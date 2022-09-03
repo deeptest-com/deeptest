@@ -13,6 +13,10 @@ import (
 	"time"
 )
 
+var (
+	breakOnce = false
+)
+
 type ExecScenarioService struct {
 	ScenarioProcessorRepo *repo.ScenarioProcessorRepo `inject:""`
 	ScenarioRepo          *repo.ScenarioRepo          `inject:""`
@@ -23,13 +27,14 @@ type ExecScenarioService struct {
 	InterfaceService      *InterfaceService           `inject:""`
 	ExecProcessorService  *ExecProcessorService       `inject:""`
 
-	ExecContextService   *business.ExecContextService  `inject:""`
-	ExecHelperService    *business.ExecHelperService   `inject:""`
-	ExecIteratorService  *business.ExecIteratorService `inject:""`
-	ExecRequestService   *business.ExecRequestService  `inject:""`
-	ExecLogService       *ExecLogService               `inject:""`
-	ExecReportService    *ExecReportService            `inject:""`
-	ExecInterfaceService *ExecInterfaceService         `inject:""`
+	ExecContextService   *business.ExecContext  `inject:""`
+	ExecComm             *business.ExecComm     `inject:""`
+	ExecHelperService    *ExecHelperService     `inject:""`
+	ExecIteratorService  *business.ExecIterator `inject:""`
+	ExecRequestService   *business.ExecRequest  `inject:""`
+	ExecLogService       *ExecLogService        `inject:""`
+	ExecReportService    *ExecReportService     `inject:""`
+	ExecInterfaceService *ExecInterfaceService  `inject:""`
 }
 
 func (s *ExecScenarioService) Load(scenarioId int) (result domain.Report, err error) {
@@ -61,7 +66,7 @@ func (s *ExecScenarioService) ExecScenario(scenarioId int, wsMsg websocket.Messa
 	s.ExecContextService.InitScopeHierarchy(uint(scenarioId))
 	s.ExecIteratorService.InitIteratorContext()
 
-	rootLog := domain.Log{
+	rootLog := domain.ExecLog{
 		Id:                rootProcessor.ID,
 		Name:              rootProcessor.Name,
 		ProcessorCategory: rootProcessor.EntityCategory,
@@ -90,15 +95,15 @@ func (s *ExecScenarioService) ExecScenario(scenarioId int, wsMsg websocket.Messa
 	return
 }
 
-func (s *ExecScenarioService) ExecProcessorRecursively(processor *model.Processor, parentLog *domain.Log,
+func (s *ExecScenarioService) ExecProcessorRecursively(processor *model.Processor, parentLog *domain.ExecLog,
 	wsMsg websocket.Message) (err error) {
 	if parentLog.Logs == nil {
-		logs := make([]*domain.Log, 0)
+		logs := make([]*domain.ExecLog, 0)
 		parentLog.Logs = &logs
 	}
 
-	if s.ExecHelperService.IsWrapperProcessor(processor.EntityCategory) {
-		if s.ExecHelperService.IsExecutableWrapperProcessor(processor.EntityCategory) {
+	if s.ExecComm.IsWrapperProcessor(processor.EntityCategory) {
+		if s.ExecComm.IsExecutableWrapperProcessor(processor.EntityCategory) {
 			s.ExecWrapperProcessor(processor, parentLog, wsMsg)
 
 		} else {
@@ -119,11 +124,21 @@ func (s *ExecScenarioService) ExecProcessorRecursively(processor *model.Processo
 	return
 }
 
-func (s *ExecScenarioService) ExecWrapperProcessor(processor *model.Processor, parentLog *domain.Log,
+func (s *ExecScenarioService) ExecWrapperProcessor(processor *model.Processor, parentLog *domain.ExecLog,
 	wsMsg websocket.Message) {
 	wrapperLog, _ := s.GetWrapperProcessorResp(processor, parentLog, wsMsg)
 
-	if s.ExecHelperService.IsLoopTimes(wrapperLog) {
+	if s.ExecComm.IsLoop(wrapperLog) {
+		s.ExecWrapperLoopProcessor(processor, wrapperLog, wsMsg)
+
+	} else if s.ExecComm.IsLogicPass(wrapperLog) {
+		s.ExecChildren(processor, wrapperLog, wsMsg)
+	}
+}
+
+func (s *ExecScenarioService) ExecWrapperLoopProcessor(processor *model.Processor, wrapperLog *domain.ExecLog,
+	wsMsg websocket.Message) {
+	if s.ExecComm.IsLoopTimesPass(wrapperLog) {
 		iterator, _ := s.ExecIteratorService.GenerateLoopTimes(*wrapperLog)
 
 		s.ExecIteratorService.Push(iterator)
@@ -132,11 +147,56 @@ func (s *ExecScenarioService) ExecWrapperProcessor(processor *model.Processor, p
 			wrapperLogItem, _ := s.AddWrapperProcessor(processor, wrapperLog, wsMsg)
 
 			s.ExecChildren(processor, wrapperLogItem, wsMsg)
+
+			if breakOnce {
+				breakOnce = false
+				break
+			}
 		}
 
 		s.ExecIteratorService.Pop()
 
-	} else if s.ExecHelperService.IsLoopRange(wrapperLog) {
+	} else if s.ExecComm.IsLoopUntilPass(wrapperLog) {
+		expression := wrapperLog.Output.Expression
+		for {
+			result, err := s.ExecHelperService.ComputerExpress(expression, wrapperLog.ProcessId)
+			pass, ok := result.(bool)
+			if err != nil || !ok || !pass {
+				break
+			}
+
+			s.ExecChildren(processor, wrapperLog, wsMsg)
+
+			if breakOnce {
+				breakOnce = false
+				break
+			}
+		}
+
+	} else if s.ExecComm.IsLoopInPass(wrapperLog) {
+		loopListProcessor, _ := s.ScenarioProcessorRepo.GetLoop(*processor)
+		iterator, _ := s.ExecIteratorService.GenerateLoopList(*wrapperLog)
+
+		s.ExecIteratorService.Push(iterator)
+
+		for _, item := range iterator.Items {
+			wrapperLogItem, _ := s.AddWrapperProcessor(processor, wrapperLog, wsMsg)
+
+			s.ExecContextService.SetVariable(processor.ID, loopListProcessor.VariableName, item)
+			vari, _ := s.ExecContextService.GetVariable(processor.ID, loopListProcessor.VariableName)
+			logUtils.Infof("%s = %v", vari.Name, vari.Value)
+
+			s.ExecChildren(processor, wrapperLogItem, wsMsg)
+
+			if breakOnce {
+				breakOnce = false
+				break
+			}
+		}
+
+		s.ExecIteratorService.Pop()
+
+	} else if s.ExecComm.IsLoopRangePass(wrapperLog) {
 		loopRangeProcessor, _ := s.ScenarioProcessorRepo.GetLoop(*processor)
 		iterator, _ := s.ExecIteratorService.GenerateLoopRange(*wrapperLog, loopRangeProcessor.Step, loopRangeProcessor.IsRand)
 
@@ -146,28 +206,41 @@ func (s *ExecScenarioService) ExecWrapperProcessor(processor *model.Processor, p
 			wrapperLogItem, _ := s.AddWrapperProcessor(processor, wrapperLog, wsMsg)
 
 			s.ExecContextService.SetVariable(processor.ID, loopRangeProcessor.VariableName, item)
-			vari := s.ExecContextService.GetVariable(processor.ID, loopRangeProcessor.VariableName)
+			vari, _ := s.ExecContextService.GetVariable(processor.ID, loopRangeProcessor.VariableName)
 			logUtils.Infof("%s = %v", vari.Name, vari.Value)
 
 			s.ExecChildren(processor, wrapperLogItem, wsMsg)
+
+			if breakOnce {
+				breakOnce = false
+				break
+			}
 		}
 
 		s.ExecIteratorService.Pop()
+	} else if s.ExecComm.IsLoopLoopBreak(wrapperLog) {
+		breakIfExpress := wrapperLog.Output.Expression
+
+		result, err := s.ExecHelperService.ComputerExpress(breakIfExpress, wrapperLog.ProcessId)
+		pass, ok := result.(bool)
+		if err != nil || !ok || !pass {
+			breakOnce = true
+		}
 	}
 }
 
-func (s *ExecScenarioService) ExecChildren(processor *model.Processor, parentLog *domain.Log, wsMsg websocket.Message) {
+func (s *ExecScenarioService) ExecChildren(processor *model.Processor, parentLog *domain.ExecLog, wsMsg websocket.Message) {
 	for _, child := range processor.Children {
 		s.ExecProcessorRecursively(child, parentLog, wsMsg)
 	}
 }
 
-func (s *ExecScenarioService) AddWrapperProcessor(processor *model.Processor, parentLog *domain.Log, wsMsg websocket.Message) (
-	wrapperLog *domain.Log, err error) {
+func (s *ExecScenarioService) AddWrapperProcessor(processor *model.Processor, parentLog *domain.ExecLog, wsMsg websocket.Message) (
+	wrapperLog *domain.ExecLog, err error) {
 
 	_, desc, _ := s.ExecIteratorService.RetrieveIteratorsVal(processor)
 
-	wrapperLog = &domain.Log{
+	wrapperLog = &domain.ExecLog{
 		Name:              processor.Name,
 		ProcessId:         processor.ID,
 		ProcessorCategory: processor.EntityCategory,
@@ -185,10 +258,10 @@ func (s *ExecScenarioService) AddWrapperProcessor(processor *model.Processor, pa
 	return
 }
 
-func (s *ExecScenarioService) GetWrapperProcessorResp(processor *model.Processor, parentLog *domain.Log, wsMsg websocket.Message) (
-	wrapperLog *domain.Log, err error) {
+func (s *ExecScenarioService) GetWrapperProcessorResp(processor *model.Processor, parentLog *domain.ExecLog, wsMsg websocket.Message) (
+	wrapperLog *domain.ExecLog, err error) {
 
-	output := domain.Output{}
+	output := domain.ExecOutput{}
 
 	//if processor.EntityCategory == consts.ProcessorThreadGroup {
 	//	result, _ = s.ExecLogService.ExecThreadGroup(processor, parentLog, wsMsg)
@@ -204,32 +277,15 @@ func (s *ExecScenarioService) GetWrapperProcessorResp(processor *model.Processor
 
 	}
 
-	wrapperLog = &domain.Log{
-		Id:                processor.ID,
-		Name:              processor.Name,
-		ProcessId:         processor.ID,
-		ProcessorCategory: processor.EntityCategory,
-		ProcessorType:     processor.EntityType,
-		ParentId:          parentLog.PersistentId,
-		ReportId:          parentLog.ReportId,
-
-		Output:  output,
-		Summary: []string{output.Text},
-	}
-
-	logs := make([]*domain.Log, 0)
-	wrapperLog.Logs = &logs
-
-	s.ExecLogService.CreateProcessorLog(processor, wrapperLog, parentLog.PersistentId)
-
-	*parentLog.Logs = append(*parentLog.Logs, wrapperLog)
-	execHelper.SendExecMsg(*wrapperLog, wsMsg)
+	wrapperLog, _ = s.wrapperLogAndSendMsg(output, processor, parentLog, wsMsg)
 
 	return
 }
 
-func (s *ExecScenarioService) ExecActionProcessorWithResp(processor *model.Processor, parentLog *domain.Log, wsMsg websocket.Message) (err error) {
-	output := domain.Output{}
+func (s *ExecScenarioService) ExecActionProcessorWithResp(processor *model.Processor, parentLog *domain.ExecLog, wsMsg websocket.Message) (
+	wrapperLog *domain.ExecLog, err error) {
+
+	output := domain.ExecOutput{}
 	if processor.EntityCategory == consts.ProcessorTimer {
 		output, _ = s.ExecProcessorService.ExecTimer(processor, parentLog, wsMsg)
 
@@ -247,18 +303,33 @@ func (s *ExecScenarioService) ExecActionProcessorWithResp(processor *model.Proce
 
 	}
 
-	actionLog := &domain.Log{
+	wrapperLog, _ = s.wrapperLogAndSendMsg(output, processor, parentLog, wsMsg)
+
+	return
+}
+
+func (s *ExecScenarioService) wrapperLogAndSendMsg(output domain.ExecOutput, processor *model.Processor, parentLog *domain.ExecLog, wsMsg websocket.Message) (
+	wrapperLog *domain.ExecLog, err error) {
+	wrapperLog = &domain.ExecLog{
 		Id:                processor.ID,
 		Name:              processor.Name,
 		ProcessId:         processor.ID,
 		ProcessorCategory: processor.EntityCategory,
 		ProcessorType:     processor.EntityType,
-		ParentId:          processor.ParentId,
-		Output:            output,
+		ParentId:          parentLog.PersistentId,
+		ReportId:          parentLog.ReportId,
+
+		Output:  output,
+		Summary: []string{output.Msg},
 	}
 
-	*parentLog.Logs = append(*parentLog.Logs, actionLog)
-	execHelper.SendExecMsg(*actionLog, wsMsg)
+	logs := make([]*domain.ExecLog, 0)
+	wrapperLog.Logs = &logs
+
+	s.ExecLogService.CreateProcessorLog(processor, wrapperLog, parentLog.PersistentId)
+
+	*parentLog.Logs = append(*parentLog.Logs, wrapperLog)
+	execHelper.SendExecMsg(*wrapperLog, wsMsg)
 
 	return
 }

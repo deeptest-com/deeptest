@@ -25,7 +25,7 @@ func DateTimeStrLong(tm time.Time) string {
 }
 
 func DateStrToTimestamp(str string) (int64, error) {
-	layout := "20060102"
+	layout := "2006-01-02"
 
 	loc, err := time.LoadLocation("Local")
 	if err != nil {
@@ -38,4 +38,20 @@ func DateStrToTimestamp(str string) (int64, error) {
 	}
 
 	return time.Unix(), nil
+}
+
+func DateTimeStrToTime(str string) (ret time.Time, err error) {
+	layout := "2006-01-02"
+
+	loc, err := time.LoadLocation("Local")
+	if err != nil {
+		return
+	}
+
+	ret, err = time.ParseInLocation(layout, str, loc)
+	if err != nil {
+		return
+	}
+
+	return
 }

@@ -52,13 +52,13 @@ func (s *ExtractorService) Delete(reqId uint) (err error) {
 }
 
 func (s *ExtractorService) ExtractInterface(interf model.Interface, resp serverDomain.InvocationResponse,
-	interfaceExecLog *model.Log) (logExtractors []domain.InterfaceExtractor, err error) {
+	interfaceExecLog *model.Log) (logExtractors []domain.ExecInterfaceExtractor, err error) {
 	extractors, _ := s.ExtractorRepo.List(interf.ID)
 
 	for _, extractor := range extractors {
 		logExtractor, err := s.Extract(extractor, resp, interf.ProjectId, interfaceExecLog)
 		if err == nil {
-			interfaceExtractor := domain.InterfaceExtractor{}
+			interfaceExtractor := domain.ExecInterfaceExtractor{}
 			copier.CopyWithOption(&interfaceExtractor, logExtractor, copier.Option{DeepCopy: true})
 			logExtractors = append(logExtractors, interfaceExtractor)
 		}

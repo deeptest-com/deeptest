@@ -61,6 +61,17 @@ func (s *ScenarioNodeService) AddProcessor(req serverDomain.ScenarioAddScenarioR
 		s.ScenarioNodeRepo.Save(&targetProcessor)
 	}
 
+	if ret.EntityType == consts.ProcessorLogicElse { // create default entity
+		entity := model.ProcessorLogic{
+			ProcessorEntity: model.ProcessorEntity{
+				ProcessorId:       ret.ID,
+				ProcessorCategory: ret.EntityCategory,
+				ProcessorType:     ret.EntityType,
+			},
+		}
+		s.ScenarioProcessorRepo.SaveLogic(&entity)
+	}
+
 	return
 }
 

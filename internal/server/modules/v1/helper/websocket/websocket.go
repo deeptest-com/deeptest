@@ -42,7 +42,7 @@ func SendExecResult(category consts.WsMsgCategory, data interface{}, wsMsg *webs
 	PubMsg(mqData)
 }
 
-func SendExecMsg(msg string, log domain.Log, wsMsg *websocket.Message) {
+func SendExecMsg(msg string, log domain.ExecLog, wsMsg *websocket.Message) {
 	logUtils.Infof(_i118Utils.Sprintf("ws_send_exec_msg", wsMsg.Room,
 		strings.ReplaceAll(strings.TrimSpace(msg), `%`, `%%`)))
 

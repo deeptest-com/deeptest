@@ -2,6 +2,7 @@ package repo
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
+	_dateUtils "github.com/aaronchen2k/deeptest/pkg/lib/date"
 	"github.com/jinzhu/copier"
 	"gorm.io/gorm"
 )
@@ -211,6 +212,11 @@ func (r *ScenarioProcessorRepo) SaveVariable(po *model.ProcessorVariable) (err e
 }
 
 func (r *ScenarioProcessorRepo) SaveCookie(po *model.ProcessorCookie) (err error) {
+	if po.ExpireTime == nil {
+		time, _ := _dateUtils.DateTimeStrToTime("3000-06-29")
+		po.ExpireTime = &time
+	}
+
 	err = r.DB.Save(po).Error
 
 	r.UpdateEntityId(po.ProcessorId, po.ID)

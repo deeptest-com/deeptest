@@ -8,14 +8,14 @@ import (
 	"github.com/kataras/iris/v12"
 )
 
-func ReplaceVariablesForInvocation(req *serverDomain.InvocationRequest, variables []domain.Variable) (err error) {
+func ReplaceVariablesForInvocation(req *serverDomain.InvocationRequest, variables []domain.ExecVariable) (err error) {
 	variableArr := genVariableArr(variables)
 	requestHelper.ReplaceAll(req, variableArr)
 
 	return
 }
 
-func genVariableArr(variables []domain.Variable) (
+func genVariableArr(variables []domain.ExecVariable) (
 	ret [][]string) {
 
 	variableMap := iris.Map{}

@@ -1,33 +1,36 @@
 package business
 
 import (
+	"errors"
+	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/repo"
+	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"time"
 )
 
 var (
-	ExecLog = domain.Log{}
+	ExecLog = domain.ExecLog{}
 
 	ScopeHierarchy  = map[uint]*[]uint{}
-	ScopedVariables = map[uint][]domain.Variable{}
-	ScopedCookies   = map[uint][]domain.Cookie{}
+	ScopedVariables = map[uint][]domain.ExecVariable{}
+	ScopedCookies   = map[uint][]domain.ExecCookie{}
 )
 
-type ExecContextService struct {
+type ExecContext struct {
 	ScenarioNodeRepo *repo.ScenarioNodeRepo `inject:""`
 }
 
-func NewExecContextService() *ExecContextService {
-	return &ExecContextService{}
+func NewExecContextService() *ExecContext {
+	return &ExecContext{}
 }
 
-func (s *ExecContextService) InitScopeHierarchy(scenarioId uint) (variables []domain.Variable) {
+func (s *ExecContext) InitScopeHierarchy(scenarioId uint) (variables []domain.ExecVariable) {
 	s.ScenarioNodeRepo.GetScopeHierarchy(scenarioId, &ScopeHierarchy)
 	return
 }
 
-func (s *ExecContextService) ListVariable(scopeId uint) (variables []domain.Variable) {
+func (s *ExecContext) ListVariable(scopeId uint) (variables []domain.ExecVariable) {
 	effectiveScopeIds := ScopeHierarchy[scopeId]
 
 	for _, id := range *effectiveScopeIds {
@@ -37,7 +40,10 @@ func (s *ExecContextService) ListVariable(scopeId uint) (variables []domain.Vari
 	return
 }
 
-func (s *ExecContextService) GetVariable(scopeId uint, variableName string) (variable domain.Variable) {
+func (s *ExecContext) GetVariable(scopeId uint, variableName string) (variable domain.ExecVariable, err error) {
+	if variableName == "var1" {
+		logUtils.Info("")
+	}
 	effectiveScopeIds := ScopeHierarchy[scopeId]
 
 	for _, id := range *effectiveScopeIds {
@@ -49,15 +55,19 @@ func (s *ExecContextService) GetVariable(scopeId uint, variableName string) (var
 		}
 	}
 
+	if variable.Name == "" {
+		err = errors.New(fmt.Sprintf("找不到变量%s", variableName))
+	}
+
 LABEL:
 
 	return
 }
 
-func (s *ExecContextService) SetVariable(scopeId uint, variableName string, variableValue interface{}) (err error) {
+func (s *ExecContext) SetVariable(scopeId uint, variableName string, variableValue interface{}) (err error) {
 	found := false
 
-	newVariable := domain.Variable{
+	newVariable := domain.ExecVariable{
 		Name:  variableName,
 		Value: variableValue,
 	}
@@ -78,17 +88,34 @@ func (s *ExecContextService) SetVariable(scopeId uint, variableName string, vari
 	return
 }
 
-func (s *ExecContextService) ListCookie(scopeId uint) (cookies []domain.Cookie) {
+func (s *ExecContext) ClearVariable(scopeId uint, variableName string) (err error) {
+	deleteIndex := -1
+	for index, item := range ScopedVariables[scopeId] {
+		if item.Name == variableName {
+			deleteIndex = index
+			break
+		}
+	}
+
+	if deleteIndex > -1 {
+		ScopedVariables[scopeId] = append(
+			ScopedVariables[scopeId][:deleteIndex], ScopedVariables[scopeId][(deleteIndex+1):]...)
+	}
+
+	return
+}
+
+func (s *ExecContext) ListCookie(scopeId uint) (cookies []domain.ExecCookie) {
 	cookies = ScopedCookies[scopeId]
 	return
 }
 
-func (s *ExecContextService) GetCookie(scopeId uint, cookieName string) (cookie domain.Cookie) {
+func (s *ExecContext) GetCookie(scopeId uint, cookieName, domain string) (cookie domain.ExecCookie) {
 	effectiveScopeIds := ScopeHierarchy[scopeId]
 
 	for _, id := range *effectiveScopeIds {
 		for _, item := range ScopedCookies[id] {
-			if item.Name == cookieName {
+			if item.Name == cookieName && item.Domain == domain && item.ExpireTime.Unix() > time.Now().Unix() {
 				cookie = item
 
 				goto LABEL
@@ -101,10 +128,10 @@ LABEL:
 	return
 }
 
-func (s *ExecContextService) SetCookie(scopeId uint, cookieName, cookieValue, domainName string, expireTime time.Time) (err error) {
+func (s *ExecContext) SetCookie(scopeId uint, cookieName string, cookieValue interface{}, domainName string, expireTime *time.Time) (err error) {
 	found := false
 
-	newCookie := domain.Cookie{
+	newCookie := domain.ExecCookie{
 		Name:  cookieName,
 		Value: cookieValue,
 
@@ -123,6 +150,23 @@ func (s *ExecContextService) SetCookie(scopeId uint, cookieName, cookieValue, do
 
 	if !found {
 		ScopedCookies[scopeId] = append(ScopedCookies[scopeId], newCookie)
+	}
+
+	return
+}
+
+func (s *ExecContext) ClearCookie(scopeId uint, cookieName string) (err error) {
+	deleteIndex := -1
+	for index, item := range ScopedCookies[scopeId] {
+		if item.Name == cookieName {
+			deleteIndex = index
+			break
+		}
+	}
+
+	if deleteIndex > -1 {
+		ScopedCookies[scopeId] = append(
+			ScopedCookies[scopeId][:deleteIndex], ScopedCookies[scopeId][(deleteIndex+1):]...)
 	}
 
 	return

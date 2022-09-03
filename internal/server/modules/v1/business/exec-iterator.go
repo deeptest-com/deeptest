@@ -15,34 +15,34 @@ var (
 	IteratorContextIndexStack *list.List
 )
 
-type ExecIteratorService struct {
+type ExecIterator struct {
 	ScenarioProcessorRepo *repo.ScenarioProcessorRepo `inject:""`
 }
 
-func NewExeIteratorService() *ExecIteratorService {
-	return &ExecIteratorService{}
+func NewExeIteratorService() *ExecIterator {
+	return &ExecIterator{}
 }
 
-func (s *ExecIteratorService) InitIteratorContext() {
+func (s *ExecIterator) InitIteratorContext() {
 	IteratorContextValueStack = list.New()
 	IteratorContextIndexStack = list.New()
 }
 
-func (s *ExecIteratorService) Push(iterator domain.ExecIterator) {
+func (s *ExecIterator) Push(iterator domain.ExecIterator) {
 	IteratorContextValueStack.PushFront(iterator)
 	IteratorContextIndexStack.PushFront(0)
 
 	return
 }
 
-func (s *ExecIteratorService) Pop() {
+func (s *ExecIterator) Pop() {
 	IteratorContextValueStack.Remove(IteratorContextValueStack.Front())
 	IteratorContextIndexStack.Remove(IteratorContextIndexStack.Front())
 
 	return
 }
 
-func (s *ExecIteratorService) GenerateLoopTimes(log domain.Log) (ret domain.ExecIterator, err error) {
+func (s *ExecIterator) GenerateLoopTimes(log domain.ExecLog) (ret domain.ExecIterator, err error) {
 	ret.ProcessorCategory = log.ProcessorCategory
 	ret.ProcessorType = log.ProcessorType
 
@@ -55,20 +55,28 @@ func (s *ExecIteratorService) GenerateLoopTimes(log domain.Log) (ret domain.Exec
 	return
 }
 
-func (s *ExecIteratorService) GenerateLoopRange(log domain.Log, stepStr string, isRand bool) (ret domain.ExecIterator, err error) {
+func (s *ExecIterator) GenerateLoopRange(log domain.ExecLog, stepStr string, isRand bool) (ret domain.ExecIterator, err error) {
 	ret.ProcessorCategory = log.ProcessorCategory
 	ret.ProcessorType = log.ProcessorType
 
 	start, end, step, precision, typ, err := execHelper.GetRange(log.Output, stepStr)
 	if err == nil {
-		ret.RangeType = typ
+		ret.DataType = typ
 		ret.Items, _ = execHelper.GenerateRangeItems(start, end, step, precision, isRand, typ)
 	}
 
 	return
 }
+func (s *ExecIterator) GenerateLoopList(log domain.ExecLog) (ret domain.ExecIterator, err error) {
+	ret.ProcessorCategory = log.ProcessorCategory
+	ret.ProcessorType = log.ProcessorType
 
-func (s *ExecIteratorService) RetrieveIteratorsVal(processor *model.Processor) (item interface{}, desc string, err error) {
+	ret.Items, ret.DataType, err = execHelper.GenerateListItems(log.Output.List)
+
+	return
+}
+
+func (s *ExecIterator) RetrieveIteratorsVal(processor *model.Processor) (item interface{}, desc string, err error) {
 	valueElem := IteratorContextValueStack.Front()
 	indexElem := IteratorContextIndexStack.Front()
 	if valueElem == nil || indexElem == nil {

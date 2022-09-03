@@ -13,6 +13,10 @@
                      @blur="validate('cookieName', { trigger: 'blur' }).catch(() => {})"/>
           </a-form-item>
 
+          <a-form-item label="Cookie域">
+            <a-input v-model:value="modelRef.domain"/>
+          </a-form-item>
+
           <a-form-item label="赋予变量名" v-bind="validateInfos.variableName">
             <a-input v-model:value="modelRef.variableName"
                      @blur="validate('variableName', { trigger: 'blur' }).catch(() => {})"/>

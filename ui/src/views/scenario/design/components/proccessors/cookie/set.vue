@@ -13,10 +13,18 @@
                      @blur="validate('cookieName', { trigger: 'blur' }).catch(() => {})"/>
           </a-form-item>
 
+          <a-form-item label="Cookie域">
+            <a-input v-model:value="modelRef.domain"/>
+          </a-form-item>
+
+          <a-form-item label="过期时间">
+            <a-date-picker v-model:value="modelRef.expireTime"/>
+          </a-form-item>
+
           <a-form-item label="取值" v-bind="validateInfos.rightValue">
             <a-input v-model:value="modelRef.rightValue"
                      @blur="validate('rightValue', { trigger: 'blur' }).catch(() => {})"/>
-            <div class="dp-input-tip">常量或用${name}表示的变量</div>
+            <div class="dp-input-tip">表达式可使用形如${name}的变量</div>
           </a-form-item>
 
           <a-form-item :wrapper-col="{ span: 16, offset: 4 }">

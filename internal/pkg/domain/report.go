@@ -36,7 +36,7 @@ type Report struct {
 	ScenarioId uint `json:"scenarioId"`
 	ProjectId  uint `json:"projectId"`
 
-	Logs []Log `gorm:"-" json:"logs"`
+	Logs []ExecLog `gorm:"-" json:"logs"`
 }
 
 type ReportSimple struct {

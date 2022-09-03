@@ -12,16 +12,16 @@ import (
 )
 
 type ExecLogService struct {
-	ScenarioProcessorRepo *repo.ScenarioProcessorRepo  `inject:""`
-	ScenarioRepo          *repo.ScenarioRepo           `inject:""`
-	TestResultRepo        *repo.ReportRepo             `inject:""`
-	TestLogRepo           *repo.LogRepo                `inject:""`
-	InterfaceRepo         *repo.InterfaceRepo          `inject:""`
-	InterfaceService      *InterfaceService            `inject:""`
-	ExecRequestService    *business.ExecRequestService `inject:""`
+	ScenarioProcessorRepo *repo.ScenarioProcessorRepo `inject:""`
+	ScenarioRepo          *repo.ScenarioRepo          `inject:""`
+	TestResultRepo        *repo.ReportRepo            `inject:""`
+	TestLogRepo           *repo.LogRepo               `inject:""`
+	InterfaceRepo         *repo.InterfaceRepo         `inject:""`
+	InterfaceService      *InterfaceService           `inject:""`
+	ExecRequestService    *business.ExecRequest       `inject:""`
 }
 
-func (s *ExecLogService) CreateProcessorLog(processor *model.Processor, log *domain.Log, parentPersistentId uint) (po model.Log, err error) {
+func (s *ExecLogService) CreateProcessorLog(processor *model.Processor, log *domain.ExecLog, parentPersistentId uint) (po model.Log, err error) {
 	po = model.Log{
 		Name:              processor.Name,
 		ProcessorCategory: processor.EntityCategory,
@@ -44,7 +44,7 @@ func (s *ExecLogService) CreateProcessorLog(processor *model.Processor, log *dom
 	return
 }
 
-func (s *ExecLogService) CreateInterfaceLog(req serverDomain.InvocationRequest, resp serverDomain.InvocationResponse, parentLog *domain.Log) (
+func (s *ExecLogService) CreateInterfaceLog(req serverDomain.InvocationRequest, resp serverDomain.InvocationResponse, parentLog *domain.ExecLog) (
 	po model.Log, err error) {
 	po = model.Log{
 		Name:              req.Name,

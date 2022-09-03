@@ -3,6 +3,7 @@ package model
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/kataras/iris/v12"
+	"time"
 )
 
 type Processor struct {
@@ -61,9 +62,7 @@ type ProcessorLogic struct {
 	BaseModel
 	ProcessorEntity
 
-	LeftValue  string                    `json:"leftValue" yaml:"leftValue"`
-	RightValue string                    `json:"rightValue" yaml:"rightValue"`
-	Operator   consts.ComparisonOperator `json:"operator" yaml:"operator"`
+	Expression string `json:"expression" yaml:"expression"`
 }
 
 func (ProcessorLogic) TableName() string {
@@ -93,8 +92,7 @@ type ProcessorTimer struct {
 	BaseModel
 	ProcessorEntity
 
-	SleepBefore int `json:"sleepBefore" yaml:"sleepBefore"`
-	SleepAfter  int `json:"sleepAfter" yaml:"sleepAfter"`
+	SleepTime int `json:"sleepTime" yaml:"sleepTime"`
 
 	Unit string `json:"unit" yaml:"unit"`
 }
@@ -180,9 +178,11 @@ type ProcessorCookie struct {
 	BaseModel
 	ProcessorEntity
 
-	CookieName   string `json:"cookieName" yaml:"cookieName"`
-	VariableName string `json:"variableName" yaml:"variableName"`
-	RightValue   string `json:"rightValue" yaml:"rightValue"`
+	CookieName   string     `json:"cookieName" yaml:"cookieName"`
+	VariableName string     `json:"variableName" yaml:"variableName"`
+	RightValue   string     `json:"rightValue" yaml:"rightValue"`
+	Domain       string     `json:"domain" yaml:"domain"`
+	ExpireTime   *time.Time `json:"expireTime" yaml:"expireTime"`
 }
 
 func (ProcessorCookie) TableName() string {

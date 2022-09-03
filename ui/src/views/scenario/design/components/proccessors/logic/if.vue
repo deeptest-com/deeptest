@@ -8,27 +8,10 @@
             <a-input v-model:value="modelRef.comments"/>
           </a-form-item>
 
-          <a-form-item label="左值" v-bind="validateInfos.leftValue">
-            <a-input v-model:value="modelRef.leftValue"
-                     @blur="validate('leftValue', { trigger: 'blur' }).catch(() => {})" />
-          </a-form-item>
-
-          <a-form-item label="操作" v-bind="validateInfos.operator">
-            <a-select v-model:value="modelRef.operator"
-                      @blur="validate('operator', { trigger: 'change' }).catch(() => {})">
-              <a-select-option v-for="(item, idx) in operators" :key="idx" :value="item.value">
-                {{ t(item.label) }}
-              </a-select-option>
-            </a-select>
-          </a-form-item>
-
-          <a-form-item label="右值" v-bind="validateInfos.rightValue">
-            <a-input v-model:value="modelRef.rightValue"
-                     @blur="validate('rightValue', { trigger: 'blur' }).catch(() => {})"/>
-          </a-form-item>
-
-          <a-form-item :wrapper-col="{ offset: 2 }">
-            左值、右值可以是常量或形如${name}的变量。
+          <a-form-item label="判断表达式" v-bind="validateInfos.expression">
+            <a-input v-model:value="modelRef.expression"
+                     @blur="validate('expression', { trigger: 'blur' }).catch(() => {})" />
+            <div class="dp-input-tip">表达式支持形如${name}的变量</div>
           </a-form-item>
 
           <a-form-item :wrapper-col="{ span: 16, offset: 2 }">
@@ -60,14 +43,8 @@ const {t} = useI18n();
 const formRef = ref();
 
 const rulesRef = reactive({
-  leftValue: [
-    {required: true, message: '请输入左值', trigger: 'blur'},
-  ],
-  rightValue: [
-    {required: true, message: '请输入右值', trigger: 'blur'},
-  ],
-  operator: [
-    {required: true, message: '请选择操作', trigger: 'blur'},
+  expression: [
+    {required: true, message: '请输入表达式', trigger: 'blur'},
   ],
 });
 

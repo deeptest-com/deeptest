@@ -10,15 +10,15 @@ import (
 )
 
 type ExecReportService struct {
-	ScenarioProcessorRepo *repo.ScenarioProcessorRepo  `inject:""`
-	ScenarioRepo          *repo.ScenarioRepo           `inject:""`
-	TestResultRepo        *repo.ReportRepo             `inject:""`
-	TestLogRepo           *repo.LogRepo                `inject:""`
-	ReportRepo            *repo.ReportRepo             `inject:""`
-	ExecRequestService    *business.ExecRequestService `inject:""`
+	ScenarioProcessorRepo *repo.ScenarioProcessorRepo `inject:""`
+	ScenarioRepo          *repo.ScenarioRepo          `inject:""`
+	TestResultRepo        *repo.ReportRepo            `inject:""`
+	TestLogRepo           *repo.LogRepo               `inject:""`
+	ReportRepo            *repo.ReportRepo            `inject:""`
+	ExecRequestService    *business.ExecRequest       `inject:""`
 }
 
-func (s ExecReportService) UpdateTestReport(rootLog domain.Log) (report model.Report) {
+func (s ExecReportService) UpdateTestReport(rootLog domain.ExecLog) (report model.Report) {
 	report, _ = s.ReportRepo.Get(rootLog.ReportId)
 	if report.InterfaceStatusMap == nil {
 		report.InterfaceStatusMap = map[uint]map[consts.ResultStatus]int{}
@@ -36,7 +36,7 @@ func (s ExecReportService) UpdateTestReport(rootLog domain.Log) (report model.Re
 	return
 }
 
-func (s ExecReportService) countRequest(log domain.Log, report *model.Report) {
+func (s ExecReportService) countRequest(log domain.ExecLog, report *model.Report) {
 	if log.ProcessorType == consts.ProcessorInterfaceDefault {
 		s.countInterface(log.InterfaceId, log.ResultStatus, report)
 

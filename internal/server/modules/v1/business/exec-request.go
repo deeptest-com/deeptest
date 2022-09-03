@@ -7,16 +7,16 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/repo"
 )
 
-type ExecRequestService struct {
-	ExecContextService *ExecContextService    `inject:""`
+type ExecRequest struct {
+	ExecContextService *ExecContext           `inject:""`
 	ScenarioNodeRepo   *repo.ScenarioNodeRepo `inject:""`
 }
 
-func NewExecRequestService() *ExecRequestService {
-	return &ExecRequestService{}
+func NewExecRequestService() *ExecRequest {
+	return &ExecRequest{}
 }
 
-func (s *ExecRequestService) ReplaceProcessorVariables(req *serverDomain.InvocationRequest, interfaceProcessor *model.Processor) (
+func (s *ExecRequest) ReplaceProcessorVariables(req *serverDomain.InvocationRequest, interfaceProcessor *model.Processor) (
 	err error) {
 
 	variables := s.ExecContextService.ListVariable(interfaceProcessor.ID)

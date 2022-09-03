@@ -14,16 +14,16 @@ import (
 )
 
 type ExecInterfaceService struct {
-	InterfaceRepo      *repo.InterfaceRepo          `inject:""`
-	InterfaceService   *InterfaceService            `inject:""`
-	ExecRequestService *business.ExecRequestService `inject:""`
-	ExecLogService     *ExecLogService              `inject:""`
+	InterfaceRepo      *repo.InterfaceRepo   `inject:""`
+	InterfaceService   *InterfaceService     `inject:""`
+	ExecRequestService *business.ExecRequest `inject:""`
+	ExecLogService     *ExecLogService       `inject:""`
 
 	ExtractorService  *ExtractorService  `inject:""`
 	CheckpointService *CheckpointService `inject:""`
 }
 
-func (s *ExecInterfaceService) ExecInterfaceProcessor(interfaceProcessor *model.Processor, parentLog *domain.Log, wsMsg websocket.Message) (err error) {
+func (s *ExecInterfaceService) ExecInterfaceProcessor(interfaceProcessor *model.Processor, parentLog *domain.ExecLog, wsMsg websocket.Message) (err error) {
 	interf, err := s.InterfaceRepo.Get(interfaceProcessor.InterfaceId)
 	if err != nil {
 		return
@@ -59,7 +59,7 @@ func (s *ExecInterfaceService) ExecInterfaceProcessor(interfaceProcessor *model.
 	reqContent, _ := json.Marshal(req)
 	respContent, _ := json.Marshal(resp)
 
-	interfaceLog := &domain.Log{
+	interfaceLog := &domain.ExecLog{
 		Id:                logPo.ID,
 		Name:              interfaceProcessor.Name,
 		ProcessorCategory: consts.ProcessorInterface,

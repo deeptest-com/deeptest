@@ -197,21 +197,6 @@ func (e FieldType) String() string {
 	return string(e)
 }
 
-type ValueType string
-
-const (
-	Int       FieldType = "int"
-	String    FieldType = "string"
-	Bool      FieldType = "bool"
-	IntArr    FieldType = "intArr"
-	StringArr FieldType = "stringArr"
-	BoolArr   FieldType = "boolArr"
-)
-
-func (e ValueType) String() string {
-	return string(e)
-}
-
 type FieldFormat string
 
 const (
@@ -321,18 +306,18 @@ func (e ResultStatus) String() string {
 type ProcessorCategory string
 
 const (
-	ProcessorRoot ProcessorCategory = "processor_root"
+	ProcessorRoot ProcessorCategory = "processor_root" // done
 	//ProcessorThreadGroup ProcessorCategory = "processor_thread_group"
-	ProcessorInterface ProcessorCategory = "processor_interface"
-	ProcessorGroup     ProcessorCategory = "processor_group"
-	ProcessorLogic     ProcessorCategory = "processor_logic"
-	ProcessorLoop      ProcessorCategory = "processor_loop"
-	ProcessorTimer     ProcessorCategory = "processor_timer"
-	ProcessorVariable  ProcessorCategory = "processor_variable"
+	ProcessorInterface ProcessorCategory = "processor_interface" // done
+	ProcessorGroup     ProcessorCategory = "processor_group"     // done
+	ProcessorLogic     ProcessorCategory = "processor_logic"     // done
+	ProcessorLoop      ProcessorCategory = "processor_loop"      // done
+	ProcessorTimer     ProcessorCategory = "processor_timer"     // done
+	ProcessorVariable  ProcessorCategory = "processor_variable"  // done
 	ProcessorAssertion ProcessorCategory = "processor_assertion"
 	ProcessorExtractor ProcessorCategory = "processor_extractor"
 
-	ProcessorCookie ProcessorCategory = "processor_cookie"
+	ProcessorCookie ProcessorCategory = "processor_cookie" // done
 	ProcessorData   ProcessorCategory = "processor_data"
 )
 
@@ -357,8 +342,8 @@ const (
 	ProcessorLoopRange ProcessorType = "processor_loop_range"
 	ProcessorLoopBreak ProcessorType = "processor_loop_break"
 
-	ProcessorVariableSet   ProcessorType = "processor_variable_set"
-	ProcessorVariableGet   ProcessorType = "processor_variable_get"
+	ProcessorVariableSet ProcessorType = "processor_variable_set"
+	//ProcessorVariableGet   ProcessorType = "processor_variable_get"
 	ProcessorVariableClear ProcessorType = "processor_variable_clear"
 
 	ProcessorAssertionDefault ProcessorType = "processor_assertion_default"
@@ -449,14 +434,14 @@ func (e ExecType) String() string {
 	return string(e)
 }
 
-type RangeType string
+type DataType string
 
 const (
-	RangeInt    RangeType = "int"
-	RangeFloat  RangeType = "float"
-	RangeString RangeType = "string"
+	Int    DataType = "int"
+	Float  DataType = "float"
+	String DataType = "string"
 )
 
-func (e RangeType) String() string {
+func (e DataType) String() string {
 	return string(e)
 }

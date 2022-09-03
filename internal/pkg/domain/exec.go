@@ -5,23 +5,23 @@ import (
 	"time"
 )
 
-type Variable struct {
+type ExecVariable struct {
 	Id         uint        `json:"id"`
 	Name       string      `json:"name"`
 	Value      interface{} `json:"value"`
 	Expression string      `json:"expression"`
 }
 
-type Cookie struct {
-	Id    uint   `json:"id"`
-	Name  string `json:"name"`
-	Value string `json:"value"`
+type ExecCookie struct {
+	Id    uint        `json:"id"`
+	Name  string      `json:"name"`
+	Value interface{} `json:"value"`
 
-	Domain     string    `json:"domain"`
-	ExpireTime time.Time `json:"expireTime"`
+	Domain     string     `json:"domain"`
+	ExpireTime *time.Time `json:"expireTime"`
 }
 
-type Log struct {
+type ExecLog struct {
 	Id             uint                  `json:"id"`
 	Name           string                `json:"name"`
 	Desc           string                `json:"desc"`
@@ -34,7 +34,7 @@ type Log struct {
 	PersistentId uint `json:"persistentId"`
 	ReportId     uint `json:"reportId"`
 
-	Logs *[]*Log `json:"logs"`
+	Logs *[]*ExecLog `json:"logs"`
 
 	// type
 	ProcessorCategory consts.ProcessorCategory `json:"processorCategory"`
@@ -50,14 +50,14 @@ type Log struct {
 	ProcessContent string               `json:"processContent,omitempty"`
 	ProcessResult  string               `json:"processResult,omitempty"`
 
-	InterfaceExtractorsResult  []InterfaceExtractor  `gorm:"-" json:"interfaceExtractorsResult,omitempty"`
-	InterfaceCheckpointsResult []InterfaceCheckpoint `gorm:"-" json:"interfaceCheckpointsResult,omitempty"`
+	InterfaceExtractorsResult  []ExecInterfaceExtractor  `gorm:"-" json:"interfaceExtractorsResult,omitempty"`
+	InterfaceCheckpointsResult []ExecInterfaceCheckpoint `gorm:"-" json:"interfaceCheckpointsResult,omitempty"`
 
-	Summary []string `json:"summary,omitempty"`
-	Output  Output   `json:"output,omitempty"`
+	Summary []string   `json:"summary,omitempty"`
+	Output  ExecOutput `json:"output,omitempty"`
 }
 
-type InterfaceExtractor struct {
+type ExecInterfaceExtractor struct {
 	Src  consts.ExtractorSrc  `json:"src"`
 	Type consts.ExtractorType `json:"type"`
 	Key  string               `json:"key"`
@@ -75,7 +75,7 @@ type InterfaceExtractor struct {
 	Result      string `json:"result"`
 	InterfaceId uint   `json:"interfaceId"`
 }
-type InterfaceCheckpoint struct {
+type ExecInterfaceCheckpoint struct {
 	Type consts.CheckpointType `json:"type"`
 
 	Expression        string `json:"expression"`
@@ -96,19 +96,29 @@ type ExecIterator struct {
 	Times []int `json:"times"`
 
 	// loop range
-	Items     []interface{}    `json:"items"`
-	RangeType consts.RangeType `json:"rangeType"`
+	Items    []interface{}   `json:"items"`
+	DataType consts.DataType `json:"dataType"`
 }
 
-type Output struct {
+type ExecOutput struct {
+	// logic if, else
+	Pass bool `json:"pass,omitempty"`
+
 	// loop - times
 	Times int `json:"times,omitempty"`
+	// loop util
+	Expression string `json:"times,omitempty"`
+	// loop in
+	List string `json:"list,omitempty"`
 	// loop - range
-	Range      string           `json:"range,omitempty"`
-	RangeStart interface{}      `json:"rangeStart,omitempty"`
-	RangeEnd   interface{}      `json:"rangeEnd,omitempty"`
-	RangeType  consts.RangeType `json:"rangeType,omitempty"`
+	Range      string          `json:"range,omitempty"`
+	RangeStart interface{}     `json:"rangeStart,omitempty"`
+	RangeEnd   interface{}     `json:"rangeEnd,omitempty"`
+	RangeType  consts.DataType `json:"rangeType,omitempty"`
+
+	// timer
+	SleepTime int `json:"sleepTime"`
 
 	// common
-	Text string `json:"text,omitempty"`
+	Msg string `json:"msg,omitempty"`
 }

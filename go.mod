@@ -3,6 +3,7 @@ module github.com/aaronchen2k/deeptest
 go 1.16
 
 require (
+	github.com/Knetic/govaluate v3.0.1-0.20171022003610-9aa49832a739+incompatible // indirect
 	github.com/antchfx/htmlquery v1.2.4 // indirect
 	github.com/antchfx/jsonquery v1.1.5 // indirect
 	github.com/antchfx/xmlquery v1.3.10 // indirect

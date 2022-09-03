@@ -6,6 +6,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
+	execHelper "github.com/aaronchen2k/deeptest/internal/server/modules/v1/helper/exec"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/repo"
 	_cacheUtils "github.com/aaronchen2k/deeptest/pkg/lib/cache"
@@ -53,13 +54,13 @@ func (s *CheckpointService) Delete(reqId uint) (err error) {
 }
 
 func (s *CheckpointService) CheckInterface(interf model.Interface, resp serverDomain.InvocationResponse,
-	interfaceExecLog *model.Log) (logCheckpoints []domain.InterfaceCheckpoint, err error) {
+	interfaceExecLog *model.Log) (logCheckpoints []domain.ExecInterfaceCheckpoint, err error) {
 	checkpoints, _ := s.CheckpointRepo.List(interf.ID)
 
 	for _, checkpoint := range checkpoints {
 		logCheckpoint, err := s.Check(checkpoint, resp, interf.ProjectId, interfaceExecLog)
 		if err == nil {
-			interfaceCheckpoint := domain.InterfaceCheckpoint{}
+			interfaceCheckpoint := domain.ExecInterfaceCheckpoint{}
 			copier.CopyWithOption(&interfaceCheckpoint, logCheckpoint, copier.Option{DeepCopy: true})
 			logCheckpoints = append(logCheckpoints, interfaceCheckpoint)
 		}
@@ -162,21 +163,7 @@ func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp ser
 		logUtils.Infof("%s = %v", checkpoint.ExtractorVariable, extractorValue)
 		checkpoint.ActualResult = extractorValue
 
-		if checkpoint.Operator == consts.Equal {
-			if extractorValue == checkpoint.Value {
-				checkpoint.ResultStatus = consts.Pass
-			}
-		} else if checkpoint.Operator == consts.NotEqual {
-			if extractorValue != checkpoint.Value {
-				checkpoint.ResultStatus = consts.Pass
-			}
-		} else if checkpoint.Operator == consts.Contain {
-			if strings.Contains(extractorValue, checkpoint.Value) {
-				checkpoint.ResultStatus = consts.Pass
-			}
-		} else {
-			checkpoint.ResultStatus = s.Compare(checkpoint.Operator, extractorValue, checkpoint.Value)
-		}
+		checkpoint.ResultStatus = execHelper.Compare(checkpoint.Operator, extractorValue, checkpoint.Value)
 
 		if interfaceExecLog == nil { // run by interface
 			s.CheckpointRepo.UpdateResult(checkpoint)
@@ -188,49 +175,4 @@ func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp ser
 	}
 
 	return
-}
-
-func (s *CheckpointService) Compare(operator consts.ComparisonOperator, actual, expect string) (
-	result consts.ResultStatus) {
-
-	result = consts.Fail
-
-	actualFloat, err1 := strconv.ParseFloat(actual, 64)
-	expectFloat, err2 := strconv.ParseFloat(expect, 64)
-
-	if err1 != nil || err2 != nil { // not a number
-		return
-	}
-
-	switch operator.String() {
-	case consts.GreaterThan.String():
-		result = GetResult(actualFloat > expectFloat)
-
-	case consts.LessThan.String():
-		result = GetResult(actualFloat < expectFloat)
-
-	case consts.GreaterThanOrEqual.String():
-		result = GetResult(actualFloat >= expectFloat)
-
-	case consts.LessThanOrEqual.String():
-		result = GetResult(actualFloat <= expectFloat)
-
-	default:
-
-	}
-
-	return
-}
-
-func GetResult(b bool) (
-	result consts.ResultStatus) {
-
-	if b {
-		result = consts.Pass
-	} else {
-		result = consts.Fail
-	}
-
-	return
-
 }

@@ -8,20 +8,9 @@
             <a-input v-model:value="modelRef.comments"/>
           </a-form-item>
 
-          <a-form-item label="前置休眠时间（秒）">
-            <a-input-number v-model:value="modelRef.sleepBefore"/>
+          <a-form-item label="休眠时间（秒）">
+            <a-input-number v-model:value="modelRef.sleepTime"/>
           </a-form-item>
-
-          <a-form-item label="后置休眠时间（秒）">
-            <a-input-number v-model:value="modelRef.sleepAfter"/>
-          </a-form-item>
-
-<!--          <a-form-item label="类型">
-            <a-select
-                :options="timerTypes"
-                v-model:value="modelRef.type">
-            </a-select>
-          </a-form-item>-->
 
           <a-form-item :wrapper-col="{ span: 16, offset: 2 }">
             <a-button type="primary" @click.prevent="submitForm">保存</a-button>

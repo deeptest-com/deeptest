@@ -39,13 +39,13 @@ func SendCancelMsg(wsMsg websocket.Message) (err error) {
 
 func SendAlreadyRunningMsg(scenarioId int, wsMsg websocket.Message) (err error) {
 	msg := _i118Utils.Sprintf("pls_stop_previous")
-	websocketHelper.SendExecMsg(msg, domain.Log{ProgressStatus: consts.InProgress}, &wsMsg)
+	websocketHelper.SendExecMsg(msg, domain.ExecLog{ProgressStatus: consts.InProgress}, &wsMsg)
 	_logUtils.Infof(msg)
 
 	return
 }
 
-func SendExecMsg(log domain.Log, wsMsg websocket.Message) (err error) {
+func SendExecMsg(log domain.ExecLog, wsMsg websocket.Message) (err error) {
 	SetRunning(true)
 	msg := _i118Utils.Sprintf("start_exec")
 	websocketHelper.SendExecMsg(msg, log, &wsMsg)
@@ -56,7 +56,7 @@ func SendExecMsg(log domain.Log, wsMsg websocket.Message) (err error) {
 
 func SendErrorMsg(scenarioId int, wsMsg websocket.Message) (err error) {
 	msg := _i118Utils.Sprintf("wrong_req_params", err.Error())
-	websocketHelper.SendExecMsg(msg, domain.Log{ProgressStatus: consts.Error}, &wsMsg)
+	websocketHelper.SendExecMsg(msg, domain.ExecLog{ProgressStatus: consts.Error}, &wsMsg)
 	_logUtils.Infof(msg)
 
 	return

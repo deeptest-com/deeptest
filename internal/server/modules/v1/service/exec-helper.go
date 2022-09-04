@@ -181,7 +181,7 @@ func (s *ExecHelperService) HandleExtractor(extractor *model.ProcessorExtractor,
 
 	interfaceExtractor := model.InterfaceExtractor{}
 	copier.CopyWithOption(&interfaceExtractor, extractor, copier.Option{DeepCopy: true})
-	s.ExtractorService.ExtractValue(&interfaceExtractor, resp)
+	err = s.ExtractorService.ExtractValue(&interfaceExtractor, resp)
 	if err != nil {
 		output.Msg = fmt.Sprintf("%s提取器解析错误%s。", output.Type, err.Error())
 		return

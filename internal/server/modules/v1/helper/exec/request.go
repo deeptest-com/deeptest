@@ -8,7 +8,7 @@ import (
 	"github.com/kataras/iris/v12"
 )
 
-func ReplaceVariablesForInvocation(req *serverDomain.InvocationRequest, variables []domain.ExecVariable) (err error) {
+func ReplaceExecVariablesForInvocation(req *serverDomain.InvocationRequest, variables []domain.ExecVariable) (err error) {
 	variableArr := genVariableArr(variables)
 	requestHelper.ReplaceAll(req, variableArr)
 
@@ -24,7 +24,17 @@ func genVariableArr(variables []domain.ExecVariable) (
 	}
 
 	for key, val := range variableMap {
-		ret = append(ret, []string{fmt.Sprintf("${%s}", key), fmt.Sprintf("%v", val)})
+		valMp, isMap := val.(map[string]interface{})
+
+		if isMap {
+			for propKey, v := range valMp {
+				ret = append(ret, []string{fmt.Sprintf("${%s.%s}", key, propKey), fmt.Sprintf("%v", v)})
+			}
+
+		} else {
+			ret = append(ret, []string{fmt.Sprintf("${%s}", key), fmt.Sprintf("%v", val)})
+
+		}
 	}
 
 	return

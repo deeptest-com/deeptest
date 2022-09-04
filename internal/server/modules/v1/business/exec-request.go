@@ -20,8 +20,7 @@ func (s *ExecRequest) ReplaceProcessorVariables(req *serverDomain.InvocationRequ
 	err error) {
 
 	variables := s.ExecContextService.ListVariable(interfaceProcessor.ID)
-
-	execHelper.ReplaceVariablesForInvocation(req, variables)
+	execHelper.ReplaceExecVariablesForInvocation(req, variables)
 
 	return
 }

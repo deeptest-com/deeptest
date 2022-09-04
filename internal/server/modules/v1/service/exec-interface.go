@@ -33,7 +33,7 @@ func (s *ExecInterfaceService) ExecInterfaceProcessor(interfaceProcessor *model.
 	copier.CopyWithOption(&req, interf, copier.Option{DeepCopy: true})
 
 	// replace variables
-	newReq, err := s.InterfaceService.ReplaceEnvironmentVariables(req)
+	newReq, err := s.InterfaceService.ReplaceEnvironmentAndExtractorVariables(req)
 	if err != nil {
 		return
 	}

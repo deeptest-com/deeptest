@@ -10,3 +10,4 @@ tmp/
 .idea/
 
 /static/upload/step/
+/deeptest.db

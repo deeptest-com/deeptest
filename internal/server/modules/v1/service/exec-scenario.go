@@ -226,6 +226,29 @@ func (s *ExecScenarioService) ExecWrapperLoopProcessor(processor *model.Processo
 		if err != nil || !ok || !pass {
 			breakOnce = true
 		}
+	} else if s.ExecComm.IsDataPass(wrapperLog) {
+		data, _ := s.ScenarioProcessorRepo.GetData(*processor)
+
+		iterator, _ := s.ExecIteratorService.GenerateData(*wrapperLog, data)
+
+		s.ExecIteratorService.Push(iterator)
+
+		for _, mapItem := range iterator.Items {
+			wrapperLogItem, _ := s.AddWrapperProcessor(processor, wrapperLog, wsMsg)
+
+			s.ExecContextService.SetVariable(processor.ID, data.VariableName, mapItem)
+			vari, _ := s.ExecContextService.GetVariable(processor.ID, data.VariableName)
+			logUtils.Infof("%s = %v", vari.Name, vari.Value)
+
+			s.ExecChildren(processor, wrapperLogItem, wsMsg)
+
+			if breakOnce {
+				breakOnce = false
+				break
+			}
+		}
+
+		s.ExecIteratorService.Pop()
 	}
 }
 

@@ -66,7 +66,7 @@ export enum ProcessorCookie {
 export enum ProcessorData {
     Text = "processor_data_text",
     Excel = "processor_data_excel",
-    ZenData = "processor_data_zendata",
+    // ZenData = "processor_data_zendata",
 }
 
 export const Methods = [

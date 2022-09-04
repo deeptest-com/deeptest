@@ -76,6 +76,15 @@ func (s *ExecIterator) GenerateLoopList(log domain.ExecLog) (ret domain.ExecIter
 	return
 }
 
+func (s *ExecIterator) GenerateData(log domain.ExecLog, data model.ProcessorData) (ret domain.ExecIterator, err error) {
+	ret.ProcessorCategory = log.ProcessorCategory
+	ret.ProcessorType = log.ProcessorType
+
+	ret.Items, _ = execHelper.GenerateDataItems(data)
+
+	return
+}
+
 func (s *ExecIterator) RetrieveIteratorsVal(processor *model.Processor) (item interface{}, desc string, err error) {
 	valueElem := IteratorContextValueStack.Front()
 	indexElem := IteratorContextIndexStack.Front()

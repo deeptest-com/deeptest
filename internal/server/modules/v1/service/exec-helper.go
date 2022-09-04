@@ -100,8 +100,11 @@ func (s *ExecHelperService) HandleLoop(loop *model.ProcessorLoop, parentLog *dom
 	return
 }
 
-func (s *ExecHelperService) HandleData(processor *model.ProcessorData, parentLog *domain.ExecLog, msg websocket.Message) (
+func (s *ExecHelperService) HandleData(data *model.ProcessorData, parentLog *domain.ExecLog, msg websocket.Message) (
 	output domain.ExecOutput, err error) {
+	output.Url = data.Url
+
+	output.Msg = fmt.Sprintf("使用数据%s迭代变量%s。", output.Url, data.VariableName)
 
 	return
 }
@@ -213,6 +216,7 @@ func (s *ExecHelperService) GetVariableValueByName(processorId uint, name string
 }
 
 func (s *ExecHelperService) ComputerExpress(expression string, scopeId uint) (ret interface{}, err error) {
+	// remove variable symbol ${} for govaluate
 	re := regexp.MustCompile("(?siU)\\${(.*)}")
 	expr := re.ReplaceAllString(expression, "$1")
 

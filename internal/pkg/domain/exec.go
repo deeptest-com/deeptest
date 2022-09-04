@@ -119,6 +119,14 @@ type ExecOutput struct {
 	// timer
 	SleepTime int `json:"sleepTime"`
 
+	// data
+	Url          string `json:"url"`
+	RepeatTimes  int    `json:"repeatTimes,omitempty"`
+	IsLoop       int    `json:"isLoop,omitempty"`
+	IsRand       bool   `json:"isRand,omitempty"`
+	IsOnce       bool   `json:"isOnce,omitempty"`
+	VariableName string `json:"variableName,omitempty"`
+
 	// common
 	Msg string `json:"msg,omitempty"`
 }

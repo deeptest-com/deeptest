@@ -17,6 +17,10 @@
             <a-input v-model:value="modelRef.url"
                      @blur="validate('url', { trigger: 'blur' }).catch(() => {})"/>
           </a-form-item>
+          <a-form-item label="分隔符" v-bind="validateInfos.separator">
+            <a-input v-model:value="modelRef.separator"
+                     @blur="validate('separator', { trigger: 'blur' }).catch(() => {})"/>
+          </a-form-item>
 
           <a-form-item label="重复次数" v-bind="validateInfos.repeatTimes">
             <a-input-number v-model:value="modelRef.repeatTimes"
@@ -70,6 +74,9 @@ const rulesRef = reactive({
   url: [
     {required: true, message: '请输入文件路径', trigger: 'blur'},
   ],
+  separator: [
+    {required: true, message: '请输入分隔符', trigger: 'blur'},
+  ]
 });
 
 const store = useStore<{ Scenario: ScenarioStateType; }>();
@@ -93,6 +100,7 @@ onMounted(() => {
   console.log('onMounted')
   if (!modelRef.value.url) modelRef.value.url = ''
   if (!modelRef.value.variableName) modelRef.value.variableName = ''
+  if (!modelRef.value.separator) modelRef.value.separator = ','
   if (!modelRef.value.repeatTimes) modelRef.value.repeatTimes = 1
 })
 

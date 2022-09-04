@@ -60,16 +60,15 @@ require (
 	github.com/spf13/viper v1.8.1
 	github.com/tjfoc/gmsm v1.4.1 // indirect
 	github.com/valyala/fastrand v1.1.0 // indirect
+	github.com/xuri/excelize/v2 v2.6.1 // indirect
 	go.uber.org/zap v1.19.1
-	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519
+	golang.org/x/crypto v0.0.0-20220817201139-bc19a97f63c8
 	golang.org/x/mod v0.5.1 // indirect
-	golang.org/x/net v0.0.0-20210924054057-cf34111cab4d
-	golang.org/x/sys v0.0.0-20210923061019-b8560ed6a9b7 // indirect
+	golang.org/x/net v0.0.0-20220812174116-3211cb980234
 	golang.org/x/text v0.3.7
 	golang.org/x/tools v0.1.6 // indirect
 	google.golang.org/grpc v1.41.0
 	google.golang.org/protobuf v1.27.1
-	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 	gorm.io/datatypes v1.0.5
 	gorm.io/driver/mysql v1.2.2
 	gorm.io/driver/postgres v1.2.3 // indirect

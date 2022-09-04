@@ -314,7 +314,7 @@ const (
 	ProcessorLoop      ProcessorCategory = "processor_loop"      // done
 	ProcessorTimer     ProcessorCategory = "processor_timer"     // done
 	ProcessorVariable  ProcessorCategory = "processor_variable"  // done
-	ProcessorAssertion ProcessorCategory = "processor_assertion"
+	ProcessorAssertion ProcessorCategory = "processor_assertion" // done
 	ProcessorExtractor ProcessorCategory = "processor_extractor"
 
 	ProcessorCookie ProcessorCategory = "processor_cookie" // done
@@ -361,9 +361,9 @@ const (
 	ProcessorCookieSet   ProcessorType = "processor_cookie_set"
 	ProcessorCookieClear ProcessorType = "processor_cookie_clear"
 
-	ProcessorDataText    ProcessorType = "processor_data_text"
-	ProcessorDataExcel   ProcessorType = "processor_data_excel"
-	ProcessorDataZenData ProcessorType = "processor_data_zendata"
+	ProcessorDataText  ProcessorType = "processor_data_text"
+	ProcessorDataExcel ProcessorType = "processor_data_excel"
+	//ProcessorDataZenData ProcessorType = "processor_data_zendata"
 )
 
 func (e ProcessorType) ToString() string {
@@ -400,9 +400,9 @@ func (e ErrorAction) ToString() string {
 type DataSource string
 
 const (
-	CSV     DataSource = "csv"
-	Excel   DataSource = "excel"
-	ZenData DataSource = "zendata"
+	Text  DataSource = "text"
+	Excel DataSource = "excel"
+	//ZenData DataSource = "zendata"
 )
 
 func (e DataSource) ToString() string {

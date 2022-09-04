@@ -36,6 +36,10 @@ func (s *ExecComm) IsLogicPass(containerLog *domain.ExecLog) bool {
 	return containerLog.ProcessorCategory == consts.ProcessorLogic && containerLog.Output.Pass
 }
 
+func (s *ExecComm) IsDataPass(containerLog *domain.ExecLog) bool {
+	return containerLog.ProcessorCategory == consts.ProcessorData && containerLog.Output.Url != ""
+}
+
 func (s *ExecComm) IsWrapperProcessor(category consts.ProcessorCategory) bool {
 	arr := []string{
 		consts.ProcessorRoot.ToString(),

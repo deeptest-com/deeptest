@@ -6,6 +6,9 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	valueGen "github.com/aaronchen2k/deeptest/internal/server/modules/v1/helper/value"
+	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
+	fileUtils "github.com/aaronchen2k/deeptest/pkg/lib/file"
+	"github.com/xuri/excelize/v2"
 	"strconv"
 	"strings"
 )
@@ -188,6 +191,84 @@ func GenerateListItems(listStr string) (ret []interface{}, typ consts.DataType, 
 		for _, item := range arr {
 			ret = append(ret, item)
 		}
+	}
+
+	return
+}
+
+func GenerateDataItems(data model.ProcessorData) (ret []interface{}, err error) {
+	url := data.Url
+
+	if data.Type == consts.Text {
+		readDataFromText(url, data.Separator)
+	} else if data.Type == consts.Excel {
+		readDataFromExcel(url)
+	}
+
+	return
+}
+func readDataFromText(url, separator string) (ret []map[string]interface{}) {
+	content := fileUtils.ReadFile(url)
+	arr := strings.Split(strings.ReplaceAll(content, "\r\n", "\n"), "\n")
+	if len(arr) < 2 {
+		return
+	}
+
+	colNameMap := map[int]string{}
+	cols := strings.Split(arr[0], separator)
+	for index, col := range cols {
+		colNameMap[index] = col
+	}
+
+	for index, line := range arr {
+		if index == 0 {
+			continue
+		}
+
+		cols := strings.Split(line, separator)
+		mp := map[string]interface{}{}
+		for index, col := range cols {
+			mp[colNameMap[index]] = col
+		}
+		ret = append(ret, mp)
+	}
+
+	return
+}
+func readDataFromExcel(url string) (ret []interface{}) {
+	excel, err := excelize.OpenFile(url)
+	if err != nil {
+		return
+	}
+
+	if len(excel.GetSheetList()) == 0 {
+		return
+	}
+
+	firstSheet := excel.GetSheetList()[0]
+
+	rows, err := excel.GetRows(firstSheet)
+	if len(rows) < 2 {
+		return
+	}
+
+	colNameMap := map[int]string{}
+	for index, col := range rows[0] {
+		col = strings.Replace(col, "'", "''", -1)
+		colNameMap[index] = col
+	}
+
+	for rowIndex, row := range rows {
+		if rowIndex == 0 {
+			continue
+		}
+
+		mp := map[string]interface{}{}
+		for index, col := range row {
+			col = strings.Replace(col, "'", "''", -1)
+			mp[colNameMap[index]] = col
+		}
+		ret = append(ret, mp)
 	}
 
 	return

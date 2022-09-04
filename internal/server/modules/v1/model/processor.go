@@ -154,8 +154,9 @@ type ProcessorData struct {
 	BaseModel
 	ProcessorEntity
 
-	Type consts.DataSource `json:"type,omitempty" yaml:"type,omitempty"`
-	Url  string            `json:"url,omitempty" yaml:"url,omitempty"`
+	Type      consts.DataSource `json:"type,omitempty" yaml:"type,omitempty"`
+	Url       string            `json:"url,omitempty" yaml:"url,omitempty"`
+	Separator string            `json:"separator,omitempty" yaml:"separator,omitempty"`
 
 	RepeatTimes int `json:"repeatTimes,omitempty" yaml:"repeatTimes,omitempty"`
 	//StartIndex     int    `json:"startIndex,omitempty" yaml:"startIndex,omitempty"`

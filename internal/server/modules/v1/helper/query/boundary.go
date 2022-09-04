@@ -2,20 +2,19 @@ package queryHelper
 
 import (
 	"fmt"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"regexp"
 	"strings"
 )
 
-func BoundaryQuery(content string, extractor *model.InterfaceExtractor) {
-	regex := regexp.MustCompile(fmt.Sprintf("(?Ui)%s(.*)%s", extractor.BoundaryStart, extractor.BoundaryEnd))
+func BoundaryQuery(content string, boundaryStart, boundaryEnd string, boundaryIndex int, boundaryIncluded bool) (result string) {
+	regex := regexp.MustCompile(fmt.Sprintf("(?Ui)%s(.*)%s", boundaryStart, boundaryEnd))
 
 	arrOfArr := regex.FindAllStringSubmatch(content, -1)
 
 	results := make([]string, 0)
 	for _, arr := range arrOfArr {
 		result := ""
-		if extractor.BoundaryIncluded {
+		if boundaryIncluded {
 			result = arr[0]
 		} else {
 			result = arr[1]
@@ -24,12 +23,14 @@ func BoundaryQuery(content string, extractor *model.InterfaceExtractor) {
 		results = append(results, result)
 	}
 
-	if extractor.BoundaryIndex > 0 {
-		if extractor.BoundaryIndex > len(results)-1 {
-			extractor.BoundaryIndex = len(results) - 1
+	if boundaryIndex > 0 {
+		if boundaryIndex > len(results)-1 {
+			boundaryIndex = len(results) - 1
 		}
-		extractor.Result = results[extractor.BoundaryIndex]
+		result = results[boundaryIndex]
 	} else {
-		extractor.Result = strings.Join(results, ", ")
+		result = strings.Join(results, ", ")
 	}
+
+	return
 }

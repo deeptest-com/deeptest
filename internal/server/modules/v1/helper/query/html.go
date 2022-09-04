@@ -1,22 +1,21 @@
 package queryHelper
 
 import (
-	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"github.com/antchfx/htmlquery"
 	"strings"
 )
 
-func HtmlQuery(content string, extractor *model.InterfaceExtractor) {
+func HtmlQuery(content string, expression string) (result string) {
 	doc, err := htmlquery.Parse(strings.NewReader(content))
 	if err != nil {
-		extractor.Result = "ContentErr"
+		result = "ContentErr"
 		return
 	}
 
-	expression, propName := getExpressionForCssSelector(extractor.Expression)
+	expression, propName := getExpressionForCssSelector(expression)
 	list, err := htmlquery.QueryAll(doc, expression)
 	if err != nil {
-		extractor.Result = "QueryErr"
+		result = "QueryErr"
 		return
 	}
 
@@ -32,7 +31,9 @@ func HtmlQuery(content string, extractor *model.InterfaceExtractor) {
 		results = append(results, result)
 	}
 
-	extractor.Result = strings.Join(results, ", ")
+	result = strings.Join(results, ", ")
+
+	return
 }
 
 func getExpressionForCssSelector(str string) (expression, propName string) {

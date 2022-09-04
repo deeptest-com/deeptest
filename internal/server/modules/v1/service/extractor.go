@@ -56,8 +56,12 @@ func (s *ExtractorService) ExtractInterface(interf model.Interface, resp serverD
 	extractors, _ := s.ExtractorRepo.List(interf.ID)
 
 	for _, extractor := range extractors {
-		logExtractor, err := s.Extract(extractor, resp, interf.ProjectId, interfaceExecLog)
+		logExtractor, err := s.Extract(extractor, resp, interfaceExecLog)
 		if err == nil {
+			_cacheUtils.SetCache(strconv.Itoa(int(interf.ProjectId)), extractor.Variable, extractor.Result)
+			val := _cacheUtils.GetCache(strconv.Itoa(int(interf.ProjectId)), extractor.Variable)
+			logUtils.Infof("%s = %v", extractor.Variable, val)
+
 			interfaceExtractor := domain.ExecInterfaceExtractor{}
 			copier.CopyWithOption(&interfaceExtractor, logExtractor, copier.Option{DeepCopy: true})
 			logExtractors = append(logExtractors, interfaceExtractor)
@@ -68,51 +72,9 @@ func (s *ExtractorService) ExtractInterface(interf model.Interface, resp serverD
 }
 
 func (s *ExtractorService) Extract(extractor model.InterfaceExtractor, resp serverDomain.InvocationResponse,
-	projectId uint, interfaceExecLog *model.Log) (logExtractor model.LogExtractor, err error) {
-	if extractor.Disabled {
-		extractor.Result = ""
+	interfaceExecLog *model.Log) (logExtractor model.LogExtractor, err error) {
 
-		if interfaceExecLog == nil { // run by interface
-			s.ExtractorRepo.UpdateResult(extractor)
-		} else { // run by processor
-			logExtractor, err = s.ExtractorRepo.UpdateResultToExecLog(extractor, interfaceExecLog)
-		}
-
-		return
-	}
-
-	if extractor.Src == consts.Header {
-		for _, h := range resp.Headers {
-			if h.Name == extractor.Key {
-				extractor.Result = h.Value
-				break
-			}
-		}
-
-		if interfaceExecLog == nil { // run by interface
-			s.ExtractorRepo.UpdateResult(extractor)
-		} else { // run by processor
-			logExtractor, err = s.ExtractorRepo.UpdateResultToExecLog(extractor, interfaceExecLog)
-		}
-
-		return
-	}
-
-	var jsonData interface{}
-	json.Unmarshal([]byte(resp.Content), &jsonData)
-
-	if requestHelper.IsJsonContent(resp.ContentType.String()) && extractor.Type == consts.JsonQuery {
-		extractorHelper.JsonQuery(resp.Content, &extractor)
-
-	} else if requestHelper.IsHtmlContent(resp.ContentType.String()) && extractor.Type == consts.HtmlQuery {
-		extractorHelper.HtmlQuery(resp.Content, &extractor)
-
-	} else if requestHelper.IsXmlContent(resp.ContentType.String()) && extractor.Type == consts.XmlQuery {
-		extractorHelper.XmlQuery(resp.Content, &extractor)
-
-	} else if extractor.Type == consts.Boundary {
-		extractorHelper.BoundaryQuery(resp.Content, &extractor)
-	}
+	s.ExtractValue(&extractor, resp)
 
 	if interfaceExecLog == nil { // run by interface
 		s.ExtractorRepo.UpdateResult(extractor)
@@ -120,10 +82,39 @@ func (s *ExtractorService) Extract(extractor model.InterfaceExtractor, resp serv
 		logExtractor, err = s.ExtractorRepo.UpdateResultToExecLog(extractor, interfaceExecLog)
 	}
 
-	_cacheUtils.SetCache(strconv.Itoa(int(projectId)), extractor.Variable, extractor.Result)
+	return
+}
 
-	val := _cacheUtils.GetCache(strconv.Itoa(int(projectId)), extractor.Variable)
-	logUtils.Infof("%s = %v", extractor.Variable, val)
+func (s *ExtractorService) ExtractValue(extractor *model.InterfaceExtractor, resp serverDomain.InvocationResponse) (err error) {
+	if extractor.Disabled {
+		extractor.Result = ""
+	} else {
+		if extractor.Src == consts.Header {
+			for _, h := range resp.Headers {
+				if h.Name == extractor.Key {
+					extractor.Result = h.Value
+					break
+				}
+			}
+		} else {
+			var jsonData interface{}
+			json.Unmarshal([]byte(resp.Content), &jsonData)
+
+			if requestHelper.IsJsonContent(resp.ContentType.String()) && extractor.Type == consts.JsonQuery {
+				extractor.Result = extractorHelper.JsonQuery(resp.Content, extractor.Expression)
+
+			} else if requestHelper.IsHtmlContent(resp.ContentType.String()) && extractor.Type == consts.HtmlQuery {
+				extractor.Result = extractorHelper.HtmlQuery(resp.Content, extractor.Expression)
+
+			} else if requestHelper.IsXmlContent(resp.ContentType.String()) && extractor.Type == consts.XmlQuery {
+				extractor.Result = extractorHelper.XmlQuery(resp.Content, extractor.Expression)
+
+			} else if extractor.Type == consts.Boundary {
+				extractor.Result = extractorHelper.BoundaryQuery(resp.Content, extractor.BoundaryStart, extractor.BoundaryEnd,
+					extractor.BoundaryIndex, extractor.BoundaryIncluded)
+			}
+		}
+	}
 
 	return
 }

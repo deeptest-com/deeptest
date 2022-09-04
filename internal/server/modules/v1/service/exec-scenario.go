@@ -136,6 +136,32 @@ func (s *ExecScenarioService) ExecWrapperProcessor(processor *model.Processor, p
 	}
 }
 
+func (s *ExecScenarioService) ExecActionProcessorWithResp(processor *model.Processor, parentLog *domain.ExecLog, wsMsg websocket.Message) (
+	wrapperLog *domain.ExecLog, err error) {
+
+	output := domain.ExecOutput{}
+	if processor.EntityCategory == consts.ProcessorTimer {
+		output, _ = s.ExecProcessorService.ExecTimer(processor, parentLog, wsMsg)
+
+	} else if processor.EntityCategory == consts.ProcessorVariable {
+		output, _ = s.ExecProcessorService.ExecVariable(processor, parentLog, wsMsg)
+
+	} else if processor.EntityCategory == consts.ProcessorAssertion {
+		output, _ = s.ExecProcessorService.ExecAssertion(processor, parentLog, wsMsg)
+
+	} else if processor.EntityCategory == consts.ProcessorExtractor {
+		output, _ = s.ExecProcessorService.ExecExtractor(processor, parentLog, wsMsg)
+
+	} else if processor.EntityCategory == consts.ProcessorCookie {
+		output, _ = s.ExecProcessorService.ExecCookie(processor, parentLog, wsMsg)
+
+	}
+
+	wrapperLog, _ = s.wrapperLogAndSendMsg(output, processor, parentLog, wsMsg)
+
+	return
+}
+
 func (s *ExecScenarioService) ExecWrapperLoopProcessor(processor *model.Processor, wrapperLog *domain.ExecLog,
 	wsMsg websocket.Message) {
 	if s.ExecComm.IsLoopTimesPass(wrapperLog) {
@@ -297,32 +323,6 @@ func (s *ExecScenarioService) GetWrapperProcessorResp(processor *model.Processor
 
 	} else if processor.EntityCategory == consts.ProcessorData {
 		output, _ = s.ExecProcessorService.ExecData(processor, parentLog, wsMsg)
-
-	}
-
-	wrapperLog, _ = s.wrapperLogAndSendMsg(output, processor, parentLog, wsMsg)
-
-	return
-}
-
-func (s *ExecScenarioService) ExecActionProcessorWithResp(processor *model.Processor, parentLog *domain.ExecLog, wsMsg websocket.Message) (
-	wrapperLog *domain.ExecLog, err error) {
-
-	output := domain.ExecOutput{}
-	if processor.EntityCategory == consts.ProcessorTimer {
-		output, _ = s.ExecProcessorService.ExecTimer(processor, parentLog, wsMsg)
-
-	} else if processor.EntityCategory == consts.ProcessorVariable {
-		output, _ = s.ExecProcessorService.ExecVariable(processor, parentLog, wsMsg)
-
-	} else if processor.EntityCategory == consts.ProcessorAssertion {
-		output, _ = s.ExecProcessorService.ExecAssertion(processor, parentLog, wsMsg)
-
-	} else if processor.EntityCategory == consts.ProcessorExtractor {
-		output, _ = s.ExecProcessorService.ExecExtractor(processor, parentLog, wsMsg)
-
-	} else if processor.EntityCategory == consts.ProcessorCookie {
-		output, _ = s.ExecProcessorService.ExecCookie(processor, parentLog, wsMsg)
 
 	}
 

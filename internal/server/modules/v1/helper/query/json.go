@@ -1,21 +1,20 @@
 package queryHelper
 
 import (
-	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"github.com/antchfx/jsonquery"
 	"strings"
 )
 
-func JsonQuery(content string, extractor *model.InterfaceExtractor) {
+func JsonQuery(content string, expression string) (result string) {
 	doc, err := jsonquery.Parse(strings.NewReader(content))
 	if err != nil {
-		extractor.Result = "ContentErr"
+		result = "ContentErr"
 		return
 	}
 
-	list, err := jsonquery.QueryAll(doc, extractor.Expression)
+	list, err := jsonquery.QueryAll(doc, expression)
 	if err != nil {
-		extractor.Result = "QueryErr"
+		result = "QueryErr"
 		return
 	}
 
@@ -25,5 +24,7 @@ func JsonQuery(content string, extractor *model.InterfaceExtractor) {
 		results = append(results, result)
 	}
 
-	extractor.Result = strings.Join(results, ", ")
+	result = strings.Join(results, ", ")
+
+	return
 }

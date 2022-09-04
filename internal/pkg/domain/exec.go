@@ -127,6 +127,16 @@ type ExecOutput struct {
 	IsOnce       bool   `json:"isOnce,omitempty"`
 	VariableName string `json:"variableName,omitempty"`
 
+	// extractor
+	Src  consts.ExtractorSrc  `json:"src"`
+	Type consts.ExtractorType `json:"type"`
+	//Expression string `json:"expression"`
+	BoundaryStart    string `json:"boundaryStart"`
+	BoundaryEnd      string `json:"boundaryEnd"`
+	BoundaryIndex    int    `json:"boundaryIndex"`
+	BoundaryIncluded bool   `json:"boundaryIncluded"`
+	Variable         string `json:"variable"`
+
 	// common
 	Msg string `json:"msg,omitempty"`
 }

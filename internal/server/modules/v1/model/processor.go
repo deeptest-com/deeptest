@@ -130,10 +130,10 @@ type ProcessorExtractor struct {
 
 	Src  consts.ExtractorSrc  `json:"src"`
 	Type consts.ExtractorType `json:"type"`
-	Key  string               `json:"key"`
+	Key  string               `json:"key"` // form header
 
 	Expression string `json:"expression"`
-	Prop       string `json:"prop"`
+	//Prop       string `json:"prop"`
 
 	BoundaryStart    string `json:"boundaryStart"`
 	BoundaryEnd      string `json:"boundaryEnd"`

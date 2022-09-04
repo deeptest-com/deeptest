@@ -1,13 +1,16 @@
 package service
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/Knetic/govaluate"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/business"
+	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/repo"
+	"github.com/jinzhu/copier"
 	"github.com/kataras/iris/v12/websocket"
 	"regexp"
 	"time"
@@ -22,6 +25,7 @@ type ExecHelperService struct {
 	InterfaceService      *InterfaceService           `inject:""`
 	ExecRequestService    *business.ExecRequest       `inject:""`
 	ExecContext           *business.ExecContext       `inject:""`
+	ExtractorService      *ExtractorService           `inject:""`
 }
 
 //func (s *ExecComm) ParseThreadGroup(processor *model.ProcessorThreadGroup, log *domain.ExecLog, msg websocket.Message) (
@@ -54,7 +58,8 @@ func (s *ExecHelperService) HandleLogic(logic *model.ProcessorLogic, parentLog *
 	} else if typ == consts.ProcessorLogicElse {
 		output.Pass = false
 
-		if len(*parentLog.Logs) > 0 && !((*parentLog.Logs)[len(*parentLog.Logs)-1]).Output.Pass {
+		brother, ok := getPreviousBrother(*parentLog)
+		if ok && !brother.Output.Pass {
 			output.Pass = true
 			output.Msg = fmt.Sprintf("通过")
 		}
@@ -162,8 +167,28 @@ func (s *ExecHelperService) HandleAssertion(processor *model.ProcessorAssertion,
 	return
 }
 
-func (s *ExecHelperService) HandleExtractor(processor *model.ProcessorExtractor, parentLog *domain.ExecLog, msg websocket.Message) (
+func (s *ExecHelperService) HandleExtractor(extractor *model.ProcessorExtractor, parentLog *domain.ExecLog, msg websocket.Message) (
 	output domain.ExecOutput, err error) {
+
+	brother, ok := getPreviousBrother(*parentLog)
+	if !ok {
+		output.Msg = fmt.Sprintf("前面节点不是接口，无法应用提取器。")
+		return
+	}
+
+	resp := serverDomain.InvocationResponse{}
+	json.Unmarshal([]byte(brother.RespContent), &resp)
+
+	interfaceExtractor := model.InterfaceExtractor{}
+	copier.CopyWithOption(&interfaceExtractor, extractor, copier.Option{DeepCopy: true})
+	s.ExtractorService.ExtractValue(&interfaceExtractor, resp)
+	if err != nil {
+		output.Msg = fmt.Sprintf("%s提取器解析错误%s。", output.Type, err.Error())
+		return
+	}
+
+	s.ExecContext.SetVariable(parentLog.ProcessId, extractor.Variable, extractor.Result) // set in parent scope
+	output.Msg = fmt.Sprintf("将提取器%s的结果%v赋予变量%s。", output.Type, extractor.Result, extractor.Variable)
 
 	return
 }
@@ -258,6 +283,16 @@ func getVariables(expression string) (ret []string) {
 	for _, childArr := range matchResultArr {
 		variableName := childArr[1]
 		ret = append(ret, variableName)
+	}
+
+	return
+}
+
+func getPreviousBrother(parent domain.ExecLog) (brother *domain.ExecLog, ok bool) {
+	if len(*parent.Logs) > 0 {
+		brother = (*parent.Logs)[len(*parent.Logs)-1]
+		ok = true
+		return
 	}
 
 	return

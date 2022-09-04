@@ -1,21 +1,20 @@
 package queryHelper
 
 import (
-	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"github.com/antchfx/xmlquery"
 	"strings"
 )
 
-func XmlQuery(content string, extractor *model.InterfaceExtractor) {
+func XmlQuery(content string, expression string) (result string) {
 	doc, err := xmlquery.Parse(strings.NewReader(content))
 	if err != nil {
-		extractor.Result = "ContentErr"
+		result = "ContentErr"
 		return
 	}
 
-	list, err := xmlquery.QueryAll(doc, extractor.Expression)
+	list, err := xmlquery.QueryAll(doc, expression)
 	if err != nil {
-		extractor.Result = "QueryErr"
+		result = "QueryErr"
 		return
 	}
 
@@ -25,5 +24,7 @@ func XmlQuery(content string, extractor *model.InterfaceExtractor) {
 		results = append(results, result)
 	}
 
-	extractor.Result = strings.Join(results, ", ")
+	result = strings.Join(results, ", ")
+
+	return
 }

@@ -9,13 +9,14 @@ import (
 )
 
 func ReplaceExecVariablesForInvocation(req *serverDomain.InvocationRequest, variables []domain.ExecVariable) (err error) {
-	variableArr := genVariableArr(variables)
+	variableArr := genComplexVariableArr(variables)
 	requestHelper.ReplaceAll(req, variableArr)
 
 	return
 }
 
-func genVariableArr(variables []domain.ExecVariable) (
+// use variables from testdata processor like ${user.email}, its value is a map.
+func genComplexVariableArr(variables []domain.ExecVariable) (
 	ret [][]string) {
 
 	variableMap := iris.Map{}

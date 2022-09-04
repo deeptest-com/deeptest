@@ -17,7 +17,6 @@ func ReplaceExecVariablesForInvocation(req *serverDomain.InvocationRequest, vari
 
 // use variables from testdata processor like ${user.email}, its value is a map.
 func genComplexVariableArr(variables []domain.ExecVariable) (ret [][]string) {
-
 	variableMap := iris.Map{}
 	for _, item := range variables {
 		variableMap[item.Name] = item.Value

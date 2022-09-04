@@ -4,6 +4,7 @@
 # file
 latest_log
 rbac_model.conf
+deeptest.db
 
 #dir
 tmp/

@@ -31,8 +31,10 @@ export function expandAllKeys(treeMap: any, isExpand: boolean): number[] {
 export function expandOneKey(treeMap: any, key: number, expandedKeys: number[]) {
     if (!expandedKeys.includes(key)) expandedKeys.push(key)
 
-    const parentId = treeMap[key].parentId
-    if (parentId) {
-        expandOneKey(treeMap, parentId, expandedKeys)
+    if (treeMap[key]) {
+        const parentId = treeMap[key].parentId
+        if (parentId) {
+            expandOneKey(treeMap, parentId, expandedKeys)
+        }
     }
 }

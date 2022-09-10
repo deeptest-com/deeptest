@@ -45,6 +45,7 @@ func (c *WebSocketCtrl) OnNamespaceConnected(wsMsg websocket.Message) error {
 	bytes, _ := json.Marshal(resp)
 	mqData := _domain.MqMsg{Namespace: wsMsg.Namespace, Room: wsMsg.Room, Event: wsMsg.Event, Content: string(bytes)}
 	websocketHelper.PubMsg(mqData)
+
 	return nil
 }
 
@@ -58,6 +59,7 @@ func (c *WebSocketCtrl) OnNamespaceDisconnect(wsMsg websocket.Message) error {
 	bytes, _ := json.Marshal(resp)
 	mqData := _domain.MqMsg{Namespace: wsMsg.Namespace, Room: wsMsg.Room, Event: wsMsg.Event, Content: string(bytes)}
 	websocketHelper.PubMsg(mqData)
+
 	return nil
 }
 
@@ -98,7 +100,7 @@ func (c *WebSocketCtrl) OnChat(wsMsg websocket.Message) (err error) {
 
 	ch = make(chan int, 1)
 	go func() {
-		c.ScenarioExecService.ExecScenario(req.Id, wsMsg)
+		c.ScenarioExecService.ExecScenario(req.Id, &wsMsg)
 
 		//c.Complete(wsMsg)
 	}()

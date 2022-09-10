@@ -17,21 +17,23 @@ var (
 	wsConn *neffos.Conn
 )
 
-func SendOutputMsg(msg string, data interface{}, wsMsg *websocket.Message) {
-	logUtils.Infof(_i118Utils.Sprintf("ws_send_exec_msg", wsMsg.Room,
-		strings.ReplaceAll(strings.TrimSpace(msg), `%`, `%%`)))
-
-	msg = strings.Trim(msg, "\n")
-	resp := _domain.WsResp{Msg: msg, Data: data}
+func SendExecMsg(msg string, log domain.ExecLog, wsMsg *websocket.Message) {
+	msg = strings.TrimSpace(msg)
+	resp := _domain.WsResp{Msg: msg, Data: log}
 
 	bytes, _ := json.Marshal(resp)
 	mqData := _domain.MqMsg{Namespace: wsMsg.Namespace, Room: wsMsg.Room, Event: wsMsg.Event, Content: string(bytes)}
-	PubMsg(mqData)
+
+	msg = strings.ReplaceAll(strings.TrimSpace(msg), `%`, `%%`)
+	if wsMsg != nil {
+		logUtils.Infof(_i118Utils.Sprintf("ws_send_exec_msg", wsMsg.Room, msg))
+		PubMsg(mqData)
+	} else {
+		logUtils.Infof(msg)
+	}
 }
 
 func SendExecResult(category consts.WsMsgCategory, data interface{}, wsMsg *websocket.Message) {
-	logUtils.Infof(_i118Utils.Sprintf("ws_send_exec_msg", wsMsg.Room, category))
-
 	resp := _domain.WsResp{Category: category, Data: data}
 	if data != nil {
 		resp.Data = data
@@ -39,19 +41,12 @@ func SendExecResult(category consts.WsMsgCategory, data interface{}, wsMsg *webs
 	bytes, _ := json.Marshal(resp)
 	mqData := _domain.MqMsg{Namespace: wsMsg.Namespace, Room: wsMsg.Room, Event: wsMsg.Event, Content: string(bytes)}
 
-	PubMsg(mqData)
-}
-
-func SendExecMsg(msg string, log domain.ExecLog, wsMsg *websocket.Message) {
-	logUtils.Infof(_i118Utils.Sprintf("ws_send_exec_msg", wsMsg.Room,
-		strings.ReplaceAll(strings.TrimSpace(msg), `%`, `%%`)))
-
-	msg = strings.TrimSpace(msg)
-	resp := _domain.WsResp{Msg: msg, Data: log}
-
-	bytes, _ := json.Marshal(resp)
-	mqData := _domain.MqMsg{Namespace: wsMsg.Namespace, Room: wsMsg.Room, Event: wsMsg.Event, Content: string(bytes)}
-	PubMsg(mqData)
+	if wsMsg != nil {
+		logUtils.Infof(_i118Utils.Sprintf("ws_send_exec_msg", wsMsg.Room, category))
+		PubMsg(mqData)
+	} else {
+		logUtils.Infof(string(bytes))
+	}
 }
 
 func Broadcast(namespace, room, event string, content string) {

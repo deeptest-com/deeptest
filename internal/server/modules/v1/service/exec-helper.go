@@ -28,13 +28,13 @@ type ExecHelperService struct {
 	ExtractorService      *ExtractorService           `inject:""`
 }
 
-//func (s *ExecComm) ParseThreadGroup(processor *model.ProcessorThreadGroup, log *domain.ExecLog, msg websocket.Message) (
+//func (s *ExecComm) ParseThreadGroup(processor *model.ProcessorThreadGroup, log *domain.ExecLog, msg *websocket.Message) (
 //	result string, err error) {
 //
 //	return
 //}
 
-func (s *ExecHelperService) HandleLogic(logic *model.ProcessorLogic, parentLog *domain.ExecLog, msg websocket.Message) (
+func (s *ExecHelperService) HandleLogic(logic *model.ProcessorLogic, parentLog *domain.ExecLog, msg *websocket.Message) (
 	output domain.ExecOutput, err error) {
 	if logic.ID == 0 {
 		output.Msg = "执行前请先配置处理器。"
@@ -48,7 +48,7 @@ func (s *ExecHelperService) HandleLogic(logic *model.ProcessorLogic, parentLog *
 		result, err = s.ComputerExpress(logic.Expression, logic.ProcessorId)
 		if err != nil {
 			output.Pass = false
-			output.Msg = fmt.Sprintf("通过")
+			output.Msg = fmt.Sprintf("不通过")
 			return
 		}
 
@@ -71,7 +71,7 @@ func (s *ExecHelperService) HandleLogic(logic *model.ProcessorLogic, parentLog *
 	return
 }
 
-func (s *ExecHelperService) HandleLoop(loop *model.ProcessorLoop, parentLog *domain.ExecLog, msg websocket.Message) (
+func (s *ExecHelperService) HandleLoop(loop *model.ProcessorLoop, parentLog *domain.ExecLog, msg *websocket.Message) (
 	output domain.ExecOutput, err error) {
 
 	if loop.ID == 0 {
@@ -105,7 +105,7 @@ func (s *ExecHelperService) HandleLoop(loop *model.ProcessorLoop, parentLog *dom
 	return
 }
 
-func (s *ExecHelperService) HandleData(data *model.ProcessorData, parentLog *domain.ExecLog, msg websocket.Message) (
+func (s *ExecHelperService) HandleData(data *model.ProcessorData, parentLog *domain.ExecLog, msg *websocket.Message) (
 	output domain.ExecOutput, err error) {
 	output.Url = data.Url
 
@@ -114,7 +114,7 @@ func (s *ExecHelperService) HandleData(data *model.ProcessorData, parentLog *dom
 	return
 }
 
-func (s *ExecHelperService) HandleTimer(processor *model.ProcessorTimer, parentLog *domain.ExecLog, msg websocket.Message) (
+func (s *ExecHelperService) HandleTimer(processor *model.ProcessorTimer, parentLog *domain.ExecLog, msg *websocket.Message) (
 	output domain.ExecOutput, err error) {
 
 	output.SleepTime = processor.SleepTime
@@ -125,7 +125,7 @@ func (s *ExecHelperService) HandleTimer(processor *model.ProcessorTimer, parentL
 	return
 }
 
-func (s *ExecHelperService) HandleVariable(processor *model.ProcessorVariable, parentLog *domain.ExecLog, msg websocket.Message) (
+func (s *ExecHelperService) HandleVariable(processor *model.ProcessorVariable, parentLog *domain.ExecLog, msg *websocket.Message) (
 	output domain.ExecOutput, err error) {
 
 	variableName := processor.VariableName
@@ -150,7 +150,7 @@ func (s *ExecHelperService) HandleVariable(processor *model.ProcessorVariable, p
 	return
 }
 
-func (s *ExecHelperService) HandleAssertion(processor *model.ProcessorAssertion, parentLog *domain.ExecLog, msg websocket.Message) (
+func (s *ExecHelperService) HandleAssertion(processor *model.ProcessorAssertion, parentLog *domain.ExecLog, msg *websocket.Message) (
 	output domain.ExecOutput, err error) {
 
 	expression := processor.Expression
@@ -167,7 +167,7 @@ func (s *ExecHelperService) HandleAssertion(processor *model.ProcessorAssertion,
 	return
 }
 
-func (s *ExecHelperService) HandleExtractor(extractor *model.ProcessorExtractor, parentLog *domain.ExecLog, msg websocket.Message) (
+func (s *ExecHelperService) HandleExtractor(extractor *model.ProcessorExtractor, parentLog *domain.ExecLog, msg *websocket.Message) (
 	output domain.ExecOutput, err error) {
 
 	brother, ok := getPreviousBrother(*parentLog)
@@ -193,7 +193,7 @@ func (s *ExecHelperService) HandleExtractor(extractor *model.ProcessorExtractor,
 	return
 }
 
-func (s *ExecHelperService) HandleCookie(processor *model.ProcessorCookie, parentLog *domain.ExecLog, msg websocket.Message) (
+func (s *ExecHelperService) HandleCookie(processor *model.ProcessorCookie, parentLog *domain.ExecLog, msg *websocket.Message) (
 	output domain.ExecOutput, err error) {
 
 	cookieName := processor.CookieName

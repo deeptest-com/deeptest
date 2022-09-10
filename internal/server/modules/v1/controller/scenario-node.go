@@ -44,7 +44,7 @@ func (c *ScenarioNodeCtrl) AddInterfaces(ctx iris.Context) {
 
 	req.ProjectId = projectId
 
-	bizErr := c.ScenarioNodeService.AddInterfaces(req)
+	nodePo, bizErr := c.ScenarioNodeService.AddInterfaces(req)
 	if bizErr != nil {
 		ctx.JSON(_domain.Response{
 			Code: _domain.ErrComm.Code,
@@ -53,7 +53,7 @@ func (c *ScenarioNodeCtrl) AddInterfaces(ctx iris.Context) {
 		return
 	}
 
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: nodePo})
 }
 
 // AddProcessor 添加
@@ -73,7 +73,7 @@ func (c *ScenarioNodeCtrl) AddProcessor(ctx iris.Context) {
 
 	req.ProjectId = uint(projectId)
 
-	po, bizErr := c.ScenarioNodeService.AddProcessor(req)
+	nodePo, bizErr := c.ScenarioNodeService.AddProcessor(req)
 	if bizErr != nil {
 		ctx.JSON(_domain.Response{
 			Code: _domain.ErrComm.Code,
@@ -82,7 +82,7 @@ func (c *ScenarioNodeCtrl) AddProcessor(ctx iris.Context) {
 		return
 	}
 
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: po})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: nodePo})
 }
 
 // UpdateName 更新

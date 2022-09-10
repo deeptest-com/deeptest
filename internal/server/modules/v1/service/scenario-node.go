@@ -21,11 +21,11 @@ func (s *ScenarioNodeService) GetTree(scenarioId int) (root *model.Processor, er
 	return
 }
 
-func (s *ScenarioNodeService) AddInterfaces(req serverDomain.ScenarioAddInterfacesReq) (err *_domain.BizErr) {
+func (s *ScenarioNodeService) AddInterfaces(req serverDomain.ScenarioAddInterfacesReq) (ret model.Processor, err *_domain.BizErr) {
 	targetProcessor, _ := s.ScenarioProcessorRepo.Get(req.TargetId)
 
 	for _, interfaceNode := range req.SelectedNodes {
-		s.createDirOrInterface(interfaceNode, targetProcessor)
+		ret, _ = s.createDirOrInterface(interfaceNode, targetProcessor)
 	}
 
 	return
@@ -48,7 +48,6 @@ func (s *ScenarioNodeService) AddProcessor(req serverDomain.ScenarioAddScenarioR
 
 	if req.Mode == "child" {
 		ret.ParentId = targetProcessor.ID
-
 	} else if req.Mode == "parent" && req.TargetProcessorCategory == consts.ProcessorInterface {
 		ret.ParentId = targetProcessor.ParentId
 	}
@@ -76,22 +75,9 @@ func (s *ScenarioNodeService) AddProcessor(req serverDomain.ScenarioAddScenarioR
 }
 
 func (s *ScenarioNodeService) createDirOrInterface(interfaceNode serverDomain.InterfaceSimple, parentProcessor model.Processor) (
-	err *_domain.BizErr) {
+	ret model.Processor, err *_domain.BizErr) {
 
-	if !interfaceNode.IsDir {
-		processor := model.Processor{
-			Name:           interfaceNode.Name,
-			ScenarioId:     parentProcessor.ScenarioId,
-			EntityCategory: consts.ProcessorInterface,
-			EntityType:     consts.ProcessorInterfaceDefault,
-			InterfaceId:    uint(interfaceNode.Id),
-			ParentId:       parentProcessor.ID,
-			ProjectId:      parentProcessor.ProjectId,
-		}
-		processor.Ordr = s.ScenarioNodeRepo.GetMaxOrder(processor.ParentId)
-		s.ScenarioNodeRepo.Save(&processor)
-
-	} else {
+	if interfaceNode.IsDir {
 		processor := model.Processor{
 			Name:           interfaceNode.Name,
 			ScenarioId:     parentProcessor.ScenarioId,
@@ -105,6 +91,21 @@ func (s *ScenarioNodeService) createDirOrInterface(interfaceNode serverDomain.In
 		for _, child := range interfaceNode.Children {
 			s.createDirOrInterface(child, processor)
 		}
+
+	} else {
+		processor := model.Processor{
+			Name:           interfaceNode.Name,
+			ScenarioId:     parentProcessor.ScenarioId,
+			EntityCategory: consts.ProcessorInterface,
+			EntityType:     consts.ProcessorInterfaceDefault,
+			InterfaceId:    uint(interfaceNode.Id),
+			ParentId:       parentProcessor.ID,
+			ProjectId:      parentProcessor.ProjectId,
+		}
+		processor.Ordr = s.ScenarioNodeRepo.GetMaxOrder(processor.ParentId)
+		s.ScenarioNodeRepo.Save(&processor)
+
+		ret = processor
 	}
 
 	return

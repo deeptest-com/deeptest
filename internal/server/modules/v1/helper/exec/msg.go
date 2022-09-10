@@ -9,22 +9,22 @@ import (
 	"github.com/kataras/iris/v12/websocket"
 )
 
-func SendStartMsg(wsMsg websocket.Message) (err error) {
+func SendStartMsg(wsMsg *websocket.Message) (err error) {
 	SetRunning(true)
-	websocketHelper.SendExecResult(consts.ProgressInProgress, nil, &wsMsg)
+	websocketHelper.SendExecResult(consts.ProgressInProgress, nil, wsMsg)
 
 	return
 }
 
-func SendEndMsg(wsMsg websocket.Message) (err error) {
+func SendEndMsg(wsMsg *websocket.Message) (err error) {
 	SetRunning(false)
-	websocketHelper.SendExecResult(consts.ProgressEnd, nil, &wsMsg)
+	websocketHelper.SendExecResult(consts.ProgressEnd, nil, wsMsg)
 
 	return
 }
 
-func SendResultMsg(report domain.ReportSimple, wsMsg websocket.Message) (err error) {
-	websocketHelper.SendExecResult(consts.Result, report, &wsMsg)
+func SendResultMsg(report domain.ReportSimple, wsMsg *websocket.Message) (err error) {
+	websocketHelper.SendExecResult(consts.Result, report, wsMsg)
 
 	return
 }
@@ -45,10 +45,10 @@ func SendAlreadyRunningMsg(scenarioId int, wsMsg websocket.Message) (err error) 
 	return
 }
 
-func SendExecMsg(log domain.ExecLog, wsMsg websocket.Message) (err error) {
+func SendExecMsg(log domain.ExecLog, wsMsg *websocket.Message) (err error) {
 	SetRunning(true)
 	msg := _i118Utils.Sprintf("start_exec")
-	websocketHelper.SendExecMsg(msg, log, &wsMsg)
+	websocketHelper.SendExecMsg(msg, log, wsMsg)
 	_logUtils.Infof(msg)
 
 	return

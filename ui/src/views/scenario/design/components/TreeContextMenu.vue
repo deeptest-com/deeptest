@@ -108,8 +108,6 @@ const menuClick = (e) => {
 
 <style lang="less">
 .dp-tree-context-menu {
-  z-index: 9;
-
   .ant-menu {
     border: 1px solid #dedfe1;
     background-color: #fff !important;

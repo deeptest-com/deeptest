@@ -17,7 +17,9 @@ const (
 )
 
 func Get(url string) (ret []byte, err error) {
-	_logUtils.Infof("===DEBUG===  request: %s", url)
+	if Verbose {
+		_logUtils.Infof("===DEBUG===  request: %s", url)
+	}
 
 	client := &http.Client{
 		Timeout: 3 * time.Second,
@@ -61,7 +63,9 @@ func Put(url string, data interface{}) (ret []byte, err error) {
 }
 
 func PostOrPut(url string, method string, data interface{}) (ret []byte, err error) {
-	_logUtils.Infof("===DEBUG===  request: %s", url)
+	if Verbose {
+		_logUtils.Infof("===DEBUG===  request: %s", url)
+	}
 
 	client := &http.Client{
 		Timeout: 3 * time.Second,

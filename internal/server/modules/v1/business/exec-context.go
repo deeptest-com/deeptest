@@ -27,6 +27,10 @@ func NewExecContextService() *ExecContext {
 
 func (s *ExecContext) InitScopeHierarchy(scenarioId uint) (variables []domain.ExecVariable) {
 	s.ScenarioNodeRepo.GetScopeHierarchy(scenarioId, &ScopeHierarchy)
+
+	ScopedVariables = map[uint][]domain.ExecVariable{}
+	ScopedCookies = map[uint][]domain.ExecCookie{}
+
 	return
 }
 

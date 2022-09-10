@@ -78,7 +78,7 @@ import {DropEvent, TreeDragEvent} from "ant-design-vue/es/tree/Tree";
 import {isRoot, isProcessor, isInterface} from '../../service'
 import {CloseOutlined, FileOutlined, FolderOutlined, FolderOpenOutlined, CheckOutlined} from "@ant-design/icons-vue";
 
-import throttle from "lodash.debounce";
+import debounce from "lodash.debounce";
 import {expandAllKeys, expandOneKey, getNodeMap} from "@/services/tree";
 import {getProcessorTypeNames, updateNodeName} from "../../service";
 import {useStore} from "vuex";
@@ -104,7 +104,7 @@ const store = useStore<{ Scenario: ScenarioStateType; Interface: InterfaceStateT
 const treeData = computed<any>(() => store.state.Scenario.treeData);
 const selectedNode = computed<any>(()=> store.state.Scenario.nodeData);
 
-const loadTree = throttle(async () => {
+const loadTree = debounce(async () => {
   await store.dispatch('Scenario/loadScenario', props.scenarioId);
 }, 60)
 loadTree();
@@ -193,21 +193,29 @@ const onRightClick = (e) => {
     parentId: node.dataRef.parentId,
   }
 
-  menuStyle.value = {
+  menuStyle.value = getContextMenuStyle(
+      event.currentTarget.getBoundingClientRect().right, event.currentTarget.getBoundingClientRect().top, 120)
+}
+
+const getContextMenuStyle = (x, y, height) => {
+  let top = y + 6
+  if (y + height > document.body.clientHeight)
+    top = document.body.clientHeight - height
+
+  return {
+    zIndex: 99,
     position: 'fixed',
     maxHeight: 40,
     textAlign: 'center',
     left: `${x + 10}px`,
-    top: `${y + 6}px`
-    // display: 'flex',
-    // flexDirection: 'row'
+    top: `${top}px`,
   }
 }
 
-const getNodeMapCall = throttle(async () => {
+const getNodeMapCall = debounce(async () => {
   getNodeMap(treeData.value[0], treeDataMap)
-}, 300)
-const getExpandedKeysCall = throttle(async () => {
+}, 500)
+const getExpandedKeysCall = debounce(async () => {
   getExpandedKeys(treeData.value[0].scenarioId).then(async keys => {
     console.log('keys', keys)
     if (keys)
@@ -219,7 +227,7 @@ const getExpandedKeysCall = throttle(async () => {
       await setExpandedKeys(treeData.value[0].scenarioId, expandedKeys.value)
     }
   })
-}, 300)
+}, 500)
 
 const getOpenKeys = (treeNode, isAll) => {
   if (!treeNode) return
@@ -308,16 +316,15 @@ const addNode = (mode, processorCategory, processorType,
   if (processorCategory === 'interface') { // select a interface
     interfaceSelectionVisible.value = true
     return
-
   } else {
     store.dispatch('Scenario/addProcessor',
         {mode, processorCategory, processorType,
           targetProcessorCategory, targetProcessorType, targetProcessorId,
           name: t(processorType)
         }).then((newNode) => {
-          console.log('newNode', newNode)
+          console.log('addProcessor successfully', newNode)
           selectNode([newNode.id])
-          expandOneKey(treeDataMap, newNode.parentId, expandedKeys.value) // expend new node
+          expandOneKey(treeDataMap, mode === 'parent' ? newNode.id : newNode.parentId, expandedKeys.value) // expend new node
           setExpandedKeys(treeData.value[0].scenarioId, expandedKeys.value)
         })
   }
@@ -332,12 +339,14 @@ const interfaceSelectionFinish = (selectedNodes) => {
       {
         selectedNodes: selectedNodes,
         targetId: targetNode.id,
-      }).then(() => {
-    interfaceSelectionVisible.value = false
-    selectNode([targetNode.id])
-    expandOneKey(treeDataMap, targetNode.parentId, expandedKeys.value) // expend new node
-    setExpandedKeys(treeData.value[0].scenarioId, expandedKeys.value)
-  })
+      }).then((newNode) => {
+        console.log('addInterfaces successfully', newNode)
+
+        interfaceSelectionVisible.value = false
+        selectNode([newNode.id])
+        expandOneKey(treeDataMap, newNode.parentId, expandedKeys.value) // expend new node
+        setExpandedKeys(treeData.value[0].scenarioId, expandedKeys.value)
+      })
 }
 
 const interfaceSelectionCancel = () => {

@@ -1,5 +1,16 @@
 package consts
 
+type ExecFromType string
+
+const (
+	FromCmd    ExecFromType = "cmd"
+	FromClient ExecFromType = "client"
+)
+
+func (e ExecFromType) String() string {
+	return string(e)
+}
+
 type WsMsgCategory string
 
 const (

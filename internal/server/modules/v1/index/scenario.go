@@ -20,6 +20,7 @@ func NewScenarioModule() *ScenarioModule {
 func (m *ScenarioModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
 		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
+
 		index.Get("/", m.ScenarioCtrl.List).Name = "场景列表"
 		index.Get("/{id:uint}", m.ScenarioCtrl.Get).Name = "场景详情"
 		index.Post("/", m.ScenarioCtrl.Create).Name = "新建场景"

@@ -23,7 +23,7 @@ type ExecInterfaceService struct {
 	CheckpointService *CheckpointService `inject:""`
 }
 
-func (s *ExecInterfaceService) ExecInterfaceProcessor(interfaceProcessor *model.Processor, parentLog *domain.ExecLog, wsMsg websocket.Message) (err error) {
+func (s *ExecInterfaceService) ExecInterfaceProcessor(interfaceProcessor *model.Processor, parentLog *domain.ExecLog, wsMsg *websocket.Message) (err error) {
 	interf, err := s.InterfaceRepo.Get(interfaceProcessor.InterfaceId)
 	if err != nil {
 		return

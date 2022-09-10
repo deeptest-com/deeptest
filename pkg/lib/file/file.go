@@ -93,7 +93,7 @@ func IsAbosutePath(pth string) bool {
 }
 
 func AddPathSepIfNeeded(pth string) string {
-	sep := _consts.PthSep
+	sep := _consts.FilePthSep
 
 	if strings.LastIndex(pth, sep) < len(pth)-1 {
 		pth += sep
@@ -108,7 +108,7 @@ func GetFilesFromParams(arguments []string) []string {
 		if strings.Index(arg, "-") != 0 {
 			if arg == "." {
 				arg = AbsolutePath(".")
-			} else if strings.Index(arg, "."+_consts.PthSep) == 0 {
+			} else if strings.Index(arg, "."+_consts.FilePthSep) == 0 {
 				arg = AbsolutePath(".") + arg[2:]
 			} else if !IsAbosutePath(arg) {
 				arg = AbsolutePath(".") + arg
@@ -129,8 +129,8 @@ func GetExeDir(workDir string) string { // where zd.exe file in
 
 	if strings.Index(arg1, "go-build") < 0 { // release
 		p, _ := exec.LookPath(os.Args[0])
-		if strings.Index(p, _consts.PthSep) > -1 {
-			dir = p[:strings.LastIndex(p, _consts.PthSep)]
+		if strings.Index(p, _consts.FilePthSep) > -1 {
+			dir = p[:strings.LastIndex(p, _consts.FilePthSep)]
 		}
 	} else { // debug
 		dir = workDir
@@ -176,7 +176,7 @@ func CopyFile(src, dst string) (int64, error) {
 }
 
 func GetFileName(pathOrUrl string) string {
-	index := strings.LastIndex(pathOrUrl, _consts.PthSep)
+	index := strings.LastIndex(pathOrUrl, _consts.FilePthSep)
 
 	name := pathOrUrl[index+1:]
 	return name
@@ -205,8 +205,8 @@ func GetAbosutePath(pth string) string {
 }
 
 func AddSepIfNeeded(pth string) string {
-	if strings.LastIndex(pth, _consts.PthSep) < len(pth)-1 {
-		pth += _consts.PthSep
+	if strings.LastIndex(pth, _consts.FilePthSep) < len(pth)-1 {
+		pth += _consts.FilePthSep
 	}
 	return pth
 }

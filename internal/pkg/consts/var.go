@@ -1,9 +1,11 @@
 package consts
 
 var (
-	Language  = "zh"
-	Verbose   = true
+	Language = "zh"
+	Verbose  = true
+
+	ExecFrom  ExecFromType
 	IsRelease bool
-	ExeDir    string
+	ExecDir   string
 	WorkDir   string
 )

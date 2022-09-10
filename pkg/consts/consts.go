@@ -3,5 +3,5 @@ package _consts
 import "os"
 
 const (
-	PthSep = string(os.PathSeparator)
+	FilePthSep = string(os.PathSeparator)
 )

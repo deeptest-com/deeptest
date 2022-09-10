@@ -26,7 +26,7 @@ type ExecProcessorService struct {
 //	return
 //}
 
-func (s *ExecProcessorService) ExecLogic(processor *model.Processor, parentLog *domain.ExecLog, msg websocket.Message) (
+func (s *ExecProcessorService) ExecLogic(processor *model.Processor, parentLog *domain.ExecLog, msg *websocket.Message) (
 	output domain.ExecOutput, err error) {
 
 	logic, err := s.ScenarioProcessorRepo.GetLogic(*processor)
@@ -35,7 +35,7 @@ func (s *ExecProcessorService) ExecLogic(processor *model.Processor, parentLog *
 	return
 }
 
-func (s *ExecProcessorService) ExecLoop(processor *model.Processor, parentLog *domain.ExecLog, msg websocket.Message) (
+func (s *ExecProcessorService) ExecLoop(processor *model.Processor, parentLog *domain.ExecLog, msg *websocket.Message) (
 	output domain.ExecOutput, err error) {
 
 	loop, err := s.ScenarioProcessorRepo.GetLoop(*processor)
@@ -44,7 +44,7 @@ func (s *ExecProcessorService) ExecLoop(processor *model.Processor, parentLog *d
 	return
 }
 
-func (s *ExecProcessorService) ExecData(processor *model.Processor, parentLog *domain.ExecLog, msg websocket.Message) (
+func (s *ExecProcessorService) ExecData(processor *model.Processor, parentLog *domain.ExecLog, msg *websocket.Message) (
 	output domain.ExecOutput, err error) {
 
 	data, err := s.ScenarioProcessorRepo.GetData(*processor)
@@ -53,7 +53,7 @@ func (s *ExecProcessorService) ExecData(processor *model.Processor, parentLog *d
 	return
 }
 
-func (s *ExecProcessorService) ExecTimer(processor *model.Processor, parentLog *domain.ExecLog, msg websocket.Message) (
+func (s *ExecProcessorService) ExecTimer(processor *model.Processor, parentLog *domain.ExecLog, msg *websocket.Message) (
 	output domain.ExecOutput, err error) {
 
 	timer, err := s.ScenarioProcessorRepo.GetTimer(*processor)
@@ -62,7 +62,7 @@ func (s *ExecProcessorService) ExecTimer(processor *model.Processor, parentLog *
 	return
 }
 
-func (s *ExecProcessorService) ExecVariable(processor *model.Processor, parentLog *domain.ExecLog, msg websocket.Message) (
+func (s *ExecProcessorService) ExecVariable(processor *model.Processor, parentLog *domain.ExecLog, msg *websocket.Message) (
 	output domain.ExecOutput, err error) {
 
 	variable, err := s.ScenarioProcessorRepo.GetVariable(*processor)
@@ -71,7 +71,7 @@ func (s *ExecProcessorService) ExecVariable(processor *model.Processor, parentLo
 	return
 }
 
-func (s *ExecProcessorService) ExecAssertion(processor *model.Processor, parentLog *domain.ExecLog, msg websocket.Message) (
+func (s *ExecProcessorService) ExecAssertion(processor *model.Processor, parentLog *domain.ExecLog, msg *websocket.Message) (
 	output domain.ExecOutput, err error) {
 
 	assertion, err := s.ScenarioProcessorRepo.GetAssertion(*processor)
@@ -80,7 +80,7 @@ func (s *ExecProcessorService) ExecAssertion(processor *model.Processor, parentL
 	return
 }
 
-func (s *ExecProcessorService) ExecExtractor(processor *model.Processor, parentLog *domain.ExecLog, msg websocket.Message) (
+func (s *ExecProcessorService) ExecExtractor(processor *model.Processor, parentLog *domain.ExecLog, msg *websocket.Message) (
 	output domain.ExecOutput, err error) {
 
 	extractor, err := s.ScenarioProcessorRepo.GetExtractor(*processor)
@@ -89,7 +89,7 @@ func (s *ExecProcessorService) ExecExtractor(processor *model.Processor, parentL
 	return
 }
 
-func (s *ExecProcessorService) ExecCookie(processor *model.Processor, parentLog *domain.ExecLog, msg websocket.Message) (
+func (s *ExecProcessorService) ExecCookie(processor *model.Processor, parentLog *domain.ExecLog, msg *websocket.Message) (
 	output domain.ExecOutput, err error) {
 
 	cookie, err := s.ScenarioProcessorRepo.GetCookie(*processor)

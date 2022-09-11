@@ -8,6 +8,11 @@
             <a-input v-model:value="modelRef.comments"/>
           </a-form-item>
 
+          <a-form-item label="变量名称" v-bind="validateInfos.variableName">
+            <a-input v-model:value="modelRef.variableName"
+                     @blur="validate('variableName', { trigger: 'blur' }).catch(() => {})"/>
+          </a-form-item>
+
           <a-form-item label="列表" v-bind="validateInfos.list">
             <a-input v-model:value="modelRef.list"
                      @blur="validate('list', { trigger: 'blur' }).catch(() => {})"/>
@@ -42,6 +47,9 @@ const {t} = useI18n();
 const formRef = ref();
 
 const rulesRef = reactive({
+  variableName: [
+    {required: true, message: '请输入变量名称', trigger: 'blur'},
+  ],
   list: [
     {required: true, message: '请输入列表', trigger: 'blur'},
   ],

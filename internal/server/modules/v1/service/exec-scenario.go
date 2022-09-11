@@ -10,11 +10,12 @@ import (
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/jinzhu/copier"
 	"github.com/kataras/iris/v12/websocket"
+	"sync"
 	"time"
 )
 
 var (
-	breakOnce = false
+	breakMap sync.Map
 )
 
 type ExecScenarioService struct {
@@ -102,13 +103,12 @@ func (s *ExecScenarioService) ExecProcessorRecursively(processor *model.Processo
 		parentLog.Logs = &logs
 	}
 
-	if s.ExecComm.IsWrapperProcessor(processor.EntityCategory) {
+	if s.ExecComm.IsWrapperProcessor(processor) {
 		if s.ExecComm.IsExecutableWrapperProcessor(processor.EntityCategory) {
 			s.ExecWrapperProcessor(processor, parentLog, wsMsg)
 
 		} else {
 			wrapperLog, _ := s.AddWrapperProcessor(processor, parentLog, wsMsg)
-
 			s.ExecChildren(processor, wrapperLog, wsMsg)
 
 		}
@@ -133,6 +133,10 @@ func (s *ExecScenarioService) ExecWrapperProcessor(processor *model.Processor, p
 
 	} else if s.ExecComm.IsLogicPass(wrapperLog) {
 		s.ExecChildren(processor, wrapperLog, wsMsg)
+
+	} else if s.ExecComm.IsDataPass(wrapperLog) {
+		s.ExecWrapperDataProcessor(processor, wrapperLog, wsMsg)
+
 	}
 }
 
@@ -155,6 +159,20 @@ func (s *ExecScenarioService) ExecActionProcessorWithResp(processor *model.Proce
 	} else if processor.EntityCategory == consts.ProcessorCookie {
 		output, _ = s.ExecProcessorService.ExecCookie(processor, parentLog, wsMsg)
 
+	} else if processor.EntityType == consts.ProcessorLoopBreak {
+		output, _ = s.ExecProcessorService.ExecLoopBreak(processor, parentLog, wsMsg)
+
+		breakFrom := output.BreakFrom
+		breakIfExpress := output.Expression
+
+		result, err := s.ExecHelperService.ComputerExpress(breakIfExpress, processor.ID)
+		pass, ok := result.(bool)
+		if err == nil && ok && pass {
+			breakMap.Store(breakFrom, true)
+			output.Msg = "真"
+		} else {
+			output.Msg = "假"
+		}
 	}
 
 	wrapperLog, _ = s.wrapperLogAndSendMsg(output, processor, parentLog, wsMsg)
@@ -174,8 +192,9 @@ func (s *ExecScenarioService) ExecWrapperLoopProcessor(processor *model.Processo
 
 			s.ExecChildren(processor, wrapperLogItem, wsMsg)
 
-			if breakOnce {
-				breakOnce = false
+			toBreak, ok := breakMap.Load(processor.ID)
+			if ok && toBreak.(bool) {
+				breakMap.Delete(processor.ID)
 				break
 			}
 		}
@@ -193,8 +212,9 @@ func (s *ExecScenarioService) ExecWrapperLoopProcessor(processor *model.Processo
 
 			s.ExecChildren(processor, wrapperLog, wsMsg)
 
-			if breakOnce {
-				breakOnce = false
+			toBreak, ok := breakMap.Load(processor.ID)
+			if ok && toBreak.(bool) {
+				breakMap.Delete(processor.ID)
 				break
 			}
 		}
@@ -214,8 +234,9 @@ func (s *ExecScenarioService) ExecWrapperLoopProcessor(processor *model.Processo
 
 			s.ExecChildren(processor, wrapperLogItem, wsMsg)
 
-			if breakOnce {
-				breakOnce = false
+			toBreak, ok := breakMap.Load(processor.ID)
+			if ok && toBreak.(bool) {
+				breakMap.Delete(processor.ID)
 				break
 			}
 		}
@@ -237,22 +258,22 @@ func (s *ExecScenarioService) ExecWrapperLoopProcessor(processor *model.Processo
 
 			s.ExecChildren(processor, wrapperLogItem, wsMsg)
 
-			if breakOnce {
-				breakOnce = false
+			toBreak, ok := breakMap.Load(processor.ID)
+			if ok && toBreak.(bool) {
+				breakMap.Delete(processor.ID)
 				break
 			}
 		}
 
 		s.ExecIteratorService.Pop()
-	} else if s.ExecComm.IsLoopLoopBreak(wrapperLog) {
-		breakIfExpress := wrapperLog.Output.Expression
 
-		result, err := s.ExecHelperService.ComputerExpress(breakIfExpress, wrapperLog.ProcessId)
-		pass, ok := result.(bool)
-		if err != nil || !ok || !pass {
-			breakOnce = true
-		}
-	} else if s.ExecComm.IsDataPass(wrapperLog) {
+	}
+
+}
+
+func (s *ExecScenarioService) ExecWrapperDataProcessor(processor *model.Processor, wrapperLog *domain.ExecLog,
+	wsMsg *websocket.Message) {
+	if s.ExecComm.IsDataPass(wrapperLog) {
 		data, _ := s.ScenarioProcessorRepo.GetData(*processor)
 
 		iterator, _ := s.ExecIteratorService.GenerateData(*wrapperLog, data)
@@ -268,8 +289,9 @@ func (s *ExecScenarioService) ExecWrapperLoopProcessor(processor *model.Processo
 
 			s.ExecChildren(processor, wrapperLogItem, wsMsg)
 
-			if breakOnce {
-				breakOnce = false
+			toBreak, ok := breakMap.Load(processor.ID)
+			if ok && toBreak.(bool) {
+				breakMap.Delete(processor.ID)
 				break
 			}
 		}

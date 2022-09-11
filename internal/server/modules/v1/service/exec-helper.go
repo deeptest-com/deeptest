@@ -96,11 +96,22 @@ func (s *ExecHelperService) HandleLoop(loop *model.ProcessorLoop, parentLog *dom
 		output.Range = loop.Range
 		output.Msg = fmt.Sprintf("区间%s。", output.Range)
 		return
-	} else if typ == consts.ProcessorLoopBreak {
-		output.Expression = loop.BreakIfExpression
-		output.Msg = fmt.Sprintf("跳出循环。")
+	}
+
+	return
+}
+
+func (s *ExecHelperService) HandleLoopBreak(loop *model.ProcessorLoop, parentLog *domain.ExecLog, msg *websocket.Message) (
+	output domain.ExecOutput, err error) {
+
+	if loop.ID == 0 {
+		output.Msg = "执行前请先配置处理器。"
 		return
 	}
+
+	output.Expression = loop.BreakIfExpression
+	output.BreakFrom = parentLog.ProcessId
+	output.Msg = fmt.Sprintf("-")
 
 	return
 }

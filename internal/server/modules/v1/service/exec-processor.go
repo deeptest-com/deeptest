@@ -43,6 +43,14 @@ func (s *ExecProcessorService) ExecLoop(processor *model.Processor, parentLog *d
 
 	return
 }
+func (s *ExecProcessorService) ExecLoopBreak(processor *model.Processor, parentLog *domain.ExecLog, msg *websocket.Message) (
+	output domain.ExecOutput, err error) {
+
+	loop, err := s.ScenarioProcessorRepo.GetLoop(*processor)
+	output, _ = s.ExecHelperService.HandleLoopBreak(&loop, parentLog, msg)
+
+	return
+}
 
 func (s *ExecProcessorService) ExecData(processor *model.Processor, parentLog *domain.ExecLog, msg *websocket.Message) (
 	output domain.ExecOutput, err error) {

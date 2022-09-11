@@ -115,6 +115,8 @@ type ExecOutput struct {
 	RangeStart interface{}     `json:"rangeStart,omitempty"`
 	RangeEnd   interface{}     `json:"rangeEnd,omitempty"`
 	RangeType  consts.DataType `json:"rangeType,omitempty"`
+	// loop break
+	BreakFrom uint `json:"breakFrom,omitempty"`
 
 	// timer
 	SleepTime int `json:"sleepTime"`

@@ -8,6 +8,11 @@
             <a-input v-model:value="modelRef.comments"/>
           </a-form-item>
 
+          <a-form-item label="变量名称" v-bind="validateInfos.variableName">
+            <a-input v-model:value="modelRef.variableName"
+                     @blur="validate('variableName', { trigger: 'blur' }).catch(() => {})"/>
+          </a-form-item>
+
           <a-form-item label="次数" v-bind="validateInfos.times">
             <a-input-number v-model:value="modelRef.times"
                      @blur="validate('times', { trigger: 'blur' }).catch(() => {})"/>
@@ -41,6 +46,9 @@ const {t} = useI18n();
 const formRef = ref();
 
 const rulesRef = reactive({
+  variableName: [
+    {required: true, message: '请输入变量名称', trigger: 'blur'},
+  ],
   times: [
     {required: true, type: 'number', message: '请输入迭代次数', trigger: 'blur'},
   ],

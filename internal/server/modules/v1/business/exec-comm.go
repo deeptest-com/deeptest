@@ -3,6 +3,7 @@ package business
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
+	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	_stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 )
 
@@ -23,7 +24,7 @@ func (s *ExecComm) IsLoopUntilPass(containerLog *domain.ExecLog) bool {
 	return containerLog.ProcessorType == consts.ProcessorLoopUntil && containerLog.Output.Expression != ""
 }
 func (s *ExecComm) IsLoopInPass(containerLog *domain.ExecLog) bool {
-	return containerLog.ProcessorType == consts.ProcessorLoopRange && containerLog.Output.List != ""
+	return containerLog.ProcessorType == consts.ProcessorLoopIn && containerLog.Output.List != ""
 }
 func (s *ExecComm) IsLoopRangePass(containerLog *domain.ExecLog) bool {
 	return containerLog.ProcessorType == consts.ProcessorLoopRange && containerLog.Output.Range != ""
@@ -40,7 +41,7 @@ func (s *ExecComm) IsDataPass(containerLog *domain.ExecLog) bool {
 	return containerLog.ProcessorCategory == consts.ProcessorData && containerLog.Output.Url != ""
 }
 
-func (s *ExecComm) IsWrapperProcessor(category consts.ProcessorCategory) bool {
+func (s *ExecComm) IsWrapperProcessor(processor *model.Processor) bool {
 	arr := []string{
 		consts.ProcessorRoot.ToString(),
 		//consts.ProcessorThreadGroup.ToString(),
@@ -49,7 +50,8 @@ func (s *ExecComm) IsWrapperProcessor(category consts.ProcessorCategory) bool {
 		consts.ProcessorLoop.ToString(),
 		consts.ProcessorData.ToString(),
 	}
-	return _stringUtils.FindInArr(category.ToString(), arr)
+
+	return _stringUtils.FindInArr(processor.EntityCategory.ToString(), arr) && processor.EntityType != consts.ProcessorLoopBreak
 }
 
 func (s *ExecComm) IsExecutableWrapperProcessor(category consts.ProcessorCategory) bool {

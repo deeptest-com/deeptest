@@ -8,6 +8,7 @@ import (
 	execHelper "github.com/aaronchen2k/deeptest/internal/server/modules/v1/helper/exec"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/repo"
+	_logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 )
 
 var (
@@ -121,6 +122,23 @@ func (s *ExecIterator) RetrieveIteratorsVal(processor *model.Processor) (item in
 
 		loopRangeProcessor, _ := s.ScenarioProcessorRepo.GetLoop(*processor)
 		desc = fmt.Sprintf("变量%s = %d", loopRangeProcessor.VariableName, item)
+
+	} else if value.ProcessorType == consts.ProcessorLoopIn {
+		items := value.Items
+		if index > len(items)-1 {
+			index = 0
+		}
+		if len(items) == 0 {
+			return
+		}
+
+		item = items[index]
+
+		loopRangeProcessor, _ := s.ScenarioProcessorRepo.GetLoop(*processor)
+		desc = fmt.Sprintf("变量%s = %d", loopRangeProcessor.VariableName, item)
+
+	} else if value.ProcessorType == consts.ProcessorLoopBreak {
+		_logUtils.Info("")
 
 	}
 

@@ -49,7 +49,7 @@ func SendExecMsg(log domain.ExecLog, wsMsg *websocket.Message) (err error) {
 	SetRunning(true)
 	msg := _i118Utils.Sprintf("start_exec")
 	websocketHelper.SendExecMsg(msg, log, wsMsg)
-	_logUtils.Infof(msg)
+	//_logUtils.Infof("=== " + log.Name)
 
 	return
 }

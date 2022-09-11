@@ -8,13 +8,13 @@ import (
 )
 
 var (
-	executableWrapperProcessors = []string{
+	executableContainerProcessors = []string{
 		consts.ProcessorLogic.ToString(),
 		consts.ProcessorLoop.ToString(),
 		consts.ProcessorData.ToString(),
 	}
 
-	noExecutableWrapperProcessors = []string{
+	noExecutableContainerProcessors = []string{
 		consts.ProcessorRoot.ToString(),
 		//consts.ProcessorThreadGroup.ToString(),
 		consts.ProcessorGroup.ToString(),
@@ -63,12 +63,12 @@ func (s *ExecComm) IsDataPass(containerLog *domain.ExecLog) bool {
 	return containerLog.ProcessorCategory == consts.ProcessorData && containerLog.Output.Url != ""
 }
 
-func (s *ExecComm) IsNoExecutableWrapperProcessor(processor *model.Processor) bool {
-	return _stringUtils.FindInArr(processor.EntityCategory.ToString(), noExecutableWrapperProcessors)
+func (s *ExecComm) IsNoExecutableContainerProcessor(processor *model.Processor) bool {
+	return _stringUtils.FindInArr(processor.EntityCategory.ToString(), noExecutableContainerProcessors)
 }
 
-func (s *ExecComm) IsExecutableWrapperProcessor(processor *model.Processor) bool {
-	return _stringUtils.FindInArr(processor.EntityCategory.ToString(), executableWrapperProcessors) &&
+func (s *ExecComm) IsExecutableContainerProcessor(processor *model.Processor) bool {
+	return _stringUtils.FindInArr(processor.EntityCategory.ToString(), executableContainerProcessors) &&
 		processor.EntityType != consts.ProcessorLoopBreak
 }
 

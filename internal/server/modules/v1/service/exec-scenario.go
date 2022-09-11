@@ -103,21 +103,18 @@ func (s *ExecScenarioService) ExecProcessorRecursively(processor *model.Processo
 		parentLog.Logs = &logs
 	}
 
-	if s.ExecComm.IsWrapperProcessor(processor) {
-		if s.ExecComm.IsExecutableWrapperProcessor(processor.EntityCategory) {
-			s.ExecWrapperProcessor(processor, parentLog, wsMsg)
+	if s.ExecComm.IsExecutableWrapperProcessor(processor) {
+		s.ExecWrapperProcessor(processor, parentLog, wsMsg)
 
-		} else {
-			wrapperLog, _ := s.AddWrapperProcessor(processor, parentLog, wsMsg)
-			s.ExecChildren(processor, wrapperLog, wsMsg)
+	} else if s.ExecComm.IsNoExecutableWrapperProcessor(processor) {
+		wrapperLog, _ := s.AddWrapperProcessor(processor, parentLog, wsMsg)
+		s.ExecChildren(processor, wrapperLog, wsMsg)
 
-		}
+	} else if s.ExecComm.IsActionProcessor(processor) {
+		s.ExecActionProcessorAndDisplay(processor, parentLog, wsMsg)
 
-	} else if processor.EntityCategory == consts.ProcessorInterface {
+	} else if s.ExecComm.IsInterfaceProcessor(processor) {
 		s.ExecInterfaceService.ExecInterfaceProcessor(processor, parentLog, wsMsg)
-
-	} else {
-		s.ExecActionProcessorWithResp(processor, parentLog, wsMsg)
 
 	}
 
@@ -126,61 +123,21 @@ func (s *ExecScenarioService) ExecProcessorRecursively(processor *model.Processo
 
 func (s *ExecScenarioService) ExecWrapperProcessor(processor *model.Processor, parentLog *domain.ExecLog,
 	wsMsg *websocket.Message) {
-	wrapperLog, _ := s.GetWrapperProcessorResp(processor, parentLog, wsMsg)
+	wrapperLog, _ := s.GenerateWrapperProcessorLogAndDisplay(processor, parentLog, wsMsg)
 
-	if s.ExecComm.IsLoop(wrapperLog) {
-		s.ExecWrapperLoopProcessor(processor, wrapperLog, wsMsg)
+	if s.ExecComm.IsLoopPass(wrapperLog) {
+		s.ExecWrapperProcessorChildrenForLoop(processor, wrapperLog, wsMsg)
+
+	} else if s.ExecComm.IsDataPass(wrapperLog) {
+		s.ExecWrapperProcessorChildrenForData(processor, wrapperLog, wsMsg)
 
 	} else if s.ExecComm.IsLogicPass(wrapperLog) {
 		s.ExecChildren(processor, wrapperLog, wsMsg)
 
-	} else if s.ExecComm.IsDataPass(wrapperLog) {
-		s.ExecWrapperDataProcessor(processor, wrapperLog, wsMsg)
-
 	}
 }
 
-func (s *ExecScenarioService) ExecActionProcessorWithResp(processor *model.Processor, parentLog *domain.ExecLog, wsMsg *websocket.Message) (
-	wrapperLog *domain.ExecLog, err error) {
-
-	output := domain.ExecOutput{}
-	if processor.EntityCategory == consts.ProcessorTimer {
-		output, _ = s.ExecProcessorService.ExecTimer(processor, parentLog, wsMsg)
-
-	} else if processor.EntityCategory == consts.ProcessorVariable {
-		output, _ = s.ExecProcessorService.ExecVariable(processor, parentLog, wsMsg)
-
-	} else if processor.EntityCategory == consts.ProcessorAssertion {
-		output, _ = s.ExecProcessorService.ExecAssertion(processor, parentLog, wsMsg)
-
-	} else if processor.EntityCategory == consts.ProcessorExtractor {
-		output, _ = s.ExecProcessorService.ExecExtractor(processor, parentLog, wsMsg)
-
-	} else if processor.EntityCategory == consts.ProcessorCookie {
-		output, _ = s.ExecProcessorService.ExecCookie(processor, parentLog, wsMsg)
-
-	} else if processor.EntityType == consts.ProcessorLoopBreak {
-		output, _ = s.ExecProcessorService.ExecLoopBreak(processor, parentLog, wsMsg)
-
-		breakFrom := output.BreakFrom
-		breakIfExpress := output.Expression
-
-		result, err := s.ExecHelperService.ComputerExpress(breakIfExpress, processor.ID)
-		pass, ok := result.(bool)
-		if err == nil && ok && pass {
-			breakMap.Store(breakFrom, true)
-			output.Msg = "真"
-		} else {
-			output.Msg = "假"
-		}
-	}
-
-	wrapperLog, _ = s.wrapperLogAndSendMsg(output, processor, parentLog, wsMsg)
-
-	return
-}
-
-func (s *ExecScenarioService) ExecWrapperLoopProcessor(processor *model.Processor, wrapperLog *domain.ExecLog,
+func (s *ExecScenarioService) ExecWrapperProcessorChildrenForLoop(processor *model.Processor, wrapperLog *domain.ExecLog,
 	wsMsg *websocket.Message) {
 	if s.ExecComm.IsLoopTimesPass(wrapperLog) {
 		iterator, _ := s.ExecIteratorService.GenerateLoopTimes(*wrapperLog)
@@ -271,7 +228,47 @@ func (s *ExecScenarioService) ExecWrapperLoopProcessor(processor *model.Processo
 
 }
 
-func (s *ExecScenarioService) ExecWrapperDataProcessor(processor *model.Processor, wrapperLog *domain.ExecLog,
+func (s *ExecScenarioService) ExecActionProcessorAndDisplay(processor *model.Processor, parentLog *domain.ExecLog, wsMsg *websocket.Message) (
+	wrapperLog *domain.ExecLog, err error) {
+
+	output := domain.ExecOutput{}
+	if processor.EntityCategory == consts.ProcessorTimer {
+		output, _ = s.ExecProcessorService.ExecTimer(processor, parentLog, wsMsg)
+
+	} else if processor.EntityCategory == consts.ProcessorVariable {
+		output, _ = s.ExecProcessorService.ExecVariable(processor, parentLog, wsMsg)
+
+	} else if processor.EntityCategory == consts.ProcessorAssertion {
+		output, _ = s.ExecProcessorService.ExecAssertion(processor, parentLog, wsMsg)
+
+	} else if processor.EntityCategory == consts.ProcessorExtractor {
+		output, _ = s.ExecProcessorService.ExecExtractor(processor, parentLog, wsMsg)
+
+	} else if processor.EntityCategory == consts.ProcessorCookie {
+		output, _ = s.ExecProcessorService.ExecCookie(processor, parentLog, wsMsg)
+
+	} else if processor.EntityType == consts.ProcessorLoopBreak {
+		output, _ = s.ExecProcessorService.ExecLoopBreak(processor, parentLog, wsMsg)
+
+		breakFrom := output.BreakFrom
+		breakIfExpress := output.Expression
+
+		result, err := s.ExecHelperService.ComputerExpress(breakIfExpress, processor.ID)
+		pass, ok := result.(bool)
+		if err == nil && ok && pass {
+			breakMap.Store(breakFrom, true)
+			output.Msg = "真"
+		} else {
+			output.Msg = "假"
+		}
+	}
+
+	wrapperLog, _ = s.wrapperLogAndSendMsg(output, processor, parentLog, wsMsg)
+
+	return
+}
+
+func (s *ExecScenarioService) ExecWrapperProcessorChildrenForData(processor *model.Processor, wrapperLog *domain.ExecLog,
 	wsMsg *websocket.Message) {
 	if s.ExecComm.IsDataPass(wrapperLog) {
 		data, _ := s.ScenarioProcessorRepo.GetData(*processor)
@@ -329,7 +326,7 @@ func (s *ExecScenarioService) AddWrapperProcessor(processor *model.Processor, pa
 	return
 }
 
-func (s *ExecScenarioService) GetWrapperProcessorResp(processor *model.Processor, parentLog *domain.ExecLog, wsMsg *websocket.Message) (
+func (s *ExecScenarioService) GenerateWrapperProcessorLogAndDisplay(processor *model.Processor, parentLog *domain.ExecLog, wsMsg *websocket.Message) (
 	wrapperLog *domain.ExecLog, err error) {
 
 	output := domain.ExecOutput{}

@@ -7,6 +7,28 @@ import (
 	_stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 )
 
+var (
+	executableWrapperProcessors = []string{
+		consts.ProcessorLogic.ToString(),
+		consts.ProcessorLoop.ToString(),
+		consts.ProcessorData.ToString(),
+	}
+
+	noExecutableWrapperProcessors = []string{
+		consts.ProcessorRoot.ToString(),
+		//consts.ProcessorThreadGroup.ToString(),
+		consts.ProcessorGroup.ToString(),
+	}
+
+	actionProcessors = []string{
+		consts.ProcessorTimer.ToString(),
+		consts.ProcessorVariable.ToString(),
+		consts.ProcessorAssertion.ToString(),
+		consts.ProcessorExtractor.ToString(),
+		consts.ProcessorCookie.ToString(),
+	}
+)
+
 type ExecComm struct {
 }
 
@@ -14,7 +36,7 @@ func NewExecHelperService() *ExecComm {
 	return &ExecComm{}
 }
 
-func (s *ExecComm) IsLoop(containerLog *domain.ExecLog) bool {
+func (s *ExecComm) IsLoopPass(containerLog *domain.ExecLog) bool {
 	return containerLog.ProcessorCategory == consts.ProcessorLoop
 }
 func (s *ExecComm) IsLoopTimesPass(containerLog *domain.ExecLog) bool {
@@ -41,36 +63,20 @@ func (s *ExecComm) IsDataPass(containerLog *domain.ExecLog) bool {
 	return containerLog.ProcessorCategory == consts.ProcessorData && containerLog.Output.Url != ""
 }
 
-func (s *ExecComm) IsWrapperProcessor(processor *model.Processor) bool {
-	arr := []string{
-		consts.ProcessorRoot.ToString(),
-		//consts.ProcessorThreadGroup.ToString(),
-		consts.ProcessorGroup.ToString(),
-		consts.ProcessorLogic.ToString(),
-		consts.ProcessorLoop.ToString(),
-		consts.ProcessorData.ToString(),
-	}
-
-	return _stringUtils.FindInArr(processor.EntityCategory.ToString(), arr) && processor.EntityType != consts.ProcessorLoopBreak
+func (s *ExecComm) IsNoExecutableWrapperProcessor(processor *model.Processor) bool {
+	return _stringUtils.FindInArr(processor.EntityCategory.ToString(), noExecutableWrapperProcessors)
 }
 
-func (s *ExecComm) IsExecutableWrapperProcessor(category consts.ProcessorCategory) bool {
-	arr := []string{
-		//consts.ProcessorThreadGroup.ToString(),
-		consts.ProcessorLogic.ToString(),
-		consts.ProcessorLoop.ToString(),
-		consts.ProcessorData.ToString(),
-	}
-	return _stringUtils.FindInArr(category.ToString(), arr)
+func (s *ExecComm) IsExecutableWrapperProcessor(processor *model.Processor) bool {
+	return _stringUtils.FindInArr(processor.EntityCategory.ToString(), executableWrapperProcessors) &&
+		processor.EntityType != consts.ProcessorLoopBreak
 }
 
-func (s *ExecComm) IsActionProcessor(category consts.ProcessorCategory) bool {
-	arr := []string{
-		consts.ProcessorTimer.ToString(),
-		consts.ProcessorVariable.ToString(),
-		consts.ProcessorAssertion.ToString(),
-		consts.ProcessorExtractor.ToString(),
-		consts.ProcessorCookie.ToString(),
-	}
-	return _stringUtils.FindInArr(category.ToString(), arr)
+func (s *ExecComm) IsActionProcessor(processor *model.Processor) bool {
+	return _stringUtils.FindInArr(processor.EntityCategory.ToString(), actionProcessors) ||
+		processor.EntityType == consts.ProcessorLoopBreak
+}
+
+func (s *ExecComm) IsInterfaceProcessor(processor *model.Processor) bool {
+	return processor.EntityCategory == consts.ProcessorInterface
 }

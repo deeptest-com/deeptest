@@ -22,6 +22,7 @@ var (
 
 	actionProcessors = []string{
 		consts.ProcessorTimer.ToString(),
+		consts.ProcessorPrint.ToString(),
 		consts.ProcessorVariable.ToString(),
 		consts.ProcessorAssertion.ToString(),
 		consts.ProcessorExtractor.ToString(),

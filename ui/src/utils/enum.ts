@@ -9,6 +9,7 @@ export enum ProcessorCategory {
     ProcessorCookie = "processor_cookie",
     ProcessorExtractor = "processor_extractor",
     ProcessorTimer = "processor_timer",
+    ProcessorPrint = "processor_print",
     ProcessorAssertion = "processor_assertion",
 }
 
@@ -20,6 +21,9 @@ export enum ProcessorGroup {
 }
 export enum ProcessorTimer {
     Time = "processor_time_default",
+}
+export enum ProcessorPrint {
+    Print = "processor_print_default",
 }
 
 export enum ProcessorLogic {

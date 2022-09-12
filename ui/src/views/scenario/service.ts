@@ -5,7 +5,7 @@ import {
     ProcessorCookie, ProcessorData,
     ProcessorExtractor,
     ProcessorLogic,
-    ProcessorLoop, ProcessorGroup, ProcessorThread, ProcessorTimer,
+    ProcessorLoop, ProcessorGroup, ProcessorThread, ProcessorTimer, ProcessorPrint,
     ProcessorCategory,
     ProcessorVariable, ProcessorAssertion
 } from "@/utils/enum";
@@ -168,6 +168,7 @@ export function getProcessorTypeMap() {
         // processor_thread: getEnumSelectItems(ProcessorThread),
         processor_group: getEnumSelectItems(ProcessorGroup),
         processor_timer: getEnumSelectItems(ProcessorTimer),
+        processor_print: getEnumSelectItems(ProcessorPrint),
         processor_logic: getEnumSelectItems(ProcessorLogic),
 
         processor_loop: getEnumSelectItems(ProcessorLoop),

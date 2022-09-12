@@ -101,6 +101,17 @@ func (ProcessorTimer) TableName() string {
 	return "biz_processor_timer"
 }
 
+type ProcessorPrint struct {
+	BaseModel
+	ProcessorEntity
+
+	Expression string `json:"expression" yaml:"expression"`
+}
+
+func (ProcessorPrint) TableName() string {
+	return "biz_processor_print"
+}
+
 type ProcessorVariable struct {
 	BaseModel
 	ProcessorEntity

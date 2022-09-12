@@ -79,6 +79,7 @@ export default {
     'processor_thread_default':  '线程',
     'processor_group_default':  '分组',
     'processor_time_default':  '计时器',
+    'processor_print_default':  '输出',
 
     'processor_logic_if':  '如果',
     'processor_logic_else':  '否则',

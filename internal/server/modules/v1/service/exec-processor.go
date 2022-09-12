@@ -72,6 +72,15 @@ func (s *ExecProcessorService) ExecTimer(processor *model.Processor, parentLog *
 	return
 }
 
+func (s *ExecProcessorService) ExecPrint(processor *model.Processor, parentLog *domain.ExecLog, msg *websocket.Message) (
+	output domain.ExecOutput, err error) {
+
+	print, err := s.ScenarioProcessorRepo.GetPrint(*processor)
+	output, _ = s.ExecHelperService.ParsePrint(&print, parentLog, msg)
+
+	return
+}
+
 func (s *ExecProcessorService) ExecVariable(processor *model.Processor, parentLog *domain.ExecLog, msg *websocket.Message) (
 	output domain.ExecOutput, err error) {
 

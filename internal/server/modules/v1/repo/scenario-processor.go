@@ -119,6 +119,19 @@ func (r *ScenarioProcessorRepo) GetTimer(processor model.Processor) (ret model.P
 	return
 }
 
+func (r *ScenarioProcessorRepo) GetPrint(processor model.Processor) (ret model.ProcessorPrint, err error) {
+	err = r.DB.Where("processor_id = ?", processor.ID).First(&ret).Error
+
+	if ret.ID == 0 {
+		comm := r.genProcessorComm(processor)
+		copier.CopyWithOption(&ret, comm, copier.Option{DeepCopy: true})
+	} else {
+		ret.Name = processor.Name
+	}
+
+	return
+}
+
 func (r *ScenarioProcessorRepo) GetCookie(processor model.Processor) (ret model.ProcessorCookie, err error) {
 	err = r.DB.Where("processor_id = ?", processor.ID).First(&ret).Error
 
@@ -180,6 +193,14 @@ func (r *ScenarioProcessorRepo) SaveGroup(po *model.ProcessorGroup) (err error) 
 }
 
 func (r *ScenarioProcessorRepo) SaveTimer(po *model.ProcessorTimer) (err error) {
+	err = r.DB.Save(po).Error
+
+	r.UpdateEntityId(po.ProcessorId, po.ID)
+
+	return
+}
+
+func (r *ScenarioProcessorRepo) SavePrint(po *model.ProcessorPrint) (err error) {
 	err = r.DB.Save(po).Error
 
 	r.UpdateEntityId(po.ProcessorId, po.ID)

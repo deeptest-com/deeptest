@@ -5,11 +5,14 @@
     <ProcessorInterfaceDefault v-if="selectedNode.processorType === 'processor_interface_default'" />
     <ProcessorGroupDefault v-if="selectedNode.processorType === 'processor_group_default'" />
     <ProcessorTimerDefault  v-if="selectedNode.processorType === 'processor_time_default'" />
+    <ProcessorPrintDefault  v-if="selectedNode.processorType === 'processor_print_default'" />
 
     <ProcessorLogicIf   v-if="selectedNode.processorType === 'processor_logic_if'" />
     <ProcessorLogicElse v-if="selectedNode.processorType === 'processor_logic_else'" />
 
     <ProcessorLoopTime  v-if="selectedNode.processorType === 'processor_loop_time'" />
+    <ProcessorLoopTime  v-if="selectedNode.processorType === 'processor_loop_time'" />
+
     <ProcessorLoopUntil v-if="selectedNode.processorType === 'processor_loop_until'" />
     <ProcessorLoopIn    v-if="selectedNode.processorType === 'processor_loop_in'" />
     <ProcessorLoopRange v-if="selectedNode.processorType === 'processor_loop_range'" />
@@ -47,6 +50,7 @@ import {StateType as ScenarioStateType} from "../../store";
 import ProcessorGroupDefault from "./proccessors/group/default.vue";
 import ProcessorInterfaceDefault from "./proccessors/interface/default.vue"
 import ProcessorTimerDefault from "./proccessors/timer/default.vue"
+import ProcessorPrintDefault from "./proccessors/print/default.vue"
 
 import ProcessorLogicIf  from "./proccessors/logic/if.vue"
 import ProcessorLogicElse from "./proccessors/logic/else.vue"

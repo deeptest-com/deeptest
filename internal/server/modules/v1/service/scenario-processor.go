@@ -31,6 +31,9 @@ func (s *ScenarioProcessorService) Get(processorId int) (ret interface{}, err er
 	} else if processor.EntityCategory == consts.ProcessorTimer {
 		ret, _ = s.ScenarioProcessorRepo.GetTimer(processor)
 
+	} else if processor.EntityCategory == consts.ProcessorPrint {
+		ret, _ = s.ScenarioProcessorRepo.GetPrint(processor)
+
 	} else if processor.EntityCategory == consts.ProcessorCookie {
 		ret, _ = s.ScenarioProcessorRepo.GetCookie(processor)
 
@@ -60,6 +63,11 @@ func (s *ScenarioProcessorService) SaveGroup(req *model.ProcessorGroup) (err err
 
 func (s *ScenarioProcessorService) SaveTimer(req *model.ProcessorTimer) (err error) {
 	err = s.ScenarioProcessorRepo.SaveTimer(req)
+	return
+}
+
+func (s *ScenarioProcessorService) SavePrint(req *model.ProcessorPrint) (err error) {
+	err = s.ScenarioProcessorRepo.SavePrint(req)
 	return
 }
 

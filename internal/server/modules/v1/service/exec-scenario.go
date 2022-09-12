@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/business"
@@ -247,6 +248,23 @@ func (s *ExecScenarioService) ExecActionProcessorAndDisplay(processor *model.Pro
 	} else if processor.EntityCategory == consts.ProcessorTimer {
 		output, _ = s.ExecProcessorService.ExecTimer(processor, parentLog, wsMsg)
 		<-time.After(time.Duration(output.SleepTime) * time.Second)
+
+	} else if processor.EntityCategory == consts.ProcessorPrint {
+		output, _ = s.ExecProcessorService.ExecPrint(processor, parentLog, wsMsg)
+
+		expression := s.ExecHelperService.ReplaceVariablesWithVerbs(output.Expression)
+		variables := s.ExecHelperService.GetVariables(output.Expression)
+
+		variableValues := make([]interface{}, 0)
+		for _, name := range variables {
+			val, err1 := s.ExecHelperService.GetVariableValueByName(processor.ID, name)
+			if err1 != nil {
+				val = "空"
+			}
+			variableValues = append(variableValues, val)
+		}
+
+		output.Msg = fmt.Sprintf(expression, variableValues...)
 
 	} else if processor.EntityType == consts.ProcessorLoopBreak {
 		output, _ = s.ExecProcessorService.ExecLoopBreak(processor, parentLog, wsMsg)

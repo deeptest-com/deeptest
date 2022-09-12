@@ -133,6 +133,14 @@ func (s *ExecHelperService) ParseTimer(processor *model.ProcessorTimer, parentLo
 	return
 }
 
+func (s *ExecHelperService) ParsePrint(processor *model.ProcessorPrint, parentLog *domain.ExecLog, msg *websocket.Message) (
+	output domain.ExecOutput, err error) {
+
+	output.Expression = processor.Expression
+
+	return
+}
+
 func (s *ExecHelperService) ParseVariable(processor *model.ProcessorVariable, parentLog *domain.ExecLog, msg *websocket.Message) (
 	output domain.ExecOutput, err error) {
 
@@ -270,7 +278,7 @@ func (s *ExecHelperService) ComputerExpress(expression string, scopeId uint) (re
 func (s *ExecHelperService) generateParams(expression string, scopeId uint) (ret map[string]interface{}, err error) {
 	ret = make(map[string]interface{}, 8)
 
-	variables := getVariables(expression)
+	variables := s.GetVariables(expression)
 
 	for _, variableName := range variables {
 		var vari domain.ExecVariable
@@ -283,7 +291,7 @@ func (s *ExecHelperService) generateParams(expression string, scopeId uint) (ret
 	return
 }
 
-func getVariables(expression string) (ret []string) {
+func (s *ExecHelperService) GetVariables(expression string) (ret []string) {
 	re := regexp.MustCompile("(?siU)\\${(.*)}")
 	matchResultArr := re.FindAllStringSubmatch(expression, -1)
 
@@ -291,6 +299,13 @@ func getVariables(expression string) (ret []string) {
 		variableName := childArr[1]
 		ret = append(ret, variableName)
 	}
+
+	return
+}
+
+func (s *ExecHelperService) ReplaceVariablesWithVerbs(expression string) (ret string) {
+	regx := regexp.MustCompile("(?siU)(\\${.*})")
+	ret = regx.ReplaceAllString(expression, "%v")
 
 	return
 }

@@ -317,18 +317,19 @@ func (e ResultStatus) String() string {
 type ProcessorCategory string
 
 const (
-	ProcessorRoot ProcessorCategory = "processor_root" // done
+	ProcessorRoot ProcessorCategory = "processor_root"
 	//ProcessorThreadGroup ProcessorCategory = "processor_thread_group"
-	ProcessorInterface ProcessorCategory = "processor_interface" // done
-	ProcessorGroup     ProcessorCategory = "processor_group"     // done
-	ProcessorLogic     ProcessorCategory = "processor_logic"     // done
-	ProcessorLoop      ProcessorCategory = "processor_loop"      // done
-	ProcessorTimer     ProcessorCategory = "processor_timer"     // done
-	ProcessorVariable  ProcessorCategory = "processor_variable"  // done
-	ProcessorAssertion ProcessorCategory = "processor_assertion" // done
+	ProcessorInterface ProcessorCategory = "processor_interface"
+	ProcessorGroup     ProcessorCategory = "processor_group"
+	ProcessorLogic     ProcessorCategory = "processor_logic"
+	ProcessorLoop      ProcessorCategory = "processor_loop"
+	ProcessorTimer     ProcessorCategory = "processor_timer"
+	ProcessorPrint     ProcessorCategory = "processor_print"
+	ProcessorVariable  ProcessorCategory = "processor_variable"
+	ProcessorAssertion ProcessorCategory = "processor_assertion"
 	ProcessorExtractor ProcessorCategory = "processor_extractor"
 
-	ProcessorCookie ProcessorCategory = "processor_cookie" // done
+	ProcessorCookie ProcessorCategory = "processor_cookie"
 	ProcessorData   ProcessorCategory = "processor_data"
 )
 
@@ -343,6 +344,7 @@ const (
 	ProcessorInterfaceDefault ProcessorType = "processor_interface_default"
 	ProcessorGroupDefault     ProcessorType = "processor_group_default"
 	ProcessorTimerDefault     ProcessorType = "processor_timer_default"
+	ProcessorPrintDefault     ProcessorType = "processor_print_default"
 
 	ProcessorLogicIf   ProcessorType = "processor_logic_if"
 	ProcessorLogicElse ProcessorType = "processor_logic_else"

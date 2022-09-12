@@ -2,10 +2,10 @@ export enum ProcessorCategory {
     ProcessorThread = "processor_thread",
     ProcessorGroup = "processor_group",
     ProcessorInterface = "processor_interface",
-    ProcessorLogic = "processor_logic",
     ProcessorLoop = "processor_loop",
-    ProcessorTimer = "processor_timer",
+    ProcessorLogic = "processor_logic",
     ProcessorVariable  = "processor_variable",
+    ProcessorTimer = "processor_timer",
     ProcessorAssertion = "processor_assertion",
     ProcessorExtractor = "processor_extractor",
 

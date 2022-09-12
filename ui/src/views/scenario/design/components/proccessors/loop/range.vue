@@ -81,7 +81,7 @@ const submitForm = async () => {
 
 onMounted(() => {
   console.log('onMounted')
-  if (!modelRef.value.range) modelRef.value.range = ''
+  if (!modelRef.value.step) modelRef.value.step = 1
 })
 
 onUnmounted(() => {

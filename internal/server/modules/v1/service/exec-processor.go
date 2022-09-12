@@ -1,6 +1,7 @@
 package service
 
 import (
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/business"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
@@ -17,6 +18,7 @@ type ExecProcessorService struct {
 	InterfaceService      *InterfaceService           `inject:""`
 	ExecRequestService    *business.ExecRequest       `inject:""`
 	ExecHelperService     *ExecHelperService          `inject:""`
+	ExecContext           *business.ExecContext       `inject:""`
 }
 
 //func (s *ExecLogService) ExecThreadGroup(processor model.Processor, log *domain.ExecLog, msg websocket.Message) (
@@ -75,6 +77,13 @@ func (s *ExecProcessorService) ExecVariable(processor *model.Processor, parentLo
 
 	variable, err := s.ScenarioProcessorRepo.GetVariable(*processor)
 	output, _ = s.ExecHelperService.ParseVariable(&variable, parentLog, msg)
+
+	if variable.ProcessorType == consts.ProcessorVariableSet {
+		s.ExecContext.SetVariable(parentLog.ProcessId, output.VariableName, output.VariableValue) // set in parent scope
+
+	} else if variable.ProcessorType == consts.ProcessorVariableClear {
+		s.ExecContext.ClearVariable(parentLog.ProcessId, output.VariableName) // set in parent scope
+	}
 
 	return
 }

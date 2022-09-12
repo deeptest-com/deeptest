@@ -136,23 +136,22 @@ func (s *ExecHelperService) ParseTimer(processor *model.ProcessorTimer, parentLo
 func (s *ExecHelperService) ParseVariable(processor *model.ProcessorVariable, parentLog *domain.ExecLog, msg *websocket.Message) (
 	output domain.ExecOutput, err error) {
 
-	variableName := processor.VariableName
+	output.VariableName = processor.VariableName
 	expression := processor.RightValue
 	typ := processor.ProcessorType
 
 	if typ == consts.ProcessorVariableSet {
-		var variableValue interface{}
-		variableValue, err = s.ComputerExpress(expression, processor.ProcessorId)
+		output.VariableValue, err = s.ComputerExpress(expression, processor.ProcessorId)
 		if err != nil {
 			output.Msg = fmt.Sprintf("计算表达式子错误 %s。", err.Error())
 			return
 		}
 
-		s.ExecContext.SetVariable(parentLog.ProcessId, variableName, variableValue) // set in parent scope
-		output.Msg = fmt.Sprintf("%s为%v。", variableName, variableValue)
+		output.Msg = fmt.Sprintf("%s为%v。", output.VariableName, output.VariableValue)
+
 	} else if typ == consts.ProcessorVariableClear {
-		s.ExecContext.ClearVariable(parentLog.ProcessId, variableName) // set in parent scope
-		output.Msg = fmt.Sprintf("%s。", variableName)
+		s.ExecContext.ClearVariable(parentLog.ProcessId, output.VariableName) // set in parent scope
+		output.Msg = fmt.Sprintf("%s。", output.VariableName)
 	}
 
 	return

@@ -139,6 +139,9 @@ type ExecOutput struct {
 	BoundaryIncluded bool   `json:"boundaryIncluded"`
 	Variable         string `json:"variable"`
 
+	// variable
+	VariableValue interface{} `json:"variableValue"`
+
 	// common
 	Msg string `json:"msg,omitempty"`
 }

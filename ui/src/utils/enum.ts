@@ -4,13 +4,12 @@ export enum ProcessorCategory {
     ProcessorInterface = "processor_interface",
     ProcessorLoop = "processor_loop",
     ProcessorLogic = "processor_logic",
+    ProcessorData = "processor_data",
     ProcessorVariable  = "processor_variable",
+    ProcessorCookie = "processor_cookie",
+    ProcessorExtractor = "processor_extractor",
     ProcessorTimer = "processor_timer",
     ProcessorAssertion = "processor_assertion",
-    ProcessorExtractor = "processor_extractor",
-
-    ProcessorCookie = "processor_cookie",
-    ProcessorData = "processor_data",
 }
 
 export enum ProcessorThread {

@@ -48,9 +48,8 @@ func (s *ExecContext) GetVariable(scopeId uint, variableName string) (variable d
 	if variableName == "var1" {
 		logUtils.Info("")
 	}
-	effectiveScopeIds := ScopeHierarchy[scopeId]
 
-	for _, id := range *effectiveScopeIds {
+	for _, id := range *ScopeHierarchy[scopeId] {
 		for _, item := range ScopedVariables[id] {
 			if item.Name == variableName {
 				variable = item
@@ -76,12 +75,14 @@ func (s *ExecContext) SetVariable(scopeId uint, variableName string, variableVal
 		Value: variableValue,
 	}
 
-	for i := 0; i < len(ScopedVariables[scopeId]); i++ {
-		if ScopedVariables[scopeId][i].Name == variableName {
-			ScopedVariables[scopeId][i] = newVariable
+	for _, id := range *ScopeHierarchy[scopeId] {
+		for i := 0; i < len(ScopedVariables[id]); i++ {
+			if ScopedVariables[id][i].Name == variableName {
+				ScopedVariables[id][i] = newVariable
 
-			found = true
-			break
+				found = true
+				break
+			}
 		}
 	}
 
@@ -94,30 +95,36 @@ func (s *ExecContext) SetVariable(scopeId uint, variableName string, variableVal
 
 func (s *ExecContext) ClearVariable(scopeId uint, variableName string) (err error) {
 	deleteIndex := -1
-	for index, item := range ScopedVariables[scopeId] {
-		if item.Name == variableName {
-			deleteIndex = index
-			break
+
+	tagertScopeId := uint(0)
+	for _, id := range *ScopeHierarchy[scopeId] {
+		for index, item := range ScopedVariables[id] {
+			if item.Name == variableName {
+				deleteIndex = index
+				tagertScopeId = id
+				break
+			}
 		}
 	}
 
 	if deleteIndex > -1 {
 		ScopedVariables[scopeId] = append(
-			ScopedVariables[scopeId][:deleteIndex], ScopedVariables[scopeId][(deleteIndex+1):]...)
+			ScopedVariables[tagertScopeId][:deleteIndex], ScopedVariables[scopeId][(deleteIndex+1):]...)
 	}
 
 	return
 }
 
 func (s *ExecContext) ListCookie(scopeId uint) (cookies []domain.ExecCookie) {
-	cookies = ScopedCookies[scopeId]
+	for _, id := range *ScopeHierarchy[scopeId] {
+		cookies = append(cookies, ScopedCookies[id]...)
+	}
+
 	return
 }
 
 func (s *ExecContext) GetCookie(scopeId uint, cookieName, domain string) (cookie domain.ExecCookie) {
-	effectiveScopeIds := ScopeHierarchy[scopeId]
-
-	for _, id := range *effectiveScopeIds {
+	for _, id := range *ScopeHierarchy[scopeId] {
 		for _, item := range ScopedCookies[id] {
 			if item.Name == cookieName && item.Domain == domain && item.ExpireTime.Unix() > time.Now().Unix() {
 				cookie = item

@@ -152,10 +152,10 @@ func (s *ExecHelperService) HandleVariable(processor *model.ProcessorVariable, p
 		}
 
 		s.ExecContext.SetVariable(parentLog.ProcessId, variableName, variableValue) // set in parent scope
-		output.Msg = fmt.Sprintf("设置变量%s为%v。", variableName, variableValue)
+		output.Msg = fmt.Sprintf("%s为%v。", variableName, variableValue)
 	} else if typ == consts.ProcessorVariableClear {
 		s.ExecContext.ClearVariable(parentLog.ProcessId, variableName) // set in parent scope
-		output.Msg = fmt.Sprintf("清除变量%s。", variableName)
+		output.Msg = fmt.Sprintf("%s。", variableName)
 	}
 
 	return

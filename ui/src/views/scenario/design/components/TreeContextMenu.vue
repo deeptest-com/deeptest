@@ -8,7 +8,7 @@
             <span>新建处理器</span>
           </template>
 
-          <template v-for="(category) in processorTypes" :key="category.value">
+          <template v-for="(category) in processorCategories" :key="category.value">
             <TreeContextSubMenu
                 :processorTypes="processorTypeMap[category.label]"
                 :category="category"
@@ -29,7 +29,7 @@
             <FolderAddOutlined />
             <span>新建处理器</span>
           </template>
-          <template v-for="(category) in processorTypes" :key="category.value">
+          <template v-for="(category) in processorCategories" :key="category.value">
             <TreeContextSubMenu
                 :processorTypes="processorTypeMap[category.label]"
                 :category="category"
@@ -49,7 +49,7 @@
             <FolderAddOutlined />
             <span>新建父处理器</span>
           </template>
-          <template v-for="(category) in processorTypes" :key="category.value">
+          <template v-for="(category) in processorCategories" :key="category.value">
             <TreeContextSubMenu
                 :processorTypes="processorTypeMap[category.label]"
                 :category="category"
@@ -92,7 +92,7 @@ const props = defineProps<{
 
 const {t} = useI18n();
 
-const processorTypes = getProcessorCategories()
+const processorCategories = getProcessorCategories()
 const processorTypeMap = getProcessorTypeMap()
 
 const menuClick = (e) => {

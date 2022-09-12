@@ -16,6 +16,8 @@
         <div class="opt">
           <a-button v-if="execResult.progressStatus !== 'in_progress'" @click="execStart" type="link">开始执行</a-button>
           <a-button v-if="execResult.progressStatus === 'in_progress'" @click="execCancel" type="link">停止执行</a-button>
+
+          <a-button @click="design" type="link">返回设计</a-button>
         </div>
       </div>
 
@@ -100,6 +102,11 @@ const execCancel = () => {
   console.log('execCancel')
   const msg = {act: 'stop', id: scenarioId.value}
   WebSocket.sentMsg(settings.webSocketRoom, JSON.stringify(msg))
+}
+
+const design = () => {
+  console.log('design')
+  router.push(`/scenario/design/${scenarioId.value}`)
 }
 
 onMounted(() => {
@@ -208,7 +215,7 @@ const OnWebSocketMsg = (data: any) => {
       padding: 0px 12px;
     }
     .result {
-      padding: 6px 12px;
+      padding: 5px 12px 6px 12px;
       .ant-row {
         margin: 6px 0;
       }

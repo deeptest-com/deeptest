@@ -187,7 +187,11 @@ const joinArr = (arr : string[]) => {
 <style lang="less" scoped>
 .scenario-exec-log-main {
   height: 100%;
-  padding: 10px;
+  padding: 5px 10px 0px 10px;
+
+  .log {
+    padding-top: 8px;
+  }
 
   .editor-wrapper {
     height: calc(100% - 30px);
@@ -197,7 +201,6 @@ const joinArr = (arr : string[]) => {
       height: 100%;
     }
   }
-
 
   .resp-content {
     .section {

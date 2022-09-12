@@ -7,6 +7,10 @@
     <div id="scenario-design-splitter" class="splitter"></div>
 
     <div id="scenario-design-right" class="right">
+      <div class="right-toolbar">
+        <a-button @click="exec" type="link">执行接口</a-button>
+      </div>
+
       <Edit></Edit>
     </div>
   </div>
@@ -48,6 +52,10 @@ watch(collapsed, () => {
   resize()
 }, {deep: true})
 
+const exec = () => {
+  router.push(`/scenario/exec/${id.value}`)
+}
+
 const resize = () => {
   resizeWidth('scenario-design-main',
       'scenario-design-left', 'scenario-design-splitter', 'scenario-design-right',
@@ -63,6 +71,9 @@ const resize = () => {
   }
   .right {
     flex: 1;
+    .right-toolbar {
+      text-align: right;
+    }
   }
 }
 </style>

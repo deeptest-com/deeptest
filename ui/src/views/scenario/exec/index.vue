@@ -6,9 +6,9 @@
 
     <div id="scenario-exec-splitter" class="splitter"></div>
 
-    <div id="scenario-exec-right" class="right">
+<!--    <div id="scenario-exec-right" class="right">
       <ScenarioExecDetail />
-    </div>
+    </div>-->
   </div>
 </template>
 

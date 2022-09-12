@@ -232,10 +232,7 @@ func (s *ExecScenarioService) ExecActionProcessorAndDisplay(processor *model.Pro
 	containerLog *domain.ExecLog, err error) {
 
 	output := domain.ExecOutput{}
-	if processor.EntityCategory == consts.ProcessorTimer {
-		output, _ = s.ExecProcessorService.ExecTimer(processor, parentLog, wsMsg)
-
-	} else if processor.EntityCategory == consts.ProcessorVariable {
+	if processor.EntityCategory == consts.ProcessorVariable {
 		output, _ = s.ExecProcessorService.ExecVariable(processor, parentLog, wsMsg)
 
 	} else if processor.EntityCategory == consts.ProcessorAssertion {
@@ -246,6 +243,10 @@ func (s *ExecScenarioService) ExecActionProcessorAndDisplay(processor *model.Pro
 
 	} else if processor.EntityCategory == consts.ProcessorCookie {
 		output, _ = s.ExecProcessorService.ExecCookie(processor, parentLog, wsMsg)
+
+	} else if processor.EntityCategory == consts.ProcessorTimer {
+		output, _ = s.ExecProcessorService.ExecTimer(processor, parentLog, wsMsg)
+		<-time.After(time.Duration(output.SleepTime) * time.Second)
 
 	} else if processor.EntityType == consts.ProcessorLoopBreak {
 		output, _ = s.ExecProcessorService.ExecLoopBreak(processor, parentLog, wsMsg)

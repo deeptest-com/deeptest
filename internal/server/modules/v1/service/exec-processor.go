@@ -30,7 +30,7 @@ func (s *ExecProcessorService) ExecLogic(processor *model.Processor, parentLog *
 	output domain.ExecOutput, err error) {
 
 	logic, err := s.ScenarioProcessorRepo.GetLogic(*processor)
-	output, _ = s.ExecHelperService.HandleLogic(&logic, parentLog, msg)
+	output, _ = s.ExecHelperService.ParseLogic(&logic, parentLog, msg)
 
 	return
 }
@@ -39,7 +39,7 @@ func (s *ExecProcessorService) ExecLoop(processor *model.Processor, parentLog *d
 	output domain.ExecOutput, err error) {
 
 	loop, err := s.ScenarioProcessorRepo.GetLoop(*processor)
-	output, _ = s.ExecHelperService.HandleLoop(&loop, parentLog, msg)
+	output, _ = s.ExecHelperService.ParseLoop(&loop, parentLog, msg)
 
 	return
 }
@@ -47,7 +47,7 @@ func (s *ExecProcessorService) ExecLoopBreak(processor *model.Processor, parentL
 	output domain.ExecOutput, err error) {
 
 	loop, err := s.ScenarioProcessorRepo.GetLoop(*processor)
-	output, _ = s.ExecHelperService.HandleLoopBreak(&loop, parentLog, msg)
+	output, _ = s.ExecHelperService.ParseLoopBreak(&loop, parentLog, msg)
 
 	return
 }
@@ -56,7 +56,7 @@ func (s *ExecProcessorService) ExecData(processor *model.Processor, parentLog *d
 	output domain.ExecOutput, err error) {
 
 	data, err := s.ScenarioProcessorRepo.GetData(*processor)
-	output, _ = s.ExecHelperService.HandleData(&data, parentLog, msg)
+	output, _ = s.ExecHelperService.ParseData(&data, parentLog, msg)
 
 	return
 }
@@ -65,7 +65,7 @@ func (s *ExecProcessorService) ExecTimer(processor *model.Processor, parentLog *
 	output domain.ExecOutput, err error) {
 
 	timer, err := s.ScenarioProcessorRepo.GetTimer(*processor)
-	output, _ = s.ExecHelperService.HandleTimer(&timer, parentLog, msg)
+	output, _ = s.ExecHelperService.ParseTimer(&timer, parentLog, msg)
 
 	return
 }
@@ -74,7 +74,7 @@ func (s *ExecProcessorService) ExecVariable(processor *model.Processor, parentLo
 	output domain.ExecOutput, err error) {
 
 	variable, err := s.ScenarioProcessorRepo.GetVariable(*processor)
-	output, _ = s.ExecHelperService.HandleVariable(&variable, parentLog, msg)
+	output, _ = s.ExecHelperService.ParseVariable(&variable, parentLog, msg)
 
 	return
 }
@@ -83,7 +83,7 @@ func (s *ExecProcessorService) ExecAssertion(processor *model.Processor, parentL
 	output domain.ExecOutput, err error) {
 
 	assertion, err := s.ScenarioProcessorRepo.GetAssertion(*processor)
-	output, _ = s.ExecHelperService.HandleAssertion(&assertion, parentLog, msg)
+	output, _ = s.ExecHelperService.ParseAssertion(&assertion, parentLog, msg)
 
 	return
 }
@@ -92,7 +92,7 @@ func (s *ExecProcessorService) ExecExtractor(processor *model.Processor, parentL
 	output domain.ExecOutput, err error) {
 
 	extractor, err := s.ScenarioProcessorRepo.GetExtractor(*processor)
-	output, _ = s.ExecHelperService.HandleExtractor(&extractor, parentLog, msg)
+	output, _ = s.ExecHelperService.ParseExtractor(&extractor, parentLog, msg)
 
 	return
 }
@@ -101,7 +101,7 @@ func (s *ExecProcessorService) ExecCookie(processor *model.Processor, parentLog 
 	output domain.ExecOutput, err error) {
 
 	cookie, err := s.ScenarioProcessorRepo.GetCookie(*processor)
-	output, _ = s.ExecHelperService.HandleCookie(&cookie, parentLog, msg)
+	output, _ = s.ExecHelperService.ParseCookie(&cookie, parentLog, msg)
 
 	return
 }

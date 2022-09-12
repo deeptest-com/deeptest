@@ -13,7 +13,6 @@ import (
 	"github.com/jinzhu/copier"
 	"github.com/kataras/iris/v12/websocket"
 	"regexp"
-	"time"
 )
 
 type ExecHelperService struct {
@@ -34,7 +33,7 @@ type ExecHelperService struct {
 //	return
 //}
 
-func (s *ExecHelperService) HandleLogic(logic *model.ProcessorLogic, parentLog *domain.ExecLog, msg *websocket.Message) (
+func (s *ExecHelperService) ParseLogic(logic *model.ProcessorLogic, parentLog *domain.ExecLog, msg *websocket.Message) (
 	output domain.ExecOutput, err error) {
 	if logic.ID == 0 {
 		output.Msg = "执行前请先配置处理器。"
@@ -71,7 +70,7 @@ func (s *ExecHelperService) HandleLogic(logic *model.ProcessorLogic, parentLog *
 	return
 }
 
-func (s *ExecHelperService) HandleLoop(loop *model.ProcessorLoop, parentLog *domain.ExecLog, msg *websocket.Message) (
+func (s *ExecHelperService) ParseLoop(loop *model.ProcessorLoop, parentLog *domain.ExecLog, msg *websocket.Message) (
 	output domain.ExecOutput, err error) {
 
 	if loop.ID == 0 {
@@ -101,7 +100,7 @@ func (s *ExecHelperService) HandleLoop(loop *model.ProcessorLoop, parentLog *dom
 	return
 }
 
-func (s *ExecHelperService) HandleLoopBreak(loop *model.ProcessorLoop, parentLog *domain.ExecLog, msg *websocket.Message) (
+func (s *ExecHelperService) ParseLoopBreak(loop *model.ProcessorLoop, parentLog *domain.ExecLog, msg *websocket.Message) (
 	output domain.ExecOutput, err error) {
 
 	if loop.ID == 0 {
@@ -116,7 +115,7 @@ func (s *ExecHelperService) HandleLoopBreak(loop *model.ProcessorLoop, parentLog
 	return
 }
 
-func (s *ExecHelperService) HandleData(data *model.ProcessorData, parentLog *domain.ExecLog, msg *websocket.Message) (
+func (s *ExecHelperService) ParseData(data *model.ProcessorData, parentLog *domain.ExecLog, msg *websocket.Message) (
 	output domain.ExecOutput, err error) {
 	output.Url = data.Url
 
@@ -125,18 +124,16 @@ func (s *ExecHelperService) HandleData(data *model.ProcessorData, parentLog *dom
 	return
 }
 
-func (s *ExecHelperService) HandleTimer(processor *model.ProcessorTimer, parentLog *domain.ExecLog, msg *websocket.Message) (
+func (s *ExecHelperService) ParseTimer(processor *model.ProcessorTimer, parentLog *domain.ExecLog, msg *websocket.Message) (
 	output domain.ExecOutput, err error) {
 
 	output.SleepTime = processor.SleepTime
-	<-time.After(time.Duration(output.SleepTime) * time.Second)
-
 	output.Msg = fmt.Sprintf("等待%d秒。", output.SleepTime)
 
 	return
 }
 
-func (s *ExecHelperService) HandleVariable(processor *model.ProcessorVariable, parentLog *domain.ExecLog, msg *websocket.Message) (
+func (s *ExecHelperService) ParseVariable(processor *model.ProcessorVariable, parentLog *domain.ExecLog, msg *websocket.Message) (
 	output domain.ExecOutput, err error) {
 
 	variableName := processor.VariableName
@@ -161,7 +158,7 @@ func (s *ExecHelperService) HandleVariable(processor *model.ProcessorVariable, p
 	return
 }
 
-func (s *ExecHelperService) HandleAssertion(processor *model.ProcessorAssertion, parentLog *domain.ExecLog, msg *websocket.Message) (
+func (s *ExecHelperService) ParseAssertion(processor *model.ProcessorAssertion, parentLog *domain.ExecLog, msg *websocket.Message) (
 	output domain.ExecOutput, err error) {
 
 	expression := processor.Expression
@@ -178,7 +175,7 @@ func (s *ExecHelperService) HandleAssertion(processor *model.ProcessorAssertion,
 	return
 }
 
-func (s *ExecHelperService) HandleExtractor(extractor *model.ProcessorExtractor, parentLog *domain.ExecLog, msg *websocket.Message) (
+func (s *ExecHelperService) ParseExtractor(extractor *model.ProcessorExtractor, parentLog *domain.ExecLog, msg *websocket.Message) (
 	output domain.ExecOutput, err error) {
 
 	brother, ok := getPreviousBrother(*parentLog)
@@ -204,7 +201,7 @@ func (s *ExecHelperService) HandleExtractor(extractor *model.ProcessorExtractor,
 	return
 }
 
-func (s *ExecHelperService) HandleCookie(processor *model.ProcessorCookie, parentLog *domain.ExecLog, msg *websocket.Message) (
+func (s *ExecHelperService) ParseCookie(processor *model.ProcessorCookie, parentLog *domain.ExecLog, msg *websocket.Message) (
 	output domain.ExecOutput, err error) {
 
 	cookieName := processor.CookieName

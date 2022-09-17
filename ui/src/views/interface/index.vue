@@ -14,9 +14,6 @@
 
 <script lang="ts">
 import {computed, defineComponent, onMounted, onUnmounted, Ref, ref, watch} from "vue";
-import {useRouter} from "vue-router";
-
-import {Form} from "ant-design-vue";
 
 import InterfaceDesigner from './components/Designer.vue';
 import {resizeWidth} from "@/utils/dom";
@@ -24,6 +21,7 @@ import InterfaceTree from "./components/Tree.vue"
 import {useStore} from "vuex";
 import {StateType as GlobalStateType} from "@/store/global";
 import {StateType as UserStateType} from "@/store/user";
+import {StateType as ProjectStateType} from "@/store/project";
 
 export default defineComponent({
   name: 'InterfaceIndexPage',
@@ -31,10 +29,9 @@ export default defineComponent({
     InterfaceTree, InterfaceDesigner,
   },
   setup() {
-    const router = useRouter();
-    const store = useStore<{ Global: GlobalStateType; User: UserStateType; }>();
-
+    const store = useStore<{ Global: GlobalStateType, User: UserStateType, ProjectData: ProjectStateType}>();
     const collapsed = computed<boolean>(()=> store.state.Global.collapsed);
+    const currProject = computed<any>(() => store.state.ProjectData.currProject);
 
     onMounted(() => {
       console.log('onMounted')

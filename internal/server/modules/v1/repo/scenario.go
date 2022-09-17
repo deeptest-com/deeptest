@@ -21,10 +21,10 @@ func NewScenarioRepo() *ScenarioRepo {
 	return &ScenarioRepo{}
 }
 
-func (r *ScenarioRepo) Paginate(req serverDomain.ScenarioReqPaginate) (data _domain.PageData, err error) {
+func (r *ScenarioRepo) Paginate(req serverDomain.ScenarioReqPaginate, projectId int) (data _domain.PageData, err error) {
 	var count int64
 
-	db := r.DB.Model(&model.Scenario{}).Where("NOT deleted")
+	db := r.DB.Model(&model.Scenario{}).Where("project_id = ? AND NOT deleted", projectId)
 
 	if req.Keywords != "" {
 		db = db.Where("name LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords))

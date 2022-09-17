@@ -19,6 +19,12 @@ type ScenarioCtrl struct {
 }
 
 func (c *ScenarioCtrl) List(ctx iris.Context) {
+	projectId, err := ctx.URLParamInt("currProjectId")
+	if projectId == 0 {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: "projectId"})
+		return
+	}
+
 	var req serverDomain.ScenarioReqPaginate
 	if err := ctx.ReadQuery(&req); err != nil {
 		errs := validate.ValidRequest(err)
@@ -30,7 +36,7 @@ func (c *ScenarioCtrl) List(ctx iris.Context) {
 	}
 	req.ConvertParams()
 
-	data, err := c.ScenarioService.Paginate(req)
+	data, err := c.ScenarioService.Paginate(req, projectId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
 		return

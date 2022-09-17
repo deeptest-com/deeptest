@@ -13,8 +13,9 @@ import (
 )
 
 type ProjectRepo struct {
-	DB       *gorm.DB  `inject:""`
-	RoleRepo *RoleRepo `inject:""`
+	DB              *gorm.DB         `inject:""`
+	RoleRepo        *RoleRepo        `inject:""`
+	ProjectRoleRepo *ProjectRoleRepo `inject:""`
 }
 
 func NewProjectRepo() *ProjectRepo {
@@ -78,7 +79,7 @@ func (r *ProjectRepo) FindByName(projectName string, id uint) (project serverDom
 	return
 }
 
-func (r *ProjectRepo) Create(req serverDomain.ProjectReq) (id uint, bizErr *_domain.BizErr) {
+func (r *ProjectRepo) Create(req serverDomain.ProjectReq, userId uint) (id uint, bizErr *_domain.BizErr) {
 	po, err := r.FindByName(req.Name, 0)
 	if po.Name != "" {
 		bizErr.Code = _domain.ErrNameExist.Code
@@ -92,6 +93,18 @@ func (r *ProjectRepo) Create(req serverDomain.ProjectReq) (id uint, bizErr *_dom
 		logUtils.Errorf("add project error", zap.String("error:", err.Error()))
 		bizErr.Code = _domain.ErrComm.Code
 
+		return
+	}
+
+	err = r.AddProjectMember(project.ID, userId)
+	if err != nil {
+		logUtils.Errorf("添加项目角色错误", zap.String("错误:", err.Error()))
+		return
+	}
+
+	err = r.AddProjectRootInterface(project.ID)
+	if err != nil {
+		logUtils.Errorf("添加接口错误", zap.String("错误:", err.Error()))
 		return
 	}
 
@@ -171,7 +184,7 @@ func (r *ProjectRepo) ListProjectByUser(userId uint) (projects []model.Project, 
 		Select("project_id").Where("user_id = ?", userId).Scan(&projectIds)
 
 	err = r.DB.Model(&model.Project{}).
-		Where("id IN (?)", projectIds).
+		Where("NOT deleted AND id IN (?)", projectIds).
 		Find(&projects).Error
 
 	return
@@ -187,6 +200,28 @@ func (r *ProjectRepo) GetCurrProjectByUser(userId uint) (currProject model.Proje
 	err = r.DB.Model(&model.Project{}).
 		Where("id = ?", user.Profile.CurrProjectId).
 		First(&currProject).Error
+
+	return
+}
+
+func (r *ProjectRepo) ChangeProject(projectId, userId uint) (err error) {
+	err = r.DB.Model(&model.SysUserProfile{}).Where("user_id = ?", userId).
+		Updates(map[string]interface{}{"curr_project_id": projectId}).Error
+
+	return
+}
+
+func (r *ProjectRepo) AddProjectMember(projectId, userId uint) (err error) {
+	projectRole, _ := r.ProjectRoleRepo.GetFirstOne()
+	projectMember := model.ProjectMember{UserId: userId, ProjectId: projectId, ProjectRoleId: projectRole.ID}
+	err = r.DB.Create(&projectMember).Error
+
+	return
+}
+
+func (r *ProjectRepo) AddProjectRootInterface(projectId uint) (err error) {
+	interf := model.Interface{Name: "所有接口", ProjectId: projectId, IsDir: true}
+	err = r.DB.Create(&interf).Error
 
 	return
 }

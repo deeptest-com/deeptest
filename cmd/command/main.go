@@ -4,6 +4,7 @@ import (
 	"flag"
 	"github.com/aaronchen2k/deeptest/internal/command/action"
 	commandConfig "github.com/aaronchen2k/deeptest/internal/command/config"
+	zapLog "github.com/aaronchen2k/deeptest/internal/pkg/log"
 	_consts "github.com/aaronchen2k/deeptest/pkg/consts"
 	"github.com/fatih/color"
 	"os"
@@ -65,6 +66,7 @@ func run(scenario string) {
 func init() {
 	cleanup()
 	commandConfig.InitConfig()
+	zapLog.Init("command")
 }
 
 func cleanup() {

@@ -16,8 +16,8 @@ func NewReportService() *ReportService {
 	return &ReportService{}
 }
 
-func (s *ReportService) Paginate(req serverDomain.ReportReqPaginate) (ret _domain.PageData, err error) {
-	ret, err = s.ReportRepo.Paginate(req)
+func (s *ReportService) Paginate(req serverDomain.ReportReqPaginate, projectId int) (ret _domain.PageData, err error) {
+	ret, err = s.ReportRepo.Paginate(req, projectId)
 	return
 }
 

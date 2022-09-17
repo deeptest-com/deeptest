@@ -164,3 +164,18 @@ export function getResultCls (result) {
         return 'dp-color-unknown'
     }
 }
+
+export function getContextMenuStyle (x, y, height) {
+    let top = y + 6
+    if (y + height > document.body.clientHeight)
+        top = document.body.clientHeight - height
+
+    return {
+        zIndex: 99,
+        position: 'fixed',
+        maxHeight: 40,
+        textAlign: 'center',
+        left: `${x + 10}px`,
+        top: `${top}px`,
+    }
+}

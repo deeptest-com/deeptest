@@ -96,8 +96,9 @@ type ExecIterator struct {
 	Times []int `json:"times"`
 
 	// loop range
-	Items    []interface{}   `json:"items"`
-	DataType consts.DataType `json:"dataType"`
+	Items    []interface{}            `json:"items"`
+	Data     []map[string]interface{} `json:"data"`
+	DataType consts.DataType          `json:"dataType"`
 }
 
 type ExecOutput struct {

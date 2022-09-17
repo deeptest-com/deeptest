@@ -8,6 +8,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/business"
 	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
+	execHelper "github.com/aaronchen2k/deeptest/internal/server/modules/v1/helper/exec"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/repo"
 	"github.com/jinzhu/copier"
@@ -22,7 +23,6 @@ type ExecHelperService struct {
 	TestLogRepo           *repo.LogRepo               `inject:""`
 	InterfaceRepo         *repo.InterfaceRepo         `inject:""`
 	InterfaceService      *InterfaceService           `inject:""`
-	ExecRequestService    *business.ExecRequest       `inject:""`
 	ExecContext           *business.ExecContext       `inject:""`
 	ExtractorService      *ExtractorService           `inject:""`
 }
@@ -33,7 +33,7 @@ type ExecHelperService struct {
 //	return
 //}
 
-func (s *ExecHelperService) ParseLogic(logic *model.ProcessorLogic, parentLog *domain.ExecLog, msg *websocket.Message) (
+func (s *ExecHelperService) EvaluateLogic(logic *model.ProcessorLogic, parentLog *domain.ExecLog, msg *websocket.Message) (
 	output domain.ExecOutput, err error) {
 	if logic.ID == 0 {
 		output.Msg = "执行前请先配置处理器。"
@@ -70,7 +70,7 @@ func (s *ExecHelperService) ParseLogic(logic *model.ProcessorLogic, parentLog *d
 	return
 }
 
-func (s *ExecHelperService) ParseLoop(loop *model.ProcessorLoop, parentLog *domain.ExecLog, msg *websocket.Message) (
+func (s *ExecHelperService) EvaluateLoop(loop *model.ProcessorLoop, parentLog *domain.ExecLog, msg *websocket.Message) (
 	output domain.ExecOutput, err error) {
 
 	if loop.ID == 0 {
@@ -81,26 +81,26 @@ func (s *ExecHelperService) ParseLoop(loop *model.ProcessorLoop, parentLog *doma
 	typ := loop.ProcessorType
 	if typ == consts.ProcessorLoopTime {
 		output.Times = loop.Times
-		output.Msg = fmt.Sprintf("执行%d次。", output.Times)
+		output.Msg = fmt.Sprintf("执行\"%d\"次。", output.Times)
 		return
 	} else if typ == consts.ProcessorLoopUntil {
 		output.Expression = loop.UntilExpression
-		output.Msg = fmt.Sprintf("直到%s。", output.Expression)
+		output.Msg = fmt.Sprintf("直到\"%s\"。", output.Expression)
 		return
 	} else if typ == consts.ProcessorLoopIn {
 		output.List = loop.List
-		output.Msg = fmt.Sprintf("迭代列表%s。", output.List)
+		output.Msg = fmt.Sprintf("迭代列表\"%s\"。", output.List)
 		return
 	} else if typ == consts.ProcessorLoopRange {
 		output.Range = loop.Range
-		output.Msg = fmt.Sprintf("区间%s。", output.Range)
+		output.Msg = fmt.Sprintf("区间\"%s\"。", output.Range)
 		return
 	}
 
 	return
 }
 
-func (s *ExecHelperService) ParseLoopBreak(loop *model.ProcessorLoop, parentLog *domain.ExecLog, msg *websocket.Message) (
+func (s *ExecHelperService) EvaluateLoopBreak(loop *model.ProcessorLoop, parentLog *domain.ExecLog, msg *websocket.Message) (
 	output domain.ExecOutput, err error) {
 
 	if loop.ID == 0 {
@@ -115,25 +115,25 @@ func (s *ExecHelperService) ParseLoopBreak(loop *model.ProcessorLoop, parentLog 
 	return
 }
 
-func (s *ExecHelperService) ParseData(data *model.ProcessorData, parentLog *domain.ExecLog, msg *websocket.Message) (
+func (s *ExecHelperService) EvaluateData(data *model.ProcessorData, parentLog *domain.ExecLog, msg *websocket.Message) (
 	output domain.ExecOutput, err error) {
 	output.Url = data.Url
 
-	output.Msg = fmt.Sprintf("使用数据%s迭代变量%s。", output.Url, data.VariableName)
+	output.Msg = fmt.Sprintf("迭代\"%s\"为变量\"%s\"。", output.Url, data.VariableName)
 
 	return
 }
 
-func (s *ExecHelperService) ParseTimer(processor *model.ProcessorTimer, parentLog *domain.ExecLog, msg *websocket.Message) (
+func (s *ExecHelperService) EvaluateTimer(processor *model.ProcessorTimer, parentLog *domain.ExecLog, msg *websocket.Message) (
 	output domain.ExecOutput, err error) {
 
 	output.SleepTime = processor.SleepTime
-	output.Msg = fmt.Sprintf("等待%d秒。", output.SleepTime)
+	output.Msg = fmt.Sprintf("等待\"%d\"秒。", output.SleepTime)
 
 	return
 }
 
-func (s *ExecHelperService) ParsePrint(processor *model.ProcessorPrint, parentLog *domain.ExecLog, msg *websocket.Message) (
+func (s *ExecHelperService) EvaluatePrint(processor *model.ProcessorPrint, parentLog *domain.ExecLog, msg *websocket.Message) (
 	output domain.ExecOutput, err error) {
 
 	output.Expression = processor.Expression
@@ -141,7 +141,7 @@ func (s *ExecHelperService) ParsePrint(processor *model.ProcessorPrint, parentLo
 	return
 }
 
-func (s *ExecHelperService) ParseVariable(processor *model.ProcessorVariable, parentLog *domain.ExecLog, msg *websocket.Message) (
+func (s *ExecHelperService) EvaluateVariable(processor *model.ProcessorVariable, parentLog *domain.ExecLog, msg *websocket.Message) (
 	output domain.ExecOutput, err error) {
 
 	output.VariableName = processor.VariableName
@@ -151,43 +151,33 @@ func (s *ExecHelperService) ParseVariable(processor *model.ProcessorVariable, pa
 	if typ == consts.ProcessorVariableSet {
 		output.VariableValue, err = s.ComputerExpress(expression, processor.ProcessorId)
 		if err != nil {
-			output.Msg = fmt.Sprintf("计算表达式子错误 %s。", err.Error())
+			output.Msg = fmt.Sprintf("计算表达式\"%s\"错误 \"%s\"。", expression, err.Error())
 			return
 		}
 
-		output.Msg = fmt.Sprintf("%s为%v。", output.VariableName, output.VariableValue)
+		output.Msg = fmt.Sprintf("\"%s\"为\"%v\"。", output.VariableName, output.VariableValue)
 
 	} else if typ == consts.ProcessorVariableClear {
-		s.ExecContext.ClearVariable(parentLog.ProcessId, output.VariableName) // set in parent scope
 		output.Msg = fmt.Sprintf("%s。", output.VariableName)
 	}
 
 	return
 }
 
-func (s *ExecHelperService) ParseAssertion(processor *model.ProcessorAssertion, parentLog *domain.ExecLog, msg *websocket.Message) (
+func (s *ExecHelperService) EvaluateAssertion(processor *model.ProcessorAssertion, parentLog *domain.ExecLog, msg *websocket.Message) (
 	output domain.ExecOutput, err error) {
 
-	expression := processor.Expression
-	result, err := s.ComputerExpress(expression, processor.ProcessorId)
-	output.Pass, _ = result.(bool)
-
-	status := "失败"
-	if output.Pass {
-		status = "通过"
-	}
-
-	output.Msg = fmt.Sprintf("断言表达式'%s'结果为%s。", expression, status)
+	output.Expression = processor.Expression
 
 	return
 }
 
-func (s *ExecHelperService) ParseExtractor(extractor *model.ProcessorExtractor, parentLog *domain.ExecLog, msg *websocket.Message) (
+func (s *ExecHelperService) EvaluateExtractor(extractor *model.ProcessorExtractor, parentLog *domain.ExecLog, msg *websocket.Message) (
 	output domain.ExecOutput, err error) {
 
 	brother, ok := getPreviousBrother(*parentLog)
 	if !ok {
-		output.Msg = fmt.Sprintf("前面节点不是接口，无法应用提取器。")
+		output.Msg = fmt.Sprintf("先前节点不是接口，无法应用提取器。")
 		return
 	}
 
@@ -196,23 +186,28 @@ func (s *ExecHelperService) ParseExtractor(extractor *model.ProcessorExtractor, 
 
 	interfaceExtractor := model.InterfaceExtractor{}
 	copier.CopyWithOption(&interfaceExtractor, extractor, copier.Option{DeepCopy: true})
+
+	interfaceExtractor.Src = consts.Body
+	interfaceExtractor.Type = s.getExtractorTypeForProcessor(extractor.ProcessorType)
+
 	err = s.ExtractorService.ExtractValue(&interfaceExtractor, resp)
 	if err != nil {
-		output.Msg = fmt.Sprintf("%s提取器解析错误%s。", output.Type, err.Error())
+		output.Msg = fmt.Sprintf("%s提取器解析错误 %s。", output.Type, err.Error())
 		return
 	}
 
-	s.ExecContext.SetVariable(parentLog.ProcessId, extractor.Variable, extractor.Result) // set in parent scope
-	output.Msg = fmt.Sprintf("将提取器%s的结果%v赋予变量%s。", output.Type, extractor.Result, extractor.Variable)
+	s.ExecContext.SetVariable(parentLog.ProcessId, extractor.Variable, interfaceExtractor.Result) // set in parent scope
+	output.Msg = fmt.Sprintf("将结果\"%v\"赋予变量\"%s\"。", interfaceExtractor.Result, extractor.Variable)
 
 	return
 }
 
-func (s *ExecHelperService) ParseCookie(processor *model.ProcessorCookie, parentLog *domain.ExecLog, msg *websocket.Message) (
+func (s *ExecHelperService) EvaluateCookie(processor *model.ProcessorCookie, parentLog *domain.ExecLog, msg *websocket.Message) (
 	output domain.ExecOutput, err error) {
 
 	cookieName := processor.CookieName
 	variableName := processor.VariableName
+	defaultValue := processor.Default
 	domain := processor.Domain
 	expireTime := processor.ExpireTime
 	expression := processor.RightValue
@@ -222,27 +217,35 @@ func (s *ExecHelperService) ParseCookie(processor *model.ProcessorCookie, parent
 		var variableValue interface{}
 		variableValue, err = s.ComputerExpress(expression, processor.ProcessorId)
 		if err != nil {
-			output.Msg = fmt.Sprintf("计算表达式子错误 %s。", err.Error())
+			output.Msg = fmt.Sprintf("计算表达式\"%s\"错误 %s。", expression, err.Error())
 			return
 		}
 
 		s.ExecContext.SetCookie(parentLog.ProcessId, cookieName, variableValue, domain, expireTime) // set in parent scope
-		output.Msg = fmt.Sprintf("设置Cookie %s的值为%v。", cookieName, variableValue)
+		output.Msg = fmt.Sprintf("%s为%v。", cookieName, variableValue)
 
 	} else if typ == consts.ProcessorCookieGet {
 		var variableValue interface{}
-		variableValue = s.ExecContext.GetCookie(parentLog.ProcessId, cookieName, domain)
+		cookie := s.ExecContext.GetCookie(parentLog.ProcessId, cookieName, domain)
+		variableValue = cookie.Value
+
+		words := ""
+		if variableValue == nil && defaultValue != "" {
+			variableValue, _ = execHelper.ParseValue(defaultValue)
+			words = "默认"
+		}
+
 		if err != nil {
 			output.Msg = fmt.Sprintf("获取Cookie %s的值错误 %s。", cookieName, err.Error())
 			return
 		}
 
 		s.ExecContext.SetVariable(parentLog.ProcessId, variableName, variableValue) // set in parent scope
-		output.Msg = fmt.Sprintf("获取Cookie %s的值%s，赋予变量%s。", cookieName, variableValue, variableName)
+		output.Msg = fmt.Sprintf("将%s%s值%v赋予变量%s。", cookieName, words, variableValue, variableName)
 
 	} else if typ == consts.ProcessorCookieClear {
 		s.ExecContext.ClearCookie(parentLog.ProcessId, cookieName) // set in parent scope
-		output.Msg = fmt.Sprintf("清除Cookie%s。", cookieName)
+		output.Msg = fmt.Sprintf("%s。", cookieName)
 	}
 
 	return
@@ -306,6 +309,20 @@ func (s *ExecHelperService) GetVariables(expression string) (ret []string) {
 func (s *ExecHelperService) ReplaceVariablesWithVerbs(expression string) (ret string) {
 	regx := regexp.MustCompile("(?siU)(\\${.*})")
 	ret = regx.ReplaceAllString(expression, "%v")
+
+	return
+}
+
+func (s *ExecHelperService) getExtractorTypeForProcessor(processorType consts.ProcessorType) (ret consts.ExtractorType) {
+	if processorType == consts.ProcessorExtractorBoundary {
+		ret = consts.Boundary
+	} else if processorType == consts.ProcessorExtractorJsonQuery {
+		ret = consts.JsonQuery
+	} else if processorType == consts.ProcessorExtractorHtmlQuery {
+		ret = consts.HtmlQuery
+	} else if processorType == consts.ProcessorExtractorXmlQuery {
+		ret = consts.XmlQuery
+	}
 
 	return
 }

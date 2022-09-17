@@ -42,7 +42,7 @@ export default defineComponent({
 
     const selectProject = (value): void => {
       console.log('selectProject', value)
-      projectStore.dispatch('ProjectData/fetchProject', value);
+      projectStore.dispatch('ProjectData/changeProject', value);
     }
 
     return {

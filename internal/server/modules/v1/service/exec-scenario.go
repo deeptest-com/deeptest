@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/business"
@@ -23,7 +22,7 @@ type ExecScenarioService struct {
 	ScenarioProcessorRepo *repo.ScenarioProcessorRepo `inject:""`
 	ScenarioRepo          *repo.ScenarioRepo          `inject:""`
 	ScenarioNodeRepo      *repo.ScenarioNodeRepo      `inject:""`
-	TestResultRepo        *repo.ReportRepo            `inject:""`
+	TestReportRepo        *repo.ReportRepo            `inject:""`
 	TestLogRepo           *repo.LogRepo               `inject:""`
 	InterfaceRepo         *repo.InterfaceRepo         `inject:""`
 	InterfaceService      *InterfaceService           `inject:""`
@@ -33,7 +32,6 @@ type ExecScenarioService struct {
 	ExecComm             *business.ExecComm     `inject:""`
 	ExecHelperService    *ExecHelperService     `inject:""`
 	ExecIteratorService  *business.ExecIterator `inject:""`
-	ExecRequestService   *business.ExecRequest  `inject:""`
 	ExecLogService       *ExecLogService        `inject:""`
 	ExecReportService    *ExecReportService     `inject:""`
 	ExecInterfaceService *ExecInterfaceService  `inject:""`
@@ -56,7 +54,7 @@ func (s *ExecScenarioService) ExecScenario(scenarioId int, wsMsg *websocket.Mess
 		return
 	}
 
-	resultPo, err := s.TestResultRepo.FindInProgressResult(uint(scenarioId))
+	resultPo, err := s.TestReportRepo.FindInProgressResult(uint(scenarioId))
 	if resultPo.ID > 0 {
 		s.RestartResult(&resultPo, scenario)
 	} else {
@@ -224,9 +222,7 @@ func (s *ExecScenarioService) ExecContainerProcessorChildrenForLoop(processor *m
 		}
 
 		s.ExecIteratorService.Pop()
-
 	}
-
 }
 
 func (s *ExecScenarioService) ExecActionProcessorAndDisplay(processor *model.Processor, parentLog *domain.ExecLog, wsMsg *websocket.Message) (
@@ -247,42 +243,15 @@ func (s *ExecScenarioService) ExecActionProcessorAndDisplay(processor *model.Pro
 
 	} else if processor.EntityCategory == consts.ProcessorTimer {
 		output, _ = s.ExecProcessorService.ExecTimer(processor, parentLog, wsMsg)
-		<-time.After(time.Duration(output.SleepTime) * time.Second)
 
 	} else if processor.EntityCategory == consts.ProcessorPrint {
 		output, _ = s.ExecProcessorService.ExecPrint(processor, parentLog, wsMsg)
 
-		expression := s.ExecHelperService.ReplaceVariablesWithVerbs(output.Expression)
-		variables := s.ExecHelperService.GetVariables(output.Expression)
-
-		variableValues := make([]interface{}, 0)
-		for _, name := range variables {
-			val, err1 := s.ExecHelperService.GetVariableValueByName(processor.ID, name)
-			if err1 != nil {
-				val = "空"
-			}
-			variableValues = append(variableValues, val)
-		}
-
-		output.Msg = fmt.Sprintf(expression, variableValues...)
-
 	} else if processor.EntityType == consts.ProcessorLoopBreak {
 		output, _ = s.ExecProcessorService.ExecLoopBreak(processor, parentLog, wsMsg)
-
-		breakFrom := output.BreakFrom
-		breakIfExpress := output.Expression
-
-		result, err := s.ExecHelperService.ComputerExpress(breakIfExpress, processor.ID)
-		pass, ok := result.(bool)
-		if err == nil && ok && pass {
-			breakMap.Store(breakFrom, true)
-			output.Msg = "真"
-		} else {
-			output.Msg = "假"
-		}
 	}
 
-	containerLog, _ = s.containerLogAndSendMsg(output, processor, parentLog, wsMsg)
+	containerLog, _ = s.generateContainerLogAndSendMsg(output, processor, parentLog, wsMsg)
 
 	return
 }
@@ -296,12 +265,12 @@ func (s *ExecScenarioService) ExecContainerProcessorChildrenForData(processor *m
 
 		s.ExecIteratorService.Push(iterator)
 
-		for _, mapItem := range iterator.Items {
+		for _, mapItem := range iterator.Data {
 			containerLogItem, _ := s.AddContainerProcessor(processor, containerLog, wsMsg)
 
 			s.ExecContextService.SetVariable(processor.ID, data.VariableName, mapItem)
-			vari, _ := s.ExecContextService.GetVariable(processor.ID, data.VariableName)
-			logUtils.Infof("%s = %v", vari.Name, vari.Value)
+			//vari, _ := s.ExecContextService.GetVariable(processor.ID, data.VariableName)
+			//logUtils.Infof("%s = %v", vari.Name, vari.Value)
 
 			s.ExecChildren(processor, containerLogItem, wsMsg)
 
@@ -364,12 +333,12 @@ func (s *ExecScenarioService) GenerateContainerProcessorLogAndDisplay(processor 
 
 	}
 
-	containerLog, _ = s.containerLogAndSendMsg(output, processor, parentLog, wsMsg)
+	containerLog, _ = s.generateContainerLogAndSendMsg(output, processor, parentLog, wsMsg)
 
 	return
 }
 
-func (s *ExecScenarioService) containerLogAndSendMsg(output domain.ExecOutput, processor *model.Processor, parentLog *domain.ExecLog, wsMsg *websocket.Message) (
+func (s *ExecScenarioService) generateContainerLogAndSendMsg(output domain.ExecOutput, processor *model.Processor, parentLog *domain.ExecLog, wsMsg *websocket.Message) (
 	containerLog *domain.ExecLog, err error) {
 	containerLog = &domain.ExecLog{
 		Id:                processor.ID,
@@ -403,27 +372,28 @@ func (s *ExecScenarioService) CreateResult(scenario model.Scenario) (result mode
 		StartTime:      &startTime,
 		ProgressStatus: consts.InProgress,
 		ScenarioId:     scenario.ID,
+		ProjectId:      scenario.ProjectId,
 	}
 
-	s.TestResultRepo.Create(&result)
+	s.TestReportRepo.Create(&result)
 
 	return
 }
 
-func (s *ExecScenarioService) RestartResult(result *model.Report, scenario model.Scenario) (err error) {
-	result.Name = scenario.Name
+func (s *ExecScenarioService) RestartResult(report *model.Report, scenario model.Scenario) (err error) {
+	report.Name = scenario.Name
 
 	startTime := time.Now()
-	result.StartTime = &startTime
+	report.StartTime = &startTime
 
-	s.TestResultRepo.ResetResult(*result)
-	s.TestResultRepo.ClearLogs(result.ID)
+	s.TestReportRepo.ResetResult(*report)
+	s.TestReportRepo.ClearLogs(report.ID)
 
 	return
 }
 
 func (s *ExecScenarioService) CancelAndSendMsg(scenarioId int, wsMsg websocket.Message) (err error) {
-	s.TestResultRepo.UpdateStatus(consts.Cancel, "", uint(scenarioId))
+	s.TestReportRepo.UpdateStatus(consts.Cancel, "", uint(scenarioId))
 	execHelper.SendCancelMsg(wsMsg)
 	return
 }

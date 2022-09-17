@@ -52,22 +52,23 @@
 </template>
 
 <script setup lang="ts">
-import {computed, onMounted, reactive, ref} from "vue";
-import {SelectTypes} from 'ant-design-vue/es/select';
+import {computed, onMounted, reactive, ref, watch} from "vue";
 import {useStore} from "vuex";
 
 import debounce from "lodash.debounce";
 import { momentUtc } from "@/utils/datetime";
 import {useRouter} from "vue-router";
 import {message, Modal} from "ant-design-vue";
+import {StateType as ProjectStateType} from "@/store/project";
 import {StateType as ScenarioStateType} from "@/views/scenario/store";
 import {StateType} from "@/views/report/store";
 import {PaginationConfig, QueryParams, Report} from "@/views/report/data";
-import {Scenario} from "@/views/scenario/data";
 import {query} from "@/views/scenario/service";
 
 const router = useRouter();
-const store = useStore<{ Report: StateType, Scenario: ScenarioStateType }>();
+const store = useStore<{ Report: StateType, Scenario: ScenarioStateType, ProjectData: ProjectStateType }>();
+
+const currProject = computed<any>(() => store.state.ProjectData.currProject);
 
 const list = computed<Report[]>(() => store.state.Report.listResult.list);
 let pagination = computed<PaginationConfig>(() => store.state.Report.listResult.pagination);
@@ -75,6 +76,11 @@ let queryParams = reactive<QueryParams>({
   keywords: '', scenarioId: '0',
   page: pagination.value.current, pageSize: pagination.value.pageSize
 });
+
+watch(currProject, () => {
+  console.log('watch currProject', currProject.value.id)
+  getList(1);
+}, {deep: false})
 
 const columns = [
   {
@@ -110,7 +116,6 @@ onMounted(() => {
   console.log('onMounted')
   getList(1);
 })
-
 
 const scenarios = ref([] as any[])
 query().then(json => {

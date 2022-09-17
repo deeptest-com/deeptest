@@ -11,3 +11,13 @@ export async function getByUser(currProjectId: number): Promise<any> {
         params,
     });
 }
+
+export async function changeProject(projectId: number): Promise<any> {
+    const data = {id: projectId}
+
+    return request({
+        url: `/${apiPath}/changeProject`,
+        method: 'POST',
+        data,
+    });
+}

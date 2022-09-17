@@ -81,7 +81,7 @@ func (s *ExecIterator) GenerateData(log domain.ExecLog, data model.ProcessorData
 	ret.ProcessorCategory = log.ProcessorCategory
 	ret.ProcessorType = log.ProcessorType
 
-	ret.Items, _ = execHelper.GenerateDataItems(data)
+	ret.Data, _ = execHelper.GenerateDataItems(data)
 
 	return
 }
@@ -121,7 +121,7 @@ func (s *ExecIterator) RetrieveIteratorsVal(processor *model.Processor) (item in
 		item = items[index]
 
 		loopRangeProcessor, _ := s.ScenarioProcessorRepo.GetLoop(*processor)
-		desc = fmt.Sprintf("变量%s = %d", loopRangeProcessor.VariableName, item)
+		desc = fmt.Sprintf("变量%s = \"%d\"", loopRangeProcessor.VariableName, item)
 
 	} else if value.ProcessorType == consts.ProcessorLoopIn {
 		items := value.Items
@@ -135,7 +135,7 @@ func (s *ExecIterator) RetrieveIteratorsVal(processor *model.Processor) (item in
 		item = items[index]
 
 		loopRangeProcessor, _ := s.ScenarioProcessorRepo.GetLoop(*processor)
-		desc = fmt.Sprintf("变量%s = %d", loopRangeProcessor.VariableName, item)
+		desc = fmt.Sprintf("变量%s = \"%d\"", loopRangeProcessor.VariableName, item)
 
 	} else if value.ProcessorType == consts.ProcessorLoopBreak {
 		_logUtils.Info("")

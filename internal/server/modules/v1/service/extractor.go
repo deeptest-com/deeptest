@@ -1,7 +1,6 @@
 package service
 
 import (
-	"encoding/json"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
@@ -14,6 +13,7 @@ import (
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/jinzhu/copier"
 	"strconv"
+	"strings"
 )
 
 type ExtractorService struct {
@@ -97,9 +97,6 @@ func (s *ExtractorService) ExtractValue(extractor *model.InterfaceExtractor, res
 				}
 			}
 		} else {
-			var jsonData interface{}
-			json.Unmarshal([]byte(resp.Content), &jsonData)
-
 			if requestHelper.IsJsonContent(resp.ContentType.String()) && extractor.Type == consts.JsonQuery {
 				extractor.Result = extractorHelper.JsonQuery(resp.Content, extractor.Expression)
 
@@ -115,6 +112,8 @@ func (s *ExtractorService) ExtractValue(extractor *model.InterfaceExtractor, res
 			}
 		}
 	}
+
+	extractor.Result = strings.TrimSpace(extractor.Result)
 
 	return
 }

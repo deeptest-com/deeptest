@@ -6,6 +6,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/repo"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"strings"
 	"time"
 )
 
@@ -44,25 +45,45 @@ func (s *ExecContext) ListVariable(scopeId uint) (variables []domain.ExecVariabl
 	return
 }
 
-func (s *ExecContext) GetVariable(scopeId uint, variableName string) (variable domain.ExecVariable, err error) {
-	if variableName == "var1" {
+func (s *ExecContext) GetVariable(scopeId uint, variablePath string) (variable domain.ExecVariable, err error) {
+	if variablePath == "var1" {
 		logUtils.Info("")
 	}
 
 	for _, id := range *ScopeHierarchy[scopeId] {
 		for _, item := range ScopedVariables[id] {
-			if item.Name == variableName {
-				variable = item
+			var ok bool
+			if variable, ok = s.EvaluateVariableExpressionValue(item, variablePath); ok {
 				goto LABEL
 			}
 		}
 	}
 
-	if variable.Name == "" {
-		err = errors.New(fmt.Sprintf("找不到变量%s", variableName))
+	if variable.Name == "" { // not found
+		err = errors.New(fmt.Sprintf("找不到变量\"%s\"", variablePath))
 	}
 
 LABEL:
+
+	return
+}
+
+func (s *ExecContext) EvaluateVariableExpressionValue(variable domain.ExecVariable, variablePath string) (
+	ret domain.ExecVariable, ok bool) {
+	arr := strings.Split(variablePath, ".")
+	variableName := arr[0]
+
+	if variable.Name == variableName {
+		ret = variable
+
+		if len(arr) > 1 {
+			variableProp := arr[1]
+			ret.Value = variable.Value.(map[string]interface{})[variableProp]
+		}
+
+		ok = true
+
+	}
 
 	return
 }

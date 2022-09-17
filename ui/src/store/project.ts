@@ -2,7 +2,7 @@ import { Mutation, Action } from 'vuex';
 import { StoreModuleType } from "@/utils/store";
 import { ResponseData } from '@/utils/request';
 import settings from '@/config/settings';
-import {getByUser} from '@/services/project';
+import {changeProject, getByUser} from '@/services/project';
 import {setCache} from "@/utils/localCache";
 
 export interface StateType {
@@ -17,6 +17,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
   };
   actions: {
     fetchProject: Action<StateType, StateType>;
+    changeProject: Action<StateType, StateType>;
   };
 }
 
@@ -53,8 +54,21 @@ const StoreModel: ModuleType = {
         return false;
       }
     },
+
+    async changeProject({ commit }, projectId) {
+      try {
+        await changeProject(projectId);
+
+        const response: ResponseData = await getByUser(projectId);
+        const { data } = response;
+        commit('saveProjects', data || 0);
+
+        return true;
+      } catch (error) {
+        return false;
+      }
+    },
   }
 }
 
 export default StoreModel;
-  

@@ -3,7 +3,6 @@ package service
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/business"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/repo"
 	"time"
@@ -15,7 +14,6 @@ type ExecReportService struct {
 	TestResultRepo        *repo.ReportRepo            `inject:""`
 	TestLogRepo           *repo.LogRepo               `inject:""`
 	ReportRepo            *repo.ReportRepo            `inject:""`
-	ExecRequestService    *business.ExecRequest       `inject:""`
 }
 
 func (s ExecReportService) UpdateTestReport(rootLog domain.ExecLog) (report model.Report) {

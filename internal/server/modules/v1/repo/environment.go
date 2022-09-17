@@ -202,3 +202,10 @@ func (r *EnvironmentRepo) getCopyName(name string, projectId uint) (ret string) 
 
 	return
 }
+
+func (r *EnvironmentRepo) ListByInterface(interfaceId uint) (vars []model.EnvironmentVar, err error) {
+	environment, _ := r.GetByInterface(interfaceId)
+	vars, _ = r.GetVars(environment.ID)
+
+	return
+}

@@ -29,8 +29,8 @@ func (s *ProjectService) GetById(id uint) (model.Project, error) {
 	return s.ProjectRepo.FindById(id)
 }
 
-func (s *ProjectService) Create(req serverDomain.ProjectReq) (uint, *_domain.BizErr) {
-	return s.ProjectRepo.Create(req)
+func (s *ProjectService) Create(req serverDomain.ProjectReq, userId uint) (uint, *_domain.BizErr) {
+	return s.ProjectRepo.Create(req, userId)
 }
 
 func (s *ProjectService) Update(id uint, req serverDomain.ProjectReq) error {
@@ -44,6 +44,12 @@ func (s *ProjectService) DeleteById(id uint) error {
 func (s *ProjectService) GetByUser(userId uint) (projects []model.Project, currProject model.Project, err error) {
 	projects, err = s.ProjectRepo.ListProjectByUser(userId)
 	currProject, err = s.ProjectRepo.GetCurrProjectByUser(userId)
+
+	return
+}
+
+func (s *ProjectService) ChangeProject(projectId, userId uint) (err error) {
+	err = s.ProjectRepo.ChangeProject(projectId, userId)
 
 	return
 }

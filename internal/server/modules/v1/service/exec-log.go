@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/business"
 	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/repo"
@@ -18,7 +17,6 @@ type ExecLogService struct {
 	TestLogRepo           *repo.LogRepo               `inject:""`
 	InterfaceRepo         *repo.InterfaceRepo         `inject:""`
 	InterfaceService      *InterfaceService           `inject:""`
-	ExecRequestService    *business.ExecRequest       `inject:""`
 }
 
 func (s *ExecLogService) CreateProcessorLog(processor *model.Processor, log *domain.ExecLog, parentPersistentId uint) (po model.Log, err error) {

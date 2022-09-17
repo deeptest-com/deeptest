@@ -18,6 +18,12 @@ type ReportCtrl struct {
 }
 
 func (c *ReportCtrl) List(ctx iris.Context) {
+	projectId, err := ctx.URLParamInt("currProjectId")
+	if projectId == 0 {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: "projectId"})
+		return
+	}
+
 	var req serverDomain.ReportReqPaginate
 	if err := ctx.ReadQuery(&req); err != nil {
 		errs := validate.ValidRequest(err)
@@ -29,7 +35,7 @@ func (c *ReportCtrl) List(ctx iris.Context) {
 	}
 	req.ConvertParams()
 
-	data, err := c.ReportService.Paginate(req)
+	data, err := c.ReportService.Paginate(req, projectId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
 		return

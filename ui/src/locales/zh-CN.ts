@@ -113,7 +113,7 @@ export default {
     'processor_cookie_set':  '设置Cookie',
     'processor_cookie_clear':  '清除Cookie',
 
-    'processor_data_text':  '文件数据',
+    'processor_data_text':  '文本数据',
     'processor_data_excel':  'Excel数据',
     'processor_data_zendata':  'ZenData数据',
 

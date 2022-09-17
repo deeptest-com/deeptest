@@ -52,7 +52,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, onMounted, reactive, ref} from "vue";
+import {computed, onMounted, reactive, ref, watch} from "vue";
 import {SelectTypes} from 'ant-design-vue/es/select';
 import {PaginationConfig, QueryParams, Scenario} from '../data.d';
 import {useStore} from "vuex";
@@ -61,6 +61,7 @@ import {StateType} from "../store";
 import debounce from "lodash.debounce";
 import {useRouter} from "vue-router";
 import {message, Modal} from "ant-design-vue";
+import {StateType as ProjectStateType} from "@/store/project";
 
 const statusArr = ref<SelectTypes['options']>([
   {
@@ -78,7 +79,8 @@ const statusArr = ref<SelectTypes['options']>([
 ]);
 
 const router = useRouter();
-const store = useStore<{ Scenario: StateType }>();
+const store = useStore<{ Scenario: StateType, ProjectData: ProjectStateType }>();
+const currProject = computed<any>(() => store.state.ProjectData.currProject);
 
 const list = computed<Scenario[]>(() => store.state.Scenario.listResult.list);
 let pagination = computed<PaginationConfig>(() => store.state.Scenario.listResult.pagination);
@@ -86,6 +88,11 @@ let queryParams = reactive<QueryParams>({
   keywords: '', enabled: '1',
   page: pagination.value.current, pageSize: pagination.value.pageSize
 });
+
+watch(currProject, () => {
+  console.log('watch currProject', currProject.value.id)
+  getList(1);
+}, {deep: false})
 
 const columns = [
   {
@@ -148,8 +155,8 @@ const design = (id: number) => {
 }
 
 const edit = (id: number) => {
-  console.log('edit')
-  router.push(`/scenario/edit/${id}`)
+  console.log('edit', currProject.value)
+  // router.push(`/scenario/edit/${id}`)
 }
 
 const remove = (id: number) => {

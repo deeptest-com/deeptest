@@ -23,7 +23,7 @@ func BoundaryQuery(content string, boundaryStart, boundaryEnd string, boundaryIn
 		results = append(results, result)
 	}
 
-	if boundaryIndex > 0 {
+	if boundaryIndex > 0 && len(results) > 0 {
 		if boundaryIndex > len(results)-1 {
 			boundaryIndex = len(results) - 1
 		}

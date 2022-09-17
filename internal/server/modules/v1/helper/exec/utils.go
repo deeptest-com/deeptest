@@ -196,18 +196,18 @@ func GenerateListItems(listStr string) (ret []interface{}, typ consts.DataType, 
 	return
 }
 
-func GenerateDataItems(data model.ProcessorData) (ret []interface{}, err error) {
+func GenerateDataItems(data model.ProcessorData) (ret []map[string]interface{}, err error) {
 	url := data.Url
 
-	if data.Type == consts.Text {
-		readDataFromText(url, data.Separator)
-	} else if data.Type == consts.Excel {
-		readDataFromExcel(url)
+	if data.ProcessorType == consts.ProcessorDataText {
+		ret, err = readDataFromText(url, data.Separator)
+	} else if data.ProcessorType == consts.ProcessorDataExcel {
+		ret, err = readDataFromExcel(url)
 	}
 
 	return
 }
-func readDataFromText(url, separator string) (ret []map[string]interface{}) {
+func readDataFromText(url, separator string) (ret []map[string]interface{}, err error) {
 	content := fileUtils.ReadFile(url)
 	arr := strings.Split(strings.ReplaceAll(content, "\r\n", "\n"), "\n")
 	if len(arr) < 2 {
@@ -235,7 +235,7 @@ func readDataFromText(url, separator string) (ret []map[string]interface{}) {
 
 	return
 }
-func readDataFromExcel(url string) (ret []interface{}) {
+func readDataFromExcel(url string) (ret []map[string]interface{}, err error) {
 	excel, err := excelize.OpenFile(url)
 	if err != nil {
 		return
@@ -276,6 +276,35 @@ func readDataFromExcel(url string) (ret []interface{}) {
 
 func interfaceToString(interf interface{}) (ret string) {
 	ret = fmt.Sprintf("%v", interf)
+
+	return
+}
+
+func ParseValue(str string) (ret interface{}, typ consts.DataType) {
+	isInt := true
+	isFloat := true
+
+	intVal := int64(0)
+	floatVal := float64(0)
+
+	intVal, intErr := strconv.ParseInt(str, 10, 64)
+	if intErr != nil {
+		isInt = false
+
+		var floatErr error
+		floatVal, floatErr = strconv.ParseFloat(str, 64)
+		if floatErr != nil {
+			isFloat = false
+		}
+	}
+
+	if isInt {
+		ret = intVal
+	} else if isFloat {
+		ret = floatVal
+	} else {
+		ret = str
+	}
 
 	return
 }

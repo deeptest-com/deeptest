@@ -4,21 +4,12 @@ import (
 	"encoding/base64"
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"github.com/kataras/iris/v12"
 	"strings"
 )
-
-func ReplaceVariablesForInvocation(req *serverDomain.InvocationRequest,
-	environmentVariables []model.EnvironmentVar, extractorVariables []serverDomain.Variable) (err error) {
-
-	variableArr := genVariableArr(environmentVariables, extractorVariables)
-
-	ReplaceAll(req, variableArr)
-
-	return
-}
 
 func ReplaceAll(req *serverDomain.InvocationRequest, variableArr [][]string) {
 	replaceUrl(req, variableArr)
@@ -67,19 +58,34 @@ func replaceAuthor(req *serverDomain.InvocationRequest, variableArr [][]string) 
 	}
 }
 
-func genVariableArr(environmentVariables []model.EnvironmentVar, extractorVariables []serverDomain.Variable) (
+func MergeVariables(environmentVariables []model.EnvironmentVar,
+	extractorVariables []serverDomain.Variable,
+	execVariables []domain.ExecVariable) (
 	ret [][]string) {
 
 	variableMap := iris.Map{}
 	for _, item := range environmentVariables {
 		variableMap[item.Name] = item.Value
 	}
-	for _, item := range extractorVariables {
+	for _, item := range extractorVariables { // overwrite previous ones
+		variableMap[item.Name] = item.Value
+	}
+	for _, item := range execVariables { // overwrite previous ones
 		variableMap[item.Name] = item.Value
 	}
 
 	for key, val := range variableMap {
-		ret = append(ret, []string{fmt.Sprintf("${%s}", key), val.(string)})
+		valMp, isMap := val.(map[string]interface{})
+
+		if isMap {
+			for propKey, v := range valMp {
+				ret = append(ret, []string{fmt.Sprintf("${%s.%s}", key, propKey), fmt.Sprintf("%v", v)})
+			}
+
+		} else {
+			ret = append(ret, []string{fmt.Sprintf("${%s}", key), fmt.Sprintf("%v", val)})
+
+		}
 	}
 
 	return

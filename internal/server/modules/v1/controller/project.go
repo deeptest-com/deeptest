@@ -55,6 +55,8 @@ func (c *ProjectCtrl) Get(ctx iris.Context) {
 }
 
 func (c *ProjectCtrl) Create(ctx iris.Context) {
+	userId := multi.GetUserId(ctx)
+
 	req := serverDomain.ProjectReq{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -62,7 +64,7 @@ func (c *ProjectCtrl) Create(ctx iris.Context) {
 		return
 	}
 
-	id, bizErr := c.ProjectService.Create(req)
+	id, bizErr := c.ProjectService.Create(req, userId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: bizErr.Code, Data: nil})
 		return
@@ -108,6 +110,32 @@ func (c *ProjectCtrl) Delete(ctx iris.Context) {
 
 func (c *ProjectCtrl) GetByUser(ctx iris.Context) {
 	userId := multi.GetUserId(ctx)
+
+	projects, currProject, err := c.ProjectService.GetByUser(userId)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		return
+	}
+
+	ret := iris.Map{"projects": projects, "currProject": currProject}
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: ret, Msg: _domain.NoErr.Msg})
+}
+
+func (c *ProjectCtrl) ChangeProject(ctx iris.Context) {
+	userId := multi.GetUserId(ctx)
+
+	req := serverDomain.ProjectReq{}
+	err := ctx.ReadJSON(&req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		return
+	}
+
+	err = c.ProjectService.ChangeProject(req.Id, userId)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		return
+	}
 
 	projects, currProject, err := c.ProjectService.GetByUser(userId)
 	if err != nil {

@@ -75,10 +75,11 @@ import {expandAllKeys, expandOneKey, getNodeMap} from "@/services/tree";
 import {DropEvent, TreeDragEvent} from "ant-design-vue/es/tree/Tree";
 import {useStore} from "vuex";
 import {StateType} from "@/views/interface/store";
+import {StateType as ProjectStateType} from "@/store/project";
 
 import TreeContextMenu from "./TreeContextMenu.vue";
-import {StateType as ProjectStateType} from "@/store/project";
 import {getExpandedKeys, setExpandedKeys} from "@/utils/cache";
+import {getContextMenuStyle} from "@/utils/dom";
 
 const useForm = Form.useForm;
 
@@ -92,16 +93,21 @@ export default defineComponent({
   setup(props) {
     const {t} = useI18n();
 
-    const projectStore = useStore<{ ProjectData: ProjectStateType }>();
-    const currProject = computed<any>(() => projectStore.state.ProjectData.currProject);
+    const store = useStore<{ Interface: StateType, ProjectData: ProjectStateType }>();
+    const currProject = computed<any>(() => store.state.ProjectData.currProject);
 
-    const store = useStore<{ Interface: StateType }>();
     const treeData = computed<any>(() => store.state.Interface.treeData);
     const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
 
+    watch(currProject, () => {
+      console.log('watch currProject', currProject.value.id)
+      queryTree();
+      selectNode(null)
+    }, {deep: false})
+
     const queryTree = throttle(async () => {
       await store.dispatch('Interface/loadInterface');
-    }, 600)
+    }, 100)
     queryTree();
 
     const replaceFields = {key: 'id', title: 'name'};
@@ -120,7 +126,10 @@ export default defineComponent({
 
     const selectNode = (keys) => {
       console.log('selectNode', keys)
-      if (selectedKeys.value.length === 0) return
+      if (!keys || selectedKeys.value.length === 0) {
+        store.dispatch('Interface/getInterface', {isDir: true})
+        return
+      }
 
       const selectedData = treeDataMap[selectedKeys.value[0]]
       store.dispatch('Interface/getInterface', {id: selectedData.id, isDir: selectedData.isDir})
@@ -172,15 +181,19 @@ export default defineComponent({
         parentId: node.dataRef.parentId
       }
 
-      menuStyle.value = {
-        position: 'fixed',
-        maxHeight: 40,
-        textAlign: 'center',
-        left: `${x + 10}px`,
-        top: `${y + 6}px`
-        // display: 'flex',
-        // flexDirection: 'row'
-      }
+
+      menuStyle.value = getContextMenuStyle(
+          event.currentTarget.getBoundingClientRect().right, event.currentTarget.getBoundingClientRect().top, 185)
+
+      // menuStyle.value = {
+      //   position: 'fixed',
+      //   maxHeight: 40,
+      //   textAlign: 'center',
+      //   left: `${x + 10}px`,
+      //   top: `${y + 6}px`
+      //   // display: 'flex',
+      //   // flexDirection: 'row'
+      // }
     }
 
     const getNodeMapCall = throttle(async () => {
@@ -267,6 +280,7 @@ export default defineComponent({
         return
       }
 
+      // add
       const arr = menuKey.split('_')
       const mode = arr[1]
       const type = arr[2]
@@ -279,7 +293,7 @@ export default defineComponent({
     const addNode = (mode, type) => {
       console.log('addNode', targetModelId)
       store.dispatch('Interface/createInterface',
-          {target: targetModelId, name: type === 'dir' ? '新目录' : '新接口'})
+          {target: targetModelId, name: type === 'dir' ? '新目录' : '新接口', mode: mode, type: type})
           .then((newNode) => {
               console.log('newNode', newNode)
               selectNode([newNode.id])

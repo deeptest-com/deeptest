@@ -93,6 +93,7 @@ import {getExpandedKeys, setExpandedKeys} from "@/utils/cache";
 import TreeContextMenu from "./TreeContextMenu.vue";
 import InterfaceSelection from "./InterfaceSelection.vue";
 import {StateType} from "@/views/interface/store";
+import {getContextMenuStyle} from "@/utils/dom";
 
 const props = defineProps<{ scenarioId: number }>()
 
@@ -195,21 +196,6 @@ const onRightClick = (e) => {
 
   menuStyle.value = getContextMenuStyle(
       event.currentTarget.getBoundingClientRect().right, event.currentTarget.getBoundingClientRect().top, 120)
-}
-
-const getContextMenuStyle = (x, y, height) => {
-  let top = y + 6
-  if (y + height > document.body.clientHeight)
-    top = document.body.clientHeight - height
-
-  return {
-    zIndex: 99,
-    position: 'fixed',
-    maxHeight: 40,
-    textAlign: 'center',
-    left: `${x + 10}px`,
-    top: `${top}px`,
-  }
 }
 
 const getNodeMapCall = debounce(async () => {

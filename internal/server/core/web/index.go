@@ -4,12 +4,12 @@ import (
 	stdContext "context"
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/log"
 	serverConfig "github.com/aaronchen2k/deeptest/internal/server/config"
 	"github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/cache"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	"github.com/aaronchen2k/deeptest/internal/server/core/module"
-	serverZap "github.com/aaronchen2k/deeptest/internal/server/core/zap"
 	myWs "github.com/aaronchen2k/deeptest/internal/server/modules/v1/controller"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/service"
 	_i118Utils "github.com/aaronchen2k/deeptest/pkg/lib/i118"
@@ -64,7 +64,7 @@ type WebServer struct {
 // Init 初始化web服务
 func Init() *WebServer {
 	serverConfig.Init()
-	serverZap.Init()
+	zapLog.Init("server")
 	_i118Utils.Init(consts.Language, "")
 
 	err := cache.Init()

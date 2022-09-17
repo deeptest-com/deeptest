@@ -1,4 +1,4 @@
-package serverZap
+package zapLog
 
 import (
 	serverConfig "github.com/aaronchen2k/deeptest/internal/server/config"
@@ -13,11 +13,16 @@ import (
 var level zapcore.Level
 
 // Init 初始化日志服务
-func Init() {
+func Init(app string) {
 	var logger *zap.Logger
 
-	if !dir.IsExist(serverConfig.CONFIG.Zap.Director) { // 判断是否有Director文件夹
-		dir.InsureDir(serverConfig.CONFIG.Zap.Director)
+	logDir := "log"
+	if app == "server" {
+		logDir = serverConfig.CONFIG.Zap.Director
+	}
+
+	if !dir.IsExist(logDir) { // 幕布不能存在创建
+		dir.InsureDir(logDir)
 	}
 
 	switch serverConfig.CONFIG.Zap.Level { // 初始化配置文件的Level

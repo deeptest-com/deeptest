@@ -16,8 +16,8 @@ func NewScenarioService() *ScenarioService {
 	return &ScenarioService{}
 }
 
-func (s *ScenarioService) Paginate(req serverDomain.ScenarioReqPaginate) (ret _domain.PageData, err error) {
-	ret, err = s.ScenarioRepo.Paginate(req)
+func (s *ScenarioService) Paginate(req serverDomain.ScenarioReqPaginate, projectId int) (ret _domain.PageData, err error) {
+	ret, err = s.ScenarioRepo.Paginate(req, projectId)
 
 	if err != nil {
 		return

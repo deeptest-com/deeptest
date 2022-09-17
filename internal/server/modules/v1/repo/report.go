@@ -20,10 +20,11 @@ func NewReportRepo() *ReportRepo {
 	return &ReportRepo{}
 }
 
-func (r *ReportRepo) Paginate(req serverDomain.ReportReqPaginate) (data _domain.PageData, err error) {
+func (r *ReportRepo) Paginate(req serverDomain.ReportReqPaginate, projectId int) (data _domain.PageData, err error) {
 	var count int64
 
-	db := r.DB.Model(&model.Report{}).Where("NOT deleted")
+	db := r.DB.Model(&model.Report{}).
+		Where("project_id = ? AND NOT deleted", projectId)
 
 	if req.Keywords != "" {
 		db = db.Where("name LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords))

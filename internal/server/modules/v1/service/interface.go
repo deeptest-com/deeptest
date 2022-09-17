@@ -188,15 +188,17 @@ func (s *InterfaceService) CopyValueFromRequest(interf *model.Interface, req ser
 	return
 }
 
-func (s *InterfaceService) ReplaceEnvironmentAndExtractorVariables(req serverDomain.InvocationRequest) (ret serverDomain.InvocationRequest, err error) {
+func (s *InterfaceService) ReplaceEnvironmentExtractorAndExecVariables(req serverDomain.InvocationRequest) (
+	ret serverDomain.InvocationRequest, err error) {
 	interfaceId := req.Id
 
-	environment, _ := s.EnvironmentRepo.GetByInterface(interfaceId)
-	environmentVariables, _ := s.EnvironmentRepo.GetVars(environment.ID)
+	environmentVariables, _ := s.EnvironmentRepo.ListByInterface(interfaceId)
 	extractorVariables, _ := s.ExtractorRepo.ListExtractorVariable(interfaceId)
 
 	ret = req
-	requestHelper.ReplaceVariablesForInvocation(&ret, environmentVariables, extractorVariables)
+
+	variableArr := requestHelper.MergeVariables(environmentVariables, extractorVariables, nil)
+	requestHelper.ReplaceAll(&req, variableArr)
 
 	return
 }

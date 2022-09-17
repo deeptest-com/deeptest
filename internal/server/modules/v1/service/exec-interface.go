@@ -7,6 +7,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/business"
 	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
 	execHelper "github.com/aaronchen2k/deeptest/internal/server/modules/v1/helper/exec"
+	requestHelper "github.com/aaronchen2k/deeptest/internal/server/modules/v1/helper/request"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/repo"
 	"github.com/jinzhu/copier"
@@ -14,13 +15,16 @@ import (
 )
 
 type ExecInterfaceService struct {
-	InterfaceRepo      *repo.InterfaceRepo   `inject:""`
-	InterfaceService   *InterfaceService     `inject:""`
-	ExecRequestService *business.ExecRequest `inject:""`
-	ExecLogService     *ExecLogService       `inject:""`
+	InterfaceService *InterfaceService `inject:""`
+	ExecLogService   *ExecLogService   `inject:""`
 
-	ExtractorService  *ExtractorService  `inject:""`
-	CheckpointService *CheckpointService `inject:""`
+	ExtractorService  *ExtractorService     `inject:""`
+	CheckpointService *CheckpointService    `inject:""`
+	ExecContext       *business.ExecContext `inject:""`
+
+	InterfaceRepo   *repo.InterfaceRepo   `inject:""`
+	EnvironmentRepo *repo.EnvironmentRepo `inject:""`
+	ExtractorRepo   *repo.ExtractorRepo   `inject:""`
 }
 
 func (s *ExecInterfaceService) ExecInterfaceProcessor(interfaceProcessor *model.Processor, parentLog *domain.ExecLog, wsMsg *websocket.Message) (err error) {
@@ -33,16 +37,14 @@ func (s *ExecInterfaceService) ExecInterfaceProcessor(interfaceProcessor *model.
 	copier.CopyWithOption(&req, interf, copier.Option{DeepCopy: true})
 
 	// replace variables
-	newReq, err := s.InterfaceService.ReplaceEnvironmentAndExtractorVariables(req)
-	if err != nil {
-		return
-	}
-	err = s.ExecRequestService.ReplaceProcessorVariables(&newReq, interfaceProcessor)
-	if err != nil {
-		return
-	}
+	environmentVariables, _ := s.EnvironmentRepo.ListByInterface(req.Id)
+	extractorVariables, _ := s.ExtractorRepo.ListExtractorVariable(req.Id)
+	execVariables := s.ExecContext.ListVariable(interfaceProcessor.ID)
+	variableArr := requestHelper.MergeVariables(environmentVariables, extractorVariables, execVariables)
 
-	resp, err := s.InterfaceService.Test(newReq)
+	requestHelper.ReplaceAll(&req, variableArr)
+
+	resp, err := s.InterfaceService.Test(req)
 	if err != nil {
 		return
 	}

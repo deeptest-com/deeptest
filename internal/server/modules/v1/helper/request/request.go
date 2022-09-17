@@ -58,19 +58,20 @@ func replaceAuthor(req *serverDomain.InvocationRequest, variableArr [][]string) 
 	}
 }
 
-func MergeVariables(environmentVariables []model.EnvironmentVar,
-	extractorVariables []serverDomain.Variable,
-	execVariables []domain.ExecVariable) (
+func MergeVariables(
+	environmentVariables []model.EnvironmentVar,
+	interfaceExtractorVariables []serverDomain.Variable,
+	processorExtractorVariables []domain.ExecVariable) (
 	ret [][]string) {
 
 	variableMap := iris.Map{}
 	for _, item := range environmentVariables {
 		variableMap[item.Name] = item.Value
 	}
-	for _, item := range extractorVariables { // overwrite previous ones
+	for _, item := range interfaceExtractorVariables { // overwrite previous ones
 		variableMap[item.Name] = item.Value
 	}
-	for _, item := range execVariables { // overwrite previous ones
+	for _, item := range processorExtractorVariables { // overwrite previous ones
 		variableMap[item.Name] = item.Value
 	}
 

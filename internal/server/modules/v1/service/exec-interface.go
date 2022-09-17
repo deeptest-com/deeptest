@@ -38,9 +38,9 @@ func (s *ExecInterfaceService) ExecInterfaceProcessor(interfaceProcessor *model.
 
 	// replace variables
 	environmentVariables, _ := s.EnvironmentRepo.ListByInterface(req.Id)
-	extractorVariables, _ := s.ExtractorRepo.ListExtractorVariable(req.Id)
-	execVariables := s.ExecContext.ListVariable(interfaceProcessor.ID)
-	variableArr := requestHelper.MergeVariables(environmentVariables, extractorVariables, execVariables)
+	interfaceExtractorVariables, _ := s.ExtractorRepo.ListExtractorVariable(req.Id)
+	processorExtractorVariables := s.ExecContext.ListVariable(interfaceProcessor.ID)
+	variableArr := requestHelper.MergeVariables(environmentVariables, interfaceExtractorVariables, processorExtractorVariables)
 
 	requestHelper.ReplaceAll(&req, variableArr)
 

@@ -9,7 +9,7 @@ import (
 	requestHelper "github.com/aaronchen2k/deeptest/internal/server/modules/v1/helper/request"
 	_consts "github.com/aaronchen2k/deeptest/pkg/consts"
 	"github.com/aaronchen2k/deeptest/pkg/lib/log"
-	stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
+	"github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"github.com/fatih/color"
 	"io/ioutil"
 	"net/http"
@@ -117,13 +117,14 @@ func gets(req serverDomain.InvocationRequest, method consts.HttpMethod, readResp
 	ret.StatusCode = consts.HttpRespCode(resp.StatusCode)
 	ret.StatusContent = resp.Status
 	ret.ContentType = consts.HttpContentType(resp.Header.Get(consts.ContentType))
-	ret.ContentLength = stringUtils.ParseInt(resp.Header.Get(consts.ContentLength))
+	ret.ContentLength = _stringUtils.ParseInt(resp.Header.Get(consts.ContentLength))
 	ret.Headers = getHeaders(resp.Header)
 
 	if readRespData {
-		content, _ := ioutil.ReadAll(resp.Body)
+		unicodeContent, _ := ioutil.ReadAll(resp.Body)
+		content, _ := _stringUtils.UnescapeUnicode(unicodeContent)
 		if _consts.Verbose {
-			_logUtils.PrintUnicode(content)
+			_logUtils.Info(string(content))
 		}
 
 		ret.Content = string(content)
@@ -194,13 +195,14 @@ func posts(req serverDomain.InvocationRequest, method consts.HttpMethod, readRes
 	ret.StatusContent = resp.Status
 
 	ret.ContentType = consts.HttpContentType(resp.Header.Get(consts.ContentType))
-	ret.ContentLength = stringUtils.ParseInt(resp.Header.Get(consts.ContentLength))
+	ret.ContentLength = _stringUtils.ParseInt(resp.Header.Get(consts.ContentLength))
 	ret.Headers = getHeaders(resp.Header)
 
 	if readRespData {
-		content, _ := ioutil.ReadAll(resp.Body)
+		unicodeContent, _ := ioutil.ReadAll(resp.Body)
+		content, _ := _stringUtils.UnescapeUnicode(unicodeContent)
 		if _consts.Verbose {
-			_logUtils.PrintUnicode(content)
+			_logUtils.Info(string(content))
 		}
 
 		ret.Content = string(content)

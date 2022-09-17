@@ -1,11 +1,8 @@
 package _logUtils
 
 import (
-	"encoding/json"
 	"fmt"
 	"go.uber.org/zap"
-	"log"
-	"strings"
 )
 
 var Logger *zap.Logger
@@ -47,28 +44,4 @@ func Debugf(str string, args ...interface{}) {
 	msg := fmt.Sprintf(str, args...)
 	Logger.Debug(msg)
 	//log.Printf(msg+"\n")
-}
-
-func PrintUnicode(str []byte) {
-	msg := ConvertUnicode(str)
-
-	Logger.Info(msg)
-	log.Print(msg)
-}
-
-func ConvertUnicode(str []byte) (msg string) {
-	var a interface{}
-
-	temp := strings.Replace(string(str), "\\\\", "\\", -1)
-
-	err := json.Unmarshal([]byte(temp), &a)
-
-	if err == nil {
-		bytes, _ := json.Marshal(a)
-		msg = string(bytes)
-	} else {
-		msg = temp
-	}
-
-	return
 }

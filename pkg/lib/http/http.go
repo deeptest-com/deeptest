@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	_consts "github.com/aaronchen2k/deeptest/pkg/consts"
 	"github.com/aaronchen2k/deeptest/pkg/lib/log"
+	_stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"github.com/fatih/color"
 	"io/ioutil"
 	"net/http"
@@ -44,8 +46,11 @@ func Get(url string) (ret []byte, err error) {
 		return
 	}
 
-	ret, err = ioutil.ReadAll(resp.Body)
-	_logUtils.Infof("===DEBUG=== response: %s", _logUtils.ConvertUnicode(ret))
+	unicodeContent, err := ioutil.ReadAll(resp.Body)
+	ret, _ = _stringUtils.UnescapeUnicode(unicodeContent)
+	if _consts.Verbose {
+		_logUtils.Infof("===DEBUG=== response: %s", ret)
+	}
 
 	if err != nil {
 		_logUtils.Infof(color.RedString("read response failed, error ", err.Error()))
@@ -104,11 +109,12 @@ func PostOrPut(url string, method string, data interface{}) (ret []byte, err err
 		return
 	}
 
-	ret, err = ioutil.ReadAll(resp.Body)
+	unicodeContent, err := ioutil.ReadAll(resp.Body)
 	defer resp.Body.Close()
 
-	if Verbose {
-		_logUtils.Infof("===DEBUG=== response: %s", _logUtils.ConvertUnicode(ret))
+	ret, _ = _stringUtils.UnescapeUnicode(unicodeContent)
+	if _consts.Verbose {
+		_logUtils.Infof("===DEBUG=== response: %s", ret)
 	}
 
 	if err != nil {

@@ -64,7 +64,7 @@
         <div v-for="(item, idx) in environmentData.vars" :key="idx" class="env">
           <div class="left">
             <span class="name">{{item.name}}</span>
-            <span class="val">{{item.value}}</span>
+            <span class="val" :title="item.value">{{item.value}}</span>
           </div>
           <div class="right">
             <a-dropdown>
@@ -82,7 +82,7 @@
         </div>
       </div>
 
-      <div v-if="true">
+      <div v-if="environmentData.vars.length == 0">
         <Empty></Empty>
       </div>
 
@@ -261,7 +261,9 @@ export default defineComponent({
 
 <style lang="less" scoped>
 .env-main {
-  height: 100%;
+  display: flex;
+  flex-direction: column;
+
   .head {
     padding: 0 3px;
     height: 32px;
@@ -280,8 +282,8 @@ export default defineComponent({
     }
   }
   .body {
-    height: calc(100% - 30px);
-    overflow-y: hidden;
+    flex: 1;
+    overflow-y: auto;
 
     .btn-wrapper {
       text-align: center;
@@ -300,7 +302,9 @@ export default defineComponent({
             flex: 1;
           }
           .val {
-            flex: 1;
+            flex: 2;
+            overflow-x: hidden;
+            text-overflow :ellipsis;
           }
         }
         .right {

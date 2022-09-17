@@ -101,7 +101,12 @@ export default defineComponent({
   .ant-tabs-right-content {
     padding-right: 0px;
     height: 100%;
-    overflow-y: auto;
+    .ant-tabs-tabpane {
+      height: 100%;
+      &.ant-tabs-tabpane-inactive {
+        display: none;
+      }
+    }
   }
   .ant-tabs-nav-scroll {
     text-align: center;
@@ -129,7 +134,7 @@ export default defineComponent({
   }
 
   .design-right {
-    width: 260px;
+    width: 300px;
     height: 100%;
     border-left: solid 1px #e6e9ec;
   }

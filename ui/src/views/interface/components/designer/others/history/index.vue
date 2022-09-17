@@ -68,6 +68,9 @@ export default defineComponent({
 
 <style lang="less" scoped>
 .history-main {
+  display: flex;
+  flex-direction: column;
+
   height: 100%;
   .head {
     padding: 0 5px;
@@ -84,8 +87,8 @@ export default defineComponent({
     }
   }
   .body {
-    height: calc(100% - 30px);
-    overflow-y: hidden;
+    flex: 1;
+    overflow-y: auto;
 
     .btn-wrapper {
       text-align: center;

@@ -195,10 +195,10 @@ func (s *InterfaceService) ReplaceEnvironmentExtractorAndExecVariables(req serve
 	environmentVariables, _ := s.EnvironmentRepo.ListByInterface(interfaceId)
 	interfaceExtractorVariables, _ := s.ExtractorRepo.ListExtractorVariable(interfaceId)
 
-	ret = req
-
 	variableArr := requestHelper.MergeVariables(environmentVariables, interfaceExtractorVariables, nil)
 	requestHelper.ReplaceAll(&req, variableArr)
+
+	ret = req
 
 	return
 }

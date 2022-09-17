@@ -2,7 +2,6 @@ package httpHelper
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
@@ -147,7 +146,7 @@ func posts(req serverDomain.InvocationRequest, method consts.HttpMethod, readRes
 
 	client := &http.Client{}
 
-	dataBytes, err := json.Marshal(reqData)
+	dataBytes := []byte(reqData)
 	if err != nil {
 		_logUtils.Infof(color.RedString("marshal request failed, error: %s.", err.Error()))
 		return

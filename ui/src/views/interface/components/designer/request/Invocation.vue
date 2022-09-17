@@ -103,9 +103,10 @@ export default defineComponent({
       console.log('selectMethod', val.key)
       interfaceData.value.method = val.key
     };
-    const invoke = (e) => {
+    const sendRequest = (e) => {
       let data = JSON.parse(JSON.stringify(interfaceData.value))
       data = prepareDataForRequest(data)
+      data.body = data.body.replaceAll('\n', '').replaceAll(' ', '')
       console.log('invoke', data)
 
       if (validateInfo()) {
@@ -146,9 +147,10 @@ export default defineComponent({
       let msg = ''
       if (!interfaceData.value.url) {
         msg = '请求地址不能为空'
-      } else if (!regxUrl.test(interfaceData.value.url)) {
-        msg = '请求地址格式错误'
       }
+      // else if (!regxUrl.test(interfaceData.value.url)) {
+      //   msg = '请求地址格式错误'
+      // }
 
       if (msg) {
         notification.warn({
@@ -166,7 +168,7 @@ export default defineComponent({
       interfaceData,
       methods,
       selectMethod,
-      sendRequest: invoke,
+      sendRequest,
       save,
       clearAll,
       saveName,

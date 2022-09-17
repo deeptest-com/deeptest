@@ -45,10 +45,11 @@
     <div class="body">
       <MonacoEditor
           class="editor"
-          :value="interfaceData.body"
+          v-model:value="interfaceData.body"
           :language="codeLang"
           theme="vs"
           :options="editorOptions"
+          @change="editorChange"
       />
     </div>
   </div>
@@ -99,11 +100,16 @@ export default defineComponent({
       return getCodeLangByType(interfaceData.value.bodyType)
     }
 
+    const editorChange = (newScriptCode) => {
+      interfaceData.value.body = newScriptCode;
+    }
+
     return {
       interfaceData,
       editorOptions,
       bodyTypes,
       codeLang,
+      editorChange,
     }
   }
 })

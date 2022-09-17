@@ -155,8 +155,8 @@ const design = (id: number) => {
 }
 
 const edit = (id: number) => {
-  console.log('edit', currProject.value)
-  // router.push(`/scenario/edit/${id}`)
+  console.log('edit')
+  router.push(`/scenario/edit/${id}`)
 }
 
 const remove = (id: number) => {

@@ -82,7 +82,7 @@
         </div>
       </div>
 
-      <div v-if="environmentData.vars.length == 0">
+      <div v-if="environmentData.vars?.length == 0">
         <Empty></Empty>
       </div>
 

@@ -125,7 +125,7 @@ export default defineComponent({
     let tree = ref(null)
 
     const selectNode = (keys) => {
-      console.log('selectNode', keys)
+      console.log('selectNode', keys, selectedKeys)
       if (!keys || selectedKeys.value.length === 0) {
         store.dispatch('Interface/getInterface', {isDir: true})
         return

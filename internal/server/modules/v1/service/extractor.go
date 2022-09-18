@@ -1,6 +1,7 @@
 package service
 
 import (
+	cacheUtils "github.com/aaronchen2k/deeptest/internal/pkg/cache"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
@@ -9,7 +10,6 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/repo"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
-	_cacheUtils "github.com/aaronchen2k/deeptest/pkg/lib/cache"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/jinzhu/copier"
 	"strconv"
@@ -57,10 +57,12 @@ func (s *ExtractorService) ExtractInterface(interf model.Interface, resp serverD
 
 	for _, extractor := range extractors {
 		logExtractor, err := s.Extract(extractor, resp, interfaceExecLog)
+
 		if err == nil {
-			_cacheUtils.SetCache(strconv.Itoa(int(interf.ProjectId)), extractor.Variable, extractor.Result)
-			val := _cacheUtils.GetCache(strconv.Itoa(int(interf.ProjectId)), extractor.Variable)
-			logUtils.Infof("%s = %v", extractor.Variable, val)
+			// save to cache for checkpoints validation
+			cacheUtils.SetCache(strconv.Itoa(int(interf.ProjectId)), extractor.Variable, extractor.Result)
+			val := cacheUtils.GetCache(strconv.Itoa(int(interf.ProjectId)), extractor.Variable)
+			logUtils.Infof("extractor variable %s = %v", extractor.Variable, val)
 
 			interfaceExtractor := domain.ExecInterfaceExtractor{}
 			copier.CopyWithOption(&interfaceExtractor, logExtractor, copier.Option{DeepCopy: true})

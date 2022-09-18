@@ -3,14 +3,13 @@ package service
 import (
 	"encoding/json"
 	"fmt"
+	cacheUtils "github.com/aaronchen2k/deeptest/internal/pkg/cache"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
 	execHelper "github.com/aaronchen2k/deeptest/internal/server/modules/v1/helper/exec"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/repo"
-	_cacheUtils "github.com/aaronchen2k/deeptest/pkg/lib/cache"
-	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"github.com/jinzhu/copier"
 	"strconv"
@@ -159,8 +158,7 @@ func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp ser
 
 	// Extractor
 	if checkpoint.Type == consts.Extractor {
-		extractorValue := _cacheUtils.GetCache(strconv.Itoa(int(projectId)), checkpoint.ExtractorVariable)
-		logUtils.Infof("%s = %v", checkpoint.ExtractorVariable, extractorValue)
+		extractorValue := cacheUtils.GetCache(strconv.Itoa(int(projectId)), checkpoint.ExtractorVariable)
 		checkpoint.ActualResult = extractorValue
 
 		checkpoint.ResultStatus = execHelper.Compare(checkpoint.Operator, extractorValue, checkpoint.Value)

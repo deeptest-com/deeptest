@@ -1,12 +1,12 @@
-package _cacheUtils
+package cacheUtils
 
 import (
-	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/kataras/iris/v12"
 )
 
 func GetCache(scope, key string) (val string) {
-	mapObj, ok := serverConsts.EnvVar.Load(scope)
+	mapObj, ok := consts.EnvVar.Load(scope)
 
 	var mp iris.Map
 	if ok {
@@ -24,7 +24,7 @@ func GetCache(scope, key string) (val string) {
 }
 
 func SetCache(scope, key, val string) {
-	mapObj, ok := serverConsts.EnvVar.Load(scope)
+	mapObj, ok := consts.EnvVar.Load(scope)
 
 	var mp iris.Map
 	if ok {
@@ -35,7 +35,7 @@ func SetCache(scope, key, val string) {
 
 	mp[key] = val
 
-	serverConsts.EnvVar.Store(scope, mp)
+	consts.EnvVar.Store(scope, mp)
 
 	return
 }

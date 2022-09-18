@@ -300,9 +300,13 @@ export default defineComponent({
           .name {
             margin-left: 0;
             flex: 1;
+            overflow: hidden;
+            white-space:nowrap;
+            text-overflow :ellipsis;
           }
           .val {
             flex: 2;
+            padding-left: 8px;
             overflow: hidden;
             white-space:nowrap;
             text-overflow :ellipsis;

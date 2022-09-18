@@ -1,5 +1,7 @@
 package consts
 
+import "sync"
+
 var (
 	Language = "zh"
 	Verbose  = true
@@ -8,4 +10,6 @@ var (
 	IsRelease bool
 	ExecDir   string
 	WorkDir   string
+
+	EnvVar sync.Map
 )

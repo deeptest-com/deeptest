@@ -317,6 +317,7 @@ export default defineComponent({
           width: 24px;
           text-align: center;
           .more {
+            display: inline-block;
             font-weight: bolder;
             font-size: 16px;
           }

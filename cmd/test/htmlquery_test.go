@@ -17,7 +17,7 @@ func TestA(t *testing.T) {
 		panic(err)
 	}
 	//  "//form[@id=1]/input[@id=\"kw\"]/@class" is invalid. changed to @id="1",
-	expression := `//form[@id="form"]/input[@id="kw"]/@class`
+	expression := `//form[@id="form"]/input[@id="kw"]`
 	list, err := htmlquery.QueryAll(doc, expression)
 	if err != nil {
 		panic(err)

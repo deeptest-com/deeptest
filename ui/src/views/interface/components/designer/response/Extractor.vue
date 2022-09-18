@@ -6,7 +6,7 @@
         <a-col flex="80px">来源</a-col>
         <a-col flex="100px">提取类型</a-col>
         <a-col flex="1">表达式</a-col>
-        <a-col flex="150px">环境变量</a-col>
+        <a-col flex="150px" style="padding-left: 10px;">环境变量</a-col>
         <a-col flex="1">提取结果</a-col>
 
         <a-col flex="100px" class="dp-right">
@@ -30,7 +30,7 @@
                 item.expression }}
           </span>
         </a-col>
-        <a-col flex="150px">{{ item.variable }}</a-col>
+        <a-col flex="150px" style="padding-left: 10px;">{{ item.variable }}</a-col>
         <a-col flex="1">{{item.result}}</a-col>
 
         <a-col flex="100px" class="dp-right">

@@ -208,6 +208,7 @@ const StoreModel: ModuleType = {
                 commit('setInterface', {
                     bodyType: 'application/json'
                 });
+                commit('setResponse', {headers: [], contentLang: 'html', content: ''});
                 return true;
             }
 
@@ -216,6 +217,7 @@ const StoreModel: ModuleType = {
                 const {data} = response;
 
                 commit('setInterface', data);
+                commit('setResponse', {headers: [], contentLang: 'html', content: ''});
                 return true;
             } catch (error) {
                 return false;

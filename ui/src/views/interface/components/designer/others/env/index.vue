@@ -2,8 +2,8 @@
   <div class="env-main">
     <div class="head no-padding">
       <div class="title">
-        <a-dropdown-button trigger="click" placement="bottomLeft" overlayClassName="select-env-overlay">
-          <div style="width: 113px;">
+        <a-dropdown-button trigger="click" placement="bottomLeft">
+          <div style="width:138px;">
             <a class="more dp-color-text">
               <span v-if="environmentData.id">{{environmentData.name}}</span>
               <span v-if="!environmentData.id">选择环境</span>
@@ -303,8 +303,10 @@ export default defineComponent({
           }
           .val {
             flex: 2;
-            overflow-x: hidden;
+            overflow: hidden;
+            white-space:nowrap;
             text-overflow :ellipsis;
+            width: 0;
           }
         }
         .right {

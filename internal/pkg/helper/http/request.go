@@ -1,7 +1,9 @@
 package httpHelper
 
 import (
+	"bufio"
 	"bytes"
+	"compress/gzip"
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
@@ -11,6 +13,8 @@ import (
 	"github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"github.com/fatih/color"
+	"golang.org/x/net/html/charset"
+	"golang.org/x/text/transform"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -120,15 +124,29 @@ func gets(req serverDomain.InvocationRequest, method consts.HttpMethod, readResp
 	ret.ContentLength = _stringUtils.ParseInt(resp.Header.Get(consts.ContentLength))
 	ret.Headers = getHeaders(resp.Header)
 
-	if readRespData {
-		unicodeContent, _ := ioutil.ReadAll(resp.Body)
-		content, _ := _stringUtils.UnescapeUnicode(unicodeContent)
-		if _consts.Verbose {
-			_logUtils.Info(string(content))
-		}
-
-		ret.Content = string(content)
+	if !readRespData {
+		return
 	}
+	reader := resp.Body
+	if resp.Header.Get("Content-Encoding") == "gzip" {
+		reader, _ = gzip.NewReader(resp.Body)
+	}
+
+	htmlContent, _ := ioutil.ReadAll(reader)
+
+	oldReader := bufio.NewReader(bytes.NewReader(htmlContent))
+	peekBytes, _ := oldReader.Peek(1024)
+	e, _, _ := charset.DetermineEncoding(peekBytes, "")
+	utf8reader := transform.NewReader(oldReader, e.NewDecoder())
+
+	htmlContent, _ = ioutil.ReadAll(utf8reader)
+
+	//htmlContent, _ = _stringUtils.UnescapeUnicode(htmlContent)
+	if _consts.Verbose {
+		_logUtils.Info(string(htmlContent))
+	}
+
+	ret.Content = string(htmlContent)
 
 	return
 }

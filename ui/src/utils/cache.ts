@@ -4,8 +4,9 @@ import settings from '@/config/settings';
 export const getShowRightBar = async (): Promise<boolean> => {
     const mp = await getCache(settings.settings);
 
-    const showRightBar = mp ? mp[settings.showRightBar] : false
-    return showRightBar
+    if (!mp || !(settings.showRightBar in mp)) return true
+
+    return mp[settings.showRightBar]
 }
 export const setShowRightBar = async (val) => {
     let mp = await getCache(settings.showRightBar) as any;

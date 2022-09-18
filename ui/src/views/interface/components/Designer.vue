@@ -10,12 +10,22 @@
               :tabBarGutter="0"
               class="right-tab">
         <a-tab-pane key="history">
-          <template #tab><HistoryOutlined /></template>
+          <template #tab>
+            <a-tooltip placement="left" overlayClassName="dp-tip-small">
+              <template #title>历史</template>
+              <HistoryOutlined/>
+            </a-tooltip>
+          </template>
           <RequestHistory></RequestHistory>
         </a-tab-pane>
 
         <a-tab-pane key="env">
-          <template #tab><EnvironmentOutlined /></template>
+          <template #tab>
+            <a-tooltip placement="left" overlayClassName="dp-tip-small">
+              <template #title>环境</template>
+              <EnvironmentOutlined/>
+            </a-tooltip>
+          </template>
           <RequestEnv></RequestEnv>
         </a-tab-pane>
       </a-tabs>
@@ -112,7 +122,7 @@ export default defineComponent({
     text-align: center;
   }
   .ant-tabs-tab {
-    padding: 6px 10px !important;
+    padding: 5px 10px !important;
     .anticon {
       margin-right: 2px !important;
     }

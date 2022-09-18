@@ -32,7 +32,10 @@
     <div class="head">
       <div class="title">
         <span @click="create" class="dp-link">
-          <PlusOutlined class="dp-icon-btn dp-trans-80" />
+          <a-tooltip overlayClassName="dp-tip-small">
+            <template #title>新建环境</template>
+            <PlusOutlined class="dp-icon-btn dp-trans-80"/>
+          </a-tooltip>
         </span>
       </div>
       <div class="acts">
@@ -54,10 +57,16 @@
           <div class="left"></div>
           <div class="right" style="width: 48px;">
             <span @click="clearVar" class="dp-link">
-              <ClearOutlined class="dp-icon-btn dp-trans-80" />
+              <a-tooltip overlayClassName="dp-tip-small">
+                <template #title>清除变量</template>
+                <ClearOutlined class="dp-icon-btn dp-trans-80"/>
+              </a-tooltip>
             </span>
             <span @click="createVar" class="dp-link">
-              <PlusOutlined class="dp-icon-btn dp-trans-80" />
+              <a-tooltip overlayClassName="dp-tip-small">
+                <template #title>添加变量</template>
+                <PlusOutlined class="dp-icon-btn dp-trans-80"/>
+              </a-tooltip>
             </span>
           </div>
         </div>

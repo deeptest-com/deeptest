@@ -6,7 +6,7 @@ import (
 )
 
 func GetCache(scope, key string) (val string) {
-	mapObj, ok := consts.EnvVar.Load(scope)
+	mapObj, ok := consts.CacheData.Load(scope)
 
 	var mp iris.Map
 	if ok {
@@ -24,7 +24,7 @@ func GetCache(scope, key string) (val string) {
 }
 
 func SetCache(scope, key, val string) {
-	mapObj, ok := consts.EnvVar.Load(scope)
+	mapObj, ok := consts.CacheData.Load(scope)
 
 	var mp iris.Map
 	if ok {
@@ -35,7 +35,7 @@ func SetCache(scope, key, val string) {
 
 	mp[key] = val
 
-	consts.EnvVar.Store(scope, mp)
+	consts.CacheData.Store(scope, mp)
 
 	return
 }

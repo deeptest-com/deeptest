@@ -11,5 +11,5 @@ var (
 	ExecDir   string
 	WorkDir   string
 
-	EnvVar sync.Map
+	CacheData sync.Map
 )

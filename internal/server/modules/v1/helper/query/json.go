@@ -1,6 +1,7 @@
 package queryHelper
 
 import (
+	"fmt"
 	"github.com/antchfx/jsonquery"
 	"strings"
 )
@@ -20,7 +21,7 @@ func JsonQuery(content string, expression string) (result string) {
 
 	results := make([]string, 0)
 	for _, item := range list {
-		result := item.InnerText()
+		result := fmt.Sprintf("%v", item.Value())
 		results = append(results, result)
 	}
 

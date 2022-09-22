@@ -34,9 +34,11 @@ import {
     removeCheckpoint,
 } from './service';
 import {Checkpoint, Extractor, Interface, Response} from "@/views/interface/data";
+import {getNodeMap} from "@/services/tree";
 
 export interface StateType {
     treeData: any[];
+    treeDataMap: any,
     interfaceData: Interface;
     responseData: Response;
 
@@ -56,6 +58,9 @@ export interface ModuleType extends StoreModuleType<StateType> {
     state: StateType;
     mutations: {
         setTree: Mutation<StateType>;
+        setTreeMap: Mutation<StateType>;
+        setTreeMapItem: Mutation<StateType>;
+        setTreeMapItemProp: Mutation<StateType>;
         setInterface: Mutation<StateType>;
         setResponse: Mutation<StateType>;
 
@@ -73,6 +78,8 @@ export interface ModuleType extends StoreModuleType<StateType> {
     actions: {
         invoke: Action<StateType, StateType>;
         saveInterface: Action<StateType, StateType>;
+        saveTreeMapItem: Action<StateType, StateType>;
+        saveTreeMapItemProp: Action<StateType, StateType>;
 
         loadInterface: Action<StateType, StateType>;
         getInterface: Action<StateType, StateType>;
@@ -110,6 +117,8 @@ export interface ModuleType extends StoreModuleType<StateType> {
 
 const initState: StateType = {
     treeData: [],
+    treeDataMap: {},
+
     interfaceData: {} as Interface,
     responseData: {} as Response,
 
@@ -135,6 +144,19 @@ const StoreModel: ModuleType = {
         setTree(state, payload) {
             payload.name = '所有接口'
             state.treeData = [payload];
+        },
+        setTreeMap(state, payload) {
+            state.treeDataMap = payload
+        },
+        setTreeMapItem(state, payload) {
+            if (!state.treeDataMap[payload.id]) return
+            state.treeDataMap[payload.id] = payload
+        },
+        setTreeMapItemProp(state, payload) {
+            if (!state.treeDataMap[payload.id]) return
+            state.treeDataMap[payload.id][payload.prop] = payload.value
+
+            console.log('---', state.treeDataMap[payload.id])
         },
         setInterface(state, data) {
             state.interfaceData = data;
@@ -194,13 +216,24 @@ const StoreModel: ModuleType = {
                 }
             })
         },
+        async saveTreeMapItem({commit}, payload: any) {
+            commit('setTreeMapItem', payload);
+        },
+        async saveTreeMapItemProp({commit}, payload: any) {
+            commit('setTreeMapItemProp', payload);
+        },
 
-        async loadInterface({commit}) {
+        async loadInterface({commit, dispatch, state}) {
             const response = await load();
             if (response.code != 0) return;
 
             const {data} = response;
             commit('setTree', data || {});
+
+            const mp = {}
+            getNodeMap(data, mp)
+            commit('setTreeMap', mp);
+
             return true;
         },
         async getInterface({commit}, payload: any) {

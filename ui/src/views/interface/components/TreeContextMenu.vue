@@ -8,17 +8,17 @@
 
       <a-menu-item key="add_brother_node" class="menu-item" v-if="treeNode.parentId > 0">
         <PlusOutlined />
-        <span>创建兄弟节点</span>
+        <span>创建同级接口</span>
       </a-menu-item>
 
       <a-menu-item key="add_child_node" class="menu-item" v-if="treeNode.isDir">
         <PlusOutlined />
-        <span>创建子节点</span>
+        <span>创建子接口</span>
       </a-menu-item>
 
       <a-menu-item key="add_brother_dir" class="menu-item" v-if="treeNode.parentId > 0">
         <PlusOutlined />
-        <span>创建兄弟目录</span>
+        <span>创建同级目录</span>
       </a-menu-item>
 
       <a-menu-item key="add_child_dir" class="menu-item" v-if="treeNode.isDir">

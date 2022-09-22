@@ -9,7 +9,8 @@ import (
 )
 
 type ExtractorRepo struct {
-	DB *gorm.DB `inject:""`
+	DB            *gorm.DB       `inject:""`
+	InterfaceRepo *InterfaceRepo `inject:""`
 }
 
 func (r *ExtractorRepo) List(interfaceId uint) (pos []model.InterfaceExtractor, err error) {
@@ -89,10 +90,10 @@ func (r *ExtractorRepo) UpdateResultToExecLog(extractor model.InterfaceExtractor
 	return
 }
 
-func (r *ExtractorRepo) ListExtractorVariable(interfaceId uint) (variables []serverDomain.Variable, err error) {
+func (r *ExtractorRepo) ListExtractorVariable(projectId uint) (variables []serverDomain.Variable, err error) {
 	err = r.DB.Model(&model.InterfaceExtractor{}).
 		Select("id, variable AS name, result AS value").
-		Where("interface_id=?", interfaceId).
+		Where("project_id=?", projectId).
 		Where("NOT deleted AND NOT disabled").
 		Order("created_at ASC").
 		Find(&variables).Error

@@ -109,6 +109,8 @@ func gets(req serverDomain.InvocationRequest, method consts.HttpMethod, readResp
 
 	resp, err := client.Do(request)
 	if err != nil {
+		returnErr(consts.Uknown, "请求错误", err.Error(), &ret)
+
 		_logUtils.Error(err.Error())
 		return
 	}
@@ -149,6 +151,12 @@ func gets(req serverDomain.InvocationRequest, method consts.HttpMethod, readResp
 	ret.Content = string(htmlContent)
 
 	return
+}
+
+func returnErr(code consts.HttpRespCode, statusContent string, content string, resp *serverDomain.InvocationResponse) {
+	resp.StatusCode = code
+	resp.StatusContent = fmt.Sprintf("%d %s", code, statusContent)
+	resp.Content, _ = url.QueryUnescape(content)
 }
 
 func posts(req serverDomain.InvocationRequest, method consts.HttpMethod, readRespData bool) (

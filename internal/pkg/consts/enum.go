@@ -45,6 +45,8 @@ func (e HttpMethod) String() string {
 type HttpRespCode int
 
 const (
+	Uknown HttpRespCode = -1
+
 	Continue          HttpRespCode = 100
 	SwitchingProtocol HttpRespCode = 101
 

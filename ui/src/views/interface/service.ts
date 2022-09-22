@@ -201,12 +201,17 @@ export async function clearEnvironmentVar(environmentId: number): Promise<any> {
 
 // helper
 export function prepareDataForRequest(data: any) {
-    data.params = data.params.filter((item) => {
-        return !!item.name
-    })
-    data.headers = data.headers.filter((item) => {
-        return !!item.name
-    })
+    if (data.params) {
+        data.params = data.params.filter((item) => {
+            return !!item.name
+        })
+    }
+
+    if (data.headers) {
+        data.headers = data.headers.filter((item) => {
+            return !!item.name
+        })
+    }
 
     return data
 }

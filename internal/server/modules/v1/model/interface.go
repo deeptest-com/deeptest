@@ -149,6 +149,8 @@ type InterfaceExtractor struct {
 
 	Result      string `json:"result"`
 	InterfaceId uint   `json:"interfaceId"`
+
+	ProjectId uint `json:"projectId"`
 }
 
 func (InterfaceExtractor) TableName() string {

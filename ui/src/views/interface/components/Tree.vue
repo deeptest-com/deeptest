@@ -33,18 +33,20 @@
           class="interface-tree"
       >
         <template #title="slotProps">
-          <span v-if="!slotProps.isEdit">{{ slotProps.name }}</span>
-
-          <span v-else class="name-editor">
-              <a-input v-model:value="editedData[slotProps.id]"
-                       @keyup.enter=updateName(slotProps.id)
-                       @click.stop
-                       :ref="'name-editor-' + slotProps.id" />
+          <span v-if="treeDataMap[slotProps.id] && treeDataMap[slotProps.id].isEdit" class="name-editor">
+            <a-input v-model:value="editedData[slotProps.id]"
+                     @keyup.enter=updateName(slotProps.id)
+                     @click.stop
+                     :ref="'name-editor-' + slotProps.id" />
 
               <span class="btns">
                 <CheckOutlined @click.stop="updateName(slotProps.id)"/>
                 <CloseOutlined @click.stop="cancelUpdate(slotProps.id)"/>
               </span>
+          </span>
+
+          <span v-else class="name-editor">
+              {{ slotProps.name }}
             </span>
         </template>
 
@@ -97,6 +99,7 @@ export default defineComponent({
     const currProject = computed<any>(() => store.state.ProjectData.currProject);
 
     const treeData = computed<any>(() => store.state.Interface.treeData);
+    const treeDataMap = computed<any>(() => store.state.Interface.treeDataMap);
     const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
 
     watch(currProject, () => {
@@ -126,12 +129,15 @@ export default defineComponent({
 
     const selectNode = (keys) => {
       console.log('selectNode', keys, selectedKeys)
-      if (!keys || selectedKeys.value.length === 0) {
+      selectedKeys.value = keys
+      if (!selectedKeys.value || selectedKeys.value.length === 0) {
         store.dispatch('Interface/getInterface', {isDir: true})
         return
       }
 
-      const selectedData = treeDataMap[selectedKeys.value[0]]
+      const selectedData = treeDataMap.value[selectedKeys.value[0]]
+      if (!selectedData) return
+
       store.dispatch('Interface/getInterface', {id: selectedData.id, isDir: selectedData.isDir})
       if (!selectedData.isDir) {
         store.dispatch('Interface/listInvocation', selectedData.id)
@@ -149,19 +155,18 @@ export default defineComponent({
       console.log('updateName', id, name)
       updateNodeName(id, name).then((json) => {
         if (json.code === 0) {
-          treeDataMap[id].name = name
-          treeDataMap[id].isEdit = false
+          store.dispatch('Interface/saveTreeMapItemProp', {id: id, prop: 'name', value: name})
+          store.dispatch('Interface/saveTreeMapItemProp', {id: id, prop: 'isEdit', value: false})
         }
       })
     }
     const cancelUpdate = (id) => {
       console.log('cancelUpdate', id)
-      treeDataMap[id].isEdit = false
+      store.dispatch('Interface/saveTreeMapItemProp', {id: id, prop: 'isEdit', value: false})
     }
 
     let contextNode = ref({} as any)
     let menuStyle = ref({} as any)
-    const treeDataMap = {}
     let tips = ref('')
     let rightVisible = false
     const onRightClick = (e) => {
@@ -171,7 +176,7 @@ export default defineComponent({
       const y = event.currentTarget.getBoundingClientRect().top
       const x = event.currentTarget.getBoundingClientRect().right
 
-      const contextNodeData = treeDataMap[node.eventKey]
+      const contextNodeData = treeDataMap.value[node.eventKey]
       contextNode.value = {
         pageX: x,
         pageY: y,
@@ -181,24 +186,9 @@ export default defineComponent({
         parentId: node.dataRef.parentId
       }
 
-
       menuStyle.value = getContextMenuStyle(
           event.currentTarget.getBoundingClientRect().right, event.currentTarget.getBoundingClientRect().top, 185)
-
-      // menuStyle.value = {
-      //   position: 'fixed',
-      //   maxHeight: 40,
-      //   textAlign: 'center',
-      //   left: `${x + 10}px`,
-      //   top: `${y + 6}px`
-      //   // display: 'flex',
-      //   // flexDirection: 'row'
-      // }
     }
-
-    const getNodeMapCall = throttle(async () => {
-      getNodeMap(treeData.value[0], treeDataMap)
-    }, 300)
 
     const getExpandedKeysCall = throttle(async () => {
       getExpandedKeys(currProject.value.id).then(async keys => {
@@ -229,8 +219,6 @@ export default defineComponent({
 
     watch(treeData, () => {
       console.log('watch', treeData)
-      getNodeMapCall()
-      // console.log('treeMap', Object.keys(treeDataMap), treeDataMap)
       if (!treeData.value[0].children || treeData.value[0].children.length === 0) {
         tips.value = '右键树状节点操作'
       }
@@ -246,7 +234,7 @@ export default defineComponent({
     const expandAll = () => {
       console.log('expandAll')
       isExpand.value = !isExpand.value
-      expandedKeys.value = expandAllKeys(treeDataMap, isExpand.value)
+      expandedKeys.value = expandAllKeys(treeDataMap.value, isExpand.value)
 
       setExpandedKeys(currProject.value.id, expandedKeys.value)
     }
@@ -258,20 +246,7 @@ export default defineComponent({
       targetModelId = targetId
 
       if (menuKey === 'rename') {
-        selectedKeys.value = [targetModelId]
-        selectNode(selectedKeys.value)
-        editedData.value[targetModelId] = treeDataMap[targetModelId].name
-
-        Object.keys(treeDataMap).forEach((key) => {
-          treeDataMap[key].isEdit = false
-        })
-        treeDataMap[targetModelId].isEdit = true
-
-        setTimeout(() => {
-          console.log('==', currentInstance.ctx.$refs[`name-editor-${targetModelId}`])
-          currentInstance.ctx.$refs[`name-editor-${targetModelId}`].focus()
-        }, 50)
-
+        renameNode()
         return
       }
 
@@ -290,17 +265,42 @@ export default defineComponent({
       clearMenu()
     }
 
+    const renameNode = () => {
+      selectedKeys.value = [targetModelId]
+      selectNode(selectedKeys.value)
+      editedData.value[targetModelId] = treeDataMap.value[targetModelId].name
+
+      Object.keys(treeDataMap.value).forEach((key) => {
+        store.dispatch('Interface/saveTreeMapItemProp', {id: key, prop: 'isEdit', value: false})
+      })
+      // treeDataMap.value[targetModelId].isEdit = true
+      store.dispatch('Interface/saveTreeMapItemProp', {id: targetModelId, prop: 'isEdit', value: true})
+
+      setTimeout(() => {
+        console.log('==', currentInstance.ctx.$refs[`name-editor-${targetModelId}`])
+        currentInstance.ctx.$refs[`name-editor-${targetModelId}`]?.focus()
+        currentInstance.ctx.$refs[`name-editor-${targetModelId}`]?.select();
+      }, 50)
+    }
+
     const addNode = (mode, type) => {
       console.log('addNode', targetModelId)
       store.dispatch('Interface/createInterface',
           {target: targetModelId, name: type === 'dir' ? '新目录' : '新接口', mode: mode, type: type})
           .then((newNode) => {
-              console.log('newNode', newNode)
+            console.log('newNode', newNode)
+
+            if (!newNode.isDir) {
+              targetModelId = newNode.id
+              renameNode()
+            } else {
+              store.dispatch('Interface/saveTreeMapItem', {id: newNode.id, value: newNode})
               selectNode([newNode.id])
-              expandOneKey(treeDataMap, newNode.parentId, expandedKeys.value) // expend new node
-              setExpandedKeys(currProject.value.id, expandedKeys.value)
             }
-          )
+
+            expandOneKey(treeDataMap.value, newNode.parentId, expandedKeys.value) // expend new node
+            setExpandedKeys(currProject.value.id, expandedKeys.value)
+          })
     }
     const removeNode = () => {
       console.log('removeNode')
@@ -320,7 +320,7 @@ export default defineComponent({
       const dragKey = info.dragNode.eventKey;
       const dropPos = info.node.pos.split('-');
       let dropPosition = info.dropPosition - Number(dropPos[dropPos.length - 1]);
-      if (!treeDataMap[dropKey].isDir && dropPosition === 0) dropPosition = 1
+      if (!treeDataMap.value[dropKey].isDir && dropPosition === 0) dropPosition = 1
       console.log(dragKey, dropKey, dropPosition);
 
       store.dispatch('Interface/moveInterface', {dragKey: dragKey, dropKey: dropKey, dropPos: dropPosition});
@@ -339,6 +339,7 @@ export default defineComponent({
 
     return {
       treeData,
+      treeDataMap,
       interfaceData,
       editedData,
 

@@ -3,7 +3,7 @@ package service
 import (
 	"encoding/json"
 	"fmt"
-	cacheUtils "github.com/aaronchen2k/deeptest/internal/pkg/cache"
+	extractCache "github.com/aaronchen2k/deeptest/internal/pkg/cache/extract"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
@@ -12,7 +12,6 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/repo"
 	stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"github.com/jinzhu/copier"
-	"strconv"
 	"strings"
 )
 
@@ -158,7 +157,7 @@ func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp ser
 
 	// Extractor
 	if checkpoint.Type == consts.Extractor {
-		extractorValue := cacheUtils.GetExtractedVariableFromCache(strconv.Itoa(int(projectId)), checkpoint.ExtractorVariable)
+		extractorValue := extractCache.Get(checkpoint.ExtractorVariable)
 		checkpoint.ActualResult = extractorValue
 
 		checkpoint.ResultStatus = execHelper.Compare(checkpoint.Operator, extractorValue, checkpoint.Value)

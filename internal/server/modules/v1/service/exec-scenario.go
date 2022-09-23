@@ -1,8 +1,7 @@
 package service
 
 import (
-	"fmt"
-	cacheUtils "github.com/aaronchen2k/deeptest/internal/pkg/cache"
+	extractCache "github.com/aaronchen2k/deeptest/internal/pkg/cache/extract"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/business"
@@ -80,7 +79,7 @@ func (s *ExecScenarioService) ExecScenario(scenarioId int, wsMsg *websocket.Mess
 	execHelper.SendStartMsg(wsMsg)
 	execHelper.SendExecMsg(rootLog, wsMsg)
 
-	cacheUtils.ClearExtractedVariables(fmt.Sprintf("%d", rootProcessor.ProjectId))
+	extractCache.ClearAll()
 	for _, child := range rootProcessor.Children {
 		s.ExecProcessorRecursively(child, &rootLog, wsMsg)
 	}

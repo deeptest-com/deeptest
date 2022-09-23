@@ -1,7 +1,5 @@
 package consts
 
-import "sync"
-
 var (
 	Language = "zh"
 	Verbose  = true
@@ -10,6 +8,4 @@ var (
 	IsRelease bool
 	ExecDir   string
 	WorkDir   string
-
-	ExtractedVariableCache sync.Map
 )

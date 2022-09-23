@@ -1,7 +1,7 @@
 package service
 
 import (
-	cacheUtils "github.com/aaronchen2k/deeptest/internal/pkg/cache"
+	extractCache "github.com/aaronchen2k/deeptest/internal/pkg/cache/extract"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
@@ -11,7 +11,6 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/repo"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	"github.com/jinzhu/copier"
-	"strconv"
 	"strings"
 )
 
@@ -59,7 +58,7 @@ func (s *ExtractorService) ExtractInterface(interf model.Interface, resp serverD
 
 		if err == nil {
 			// save to cache for following interface's checkpoints and processors
-			cacheUtils.SetExtractedVariableToCache(strconv.Itoa(int(interf.ProjectId)), extractor.Variable, extractor.Result)
+			extractCache.Set(extractor.Variable, extractor.Result)
 
 			interfaceExtractor := domain.ExecInterfaceExtractor{}
 			copier.CopyWithOption(&interfaceExtractor, logExtractor, copier.Option{DeepCopy: true})

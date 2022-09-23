@@ -1,8 +1,7 @@
 package controller
 
 import (
-	"fmt"
-	cacheUtils "github.com/aaronchen2k/deeptest/internal/pkg/cache"
+	extractCache "github.com/aaronchen2k/deeptest/internal/pkg/cache/extract"
 	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
@@ -38,7 +37,7 @@ func (c *InvocationCtrl) Invoke(ctx iris.Context) {
 		return
 	}
 
-	cacheUtils.ClearExtractedVariables(fmt.Sprintf("%d", projectId))
+	extractCache.ClearAll()
 
 	reqNew, err := c.InterfaceService.ReplaceEnvironmentExtractorAndExecVariables(req)
 	if err != nil {

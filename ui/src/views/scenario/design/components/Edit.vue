@@ -3,38 +3,39 @@
     <!--    <ProcessorThreadDefault v-if="selectedNode.processorType === 'processor_thread_default'" />-->
 
     <ProcessorInterfaceDefault v-if="selectedNode.processorType === 'processor_interface_default'" />
-    <ProcessorGroupDefault v-if="selectedNode.processorType === 'processor_group_default'" />
-    <ProcessorTimerDefault  v-if="selectedNode.processorType === 'processor_time_default'" />
-    <ProcessorPrintDefault  v-if="selectedNode.processorType === 'processor_print_default'" />
+    <ProcessorGroupDefault v-else-if="selectedNode.processorType === 'processor_group_default'" />
+    <ProcessorTimerDefault  v-else-if="selectedNode.processorType === 'processor_time_default'" />
+    <ProcessorPrintDefault  v-else-if="selectedNode.processorType === 'processor_print_default'" />
 
-    <ProcessorLogicIf   v-if="selectedNode.processorType === 'processor_logic_if'" />
-    <ProcessorLogicElse v-if="selectedNode.processorType === 'processor_logic_else'" />
+    <ProcessorLogicIf   v-else-if="selectedNode.processorType === 'processor_logic_if'" />
+    <ProcessorLogicElse v-else-if="selectedNode.processorType === 'processor_logic_else'" />
 
-    <ProcessorLoopTime  v-if="selectedNode.processorType === 'processor_loop_time'" />
-    <ProcessorLoopTime  v-if="selectedNode.processorType === 'processor_loop_time'" />
+    <ProcessorLoopTime  v-else-if="selectedNode.processorType === 'processor_loop_time'" />
 
-    <ProcessorLoopUntil v-if="selectedNode.processorType === 'processor_loop_until'" />
-    <ProcessorLoopIn    v-if="selectedNode.processorType === 'processor_loop_in'" />
-    <ProcessorLoopRange v-if="selectedNode.processorType === 'processor_loop_range'" />
-    <ProcessorLoopBreak v-if="selectedNode.processorType === 'processor_loop_break'" />
+    <ProcessorLoopUntil v-else-if="selectedNode.processorType === 'processor_loop_until'" />
+    <ProcessorLoopIn    v-else-if="selectedNode.processorType === 'processor_loop_in'" />
+    <ProcessorLoopRange v-else-if="selectedNode.processorType === 'processor_loop_range'" />
+    <ProcessorLoopBreak v-else-if="selectedNode.processorType === 'processor_loop_break'" />
 
-    <ProcessorVariableSet   v-if="selectedNode.processorType === 'processor_variable_set'" />
-    <ProcessorVariableClear v-if="selectedNode.processorType === 'processor_variable_clear'" />
+    <ProcessorVariableSet   v-else-if="selectedNode.processorType === 'processor_variable_set'" />
+    <ProcessorVariableClear v-else-if="selectedNode.processorType === 'processor_variable_clear'" />
 
-    <ProcessorAssertionDefault      v-if="selectedNode.processorCategory === 'processor_assertion'" />
+    <ProcessorAssertionDefault      v-else-if="selectedNode.processorCategory === 'processor_assertion'" />
 
-    <ProcessorExtractorBoundary  v-if="selectedNode.processorType === 'processor_extractor_boundary'" />
-    <ProcessorExtractorJsonQuery v-if="selectedNode.processorType === 'processor_extractor_jsonquery'" />
-    <ProcessorExtractorHtmlQuery v-if="selectedNode.processorType === 'processor_extractor_htmlquery'" />
-    <ProcessorExtractorXmlQuery  v-if="selectedNode.processorType === 'processor_extractor_xmlquery'" />
+    <ProcessorExtractorBoundary  v-else-if="selectedNode.processorType === 'processor_extractor_boundary'" />
+    <ProcessorExtractorJsonQuery v-else-if="selectedNode.processorType === 'processor_extractor_jsonquery'" />
+    <ProcessorExtractorHtmlQuery v-else-if="selectedNode.processorType === 'processor_extractor_htmlquery'" />
+    <ProcessorExtractorXmlQuery  v-else-if="selectedNode.processorType === 'processor_extractor_xmlquery'" />
 
-    <ProcessorCookieGet   v-if="selectedNode.processorType === 'processor_cookie_get'" />
-    <ProcessorCookieSet   v-if="selectedNode.processorType === 'processor_cookie_set'" />
-    <ProcessorCookieClear v-if="selectedNode.processorType === 'processor_cookie_clear'" />
+    <ProcessorCookieGet   v-else-if="selectedNode.processorType === 'processor_cookie_get'" />
+    <ProcessorCookieSet   v-else-if="selectedNode.processorType === 'processor_cookie_set'" />
+    <ProcessorCookieClear v-else-if="selectedNode.processorType === 'processor_cookie_clear'" />
 
-    <ProcessorDataText    v-if="selectedNode.processorType === 'processor_data_text'" />
-    <ProcessorDataExcel   v-if="selectedNode.processorType === 'processor_data_excel'" />
-    <ProcessorDataZenData v-if="selectedNode.processorType === 'processor_data_zendata'" />
+    <ProcessorDataText    v-else-if="selectedNode.processorType === 'processor_data_text'" />
+    <ProcessorDataExcel   v-else-if="selectedNode.processorType === 'processor_data_excel'" />
+    <ProcessorDataZenData v-else-if="selectedNode.processorType === 'processor_data_zendata'" />
+
+    <span v-else></span>
 
   </div>
 </template>

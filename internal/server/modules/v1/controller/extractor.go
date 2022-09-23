@@ -109,7 +109,7 @@ func (c *ExtractorCtrl) ListExtractorVariable(ctx iris.Context) {
 		return
 	}
 
-	data, err := c.ExtractorService.ListExtractorVariable(interfaceId)
+	data, err := c.ExtractorService.ListExtractorVariableByInterface(interfaceId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
 		return

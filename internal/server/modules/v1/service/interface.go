@@ -193,7 +193,8 @@ func (s *InterfaceService) ReplaceEnvironmentExtractorAndExecVariables(req serve
 	interfaceId := req.Id
 
 	environmentVariables, _ := s.EnvironmentRepo.ListByInterface(interfaceId)
-	interfaceExtractorVariables, _ := s.ExtractorRepo.ListExtractorVariable(req.ProjectId)
+	// get all variable extracted in project
+	interfaceExtractorVariables, _ := s.ExtractorRepo.ListExtractorVariableByProject(req.ProjectId)
 
 	variableArr := requestHelper.MergeVariables(environmentVariables, interfaceExtractorVariables, nil)
 	requestHelper.ReplaceAll(&req, variableArr)

@@ -90,7 +90,7 @@ func (r *ExtractorRepo) UpdateResultToExecLog(extractor model.InterfaceExtractor
 	return
 }
 
-func (r *ExtractorRepo) ListExtractorVariable(projectId uint) (variables []serverDomain.Variable, err error) {
+func (r *ExtractorRepo) ListExtractorVariableByProject(projectId uint) (variables []serverDomain.Variable, err error) {
 	err = r.DB.Model(&model.InterfaceExtractor{}).
 		Select("id, variable AS name, result AS value").
 		Where("project_id=?", projectId).
@@ -100,3 +100,14 @@ func (r *ExtractorRepo) ListExtractorVariable(projectId uint) (variables []serve
 
 	return
 }
+
+//func (r *ExtractorRepo) ListExtractorVariableByInterface(interfaceId uint) (variables []serverDomain.Variable, err error) {
+//	err = r.DB.Model(&model.InterfaceExtractor{}).
+//		Select("id, variable AS name, result AS value").
+//		Where("interface_id=?", interfaceId).
+//		Where("NOT deleted AND NOT disabled").
+//		Order("created_at ASC").
+//		Find(&variables).Error
+//
+//	return
+//}

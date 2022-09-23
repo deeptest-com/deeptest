@@ -57,10 +57,11 @@ export interface StateType {
 export interface ModuleType extends StoreModuleType<StateType> {
     state: StateType;
     mutations: {
-        setTree: Mutation<StateType>;
-        setTreeMap: Mutation<StateType>;
-        setTreeMapItem: Mutation<StateType>;
-        setTreeMapItemProp: Mutation<StateType>;
+        setTreeData: Mutation<StateType>;
+        setTreeDataMap: Mutation<StateType>;
+        setTreeDataMapItem: Mutation<StateType>;
+        setTreeDataMapItemProp: Mutation<StateType>;
+
         setInterface: Mutation<StateType>;
         setResponse: Mutation<StateType>;
 
@@ -141,23 +142,22 @@ const StoreModel: ModuleType = {
         ...initState
     },
     mutations: {
-        setTree(state, payload) {
+        setTreeData(state, payload) {
             payload.name = '所有接口'
             state.treeData = [payload];
         },
-        setTreeMap(state, payload) {
+        setTreeDataMap(state, payload) {
             state.treeDataMap = payload
         },
-        setTreeMapItem(state, payload) {
+        setTreeDataMapItem(state, payload) {
             if (!state.treeDataMap[payload.id]) return
             state.treeDataMap[payload.id] = payload
         },
-        setTreeMapItemProp(state, payload) {
+        setTreeDataMapItemProp(state, payload) {
             if (!state.treeDataMap[payload.id]) return
             state.treeDataMap[payload.id][payload.prop] = payload.value
-
-            console.log('---', state.treeDataMap[payload.id])
         },
+
         setInterface(state, data) {
             state.interfaceData = data;
 
@@ -217,10 +217,10 @@ const StoreModel: ModuleType = {
             })
         },
         async saveTreeMapItem({commit}, payload: any) {
-            commit('setTreeMapItem', payload);
+            commit('setTreeDataMapItem', payload);
         },
         async saveTreeMapItemProp({commit}, payload: any) {
-            commit('setTreeMapItemProp', payload);
+            commit('setTreeDataMapItemProp', payload);
         },
 
         async loadInterface({commit, dispatch, state}) {
@@ -228,11 +228,11 @@ const StoreModel: ModuleType = {
             if (response.code != 0) return;
 
             const {data} = response;
-            commit('setTree', data || {});
+            commit('setTreeData', data || {});
 
             const mp = {}
             getNodeMap(data, mp)
-            commit('setTreeMap', mp);
+            commit('setTreeDataMap', mp);
 
             return true;
         },

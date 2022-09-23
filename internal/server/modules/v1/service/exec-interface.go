@@ -2,6 +2,8 @@ package service
 
 import (
 	"encoding/json"
+	"fmt"
+	cacheUtils "github.com/aaronchen2k/deeptest/internal/pkg/cache"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/business"
@@ -38,7 +40,8 @@ func (s *ExecInterfaceService) ExecInterfaceProcessor(interfaceProcessor *model.
 
 	// replace variables
 	environmentVariables, _ := s.EnvironmentRepo.ListByInterface(req.Id)
-	interfaceExtractorVariables, _ := s.ExtractorRepo.ListExtractorVariable(req.Id)
+	interfaceExtractorVariables := cacheUtils.GetAllExtractedVariablesForProject(
+		fmt.Sprintf("%d", interfaceProcessor.ProjectId))
 	processorExtractorVariables := s.ExecContext.ListVariable(interfaceProcessor.ID)
 	variableArr := requestHelper.MergeVariables(environmentVariables, interfaceExtractorVariables, processorExtractorVariables)
 

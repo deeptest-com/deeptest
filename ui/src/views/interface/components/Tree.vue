@@ -108,6 +108,16 @@ export default defineComponent({
       selectNode(null)
     }, {deep: false})
 
+    watch(treeData, () => {
+      console.log('watch', treeData)
+
+      if (!treeData.value[0].children || treeData.value[0].children.length === 0) {
+        tips.value = '右键树状节点操作'
+      }
+
+      getExpandedKeysCall()
+    })
+
     const queryTree = throttle(async () => {
       await store.dispatch('Interface/loadInterface');
     }, 100)
@@ -128,8 +138,9 @@ export default defineComponent({
     let tree = ref(null)
 
     const selectNode = (keys) => {
-      console.log('selectNode', keys, selectedKeys)
+      console.log('selectNode', keys)
       selectedKeys.value = keys
+
       if (!selectedKeys.value || selectedKeys.value.length === 0) {
         store.dispatch('Interface/getInterface', {isDir: true})
         return
@@ -217,15 +228,6 @@ export default defineComponent({
     getOpenKeys(treeData.value[0], false)
     console.log('expandedKeys.value', expandedKeys.value)
 
-    watch(treeData, () => {
-      console.log('watch', treeData)
-      if (!treeData.value[0].children || treeData.value[0].children.length === 0) {
-        tips.value = '右键树状节点操作'
-      }
-
-      getExpandedKeysCall()
-    })
-
     const expandNode = (keys: string[], e: any) => {
       console.log('expandNode', keys[0], e)
 
@@ -242,7 +244,6 @@ export default defineComponent({
     let targetModelId = 0
     const menuClick = (menuKey: string, targetId: number) => {
       console.log('menuClick', menuKey, targetId)
-
       targetModelId = targetId
 
       if (menuKey === 'rename') {
@@ -305,6 +306,7 @@ export default defineComponent({
     const removeNode = () => {
       console.log('removeNode')
       store.dispatch('Interface/deleteInterface', targetModelId);
+      selectNode([])
     }
     const clearMenu = () => {
       console.log('clearMenu')

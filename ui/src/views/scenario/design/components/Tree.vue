@@ -33,19 +33,21 @@
           class="interf-tree"
       >
         <template #title="slotProps">
-          <span v-if="!slotProps.isEdit">{{ slotProps.name }}</span>
+          <span v-if="treeDataMap[slotProps.id] && treeDataMap[slotProps.id].isEdit" class="name-editor">
+            <a-input v-model:value="editedData[slotProps.id]"
+                     @keyup.enter=updateName(slotProps.id)
+                     @click.stop
+                     :ref="'name-editor-' + slotProps.id" />
 
-          <span v-else class="name-editor">
-              <a-input v-model:value="editedData[slotProps.id]"
-                       @keyup.enter=updateName(slotProps.id)
-                       @click.stop
-                       :ref="'name-editor-' + slotProps.id" />
-
-              <span class="btns">
-                <CheckOutlined @click.stop="updateName(slotProps.id)"/>
-                <CloseOutlined @click.stop="cancelUpdate(slotProps.id)"/>
-              </span>
+            <span class="btns">
+              <CheckOutlined @click.stop="updateName(slotProps.id)"/>
+              <CloseOutlined @click.stop="cancelUpdate(slotProps.id)"/>
             </span>
+          </span>
+
+          <span v-else>
+            {{ slotProps.name }}
+          </span>
         </template>
 
         <template #icon="slotProps">
@@ -79,7 +81,7 @@ import {isRoot, isProcessor, isInterface} from '../../service'
 import {CloseOutlined, FileOutlined, FolderOutlined, FolderOpenOutlined, CheckOutlined} from "@ant-design/icons-vue";
 
 import debounce from "lodash.debounce";
-import {expandAllKeys, expandOneKey, getNodeMap} from "@/services/tree";
+import {expandAllKeys, expandOneKey} from "@/services/tree";
 import {getProcessorTypeNames, updateNodeName} from "../../service";
 import {useStore} from "vuex";
 import {Scenario} from "../../data";
@@ -103,7 +105,18 @@ const {t} = useI18n();
 
 const store = useStore<{ Scenario: ScenarioStateType; Interface: InterfaceStateType, Project: ProjectStateType; }>();
 const treeData = computed<any>(() => store.state.Scenario.treeData);
+const treeDataMap = computed<any>(() => store.state.Scenario.treeDataMap);
 const selectedNode = computed<any>(()=> store.state.Scenario.nodeData);
+
+watch(treeData, () => {
+  console.log('watch', treeData)
+
+  if (!treeData.value[0].children || treeData.value[0].children.length === 0) {
+    tips.value = '右键树状节点操作'
+  }
+
+  getExpandedKeysCall()
+})
 
 const loadTree = debounce(async () => {
   await store.dispatch('Scenario/loadScenario', props.scenarioId);
@@ -127,13 +140,22 @@ const expandNode = (keys: string[], e: any) => {
 
 const selectNode = (keys) => {
   console.log('selectNode', keys)
-  if (selectedKeys.value.length === 0) return
+  selectedKeys.value = keys
 
-  const selectedData = treeDataMap[selectedKeys.value[0]]
-  if (isRoot(selectedData.entityCategory)) return
+  if (!selectedKeys.value || selectedKeys.value.length === 0) {
+    store.dispatch('Scenario/getNode', null)
+    return
+  }
+
+  const selectedData = treeDataMap.value[selectedKeys.value[0]]
+  if (isRoot(selectedData.entityCategory)) {
+    store.dispatch('Scenario/getNode', null)
+    return
+  }
 
   store.dispatch('Scenario/getNode', selectedData).then((ok) => {
     console.log('===', selectedNode.value)
+
     if (ok && selectedNode.value.processorType === 'processor_interface_default') {
       const interfaceId = selectedNode.value.interfaceId
       store.dispatch('Interface/getInterface', {
@@ -154,10 +176,11 @@ const checkNode = (keys, e) => {
 const updateName = (id) => {
   const name = editedData.value[id]
   console.log('updateName', id, name)
+
   updateNodeName(id, name).then((json) => {
     if (json.code === 0) {
-      treeDataMap[id].name = name
-      treeDataMap[id].isEdit = false
+      store.dispatch('Scenario/saveTreeMapItemProp', {id: id, prop: 'name', value: name})
+      store.dispatch('Scenario/saveTreeMapItemProp', {id: id, prop: 'isEdit', value: false})
 
       if (id === selectedNode.value.processorId) {
         store.dispatch('Scenario/getNode', {id: id})
@@ -167,12 +190,11 @@ const updateName = (id) => {
 }
 const cancelUpdate = (id) => {
   console.log('cancelUpdate', id)
-  treeDataMap[id].isEdit = false
+  store.dispatch('Scenario/saveTreeMapItemProp', {id: id, prop: 'isEdit', value: false})
 }
 
 let contextNode = ref({} as any)
 let menuStyle = ref({} as any)
-const treeDataMap = {}
 let tips = ref('')
 let rightVisible = false
 const onRightClick = (e) => {
@@ -198,9 +220,6 @@ const onRightClick = (e) => {
       event.currentTarget.getBoundingClientRect().right, event.currentTarget.getBoundingClientRect().top, 120)
 }
 
-const getNodeMapCall = debounce(async () => {
-  getNodeMap(treeData.value[0], treeDataMap)
-}, 500)
 const getExpandedKeysCall = debounce(async () => {
   getExpandedKeys(treeData.value[0].scenarioId).then(async keys => {
     console.log('keys', keys)
@@ -228,21 +247,10 @@ const getOpenKeys = (treeNode, isAll) => {
 getOpenKeys(treeData.value[0], false)
 console.log('expandedKeys.value', expandedKeys.value)
 
-watch(treeData, () => {
-  console.log('watch', treeData)
-  getNodeMapCall()
-  // console.log('treeMap', Object.keys(treeDataMap), treeDataMap)
-  if (!treeData.value[0].children || treeData.value[0].children.length === 0) {
-    tips.value = '右键树状节点操作'
-  }
-
-  getExpandedKeysCall()
-})
-
 const expandAll = () => {
   console.log('expandAll')
   isExpand.value = !isExpand.value
-  expandedKeys.value = expandAllKeys(treeDataMap, isExpand.value)
+  expandedKeys.value = expandAllKeys(treeDataMap.value, isExpand.value)
 
   setExpandedKeys(treeData.value[0].scenarioId, expandedKeys.value)
 }
@@ -250,24 +258,10 @@ const expandAll = () => {
 let targetModelId = 0
 const menuClick = (menuKey: string, targetId: number) => {
   console.log('menuClick', menuKey, targetId)
-
   targetModelId = targetId
 
   if (menuKey === 'rename') {
-    selectedKeys.value = [targetModelId]
-    // selectNode(selectedKeys.value)
-    editedData.value[targetModelId] = treeDataMap[targetModelId].name
-
-    Object.keys(treeDataMap).forEach((key) => {
-      treeDataMap[key].isEdit = false
-    })
-    treeDataMap[targetModelId].isEdit = true
-
-    setTimeout(() => {
-      console.log('==', currentInstance.ctx.$refs[`name-editor-${targetModelId}`])
-      currentInstance.ctx.$refs[`name-editor-${targetModelId}`].focus()
-    }, 50)
-
+    renameNode()
     return
   }
 
@@ -283,8 +277,8 @@ const menuClick = (menuKey: string, targetId: number) => {
   const processorCategory = arr[2]
   const processorType = arr[3]
 
-  const targetProcessorCategory = treeDataMap[targetModelId].entityCategory
-  const targetProcessorType = treeDataMap[targetModelId].entityType
+  const targetProcessorCategory = treeDataMap.value[targetModelId].entityCategory
+  const targetProcessorType = treeDataMap.value[targetModelId].entityType
 
   const targetProcessorId = targetModelId
 
@@ -292,6 +286,23 @@ const menuClick = (menuKey: string, targetId: number) => {
       targetProcessorCategory, targetProcessorType, targetProcessorId)
 
   clearMenu()
+}
+
+const renameNode = () => {
+  selectedKeys.value = [targetModelId]
+  selectNode(selectedKeys.value)
+  editedData.value[targetModelId] = treeDataMap.value[targetModelId].name
+
+  Object.keys(treeDataMap.value).forEach((key) => {
+    store.dispatch('Scenario/saveTreeMapItemProp', {id: key, prop: 'isEdit', value: false})
+  })
+  store.dispatch('Scenario/saveTreeMapItemProp', {id: targetModelId, prop: 'isEdit', value: true})
+
+  setTimeout(() => {
+    console.log('==', currentInstance.ctx.$refs[`name-editor-${targetModelId}`])
+    currentInstance.ctx.$refs[`name-editor-${targetModelId}`]?.focus()
+    currentInstance.ctx.$refs[`name-editor-${targetModelId}`]?.select();
+  }, 50)
 }
 
 const addNode = (mode, processorCategory, processorType,
@@ -310,7 +321,7 @@ const addNode = (mode, processorCategory, processorType,
         }).then((newNode) => {
           console.log('addProcessor successfully', newNode)
           selectNode([newNode.id])
-          expandOneKey(treeDataMap, mode === 'parent' ? newNode.id : newNode.parentId, expandedKeys.value) // expend new node
+          expandOneKey(treeDataMap.value, mode === 'parent' ? newNode.id : newNode.parentId, expandedKeys.value) // expend new node
           setExpandedKeys(treeData.value[0].scenarioId, expandedKeys.value)
         })
   }
@@ -318,7 +329,7 @@ const addNode = (mode, processorCategory, processorType,
 
 const interfaceSelectionVisible = ref(false)
 const interfaceSelectionFinish = (selectedNodes) => {
-  const targetNode = treeDataMap[targetModelId]
+  const targetNode = treeDataMap.value[targetModelId]
   console.log('interfaceSelectionFinish', selectedNodes, targetNode)
 
   store.dispatch('Scenario/addInterfaces',
@@ -330,7 +341,7 @@ const interfaceSelectionFinish = (selectedNodes) => {
 
         interfaceSelectionVisible.value = false
         selectNode([newNode.id])
-        expandOneKey(treeDataMap, newNode.parentId, expandedKeys.value) // expend new node
+        expandOneKey(treeDataMap.value, newNode.parentId, expandedKeys.value) // expend new node
         setExpandedKeys(treeData.value[0].scenarioId, expandedKeys.value)
       })
 }
@@ -343,6 +354,7 @@ const interfaceSelectionCancel = () => {
 const removeNode = () => {
   console.log('removeNode')
   store.dispatch('Scenario/removeNode', targetModelId);
+  selectNode([])
 }
 const clearMenu = () => {
   console.log('clearMenu')
@@ -358,7 +370,7 @@ const onDrop = (info: DropEvent) => {
   const dragKey = info.dragNode.eventKey;
   const dropPos = info.node.pos.split('-');
   let dropPosition = info.dropPosition - Number(dropPos[dropPos.length - 1]);
-  if (isInterface(treeDataMap[dropKey].processorCategory) && dropPosition === 0) dropPosition = 1
+  if (isInterface(treeDataMap.value[dropKey].processorCategory) && dropPosition === 0) dropPosition = 1
   console.log(dragKey, dropKey, dropPosition);
 
   store.dispatch('Scenario/moveNode', {dragKey: dragKey, dropKey: dropKey, dropPos: dropPosition});

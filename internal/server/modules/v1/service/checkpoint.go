@@ -158,7 +158,7 @@ func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp ser
 
 	// Extractor
 	if checkpoint.Type == consts.Extractor {
-		extractorValue := cacheUtils.GetCache(strconv.Itoa(int(projectId)), checkpoint.ExtractorVariable)
+		extractorValue := cacheUtils.GetExtractedVariableFromCache(strconv.Itoa(int(projectId)), checkpoint.ExtractorVariable)
 		checkpoint.ActualResult = extractorValue
 
 		checkpoint.ResultStatus = execHelper.Compare(checkpoint.Operator, extractorValue, checkpoint.Value)

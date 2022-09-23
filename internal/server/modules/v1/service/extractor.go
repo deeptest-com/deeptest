@@ -10,7 +10,6 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/repo"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
-	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/jinzhu/copier"
 	"strconv"
 	"strings"
@@ -59,10 +58,8 @@ func (s *ExtractorService) ExtractInterface(interf model.Interface, resp serverD
 		logExtractor, err := s.Extract(extractor, resp, interfaceExecLog)
 
 		if err == nil {
-			// save to cache for checkpoints validation
-			cacheUtils.SetCache(strconv.Itoa(int(interf.ProjectId)), extractor.Variable, extractor.Result)
-			val := cacheUtils.GetCache(strconv.Itoa(int(interf.ProjectId)), extractor.Variable)
-			logUtils.Infof("extractor variable %s = %v", extractor.Variable, val)
+			// save to cache for following interface's checkpoints and processors
+			cacheUtils.SetExtractedVariableToCache(strconv.Itoa(int(interf.ProjectId)), extractor.Variable, extractor.Result)
 
 			interfaceExtractor := domain.ExecInterfaceExtractor{}
 			copier.CopyWithOption(&interfaceExtractor, logExtractor, copier.Option{DeepCopy: true})
@@ -120,8 +117,14 @@ func (s *ExtractorService) ExtractValue(extractor *model.InterfaceExtractor, res
 	return
 }
 
-func (s *ExtractorService) ListExtractorVariable(interfaceId int) (variables []serverDomain.Variable, err error) {
-	variables, err = s.ExtractorRepo.ListExtractorVariable(uint(interfaceId))
+func (s *ExtractorService) ListExtractorVariableByProject(projectId int) (variables []serverDomain.Variable, err error) {
+	variables, err = s.ExtractorRepo.ListExtractorVariableByProject(uint(projectId))
+
+	return
+}
+
+func (s *ExtractorService) ListExtractorVariableByInterface(interfaceId int) (variables []serverDomain.Variable, err error) {
+	variables, err = s.ExtractorRepo.ListExtractorVariableByProject(uint(interfaceId))
 
 	return
 }

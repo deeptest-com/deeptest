@@ -19,6 +19,7 @@ import {
 
     loadExecResult,
 } from './service';
+import {getNodeMap} from "@/services/tree";
 
 export interface StateType {
     scenarioId: number;
@@ -28,6 +29,7 @@ export interface StateType {
     queryParams: any;
 
     treeData: Scenario[];
+    treeDataMap: any,
     nodeData: any;
 
     execResult: any;
@@ -42,7 +44,10 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setDetail: Mutation<StateType>;
         setQueryParams: Mutation<StateType>;
 
-        setTree: Mutation<StateType>;
+        setTreeData: Mutation<StateType>;
+        setTreeDataMap: Mutation<StateType>;
+        setTreeDataMapItem: Mutation<StateType>;
+        setTreeDataMapItemProp: Mutation<StateType>;
         setNode: Mutation<StateType>;
 
         setExecResult: Mutation<StateType>;
@@ -67,6 +72,9 @@ export interface ModuleType extends StoreModuleType<StateType> {
         saveProcessorName: Action<StateType, StateType>;
         saveProcessor: Action<StateType, StateType>;
 
+        saveTreeMapItem: Action<StateType, StateType>;
+        saveTreeMapItemProp: Action<StateType, StateType>;
+
         loadExecResult: Action<StateType, StateType>;
         updateExecResult: Action<StateType, StateType>;
     };
@@ -88,6 +96,7 @@ const initState: StateType = {
     queryParams: {},
 
     treeData: [],
+    treeDataMap: {},
     nodeData: {},
     execResult: {},
 };
@@ -110,9 +119,21 @@ const StoreModel: ModuleType = {
             state.detailResult = payload;
         },
 
-        setTree(state, data) {
+        setTreeData(state, data) {
             state.treeData = [data];
         },
+        setTreeDataMap(state, payload) {
+            state.treeDataMap = payload
+        },
+        setTreeDataMapItem(state, payload) {
+            if (!state.treeDataMap[payload.id]) return
+            state.treeDataMap[payload.id] = payload
+        },
+        setTreeDataMapItemProp(state, payload) {
+            if (!state.treeDataMap[payload.id]) return
+            state.treeDataMap[payload.id][payload.prop] = payload.value
+        },
+
         setNode(state, data) {
             state.nodeData = data;
         },
@@ -169,6 +190,14 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
+
+        async saveTreeMapItem({commit}, payload: any) {
+            commit('setTreeDataMapItem', payload);
+        },
+        async saveTreeMapItemProp({commit}, payload: any) {
+            commit('setTreeDataMapItemProp', payload);
+        },
+
         async saveScenario({commit}, payload: any) {
             const jsn = await save(payload)
             if (jsn.code === 0) {
@@ -192,14 +221,23 @@ const StoreModel: ModuleType = {
             if (response.code != 0) return;
 
             const {data} = response;
-            commit('setTree', data || {});
+            commit('setTreeData', data || {});
             commit('setScenarioId', scenarioId );
+
+            const mp = {}
+            getNodeMap(data, mp)
+            commit('setTreeDataMap', mp);
 
             return true;
         },
 
         async getNode({commit}, payload: any) {
             try {
+                if (!payload) {
+                    commit('setNode', {});
+                    return true;
+                }
+
                 const response = await getNode(payload.id);
                 const {data} = response;
 

@@ -59,7 +59,7 @@ func (s *ExtractorService) ExtractInterface(interf model.Interface, resp serverD
 
 		if err == nil {
 			// save to cache for following interface's checkpoints and processors
-			s.ExecCache.Set(extractor.Variable, extractor.Result)
+			s.ExecCache.SetVariable(extractor.Variable, extractor.Result)
 
 			interfaceExtractor := domain.ExecInterfaceExtractor{}
 			copier.CopyWithOption(&interfaceExtractor, logExtractor, copier.Option{DeepCopy: true})

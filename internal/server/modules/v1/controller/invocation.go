@@ -38,7 +38,7 @@ func (c *InvocationCtrl) Invoke(ctx iris.Context) {
 		return
 	}
 
-	c.ExecCache.ClearAll()
+	c.ExecCache.ClearAllVariable()
 
 	reqNew, err := c.InterfaceService.ReplaceEnvironmentExtractorAndExecVariables(req)
 	if err != nil {

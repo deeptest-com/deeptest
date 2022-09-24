@@ -79,7 +79,7 @@ func (s *ExecScenarioService) ExecScenario(scenarioId int, wsMsg *websocket.Mess
 	execHelper.SendStartMsg(wsMsg)
 	execHelper.SendExecMsg(rootLog, wsMsg)
 
-	s.ExecCache.ClearAll()
+	s.ExecCache.ClearAllVariable()
 	for _, child := range rootProcessor.Children {
 		s.ExecProcessorRecursively(child, &rootLog, wsMsg)
 	}

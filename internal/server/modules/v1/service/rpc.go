@@ -20,7 +20,7 @@ func NewRpcService() *RpcService {
 func (s *RpcService) SayHello(nodeIp string, nodePort int, req *pb.HelloRequest) (
 	reply *pb.HelloReply) {
 
-	// Set up a connection to the server.
+	// SetVariable up a connection to the server.
 	creds, err := credentials.NewClientTLSFromFile("cert/test.pem", "*.deeptest.com")
 	if err != nil {
 		logUtils.Errorf("credentials.NewClientTLSFromFile fail, error %s", err.Error())

@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/business"
 	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
 	execHelper "github.com/aaronchen2k/deeptest/internal/server/modules/v1/helper/exec"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
@@ -19,7 +18,7 @@ type CheckpointService struct {
 	CheckpointRepo *repo.CheckpointRepo `inject:""`
 	InterfaceRepo  *repo.InterfaceRepo  `inject:""`
 	ProjectRepo    *repo.ProjectRepo    `inject:""`
-	ExecCache      *business.ExecCache  `inject:""`
+	ExtractorRepo  *repo.ExtractorRepo  `inject:""`
 }
 
 func (s *CheckpointService) List(interfaceId int) (checkpoints []model.InterfaceCheckpoint, err error) {
@@ -158,10 +157,11 @@ func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp ser
 
 	// Extractor
 	if checkpoint.Type == consts.Extractor {
-		extractorValue := s.ExecCache.GetVariable(checkpoint.ExtractorVariable)
-		checkpoint.ActualResult = extractorValue
+		// get extractor variable value saved by previous extract opt
+		extractorPo, _ := s.ExtractorRepo.GetByVariable(checkpoint.ExtractorVariable, 0, checkpoint.InterfaceId)
+		checkpoint.ActualResult = extractorPo.Result
 
-		checkpoint.ResultStatus = execHelper.Compare(checkpoint.Operator, extractorValue, checkpoint.Value)
+		checkpoint.ResultStatus = execHelper.Compare(checkpoint.Operator, checkpoint.ActualResult, checkpoint.Value)
 
 		if interfaceExecLog == nil { // run by interface
 			s.CheckpointRepo.UpdateResult(checkpoint)

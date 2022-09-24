@@ -2,12 +2,12 @@
   <div class="response-checkpoint-main">
     <div class="head">
       <a-row type="flex">
-        <a-col flex="60px">编号</a-col>
-        <a-col flex="120px">类型</a-col>
-        <a-col flex="1">变量 / 键值</a-col>
-        <a-col flex="100px">运算符</a-col>
+        <a-col flex="50px">编号</a-col>
+        <a-col flex="100px">类型</a-col>
+        <a-col flex="120px">变量 / 键值</a-col>
+        <a-col flex="60px">运算符</a-col>
         <a-col flex="100px">数值</a-col>
-        <a-col flex="100px">实际结果</a-col>
+        <a-col flex="1">实际结果</a-col>
         <a-col flex="100px">状态</a-col>
 
         <a-col flex="100px" class="dp-right">
@@ -18,12 +18,12 @@
 
     <div class="body">
       <a-row v-for="(item, idx) in checkpointsData" :key="idx" type="flex">
-        <a-col flex="60px">{{idx + 1}}</a-col>
-        <a-col flex="120px">{{ t(item.type) }}</a-col>
-        <a-col flex="1">{{ item.type === CheckpointType.extractor ? item.extractorVariable : item.expression }} </a-col>
-        <a-col flex="100px">{{ t(item.operator) }}</a-col>
+        <a-col flex="50px">{{idx + 1}}</a-col>
+        <a-col flex="100px">{{ t(item.type) }}</a-col>
+        <a-col flex="120px">{{ item.type === CheckpointType.extractor ? item.extractorVariable : item.expression }} </a-col>
+        <a-col flex="60px">{{ t(item.operator) }}</a-col>
         <a-col flex="100px">{{ item.value }}</a-col>
-        <a-col flex="100px">
+        <a-col flex="1" style="width: 0; word-break: break-word;">
           {{ item.actualResult }}
         </a-col>
         <a-col flex="100px" :class="getResultCls(item.resultStatus)">
@@ -278,7 +278,7 @@ export default defineComponent({
       variables,
       editVisible,
       CheckpointType,
-
+      getResultCls,
       add,
       edit,
       remove,

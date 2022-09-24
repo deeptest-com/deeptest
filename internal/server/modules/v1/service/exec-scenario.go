@@ -29,7 +29,6 @@ type ExecScenarioService struct {
 	ExecProcessorService  *ExecProcessorService       `inject:""`
 
 	ExecContextService   *business.ExecContext  `inject:""`
-	ExecCache            *business.ExecCache    `inject:""`
 	ExecComm             *business.ExecComm     `inject:""`
 	ExecHelperService    *ExecHelperService     `inject:""`
 	ExecIteratorService  *business.ExecIterator `inject:""`
@@ -79,7 +78,6 @@ func (s *ExecScenarioService) ExecScenario(scenarioId int, wsMsg *websocket.Mess
 	execHelper.SendStartMsg(wsMsg)
 	execHelper.SendExecMsg(rootLog, wsMsg)
 
-	s.ExecCache.ClearAllVariable()
 	for _, child := range rootProcessor.Children {
 		s.ExecProcessorRecursively(child, &rootLog, wsMsg)
 	}

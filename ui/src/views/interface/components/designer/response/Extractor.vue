@@ -2,11 +2,11 @@
   <div class="response-extractor-main">
     <div class="head">
       <a-row type="flex" class="extractor">
-        <a-col flex="60px">编号</a-col>
-        <a-col flex="80px">来源</a-col>
-        <a-col flex="100px">提取类型</a-col>
+        <a-col flex="50px">编号</a-col>
+        <a-col flex="70px">来源</a-col>
+        <a-col flex="90px">提取类型</a-col>
         <a-col flex="1">表达式</a-col>
-        <a-col flex="150px" style="padding-left: 10px;">环境变量</a-col>
+        <a-col flex="150px" style="padding-left: 10px;">变量</a-col>
         <a-col flex="1">提取结果</a-col>
 
         <a-col flex="100px" class="dp-right">
@@ -17,10 +17,10 @@
 
     <div class="items">
       <a-row v-for="(item, idx) in extractorsData" :key="idx" type="flex" class="item">
-        <a-col flex="60px">{{idx + 1}}</a-col>
-        <a-col flex="80px">{{ t(item.src) }}</a-col>
-        <a-col flex="100px">{{ item.type ? t(item.type) : '' }}</a-col>
-        <a-col flex="1">
+        <a-col flex="50px">{{idx + 1}}</a-col>
+        <a-col flex="70px">{{ t(item.src) }}</a-col>
+        <a-col flex="90px">{{ item.type ? t(item.type) : '' }}</a-col>
+        <a-col flex="1"  style="width: 0; word-break: break-word;">
           <span v-if="item.src === ExtractorSrc.header">
             {{ item.key }}
           </span>
@@ -31,7 +31,7 @@
           </span>
         </a-col>
         <a-col flex="150px" style="padding-left: 10px;">{{ item.variable }}</a-col>
-        <a-col flex="1">{{item.result}}</a-col>
+        <a-col flex="1"  style="width: 0; word-break: break-word;">{{item.result}}</a-col>
 
         <a-col flex="100px" class="dp-right">
           <a-tooltip v-if="!item.disabled" @click="disable(item)" overlayClassName="dp-tip-small">

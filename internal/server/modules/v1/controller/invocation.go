@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/business"
 	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
@@ -13,7 +12,6 @@ type InvocationCtrl struct {
 	InterfaceService  *service.InterfaceService  `inject:""`
 	ExtractorService  *service.ExtractorService  `inject:""`
 	CheckpointService *service.CheckpointService `inject:""`
-	ExecCache         *business.ExecCache        `inject:""`
 	BaseCtrl
 }
 
@@ -37,8 +35,6 @@ func (c *InvocationCtrl) Invoke(ctx iris.Context) {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
 		return
 	}
-
-	c.ExecCache.ClearAllVariable()
 
 	reqNew, err := c.InterfaceService.ReplaceEnvironmentExtractorAndExecVariables(req)
 	if err != nil {

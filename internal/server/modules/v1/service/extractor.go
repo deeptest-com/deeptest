@@ -15,9 +15,9 @@ import (
 )
 
 type ExtractorService struct {
-	ExtractorRepo *repo.ExtractorRepo `inject:""`
-	InterfaceRepo *repo.InterfaceRepo `inject:""`
-	ExecCache     *business.ExecCache `inject:""`
+	ExtractorRepo *repo.ExtractorRepo   `inject:""`
+	InterfaceRepo *repo.InterfaceRepo   `inject:""`
+	ExecContext   *business.ExecContext `inject:""`
 }
 
 func (s *ExtractorService) List(interfaceId int) (extractors []model.InterfaceExtractor, err error) {
@@ -57,10 +57,7 @@ func (s *ExtractorService) ExtractInterface(interf model.Interface, resp serverD
 	for _, extractor := range extractors {
 		logExtractor, err := s.Extract(extractor, resp, interfaceExecLog)
 
-		if err == nil {
-			// save to cache for following interface's checkpoints and processors
-			s.ExecCache.SetVariable(extractor.Variable, extractor.Result)
-
+		if err == nil && interfaceExecLog != nil { // run by processor
 			interfaceExtractor := domain.ExecInterfaceExtractor{}
 			copier.CopyWithOption(&interfaceExtractor, logExtractor, copier.Option{DeepCopy: true})
 			logExtractors = append(logExtractors, interfaceExtractor)
@@ -78,6 +75,7 @@ func (s *ExtractorService) Extract(extractor model.InterfaceExtractor, resp serv
 	if interfaceExecLog == nil { // run by interface
 		s.ExtractorRepo.UpdateResult(extractor)
 	} else { // run by processor
+		s.ExecContext.SetVariable(interfaceExecLog.ProcessorId, extractor.Variable, extractor.Result)
 		logExtractor, err = s.ExtractorRepo.UpdateResultToExecLog(extractor, interfaceExecLog)
 	}
 
@@ -124,7 +122,7 @@ func (s *ExtractorService) ListExtractorVariableByProject(projectId int) (variab
 }
 
 func (s *ExtractorService) ListExtractorVariableByInterface(interfaceId int) (variables []serverDomain.Variable, err error) {
-	variables, err = s.ExtractorRepo.ListExtractorVariableByProject(uint(interfaceId))
+	variables, err = s.ExtractorRepo.ListExtractorVariableByInterface(uint(interfaceId))
 
 	return
 }

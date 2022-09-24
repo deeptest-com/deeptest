@@ -139,12 +139,13 @@ export default defineComponent({
   height: 100%;
 
   #design-content {
+    flex: 1;
+    width: 0;
     height: 100%;
-    width: 100%;
   }
 
   .design-right {
-    width: 300px;
+    width: 280px;
     height: 100%;
     border-left: solid 1px #e6e9ec;
   }

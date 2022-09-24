@@ -174,7 +174,7 @@ export default defineComponent({
     }
 
     .indexlayout-top-menu-right {
-      width: 238px;
+      width: 284px;
 
       .indexlayout-top-project {
         float: left;

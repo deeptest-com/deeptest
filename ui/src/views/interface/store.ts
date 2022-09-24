@@ -31,7 +31,7 @@ import {
     listCheckpoint,
     getCheckpoint,
     saveCheckpoint,
-    removeCheckpoint,
+    removeCheckpoint, getLastInvocationResp,
 } from './service';
 import {Checkpoint, Extractor, Interface, Response} from "@/views/interface/data";
 import {getNodeMap} from "@/services/tree";
@@ -84,6 +84,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
 
         loadInterface: Action<StateType, StateType>;
         getInterface: Action<StateType, StateType>;
+        getLastInvocationResp: Action<StateType, StateType>;
         createInterface: Action<StateType, StateType>;
         updateInterface: Action<StateType, StateType>;
         deleteInterface: Action<StateType, StateType>;
@@ -250,11 +251,17 @@ const StoreModel: ModuleType = {
                 const {data} = response;
 
                 commit('setInterface', data);
-                commit('setResponse', {headers: [], contentLang: 'html', content: ''});
                 return true;
             } catch (error) {
                 return false;
             }
+        },
+        async getLastInvocationResp({commit, dispatch, state}, id: number) {
+            const response = await getLastInvocationResp(id);
+            const {data} = response;
+
+            commit('setResponse', data);
+            return true;
         },
         async createInterface({commit, dispatch, state}, payload: any) {
             try {

@@ -21,6 +21,8 @@ func (m *InvocationModule) Party() module.WebModule {
 		index.Get("/", m.InvocationCtrl.List).Name = "调用列表"
 		index.Get("/{id:uint}", m.InvocationCtrl.GetAsInterface).Name = "调用详情"
 		index.Delete("/{id:uint}", m.InvocationCtrl.Delete).Name = "删除调用"
+
+		index.Get("/getLastResp", m.InvocationCtrl.GetLastResp).Name = "最后一次调用详情"
 	}
 	return module.NewModule("/invocations", handler)
 }

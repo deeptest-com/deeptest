@@ -27,6 +27,15 @@ func (r *InvocationRepo) Get(id uint) (invocation model.Invocation, err error) {
 	return
 }
 
+func (r *InvocationRepo) GetLast(interfaceId int) (invocation model.Invocation, err error) {
+	err = r.DB.
+		Where("interface_id=?", interfaceId).
+		Where("NOT deleted").
+		Order("created_at DESC").
+		First(&invocation).Error
+	return
+}
+
 func (r *InvocationRepo) Save(invocation *model.Invocation) (err error) {
 	err = r.DB.Save(invocation).Error
 	return

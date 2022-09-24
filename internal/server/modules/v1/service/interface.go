@@ -85,13 +85,13 @@ func (s *InterfaceService) Get(interfId uint) (interf model.Interface, err error
 	if interfId > 0 {
 		interf, err = s.InterfaceRepo.Get(interfId)
 
-		interf.Params, _ = s.InterfaceRepo.ListParams(uint(interfId))
-		interf.Headers, _ = s.InterfaceRepo.ListHeaders(uint(interfId))
+		interf.Params, _ = s.InterfaceRepo.ListParams(interfId)
+		interf.Headers, _ = s.InterfaceRepo.ListHeaders(interfId)
 
-		interf.BasicAuth, _ = s.InterfaceRepo.GetBasicAuth(uint(interfId))
-		interf.BearerToken, _ = s.InterfaceRepo.GetBearerToken(uint(interfId))
-		interf.OAuth20, _ = s.InterfaceRepo.GetOAuth20(uint(interfId))
-		interf.ApiKey, _ = s.InterfaceRepo.GetApiKey(uint(interfId))
+		interf.BasicAuth, _ = s.InterfaceRepo.GetBasicAuth(interfId)
+		interf.BearerToken, _ = s.InterfaceRepo.GetBearerToken(interfId)
+		interf.OAuth20, _ = s.InterfaceRepo.GetOAuth20(interfId)
+		interf.ApiKey, _ = s.InterfaceRepo.GetApiKey(interfId)
 	}
 
 	interf.Params = append(interf.Params, model.InterfaceParam{Name: "", Value: ""})

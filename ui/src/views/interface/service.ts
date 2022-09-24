@@ -32,6 +32,14 @@ export async function get(id: number): Promise<any> {
     return request({url: `/${apiPath}/${id}`});
 }
 
+export async function getLastInvocationResp(id: number): Promise<any> {
+    const params = {id : id}
+    return request({
+        url: `/${apiVocation}/getLastResp`,
+        params
+    });
+}
+
 export async function create(data): Promise<any> {
     return request({
         url: `/${apiPath}`,

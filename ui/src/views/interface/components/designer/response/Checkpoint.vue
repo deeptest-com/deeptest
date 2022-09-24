@@ -27,7 +27,7 @@
           {{ item.actualResult }}
         </a-col>
         <a-col flex="100px" :class="getResultCls(item.resultStatus)">
-          {{ t(item.resultStatus) }}
+          {{ item.resultStatus ? t(item.resultStatus)  : ''}}
         </a-col>
 
         <a-col flex="100px" class="dp-right">

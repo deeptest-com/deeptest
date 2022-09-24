@@ -22,10 +22,6 @@ type ExecContext struct {
 	ScenarioNodeRepo *repo.ScenarioNodeRepo `inject:""`
 }
 
-func NewExecContextService() *ExecContext {
-	return &ExecContext{}
-}
-
 func (s *ExecContext) InitScopeHierarchy(scenarioId uint) (variables []domain.ExecVariable) {
 	s.ScenarioNodeRepo.GetScopeHierarchy(scenarioId, &ScopeHierarchy)
 

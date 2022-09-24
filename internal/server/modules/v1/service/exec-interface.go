@@ -2,7 +2,6 @@ package service
 
 import (
 	"encoding/json"
-	extractCache "github.com/aaronchen2k/deeptest/internal/pkg/cache/extract"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/business"
@@ -22,6 +21,7 @@ type ExecInterfaceService struct {
 	ExtractorService  *ExtractorService     `inject:""`
 	CheckpointService *CheckpointService    `inject:""`
 	ExecContext       *business.ExecContext `inject:""`
+	ExecCache         *business.ExecCache   `inject:""`
 
 	InterfaceRepo   *repo.InterfaceRepo   `inject:""`
 	EnvironmentRepo *repo.EnvironmentRepo `inject:""`
@@ -39,7 +39,7 @@ func (s *ExecInterfaceService) ExecInterfaceProcessor(interfaceProcessor *model.
 
 	// replace variables
 	environmentVariables, _ := s.EnvironmentRepo.ListByInterface(req.Id)
-	interfaceExtractorVariables := extractCache.GetAll()
+	interfaceExtractorVariables := s.ExecCache.GetAll()
 	processorExtractorVariables := s.ExecContext.ListVariable(interfaceProcessor.ID)
 	variableArr := requestHelper.MergeVariables(environmentVariables, interfaceExtractorVariables, processorExtractorVariables)
 

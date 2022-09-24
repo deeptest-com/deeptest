@@ -1,7 +1,6 @@
 package service
 
 import (
-	extractCache "github.com/aaronchen2k/deeptest/internal/pkg/cache/extract"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/business"
@@ -30,6 +29,7 @@ type ExecScenarioService struct {
 	ExecProcessorService  *ExecProcessorService       `inject:""`
 
 	ExecContextService   *business.ExecContext  `inject:""`
+	ExecCache            *business.ExecCache    `inject:""`
 	ExecComm             *business.ExecComm     `inject:""`
 	ExecHelperService    *ExecHelperService     `inject:""`
 	ExecIteratorService  *business.ExecIterator `inject:""`
@@ -79,7 +79,7 @@ func (s *ExecScenarioService) ExecScenario(scenarioId int, wsMsg *websocket.Mess
 	execHelper.SendStartMsg(wsMsg)
 	execHelper.SendExecMsg(rootLog, wsMsg)
 
-	extractCache.ClearAll()
+	s.ExecCache.ClearAll()
 	for _, child := range rootProcessor.Children {
 		s.ExecProcessorRecursively(child, &rootLog, wsMsg)
 	}

@@ -33,10 +33,6 @@ var (
 type ExecComm struct {
 }
 
-func NewExecHelperService() *ExecComm {
-	return &ExecComm{}
-}
-
 func (s *ExecComm) IsLoopPass(containerLog *domain.ExecLog) bool {
 	return containerLog.ProcessorCategory == consts.ProcessorLoop
 }

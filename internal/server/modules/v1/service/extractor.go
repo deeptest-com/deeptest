@@ -1,9 +1,9 @@
 package service
 
 import (
-	extractCache "github.com/aaronchen2k/deeptest/internal/pkg/cache/extract"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
+	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/business"
 	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
 	extractorHelper "github.com/aaronchen2k/deeptest/internal/server/modules/v1/helper/query"
 	requestHelper "github.com/aaronchen2k/deeptest/internal/server/modules/v1/helper/request"
@@ -17,6 +17,7 @@ import (
 type ExtractorService struct {
 	ExtractorRepo *repo.ExtractorRepo `inject:""`
 	InterfaceRepo *repo.InterfaceRepo `inject:""`
+	ExecCache     *business.ExecCache `inject:""`
 }
 
 func (s *ExtractorService) List(interfaceId int) (extractors []model.InterfaceExtractor, err error) {
@@ -58,7 +59,7 @@ func (s *ExtractorService) ExtractInterface(interf model.Interface, resp serverD
 
 		if err == nil {
 			// save to cache for following interface's checkpoints and processors
-			extractCache.Set(extractor.Variable, extractor.Result)
+			s.ExecCache.Set(extractor.Variable, extractor.Result)
 
 			interfaceExtractor := domain.ExecInterfaceExtractor{}
 			copier.CopyWithOption(&interfaceExtractor, logExtractor, copier.Option{DeepCopy: true})

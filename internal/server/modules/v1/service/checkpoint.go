@@ -3,9 +3,9 @@ package service
 import (
 	"encoding/json"
 	"fmt"
-	extractCache "github.com/aaronchen2k/deeptest/internal/pkg/cache/extract"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
+	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/business"
 	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
 	execHelper "github.com/aaronchen2k/deeptest/internal/server/modules/v1/helper/exec"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
@@ -19,6 +19,7 @@ type CheckpointService struct {
 	CheckpointRepo *repo.CheckpointRepo `inject:""`
 	InterfaceRepo  *repo.InterfaceRepo  `inject:""`
 	ProjectRepo    *repo.ProjectRepo    `inject:""`
+	ExecCache      *business.ExecCache  `inject:""`
 }
 
 func (s *CheckpointService) List(interfaceId int) (checkpoints []model.InterfaceCheckpoint, err error) {
@@ -157,7 +158,7 @@ func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp ser
 
 	// Extractor
 	if checkpoint.Type == consts.Extractor {
-		extractorValue := extractCache.Get(checkpoint.ExtractorVariable)
+		extractorValue := s.ExecCache.Get(checkpoint.ExtractorVariable)
 		checkpoint.ActualResult = extractorValue
 
 		checkpoint.ResultStatus = execHelper.Compare(checkpoint.Operator, extractorValue, checkpoint.Value)

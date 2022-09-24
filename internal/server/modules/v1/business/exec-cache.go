@@ -1,4 +1,4 @@
-package extractCache
+package business
 
 import (
 	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
@@ -9,7 +9,10 @@ var (
 	extractedVariableCache sync.Map
 )
 
-func Get(key string) (ret string) {
+type ExecCache struct {
+}
+
+func (s *ExecCache) Get(key string) (ret string) {
 	obj, ok := extractedVariableCache.Load(key)
 	if ok {
 		ret = obj.(string)
@@ -18,12 +21,12 @@ func Get(key string) (ret string) {
 	return
 }
 
-func Set(key, val string) {
+func (s *ExecCache) Set(key, val string) {
 	extractedVariableCache.Store(key, val)
 	return
 }
 
-func GetAll() (ret []serverDomain.Variable) {
+func (s *ExecCache) GetAll() (ret []serverDomain.Variable) {
 	extractedVariableCache.Range(func(key, value interface{}) bool {
 		variable := serverDomain.Variable{
 			Name:  key.(string),
@@ -37,7 +40,7 @@ func GetAll() (ret []serverDomain.Variable) {
 	return
 }
 
-func ClearAll() {
+func (s *ExecCache) ClearAll() {
 	extractedVariableCache.Range(func(key, value interface{}) bool {
 		extractedVariableCache.Delete(key)
 		return true

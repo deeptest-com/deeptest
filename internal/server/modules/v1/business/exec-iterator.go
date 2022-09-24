@@ -20,10 +20,6 @@ type ExecIterator struct {
 	ScenarioProcessorRepo *repo.ScenarioProcessorRepo `inject:""`
 }
 
-func NewExeIteratorService() *ExecIterator {
-	return &ExecIterator{}
-}
-
 func (s *ExecIterator) InitIteratorContext() {
 	IteratorContextValueStack = list.New()
 	IteratorContextIndexStack = list.New()

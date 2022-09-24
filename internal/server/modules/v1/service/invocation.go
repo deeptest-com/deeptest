@@ -21,7 +21,6 @@ func (s *InvocationService) ListByInterface(interfId int) (invocations []model.I
 
 func (s *InvocationService) GetLastResp(interfId int) (resp serverDomain.InvocationResponse, err error) {
 	invocation, err := s.InvocationRepo.GetLast(interfId)
-
 	json.Unmarshal([]byte(invocation.RespContent), &resp)
 
 	return

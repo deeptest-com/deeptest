@@ -141,7 +141,7 @@ export default defineComponent({
       console.log('selectNode', keys)
       selectedKeys.value = keys
 
-      if (!selectedKeys.value || selectedKeys.value.length === 0) {
+      if (!selectedKeys.value || selectedKeys.value.length === 0) { // not to display the design page
         store.dispatch('Interface/getInterface', {isDir: true})
         return
       }

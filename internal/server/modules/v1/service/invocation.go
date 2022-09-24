@@ -2,6 +2,7 @@ package service
 
 import (
 	"encoding/json"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/repo"
@@ -20,8 +21,15 @@ func (s *InvocationService) ListByInterface(interfId int) (invocations []model.I
 }
 
 func (s *InvocationService) GetLastResp(interfId int) (resp serverDomain.InvocationResponse, err error) {
-	invocation, err := s.InvocationRepo.GetLast(interfId)
-	json.Unmarshal([]byte(invocation.RespContent), &resp)
+	invocation, _ := s.InvocationRepo.GetLast(interfId)
+	if invocation.ID > 0 {
+		json.Unmarshal([]byte(invocation.RespContent), &resp)
+	} else {
+		resp = serverDomain.InvocationResponse{
+			ContentLang: consts.LangHTML,
+			Content:     "",
+		}
+	}
 
 	return
 }

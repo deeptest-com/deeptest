@@ -154,10 +154,17 @@ export default defineComponent({
     const operatorsForCode = getCompareOptsForRespCode()
 
     const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
-    const responseData = computed<Response>(() => store.state.Interface.responseData);
     const checkpointsData = computed(() => store.state.Interface.checkpointsData);
 
-    store.dispatch('Interface/listCheckpoint')
+    watch(interfaceData, () => {
+      console.log('watch interfaceData')
+      listCheckPoint()
+    }, {deep: true})
+
+    const listCheckPoint = () => {
+      store.dispatch('Interface/listCheckpoint')
+    }
+    listCheckPoint()
 
     const model = ref({
       type: CheckpointType.responseStatus,
@@ -272,7 +279,6 @@ export default defineComponent({
     return {
       t,
       interfaceData,
-      responseData,
       checkpointsData,
       model,
       variables,

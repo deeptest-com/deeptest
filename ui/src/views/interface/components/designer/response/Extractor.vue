@@ -127,7 +127,7 @@
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, reactive, ref} from "vue";
+import {computed, defineComponent, reactive, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import {Form} from 'ant-design-vue';
@@ -162,10 +162,17 @@ export default defineComponent({
     const typeOptions = getEnumSelectItems(ExtractorType)
 
     const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
-    const responseData = computed<Response>(() => store.state.Interface.responseData);
     const extractorsData = computed(() => store.state.Interface.extractorsData);
 
-    store.dispatch('Interface/listExtractor')
+    watch(interfaceData, () => {
+      console.log('watch interfaceData')
+      listExtractor()
+    }, {deep: true})
+
+    const listExtractor = () => {
+      store.dispatch('Interface/listExtractor')
+    }
+    listExtractor()
 
     const model = ref({} as Extractor)
     const results = ref({})
@@ -278,7 +285,6 @@ export default defineComponent({
     return {
       t,
       interfaceData,
-      responseData,
       extractorsData,
       model,
       results,

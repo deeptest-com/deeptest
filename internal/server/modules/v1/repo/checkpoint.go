@@ -72,10 +72,13 @@ func (r *CheckpointRepo) UpdateResult(checkpoint model.InterfaceCheckpoint) (err
 
 func (r *CheckpointRepo) UpdateResultToExecLog(checkpoint model.InterfaceCheckpoint, log *model.Log) (
 	logCheckpoint model.LogCheckpoint, err error) {
-	logCheckpoint.LogId = log.ID
 
 	copier.CopyWithOption(&logCheckpoint, checkpoint, copier.Option{DeepCopy: true})
 	logCheckpoint.ID = 0
+	logCheckpoint.LogId = log.ID
+	logCheckpoint.CreatedAt = nil
+	logCheckpoint.UpdatedAt = nil
+
 	err = r.DB.Save(&logCheckpoint).Error
 
 	return

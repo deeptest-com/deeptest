@@ -57,9 +57,10 @@ func (s *ExtractorService) ExtractInterface(interf model.Interface, resp serverD
 	for _, extractor := range extractors {
 		logExtractor, err := s.Extract(extractor, resp, interfaceExecLog)
 
-		if err == nil && interfaceExecLog != nil { // run by processor
+		if err == nil && interfaceExecLog != nil { // gen report for processor
 			interfaceExtractor := domain.ExecInterfaceExtractor{}
 			copier.CopyWithOption(&interfaceExtractor, logExtractor, copier.Option{DeepCopy: true})
+
 			logExtractors = append(logExtractors, interfaceExtractor)
 		}
 	}
@@ -74,9 +75,11 @@ func (s *ExtractorService) Extract(extractor model.InterfaceExtractor, resp serv
 
 	if interfaceExecLog == nil { // run by interface
 		s.ExtractorRepo.UpdateResult(extractor)
+
 	} else { // run by processor
 		s.ExecContext.SetVariable(interfaceExecLog.ProcessorId, extractor.Variable, extractor.Result)
 		logExtractor, err = s.ExtractorRepo.UpdateResultToExecLog(extractor, interfaceExecLog)
+
 	}
 
 	return

@@ -4,12 +4,9 @@ import serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/
 
 type Project struct {
 	BaseModel
-
 	serverDomain.ProjectBase
 
 	DefaultEnvironmentId uint `json:"defaultEnvironmentId"`
-
-	//Products []*Product `json:"products" gorm:"many2many:biz_project_product_r;"`
 }
 
 func (Project) TableName() string {

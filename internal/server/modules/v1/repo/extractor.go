@@ -85,6 +85,9 @@ func (r *ExtractorRepo) UpdateResultToExecLog(extractor model.InterfaceExtractor
 	copier.CopyWithOption(&logExtractor, extractor, copier.Option{DeepCopy: true})
 	logExtractor.ID = 0
 	logExtractor.LogId = log.ID
+	logExtractor.CreatedAt = nil
+	logExtractor.UpdatedAt = nil
+
 	err = r.DB.Save(&logExtractor).Error
 
 	return

@@ -56,10 +56,12 @@ func (s *CheckpointService) CheckInterface(interf model.Interface, resp serverDo
 	checkpoints, _ := s.CheckpointRepo.List(interf.ID)
 
 	for _, checkpoint := range checkpoints {
-		logCheckpoint, err := s.Check(checkpoint, resp, interf.ProjectId, interfaceExecLog)
-		if err == nil {
+		logCheckpoint, err := s.Check(checkpoint, resp, interfaceExecLog)
+
+		if err == nil && interfaceExecLog != nil { // gen report for processor
 			interfaceCheckpoint := domain.ExecInterfaceCheckpoint{}
 			copier.CopyWithOption(&interfaceCheckpoint, logCheckpoint, copier.Option{DeepCopy: true})
+
 			logCheckpoints = append(logCheckpoints, interfaceCheckpoint)
 		}
 	}
@@ -68,14 +70,16 @@ func (s *CheckpointService) CheckInterface(interf model.Interface, resp serverDo
 }
 
 func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp serverDomain.InvocationResponse,
-	projectId uint, interfaceExecLog *model.Log) (logCheckpoint model.LogCheckpoint, err error) {
+	interfaceExecLog *model.Log) (logCheckpoint model.LogCheckpoint, err error) {
 	if checkpoint.Disabled {
 		checkpoint.ResultStatus = ""
 
 		if interfaceExecLog == nil { // run by interface
 			s.CheckpointRepo.UpdateResult(checkpoint)
+
 		} else { // run by processor
 			logCheckpoint, err = s.CheckpointRepo.UpdateResultToExecLog(checkpoint, interfaceExecLog)
+
 		}
 
 		return

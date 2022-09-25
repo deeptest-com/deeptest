@@ -8,12 +8,15 @@
 
     <div class="body">
       <div class="histories">
-        <div v-for="(item, idx) in invocationsData" :key="idx" class="history">
+        <div v-for="(item, idx) in invocationsData" :key="idx"
+             @mouseover="mouseOver"
+             @mouseout="mouseLeave"
+             class="history dp-link">
           <div class="left">
-            <span @click="getRequestAsInterface(item.id)" class="dp-link" title="点击加载历史请求数据">{{item.name}}</span>
+            <span @click="getRequestAsInterface(item.id)" title="点击加载历史请求数据">{{item.name}}</span>
           </div>
           <div class="right">
-            <span @click="removeHistory(item.id)" class="dp-link"><DeleteOutlined /></span>
+            <span @click="removeHistory(item.id)" class="link"><DeleteOutlined /></span>
           </div>
         </div>
       </div>
@@ -54,12 +57,23 @@ export default defineComponent({
       store.dispatch('Interface/removeInvocation', {id: id, interfaceId: interfaceData.value.id})
     }
 
+    const mouseOver = (event) => {
+      console.log('mouseOver', event)
+      event.currentTarget.querySelector(".link").style.display = 'block'
+    }
+     const mouseLeave = (event) => {
+       console.log('mouseLeave', event);
+       event.currentTarget.querySelector(".link").style.display = 'none'
+    }
+
     return {
       interfaceData,
       invocationsData,
 
       getRequestAsInterface,
       removeHistory,
+      mouseOver,
+      mouseLeave
     }
   }
 })
@@ -112,6 +126,9 @@ export default defineComponent({
         .right {
           width: 20px;
           cursor: pointer;
+          .link {
+            display: none;
+          }
         }
       }
     }

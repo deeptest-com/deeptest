@@ -51,7 +51,7 @@ func (s *ExtractorService) Delete(reqId uint) (err error) {
 }
 
 func (s *ExtractorService) ExtractInterface(interf model.Interface, resp serverDomain.InvocationResponse,
-	interfaceExecLog *model.Log) (logExtractors []domain.ExecInterfaceExtractor, err error) {
+	interfaceExecLog *model.ExecLogProcessor) (logExtractors []domain.ExecInterfaceExtractor, err error) {
 	extractors, _ := s.ExtractorRepo.List(interf.ID)
 
 	for _, extractor := range extractors {
@@ -69,7 +69,7 @@ func (s *ExtractorService) ExtractInterface(interf model.Interface, resp serverD
 }
 
 func (s *ExtractorService) Extract(extractor model.InterfaceExtractor, resp serverDomain.InvocationResponse,
-	interfaceExecLog *model.Log) (logExtractor model.LogExtractor, err error) {
+	interfaceExecLog *model.ExecLogProcessor) (logExtractor model.ExecLogExtractor, err error) {
 
 	s.ExtractValue(&extractor, resp)
 

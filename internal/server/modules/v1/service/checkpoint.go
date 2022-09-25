@@ -52,7 +52,7 @@ func (s *CheckpointService) Delete(reqId uint) (err error) {
 }
 
 func (s *CheckpointService) CheckInterface(interf model.Interface, resp serverDomain.InvocationResponse,
-	interfaceExecLog *model.Log) (logCheckpoints []domain.ExecInterfaceCheckpoint, err error) {
+	interfaceExecLog *model.ExecLogProcessor) (logCheckpoints []domain.ExecInterfaceCheckpoint, err error) {
 	checkpoints, _ := s.CheckpointRepo.List(interf.ID)
 
 	for _, checkpoint := range checkpoints {
@@ -70,7 +70,7 @@ func (s *CheckpointService) CheckInterface(interf model.Interface, resp serverDo
 }
 
 func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp serverDomain.InvocationResponse,
-	interfaceExecLog *model.Log) (logCheckpoint model.LogCheckpoint, err error) {
+	interfaceExecLog *model.ExecLogProcessor) (logCheckpoint model.ExecLogCheckpoint, err error) {
 	if checkpoint.Disabled {
 		checkpoint.ResultStatus = ""
 

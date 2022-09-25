@@ -19,8 +19,8 @@ type ExecLogService struct {
 	InterfaceService      *InterfaceService           `inject:""`
 }
 
-func (s *ExecLogService) CreateProcessorLog(processor *model.Processor, log *domain.ExecLog, parentPersistentId uint) (po model.Log, err error) {
-	po = model.Log{
+func (s *ExecLogService) CreateProcessorLog(processor *model.Processor, log *domain.ExecLog, parentPersistentId uint) (po model.ExecLogProcessor, err error) {
+	po = model.ExecLogProcessor{
 		Name:              processor.Name,
 		ProcessorCategory: processor.EntityCategory,
 		ProcessorType:     processor.EntityType,
@@ -43,8 +43,8 @@ func (s *ExecLogService) CreateProcessorLog(processor *model.Processor, log *dom
 }
 
 func (s *ExecLogService) CreateInterfaceLog(req serverDomain.InvocationRequest, resp serverDomain.InvocationResponse, parentLog *domain.ExecLog) (
-	po model.Log, err error) {
-	po = model.Log{
+	po model.ExecLogProcessor, err error) {
+	po = model.ExecLogProcessor{
 		Name:              req.Name,
 		ProcessorCategory: consts.ProcessorInterface,
 		ProcessorType:     consts.ProcessorInterfaceDefault,

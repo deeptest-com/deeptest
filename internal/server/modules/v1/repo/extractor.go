@@ -79,8 +79,8 @@ func (r *ExtractorRepo) UpdateResult(extractor model.InterfaceExtractor) (err er
 
 	return
 }
-func (r *ExtractorRepo) UpdateResultToExecLog(extractor model.InterfaceExtractor, log *model.Log) (
-	logExtractor model.LogExtractor, err error) {
+func (r *ExtractorRepo) UpdateResultToExecLog(extractor model.InterfaceExtractor, log *model.ExecLogProcessor) (
+	logExtractor model.ExecLogExtractor, err error) {
 
 	copier.CopyWithOption(&logExtractor, extractor, copier.Option{DeepCopy: true})
 	logExtractor.ID = 0

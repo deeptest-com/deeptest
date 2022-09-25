@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-type Log struct {
+type ExecLogProcessor struct {
 	BaseModel
 
 	Name           string                `json:"name"`
@@ -29,8 +29,8 @@ type Log struct {
 	HttpRespStatusCode    consts.HttpRespCode `json:"httpStatusCode"`
 	HttpRespStatusContent string              `json:"httpStatusContent"`
 
-	InterfaceExtractorsResult  []LogExtractor  `gorm:"-" json:"interfaceExtractorsResult,omitempty"`
-	InterfaceCheckpointsResult []LogCheckpoint `gorm:"-" json:"interfaceCheckpointsResult,omitempty"`
+	InterfaceExtractorsResult  []ExecLogExtractor  `gorm:"-" json:"interfaceExtractorsResult,omitempty"`
+	InterfaceCheckpointsResult []ExecLogCheckpoint `gorm:"-" json:"interfaceCheckpointsResult,omitempty"`
 
 	// for processor
 	ProcessorType    consts.ProcessorType `json:"processorType" yaml:"processorType"`
@@ -41,14 +41,14 @@ type Log struct {
 	Summary string `json:"summary,omitempty"`
 	Output  string `json:"output,omitempty"`
 
-	Logs []*Log `gorm:"-" json:"logs"`
+	Logs []*ExecLogProcessor `gorm:"-" json:"logs"`
 }
 
-func (Log) TableName() string {
-	return "biz_log"
+func (ExecLogProcessor) TableName() string {
+	return "biz_exec_log_processor"
 }
 
-type LogExtractor struct {
+type ExecLogExtractor struct {
 	BaseModel
 	Src  consts.ExtractorSrc  `json:"src"`
 	Type consts.ExtractorType `json:"type"`
@@ -69,11 +69,11 @@ type LogExtractor struct {
 	LogId       uint   `json:"logId"`
 }
 
-func (LogExtractor) TableName() string {
-	return "biz_log_extractor"
+func (ExecLogExtractor) TableName() string {
+	return "biz_exec_log_extractor"
 }
 
-type LogCheckpoint struct {
+type ExecLogCheckpoint struct {
 	BaseModel
 	Type consts.CheckpointType `json:"type"`
 
@@ -89,6 +89,6 @@ type LogCheckpoint struct {
 	LogId        uint                `json:"logId"`
 }
 
-func (LogCheckpoint) TableName() string {
-	return "biz_log_checkpoint"
+func (ExecLogCheckpoint) TableName() string {
+	return "biz_exec_log_checkpoint"
 }

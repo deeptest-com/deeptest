@@ -16,7 +16,7 @@ func NewLogRepo() *LogRepo {
 	return &LogRepo{}
 }
 
-func (r *LogRepo) ListByReport(reportId uint) (logs []*model.Log, err error) {
+func (r *LogRepo) ListByReport(reportId uint) (logs []*model.ExecLogProcessor, err error) {
 	err = r.DB.
 		Where("report_id=?", reportId).
 		Where("NOT deleted").
@@ -25,8 +25,8 @@ func (r *LogRepo) ListByReport(reportId uint) (logs []*model.Log, err error) {
 	return
 }
 
-func (r *LogRepo) Get(id uint) (scenario model.Log, err error) {
-	err = r.DB.Model(&model.Log{}).Where("id = ?", id).First(&scenario).Error
+func (r *LogRepo) Get(id uint) (scenario model.ExecLogProcessor, err error) {
+	err = r.DB.Model(&model.ExecLogProcessor{}).Where("id = ?", id).First(&scenario).Error
 	if err != nil {
 		logUtils.Errorf("find scenario by id error", zap.String("error:", err.Error()))
 		return scenario, err
@@ -35,14 +35,14 @@ func (r *LogRepo) Get(id uint) (scenario model.Log, err error) {
 	return scenario, nil
 }
 
-func (r *LogRepo) Save(log *model.Log) (err error) {
+func (r *LogRepo) Save(log *model.ExecLogProcessor) (err error) {
 	err = r.DB.Save(log).Error
 
 	return
 }
 
 func (r *LogRepo) DeleteById(id uint) (err error) {
-	err = r.DB.Model(&model.Log{}).Where("id = ?", id).
+	err = r.DB.Model(&model.ExecLogProcessor{}).Where("id = ?", id).
 		Updates(map[string]interface{}{"deleted": true}).Error
 	if err != nil {
 		logUtils.Errorf("delete scenario by id error", zap.String("error:", err.Error()))

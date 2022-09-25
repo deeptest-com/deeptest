@@ -70,8 +70,8 @@ func (r *CheckpointRepo) UpdateResult(checkpoint model.InterfaceCheckpoint) (err
 	return
 }
 
-func (r *CheckpointRepo) UpdateResultToExecLog(checkpoint model.InterfaceCheckpoint, log *model.Log) (
-	logCheckpoint model.LogCheckpoint, err error) {
+func (r *CheckpointRepo) UpdateResultToExecLog(checkpoint model.InterfaceCheckpoint, log *model.ExecLogProcessor) (
+	logCheckpoint model.ExecLogCheckpoint, err error) {
 
 	copier.CopyWithOption(&logCheckpoint, checkpoint, copier.Option{DeepCopy: true})
 	logCheckpoint.ID = 0

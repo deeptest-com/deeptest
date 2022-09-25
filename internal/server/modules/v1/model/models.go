@@ -49,8 +49,8 @@ var (
 		&ProcessorCookie{},
 
 		&Report{},
-		&Log{},
-		&LogExtractor{},
-		&LogCheckpoint{},
+		&ExecLogProcessor{},
+		&ExecLogExtractor{},
+		&ExecLogCheckpoint{},
 	}
 )

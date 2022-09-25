@@ -37,7 +37,7 @@ type Report struct {
 	ScenarioId uint `json:"scenarioId"`
 	ProjectId  uint `json:"projectId"`
 
-	Logs []*Log `gorm:"-" json:"logs"`
+	Logs []*ExecLogProcessor `gorm:"-" json:"logs"`
 }
 
 func (Report) TableName() string {

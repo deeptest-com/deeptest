@@ -87,7 +87,7 @@ func (r *ReportRepo) DeleteById(id uint) (err error) {
 		return
 	}
 
-	err = r.DB.Model(&model.Log{}).Where("report_id = ?", id).
+	err = r.DB.Model(&model.ExecLogProcessor{}).Where("report_id = ?", id).
 		Updates(map[string]interface{}{"deleted": true}).Error
 	if err != nil {
 		logUtils.Errorf("delete report's logs by id error %s", err.Error())
@@ -143,7 +143,7 @@ func (r *ReportRepo) ResetResult(result model.Report) (err error) {
 }
 
 func (r *ReportRepo) ClearLogs(resultId uint) (err error) {
-	err = r.DB.Model(&model.Log{}).Where("result_id = ?", resultId).
+	err = r.DB.Model(&model.ExecLogProcessor{}).Where("result_id = ?", resultId).
 		Updates(map[string]interface{}{"deleted": true}).Error
 	if err != nil {
 		logUtils.Errorf("delete logs by result id error %s", err.Error())
@@ -161,7 +161,7 @@ func (r *ReportRepo) FindInProgressResult(scenarioId uint) (result model.Report,
 	return
 }
 
-func (r *ReportRepo) getLogTree(report model.Report) (root model.Log, err error) {
+func (r *ReportRepo) getLogTree(report model.Report) (root model.ExecLogProcessor, err error) {
 	logs, err := r.LogRepo.ListByReport(report.ID)
 	if err != nil {
 		return
@@ -174,7 +174,7 @@ func (r *ReportRepo) getLogTree(report model.Report) (root model.Log, err error)
 		}
 	}
 
-	root = model.Log{
+	root = model.ExecLogProcessor{
 		Name: report.Name,
 	}
 	r.makeTree(logs, &root)
@@ -182,7 +182,7 @@ func (r *ReportRepo) getLogTree(report model.Report) (root model.Log, err error)
 	return
 }
 
-func (r *ReportRepo) makeTree(Data []*model.Log, parent *model.Log) { //参数为父节点，添加父节点的子节点指针切片
+func (r *ReportRepo) makeTree(Data []*model.ExecLogProcessor, parent *model.ExecLogProcessor) { //参数为父节点，添加父节点的子节点指针切片
 	children, _ := r.haveChild(Data, parent) //判断节点是否有子节点并返回
 
 	if children != nil {
@@ -197,7 +197,7 @@ func (r *ReportRepo) makeTree(Data []*model.Log, parent *model.Log) { //参数�
 	}
 }
 
-func (r *ReportRepo) haveChild(Data []*model.Log, node *model.Log) (children []*model.Log, yes bool) {
+func (r *ReportRepo) haveChild(Data []*model.ExecLogProcessor, node *model.ExecLogProcessor) (children []*model.ExecLogProcessor, yes bool) {
 	for _, v := range Data {
 		if v.ParentId == node.ID {
 			children = append(children, v)
@@ -211,7 +211,7 @@ func (r *ReportRepo) haveChild(Data []*model.Log, node *model.Log) (children []*
 	return
 }
 
-func (r *ReportRepo) listLogExtractors(logId uint) (extractors []model.LogExtractor, err error) {
+func (r *ReportRepo) listLogExtractors(logId uint) (extractors []model.ExecLogExtractor, err error) {
 	err = r.DB.
 		Where("log_id =? AND not deleted", logId).
 		Find(&extractors).Error
@@ -219,7 +219,7 @@ func (r *ReportRepo) listLogExtractors(logId uint) (extractors []model.LogExtrac
 	return
 }
 
-func (r *ReportRepo) listLogCheckpoints(logId uint) (checkpoints []model.LogCheckpoint, err error) {
+func (r *ReportRepo) listLogCheckpoints(logId uint) (checkpoints []model.ExecLogCheckpoint, err error) {
 	err = r.DB.
 		Where("log_id =? AND not deleted", logId).
 		Find(&checkpoints).Error

@@ -52,11 +52,16 @@ func (s *CheckpointService) Delete(reqId uint) (err error) {
 }
 
 func (s *CheckpointService) CheckInterface(interf model.Interface, resp serverDomain.InvocationResponse,
-	interfaceExecLog *model.ExecLogProcessor) (logCheckpoints []domain.ExecInterfaceCheckpoint, err error) {
+	interfaceExecLog *model.ExecLogProcessor) (
+	logCheckpoints []domain.ExecInterfaceCheckpoint, status consts.ResultStatus, err error) {
 	checkpoints, _ := s.CheckpointRepo.List(interf.ID)
 
+	status = consts.Pass
 	for _, checkpoint := range checkpoints {
 		logCheckpoint, err := s.Check(checkpoint, resp, interfaceExecLog)
+		if logCheckpoint.ResultStatus == consts.Fail {
+			status = consts.Fail
+		}
 
 		if err == nil && interfaceExecLog != nil { // gen report for processor
 			interfaceCheckpoint := domain.ExecInterfaceCheckpoint{}

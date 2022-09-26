@@ -16,27 +16,29 @@ type InterfaceService struct {
 	InterfaceRepo   *repo.InterfaceRepo   `inject:""`
 	EnvironmentRepo *repo.EnvironmentRepo `inject:""`
 	ExtractorRepo   *repo.ExtractorRepo   `inject:""`
+
+	VariableService *VariableService `inject:""`
 }
 
 func (s *InterfaceService) Test(req serverDomain.InvocationRequest) (ret serverDomain.InvocationResponse, err error) {
 	if req.Method == consts.GET {
-		ret, _ = httpHelper.Get(req)
+		ret, err = httpHelper.Get(req)
 	} else if req.Method == consts.POST {
-		ret, _ = httpHelper.Post(req)
+		ret, err = httpHelper.Post(req)
 	} else if req.Method == consts.PUT {
-		ret, _ = httpHelper.Put(req)
+		ret, err = httpHelper.Put(req)
 	} else if req.Method == consts.DELETE {
-		ret, _ = httpHelper.Delete(req)
+		ret, err = httpHelper.Delete(req)
 	} else if req.Method == consts.PATCH {
-		ret, _ = httpHelper.Patch(req)
+		ret, err = httpHelper.Patch(req)
 	} else if req.Method == consts.HEAD {
-		ret, _ = httpHelper.Head(req)
+		ret, err = httpHelper.Head(req)
 	} else if req.Method == consts.CONNECT {
-		ret, _ = httpHelper.Connect(req)
+		ret, err = httpHelper.Connect(req)
 	} else if req.Method == consts.OPTIONS {
-		ret, _ = httpHelper.Options(req)
+		ret, err = httpHelper.Options(req)
 	} else if req.Method == consts.TRACE {
-		ret, _ = httpHelper.Trace(req)
+		ret, err = httpHelper.Trace(req)
 	}
 
 	s.GetContentProps(&ret)
@@ -190,12 +192,7 @@ func (s *InterfaceService) CopyValueFromRequest(interf *model.Interface, req ser
 
 func (s *InterfaceService) ReplaceEnvironmentExtractorAndExecVariables(req serverDomain.InvocationRequest) (
 	ret serverDomain.InvocationRequest, err error) {
-	interfaceId := req.Id
-
-	environmentVariables, _ := s.EnvironmentRepo.ListByInterface(interfaceId)
-	interfaceExtractorVariables, _ := s.ExtractorRepo.ListExtractorVariableByProject(req.ProjectId)
-
-	variableArr := requestHelper.MergeVariables(environmentVariables, interfaceExtractorVariables, nil)
+	variableArr, _ := s.VariableService.GetVariablesByInterface(req.Id)
 	requestHelper.ReplaceAll(&req, variableArr)
 
 	ret = req

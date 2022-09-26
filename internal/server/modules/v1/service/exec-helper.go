@@ -6,9 +6,11 @@ import (
 	"github.com/Knetic/govaluate"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
+	commUtils "github.com/aaronchen2k/deeptest/internal/pkg/utils"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/business"
 	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
 	execHelper "github.com/aaronchen2k/deeptest/internal/server/modules/v1/helper/exec"
+	expressionHelper "github.com/aaronchen2k/deeptest/internal/server/modules/v1/helper/expression"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/repo"
 	"github.com/jinzhu/copier"
@@ -44,7 +46,7 @@ func (s *ExecHelperService) EvaluateLogic(logic *model.ProcessorLogic, parentLog
 
 	if typ == consts.ProcessorLogicIf {
 		var result interface{}
-		result, err = s.ComputerExpress(logic.Expression, logic.ProcessorId)
+		result, err = s.EvaluateGovaluateExpression(logic.Expression, logic.ProcessorId)
 		if err != nil {
 			output.Pass = false
 			output.Msg = fmt.Sprintf("不通过")
@@ -149,7 +151,7 @@ func (s *ExecHelperService) EvaluateVariable(processor *model.ProcessorVariable,
 	typ := processor.ProcessorType
 
 	if typ == consts.ProcessorVariableSet {
-		output.VariableValue, err = s.ComputerExpress(expression, processor.ProcessorId)
+		output.VariableValue, err = s.EvaluateGovaluateExpression(expression, processor.ProcessorId)
 		if err != nil {
 			output.Msg = fmt.Sprintf("计算表达式\"%s\"错误 \"%s\"。", expression, err.Error())
 			return
@@ -215,7 +217,7 @@ func (s *ExecHelperService) EvaluateCookie(processor *model.ProcessorCookie, par
 
 	if typ == consts.ProcessorCookieSet {
 		var variableValue interface{}
-		variableValue, err = s.ComputerExpress(expression, processor.ProcessorId)
+		variableValue, err = s.EvaluateGovaluateExpression(expression, processor.ProcessorId)
 		if err != nil {
 			output.Msg = fmt.Sprintf("计算表达式\"%s\"错误 %s。", expression, err.Error())
 			return
@@ -258,12 +260,10 @@ func (s *ExecHelperService) GetVariableValueByName(processorId uint, name string
 	return
 }
 
-func (s *ExecHelperService) ComputerExpress(expression string, scopeId uint) (ret interface{}, err error) {
-	// remove variable symbol ${} for govaluate
-	re := regexp.MustCompile("(?siU)\\${(.*)}")
-	expr := re.ReplaceAllString(expression, "$1")
+func (s *ExecHelperService) EvaluateGovaluateExpression(expression string, scopeId uint) (ret interface{}, err error) {
+	expr := commUtils.RemoveLeftVariableSymbol(expression)
 
-	valueExpression, err := govaluate.NewEvaluableExpression(expr)
+	valueExpression, err := govaluate.NewEvaluableExpressionWithFunctions(expr, expressionHelper.Functions)
 	if err != nil {
 		return
 	}
@@ -281,7 +281,7 @@ func (s *ExecHelperService) ComputerExpress(expression string, scopeId uint) (re
 func (s *ExecHelperService) generateParams(expression string, scopeId uint) (ret map[string]interface{}, err error) {
 	ret = make(map[string]interface{}, 8)
 
-	variables := s.GetVariables(expression)
+	variables := execHelper.GetVariables(expression)
 
 	for _, variableName := range variables {
 		var vari domain.ExecVariable
@@ -289,18 +289,6 @@ func (s *ExecHelperService) generateParams(expression string, scopeId uint) (ret
 		if err == nil {
 			ret[variableName] = vari.Value
 		}
-	}
-
-	return
-}
-
-func (s *ExecHelperService) GetVariables(expression string) (ret []string) {
-	re := regexp.MustCompile("(?siU)\\${(.*)}")
-	matchResultArr := re.FindAllStringSubmatch(expression, -1)
-
-	for _, childArr := range matchResultArr {
-		variableName := childArr[1]
-		ret = append(ret, variableName)
 	}
 
 	return

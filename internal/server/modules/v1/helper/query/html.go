@@ -20,25 +20,20 @@ func HtmlQuery(content string, expression string) (result string) {
 	}
 
 	expression, propName := GetExpressionForCssSelector(expression)
-	list, err := htmlquery.QueryAll(doc, expression)
-	if err != nil {
+	elem, err := htmlquery.Query(doc, expression)
+	if err != nil || elem == nil {
 		result = "QueryErr"
 		return
 	}
 
-	results := make([]string, 0)
-	for _, item := range list {
-		result := ""
-		if propName != "" {
-			result = htmlquery.SelectAttr(item, propName)
-		} else {
-			result = htmlquery.InnerText(item)
-		}
-
-		results = append(results, result)
+	obj := ""
+	if propName != "" {
+		obj = htmlquery.SelectAttr(elem, propName)
+	} else {
+		obj = htmlquery.InnerText(elem)
 	}
 
-	result = strings.Join(results, ", ")
+	result = fmt.Sprintf("%v", obj)
 
 	return
 }

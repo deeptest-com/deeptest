@@ -44,7 +44,7 @@ func (c *InvocationCtrl) Invoke(ctx iris.Context) {
 
 	resp, err := c.InterfaceService.Test(reqNew)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: resp})
 		return
 	}
 

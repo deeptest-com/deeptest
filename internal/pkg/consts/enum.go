@@ -257,19 +257,21 @@ const (
 	ResponseHeader CheckpointType = "responseHeader"
 	ResponseBody   CheckpointType = "responseBody"
 	Extractor      CheckpointType = "extractor"
+	Judgement      CheckpointType = "judgement"
 )
 
 type ComparisonOperator string
 
 const (
-	Contain            ComparisonOperator = "contain"
-	NotContain         ComparisonOperator = "notContain"
 	Equal              ComparisonOperator = "equal"
 	NotEqual           ComparisonOperator = "notEqual"
 	GreaterThan        ComparisonOperator = "greaterThan"
 	GreaterThanOrEqual ComparisonOperator = "greaterThanOrEqual"
 	LessThan           ComparisonOperator = "lessThan"
 	LessThanOrEqual    ComparisonOperator = "lessThanOrEqual"
+
+	Contain    ComparisonOperator = "contain"
+	NotContain ComparisonOperator = "notContain"
 )
 
 func (e ComparisonOperator) String() string {

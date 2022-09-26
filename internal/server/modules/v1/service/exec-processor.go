@@ -5,6 +5,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/business"
+	execHelper "github.com/aaronchen2k/deeptest/internal/server/modules/v1/helper/exec"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/repo"
 	"github.com/kataras/iris/v12/websocket"
@@ -55,7 +56,7 @@ func (s *ExecProcessorService) ExecLoopBreak(processor *model.Processor, parentL
 	breakFrom := output.BreakFrom
 	breakIfExpress := output.Expression
 
-	result, err := s.ExecHelperService.ComputerExpress(breakIfExpress, processor.ID)
+	result, err := s.ExecHelperService.EvaluateGovaluateExpression(breakIfExpress, processor.ID)
 	pass, ok := result.(bool)
 	if err == nil && ok && pass {
 		breakMap.Store(breakFrom, true)
@@ -94,7 +95,7 @@ func (s *ExecProcessorService) ExecPrint(processor *model.Processor, parentLog *
 	output, _ = s.ExecHelperService.EvaluatePrint(&print, parentLog, msg)
 
 	expression := s.ExecHelperService.ReplaceVariablesWithVerbs(output.Expression)
-	variables := s.ExecHelperService.GetVariables(output.Expression)
+	variables := execHelper.GetVariables(output.Expression)
 
 	variableValues := make([]interface{}, 0)
 	for _, name := range variables {
@@ -132,7 +133,7 @@ func (s *ExecProcessorService) ExecAssertion(processor *model.Processor, parentL
 	assertion, err := s.ScenarioProcessorRepo.GetAssertion(*processor)
 	output, _ = s.ExecHelperService.EvaluateAssertion(&assertion, parentLog, msg)
 
-	result, _ := s.ExecHelperService.ComputerExpress(output.Expression, processor.ID)
+	result, _ := s.ExecHelperService.EvaluateGovaluateExpression(output.Expression, processor.ID)
 	output.Pass, _ = result.(bool)
 
 	status := "失败"

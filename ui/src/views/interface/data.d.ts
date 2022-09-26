@@ -18,6 +18,7 @@ export interface Interface {
 
     extractors: Extractor[];
     checkpoints: Checkpoint[];
+    projectId?: number;
 }
 
 export interface Response {
@@ -77,6 +78,7 @@ export interface Extractor {
 
     variable: string;
     interfaceId?: number;
+    projectId?: number;
 }
 
 export interface Checkpoint {

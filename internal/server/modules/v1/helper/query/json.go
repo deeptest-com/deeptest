@@ -13,19 +13,24 @@ func JsonQuery(content string, expression string) (result string) {
 		return
 	}
 
-	list, err := jsonquery.QueryAll(doc, expression)
-	if err != nil {
+	expression, propName := GetExpressionForCssSelector(expression)
+	elem, err := jsonquery.Query(doc, expression)
+	if err != nil || elem == nil {
 		result = "QueryErr"
 		return
 	}
 
-	results := make([]string, 0)
-	for _, item := range list {
-		result := fmt.Sprintf("%v", item.Value())
-		results = append(results, result)
+	var obj interface{}
+	if propName != "" {
+		mp, ok := elem.Value().(map[string]interface{})
+		if ok {
+			obj = mp[propName]
+		}
+	} else {
+		obj = elem.Value()
 	}
 
-	result = strings.Join(results, ", ")
+	result = fmt.Sprintf("%v", obj)
 
 	return
 }

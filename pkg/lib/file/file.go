@@ -78,7 +78,7 @@ func IsDir(f string) bool {
 }
 
 func AbsolutePath(pth string) string {
-	if !IsAbosutePath(pth) {
+	if !IsAbsolutePath(pth) {
 		pth, _ = filepath.Abs(pth)
 	}
 
@@ -87,7 +87,7 @@ func AbsolutePath(pth string) string {
 	return pth
 }
 
-func IsAbosutePath(pth string) bool {
+func IsAbsolutePath(pth string) bool {
 	return path.IsAbs(pth) ||
 		strings.Index(pth, ":") == 1 // windows
 }
@@ -110,7 +110,7 @@ func GetFilesFromParams(arguments []string) []string {
 				arg = AbsolutePath(".")
 			} else if strings.Index(arg, "."+_consts.FilePthSep) == 0 {
 				arg = AbsolutePath(".") + arg[2:]
-			} else if !IsAbosutePath(arg) {
+			} else if !IsAbsolutePath(arg) {
 				arg = AbsolutePath(".") + arg
 			}
 
@@ -195,7 +195,7 @@ func GetExtName(pathOrUrl string) string {
 }
 
 func GetAbosutePath(pth string) string {
-	if !IsAbosutePath(pth) {
+	if !IsAbsolutePath(pth) {
 		pth, _ = filepath.Abs(pth)
 	}
 

@@ -6,12 +6,12 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-func NewUuid() string {
+func Uuid() string {
 	uid := uuid.NewV4().String()
 	return strings.Replace(uid, "-", "", -1)
 }
 
-func NewUuidWithSep() string {
+func UuidWithSep() string {
 	uid := uuid.NewV4().String()
 	return uid
 }

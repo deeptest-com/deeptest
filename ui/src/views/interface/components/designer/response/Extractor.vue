@@ -1,7 +1,7 @@
 <template>
   <div class="response-extractor-main">
     <div class="head">
-      <a-row type="flex" class="extractor">
+      <a-row type="flex" class="extractor item">
         <a-col flex="50px">编号</a-col>
         <a-col flex="70px">来源</a-col>
         <a-col flex="90px">提取类型</a-col>
@@ -162,6 +162,7 @@ export default defineComponent({
     const typeOptions = getEnumSelectItems(ExtractorType)
 
     const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
+    const responseData = computed<any>(() => store.state.Interface.responseData);
     const extractorsData = computed(() => store.state.Interface.extractorsData);
 
     watch(interfaceData, () => {
@@ -215,6 +216,13 @@ export default defineComponent({
       model.value = {src: ExtractorSrc.header, type: ExtractorType.boundary, expression: '', variable: ''} as Extractor
 
       selectSrc()
+      if (responseData.value.contentLang === 'json') {
+        model.value.type = ExtractorType.jsonquery
+      } else if (responseData.value.contentLang === 'xml') {
+        model.value.type = ExtractorType.xmlquery
+      } else if (responseData.value.contentLang === 'html') {
+        model.value.type = ExtractorType.htmlquery
+      }
     }
 
     const edit = (item) => {
@@ -229,6 +237,7 @@ export default defineComponent({
       console.log('save')
       validate().then(() => {
         model.value.interfaceId = interfaceData.value.id
+        model.value.projectId = interfaceData.value.projectId
         store.dispatch('Interface/saveExtractor', model.value).then((result) => {
           if (result) {
             editVisible.value = false
@@ -322,6 +331,7 @@ export default defineComponent({
 <style lang="less" scoped>
 .response-extractor-main {
   height: 100%;
+
   .head {
     padding: 2px 3px;
     border-bottom: 1px solid #d9d9d9;
@@ -332,8 +342,10 @@ export default defineComponent({
   }
   .item {
     .ant-col {
+      padding: 0 3px;
       word-break: break-all;
     }
   }
+
 }
 </style>

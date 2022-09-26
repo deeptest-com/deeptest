@@ -53,7 +53,7 @@ func (r *ExtractorRepo) Save(extractor *model.InterfaceExtractor) (id uint, bizE
 
 	err := r.DB.Save(extractor).Error
 	if err != nil {
-		bizErr.Code = _domain.ErrComm.Code
+		bizErr.Code = _domain.SystemErr.Code
 		return
 	}
 

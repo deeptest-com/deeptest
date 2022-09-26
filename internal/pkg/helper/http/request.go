@@ -1,20 +1,18 @@
 package httpHelper
 
 import (
-	"bufio"
 	"bytes"
 	"compress/gzip"
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
+	commUtils "github.com/aaronchen2k/deeptest/internal/pkg/utils"
 	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
 	requestHelper "github.com/aaronchen2k/deeptest/internal/server/modules/v1/helper/request"
 	_consts "github.com/aaronchen2k/deeptest/pkg/consts"
 	"github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"github.com/fatih/color"
-	"golang.org/x/net/html/charset"
-	"golang.org/x/text/transform"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -69,7 +67,7 @@ func Trace(req serverDomain.InvocationRequest) (ret serverDomain.InvocationRespo
 func gets(req serverDomain.InvocationRequest, method consts.HttpMethod, readRespData bool) (
 	ret serverDomain.InvocationResponse, err error) {
 
-	reqUrl := req.Url
+	reqUrl := commUtils.RemoveLeftVariableSymbol(req.Url)
 	reqParams := req.Params
 	reqHeaders := req.Headers
 
@@ -109,8 +107,7 @@ func gets(req serverDomain.InvocationRequest, method consts.HttpMethod, readResp
 
 	resp, err := client.Do(request)
 	if err != nil {
-		returnErr(consts.Uknown, "请求错误", err.Error(), &ret)
-
+		wrapperErrInResp(consts.Uknown, "请求错误", err.Error(), &ret)
 		_logUtils.Error(err.Error())
 		return
 	}
@@ -134,35 +131,23 @@ func gets(req serverDomain.InvocationRequest, method consts.HttpMethod, readResp
 		reader, _ = gzip.NewReader(resp.Body)
 	}
 
-	htmlContent, _ := ioutil.ReadAll(reader)
+	unicodeContent, err := ioutil.ReadAll(reader)
+	utf8Content, _ := _stringUtils.UnescapeUnicode(unicodeContent)
 
-	oldReader := bufio.NewReader(bytes.NewReader(htmlContent))
-	peekBytes, _ := oldReader.Peek(1024)
-	e, _, _ := charset.DetermineEncoding(peekBytes, "")
-	utf8reader := transform.NewReader(oldReader, e.NewDecoder())
-
-	htmlContent, _ = ioutil.ReadAll(utf8reader)
-
-	//htmlContent, _ = _stringUtils.UnescapeUnicode(htmlContent)
 	if _consts.Verbose {
-		_logUtils.Info(string(htmlContent))
+		_logUtils.Info(string(utf8Content))
 	}
 
-	ret.Content = string(htmlContent)
+	ret.Content = string(utf8Content)
 
 	return
-}
-
-func returnErr(code consts.HttpRespCode, statusContent string, content string, resp *serverDomain.InvocationResponse) {
-	resp.StatusCode = code
-	resp.StatusContent = fmt.Sprintf("%d %s", code, statusContent)
-	resp.Content, _ = url.QueryUnescape(content)
 }
 
 func posts(req serverDomain.InvocationRequest, method consts.HttpMethod, readRespData bool) (
 	ret serverDomain.InvocationResponse, err error) {
 
-	reqUrl := req.Url
+	reqUrl := commUtils.RemoveLeftVariableSymbol(req.Url)
+	reqHeaders := req.Headers
 	reqParams := req.Params
 	reqData := req.Body
 	bodyType := req.BodyType
@@ -201,12 +186,22 @@ func posts(req serverDomain.InvocationRequest, method consts.HttpMethod, readRes
 	}
 	request.URL.RawQuery = queryParams.Encode()
 
+	for _, header := range reqHeaders {
+		request.Header.Set(header.Name, header.Value)
+	}
+
 	request.Header.Set(consts.ContentType, bodyType.String())
 	addAuthorInfo(req, request)
 
 	startTime := time.Now().UnixMilli()
 
 	resp, err := client.Do(request)
+	if err != nil {
+		wrapperErrInResp(consts.Uknown, "请求错误", err.Error(), &ret)
+		_logUtils.Error(err.Error())
+		return
+	}
+
 	defer resp.Body.Close()
 
 	endTime := time.Now().UnixMilli()
@@ -225,13 +220,19 @@ func posts(req serverDomain.InvocationRequest, method consts.HttpMethod, readRes
 	ret.Headers = getHeaders(resp.Header)
 
 	if readRespData {
-		unicodeContent, _ := ioutil.ReadAll(resp.Body)
-		content, _ := _stringUtils.UnescapeUnicode(unicodeContent)
-		if _consts.Verbose {
-			_logUtils.Info(string(content))
+		reader := resp.Body
+		if resp.Header.Get("Content-Encoding") == "gzip" {
+			reader, _ = gzip.NewReader(resp.Body)
 		}
 
-		ret.Content = string(content)
+		unicodeContent, _ := ioutil.ReadAll(reader)
+		utf8Content, _ := _stringUtils.UnescapeUnicode(unicodeContent)
+
+		if _consts.Verbose {
+			_logUtils.Info(string(utf8Content))
+		}
+
+		ret.Content = string(utf8Content)
 	}
 
 	return
@@ -281,4 +282,10 @@ func UpdateUrl(url string) string {
 		url += "/"
 	}
 	return url
+}
+
+func wrapperErrInResp(code consts.HttpRespCode, statusContent string, content string, resp *serverDomain.InvocationResponse) {
+	resp.StatusCode = code
+	resp.StatusContent = fmt.Sprintf("%d %s", code, statusContent)
+	resp.Content, _ = url.QueryUnescape(content)
 }

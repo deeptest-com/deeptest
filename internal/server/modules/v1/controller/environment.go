@@ -65,7 +65,7 @@ func (c *EnvironmentCtrl) Change(ctx iris.Context) {
 	err = c.EnvironmentService.Change(id, interfaceId, projectId)
 	if err != nil {
 		ctx.JSON(_domain.Response{
-			Code: _domain.ErrComm.Code,
+			Code: _domain.SystemErr.Code,
 			Data: nil,
 		})
 		return
@@ -93,7 +93,7 @@ func (c *EnvironmentCtrl) Create(ctx iris.Context) {
 	err = c.EnvironmentService.Create(&env)
 	if err != nil {
 		ctx.JSON(_domain.Response{
-			Code: _domain.ErrComm.Code,
+			Code: _domain.SystemErr.Code,
 			Data: nil,
 		})
 		return
@@ -133,7 +133,7 @@ func (c *EnvironmentCtrl) Copy(ctx iris.Context) {
 	err = c.EnvironmentService.Copy(id)
 	if err != nil {
 		ctx.JSON(_domain.Response{
-			Code: _domain.ErrComm.Code,
+			Code: _domain.SystemErr.Code,
 			Data: nil,
 		})
 		return

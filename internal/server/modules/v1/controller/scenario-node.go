@@ -47,7 +47,7 @@ func (c *ScenarioNodeCtrl) AddInterfaces(ctx iris.Context) {
 	nodePo, bizErr := c.ScenarioNodeService.AddInterfaces(req)
 	if bizErr != nil {
 		ctx.JSON(_domain.Response{
-			Code: _domain.ErrComm.Code,
+			Code: _domain.SystemErr.Code,
 			Data: nil,
 		})
 		return
@@ -76,7 +76,7 @@ func (c *ScenarioNodeCtrl) AddProcessor(ctx iris.Context) {
 	nodePo, bizErr := c.ScenarioNodeService.AddProcessor(req)
 	if bizErr != nil {
 		ctx.JSON(_domain.Response{
-			Code: _domain.ErrComm.Code,
+			Code: _domain.SystemErr.Code,
 			Data: nil,
 		})
 		return

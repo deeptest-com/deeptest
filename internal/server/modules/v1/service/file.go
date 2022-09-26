@@ -64,5 +64,5 @@ func GetFileName(name string) (string, error) {
 
 	base := fns[0]
 	ext := fns[1]
-	return str.Join(base, "-", stringUtils.NewUuid(), ".", ext), nil
+	return str.Join(base, "-", stringUtils.Uuid(), ".", ext), nil
 }

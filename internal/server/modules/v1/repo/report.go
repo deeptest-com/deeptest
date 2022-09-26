@@ -71,7 +71,7 @@ func (r *ReportRepo) Create(result *model.Report) (bizErr *_domain.BizErr) {
 	err := r.DB.Model(&model.Report{}).Create(result).Error
 	if err != nil {
 		logUtils.Errorf("create report error %s", err.Error())
-		bizErr.Code = _domain.ErrComm.Code
+		bizErr.Code = _domain.SystemErr.Code
 
 		return
 	}

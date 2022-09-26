@@ -7,6 +7,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
 	execHelper "github.com/aaronchen2k/deeptest/internal/server/modules/v1/helper/exec"
+	expressionHelper "github.com/aaronchen2k/deeptest/internal/server/modules/v1/helper/expression"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/repo"
 	stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
@@ -15,10 +16,13 @@ import (
 )
 
 type CheckpointService struct {
-	CheckpointRepo *repo.CheckpointRepo `inject:""`
-	InterfaceRepo  *repo.InterfaceRepo  `inject:""`
-	ProjectRepo    *repo.ProjectRepo    `inject:""`
-	ExtractorRepo  *repo.ExtractorRepo  `inject:""`
+	CheckpointRepo    *repo.CheckpointRepo  `inject:""`
+	InterfaceRepo     *repo.InterfaceRepo   `inject:""`
+	EnvironmentRepo   *repo.EnvironmentRepo `inject:""`
+	ProjectRepo       *repo.ProjectRepo     `inject:""`
+	ExtractorRepo     *repo.ExtractorRepo   `inject:""`
+	ExecHelperService *ExecHelperService    `inject:""`
+	VariableService   *VariableService      `inject:""`
 }
 
 func (s *CheckpointService) List(interfaceId int) (checkpoints []model.InterfaceCheckpoint, err error) {
@@ -58,7 +62,9 @@ func (s *CheckpointService) CheckInterface(interf model.Interface, resp serverDo
 
 	status = consts.Pass
 	for _, checkpoint := range checkpoints {
+
 		logCheckpoint, err := s.Check(checkpoint, resp, interfaceExecLog)
+
 		if logCheckpoint.ResultStatus == consts.Fail {
 			status = consts.Fail
 		}
@@ -154,6 +160,33 @@ func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp ser
 		} else if checkpoint.Operator == consts.Contain && strings.Contains(resp.Content, checkpoint.Value) {
 			checkpoint.ResultStatus = consts.Pass
 		}
+
+		if interfaceExecLog == nil { // run by interface
+			s.CheckpointRepo.UpdateResult(checkpoint)
+		} else { // run by processor
+			logCheckpoint, err = s.CheckpointRepo.UpdateResultToExecLog(checkpoint, interfaceExecLog)
+		}
+
+		return
+	}
+
+	// Judgement
+	if checkpoint.Type == consts.Judgement {
+		var result interface{}
+		if interfaceExecLog != nil { // run by processor
+			result, _ = s.ExecHelperService.EvaluateGovaluateExpression(checkpoint.Expression, interfaceExecLog.ProcessorId)
+		} else {
+			variables, _ := s.VariableService.GetVariablesByInterface(checkpoint.InterfaceId)
+			result, _ = expressionHelper.EvaluateGovaluateExpression(checkpoint.Expression, variables)
+		}
+
+		ret, ok := result.(bool)
+		if ok && ret {
+			checkpoint.ResultStatus = consts.Pass
+		} else {
+			checkpoint.ResultStatus = consts.Fail
+		}
+		checkpoint.ActualResult = fmt.Sprintf("%v", ret)
 
 		if interfaceExecLog == nil { // run by interface
 			s.CheckpointRepo.UpdateResult(checkpoint)

@@ -2,7 +2,7 @@ import {ProcessorExtractor} from "@/utils/enum";
 
 export default {
     '': '',
-    'empty': 'empty',
+    'empty': '',
     'app.global.menu.notfound': 'Not Found',
     'app.global.form.validatefields.catch': '验证不通过，请检查输入',
 
@@ -46,6 +46,7 @@ export default {
     'responseHeader': '响应头',
     'responseBody': '响应体',
     'extractor': '提取器',
+    'judgement': '判断',
 
     'fulltext': '全文本',
     'jsonquery':  'JSON查询',
@@ -54,14 +55,15 @@ export default {
     'regular':  '正则表达式',
     'boundary':  '边界选择器',
 
-    'contain':  '包含',
-    'notContain': '不包含',
     'equal':  '=',
     'notEqual':  '!=',
     'greaterThan':  '>',
     'lessThan':  '<',
     'greaterThanOrEqual':  '>=',
     'lessThanOrEqual':  '<=',
+
+    'contain':  '包含',
+    'notContain': '不包含',
 
     // 处理器分类
     'processor_thread':  '线程',
@@ -126,9 +128,9 @@ export default {
     'biz_401': '请重新登录',
     'biz_403': '权限不足',
 
-    'biz_1000': '请求错误',
     'biz_2000': '参数错误',
+    'biz_3000': '请求失败',
+    'biz_4000': '系统错误',
 
-    'biz_10000': '服务请求失败',
     'biz_10100': '指定名称的记录已存在',
 }

@@ -94,21 +94,23 @@ export default defineComponent({
         }
 
         setTimeout(() => {
-          editor.getAction('editor.action.formatDocument').run()
+          if (editor.getAction('editor.action.formatDocument'))
+            editor.getAction('editor.action.formatDocument').run()
           console.log('format codes')
 
           const elems= document.getElementsByClassName('monaco-editor-vue3');
           for(let i=0; i < elems.length; i++) {
             elems[i].style.maxWidth = 0 // elems[i].clientWidth - 200 + 'px'
           }
-        }, 60)
+        }, 100)
       })
 
       this.$emit('editorDidMount', this.editor)
       setTimeout(() => {
-        editor.getAction('editor.action.formatDocument').run()
+        if (editor.getAction('editor.action.formatDocument'))
+          editor.getAction('editor.action.formatDocument').run()
         console.log('format codes')
-      }, 60)
+      }, 100)
     },
     _setModel(value, original) {
       const { language } = this;

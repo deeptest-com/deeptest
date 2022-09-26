@@ -21,6 +21,7 @@ type ExecInterfaceService struct {
 	ExtractorService  *ExtractorService     `inject:""`
 	CheckpointService *CheckpointService    `inject:""`
 	ExecContext       *business.ExecContext `inject:""`
+	VariableService   *VariableService      `inject:""`
 
 	InterfaceRepo   *repo.InterfaceRepo   `inject:""`
 	EnvironmentRepo *repo.EnvironmentRepo `inject:""`
@@ -36,12 +37,7 @@ func (s *ExecInterfaceService) ExecInterfaceProcessor(interfaceProcessor *model.
 	req := serverDomain.InvocationRequest{}
 	copier.CopyWithOption(&req, interf, copier.Option{DeepCopy: true})
 
-	// replace variables
-	environmentVariables, _ := s.EnvironmentRepo.ListByInterface(req.Id)
-	execVariables := s.ExecContext.ListVariable(interfaceProcessor.ID)
-	// interfaceExtractorVariables saved in execVariables
-	variableArr := requestHelper.MergeVariables(environmentVariables, nil, execVariables)
-
+	variableArr, _ := s.VariableService.GetVariablesByInterfaceAndProcessor(req.Id, interfaceProcessor.ID)
 	requestHelper.ReplaceAll(&req, variableArr)
 
 	resp, err := s.InterfaceService.Test(req)

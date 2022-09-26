@@ -87,7 +87,7 @@ func (r *ScenarioRepo) Create(scenario model.Scenario) (ret model.Scenario, bizE
 	err = r.DB.Model(&model.Scenario{}).Create(&scenario).Error
 	if err != nil {
 		logUtils.Errorf("add scenario error", zap.String("error:", err.Error()))
-		bizErr.Code = _domain.ErrComm.Code
+		bizErr.Code = _domain.SystemErr.Code
 
 		return
 	}

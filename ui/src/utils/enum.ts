@@ -86,14 +86,16 @@ export const Methods = [
 ]
 
 export enum ComparisonOperator {
-    contain = 'contain',
-    notContain = 'notContain',
+    empty = 'empty',
     equal = 'equal',
     notEqual = 'notEqual',
     greaterThan = 'greaterThan',
     lessThan = 'lessThan',
     greaterThanOrEqual = 'greaterThanOrEqual',
     lessThanOrEqual = 'lessThanOrEqual',
+
+    contain = 'contain',
+    notContain = 'notContain',
 }
 
 export enum ExtractorSrc {
@@ -113,6 +115,7 @@ export enum CheckpointType {
     responseHeader = 'responseHeader',
     responseBody = 'responseBody',
     extractor = 'extractor',
+    judgement = 'judgement'
 }
 
 export enum AuthorizationTypes {

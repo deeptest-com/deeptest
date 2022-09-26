@@ -1,10 +1,10 @@
 <template>
   <div class="response-checkpoint-main">
     <div class="head">
-      <a-row type="flex">
+      <a-row type="flex" class="item">
         <a-col flex="50px">编号</a-col>
-        <a-col flex="100px">类型</a-col>
-        <a-col flex="120px">变量 / 键值</a-col>
+        <a-col flex="60px">类型</a-col>
+        <a-col flex="160px">变量 / 键值 / 表达式</a-col>
         <a-col flex="60px">运算符</a-col>
         <a-col flex="100px">数值</a-col>
         <a-col flex="1">实际结果</a-col>
@@ -17,12 +17,12 @@
     </div>
 
     <div class="body">
-      <a-row v-for="(item, idx) in checkpointsData" :key="idx" type="flex">
+      <a-row v-for="(item, idx) in checkpointsData" :key="idx" type="flex" class="item">
         <a-col flex="50px">{{idx + 1}}</a-col>
-        <a-col flex="100px">{{ t(item.type) }}</a-col>
-        <a-col flex="120px">{{ item.type === CheckpointType.extractor ? item.extractorVariable : item.expression }} </a-col>
+        <a-col flex="60px">{{ t(item.type) }}</a-col>
+        <a-col flex="160px">{{ item.type === CheckpointType.extractor ? item.extractorVariable : item.expression }} </a-col>
         <a-col flex="60px">{{ t(item.operator) }}</a-col>
-        <a-col flex="100px">{{ item.value }}</a-col>
+        <a-col flex="100px">{{ t(item.value) }}</a-col>
         <a-col flex="1" style="width: 0; word-break: break-word;">
           {{ item.actualResult }}
         </a-col>
@@ -48,7 +48,7 @@
     </div>
 
     <a-modal
-        :title="model.id ? '编辑' : '创建' + '变量'"
+        :title="model.id ? '编辑' : '创建' + '检查点'"
         :destroy-on-close="true"
         :mask-closable="false"
         :visible="editVisible"
@@ -84,7 +84,7 @@
             </a-select>
           </a-form-item>
 
-          <a-form-item label="运算符" v-bind="validateInfos.operator">
+          <a-form-item v-if="model.type !== 'judgement'" label="运算符" v-bind="validateInfos.operator">
             {{ void (options = model.type === 'responseStatus' ? operatorsForCode :
               isInArray(model.type, ['responseHeader', 'responseBody']) ? operatorsForString : operators) }}
 
@@ -98,7 +98,14 @@
             </a-select>
           </a-form-item>
 
-          <a-form-item label="数值" v-bind="validateInfos.value">
+          <a-form-item v-if="model.type === 'judgement'" label="判断表达式" v-bind="validateInfos.expression">
+            <a-textarea v-model:value="model.expression" :auto-size="{ minRows: 2, maxRows: 5 }"
+                     @blur="validate('expression', { trigger: 'blur' }).catch(() => {})" />
+
+            <div class="dp-input-tip">表达式需返回一个布尔值</div>
+          </a-form-item>
+
+          <a-form-item v-if="model.type !== 'judgement'" label="数值" v-bind="validateInfos.value">
             <a-input v-model:value="model.value"
                      @blur="validate('value', { trigger: 'blur' }).catch(() => {})" />
           </a-form-item>
@@ -177,7 +184,9 @@ export default defineComponent({
     const editVisible = ref(false)
 
     const extractorVariableRequired = { required: true, message: '请选择变量', trigger: 'change' }
-    const expressionRequired = { required: true, message: '请输入键值', trigger: 'blur' }
+    const expressionRequired = { required: true, message: '请输入表达式', trigger: 'blur' }
+    const operatorRequired = { required: true, message: '请选择操作', trigger: 'change' }
+    const valueRequired = { required: true, message: '请输入数值', trigger: 'blur' }
     const rules = reactive({
       type: [
         { required: true, message: '请选择类型', trigger: 'blur' },
@@ -189,10 +198,10 @@ export default defineComponent({
         expressionRequired
       ],
       operator: [
-        { required: true, message: '请选择操作', trigger: 'change' },
+        operatorRequired,
       ],
       value: [
-        { required: true, message: '请输入数值', trigger: 'blur' },
+        valueRequired,
       ],
     } as any);
 
@@ -259,10 +268,21 @@ export default defineComponent({
     }
 
     const loadExtractorVariable = () => {
-      if (model.value.type === CheckpointType.responseHeader) {
+      if (model.value.type === CheckpointType.responseHeader || model.value.type === CheckpointType.judgement) {
         rules.expression = [expressionRequired]
       } else {
         rules.expression = []
+      }
+
+      if (model.value.type === CheckpointType.judgement) {
+        rules.operator = []
+        rules.value = []
+        model.value.operator = ComparisonOperator.empty
+        model.value.value = ComparisonOperator.empty
+      } else {
+        rules.operator = [operatorRequired]
+        rules.value = [valueRequired]
+        model.value.operator = ComparisonOperator.equal
       }
 
       if (model.value.type === CheckpointType.extractor) {
@@ -325,8 +345,14 @@ export default defineComponent({
   }
   .body {
     padding: 6px;
-    height: calc(100% - 30px);
+    height: calc(100% - 30px)
+  }
 
+  .item {
+    .ant-col {
+      padding: 0 3px;
+      word-break: break-all;
+    }
   }
 }
 </style>

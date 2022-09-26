@@ -9,12 +9,12 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/v1/model"
 	fileUtils "github.com/aaronchen2k/deeptest/pkg/lib/file"
 	"github.com/xuri/excelize/v2"
+	"regexp"
 	"strconv"
 	"strings"
 )
 
-func Compare(operator consts.ComparisonOperator, actual, expect interface{}) (
-	result consts.ResultStatus) {
+func Compare(operator consts.ComparisonOperator, actual, expect interface{}) (result consts.ResultStatus) {
 
 	if operator == consts.Equal {
 		if actual == expect {
@@ -304,6 +304,18 @@ func ParseValue(str string) (ret interface{}, typ consts.DataType) {
 		ret = floatVal
 	} else {
 		ret = str
+	}
+
+	return
+}
+
+func GetVariables(expression string) (ret []string) {
+	re := regexp.MustCompile("(?siU)\\${(.*)}")
+	matchResultArr := re.FindAllStringSubmatch(expression, -1)
+
+	for _, childArr := range matchResultArr {
+		variableName := childArr[1]
+		ret = append(ret, variableName)
 	}
 
 	return

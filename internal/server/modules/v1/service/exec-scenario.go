@@ -160,7 +160,7 @@ func (s *ExecScenarioService) ExecContainerProcessorChildrenForLoop(processor *m
 	} else if s.ExecComm.IsLoopUntilPass(containerLog) {
 		expression := containerLog.Output.Expression
 		for {
-			result, err := s.ExecHelperService.ComputerExpress(expression, containerLog.ProcessId)
+			result, err := s.ExecHelperService.EvaluateGovaluateExpression(expression, containerLog.ProcessId)
 			pass, ok := result.(bool)
 			if err != nil || !ok || pass {
 				break

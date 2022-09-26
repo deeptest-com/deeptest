@@ -59,9 +59,10 @@ var (
 
 	NeedInitErr = BizErr{1000, "前往初始化数据库"}
 	ParamErr    = BizErr{2000, "参数解析失败"}
-	SystemErr   = BizErr{3000, "系统错误"}
 
-	ErrComm      = BizErr{10000, "数据库操作失败"}
+	RequestErr = BizErr{3000, "请求失败"}
+	SystemErr  = BizErr{4000, "系统错误"}
+
 	ErrNameExist = BizErr{10100, "指定名称的记录已存在"}
 )
 

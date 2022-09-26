@@ -70,9 +70,9 @@ func (r *InterfaceRepo) ListByProject(projectId int) (pos []*model.Interface, er
 	return
 }
 
-func (r *InterfaceRepo) Get(fieldId uint) (field model.Interface, err error) {
+func (r *InterfaceRepo) Get(interfaceId uint) (field model.Interface, err error) {
 	err = r.DB.
-		Where("id=?", fieldId).
+		Where("id=?", interfaceId).
 		Where("NOT deleted").
 		First(&field).Error
 	return

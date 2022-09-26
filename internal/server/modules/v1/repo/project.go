@@ -91,7 +91,7 @@ func (r *ProjectRepo) Create(req serverDomain.ProjectReq, userId uint) (id uint,
 	err = r.DB.Model(&model.Project{}).Create(&project).Error
 	if err != nil {
 		logUtils.Errorf("add project error", zap.String("error:", err.Error()))
-		bizErr.Code = _domain.ErrComm.Code
+		bizErr.Code = _domain.SystemErr.Code
 
 		return
 	}

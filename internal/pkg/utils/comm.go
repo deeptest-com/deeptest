@@ -1,10 +1,11 @@
 package commUtils
 
 import (
-	_consts "github.com/aaronchen2k/deeptest/pkg/consts"
 	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
+	fileUtils "github.com/aaronchen2k/deeptest/pkg/lib/file"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 )
 
@@ -22,7 +23,7 @@ func GetExecDir() (dir string) { // where ztf exe file in
 	}
 
 	dir, _ = filepath.Abs(dir)
-	dir = AddFilePathSepIfNeeded(dir)
+	dir = fileUtils.AddPathSepIfNeeded(dir)
 
 	return
 }
@@ -31,16 +32,16 @@ func GetWorkDir() string { // where we run file in
 	dir, _ := os.Getwd()
 
 	dir, _ = filepath.Abs(dir)
-	dir = AddFilePathSepIfNeeded(dir)
+	dir = fileUtils.AddPathSepIfNeeded(dir)
 
 	return dir
 }
 
-func AddFilePathSepIfNeeded(pth string) string {
-	sep := _consts.FilePthSep
+func RemoveLeftVariableSymbol(str string) (ret string) {
+	// remove variable symbol ${} not be replaced
 
-	if strings.LastIndex(pth, sep) < len(pth)-1 {
-		pth += sep
-	}
-	return pth
+	regx := regexp.MustCompile("(?siU)\\${(.*)}")
+	ret = regx.ReplaceAllString(str, "$1")
+
+	return
 }

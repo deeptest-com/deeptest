@@ -2,7 +2,7 @@ package main
 
 import (
 	"flag"
-	"github.com/aaronchen2k/deeptest/internal/command/action"
+	"github.com/aaronchen2k/deeptest/cmd/command/action"
 	commandConfig "github.com/aaronchen2k/deeptest/internal/command/config"
 	zapLog "github.com/aaronchen2k/deeptest/internal/pkg/log"
 	_consts "github.com/aaronchen2k/deeptest/pkg/consts"

@@ -10,6 +10,9 @@ type ExecVariable struct {
 	Name       string      `json:"name"`
 	Value      interface{} `json:"value"`
 	Expression string      `json:"expression"`
+
+	InterfaceId uint `json:"interfaceId"`
+	IsShare     bool `json:"isShare"`
 }
 
 type ExecCookie struct {

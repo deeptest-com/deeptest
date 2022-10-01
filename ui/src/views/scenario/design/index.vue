@@ -8,7 +8,7 @@
 
     <div id="scenario-design-right" class="right">
       <div class="right-toolbar">
-        <a-button @click="exec" type="link">执行接口</a-button>
+        <a-button @click="exec" type="link">执行场景</a-button>
       </div>
 
       <Edit></Edit>

@@ -1,11 +1,11 @@
 package main
 
 import (
+	"github.com/aaronchen2k/deeptest/cmd/server/server"
+	"github.com/aaronchen2k/deeptest/cmd/server/v1"
 	"github.com/aaronchen2k/deeptest/internal/server/core/cron"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
-	"github.com/aaronchen2k/deeptest/internal/server/core/web"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/v1"
-	websocketHelper "github.com/aaronchen2k/deeptest/internal/server/modules/v1/helper/websocket"
+	"github.com/aaronchen2k/deeptest/internal/server/modules/helper/websocket"
 	"github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/facebookgo/inject"
 	"github.com/sirupsen/logrus"
@@ -17,26 +17,29 @@ import (
 // @contact.url https://github.com/aaronchen2k/deeptest/issues
 // @contact.email 462626@qq.com
 func main() {
-	cron.NewServerCron().Init()
 	websocketHelper.InitMq()
 
-	webServer := web.Init()
-	if webServer == nil {
+	server := server.Init()
+	if server == nil {
 		return
 	}
-	injectModule(webServer)
-	webServer.Run()
+
+	injectModule(server)
+	server.Start()
 }
 
-func injectModule(ws *web.WebServer) {
+func injectModule(ws *server.WebServer) {
 	var g inject.Graph
 	g.Logger = logrus.StandardLogger()
 
+	cron := cron.NewServerCron()
+	cron.Init()
 	indexModule := v1.NewIndexModule()
 
 	// inject objects
 	if err := g.Provide(
 		&inject.Object{Value: dao.GetDB()},
+		&inject.Object{Value: cron},
 		&inject.Object{Value: indexModule},
 	); err != nil {
 		logrus.Fatalf("provide usecase objects to the Graph: %v", err)

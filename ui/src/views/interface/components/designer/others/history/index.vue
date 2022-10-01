@@ -2,7 +2,7 @@
   <div class="history-main">
     <div class="head">
       <div class="title">
-       历史
+       执行历史
       </div>
     </div>
 

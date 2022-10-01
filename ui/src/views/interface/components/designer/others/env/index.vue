@@ -1,100 +1,172 @@
 <template>
   <div class="env-main">
     <div class="head no-padding">
-      <div class="title">
-        <a-dropdown-button trigger="click" placement="bottomLeft">
-          <div style="width:138px;">
-            <a class="more dp-color-text">
-              <span v-if="environmentData.id">{{environmentData.name}}</span>
-              <span v-if="!environmentData.id">选择环境</span>
-            </a>
-          </div>
+      <div class="title dp-bg-white">
+        <div class="label ">选择环境</div>
 
-          <template #icon><DownOutlined /></template>
-          <template #overlay>
-            <a-menu @click="select" class="select-env-menu">
-              <a-menu-item v-for="item in environmentsData" :key="item.id"
-                           :class="[{'dp-bg-selected-light':item.id === environmentData.id}]">
-                <span class="menu-item-var">
-                  <span class="title">{{item.name}}</span>
+        <div class="content ">
+          <a-dropdown-button trigger="click" placement="bottomLeft" class="dp-dropdown">
+            <div class="name">
+              <a class="more dp-color-text">
+                <span v-if="environmentData.id">{{environmentData.name}}</span>
+              </a>
+            </div>
 
-                  <span @click.stop="edit(item)" class="act"><EditOutlined /></span>
-                  <span @click.stop="remove(item)" class="act"><DeleteOutlined /></span>
-                  <span @click.stop="copy(item)" class="act"><CopyOutlined /></span>
-                </span>
-              </a-menu-item>
-            </a-menu>
-          </template>
-        </a-dropdown-button>
+            <template #icon><DownOutlined /></template>
 
+            <template #overlay>
+              <a-menu @click="select" class="select-env-menu">
+                <a-menu-item v-for="item in environmentsData" :key="item.id"
+                             :class="[{'dp-bg-selected-light':item.id === environmentData.id}]">
+                  <span class="menu-item-var">
+                    <span class="title">{{item.name}}</span>
+
+                    <span @click.stop="edit(item)" class="act"><EditOutlined /></span>
+                    <span @click.stop="remove(item)" class="act"><DeleteOutlined /></span>
+                    <span @click.stop="copy(item)" class="act"><CopyOutlined /></span>
+                  </span>
+                </a-menu-item>
+              </a-menu>
+            </template>
+          </a-dropdown-button>
+        </div>
       </div>
     </div>
-    <div class="head">
-      <div class="title">
+
+    <div class="env-var">
+      <div class="head">
+        <div class="title">
         <span @click="create" class="dp-link">
           <a-tooltip overlayClassName="dp-tip-small">
             <template #title>新建环境</template>
             <PlusOutlined class="dp-icon-btn dp-trans-80"/>
           </a-tooltip>
         </span>
-      </div>
-      <div class="acts">
-        <a-tooltip overlayClassName="dp-tip-small">
-          <template #title>帮助</template>
-          <QuestionCircleOutlined class="dp-icon-btn dp-trans-80"/>
-        </a-tooltip>
+        </div>
+        <div class="acts">
+          <a-tooltip overlayClassName="dp-tip-small">
+            <template #title>帮助</template>
+            <QuestionCircleOutlined class="dp-icon-btn dp-trans-80"/>
+          </a-tooltip>
 
-        <a-tooltip overlayClassName="dp-tip-small">
-          <template #title>导入/导出</template>
-          <ImportOutlined class="dp-icon-btn dp-trans-60" />
-        </a-tooltip>
+          <a-tooltip overlayClassName="dp-tip-small">
+            <template #title>导入/导出</template>
+            <ImportOutlined class="dp-icon-btn dp-trans-60" />
+          </a-tooltip>
+        </div>
       </div>
-    </div>
-
-    <div class="body">
-      <div v-if="environmentData.id" class="envs">
-        <div class="env">
-          <div class="left"></div>
-          <div class="right" style="width: 48px;">
+      <div class="body">
+        <div v-if="environmentData.id" class="envs">
+          <div class="env header">
+            <div class="left">
+              环境变量
+            </div>
+            <div class="right" style="width: 48px;">
             <span @click="clearVar" class="dp-link">
               <a-tooltip overlayClassName="dp-tip-small">
                 <template #title>清除变量</template>
                 <ClearOutlined class="dp-icon-btn dp-trans-80"/>
               </a-tooltip>
             </span>
-            <span @click="createVar" class="dp-link">
+              <span @click="createVar" class="dp-link">
               <a-tooltip overlayClassName="dp-tip-small">
                 <template #title>添加变量</template>
                 <PlusOutlined class="dp-icon-btn dp-trans-80"/>
               </a-tooltip>
             </span>
+            </div>
+          </div>
+          <div v-for="(item, idx) in environmentData.vars" :key="idx" class="env">
+            <div class="left">
+              <div class="name">
+                <a-tooltip class="name" overlayClassName="dp-tip-small">
+                  <template #title>{{item.name}}</template>
+                  {{item.name}}
+                </a-tooltip>
+              </div>
+
+              <div class="val">
+                <a-tooltip class="val" overlayClassName="dp-tip-small">
+                  <template #title>{{item.value}}</template>
+                  {{item.value}}
+                </a-tooltip>
+              </div>
+
+            </div>
+            <div class="right">
+              <a-dropdown>
+                <a class="more dp-color-text" @click.prevent>
+                  <MoreOutlined />
+                </a>
+                <template #overlay>
+                  <a-menu>
+                    <a-menu-item @click="editVar(item)" key="edit">编辑</a-menu-item>
+                    <a-menu-item @click="removeVar(item)" key="edit">删除</a-menu-item>
+                  </a-menu>
+                </template>
+              </a-dropdown>
+            </div>
           </div>
         </div>
-        <div v-for="(item, idx) in environmentData.vars" :key="idx" class="env">
-          <div class="left">
-            <span class="name">{{item.name}}</span>
-            <span class="val" :title="item.value">{{item.value}}</span>
+
+        <div v-if="environmentData.vars?.length == 0">
+          <Empty></Empty>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="env-var">
+      <div class="body">
+        <div v-if="environmentData.id" class="envs">
+          <div class="env">
+            <div class="left">
+              共享变量
+            </div>
+            <div class="right">
+              <span class="dp-link">
+                <a-tooltip overlayClassName="dp-tip-small">
+                  <template #title>清除</template>
+                  <ClearOutlined @click="clearShareVar" class="dp-icon-btn dp-trans-80"/>
+                </a-tooltip>
+              </span>
+              <span class="dp-link">
+                <a-tooltip overlayClassName="dp-tip-small">
+                  <template #title>帮助</template>
+                  <QuestionCircleOutlined class="dp-icon-btn dp-trans-80"/>
+                </a-tooltip>
+              </span>
+            </div>
           </div>
-          <div class="right">
-            <a-dropdown>
-              <a class="more dp-color-text" @click.prevent>
-                <MoreOutlined />
-              </a>
-              <template #overlay>
-                <a-menu>
-                  <a-menu-item @click="editVar(item)" key="edit">编辑</a-menu-item>
-                  <a-menu-item @click="removeVar(item)" key="edit">删除</a-menu-item>
-                </a-menu>
-              </template>
-            </a-dropdown>
+
+          <div v-for="(item, idx) in validExtractorVariablesData" :key="idx" class="env">
+            <div class="left">
+              <div class="name">
+                <a-tooltip overlayClassName="dp-tip-small">
+                  <template #title>{{item.name}}</template>
+                  {{item.name}}
+                </a-tooltip>
+              </div>
+
+              <div class="val">
+                <a-tooltip class="val" overlayClassName="dp-tip-small">
+                  <template #title>{{item.value}}</template>
+                  {{item.value}}
+                </a-tooltip>
+              </div>
+            </div>
+
+            <div class="right">
+              <DeleteOutlined @click="removeShareVar(item)"  class="dp-icon-btn dp-trans-80" />
+            </div>
           </div>
         </div>
-      </div>
 
-      <div v-if="environmentData.vars?.length == 0">
-        <Empty></Empty>
-      </div>
+        <div v-if="environmentData.vars?.length == 0">
+          <Empty></Empty>
+        </div>
 
+      </div>
     </div>
 
     <EnvEdit
@@ -122,11 +194,13 @@ import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import { QuestionCircleOutlined,ImportOutlined, MoreOutlined, ClearOutlined, PlusOutlined,
   DownOutlined, EditOutlined, DeleteOutlined, CopyOutlined } from '@ant-design/icons-vue';
-import {StateType} from "@/views/interface/store";
+import {StateType as InterfaceStateType} from "@/views/interface/store";
+import {StateType as EnvironmentStateType} from "@/store/environment";
 import Empty from "@/components/others/empty.vue";
 import {Interface} from "@/views/interface/data";
 import EnvEdit from "./edit.vue";
 import EnvVarEdit from "./edit-var.vue"
+import {StateType as ProjectStateType} from "@/store/project";
 
 export default defineComponent({
   name: 'RequestEnv',
@@ -141,10 +215,15 @@ export default defineComponent({
 
   setup(props) {
     const {t} = useI18n();
-    const store = useStore<{ Interface: StateType }>();
+    const store = useStore<{ Interface: InterfaceStateType, ProjectData: ProjectStateType, EnvironmentData: EnvironmentStateType }>();
+    const currProject = computed<any>(() => store.state.ProjectData.currProject);
     const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
-    const environmentsData = computed<any[]>(() => store.state.Interface.environmentsData);
-    const environmentData = computed<any[]>(() => store.state.Interface.environmentData);
+    const environmentsData = computed<any[]>(() => store.state.EnvironmentData.environmentsData);
+    const environmentData = computed<any>(() => store.state.EnvironmentData.environmentData);
+    const validExtractorVariablesData = computed(() => store.state.Interface.validExtractorVariablesData);
+
+    store.dispatch('EnvironmentData/listEnvironment')
+    store.dispatch('EnvironmentData/getEnvironment', {id: 0, projectId: currProject.value.id})
 
     const envEditVisible = ref(false)
     const modelId = ref(0)
@@ -154,7 +233,7 @@ export default defineComponent({
 
     const select = (val) => {
       console.log('select', val.key)
-      store.dispatch('Interface/changeEnvironment', val.key)
+      store.dispatch('EnvironmentData/changeEnvironment', {id: val.key, projectId: currProject.value.id})
     }
 
     const create = () => {
@@ -171,17 +250,12 @@ export default defineComponent({
 
     const remove = (val) => {
       console.log('remove', val)
-      store.dispatch('Interface/removeEnvironment', val.id)
+      store.dispatch('EnvironmentData/removeEnvironment', val.id)
     }
 
     const copy = (val) => {
       console.log('copy', val)
-      store.dispatch('Interface/copyEnvironment', val.id)
-    }
-
-    const get = (id) => {
-      console.log('get', id)
-      store.dispatch('Interface/getEnvironment', id)
+      store.dispatch('EnvironmentData/copyEnvironment', val.id)
     }
 
     const envEditFinish = () => {
@@ -204,11 +278,11 @@ export default defineComponent({
     }
     const removeVar = (item) => {
       console.log('removeVar', item)
-      store.dispatch('Interface/removeEnvironmentVar', item.id)
+      store.dispatch('EnvironmentData/removeEnvironmentVar', item.id)
     }
     const clearVar  = () => {
       console.log('clearVar')
-      store.dispatch('Interface/clearEnvironmentVar')
+      store.dispatch('EnvironmentData/clearEnvironmentVar', environmentData.value.id)
     }
     const envVarEditFinish = () => {
       console.log('envVarEditFinish')
@@ -221,10 +295,20 @@ export default defineComponent({
       envVarEditVisible.value = false
     }
 
+    const clearShareVar  = () => {
+      console.log('clearShareVar')
+      store.dispatch('Interface/clearShareVar', interfaceData.value.id)
+    }
+    const removeShareVar = (item) => {
+      console.log('removeShareVar', item)
+      store.dispatch('Interface/removeShareVar', item.id)
+    }
+
     return {
       interfaceData,
       environmentsData,
       environmentData,
+      validExtractorVariablesData,
 
       envEditVisible,
       modelId,
@@ -236,7 +320,7 @@ export default defineComponent({
       envVarEditFinish,
       envVarEditCancel,
 
-      get,
+      // get,
       select,
       create,
       edit,
@@ -244,9 +328,12 @@ export default defineComponent({
       copy,
 
       createVar,
+      clearVar,
       editVar,
       removeVar,
-      clearVar,
+
+      clearShareVar,
+      removeShareVar,
     }
   }
 })
@@ -272,6 +359,7 @@ export default defineComponent({
 .env-main {
   display: flex;
   flex-direction: column;
+  height: 100%;
 
   .head {
     padding: 0 3px;
@@ -284,55 +372,86 @@ export default defineComponent({
     }
     .title {
       flex: 1;
+      display: flex;
+
+      .label {
+        padding: 0 5px;
+        width: 68px;
+      }
+      .content {
+        flex: 1;
+      }
+
     }
     .acts {
       width: 50px;
       text-align: right;
     }
   }
-  .body {
-    flex: 1;
-    overflow-y: auto;
 
-    .btn-wrapper {
-      text-align: center;
-    }
-    .envs {
-      padding: 3px 2px;
-      .env {
-        display: flex;
-        padding: 3px 2px 4px 4px;
-        line-height: 16px;
-        .left {
-          flex: 1;
+  .env-var {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+
+    .body {
+      flex: 1;
+      overflow-y: auto;
+
+      .btn-wrapper {
+        text-align: center;
+      }
+      .envs {
+        padding: 3px 2px;
+        .env {
           display: flex;
-          .name {
-            margin-left: 0;
+          padding: 3px 2px 4px 4px;
+          line-height: 20px;
+
+          &:first-child {
+            border-bottom: 1px solid #eaeaee;
+            .right {
+              width: 48px;
+              .dp-link {
+                display: inline-block;
+                width: 24px;
+              }
+            }
+          }
+
+          .left {
             flex: 1;
-            overflow: hidden;
-            white-space:nowrap;
-            text-overflow :ellipsis;
+            display: flex;
+
+            .name {
+              margin-left: 0;
+              flex: 2;
+              overflow: hidden;
+              white-space:nowrap;
+              text-overflow :ellipsis;
+            }
+            .val {
+              flex: 3;
+              padding-left: 8px;
+              overflow: hidden;
+              white-space:nowrap;
+              text-overflow :ellipsis;
+              width: 0;
+            }
           }
-          .val {
-            flex: 2;
-            padding-left: 8px;
-            overflow: hidden;
-            white-space:nowrap;
-            text-overflow :ellipsis;
-            width: 0;
-          }
-        }
-        .right {
-          width: 24px;
-          text-align: center;
-          .more {
-            display: inline-block;
-            font-weight: bolder;
-            font-size: 16px;
+          .right {
+            text-align: center;
+            width: 24px;
+            .more {
+              display: inline-block;
+              font-weight: bolder;
+              font-size: 16px;
+            }
           }
         }
       }
     }
   }
+
 }
 </style>

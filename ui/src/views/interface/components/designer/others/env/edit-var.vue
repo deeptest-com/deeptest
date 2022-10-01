@@ -36,7 +36,8 @@ import {message, Form} from 'ant-design-vue';
 import {useI18n} from "vue-i18n";
 import {getEnvironment, saveEnvironment} from "@/views/interface/service";
 import {useStore} from "vuex";
-import {StateType} from "@/views/interface/store";
+import {StateType as InterfaceStateType} from "@/views/interface/store";
+import {StateType as EnvironmentStateType} from "@/store/environment";
 const useForm = Form.useForm;
 
 export default defineComponent({
@@ -65,7 +66,7 @@ export default defineComponent({
   setup(props) {
     const { t } = useI18n();
 
-    const store = useStore<{ Interface: StateType }>();
+    const store = useStore<{ Interface: InterfaceStateType, EnvironmentData: EnvironmentStateType }>();
 
     const rulesRef = reactive({
       name: [
@@ -90,7 +91,7 @@ export default defineComponent({
       console.log('onSubmit', modelRef)
 
       validate().then(async () => {
-        store.dispatch('Interface/saveEnvironmentVar', modelRef).then(() => {
+        store.dispatch('EnvironmentData/saveEnvironmentVar', modelRef).then(() => {
           props.onFinish();
         })
       }).catch(err => { console.log('') })

@@ -148,7 +148,7 @@ const selectNode = (keys) => {
   }
 
   const selectedData = treeDataMap.value[selectedKeys.value[0]]
-  if (isRoot(selectedData.entityCategory)) {
+  if (selectedData && isRoot(selectedData.entityCategory)) {
     store.dispatch('Scenario/getNode', null)
     return
   }
@@ -163,8 +163,6 @@ const selectNode = (keys) => {
       })
 
       store.dispatch('Interface/listInvocation', interfaceId)
-      store.dispatch('Interface/listEnvironment')
-      store.dispatch('Interface/getEnvironment', {id: 0, interfaceId: interfaceId})
     }
   })
 }

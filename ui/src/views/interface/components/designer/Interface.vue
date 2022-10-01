@@ -44,6 +44,7 @@ import debounce from "lodash.debounce";
 
     watch(interfaceData, () => {
       console.log('watch interfaceData')
+      store.dispatch('Interface/listValidExtractorVariable')
       // resize()
     }, {deep: true})
 

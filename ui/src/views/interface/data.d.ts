@@ -77,6 +77,7 @@ export interface Extractor {
     boundaryIncluded: boolean;
 
     variable: string;
+    isShare: boolean;
     interfaceId?: number;
     projectId?: number;
 }

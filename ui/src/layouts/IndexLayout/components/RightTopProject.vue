@@ -17,6 +17,7 @@ import {computed, ComputedRef, defineComponent, onMounted} from "vue";
 import {useStore} from "vuex";
 import {StateType as UserStateType} from "@/store/user";
 import {StateType as ProjectStateType} from "@/store/project";
+import {StateType as EnvironmentStateType} from "@/store/environment";
 
 interface RightTopProject {
   message: ComputedRef<number>;
@@ -30,19 +31,20 @@ export default defineComponent({
   name: 'RightTopProject',
   components: {},
   setup(): RightTopProject {
-    const userStore = useStore<{ User: UserStateType }>();
-    const projectStore = useStore<{ ProjectData: ProjectStateType }>();
+    const store = useStore<{ User: UserStateType, ProjectData: ProjectStateType, EnvironmentData: EnvironmentStateType }>();
 
-    const message = computed<number>(() => userStore.state.User.message);
-    const projects = computed<any>(() => projectStore.state.ProjectData.projects);
-    const currProject = computed<any>(() => projectStore.state.ProjectData.currProject);
+    const message = computed<number>(() => store.state.User.message);
+    const projects = computed<any>(() => store.state.ProjectData.projects);
+    const currProject = computed<any>(() => store.state.ProjectData.currProject);
 
-    userStore.dispatch("User/fetchMessage");
-    projectStore.dispatch("ProjectData/fetchProject");
+    store.dispatch("User/fetchMessage");
+    store.dispatch("ProjectData/fetchProject");
 
     const selectProject = (value): void => {
       console.log('selectProject', value)
-      projectStore.dispatch('ProjectData/changeProject', value);
+      store.dispatch('ProjectData/changeProject', value);
+
+      store.dispatch('EnvironmentData/getEnvironment', {id: 0, projectId: value})
     }
 
     return {

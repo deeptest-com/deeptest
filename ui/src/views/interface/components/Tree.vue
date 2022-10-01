@@ -154,8 +154,6 @@ export default defineComponent({
         store.dispatch('Interface/getLastInvocationResp', selectedData.id)
 
         store.dispatch('Interface/listInvocation', selectedData.id)
-        store.dispatch('Interface/listEnvironment')
-        store.dispatch('Interface/getEnvironment', {id: 0, interfaceId: selectedData.id})
       }
     }
 
@@ -293,13 +291,9 @@ export default defineComponent({
           .then((newNode) => {
             console.log('newNode', newNode)
 
-            if (!newNode.isDir) {
-              targetModelId = newNode.id
-              renameNode()
-            } else {
-              store.dispatch('Interface/saveTreeMapItem', {id: newNode.id, value: newNode})
-              selectNode([newNode.id])
-            }
+            targetModelId = newNode.id
+            renameNode()
+            // selectNode([newNode.id])
 
             expandOneKey(treeDataMap.value, newNode.parentId, expandedKeys.value) // expend new node
             setExpandedKeys(currProject.value.id, expandedKeys.value)

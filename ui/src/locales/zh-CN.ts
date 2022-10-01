@@ -46,7 +46,7 @@ export default {
     'responseHeader': '响应头',
     'responseBody': '响应体',
     'extractor': '提取器',
-    'judgement': '判断',
+    'judgement': '判断表达式',
 
     'fulltext': '全文本',
     'jsonquery':  'JSON查询',

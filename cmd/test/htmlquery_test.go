@@ -3,6 +3,7 @@ package test
 import (
 	"fmt"
 	"github.com/antchfx/htmlquery"
+	"log"
 	"os"
 	"testing"
 )
@@ -10,11 +11,11 @@ import (
 func TestHtml(t *testing.T) {
 	f, err := os.Open("./baidu.html")
 	if err != nil {
-		panic(err)
+		log.Println(err)
 	}
 	doc, err := htmlquery.Parse(f)
 	if err != nil {
-		panic(err)
+		log.Println(err)
 	}
 
 	expression := `//form[@id="form"]//input[@id="kw"]`

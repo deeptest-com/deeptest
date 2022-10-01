@@ -22,7 +22,7 @@
         <a-col flex="60px">{{ t(item.type) }}</a-col>
         <a-col flex="160px">{{ item.type === CheckpointType.extractor ? item.extractorVariable : item.expression }} </a-col>
         <a-col flex="60px">{{ t(item.operator) }}</a-col>
-        <a-col flex="100px">{{ t(item.value) }}</a-col>
+        <a-col flex="100px">{{ item.value }}</a-col>
         <a-col flex="1" style="width: 0; word-break: break-word;">
           {{ item.actualResult }}
         </a-col>

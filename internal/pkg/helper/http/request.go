@@ -4,11 +4,11 @@ import (
 	"bytes"
 	"compress/gzip"
 	"fmt"
+	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	commUtils "github.com/aaronchen2k/deeptest/internal/pkg/utils"
-	serverDomain "github.com/aaronchen2k/deeptest/internal/server/modules/v1/domain"
-	requestHelper "github.com/aaronchen2k/deeptest/internal/server/modules/v1/helper/request"
+	"github.com/aaronchen2k/deeptest/internal/server/modules/helper/request"
 	_consts "github.com/aaronchen2k/deeptest/pkg/consts"
 	"github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/aaronchen2k/deeptest/pkg/lib/string"
@@ -20,52 +20,52 @@ import (
 	"time"
 )
 
-func Get(req serverDomain.InvocationRequest) (ret serverDomain.InvocationResponse, err error) {
+func Get(req v1.InvocationRequest) (ret v1.InvocationResponse, err error) {
 	return gets(req, consts.GET, true)
 }
 
-func Post(req serverDomain.InvocationRequest) (
-	ret serverDomain.InvocationResponse, err error) {
+func Post(req v1.InvocationRequest) (
+	ret v1.InvocationResponse, err error) {
 
 	return posts(req, consts.POST, true)
 }
 
-func Put(req serverDomain.InvocationRequest) (
-	ret serverDomain.InvocationResponse, err error) {
+func Put(req v1.InvocationRequest) (
+	ret v1.InvocationResponse, err error) {
 
 	return posts(req, consts.PUT, true)
 }
 
-func Patch(req serverDomain.InvocationRequest) (
-	ret serverDomain.InvocationResponse, err error) {
+func Patch(req v1.InvocationRequest) (
+	ret v1.InvocationResponse, err error) {
 
 	return posts(req, consts.PATCH, true)
 }
 
-func Delete(req serverDomain.InvocationRequest) (
-	ret serverDomain.InvocationResponse, err error) {
+func Delete(req v1.InvocationRequest) (
+	ret v1.InvocationResponse, err error) {
 
 	return posts(req, consts.DELETE, true)
 }
 
-func Head(req serverDomain.InvocationRequest) (ret serverDomain.InvocationResponse, err error) {
+func Head(req v1.InvocationRequest) (ret v1.InvocationResponse, err error) {
 	return gets(req, consts.HEAD, false)
 }
 
-func Connect(req serverDomain.InvocationRequest) (ret serverDomain.InvocationResponse, err error) {
+func Connect(req v1.InvocationRequest) (ret v1.InvocationResponse, err error) {
 	return gets(req, consts.CONNECT, false)
 }
 
-func Options(req serverDomain.InvocationRequest) (ret serverDomain.InvocationResponse, err error) {
+func Options(req v1.InvocationRequest) (ret v1.InvocationResponse, err error) {
 	return gets(req, consts.OPTIONS, false)
 }
 
-func Trace(req serverDomain.InvocationRequest) (ret serverDomain.InvocationResponse, err error) {
+func Trace(req v1.InvocationRequest) (ret v1.InvocationResponse, err error) {
 	return gets(req, consts.TRACE, false)
 }
 
-func gets(req serverDomain.InvocationRequest, method consts.HttpMethod, readRespData bool) (
-	ret serverDomain.InvocationResponse, err error) {
+func gets(req v1.InvocationRequest, method consts.HttpMethod, readRespData bool) (
+	ret v1.InvocationResponse, err error) {
 
 	reqUrl := commUtils.RemoveLeftVariableSymbol(req.Url)
 	reqParams := req.Params
@@ -143,8 +143,8 @@ func gets(req serverDomain.InvocationRequest, method consts.HttpMethod, readResp
 	return
 }
 
-func posts(req serverDomain.InvocationRequest, method consts.HttpMethod, readRespData bool) (
-	ret serverDomain.InvocationResponse, err error) {
+func posts(req v1.InvocationRequest, method consts.HttpMethod, readRespData bool) (
+	ret v1.InvocationResponse, err error) {
 
 	reqUrl := commUtils.RemoveLeftVariableSymbol(req.Url)
 	reqHeaders := req.Headers
@@ -238,7 +238,7 @@ func posts(req serverDomain.InvocationRequest, method consts.HttpMethod, readRes
 	return
 }
 
-func addAuthorInfo(req serverDomain.InvocationRequest, request *http.Request) {
+func addAuthorInfo(req v1.InvocationRequest, request *http.Request) {
 	if req.AuthorizationType == consts.BasicAuth {
 		str := fmt.Sprintf("%s:%s", req.BasicAuth.Username, req.BasicAuth.Password)
 		str = fmt.Sprintf("Basic %s", requestHelper.Base64(str))
@@ -284,7 +284,7 @@ func UpdateUrl(url string) string {
 	return url
 }
 
-func wrapperErrInResp(code consts.HttpRespCode, statusContent string, content string, resp *serverDomain.InvocationResponse) {
+func wrapperErrInResp(code consts.HttpRespCode, statusContent string, content string, resp *v1.InvocationResponse) {
 	resp.StatusCode = code
 	resp.StatusContent = fmt.Sprintf("%d %s", code, statusContent)
 	resp.Content, _ = url.QueryUnescape(content)

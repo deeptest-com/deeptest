@@ -57,6 +57,7 @@
         :visible="editVisible"
         :onCancel="cancel"
         :footer="null"
+        width="700px"
     >
       <div>
         <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
@@ -111,6 +112,11 @@
           <a-form-item label="变量名称" v-bind="validateInfos.variable">
             <a-input v-model:value="model.variable"
                      @blur="validate('variable', { trigger: 'blur' }).catch(() => {})" />
+          </a-form-item>
+
+          <a-form-item label="变量与其他接口共享" v-bind="validateInfos.variable">
+            <a-switch v-model:checked="model.isShare" />
+            <div class="dp-input-tip">变量默认为接口私有，仅限在接口检查器中引用。</div>
           </a-form-item>
 
           <a-form-item :wrapper-col="{ span: wrapperCol.span, offset: labelCol.span }">
@@ -213,7 +219,7 @@ export default defineComponent({
 
     const add = () => {
       editVisible.value = true
-      model.value = {src: ExtractorSrc.header, type: ExtractorType.boundary, expression: '', variable: ''} as Extractor
+      model.value = {src: ExtractorSrc.body, type: ExtractorType.boundary, expression: '', variable: '', isShare: false} as Extractor
 
       selectSrc()
       if (responseData.value.contentLang === 'json') {

@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/aaronchen2k/deeptest/internal/command/action"
+	"github.com/aaronchen2k/deeptest/cmd/command/action"
 	commandConsts "github.com/aaronchen2k/deeptest/internal/command/consts"
 	_logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/facebookgo/inject"

@@ -2,31 +2,24 @@ import {Action, Mutation} from 'vuex';
 import {StoreModuleType} from "@/utils/store";
 
 import {
-    changeEnvironment,
-    clearEnvironmentVar,
-    copyEnvironment,
     create,
     get,
     invoke,
     listInvocation,
-    getEnvironment,
     getInvocationAsInterface,
-    listEnvironment,
     load,
     move,
     remove,
-    removeEnvironment,
-    removeEnvironmentVar,
     removeInvocation,
-    saveEnvironment,
-    saveEnvironmentVar,
     saveInterface,
     update,
 
     listExtractor,
+    listValidExtractorVariable,
     getExtractor,
     saveExtractor,
     removeExtractor,
+    removeShareVar, clearShareVar,
 
     listCheckpoint,
     getCheckpoint,
@@ -44,11 +37,9 @@ export interface StateType {
 
     invocationsData: any[];
 
-    environmentsData: any[];
-    environmentData: any;
-
     extractorsData: any[];
     extractorData: any;
+    validExtractorVariablesData: any[];
 
     checkpointsData: any[];
     checkpointData: any;
@@ -67,11 +58,9 @@ export interface ModuleType extends StoreModuleType<StateType> {
 
         setInvocations: Mutation<StateType>;
 
-        setEnvironments: Mutation<StateType>;
-        setEnvironment: Mutation<StateType>;
-
         setExtractors: Mutation<StateType>;
         setExtractor: Mutation<StateType>;
+        setValidExtractorVariables: Mutation<StateType>;
 
         setCheckpoints: Mutation<StateType>;
         setCheckpoint: Mutation<StateType>;
@@ -79,7 +68,6 @@ export interface ModuleType extends StoreModuleType<StateType> {
     actions: {
         invoke: Action<StateType, StateType>;
         saveInterface: Action<StateType, StateType>;
-        saveTreeMapItem: Action<StateType, StateType>;
         saveTreeMapItemProp: Action<StateType, StateType>;
 
         loadInterface: Action<StateType, StateType>;
@@ -94,21 +82,13 @@ export interface ModuleType extends StoreModuleType<StateType> {
         getInvocationAsInterface: Action<StateType, StateType>;
         removeInvocation: Action<StateType, StateType>;
 
-        listEnvironment: Action<StateType, StateType>;
-        getEnvironment: Action<StateType, StateType>;
-        changeEnvironment: Action<StateType, StateType>;
-        saveEnvironment: Action<StateType, StateType>;
-        copyEnvironment: Action<StateType, StateType>;
-        removeEnvironment: Action<StateType, StateType>;
-
-        saveEnvironmentVar: Action<StateType, StateType>;
-        removeEnvironmentVar: Action<StateType, StateType>;
-        clearEnvironmentVar: Action<StateType, StateType>;
-
         listExtractor: Action<StateType, StateType>;
         getExtractor: Action<StateType, StateType>;
         saveExtractor: Action<StateType, StateType>;
         removeExtractor: Action<StateType, StateType>;
+        removeShareVar: Action<StateType, StateType>;
+        clearShareVar: Action<StateType, StateType>;
+        listValidExtractorVariable: Action<StateType, StateType>;
 
         listCheckpoint: Action<StateType, StateType>;
         getCheckpoint: Action<StateType, StateType>;
@@ -126,11 +106,9 @@ const initState: StateType = {
 
     invocationsData: [],
 
-    environmentsData: [],
-    environmentData: [],
-
     extractorsData: [],
     extractorData: {} as Extractor,
+    validExtractorVariablesData: [],
 
     checkpointsData: [],
     checkpointData: {} as Checkpoint,
@@ -171,18 +149,16 @@ const StoreModel: ModuleType = {
             state.invocationsData = payload;
         },
 
-        setEnvironments(state, payload) {
-            state.environmentsData = payload;
-        },
-        setEnvironment(state, payload) {
-            state.environmentData = payload;
-        },
-
         setExtractors(state, payload) {
             state.extractorsData = payload;
         },
+
         setExtractor(state, payload) {
             state.extractorData = payload;
+        },
+
+        setValidExtractorVariables(state, payload) {
+            state.validExtractorVariablesData = payload;
         },
 
         setCheckpoints(state, payload) {
@@ -201,6 +177,7 @@ const StoreModel: ModuleType = {
                     dispatch('listInvocation', payload.id);
                     dispatch('listExtractor', payload.id);
                     dispatch('listCheckpoint', payload.id);
+                    dispatch('listValidExtractorVariable', state.interfaceData.id);
 
                     return true;
                 } else {
@@ -216,9 +193,6 @@ const StoreModel: ModuleType = {
                     return false
                 }
             })
-        },
-        async saveTreeMapItem({commit}, payload: any) {
-            commit('setTreeDataMapItem', payload);
         },
         async saveTreeMapItemProp({commit}, payload: any) {
             commit('setTreeDataMapItemProp', payload);
@@ -332,103 +306,6 @@ const StoreModel: ModuleType = {
             }
         },
 
-        // environment
-        async listEnvironment({commit}) {
-            try {
-                const resp = await listEnvironment();
-                const {data} = resp;
-                commit('setEnvironments', data);
-                return true;
-            } catch (error) {
-                return false;
-            }
-        },
-        async getEnvironment({commit}, payload: any) {
-            try {
-                const response = await getEnvironment(payload.id, payload.interfaceId);
-                const {data} = response;
-
-                commit('setEnvironment', data);
-                return true;
-            } catch (error) {
-                return false;
-            }
-        },
-        async saveEnvironment({commit, dispatch, state}, payload: any) {
-            try {
-                const resp = await saveEnvironment(payload);
-
-                dispatch('listEnvironment');
-                dispatch('getEnvironment', {id: 0, interfaceId: state.interfaceData.id})
-                return resp.data;
-            } catch (error) {
-                return false;
-            }
-        },
-        async copyEnvironment({commit, dispatch, state}, id: number) {
-            try {
-                const resp = await copyEnvironment(id);
-
-                dispatch('listEnvironment');
-                dispatch('getEnvironment', {id: 0, interfaceId: state.interfaceData.id})
-                return resp.data;
-            } catch (error) {
-                return false;
-            }
-        },
-        async removeEnvironment({commit, dispatch, state}, id: number) {
-            try {
-                await removeEnvironment(id);
-
-                dispatch('listEnvironment', state.interfaceData.id);
-                dispatch('getEnvironment', {id: 0, interfaceId: state.interfaceData.id})
-                return true;
-            } catch (error) {
-                return false;
-            }
-        },
-        async changeEnvironment({commit, dispatch, state}, id: Number) {
-            await changeEnvironment(id, state.interfaceData.id);
-
-            dispatch('listEnvironment');
-            dispatch('getEnvironment', {id: 0, interfaceId: state.interfaceData.id})
-            return true
-        },
-
-        // environment var
-        async saveEnvironmentVar({commit}, payload: any) {
-            try {
-                const resp = await saveEnvironmentVar(payload);
-                const {data} = resp;
-                commit('setEnvironment', data);
-                return true;
-            } catch (error) {
-                return false;
-            }
-        },
-        async removeEnvironmentVar({commit}, id: number) {
-            try {
-                const resp = await removeEnvironmentVar(id);
-                const {data} = resp;
-                commit('setEnvironment', data);
-
-                return true;
-            } catch (error) {
-                return false;
-            }
-        },
-        async clearEnvironmentVar({commit, dispatch, state}) {
-            try {
-                const resp = await clearEnvironmentVar(state.environmentData.id);
-                const {data} = resp;
-                commit('setEnvironment', data);
-
-                return true;
-            } catch (error) {
-                return false;
-            }
-        },
-
         // extractor
         async listExtractor({commit, dispatch, state}) {
             try {
@@ -465,6 +342,41 @@ const StoreModel: ModuleType = {
                 await removeExtractor(id);
 
                 dispatch('listExtractor', state.interfaceData.id);
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+
+        // extractor variable
+        async removeShareVar({commit, dispatch, state}, id: any) {
+            try {
+                const resp = await removeShareVar(id);
+                const {data} = resp;
+                dispatch('listValidExtractorVariable', state.interfaceData.id);
+
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+        async clearShareVar({commit, dispatch, state}, interfaceId: any) {
+            try {
+                const resp = await clearShareVar(interfaceId);
+                const {data} = resp;
+                dispatch('listValidExtractorVariable', state.interfaceData.id);
+
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+
+        async listValidExtractorVariable({commit, dispatch, state}) {
+            try {
+                const resp = await listValidExtractorVariable(state.interfaceData.id);
+                const {data} = resp;
+                commit('setValidExtractorVariables', data);
                 return true;
             } catch (error) {
                 return false;

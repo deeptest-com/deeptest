@@ -8,6 +8,7 @@ const apiVocation = 'invocations';
 const apiAuth = 'auth';
 const apiEnvironment = 'environments'
 const apiEnvironmentVar = `${apiEnvironment}/vars`
+const apiShareVar = `${apiEnvironment}/shareVars`
 
 const apiExtractor = 'extractors'
 const apiCheckpoint = 'checkpoints'
@@ -144,8 +145,8 @@ export async function listEnvironment(): Promise<any> {
         params,
     });
 }
-export async function getEnvironment(id: number, interfaceId: number): Promise<any> {
-    const params = {interfaceId: interfaceId}
+export async function getEnvironment(id: number, projectId: number): Promise<any> {
+    const params = {projectId: projectId}
     return request({
         url: `/${apiEnvironment}/${id}`,
         method: 'GET',
@@ -153,8 +154,8 @@ export async function getEnvironment(id: number, interfaceId: number): Promise<a
     });
 }
 
-export async function changeEnvironment(id, interfaceId): Promise<any> {
-    const params = {id, interfaceId}
+export async function changeEnvironment(id, projectId): Promise<any> {
+    const params = {id, projectId}
 
     return request({
         url: `/${apiEnvironment}/changeEnvironment`,
@@ -202,6 +203,21 @@ export async function clearEnvironmentVar(environmentId: number): Promise<any> {
     const params = {environmentId: environmentId}
     return request({
         url: `/${apiEnvironmentVar}/clear`,
+        method: 'POST',
+        params,
+    });
+}
+
+export async function removeShareVar(id: number): Promise<any> {
+    return request({
+        url: `/${apiShareVar}/${id}`,
+        method: 'DELETE',
+    });
+}
+export async function clearShareVar(interfaceId: number): Promise<any> {
+    const params = {interfaceId}
+    return request({
+        url: `/${apiShareVar}/clear`,
         method: 'POST',
         params,
     });
@@ -277,6 +293,14 @@ export async function listExtractorVariable(interfaceId: number): Promise<any> {
     const params = {interfaceId}
     return request({
         url: `/${apiExtractor}/listExtractorVariable`,
+        method: 'GET',
+        params,
+    });
+}
+export async function listValidExtractorVariable(interfaceId: number): Promise<any> {
+    const params = {interfaceId}
+    return request({
+        url: `/${apiExtractor}/listValidExtractorVariable`,
         method: 'GET',
         params,
     });

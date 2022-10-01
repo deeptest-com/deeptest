@@ -9,15 +9,6 @@
               tabPosition="right"
               :tabBarGutter="0"
               class="right-tab">
-        <a-tab-pane key="history">
-          <template #tab>
-            <a-tooltip placement="left" overlayClassName="dp-tip-small">
-              <template #title>历史</template>
-              <HistoryOutlined/>
-            </a-tooltip>
-          </template>
-          <RequestHistory></RequestHistory>
-        </a-tab-pane>
 
         <a-tab-pane key="env">
           <template #tab>
@@ -28,6 +19,17 @@
           </template>
           <RequestEnv></RequestEnv>
         </a-tab-pane>
+
+        <a-tab-pane key="history">
+          <template #tab>
+            <a-tooltip placement="left" overlayClassName="dp-tip-small">
+              <template #title>历史</template>
+              <HistoryOutlined/>
+            </a-tooltip>
+          </template>
+          <RequestHistory></RequestHistory>
+        </a-tab-pane>
+
       </a-tabs>
     </div>
 
@@ -70,7 +72,7 @@ export default defineComponent({
 
     const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
 
-    const tabKey = ref('history')
+    const tabKey = ref('env')
 
     const showRightBar = ref(false)
     getShowRightBar().then((val) => {
@@ -145,7 +147,7 @@ export default defineComponent({
   }
 
   .design-right {
-    width: 280px;
+    width: 320px;
     height: 100%;
     border-left: solid 1px #e6e9ec;
   }

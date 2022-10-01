@@ -7,7 +7,7 @@
     <div id="interface-design-splitter" class="splitter"></div>
 
     <div id="interface-design-right" class="right">
-      <InterfaceDesigner></InterfaceDesigner>
+      <InterfaceDesigner v-if="!interfaceData.isDir"></InterfaceDesigner>
     </div>
   </div>
 </template>
@@ -22,6 +22,8 @@ import {useStore} from "vuex";
 import {StateType as GlobalStateType} from "@/store/global";
 import {StateType as UserStateType} from "@/store/user";
 import {StateType as ProjectStateType} from "@/store/project";
+import {Interface} from "@/views/interface/data";
+import {StateType} from "@/views/interface/store";
 
 export default defineComponent({
   name: 'InterfaceIndexPage',
@@ -29,9 +31,11 @@ export default defineComponent({
     InterfaceTree, InterfaceDesigner,
   },
   setup() {
-    const store = useStore<{ Global: GlobalStateType, User: UserStateType, ProjectData: ProjectStateType}>();
+    const store = useStore<{ Global: GlobalStateType, User: UserStateType, ProjectData: ProjectStateType,
+      Interface: StateType }>();
     const collapsed = computed<boolean>(()=> store.state.Global.collapsed);
     const currProject = computed<any>(() => store.state.ProjectData.currProject);
+    const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
 
     onMounted(() => {
       console.log('onMounted')
@@ -53,7 +57,7 @@ export default defineComponent({
     }
 
     return {
-
+      interfaceData
     }
   }
 

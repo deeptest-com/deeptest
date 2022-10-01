@@ -35,6 +35,9 @@
 .dp-btn-gap {
     margin: 0 3px;
 }
+.dp-bg-white {
+    background: #fff;
+}
 .dp-bg-selected {
     background-color: @itemSelectedBackground;
 }
@@ -54,6 +57,14 @@
 .dp-bg-input-transparent {
     background-color: transparent;
     border: 0;
+}
+.dp-dropdown {
+    &.ant-dropdown-button {
+        width: 100%;
+        .ant-btn:first-child {
+            width: 100%;
+        }
+    }
 }
 .dp-icon-btn-container {
     line-height: 32px;
@@ -134,6 +145,29 @@
     }
     .ant-modal-body {
         flex: 1;
+    }
+}
+
+.dp-param-grid {
+    .head {
+        padding: 2px 3px;
+        border-bottom: 1px solid #d9d9d9;
+    }
+    .params {
+        height: calc(100% - 28px);
+        overflow-y: auto;
+        .param {
+            padding: 2px 3px;
+            border-bottom: 1px solid #d9d9d9;
+
+            .ant-col {
+                border-right: 1px solid #d9d9d9;
+
+                input {
+                    margin-top: 1px;
+                }
+            }
+        }
     }
 }
 

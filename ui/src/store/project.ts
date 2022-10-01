@@ -68,7 +68,9 @@ const StoreModel: ModuleType = {
         return false;
       }
     },
-  }
+  },
+
+
 }
 
 export default StoreModel;

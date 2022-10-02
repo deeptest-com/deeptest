@@ -31,23 +31,23 @@ func (Processor) TableName() string {
 	return "biz_processor"
 }
 
-type ProcessorThreadGroup struct {
-	BaseModel
-	ProcessorEntity
-
-	Count int `json:"count" yaml:"count"`
-	Loop  int `json:"loop" yaml:"loop"`
-
-	StartupDelay int `json:"startupDelay" yaml:"startupDelay"`
-	RampUpPeriod int `json:"rampUpPeriod" yaml:"rampUpPeriod"`
-	Duration     int `json:"duration" yaml:"duration"`
-
-	ErrorAction consts.ErrorAction
-}
-
-func (ProcessorThreadGroup) TableName() string {
-	return "biz_processor_thread_group"
-}
+//type ProcessorThreadGroup struct {
+//	BaseModel
+//	ProcessorEntity
+//
+//	Count int `json:"count" yaml:"count"`
+//	Loop  int `json:"loop" yaml:"loop"`
+//
+//	StartupDelay int `json:"startupDelay" yaml:"startupDelay"`
+//	RampUpPeriod int `json:"rampUpPeriod" yaml:"rampUpPeriod"`
+//	Duration     int `json:"duration" yaml:"duration"`
+//
+//	ErrorAction consts.ErrorAction
+//}
+//
+//func (ProcessorThreadGroup) TableName() string {
+//	return "biz_processor_thread_group"
+//}
 
 type ProcessorGroup struct {
 	BaseModel
@@ -213,8 +213,7 @@ type ProcessorEntity struct {
 	ProcessorId       uint                     `json:"processorId" yaml:"processorId"`
 	ProcessorCategory consts.ProcessorCategory `json:"processorCategory" yaml:"processorCategory"`
 	ProcessorType     consts.ProcessorType     `json:"processorType" yaml:"processorType"`
-
-	//ParentId uint `json:"parentId" yaml:"parentId"`
+	ParentId          uint                     `json:"parentId" yaml:"parentId"`
 
 	// interface or Processor
 	Children []interface{} `json:"children" yaml:"children" gorm:"-"`

@@ -321,8 +321,7 @@ func (e ResultStatus) String() string {
 type ProcessorCategory string
 
 const (
-	ProcessorScenario ProcessorCategory = "processor_scenario"
-	ProcessorRoot     ProcessorCategory = "processor_root"
+	ProcessorRoot ProcessorCategory = "processor_root"
 	//ProcessorThreadGroup ProcessorCategory = "processor_thread_group"
 
 	ProcessorInterface ProcessorCategory = "processor_interface"
@@ -346,7 +345,6 @@ func (e ProcessorCategory) ToString() string {
 type ProcessorType string
 
 const (
-	ProcessorScenarioDefault ProcessorType = "processor_scenario_default"
 	//ProcessorThreadDefault ProcessorType = "processor_thread_default"
 
 	ProcessorInterfaceDefault ProcessorType = "processor_interface_default"

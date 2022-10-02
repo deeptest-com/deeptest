@@ -7,24 +7,24 @@ import (
 	"log"
 )
 
-type ProcessorGroupStage struct {
+type ProcessorRootStage struct {
 	stage *run.TStage
 }
 
-func (s *ProcessorGroupStage) Name() string {
+func (s *ProcessorRootStage) Name() string {
 	return s.stage.Name
 }
 
-func (s *ProcessorGroupStage) Category() consts.ProcessorCategory {
-	return consts.ProcessorGroup
+func (s *ProcessorRootStage) Category() consts.ProcessorCategory {
+	return consts.ProcessorRoot
 }
 
-func (s *ProcessorGroupStage) Struct() *run.TStage {
+func (s *ProcessorRootStage) Struct() *run.TStage {
 	return s.stage
 }
 
-func (s *ProcessorGroupStage) Run(r *run.SessionRunner) (ret *run.StageResult, err error) {
-	processor, ok := s.stage.Processor.(ProcessorGroup)
+func (s *ProcessorRootStage) Run(r *run.SessionRunner) (ret *run.StageResult, err error) {
+	processor, ok := s.stage.Processor.(ProcessorRoot)
 	if ok {
 		log.Println(processor)
 	}
@@ -38,7 +38,7 @@ func (s *ProcessorGroupStage) Run(r *run.SessionRunner) (ret *run.StageResult, e
 	return
 }
 
-type ProcessorGroup struct {
+type ProcessorRoot struct {
 	Id uint
 	model.ProcessorEntity
 

@@ -12,7 +12,6 @@ type IStage interface {
 	Run(*SessionRunner) (*StageResult, error)
 
 	Category() consts.ProcessorCategory
-	Type() consts.ProcessorType
 }
 
 // TStage represents teststage data structure.

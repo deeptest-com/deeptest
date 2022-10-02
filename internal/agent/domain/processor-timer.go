@@ -7,24 +7,24 @@ import (
 	"log"
 )
 
-type ProcessorGroupStage struct {
+type ProcessorTimerStage struct {
 	stage *run.TStage
 }
 
-func (s *ProcessorGroupStage) Name() string {
+func (s *ProcessorTimerStage) Name() string {
 	return s.stage.Name
 }
 
-func (s *ProcessorGroupStage) Category() consts.ProcessorCategory {
-	return consts.ProcessorGroup
+func (s *ProcessorTimerStage) Category() consts.ProcessorCategory {
+	return consts.ProcessorTimer
 }
 
-func (s *ProcessorGroupStage) Struct() *run.TStage {
+func (s *ProcessorTimerStage) Struct() *run.TStage {
 	return s.stage
 }
 
-func (s *ProcessorGroupStage) Run(r *run.SessionRunner) (ret *run.StageResult, err error) {
-	processor, ok := s.stage.Processor.(ProcessorGroup)
+func (s *ProcessorTimerStage) Run(r *run.SessionRunner) (ret *run.StageResult, err error) {
+	processor, ok := s.stage.Processor.(ProcessorTimer)
 	if ok {
 		log.Println(processor)
 	}
@@ -38,9 +38,11 @@ func (s *ProcessorGroupStage) Run(r *run.SessionRunner) (ret *run.StageResult, e
 	return
 }
 
-type ProcessorGroup struct {
+type ProcessorTimer struct {
 	Id uint
 	model.ProcessorEntity
+
+	SleepTime int `json:"sleepTime" yaml:"sleepTime"`
 
 	Children []interface{} `json:"children" yaml:"children" gorm:"-"`
 }

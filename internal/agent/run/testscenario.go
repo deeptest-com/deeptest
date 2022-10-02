@@ -1,9 +1,5 @@
 package run
 
-import (
-	"fmt"
-)
-
 // ITestScenario represents interface for testcases,
 // includes TestScenario and TestScenarioPath.
 type ITestScenario interface {
@@ -19,13 +15,6 @@ type TestScenario struct {
 
 func (tc *TestScenario) ToTestScenario() (*TestScenario, error) {
 	return tc, nil
-}
-
-// TestScenarioPath implements ITestScenario interface.
-type TestScenarioPath string
-
-func (path *TestScenarioPath) GetPath() string {
-	return fmt.Sprintf("%v", *path)
 }
 
 // TScenario represents testcase data structure.

@@ -3,8 +3,8 @@ package run
 import (
 	"context"
 	"crypto/tls"
-	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/fatih/color"
+	"github.com/rs/zerolog/log"
 	"net/http"
 	"net/http/httptrace"
 	"strconv"
@@ -234,7 +234,9 @@ func (s *HttpStat) Print() {
 			fmtb(s.Total),            // total
 		)
 	}
-	logUtils.Infof("HTTP latency statistics: %v", s.Durations())
+	log.Info().
+		Interface("httpstat(ms)", s.Durations()).
+		Msg("HTTP latency statistics")
 }
 
 func grayscale(code color.Attribute) func(string, ...interface{}) string {

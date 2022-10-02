@@ -9,7 +9,7 @@ import (
 	"fmt"
 	builtin "github.com/aaronchen2k/deeptest/internal/pkg/buildin"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"github.com/rs/zerolog/log"
 	"io"
 	"net/http"
 	"net/http/httputil"
@@ -141,7 +141,7 @@ func (r *requestBuilder) prepareUrlParams(stepVariables map[string]interface{}) 
 	// parse step request url
 	requestUrl, err := r.parser.ParseString(r.stepRequest.URL, stepVariables)
 	if err != nil {
-		logUtils.Warnf("parse request url failed")
+		log.Error().Err(err).Msg("parse request url failed")
 		return err
 	}
 	var baseURL string
@@ -693,35 +693,35 @@ type StepRequestWithOptionalArgs struct {
 
 // SetVerify sets whether to verify SSL for current HTTP request.
 func (s *StepRequestWithOptionalArgs) SetVerify(verify bool) *StepRequestWithOptionalArgs {
-	logUtils.Infof("set step request verify %v", verify)
+	log.Info().Bool("verify", verify).Msg("set step request verify")
 	s.step.Request.Verify = verify
 	return s
 }
 
 // SetTimeout sets timeout for current HTTP request.
 func (s *StepRequestWithOptionalArgs) SetTimeout(timeout time.Duration) *StepRequestWithOptionalArgs {
-	logUtils.Infof("set step request timeout %v", timeout.Seconds())
+	log.Info().Float64("timeout(seconds)", timeout.Seconds()).Msg("set step request timeout")
 	s.step.Request.Timeout = timeout.Seconds()
 	return s
 }
 
 // SetProxies sets proxies for current HTTP request.
 func (s *StepRequestWithOptionalArgs) SetProxies(proxies map[string]string) *StepRequestWithOptionalArgs {
-	logUtils.Infof("set step request proxies %v", proxies)
+	log.Info().Interface("proxies", proxies).Msg("set step request proxies")
 	// TODO
 	return s
 }
 
 // SetAllowRedirects sets whether to allow redirects for current HTTP request.
 func (s *StepRequestWithOptionalArgs) SetAllowRedirects(allowRedirects bool) *StepRequestWithOptionalArgs {
-	logUtils.Infof("set step request allowRedirects %v", allowRedirects)
+	log.Info().Bool("allowRedirects", allowRedirects).Msg("set step request allowRedirects")
 	s.step.Request.AllowRedirects = allowRedirects
 	return s
 }
 
 // SetAuth sets auth for current HTTP request.
 func (s *StepRequestWithOptionalArgs) SetAuth(auth map[string]string) *StepRequestWithOptionalArgs {
-	logUtils.Infof("set step request auth %v", auth)
+	log.Info().Interface("auth", auth).Msg("set step request auth")
 	// TODO
 	return s
 }

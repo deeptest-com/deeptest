@@ -16,7 +16,7 @@ type SessionRunner struct {
 	sessionVariables map[string]interface{}
 
 	startTime        time.Time                  // record start time of the testcase
-	summary          *TestCaseSummary           // record test case summary
+	summary          *TestScenarioSummary       // record test case summary
 	wsConnMap        map[string]*websocket.Conn // save all websocket connections
 	pongResponseChan chan string                // channel used to receive pong response message
 }
@@ -135,16 +135,19 @@ func (r *SessionRunner) updateSessionVariables(parameters map[string]interface{}
 	}
 }
 
-func (r *SessionRunner) GetSummary() *TestCaseSummary {
+func (r *SessionRunner) GetSummary() *TestScenarioSummary {
 	caseSummary := r.summary
 	caseSummary.Name = r.parsedConfig.Name
 	caseSummary.Time.StartAt = r.startTime
 	caseSummary.Time.Duration = time.Since(r.startTime).Seconds()
+
 	exportVars := make(map[string]interface{})
 	for _, value := range r.parsedConfig.Export {
 		exportVars[value] = r.sessionVariables[value]
 	}
+
 	caseSummary.InOut.ExportVars = exportVars
 	caseSummary.InOut.ConfigVars = r.parsedConfig.Variables
+
 	return caseSummary
 }

@@ -150,8 +150,9 @@ func (r *MainRunner) Run(testScenarios ...TestScenario) (err error) {
 
 		err = sessionRunner.Start(nil)
 
-		caseSummary := sessionRunner.GetSummary()
-		s.appendCaseSummary(caseSummary)
+		scenarioSummary := sessionRunner.GetSummary()
+		s.appendScenarioSummary(scenarioSummary)
+
 		if err != nil {
 			log.Error().Err(err).Msg("[Run] run testcase failed")
 			runErr = err

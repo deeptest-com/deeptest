@@ -22,7 +22,7 @@ func newOutSummary() *Summary {
 	return &Summary{
 		Success: true,
 		Stat:    &Stat{},
-		Time: &TestCaseTime{
+		Time: &TestScenarioTime{
 			StartAt: time.Now(),
 		},
 		Platform: platForm,
@@ -31,33 +31,35 @@ func newOutSummary() *Summary {
 
 // Summary stores tests summary for current task execution, maybe include one or multiple testcases
 type Summary struct {
-	Success  bool               `json:"success" yaml:"success"`
-	Stat     *Stat              `json:"stat" yaml:"stat"`
-	Time     *TestCaseTime      `json:"time" yaml:"time"`
-	Platform *Platform          `json:"platform" yaml:"platform"`
-	Details  []*TestCaseSummary `json:"details" yaml:"details"`
+	Success  bool                   `json:"success" yaml:"success"`
+	Stat     *Stat                  `json:"stat" yaml:"stat"`
+	Time     *TestScenarioTime      `json:"time" yaml:"time"`
+	Platform *Platform              `json:"platform" yaml:"platform"`
+	Details  []*TestScenarioSummary `json:"details" yaml:"details"`
 	rootDir  string
 }
 
-func (s *Summary) appendCaseSummary(caseSummary *TestCaseSummary) {
-	s.Success = s.Success && caseSummary.Success
-	s.Stat.TestCases.Total += 1
-	s.Stat.TestSteps.Total += len(caseSummary.Records)
-	if caseSummary.Success {
-		s.Stat.TestCases.Success += 1
+func (s *Summary) appendScenarioSummary(scenarioSummary *TestScenarioSummary) {
+	s.Success = s.Success && scenarioSummary.Success
+	s.Stat.TestScenarios.Total += 1
+	s.Stat.TestStages.Total += len(scenarioSummary.Records)
+
+	if scenarioSummary.Success {
+		s.Stat.TestScenarios.Success += 1
 	} else {
-		s.Stat.TestCases.Fail += 1
+		s.Stat.TestScenarios.Fail += 1
 	}
-	s.Stat.TestSteps.Successes += caseSummary.Stat.Successes
-	s.Stat.TestSteps.Failures += caseSummary.Stat.Failures
-	s.Details = append(s.Details, caseSummary)
-	s.Success = s.Success && caseSummary.Success
+
+	s.Stat.TestStages.Successes += scenarioSummary.Stat.Successes
+	s.Stat.TestStages.Failures += scenarioSummary.Stat.Failures
+	s.Details = append(s.Details, scenarioSummary)
+	s.Success = s.Success && scenarioSummary.Success
 
 	// specify output reports dir
 	if len(s.Details) == 1 {
-		s.rootDir = caseSummary.RootDir
-	} else if s.rootDir != caseSummary.RootDir {
-		// if multiple testcases have different root path, use current working dir
+		s.rootDir = scenarioSummary.RootDir
+	} else if s.rootDir != scenarioSummary.RootDir {
+		// if multiple testscenarios have different root path, use current working dir
 		s.rootDir, _ = os.Getwd()
 	}
 }
@@ -113,89 +115,89 @@ var reportTemplate string
 const resultsDir = "reports"
 
 type Stat struct {
-	TestCases TestCaseStat `json:"testcases" yaml:"test_cases"`
-	TestSteps TestStepStat `json:"teststeps" yaml:"test_steps"`
+	TestScenarios TestScenarioStat `json:"testScenarios" yaml:"testScenarios"`
+	TestStages    TestStageStat    `json:"testStages" yaml:"testStages"`
 }
 
-type TestCaseStat struct {
+type TestScenarioStat struct {
 	Total   int `json:"total" yaml:"total"`
 	Success int `json:"success" yaml:"success"`
 	Fail    int `json:"fail" yaml:"fail"`
 }
 
-type TestStepStat struct {
+type TestStageStat struct {
 	Total     int `json:"total" yaml:"total"`
 	Successes int `json:"successes" yaml:"successes"`
 	Failures  int `json:"failures" yaml:"failures"`
 }
 
-type TestCaseTime struct {
-	StartAt  time.Time `json:"start_at,omitempty" yaml:"start_at,omitempty"`
+type TestScenarioTime struct {
+	StartAt  time.Time `json:"startAt,omitempty" yaml:"startAt,omitempty"`
 	Duration float64   `json:"duration,omitempty" yaml:"duration,omitempty"`
 }
 
 type Platform struct {
-	HttprunnerVersion string `json:"httprunner_version" yaml:"httprunner_version"`
-	GoVersion         string `json:"go_version" yaml:"go_version"`
-	Platform          string `json:"platform" yaml:"platform"`
+	DeepTestVersion string `json:"deepTestVersion" yaml:"deepTestVersion"`
+	GoVersion       string `json:"goVersion" yaml:"goVersion"`
+	Platform        string `json:"platform" yaml:"platform"`
 }
 
-// TestCaseSummary stores tests summary for one testcase
-type TestCaseSummary struct {
-	Name    string         `json:"name" yaml:"name"`
-	Success bool           `json:"success" yaml:"success"`
-	CaseId  string         `json:"case_id,omitempty" yaml:"case_id,omitempty"` // TODO
-	Stat    *TestStepStat  `json:"stat" yaml:"stat"`
-	Time    *TestCaseTime  `json:"time" yaml:"time"`
-	InOut   *TestCaseInOut `json:"in_out" yaml:"in_out"`
-	Log     string         `json:"log,omitempty" yaml:"log,omitempty"` // TODO
-	Records []*StageResult `json:"records" yaml:"records"`
-	RootDir string         `json:"root_dir" yaml:"root_dir"`
+// TestScenarioSummary stores tests summary for one testScenario
+type TestScenarioSummary struct {
+	Name       string             `json:"name" yaml:"name"`
+	Success    bool               `json:"success" yaml:"success"`
+	ScenarioId string             `json:"scenarioId,omitempty" yaml:"scenarioId,omitempty"` // TODO
+	Stat       *TestStageStat     `json:"stat" yaml:"stat"`
+	Time       *TestScenarioTime  `json:"time" yaml:"time"`
+	InOut      *TestScenarioInOut `json:"inOut" yaml:"inOut"`
+	Log        string             `json:"log,omitempty" yaml:"log,omitempty"` // TODO
+	Records    []*StageResult     `json:"records" yaml:"records"`
+	RootDir    string             `json:"rootDir" yaml:"rootDir"`
 }
 
-type TestCaseInOut struct {
-	ConfigVars map[string]interface{} `json:"config_vars" yaml:"config_vars"`
-	ExportVars map[string]interface{} `json:"export_vars" yaml:"export_vars"`
+type TestScenarioInOut struct {
+	ConfigVars map[string]interface{} `json:"configVars" yaml:"configVars"`
+	ExportVars map[string]interface{} `json:"exportVars" yaml:"exportVars"`
 }
 
 func newSessionData() *SessionData {
 	return &SessionData{
-		Success:  false,
-		ReqResps: &ReqResps{},
+		Success: false,
+		ReqResp: &ReqResp{},
 	}
 }
 
 type SessionData struct {
 	Success    bool                `json:"success" yaml:"success"`
-	ReqResps   *ReqResps           `json:"req_resps" yaml:"req_resps"`
+	ReqResp    *ReqResp            `json:"reqResp" yaml:"reqResp"`
 	Address    *Address            `json:"address,omitempty" yaml:"address,omitempty"` // TODO
 	Validators []*ValidationResult `json:"validators,omitempty" yaml:"validators,omitempty"`
 }
 
-type ReqResps struct {
+type ReqResp struct {
 	Request  interface{} `json:"request" yaml:"request"`
 	Response interface{} `json:"response" yaml:"response"`
 }
 
 type Address struct {
-	ClientIP   string `json:"client_ip,omitempty" yaml:"client_ip,omitempty"`
-	ClientPort string `json:"client_port,omitempty" yaml:"client_port,omitempty"`
-	ServerIP   string `json:"server_ip,omitempty" yaml:"server_ip,omitempty"`
-	ServerPort string `json:"server_port,omitempty" yaml:"server_port,omitempty"`
+	ClientIP   string `json:"clientIp,omitempty" yaml:"clientIp,omitempty"`
+	ClientPort string `json:"clientPort,omitempty" yaml:"clientIport,omitempty"`
+	ServerIP   string `json:"serverIp,omitempty" yaml:"serverIp,omitempty"`
+	ServerPort string `json:"serverPort,omitempty" yaml:"serverPort,omitempty"`
 }
 
 type ValidationResult struct {
 	Validator
-	CheckValue  interface{} `json:"check_value" yaml:"check_value"`
-	CheckResult string      `json:"check_result" yaml:"check_result"`
+	CheckValue  interface{} `json:"checkValue" yaml:"checkValue"`
+	CheckResult string      `json:"checkResult" yaml:"checkResult"`
 }
 
-func newSummary() *TestCaseSummary {
-	return &TestCaseSummary{
+func newSummary() *TestScenarioSummary {
+	return &TestScenarioSummary{
 		Success: true,
-		Stat:    &TestStepStat{},
-		Time:    &TestCaseTime{},
-		InOut:   &TestCaseInOut{},
+		Stat:    &TestStageStat{},
+		Time:    &TestScenarioTime{},
+		InOut:   &TestScenarioInOut{},
 		Records: []*StageResult{},
 	}
 }

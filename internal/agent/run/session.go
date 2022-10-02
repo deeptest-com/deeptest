@@ -68,9 +68,10 @@ func (r *SessionRunner) Start(givenVars map[string]interface{}) error {
 		log.Info().Str("step", stepName).
 			Str("type", string(stage.Type())).Msg("run step start")
 
+		// run stage like processor or interface
 		stepResult, err := stage.Run(r)
-		stepResult.Name = stepName
 
+		stepResult.Name = stepName
 		if err != nil {
 			log.Error().
 				Str("step", stepResult.Name).

@@ -8,25 +8,27 @@ import "github.com/aaronchen2k/deeptest/internal/pkg/consts"
 // StepTransaction, StepRendezvous, StepWebSocket.
 type IStage interface {
 	Name() string
-	Category() consts.ProcessorCategory
-	Type() consts.ProcessorType
 	Struct() *TStage
 	Run(*SessionRunner) (*StageResult, error)
+
+	Category() consts.ProcessorCategory
+	Type() consts.ProcessorType
 }
 
 // TStage represents teststage data structure.
 // Each stage maybe three different types: make one request or reference another api/testcase.
 type TStage struct {
-	Name          string                 `json:"name" yaml:"name"` // required
-	Request       *Request               `json:"request,omitempty" yaml:"request,omitempty"`
-	API           interface{}            `json:"api,omitempty" yaml:"api,omitempty"`           // *APIPath or *API
-	TestCase      interface{}            `json:"testcase,omitempty" yaml:"testcase,omitempty"` // *TestCasePath or *TestCase
+	Name      string      `json:"name" yaml:"name"` // required
+	Processor interface{} `json:"processor,omitempty" yaml:"processor,omitempty"`
+
 	Variables     map[string]interface{} `json:"variables,omitempty" yaml:"variables,omitempty"`
 	SetupHooks    []string               `json:"setupHooks,omitempty" yaml:"setupHooks,omitempty"`
 	TeardownHooks []string               `json:"teardownHooks,omitempty" yaml:"teardownHooks,omitempty"`
 	Extract       map[string]string      `json:"extract,omitempty" yaml:"extract,omitempty"`
 	Validators    []interface{}          `json:"validate,omitempty" yaml:"validate,omitempty"`
 	Export        []string               `json:"export,omitempty" yaml:"export,omitempty"`
+
+	Children []IStage `json:"children,omitempty" yaml:"children,omitempty"`
 }
 
 type StageResult struct {

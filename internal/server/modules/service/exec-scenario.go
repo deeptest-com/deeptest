@@ -1,6 +1,7 @@
 package service
 
 import (
+	runDomain "github.com/aaronchen2k/deeptest/internal/agent/domain"
 	"github.com/aaronchen2k/deeptest/internal/agent/run"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
@@ -65,7 +66,14 @@ func (s *ExecScenarioService) RunScenario(scenarioId int, wsMsg *websocket.Messa
 
 	return
 }
-func (s *ExecScenarioService) genTestScenario(scenario model.Scenario) (testScenario run.TestScenario, err error) {
+func (s *ExecScenarioService) genTestScenario(po model.Scenario) (ret run.TestScenario, err error) {
+	ret.Id = po.ID
+	ret.Name = po.Name
+
+	// TODO: get from db
+	processorGroupStage := runDomain.ProcessorGroupStage{}
+	ret.TestStages = append(ret.TestStages, &processorGroupStage)
+
 	return
 }
 

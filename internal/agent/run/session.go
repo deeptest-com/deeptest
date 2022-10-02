@@ -1,4 +1,4 @@
-package request
+package run
 
 import (
 	_ "embed"
@@ -58,18 +58,19 @@ func (r *SessionRunner) Start(givenVars map[string]interface{}) error {
 	r.updateSessionVariables(givenVars)
 
 	// run step in sequential order
-	for _, step := range r.testCase.TestSteps {
+	for _, stage := range r.testScenario.TestStages {
 		// parse step name
-		parsedName, err := r.parser.ParseString(step.Name(), r.sessionVariables)
+		parsedName, err := r.parser.ParseString(stage.Name(), r.sessionVariables)
 		if err != nil {
-			parsedName = step.Name()
+			parsedName = stage.Name()
 		}
 		stepName := convertString(parsedName)
 		log.Info().Str("step", stepName).
-			Str("type", string(step.Type())).Msg("run step start")
+			Str("type", string(stage.Type())).Msg("run step start")
 
-		stepResult, err := step.Run(r)
+		stepResult, err := stage.Run(r)
 		stepResult.Name = stepName
+
 		if err != nil {
 			log.Error().
 				Str("step", stepResult.Name).

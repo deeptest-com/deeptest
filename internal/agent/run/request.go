@@ -1,4 +1,4 @@
-package request
+package run
 
 import (
 	"bytes"
@@ -686,7 +686,7 @@ func (s *StepRequest) PATCH(url string) *StepRequestWithOptionalArgs {
 	}
 }
 
-// StepRequestWithOptionalArgs implements IStep interface.
+// StepRequestWithOptionalArgs implements IStage interface.
 type StepRequestWithOptionalArgs struct {
 	step *TStage
 }
@@ -798,7 +798,7 @@ func (s *StepRequestWithOptionalArgs) Run(r *SessionRunner) (*StageResult, error
 	return runStepRequest(r, s.step)
 }
 
-// StepRequestExtraction implements IStep interface.
+// StepRequestExtraction implements IStage interface.
 type StepRequestExtraction struct {
 	step *TStage
 }
@@ -840,7 +840,7 @@ func (s *StepRequestExtraction) Run(r *SessionRunner) (*StageResult, error) {
 	return nil, errors.New("unexpected protocol type")
 }
 
-// StepRequestValidation implements IStep interface.
+// StepRequestValidation implements IStage interface.
 type StepRequestValidation struct {
 	step *TStage
 }

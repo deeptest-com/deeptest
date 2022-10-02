@@ -1,4 +1,4 @@
-package request
+package run
 
 import (
 	"crypto/tls"
@@ -9,19 +9,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gorilla/websocket"
 	"github.com/rs/zerolog/log"
 	"golang.org/x/net/http2"
 )
 
-// Run starts to run API test with default configs.
-func Run(testcases ...ITestCase) error {
-	t := &testing.T{}
-	return NewRunner(t).SetRequestsLogOn().Run(testcases...)
-}
-
-// NewRunner constructs a new runner instance.
-func NewRunner(t *testing.T) *MainRunner {
+// NewMainRunner constructs a new runner instance.
+func NewMainRunner(t *testing.T) *MainRunner {
 	if t == nil {
 		t = &testing.T{}
 	}
@@ -66,7 +59,7 @@ func (r *MainRunner) SetClientTransport(maxConns int, disableKeepAlive bool, dis
 		TLSClientConfig:    &tls.Config{InsecureSkipVerify: true},
 		DisableCompression: disableCompression,
 	}
-	r.wsDialer.EnableCompression = !disableCompression
+
 	return r
 }
 
@@ -117,7 +110,7 @@ func (r *MainRunner) SetProxyUrl(proxyUrl string) *MainRunner {
 		Proxy:           http.ProxyURL(p),
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 	}
-	r.wsDialer.Proxy = http.ProxyURL(p)
+
 	return r
 }
 
@@ -143,14 +136,56 @@ func (r *MainRunner) GenHTMLReport() *MainRunner {
 }
 
 // Run starts to execute one or multiple testcases.
-func (r *MainRunner) Run(testcases ...ITestCase) (err error) {
+func (r *MainRunner) Run(testScenarios ...TestScenario) (err error) {
+	s := newOutSummary()
+
+	var runErr error
+
+	for _, testScenario := range testScenarios {
+		sessionRunner, err := r.NewSessionRunner(&testScenario)
+		if err != nil {
+			log.Error().Err(err).Msg("[Run] init session runner failed")
+			return err
+		}
+
+		err = sessionRunner.Start(nil)
+
+		caseSummary := sessionRunner.GetSummary()
+		s.appendCaseSummary(caseSummary)
+		if err != nil {
+			log.Error().Err(err).Msg("[Run] run testcase failed")
+			runErr = err
+			break
+		}
+	}
+
+	s.Time.Duration = time.Since(s.Time.StartAt).Seconds()
+
+	// save summary
+	if r.saveTests {
+		err := s.genSummary()
+		if err != nil {
+			return err
+		}
+	}
+
+	// generate HTML report
+	if r.genHTMLReport {
+		err := s.genHTMLReport()
+		if err != nil {
+			return err
+		}
+	}
+
+	return runErr
+
 	return
 }
 
 // NewSessionRunner creates a new session runner for testcase.
 // each testcase has its own session runner
-func (r *MainRunner) NewSessionRunner(testcase *TestCase) (*SessionRunner, error) {
-	runner, err := r.newCaseRunner(testcase)
+func (r *MainRunner) NewSessionRunner(scenario *TestScenario) (*SessionRunner, error) {
+	runner, err := r.newScenarioRunner(scenario)
 	if err != nil {
 		return nil, err
 	}
@@ -162,11 +197,11 @@ func (r *MainRunner) NewSessionRunner(testcase *TestCase) (*SessionRunner, error
 	return sessionRunner, nil
 }
 
-func (r *MainRunner) newCaseRunner(testcase *TestCase) (*ScenarioRunner, error) {
+func (r *MainRunner) newScenarioRunner(testScenario *TestScenario) (*ScenarioRunner, error) {
 	runner := &ScenarioRunner{
-		testCase:  testcase,
-		hrpRunner: r,
-		parser:    newParser(),
+		testScenario: testScenario,
+		hrpRunner:    r,
+		parser:       newParser(),
 	}
 
 	return runner, nil
@@ -183,11 +218,10 @@ type MainRunner struct {
 	genHTMLReport bool
 	httpClient    *http.Client
 	http2Client   *http.Client
-	wsDialer      *websocket.Dialer
 }
 
 type ScenarioRunner struct {
-	testCase           *TestCase
+	testScenario       *TestScenario
 	hrpRunner          *MainRunner
 	parser             *Parser
 	parsedConfig       *TConfig

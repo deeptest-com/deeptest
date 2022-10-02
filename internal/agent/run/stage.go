@@ -1,6 +1,18 @@
-package request
+package run
 
 import "github.com/aaronchen2k/deeptest/internal/pkg/consts"
+
+// IStage represents interface for all types for teststages, includes:
+// StepRequest, StepRequestWithOptionalArgs, StepRequestValidation, StepRequestExtraction,
+// StepTestCaseWithOptionalArgs,
+// StepTransaction, StepRendezvous, StepWebSocket.
+type IStage interface {
+	Name() string
+	Category() consts.ProcessorCategory
+	Type() consts.ProcessorType
+	Struct() *TStage
+	Run(*SessionRunner) (*StageResult, error)
+}
 
 // TStage represents teststage data structure.
 // Each stage maybe three different types: make one request or reference another api/testcase.
@@ -15,18 +27,6 @@ type TStage struct {
 	Extract       map[string]string      `json:"extract,omitempty" yaml:"extract,omitempty"`
 	Validators    []interface{}          `json:"validate,omitempty" yaml:"validate,omitempty"`
 	Export        []string               `json:"export,omitempty" yaml:"export,omitempty"`
-}
-
-// IStep represents interface for all types for teststages, includes:
-// StepRequest, StepRequestWithOptionalArgs, StepRequestValidation, StepRequestExtraction,
-// StepTestCaseWithOptionalArgs,
-// StepTransaction, StepRendezvous, StepWebSocket.
-type IStep interface {
-	Name() string
-	Category() consts.ProcessorCategory
-	Type() consts.ProcessorType
-	Struct() *TStage
-	Run(*SessionRunner) (*StageResult, error)
 }
 
 type StageResult struct {

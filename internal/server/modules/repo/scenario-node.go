@@ -32,8 +32,10 @@ func (r *ScenarioNodeRepo) GenTestScenario(scenarioId uint) (ret *run.TestScenar
 	}
 
 	po, err := r.Get(scenarioId)
-	ret.Id = po.ID
-	ret.Name = po.Name
+	ret = &run.TestScenario{
+		Id:   po.ID,
+		Name: po.Name,
+	}
 	ret.TestStages = append(ret.TestStages, &runDomain)
 
 	return
@@ -41,8 +43,7 @@ func (r *ScenarioNodeRepo) GenTestScenario(scenarioId uint) (ret *run.TestScenar
 
 func (r *ScenarioNodeRepo) getStageTree(parentProcessor model.Processor, parentStage *run.TStage) {
 	for _, processor := range (parentProcessor).Children {
-		stage, _ := r.GetStage(*processor)
-		parentStage.Children = append(parentStage.Children, stage.(run.IStage))
+		r.GetStage(*processor, parentStage)
 
 		for _, child := range processor.Children {
 			childStage := run.TStage{
@@ -242,39 +243,50 @@ func (r *ScenarioNodeRepo) addSuperParent(id, parentId uint, childToParentIdMap 
 	}
 }
 
-func (r *ScenarioNodeRepo) GetStage(processor model.Processor) (stage interface{}, err error) {
+func (r *ScenarioNodeRepo) GetStage(processor model.Processor, parentStage *run.TStage) (err error) {
 	if processor.EntityCategory == consts.ProcessorInterface {
-		stage, _ = r.getInterfaceStage(processor)
+		stage, _ := r.getInterfaceStage(processor)
+		parentStage.Children = append(parentStage.Children, &stage)
 
 	} else if processor.EntityCategory == consts.ProcessorGroup {
-		stage, _ = r.getGroupStage(processor)
+		stage, _ := r.getGroupStage(processor)
+		parentStage.Children = append(parentStage.Children, &stage)
 
 	} else if processor.EntityCategory == consts.ProcessorLogic {
-		stage, _ = r.getLogicStage(processor)
+		stage, _ := r.getLogicStage(processor)
+		parentStage.Children = append(parentStage.Children, &stage)
 
 	} else if processor.EntityCategory == consts.ProcessorLoop {
-		stage, _ = r.getLoopStage(processor)
+		stage, _ := r.getLoopStage(processor)
+		parentStage.Children = append(parentStage.Children, &stage)
 
 	} else if processor.EntityCategory == consts.ProcessorVariable {
-		stage, _ = r.getVariableStage(processor)
+		stage, _ := r.getVariableStage(processor)
+		parentStage.Children = append(parentStage.Children, &stage)
 
 	} else if processor.EntityCategory == consts.ProcessorTimer {
-		stage, _ = r.getTimerStage(processor)
+		stage, _ := r.getTimerStage(processor)
+		parentStage.Children = append(parentStage.Children, &stage)
 
 	} else if processor.EntityCategory == consts.ProcessorPrint {
-		stage, _ = r.getPrintStage(processor)
+		stage, _ := r.getPrintStage(processor)
+		parentStage.Children = append(parentStage.Children, &stage)
 
 	} else if processor.EntityCategory == consts.ProcessorCookie {
-		stage, _ = r.getCookieStage(processor)
+		stage, _ := r.getCookieStage(processor)
+		parentStage.Children = append(parentStage.Children, &stage)
 
 	} else if processor.EntityCategory == consts.ProcessorAssertion {
-		stage, _ = r.getAssertionStage(processor)
+		stage, _ := r.getAssertionStage(processor)
+		parentStage.Children = append(parentStage.Children, &stage)
 
 	} else if processor.EntityCategory == consts.ProcessorExtractor {
-		stage, _ = r.getExtractorStage(processor)
+		stage, _ := r.getExtractorStage(processor)
+		parentStage.Children = append(parentStage.Children, &stage)
 
 	} else if processor.EntityCategory == consts.ProcessorData {
-		stage, _ = r.getDataStage(processor)
+		stage, _ := r.getDataStage(processor)
+		parentStage.Children = append(parentStage.Children, &stage)
 
 	}
 

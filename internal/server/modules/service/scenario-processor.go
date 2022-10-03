@@ -14,7 +14,7 @@ func (s *ScenarioProcessorService) Get(processorId int) (ret interface{}, err er
 	processor, _ := s.ScenarioProcessorRepo.Get(uint(processorId))
 
 	if processor.EntityCategory == consts.ProcessorInterface {
-		ret, _ = s.ScenarioProcessorRepo.GetInterface(&processor)
+		ret, _ = s.ScenarioProcessorRepo.GetInterface(processor)
 
 	} else if processor.EntityCategory == consts.ProcessorGroup {
 		ret, _ = s.ScenarioProcessorRepo.GetGroup(processor)

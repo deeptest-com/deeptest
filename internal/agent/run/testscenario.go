@@ -1,7 +1,5 @@
 package run
 
-import "github.com/aaronchen2k/deeptest/internal/pkg/consts"
-
 // ITestScenario represents interface for testcases,
 // includes TestScenario and TestScenarioPath.
 type ITestScenario interface {
@@ -15,13 +13,6 @@ type TestScenario struct {
 	Id         uint
 	Name       string
 	TestStages []IStage
-}
-
-func (ts *TestScenario) Category() consts.ProcessorCategory {
-	return consts.ProcessorScenario
-}
-func (ts *TestScenario) Type() consts.ProcessorType {
-	return consts.ProcessorScenarioDefault
 }
 
 // TScenario represents testcase data structure.

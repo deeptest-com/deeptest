@@ -36,7 +36,7 @@ var (
 
 		&Scenario{},
 		&Processor{},
-		&ProcessorThreadGroup{},
+		//&ProcessorThreadGroup{},
 		&ProcessorGroup{},
 		&ProcessorLogic{},
 		&ProcessorLoop{},

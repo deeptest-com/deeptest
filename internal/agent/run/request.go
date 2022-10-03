@@ -430,8 +430,8 @@ func runStepRequest(r *SessionRunner, step *TStage) (stepResult *StageResult, er
 		}
 	}
 
-	sessionData.ReqResps.Request = rb.requestMap
-	sessionData.ReqResps.Response = builtin.FormatResponse(respObj.respObjMeta)
+	sessionData.ReqResp.Request = rb.requestMap
+	sessionData.ReqResp.Response = builtin.FormatResponse(respObj.respObjMeta)
 
 	//// extract variables from response
 	//extractors := step.Extract

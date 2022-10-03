@@ -48,28 +48,6 @@ func (s *ExecScenarioService) Load(scenarioId int) (result domain.Report, err er
 	return
 }
 
-//func (s *ExecScenarioService) RunScenario(scenarioId int, wsMsg *websocket.Message) (err error) {
-//	po, err := s.ScenarioRepo.Get(uint(scenarioId))
-//	if err != nil {
-//		return
-//	}
-//
-//	testScenario, err := s.genTestScenario(po)
-//	if err != nil {
-//		return
-//	}
-//
-//	mainRunner := run.NewMainRunner(nil)
-//	mainRunner.Run(testScenario)
-//
-//	return
-//}
-//func (s *ExecScenarioService) genTestScenario(po model.Scenario) (ret *run.TestScenario, err error) {
-//	ret, _ = s.ScenarioNodeRepo.GenTestScenario(po.ID)
-//
-//	return
-//}
-
 func (s *ExecScenarioService) ExecScenario(scenarioId int, wsMsg *websocket.Message) (err error) {
 	scenario, err := s.ScenarioRepo.Get(uint(scenarioId))
 	if err != nil {

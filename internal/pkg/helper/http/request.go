@@ -3,6 +3,8 @@ package httpHelper
 import (
 	"bytes"
 	"compress/gzip"
+	"compress/zlib"
+	"crypto/tls"
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
@@ -12,9 +14,12 @@ import (
 	_consts "github.com/aaronchen2k/deeptest/pkg/consts"
 	"github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/aaronchen2k/deeptest/pkg/lib/string"
+	"github.com/andybalholm/brotli"
 	"github.com/fatih/color"
+	"io"
 	"io/ioutil"
 	"net/http"
+	"net/http/cookiejar"
 	"net/url"
 	"strings"
 	"time"
@@ -112,6 +117,12 @@ func gets(req v1.InvocationRequest, method consts.HttpMethod, readRespData bool)
 		return
 	}
 
+	// decode response body in br/gzip/deflate formats
+	err = decodeResponseBody(resp)
+	if err != nil {
+		return
+	}
+
 	defer resp.Body.Close()
 
 	endTime := time.Now().UnixMilli()
@@ -156,9 +167,33 @@ func posts(req v1.InvocationRequest, method consts.HttpMethod, readRespData bool
 		_logUtils.Info(reqUrl)
 	}
 
-	client := &http.Client{}
+	jar, _ := cookiejar.New(nil)
+	client := &http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		},
+		Jar:     jar, // insert response cookies into request
+		Timeout: 120 * time.Second,
+	}
+	//http2Client := &http.Client{
+	//	Transport: &http2.Transport{
+	//		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	//	},
+	//	Timeout: 120 * time.Second,
+	//}
 
-	dataBytes := []byte(reqData)
+	var dataBytes []byte
+
+	if strings.HasPrefix(bodyType.String(), "application/x-www-form-urlencoded") { // post form data
+		formData := make(url.Values)
+		for _, param := range reqParams {
+			formData.Add(param.Name, param.Value)
+		}
+		dataBytes = []byte(formData.Encode())
+	} else {
+		dataBytes = []byte(reqData)
+	}
+
 	if err != nil {
 		_logUtils.Infof(color.RedString("marshal request failed, error: %s.", err.Error()))
 		return
@@ -288,4 +323,24 @@ func wrapperErrInResp(code consts.HttpRespCode, statusContent string, content st
 	resp.StatusCode = code
 	resp.StatusContent = fmt.Sprintf("%d %s", code, statusContent)
 	resp.Content, _ = url.QueryUnescape(content)
+}
+
+func decodeResponseBody(resp *http.Response) (err error) {
+	switch resp.Header.Get("Content-Encoding") {
+	case "br":
+		resp.Body = io.NopCloser(brotli.NewReader(resp.Body))
+	case "gzip":
+		resp.Body, err = gzip.NewReader(resp.Body)
+		if err != nil {
+			return err
+		}
+		resp.ContentLength = -1 // set to unknown to avoid Content-Length mismatched
+	case "deflate":
+		resp.Body, err = zlib.NewReader(resp.Body)
+		if err != nil {
+			return err
+		}
+		resp.ContentLength = -1 // set to unknown to avoid Content-Length mismatched
+	}
+	return nil
 }

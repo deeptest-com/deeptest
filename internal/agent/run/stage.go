@@ -17,6 +17,7 @@ type IStage interface {
 // TStage represents teststage data structure.
 // Each stage maybe three different types: make one request or reference another api/testcase.
 type TStage struct {
+	Id        uint        `json:"id" yaml:"id"`
 	Name      string      `json:"name" yaml:"name"` // required
 	Processor interface{} `json:"processor,omitempty" yaml:"processor,omitempty"`
 

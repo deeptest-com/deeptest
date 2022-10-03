@@ -8,11 +8,11 @@ import (
 )
 
 type ProcessorRootStage struct {
-	stage *run.TStage
+	Stage *run.TStage
 }
 
 func (s *ProcessorRootStage) Name() string {
-	return s.stage.Name
+	return s.Stage.Name
 }
 
 func (s *ProcessorRootStage) Category() consts.ProcessorCategory {
@@ -20,16 +20,16 @@ func (s *ProcessorRootStage) Category() consts.ProcessorCategory {
 }
 
 func (s *ProcessorRootStage) Struct() *run.TStage {
-	return s.stage
+	return s.Stage
 }
 
 func (s *ProcessorRootStage) Run(r *run.SessionRunner) (ret *run.StageResult, err error) {
-	processor, ok := s.stage.Processor.(ProcessorRoot)
+	processor, ok := s.Stage.Processor.(ProcessorRoot)
 	if ok {
 		log.Println(processor)
 	}
 
-	for _, child := range s.stage.Children {
+	for _, child := range s.Stage.Children {
 		log.Println(child)
 
 		child.Run(r)
@@ -40,6 +40,7 @@ func (s *ProcessorRootStage) Run(r *run.SessionRunner) (ret *run.StageResult, er
 
 type ProcessorRoot struct {
 	Id uint
+
 	model.ProcessorEntity
 
 	Children []interface{} `json:"children" yaml:"children" gorm:"-"`

@@ -16,7 +16,7 @@ type ScenarioNodeService struct {
 }
 
 func (s *ScenarioNodeService) GetTree(scenarioId int) (root *model.Processor, err error) {
-	root, err = s.ScenarioNodeRepo.GetTree(scenarioId)
+	root, err = s.ScenarioNodeRepo.GetTree(uint(scenarioId))
 
 	return
 }

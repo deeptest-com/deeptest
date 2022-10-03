@@ -8,11 +8,11 @@ import (
 )
 
 type ProcessorTimerStage struct {
-	stage *run.TStage
+	Stage *run.TStage
 }
 
 func (s *ProcessorTimerStage) Name() string {
-	return s.stage.Name
+	return s.Stage.Name
 }
 
 func (s *ProcessorTimerStage) Category() consts.ProcessorCategory {
@@ -20,16 +20,16 @@ func (s *ProcessorTimerStage) Category() consts.ProcessorCategory {
 }
 
 func (s *ProcessorTimerStage) Struct() *run.TStage {
-	return s.stage
+	return s.Stage
 }
 
 func (s *ProcessorTimerStage) Run(r *run.SessionRunner) (ret *run.StageResult, err error) {
-	processor, ok := s.stage.Processor.(ProcessorTimer)
+	processor, ok := s.Stage.Processor.(ProcessorTimer)
 	if ok {
 		log.Println(processor)
 	}
 
-	for _, child := range s.stage.Children {
+	for _, child := range s.Stage.Children {
 		log.Println(child)
 
 		child.Run(r)

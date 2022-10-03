@@ -47,8 +47,8 @@ func (r *ScenarioProcessorRepo) GetAll(scenarioId uint) (processors []model.Proc
 //	return
 //}
 
-func (r *ScenarioProcessorRepo) GetInterface(processor *model.Processor) (ret interface{}, err error) {
-	ret = r.genProcessorComm(*processor)
+func (r *ScenarioProcessorRepo) GetInterface(processor model.Processor) (ret interface{}, err error) {
+	ret = r.genProcessorComm(processor)
 
 	return
 }

@@ -1,7 +1,6 @@
 package service
 
 import (
-	runDomain "github.com/aaronchen2k/deeptest/internal/agent/domain"
 	"github.com/aaronchen2k/deeptest/internal/agent/run"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
@@ -66,13 +65,8 @@ func (s *ExecScenarioService) RunScenario(scenarioId int, wsMsg *websocket.Messa
 
 	return
 }
-func (s *ExecScenarioService) genTestScenario(po model.Scenario) (ret run.TestScenario, err error) {
-	ret.Id = po.ID
-	ret.Name = po.Name
-
-	// TODO: get from db
-	processorGroupStage := runDomain.ProcessorGroupStage{}
-	ret.TestStages = append(ret.TestStages, &processorGroupStage)
+func (s *ExecScenarioService) genTestScenario(po model.Scenario) (ret *run.TestScenario, err error) {
+	ret, _ = s.ScenarioNodeRepo.GenTestScenario(po.ID)
 
 	return
 }
@@ -83,6 +77,8 @@ func (s *ExecScenarioService) ExecScenario(scenarioId int, wsMsg *websocket.Mess
 		return
 	}
 
+	s.genTestScenario(scenario)
+
 	resultPo, err := s.TestReportRepo.FindInProgressResult(uint(scenarioId))
 	if resultPo.ID > 0 {
 		s.RestartResult(&resultPo, scenario)
@@ -90,7 +86,7 @@ func (s *ExecScenarioService) ExecScenario(scenarioId int, wsMsg *websocket.Mess
 		resultPo, _ = s.CreateResult(scenario)
 	}
 
-	rootProcessor, err := s.ScenarioNodeRepo.GetTree(scenarioId)
+	rootProcessor, err := s.ScenarioNodeRepo.GetTree(uint(scenarioId))
 
 	s.ExecContextService.InitScopeHierarchy(uint(scenarioId))
 	s.ExecIteratorService.InitIteratorContext()

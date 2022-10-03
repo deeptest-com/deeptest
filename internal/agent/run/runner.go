@@ -136,13 +136,13 @@ func (r *MainRunner) GenHTMLReport() *MainRunner {
 }
 
 // Run starts to execute one or multiple testcases.
-func (r *MainRunner) Run(testScenarios ...TestScenario) (err error) {
+func (r *MainRunner) Run(testScenarios ...*TestScenario) (err error) {
 	s := newOutSummary()
 
 	var runErr error
 
 	for _, testScenario := range testScenarios {
-		sessionRunner, err := r.NewSessionRunner(&testScenario)
+		sessionRunner, err := r.NewSessionRunner(testScenario)
 		if err != nil {
 			log.Error().Err(err).Msg("[Run] init session runner failed")
 			return err

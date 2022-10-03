@@ -8,11 +8,11 @@ import (
 )
 
 type ProcessorAssertionStage struct {
-	stage *run.TStage
+	Stage *run.TStage
 }
 
 func (s *ProcessorAssertionStage) Name() string {
-	return s.stage.Name
+	return s.Stage.Name
 }
 
 func (s *ProcessorAssertionStage) Category() consts.ProcessorCategory {
@@ -20,16 +20,16 @@ func (s *ProcessorAssertionStage) Category() consts.ProcessorCategory {
 }
 
 func (s *ProcessorAssertionStage) Struct() *run.TStage {
-	return s.stage
+	return s.Stage
 }
 
 func (s *ProcessorAssertionStage) Run(r *run.SessionRunner) (ret *run.StageResult, err error) {
-	processor, ok := s.stage.Processor.(ProcessorAssertion)
+	processor, ok := s.Stage.Processor.(ProcessorAssertion)
 	if ok {
 		log.Println(processor)
 	}
 
-	for _, child := range s.stage.Children {
+	for _, child := range s.Stage.Children {
 		log.Println(child)
 
 		child.Run(r)

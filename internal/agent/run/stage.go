@@ -20,9 +20,7 @@ type TStage struct {
 	Id   uint   `json:"id" yaml:"id"`
 	Name string `json:"name" yaml:"name"` // required
 
-	Request   *Request    `json:"request,omitempty" yaml:"request,omitempty"`
-	Processor interface{} `json:"processor,omitempty" yaml:"processor,omitempty"`
-
+	Request       *Request               `json:"request,omitempty" yaml:"request,omitempty"`
 	Variables     map[string]interface{} `json:"variables,omitempty" yaml:"variables,omitempty"`
 	SetupHooks    []string               `json:"setupHooks,omitempty" yaml:"setupHooks,omitempty"`
 	TeardownHooks []string               `json:"teardownHooks,omitempty" yaml:"teardownHooks,omitempty"`
@@ -30,7 +28,8 @@ type TStage struct {
 	Validators    []interface{}          `json:"validate,omitempty" yaml:"validate,omitempty"`
 	Export        []string               `json:"export,omitempty" yaml:"export,omitempty"`
 
-	Children []IStage `json:"children,omitempty" yaml:"children,omitempty"`
+	Processor interface{} `json:"processor,omitempty" yaml:"processor,omitempty"`
+	Children  []IStage    `json:"children,omitempty" yaml:"children,omitempty"`
 }
 
 type StageResult struct {

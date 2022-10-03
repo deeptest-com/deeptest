@@ -4,39 +4,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/agent/run"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
-	"log"
 )
-
-type ProcessorDataStage struct {
-	Stage *run.TStage
-}
-
-func (s *ProcessorDataStage) Name() string {
-	return s.Stage.Name
-}
-
-func (s *ProcessorDataStage) Category() consts.ProcessorCategory {
-	return consts.ProcessorData
-}
-
-func (s *ProcessorDataStage) Struct() *run.TStage {
-	return s.Stage
-}
-
-func (s *ProcessorDataStage) Run(r *run.SessionRunner) (ret *run.StageResult, err error) {
-	processor, ok := s.Stage.Processor.(ProcessorData)
-	if ok {
-		log.Println(processor)
-	}
-
-	for _, child := range s.Stage.Children {
-		log.Println(child)
-
-		child.Run(r)
-	}
-
-	return
-}
 
 type ProcessorData struct {
 	Id uint
@@ -57,4 +25,8 @@ type ProcessorData struct {
 	VariableName string `json:"variableName,omitempty" yaml:"variableName,omitempty"`
 
 	Children []interface{} `json:"children" yaml:"children" gorm:"-"`
+}
+
+func (s *ProcessorData) Run(r *run.SessionRunner) (ret *run.StageResult, err error) {
+	return
 }

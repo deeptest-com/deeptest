@@ -1,12 +1,9 @@
 package repo
 
 import (
-	runDomain "github.com/aaronchen2k/deeptest/internal/agent/domain"
-	"github.com/aaronchen2k/deeptest/internal/agent/run"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
-	"github.com/jinzhu/copier"
 	"github.com/kataras/iris/v12"
 	"gorm.io/gorm"
 )
@@ -17,44 +14,47 @@ type ScenarioNodeRepo struct {
 	ScenarioRepo          *ScenarioRepo          `inject:""`
 }
 
-func (r *ScenarioNodeRepo) GenTestScenario(scenarioId uint) (ret *run.TestScenario, err error) {
-	rootProcessor, _ := r.GetTree(scenarioId)
-
-	rootStage := run.TStage{
-		Id:   rootProcessor.ID,
-		Name: rootProcessor.Name,
-	}
-
-	r.getStageTree(*rootProcessor, &rootStage)
-
-	runDomain := runDomain.ProcessorRootStage{
-		Stage: &rootStage,
-	}
-
-	po, err := r.Get(scenarioId)
-	ret = &run.TestScenario{
-		Id:   po.ID,
-		Name: po.Name,
-	}
-	ret.TestStages = append(ret.TestStages, &runDomain)
-
-	return
-}
-
-func (r *ScenarioNodeRepo) getStageTree(parentProcessor model.Processor, parentStage *run.TStage) {
-	for _, processor := range (parentProcessor).Children {
-		r.GetStage(*processor, parentStage)
-
-		for _, child := range processor.Children {
-			childStage := run.TStage{
-				Id:   child.ID,
-				Name: child.Name,
-			}
-
-			r.getStageTree(*child, &childStage)
-		}
-	}
-}
+//func (r *ScenarioNodeRepo) GenTestScenario(scenarioId uint) (ret *run.TestScenario, err error) {
+//	rootProcessor, _ := r.GetTree(scenarioId)
+//
+//	rootStage := run.TStage{
+//		Id:   rootProcessor.ID,
+//		Name: rootProcessor.Name,
+//	}
+//
+//	r.getStageTree(*rootProcessor, &rootStage)
+//
+//	runDomain := runDomain.ProcessorRootStage{
+//		Stage: &rootStage,
+//	}
+//
+//	po, err := r.Get(scenarioId)
+//	ret = &run.TestScenario {
+//		Id: po.ID,
+//		Name: po.Name,
+//	}
+//	ret.TestStages = append(ret.TestStages, &runDomain)
+//
+//	return
+//}
+//func (r *ScenarioNodeRepo) getStageTree(parentProcessor model.Processor, parentStage *run.TStage) {
+//	r.GetStage(parentProcessor, parentStage)
+//
+//	for _, processor := range (parentProcessor).Children {
+//		r.GetStage(*processor, parentStage)
+//
+//		for _, child := range processor.Children {
+//			childStage := run.TStage{
+//				Id:   child.ID,
+//				Name: child.Name,
+//			}
+//
+//			parentStage.Children = parentStage.Children
+//
+//			r.getStageTree(*child, &childStage)
+//		}
+//	}
+//}
 
 func (r *ScenarioNodeRepo) GetTree(scenarioId uint) (root *model.Processor, err error) {
 	scenario, err := r.ScenarioRepo.Get(scenarioId)
@@ -243,197 +243,195 @@ func (r *ScenarioNodeRepo) addSuperParent(id, parentId uint, childToParentIdMap 
 	}
 }
 
-func (r *ScenarioNodeRepo) GetStage(processor model.Processor, parentStage *run.TStage) (err error) {
-	if processor.EntityCategory == consts.ProcessorInterface {
-		stage, _ := r.getInterfaceStage(processor)
-		parentStage.Children = append(parentStage.Children, &stage)
-
-	} else if processor.EntityCategory == consts.ProcessorGroup {
-		stage, _ := r.getGroupStage(processor)
-		parentStage.Children = append(parentStage.Children, &stage)
-
-	} else if processor.EntityCategory == consts.ProcessorLogic {
-		stage, _ := r.getLogicStage(processor)
-		parentStage.Children = append(parentStage.Children, &stage)
-
-	} else if processor.EntityCategory == consts.ProcessorLoop {
-		stage, _ := r.getLoopStage(processor)
-		parentStage.Children = append(parentStage.Children, &stage)
-
-	} else if processor.EntityCategory == consts.ProcessorVariable {
-		stage, _ := r.getVariableStage(processor)
-		parentStage.Children = append(parentStage.Children, &stage)
-
-	} else if processor.EntityCategory == consts.ProcessorTimer {
-		stage, _ := r.getTimerStage(processor)
-		parentStage.Children = append(parentStage.Children, &stage)
-
-	} else if processor.EntityCategory == consts.ProcessorPrint {
-		stage, _ := r.getPrintStage(processor)
-		parentStage.Children = append(parentStage.Children, &stage)
-
-	} else if processor.EntityCategory == consts.ProcessorCookie {
-		stage, _ := r.getCookieStage(processor)
-		parentStage.Children = append(parentStage.Children, &stage)
-
-	} else if processor.EntityCategory == consts.ProcessorAssertion {
-		stage, _ := r.getAssertionStage(processor)
-		parentStage.Children = append(parentStage.Children, &stage)
-
-	} else if processor.EntityCategory == consts.ProcessorExtractor {
-		stage, _ := r.getExtractorStage(processor)
-		parentStage.Children = append(parentStage.Children, &stage)
-
-	} else if processor.EntityCategory == consts.ProcessorData {
-		stage, _ := r.getDataStage(processor)
-		parentStage.Children = append(parentStage.Children, &stage)
-
-	}
-
-	return
-}
-
-func (r *ScenarioNodeRepo) getInterfaceStage(processor model.Processor) (ret runDomain.ProcessorInterfaceStage, err error) {
-	po, _ := r.ScenarioProcessorRepo.GetInterface(processor)
-	processorInterface := runDomain.ProcessorInterface{}
-
-	copier.CopyWithOption(&processorInterface, po, copier.Option{DeepCopy: true})
-	ret = runDomain.ProcessorInterfaceStage{
-		Stage: &run.TStage{
-			Processor: processorInterface,
-		},
-	}
-
-	return
-}
-
-func (r *ScenarioNodeRepo) getGroupStage(processor model.Processor) (ret runDomain.ProcessorGroupStage, err error) {
-	po, _ := r.ScenarioProcessorRepo.GetGroup(processor)
-	processorGroup := runDomain.ProcessorGroup{}
-
-	copier.CopyWithOption(&processorGroup, po, copier.Option{DeepCopy: true})
-	ret = runDomain.ProcessorGroupStage{
-		Stage: &run.TStage{
-			Processor: processorGroup,
-		},
-	}
-
-	return
-}
-func (r *ScenarioNodeRepo) getLogicStage(processor model.Processor) (ret runDomain.ProcessorLogicStage, err error) {
-	po, _ := r.ScenarioProcessorRepo.GetLogic(processor)
-	processorLogic := runDomain.ProcessorLogic{}
-
-	copier.CopyWithOption(&processorLogic, po, copier.Option{DeepCopy: true})
-	ret = runDomain.ProcessorLogicStage{
-		Stage: &run.TStage{
-			Processor: processorLogic,
-		},
-	}
-
-	return
-}
-func (r *ScenarioNodeRepo) getLoopStage(processor model.Processor) (ret runDomain.ProcessorInterfaceStage, err error) {
-	po, _ := r.ScenarioProcessorRepo.GetInterface(processor)
-	processorInterface := runDomain.ProcessorInterface{}
-
-	copier.CopyWithOption(&processorInterface, po, copier.Option{DeepCopy: true})
-	ret = runDomain.ProcessorInterfaceStage{
-		Stage: &run.TStage{
-			Processor: processorInterface,
-		},
-	}
-
-	return
-}
-func (r *ScenarioNodeRepo) getVariableStage(processor model.Processor) (ret runDomain.ProcessorVariableStage, err error) {
-	po, _ := r.ScenarioProcessorRepo.GetVariable(processor)
-	processorVariable := runDomain.ProcessorVariable{}
-
-	copier.CopyWithOption(&processorVariable, po, copier.Option{DeepCopy: true})
-	ret = runDomain.ProcessorVariableStage{
-		Stage: &run.TStage{
-			Processor: processorVariable,
-		},
-	}
-
-	return
-}
-func (r *ScenarioNodeRepo) getTimerStage(processor model.Processor) (ret runDomain.ProcessorTimerStage, err error) {
-	po, _ := r.ScenarioProcessorRepo.GetTimer(processor)
-	processorTimer := runDomain.ProcessorTimer{}
-
-	copier.CopyWithOption(&processorTimer, po, copier.Option{DeepCopy: true})
-	ret = runDomain.ProcessorTimerStage{
-		Stage: &run.TStage{
-			Processor: processorTimer,
-		},
-	}
-
-	return
-}
-func (r *ScenarioNodeRepo) getPrintStage(processor model.Processor) (ret runDomain.ProcessorPrintStage, err error) {
-	po, _ := r.ScenarioProcessorRepo.GetPrint(processor)
-	processorPrint := runDomain.ProcessorPrint{}
-
-	copier.CopyWithOption(&processorPrint, po, copier.Option{DeepCopy: true})
-	ret = runDomain.ProcessorPrintStage{
-		Stage: &run.TStage{
-			Processor: processorPrint,
-		},
-	}
-
-	return
-}
-func (r *ScenarioNodeRepo) getCookieStage(processor model.Processor) (ret runDomain.ProcessorCookieStage, err error) {
-	po, _ := r.ScenarioProcessorRepo.GetCookie(processor)
-	processorCookie := runDomain.ProcessorCookie{}
-
-	copier.CopyWithOption(&processorCookie, po, copier.Option{DeepCopy: true})
-	ret = runDomain.ProcessorCookieStage{
-		Stage: &run.TStage{
-			Processor: processorCookie,
-		},
-	}
-
-	return
-}
-func (r *ScenarioNodeRepo) getAssertionStage(processor model.Processor) (ret runDomain.ProcessorAssertionStage, err error) {
-	po, _ := r.ScenarioProcessorRepo.GetAssertion(processor)
-	processorAssertion := runDomain.ProcessorAssertion{}
-
-	copier.CopyWithOption(&processorAssertion, po, copier.Option{DeepCopy: true})
-	ret = runDomain.ProcessorAssertionStage{
-		Stage: &run.TStage{
-			Processor: processorAssertion,
-		},
-	}
-
-	return
-}
-func (r *ScenarioNodeRepo) getExtractorStage(processor model.Processor) (ret runDomain.ProcessorExtractorStage, err error) {
-	po, _ := r.ScenarioProcessorRepo.GetExtractor(processor)
-	processorExtractor := runDomain.ProcessorExtractor{}
-
-	copier.CopyWithOption(&processorExtractor, po, copier.Option{DeepCopy: true})
-	ret = runDomain.ProcessorExtractorStage{
-		Stage: &run.TStage{
-			Processor: processorExtractor,
-		},
-	}
-
-	return
-}
-func (r *ScenarioNodeRepo) getDataStage(processor model.Processor) (ret runDomain.ProcessorDataStage, err error) {
-	po, _ := r.ScenarioProcessorRepo.GetData(processor)
-	processorData := runDomain.ProcessorData{}
-
-	copier.CopyWithOption(&processorData, po, copier.Option{DeepCopy: true})
-	ret = runDomain.ProcessorDataStage{
-		Stage: &run.TStage{
-			Processor: processorData,
-		},
-	}
-
-	return
-}
+//func (r *ScenarioNodeRepo) GetStage(processor model.Processor, parentStage *run.TStage) (err error) {
+//	if processor.EntityCategory == consts.ProcessorInterface {
+//		stage, _ := r.getInterfaceStage(processor)
+//		parentStage.Children = append(parentStage.Children, &stage)
+//
+//	} else if processor.EntityCategory == consts.ProcessorGroup {
+//		stage, _ := r.getGroupStage(processor)
+//		parentStage.Children = append(parentStage.Children, &stage)
+//
+//	} else if processor.EntityCategory == consts.ProcessorLogic {
+//		stage, _ := r.getLogicStage(processor)
+//		parentStage.Children = append(parentStage.Children, &stage)
+//
+//	} else if processor.EntityCategory == consts.ProcessorLoop {
+//		stage, _ := r.getLoopStage(processor)
+//		parentStage.Children = append(parentStage.Children, &stage)
+//
+//	} else if processor.EntityCategory == consts.ProcessorVariable {
+//		stage, _ := r.getVariableStage(processor)
+//		parentStage.Children = append(parentStage.Children, &stage)
+//
+//	} else if processor.EntityCategory == consts.ProcessorTimer {
+//		stage, _ := r.getTimerStage(processor)
+//		parentStage.Children = append(parentStage.Children, &stage)
+//
+//	} else if processor.EntityCategory == consts.ProcessorPrint {
+//		stage, _ := r.getPrintStage(processor)
+//		parentStage.Children = append(parentStage.Children, &stage)
+//
+//	} else if processor.EntityCategory == consts.ProcessorCookie {
+//		stage, _ := r.getCookieStage(processor)
+//		parentStage.Children = append(parentStage.Children, &stage)
+//
+//	} else if processor.EntityCategory == consts.ProcessorAssertion {
+//		stage, _ := r.getAssertionStage(processor)
+//		parentStage.Children = append(parentStage.Children, &stage)
+//
+//	} else if processor.EntityCategory == consts.ProcessorExtractor {
+//		stage, _ := r.getExtractorStage(processor)
+//		parentStage.Children = append(parentStage.Children, &stage)
+//
+//	} else if processor.EntityCategory == consts.ProcessorData {
+//		stage, _ := r.getDataStage(processor)
+//		parentStage.Children = append(parentStage.Children, &stage)
+//
+//	}
+//
+//	return
+//}
+//func (r *ScenarioNodeRepo) getInterfaceStage(processor model.Processor) (ret runDomain.ProcessorInterfaceStage, err error) {
+//	po, _ := r.ScenarioProcessorRepo.GetInterface(processor)
+//	processorInterface := runDomain.ProcessorInterface{}
+//
+//	copier.CopyWithOption(&processorInterface, po, copier.Option{DeepCopy: true})
+//	ret = runDomain.ProcessorInterfaceStage{
+//		Stage: &run.TStage{
+//			Processor: processorInterface,
+//		},
+//	}
+//
+//	return
+//}
+//func (r *ScenarioNodeRepo) getGroupStage(processor model.Processor) (ret runDomain.ProcessorGroupStage, err error) {
+//	po, _ := r.ScenarioProcessorRepo.GetGroup(processor)
+//	processorGroup := runDomain.ProcessorGroup{}
+//
+//	copier.CopyWithOption(&processorGroup, po, copier.Option{DeepCopy: true})
+//	ret = runDomain.ProcessorGroupStage{
+//		Stage: &run.TStage{
+//			Processor: processorGroup,
+//		},
+//	}
+//
+//	return
+//}
+//func (r *ScenarioNodeRepo) getLogicStage(processor model.Processor) (ret runDomain.ProcessorLogicStage, err error) {
+//	po, _ := r.ScenarioProcessorRepo.GetLogic(processor)
+//	processorLogic := runDomain.ProcessorLogic{}
+//
+//	copier.CopyWithOption(&processorLogic, po, copier.Option{DeepCopy: true})
+//	ret = runDomain.ProcessorLogicStage{
+//		Stage: &run.TStage{
+//			Processor: processorLogic,
+//		},
+//	}
+//
+//	return
+//}
+//func (r *ScenarioNodeRepo) getLoopStage(processor model.Processor) (ret runDomain.ProcessorInterfaceStage, err error) {
+//	po, _ := r.ScenarioProcessorRepo.GetInterface(processor)
+//	processorInterface := runDomain.ProcessorInterface{}
+//
+//	copier.CopyWithOption(&processorInterface, po, copier.Option{DeepCopy: true})
+//	ret = runDomain.ProcessorInterfaceStage{
+//		Stage: &run.TStage{
+//			Processor: processorInterface,
+//		},
+//	}
+//
+//	return
+//}
+//func (r *ScenarioNodeRepo) getVariableStage(processor model.Processor) (ret runDomain.ProcessorVariableStage, err error) {
+//	po, _ := r.ScenarioProcessorRepo.GetVariable(processor)
+//	processorVariable := runDomain.ProcessorVariable{}
+//
+//	copier.CopyWithOption(&processorVariable, po, copier.Option{DeepCopy: true})
+//	ret = runDomain.ProcessorVariableStage{
+//		Stage: &run.TStage{
+//			Processor: processorVariable,
+//		},
+//	}
+//
+//	return
+//}
+//func (r *ScenarioNodeRepo) getTimerStage(processor model.Processor) (ret runDomain.ProcessorTimerStage, err error) {
+//	po, _ := r.ScenarioProcessorRepo.GetTimer(processor)
+//	processorTimer := runDomain.ProcessorTimer{}
+//
+//	copier.CopyWithOption(&processorTimer, po, copier.Option{DeepCopy: true})
+//	ret = runDomain.ProcessorTimerStage{
+//		Stage: &run.TStage{
+//			Processor: processorTimer,
+//		},
+//	}
+//
+//	return
+//}
+//func (r *ScenarioNodeRepo) getPrintStage(processor model.Processor) (ret runDomain.ProcessorPrintStage, err error) {
+//	po, _ := r.ScenarioProcessorRepo.GetPrint(processor)
+//	processorPrint := runDomain.ProcessorPrint{}
+//
+//	copier.CopyWithOption(&processorPrint, po, copier.Option{DeepCopy: true})
+//	ret = runDomain.ProcessorPrintStage{
+//		Stage: &run.TStage{
+//			Processor: processorPrint,
+//		},
+//	}
+//
+//	return
+//}
+//func (r *ScenarioNodeRepo) getCookieStage(processor model.Processor) (ret runDomain.ProcessorCookieStage, err error) {
+//	po, _ := r.ScenarioProcessorRepo.GetCookie(processor)
+//	processorCookie := runDomain.ProcessorCookie{}
+//
+//	copier.CopyWithOption(&processorCookie, po, copier.Option{DeepCopy: true})
+//	ret = runDomain.ProcessorCookieStage{
+//		Stage: &run.TStage{
+//			Processor: processorCookie,
+//		},
+//	}
+//
+//	return
+//}
+//func (r *ScenarioNodeRepo) getAssertionStage(processor model.Processor) (ret runDomain.ProcessorAssertionStage, err error) {
+//	po, _ := r.ScenarioProcessorRepo.GetAssertion(processor)
+//	processorAssertion := runDomain.ProcessorAssertion{}
+//
+//	copier.CopyWithOption(&processorAssertion, po, copier.Option{DeepCopy: true})
+//	ret = runDomain.ProcessorAssertionStage{
+//		Stage: &run.TStage{
+//			Processor: processorAssertion,
+//		},
+//	}
+//
+//	return
+//}
+//func (r *ScenarioNodeRepo) getExtractorStage(processor model.Processor) (ret runDomain.ProcessorExtractorStage, err error) {
+//	po, _ := r.ScenarioProcessorRepo.GetExtractor(processor)
+//	processorExtractor := runDomain.ProcessorExtractor{}
+//
+//	copier.CopyWithOption(&processorExtractor, po, copier.Option{DeepCopy: true})
+//	ret = runDomain.ProcessorExtractorStage{
+//		Stage: &run.TStage{
+//			Processor: processorExtractor,
+//		},
+//	}
+//
+//	return
+//}
+//func (r *ScenarioNodeRepo) getDataStage(processor model.Processor) (ret runDomain.ProcessorDataStage, err error) {
+//	po, _ := r.ScenarioProcessorRepo.GetData(processor)
+//	processorData := runDomain.ProcessorData{}
+//
+//	copier.CopyWithOption(&processorData, po, copier.Option{DeepCopy: true})
+//	ret = runDomain.ProcessorDataStage{
+//		Stage: &run.TStage{
+//			Processor: processorData,
+//		},
+//	}
+//
+//	return
+//}

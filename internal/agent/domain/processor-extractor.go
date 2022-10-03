@@ -4,39 +4,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/agent/run"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
-	"log"
 )
-
-type ProcessorExtractorStage struct {
-	Stage *run.TStage
-}
-
-func (s *ProcessorExtractorStage) Name() string {
-	return s.Stage.Name
-}
-
-func (s *ProcessorExtractorStage) Category() consts.ProcessorCategory {
-	return consts.ProcessorExtractor
-}
-
-func (s *ProcessorExtractorStage) Struct() *run.TStage {
-	return s.Stage
-}
-
-func (s *ProcessorExtractorStage) Run(r *run.SessionRunner) (ret *run.StageResult, err error) {
-	processor, ok := s.Stage.Processor.(ProcessorExtractor)
-	if ok {
-		log.Println(processor)
-	}
-
-	for _, child := range s.Stage.Children {
-		log.Println(child)
-
-		child.Run(r)
-	}
-
-	return
-}
 
 type ProcessorExtractor struct {
 	Id uint
@@ -60,4 +28,8 @@ type ProcessorExtractor struct {
 	InterfaceId uint   `json:"interfaceId"`
 
 	Children []interface{} `json:"children" yaml:"children" gorm:"-"`
+}
+
+func (s *ProcessorExtractor) Run(r *run.SessionRunner) (ret *run.StageResult, err error) {
+	return
 }

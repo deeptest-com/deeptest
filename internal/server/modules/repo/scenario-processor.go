@@ -187,7 +187,7 @@ func (r *ScenarioProcessorRepo) GetData(processor model.Processor) (ret model.Pr
 func (r *ScenarioProcessorRepo) SaveGroup(po *model.ProcessorGroup) (err error) {
 	err = r.DB.Save(po).Error
 
-	r.UpdateEntityId(po.ProcessorId, po.ID)
+	r.UpdateEntityId(po.ProcessorID, po.ID)
 
 	return
 }
@@ -195,7 +195,7 @@ func (r *ScenarioProcessorRepo) SaveGroup(po *model.ProcessorGroup) (err error) 
 func (r *ScenarioProcessorRepo) SaveTimer(po *model.ProcessorTimer) (err error) {
 	err = r.DB.Save(po).Error
 
-	r.UpdateEntityId(po.ProcessorId, po.ID)
+	r.UpdateEntityId(po.ProcessorID, po.ID)
 
 	return
 }
@@ -203,7 +203,7 @@ func (r *ScenarioProcessorRepo) SaveTimer(po *model.ProcessorTimer) (err error) 
 func (r *ScenarioProcessorRepo) SavePrint(po *model.ProcessorPrint) (err error) {
 	err = r.DB.Save(po).Error
 
-	r.UpdateEntityId(po.ProcessorId, po.ID)
+	r.UpdateEntityId(po.ProcessorID, po.ID)
 
 	return
 }
@@ -211,7 +211,7 @@ func (r *ScenarioProcessorRepo) SavePrint(po *model.ProcessorPrint) (err error) 
 func (r *ScenarioProcessorRepo) SaveLogic(po *model.ProcessorLogic) (err error) {
 	err = r.DB.Save(po).Error
 
-	r.UpdateEntityId(po.ProcessorId, po.ID)
+	r.UpdateEntityId(po.ProcessorID, po.ID)
 
 	return
 }
@@ -219,7 +219,7 @@ func (r *ScenarioProcessorRepo) SaveLogic(po *model.ProcessorLogic) (err error) 
 func (r *ScenarioProcessorRepo) SaveLoop(po *model.ProcessorLoop) (err error) {
 	err = r.DB.Save(po).Error
 
-	r.UpdateEntityId(po.ProcessorId, po.ID)
+	r.UpdateEntityId(po.ProcessorID, po.ID)
 
 	return
 }
@@ -227,7 +227,7 @@ func (r *ScenarioProcessorRepo) SaveLoop(po *model.ProcessorLoop) (err error) {
 func (r *ScenarioProcessorRepo) SaveVariable(po *model.ProcessorVariable) (err error) {
 	err = r.DB.Save(po).Error
 
-	r.UpdateEntityId(po.ProcessorId, po.ID)
+	r.UpdateEntityId(po.ProcessorID, po.ID)
 
 	return
 }
@@ -240,7 +240,7 @@ func (r *ScenarioProcessorRepo) SaveCookie(po *model.ProcessorCookie) (err error
 
 	err = r.DB.Save(po).Error
 
-	r.UpdateEntityId(po.ProcessorId, po.ID)
+	r.UpdateEntityId(po.ProcessorID, po.ID)
 
 	return
 }
@@ -248,7 +248,7 @@ func (r *ScenarioProcessorRepo) SaveCookie(po *model.ProcessorCookie) (err error
 func (r *ScenarioProcessorRepo) SaveAssertion(po *model.ProcessorAssertion) (err error) {
 	err = r.DB.Save(po).Error
 
-	r.UpdateEntityId(po.ProcessorId, po.ID)
+	r.UpdateEntityId(po.ProcessorID, po.ID)
 
 	return
 }
@@ -256,7 +256,7 @@ func (r *ScenarioProcessorRepo) SaveAssertion(po *model.ProcessorAssertion) (err
 func (r *ScenarioProcessorRepo) SaveExtractor(po *model.ProcessorExtractor) (err error) {
 	err = r.DB.Save(po).Error
 
-	r.UpdateEntityId(po.ProcessorId, po.ID)
+	r.UpdateEntityId(po.ProcessorID, po.ID)
 
 	return
 }
@@ -264,7 +264,7 @@ func (r *ScenarioProcessorRepo) SaveExtractor(po *model.ProcessorExtractor) (err
 func (r *ScenarioProcessorRepo) SaveData(po *model.ProcessorData) (err error) {
 	err = r.DB.Save(po).Error
 
-	r.UpdateEntityId(po.ProcessorId, po.ID)
+	r.UpdateEntityId(po.ProcessorID, po.ID)
 
 	return
 }
@@ -284,7 +284,7 @@ func (r *ScenarioProcessorRepo) genProcessorComm(processor model.Processor) (ret
 
 	ret.ProcessorCategory = processor.EntityCategory
 	ret.ProcessorType = processor.EntityType
-	ret.ProcessorId = processor.ID
+	ret.ProcessorID = processor.ID
 
 	if processor.InterfaceId > 0 {
 		ret.InterfaceId = processor.InterfaceId

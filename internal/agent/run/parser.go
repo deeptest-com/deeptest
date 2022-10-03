@@ -3,9 +3,7 @@ package run
 import (
 	builtinJSON "encoding/json"
 	"fmt"
-	"github.com/Knetic/govaluate"
 	builtin "github.com/aaronchen2k/deeptest/internal/pkg/buildin"
-	expressionHelper "github.com/aaronchen2k/deeptest/internal/server/modules/helper/expression"
 	"net/url"
 	"path"
 	"reflect"
@@ -364,21 +362,23 @@ func mergeSlices(slice, overriddenSlice []string) []string {
 
 // literalEval parse string to number if possible
 func literalEval(raw string) (interface{}, error) {
-	eval, err := govaluate.NewEvaluableExpressionWithFunctions(raw, expressionHelper.GovaluateFunctions)
-	raw = strings.TrimSpace(raw)
+	//eval, err := govaluate.NewEvaluableExpressionWithFunctions(raw, expressionHelper.GovaluateFunctions)
+	//raw = strings.TrimSpace(raw)
+	//
+	//// return raw string if not number
+	//if !regexCompileNumber.Match([]byte(raw)) {
+	//	return raw, nil
+	//}
+	//
+	//// eval string to number
+	//result, err := eval.Evaluate(nil)
+	//if err != nil {
+	//	log.Error().Err(err).Msgf("[literalEval] eval %s failed", raw)
+	//	return raw, err
+	//}
+	//return result, nil
 
-	// return raw string if not number
-	if !regexCompileNumber.Match([]byte(raw)) {
-		return raw, nil
-	}
-
-	// eval string to number
-	result, err := eval.Evaluate(nil)
-	if err != nil {
-		log.Error().Err(err).Msgf("[literalEval] eval %s failed", raw)
-		return raw, err
-	}
-	return result, nil
+	return nil, nil
 }
 
 func parseFunctionArguments(argsStr string) ([]interface{}, error) {

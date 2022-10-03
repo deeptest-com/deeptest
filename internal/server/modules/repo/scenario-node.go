@@ -1,9 +1,11 @@
 package repo
 
 import (
+	agentDomain "github.com/aaronchen2k/deeptest/internal/agent/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
+	"github.com/jinzhu/copier"
 	"github.com/kataras/iris/v12"
 	"gorm.io/gorm"
 )
@@ -56,18 +58,20 @@ type ScenarioNodeRepo struct {
 //	}
 //}
 
-func (r *ScenarioNodeRepo) GetTree(scenarioId uint) (root *model.Processor, err error) {
+func (r *ScenarioNodeRepo) GetTree(scenarioId uint) (root *agentDomain.Processor, err error) {
 	scenario, err := r.ScenarioRepo.Get(scenarioId)
 
-	processors, err := r.ListByScenario(scenarioId)
+	pos, err := r.ListByScenario(scenarioId)
 	if err != nil {
 		return
 	}
 
-	root = processors[0]
+	tos := r.toTos(pos)
+
+	root = tos[0]
 	root.Name = scenario.Name
 	root.Slots = iris.Map{"icon": "icon"}
-	r.makeTree(processors[1:], root)
+	r.makeTree(tos[1:], root)
 
 	return
 }
@@ -86,30 +90,44 @@ func (r *ScenarioNodeRepo) Get(id uint) (processor model.Processor, err error) {
 	return
 }
 
-func (r *ScenarioNodeRepo) makeTree(Data []*model.Processor, parent *model.Processor) { //参数为父节点，添加父节点的子节点指针切片
-	children, _ := r.haveChild(Data, parent) //判断节点是否有子节点并返回
+func (r *ScenarioNodeRepo) toTos(pos []*model.Processor) (tos []*agentDomain.Processor) {
+	for _, po := range pos {
+		to := agentDomain.Processor{}
+		copier.CopyWithOption(&to, po, copier.Option{DeepCopy: true})
+		tos = append(tos, &to)
+	}
+
+	return
+}
+
+func (r *ScenarioNodeRepo) makeTree(findIn []*agentDomain.Processor, parent *agentDomain.Processor) { //参数为父节点，添加父节点的子节点指针切片
+	children, _ := r.hasChild(findIn, parent) // 判断节点是否有子节点并返回
 
 	if children != nil {
-		parent.Children = append(parent.Children, children[0:]...) //添加子节点
-		for _, child := range children {                           //查询子节点的子节点，并添加到子节点
-			_, has := r.haveChild(Data, child)
+		parent.Children = append(parent.Children, children[0:]...) // 添加子节点
+
+		for _, child := range children {                           // 查询子节点的子节点，并添加到子节点
+			_, has := r.hasChild(findIn, child)
 			if has {
-				r.makeTree(Data, child) //递归添加节点
+				r.makeTree(findIn, child) // 递归添加节点
 			}
 		}
 	}
 }
 
-func (r *ScenarioNodeRepo) haveChild(Data []*model.Processor, node *model.Processor) (child []*model.Processor, yes bool) {
-	for _, v := range Data {
-		if v.ParentId == node.ID {
-			v.Slots = iris.Map{"icon": "icon"}
-			child = append(child, v)
+func (r *ScenarioNodeRepo) hasChild(processors []*agentDomain.Processor, node *agentDomain.Processor) (
+		ret []*agentDomain.Processor, yes bool) {
+	for _, item := range processors {
+		if item.ParentId == node.ID {
+			item.Slots = iris.Map{"icon": "icon"}
+			ret = append(ret, item)
 		}
 	}
-	if child != nil {
+
+	if ret != nil {
 		yes = true
 	}
+
 	return
 }
 

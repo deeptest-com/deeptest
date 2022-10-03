@@ -3,6 +3,7 @@ package service
 import (
 	"encoding/json"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	agentDomain "github.com/aaronchen2k/deeptest/internal/agent/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	model2 "github.com/aaronchen2k/deeptest/internal/server/modules/model"
@@ -19,7 +20,7 @@ type ExecLogService struct {
 	InterfaceService      *InterfaceService            `inject:""`
 }
 
-func (s *ExecLogService) CreateProcessorLog(processor *model2.Processor, log *domain.ExecLog, parentPersistentId uint) (po model2.ExecLogProcessor, err error) {
+func (s *ExecLogService) CreateProcessorLog(processor *agentDomain.Processor, log *domain.ExecLog, parentPersistentId uint) (po model2.ExecLogProcessor, err error) {
 	po = model2.ExecLogProcessor{
 		Name:              processor.Name,
 		ProcessorCategory: processor.EntityCategory,

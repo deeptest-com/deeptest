@@ -3,12 +3,12 @@ package service
 import (
 	"encoding/json"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	agentDomain "github.com/aaronchen2k/deeptest/internal/agent/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/business"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/helper/exec"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/helper/request"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	repo2 "github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"github.com/jinzhu/copier"
 	"github.com/kataras/iris/v12/websocket"
@@ -29,7 +29,7 @@ type ExecInterfaceService struct {
 	ExtractorRepo   *repo2.ExtractorRepo   `inject:""`
 }
 
-func (s *ExecInterfaceService) ExecInterfaceProcessor(interfaceProcessor *model.Processor, parentLog *domain.ExecLog, wsMsg *websocket.Message) (err error) {
+func (s *ExecInterfaceService) ExecInterfaceProcessor(interfaceProcessor *agentDomain.Processor, parentLog *domain.ExecLog, wsMsg *websocket.Message) (err error) {
 	interf, err := s.InterfaceRepo.Get(interfaceProcessor.InterfaceId)
 	if err != nil {
 		return

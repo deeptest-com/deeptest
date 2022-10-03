@@ -1,6 +1,7 @@
 package model
 
 import (
+	runDomain "github.com/aaronchen2k/deeptest/internal/agent/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/kataras/iris/v12"
 	"time"
@@ -33,7 +34,7 @@ func (Processor) TableName() string {
 
 //type ProcessorThreadGroup struct {
 //	BaseModel
-//	ProcessorEntity
+//	runDomain.ProcessorEntity
 //
 //	Count int `json:"count" yaml:"count"`
 //	Loop  int `json:"loop" yaml:"loop"`
@@ -51,7 +52,7 @@ func (Processor) TableName() string {
 
 type ProcessorGroup struct {
 	BaseModel
-	ProcessorEntity
+	runDomain.ProcessorEntity
 }
 
 func (ProcessorGroup) TableName() string {
@@ -60,7 +61,7 @@ func (ProcessorGroup) TableName() string {
 
 type ProcessorLogic struct {
 	BaseModel
-	ProcessorEntity
+	runDomain.ProcessorEntity
 
 	Expression string `json:"expression" yaml:"expression"`
 }
@@ -71,7 +72,7 @@ func (ProcessorLogic) TableName() string {
 
 type ProcessorLoop struct {
 	BaseModel
-	ProcessorEntity
+	runDomain.ProcessorEntity
 
 	Times        int    `json:"times" yaml:"times"` // time
 	Range        string `json:"range" yaml:"range"` // range
@@ -90,7 +91,7 @@ func (ProcessorLoop) TableName() string {
 
 type ProcessorTimer struct {
 	BaseModel
-	ProcessorEntity
+	runDomain.ProcessorEntity
 
 	SleepTime int `json:"sleepTime" yaml:"sleepTime"`
 
@@ -103,7 +104,7 @@ func (ProcessorTimer) TableName() string {
 
 type ProcessorPrint struct {
 	BaseModel
-	ProcessorEntity
+	runDomain.ProcessorEntity
 
 	Expression string `json:"expression" yaml:"expression"`
 }
@@ -114,7 +115,7 @@ func (ProcessorPrint) TableName() string {
 
 type ProcessorVariable struct {
 	BaseModel
-	ProcessorEntity
+	runDomain.ProcessorEntity
 
 	VariableName string `json:"variableName" yaml:"variableName"`
 	RightValue   string `json:"rightValue" yaml:"rightValue"`
@@ -126,7 +127,7 @@ func (ProcessorVariable) TableName() string {
 
 type ProcessorAssertion struct {
 	BaseModel
-	ProcessorEntity
+	runDomain.ProcessorEntity
 
 	Expression string `json:"expression" yaml:"expression"`
 }
@@ -137,7 +138,7 @@ func (ProcessorAssertion) TableName() string {
 
 type ProcessorExtractor struct {
 	BaseModel
-	ProcessorEntity
+	runDomain.ProcessorEntity
 
 	Src  consts.ExtractorSrc  `json:"src"`
 	Type consts.ExtractorType `json:"type"`
@@ -163,7 +164,7 @@ func (ProcessorExtractor) TableName() string {
 
 type ProcessorData struct {
 	BaseModel
-	ProcessorEntity
+	runDomain.ProcessorEntity
 
 	Type      consts.DataSource `json:"type,omitempty" yaml:"type,omitempty"`
 	Url       string            `json:"url,omitempty" yaml:"url,omitempty"`
@@ -186,7 +187,7 @@ func (ProcessorData) TableName() string {
 
 type ProcessorCookie struct {
 	BaseModel
-	ProcessorEntity
+	runDomain.ProcessorEntity
 
 	CookieName   string     `json:"cookieName" yaml:"cookieName"`
 	VariableName string     `json:"variableName" yaml:"variableName"`
@@ -201,20 +202,6 @@ func (ProcessorCookie) TableName() string {
 
 type ProcessorComm struct {
 	Id uint `json:"id" yaml:"id"`
-	ProcessorEntity
+	runDomain.ProcessorEntity
 	InterfaceId uint `json:"interfaceId"`
-}
-
-type ProcessorEntity struct {
-	Name     string `gorm:"-" json:"name" yaml:"name"`
-	Comments string `json:"comments" yaml:"comments"`
-	Default  string `json:"default" yaml:"default"`
-
-	ProcessorId       uint                     `json:"processorId" yaml:"processorId"`
-	ProcessorCategory consts.ProcessorCategory `json:"processorCategory" yaml:"processorCategory"`
-	ProcessorType     consts.ProcessorType     `json:"processorType" yaml:"processorType"`
-	ParentId          uint                     `json:"parentId" yaml:"parentId"`
-
-	// interface or Processor
-	Children []interface{} `json:"children" yaml:"children" gorm:"-"`
 }

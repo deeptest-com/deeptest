@@ -3,6 +3,7 @@ package business
 import (
 	"container/list"
 	"fmt"
+	agentDomain "github.com/aaronchen2k/deeptest/internal/agent/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/helper/exec"
@@ -82,7 +83,7 @@ func (s *ExecIterator) GenerateData(log domain.ExecLog, data model.ProcessorData
 	return
 }
 
-func (s *ExecIterator) RetrieveIteratorsVal(processor *model.Processor) (item interface{}, desc string, err error) {
+func (s *ExecIterator) RetrieveIteratorsVal(processor *agentDomain.Processor) (item interface{}, desc string, err error) {
 	valueElem := IteratorContextValueStack.Front()
 	indexElem := IteratorContextIndexStack.Front()
 	if valueElem == nil || indexElem == nil {
@@ -116,7 +117,8 @@ func (s *ExecIterator) RetrieveIteratorsVal(processor *model.Processor) (item in
 
 		item = items[index]
 
-		loopRangeProcessor, _ := s.ScenarioProcessorRepo.GetLoop(*processor)
+		po, _  := s.ScenarioProcessorRepo.Get(processor.ID)
+		loopRangeProcessor, _ := s.ScenarioProcessorRepo.GetLoop(po)
 		desc = fmt.Sprintf("变量%s = \"%d\"", loopRangeProcessor.VariableName, item)
 
 	} else if value.ProcessorType == consts.ProcessorLoopIn {
@@ -130,7 +132,8 @@ func (s *ExecIterator) RetrieveIteratorsVal(processor *model.Processor) (item in
 
 		item = items[index]
 
-		loopRangeProcessor, _ := s.ScenarioProcessorRepo.GetLoop(*processor)
+		po, _  := s.ScenarioProcessorRepo.Get(processor.ID)
+		loopRangeProcessor, _ := s.ScenarioProcessorRepo.GetLoop(po)
 		desc = fmt.Sprintf("变量%s = \"%d\"", loopRangeProcessor.VariableName, item)
 
 	} else if value.ProcessorType == consts.ProcessorLoopBreak {

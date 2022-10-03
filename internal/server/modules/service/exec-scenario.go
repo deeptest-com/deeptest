@@ -1,6 +1,7 @@
 package service
 
 import (
+	agentDomain "github.com/aaronchen2k/deeptest/internal/agent/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	business2 "github.com/aaronchen2k/deeptest/internal/server/modules/business"
@@ -97,7 +98,7 @@ func (s *ExecScenarioService) ExecScenario(scenarioId int, wsMsg *websocket.Mess
 	return
 }
 
-func (s *ExecScenarioService) ExecProcessorRecursively(processor *model.Processor, parentLog *domain.ExecLog,
+func (s *ExecScenarioService) ExecProcessorRecursively(processor *agentDomain.Processor, parentLog *domain.ExecLog,
 	wsMsg *websocket.Message) (err error) {
 	if parentLog.Logs == nil {
 		logs := make([]*domain.ExecLog, 0)
@@ -122,7 +123,7 @@ func (s *ExecScenarioService) ExecProcessorRecursively(processor *model.Processo
 	return
 }
 
-func (s *ExecScenarioService) ExecContainerProcessor(processor *model.Processor, parentLog *domain.ExecLog,
+func (s *ExecScenarioService) ExecContainerProcessor(processor *agentDomain.Processor, parentLog *domain.ExecLog,
 	wsMsg *websocket.Message) {
 	containerLog, _ := s.GenerateContainerProcessorLogAndDisplay(processor, parentLog, wsMsg)
 
@@ -138,7 +139,7 @@ func (s *ExecScenarioService) ExecContainerProcessor(processor *model.Processor,
 	}
 }
 
-func (s *ExecScenarioService) ExecContainerProcessorChildrenForLoop(processor *model.Processor, containerLog *domain.ExecLog,
+func (s *ExecScenarioService) ExecContainerProcessorChildrenForLoop(processor *agentDomain.Processor, containerLog *domain.ExecLog,
 	wsMsg *websocket.Message) {
 	if s.ExecComm.IsLoopTimesPass(containerLog) {
 		iterator, _ := s.ExecIteratorService.GenerateLoopTimes(*containerLog)
@@ -178,7 +179,8 @@ func (s *ExecScenarioService) ExecContainerProcessorChildrenForLoop(processor *m
 		}
 
 	} else if s.ExecComm.IsLoopInPass(containerLog) {
-		loopListProcessor, _ := s.ScenarioProcessorRepo.GetLoop(*processor)
+		po, _ := s.ScenarioProcessorRepo.Get(processor.ID)
+		loopListProcessor, _ := s.ScenarioProcessorRepo.GetLoop(po)
 		iterator, _ := s.ExecIteratorService.GenerateLoopList(*containerLog)
 
 		s.ExecIteratorService.Push(iterator)
@@ -202,7 +204,8 @@ func (s *ExecScenarioService) ExecContainerProcessorChildrenForLoop(processor *m
 		s.ExecIteratorService.Pop()
 
 	} else if s.ExecComm.IsLoopRangePass(containerLog) {
-		loopRangeProcessor, _ := s.ScenarioProcessorRepo.GetLoop(*processor)
+		po, _ := s.ScenarioProcessorRepo.Get(processor.ID)
+		loopRangeProcessor, _ := s.ScenarioProcessorRepo.GetLoop(po)
 		iterator, _ := s.ExecIteratorService.GenerateLoopRange(*containerLog, loopRangeProcessor.Step, loopRangeProcessor.IsRand)
 
 		s.ExecIteratorService.Push(iterator)
@@ -227,7 +230,7 @@ func (s *ExecScenarioService) ExecContainerProcessorChildrenForLoop(processor *m
 	}
 }
 
-func (s *ExecScenarioService) ExecActionProcessorAndDisplay(processor *model.Processor, parentLog *domain.ExecLog, wsMsg *websocket.Message) (
+func (s *ExecScenarioService) ExecActionProcessorAndDisplay(processor *agentDomain.Processor, parentLog *domain.ExecLog, wsMsg *websocket.Message) (
 	containerLog *domain.ExecLog, err error) {
 
 	output := domain.ExecOutput{}
@@ -258,10 +261,11 @@ func (s *ExecScenarioService) ExecActionProcessorAndDisplay(processor *model.Pro
 	return
 }
 
-func (s *ExecScenarioService) ExecContainerProcessorChildrenForData(processor *model.Processor, containerLog *domain.ExecLog,
+func (s *ExecScenarioService) ExecContainerProcessorChildrenForData(processor *agentDomain.Processor, containerLog *domain.ExecLog,
 	wsMsg *websocket.Message) {
 	if s.ExecComm.IsDataPass(containerLog) {
-		data, _ := s.ScenarioProcessorRepo.GetData(*processor)
+		po, _ := s.ScenarioProcessorRepo.Get(processor.ID)
+		data, _ := s.ScenarioProcessorRepo.GetData(po)
 
 		iterator, _ := s.ExecIteratorService.GenerateData(*containerLog, data)
 
@@ -287,13 +291,13 @@ func (s *ExecScenarioService) ExecContainerProcessorChildrenForData(processor *m
 	}
 }
 
-func (s *ExecScenarioService) ExecChildren(processor *model.Processor, parentLog *domain.ExecLog, wsMsg *websocket.Message) {
+func (s *ExecScenarioService) ExecChildren(processor *agentDomain.Processor, parentLog *domain.ExecLog, wsMsg *websocket.Message) {
 	for _, child := range processor.Children {
 		s.ExecProcessorRecursively(child, parentLog, wsMsg)
 	}
 }
 
-func (s *ExecScenarioService) AddContainerProcessor(processor *model.Processor, parentLog *domain.ExecLog, wsMsg *websocket.Message) (
+func (s *ExecScenarioService) AddContainerProcessor(processor *agentDomain.Processor, parentLog *domain.ExecLog, wsMsg *websocket.Message) (
 	containerLog *domain.ExecLog, err error) {
 
 	_, desc, _ := s.ExecIteratorService.RetrieveIteratorsVal(processor)
@@ -316,7 +320,7 @@ func (s *ExecScenarioService) AddContainerProcessor(processor *model.Processor, 
 	return
 }
 
-func (s *ExecScenarioService) GenerateContainerProcessorLogAndDisplay(processor *model.Processor, parentLog *domain.ExecLog, wsMsg *websocket.Message) (
+func (s *ExecScenarioService) GenerateContainerProcessorLogAndDisplay(processor *agentDomain.Processor, parentLog *domain.ExecLog, wsMsg *websocket.Message) (
 	containerLog *domain.ExecLog, err error) {
 
 	output := domain.ExecOutput{}
@@ -340,7 +344,7 @@ func (s *ExecScenarioService) GenerateContainerProcessorLogAndDisplay(processor 
 	return
 }
 
-func (s *ExecScenarioService) generateContainerLogAndSendMsg(output domain.ExecOutput, processor *model.Processor, parentLog *domain.ExecLog, wsMsg *websocket.Message) (
+func (s *ExecScenarioService) generateContainerLogAndSendMsg(output domain.ExecOutput, processor *agentDomain.Processor, parentLog *domain.ExecLog, wsMsg *websocket.Message) (
 	containerLog *domain.ExecLog, err error) {
 	containerLog = &domain.ExecLog{
 		Id:                processor.ID,

@@ -1,9 +1,9 @@
 package business
 
 import (
+	agentDomain "github.com/aaronchen2k/deeptest/internal/agent/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	_stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 )
 
@@ -60,20 +60,20 @@ func (s *ExecComm) IsDataPass(containerLog *domain.ExecLog) bool {
 	return containerLog.ProcessorCategory == consts.ProcessorData && containerLog.Output.Url != ""
 }
 
-func (s *ExecComm) IsNoExecutableContainerProcessor(processor *model.Processor) bool {
+func (s *ExecComm) IsNoExecutableContainerProcessor(processor *agentDomain.Processor) bool {
 	return _stringUtils.FindInArr(processor.EntityCategory.ToString(), noExecutableContainerProcessors)
 }
 
-func (s *ExecComm) IsExecutableContainerProcessor(processor *model.Processor) bool {
+func (s *ExecComm) IsExecutableContainerProcessor(processor *agentDomain.Processor) bool {
 	return _stringUtils.FindInArr(processor.EntityCategory.ToString(), executableContainerProcessors) &&
 		processor.EntityType != consts.ProcessorLoopBreak
 }
 
-func (s *ExecComm) IsActionProcessor(processor *model.Processor) bool {
+func (s *ExecComm) IsActionProcessor(processor *agentDomain.Processor) bool {
 	return _stringUtils.FindInArr(processor.EntityCategory.ToString(), actionProcessors) ||
 		processor.EntityType == consts.ProcessorLoopBreak
 }
 
-func (s *ExecComm) IsInterfaceProcessor(processor *model.Processor) bool {
+func (s *ExecComm) IsInterfaceProcessor(processor *agentDomain.Processor) bool {
 	return processor.EntityCategory == consts.ProcessorInterface
 }

@@ -2,6 +2,7 @@ package service
 
 import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	 "github.com/aaronchen2k/deeptest/internal/agent/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
@@ -15,7 +16,7 @@ type ScenarioNodeService struct {
 	ScenarioRepo          *repo2.ScenarioRepo          `inject:""`
 }
 
-func (s *ScenarioNodeService) GetTree(scenarioId int) (root *model.Processor, err error) {
+func (s *ScenarioNodeService) GetTree(scenarioId int) (root *agentDomain.Processor, err error) {
 	root, err = s.ScenarioNodeRepo.GetTree(uint(scenarioId))
 
 	return
@@ -62,8 +63,8 @@ func (s *ScenarioNodeService) AddProcessor(req v1.ScenarioAddScenarioReq) (ret m
 
 	if ret.EntityType == consts.ProcessorLogicElse { // create default entity
 		entity := model.ProcessorLogic{
-			ProcessorEntity: model.ProcessorEntity{
-				ProcessorId:       ret.ID,
+			ProcessorEntity: agentDomain.ProcessorEntity{
+				ProcessorID:       ret.ID,
 				ProcessorCategory: ret.EntityCategory,
 				ProcessorType:     ret.EntityType,
 			},

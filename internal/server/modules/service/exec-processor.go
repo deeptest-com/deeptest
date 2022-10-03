@@ -2,23 +2,23 @@ package service
 
 import (
 	"fmt"
+	 "github.com/aaronchen2k/deeptest/internal/agent/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/business"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/helper/exec"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
-	repo2 "github.com/aaronchen2k/deeptest/internal/server/modules/repo"
+	 "github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"github.com/kataras/iris/v12/websocket"
 	"time"
 )
 
 type ExecProcessorService struct {
-	ScenarioProcessorRepo *repo2.ScenarioProcessorRepo `inject:""`
-	ScenarioRepo          *repo2.ScenarioRepo          `inject:""`
-	TestResultRepo        *repo2.ReportRepo            `inject:""`
-	TestLogRepo           *repo2.LogRepo               `inject:""`
-	InterfaceRepo         *repo2.InterfaceRepo         `inject:""`
-	InterfaceService      *InterfaceService            `inject:""`
+	ScenarioProcessorRepo *repo.ScenarioProcessorRepo `inject:""`
+	ScenarioRepo          *repo.ScenarioRepo          `inject:""`
+	TestResultRepo        *repo.ReportRepo            `inject:""`
+	TestLogRepo           *repo.LogRepo               `inject:""`
+	InterfaceRepo         *repo.InterfaceRepo         `inject:""`
+	InterfaceService      *InterfaceService           `inject:""`
 	ExecHelperService     *ExecHelperService           `inject:""`
 	ExecContext           *business.ExecContext        `inject:""`
 }
@@ -30,27 +30,30 @@ type ExecProcessorService struct {
 //	return
 //}
 
-func (s *ExecProcessorService) ExecLogic(processor *model.Processor, parentLog *domain.ExecLog, msg *websocket.Message) (
+func (s *ExecProcessorService) ExecLogic(processor *agentDomain.Processor, parentLog *domain.ExecLog, msg *websocket.Message) (
 	output domain.ExecOutput, err error) {
 
-	logic, err := s.ScenarioProcessorRepo.GetLogic(*processor)
+	po, _ := s.ScenarioProcessorRepo.Get(processor.ID)
+	logic, err := s.ScenarioProcessorRepo.GetLogic(po)
 	output, _ = s.ExecHelperService.EvaluateLogic(&logic, parentLog, msg)
 
 	return
 }
 
-func (s *ExecProcessorService) ExecLoop(processor *model.Processor, parentLog *domain.ExecLog, msg *websocket.Message) (
+func (s *ExecProcessorService) ExecLoop(processor *agentDomain.Processor, parentLog *domain.ExecLog, msg *websocket.Message) (
 	output domain.ExecOutput, err error) {
 
-	loop, err := s.ScenarioProcessorRepo.GetLoop(*processor)
+	po, _ := s.ScenarioProcessorRepo.Get(processor.ID)
+	loop, err := s.ScenarioProcessorRepo.GetLoop(po)
 	output, _ = s.ExecHelperService.EvaluateLoop(&loop, parentLog, msg)
 
 	return
 }
-func (s *ExecProcessorService) ExecLoopBreak(processor *model.Processor, parentLog *domain.ExecLog, msg *websocket.Message) (
+func (s *ExecProcessorService) ExecLoopBreak(processor *agentDomain.Processor, parentLog *domain.ExecLog, msg *websocket.Message) (
 	output domain.ExecOutput, err error) {
 
-	loop, err := s.ScenarioProcessorRepo.GetLoop(*processor)
+	po, _ := s.ScenarioProcessorRepo.Get(processor.ID)
+	loop, err := s.ScenarioProcessorRepo.GetLoop(po)
 	output, _ = s.ExecHelperService.EvaluateLoopBreak(&loop, parentLog, msg)
 
 	breakFrom := output.BreakFrom
@@ -68,19 +71,21 @@ func (s *ExecProcessorService) ExecLoopBreak(processor *model.Processor, parentL
 	return
 }
 
-func (s *ExecProcessorService) ExecData(processor *model.Processor, parentLog *domain.ExecLog, msg *websocket.Message) (
+func (s *ExecProcessorService) ExecData(processor *agentDomain.Processor, parentLog *domain.ExecLog, msg *websocket.Message) (
 	output domain.ExecOutput, err error) {
 
-	data, err := s.ScenarioProcessorRepo.GetData(*processor)
+	po, _ := s.ScenarioProcessorRepo.Get(processor.ID)
+	data, err := s.ScenarioProcessorRepo.GetData(po)
 	output, _ = s.ExecHelperService.EvaluateData(&data, parentLog, msg)
 
 	return
 }
 
-func (s *ExecProcessorService) ExecTimer(processor *model.Processor, parentLog *domain.ExecLog, msg *websocket.Message) (
+func (s *ExecProcessorService) ExecTimer(processor *agentDomain.Processor, parentLog *domain.ExecLog, msg *websocket.Message) (
 	output domain.ExecOutput, err error) {
 
-	timer, err := s.ScenarioProcessorRepo.GetTimer(*processor)
+	po, _ := s.ScenarioProcessorRepo.Get(processor.ID)
+	timer, err := s.ScenarioProcessorRepo.GetTimer(po)
 	output, _ = s.ExecHelperService.EvaluateTimer(&timer, parentLog, msg)
 
 	<-time.After(time.Duration(output.SleepTime) * time.Second)
@@ -88,10 +93,11 @@ func (s *ExecProcessorService) ExecTimer(processor *model.Processor, parentLog *
 	return
 }
 
-func (s *ExecProcessorService) ExecPrint(processor *model.Processor, parentLog *domain.ExecLog, msg *websocket.Message) (
+func (s *ExecProcessorService) ExecPrint(processor *agentDomain.Processor, parentLog *domain.ExecLog, msg *websocket.Message) (
 	output domain.ExecOutput, err error) {
 
-	print, err := s.ScenarioProcessorRepo.GetPrint(*processor)
+	po, _ := s.ScenarioProcessorRepo.Get(processor.ID)
+	print, err := s.ScenarioProcessorRepo.GetPrint(po)
 	output, _ = s.ExecHelperService.EvaluatePrint(&print, parentLog, msg)
 
 	expression := s.ExecHelperService.ReplaceVariablesWithVerbs(output.Expression)
@@ -111,10 +117,11 @@ func (s *ExecProcessorService) ExecPrint(processor *model.Processor, parentLog *
 	return
 }
 
-func (s *ExecProcessorService) ExecVariable(processor *model.Processor, parentLog *domain.ExecLog, msg *websocket.Message) (
+func (s *ExecProcessorService) ExecVariable(processor *agentDomain.Processor, parentLog *domain.ExecLog, msg *websocket.Message) (
 	output domain.ExecOutput, err error) {
 
-	variable, err := s.ScenarioProcessorRepo.GetVariable(*processor)
+	po, _ := s.ScenarioProcessorRepo.Get(processor.ID)
+	variable, err := s.ScenarioProcessorRepo.GetVariable(po)
 	output, _ = s.ExecHelperService.EvaluateVariable(&variable, parentLog, msg)
 
 	if processor.EntityType == consts.ProcessorVariableSet {
@@ -127,10 +134,11 @@ func (s *ExecProcessorService) ExecVariable(processor *model.Processor, parentLo
 	return
 }
 
-func (s *ExecProcessorService) ExecAssertion(processor *model.Processor, parentLog *domain.ExecLog, msg *websocket.Message) (
+func (s *ExecProcessorService) ExecAssertion(processor *agentDomain.Processor, parentLog *domain.ExecLog, msg *websocket.Message) (
 	output domain.ExecOutput, err error) {
 
-	assertion, err := s.ScenarioProcessorRepo.GetAssertion(*processor)
+	po, _ := s.ScenarioProcessorRepo.Get(processor.ID)
+	assertion, err := s.ScenarioProcessorRepo.GetAssertion(po)
 	output, _ = s.ExecHelperService.EvaluateAssertion(&assertion, parentLog, msg)
 
 	result, _ := s.ExecHelperService.EvaluateGovaluateExpression(output.Expression, processor.ID)
@@ -145,19 +153,21 @@ func (s *ExecProcessorService) ExecAssertion(processor *model.Processor, parentL
 	return
 }
 
-func (s *ExecProcessorService) ExecExtractor(processor *model.Processor, parentLog *domain.ExecLog, msg *websocket.Message) (
+func (s *ExecProcessorService) ExecExtractor(processor *agentDomain.Processor, parentLog *domain.ExecLog, msg *websocket.Message) (
 	output domain.ExecOutput, err error) {
 
-	extractor, err := s.ScenarioProcessorRepo.GetExtractor(*processor)
+	po, _ := s.ScenarioProcessorRepo.Get(processor.ID)
+	extractor, err := s.ScenarioProcessorRepo.GetExtractor(po)
 	output, _ = s.ExecHelperService.EvaluateExtractor(&extractor, parentLog, msg)
 
 	return
 }
 
-func (s *ExecProcessorService) ExecCookie(processor *model.Processor, parentLog *domain.ExecLog, msg *websocket.Message) (
+func (s *ExecProcessorService) ExecCookie(processor *agentDomain.Processor, parentLog *domain.ExecLog, msg *websocket.Message) (
 	output domain.ExecOutput, err error) {
 
-	cookie, err := s.ScenarioProcessorRepo.GetCookie(*processor)
+	po, _ := s.ScenarioProcessorRepo.Get(processor.ID)
+	cookie, err := s.ScenarioProcessorRepo.GetCookie(po)
 	output, _ = s.ExecHelperService.EvaluateCookie(&cookie, parentLog, msg)
 
 	return

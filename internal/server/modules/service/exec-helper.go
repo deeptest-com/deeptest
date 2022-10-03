@@ -46,7 +46,7 @@ func (s *ExecHelperService) EvaluateLogic(logic *model.ProcessorLogic, parentLog
 
 	if typ == consts.ProcessorLogicIf {
 		var result interface{}
-		result, err = s.EvaluateGovaluateExpression(logic.Expression, logic.ProcessorId)
+		result, err = s.EvaluateGovaluateExpression(logic.Expression, logic.ProcessorID)
 		if err != nil {
 			output.Pass = false
 			output.Msg = fmt.Sprintf("不通过")
@@ -151,7 +151,7 @@ func (s *ExecHelperService) EvaluateVariable(processor *model.ProcessorVariable,
 	typ := processor.ProcessorType
 
 	if typ == consts.ProcessorVariableSet {
-		output.VariableValue, err = s.EvaluateGovaluateExpression(expression, processor.ProcessorId)
+		output.VariableValue, err = s.EvaluateGovaluateExpression(expression, processor.ProcessorID)
 		if err != nil {
 			output.Msg = fmt.Sprintf("计算表达式\"%s\"错误 \"%s\"。", expression, err.Error())
 			return
@@ -217,7 +217,7 @@ func (s *ExecHelperService) EvaluateCookie(processor *model.ProcessorCookie, par
 
 	if typ == consts.ProcessorCookieSet {
 		var variableValue interface{}
-		variableValue, err = s.EvaluateGovaluateExpression(expression, processor.ProcessorId)
+		variableValue, err = s.EvaluateGovaluateExpression(expression, processor.ProcessorID)
 		if err != nil {
 			output.Msg = fmt.Sprintf("计算表达式\"%s\"错误 %s。", expression, err.Error())
 			return

@@ -1,9 +1,5 @@
 package agentExec
 
-import (
-	"github.com/aaronchen2k/deeptest/internal/agent/run"
-)
-
 type ProcessorTimer struct {
 	ID uint `json:"id" yaml:"id"`
 	ProcessorEntity
@@ -11,6 +7,6 @@ type ProcessorTimer struct {
 	SleepTime int `json:"sleepTime" yaml:"sleepTime"`
 }
 
-func (s *ProcessorTimer) Run(r *run.SessionRunner) (ret *run.StageResult, err error) {
+func (p ProcessorTimer) Run(s *Session) (ret *Log, err error) {
 	return
 }

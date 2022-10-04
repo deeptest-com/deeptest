@@ -96,7 +96,7 @@ func (r *ScenarioNodeRepo) toTos(pos []*model.Processor, withDetail bool) (tos [
 		copier.CopyWithOption(&to, po, copier.Option{DeepCopy: true})
 
 		if withDetail {
-			to.Entity, _ = r.ScenarioProcessorRepo.GetEntity(to.ID)
+			to.Entity, _ = r.ScenarioProcessorRepo.GetEntityTo(to.ID)
 		}
 
 		tos = append(tos, &to)

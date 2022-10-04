@@ -1,9 +1,5 @@
 package agentExec
 
-import (
-	"github.com/aaronchen2k/deeptest/internal/agent/run"
-)
-
 type ProcessorLoop struct {
 	ID uint `json:"id" yaml:"id"`
 	ProcessorEntity
@@ -19,6 +15,6 @@ type ProcessorLoop struct {
 	BreakIfExpression string `json:"breakIfExpression" yaml:"breakIfExpression"`
 }
 
-func (s *ProcessorLoop) Run(r *run.SessionRunner) (ret *run.StageResult, err error) {
+func (p ProcessorLoop) Run(s *Session) (ret *Log, err error) {
 	return
 }

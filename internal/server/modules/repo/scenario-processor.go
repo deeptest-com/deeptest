@@ -1,6 +1,7 @@
 package repo
 
 import (
+	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	_dateUtils "github.com/aaronchen2k/deeptest/pkg/lib/date"
@@ -22,39 +23,106 @@ func (r *ScenarioProcessorRepo) Get(id uint) (processor model.Processor, err err
 func (r *ScenarioProcessorRepo) GetEntity(processorId uint) (ret interface{}, err error) {
 	processor, _ := r.Get(processorId)
 
-	if processor.EntityCategory == consts.ProcessorInterface {
+	switch processor.EntityCategory {
+	case consts.ProcessorInterface:
 		ret, _ = r.GetInterface(processor)
 
-	} else if processor.EntityCategory == consts.ProcessorGroup {
+	case consts.ProcessorGroup:
 		ret, _ = r.GetGroup(processor)
 
-	} else if processor.EntityCategory == consts.ProcessorLogic {
+	case consts.ProcessorLogic:
 		ret, _ = r.GetLogic(processor)
 
-	} else if processor.EntityCategory == consts.ProcessorLoop {
+	case consts.ProcessorLoop:
 		ret, _ = r.GetLoop(processor)
 
-	} else if processor.EntityCategory == consts.ProcessorVariable {
+	case consts.ProcessorVariable:
 		ret, _ = r.GetVariable(processor)
 
-	} else if processor.EntityCategory == consts.ProcessorTimer {
+	case consts.ProcessorTimer:
 		ret, _ = r.GetTimer(processor)
 
-	} else if processor.EntityCategory == consts.ProcessorPrint {
+	case consts.ProcessorPrint:
 		ret, _ = r.GetPrint(processor)
 
-	} else if processor.EntityCategory == consts.ProcessorCookie {
+	case consts.ProcessorCookie:
 		ret, _ = r.GetCookie(processor)
 
-	} else if processor.EntityCategory == consts.ProcessorAssertion {
+	case consts.ProcessorAssertion:
 		ret, _ = r.GetAssertion(processor)
 
-	} else if processor.EntityCategory == consts.ProcessorExtractor {
+	case consts.ProcessorExtractor:
 		ret, _ = r.GetExtractor(processor)
 
-	} else if processor.EntityCategory == consts.ProcessorData {
+	case consts.ProcessorData:
 		ret, _ = r.GetData(processor)
 
+	default:
+	}
+
+	return
+}
+
+func (r *ScenarioProcessorRepo) GetEntityTo(processorId uint) (ret agentExec.IProcessorEntity, err error) {
+	processor, _ := r.Get(processorId)
+
+	switch processor.EntityCategory {
+	case consts.ProcessorInterface:
+		po, _ := r.GetInterface(processor)
+		ret = agentExec.ProcessorInterface{}
+		copier.CopyWithOption(&ret, po, copier.Option{DeepCopy: true})
+
+	case consts.ProcessorGroup:
+		po, _ := r.GetGroup(processor)
+		ret = agentExec.ProcessorGroup{}
+		copier.CopyWithOption(&ret, po, copier.Option{DeepCopy: true})
+
+	case consts.ProcessorLogic:
+		po, _ := r.GetLogic(processor)
+		ret = agentExec.ProcessorLogic{}
+		copier.CopyWithOption(&ret, po, copier.Option{DeepCopy: true})
+
+	case consts.ProcessorLoop:
+		po, _ := r.GetLoop(processor)
+		ret = agentExec.ProcessorLoop{}
+		copier.CopyWithOption(&ret, po, copier.Option{DeepCopy: true})
+
+	case consts.ProcessorVariable:
+		po, _ := r.GetVariable(processor)
+		ret = agentExec.ProcessorVariable{}
+		copier.CopyWithOption(&ret, po, copier.Option{DeepCopy: true})
+
+	case consts.ProcessorTimer:
+		po, _ := r.GetTimer(processor)
+		ret = agentExec.ProcessorTimer{}
+		copier.CopyWithOption(&ret, po, copier.Option{DeepCopy: true})
+
+	case consts.ProcessorPrint:
+		po, _ := r.GetPrint(processor)
+		ret = agentExec.ProcessorPrint{}
+		copier.CopyWithOption(&ret, po, copier.Option{DeepCopy: true})
+
+	case consts.ProcessorCookie:
+		po, _ := r.GetCookie(processor)
+		ret = agentExec.ProcessorCookie{}
+		copier.CopyWithOption(&ret, po, copier.Option{DeepCopy: true})
+
+	case consts.ProcessorAssertion:
+		po, _ := r.GetAssertion(processor)
+		ret = agentExec.ProcessorAssertion{}
+		copier.CopyWithOption(&ret, po, copier.Option{DeepCopy: true})
+
+	case consts.ProcessorExtractor:
+		po, _ := r.GetExtractor(processor)
+		ret = agentExec.ProcessorExtractor{}
+		copier.CopyWithOption(&ret, po, copier.Option{DeepCopy: true})
+
+	case consts.ProcessorData:
+		po, _ := r.GetData(processor)
+		ret = agentExec.ProcessorData{}
+		copier.CopyWithOption(&ret, po, copier.Option{DeepCopy: true})
+
+	default:
 	}
 
 	return

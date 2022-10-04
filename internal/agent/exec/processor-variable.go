@@ -1,8 +1,6 @@
 package agentExec
 
-import (
-	"github.com/aaronchen2k/deeptest/internal/agent/run"
-)
+import logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 
 type ProcessorVariable struct {
 	ID uint `json:"id" yaml:"id"`
@@ -12,6 +10,7 @@ type ProcessorVariable struct {
 	RightValue   string `json:"rightValue" yaml:"rightValue"`
 }
 
-func (s *ProcessorVariable) Run(r *run.SessionRunner) (ret *run.StageResult, err error) {
+func (p ProcessorVariable) Run(s *Session) (ret *Log, err error) {
+	logUtils.Infof("variable")
 	return
 }

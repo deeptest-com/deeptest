@@ -1,14 +1,13 @@
 package agentExec
 
-import (
-	"github.com/aaronchen2k/deeptest/internal/agent/run"
-)
+import logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 
 type ProcessorGroup struct {
 	ID uint `json:"id" yaml:"id"`
 	ProcessorEntity
 }
 
-func (s *ProcessorGroup) Run(r *run.SessionRunner) (ret *run.StageResult, err error) {
+func (p ProcessorGroup) Run(s *Session) (ret *Log, err error) {
+	logUtils.Infof("group")
 	return
 }

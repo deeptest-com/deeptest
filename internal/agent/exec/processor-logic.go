@@ -1,9 +1,5 @@
 package agentExec
 
-import (
-	"github.com/aaronchen2k/deeptest/internal/agent/run"
-)
-
 type ProcessorLogic struct {
 	ID uint `json:"id" yaml:"id"`
 	ProcessorEntity
@@ -11,6 +7,6 @@ type ProcessorLogic struct {
 	Expression string `json:"expression" yaml:"expression"`
 }
 
-func (s *ProcessorLogic) Run(r *run.SessionRunner) (ret *run.StageResult, err error) {
+func (p ProcessorLogic) Run(s *Session) (ret *Log, err error) {
 	return
 }

@@ -22,18 +22,27 @@ type Processor struct {
 	EntityId       uint                     `json:"entityId"`
 	InterfaceId    uint                     `json:"interfaceId"`
 
-	Ordr     int          `json:"ordr"`
-	Children []*Processor `json:"children"`
-	Slots    iris.Map     `json:"slots"`
-	Entity   interface{}  `json:"entity"`
+	Ordr     int              `json:"ordr"`
+	Children []*Processor     `json:"children"`
+	Slots    iris.Map         `json:"slots"`
+	Entity   IProcessorEntity `json:"entity"`
 
 	Log *Log `json:"log"`
+
+	Session Session `json:"session"`
 }
 
-func (p *Processor) Run() {
+func (p *Processor) Run(s *Session) {
 	logUtils.Infof("run processor %s - %s, %s", p.Name, p.EntityCategory, p.EntityType)
+	p.runEntity(s)
 
 	for _, child := range p.Children {
-		child.Run()
+		child.Run(s)
+	}
+}
+
+func (p *Processor) runEntity(s *Session) {
+	if p.Entity != nil {
+		p.Entity.Run(s)
 	}
 }

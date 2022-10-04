@@ -1,7 +1,6 @@
 package agentExec
 
 import (
-	"github.com/aaronchen2k/deeptest/internal/agent/run"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 )
 
@@ -27,6 +26,6 @@ type ProcessorExtractor struct {
 	InterfaceID uint   `json:"interfaceID"`
 }
 
-func (s *ProcessorExtractor) Run(r *run.SessionRunner) (ret *run.StageResult, err error) {
+func (p ProcessorExtractor) Run(s *Session) (ret *Log, err error) {
 	return
 }

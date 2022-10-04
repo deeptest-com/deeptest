@@ -2,6 +2,10 @@ package agentExec
 
 import "github.com/aaronchen2k/deeptest/internal/pkg/consts"
 
+type IProcessorEntity interface {
+	Run(*Session) (*Log, error)
+}
+
 type ProcessorEntity struct {
 	Name     string `gorm:"-" json:"name" yaml:"name"`
 	Comments string `json:"comments" yaml:"comments"`

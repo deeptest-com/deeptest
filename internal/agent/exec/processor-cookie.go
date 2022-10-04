@@ -1,7 +1,6 @@
 package agentExec
 
 import (
-	"github.com/aaronchen2k/deeptest/internal/agent/run"
 	"time"
 )
 
@@ -18,6 +17,6 @@ type ProcessorCookie struct {
 	Children []interface{} `json:"children" yaml:"children" gorm:"-"`
 }
 
-func (s *ProcessorCookie) Run(r *run.SessionRunner) (ret *run.StageResult, err error) {
+func (p ProcessorCookie) Run(s *Session) (ret *Log, err error) {
 	return
 }

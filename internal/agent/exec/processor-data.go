@@ -1,7 +1,6 @@
 package agentExec
 
 import (
-	"github.com/aaronchen2k/deeptest/internal/agent/run"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 )
 
@@ -24,6 +23,6 @@ type ProcessorData struct {
 	VariableName string `json:"variableName,omitempty" yaml:"variableName,omitempty"`
 }
 
-func (s *ProcessorData) Run(r *run.SessionRunner) (ret *run.StageResult, err error) {
+func (p ProcessorData) Run(s *Session) (ret *Log, err error) {
 	return
 }

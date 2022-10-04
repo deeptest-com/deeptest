@@ -16,16 +16,16 @@ type Session struct {
 	Http2Client *http.Client
 	Failfast    bool
 
-	Processor *Processor
-	Report    *Report
+	RootProcessor *Processor
+	Report        *Report
 }
 
 func NewSession(root *Processor, failfast bool) (ret *Session) {
 	session := Session{
-		ScenarioId: root.ScenarioId,
-		Name:       root.Name,
-		Processor:  root,
-		Failfast:   failfast,
+		ScenarioId:    root.ScenarioId,
+		Name:          root.Name,
+		RootProcessor: root,
+		Failfast:      failfast,
 	}
 
 	jar, _ := cookiejar.New(nil)
@@ -50,5 +50,5 @@ func NewSession(root *Processor, failfast bool) (ret *Session) {
 }
 
 func (s *Session) Run() {
-	s.Processor.Run()
+	s.RootProcessor.Run(s)
 }

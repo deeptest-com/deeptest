@@ -6,7 +6,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/consts"
-	execHelper2 "github.com/aaronchen2k/deeptest/internal/server/modules/helper/exec"
+	execHelper "github.com/aaronchen2k/deeptest/internal/server/modules/helper/exec"
 	websocketHelper2 "github.com/aaronchen2k/deeptest/internal/server/modules/helper/websocket"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
@@ -72,7 +72,7 @@ func (c *WebSocketCtrl) OnChat(wsMsg websocket.Message) (err error) {
 	req := domain.WsReq{}
 	err = json.Unmarshal(wsMsg.Body, &req)
 	if err != nil {
-		execHelper2.SendErrorMsg(req.Id, wsMsg)
+		execHelper.SendErrorMsg(req.Id, wsMsg)
 		return
 	}
 
@@ -80,7 +80,7 @@ func (c *WebSocketCtrl) OnChat(wsMsg websocket.Message) (err error) {
 
 	if act == consts.ExecStop {
 		if ch != nil {
-			if !execHelper2.GetRunning() {
+			if !execHelper.GetRunning() {
 				ch = nil
 			} else {
 				ch <- 1
@@ -93,17 +93,19 @@ func (c *WebSocketCtrl) OnChat(wsMsg websocket.Message) (err error) {
 		return
 	}
 
-	if execHelper2.GetRunning() && (act == consts.ExecStart) { // already running
-		execHelper2.SendAlreadyRunningMsg(req.Id, wsMsg)
+	if execHelper.GetRunning() && (act == consts.ExecStart) { // already running
+		execHelper.SendAlreadyRunningMsg(req.Id, wsMsg)
 		return
 	}
 
-	ch = make(chan int, 1)
-	go func() {
-		c.ScenarioExecService.ExecScenario(req.Id, &wsMsg)
+	if act == consts.ExecScenario {
+		ch = make(chan int, 1)
+		go func() {
+			c.ScenarioExecService.ExecScenario(req.Id, &wsMsg)
 
-		//c.Complete(wsMsg)
-	}()
+			//c.Complete(wsMsg)
+		}()
+	}
 
 	return
 }

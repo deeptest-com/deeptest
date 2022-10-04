@@ -54,6 +54,8 @@ func (s *ExecScenarioService) ExecScenario(scenarioId int, wsMsg *websocket.Mess
 	session := agentExec.NewSession(root, false)
 	session.Run()
 
+	return
+
 	scenario, err := s.ScenarioRepo.Get(uint(scenarioId))
 	if err != nil {
 		return

@@ -10,8 +10,8 @@ type ScenarioProcessorService struct {
 	ScenarioProcessorRepo *repo.ScenarioProcessorRepo `inject:""`
 }
 
-func (s *ScenarioProcessorService) Get(id int) (processor model.Processor, err error) {
-	processor, err = s.ScenarioProcessorRepo.Get(uint(id))
+func (s *ScenarioProcessorService) GetEntity(id int) (ret interface{}, err error) {
+	ret, err = s.ScenarioProcessorRepo.GetEntity(uint(id))
 	return
 }
 

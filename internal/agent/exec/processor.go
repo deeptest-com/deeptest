@@ -31,7 +31,7 @@ type Processor struct {
 }
 
 func (p *Processor) Run() {
-	logUtils.Infof("run processor %s ", p.Name)
+	logUtils.Infof("run processor %s - %s, %s", p.Name, p.EntityCategory, p.EntityType)
 
 	for _, child := range p.Children {
 		child.Run()

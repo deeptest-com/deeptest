@@ -24,13 +24,13 @@ func (c *ScenarioProcessorCtrl) Get(ctx iris.Context) {
 		return
 	}
 
-	processor, err := c.ScenarioProcessorService.Get(processorId)
+	processorEntity, err := c.ScenarioProcessorService.GetEntity(processorId)
 
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: _domain.SystemErr.Msg})
 		return
 	}
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: processor})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: processorEntity})
 }
 
 // UpdateName 更新

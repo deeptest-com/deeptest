@@ -3,7 +3,7 @@ package service
 import (
 	"encoding/json"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
-	agentDomain "github.com/aaronchen2k/deeptest/internal/agent/domain"
+	agentDomain "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/business"

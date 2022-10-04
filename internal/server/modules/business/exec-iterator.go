@@ -3,7 +3,7 @@ package business
 import (
 	"container/list"
 	"fmt"
-	agentDomain "github.com/aaronchen2k/deeptest/internal/agent/domain"
+	agentDomain "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/helper/exec"
@@ -117,7 +117,7 @@ func (s *ExecIterator) RetrieveIteratorsVal(processor *agentDomain.Processor) (i
 
 		item = items[index]
 
-		po, _  := s.ScenarioProcessorRepo.Get(processor.ID)
+		po, _ := s.ScenarioProcessorRepo.Get(processor.ID)
 		loopRangeProcessor, _ := s.ScenarioProcessorRepo.GetLoop(po)
 		desc = fmt.Sprintf("变量%s = \"%d\"", loopRangeProcessor.VariableName, item)
 
@@ -132,7 +132,7 @@ func (s *ExecIterator) RetrieveIteratorsVal(processor *agentDomain.Processor) (i
 
 		item = items[index]
 
-		po, _  := s.ScenarioProcessorRepo.Get(processor.ID)
+		po, _ := s.ScenarioProcessorRepo.Get(processor.ID)
 		loopRangeProcessor, _ := s.ScenarioProcessorRepo.GetLoop(po)
 		desc = fmt.Sprintf("变量%s = \"%d\"", loopRangeProcessor.VariableName, item)
 

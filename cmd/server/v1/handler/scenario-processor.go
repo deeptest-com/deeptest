@@ -1,7 +1,7 @@
 package handler
 
 import (
-	agentDomain "github.com/aaronchen2k/deeptest/internal/agent/domain"
+	agentDomain "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"

@@ -1,7 +1,7 @@
 package model
 
 import (
-	runDomain "github.com/aaronchen2k/deeptest/internal/agent/domain"
+	runDomain "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/kataras/iris/v12"
 	"time"

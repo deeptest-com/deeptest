@@ -1,7 +1,7 @@
 package repo
 
 import (
-	agentDomain "github.com/aaronchen2k/deeptest/internal/agent/domain"
+	agentDomain "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
@@ -58,7 +58,7 @@ type ScenarioNodeRepo struct {
 //	}
 //}
 
-func (r *ScenarioNodeRepo) GetTree(scenarioId uint) (root *agentDomain.Processor, err error) {
+func (r *ScenarioNodeRepo) GetTree(scenarioId uint, withEntity bool) (root *agentDomain.Processor, err error) {
 	scenario, err := r.ScenarioRepo.Get(scenarioId)
 
 	pos, err := r.ListByScenario(scenarioId)
@@ -66,7 +66,7 @@ func (r *ScenarioNodeRepo) GetTree(scenarioId uint) (root *agentDomain.Processor
 		return
 	}
 
-	tos := r.toTos(pos)
+	tos := r.toTos(pos, withEntity)
 
 	root = tos[0]
 	root.Name = scenario.Name
@@ -90,10 +90,15 @@ func (r *ScenarioNodeRepo) Get(id uint) (processor model.Processor, err error) {
 	return
 }
 
-func (r *ScenarioNodeRepo) toTos(pos []*model.Processor) (tos []*agentDomain.Processor) {
+func (r *ScenarioNodeRepo) toTos(pos []*model.Processor, withDetail bool) (tos []*agentDomain.Processor) {
 	for _, po := range pos {
 		to := agentDomain.Processor{}
 		copier.CopyWithOption(&to, po, copier.Option{DeepCopy: true})
+
+		if withDetail {
+			to.Entity, _ = r.ScenarioProcessorRepo.GetEntity(to.ID)
+		}
+
 		tos = append(tos, &to)
 	}
 
@@ -106,7 +111,7 @@ func (r *ScenarioNodeRepo) makeTree(findIn []*agentDomain.Processor, parent *age
 	if children != nil {
 		parent.Children = append(parent.Children, children[0:]...) // 添加子节点
 
-		for _, child := range children {                           // 查询子节点的子节点，并添加到子节点
+		for _, child := range children { // 查询子节点的子节点，并添加到子节点
 			_, has := r.hasChild(findIn, child)
 			if has {
 				r.makeTree(findIn, child) // 递归添加节点
@@ -116,7 +121,7 @@ func (r *ScenarioNodeRepo) makeTree(findIn []*agentDomain.Processor, parent *age
 }
 
 func (r *ScenarioNodeRepo) hasChild(processors []*agentDomain.Processor, node *agentDomain.Processor) (
-		ret []*agentDomain.Processor, yes bool) {
+	ret []*agentDomain.Processor, yes bool) {
 	for _, item := range processors {
 		if item.ParentId == node.ID {
 			item.Slots = iris.Map{"icon": "icon"}

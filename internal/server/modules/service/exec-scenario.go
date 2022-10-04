@@ -1,13 +1,13 @@
 package service
 
 import (
-	agentDomain "github.com/aaronchen2k/deeptest/internal/agent/domain"
+	"github.com/aaronchen2k/deeptest/internal/agent/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
-	business2 "github.com/aaronchen2k/deeptest/internal/server/modules/business"
+	"github.com/aaronchen2k/deeptest/internal/server/modules/business"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/helper/exec"
-	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
-	repo2 "github.com/aaronchen2k/deeptest/internal/server/modules/repo"
+	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
+	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/jinzhu/copier"
 	"github.com/kataras/iris/v12/websocket"
@@ -20,22 +20,22 @@ var (
 )
 
 type ExecScenarioService struct {
-	ScenarioProcessorRepo *repo2.ScenarioProcessorRepo `inject:""`
-	ScenarioRepo          *repo2.ScenarioRepo          `inject:""`
-	ScenarioNodeRepo      *repo2.ScenarioNodeRepo      `inject:""`
-	TestReportRepo        *repo2.ReportRepo            `inject:""`
-	TestLogRepo           *repo2.LogRepo               `inject:""`
-	InterfaceRepo         *repo2.InterfaceRepo         `inject:""`
-	InterfaceService      *InterfaceService            `inject:""`
-	ExecProcessorService  *ExecProcessorService        `inject:""`
+	ScenarioProcessorRepo *repo.ScenarioProcessorRepo `inject:""`
+	ScenarioRepo          *repo.ScenarioRepo          `inject:""`
+	ScenarioNodeRepo      *repo.ScenarioNodeRepo      `inject:""`
+	TestReportRepo        *repo.ReportRepo            `inject:""`
+	TestLogRepo           *repo.LogRepo               `inject:""`
+	InterfaceRepo         *repo.InterfaceRepo         `inject:""`
+	InterfaceService      *InterfaceService           `inject:""`
+	ExecProcessorService  *ExecProcessorService       `inject:""`
 
-	ExecContextService   *business2.ExecContext  `inject:""`
-	ExecComm             *business2.ExecComm     `inject:""`
-	ExecHelperService    *ExecHelperService      `inject:""`
-	ExecIteratorService  *business2.ExecIterator `inject:""`
-	ExecLogService       *ExecLogService         `inject:""`
-	ExecReportService    *ExecReportService      `inject:""`
-	ExecInterfaceService *ExecInterfaceService   `inject:""`
+	ExecContextService   *business.ExecContext  `inject:""`
+	ExecComm             *business.ExecComm     `inject:""`
+	ExecHelperService    *ExecHelperService     `inject:""`
+	ExecIteratorService  *business.ExecIterator `inject:""`
+	ExecLogService       *ExecLogService        `inject:""`
+	ExecReportService    *ExecReportService     `inject:""`
+	ExecInterfaceService *ExecInterfaceService  `inject:""`
 }
 
 func (s *ExecScenarioService) Load(scenarioId int) (result domain.Report, err error) {
@@ -50,12 +50,14 @@ func (s *ExecScenarioService) Load(scenarioId int) (result domain.Report, err er
 }
 
 func (s *ExecScenarioService) ExecScenario(scenarioId int, wsMsg *websocket.Message) (err error) {
+	root, _ := s.ScenarioNodeRepo.GetTree(uint(scenarioId), true)
+	session := agentExec.NewSession(root, false)
+	session.Run()
+
 	scenario, err := s.ScenarioRepo.Get(uint(scenarioId))
 	if err != nil {
 		return
 	}
-
-	//s.genTestScenario(scenario)
 
 	resultPo, err := s.TestReportRepo.FindInProgressResult(uint(scenarioId))
 	if resultPo.ID > 0 {
@@ -64,7 +66,7 @@ func (s *ExecScenarioService) ExecScenario(scenarioId int, wsMsg *websocket.Mess
 		resultPo, _ = s.CreateResult(scenario)
 	}
 
-	rootProcessor, err := s.ScenarioNodeRepo.GetTree(uint(scenarioId))
+	rootProcessor, err := s.ScenarioNodeRepo.GetTree(uint(scenarioId), false)
 
 	s.ExecContextService.InitScopeHierarchy(uint(scenarioId))
 	s.ExecIteratorService.InitIteratorContext()
@@ -98,7 +100,7 @@ func (s *ExecScenarioService) ExecScenario(scenarioId int, wsMsg *websocket.Mess
 	return
 }
 
-func (s *ExecScenarioService) ExecProcessorRecursively(processor *agentDomain.Processor, parentLog *domain.ExecLog,
+func (s *ExecScenarioService) ExecProcessorRecursively(processor *agentExec.Processor, parentLog *domain.ExecLog,
 	wsMsg *websocket.Message) (err error) {
 	if parentLog.Logs == nil {
 		logs := make([]*domain.ExecLog, 0)
@@ -123,7 +125,7 @@ func (s *ExecScenarioService) ExecProcessorRecursively(processor *agentDomain.Pr
 	return
 }
 
-func (s *ExecScenarioService) ExecContainerProcessor(processor *agentDomain.Processor, parentLog *domain.ExecLog,
+func (s *ExecScenarioService) ExecContainerProcessor(processor *agentExec.Processor, parentLog *domain.ExecLog,
 	wsMsg *websocket.Message) {
 	containerLog, _ := s.GenerateContainerProcessorLogAndDisplay(processor, parentLog, wsMsg)
 
@@ -139,7 +141,7 @@ func (s *ExecScenarioService) ExecContainerProcessor(processor *agentDomain.Proc
 	}
 }
 
-func (s *ExecScenarioService) ExecContainerProcessorChildrenForLoop(processor *agentDomain.Processor, containerLog *domain.ExecLog,
+func (s *ExecScenarioService) ExecContainerProcessorChildrenForLoop(processor *agentExec.Processor, containerLog *domain.ExecLog,
 	wsMsg *websocket.Message) {
 	if s.ExecComm.IsLoopTimesPass(containerLog) {
 		iterator, _ := s.ExecIteratorService.GenerateLoopTimes(*containerLog)
@@ -230,7 +232,7 @@ func (s *ExecScenarioService) ExecContainerProcessorChildrenForLoop(processor *a
 	}
 }
 
-func (s *ExecScenarioService) ExecActionProcessorAndDisplay(processor *agentDomain.Processor, parentLog *domain.ExecLog, wsMsg *websocket.Message) (
+func (s *ExecScenarioService) ExecActionProcessorAndDisplay(processor *agentExec.Processor, parentLog *domain.ExecLog, wsMsg *websocket.Message) (
 	containerLog *domain.ExecLog, err error) {
 
 	output := domain.ExecOutput{}
@@ -261,7 +263,7 @@ func (s *ExecScenarioService) ExecActionProcessorAndDisplay(processor *agentDoma
 	return
 }
 
-func (s *ExecScenarioService) ExecContainerProcessorChildrenForData(processor *agentDomain.Processor, containerLog *domain.ExecLog,
+func (s *ExecScenarioService) ExecContainerProcessorChildrenForData(processor *agentExec.Processor, containerLog *domain.ExecLog,
 	wsMsg *websocket.Message) {
 	if s.ExecComm.IsDataPass(containerLog) {
 		po, _ := s.ScenarioProcessorRepo.Get(processor.ID)
@@ -291,13 +293,13 @@ func (s *ExecScenarioService) ExecContainerProcessorChildrenForData(processor *a
 	}
 }
 
-func (s *ExecScenarioService) ExecChildren(processor *agentDomain.Processor, parentLog *domain.ExecLog, wsMsg *websocket.Message) {
+func (s *ExecScenarioService) ExecChildren(processor *agentExec.Processor, parentLog *domain.ExecLog, wsMsg *websocket.Message) {
 	for _, child := range processor.Children {
 		s.ExecProcessorRecursively(child, parentLog, wsMsg)
 	}
 }
 
-func (s *ExecScenarioService) AddContainerProcessor(processor *agentDomain.Processor, parentLog *domain.ExecLog, wsMsg *websocket.Message) (
+func (s *ExecScenarioService) AddContainerProcessor(processor *agentExec.Processor, parentLog *domain.ExecLog, wsMsg *websocket.Message) (
 	containerLog *domain.ExecLog, err error) {
 
 	_, desc, _ := s.ExecIteratorService.RetrieveIteratorsVal(processor)
@@ -320,7 +322,7 @@ func (s *ExecScenarioService) AddContainerProcessor(processor *agentDomain.Proce
 	return
 }
 
-func (s *ExecScenarioService) GenerateContainerProcessorLogAndDisplay(processor *agentDomain.Processor, parentLog *domain.ExecLog, wsMsg *websocket.Message) (
+func (s *ExecScenarioService) GenerateContainerProcessorLogAndDisplay(processor *agentExec.Processor, parentLog *domain.ExecLog, wsMsg *websocket.Message) (
 	containerLog *domain.ExecLog, err error) {
 
 	output := domain.ExecOutput{}
@@ -344,7 +346,7 @@ func (s *ExecScenarioService) GenerateContainerProcessorLogAndDisplay(processor 
 	return
 }
 
-func (s *ExecScenarioService) generateContainerLogAndSendMsg(output domain.ExecOutput, processor *agentDomain.Processor, parentLog *domain.ExecLog, wsMsg *websocket.Message) (
+func (s *ExecScenarioService) generateContainerLogAndSendMsg(output domain.ExecOutput, processor *agentExec.Processor, parentLog *domain.ExecLog, wsMsg *websocket.Message) (
 	containerLog *domain.ExecLog, err error) {
 	containerLog = &domain.ExecLog{
 		Id:                processor.ID,

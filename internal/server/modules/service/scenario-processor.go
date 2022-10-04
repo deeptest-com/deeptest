@@ -1,8 +1,7 @@
 package service
 
 import (
-	agentDomain "github.com/aaronchen2k/deeptest/internal/agent/domain"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	agentDomain "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 )
@@ -11,44 +10,8 @@ type ScenarioProcessorService struct {
 	ScenarioProcessorRepo *repo.ScenarioProcessorRepo `inject:""`
 }
 
-func (s *ScenarioProcessorService) Get(processorId int) (ret interface{}, err error) {
-	processor, _ := s.ScenarioProcessorRepo.Get(uint(processorId))
-
-	if processor.EntityCategory == consts.ProcessorInterface {
-		ret, _ = s.ScenarioProcessorRepo.GetInterface(processor)
-
-	} else if processor.EntityCategory == consts.ProcessorGroup {
-		ret, _ = s.ScenarioProcessorRepo.GetGroup(processor)
-
-	} else if processor.EntityCategory == consts.ProcessorLogic {
-		ret, _ = s.ScenarioProcessorRepo.GetLogic(processor)
-
-	} else if processor.EntityCategory == consts.ProcessorLoop {
-		ret, _ = s.ScenarioProcessorRepo.GetLoop(processor)
-
-	} else if processor.EntityCategory == consts.ProcessorVariable {
-		ret, _ = s.ScenarioProcessorRepo.GetVariable(processor)
-
-	} else if processor.EntityCategory == consts.ProcessorTimer {
-		ret, _ = s.ScenarioProcessorRepo.GetTimer(processor)
-
-	} else if processor.EntityCategory == consts.ProcessorPrint {
-		ret, _ = s.ScenarioProcessorRepo.GetPrint(processor)
-
-	} else if processor.EntityCategory == consts.ProcessorCookie {
-		ret, _ = s.ScenarioProcessorRepo.GetCookie(processor)
-
-	} else if processor.EntityCategory == consts.ProcessorAssertion {
-		ret, _ = s.ScenarioProcessorRepo.GetAssertion(processor)
-
-	} else if processor.EntityCategory == consts.ProcessorExtractor {
-		ret, _ = s.ScenarioProcessorRepo.GetExtractor(processor)
-
-	} else if processor.EntityCategory == consts.ProcessorData {
-		ret, _ = s.ScenarioProcessorRepo.GetData(processor)
-
-	}
-
+func (s *ScenarioProcessorService) Get(id int) (processor model.Processor, err error) {
+	processor, err = s.ScenarioProcessorRepo.Get(uint(id))
 	return
 }
 

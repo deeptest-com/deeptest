@@ -1,4 +1,4 @@
-package agentDomain
+package agentExec
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
@@ -24,5 +24,5 @@ type Processor struct {
 	Ordr     int          `json:"ordr"`
 	Children []*Processor `gorm:"-" json:"children"`
 	Slots    iris.Map     `gorm:"-" json:"slots"`
-	Entity    interface{}     `gorm:"-" json:"entity"`
+	Entity   interface{}  `gorm:"-" json:"entity"`
 }

@@ -1,7 +1,7 @@
 package business
 
 import (
-	agentDomain "github.com/aaronchen2k/deeptest/internal/agent/domain"
+	agentDomain "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	_stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"

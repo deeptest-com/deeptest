@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	_dateUtils "github.com/aaronchen2k/deeptest/pkg/lib/date"
 	"github.com/jinzhu/copier"
@@ -15,6 +16,47 @@ type ScenarioProcessorRepo struct {
 
 func (r *ScenarioProcessorRepo) Get(id uint) (processor model.Processor, err error) {
 	err = r.DB.Where("id = ?", id).First(&processor).Error
+	return
+}
+
+func (r *ScenarioProcessorRepo) GetEntity(processorId uint) (ret interface{}, err error) {
+	processor, _ := r.Get(processorId)
+
+	if processor.EntityCategory == consts.ProcessorInterface {
+		ret, _ = r.GetInterface(processor)
+
+	} else if processor.EntityCategory == consts.ProcessorGroup {
+		ret, _ = r.GetGroup(processor)
+
+	} else if processor.EntityCategory == consts.ProcessorLogic {
+		ret, _ = r.GetLogic(processor)
+
+	} else if processor.EntityCategory == consts.ProcessorLoop {
+		ret, _ = r.GetLoop(processor)
+
+	} else if processor.EntityCategory == consts.ProcessorVariable {
+		ret, _ = r.GetVariable(processor)
+
+	} else if processor.EntityCategory == consts.ProcessorTimer {
+		ret, _ = r.GetTimer(processor)
+
+	} else if processor.EntityCategory == consts.ProcessorPrint {
+		ret, _ = r.GetPrint(processor)
+
+	} else if processor.EntityCategory == consts.ProcessorCookie {
+		ret, _ = r.GetCookie(processor)
+
+	} else if processor.EntityCategory == consts.ProcessorAssertion {
+		ret, _ = r.GetAssertion(processor)
+
+	} else if processor.EntityCategory == consts.ProcessorExtractor {
+		ret, _ = r.GetExtractor(processor)
+
+	} else if processor.EntityCategory == consts.ProcessorData {
+		ret, _ = r.GetData(processor)
+
+	}
+
 	return
 }
 

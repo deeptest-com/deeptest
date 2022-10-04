@@ -16,14 +16,15 @@ type Session struct {
 	Http2Client *http.Client
 	Failfast    bool
 
-	Root *Processor
+	Processor *Processor
+	Report    *Report
 }
 
 func NewSession(root *Processor, failfast bool) (ret *Session) {
 	session := Session{
 		ScenarioId: root.ScenarioId,
 		Name:       root.Name,
-		Root:       root,
+		Processor:  root,
 		Failfast:   failfast,
 	}
 
@@ -48,6 +49,6 @@ func NewSession(root *Processor, failfast bool) (ret *Session) {
 	return
 }
 
-func (*Session) Run() {
-
+func (s *Session) Run() {
+	s.Processor.Run()
 }

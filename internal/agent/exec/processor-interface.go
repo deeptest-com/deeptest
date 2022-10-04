@@ -7,7 +7,7 @@ type ProcessorInterface struct {
 	ProcessorEntity
 }
 
-func (p ProcessorInterface) Run(s *Session) (ret *Log, err error) {
+func (p ProcessorInterface) Run(s *Session) (variableName string, variableValues []interface{}, err error) {
 	logUtils.Infof("interface")
 	return
 }

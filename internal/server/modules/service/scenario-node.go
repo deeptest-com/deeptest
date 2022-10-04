@@ -8,6 +8,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	repo2 "github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
+	"github.com/jinzhu/copier"
 )
 
 type ScenarioNodeService struct {
@@ -145,6 +146,19 @@ func (s *ScenarioNodeService) deleteScenarioNodeAndChildren(nodeId uint) (err er
 		for _, child := range children {
 			s.deleteScenarioNodeAndChildren(child.ID)
 		}
+	}
+
+	return
+}
+
+func (s *ScenarioNodeService) ListToByScenario(id uint) (ret []*agentExec.Processor, err error) {
+	pos, _ := s.ScenarioNodeRepo.ListByScenario(id)
+
+	for _, po := range pos {
+		to := agentExec.Processor{}
+		copier.CopyWithOption(&to, po, copier.Option{DeepCopy: true})
+
+		ret = append(ret, &to)
 	}
 
 	return

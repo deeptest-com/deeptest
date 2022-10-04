@@ -5,6 +5,6 @@ type ProcessorRoot struct {
 	ProcessorEntity
 }
 
-func (p *ProcessorRoot) Run(s *Session) (ret *Log, err error) {
+func (p *ProcessorRoot) Run(s *Session) (variableName string, variableValues []interface{}, err error) {
 	return
 }

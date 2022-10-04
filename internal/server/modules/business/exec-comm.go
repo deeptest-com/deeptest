@@ -60,13 +60,13 @@ func (s *ExecComm) IsDataPass(containerLog *domain.ExecLog) bool {
 	return containerLog.ProcessorCategory == consts.ProcessorData && containerLog.Output.Url != ""
 }
 
-func (s *ExecComm) IsNoExecutableContainerProcessor(processor *agentDomain.Processor) bool {
-	return _stringUtils.FindInArr(processor.EntityCategory.ToString(), noExecutableContainerProcessors)
-}
-
 func (s *ExecComm) IsExecutableContainerProcessor(processor *agentDomain.Processor) bool {
 	return _stringUtils.FindInArr(processor.EntityCategory.ToString(), executableContainerProcessors) &&
 		processor.EntityType != consts.ProcessorLoopBreak
+}
+
+func (s *ExecComm) IsNoExecutableContainerProcessor(processor *agentDomain.Processor) bool {
+	return _stringUtils.FindInArr(processor.EntityCategory.ToString(), noExecutableContainerProcessors)
 }
 
 func (s *ExecComm) IsActionProcessor(processor *agentDomain.Processor) bool {

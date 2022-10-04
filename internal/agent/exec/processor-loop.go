@@ -15,6 +15,6 @@ type ProcessorLoop struct {
 	BreakIfExpression string `json:"breakIfExpression" yaml:"breakIfExpression"`
 }
 
-func (p ProcessorLoop) Run(s *Session) (ret *Log, err error) {
+func (p ProcessorLoop) Run(s *Session) (variableName string, variableValues []interface{}, err error) {
 	return
 }

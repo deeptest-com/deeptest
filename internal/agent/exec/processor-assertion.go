@@ -7,6 +7,6 @@ type ProcessorAssertion struct {
 	Expression string `json:"expression" yaml:"expression"`
 }
 
-func (p ProcessorAssertion) Run(s *Session) (ret *Log, err error) {
+func (p ProcessorAssertion) Run(s *Session) (variableName string, variableValues []interface{}, err error) {
 	return
 }

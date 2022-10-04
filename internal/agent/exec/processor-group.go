@@ -7,7 +7,7 @@ type ProcessorGroup struct {
 	ProcessorEntity
 }
 
-func (p ProcessorGroup) Run(s *Session) (ret *Log, err error) {
+func (p ProcessorGroup) Run(s *Session) (variableName string, variableValues []interface{}, err error) {
 	logUtils.Infof("group")
 	return
 }

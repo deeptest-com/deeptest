@@ -34,15 +34,27 @@ type Processor struct {
 
 func (p *Processor) Run(s *Session) {
 	logUtils.Infof("run processor %s - %s, %s", p.Name, p.EntityCategory, p.EntityType)
-	p.runEntity(s)
 
-	for _, child := range p.Children {
-		child.Run(s)
+	iterateVariableName, iterateVariableValues, err := p.runEntity(s)
+	if err != nil || iterateVariableName == "" {
+		return
+	}
+
+	for _, variable := range iterateVariableValues {
+		SetVariable(p.ID, iterateVariableName, variable, false)
+
+		for _, child := range p.Children {
+			child.Run(s)
+		}
 	}
 }
 
-func (p *Processor) runEntity(s *Session) {
-	if p.Entity != nil {
-		p.Entity.Run(s)
+func (p *Processor) runEntity(s *Session) (iterateVariableName string, iterateVariableValues []interface{}, err error) {
+	if p.Entity == nil {
+		return
 	}
+
+	iterateVariableName, iterateVariableValues, err = p.Entity.Run(s)
+
+	return
 }

@@ -29,6 +29,7 @@ type ExecScenarioService struct {
 	InterfaceService      *InterfaceService           `inject:""`
 	ExecProcessorService  *ExecProcessorService       `inject:""`
 
+	ScenarioNodeService  *ScenarioNodeService   `inject:""`
 	ExecContextService   *business.ExecContext  `inject:""`
 	ExecComm             *business.ExecComm     `inject:""`
 	ExecHelperService    *ExecHelperService     `inject:""`
@@ -50,6 +51,9 @@ func (s *ExecScenarioService) Load(scenarioId int) (result domain.Report, err er
 }
 
 func (s *ExecScenarioService) ExecScenario(scenarioId int, wsMsg *websocket.Message) (err error) {
+	processors, _ := s.ScenarioNodeService.ListToByScenario(uint(scenarioId))
+	agentExec.InitScopeHierarchy(processors)
+
 	root, _ := s.ScenarioNodeRepo.GetTree(uint(scenarioId), true)
 	session := agentExec.NewSession(root, false)
 	session.Run()

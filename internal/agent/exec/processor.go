@@ -33,16 +33,16 @@ type Processor struct {
 	Slots    iris.Map         `json:"slots"`
 	Entity   IProcessorEntity `json:"-"`
 
-	Log Log `json:"log"`
+	Result Result `json:"log"`
 
 	Session Session `json:"-"`
 }
 
-func (p *Processor) Run(s *Session) (log Log, err error) {
+func (p *Processor) Run(s *Session) (log Result, err error) {
 	logUtils.Infof("%s - %s", p.Name, p.EntityType)
 
 	if p.Entity != nil {
-		p.Log, err = p.Entity.Run(s)
+		log, err = p.Entity.Run(s)
 	}
 
 	if p.EntityCategory == consts.ProcessorLoop { // loop
@@ -56,6 +56,8 @@ func (p *Processor) Run(s *Session) (log Log, err error) {
 			child.Run(s)
 		}
 	}
+
+	p.Result = log
 
 	return
 }
@@ -73,10 +75,12 @@ func (p *Processor) runLoopUntil(s *Session, iterator domain.ExecIterator) (err 
 		for _, child := range p.Children {
 			childLog, _ := child.Run(s)
 			if childLog.WillBreak {
-				break
+				logUtils.Infof("break")
+				goto LABEL
 			}
 		}
 	}
+LABEL:
 
 	return
 }
@@ -88,6 +92,7 @@ func (p *Processor) runLoopItems(s *Session, iterator domain.ExecIterator) (err 
 		for _, child := range p.Children {
 			childLog, _ := child.Run(s)
 			if childLog.WillBreak {
+				logUtils.Infof("break")
 				goto LABEL
 			}
 		}

@@ -7,6 +7,6 @@ type ProcessorPrint struct {
 	Expression string `json:"expression" yaml:"expression"`
 }
 
-func (p ProcessorPrint) Run(s *Session) (log Log, err error) {
+func (p ProcessorPrint) Run(s *Session) (log Result, err error) {
 	return
 }

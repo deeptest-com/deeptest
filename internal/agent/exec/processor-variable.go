@@ -12,7 +12,7 @@ type ProcessorVariable struct {
 	RightValue   string `json:"rightValue" yaml:"rightValue"`
 }
 
-func (p ProcessorVariable) Run(s *Session) (log Log, err error) {
+func (p ProcessorVariable) Run(s *Session) (log Result, err error) {
 	logUtils.Infof("variable")
 	return
 }

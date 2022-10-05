@@ -11,10 +11,10 @@ type ProcessorInterface struct {
 	InterfaceID uint `json:"interfaceID"`
 }
 
-func (p ProcessorInterface) Run(s *Session) (log Log, err error) {
+func (p ProcessorInterface) Run(s *Session) (log Result, err error) {
 	logUtils.Infof("interface entity")
 
-	log = Log{
+	log = Result{
 		Name:        p.Name,
 		InterfaceId: p.InterfaceID,
 		//ReqContent:   string(reqContent),

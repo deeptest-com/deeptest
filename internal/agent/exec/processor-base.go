@@ -5,7 +5,7 @@ import (
 )
 
 type IProcessorEntity interface {
-	Run(*Session) (Log, error)
+	Run(*Session) (Result, error)
 }
 
 type ProcessorEntity struct {

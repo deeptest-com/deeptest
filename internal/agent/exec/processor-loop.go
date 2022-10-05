@@ -22,7 +22,7 @@ type ProcessorLoop struct {
 	BreakIfExpression string `json:"breakIfExpression" yaml:"breakIfExpression"`
 }
 
-func (p ProcessorLoop) Run(s *Session) (log Log, err error) {
+func (p ProcessorLoop) Run(s *Session) (log Result, err error) {
 	logUtils.Infof("loop entity")
 
 	log.Name = p.Name

@@ -9,10 +9,10 @@ type ProcessorRoot struct {
 	ProcessorEntity
 }
 
-func (p *ProcessorRoot) Run(s *Session) (log Log, err error) {
+func (p *ProcessorRoot) Run(s *Session) (log Result, err error) {
 	logUtils.Infof("root")
 
-	log = Log{
+	log = Result{
 		Name: p.Name,
 	}
 

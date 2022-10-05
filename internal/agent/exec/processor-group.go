@@ -9,10 +9,10 @@ type ProcessorGroup struct {
 	ProcessorEntity
 }
 
-func (p ProcessorGroup) Run(s *Session) (log Log, err error) {
+func (p ProcessorGroup) Run(s *Session) (log Result, err error) {
 	logUtils.Infof("group")
 
-	log = Log{
+	log = Result{
 		Name: p.Name,
 	}
 

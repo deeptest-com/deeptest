@@ -49,10 +49,12 @@ func (p *Processor) Run(s *Session) (log Log, err error) {
 		} else {
 			p.runLoopItems(s, log.Iterator)
 		}
+
 	} else {
 		for _, child := range p.Children {
 			child.Run(s)
 		}
+
 	}
 
 	p.Log = log

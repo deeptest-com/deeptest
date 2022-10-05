@@ -102,7 +102,6 @@ func (p *Processor) runLoopItems(s *Session, iterator domain.ExecIterator) (err 
 			}
 		}
 	}
-
 LABEL:
 
 	return

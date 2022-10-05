@@ -1,9 +1,11 @@
 package agentExec
 
-import "github.com/aaronchen2k/deeptest/internal/pkg/consts"
+import (
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+)
 
 type IProcessorEntity interface {
-	Run(*Session) (Log, string, []interface{}, error)
+	Run(*Session) (Log, error)
 }
 
 type ProcessorEntity struct {

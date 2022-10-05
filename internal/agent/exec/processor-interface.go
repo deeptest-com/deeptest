@@ -11,7 +11,7 @@ type ProcessorInterface struct {
 	InterfaceID uint `json:"interfaceID"`
 }
 
-func (p ProcessorInterface) Run(s *Session) (log Log, variableName string, variableValues []interface{}, err error) {
+func (p ProcessorInterface) Run(s *Session) (log Log, err error) {
 	logUtils.Infof("interface")
 
 	log = Log{

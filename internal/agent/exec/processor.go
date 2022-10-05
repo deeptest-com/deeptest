@@ -2,8 +2,14 @@ package agentExec
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/kataras/iris/v12"
+	"sync"
+)
+
+var (
+	breakMap sync.Map
 )
 
 type Processor struct {
@@ -32,31 +38,66 @@ type Processor struct {
 	Session Session `json:"session"`
 }
 
-func (p *Processor) Run(s *Session) {
+func (p *Processor) Run(s *Session) (log Log, err error) {
 	logUtils.Infof("run processor %s - %s, %s", p.Name, p.EntityCategory, p.EntityType)
 
-	log, iterateVariableName, iterateVariableValues, err := p.runEntity(s)
-	p.Log = log
+	log, _ = p.runEntity(s)
 
-	if err != nil || iterateVariableName == "" {
-		return
-	}
-
-	for _, variable := range iterateVariableValues {
-		SetVariable(p.ID, iterateVariableName, variable, false)
-
-		for _, child := range p.Children {
-			child.Run(s)
+	if log.ProcessorCategory == consts.ProcessorLoop { // loop
+		if p.EntityType == consts.ProcessorLoopUntil {
+			p.runLoopUntil(s, log.Iterator)
+		} else {
+			p.runLoopItems(s, log.Iterator)
 		}
 	}
+
+	p.Log = log
+
+	return
 }
 
-func (p *Processor) runEntity(s *Session) (log Log, iterateVariableName string, iterateVariableValues []interface{}, err error) {
+func (p *Processor) runEntity(s *Session) (log Log, err error) {
 	if p.Entity == nil {
 		return
 	}
 
-	log, iterateVariableName, iterateVariableValues, err = p.Entity.Run(s)
+	log, err = p.Entity.Run(s)
+
+	return
+}
+
+func (p *Processor) runLoopUntil(s *Session, iterator domain.ExecIterator) (err error) {
+	expression := iterator.UntilExpression
+
+	for {
+		result, err := EvaluateGovaluateExpression(expression, p.ID)
+		pass, ok := result.(bool)
+		if err != nil || !ok || pass {
+			break
+		}
+
+		for _, child := range p.Children {
+			childLog, _ := child.Run(s)
+			if childLog.WillBreak {
+				break
+			}
+		}
+	}
+
+	return
+}
+
+func (p *Processor) runLoopItems(s *Session, iterator domain.ExecIterator) (err error) {
+	for _, item := range iterator.Items {
+		SetVariable(p.ID, iterator.VariableName, item, false)
+
+		for _, child := range p.Children {
+			childLog, _ := child.Run(s)
+			if childLog.WillBreak {
+				break
+			}
+		}
+	}
 
 	return
 }

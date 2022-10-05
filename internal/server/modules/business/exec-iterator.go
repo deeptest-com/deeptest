@@ -57,7 +57,7 @@ func (s *ExecIterator) GenerateLoopRange(log domain.ExecLog, stepStr string, isR
 	ret.ProcessorCategory = log.ProcessorCategory
 	ret.ProcessorType = log.ProcessorType
 
-	start, end, step, precision, typ, err := execHelper.GetRange(log.Output, stepStr)
+	start, end, step, precision, typ, err := execHelper.GetRange(log.Output.Range, stepStr)
 	if err == nil {
 		ret.DataType = typ
 		ret.Items, _ = execHelper.GenerateRangeItems(start, end, step, precision, isRand, typ)

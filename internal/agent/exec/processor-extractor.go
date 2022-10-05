@@ -26,6 +26,6 @@ type ProcessorExtractor struct {
 	InterfaceID uint   `json:"interfaceID"`
 }
 
-func (p ProcessorExtractor) Run(s *Session) (log Log, variableName string, variableValues []interface{}, err error) {
+func (p ProcessorExtractor) Run(s *Session) (log Log, err error) {
 	return
 }

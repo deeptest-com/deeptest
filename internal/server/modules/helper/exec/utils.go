@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	valueGen2 "github.com/aaronchen2k/deeptest/internal/server/modules/helper/value"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	fileUtils "github.com/aaronchen2k/deeptest/pkg/lib/file"
@@ -80,8 +79,7 @@ func GetResult(b bool) (
 
 }
 
-func GetRange(output domain.ExecOutput, stepStr string) (start, end, step interface{}, precision int, typ consts.DataType, err error) {
-	rangeStr := output.Range
+func GetRange(rangeStr, stepStr string) (start, end, step interface{}, precision int, typ consts.DataType, err error) {
 	if stepStr == "" {
 		stepStr = "1"
 	}
@@ -127,7 +125,7 @@ func GetRange(output domain.ExecOutput, stepStr string) (start, end, step interf
 		}
 
 		start = startFloat
-		output.RangeEnd = endFloat
+		end = endFloat
 		step = stepFloat
 		typ = consts.Float
 

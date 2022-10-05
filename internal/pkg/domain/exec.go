@@ -94,6 +94,7 @@ type ExecInterfaceCheckpoint struct {
 type ExecIterator struct {
 	ProcessorCategory consts.ProcessorCategory
 	ProcessorType     consts.ProcessorType
+	VariableName      string `json:"variableName,omitempty"`
 
 	// loop times
 	Times []int `json:"times"`
@@ -102,6 +103,9 @@ type ExecIterator struct {
 	Items    []interface{}            `json:"items"`
 	Data     []map[string]interface{} `json:"data"`
 	DataType consts.DataType          `json:"dataType"`
+
+	// loop condition
+	UntilExpression string `json:"untilExpression"`
 }
 
 type ExecOutput struct {

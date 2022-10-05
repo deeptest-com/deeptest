@@ -1,6 +1,8 @@
 package agentExec
 
-import logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+import (
+	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+)
 
 type ProcessorVariable struct {
 	ID uint `json:"id" yaml:"id"`
@@ -10,7 +12,7 @@ type ProcessorVariable struct {
 	RightValue   string `json:"rightValue" yaml:"rightValue"`
 }
 
-func (p ProcessorVariable) Run(s *Session) (log Log, variableName string, variableValues []interface{}, err error) {
+func (p ProcessorVariable) Run(s *Session) (log Log, err error) {
 	logUtils.Infof("variable")
 	return
 }

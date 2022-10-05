@@ -2,6 +2,7 @@ package agentExec
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"time"
 )
 
@@ -37,6 +38,11 @@ type Log struct {
 	ProcessorId      uint                 `json:"processorId,omitempty"`
 	ProcessorContent string               `json:"processorContent,omitempty"`
 	ProcessorResult  string               `json:"processorResult,omitempty"`
+
+	// for loop processor
+	Iterator domain.ExecIterator `json:"iterator,omitempty"`
+	// for loop break processor
+	WillBreak bool `json:"break,omitempty"`
 
 	Summary string `json:"summary,omitempty"`
 	Output  string `json:"output,omitempty"`

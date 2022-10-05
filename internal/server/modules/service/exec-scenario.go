@@ -55,7 +55,7 @@ func (s *ExecScenarioService) ExecScenario(scenarioId int, wsMsg *websocket.Mess
 	agentExec.InitScopeHierarchy(processors)
 
 	root, _ := s.ScenarioNodeRepo.GetTree(uint(scenarioId), true)
-	session := agentExec.NewSession(root, false)
+	session := agentExec.NewSession(root, wsMsg, false)
 	session.Run()
 
 	return

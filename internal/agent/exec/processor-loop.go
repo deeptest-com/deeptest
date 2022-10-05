@@ -2,8 +2,9 @@ package agentExec
 
 import (
 	"fmt"
+	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
+	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 )
 
@@ -89,16 +90,16 @@ func GenerateLoopTimes(loop ProcessorLoop) (ret domain.ExecIterator, err error) 
 	return
 }
 func GenerateLoopRange(loop ProcessorLoop) (ret domain.ExecIterator, err error) {
-	start, end, step, precision, typ, err := GetRange(loop.Range, loop.Step)
+	start, end, step, precision, typ, err := utils.GetRange(loop.Range, loop.Step)
 	if err == nil {
 		ret.DataType = typ
-		ret.Items, _ = GenerateRangeItems(start, end, step, precision, loop.IsRand, typ)
+		ret.Items, _ = utils.GenerateRangeItems(start, end, step, precision, loop.IsRand, typ)
 	}
 
 	return
 }
 func GenerateLoopList(loop ProcessorLoop) (ret domain.ExecIterator, err error) {
-	ret.Items, ret.DataType, err = GenerateListItems(loop.List)
+	ret.Items, ret.DataType, err = utils.GenerateListItems(loop.List)
 
 	return
 }

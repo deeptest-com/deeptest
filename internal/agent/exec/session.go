@@ -2,6 +2,7 @@ package agentExec
 
 import (
 	"crypto/tls"
+	"github.com/kataras/iris/v12/websocket"
 	"golang.org/x/net/http2"
 	"net/http"
 	"net/http/cookiejar"
@@ -18,14 +19,17 @@ type Session struct {
 
 	RootProcessor *Processor
 	Report        *Report
+
+	WsMsg *websocket.Message
 }
 
-func NewSession(root *Processor, failfast bool) (ret *Session) {
+func NewSession(root *Processor, wsMsg *websocket.Message, failfast bool) (ret *Session) {
 	session := Session{
 		ScenarioId:    root.ScenarioId,
 		Name:          root.Name,
 		RootProcessor: root,
 		Failfast:      failfast,
+		WsMsg:         wsMsg,
 	}
 
 	jar, _ := cookiejar.New(nil)

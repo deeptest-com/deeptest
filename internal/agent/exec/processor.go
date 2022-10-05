@@ -41,7 +41,9 @@ type Processor struct {
 func (p *Processor) Run(s *Session) (log Log, err error) {
 	logUtils.Infof("%s - %s", p.Name, p.EntityType)
 
-	log, _ = p.runEntity(s)
+	if p.Entity != nil {
+		p.Log, err = p.Entity.Run(s)
+	}
 
 	if p.EntityCategory == consts.ProcessorLoop { // loop
 		if p.EntityType == consts.ProcessorLoopUntil {
@@ -49,25 +51,11 @@ func (p *Processor) Run(s *Session) (log Log, err error) {
 		} else {
 			p.runLoopItems(s, log.Iterator)
 		}
-
 	} else {
 		for _, child := range p.Children {
 			child.Run(s)
 		}
-
 	}
-
-	p.Log = log
-
-	return
-}
-
-func (p *Processor) runEntity(s *Session) (log Log, err error) {
-	if p.Entity == nil {
-		return
-	}
-
-	log, err = p.Entity.Run(s)
 
 	return
 }

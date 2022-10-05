@@ -141,6 +141,7 @@ func (r *ScenarioNodeRepo) CreateDefault(scenarioId uint) (po model.Processor, e
 		ScenarioId:     scenarioId,
 		Name:           "root",
 		EntityCategory: consts.ProcessorRoot,
+		EntityType:     consts.ProcessorRootDefault,
 		EntityId:       0,
 	}
 	err = r.DB.Create(&po).Error

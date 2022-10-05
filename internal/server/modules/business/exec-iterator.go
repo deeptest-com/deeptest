@@ -46,7 +46,7 @@ func (s *ExecIterator) GenerateLoopTimes(log domain.ExecLog) (ret domain.ExecIte
 
 	if log.Output.Times > 0 {
 		for i := 0; i < log.Output.Times; i++ {
-			ret.Times = append(ret.Times, i+1)
+			ret.Items = append(ret.Items, i+1)
 		}
 	}
 
@@ -94,7 +94,7 @@ func (s *ExecIterator) RetrieveIteratorsVal(processor *agentDomain.Processor) (i
 	index := indexElem.Value.(int)
 
 	if value.ProcessorType == consts.ProcessorLoopTime {
-		items := value.Times
+		items := value.Items
 
 		if index > len(items)-1 {
 			index = 0

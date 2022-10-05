@@ -154,7 +154,7 @@ func (s *ExecScenarioService) ExecContainerProcessorChildrenForLoop(processor *a
 
 		s.ExecIteratorService.Push(iterator)
 
-		for range iterator.Times {
+		for range iterator.Items {
 			containerLogItem, _ := s.AddContainerProcessor(processor, containerLog, wsMsg)
 
 			s.ExecChildren(processor, containerLogItem, wsMsg)

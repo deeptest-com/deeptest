@@ -345,6 +345,7 @@ func (e ProcessorCategory) ToString() string {
 type ProcessorType string
 
 const (
+	ProcessorRootDefault ProcessorType = "processor_root_default"
 	//ProcessorThreadDefault ProcessorType = "processor_thread_default"
 
 	ProcessorInterfaceDefault ProcessorType = "processor_interface_default"

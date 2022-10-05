@@ -96,9 +96,6 @@ type ExecIterator struct {
 	ProcessorType     consts.ProcessorType
 	VariableName      string `json:"variableName,omitempty"`
 
-	// loop times
-	Times []int `json:"times"`
-
 	// loop range
 	Items    []interface{}            `json:"items"`
 	Data     []map[string]interface{} `json:"data"`

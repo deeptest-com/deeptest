@@ -12,7 +12,7 @@ type ProcessorInterface struct {
 }
 
 func (p ProcessorInterface) Run(s *Session) (log Log, err error) {
-	logUtils.Infof("interface")
+	logUtils.Infof("interface entity")
 
 	log = Log{
 		Name:        p.Name,

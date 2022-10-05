@@ -31,23 +31,27 @@ type Processor struct {
 	Ordr     int              `json:"ordr"`
 	Children []*Processor     `json:"children"`
 	Slots    iris.Map         `json:"slots"`
-	Entity   IProcessorEntity `json:"entity"`
+	Entity   IProcessorEntity `json:"-"`
 
 	Log Log `json:"log"`
 
-	Session Session `json:"session"`
+	Session Session `json:"-"`
 }
 
 func (p *Processor) Run(s *Session) (log Log, err error) {
-	logUtils.Infof("run processor %s - %s, %s", p.Name, p.EntityCategory, p.EntityType)
+	logUtils.Infof("%s - %s", p.Name, p.EntityType)
 
 	log, _ = p.runEntity(s)
 
-	if log.ProcessorCategory == consts.ProcessorLoop { // loop
+	if p.EntityCategory == consts.ProcessorLoop { // loop
 		if p.EntityType == consts.ProcessorLoopUntil {
 			p.runLoopUntil(s, log.Iterator)
 		} else {
 			p.runLoopItems(s, log.Iterator)
+		}
+	} else {
+		for _, child := range p.Children {
+			child.Run(s)
 		}
 	}
 
@@ -94,10 +98,12 @@ func (p *Processor) runLoopItems(s *Session, iterator domain.ExecIterator) (err 
 		for _, child := range p.Children {
 			childLog, _ := child.Run(s)
 			if childLog.WillBreak {
-				break
+				goto LABEL
 			}
 		}
 	}
+
+LABEL:
 
 	return
 }

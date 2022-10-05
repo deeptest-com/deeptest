@@ -1,4 +1,5 @@
 export enum ProcessorCategory {
+    ProcessorRoot = "processor_root",
     ProcessorThread = "processor_thread",
     ProcessorGroup = "processor_group",
     ProcessorInterface = "processor_interface",
@@ -13,6 +14,9 @@ export enum ProcessorCategory {
     ProcessorAssertion = "processor_assertion",
 }
 
+export enum ProcessorRoot {
+    Root = "processor_root_default",
+}
 export enum ProcessorThread {
     Thread = "processor_thread_default",
 }

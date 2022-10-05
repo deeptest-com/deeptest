@@ -5,7 +5,7 @@ import {
     ProcessorCookie, ProcessorData,
     ProcessorExtractor,
     ProcessorLogic,
-    ProcessorLoop, ProcessorGroup, ProcessorThread, ProcessorTimer, ProcessorPrint,
+    ProcessorLoop, ProcessorGroup, ProcessorTimer, ProcessorPrint,
     ProcessorCategory,
     ProcessorVariable, ProcessorAssertion
 } from "@/utils/enum";

@@ -23,7 +23,7 @@ type ProcessorLoop struct {
 }
 
 func (p ProcessorLoop) Run(s *Session) (log Log, err error) {
-	logUtils.Infof("loop")
+	logUtils.Infof("loop entity")
 
 	log.Name = p.Name
 
@@ -41,8 +41,8 @@ func getBeak(loop ProcessorLoop) (ret bool, output string) {
 	breakIfExpress := loop.BreakIfExpression
 
 	result, err := EvaluateGovaluateExpression(breakIfExpress, loop.ProcessorID)
-	pass, ok := result.(bool)
-	if err == nil && ok && pass {
+	ret, ok := result.(bool)
+	if err == nil && ok && ret {
 		breakMap.Store(breakFrom, true)
 		output = "真"
 	} else {
@@ -80,7 +80,7 @@ func getIterator(loop ProcessorLoop) (iterator domain.ExecIterator, msg string) 
 func GenerateLoopTimes(loop ProcessorLoop) (ret domain.ExecIterator, err error) {
 	if loop.Times > 0 {
 		for i := 0; i < loop.Times; i++ {
-			ret.Times = append(ret.Times, i+1)
+			ret.Items = append(ret.Items, i+1)
 		}
 	}
 

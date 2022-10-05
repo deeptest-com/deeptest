@@ -7,6 +7,6 @@ type ProcessorTimer struct {
 	SleepTime int `json:"sleepTime" yaml:"sleepTime"`
 }
 
-func (p ProcessorTimer) Run(s *Session) (variableName string, variableValues []interface{}, err error) {
+func (p ProcessorTimer) Run(s *Session) (log Log, variableName string, variableValues []interface{}, err error) {
 	return
 }

@@ -69,7 +69,9 @@ func (r *ScenarioProcessorRepo) GetEntityTo(processorId uint) (ret agentExec.IPr
 	switch processor.EntityCategory {
 	case consts.ProcessorInterface:
 		po, _ := r.GetInterface(processor)
-		ret = agentExec.ProcessorInterface{}
+		ret = agentExec.ProcessorInterface{
+			InterfaceID: processor.InterfaceId,
+		}
 		copier.CopyWithOption(&ret, po, copier.Option{DeepCopy: true})
 
 	case consts.ProcessorGroup:

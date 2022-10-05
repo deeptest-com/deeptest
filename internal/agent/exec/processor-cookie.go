@@ -17,6 +17,6 @@ type ProcessorCookie struct {
 	Children []interface{} `json:"children" yaml:"children" gorm:"-"`
 }
 
-func (p ProcessorCookie) Run(s *Session) (variableName string, variableValues []interface{}, err error) {
+func (p ProcessorCookie) Run(s *Session) (log Log, variableName string, variableValues []interface{}, err error) {
 	return
 }

@@ -3,7 +3,7 @@ package agentExec
 import "github.com/aaronchen2k/deeptest/internal/pkg/consts"
 
 type IProcessorEntity interface {
-	Run(*Session) (string, []interface{}, error)
+	Run(*Session) (Log, string, []interface{}, error)
 }
 
 type ProcessorEntity struct {

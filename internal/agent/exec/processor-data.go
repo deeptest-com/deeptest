@@ -23,6 +23,6 @@ type ProcessorData struct {
 	VariableName string `json:"variableName,omitempty" yaml:"variableName,omitempty"`
 }
 
-func (p ProcessorData) Run(s *Session) (variableName string, variableValues []interface{}, err error) {
+func (p ProcessorData) Run(s *Session) (log Log, variableName string, variableValues []interface{}, err error) {
 	return
 }

@@ -7,6 +7,6 @@ type ProcessorLogic struct {
 	Expression string `json:"expression" yaml:"expression"`
 }
 
-func (p ProcessorLogic) Run(s *Session) (variableName string, variableValues []interface{}, err error) {
+func (p ProcessorLogic) Run(s *Session) (log Log, variableName string, variableValues []interface{}, err error) {
 	return
 }

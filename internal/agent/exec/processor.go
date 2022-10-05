@@ -27,7 +27,7 @@ type Processor struct {
 	Slots    iris.Map         `json:"slots"`
 	Entity   IProcessorEntity `json:"entity"`
 
-	Log *Log `json:"log"`
+	Log Log `json:"log"`
 
 	Session Session `json:"session"`
 }
@@ -35,7 +35,9 @@ type Processor struct {
 func (p *Processor) Run(s *Session) {
 	logUtils.Infof("run processor %s - %s, %s", p.Name, p.EntityCategory, p.EntityType)
 
-	iterateVariableName, iterateVariableValues, err := p.runEntity(s)
+	log, iterateVariableName, iterateVariableValues, err := p.runEntity(s)
+	p.Log = log
+
 	if err != nil || iterateVariableName == "" {
 		return
 	}
@@ -49,12 +51,12 @@ func (p *Processor) Run(s *Session) {
 	}
 }
 
-func (p *Processor) runEntity(s *Session) (iterateVariableName string, iterateVariableValues []interface{}, err error) {
+func (p *Processor) runEntity(s *Session) (log Log, iterateVariableName string, iterateVariableValues []interface{}, err error) {
 	if p.Entity == nil {
 		return
 	}
 
-	iterateVariableName, iterateVariableValues, err = p.Entity.Run(s)
+	log, iterateVariableName, iterateVariableValues, err = p.Entity.Run(s)
 
 	return
 }

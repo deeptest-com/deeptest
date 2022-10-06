@@ -11,8 +11,8 @@ type ExecVariable struct {
 	Value      interface{} `json:"value"`
 	Expression string      `json:"expression"`
 
-	InterfaceId uint `json:"interfaceId"`
-	IsShare     bool `json:"isShare"`
+	InterfaceId uint                  `json:"interfaceId"`
+	Scope       consts.ExtractorScope `json:"scope"`
 }
 
 type ExecCookie struct {

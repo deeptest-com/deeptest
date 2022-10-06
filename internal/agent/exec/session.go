@@ -22,8 +22,7 @@ type Session struct {
 	RootProcessor *Processor
 	Report        *Report
 
-	Variables []domain.Variable
-	WsMsg     *websocket.Message
+	WsMsg *websocket.Message
 }
 
 func NewSession(root *Processor, variables []domain.Variable, failfast bool, wsMsg *websocket.Message) (ret *Session) {

@@ -78,7 +78,7 @@ func (s *ExtractorService) Extract(extractor model.InterfaceExtractor, resp v1.I
 
 	} else { // run by processor
 		s.ExecContext.SetVariable(interfaceExecLog.ProcessorId, extractor.Variable, extractor.Result,
-			extractor.IsShare)
+			extractor.Scope)
 
 		logExtractor, err = s.ExtractorRepo.UpdateResultToExecLog(extractor, interfaceExecLog)
 

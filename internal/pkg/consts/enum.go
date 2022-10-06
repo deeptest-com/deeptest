@@ -260,6 +260,14 @@ const (
 	Judgement      CheckpointType = "judgement"
 )
 
+type ExtractorScope string
+
+const (
+	Private ExtractorScope = "private"
+	Local   ExtractorScope = "local"
+	Global  ExtractorScope = "global"
+)
+
 type ComparisonOperator string
 
 const (

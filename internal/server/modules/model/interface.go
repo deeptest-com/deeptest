@@ -143,9 +143,9 @@ type InterfaceExtractor struct {
 	BoundaryIndex    int    `json:"boundaryIndex"`
 	BoundaryIncluded bool   `json:"boundaryIncluded"`
 
-	Variable    string `json:"variable"`
-	IsShare     bool   `json:"isShare" gorm:"default:false"`
-	EnableShare bool   `json:"enableShare" gorm:"default:false"`
+	Variable    string                `json:"variable"`
+	Scope       consts.ExtractorScope `json:"scope" gorm:"default:private"`
+	EnableShare bool                  `json:"enableShare" gorm:"default:false"`
 
 	Result      string `json:"result"`
 	InterfaceId uint   `json:"interfaceId"`

@@ -66,7 +66,7 @@ func (p *Processor) runLoopUntil(s *Session, iterator domain.ExecIterator) (err 
 	expression := iterator.UntilExpression
 
 	for {
-		result, err := EvaluateGovaluateExpression(expression, p.ID)
+		result, err := EvaluateGovaluateExpressionByScope(expression, p.ID)
 		pass, ok := result.(bool)
 		if err != nil || !ok || pass {
 			break
@@ -87,7 +87,7 @@ LABEL:
 
 func (p *Processor) runLoopItems(s *Session, iterator domain.ExecIterator) (err error) {
 	for _, item := range iterator.Items {
-		SetVariable(p.ID, iterator.VariableName, item, false)
+		SetVariable(p.ID, iterator.VariableName, item, consts.Local)
 
 		for _, child := range p.Children {
 			childLog, _ := child.Run(s)

@@ -35,6 +35,7 @@ type ExecScenarioService struct {
 	ExecHelperService    *ExecHelperService     `inject:""`
 	ExecIteratorService  *business.ExecIterator `inject:""`
 	ExecLogService       *ExecLogService        `inject:""`
+	EnvironmentService   *EnvironmentService    `inject:""`
 	ExecReportService    *ExecReportService     `inject:""`
 	ExecInterfaceService *ExecInterfaceService  `inject:""`
 }
@@ -55,7 +56,9 @@ func (s *ExecScenarioService) ExecScenario(scenarioId int, wsMsg *websocket.Mess
 	agentExec.InitScopeHierarchy(processors)
 
 	root, _ := s.ScenarioNodeRepo.GetTree(uint(scenarioId), true)
-	session := agentExec.NewSession(root, wsMsg, false)
+	variables, _ := s.EnvironmentService.ListVariableForExec(uint(scenarioId))
+
+	session := agentExec.NewSession(root, variables, false, wsMsg)
 	session.Run()
 
 	return
@@ -196,7 +199,7 @@ func (s *ExecScenarioService) ExecContainerProcessorChildrenForLoop(processor *a
 		for _, item := range iterator.Items {
 			containerLogItem, _ := s.AddContainerProcessor(processor, containerLog, wsMsg)
 
-			s.ExecContextService.SetVariable(processor.ID, loopListProcessor.VariableName, item, false)
+			s.ExecContextService.SetVariable(processor.ID, loopListProcessor.VariableName, item, consts.Local)
 			vari, _ := s.ExecContextService.GetVariable(processor.ID, loopListProcessor.VariableName)
 			logUtils.Infof("%s = %v", vari.Name, vari.Value)
 
@@ -221,7 +224,7 @@ func (s *ExecScenarioService) ExecContainerProcessorChildrenForLoop(processor *a
 		for _, item := range iterator.Items {
 			containerLogItem, _ := s.AddContainerProcessor(processor, containerLog, wsMsg)
 
-			s.ExecContextService.SetVariable(processor.ID, loopRangeProcessor.VariableName, item, false)
+			s.ExecContextService.SetVariable(processor.ID, loopRangeProcessor.VariableName, item, consts.Local)
 			vari, _ := s.ExecContextService.GetVariable(processor.ID, loopRangeProcessor.VariableName)
 			logUtils.Infof("%s = %v", vari.Name, vari.Value)
 
@@ -282,7 +285,7 @@ func (s *ExecScenarioService) ExecContainerProcessorChildrenForData(processor *a
 		for _, mapItem := range iterator.Data {
 			containerLogItem, _ := s.AddContainerProcessor(processor, containerLog, wsMsg)
 
-			s.ExecContextService.SetVariable(processor.ID, data.VariableName, mapItem, false)
+			s.ExecContextService.SetVariable(processor.ID, data.VariableName, mapItem, consts.Local)
 			//vari, _ := s.ExecContextService.GetVariable(processor.ID, data.VariableName)
 			//logUtils.Infof("%s = %v", vari.Name, vari.Value)
 

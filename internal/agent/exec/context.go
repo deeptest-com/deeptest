@@ -3,6 +3,7 @@ package agentExec
 import (
 	"errors"
 	"fmt"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"strings"
@@ -29,7 +30,7 @@ func ListCachedVariable(scopeId uint) (variables []domain.ExecVariable) {
 
 	for _, id := range *effectiveScopeIds {
 		for _, vari := range ScopedVariables[id] {
-			if !vari.IsShare && id != scopeId {
+			if !(vari.Scope == consts.Global || id != scopeId) {
 				continue
 			}
 
@@ -86,15 +87,15 @@ func EvaluateVariableExpressionValue(variable domain.ExecVariable, variablePath 
 	return
 }
 
-func SetVariable(scopeId uint, variableName string, variableValue interface{}, isShare bool) (
+func SetVariable(scopeId uint, variableName string, variableValue interface{}, scope consts.ExtractorScope) (
 	err error) {
 
 	found := false
 
 	newVariable := domain.ExecVariable{
-		Name:    variableName,
-		Value:   variableValue,
-		IsShare: isShare,
+		Name:  variableName,
+		Value: variableValue,
+		Scope: scope,
 	}
 
 	allValidIds := ScopeHierarchy[scopeId]

@@ -125,7 +125,7 @@ func (s *ExecProcessorService) ExecVariable(processor *agentExec.Processor, pare
 	output, _ = s.ExecHelperService.EvaluateVariable(&variable, parentLog, msg)
 
 	if processor.EntityType == consts.ProcessorVariableSet {
-		s.ExecContext.SetVariable(parentLog.ProcessId, output.VariableName, output.VariableValue, false) // set in parent scope
+		s.ExecContext.SetVariable(parentLog.ProcessId, output.VariableName, output.VariableValue, consts.Local) // set in parent scope
 
 	} else if processor.EntityType == consts.ProcessorVariableClear {
 		s.ExecContext.ClearVariable(parentLog.ProcessId, output.VariableName) // set in parent scope

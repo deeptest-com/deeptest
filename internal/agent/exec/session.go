@@ -2,6 +2,7 @@ package agentExec
 
 import (
 	"crypto/tls"
+	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/kataras/iris/v12/websocket"
 	"golang.org/x/net/http2"
 	"net/http"
@@ -20,14 +21,16 @@ type Session struct {
 	RootProcessor *Processor
 	Report        *Report
 
-	WsMsg *websocket.Message
+	Variables []domain.Variable
+	WsMsg     *websocket.Message
 }
 
-func NewSession(root *Processor, wsMsg *websocket.Message, failfast bool) (ret *Session) {
+func NewSession(root *Processor, variables []domain.Variable, failfast bool, wsMsg *websocket.Message) (ret *Session) {
 	session := Session{
 		ScenarioId:    root.ScenarioId,
 		Name:          root.Name,
 		RootProcessor: root,
+		Variables:     variables,
 		Failfast:      failfast,
 		WsMsg:         wsMsg,
 	}

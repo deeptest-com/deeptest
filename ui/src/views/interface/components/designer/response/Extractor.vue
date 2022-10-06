@@ -114,9 +114,15 @@
                      @blur="validate('variable', { trigger: 'blur' }).catch(() => {})" />
           </a-form-item>
 
-          <a-form-item label="变量与其他接口共享" v-bind="validateInfos.variable">
-            <a-switch v-model:checked="model.isShare" />
-            <div class="dp-input-tip">变量默认为接口私有，仅限在接口检查器中引用。</div>
+          <a-form-item label="变量作用域">
+            <a-radio-group v-model:value="model.scope">
+              <a-radio value="private">私有</a-radio>
+              <a-radio value="local">局部</a-radio>
+              <a-radio value="global">全局</a-radio>
+            </a-radio-group>
+            <div class="dp-input-tip">
+              私有变量仅在本接口的检查器中可见，局部变量在整个接口设计器和场景目录下可见，全局变量在整个场景中可见。
+            </div>
           </a-form-item>
 
           <a-form-item :wrapper-col="{ span: wrapperCol.span, offset: labelCol.span }">
@@ -219,7 +225,7 @@ export default defineComponent({
 
     const add = () => {
       editVisible.value = true
-      model.value = {src: ExtractorSrc.body, type: ExtractorType.boundary, expression: '', variable: '', isShare: false} as Extractor
+      model.value = {src: ExtractorSrc.body, type: ExtractorType.boundary, expression: '', variable: '', scope: 'private'} as Extractor
 
       selectSrc()
       if (responseData.value.contentLang === 'json') {

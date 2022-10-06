@@ -198,7 +198,7 @@ func (s *ExecHelperService) EvaluateExtractor(extractor *model.ProcessorExtracto
 		return
 	}
 
-	s.ExecContext.SetVariable(parentLog.ProcessId, extractor.Variable, interfaceExtractor.Result, false) // set in parent scope
+	s.ExecContext.SetVariable(parentLog.ProcessId, extractor.Variable, interfaceExtractor.Result, consts.Local) // set in parent scope
 	output.Msg = fmt.Sprintf("将结果\"%v\"赋予变量\"%s\"。", interfaceExtractor.Result, extractor.Variable)
 
 	return
@@ -242,7 +242,7 @@ func (s *ExecHelperService) EvaluateCookie(processor *model.ProcessorCookie, par
 			return
 		}
 
-		s.ExecContext.SetVariable(parentLog.ProcessId, variableName, variableValue, false) // set in parent scope
+		s.ExecContext.SetVariable(parentLog.ProcessId, variableName, variableValue, consts.Local) // set in parent scope
 		output.Msg = fmt.Sprintf("将%s%s值%v赋予变量%s。", cookieName, words, variableValue, variableName)
 
 	} else if typ == consts.ProcessorCookieClear {

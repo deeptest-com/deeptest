@@ -41,7 +41,7 @@ func getBeak(loop ProcessorLoop) (ret bool, output string) {
 	breakFrom := loop.ParentID
 	breakIfExpress := loop.BreakIfExpression
 
-	result, err := EvaluateGovaluateExpression(breakIfExpress, loop.ProcessorID)
+	result, err := EvaluateGovaluateExpressionByScope(breakIfExpress, loop.ProcessorID)
 	ret, ok := result.(bool)
 	if err == nil && ok && ret {
 		breakMap.Store(breakFrom, true)
@@ -113,7 +113,7 @@ func GenerateLoopList(loop ProcessorLoop) (ret domain.ExecIterator, err error) {
 //breakFrom := output.BreakFrom
 //breakIfExpress := output.Expression
 //
-//result, err := EvaluateGovaluateExpression(breakIfExpress, p.ID)
+//result, err := EvaluateGovaluateExpressionByScope(breakIfExpress, p.ID)
 //pass, ok := result.(bool)
 //if err == nil && ok && pass {
 //breakMap.Store(breakFrom, true)

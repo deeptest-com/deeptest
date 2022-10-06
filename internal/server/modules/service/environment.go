@@ -2,18 +2,42 @@ package service
 
 import (
 	"errors"
+	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	repo2 "github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 )
 
 type EnvironmentService struct {
 	EnvironmentRepo *repo2.EnvironmentRepo `inject:""`
+	ScenarioRepo    *repo2.ScenarioRepo    `inject:""`
 	InterfaceRepo   *repo2.InterfaceRepo   `inject:""`
 	ProjectRepo     *repo2.ProjectRepo     `inject:""`
 }
 
 func (s *EnvironmentService) List() (envs []model.Environment, err error) {
 	envs, err = s.EnvironmentRepo.List()
+
+	return
+}
+
+func (s *EnvironmentService) ListVariableForExec(scenarioId uint) (ret []domain.Variable, err error) {
+	scenario, err := s.ScenarioRepo.Get(scenarioId)
+	if err != nil {
+		return
+	}
+
+	pos, err := s.EnvironmentRepo.ListVariableByProject(scenario.ProjectId)
+	if err != nil {
+		return
+	}
+
+	for _, po := range pos {
+		ret = append(ret, domain.Variable{
+			ID:    po.ID,
+			Name:  po.Name,
+			Value: po.Value,
+		})
+	}
 
 	return
 }

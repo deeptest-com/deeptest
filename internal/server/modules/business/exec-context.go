@@ -3,6 +3,7 @@ package business
 import (
 	"errors"
 	"fmt"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
@@ -36,7 +37,7 @@ func (s *ExecContext) ListCachedVariable(scopeId uint) (variables []domain.ExecV
 
 	for _, id := range *effectiveScopeIds {
 		for _, vari := range ScopedVariables[id] {
-			if !vari.IsShare && id != scopeId {
+			if !(vari.Scope == consts.Global || id != scopeId) {
 				continue
 			}
 
@@ -93,15 +94,15 @@ func (s *ExecContext) EvaluateVariableExpressionValue(variable domain.ExecVariab
 	return
 }
 
-func (s *ExecContext) SetVariable(scopeId uint, variableName string, variableValue interface{}, isShare bool) (
+func (s *ExecContext) SetVariable(scopeId uint, variableName string, variableValue interface{}, scope consts.ExtractorScope) (
 	err error) {
 
 	found := false
 
 	newVariable := domain.ExecVariable{
-		Name:    variableName,
-		Value:   variableValue,
-		IsShare: isShare,
+		Name:  variableName,
+		Value: variableValue,
+		Scope: scope,
 	}
 
 	allValidIds := ScopeHierarchy[scopeId]

@@ -17,7 +17,7 @@ import (
 // @contact.url https://github.com/aaronchen2k/deeptest/issues
 // @contact.email 462626@qq.com
 func main() {
-	websocketHelper.websocketHelper.InitMq()
+	websocketHelper.InitMq()
 
 	server := server.Init()
 	if server == nil {

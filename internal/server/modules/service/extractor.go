@@ -2,9 +2,9 @@ package service
 
 import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/query"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
-	"github.com/aaronchen2k/deeptest/internal/pkg/helper/query"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/business"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/helper/request"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"

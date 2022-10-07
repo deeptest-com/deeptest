@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils"
+	queryHelper2 "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/query"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	queryHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/query"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/websocket"
 	stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 
@@ -109,16 +109,16 @@ func (p ProcessorInterface) ExtractValue(extractor *domain.ExecInterfaceExtracto
 			}
 		} else {
 			if utils.IsJsonContent(resp.ContentType.String()) && extractor.Type == consts.JsonQuery {
-				extractor.Result = queryHelper.JsonQuery(resp.Content, extractor.Expression)
+				extractor.Result = queryHelper2.JsonQuery(resp.Content, extractor.Expression)
 
 			} else if utils.IsHtmlContent(resp.ContentType.String()) && extractor.Type == consts.HtmlQuery {
-				extractor.Result = queryHelper.HtmlQuery(resp.Content, extractor.Expression)
+				extractor.Result = queryHelper2.HtmlQuery(resp.Content, extractor.Expression)
 
 			} else if utils.IsXmlContent(resp.ContentType.String()) && extractor.Type == consts.XmlQuery {
-				extractor.Result = queryHelper.XmlQuery(resp.Content, extractor.Expression)
+				extractor.Result = queryHelper2.XmlQuery(resp.Content, extractor.Expression)
 
 			} else if extractor.Type == consts.Boundary {
-				extractor.Result = queryHelper.BoundaryQuery(resp.Content, extractor.BoundaryStart, extractor.BoundaryEnd,
+				extractor.Result = queryHelper2.BoundaryQuery(resp.Content, extractor.BoundaryStart, extractor.BoundaryEnd,
 					extractor.BoundaryIndex, extractor.BoundaryIncluded)
 			}
 		}

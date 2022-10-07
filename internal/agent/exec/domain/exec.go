@@ -24,7 +24,7 @@ type ExecCookie struct {
 	ExpireTime *time.Time `json:"expireTime"`
 }
 
-type ExecInterfaceExtractor struct {
+type Extractor struct {
 	Src  consts.ExtractorSrc  `json:"src"`
 	Type consts.ExtractorType `json:"type"`
 	Key  string               `json:"key"`
@@ -45,7 +45,7 @@ type ExecInterfaceExtractor struct {
 
 	Disabled bool `json:"disabled"`
 }
-type ExecInterfaceCheckpoint struct {
+type Checkpoint struct {
 	Type consts.CheckpointType `json:"type"`
 
 	Expression        string `json:"expression"`

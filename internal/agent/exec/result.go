@@ -30,8 +30,8 @@ type Result struct {
 	HttpRespStatusCode    consts.HttpRespCode `json:"httpStatusCode,omitempty"`
 	HttpRespStatusContent string              `json:"httpStatusContent,omitempty"`
 
-	InterfaceExtractorsResult  []ExtractLog    `json:"interfaceExtractorsResult,omitempty"`
-	InterfaceCheckpointsResult []CheckpointLog `json:"interfaceCheckpointsResult,omitempty"`
+	ExtractorsResult  []domain.Extractor  `json:"extractorsResult,omitempty"`
+	CheckpointsResult []domain.Checkpoint `json:"checkpointsResult,omitempty"`
 
 	// for processor
 	ProcessorType    consts.ProcessorType `json:"processorType,omitempty"`
@@ -48,41 +48,4 @@ type Result struct {
 	Output  string `json:"output,omitempty"`
 
 	Logs []*Result `json:"logs"`
-}
-
-type ExtractLog struct {
-	ID   uint                 `json:"id" yaml:"id"`
-	Src  consts.ExtractorSrc  `json:"src"`
-	Type consts.ExtractorType `json:"type"`
-	Key  string               `json:"key"`
-
-	Expression string `json:"expression"`
-	Prop       string `json:"prop"`
-
-	BoundaryStart    string `json:"boundaryStart"`
-	BoundaryEnd      string `json:"boundaryEnd"`
-	BoundaryIndex    int    `json:"boundaryIndex"`
-	BoundaryIncluded bool   `json:"boundaryIncluded"`
-
-	Variable string `json:"variable"`
-
-	Result      string `json:"result"`
-	InterfaceId uint   `json:"interfaceId"`
-	LogId       uint   `json:"logId"`
-}
-
-type CheckpointLog struct {
-	ID   uint                  `json:"id" yaml:"id"`
-	Type consts.CheckpointType `json:"type"`
-
-	Expression        string `json:"expression"`
-	ExtractorVariable string `json:"extractorVariable"`
-
-	Operator consts.ComparisonOperator `json:"operator"`
-	Value    string                    `json:"value"`
-
-	ActualResult string              `json:"actualResult"`
-	ResultStatus consts.ResultStatus `json:"resultStatus"`
-	InterfaceId  uint                `json:"interfaceId"`
-	LogId        uint                `json:"logId"`
 }

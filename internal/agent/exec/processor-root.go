@@ -10,9 +10,9 @@ type ProcessorRoot struct {
 }
 
 func (p *ProcessorRoot) Run(s *Session) (log Result, err error) {
-	logUtils.Infof("root")
+	logUtils.Infof("root entity")
 
-	log = Result{
+	p.Result = Result{
 		Name: p.Name,
 	}
 

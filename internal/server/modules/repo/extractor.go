@@ -25,7 +25,7 @@ func (r *ExtractorRepo) List(interfaceId uint) (pos []model.InterfaceExtractor, 
 	return
 }
 
-func (r *ExtractorRepo) ListTo(interfaceId uint) (ret []domain.ExecInterfaceExtractor, err error) {
+func (r *ExtractorRepo) ListTo(interfaceId uint) (ret []domain.Extractor, err error) {
 	pos := make([]model.InterfaceExtractor, 0)
 
 	err = r.DB.
@@ -34,7 +34,7 @@ func (r *ExtractorRepo) ListTo(interfaceId uint) (ret []domain.ExecInterfaceExtr
 		Find(&pos).Error
 
 	for _, po := range pos {
-		extractor := domain.ExecInterfaceExtractor{}
+		extractor := domain.Extractor{}
 		copier.CopyWithOption(&extractor, po, copier.Option{DeepCopy: true})
 
 		ret = append(ret, extractor)

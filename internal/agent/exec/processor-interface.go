@@ -5,13 +5,12 @@ import (
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils"
-	queryHelper2 "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/query"
+	queryHelper "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/query"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/websocket"
 	stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
-	"github.com/jinzhu/copier"
 	"strings"
 )
 
@@ -22,14 +21,18 @@ type ProcessorInterface struct {
 	Request  domain.Request  `json:"request"`
 	Response domain.Response `json:"response"`
 
-	Extractors  []domain.ExecInterfaceExtractor
-	Checkpoints []domain.ExecInterfaceCheckpoint
+	Extractors  []domain.Extractor
+	Checkpoints []domain.Checkpoint
 
-	Result Result `json:"id"`
+	Result Result `json:"result"`
 }
 
 func (p ProcessorInterface) Run(s *Session) (log Result, err error) {
 	logUtils.Infof("interface entity")
+
+	p.Result = Result{
+		Name: p.Name,
+	}
 
 	variableMap := GetVariableMap(p.ProcessorID)
 	ReplaceAll(&p.Request, variableMap)
@@ -58,10 +61,8 @@ func (p ProcessorInterface) ExtractInterface(s *Session) (err error) {
 		SetVariable(p.ID, extractor.Variable, extractor.Result, extractor.Scope)
 
 		if err == nil { // gen report for processor
-			interfaceExtractor := domain.ExecInterfaceExtractor{}
-			copier.CopyWithOption(&interfaceExtractor, extractor, copier.Option{DeepCopy: true})
 
-			p.Extractors = append(p.Extractors, interfaceExtractor)
+			p.Result.ExtractorsResult = append(p.Result.ExtractorsResult, extractor)
 		}
 	}
 
@@ -78,10 +79,7 @@ func (p *ProcessorInterface) CheckInterface(s *Session) (err error) {
 		}
 
 		if err == nil {
-			interfaceCheckpoint := domain.ExecInterfaceCheckpoint{}
-			copier.CopyWithOption(&interfaceCheckpoint, checkpoint, copier.Option{DeepCopy: true})
-
-			p.Checkpoints = append(p.Checkpoints, interfaceCheckpoint)
+			p.Result.CheckpointsResult = append(p.Result.CheckpointsResult, checkpoint)
 		}
 	}
 
@@ -90,7 +88,7 @@ func (p *ProcessorInterface) CheckInterface(s *Session) (err error) {
 	return
 }
 
-func (p ProcessorInterface) Extract(extractor *domain.ExecInterfaceExtractor, resp domain.Response) (err error) {
+func (p ProcessorInterface) Extract(extractor *domain.Extractor, resp domain.Response) (err error) {
 	if extractor.Disabled {
 		extractor.Result = ""
 	} else {
@@ -103,16 +101,16 @@ func (p ProcessorInterface) Extract(extractor *domain.ExecInterfaceExtractor, re
 			}
 		} else {
 			if utils.IsJsonContent(resp.ContentType.String()) && extractor.Type == consts.JsonQuery {
-				extractor.Result = queryHelper2.JsonQuery(resp.Content, extractor.Expression)
+				extractor.Result = queryHelper.JsonQuery(resp.Content, extractor.Expression)
 
 			} else if utils.IsHtmlContent(resp.ContentType.String()) && extractor.Type == consts.HtmlQuery {
-				extractor.Result = queryHelper2.HtmlQuery(resp.Content, extractor.Expression)
+				extractor.Result = queryHelper.HtmlQuery(resp.Content, extractor.Expression)
 
 			} else if utils.IsXmlContent(resp.ContentType.String()) && extractor.Type == consts.XmlQuery {
-				extractor.Result = queryHelper2.XmlQuery(resp.Content, extractor.Expression)
+				extractor.Result = queryHelper.XmlQuery(resp.Content, extractor.Expression)
 
 			} else if extractor.Type == consts.Boundary {
-				extractor.Result = queryHelper2.BoundaryQuery(resp.Content, extractor.BoundaryStart, extractor.BoundaryEnd,
+				extractor.Result = queryHelper.BoundaryQuery(resp.Content, extractor.BoundaryStart, extractor.BoundaryEnd,
 					extractor.BoundaryIndex, extractor.BoundaryIncluded)
 			}
 		}
@@ -123,7 +121,7 @@ func (p ProcessorInterface) Extract(extractor *domain.ExecInterfaceExtractor, re
 	return
 }
 
-func (p *ProcessorInterface) Check(checkpoint *domain.ExecInterfaceCheckpoint, resp domain.Response) (err error) {
+func (p *ProcessorInterface) Check(checkpoint *domain.Checkpoint, resp domain.Response) (err error) {
 	if checkpoint.Disabled {
 		checkpoint.ResultStatus = ""
 		return

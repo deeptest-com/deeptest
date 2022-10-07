@@ -3,7 +3,7 @@ package execHelper
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/helper/websocket"
+	websocketHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/websocket"
 	_i118Utils "github.com/aaronchen2k/deeptest/pkg/lib/i118"
 	_logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/kataras/iris/v12/websocket"

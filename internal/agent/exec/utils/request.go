@@ -5,11 +5,11 @@ import (
 	"compress/gzip"
 	"compress/zlib"
 	"crypto/tls"
+	"encoding/base64"
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	commUtils "github.com/aaronchen2k/deeptest/internal/pkg/utils"
-	requestHelper "github.com/aaronchen2k/deeptest/internal/server/modules/helper/request"
 	_consts "github.com/aaronchen2k/deeptest/pkg/consts"
 	_logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	_stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
@@ -131,7 +131,7 @@ func gets(req domain.Request, method consts.HttpMethod, readRespData bool) (
 	ret.StatusContent = resp.Status
 	ret.ContentType = consts.HttpContentType(resp.Header.Get(consts.ContentType))
 	ret.ContentLength = _stringUtils.ParseInt(resp.Header.Get(consts.ContentLength))
-	ret.RespHeaders = getHeaders(resp.Header)
+	ret.Headers = getHeaders(resp.Header)
 
 	if !readRespData {
 		return
@@ -251,7 +251,7 @@ func posts(req domain.Request, method consts.HttpMethod, readRespData bool) (
 
 	ret.ContentType = consts.HttpContentType(resp.Header.Get(consts.ContentType))
 	ret.ContentLength = _stringUtils.ParseInt(resp.Header.Get(consts.ContentLength))
-	ret.RespHeaders = getHeaders(resp.Header)
+	ret.Headers = getHeaders(resp.Header)
 
 	if readRespData {
 		reader := resp.Body
@@ -275,7 +275,7 @@ func posts(req domain.Request, method consts.HttpMethod, readRespData bool) (
 func addAuthorInfo(req domain.Request, request *http.Request) {
 	if req.AuthorizationType == consts.BasicAuth {
 		str := fmt.Sprintf("%s:%s", req.BasicAuth.Username, req.BasicAuth.Password)
-		str = fmt.Sprintf("Basic %s", requestHelper.Base64(str))
+		str = fmt.Sprintf("Basic %s", Base64(str))
 
 		request.Header.Set(consts.Authorization, str)
 
@@ -342,4 +342,20 @@ func decodeResponseBody(resp *http.Response) (err error) {
 		resp.ContentLength = -1 // set to unknown to avoid Content-Length mismatched
 	}
 	return nil
+}
+
+func Base64(str string) (ret string) {
+	ret = base64.StdEncoding.EncodeToString([]byte(str))
+
+	return
+}
+
+func IsXmlContent(str string) bool {
+	return strings.Contains(str, "xml")
+}
+func IsHtmlContent(str string) bool {
+	return strings.Contains(str, "html")
+}
+func IsJsonContent(str string) bool {
+	return strings.Contains(str, "json")
 }

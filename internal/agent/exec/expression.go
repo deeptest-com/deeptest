@@ -3,7 +3,7 @@ package agentExec
 import (
 	"fmt"
 	"github.com/Knetic/govaluate"
-	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
+	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	commUtils "github.com/aaronchen2k/deeptest/internal/pkg/utils"
 	_stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"regexp"

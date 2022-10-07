@@ -1,7 +1,6 @@
 package agentExec
 
 import (
-	"encoding/base64"
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils"
@@ -210,20 +209,4 @@ func ReplaceExpressionValue(value string, variableMap map[string]interface{}, ex
 	}
 
 	return
-}
-
-func Base64(str string) (ret string) {
-	ret = base64.StdEncoding.EncodeToString([]byte(str))
-
-	return
-}
-
-func IsXmlContent(str string) bool {
-	return strings.Contains(str, "xml")
-}
-func IsHtmlContent(str string) bool {
-	return strings.Contains(str, "html")
-}
-func IsJsonContent(str string) bool {
-	return strings.Contains(str, "json")
 }

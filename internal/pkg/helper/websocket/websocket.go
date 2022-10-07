@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	_i118Utils "github.com/aaronchen2k/deeptest/pkg/lib/i118"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
@@ -17,7 +16,7 @@ var (
 	wsConn *neffos.Conn
 )
 
-func SendExecMsg(msg string, log domain.ExecLog, wsMsg *websocket.Message) {
+func SendExecMsg(msg string, log interface{}, wsMsg *websocket.Message) {
 	msg = strings.TrimSpace(msg)
 	resp := _domain.WsResp{Msg: msg, Data: log}
 

@@ -34,7 +34,7 @@ type InterfaceSimple struct {
 	Url               string          `json:"url"`
 	Method            string          `gorm:"default:GET" json:"method"`
 	Params            []domain.Param  `gorm:"-" json:"params"`
-	RespHeaders           []domain.Header `gorm:"-" json:"headers"`
+	Headers           []domain.Header `gorm:"-" json:"headers"`
 	Body              string          `gorm:"default:{}" json:"body"`
 	BodyType          consts.HttpContentType          `gorm:"default:''" json:"bodyType"`
 	AuthorizationType string          `gorm:"default:''" json:"authorizationType"`

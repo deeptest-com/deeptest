@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/helper/websocket"
 	"github.com/aaronchen2k/deeptest/internal/server/consts"
 	execHelper "github.com/aaronchen2k/deeptest/internal/server/modules/helper/exec"
-	websocketHelper2 "github.com/aaronchen2k/deeptest/internal/server/modules/helper/websocket"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	_i118Utils "github.com/aaronchen2k/deeptest/pkg/lib/i118"
@@ -37,14 +37,14 @@ func NewWsCtrl() *WebSocketCtrl {
 }
 
 func (c *WebSocketCtrl) OnNamespaceConnected(wsMsg websocket.Message) error {
-	websocketHelper2.SetConn(c.Conn)
+	websocketHelper.SetConn(c.Conn)
 
 	_logUtils.Infof(_i118Utils.Sprintf("ws_namespace_connected", c.Conn.ID(), wsMsg.Room))
 
 	resp := _domain.WsResp{Msg: "from server: connected to websocket"}
 	bytes, _ := json.Marshal(resp)
 	mqData := _domain.MqMsg{Namespace: wsMsg.Namespace, Room: wsMsg.Room, Event: wsMsg.Event, Content: string(bytes)}
-	websocketHelper2.PubMsg(mqData)
+	websocketHelper.PubMsg(mqData)
 
 	return nil
 }
@@ -58,7 +58,7 @@ func (c *WebSocketCtrl) OnNamespaceDisconnect(wsMsg websocket.Message) error {
 	resp := _domain.WsResp{Msg: fmt.Sprintf("ws_connected")}
 	bytes, _ := json.Marshal(resp)
 	mqData := _domain.MqMsg{Namespace: wsMsg.Namespace, Room: wsMsg.Room, Event: wsMsg.Event, Content: string(bytes)}
-	websocketHelper2.PubMsg(mqData)
+	websocketHelper.PubMsg(mqData)
 
 	return nil
 }

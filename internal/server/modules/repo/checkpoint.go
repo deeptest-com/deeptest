@@ -1,7 +1,8 @@
 package repo
 
 import (
-	model2 "github.com/aaronchen2k/deeptest/internal/server/modules/model"
+	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
+	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/jinzhu/copier"
 	"gorm.io/gorm"
 )
@@ -10,7 +11,7 @@ type CheckpointRepo struct {
 	DB *gorm.DB `inject:""`
 }
 
-func (r *CheckpointRepo) List(interfaceId uint) (pos []model2.InterfaceCheckpoint, err error) {
+func (r *CheckpointRepo) List(interfaceId uint) (pos []model.InterfaceCheckpoint, err error) {
 	err = r.DB.
 		Where("interface_id=?", interfaceId).
 		Where("NOT deleted").
@@ -19,7 +20,25 @@ func (r *CheckpointRepo) List(interfaceId uint) (pos []model2.InterfaceCheckpoin
 	return
 }
 
-func (r *CheckpointRepo) Get(id uint) (checkpoint model2.InterfaceCheckpoint, err error) {
+func (r *CheckpointRepo) ListTo(interfaceId uint) (ret []domain.ExecInterfaceCheckpoint, err error) {
+	pos := make([]model.InterfaceExtractor, 0)
+
+	err = r.DB.
+		Where("interface_id=?", interfaceId).
+		Where("NOT deleted").
+		Find(&pos).Error
+
+	for _, po := range pos {
+		extractor := domain.ExecInterfaceCheckpoint{}
+		copier.CopyWithOption(&extractor, po, copier.Option{DeepCopy: true})
+
+		ret = append(ret, extractor)
+	}
+
+	return
+}
+
+func (r *CheckpointRepo) Get(id uint) (checkpoint model.InterfaceCheckpoint, err error) {
 	err = r.DB.
 		Where("id=?", id).
 		Where("NOT deleted").
@@ -27,8 +46,8 @@ func (r *CheckpointRepo) Get(id uint) (checkpoint model2.InterfaceCheckpoint, er
 	return
 }
 
-func (r *CheckpointRepo) GetByName(name string, interfaceId uint) (checkpoint model2.InterfaceCheckpoint, err error) {
-	var checkpoints []model2.InterfaceCheckpoint
+func (r *CheckpointRepo) GetByName(name string, interfaceId uint) (checkpoint model.InterfaceCheckpoint, err error) {
+	var checkpoints []model.InterfaceCheckpoint
 
 	db := r.DB.Model(&checkpoint).
 		Where("name = ? AND interface_id =? AND not deleted", name, interfaceId)
@@ -46,13 +65,13 @@ func (r *CheckpointRepo) GetByName(name string, interfaceId uint) (checkpoint mo
 	return
 }
 
-func (r *CheckpointRepo) Save(checkpoint *model2.InterfaceCheckpoint) (err error) {
+func (r *CheckpointRepo) Save(checkpoint *model.InterfaceCheckpoint) (err error) {
 	err = r.DB.Save(checkpoint).Error
 	return
 }
 
 func (r *CheckpointRepo) Delete(id uint) (err error) {
-	err = r.DB.Model(&model2.InterfaceCheckpoint{}).
+	err = r.DB.Model(&model.InterfaceCheckpoint{}).
 		Where("id=?", id).
 		Update("deleted", true).
 		Error
@@ -60,7 +79,7 @@ func (r *CheckpointRepo) Delete(id uint) (err error) {
 	return
 }
 
-func (r *CheckpointRepo) UpdateResult(checkpoint model2.InterfaceCheckpoint) (err error) {
+func (r *CheckpointRepo) UpdateResult(checkpoint model.InterfaceCheckpoint) (err error) {
 	err = r.DB.Model(&checkpoint).
 		Where("id=?", checkpoint.ID).
 		Update("actual_result", checkpoint.ActualResult).
@@ -70,8 +89,8 @@ func (r *CheckpointRepo) UpdateResult(checkpoint model2.InterfaceCheckpoint) (er
 	return
 }
 
-func (r *CheckpointRepo) UpdateResultToExecLog(checkpoint model2.InterfaceCheckpoint, log *model2.ExecLogProcessor) (
-	logCheckpoint model2.ExecLogCheckpoint, err error) {
+func (r *CheckpointRepo) UpdateResultToExecLog(checkpoint model.InterfaceCheckpoint, log *model.ExecLogProcessor) (
+	logCheckpoint model.ExecLogCheckpoint, err error) {
 
 	copier.CopyWithOption(&logCheckpoint, checkpoint, copier.Option{DeepCopy: true})
 	logCheckpoint.ID = 0

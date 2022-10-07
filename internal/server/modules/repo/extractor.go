@@ -2,7 +2,8 @@ package repo
 
 import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
-	model2 "github.com/aaronchen2k/deeptest/internal/server/modules/model"
+	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
+	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/jinzhu/copier"
@@ -15,7 +16,7 @@ type ExtractorRepo struct {
 	InterfaceRepo *InterfaceRepo `inject:""`
 }
 
-func (r *ExtractorRepo) List(interfaceId uint) (pos []model2.InterfaceExtractor, err error) {
+func (r *ExtractorRepo) List(interfaceId uint) (pos []model.InterfaceExtractor, err error) {
 	err = r.DB.
 		Where("interface_id=?", interfaceId).
 		Where("NOT deleted").
@@ -24,7 +25,25 @@ func (r *ExtractorRepo) List(interfaceId uint) (pos []model2.InterfaceExtractor,
 	return
 }
 
-func (r *ExtractorRepo) Get(id uint) (extractor model2.InterfaceExtractor, err error) {
+func (r *ExtractorRepo) ListTo(interfaceId uint) (ret []domain.ExecInterfaceExtractor, err error) {
+	pos := make([]model.InterfaceExtractor, 0)
+
+	err = r.DB.
+		Where("interface_id=?", interfaceId).
+		Where("NOT deleted").
+		Find(&pos).Error
+
+	for _, po := range pos {
+		extractor := domain.ExecInterfaceExtractor{}
+		copier.CopyWithOption(&extractor, po, copier.Option{DeepCopy: true})
+
+		ret = append(ret, extractor)
+	}
+
+	return
+}
+
+func (r *ExtractorRepo) Get(id uint) (extractor model.InterfaceExtractor, err error) {
 	err = r.DB.
 		Where("id=?", id).
 		Where("NOT deleted").
@@ -32,7 +51,7 @@ func (r *ExtractorRepo) Get(id uint) (extractor model2.InterfaceExtractor, err e
 	return
 }
 
-func (r *ExtractorRepo) GetByVariable(variable string, id uint, interfaceId uint) (extractor model2.InterfaceExtractor, err error) {
+func (r *ExtractorRepo) GetByVariable(variable string, id uint, interfaceId uint) (extractor model.InterfaceExtractor, err error) {
 	db := r.DB.Model(&extractor).
 		Where("variable = ? AND interface_id =? AND not deleted",
 			variable, interfaceId)
@@ -46,7 +65,7 @@ func (r *ExtractorRepo) GetByVariable(variable string, id uint, interfaceId uint
 	return
 }
 
-func (r *ExtractorRepo) Save(extractor *model2.InterfaceExtractor) (id uint, bizErr _domain.BizErr) {
+func (r *ExtractorRepo) Save(extractor *model.InterfaceExtractor) (id uint, bizErr _domain.BizErr) {
 	po, _ := r.GetByVariable(extractor.Variable, extractor.ID, extractor.InterfaceId)
 	if po.ID > 0 {
 		bizErr.Code = _domain.ErrNameExist.Code
@@ -65,7 +84,7 @@ func (r *ExtractorRepo) Save(extractor *model2.InterfaceExtractor) (id uint, biz
 }
 
 func (r *ExtractorRepo) Delete(id uint) (err error) {
-	err = r.DB.Model(&model2.InterfaceExtractor{}).
+	err = r.DB.Model(&model.InterfaceExtractor{}).
 		Where("id=?", id).
 		Update("deleted", true).
 		Error
@@ -73,7 +92,7 @@ func (r *ExtractorRepo) Delete(id uint) (err error) {
 	return
 }
 
-func (r *ExtractorRepo) UpdateResult(extractor model2.InterfaceExtractor) (err error) {
+func (r *ExtractorRepo) UpdateResult(extractor model.InterfaceExtractor) (err error) {
 	values := map[string]interface{}{
 		"result":       extractor.Result,
 		"enable_share": true,
@@ -87,8 +106,8 @@ func (r *ExtractorRepo) UpdateResult(extractor model2.InterfaceExtractor) (err e
 
 	return
 }
-func (r *ExtractorRepo) UpdateResultToExecLog(extractor model2.InterfaceExtractor, log *model2.ExecLogProcessor) (
-	logExtractor model2.ExecLogExtractor, err error) {
+func (r *ExtractorRepo) UpdateResultToExecLog(extractor model.InterfaceExtractor, log *model.ExecLogProcessor) (
+	logExtractor model.ExecLogExtractor, err error) {
 
 	copier.CopyWithOption(&logExtractor, extractor, copier.Option{DeepCopy: true})
 	logExtractor.ID = 0
@@ -102,7 +121,7 @@ func (r *ExtractorRepo) UpdateResultToExecLog(extractor model2.InterfaceExtracto
 }
 
 func (r *ExtractorRepo) ListValidExtractorVariable(interfaceId, projectId uint) (variables []v1.Variable, err error) {
-	err = r.DB.Model(&model2.InterfaceExtractor{}).
+	err = r.DB.Model(&model.InterfaceExtractor{}).
 		Select("id, variable AS name, result AS value, "+
 			"interface_id AS interfaceId, is_share AS isShare").
 		Where("(is_share OR interface_id = ?) AND enable_share", interfaceId).
@@ -115,7 +134,7 @@ func (r *ExtractorRepo) ListValidExtractorVariable(interfaceId, projectId uint) 
 }
 
 func (r *ExtractorRepo) ListExtractorVariableByInterface(interfaceId uint) (variables []v1.Variable, err error) {
-	err = r.DB.Model(&model2.InterfaceExtractor{}).
+	err = r.DB.Model(&model.InterfaceExtractor{}).
 		Select("id, variable AS name, result AS value").
 		Where("interface_id=?", interfaceId).
 		Where("NOT deleted AND NOT disabled").

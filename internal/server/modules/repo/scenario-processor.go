@@ -13,6 +13,8 @@ type ScenarioProcessorRepo struct {
 	DB *gorm.DB `inject:""`
 
 	ScenarioNodeRepo *ScenarioNodeRepo `inject:""`
+	ExtractorRepo    *ExtractorRepo    `inject:""`
+	CheckpointRepo   *CheckpointRepo   `inject:""`
 }
 
 func (r *ScenarioProcessorRepo) Get(id uint) (processor model.Processor, err error) {
@@ -69,10 +71,13 @@ func (r *ScenarioProcessorRepo) GetEntityTo(processorId uint) (ret agentExec.IPr
 	switch processor.EntityCategory {
 	case consts.ProcessorInterface:
 		po, _ := r.GetInterface(processor)
-		ret = agentExec.ProcessorInterface{
-			InterfaceID: processor.InterfaceId,
-		}
+		interf := agentExec.ProcessorInterface{}
 		copier.CopyWithOption(&ret, po, copier.Option{DeepCopy: true})
+
+		interf.Extractors, _ = r.ExtractorRepo.ListTo(interf.ID)
+		interf.Checkpoints, _ = r.CheckpointRepo.ListTo(interf.ID)
+
+		ret = interf
 
 	case consts.ProcessorGroup:
 		po, _ := r.GetGroup(processor)

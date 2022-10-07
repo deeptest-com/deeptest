@@ -3,9 +3,9 @@ package main
 import (
 	"github.com/aaronchen2k/deeptest/cmd/server/server"
 	"github.com/aaronchen2k/deeptest/cmd/server/v1"
+	"github.com/aaronchen2k/deeptest/internal/pkg/helper/websocket"
 	"github.com/aaronchen2k/deeptest/internal/server/core/cron"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/helper/websocket"
 	"github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/facebookgo/inject"
 	"github.com/sirupsen/logrus"
@@ -17,7 +17,7 @@ import (
 // @contact.url https://github.com/aaronchen2k/deeptest/issues
 // @contact.email 462626@qq.com
 func main() {
-	websocketHelper.InitMq()
+	websocketHelper.websocketHelper.InitMq()
 
 	server := server.Init()
 	if server == nil {

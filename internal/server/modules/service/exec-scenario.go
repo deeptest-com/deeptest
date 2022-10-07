@@ -286,8 +286,6 @@ func (s *ExecScenarioService) ExecContainerProcessorChildrenForData(processor *a
 			containerLogItem, _ := s.AddContainerProcessor(processor, containerLog, wsMsg)
 
 			s.ExecContextService.SetVariable(processor.ID, data.VariableName, mapItem, consts.Local)
-			//vari, _ := s.ExecContextService.GetVariable(processor.ID, data.VariableName)
-			//logUtils.Infof("%s = %v", vari.Name, vari.Value)
 
 			s.ExecChildren(processor, containerLogItem, wsMsg)
 

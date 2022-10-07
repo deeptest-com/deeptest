@@ -28,7 +28,7 @@ type Response struct {
 	StatusCode    consts.HttpRespCode `json:"statusCode"`
 	StatusContent string              `json:"statusContent"`
 
-	RespHeaders []Header               ` json:"respHeaders"`
+	Headers     []Header               ` json:"respHeaders"`
 	Content     string                 `json:"content"`
 	ContentType consts.HttpContentType `json:"contentType"`
 

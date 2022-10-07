@@ -37,10 +37,13 @@ type ExecInterfaceExtractor struct {
 	BoundaryIndex    int    `json:"boundaryIndex"`
 	BoundaryIncluded bool   `json:"boundaryIncluded"`
 
-	Variable string `json:"variable"`
+	Variable string                `json:"variable"`
+	Scope    consts.ExtractorScope `json:"scope"`
 
 	Result      string `json:"result"`
 	InterfaceId uint   `json:"interfaceId"`
+
+	Disabled bool `json:"disabled"`
 }
 type ExecInterfaceCheckpoint struct {
 	Type consts.CheckpointType `json:"type"`
@@ -48,11 +51,14 @@ type ExecInterfaceCheckpoint struct {
 	Expression        string `json:"expression"`
 	ExtractorVariable string `json:"extractorVariable"`
 
-	Operator consts.ComparisonOperator `json:"operator"`
-	Value    string                    `json:"value"`
+	Operator     consts.ComparisonOperator `json:"operator"`
+	Value        string                    `json:"value"`
+	ActualResult string                    `json:"actualResult"`
 
 	ResultStatus consts.ResultStatus `json:"resultStatus"`
 	InterfaceId  uint                `json:"interfaceId"`
+
+	Disabled bool `json:"disabled"`
 }
 
 type ExecIterator struct {

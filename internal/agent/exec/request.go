@@ -4,12 +4,71 @@ import (
 	"encoding/base64"
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
+	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"regexp"
 	"strings"
 )
 
-func ReplaceAll(req *ProcessorInterface, variableMap map[string]interface{}) {
+func Invoke(req domain.Request) (resp domain.Response, err error) {
+	if req.Method == consts.GET {
+		resp, err = utils.Get(req)
+	} else if req.Method == consts.POST {
+		resp, err = utils.Post(req)
+	} else if req.Method == consts.PUT {
+		resp, err = utils.Put(req)
+	} else if req.Method == consts.DELETE {
+		resp, err = utils.Delete(req)
+	} else if req.Method == consts.PATCH {
+		resp, err = utils.Patch(req)
+	} else if req.Method == consts.HEAD {
+		resp, err = utils.Head(req)
+	} else if req.Method == consts.CONNECT {
+		resp, err = utils.Connect(req)
+	} else if req.Method == consts.OPTIONS {
+		resp, err = utils.Options(req)
+	} else if req.Method == consts.TRACE {
+		resp, err = utils.Trace(req)
+	}
+
+	GetContentProps(&resp)
+
+	return
+}
+
+func GetContentProps(resp *domain.Response) {
+	resp.ContentLang = "plaintext"
+
+	if resp.ContentLang == "" {
+		return
+	}
+
+	arr := strings.Split(string(resp.ContentType), ";")
+
+	arr1 := strings.Split(arr[0], "/")
+	if len(arr1) == 1 {
+		return
+	}
+
+	typeName := arr1[1]
+	if typeName == "text" || typeName == "plain" {
+		typeName = "plaintext"
+	}
+	resp.ContentLang = consts.HttpRespLangType(typeName)
+
+	if len(arr) > 1 {
+		arr2 := strings.Split(arr[1], "=")
+		if len(arr2) > 1 {
+			resp.ContentCharset = consts.HttpRespCharset(arr2[1])
+		}
+	}
+
+	//ret.Content = mockHelper.FormatXml(ret.Content)
+
+	return
+}
+
+func ReplaceAll(req *domain.Request, variableMap map[string]interface{}) {
 	expressionValueMap := map[string]interface{}{}
 
 	replaceUrl(req, variableMap, &expressionValueMap)
@@ -19,27 +78,27 @@ func ReplaceAll(req *ProcessorInterface, variableMap map[string]interface{}) {
 	replaceAuthor(req, variableMap, &expressionValueMap)
 }
 
-func replaceUrl(req *ProcessorInterface, variableMap map[string]interface{}, expressionValueMap *map[string]interface{}) {
+func replaceUrl(req *domain.Request, variableMap map[string]interface{}, expressionValueMap *map[string]interface{}) {
 	req.Url = ReplaceVariableValue(req.Url, variableMap)
 	req.Url = ReplaceExpressionValue(req.Url, variableMap, expressionValueMap)
 }
-func replaceParams(req *ProcessorInterface, variableMap map[string]interface{}, expressionValueMap *map[string]interface{}) {
+func replaceParams(req *domain.Request, variableMap map[string]interface{}, expressionValueMap *map[string]interface{}) {
 	for idx, param := range req.Params {
 		req.Params[idx].Value = ReplaceVariableValue(param.Value, variableMap)
 		req.Params[idx].Value = ReplaceExpressionValue(req.Params[idx].Value, variableMap, expressionValueMap)
 	}
 }
-func replaceHeaders(req *ProcessorInterface, variableMap map[string]interface{}, expressionValueMap *map[string]interface{}) {
+func replaceHeaders(req *domain.Request, variableMap map[string]interface{}, expressionValueMap *map[string]interface{}) {
 	for idx, header := range req.Headers {
 		req.Headers[idx].Value = ReplaceVariableValue(header.Value, variableMap)
 		req.Headers[idx].Value = ReplaceExpressionValue(req.Headers[idx].Value, variableMap, expressionValueMap)
 	}
 }
-func replaceBody(req *ProcessorInterface, variableMap map[string]interface{}, expressionValueMap *map[string]interface{}) {
+func replaceBody(req *domain.Request, variableMap map[string]interface{}, expressionValueMap *map[string]interface{}) {
 	req.Body = ReplaceVariableValue(req.Body, variableMap)
 	req.Body = ReplaceExpressionValue(req.Body, variableMap, expressionValueMap)
 }
-func replaceAuthor(req *ProcessorInterface, variableMap map[string]interface{}, expressionValueMap *map[string]interface{}) {
+func replaceAuthor(req *domain.Request, variableMap map[string]interface{}, expressionValueMap *map[string]interface{}) {
 	if req.AuthorizationType == consts.BasicAuth {
 		req.BasicAuth.Username = ReplaceVariableValue(req.BasicAuth.Username, variableMap)
 		req.BasicAuth.Password = ReplaceVariableValue(req.BasicAuth.Password, variableMap)

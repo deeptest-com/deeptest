@@ -40,6 +40,15 @@ func ListCachedVariable(processorId uint) (variables []domain.ExecVariable) {
 
 	return
 }
+func GetVariableMap(processorId uint) (ret map[string]interface{}) {
+	variables := ListCachedVariable(processorId)
+
+	for _, item := range variables {
+		ret[item.Name] = item.Value
+	}
+
+	return
+}
 
 func GetVariable(processorId uint, variablePath string) (variable domain.ExecVariable, err error) {
 	if variablePath == "var1" {

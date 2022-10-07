@@ -60,8 +60,8 @@ func (s *ExecLogService) CreateInterfaceLog(req v1.InvocationRequest, resp v1.In
 	bytesReq, _ := json.Marshal(req)
 	po.ReqContent = string(bytesReq)
 
-	bytesReps, _ := json.Marshal(resp)
-	po.RespContent = string(bytesReps)
+	bytesResp, _ := json.Marshal(resp)
+	po.RespContent = string(bytesResp)
 
 	err = s.TestLogRepo.Save(&po)
 

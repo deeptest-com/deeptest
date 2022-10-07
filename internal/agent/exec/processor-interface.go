@@ -26,11 +26,6 @@ func (p ProcessorInterface) Run(s *Session) (log Result, err error) {
 		return
 	}
 
-	logPo, err := s.ExecLogService.CreateInterfaceLog(req, resp, parentLog)
-	if err != nil {
-		return
-	}
-
 	logExtractors, err := s.ExtractorService.ExtractInterface(interf, resp, &logPo)
 	logCheckpoints, status, err := s.CheckpointService.CheckInterface(interf, resp, &logPo)
 
@@ -54,8 +49,7 @@ func (p ProcessorInterface) Run(s *Session) (log Result, err error) {
 		InterfaceCheckpointsResult: logCheckpoints,
 	}
 
-	*parentLog.Logs = append(*parentLog.Logs, interfaceLog)
-	execHelper.SendExecMsg(*interfaceLog, wsMsg)
+	execHelper.SendExecMsg(*interfaceLog, s.WsMsg)
 
 	log = Result{
 		Name:        p.Name,

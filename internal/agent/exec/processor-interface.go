@@ -55,6 +55,7 @@ func (p ProcessorInterface) Run(s *Session) (log Result, err error) {
 func (p ProcessorInterface) ExtractInterface(s *Session) (err error) {
 	for _, extractor := range p.Extractors {
 		p.Extract(&extractor, p.Response)
+		SetVariable(p.ID, extractor.Variable, extractor.Result, extractor.Scope)
 
 		if err == nil { // gen report for processor
 			interfaceExtractor := domain.ExecInterfaceExtractor{}
@@ -90,13 +91,6 @@ func (p *ProcessorInterface) CheckInterface(s *Session) (err error) {
 }
 
 func (p ProcessorInterface) Extract(extractor *domain.ExecInterfaceExtractor, resp domain.Response) (err error) {
-	p.ExtractValue(extractor, resp)
-	SetVariable(p.ID, extractor.Variable, extractor.Result, extractor.Scope)
-
-	return
-}
-
-func (p ProcessorInterface) ExtractValue(extractor *domain.ExecInterfaceExtractor, resp domain.Response) (err error) {
 	if extractor.Disabled {
 		extractor.Result = ""
 	} else {

@@ -40,10 +40,11 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (lo
 	ReplaceAll(&entity.Request, variableMap)
 
 	GetRequestProps(&entity.Request)
+	entity.Response, err = Invoke(entity.Request)
+	GetContentProps(&entity.Response)
+
 	reqContent, _ := json.Marshal(entity.Request)
 	entity.Result.ReqContent = string(reqContent)
-
-	entity.Response, err = Invoke(entity.Request)
 
 	respContent, _ := json.Marshal(entity.Response)
 	entity.Result.RespContent = string(respContent)

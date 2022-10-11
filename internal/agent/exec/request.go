@@ -30,8 +30,6 @@ func Invoke(req domain.Request) (resp domain.Response, err error) {
 		resp, err = utils.Trace(req)
 	}
 
-	GetContentProps(&resp)
-
 	return
 }
 

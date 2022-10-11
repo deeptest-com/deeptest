@@ -1,12 +1,13 @@
 package agentExec
 
 import (
+	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 )
 
 type ProcessorExtractor struct {
 	ID uint `json:"id" yaml:"id"`
-	ProcessorEntity
+	ProcessorEntityBase
 
 	Src  consts.ExtractorSrc  `json:"src"`
 	Type consts.ExtractorType `json:"type"`
@@ -26,6 +27,6 @@ type ProcessorExtractor struct {
 	InterfaceID uint   `json:"interfaceID"`
 }
 
-func (p ProcessorExtractor) Run(s *Session) (log Result, err error) {
+func (entity ProcessorExtractor) Run(processor *Processor, session *Session) (log domain.Result, err error) {
 	return
 }

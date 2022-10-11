@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"strings"
 	"time"
 )
@@ -28,33 +27,43 @@ func InitScopeHierarchy(processors []*Processor) (variables []domain.ExecVariabl
 func ListCachedVariable(processorId uint) (variables []domain.ExecVariable) {
 	effectiveScopeIds := ScopeHierarchy[processorId]
 
+	if effectiveScopeIds == nil {
+		return
+	}
+
 	for _, id := range *effectiveScopeIds {
 		for _, vari := range ScopedVariables[id] {
-			if !(vari.Scope == consts.Global || id != processorId) {
-				continue
-			}
+			if vari.Scope == consts.Global || vari.Scope == consts.Local ||
+				(vari.Scope == consts.Private && id == processorId) {
 
-			variables = append(variables, vari)
+				variables = append(variables, vari)
+			}
 		}
 	}
 
 	return
 }
 func GetVariableMap(processorId uint) (ret map[string]interface{}) {
+	ret = map[string]interface{}{}
+
 	variables := ListCachedVariable(processorId)
 
 	for _, item := range variables {
-		ret[item.Name] = item.Value
+		valMap, isMap := item.Value.(map[string]interface{})
+
+		if isMap {
+			for propKey, v := range valMap {
+				ret[fmt.Sprintf("%s.%s", item.Name, propKey)] = v
+			}
+		} else {
+			ret[item.Name] = item.Value
+		}
 	}
 
 	return
 }
 
 func GetVariable(processorId uint, variablePath string) (variable domain.ExecVariable, err error) {
-	if variablePath == "var1" {
-		logUtils.Info("")
-	}
-
 	allValidIds := ScopeHierarchy[processorId]
 	if allValidIds != nil {
 		for _, id := range *allValidIds {

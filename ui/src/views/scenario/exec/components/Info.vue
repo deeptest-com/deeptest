@@ -129,12 +129,10 @@ const OnWebSocketMsg = (data: any) => {
   if (wsMsg.category == 'result') {
     result.value = wsMsg.data
     return
-
   } else if (wsMsg.category != '') {
     execResult.value.progressStatus = wsMsg.category
     if (wsMsg.category === 'in_progress') result.value = {}
     return
-
   }
 
   const log = wsMsg.data
@@ -142,43 +140,13 @@ const OnWebSocketMsg = (data: any) => {
 
   if (log.parentId === 0) {
     logTreeData.value = log
+    logTreeData.value.name = execResult.value.name
   } else {
     if (!logMap.value[log.parentId]) logMap.value[log.parentId] = {}
     if (!logMap.value[log.parentId].logs) logMap.value[log.parentId].logs = []
 
     logMap.value[log.parentId].logs.push(log)
   }
-
-  // console.log(2, logTreeData)
-
-  // const msgText = wsMsg.msg
-  // store.dispatch('Scenario/updateExecResult', wsMsg.data).then(() => {
-  //   console.log('===', msgText, execResult.value)
-  // })
-
-  // if ('isRunning' in wsMsg) {
-  //   console.log(`change isRunning to ${wsMsg.isRunning}`)
-  //   store.dispatch('Exec/setRunning', wsMsg.isRunning)
-  // }
-  //
-  // if (item.info?.status === 'start') {
-  //   const key = item.info.key + '-' + caseCount.value
-  //   caseDetail.value[key] = logContentExpand.value
-  // }
-  //
-  // item = genExecInfo(item, caseCount.value)
-  // if (item.info && item.info.key && isInArray(item.info.status, ['pass', 'fail', 'skip'])) { // set case result
-  //   store.dispatch('Result/list', {
-  //     keywords: '',
-  //     enabled: 1,
-  //     pageSize: 10,
-  //     page: 1
-  //   });
-  //   caseResult.value[item.info.key] = item.info.status
-  // }
-  //
-  // wsMsg.out.push(item)
-  // scroll('log-list')
 }
 
 </script>

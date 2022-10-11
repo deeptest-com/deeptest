@@ -1,12 +1,14 @@
 package agentExec
 
+import "github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
+
 type ProcessorPrint struct {
 	ID uint `json:"id" yaml:"id"`
-	ProcessorEntity
+	ProcessorEntityBase
 
 	Expression string `json:"expression" yaml:"expression"`
 }
 
-func (p ProcessorPrint) Run(s *Session) (log Result, err error) {
+func (entity ProcessorPrint) Run(processor *Processor, session *Session) (log domain.Result, err error) {
 	return
 }

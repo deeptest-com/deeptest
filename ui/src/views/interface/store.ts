@@ -214,7 +214,8 @@ const StoreModel: ModuleType = {
         async getInterface({commit}, payload: any) {
             if (payload.isDir) {
                 commit('setInterface', {
-                    bodyType: 'application/json'
+                    bodyType: 'application/json',
+                    headers: [{name:'', value:''}], params: [{name:'', value:''}],
                 });
                 commit('setResponse', {headers: [], contentLang: 'html', content: ''});
                 return true;
@@ -223,6 +224,8 @@ const StoreModel: ModuleType = {
             try {
                 const response = await get(payload.id);
                 const {data} = response;
+                data.headers.push({name:'', value:''})
+                data.params.push({name:'', value:''})
 
                 commit('setInterface', data);
                 return true;

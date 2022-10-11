@@ -1,12 +1,17 @@
 package agentExec
 
 import (
+	"fmt"
+	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
+	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils"
+	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 )
 
 type ProcessorData struct {
 	ID uint `json:"id" yaml:"id"`
-	ProcessorEntity
+	ProcessorEntityBase
 
 	Type      consts.DataSource `json:"type,omitempty" yaml:"type,omitempty"`
 	Url       string            `json:"url,omitempty" yaml:"url,omitempty"`
@@ -23,6 +28,59 @@ type ProcessorData struct {
 	VariableName string `json:"variableName,omitempty" yaml:"variableName,omitempty"`
 }
 
-func (p ProcessorData) Run(s *Session) (log Result, err error) {
+func (entity ProcessorData) Run(processor *Processor, session *Session) (log domain.Result, err error) {
+	logUtils.Infof("data entity")
+
+	log = domain.Result{
+		ID:                entity.ProcessorID,
+		Name:              entity.Name,
+		ProcessorCategory: entity.ProcessorCategory,
+		ProcessorType:     entity.ProcessorType,
+		ParentId:          entity.ParentID,
+	}
+
+	log.Iterator, log.Output = entity.getIterator()
+
+	entity.Result = log
+	exec.SendExecMsg(entity.Result, session.WsMsg)
+
+	entity.runDataItems(session, processor, log.Iterator)
+
+	return
+}
+
+func (entity *ProcessorData) runDataItems(session *Session, processor *Processor, iterator domain.ExecIterator) (err error) {
+	for _, item := range iterator.Data {
+		SetVariable(processor.ID, iterator.VariableName, item, consts.Local)
+
+		for _, child := range processor.Children {
+			child.Run(session)
+		}
+	}
+
+	return
+}
+
+func (entity ProcessorData) getIterator() (iterator domain.ExecIterator, msg string) {
+	if entity.ID == 0 {
+		msg = "执行前请先配置处理器。"
+		return
+	}
+
+	iterator, _ = entity.GenerateLoopList()
+	msg = fmt.Sprintf("迭代数据\"%s\"。", entity.Url)
+
+	iterator.VariableName = entity.VariableName
+
+	return
+}
+
+func (entity ProcessorData) GenerateLoopList() (ret domain.ExecIterator, err error) {
+	if entity.ProcessorType == consts.ProcessorDataText {
+		ret.Data, err = utils.ReadDataFromText(entity.Url, entity.Separator)
+	} else if entity.ProcessorType == consts.ProcessorDataExcel {
+		ret.Data, err = utils.ReadDataFromExcel(entity.Url)
+	}
+
 	return
 }

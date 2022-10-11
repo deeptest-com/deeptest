@@ -112,7 +112,7 @@ func gets(req v1.InvocationRequest, method consts.HttpMethod, readRespData bool)
 
 	resp, err := client.Do(request)
 	if err != nil {
-		wrapperErrInResp(consts.Uknown, "请求错误", err.Error(), &ret)
+		wrapperErrInResp(consts.ServiceUnavailable, "请求错误", err.Error(), &ret)
 		_logUtils.Error(err.Error())
 		return
 	}
@@ -232,7 +232,7 @@ func posts(req v1.InvocationRequest, method consts.HttpMethod, readRespData bool
 
 	resp, err := client.Do(request)
 	if err != nil {
-		wrapperErrInResp(consts.Uknown, "请求错误", err.Error(), &ret)
+		wrapperErrInResp(consts.ServiceUnavailable, "请求错误", err.Error(), &ret)
 		_logUtils.Error(err.Error())
 		return
 	}

@@ -5,15 +5,16 @@ import (
 )
 
 type Request struct {
-	Method            consts.HttpMethod      `gorm:"default:GET" json:"method"`
-	Url               string                 `json:"url"`
-	Params            []Param                ` json:"params"`
-	Headers           []Header               ` json:"headers"`
-	Body              string                 `gorm:"default:{}" json:"body"`
-	BodyType          consts.HttpContentType `gorm:"default:json" json:"bodyType"`
-	AuthorizationType consts.AuthorType      `gorm:"default:''" json:"authorizationType"`
-	PreRequestScript  string                 `gorm:"default:''" json:"preRequestScript"`
-	ValidationScript  string                 `gorm:"default:''" json:"validationScript"`
+	Method            consts.HttpMethod       `gorm:"default:GET" json:"method"`
+	Url               string                  `json:"url"`
+	Params            []Param                 ` json:"params"`
+	Headers           []Header                ` json:"headers"`
+	Body              string                  `gorm:"default:{}" json:"body"`
+	BodyType          consts.HttpContentType  `gorm:"default:json" json:"bodyType"`
+	BodyLang          consts.HttpRespLangType `gorm:"default:json" json:"bodyLang"`
+	AuthorizationType consts.AuthorType       `gorm:"default:''" json:"authorizationType"`
+	PreRequestScript  string                  `gorm:"default:''" json:"preRequestScript"`
+	ValidationScript  string                  `gorm:"default:''" json:"validationScript"`
 
 	BasicAuth   BasicAuth   ` json:"basicAuth"`
 	BearerToken BearerToken ` json:"bearerToken"`

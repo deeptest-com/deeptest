@@ -1,7 +1,6 @@
-package agentExec
+package domain
 
 import (
-	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"time"
 )
@@ -30,8 +29,8 @@ type Result struct {
 	HttpRespStatusCode    consts.HttpRespCode `json:"httpStatusCode,omitempty"`
 	HttpRespStatusContent string              `json:"httpStatusContent,omitempty"`
 
-	ExtractorsResult  []domain.Extractor  `json:"extractorsResult,omitempty"`
-	CheckpointsResult []domain.Checkpoint `json:"checkpointsResult,omitempty"`
+	ExtractorsResult  []Extractor  `json:"extractorsResult,omitempty"`
+	CheckpointsResult []Checkpoint `json:"checkpointsResult,omitempty"`
 
 	// for processor
 	ProcessorType    consts.ProcessorType `json:"processorType,omitempty"`
@@ -40,7 +39,7 @@ type Result struct {
 	ProcessorResult  string               `json:"processorResult,omitempty"`
 
 	// for loop processor
-	Iterator domain.ExecIterator `json:"iterator,omitempty"`
+	Iterator ExecIterator `json:"iterator,omitempty"`
 	// for loop break processor
 	WillBreak bool `json:"break,omitempty"`
 

@@ -1,6 +1,7 @@
 package agentExec
 
 import (
+	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"time"
 )
@@ -37,5 +38,5 @@ type Report struct {
 	ScenarioId uint `json:"scenarioId"`
 	ProjectId  uint `json:"projectId"`
 
-	Logs []*Result `json:"logs"`
+	Logs []*domain.Result `json:"logs"`
 }

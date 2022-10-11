@@ -22,10 +22,18 @@ export default defineComponent({
       const msg = result.httpCode === 200 ? t('biz_'+result.resultCode) : t('http_'+result.httpCode)
       const desc = result.resultMsg ? result.resultMsg : ''
 
-      notification.error({
-        message: msg,
-        description: desc,
-      });
+      if (result.resultCode === 401) {
+        notification.warn({
+          message: msg,
+          description: desc,
+        });
+      }  else {
+        notification.error({
+          message: msg,
+          description: desc,
+        });
+      }
+
     }
 
     onMounted(() => {

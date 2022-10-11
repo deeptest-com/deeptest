@@ -1,7 +1,7 @@
 package handler
 
 import (
-	agentDomain "github.com/aaronchen2k/deeptest/internal/agent/exec"
+	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
@@ -35,7 +35,7 @@ func (c *ScenarioProcessorCtrl) Get(ctx iris.Context) {
 
 // UpdateName 更新
 func (c *ScenarioProcessorCtrl) UpdateName(ctx iris.Context) {
-	var req agentDomain.ProcessorEntity
+	var req agentExec.ProcessorEntityBase
 	err := ctx.ReadJSON(&req)
 	if err != nil {
 		logUtils.Errorf("参数验证失败", err.Error())

@@ -4,13 +4,14 @@ import (
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils"
+	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 )
 
 type ProcessorLoop struct {
 	ID uint `json:"id" yaml:"id"`
-	ProcessorEntity
+	ProcessorEntityBase
 
 	Times        int    `json:"times" yaml:"times"` // time
 	Range        string `json:"range" yaml:"range"` // range
@@ -23,25 +24,44 @@ type ProcessorLoop struct {
 	BreakIfExpression string `json:"breakIfExpression" yaml:"breakIfExpression"`
 }
 
-func (p ProcessorLoop) Run(s *Session) (log Result, err error) {
+func (entity ProcessorLoop) Run(processor *Processor, session *Session) (log domain.Result, err error) {
 	logUtils.Infof("loop entity")
 
-	log.Name = p.Name
+	log = domain.Result{
+		ID:                entity.ProcessorID,
+		Name:              entity.Name,
+		ProcessorCategory: entity.ProcessorCategory,
+		ProcessorType:     entity.ProcessorType,
+		ParentId:          entity.ParentID,
+	}
 
-	if p.ProcessorType == consts.ProcessorLoopBreak {
-		log.WillBreak, log.Output = getBeak(p)
+	if entity.ProcessorType == consts.ProcessorLoopBreak {
+		log.WillBreak, log.Output = entity.getBeak()
+		processor.Result = log
+
+		exec.SendExecMsg(processor.Result, session.WsMsg)
+		return
+	}
+
+	log.Iterator, log.Output = entity.getIterator()
+
+	processor.Result = log
+	exec.SendExecMsg(processor.Result, session.WsMsg)
+
+	if entity.ProcessorType == consts.ProcessorLoopUntil {
+		entity.runLoopUntil(session, processor, log.Iterator)
 	} else {
-		log.Iterator, log.Output = getIterator(p)
+		entity.runLoopItems(session, processor, log.Iterator)
 	}
 
 	return
 }
 
-func getBeak(loop ProcessorLoop) (ret bool, output string) {
-	breakFrom := loop.ParentID
-	breakIfExpress := loop.BreakIfExpression
+func (entity ProcessorLoop) getBeak() (ret bool, output string) {
+	breakFrom := entity.ParentID
+	breakIfExpress := entity.BreakIfExpression
 
-	result, err := EvaluateGovaluateExpressionByScope(breakIfExpress, loop.ProcessorID)
+	result, err := EvaluateGovaluateExpressionByScope(breakIfExpress, entity.ProcessorID)
 	ret, ok := result.(bool)
 	if err == nil && ok && ret {
 		breakMap.Store(breakFrom, true)
@@ -53,34 +73,76 @@ func getBeak(loop ProcessorLoop) (ret bool, output string) {
 	return
 }
 
-func getIterator(loop ProcessorLoop) (iterator domain.ExecIterator, msg string) {
-	if loop.ID == 0 {
+func (entity ProcessorLoop) getIterator() (iterator domain.ExecIterator, msg string) {
+	if entity.ID == 0 {
 		msg = "执行前请先配置处理器。"
 		return
 	}
 
-	if loop.ProcessorType == consts.ProcessorLoopTime {
-		iterator, _ = GenerateLoopTimes(loop)
-		msg = fmt.Sprintf("迭代\"%d\"次。", loop.Times)
-	} else if loop.ProcessorType == consts.ProcessorLoopIn {
-		iterator, _ = GenerateLoopList(loop)
-		msg = fmt.Sprintf("迭代列表\"%s\"。", loop.List)
-	} else if loop.ProcessorType == consts.ProcessorLoopRange {
-		iterator, _ = GenerateLoopRange(loop)
-		msg = fmt.Sprintf("迭代区间\"%s\"。", loop.Range)
-	} else if loop.ProcessorType == consts.ProcessorLoopUntil {
-		iterator.UntilExpression = loop.UntilExpression
-		msg = fmt.Sprintf("迭代直到\"%s\"。", loop.UntilExpression)
+	if entity.ProcessorType == consts.ProcessorLoopTime {
+		iterator, _ = entity.GenerateLoopTimes()
+		msg = fmt.Sprintf("迭代\"%d\"次。", entity.Times)
+	} else if entity.ProcessorType == consts.ProcessorLoopIn {
+		iterator, _ = entity.GenerateLoopList()
+		msg = fmt.Sprintf("迭代列表\"%s\"。", entity.List)
+	} else if entity.ProcessorType == consts.ProcessorLoopRange {
+		iterator, _ = entity.GenerateLoopRange()
+		msg = fmt.Sprintf("迭代区间\"%s\"。", entity.Range)
+	} else if entity.ProcessorType == consts.ProcessorLoopUntil {
+		iterator.UntilExpression = entity.UntilExpression
+		msg = fmt.Sprintf("迭代直到\"%s\"。", entity.UntilExpression)
 	}
 
-	iterator.VariableName = loop.VariableName
+	iterator.VariableName = entity.VariableName
 
 	return
 }
 
-func GenerateLoopTimes(loop ProcessorLoop) (ret domain.ExecIterator, err error) {
-	if loop.Times > 0 {
-		for i := 0; i < loop.Times; i++ {
+func (entity *ProcessorLoop) runLoopUntil(s *Session, processor *Processor, iterator domain.ExecIterator) (err error) {
+	expression := iterator.UntilExpression
+
+	for {
+		result, err := EvaluateGovaluateExpressionByScope(expression, entity.ID)
+		pass, ok := result.(bool)
+		if err != nil || !ok || pass {
+			break
+		}
+
+		for _, child := range processor.Children {
+			childLog, _ := (*child).Run(s)
+
+			if childLog.WillBreak {
+				logUtils.Infof("break")
+				goto LABEL
+			}
+		}
+	}
+LABEL:
+
+	return
+}
+
+func (entity *ProcessorLoop) runLoopItems(s *Session, processor *Processor, iterator domain.ExecIterator) (err error) {
+	for _, item := range iterator.Items {
+		SetVariable(entity.ID, iterator.VariableName, item, consts.Local)
+
+		for _, child := range processor.Children {
+			childLog, _ := child.Run(s)
+
+			if childLog.WillBreak {
+				logUtils.Infof("break")
+				goto LABEL
+			}
+		}
+	}
+LABEL:
+
+	return
+}
+
+func (entity ProcessorLoop) GenerateLoopTimes() (ret domain.ExecIterator, err error) {
+	if entity.Times > 0 {
+		for i := 0; i < entity.Times; i++ {
 			ret.Items = append(ret.Items, i+1)
 		}
 	}
@@ -89,54 +151,17 @@ func GenerateLoopTimes(loop ProcessorLoop) (ret domain.ExecIterator, err error) 
 
 	return
 }
-func GenerateLoopRange(loop ProcessorLoop) (ret domain.ExecIterator, err error) {
-	start, end, step, precision, typ, err := utils.GetRange(loop.Range, loop.Step)
+func (entity ProcessorLoop) GenerateLoopRange() (ret domain.ExecIterator, err error) {
+	start, end, step, precision, typ, err := utils.GetRange(entity.Range, entity.Step)
 	if err == nil {
 		ret.DataType = typ
-		ret.Items, _ = utils.GenerateRangeItems(start, end, step, precision, loop.IsRand, typ)
+		ret.Items, _ = utils.GenerateRangeItems(start, end, step, precision, entity.IsRand, typ)
 	}
 
 	return
 }
-func GenerateLoopList(loop ProcessorLoop) (ret domain.ExecIterator, err error) {
-	ret.Items, ret.DataType, err = utils.GenerateListItems(loop.List)
+func (entity ProcessorLoop) GenerateLoopList() (ret domain.ExecIterator, err error) {
+	ret.Items, ret.DataType, err = utils.GenerateListItems(entity.List)
 
 	return
-}
-
-//else if typ == consts.ProcessorLoopBreak {
-//output.Expression = loop.BreakIfExpression
-//output.BreakFrom = parentLog.ProcessId
-//
-//output, _ = EvaluateLoopBreak(&loop, parentLog, msg)
-//
-//breakFrom := output.BreakFrom
-//breakIfExpress := output.Expression
-//
-//result, err := EvaluateGovaluateExpressionByScope(breakIfExpress, p.ID)
-//pass, ok := result.(bool)
-//if err == nil && ok && pass {
-//breakMap.Store(breakFrom, true)
-//ret = "真"
-//} else {
-//ret = "假"
-//}
-//
-//return
-//}
-
-func IsLoopTimesPass(loop ProcessorLoop, output domain.ExecOutput) bool {
-	return loop.ProcessorType == consts.ProcessorLoopTime && output.Times > 0
-}
-func IsLoopUntilPass(loop ProcessorLoop, output domain.ExecOutput) bool {
-	return loop.ProcessorType == consts.ProcessorLoopUntil && output.Expression != ""
-}
-func IsLoopInPass(loop ProcessorLoop, output domain.ExecOutput) bool {
-	return loop.ProcessorType == consts.ProcessorLoopIn && output.List != ""
-}
-func IsLoopRangePass(loop ProcessorLoop, output domain.ExecOutput) bool {
-	return loop.ProcessorType == consts.ProcessorLoopRange && output.Range != ""
-}
-func IsLoopLoopBreak(loop ProcessorLoop, output domain.ExecOutput) bool {
-	return loop.ProcessorType == consts.ProcessorLoopBreak
 }

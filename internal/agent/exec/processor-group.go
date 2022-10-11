@@ -1,19 +1,31 @@
 package agentExec
 
 import (
+	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
+	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 )
 
 type ProcessorGroup struct {
 	ID uint `json:"id" yaml:"id"`
-	ProcessorEntity
+	ProcessorEntityBase
 }
 
-func (p ProcessorGroup) Run(s *Session) (log Result, err error) {
+func (entity ProcessorGroup) Run(processor *Processor, session *Session) (log domain.Result, err error) {
 	logUtils.Infof("group entity")
 
-	p.Result = Result{
-		Name: p.Name,
+	entity.Result = domain.Result{
+		ID:                entity.ProcessorID,
+		Name:              entity.Name,
+		ProcessorCategory: entity.ProcessorCategory,
+		ProcessorType:     entity.ProcessorType,
+		ParentId:          entity.ParentID,
+	}
+
+	exec.SendExecMsg(entity.Result, session.WsMsg)
+
+	for _, child := range processor.Children {
+		child.Run(session)
 	}
 
 	return

@@ -46,7 +46,7 @@ const errorHandler = (axiosResponse: AxiosResponse) => {
         const reqUrl = (url + '').split("?")[0].replace(baseURL + '', '');
         const noNeedLogin = settings.ajaxResponseNoVerifyUrl.includes(reqUrl);
         if (code === 401 && !noNeedLogin) {
-            router.replace('/user/login');
+            router.push('/user/login');
         }
 
     } else {
@@ -126,16 +126,16 @@ request.interceptors.response.use(
     /* error => {} */ // 已在 export default catch
 );
 
-/** 
+/**
  * ajax 导出
- * 
+ *
  * Method: get
  *     Request Headers
  *         无 - Content-Type
  *     Query String Parameters
  *         name: name
  *         age: age
- * 
+ *
  * Method: post
  *     Request Headers
  *         Content-Type:application/json;charset=UTF-8

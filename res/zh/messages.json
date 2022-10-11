@@ -10,12 +10,24 @@
       "translation": "错误的请求参数：%s。\n"
     },
     {
+      "id": "exec",
+      "translation": "执行"
+    },
+    {
       "id": "start_exec",
       "translation": "开始执行"
     },
     {
       "id": "end_exec",
       "translation": "退出执行"
+    },
+    {
+      "id": "exec_success",
+      "translation": "执行成功"
+    },
+    {
+      "id": "exec_fail",
+      "translation": "执行失败"
     },
     {
       "id": "pls_stop_previous",

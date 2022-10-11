@@ -3,11 +3,12 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
+	execDomain "github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
+	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/websocket"
 	"github.com/aaronchen2k/deeptest/internal/server/consts"
-	execHelper "github.com/aaronchen2k/deeptest/internal/server/modules/helper/exec"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	_i118Utils "github.com/aaronchen2k/deeptest/pkg/lib/i118"
@@ -72,7 +73,8 @@ func (c *WebSocketCtrl) OnChat(wsMsg websocket.Message) (err error) {
 	req := domain.WsReq{}
 	err = json.Unmarshal(wsMsg.Body, &req)
 	if err != nil {
-		execHelper.SendErrorMsg(req.Id, wsMsg)
+		result := execDomain.Result{}
+		exec.SendErrorMsg(result, &wsMsg)
 		return
 	}
 
@@ -80,7 +82,7 @@ func (c *WebSocketCtrl) OnChat(wsMsg websocket.Message) (err error) {
 
 	if act == consts.ExecStop {
 		if ch != nil {
-			if !execHelper.GetRunning() {
+			if !exec.GetRunning() {
 				ch = nil
 			} else {
 				ch <- 1
@@ -93,8 +95,8 @@ func (c *WebSocketCtrl) OnChat(wsMsg websocket.Message) (err error) {
 		return
 	}
 
-	if execHelper.GetRunning() && (act == consts.ExecStart) { // already running
-		execHelper.SendAlreadyRunningMsg(req.Id, wsMsg)
+	if exec.GetRunning() && (act == consts.ExecStart) { // already running
+		exec.SendAlreadyRunningMsg(req.Id, wsMsg)
 		return
 	}
 

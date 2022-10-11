@@ -64,7 +64,7 @@ func (s *ScenarioNodeService) AddProcessor(req v1.ScenarioAddScenarioReq) (ret m
 
 	if ret.EntityType == consts.ProcessorLogicElse { // create default entity
 		entity := model.ProcessorLogic{
-			ProcessorEntity: agentExec.ProcessorEntity{
+			ProcessorEntityBase: agentExec.ProcessorEntityBase{
 				ProcessorID:       ret.ID,
 				ProcessorCategory: ret.EntityCategory,
 				ProcessorType:     ret.EntityType,
@@ -89,6 +89,7 @@ func (s *ScenarioNodeService) createDirOrInterface(interfaceNode v1.InterfaceSim
 			Name:           interfaceNode.Name,
 			ScenarioId:     parentProcessor.ScenarioId,
 			EntityCategory: consts.ProcessorGroup,
+			EntityType:     consts.ProcessorGroupDefault,
 			ParentId:       parentProcessor.ID,
 			ProjectId:      parentProcessor.ProjectId,
 		}

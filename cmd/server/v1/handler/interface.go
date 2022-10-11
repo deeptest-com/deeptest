@@ -3,7 +3,7 @@ package handler
 import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/core/web/validate"
-	service2 "github.com/aaronchen2k/deeptest/internal/server/modules/service"
+	service "github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"strings"
@@ -13,8 +13,8 @@ import (
 )
 
 type InterfaceCtrl struct {
-	InterfaceService  *service2.InterfaceService  `inject:""`
-	InvocationService *service2.InvocationService `inject:""`
+	InterfaceService  *service.InterfaceService  `inject:""`
+	InvocationService *service.InvocationService `inject:""`
 
 	BaseCtrl
 }
@@ -71,7 +71,7 @@ func (c *InterfaceCtrl) Get(ctx iris.Context) {
 		return
 	}
 
-	interf, err := c.InterfaceService.Get(uint(id))
+	interf, err := c.InterfaceService.GetDetail(uint(id))
 
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: _domain.SystemErr.Msg})

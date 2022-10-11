@@ -77,6 +77,22 @@ func (r *InterfaceRepo) Get(interfaceId uint) (field model.Interface, err error)
 	return
 }
 
+func (r *InterfaceRepo) GetDetail(interfId uint) (interf model.Interface, err error) {
+	if interfId > 0 {
+		interf, err = r.Get(interfId)
+
+		interf.Params, _ = r.ListParams(interfId)
+		interf.Headers, _ = r.ListHeaders(interfId)
+
+		interf.BasicAuth, _ = r.GetBasicAuth(interfId)
+		interf.BearerToken, _ = r.GetBearerToken(interfId)
+		interf.OAuth20, _ = r.GetOAuth20(interfId)
+		interf.ApiKey, _ = r.GetApiKey(interfId)
+	}
+
+	return
+}
+
 func (r *InterfaceRepo) Save(field *model.Interface) (err error) {
 	err = r.DB.Save(field).Error
 	return

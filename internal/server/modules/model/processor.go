@@ -1,7 +1,7 @@
 package model
 
 import (
-	runDomain "github.com/aaronchen2k/deeptest/internal/agent/exec"
+	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/kataras/iris/v12"
 	"time"
@@ -34,7 +34,7 @@ func (Processor) TableName() string {
 
 //type ProcessorThreadGroup struct {
 //	BaseModel
-//	runDomain.ProcessorEntity
+//	agentExec.ProcessorEntityBase
 //
 //	Count int `json:"count" yaml:"count"`
 //	Loop  int `json:"loop" yaml:"loop"`
@@ -52,7 +52,7 @@ func (Processor) TableName() string {
 
 type ProcessorGroup struct {
 	BaseModel
-	runDomain.ProcessorEntity
+	agentExec.ProcessorEntityBase
 }
 
 func (ProcessorGroup) TableName() string {
@@ -61,7 +61,7 @@ func (ProcessorGroup) TableName() string {
 
 type ProcessorLogic struct {
 	BaseModel
-	runDomain.ProcessorEntity
+	agentExec.ProcessorEntityBase
 
 	Expression string `json:"expression" yaml:"expression"`
 }
@@ -72,7 +72,7 @@ func (ProcessorLogic) TableName() string {
 
 type ProcessorLoop struct {
 	BaseModel
-	runDomain.ProcessorEntity
+	agentExec.ProcessorEntityBase
 
 	Times        int    `json:"times" yaml:"times"` // time
 	Range        string `json:"range" yaml:"range"` // range
@@ -91,7 +91,7 @@ func (ProcessorLoop) TableName() string {
 
 type ProcessorTimer struct {
 	BaseModel
-	runDomain.ProcessorEntity
+	agentExec.ProcessorEntityBase
 
 	SleepTime int `json:"sleepTime" yaml:"sleepTime"`
 
@@ -104,7 +104,7 @@ func (ProcessorTimer) TableName() string {
 
 type ProcessorPrint struct {
 	BaseModel
-	runDomain.ProcessorEntity
+	agentExec.ProcessorEntityBase
 
 	Expression string `json:"expression" yaml:"expression"`
 }
@@ -115,7 +115,7 @@ func (ProcessorPrint) TableName() string {
 
 type ProcessorVariable struct {
 	BaseModel
-	runDomain.ProcessorEntity
+	agentExec.ProcessorEntityBase
 
 	VariableName string `json:"variableName" yaml:"variableName"`
 	RightValue   string `json:"rightValue" yaml:"rightValue"`
@@ -127,7 +127,7 @@ func (ProcessorVariable) TableName() string {
 
 type ProcessorAssertion struct {
 	BaseModel
-	runDomain.ProcessorEntity
+	agentExec.ProcessorEntityBase
 
 	Expression string `json:"expression" yaml:"expression"`
 }
@@ -138,7 +138,7 @@ func (ProcessorAssertion) TableName() string {
 
 type ProcessorExtractor struct {
 	BaseModel
-	runDomain.ProcessorEntity
+	agentExec.ProcessorEntityBase
 
 	Src  consts.ExtractorSrc  `json:"src"`
 	Type consts.ExtractorType `json:"type"`
@@ -164,7 +164,7 @@ func (ProcessorExtractor) TableName() string {
 
 type ProcessorData struct {
 	BaseModel
-	runDomain.ProcessorEntity
+	agentExec.ProcessorEntityBase
 
 	Type      consts.DataSource `json:"type,omitempty" yaml:"type,omitempty"`
 	Url       string            `json:"url,omitempty" yaml:"url,omitempty"`
@@ -187,7 +187,7 @@ func (ProcessorData) TableName() string {
 
 type ProcessorCookie struct {
 	BaseModel
-	runDomain.ProcessorEntity
+	agentExec.ProcessorEntityBase
 
 	CookieName   string     `json:"cookieName" yaml:"cookieName"`
 	VariableName string     `json:"variableName" yaml:"variableName"`
@@ -202,6 +202,6 @@ func (ProcessorCookie) TableName() string {
 
 type ProcessorComm struct {
 	Id uint `json:"id" yaml:"id"`
-	runDomain.ProcessorEntity
+	agentExec.ProcessorEntityBase
 	InterfaceId uint `json:"interfaceId"`
 }

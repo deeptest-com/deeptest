@@ -2,10 +2,11 @@ package service
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/agent/exec"
+	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/business"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/helper/exec"
+	execHelper "github.com/aaronchen2k/deeptest/internal/server/modules/helper/exec"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
@@ -409,6 +410,6 @@ func (s *ExecScenarioService) RestartResult(report *model.Report, scenario model
 
 func (s *ExecScenarioService) CancelAndSendMsg(scenarioId int, wsMsg websocket.Message) (err error) {
 	s.TestReportRepo.UpdateStatus(consts.Cancel, "", uint(scenarioId))
-	execHelper.SendCancelMsg(wsMsg)
+	exec.SendCancelMsg(wsMsg)
 	return
 }

@@ -2,11 +2,11 @@
   <div class="scenario-exec-log-main">
     <div v-for="(item, index) in logs" :key="index" class="log">
       <div>
-        <div v-if="!item.respContent">
+        <div v-if="item.processorCategory !== 'processor_interface'">
           {{ item.name }}&nbsp; {{ joinArr(item.summary) }}
         </div>
 
-        <a-collapse v-if="item.respContent" expand-icon-position="right">
+        <a-collapse v-if="item.processorCategory === 'processor_interface'" expand-icon-position="right">
           <a-collapse-panel key="index" :header="getHeader(item)">
             <template #extra>
               <span :class="getResultCls(item.resultStatus)">{{ t(item.resultStatus) }}</span>
@@ -17,18 +17,21 @@
                 <div class="title">请求</div>
                 <div class="content">
                   <a-row class="url">
-                    <a-col flex="150px">{{ getReq(item).method }}</a-col>
                     <a-col flex="200px">{{ getResp(item).statusCode }}</a-col>
-
+                    <a-col flex="150px">{{ getReq(item).method }}</a-col>
                     <a-col flex="1">{{ getReq(item).url }}</a-col>
                   </a-row>
                 </div>
               </div>
 
-              <div class="section extractor">
+              <div v-if="getReq(item).method === 'POST'" class="show-detail">
+                <a-link @click="showModal(item, 'req')" to="">显示请求体</a-link>
+              </div>
+
+              <div v-if="item.extractorsResult" class="section extractor">
                 <div class="title">提取器</div>
                 <div class="content">
-                  <a-row v-for="(extractor, idx) in item.interfaceExtractorsResult" :key="idx" type="flex" class="item">
+                  <a-row v-for="(extractor, idx) in item.extractorsResult" :key="idx" type="flex" class="item">
                     <a-col flex="50px">{{idx + 1}}</a-col>
                     <a-col flex="100px">{{ t(extractor.src) }}</a-col>
                     <a-col flex="100px">{{ extractor.type ? t('processor_extractor_'+extractor.type) : '' }}</a-col>
@@ -48,11 +51,11 @@
                 </div>
               </div>
 
-              <div class="section checkpoint">
+              <div v-if="item.checkpointsResult" class="section checkpoint">
                 <div class="title">检查点</div>
 
                 <div class="content">
-                  <a-row v-for="(checkpoint, idx) in item.interfaceCheckpointsResult" :key="idx" type="flex" class="item">
+                  <a-row v-for="(checkpoint, idx) in item.checkpointsResult" :key="idx" type="flex" class="item">
                     <a-col flex="50px">{{idx + 1}}</a-col>
                     <a-col flex="100px">{{t(checkpoint.type)}}</a-col>
                     <a-col flex="100px">{{ checkpoint.type === CheckpointType.extractor ? checkpoint.extractorVariable : checkpoint.expression }} </a-col>
@@ -68,7 +71,7 @@
                 </div>
               </div>
 
-              <div class="section header">
+              <div v-if="getResp(item).headers" class="section header">
                 <div class="title">响应头</div>
 
                 <div class="content">
@@ -80,8 +83,8 @@
                 </div>
               </div>
 
-              <div class="resp">
-                <a-link @click="showModal(item)" to="">显示响应内容</a-link>
+              <div class="show-detail">
+                <a-link @click="showModal(item, 'resp')" to="">显示响应内容</a-link>
               </div>
             </div>
 
@@ -101,8 +104,8 @@
       <div class="editor-wrapper">
         <MonacoEditor
             class="editor"
-            :value="resp.content"
-            :language="resp.contentLang"
+            :value="req.body ? req.body : resp.content"
+            :language="req.bodyLang ? req.bodyLang : resp.contentLang"
             theme="vs"
             :options="editorOptions"
         />
@@ -133,11 +136,20 @@ defineProps<{
 const { t } = useI18n();
 const editorOptions = ref(MonacoOptions)
 
+const req = ref({})
 const resp = ref({})
 const visible = ref<boolean>(false);
 
-const showModal = (item) => {
-  resp.value = getResp(item)
+const showModal = (item, type) => {
+  if (type === 'req') {
+    req.value = getReq(item)
+    resp.value = {}
+  }
+  else if (type === 'resp') {
+    req.value = {}
+    resp.value = getResp(item)
+  }
+
   visible.value = true;
 };
 
@@ -160,6 +172,7 @@ const getReq = (item) => {
 
   return JSON.parse(item.reqContent)
 }
+
 const getResp = (item) => {
   if (!item.reqContent) return {}
 
@@ -181,6 +194,9 @@ const joinArr = (arr : string[]) => {
 <style lang="less">
 .scenario-exec-log-main {
   height: 100%;
+  .ant-collapse-content-box {
+    padding-top: 8px !important;
+  }
 }
 </style>
 
@@ -204,7 +220,7 @@ const joinArr = (arr : string[]) => {
 
   .resp-content {
     .section {
-      margin-bottom: 15px;
+      margin: 10px 0;
       border: 1px solid #dedfe1;
 
       .title {
@@ -219,6 +235,9 @@ const joinArr = (arr : string[]) => {
             background-color: #F8F8FF !important;
           }
         }
+      }
+      .show-detail {
+        margin: 5px 0;
       }
     }
   }

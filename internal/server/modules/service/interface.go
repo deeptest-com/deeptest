@@ -82,25 +82,6 @@ func (s *InterfaceService) GetTree(projectId int) (root *model.Interface, err er
 	return
 }
 
-func (s *InterfaceService) Get(interfId uint) (interf model.Interface, err error) {
-	if interfId > 0 {
-		interf, err = s.InterfaceRepo.Get(interfId)
-
-		interf.Params, _ = s.InterfaceRepo.ListParams(interfId)
-		interf.Headers, _ = s.InterfaceRepo.ListHeaders(interfId)
-
-		interf.BasicAuth, _ = s.InterfaceRepo.GetBasicAuth(interfId)
-		interf.BearerToken, _ = s.InterfaceRepo.GetBearerToken(interfId)
-		interf.OAuth20, _ = s.InterfaceRepo.GetOAuth20(interfId)
-		interf.ApiKey, _ = s.InterfaceRepo.GetApiKey(interfId)
-	}
-
-	interf.Params = append(interf.Params, model.InterfaceParam{Name: "", Value: ""})
-	interf.Headers = append(interf.Headers, model.InterfaceHeader{Name: "", Value: ""})
-
-	return
-}
-
 func (s *InterfaceService) Save(interf *model.Interface) (err error) {
 	err = s.InterfaceRepo.Save(interf)
 
@@ -187,4 +168,8 @@ func (s *InterfaceService) CopyValueFromRequest(interf *model.Interface, req v1.
 	copier.CopyWithOption(interf, req, copier.Option{DeepCopy: true})
 
 	return
+}
+
+func (s *InterfaceService) GetDetail(id uint) (interf model.Interface, err error) {
+	return s.InterfaceRepo.GetDetail(id)
 }

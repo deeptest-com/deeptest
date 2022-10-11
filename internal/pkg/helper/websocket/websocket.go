@@ -32,8 +32,21 @@ func SendExecMsg(msg string, log interface{}, wsMsg *websocket.Message) {
 	}
 }
 
-func SendExecResult(category consts.WsMsgCategory, data interface{}, wsMsg *websocket.Message) {
-	resp := _domain.WsResp{Category: category, Data: data}
+func SendExecStatus(category consts.WsMsgCategory, wsMsg *websocket.Message) {
+	resp := _domain.WsResp{Category: category}
+	bytes, _ := json.Marshal(resp)
+	mqData := _domain.MqMsg{Namespace: wsMsg.Namespace, Room: wsMsg.Room, Event: wsMsg.Event, Content: string(bytes)}
+
+	if wsMsg != nil {
+		logUtils.Infof(_i118Utils.Sprintf("ws_send_exec_msg", wsMsg.Room, category))
+		PubMsg(mqData)
+	} else {
+		logUtils.Infof(string(bytes))
+	}
+}
+
+func SendExecResult(data interface{}, wsMsg *websocket.Message) {
+	resp := _domain.WsResp{Category: consts.Result, Data: data}
 	if data != nil {
 		resp.Data = data
 	}
@@ -41,7 +54,7 @@ func SendExecResult(category consts.WsMsgCategory, data interface{}, wsMsg *webs
 	mqData := _domain.MqMsg{Namespace: wsMsg.Namespace, Room: wsMsg.Room, Event: wsMsg.Event, Content: string(bytes)}
 
 	if wsMsg != nil {
-		logUtils.Infof(_i118Utils.Sprintf("ws_send_exec_msg", wsMsg.Room, category))
+		logUtils.Infof(_i118Utils.Sprintf("ws_send_exec_msg", wsMsg.Room, consts.Result))
 		PubMsg(mqData)
 	} else {
 		logUtils.Infof(string(bytes))

@@ -7,7 +7,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/business"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/helper/exec"
+	execHelper "github.com/aaronchen2k/deeptest/internal/server/modules/helper/exec"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/helper/request"
 	repo2 "github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"github.com/jinzhu/copier"

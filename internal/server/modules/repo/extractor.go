@@ -94,8 +94,7 @@ func (r *ExtractorRepo) Delete(id uint) (err error) {
 
 func (r *ExtractorRepo) UpdateResult(extractor model.InterfaceExtractor) (err error) {
 	values := map[string]interface{}{
-		"result":       extractor.Result,
-		"enable_share": true,
+		"result": extractor.Result,
 	}
 	err = r.DB.Model(&extractor).Where("id = ?", extractor.ID).
 		Updates(values).Error
@@ -123,8 +122,8 @@ func (r *ExtractorRepo) UpdateResultToExecLog(extractor model.InterfaceExtractor
 func (r *ExtractorRepo) ListValidExtractorVariable(interfaceId, projectId uint) (variables []v1.Variable, err error) {
 	err = r.DB.Model(&model.InterfaceExtractor{}).
 		Select("id, variable AS name, result AS value, "+
-			"interface_id AS interfaceId, is_share AS isShare").
-		Where("(is_share OR interface_id = ?) AND enable_share", interfaceId).
+			"interface_id AS interfaceId, scope AS scope").
+		//Where("(is_share OR interface_id = ?) AND enable_share", interfaceId).
 		Where("project_id=?", projectId).
 		Where("NOT deleted AND NOT disabled").
 		Order("created_at ASC").

@@ -21,7 +21,7 @@ func (r *CheckpointRepo) List(interfaceId uint) (pos []model.InterfaceCheckpoint
 }
 
 func (r *CheckpointRepo) ListTo(interfaceId uint) (ret []domain.Checkpoint, err error) {
-	pos := make([]model.InterfaceExtractor, 0)
+	pos := make([]model.InterfaceCheckpoint, 0)
 
 	err = r.DB.
 		Where("interface_id=?", interfaceId).
@@ -29,10 +29,10 @@ func (r *CheckpointRepo) ListTo(interfaceId uint) (ret []domain.Checkpoint, err 
 		Find(&pos).Error
 
 	for _, po := range pos {
-		extractor := domain.Checkpoint{}
-		copier.CopyWithOption(&extractor, po, copier.Option{DeepCopy: true})
+		checkpoint := domain.Checkpoint{}
+		copier.CopyWithOption(&checkpoint, po, copier.Option{DeepCopy: true})
 
-		ret = append(ret, extractor)
+		ret = append(ret, checkpoint)
 	}
 
 	return

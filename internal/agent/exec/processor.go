@@ -33,71 +33,17 @@ type Processor struct {
 	Slots    iris.Map         `json:"slots"`
 	Entity   IProcessorEntity `json:"-"`
 
-	Result Result `json:"log"`
+	Result domain.Result `json:"log"`
 
 	Session Session `json:"-"`
 }
 
-func (p *Processor) Run(s *Session) (log Result, err error) {
+func (p *Processor) Run(s *Session) (log domain.Result, err error) {
 	logUtils.Infof("%s - %s", p.Name, p.EntityType)
 
 	if p.Entity != nil {
-		log, err = p.Entity.Run(s)
+		log, _ = p.Entity.Run(p, s)
 	}
-
-	if p.EntityCategory == consts.ProcessorLoop { // loop
-		if p.EntityType == consts.ProcessorLoopUntil {
-			p.runLoopUntil(s, log.Iterator)
-		} else {
-			p.runLoopItems(s, log.Iterator)
-		}
-	} else {
-		for _, child := range p.Children {
-			child.Run(s)
-		}
-	}
-
-	p.Result = log
-
-	return
-}
-
-func (p *Processor) runLoopUntil(s *Session, iterator domain.ExecIterator) (err error) {
-	expression := iterator.UntilExpression
-
-	for {
-		result, err := EvaluateGovaluateExpressionByScope(expression, p.ID)
-		pass, ok := result.(bool)
-		if err != nil || !ok || pass {
-			break
-		}
-
-		for _, child := range p.Children {
-			childLog, _ := child.Run(s)
-			if childLog.WillBreak {
-				logUtils.Infof("break")
-				goto LABEL
-			}
-		}
-	}
-LABEL:
-
-	return
-}
-
-func (p *Processor) runLoopItems(s *Session, iterator domain.ExecIterator) (err error) {
-	for _, item := range iterator.Items {
-		SetVariable(p.ID, iterator.VariableName, item, consts.Local)
-
-		for _, child := range p.Children {
-			childLog, _ := child.Run(s)
-			if childLog.WillBreak {
-				logUtils.Infof("break")
-				goto LABEL
-			}
-		}
-	}
-LABEL:
 
 	return
 }

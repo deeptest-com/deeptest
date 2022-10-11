@@ -13,6 +13,7 @@ import (
 
 type InvocationService struct {
 	InvocationRepo *repo.InvocationRepo `inject:""`
+	InterfaceRepo  *repo.InterfaceRepo  `inject:""`
 
 	InterfaceService  *InterfaceService  `inject:""`
 	ExtractorService  *ExtractorService  `inject:""`
@@ -37,7 +38,7 @@ func (s *InvocationService) Invoke(req v1.InvocationRequest, projectId int) (
 		return
 	}
 
-	interf, _ := s.InterfaceService.Get(req.Id)
+	interf, _ := s.InterfaceRepo.GetDetail(req.Id)
 	s.ExtractorService.ExtractInterface(interf, resp, nil)
 	s.CheckpointService.CheckInterface(interf, resp, nil)
 

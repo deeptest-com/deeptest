@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils"
+	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	queryHelper "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/query"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/internal/pkg/helper/websocket"
 	stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
@@ -16,79 +16,89 @@ import (
 
 type ProcessorInterface struct {
 	ID uint `json:"id"`
-	ProcessorEntity
+	ProcessorEntityBase
 
-	Request  domain.Request  `json:"request"`
+	domain.Request
 	Response domain.Response `json:"response"`
 
 	Extractors  []domain.Extractor
 	Checkpoints []domain.Checkpoint
-
-	Result Result `json:"result"`
 }
 
-func (p ProcessorInterface) Run(s *Session) (log Result, err error) {
+func (entity ProcessorInterface) Run(processor *Processor, session *Session) (log domain.Result, err error) {
 	logUtils.Infof("interface entity")
 
-	p.Result = Result{
-		Name: p.Name,
+	entity.Result = domain.Result{
+		ID:                entity.ProcessorID,
+		Name:              entity.Name,
+		ProcessorCategory: entity.ProcessorCategory,
+		ProcessorType:     entity.ProcessorType,
+		ParentId:          entity.ParentID,
 	}
 
-	variableMap := GetVariableMap(p.ProcessorID)
-	ReplaceAll(&p.Request, variableMap)
+	variableMap := GetVariableMap(entity.ProcessorID)
+	ReplaceAll(&entity.Request, variableMap)
 
-	p.Response, err = Invoke(p.Request)
+	GetRequestProps(&entity.Request)
+	reqContent, _ := json.Marshal(entity.Request)
+	entity.Result.ReqContent = string(reqContent)
+
+	entity.Response, err = Invoke(entity.Request)
+
+	respContent, _ := json.Marshal(entity.Response)
+	entity.Result.RespContent = string(respContent)
+
 	if err != nil {
+		entity.Result.ResultStatus = consts.Fail
+		//entity.Result.Summary = err.Error()
+		exec.SendErrorMsg(entity.Result, session.WsMsg)
 		return
 	}
 
-	p.ExtractInterface(s)
-	p.CheckInterface(s)
+	entity.ExtractInterface(session)
+	entity.CheckInterface(session)
 
-	reqContent, _ := json.Marshal(p.Request)
-	respContent, _ := json.Marshal(p.Response)
-	p.Result.ReqContent = string(reqContent)
-	p.Result.RespContent = string(respContent)
-
-	websocketHelper.SendExecMsg("exec interface", p.Result, s.WsMsg)
+	exec.SendExecMsg(entity.Result, session.WsMsg)
 
 	return
 }
 
-func (p ProcessorInterface) ExtractInterface(s *Session) (err error) {
-	for _, extractor := range p.Extractors {
-		p.Extract(&extractor, p.Response)
-		SetVariable(p.ID, extractor.Variable, extractor.Result, extractor.Scope)
+func (entity *ProcessorInterface) ExtractInterface(session *Session) (err error) {
+	for _, extractor := range entity.Extractors {
+		entity.Extract(&extractor, entity.Response)
+		SetVariable(entity.ParentID, extractor.Variable, extractor.Result, extractor.Scope)
 
 		if err == nil { // gen report for processor
-
-			p.Result.ExtractorsResult = append(p.Result.ExtractorsResult, extractor)
+			entity.Result.ExtractorsResult = append(entity.Result.ExtractorsResult, extractor)
 		}
 	}
 
 	return
 }
 
-func (p *ProcessorInterface) CheckInterface(s *Session) (err error) {
+func (entity *ProcessorInterface) CheckInterface(session *Session) (err error) {
 	status := consts.Pass
-	for _, checkpoint := range p.Checkpoints {
-		p.Check(&checkpoint, p.Response)
+
+	for _, checkpoint := range entity.Checkpoints {
+		entity.Check(&checkpoint, entity.Response)
 
 		if checkpoint.ResultStatus == consts.Fail {
 			status = consts.Fail
 		}
 
 		if err == nil {
-			p.Result.CheckpointsResult = append(p.Result.CheckpointsResult, checkpoint)
+			entity.Result.CheckpointsResult = append(entity.Result.CheckpointsResult, checkpoint)
 		}
 	}
 
-	p.Result.ResultStatus = status
+	entity.Result.ResultStatus = status
 
 	return
 }
 
-func (p ProcessorInterface) Extract(extractor *domain.Extractor, resp domain.Response) (err error) {
+func (entity ProcessorInterface) Extract(extractor *domain.Extractor, resp domain.Response) (err error) {
+	extractor.Result = ""
+
 	if extractor.Disabled {
 		extractor.Result = ""
 	} else {
@@ -121,7 +131,7 @@ func (p ProcessorInterface) Extract(extractor *domain.Extractor, resp domain.Res
 	return
 }
 
-func (p *ProcessorInterface) Check(checkpoint *domain.Checkpoint, resp domain.Response) (err error) {
+func (entity *ProcessorInterface) Check(checkpoint *domain.Checkpoint, resp domain.Response) (err error) {
 	if checkpoint.Disabled {
 		checkpoint.ResultStatus = ""
 		return
@@ -191,7 +201,7 @@ func (p *ProcessorInterface) Check(checkpoint *domain.Checkpoint, resp domain.Re
 
 	// Judgement
 	if checkpoint.Type == consts.Judgement {
-		result, _ := EvaluateGovaluateExpressionByScope(checkpoint.Expression, p.ID)
+		result, _ := EvaluateGovaluateExpressionByScope(checkpoint.Expression, entity.ProcessorID)
 
 		ret, ok := result.(bool)
 		if ok && ret {
@@ -207,7 +217,7 @@ func (p *ProcessorInterface) Check(checkpoint *domain.Checkpoint, resp domain.Re
 	// Extractor
 	if checkpoint.Type == consts.Extractor {
 		// get extractor variable value saved by previous extract opt
-		variable, _ := GetVariable(p.ID, checkpoint.ExtractorVariable)
+		variable, _ := GetVariable(entity.ProcessorID, checkpoint.ExtractorVariable)
 		checkpoint.ActualResult = variable.Value.(string)
 
 		checkpoint.ResultStatus = utils.Compare(checkpoint.Operator, checkpoint.ActualResult, checkpoint.Value)

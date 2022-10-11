@@ -15,6 +15,7 @@ type ScenarioProcessorRepo struct {
 	ScenarioNodeRepo *ScenarioNodeRepo `inject:""`
 	ExtractorRepo    *ExtractorRepo    `inject:""`
 	CheckpointRepo   *CheckpointRepo   `inject:""`
+	InterfaceRepo    *InterfaceRepo    `inject:""`
 }
 
 func (r *ScenarioProcessorRepo) Get(id uint) (processor model.Processor, err error) {
@@ -69,10 +70,21 @@ func (r *ScenarioProcessorRepo) GetEntityTo(processorId uint) (ret agentExec.IPr
 	processor, _ := r.Get(processorId)
 
 	switch processor.EntityCategory {
+	case consts.ProcessorRoot:
+		comm, _ := r.GetRoot(processor)
+
+		ret = agentExec.ProcessorRoot{}
+		copier.CopyWithOption(&ret, comm, copier.Option{DeepCopy: true})
+
 	case consts.ProcessorInterface:
-		po, _ := r.GetInterface(processor)
+		interfacePo, _ := r.InterfaceRepo.GetDetail(processor.InterfaceId)
+
 		interf := agentExec.ProcessorInterface{}
-		copier.CopyWithOption(&ret, po, copier.Option{DeepCopy: true})
+		copier.CopyWithOption(&interf, interfacePo, copier.Option{DeepCopy: true})
+		interf.ProcessorID = processor.ID
+		interf.ParentID = processor.ParentId
+		interf.ProcessorCategory = consts.ProcessorInterface
+		interf.ProcessorType = consts.ProcessorInterfaceDefault
 
 		interf.Extractors, _ = r.ExtractorRepo.ListTo(interf.ID)
 		interf.Checkpoints, _ = r.CheckpointRepo.ListTo(interf.ID)
@@ -150,35 +162,30 @@ func (r *ScenarioProcessorRepo) GetAll(scenarioId uint) (processors []model.Proc
 	return
 }
 
-//func (r *ScenarioProcessorRepo) GetRootProcessor(scenarioId uint) (processor model.Processor, err error) {
-//	err = r.DB.Where("scenario_id = ? AND entity_category = ?", scenarioId, consts.ProcessorRoot).
-//		First(&processor).Error
-//
-//	return
-//}
-
-//func (r *ScenarioProcessorRepo) GetChildrenProcessor(parentId, scenarioId uint) (pos []model.Processor, err error) {
-//	err = r.DB.Where("parent_id = ? AND scenario_id = ? AND NOT deleted", parentId, scenarioId).
-//		Find(&pos).Error
-//
-//	return
-//}
-
-func (r *ScenarioProcessorRepo) GetInterface(processor model.Processor) (ret interface{}, err error) {
+func (r *ScenarioProcessorRepo) GetRoot(processor model.Processor) (ret model.ProcessorComm, err error) {
+	// there is no ProcessorRoot obj, just return a common obj
 	ret = r.genProcessorComm(processor)
 
 	return
 }
 
-func (r *ScenarioProcessorRepo) GetGroup(processor model.Processor) (ret interface{}, err error) {
-	var entity model.ProcessorGroup
-	err = r.DB.Where("processor_id = ?", processor.ID).First(&entity).Error
+func (r *ScenarioProcessorRepo) GetInterface(processor model.Processor) (ret model.ProcessorComm, err error) {
+	// processor refer to an interface using interfaceID,
+	// there is no ProcessorInterface obj, just return a common obj
+	ret = r.genProcessorComm(processor)
 
-	if entity.ID == 0 {
-		ret = r.genProcessorComm(processor)
+	return
+}
+
+func (r *ScenarioProcessorRepo) GetGroup(processor model.Processor) (ret model.ProcessorGroup, err error) {
+	err = r.DB.Where("processor_id = ?", processor.ID).First(&ret).Error
+
+	if ret.ID == 0 {
+		comm := r.genProcessorComm(processor)
+		copier.CopyWithOption(&ret, comm, copier.Option{DeepCopy: true})
 	} else {
-		entity.Name = processor.Name
-		ret = entity
+		ret.Name = processor.Name
+		ret.ParentID = processor.ParentId
 	}
 
 	return
@@ -192,6 +199,7 @@ func (r *ScenarioProcessorRepo) GetLogic(processor model.Processor) (ret model.P
 		copier.CopyWithOption(&ret, comm, copier.Option{DeepCopy: true})
 	} else {
 		ret.Name = processor.Name
+		ret.ParentID = processor.ParentId
 	}
 
 	return
@@ -205,6 +213,7 @@ func (r *ScenarioProcessorRepo) GetLoop(processor model.Processor) (ret model.Pr
 		copier.CopyWithOption(&ret, comm, copier.Option{DeepCopy: true})
 	} else {
 		ret.Name = processor.Name
+		ret.ParentID = processor.ParentId
 	}
 
 	return
@@ -218,6 +227,7 @@ func (r *ScenarioProcessorRepo) GetVariable(processor model.Processor) (ret mode
 		copier.CopyWithOption(&ret, comm, copier.Option{DeepCopy: true})
 	} else {
 		ret.Name = processor.Name
+		ret.ParentID = processor.ParentId
 	}
 
 	return
@@ -231,6 +241,7 @@ func (r *ScenarioProcessorRepo) GetTimer(processor model.Processor) (ret model.P
 		copier.CopyWithOption(&ret, comm, copier.Option{DeepCopy: true})
 	} else {
 		ret.Name = processor.Name
+		ret.ParentID = processor.ParentId
 	}
 
 	return
@@ -244,6 +255,7 @@ func (r *ScenarioProcessorRepo) GetPrint(processor model.Processor) (ret model.P
 		copier.CopyWithOption(&ret, comm, copier.Option{DeepCopy: true})
 	} else {
 		ret.Name = processor.Name
+		ret.ParentID = processor.ParentId
 	}
 
 	return
@@ -257,6 +269,7 @@ func (r *ScenarioProcessorRepo) GetCookie(processor model.Processor) (ret model.
 		copier.CopyWithOption(&ret, comm, copier.Option{DeepCopy: true})
 	} else {
 		ret.Name = processor.Name
+		ret.ParentID = processor.ParentId
 	}
 
 	return
@@ -270,6 +283,7 @@ func (r *ScenarioProcessorRepo) GetAssertion(processor model.Processor) (ret mod
 		copier.CopyWithOption(&ret, comm, copier.Option{DeepCopy: true})
 	} else {
 		ret.Name = processor.Name
+		ret.ParentID = processor.ParentId
 	}
 
 	return
@@ -283,6 +297,7 @@ func (r *ScenarioProcessorRepo) GetExtractor(processor model.Processor) (ret mod
 		copier.CopyWithOption(&ret, comm, copier.Option{DeepCopy: true})
 	} else {
 		ret.Name = processor.Name
+		ret.ParentID = processor.ParentId
 	}
 
 	return
@@ -296,6 +311,7 @@ func (r *ScenarioProcessorRepo) GetData(processor model.Processor) (ret model.Pr
 		copier.CopyWithOption(&ret, comm, copier.Option{DeepCopy: true})
 	} else {
 		ret.Name = processor.Name
+		ret.ParentID = processor.ParentId
 	}
 
 	return
@@ -402,7 +418,17 @@ func (r *ScenarioProcessorRepo) genProcessorComm(processor model.Processor) (ret
 	ret.ProcessorCategory = processor.EntityCategory
 	ret.ProcessorType = processor.EntityType
 	ret.ProcessorID = processor.ID
+	ret.ParentID = processor.ParentId
 
+	ret = model.ProcessorComm{
+		ProcessorEntityBase: agentExec.ProcessorEntityBase{
+			Name:              processor.Name,
+			ProcessorCategory: processor.EntityCategory,
+			ProcessorType:     processor.EntityType,
+			ProcessorID:       processor.ID,
+			ParentID:          processor.ParentId,
+		},
+	}
 	if processor.InterfaceId > 0 {
 		ret.InterfaceId = processor.InterfaceId
 	}

@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	mqTopic  = "WebsocketTopic"
+	mqTopic  = "MQ_WebsocketTopic"
 	mqClient *mq.Client
 )
 

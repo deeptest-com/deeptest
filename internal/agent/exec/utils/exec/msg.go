@@ -1,9 +1,9 @@
-package execHelper
+package exec
 
 import (
+	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
-	websocketHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/websocket"
+	"github.com/aaronchen2k/deeptest/internal/pkg/helper/websocket"
 	_i118Utils "github.com/aaronchen2k/deeptest/pkg/lib/i118"
 	_logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/kataras/iris/v12/websocket"
@@ -39,25 +39,23 @@ func SendCancelMsg(wsMsg websocket.Message) (err error) {
 
 func SendAlreadyRunningMsg(scenarioId int, wsMsg websocket.Message) (err error) {
 	msg := _i118Utils.Sprintf("pls_stop_previous")
-	websocketHelper.SendExecMsg(msg, domain.ExecLog{ProgressStatus: consts.InProgress}, &wsMsg)
+	websocketHelper.SendExecMsg(msg, domain.Result{ProgressStatus: consts.InProgress}, &wsMsg)
 	_logUtils.Infof(msg)
 
 	return
 }
 
-func SendExecMsg(log domain.ExecLog, wsMsg *websocket.Message) (err error) {
+func SendExecMsg(log domain.Result, wsMsg *websocket.Message) (err error) {
 	SetRunning(true)
-	msg := _i118Utils.Sprintf("start_exec")
+	msg := _i118Utils.Sprintf("exec")
 	websocketHelper.SendExecMsg(msg, log, wsMsg)
-	//_logUtils.Infof("=== " + log.Name)
 
 	return
 }
 
-func SendErrorMsg(scenarioId int, wsMsg websocket.Message) (err error) {
-	msg := _i118Utils.Sprintf("wrong_req_params", err.Error())
-	websocketHelper.SendExecMsg(msg, domain.ExecLog{ProgressStatus: consts.Error}, &wsMsg)
-	_logUtils.Infof(msg)
+func SendErrorMsg(log domain.Result, wsMsg *websocket.Message) (err error) {
+	msg := _i118Utils.Sprintf("exec_fail")
+	websocketHelper.SendExecMsg(msg, log, wsMsg)
 
 	return
 }

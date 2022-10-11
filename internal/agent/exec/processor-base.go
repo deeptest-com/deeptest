@@ -1,14 +1,11 @@
 package agentExec
 
 import (
+	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 )
 
-type IProcessorEntity interface {
-	Run(*Session) (Result, error)
-}
-
-type ProcessorEntity struct {
+type ProcessorEntityBase struct {
 	Name     string `gorm:"-" json:"name"`
 	Comments string `json:"comments"`
 	Default  string `json:"default"`
@@ -18,5 +15,11 @@ type ProcessorEntity struct {
 	ProcessorType     consts.ProcessorType     `json:"processorType" yaml:"processorType"`
 	ParentID          uint                     `json:"parentID" yaml:"parentID"`
 
-	Result Result `json:"result,omitempty" gorm:"-"`
+	//Children []*Processor `json:"children" gorm:"-"`
+
+	Result domain.Result `json:"result,omitempty" gorm:"-"`
+}
+
+type IProcessorEntity interface {
+	Run(*Processor, *Session) (domain.Result, error)
 }

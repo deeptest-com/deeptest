@@ -35,8 +35,24 @@ func Invoke(req domain.Request) (resp domain.Response, err error) {
 	return
 }
 
+func GetRequestProps(req *domain.Request) {
+	req.BodyLang = consts.LangPlainTEXT
+
+	arr := strings.Split(string(req.BodyType), "/")
+	if len(arr) == 1 {
+		return
+	}
+
+	typeName := arr[1]
+	if typeName == "text" || typeName == "plain" {
+		typeName = "plaintext"
+	}
+
+	req.BodyLang = consts.HttpRespLangType(typeName)
+}
+
 func GetContentProps(resp *domain.Response) {
-	resp.ContentLang = "plaintext"
+	resp.ContentLang = consts.LangPlainTEXT
 
 	if resp.ContentLang == "" {
 		return
@@ -175,7 +191,7 @@ func ReplaceVariableValue(value string, variableMap map[string]interface{}) (ret
 
 	for _, item := range variables {
 		old := fmt.Sprintf("${%s}", item)
-		new := fmt.Sprintf("%v", variableMap[old])
+		new := fmt.Sprintf("%v", variableMap[item])
 
 		ret = strings.ReplaceAll(ret, old, new)
 	}

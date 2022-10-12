@@ -41,8 +41,8 @@ func (entity ProcessorData) Run(processor *Processor, session *Session) (log dom
 
 	log.Iterator, log.Output = entity.getIterator()
 
-	entity.Result = log
-	exec.SendExecMsg(entity.Result, session.WsMsg)
+	processor.Result = log
+	exec.SendExecMsg(processor.Result, session.WsMsg)
 
 	entity.runDataItems(session, processor, log.Iterator)
 

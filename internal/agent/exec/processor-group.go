@@ -14,7 +14,7 @@ type ProcessorGroup struct {
 func (entity ProcessorGroup) Run(processor *Processor, session *Session) (log domain.Result, err error) {
 	logUtils.Infof("group entity")
 
-	entity.Result = domain.Result{
+	processor.Result = domain.Result{
 		ID:                entity.ProcessorID,
 		Name:              entity.Name,
 		ProcessorCategory: entity.ProcessorCategory,
@@ -22,7 +22,7 @@ func (entity ProcessorGroup) Run(processor *Processor, session *Session) (log do
 		ParentId:          entity.ParentID,
 	}
 
-	exec.SendExecMsg(entity.Result, session.WsMsg)
+	exec.SendExecMsg(processor.Result, session.WsMsg)
 
 	for _, child := range processor.Children {
 		child.Run(session)

@@ -16,7 +16,7 @@
               <div class="section request">
                 <div class="title">请求</div>
                 <div class="content">
-                  <a-row class="url">
+                  <a-row class="url item">
                     <a-col flex="200px">{{ getResp(item).statusCode }}</a-col>
                     <a-col flex="150px">{{ getReq(item).method }}</a-col>
                     <a-col flex="1">{{ getReq(item).url }}</a-col>
@@ -224,15 +224,17 @@ const joinArr = (arr : string[]) => {
       border: 1px solid #dedfe1;
 
       .title {
-        padding: 6px;
+        padding: 6px 10px;
         border-bottom: 1px solid #dedfe1;
         font-weight: bolder;
       }
       .content {
-        padding: 6px;
+        padding: 6px 0;
         .item {
+          padding: 3px 10px;
+          line-height: 20px;
           &:nth-child(even) {
-            background-color: #F8F8FF !important;
+            background-color: #f5f6f8 !important;
           }
         }
       }

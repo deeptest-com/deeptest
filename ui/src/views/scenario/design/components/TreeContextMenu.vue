@@ -1,5 +1,5 @@
 <template>
-  <div class="dp-tree-context-menu">
+  <div class="dp-tree-context-menu" :set="mode = treeNode.isDir ? 'child' : 'brother'">
     <a-menu @click="menuClick" trigger="['click']" mode="vertical">
       <template v-if="isRoot(treeNode.entityCategory)">
         <a-sub-menu @click.stop key="addProcessor" trigger="['click']" class="menu-item" popupClassName="dp-tree-context-submenu">
@@ -14,7 +14,6 @@
                 :category="category"
                 mode="child" />
           </template>
-
         </a-sub-menu>
 
         <a-menu-item key="add-child-interface" class="menu-item">
@@ -33,11 +32,11 @@
             <TreeContextSubMenu
                 :processorTypes="processorTypeMap[category.label]"
                 :category="category"
-                mode="child"/>
+                :mode="mode"/>
           </template>
         </a-sub-menu>
 
-        <a-menu-item key="add-child-interface" class="menu-item">
+        <a-menu-item :key="'add-' + mode + '-interface'" class="menu-item">
           <FileAddOutlined />
           <span>新建请求</span>
         </a-menu-item>

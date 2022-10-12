@@ -28,7 +28,7 @@ type ProcessorInterface struct {
 func (entity ProcessorInterface) Run(processor *Processor, session *Session) (log domain.Result, err error) {
 	logUtils.Infof("interface entity")
 
-	entity.Result = domain.Result{
+	processor.Result = domain.Result{
 		ID:                entity.ProcessorID,
 		Name:              entity.Name,
 		ProcessorCategory: entity.ProcessorCategory,
@@ -44,40 +44,40 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (lo
 	GetContentProps(&entity.Response)
 
 	reqContent, _ := json.Marshal(entity.Request)
-	entity.Result.ReqContent = string(reqContent)
+	processor.Result.ReqContent = string(reqContent)
 
 	respContent, _ := json.Marshal(entity.Response)
-	entity.Result.RespContent = string(respContent)
+	processor.Result.RespContent = string(respContent)
 
 	if err != nil {
-		entity.Result.ResultStatus = consts.Fail
+		processor.Result.ResultStatus = consts.Fail
 		//entity.Result.Summary = err.Error()
-		exec.SendErrorMsg(entity.Result, session.WsMsg)
+		exec.SendErrorMsg(processor.Result, session.WsMsg)
 		return
 	}
 
-	entity.ExtractInterface(session)
-	entity.CheckInterface(session)
+	entity.ExtractInterface(processor, session)
+	entity.CheckInterface(processor, session)
 
-	exec.SendExecMsg(entity.Result, session.WsMsg)
+	exec.SendExecMsg(processor.Result, session.WsMsg)
 
 	return
 }
 
-func (entity *ProcessorInterface) ExtractInterface(session *Session) (err error) {
+func (entity *ProcessorInterface) ExtractInterface(processor *Processor, session *Session) (err error) {
 	for _, extractor := range entity.Extractors {
 		entity.Extract(&extractor, entity.Response)
 		SetVariable(entity.ParentID, extractor.Variable, extractor.Result, extractor.Scope)
 
 		if err == nil { // gen report for processor
-			entity.Result.ExtractorsResult = append(entity.Result.ExtractorsResult, extractor)
+			processor.Result.ExtractorsResult = append(processor.Result.ExtractorsResult, extractor)
 		}
 	}
 
 	return
 }
 
-func (entity *ProcessorInterface) CheckInterface(session *Session) (err error) {
+func (entity *ProcessorInterface) CheckInterface(processor *Processor, session *Session) (err error) {
 	status := consts.Pass
 
 	for _, checkpoint := range entity.Checkpoints {
@@ -88,11 +88,11 @@ func (entity *ProcessorInterface) CheckInterface(session *Session) (err error) {
 		}
 
 		if err == nil {
-			entity.Result.CheckpointsResult = append(entity.Result.CheckpointsResult, checkpoint)
+			processor.Result.CheckpointsResult = append(processor.Result.CheckpointsResult, checkpoint)
 		}
 	}
 
-	entity.Result.ResultStatus = status
+	processor.Result.ResultStatus = status
 
 	return
 }

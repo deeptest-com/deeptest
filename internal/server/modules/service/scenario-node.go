@@ -26,6 +26,10 @@ func (s *ScenarioNodeService) GetTree(scenarioId int) (root *agentExec.Processor
 func (s *ScenarioNodeService) AddInterfaces(req v1.ScenarioAddInterfacesReq) (ret model.Processor, err *_domain.BizErr) {
 	targetProcessor, _ := s.ScenarioProcessorRepo.Get(req.TargetId)
 
+	if !s.ScenarioNodeRepo.IsDir(targetProcessor) {
+		targetProcessor, _ = s.ScenarioProcessorRepo.Get(targetProcessor.ParentId)
+	}
+
 	for _, interfaceNode := range req.SelectedNodes {
 		ret, _ = s.createDirOrInterface(interfaceNode, targetProcessor)
 	}
@@ -50,14 +54,17 @@ func (s *ScenarioNodeService) AddProcessor(req v1.ScenarioAddScenarioReq) (ret m
 
 	if req.Mode == "child" {
 		ret.ParentId = targetProcessor.ID
+	} else if req.Mode == "brother" {
+		ret.ParentId = targetProcessor.ParentId
 	} else if req.Mode == "parent" && req.TargetProcessorCategory == consts.ProcessorInterface {
 		ret.ParentId = targetProcessor.ParentId
 	}
+
 	ret.Ordr = s.ScenarioNodeRepo.GetMaxOrder(ret.ParentId)
 
 	s.ScenarioNodeRepo.Save(&ret)
 
-	if req.Mode == "parent" {
+	if req.Mode == "parent" { // move interface to new folder
 		targetProcessor.ParentId = ret.ID
 		s.ScenarioNodeRepo.Save(&targetProcessor)
 	}

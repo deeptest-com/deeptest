@@ -71,6 +71,7 @@ func (r *ScenarioNodeRepo) GetTree(scenarioId uint, withEntity bool) (root *agen
 	root = tos[0]
 	root.Name = scenario.Name
 	root.Slots = iris.Map{"icon": "icon"}
+
 	r.makeTree(tos[1:], root)
 
 	return
@@ -92,7 +93,9 @@ func (r *ScenarioNodeRepo) Get(id uint) (processor model.Processor, err error) {
 
 func (r *ScenarioNodeRepo) toTos(pos []*model.Processor, withDetail bool) (tos []*agentDomain.Processor) {
 	for _, po := range pos {
-		to := agentDomain.Processor{}
+		to := agentDomain.Processor{
+			IsDir: r.IsDir(*po),
+		}
 		copier.CopyWithOption(&to, po, copier.Option{DeepCopy: true})
 
 		if withDetail {
@@ -120,11 +123,14 @@ func (r *ScenarioNodeRepo) makeTree(findIn []*agentDomain.Processor, parent *age
 	}
 }
 
-func (r *ScenarioNodeRepo) hasChild(processors []*agentDomain.Processor, node *agentDomain.Processor) (
+func (r *ScenarioNodeRepo) hasChild(processors []*agentDomain.Processor, parent *agentDomain.Processor) (
 	ret []*agentDomain.Processor, yes bool) {
+
 	for _, item := range processors {
-		if item.ParentId == node.ID {
+		if item.ParentId == parent.ID {
 			item.Slots = iris.Map{"icon": "icon"}
+			item.Parent = parent
+
 			ret = append(ret, item)
 		}
 	}
@@ -265,4 +271,15 @@ func (r *ScenarioNodeRepo) addSuperParent(id, parentId uint, childToParentIdMap 
 
 		r.addSuperParent(id, superId, childToParentIdMap, scopeHierarchyMap)
 	}
+}
+
+func (r *ScenarioNodeRepo) IsDir(po model.Processor) (ret bool) {
+	ret = po.EntityCategory == consts.ProcessorRoot ||
+		//po.EntityCategory == consts.ProcessorThread ||
+		po.EntityCategory == consts.ProcessorGroup ||
+		po.EntityCategory == consts.ProcessorLoop ||
+		po.EntityCategory == consts.ProcessorLogic ||
+		po.EntityCategory == consts.ProcessorData
+
+	return
 }

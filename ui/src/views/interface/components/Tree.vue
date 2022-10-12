@@ -105,7 +105,7 @@ export default defineComponent({
     watch(currProject, () => {
       console.log('watch currProject', currProject.value.id)
       queryTree();
-      selectNode(null)
+      selectNode([], null)
     }, {deep: false})
 
     watch(treeData, () => {
@@ -137,9 +137,15 @@ export default defineComponent({
 
     let tree = ref(null)
 
-    const selectNode = (keys) => {
-      console.log('selectNode', keys)
-      selectedKeys.value = keys
+    const selectNode = (keys, e) => {
+      console.log('selectNode', keys, e?.node.dataRef.id)
+
+      if (keys.length === 0 && e) {
+        selectedKeys.value = [e.node.dataRef.id] // cancel un-select
+        return
+      } else {
+        selectedKeys.value = keys
+      }
 
       if (!selectedKeys.value || selectedKeys.value.length === 0) { // not to display the design page
         store.dispatch('Interface/getInterface', {isDir: true})
@@ -268,7 +274,7 @@ export default defineComponent({
 
     const renameNode = () => {
       selectedKeys.value = [targetModelId]
-      selectNode(selectedKeys.value)
+      selectNode(selectedKeys.value, null)
       editedData.value[targetModelId] = treeDataMap.value[targetModelId].name
 
       Object.keys(treeDataMap.value).forEach((key) => {
@@ -302,7 +308,7 @@ export default defineComponent({
     const removeNode = () => {
       console.log('removeNode')
       store.dispatch('Interface/deleteInterface', targetModelId);
-      selectNode([])
+      selectNode([], null)
     }
     const clearMenu = () => {
       console.log('clearMenu')

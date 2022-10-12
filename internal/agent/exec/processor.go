@@ -31,8 +31,10 @@ type Processor struct {
 	Ordr     int              `json:"ordr"`
 	Children []*Processor     `json:"children"`
 	Slots    iris.Map         `json:"slots"`
+	IsDir    bool             `json:"isDir"`
 	Entity   IProcessorEntity `json:"-"`
 
+	Parent *Processor    `json:"-"`
 	Result domain.Result `json:"log"`
 
 	Session Session `json:"-"`

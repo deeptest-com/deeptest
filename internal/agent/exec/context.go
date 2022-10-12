@@ -182,8 +182,12 @@ func ClearVariable(processorId uint, variableName string) (err error) {
 	}
 
 	if deleteIndex > -1 {
-		ScopedVariables[processorId] = append(
-			ScopedVariables[targetScopeId][:deleteIndex], ScopedVariables[processorId][(deleteIndex+1):]...)
+		if len(ScopedVariables[targetScopeId]) == deleteIndex+1 {
+			ScopedVariables[targetScopeId] = make([]domain.ExecVariable, 0)
+		} else {
+			ScopedVariables[targetScopeId] = append(
+				ScopedVariables[targetScopeId][:deleteIndex], ScopedVariables[targetScopeId][(deleteIndex+1):]...)
+		}
 	}
 
 	return

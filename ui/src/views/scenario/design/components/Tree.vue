@@ -51,9 +51,12 @@
         </template>
 
         <template #icon="slotProps">
-          <FolderOutlined v-if="slotProps.entityCategory !==  'processor_interface' && !slotProps.expanded"/>
-          <FolderOpenOutlined v-if="slotProps.entityCategory !==  'processor_interface' && slotProps.expanded"/>
-          <FileOutlined v-if="slotProps.entityCategory ===  'processor_interface'"/>
+          <template v-if="slotProps.isDir">
+            <FolderOutlined v-if="!slotProps.expanded"/>
+            <FolderOpenOutlined v-if="slotProps.expanded"/>
+          </template>
+
+          <FileOutlined v-else />
         </template>
       </a-tree>
 
@@ -96,6 +99,7 @@ import TreeContextMenu from "./TreeContextMenu.vue";
 import InterfaceSelection from "./InterfaceSelection.vue";
 import {StateType} from "@/views/interface/store";
 import {getContextMenuStyle} from "@/utils/dom";
+import {ProcessorCategory} from "@/utils/enum";
 
 const props = defineProps<{ scenarioId: number }>()
 
@@ -138,9 +142,15 @@ const expandNode = (keys: string[], e: any) => {
   setExpandedKeys(treeData.value[0].scenarioId, expandedKeys.value)
 }
 
-const selectNode = (keys) => {
-  console.log('selectNode', keys)
-  selectedKeys.value = keys
+const selectNode = (keys, e) => {
+  console.log('selectNode', keys, e?.node.dataRef.id)
+
+  if (keys.length === 0 && e) {
+    selectedKeys.value = [e.node.dataRef.id] // cancel un-select
+    return
+  } else {
+    selectedKeys.value = keys
+  }
 
   if (!selectedKeys.value || selectedKeys.value.length === 0) {
     store.dispatch('Scenario/getNode', null)
@@ -208,6 +218,7 @@ const onRightClick = (e) => {
     id: node.eventKey,
     title: node.title,
     entityCategory: node.dataRef.entityCategory,
+    isDir: node.dataRef.isDir,
     entityType: node.dataRef.entityType,
     entityId: node.dataRef.entityId,
     interfaceId: node.dataRef.interfaceId,
@@ -275,10 +286,9 @@ const menuClick = (menuKey: string, targetId: number) => {
   const processorCategory = arr[2]
   const processorType = arr[3]
 
+  const targetProcessorId = targetModelId
   const targetProcessorCategory = treeDataMap.value[targetModelId].entityCategory
   const targetProcessorType = treeDataMap.value[targetModelId].entityType
-
-  const targetProcessorId = targetModelId
 
   addNode(mode, processorCategory, processorType,
       targetProcessorCategory, targetProcessorType, targetProcessorId)
@@ -288,7 +298,7 @@ const menuClick = (menuKey: string, targetId: number) => {
 
 const renameNode = () => {
   selectedKeys.value = [targetModelId]
-  selectNode(selectedKeys.value)
+  selectNode(selectedKeys.value, null)
   editedData.value[targetModelId] = treeDataMap.value[targetModelId].name
 
   Object.keys(treeDataMap.value).forEach((key) => {
@@ -311,6 +321,7 @@ const addNode = (mode, processorCategory, processorType,
   if (processorCategory === 'interface') { // select a interface
     interfaceSelectionVisible.value = true
     return
+
   } else {
     store.dispatch('Scenario/addProcessor',
         {mode, processorCategory, processorType,
@@ -318,7 +329,7 @@ const addNode = (mode, processorCategory, processorType,
           name: t(processorType)
         }).then((newNode) => {
           console.log('addProcessor successfully', newNode)
-          selectNode([newNode.id])
+          selectNode([newNode.id], null)
           expandOneKey(treeDataMap.value, mode === 'parent' ? newNode.id : newNode.parentId, expandedKeys.value) // expend new node
           setExpandedKeys(treeData.value[0].scenarioId, expandedKeys.value)
         })
@@ -338,7 +349,7 @@ const interfaceSelectionFinish = (selectedNodes) => {
         console.log('addInterfaces successfully', newNode)
 
         interfaceSelectionVisible.value = false
-        selectNode([newNode.id])
+        selectNode([newNode.id], null)
         expandOneKey(treeDataMap.value, newNode.parentId, expandedKeys.value) // expend new node
         setExpandedKeys(treeData.value[0].scenarioId, expandedKeys.value)
       })
@@ -352,7 +363,7 @@ const interfaceSelectionCancel = () => {
 const removeNode = () => {
   console.log('removeNode')
   store.dispatch('Scenario/removeNode', targetModelId);
-  selectNode([])
+  selectNode([], null)
 }
 const clearMenu = () => {
   console.log('clearMenu')

@@ -1,8 +1,14 @@
 package agentExec
 
 import (
+	"encoding/json"
+	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
+	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils"
+	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
+	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/query"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"strings"
 )
 
 type ProcessorExtractor struct {
@@ -25,8 +31,91 @@ type ProcessorExtractor struct {
 
 	Result      string `json:"result"`
 	InterfaceID uint   `json:"interfaceID"`
+
+	Disabled bool `json:"disabled"`
 }
 
 func (entity ProcessorExtractor) Run(processor *Processor, session *Session) (log domain.Result, err error) {
+	processor.Result = domain.Result{
+		ID:                entity.ProcessorID,
+		Name:              entity.Name,
+		ProcessorCategory: entity.ProcessorCategory,
+		ProcessorType:     entity.ProcessorType,
+		ParentId:          entity.ParentID,
+	}
+
+	brother, ok := getPreviousBrother(*processor)
+	if !ok || brother.EntityType != consts.ProcessorInterfaceDefault {
+		processor.Result.Summary = fmt.Sprintf("先前节点不是接口，无法应用提取器。")
+		exec.SendExecMsg(processor.Result, session.WsMsg)
+		return
+	}
+
+	resp := domain.Response{}
+	json.Unmarshal([]byte(brother.Result.RespContent), &resp)
+
+	entity.Src = consts.Body
+	entity.Type = getExtractorTypeForProcessor(entity.ProcessorType)
+
+	err = ExtractValue(&entity, resp)
+	if err != nil {
+		processor.Result.Summary = fmt.Sprintf("%s提取器解析错误 %s。", entity.ProcessorType, err.Error())
+		exec.SendExecMsg(processor.Result, session.WsMsg)
+		return
+	}
+
+	SetVariable(processor.ParentId, entity.Variable, entity.Result, consts.Local) // set in parent scope
+	processor.Result.Summary = fmt.Sprintf("将结果\"%v\"赋予变量\"%s\"。", entity.Result, entity.Variable)
+
+	exec.SendExecMsg(processor.Result, session.WsMsg)
+
+	return
+}
+
+func ExtractValue(extractor *ProcessorExtractor, resp domain.Response) (err error) {
+	if extractor.Disabled {
+		extractor.Result = ""
+		return
+	}
+
+	if extractor.Src == consts.Header {
+		for _, h := range resp.Headers {
+			if h.Name == extractor.Key {
+				extractor.Result = h.Value
+				break
+			}
+		}
+	} else {
+		if utils.IsJsonContent(resp.ContentType.String()) && extractor.Type == consts.JsonQuery {
+			extractor.Result = queryHelper.JsonQuery(resp.Content, extractor.Expression)
+
+		} else if utils.IsHtmlContent(resp.ContentType.String()) && extractor.Type == consts.HtmlQuery {
+			extractor.Result = queryHelper.HtmlQuery(resp.Content, extractor.Expression)
+
+		} else if utils.IsXmlContent(resp.ContentType.String()) && extractor.Type == consts.XmlQuery {
+			extractor.Result = queryHelper.XmlQuery(resp.Content, extractor.Expression)
+
+		} else if extractor.Type == consts.Boundary {
+			extractor.Result = queryHelper.BoundaryQuery(resp.Content, extractor.BoundaryStart, extractor.BoundaryEnd,
+				extractor.BoundaryIndex, extractor.BoundaryIncluded)
+		}
+	}
+
+	extractor.Result = strings.TrimSpace(extractor.Result)
+
+	return
+}
+
+func getExtractorTypeForProcessor(processorType consts.ProcessorType) (ret consts.ExtractorType) {
+	if processorType == consts.ProcessorExtractorBoundary {
+		ret = consts.Boundary
+	} else if processorType == consts.ProcessorExtractorJsonQuery {
+		ret = consts.JsonQuery
+	} else if processorType == consts.ProcessorExtractorHtmlQuery {
+		ret = consts.HtmlQuery
+	} else if processorType == consts.ProcessorExtractorXmlQuery {
+		ret = consts.XmlQuery
+	}
+
 	return
 }

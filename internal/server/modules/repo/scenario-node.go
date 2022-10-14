@@ -16,48 +16,6 @@ type ScenarioNodeRepo struct {
 	ScenarioRepo          *ScenarioRepo          `inject:""`
 }
 
-//func (r *ScenarioNodeRepo) GenTestScenario(scenarioId uint) (ret *run.TestScenario, err error) {
-//	rootProcessor, _ := r.GetTree(scenarioId)
-//
-//	rootStage := run.TStage{
-//		Id:   rootProcessor.ID,
-//		Name: rootProcessor.Name,
-//	}
-//
-//	r.getStageTree(*rootProcessor, &rootStage)
-//
-//	runDomain := runDomain.ProcessorRootStage{
-//		Stage: &rootStage,
-//	}
-//
-//	po, err := r.Get(scenarioId)
-//	ret = &run.TestScenario {
-//		Id: po.ID,
-//		Name: po.Name,
-//	}
-//	ret.TestStages = append(ret.TestStages, &runDomain)
-//
-//	return
-//}
-//func (r *ScenarioNodeRepo) getStageTree(parentProcessor model.Processor, parentStage *run.TStage) {
-//	r.GetStage(parentProcessor, parentStage)
-//
-//	for _, processor := range (parentProcessor).Children {
-//		r.GetStage(*processor, parentStage)
-//
-//		for _, child := range processor.Children {
-//			childStage := run.TStage{
-//				Id:   child.ID,
-//				Name: child.Name,
-//			}
-//
-//			parentStage.Children = parentStage.Children
-//
-//			r.getStageTree(*child, &childStage)
-//		}
-//	}
-//}
-
 func (r *ScenarioNodeRepo) GetTree(scenarioId uint, withEntity bool) (root *agentDomain.Processor, err error) {
 	scenario, err := r.ScenarioRepo.Get(scenarioId)
 

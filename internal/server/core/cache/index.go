@@ -3,7 +3,7 @@ package cache
 import (
 	"context"
 	"errors"
-	serverConfig "github.com/aaronchen2k/deeptest/internal/server/config"
+	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"strings"
 	"time"
 

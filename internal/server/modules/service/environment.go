@@ -21,6 +21,8 @@ func (s *EnvironmentService) List() (envs []model.Environment, err error) {
 }
 
 func (s *EnvironmentService) ListVariableForExec(scenarioId uint) (ret []domain.Variable, err error) {
+	ret = make([]domain.Variable, 0)
+
 	scenario, err := s.ScenarioRepo.Get(scenarioId)
 	if err != nil {
 		return

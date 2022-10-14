@@ -25,11 +25,12 @@ redis:
   pool-size: 0
 system:
   level: debug
-  addr: 127.0.0.1:8085
+  serverAddress: 127.0.0.1:8085
+  agentAddress: 127.0.0.1:8086
   static-prefix: /upload
   static-path: /static/upload
   web-path: ./static/dist
-  db-type: sqlite
+  db-type: mysql
   cache-type: redis
   time-format: "2006-01-02 15:04:05"
 zap:

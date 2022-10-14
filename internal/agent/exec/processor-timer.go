@@ -24,6 +24,7 @@ func (entity ProcessorTimer) Run(processor *Processor, session *Session) (log do
 	}
 
 	processor.Result.Summary = fmt.Sprintf("等待\"%d\"秒。", entity.SleepTime)
+	processor.Parent.Result.Children = append(processor.Parent.Result.Children, &processor.Result)
 	exec.SendExecMsg(processor.Result, session.WsMsg)
 
 	<-time.After(time.Duration(entity.SleepTime) * time.Second)

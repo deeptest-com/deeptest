@@ -174,7 +174,7 @@ export default defineComponent({
     }
 
     .indexlayout-top-menu-right {
-      width: 238px;
+      width: 220px;
 
       .indexlayout-top-project {
         float: left;
@@ -183,7 +183,8 @@ export default defineComponent({
 
       .indexlayout-top-settings {
         float: left;
-        padding: 15px 0 15px 20px;
+        padding: 15px 0 15px 16px;
+        width: 60px;
         color: #c0c4cc;
 
         .indexlayout-top-usermenu {

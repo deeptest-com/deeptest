@@ -3,8 +3,8 @@ package main
 import (
 	"github.com/aaronchen2k/deeptest/cmd/server/server"
 	"github.com/aaronchen2k/deeptest/cmd/server/v1"
+	"github.com/aaronchen2k/deeptest/internal/pkg/core/cron"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/websocket"
-	"github.com/aaronchen2k/deeptest/internal/server/core/cron"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	"github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/facebookgo/inject"

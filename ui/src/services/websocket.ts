@@ -17,11 +17,12 @@ export class WebSocket {
   static conn: NSConn
 
   static async init(reConn): Promise<any> {
-    console.log(`init websocket`)
+    const url = getWebSocketApi()
+    console.log(`init websocket, connect to ` + url)
 
     if (reConn || !WebSocket.conn) {
       try {
-        const conn = await neffos.dial(getWebSocketApi(), {
+        const conn = await neffos.dial(url, {
           default: {
             _OnNamespaceConnected: (nsConn, msg) => {
               if (nsConn.conn.wasReconnected()) {
@@ -88,11 +89,11 @@ export class WebSocket {
 }
 
 export function getWebSocketApi (): string {
-  const isProd = process.env.NODE_ENV === 'production'
-  const loc = window.location
-  console.log(`${isProd}, ${loc.toString()}`)
+  // const isProd = process.env.NODE_ENV === 'production'
+  // const loc = window.location
+  // console.log(`${isProd}, ${loc.toString()}`)
 
-  const apiHost = process.env.VUE_APP_APIHOST ? process.env.VUE_APP_APIHOST : ''
+  const apiHost = process.env.VUE_APP_API_AGENT ? process.env.VUE_APP_API_AGENT : ''
   const url = apiHost.replace('http', 'ws') + '/ws'
   console.log(`websocket url = ${url}`)
 

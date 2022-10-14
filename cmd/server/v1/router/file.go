@@ -2,8 +2,8 @@ package router
 
 import (
 	"github.com/aaronchen2k/deeptest/cmd/server/v1/handler"
-	serverConfig "github.com/aaronchen2k/deeptest/internal/server/config"
-	"github.com/aaronchen2k/deeptest/internal/server/core/module"
+	"github.com/aaronchen2k/deeptest/internal/pkg/config"
+	"github.com/aaronchen2k/deeptest/internal/pkg/core/module"
 	"github.com/aaronchen2k/deeptest/internal/server/middleware"
 	"github.com/kataras/iris/v12"
 )

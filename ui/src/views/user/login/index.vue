@@ -17,12 +17,12 @@
             <a-form-item>
                 <a-button type="primary" class="submit" @click="handleSubmit" :loading="submitLoading">
                     {{t('page.user.login.form.btn-submit')}}
-                </a-button>  
+                </a-button>
                 <div class="text-align-right">
                     <router-link to="/user/register">
                         {{t('page.user.login.form.btn-jump')}}
                     </router-link>
-                </div>              
+                </div>
             </a-form-item>
 
             <a-alert v-if="loginStatus === 'error' && !submitLoading" :message="t('page.user.login.form.login-error')" type="error" :show-icon="true" />
@@ -37,7 +37,7 @@ import { useStore } from 'vuex';
 import { useI18n } from "vue-i18n";
 
 import { Props, validateInfos } from 'ant-design-vue/lib/form/useForm';
-import { message, Form } from 'ant-design-vue';
+import {message, Form, notification} from 'ant-design-vue';
 const useForm = Form.useForm;
 
 import { UserOutlined, UnlockOutlined } from '@ant-design/icons-vue';
@@ -46,7 +46,7 @@ import { LoginParamsType } from './data.d';
 import { StateType as UserLoginStateType } from './store';
 
 interface UserLoginSetupData {
-    t: (key: string | number) => string;    
+    t: (key: string | number) => string;
     resetFields: (newValues?: Props) => void;
     validateInfos: ComputedRef<validateInfos>;
     modelRef: LoginParamsType;
@@ -85,7 +85,7 @@ export default defineComponent({
                     required: true,
                     message: 'page.user.login.form-item-password.required',
                 },
-            ],            
+            ],
         });
         // 获取表单内容
         const { resetFields, validate, validateInfos } = useForm(modelRef, rulesRef);
@@ -99,7 +99,10 @@ export default defineComponent({
                 const fieldsValue = await validate<LoginParamsType>();
                 const res: boolean = await store.dispatch('UserLogin/login',fieldsValue);
                 if (res === true) {
-                    message.success(t('page.user.login.form.login-success'));
+                  notification.success({
+                    message: t('page.user.login.form.login-success')
+                  });
+
                     const { redirect, ...query } = currentRoute.value.query;
                     router.replace({
                         path: redirect as string || '/',
@@ -147,8 +150,8 @@ export default defineComponent({
     margin-bottom: 30px;
     text-align: center;
     color: #ffffff;
-    /* background-image:-webkit-linear-gradient(right,#FFFFFF,#009688, #FFFFFF); 
-        -webkit-background-clip: text; 
+    /* background-image:-webkit-linear-gradient(right,#FFFFFF,#009688, #FFFFFF);
+        -webkit-background-clip: text;
         -webkit-text-fill-color:transparent; */
   }
   .submit {

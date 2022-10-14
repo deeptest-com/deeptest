@@ -40,16 +40,15 @@ func (entity ProcessorVariable) Run(processor *Processor, session *Session) (log
 		}
 
 		SetVariable(processor.ID, entity.VariableName, variableValue, consts.Local) // set in parent scope
-
 		processor.Result.Summary = fmt.Sprintf("\"%s\"为\"%v\"。", entity.VariableName, variableValue)
-		exec.SendExecMsg(processor.Result, session.WsMsg)
 
 	} else if entity.ProcessorType == consts.ProcessorVariableClear {
 		ClearVariable(processor.ID, entity.VariableName)
-
 		processor.Result.Summary = fmt.Sprintf("\"%s\"成功。", entity.VariableName)
-		exec.SendExecMsg(processor.Result, session.WsMsg)
 	}
+
+	processor.Parent.Result.Children = append(processor.Parent.Result.Children, &processor.Result)
+	exec.SendExecMsg(processor.Result, session.WsMsg)
 
 	return
 }

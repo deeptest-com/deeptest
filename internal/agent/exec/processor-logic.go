@@ -42,6 +42,7 @@ func (entity ProcessorLogic) Run(processor *Processor, session *Session) (log do
 	}
 
 	processor.Result.ResultStatus, processor.Result.Summary = getResultStatus(pass)
+	processor.Parent.Result.Children = append(processor.Parent.Result.Children, &processor.Result)
 
 	exec.SendExecMsg(processor.Result, session.WsMsg)
 

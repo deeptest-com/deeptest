@@ -1,6 +1,16 @@
 <template>
   <div class="indexlayout-top-settings">
-    <a-dropdown>
+    <div class="msgs">
+      <a href="#">
+        <a-badge count="100" :overflowCount="99" show-zero
+                 :numberStyle="{fontSize: '12px', minWidth: '16px', height: '16px', lineHeight: '15px', padding: '0 4px'}">
+
+            <BellOutlined class="dp-light" :style="{ fontSize: '20px' }" />
+        </a-badge>
+      </a>
+    </div>
+
+<!--    <a-dropdown>
       <a @click="e => e.preventDefault()"
          class="indexlayout-top-usermenu ant-dropdown-link">
         <span>设置</span>
@@ -15,7 +25,7 @@
           </a-menu-item>
         </a-menu>
       </template>
-    </a-dropdown>
+    </a-dropdown>-->
   </div>
 </template>
 <script lang="ts">
@@ -29,7 +39,8 @@ import {CurrentUser, StateType as UserStateType} from "@/store/user";
 export default defineComponent({
   name: 'RightTopSettings',
   components: {
-    DownOutlined, BellOutlined,
+    // DownOutlined,
+    BellOutlined,
   },
   setup() {
     const {t} = useI18n();
@@ -63,5 +74,7 @@ export default defineComponent({
 </script>
 
 <style lang="less" scoped>
-
+  .msgs {
+    text-align: left;
+  }
 </style>

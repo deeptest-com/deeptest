@@ -83,6 +83,7 @@ import bus from "@/utils/eventBus";
 import Log from "./Log.vue"
 import { momentShort } from "@/utils/datetime";
 import {useI18n} from "vue-i18n";
+import {loadExecData} from "@/views/scenario/service";
 const { t } = useI18n();
 
 const router = useRouter();
@@ -95,7 +96,12 @@ store.dispatch('Scenario/loadExecResult', scenarioId.value);
 
 const execStart = () => {
   console.log('execStart')
-  WebSocket.sentMsg(settings.webSocketRoom, JSON.stringify({act: 'execScenario', id: scenarioId.value}))
+
+  loadExecData(scenarioId.value).then(json => {
+    if (json.code != 0) return
+
+    // WebSocket.sentMsg(settings.webSocketRoom, JSON.stringify({act: 'execScenario', id: scenarioId.value}))
+  })
 }
 
 const execCancel = () => {

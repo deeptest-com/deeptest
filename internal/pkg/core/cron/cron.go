@@ -2,7 +2,7 @@ package cron
 
 import (
 	"fmt"
-	"github.com/aaronchen2k/deeptest/internal/server/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/pkg/lib/cron"
 	"github.com/aaronchen2k/deeptest/pkg/lib/date"
 	"github.com/aaronchen2k/deeptest/pkg/lib/log"
@@ -26,12 +26,12 @@ func (s *ServerCron) Init() {
 
 	_cronUtils.AddTask(
 		"check",
-		fmt.Sprintf("@every %ds", serverConsts.WebCheckInterval),
+		fmt.Sprintf("@every %ds", consts.WebCheckInterval),
 		func() {
 			isRunning, _ := s.syncMap.Load("isRunning")
 			lastCompletedTime, _ := s.syncMap.Load("lastCompletedTime")
 
-			if isRunning.(bool) || time.Now().Unix()-lastCompletedTime.(int64) < serverConsts.WebCheckInterval {
+			if isRunning.(bool) || time.Now().Unix()-lastCompletedTime.(int64) < consts.WebCheckInterval {
 				_logUtils.Infof("skip this iteration " + _dateUtils.DateTimeStr(time.Now()))
 				return
 			}

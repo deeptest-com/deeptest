@@ -2,9 +2,9 @@ package v1
 
 import (
 	"github.com/aaronchen2k/deeptest/cmd/server/v1/router"
-	serverConfig "github.com/aaronchen2k/deeptest/internal/server/config"
-	"github.com/aaronchen2k/deeptest/internal/server/consts"
-	"github.com/aaronchen2k/deeptest/internal/server/core/module"
+	"github.com/aaronchen2k/deeptest/internal/pkg/config"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/core/module"
 	"time"
 
 	"github.com/kataras/iris/v12"
@@ -75,5 +75,5 @@ func (m *IndexModule) Party() module.WebModule {
 		m.ScenarioExecModule.Party(),
 		m.ReportModule.Party(),
 	}
-	return module.NewModule(serverConsts.ApiPath, handler, modules...)
+	return module.NewModule(consts.ApiPath, handler, modules...)
 }

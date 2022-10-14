@@ -31,6 +31,7 @@ func (entity ProcessorAssertion) Run(processor *Processor, session *Session) (re
 
 	processor.Result.Summary = fmt.Sprintf("断言\"%s\"结果为\"%s\"。", entity.Expression, status)
 
+	processor.Parent.Result.Children = append(processor.Parent.Result.Children, &processor.Result)
 	exec.SendExecMsg(processor.Result, session.WsMsg)
 
 	return

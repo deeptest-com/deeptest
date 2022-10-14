@@ -24,10 +24,10 @@ type ProcessorLoop struct {
 	BreakIfExpression string `json:"breakIfExpression" yaml:"breakIfExpression"`
 }
 
-func (entity ProcessorLoop) Run(processor *Processor, session *Session) (log domain.Result, err error) {
+func (entity ProcessorLoop) Run(processor *Processor, session *Session) (result domain.Result, err error) {
 	logUtils.Infof("loop entity")
 
-	log = domain.Result{
+	result = domain.Result{
 		ID:                entity.ProcessorID,
 		Name:              entity.Name,
 		ProcessorCategory: entity.ProcessorCategory,
@@ -36,28 +36,30 @@ func (entity ProcessorLoop) Run(processor *Processor, session *Session) (log dom
 	}
 
 	if entity.ProcessorType == consts.ProcessorLoopBreak {
-		log.WillBreak, log.Output = entity.getBeak()
-		processor.Result = log
+		result.WillBreak, result.Summary = entity.getBeak()
+		processor.Result = result
 
+		processor.Parent.Result.Children = append(processor.Parent.Result.Children, &processor.Result)
 		exec.SendExecMsg(processor.Result, session.WsMsg)
 		return
 	}
 
-	log.Iterator, log.Output = entity.getIterator()
+	result.Iterator, result.Summary = entity.getIterator()
 
-	processor.Result = log
+	processor.Result = result
+	processor.Parent.Result.Children = append(processor.Parent.Result.Children, &processor.Result)
 	exec.SendExecMsg(processor.Result, session.WsMsg)
 
 	if entity.ProcessorType == consts.ProcessorLoopUntil {
-		entity.runLoopUntil(session, processor, log.Iterator)
+		entity.runLoopUntil(session, processor, result.Iterator)
 	} else {
-		entity.runLoopItems(session, processor, log.Iterator)
+		entity.runLoopItems(session, processor, result.Iterator)
 	}
 
 	return
 }
 
-func (entity ProcessorLoop) getBeak() (ret bool, output string) {
+func (entity ProcessorLoop) getBeak() (ret bool, msg string) {
 	breakFrom := entity.ParentID
 	breakIfExpress := entity.BreakIfExpression
 
@@ -65,9 +67,9 @@ func (entity ProcessorLoop) getBeak() (ret bool, output string) {
 	ret, ok := result.(bool)
 	if err == nil && ok && ret {
 		breakMap.Store(breakFrom, true)
-		output = "真"
+		msg = "真"
 	} else {
-		output = "假"
+		msg = "假"
 	}
 
 	return

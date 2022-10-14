@@ -2,8 +2,9 @@ package server
 
 import (
 	"fmt"
-	serverConfig "github.com/aaronchen2k/deeptest/internal/server/config"
-	"github.com/aaronchen2k/deeptest/internal/server/core/module"
+	"github.com/aaronchen2k/deeptest/internal/pkg/config"
+	middleware2 "github.com/aaronchen2k/deeptest/internal/pkg/core/middleware"
+	"github.com/aaronchen2k/deeptest/internal/pkg/core/module"
 	"github.com/aaronchen2k/deeptest/internal/server/middleware"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"strings"
@@ -17,7 +18,7 @@ import (
 
 // InitRouter 初始化模块路由
 func (webServer *WebServer) InitRouter() error {
-	webServer.app.UseRouter(middleware.CrsAuth())
+	webServer.app.UseRouter(middleware2.CrsAuth())
 
 	app := webServer.app.Party("/").AllowMethods(iris.MethodOptions)
 	{

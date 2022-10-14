@@ -1,8 +1,13 @@
 package domain
 
-import "github.com/aaronchen2k/deeptest/internal/pkg/consts"
+import (
+	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+)
 
 type WsReq struct {
-	Act consts.ExecType `json:"act"`
-	Id  int             `json:"id"`
+	Act     consts.ExecType   `json:"act"`
+	ExecReq agentExec.ExecReq `json:"execReq"`
+
+	Id int `json:"id"`
 }

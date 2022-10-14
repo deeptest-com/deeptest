@@ -51,7 +51,8 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (lo
 
 	if err != nil {
 		processor.Result.ResultStatus = consts.Fail
-		//entity.Result.Summary = err.Error()
+		processor.Result.Summary = err.Error()
+		processor.Parent.Result.Children = append(processor.Parent.Result.Children, &processor.Result)
 		exec.SendErrorMsg(processor.Result, session.WsMsg)
 		return
 	}
@@ -59,6 +60,7 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (lo
 	entity.ExtractInterface(processor, session)
 	entity.CheckInterface(processor, session)
 
+	processor.Parent.Result.Children = append(processor.Parent.Result.Children, &processor.Result)
 	exec.SendExecMsg(processor.Result, session.WsMsg)
 
 	return
@@ -66,7 +68,7 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (lo
 
 func (entity *ProcessorInterface) ExtractInterface(processor *Processor, session *Session) (err error) {
 	for _, extractor := range entity.Extractors {
-		entity.Extract(&extractor, entity.Response)
+		err = entity.Extract(&extractor, entity.Response)
 		SetVariable(entity.ParentID, extractor.Variable, extractor.Result, extractor.Scope)
 
 		if err == nil { // gen report for processor

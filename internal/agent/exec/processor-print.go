@@ -28,6 +28,7 @@ func (entity ProcessorPrint) Run(processor *Processor, session *Session) (log do
 	processor.Result.Summary = strings.ReplaceAll(fmt.Sprintf("%s为\"%v\"。",
 		entity.Expression, value), "<nil>", "空")
 
+	processor.Parent.Result.Children = append(processor.Parent.Result.Children, &processor.Result)
 	exec.SendExecMsg(processor.Result, session.WsMsg)
 
 	return

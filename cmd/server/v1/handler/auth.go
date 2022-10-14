@@ -1,7 +1,7 @@
 package handler
 
 import (
-	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	service2 "github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
@@ -48,8 +48,8 @@ func (c *AuthCtrl) GetOAuth2AccessToken(ctx iris.Context) {
 	data, err := c.AuthService.GenOAuth2AccessToken(accessTokenURL, clientId, clientSecret, code)
 
 	c.WebSocketService.SendMsg(
-		serverConsts.WsDefaultNameSpace,
-		serverConsts.WsDefaultRoom,
+		consts.WsDefaultNameSpace,
+		consts.WsDefaultRoom,
 		data)
 
 	if err != nil {
@@ -79,8 +79,8 @@ func (c *AuthCtrl) UseOAuth2AccessToken(ctx iris.Context) {
 		"tokenType": tokenType,
 	}
 	c.WebSocketService.SendMsg(
-		serverConsts.WsDefaultNameSpace,
-		serverConsts.WsDefaultRoom,
+		consts.WsDefaultNameSpace,
+		consts.WsDefaultRoom,
 		data)
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code})

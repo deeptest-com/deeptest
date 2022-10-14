@@ -2,13 +2,11 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	execDomain "github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/websocket"
-	"github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	_i118Utils "github.com/aaronchen2k/deeptest/pkg/lib/i118"
@@ -33,7 +31,7 @@ type WebSocketCtrl struct {
 }
 
 func NewWsCtrl() *WebSocketCtrl {
-	inst := &WebSocketCtrl{Namespace: serverConsts.WsDefaultNameSpace}
+	inst := &WebSocketCtrl{Namespace: consts.WsDefaultNameSpace}
 	return inst
 }
 
@@ -56,7 +54,7 @@ func (c *WebSocketCtrl) OnNamespaceConnected(wsMsg websocket.Message) error {
 func (c *WebSocketCtrl) OnNamespaceDisconnect(wsMsg websocket.Message) error {
 	_logUtils.Infof(_i118Utils.Sprintf("ws_namespace_disconnected", c.Conn.ID()))
 
-	resp := _domain.WsResp{Msg: fmt.Sprintf("ws_connected")}
+	resp := _domain.WsResp{Msg: "from server: disconnected to websocket"}
 	bytes, _ := json.Marshal(resp)
 	mqData := _domain.MqMsg{Namespace: wsMsg.Namespace, Room: wsMsg.Room, Event: wsMsg.Event, Content: string(bytes)}
 	websocketHelper.PubMsg(mqData)

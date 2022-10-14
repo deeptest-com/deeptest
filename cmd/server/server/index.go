@@ -4,13 +4,12 @@ import (
 	stdContext "context"
 	"fmt"
 	"github.com/aaronchen2k/deeptest/cmd/server/v1/handler"
+	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/core/module"
 	"github.com/aaronchen2k/deeptest/internal/pkg/log"
-	serverConfig "github.com/aaronchen2k/deeptest/internal/server/config"
-	"github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/cache"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
-	"github.com/aaronchen2k/deeptest/internal/server/core/module"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	_i118Utils "github.com/aaronchen2k/deeptest/pkg/lib/i118"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
@@ -37,21 +36,11 @@ import (
 
 var client *tests.Client
 
-// WebServer web 服务
-// - app iris application
-// - modules 服务的模块
-// - idleConnsClosed
-// - addr  服务访问地址
-// - timeFormat  时间格式
-// - globalMiddlewares  全局中间件
-// - wg  sync.WaitGroup
-// - staticPrefix  静态文件访问地址前缀
-// - staticPath  静态文件地址
-// - webPath  前端文件地址
+// WebServer 服务器
 type WebServer struct {
 	app               *iris.Application
 	modules           []module.WebModule
-	idleConnsClosed   chan struct{}
+	idleConnClosed    chan struct{}
 	addr              string
 	timeFormat        string
 	globalMiddlewares []context.Handler
@@ -63,7 +52,7 @@ type WebServer struct {
 
 // Init 初始化web服务
 func Init() *WebServer {
-	serverConfig.Init()
+	serverConfig.Init("server")
 	zapLog.Init("server")
 	_i118Utils.Init(consts.Language, "")
 
@@ -92,7 +81,7 @@ func Init() *WebServer {
 	websocketCtrl := handler.NewWsCtrl()
 	injectWsModule(websocketCtrl)
 
-	websocketAPI := app.Party(serverConsts.WsPath)
+	websocketAPI := app.Party(consts.WsPath)
 	m := mvc.New(websocketAPI)
 	m.Register(
 		&service.PrefixedLogger{Prefix: ""},
@@ -104,12 +93,12 @@ func Init() *WebServer {
 
 	return &WebServer{
 		app:               app,
-		addr:              serverConfig.CONFIG.System.Addr,
+		addr:              serverConfig.CONFIG.System.ServerAddress,
 		timeFormat:        serverConfig.CONFIG.System.TimeFormat,
 		staticPrefix:      serverConfig.CONFIG.System.StaticPrefix,
 		staticPath:        serverConfig.CONFIG.System.StaticPath,
 		webPath:           serverConfig.CONFIG.System.WebPath,
-		idleConnsClosed:   idleConnClosed,
+		idleConnClosed:    idleConnClosed,
 		globalMiddlewares: []context.Handler{},
 	}
 }
@@ -200,7 +189,7 @@ func (webServer *WebServer) Start() {
 		iris.WithOptimizations,
 		iris.WithTimeFormat(webServer.timeFormat),
 	)
-	<-webServer.idleConnsClosed
+	<-webServer.idleConnClosed
 }
 
 func injectWsModule(websocketCtrl *handler.WebSocketCtrl) {

@@ -44,6 +44,7 @@ func (entity ProcessorCookie) Run(processor *Processor, session *Session) (log d
 		variableValue, err = EvaluateGovaluateExpressionByScope(expression, entity.ProcessorID)
 		if err != nil {
 			processor.Result.Summary = fmt.Sprintf("计算表达式\"%s\"错误 %s。", expression, err.Error())
+			processor.Parent.Result.Children = append(processor.Parent.Result.Children, &processor.Result)
 			exec.SendExecMsg(processor.Result, session.WsMsg)
 			return
 		}
@@ -65,6 +66,7 @@ func (entity ProcessorCookie) Run(processor *Processor, session *Session) (log d
 
 		if err != nil {
 			processor.Result.Summary = fmt.Sprintf("获取Cookie %s的值错误 %s。", cookieName, err.Error())
+			processor.Parent.Result.Children = append(processor.Parent.Result.Children, &processor.Result)
 			exec.SendExecMsg(processor.Result, session.WsMsg)
 			return
 		}
@@ -77,6 +79,7 @@ func (entity ProcessorCookie) Run(processor *Processor, session *Session) (log d
 		processor.Result.Summary = fmt.Sprintf("%s。", cookieName)
 	}
 
+	processor.Parent.Result.Children = append(processor.Parent.Result.Children, &processor.Result)
 	exec.SendExecMsg(processor.Result, session.WsMsg)
 
 	return

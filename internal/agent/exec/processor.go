@@ -12,6 +12,11 @@ var (
 	breakMap sync.Map
 )
 
+type ExecReq struct {
+	RootProcessor Processor         `json:"rootProcessor"`
+	Variables     []domain.Variable `json:"variables"`
+}
+
 type Processor struct {
 	ID uint `json:"id"`
 

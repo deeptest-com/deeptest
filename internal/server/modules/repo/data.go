@@ -3,7 +3,7 @@ package repo
 import (
 	"database/sql"
 	"fmt"
-	serverConfig "github.com/aaronchen2k/deeptest/internal/server/config"
+	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"gorm.io/gorm"
 )
 

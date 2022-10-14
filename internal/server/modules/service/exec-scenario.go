@@ -52,18 +52,19 @@ func (s *ExecScenarioService) Load(scenarioId int) (result domain.Report, err er
 	return
 }
 
-func (s *ExecScenarioService) ExecScenario(scenarioId int, wsMsg *websocket.Message) (err error) {
+func (s *ExecScenarioService) LoadExecData(scenarioId int) (execReq agentExec.ExecReq, err error) {
 	processors, _ := s.ScenarioNodeService.ListToByScenario(uint(scenarioId))
 	agentExec.InitScopeHierarchy(processors)
 
-	root, _ := s.ScenarioNodeRepo.GetTree(uint(scenarioId), true)
-	variables, _ := s.EnvironmentService.ListVariableForExec(uint(scenarioId))
+	rootProcessor, _ := s.ScenarioNodeRepo.GetTree(uint(scenarioId), true)
+	execReq.Variables, _ = s.EnvironmentService.ListVariableForExec(uint(scenarioId))
 
-	session := agentExec.NewSession(root, variables, false, wsMsg)
-	session.Run()
+	execReq.RootProcessor = *rootProcessor
 
 	return
+}
 
+func (s *ExecScenarioService) ExecScenario(scenarioId int, wsMsg *websocket.Message) (err error) {
 	scenario, err := s.ScenarioRepo.Get(uint(scenarioId))
 	if err != nil {
 		return

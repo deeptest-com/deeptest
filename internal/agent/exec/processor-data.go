@@ -28,10 +28,10 @@ type ProcessorData struct {
 	VariableName string `json:"variableName,omitempty" yaml:"variableName,omitempty"`
 }
 
-func (entity ProcessorData) Run(processor *Processor, session *Session) (log domain.Result, err error) {
+func (entity ProcessorData) Run(processor *Processor, session *Session) (result domain.Result, err error) {
 	logUtils.Infof("data entity")
 
-	log = domain.Result{
+	result = domain.Result{
 		ID:                entity.ProcessorID,
 		Name:              entity.Name,
 		ProcessorCategory: entity.ProcessorCategory,
@@ -39,12 +39,14 @@ func (entity ProcessorData) Run(processor *Processor, session *Session) (log dom
 		ParentId:          entity.ParentID,
 	}
 
-	log.Iterator, log.Output = entity.getIterator()
+	result.Iterator, result.Summary = entity.getIterator()
 
-	processor.Result = log
+	processor.Result = result
+
+	processor.Parent.Result.Children = append(processor.Parent.Result.Children, &processor.Result)
 	exec.SendExecMsg(processor.Result, session.WsMsg)
 
-	entity.runDataItems(session, processor, log.Iterator)
+	entity.runDataItems(session, processor, result.Iterator)
 
 	return
 }

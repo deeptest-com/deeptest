@@ -49,6 +49,15 @@ export async function load(scenarioId): Promise<any> {
     });
 }
 
+export async function loadExecData(scenarioId): Promise<any> {
+    const params = {scenarioId}
+    return request({
+        url: `/${apiPathExec}/loadExecData`,
+        method: 'get',
+        params,
+    });
+}
+
 export async function loadExecResult(scenarioId): Promise<any> {
     const params = {scenarioId}
     return request({

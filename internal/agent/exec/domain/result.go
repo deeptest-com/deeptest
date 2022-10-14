@@ -9,18 +9,18 @@ type Result struct {
 	ID uint `json:"id" yaml:"id"`
 
 	Name           string                `json:"name"`
-	Desc           string                `json:"desc"`
-	ProgressStatus consts.ProgressStatus `json:"progressStatus"`
+	Desc           string                `json:"desc,omitempty"`
+	ProgressStatus consts.ProgressStatus `json:"progressStatus,omitempty"`
 	ResultStatus   consts.ResultStatus   `json:"resultStatus"`
-	StartTime      *time.Time            `json:"startTime"`
-	EndTime        *time.Time            `json:"endTime"`
+	StartTime      *time.Time            `json:"startTime,omitempty"`
+	EndTime        *time.Time            `json:"endTime,omitempty"`
 
 	ParentId uint `json:"parentId"`
 	ReportId uint `json:"reportId"`
-	UseID    uint `json:"useId"`
+	UseID    uint `json:"useId,omitempty"`
 
-	// type
 	ProcessorCategory consts.ProcessorCategory `json:"processorCategory"`
+	ProcessorType     consts.ProcessorType     `json:"processorType"`
 
 	// for interface
 	InterfaceId           uint                `json:"interfaceId,omitempty"`
@@ -33,10 +33,9 @@ type Result struct {
 	CheckpointsResult []Checkpoint `json:"checkpointsResult,omitempty"`
 
 	// for processor
-	ProcessorType    consts.ProcessorType `json:"processorType,omitempty"`
-	ProcessorId      uint                 `json:"processorId,omitempty"`
-	ProcessorContent string               `json:"processorContent,omitempty"`
-	ProcessorResult  string               `json:"processorResult,omitempty"`
+	ProcessorId      uint   `json:"processorId,omitempty"`
+	ProcessorContent string `json:"processorContent,omitempty"`
+	ProcessorResult  string `json:"processorResult,omitempty"`
 
 	// for loop processor
 	Iterator ExecIterator `json:"iterator,omitempty"`
@@ -44,7 +43,6 @@ type Result struct {
 	WillBreak bool `json:"break,omitempty"`
 
 	Summary string `json:"summary,omitempty"`
-	Output  string `json:"output,omitempty"`
 
-	Logs []*Result `json:"logs"`
+	Children []*Result `json:"logs,omitempty"`
 }

@@ -1,7 +1,7 @@
 package zapLog
 
 import (
-	serverConfig "github.com/aaronchen2k/deeptest/internal/server/config"
+	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	myZap "github.com/aaronchen2k/deeptest/pkg/core/zap"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/snowlyg/helper/dir"

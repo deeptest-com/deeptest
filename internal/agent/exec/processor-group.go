@@ -22,6 +22,7 @@ func (entity ProcessorGroup) Run(processor *Processor, session *Session) (log do
 		ParentId:          entity.ParentID,
 	}
 
+	processor.Parent.Result.Children = append(processor.Parent.Result.Children, &processor.Result)
 	exec.SendExecMsg(processor.Result, session.WsMsg)
 
 	for _, child := range processor.Children {

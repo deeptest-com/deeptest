@@ -84,6 +84,7 @@ import Log from "./Log.vue"
 import { momentShort } from "@/utils/datetime";
 import {useI18n} from "vue-i18n";
 import {loadExecData} from "@/views/scenario/service";
+import {getToken} from "@/utils/localToken";
 const { t } = useI18n();
 
 const router = useRouter();
@@ -94,14 +95,20 @@ const execResult = computed<any>(()=> store.state.Scenario.execResult);
 const scenarioId = ref(+router.currentRoute.value.params.id)
 store.dispatch('Scenario/loadExecResult', scenarioId.value);
 
-const execStart = () => {
+const execStart = async () => {
   console.log('execStart')
 
-  loadExecData(scenarioId.value).then(json => {
-    if (json.code != 0) return
+  const json = await loadExecData(scenarioId.value)
+  if (json.code != 0) return
 
-    // WebSocket.sentMsg(settings.webSocketRoom, JSON.stringify({act: 'execScenario', id: scenarioId.value}))
-  })
+  const data = json.data
+  data.serverUrl = process.env.VUE_APP_API_SERVER
+  data.token = await getToken();
+
+  convertEntityToRawData(data.rootProcessor)
+
+  WebSocket.sentMsg(settings.webSocketRoom, JSON.stringify({act: 'execScenario', execReq: data}))
+
 }
 
 const execCancel = () => {
@@ -113,6 +120,17 @@ const execCancel = () => {
 const design = () => {
   console.log('design')
   router.push(`/scenario/design/${scenarioId.value}`)
+}
+
+const convertEntityToRawData = (processor) => {
+  processor.entityRaw = processor.entity
+  processor.entity = null
+
+  if (!processor.children) return
+
+  for (let i = 0; i < processor.children.length; i++) {
+    convertEntityToRawData(processor.children[i])
+  }
 }
 
 onMounted(() => {
@@ -130,6 +148,8 @@ const logMap = ref({} as any)
 const logTreeData = ref({} as any)
 const OnWebSocketMsg = (data: any) => {
   console.log('WebsocketMsgEvent in exec info')
+
+  if (!data.msg) return
 
   const wsMsg = JSON.parse(data.msg) as WsMsg
   if (wsMsg.category == 'result') {

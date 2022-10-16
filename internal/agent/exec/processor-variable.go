@@ -6,6 +6,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"time"
 )
 
 type ProcessorVariable struct {
@@ -19,12 +20,14 @@ type ProcessorVariable struct {
 func (entity ProcessorVariable) Run(processor *Processor, session *Session) (log domain.Result, err error) {
 	logUtils.Infof("variable entity")
 
-	processor.Result = domain.Result{
-		ID:                entity.ProcessorID,
+	startTime := time.Now()
+	processor.Result = &domain.Result{
+		ID:                int(entity.ProcessorID),
 		Name:              entity.Name,
 		ProcessorCategory: entity.ProcessorCategory,
 		ProcessorType:     entity.ProcessorType,
-		ParentId:          entity.ParentID,
+		StartTime:         &startTime,
+		ParentId:          int(entity.ParentID),
 	}
 
 	if entity.ProcessorType == consts.ProcessorVariableSet {
@@ -47,8 +50,15 @@ func (entity ProcessorVariable) Run(processor *Processor, session *Session) (log
 		processor.Result.Summary = fmt.Sprintf("\"%s\"成功。", entity.VariableName)
 	}
 
-	processor.Parent.Result.Children = append(processor.Parent.Result.Children, &processor.Result)
-	exec.SendExecMsg(processor.Result, session.WsMsg)
+	if processor.Parent.Result.Children == nil {
+
+	}
+
+	processor.AddResultToParent()
+	exec.SendExecMsg(*processor.Result, session.WsMsg)
+
+	endTime := time.Now()
+	processor.Result.EndTime = &endTime
 
 	return
 }

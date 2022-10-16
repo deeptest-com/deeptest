@@ -2,6 +2,7 @@ package service
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/agent/exec"
+	execDomain "github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
@@ -53,13 +54,10 @@ func (s *ExecScenarioService) Load(scenarioId int) (result domain.Report, err er
 }
 
 func (s *ExecScenarioService) LoadExecData(scenarioId int) (execReq agentExec.ExecReq, err error) {
-	processors, _ := s.ScenarioNodeService.ListToByScenario(uint(scenarioId))
-	agentExec.InitScopeHierarchy(processors)
-
 	rootProcessor, _ := s.ScenarioNodeRepo.GetTree(uint(scenarioId), true)
 	execReq.Variables, _ = s.EnvironmentService.ListVariableForExec(uint(scenarioId))
 
-	execReq.RootProcessor = *rootProcessor
+	execReq.RootProcessor = rootProcessor
 
 	return
 }
@@ -413,4 +411,99 @@ func (s *ExecScenarioService) CancelAndSendMsg(scenarioId int, wsMsg websocket.M
 	s.TestReportRepo.UpdateStatus(consts.Cancel, "", uint(scenarioId))
 	exec.SendCancelMsg(wsMsg)
 	return
+}
+
+func (s *ExecScenarioService) SaveReport(scenarioId int, rootResult execDomain.Result) (err error) {
+	scenario, _ := s.ScenarioRepo.Get(uint(scenarioId))
+	rootResult.Name = scenario.Name
+
+	report := model.Report{
+		Name:      scenario.Name,
+		StartTime: rootResult.StartTime,
+		EndTime:   rootResult.EndTime,
+		Duration:  rootResult.EndTime.Unix() - rootResult.StartTime.Unix(),
+
+		ProgressStatus: rootResult.ProgressStatus,
+		ResultStatus:   rootResult.ResultStatus,
+
+		ScenarioId: scenario.ID,
+		ProjectId:  scenario.ProjectId,
+	}
+
+	s.countRequest(rootResult, &report)
+	s.summarizeInterface(&report)
+
+	s.TestReportRepo.Create(&report)
+	s.TestLogRepo.CreateLogs(rootResult, &report)
+
+	return
+}
+
+func (s ExecScenarioService) countRequest(result execDomain.Result, report *model.Report) {
+	if result.ProcessorType == consts.ProcessorInterfaceDefault {
+		s.countInterface(result.InterfaceId, result.ResultStatus, report)
+
+		report.TotalRequestNum++
+
+		switch result.ResultStatus {
+		case consts.Pass:
+			report.PassRequestNum++
+
+		case consts.Fail:
+			report.FailRequestNum++
+			report.ResultStatus = consts.Fail
+
+		default:
+		}
+
+	} else if result.ProcessorType == consts.ProcessorAssertionDefault {
+		switch result.ResultStatus {
+		case consts.Pass:
+			report.PassAssertionNum++
+
+		case consts.Fail:
+			report.FailAssertionNum++
+			report.ResultStatus = consts.Fail
+
+		default:
+		}
+	}
+
+	if result.Children == nil {
+		return
+	}
+
+	for _, log := range result.Children {
+		s.countRequest(*log, report)
+	}
+}
+
+func (s ExecScenarioService) countInterface(interfaceId uint, status consts.ResultStatus, report *model.Report) {
+	if report.InterfaceStatusMap[interfaceId] == nil {
+		report.InterfaceStatusMap[interfaceId] = map[consts.ResultStatus]int{}
+		report.InterfaceStatusMap[interfaceId][consts.Pass] = 0
+		report.InterfaceStatusMap[interfaceId][consts.Fail] = 0
+	}
+
+	switch status {
+	case consts.Pass:
+		report.InterfaceStatusMap[interfaceId][consts.Pass]++
+
+	case consts.Fail:
+		report.InterfaceStatusMap[interfaceId][consts.Fail]++
+
+	default:
+	}
+}
+
+func (s ExecScenarioService) summarizeInterface(report *model.Report) {
+	for _, val := range report.InterfaceStatusMap {
+		if val[consts.Fail] > 0 {
+			report.FailInterfaceNum++
+		} else {
+			report.PassInterfaceNum++
+		}
+
+		report.TotalInterfaceNum++
+	}
 }

@@ -1,6 +1,8 @@
 package repo
 
 import (
+	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"go.uber.org/zap"
@@ -48,6 +50,68 @@ func (r *LogRepo) DeleteById(id uint) (err error) {
 		logUtils.Errorf("delete scenario by id error", zap.String("error:", err.Error()))
 		return
 	}
+
+	return
+}
+
+func (r *LogRepo) CreateLogs(rootResult domain.Result, report *model.Report) (err error) {
+	parentId, _ := r.CreateLog(rootResult, 0, report.ID)
+
+	for _, child := range rootResult.Children {
+		r.CreateLog(*child, parentId, report.ID)
+	}
+
+	return
+}
+
+func (r *LogRepo) CreateLog(result domain.Result, parentId, reportId uint) (id uint, err error) {
+	if result.ProcessorCategory == consts.ProcessorInterface {
+		id, _ = r.CreateInterfaceLog(result, parentId, reportId)
+	} else {
+		id, _ = r.CreateCommonLog(result, parentId, reportId)
+	}
+
+	return
+}
+
+func (r *LogRepo) CreateInterfaceLog(result domain.Result, parentId, reportId uint) (id uint, err error) {
+	po := model.ExecLogProcessor{
+		Name:              result.Name,
+		ProcessorCategory: result.ProcessorCategory,
+		ProcessorType:     result.ProcessorType,
+		ResultStatus:      result.ResultStatus,
+
+		ReqContent:  result.ReqContent,
+		RespContent: result.RespContent,
+
+		InterfaceId: result.InterfaceId,
+		ProcessorId: result.ProcessorId,
+		ParentId:    parentId,
+		ReportId:    reportId,
+	}
+
+	err = r.Save(&po)
+	id = po.ID
+
+	return
+}
+
+func (r *LogRepo) CreateCommonLog(result domain.Result, parentId, reportId uint) (id uint, err error) {
+	po := model.ExecLogProcessor{
+		Name:              result.Name,
+		ProcessorCategory: result.ProcessorCategory,
+		ProcessorType:     result.ProcessorType,
+		ResultStatus:      result.ResultStatus,
+
+		Summary: result.Summary,
+
+		ProcessorId: result.ProcessorId,
+		ParentId:    parentId,
+		ReportId:    reportId,
+	}
+
+	err = r.Save(&po)
+	id = po.ID
 
 	return
 }

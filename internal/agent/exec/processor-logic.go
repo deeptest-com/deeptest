@@ -4,6 +4,8 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"time"
 )
 
 type ProcessorLogic struct {
@@ -14,12 +16,16 @@ type ProcessorLogic struct {
 }
 
 func (entity ProcessorLogic) Run(processor *Processor, session *Session) (log domain.Result, err error) {
-	processor.Result = domain.Result{
-		ID:                entity.ProcessorID,
+	logUtils.Infof("logic entity")
+
+	startTime := time.Now()
+	processor.Result = &domain.Result{
+		ID:                int(entity.ProcessorID),
 		Name:              entity.Name,
 		ProcessorCategory: entity.ProcessorCategory,
 		ProcessorType:     entity.ProcessorType,
-		ParentId:          entity.ParentID,
+		StartTime:         &startTime,
+		ParentId:          int(entity.ParentID),
 	}
 
 	typ := entity.ProcessorType
@@ -42,9 +48,12 @@ func (entity ProcessorLogic) Run(processor *Processor, session *Session) (log do
 	}
 
 	processor.Result.ResultStatus, processor.Result.Summary = getResultStatus(pass)
-	processor.Parent.Result.Children = append(processor.Parent.Result.Children, &processor.Result)
+	processor.AddResultToParent()
 
-	exec.SendExecMsg(processor.Result, session.WsMsg)
+	exec.SendExecMsg(*processor.Result, session.WsMsg)
+
+	endTime := time.Now()
+	processor.Result.EndTime = &endTime
 
 	return
 }

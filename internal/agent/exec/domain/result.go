@@ -6,7 +6,7 @@ import (
 )
 
 type Result struct {
-	ID uint `json:"id" yaml:"id"`
+	ID int `json:"id" yaml:"id"`
 
 	Name           string                `json:"name"`
 	Desc           string                `json:"desc,omitempty"`
@@ -15,9 +15,9 @@ type Result struct {
 	StartTime      *time.Time            `json:"startTime,omitempty"`
 	EndTime        *time.Time            `json:"endTime,omitempty"`
 
-	ParentId uint `json:"parentId"`
-	ReportId uint `json:"reportId"`
-	UseID    uint `json:"useId,omitempty"`
+	ParentId int `json:"parentId"`
+	//ReportId uint `json:"reportId"`
+	UseID uint `json:"useId,omitempty"`
 
 	ProcessorCategory consts.ProcessorCategory `json:"processorCategory"`
 	ProcessorType     consts.ProcessorType     `json:"processorType"`

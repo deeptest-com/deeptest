@@ -58,7 +58,7 @@ import {useStore} from "vuex";
 import debounce from "lodash.debounce";
 import { momentUtc } from "@/utils/datetime";
 import {useRouter} from "vue-router";
-import {message, Modal} from "ant-design-vue";
+import {message, Modal, notification} from "ant-design-vue";
 import {StateType as ProjectStateType} from "@/store/project";
 import {StateType as ScenarioStateType} from "@/views/scenario/store";
 import {StateType} from "@/views/report/store";
@@ -154,9 +154,13 @@ const remove = (id: number) => {
       store.dispatch('Report/remove', id).then((res) => {
         console.log('res', res)
         if (res === true) {
-          message.success(`删除报告成功`)
+          notification.success({
+            message: `删除成功`,
+          });
         } else {
-          message.error(`删除报告失败`)
+          notification.error({
+            message: `删除失败`,
+          });
         }
       })
     }

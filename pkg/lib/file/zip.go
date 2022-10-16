@@ -9,7 +9,7 @@ import (
 )
 
 func ZipFiles(dist string, dir string, files []string) error {
-	dir = AddPathSepIfNeeded(dir)
+	dir = AddSepIfNeeded(dir)
 
 	paths := make([]string, 0)
 	for _, file := range files {

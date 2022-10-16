@@ -19,6 +19,7 @@ type ScenarioNodeService struct {
 
 func (s *ScenarioNodeService) GetTree(scenarioId int) (root *agentExec.Processor, err error) {
 	root, err = s.ScenarioNodeRepo.GetTree(uint(scenarioId), false)
+	root.Session = agentExec.Session{}
 
 	return
 }

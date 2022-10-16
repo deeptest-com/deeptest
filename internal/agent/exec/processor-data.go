@@ -7,6 +7,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"time"
 )
 
 type ProcessorData struct {
@@ -31,22 +32,27 @@ type ProcessorData struct {
 func (entity ProcessorData) Run(processor *Processor, session *Session) (result domain.Result, err error) {
 	logUtils.Infof("data entity")
 
-	result = domain.Result{
-		ID:                entity.ProcessorID,
+	startTime := time.Now()
+	processor.Result = &domain.Result{
+		ID:                int(entity.ProcessorID),
 		Name:              entity.Name,
 		ProcessorCategory: entity.ProcessorCategory,
 		ProcessorType:     entity.ProcessorType,
-		ParentId:          entity.ParentID,
+		StartTime:         &startTime,
+		ParentId:          int(entity.ParentID),
 	}
 
 	result.Iterator, result.Summary = entity.getIterator()
 
-	processor.Result = result
+	processor.Result = &result
 
-	processor.Parent.Result.Children = append(processor.Parent.Result.Children, &processor.Result)
-	exec.SendExecMsg(processor.Result, session.WsMsg)
+	processor.AddResultToParent()
+	exec.SendExecMsg(*processor.Result, session.WsMsg)
 
 	entity.runDataItems(session, processor, result.Iterator)
+
+	endTime := time.Now()
+	processor.Result.EndTime = &endTime
 
 	return
 }

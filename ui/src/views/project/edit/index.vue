@@ -35,7 +35,7 @@ import {useRouter} from "vue-router";
 import {useStore} from "vuex";
 import { useI18n } from "vue-i18n";
 import { Props, validateInfos } from 'ant-design-vue/lib/form/useForm';
-import {message, Form} from 'ant-design-vue';
+import {message, Form, notification} from 'ant-design-vue';
 const useForm = Form.useForm;
 import {StateType} from "../store";
 import {Project} from "@/views/project/data";
@@ -87,10 +87,14 @@ export default defineComponent({
               store.dispatch('Project/saveProject', modelRef.value).then((res) => {
                 console.log('res', res)
                 if (res === true) {
-                  message.success(`保存项目成功`);
+                  notification.success({
+                    message: `保存成功`,
+                  });
                   router.replace('/project/index')
                 } else {
-                  message.error(`保存项目失败`);
+                  notification.success({
+                    message: `保存失败`,
+                  });
                 }
               })
             })

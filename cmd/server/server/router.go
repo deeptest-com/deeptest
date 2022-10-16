@@ -18,7 +18,7 @@ import (
 
 // InitRouter 初始化模块路由
 func (webServer *WebServer) InitRouter() error {
-	webServer.app.UseRouter(middleware2.CrsAuth())
+	webServer.app.UseRouter(middleware2.CrsAuth("server"))
 
 	app := webServer.app.Party("/").AllowMethods(iris.MethodOptions)
 	{

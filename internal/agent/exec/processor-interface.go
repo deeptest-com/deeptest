@@ -9,6 +9,7 @@ import (
 	queryHelper "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/query"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
+	"time"
 
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"strings"
@@ -28,12 +29,14 @@ type ProcessorInterface struct {
 func (entity ProcessorInterface) Run(processor *Processor, session *Session) (log domain.Result, err error) {
 	logUtils.Infof("interface entity")
 
-	processor.Result = domain.Result{
-		ID:                entity.ProcessorID,
+	startTime := time.Now()
+	processor.Result = &domain.Result{
+		ID:                int(entity.ProcessorID),
 		Name:              entity.Name,
 		ProcessorCategory: entity.ProcessorCategory,
 		ProcessorType:     entity.ProcessorType,
-		ParentId:          entity.ParentID,
+		StartTime:         &startTime,
+		ParentId:          int(entity.ParentID),
 	}
 
 	variableMap := GetVariableMap(entity.ProcessorID)
@@ -52,16 +55,19 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (lo
 	if err != nil {
 		processor.Result.ResultStatus = consts.Fail
 		processor.Result.Summary = err.Error()
-		processor.Parent.Result.Children = append(processor.Parent.Result.Children, &processor.Result)
-		exec.SendErrorMsg(processor.Result, session.WsMsg)
+		processor.AddResultToParent()
+		exec.SendErrorMsg(*processor.Result, session.WsMsg)
 		return
 	}
 
 	entity.ExtractInterface(processor, session)
 	entity.CheckInterface(processor, session)
 
-	processor.Parent.Result.Children = append(processor.Parent.Result.Children, &processor.Result)
-	exec.SendExecMsg(processor.Result, session.WsMsg)
+	processor.AddResultToParent()
+	exec.SendExecMsg(*processor.Result, session.WsMsg)
+
+	endTime := time.Now()
+	processor.Result.EndTime = &endTime
 
 	return
 }

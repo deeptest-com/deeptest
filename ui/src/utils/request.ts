@@ -46,7 +46,7 @@ const errorHandler = (axiosResponse: AxiosResponse) => {
         const reqUrl = (url + '').split("?")[0].replace(baseURL + '', '');
         const noNeedLogin = settings.ajaxResponseNoVerifyUrl.includes(reqUrl);
         if (code === 401 && !noNeedLogin) {
-            router.push('/user/login');
+            router.replace('/user/login');
         }
 
     } else {

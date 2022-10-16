@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
+	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"strings"
+	"time"
 )
 
 type ProcessorPrint struct {
@@ -15,12 +17,16 @@ type ProcessorPrint struct {
 }
 
 func (entity ProcessorPrint) Run(processor *Processor, session *Session) (log domain.Result, err error) {
-	processor.Result = domain.Result{
-		ID:                entity.ProcessorID,
+	logUtils.Infof("print entity")
+
+	startTime := time.Now()
+	processor.Result = &domain.Result{
+		ID:                int(entity.ProcessorID),
 		Name:              entity.Name,
 		ProcessorCategory: entity.ProcessorCategory,
 		ProcessorType:     entity.ProcessorType,
-		ParentId:          entity.ParentID,
+		StartTime:         &startTime,
+		ParentId:          int(entity.ParentID),
 	}
 
 	value, err := EvaluateGovaluateExpressionByScope(entity.Expression, processor.ID)
@@ -28,8 +34,11 @@ func (entity ProcessorPrint) Run(processor *Processor, session *Session) (log do
 	processor.Result.Summary = strings.ReplaceAll(fmt.Sprintf("%s为\"%v\"。",
 		entity.Expression, value), "<nil>", "空")
 
-	processor.Parent.Result.Children = append(processor.Parent.Result.Children, &processor.Result)
-	exec.SendExecMsg(processor.Result, session.WsMsg)
+	processor.AddResultToParent()
+	exec.SendExecMsg(*processor.Result, session.WsMsg)
+
+	endTime := time.Now()
+	processor.Result.EndTime = &endTime
 
 	return
 }

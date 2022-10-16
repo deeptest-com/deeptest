@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
+	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"time"
 )
 
 type ProcessorAssertion struct {
@@ -14,12 +16,16 @@ type ProcessorAssertion struct {
 }
 
 func (entity ProcessorAssertion) Run(processor *Processor, session *Session) (result domain.Result, err error) {
-	processor.Result = domain.Result{
-		ID:                entity.ProcessorID,
+	logUtils.Infof("assertion entity")
+
+	startTime := time.Now()
+	processor.Result = &domain.Result{
+		ID:                int(entity.ProcessorID),
 		Name:              entity.Name,
 		ProcessorCategory: entity.ProcessorCategory,
 		ProcessorType:     entity.ProcessorType,
-		ParentId:          entity.ParentID,
+		StartTime:         &startTime,
+		ParentId:          int(entity.ParentID),
 	}
 
 	ret, err := EvaluateGovaluateExpressionByScope(entity.Expression, entity.ID)
@@ -31,8 +37,11 @@ func (entity ProcessorAssertion) Run(processor *Processor, session *Session) (re
 
 	processor.Result.Summary = fmt.Sprintf("断言\"%s\"结果为\"%s\"。", entity.Expression, status)
 
-	processor.Parent.Result.Children = append(processor.Parent.Result.Children, &processor.Result)
-	exec.SendExecMsg(processor.Result, session.WsMsg)
+	processor.AddResultToParent()
+	exec.SendExecMsg(*processor.Result, session.WsMsg)
+
+	endTime := time.Now()
+	processor.Result.EndTime = &endTime
 
 	return
 }

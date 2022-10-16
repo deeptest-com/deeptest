@@ -7,6 +7,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"time"
 )
 
 type ProcessorLoop struct {
@@ -27,34 +28,39 @@ type ProcessorLoop struct {
 func (entity ProcessorLoop) Run(processor *Processor, session *Session) (result domain.Result, err error) {
 	logUtils.Infof("loop entity")
 
-	result = domain.Result{
-		ID:                entity.ProcessorID,
+	startTime := time.Now()
+	processor.Result = &domain.Result{
+		ID:                int(entity.ProcessorID),
 		Name:              entity.Name,
 		ProcessorCategory: entity.ProcessorCategory,
 		ProcessorType:     entity.ProcessorType,
-		ParentId:          entity.ParentID,
+		StartTime:         &startTime,
+		ParentId:          int(entity.ParentID),
 	}
 
 	if entity.ProcessorType == consts.ProcessorLoopBreak {
 		result.WillBreak, result.Summary = entity.getBeak()
-		processor.Result = result
+		processor.Result = &result
 
-		processor.Parent.Result.Children = append(processor.Parent.Result.Children, &processor.Result)
-		exec.SendExecMsg(processor.Result, session.WsMsg)
+		processor.AddResultToParent()
+		exec.SendExecMsg(*processor.Result, session.WsMsg)
 		return
 	}
 
 	result.Iterator, result.Summary = entity.getIterator()
 
-	processor.Result = result
-	processor.Parent.Result.Children = append(processor.Parent.Result.Children, &processor.Result)
-	exec.SendExecMsg(processor.Result, session.WsMsg)
+	processor.Result = &result
+	processor.AddResultToParent()
+	exec.SendExecMsg(*processor.Result, session.WsMsg)
 
 	if entity.ProcessorType == consts.ProcessorLoopUntil {
 		entity.runLoopUntil(session, processor, result.Iterator)
 	} else {
 		entity.runLoopItems(session, processor, result.Iterator)
 	}
+
+	endTime := time.Now()
+	processor.Result.EndTime = &endTime
 
 	return
 }

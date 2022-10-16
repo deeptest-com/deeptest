@@ -23,7 +23,7 @@ func GetExecDir() (dir string) { // where ztf exe file in
 	}
 
 	dir, _ = filepath.Abs(dir)
-	dir = fileUtils.AddPathSepIfNeeded(dir)
+	dir = fileUtils.AddSepIfNeeded(dir)
 
 	return
 }
@@ -32,7 +32,7 @@ func GetWorkDir() string { // where we run file in
 	dir, _ := os.Getwd()
 
 	dir, _ = filepath.Abs(dir)
-	dir = fileUtils.AddPathSepIfNeeded(dir)
+	dir = fileUtils.AddSepIfNeeded(dir)
 
 	return dir
 }

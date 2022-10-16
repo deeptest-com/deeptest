@@ -8,7 +8,9 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/query"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"strings"
+	"time"
 )
 
 type ProcessorExtractor struct {
@@ -36,19 +38,23 @@ type ProcessorExtractor struct {
 }
 
 func (entity ProcessorExtractor) Run(processor *Processor, session *Session) (log domain.Result, err error) {
-	processor.Result = domain.Result{
-		ID:                entity.ProcessorID,
+	logUtils.Infof("extractor entity")
+
+	startTime := time.Now()
+	processor.Result = &domain.Result{
+		ID:                int(entity.ProcessorID),
 		Name:              entity.Name,
 		ProcessorCategory: entity.ProcessorCategory,
 		ProcessorType:     entity.ProcessorType,
-		ParentId:          entity.ParentID,
+		StartTime:         &startTime,
+		ParentId:          int(entity.ParentID),
 	}
 
 	brother, ok := getPreviousBrother(*processor)
 	if !ok || brother.EntityType != consts.ProcessorInterfaceDefault {
 		processor.Result.Summary = fmt.Sprintf("先前节点不是接口，无法应用提取器。")
-		processor.Parent.Result.Children = append(processor.Parent.Result.Children, &processor.Result)
-		exec.SendExecMsg(processor.Result, session.WsMsg)
+		processor.AddResultToParent()
+		exec.SendExecMsg(*processor.Result, session.WsMsg)
 		return
 	}
 
@@ -61,16 +67,19 @@ func (entity ProcessorExtractor) Run(processor *Processor, session *Session) (lo
 	err = ExtractValue(&entity, resp)
 	if err != nil {
 		processor.Result.Summary = fmt.Sprintf("%s提取器解析错误 %s。", entity.ProcessorType, err.Error())
-		processor.Parent.Result.Children = append(processor.Parent.Result.Children, &processor.Result)
-		exec.SendExecMsg(processor.Result, session.WsMsg)
+		processor.AddResultToParent()
+		exec.SendExecMsg(*processor.Result, session.WsMsg)
 		return
 	}
 
 	SetVariable(processor.ParentId, entity.Variable, entity.Result, consts.Local) // set in parent scope
 
 	processor.Result.Summary = fmt.Sprintf("将结果\"%v\"赋予变量\"%s\"。", entity.Result, entity.Variable)
-	processor.Parent.Result.Children = append(processor.Parent.Result.Children, &processor.Result)
-	exec.SendExecMsg(processor.Result, session.WsMsg)
+	processor.AddResultToParent()
+	exec.SendExecMsg(*processor.Result, session.WsMsg)
+
+	endTime := time.Now()
+	processor.Result.EndTime = &endTime
 
 	return
 }

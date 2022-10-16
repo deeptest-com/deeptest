@@ -4,6 +4,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"time"
 )
 
 type ProcessorGroup struct {
@@ -14,20 +15,25 @@ type ProcessorGroup struct {
 func (entity ProcessorGroup) Run(processor *Processor, session *Session) (log domain.Result, err error) {
 	logUtils.Infof("group entity")
 
-	processor.Result = domain.Result{
-		ID:                entity.ProcessorID,
+	startTime := time.Now()
+	processor.Result = &domain.Result{
+		ID:                int(entity.ProcessorID),
 		Name:              entity.Name,
 		ProcessorCategory: entity.ProcessorCategory,
 		ProcessorType:     entity.ProcessorType,
-		ParentId:          entity.ParentID,
+		StartTime:         &startTime,
+		ParentId:          int(entity.ParentID),
 	}
 
-	processor.Parent.Result.Children = append(processor.Parent.Result.Children, &processor.Result)
-	exec.SendExecMsg(processor.Result, session.WsMsg)
+	processor.AddResultToParent()
+	exec.SendExecMsg(*processor.Result, session.WsMsg)
 
 	for _, child := range processor.Children {
 		child.Run(session)
 	}
+
+	endTime := time.Now()
+	processor.Result.EndTime = &endTime
 
 	return
 }

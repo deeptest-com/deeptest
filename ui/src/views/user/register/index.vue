@@ -16,16 +16,16 @@
             <a-form-item>
                 <a-button type="primary" class="submit" @click="handleSubmit" :loading="submitLoading">
                     {{t('page.user.register.form.btn-submit')}}
-                </a-button>  
+                </a-button>
                 <div class="text-align-right">
                     <router-link to="/user/login">
                         {{t('page.user.register.form.btn-jump')}}
                     </router-link>
-                </div>              
+                </div>
             </a-form-item>
 
             <a-alert v-if="errorMsg !== '' && typeof errorMsg !== 'undefined' &&  !submitLoading" :message="errorMsg" type="error" :show-icon="true" />
-            
+
         </a-form>
     </div>
 </template>
@@ -36,7 +36,7 @@ import { useStore } from 'vuex';
 import { useI18n } from "vue-i18n";
 
 import { Props, validateInfos } from 'ant-design-vue/lib/form/useForm';
-import { message, Form } from 'ant-design-vue';
+import {message, Form, notification} from 'ant-design-vue';
 const useForm = Form.useForm;
 
 import useI18nAntdFormVaildateInfos from '@/composables/useI18nAntdFormVaildateInfos';
@@ -49,7 +49,7 @@ interface UserRegisterSetupData {
     modelRef: RegisterParamsType;
     submitLoading: Ref<boolean>;
     handleSubmit: (e: MouseEvent) => void;
-    errorMsg: ComputedRef<string | undefined>; 
+    errorMsg: ComputedRef<string | undefined>;
 }
 
 export default defineComponent({
@@ -91,7 +91,7 @@ export default defineComponent({
                         }
                     }
                 }
-            ],          
+            ],
         });
         // 获取表单内容
         const { validate, validateInfos } = useForm(modelRef, rulesRef);
@@ -105,15 +105,18 @@ export default defineComponent({
                 const fieldsValue = await validate<RegisterParamsType>();
                 const res: boolean = await store.dispatch('UserRegister/register',fieldsValue);
                 if (res === true) {
-                    message.success(t('page.user.register.form.register-success'));
-                    router.replace('/user/login');
+                  notification.success({
+                    message: t('page.user.register.form.register-success'),
+                  });
+                  router.replace('/user/login');
                 }
             } catch (error) {
-                // console.log('error', error);
-                message.warning(t('app.global.form.validatefields.catch'));
+              notification.warn({
+                message: t('page.user.register.form.register-fail'),
+              });
             }
             submitLoading.value = false;
-        };        
+        };
 
         // 重置 validateInfos
         const validateInfosNew = useI18nAntdFormVaildateInfos(validateInfos);
@@ -148,8 +151,8 @@ export default defineComponent({
     margin-bottom: 30px;
     text-align: center;
     color: #ffffff;
-    /* background-image:-webkit-linear-gradient(right,#FFFFFF,#009688, #FFFFFF); 
-        -webkit-background-clip: text; 
+    /* background-image:-webkit-linear-gradient(right,#FFFFFF,#009688, #FFFFFF);
+        -webkit-background-clip: text;
         -webkit-text-fill-color:transparent; */
   }
   .submit {

@@ -3,7 +3,7 @@
     <div v-for="(item, index) in logs" :key="index" class="log">
       <div>
         <div v-if="item.processorCategory !== 'processor_interface'">
-          {{ item.name }}&nbsp; {{ joinArr(item.summary) }}
+          {{ item.name }} {{ joinArr(item.summary) }}
         </div>
 
         <a-collapse v-if="item.processorCategory === 'processor_interface'" expand-icon-position="right">

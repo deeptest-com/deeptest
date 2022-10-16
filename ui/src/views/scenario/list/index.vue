@@ -60,7 +60,7 @@ import {useStore} from "vuex";
 import {StateType} from "../store";
 import debounce from "lodash.debounce";
 import {useRouter} from "vue-router";
-import {message, Modal} from "ant-design-vue";
+import {message, Modal, notification} from "ant-design-vue";
 import {StateType as ProjectStateType} from "@/store/project";
 
 const statusArr = ref<SelectTypes['options']>([
@@ -171,10 +171,14 @@ const remove = (id: number) => {
       store.dispatch('Scenario/removeScenario', id).then((res) => {
         console.log('res', res)
         if (res === true) {
-          message.success(`删除项目成功`)
+          notification.success({
+            message: `删除成功`,
+          });
           store.dispatch('Scenario/queryScenario', id)
         } else {
-          message.error(`删除项目失败`)
+          notification.error({
+            message: `删除失败`,
+          });
         }
       })
     }

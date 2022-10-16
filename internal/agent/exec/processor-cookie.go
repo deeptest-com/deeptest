@@ -6,6 +6,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	valueGen "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/value"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"time"
 )
 
@@ -23,12 +24,16 @@ type ProcessorCookie struct {
 }
 
 func (entity ProcessorCookie) Run(processor *Processor, session *Session) (log domain.Result, err error) {
-	processor.Result = domain.Result{
-		ID:                entity.ProcessorID,
+	logUtils.Infof("cookie entity")
+
+	startTime := time.Now()
+	processor.Result = &domain.Result{
+		ID:                int(entity.ProcessorID),
 		Name:              entity.Name,
 		ProcessorCategory: entity.ProcessorCategory,
 		ProcessorType:     entity.ProcessorType,
-		ParentId:          entity.ParentID,
+		StartTime:         &startTime,
+		ParentId:          int(entity.ParentID),
 	}
 
 	cookieName := entity.CookieName
@@ -44,8 +49,8 @@ func (entity ProcessorCookie) Run(processor *Processor, session *Session) (log d
 		variableValue, err = EvaluateGovaluateExpressionByScope(expression, entity.ProcessorID)
 		if err != nil {
 			processor.Result.Summary = fmt.Sprintf("计算表达式\"%s\"错误 %s。", expression, err.Error())
-			processor.Parent.Result.Children = append(processor.Parent.Result.Children, &processor.Result)
-			exec.SendExecMsg(processor.Result, session.WsMsg)
+			processor.AddResultToParent()
+			exec.SendExecMsg(*processor.Result, session.WsMsg)
 			return
 		}
 
@@ -66,8 +71,8 @@ func (entity ProcessorCookie) Run(processor *Processor, session *Session) (log d
 
 		if err != nil {
 			processor.Result.Summary = fmt.Sprintf("获取Cookie %s的值错误 %s。", cookieName, err.Error())
-			processor.Parent.Result.Children = append(processor.Parent.Result.Children, &processor.Result)
-			exec.SendExecMsg(processor.Result, session.WsMsg)
+			processor.AddResultToParent()
+			exec.SendExecMsg(*processor.Result, session.WsMsg)
 			return
 		}
 
@@ -79,8 +84,11 @@ func (entity ProcessorCookie) Run(processor *Processor, session *Session) (log d
 		processor.Result.Summary = fmt.Sprintf("%s。", cookieName)
 	}
 
-	processor.Parent.Result.Children = append(processor.Parent.Result.Children, &processor.Result)
-	exec.SendExecMsg(processor.Result, session.WsMsg)
+	processor.AddResultToParent()
+	exec.SendExecMsg(*processor.Result, session.WsMsg)
+
+	endTime := time.Now()
+	processor.Result.EndTime = &endTime
 
 	return
 }

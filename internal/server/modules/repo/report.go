@@ -5,7 +5,7 @@ import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
-	model2 "github.com/aaronchen2k/deeptest/internal/server/modules/model"
+	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"gorm.io/gorm"
@@ -23,7 +23,7 @@ func NewReportRepo() *ReportRepo {
 func (r *ReportRepo) Paginate(req v1.ReportReqPaginate, projectId int) (data _domain.PageData, err error) {
 	var count int64
 
-	db := r.DB.Model(&model2.Report{}).
+	db := r.DB.Model(&model.Report{}).
 		Where("project_id = ? AND NOT deleted", projectId)
 
 	if req.Keywords != "" {
@@ -39,7 +39,7 @@ func (r *ReportRepo) Paginate(req v1.ReportReqPaginate, projectId int) (data _do
 		return
 	}
 
-	results := make([]*model2.Report, 0)
+	results := make([]*model.Report, 0)
 
 	err = db.
 		Scopes(dao.PaginateScope(req.Page, req.PageSize, req.Order, req.Field)).
@@ -54,7 +54,7 @@ func (r *ReportRepo) Paginate(req v1.ReportReqPaginate, projectId int) (data _do
 	return
 }
 
-func (r *ReportRepo) Get(id uint) (report model2.Report, err error) {
+func (r *ReportRepo) Get(id uint) (report model.Report, err error) {
 	err = r.DB.Where("id = ?", id).First(&report).Error
 	if err != nil {
 		logUtils.Errorf("find report by id error %s", err.Error())
@@ -67,8 +67,8 @@ func (r *ReportRepo) Get(id uint) (report model2.Report, err error) {
 	return
 }
 
-func (r *ReportRepo) Create(result *model2.Report) (bizErr *_domain.BizErr) {
-	err := r.DB.Model(&model2.Report{}).Create(result).Error
+func (r *ReportRepo) Create(result *model.Report) (bizErr *_domain.BizErr) {
+	err := r.DB.Model(&model.Report{}).Create(result).Error
 	if err != nil {
 		logUtils.Errorf("create report error %s", err.Error())
 		bizErr.Code = _domain.SystemErr.Code
@@ -80,14 +80,14 @@ func (r *ReportRepo) Create(result *model2.Report) (bizErr *_domain.BizErr) {
 }
 
 func (r *ReportRepo) DeleteById(id uint) (err error) {
-	err = r.DB.Model(&model2.Report{}).Where("id = ?", id).
+	err = r.DB.Model(&model.Report{}).Where("id = ?", id).
 		Updates(map[string]interface{}{"deleted": true}).Error
 	if err != nil {
 		logUtils.Errorf("delete report by id error %s", err.Error())
 		return
 	}
 
-	err = r.DB.Model(&model2.ExecLogProcessor{}).Where("report_id = ?", id).
+	err = r.DB.Model(&model.ExecLogProcessor{}).Where("report_id = ?", id).
 		Updates(map[string]interface{}{"deleted": true}).Error
 	if err != nil {
 		logUtils.Errorf("delete report's logs by id error %s", err.Error())
@@ -104,14 +104,14 @@ func (r *ReportRepo) UpdateStatus(progressStatus consts.ProgressStatus, resultSt
 		"progress_status": progressStatus,
 		"result_status":   resultStatus,
 	}
-	err = r.DB.Model(&model2.Report{}).
+	err = r.DB.Model(&model.Report{}).
 		Where("report_id = ? AND progress_status = ?", scenarioId, consts.InProgress).
 		Updates(values).Error
 
 	return
 }
 
-func (r *ReportRepo) UpdateResult(report model2.Report) (err error) {
+func (r *ReportRepo) UpdateResult(report model.Report) (err error) {
 	values := map[string]interface{}{
 		"pass_num":        report.PassRequestNum,
 		"fail_num":        report.FailRequestNum,
@@ -121,14 +121,14 @@ func (r *ReportRepo) UpdateResult(report model2.Report) (err error) {
 		"progress_status": consts.End,
 		"result_status":   report.ResultStatus,
 	}
-	err = r.DB.Model(&model2.Report{}).
+	err = r.DB.Model(&model.Report{}).
 		Where("id = ?", report.ID).
 		Updates(values).Error
 
 	return
 }
 
-func (r *ReportRepo) ResetResult(result model2.Report) (err error) {
+func (r *ReportRepo) ResetResult(result model.Report) (err error) {
 	values := map[string]interface{}{
 		"name":       result.Name,
 		"start_time": result.StartTime,
@@ -143,7 +143,7 @@ func (r *ReportRepo) ResetResult(result model2.Report) (err error) {
 }
 
 func (r *ReportRepo) ClearLogs(resultId uint) (err error) {
-	err = r.DB.Model(&model2.ExecLogProcessor{}).Where("result_id = ?", resultId).
+	err = r.DB.Model(&model.ExecLogProcessor{}).Where("result_id = ?", resultId).
 		Updates(map[string]interface{}{"deleted": true}).Error
 	if err != nil {
 		logUtils.Errorf("delete logs by result id error %s", err.Error())
@@ -153,7 +153,7 @@ func (r *ReportRepo) ClearLogs(resultId uint) (err error) {
 	return
 }
 
-func (r *ReportRepo) FindInProgressResult(scenarioId uint) (result model2.Report, err error) {
+func (r *ReportRepo) FindInProgressResult(scenarioId uint) (result model.Report, err error) {
 	err = r.DB.Model(&result).
 		Where("progress_status =? AND scenario_id = ? AND  not deleted", consts.InProgress, scenarioId).
 		First(&result).Error
@@ -161,7 +161,7 @@ func (r *ReportRepo) FindInProgressResult(scenarioId uint) (result model2.Report
 	return
 }
 
-func (r *ReportRepo) getLogTree(report model2.Report) (root model2.ExecLogProcessor, err error) {
+func (r *ReportRepo) getLogTree(report model.Report) (root model.ExecLogProcessor, err error) {
 	logs, err := r.LogRepo.ListByReport(report.ID)
 	if err != nil {
 		return
@@ -174,7 +174,7 @@ func (r *ReportRepo) getLogTree(report model2.Report) (root model2.ExecLogProces
 		}
 	}
 
-	root = model2.ExecLogProcessor{
+	root = model.ExecLogProcessor{
 		Name: report.Name,
 	}
 	r.makeTree(logs, &root)
@@ -182,7 +182,7 @@ func (r *ReportRepo) getLogTree(report model2.Report) (root model2.ExecLogProces
 	return
 }
 
-func (r *ReportRepo) makeTree(Data []*model2.ExecLogProcessor, parent *model2.ExecLogProcessor) { //参数为父节点，添加父节点的子节点指针切片
+func (r *ReportRepo) makeTree(Data []*model.ExecLogProcessor, parent *model.ExecLogProcessor) { //参数为父节点，添加父节点的子节点指针切片
 	children, _ := r.haveChild(Data, parent) //判断节点是否有子节点并返回
 
 	if children != nil {
@@ -197,7 +197,7 @@ func (r *ReportRepo) makeTree(Data []*model2.ExecLogProcessor, parent *model2.Ex
 	}
 }
 
-func (r *ReportRepo) haveChild(Data []*model2.ExecLogProcessor, node *model2.ExecLogProcessor) (children []*model2.ExecLogProcessor, yes bool) {
+func (r *ReportRepo) haveChild(Data []*model.ExecLogProcessor, node *model.ExecLogProcessor) (children []*model.ExecLogProcessor, yes bool) {
 	for _, v := range Data {
 		if v.ParentId == node.ID {
 			children = append(children, v)
@@ -211,7 +211,7 @@ func (r *ReportRepo) haveChild(Data []*model2.ExecLogProcessor, node *model2.Exe
 	return
 }
 
-func (r *ReportRepo) listLogExtractors(logId uint) (extractors []model2.ExecLogExtractor, err error) {
+func (r *ReportRepo) listLogExtractors(logId uint) (extractors []model.ExecLogExtractor, err error) {
 	err = r.DB.
 		Where("log_id =? AND not deleted", logId).
 		Find(&extractors).Error
@@ -219,7 +219,7 @@ func (r *ReportRepo) listLogExtractors(logId uint) (extractors []model2.ExecLogE
 	return
 }
 
-func (r *ReportRepo) listLogCheckpoints(logId uint) (checkpoints []model2.ExecLogCheckpoint, err error) {
+func (r *ReportRepo) listLogCheckpoints(logId uint) (checkpoints []model.ExecLogCheckpoint, err error) {
 	err = r.DB.
 		Where("log_id =? AND not deleted", logId).
 		Find(&checkpoints).Error

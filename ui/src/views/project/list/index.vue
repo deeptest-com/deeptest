@@ -57,7 +57,7 @@ import {useStore} from "vuex";
 import {StateType} from "../store";
 import debounce from "lodash.debounce";
 import {useRouter} from "vue-router";
-import {message, Modal} from "ant-design-vue";
+import {message, Modal, notification} from "ant-design-vue";
 
 export default defineComponent({
   name: 'ProjectListPage',
@@ -156,9 +156,13 @@ export default defineComponent({
           store.dispatch('Project/removeProject', id).then((res) => {
             console.log('res', res)
             if (res === true) {
-              message.success(`删除项目成功`)
+              notification.success({
+                message: `删除成功`,
+              });
             } else {
-              message.error(`删除项目失败`)
+              notification.error({
+                message: `删除失败`,
+              });
             }
           })
         }

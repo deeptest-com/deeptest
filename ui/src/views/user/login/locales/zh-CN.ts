@@ -7,5 +7,7 @@ export default {
   'page.user.login.form.btn-submit': '登录',
   'page.user.login.form.btn-jump': '还没有账户？现在注册！',
   'page.user.login.form.login-error': '用户名或密码错误！',
+
   'page.user.login.form.login-success': '登录成功！',
+  'page.user.login.form.login-fail': '登录失败！'
 };

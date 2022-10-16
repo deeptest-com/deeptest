@@ -15,8 +15,8 @@ var (
 	ScopedCookies   = map[uint][]domain.ExecCookie{}
 )
 
-func InitScopeHierarchy(processors []*Processor) (variables []domain.ExecVariable) {
-	GetScopeHierarchy(processors, &ScopeHierarchy)
+func InitScopeHierarchy(processor *Processor) (variables []domain.ExecVariable) {
+	GetScopeHierarchy(processor, &ScopeHierarchy)
 
 	ScopedVariables = map[uint][]domain.ExecVariable{}
 	ScopedCookies = map[uint][]domain.ExecCookie{}
@@ -267,7 +267,10 @@ func ClearCookie(processorId uint, cookieName string) (err error) {
 	return
 }
 
-func GetScopeHierarchy(processors []*Processor, scopeHierarchyMap *map[uint]*[]uint) {
+func GetScopeHierarchy(processor *Processor, scopeHierarchyMap *map[uint]*[]uint) {
+	processors := make([]*Processor, 0)
+	GetProcessorList(processor, &processors)
+
 	childToParentIdMap := map[uint]uint{}
 	for _, processor := range processors {
 		childToParentIdMap[processor.ID] = processor.ParentId
@@ -282,6 +285,16 @@ func GetScopeHierarchy(processors []*Processor, scopeHierarchyMap *map[uint]*[]u
 
 		addSuperParent(childId, parentId, childToParentIdMap, scopeHierarchyMap)
 	}
+}
+
+func GetProcessorList(processor *Processor, list *[]*Processor) {
+	*list = append(*list, processor)
+
+	for _, child := range processor.Children {
+		GetProcessorList(child, list)
+	}
+
+	return
 }
 
 func addSuperParent(id, parentId uint, childToParentIdMap map[uint]uint, scopeHierarchyMap *map[uint]*[]uint) {

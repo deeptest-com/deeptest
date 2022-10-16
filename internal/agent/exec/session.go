@@ -2,7 +2,6 @@ package agentExec
 
 import (
 	"crypto/tls"
-	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/kataras/iris/v12/websocket"
 	"golang.org/x/net/http2"
@@ -34,7 +33,7 @@ func NewSession(req *ExecReq, failfast bool, wsMsg *websocket.Message) (ret *Ses
 	session := Session{
 		ScenarioId:    root.ScenarioId,
 		Name:          root.Name,
-		RootProcessor: &root,
+		RootProcessor: root,
 		Failfast:      failfast,
 		WsMsg:         wsMsg,
 	}
@@ -61,11 +60,5 @@ func NewSession(req *ExecReq, failfast bool, wsMsg *websocket.Message) (ret *Ses
 }
 
 func (s *Session) Run() {
-	exec.SendStartMsg(s.WsMsg)
-
 	s.RootProcessor.Run(s)
-
-	exec.SendEndMsg(s.WsMsg)
-
-	// 在Agent的WebSocket Controller中调用执行，结束后向服务器提交结果
 }

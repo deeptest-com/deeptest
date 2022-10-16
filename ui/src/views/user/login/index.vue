@@ -103,17 +103,18 @@ export default defineComponent({
                     message: t('page.user.login.form.login-success')
                   });
 
-                    const { redirect, ...query } = currentRoute.value.query;
-                    router.replace({
-                        path: redirect as string || '/',
-                        query: {
-                            ...query
-                        }
-                    });
+                  const { redirect, ...query } = currentRoute.value.query;
+                  router.replace({
+                      path: redirect as string || '/',
+                      query: {
+                          ...query
+                      }
+                  });
                 }
             } catch (error) {
-                // console.log('error', error);
-                message.warning(t('app.global.form.validatefields.catch'));
+              notification.warn({
+                message: t('page.user.login.form.login-fail'),
+              });
             }
             submitLoading.value = false;
         };

@@ -82,7 +82,7 @@ func AbsolutePath(pth string) string {
 		pth, _ = filepath.Abs(pth)
 	}
 
-	pth = AddPathSepIfNeeded(pth)
+	pth = AddSepIfNeeded(pth)
 
 	return pth
 }
@@ -90,15 +90,6 @@ func AbsolutePath(pth string) string {
 func IsAbsolutePath(pth string) bool {
 	return path.IsAbs(pth) ||
 		strings.Index(pth, ":") == 1 // windows
-}
-
-func AddPathSepIfNeeded(pth string) string {
-	sep := _consts.FilePthSep
-
-	if strings.LastIndex(pth, sep) < len(pth)-1 {
-		pth += sep
-	}
-	return pth
 }
 
 func GetFilesFromParams(arguments []string) []string {
@@ -145,7 +136,7 @@ func GetExeDir(workDir string) string { // where zd.exe file in
 func GetWorkDir() string { // where ztf command in
 	dir, _ := os.Getwd()
 	dir, _ = filepath.Abs(dir)
-	dir = AddPathSepIfNeeded(dir)
+	dir = AddSepIfNeeded(dir)
 
 	return dir
 }
@@ -194,7 +185,7 @@ func GetExtName(pathOrUrl string) string {
 	return pathOrUrl[index:]
 }
 
-func GetAbosutePath(pth string) string {
+func GetAbsolutePath(pth string) string {
 	if !IsAbsolutePath(pth) {
 		pth, _ = filepath.Abs(pth)
 	}

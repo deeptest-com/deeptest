@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
+	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"time"
 )
 
@@ -15,19 +16,26 @@ type ProcessorTimer struct {
 }
 
 func (entity ProcessorTimer) Run(processor *Processor, session *Session) (log domain.Result, err error) {
-	processor.Result = domain.Result{
-		ID:                entity.ProcessorID,
+	logUtils.Infof("timer entity")
+
+	startTime := time.Now()
+	processor.Result = &domain.Result{
+		ID:                int(entity.ProcessorID),
 		Name:              entity.Name,
 		ProcessorCategory: entity.ProcessorCategory,
 		ProcessorType:     entity.ProcessorType,
-		ParentId:          entity.ParentID,
+		StartTime:         &startTime,
+		ParentId:          int(entity.ParentID),
 	}
 
 	processor.Result.Summary = fmt.Sprintf("等待\"%d\"秒。", entity.SleepTime)
-	processor.Parent.Result.Children = append(processor.Parent.Result.Children, &processor.Result)
-	exec.SendExecMsg(processor.Result, session.WsMsg)
+	processor.AddResultToParent()
+	exec.SendExecMsg(*processor.Result, session.WsMsg)
 
 	<-time.After(time.Duration(entity.SleepTime) * time.Second)
+
+	endTime := time.Now()
+	processor.Result.EndTime = &endTime
 
 	return
 }

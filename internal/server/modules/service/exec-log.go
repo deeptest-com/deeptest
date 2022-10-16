@@ -6,7 +6,7 @@ import (
 	agentDomain "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
-	model2 "github.com/aaronchen2k/deeptest/internal/server/modules/model"
+	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	repo2 "github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"strings"
 )
@@ -20,8 +20,8 @@ type ExecLogService struct {
 	InterfaceService      *InterfaceService            `inject:""`
 }
 
-func (s *ExecLogService) CreateProcessorLog(processor *agentDomain.Processor, log *domain.ExecLog, parentPersistentId uint) (po model2.ExecLogProcessor, err error) {
-	po = model2.ExecLogProcessor{
+func (s *ExecLogService) CreateProcessorLog(processor *agentDomain.Processor, log *domain.ExecLog, parentPersistentId uint) (po model.ExecLogProcessor, err error) {
+	po = model.ExecLogProcessor{
 		Name:              processor.Name,
 		ProcessorCategory: processor.EntityCategory,
 		ProcessorType:     processor.EntityType,
@@ -44,8 +44,8 @@ func (s *ExecLogService) CreateProcessorLog(processor *agentDomain.Processor, lo
 }
 
 func (s *ExecLogService) CreateInterfaceLog(req v1.InvocationRequest, resp v1.InvocationResponse, parentLog *domain.ExecLog) (
-	po model2.ExecLogProcessor, err error) {
-	po = model2.ExecLogProcessor{
+	po model.ExecLogProcessor, err error) {
+	po = model.ExecLogProcessor{
 		Name:              req.Name,
 		ProcessorCategory: consts.ProcessorInterface,
 		ProcessorType:     consts.ProcessorInterfaceDefault,

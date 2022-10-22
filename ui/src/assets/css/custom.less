@@ -116,23 +116,42 @@
         overflow-y: auto;
         overflow-x: hidden;
     }
+}
+.splitter {
+    min-width: 1px;
+    cursor: col-resize;
 
-    .splitter {
-        width: 1px;
-        height: 100%;
-        background-color: #e6e9ec;
-        cursor: ew-resize;
+    height: 100%;
+    background-color: var(--splitter-color, #d9d9d9);
+    position: relative;
+}
 
-        &:hover {
-            width: 1px;
-            background-color: #D0D7DE;
-        }
+.splitter:before {
+    content: ' ';
+    position: absolute;
+    display: block;
+    left: 0;
+    top: 0;
+    transition: opacity 0.4s;
+    background-color: var(--splitter-hover-color, rgba(0, 0, 0, .05));
+    opacity: 0;
+    z-index: 1;
+}
 
-        &.active {
-            width: 1px;
-            background-color: #a9aeb4;
-        }
-    }
+.splitter:hover:before {
+    opacity: 1;
+}
+
+.dp-splits-v>.splitter:before {
+    left: calc(0px - var(--splitter-hover-size, 6px) / 2);
+    right: calc(0px - var(--splitter-hover-size, 6px) / 2);
+    height: 100%;
+}
+
+.dp-splits-h>.splitter:before {
+    top: calc(0px - var(--splitter-hover-size, 6px) / 2);
+    bottom: calc(0px - var(--splitter-hover-size, 6px) / 2);
+    width: 100%;
 }
 
 .dp-full-modal {

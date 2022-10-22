@@ -8,7 +8,6 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/business"
 	_httpUtils "github.com/aaronchen2k/deeptest/pkg/lib/http"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/kataras/iris/v12/websocket"
@@ -20,9 +19,6 @@ var (
 )
 
 type ExecService struct {
-	ExecContextService  *business.ExecContext  `inject:""`
-	ExecComm            *business.ExecComm     `inject:""`
-	ExecIteratorService *business.ExecIterator `inject:""`
 }
 
 func (s *ExecService) ExecScenario(req *agentExec.ExecReq, wsMsg *websocket.Message) (err error) {

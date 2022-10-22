@@ -1,0 +1,15 @@
+{
+    "name": "deeptest",
+    "displayName": "DeeptTest",
+    "version": "0.8",
+    "main": "./main.js",
+    "author": {
+        "name": "Aaron Chen",
+        "email": "462826@qq.com"
+    },
+    "homepage": "https://deeptest.com",
+    "company": "苏州谷笛",
+    "license": "GPL 3.0",
+    "copyright": "Copyright (C) 2022",
+    "buildTime": "2022/10/18 09:01::01"
+}

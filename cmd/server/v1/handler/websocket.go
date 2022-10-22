@@ -2,10 +2,7 @@ package handler
 
 import (
 	"encoding/json"
-	execDomain "github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
-	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/websocket"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
@@ -67,44 +64,6 @@ func (c *WebSocketCtrl) OnChat(wsMsg websocket.Message) (err error) {
 	ctx := websocket.GetContext(c.Conn)
 
 	_logUtils.Infof("WebSocket OnChat: remote address=%s, room=%s, msg=%s", ctx.RemoteAddr(), wsMsg.Room, string(wsMsg.Body))
-
-	req := domain.WsReq{}
-	err = json.Unmarshal(wsMsg.Body, &req)
-	if err != nil {
-		result := execDomain.Result{}
-		exec.SendErrorMsg(result, &wsMsg)
-		return
-	}
-
-	act := req.Act
-
-	if act == consts.ExecStop {
-		if ch != nil {
-			if !exec.GetRunning() {
-				ch = nil
-			} else {
-				ch <- 1
-				ch = nil
-			}
-		}
-
-		c.ScenarioExecService.CancelAndSendMsg(req.Id, wsMsg)
-
-		return
-	}
-
-	if exec.GetRunning() && (act == consts.ExecStart) { // already running
-		exec.SendAlreadyRunningMsg(req.Id, wsMsg)
-		return
-	}
-
-	if act == consts.ExecScenario {
-		ch = make(chan int, 1)
-		go func() {
-			c.ScenarioExecService.ExecScenario(req.Id, &wsMsg)
-			//c.Complete(wsMsg)
-		}()
-	}
 
 	return
 }

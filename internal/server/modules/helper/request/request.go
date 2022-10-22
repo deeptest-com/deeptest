@@ -1,16 +1,12 @@
 package requestHelper
 
 import (
-	"encoding/base64"
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
-	execHelper "github.com/aaronchen2k/deeptest/internal/server/modules/helper/exec"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/helper/expression"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
-	"regexp"
-	"strings"
 )
 
 func ReplaceAll(req *v1.InvocationRequest, variableMap map[string]interface{}) {
@@ -24,60 +20,60 @@ func ReplaceAll(req *v1.InvocationRequest, variableMap map[string]interface{}) {
 }
 
 func replaceUrl(req *v1.InvocationRequest, variableMap map[string]interface{}, expressionValueMap *map[string]interface{}) {
-	req.Url = ReplaceVariableValue(req.Url, variableMap)
-	req.Url = ReplaceExpressionValue(req.Url, variableMap, expressionValueMap)
+	req.Url = agentExec.ReplaceVariableValue(req.Url, variableMap)
+	req.Url = agentExec.ReplaceExpressionValue(req.Url, variableMap, expressionValueMap)
 }
 func replaceParams(req *v1.InvocationRequest, variableMap map[string]interface{}, expressionValueMap *map[string]interface{}) {
 	for idx, param := range req.Params {
-		req.Params[idx].Value = ReplaceVariableValue(param.Value, variableMap)
-		req.Params[idx].Value = ReplaceExpressionValue(req.Params[idx].Value, variableMap, expressionValueMap)
+		req.Params[idx].Value = agentExec.ReplaceVariableValue(param.Value, variableMap)
+		req.Params[idx].Value = agentExec.ReplaceExpressionValue(req.Params[idx].Value, variableMap, expressionValueMap)
 	}
 }
 func replaceHeaders(req *v1.InvocationRequest, variableMap map[string]interface{}, expressionValueMap *map[string]interface{}) {
 	for idx, header := range req.Headers {
-		req.Headers[idx].Value = ReplaceVariableValue(header.Value, variableMap)
-		req.Headers[idx].Value = ReplaceExpressionValue(req.Headers[idx].Value, variableMap, expressionValueMap)
+		req.Headers[idx].Value = agentExec.ReplaceVariableValue(header.Value, variableMap)
+		req.Headers[idx].Value = agentExec.ReplaceExpressionValue(req.Headers[idx].Value, variableMap, expressionValueMap)
 	}
 }
 func replaceBody(req *v1.InvocationRequest, variableMap map[string]interface{}, expressionValueMap *map[string]interface{}) {
-	req.Body = ReplaceVariableValue(req.Body, variableMap)
-	req.Body = ReplaceExpressionValue(req.Body, variableMap, expressionValueMap)
+	req.Body = agentExec.ReplaceVariableValue(req.Body, variableMap)
+	req.Body = agentExec.ReplaceExpressionValue(req.Body, variableMap, expressionValueMap)
 }
 func replaceAuthor(req *v1.InvocationRequest, variableMap map[string]interface{}, expressionValueMap *map[string]interface{}) {
 	if req.AuthorizationType == consts.BasicAuth {
-		req.BasicAuth.Username = ReplaceVariableValue(req.BasicAuth.Username, variableMap)
-		req.BasicAuth.Password = ReplaceVariableValue(req.BasicAuth.Password, variableMap)
+		req.BasicAuth.Username = agentExec.ReplaceVariableValue(req.BasicAuth.Username, variableMap)
+		req.BasicAuth.Password = agentExec.ReplaceVariableValue(req.BasicAuth.Password, variableMap)
 
-		req.BasicAuth.Username = ReplaceExpressionValue(req.BasicAuth.Username, variableMap, expressionValueMap)
-		req.BasicAuth.Password = ReplaceExpressionValue(req.BasicAuth.Password, variableMap, expressionValueMap)
+		req.BasicAuth.Username = agentExec.ReplaceExpressionValue(req.BasicAuth.Username, variableMap, expressionValueMap)
+		req.BasicAuth.Password = agentExec.ReplaceExpressionValue(req.BasicAuth.Password, variableMap, expressionValueMap)
 
 	} else if req.AuthorizationType == consts.BearerToken {
-		req.BearerToken.Token = ReplaceVariableValue(req.BearerToken.Token, variableMap)
-		req.BearerToken.Token = ReplaceExpressionValue(req.BearerToken.Token, variableMap, expressionValueMap)
+		req.BearerToken.Token = agentExec.ReplaceVariableValue(req.BearerToken.Token, variableMap)
+		req.BearerToken.Token = agentExec.ReplaceExpressionValue(req.BearerToken.Token, variableMap, expressionValueMap)
 
 	} else if req.AuthorizationType == consts.OAuth2 {
-		req.OAuth20.Name = ReplaceVariableValue(req.OAuth20.Name, variableMap)
-		req.OAuth20.CallbackUrl = ReplaceVariableValue(req.OAuth20.CallbackUrl, variableMap)
-		req.OAuth20.AuthURL = ReplaceVariableValue(req.OAuth20.AuthURL, variableMap)
-		req.OAuth20.AccessTokenURL = ReplaceVariableValue(req.OAuth20.AccessTokenURL, variableMap)
-		req.OAuth20.ClientID = ReplaceVariableValue(req.OAuth20.ClientID, variableMap)
-		req.OAuth20.Scope = ReplaceVariableValue(req.OAuth20.Scope, variableMap)
+		req.OAuth20.Name = agentExec.ReplaceVariableValue(req.OAuth20.Name, variableMap)
+		req.OAuth20.CallbackUrl = agentExec.ReplaceVariableValue(req.OAuth20.CallbackUrl, variableMap)
+		req.OAuth20.AuthURL = agentExec.ReplaceVariableValue(req.OAuth20.AuthURL, variableMap)
+		req.OAuth20.AccessTokenURL = agentExec.ReplaceVariableValue(req.OAuth20.AccessTokenURL, variableMap)
+		req.OAuth20.ClientID = agentExec.ReplaceVariableValue(req.OAuth20.ClientID, variableMap)
+		req.OAuth20.Scope = agentExec.ReplaceVariableValue(req.OAuth20.Scope, variableMap)
 
-		req.OAuth20.Name = ReplaceExpressionValue(req.OAuth20.Name, variableMap, expressionValueMap)
-		req.OAuth20.CallbackUrl = ReplaceExpressionValue(req.OAuth20.CallbackUrl, variableMap, expressionValueMap)
-		req.OAuth20.AuthURL = ReplaceExpressionValue(req.OAuth20.AuthURL, variableMap, expressionValueMap)
-		req.OAuth20.AccessTokenURL = ReplaceExpressionValue(req.OAuth20.AccessTokenURL, variableMap, expressionValueMap)
-		req.OAuth20.ClientID = ReplaceExpressionValue(req.OAuth20.ClientID, variableMap, expressionValueMap)
-		req.OAuth20.Scope = ReplaceExpressionValue(req.OAuth20.Scope, variableMap, expressionValueMap)
+		req.OAuth20.Name = agentExec.ReplaceExpressionValue(req.OAuth20.Name, variableMap, expressionValueMap)
+		req.OAuth20.CallbackUrl = agentExec.ReplaceExpressionValue(req.OAuth20.CallbackUrl, variableMap, expressionValueMap)
+		req.OAuth20.AuthURL = agentExec.ReplaceExpressionValue(req.OAuth20.AuthURL, variableMap, expressionValueMap)
+		req.OAuth20.AccessTokenURL = agentExec.ReplaceExpressionValue(req.OAuth20.AccessTokenURL, variableMap, expressionValueMap)
+		req.OAuth20.ClientID = agentExec.ReplaceExpressionValue(req.OAuth20.ClientID, variableMap, expressionValueMap)
+		req.OAuth20.Scope = agentExec.ReplaceExpressionValue(req.OAuth20.Scope, variableMap, expressionValueMap)
 
 	} else if req.AuthorizationType == consts.ApiKey {
-		req.ApiKey.Key = ReplaceVariableValue(req.ApiKey.Key, variableMap)
-		req.ApiKey.Value = ReplaceVariableValue(req.ApiKey.Value, variableMap)
-		req.ApiKey.TransferMode = ReplaceVariableValue(req.ApiKey.TransferMode, variableMap)
+		req.ApiKey.Key = agentExec.ReplaceVariableValue(req.ApiKey.Key, variableMap)
+		req.ApiKey.Value = agentExec.ReplaceVariableValue(req.ApiKey.Value, variableMap)
+		req.ApiKey.TransferMode = agentExec.ReplaceVariableValue(req.ApiKey.TransferMode, variableMap)
 
-		req.ApiKey.Key = ReplaceExpressionValue(req.ApiKey.Key, variableMap, expressionValueMap)
-		req.ApiKey.Value = ReplaceExpressionValue(req.ApiKey.Value, variableMap, expressionValueMap)
-		req.ApiKey.TransferMode = ReplaceExpressionValue(req.ApiKey.TransferMode, variableMap, expressionValueMap)
+		req.ApiKey.Key = agentExec.ReplaceExpressionValue(req.ApiKey.Key, variableMap, expressionValueMap)
+		req.ApiKey.Value = agentExec.ReplaceExpressionValue(req.ApiKey.Value, variableMap, expressionValueMap)
+		req.ApiKey.TransferMode = agentExec.ReplaceExpressionValue(req.ApiKey.TransferMode, variableMap, expressionValueMap)
 	}
 }
 
@@ -113,62 +109,4 @@ func MergeVariables(environmentVariables []model.EnvironmentVar, interfaceExtrac
 	}
 
 	return
-}
-
-func ReplaceVariableValue(value string, variableMap map[string]interface{}) (ret string) {
-	variables := execHelper.GetVariablesInVariablePlaceholder(value)
-	ret = value
-
-	for _, item := range variables {
-		old := fmt.Sprintf("${%s}", item)
-		new := fmt.Sprintf("%v", variableMap[old])
-
-		ret = strings.ReplaceAll(ret, old, new)
-	}
-
-	return
-}
-
-func ReplaceExpressionValue(value string, variableMap map[string]interface{}, expressionValueMap *map[string]interface{}) (
-	ret string) {
-
-	ret = value
-
-	regex := regexp.MustCompile(`(?Ui)\$expr\('(.*)'\)`) // $expr('uuid()')
-	arrOfArr := regex.FindAllStringSubmatch(ret, -1)
-
-	if len(arrOfArr) == 0 {
-		return
-	}
-
-	for _, arr := range arrOfArr {
-		expressionWithSymbol := arr[0]
-		expressionWithoutSymbol := arr[1]
-
-		expressionValue, ok := (*expressionValueMap)[expressionWithoutSymbol]
-		if !ok {
-			expressionValue, _ = expressionHelper.EvaluateGovaluateExpression(expressionWithoutSymbol, variableMap)
-			(*expressionValueMap)[expressionWithoutSymbol] = expressionValue
-		}
-
-		ret = strings.ReplaceAll(ret, expressionWithSymbol, fmt.Sprintf("%v", expressionValue))
-	}
-
-	return
-}
-
-func Base64(str string) (ret string) {
-	ret = base64.StdEncoding.EncodeToString([]byte(str))
-
-	return
-}
-
-func IsXmlContent(str string) bool {
-	return strings.Contains(str, "xml")
-}
-func IsHtmlContent(str string) bool {
-	return strings.Contains(str, "html")
-}
-func IsJsonContent(str string) bool {
-	return strings.Contains(str, "json")
 }

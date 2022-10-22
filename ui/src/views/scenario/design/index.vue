@@ -59,7 +59,7 @@ const exec = () => {
 const resize = () => {
   resizeWidth('scenario-design-main',
       'scenario-design-left', 'scenario-design-splitter', 'scenario-design-right',
-      260, 800, collapsed.value ? 55 - 15 : 100 - 25)
+      260, 800)
 }
 
 </script>

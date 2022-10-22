@@ -149,40 +149,6 @@ func replaceAuthor(req *domain.Request, variableMap map[string]interface{}, expr
 	}
 }
 
-func MergeVariables(environmentVariables []domain.Variable, interfaceExtractorVariables []domain.Variable,
-	processorExecVariables []domain.ExecVariable) (
-	ret map[string]interface{}) {
-
-	ret = map[string]interface{}{}
-
-	variableMap := map[string]interface{}{}
-	for _, item := range environmentVariables {
-		variableMap[item.Name] = item.Value
-	}
-	for _, item := range interfaceExtractorVariables { // overwrite previous ones
-		variableMap[item.Name] = item.Value
-	}
-	for _, item := range processorExecVariables { // overwrite previous ones
-		variableMap[item.Name] = item.Value
-	}
-
-	for key, val := range variableMap {
-		valMp, isMap := val.(map[string]interface{})
-
-		if isMap {
-			for propKey, v := range valMp {
-				ret[fmt.Sprintf("${%s.%s}", key, propKey)] = v
-			}
-
-		} else {
-			ret[fmt.Sprintf("${%s}", key)] = val
-
-		}
-	}
-
-	return
-}
-
 func ReplaceVariableValue(value string, variableMap map[string]interface{}) (ret string) {
 	variables := GetVariablesInVariablePlaceholder(value)
 	ret = value
@@ -215,7 +181,7 @@ func ReplaceExpressionValue(value string, variableMap map[string]interface{}, ex
 
 		expressionValue, ok := (*expressionValueMap)[expressionWithoutSymbol]
 		if !ok {
-			expressionValue, _ = EvaluateGovaluateExpressionByScopeWithVariables(expressionWithoutSymbol, variableMap)
+			expressionValue, _ = EvaluateGovaluateExpressionWithVariables(expressionWithoutSymbol, variableMap)
 			(*expressionValueMap)[expressionWithoutSymbol] = expressionValue
 		}
 

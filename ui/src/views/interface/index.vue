@@ -34,7 +34,6 @@ export default defineComponent({
     const store = useStore<{ Global: GlobalStateType, User: UserStateType, ProjectData: ProjectStateType,
       Interface: StateType }>();
     const collapsed = computed<boolean>(()=> store.state.Global.collapsed);
-    const currProject = computed<any>(() => store.state.ProjectData.currProject);
     const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
 
     onMounted(() => {
@@ -53,7 +52,7 @@ export default defineComponent({
     const resize = () => {
       resizeWidth('interface-design-main',
             'interface-design-left', 'interface-design-splitter', 'interface-design-right',
-          260, 800, collapsed.value ? 55 - 15 : 100 - 25)
+          260, 800)
     }
 
     return {

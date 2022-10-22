@@ -7,10 +7,10 @@ import (
 	"crypto/tls"
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	commUtils "github.com/aaronchen2k/deeptest/internal/pkg/utils"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/helper/request"
 	_consts "github.com/aaronchen2k/deeptest/pkg/consts"
 	"github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/aaronchen2k/deeptest/pkg/lib/string"
@@ -276,7 +276,7 @@ func posts(req v1.InvocationRequest, method consts.HttpMethod, readRespData bool
 func addAuthorInfo(req v1.InvocationRequest, request *http.Request) {
 	if req.AuthorizationType == consts.BasicAuth {
 		str := fmt.Sprintf("%s:%s", req.BasicAuth.Username, req.BasicAuth.Password)
-		str = fmt.Sprintf("Basic %s", requestHelper.Base64(str))
+		str = fmt.Sprintf("Basic %s", utils.Base64(str))
 
 		request.Header.Set(consts.Authorization, str)
 

@@ -47,7 +47,7 @@ func EvaluateGovaluateExpressionByScope(expression string, scopeId uint) (ret in
 
 	return
 }
-func EvaluateGovaluateExpressionByScopeWithVariables(expression string, variables map[string]interface{}) (ret interface{}, err error) {
+func EvaluateGovaluateExpressionWithVariables(expression string, variables map[string]interface{}) (ret interface{}, err error) {
 	expr := commUtils.RemoveLeftVariableSymbol(expression)
 
 	govaluateExpression, err := govaluate.NewEvaluableExpressionWithFunctions(expr, GovaluateFunctions)

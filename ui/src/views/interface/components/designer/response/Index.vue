@@ -40,7 +40,7 @@ export default defineComponent({
 
     onMounted(() => {
       console.log('onMounted')
-      resizeHeight('content', 'top-panel', 'splitter-v', 'bottom-panel', 200, 200, 50)
+      resizeHeight('content', 'top-panel', 'splitter-v', 'bottom-panel', 200, 200)
     })
 
     return {

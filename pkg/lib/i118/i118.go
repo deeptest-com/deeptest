@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/aaronchen2k/deeptest/pkg/lib/res"
+	"github.com/rs/zerolog/log"
 	"golang.org/x/text/language"
 	"golang.org/x/text/message"
 	"io/ioutil"
@@ -17,8 +18,10 @@ func Init(lang string, app string) {
 	//once.Do(func() {
 
 	langRes := filepath.Join("res", app, lang, "messages.json")
+	log.Printf(langRes)
 
 	bytes, _ := _resUtils.ReadRes(langRes)
+	log.Printf(string(bytes))
 	InitResFromAsset(bytes)
 
 	if lang == "zh" {

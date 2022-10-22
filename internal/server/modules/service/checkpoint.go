@@ -4,25 +4,24 @@ import (
 	"encoding/json"
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
+	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/helper/exec"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/helper/expression"
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
-	repo2 "github.com/aaronchen2k/deeptest/internal/server/modules/repo"
+	repo "github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"github.com/jinzhu/copier"
 	"strings"
 )
 
 type CheckpointService struct {
-	CheckpointRepo    *repo2.CheckpointRepo  `inject:""`
-	InterfaceRepo     *repo2.InterfaceRepo   `inject:""`
-	EnvironmentRepo   *repo2.EnvironmentRepo `inject:""`
-	ProjectRepo       *repo2.ProjectRepo     `inject:""`
-	ExtractorRepo     *repo2.ExtractorRepo   `inject:""`
-	ExecHelperService *ExecHelperService     `inject:""`
-	VariableService   *VariableService       `inject:""`
+	CheckpointRepo  *repo.CheckpointRepo  `inject:""`
+	InterfaceRepo   *repo.InterfaceRepo   `inject:""`
+	EnvironmentRepo *repo.EnvironmentRepo `inject:""`
+	ProjectRepo     *repo.ProjectRepo     `inject:""`
+	ExtractorRepo   *repo.ExtractorRepo   `inject:""`
+	VariableService *VariableService      `inject:""`
 }
 
 func (s *CheckpointService) List(interfaceId int) (checkpoints []model.InterfaceCheckpoint, err error) {
@@ -179,10 +178,10 @@ func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp v1.
 	if checkpoint.Type == consts.Judgement {
 		var result interface{}
 		if interfaceExecLog != nil { // run by processor
-			result, _ = s.ExecHelperService.EvaluateGovaluateExpression(checkpoint.Expression, interfaceExecLog.ProcessorId)
+			result, _ = agentExec.EvaluateGovaluateExpressionByScope(checkpoint.Expression, interfaceExecLog.ProcessorId)
 		} else {
 			variables, _ := s.VariableService.GetVariablesByInterface(checkpoint.InterfaceId)
-			result, _ = expressionHelper.EvaluateGovaluateExpression(checkpoint.Expression, variables)
+			result, _ = agentExec.EvaluateGovaluateExpressionWithVariables(checkpoint.Expression, variables)
 		}
 
 		ret, ok := result.(bool)
@@ -208,7 +207,7 @@ func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp v1.
 		extractorPo, _ := s.ExtractorRepo.GetByVariable(checkpoint.ExtractorVariable, 0, checkpoint.InterfaceId)
 		checkpoint.ActualResult = extractorPo.Result
 
-		checkpoint.ResultStatus = execHelper.Compare(checkpoint.Operator, checkpoint.ActualResult, checkpoint.Value)
+		checkpoint.ResultStatus = utils.Compare(checkpoint.Operator, checkpoint.ActualResult, checkpoint.Value)
 
 		if interfaceExecLog == nil { // run by interface
 			s.CheckpointRepo.UpdateResult(checkpoint)

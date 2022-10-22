@@ -1,10 +1,12 @@
 <template>
-  <div class="designer-main">
+  <div id="designer-main" class="dp-splits-v">
     <div id="design-content">
       <DesignInterface />
     </div>
 
-    <div v-if="interfaceData.id && showRightBar" class="design-right">
+    <div id="design-splitter" class="splitter"></div>
+
+    <div id="design-right">
       <a-tabs v-model:activeKey="tabKey"
               tabPosition="right"
               :tabBarGutter="0"
@@ -32,11 +34,6 @@
 
       </a-tabs>
     </div>
-
-    <div class="switcher">
-      <LeftCircleOutlined v-if="!showRightBar" @click="show" />
-      <RightCircleOutlined v-if="showRightBar" @click="show" />
-    </div>
   </div>
 
 </template>
@@ -54,6 +51,7 @@ import RequestEnv from './designer/others/env/index.vue';
 import RequestHistory from './designer/others/history/index.vue';
 import {Interface} from "@/views/interface/data";
 import {getShowRightBar, setShowRightBar} from "@/utils/cache";
+import {resizeWidth} from "@/utils/dom";
 
 const useForm = Form.useForm;
 
@@ -62,10 +60,11 @@ export default defineComponent({
   props: {
   },
   components: {
-    HistoryOutlined, EnvironmentOutlined, LeftCircleOutlined, RightCircleOutlined,
+    HistoryOutlined, EnvironmentOutlined,
     DesignInterface,
     RequestEnv, RequestHistory,
   },
+
   setup(props) {
     const {t} = useI18n();
     const store = useStore<{ Interface: StateType }>();
@@ -74,30 +73,23 @@ export default defineComponent({
 
     const tabKey = ref('env')
 
-    const showRightBar = ref(false)
-    getShowRightBar().then((val) => {
-      showRightBar.value = val
-    })
-
-    const show = (e) => {
-      console.log('show')
-      showRightBar.value = !showRightBar.value
-      setShowRightBar(showRightBar.value)
-    }
-
     onMounted(() => {
       console.log('onMounted')
+      resize()
     })
 
     watch(interfaceData, () => {
       console.log('watch interfaceData')
     }, {deep: true})
 
+    const resize = () => {
+      resizeWidth('designer-main',
+          'design-content', 'design-splitter', 'design-right', 500, 300)
+    }
+
     return {
       interfaceData,
-      tabKey,
-      showRightBar,
-      show,
+      tabKey
     }
   }
 })
@@ -136,7 +128,7 @@ export default defineComponent({
 </style>
 
 <style lang="less" scoped>
-.designer-main {
+#designer-main {
   display: flex;
   height: 100%;
 
@@ -146,10 +138,9 @@ export default defineComponent({
     height: 100%;
   }
 
-  .design-right {
+  #design-right {
     width: 320px;
     height: 100%;
-    border-left: solid 1px #e6e9ec;
   }
 
   .switcher {

@@ -189,7 +189,7 @@
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, ref} from "vue";
+import {computed, defineComponent, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import { QuestionCircleOutlined,ImportOutlined, MoreOutlined, ClearOutlined, PlusOutlined,
@@ -223,7 +223,13 @@ export default defineComponent({
     const validExtractorVariablesData = computed(() => store.state.Interface.validExtractorVariablesData);
 
     store.dispatch('EnvironmentData/listEnvironment')
-    store.dispatch('EnvironmentData/getEnvironment', {id: 0, projectId: currProject.value.id})
+    if (currProject.value.id)
+      store.dispatch('EnvironmentData/getEnvironment', {id: 0, projectId: currProject.value.id})
+
+    watch(currProject, () => {
+      console.log('watch currProject', currProject.value.id)
+      store.dispatch('EnvironmentData/getEnvironment', {id: 0, projectId: currProject.value.id})
+    }, {deep: false})
 
     const envEditVisible = ref(false)
     const modelId = ref(0)

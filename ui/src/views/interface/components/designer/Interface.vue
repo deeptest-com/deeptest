@@ -50,7 +50,7 @@ import debounce from "lodash.debounce";
 
     const resize = () => {
       resizeHeight('designer-interface-main', 'top-panel', 'design-splitter-v', 'bottom-panel',
-          200, 100, 50)
+          200, 100)
     }
 </script>
 

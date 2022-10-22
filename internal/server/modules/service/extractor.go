@@ -2,11 +2,10 @@ package service
 
 import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/query"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/business"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/helper/request"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
@@ -15,9 +14,8 @@ import (
 )
 
 type ExtractorService struct {
-	ExtractorRepo *repo.ExtractorRepo   `inject:""`
-	InterfaceRepo *repo.InterfaceRepo   `inject:""`
-	ExecContext   *business.ExecContext `inject:""`
+	ExtractorRepo *repo.ExtractorRepo `inject:""`
+	InterfaceRepo *repo.InterfaceRepo `inject:""`
 }
 
 func (s *ExtractorService) List(interfaceId int) (extractors []model.InterfaceExtractor, err error) {
@@ -73,16 +71,7 @@ func (s *ExtractorService) Extract(extractor model.InterfaceExtractor, resp v1.I
 
 	s.ExtractValue(&extractor, resp)
 
-	if interfaceExecLog == nil { // run by interface
-		s.ExtractorRepo.UpdateResult(extractor)
-
-	} else { // run by processor
-		s.ExecContext.SetVariable(interfaceExecLog.ProcessorId, extractor.Variable, extractor.Result,
-			extractor.Scope)
-
-		logExtractor, err = s.ExtractorRepo.UpdateResultToExecLog(extractor, interfaceExecLog)
-
-	}
+	s.ExtractorRepo.UpdateResult(extractor)
 
 	return
 }
@@ -90,28 +79,29 @@ func (s *ExtractorService) Extract(extractor model.InterfaceExtractor, resp v1.I
 func (s *ExtractorService) ExtractValue(extractor *model.InterfaceExtractor, resp v1.InvocationResponse) (err error) {
 	if extractor.Disabled {
 		extractor.Result = ""
+		return
+	}
+
+	if extractor.Src == consts.Header {
+		for _, h := range resp.Headers {
+			if h.Name == extractor.Key {
+				extractor.Result = h.Value
+				break
+			}
+		}
 	} else {
-		if extractor.Src == consts.Header {
-			for _, h := range resp.Headers {
-				if h.Name == extractor.Key {
-					extractor.Result = h.Value
-					break
-				}
-			}
-		} else {
-			if requestHelper.IsJsonContent(resp.ContentType.String()) && extractor.Type == consts.JsonQuery {
-				extractor.Result = queryHelper.JsonQuery(resp.Content, extractor.Expression)
+		if utils.IsJsonContent(resp.ContentType.String()) && extractor.Type == consts.JsonQuery {
+			extractor.Result = queryHelper.JsonQuery(resp.Content, extractor.Expression)
 
-			} else if requestHelper.IsHtmlContent(resp.ContentType.String()) && extractor.Type == consts.HtmlQuery {
-				extractor.Result = queryHelper.HtmlQuery(resp.Content, extractor.Expression)
+		} else if utils.IsHtmlContent(resp.ContentType.String()) && extractor.Type == consts.HtmlQuery {
+			extractor.Result = queryHelper.HtmlQuery(resp.Content, extractor.Expression)
 
-			} else if requestHelper.IsXmlContent(resp.ContentType.String()) && extractor.Type == consts.XmlQuery {
-				extractor.Result = queryHelper.XmlQuery(resp.Content, extractor.Expression)
+		} else if utils.IsXmlContent(resp.ContentType.String()) && extractor.Type == consts.XmlQuery {
+			extractor.Result = queryHelper.XmlQuery(resp.Content, extractor.Expression)
 
-			} else if extractor.Type == consts.Boundary {
-				extractor.Result = queryHelper.BoundaryQuery(resp.Content, extractor.BoundaryStart, extractor.BoundaryEnd,
-					extractor.BoundaryIndex, extractor.BoundaryIncluded)
-			}
+		} else if extractor.Type == consts.Boundary {
+			extractor.Result = queryHelper.BoundaryQuery(resp.Content, extractor.BoundaryStart, extractor.BoundaryEnd,
+				extractor.BoundaryIndex, extractor.BoundaryIncluded)
 		}
 	}
 

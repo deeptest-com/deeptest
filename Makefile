@@ -1,56 +1,234 @@
-VERSION=1.0.0
+VERSION=0.8
 PROJECT=deeptest
-PACKAGE=${PROJECT}-${VERSION}
-BINARY=deeptest
-BIN_DIR=bin
-BIN_ZIP_DIR=${BIN_DIR}/zip/${PROJECT}/${VERSION}/
-BIN_ZIP_RELAT=../../../zip/${PROJECT}/${VERSION}/
-BIN_OUT=${BIN_DIR}/${PROJECT}/${VERSION}/
-BIN_WIN64=${BIN_OUT}win64/zagent-server/
-BIN_WIN32=${BIN_OUT}win32/zagent-server/
-BIN_LINUX=${BIN_OUT}linux/zagent-server/
-BIN_MAC=${BIN_OUT}mac/zagent-server/
 
-default: prepare_res compile_all copy_files package
+ifeq ($(OS),Windows_NT)
+    PLATFORM="windows"
+else
+    ifeq ($(shell uname),Darwin)
+        PLATFORM="mac"
+    else
+        PLATFORM="unix"
+    endif
+endif
 
-win64: prepare_res compile_win64 copy_files package
-win32: prepare_res compile_win32 copy_files package
-linux: prepare_res compile_linux copy_files package
-mac: prepare_res compile_mac copy_files package
+ifeq ($(PLATFORM),"mac")
+    QINIU_DIR=~/work/zentao/qiniu/
+else
+    QINIU_DIR=~/deeptestZip
+endif
+
+QINIU_DIST_DIR=${QINIU_DIR}${PROJECT}/${VERSION}/
+
+SERVER_MAIN_FILE=cmd/server/main.go
+AGENT_MAIN_FILE=cmd/agent/main.go
+
+SERVER_BIN_DIR=bin/
+CLIENT_BIN_DIR=client/bin/
+CLIENT_OUT_DIR=client/out/
+
+BUILD_TIME=`git show -s --format=%cd`
+GO_VERSION=`go version`
+GIT_HASH=`git show -s --format=%H`
+BUILD_CMD_UNIX=go build -ldflags "-X 'main.AppVersion=${VERSION}' -X 'main.BuildTime=${BUILD_TIME}' -X 'main.GoVersion=${GO_VERSION}' -X 'main.GitHash=${GIT_HASH}'"
+BUILD_CMD_WIN=go build -ldflags "-s -w -X 'main.AppVersion=${VERSION}' -X 'main.BuildTime=${BUILD_TIME}' -X 'main.GoVersion=${GO_VERSION}' -X 'main.GitHash=${GIT_HASH}'"
+
+default: win64 win32 linux mac
+
+win64: prepare build_gui_win64 compile_launcher_win64 compile_server_win64 copy_files_win64 zip_win64
+win32: prepare build_gui_win32 compile_launcher_win32 compile_server_win32 copy_files_win32 zip_win32
+linux: prepare build_gui_linux                        compile_server_linux copy_files_linux zip_linux
+mac:   prepare build_gui_mac                          compile_server_mac   copy_files_mac   zip_mac
+
+prepare: update_version prepare_res
+
+update_version: update_version_in_config gen_version_file
+
+update_version_in_config:
+ifeq ($(PLATFORM),"mac")
+    @gsed -i "s/Version.*/Version = ${VERSION}/" conf/ztf.conf
+else
+	@sed -i "s/Version.*/Version = ${VERSION}/" conf/ztf.conf
+endif
+
+gen_version_file:
+	@echo 'gen version'
+	@mkdir -p ${QINIU_DIR}/${PROJECT}/
+	@echo ${VERSION} > ${QINIU_DIR}/${PROJECT}/version.txt
+
+compile_ui:
+	@cd ui && yarn build --dest ../client/ui && cd ..
 
 prepare_res:
 	@echo 'start prepare res'
+	@rm -rf res/res.go
 	@go-bindata -o=res/res.go -pkg=res res/...
-	@rm -rf ${BIN_DIR}
 
-compile_all: compile_win64 compile_win32 compile_linux compile_mac
-
-compile_win64:
+# server
+compile_server_win64:
 	@echo 'start compile win64'
-	@CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o ${BIN_WIN64}zagent-server.exe cmd/server/main.go
+	@CGO_ENABLED=1 CC=x86_64-w64-mingw32-gcc CXX=x86_64-w64-mingw32-g++ GOOS=windows GOARCH=amd64 \
+		${BUILD_CMD_WIN} -x -v \
+		-o ${SERVER_BIN_DIR}win64/${PROJECT}.exe ${SERVER_MAIN_FILE}
 
-compile_win32:
+compile_server_win32:
 	@echo 'start compile win32'
-	@CGO_ENABLED=0 GOOS=windows GOARCH=386 go build -o ${BIN_WIN32}zagent-server.exe cmd/server/main.go
+	@CGO_ENABLED=1 CC=i686-w64-mingw32-gcc CXX=i686-w64-mingw32-g++ GOOS=windows GOARCH=386 \
+		${BUILD_CMD_WIN} -x -v \
+		-o ${SERVER_BIN_DIR}win32/${PROJECT}.exe ${SERVER_MAIN_FILE}
 
-compile_linux:
+compile_server_linux:
 	@echo 'start compile linux'
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ${BIN_LINUX}zagent-server cmd/server/main.go
+ifeq ($(PLATFORM),"Mac")
+	@CGO_ENABLED=1 GOOS=linux GOARCH=amd64 CC=/usr/local/gcc-4.8.1-for-linux64/bin/x86_64-pc-linux-gcc CXX=/usr/local/gcc-4.8.1-for-linux64/bin/x86_64-pc-linux-g++ \
+		${BUILD_CMD_UNIX} \
+		-o ${SERVER_BIN_DIR}linux/${PROJECT} ${SERVER_MAIN_FILE}
+else
+	CGO_ENABLED=1 GOOS=linux GOARCH=amd64 CC=gcc CXX=g++ \
+		${BUILD_CMD_UNIX} \
+		-o ${SERVER_BIN_DIR}linux/${PROJECT} ${SERVER_MAIN_FILE}
+endif
 
-compile_mac:
+compile_server_mac:
+	@echo 'start compile darwin'
+	@echo
+	@CGO_ENABLED=1 GOOS=darwin GOARCH=amd64 \
+		${BUILD_CMD_UNIX} \
+		-o ${SERVER_BIN_DIR}darwin/${PROJECT} ${SERVER_MAIN_FILE}
+
+# launcher
+compile_launcher_win64:
+	@echo 'start compile win64 launcher'
+	@cd cmd/launcher && \
+        CC=x86_64-w64-mingw32-gcc CXX=x86_64-w64-mingw32-g++ GOOS=windows GOARCH=amd64 \
+		${BUILD_CMD_WIN} -x -v \
+		-o ../../${SERVER_BIN_DIR}win64/${PROJECT}-gui.exe && \
+		cd ..
+
+compile_launcher_win32:
+	@echo 'start compile win32 launcher'
+	@cd cmd/launcher && \
+        CC=i686-w64-mingw32-gcc CXX=i686-w64-mingw32-g++ GOOS=windows GOARCH=386 \
+		${BUILD_CMD_WIN} -x -v \
+		-o ../../${SERVER_BIN_DIR}win32/${PROJECT}-gui.exe && \
+        cd ..
+
+# gui
+build_gui_win64: compile_gui_win64 package_gui_win64_client
+compile_gui_win64:
+	@echo 'start compile win64'
+	@rm -rf ./${CLIENT_BIN_DIR}/*
+	@CGO_ENABLED=1 CC=x86_64-w64-mingw32-gcc CXX=x86_64-w64-mingw32-g++ GOOS=windows GOARCH=amd64 \
+		${BUILD_CMD_WIN} -x -v \
+		-o ${CLIENT_BIN_DIR}win32/${PROJECT}.exe ${AGENT_MAIN_FILE}
+package_gui_win64_client:
+	@cd client && npm run package-win64 && cd ..
+	@rm -rf ${CLIENT_OUT_DIR}win64 && mkdir ${CLIENT_OUT_DIR}win64 && \
+		mv ${CLIENT_OUT_DIR}${PROJECT}-win32-x64 ${CLIENT_OUT_DIR}win64/gui
+
+build_gui_win32: compile_gui_win32 package_gui_win32_client
+compile_gui_win32:
+	@echo 'start compile win32'
+	@rm -rf ./${CLIENT_BIN_DIR}/*
+	@CGO_ENABLED=1 CC=i686-w64-mingw32-gcc CXX=i686-w64-mingw32-g++ GOOS=windows GOARCH=386 \
+		${BUILD_CMD_WIN} -x -v \
+		-o ${CLIENT_BIN_DIR}win32/${PROJECT}.exe ${AGENT_MAIN_FILE}
+package_gui_win32_client:
+	@cd client && npm run package-win32 && cd ..
+	@rm -rf ${CLIENT_OUT_DIR}win32 && mkdir ${CLIENT_OUT_DIR}win32 && \
+		mv ${CLIENT_OUT_DIR}${PROJECT}-win32-ia32 ${CLIENT_OUT_DIR}win32/gui
+
+build_gui_linux: compile_gui_linux package_gui_linux_client
+compile_gui_linux:
+	@echo 'start compile linux'
+	@rm -rf ./${CLIENT_BIN_DIR}/*
+ifeq ($(PLATFORM),"mac")
+	CGO_ENABLED=1 GOOS=linux GOARCH=amd64 CC=/usr/local/gcc-4.8.1-for-linux64/bin/x86_64-pc-linux-gcc CXX=/usr/local/gcc-4.8.1-for-linux64/bin/x86_64-pc-linux-g++ \
+		${BUILD_CMD_UNIX} \
+		-o ${CLIENT_BIN_DIR}linux/${PROJECT} ${AGENT_MAIN_FILE}
+else
+	CGO_ENABLED=1 GOOS=linux GOARCH=amd64 CC=gcc CXX=g++ \
+		${BUILD_CMD_UNIX} \
+		-o ${CLIENT_BIN_DIR}linux/${PROJECT} ${AGENT_MAIN_FILE}
+endif
+package_gui_linux_client:
+	@cd client && npm run package-linux && cd ..
+	@rm -rf ${CLIENT_OUT_DIR}linux && mkdir ${CLIENT_OUT_DIR}linux && \
+		mv ${CLIENT_OUT_DIR}${PROJECT}-linux-x64 ${CLIENT_OUT_DIR}linux/gui
+
+build_gui_mac: compile_gui_mac package_gui_mac_client
+compile_gui_mac:
 	@echo 'start compile mac'
-	@CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o ${BIN_MAC}zagent-server cmd/server/main.go
+	@rm -rf ./${CLIENT_BIN_DIR}/*
+	@echo
+	@CGO_ENABLED=1 GOOS=darwin GOARCH=amd64 \
+		${BUILD_CMD_UNIX} \
+		-o ${CLIENT_BIN_DIR}darwin/${PROJECT} ${AGENT_MAIN_FILE}
+package_gui_mac_client:
+	@cd client && npm run package-mac && cd ..
+	@rm -rf ${CLIENT_OUT_DIR}darwin && mkdir ${CLIENT_OUT_DIR}darwin && \
+		mv ${CLIENT_OUT_DIR}${PROJECT}-darwin-x64 ${CLIENT_OUT_DIR}darwin/gui && \
+		mv ${CLIENT_OUT_DIR}darwin/gui/${PROJECT}.app ${CLIENT_OUT_DIR}darwin/${PROJECT}.app && rm -rf ${CLIENT_OUT_DIR}darwin/gui
 
-copy_files:
-	@echo 'start copy files'
-	@cp -r {cmd/server/server.yml,cmd/server/perms.yml,cmd/server/rbac_model.conf} bin
-	@for subdir in `ls ${BIN_OUT}`; \
-	    do cp -r {bin/server.yml,bin/perms.yml,bin/rbac_model.conf} "${BIN_OUT}$${subdir}/zagent-server"; done
+# copy files
+copy_files_win64:
+	@echo 'start copy files win64'
+	cp ${CLIENT_BIN_DIR}win64/* "${CLIENT_OUT_DIR}win64"
 
-package:
-	@echo 'start package'
+copy_files_win32:
+	@echo 'start copy files win32'
+	cp ${CLIENT_BIN_DIR}win32/* "${CLIENT_OUT_DIR}win32"
+
+copy_files_linux:
+	@echo 'start copy files linux'
+	cp ${CLIENT_BIN_DIR}linux/* "${CLIENT_OUT_DIR}linux"
+
+copy_files_mac:
+	@echo 'start copy files darwin'
+	cp ${CLIENT_BIN_DIR}darwin/* "${CLIENT_OUT_DIR}darwin"
+
+# zip files
+zip_win64:
+	@echo 'start zip win64'
 	@find . -name .DS_Store -print0 | xargs -0 rm -f
-	@for subdir in `ls ${BIN_OUT}`; do mkdir -p ${BIN_DIR}/zip/${PROJECT}/${VERSION}/$${subdir}; done
+	@mkdir -p ${QINIU_DIST_DIR}win64 && rm -rf ${QINIU_DIST_DIR}win64/${PROJECT}.zip
+	@cd ${CLIENT_OUT_DIR}win64 && \
+		zip -ry ${QINIU_DIST_DIR}win64/${PROJECT}.zip ./* && \
+		md5sum ${QINIU_DIST_DIR}win64/${PROJECT}.zip | awk '{print $$1}' | \
+			xargs echo > ${QINIU_DIST_DIR}win64/${PROJECT}.zip.md5 && \
+        cd ../..; \
 
-	@cd ${BIN_OUT} && \
-		for subdir in `ls ./`; do cd $${subdir} && zip -r ${BIN_ZIP_RELAT}$${subdir}/${BINARY}.zip "${BINARY}" && cd ..; done
+zip_win32:
+	@echo 'start zip win32'
+	@find . -name .DS_Store -print0 | xargs -0 rm -f
+	@mkdir -p ${QINIU_DIST_DIR}win32 && rm -rf ${QINIU_DIST_DIR}win32/${PROJECT}.zip
+	@cd ${CLIENT_OUT_DIR}win32 && \
+		zip -ry ${QINIU_DIST_DIR}win32/${PROJECT}.zip ./* && \
+		md5sum ${QINIU_DIST_DIR}win32/${PROJECT}.zip | awk '{print $$1}' | \
+			xargs echo > ${QINIU_DIST_DIR}win32/${PROJECT}.zip.md5 && \
+        cd ../..; \
+
+zip_linux:
+	@echo 'start zip linux'
+	@find . -name .DS_Store -print0 | xargs -0 rm -f
+	@mkdir -p ${QINIU_DIST_DIR}linux && rm -rf ${QINIU_DIST_DIR}linux/${PROJECT}.zip
+	@cd ${CLIENT_OUT_DIR}linux && \
+		zip -ry ${QINIU_DIST_DIR}linux/${PROJECT}.zip ./* && \
+		md5sum ${QINIU_DIST_DIR}linux/${PROJECT}.zip | awk '{print $$1}' | \
+			xargs echo > ${QINIU_DIST_DIR}linux/${PROJECT}.zip.md5 && \
+        cd ../..; \
+
+zip_mac:
+	@echo 'start zip darwin'
+	@find . -name .DS_Store -print0 | xargs -0 rm -f
+	@mkdir -p ${QINIU_DIST_DIR}darwin && rm -rf ${QINIU_DIST_DIR}darwin/${PROJECT}.zip
+	@cd ${CLIENT_OUT_DIR}darwin && \
+		zip -ry ${QINIU_DIST_DIR}darwin/${PROJECT}.zip ./* && \
+		md5sum ${QINIU_DIST_DIR}darwin/${PROJECT}.zip | awk '{print $$1}' | \
+			xargs echo > ${QINIU_DIST_DIR}darwin/${PROJECT}.zip.md5 && \
+        cd ../..; \
+
+upload_to:
+	@echo 'upload...'
+	@find ${QINIU_DIR} -name ".DS_Store" -type f -delete
+	@qshell qupload2 --src-dir=${QINIU_DIR} --bucket=download --thread-count=10 --log-file=qshell.log \
+					 --skip-path-prefixes=zz,zd,zmanager,driver --rescan-local --overwrite --check-hash

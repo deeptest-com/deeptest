@@ -11,3 +11,5 @@ tmp/
 
 /static/upload/step/
 /deeptest.db
+/res/res.go
+/bin/

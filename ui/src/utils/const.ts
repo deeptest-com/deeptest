@@ -1,5 +1,8 @@
 import {ref} from "vue";
 
+export const NotificationKeyRequest = 'key_request'
+export const NotificationKeyCommon = 'key_common'
+
 export const EventNodeIdJson = 'deeptest-event-node-json'
 export const EventNameJson = 'deeptest-event-from-chrome-json'
 

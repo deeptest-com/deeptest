@@ -76,6 +76,7 @@ import {Methods} from "@/utils/enum";
 import {regxUrl} from "@/utils/validation";
 import {Interface} from "@/views/interface/data";
 import {prepareDataForRequest} from "@/views/interface/service";
+import {NotificationKeyCommon} from "@/utils/const";
 
 export default defineComponent({
   name: 'RequestInvocation',
@@ -154,6 +155,7 @@ export default defineComponent({
 
       if (msg) {
         notification.warn({
+          key: NotificationKeyCommon,
           message: msg,
           placement: 'bottomLeft'
         });

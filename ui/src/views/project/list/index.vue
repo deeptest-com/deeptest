@@ -58,6 +58,7 @@ import {StateType} from "../store";
 import debounce from "lodash.debounce";
 import {useRouter} from "vue-router";
 import {message, Modal, notification} from "ant-design-vue";
+import {NotificationKeyCommon} from "@/utils/const";
 
 export default defineComponent({
   name: 'ProjectListPage',
@@ -157,10 +158,12 @@ export default defineComponent({
             console.log('res', res)
             if (res === true) {
               notification.success({
+                key: NotificationKeyCommon,
                 message: `删除成功`,
               });
             } else {
               notification.error({
+                key: NotificationKeyCommon,
                 message: `删除失败`,
               });
             }

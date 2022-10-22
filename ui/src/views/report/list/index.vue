@@ -64,6 +64,7 @@ import {StateType as ScenarioStateType} from "@/views/scenario/store";
 import {StateType} from "@/views/report/store";
 import {PaginationConfig, QueryParams, Report} from "@/views/report/data";
 import {query} from "@/views/scenario/service";
+import {NotificationKeyCommon} from "@/utils/const";
 
 const router = useRouter();
 const store = useStore<{ Report: StateType, Scenario: ScenarioStateType, ProjectData: ProjectStateType }>();
@@ -155,10 +156,12 @@ const remove = (id: number) => {
         console.log('res', res)
         if (res === true) {
           notification.success({
+            key: NotificationKeyCommon,
             message: `删除成功`,
           });
         } else {
           notification.error({
+            key: NotificationKeyCommon,
             message: `删除失败`,
           });
         }

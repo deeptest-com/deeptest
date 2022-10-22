@@ -39,6 +39,7 @@ import {message, Form, notification} from 'ant-design-vue';
 const useForm = Form.useForm;
 import {StateType} from "../store";
 import {Project} from "@/views/project/data";
+import {NotificationKeyCommon} from "@/utils/const";
 
 interface EditProjectPageSetupData {
   formRef: any
@@ -88,11 +89,13 @@ export default defineComponent({
                 console.log('res', res)
                 if (res === true) {
                   notification.success({
+                    key: NotificationKeyCommon,
                     message: `保存成功`,
                   });
                   router.replace('/project/index')
                 } else {
                   notification.success({
+                    key: NotificationKeyCommon,
                     message: `保存失败`,
                   });
                 }

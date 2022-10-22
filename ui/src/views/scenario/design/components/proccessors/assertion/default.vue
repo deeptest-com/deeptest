@@ -32,6 +32,7 @@ import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import {StateType as ScenarioStateType} from "@/views/scenario/store";
 import {getCompareOpts} from "@/utils/compare";
+import {NotificationKeyCommon} from "@/utils/const";
 
 const useForm = Form.useForm;
 
@@ -57,10 +58,12 @@ const submitForm = async () => {
         store.dispatch('Scenario/saveProcessor', modelRef.value).then((res) => {
           if (res === true) {
             notification.success({
+              key: NotificationKeyCommon,
               message: `保存成功`,
             });
           } else {
             notification.error({
+              key: NotificationKeyCommon,
               message: `保存失败`,
             });
           }

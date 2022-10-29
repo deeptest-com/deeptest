@@ -12,6 +12,7 @@ import (
 	"github.com/kataras/iris/v12"
 	"github.com/rs/zerolog/log"
 	"go.uber.org/zap"
+	"gopkg.in/yaml.v3"
 	"strings"
 )
 
@@ -165,8 +166,15 @@ func (c *InterfaceCtrl) ImportSpecFromContent(ctx iris.Context) {
 		return
 	}
 
-	jsn, _ := json.Marshal(req)
-	log.Print(targetId, jsn)
+	if req.Type == "postman" {
+		mp := iris.Map{}
+		yaml.Unmarshal([]byte(req.Content), &mp)
+		log.Print(targetId, mp)
+	} else {
+		mp := iris.Map{}
+		json.Unmarshal([]byte(req.Content), &mp)
+		log.Print(targetId, mp)
+	}
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: nil, Msg: _domain.NoErr.Msg})
 
@@ -186,8 +194,9 @@ func (c *InterfaceCtrl) ImportSpecFromForm(ctx iris.Context) {
 	pth, err := c.FileService.UploadFile(ctx, fh, "spec")
 
 	content := _fileUtils.ReadFileBuf(pth)
-	jsn, _ := json.Marshal(content)
-	log.Print(targetId, jsn)
+	mp := iris.Map{}
+	json.Unmarshal(content, &mp)
+	log.Print(targetId, mp)
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: nil, Msg: _domain.NoErr.Msg})
 

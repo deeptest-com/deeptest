@@ -1,5 +1,5 @@
 import {app, BrowserWindow, ipcMain, Menu, shell, dialog, globalShortcut} from 'electron';
-
+const path = require('path');
 import {DEBUG, electronMsg, electronMsgReplay, minimumSizeHeight, minimumSizeWidth} from './utils/consts';
 import {IS_MAC_OSX, IS_LINUX, IS_WINDOWS_OS} from './utils/env';
 import {logInfo, logErr} from './utils/log';
@@ -64,9 +64,9 @@ export class DeepTestApp {
         await mainWin.loadURL(url);
 
         ipcMain.on(electronMsg, (event, arg) => {
-            logInfo('msg from renderer: ' + arg)
+            logInfo('msg from renderer: ' + arg.act + ', ' + arg.type)
 
-            if (arg.act == 'importSpec') {
+            if (arg.act == 'selectSpec') {
                 this.showSpecSelection(event, arg)
                 return
             }
@@ -167,6 +167,8 @@ export class DeepTestApp {
     }
 
     showSpecSelection(event, arg) {
+        console.log('showSpecSelection')
+
         dialog.showOpenDialog({
             properties: ['openFile']
         }).then(result => {
@@ -197,6 +199,8 @@ export class DeepTestApp {
     }
 
     replyOpenApiSpec(event, result, arg)  {
+        console.log(`replyOpenApiSpec`)
+
         if (!result.filePaths || result.filePaths.length == 0) return
 
         const file = result.filePaths[0]

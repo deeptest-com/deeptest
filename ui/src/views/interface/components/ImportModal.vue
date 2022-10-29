@@ -67,7 +67,7 @@ export default defineComponent({
       console.log('selectFile')
 
       const { ipcRenderer } = window.require('electron')
-      ipcRenderer.send(settings.electronMsg, {act: 'importSpec', type: modelRef.value.type})
+      ipcRenderer.send(settings.electronMsg, {act: 'selectSpec', type: modelRef.value.type})
 
       ipcRenderer.on(settings.electronMsgReplay, (event, data) => {
         console.log('from electron: ', data)

@@ -28,14 +28,14 @@ npm run start
 * `UI_SERVER_PORT`：DeepTest UI 服务端口，如果不指定则使用 `8000`；
 * `SERVER_EXE_PATH`：DeepTest 服务可执行文件位置（相对于 `/client` 目录），如果不指定则会自动进入 `../cmd/server/` 目录下执行 `go run main.go -p 8085` 启动 DeepTest 服务器。
 * `SERVER_CWD_PATH`：DeepTest 服务运行目录；
-* `SKIP_SERVER`：跳过启动 DeepTest 服务，适用于 DeepTest 服务已经在外部启动的情况。
+* `SKIP_AGENT_SERVER`：跳过启动Agent服务，适用于Agent服务已经在外部启动的情况。
 
 ### 特殊调试模式
 
 **模式一：使用外部 UI 服务**
 
 ```
-SKIP_SERVER=1 UI_SERVER_URL=http://localhost:8000 npm run start
+SKIP_AGENT_SERVER=1 UI_SERVER_URL=http://localhost:8000 npm run start
 ```
 
 **模式二：使用本地 UI 静态文件目录**
@@ -53,13 +53,13 @@ SERVER_EXE_PATH=bin/darwin/deeptest npm run start
 **模式四：跳过启动 DeepTest 服务，使用外部 DeepTest 服务**
 
 ```
-SKIP_SERVER=1 npm run start
+SKIP_AGENT_SERVER=1 npm run start
 ```
 
 **模式五：综合使用外部 UI 服务和外部 DeepTest 服务**
 
 ```
-UI_SERVER_URL=http://localhost:8000 SKIP_SERVER=1 npm run start
+UI_SERVER_URL=http://localhost:8000 SKIP_AGENT_SERVER=1 npm run start
 ```
 
 ## 代码检查

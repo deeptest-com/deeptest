@@ -1,13 +1,26 @@
 package main
 
 import (
+	"flag"
 	"github.com/aaronchen2k/deeptest/cmd/agent/agent"
 	v1 "github.com/aaronchen2k/deeptest/cmd/agent/v1"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/cron"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/websocket"
+	_consts "github.com/aaronchen2k/deeptest/pkg/consts"
 	"github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/facebookgo/inject"
+	"github.com/fatih/color"
 	"github.com/sirupsen/logrus"
+)
+
+var (
+	AppVersion string
+	BuildTime  string
+	GoVersion  string
+	GitHash    string
+
+	flagSet *flag.FlagSet
 )
 
 // @title DeepTest代理API文档
@@ -16,6 +29,11 @@ import (
 // @contact.url https://github.com/aaronchen2k/deeptest/issues
 // @contact.email 462626@qq.com
 func main() {
+	flagSet = flag.NewFlagSet("deeptest", flag.ContinueOnError)
+
+	flagSet.IntVar(&consts.Port, "p", 0, "")
+	flagSet.BoolVar(&_consts.Verbose, "verbose", false, "")
+
 	websocketHelper.InitMq()
 
 	server := agent.Init()
@@ -50,4 +68,12 @@ func injectModule(ws *agent.WebServer) {
 	ws.AddModule(indexModule.Party())
 
 	_logUtils.Infof("start agent")
+}
+
+func init() {
+	cleanup()
+}
+
+func cleanup() {
+	color.Unset()
 }

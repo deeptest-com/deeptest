@@ -17,6 +17,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"net/http"
 	"path/filepath"
+	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -81,6 +82,11 @@ func Init() *WebServer {
 	websocketServer := websocket.New(
 		gorilla.Upgrader(gorillaWs.Upgrader{CheckOrigin: func(*http.Request) bool { return true }}), m)
 	websocketAPI.Get("/", websocket.Handler(websocketServer))
+
+	if consts.Port != 0 {
+		serverConfig.CONFIG.System.AgentAddress =
+			fmt.Sprintf("%s:%d", strings.Split(serverConfig.CONFIG.System.AgentAddress, ":")[0], consts.Port)
+	}
 
 	return &WebServer{
 		app:               app,

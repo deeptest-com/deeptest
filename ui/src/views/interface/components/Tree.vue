@@ -62,6 +62,13 @@
       </div>
     </div>
 
+    <ImportModal
+        v-if="showImport"
+        :isVisible="showImport"
+        :submit="importSpec"
+        :cancel="importClose"
+    />
+
   </div>
 </template>
 
@@ -80,6 +87,7 @@ import {StateType} from "@/views/interface/store";
 import {StateType as ProjectStateType} from "@/store/project";
 
 import TreeContextMenu from "./TreeContextMenu.vue";
+import ImportModal from "./ImportModal.vue";
 import {getExpandedKeys, setExpandedKeys} from "@/utils/cache";
 import {getContextMenuStyle} from "@/utils/dom";
 
@@ -89,7 +97,7 @@ export default defineComponent({
   name: 'InterfaceTree',
   props: {},
   components: {
-    TreeContextMenu,
+    TreeContextMenu, ImportModal,
     CloseOutlined, FileOutlined, FolderOutlined, FolderOpenOutlined, CheckOutlined,
   },
   setup(props) {
@@ -252,6 +260,11 @@ export default defineComponent({
       console.log('menuClick', menuKey, targetId)
       targetModelId = targetId
 
+      if (menuKey === 'export_spec') {
+        showImport.value = true
+        return
+      }
+
       if (menuKey === 'rename') {
         renameNode()
         return
@@ -330,6 +343,16 @@ export default defineComponent({
       store.dispatch('Interface/moveInterface', {dragKey: dragKey, dropKey: dropKey, dropPos: dropPosition});
     }
 
+    const showImport = ref(false)
+    const importSpec = () => {
+      console.log('importSpec')
+
+    }
+    const importClose = () => {
+      console.log('showImportClose')
+      showImport.value = false
+    }
+
     let currentInstance
     onMounted(() => {
       console.log('onMounted')
@@ -368,6 +391,10 @@ export default defineComponent({
 
       updateName,
       cancelUpdate,
+
+      showImport,
+      importSpec,
+      importClose,
 
       tips,
     }

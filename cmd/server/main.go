@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"github.com/aaronchen2k/deeptest/cmd/server/server"
 	"github.com/aaronchen2k/deeptest/cmd/server/v1"
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/cron"
@@ -8,7 +9,20 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	"github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/facebookgo/inject"
+	"github.com/fatih/color"
 	"github.com/sirupsen/logrus"
+	"os"
+	"os/signal"
+	"syscall"
+)
+
+var (
+	AppVersion string
+	BuildTime  string
+	GoVersion  string
+	GitHash    string
+
+	flagSet *flag.FlagSet
 )
 
 // @title DeepTest服务端API文档
@@ -17,6 +31,14 @@ import (
 // @contact.url https://github.com/aaronchen2k/deeptest/issues
 // @contact.email 462626@qq.com
 func main() {
+	channel := make(chan os.Signal)
+	signal.Notify(channel, os.Interrupt, syscall.SIGTERM)
+	go func() {
+		<-channel
+		cleanup()
+		os.Exit(0)
+	}()
+
 	websocketHelper.InitMq()
 
 	server := server.Init()
@@ -52,4 +74,12 @@ func injectModule(ws *server.WebServer) {
 	ws.AddModule(indexModule.Party())
 
 	_logUtils.Infof("start server")
+}
+
+func init() {
+	cleanup()
+}
+
+func cleanup() {
+	color.Unset()
 }

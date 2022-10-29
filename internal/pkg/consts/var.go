@@ -8,4 +8,6 @@ var (
 	IsRelease bool
 	ExecDir   string
 	WorkDir   string
+
+	Port int
 )

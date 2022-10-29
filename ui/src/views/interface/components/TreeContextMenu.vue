@@ -31,6 +31,11 @@
         <span v-if="treeNode.isDir">删除目录</span>
         <span v-if="!treeNode.isDir">删除节点</span>
       </a-menu-item>
+
+      <a-menu-item key="export_spec" class="menu-item">
+        <PlusOutlined />
+        <span>导入...</span>
+      </a-menu-item>
     </a-menu>
   </div>
 </template>

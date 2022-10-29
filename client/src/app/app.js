@@ -72,6 +72,10 @@ export class DeepTestApp {
                 case 'selectFile':
                     this.showFileSelection(event)
                     break;
+                case 'importSpec': {
+                    this.showFileSelection(event, true)
+                    break;
+                }
 
                 case 'fullScreen':
                     mainWin.setFullScreen(!mainWin.isFullScreen());
@@ -160,11 +164,18 @@ export class DeepTestApp {
         });
     }
 
-    showFileSelection(event) {
+    showFileSelection(event, isOpenApi) {
         dialog.showOpenDialog({
             properties: ['openFile']
         }).then(result => {
-            this.reply(event, result)
+            if (isOpenApi) {
+                console.log('convert', result)
+
+                event.replySpec(electronMsgReplay, result);
+
+            } else {
+                this.replyFile(event, result)
+            }
         }).catch(err => {
             logErr(err)
         })
@@ -174,13 +185,21 @@ export class DeepTestApp {
         dialog.showOpenDialog({
             properties: ['openDirectory']
         }).then(result => {
-            this.reply(event, result)
+            this.replyFile(event, result)
         }).catch(err => {
             logErr(err)
         })
     }
 
-    reply(event, result)  {
+    replySpec(event, result)  {
+        if (result.filePaths && result.filePaths.length > 0) {
+            const file = result.filePaths[0]
+
+            event.reply(electronMsgReplay, {path: file, spec: 'converted spec'});
+        }
+    }
+
+    replyFile(event, result)  {
         if (result.filePaths && result.filePaths.length > 0) {
             event.reply(electronMsgReplay, result.filePaths[0]);
         }

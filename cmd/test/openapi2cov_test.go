@@ -27,6 +27,7 @@ func TestConvOpenAPIV2ToV3(t *testing.T) {
 	err = doc3.Validate(context.Background())
 	require.NoError(t, err)
 	data, err := json.MarshalIndent(doc3, "", "\t")
+
 	require.NoError(t, err)
 	require.JSONEq(t, exampleV3, string(data))
 

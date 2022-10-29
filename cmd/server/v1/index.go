@@ -24,6 +24,7 @@ type IndexModule struct {
 
 	ProjectModule     *router.ProjectModule     `inject:""`
 	InterfaceModule   *router.InterfaceModule   `inject:""`
+	ImportModule      *router.ImportModule      `inject:""`
 	InvocationModule  *router.InvocationModule  `inject:""`
 	AuthModule        *router.AuthModule        `inject:""`
 	EnvironmentModule *router.EnvironmentModule `inject:""`
@@ -64,6 +65,7 @@ func (m *IndexModule) Party() module.WebModule {
 
 		m.ProjectModule.Party(),
 		m.InterfaceModule.Party(),
+		m.ImportModule.Party(),
 		m.InvocationModule.Party(),
 		m.AuthModule.Party(),
 		m.EnvironmentModule.Party(),

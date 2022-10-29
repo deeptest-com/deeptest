@@ -24,9 +24,6 @@ func (m *InterfaceModule) Party() module.WebModule {
 		index.Put("/{id:uint}", m.InterfaceCtrl.Update).Name = "更新接口"
 		index.Put("/updateName", m.InterfaceCtrl.UpdateName).Name = "更新名称接口"
 
-		index.Post("/importSpecFromContent/{targetId:uint}", m.InterfaceCtrl.ImportSpecFromContent).Name = "从Electron客户端上传"
-		index.Post("/importSpecFromForm/{targetId:uint}", m.InterfaceCtrl.ImportSpecFromForm).Name = "使用网页测试上传"
-
 		index.Delete("/{id:uint}", m.InterfaceCtrl.Delete).Name = "删除接口"
 		index.Post("/move", m.InterfaceCtrl.Move).Name = "移动接口"
 	}

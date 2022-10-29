@@ -4,6 +4,7 @@ import {isInArray} from "@/utils/array";
 import {ComparisonOperator} from "@/utils/enum";
 
 const apiPath = 'interfaces';
+const apiPImport = 'import';
 const apiVocation = 'invocations';
 const apiAuth = 'auth';
 const apiEnvironment = 'environments'
@@ -75,15 +76,17 @@ export async function remove(id: number): Promise<any> {
 
 export async function importSpecFromContent(data, targetId): Promise<any> {
     return request({
-        url: `/${apiPath}/importSpecFromContent/${targetId}`,
+        url: `/${apiPImport}/importSpecFromContent`,
         method: 'POST',
+        params: {targetId: targetId, type: data.type},
         data: data,
     });
 }
 export async function importSpecFromForm(data, targetId): Promise<any> {
     return request({
-        url: `/${apiPath}/importSpecFromForm/${targetId}`,
+        url: `/${apiPImport}/importSpecFromForm/${targetId}`,
         method: 'POST',
+        params: {targetId: targetId, type: data.type},
         data: data.formData,
     });
 }

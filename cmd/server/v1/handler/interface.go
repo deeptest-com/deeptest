@@ -1,18 +1,14 @@
 package handler
 
 import (
-	"encoding/json"
 	domain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	commService "github.com/aaronchen2k/deeptest/internal/pkg/service"
 	"github.com/aaronchen2k/deeptest/internal/server/core/web/validate"
 	service "github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
-	_fileUtils "github.com/aaronchen2k/deeptest/pkg/lib/file"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/kataras/iris/v12"
-	"github.com/rs/zerolog/log"
 	"go.uber.org/zap"
-	"gopkg.in/yaml.v3"
 	"strings"
 )
 
@@ -153,54 +149,6 @@ func (c *InterfaceCtrl) UpdateName(ctx iris.Context) {
 	}
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: nil, Msg: _domain.NoErr.Msg})
-}
-
-func (c *InterfaceCtrl) ImportSpecFromContent(ctx iris.Context) {
-	targetId, _ := ctx.Params().GetInt("targetId")
-
-	req := domain.InterfaceImportReq{}
-	err := ctx.ReadJSON(&req)
-	if err != nil {
-		logUtils.Errorf("参数验证失败", err.Error())
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Data: nil, Msg: err.Error()})
-		return
-	}
-
-	if req.Type == "postman" {
-		mp := iris.Map{}
-		yaml.Unmarshal([]byte(req.Content), &mp)
-		log.Print(targetId, mp)
-	} else {
-		mp := iris.Map{}
-		json.Unmarshal([]byte(req.Content), &mp)
-		log.Print(targetId, mp)
-	}
-
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: nil, Msg: _domain.NoErr.Msg})
-
-	return
-}
-func (c *InterfaceCtrl) ImportSpecFromForm(ctx iris.Context) {
-	targetId, _ := ctx.Params().GetInt("targetId")
-
-	f, fh, err := ctx.FormFile("file")
-	if err != nil {
-		logUtils.Errorf("获取上传文件失败， %s。", err.Error())
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
-		return
-	}
-	defer f.Close()
-
-	pth, err := c.FileService.UploadFile(ctx, fh, "spec")
-
-	content := _fileUtils.ReadFileBuf(pth)
-	mp := iris.Map{}
-	json.Unmarshal(content, &mp)
-	log.Print(targetId, mp)
-
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: nil, Msg: _domain.NoErr.Msg})
-
-	return
 }
 
 // Delete 删除

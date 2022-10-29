@@ -13,3 +13,4 @@ tmp/
 /deeptest.db
 /res/res.go
 /bin/
+/xdoc/openapi/out/

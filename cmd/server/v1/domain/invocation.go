@@ -1,6 +1,7 @@
 package domain
 
 import (
+	agentExecDomain "github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 )
@@ -9,20 +10,7 @@ type InvocationRequest struct {
 	Id   uint   `gorm:"-" json:"id"`
 	Name string `json:"name"`
 
-	Method            consts.HttpMethod      `gorm:"default:GET" json:"method"`
-	Url               string                 `json:"url"`
-	Params            []domain.Param         `gorm:"-" json:"params"`
-	Headers           []domain.Header        `gorm:"-" json:"headers"`
-	Body              string                 `gorm:"default:{}" json:"body"`
-	BodyType          consts.HttpContentType `gorm:"default:json" json:"bodyType"`
-	AuthorizationType consts.AuthorType      `gorm:"default:''" json:"authorizationType"`
-	PreRequestScript  string                 `gorm:"default:''" json:"preRequestScript"`
-	ValidationScript  string                 `gorm:"default:''" json:"validationScript"`
-
-	BasicAuth   domain.BasicAuth   `gorm:"-" json:"basicAuth"`
-	BearerToken domain.BearerToken `gorm:"-" json:"bearerToken"`
-	OAuth20     domain.OAuth20     `gorm:"-" json:"oauth20"`
-	ApiKey      domain.ApiKey      `gorm:"-" json:"apiKey"`
+	agentExecDomain.BaseRequest
 
 	ProjectId uint `json:"projectId"`
 }

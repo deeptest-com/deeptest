@@ -45,11 +45,13 @@ func (s *ExecService) ExecScenario(req *agentExec.ExecReq, wsMsg *websocket.Mess
 func (s *ExecService) SubmitResult(result domain.Result, scenarioId uint, serverUrl, token string) (err error) {
 	bodyBytes, _ := json.Marshal(result)
 	req := domain.Request{
-		Url:               _httpUtils.AddSepIfNeeded(serverUrl) + fmt.Sprintf("scenarios/exec/submitResult/%d", scenarioId),
-		Body:              string(bodyBytes),
-		AuthorizationType: consts.BearerToken,
-		BearerToken: domain.BearerToken{
-			Token: token,
+		BaseRequest: domain.BaseRequest{
+			Url:               _httpUtils.AddSepIfNeeded(serverUrl) + fmt.Sprintf("scenarios/exec/submitResult/%d", scenarioId),
+			Body:              string(bodyBytes),
+			AuthorizationType: consts.BearerToken,
+			BearerToken: domain.BearerToken{
+				Token: token,
+			},
 		},
 	}
 	resp, err := utils.Post(req)

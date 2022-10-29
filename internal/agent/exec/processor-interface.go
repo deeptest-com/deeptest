@@ -40,7 +40,7 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (lo
 	}
 
 	variableMap := GetVariableMap(entity.ProcessorID)
-	ReplaceAll(&entity.Request, variableMap)
+	ReplaceAll(&entity.Request.BaseRequest, variableMap)
 
 	GetRequestProps(&entity.Request)
 	entity.Response, err = Invoke(entity.Request)

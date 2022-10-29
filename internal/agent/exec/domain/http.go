@@ -5,21 +5,7 @@ import (
 )
 
 type Request struct {
-	Method            consts.HttpMethod       `gorm:"default:GET" json:"method"`
-	Url               string                  `json:"url"`
-	Params            []Param                 ` json:"params"`
-	Headers           []Header                ` json:"headers"`
-	Body              string                  `gorm:"default:{}" json:"body"`
-	BodyType          consts.HttpContentType  `gorm:"default:json" json:"bodyType"`
-	BodyLang          consts.HttpRespLangType `gorm:"default:json" json:"bodyLang"`
-	AuthorizationType consts.AuthorType       `gorm:"default:''" json:"authorizationType"`
-	PreRequestScript  string                  `gorm:"default:''" json:"preRequestScript"`
-	ValidationScript  string                  `gorm:"default:''" json:"validationScript"`
-
-	BasicAuth   BasicAuth   ` json:"basicAuth"`
-	BearerToken BearerToken ` json:"bearerToken"`
-	OAuth20     OAuth20     ` json:"oauth20"`
-	ApiKey      ApiKey      ` json:"apiKey"`
+	BaseRequest
 
 	InterfaceID uint `json:"interfaceID"`
 	ProjectID   uint `json:"projectID"`
@@ -38,6 +24,24 @@ type Response struct {
 	ContentLength  int                     `json:"contentLength"`
 
 	Time int64 `json:"time"`
+}
+
+type BaseRequest struct {
+	Method            consts.HttpMethod       `gorm:"default:GET" json:"method"`
+	Url               string                  `json:"url"`
+	Params            []Param                 ` json:"params"`
+	Headers           []Header                ` json:"headers"`
+	Body              string                  `gorm:"default:{}" json:"body"`
+	BodyType          consts.HttpContentType  `gorm:"default:json" json:"bodyType"`
+	BodyLang          consts.HttpRespLangType `gorm:"default:json" json:"bodyLang"`
+	AuthorizationType consts.AuthorType       `gorm:"default:''" json:"authorizationType"`
+	PreRequestScript  string                  `gorm:"default:''" json:"preRequestScript"`
+	ValidationScript  string                  `gorm:"default:''" json:"validationScript"`
+
+	BasicAuth   BasicAuth   ` json:"basicAuth"`
+	BearerToken BearerToken ` json:"bearerToken"`
+	OAuth20     OAuth20     ` json:"oauth20"`
+	ApiKey      ApiKey      ` json:"apiKey"`
 }
 
 type Param struct {

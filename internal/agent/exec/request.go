@@ -81,7 +81,7 @@ func GetContentProps(resp *domain.Response) {
 	return
 }
 
-func ReplaceAll(req *domain.Request, variableMap map[string]interface{}) {
+func ReplaceAll(req *domain.BaseRequest, variableMap map[string]interface{}) {
 	expressionValueMap := map[string]interface{}{}
 
 	replaceUrl(req, variableMap, &expressionValueMap)
@@ -91,27 +91,27 @@ func ReplaceAll(req *domain.Request, variableMap map[string]interface{}) {
 	replaceAuthor(req, variableMap, &expressionValueMap)
 }
 
-func replaceUrl(req *domain.Request, variableMap map[string]interface{}, expressionValueMap *map[string]interface{}) {
+func replaceUrl(req *domain.BaseRequest, variableMap map[string]interface{}, expressionValueMap *map[string]interface{}) {
 	req.Url = ReplaceVariableValue(req.Url, variableMap)
 	req.Url = ReplaceExpressionValue(req.Url, variableMap, expressionValueMap)
 }
-func replaceParams(req *domain.Request, variableMap map[string]interface{}, expressionValueMap *map[string]interface{}) {
+func replaceParams(req *domain.BaseRequest, variableMap map[string]interface{}, expressionValueMap *map[string]interface{}) {
 	for idx, param := range req.Params {
 		req.Params[idx].Value = ReplaceVariableValue(param.Value, variableMap)
 		req.Params[idx].Value = ReplaceExpressionValue(req.Params[idx].Value, variableMap, expressionValueMap)
 	}
 }
-func replaceHeaders(req *domain.Request, variableMap map[string]interface{}, expressionValueMap *map[string]interface{}) {
+func replaceHeaders(req *domain.BaseRequest, variableMap map[string]interface{}, expressionValueMap *map[string]interface{}) {
 	for idx, header := range req.Headers {
 		req.Headers[idx].Value = ReplaceVariableValue(header.Value, variableMap)
 		req.Headers[idx].Value = ReplaceExpressionValue(req.Headers[idx].Value, variableMap, expressionValueMap)
 	}
 }
-func replaceBody(req *domain.Request, variableMap map[string]interface{}, expressionValueMap *map[string]interface{}) {
+func replaceBody(req *domain.BaseRequest, variableMap map[string]interface{}, expressionValueMap *map[string]interface{}) {
 	req.Body = ReplaceVariableValue(req.Body, variableMap)
 	req.Body = ReplaceExpressionValue(req.Body, variableMap, expressionValueMap)
 }
-func replaceAuthor(req *domain.Request, variableMap map[string]interface{}, expressionValueMap *map[string]interface{}) {
+func replaceAuthor(req *domain.BaseRequest, variableMap map[string]interface{}, expressionValueMap *map[string]interface{}) {
 	if req.AuthorizationType == consts.BasicAuth {
 		req.BasicAuth.Username = ReplaceVariableValue(req.BasicAuth.Username, variableMap)
 		req.BasicAuth.Password = ReplaceVariableValue(req.BasicAuth.Password, variableMap)

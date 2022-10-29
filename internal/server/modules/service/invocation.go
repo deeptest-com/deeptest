@@ -3,8 +3,8 @@ package service
 import (
 	"encoding/json"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	requestHelper "github.com/aaronchen2k/deeptest/internal/server/modules/helper/request"
 	model2 "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"github.com/jinzhu/copier"
@@ -134,7 +134,7 @@ func (s *InvocationService) CopyValueFromRequest(invocation *model2.Invocation, 
 func (s *InvocationService) ReplaceEnvironmentExtractorAndExecVariables(req v1.InvocationRequest) (
 	ret v1.InvocationRequest, err error) {
 	variableMap, _ := s.VariableService.GetVariablesByInterface(req.Id)
-	requestHelper.ReplaceAll(&req, variableMap)
+	agentExec.ReplaceAll(&req.BaseRequest, variableMap)
 
 	ret = req
 

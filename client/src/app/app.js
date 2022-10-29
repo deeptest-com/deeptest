@@ -7,6 +7,7 @@ import Config from './utils/config';
 import Lang, {initLang} from './core/lang';
 import {startUIService} from "./core/ui";
 import {startAgent, killAgent} from "./core/deeptest";
+import postmanToOpenApi from "postman-to-openapi";
 
 const cp = require('child_process');
 const fs = require('fs');
@@ -65,6 +66,11 @@ export class DeepTestApp {
         ipcMain.on(electronMsg, (event, arg) => {
             logInfo('msg from renderer: ' + arg)
 
+            if (arg.act == 'importSpec') {
+                this.showSpecSelection(event, arg)
+                return
+            }
+
             switch (arg) {
                 case 'selectDir':
                     this.showFolderSelection(event)
@@ -72,10 +78,6 @@ export class DeepTestApp {
                 case 'selectFile':
                     this.showFileSelection(event)
                     break;
-                case 'importSpec': {
-                    this.showFileSelection(event, true)
-                    break;
-                }
 
                 case 'fullScreen':
                     mainWin.setFullScreen(!mainWin.isFullScreen());
@@ -164,18 +166,21 @@ export class DeepTestApp {
         });
     }
 
-    showFileSelection(event, isOpenApi) {
+    showSpecSelection(event, arg) {
         dialog.showOpenDialog({
             properties: ['openFile']
         }).then(result => {
-            if (isOpenApi) {
-                console.log('convert', result)
+            this.replyOpenApiSpec(event, result, arg)
+        }).catch(err => {
+            logErr(err)
+        })
+    }
 
-                this.replySpec(event, result);
-
-            } else {
-                this.replyFile(event, result)
-            }
+    showFileSelection(event) {
+        dialog.showOpenDialog({
+            properties: ['openFile']
+        }).then(result => {
+            this.replyFile(event, result)
         }).catch(err => {
             logErr(err)
         })
@@ -191,19 +196,29 @@ export class DeepTestApp {
         })
     }
 
-    replySpec(event, result)  {
-        if (result.filePaths && result.filePaths.length > 0) {
-            const postmanToOpenApi = require('postman-to-openapi')
-            const file = result.filePaths[0]
+    replyOpenApiSpec(event, result, arg)  {
+        if (!result.filePaths || result.filePaths.length == 0) return
 
+        const file = result.filePaths[0]
+
+        if (arg.type === 'postman') {
+            console.log(`convert postman spec`)
+
+            const postmanToOpenApi = require('postman-to-openapi')
             postmanToOpenApi(file, null, { defaultTag: 'General' })
-                .then(result => {
-                    console.log(`OpenAPI specs: ${result}`)
-                    event.reply(electronMsgReplay, {path: file, spec: result});
+                .then(content => {
+                    // console.log(`OpenAPI specs: ${content}`)
+                    event.reply(electronMsgReplay, content);
                 })
                 .catch(err => {
                     console.log(err)
                 })
+        } else {
+            console.log(`read from file`)
+
+            const content = fs.readFileSync(file, 'utf-8')
+            // console.log(`OpenAPI specs: ${content}`)
+            event.reply(electronMsgReplay, content);
         }
     }
 

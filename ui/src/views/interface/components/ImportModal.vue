@@ -52,7 +52,7 @@ export default defineComponent({
       ipcRenderer.send(settings.electronMsg, 'importSpec')
 
       ipcRenderer.on(settings.electronMsgReplay, (event, data) => {
-        console.log('from electron: ' +data)
+        console.log('from electron: ' + data.path + ', ' + data.spec)
       })
     }
 

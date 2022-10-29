@@ -171,7 +171,7 @@ export class DeepTestApp {
             if (isOpenApi) {
                 console.log('convert', result)
 
-                event.replySpec(electronMsgReplay, result);
+                this.replySpec(event, result);
 
             } else {
                 this.replyFile(event, result)
@@ -193,9 +193,17 @@ export class DeepTestApp {
 
     replySpec(event, result)  {
         if (result.filePaths && result.filePaths.length > 0) {
+            const postmanToOpenApi = require('postman-to-openapi')
             const file = result.filePaths[0]
 
-            event.reply(electronMsgReplay, {path: file, spec: 'converted spec'});
+            postmanToOpenApi(file, null, { defaultTag: 'General' })
+                .then(result => {
+                    console.log(`OpenAPI specs: ${result}`)
+                    event.reply(electronMsgReplay, {path: file, spec: result});
+                })
+                .catch(err => {
+                    console.log(err)
+                })
         }
     }
 

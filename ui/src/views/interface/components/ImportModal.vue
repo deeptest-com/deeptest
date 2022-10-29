@@ -11,6 +11,15 @@
             <a-button v-if="isElectron" @click="selectFile()">选择文件</a-button>
             <a-input type="text" v-if="!isElectron" v-model="modelRef.path" />
           </a-form-item>
+
+        <a-form-item label="文件类型">
+          <a-radio-group v-model:value="modelRef.type">
+            <a-radio class="radio" value="openapi3">OpenAPI 3</a-radio>
+            <a-radio class="radio" value="openapi2">Swagger (OpenAPI2)</a-radio>
+            <a-radio class="radio" value="postman">PostMan</a-radio>
+          </a-radio-group>
+        </a-form-item>
+
         </a-form>
 
       <template #footer>
@@ -68,5 +77,9 @@ export default defineComponent({
 })
 </script>
 <style lang="less" scoped>
-
+.radio {
+  display: block;
+  height: 30px;
+  lineHeight: 30px;
+}
 </style>

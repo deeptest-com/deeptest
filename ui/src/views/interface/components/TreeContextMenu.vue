@@ -32,7 +32,7 @@
         <span v-if="!treeNode.isDir">删除节点</span>
       </a-menu-item>
 
-      <a-menu-item key="export_spec" class="menu-item">
+      <a-menu-item v-if="treeNode.isDir" key="export_spec" class="menu-item">
         <PlusOutlined />
         <span>导入...</span>
       </a-menu-item>

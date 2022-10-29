@@ -1,20 +1,25 @@
 package handler
 
 import (
-	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"encoding/json"
+	domain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	commService "github.com/aaronchen2k/deeptest/internal/pkg/service"
 	"github.com/aaronchen2k/deeptest/internal/server/core/web/validate"
 	service "github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
+	_fileUtils "github.com/aaronchen2k/deeptest/pkg/lib/file"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
-	"strings"
-
 	"github.com/kataras/iris/v12"
+	"github.com/rs/zerolog/log"
 	"go.uber.org/zap"
+	"strings"
 )
 
 type InterfaceCtrl struct {
 	InterfaceService  *service.InterfaceService  `inject:""`
 	InvocationService *service.InvocationService `inject:""`
+
+	FileService *commService.FileService `inject:""`
 
 	BaseCtrl
 }
@@ -27,7 +32,7 @@ func (c *InterfaceCtrl) SaveInterface(ctx iris.Context) {
 		return
 	}
 
-	req := v1.InvocationRequest{}
+	req := domain.InvocationRequest{}
 	err = ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
@@ -88,7 +93,7 @@ func (c *InterfaceCtrl) Create(ctx iris.Context) {
 		return
 	}
 
-	req := v1.InterfaceReq{}
+	req := domain.InterfaceReq{}
 	err = ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
@@ -112,7 +117,7 @@ func (c *InterfaceCtrl) Create(ctx iris.Context) {
 func (c *InterfaceCtrl) Update(ctx iris.Context) {
 	id, err := ctx.URLParamInt("id")
 
-	var req v1.InterfaceReq
+	var req domain.InterfaceReq
 	if err := ctx.ReadJSON(&req); err != nil {
 		errs := validate.ValidRequest(err)
 		if len(errs) > 0 {
@@ -132,7 +137,7 @@ func (c *InterfaceCtrl) Update(ctx iris.Context) {
 
 // UpdateName 更新
 func (c *InterfaceCtrl) UpdateName(ctx iris.Context) {
-	var req v1.InterfaceReq
+	var req domain.InterfaceReq
 	err := ctx.ReadJSON(&req)
 	if err != nil {
 		logUtils.Errorf("参数验证失败", err.Error())
@@ -147,6 +152,46 @@ func (c *InterfaceCtrl) UpdateName(ctx iris.Context) {
 	}
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: nil, Msg: _domain.NoErr.Msg})
+}
+
+func (c *InterfaceCtrl) ImportSpecFromContent(ctx iris.Context) {
+	targetId, _ := ctx.Params().GetInt("targetId")
+
+	req := domain.InterfaceImportReq{}
+	err := ctx.ReadJSON(&req)
+	if err != nil {
+		logUtils.Errorf("参数验证失败", err.Error())
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Data: nil, Msg: err.Error()})
+		return
+	}
+
+	jsn, _ := json.Marshal(req)
+	log.Print(targetId, jsn)
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: nil, Msg: _domain.NoErr.Msg})
+
+	return
+}
+func (c *InterfaceCtrl) ImportSpecFromForm(ctx iris.Context) {
+	targetId, _ := ctx.Params().GetInt("targetId")
+
+	f, fh, err := ctx.FormFile("file")
+	if err != nil {
+		logUtils.Errorf("获取上传文件失败， %s。", err.Error())
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		return
+	}
+	defer f.Close()
+
+	pth, err := c.FileService.UploadFile(ctx, fh, "spec")
+
+	content := _fileUtils.ReadFileBuf(pth)
+	jsn, _ := json.Marshal(content)
+	log.Print(targetId, jsn)
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: nil, Msg: _domain.NoErr.Msg})
+
+	return
 }
 
 // Delete 删除
@@ -171,7 +216,7 @@ func (c *InterfaceCtrl) Delete(ctx iris.Context) {
 func (c *InterfaceCtrl) Move(ctx iris.Context) {
 	projectId, _ := ctx.URLParamInt("currProjectId")
 
-	var req v1.InterfaceMoveReq
+	var req domain.InterfaceMoveReq
 	err := ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})

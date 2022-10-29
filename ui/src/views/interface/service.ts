@@ -73,6 +73,21 @@ export async function remove(id: number): Promise<any> {
     });
 }
 
+export async function importSpecFromContent(data, targetId): Promise<any> {
+    return request({
+        url: `/${apiPath}/importSpecFromContent/${targetId}`,
+        method: 'POST',
+        data: data,
+    });
+}
+export async function importSpecFromForm(data, targetId): Promise<any> {
+    return request({
+        url: `/${apiPath}/importSpecFromForm/${targetId}`,
+        method: 'POST',
+        data: data.formData,
+    });
+}
+
 export async function move(data: any): Promise<any> {
     return request({
         url: `/${apiPath}/move`,

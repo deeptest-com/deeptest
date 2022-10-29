@@ -30,6 +30,10 @@ type InterfaceSimple struct {
 	Children []InterfaceSimple `json:"children"`
 }
 
+type InterfaceImportReq struct {
+	Content string `json:"content"`
+}
+
 /*type InterfaceResp struct {
 	Url               string          `json:"url"`
 	Method            string          `gorm:"default:GET" json:"method"`

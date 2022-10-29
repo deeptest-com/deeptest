@@ -79,7 +79,7 @@ import {Form} from 'ant-design-vue';
 import {CloseOutlined, FileOutlined, FolderOutlined, FolderOpenOutlined, CheckOutlined} from "@ant-design/icons-vue";
 import {Interface} from "@/views/interface/data";
 import throttle from "lodash.debounce";
-import {updateNodeName} from "@/views/interface/service";
+import {importSpecFromContent, importSpecFromForm, updateNodeName} from "@/views/interface/service";
 import {expandAllKeys, expandOneKey, getNodeMap} from "@/services/tree";
 import {DropEvent, TreeDragEvent} from "ant-design-vue/es/tree/Tree";
 import {useStore} from "vuex";
@@ -344,10 +344,16 @@ export default defineComponent({
     }
 
     const showImport = ref(false)
-    const importSpec = () => {
-      console.log('importSpec')
+    const importSpec = (data) => {
+      console.log('importSpec', data)
 
+      if (data.content) { // from electron
+        importSpecFromContent(data, targetModelId)
+      } else if (data.formData) { // from test page
+        importSpecFromForm(data, targetModelId)
+      }
     }
+
     const importClose = () => {
       console.log('showImportClose')
       showImport.value = false

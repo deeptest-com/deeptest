@@ -27,14 +27,14 @@ func NewFileService() *FileService {
 }
 
 // UploadFile 上传文件
-func (s *FileService) UploadFile(ctx iris.Context, fh *multipart.FileHeader) (pth string, err error) {
+func (s *FileService) UploadFile(ctx iris.Context, fh *multipart.FileHeader, folder string) (pth string, err error) {
 	filename, err := GetFileName(fh.Filename)
 	if err != nil {
 		logUtils.Errorf("获取文件名失败，错误%s", err.Error())
 		return
 	}
 
-	relaDir := filepath.Join("static", "upload", "step", dateUtils.DateStr(time.Now()))
+	relaDir := filepath.Join("static", "upload", folder, dateUtils.DateStr(time.Now()))
 	absDir := filepath.Join(dir.GetCurrentAbPath(), relaDir)
 
 	err = dir.InsureDir(absDir)

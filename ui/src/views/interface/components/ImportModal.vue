@@ -2,14 +2,23 @@
   <div>
     <a-modal title="导入定义"
              :visible="isVisible"
-             :onCancel="cancel">
+             :onCancel="onCancel">
 
       <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
           <a-form-item label="文件">
-            <a-input v-if="isElectron" v-model:value="modelRef.path" />
+            <a-input v-model:value="modelRef.path" />
 
             <a-button v-if="isElectron" @click="selectFile()">选择文件</a-button>
-            <a-input type="text" v-if="!isElectron" v-model="modelRef.path" />
+
+            <a-upload v-if="!isElectron"
+                      v-model:file-list="fileList"
+                      :before-upload="beforeUpload"
+                      :showUploadList="false"
+                      accept=".json,.yml,.yaml"
+            >
+              <a-button>选择文件</a-button>
+            </a-upload>
+
           </a-form-item>
 
         <a-form-item label="文件类型">
@@ -23,7 +32,7 @@
         </a-form>
 
       <template #footer>
-        <a-button @click="submit" type="primary">导入</a-button>
+        <a-button @click="onSubmit" type="primary">导入</a-button>
       </template>
     </a-modal>
   </div>
@@ -60,15 +69,43 @@ export default defineComponent({
       const { ipcRenderer } = window.require('electron')
       ipcRenderer.send(settings.electronMsg, {act: 'importSpec', type: modelRef.value.type})
 
-      ipcRenderer.on(settings.electronMsgReplay, (event, content) => {
-        console.log('from electron: ' + content)
+      ipcRenderer.on(settings.electronMsgReplay, (event, data) => {
+        console.log('from electron: ', data)
+        modelRef.value.path = data.path
+        modelRef.value.content = data.content
       })
+    }
+
+    const fileList = ref([]);
+
+    const beforeUpload = (file) => {
+      console.log('beforeUpload', file)
+      modelRef.value.path = file.name
+
+      modelRef.value.formData = new FormData()
+      modelRef.value.formData.append('file', file)
+
+      return false
+    };
+
+    const onSubmit  = () => {
+      console.log('onSubmit')
+      props.submit(modelRef.value)
+    }
+
+    const onCancel = () => {
+      console.log('onSubmit')
+      props.cancel()
     }
 
     return {
       isElectron,
       modelRef,
       selectFile,
+      fileList,
+      beforeUpload,
+      onSubmit,
+      onCancel,
 
       labelCol: { span: 4 },
       wrapperCol: { span: 18 },

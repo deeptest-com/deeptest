@@ -1,23 +1,30 @@
 <template>
-  <div>
+  <div class="import-spec">
     <a-modal title="导入定义"
              :visible="isVisible"
-             :onCancel="onCancel">
+             :onCancel="onCancel"
+             class="import-modal">
 
       <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
           <a-form-item label="文件">
-            <a-input v-model:value="modelRef.path" />
-
-            <a-button v-if="isElectron" @click="selectFile()">选择文件</a-button>
-
-            <a-upload v-if="!isElectron"
-                      v-model:file-list="fileList"
-                      :before-upload="beforeUpload"
-                      :showUploadList="false"
-                      accept=".json,.yml,.yaml"
+            <a-input-search
+                v-model:value="modelRef.path"
+                @search="selectFile"
             >
-              <a-button>选择文件</a-button>
-            </a-upload>
+              <template #enterButton>
+                <a-button v-if="isElectron" >选择文件</a-button>
+
+                <a-upload v-if="!isElectron"
+                          v-model:file-list="fileList"
+                          :before-upload="beforeUpload"
+                          :showUploadList="false"
+                          accept=".json,.yml,.yaml"
+                >
+                  <div>选择文件</div>
+                </a-upload>
+              </template>
+
+            </a-input-search>
 
           </a-form-item>
 
@@ -32,7 +39,7 @@
         </a-form>
 
       <template #footer>
-        <a-button @click="onSubmit" type="primary">导入</a-button>
+        <a-button :disabled="!modelRef.path" @click="onSubmit" type="primary">导入</a-button>
       </template>
     </a-modal>
   </div>
@@ -61,10 +68,12 @@ export default defineComponent({
 
   setup(props) {
     const isElectron = ref(!!window.require)
-    const modelRef = ref({} as any)
+    const modelRef = ref({type: 'openapi3'} as any)
 
     const selectFile = () => {
       console.log('selectFile')
+
+      if (!isElectron.value) return
 
       const { ipcRenderer } = window.require('electron')
       ipcRenderer.send(settings.electronMsg, {act: 'selectSpec', type: modelRef.value.type})
@@ -113,6 +122,19 @@ export default defineComponent({
   }
 })
 </script>
+
+<style lang="less">
+.import-modal {
+  .ant-input-search {
+    .ant-btn-primary {
+      color: #000000d9 !important;
+      background: #fff !important;
+      border-color: #d9d9d9 !important;
+    }
+  }
+}
+</style>
+
 <style lang="less" scoped>
 .radio {
   display: block;

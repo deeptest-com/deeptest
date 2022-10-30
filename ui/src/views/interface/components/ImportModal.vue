@@ -41,7 +41,7 @@
   </div>
 </template>
 <script lang="ts">
-import {defineComponent, Ref, ref, PropType} from "vue";
+import {defineComponent, Ref, ref, PropType, onMounted, getCurrentInstance, onUnmounted} from "vue";
 import settings from "@/config/settings";
 import {loadSpecFromAgent} from "@/views/interface/service";
 
@@ -67,13 +67,10 @@ export default defineComponent({
     const isElectron = ref(!!window.require)
     const modelRef = ref({type: 'openapi3'} as any)
 
-    const selectFile = () => {
-      console.log('selectFile')
+    let ipcRenderer = undefined as any
 
-      if (!isElectron.value) return
-
-      const { ipcRenderer } = window.require('electron')
-      ipcRenderer.send(settings.electronMsg, {act: 'selectSpec', type: modelRef.value.type})
+    if (isElectron.value && !ipcRenderer) {
+      ipcRenderer = window.require('electron').ipcRenderer
 
       ipcRenderer.on(settings.electronMsgReplay, (event, data) => {
         console.log('from electron: ', data)
@@ -90,6 +87,22 @@ export default defineComponent({
           })
         }
       })
+    }
+
+    onMounted(() => {
+      console.log('onMounted')
+    })
+
+    onUnmounted(() => {
+      console.log('onUnmounted')
+    })
+
+    const selectFile = () => {
+      console.log('selectFile')
+
+      if (!isElectron.value) return
+
+      ipcRenderer.send(settings.electronMsg, {act: 'selectSpec', type: modelRef.value.type})
     }
 
     const fileList = ref([]);

@@ -212,17 +212,14 @@ export class DeepTestApp {
             postmanToOpenApi(file, null, { defaultTag: 'General' })
                 .then(content => {
                     // console.log(`OpenAPI specs: ${content}`)
-                    event.reply(electronMsgReplay, {path: path.basename(file), content: content});
+                    event.reply(electronMsgReplay, {path: file, content: content});
                 })
                 .catch(err => {
                     console.log(err)
                 })
         } else {
             console.log(`read from file`)
-
-            const content = fs.readFileSync(file, 'utf-8')
-            // console.log(`OpenAPI specs: ${content}`)
-            event.reply(electronMsgReplay, {path: path.basename(file), content: content});
+            event.reply(electronMsgReplay, {path: file, content: undefined});
         }
     }
 

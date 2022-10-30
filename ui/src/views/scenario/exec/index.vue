@@ -53,7 +53,7 @@ onMounted(() => {
 const resize = () => {
   resizeWidth('scenario-exec-main',
       'scenario-exec-left', 'scenario-exec-splitter', 'scenario-exec-right',
-       800, 260, collapsed.value ? 80 : 136)
+       800, 260)
 }
 
 </script>

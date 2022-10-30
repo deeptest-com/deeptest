@@ -1,10 +1,11 @@
 import request from '@/utils/request';
+import {requestToAgent} from '@/utils/request';
 import {Interface, OAuth20} from "@/views/interface/data";
 import {isInArray} from "@/utils/array";
-import {ComparisonOperator} from "@/utils/enum";
 
 const apiPath = 'interfaces';
-const apiPImport = 'import';
+const apiImport = 'import';
+const apiSpec = 'spec';
 const apiVocation = 'invocations';
 const apiAuth = 'auth';
 const apiEnvironment = 'environments'
@@ -74,20 +75,20 @@ export async function remove(id: number): Promise<any> {
     });
 }
 
-export async function importSpecFromContent(data, targetId): Promise<any> {
+export async function loadSpecFromAgent(path, type): Promise<any> {
+    return requestToAgent({
+        url: `/${apiSpec}/load`,
+        method: 'POST',
+        params: {path: path, type: type},
+    });
+}
+
+export async function importSpec(data, targetId): Promise<any> {
     return request({
-        url: `/${apiPImport}/importSpecFromContent`,
+        url: `/${apiImport}/importSpec`,
         method: 'POST',
         params: {targetId: targetId, type: data.type},
         data: data,
-    });
-}
-export async function importSpecFromForm(data, targetId): Promise<any> {
-    return request({
-        url: `/${apiPImport}/importSpecFromForm/${targetId}`,
-        method: 'POST',
-        params: {targetId: targetId, type: data.type},
-        data: data.formData,
     });
 }
 

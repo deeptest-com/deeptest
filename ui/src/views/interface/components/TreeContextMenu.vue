@@ -34,7 +34,7 @@
 
       <a-menu-item v-if="treeNode.isDir" key="export_spec" class="menu-item">
         <PlusOutlined />
-        <span>导入...</span>
+        <span>导入接口...</span>
       </a-menu-item>
     </a-menu>
   </div>

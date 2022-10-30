@@ -3,28 +3,24 @@
     <a-modal title="导入定义"
              :visible="isVisible"
              :onCancel="onCancel"
-             class="import-modal">
+             class="import-modal"
+             width="700px">
 
       <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
           <a-form-item label="文件">
+
             <a-input-search
+                v-if="isElectron"
                 v-model:value="modelRef.path"
                 @search="selectFile"
             >
               <template #enterButton>
-                <a-button v-if="isElectron" >选择文件</a-button>
-
-                <a-upload v-if="!isElectron"
-                          v-model:file-list="fileList"
-                          :before-upload="beforeUpload"
-                          :showUploadList="false"
-                          accept=".json,.yml,.yaml"
-                >
-                  <div>选择文件</div>
-                </a-upload>
+                <a-button  >选择文件</a-button>
               </template>
 
             </a-input-search>
+
+            <div v-if="!isElectron">请使用客户端导入</div>
 
           </a-form-item>
 
@@ -47,6 +43,7 @@
 <script lang="ts">
 import {defineComponent, Ref, ref, PropType} from "vue";
 import settings from "@/config/settings";
+import {loadSpecFromAgent} from "@/views/interface/service";
 
 export default defineComponent({
   name: 'ImportModal',
@@ -81,21 +78,21 @@ export default defineComponent({
       ipcRenderer.on(settings.electronMsgReplay, (event, data) => {
         console.log('from electron: ', data)
         modelRef.value.path = data.path
-        modelRef.value.content = data.content
+
+        if (modelRef.value.type === 'postman') { // already converted by postman
+          modelRef.value.content = data.content
+        } else { // call agent to convert
+          loadSpecFromAgent(modelRef.value.path, modelRef.value.type).then((json) => {
+            if (json.code === 0) {
+              console.log(json.data)
+              modelRef.value.content = json.data.content
+            }
+          })
+        }
       })
     }
 
     const fileList = ref([]);
-
-    const beforeUpload = (file) => {
-      console.log('beforeUpload', file)
-      modelRef.value.path = file.name
-
-      modelRef.value.formData = new FormData()
-      modelRef.value.formData.append('file', file)
-
-      return false
-    };
 
     const onSubmit  = () => {
       console.log('onSubmit')
@@ -112,7 +109,6 @@ export default defineComponent({
       modelRef,
       selectFile,
       fileList,
-      beforeUpload,
       onSubmit,
       onCancel,
 
@@ -124,15 +120,6 @@ export default defineComponent({
 </script>
 
 <style lang="less">
-.import-modal {
-  .ant-input-search {
-    .ant-btn-primary {
-      color: #000000d9 !important;
-      background: #fff !important;
-      border-color: #d9d9d9 !important;
-    }
-  }
-}
 </style>
 
 <style lang="less" scoped>

@@ -64,7 +64,13 @@ const errorHandler = (axiosResponse: AxiosResponse) => {
 const request = axios.create({
     baseURL: process.env.VUE_APP_API_SERVER,
     withCredentials: true, // 跨域请求时发送cookie
-    timeout: 0 // 请求超时时间，单位毫秒，0 不做限制
+    timeout: 0
+});
+
+const requestAgent = axios.create({
+    baseURL: process.env.VUE_APP_API_AGENT,
+    withCredentials: true,
+    timeout: 0
 });
 
 // 全局设置 - post请求头
@@ -147,4 +153,8 @@ request.interceptors.response.use(
  */
 export default function(config: AxiosRequestConfig): AxiosPromise<any> {
     return request(config).then((response: AxiosResponse) => response.data).catch(error => errorHandler(error));
+}
+
+export function requestToAgent (config: AxiosRequestConfig): AxiosPromise<any> {
+    return requestAgent(config).then((response: AxiosResponse) => response.data).catch(error => errorHandler(error));
 }

@@ -13,6 +13,7 @@ import (
 
 type IndexModule struct {
 	FileModule *router.FileModule `inject:""`
+	SpecModule *router.SpecModule `inject:""`
 }
 
 func NewIndexModule() *IndexModule {
@@ -32,6 +33,7 @@ func (m *IndexModule) Party() module.WebModule {
 	}
 	modules := []module.WebModule{
 		m.FileModule.Party(),
+		m.SpecModule.Party(),
 	}
 	return module.NewModule(consts.ApiPath, handler, modules...)
 }

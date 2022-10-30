@@ -7,12 +7,23 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi"
 	_shellUtils "github.com/aaronchen2k/deeptest/pkg/lib/shell"
 	"github.com/getkin/kin-openapi/openapi2"
+	"github.com/getkin/kin-openapi/openapi3"
+	"log"
 )
 
 type ImportService struct {
 }
 
-func (s *ImportService) Import(content []byte, targetId int) (err error) {
+func (s *ImportService) Import(content []byte, typ string, targetId int) (err error) {
+	ctx := context.Background()
+	loader := &openapi3.Loader{Context: ctx, IsExternalRefsAllowed: true}
+
+	doc, err := loader.LoadFromData(content)
+
+	//err = doc.Validate(loader.Context)
+
+	log.Print(doc)
+
 	return
 }
 

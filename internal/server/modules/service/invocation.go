@@ -5,7 +5,7 @@ import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	model2 "github.com/aaronchen2k/deeptest/internal/server/modules/model"
+	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"github.com/jinzhu/copier"
 	"time"
@@ -50,7 +50,7 @@ func (s *InvocationService) Invoke(req v1.InvocationRequest, projectId int) (
 	return
 }
 
-func (s *InvocationService) ListByInterface(interfId int) (invocations []model2.Invocation, err error) {
+func (s *InvocationService) ListByInterface(interfId int) (invocations []model.Invocation, err error) {
 	invocations, err = s.InvocationRepo.List(interfId)
 
 	return
@@ -70,13 +70,13 @@ func (s *InvocationService) GetLastResp(interfId int) (resp v1.InvocationRespons
 	return
 }
 
-func (s *InvocationService) Get(id int) (invocation model2.Invocation, err error) {
+func (s *InvocationService) Get(id int) (invocation model.Invocation, err error) {
 	invocation, err = s.InvocationRepo.Get(uint(id))
 
 	return
 }
 
-func (s *InvocationService) GetAsInterface(id int) (interf model2.Interface, err error) {
+func (s *InvocationService) GetAsInterface(id int) (interf model.Interface, err error) {
 	invocation, err := s.InvocationRepo.Get(uint(id))
 
 	interfReq := v1.InvocationRequest{}
@@ -94,8 +94,8 @@ func (s *InvocationService) GetAsInterface(id int) (interf model2.Interface, err
 }
 
 func (s *InvocationService) Create(req v1.InvocationRequest,
-	resp v1.InvocationResponse, projectId int) (invocation model2.Invocation, err error) {
-	invocation = model2.Invocation{
+	resp v1.InvocationResponse, projectId int) (invocation model.Invocation, err error) {
+	invocation = model.Invocation{
 		Name:        time.Now().Format("01-02 15:04:05"),
 		InterfaceId: req.Id,
 		ProjectId:   uint(projectId),
@@ -112,7 +112,7 @@ func (s *InvocationService) Create(req v1.InvocationRequest,
 	return
 }
 
-func (s *InvocationService) Update(invocation model2.Invocation) (err error) {
+func (s *InvocationService) Update(invocation model.Invocation) (err error) {
 
 	return
 }
@@ -123,7 +123,7 @@ func (s *InvocationService) Delete(id uint) (err error) {
 	return
 }
 
-func (s *InvocationService) CopyValueFromRequest(invocation *model2.Invocation, req v1.InvocationRequest) (err error) {
+func (s *InvocationService) CopyValueFromRequest(invocation *model.Invocation, req v1.InvocationRequest) (err error) {
 	invocation.ID = req.Id
 
 	copier.CopyWithOption(invocation, req, copier.Option{DeepCopy: true})

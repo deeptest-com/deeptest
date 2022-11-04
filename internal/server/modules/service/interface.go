@@ -15,11 +15,11 @@ type ImportService struct {
 }
 
 func (s *ImportService) Import(content []byte, typ string, targetId int) (err error) {
-	//ctx := context.Background()
-	//loader := &openapi3.Loader{Context: ctx, IsExternalRefsAllowed: true}
-	//
-	//doc, err := loader.LoadFromData(content)
-	//err = doc.Validate(loader.Context)
+	ctx := context.Background()
+	loader := &openapi3.Loader{Context: ctx, IsExternalRefsAllowed: true}
+
+	doc, err := loader.LoadFromData(content)
+	err = doc.Validate(loader.Context)
 
 	var doc3 *openapi3.T
 

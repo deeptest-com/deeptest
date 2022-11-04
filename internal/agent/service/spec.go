@@ -44,7 +44,7 @@ func (s *SpecService) Load(path, typ string) (content string, err error) {
 		return
 	}
 
-	//_ := doc.Validate(ctx)
+	//_ := doc3.Validate(ctx)
 
 	var bytes []byte
 	bytes, err = json.Marshal(doc3)

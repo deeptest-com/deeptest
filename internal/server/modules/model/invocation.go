@@ -6,10 +6,10 @@ type Invocation struct {
 	BaseModel
 
 	Name string `json:"name"`
-	Desc string `json:"desc,omitempty"`
+	Desc string `json:"desc,omitempty" gorm:"type:text"`
 
-	ReqContent  string `json:"reqContent,omitempty"`
-	RespContent string `json:"respContent,omitempty"`
+	ReqContent  string `json:"reqContent,omitempty" gorm:"type:mediumtext"`
+	RespContent string `json:"respContent,omitempty" gorm:"type:mediumtext"`
 
 	HttpRespStatusCode    consts.HttpRespCode `json:"httpStatusCode"`
 	HttpRespStatusContent string              `json:"httpStatusContent"`

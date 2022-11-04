@@ -24,8 +24,8 @@ type ExecLogProcessor struct {
 
 	// for interface
 	InterfaceId           uint                `json:"interfaceId"`
-	ReqContent            string              `json:"reqContent,omitempty"`
-	RespContent           string              `json:"respContent,omitempty"`
+	ReqContent            string              `json:"reqContent,omitempty" gorm:"type:mediumtext"`
+	RespContent           string              `json:"respContent,omitempty" gorm:"type:mediumtext"`
 	HttpRespStatusCode    consts.HttpRespCode `json:"httpStatusCode"`
 	HttpRespStatusContent string              `json:"httpStatusContent"`
 
@@ -33,10 +33,10 @@ type ExecLogProcessor struct {
 	InterfaceCheckpointsResult []ExecLogCheckpoint `gorm:"-" json:"interfaceCheckpointsResult,omitempty"`
 
 	// for processor
-	ProcessorType    consts.ProcessorType `json:"processorType" yaml:"processorType"`
-	ProcessorId      uint                 `json:"processorId,omitempty"`
-	ProcessorContent string               `json:"processorContent,omitempty"`
-	ProcessorResult  string               `json:"processorResult,omitempty"`
+	ProcessorType consts.ProcessorType `json:"processorType" yaml:"processorType"`
+	ProcessorId   uint                 `json:"processorId,omitempty"`
+	//ProcessorContent string               `json:"processorContent,omitempty"`
+	//ProcessorResult  string               `json:"processorResult,omitempty"`
 
 	Summary string `json:"summary,omitempty"`
 	Output  string `json:"output,omitempty"`

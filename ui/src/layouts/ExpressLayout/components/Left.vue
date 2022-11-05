@@ -2,8 +2,7 @@
   <div id="expresslayout-left">
     <div class="expresslayout-left-logo">
       <router-link to="/" class="logo-url">
-        <h3 v-if="collapsed" class="logo-title">DT</h3>
-        <h3 v-else class="logo-title">DeepTest</h3>
+        <div class="logo-title">DeepTest</div>
       </router-link>
     </div>
 
@@ -35,8 +34,8 @@ export default defineComponent({
   flex-direction: column;
   width: 260px;
   height: 100vh;
-  background-color: #222834;
-  color: #c0c4cc;
+  background-color: #FAFAFA;
+  color: #343333;
 
   .expresslayout-left-logo {
     width: 100%;
@@ -53,9 +52,9 @@ export default defineComponent({
       .logo-title {
         display: inline-block;
         margin: 0;
-        font-size: 16px;
+        font-size: 22px;
         font-family: Roboto, sans-serif;
-        color: #c0c4cc;
+        color: rgb(51, 51, 51);
       }
     }
     img {

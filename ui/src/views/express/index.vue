@@ -1,23 +1,23 @@
 <template>
   <div id="express-main" class="express-main dp-splits-v">
-    <div id="express-left" class="left">
-      <InterfaceTree />
-    </div>
+<!--    <div id="express-left" class="left">-->
+<!--      <InterfaceTree />-->
+<!--    </div>-->
 
-    <div id="express-splitter" class="splitter"></div>
+<!--    <div id="express-splitter" class="splitter"></div>-->
 
-    <div id="express-right" class="right">
-      <InterfaceDesigner></InterfaceDesigner>
-    </div>
+<!--    <div id="express-right" class="right">-->
+<!--      <InterfaceDesigner></InterfaceDesigner>-->
+<!--    </div>-->
   </div>
 </template>
 
 <script setup lang="ts">
 import {computed, defineComponent, onMounted, onUnmounted, Ref, ref, watch} from "vue";
 
-import InterfaceDesigner from './components/Designer.vue';
+// import InterfaceDesigner from './components/Designer.vue';
 import {resizeWidth} from "@/utils/dom";
-import InterfaceTree from "./components/Tree.vue"
+// import InterfaceTree from "./components/Tree.vue"
 import {useStore} from "vuex";
 import {StateType as GlobalStateType} from "@/store/global";
 import {StateType as UserStateType} from "@/store/user";

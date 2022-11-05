@@ -5,7 +5,7 @@
 import NProgress from 'nprogress'; // progress bar
 import 'nprogress/nprogress.css'; // progress bar style
 NProgress.configure({ showSpinner: false, easing: 'ease', speed: 1000 }); // NProgress Configuration
- 
+
 import { createRouter, createWebHashHistory } from 'vue-router';
 import { RoutesDataItem } from "@/utils/routes";
 import settings from "@/config/settings";
@@ -14,6 +14,9 @@ import SecurityLayout from '@/layouts/SecurityLayout.vue';
 
 import IndexLayoutRoutes from '@/layouts/IndexLayout/routes';
 import IndexLayout from '@/layouts/IndexLayout/index.vue';
+
+import ExpressLayoutRoutes from '@/layouts/ExpressLayout/routes';
+import ExpressLayout from '@/layouts/ExpressLayout/index.vue';
 
 import UserLayoutRoutes from '@/layouts/UserLayout/routes';
 import UserLayout from '@/layouts/UserLayout/index.vue';
@@ -52,7 +55,7 @@ const routes: RoutesDataItem[] = [
         component: () => import('@/views/refresh/index.vue'),
       },
     ]
-  },  
+  },
   {
     title: 'empty',
     path: '/user',
@@ -64,7 +67,15 @@ const routes: RoutesDataItem[] = [
     title: 'app.global.menu.notfound',
     path: '/:pathMatch(.*)*',
     component: () => import('@/views/404/index.vue'),
-  }
+  },
+
+  {
+    title: 'empty',
+    path: '/express',
+    redirect: '/express/index',
+    component: ExpressLayout,
+    children: ExpressLayoutRoutes,
+  },
 ]
 
 const router = createRouter({

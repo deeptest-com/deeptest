@@ -12,15 +12,14 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import {computed, defineComponent, nextTick, ref, watch, defineProps, defineEmits, defineExpose} from "vue";
 import {useStore} from 'vuex';
 import {useRoute} from 'vue-router';
 import {StateType as GlobalStateType} from '@/store/global';
-import {StateType as UserStateType} from "@/store/user";
 
 import Left from './components/Left.vue';
-import RightTop from '@/layouts/IndexLayout/components/RightTop.vue';
+import RightTop from './components/RightTop.vue';
 
 // const props = defineProps({
 //   msg: String,
@@ -36,7 +35,7 @@ import RightTop from '@/layouts/IndexLayout/components/RightTop.vue';
 //   btn
 // })
 
-const store = useStore<{ Global: GlobalStateType; User: UserStateType; }>();
+const store = useStore<{ Global: GlobalStateType; }>();
 const route = useRoute();
 
 </script>
@@ -52,7 +51,7 @@ const route = useRoute();
   position: relative;
   flex: 1;
   overflow: auto;
-  background-color: #f0f3f4;
+  background-color: #FFFFFF;
 
   &.fiexd-header {
     display: flex;

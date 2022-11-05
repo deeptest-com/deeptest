@@ -6,29 +6,73 @@
       </router-link>
     </div>
 
-    <div class="expresslayout-left-menu">
+    <div class="expresslayout-left-content">
+      <div class="search">
+        <a-input>
+          <template #prefix>
+            <SearchOutlined/>
+          </template>
+        </a-input>
+      </div>
 
+      <div class="content">
+        <ul class="list desc">
+          <li>
+            <span class="item">Introduction</span>
+          </li>
+          <li>
+            <span class="item">OpenAPI Specification</span>
+          </li>
+          <li>
+            <span class="item">Authentication</span>
+          </li>
+        </ul>
+
+        <div class="title">APIS</div>
+        <ul class="list apis">
+          <li>
+            <span class="method post">post</span>
+            <span class="name">Introduction</span>
+          </li>
+          <li>
+            <span class="method get">get</span>
+            <span class="name">OpenAPI Specification</span>
+          </li>
+          <li>
+            <span class="method put">put</span>
+            <span class="name">Authentication</span>
+          </li>
+        </ul>
+
+        <div class="title">MODELS</div>
+        <ul class="list models">
+          <li>
+            <span class="name">Pet</span>
+          </li>
+          <li>
+            <span class="name">Dog</span>
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 
-import { defineComponent, PropType} from "vue";
+import {SearchOutlined} from '@ant-design/icons-vue';</script>
 
-export default defineComponent({
-  name: 'Left',
-  props: {
-
-  },
-  components: {
-
-  },
-})
-</script>
+<style lang="less">
+.expresslayout-left-content {
+  .ant-input-affix-wrapper {
+    input.ant-input {
+      background-color: #FAFAFA !important;
+    }
+  }
+}
+</style>
 
 <style lang="less" scoped>
-@import '../../../assets/css/global.less';
 #expresslayout-left {
   display: flex;
   flex-direction: column;
@@ -49,6 +93,7 @@ export default defineComponent({
       width: 100%;
       height: 100%;
       overflow: hidden;
+
       .logo-title {
         display: inline-block;
         margin: 0;
@@ -57,12 +102,96 @@ export default defineComponent({
         color: rgb(51, 51, 51);
       }
     }
+
     img {
       vertical-align: middle;
     }
   }
 
-  .scrollbar();
+  .expresslayout-left-content {
+    padding: 8px;
+    height: calc(100% - 50px);
+
+    .search {
+      margin-bottom: 15px;
+      height: 26px;
+    }
+
+    .content {
+      height: calc(100% - 40px);
+      overflow-y: auto;
+      .ant-input-affix-wrapper {
+        border: 0;
+        border-bottom: 1px solid #d9d9d9;
+        background-color: #FAFAFA;
+        box-shadow: none;
+      }
+
+      .title {
+        padding: 10px 10px 5px 10px;
+        font-size: 16px;
+        font-weight: normal;
+      }
+
+      ul {
+        margin: 0px;
+        padding: 0px;
+
+        li {
+          list-style: inside none none;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          padding: 10px 10px;
+          line-height: 16px;
+
+          .method {
+            width: 9ex;
+            display: inline-block;
+            background-color: rgb(51, 51, 51);
+            border-radius: 3px;
+            background-repeat: no-repeat;
+            background-position: 6px 4px;
+            font-size: 7px;
+            font-family: Verdana, sans-serif;
+            color: white;
+            text-transform: uppercase;
+            text-align: center;
+            font-weight: bold;
+            vertical-align: middle;
+            margin-right: 6px;
+
+            &.post {
+              background-color: #186FAF;
+            }
+
+            &.get {
+              background-color: #2F8132;
+            }
+
+            &.put {
+              background-color: #186FAF;
+            }
+
+            &.delete {
+              background-color: #186FAF;
+            }
+          }
+
+          .name {
+            vertical-align: middle;
+          }
+        }
+
+        &.apis {
+
+        }
+
+        &.models {
+
+        }
+      }
+    }
+  }
 
 }
 </style>

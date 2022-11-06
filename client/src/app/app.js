@@ -67,7 +67,8 @@ export class DeepTestApp {
         await mainWin.loadURL(url);
 
         ipcMain.on(electronMsg, (event, arg) => {
-            logInfo('msg from renderer: ' + arg.act + ', ' + arg.type + ', ' + arg.src + ', ' + arg.url)
+            logInfo('msg from renderer: ')
+            logInfo(arg)
 
             if (arg.act == 'loadSpec') {
                 this.loadSpec(event, arg)
@@ -170,8 +171,6 @@ export class DeepTestApp {
     }
 
     loadSpec(event, arg) {
-        console.log('loadSpec', arg)
-
         if (arg.src === 'url') {
             this.loadFromUrl(event, arg)
         } else {
@@ -182,7 +181,7 @@ export class DeepTestApp {
     async loadFromUrl(event, arg) {
         console.log('loadFromUrl')
         const buffer = await getBuffer(arg.url)
-        console.log('buffer', buffer)
+        console.log('buffer', buffer.toString())
     }
 
     showSpecSelection(event, arg) {

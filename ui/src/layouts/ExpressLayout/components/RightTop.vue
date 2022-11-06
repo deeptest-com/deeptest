@@ -66,10 +66,11 @@ if (isElectron.value && !ipcRenderer) {
     console.log('from electron: ', data)
 
     submitSpec(data).then((json) => {
-      console.log('submitSpec', json)
-      // if (json.code === 0) {
-      //
-      // }
+      if (json.code === 0) {
+        console.log('submitSpec', json.data)
+      } else {
+        message.error(json.msg)
+      }
     })
   })
 }

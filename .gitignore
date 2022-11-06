@@ -9,8 +9,8 @@ rbac_model.conf
 tmp/
 .idea/
 
-/static/upload/step/
 /deeptest.db
 /res/res.go
 /bin/
 /xdoc/openapi/out/
+/static/upload/spec/

@@ -17,7 +17,7 @@
 
       <div class="content">
         <ul class="list desc">
-          <li>
+          <li @click="selectSection('item')">
             <span class="item">Introduction</span>
           </li>
           <li>
@@ -30,7 +30,7 @@
 
         <div class="title">APIS</div>
         <ul class="list apis">
-          <li>
+          <li @click="selectApi('item')">
             <span class="method post">post</span>
             <span class="name">Introduction</span>
           </li>
@@ -46,7 +46,7 @@
 
         <div class="title">MODELS</div>
         <ul class="list models">
-          <li>
+          <li @click="selectModel('item')">
             <span class="name">Pet</span>
           </li>
           <li>
@@ -60,7 +60,21 @@
 
 <script setup lang="ts">
 
-import {SearchOutlined} from '@ant-design/icons-vue';</script>
+import {SearchOutlined} from '@ant-design/icons-vue';
+
+const selectSection = (item) => {
+  console.log('selectSection')
+}
+
+const selectApi = (item) => {
+  console.log('selectApi')
+}
+
+const selectModel = (item) => {
+  console.log('selectModel')
+}
+
+</script>
 
 <style lang="less">
 .expresslayout-left-content {
@@ -143,6 +157,16 @@ import {SearchOutlined} from '@ant-design/icons-vue';</script>
           text-overflow: ellipsis;
           padding: 10px 10px;
           line-height: 16px;
+          cursor: pointer;
+
+          &:hover {
+            color: #32329FFF;
+            background-color: #ededed;
+          }
+          &.active {
+            color: #32329FFF;
+            background-color: #EDEDEDFF;
+          }
 
           .method {
             width: 9ex;

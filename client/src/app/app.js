@@ -181,7 +181,7 @@ export class DeepTestApp {
     async loadFromUrl(event, arg) {
         console.log('loadFromUrl')
         const buffer = await getBuffer(arg.url)
-        console.log('buffer', buffer.toString())
+        console.log('buffer:\n', buffer.toString())
     }
 
     showSpecSelection(event, arg) {

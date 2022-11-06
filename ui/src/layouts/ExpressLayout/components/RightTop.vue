@@ -38,13 +38,14 @@
 </template>
 <script setup lang="ts">
 import {defineComponent, PropType, toRefs, ref} from "vue";
-import { message } from 'ant-design-vue';
+import {message, notification} from 'ant-design-vue';
 import {useI18n} from "vue-i18n";
 import { UploadOutlined } from '@ant-design/icons-vue';
 
 import RightTopWebsocket from './RightTopWebsocket.vue';
 import settings from "@/config/settings";
 import {submitSpec} from "@/views/interface/service";
+import {NotificationKeyCommon} from "@/utils/const";
 
 const {t} = useI18n();
 // const {topNavEnable} = toRefs(props);
@@ -69,7 +70,11 @@ if (isElectron.value && !ipcRenderer) {
       if (json.code === 0) {
         console.log('submitSpec', json.data)
       } else {
-        message.error(json.msg)
+        notification.error({
+          key: NotificationKeyCommon,
+          message: '解析错误',
+          description: json.msg
+        })
       }
     })
   })

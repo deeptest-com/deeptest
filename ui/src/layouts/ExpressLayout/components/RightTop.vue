@@ -8,10 +8,8 @@
               <a-upload
                   v-model:file-list="fileList"
                   name="file"
-                  :multiple="true"
-                  action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-                  :headers="headers"
-                  @change="handleChange"
+                  :multiple="false"
+                  @click="load('file')"
               >
                 <a-button>
                   <upload-outlined></upload-outlined>
@@ -21,10 +19,10 @@
             </a-col>
             <a-col flex="auto">
               <a-input-search
-                  v-model:value="value"
+                  v-model:value="modelRef.url"
                   placeholder="输入地址"
                   enter-button="加载"
-                  @search="onSearch"
+                  @search="load('url')"
               />
             </a-col>
           </a-row>
@@ -48,20 +46,52 @@ import {useI18n} from "vue-i18n";
 import { UploadOutlined } from '@ant-design/icons-vue';
 
 import RightTopWebsocket from './RightTopWebsocket.vue';
+import settings from "@/config/settings";
+import {loadSpecFromAgent} from "@/views/interface/service";
 
 const {t} = useI18n();
 // const {topNavEnable} = toRefs(props);
 
-const handleChange = (info) => {
-  if (info.file.status !== 'uploading') {
-    console.log(info.file, info.fileList);
+const isElectron = ref(!!window.require)
+const modelRef = ref({
+  type: 'openapi3',
+  url: 'https://gitee.com/deeptest-com/deeptest/raw/main/xdoc/openapi/openapi3/callbacks.yml'
+} as any)
+
+let ipcRenderer = undefined as any
+
+if (isElectron.value && !ipcRenderer) {
+  ipcRenderer = window.require('electron').ipcRenderer
+
+  ipcRenderer.on(settings.electronMsgReplay, (event, data) => {
+    console.log('from electron: ', data)
+    modelRef.value.path = data.path
+
+    if (modelRef.value.type === 'postman') { // already converted by postman
+      modelRef.value.content = data.content
+    } else { // call agent to convert
+      loadSpecFromAgent(modelRef.value.path, modelRef.value.type).then((json) => {
+        if (json.code === 0) {
+          console.log(json.data)
+          modelRef.value.content = json.data.content
+        }
+      })
+    }
+  })
+}
+
+const load = (src) => {
+  console.log('load')
+  if (!isElectron.value) return
+
+  const data = {act: 'loadSpec', type: modelRef.value.type, src: src} as any
+  if (src === 'url') {
+    data.url = modelRef.value.url
   }
-  if (info.file.status === 'done') {
-    message.success(`${info.file.name} file uploaded successfully`);
-  } else if (info.file.status === 'error') {
-    message.error(`${info.file.name} file upload failed.`);
-  }
-};
+
+  console.log(data)
+  ipcRenderer.send(settings.electronMsg, data)
+}
 
 const fileList = ref([]);
 

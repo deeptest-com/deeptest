@@ -4,16 +4,18 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/getkin/kin-openapi/openapi3"
+	"net/url"
+	"strings"
 )
 
 type SpecService struct {
 }
 
-func (s *SpecService) Load(path, typ string) (content string, err error) {
+func (s *SpecService) Load(pathOrUrl, typ string) (content string, err error) {
 	var doc3 *openapi3.T
 
 	//if typ == "openapi2" {
-	//	v2Content := _fileUtils.ReadFileBuf(path)
+	//	v2Content := _fileUtils.ReadFileBuf(pathOrUrl)
 	//
 	//	var doc2 openapi2.T
 	//	err = json.Unmarshal(v2Content, &doc2)
@@ -39,7 +41,16 @@ func (s *SpecService) Load(path, typ string) (content string, err error) {
 	ctx := context.Background()
 	loader := &openapi3.Loader{Context: ctx, IsExternalRefsAllowed: true}
 
-	doc3, err = loader.LoadFromFile(path)
+	if strings.HasPrefix(pathOrUrl, "http") {
+		u, err := url.Parse(pathOrUrl)
+		doc3, err = loader.LoadFromURI(u)
+		if err != nil {
+			return
+		}
+	} else {
+		doc3, err = loader.LoadFromFile(pathOrUrl)
+	}
+
 	if err != nil {
 		return
 	}

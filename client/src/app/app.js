@@ -13,6 +13,9 @@ const cp = require('child_process');
 const fs = require('fs');
 const pth = require('path');
 
+const bent = require('bent');
+const getBuffer = bent('buffer')
+
 export class DeepTestApp {
     constructor() {
         app.name = Lang.string('app.title', Config.pkg.displayName);
@@ -64,10 +67,10 @@ export class DeepTestApp {
         await mainWin.loadURL(url);
 
         ipcMain.on(electronMsg, (event, arg) => {
-            logInfo('msg from renderer: ' + arg.act + ', ' + arg.type)
+            logInfo('msg from renderer: ' + arg.act + ', ' + arg.type + ', ' + arg.src + ', ' + arg.url)
 
-            if (arg.act == 'selectSpec') {
-                this.showSpecSelection(event, arg)
+            if (arg.act == 'loadSpec') {
+                this.loadSpec(event, arg)
                 return
             }
 
@@ -164,6 +167,22 @@ export class DeepTestApp {
             // 在 OS X 系统上，可能存在所有应用窗口关闭了，但是程序还没关闭，此时如果收到激活应用请求，需要重新打开应用窗口并创建应用菜单。
             this.openOrCreateWindow()
         });
+    }
+
+    loadSpec(event, arg) {
+        console.log('loadSpec', arg)
+
+        if (arg.src === 'url') {
+            this.loadFromUrl(event, arg)
+        } else {
+            this.showSpecSelection(event, arg)
+        }
+    }
+
+    async loadFromUrl(event, arg) {
+        console.log('loadFromUrl')
+        const buffer = await getBuffer(arg.url)
+        console.log('buffer', buffer)
     }
 
     showSpecSelection(event, arg) {

@@ -12,10 +12,10 @@ type SpecCtrl struct {
 
 // Load 解析定义文件
 func (c *SpecCtrl) Load(ctx iris.Context) {
-	pth := ctx.URLParam("path")
-	typ := ctx.URLParam("type")
+	pathOrUrl := ctx.URLParam("path")
+	specType := ctx.URLParam("type")
 
-	content, err := c.SpecService.Load(pth, typ)
+	content, err := c.SpecService.Load(pathOrUrl, specType)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
 		return

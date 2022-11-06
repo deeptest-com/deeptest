@@ -35,9 +35,9 @@ module.exports = {
         }
     ],
     plugins: [
-        [
-            '@electron-forge/plugin-webpack',
-            {
+        {
+            "name": '@electron-forge/plugin-webpack',
+            "config": {
                 mainConfig: './webpack.main.config.js',
                 renderer: {
                     config: './webpack.renderer.config.js',
@@ -50,6 +50,6 @@ module.exports = {
                     ]
                 }
             }
-        ]
+        }
     ]
 }

@@ -12,12 +12,10 @@
             <a-input-search
                 v-if="isElectron"
                 v-model:value="modelRef.path"
-                @search="selectFile"
-            >
+                @search="selectFile">
               <template #enterButton>
                 <a-button  >选择文件</a-button>
               </template>
-
             </a-input-search>
 
             <div v-if="!isElectron">请使用客户端导入</div>
@@ -102,7 +100,7 @@ export default defineComponent({
 
       if (!isElectron.value) return
 
-      ipcRenderer.send(settings.electronMsg, {act: 'selectSpec', type: modelRef.value.type})
+      ipcRenderer.send(settings.electronMsg, {act: 'loadSpec', type: modelRef.value.type, src: 'file'})
     }
 
     const fileList = ref([]);

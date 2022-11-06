@@ -45,10 +45,10 @@ func NewIndexModule() *IndexModule {
 // Party v1 模块
 func (m *IndexModule) Party() module.WebModule {
 	handler := func(v1 iris.Party) {
-		if !serverConfig.CONFIG.Limit.Disable {
+		if !config.CONFIG.Limit.Disable {
 			limitV1 := rate.Limit(
-				serverConfig.CONFIG.Limit.Limit,
-				serverConfig.CONFIG.Limit.Burst,
+				config.CONFIG.Limit.Limit,
+				config.CONFIG.Limit.Burst,
 				rate.PurgeEvery(time.Minute, 5*time.Minute))
 			v1.Use(limitV1)
 		}

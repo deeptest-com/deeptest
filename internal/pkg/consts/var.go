@@ -10,4 +10,8 @@ var (
 	WorkDir   string
 
 	Port int
+
+	FolderTmp = "tmp"
+	HomeDir   = ""
+	TmpDir    = ""
 )

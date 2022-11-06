@@ -1,6 +1,8 @@
 package _fileUtils
 
 import (
+	"bytes"
+	"errors"
 	"fmt"
 	"github.com/aaronchen2k/deeptest/pkg/consts"
 	_commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
@@ -8,8 +10,10 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"os/user"
 	"path"
 	"path/filepath"
+	"runtime"
 	"strings"
 )
 
@@ -215,4 +219,57 @@ func ListDir(pth string) (ret []string, err error) {
 	}
 
 	return
+}
+
+func GetUserHome() (dir string, err error) {
+	user, err := user.Current()
+	if err == nil {
+		dir = user.HomeDir
+	} else { // cross compile support
+
+		if "windows" == runtime.GOOS { // windows
+			dir, err = homeWindows()
+		} else { // Unix-like system, so just assume Unix
+			dir, err = homeUnix()
+		}
+	}
+
+	dir = AddSepIfNeeded(dir)
+
+	return
+}
+func homeUnix() (string, error) {
+	// First prefer the HOME environmental variable
+	if home := os.Getenv("HOME"); home != "" {
+		return home, nil
+	}
+
+	// If that fails, try the shell
+	var stdout bytes.Buffer
+	cmd := exec.Command("sh", "-c", "eval echo ~$USER")
+	cmd.Stdout = &stdout
+	if err := cmd.Run(); err != nil {
+		return "", err
+	}
+
+	result := strings.TrimSpace(stdout.String())
+	if result == "" {
+		return "", errors.New("blank output when reading home directory")
+	}
+
+	return result, nil
+}
+
+func homeWindows() (string, error) {
+	drive := os.Getenv("HOMEDRIVE")
+	path := os.Getenv("HOMEPATH")
+	home := drive + path
+	if drive == "" || path == "" {
+		home = os.Getenv("USERPROFILE")
+	}
+	if home == "" {
+		return "", errors.New("HOMEDRIVE, HOMEPATH, and USERPROFILE are blank")
+	}
+
+	return home, nil
 }

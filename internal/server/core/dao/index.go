@@ -26,7 +26,7 @@ var (
 // GetDB 数据库单例
 func GetDB() *gorm.DB {
 	once.Do(func() {
-		switch serverConfig.CONFIG.System.DbType {
+		switch config.CONFIG.System.DbType {
 		case "sqlite":
 			db = GormSQLLite()
 		case "mysql":
@@ -94,7 +94,7 @@ func DBFile() string {
 
 // GormMySQL 初始化Mysql数据库
 func GormMySQL() *gorm.DB {
-	m := serverConfig.CONFIG.Mysql
+	m := config.CONFIG.Mysql
 	if m.Dbname == "" {
 		return nil
 	}
@@ -119,7 +119,7 @@ func GormMySQL() *gorm.DB {
 // gormConfig 根据配置决定是否开启日志
 func gormConfig(mod bool) *gorm.Config {
 	var config = &gorm.Config{DisableForeignKeyConstraintWhenMigrating: true}
-	switch serverConfig.CONFIG.Mysql.LogZap {
+	switch config.CONFIG.Mysql.LogZap {
 	case "silent", "Silent":
 		config.Logger = Default.LogMode(logger.Silent)
 	case "error", "SendErrorMsg":

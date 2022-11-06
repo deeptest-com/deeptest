@@ -75,11 +75,11 @@ export async function remove(id: number): Promise<any> {
     });
 }
 
-export async function loadSpecFromAgent(path, type): Promise<any> {
+export async function submitSpec(data): Promise<any> {
     return requestToAgent({
-        url: `/${apiSpec}/load`,
+        url: `/${apiSpec}/submitSpec`,
         method: 'POST',
-        params: {path: path, type: type},
+        data,
     });
 }
 

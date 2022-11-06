@@ -2,7 +2,6 @@ package handler
 
 import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
-	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/server/core/web/validate"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
@@ -44,7 +43,7 @@ func (c *DataCtrl) Check(ctx iris.Context) {
 			"needInit": true,
 		}, Msg: str.Join(_domain.NeedInitErr.Msg, ":数据库初始化失败")})
 		return
-	} else if serverConfig.CONFIG.System.CacheType == "redis" && serverConfig.CACHE == nil {
+	} else if config.CONFIG.System.CacheType == "redis" && config.CACHE == nil {
 		ctx.JSON(_domain.Response{Code: _domain.NeedInitErr.Code, Data: iris.Map{
 			"needInit": true,
 		}, Msg: str.Join(_domain.NeedInitErr.Msg, ":缓存驱动初始化失败")})

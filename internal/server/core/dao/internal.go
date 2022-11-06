@@ -3,7 +3,6 @@ package dao
 import (
 	"context"
 	"fmt"
-	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"io/ioutil"
 	"log"
@@ -134,7 +133,7 @@ func (c *customLogger) Trace(ctx context.Context, begin time.Time, fc func() (st
 }
 
 func (c *customLogger) Printf(message string, data ...interface{}) {
-	if serverConfig.CONFIG.Mysql.LogZap != "" {
+	if config.CONFIG.Mysql.LogZap != "" {
 		switch len(data) {
 		case 0:
 			logUtils.Infof(message)

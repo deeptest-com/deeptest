@@ -18,10 +18,10 @@ func NewDataRepo() *DataRepo {
 // CreateMySqlDb 创建数据库(mysql)
 func (s *DataRepo) CreateMySqlDb() error {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s)/",
-		serverConfig.CONFIG.Mysql.Username, serverConfig.CONFIG.Mysql.Password,
-		serverConfig.CONFIG.Mysql.Url)
+		config.CONFIG.Mysql.Username, config.CONFIG.Mysql.Password,
+		config.CONFIG.Mysql.Url)
 	createSql := fmt.Sprintf("CREATE DATABASE IF NOT EXISTS `%s` DEFAULT CHARACTER SET utf8mb4 DEFAULT COLLATE utf8mb4_general_ci;",
-		serverConfig.CONFIG.Mysql.Dbname)
+		config.CONFIG.Mysql.Dbname)
 
 	db, err := sql.Open("mysql", dsn)
 	if err != nil {

@@ -23,7 +23,7 @@ func (webServer *WebServer) InitRouter() error {
 	app := webServer.app.Party("/").AllowMethods(iris.MethodOptions)
 	{
 		app.Use(middleware.InitCheck())
-		if serverConfig.CONFIG.System.Level == "debug" {
+		if config.CONFIG.System.Level == "debug" {
 			debug := DebugParty()
 			app.PartyFunc(debug.RelativePath, debug.Handler)
 		}
@@ -35,7 +35,7 @@ func (webServer *WebServer) InitRouter() error {
 			return fmt.Errorf("build router %w", err)
 		}
 
-		serverConfig.PermRoutes = webServer.GetSources()
+		config.PermRoutes = webServer.GetSources()
 
 		return nil
 	}

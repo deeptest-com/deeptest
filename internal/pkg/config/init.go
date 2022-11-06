@@ -1,10 +1,11 @@
-package serverConfig
+package config
 
 import (
 	"bytes"
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	myZap "github.com/aaronchen2k/deeptest/pkg/core/zap"
+	_fileUtils "github.com/aaronchen2k/deeptest/pkg/lib/file"
 	_resUtils "github.com/aaronchen2k/deeptest/pkg/lib/res"
 	"github.com/go-redis/redis/v8"
 	"path/filepath"
@@ -22,6 +23,15 @@ var (
 )
 
 func Init(app string) {
+	if app == "agent" {
+		home, _ := _fileUtils.GetUserHome()
+		consts.HomeDir = filepath.Join(home, consts.App)
+
+		consts.TmpDir = filepath.Join(consts.HomeDir, consts.FolderTmp)
+
+		_fileUtils.MkDirIfNeeded(consts.TmpDir)
+	}
+
 	v := viper.New()
 	VIPER = v
 	VIPER.SetConfigType("yaml")

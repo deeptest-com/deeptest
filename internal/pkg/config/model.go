@@ -1,4 +1,4 @@
-package serverConfig
+package config
 
 import (
 	"fmt"

@@ -35,8 +35,8 @@ func NewDataService() *DataService {
 }
 
 // writeConfig 写入配置文件
-func (s *DataService) writeConfig(viper *viper.Viper, conf serverConfig.Config) error {
-	cs := str.StructToMap(serverConfig.CONFIG)
+func (s *DataService) writeConfig(viper *viper.Viper, conf config.Config) error {
+	cs := str.StructToMap(config.CONFIG)
 	for k, v := range cs {
 		viper.Set(k, v)
 	}
@@ -44,7 +44,7 @@ func (s *DataService) writeConfig(viper *viper.Viper, conf serverConfig.Config) 
 }
 
 // 回滚配置
-func (s *DataService) refreshConfig(viper *viper.Viper, conf serverConfig.Config) error {
+func (s *DataService) refreshConfig(viper *viper.Viper, conf config.Config) error {
 	err := s.writeConfig(viper, conf)
 	if err != nil {
 		logUtils.Errorf("还原配置文件设置错误", zap.String("refreshConfig(consts.VIPER)", err.Error()))
@@ -55,17 +55,17 @@ func (s *DataService) refreshConfig(viper *viper.Viper, conf serverConfig.Config
 
 // InitDB 创建数据库并初始化
 func (s *DataService) InitDB(req v1.DataReq) error {
-	defaultConfig := serverConfig.CONFIG
-	if serverConfig.VIPER == nil {
+	defaultConfig := config.CONFIG
+	if config.VIPER == nil {
 		logUtils.Errorf("初始化错误", zap.String("InitDB", ErrViperEmpty.Error()))
 		return ErrViperEmpty
 	}
 
-	if serverConfig.CONFIG.System.CacheType == "redis" {
-		serverConfig.CONFIG.Redis = serverConfig.Redis{
-			DB:       serverConfig.CONFIG.Redis.DB,
-			Addr:     serverConfig.CONFIG.Redis.Addr,
-			Password: serverConfig.CONFIG.Redis.Password,
+	if config.CONFIG.System.CacheType == "redis" {
+		config.CONFIG.Redis = config.Redis{
+			DB:       config.CONFIG.Redis.DB,
+			Addr:     config.CONFIG.Redis.Addr,
+			Password: config.CONFIG.Redis.Password,
 		}
 		err := cache.Init() // redis缓存
 		if err != nil {
@@ -74,26 +74,26 @@ func (s *DataService) InitDB(req v1.DataReq) error {
 		}
 	}
 
-	if serverConfig.CONFIG.System.DbType == "mysql" {
+	if config.CONFIG.System.DbType == "mysql" {
 		if err := s.DataRepo.CreateMySqlDb(); err != nil {
 			return err
 		}
 	}
 
-	if err := s.writeConfig(serverConfig.VIPER, serverConfig.CONFIG); err != nil {
+	if err := s.writeConfig(config.VIPER, config.CONFIG); err != nil {
 		logUtils.Errorf("更新配置文件错误", zap.String("writeConfig(consts.VIPER)", err.Error()))
 	}
 
 	if s.DataRepo.DB == nil {
 		logUtils.Error("数据库初始化错误")
-		s.refreshConfig(serverConfig.VIPER, defaultConfig)
+		s.refreshConfig(config.VIPER, defaultConfig)
 		return errors.New("数据库初始化错误")
 	}
 
 	err := s.DataRepo.DB.AutoMigrate(model.Models...)
 	if err != nil {
 		logUtils.Errorf("迁移数据表错误", zap.String("错误:", err.Error()))
-		s.refreshConfig(serverConfig.VIPER, defaultConfig)
+		s.refreshConfig(config.VIPER, defaultConfig)
 		return err
 	}
 
@@ -106,7 +106,7 @@ func (s *DataService) InitDB(req v1.DataReq) error {
 		)
 		if err != nil {
 			logUtils.Errorf("填充数据错误", zap.String("错误:", err.Error()))
-			s.refreshConfig(serverConfig.VIPER, defaultConfig)
+			s.refreshConfig(config.VIPER, defaultConfig)
 			return err
 		}
 	}

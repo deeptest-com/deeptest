@@ -52,7 +52,7 @@ type WebServer struct {
 
 // Init 初始化web服务
 func Init() *WebServer {
-	serverConfig.Init("server")
+	config.Init("server")
 	zapLog.Init("server")
 	_i118Utils.Init(consts.Language, "")
 
@@ -64,7 +64,7 @@ func Init() *WebServer {
 
 	app := iris.New()
 	app.Validator = validator.New() //参数验证
-	app.Logger().SetLevel(serverConfig.CONFIG.System.Level)
+	app.Logger().SetLevel(config.CONFIG.System.Level)
 	idleConnClosed := make(chan struct{})
 	iris.RegisterOnInterrupt(func() { //优雅退出
 		timeout := 10 * time.Second
@@ -93,11 +93,11 @@ func Init() *WebServer {
 
 	return &WebServer{
 		app:               app,
-		addr:              serverConfig.CONFIG.System.ServerAddress,
-		timeFormat:        serverConfig.CONFIG.System.TimeFormat,
-		staticPrefix:      serverConfig.CONFIG.System.StaticPrefix,
-		staticPath:        serverConfig.CONFIG.System.StaticPath,
-		webPath:           serverConfig.CONFIG.System.WebPath,
+		addr:              config.CONFIG.System.ServerAddress,
+		timeFormat:        config.CONFIG.System.TimeFormat,
+		staticPrefix:      config.CONFIG.System.StaticPrefix,
+		staticPath:        config.CONFIG.System.StaticPath,
+		webPath:           config.CONFIG.System.WebPath,
 		idleConnClosed:    idleConnClosed,
 		globalMiddlewares: []context.Handler{},
 	}

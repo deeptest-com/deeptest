@@ -47,7 +47,7 @@ import { UploadOutlined } from '@ant-design/icons-vue';
 
 import RightTopWebsocket from './RightTopWebsocket.vue';
 import settings from "@/config/settings";
-import {loadSpecFromAgent} from "@/views/interface/service";
+import {submitSpec} from "@/views/interface/service";
 
 const {t} = useI18n();
 // const {topNavEnable} = toRefs(props);
@@ -56,7 +56,8 @@ const isElectron = ref(!!window.require)
 const modelRef = ref({
   type: 'openapi3',
   // url: 'https://gitee.com/deeptest-com/deeptest/raw/main/xdoc/openapi/openapi3/callbacks.yml'
-  url: 'https://gitee.com/deeptest-com/deeptest/raw/main/xdoc/openapi/postman/v21/PostmantoOpenAPI.json'
+   url: 'https://gitee.com/deeptest-com/deeptest/raw/main/xdoc/openapi/swagger/swagger.json'
+  // url: 'https://gitee.com/deeptest-com/deeptest/raw/main/xdoc/openapi/postman/v21/PostmantoOpenAPI.json'
 } as any)
 
 let ipcRenderer = undefined as any
@@ -66,20 +67,12 @@ if (isElectron.value && !ipcRenderer) {
 
   ipcRenderer.on(settings.electronMsgReplay, (event, data) => {
     console.log('from electron: ', data)
-    modelRef.value.path = data.path
 
-    if (data.content) { // already converted by postman OR from url
-      modelRef.value.content = data.content
-
-    } else { // call agent to convert
-      loadSpecFromAgent(modelRef.value.path, modelRef.value.type).then((json) => {
-        if (json.code === 0) {
-          console.log('loadSpecFromAgent', json.data)
-          modelRef.value.content = json.data.content
-        }
-      })
-
-    }
+    submitSpec(data).then((json) => {
+      if (json.code === 0) {
+        console.log('submitSpec', json.data)
+      }
+    })
   })
 }
 

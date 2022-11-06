@@ -18,7 +18,7 @@ func NewFileModule() *FileModule {
 // Party 上传文件模块
 func (m *FileModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
-		index.Post("/", iris.LimitRequestBodySize(serverConfig.CONFIG.MaxSize+1<<20), m.FileCtrl.Upload).Name = "上传文件"
+		index.Post("/", iris.LimitRequestBodySize(config.CONFIG.MaxSize+1<<20), m.FileCtrl.Upload).Name = "上传文件"
 	}
 	return module.NewModule("/upload", handler)
 }

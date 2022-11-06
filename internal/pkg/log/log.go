@@ -18,14 +18,14 @@ func Init(app string) {
 
 	logDir := "log"
 	if app == "server" {
-		logDir = serverConfig.CONFIG.Zap.Director
+		logDir = config.CONFIG.Zap.Director
 	}
 
 	if !dir.IsExist(logDir) { // 幕布不能存在创建
 		dir.InsureDir(logDir)
 	}
 
-	switch serverConfig.CONFIG.Zap.Level { // 初始化配置文件的Level
+	switch config.CONFIG.Zap.Level { // 初始化配置文件的Level
 	case "debug":
 		level = zap.DebugLevel
 	case "info":
@@ -49,7 +49,7 @@ func Init(app string) {
 	} else {
 		logger = zap.New(myZap.GetEncoderCore(level))
 	}
-	if serverConfig.CONFIG.Zap.ShowLine {
+	if config.CONFIG.Zap.ShowLine {
 		logger = logger.WithOptions(zap.AddCaller())
 	}
 

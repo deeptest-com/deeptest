@@ -41,7 +41,7 @@
 <script lang="ts">
 import {defineComponent, Ref, ref, PropType, onMounted, getCurrentInstance, onUnmounted} from "vue";
 import settings from "@/config/settings";
-import {loadSpecFromAgent} from "@/views/interface/service";
+import {submitSpec} from "@/views/interface/service";
 
 export default defineComponent({
   name: 'ImportModal',
@@ -72,18 +72,13 @@ export default defineComponent({
 
       ipcRenderer.on(settings.electronMsgReplay, (event, data) => {
         console.log('from electron: ', data)
-        modelRef.value.path = data.path
+        modelRef.value.file = data.file
 
-        if (modelRef.value.type === 'postman') { // already converted by postman
-          modelRef.value.content = data.content
-        } else { // call agent to convert
-          loadSpecFromAgent(modelRef.value.path, modelRef.value.type).then((json) => {
-            if (json.code === 0) {
-              console.log(json.data)
-              modelRef.value.content = json.data.content
-            }
-          })
-        }
+        // submitSpec(data).then((json) => {
+        //   if (json.code === 0) {
+        //     console.log(json.data)
+        //   }
+        // })
       })
     }
 

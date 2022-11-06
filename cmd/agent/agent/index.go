@@ -50,13 +50,13 @@ type WebServer struct {
 
 // Init 初始化web服务
 func Init() *WebServer {
-	serverConfig.Init("agent")
+	config.Init("agent")
 	zapLog.Init("agent")
 	_i118Utils.Init(consts.Language, "")
 
 	app := iris.New()
 	app.Validator = validator.New() //参数验证
-	app.Logger().SetLevel(serverConfig.CONFIG.System.Level)
+	app.Logger().SetLevel(config.CONFIG.System.Level)
 	idleConnClosed := make(chan struct{})
 	iris.RegisterOnInterrupt(func() { //优雅退出
 		timeout := 10 * time.Second
@@ -84,17 +84,17 @@ func Init() *WebServer {
 	websocketAPI.Get("/", websocket.Handler(websocketServer))
 
 	if consts.Port != 0 {
-		serverConfig.CONFIG.System.AgentAddress =
-			fmt.Sprintf("%s:%d", strings.Split(serverConfig.CONFIG.System.AgentAddress, ":")[0], consts.Port)
+		config.CONFIG.System.AgentAddress =
+			fmt.Sprintf("%s:%d", strings.Split(config.CONFIG.System.AgentAddress, ":")[0], consts.Port)
 	}
 
 	return &WebServer{
 		app:               app,
-		addr:              serverConfig.CONFIG.System.AgentAddress,
-		timeFormat:        serverConfig.CONFIG.System.TimeFormat,
-		staticPrefix:      serverConfig.CONFIG.System.StaticPrefix,
-		staticPath:        serverConfig.CONFIG.System.StaticPath,
-		webPath:           serverConfig.CONFIG.System.WebPath,
+		addr:              config.CONFIG.System.AgentAddress,
+		timeFormat:        config.CONFIG.System.TimeFormat,
+		staticPrefix:      config.CONFIG.System.StaticPrefix,
+		staticPath:        config.CONFIG.System.StaticPath,
+		webPath:           config.CONFIG.System.WebPath,
 		idleConnClosed:    idleConnClosed,
 		globalMiddlewares: []context.Handler{},
 	}

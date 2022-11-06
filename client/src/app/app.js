@@ -7,7 +7,6 @@ import Config from './utils/config';
 import Lang, {initLang} from './core/lang';
 import {startUIService} from "./core/ui";
 import {startAgent, killAgent} from "./core/deeptest";
-import postmanToOpenApi from "postman-to-openapi";
 import logger from "electron-log";
 
 const cp = require('child_process');
@@ -17,9 +16,10 @@ const pth = require('path');
 const bent = require('bent');
 const getBuffer = bent('buffer')
 
+const postmanToOpenApi = require('postman-to-openapi')
+
 const workDir = pth.join(require("os").homedir(), 'deeptest');
 const tempDir = pth.join(workDir, 'tmp');
-fs.mkdirSync(tempDir);
 
 export class DeepTestApp {
     constructor() {
@@ -179,68 +179,44 @@ export class DeepTestApp {
         if (arg.src === 'url') {
             this.loadFromUrl(event, arg)
         } else {
-            this.showSpecSelection(event, arg)
+            this.showFileSelection(event, arg)
         }
     }
 
     async loadFromUrl(event, arg) {
         logInfo('loadFromUrl')
         const buffer = await getBuffer(arg.url)
-        logInfo('buffer', buffer.toString())
 
-        this.replyLoadApiSpec(event, arg.type, 'url', null, buffer.toString())
+        const index = arg.url.lastIndexOf('/')
+        const fileName = arg.url.substring(index)
+        const file = pth.join(tempDir, fileName);
+
+        fs.createWriteStream(file, {flags:"w", start:0}).end(buffer)
+
+        this.replyLoadApiSpec(event, arg.type, 'url', file, arg.url)
     }
 
-    showSpecSelection(event, arg) {
-        logInfo('showSpecSelection')
+    async showFileSelection(event, arg) {
+        logInfo('showFileSelection')
 
-        dialog.showOpenDialog({
-            properties: ['openFile']
-        }).then(result => {
-            if (!result.filePaths || result.filePaths.length == 0) return
-
+        const result = await dialog.showOpenDialog({properties: ['openFile']})
+        if (result.filePaths && result.filePaths.length > 0) {
             this.replyLoadApiSpec(event, arg.type, 'file', result.filePaths[0], null)
-        }).catch(err => {
-            logErr(err)
-        })
+        }
     }
 
-    replyLoadApiSpec(event, type, src, file, content)  {
-        console.log(`replyLoadApiSpec`)
+    async replyLoadApiSpec(event, type, src, file, url) {
+        console.log(`replyLoadApiSpec`, type, src, file, url)
 
-        const isPostMan = (src === 'file' && type === 'postman') || (src === 'url' && content.indexOf('postman') > -1)
-        const isLoadFromUrl = src === 'url'
+        let content = fs.readFileSync(file)
+
+        const isPostMan = type === 'postman' || content.indexOf('postman') > -1
 
         if (isPostMan) {
-            console.log(`convert postman spec`)
-
-            if (content) { // save postman content to disc for converting if needed
-                file = pth.join(tempDir, 'postman.json');
-                fs.createWriteStream(file, {
-                    flags:"w",
-                    start:0
-                }).end(content)
-            }
-
-            const postmanToOpenApi = require('postman-to-openapi')
-            postmanToOpenApi(file, null, { defaultTag: 'General' })
-                .then(content => {
-                    // console.log(`OpenAPI specs: ${content}`)
-                    event.reply(electronMsgReplay, {content: content, src: src, type: type, path: file});
-                })
-                .catch(err => {
-                    console.log(err)
-                })
-
-        } else if (isLoadFromUrl) {
-            console.log(`read from url`)
-            event.reply(electronMsgReplay, {content: content, src: src, type: type, path: file});
-
-        } else if (!!file) {
-            console.log(`read from file`)
-            event.reply(electronMsgReplay, {content: undefined, src: src, type: type, path: file});
-
+            content = await postmanToOpenApi(file, null, {defaultTag: 'General'})
         }
+
+        event.reply(electronMsgReplay, {src: src, type: type, content: content, file: file, url: url});
     }
 
     // common file selection

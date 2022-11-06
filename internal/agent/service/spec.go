@@ -3,15 +3,14 @@ package service
 import (
 	"context"
 	"encoding/json"
+	"github.com/aaronchen2k/deeptest/cmd/agent/v1/domain"
 	"github.com/getkin/kin-openapi/openapi3"
-	"net/url"
-	"strings"
 )
 
 type SpecService struct {
 }
 
-func (s *SpecService) Load(pathOrUrl, typ string) (content string, err error) {
+func (s *SpecService) SubmitSpec(req domain.SubmitSpecReq) (content string, err error) {
 	var doc3 *openapi3.T
 
 	//if typ == "openapi2" {
@@ -41,20 +40,7 @@ func (s *SpecService) Load(pathOrUrl, typ string) (content string, err error) {
 	ctx := context.Background()
 	loader := &openapi3.Loader{Context: ctx, IsExternalRefsAllowed: true}
 
-	if strings.HasPrefix(pathOrUrl, "http") {
-		var u *url.URL
-		u, err = url.Parse(pathOrUrl)
-		if err != nil {
-			return
-		}
-
-		doc3, err = loader.LoadFromURI(u)
-		if err != nil {
-			return
-		}
-	} else {
-		doc3, err = loader.LoadFromFile(pathOrUrl)
-	}
+	doc3, err = loader.LoadFromData([]byte(req.Content))
 
 	if err != nil {
 		return

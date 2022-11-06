@@ -176,6 +176,7 @@ export class DeepTestApp {
 
     // load spec
     loadSpec(event, arg) {
+        console.log(arg)
         if (arg.src === 'url') {
             this.loadFromUrl(event, arg)
         } else {
@@ -191,7 +192,7 @@ export class DeepTestApp {
         const fileName = arg.url.substring(index)
         const file = pth.join(tempDir, fileName);
 
-        fs.createWriteStream(file, {flags:"w", start:0}).end(buffer)
+        fs.writeFileSync(file, buffer)
 
         this.replyLoadApiSpec(event, arg.type, 'url', file, arg.url)
     }
@@ -208,7 +209,7 @@ export class DeepTestApp {
     async replyLoadApiSpec(event, type, src, file, url) {
         console.log(`replyLoadApiSpec`, type, src, file, url)
 
-        let content = fs.readFileSync(file)
+        let content = fs.readFileSync(file).toString()
 
         const isPostMan = type === 'postman' || content.indexOf('postman') > -1
 

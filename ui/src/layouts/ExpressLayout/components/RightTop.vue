@@ -56,8 +56,8 @@ const isElectron = ref(!!window.require)
 const modelRef = ref({
   type: 'openapi3',
   // url: 'https://gitee.com/deeptest-com/deeptest/raw/main/xdoc/openapi/openapi3/callbacks.yml'
-   url: 'https://gitee.com/deeptest-com/deeptest/raw/main/xdoc/openapi/swagger/swagger.json'
-  // url: 'https://gitee.com/deeptest-com/deeptest/raw/main/xdoc/openapi/postman/v21/PostmantoOpenAPI.json'
+  //  url: 'https://gitee.com/deeptest-com/deeptest/raw/main/xdoc/openapi/swagger/swagger.json'
+  url: 'https://gitee.com/deeptest-com/deeptest/raw/main/xdoc/openapi/postman/v21/PostmantoOpenAPI.json'
 } as any)
 
 let ipcRenderer = undefined as any
@@ -69,9 +69,10 @@ if (isElectron.value && !ipcRenderer) {
     console.log('from electron: ', data)
 
     submitSpec(data).then((json) => {
-      if (json.code === 0) {
-        console.log('submitSpec', json.data)
-      }
+      console.log('submitSpec', json)
+      // if (json.code === 0) {
+      //
+      // }
     })
   })
 }

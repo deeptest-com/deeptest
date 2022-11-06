@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"encoding/json"
 	"github.com/aaronchen2k/deeptest/cmd/agent/v1/domain"
 	"github.com/getkin/kin-openapi/openapi3"
 )
@@ -10,9 +9,7 @@ import (
 type SpecService struct {
 }
 
-func (s *SpecService) SubmitSpec(req domain.SubmitSpecReq) (content string, err error) {
-	var doc3 *openapi3.T
-
+func (s *SpecService) SubmitSpec(req domain.SubmitSpecReq) (doc3 *openapi3.T, err error) {
 	//if typ == "openapi2" {
 	//	v2Content := _fileUtils.ReadFileBuf(pathOrUrl)
 	//
@@ -48,13 +45,6 @@ func (s *SpecService) SubmitSpec(req domain.SubmitSpecReq) (content string, err 
 
 	//_ := doc3.Validate(ctx)
 
-	var bytes []byte
-	bytes, err = json.Marshal(doc3)
-	if err != nil {
-		return
-	}
-
-	content = string(bytes)
 	//}
 
 	return

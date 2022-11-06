@@ -3,14 +3,14 @@ import {DEBUG} from './consts';
 logger.transports.file.resolvePath = () =>
     require("path").join(require("os").homedir(), 'deeptest', 'log', 'electron.log');
 
-export function logDebug(str) {
+export function logDebug(...params) {
     if (DEBUG) {
-        logger.debug(str);
+        logger.debug(params);
     }
 }
-export function logInfo(str) {
-    logger.info(str);
+export function logInfo(...params) {
+    logger.info(params.join(', '));
 }
-export function logErr(str) {
-    logger.error(str);
+export function logErr(...params) {
+    logger.error(params);
 }

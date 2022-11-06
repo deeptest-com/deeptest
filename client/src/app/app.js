@@ -16,7 +16,7 @@ const pth = require('path');
 const bent = require('bent');
 const getBuffer = bent('buffer')
 
-const postmanToOpenApi = require('postman-to-openapi')
+let postmanToOpenApi = null
 
 const workDir = pth.join(require("os").homedir(), 'deeptest');
 const tempDir = pth.join(workDir, 'tmp');
@@ -176,11 +176,10 @@ export class DeepTestApp {
 
     // load spec
     loadSpec(event, arg) {
-        console.log(arg)
         if (arg.src === 'url') {
             this.loadFromUrl(event, arg)
         } else {
-            this.showFileSelection(event, arg)
+            this.showSpecSelection(event, arg)
         }
     }
 
@@ -197,10 +196,9 @@ export class DeepTestApp {
         this.replyLoadApiSpec(event, arg.type, 'url', file, arg.url)
     }
 
-    async showFileSelection(event, arg) {
-        logInfo('showFileSelection')
-
+    async showSpecSelection(event, arg) {
         const result = await dialog.showOpenDialog({properties: ['openFile']})
+
         if (result.filePaths && result.filePaths.length > 0) {
             this.replyLoadApiSpec(event, arg.type, 'file', result.filePaths[0], null)
         }
@@ -209,15 +207,20 @@ export class DeepTestApp {
     async replyLoadApiSpec(event, type, src, file, url) {
         console.log(`replyLoadApiSpec`, type, src, file, url)
 
+        // load the content to check that if it is a postman file
         let content = fs.readFileSync(file).toString()
 
         const isPostMan = type === 'postman' || content.indexOf('postman') > -1
 
         if (isPostMan) {
-            content = await postmanToOpenApi(file, null, {defaultTag: 'General'})
+            if (!postmanToOpenApi) postmanToOpenApi = require('postman-to-openapi')
+
+            const oldFile = file
+            file = pth.join(tempDir, 'postman.json')
+            await postmanToOpenApi(oldFile, file, {defaultTag: 'General'})
         }
 
-        event.reply(electronMsgReplay, {src: src, type: type, content: content, file: file, url: url});
+        event.reply(electronMsgReplay, {src: src, type: type, file: file, url: url});
     }
 
     // common file selection

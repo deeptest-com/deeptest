@@ -4,20 +4,17 @@
       <a-row type="flex" class="nav">
         <a-col flex="auto" class="form">
           <a-row type="flex">
-            <a-col flex="90px">
-              <a-upload
-                  v-model:file-list="fileList"
-                  name="file"
-                  :multiple="false"
-                  @click="load('file')"
-              >
-                <a-button>
-                  <upload-outlined></upload-outlined>
-                  <span>上传文件</span>
-                </a-button>
-              </a-upload>
+            <a-col flex="90px" class="from-file">
+              <a-input-search
+                  v-model:value="modelRef.file"
+                  @search="load('file')">
+                <template #enterButton>
+                  <a-button>上传文件</a-button>
+                </template>
+              </a-input-search>
             </a-col>
-            <a-col flex="auto">
+
+            <a-col flex="auto" class="from-url">
               <a-input-search
                   v-model:value="modelRef.url"
                   placeholder="输入地址"
@@ -55,9 +52,9 @@ const {t} = useI18n();
 const isElectron = ref(!!window.require)
 const modelRef = ref({
   type: 'openapi3',
-  // url: 'https://gitee.com/deeptest-com/deeptest/raw/main/xdoc/openapi/openapi3/callbacks.yml'
+  url: 'https://gitee.com/deeptest-com/deeptest/raw/main/xdoc/openapi/openapi3/callbacks.yml'
   //  url: 'https://gitee.com/deeptest-com/deeptest/raw/main/xdoc/openapi/swagger/swagger.json'
-  url: 'https://gitee.com/deeptest-com/deeptest/raw/main/xdoc/openapi/postman/v21/PostmantoOpenAPI.json'
+  // url: 'https://gitee.com/deeptest-com/deeptest/raw/main/xdoc/openapi/postman/v21/PostmantoOpenAPI.json'
 } as any)
 
 let ipcRenderer = undefined as any
@@ -113,6 +110,14 @@ const fileList = ref([]);
     .nav {
       width: 100%;
       .form {
+        .from-file {
+          .ant-input-search {
+
+            input {
+              display: none;
+            }
+          }
+        }
       }
       .github {
         text-align: right;

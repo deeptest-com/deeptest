@@ -18,6 +18,8 @@ const bent = require('bent');
 const getBuffer = bent('buffer')
 
 const workDir = pth.join(require("os").homedir(), 'deeptest');
+const tempDir = pth.join(workDir, 'tmp');
+fs.mkdirSync(tempDir);
 
 export class DeepTestApp {
     constructor() {
@@ -207,30 +209,37 @@ export class DeepTestApp {
         console.log(`replyLoadApiSpec`)
 
         const isPostMan = (src === 'file' && type === 'postman') || (src === 'url' && content.indexOf('postman') > -1)
+        const isLoadFromUrl = src === 'url'
 
         if (isPostMan) {
             console.log(`convert postman spec`)
 
             if (content) { // save postman content to disc for converting if needed
-                file = pth.join(workDir, 'temp', 'postman.json');
-                fs.createWriteStream(filePath, {
-                    flags:"a",
+                file = pth.join(tempDir, 'postman.json');
+                fs.createWriteStream(file, {
+                    flags:"w",
                     start:0
-                }).end(file)
+                }).end(content)
             }
 
             const postmanToOpenApi = require('postman-to-openapi')
             postmanToOpenApi(file, null, { defaultTag: 'General' })
                 .then(content => {
                     // console.log(`OpenAPI specs: ${content}`)
-                    event.reply(electronMsgReplay, {path: file, content: content});
+                    event.reply(electronMsgReplay, {content: content, src: src, type: type, path: file});
                 })
                 .catch(err => {
                     console.log(err)
                 })
+
+        } else if (isLoadFromUrl) {
+            console.log(`read from url`)
+            event.reply(electronMsgReplay, {content: content, src: src, type: type, path: file});
+
         } else if (!!file) {
             console.log(`read from file`)
-            event.reply(electronMsgReplay, {path: file, content: undefined});
+            event.reply(electronMsgReplay, {content: undefined, src: src, type: type, path: file});
+
         }
     }
 

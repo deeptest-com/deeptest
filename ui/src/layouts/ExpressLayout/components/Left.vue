@@ -109,7 +109,7 @@ import {SearchOutlined} from '@ant-design/icons-vue';</script>
   }
 
   .expresslayout-left-content {
-    padding: 8px;
+    padding: 0 8px 8px 8px;
     height: calc(100% - 50px);
 
     .search {
@@ -169,12 +169,32 @@ import {SearchOutlined} from '@ant-design/icons-vue';</script>
             }
 
             &.put {
-              background-color: #186FAF;
+              background-color: #95507C;
             }
 
             &.delete {
-              background-color: #186FAF;
+              background-color: #c33;
             }
+
+            &.patch {
+              background-color: #bf581d;
+            }
+
+            head {
+              background-color: #a23dad;
+            }
+
+            options {
+              background-color: #947014;
+            }
+
+            .connect {
+              background-color: #149494;
+            }
+            .trace {
+              background-color: #2dcebb;
+            }
+
           }
 
           .name {

@@ -42,7 +42,12 @@ func (s *SpecService) Load(pathOrUrl, typ string) (content string, err error) {
 	loader := &openapi3.Loader{Context: ctx, IsExternalRefsAllowed: true}
 
 	if strings.HasPrefix(pathOrUrl, "http") {
-		u, err := url.Parse(pathOrUrl)
+		var u *url.URL
+		u, err = url.Parse(pathOrUrl)
+		if err != nil {
+			return
+		}
+
 		doc3, err = loader.LoadFromURI(u)
 		if err != nil {
 			return

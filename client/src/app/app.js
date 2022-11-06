@@ -8,6 +8,7 @@ import Lang, {initLang} from './core/lang';
 import {startUIService} from "./core/ui";
 import {startAgent, killAgent} from "./core/deeptest";
 import postmanToOpenApi from "postman-to-openapi";
+import logger from "electron-log";
 
 const cp = require('child_process');
 const fs = require('fs');
@@ -15,6 +16,8 @@ const pth = require('path');
 
 const bent = require('bent');
 const getBuffer = bent('buffer')
+
+const workDir = pth.join(require("os").homedir(), 'deeptest');
 
 export class DeepTestApp {
     constructor() {
@@ -67,7 +70,7 @@ export class DeepTestApp {
         await mainWin.loadURL(url);
 
         ipcMain.on(electronMsg, (event, arg) => {
-            logInfo('msg from renderer: ', arg[0])
+            logInfo('msg from renderer', JSON.stringify(arg))
 
             if (arg.act == 'loadSpec') {
                 this.loadSpec(event, arg)
@@ -169,6 +172,7 @@ export class DeepTestApp {
         });
     }
 
+    // load spec
     loadSpec(event, arg) {
         if (arg.src === 'url') {
             this.loadFromUrl(event, arg)
@@ -180,7 +184,9 @@ export class DeepTestApp {
     async loadFromUrl(event, arg) {
         logInfo('loadFromUrl')
         const buffer = await getBuffer(arg.url)
-        logInfo('buffer: ', buffer.toString())
+        logInfo('buffer', buffer.toString())
+
+        this.replyLoadApiSpec(event, arg.type, 'url', null, buffer.toString())
     }
 
     showSpecSelection(event, arg) {
@@ -189,41 +195,29 @@ export class DeepTestApp {
         dialog.showOpenDialog({
             properties: ['openFile']
         }).then(result => {
-            this.replyOpenApiSpec(event, result, arg)
+            if (!result.filePaths || result.filePaths.length == 0) return
+
+            this.replyLoadApiSpec(event, arg.type, 'file', result.filePaths[0], null)
         }).catch(err => {
             logErr(err)
         })
     }
 
-    showFileSelection(event) {
-        dialog.showOpenDialog({
-            properties: ['openFile']
-        }).then(result => {
-            this.replyFile(event, result)
-        }).catch(err => {
-            logErr(err)
-        })
-    }
+    replyLoadApiSpec(event, type, src, file, content)  {
+        console.log(`replyLoadApiSpec`)
 
-    showFolderSelection(event) {
-        dialog.showOpenDialog({
-            properties: ['openDirectory']
-        }).then(result => {
-            this.replyFile(event, result)
-        }).catch(err => {
-            logErr(err)
-        })
-    }
+        const isPostMan = (src === 'file' && type === 'postman') || (src === 'url' && content.indexOf('postman') > -1)
 
-    replyOpenApiSpec(event, result, arg)  {
-        console.log(`replyOpenApiSpec`)
-
-        if (!result.filePaths || result.filePaths.length == 0) return
-
-        const file = result.filePaths[0]
-
-        if (arg.type === 'postman') {
+        if (isPostMan) {
             console.log(`convert postman spec`)
+
+            if (content) { // save postman content to disc for converting if needed
+                file = pth.join(workDir, 'temp', 'postman.json');
+                fs.createWriteStream(filePath, {
+                    flags:"a",
+                    start:0
+                }).end(file)
+            }
 
             const postmanToOpenApi = require('postman-to-openapi')
             postmanToOpenApi(file, null, { defaultTag: 'General' })
@@ -234,16 +228,37 @@ export class DeepTestApp {
                 .catch(err => {
                     console.log(err)
                 })
-        } else {
+        } else if (!!file) {
             console.log(`read from file`)
             event.reply(electronMsgReplay, {path: file, content: undefined});
         }
+    }
+
+    // common file selection
+    showFileSelection(event) {
+        dialog.showOpenDialog({
+            properties: ['openFile']
+        }).then(result => {
+            this.replyFile(event, result)
+        }).catch(err => {
+            logErr(err)
+        })
     }
 
     replyFile(event, result)  {
         if (result.filePaths && result.filePaths.length > 0) {
             event.reply(electronMsgReplay, result.filePaths[0]);
         }
+    }
+
+    showFolderSelection(event) {
+        dialog.showOpenDialog({
+            properties: ['openDirectory']
+        }).then(result => {
+            this.replyFile(event, result)
+        }).catch(err => {
+            logErr(err)
+        })
     }
 
     openInExplore(path) {

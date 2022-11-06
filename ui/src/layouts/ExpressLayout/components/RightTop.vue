@@ -87,6 +87,7 @@ const load = (src) => {
   const data = {act: 'loadSpec', type: modelRef.value.type, src: src} as any
   if (src === 'url') {
     data.url = modelRef.value.url
+    data.type = undefined
   }
 
   console.log(data)

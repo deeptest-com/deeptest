@@ -90,7 +90,7 @@ const selectModel = (item) => {
 #expresslayout-left {
   display: flex;
   flex-direction: column;
-  width: 260px;
+  width: 280px;
   height: 100vh;
   background-color: #FAFAFA;
   color: #343333;
@@ -155,9 +155,11 @@ const selectModel = (item) => {
           list-style: inside none none;
           overflow: hidden;
           text-overflow: ellipsis;
-          padding: 10px 10px;
+          padding: 12px 10px;
           line-height: 16px;
           cursor: pointer;
+          font-family: Montserrat, sans-serif;
+          font-size: 15px;
 
           &:hover {
             color: #32329FFF;

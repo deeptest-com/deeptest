@@ -210,7 +210,7 @@ export class DeepTestApp {
         // load the content to check that if it is a postman file
         let content = fs.readFileSync(file).toString()
 
-        const isPostMan = type === 'postman' || content.indexOf('postman') > -1
+        const isPostMan = type === 'postman' || content.indexOf('"_postman_id"') > -1
 
         if (isPostMan) {
             if (!postmanToOpenApi) postmanToOpenApi = require('postman-to-openapi')

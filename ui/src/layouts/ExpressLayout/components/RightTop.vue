@@ -53,7 +53,7 @@ const isElectron = ref(!!window.require)
 const modelRef = ref({
   type: 'openapi3',
   // url: 'https://gitee.com/deeptest-com/deeptest/raw/main/xdoc/openapi/openapi3/callbacks.yml'
-  url: 'https://gitee.com/deeptest-com/deeptest/raw/main/xdoc/openapi/openapi3/openapi.yaml'
+  url: 'https://gitee.com/deeptest-com/deeptest/raw/main/xdoc/openapi/openapi3/long-desc.yaml'
   // url: 'https://gitee.com/deeptest-com/deeptest/raw/main/xdoc/openapi/swagger/swagger.json'
   // url: 'https://gitee.com/deeptest-com/deeptest/raw/main/xdoc/openapi/postman/v21/PostmantoOpenAPI.json'
 } as any)

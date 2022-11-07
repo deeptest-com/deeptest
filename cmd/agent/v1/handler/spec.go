@@ -20,12 +20,12 @@ func (c *SpecCtrl) SubmitSpec(ctx iris.Context) {
 		return
 	}
 
-	doc3, err := c.SpecService.SubmitSpec(req)
+	doc3, desc, err := c.SpecService.SubmitSpec(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
 		return
 	}
 
-	ret := iris.Map{"doc": doc3}
+	ret := iris.Map{"doc": doc3, "desc": desc}
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: ret, Msg: _domain.NoErr.Msg})
 }

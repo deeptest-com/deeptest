@@ -1,9 +1,13 @@
 <template>
-  <div id="expresslayout">
-    <left></left>
+  <div class="expresslayout">
+    <div class="expresslayout-left">
+      <left></left>
+    </div>
 
-    <div id="expresslayout-right">
-      <right-top></right-top>
+    <div class="expresslayout-right">
+      <div class="expresslayout-right-top">
+        <right-top></right-top>
+      </div>
 
       <div class="expresslayout-right-main">
           <router-view></router-view>
@@ -41,31 +45,33 @@ const route = useRoute();
 </script>
 
 <style lang="less">
-#expresslayout {
+.expresslayout {
   display: flex;
   height: 100vh;
   overflow: hidden;
-}
 
-#expresslayout-right {
-  position: relative;
-  flex: 1;
-  overflow: auto;
-  background-color: #FFFFFF;
+  .expresslayout-left {
+    width: 280px;
+  }
 
-  &.fiexd-header {
-    display: flex;
-    flex-direction: column;
+  .expresslayout-right {
+    flex: 1;
+    height: 100%;
+    background-color: #FFFFFF;
+
+    .expresslayout-right-top {
+      height: 50px;
+    }
 
     .expresslayout-right-main {
-      flex: 1;
-      overflow: auto;
+      height: calc(100% - 50px);
+      .express-main {
+        padding: 0 12px;
+        position: relative;
+        overflow-y: auto;
+      }
     }
   }
 }
 
-.expresslayout-main-content {
-  margin: 24px;
-  position: relative;
-}
 </style>

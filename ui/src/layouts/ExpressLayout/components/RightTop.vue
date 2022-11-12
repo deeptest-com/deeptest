@@ -36,18 +36,22 @@
 
 </template>
 <script setup lang="ts">
-import {defineComponent, PropType, toRefs, ref} from "vue";
+import {defineComponent, PropType, toRefs, ref, computed, onMounted} from "vue";
 import {message, notification} from 'ant-design-vue';
 import {useI18n} from "vue-i18n";
 import { UploadOutlined } from '@ant-design/icons-vue';
 
 import RightTopWebsocket from './RightTopWebsocket.vue';
 import settings from "@/config/settings";
-import {submitSpec} from "@/views/interface/service";
 import {NotificationKeyCommon} from "@/utils/const";
+import {useStore} from "vuex";
+import {StateType as GlobalStateType} from "@/store/global";
+import {StateType as SpecStateType} from "@/views/express/store";
 
 const {t} = useI18n();
-// const {topNavEnable} = toRefs(props);
+
+const store = useStore<{ Global: GlobalStateType, Spec: SpecStateType}>();
+const specData = computed<any>(() => store.state.Spec.specData);
 
 const isElectron = ref(!!window.require)
 const modelRef = ref({
@@ -58,6 +62,7 @@ const modelRef = ref({
   // url: 'https://gitee.com/deeptest-com/deeptest/raw/main/xdoc/openapi/postman/v21/PostmantoOpenAPI.json'
 } as any)
 
+const fileList = ref([]);
 let ipcRenderer = undefined as any
 
 if (isElectron.value && !ipcRenderer) {
@@ -65,36 +70,53 @@ if (isElectron.value && !ipcRenderer) {
 
   ipcRenderer.on(settings.electronMsgReplay, (event, data) => {
     console.log('from electron: ', data)
-
-    submitSpec(data).then((json) => {
-      if (json.code === 0) {
-        console.log('submitSpec', json.data)
-      } else {
-        notification.error({
-          key: NotificationKeyCommon,
-          message: '解析错误',
-          description: json.msg
-        })
-      }
-    })
+    parseSpec(data)
   })
 }
 
 const load = (src) => {
   console.log('load')
-  if (!isElectron.value) return
 
-  const data = {act: 'loadSpec', type: modelRef.value.type, src: src} as any
-  if (src === 'url') {
-    data.url = modelRef.value.url
-    data.type = undefined
+  if (isElectron.value) {
+    const data = {act: 'loadSpec', type: modelRef.value.type, src: src} as any
+    if (src === 'url') {
+      data.url = modelRef.value.url
+      data.type = undefined
+    }
+
+    ipcRenderer.send(settings.electronMsg, data)
+
+  } else { // just for testing by webpage
+    const data = {
+      src: 'url',
+      url: modelRef.value.url
+    }
+    parseSpec(data)
   }
-
-  console.log(data)
-  ipcRenderer.send(settings.electronMsg, data)
 }
 
-const fileList = ref([]);
+const parseSpec = (data) => {
+  console.log('parseSpec')
+  store.dispatch('Spec/loadSpec', data).then(() => {
+    console.log('success', specData.value)
+  })
+  .catch((error) => {
+    notification.error({
+      key: NotificationKeyCommon,
+      message: '解析错误',
+      description: data.msg
+    })
+  })
+}
+
+onMounted(() => {
+  console.log('onMounted')
+  load('')
+})
+
+onMounted(() => {
+  console.log('onMounted')
+})
 
 </script>
 

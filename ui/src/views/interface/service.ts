@@ -75,14 +75,6 @@ export async function remove(id: number): Promise<any> {
     });
 }
 
-export async function submitSpec(data): Promise<any> {
-    return requestToAgent({
-        url: `/${apiSpec}/submitSpec`,
-        method: 'POST',
-        data,
-    });
-}
-
 export async function importSpec(data, targetId): Promise<any> {
     return request({
         url: `/${apiImport}/importSpec`,

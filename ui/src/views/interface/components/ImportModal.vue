@@ -41,7 +41,6 @@
 <script lang="ts">
 import {defineComponent, Ref, ref, PropType, onMounted, getCurrentInstance, onUnmounted} from "vue";
 import settings from "@/config/settings";
-import {submitSpec} from "@/views/interface/service";
 
 export default defineComponent({
   name: 'ImportModal',

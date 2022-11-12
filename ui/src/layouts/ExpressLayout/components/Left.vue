@@ -17,14 +17,8 @@
 
       <div class="content">
         <ul class="list desc">
-          <li @click="selectSection('item')">
-            <span class="item">Introduction</span>
-          </li>
-          <li>
-            <span class="item">OpenAPI Specification</span>
-          </li>
-          <li>
-            <span class="item">Authentication</span>
+          <li v-for="(item, index) in specData.info.desc" :key="index" @click="selectSection(index)">
+            <span class="item">{{ getSectionTitle(item) }}</span>
           </li>
         </ul>
 
@@ -59,11 +53,18 @@
 </template>
 
 <script setup lang="ts">
+import {useStore} from "vuex";
+
+const store = useStore<{ Global: GlobalStateType, Spec: SpecStateType}>();
+const specData = computed<any>(() => store.state.Spec.specData);
 
 import {SearchOutlined} from '@ant-design/icons-vue';
+import {StateType as GlobalStateType} from "@/store/global";
+import {StateType as SpecStateType} from "@/views/express/store";
+import {computed} from "vue";
 
-const selectSection = (item) => {
-  console.log('selectSection')
+const selectSection = (index) => {
+  console.log('selectSection', index)
 }
 
 const selectApi = (item) => {
@@ -72,6 +73,21 @@ const selectApi = (item) => {
 
 const selectModel = (item) => {
   console.log('selectModel')
+}
+
+const getSectionTitle = (item) => {
+  const start = item[0]
+  const end = item[1]
+
+  var content
+
+  if (start + end === 0) {
+    content = 'Introduction'
+  } else {
+    content = specData.value.doc.info.description.substring(start, end).trim()
+  }
+
+  return content
 }
 
 </script>

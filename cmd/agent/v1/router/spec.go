@@ -17,7 +17,7 @@ func NewSpecModule() *SpecModule {
 // Party 上传文件模块
 func (m *SpecModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
-		index.Post("/submitSpec", m.SpecCtrl.SubmitSpec).Name = "解析导入文件内容"
+		index.Post("/loadSpec", m.SpecCtrl.Load).Name = "解析导入文件内容"
 	}
 	return module.NewModule("/spec", handler)
 }

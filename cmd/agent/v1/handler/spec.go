@@ -11,8 +11,8 @@ type SpecCtrl struct {
 	SpecService *service.SpecService `inject:""`
 }
 
-// SubmitSpec 解析定义文件
-func (c *SpecCtrl) SubmitSpec(ctx iris.Context) {
+// Load 解析定义文件
+func (c *SpecCtrl) Load(ctx iris.Context) {
 	req := domain.SubmitSpecReq{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -20,12 +20,12 @@ func (c *SpecCtrl) SubmitSpec(ctx iris.Context) {
 		return
 	}
 
-	doc3, desc, err := c.SpecService.SubmitSpec(req)
+	doc3, info, err := c.SpecService.SubmitSpec(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
 		return
 	}
 
-	ret := iris.Map{"doc": doc3, "desc": desc}
+	ret := iris.Map{"doc": doc3, "info": info}
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: ret, Msg: _domain.NoErr.Msg})
 }

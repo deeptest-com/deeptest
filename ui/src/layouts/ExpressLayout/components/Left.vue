@@ -24,18 +24,12 @@
 
         <div class="title">APIS</div>
         <ul class="list apis">
-          <li @click="selectApi('item')">
-            <span class="method post">post</span>
-            <span class="name">Introduction</span>
-          </li>
-          <li>
-            <span class="method get">get</span>
-            <span class="name">OpenAPI Specification</span>
-          </li>
-          <li>
-            <span class="method put">put</span>
-            <span class="name">Authentication</span>
-          </li>
+          <template v-for="(item, index) in specData.doc?.paths" :key="index">
+            <li v-for="(path, method) in item" :key="method" @click="selectApi(method, path)">
+              <span class="method" :class="method">{{ method }}</span>
+              <span class="name">{{ path.summary }}</span>
+            </li>
+          </template>
         </ul>
 
         <div class="title">MODELS</div>
@@ -61,19 +55,23 @@ const specData = computed<any>(() => store.state.Spec.specData);
 import {SearchOutlined} from '@ant-design/icons-vue';
 import {StateType as GlobalStateType} from "@/store/global";
 import {StateType as SpecStateType} from "@/views/express/store";
-import {computed} from "vue";
+import {computed, nextTick} from "vue";
 
 const selectSection = (index) => {
-  console.log('selectSection')
+  console.log('selectSection', specData.value.info.desc)
 
-  const id = getSectionTitle(specData.value.info.desc[index])
-  const elem = document.getElementById(id);
+  store.dispatch('Spec/setMode', 'desc')
 
-  if (elem) elem.scrollIntoView()
+  nextTick(()=>{
+    const id = getSectionTitle(specData.value.info.desc[index])
+    const elem = document.getElementById(id);
+    if (elem) elem.scrollIntoView()
+  })
 }
 
-const selectApi = (item) => {
+const selectApi = (method, path) => {
   console.log('selectApi')
+  store.dispatch('Spec/setPath', path)
 }
 
 const selectModel = (item) => {

@@ -1,8 +1,12 @@
 <template>
   <div id="express-main" class="express-main dp-splits-v">
-        <div>
-          <md-editor v-model="content" class="dp-md" preview-only />
-        </div>
+    <div v-if="mode === 'desc'">
+      <md-editor v-model="modelData.desc" class="dp-md" preview-only />
+    </div>
+
+    <div v-if="mode === 'path'">
+      {{modelData.path}}
+    </div>
 
 <!--    <div id="express-left" class="left">-->
 <!--      <InterfaceTree />-->
@@ -33,8 +37,11 @@ import {StateType} from "@/views/interface/store";
 import {StateType as SpecStateType} from "@/views/express/store";
 
 const store = useStore<{ Global: GlobalStateType, Spec: SpecStateType}>();
+const mode = computed<any>(() => store.state.Spec.mode);
 const specData = computed<any>(() => store.state.Spec.specData);
-const content = ref('')
+const pathData = computed<any>(() => store.state.Spec.pathData);
+
+const modelData = ref({} as any)
 
 onMounted(() => {
   console.log('onMounted')
@@ -46,7 +53,12 @@ onUnmounted(() => {
 
 watch(specData, () => {
   console.log('watch specData')
-  content.value = specData.value.doc?.info?.description
+  modelData.value.desc = specData.value.doc?.info?.description
+}, {deep: true})
+
+watch(pathData, () => {
+  console.log('watch pathData')
+  modelData.value.path = pathData.value
 }, {deep: true})
 
 const resize = () => {

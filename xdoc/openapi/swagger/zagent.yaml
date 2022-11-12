@@ -1,0 +1,613 @@
+definitions:
+  _domain.Response:
+    properties:
+      code:
+        description: Enums consts.ResultCode
+        type: string
+      data:
+        type: object
+      msg:
+        type: string
+    type: object
+  agentModel.Task:
+    properties:
+      backing:
+        type: string
+      cancelDate:
+        type: string
+      createdDate:
+        type: string
+      deleted:
+        type: boolean
+      deletedDate:
+        type: string
+      desc:
+        type: string
+      disabled:
+        type: boolean
+      endDate:
+        type: string
+      id:
+        type: integer
+      md5:
+        type: string
+      name:
+        type: string
+      path:
+        type: string
+      rate:
+        type: number
+      retry:
+        type: integer
+      speed:
+        type: number
+      startDate:
+        type: string
+      status:
+        type: string
+      task:
+        type: integer
+      timeoutDate:
+        type: string
+      type:
+        type: string
+      updatedDate:
+        type: string
+      url:
+        description: for download
+        type: string
+      vm:
+        description: for export vm
+        type: string
+      xml:
+        type: string
+    type: object
+  v1.CreateVmReq:
+    properties:
+      cpu:
+        type: integer
+      disk:
+        description: Unit G
+        type: integer
+      memory:
+        description: Unit G
+        type: integer
+      name:
+        type: string
+      os:
+        description: From 'osinfo-query os' command
+        enum:
+        - win10
+        - ubuntu20.04
+        type: string
+      path:
+        type: string
+      task:
+        type: string
+    type: object
+  v1.CreateVmResp:
+    properties:
+      mac:
+        type: string
+      status:
+        description: Enums consts.VmStatus
+        type: string
+      vnc:
+        type: integer
+    type: object
+  v1.DownloadCancelReq:
+    properties:
+      id:
+        type: integer
+    type: object
+  v1.DownloadReq:
+    properties:
+      md5:
+        type: string
+      task:
+        type: integer
+      url:
+        type: string
+    type: object
+  v1.ExportVmReq:
+    properties:
+      backing:
+        type: string
+      task:
+        type: integer
+      vm:
+        type: string
+    type: object
+  v1.ListTaskResp:
+    properties:
+      canceled:
+        items:
+          $ref: '#/definitions/agentModel.Task'
+        type: array
+      completed:
+        items:
+          $ref: '#/definitions/agentModel.Task'
+        type: array
+      created:
+        items:
+          $ref: '#/definitions/agentModel.Task'
+        type: array
+      failed:
+        items:
+          $ref: '#/definitions/agentModel.Task'
+        type: array
+      inprogress:
+        items:
+          $ref: '#/definitions/agentModel.Task'
+        type: array
+    type: object
+  v1.ServiceCheckReq:
+    properties:
+      services:
+        type: string
+    type: object
+  v1.ServiceCheckResp:
+    properties:
+      kvm:
+        description: Enums consts.HostServiceStatus
+        type: string
+      novnc:
+        description: Enums consts.HostServiceStatus
+        type: string
+      websockify:
+        description: Enums consts.HostServiceStatus
+        type: string
+    type: object
+  v1.VmNotifyReq:
+    properties:
+      macAddress:
+        type: string
+    type: object
+  v1.VmNotifyResp:
+    properties:
+      agentPortOnHost:
+        type: integer
+      ip:
+        type: string
+      secret:
+        type: string
+    type: object
+  v1.VmPortMapReq:
+    properties:
+      ip:
+        type: string
+      port:
+        type: integer
+      type:
+        description: Enums consts.NatForwardType
+        type: string
+    type: object
+  v1.VmPortMapResp:
+    properties:
+      alreadyMapped:
+        type: boolean
+      hostPort:
+        type: integer
+      ip:
+        type: string
+      port:
+        type: integer
+      type:
+        description: Enums consts.NatForwardType
+        type: string
+    type: object
+  v1.VncTokenResp:
+    properties:
+      ip:
+        type: string
+      port:
+        type: string
+      token:
+        type: string
+    type: object
+info:
+  contact:
+    email: 462626@qq.com
+    name: Support
+    url: https://github.com/easysoft/zv/issues
+  title: ZAgent宿主机API文档
+  version: "1.0"
+paths:
+  /api/v1/download/add:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Download Request Object
+        in: body
+        name: DownloadReq
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/v1.DownloadReq'
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: code = success | fail
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 添加下载任务
+  /api/v1/download/cancel:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: CancelDate Download Request Object
+        in: body
+        name: DownloadCancelReq
+        required: true
+        schema:
+          $ref: '#/definitions/v1.DownloadCancelReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: code = success | fail
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 强制终止下载任务
+  /api/v1/kvm/{name}/boot:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Kvm Name
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: code = success | fail
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+      summary: 启动KVM虚拟机
+  /api/v1/kvm/{name}/destroy:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Kvm Name
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: code = success | fail
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+      summary: 安全关闭并断电KVM虚拟机，关机不成功的情况下放弃
+  /api/v1/kvm/{name}/poweroff:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Kvm Name
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: code = success | fail
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+      summary: 强行关闭并断电KVM虚拟机，关闭超时情况下会强行断电
+  /api/v1/kvm/{name}/reboot:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Kvm Name
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: code = success | fail
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+      summary: 向KVM虚拟机发送重启信号，有可能无法成功重启
+  /api/v1/kvm/{name}/remove:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Kvm Name
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: remove vm disk file or not
+        in: query
+        name: removeDisk
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: code = success | fail
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+      summary: 移除KVM虚拟机
+  /api/v1/kvm/{name}/resume:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Kvm Name
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: code = success | fail
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+      summary: 恢复KVM虚拟机
+  /api/v1/kvm/{name}/shutdown:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Kvm Name
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: code = success | fail
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+      summary: 向KVM虚拟机发送关闭信号，有可能无法成功关闭
+  /api/v1/kvm/{name}/suspend:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Kvm Name
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: code = success | fail
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+      summary: 休眠KVM虚拟机
+  /api/v1/kvm/create:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Create Kvm Request Object
+        in: body
+        name: CreateVmReq
+        required: true
+        schema:
+          $ref: '#/definitions/v1.CreateVmReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: code = success | fail
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/v1.CreateVmResp'
+              type: object
+      summary: 创建KVM虚拟机
+  /api/v1/kvm/exportVm:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Export Kvm Request Object
+        in: body
+        name: ExportVmReq
+        required: true
+        schema:
+          $ref: '#/definitions/v1.ExportVmReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: code = success | fail
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 导出KVM虚拟机为模板镜像
+  /api/v1/service/check:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Service Check Request Object
+        in: body
+        name: ServiceCheckReq
+        required: true
+        schema:
+          $ref: '#/definitions/v1.ServiceCheckReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: code = success | fail
+          schema:
+            $ref: '#/definitions/v1.ServiceCheckResp'
+      summary: 检测宿主机服务状态
+  /api/v1/task/status:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: code = success | fail
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/v1.ListTaskResp'
+              type: object
+      summary: 获取任务状态
+  /api/v1/virtual/addVmPortMap:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Vm Port Map Request Object
+        in: body
+        name: VmPortMapReq
+        required: true
+        schema:
+          $ref: '#/definitions/v1.VmPortMapReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: code = success | fail
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/v1.VmPortMapResp'
+              type: object
+      summary: 新增虚拟机到宿主机端口的映射
+  /api/v1/virtual/getVncToken:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: VNC Port
+        in: query
+        name: port
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: code = success | fail
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/v1.VncTokenResp'
+              type: object
+      summary: 根据VNC Port获取Token
+  /api/v1/virtual/notifyHost:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Vm Notify Request Object
+        in: body
+        name: VmNotifyReq
+        required: true
+        schema:
+          $ref: '#/definitions/v1.VmNotifyReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: code = success | fail
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/v1.VmNotifyResp'
+              type: object
+      summary: 虚拟机请求安全码
+  /api/v1/virtual/removeVmPortMap:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Vm Port Map Request Object
+        in: body
+        name: VmPortMapReq
+        required: true
+        schema:
+          $ref: '#/definitions/v1.VmPortMapReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: code = success | fail
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 移除虚拟机到宿主机的端口映射
+swagger: "2.0"

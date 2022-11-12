@@ -64,7 +64,12 @@ import {StateType as SpecStateType} from "@/views/express/store";
 import {computed} from "vue";
 
 const selectSection = (index) => {
-  console.log('selectSection', index)
+  console.log('selectSection')
+
+  const id = getSectionTitle(specData.value.info.desc[index])
+  const elem = document.getElementById(id);
+
+  if (elem) elem.scrollIntoView()
 }
 
 const selectApi = (item) => {

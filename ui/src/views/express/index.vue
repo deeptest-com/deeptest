@@ -61,6 +61,7 @@ const resize = () => {
 .dp-md {
   h1 {
     margin: 6px 0px 3px 0px !important;
+    font-size: 22px;
   }
 }
 </style>

@@ -42,11 +42,13 @@ func (s *SpecService) parseDesc(desc string) (ret [][]int) {
 	compileRegex := regexp.MustCompile(`[\^\n]# (.+)`)
 	arr := compileRegex.FindAllStringSubmatchIndex(desc, -1)
 
-	str := desc[arr[0][2]:arr[0][3]]
-	fmt.Sprintln(arr, str)
+	if len(arr) > 0 {
+		str := desc[arr[0][2]:arr[0][3]]
+		fmt.Sprintln(arr, str)
 
-	for _, item := range arr {
-		ret = append(ret, []int{item[2], item[3]})
+		for _, item := range arr {
+			ret = append(ret, []int{item[2], item[3]})
+		}
 	}
 
 	if len(ret) == 0 {

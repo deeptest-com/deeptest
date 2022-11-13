@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	"net/http"

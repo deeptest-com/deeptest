@@ -4,6 +4,7 @@ var (
 	Language = "zh"
 	Verbose  = true
 
+	RunFrom   RunType
 	ExecFrom  ExecFromType
 	IsRelease bool
 	ExecDir   string

@@ -8,6 +8,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/module"
 	"github.com/aaronchen2k/deeptest/internal/pkg/log"
+	commUtils "github.com/aaronchen2k/deeptest/internal/pkg/utils"
 	"github.com/aaronchen2k/deeptest/internal/server/core/cache"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
@@ -52,6 +53,9 @@ type WebServer struct {
 
 // Init 初始化web服务
 func Init() *WebServer {
+	consts.RunFrom = consts.FromServer
+	consts.WorkDir = commUtils.GetWorkDir()
+
 	config.Init("server")
 	zapLog.Init("server")
 	_i118Utils.Init(consts.Language, "")
@@ -78,8 +82,8 @@ func Init() *WebServer {
 	mvc.New(app)
 
 	// init websocket
-	websocketCtrl := handler.NewWsCtrl()
-	injectWsModule(websocketCtrl)
+	websocketCtrl := handler.NewWebsocketCtrl()
+	injectWebsocketModule(websocketCtrl)
 
 	websocketAPI := app.Party(consts.WsPath)
 	m := mvc.New(websocketAPI)
@@ -192,7 +196,7 @@ func (webServer *WebServer) Start() {
 	<-webServer.idleConnClosed
 }
 
-func injectWsModule(websocketCtrl *handler.WebSocketCtrl) {
+func injectWebsocketModule(websocketCtrl *handler.WebSocketCtrl) {
 	var g inject.Graph
 	g.Logger = logrus.StandardLogger()
 

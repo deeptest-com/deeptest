@@ -7,6 +7,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/cron"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/websocket"
+	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	_consts "github.com/aaronchen2k/deeptest/pkg/consts"
 	"github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/facebookgo/inject"
@@ -54,7 +55,9 @@ func injectModule(ws *agent.WebServer) {
 	indexModule := v1.NewIndexModule()
 
 	// inject objects
+	dao.GetDB()
 	if err := g.Provide(
+		&inject.Object{Value: dao.GetDB()},
 		&inject.Object{Value: cron},
 		&inject.Object{Value: indexModule},
 	); err != nil {

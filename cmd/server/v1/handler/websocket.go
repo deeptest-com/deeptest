@@ -27,7 +27,7 @@ type WebSocketCtrl struct {
 	ScenarioExecService *service.ExecScenarioService `inject:""`
 }
 
-func NewWsCtrl() *WebSocketCtrl {
+func NewWebsocketCtrl() *WebSocketCtrl {
 	inst := &WebSocketCtrl{Namespace: consts.WsDefaultNameSpace}
 	return inst
 }

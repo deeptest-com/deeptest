@@ -26,7 +26,6 @@ func Init(app string) {
 	if app == "agent" {
 		home, _ := _fileUtils.GetUserHome()
 		consts.HomeDir = filepath.Join(home, consts.App)
-
 		consts.TmpDir = filepath.Join(consts.HomeDir, consts.FolderTmp)
 
 		_fileUtils.MkDirIfNeeded(consts.TmpDir)

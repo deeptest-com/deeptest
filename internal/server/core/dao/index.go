@@ -26,12 +26,9 @@ var (
 // GetDB 数据库单例
 func GetDB() *gorm.DB {
 	once.Do(func() {
-		switch config.CONFIG.System.DbType {
-		case "sqlite":
-			db = GormSQLLite()
-		case "mysql":
+		if consts.RunFrom == consts.FromServer && config.CONFIG.System.DbType == "mysql" {
 			db = GormMySQL()
-		default:
+		} else {
 			db = GormSQLLite()
 		}
 	})
@@ -88,7 +85,7 @@ func GormSQLLite() *gorm.DB {
 }
 
 func DBFile() string {
-	path := filepath.Join(consts.WorkDir, consts.App+".db")
+	path := filepath.Join(consts.WorkDir, consts.RunFrom.String()+".db")
 	return path
 }
 
@@ -118,24 +115,24 @@ func GormMySQL() *gorm.DB {
 
 // gormConfig 根据配置决定是否开启日志
 func gormConfig(mod bool) *gorm.Config {
-	var config = &gorm.Config{DisableForeignKeyConstraintWhenMigrating: true}
+	var gormConf = &gorm.Config{DisableForeignKeyConstraintWhenMigrating: true}
 	switch config.CONFIG.Mysql.LogZap {
 	case "silent", "Silent":
-		config.Logger = Default.LogMode(logger.Silent)
+		gormConf.Logger = Default.LogMode(logger.Silent)
 	case "error", "SendErrorMsg":
-		config.Logger = Default.LogMode(logger.Error)
+		gormConf.Logger = Default.LogMode(logger.Error)
 	case "warn", "Warn":
-		config.Logger = Default.LogMode(logger.Warn)
+		gormConf.Logger = Default.LogMode(logger.Warn)
 	case "info", "Info":
-		config.Logger = Default.LogMode(logger.Info)
+		gormConf.Logger = Default.LogMode(logger.Info)
 	case "zap", "Zap":
-		config.Logger = Default.LogMode(logger.Info)
+		gormConf.Logger = Default.LogMode(logger.Info)
 	default:
 		if mod {
-			config.Logger = Default.LogMode(logger.Info)
+			gormConf.Logger = Default.LogMode(logger.Info)
 			break
 		}
-		config.Logger = Default.LogMode(logger.Silent)
+		gormConf.Logger = Default.LogMode(logger.Silent)
 	}
-	return config
+	return gormConf
 }

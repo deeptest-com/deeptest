@@ -31,7 +31,7 @@ type WebSocketCtrl struct {
 	ExecService *service.ExecService `inject:""`
 }
 
-func NewWsCtrl() *WebSocketCtrl {
+func NewWebsocketCtrl() *WebSocketCtrl {
 	inst := &WebSocketCtrl{Namespace: consts.WsDefaultNameSpace}
 	return inst
 }

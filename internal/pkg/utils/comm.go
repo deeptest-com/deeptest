@@ -1,6 +1,7 @@
 package commUtils
 
 import (
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	fileUtils "github.com/aaronchen2k/deeptest/pkg/lib/file"
 	"os"
@@ -28,13 +29,18 @@ func GetExecDir() (dir string) { // where ztf exe file in
 	return
 }
 
-func GetWorkDir() string { // where we run file in
-	dir, _ := os.Getwd()
+func GetWorkDir() (dir string) {
+	//dir, _ := os.Getwd()
+	//
+	//dir, _ = filepath.Abs(dir)
+	//dir = fileUtils.AddSepIfNeeded(dir)
 
-	dir, _ = filepath.Abs(dir)
+	home, _ := fileUtils.GetUserHome()
+	dir = filepath.Join(home, consts.App)
 	dir = fileUtils.AddSepIfNeeded(dir)
+	fileUtils.MkDirIfNeeded(dir)
 
-	return dir
+	return
 }
 
 func RemoveLeftVariableSymbol(str string) (ret string) {

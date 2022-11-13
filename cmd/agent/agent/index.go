@@ -9,6 +9,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/module"
 	"github.com/aaronchen2k/deeptest/internal/pkg/log"
 	"github.com/aaronchen2k/deeptest/internal/pkg/service"
+	commUtils "github.com/aaronchen2k/deeptest/internal/pkg/utils"
 	_i118Utils "github.com/aaronchen2k/deeptest/pkg/lib/i118"
 	"github.com/facebookgo/inject"
 	gorillaWs "github.com/gorilla/websocket"
@@ -50,6 +51,9 @@ type WebServer struct {
 
 // Init 初始化web服务
 func Init() *WebServer {
+	consts.RunFrom = consts.FromAgent
+	consts.WorkDir = commUtils.GetWorkDir()
+
 	config.Init("agent")
 	zapLog.Init("agent")
 	_i118Utils.Init(consts.Language, "")
@@ -70,8 +74,8 @@ func Init() *WebServer {
 	mvc.New(app)
 
 	// init websocket
-	websocketCtrl := handler.NewWsCtrl()
-	injectWsModule(websocketCtrl)
+	websocketCtrl := handler.NewWebsocketCtrl()
+	injectWebsocketModule(websocketCtrl)
 
 	websocketAPI := app.Party(consts.WsPath)
 	m := mvc.New(websocketAPI)
@@ -189,7 +193,7 @@ func (webServer *WebServer) Start() {
 	<-webServer.idleConnClosed
 }
 
-func injectWsModule(websocketCtrl *handler.WebSocketCtrl) {
+func injectWebsocketModule(websocketCtrl *handler.WebSocketCtrl) {
 	var g inject.Graph
 	g.Logger = logrus.StandardLogger()
 

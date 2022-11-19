@@ -60,7 +60,9 @@ func (InterfaceParam) TableName() string {
 type InterfaceHeader struct {
 	BaseModel
 	Name        string `json:"name"`
+	Desc        string `json:"desc"`
 	Value       string `json:"value"`
+	Type        string `json:"type"`
 	InterfaceId uint   `json:"interfaceId"`
 }
 

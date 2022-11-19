@@ -107,10 +107,10 @@ func convertOperation(url string, operation *openapi3.Operation) (interf model.I
 		paramIn := item.Value.In
 
 		if paramIn == "header" {
-			//header, err := genHeader(item)
-			//if err == nil {
-			//	interf.Headers = append(interf.Headers, header)
-			//}
+			header, err := genHeader(item)
+			if err == nil {
+				interf.Headers = append(interf.Headers, header)
+			}
 		} else if paramIn == "path" {
 		} else if paramIn == "query" {
 			param, err := genQueryParam(item)
@@ -118,19 +118,32 @@ func convertOperation(url string, operation *openapi3.Operation) (interf model.I
 				interf.Params = append(interf.Params, param)
 			}
 		} else if paramIn == "body" {
-			//item, err := genQueryParam(item)
-			//if err == nil {
-			//	interf.Params = append(interf.Params, item)
-			//}
+			interf.Body, err = genBody(item)
 		}
 	}
 
 	return
 }
 
+func genBody(param *openapi3.ParameterRef) (ret string, err error) {
+	val := param.Value.Schema.Value
+
+	if val.Type == "object" {
+		ret, err = genBodyFromSchema(val)
+	}
+
+	return
+}
+func genBodyFromSchema(schema *openapi3.Schema) (ret string, err error) {
+
+	return
+}
+
 func genHeader(param *openapi3.ParameterRef) (ret model.InterfaceHeader, err error) {
 	ret.Name = param.Value.Name
-	//ret.Value = param.Value.Content
+	ret.Desc = param.Value.Description
+	ret.Type, _ = genDataType(param.Value.ExtensionProps.Extensions)
+	ret.Value = getExampleFromParam(param.Value)
 
 	return
 }
@@ -139,12 +152,12 @@ func genQueryParam(param *openapi3.ParameterRef) (ret model.InterfaceParam, err 
 	ret.Name = param.Value.Name
 	ret.Desc = param.Value.Description
 	ret.Type, _ = genDataType(param.Value.ExtensionProps.Extensions)
-	ret.Value = getExample(param.Value)
+	ret.Value = getExampleFromParam(param.Value)
 
 	return
 }
 
-func getExample(param *openapi3.Parameter) (ret string) {
+func getExampleFromParam(param *openapi3.Parameter) (ret string) {
 	if param.Example != nil {
 		ret = fmt.Sprintf("%v", param.Example)
 		return

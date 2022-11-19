@@ -47,8 +47,8 @@ import {getOAuth2AccessToken, useOAuth2AccessToken} from "@/services/mock";
 import {useStore} from "vuex";
 import {StateType as ProjectStateType} from "@/store/project";
 
-const projectStore = useStore<{ ProjectData: ProjectStateType }>();
-const currProject = computed<any>(() => projectStore.state.ProjectData.currProject);
+const projectStore = useStore<{ ProjectGlobal: ProjectStateType }>();
+const currProject = computed<any>(() => projectStore.state.ProjectGlobal.currProject);
 
 const url = window.location.href
 const interfaceId = getUrlKey('interfaceId', url)

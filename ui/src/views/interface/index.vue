@@ -31,8 +31,7 @@ export default defineComponent({
     InterfaceTree, InterfaceDesigner,
   },
   setup() {
-    const store = useStore<{ Global: GlobalStateType, User: UserStateType, ProjectData: ProjectStateType,
-      Interface: StateType }>();
+    const store = useStore<{ Global: GlobalStateType, User: UserStateType, Interface: StateType }>();
     const collapsed = computed<boolean>(()=> store.state.Global.collapsed);
     const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
 

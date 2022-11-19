@@ -79,8 +79,8 @@ const statusArr = ref<SelectTypes['options']>([
 ]);
 
 const router = useRouter();
-const store = useStore<{ Scenario: StateType, ProjectData: ProjectStateType }>();
-const currProject = computed<any>(() => store.state.ProjectData.currProject);
+const store = useStore<{ Scenario: StateType, ProjectGlobal: ProjectStateType }>();
+const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 
 const list = computed<Scenario[]>(() => store.state.Scenario.listResult.list);
 let pagination = computed<PaginationConfig>(() => store.state.Scenario.listResult.pagination);

@@ -11,10 +11,10 @@
 
             <a-input-search
                 v-if="isElectron"
-                v-model:value="modelRef.path"
+                v-model:value="modelRef.file"
                 @search="selectFile">
               <template #enterButton>
-                <a-button  >选择文件</a-button>
+                <a-button>选择文件</a-button>
               </template>
             </a-input-search>
 
@@ -33,7 +33,7 @@
         </a-form>
 
       <template #footer>
-        <a-button :disabled="!modelRef.path" @click="onSubmit" type="primary">导入</a-button>
+        <a-button :disabled="!modelRef.file" @click="onSubmit" type="primary">导入</a-button>
       </template>
     </a-modal>
   </div>
@@ -65,36 +65,22 @@ export default defineComponent({
     const modelRef = ref({type: 'openapi3'} as any)
 
     let ipcRenderer = undefined as any
-
     if (isElectron.value && !ipcRenderer) {
       ipcRenderer = window.require('electron').ipcRenderer
 
       ipcRenderer.on(settings.electronMsgReplay, (event, data) => {
         console.log('from electron: ', data)
         modelRef.value.file = data.file
-
-        // submitSpec(data).then((json) => {
-        //   if (json.code === 0) {
-        //     console.log(json.data)
-        //   }
-        // })
       })
     }
-
-    onMounted(() => {
-      console.log('onMounted')
-    })
-
-    onUnmounted(() => {
-      console.log('onUnmounted')
-    })
 
     const selectFile = () => {
       console.log('selectFile')
 
-      if (!isElectron.value) return
-
-      ipcRenderer.send(settings.electronMsg, {act: 'loadSpec', type: modelRef.value.type, src: 'file'})
+      if (isElectron.value) {
+        const data = {act: 'loadSpec', type: modelRef.value.type, src: 'file'} as any
+        ipcRenderer.send(settings.electronMsg, data)
+      }
     }
 
     const fileList = ref([]);
@@ -108,6 +94,14 @@ export default defineComponent({
       console.log('onSubmit')
       props.cancel()
     }
+
+    onMounted(() => {
+      console.log('onMounted')
+    })
+
+    onUnmounted(() => {
+      console.log('onUnmounted')
+    })
 
     return {
       isElectron,

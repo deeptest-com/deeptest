@@ -88,7 +88,7 @@ func (c *AuthCtrl) UseOAuth2AccessToken(ctx iris.Context) {
 
 // ListOAuth2Token
 func (c *AuthCtrl) ListOAuth2Token(ctx iris.Context) {
-	projectId, _ := ctx.URLParamInt("projectId")
+	projectId, _ := ctx.URLParamInt("currProjectId")
 
 	pos, err := c.AuthService.ListOAuth2Token(projectId)
 	if err != nil {

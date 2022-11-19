@@ -4,7 +4,7 @@ import (
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
-	model2 "github.com/aaronchen2k/deeptest/internal/server/modules/model"
+	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
@@ -16,6 +16,7 @@ type ProjectRepo struct {
 	DB              *gorm.DB         `inject:""`
 	RoleRepo        *RoleRepo        `inject:""`
 	ProjectRoleRepo *ProjectRoleRepo `inject:""`
+	EnvironmentRepo *EnvironmentRepo `inject:""`
 }
 
 func NewProjectRepo() *ProjectRepo {
@@ -25,7 +26,7 @@ func NewProjectRepo() *ProjectRepo {
 func (r *ProjectRepo) Paginate(req v1.ProjectReqPaginate) (data _domain.PageData, err error) {
 	var count int64
 
-	db := r.DB.Model(&model2.Project{}).Where("NOT deleted")
+	db := r.DB.Model(&model.Project{}).Where("NOT deleted")
 
 	if req.Keywords != "" {
 		db = db.Where("name LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords))
@@ -40,7 +41,7 @@ func (r *ProjectRepo) Paginate(req v1.ProjectReqPaginate) (data _domain.PageData
 		return
 	}
 
-	projects := make([]*model2.Project, 0)
+	projects := make([]*model.Project, 0)
 
 	err = db.
 		Scopes(dao.PaginateScope(req.Page, req.PageSize, req.Order, req.Field)).
@@ -55,9 +56,9 @@ func (r *ProjectRepo) Paginate(req v1.ProjectReqPaginate) (data _domain.PageData
 	return
 }
 
-func (r *ProjectRepo) FindById(id uint) (model2.Project, error) {
-	project := model2.Project{}
-	err := r.DB.Model(&model2.Project{}).Where("id = ?", id).First(&project).Error
+func (r *ProjectRepo) FindById(id uint) (model.Project, error) {
+	project := model.Project{}
+	err := r.DB.Model(&model.Project{}).Where("id = ?", id).First(&project).Error
 	if err != nil {
 		logUtils.Errorf("find project by id error", zap.String("error:", err.Error()))
 		return project, err
@@ -66,8 +67,8 @@ func (r *ProjectRepo) FindById(id uint) (model2.Project, error) {
 	return project, nil
 }
 
-func (r *ProjectRepo) FindByName(projectName string, id uint) (project v1.ProjectResp, err error) {
-	db := r.DB.Model(&model2.Project{}).
+func (r *ProjectRepo) GetByName(projectName string, id uint) (project v1.ProjectResp, err error) {
+	db := r.DB.Model(&model.Project{}).
 		Where("name = ?", projectName)
 
 	if id > 0 {
@@ -79,22 +80,42 @@ func (r *ProjectRepo) FindByName(projectName string, id uint) (project v1.Projec
 	return
 }
 
+func (r *ProjectRepo) GetBySpec(spec string) (project model.Project, err error) {
+	err = r.DB.Model(&model.Project{}).
+		Where("spec = ?", spec).
+		First(&project).Error
+
+	return
+}
+
+func (r *ProjectRepo) Save(po *model.Project) (err error) {
+	err = r.DB.Save(po).Error
+
+	return
+}
+
 func (r *ProjectRepo) Create(req v1.ProjectReq, userId uint) (id uint, bizErr *_domain.BizErr) {
-	po, err := r.FindByName(req.Name, 0)
+	po, err := r.GetByName(req.Name, 0)
 	if po.Name != "" {
 		bizErr.Code = _domain.ErrNameExist.Code
 		return
 	}
 
-	project := model2.Project{ProjectBase: req.ProjectBase}
+	project := model.Project{ProjectBase: req.ProjectBase}
 
-	err = r.DB.Model(&model2.Project{}).Create(&project).Error
+	err = r.DB.Model(&model.Project{}).Create(&project).Error
 	if err != nil {
 		logUtils.Errorf("add project error", zap.String("error:", err.Error()))
 		bizErr.Code = _domain.SystemErr.Code
 
 		return
 	}
+
+	env := model.Environment{
+		Name: "默认环境",
+	}
+	err = r.EnvironmentRepo.Save(&env)
+	err = r.UpdateDefaultEnvironment(project.ID, env.ID)
 
 	err = r.AddProjectMember(project.ID, userId)
 	if err != nil {
@@ -114,8 +135,8 @@ func (r *ProjectRepo) Create(req v1.ProjectReq, userId uint) (id uint, bizErr *_
 }
 
 func (r *ProjectRepo) Update(id uint, req v1.ProjectReq) error {
-	project := model2.Project{ProjectBase: req.ProjectBase}
-	err := r.DB.Model(&model2.Project{}).Where("id = ?", req.Id).Updates(&project).Error
+	project := model.Project{ProjectBase: req.ProjectBase}
+	err := r.DB.Model(&model.Project{}).Where("id = ?", req.Id).Updates(&project).Error
 	if err != nil {
 		logUtils.Errorf("update project error", zap.String("error:", err.Error()))
 		return err
@@ -125,7 +146,7 @@ func (r *ProjectRepo) Update(id uint, req v1.ProjectReq) error {
 }
 
 func (r *ProjectRepo) UpdateDefaultEnvironment(projectId, envId uint) (err error) {
-	err = r.DB.Model(&model2.Project{}).
+	err = r.DB.Model(&model.Project{}).
 		Where("id = ?", projectId).
 		Updates(map[string]interface{}{"environment_id": envId}).Error
 
@@ -138,7 +159,7 @@ func (r *ProjectRepo) UpdateDefaultEnvironment(projectId, envId uint) (err error
 }
 
 func (r *ProjectRepo) DeleteById(id uint) (err error) {
-	err = r.DB.Model(&model2.Project{}).Where("id = ?", id).
+	err = r.DB.Model(&model.Project{}).Where("id = ?", id).
 		Updates(map[string]interface{}{"deleted": true}).Error
 	if err != nil {
 		logUtils.Errorf("delete project by id error", zap.String("error:", err.Error()))
@@ -149,7 +170,7 @@ func (r *ProjectRepo) DeleteById(id uint) (err error) {
 }
 
 func (r *ProjectRepo) DeleteChildren(ids []int, tx *gorm.DB) (err error) {
-	err = tx.Model(&model2.Project{}).Where("id IN (?)", ids).
+	err = tx.Model(&model.Project{}).Where("id IN (?)", ids).
 		Updates(map[string]interface{}{"deleted": true}).Error
 	if err != nil {
 		logUtils.Errorf("batch delete project error", zap.String("error:", err.Error()))
@@ -178,26 +199,26 @@ func (r *ProjectRepo) GetChildrenIds(id uint) (ids []int, err error) {
 	return
 }
 
-func (r *ProjectRepo) ListProjectByUser(userId uint) (projects []model2.Project, err error) {
+func (r *ProjectRepo) ListProjectByUser(userId uint) (projects []model.Project, err error) {
 	var projectIds []uint
-	r.DB.Model(&model2.ProjectMember{}).
+	r.DB.Model(&model.ProjectMember{}).
 		Select("project_id").Where("user_id = ?", userId).Scan(&projectIds)
 
-	err = r.DB.Model(&model2.Project{}).
+	err = r.DB.Model(&model.Project{}).
 		Where("NOT deleted AND id IN (?)", projectIds).
 		Find(&projects).Error
 
 	return
 }
 
-func (r *ProjectRepo) GetCurrProjectByUser(userId uint) (currProject model2.Project, err error) {
-	var user model2.SysUser
+func (r *ProjectRepo) GetCurrProjectByUser(userId uint) (currProject model.Project, err error) {
+	var user model.SysUser
 	err = r.DB.Preload("Profile").
 		Where("id = ?", userId).
 		First(&user).
 		Error
 
-	err = r.DB.Model(&model2.Project{}).
+	err = r.DB.Model(&model.Project{}).
 		Where("id = ?", user.Profile.CurrProjectId).
 		First(&currProject).Error
 
@@ -205,7 +226,7 @@ func (r *ProjectRepo) GetCurrProjectByUser(userId uint) (currProject model2.Proj
 }
 
 func (r *ProjectRepo) ChangeProject(projectId, userId uint) (err error) {
-	err = r.DB.Model(&model2.SysUserProfile{}).Where("user_id = ?", userId).
+	err = r.DB.Model(&model.SysUserProfile{}).Where("user_id = ?", userId).
 		Updates(map[string]interface{}{"curr_project_id": projectId}).Error
 
 	return
@@ -213,14 +234,14 @@ func (r *ProjectRepo) ChangeProject(projectId, userId uint) (err error) {
 
 func (r *ProjectRepo) AddProjectMember(projectId, userId uint) (err error) {
 	projectRole, _ := r.ProjectRoleRepo.GetFirstOne()
-	projectMember := model2.ProjectMember{UserId: userId, ProjectId: projectId, ProjectRoleId: projectRole.ID}
+	projectMember := model.ProjectMember{UserId: userId, ProjectId: projectId, ProjectRoleId: projectRole.ID}
 	err = r.DB.Create(&projectMember).Error
 
 	return
 }
 
 func (r *ProjectRepo) AddProjectRootInterface(projectId uint) (err error) {
-	interf := model2.Interface{Name: "所有接口", ProjectId: projectId, IsDir: true}
+	interf := model.Interface{Name: "所有接口", ProjectId: projectId, IsDir: true}
 	err = r.DB.Create(&interf).Error
 
 	return

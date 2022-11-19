@@ -176,11 +176,9 @@ import {WsMsg} from "@/types/data";
 import {StateType as ProjectStateType} from "@/store/project";
 
 const {t} = useI18n();
-const store = useStore<{ Interface: StateType }>();
+const store = useStore<{ Interface: StateType, ProjectGlobal: ProjectStateType }>();
+const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
-
-const projectStore = useStore<{ ProjectData: ProjectStateType }>();
-const currProject = computed<any>(() => projectStore.state.ProjectData.currProject);
 
 const oauth2GrantTypes = getEnumSelectItems(OAuth2GrantTypes)
 const oauth2ClientAuthWays = getEnumSelectItems(OAuth2ClientAuthenticationWay)

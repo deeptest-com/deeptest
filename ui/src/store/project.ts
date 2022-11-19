@@ -28,7 +28,7 @@ const initState: StateType = {
 
 const StoreModel: ModuleType = {
   namespaced: true,
-  name: 'ProjectData',
+  name: 'ProjectGlobal',
   state: {
     ...initState
   },

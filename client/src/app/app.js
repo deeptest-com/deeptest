@@ -7,7 +7,7 @@ import Config from './utils/config';
 import Lang, {initLang} from './core/lang';
 import {startUIService} from "./core/ui";
 import {startAgent, killAgent} from "./core/deeptest";
-import logger from "electron-log";
+import { nanoid } from 'nanoid'
 
 const cp = require('child_process');
 const fs = require('fs');
@@ -19,7 +19,11 @@ const getBuffer = bent('buffer')
 let postmanToOpenApi = null
 
 const workDir = pth.join(require("os").homedir(), 'deeptest');
-const tempDir = pth.join(workDir, 'tmp');
+const convertedDir = pth.join(workDir, 'converted');
+fs.mkdir(convertedDir,function(err){
+    if (err) return console.error(err);
+    console.log(`mkdir ${convertedDir} successfully`);
+});
 
 export class DeepTestApp {
     constructor() {
@@ -189,7 +193,7 @@ export class DeepTestApp {
 
         const index = arg.url.lastIndexOf('/')
         const fileName = arg.url.substring(index)
-        const file = pth.join(tempDir, fileName);
+        const file = pth.join(convertedDir, fileName);
 
         fs.writeFileSync(file, buffer)
 
@@ -216,7 +220,7 @@ export class DeepTestApp {
             if (!postmanToOpenApi) postmanToOpenApi = require('postman-to-openapi')
 
             const oldFile = file
-            file = pth.join(tempDir, 'postman.json')
+            file = pth.join(convertedDir, 'postman-' + nanoid() + '.json')
             await postmanToOpenApi(oldFile, file, {defaultTag: 'General'})
         }
 

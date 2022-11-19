@@ -107,7 +107,7 @@ const useForm = Form.useForm;
 
 const {t} = useI18n();
 
-const store = useStore<{ Scenario: ScenarioStateType; Interface: InterfaceStateType, Project: ProjectStateType; }>();
+const store = useStore<{ Scenario: ScenarioStateType; Interface: InterfaceStateType }>();
 const treeData = computed<any>(() => store.state.Scenario.treeData);
 const treeDataMap = computed<any>(() => store.state.Scenario.treeDataMap);
 const selectedNode = computed<any>(()=> store.state.Scenario.nodeData);

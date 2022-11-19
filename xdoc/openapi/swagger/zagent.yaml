@@ -206,9 +206,9 @@ definitions:
         type: string
     type: object
 servers:
-  - url: //petstore.swagger.io/v2
+  - url: https://petstore.swagger.io/v2
     description: Default server
-  - url: //petstore.swagger.io/sandbox
+  - url: https://petstore.swagger.io/sandbox
     description: Sandbox server
 info:
   contact:
@@ -251,7 +251,6 @@ info:
     and standard method from web, mobile and desktop applications.
 
     <!-- ReDoc-Inject: <security-definitions> -->
-
 
 paths:
   /api/v1/download/add:
@@ -400,6 +399,7 @@ paths:
         in: query
         name: removeDisk
         type: boolean
+        example: true
       produces:
       - application/json
       responses:

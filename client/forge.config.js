@@ -35,9 +35,9 @@ module.exports = {
         }
     ],
     plugins: [
-        {
-            "name": '@electron-forge/plugin-webpack',
-            "config": {
+/*        {
+            'name': '@electron-forge/plugin-webpack',
+            'config': {
                 mainConfig: './webpack.main.config.js',
                 renderer: {
                     config: './webpack.renderer.config.js',
@@ -50,6 +50,22 @@ module.exports = {
                     ]
                 }
             }
-        }
+        }*/
+        [
+            "@electron-forge/plugin-webpack",
+            {
+                mainConfig: './webpack.main.config.js',
+                renderer: {
+                    config: './webpack.renderer.config.js',
+                    entryPoints: [
+                        // {
+                        //   html: './src/index.html',
+                        //   js: './src/renderer.js',
+                        //   name: 'main_window'
+                        // }
+                    ]
+                }
+            }
+        ]
     ]
 }

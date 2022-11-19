@@ -67,9 +67,9 @@ import {query} from "@/views/scenario/service";
 import {NotificationKeyCommon} from "@/utils/const";
 
 const router = useRouter();
-const store = useStore<{ Report: StateType, Scenario: ScenarioStateType, ProjectData: ProjectStateType }>();
+const store = useStore<{ Report: StateType, Scenario: ScenarioStateType, ProjectGlobal: ProjectStateType }>();
 
-const currProject = computed<any>(() => store.state.ProjectData.currProject);
+const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 
 const list = computed<Report[]>(() => store.state.Report.listResult.list);
 let pagination = computed<PaginationConfig>(() => store.state.Report.listResult.pagination);

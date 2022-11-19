@@ -7,7 +7,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/casbin"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
-	model2 "github.com/aaronchen2k/deeptest/internal/server/modules/model"
+	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"golang.org/x/crypto/bcrypt"
@@ -34,7 +34,7 @@ func NewUserRepo() *UserRepo {
 func (r *UserRepo) Paginate(req v1.UserReqPaginate) (data _domain.PageData, err error) {
 	var count int64
 
-	db := r.DB.Model(&model2.SysUser{})
+	db := r.DB.Model(&model.SysUser{})
 	if len(req.Name) > 0 {
 		db = db.Where("name LIKE ?", fmt.Sprintf("%s%%", req.Name))
 	}
@@ -93,7 +93,7 @@ func (r *UserRepo) GetRoles(users ...*v1.UserResp) {
 
 func (r *UserRepo) FindByUserName(username string, ids ...uint) (v1.UserResp, error) {
 	user := v1.UserResp{}
-	db := r.DB.Model(&model2.SysUser{}).Where("username = ?", username)
+	db := r.DB.Model(&model.SysUser{}).Where("username = ?", username)
 	if len(ids) == 1 {
 		db.Where("id != ?", ids[0])
 	}
@@ -108,7 +108,7 @@ func (r *UserRepo) FindByUserName(username string, ids ...uint) (v1.UserResp, er
 
 func (r *UserRepo) FindPasswordByUserName(username string, ids ...uint) (v1.LoginResp, error) {
 	user := v1.LoginResp{}
-	db := r.DB.Model(&model2.SysUser{}).Select("id,password").Where("username = ?", username)
+	db := r.DB.Model(&model.SysUser{}).Select("id,password").Where("username = ?", username)
 	if len(ids) == 1 {
 		db.Where("id != ?", ids[0])
 	}
@@ -124,7 +124,7 @@ func (r *UserRepo) Create(req v1.UserReq) (uint, error) {
 	if _, err := r.FindByUserName(req.Username); !errors.Is(err, gorm.ErrRecordNotFound) {
 		return 0, fmt.Errorf("用户名 %s 已经被使用", req.Username)
 	}
-	user := model2.SysUser{UserBase: req.UserBase, RoleIds: req.RoleIds}
+	user := model.SysUser{UserBase: req.UserBase, RoleIds: req.RoleIds}
 	hash, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
 		logUtils.Errorf("密码加密错误", zap.String("错误:", err.Error()))
@@ -134,7 +134,7 @@ func (r *UserRepo) Create(req v1.UserReq) (uint, error) {
 	logUtils.Infof("添加用户", zap.String("hash:", req.Password), zap.ByteString("hash:", hash))
 
 	user.Password = string(hash)
-	err = r.DB.Model(&model2.SysUser{}).Create(&user).Error
+	err = r.DB.Model(&model.SysUser{}).Create(&user).Error
 	if err != nil {
 		logUtils.Errorf("添加用户错误", zap.String("错误:", err.Error()))
 		return 0, err
@@ -169,8 +169,8 @@ func (r *UserRepo) Update(id uint, req v1.UserReq) error {
 		return err
 	}
 
-	user := model2.SysUser{UserBase: req.UserBase}
-	err := r.DB.Model(&model2.SysUser{}).Where("id = ?", id).Updates(&user).Error
+	user := model.SysUser{UserBase: req.UserBase}
+	err := r.DB.Model(&model.SysUser{}).Where("id = ?", id).Updates(&user).Error
 	if err != nil {
 		logUtils.Errorf("更新用户错误", zap.String("错误:", err.Error()))
 		return err
@@ -194,7 +194,7 @@ func (r *UserRepo) IsAdminUser(id uint) (bool, error) {
 
 func (r *UserRepo) FindById(id uint) (v1.UserResp, error) {
 	user := v1.UserResp{}
-	err := r.DB.Model(&model2.SysUser{}).Where("id = ?", id).First(&user).Error
+	err := r.DB.Model(&model.SysUser{}).Where("id = ?", id).First(&user).Error
 	if err != nil {
 		logUtils.Errorf("find user err ", zap.String("错误:", err.Error()))
 		return user, err
@@ -206,7 +206,7 @@ func (r *UserRepo) FindById(id uint) (v1.UserResp, error) {
 }
 
 func (r *UserRepo) DeleteById(id uint) error {
-	err := r.DB.Unscoped().Delete(&model2.SysUser{}, id).Error
+	err := r.DB.Unscoped().Delete(&model.SysUser{}, id).Error
 	if err != nil {
 		logUtils.Errorf("delete user by id get  err ", zap.String("错误:", err.Error()))
 		return err
@@ -214,13 +214,13 @@ func (r *UserRepo) DeleteById(id uint) error {
 	return nil
 }
 
-func (r *UserRepo) AddProfileForUser(user *model2.SysUser, project model2.Project) (err error) {
+func (r *UserRepo) AddProfileForUser(user *model.SysUser, project model.Project) (err error) {
 	_, err = r.ProfileRepo.FindByUserId(user.ID)
 	if !errors.Is(err, gorm.ErrRecordNotFound) {
 		return fmt.Errorf("用户 %s 信息已经被使用", user.Name)
 	}
 
-	profile := model2.SysUserProfile{UserId: user.ID, Email: "chenqi@deeptest.com", CurrProjectId: project.ID}
+	profile := model.SysUserProfile{UserId: user.ID, Email: "chenqi@deeptest.com", CurrProjectId: project.ID}
 	err = r.DB.Create(&profile).Error
 	if err != nil {
 		logUtils.Errorf("添加用户错误", zap.String("错误:", err.Error()))
@@ -231,7 +231,7 @@ func (r *UserRepo) AddProfileForUser(user *model2.SysUser, project model2.Projec
 }
 
 // AddRoleForUser add roles for user
-func (r *UserRepo) AddRoleForUser(user *model2.SysUser) error {
+func (r *UserRepo) AddRoleForUser(user *model.SysUser) error {
 	userId := strconv.FormatUint(uint64(user.ID), 10)
 	oldRoleIds, err := casbin.Instance().GetRolesForUser(userId)
 	if err != nil {
@@ -262,14 +262,14 @@ func (r *UserRepo) AddRoleForUser(user *model2.SysUser) error {
 	return nil
 }
 
-func (r *UserRepo) AddProjectForUser(user *model2.SysUser) (project model2.Project, err error) {
+func (r *UserRepo) AddProjectForUser(user *model.SysUser) (project model.Project, err error) {
 	_, err = r.ProjectRepo.GetCurrProjectByUser(user.ID)
 	if !errors.Is(err, gorm.ErrRecordNotFound) {
 		err = fmt.Errorf("用户%s的默认项目已存在", user.Name)
 		return
 	}
 
-	project = model2.Project{ProjectBase: v1.ProjectBase{Name: "默认项目"}}
+	project = model.Project{ProjectBase: v1.ProjectBase{Name: "默认项目"}}
 	err = r.DB.Create(&project).Error
 	if err != nil {
 		logUtils.Errorf("添加项目错误", zap.String("错误:", err.Error()))
@@ -312,7 +312,7 @@ func (r *UserRepo) CleanToken(authorityType int, userId string) error {
 }
 
 func (r *UserRepo) UpdatePasswordByName(name string, password string) (err error) {
-	err = r.DB.Model(&model2.SysUser{}).Where("username = ?", name).
+	err = r.DB.Model(&model.SysUser{}).Where("username = ?", name).
 		Updates(map[string]interface{}{"password": password}).Error
 	if err != nil {
 		logUtils.Errorf("更新用户错误", zap.String("错误:", err.Error()))

@@ -66,7 +66,7 @@ export default defineComponent({
   setup(props) {
     const { t } = useI18n();
 
-    const store = useStore<{ Interface: InterfaceStateType, EnvironmentData: EnvironmentStateType }>();
+    const store = useStore<{ Interface: InterfaceStateType, Environment: EnvironmentStateType }>();
 
     const rulesRef = reactive({
       name: [
@@ -91,7 +91,7 @@ export default defineComponent({
       console.log('onSubmit', modelRef)
 
       validate().then(async () => {
-        store.dispatch('EnvironmentData/saveEnvironmentVar', modelRef).then(() => {
+        store.dispatch('Environment/saveEnvironmentVar', modelRef).then(() => {
           props.onFinish();
         })
       }).catch(err => { console.log('') })

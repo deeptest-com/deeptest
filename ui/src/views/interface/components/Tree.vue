@@ -103,8 +103,8 @@ export default defineComponent({
   setup(props) {
     const {t} = useI18n();
 
-    const store = useStore<{ Interface: StateType, ProjectData: ProjectStateType }>();
-    const currProject = computed<any>(() => store.state.ProjectData.currProject);
+    const store = useStore<{ Interface: StateType, ProjectGlobal: ProjectStateType }>();
+    const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 
     const treeData = computed<any>(() => store.state.Interface.treeData);
     const treeDataMap = computed<any>(() => store.state.Interface.treeDataMap);

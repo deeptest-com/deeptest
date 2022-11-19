@@ -12,13 +12,13 @@ import (
 type SpecService struct {
 }
 
-func (s *SpecService) SubmitSpec(req domain.SubmitSpecReq) (doc3 *openapi3.T, info map[string]interface{}, err error) {
+func (s *SpecService) Load(req domain.SubmitSpecReq) (doc3 *openapi3.T, info map[string]interface{}, err error) {
 	ctx := context.Background()
 	loader := &openapi3.Loader{Context: ctx, IsExternalRefsAllowed: true}
 
-	if req.File != "" {
+	if req.File != "" { // from (converted) file
 		doc3, err = loader.LoadFromFile(req.File)
-	} else {
+	} else { // from url
 		var content []byte
 		content, err = _httpUtils.Get(req.Url)
 		if err != nil {

@@ -31,9 +31,9 @@ type InterfaceSimple struct {
 }
 
 type InterfaceImportReq struct {
-	Type    string `json:"type"`
-	Path    string `json:"path"`
-	Content string `json:"content"`
+	Src  string `json:"src"`
+	Type string `json:"type"`
+	File string `json:"file"`
 }
 
 /*type InterfaceResp struct {

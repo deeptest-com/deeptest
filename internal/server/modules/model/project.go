@@ -8,7 +8,8 @@ type Project struct {
 	BaseModel
 	v1.ProjectBase
 
-	EnvironmentId uint `json:"environmentId"`
+	Spec          string `json:"spec"`
+	EnvironmentId uint   `json:"environmentId"`
 }
 
 func (Project) TableName() string {

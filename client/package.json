@@ -47,6 +47,7 @@
     "express": "^4.17.3",
     "find-process": "^1.4.7",
     "kill-port-process": "^3.0.1",
+    "nanoid": "^4.0.0",
     "open-term": "^2.0.4",
     "postman-to-openapi": "^2.7.1",
     "ps-tree": "^1.2.0",

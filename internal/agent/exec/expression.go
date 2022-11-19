@@ -87,7 +87,7 @@ func generateGovaluateParamsWithVariables(expression string, variableMap map[str
 	variables := GetVariablesInVariablePlaceholder(expression)
 
 	for _, variableName := range variables {
-		temp := fmt.Sprintf("${%s}", variableName)
+		temp := fmt.Sprintf("{%s}", variableName)
 		if val, ok := variableMap[temp]; ok {
 			ret[variableName] = val
 		}
@@ -97,7 +97,7 @@ func generateGovaluateParamsWithVariables(expression string, variableMap map[str
 }
 
 func GetVariablesInVariablePlaceholder(expression string) (ret []string) {
-	re := regexp.MustCompile("(?siU)\\${(.*)}")
+	re := regexp.MustCompile("(?siU){(.*)}")
 	matchResultArr := re.FindAllStringSubmatch(expression, -1)
 
 	for _, childArr := range matchResultArr {

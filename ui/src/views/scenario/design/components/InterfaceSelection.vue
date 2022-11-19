@@ -75,8 +75,8 @@ const props = defineProps<{
   onFinish: Function,
 }>()
 
-const store = useStore<{ Interface: StateType, ProjectData: ProjectStateType }>();
-const currProject = computed<any>(() => store.state.ProjectData.currProject);
+const store = useStore<{ Interface: StateType, ProjectGlobal: ProjectStateType }>();
+const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const treeData = computed<any>(() => store.state.Interface.treeData);
 const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
 

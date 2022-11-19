@@ -22,7 +22,7 @@ type Interface struct {
 	Slots iris.Map `gorm:"-" json:"slots"`
 
 	Url               string                 `json:"url"`
-	Method            string                 `gorm:"default:GET" json:"method"`
+	Method            consts.HttpMethod      `gorm:"default:GET" json:"method"`
 	Params            []InterfaceParam       `gorm:"-" json:"params"`
 	Headers           []InterfaceHeader      `gorm:"-" json:"headers"`
 	Body              string                 `gorm:"default:{}" json:"body"`
@@ -47,7 +47,9 @@ func (Interface) TableName() string {
 type InterfaceParam struct {
 	BaseModel
 	Name        string `json:"name"`
+	Desc        string `json:"desc"`
 	Value       string `json:"value"`
+	Type        string `json:"type"`
 	InterfaceId uint   `json:"interfaceId"`
 }
 

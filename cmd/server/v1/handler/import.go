@@ -29,9 +29,7 @@ func (c *ImportCtrl) ImportSpec(ctx iris.Context) {
 		return
 	}
 
-	content := []byte(req.Content)
-
-	c.ImportService.Import(content, typ, targetId)
+	c.ImportService.Import(req, typ, targetId)
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: nil, Msg: _domain.NoErr.Msg})
 

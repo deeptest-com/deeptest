@@ -25,14 +25,10 @@ func (c *EnvironmentCtrl) List(ctx iris.Context) {
 
 // Get 详情
 func (c *EnvironmentCtrl) Get(ctx iris.Context) {
+	projectId, err := ctx.URLParamInt("currProjectId")
 	id, err := ctx.Params().GetInt("id")
-	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Data: nil, Msg: _domain.ParamErr.Msg})
-		return
-	}
 
-	projectId, err := ctx.URLParamInt("projectId")
-	if err != nil {
+	if id <= 0 && projectId <= 0 {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Data: nil, Msg: _domain.ParamErr.Msg})
 		return
 	}
@@ -47,7 +43,7 @@ func (c *EnvironmentCtrl) Get(ctx iris.Context) {
 
 // Change 修改
 func (c *EnvironmentCtrl) Change(ctx iris.Context) {
-	projectId, err := ctx.URLParamInt("projectId")
+	projectId, err := ctx.URLParamInt("currProjectId")
 	id, err := ctx.URLParamInt("id")
 
 	if projectId == 0 || id == 0 {

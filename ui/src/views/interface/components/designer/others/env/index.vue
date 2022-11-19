@@ -215,20 +215,20 @@ export default defineComponent({
 
   setup(props) {
     const {t} = useI18n();
-    const store = useStore<{ Interface: InterfaceStateType, ProjectData: ProjectStateType, EnvironmentData: EnvironmentStateType }>();
-    const currProject = computed<any>(() => store.state.ProjectData.currProject);
+    const store = useStore<{ Interface: InterfaceStateType, ProjectGlobal: ProjectStateType, Environment: EnvironmentStateType }>();
+    const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
     const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
-    const environmentsData = computed<any[]>(() => store.state.EnvironmentData.environmentsData);
-    const environmentData = computed<any>(() => store.state.EnvironmentData.environmentData);
+    const environmentsData = computed<any[]>(() => store.state.Environment.environmentsData);
+    const environmentData = computed<any>(() => store.state.Environment.environmentData);
     const validExtractorVariablesData = computed(() => store.state.Interface.validExtractorVariablesData);
 
-    store.dispatch('EnvironmentData/listEnvironment')
+    store.dispatch('Environment/listEnvironment')
     if (currProject.value.id)
-      store.dispatch('EnvironmentData/getEnvironment', {id: 0, projectId: currProject.value.id})
+      store.dispatch('Environment/getEnvironment', {id: 0, projectId: currProject.value.id})
 
     watch(currProject, () => {
       console.log('watch currProject', currProject.value.id)
-      store.dispatch('EnvironmentData/getEnvironment', {id: 0, projectId: currProject.value.id})
+      store.dispatch('Environment/getEnvironment', {id: 0, projectId: currProject.value.id})
     }, {deep: false})
 
     const envEditVisible = ref(false)
@@ -239,7 +239,7 @@ export default defineComponent({
 
     const select = (val) => {
       console.log('select', val.key)
-      store.dispatch('EnvironmentData/changeEnvironment', {id: val.key, projectId: currProject.value.id})
+      store.dispatch('Environment/changeEnvironment', {id: val.key, projectId: currProject.value.id})
     }
 
     const create = () => {
@@ -256,12 +256,12 @@ export default defineComponent({
 
     const remove = (val) => {
       console.log('remove', val)
-      store.dispatch('EnvironmentData/removeEnvironment', val.id)
+      store.dispatch('Environment/removeEnvironment', val.id)
     }
 
     const copy = (val) => {
       console.log('copy', val)
-      store.dispatch('EnvironmentData/copyEnvironment', val.id)
+      store.dispatch('Environment/copyEnvironment', val.id)
     }
 
     const envEditFinish = () => {
@@ -284,11 +284,11 @@ export default defineComponent({
     }
     const removeVar = (item) => {
       console.log('removeVar', item)
-      store.dispatch('EnvironmentData/removeEnvironmentVar', item.id)
+      store.dispatch('Environment/removeEnvironmentVar', item.id)
     }
     const clearVar  = () => {
       console.log('clearVar')
-      store.dispatch('EnvironmentData/clearEnvironmentVar', environmentData.value.id)
+      store.dispatch('Environment/clearEnvironmentVar', environmentData.value.id)
     }
     const envVarEditFinish = () => {
       console.log('envVarEditFinish')

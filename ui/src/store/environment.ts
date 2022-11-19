@@ -44,7 +44,7 @@ const initState: StateType = {
 
 const StoreModel: ModuleType = {
   namespaced: true,
-  name: 'EnvironmentData',
+  name: 'Environment',
   state: {
     ...initState
   },

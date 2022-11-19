@@ -4,12 +4,12 @@
       <a-row type="flex" class="nav">
         <a-col flex="auto" class="form">
           <a-row type="flex">
-            <a-col flex="90px" class="from-file">
+            <a-col flex="70px" class="from-file">
               <a-input-search
                   v-model:value="modelRef.file"
                   @search="load('file')">
                 <template #enterButton>
-                  <a-button>上传文件</a-button>
+                  <a-button>上传</a-button>
                 </template>
               </a-input-search>
             </a-col>
@@ -21,6 +21,10 @@
                   enter-button="加载"
                   @search="load('url')"
               />
+            </a-col>
+
+            <a-col flex="90px" class="history">
+
             </a-col>
           </a-row>
         </a-col>
@@ -65,7 +69,6 @@ const modelRef = ref({
 
 const fileList = ref([]);
 let ipcRenderer = undefined as any
-
 if (isElectron.value && !ipcRenderer) {
   ipcRenderer = window.require('electron').ipcRenderer
 
@@ -139,13 +142,20 @@ onMounted(() => {
     .nav {
       width: 100%;
       .form {
+        .from-url {
+          margin-right: 1px;
+        }
         .from-file {
+          margin-right: 1px;
           .ant-input-search {
-
             input {
               display: none;
             }
           }
+        }
+
+        .history {
+
         }
       }
       .github {

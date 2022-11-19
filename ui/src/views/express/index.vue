@@ -30,10 +30,6 @@ import {resizeWidth} from "@/utils/dom";
 // import InterfaceTree from "./components/Tree.vue"
 import {useStore} from "vuex";
 import {StateType as GlobalStateType} from "@/store/global";
-import {StateType as UserStateType} from "@/store/user";
-import {StateType as ProjectStateType} from "@/store/project";
-import {Interface} from "@/views/interface/data";
-import {StateType} from "@/views/interface/store";
 import {StateType as SpecStateType} from "@/views/express/store";
 
 const store = useStore<{ Global: GlobalStateType, Spec: SpecStateType}>();

@@ -4,6 +4,7 @@ import (
 	"flag"
 	"github.com/aaronchen2k/deeptest/cmd/agent/agent"
 	v1 "github.com/aaronchen2k/deeptest/cmd/agent/v1"
+	"github.com/aaronchen2k/deeptest/internal/agent/service"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/cron"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/websocket"
@@ -43,6 +44,9 @@ func main() {
 	}
 
 	injectModule(server)
+
+	service.NewInitService().InitModels()
+
 	server.Start()
 }
 
@@ -55,7 +59,6 @@ func injectModule(ws *agent.WebServer) {
 	indexModule := v1.NewIndexModule()
 
 	// inject objects
-	dao.GetDB()
 	if err := g.Provide(
 		&inject.Object{Value: dao.GetDB()},
 		&inject.Object{Value: cron},

@@ -135,6 +135,34 @@ func genBody(param *openapi3.ParameterRef) (ret string, err error) {
 	return
 }
 func genBodyFromSchema(schema *openapi3.Schema) (ret string, err error) {
+	mp := map[string]interface{}{}
+
+	for key, prop := range schema.Properties {
+		var val interface{}
+		example := prop.Value.Example
+
+		fmt.Println(prop.Value.Type)
+
+		if prop.Value.Type == "string" {
+			if example != nil {
+				val = example.(string)
+			} else {
+				val = ""
+			}
+
+		} else if prop.Value.Type == "integer" {
+			if example != nil {
+				val = example.(int)
+			} else {
+				val = 0
+			}
+		}
+
+		mp[key] = val
+	}
+
+	bytes, _ := json.Marshal(mp)
+	ret = string(bytes)
 
 	return
 }

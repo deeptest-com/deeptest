@@ -99,7 +99,8 @@ func convertOperations(url string, pth *openapi3.PathItem) (interfaces []model.I
 }
 
 func convertOperation(url string, operation *openapi3.Operation) (interf model.Interface, err error) {
-	// url
+	// common
+	interf.Name = operation.Summary
 	interf.Url = url
 
 	// headers and params

@@ -18,18 +18,21 @@ type ImportCtrl struct {
 }
 
 func (c *ImportCtrl) ImportSpec(ctx iris.Context) {
-	targetId, _ := ctx.URLParamInt("targetId")
-	typ := ctx.URLParam("type")
+	targetId, err := ctx.URLParamInt("targetId")
+	if targetId == 0 {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: "targetId"})
+		return
+	}
 
 	req := domain.InterfaceImportReq{}
-	err := ctx.ReadJSON(&req)
+	err = ctx.ReadJSON(&req)
 	if err != nil {
 		logUtils.Errorf("参数验证失败", err.Error())
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Data: nil, Msg: err.Error()})
 		return
 	}
 
-	c.ImportService.Import(req, typ, targetId)
+	c.ImportService.Import(req, targetId)
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: nil, Msg: _domain.NoErr.Msg})
 

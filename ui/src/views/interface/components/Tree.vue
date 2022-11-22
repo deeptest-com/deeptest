@@ -75,7 +75,7 @@
 <script lang="ts">
 import {computed, defineComponent, getCurrentInstance, onMounted, onUnmounted, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
-import {Form} from 'ant-design-vue';
+import {Form, notification} from 'ant-design-vue';
 import {CloseOutlined, FileOutlined, FolderOutlined, FolderOpenOutlined, CheckOutlined} from "@ant-design/icons-vue";
 import {Interface} from "@/views/interface/data";
 import throttle from "lodash.debounce";
@@ -90,6 +90,7 @@ import TreeContextMenu from "./TreeContextMenu.vue";
 import ImportModal from "./ImportModal.vue";
 import {getExpandedKeys, setExpandedKeys} from "@/utils/cache";
 import {getContextMenuStyle} from "@/utils/dom";
+import {NotificationKeyRequest} from "@/utils/const";
 
 const useForm = Form.useForm;
 
@@ -346,7 +347,24 @@ export default defineComponent({
     const showImport = ref(false)
     const importSubmit = (data) => {
       console.log('importSpec', data)
-      importSpec(data, targetModelId)
+      importSpec(data, targetModelId).then((json) => {
+        if (json.code === 0) {
+          showImport.value = false
+          store.dispatch('Interface/loadInterface')
+              .then((result) => {
+                console.log('===', result)
+
+                expandOneKey(treeDataMap.value, targetModelId, expandedKeys.value) // expend parent node
+                setExpandedKeys(currProject.value.id, expandedKeys.value)
+              })
+
+        } else {
+          notification.error({
+            key: NotificationKeyRequest,
+            message: '导入失败',
+          });
+        }
+      })
     }
 
     const importClose = () => {

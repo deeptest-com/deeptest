@@ -5,6 +5,7 @@ import (
 	"github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
+	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	repo "github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"github.com/getkin/kin-openapi/openapi3"
 )
@@ -50,8 +51,7 @@ func (s *ImportService) GenerateInterface(doc *openapi3.T, targetId, projectId u
 		interf.ParentId = targetId
 		interf.IsDir = false
 
-		interf.ParentId, interf.Ordr = s.InterfaceRepo.UpdateOrder(serverConsts.Inner, interf.ParentId)
-		err = s.InterfaceRepo.Save(&interf)
+		s.Create(&interf)
 	}
 
 	return
@@ -75,6 +75,46 @@ func (s *ImportService) GenerateEnvironment(doc *openapi3.T, projectId uint) (er
 			vari.EnvironmentId = env.ID
 			s.EnvironmentRepo.SaveVar(&vari)
 		}
+	}
+
+	return
+}
+
+func (s *ImportService) Create(interf *model.Interface) (err error) {
+	interf.ParentId, interf.Ordr = s.InterfaceRepo.UpdateOrder(serverConsts.Inner, interf.ParentId)
+	err = s.InterfaceRepo.Save(interf)
+	if err != nil {
+		return err
+	}
+
+	err = s.InterfaceRepo.UpdateParams(interf.ID, interf.Params)
+	if err != nil {
+		return err
+	}
+
+	err = s.InterfaceRepo.UpdateHeaders(interf.ID, interf.Headers)
+	if err != nil {
+		return err
+	}
+
+	err = s.InterfaceRepo.UpdateBasicAuth(interf.ID, interf.BasicAuth)
+	if err != nil {
+		return err
+	}
+
+	err = s.InterfaceRepo.UpdateBearerToken(interf.ID, interf.BearerToken)
+	if err != nil {
+		return err
+	}
+
+	err = s.InterfaceRepo.UpdateOAuth20(interf.ID, interf.OAuth20)
+	if err != nil {
+		return err
+	}
+
+	err = s.InterfaceRepo.UpdateApiKey(interf.ID, interf.ApiKey)
+	if err != nil {
+		return err
 	}
 
 	return

@@ -350,14 +350,11 @@ export default defineComponent({
       importSpec(data, targetModelId).then((json) => {
         if (json.code === 0) {
           showImport.value = false
-          store.dispatch('Interface/loadInterface')
-              .then((result) => {
-                console.log('===', result)
-
-                expandOneKey(treeDataMap.value, targetModelId, expandedKeys.value) // expend parent node
-                setExpandedKeys(currProject.value.id, expandedKeys.value)
-              })
-
+          store.dispatch('Interface/loadInterface').then((result) => {
+              console.log(result)
+              expandOneKey(treeDataMap.value, targetModelId, expandedKeys.value) // expend parent node
+              setExpandedKeys(currProject.value.id, expandedKeys.value)
+            })
         } else {
           notification.error({
             key: NotificationKeyRequest,

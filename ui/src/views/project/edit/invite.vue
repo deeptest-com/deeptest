@@ -8,11 +8,11 @@
       <template #extra></template>
 
       <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
-        <a-form-item label="用户名称" v-bind="validateInfos.username">
+        <a-form-item label="用户名" v-bind="validateInfos.username">
           <a-input v-model:value="modelRef.username"/>
         </a-form-item>
 
-        <a-form-item label="邮箱地址" v-bind="validateInfos.email">
+        <a-form-item label="邮箱" v-bind="validateInfos.email">
           <a-input v-model:value="modelRef.email"/>
         </a-form-item>
 
@@ -52,8 +52,8 @@ const rulesRef = reactive({
       message: '请输入用户名',
     },
     {
-      min: 6,
-      message: '用户名最少6位'
+      min: 4,
+      message: '用户名最少4位'
     }
   ],
   email: [

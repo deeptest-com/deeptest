@@ -1,6 +1,6 @@
 <template>
   <div class="change-password">
-    <a-modal title="导入定义"
+    <a-modal title="修改密码"
              :visible="isVisible"
              :onCancel="onCancel"
              class="change-password-modal">

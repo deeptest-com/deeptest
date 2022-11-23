@@ -27,13 +27,13 @@ export default defineComponent({
         notification.warn({
           key: NotificationKeyCommon,
           message: msg,
-          description: desc,
+          description: desc ? desc : '',
         });
       }  else {
         notification.error({
           key: NotificationKeyCommon,
           message: msg,
-          description: desc,
+          description: desc ? desc : '',
         });
       }
 

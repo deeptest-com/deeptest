@@ -64,8 +64,9 @@ var (
 	SystemErr  = BizErr{4000, "系统错误"}
 
 	ErrNameExist          = BizErr{10100, "同名记录已存在"}
-	ErrUserExist          = BizErr{10200, "用户名已占用"}
-	ErrPasswordMustBeSame = BizErr{10300, "两次密码必须一样"}
+	ErrUsernameExist      = BizErr{10200, "用户名已占用"}
+	ErrEmailExist         = BizErr{10300, "邮箱已存在"}
+	ErrPasswordMustBeSame = BizErr{10500, "两次密码必须一样"}
 )
 
 func (e BizErr) Error() string {

@@ -76,10 +76,14 @@ export default defineComponent({
 
         const rulesRef = reactive({
           username: [
-              {
-                  required: true,
-                  message: 'page.user.register.form-item-username.required',
-              },
+            {
+                required: true,
+                message: 'page.user.register.form-item-username.required',
+            },
+            {
+              min: 4,
+              message: '用户名最少4位'
+            }
           ],
           email: [
             {

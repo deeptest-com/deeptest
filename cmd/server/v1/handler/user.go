@@ -77,6 +77,13 @@ func (c *UserCtrl) UpdateEmail(ctx iris.Context) {
 		return
 	}
 
+	po, _ := c.UserRepo.FindByEmail(req.Email, userId)
+	if po.Id > 0 {
+		bizErr := _domain.ErrEmailExist
+		ctx.JSON(_domain.Response{Code: bizErr.Code})
+		return
+	}
+
 	err = c.UserRepo.UpdateEmail(req.Email, userId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
@@ -100,6 +107,13 @@ func (c *UserCtrl) UpdateName(ctx iris.Context) {
 	err := ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		return
+	}
+
+	po, _ := c.UserRepo.FindByUserName(req.Username, userId)
+	if po.Id > 0 {
+		bizErr := _domain.ErrUsernameExist
+		ctx.JSON(_domain.Response{Code: bizErr.Code})
 		return
 	}
 

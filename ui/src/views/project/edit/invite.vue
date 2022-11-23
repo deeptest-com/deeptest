@@ -51,13 +51,19 @@ const rulesRef = reactive({
       required: true,
       message: '请输入用户名',
     },
+    {
+      min: 6,
+      message: '用户名最少6位'
+    }
   ],
   email: [
     {
-      type: 'string',
       required: true,
+      message: '邮箱地址不能为空',
+    },
+    {
       pattern: pattern.email,
-      message: '请输入邮箱',
+      message: '不正确的邮箱地址',
     },
   ],
 });

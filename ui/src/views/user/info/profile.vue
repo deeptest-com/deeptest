@@ -95,15 +95,21 @@ const rulesRef = reactive({
       required: true,
       message: t('page.user.register.form-item-username.required'),
     },
+    {
+      min: 4,
+      message: '用户名最少4位'
+    }
   ],
   email: [
     {
-      type: 'string',
       required: true,
-      pattern: pattern.email,
-      message: t('page.user.register.form-item-email.required'),
+      message: '邮箱地址不能为空',
     },
-  ]
+    {
+      pattern: pattern.email,
+      message: '不正确的邮箱地址',
+    },
+  ],
 });
 
 const {resetFields, validate, validateInfos} = useForm(modelRef, rulesRef);
@@ -163,11 +169,6 @@ const afterUpdate = async (result) => {
     });
     changing.value = ''
     showChangePassword.value = false
-  } else {
-    notification.error({
-      key: NotificationKeyCommon,
-      message: `更新失败`,
-    });
   }
 }
 

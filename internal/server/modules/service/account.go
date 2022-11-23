@@ -73,7 +73,7 @@ func (s *AccountService) Register(req v1.RegisterReq) (err _domain.BizErr) {
 
 	po, _ := s.UserRepo.FindByUserName(req.Username)
 	if po.Id > 0 {
-		err = _domain.ErrUserExist
+		err = _domain.ErrUsernameExist
 		return
 	}
 

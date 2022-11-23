@@ -95,14 +95,33 @@ func (r *UserRepo) GetRoles(users ...*domain.UserResp) {
 func (r *UserRepo) FindByUserName(username string, ids ...uint) (domain.UserResp, error) {
 	user := domain.UserResp{}
 	db := r.DB.Model(&model.SysUser{}).Where("username = ?", username)
+
 	if len(ids) == 1 {
 		db.Where("id != ?", ids[0])
 	}
+
 	err := db.First(&user).Error
 	if err != nil {
-		logUtils.Errorf("根据用户名查询用户错误", zap.String("用户名:", username), zap.Uints("ids:", ids), zap.String("错误:", err.Error()))
 		return user, err
 	}
+
+	r.GetRoles(&user)
+	return user, nil
+}
+
+func (r *UserRepo) FindByEmail(email string, ids ...uint) (domain.UserResp, error) {
+	user := domain.UserResp{}
+	db := r.DB.Model(&model.SysUser{}).Where("email = ?", email)
+
+	if len(ids) == 1 {
+		db.Where("id != ?", ids[0])
+	}
+
+	err := db.First(&user).Error
+	if err != nil {
+		return user, err
+	}
+
 	r.GetRoles(&user)
 	return user, nil
 }

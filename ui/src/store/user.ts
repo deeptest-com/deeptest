@@ -1,12 +1,13 @@
 import { Mutation, Action } from 'vuex';
 import { StoreModuleType } from "@/utils/store";
 import { ResponseData } from '@/utils/request';
-import {queryCurrent, queryMessage, queryProject} from "@/services/user";
+import {getCurrent, queryMessage, queryProject, updateEmail, updateName, updatePassword} from "@/services/user";
 import { removeToken } from "@/utils/localToken";
 
 export interface CurrentUser {
   id: number;
-  name: string;
+  username: string;
+  email: string;
   avatar: string;
   roles: string[];
 }
@@ -26,13 +27,18 @@ export interface ModuleType extends StoreModuleType<StateType> {
     fetchCurrent: Action<StateType, StateType>;
     fetchMessage: Action<StateType, StateType>;
     logout: Action<StateType, StateType>;
+
+    updateEmail: Action<StateType, StateType>;
+    updateName: Action<StateType, StateType>;
+    updatePassword: Action<StateType, StateType>;
   };
 }
 
 const initState: StateType = {
   currentUser: {
     id: 0,
-    name: '',
+    username: '',
+    email: '',
     avatar: '',
     roles: [],
   },
@@ -59,7 +65,7 @@ const StoreModel: ModuleType = {
   actions: {
     async fetchCurrent({ commit }) {
       try {
-        const response: ResponseData = await queryCurrent();
+        const response: ResponseData = await getCurrent();
 
         const { data } = response;
         commit('saveCurrentUser', data || {});
@@ -71,7 +77,7 @@ const StoreModel: ModuleType = {
     async fetchMessage({ commit }) {
       try {
         const response: ResponseData = await queryMessage();
-        const { data } = response;        
+        const { data } = response;
         commit('saveMessage', data || 0);
         return true;
       } catch (error) {
@@ -86,6 +92,47 @@ const StoreModel: ModuleType = {
       } catch (error) {
         return false;
       }
+    },
+
+    async updateEmail({ commit }, payload) {
+      try {
+        const json = await updateEmail(payload);
+        if (json.code === 0) {
+          commit('saveCurrentUser', json.data);
+          return true;
+        } else {
+          return false
+        }
+      } catch (error) {
+        return false;
+      }
+    },
+    async updateName({ commit }, payload) {
+      try {
+        const json = await updateName(payload);
+        if (json.code === 0) {
+          commit('saveCurrentUser', json.data);
+          return true;
+        } else {
+          return false
+        }
+      } catch (error) {
+        return false;
+      }
+    },
+    async updatePassword({ commit }, payload) {
+      try {
+        const json = await updatePassword(payload);
+        if (json.code === 0) {
+          commit('saveCurrentUser', json.data);
+          return true;
+        } else {
+          return false
+        }
+        return true;
+      } catch (error) {
+        return false;
+      }
     }
   }
 }
@@ -93,4 +140,3 @@ const StoreModel: ModuleType = {
 
 
 export default StoreModel;
-  

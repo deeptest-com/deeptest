@@ -14,8 +14,8 @@ import (
 )
 
 type AccountCtrl struct {
-	AuthService *service.AccountService `inject:""`
-	UserRepo    *repo.UserRepo          `inject:""`
+	AccountService *service.AccountService `inject:""`
+	UserRepo       *repo.UserRepo          `inject:""`
 }
 
 func (c *AccountCtrl) Login(ctx iris.Context) {
@@ -29,10 +29,27 @@ func (c *AccountCtrl) Login(ctx iris.Context) {
 			return
 		}
 	}
-	token, err := c.AuthService.GetAccessToken(req)
+	token, err := c.AccountService.Login(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
 		return
 	}
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: iris.Map{"token": token}, Msg: _domain.NoErr.Msg})
+}
+
+func (c *AccountCtrl) Register(ctx iris.Context) {
+	var req v1.RegisterReq
+	if err := ctx.ReadJSON(&req); err != nil {
+		errs := validate.ValidRequest(err)
+
+		if len(errs) > 0 {
+			_logUtils.Errorf("参数验证失败", zap.String("ValidRequest()", strings.Join(errs, ";")))
+			ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: strings.Join(errs, ";")})
+			return
+		}
+	}
+
+	err := c.AccountService.Register(req)
+
+	ctx.JSON(_domain.Response{Code: err.Code, Msg: err.Msg})
 }

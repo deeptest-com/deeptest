@@ -3,7 +3,7 @@ package repo
 import (
 	"errors"
 	"fmt"
-	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/casbin"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
@@ -24,6 +24,7 @@ type UserRepo struct {
 	ProfileRepo     *ProfileRepo     `inject:""`
 	RoleRepo        *RoleRepo        `inject:""`
 	ProjectRepo     *ProjectRepo     `inject:""`
+	EnvironmentRepo *EnvironmentRepo `inject:""`
 	ProjectRoleRepo *ProjectRoleRepo `inject:""`
 }
 
@@ -31,7 +32,7 @@ func NewUserRepo() *UserRepo {
 	return &UserRepo{}
 }
 
-func (r *UserRepo) Paginate(req v1.UserReqPaginate) (data _domain.PageData, err error) {
+func (r *UserRepo) Paginate(req domain.UserReqPaginate) (data _domain.PageData, err error) {
 	var count int64
 
 	db := r.DB.Model(&model.SysUser{})
@@ -45,7 +46,7 @@ func (r *UserRepo) Paginate(req v1.UserReqPaginate) (data _domain.PageData, err 
 		return
 	}
 
-	users := make([]*v1.UserResp, 0)
+	users := make([]*domain.UserResp, 0)
 	err = db.Scopes(dao.PaginateScope(req.Page, req.PageSize, req.Order, req.Field)).
 		Find(&users).Error
 	if err != nil {
@@ -63,7 +64,7 @@ func (r *UserRepo) Paginate(req v1.UserReqPaginate) (data _domain.PageData, err 
 }
 
 // getRoles
-func (r *UserRepo) GetRoles(users ...*v1.UserResp) {
+func (r *UserRepo) GetRoles(users ...*domain.UserResp) {
 	var roleIds []string
 	userRoleIds := make(map[uint][]string, 10)
 	if len(users) == 0 {
@@ -91,8 +92,8 @@ func (r *UserRepo) GetRoles(users ...*v1.UserResp) {
 	}
 }
 
-func (r *UserRepo) FindByUserName(username string, ids ...uint) (v1.UserResp, error) {
-	user := v1.UserResp{}
+func (r *UserRepo) FindByUserName(username string, ids ...uint) (domain.UserResp, error) {
+	user := domain.UserResp{}
 	db := r.DB.Model(&model.SysUser{}).Where("username = ?", username)
 	if len(ids) == 1 {
 		db.Where("id != ?", ids[0])
@@ -106,8 +107,8 @@ func (r *UserRepo) FindByUserName(username string, ids ...uint) (v1.UserResp, er
 	return user, nil
 }
 
-func (r *UserRepo) FindPasswordByUserName(username string, ids ...uint) (v1.LoginResp, error) {
-	user := v1.LoginResp{}
+func (r *UserRepo) FindPasswordByUserName(username string, ids ...uint) (domain.LoginResp, error) {
+	user := domain.LoginResp{}
 	db := r.DB.Model(&model.SysUser{}).Select("id,password").Where("username = ?", username)
 	if len(ids) == 1 {
 		db.Where("id != ?", ids[0])
@@ -117,13 +118,63 @@ func (r *UserRepo) FindPasswordByUserName(username string, ids ...uint) (v1.Logi
 		logUtils.Errorf("根据用户名查询用户错误", zap.String("用户名:", username), zap.Uints("ids:", ids), zap.String("错误:", err.Error()))
 		return user, err
 	}
+
 	return user, nil
 }
 
-func (r *UserRepo) Create(req v1.UserReq) (uint, error) {
+func (r *UserRepo) FindPasswordByEmail(email string) (domain.LoginResp, error) {
+	user := domain.LoginResp{}
+	db := r.DB.Model(&model.SysUser{}).Select("id,password").Where("email = ?", email)
+
+	err := db.First(&user).Error
+	if err != nil {
+		logUtils.Errorf("根据邮箱查询用户错误", zap.String("邮箱:", email), zap.String("错误:", err.Error()))
+		return user, err
+	}
+
+	return user, nil
+}
+
+func (r *UserRepo) Register(user *model.SysUser) (err error) {
+	hash, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	if err != nil {
+		logUtils.Errorf("密码加密错误", zap.String("错误:", err.Error()))
+		return
+	}
+
+	user.Password = string(hash)
+	err = r.DB.Model(&model.SysUser{}).Create(&user).Error
+	if err != nil {
+		logUtils.Errorf("添加用户错误", zap.String("错误:", err.Error()))
+		return
+	}
+
+	project, err := r.AddProjectForUser(user)
+	if err != nil {
+		logUtils.Errorf("添加用户项目错误", zap.String("错误:", err.Error()))
+		return
+	}
+
+	err = r.AddProfileForUser(user, project)
+	if err != nil {
+		logUtils.Errorf("添加用户信息错误", zap.String("错误:", err.Error()))
+		return
+	}
+
+	err = r.AddRoleForUser(user)
+	if err != nil {
+		logUtils.Errorf("添加用户角色错误", zap.String("错误:", err.Error()))
+		return
+	}
+
+	return
+}
+
+func (r *UserRepo) Create(req domain.UserReq) (uint, error) {
 	if _, err := r.FindByUserName(req.Username); !errors.Is(err, gorm.ErrRecordNotFound) {
 		return 0, fmt.Errorf("用户名 %s 已经被使用", req.Username)
 	}
+
 	user := model.SysUser{UserBase: req.UserBase, RoleIds: req.RoleIds}
 	hash, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
@@ -159,7 +210,7 @@ func (r *UserRepo) Create(req v1.UserReq) (uint, error) {
 	return user.ID, nil
 }
 
-func (r *UserRepo) Update(id uint, req v1.UserReq) error {
+func (r *UserRepo) Update(id uint, req domain.UserReq) error {
 	if b, err := r.IsAdminUser(id); err != nil {
 		return err
 	} else if b {
@@ -192,8 +243,8 @@ func (r *UserRepo) IsAdminUser(id uint) (bool, error) {
 	return arr.InArrayS(user.Roles, serverConsts.AdminRoleName), nil
 }
 
-func (r *UserRepo) FindById(id uint) (v1.UserResp, error) {
-	user := v1.UserResp{}
+func (r *UserRepo) FindById(id uint) (domain.UserResp, error) {
+	user := domain.UserResp{}
 	err := r.DB.Model(&model.SysUser{}).Where("id = ?", id).First(&user).Error
 	if err != nil {
 		logUtils.Errorf("find user err ", zap.String("错误:", err.Error()))
@@ -220,7 +271,7 @@ func (r *UserRepo) AddProfileForUser(user *model.SysUser, project model.Project)
 		return fmt.Errorf("用户 %s 信息已经被使用", user.Name)
 	}
 
-	profile := model.SysUserProfile{UserId: user.ID, Email: "chenqi@deeptest.com", CurrProjectId: project.ID}
+	profile := model.SysUserProfile{UserId: user.ID, CurrProjectId: project.ID}
 	err = r.DB.Create(&profile).Error
 	if err != nil {
 		logUtils.Errorf("添加用户错误", zap.String("错误:", err.Error()))
@@ -246,7 +297,8 @@ func (r *UserRepo) AddRoleForUser(user *model.SysUser) error {
 		}
 	}
 	if len(user.RoleIds) == 0 {
-		return nil
+		role, _ := r.RoleRepo.FindByName("user")
+		user.RoleIds = append(user.RoleIds, role.Id)
 	}
 
 	var roleIds []string
@@ -269,7 +321,7 @@ func (r *UserRepo) AddProjectForUser(user *model.SysUser) (project model.Project
 		return
 	}
 
-	project = model.Project{ProjectBase: v1.ProjectBase{Name: "默认项目"}}
+	project = model.Project{ProjectBase: domain.ProjectBase{Name: "默认项目"}}
 	err = r.DB.Create(&project).Error
 	if err != nil {
 		logUtils.Errorf("添加项目错误", zap.String("错误:", err.Error()))
@@ -279,6 +331,12 @@ func (r *UserRepo) AddProjectForUser(user *model.SysUser) (project model.Project
 	err = r.ProjectRepo.AddProjectMember(project.ID, user.ID)
 	if err != nil {
 		logUtils.Errorf("添加项目角色错误", zap.String("错误:", err.Error()))
+		return
+	}
+
+	err = r.EnvironmentRepo.AddDefaultForProject(project.ID)
+	if err != nil {
+		logUtils.Errorf("添加项目默认环境错误", zap.String("错误:", err.Error()))
 		return
 	}
 
@@ -323,4 +381,58 @@ func (r *UserRepo) UpdatePasswordByName(name string, password string) (err error
 }
 func (r *UserRepo) UpdateAvatar(id uint, avatar string) error {
 	return nil
+}
+
+func (r *UserRepo) UpdateEmail(email string, id uint) (err error) {
+	err = r.DB.Model(&model.SysUser{}).
+		Where("id = ?", id).
+		Updates(map[string]interface{}{"email": email}).Error
+	if err != nil {
+		logUtils.Errorf("更新用户邮箱错误 %s", err.Error())
+		return err
+	}
+
+	return
+}
+
+func (r *UserRepo) UpdateName(username string, id uint) (err error) {
+	err = r.DB.Model(&model.SysUser{}).
+		Where("id = ?", id).
+		Updates(map[string]interface{}{"username": username}).Error
+	if err != nil {
+		logUtils.Errorf("更新用户名称错误 %s", err.Error())
+		return err
+	}
+
+	return
+}
+
+func (r *UserRepo) UpdatePassword(req domain.UpdateUserReq, id uint) (err error) {
+	user, err := r.FindById(id)
+	if err != nil {
+		if err != nil {
+			return
+		}
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password))
+	if err != nil {
+		err = errors.New("原有密码错误")
+		return
+	}
+
+	hash, err := bcrypt.GenerateFromPassword([]byte(req.NewPassword), bcrypt.DefaultCost)
+	if err != nil {
+		return
+	}
+	req.NewPassword = string(hash)
+
+	err = r.DB.Model(&model.SysUser{}).
+		Where("id = ?", id).
+		Updates(map[string]interface{}{"password": req.NewPassword}).Error
+	if err != nil {
+		return err
+	}
+
+	return
 }

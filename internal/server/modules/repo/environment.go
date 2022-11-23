@@ -9,7 +9,8 @@ import (
 )
 
 type EnvironmentRepo struct {
-	DB *gorm.DB `inject:""`
+	DB          *gorm.DB     `inject:""`
+	ProjectRepo *ProjectRepo `inject:""`
 }
 
 func (r *EnvironmentRepo) List() (pos []model.Environment, err error) {
@@ -119,6 +120,16 @@ func (r *EnvironmentRepo) Delete(id uint) (err error) {
 
 	err = r.DB.Model(&model.EnvironmentVar{}).
 		Where("environment_id = ?", id).Update("deleted", true).Error
+
+	return
+}
+
+func (r *EnvironmentRepo) AddDefaultForProject(projectId uint) (err error) {
+	env := model.Environment{
+		Name: "默认环境",
+	}
+	err = r.Save(&env)
+	err = r.ProjectRepo.UpdateDefaultEnvironment(projectId, env.ID)
 
 	return
 }

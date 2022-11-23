@@ -100,6 +100,22 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
       },
     ],
   },
+
+  {
+    title: 'index-layout.menu',
+    path: '/user',
+    redirect: '/report/index',
+    component: BlankLayout,
+    children: [
+      {
+        icon: 'profile',
+        title: 'profile',
+        path: 'profile',
+        component: () => import('@/views/user/info/profile.vue'),
+        hidden: true,
+      },
+    ],
+  },
 ] as Array<RoutesDataItem>;
 
 export default IndexLayoutRoutes;

@@ -21,6 +21,7 @@ func (s *RoleSource) GetSources() ([]v1.RoleReq, error) {
 	if err != nil {
 		return []v1.RoleReq{}, err
 	}
+
 	sources := []v1.RoleReq{
 		{
 			RoleBase: v1.RoleBase{
@@ -30,19 +31,31 @@ func (s *RoleSource) GetSources() ([]v1.RoleReq, error) {
 				Perms:       perms,
 			},
 		},
+		{
+			RoleBase: v1.RoleBase{
+				Name:        "user",
+				DisplayName: "普通用户",
+				Description: "普通用户",
+				Perms:       perms,
+			},
+		},
 	}
 	return sources, err
 }
 
 func (s *RoleSource) Init() error {
-	if s.RoleRepo.DB.Model(&model.SysRole{}).Where("id IN ?", []int{1}).Find(&[]model.SysRole{}).RowsAffected == 1 {
+	if s.RoleRepo.DB.Model(&model.SysRole{}).
+		Where("id IN ?", []int{1}).
+		Find(&[]model.SysRole{}).RowsAffected == 2 {
 		color.Danger.Printf("\n[Mysql] --> %s 表的初始数据已存在!", model.SysRole{}.TableName())
 		return nil
 	}
+
 	sources, err := s.GetSources()
 	if err != nil {
 		return err
 	}
+
 	for _, source := range sources {
 		if _, err := s.RoleRepo.Create(source); err != nil { // 遇到错误时回滚事务
 			return err

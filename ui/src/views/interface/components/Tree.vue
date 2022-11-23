@@ -46,8 +46,8 @@
           </span>
 
           <span v-else class="name-editor">
-              {{ slotProps.name }}
-            </span>
+            {{ slotProps.name }}
+          </span>
         </template>
 
         <template #icon="slotProps">
@@ -90,7 +90,7 @@ import TreeContextMenu from "./TreeContextMenu.vue";
 import ImportModal from "./ImportModal.vue";
 import {getExpandedKeys, setExpandedKeys} from "@/utils/cache";
 import {getContextMenuStyle} from "@/utils/dom";
-import {NotificationKeyRequest} from "@/utils/const";
+import {NotificationKeyCommon} from "@/utils/const";
 
 const useForm = Form.useForm;
 
@@ -357,7 +357,7 @@ export default defineComponent({
             })
         } else {
           notification.error({
-            key: NotificationKeyRequest,
+            key: NotificationKeyCommon,
             message: '导入失败',
           });
         }

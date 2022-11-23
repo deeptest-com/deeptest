@@ -44,6 +44,7 @@ import { UserOutlined, UnlockOutlined } from '@ant-design/icons-vue';
 import useI18nAntdFormVaildateInfos from '@/composables/useI18nAntdFormVaildateInfos';
 import { LoginParamsType } from './data.d';
 import { StateType as UserLoginStateType } from './store';
+import {NotificationKeyCommon} from "@/utils/const";
 
 interface UserLoginSetupData {
     t: (key: string | number) => string;
@@ -100,6 +101,7 @@ export default defineComponent({
                 const res: boolean = await store.dispatch('UserLogin/login',fieldsValue);
                 if (res === true) {
                   notification.success({
+                    key: NotificationKeyCommon,
                     message: t('page.user.login.form.login-success')
                   });
 
@@ -113,6 +115,7 @@ export default defineComponent({
                 }
             } catch (error) {
               notification.warn({
+                key: NotificationKeyCommon,
                 message: t('page.user.login.form.login-fail'),
               });
             }

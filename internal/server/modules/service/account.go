@@ -3,7 +3,9 @@ package service
 import (
 	"errors"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
+	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"golang.org/x/crypto/bcrypt"
 	"strconv"
@@ -25,20 +27,26 @@ func NewAuthService() *AccountService {
 	return &AccountService{}
 }
 
-// GetAccessToken 登录
-func (s *AccountService) GetAccessToken(req v1.LoginReq) (string, error) {
-	admin, err := s.UserRepo.FindPasswordByUserName(req.Username)
+// Login 登录
+func (s *AccountService) Login(req v1.LoginReq) (token string, err error) {
+	user, err := s.UserRepo.FindPasswordByUserName(req.Username)
 	if err != nil {
-		return "", err
+		user, err = s.UserRepo.FindPasswordByEmail(req.Username)
+
+		if err != nil {
+			return
+		}
 	}
 
-	if err := bcrypt.CompareHashAndPassword([]byte(admin.Password), []byte(req.Password)); err != nil {
-		logUtils.Errorf("用户名或密码错误", zap.String("密码:", req.Password), zap.String("hash:", admin.Password), zap.String("bcrypt.CompareHashAndPassword()", err.Error()))
-		return "", ErrUserNameOrPassword
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password))
+	if err != nil {
+		logUtils.Errorf("用户名或密码错误", zap.String("密码:", req.Password), zap.String("hash:", user.Password), zap.String("bcrypt.CompareHashAndPassword()", err.Error()))
+		err = ErrUserNameOrPassword
+		return
 	}
 
 	claims := &multi.CustomClaims{
-		ID:            strconv.FormatUint(uint64(admin.Id), 10),
+		ID:            strconv.FormatUint(uint64(user.Id), 10),
 		Username:      req.Username,
 		AuthorityId:   "",
 		AuthorityType: multi.AdminAuthority,
@@ -47,10 +55,37 @@ func (s *AccountService) GetAccessToken(req v1.LoginReq) (string, error) {
 		CreationDate:  time.Now().Local().Unix(),
 		ExpiresIn:     multi.RedisSessionTimeoutWeb.Milliseconds(),
 	}
-	token, _, err := multi.AuthDriver.GenerateToken(claims)
+	token, _, err = multi.AuthDriver.GenerateToken(claims)
 	if err != nil {
 		return "", err
 	}
 
-	return token, nil
+	return
+}
+
+func (s *AccountService) Register(req v1.RegisterReq) (err _domain.BizErr) {
+	err = _domain.NoErr
+
+	if req.Password != req.Confirm {
+		err = _domain.ErrPasswordMustBeSame
+		return
+	}
+
+	po, _ := s.UserRepo.FindByUserName(req.Username)
+	if po.Id > 0 {
+		err = _domain.ErrUserExist
+		return
+	}
+
+	user := model.SysUser{
+		UserBase: v1.UserBase{
+			Username: req.Username,
+			Email:    req.Email,
+		},
+		Password: req.Password,
+	}
+
+	s.UserRepo.Register(&user)
+
+	return
 }

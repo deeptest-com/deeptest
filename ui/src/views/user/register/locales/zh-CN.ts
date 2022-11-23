@@ -1,6 +1,8 @@
 export default {
   'page.user.register.form-item-username': '用户名',
   'page.user.register.form-item-username.required': '请输入用户名',
+  'page.user.register.form-item-email': '邮箱地址',
+  'page.user.register.form-item-email.required': '请输入正确的邮箱地址',
   'page.user.register.form-item-password': '密码',
   'page.user.register.form-item-password.required': '请输入密码',
   'page.user.register.form-item-confirmpassword': '确认密码',

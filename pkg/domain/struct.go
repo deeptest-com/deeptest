@@ -57,13 +57,15 @@ var (
 	AuthErr       = BizErr{401, "请重新登录"}
 	AuthActionErr = BizErr{403, "权限不足"}
 
-	NeedInitErr = BizErr{1000, "前往初始化数据库"}
+	NeedInitErr = BizErr{1000, "未初始化"}
 	ParamErr    = BizErr{2000, "参数解析失败"}
 
 	RequestErr = BizErr{3000, "请求失败"}
 	SystemErr  = BizErr{4000, "系统错误"}
 
-	ErrNameExist = BizErr{10100, "指定名称的记录已存在"}
+	ErrNameExist          = BizErr{10100, "同名记录已存在"}
+	ErrUserExist          = BizErr{10200, "用户名已占用"}
+	ErrPasswordMustBeSame = BizErr{10300, "两次密码必须一样"}
 )
 
 func (e BizErr) Error() string {

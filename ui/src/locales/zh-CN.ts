@@ -31,6 +31,9 @@ export default {
     'report': '报告',
     'report.detail': '报告细节',
 
+    'profile': '信息',
+    'invite': '邀请',
+
     'mock.oauth2.callback': 'OAuth2回调模拟',
 
     'json': 'JSON',

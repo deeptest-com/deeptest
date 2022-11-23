@@ -23,10 +23,14 @@ func NewProjectRepo() *ProjectRepo {
 	return &ProjectRepo{}
 }
 
-func (r *ProjectRepo) Paginate(req v1.ProjectReqPaginate) (data _domain.PageData, err error) {
+func (r *ProjectRepo) Paginate(req v1.ProjectReqPaginate, userId uint) (data _domain.PageData, err error) {
 	var count int64
 
-	db := r.DB.Model(&model.Project{}).Where("NOT deleted")
+	var projectIds []uint
+	r.DB.Model(&model.ProjectMember{}).
+		Select("project_id").Where("user_id = ?", userId).Scan(&projectIds)
+
+	db := r.DB.Model(&model.Project{}).Where("NOT deleted AND id IN (?)", projectIds)
 
 	if req.Keywords != "" {
 		db = db.Where("name LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords))
@@ -111,11 +115,11 @@ func (r *ProjectRepo) Create(req v1.ProjectReq, userId uint) (id uint, bizErr *_
 		return
 	}
 
-	env := model.Environment{
-		Name: "默认环境",
+	err = r.EnvironmentRepo.AddDefaultForProject(project.ID)
+	if err != nil {
+		logUtils.Errorf("添加项目默认环境错误", zap.String("错误:", err.Error()))
+		return
 	}
-	err = r.EnvironmentRepo.Save(&env)
-	err = r.UpdateDefaultEnvironment(project.ID, env.ID)
 
 	err = r.AddProjectMember(project.ID, userId)
 	if err != nil {

@@ -1,6 +1,4 @@
 export default {
-
-
   'index-layout.menu.component': '组件',
   'index-layout.menu.component.icon': '图标',
   'index-layout.menu.component.icon.svg': 'IconSvg',

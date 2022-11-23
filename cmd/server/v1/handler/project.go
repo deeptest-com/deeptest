@@ -19,6 +19,8 @@ type ProjectCtrl struct {
 }
 
 func (c *ProjectCtrl) List(ctx iris.Context) {
+	userId := multi.GetUserId(ctx)
+
 	var req v1.ProjectReqPaginate
 	if err := ctx.ReadQuery(&req); err != nil {
 		errs := validate.ValidRequest(err)
@@ -30,7 +32,7 @@ func (c *ProjectCtrl) List(ctx iris.Context) {
 	}
 	req.ConvertParams()
 
-	data, err := c.ProjectService.Paginate(req)
+	data, err := c.ProjectService.Paginate(req, userId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
 		return

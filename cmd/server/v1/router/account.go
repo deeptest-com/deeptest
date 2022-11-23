@@ -20,6 +20,7 @@ func (m *AccountModule) Party() module.WebModule {
 	handler := func(public iris.Party) {
 		public.Use(middleware.InitCheck())
 		public.Post("/login", m.AccountCtrl.Login)
+		public.Post("/register", m.AccountCtrl.Register)
 
 		public.Use(middleware.JwtHandler(), middleware.Casbin(), middleware.OperationRecord())
 	}

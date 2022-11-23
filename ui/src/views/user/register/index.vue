@@ -7,12 +7,19 @@
             <a-form-item label="" v-bind="validateInfos.username">
                 <a-input v-model:value="modelRef.username" :placeholder="t('page.user.register.form-item-username')" @keyup.enter="handleSubmit" />
             </a-form-item>
+
+          <a-form-item label="" v-bind="validateInfos.email">
+            <a-input v-model:value="modelRef.email" :placeholder="t('page.user.register.form-item-email')" @keyup.enter="handleSubmit" />
+          </a-form-item>
+
             <a-form-item label="" v-bind="validateInfos.password">
                 <a-input-password v-model:value="modelRef.password" :placeholder="t('page.user.register.form-item-password')" @keyup.enter="handleSubmit" />
             </a-form-item>
+
             <a-form-item label="" v-bind="validateInfos.confirm">
                 <a-input-password v-model:value="modelRef.confirm" :placeholder="t('page.user.register.form-item-confirmpassword')" @keyup.enter="handleSubmit" />
             </a-form-item>
+
             <a-form-item>
                 <a-button type="primary" class="submit" @click="handleSubmit" :loading="submitLoading">
                     {{t('page.user.register.form.btn-submit')}}
@@ -42,6 +49,7 @@ const useForm = Form.useForm;
 import useI18nAntdFormVaildateInfos from '@/composables/useI18nAntdFormVaildateInfos';
 import { RegisterParamsType } from "./data.d";
 import { StateType as RegisterStateType } from "./store";
+import {pattern} from "@/utils/const";
 
 interface UserRegisterSetupData {
     t: (key: string | number) => string;
@@ -59,45 +67,56 @@ export default defineComponent({
         const store = useStore<{UserRegister: RegisterStateType}>();
         const { t } = useI18n();
 
-        // 表单值
         const modelRef = reactive<RegisterParamsType>({
-            username: '',
-            password: '',
-            confirm: ''
+          username: '',
+          email: '',
+          password: '',
+          confirm: ''
         });
-        // 表单验证
+
         const rulesRef = reactive({
-            username: [
-                {
-                    required: true,
-                    message: 'page.user.register.form-item-username.required',
-                },
-            ],
-            password: [
-                {
-                    required: true,
-                    message: 'page.user.register.form-item-password.required',
-                },
-            ],
-            confirm: [
-                {
-                    validator: (rule: any, value: string, callback: any) => {
-                        if (value === '') {
-                            return Promise.reject('page.user.register.form-item-password.required');
-                        } else if (value !== modelRef.password) {
-                            return Promise.reject("page.user.register.form-item-confirmpassword.compare");
-                        } else {
-                            return Promise.resolve();
-                        }
-                    }
-                }
-            ],
+          username: [
+              {
+                  required: true,
+                  message: 'page.user.register.form-item-username.required',
+              },
+          ],
+          email: [
+            {
+              type: 'string',
+              required: true,
+              pattern: pattern.email,
+              message: 'page.user.register.form-item-email.required',
+            },
+          ],
+          password: [
+            {
+                required: true,
+                message: 'page.user.register.form-item-password.required',
+            trigger: 'blur'
+            },
+            {
+              min: 6,
+              message: '密码长度最少6位',
+            }
+          ],
+          confirm: [
+              {
+                  validator: (rule: any, value: string, callback: any) => {
+                      if (value === '') {
+                          return Promise.reject('page.user.register.form-item-password.required');
+                      } else if (value !== modelRef.password) {
+                          return Promise.reject("page.user.register.form-item-confirmpassword.compare");
+                      } else {
+                          return Promise.resolve();
+                      }
+                  }
+              }
+          ],
         });
-        // 获取表单内容
+
         const { validate, validateInfos } = useForm(modelRef, rulesRef);
-        // 注册loading
         const submitLoading = ref<boolean>(false);
-        // 注册
         const handleSubmit = async (e: MouseEvent) => {
             e.preventDefault();
             submitLoading.value = true;
@@ -123,7 +142,6 @@ export default defineComponent({
 
          // 注册状态
         const errorMsg = computed<string | undefined>(()=> store.state.UserRegister.errorMsg);
-
 
         return {
             t,

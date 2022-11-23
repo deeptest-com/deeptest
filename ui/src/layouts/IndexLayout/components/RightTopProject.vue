@@ -38,7 +38,7 @@ export default defineComponent({
     const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 
     store.dispatch("User/fetchMessage");
-    store.dispatch("Project/fetchProject");
+    store.dispatch("ProjectGlobal/fetchProject");
 
     const selectProject = (value): void => {
       console.log('selectProject', value)

@@ -12,10 +12,10 @@
         <span class="title" :class="[{hide: collapsed}]">设置</span>
       </template>
 
-      <a-menu-item key="lang">
+<!--  <a-menu-item key="lang">
         <icon-svg type="language-outline" class="icon-svg" />
         <span>界面语言</span>
-      </a-menu-item>
+      </a-menu-item>-->
       <a-menu-item key="profile">
         <UserOutlined />
         <span>个人信息</span>
@@ -53,7 +53,7 @@ export default defineComponent({
   },
   components: {
     SelectLang,
-    IconSvg,
+    // IconSvg,
     SettingOutlined, UserOutlined, LogoutOutlined
   },
   setup(props) {
@@ -78,7 +78,7 @@ export default defineComponent({
         selectLangVisible.value = true
 
       } else if (key === 'profile') {
-        console.log('profile')
+        router.replace({path: '/user/profile'})
 
       } else if (key === 'logout') {
         const res: boolean = await store.dispatch('User/logout');

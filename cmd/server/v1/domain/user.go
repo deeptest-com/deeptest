@@ -22,9 +22,17 @@ type UserResp struct {
 	Roles []string `gorm:"-" json:"roles"`
 }
 
+type UpdateUserReq struct {
+	Username    string
+	Email       string
+	Password    string
+	NewPassword string
+}
+
 type UserBase struct {
 	Username string `gorm:"uniqueIndex;not null;type:varchar(60)" json:"username" validate:"required"`
 	Name     string `gorm:"index;not null; type:varchar(60)" json:"name"`
+	Email    string `gorm:"index;not null; type:varchar(60)" json:"email"`
 	Intro    string `gorm:"not null; type:varchar(512)" json:"intro"`
 	Avatar   string `gorm:"type:varchar(1024)" json:"avatar"`
 
@@ -40,9 +48,4 @@ func (res *UserResp) ToString() {
 	if !re.MatchString(res.Avatar) {
 		res.Avatar = str.Join("http://127.0.0.1:8085/upload/", res.Avatar)
 	}
-}
-
-type LoginResp struct {
-	_domain.ReqId
-	Password string `json:"password"`
 }

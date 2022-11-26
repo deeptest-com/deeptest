@@ -14,3 +14,4 @@ tmp/
 /bin/
 /xdoc/openapi/out/
 /static/upload/spec/
+/internal/pkg/consts/private.go

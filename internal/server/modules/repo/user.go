@@ -4,12 +4,14 @@ import (
 	"errors"
 	"fmt"
 	"github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/casbin"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	_stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"golang.org/x/crypto/bcrypt"
 	"strconv"
 
@@ -55,7 +57,7 @@ func (r *UserRepo) Paginate(req domain.UserReqPaginate) (data _domain.PageData, 
 	}
 
 	// 查询用户角色
-	r.GetRoles(users...)
+	r.GetSysRoles(users...)
 
 	data.Result = users
 	data.Populate(users, count, req.Page, req.PageSize)
@@ -63,13 +65,15 @@ func (r *UserRepo) Paginate(req domain.UserReqPaginate) (data _domain.PageData, 
 	return
 }
 
-// getRoles
-func (r *UserRepo) GetRoles(users ...*domain.UserResp) {
+// GetSysRoles
+func (r *UserRepo) GetSysRoles(users ...*domain.UserResp) {
 	var roleIds []string
 	userRoleIds := make(map[uint][]string, 10)
+
 	if len(users) == 0 {
 		return
 	}
+
 	for _, user := range users {
 		user.ToString()
 		userRoleId := casbin.GetRolesForUser(user.Id)
@@ -86,8 +90,27 @@ func (r *UserRepo) GetRoles(users ...*domain.UserResp) {
 		for _, role := range roles {
 			sRoleId := strconv.FormatInt(int64(role.Id), 10)
 			if arr.InArrayS(userRoleIds[user.Id], sRoleId) {
-				user.Roles = append(user.Roles, role.Name)
+				user.SysRoles = append(user.SysRoles, role.Name)
 			}
+		}
+	}
+}
+
+// getRoles
+func (r *UserRepo) GetProjectRoles(users ...*domain.UserResp) {
+	if len(users) == 0 {
+		return
+	}
+
+	for _, user := range users {
+		projectRoles, err := r.ProjectRepo.FindRolesByUser(user.Id)
+		if err != nil {
+			break
+		}
+
+		user.ProjectRoles = map[uint]consts.RoleType{}
+		for _, projectRole := range projectRoles {
+			user.ProjectRoles[projectRole.ProjectId] = projectRole.ProjectRoleName
 		}
 	}
 }
@@ -105,7 +128,7 @@ func (r *UserRepo) FindByUserName(username string, ids ...uint) (domain.UserResp
 		return user, err
 	}
 
-	r.GetRoles(&user)
+	r.GetSysRoles(&user)
 	return user, nil
 }
 
@@ -122,7 +145,7 @@ func (r *UserRepo) FindByEmail(email string, ids ...uint) (domain.UserResp, erro
 		return user, err
 	}
 
-	r.GetRoles(&user)
+	r.GetSysRoles(&user)
 	return user, nil
 }
 
@@ -157,32 +180,27 @@ func (r *UserRepo) FindPasswordByEmail(email string) (domain.LoginResp, error) {
 func (r *UserRepo) Register(user *model.SysUser) (err error) {
 	hash, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
-		logUtils.Errorf("密码加密错误", zap.String("错误:", err.Error()))
 		return
 	}
 
 	user.Password = string(hash)
 	err = r.DB.Model(&model.SysUser{}).Create(&user).Error
 	if err != nil {
-		logUtils.Errorf("添加用户错误", zap.String("错误:", err.Error()))
 		return
 	}
 
 	project, err := r.AddProjectForUser(user)
 	if err != nil {
-		logUtils.Errorf("添加用户项目错误", zap.String("错误:", err.Error()))
 		return
 	}
 
-	err = r.AddProfileForUser(user, project)
+	err = r.AddProfileForUser(user, project.ID)
 	if err != nil {
-		logUtils.Errorf("添加用户信息错误", zap.String("错误:", err.Error()))
 		return
 	}
 
 	err = r.AddRoleForUser(user)
 	if err != nil {
-		logUtils.Errorf("添加用户角色错误", zap.String("错误:", err.Error()))
 		return
 	}
 
@@ -197,32 +215,25 @@ func (r *UserRepo) Create(req domain.UserReq) (uint, error) {
 	user := model.SysUser{UserBase: req.UserBase, RoleIds: req.RoleIds}
 	hash, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
-		logUtils.Errorf("密码加密错误", zap.String("错误:", err.Error()))
 		return 0, err
 	}
-
-	logUtils.Infof("添加用户", zap.String("hash:", req.Password), zap.ByteString("hash:", hash))
 
 	user.Password = string(hash)
 	err = r.DB.Model(&model.SysUser{}).Create(&user).Error
 	if err != nil {
-		logUtils.Errorf("添加用户错误", zap.String("错误:", err.Error()))
 		return 0, err
 	}
 
 	project, err := r.AddProjectForUser(&user)
 	if err != nil {
-		logUtils.Errorf("添加用户项目错误", zap.String("错误:", err.Error()))
 		return 0, err
 	}
 
-	if err := r.AddProfileForUser(&user, project); err != nil {
-		logUtils.Errorf("添加用户信息错误", zap.String("错误:", err.Error()))
+	if err := r.AddProfileForUser(&user, project.ID); err != nil {
 		return 0, err
 	}
 
 	if err := r.AddRoleForUser(&user); err != nil {
-		logUtils.Errorf("添加用户角色错误", zap.String("错误:", err.Error()))
 		return 0, err
 	}
 
@@ -254,23 +265,74 @@ func (r *UserRepo) Update(id uint, req domain.UserReq) error {
 	return nil
 }
 
+func (r *UserRepo) InviteToProject(req domain.InviteUserReq) (user model.SysUser, err error) {
+	user = model.SysUser{
+		UserBase: domain.UserBase{
+			Username: req.Username,
+			Email:    req.Email,
+		},
+		Password: _stringUtils.RandStr(6),
+	}
+
+	if len(user.RoleIds) == 0 {
+		role, _ := r.RoleRepo.FindByName("user")
+		user.RoleIds = append(user.RoleIds, role.Id)
+	}
+
+	hash, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return
+	}
+
+	user.Password = string(hash)
+	err = r.DB.Model(&model.SysUser{}).Create(&user).Error
+	if err != nil {
+		return
+	}
+
+	err = r.ProjectRepo.AddProjectMember(uint(req.ProjectId), user.ID)
+	if err != nil {
+		return
+	}
+
+	err = r.AddProfileForUser(&user, uint(req.ProjectId))
+	if err != nil {
+		return
+	}
+
+	err = r.AddRoleForUser(&user)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
 func (r *UserRepo) IsAdminUser(id uint) (bool, error) {
-	user, err := r.FindById(id)
+	user, err := r.FindDetailById(id)
 	if err != nil {
 		return false, err
 	}
-	return arr.InArrayS(user.Roles, serverConsts.AdminRoleName), nil
+
+	return arr.InArrayS(user.SysRoles, serverConsts.AdminRoleName), nil
 }
 
-func (r *UserRepo) FindById(id uint) (domain.UserResp, error) {
-	user := domain.UserResp{}
-	err := r.DB.Model(&model.SysUser{}).Where("id = ?", id).First(&user).Error
+func (r *UserRepo) FindById(id uint) (user domain.UserResp, err error) {
+	err = r.DB.Model(&model.SysUser{}).Where("id = ?", id).First(&user).Error
 	if err != nil {
-		logUtils.Errorf("find user err ", zap.String("错误:", err.Error()))
 		return user, err
 	}
 
-	r.GetRoles(&user)
+	return
+}
+func (r *UserRepo) FindDetailById(id uint) (user domain.UserResp, err error) {
+	user, err = r.FindById(id)
+	if err != nil {
+		return user, err
+	}
+
+	r.GetSysRoles(&user)
+	r.GetProjectRoles(&user)
 
 	return user, nil
 }
@@ -284,13 +346,13 @@ func (r *UserRepo) DeleteById(id uint) error {
 	return nil
 }
 
-func (r *UserRepo) AddProfileForUser(user *model.SysUser, project model.Project) (err error) {
+func (r *UserRepo) AddProfileForUser(user *model.SysUser, projectId uint) (err error) {
 	_, err = r.ProfileRepo.FindByUserId(user.ID)
 	if !errors.Is(err, gorm.ErrRecordNotFound) {
 		return fmt.Errorf("用户 %s 信息已经被使用", user.Name)
 	}
 
-	profile := model.SysUserProfile{UserId: user.ID, CurrProjectId: project.ID}
+	profile := model.SysUserProfile{UserId: user.ID, CurrProjectId: projectId}
 	err = r.DB.Create(&profile).Error
 	if err != nil {
 		logUtils.Errorf("添加用户错误", zap.String("错误:", err.Error()))

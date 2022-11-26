@@ -27,7 +27,8 @@ export default defineComponent({
         const message = computed<number>(()=> store.state.User.message);
 
         onMounted(()=>{
-            store.dispatch("User/fetchMessage");
+          store.dispatch("User/fetchMessage");
+          // store.dispatch("User/fetchCurrent");
         })
 
         return {

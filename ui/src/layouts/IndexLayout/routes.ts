@@ -19,7 +19,21 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
         icon: 'project',
         title: 'project.edit',
         path: 'edit/:id',
-        component: () => import('@/views/project/edit/index.vue'),
+        component: () => import('@/views/project/edit/edit.vue'),
+        hidden: true,
+      },
+      {
+        icon: 'members',
+        title: 'project.members',
+        path: 'members/:id',
+        component: () => import('@/views/project/edit/members.vue'),
+        hidden: true,
+      },
+      {
+        icon: 'project',
+        title: 'project.invite',
+        path: 'invite/:id',
+        component: () => import('@/views/project/edit/invite.vue'),
         hidden: true,
       },
     ],
@@ -104,7 +118,6 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
   {
     title: 'index-layout.menu',
     path: '/user',
-    redirect: '/report/index',
     component: BlankLayout,
     children: [
       {
@@ -114,8 +127,16 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
         component: () => import('@/views/user/info/profile.vue'),
         hidden: true,
       },
+      {
+        icon: 'message',
+        title: 'message',
+        path: 'message',
+        component: () => import('@/views/user/info/message.vue'),
+        hidden: true,
+      },
     ],
   },
+
 ] as Array<RoutesDataItem>;
 
 export default IndexLayoutRoutes;

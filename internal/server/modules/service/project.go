@@ -53,3 +53,15 @@ func (s *ProjectService) ChangeProject(projectId, userId uint) (err error) {
 
 	return
 }
+
+func (s *ProjectService) Members(req v1.ProjectReqPaginate, projectId int) (data _domain.PageData, err error) {
+	data, err = s.ProjectRepo.Members(req, projectId)
+
+	return
+}
+
+func (s *ProjectService) RemoveMember(req v1.ProjectMemberRemoveReq) (err error) {
+	err = s.ProjectRepo.RemoveMember(req.UserId, req.ProjectId)
+
+	return
+}

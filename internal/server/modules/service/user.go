@@ -21,7 +21,7 @@ func (s *UserService) Paginate(req v1.UserReqPaginate) (_domain.PageData, error)
 
 // getRoles
 func (s *UserService) getRoles(users ...*v1.UserResp) {
-	s.UserRepo.GetRoles(users...)
+	s.UserRepo.GetSysRoles(users...)
 }
 
 func (s *UserService) FindByUserName(username string, ids ...uint) (v1.UserResp, error) {
@@ -69,4 +69,23 @@ func (s *UserService) CleanToken(authorityType int, userId string) error {
 
 func (s *UserService) UpdateAvatar(id uint, avatar string) error {
 	return s.UserRepo.UpdateAvatar(id, avatar)
+}
+
+func (s *UserService) Invite(req v1.InviteUserReq) (user model.SysUser, err *_domain.BizErr) {
+	po1, _ := s.UserRepo.FindByEmail(req.Email)
+	if po1.Id > 0 {
+		err = &_domain.ErrEmailExist
+		return
+	}
+
+	po2, _ := s.UserRepo.FindByUserName(req.Username)
+	if po2.Id > 0 {
+		err = &_domain.ErrUsernameExist
+		return
+	}
+
+	s.UserRepo.InviteToProject(req)
+	// TODO: send email
+
+	return
 }

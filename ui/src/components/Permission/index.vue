@@ -11,7 +11,7 @@
             </template>
         </a-result>
     </slot>
-    
+
 </template>
 <script lang="ts">
 import { computed, ComputedRef, defineComponent, PropType } from "vue";
@@ -35,7 +35,7 @@ export default defineComponent({
         const store = useStore<{User: UserStateType}>();
 
         // 是否有权限
-        const isPermission = computed(()=> hasPermissionRouteRoles(store.state.User.currentUser.roles, props.roles));
+        const isPermission = computed(()=> hasPermissionRouteRoles(store.state.User.currentUser.sysRoles, props.roles));
 
         return {
             isPermission

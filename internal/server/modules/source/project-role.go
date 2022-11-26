@@ -1,6 +1,7 @@
 package source
 
 import (
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	repo2 "github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"github.com/gookit/color"
@@ -18,7 +19,12 @@ func NewProjectRoleSource() *ProjectRoleSource {
 func (s *ProjectRoleSource) GetSources() (sources []model.ProjectRole, err error) {
 	sources = []model.ProjectRole{
 		{
-			Name: "项目管理员",
+			Name:        consts.Admin,
+			DisplayName: "管理员",
+		},
+		{
+			Name:        consts.User,
+			DisplayName: "用户",
 		},
 	}
 	return

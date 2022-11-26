@@ -1,7 +1,7 @@
 import request from '@/utils/request';
 import {LoginParamsType} from "@/views/user/login/data";
 
-export async function getCurrent(): Promise<any> {
+export async function getProfile(): Promise<any> {
     return request({
         url: '/users/profile',
         method: 'get'

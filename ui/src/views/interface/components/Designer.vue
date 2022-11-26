@@ -50,7 +50,6 @@ import DesignInterface from './designer/Interface.vue';
 import RequestEnv from './designer/others/env/index.vue';
 import RequestHistory from './designer/others/history/index.vue';
 import {Interface} from "@/views/interface/data";
-import {getShowRightBar, setShowRightBar} from "@/utils/cache";
 import {resizeWidth} from "@/utils/dom";
 
 const useForm = Form.useForm;

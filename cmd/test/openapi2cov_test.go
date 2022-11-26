@@ -288,7 +288,7 @@ const exampleV2 = `
 						"x-mimetype": "text/plain"
 					},
 					{
-						"description": "File Id",
+						"description": "File UserId",
 						"in": "query",
 						"name": "id",
 						"type": "integer"
@@ -651,7 +651,7 @@ const exampleV3 = `
 				"description": "example post",
 				"parameters": [
 					{
-						"description": "File Id",
+						"description": "File UserId",
 						"in": "query",
 						"name": "id",
 						"schema": {

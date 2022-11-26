@@ -19,9 +19,9 @@
       </sider-menu>
     </div>
 
-    <div class="indexlayout-left-menu-bottom">
+<!--    <div class="indexlayout-left-menu-bottom">
       <SettingsMenu></SettingsMenu>
-    </div>
+    </div>-->
   </div>
 </template>
 
@@ -70,7 +70,7 @@ export default defineComponent({
     }
   },
   components: {
-    SiderMenu, SettingsMenu,
+    SiderMenu,
   },
 })
 </script>

@@ -4,7 +4,9 @@
           <template #title>
             <div>编辑项目</div>
           </template>
-          <template #extra></template>
+          <template #extra>
+            <a-button type="link" @click="() => back()">返回</a-button>
+          </template>
 
           <div>
             <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
@@ -39,21 +41,9 @@ import {StateType} from "../store";
 import {Project} from "@/views/project/data";
 import {NotificationKeyCommon} from "@/utils/const";
 
-interface EditProjectPageSetupData {
-  formRef: any
-  modelRef: ComputedRef<Partial<Project>>
-  rulesRef: any
-  labelCol: any
-  wrapperCol: any
-  validate: any
-  validateInfos: validateInfos
-  submitForm:  () => void;
-  resetFields:  () => void;
-}
-
 export default defineComponent({
     name: 'ScriptEditPage',
-    setup(): EditProjectPageSetupData {
+    setup() {
       const router = useRouter();
 
       const { t } = useI18n();
@@ -101,6 +91,10 @@ export default defineComponent({
         });
       };
 
+      const back = (): void => {
+        router.replace(`/project/index`)
+      }
+
       return {
         labelCol: { span: 4 },
         wrapperCol: { span: 14 },
@@ -110,7 +104,8 @@ export default defineComponent({
         resetFields,
         validate,
         validateInfos,
-        submitForm
+        submitForm,
+        back,
       }
     }
 })

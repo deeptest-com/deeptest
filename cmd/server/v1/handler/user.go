@@ -49,7 +49,7 @@ func (c *UserCtrl) GetUser(ctx iris.Context) {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
-	user, err := c.UserRepo.FindById(req.Id)
+	user, err := c.UserRepo.FindDetailById(req.Id)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return
@@ -59,12 +59,20 @@ func (c *UserCtrl) GetUser(ctx iris.Context) {
 
 // Invite 邀请用户
 func (c *UserCtrl) Invite(ctx iris.Context) {
-	user, err := c.UserRepo.FindById(multi.GetUserId(ctx))
+	req := domain.InviteUserReq{}
+	err := ctx.ReadJSON(&req)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
 		return
 	}
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: user, Msg: _domain.NoErr.Msg})
+
+	_, bizErr := c.UserService.Invite(req)
+	if bizErr != nil {
+		ctx.JSON(_domain.Response{Code: bizErr.Code})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 }
 
 // UpdateEmail 修改邮箱
@@ -90,7 +98,7 @@ func (c *UserCtrl) UpdateEmail(ctx iris.Context) {
 		return
 	}
 
-	user, err := c.UserRepo.FindById(userId)
+	user, err := c.UserRepo.FindDetailById(userId)
 	user.Password = ""
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
@@ -123,7 +131,7 @@ func (c *UserCtrl) UpdateName(ctx iris.Context) {
 		return
 	}
 
-	user, err := c.UserRepo.FindById(userId)
+	user, err := c.UserRepo.FindDetailById(userId)
 	user.Password = ""
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
@@ -150,7 +158,7 @@ func (c *UserCtrl) UpdatePassword(ctx iris.Context) {
 		return
 	}
 
-	user, err := c.UserRepo.FindById(userId)
+	user, err := c.UserRepo.FindDetailById(userId)
 	user.Password = ""
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
@@ -162,7 +170,7 @@ func (c *UserCtrl) UpdatePassword(ctx iris.Context) {
 
 // Profile 个人信息
 func (c *UserCtrl) Profile(ctx iris.Context) {
-	user, err := c.UserRepo.FindById(multi.GetUserId(ctx))
+	user, err := c.UserRepo.FindDetailById(multi.GetUserId(ctx))
 	user.Password = ""
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})

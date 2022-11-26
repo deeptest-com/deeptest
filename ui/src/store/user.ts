@@ -1,7 +1,7 @@
 import { Mutation, Action } from 'vuex';
 import { StoreModuleType } from "@/utils/store";
 import { ResponseData } from '@/utils/request';
-import {getCurrent, queryMessage, queryProject, updateEmail, updateName, updatePassword} from "@/services/user";
+import {getProfile, queryMessage, queryProject, updateEmail, updateName, updatePassword} from "@/services/user";
 import { removeToken } from "@/utils/localToken";
 
 export interface CurrentUser {
@@ -9,7 +9,8 @@ export interface CurrentUser {
   username: string;
   email: string;
   avatar: string;
-  roles: string[];
+  sysRoles: string[];
+  projectRoles: any;
 }
 
 export interface StateType {
@@ -40,7 +41,8 @@ const initState: StateType = {
     username: '',
     email: '',
     avatar: '',
-    roles: [],
+    sysRoles: [],
+    projectRoles: {},
   },
   message: 0,
 }
@@ -65,7 +67,7 @@ const StoreModel: ModuleType = {
   actions: {
     async fetchCurrent({ commit }) {
       try {
-        const response: ResponseData = await getCurrent();
+        const response: ResponseData = await getProfile();
 
         const { data } = response;
         commit('saveCurrentUser', data || {});
@@ -74,6 +76,7 @@ const StoreModel: ModuleType = {
         return false;
       }
     },
+
     async fetchMessage({ commit }) {
       try {
         const response: ResponseData = await queryMessage();

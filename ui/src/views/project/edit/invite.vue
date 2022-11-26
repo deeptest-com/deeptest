@@ -5,7 +5,9 @@
         <div>邀请用户</div>
       </template>
 
-      <template #extra></template>
+      <template #extra>
+        <a-button type="link" @click="() => back()">返回</a-button>
+      </template>
 
       <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-form-item label="用户名" v-bind="validateInfos.username">
@@ -29,21 +31,25 @@
 </template>
 
 <script setup lang="ts">
-import {reactive} from "vue";
+import {ref, reactive} from "vue";
 import {useI18n} from "vue-i18n";
 
 import {Form, notification} from 'ant-design-vue';
 import {NotificationKeyCommon, pattern} from "@/utils/const";
 import {inviteUser} from "@/views/user/info/service";
+import {useRouter} from "vue-router";
+const router = useRouter();
 
 const useForm = Form.useForm;
 
 const {t} = useI18n();
 
-const modelRef = reactive<any>({
+const modelRef = ref<any>({
   username: '',
   email: '',
 });
+
+const projectId = +router.currentRoute.value.params.id
 
 const rulesRef = reactive({
   username: [
@@ -74,7 +80,7 @@ const submit = async (e: MouseEvent) => {
   validate().then(() => {
     console.log(modelRef);
 
-    inviteUser(modelRef.value).then((json) => {
+    inviteUser(modelRef.value, projectId).then((json) => {
       if (json.code === 0) {
         notification.success({
           key: NotificationKeyCommon,
@@ -88,6 +94,11 @@ const submit = async (e: MouseEvent) => {
       }
     })
   })
+}
+
+const back = () => {
+  console.log('back')
+  router.push(`/project/members/${projectId}`)
 }
 
 const labelCol = {span: 4}

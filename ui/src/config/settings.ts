@@ -1,5 +1,4 @@
 import { RoutesDataItem } from "@/utils/routes";
-import {getShowRightBar} from "@/utils/cache";
 
 /**
  * 站点配置
@@ -42,7 +41,6 @@ export interface SettingsType {
     currProjectId: string;
 
     settings: string;
-    showRightBar: string;
     expandedKeys: string;
 
     eventNotify,
@@ -75,16 +73,15 @@ const settings: SettingsType = {
     headFixed: true,
     tabNavEnable: false,
     homeRouteItem: {
-        icon: 'project',
-        title: 'index-layout.menu.project.list',
-        path: '/project/index',
-        component: ()=> import('@/views/home/index.vue')
+        icon: 'interface',
+        title: 'interface',
+        path: '/interface/index',
+        component: ()=> import('@/views/interface/index.vue')
     },
     siteTokenKey: 'admin_antd_vue_token',
     currProjectId: 'curr_project_id',
 
     settings: 'settings',
-    showRightBar: 'showRightBar',
     expandedKeys: 'deeptest-expandedKeys',
 
     eventNotify: 'eventNotify',

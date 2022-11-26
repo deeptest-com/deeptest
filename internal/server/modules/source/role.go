@@ -26,16 +26,14 @@ func (s *RoleSource) GetSources() ([]v1.RoleReq, error) {
 		{
 			RoleBase: v1.RoleBase{
 				Name:        "admin",
-				DisplayName: "超级管理员",
-				Description: "超级管理员",
+				DisplayName: "管理员",
 				Perms:       perms,
 			},
 		},
 		{
 			RoleBase: v1.RoleBase{
 				Name:        "user",
-				DisplayName: "普通用户",
-				Description: "普通用户",
+				DisplayName: "用户",
 				Perms:       perms,
 			},
 		},

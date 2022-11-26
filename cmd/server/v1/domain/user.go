@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	"github.com/snowlyg/helper/str"
 	"regexp"
@@ -16,10 +17,18 @@ type UserReqPaginate struct {
 	Name string `json:"name"`
 }
 
+type MemberResp struct {
+	Id       uint   `json:"id"`
+	Username string `json:"username"`
+	Email    string `json:"email"`
+}
+
 type UserResp struct {
 	_domain.Model
 	UserBase
-	Roles []string `gorm:"-" json:"roles"`
+
+	SysRoles     []string                 `gorm:"-" json:"sysRoles"`
+	ProjectRoles map[uint]consts.RoleType `gorm:"-" json:"projectRoles"`
 }
 
 type UpdateUserReq struct {
@@ -27,6 +36,12 @@ type UpdateUserReq struct {
 	Email       string
 	Password    string
 	NewPassword string
+}
+
+type InviteUserReq struct {
+	Username  string
+	Email     string
+	ProjectId int
 }
 
 type UserBase struct {

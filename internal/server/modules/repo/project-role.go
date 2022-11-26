@@ -2,6 +2,7 @@ package repo
 
 import (
 	"errors"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"gorm.io/gorm"
@@ -15,13 +16,25 @@ func NewProjectRoleRepo() *ProjectRoleRepo {
 	return &ProjectRoleRepo{}
 }
 
-func (r *ProjectRoleRepo) GetFirstOne() (projectRole model.ProjectRole, err error) {
-	db := r.DB.Model(&model.ProjectRole{}).Where("1=1").Order("id ASC")
+func (r *ProjectRoleRepo) GetAdminRecord() (projectRole model.ProjectRole, err error) {
+	db := r.DB.Model(&model.ProjectRole{}).Where("name='admin'").Order("id ASC")
+	err = db.First(&projectRole).Error
+	return
+}
+func (r *ProjectRoleRepo) GetUserRecord() (projectRole model.ProjectRole, err error) {
+	db := r.DB.Model(&model.ProjectRole{}).Where("name='user'").Order("id ASC")
 	err = db.First(&projectRole).Error
 	return
 }
 
-func (r *ProjectRoleRepo) FindByName(name string) (projectRole model.ProjectRole, err error) {
+func (r *ProjectRoleRepo) FindById(id uint) (projectRole model.ProjectRole, err error) {
+	db := r.DB.Model(&model.ProjectRole{}).Where("id = ?", id)
+
+	err = db.First(&projectRole).Error
+	return
+}
+
+func (r *ProjectRoleRepo) FindByName(name consts.RoleType) (projectRole model.ProjectRole, err error) {
 	db := r.DB.Model(&model.ProjectRole{}).Where("name = ?", name)
 
 	err = db.First(&projectRole).Error

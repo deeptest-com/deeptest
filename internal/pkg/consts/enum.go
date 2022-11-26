@@ -482,3 +482,14 @@ const (
 func (e DataType) String() string {
 	return string(e)
 }
+
+type RoleType string
+
+const (
+	Admin RoleType = "admin"
+	User  RoleType = "user"
+)
+
+func (e RoleType) String() string {
+	return string(e)
+}

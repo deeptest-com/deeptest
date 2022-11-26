@@ -21,6 +21,8 @@ export default {
     'project': '项目',
     'project.list': '项目列表',
     'project.edit': '项目编辑',
+    'project.members': '项目成员',
+    'project.invite': '邀请成员',
 
     'interface': '接口',
     'scenario': '场景',
@@ -31,8 +33,9 @@ export default {
     'report': '报告',
     'report.detail': '报告细节',
 
-    'profile': '信息',
-    'invite': '邀请',
+    'profile': '个人信息',
+    'invite': '邀请用户',
+    'message': '消息',
 
     'mock.oauth2.callback': 'OAuth2回调模拟',
 

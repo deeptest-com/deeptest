@@ -20,6 +20,11 @@ type ProjectResp struct {
 	ProjectBase
 }
 
+type ProjectMemberRemoveReq struct {
+	UserId    int `json:"userId"`
+	ProjectId int `json:"projectId"`
+}
+
 type ProjectBase struct {
 	Name string `json:"name"`
 	Desc string `json:"desc" gorm:"column:descr"`

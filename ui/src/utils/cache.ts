@@ -1,21 +1,6 @@
 import {getCache, setCache} from './localCache';
 import settings from '@/config/settings';
 
-export const getShowRightBar = async (): Promise<boolean> => {
-    const mp = await getCache(settings.settings);
-
-    if (!mp || !(settings.showRightBar in mp)) return true
-
-    return mp[settings.showRightBar]
-}
-export const setShowRightBar = async (val) => {
-    let mp = await getCache(settings.showRightBar) as any;
-    if (!mp) mp = {}
-
-    mp[settings.showRightBar] = val
-    await setCache(settings.settings, mp);
-}
-
 export const getExpandedKeys = async (projectId) => {
     console.log('getExpandedKeys')
     const key = `${projectId}`

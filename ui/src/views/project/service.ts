@@ -10,6 +10,13 @@ export async function query(params?: QueryParams): Promise<any> {
         params,
     });
 }
+export async function queryMembers(params): Promise<any> {
+    return request({
+        url: `/${apiPath}/members`,
+        method: 'get',
+        params,
+    });
+}
 
 export async function save(params: Partial<Project>): Promise<any> {
     return request({
@@ -28,4 +35,12 @@ export async function remove(id: number): Promise<any> {
 
 export async function detail(id: number): Promise<any> {
     return request({url: `/${apiPath}/${id}`});
+}
+
+export async function removeMember(userId: number, projectId: number): Promise<any> {
+    return request({
+        url: `/${apiPath}/removeMember`,
+        method: 'post',
+        data: {userId: userId, projectId: projectId}
+    });
 }

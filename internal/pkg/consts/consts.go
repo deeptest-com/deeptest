@@ -27,4 +27,6 @@ const (
 
 	ConfigFileName = "server.yaml"
 	CasbinFileName = "rbac_model.conf" // casbin 规则文件名称
+
+	SupportEmail = "support@deeptest.com"
 )

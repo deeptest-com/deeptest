@@ -36,10 +36,11 @@
             <a-tag v-else color="cyan">禁用</a-tag>
           </template>
           <template #action="{ record }">
-            <a-button type="link" @click="() => edit(record.id)">编辑
-            </a-button>
-            <a-button type="link" @click="() => remove(record.id)">删除
-            </a-button>
+            <a-button type="link" @click="() => members(record.id)">成员</a-button>
+            <a-button type="link" @click="() => edit(record.id)"
+                      :disabled="currentUser.projectRoles[record.id] !== 'admin'">编辑</a-button>
+            <a-button type="link" @click="() => remove(record.id)"
+                      :disabled="currentUser.projectRoles[record.id] !== 'admin'">删除</a-button>
           </template>
 
         </a-table>
@@ -48,7 +49,7 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import {computed, ComputedRef, defineComponent, onMounted, reactive, Ref, ref} from "vue";
 import {SelectTypes} from 'ant-design-vue/es/select';
 import {PaginationConfig, QueryParams, Project} from '../data.d';
@@ -59,12 +60,8 @@ import debounce from "lodash.debounce";
 import {useRouter} from "vue-router";
 import {message, Modal, notification} from "ant-design-vue";
 import {NotificationKeyCommon} from "@/utils/const";
+import {StateType as UserStateType} from "@/store/user";
 
-export default defineComponent({
-  name: 'ProjectListPage',
-  components: {
-  },
-  setup() {
     const statusArr = ref<SelectTypes['options']>([
       {
         label: '所有状态',
@@ -81,9 +78,8 @@ export default defineComponent({
     ]);
 
     const router = useRouter();
-    const store = useStore<{ Project: StateType }>();
-
-    console.log(store.state.Project)
+    const store = useStore<{ Project: StateType, User: UserStateType }>();
+    const currentUser = computed<any>(()=> store.state.User.currentUser);
 
     const list = computed<Project[]>(() => store.state.Project.queryResult.list);
     let pagination = computed<PaginationConfig>(() => store.state.Project.queryResult.pagination);
@@ -142,7 +138,12 @@ export default defineComponent({
       loading.value = false;
     }
 
-    const edit = async (id: number) => {
+    const members = (id: number) => {
+      console.log('members')
+      router.push(`/project/members/${id}`)
+    }
+
+    const edit = (id: number) => {
       console.log('edit')
       router.push(`/project/edit/${id}`)
     }
@@ -182,23 +183,6 @@ export default defineComponent({
       getList(1);
     })
 
-    return {
-      statusArr,
-      queryParams,
-      columns,
-      list,
-      pagination,
-      loading,
-      getList,
-
-      edit,
-      remove,
-
-      onSearch,
-    }
-  }
-
-})
 </script>
 
 <style lang="less" scoped>

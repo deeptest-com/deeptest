@@ -1,9 +1,13 @@
 <template>
   <div class="resetPassword-main">
     <h1 class="title">
-      重置密码
+      设置密码
     </h1>
     <a-form :wrapper-col="{span:24}">
+      <a-form-item label="">
+        用户 {{username}}
+      </a-form-item>
+
       <a-form-item label="" v-bind="validateInfos.password">
         <a-input v-model:value="modelRef.password" placeholder="输入新密码"
                  @blur="validate('password', { trigger: 'blur' }).catch(() => {})" />

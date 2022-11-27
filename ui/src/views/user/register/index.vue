@@ -162,7 +162,7 @@ export default defineComponent({
 <style lang="less" scoped>
 .main {
   flex: none;
-  width: 320px;
+  width: 380px;
   padding: 36px;
   margin: 0 auto;
   border-radius: 4px;

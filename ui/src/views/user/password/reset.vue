@@ -107,7 +107,7 @@ const handleSubmit = async (e: MouseEvent) => {
 <style lang="less" scoped>
 .resetPassword-main {
   flex: none;
-  width: 320px;
+  width: 380px;
   padding: 36px;
   margin: 0 auto;
   border-radius: 4px;

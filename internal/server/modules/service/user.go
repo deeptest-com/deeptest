@@ -74,28 +74,32 @@ func (s *UserService) UpdateAvatar(id uint, avatar string) error {
 	return s.UserRepo.UpdateAvatar(id, avatar)
 }
 
-func (s *UserService) Invite(req v1.InviteUserReq) (user model.SysUser, err *_domain.BizErr) {
+func (s *UserService) Invite(req v1.InviteUserReq) (user model.SysUser, bizErr *_domain.BizErr) {
 	po1, _ := s.UserRepo.FindByEmail(req.Email)
 	if po1.Id > 0 {
-		err = &_domain.ErrEmailExist
+		bizErr = &_domain.ErrEmailExist
 		return
 	}
 
 	po2, _ := s.UserRepo.FindByUserName(req.Username)
 	if po2.Id > 0 {
-		err = &_domain.ErrUsernameExist
+		bizErr = &_domain.ErrUsernameExist
 		return
 	}
 
 	s.UserRepo.InviteToProject(req)
+
+	vcode, _ := s.UserRepo.GenAndUpdateVcode(user.ID)
 
 	url := consts.Url
 	if !consts.IsRelease {
 		url = consts.UrlDev
 	}
 	settings := map[string]string{
-		"name": user.Username,
-		"url":  url,
+		"name":  user.Username,
+		"url":   url,
+		"vcode": vcode,
+		"sys":   consts.Sys,
 	}
 	_mailUtils.Send(user.Email, _i118Utils.Sprintf("invite_user"), "invite-user", settings)
 

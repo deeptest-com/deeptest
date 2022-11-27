@@ -16,7 +16,7 @@
  	<br />
  	<div>
         ${inviter}邀请你使用${sys}。
- 		请访问地址 <a href="${url}">${url}</a>。
+ 		请访问地址 <a href="${url}#/user/resetPassword/${name}/${vcode}">${url}#/user/resetPassword/${name}/${vcode}</a> 使用。
  	</div>
  </body>
  </html>

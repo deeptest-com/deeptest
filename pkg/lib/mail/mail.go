@@ -26,7 +26,7 @@ import (
 // url
 // vcode
 
-func Send(subject, tmpl string, mp map[string]string) (err error) {
+func Send(to, subject, tmpl string, mp map[string]string) (err error) {
 	d := gomail.NewDialer(
 		consts.EmailSmtpAddress,
 		consts.EmailSmtpPort,
@@ -39,7 +39,7 @@ func Send(subject, tmpl string, mp map[string]string) (err error) {
 
 	m := gomail.NewMessage()
 	m.SetHeader("From", consts.SupportEmail)
-	m.SetAddressHeader("To", mp["toEmail"], mp["toName"])
+	m.SetAddressHeader("To", to, mp["name"])
 	m.SetHeader("Subject", subject)
 
 	configRes := filepath.Join("res", "tmpl", tmpl+".ftl")
@@ -49,7 +49,8 @@ func Send(subject, tmpl string, mp map[string]string) (err error) {
 
 	m.SetBody("text/html", body)
 
-	if err := gomail.Send(s, m); err != nil {
+	err = gomail.Send(s, m)
+	if err != nil {
 		_logUtils.Infof("Failed to send email to %q: %v", mp["toEmail"], err)
 	}
 	m.Reset()

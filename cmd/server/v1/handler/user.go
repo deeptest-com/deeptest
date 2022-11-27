@@ -152,7 +152,7 @@ func (c *UserCtrl) UpdatePassword(ctx iris.Context) {
 		return
 	}
 
-	err = c.UserRepo.UpdatePassword(req, userId)
+	err = c.UserRepo.ChangePassword(req, userId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

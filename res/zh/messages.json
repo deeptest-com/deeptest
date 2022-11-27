@@ -33,9 +33,18 @@
       "id": "pls_stop_previous",
       "translation": "请先终止上一个任务。"
     },
+
+    {
+      "id": "register_success",
+      "translation": "注册成功"
+    },
     {
       "id": "reset_password",
       "translation": "重置密码"
+    },
+    {
+      "id": "invite_user",
+      "translation": "邀请用户"
     }
   ]
 }

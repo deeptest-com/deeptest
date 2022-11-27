@@ -5,9 +5,18 @@
       "id": "for_example",
       "translation": "e.g. %s"
     },
+
+    {
+      "id": "register_success",
+      "translation": "Register Successfully"
+    },
     {
       "id": "reset_password",
       "translation": "Reset Password"
+    },
+    {
+      "id": "invite_user",
+      "translation": "Invite User"
     }
   ]
 }

@@ -2,9 +2,12 @@ package service
 
 import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
+	_i118Utils "github.com/aaronchen2k/deeptest/pkg/lib/i118"
+	_mailUtils "github.com/aaronchen2k/deeptest/pkg/lib/mail"
 )
 
 type UserService struct {
@@ -85,7 +88,16 @@ func (s *UserService) Invite(req v1.InviteUserReq) (user model.SysUser, err *_do
 	}
 
 	s.UserRepo.InviteToProject(req)
-	// TODO: send email
+
+	url := consts.Url
+	if !consts.IsRelease {
+		url = consts.UrlDev
+	}
+	settings := map[string]string{
+		"name": user.Username,
+		"url":  url,
+	}
+	_mailUtils.Send(user.Email, _i118Utils.Sprintf("invite_user"), "invite-user", settings)
 
 	return
 }

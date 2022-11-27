@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	myZap "github.com/aaronchen2k/deeptest/pkg/core/zap"
+	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	_fileUtils "github.com/aaronchen2k/deeptest/pkg/lib/file"
 	_resUtils "github.com/aaronchen2k/deeptest/pkg/lib/res"
 	"github.com/go-redis/redis/v8"
@@ -23,6 +24,8 @@ var (
 )
 
 func Init(app string) {
+	consts.IsRelease = _commUtils.IsRelease()
+
 	if app == "agent" {
 		home, _ := _fileUtils.GetUserHome()
 		consts.HomeDir = filepath.Join(home, consts.App)

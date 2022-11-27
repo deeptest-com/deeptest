@@ -19,3 +19,10 @@ type RegisterReq struct {
 	Password string `json:"password" validate:"required"`
 	Confirm  string `json:"confirm" validate:"required"`
 }
+
+type ResetPasswordReq struct {
+	Username string `json:"username" validate:"required"`
+	Vcode    string `json:"vcode" validate:"required"`
+	Password string `json:"password" validate:"required"`
+	Confirm  string `json:"confirm" validate:"required"`
+}

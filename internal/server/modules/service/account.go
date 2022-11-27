@@ -90,26 +90,43 @@ func (s *AccountService) Register(req v1.RegisterReq) (err _domain.BizErr) {
 
 	s.UserRepo.Register(&user)
 
-	settings := map[string]string{
-		"name": user.Name,
-		"sys":  consts.Sys,
-		"url":  consts.Url,
-	}
-	_mailUtils.Send("", "", settings)
+	//mp := map[string]string{
+	//	"name": user.Name,
+	//	"sys":  consts.Sys,
+	//	"url":  consts.Url,
+	//}
+	//_mailUtils.Send(user.Email, _i118Utils.Sprintf("register_success"), "register-success", mp)
 
 	return
 }
 
 func (s *AccountService) ForgotPassword(usernameOrPassword string) (err error) {
-	user, err := s.UserRepo.GetByUsernameOrPassword()
+	user, err := s.UserRepo.GetByUsernameOrPassword(usernameOrPassword)
 
+	vcode, err := s.UserRepo.GenAndUpdateVcode(user.ID)
+
+	url := consts.Url
+	if !consts.IsRelease {
+		url = consts.UrlDev
+	}
 	settings := map[string]string{
-		"name":  user.Name,
-		"vcode": "vcode",
-		"url":   consts.Url,
+		"name":  user.Username,
+		"url":   url,
+		"vcode": vcode,
+	}
+	_mailUtils.Send(user.Email, _i118Utils.Sprintf("reset-password"),
+		"reset_password", settings)
+
+	return
+}
+
+func (s *AccountService) ResetPassword(req v1.ResetPasswordReq) (err error) {
+	user, err := s.UserRepo.FindByUserNameAndVcode(req.Username, req.Vcode)
+	if err != nil {
+		return
 	}
 
-	_mailUtils.Send(_i118Utils.Sprintf("reset_password"), "reset_password", settings)
+	err = s.UserRepo.UpdatePassword(req.Password, user.ID)
 
 	return
 }

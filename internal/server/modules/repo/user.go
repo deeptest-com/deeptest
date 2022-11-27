@@ -14,6 +14,7 @@ import (
 	_stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"golang.org/x/crypto/bcrypt"
 	"strconv"
+	"strings"
 
 	"github.com/snowlyg/helper/arr"
 	"github.com/snowlyg/multi"
@@ -177,6 +178,17 @@ func (r *UserRepo) FindPasswordByEmail(email string) (domain.LoginResp, error) {
 	return user, nil
 }
 
+func (r *UserRepo) FindByUserNameAndVcode(username, vcode string) (user model.SysUser, err error) {
+	err = r.DB.Model(&model.SysUser{}).Where("username = ? AND vcode = ?", username, vcode).
+		First(&user).Error
+
+	if err != nil {
+		return user, err
+	}
+
+	return
+}
+
 func (r *UserRepo) Register(user *model.SysUser) (err error) {
 	hash, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
@@ -337,7 +349,16 @@ func (r *UserRepo) FindDetailById(id uint) (user domain.UserResp, err error) {
 	return user, nil
 }
 
-func (r *UserRepo) GetByUsernameOrPassword() (user model.SysUser, err error) {
+func (r *UserRepo) GetByUsernameOrPassword(usernameOrPassword string) (user model.SysUser, err error) {
+	err = r.DB.Model(&model.SysUser{}).
+		Where("NOT deleted").
+		Where("username = ? OR email = ?", usernameOrPassword, usernameOrPassword).
+		First(&user).Error
+
+	if err != nil {
+		return
+	}
+
 	return
 }
 
@@ -492,7 +513,7 @@ func (r *UserRepo) UpdateName(username string, id uint) (err error) {
 	return
 }
 
-func (r *UserRepo) UpdatePassword(req domain.UpdateUserReq, id uint) (err error) {
+func (r *UserRepo) ChangePassword(req domain.UpdateUserReq, id uint) (err error) {
 	user, err := r.FindById(id)
 	if err != nil {
 		if err != nil {
@@ -517,6 +538,38 @@ func (r *UserRepo) UpdatePassword(req domain.UpdateUserReq, id uint) (err error)
 		Updates(map[string]interface{}{"password": req.NewPassword}).Error
 	if err != nil {
 		return err
+	}
+
+	return
+}
+
+func (r *UserRepo) UpdatePassword(password string, id uint) (err error) {
+	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return
+	}
+
+	newPassword := string(hash)
+
+	err = r.DB.Model(&model.SysUser{}).
+		Where("id = ?", id).
+		Updates(map[string]interface{}{"password": newPassword}).Error
+
+	if err != nil {
+		return err
+	}
+
+	return
+}
+
+func (r *UserRepo) GenAndUpdateVcode(id uint) (vcode string, err error) {
+	vcode = strings.ToLower(_stringUtils.RandStr(6))
+
+	err = r.DB.Model(&model.SysUser{}).
+		Where("id = ?", id).
+		Updates(map[string]interface{}{"vcode": vcode}).Error
+	if err != nil {
+		return
 	}
 
 	return

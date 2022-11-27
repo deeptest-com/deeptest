@@ -14,8 +14,13 @@ const UserLayoutRoutes: RoutesDataItem[] = [
     {
         title: 'user-layout.menu.forgotPassword',
         path: 'forgotPassword',
-        component: () => import('@/views/user/forgotPassword/index.vue'),
+        component: () => import('@/views/user/password/forgot.vue'),
     },
+    {
+        title: 'user-layout.menu.resetPassword',
+        path: 'resetPassword/:username/:vcode',
+        component: () => import('@/views/user/password/reset.vue'),
+    }
 
 ];
 

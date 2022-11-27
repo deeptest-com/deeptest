@@ -10,7 +10,7 @@
 
       <a-form-item>
         <a-button type="primary" class="submit" @click="handleSubmit" :loading="submitLoading">
-          重置密码
+          提交
         </a-button>
         <div class="text-align-right">
           <router-link to="/user/login">
@@ -28,7 +28,7 @@ import { useI18n } from "vue-i18n";
 
 import {message, Form, notification} from 'ant-design-vue';
 import {NotificationKeyCommon} from "@/utils/const";
-import {forgotPassword} from "@/views/user/forgotPassword/service";
+import {forgotPassword} from "@/views/user/password/service";
 const useForm = Form.useForm;
 
 const router = useRouter();

@@ -9,3 +9,11 @@ export async function forgotPassword(usernameOrPassword): Promise<any> {
         params: {usernameOrPassword: usernameOrPassword},
     });
 }
+
+export async function resetPassword(data): Promise<any> {
+    return request({
+        url: `/${apiPath}/resetPassword`,
+        method: 'POST',
+        data,
+    });
+}

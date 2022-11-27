@@ -28,7 +28,8 @@ const (
 	ConfigFileName = "server.yaml"
 	CasbinFileName = "rbac_model.conf" // casbin 规则文件名称
 
-	SupportEmail = "support@deeptest.com"
+	SupportEmail = "chenqi@deeptest.com"
 	Sys          = "DeepTest"
-	Url          = "https://deeptest.com"
+	Url          = "https://deeptest.com/"
+	UrlDev       = "http://localhost:8000/"
 )

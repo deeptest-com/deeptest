@@ -9,9 +9,9 @@ type SysUser struct {
 
 	v1.UserBase
 
-	Password string `gorm:"type:varchar(250)" json:"password" validate:"required"`
-
-	Profile SysUserProfile `gorm:"foreignKey:user_id"`
+	Password string         `gorm:"type:varchar(250)" json:"password" validate:"required"`
+	Vcode    string         `json:"vcode"`
+	Profile  SysUserProfile `gorm:"foreignKey:user_id"`
 
 	RoleIds []uint `gorm:"-" json:"role_ids"`
 }

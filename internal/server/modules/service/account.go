@@ -114,8 +114,7 @@ func (s *AccountService) ForgotPassword(usernameOrPassword string) (err error) {
 		"url":   url,
 		"vcode": vcode,
 	}
-	_mailUtils.Send(user.Email, _i118Utils.Sprintf("reset-password"),
-		"reset_password", settings)
+	_mailUtils.Send(user.Email, _i118Utils.Sprintf("reset_password"), "reset-password", settings)
 
 	return
 }

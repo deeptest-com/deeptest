@@ -83,8 +83,10 @@ const handleSubmit = async (e: MouseEvent) => {
       if (json.code === 0) {
         notification.success({
           key: NotificationKeyCommon,
-          message: `修改密码成功。`,
+          message: `修改密码成功，请登录。`,
         });
+
+        router.replace('/user/login')
       } else {
         notification.error({
           key: NotificationKeyCommon,

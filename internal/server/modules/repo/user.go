@@ -574,3 +574,15 @@ func (r *UserRepo) GenAndUpdateVcode(id uint) (vcode string, err error) {
 
 	return
 }
+
+func (r *UserRepo) ClearVcode(id uint) (err error) {
+	err = r.DB.Model(&model.SysUser{}).
+		Where("id = ?", id).
+		Updates(map[string]interface{}{"vcode": ""}).Error
+
+	if err != nil {
+		return
+	}
+
+	return
+}

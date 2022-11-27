@@ -73,8 +73,11 @@ func (c *AccountCtrl) ResetPassword(ctx iris.Context) {
 	var req v1.ResetPasswordReq
 	err := ctx.ReadJSON(&req)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
-		return
+		errs := validate.ValidRequest(err)
+		if len(errs) > 0 {
+			ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: strings.Join(errs, ";")})
+			return
+		}
 	}
 
 	err = c.AccountService.ResetPassword(req)

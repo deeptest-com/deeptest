@@ -126,6 +126,14 @@ func (s *AccountService) ResetPassword(req v1.ResetPasswordReq) (err error) {
 	}
 
 	err = s.UserRepo.UpdatePassword(req.Password, user.ID)
+	if err != nil {
+		return
+	}
+
+	err = s.UserRepo.ClearVcode(user.ID)
+	if err != nil {
+		return
+	}
 
 	return
 }

@@ -19,9 +19,13 @@
                     {{t('page.user.login.form.btn-submit')}}
                 </a-button>
                 <div class="text-align-right">
-                    <router-link to="/user/register">
-                        {{t('page.user.login.form.btn-jump')}}
-                    </router-link>
+                  <router-link to="/user/forgotPassword">
+                   忘记密码
+                  </router-link>
+                  &nbsp;&nbsp;&nbsp;
+                  <router-link to="/user/register">
+                    现在注册
+                  </router-link>
                 </div>
             </a-form-item>
 

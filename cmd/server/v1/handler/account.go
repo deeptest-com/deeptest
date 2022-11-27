@@ -53,3 +53,19 @@ func (c *AccountCtrl) Register(ctx iris.Context) {
 
 	ctx.JSON(_domain.Response{Code: err.Code, Msg: err.Msg})
 }
+
+func (c *AccountCtrl) ForgotPassword(ctx iris.Context) {
+	usernameOrPassword := ctx.URLParam("usernameOrPassword")
+	if usernameOrPassword == "" {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: "no usernameOrPassword param"})
+		return
+	}
+
+	err := c.AccountService.ForgotPassword(usernameOrPassword)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+}

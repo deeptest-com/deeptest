@@ -3,10 +3,13 @@ package service
 import (
 	"errors"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
+	_i118Utils "github.com/aaronchen2k/deeptest/pkg/lib/i118"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	_mailUtils "github.com/aaronchen2k/deeptest/pkg/lib/mail"
 	"golang.org/x/crypto/bcrypt"
 	"strconv"
 	"time"
@@ -86,6 +89,27 @@ func (s *AccountService) Register(req v1.RegisterReq) (err _domain.BizErr) {
 	}
 
 	s.UserRepo.Register(&user)
+
+	settings := map[string]string{
+		"name": user.Name,
+		"sys":  consts.Sys,
+		"url":  consts.Url,
+	}
+	_mailUtils.Send("", "", settings)
+
+	return
+}
+
+func (s *AccountService) ForgotPassword(usernameOrPassword string) (err error) {
+	user, err := s.UserRepo.GetByUsernameOrPassword()
+
+	settings := map[string]string{
+		"name":  user.Name,
+		"vcode": "vcode",
+		"url":   consts.Url,
+	}
+
+	_mailUtils.Send(_i118Utils.Sprintf("reset_password"), "reset_password", settings)
 
 	return
 }

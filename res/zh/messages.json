@@ -32,6 +32,10 @@
     {
       "id": "pls_stop_previous",
       "translation": "请先终止上一个任务。"
+    },
+    {
+      "id": "reset_password",
+      "translation": "重置密码"
     }
   ]
 }

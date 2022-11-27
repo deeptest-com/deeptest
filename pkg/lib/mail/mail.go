@@ -8,12 +8,14 @@ import (
 	"github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	"github.com/aaronchen2k/deeptest/pkg/lib/i118"
 	"github.com/aaronchen2k/deeptest/pkg/lib/log"
+	_resUtils "github.com/aaronchen2k/deeptest/pkg/lib/res"
 	"github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"github.com/kataras/iris/v12/websocket"
 	"gopkg.in/gomail.v2"
 	"io"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"regexp"
 	"strings"
 )
@@ -40,8 +42,10 @@ func Send(subject, tmpl string, mp map[string]string) (err error) {
 	m.SetAddressHeader("To", mp["toEmail"], mp["toName"])
 	m.SetHeader("Subject", subject)
 
-	content := tmpl
-	body := os.Expand(content, func(k string) string { return mp[k] })
+	configRes := filepath.Join("res", "tmpl", tmpl+".ftl")
+	content, _ := _resUtils.ReadRes(configRes)
+
+	body := os.Expand(string(content), func(k string) string { return mp[k] })
 
 	m.SetBody("text/html", body)
 

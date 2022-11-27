@@ -15,7 +15,7 @@
  	</div>
  	<br />
  	<div>
- 		您已成功注册${sys}账号，请访问 <a href="${url}/${vcode}">${url}/${vcode}</a>。
+ 		您已成功注册${sys}账号，请访问 <a href="${url}">${url}</a>。
  	</div>
  </body>
  </html>

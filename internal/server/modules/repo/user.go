@@ -337,6 +337,10 @@ func (r *UserRepo) FindDetailById(id uint) (user domain.UserResp, err error) {
 	return user, nil
 }
 
+func (r *UserRepo) GetByUsernameOrPassword() (user model.SysUser, err error) {
+	return
+}
+
 func (r *UserRepo) DeleteById(id uint) error {
 	err := r.DB.Unscoped().Delete(&model.SysUser{}, id).Error
 	if err != nil {

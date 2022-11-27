@@ -29,4 +29,6 @@ const (
 	CasbinFileName = "rbac_model.conf" // casbin 规则文件名称
 
 	SupportEmail = "support@deeptest.com"
+	Sys          = "DeepTest"
+	Url          = "https://deeptest.com"
 )

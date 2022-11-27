@@ -4,6 +4,10 @@
     {
       "id": "for_example",
       "translation": "e.g. %s"
+    },
+    {
+      "id": "reset_password",
+      "translation": "Reset Password"
     }
   ]
 }

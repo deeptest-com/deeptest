@@ -8,6 +8,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	repo2 "github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"github.com/jinzhu/copier"
+	"net/url"
 	"strings"
 )
 
@@ -20,6 +21,16 @@ type InterfaceService struct {
 }
 
 func (s *InterfaceService) Test(req v1.InvocationRequest) (ret v1.InvocationResponse, err error) {
+	u, err := url.Parse(req.Url)
+	if err != nil {
+		return
+	}
+
+	if u.Scheme == "" {
+		u.Scheme = "https"
+		req.Url = u.String()
+	}
+
 	if req.Method == consts.GET {
 		ret, err = httpHelper.Get(req)
 	} else if req.Method == consts.POST {

@@ -61,7 +61,6 @@ func (r *RoleRepo) FindByName(name string, ids ...uint) (v1.RoleResp, error) {
 	}
 	err := db.First(&role).Error
 	if err != nil {
-		logUtils.Errorf("根据名称查询角色错误", zap.String("名称:", name), zap.String("错误:", err.Error()))
 		return role, err
 	}
 	return role, nil

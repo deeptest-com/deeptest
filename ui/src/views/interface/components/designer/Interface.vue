@@ -42,10 +42,14 @@ import debounce from "lodash.debounce";
       window.removeEventListener('resize', resizeHandler)
     })
 
+    let id = interfaceData.value.id
     watch(interfaceData, () => {
-      console.log('watch interfaceData')
-      store.dispatch('Interface/listValidExtractorVariable')
-      // resize()
+      console.log('watch interfaceData', interfaceData.value.id)
+
+      if (interfaceData.value.id !== id) {
+        store.dispatch('Interface/listValidExtractorVariable')
+      }
+      id = interfaceData.value.id
     }, {deep: true})
 
     const resize = () => {

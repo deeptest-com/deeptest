@@ -77,10 +77,6 @@ export default defineComponent({
       resize()
     })
 
-    watch(interfaceData, () => {
-      console.log('watch interfaceData')
-    }, {deep: true})
-
     const resize = () => {
       resizeWidth('designer-main',
           'design-content', 'design-splitter', 'design-right', 500, 300)

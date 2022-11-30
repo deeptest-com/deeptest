@@ -30,7 +30,7 @@ system:
   static-prefix: /upload
   static-path: /static/upload
   web-path: ./static/dist
-  db-type: mysql
+  db-type: sqlite
   cache-type: redis
   time-format: "2006-01-02 15:04:05"
 zap:

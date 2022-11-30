@@ -13,3 +13,4 @@ tmp/
 /xdoc/openapi/out/
 /static/upload/spec/
 /internal/pkg/consts/private.go
+/latest_log

@@ -1,0 +1,14 @@
+# 启动客户端
+git clone https://gitee.com/deeptest-com/deeptest.git
+yarn install
+
+打开yarn.lock文件，修改node-fetch的版本为2.6.0，有3个地方，注意去掉版本前面的^符号。
+        dependencies:
+            "@sinonjs/text-encoding" "^0.7.1"
+    1.	    node-fetch "2.6.0"
+            ws "^7.0.0"
+
+    2.	node-fetch@2.6.0:
+    3. 		version "2.6.0"
+
+yarn serve

@@ -5,11 +5,17 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	httpHelper "github.com/aaronchen2k/deeptest/pkg/lib/http"
 	"regexp"
 	"strings"
 )
 
 func Invoke(req domain.Request) (resp domain.Response, err error) {
+	req.Url, err = httpHelper.AddDefaultUrlSchema(req.Url)
+	if err != nil {
+		return
+	}
+
 	if req.Method == consts.GET {
 		resp, err = utils.Get(req)
 	} else if req.Method == consts.POST {

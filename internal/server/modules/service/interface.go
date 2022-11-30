@@ -7,8 +7,8 @@ import (
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	repo2 "github.com/aaronchen2k/deeptest/internal/server/modules/repo"
+	"github.com/aaronchen2k/deeptest/pkg/lib/http"
 	"github.com/jinzhu/copier"
-	"net/url"
 	"strings"
 )
 
@@ -21,14 +21,9 @@ type InterfaceService struct {
 }
 
 func (s *InterfaceService) Test(req v1.InvocationRequest) (ret v1.InvocationResponse, err error) {
-	u, err := url.Parse(req.Url)
+	req.Url, err = _httpUtils.AddDefaultUrlSchema(req.Url)
 	if err != nil {
 		return
-	}
-
-	if u.Scheme == "" {
-		u.Scheme = "https"
-		req.Url = u.String()
 	}
 
 	if req.Method == consts.GET {

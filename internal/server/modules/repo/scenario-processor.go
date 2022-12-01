@@ -73,7 +73,7 @@ func (r *ScenarioProcessorRepo) GetEntityTo(processorId uint) (ret agentExec.IPr
 	case consts.ProcessorRoot:
 		comm, _ := r.GetRoot(processor)
 
-		ret = &agentExec.ProcessorRoot{}
+		ret = agentExec.ProcessorRoot{}
 		copier.CopyWithOption(&ret, comm, copier.Option{DeepCopy: true})
 
 	case consts.ProcessorInterface:
@@ -93,52 +93,52 @@ func (r *ScenarioProcessorRepo) GetEntityTo(processorId uint) (ret agentExec.IPr
 
 	case consts.ProcessorGroup:
 		po, _ := r.GetGroup(processor)
-		ret = &agentExec.ProcessorGroup{}
+		ret = agentExec.ProcessorGroup{}
 		copier.CopyWithOption(&ret, po, copier.Option{DeepCopy: true})
 
 	case consts.ProcessorLogic:
 		po, _ := r.GetLogic(processor)
-		ret = &agentExec.ProcessorLogic{}
+		ret = agentExec.ProcessorLogic{}
 		copier.CopyWithOption(&ret, po, copier.Option{DeepCopy: true})
 
 	case consts.ProcessorLoop:
 		po, _ := r.GetLoop(processor)
-		ret = &agentExec.ProcessorLoop{}
+		ret = agentExec.ProcessorLoop{}
 		copier.CopyWithOption(&ret, po, copier.Option{DeepCopy: true})
 
 	case consts.ProcessorVariable:
 		po, _ := r.GetVariable(processor)
-		ret = &agentExec.ProcessorVariable{}
+		ret = agentExec.ProcessorVariable{}
 		copier.CopyWithOption(&ret, po, copier.Option{DeepCopy: true})
 
 	case consts.ProcessorTimer:
 		po, _ := r.GetTimer(processor)
-		ret = &agentExec.ProcessorTimer{}
+		ret = agentExec.ProcessorTimer{}
 		copier.CopyWithOption(&ret, po, copier.Option{DeepCopy: true})
 
 	case consts.ProcessorPrint:
 		po, _ := r.GetPrint(processor)
-		ret = &agentExec.ProcessorPrint{}
+		ret = agentExec.ProcessorPrint{}
 		copier.CopyWithOption(&ret, po, copier.Option{DeepCopy: true})
 
 	case consts.ProcessorCookie:
 		po, _ := r.GetCookie(processor)
-		ret = &agentExec.ProcessorCookie{}
+		ret = agentExec.ProcessorCookie{}
 		copier.CopyWithOption(&ret, po, copier.Option{DeepCopy: true})
 
 	case consts.ProcessorAssertion:
 		po, _ := r.GetAssertion(processor)
-		ret = &agentExec.ProcessorAssertion{}
+		ret = agentExec.ProcessorAssertion{}
 		copier.CopyWithOption(&ret, po, copier.Option{DeepCopy: true})
 
 	case consts.ProcessorExtractor:
 		po, _ := r.GetExtractor(processor)
-		ret = &agentExec.ProcessorExtractor{}
+		ret = agentExec.ProcessorExtractor{}
 		copier.CopyWithOption(&ret, po, copier.Option{DeepCopy: true})
 
 	case consts.ProcessorData:
 		po, _ := r.GetData(processor)
-		ret = &agentExec.ProcessorData{}
+		ret = agentExec.ProcessorData{}
 		copier.CopyWithOption(&ret, po, copier.Option{DeepCopy: true})
 
 	default:

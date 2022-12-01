@@ -15,7 +15,7 @@ type ProcessorLogic struct {
 	Expression string `json:"expression" yaml:"expression"`
 }
 
-func (entity *ProcessorLogic) Run(processor *Processor, session *Session) (err error) {
+func (entity ProcessorLogic) Run(processor *Processor, session *Session) (err error) {
 	logUtils.Infof("logic entity")
 
 	startTime := time.Now()

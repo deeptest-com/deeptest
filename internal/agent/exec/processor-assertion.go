@@ -15,7 +15,7 @@ type ProcessorAssertion struct {
 	Expression string `json:"expression" yaml:"expression"`
 }
 
-func (entity *ProcessorAssertion) Run(processor *Processor, session *Session) (err error) {
+func (entity ProcessorAssertion) Run(processor *Processor, session *Session) (err error) {
 	logUtils.Infof("assertion entity")
 
 	startTime := time.Now()

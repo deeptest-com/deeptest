@@ -17,7 +17,7 @@ type ProcessorVariable struct {
 	RightValue   string `json:"rightValue" yaml:"rightValue"`
 }
 
-func (entity *ProcessorVariable) Run(processor *Processor, session *Session) (err error) {
+func (entity ProcessorVariable) Run(processor *Processor, session *Session) (err error) {
 	logUtils.Infof("variable entity")
 
 	startTime := time.Now()

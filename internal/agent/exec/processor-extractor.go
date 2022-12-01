@@ -37,7 +37,7 @@ type ProcessorExtractor struct {
 	Disabled bool `json:"disabled"`
 }
 
-func (entity *ProcessorExtractor) Run(processor *Processor, session *Session) (err error) {
+func (entity ProcessorExtractor) Run(processor *Processor, session *Session) (err error) {
 	logUtils.Infof("extractor entity")
 
 	startTime := time.Now()
@@ -64,7 +64,7 @@ func (entity *ProcessorExtractor) Run(processor *Processor, session *Session) (e
 	entity.Src = consts.Body
 	entity.Type = getExtractorTypeForProcessor(entity.ProcessorType)
 
-	err = ExtractValue(entity, resp)
+	err = ExtractValue(&entity, resp)
 	if err != nil {
 		processor.Result.Summary = fmt.Sprintf("%s提取器解析错误 %s。", entity.ProcessorType, err.Error())
 		processor.AddResultToParent()

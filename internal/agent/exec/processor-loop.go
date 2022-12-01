@@ -25,7 +25,7 @@ type ProcessorLoop struct {
 	BreakIfExpression string `json:"breakIfExpression" yaml:"breakIfExpression"`
 }
 
-func (entity *ProcessorLoop) Run(processor *Processor, session *Session) (err error) {
+func (entity ProcessorLoop) Run(processor *Processor, session *Session) (err error) {
 	logUtils.Infof("loop entity")
 
 	startTime := time.Now()

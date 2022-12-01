@@ -26,7 +26,7 @@ type ProcessorInterface struct {
 	Checkpoints []domain.Checkpoint
 }
 
-func (entity *ProcessorInterface) Run(processor *Processor, session *Session) (err error) {
+func (entity ProcessorInterface) Run(processor *Processor, session *Session) (err error) {
 	logUtils.Infof("interface entity")
 
 	startTime := time.Now()

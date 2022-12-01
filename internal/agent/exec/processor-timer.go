@@ -15,7 +15,7 @@ type ProcessorTimer struct {
 	SleepTime int `json:"sleepTime" yaml:"sleepTime"`
 }
 
-func (entity ProcessorTimer) Run(processor *Processor, session *Session) (log domain.Result, err error) {
+func (entity *ProcessorTimer) Run(processor *Processor, session *Session) (err error) {
 	logUtils.Infof("timer entity")
 
 	startTime := time.Now()

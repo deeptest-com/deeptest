@@ -43,13 +43,7 @@ func (c *InterfaceCtrl) SaveInterface(ctx iris.Context) {
 		return
 	}
 
-	resp, err := c.InterfaceService.Test(req)
-	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
-		return
-	}
-
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: resp})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code})
 }
 
 // Load

@@ -23,7 +23,7 @@ type ProcessorCookie struct {
 	Children []interface{} `json:"children" yaml:"children" gorm:"-"`
 }
 
-func (entity ProcessorCookie) Run(processor *Processor, session *Session) (log domain.Result, err error) {
+func (entity *ProcessorCookie) Run(processor *Processor, session *Session) (err error) {
 	logUtils.Infof("cookie entity")
 
 	startTime := time.Now()

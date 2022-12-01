@@ -16,7 +16,7 @@ type ProcessorPrint struct {
 	Expression string `json:"expression" yaml:"expression"`
 }
 
-func (entity ProcessorPrint) Run(processor *Processor, session *Session) (log domain.Result, err error) {
+func (entity *ProcessorPrint) Run(processor *Processor, session *Session) (err error) {
 	logUtils.Infof("print entity")
 
 	startTime := time.Now()

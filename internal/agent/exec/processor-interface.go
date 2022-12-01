@@ -26,7 +26,7 @@ type ProcessorInterface struct {
 	Checkpoints []domain.Checkpoint
 }
 
-func (entity ProcessorInterface) Run(processor *Processor, session *Session) (log domain.Result, err error) {
+func (entity *ProcessorInterface) Run(processor *Processor, session *Session) (err error) {
 	logUtils.Infof("interface entity")
 
 	startTime := time.Now()
@@ -105,7 +105,7 @@ func (entity *ProcessorInterface) CheckInterface(processor *Processor, session *
 	return
 }
 
-func (entity ProcessorInterface) Extract(extractor *domain.Extractor, resp domain.Response) (err error) {
+func (entity *ProcessorInterface) Extract(extractor *domain.Extractor, resp domain.Response) (err error) {
 	extractor.Result = ""
 
 	if extractor.Disabled {

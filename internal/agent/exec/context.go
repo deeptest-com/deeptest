@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	_intUtils "github.com/aaronchen2k/deeptest/pkg/lib/int"
 	"strings"
 	"time"
 )
@@ -281,7 +282,10 @@ func GetScopeHierarchy(processor *Processor, scopeHierarchyMap *map[uint]*[]uint
 			arr := []uint{childId}
 			(*scopeHierarchyMap)[childId] = &arr
 		}
-		*(*scopeHierarchyMap)[childId] = append(*(*scopeHierarchyMap)[childId], parentId)
+
+		if !_intUtils.FindUintInArr(parentId, *(*scopeHierarchyMap)[childId]) {
+			*(*scopeHierarchyMap)[childId] = append(*(*scopeHierarchyMap)[childId], parentId)
+		}
 
 		addSuperParent(childId, parentId, childToParentIdMap, scopeHierarchyMap)
 	}
@@ -300,7 +304,9 @@ func GetProcessorList(processor *Processor, list *[]*Processor) {
 func addSuperParent(id, parentId uint, childToParentIdMap map[uint]uint, scopeHierarchyMap *map[uint]*[]uint) {
 	superId, ok := childToParentIdMap[parentId]
 	if ok {
-		*(*scopeHierarchyMap)[id] = append(*(*scopeHierarchyMap)[id], superId)
+		if !_intUtils.FindUintInArr(superId, *(*scopeHierarchyMap)[id]) {
+			*(*scopeHierarchyMap)[id] = append(*(*scopeHierarchyMap)[id], superId)
+		}
 
 		addSuperParent(id, superId, childToParentIdMap, scopeHierarchyMap)
 	}

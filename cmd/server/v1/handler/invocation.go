@@ -15,28 +15,46 @@ type InvocationCtrl struct {
 	BaseCtrl
 }
 
+// LoadExecData
+func (c *InvocationCtrl) LoadExecData(ctx iris.Context) {
+	req := v1.InvocationRequest{}
+	err := ctx.ReadJSON(&req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		return
+	}
+
+	data, err := c.InvocationService.LoadExecData(req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data, Msg: _domain.NoErr.Msg})
+}
+
 // Invoke
-func (c *InvocationCtrl) Invoke(ctx iris.Context) {
+func (c *InvocationCtrl) SubmitInvokeResult(ctx iris.Context) {
 	projectId, err := ctx.URLParamInt("currProjectId")
 	if projectId == 0 {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: "projectId"})
 		return
 	}
 
-	req := v1.InvocationRequest{}
+	req := v1.SubmitInvocationResultRequest{}
 	err = ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
 		return
 	}
 
-	resp, err := c.InvocationService.Invoke(req, projectId)
+	err = c.InvocationService.SubmitInvokeResult(req.Request, req.Response, projectId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
 		return
 	}
 
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: resp})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code})
 }
 
 // List

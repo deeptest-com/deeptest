@@ -8,12 +8,13 @@
 <script lang="ts">
 import {computed, ComputedRef, defineComponent, onMounted, PropType, Ref} from "vue";
 import {useI18n} from "vue-i18n";
-import {Form, message} from 'ant-design-vue';
+import {Form, message, notification} from 'ant-design-vue';
 import {useStore} from "vuex";
 import {StateType} from "@/views/interface/store";
 import RequestInvocation from './Invocation.vue';
 import RequestConfig from './Config.vue';
 import {Interface} from "@/views/interface/data";
+import {NotificationKeyCommon} from "@/utils/const";
 
 const useForm = Form.useForm;
 
@@ -36,7 +37,19 @@ export default defineComponent({
 
     const saveInterface = (data) => {
       console.log('saveInterface', data)
-      store.dispatch('Interface/saveInterface', data)
+      store.dispatch('Interface/saveInterface', data).then((res) => {
+        if (res === true) {
+          notification.success({
+            key: NotificationKeyCommon,
+            message: `保存成功`,
+          });
+        } else {
+          notification.success({
+            key: NotificationKeyCommon,
+            message: `保存失败`,
+          });
+        }
+      })
     };
 
     onMounted(() => {

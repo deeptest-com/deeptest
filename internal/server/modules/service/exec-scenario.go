@@ -109,6 +109,10 @@ func (s ExecScenarioService) countRequest(result execDomain.Result, report *mode
 }
 
 func (s ExecScenarioService) countInterface(interfaceId uint, status consts.ResultStatus, report *model.Report) {
+	if report.InterfaceStatusMap == nil {
+		report.InterfaceStatusMap = map[uint]map[consts.ResultStatus]int{}
+	}
+
 	if report.InterfaceStatusMap[interfaceId] == nil {
 		report.InterfaceStatusMap[interfaceId] = map[consts.ResultStatus]int{}
 		report.InterfaceStatusMap[interfaceId][consts.Pass] = 0

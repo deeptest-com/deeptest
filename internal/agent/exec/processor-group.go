@@ -12,7 +12,7 @@ type ProcessorGroup struct {
 	ProcessorEntityBase
 }
 
-func (entity ProcessorGroup) Run(processor *Processor, session *Session) (log domain.Result, err error) {
+func (entity *ProcessorGroup) Run(processor *Processor, session *Session) (err error) {
 	logUtils.Infof("group entity")
 
 	startTime := time.Now()

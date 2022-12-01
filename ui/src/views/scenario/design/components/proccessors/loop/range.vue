@@ -16,7 +16,7 @@
           <a-form-item label="区间" v-bind="validateInfos.range">
             <a-input v-model:value="modelRef.range"
                      @blur="validate('range', { trigger: 'blur' }).catch(() => {})"/>
-            <div class="dp-input-tip">类似1-9或a-z的取值区间，可使用${name}引用变量</div>
+            <div class="dp-input-tip">类似1-9或a-z的取值区间，可使用形如{name}的变量</div>
           </a-form-item>
           <a-form-item label="间隔">
             <a-input-number v-model:value="modelRef.step"/>

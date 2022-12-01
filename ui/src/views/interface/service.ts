@@ -6,7 +6,7 @@ import {isInArray} from "@/utils/array";
 const apiPath = 'interfaces';
 const apiImport = 'import';
 const apiSpec = 'spec';
-const apiVocation = 'invocations';
+const apiInvocation = 'invocations';
 const apiAuth = 'auth';
 const apiEnvironment = 'environments'
 const apiEnvironmentVar = `${apiEnvironment}/vars`
@@ -31,6 +31,15 @@ export async function load(): Promise<any> {
     });
 }
 
+export async function loadExecInterface(id): Promise<any> {
+    const params = {id}
+    return request({
+        url: `/${apiInvocation}/loadExecData`,
+        method: 'get',
+        params,
+    });
+}
+
 export async function get(id: number): Promise<any> {
     return request({url: `/${apiPath}/${id}`});
 }
@@ -38,7 +47,7 @@ export async function get(id: number): Promise<any> {
 export async function getLastInvocationResp(id: number): Promise<any> {
     const params = {id : id}
     return request({
-        url: `/${apiVocation}/getLastResp`,
+        url: `/${apiInvocation}/getLastResp`,
         params
     });
 }
@@ -93,28 +102,43 @@ export async function move(data: any): Promise<any> {
 }
 
 // invocation
-export async function invoke(interf: Interface): Promise<any> {
+export async function loadExecData(interf: Interface): Promise<any> {
     return request({
-        url: `/${apiVocation}/invoke`,
+        url: `/${apiInvocation}/loadExecData`,
         method: 'post',
         data: interf,
     });
 }
+export async function invoke(data): Promise<any> {
+    return requestToAgent({
+        url: `/${apiInvocation}/invoke`,
+        method: 'POST',
+        data,
+    });
+}
+export async function submitInvokeResult(data: any): Promise<any> {
+    return request({
+        url: `/${apiInvocation}/submitInvokeResult`,
+        method: 'post',
+        data,
+    });
+}
+
 export async function listInvocation(interfaceId: number): Promise<any> {
     const params = {interfaceId: interfaceId}
 
     return request({
-        url: `/${apiVocation}`,
+        url: `/${apiInvocation}`,
         method: 'GET',
         params,
     });
 }
 export async function getInvocationAsInterface(id: number): Promise<any> {
-    return request({url: `/${apiVocation}/${id}`});
+    return request({url: `/${apiInvocation}/${id}`});
 }
 export async function removeInvocation(id: number): Promise<any> {
     return request({
-        url: `/${apiVocation}/${id}`,
+        url: `/${apiInvocation}/${id}`,
         method: 'DELETE',
     });
 }

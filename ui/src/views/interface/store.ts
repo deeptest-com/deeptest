@@ -24,7 +24,7 @@ import {
     listCheckpoint,
     getCheckpoint,
     saveCheckpoint,
-    removeCheckpoint, getLastInvocationResp,
+    removeCheckpoint, getLastInvocationResp, loadExecData, submitInvokeResult,
 } from './service';
 import {Checkpoint, Extractor, Interface, Response} from "@/views/interface/data";
 import {getNodeMap} from "@/services/tree";
@@ -169,30 +169,36 @@ const StoreModel: ModuleType = {
         },
     },
     actions: {
-        async invoke({commit, dispatch, state}, payload: any) {
-            invoke(payload).then((json) => {
-                if (json.code === 0) {
-                    commit('setResponse', json.data);
+        async invoke({commit, dispatch, state}, request: any) {
+            const updatedRequest = await loadExecData(request)
 
-                    dispatch('listInvocation', payload.id);
-                    dispatch('listExtractor', payload.id);
-                    dispatch('listCheckpoint', payload.id);
-                    dispatch('listValidExtractorVariable', state.interfaceData.id);
+            const response = await invoke(updatedRequest.data)
 
-                    return true;
-                } else {
-                    return false
-                }
+            const submitResult = await submitInvokeResult({
+                request: updatedRequest.data,
+                response: response.data,
             })
+
+            if (submitResult.code === 0) {
+                commit('setResponse', response.data);
+
+                dispatch('listInvocation', request.id);
+                dispatch('listExtractor', request.id);
+                dispatch('listCheckpoint', request.id);
+                dispatch('listValidExtractorVariable', state.interfaceData.id);
+
+                return true;
+            } else {
+                return false
+            }
         },
         async saveInterface({commit}, payload: any) {
-            saveInterface(payload).then((json) => {
-                if (json.code === 0) {
-                    return true;
-                } else {
-                    return false
-                }
-            })
+            const json = await  saveInterface(payload)
+            if (json.code === 0) {
+                return true;
+            } else {
+                return false
+            }
         },
         async saveTreeMapItemProp({commit}, payload: any) {
             commit('setTreeDataMapItemProp', payload);

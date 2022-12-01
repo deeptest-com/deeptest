@@ -32,7 +32,7 @@
       </a-dropdown-button>
     </div>
     <div class="save">
-      <a-dropdown-button trigger="click" @click="sendRequest" class="dp-bg-light">
+      <a-dropdown-button trigger="click" @click="save" class="dp-bg-light">
         <SaveOutlined />
         保存
         <template #overlay>
@@ -108,7 +108,6 @@ export default defineComponent({
       let data = JSON.parse(JSON.stringify(interfaceData.value))
       data = prepareDataForRequest(data)
       data.body = data.body.replaceAll('\n', '').replaceAll(' ', '')
-      console.log('invoke', data)
 
       if (validateInfo()) {
         props.onSend(data)

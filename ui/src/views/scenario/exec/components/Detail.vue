@@ -51,7 +51,7 @@ const execData = computed<any>(()=> store.state.Scenario.execData);
 
 const id = ref(+router.currentRoute.value.params.id)
 
-// store.dispatch('Scenario/loadExecData', id.value);
+// store.dispatch('Scenario/loadExecScenario', id.value);
 
 </script>
 

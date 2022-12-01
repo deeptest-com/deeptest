@@ -16,9 +16,9 @@ type ScenarioExecCtrl struct {
 
 // LoadExecData
 func (c *ScenarioExecCtrl) LoadExecData(ctx iris.Context) {
-	scenarioId, err := ctx.URLParamInt("scenarioId")
+	id, err := ctx.URLParamInt("id")
 
-	data, err := c.ScenarioExecService.LoadExecData(scenarioId)
+	data, err := c.ScenarioExecService.LoadExecData(id)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
 		return
@@ -27,7 +27,7 @@ func (c *ScenarioExecCtrl) LoadExecData(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data, Msg: _domain.NoErr.Msg})
 }
 
-// loadExecData
+// loadExecScenario
 func (c *ScenarioExecCtrl) LoadExecResult(ctx iris.Context) {
 	scenarioId, err := ctx.URLParamInt("scenarioId")
 

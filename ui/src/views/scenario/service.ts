@@ -49,10 +49,10 @@ export async function load(scenarioId): Promise<any> {
     });
 }
 
-export async function loadExecData(scenarioId): Promise<any> {
-    const params = {scenarioId}
+export async function loadExecScenario(id): Promise<any> {
+    const params = {id}
     return request({
-        url: `/${apiPathExec}/loadExecData`,
+        url: `/${apiPathExec}/loadExecScenario`,
         method: 'get',
         params,
     });

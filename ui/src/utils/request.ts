@@ -68,9 +68,7 @@ const request = axios.create({
 });
 
 const requestAgent = axios.create({
-    baseURL: process.env.VUE_APP_API_AGENT,
-    withCredentials: true,
-    timeout: 0
+    baseURL: process.env.VUE_APP_API_AGENT
 });
 
 // 全局设置 - post请求头
@@ -79,56 +77,65 @@ const requestAgent = axios.create({
 /**
  * 请求拦截器
  */
+const requestInterceptors = async (config: AxiosRequestConfig & { cType?: boolean, baseURL?: string }) => {
+    // 如果设置了cType 说明是自定义 添加 Content-Type类型 为自定义post 做铺垫
+    if (config['cType']) {
+        config.headers['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8';
+    }
+
+    // 添加jwt token
+    const jwtToken = await getToken();
+    if (jwtToken) {
+        config.headers[settings.ajaxHeadersTokenKey] = 'Bearer ' + jwtToken;
+    }
+
+    // 修改示例请求指向mock地址
+    const url = config.url || '';
+    if (url.indexOf('/home') > -1 || url.indexOf('/pages') > -1) {
+        config.baseURL = '/api';
+    }
+
+    // 加随机数清除缓存
+    config.params = { ...config.params, ts: Date.now() };
+    if (!config.params.currProjectId) {
+        const projectId = await getCache(settings.currProjectId);
+        config.params = { ...config.params, currProjectId: projectId, lang: i18n.global.locale.value };
+    }
+
+    console.log('=== request ===', config)
+    return config;
+}
 request.interceptors.request.use(
-    async (config: AxiosRequestConfig & { cType?: boolean, baseURL?: string }) => {
-
-        // 如果设置了cType 说明是自定义 添加 Content-Type类型 为自定义post 做铺垫
-        if (config['cType']) {
-            config.headers['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8';
-        }
-
-        // 添加jwt token
-        const jwtToken = await getToken();
-        if (jwtToken) {
-            config.headers[settings.ajaxHeadersTokenKey] = 'Bearer ' + jwtToken;
-        }
-
-        // 修改示例请求指向mock地址
-        const url = config.url || '';
-        if (url.indexOf('/home') > -1 || url.indexOf('/pages') > -1) {
-            config.baseURL = '/api';
-        }
-
-        // 加随机数清除缓存
-        config.params = { ...config.params, ts: Date.now() };
-        if (!config.params.currProjectId) {
-            const projectId = await getCache(settings.currProjectId);
-            config.params = { ...config.params, currProjectId: projectId, lang: i18n.global.locale.value };
-        }
-
-        console.log('=== request ===', config)
-        return config;
-    },
+    requestInterceptors,
+    /* error=> {} */ // 已在 export default catch
+);
+requestAgent.interceptors.request.use(
+    requestInterceptors,
     /* error=> {} */ // 已在 export default catch
 );
 
 /**
  * 响应拦截器
  */
+const responseInterceptors = async (axiosResponse: AxiosResponse) => {
+    console.log('=== response ===', axiosResponse.config.url, axiosResponse)
+
+    const res: ResponseData = axiosResponse.data;
+    const { code, token } = res;
+
+    // 自定义状态码验证
+    if (code !== 0) {
+        return Promise.reject(axiosResponse);
+    }
+
+    return axiosResponse;
+}
 request.interceptors.response.use(
-    async (axiosResponse: AxiosResponse) => {
-        console.log('=== response ===', axiosResponse.config.url, axiosResponse)
-
-        const res: ResponseData = axiosResponse.data;
-        const { code, token } = res;
-
-        // 自定义状态码验证
-        if (code !== 0) {
-            return Promise.reject(axiosResponse);
-        }
-
-        return axiosResponse;
-    },
+    responseInterceptors,
+    /* error => {} */ // 已在 export default catch
+);
+requestAgent.interceptors.response.use(
+    responseInterceptors,
     /* error => {} */ // 已在 export default catch
 );
 

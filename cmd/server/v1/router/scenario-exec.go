@@ -20,7 +20,7 @@ func (m *ScenarioExecModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
 		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
 
-		index.Get("/loadExecData", m.ScenarioExecCtrl.LoadExecData).Name = "加载执行场景"
+		index.Get("/loadExecScenario", m.ScenarioExecCtrl.LoadExecData).Name = "加载执行场景"
 		index.Get("/loadExecResult", m.ScenarioExecCtrl.LoadExecResult).Name = "加载执行结果"
 
 		index.Post("/submitResult/{id:uint}", m.ScenarioExecCtrl.SubmitResult).Name = "提交测试结果"

@@ -25,7 +25,7 @@ type ProcessorLoop struct {
 	BreakIfExpression string `json:"breakIfExpression" yaml:"breakIfExpression"`
 }
 
-func (entity ProcessorLoop) Run(processor *Processor, session *Session) (result domain.Result, err error) {
+func (entity *ProcessorLoop) Run(processor *Processor, session *Session) (err error) {
 	logUtils.Infof("loop entity")
 
 	startTime := time.Now()
@@ -39,24 +39,23 @@ func (entity ProcessorLoop) Run(processor *Processor, session *Session) (result 
 	}
 
 	if entity.ProcessorType == consts.ProcessorLoopBreak {
-		result.WillBreak, result.Summary = entity.getBeak()
-		processor.Result = &result
+		processor.Result.WillBreak, processor.Result.Summary = entity.getBeak()
 
 		processor.AddResultToParent()
 		exec.SendExecMsg(*processor.Result, session.WsMsg)
+
 		return
 	}
 
-	result.Iterator, result.Summary = entity.getIterator()
+	processor.Result.Iterator, processor.Result.Summary = entity.getIterator()
 
-	processor.Result = &result
 	processor.AddResultToParent()
 	exec.SendExecMsg(*processor.Result, session.WsMsg)
 
 	if entity.ProcessorType == consts.ProcessorLoopUntil {
-		entity.runLoopUntil(session, processor, result.Iterator)
+		entity.runLoopUntil(session, processor, processor.Result.Iterator)
 	} else {
-		entity.runLoopItems(session, processor, result.Iterator)
+		entity.runLoopItems(session, processor, processor.Result.Iterator)
 	}
 
 	endTime := time.Now()
@@ -65,7 +64,49 @@ func (entity ProcessorLoop) Run(processor *Processor, session *Session) (result 
 	return
 }
 
-func (entity ProcessorLoop) getBeak() (ret bool, msg string) {
+func (entity *ProcessorLoop) runLoopItems(s *Session, processor *Processor, iterator domain.ExecIterator) (err error) {
+	for _, item := range iterator.Items {
+		SetVariable(entity.ProcessorID, iterator.VariableName, item, consts.Local)
+
+		for _, child := range processor.Children {
+			child.Run(s)
+
+			if child.Result.WillBreak {
+				logUtils.Infof("break")
+				goto LABEL
+			}
+		}
+	}
+LABEL:
+
+	return
+}
+
+func (entity *ProcessorLoop) runLoopUntil(s *Session, processor *Processor, iterator domain.ExecIterator) (err error) {
+	expression := iterator.UntilExpression
+
+	for {
+		result, err := EvaluateGovaluateExpressionByScope(expression, entity.ID)
+		pass, ok := result.(bool)
+		if err != nil || !ok || pass {
+			break
+		}
+
+		for _, child := range processor.Children {
+			(*child).Run(s)
+
+			if child.Result.WillBreak {
+				logUtils.Infof("break")
+				goto LABEL
+			}
+		}
+	}
+LABEL:
+
+	return
+}
+
+func (entity *ProcessorLoop) getBeak() (ret bool, msg string) {
 	breakFrom := entity.ParentID
 	breakIfExpress := entity.BreakIfExpression
 
@@ -81,7 +122,7 @@ func (entity ProcessorLoop) getBeak() (ret bool, msg string) {
 	return
 }
 
-func (entity ProcessorLoop) getIterator() (iterator domain.ExecIterator, msg string) {
+func (entity *ProcessorLoop) getIterator() (iterator domain.ExecIterator, msg string) {
 	if entity.ID == 0 {
 		msg = "执行前请先配置处理器。"
 		return
@@ -106,49 +147,7 @@ func (entity ProcessorLoop) getIterator() (iterator domain.ExecIterator, msg str
 	return
 }
 
-func (entity *ProcessorLoop) runLoopUntil(s *Session, processor *Processor, iterator domain.ExecIterator) (err error) {
-	expression := iterator.UntilExpression
-
-	for {
-		result, err := EvaluateGovaluateExpressionByScope(expression, entity.ID)
-		pass, ok := result.(bool)
-		if err != nil || !ok || pass {
-			break
-		}
-
-		for _, child := range processor.Children {
-			childLog, _ := (*child).Run(s)
-
-			if childLog.WillBreak {
-				logUtils.Infof("break")
-				goto LABEL
-			}
-		}
-	}
-LABEL:
-
-	return
-}
-
-func (entity *ProcessorLoop) runLoopItems(s *Session, processor *Processor, iterator domain.ExecIterator) (err error) {
-	for _, item := range iterator.Items {
-		SetVariable(entity.ID, iterator.VariableName, item, consts.Local)
-
-		for _, child := range processor.Children {
-			childLog, _ := child.Run(s)
-
-			if childLog.WillBreak {
-				logUtils.Infof("break")
-				goto LABEL
-			}
-		}
-	}
-LABEL:
-
-	return
-}
-
-func (entity ProcessorLoop) GenerateLoopTimes() (ret domain.ExecIterator, err error) {
+func (entity *ProcessorLoop) GenerateLoopTimes() (ret domain.ExecIterator, err error) {
 	if entity.Times > 0 {
 		for i := 0; i < entity.Times; i++ {
 			ret.Items = append(ret.Items, i+1)
@@ -159,7 +158,7 @@ func (entity ProcessorLoop) GenerateLoopTimes() (ret domain.ExecIterator, err er
 
 	return
 }
-func (entity ProcessorLoop) GenerateLoopRange() (ret domain.ExecIterator, err error) {
+func (entity *ProcessorLoop) GenerateLoopRange() (ret domain.ExecIterator, err error) {
 	start, end, step, precision, typ, err := utils.GetRange(entity.Range, entity.Step)
 	if err == nil {
 		ret.DataType = typ
@@ -168,7 +167,7 @@ func (entity ProcessorLoop) GenerateLoopRange() (ret domain.ExecIterator, err er
 
 	return
 }
-func (entity ProcessorLoop) GenerateLoopList() (ret domain.ExecIterator, err error) {
+func (entity *ProcessorLoop) GenerateLoopList() (ret domain.ExecIterator, err error) {
 	ret.Items, ret.DataType, err = utils.GenerateListItems(entity.List)
 
 	return

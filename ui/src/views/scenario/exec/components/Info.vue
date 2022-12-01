@@ -83,7 +83,7 @@ import bus from "@/utils/eventBus";
 import Log from "./Log.vue"
 import { momentShort } from "@/utils/datetime";
 import {useI18n} from "vue-i18n";
-import {loadExecData} from "@/views/scenario/service";
+import {loadExecScenario} from "@/views/scenario/service";
 import {getToken} from "@/utils/localToken";
 const { t } = useI18n();
 
@@ -98,7 +98,7 @@ store.dispatch('Scenario/loadExecResult', scenarioId.value);
 const execStart = async () => {
   console.log('execStart')
 
-  const json = await loadExecData(scenarioId.value)
+  const json = await loadExecScenario(scenarioId.value)
   if (json.code != 0) return
 
   const data = json.data
@@ -108,7 +108,6 @@ const execStart = async () => {
   convertEntityToRawData(data.rootProcessor)
 
   WebSocket.sentMsg(settings.webSocketRoom, JSON.stringify({act: 'execScenario', execReq: data}))
-
 }
 
 const execCancel = () => {
@@ -147,7 +146,7 @@ const result = ref({} as any)
 const logMap = ref({} as any)
 const logTreeData = ref({} as any)
 const OnWebSocketMsg = (data: any) => {
-  console.log('WebsocketMsgEvent in exec info')
+  console.log('--- WebsocketMsgEvent in exec info', data)
 
   if (!data.msg) return
 

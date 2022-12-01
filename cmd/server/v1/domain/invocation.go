@@ -16,6 +16,7 @@ type InvocationRequest struct {
 }
 
 type InvocationResponse struct {
+	Id            uint                `json:"id"`
 	StatusCode    consts.HttpRespCode `json:"statusCode"`
 	StatusContent string              `json:"statusContent"`
 
@@ -28,4 +29,9 @@ type InvocationResponse struct {
 	ContentLength  int                     `json:"contentLength"`
 
 	Time int64 `json:"time"`
+}
+
+type SubmitInvocationResultRequest struct {
+	Request  InvocationRequest  `json:"request"`
+	Response InvocationResponse `json:"response"`
 }

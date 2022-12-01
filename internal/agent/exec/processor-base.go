@@ -1,7 +1,6 @@
 package agentExec
 
 import (
-	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 )
 
@@ -20,7 +19,7 @@ type ProcessorEntityBase struct {
 }
 
 type IProcessorEntity interface {
-	Run(*Processor, *Session) (domain.Result, error)
+	Run(*Processor, *Session) error
 }
 
 func getPreviousBrother(processor Processor) (brother Processor, ok bool) {

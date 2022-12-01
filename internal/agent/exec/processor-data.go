@@ -29,7 +29,7 @@ type ProcessorData struct {
 	VariableName string `json:"variableName,omitempty" yaml:"variableName,omitempty"`
 }
 
-func (entity ProcessorData) Run(processor *Processor, session *Session) (result domain.Result, err error) {
+func (entity *ProcessorData) Run(processor *Processor, session *Session) (err error) {
 	logUtils.Infof("data entity")
 
 	startTime := time.Now()
@@ -42,17 +42,17 @@ func (entity ProcessorData) Run(processor *Processor, session *Session) (result 
 		ParentId:          int(entity.ParentID),
 	}
 
-	result.Iterator, result.Summary = entity.getIterator()
-
-	processor.Result = &result
+	processor.Result.Iterator, processor.Result.Summary = entity.getIterator()
 
 	processor.AddResultToParent()
 	exec.SendExecMsg(*processor.Result, session.WsMsg)
 
-	entity.runDataItems(session, processor, result.Iterator)
+	entity.runDataItems(session, processor, processor.Result.Iterator)
 
 	endTime := time.Now()
 	processor.Result.EndTime = &endTime
+
+	//result = *processor.Result
 
 	return
 }
@@ -69,7 +69,7 @@ func (entity *ProcessorData) runDataItems(session *Session, processor *Processor
 	return
 }
 
-func (entity ProcessorData) getIterator() (iterator domain.ExecIterator, msg string) {
+func (entity *ProcessorData) getIterator() (iterator domain.ExecIterator, msg string) {
 	if entity.ID == 0 {
 		msg = "执行前请先配置处理器。"
 		return
@@ -83,7 +83,7 @@ func (entity ProcessorData) getIterator() (iterator domain.ExecIterator, msg str
 	return
 }
 
-func (entity ProcessorData) GenerateLoopList() (ret domain.ExecIterator, err error) {
+func (entity *ProcessorData) GenerateLoopList() (ret domain.ExecIterator, err error) {
 	if entity.ProcessorType == consts.ProcessorDataText {
 		ret.Data, err = utils.ReadDataFromText(entity.Url, entity.Separator)
 	} else if entity.ProcessorType == consts.ProcessorDataExcel {

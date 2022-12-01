@@ -16,7 +16,8 @@ func (m *InvocationModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
 		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
 
-		index.Post("/invoke", m.InvocationCtrl.Invoke).Name = "模拟测试接口"
+		index.Post("/loadExecData", m.InvocationCtrl.LoadExecData).Name = "获取测试接口"
+		index.Post("/submitInvokeResult", m.InvocationCtrl.SubmitInvokeResult).Name = "提交接口测试结果"
 
 		index.Get("/", m.InvocationCtrl.List).Name = "调用列表"
 		index.Get("/{id:uint}", m.InvocationCtrl.GetAsInterface).Name = "调用详情"

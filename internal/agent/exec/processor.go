@@ -49,11 +49,11 @@ type Processor struct {
 	Session Session `json:"-"`
 }
 
-func (p *Processor) Run(s *Session) (log domain.Result, err error) {
+func (p *Processor) Run(s *Session) (err error) {
 	logUtils.Infof("%s - %s", p.Name, p.EntityType)
 
 	if p.Entity != nil {
-		log, _ = p.Entity.Run(p, s)
+		p.Entity.Run(p, s)
 	}
 
 	return
@@ -71,62 +71,62 @@ func (p *Processor) UnmarshalEntity() (err error) {
 	case consts.ProcessorRoot:
 		ret := ProcessorRoot{}
 		json.Unmarshal(bytes, &ret)
-		p.Entity = ret
+		p.Entity = &ret
 
 	case consts.ProcessorInterface:
 		ret := ProcessorInterface{}
 		json.Unmarshal(bytes, &ret)
-		p.Entity = ret
+		p.Entity = &ret
 
 	case consts.ProcessorGroup:
 		ret := ProcessorGroup{}
 		json.Unmarshal(bytes, &ret)
-		p.Entity = ret
+		p.Entity = &ret
 
 	case consts.ProcessorLogic:
 		ret := ProcessorLogic{}
 		json.Unmarshal(bytes, &ret)
-		p.Entity = ret
+		p.Entity = &ret
 
 	case consts.ProcessorLoop:
 		ret := ProcessorLoop{}
 		json.Unmarshal(bytes, &ret)
-		p.Entity = ret
+		p.Entity = &ret
 
 	case consts.ProcessorVariable:
 		ret := ProcessorVariable{}
 		json.Unmarshal(bytes, &ret)
-		p.Entity = ret
+		p.Entity = &ret
 
 	case consts.ProcessorTimer:
 		ret := ProcessorTimer{}
 		json.Unmarshal(bytes, &ret)
-		p.Entity = ret
+		p.Entity = &ret
 
 	case consts.ProcessorPrint:
 		ret := ProcessorPrint{}
 		json.Unmarshal(bytes, &ret)
-		p.Entity = ret
+		p.Entity = &ret
 
 	case consts.ProcessorCookie:
 		ret := ProcessorCookie{}
 		json.Unmarshal(bytes, &ret)
-		p.Entity = ret
+		p.Entity = &ret
 
 	case consts.ProcessorAssertion:
 		ret := ProcessorAssertion{}
 		json.Unmarshal(bytes, &ret)
-		p.Entity = ret
+		p.Entity = &ret
 
 	case consts.ProcessorExtractor:
 		ret := ProcessorExtractor{}
 		json.Unmarshal(bytes, &ret)
-		p.Entity = ret
+		p.Entity = &ret
 
 	case consts.ProcessorData:
 		ret := ProcessorData{}
 		json.Unmarshal(bytes, &ret)
-		p.Entity = ret
+		p.Entity = &ret
 
 	default:
 	}

@@ -80,7 +80,7 @@ const submitForm = async () => {
 
 onMounted(() => {
   console.log('onMounted')
-  if (!modelRef.value.times) modelRef.value.times = 1
+  if (!modelRef.value.times) modelRef.value.times = 3
 })
 
 onUnmounted(() => {

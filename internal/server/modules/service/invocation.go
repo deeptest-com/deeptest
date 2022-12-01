@@ -21,24 +21,19 @@ type InvocationService struct {
 	VariableService   *VariableService   `inject:""`
 }
 
-func (s *InvocationService) Invoke(req v1.InvocationRequest, projectId int) (
-	resp v1.InvocationResponse, err error) {
+func (s *InvocationService) LoadExecData(req v1.InvocationRequest) (ret v1.InvocationRequest, err error) {
 	err = s.InterfaceService.UpdateByInvocation(req)
 	if err != nil {
 		return
 	}
 
-	reqNew, err := s.ReplaceEnvironmentExtractorAndExecVariables(req)
-	if err != nil {
-		return
-	}
+	ret, err = s.ReplaceEnvironmentExtractorAndExecVariables(req)
 
-	resp, err = s.InterfaceService.Test(reqNew)
-	if err != nil {
-		return
-	}
+	return
+}
 
-	interf, _ := s.InterfaceRepo.GetDetail(req.Id)
+func (s *InvocationService) SubmitInvokeResult(req v1.InvocationRequest, resp v1.InvocationResponse, projectId int) (err error) {
+	interf, _ := s.InterfaceRepo.GetDetail(resp.Id)
 	s.ExtractorService.ExtractInterface(interf, resp, nil)
 	s.CheckpointService.CheckInterface(interf, resp, nil)
 

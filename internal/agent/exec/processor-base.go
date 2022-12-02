@@ -13,9 +13,6 @@ type ProcessorEntityBase struct {
 	ProcessorCategory consts.ProcessorCategory `json:"processorCategory" yaml:"processorCategory"`
 	ProcessorType     consts.ProcessorType     `json:"processorType" yaml:"processorType"`
 	ParentID          uint                     `json:"parentID" yaml:"parentID"`
-
-	//Children []*Processor `json:"children" gorm:"-"`
-	//Result domain.Result `json:"result,omitempty" gorm:"-"`
 }
 
 type IProcessorEntity interface {

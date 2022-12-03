@@ -4,10 +4,10 @@
       <div class="params">
         <a-row v-for="(item, idx) in interfaceData.bodyFormUrlencoded" :key="idx" type="flex" class="param">
           <a-col flex="1">
-            <a-input v-model:value="item.name" @change="onParamChange(idx)" class="dp-bg-input-transparent" />
+            <a-input v-model:value="item.name" @change="onFormUrlencoded(idx)" class="dp-bg-input-transparent" />
           </a-col>
           <a-col flex="1">
-            <a-input v-model:value="item.value" @change="onParamChange(idx)" class="dp-bg-input-transparent" />
+            <a-input v-model:value="item.value" @change="onFormUrlencoded(idx)" class="dp-bg-input-transparent" />
           </a-col>
           <a-col flex="80px" class="dp-right dp-icon-btn-container">
             <a-tooltip v-if="!item.disabled" @click="disable(idx)" overlayClassName="dp-tip-small">
@@ -48,8 +48,8 @@ const {t} = useI18n();
 const store = useStore<{ Interface: StateType }>();
 const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
 
-const onParamChange = (idx) => {
-  console.log('onParamChange', idx)
+const onFormUrlencoded = (idx) => {
+  console.log('onFormUrlencoded', idx)
   if (interfaceData.value.bodyFormUrlencoded.length <= idx + 1
         && (interfaceData.value.bodyFormUrlencoded[idx].name !== '' || interfaceData.value.bodyFormUrlencoded[idx].value !== '')) {
     interfaceData.value.bodyFormUrlencoded.push({} as BodyFormUrlEncodedItem)

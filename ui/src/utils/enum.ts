@@ -76,6 +76,15 @@ export enum ProcessorData {
     // ZenData = "processor_data_zendata",
 }
 
+export enum RequestBodyType {
+    'application/json'= 'application/json',
+    'application/xml' = 'application/xml',
+    'multipart/form-data' = 'multipart/form-data',
+    'application/x-www-form-urlencoded' = 'application/x-www-form-urlencoded',
+    'text/html' = 'text/html',
+    'text/plain' = 'text/plain',
+}
+
 export const Methods = [
     "GET",
     "POST",

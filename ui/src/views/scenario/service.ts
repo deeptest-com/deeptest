@@ -7,7 +7,7 @@ import {
     ProcessorLogic,
     ProcessorLoop, ProcessorGroup, ProcessorTimer, ProcessorPrint,
     ProcessorCategory,
-    ProcessorVariable, ProcessorAssertion
+    ProcessorVariable, ProcessorAssertion, RequestBodyType
 } from "@/utils/enum";
 
 const apiPath = 'scenarios';
@@ -140,6 +140,10 @@ export async function saveProcessor(data: any): Promise<any> {
         method: 'PUT',
         data: data,
     });
+}
+
+export function getRequestBodyTypes() {
+    return getEnumSelectItems(RequestBodyType)
 }
 
 export function getProcessorCategories() {

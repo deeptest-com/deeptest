@@ -188,12 +188,12 @@ func posts(req v1.InvocationRequest, method consts.HttpMethod, readRespData bool
 
 	var dataBytes []byte
 
+	formDatacontentType := ""
 	if strings.HasPrefix(bodyType.String(), consts.ContentTypeFormData.String()) {
-		formData := make(url.Values)
-		for _, item := range bodyFormData {
-			formData.Add(item.Name, item.Value)
-		}
-		dataBytes = []byte(formData.Encode())
+		formDataWriter, _ := utils.MultipartEncoder(bodyFormData)
+		formDatacontentType = utils.MultipartContentType(formDataWriter)
+
+		dataBytes = formDataWriter.Payload.Bytes()
 
 	} else if strings.HasPrefix(bodyType.String(), consts.ContentTypeFormUrlencoded.String()) {
 		// post form data
@@ -209,8 +209,6 @@ func posts(req v1.InvocationRequest, method consts.HttpMethod, readRespData bool
 		if err != nil {
 			return
 		}
-
-		//dataBytes = []byte(reqBody)
 	}
 
 	if err != nil {
@@ -247,6 +245,8 @@ func posts(req v1.InvocationRequest, method consts.HttpMethod, readRespData bool
 
 	if strings.HasPrefix(bodyType.String(), consts.ContentTypeJSON.String()) {
 		request.Header.Set(consts.ContentType, fmt.Sprintf("%s; charset=utf-8", bodyType))
+	} else if strings.HasPrefix(bodyType.String(), consts.ContentTypeFormData.String()) {
+		request.Header.Set(consts.ContentType, formDatacontentType)
 	} else {
 		request.Header.Set(consts.ContentType, bodyType.String())
 	}

@@ -77,6 +77,7 @@ import {getCodeLangByType} from "@/views/interface/service";
 import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
 import BodyFormUrlencoded from "./Body-FormUrlencoded.vue";
 import BodyFormData from "./Body-FormData.vue";
+import {getRequestBodyTypes} from "@/views/scenario/service";
 
     const {t} = useI18n();
     const store = useStore<{ Interface: StateType }>();
@@ -86,14 +87,7 @@ import BodyFormData from "./Body-FormData.vue";
     })
     const editorOptions = ref(MonacoOptions)
 
-    const bodyTypes = ref([
-      {value: 'application/json', label: 'application/json'},
-      {value: 'application/xml', label: 'application/xml'},
-      {value: 'multipart/form-data', label: 'multipart/form-data'},
-      {value: 'application/x-www-form-urlencoded', label: 'application/x-www-form-urlencoded'},
-      {value: 'text/html', label: 'text/html'},
-      {value: 'text/plain', label: 'text/plain'},
-    ])
+    const bodyTypes = ref(getRequestBodyTypes())
 
     const getCodeLang = () => {
       console.log('interfaceData.value.bodyType', interfaceData.value.bodyType)

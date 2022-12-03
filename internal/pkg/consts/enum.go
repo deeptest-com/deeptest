@@ -127,7 +127,7 @@ const (
 	ContentTypeHTML HttpContentType = "text/html"
 	ContentTypeTEXT HttpContentType = "text/text"
 
-	ContentTypeFormData       HttpContentType = "application/form-data"
+	ContentTypeFormData       HttpContentType = "multipart/form-data"
 	ContentTypeFormUrlencoded HttpContentType = "application/x-www-form-urlencoded"
 
 	ContentTypeUnixDir HttpContentType = "httpd/unix-directory"

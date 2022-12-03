@@ -4,12 +4,12 @@
       <div class="params">
         <a-row v-for="(item, idx) in interfaceData.bodyFormData" :key="idx" type="flex" class="param">
           <a-col flex="1">
-            <a-input v-model:value="item.name" @change="onParamChange(idx)" class="dp-bg-input-transparent" />
+            <a-input v-model:value="item.name" @change="onFormDataChange(idx)" class="dp-bg-input-transparent" />
           </a-col>
           <a-col width="60px">
             <a-select
                 v-model:value="item.type"
-                @change="onParamChange(idx)"
+                @change="onFormDataChange(idx)"
                 :bordered="false"
             >
               <a-select-option value="text">Text</a-select-option>
@@ -17,7 +17,7 @@
             </a-select>
           </a-col>
           <a-col flex="1">
-            <a-input v-model:value="item.value" @change="onParamChange(idx)" class="dp-bg-input-transparent" />
+            <a-input v-model:value="item.value" @change="onFormDataChange(idx)" class="dp-bg-input-transparent" />
           </a-col>
 
           <a-col flex="80px" class="dp-right dp-icon-btn-container">

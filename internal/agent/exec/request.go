@@ -160,8 +160,9 @@ func ReplaceVariableValue(value string, variableMap map[string]interface{}) (ret
 	ret = value
 
 	for _, item := range variables {
-		old := fmt.Sprintf("${%s}", item)
-		new := fmt.Sprintf("%v", variableMap[item])
+		variablePlaceholde := fmt.Sprintf("{%s}", item)
+		old := variablePlaceholde
+		new := fmt.Sprintf("%v", variableMap[variablePlaceholde])
 
 		ret = strings.ReplaceAll(ret, old, new)
 	}

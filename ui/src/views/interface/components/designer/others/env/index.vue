@@ -254,14 +254,14 @@ export default defineComponent({
       envEditVisible.value = true
     }
 
-    const remove = (val) => {
-      console.log('remove', val)
-      store.dispatch('Environment/removeEnvironment', val.id)
+    const remove = (item) => {
+      console.log('remove', item)
+      store.dispatch('Environment/removeEnvironment', item)
     }
 
-    const copy = (val) => {
-      console.log('copy', val)
-      store.dispatch('Environment/copyEnvironment', val.id)
+    const copy = (item) => {
+      console.log('copy', item)
+      store.dispatch('Environment/copyEnvironment', item)
     }
 
     const envEditFinish = () => {

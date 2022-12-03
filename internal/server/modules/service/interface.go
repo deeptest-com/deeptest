@@ -2,6 +2,7 @@ package service
 
 import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	repo "github.com/aaronchen2k/deeptest/internal/server/modules/repo"
@@ -25,8 +26,11 @@ func (s *InterfaceService) Get(interfId uint) (interf model.Interface, err error
 	if interfId > 0 {
 		interf, err = s.InterfaceRepo.Get(interfId)
 
-		interf.Params, _ = s.InterfaceRepo.ListParams(interfId)
 		interf.Headers, _ = s.InterfaceRepo.ListHeaders(interfId)
+		interf.Params, _ = s.InterfaceRepo.ListParams(interfId)
+
+		interf.BodyFormData, _ = s.InterfaceRepo.ListBodyFormData(interfId)
+		interf.BodyFormUrlencoded, _ = s.InterfaceRepo.ListBodyFormUrlencoded(interfId)
 
 		interf.BasicAuth, _ = s.InterfaceRepo.GetBasicAuth(interfId)
 		interf.BearerToken, _ = s.InterfaceRepo.GetBearerToken(interfId)
@@ -34,8 +38,11 @@ func (s *InterfaceService) Get(interfId uint) (interf model.Interface, err error
 		interf.ApiKey, _ = s.InterfaceRepo.GetApiKey(interfId)
 	}
 
-	interf.Params = append(interf.Params, model.InterfaceParam{Name: "", Value: ""})
 	interf.Headers = append(interf.Headers, model.InterfaceHeader{Name: "", Value: ""})
+	interf.Params = append(interf.Params, model.InterfaceParam{Name: "", Value: ""})
+
+	interf.BodyFormData = append(interf.BodyFormData, model.BodyFormDataItem{Name: "", Value: "", Type: consts.FormDataTypeText})
+	interf.BodyFormUrlencoded = append(interf.BodyFormUrlencoded, model.BodyFormUrlEncodedItem{Name: "", Value: ""})
 
 	return
 }

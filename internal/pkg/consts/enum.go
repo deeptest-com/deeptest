@@ -56,8 +56,8 @@ func (e HttpMethod) String() string {
 type FormDataType string
 
 const (
-	EncodedTypeText HttpMethod = "text"
-	EncodedTypeFile HttpMethod = "file"
+	FormDataTypeText FormDataType = "text"
+	FormDataTypeFile FormDataType = "file"
 )
 
 func (e FormDataType) String() string {

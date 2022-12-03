@@ -104,7 +104,10 @@ export default defineComponent({
       console.log('selectMethod', val.key)
       interfaceData.value.method = val.key
     };
+
     const sendRequest = (e) => {
+      console.log('--- interface data', interfaceData.value)
+
       let data = JSON.parse(JSON.stringify(interfaceData.value))
       data = prepareDataForRequest(data)
       data.body = data.body.replaceAll('\n', '').replaceAll(' ', '')

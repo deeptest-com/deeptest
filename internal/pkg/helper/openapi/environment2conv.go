@@ -24,7 +24,7 @@ func genUrl(url string, variables map[string]*openapi3.ServerVariable) (ret stri
 	ret = strings.TrimRight(url, "/")
 
 	for name, svar := range variables {
-		ret = strings.ReplaceAll(ret, "{"+name+"}", svar.Default)
+		ret = strings.ReplaceAll(ret, "${"+name+"}", svar.Default)
 	}
 
 	return

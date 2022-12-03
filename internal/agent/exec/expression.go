@@ -87,7 +87,7 @@ func generateGovaluateParamsWithVariables(expression string, variableMap map[str
 	variables := GetVariablesInVariablePlaceholder(expression)
 
 	for _, variableName := range variables {
-		temp := fmt.Sprintf("{%s}", variableName)
+		temp := fmt.Sprintf("${%s}", variableName)
 		if val, ok := variableMap[temp]; ok {
 			ret[variableName] = val
 		}

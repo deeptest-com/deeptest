@@ -5,6 +5,7 @@ import (
 	"compress/gzip"
 	"compress/zlib"
 	"crypto/tls"
+	"encoding/json"
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils"
@@ -160,7 +161,7 @@ func posts(req v1.InvocationRequest, method consts.HttpMethod, readRespData bool
 	reqUrl := commUtils.RemoveLeftVariableSymbol(req.Url)
 	reqHeaders := req.Headers
 	reqParams := req.Params
-	reqData := req.Body
+	reqBody := req.Body
 
 	bodyType := req.BodyType
 	bodyFormData := req.BodyFormData
@@ -195,15 +196,21 @@ func posts(req v1.InvocationRequest, method consts.HttpMethod, readRespData bool
 		dataBytes = []byte(formData.Encode())
 
 	} else if strings.HasPrefix(bodyType.String(), consts.ContentTypeFormUrlencoded.String()) {
+		// post form data
 		formData := make(url.Values)
 		for _, item := range bodyFormUrlencoded {
 			formData.Add(item.Name, item.Value)
 		}
 		dataBytes = []byte(formData.Encode())
 
-	} else {
-		dataBytes = []byte(reqData)
+	} else if strings.HasPrefix(bodyType.String(), consts.ContentTypeJSON.String()) {
+		// post json
+		dataBytes, err = json.Marshal(reqBody)
+		if err != nil {
+			return
+		}
 
+		//dataBytes = []byte(reqBody)
 	}
 
 	if err != nil {
@@ -238,7 +245,12 @@ func posts(req v1.InvocationRequest, method consts.HttpMethod, readRespData bool
 		request.Header.Set(header.Name, header.Value)
 	}
 
-	request.Header.Set(consts.ContentType, bodyType.String())
+	if strings.HasPrefix(bodyType.String(), consts.ContentTypeJSON.String()) {
+		request.Header.Set(consts.ContentType, fmt.Sprintf("%s; charset=utf-8", bodyType))
+	} else {
+		request.Header.Set(consts.ContentType, bodyType.String())
+	}
+
 	addAuthorInfo(req, request)
 
 	startTime := time.Now().UnixMilli()

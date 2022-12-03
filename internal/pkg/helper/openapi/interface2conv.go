@@ -12,7 +12,7 @@ import (
 
 func ConvertPathsToInterfaces(doc *openapi3.T) (interfaces []model.Interface, err error) {
 	for pth, item := range doc.Paths {
-		url := "{server}"
+		url := "${server}"
 		url = path.Join(url, pth)
 
 		interf, _ := convertOperations(url, item)

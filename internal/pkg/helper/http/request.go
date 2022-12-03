@@ -161,7 +161,10 @@ func posts(req v1.InvocationRequest, method consts.HttpMethod, readRespData bool
 	reqHeaders := req.Headers
 	reqParams := req.Params
 	reqData := req.Body
+
 	bodyType := req.BodyType
+	bodyFormData := req.BodyFormData
+	bodyFormUrlencoded := req.BodyFormUrlencoded
 
 	if _consts.Verbose {
 		_logUtils.Info(reqUrl)
@@ -184,14 +187,23 @@ func posts(req v1.InvocationRequest, method consts.HttpMethod, readRespData bool
 
 	var dataBytes []byte
 
-	if strings.HasPrefix(bodyType.String(), "application/x-www-form-urlencoded") { // post form data
+	if strings.HasPrefix(bodyType.String(), consts.ContentTypeFormData.String()) {
 		formData := make(url.Values)
-		for _, param := range reqParams {
-			formData.Add(param.Name, param.Value)
+		for _, item := range bodyFormData {
+			formData.Add(item.Name, item.Value)
 		}
 		dataBytes = []byte(formData.Encode())
+
+	} else if strings.HasPrefix(bodyType.String(), consts.ContentTypeFormUrlencoded.String()) {
+		formData := make(url.Values)
+		for _, item := range bodyFormUrlencoded {
+			formData.Add(item.Name, item.Value)
+		}
+		dataBytes = []byte(formData.Encode())
+
 	} else {
 		dataBytes = []byte(reqData)
+
 	}
 
 	if err != nil {
@@ -216,6 +228,7 @@ func posts(req v1.InvocationRequest, method consts.HttpMethod, readRespData bool
 			queryParams.Add(arr[0], arr[1])
 		}
 	}
+
 	for _, param := range reqParams {
 		queryParams.Add(param.Name, param.Value)
 	}

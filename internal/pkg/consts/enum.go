@@ -53,14 +53,14 @@ func (e HttpMethod) String() string {
 	return string(e)
 }
 
-type FormUrlEncodedType string
+type FormDataType string
 
 const (
 	EncodedTypeText HttpMethod = "text"
 	EncodedTypeFile HttpMethod = "file"
 )
 
-func (e FormUrlEncodedType) String() string {
+func (e FormDataType) String() string {
 	return string(e)
 }
 

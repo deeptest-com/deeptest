@@ -63,11 +63,11 @@ func (InterfaceParam) TableName() string {
 
 type BodyFormDataItem struct {
 	BaseModel
-	Name        string `json:"name"`
-	Value       string `json:"value"`
-	Type        string `json:"type"`
-	Desc        string `json:"desc"`
-	InterfaceId uint   `json:"interfaceId"`
+	Name        string              `json:"name"`
+	Value       string              `json:"value"`
+	Type        consts.FormDataType `json:"type"`
+	Desc        string              `json:"desc"`
+	InterfaceId uint                `json:"interfaceId"`
 }
 
 func (BodyFormDataItem) TableName() string {
@@ -76,11 +76,10 @@ func (BodyFormDataItem) TableName() string {
 
 type BodyFormUrlEncodedItem struct {
 	BaseModel
-	Name        string                    `json:"name"`
-	Value       string                    `json:"value"`
-	Desc        string                    `json:"desc"`
-	Type        consts.FormUrlEncodedType `json:"type"`
-	InterfaceId uint                      `json:"interfaceId"`
+	Name        string `json:"name"`
+	Value       string `json:"value"`
+	Desc        string `json:"desc"`
+	InterfaceId uint   `json:"interfaceId"`
 }
 
 func (BodyFormUrlEncodedItem) TableName() string {

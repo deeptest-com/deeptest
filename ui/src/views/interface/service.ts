@@ -260,14 +260,25 @@ export async function clearShareVar(interfaceId: number): Promise<any> {
 
 // helper
 export function prepareDataForRequest(data: any) {
+    if (data.headers) {
+        data.headers = data.headers.filter((item) => {
+            return !!item.name
+        })
+    }
+
     if (data.params) {
         data.params = data.params.filter((item) => {
             return !!item.name
         })
     }
 
-    if (data.headers) {
-        data.headers = data.headers.filter((item) => {
+    if (data.bodyFormData) {
+        data.bodyFormData = data.bodyFormData.filter((item) => {
+            return !!item.name
+        })
+    }
+    if (data.bodyFormUrlencoded) {
+        data.bodyFormUrlencoded = data.bodyFormUrlencoded.filter((item) => {
             return !!item.name
         })
     }

@@ -116,6 +116,7 @@ export default defineComponent({
 
     const save = (e) => {
       let data = JSON.parse(JSON.stringify(interfaceData.value))
+      console.log('save', data)
       data = prepareDataForRequest(data)
       console.log('save', data)
 

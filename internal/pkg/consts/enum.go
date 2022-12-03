@@ -53,6 +53,17 @@ func (e HttpMethod) String() string {
 	return string(e)
 }
 
+type FormUrlEncodedType string
+
+const (
+	EncodedTypeText HttpMethod = "text"
+	EncodedTypeFile HttpMethod = "file"
+)
+
+func (e FormUrlEncodedType) String() string {
+	return string(e)
+}
+
 type HttpRespCode int
 
 const (

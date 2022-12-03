@@ -43,41 +43,41 @@
     </div>
 
     <div class="body">
-      <MonacoEditor
-          class="editor"
-          v-model:value="interfaceData.body"
-          :language="codeLang"
-          theme="vs"
-          :options="editorOptions"
-          @change="editorChange"
-      />
+      <div v-if="interfaceData.bodyType === 'multipart/form-data'">
+        <BodyFormData></BodyFormData>
+      </div>
+      <div v-if="interfaceData.bodyType === 'application/x-www-form-urlencoded'">
+        <BodyFormUrlencoded></BodyFormUrlencoded>
+      </div>
+
+      <div v-else>
+        <MonacoEditor
+            class="editor"
+            v-model:value="interfaceData.body"
+            :language="codeLang"
+            theme="vs"
+            :options="editorOptions"
+            @change="editorChange"
+        />
+      </div>
     </div>
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import {computed, ComputedRef, defineComponent, PropType, Ref, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import { QuestionCircleOutlined, DeleteOutlined, ClearOutlined, ImportOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons-vue';
 import {StateType} from "@/views/interface/store";
 import {isInArray} from "@/utils/array";
-import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
 import {MonacoOptions} from "@/utils/const";
 import {Interface} from "@/views/interface/data";
 import {getCodeLangByType} from "@/views/interface/service";
+import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
+import BodyFormUrlencoded from "./Body-FormUrlencoded.vue";
+import BodyFormData from "./Body-FormData.vue";
 
-export default defineComponent({
-  name: 'RequestBody',
-  components: {
-    MonacoEditor,
-    QuestionCircleOutlined, DeleteOutlined, ClearOutlined, ImportOutlined,
-  },
-
-  computed: {
-  },
-
-  setup(props) {
     const {t} = useI18n();
     const store = useStore<{ Interface: StateType }>();
     const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
@@ -89,8 +89,8 @@ export default defineComponent({
     const bodyTypes = ref([
       {value: 'application/json', label: 'application/json'},
       {value: 'application/xml', label: 'application/xml'},
-      {value: 'application/x-www-form-urlencoded', label: 'application/x-www-form-urlencoded'},
       {value: 'multipart/form-data', label: 'multipart/form-data'},
+      {value: 'application/x-www-form-urlencoded', label: 'application/x-www-form-urlencoded'},
       {value: 'text/html', label: 'text/html'},
       {value: 'text/plain', label: 'text/plain'},
     ])
@@ -103,16 +103,6 @@ export default defineComponent({
     const editorChange = (newScriptCode) => {
       interfaceData.value.body = newScriptCode;
     }
-
-    return {
-      interfaceData,
-      editorOptions,
-      bodyTypes,
-      codeLang,
-      editorChange,
-    }
-  }
-})
 
 </script>
 

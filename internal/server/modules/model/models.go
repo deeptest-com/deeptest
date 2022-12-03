@@ -20,6 +20,8 @@ var (
 
 		&Interface{},
 		&InterfaceParam{},
+		&BodyFormDataItem{},
+		&BodyFormUrlEncodedItem{},
 		&InterfaceHeader{},
 		&InterfaceBasicAuth{},
 		&InterfaceBearerToken{},

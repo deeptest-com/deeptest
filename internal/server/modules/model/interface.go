@@ -21,15 +21,19 @@ type Interface struct {
 
 	Slots iris.Map `gorm:"-" json:"slots"`
 
-	Url               string                 `json:"url"`
-	Method            consts.HttpMethod      `gorm:"default:GET" json:"method"`
-	Params            []InterfaceParam       `gorm:"-" json:"params"`
-	Headers           []InterfaceHeader      `gorm:"-" json:"headers"`
-	Body              string                 `gorm:"default:{}" json:"body"`
-	BodyType          consts.HttpContentType `gorm:"default:''" json:"bodyType"`
-	AuthorizationType string                 `gorm:"default:''" json:"authorizationType"`
-	PreRequestScript  string                 `gorm:"default:''" json:"preRequestScript"`
-	ValidationScript  string                 `gorm:"default:''" json:"validationScript"`
+	Url     string            `json:"url"`
+	Method  consts.HttpMethod `gorm:"default:GET" json:"method"`
+	Params  []InterfaceParam  `gorm:"-" json:"params"`
+	Headers []InterfaceHeader `gorm:"-" json:"headers"`
+
+	Body               string                   `gorm:"default:{}" json:"body"`
+	BodyFormData       []BodyFormDataItem       `gorm:"-" json:"bodyFormData"`
+	BodyFormUrlencoded []BodyFormUrlEncodedItem `gorm:"-" json:"bodyFormUrlencoded"`
+	BodyType           consts.HttpContentType   `gorm:"default:''" json:"bodyType"`
+
+	AuthorizationType string `gorm:"default:''" json:"authorizationType"`
+	PreRequestScript  string `gorm:"default:''" json:"preRequestScript"`
+	ValidationScript  string `gorm:"default:''" json:"validationScript"`
 
 	BasicAuth   InterfaceBasicAuth   `gorm:"-" json:"basicAuth"`
 	BearerToken InterfaceBearerToken `gorm:"-" json:"bearerToken"`
@@ -47,14 +51,40 @@ func (Interface) TableName() string {
 type InterfaceParam struct {
 	BaseModel
 	Name        string `json:"name"`
-	Desc        string `json:"desc"`
 	Value       string `json:"value"`
 	Type        string `json:"type"`
+	Desc        string `json:"desc"`
 	InterfaceId uint   `json:"interfaceId"`
 }
 
 func (InterfaceParam) TableName() string {
 	return "biz_interface_param"
+}
+
+type BodyFormDataItem struct {
+	BaseModel
+	Name        string `json:"name"`
+	Value       string `json:"value"`
+	Type        string `json:"type"`
+	Desc        string `json:"desc"`
+	InterfaceId uint   `json:"interfaceId"`
+}
+
+func (BodyFormDataItem) TableName() string {
+	return "biz_interface_form_data_item"
+}
+
+type BodyFormUrlEncodedItem struct {
+	BaseModel
+	Name        string                    `json:"name"`
+	Value       string                    `json:"value"`
+	Desc        string                    `json:"desc"`
+	Type        consts.FormUrlEncodedType `json:"type"`
+	InterfaceId uint                      `json:"interfaceId"`
+}
+
+func (BodyFormUrlEncodedItem) TableName() string {
+	return "biz_interface_form_urlencoded_item"
 }
 
 type InterfaceHeader struct {

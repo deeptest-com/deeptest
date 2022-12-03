@@ -8,6 +8,8 @@ export interface Interface {
     params: Param[];
 
     body: string;
+    bodyFormUrlencoded: BodyFormUrlEncodedItem[];
+    bodyFormData: BodyFormDataItem[];
     bodyType: string;
 
     authorizationType: string
@@ -33,6 +35,18 @@ export interface Response {
 }
 
 export interface Param {
+    name: string;
+    value: any;
+    disabled: boolean;
+}
+
+export interface BodyFormDataItem {
+    name: string;
+    value: any;
+    type: string;
+    disabled: boolean;
+}
+export interface BodyFormUrlEncodedItem {
     name: string;
     value: any;
     disabled: boolean;

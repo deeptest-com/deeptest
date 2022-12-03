@@ -221,7 +221,10 @@ const StoreModel: ModuleType = {
             if (payload.isDir) {
                 commit('setInterface', {
                     bodyType: 'application/json',
-                    headers: [{name:'', value:''}], params: [{name:'', value:''}],
+                    headers: [{name:'', value:''}],
+                    params: [{name:'', value:''}],
+                    bodyFormData: [{name:'', value:'', type: 'text'}],
+                    bodyFormUrlencoded: [{name:'', value:''}],
                 });
                 commit('setResponse', {headers: [], contentLang: 'html', content: ''});
                 return true;
@@ -232,6 +235,8 @@ const StoreModel: ModuleType = {
                 const {data} = response;
                 data.headers.push({name:'', value:''})
                 data.params.push({name:'', value:''})
+                data.bodyFormData.push({name:'', value:'', type: 'text'})
+                data.bodyFormUrlencoded.push({name:'', value:''})
 
                 commit('setInterface', data);
                 return true;

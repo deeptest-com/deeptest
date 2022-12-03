@@ -83,6 +83,8 @@ func (r *InterfaceRepo) GetDetail(interfId uint) (interf model.Interface, err er
 
 		interf.Params, _ = r.ListParams(interfId)
 		interf.Headers, _ = r.ListHeaders(interfId)
+		interf.BodyFormData, _ = r.ListBodyFormData(interfId)
+		interf.BodyFormUrlencoded, _ = r.ListBodyFormUrlencoded(interfId)
 
 		interf.BasicAuth, _ = r.GetBasicAuth(interfId)
 		interf.BearerToken, _ = r.GetBearerToken(interfId)
@@ -106,6 +108,16 @@ func (r *InterfaceRepo) Update(interf model.Interface) (err error) {
 		}
 
 		err = r.UpdateParams(interf.ID, interf.Params)
+		if err != nil {
+			return err
+		}
+
+		err = r.UpdateBodyFormData(interf.ID, interf.BodyFormData)
+		if err != nil {
+			return err
+		}
+
+		err = r.UpdateBodyFormUrlencoded(interf.ID, interf.BodyFormUrlencoded)
 		if err != nil {
 			return err
 		}
@@ -148,6 +160,23 @@ func (r *InterfaceRepo) UpdateName(id int, name string) (err error) {
 	return
 }
 
+func (r *InterfaceRepo) UpdateHeaders(id uint, headers []model.InterfaceHeader) (err error) {
+	err = r.RemoveHeaders(id)
+
+	if len(headers) == 0 {
+		return
+	}
+
+	for idx, _ := range headers {
+		headers[idx].ID = 0
+		headers[idx].InterfaceId = id
+	}
+
+	err = r.DB.Create(&headers).Error
+
+	return
+}
+
 func (r *InterfaceRepo) UpdateParams(id uint, params []model.InterfaceParam) (err error) {
 	err = r.RemoveParams(id)
 
@@ -164,19 +193,36 @@ func (r *InterfaceRepo) UpdateParams(id uint, params []model.InterfaceParam) (er
 
 	return
 }
-func (r *InterfaceRepo) UpdateHeaders(id uint, headers []model.InterfaceHeader) (err error) {
-	err = r.RemoveHeaders(id)
 
-	if len(headers) == 0 {
+func (r *InterfaceRepo) UpdateBodyFormData(id uint, items []model.BodyFormDataItem) (err error) {
+	err = r.RemoveBodyFormData(id)
+
+	if len(items) == 0 {
 		return
 	}
 
-	for idx, _ := range headers {
-		headers[idx].ID = 0
-		headers[idx].InterfaceId = id
+	for idx, _ := range items {
+		items[idx].ID = 0
+		items[idx].InterfaceId = id
 	}
 
-	err = r.DB.Create(&headers).Error
+	err = r.DB.Create(&items).Error
+
+	return
+}
+func (r *InterfaceRepo) UpdateBodyFormUrlencoded(id uint, items []model.BodyFormUrlEncodedItem) (err error) {
+	err = r.RemoveBodyFormUrlencoded(id)
+
+	if len(items) == 0 {
+		return
+	}
+
+	for idx, _ := range items {
+		items[idx].ID = 0
+		items[idx].InterfaceId = id
+	}
+
+	err = r.DB.Create(&items).Error
 
 	return
 }
@@ -218,13 +264,6 @@ func (r *InterfaceRepo) UpdateApiKey(id uint, payload model.InterfaceApiKey) (er
 	return
 }
 
-func (r *InterfaceRepo) RemoveParams(id uint) (err error) {
-	err = r.DB.
-		Where("interface_id = ?", id).
-		Delete(&model.InterfaceParam{}, "").Error
-
-	return
-}
 func (r *InterfaceRepo) RemoveHeaders(id uint) (err error) {
 	err = r.DB.
 		Where("interface_id = ?", id).
@@ -232,6 +271,30 @@ func (r *InterfaceRepo) RemoveHeaders(id uint) (err error) {
 
 	return
 }
+
+func (r *InterfaceRepo) RemoveParams(id uint) (err error) {
+	err = r.DB.
+		Where("interface_id = ?", id).
+		Delete(&model.InterfaceParam{}, "").Error
+
+	return
+}
+
+func (r *InterfaceRepo) RemoveBodyFormData(id uint) (err error) {
+	err = r.DB.
+		Where("interface_id = ?", id).
+		Delete(&model.BodyFormDataItem{}, "").Error
+
+	return
+}
+func (r *InterfaceRepo) RemoveBodyFormUrlencoded(id uint) (err error) {
+	err = r.DB.
+		Where("interface_id = ?", id).
+		Delete(&model.BodyFormUrlEncodedItem{}, "").Error
+
+	return
+}
+
 func (r *InterfaceRepo) GetBasicAuth(id uint) (po model.InterfaceBasicAuth, err error) {
 	err = r.DB.
 		Where("interface_id = ?", id).
@@ -328,6 +391,16 @@ func (r *InterfaceRepo) SetOAuth2AccessToken(token string, interfaceId int) (err
 	return
 }
 
+func (r *InterfaceRepo) ListHeaders(interfaceId uint) (pos []model.InterfaceHeader, err error) {
+	err = r.DB.
+		Where("interface_id=?", interfaceId).
+		Where("NOT deleted").
+		Order("id ASC").
+		Find(&pos).Error
+
+	return
+}
+
 func (r *InterfaceRepo) ListParams(interfaceId uint) (pos []model.InterfaceParam, err error) {
 	err = r.DB.
 		Where("interface_id=?", interfaceId).
@@ -337,7 +410,17 @@ func (r *InterfaceRepo) ListParams(interfaceId uint) (pos []model.InterfaceParam
 	return
 }
 
-func (r *InterfaceRepo) ListHeaders(interfaceId uint) (pos []model.InterfaceHeader, err error) {
+func (r *InterfaceRepo) ListBodyFormData(interfaceId uint) (pos []model.BodyFormDataItem, err error) {
+	err = r.DB.
+		Where("interface_id=?", interfaceId).
+		Where("NOT deleted").
+		Order("id ASC").
+		Find(&pos).Error
+
+	return
+}
+
+func (r *InterfaceRepo) ListBodyFormUrlencoded(interfaceId uint) (pos []model.BodyFormUrlEncodedItem, err error) {
 	err = r.DB.
 		Where("interface_id=?", interfaceId).
 		Where("NOT deleted").

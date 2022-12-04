@@ -153,12 +153,12 @@ onMounted(() => {
   overflow-y: auto;
 
   .flow {
-    line-height: 30px;
+    line-height: 32px;
     input {
       width: calc(100% - 46px)
     }
     .filename {
-      padding-left: 10px;
+      padding: 0 10px;
     }
     .ant-btn {
       position: absolute;

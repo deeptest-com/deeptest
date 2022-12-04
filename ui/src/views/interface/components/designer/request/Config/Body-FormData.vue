@@ -6,7 +6,7 @@
           <a-col flex="1">
             <a-input v-model:value="item.name" @change="onFormDataChange(idx)" class="dp-bg-input-transparent" />
           </a-col>
-          <a-col width="60px">
+          <a-col width="72px">
             <a-select
                 v-model:value="item.type"
                 @change="onFormDataChange(idx)"
@@ -18,18 +18,12 @@
           </a-col>
 
           <a-col flex="2" class="flow">
-            <a-input v-model:value="item.value" class="dp-bg-input-transparent" />
+            <a-input v-if="item.type!=='file'" v-model:value="item.value" class="dp-bg-input-transparent" />
+            <span v-if="item.type==='file'" class="filename">{{getFileName(item.value)}}</span>
 
-            <a-input-search
-                v-if="item.type === 'file'"
-                v-model:value="item.value"
-                @search="selectFile(idx)">
-              <template #enterButton>
-                <a-button>
-                  <UploadOutlined />
-                </a-button>
-              </template>
-            </a-input-search>
+            <a-button v-if="item.type==='file'" @click="selectFile(idx)">
+              <UploadOutlined />
+            </a-button>
           </a-col>
 
           <a-col flex="80px" class="dp-right dp-icon-btn-container">
@@ -56,11 +50,6 @@
         </a-row>
       </div>
     </div>
-
-    <input ref="uploadRef"
-           @change="getUploadFile($event)"
-           type="file"
-           style="display:none">
 
   </div>
 </template>
@@ -125,7 +114,7 @@ if (isElectron.value && !ipcRenderer) {
 
   ipcRenderer.on(settings.electronMsgReplay, (event, data) => {
     console.log('from electron: ', data)
-    interfaceData.value.bodyFormData[selectedItemIndex].value = data.file
+    interfaceData.value.bodyFormData[selectedItemIndex].value = data.filepath
   })
 }
 
@@ -148,6 +137,10 @@ const getUploadFile = (e) => {
   console.log('getUploadFile',  e.target.files[0])
 }
 
+const getFileName = (path) => {
+  return path.replace(/^.*[\\\\/]/, '')
+}
+
 onMounted(() => {
   console.log('onMounted', uploadRef.value)
 })
@@ -159,14 +152,19 @@ onMounted(() => {
   height: 100%;
   overflow-y: auto;
 
-  .flow .ant-input-search {
-    position: absolute;
-    right: 0px;
-    width: 46px;
+  .flow {
+    line-height: 30px;
     input {
-      display: none;
+      width: calc(100% - 46px)
+    }
+    .filename {
+      padding-left: 10px;
     }
     .ant-btn {
+      position: absolute;
+      right: 0;
+      z-index: 99;
+
       background: transparent;
       color: rgba(0, 0, 0, 0.65);
       border-color: #d9d9d9;

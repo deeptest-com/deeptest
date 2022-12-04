@@ -44,7 +44,7 @@ export interface BodyFormDataItem {
     name: string;
     value: any;
     type: string;
-    files: string[];
+    filename: string;
     disabled: boolean;
 }
 export interface BodyFormUrlEncodedItem {

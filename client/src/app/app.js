@@ -186,7 +186,9 @@ export class DeepTestApp {
         const result = await dialog.showOpenDialog({properties: ['openFile']})
 
         if (result.filePaths && result.filePaths.length > 0) {
-            event.reply(electronMsgReplay, {file: result.filePaths[0]});
+            event.reply(electronMsgReplay, {
+                filepath: result.filePaths[0],
+            });
         }
     }
 

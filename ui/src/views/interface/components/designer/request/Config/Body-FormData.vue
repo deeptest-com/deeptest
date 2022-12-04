@@ -139,7 +139,7 @@ const selectFile = (index) => {
   } else {
     notification.warn({
       key: NotificationKeyCommon,
-      message: `仅支持在客户端下上传文件`,
+      message: `请使用客户端上传文件`,
     });
   }
 }

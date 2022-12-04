@@ -79,24 +79,24 @@ import BodyFormUrlencoded from "./Body-FormUrlencoded.vue";
 import BodyFormData from "./Body-FormData.vue";
 import {getRequestBodyTypes} from "@/views/scenario/service";
 
-    const {t} = useI18n();
-    const store = useStore<{ Interface: StateType }>();
-    const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
-    const codeLang = computed(() => {
-      return getCodeLang()
-    })
-    const editorOptions = ref(MonacoOptions)
+const {t} = useI18n();
+const store = useStore<{ Interface: StateType }>();
+const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
+const codeLang = computed(() => {
+  return getCodeLang()
+})
+const editorOptions = ref(MonacoOptions)
 
-    const bodyTypes = ref(getRequestBodyTypes())
+const bodyTypes = ref(getRequestBodyTypes())
 
-    const getCodeLang = () => {
-      console.log('interfaceData.value.bodyType', interfaceData.value.bodyType)
-      return getCodeLangByType(interfaceData.value.bodyType)
-    }
+const getCodeLang = () => {
+  console.log('interfaceData.value.bodyType', interfaceData.value.bodyType)
+  return getCodeLangByType(interfaceData.value.bodyType)
+}
 
-    const editorChange = (newScriptCode) => {
-      interfaceData.value.body = newScriptCode;
-    }
+const editorChange = (newScriptCode) => {
+  interfaceData.value.body = newScriptCode;
+}
 
 </script>
 

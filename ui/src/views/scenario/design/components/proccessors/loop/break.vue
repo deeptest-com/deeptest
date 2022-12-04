@@ -10,7 +10,7 @@
 
           <a-form-item label="跳出如果满足">
             <a-input v-model:value="modelRef.breakIfExpression"/>
-            <div class="dp-input-tip">表达式支持四则运算，可使用形如{name}的变量</div>
+            <div class="dp-input-tip">表达式支持四则运算，可使用形如${name}的变量</div>
           </a-form-item>
 
           <a-form-item :wrapper-col="{ span: 16, offset: 2 }">

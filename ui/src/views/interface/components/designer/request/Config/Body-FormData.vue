@@ -16,8 +16,20 @@
               <a-select-option value="file">File</a-select-option>
             </a-select>
           </a-col>
-          <a-col flex="1">
-            <a-input v-model:value="item.value" @change="onFormDataChange(idx)" class="dp-bg-input-transparent" />
+
+          <a-col flex="2" class="flow">
+            <a-input v-model:value="item.value" class="dp-bg-input-transparent" />
+
+            <a-input-search
+                v-if="item.type === 'file'"
+                v-model:value="item.value"
+                @search="selectFile(idx)">
+              <template #enterButton>
+                <a-button>
+                  <UploadOutlined />
+                </a-button>
+              </template>
+            </a-input-search>
           </a-col>
 
           <a-col flex="80px" class="dp-right dp-icon-btn-container">
@@ -44,20 +56,35 @@
         </a-row>
       </div>
     </div>
+
+    <input ref="uploadRef"
+           @change="getUploadFile($event)"
+           type="file"
+           style="display:none">
+
   </div>
 </template>
 
 <script setup lang="ts">
-import {computed, ComputedRef, defineComponent, PropType, Ref, ref} from "vue";
+
+import {computed, ComputedRef, defineComponent, onMounted, PropType, Ref, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
-import { QuestionCircleOutlined, DeleteOutlined, PlusOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons-vue';
+import {
+  CheckCircleOutlined, CloseCircleOutlined,  UploadOutlined, DeleteOutlined, PlusOutlined
+} from '@ant-design/icons-vue';
 import {StateType} from "@/views/interface/store";
 import {Param, Interface, BodyFormDataItem} from "@/views/interface/data";
+import {notification} from "ant-design-vue";
+import {NotificationKeyCommon} from "@/utils/const";
+import settings from "@/config/settings";
 
 const {t} = useI18n();
 const store = useStore<{ Interface: StateType }>();
 const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
+
+let uploadRef = ref()
+const isElectron = ref(!!window.require)
 
 const onFormDataChange = (idx) => {
   console.log('onFormDataChange', idx)
@@ -87,14 +114,69 @@ const remove = (idx) => {
 }
 const insert = (idx) => {
   console.log('insert')
-  interfaceData.value.bodyFormData.splice(idx+1, 0, {} as BodyFormDataItem)
+  interfaceData.value.bodyFormData.splice(idx + 1, 0, {} as BodyFormDataItem)
 }
+
+let selectedItemIndex = -1
+
+let ipcRenderer = undefined as any
+if (isElectron.value && !ipcRenderer) {
+  ipcRenderer = window.require('electron').ipcRenderer
+
+  ipcRenderer.on(settings.electronMsgReplay, (event, data) => {
+    console.log('from electron: ', data)
+    interfaceData.value.bodyFormData[selectedItemIndex].value = data.file
+  })
+}
+
+const selectFile = (index) => {
+  console.log('selectFile', index)
+  selectedItemIndex = index
+
+  if (isElectron.value) {
+    const data = {act: 'uploadFile'} as any
+    ipcRenderer.send(settings.electronMsg, data)
+  } else {
+    notification.warn({
+      key: NotificationKeyCommon,
+      message: `仅支持在客户端下上传文件`,
+    });
+  }
+}
+
+const getUploadFile = (e) => {
+  console.log('getUploadFile',  e.target.files[0])
+}
+
+onMounted(() => {
+  console.log('onMounted', uploadRef.value)
+})
 
 </script>
 
-<style lang="less" scoped>
+<style lang="less" >
 .formdata-main {
   height: 100%;
+  overflow-y: auto;
+
+  .flow .ant-input-search {
+    position: absolute;
+    right: 0px;
+    width: 46px;
+    input {
+      display: none;
+    }
+    .ant-btn {
+      background: transparent;
+      color: rgba(0, 0, 0, 0.65);
+      border-color: #d9d9d9;
+      &:hover, &:active {
+        background: transparent;
+        color: rgba(0, 0, 0, 0.65);
+        border-color: #d9d9d9;
+      }
+    }
+  }
 }
 
 </style>

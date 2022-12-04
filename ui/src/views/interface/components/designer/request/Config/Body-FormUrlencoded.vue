@@ -84,6 +84,7 @@ const insert = (idx) => {
 <style lang="less" scoped>
 .formurlencoded-main {
   height: 100%;
+  overflow-y: auto;
 }
 
 </style>

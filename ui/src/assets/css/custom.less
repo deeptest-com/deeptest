@@ -62,144 +62,153 @@
     background-color: transparent;
     border: 0;
 }
+.dp-bg-button-transparent {
+    background: transparent !important;
+
+    &:active, &:hover {
+        background: transparent !important;
+        border-color: #d9d9d9 !important;
+    }
+
+}
 .dp-dropdown {
-    &.ant-dropdown-button {
+&.ant-dropdown-button {
+    width: 100%;
+    .ant-btn:first-child {
         width: 100%;
-        .ant-btn:first-child {
-            width: 100%;
-        }
     }
 }
+}
 .dp-icon-btn-container {
-    line-height: 32px;
+line-height: 32px;
 }
 .dp-icon-btn {
-    padding: 3px 5px;
-    cursor: pointer !important;
+padding: 3px 5px;
+cursor: pointer !important;
 }
 .dp-trans-80 {
-    opacity: 0.6;
+opacity: 0.6;
 }
 
 .dp-input-tip {
-    padding-top: 8px;
-    font-size: 13px;
+padding-top: 8px;
+font-size: 13px;
 }
 .dp-tip-small {
-    padding-top: 8px;
-    font-size: 12px;
-    line-height: 12px;
-    .ant-tooltip-inner {
-        padding: 6px 8px;
-        min-height: 24px;
-    }
+padding-top: 8px;
+font-size: 12px;
+line-height: 12px;
+.ant-tooltip-inner {
+    padding: 6px 8px;
+    min-height: 24px;
+}
 }
 
 .dp-table {
-    td {
-    }
-    .ant-btn-link {
-        padding: 0px 5px;
-    }
+td {
+}
+.ant-btn-link {
+    padding: 0px 5px;
+}
 }
 
 .dp-splits-v {
-    display: flex;
+display: flex;
+height: 100%;
+
+.left {
     height: 100%;
+}
 
-    .left {
-        height: 100%;
-    }
-
-    .right {
-        height: 100%;
-        overflow-y: auto;
-        overflow-x: hidden;
-    }
+.right {
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
 }
 .splitter {
-    min-width: 1px;
-    cursor: col-resize;
+min-width: 1px;
+cursor: col-resize;
 
-    height: 100%;
-    background-color: var(--splitter-color, #d9d9d9);
-    position: relative;
+height: 100%;
+background-color: var(--splitter-color, #d9d9d9);
+position: relative;
 }
 
 .splitter:before {
-    content: ' ';
-    position: absolute;
-    display: block;
-    left: 0;
-    top: 0;
-    transition: opacity 0.4s;
-    background-color: var(--splitter-hover-color, rgba(0, 0, 0, .05));
-    opacity: 0;
-    z-index: 1;
+content: ' ';
+position: absolute;
+display: block;
+left: 0;
+top: 0;
+transition: opacity 0.4s;
+background-color: var(--splitter-hover-color, rgba(0, 0, 0, .05));
+opacity: 0;
+z-index: 1;
 }
 
 .splitter:hover:before {
-    opacity: 1;
+opacity: 1;
 }
 
 .dp-splits-v>.splitter:before {
-    left: calc(0px - var(--splitter-hover-size, 6px) / 2);
-    right: calc(0px - var(--splitter-hover-size, 6px) / 2);
-    height: 100%;
+left: calc(0px - var(--splitter-hover-size, 6px) / 2);
+right: calc(0px - var(--splitter-hover-size, 6px) / 2);
+height: 100%;
 }
 
 .dp-splits-h>.splitter:before {
-    top: calc(0px - var(--splitter-hover-size, 6px) / 2);
-    bottom: calc(0px - var(--splitter-hover-size, 6px) / 2);
-    width: 100%;
+top: calc(0px - var(--splitter-hover-size, 6px) / 2);
+bottom: calc(0px - var(--splitter-hover-size, 6px) / 2);
+width: 100%;
 }
 
 .dp-full-modal {
-    .ant-modal {
-        max-width: 100%;
-        top: 0;
-        padding-bottom: 0;
-        margin: 0;
-    }
-    .ant-modal-content {
-        display: flex;
-        flex-direction: column;
-        height: calc(100vh);
-    }
-    .ant-modal-body {
-        flex: 1;
-    }
+.ant-modal {
+    max-width: 100%;
+    top: 0;
+    padding-bottom: 0;
+    margin: 0;
+}
+.ant-modal-content {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh);
+}
+.ant-modal-body {
+    flex: 1;
+}
 }
 
 .dp-param-grid {
-    .head {
+.head {
+    padding: 2px 3px;
+    border-bottom: 1px solid #d9d9d9;
+}
+.params {
+    height: calc(100% - 28px);
+    overflow-y: auto;
+    .param {
         padding: 2px 3px;
         border-bottom: 1px solid #d9d9d9;
-    }
-    .params {
-        height: calc(100% - 28px);
-        overflow-y: auto;
-        .param {
-            padding: 2px 3px;
-            border-bottom: 1px solid #d9d9d9;
 
-            .ant-col {
-                border-right: 1px solid #d9d9d9;
+        .ant-col {
+            border-right: 1px solid #d9d9d9;
 
-                input {
-                    margin-top: 1px;
-                }
+            input {
+                margin-top: 1px;
             }
         }
     }
 }
+}
 
 .editor-wrapper {
-    height: 100%;
-    overflow-x: hidden;
-    overflow-y: hidden;
+height: 100%;
+overflow-x: hidden;
+overflow-y: hidden;
 
-    & > div {
-        height: 100%;
-    }
+& > div {
+    height: 100%;
+}
 }

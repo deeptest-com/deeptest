@@ -81,6 +81,9 @@ export class DeepTestApp {
             if (arg.act == 'loadSpec') {
                 this.loadSpec(event, arg)
                 return
+            } else if (arg.act == 'uploadFile') {
+                this.uploadFile(event, arg)
+                return
             }
 
             switch (arg) {
@@ -176,6 +179,15 @@ export class DeepTestApp {
             // 在 OS X 系统上，可能存在所有应用窗口关闭了，但是程序还没关闭，此时如果收到激活应用请求，需要重新打开应用窗口并创建应用菜单。
             this.openOrCreateWindow()
         });
+    }
+
+    // upload file
+    async uploadFile(event, arg) {
+        const result = await dialog.showOpenDialog({properties: ['openFile']})
+
+        if (result.filePaths && result.filePaths.length > 0) {
+            event.reply(electronMsgReplay, {file: result.filePaths[0]});
+        }
     }
 
     // load spec

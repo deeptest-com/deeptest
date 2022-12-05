@@ -25,8 +25,8 @@ redis:
   pool-size: 0
 system:
   level: debug
-  serverAddress: 127.0.0.1:8085
-  agentAddress: 127.0.0.1:8086
+  serverAddress: 0.0.0.0:8085
+  agentAddress: 0.0.0.0:8086
   static-prefix: /upload
   static-path: /static/upload
   web-path: ./static/dist

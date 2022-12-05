@@ -20,3 +20,12 @@ p2o xdoc/openapi/postman/v21/SimplePost.json -f xdoc/openapi/out/simple-post-v21
 
 UI_SERVER_URL=http://localhost:8000 SKIP_AGENT_SERVER=1 npm run start
 UI_SERVER_URL=http://localhost:8000/#/express/index SKIP_AGENT_SERVER=1 npm run start
+
+# 部署
+scp -rf ui/dist aaron@110.42.146.127:/home/aaron/dev/project/deeptest/ui/dist
+
+ps -ef | grep 'go run\|yarn serve' | grep -v grep | awk '{print $2}' | xargs kill -9
+nohup go run cmd/server/main.go > server.log 2>&1 &
+nohup go run cmd/agent/main.go  > agent.log 2>&1 &
+
+cd ui && yarn build && scp -r ui/dist aaron@110.42.146.127:/home/aaron/dev/project/deeptest/static && cd ..

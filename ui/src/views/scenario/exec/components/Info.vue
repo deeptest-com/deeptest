@@ -102,7 +102,7 @@ const execStart = async () => {
   if (json.code != 0) return
 
   const data = json.data
-  data.serverUrl = process.env.VUE_APP_API_SERVER
+  data.serverUrl = process.env.VUE_APP_API_SERVER // used by agent to submit result to server
   data.token = await getToken();
 
   convertEntityToRawData(data.rootProcessor)

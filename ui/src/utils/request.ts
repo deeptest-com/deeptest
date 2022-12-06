@@ -23,46 +23,30 @@ export interface ResultErr {
 }
 
 /**
- * 异常处理程序
- */
-const errorHandler = (axiosResponse: AxiosResponse) => {
-    console.log(axiosResponse)
-
-    if (!axiosResponse) axiosResponse = {status: 500} as AxiosResponse
-
-    if (axiosResponse.status === 200) {
-        const result ={
-            httpCode: axiosResponse.status,
-            resultCode: axiosResponse.data.code,
-            resultMsg: axiosResponse.data.msg
-        } as ResultErr
-
-        bus.emit(settings.eventNotify, result)
-
-        const { config, data } = axiosResponse;
-        const { url, baseURL } = config;
-        const { code, msg } = data
-
-        const reqUrl = (url + '').split("?")[0].replace(baseURL + '', '');
-        const noNeedLogin = settings.ajaxResponseNoVerifyUrl.includes(reqUrl);
-        if (code === 401 && !noNeedLogin) {
-            router.replace('/user/login');
-        }
-
-    } else {
-        bus.emit(settings.eventNotify, {
-            httpCode: axiosResponse.status
-        })
-    }
-
-    return Promise.reject({})
-}
-
-/**
  * 配置request请求时的默认参数
  */
+
+const getServerUrl = () => {
+    let apiUrl = process.env.VUE_APP_API_SERVER
+
+    if (process.env.NODE_ENV === 'production') {
+        const location = unescape(window.location.href);
+
+        let serverUrl = location.split('#')[0].split('index.html')[0];
+        if (!serverUrl.endsWith('/')) {
+            serverUrl += '/'
+        }
+
+        apiUrl = serverUrl + 'api/v1'
+
+        console.log('on prod env, server url is ' + serverUrl)
+    }
+
+    return apiUrl
+}
+
 const request = axios.create({
-    baseURL: process.env.VUE_APP_API_SERVER,
+    baseURL: getServerUrl(),
     withCredentials: true, // 跨域请求时发送cookie
     timeout: 0
 });
@@ -138,6 +122,42 @@ requestAgent.interceptors.response.use(
     responseInterceptors,
     /* error => {} */ // 已在 export default catch
 );
+
+/**
+ * 异常处理程序
+ */
+const errorHandler = (axiosResponse: AxiosResponse) => {
+    console.log(axiosResponse)
+
+    if (!axiosResponse) axiosResponse = {status: 500} as AxiosResponse
+
+    if (axiosResponse.status === 200) {
+        const result ={
+            httpCode: axiosResponse.status,
+            resultCode: axiosResponse.data.code,
+            resultMsg: axiosResponse.data.msg
+        } as ResultErr
+
+        bus.emit(settings.eventNotify, result)
+
+        const { config, data } = axiosResponse;
+        const { url, baseURL } = config;
+        const { code, msg } = data
+
+        const reqUrl = (url + '').split("?")[0].replace(baseURL + '', '');
+        const noNeedLogin = settings.ajaxResponseNoVerifyUrl.includes(reqUrl);
+        if (code === 401 && !noNeedLogin) {
+            router.replace('/user/login');
+        }
+
+    } else {
+        bus.emit(settings.eventNotify, {
+            httpCode: axiosResponse.status
+        })
+    }
+
+    return Promise.reject({})
+}
 
 /**
  * ajax 导出

@@ -1,6 +1,10 @@
 <template>
   <div id="request-main">
-    <RequestInvocation :onSend="invoke" :onSave="saveInterface"></RequestInvocation>
+    <RequestInvocation
+        :onSend="invoke"
+        :onSave="saveInterface">
+    </RequestInvocation>
+
     <RequestConfig></RequestConfig>
   </div>
 </template>

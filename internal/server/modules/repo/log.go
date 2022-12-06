@@ -55,11 +55,7 @@ func (r *LogRepo) DeleteById(id uint) (err error) {
 }
 
 func (r *LogRepo) CreateLogs(rootResult domain.Result, report *model.Report) (err error) {
-	parentId, _ := r.CreateLog(rootResult, 0, report.ID)
-
-	for _, child := range rootResult.Children {
-		r.CreateLog(*child, parentId, report.ID)
-	}
+	r.CreateLog(rootResult, 0, report.ID)
 
 	return
 }
@@ -69,6 +65,11 @@ func (r *LogRepo) CreateLog(result domain.Result, parentId, reportId uint) (id u
 		id, _ = r.CreateInterfaceLog(result, parentId, reportId)
 	} else {
 		id, _ = r.CreateCommonLog(result, parentId, reportId)
+	}
+
+	for _, child2 := range result.Children {
+		child := *child2
+		r.CreateLog(child, id, reportId)
 	}
 
 	return

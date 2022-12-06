@@ -66,7 +66,7 @@ export default defineComponent({
         UserOutlined,
         UnlockOutlined,
     },
-    setup(): UserLoginSetupData {
+    setup() {
         const router = useRouter();
         const { currentRoute } = router;
         const store = useStore<{UserLogin: UserLoginStateType}>();

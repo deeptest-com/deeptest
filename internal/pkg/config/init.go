@@ -26,29 +26,31 @@ var (
 func Init(app string) {
 	consts.IsRelease = _commUtils.IsRelease()
 
-	if app == "server" {
-		// 初始化Casbin配置
-		casbinPath := consts.CasbinFileName
-		fmt.Sprintf("casbin conf file is %s", casbinPath)
-
-		if !dir.IsExist(casbinPath) {
-			casbinRes := filepath.Join("res", consts.CasbinFileName)
-			yamlDefault, err := deeptest.ReadResData(casbinRes)
-			if err != nil {
-				panic(fmt.Errorf("failed to read casbin rbac_model.conf from res: %s", err.Error()))
-			}
-
-			err = _fileUtils.WriteFile(casbinPath, string(yamlDefault))
-			if err != nil {
-				panic(fmt.Errorf("failed to write casbin rbac_model.conf 文件错误: %s", err.Error()))
-			}
-		}
-	} else if app == "agent" {
+	if app == "agent" {
 		home, _ := _fileUtils.GetUserHome()
 		consts.HomeDir = filepath.Join(home, consts.App)
 		consts.TmpDir = filepath.Join(consts.HomeDir, consts.FolderTmp)
 
 		_fileUtils.MkDirIfNeeded(consts.TmpDir)
+
+		return
+	}
+
+	// 初始化Casbin配置
+	casbinPath := consts.CasbinFileName
+	fmt.Sprintf("casbin conf file is %s", casbinPath)
+
+	if !dir.IsExist(casbinPath) {
+		casbinRes := filepath.Join("res", consts.CasbinFileName)
+		yamlDefault, err := deeptest.ReadResData(casbinRes)
+		if err != nil {
+			panic(fmt.Errorf("failed to read casbin rbac_model.conf from res: %s", err.Error()))
+		}
+
+		err = _fileUtils.WriteFile(casbinPath, string(yamlDefault))
+		if err != nil {
+			panic(fmt.Errorf("failed to write casbin rbac_model.conf 文件错误: %s", err.Error()))
+		}
 	}
 
 	v := viper.New()
@@ -91,5 +93,6 @@ func Init(app string) {
 	if err := v.Unmarshal(&CONFIG); err != nil {
 		fmt.Println(err)
 	}
+
 	myZap.ZapInst = CONFIG.Zap
 }

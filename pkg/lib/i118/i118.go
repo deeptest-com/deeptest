@@ -4,10 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/aaronchen2k/deeptest"
-	"github.com/rs/zerolog/log"
 	"golang.org/x/text/language"
 	"golang.org/x/text/message"
-	"io/ioutil"
 	"path/filepath"
 )
 
@@ -18,10 +16,11 @@ func Init(lang string, app string) {
 	//once.Do(func() {
 
 	langRes := filepath.Join("res", lang, "messages.json")
-	log.Printf(langRes)
+	fmt.Printf("path %s\n", langRes)
 
 	bytes, _ := deeptest.ReadResData(langRes)
-	log.Printf(string(bytes))
+	fmt.Printf("content %s\n", string(bytes))
+
 	InitResFromAsset(bytes)
 
 	if lang == "zh" {
@@ -47,12 +46,6 @@ func Check(e error) {
 	if e != nil {
 		panic(e)
 	}
-}
-func ReadI18nJson(file string) string {
-	b, err := ioutil.ReadFile(file)
-	Check(err)
-	str := string(b)
-	return str
 }
 
 func InitResFromAsset(bytes []byte) {

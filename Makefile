@@ -168,7 +168,7 @@ package_gui_mac_client:
 # copy files
 copy_files_win64:
 	@echo 'start copy files win64'
-	cp ${CLIENT_BIN_DIR}win64/* "${CLIENT_OUT_DIR}win64"
+	cp ${CLIENT_BIN_DIR}win32/* "${CLIENT_OUT_DIR}win64"
 
 copy_files_win32:
 	@echo 'start copy files win32'

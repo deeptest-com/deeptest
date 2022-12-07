@@ -47,10 +47,10 @@ func Start() {
 	idleConnClosed := make(chan struct{})
 	irisApp := createIrisApp(&idleConnClosed)
 
-	irisApp.Use(func(ctx iris.Context) {
-		ctx.Request().Header.Del("Origin")
-		ctx.Next()
-	})
+	//irisApp.Use(func(ctx iris.Context) {
+	//	ctx.Request().Header.Del("Origin")
+	//	ctx.Next()
+	//})
 
 	initWebSocket(irisApp)
 

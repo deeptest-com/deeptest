@@ -9,6 +9,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/cron"
+	"github.com/aaronchen2k/deeptest/internal/pkg/core/middleware"
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/module"
 	"github.com/aaronchen2k/deeptest/internal/pkg/log"
 	commUtils "github.com/aaronchen2k/deeptest/internal/pkg/utils"
@@ -45,6 +46,11 @@ func Start() {
 
 	idleConnClosed := make(chan struct{})
 	irisApp := createIrisApp(&idleConnClosed)
+
+	irisApp.Use(func(ctx iris.Context) {
+		ctx.Request().Header.Del("Origin")
+		ctx.Next()
+	})
 
 	initWebSocket(irisApp)
 
@@ -220,7 +226,9 @@ func initWebSocket(irisApp *iris.Application) {
 	)
 	m.HandleWebsocket(websocketCtrl)
 	websocketServer := websocket.New(
-		websocket.DefaultGorillaUpgrader, m)
+		middleware.DefaultUpgrader,
+		//gorilla.Upgrader(gorillaWs.Upgrader{CheckOrigin: func(*http.Request) bool { return true }}),
+		m)
 
 	websocketAPI.Get("/", websocket.Handler(websocketServer))
 }

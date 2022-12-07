@@ -10,14 +10,7 @@ import (
 func CrsAuth(app string) context.Handler {
 	origins := make([]string, 0)
 	if app == "server" {
-
 	} else if app == "agent" {
-		origins = append(origins, []string{
-			"http://localhost:8000",
-			"http://server.deeptest.loc",
-			"http://server.deeptest.com",
-			"https://server.deeptest.com",
-		}...)
 	}
 
 	return cors.New(cors.Options{

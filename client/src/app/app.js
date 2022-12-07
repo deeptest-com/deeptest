@@ -29,6 +29,10 @@ export class DeepTestApp {
     constructor() {
         app.name = Lang.string('app.title', Config.pkg.displayName);
 
+        app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors')
+        app.commandLine.appendSwitch('disable-site-isolation-trials')
+        app.commandLine.appendSwitch('disable-features','BlockInsecurePrivateNetworkRequests')
+
         this._windows = new Map();
 
         startAgent().then((agentUrl)=> {

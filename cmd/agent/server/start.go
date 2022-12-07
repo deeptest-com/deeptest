@@ -45,6 +45,7 @@ func Init() *WebServer {
 	_i118Utils.Init(consts.Language, "")
 
 	app := iris.New()
+
 	app.Validator = validator.New() //参数验证
 	app.Logger().SetLevel(config.CONFIG.System.Level)
 	idleConnClosed := make(chan struct{})

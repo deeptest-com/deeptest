@@ -1,11 +1,10 @@
-package server
+package agentServe
 
 import (
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
-	middleware2 "github.com/aaronchen2k/deeptest/internal/pkg/core/middleware"
+	"github.com/aaronchen2k/deeptest/internal/pkg/core/middleware"
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/module"
-	"github.com/aaronchen2k/deeptest/internal/server/middleware"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"strings"
 	"sync"
@@ -33,20 +32,15 @@ type WebServer struct {
 
 // InitRouter 初始化模块路由
 func (webServer *WebServer) InitRouter() error {
-	webServer.app.UseRouter(middleware2.CrsAuth("server"))
+	webServer.app.UseRouter(middleware.CrsAuth("agent"))
 
 	app := webServer.app.Party("/").AllowMethods(iris.MethodOptions)
 	{
-		app.Use(middleware.InitCheck())
 		if config.CONFIG.System.Level == "debug" {
 			debug := DebugParty()
 			app.PartyFunc(debug.RelativePath, debug.Handler)
 		}
 		webServer.initModule()
-
-		webServer.AddWebStatic()
-		webServer.AddUploadStatic()
-
 		err := webServer.app.Build()
 		if err != nil {
 			return fmt.Errorf("build router %w", err)

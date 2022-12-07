@@ -2,7 +2,7 @@ package main
 
 import (
 	"flag"
-	"github.com/aaronchen2k/deeptest/cmd/agent/server"
+	"github.com/aaronchen2k/deeptest/cmd/agent/serve"
 	v1 "github.com/aaronchen2k/deeptest/cmd/agent/v1"
 	"github.com/aaronchen2k/deeptest/internal/agent/service"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
@@ -38,7 +38,7 @@ func main() {
 
 	websocketHelper.InitMq()
 
-	server := server.Init()
+	server := agentServe.Init()
 	if server == nil {
 		return
 	}
@@ -50,7 +50,7 @@ func main() {
 	server.Start()
 }
 
-func injectModule(ws *server.WebServer) {
+func injectModule(ws *agentServe.WebServer) {
 	var g inject.Graph
 	g.Logger = logrus.StandardLogger()
 

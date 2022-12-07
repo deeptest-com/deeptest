@@ -2,7 +2,7 @@ package main
 
 import (
 	"flag"
-	"github.com/aaronchen2k/deeptest/cmd/server/server"
+	"github.com/aaronchen2k/deeptest/cmd/server/serverServe"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/websocket"
 	"github.com/fatih/color"
 	"os"
@@ -35,7 +35,7 @@ func main() {
 
 	websocketHelper.InitMq()
 
-	server.Start()
+	serverServe.Start()
 }
 
 func init() {

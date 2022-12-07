@@ -22,7 +22,7 @@ QINIU_DIST_DIR=${QINIU_DIR}${PROJECT}/${VERSION}/
 SERVER_MAIN_FILE=cmd/server/main.go
 AGENT_MAIN_FILE=cmd/agent/main.go
 
-SERVER_BIN_DIR=bin/
+BIN_DIR=bin/
 CLIENT_BIN_DIR=client/bin/
 CLIENT_OUT_DIR=client/out/
 
@@ -63,25 +63,25 @@ compile_server_win64:
 	@echo 'start compile win64'
 	@CGO_ENABLED=1 CC=x86_64-w64-mingw32-gcc CXX=x86_64-w64-mingw32-g++ GOOS=windows GOARCH=amd64 \
 		${BUILD_CMD_WIN} -x -v \
-		-o ${SERVER_BIN_DIR}win64/${PROJECT}.exe ${SERVER_MAIN_FILE}
+		-o ${BIN_DIR}win64/${PROJECT}.exe ${SERVER_MAIN_FILE}
 
 compile_server_win32:
 	@echo 'start compile win32'
 	@CGO_ENABLED=1 CC=i686-w64-mingw32-gcc CXX=i686-w64-mingw32-g++ GOOS=windows GOARCH=386 \
 		${BUILD_CMD_WIN} -x -v \
-		-o ${SERVER_BIN_DIR}win32/${PROJECT}.exe ${SERVER_MAIN_FILE}
+		-o ${BIN_DIR}win32/${PROJECT}.exe ${SERVER_MAIN_FILE}
 
 compile_server_linux:
 	@echo 'start compile linux'
 ifeq ($(PLATFORM),"mac")
 	@CGO_ENABLED=1 GOOS=linux GOARCH=amd64 CC=/usr/local/gcc-4.8.1-for-linux64/bin/x86_64-pc-linux-gcc CXX=/usr/local/gcc-4.8.1-for-linux64/bin/x86_64-pc-linux-g++ \
 		${BUILD_CMD_UNIX} \
-		-o ${SERVER_BIN_DIR}linux/${PROJECT} ${SERVER_MAIN_FILE}
+		-o ${BIN_DIR}linux/${PROJECT} ${SERVER_MAIN_FILE}
 
 else
 	CGO_ENABLED=1 GOOS=linux GOARCH=amd64 CC=gcc CXX=g++ \
 		${BUILD_CMD_UNIX} \
-		-o ${SERVER_BIN_DIR}linux/${PROJECT} ${SERVER_MAIN_FILE}
+		-o ${BIN_DIR}linux/${PROJECT} ${SERVER_MAIN_FILE}
 endif
 
 compile_server_mac:
@@ -89,7 +89,7 @@ compile_server_mac:
 	@echo
 	@CGO_ENABLED=1 GOOS=darwin GOARCH=amd64 \
 		${BUILD_CMD_UNIX} \
-		-o ${SERVER_BIN_DIR}darwin/${PROJECT} ${SERVER_MAIN_FILE}
+		-o ${BIN_DIR}darwin/${PROJECT} ${SERVER_MAIN_FILE}
 
 # launcher
 compile_launcher_win64:
@@ -97,7 +97,7 @@ compile_launcher_win64:
 	@cd cmd/launcher && \
         CC=x86_64-w64-mingw32-gcc CXX=x86_64-w64-mingw32-g++ GOOS=windows GOARCH=amd64 \
 		${BUILD_CMD_WIN} -x -v \
-		-o ../../${SERVER_BIN_DIR}win64/${PROJECT}-gui.exe && \
+		-o ../../${BIN_DIR}win64/${PROJECT}-gui.exe && \
 		cd ..
 
 compile_launcher_win32:
@@ -105,7 +105,7 @@ compile_launcher_win32:
 	@cd cmd/launcher && \
         CC=i686-w64-mingw32-gcc CXX=i686-w64-mingw32-g++ GOOS=windows GOARCH=386 \
 		${BUILD_CMD_WIN} -x -v \
-		-o ../../${SERVER_BIN_DIR}win32/${PROJECT}-gui.exe && \
+		-o ../../${BIN_DIR}win32/${PROJECT}-gui.exe && \
         cd ..
 
 # gui
@@ -168,19 +168,17 @@ package_gui_mac_client:
 # copy files
 copy_files_win64:
 	@echo 'start copy files win64'
-	cp ${CLIENT_BIN_DIR}win32/* "${CLIENT_OUT_DIR}win64"
+	cp ${BIN_DIR}win32/${PROJECT}-gui.exe "${CLIENT_OUT_DIR}win64"
 
 copy_files_win32:
 	@echo 'start copy files win32'
-	cp ${CLIENT_BIN_DIR}win32/* "${CLIENT_OUT_DIR}win32"
+	cp ${BIN_DIR}win32/${PROJECT}-gui.exe "${CLIENT_OUT_DIR}win32"
 
 copy_files_linux:
 	@echo 'start copy files linux'
-	cp ${CLIENT_BIN_DIR}linux/* "${CLIENT_OUT_DIR}linux"
 
 copy_files_mac:
 	@echo 'start copy files darwin'
-	cp ${CLIENT_BIN_DIR}darwin/* "${CLIENT_OUT_DIR}darwin"
 
 # zip files
 zip_win64:

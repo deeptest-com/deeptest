@@ -15,3 +15,5 @@ tmp/
 /internal/pkg/consts/private.go
 /latest_log
 /static/dist/
+/rbac_model.conf
+/server.yaml

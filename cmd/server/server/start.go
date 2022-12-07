@@ -18,9 +18,7 @@ import (
 	_i118Utils "github.com/aaronchen2k/deeptest/pkg/lib/i118"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/facebookgo/inject"
-	gorillaWs "github.com/gorilla/websocket"
 	"github.com/kataras/iris/v12/websocket"
-	"github.com/kataras/neffos/gorilla"
 	"github.com/sirupsen/logrus"
 	"net/http"
 	"path/filepath"
@@ -222,7 +220,8 @@ func initWebSocket(irisApp *iris.Application) {
 	)
 	m.HandleWebsocket(websocketCtrl)
 	websocketServer := websocket.New(
-		gorilla.Upgrader(gorillaWs.Upgrader{CheckOrigin: func(*http.Request) bool { return true }}), m)
+		websocket.DefaultGorillaUpgrader, m)
+
 	websocketAPI.Get("/", websocket.Handler(websocketServer))
 }
 

@@ -8,7 +8,6 @@ import (
 	myZap "github.com/aaronchen2k/deeptest/pkg/core/zap"
 	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	_fileUtils "github.com/aaronchen2k/deeptest/pkg/lib/file"
-	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/go-redis/redis/v8"
 	"path/filepath"
 
@@ -30,18 +29,18 @@ func Init(app string) {
 	if app == "server" {
 		// 初始化Casbin配置
 		casbinPath := consts.CasbinFileName
-		logUtils.Infof("casbin conf file is %s", casbinPath)
+		fmt.Sprintf("casbin conf file is %s", casbinPath)
 
 		if !dir.IsExist(casbinPath) {
 			casbinRes := filepath.Join("res", consts.CasbinFileName)
 			yamlDefault, err := deeptest.ReadResData(casbinRes)
 			if err != nil {
-				logUtils.Errorf("failed to read casbin rbac_model.conf from res: %s", err.Error())
+				panic(fmt.Errorf("failed to read casbin rbac_model.conf from res: %s", err.Error()))
 			}
 
 			err = _fileUtils.WriteFile(casbinPath, string(yamlDefault))
 			if err != nil {
-				logUtils.Errorf("failed to write casbin rbac_model.conf 文件错误: %s", err.Error())
+				panic(fmt.Errorf("failed to write casbin rbac_model.conf 文件错误: %s", err.Error()))
 			}
 		}
 	} else if app == "agent" {

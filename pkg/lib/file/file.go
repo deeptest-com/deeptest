@@ -33,19 +33,14 @@ func ReadFileBuf(filePath string) []byte {
 	return buf
 }
 
-func WriteFile(filePath string, content string) {
+func WriteFile(filePath string, content string) (err error) {
 	dir := filepath.Dir(filePath)
 	MkDirIfNeeded(dir)
 
 	var d1 = []byte(content)
-	err2 := ioutil.WriteFile(filePath, d1, 0666) //写入文件(字节数组)
-	check(err2)
-}
+	err = ioutil.WriteFile(filePath, d1, 0666) //写入文件(字节数组)
 
-func check(e error) {
-	if e != nil {
-		panic(e)
-	}
+	return
 }
 
 func FileExist(path string) bool {

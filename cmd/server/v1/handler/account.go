@@ -43,7 +43,7 @@ func (c *AccountCtrl) Register(ctx iris.Context) {
 		errs := validate.ValidRequest(err)
 
 		if len(errs) > 0 {
-			ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: strings.Join(errs, ";")})
+			ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: strings.Join(errs, ";")})
 			return
 		}
 	}
@@ -62,7 +62,7 @@ func (c *AccountCtrl) ForgotPassword(ctx iris.Context) {
 
 	err := c.AccountService.ForgotPassword(usernameOrPassword)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
@@ -82,7 +82,7 @@ func (c *AccountCtrl) ResetPassword(ctx iris.Context) {
 
 	err = c.AccountService.ResetPassword(req)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 

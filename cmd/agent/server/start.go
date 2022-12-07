@@ -1,4 +1,4 @@
-package agent
+package server
 
 import (
 	stdContext "context"
@@ -34,20 +34,6 @@ import (
 )
 
 var client *tests.Client
-
-// WebServer 服务器
-type WebServer struct {
-	app               *iris.Application
-	modules           []module.WebModule
-	idleConnClosed    chan struct{}
-	addr              string
-	timeFormat        string
-	globalMiddlewares []context.Handler
-	wg                sync.WaitGroup
-	staticPrefix      string
-	staticPath        string
-	webPath           string
-}
 
 // Init 初始化web服务
 func Init() *WebServer {

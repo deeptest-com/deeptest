@@ -4,11 +4,11 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
+	"github.com/aaronchen2k/deeptest"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	"github.com/aaronchen2k/deeptest/pkg/lib/i118"
 	"github.com/aaronchen2k/deeptest/pkg/lib/log"
-	_resUtils "github.com/aaronchen2k/deeptest/pkg/lib/res"
 	"github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"github.com/kataras/iris/v12/websocket"
 	"gopkg.in/gomail.v2"
@@ -43,7 +43,7 @@ func Send(to, subject, tmpl string, mp map[string]string) (err error) {
 	m.SetHeader("Subject", subject)
 
 	configRes := filepath.Join("res", "tmpl", tmpl+".ftl")
-	content, _ := _resUtils.ReadRes(configRes)
+	content, _ := deeptest.ReadResData(configRes)
 
 	body := os.Expand(string(content), func(k string) string { return mp[k] })
 

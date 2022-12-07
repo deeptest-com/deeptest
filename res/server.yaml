@@ -1,12 +1,3 @@
-system:
-  level: debug
-  addr: 127.0.0.1:8085
-  static-prefix: /upload
-  static-path: /static/upload
-  web-path: ./static/dist
-  db-type: sqlite
-  cache-type: redis
-  time-format: "2006-01-02 15:04:05"
 captcha:
   key-long: 6
   img-width: 240
@@ -17,22 +8,6 @@ limit:
   burst: 5
 max-size: 1024
 maxsize: 1024
-zap:
-  level: info
-  format: console
-  prefix: '[OP-ONLINE] '
-  director: log
-  link-name: latest_log
-  show-line: true
-  encode-level: ""
-  stacktrace-key: stacktrace
-  log-in-console: true
-redis:
-  db: 0
-  addr: 127.0.0.1:6379
-  password: P2ssw0rd
-  pool-size: 0
-
 mysql:
   url: 127.0.0.1:3306
   config: charset=utf8mb4&parseTime=True&loc=Local
@@ -43,3 +18,28 @@ mysql:
   max-open-conns: 0
   log-mode: true
   log-zap: ""
+redis:
+  db: 0
+  addr: 127.0.0.1:6379
+  password: P2ssw0rd
+  pool-size: 0
+system:
+  level: debug
+  serverAddress: 0.0.0.0:8085
+  agentAddress: 0.0.0.0:8086
+  static-prefix: /upload
+  static-path: /static/upload
+  web-path: ui/dist
+  db-type: mysql
+  cache-type: redis
+  time-format: "2006-01-02 15:04:05"
+zap:
+  level: info
+  format: console
+  prefix: '[OP-ONLINE] '
+  director: log
+  link-name: latest_log
+  show-line: true
+  encode-level: ""
+  stacktrace-key: stacktrace
+  log-in-console: true

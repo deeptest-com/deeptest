@@ -179,7 +179,7 @@ type InterfaceExtractor struct {
 	Variable string                `json:"variable"`
 	Scope    consts.ExtractorScope `json:"scope" gorm:"default:private"`
 
-	Result      string `json:"result"`
+	Result      string `json:"result" gorm:"type:text"`
 	InterfaceId uint   `json:"interfaceId"`
 
 	ProjectId uint `json:"projectId"`

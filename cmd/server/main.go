@@ -3,14 +3,8 @@ package main
 import (
 	"flag"
 	"github.com/aaronchen2k/deeptest/cmd/server/server"
-	"github.com/aaronchen2k/deeptest/cmd/server/v1"
-	"github.com/aaronchen2k/deeptest/internal/pkg/core/cron"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/websocket"
-	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
-	"github.com/aaronchen2k/deeptest/pkg/lib/log"
-	"github.com/facebookgo/inject"
 	"github.com/fatih/color"
-	"github.com/sirupsen/logrus"
 	"os"
 	"os/signal"
 	"syscall"
@@ -41,39 +35,7 @@ func main() {
 
 	websocketHelper.InitMq()
 
-	server := server.Init()
-	if server == nil {
-		return
-	}
-
-	injectModule(server)
 	server.Start()
-}
-
-func injectModule(ws *server.WebServer) {
-	var g inject.Graph
-	g.Logger = logrus.StandardLogger()
-
-	cron := cron.NewServerCron()
-	cron.Init()
-	indexModule := v1.NewIndexModule()
-
-	// inject objects
-	if err := g.Provide(
-		&inject.Object{Value: dao.GetDB()},
-		&inject.Object{Value: cron},
-		&inject.Object{Value: indexModule},
-	); err != nil {
-		logrus.Fatalf("provide usecase objects to the Graph: %v", err)
-	}
-	err := g.Populate()
-	if err != nil {
-		logrus.Fatalf("populate the incomplete Objects: %v", err)
-	}
-
-	ws.AddModule(indexModule.Party())
-
-	_logUtils.Infof("start server")
 }
 
 func init() {

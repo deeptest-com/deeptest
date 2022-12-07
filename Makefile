@@ -39,7 +39,7 @@ win32: prepare build_gui_win32 compile_launcher_win32 compile_server_win32 copy_
 linux: prepare build_gui_linux                        compile_server_linux copy_files_linux zip_linux
 mac:   prepare build_gui_mac                          compile_server_mac   copy_files_mac   zip_mac
 
-prepare: update_version prepare_res
+prepare: update_version
 
 update_version: update_version_in_config gen_version_file
 
@@ -58,11 +58,6 @@ gen_version_file:
 compile_ui:
 	@cd ui && yarn build --dest ../client/ui && cd ..
 
-prepare_res:
-	@echo 'start prepare res'
-	@rm -rf res/res.go
-	@go-bindata -o=res/res.go -pkg=res res/...
-
 # server
 compile_server_win64:
 	@echo 'start compile win64'
@@ -78,10 +73,11 @@ compile_server_win32:
 
 compile_server_linux:
 	@echo 'start compile linux'
-ifeq ($(PLATFORM),"Mac")
+ifeq ($(PLATFORM),"mac")
 	@CGO_ENABLED=1 GOOS=linux GOARCH=amd64 CC=/usr/local/gcc-4.8.1-for-linux64/bin/x86_64-pc-linux-gcc CXX=/usr/local/gcc-4.8.1-for-linux64/bin/x86_64-pc-linux-g++ \
 		${BUILD_CMD_UNIX} \
 		-o ${SERVER_BIN_DIR}linux/${PROJECT} ${SERVER_MAIN_FILE}
+
 else
 	CGO_ENABLED=1 GOOS=linux GOARCH=amd64 CC=gcc CXX=g++ \
 		${BUILD_CMD_UNIX} \

@@ -3,7 +3,7 @@ package _i118Utils
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/aaronchen2k/deeptest/pkg/lib/res"
+	"github.com/aaronchen2k/deeptest"
 	"github.com/rs/zerolog/log"
 	"golang.org/x/text/language"
 	"golang.org/x/text/message"
@@ -17,10 +17,10 @@ func Init(lang string, app string) {
 	//var once sync.Once
 	//once.Do(func() {
 
-	langRes := filepath.Join("res", app, lang, "messages.json")
+	langRes := filepath.Join("res", lang, "messages.json")
 	log.Printf(langRes)
 
-	bytes, _ := _resUtils.ReadRes(langRes)
+	bytes, _ := deeptest.ReadResData(langRes)
 	log.Printf(string(bytes))
 	InitResFromAsset(bytes)
 

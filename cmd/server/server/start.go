@@ -3,9 +3,12 @@ package server
 import (
 	stdContext "context"
 	"fmt"
+	"github.com/aaronchen2k/deeptest"
+	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1"
 	"github.com/aaronchen2k/deeptest/cmd/server/v1/handler"
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/core/cron"
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/module"
 	"github.com/aaronchen2k/deeptest/internal/pkg/log"
 	commUtils "github.com/aaronchen2k/deeptest/internal/pkg/utils"
@@ -31,28 +34,38 @@ import (
 	"github.com/snowlyg/helper/str"
 	"github.com/snowlyg/helper/tests"
 
+	"github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/mvc"
 )
 
 var client *tests.Client
 
-// WebServer 服务器
-type WebServer struct {
-	app               *iris.Application
-	modules           []module.WebModule
-	idleConnClosed    chan struct{}
-	addr              string
-	timeFormat        string
-	globalMiddlewares []context.Handler
-	wg                sync.WaitGroup
-	staticPrefix      string
-	staticPath        string
-	webPath           string
+// Start 初始化web服务
+func Start() {
+	inits()
+
+	idleConnClosed := make(chan struct{})
+	irisApp := createIrisApp(&idleConnClosed)
+
+	initWebSocket(irisApp)
+
+	server := &WebServer{
+		app:               irisApp,
+		addr:              config.CONFIG.System.ServerAddress,
+		timeFormat:        config.CONFIG.System.TimeFormat,
+		staticPrefix:      config.CONFIG.System.StaticPrefix,
+		staticPath:        config.CONFIG.System.StaticPath,
+		webPath:           config.CONFIG.System.WebPath,
+		idleConnClosed:    idleConnClosed,
+		globalMiddlewares: []context.Handler{},
+	}
+
+	server.InjectModule()
+	server.Start()
 }
 
-// Init 初始化web服务
-func Init() *WebServer {
+func inits() {
 	consts.RunFrom = consts.FromServer
 	consts.WorkDir = commUtils.GetWorkDir()
 
@@ -63,48 +76,61 @@ func Init() *WebServer {
 	err := cache.Init()
 	if err != nil {
 		logUtils.Errorf("init redis cache failed, error %s", err.Error())
-		return nil
+		return
 	}
+}
 
-	app := iris.New()
-	app.Validator = validator.New() //参数验证
-	app.Logger().SetLevel(config.CONFIG.System.Level)
-	idleConnClosed := make(chan struct{})
+func createIrisApp(idleConnClosed *chan struct{}) (irisApp *iris.Application) {
+	irisApp = iris.New()
+	irisApp.Validator = validator.New() //参数验证
+	irisApp.Logger().SetLevel(config.CONFIG.System.Level)
+
 	iris.RegisterOnInterrupt(func() { //优雅退出
 		timeout := 10 * time.Second
 		ctx, cancel := stdContext.WithTimeout(stdContext.Background(), timeout)
 		defer cancel()
-		app.Shutdown(ctx) // close all hosts
-		close(idleConnClosed)
+		irisApp.Shutdown(ctx) // close all hosts
+
+		close(*idleConnClosed)
 	})
 
-	// init grpc
-	mvc.New(app)
+	return
+}
 
-	// init websocket
-	websocketCtrl := handler.NewWebsocketCtrl()
-	injectWebsocketModule(websocketCtrl)
+// injectWebsocketModule 注册组件
+func injectWebsocketModule(websocketCtrl *handler.WebSocketCtrl) {
+	var g inject.Graph
+	g.Logger = logrus.StandardLogger()
 
-	websocketAPI := app.Party(consts.WsPath)
-	m := mvc.New(websocketAPI)
-	m.Register(
-		&service.PrefixedLogger{Prefix: ""},
-	)
-	m.HandleWebsocket(websocketCtrl)
-	websocketServer := websocket.New(
-		gorilla.Upgrader(gorillaWs.Upgrader{CheckOrigin: func(*http.Request) bool { return true }}), m)
-	websocketAPI.Get("/", websocket.Handler(websocketServer))
-
-	return &WebServer{
-		app:               app,
-		addr:              config.CONFIG.System.ServerAddress,
-		timeFormat:        config.CONFIG.System.TimeFormat,
-		staticPrefix:      config.CONFIG.System.StaticPrefix,
-		staticPath:        config.CONFIG.System.StaticPath,
-		webPath:           config.CONFIG.System.WebPath,
-		idleConnClosed:    idleConnClosed,
-		globalMiddlewares: []context.Handler{},
+	if err := g.Provide(
+		&inject.Object{Value: dao.GetDB()},
+		&inject.Object{Value: websocketCtrl},
+	); err != nil {
+		logrus.Fatalf("provide usecase objects to the Graph: %v", err)
 	}
+	err := g.Populate()
+	if err != nil {
+		logrus.Fatalf("populate the incomplete Objects: %v", err)
+	}
+}
+
+// Init 启动web服务
+func (webServer *WebServer) Start() {
+	webServer.app.UseGlobal(webServer.globalMiddlewares...)
+	err := webServer.InitRouter()
+	if err != nil {
+		fmt.Printf("初始化路由错误： %v\n", err)
+		panic(err)
+	}
+	// 添加上传文件路径
+	webServer.app.Listen(
+		webServer.addr,
+		iris.WithoutInterruptHandler,
+		iris.WithoutServerError(iris.ErrServerClosed),
+		iris.WithOptimizations,
+		iris.WithTimeFormat(webServer.timeFormat),
+	)
+	<-webServer.idleConnClosed
 }
 
 // GetStaticPath 获取静态路径
@@ -127,24 +153,29 @@ func (webServer *WebServer) AddModule(module ...module.WebModule) {
 	webServer.modules = append(webServer.modules, module...)
 }
 
-// AddStatic 添加静态文件
-func (webServer *WebServer) AddStatic(requestPath string, fsOrDir interface{}, opts ...iris.DirOptions) {
-	webServer.app.HandleDir(requestPath, fsOrDir, opts...)
-}
+// AddWebStatic 添加前端页面访问
+func (webServer *WebServer) AddWebStatic() {
+	uiFs, err := deeptest.GetUiFileSys()
+	if err != nil {
+		return
+	}
 
-// AddWebStatic 添加前端访问地址
-func (webServer *WebServer) AddWebStatic(requestPath string) {
-	fsOrDir := iris.Dir(filepath.Join(dir.GetCurrentAbPath(), webServer.webPath))
-	webServer.AddStatic(requestPath, fsOrDir, iris.DirOptions{
+	webServer.app.HandleDir("/", http.FS(uiFs), iris.DirOptions{
 		IndexName: "index.html",
+		ShowList:  false,
 		SPA:       true,
 	})
 }
 
-// AddUploadStatic 添加上传文件访问地址
+// AddUploadStatic 添加上传文件访问
 func (webServer *WebServer) AddUploadStatic() {
 	fsOrDir := iris.Dir(filepath.Join(dir.GetCurrentAbPath(), webServer.staticPath))
 	webServer.AddStatic(webServer.staticPrefix, fsOrDir)
+}
+
+// AddStatic 添加静态文件
+func (webServer *WebServer) AddStatic(requestPath string, fsOrDir interface{}, opts ...iris.DirOptions) {
+	webServer.app.HandleDir(requestPath, fsOrDir, opts...)
 }
 
 // GetModules 获取模块
@@ -177,32 +208,38 @@ func (webServer *WebServer) GetTestLogin(t *testing.T, url string, res tests.Res
 	return client
 }
 
-// Init 启动web服务
-func (webServer *WebServer) Start() {
-	webServer.app.UseGlobal(webServer.globalMiddlewares...)
-	err := webServer.InitRouter()
-	if err != nil {
-		fmt.Printf("初始化路由错误： %v\n", err)
-		panic(err)
-	}
-	// 添加上传文件路径
-	webServer.app.Listen(
-		webServer.addr,
-		iris.WithoutInterruptHandler,
-		iris.WithoutServerError(iris.ErrServerClosed),
-		iris.WithOptimizations,
-		iris.WithTimeFormat(webServer.timeFormat),
+// Init 加载模块
+func initWebSocket(irisApp *iris.Application) {
+	websocketCtrl := handler.NewWebsocketCtrl()
+	injectWebsocketModule(websocketCtrl)
+
+	mvc.New(irisApp)
+
+	websocketAPI := irisApp.Party(consts.WsPath)
+	m := mvc.New(websocketAPI)
+	m.Register(
+		&service.PrefixedLogger{Prefix: ""},
 	)
-	<-webServer.idleConnClosed
+	m.HandleWebsocket(websocketCtrl)
+	websocketServer := websocket.New(
+		gorilla.Upgrader(gorillaWs.Upgrader{CheckOrigin: func(*http.Request) bool { return true }}), m)
+	websocketAPI.Get("/", websocket.Handler(websocketServer))
 }
 
-func injectWebsocketModule(websocketCtrl *handler.WebSocketCtrl) {
+// Init 加载模块
+func (webServer *WebServer) InjectModule() {
 	var g inject.Graph
 	g.Logger = logrus.StandardLogger()
 
+	cron := cron.NewServerCron()
+	cron.Init()
+	indexModule := v1.NewIndexModule()
+
+	// inject objects
 	if err := g.Provide(
 		&inject.Object{Value: dao.GetDB()},
-		&inject.Object{Value: websocketCtrl},
+		&inject.Object{Value: cron},
+		&inject.Object{Value: indexModule},
 	); err != nil {
 		logrus.Fatalf("provide usecase objects to the Graph: %v", err)
 	}
@@ -210,4 +247,8 @@ func injectWebsocketModule(websocketCtrl *handler.WebSocketCtrl) {
 	if err != nil {
 		logrus.Fatalf("populate the incomplete Objects: %v", err)
 	}
+
+	webServer.AddModule(indexModule.Party())
+
+	_logUtils.Infof("start server")
 }

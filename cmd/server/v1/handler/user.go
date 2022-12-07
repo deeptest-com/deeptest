@@ -170,12 +170,20 @@ func (c *UserCtrl) UpdatePassword(ctx iris.Context) {
 
 // Profile 个人信息
 func (c *UserCtrl) Profile(ctx iris.Context) {
-	user, err := c.UserRepo.FindDetailById(multi.GetUserId(ctx))
-	user.Password = ""
+	id := multi.GetUserId(ctx)
+	_logUtils.Infof("user is %v", id)
+	if id == 0 {
+		ctx.JSON(_domain.Response{Code: _domain.ErrNoUser.Code, Msg: _domain.SystemErr.Msg})
+		return
+	}
+
+	user, err := c.UserRepo.FindDetailById(id)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return
 	}
+
+	user.Password = ""
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: user, Msg: _domain.NoErr.Msg})
 }

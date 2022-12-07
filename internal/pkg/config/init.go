@@ -3,11 +3,12 @@ package config
 import (
 	"bytes"
 	"fmt"
+	"github.com/aaronchen2k/deeptest"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	myZap "github.com/aaronchen2k/deeptest/pkg/core/zap"
 	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	_fileUtils "github.com/aaronchen2k/deeptest/pkg/lib/file"
-	_resUtils "github.com/aaronchen2k/deeptest/pkg/lib/res"
+	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/go-redis/redis/v8"
 	"path/filepath"
 
@@ -26,7 +27,24 @@ var (
 func Init(app string) {
 	consts.IsRelease = _commUtils.IsRelease()
 
-	if app == "agent" {
+	if app == "server" {
+		// 初始化Casbin配置
+		casbinPath := consts.CasbinFileName
+		logUtils.Infof("casbin conf file is %s", casbinPath)
+
+		if !dir.IsExist(casbinPath) {
+			casbinRes := filepath.Join("res", consts.CasbinFileName)
+			yamlDefault, err := deeptest.ReadResData(casbinRes)
+			if err != nil {
+				logUtils.Errorf("failed to read casbin rbac_model.conf from res: %s", err.Error())
+			}
+
+			err = _fileUtils.WriteFile(casbinPath, string(yamlDefault))
+			if err != nil {
+				logUtils.Errorf("failed to write casbin rbac_model.conf 文件错误: %s", err.Error())
+			}
+		}
+	} else if app == "agent" {
 		home, _ := _fileUtils.GetUserHome()
 		consts.HomeDir = filepath.Join(home, consts.App)
 		consts.TmpDir = filepath.Join(consts.HomeDir, consts.FolderTmp)
@@ -43,27 +61,23 @@ func Init(app string) {
 
 	if !dir.IsExist(configFile) { // 没有配置文件，写入默认配置
 		configRes := filepath.Join("res", consts.ConfigFileName)
-		yamlDefault, _ := _resUtils.ReadRes(configRes)
+		yamlDefault, _ := deeptest.ReadResData(configRes)
 
 		if err := VIPER.ReadConfig(bytes.NewBuffer(yamlDefault)); err != nil {
 			panic(fmt.Errorf("读取默认配置文件错误: %w ", err))
 		}
-
 		if err := VIPER.Unmarshal(&CONFIG); err != nil {
 			panic(fmt.Errorf("同步配置文件错误: %w ", err))
 		}
-
 		if err := VIPER.WriteConfigAs(configFile); err != nil {
 			panic(fmt.Errorf("写入配置文件错误: %w ", err))
 		}
-		return
-	}
-
-	// 存在配置文件，读取配置文件内容
-	VIPER.SetConfigFile(configFile)
-	err := VIPER.ReadInConfig()
-	if err != nil {
-		panic(fmt.Errorf("读取配置错误: %w ", err))
+	} else {
+		VIPER.SetConfigFile(configFile)
+		err := VIPER.ReadInConfig()
+		if err != nil {
+			panic(fmt.Errorf("读取配置错误: %w ", err))
+		}
 	}
 
 	// 监控配置文件变化
@@ -79,20 +93,4 @@ func Init(app string) {
 		fmt.Println(err)
 	}
 	myZap.ZapInst = CONFIG.Zap
-
-	if app == "server" {
-		// 初始化Casbin配置
-		casbinPath := consts.CasbinFileName
-		fmt.Printf("Casbin配置文件为%s\n", casbinPath)
-
-		if !dir.IsExist(casbinPath) {
-			casbinRes := filepath.Join("res", consts.CasbinFileName)
-			yamlDefault, _ := _resUtils.ReadRes(casbinRes)
-
-			_, err = dir.WriteBytes(casbinPath, yamlDefault)
-			if err != nil {
-				panic(fmt.Errorf("初始化 casbin rbac_model.conf 文件错误: %w ", err))
-			}
-		}
-	}
 }

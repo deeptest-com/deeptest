@@ -3,11 +3,11 @@ package server
 import (
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
-	middleware2 "github.com/aaronchen2k/deeptest/internal/pkg/core/middleware"
+	"github.com/aaronchen2k/deeptest/internal/pkg/core/middleware"
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/module"
-	"github.com/aaronchen2k/deeptest/internal/server/middleware"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"strings"
+	"sync"
 
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/context"
@@ -16,13 +16,26 @@ import (
 	"github.com/snowlyg/helper/arr"
 )
 
+// WebServer 服务器
+type WebServer struct {
+	app               *iris.Application
+	modules           []module.WebModule
+	idleConnClosed    chan struct{}
+	addr              string
+	timeFormat        string
+	globalMiddlewares []context.Handler
+	wg                sync.WaitGroup
+	staticPrefix      string
+	staticPath        string
+	webPath           string
+}
+
 // InitRouter 初始化模块路由
 func (webServer *WebServer) InitRouter() error {
-	webServer.app.UseRouter(middleware2.CrsAuth("server"))
+	webServer.app.UseRouter(middleware.CrsAuth("agent"))
 
 	app := webServer.app.Party("/").AllowMethods(iris.MethodOptions)
 	{
-		app.Use(middleware.InitCheck())
 		if config.CONFIG.System.Level == "debug" {
 			debug := DebugParty()
 			app.PartyFunc(debug.RelativePath, debug.Handler)

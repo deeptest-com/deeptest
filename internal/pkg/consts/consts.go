@@ -33,4 +33,6 @@ const (
 	Sys          = "DeepTest"
 	Url          = "https://deeptest.com/"
 	UrlDev       = "http://localhost:8000/"
+
+	AgentPort = 8086
 )

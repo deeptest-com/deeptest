@@ -63,25 +63,25 @@ compile_server_win64:
 	@echo 'start compile win64'
 	@CGO_ENABLED=1 CC=x86_64-w64-mingw32-gcc CXX=x86_64-w64-mingw32-g++ GOOS=windows GOARCH=amd64 \
 		${BUILD_CMD_WIN} -x -v \
-		-o ${BIN_DIR}win64/${PROJECT}.exe ${SERVER_MAIN_FILE}
+		-o ${BIN_DIR}win64/${PROJECT}-server.exe ${SERVER_MAIN_FILE}
 
 compile_server_win32:
 	@echo 'start compile win32'
 	@CGO_ENABLED=1 CC=i686-w64-mingw32-gcc CXX=i686-w64-mingw32-g++ GOOS=windows GOARCH=386 \
 		${BUILD_CMD_WIN} -x -v \
-		-o ${BIN_DIR}win32/${PROJECT}.exe ${SERVER_MAIN_FILE}
+		-o ${BIN_DIR}win32/${PROJECT}-server.exe ${SERVER_MAIN_FILE}
 
 compile_server_linux:
 	@echo 'start compile linux'
 ifeq ($(PLATFORM),"mac")
 	@CGO_ENABLED=1 GOOS=linux GOARCH=amd64 CC=/usr/local/gcc-4.8.1-for-linux64/bin/x86_64-pc-linux-gcc CXX=/usr/local/gcc-4.8.1-for-linux64/bin/x86_64-pc-linux-g++ \
 		${BUILD_CMD_UNIX} \
-		-o ${BIN_DIR}linux/${PROJECT} ${SERVER_MAIN_FILE}
+		-o ${BIN_DIR}linux/${PROJECT}-server ${SERVER_MAIN_FILE}
 
 else
 	CGO_ENABLED=1 GOOS=linux GOARCH=amd64 CC=gcc CXX=g++ \
 		${BUILD_CMD_UNIX} \
-		-o ${BIN_DIR}linux/${PROJECT} ${SERVER_MAIN_FILE}
+		-o ${BIN_DIR}linux/${PROJECT}-server ${SERVER_MAIN_FILE}
 endif
 
 compile_server_mac:
@@ -89,7 +89,7 @@ compile_server_mac:
 	@echo
 	@CGO_ENABLED=1 GOOS=darwin GOARCH=amd64 \
 		${BUILD_CMD_UNIX} \
-		-o ${BIN_DIR}darwin/${PROJECT} ${SERVER_MAIN_FILE}
+		-o ${BIN_DIR}darwin/${PROJECT}-server ${SERVER_MAIN_FILE}
 
 # launcher
 compile_launcher_win64:
@@ -168,7 +168,7 @@ package_gui_mac_client:
 # copy files
 copy_files_win64:
 	@echo 'start copy files win64'
-	cp ${BIN_DIR}win32/${PROJECT}-gui.exe "${CLIENT_OUT_DIR}win64"
+	cp ${BIN_DIR}win64/${PROJECT}-gui.exe "${CLIENT_OUT_DIR}win64"
 
 copy_files_win32:
 	@echo 'start copy files win32'

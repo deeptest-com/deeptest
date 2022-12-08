@@ -9,6 +9,7 @@ import (
 	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	_fileUtils "github.com/aaronchen2k/deeptest/pkg/lib/file"
 	"github.com/go-redis/redis/v8"
+	"path"
 	"path/filepath"
 
 	"github.com/fsnotify/fsnotify"
@@ -26,12 +27,25 @@ var (
 func Init(app string) {
 	consts.IsRelease = _commUtils.IsRelease()
 
+	v := viper.New()
+	VIPER = v
+	VIPER.SetConfigType("yaml")
+
 	if app == "agent" {
 		home, _ := _fileUtils.GetUserHome()
 		consts.HomeDir = filepath.Join(home, consts.App)
 		consts.TmpDir = filepath.Join(consts.HomeDir, consts.FolderTmp)
 
 		_fileUtils.MkDirIfNeeded(consts.TmpDir)
+
+		configRes := path.Join("res", consts.ConfigFileName)
+		yamlDefault, _ := deeptest.ReadResData(configRes)
+		if err := VIPER.ReadConfig(bytes.NewBuffer(yamlDefault)); err != nil {
+			panic(fmt.Errorf("读取默认配置文件错误: %w ", err))
+		}
+		if err := VIPER.Unmarshal(&CONFIG); err != nil {
+			panic(fmt.Errorf("解析配置文件错误: %w ", err))
+		}
 
 		return
 	}
@@ -53,14 +67,9 @@ func Init(app string) {
 		}
 	}
 
-	v := viper.New()
-	VIPER = v
-	VIPER.SetConfigType("yaml")
+	fmt.Printf("配置文件路径为%s\n", consts.ConfigFileName)
 
-	configFile := consts.ConfigFileName
-	fmt.Printf("配置文件路径为%s\n", configFile)
-
-	if !dir.IsExist(configFile) { // 没有配置文件，写入默认配置
+	if !dir.IsExist(consts.ConfigFileName) { // 没有配置文件，写入默认配置
 		configRes := filepath.Join("res", consts.ConfigFileName)
 		yamlDefault, _ := deeptest.ReadResData(configRes)
 
@@ -68,13 +77,13 @@ func Init(app string) {
 			panic(fmt.Errorf("读取默认配置文件错误: %w ", err))
 		}
 		if err := VIPER.Unmarshal(&CONFIG); err != nil {
-			panic(fmt.Errorf("同步配置文件错误: %w ", err))
+			panic(fmt.Errorf("解析配置文件错误: %w ", err))
 		}
-		if err := VIPER.WriteConfigAs(configFile); err != nil {
+		if err := VIPER.WriteConfigAs(consts.ConfigFileName); err != nil {
 			panic(fmt.Errorf("写入配置文件错误: %w ", err))
 		}
 	} else {
-		VIPER.SetConfigFile(configFile)
+		VIPER.SetConfigFile(consts.ConfigFileName)
 		err := VIPER.ReadInConfig()
 		if err != nil {
 			panic(fmt.Errorf("读取配置错误: %w ", err))

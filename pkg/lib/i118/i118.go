@@ -6,7 +6,7 @@ import (
 	"github.com/aaronchen2k/deeptest"
 	"golang.org/x/text/language"
 	"golang.org/x/text/message"
-	"path/filepath"
+	"path"
 )
 
 var I118Prt *message.Printer
@@ -15,7 +15,7 @@ func Init(lang string, app string) {
 	//var once sync.Once
 	//once.Do(func() {
 
-	langRes := filepath.Join("res", lang, "messages.json")
+	langRes := path.Join("res", lang, "messages.json")
 	fmt.Printf("path %s\n", langRes)
 
 	bytes, _ := deeptest.ReadResData(langRes)

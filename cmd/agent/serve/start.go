@@ -18,7 +18,6 @@ import (
 	"github.com/sirupsen/logrus"
 	"net/http"
 	"path/filepath"
-	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -74,18 +73,10 @@ func Init() *WebServer {
 		gorilla.Upgrader(gorillaWs.Upgrader{CheckOrigin: func(*http.Request) bool { return true }}), m)
 	websocketAPI.Get("/", websocket.Handler(websocketServer))
 
-	if consts.Port != 0 {
-		config.CONFIG.System.AgentAddress =
-			fmt.Sprintf("%s:%d", strings.Split(config.CONFIG.System.AgentAddress, ":")[0], consts.Port)
-	}
-
 	return &WebServer{
 		app:               app,
 		addr:              config.CONFIG.System.AgentAddress,
 		timeFormat:        config.CONFIG.System.TimeFormat,
-		staticPrefix:      config.CONFIG.System.StaticPrefix,
-		staticPath:        config.CONFIG.System.StaticPath,
-		webPath:           config.CONFIG.System.WebPath,
 		idleConnClosed:    idleConnClosed,
 		globalMiddlewares: []context.Handler{},
 	}

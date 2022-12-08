@@ -32,4 +32,6 @@ nohup go run cmd/agent/main.go  > agent.log 2>&1 &
 make compile_server_linux
 scp -r bin/linux/deeptest aaron@110.42.146.127:/home/aaron/dev/server
 
+nohup go run deeptest > deeptest.log 2>&1 &
+
 cd ui && yarn build && scp -r ui/dist aaron@110.42.146.127:/home/aaron/dev/project/deeptest/static && cd ..

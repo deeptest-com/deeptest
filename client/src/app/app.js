@@ -77,7 +77,13 @@ export class DeepTestApp {
         this._windows.set('main', mainWin);
 
         // const url = await startUIService()
-        const url = 'http://110.42.146.127:8085'
+
+        let url = 'http://110.42.146.127:8085'
+        if (process.env.UI_SERVER_URL) {
+            url = process.env.UI_SERVER_URL
+        }
+        logInfo('load ' + url)
+
         await mainWin.loadURL(url);
 
         ipcMain.on(electronMsg, (event, arg) => {

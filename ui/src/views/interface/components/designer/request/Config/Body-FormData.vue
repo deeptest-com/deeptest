@@ -138,6 +138,9 @@ const getUploadFile = (e) => {
 }
 
 const getFileName = (path) => {
+  if (!path) {
+    return ''
+  }
   return path.replace(/^.*[\\\\/]/, '')
 }
 

@@ -158,14 +158,13 @@ func (r *RoleRepo) DeleteById(id uint) error {
 	return nil
 }
 
-func (r *RoleRepo) FindInId(ids []string) ([]*v1.RoleResp, error) {
-	roles := []*v1.RoleResp{}
+func (r *RoleRepo) FindInId(ids []string) (roles []v1.RoleResp, error error) {
 	err := r.DB.Model(&model.SysRole{}).Where("id in ?", ids).Find(&roles).Error
 	if err != nil {
 		logUtils.Errorf("通过ids查询角色错误", zap.String("错误:", err.Error()))
-		return nil, err
+		return
 	}
-	return roles, nil
+	return
 }
 
 // AddPermForRole

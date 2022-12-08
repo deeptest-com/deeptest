@@ -31,7 +31,7 @@ func NewAuthService() *AccountService {
 }
 
 // Login 登录
-func (s *AccountService) Login(req v1.LoginReq) (token string, err error) {
+func (s *AccountService) Login(req v1.LoginReq) (ret v1.LoginResp, err error) {
 	user, err := s.UserRepo.FindPasswordByUserName(req.Username)
 	if err != nil {
 		user, err = s.UserRepo.FindPasswordByEmail(req.Username)
@@ -58,9 +58,9 @@ func (s *AccountService) Login(req v1.LoginReq) (token string, err error) {
 		CreationDate:  time.Now().Local().Unix(),
 		ExpiresIn:     multi.RedisSessionTimeoutWeb.Milliseconds(),
 	}
-	token, _, err = multi.AuthDriver.GenerateToken(claims)
+	ret.Token, _, err = multi.AuthDriver.GenerateToken(claims)
 	if err != nil {
-		return "", err
+		return
 	}
 
 	return

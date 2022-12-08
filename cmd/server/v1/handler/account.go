@@ -29,12 +29,12 @@ func (c *AccountCtrl) Login(ctx iris.Context) {
 			return
 		}
 	}
-	token, err := c.AccountService.Login(req)
+	resp, err := c.AccountService.Login(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
 		return
 	}
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: iris.Map{"token": token}, Msg: _domain.NoErr.Msg})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: resp, Msg: _domain.NoErr.Msg})
 }
 
 func (c *AccountCtrl) Register(ctx iris.Context) {

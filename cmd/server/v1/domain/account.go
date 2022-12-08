@@ -11,6 +11,7 @@ type LoginReq struct {
 type LoginResp struct {
 	_domain.ReqId
 	Password string `json:"password"`
+	Token    string `json:"token"`
 }
 
 type RegisterReq struct {

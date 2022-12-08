@@ -44,7 +44,7 @@ func (s *RoleService) DeleteById(id uint) error {
 	return s.RoleRepo.DeleteById(id)
 }
 
-func (s *RoleService) FindInId(ids []string) ([]*v1.RoleResp, error) {
+func (s *RoleService) FindInId(ids []string) ([]v1.RoleResp, error) {
 	return s.RoleRepo.FindInId(ids)
 }
 

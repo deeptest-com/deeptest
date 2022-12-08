@@ -103,10 +103,10 @@ const remove = (idx) => {
 }
 const insert = (idx) => {
   console.log('insert')
-  interfaceData.value.bodyFormData.splice(idx + 1, 0, {} as BodyFormDataItem)
+  interfaceData.value.bodyFormData.splice(idx + 1, 0, {type: 'text'} as BodyFormDataItem)
 }
 
-let selectedItemIndex = -1
+const selectedItemIndex = ref(0)
 
 let ipcRenderer = undefined as any
 if (isElectron.value && !ipcRenderer) {
@@ -114,13 +114,13 @@ if (isElectron.value && !ipcRenderer) {
 
   ipcRenderer.on(settings.electronMsgReplay, (event, data) => {
     console.log('from electron: ', data)
-    interfaceData.value.bodyFormData[selectedItemIndex].value = data.filepath
+    interfaceData.value.bodyFormData[selectedItemIndex.value].value = data.filepath
   })
 }
 
 const selectFile = (index) => {
   console.log('selectFile', index)
-  selectedItemIndex = index
+  selectedItemIndex.value = index
 
   if (isElectron.value) {
     const data = {act: 'uploadFile'} as any

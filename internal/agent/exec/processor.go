@@ -134,10 +134,10 @@ func (p *Processor) UnmarshalEntity() (err error) {
 	return
 }
 
-func (p *Processor) AppendNewChildProcessor() (child Processor) {
+func (p *Processor) AppendNewChildProcessor(category consts.ProcessorCategory, typ consts.ProcessorType) (child Processor) {
 	child = Processor{
-		EntityCategory: consts.ProcessorLoop,
-		EntityType:     consts.ProcessorLoopBreak,
+		EntityCategory: category,
+		EntityType:     typ,
 		Parent:         p,
 		ParentId:       p.ID,
 	}
@@ -146,8 +146,6 @@ func (p *Processor) AppendNewChildProcessor() (child Processor) {
 		ProcessorCategory: child.EntityCategory,
 		ProcessorType:     child.EntityType,
 		ParentId:          int(p.ID),
-		WillBreak:         true,
-		Summary:           "条件满足，跳出循环。",
 	}
 
 	return

@@ -89,7 +89,7 @@ func (entity *ProcessorLoop) runLoopUntil(s *Session, processor *Processor, iter
 		result, err := EvaluateGovaluateExpressionByScope(expression, entity.ProcessorID)
 		pass, ok := result.(bool)
 		if err != nil || !ok || pass {
-			childBreakProcessor := processor.AppendNewChildProcessor()
+			childBreakProcessor := processor.AppendNewChildProcessor(consts.ProcessorLoop, consts.ProcessorLoopBreak)
 			childBreakProcessor.Result.WillBreak = true
 			childBreakProcessor.Result.Summary = "条件满足，跳出循环。"
 

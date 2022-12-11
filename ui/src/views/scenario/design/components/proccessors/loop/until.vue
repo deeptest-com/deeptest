@@ -8,10 +8,10 @@
             <a-input v-model:value="modelRef.comments"/>
           </a-form-item>
 
-          <a-form-item label="变量名称" v-bind="validateInfos.variableName">
+<!--          <a-form-item label="变量名称" v-bind="validateInfos.variableName">
             <a-input v-model:value="modelRef.variableName"
                      @blur="validate('variableName', { trigger: 'blur' }).catch(() => {})"/>
-          </a-form-item>
+          </a-form-item>-->
 
           <a-form-item label="条件表达式" v-bind="validateInfos.untilExpression">
             <a-input v-model:value="modelRef.untilExpression"

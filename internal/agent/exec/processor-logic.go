@@ -49,8 +49,13 @@ func (entity ProcessorLogic) Run(processor *Processor, session *Session) (err er
 
 	processor.Result.ResultStatus, processor.Result.Summary = getResultStatus(pass)
 	processor.AddResultToParent()
-
 	exec.SendExecMsg(*processor.Result, session.WsMsg)
+
+	if pass {
+		for _, child := range processor.Children {
+			child.Run(session)
+		}
+	}
 
 	endTime := time.Now()
 	processor.Result.EndTime = &endTime

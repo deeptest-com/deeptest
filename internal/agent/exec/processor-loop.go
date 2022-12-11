@@ -64,12 +64,12 @@ func (entity ProcessorLoop) Run(processor *Processor, session *Session) (err err
 	return
 }
 
-func (entity *ProcessorLoop) runLoopItems(s *Session, processor *Processor, iterator domain.ExecIterator) (err error) {
+func (entity *ProcessorLoop) runLoopItems(session *Session, processor *Processor, iterator domain.ExecIterator) (err error) {
 	for _, item := range iterator.Items {
 		SetVariable(entity.ProcessorID, iterator.VariableName, item, consts.Local)
 
 		for _, child := range processor.Children {
-			child.Run(s)
+			child.Run(session)
 
 			if child.Result.WillBreak {
 				logUtils.Infof("break")
@@ -82,7 +82,7 @@ LABEL:
 	return
 }
 
-func (entity *ProcessorLoop) runLoopUntil(s *Session, processor *Processor, iterator domain.ExecIterator) (err error) {
+func (entity *ProcessorLoop) runLoopUntil(session *Session, processor *Processor, iterator domain.ExecIterator) (err error) {
 	expression := iterator.UntilExpression
 
 	for {
@@ -94,13 +94,13 @@ func (entity *ProcessorLoop) runLoopUntil(s *Session, processor *Processor, iter
 			childBreakProcessor.Result.Summary = "条件满足，跳出循环。"
 
 			childBreakProcessor.AddResultToParent()
-			exec.SendExecMsg(*childBreakProcessor.Result, s.WsMsg)
+			exec.SendExecMsg(*childBreakProcessor.Result, session.WsMsg)
 
 			break
 		}
 
 		for _, child := range processor.Children {
-			(*child).Run(s)
+			(*child).Run(session)
 
 			if child.Result.WillBreak {
 				logUtils.Infof("break")

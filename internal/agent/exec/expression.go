@@ -32,18 +32,27 @@ var (
 func EvaluateGovaluateExpressionByScope(expression string, scopeId uint) (ret interface{}, err error) {
 	expr := commUtils.RemoveLeftVariableSymbol(expression)
 
+	exprErr := false
+
 	valueExpression, err := govaluate.NewEvaluableExpressionWithFunctions(expr, GovaluateFunctions)
 	if err != nil {
-		ret = expression
-		return
+		exprErr = true
+	} else {
+		parameters, err := generateGovaluateParamsByScope(expression, scopeId)
+		if err != nil || parameters == nil {
+			exprErr = true
+		} else {
+			ret, err = valueExpression.Evaluate(parameters)
+			if err != nil {
+				exprErr = true
+			}
+		}
 	}
 
-	parameters, err := generateGovaluateParamsByScope(expression, scopeId)
-	if err != nil {
-		return
+	if exprErr {
+		variableMap := GetVariableMap(scopeId)
+		ret = ReplaceVariableValue(expression, variableMap)
 	}
-
-	ret, err = valueExpression.Evaluate(parameters)
 
 	return
 }

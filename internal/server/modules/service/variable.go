@@ -47,11 +47,11 @@ func MergeVariables(environmentVariables []model.EnvironmentVar, interfaceExtrac
 
 		if isMap {
 			for propKey, v := range valMp {
-				ret[fmt.Sprintf("${%s.%s}", key, propKey)] = v
+				ret[fmt.Sprintf("%s.%s", key, propKey)] = v
 			}
 
 		} else {
-			ret[fmt.Sprintf("${%s}", key)] = val
+			ret[fmt.Sprintf("%s", key)] = val
 
 		}
 	}

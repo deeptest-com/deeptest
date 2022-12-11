@@ -1,7 +1,6 @@
 package agentExec
 
 import (
-	"fmt"
 	"github.com/Knetic/govaluate"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	commUtils "github.com/aaronchen2k/deeptest/internal/pkg/utils"
@@ -32,27 +31,18 @@ var (
 func EvaluateGovaluateExpressionByScope(expression string, scopeId uint) (ret interface{}, err error) {
 	expr := commUtils.RemoveLeftVariableSymbol(expression)
 
-	exprErr := false
-
 	valueExpression, err := govaluate.NewEvaluableExpressionWithFunctions(expr, GovaluateFunctions)
 	if err != nil {
-		exprErr = true
-	} else {
-		parameters, err := generateGovaluateParamsByScope(expression, scopeId)
-		if err != nil || parameters == nil {
-			exprErr = true
-		} else {
-			ret, err = valueExpression.Evaluate(parameters)
-			if err != nil {
-				exprErr = true
-			}
-		}
+		ret = expression
+		return
 	}
 
-	if exprErr {
-		variableMap := GetVariableMap(scopeId)
-		ret = ReplaceVariableValue(expression, variableMap)
+	parameters, err := generateGovaluateParamsByScope(expression, scopeId)
+	if err != nil {
+		return
 	}
+
+	ret, err = valueExpression.Evaluate(parameters)
 
 	return
 }
@@ -96,8 +86,7 @@ func generateGovaluateParamsWithVariables(expression string, variableMap map[str
 	variables := GetVariablesInVariablePlaceholder(expression)
 
 	for _, variableName := range variables {
-		temp := fmt.Sprintf("${%s}", variableName)
-		if val, ok := variableMap[temp]; ok {
+		if val, ok := variableMap[variableName]; ok {
 			ret[variableName] = val
 		}
 	}

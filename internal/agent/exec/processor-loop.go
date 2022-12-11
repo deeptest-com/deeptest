@@ -86,9 +86,16 @@ func (entity *ProcessorLoop) runLoopUntil(s *Session, processor *Processor, iter
 	expression := iterator.UntilExpression
 
 	for {
-		result, err := EvaluateGovaluateExpressionByScope(expression, entity.ID)
+		result, err := EvaluateGovaluateExpressionByScope(expression, entity.ProcessorID)
 		pass, ok := result.(bool)
 		if err != nil || !ok || pass {
+			childBreakProcessor := processor.AppendNewChildProcessor()
+			childBreakProcessor.Result.WillBreak = true
+			childBreakProcessor.Result.Summary = "条件满足，跳出循环。"
+
+			childBreakProcessor.AddResultToParent()
+			exec.SendExecMsg(*childBreakProcessor.Result, s.WsMsg)
+
 			break
 		}
 
@@ -133,13 +140,13 @@ func (entity *ProcessorLoop) getIterator() (iterator domain.ExecIterator, msg st
 		msg = fmt.Sprintf("迭代\"%d\"次。", entity.Times)
 	} else if entity.ProcessorType == consts.ProcessorLoopIn {
 		iterator, _ = entity.GenerateLoopList()
-		msg = fmt.Sprintf("迭代列表\"%s\"。", entity.List)
+		msg = fmt.Sprintf("\"%s\"。", entity.List)
 	} else if entity.ProcessorType == consts.ProcessorLoopRange {
 		iterator, _ = entity.GenerateLoopRange()
-		msg = fmt.Sprintf("迭代区间\"%s\"。", entity.Range)
+		msg = fmt.Sprintf("\"%s\"。", entity.Range)
 	} else if entity.ProcessorType == consts.ProcessorLoopUntil {
 		iterator.UntilExpression = entity.UntilExpression
-		msg = fmt.Sprintf("迭代直到\"%s\"。", entity.UntilExpression)
+		msg = fmt.Sprintf("\"%s\"。", entity.UntilExpression)
 	}
 
 	iterator.VariableName = entity.VariableName

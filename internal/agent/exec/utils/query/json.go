@@ -2,6 +2,7 @@ package queryHelper
 
 import (
 	"fmt"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/antchfx/jsonquery"
 	"strings"
 )
@@ -9,14 +10,14 @@ import (
 func JsonQuery(content string, expression string) (result string) {
 	doc, err := jsonquery.Parse(strings.NewReader(content))
 	if err != nil {
-		result = "ContentErr"
+		result = consts.ContentErr
 		return
 	}
 
 	expression, propName := GetExpressionForCssSelector(expression)
 	elem, err := jsonquery.Query(doc, expression)
 	if err != nil || elem == nil {
-		result = "QueryErr"
+		result = consts.ExtractorErr
 		return
 	}
 

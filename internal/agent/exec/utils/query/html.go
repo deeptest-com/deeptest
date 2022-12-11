@@ -2,6 +2,7 @@ package queryHelper
 
 import (
 	"fmt"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/antchfx/htmlquery"
 	"strings"
 )
@@ -15,14 +16,14 @@ func HtmlQuery(content string, expression string) (result string) {
 
 	doc, err := htmlquery.Parse(strings.NewReader(content))
 	if err != nil {
-		result = "ContentErr"
+		result = consts.ContentErr
 		return
 	}
 
 	expression, propName := GetExpressionForCssSelector(expression)
 	elem, err := htmlquery.Query(doc, expression)
 	if err != nil || elem == nil {
-		result = "QueryErr"
+		result = consts.ExtractorErr
 		return
 	}
 

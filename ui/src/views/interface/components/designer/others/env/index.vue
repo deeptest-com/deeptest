@@ -151,7 +151,7 @@
               <div class="val">
                 <a-tooltip class="val" overlayClassName="dp-tip-small">
                   <template #title>{{item.value}}</template>
-                  {{item.value}}
+                  {{item.value==='extractor_err'? t(item.value+'_short') : item.value}}
                 </a-tooltip>
               </div>
             </div>
@@ -188,7 +188,7 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import {computed, defineComponent, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
@@ -202,18 +202,6 @@ import EnvEdit from "./edit.vue";
 import EnvVarEdit from "./edit-var.vue"
 import {StateType as ProjectStateType} from "@/store/project";
 
-export default defineComponent({
-  name: 'RequestEnv',
-  components: {
-    EnvEdit, EnvVarEdit,
-    QuestionCircleOutlined, ImportOutlined, Empty, MoreOutlined, PlusOutlined, ClearOutlined,
-    DownOutlined, EditOutlined, DeleteOutlined, CopyOutlined,
-  },
-
-  computed: {
-  },
-
-  setup(props) {
     const {t} = useI18n();
     const store = useStore<{ Interface: InterfaceStateType, ProjectGlobal: ProjectStateType, Environment: EnvironmentStateType }>();
     const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
@@ -309,40 +297,6 @@ export default defineComponent({
       console.log('removeShareVar', item)
       store.dispatch('Interface/removeShareVar', item.id)
     }
-
-    return {
-      interfaceData,
-      environmentsData,
-      environmentData,
-      validExtractorVariablesData,
-
-      envEditVisible,
-      modelId,
-      envEditFinish,
-      envEditCancel,
-
-      envVarEditVisible,
-      envVal,
-      envVarEditFinish,
-      envVarEditCancel,
-
-      // get,
-      select,
-      create,
-      edit,
-      remove,
-      copy,
-
-      createVar,
-      clearVar,
-      editVar,
-      removeVar,
-
-      clearShareVar,
-      removeShareVar,
-    }
-  }
-})
 
 </script>
 

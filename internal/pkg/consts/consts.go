@@ -34,5 +34,8 @@ const (
 	Url          = "https://deeptest.com/"
 	UrlDev       = "http://localhost:8000/"
 
+	ExtractorErr = "extractor_err"
+	ContentErr   = "content_err"
+
 	AgentPort = 8086
 )

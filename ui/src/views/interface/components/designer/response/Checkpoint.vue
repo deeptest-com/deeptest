@@ -27,7 +27,7 @@
           {{ item.actualResult }}
         </a-col>
         <a-col flex="100px" :class="getResultCls(item.resultStatus)">
-          {{ item.resultStatus ? t(item.resultStatus)  : ''}}
+          {{ item.resultStatus ? t(item.resultStatus) : '' }}
         </a-col>
 
         <a-col flex="100px" class="dp-right">
@@ -123,7 +123,7 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import {computed, ComputedRef, defineComponent, PropType, reactive, Ref, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
@@ -142,192 +142,152 @@ import {getCompareOptsForRespCode, getCompareOptsForString} from "@/utils/compar
 
 const useForm = Form.useForm;
 
-export default defineComponent({
-  name: 'ResponseCheckpoint',
-  components: {
-    PlusOutlined, EditOutlined, DeleteOutlined, CloseCircleOutlined, CheckCircleOutlined,
-  },
+const {t} = useI18n();
+const store = useStore<{ Interface: StateType }>();
 
-  computed: {
-  },
+const types = getEnumSelectItems(CheckpointType)
+const operators = getEnumSelectItems(ComparisonOperator)
+const operatorsForString = getCompareOptsForString()
+const operatorsForCode = getCompareOptsForRespCode()
 
-  setup(props) {
-    const {t} = useI18n();
-    const store = useStore<{ Interface: StateType }>();
+const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
+const checkpointsData = computed(() => store.state.Interface.checkpointsData);
 
-    const types = getEnumSelectItems(CheckpointType)
-    const operators = getEnumSelectItems(ComparisonOperator)
-    const operatorsForString = getCompareOptsForString()
-    const operatorsForCode = getCompareOptsForRespCode()
+watch(interfaceData, () => {
+  console.log('watch interfaceData')
+  listCheckPoint()
+}, {deep: true})
 
-    const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
-    const checkpointsData = computed(() => store.state.Interface.checkpointsData);
+const listCheckPoint = () => {
+  store.dispatch('Interface/listCheckpoint')
+}
+listCheckPoint()
 
-    watch(interfaceData, () => {
-      console.log('watch interfaceData')
-      listCheckPoint()
-    }, {deep: true})
+const model = ref({
+  type: CheckpointType.responseStatus,
+  expression: '',
+  extractorVariable: '',
+  operator: ComparisonOperator.equal,
+  value: ''} as Checkpoint)
 
-    const listCheckPoint = () => {
-      store.dispatch('Interface/listCheckpoint')
-    }
-    listCheckPoint()
+const variables = ref([])
+const editVisible = ref(false)
 
-    const model = ref({
-      type: CheckpointType.responseStatus,
-      expression: '',
-      extractorVariable: '',
-      operator: ComparisonOperator.equal,
-      value: ''} as Checkpoint)
+const extractorVariableRequired = { required: true, message: '请选择变量', trigger: 'change' }
+const expressionRequired = { required: true, message: '请输入表达式', trigger: 'blur' }
+const operatorRequired = { required: true, message: '请选择操作', trigger: 'change' }
+const valueRequired = { required: true, message: '请输入数值', trigger: 'blur' }
+const rules = reactive({
+  type: [
+    { required: true, message: '请选择类型', trigger: 'blur' },
+  ],
+  extractorVariable: [
+    extractorVariableRequired
+  ],
+  expression: [
+    expressionRequired
+  ],
+  operator: [
+    operatorRequired,
+  ],
+  value: [
+    valueRequired,
+  ],
+} as any);
 
-    const variables = ref([])
-    const editVisible = ref(false)
+const { resetFields, validate, validateInfos } = useForm(model, rules);
 
-    const extractorVariableRequired = { required: true, message: '请选择变量', trigger: 'change' }
-    const expressionRequired = { required: true, message: '请输入表达式', trigger: 'blur' }
-    const operatorRequired = { required: true, message: '请选择操作', trigger: 'change' }
-    const valueRequired = { required: true, message: '请输入数值', trigger: 'blur' }
-    const rules = reactive({
-      type: [
-        { required: true, message: '请选择类型', trigger: 'blur' },
-      ],
-      extractorVariable: [
-        extractorVariableRequired
-      ],
-      expression: [
-        expressionRequired
-      ],
-      operator: [
-        operatorRequired,
-      ],
-      value: [
-        valueRequired,
-      ],
-    } as any);
+const add = () => {
+  console.log('add')
+  editVisible.value = true
+  model.value = {
+    type: CheckpointType.responseStatus,
+    expression: '',
+    extractorVariable: '',
+    operator: ComparisonOperator.equal,
+    value: ''} as Checkpoint
+  loadExtractorVariable()
+}
 
-    const { resetFields, validate, validateInfos } = useForm(model, rules);
+const edit = (item) => {
+  console.log('edit')
+  model.value = item
+  editVisible.value = true
 
-    const add = () => {
-      console.log('add')
-      editVisible.value = true
-      model.value = {
-        type: CheckpointType.responseStatus,
-        expression: '',
-        extractorVariable: '',
-        operator: ComparisonOperator.equal,
-        value: ''} as Checkpoint
-      loadExtractorVariable()
-    }
+  loadExtractorVariable()
+}
 
-    const edit = (item) => {
-      console.log('edit')
-      model.value = item
-      editVisible.value = true
-
-      loadExtractorVariable()
-    }
-
-    const save = () => {
-      console.log('save')
-      validate().then(() => {
-        model.value.interfaceId = interfaceData.value.id
-        store.dispatch('Interface/saveCheckpoint', model.value).then((result) => {
-          if (result) {
-            editVisible.value = false
-          }
-        })
-      })
-    }
-
-    const cancel = () => {
-      console.log('cancel')
-      editVisible.value = false
-    }
-
-    const remove = (item) => {
-      console.log('remove')
-      store.dispatch('Interface/removeCheckpoint', item.id)
-    }
-
-    const disable = (item) => {
-      console.log('disabled')
-      item.disabled = !item.disabled
-      store.dispatch('Interface/saveCheckpoint', item)
-    }
-
-    const selectType = () => {
-      console.log('selectType')
-
-      if (model.value.type === CheckpointType.responseBody) {
-        model.value.operator = ComparisonOperator.contain
-      } else {
-        model.value.operator = ComparisonOperator.equal
+const save = () => {
+  console.log('save')
+  validate().then(() => {
+    model.value.interfaceId = interfaceData.value.id
+    store.dispatch('Interface/saveCheckpoint', model.value).then((result) => {
+      if (result) {
+        editVisible.value = false
       }
+    })
+  })
+}
 
-      loadExtractorVariable()
-    }
+const cancel = () => {
+  console.log('cancel')
+  editVisible.value = false
+}
 
-    const loadExtractorVariable = () => {
-      if (model.value.type === CheckpointType.responseHeader || model.value.type === CheckpointType.judgement) {
-        rules.expression = [expressionRequired]
-      } else {
-        rules.expression = []
-      }
+const remove = (item) => {
+  console.log('remove')
+  store.dispatch('Interface/removeCheckpoint', item.id)
+}
 
-      if (model.value.type === CheckpointType.judgement) {
-        rules.operator = []
-        rules.value = []
-        model.value.operator = ComparisonOperator.empty
-        model.value.value = ComparisonOperator.empty
-      } else {
-        rules.operator = [operatorRequired]
-        rules.value = [valueRequired]
-        model.value.operator = ComparisonOperator.equal
-      }
+const disable = (item) => {
+  console.log('disabled')
+  item.disabled = !item.disabled
+  store.dispatch('Interface/saveCheckpoint', item)
+}
 
-      if (model.value.type === CheckpointType.extractor) {
-        rules.extractorVariable = [extractorVariableRequired]
+const selectType = () => {
+  console.log('selectType')
 
-        listExtractorVariable(interfaceData.value.id).then((jsn) => {
-          variables.value = jsn.data
-        })
-      } else {
-        rules.extractorVariable = []
-      }
-    }
-
-    return {
-      t,
-      interfaceData,
-      checkpointsData,
-      model,
-      variables,
-      editVisible,
-      CheckpointType,
-      getResultCls,
-      add,
-      edit,
-      remove,
-      disable,
-      save,
-      cancel,
-      selectType,
-      isInArray,
-
-      rules,
-      validate,
-      validateInfos,
-      resetFields,
-
-      types,
-      operators,
-      operatorsForString,
-      operatorsForCode,
-      labelCol: { span: 6 },
-      wrapperCol: { span: 16 },
-    }
+  if (model.value.type === CheckpointType.responseBody) {
+    model.value.operator = ComparisonOperator.contain
+  } else {
+    model.value.operator = ComparisonOperator.equal
   }
-})
+
+  loadExtractorVariable()
+}
+
+const loadExtractorVariable = () => {
+  if (model.value.type === CheckpointType.responseHeader || model.value.type === CheckpointType.judgement) {
+    rules.expression = [expressionRequired]
+  } else {
+    rules.expression = []
+  }
+
+  if (model.value.type === CheckpointType.judgement) {
+    rules.operator = []
+    rules.value = []
+    model.value.operator = ComparisonOperator.empty
+    model.value.value = ComparisonOperator.empty
+  } else {
+    rules.operator = [operatorRequired]
+    rules.value = [valueRequired]
+    model.value.operator = ComparisonOperator.equal
+  }
+
+  if (model.value.type === CheckpointType.extractor) {
+    rules.extractorVariable = [extractorVariableRequired]
+
+    listExtractorVariable(interfaceData.value.id).then((jsn) => {
+      variables.value = jsn.data
+    })
+  } else {
+    rules.extractorVariable = []
+  }
+}
+
+const labelCol = { span: 6 }
+const wrapperCol = { span: 16 }
 
 </script>
 

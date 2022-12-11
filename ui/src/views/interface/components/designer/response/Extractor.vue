@@ -7,7 +7,7 @@
         <a-col flex="90px">提取类型</a-col>
         <a-col flex="1">表达式</a-col>
         <a-col flex="150px" style="padding-left: 10px;">变量</a-col>
-        <a-col flex="1">提取结果</a-col>
+        <a-col flex="1">结果</a-col>
 
         <a-col flex="100px" class="dp-right">
           <PlusOutlined @click.stop="add" class="dp-icon-btn dp-trans-80" />
@@ -31,7 +31,9 @@
           </span>
         </a-col>
         <a-col flex="150px" style="padding-left: 10px;">{{ item.variable }}</a-col>
-        <a-col flex="1"  style="width: 0; word-break: break-word;">{{item.result}}</a-col>
+        <a-col flex="1" :class="[item.result==='extractor_err'? 'dp-color-fail': '']"  style="width: 0; word-break: break-word;">
+          {{item.result==='extractor_err'? t(item.result) : item.result}}
+        </a-col>
 
         <a-col flex="100px" class="dp-right">
           <a-tooltip v-if="!item.disabled" @click="disable(item)" overlayClassName="dp-tip-small">
@@ -138,7 +140,7 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import {computed, defineComponent, reactive, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
@@ -156,184 +158,144 @@ import {getEnumSelectItems} from "@/views/interface/service";
 import {ExtractorSrc, ExtractorType} from "@/utils/enum";
 
 const useForm = Form.useForm;
+const {t} = useI18n();
+const store = useStore<{ Interface: StateType }>();
 
-export default defineComponent({
-  name: 'ResponseExtractor',
-  components: {
-    PlusOutlined, EditOutlined, DeleteOutlined, CloseCircleOutlined, CheckCircleOutlined,
-  },
+const srcOptions = getEnumSelectItems(ExtractorSrc)
+const typeOptions = getEnumSelectItems(ExtractorType)
 
-  computed: {
-  },
+const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
+const responseData = computed<any>(() => store.state.Interface.responseData);
+const extractorsData = computed(() => store.state.Interface.extractorsData);
 
-  setup(props) {
-    const {t} = useI18n();
-    const store = useStore<{ Interface: StateType }>();
+watch(interfaceData, () => {
+  console.log('watch interfaceData')
+  listExtractor()
+}, {deep: true})
 
-    const srcOptions = getEnumSelectItems(ExtractorSrc)
-    const typeOptions = getEnumSelectItems(ExtractorType)
+const listExtractor = () => {
+  store.dispatch('Interface/listExtractor')
+}
+listExtractor()
 
-    const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
-    const responseData = computed<any>(() => store.state.Interface.responseData);
-    const extractorsData = computed(() => store.state.Interface.extractorsData);
+const model = ref({} as Extractor)
+const results = ref({})
+const editVisible = ref(false)
 
-    watch(interfaceData, () => {
-      console.log('watch interfaceData')
-      listExtractor()
-    }, {deep: true})
+const typeRequired = { required: true, message: '请选择类型', trigger: 'change' }
+const expressionRequired = { required: true, message: '请输入元素路径', trigger: 'blur' }
+const keyRequired = { required: true, message: '请输入键值', trigger: 'blur' }
+const boundaryStartRequired = { required: true, message: '请输入边界开始字符串', trigger: 'blur' }
+const boundaryEndRequired = { required: true, message: '请输入边界结束字符串', trigger: 'blur' }
 
-    const listExtractor = () => {
-      store.dispatch('Interface/listExtractor')
-    }
-    listExtractor()
+const rules = reactive({
+  src: [
+    { required: true, message: '请选择来源', trigger: 'change' },
+  ],
+  type: [
+    typeRequired,
+  ],
+  expression: [
+    expressionRequired,
+  ],
+  key: [
+    keyRequired,
+  ],
+  boundaryStart: [
+    boundaryStartRequired,
+  ],
+  boundaryEnd: [
+    boundaryEndRequired,
+  ],
+  variable: [
+    { required: true, message: '请输入变量名', trigger: 'blur' },
+  ],
+});
 
-    const model = ref({} as Extractor)
-    const results = ref({})
-    const editVisible = ref(false)
+const { resetFields, validate, validateInfos } = useForm(model, rules);
 
-    const typeRequired = { required: true, message: '请选择类型', trigger: 'change' }
-    const expressionRequired = { required: true, message: '请输入元素路径', trigger: 'blur' }
-    const keyRequired = { required: true, message: '请输入键值', trigger: 'blur' }
-    const boundaryStartRequired = { required: true, message: '请输入边界开始字符串', trigger: 'blur' }
-    const boundaryEndRequired = { required: true, message: '请输入边界结束字符串', trigger: 'blur' }
+const add = () => {
+  editVisible.value = true
+  model.value = {src: ExtractorSrc.body, type: ExtractorType.boundary, expression: '', variable: '', scope: 'private'} as Extractor
 
-    const rules = reactive({
-      src: [
-        { required: true, message: '请选择来源', trigger: 'change' },
-      ],
-      type: [
-        typeRequired,
-      ],
-      expression: [
-        expressionRequired,
-      ],
-      key: [
-        keyRequired,
-      ],
-      boundaryStart: [
-        boundaryStartRequired,
-      ],
-      boundaryEnd: [
-        boundaryEndRequired,
-      ],
-      variable: [
-        { required: true, message: '请输入变量名', trigger: 'blur' },
-      ],
-    });
-
-    const { resetFields, validate, validateInfos } = useForm(model, rules);
-
-    const add = () => {
-      editVisible.value = true
-      model.value = {src: ExtractorSrc.body, type: ExtractorType.boundary, expression: '', variable: '', scope: 'private'} as Extractor
-
-      selectSrc()
-      if (responseData.value.contentLang === 'json') {
-        model.value.type = ExtractorType.jsonquery
-      } else if (responseData.value.contentLang === 'xml') {
-        model.value.type = ExtractorType.xmlquery
-      } else if (responseData.value.contentLang === 'html') {
-        model.value.type = ExtractorType.htmlquery
-      }
-    }
-
-    const edit = (item) => {
-      console.log('edit')
-      model.value = item
-      editVisible.value = true
-
-      selectSrc()
-    }
-
-    const save = () => {
-      console.log('save')
-      validate().then(() => {
-        model.value.interfaceId = interfaceData.value.id
-        model.value.projectId = interfaceData.value.projectId
-        store.dispatch('Interface/saveExtractor', model.value).then((result) => {
-          if (result) {
-            editVisible.value = false
-          }
-        })
-      })
-    }
-
-    const cancel = () => {
-      console.log('cancel')
-      editVisible.value = false
-    }
-
-    const remove = (item) => {
-      console.log('remove')
-      store.dispatch('Interface/removeExtractor', item.id)
-    }
-
-    const disable = (item) => {
-      console.log('disabled')
-      item.disabled = !item.disabled
-      store.dispatch('Interface/saveExtractor', item)
-    }
-
-    const selectSrc = () => {
-      console.log('selectSrc', model.value.src)
-
-      if (model.value.src === ExtractorSrc.header) {
-        rules.key = [keyRequired]
-        rules.expression = []
-        rules.type = []
-      } else {
-        rules.key = []
-        rules.expression = [expressionRequired]
-        rules.type = [typeRequired]
-      }
-
-      selectType()
-    }
-    const selectType = () => {
-      console.log('selectType', model.value.type)
-
-      if (model.value.type === ExtractorType.boundary) {
-        rules.boundaryStart = [boundaryStartRequired]
-        rules.boundaryEnd = [boundaryEndRequired]
-        rules.expression = []
-      } else {
-        rules.boundaryStart = []
-        rules.boundaryEnd = []
-        rules.expression = [expressionRequired]
-      }
-    }
-
-    return {
-      t,
-      interfaceData,
-      extractorsData,
-      model,
-      results,
-      editVisible,
-      ExtractorSrc,
-      ExtractorType,
-
-      add,
-      edit,
-      remove,
-      disable,
-      save,
-      cancel,
-      selectSrc,
-      selectType,
-
-      rules,
-      validate,
-      validateInfos,
-      resetFields,
-
-      srcOptions,
-      typeOptions,
-      labelCol: { span: 6 },
-      wrapperCol: { span: 16 },
-    }
+  selectSrc()
+  if (responseData.value.contentLang === 'json') {
+    model.value.type = ExtractorType.jsonquery
+  } else if (responseData.value.contentLang === 'xml') {
+    model.value.type = ExtractorType.xmlquery
+  } else if (responseData.value.contentLang === 'html') {
+    model.value.type = ExtractorType.htmlquery
   }
-})
+}
+
+const edit = (item) => {
+  console.log('edit')
+  model.value = item
+  editVisible.value = true
+
+  selectSrc()
+}
+
+const save = () => {
+  console.log('save')
+  validate().then(() => {
+    model.value.interfaceId = interfaceData.value.id
+    model.value.projectId = interfaceData.value.projectId
+    store.dispatch('Interface/saveExtractor', model.value).then((result) => {
+      if (result) {
+        editVisible.value = false
+      }
+    })
+  })
+}
+
+const cancel = () => {
+  console.log('cancel')
+  editVisible.value = false
+}
+
+const remove = (item) => {
+  console.log('remove')
+  store.dispatch('Interface/removeExtractor', item.id)
+}
+
+const disable = (item) => {
+  console.log('disabled')
+  item.disabled = !item.disabled
+  store.dispatch('Interface/saveExtractor', item)
+}
+
+const selectSrc = () => {
+  console.log('selectSrc', model.value.src)
+
+  if (model.value.src === ExtractorSrc.header) {
+    rules.key = [keyRequired]
+    rules.expression = []
+    rules.type = []
+  } else {
+    rules.key = []
+    rules.expression = [expressionRequired]
+    rules.type = [typeRequired]
+  }
+
+  selectType()
+}
+const selectType = () => {
+  console.log('selectType', model.value.type)
+
+  if (model.value.type === ExtractorType.boundary) {
+    rules.boundaryStart = [boundaryStartRequired]
+    rules.boundaryEnd = [boundaryEndRequired]
+    rules.expression = []
+  } else {
+    rules.boundaryStart = []
+    rules.boundaryEnd = []
+    rules.expression = [expressionRequired]
+  }
+}
+
+const labelCol = { span: 6 }
+const wrapperCol = { span: 16 }
 
 </script>
 

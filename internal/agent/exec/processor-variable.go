@@ -42,7 +42,7 @@ func (entity ProcessorVariable) Run(processor *Processor, session *Session) (err
 			//	return
 		}
 
-		SetVariable(processor.ID, entity.VariableName, variableValue, consts.Local) // set in parent scope
+		SetVariable(processor.ParentId, entity.VariableName, variableValue, consts.Local) // set in parent scope
 		processor.Result.Summary = fmt.Sprintf("\"%s\"为\"%v\"。", entity.VariableName, variableValue)
 
 	} else if entity.ProcessorType == consts.ProcessorVariableClear {

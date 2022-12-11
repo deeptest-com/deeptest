@@ -13,22 +13,35 @@
         <ResponseHeaders></ResponseHeaders>
       </a-tab-pane>
 
-      <a-tab-pane key="4" tab="提取器">
+      <a-tab-pane key="4">
         <ResponseExtractor></ResponseExtractor>
+
+        <template #tab>
+          <a-badge v-if="extractorFail" dot><span class="link">提取器</span></a-badge>
+          <span v-else>提取器</span>
+        </template>
+
       </a-tab-pane>
 
-      <a-tab-pane key="5" tab="检查点">
+      <a-tab-pane key="5">
         <ResponseCheckpoint></ResponseCheckpoint>
+
+        <template #tab>
+          <a-badge v-if="checkpointFail" dot><span class="link">检查点</span></a-badge>
+          <span v-else>检查点</span>
+        </template>
+
       </a-tab-pane>
     </a-tabs>
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import {computed, ComputedRef, defineComponent, PropType, Ref, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import {StateType} from "@/views/interface/store";
+import { ExclamationOutlined } from '@ant-design/icons-vue';
 import ResponseLensJson from "./Renderer/lenses/JSONLensRenderer.vue";
 import ResponseHeaders from "./Renderer/Headers.vue";
 import ResponseExtractor from "./Extractor.vue";
@@ -38,37 +51,48 @@ import ResponseLensHtml from "@/views/interface/components/designer/response/Ren
 import ResponseLensImage from "@/views/interface/components/designer/response/Renderer/lenses/ImageLensRenderer.vue";
 import ResponseLensRaw from "@/views/interface/components/designer/response/Renderer/lenses/RawLensRenderer.vue";
 
-export default defineComponent({
-  name: 'ResponseRenderer',
-  components: {
-    ResponseLensRaw,
-    ResponseLensImage,
-    ResponseLensHtml,
-    ResponseLensXml,
-    ResponseHeaders, ResponseLensJson,
-    ResponseExtractor, ResponseCheckpoint,
-  },
-  setup(props) {
-    const {t} = useI18n();
-    const store = useStore<{ Interface: StateType }>();
-    const responseData = computed<any>(() => store.state.Interface.responseData);
-    const title = ref(t('text'))
+const {t} = useI18n();
+const store = useStore<{ Interface: StateType }>();
+const responseData = computed<any>(() => store.state.Interface.responseData);
+const extractorsData = computed(() => store.state.Interface.extractorsData);
+const checkpointsData = computed(() => store.state.Interface.checkpointsData);
 
-    watch(responseData, () => {
-      console.log('watch responseData')
-      title.value = t(responseData.value.contentLang)
-    }, {deep: true})
+const title = ref(t('text'))
 
-    const activeKey = ref('1');
+watch(responseData, () => {
+  console.log('watch responseData')
+  title.value = t(responseData.value.contentLang)
+}, {deep: true})
 
-    return {
-      t,
-      responseData,
-      activeKey,
-      title,
-    }
+const activeKey = ref('1');
+
+const extractorFail = computed(() => {
+  console.log('===', extractorsData.value)
+  for (let val of extractorsData.value) {
+    console.log('===', val.result)
+    if (val.result==='extractor_err') return true
   }
+  return false
 })
+
+const checkpointFail = computed(() => {
+  console.log('===', checkpointsData.value)
+  for (let val of checkpointsData.value) {
+    console.log('---', val.resultStatus)
+    if (val.resultStatus==='fail') return true
+  }
+  return false
+})
+
+const listExtractor = () => {
+  store.dispatch('Interface/listExtractor')
+}
+listExtractor()
+
+const listCheckPoint = () => {
+  store.dispatch('Interface/listCheckpoint')
+}
+listCheckPoint()
 
 </script>
 
@@ -86,6 +110,7 @@ export default defineComponent({
 </style>
 
 <style lang="less" scoped>
-
-
+  .link {
+    color: #009688;
+  }
 </style>

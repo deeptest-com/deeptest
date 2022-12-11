@@ -12,14 +12,20 @@ func Compare(operator consts.ComparisonOperator, actual, expect interface{}) (re
 	if operator == consts.Equal {
 		if actual == expect {
 			result = consts.Pass
+		} else {
+			result = consts.Fail
 		}
 	} else if operator == consts.NotEqual {
 		if actual != expect {
 			result = consts.Pass
+		} else {
+			result = consts.Fail
 		}
 	} else if operator == consts.Contain {
 		if strings.Contains(interfaceToString(actual), interfaceToString(expect)) {
 			result = consts.Pass
+		} else {
+			result = consts.Fail
 		}
 	} else {
 		result = CompareAsFloat(operator, actual, expect)

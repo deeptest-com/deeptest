@@ -131,6 +131,10 @@ export default {
     'block': '阻塞',
     'unknown': '位置',
 
+    'extractor_err': '提取失败',
+    'extractor_err_short': '失败',
+    'content_err': '内容错误',
+
     'http_1000': '无法连接到服务',
 
     'biz_401': '请重新登录',

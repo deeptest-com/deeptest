@@ -133,3 +133,22 @@ func (p *Processor) UnmarshalEntity() (err error) {
 
 	return
 }
+
+func (p *Processor) AppendNewChildProcessor() (child Processor) {
+	child = Processor{
+		EntityCategory: consts.ProcessorLoop,
+		EntityType:     consts.ProcessorLoopBreak,
+		Parent:         p,
+		ParentId:       p.ID,
+	}
+
+	child.Result = &domain.Result{
+		ProcessorCategory: child.EntityCategory,
+		ProcessorType:     child.EntityType,
+		ParentId:          int(p.ID),
+		WillBreak:         true,
+		Summary:           "条件满足，跳出循环。",
+	}
+
+	return
+}

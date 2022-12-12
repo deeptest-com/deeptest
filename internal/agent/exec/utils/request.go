@@ -6,6 +6,7 @@ import (
 	"compress/zlib"
 	"crypto/tls"
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
@@ -159,8 +160,11 @@ func posts(req domain.Request, method consts.HttpMethod, readRespData bool) (
 	reqUrl := commUtils.RemoveLeftVariableSymbol(req.Url)
 	reqHeaders := req.Headers
 	reqParams := req.Params
-	reqData := req.Body
+	reqBody := req.Body
+
 	bodyType := req.BodyType
+	bodyFormData := req.BodyFormData
+	bodyFormUrlencoded := req.BodyFormUrlencoded
 
 	if _consts.Verbose {
 		_logUtils.Info(reqUrl)
@@ -183,14 +187,27 @@ func posts(req domain.Request, method consts.HttpMethod, readRespData bool) (
 
 	var dataBytes []byte
 
-	if strings.HasPrefix(bodyType.String(), "application/x-www-form-urlencoded") { // post form data
+	formDatacontentType := ""
+	if strings.HasPrefix(bodyType.String(), consts.ContentTypeFormData.String()) {
+		formDataWriter, _ := MultipartEncoder(bodyFormData)
+		formDatacontentType = MultipartContentType(formDataWriter)
+
+		dataBytes = formDataWriter.Payload.Bytes()
+
+	} else if strings.HasPrefix(bodyType.String(), consts.ContentTypeFormUrlencoded.String()) {
+		// post form data
 		formData := make(url.Values)
-		for _, param := range reqParams {
-			formData.Add(param.Name, param.Value)
+		for _, item := range bodyFormUrlencoded {
+			formData.Add(item.Name, item.Value)
 		}
 		dataBytes = []byte(formData.Encode())
-	} else {
-		dataBytes = []byte(reqData)
+
+	} else if strings.HasPrefix(bodyType.String(), consts.ContentTypeJSON.String()) {
+		// post json
+		dataBytes, err = json.Marshal(reqBody)
+		if err != nil {
+			return
+		}
 	}
 
 	if err != nil {
@@ -224,7 +241,14 @@ func posts(req domain.Request, method consts.HttpMethod, readRespData bool) (
 		request.Header.Set(header.Name, header.Value)
 	}
 
-	request.Header.Set(consts.ContentType, bodyType.String())
+	if strings.HasPrefix(bodyType.String(), consts.ContentTypeJSON.String()) {
+		request.Header.Set(consts.ContentType, fmt.Sprintf("%s; charset=utf-8", bodyType))
+	} else if strings.HasPrefix(bodyType.String(), consts.ContentTypeFormData.String()) {
+		request.Header.Set(consts.ContentType, formDatacontentType)
+	} else {
+		request.Header.Set(consts.ContentType, bodyType.String())
+	}
+
 	addAuthorInfo(req, request)
 
 	startTime := time.Now().UnixMilli()

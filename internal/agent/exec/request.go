@@ -49,7 +49,7 @@ func GetRequestProps(req *domain.Request) {
 
 	typeName := arr[1]
 	if typeName == "text" || typeName == "plain" {
-		typeName = "plaintext"
+		typeName = consts.LangPlainTEXT.String()
 	}
 
 	req.BodyLang = consts.HttpRespLangType(typeName)

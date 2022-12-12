@@ -45,14 +45,13 @@ func (s *InvocationService) Test(req v1.InvocationRequest) (ret v1.InvocationRes
 }
 
 func (s *InvocationService) GetContentProps(ret *v1.InvocationResponse) {
-	ret.ContentLang = "plaintext"
+	ret.ContentLang = consts.LangPlainTEXT
 
 	if ret.ContentLang == "" {
 		return
 	}
 
 	arr := strings.Split(string(ret.ContentType), ";")
-
 	arr1 := strings.Split(arr[0], "/")
 	if len(arr1) == 1 {
 		return
@@ -60,7 +59,7 @@ func (s *InvocationService) GetContentProps(ret *v1.InvocationResponse) {
 
 	typeName := arr1[1]
 	if typeName == "text" || typeName == "plain" {
-		typeName = "plaintext"
+		typeName = consts.LangPlainTEXT.String()
 	}
 	ret.ContentLang = consts.HttpRespLangType(typeName)
 

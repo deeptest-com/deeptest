@@ -98,61 +98,51 @@ func ReplaceAll(req *domain.BaseRequest, variableMap map[string]interface{}) {
 }
 
 func replaceUrl(req *domain.BaseRequest, variableMap map[string]interface{}, expressionValueMapCache *map[string]interface{}) {
-	req.Url = ReplaceExpressionValue(req.Url, variableMap, expressionValueMapCache)
-	req.Url = ReplaceVariableValue(req.Url, variableMap)
+	req.Url = ReplaceExpressionAndVariableValue(req.Url, variableMap, expressionValueMapCache)
 }
 func replaceParams(req *domain.BaseRequest, variableMap map[string]interface{}, expressionValueMapCache *map[string]interface{}) {
 	for idx, param := range req.Params {
-		req.Params[idx].Value = ReplaceExpressionValue(req.Params[idx].Value, variableMap, expressionValueMapCache)
-		req.Params[idx].Value = ReplaceVariableValue(param.Value, variableMap)
+		req.Params[idx].Value = ReplaceExpressionAndVariableValue(param.Value, variableMap, expressionValueMapCache)
 	}
 }
 func replaceHeaders(req *domain.BaseRequest, variableMap map[string]interface{}, expressionValueMapCache *map[string]interface{}) {
 	for idx, header := range req.Headers {
-		req.Headers[idx].Value = ReplaceExpressionValue(req.Headers[idx].Value, variableMap, expressionValueMapCache)
-		req.Headers[idx].Value = ReplaceVariableValue(header.Value, variableMap)
+		req.Headers[idx].Value = ReplaceExpressionAndVariableValue(header.Value, variableMap, expressionValueMapCache)
 	}
 }
 func replaceBody(req *domain.BaseRequest, variableMap map[string]interface{}, expressionValueMapCache *map[string]interface{}) {
-	req.Body = ReplaceExpressionValue(req.Body, variableMap, expressionValueMapCache)
-	req.Body = ReplaceVariableValue(req.Body, variableMap)
+	req.Body = ReplaceExpressionAndVariableValue(req.Body, variableMap, expressionValueMapCache)
 }
 func replaceAuthor(req *domain.BaseRequest, variableMap map[string]interface{}, expressionValueMapCache *map[string]interface{}) {
 	if req.AuthorizationType == consts.BasicAuth {
-		req.BasicAuth.Username = ReplaceExpressionValue(req.BasicAuth.Username, variableMap, expressionValueMapCache)
-		req.BasicAuth.Password = ReplaceExpressionValue(req.BasicAuth.Password, variableMap, expressionValueMapCache)
-
-		req.BasicAuth.Username = ReplaceVariableValue(req.BasicAuth.Username, variableMap)
-		req.BasicAuth.Password = ReplaceVariableValue(req.BasicAuth.Password, variableMap)
+		req.BasicAuth.Username = ReplaceExpressionAndVariableValue(req.BasicAuth.Username, variableMap, expressionValueMapCache)
+		req.BasicAuth.Password = ReplaceExpressionAndVariableValue(req.BasicAuth.Password, variableMap, expressionValueMapCache)
 
 	} else if req.AuthorizationType == consts.BearerToken {
-		req.BearerToken.Token = ReplaceExpressionValue(req.BearerToken.Token, variableMap, expressionValueMapCache)
-		req.BearerToken.Token = ReplaceVariableValue(req.BearerToken.Token, variableMap)
+		req.BearerToken.Token = ReplaceExpressionAndVariableValue(req.BearerToken.Token, variableMap, expressionValueMapCache)
 
 	} else if req.AuthorizationType == consts.OAuth2 {
-		req.OAuth20.Name = ReplaceExpressionValue(req.OAuth20.Name, variableMap, expressionValueMapCache)
-		req.OAuth20.CallbackUrl = ReplaceExpressionValue(req.OAuth20.CallbackUrl, variableMap, expressionValueMapCache)
-		req.OAuth20.AuthURL = ReplaceExpressionValue(req.OAuth20.AuthURL, variableMap, expressionValueMapCache)
-		req.OAuth20.AccessTokenURL = ReplaceExpressionValue(req.OAuth20.AccessTokenURL, variableMap, expressionValueMapCache)
-		req.OAuth20.ClientID = ReplaceExpressionValue(req.OAuth20.ClientID, variableMap, expressionValueMapCache)
-		req.OAuth20.Scope = ReplaceExpressionValue(req.OAuth20.Scope, variableMap, expressionValueMapCache)
-
-		req.OAuth20.Name = ReplaceVariableValue(req.OAuth20.Name, variableMap)
-		req.OAuth20.CallbackUrl = ReplaceVariableValue(req.OAuth20.CallbackUrl, variableMap)
-		req.OAuth20.AuthURL = ReplaceVariableValue(req.OAuth20.AuthURL, variableMap)
-		req.OAuth20.AccessTokenURL = ReplaceVariableValue(req.OAuth20.AccessTokenURL, variableMap)
-		req.OAuth20.ClientID = ReplaceVariableValue(req.OAuth20.ClientID, variableMap)
-		req.OAuth20.Scope = ReplaceVariableValue(req.OAuth20.Scope, variableMap)
+		req.OAuth20.Name = ReplaceExpressionAndVariableValue(req.OAuth20.Name, variableMap, expressionValueMapCache)
+		req.OAuth20.CallbackUrl = ReplaceExpressionAndVariableValue(req.OAuth20.CallbackUrl, variableMap, expressionValueMapCache)
+		req.OAuth20.AuthURL = ReplaceExpressionAndVariableValue(req.OAuth20.AuthURL, variableMap, expressionValueMapCache)
+		req.OAuth20.AccessTokenURL = ReplaceExpressionAndVariableValue(req.OAuth20.AccessTokenURL, variableMap, expressionValueMapCache)
+		req.OAuth20.ClientID = ReplaceExpressionAndVariableValue(req.OAuth20.ClientID, variableMap, expressionValueMapCache)
+		req.OAuth20.Scope = ReplaceExpressionAndVariableValue(req.OAuth20.Scope, variableMap, expressionValueMapCache)
 
 	} else if req.AuthorizationType == consts.ApiKey {
-		req.ApiKey.Key = ReplaceExpressionValue(req.ApiKey.Key, variableMap, expressionValueMapCache)
-		req.ApiKey.Value = ReplaceExpressionValue(req.ApiKey.Value, variableMap, expressionValueMapCache)
-		req.ApiKey.TransferMode = ReplaceExpressionValue(req.ApiKey.TransferMode, variableMap, expressionValueMapCache)
-
-		req.ApiKey.Key = ReplaceVariableValue(req.ApiKey.Key, variableMap)
-		req.ApiKey.Value = ReplaceVariableValue(req.ApiKey.Value, variableMap)
-		req.ApiKey.TransferMode = ReplaceVariableValue(req.ApiKey.TransferMode, variableMap)
+		req.ApiKey.Key = ReplaceExpressionAndVariableValue(req.ApiKey.Key, variableMap, expressionValueMapCache)
+		req.ApiKey.Value = ReplaceExpressionAndVariableValue(req.ApiKey.Value, variableMap, expressionValueMapCache)
+		req.ApiKey.TransferMode = ReplaceExpressionAndVariableValue(req.ApiKey.TransferMode, variableMap, expressionValueMapCache)
 	}
+}
+
+func ReplaceExpressionAndVariableValue(value string, variableMap map[string]interface{},
+	expressionValueMapCache *map[string]interface{}) (ret string) {
+
+	ret = ReplaceExpressionValue(value, variableMap, expressionValueMapCache)
+	ret = ReplaceVariableValue(ret, variableMap)
+
+	return
 }
 
 func ReplaceVariableValue(value string, variableMap map[string]interface{}) (ret string) {

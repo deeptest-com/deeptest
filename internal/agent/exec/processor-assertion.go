@@ -28,7 +28,7 @@ func (entity ProcessorAssertion) Run(processor *Processor, session *Session) (er
 		ParentId:          int(entity.ParentID),
 	}
 
-	ret, err := EvaluateGovaluateExpressionByScope(entity.Expression, entity.ID)
+	ret, err := EvaluateGovaluateExpressionByScope(entity.Expression, processor.ID)
 
 	pass, _ := ret.(bool)
 

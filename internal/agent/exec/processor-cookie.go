@@ -76,8 +76,12 @@ func (entity ProcessorCookie) Run(processor *Processor, session *Session) (err e
 			return
 		}
 
+		if variableValue == nil {
+			variableValue = "空"
+		}
+
 		SetVariable(processor.ParentId, variableName, variableValue, consts.Local) // set in parent scope
-		processor.Result.Summary = fmt.Sprintf("将%s%s值%v赋予变量%s。", cookieName, words, variableValue, variableName)
+		processor.Result.Summary = fmt.Sprintf("将%s%s值\"%v\"赋予变量%s。", cookieName, words, variableValue, variableName)
 
 	} else if typ == consts.ProcessorCookieClear {
 		ClearCookie(processor.ParentId, cookieName) // set in parent scope

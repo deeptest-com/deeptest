@@ -2,10 +2,10 @@ package service
 
 import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
-	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/query"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
+	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
@@ -90,13 +90,13 @@ func (s *ExtractorService) ExtractValue(extractor *model.InterfaceExtractor, res
 			}
 		}
 	} else {
-		if utils.IsJsonContent(resp.ContentType.String()) && extractor.Type == consts.JsonQuery {
+		if httpHelper.IsJsonContent(resp.ContentType.String()) && extractor.Type == consts.JsonQuery {
 			extractor.Result = queryHelper.JsonQuery(resp.Content, extractor.Expression)
 
-		} else if utils.IsHtmlContent(resp.ContentType.String()) && extractor.Type == consts.HtmlQuery {
+		} else if httpHelper.IsHtmlContent(resp.ContentType.String()) && extractor.Type == consts.HtmlQuery {
 			extractor.Result = queryHelper.HtmlQuery(resp.Content, extractor.Expression)
 
-		} else if utils.IsXmlContent(resp.ContentType.String()) && extractor.Type == consts.XmlQuery {
+		} else if httpHelper.IsXmlContent(resp.ContentType.String()) && extractor.Type == consts.XmlQuery {
 			extractor.Result = queryHelper.XmlQuery(resp.Content, extractor.Expression)
 
 		} else if extractor.Type == consts.Boundary {

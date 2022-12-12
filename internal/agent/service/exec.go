@@ -3,11 +3,12 @@ package service
 import (
 	"encoding/json"
 	"fmt"
+	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
-	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
 	_httpUtils "github.com/aaronchen2k/deeptest/pkg/lib/http"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/kataras/iris/v12/websocket"
@@ -44,17 +45,15 @@ func (s *ExecService) ExecScenario(req *agentExec.ExecReq, wsMsg *websocket.Mess
 
 func (s *ExecService) SubmitResult(result domain.Result, scenarioId uint, serverUrl, token string) (err error) {
 	bodyBytes, _ := json.Marshal(result)
-	req := domain.Request{
-		BaseRequest: domain.BaseRequest{
-			Url:               _httpUtils.AddSepIfNeeded(serverUrl) + fmt.Sprintf("scenarios/exec/submitResult/%d", scenarioId),
-			Body:              string(bodyBytes),
-			AuthorizationType: consts.BearerToken,
-			BearerToken: domain.BearerToken{
-				Token: token,
-			},
+	req := v1.BaseRequest{
+		Url:               _httpUtils.AddSepIfNeeded(serverUrl) + fmt.Sprintf("scenarios/exec/submitResult/%d", scenarioId),
+		Body:              string(bodyBytes),
+		AuthorizationType: consts.BearerToken,
+		BearerToken: v1.BearerToken{
+			Token: token,
 		},
 	}
-	resp, err := utils.Post(req)
+	resp, err := httpHelper.Post(req)
 
 	if err != nil {
 		logUtils.Infof("submit result failed, error, %s", err.Error())

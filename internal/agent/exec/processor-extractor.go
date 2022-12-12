@@ -3,11 +3,12 @@ package agentExec
 import (
 	"encoding/json"
 	"fmt"
+	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
-	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/query"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"strings"
 	"time"
@@ -58,7 +59,7 @@ func (entity ProcessorExtractor) Run(processor *Processor, session *Session) (er
 		return
 	}
 
-	resp := domain.Response{}
+	resp := v1.InvocationResponse{}
 	json.Unmarshal([]byte(brother.Result.RespContent), &resp)
 
 	entity.Src = consts.Body
@@ -84,7 +85,7 @@ func (entity ProcessorExtractor) Run(processor *Processor, session *Session) (er
 	return
 }
 
-func ExtractValue(extractor *ProcessorExtractor, resp domain.Response) (err error) {
+func ExtractValue(extractor *ProcessorExtractor, resp v1.InvocationResponse) (err error) {
 	if extractor.Disabled {
 		extractor.Result = ""
 		return
@@ -98,13 +99,13 @@ func ExtractValue(extractor *ProcessorExtractor, resp domain.Response) (err erro
 			}
 		}
 	} else {
-		if utils.IsJsonContent(resp.ContentType.String()) && extractor.Type == consts.JsonQuery {
+		if httpHelper.IsJsonContent(resp.ContentType.String()) && extractor.Type == consts.JsonQuery {
 			extractor.Result = queryHelper.JsonQuery(resp.Content, extractor.Expression)
 
-		} else if utils.IsHtmlContent(resp.ContentType.String()) && extractor.Type == consts.HtmlQuery {
+		} else if httpHelper.IsHtmlContent(resp.ContentType.String()) && extractor.Type == consts.HtmlQuery {
 			extractor.Result = queryHelper.HtmlQuery(resp.Content, extractor.Expression)
 
-		} else if utils.IsXmlContent(resp.ContentType.String()) && extractor.Type == consts.XmlQuery {
+		} else if httpHelper.IsXmlContent(resp.ContentType.String()) && extractor.Type == consts.XmlQuery {
 			extractor.Result = queryHelper.XmlQuery(resp.Content, extractor.Expression)
 
 		} else if extractor.Type == consts.Boundary {

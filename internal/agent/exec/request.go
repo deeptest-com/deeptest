@@ -2,44 +2,44 @@ package agentExec
 
 import (
 	"fmt"
-	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
-	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils"
+	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	httpHelper "github.com/aaronchen2k/deeptest/pkg/lib/http"
+	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
+	_httpUtils "github.com/aaronchen2k/deeptest/pkg/lib/http"
 	"regexp"
 	"strings"
 )
 
-func Invoke(req domain.Request) (resp domain.Response, err error) {
-	req.Url, err = httpHelper.AddDefaultUrlSchema(req.Url)
+func Invoke(req v1.BaseRequest) (resp v1.InvocationResponse, err error) {
+	req.Url, err = _httpUtils.AddDefaultUrlSchema(req.Url)
 	if err != nil {
 		return
 	}
 
 	if req.Method == consts.GET {
-		resp, err = utils.Get(req)
+		resp, err = httpHelper.Get(req)
 	} else if req.Method == consts.POST {
-		resp, err = utils.Post(req)
+		resp, err = httpHelper.Post(req)
 	} else if req.Method == consts.PUT {
-		resp, err = utils.Put(req)
+		resp, err = httpHelper.Put(req)
 	} else if req.Method == consts.DELETE {
-		resp, err = utils.Delete(req)
+		resp, err = httpHelper.Delete(req)
 	} else if req.Method == consts.PATCH {
-		resp, err = utils.Patch(req)
+		resp, err = httpHelper.Patch(req)
 	} else if req.Method == consts.HEAD {
-		resp, err = utils.Head(req)
+		resp, err = httpHelper.Head(req)
 	} else if req.Method == consts.CONNECT {
-		resp, err = utils.Connect(req)
+		resp, err = httpHelper.Connect(req)
 	} else if req.Method == consts.OPTIONS {
-		resp, err = utils.Options(req)
+		resp, err = httpHelper.Options(req)
 	} else if req.Method == consts.TRACE {
-		resp, err = utils.Trace(req)
+		resp, err = httpHelper.Trace(req)
 	}
 
 	return
 }
 
-func GetRequestProps(req *domain.Request) {
+func GetRequestProps(req *v1.BaseRequest) {
 	req.BodyLang = consts.LangPlainTEXT
 
 	arr := strings.Split(string(req.BodyType), "/")
@@ -55,7 +55,7 @@ func GetRequestProps(req *domain.Request) {
 	req.BodyLang = consts.HttpRespLangType(typeName)
 }
 
-func GetContentProps(resp *domain.Response) {
+func GetContentProps(resp *v1.InvocationResponse) {
 	resp.ContentLang = consts.LangPlainTEXT
 
 	if resp.ContentLang == "" {
@@ -87,7 +87,7 @@ func GetContentProps(resp *domain.Response) {
 	return
 }
 
-func ReplaceAll(req *domain.BaseRequest, variableMap map[string]interface{}) {
+func ReplaceAll(req *v1.BaseRequest, variableMap map[string]interface{}) {
 	expressionValueMapCache := map[string]interface{}{}
 
 	replaceUrl(req, variableMap, &expressionValueMapCache)
@@ -97,23 +97,23 @@ func ReplaceAll(req *domain.BaseRequest, variableMap map[string]interface{}) {
 	replaceAuthor(req, variableMap, &expressionValueMapCache)
 }
 
-func replaceUrl(req *domain.BaseRequest, variableMap map[string]interface{}, expressionValueMapCache *map[string]interface{}) {
+func replaceUrl(req *v1.BaseRequest, variableMap map[string]interface{}, expressionValueMapCache *map[string]interface{}) {
 	req.Url = ReplaceExpressionAndVariableValue(req.Url, variableMap, expressionValueMapCache)
 }
-func replaceParams(req *domain.BaseRequest, variableMap map[string]interface{}, expressionValueMapCache *map[string]interface{}) {
+func replaceParams(req *v1.BaseRequest, variableMap map[string]interface{}, expressionValueMapCache *map[string]interface{}) {
 	for idx, param := range req.Params {
 		req.Params[idx].Value = ReplaceExpressionAndVariableValue(param.Value, variableMap, expressionValueMapCache)
 	}
 }
-func replaceHeaders(req *domain.BaseRequest, variableMap map[string]interface{}, expressionValueMapCache *map[string]interface{}) {
+func replaceHeaders(req *v1.BaseRequest, variableMap map[string]interface{}, expressionValueMapCache *map[string]interface{}) {
 	for idx, header := range req.Headers {
 		req.Headers[idx].Value = ReplaceExpressionAndVariableValue(header.Value, variableMap, expressionValueMapCache)
 	}
 }
-func replaceBody(req *domain.BaseRequest, variableMap map[string]interface{}, expressionValueMapCache *map[string]interface{}) {
+func replaceBody(req *v1.BaseRequest, variableMap map[string]interface{}, expressionValueMapCache *map[string]interface{}) {
 	req.Body = ReplaceExpressionAndVariableValue(req.Body, variableMap, expressionValueMapCache)
 }
-func replaceAuthor(req *domain.BaseRequest, variableMap map[string]interface{}, expressionValueMapCache *map[string]interface{}) {
+func replaceAuthor(req *v1.BaseRequest, variableMap map[string]interface{}, expressionValueMapCache *map[string]interface{}) {
 	if req.AuthorizationType == consts.BasicAuth {
 		req.BasicAuth.Username = ReplaceExpressionAndVariableValue(req.BasicAuth.Username, variableMap, expressionValueMapCache)
 		req.BasicAuth.Password = ReplaceExpressionAndVariableValue(req.BasicAuth.Password, variableMap, expressionValueMapCache)

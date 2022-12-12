@@ -5,6 +5,7 @@ import (
 	"compress/gzip"
 	"compress/zlib"
 	"crypto/tls"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
@@ -26,51 +27,51 @@ import (
 	"time"
 )
 
-func Get(req v1.InvocationRequest) (ret v1.InvocationResponse, err error) {
+func Get(req v1.BaseRequest) (ret v1.InvocationResponse, err error) {
 	return gets(req, consts.GET, true)
 }
 
-func Post(req v1.InvocationRequest) (
+func Post(req v1.BaseRequest) (
 	ret v1.InvocationResponse, err error) {
 
 	return posts(req, consts.POST, true)
 }
 
-func Put(req v1.InvocationRequest) (
+func Put(req v1.BaseRequest) (
 	ret v1.InvocationResponse, err error) {
 
 	return posts(req, consts.PUT, true)
 }
 
-func Patch(req v1.InvocationRequest) (
+func Patch(req v1.BaseRequest) (
 	ret v1.InvocationResponse, err error) {
 
 	return posts(req, consts.PATCH, true)
 }
 
-func Delete(req v1.InvocationRequest) (
+func Delete(req v1.BaseRequest) (
 	ret v1.InvocationResponse, err error) {
 
 	return posts(req, consts.DELETE, true)
 }
 
-func Head(req v1.InvocationRequest) (ret v1.InvocationResponse, err error) {
+func Head(req v1.BaseRequest) (ret v1.InvocationResponse, err error) {
 	return gets(req, consts.HEAD, false)
 }
 
-func Connect(req v1.InvocationRequest) (ret v1.InvocationResponse, err error) {
+func Connect(req v1.BaseRequest) (ret v1.InvocationResponse, err error) {
 	return gets(req, consts.CONNECT, false)
 }
 
-func Options(req v1.InvocationRequest) (ret v1.InvocationResponse, err error) {
+func Options(req v1.BaseRequest) (ret v1.InvocationResponse, err error) {
 	return gets(req, consts.OPTIONS, false)
 }
 
-func Trace(req v1.InvocationRequest) (ret v1.InvocationResponse, err error) {
+func Trace(req v1.BaseRequest) (ret v1.InvocationResponse, err error) {
 	return gets(req, consts.TRACE, false)
 }
 
-func gets(req v1.InvocationRequest, method consts.HttpMethod, readRespData bool) (
+func gets(req v1.BaseRequest, method consts.HttpMethod, readRespData bool) (
 	ret v1.InvocationResponse, err error) {
 
 	reqUrl := commUtils.RemoveLeftVariableSymbol(req.Url)
@@ -155,7 +156,7 @@ func gets(req v1.InvocationRequest, method consts.HttpMethod, readRespData bool)
 	return
 }
 
-func posts(req v1.InvocationRequest, method consts.HttpMethod, readRespData bool) (
+func posts(req v1.BaseRequest, method consts.HttpMethod, readRespData bool) (
 	ret v1.InvocationResponse, err error) {
 
 	reqUrl := commUtils.RemoveLeftVariableSymbol(req.Url)
@@ -298,10 +299,10 @@ func posts(req v1.InvocationRequest, method consts.HttpMethod, readRespData bool
 	return
 }
 
-func addAuthorInfo(req v1.InvocationRequest, request *http.Request) {
+func addAuthorInfo(req v1.BaseRequest, request *http.Request) {
 	if req.AuthorizationType == consts.BasicAuth {
 		str := fmt.Sprintf("%s:%s", req.BasicAuth.Username, req.BasicAuth.Password)
-		str = fmt.Sprintf("Basic %s", utils.Base64(str))
+		str = fmt.Sprintf("Basic %s", Base64(str))
 
 		request.Header.Set(consts.Authorization, str)
 
@@ -368,4 +369,20 @@ func decodeResponseBody(resp *http.Response) (err error) {
 		resp.ContentLength = -1 // set to unknown to avoid Content-Length mismatched
 	}
 	return nil
+}
+
+func IsXmlContent(str string) bool {
+	return strings.Contains(str, "xml")
+}
+func IsHtmlContent(str string) bool {
+	return strings.Contains(str, "html")
+}
+func IsJsonContent(str string) bool {
+	return strings.Contains(str, "json")
+}
+
+func Base64(str string) (ret string) {
+	ret = base64.StdEncoding.EncodeToString([]byte(str))
+
+	return
 }

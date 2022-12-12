@@ -8,9 +8,11 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	queryHelper "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/query"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
 	stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"time"
 
+	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"strings"
 )
@@ -19,8 +21,8 @@ type ProcessorInterface struct {
 	ID uint `json:"id"`
 	ProcessorEntityBase
 
-	domain.Request
-	Response domain.Response `json:"response"`
+	v1.BaseRequest
+	Response v1.InvocationResponse `json:"response"`
 
 	Extractors  []domain.Extractor
 	Checkpoints []domain.Checkpoint
@@ -40,13 +42,13 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 	}
 
 	variableMap := GetVariableMap(entity.ProcessorID)
-	ReplaceAll(&entity.Request.BaseRequest, variableMap)
+	ReplaceAll(&entity.BaseRequest, variableMap)
 
-	GetRequestProps(&entity.Request)
-	entity.Response, err = Invoke(entity.Request)
+	GetRequestProps(&entity.BaseRequest)
+	entity.Response, err = Invoke(entity.BaseRequest)
 	GetContentProps(&entity.Response)
 
-	reqContent, _ := json.Marshal(entity.Request)
+	reqContent, _ := json.Marshal(entity.BaseRequest)
 	processor.Result.ReqContent = string(reqContent)
 
 	respContent, _ := json.Marshal(entity.Response)
@@ -105,7 +107,7 @@ func (entity *ProcessorInterface) CheckInterface(processor *Processor, session *
 	return
 }
 
-func (entity *ProcessorInterface) Extract(extractor *domain.Extractor, resp domain.Response) (err error) {
+func (entity *ProcessorInterface) Extract(extractor *domain.Extractor, resp v1.InvocationResponse) (err error) {
 	extractor.Result = ""
 
 	if extractor.Disabled {
@@ -119,13 +121,13 @@ func (entity *ProcessorInterface) Extract(extractor *domain.Extractor, resp doma
 				}
 			}
 		} else {
-			if utils.IsJsonContent(resp.ContentType.String()) && extractor.Type == consts.JsonQuery {
+			if httpHelper.IsJsonContent(resp.ContentType.String()) && extractor.Type == consts.JsonQuery {
 				extractor.Result = queryHelper.JsonQuery(resp.Content, extractor.Expression)
 
-			} else if utils.IsHtmlContent(resp.ContentType.String()) && extractor.Type == consts.HtmlQuery {
+			} else if httpHelper.IsHtmlContent(resp.ContentType.String()) && extractor.Type == consts.HtmlQuery {
 				extractor.Result = queryHelper.HtmlQuery(resp.Content, extractor.Expression)
 
-			} else if utils.IsXmlContent(resp.ContentType.String()) && extractor.Type == consts.XmlQuery {
+			} else if httpHelper.IsXmlContent(resp.ContentType.String()) && extractor.Type == consts.XmlQuery {
 				extractor.Result = queryHelper.XmlQuery(resp.Content, extractor.Expression)
 
 			} else if extractor.Type == consts.Boundary {
@@ -140,7 +142,7 @@ func (entity *ProcessorInterface) Extract(extractor *domain.Extractor, resp doma
 	return
 }
 
-func (entity *ProcessorInterface) Check(checkpoint *domain.Checkpoint, resp domain.Response) (err error) {
+func (entity *ProcessorInterface) Check(checkpoint *domain.Checkpoint, resp v1.InvocationResponse) (err error) {
 	if checkpoint.Disabled {
 		checkpoint.ResultStatus = ""
 		return

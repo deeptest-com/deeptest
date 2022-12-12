@@ -18,23 +18,23 @@ func (s *InvocationService) Test(req v1.InvocationRequest) (ret v1.InvocationRes
 	}
 
 	if req.Method == consts.GET {
-		ret, err = httpHelper.Get(req)
+		ret, err = httpHelper.Get(req.BaseRequest)
 	} else if req.Method == consts.POST {
-		ret, err = httpHelper.Post(req)
+		ret, err = httpHelper.Post(req.BaseRequest)
 	} else if req.Method == consts.PUT {
-		ret, err = httpHelper.Put(req)
+		ret, err = httpHelper.Put(req.BaseRequest)
 	} else if req.Method == consts.DELETE {
-		ret, err = httpHelper.Delete(req)
+		ret, err = httpHelper.Delete(req.BaseRequest)
 	} else if req.Method == consts.PATCH {
-		ret, err = httpHelper.Patch(req)
+		ret, err = httpHelper.Patch(req.BaseRequest)
 	} else if req.Method == consts.HEAD {
-		ret, err = httpHelper.Head(req)
+		ret, err = httpHelper.Head(req.BaseRequest)
 	} else if req.Method == consts.CONNECT {
-		ret, err = httpHelper.Connect(req)
+		ret, err = httpHelper.Connect(req.BaseRequest)
 	} else if req.Method == consts.OPTIONS {
-		ret, err = httpHelper.Options(req)
+		ret, err = httpHelper.Options(req.BaseRequest)
 	} else if req.Method == consts.TRACE {
-		ret, err = httpHelper.Trace(req)
+		ret, err = httpHelper.Trace(req.BaseRequest)
 	}
 
 	s.GetContentProps(&ret)

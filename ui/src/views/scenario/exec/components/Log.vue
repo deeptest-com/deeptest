@@ -46,7 +46,9 @@
                       </span>
                     </a-col>
                     <a-col flex="100px">{{ extractor.variable }}</a-col>
-                    <a-col flex="1">{{extractor.result}}</a-col>
+                    <a-col :class="[extractor.result==='extractor_err'? 'dp-color-fail': '']" flex="1">
+                      {{extractor.result==='extractor_err'? t(extractor.result) : extractor.result}}
+                    </a-col>
                   </a-row>
                 </div>
               </div>

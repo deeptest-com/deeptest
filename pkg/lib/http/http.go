@@ -1,10 +1,10 @@
 package _httpUtils
 
 import (
+	"compress/gzip"
 	"encoding/json"
 	"errors"
 	"fmt"
-	_consts "github.com/aaronchen2k/deeptest/pkg/consts"
 	"github.com/aaronchen2k/deeptest/pkg/lib/log"
 	_stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"github.com/fatih/color"
@@ -46,16 +46,13 @@ func Get(url string) (ret []byte, err error) {
 		return
 	}
 
-	unicodeContent, err := ioutil.ReadAll(resp.Body)
-	ret, _ = _stringUtils.UnescapeUnicode(unicodeContent)
-	if _consts.Verbose {
-		_logUtils.Infof("===DEBUG=== response: %s", ret)
+	reader := resp.Body
+	if resp.Header.Get("Content-Encoding") == "gzip" {
+		reader, _ = gzip.NewReader(resp.Body)
 	}
 
-	if err != nil {
-		_logUtils.Infof(color.RedString("read response failed, error ", err.Error()))
-		return
-	}
+	unicodeContent, _ := ioutil.ReadAll(reader)
+	ret, _ = _stringUtils.UnescapeUnicode(unicodeContent)
 
 	return
 }
@@ -109,18 +106,13 @@ func PostOrPut(url string, method string, data interface{}) (ret []byte, err err
 		return
 	}
 
-	unicodeContent, err := ioutil.ReadAll(resp.Body)
-	defer resp.Body.Close()
+	reader := resp.Body
+	if resp.Header.Get("Content-Encoding") == "gzip" {
+		reader, _ = gzip.NewReader(resp.Body)
+	}
 
+	unicodeContent, _ := ioutil.ReadAll(reader)
 	ret, _ = _stringUtils.UnescapeUnicode(unicodeContent)
-	if _consts.Verbose {
-		_logUtils.Infof("===DEBUG=== response: %s", ret)
-	}
-
-	if err != nil {
-		_logUtils.Infof(color.RedString("read response failed, error: %s.", err.Error()))
-		return
-	}
 
 	return
 }

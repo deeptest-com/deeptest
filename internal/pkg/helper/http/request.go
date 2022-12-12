@@ -180,12 +180,6 @@ func posts(req v1.BaseRequest, method consts.HttpMethod, readRespData bool) (
 		Jar:     jar, // insert response cookies into request
 		Timeout: 120 * time.Second,
 	}
-	//http2Client := &http.Client{
-	//	Transport: &http2.Transport{
-	//		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-	//	},
-	//	Timeout: 120 * time.Second,
-	//}
 
 	var dataBytes []byte
 
@@ -280,21 +274,23 @@ func posts(req v1.BaseRequest, method consts.HttpMethod, readRespData bool) (
 	ret.ContentLength = _stringUtils.ParseInt(resp.Header.Get(consts.ContentLength))
 	ret.Headers = getHeaders(resp.Header)
 
-	if readRespData {
-		reader := resp.Body
-		if resp.Header.Get("Content-Encoding") == "gzip" {
-			reader, _ = gzip.NewReader(resp.Body)
-		}
-
-		unicodeContent, _ := ioutil.ReadAll(reader)
-		utf8Content, _ := _stringUtils.UnescapeUnicode(unicodeContent)
-
-		if _consts.Verbose {
-			_logUtils.Info(string(utf8Content))
-		}
-
-		ret.Content = string(utf8Content)
+	if !readRespData {
+		return
 	}
+
+	reader := resp.Body
+	if resp.Header.Get("Content-Encoding") == "gzip" {
+		reader, _ = gzip.NewReader(resp.Body)
+	}
+
+	unicodeContent, _ := ioutil.ReadAll(reader)
+	utf8Content, _ := _stringUtils.UnescapeUnicode(unicodeContent)
+
+	if _consts.Verbose {
+		_logUtils.Info(string(utf8Content))
+	}
+
+	ret.Content = string(utf8Content)
 
 	return
 }

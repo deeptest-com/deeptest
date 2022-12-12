@@ -210,7 +210,8 @@ func GetCookie(processorId uint, cookieName, domain string) (cookie domain.ExecC
 	if allValidIds != nil {
 		for _, id := range *ScopeHierarchy[processorId] {
 			for _, item := range ScopedCookies[id] {
-				if item.Name == cookieName && item.Domain == domain && item.ExpireTime.Unix() > time.Now().Unix() {
+				if item.Name == cookieName && (item.Domain == "" || domain == "" || item.Domain == domain) &&
+					(item.ExpireTime == nil || item.ExpireTime.Unix() > time.Now().Unix()) {
 					cookie = item
 
 					goto LABEL

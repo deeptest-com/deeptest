@@ -91,6 +91,7 @@ onMounted(() => {
   console.log('onMounted')
   if (!modelRef.value.cookieName) modelRef.value.cookieName = ''
   if (!modelRef.value.rightValue) modelRef.value.rightValue = ''
+  if (!modelRef.value.expireTime) modelRef.value.expireTime = null
 })
 
 onUnmounted(() => {

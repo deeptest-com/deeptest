@@ -165,7 +165,7 @@ func ReplaceExpressionValue(value string, variableMap map[string]interface{}, ex
 
 	ret = value
 
-	regex := regexp.MustCompile(`(?Ui)\$expr\('(.*)'\)`) // $expr('uuid()')
+	regex := regexp.MustCompile(`(?Ui)\$expr\("(.*)"\)`) // $expr("uuid()")
 	arrOfArr := regex.FindAllStringSubmatch(ret, -1)
 
 	if len(arrOfArr) == 0 {

@@ -32,7 +32,7 @@
                      @blur="validate('isOnce', { trigger: 'blur' }).catch(() => {})"/>
           </a-form-item>
           <a-form-item label="是否循环" v-bind="validateInfos.isLoop">
-            <a-switch :disabled="modelRef.isOnce" v-model:checked="modelRef.isLoop" v-model:value="modelRef.isLoop"
+            <a-switch :disabled="modelRef.isOnce" v-model:checked="modelRef.isLoop"
                      @blur="validate('isLoop', { trigger: 'blur' }).catch(() => {})"/>
           </a-form-item>
 

@@ -11,7 +11,7 @@
           <a-form-item label="判断表达式" v-bind="validateInfos.expression">
             <a-input v-model:value="modelRef.expression"
                      @blur="validate('expression', { trigger: 'blur' }).catch(() => {})" />
-            <div class="dp-input-tip">表达式支持形如${name}的变量</div>
+            <div class="dp-input-tip">支持形如${name}的变量引用，表达式形式类似$expr(${name}+1)</div>
           </a-form-item>
 
           <a-form-item :wrapper-col="{ span: 16, offset: 4 }">

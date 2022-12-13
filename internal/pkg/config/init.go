@@ -47,6 +47,8 @@ func Init(app string) {
 			panic(fmt.Errorf("解析配置文件错误: %w ", err))
 		}
 
+		myZap.ZapInst = CONFIG.Zap
+
 		return
 	}
 

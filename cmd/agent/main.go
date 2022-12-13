@@ -38,16 +38,18 @@ func main() {
 
 	websocketHelper.InitMq()
 
-	server := agentServe.Init()
-	if server == nil {
+	agent := agentServe.Init()
+	if agent == nil {
 		return
 	}
 
-	injectModule(server)
+	injectModule(agent)
 
 	service.NewInitService().InitModels()
 
-	server.Start()
+	agent.Start()
+
+	_logUtils.Infof("start agent")
 }
 
 func injectModule(ws *agentServe.WebServer) {
@@ -72,8 +74,6 @@ func injectModule(ws *agentServe.WebServer) {
 	}
 
 	ws.AddModule(indexModule.Party())
-
-	_logUtils.Infof("start agent")
 }
 
 func init() {

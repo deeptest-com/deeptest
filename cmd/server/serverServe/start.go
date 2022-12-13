@@ -33,7 +33,6 @@ import (
 	"github.com/snowlyg/helper/str"
 	"github.com/snowlyg/helper/tests"
 
-	"github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/mvc"
 )
@@ -256,6 +255,4 @@ func (webServer *WebServer) InjectModule() {
 	}
 
 	webServer.AddModule(indexModule.Party())
-
-	_logUtils.Infof("start server")
 }

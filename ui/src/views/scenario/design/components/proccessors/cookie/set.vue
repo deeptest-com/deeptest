@@ -24,7 +24,7 @@
           <a-form-item label="取值" v-bind="validateInfos.rightValue">
             <a-input v-model:value="modelRef.rightValue"
                      @blur="validate('rightValue', { trigger: 'blur' }).catch(() => {})"/>
-            <div class="dp-input-tip">可引用形如${name}的变量。</div>
+            <div class="dp-input-tip">{{t('tips_rightvalue')}}</div>
           </a-form-item>
 
           <a-form-item :wrapper-col="{ span: 16, offset: 4 }">

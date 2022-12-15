@@ -8,10 +8,10 @@
             <a-input v-model:value="modelRef.comments"/>
           </a-form-item>
 
-          <a-form-item label="输出表达式" v-bind="validateInfos.expression">
-            <a-input v-model:value="modelRef.expression"
-                     @blur="validate('expression', { trigger: 'blur' }).catch(() => {})" />
-            <div class="dp-input-tip">支持形如${name}的变量引用，表达式形式类似$expr(${name}+1)</div>
+          <a-form-item label="输出" v-bind="validateInfos.rightValue">
+            <a-input v-model:value="modelRef.rightValue"
+                     @blur="validate('rightValue', { trigger: 'blur' }).catch(() => {})" />
+            <div class="dp-input-tip">可引用形如${name}的变量。</div>
           </a-form-item>
 
           <a-form-item :wrapper-col="{ span: 16, offset: 4 }">
@@ -42,8 +42,8 @@ const {t} = useI18n();
 const formRef = ref();
 
 const rulesRef = reactive({
-  expression: [
-    {required: true, message: '请表达式', trigger: 'blur'},
+  rightValue: [
+    {required: true, message: '请输入内容', trigger: 'blur'},
   ],
 });
 

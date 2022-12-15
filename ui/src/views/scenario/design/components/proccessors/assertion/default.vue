@@ -11,7 +11,7 @@
           <a-form-item label="判断表达式" v-bind="validateInfos.expression">
             <a-input v-model:value="modelRef.expression"
                      @blur="validate('expression', { trigger: 'blur' }).catch(() => {})" />
-            <div class="dp-input-tip">直接输入返回布尔值形如${name}==1的表达式，不需要$expr()调用。</div>
+            <div class="dp-input-tip">表达式可引用形如${name}的变量，需返回一个布尔值。</div>
           </a-form-item>
 
           <a-form-item :wrapper-col="{ span: 16, offset: 4 }">
@@ -76,7 +76,7 @@ const optOptions = getCompareOpts()
 onMounted(() => {
   console.log('onMounted')
   if (!modelRef.value.leftValue) modelRef.value.leftValue = ''
-  if (!modelRef.value.rightValue) modelRef.value.rightValue = ''
+  if (!modelRef.value.expression) modelRef.value.expression = ''
   if (!modelRef.value.operator) modelRef.value.operator = 'equal'
 })
 

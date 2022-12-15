@@ -106,7 +106,7 @@ type ProcessorPrint struct {
 	BaseModel
 	agentExec.ProcessorEntityBase
 
-	Expression string `json:"expression" yaml:"expression"`
+	RightValue string `json:"rightValue" yaml:"rightValue"`
 }
 
 func (ProcessorPrint) TableName() string {
@@ -118,7 +118,7 @@ type ProcessorVariable struct {
 	agentExec.ProcessorEntityBase
 
 	VariableName string `json:"variableName" yaml:"variableName"`
-	RightValue   string `json:"rightValue" yaml:"rightValue"`
+	Expression   string `json:"expression" yaml:"expression"`
 }
 
 func (ProcessorVariable) TableName() string {

@@ -10,8 +10,8 @@ type Environment struct {
 type EnvironmentVar struct {
 	BaseModel
 
-	Name  string `json:"name"`
-	Value string `json:"value"`
+	Name       string `json:"name"`
+	RightValue string `json:"rightValue"`
 
 	EnvironmentId uint `json:"environmentId"`
 }

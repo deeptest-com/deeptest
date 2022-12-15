@@ -14,7 +14,7 @@ type ProcessorVariable struct {
 	ProcessorEntityBase
 
 	VariableName string `json:"variableName" yaml:"variableName"`
-	RightValue   string `json:"rightValue" yaml:"rightValue"`
+	Expression   string `json:"expression" yaml:"expression"`
 }
 
 func (entity ProcessorVariable) Run(processor *Processor, session *Session) (err error) {
@@ -32,14 +32,10 @@ func (entity ProcessorVariable) Run(processor *Processor, session *Session) (err
 
 	if entity.ProcessorType == consts.ProcessorVariableSet {
 		var variableValue interface{}
-		variableValue, err = EvaluateGovaluateExpressionByScope(entity.RightValue, processor.ID)
+		variableValue, err = EvaluateGovaluateExpressionByScope(entity.Expression, processor.ID)
 
 		if err != nil {
-			//	entity.Result.ResultStatus = consts.Fail
-			// entity.Result.Summary = fmt.Sprintf("计算表达式\"%s\"错误，\"%s\"。", entity.RightValue, err.Error())
-			//
-			//	exec.SendErrorMsg(entity.Result, session.WsMsg)
-			//	return
+			variableValue = err.Error()
 		}
 
 		SetVariable(processor.ParentId, entity.VariableName, variableValue, consts.Local) // set in parent scope
@@ -48,10 +44,6 @@ func (entity ProcessorVariable) Run(processor *Processor, session *Session) (err
 	} else if entity.ProcessorType == consts.ProcessorVariableClear {
 		ClearVariable(processor.ID, entity.VariableName)
 		processor.Result.Summary = fmt.Sprintf("\"%s\"成功。", entity.VariableName)
-	}
-
-	if processor.Parent.Result.Children == nil {
-
 	}
 
 	processor.AddResultToParent()

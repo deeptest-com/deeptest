@@ -12,7 +12,7 @@ func ConvertServersToEnvironments(servers openapi3.Servers) (vars []model.Enviro
 			Name: "server",
 		}
 
-		vari.Value = genUrl(server.URL, server.Variables)
+		vari.RightValue = genUrl(server.URL, server.Variables)
 
 		vars = append(vars, vari)
 	}

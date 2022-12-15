@@ -41,18 +41,13 @@ func (entity ProcessorCookie) Run(processor *Processor, session *Session) (err e
 	defaultValue := entity.Default
 	domain := entity.Domain
 	expireTime := entity.ExpireTime
-	expression := entity.RightValue
+	rightValue := entity.RightValue
 	typ := entity.ProcessorType
 
 	if typ == consts.ProcessorCookieSet {
-		var variableValue interface{}
-		variableValue, err = EvaluateGovaluateExpressionByScope(expression, entity.ProcessorID)
-		if err != nil {
-			processor.Result.Summary = fmt.Sprintf("计算表达式\"%s\"错误 %s。", expression, err.Error())
-			processor.AddResultToParent()
-			exec.SendExecMsg(*processor.Result, session.WsMsg)
-			return
-		}
+
+		variableMap := GetVariableMap(processor.ID)
+		variableValue := ReplaceVariableValue(rightValue, variableMap)
 
 		SetCookie(processor.ParentId, cookieName, variableValue, domain, expireTime) // set in parent scope
 

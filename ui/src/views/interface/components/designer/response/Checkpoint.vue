@@ -102,7 +102,7 @@
             <a-textarea v-model:value="model.expression" :auto-size="{ minRows: 2, maxRows: 5 }"
                      @blur="validate('expression', { trigger: 'blur' }).catch(() => {})" />
 
-            <div class="dp-input-tip">表达式需返回一个布尔值</div>
+            <div class="dp-input-tip">表达式可引用形如${name}的变量，需返回一个布尔值。</div>
           </a-form-item>
 
           <a-form-item v-if="model.type !== 'judgement'" label="数值" v-bind="validateInfos.value">

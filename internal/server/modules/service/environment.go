@@ -37,7 +37,7 @@ func (s *EnvironmentService) ListVariableForExec(scenarioId uint) (ret []domain.
 		ret = append(ret, domain.Variable{
 			ID:    po.ID,
 			Name:  po.Name,
-			Value: po.Value,
+			Value: po.RightValue,
 		})
 	}
 

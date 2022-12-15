@@ -21,7 +21,7 @@ mysql:
 redis:
   db: 0
   addr: 127.0.0.1:6379
-  password: P2ssw0rd
+  password:
   pool-size: 0
 system:
   level: debug

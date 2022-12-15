@@ -77,7 +77,7 @@ func (r *EnvironmentRepo) GetVars(envId uint) (vars []model.EnvironmentVar, err 
 
 func (r *EnvironmentRepo) GetSameVar(vari model.EnvironmentVar, envId uint) (ret model.EnvironmentVar, err error) {
 	err = r.DB.
-		Where("name=? AND value=?", vari.Name, vari.Value).
+		Where("name=? AND value=?", vari.Name, vari.RightValue).
 		Where("environment_id=?", envId).
 		Where("NOT deleted").
 		First(&ret).Error

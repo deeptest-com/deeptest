@@ -33,7 +33,7 @@ func MergeVariables(environmentVariables []model.EnvironmentVar, interfaceExtrac
 
 	variableMap := map[string]interface{}{}
 	for _, item := range environmentVariables {
-		variableMap[item.Name] = item.Value
+		variableMap[item.Name] = item.RightValue
 	}
 	for _, item := range interfaceExtractorVariables { // overwrite previous ones
 		variableMap[item.Name] = item.Value

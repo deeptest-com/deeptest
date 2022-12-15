@@ -29,11 +29,8 @@ func (entity ProcessorPrint) Run(processor *Processor, session *Session) (err er
 		ParentId:          int(entity.ParentID),
 	}
 
-	//value, err := EvaluateGovaluateExpressionByScope(entity.Expression, processor.ID)
-
 	variableMap := GetVariableMap(processor.ID)
-	expressionValueMapCache := map[string]interface{}{}
-	value := ReplaceExpressionAndVariableValue(entity.Expression, variableMap, &expressionValueMapCache)
+	value := ReplaceVariableValue(entity.Expression, variableMap)
 
 	processor.Result.Summary = strings.ReplaceAll(fmt.Sprintf("%s为\"%v\"。",
 		entity.Expression, value), "<nil>", "空")

@@ -13,10 +13,10 @@
                      @blur="validate('variableName', { trigger: 'blur' }).catch(() => {})"/>
           </a-form-item>-->
 
-          <a-form-item label="条件表达式" v-bind="validateInfos.untilExpression">
+          <a-form-item label="判断表达式" v-bind="validateInfos.untilExpression">
             <a-input v-model:value="modelRef.untilExpression"
                      @blur="validate('untilExpression', { trigger: 'blur' }).catch(() => {})"/>
-            <div class="dp-input-tip">表达式支持四则运算，可使用形如${name}的变量</div>
+            <div class="dp-input-tip">表达式可引用形如${name}的变量，需返回一个布尔值。</div>
           </a-form-item>
 
           <a-form-item :wrapper-col="{ span: 16, offset: 2 }">
@@ -78,7 +78,7 @@ const submitForm = async () => {
 
 onMounted(() => {
   console.log('onMounted')
-  if (!modelRef.value.expression) modelRef.value.expression = ''
+  if (!modelRef.value.untilExpression) modelRef.value.untilExpression = ''
 })
 
 onUnmounted(() => {

@@ -1,8 +1,7 @@
 package consts
 
 const (
-	App     = "deeptest"
-	Pattern = "pattern"
+	App = "deeptest"
 
 	ContentType   = "Content-Type"
 	ContentLength = "Content-Length"
@@ -36,8 +35,6 @@ const (
 
 	ExtractorErr = "extractor_err"
 	ContentErr   = "content_err"
-
-	AgentPort = 8086
 
 	EmailSmtpAddress = "smtp.exmail.qq.com"
 	EmailSmtpPort    = 465

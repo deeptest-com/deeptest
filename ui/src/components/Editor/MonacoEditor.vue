@@ -8,6 +8,7 @@ import * as monaco from 'monaco-editor'
 import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
 import debounce from "lodash.debounce";
+import {addExtractAction} from "@/components/Editor/service";
 
 export default defineComponent({
   name: "MonacoEditor",
@@ -46,6 +47,7 @@ export default defineComponent({
 
   mounted() {
     console.log('editor mounted')
+
     this.initMonaco()
 
     const resizeIt = debounce(() => {
@@ -55,6 +57,7 @@ export default defineComponent({
       // console.log(size)
       this.editor.layout(size)
     }, 500);
+
     bus.on(settings.eventEditorContainerHeightChanged, () => {
       console.log('resizeIt')
       resizeIt()
@@ -63,9 +66,11 @@ export default defineComponent({
 
   beforeUnmount() {
     console.log('editor beforeUnmount')
+
     this.editor && this.editor.dispose();
     bus.off(settings.eventEditorContainerHeightChanged)
   },
+
   methods: {
     initMonaco(){
       this.$emit('editorWillMount', this.monaco)
@@ -77,16 +82,25 @@ export default defineComponent({
           verticalScrollbarSize: 6,
           horizontalScrollbarSize: 6
         }})
+
+      console.log('====', options)
+
       this.editor = monaco.editor[this.diffEditor ? 'createDiffEditor' : 'create'](this.$el, {
         value: value,
         language: language,
         theme: theme,
         ...options
       });
+
       this.diffEditor && this._setModel(this.value, this.original);
+
+      if (this.options.usedAs === 'response') {
+        addExtractAction(this.editor)
+      }
 
       // @event `change`
       const editor = this._getEditor()
+
       editor.onDidChangeModelContent(event => {
         const value = editor.getValue()
         if (this.value !== value) {
@@ -106,39 +120,47 @@ export default defineComponent({
       })
 
       this.$emit('editorDidMount', this.editor)
+
       setTimeout(() => {
         if (editor.getAction('editor.action.formatDocument'))
           editor.getAction('editor.action.formatDocument').run()
         console.log('format codes')
       }, 100)
     },
+
     _setModel(value, original) {
       const { language } = this;
       const originalModel = monaco.editor.createModel(original, language);
       const modifiedModel = monaco.editor.createModel(value, language);
+
       this.editor.setModel({
         original: originalModel,
         modified: modifiedModel
       });
     },
+
     _setValue(value) {
       let editor = this._getEditor();
       if(editor) return editor.setValue(value);
     },
+
     _getValue() {
       let editor = this._getEditor();
       if(!editor) return '';
       return editor.getValue();
     },
+
     _getEditor() {
       if(!this.editor) return null;
       return this.diffEditor ? this.editor.modifiedEditor : this.editor;
     },
+
     _setOriginal(){
       const { original } = this.editor.getModel()
       original.setValue(this.original)
     }
   },
+
   watch: {
     options: {
       deep: true,
@@ -146,21 +168,26 @@ export default defineComponent({
         this.editor.updateOptions(options);
       }
     },
+
     value() {
       this.value !== this._getValue() && this._setValue(this.value);
     },
+
     original() {
       this._setOriginal()
     },
+
     language() {
       if(!this.editor) return;
-      if(this.diffEditor){
+
+      if (this.diffEditor) {
         const { original, modified } = this.editor.getModel();
         monaco.editor.setModelLanguage(original, this.language);
         monaco.editor.setModelLanguage(modified, this.language);
-      }else
+      } else
         monaco.editor.setModelLanguage(this.editor.getModel(), this.language);
     },
+
     theme() {
       monaco.editor.setTheme(this.theme);
     },
@@ -169,8 +196,8 @@ export default defineComponent({
 </script>
 
 <style lang="less">
-  .monaco-editor-vue3 {
-    .monaco-editor {
-    }
+.monaco-editor-vue3 {
+  .monaco-editor {
   }
+}
 </style>

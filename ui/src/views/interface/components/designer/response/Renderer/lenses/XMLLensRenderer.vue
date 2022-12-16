@@ -64,7 +64,7 @@ export default defineComponent({
     const store = useStore<{ Interface: StateType }>();
     const responseData = computed<Response>(() => store.state.Interface.responseData);
 
-    const editorOptions = ref(MonacoOptions)
+    const editorOptions = ref(Object.assign({usedAs: 'response'}, MonacoOptions) )
     const content = ref(formatXml(responseData.value.content))
 
     watch(responseData, () => {

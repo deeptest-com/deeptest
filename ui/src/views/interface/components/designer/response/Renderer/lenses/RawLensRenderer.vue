@@ -63,7 +63,7 @@ export default defineComponent({
     const store = useStore<{ Interface: StateType }>();
     const responseData = computed<Response>(() => store.state.Interface.responseData);
 
-    const editorOptions = ref(Object.assign({usedAs: 'response'}, MonacoOptions) )
+    const editorOptions = ref(Object.assign({usedWith: 'response'}, MonacoOptions) )
 
     return {
       responseData,

@@ -8,7 +8,7 @@ import * as monaco from 'monaco-editor'
 import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
 import debounce from "lodash.debounce";
-import {addExtractAction} from "@/components/Editor/service";
+import {addExtractAction, addReplaceAction} from "@/components/Editor/service";
 
 export default defineComponent({
   name: "MonacoEditor",
@@ -94,8 +94,10 @@ export default defineComponent({
 
       this.diffEditor && this._setModel(this.value, this.original);
 
-      if (this.options.usedAs === 'response') {
+      if (this.options.usedWith === 'response') {
         addExtractAction(this.editor)
+      } else if (this.options.usedWith === 'request') {
+        addReplaceAction(this.editor)
       }
 
       // @event `change`

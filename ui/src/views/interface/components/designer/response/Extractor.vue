@@ -123,7 +123,7 @@
               <a-radio value="global">全局</a-radio>
             </a-radio-group>
             <div class="dp-input-tip">
-              局部变量在整个接口设计器和其诞生的场景目录下可见。
+              局部变量在整个接口设计器及其诞生的场景目录下有效。
             </div>
           </a-form-item>
 

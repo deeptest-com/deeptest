@@ -38,4 +38,9 @@ const (
 	ContentErr   = "content_err"
 
 	AgentPort = 8086
+
+	EmailSmtpAddress = "smtp.exmail.qq.com"
+	EmailSmtpPort    = 465
+	EmailAccount     = "chenqi@deeptest.com"
+	EmailPassword    = ""
 )

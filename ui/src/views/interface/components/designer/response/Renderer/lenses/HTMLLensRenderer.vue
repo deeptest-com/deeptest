@@ -28,49 +28,69 @@
     <div class="body">
       <MonacoEditor
           class="editor"
+          :interfaceId="interfaceData.id"
           :value="responseData.content"
           :language="responseData.contentLang"
           theme="vs"
           :options="editorOptions"
+
+          :onExtractor="responseExtractor"
+          :onReplace="responseExtractor"
       />
     </div>
+
+    <ResponseExtractor
+        v-if="responseExtractorVisible"
+        :interfaceId="interfaceData.id"
+        :content="responseData.content"
+        :selection="selectionRef"
+        :onFinish="responseExtractorFinish"
+        :onCancel="responseExtractorCancel"
+    />
   </div>
 </template>
 
-<script lang="ts">
-import {computed, ComputedRef, defineComponent, PropType, Ref, ref, watch} from "vue";
+<script setup lang="ts">
+import {computed, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import { DownloadOutlined, CopyOutlined, ClearOutlined } from '@ant-design/icons-vue';
 import {StateType} from "@/views/interface/store";
-import {isInArray} from "@/utils/array";
 import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
 import {MonacoOptions} from "@/utils/const";
 import {Interface, Response} from "@/views/interface/data";
+import ResponseExtractor from "@/components/Editor/ResponseExtractor.vue";
 
-export default defineComponent({
-  name: 'ResponseLensHtml',
-  components: {
-    MonacoEditor,
-    CopyOutlined, DownloadOutlined, ClearOutlined,
-  },
+const {t} = useI18n();
+const store = useStore<{ Interface: StateType }>();
+const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
+const responseData = computed<Response>(() => store.state.Interface.responseData);
 
-  computed: {
-  },
+const responseExtractorVisible = ref(false)
+const requestReplaceVisible = ref(false)
 
-  setup(props) {
-    const {t} = useI18n();
-    const store = useStore<{ Interface: StateType }>();
-    const responseData = computed<Response>(() => store.state.Interface.responseData);
+const editorOptions = ref(Object.assign({usedWith: 'response'}, MonacoOptions) )
 
-    const editorOptions = ref(Object.assign({usedWith: 'response'}, MonacoOptions) )
+const selectionRef = ref({} as any)
 
-    return {
-      responseData,
-      editorOptions,
-    }
-  }
-})
+const responseExtractor = (selection) => {
+  console.log('responseExtractor', selection)
+  responseExtractorVisible.value = true
+}
+
+const requestReplace = (selection) => {
+  console.log('requestReplace', selection)
+  requestReplaceVisible.value = true
+}
+
+const responseExtractorFinish = () => {
+  console.log('responseExtractorFinish')
+  responseExtractorVisible.value = false
+}
+const responseExtractorCancel = () => {
+  console.log('responseExtractorCancel')
+  responseExtractorVisible.value = false
+}
 
 </script>
 
@@ -103,7 +123,7 @@ export default defineComponent({
   .body {
     height: calc(100% - 30px);
     overflow-y: hidden;
-    &>div {
+    &>div.monaco-editor-vue3 {
       height: 100%;
     }
   }

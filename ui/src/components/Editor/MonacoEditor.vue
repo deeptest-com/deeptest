@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import { defineComponent, computed, toRefs } from 'vue'
+import { defineComponent, computed, toRefs, ref } from 'vue'
 import * as monaco from 'monaco-editor'
 import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
@@ -17,10 +17,14 @@ export default defineComponent({
     width: {type: [String, Number], default: '100%'},
     height: {type: [String, Number], default: '100%'},
     original: String,
+    interfaceId: Number,
     value: String,
     language: {type: String, default: 'javascript'},
     theme: {type: String, default: 'vs'},
     options: {type: Object, default() {return {};}},
+
+    onExtractor: {type: Function},
+    onReplace: {type: Function},
   },
   emits: [
     'editorWillMount',
@@ -75,15 +79,13 @@ export default defineComponent({
     initMonaco(){
       this.$emit('editorWillMount', this.monaco)
 
-      const { value, language, theme, options } = this;
+      const { interfaceId, value, language, theme, options } = this;
       Object.assign(options, {scrollbar: {
           useShadows: false,
           automaticLayout: true,
           verticalScrollbarSize: 6,
           horizontalScrollbarSize: 6
         }})
-
-      console.log('====', options)
 
       this.editor = monaco.editor[this.diffEditor ? 'createDiffEditor' : 'create'](this.$el, {
         value: value,
@@ -95,9 +97,9 @@ export default defineComponent({
       this.diffEditor && this._setModel(this.value, this.original);
 
       if (this.options.usedWith === 'response') {
-        addExtractAction(this.editor)
+        addExtractAction(this.editor, this.onExtractor)
       } else if (this.options.usedWith === 'request') {
-        addReplaceAction(this.editor)
+        addReplaceAction(this.editor, this.onReplace)
       }
 
       // @event `change`

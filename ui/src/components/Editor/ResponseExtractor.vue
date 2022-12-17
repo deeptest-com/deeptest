@@ -14,21 +14,23 @@
                    @blur="validate('xpath', { trigger: 'blur' }).catch(() => {})" />
         </a-form-item>
 
-        <a-form-item label="变量" v-bind="modelRef.varName">
+        <a-form-item label="变量" v-bind="validateInfos.varName">
           <a-input-group compact>
-            <a-input v-model:value="modelRef.varName" style="width: 72%"
-                     @blur="validate('varName', { trigger: 'blur' }).catch(() => {})"  />
+            <a-input v-model:value="modelRef.varName"
+                     @change="onVarChanged"
+                     @blur="validate('varName', { trigger: 'blur' }).catch(() => {})"
+                     style="width: 72%"/>
 
             <a-select v-model:value="modelRef.code"
-                      @change="onVarChanged"
+                      @change="onVarSelected"
                       style="width: 28%">
-              <a-select-option v-for="(item, idx) in environmentData.vars" :key="'env-' + idx"
-                               :value="'env-' + item.id + '-' + item.name">
-                {{item.name}}
+              <a-select-option value="">
+                选择变量
               </a-select-option>
 
-              <a-select-option v-for="(item, idx) in validExtractorVariablesData" :key="'extract-' + idx"
-                               :value="'extract-' + item.id + '-' + item.name">
+              <a-select-option v-for="(item, idx) in validExtractorVariablesData"
+                               :key="idx"
+                               :value="item.id + '-' + item.name">
                 {{item.name}}
               </a-select-option>
             </a-select>
@@ -91,19 +93,45 @@ const { t } = useI18n();
 const store = useStore<{ Interface: InterfaceStateType, Environment: EnvironmentStateType }>();
 const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
 
-const environmentData = computed<any>(() => store.state.Environment.environmentData); // environmentData.vars
 const validExtractorVariablesData = computed(() => store.state.Interface.validExtractorVariablesData);
 
 const modelRef = ref<any>({
   xpath: '',
   varName: '',
+  code: '',
 })
 
-const onVarChanged = (value) => {
-  console.log(value);
+const onVarChanged = (e) => {
+  console.log('onVarChanged', e)
+
+  const value = e.target.value.trim()
+
+  if (!value) {
+    modelRef.value.code = ''
+    return
+  }
+
+  let found = false
+  for (let i in validExtractorVariablesData.value) {
+    const item = validExtractorVariablesData.value[i]
+
+    if (value === item.name) {
+      modelRef.value.code = item.id + '-' + item.name
+      found = true
+      break
+    }
+  }
+
+  if (!found) {
+    modelRef.value.code = ''
+  }
+};
+
+const onVarSelected = (value) => {
+  console.log('onVarSelected')
 
   const arr = value.split('-')
-  modelRef.value.varName = arr[2]
+  modelRef.value.varName = arr[1]
 };
 
 const onSubmit = async () => {

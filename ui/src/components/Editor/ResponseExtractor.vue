@@ -14,16 +14,23 @@
                    @blur="validate('xpath', { trigger: 'blur' }).catch(() => {})" />
         </a-form-item>
 
-        <a-form-item label="变量" v-bind="validateInfos.varName">
+        <a-form-item label="变量" v-bind="modelRef.varName">
           <a-input-group compact>
             <a-input v-model:value="modelRef.varName" style="width: 72%"
                      @blur="validate('varName', { trigger: 'blur' }).catch(() => {})"  />
-            <a-select v-model:value="modelRef.varId" style="width: 28%">
-              <a-select-option v-for="(item, idx) in environmentData.vars" :key="idx"
-                               :value="item.value">{{item.name}}</a-select-option>
 
-              <a-select-option v-for="(item, idx) in validExtractorVariablesData" :key="idx"
-                               :value="item.value">{{item.name}}</a-select-option>
+            <a-select v-model:value="modelRef.code"
+                      @change="onVarChanged"
+                      style="width: 28%">
+              <a-select-option v-for="(item, idx) in environmentData.vars" :key="'env-' + idx"
+                               :value="'env-' + item.id + '-' + item.name">
+                {{item.name}}
+              </a-select-option>
+
+              <a-select-option v-for="(item, idx) in validExtractorVariablesData" :key="'extract-' + idx"
+                               :value="'extract-' + item.id + '-' + item.name">
+                {{item.name}}
+              </a-select-option>
             </a-select>
           </a-input-group>
         </a-form-item>
@@ -87,21 +94,17 @@ const interfaceData = computed<Interface>(() => store.state.Interface.interfaceD
 const environmentData = computed<any>(() => store.state.Environment.environmentData); // environmentData.vars
 const validExtractorVariablesData = computed(() => store.state.Interface.validExtractorVariablesData);
 
-const rulesRef = reactive({
-  xpath: [
-    { required: true, message: '请输入XPath表达式', trigger: 'blur' },
-  ],
-  varName: [
-    { required: true, message: '请输入变量名', trigger: 'blur' },
-  ],
-});
-
 const modelRef = ref<any>({
   xpath: '',
   varName: '',
 })
 
-const { resetFields, validate, validateInfos } = useForm(modelRef, rulesRef);
+const onVarChanged = (value) => {
+  console.log(value);
+
+  const arr = value.split('-')
+  modelRef.value.varName = arr[2]
+};
 
 const onSubmit = async () => {
   console.log('onSubmit', modelRef)
@@ -117,6 +120,16 @@ onMounted(()=> {
   console.log('onMounted')
 
 })
+
+const rulesRef = reactive({
+  xpath: [
+    { required: true, message: '请输入XPath表达式', trigger: 'blur' },
+  ],
+  varName: [
+    { required: true, message: '请输入变量名', trigger: 'blur' },
+  ],
+});
+const { resetFields, validate, validateInfos } = useForm(modelRef, rulesRef);
 
 // const emit = defineEmits(["update:dialogVisible"]);
 // const commit = ()=>{

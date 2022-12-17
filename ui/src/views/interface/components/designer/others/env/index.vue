@@ -87,8 +87,8 @@
 
               <div class="val">
                 <a-tooltip class="val" overlayClassName="dp-tip-small">
-                  <template #title>{{item.value}}</template>
-                  {{item.value}}
+                  <template #title>{{item.rightValue}}</template>
+                  {{item.rightValue}}
                 </a-tooltip>
               </div>
 
@@ -150,8 +150,8 @@
 
               <div class="val">
                 <a-tooltip class="val" overlayClassName="dp-tip-small">
-                  <template #title>{{item.value}}</template>
-                  {{item.value==='extractor_err'? t(item.value+'_short') : item.value}}
+                  <template #title>{{item.rightValue}}</template>
+                  {{item.rightValue==='extractor_err'? t(item.rightValue+'_short') : item.rightValue}}
                 </a-tooltip>
               </div>
             </div>

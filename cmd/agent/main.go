@@ -52,7 +52,7 @@ func main() {
 	_logUtils.Infof("start agent")
 }
 
-func injectModule(ws *agentServe.WebServer) {
+func injectModule(ws *agentServe.AgentServer) {
 	var g inject.Graph
 	g.Logger = logrus.StandardLogger()
 

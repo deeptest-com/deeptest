@@ -16,8 +16,8 @@ import (
 	"github.com/snowlyg/helper/arr"
 )
 
-// WebServer 服务器
-type WebServer struct {
+// AgentServer 服务器
+type AgentServer struct {
 	app               *iris.Application
 	modules           []module.WebModule
 	idleConnClosed    chan struct{}
@@ -25,38 +25,37 @@ type WebServer struct {
 	timeFormat        string
 	globalMiddlewares []context.Handler
 	wg                sync.WaitGroup
-	staticPrefix      string
 	staticPath        string
 	webPath           string
 }
 
 // InitRouter 初始化模块路由
-func (webServer *WebServer) InitRouter() error {
-	webServer.app.UseRouter(middleware.CrsAuth("agent"))
+func (s *AgentServer) InitRouter() error {
+	s.app.UseRouter(middleware.CrsAuth("agent"))
 
-	app := webServer.app.Party("/").AllowMethods(iris.MethodOptions)
+	app := s.app.Party("/").AllowMethods(iris.MethodOptions)
 	{
 		if config.CONFIG.System.Level == "debug" {
 			debug := DebugParty()
 			app.PartyFunc(debug.RelativePath, debug.Handler)
 		}
-		webServer.initModule()
-		err := webServer.app.Build()
+		s.initModule()
+		err := s.app.Build()
 		if err != nil {
 			return fmt.Errorf("build router %w", err)
 		}
 
-		config.PermRoutes = webServer.GetSources()
+		config.PermRoutes = s.GetSources()
 
 		return nil
 	}
 }
 
 // GetSources 获取web服务需要认证的权限
-func (webServer *WebServer) GetSources() []map[string]string {
-	routeLen := len(webServer.app.GetRoutes())
+func (s *AgentServer) GetSources() []map[string]string {
+	routeLen := len(s.app.GetRoutes())
 	ch := make(chan map[string]string, routeLen)
-	for _, r := range webServer.app.GetRoutes() {
+	for _, r := range s.app.GetRoutes() {
 		if strings.Index(r.Path, "test123") > -1 {
 			logUtils.Info("")
 		}
@@ -87,22 +86,22 @@ func (webServer *WebServer) GetSources() []map[string]string {
 }
 
 // initModule 初始化web服务模块，包括子模块
-func (webServer *WebServer) initModule() {
-	if len(webServer.modules) > 0 {
-		for _, mod := range webServer.modules {
+func (s *AgentServer) initModule() {
+	if len(s.modules) > 0 {
+		for _, mod := range s.modules {
 			mod := mod
-			webServer.wg.Add(1)
+			s.wg.Add(1)
 			go func(mod module.WebModule) {
-				sub := webServer.app.PartyFunc(mod.RelativePath, mod.Handler)
+				sub := s.app.PartyFunc(mod.RelativePath, mod.Handler)
 				if len(mod.Modules) > 0 {
 					for _, subModule := range mod.Modules {
 						sub.PartyFunc(subModule.RelativePath, subModule.Handler)
 					}
 				}
-				webServer.wg.Done()
+				s.wg.Done()
 			}(mod)
 		}
-		webServer.wg.Wait()
+		s.wg.Wait()
 	}
 }
 

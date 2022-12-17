@@ -57,7 +57,6 @@ func Start() {
 		app:               irisApp,
 		addr:              config.CONFIG.System.ServerAddress,
 		timeFormat:        config.CONFIG.System.TimeFormat,
-		staticPrefix:      config.CONFIG.System.StaticPrefix,
 		staticPath:        config.CONFIG.System.StaticPath,
 		webPath:           config.CONFIG.System.WebPath,
 		idleConnClosed:    idleConnClosed,
@@ -136,16 +135,6 @@ func (webServer *WebServer) Start() {
 	<-webServer.idleConnClosed
 }
 
-// GetStaticPath 获取静态路径
-func (webServer *WebServer) GetStaticPath() string {
-	return webServer.staticPath
-}
-
-// GetWebPath 获取前端路径
-func (webServer *WebServer) GetWebPath() string {
-	return webServer.webPath
-}
-
 // GetAddr 获取web服务地址
 func (webServer *WebServer) GetAddr() string {
 	return webServer.addr
@@ -156,8 +145,8 @@ func (webServer *WebServer) AddModule(module ...module.WebModule) {
 	webServer.modules = append(webServer.modules, module...)
 }
 
-// AddWebStatic 添加前端页面访问
-func (webServer *WebServer) AddWebStatic() {
+// AddWebUi 添加前端页面访问
+func (webServer *WebServer) AddWebUi() {
 	uiFs, err := deeptest.GetUiFileSys()
 	if err != nil {
 		return
@@ -172,12 +161,17 @@ func (webServer *WebServer) AddWebStatic() {
 
 // AddUploadStatic 添加上传文件访问
 func (webServer *WebServer) AddUploadStatic() {
-	fsOrDir := iris.Dir(filepath.Join(dir.GetCurrentAbPath(), webServer.staticPath))
-	webServer.AddStatic(webServer.staticPrefix, fsOrDir)
+	fsOrDir := iris.Dir(filepath.Join(dir.GetCurrentAbPath(), filepath.Join(webServer.staticPath, "upload")))
+	webServer.addStatic("/upload", fsOrDir)
 }
 
-// AddStatic 添加静态文件
-func (webServer *WebServer) AddStatic(requestPath string, fsOrDir interface{}, opts ...iris.DirOptions) {
+// AddTestStatic 添加测试文件访问
+func (webServer *WebServer) AddTestStatic() {
+	fsOrDir := iris.Dir(filepath.Join(dir.GetCurrentAbPath(), filepath.Join(webServer.staticPath, "test")))
+	webServer.addStatic("/test", fsOrDir)
+}
+
+func (webServer *WebServer) addStatic(requestPath string, fsOrDir interface{}, opts ...iris.DirOptions) {
 	webServer.app.HandleDir(requestPath, fsOrDir, opts...)
 }
 

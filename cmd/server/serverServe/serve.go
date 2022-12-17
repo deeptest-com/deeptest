@@ -26,7 +26,6 @@ type WebServer struct {
 	timeFormat        string
 	globalMiddlewares []context.Handler
 	wg                sync.WaitGroup
-	staticPrefix      string
 	staticPath        string
 	webPath           string
 }
@@ -44,8 +43,9 @@ func (webServer *WebServer) InitRouter() error {
 		}
 		webServer.initModule()
 
-		webServer.AddWebStatic()
+		webServer.AddWebUi()
 		webServer.AddUploadStatic()
+		webServer.AddTestStatic()
 
 		err := webServer.app.Build()
 		if err != nil {

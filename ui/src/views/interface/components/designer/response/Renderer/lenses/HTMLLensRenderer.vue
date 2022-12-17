@@ -75,7 +75,15 @@ const selectionRef = ref({} as any)
 
 const responseExtractor = (data) => {
   console.log('responseExtractor', data)
-  responseExtractorVisible.value = true
+  // responseExtractorVisible.value = true
+
+  // test xpath generator
+  // const div = document.createElement("div");
+  // div.innerHTML = data.html;
+  // console.log('======', div.childNodes[0].childNodes[0])
+
+  let frag = document.createRange().createContextualFragment(data.html);
+  console.log('======', frag.getElementById('h1'))
 }
 
 const requestReplace = (data) => {

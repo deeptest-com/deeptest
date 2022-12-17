@@ -17,14 +17,12 @@ import (
 	"github.com/kataras/neffos/gorilla"
 	"github.com/sirupsen/logrus"
 	"net/http"
-	"path/filepath"
 	"sync"
 	"testing"
 	"time"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/kataras/iris/v12/context"
-	"github.com/snowlyg/helper/dir"
 	"github.com/snowlyg/helper/str"
 	"github.com/snowlyg/helper/tests"
 
@@ -35,7 +33,7 @@ import (
 var client *tests.Client
 
 // Init 初始化web服务
-func Init() *WebServer {
+func Init() *AgentServer {
 	consts.RunFrom = consts.FromAgent
 	consts.WorkDir = commUtils.GetWorkDir()
 
@@ -73,7 +71,7 @@ func Init() *WebServer {
 		gorilla.Upgrader(gorillaWs.Upgrader{CheckOrigin: func(*http.Request) bool { return true }}), m)
 	websocketAPI.Get("/", websocket.Handler(websocketServer))
 
-	return &WebServer{
+	return &AgentServer{
 		app:               app,
 		addr:              config.CONFIG.System.AgentAddress,
 		timeFormat:        config.CONFIG.System.TimeFormat,
@@ -83,56 +81,36 @@ func Init() *WebServer {
 }
 
 // GetStaticPath 获取静态路径
-func (webServer *WebServer) GetStaticPath() string {
-	return webServer.staticPath
+func (s *AgentServer) GetStaticPath() string {
+	return s.staticPath
 }
 
 // GetWebPath 获取前端路径
-func (webServer *WebServer) GetWebPath() string {
-	return webServer.webPath
+func (s *AgentServer) GetWebPath() string {
+	return s.webPath
 }
 
 // GetAddr 获取web服务地址
-func (webServer *WebServer) GetAddr() string {
-	return webServer.addr
+func (s *AgentServer) GetAddr() string {
+	return s.addr
 }
 
 // AddModule 添加模块
-func (webServer *WebServer) AddModule(module ...module.WebModule) {
-	webServer.modules = append(webServer.modules, module...)
-}
-
-// AddStatic 添加静态文件
-func (webServer *WebServer) AddStatic(requestPath string, fsOrDir interface{}, opts ...iris.DirOptions) {
-	webServer.app.HandleDir(requestPath, fsOrDir, opts...)
-}
-
-// AddWebStatic 添加前端访问地址
-func (webServer *WebServer) AddWebStatic(requestPath string) {
-	fsOrDir := iris.Dir(filepath.Join(dir.GetCurrentAbPath(), webServer.webPath))
-	webServer.AddStatic(requestPath, fsOrDir, iris.DirOptions{
-		IndexName: "index.html",
-		SPA:       true,
-	})
-}
-
-// AddUploadStatic 添加上传文件访问地址
-func (webServer *WebServer) AddUploadStatic() {
-	fsOrDir := iris.Dir(filepath.Join(dir.GetCurrentAbPath(), webServer.staticPath))
-	webServer.AddStatic(webServer.staticPrefix, fsOrDir)
+func (s *AgentServer) AddModule(module ...module.WebModule) {
+	s.modules = append(s.modules, module...)
 }
 
 // GetModules 获取模块
-func (webServer *WebServer) GetModules() []module.WebModule {
-	return webServer.modules
+func (s *AgentServer) GetModules() []module.WebModule {
+	return s.modules
 }
 
 // GetTestAuth 获取测试验证客户端
-func (webServer *WebServer) GetTestAuth(t *testing.T) *tests.Client {
+func (s *AgentServer) GetTestAuth(t *testing.T) *tests.Client {
 	var once sync.Once
 	once.Do(
 		func() {
-			client = tests.New(str.Join("http://", webServer.addr), t, webServer.app)
+			client = tests.New(str.Join("http://", s.addr), t, s.app)
 			if client == nil {
 				t.Fatalf("client is nil")
 			}
@@ -143,8 +121,8 @@ func (webServer *WebServer) GetTestAuth(t *testing.T) *tests.Client {
 }
 
 // GetTestLogin 测试登录web服务
-func (webServer *WebServer) GetTestLogin(t *testing.T, url string, res tests.Responses, datas ...map[string]interface{}) *tests.Client {
-	client := webServer.GetTestAuth(t)
+func (s *AgentServer) GetTestLogin(t *testing.T, url string, res tests.Responses, datas ...map[string]interface{}) *tests.Client {
+	client := s.GetTestAuth(t)
 	err := client.Login(url, res, datas...)
 	if err != nil {
 		t.Fatal(err)
@@ -153,22 +131,22 @@ func (webServer *WebServer) GetTestLogin(t *testing.T, url string, res tests.Res
 }
 
 // Init 启动web服务
-func (webServer *WebServer) Start() {
-	webServer.app.UseGlobal(webServer.globalMiddlewares...)
-	err := webServer.InitRouter()
+func (s *AgentServer) Start() {
+	s.app.UseGlobal(s.globalMiddlewares...)
+	err := s.InitRouter()
 	if err != nil {
 		fmt.Printf("初始化路由错误： %v\n", err)
 		panic(err)
 	}
 	// 添加上传文件路径
-	webServer.app.Listen(
-		webServer.addr,
+	s.app.Listen(
+		s.addr,
 		iris.WithoutInterruptHandler,
 		iris.WithoutServerError(iris.ErrServerClosed),
 		iris.WithOptimizations,
-		iris.WithTimeFormat(webServer.timeFormat),
+		iris.WithTimeFormat(s.timeFormat),
 	)
-	<-webServer.idleConnClosed
+	<-s.idleConnClosed
 }
 
 func injectWebsocketModule(websocketCtrl *handler.WebSocketCtrl) {

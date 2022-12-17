@@ -30,7 +30,8 @@ export function addExtractAction(editor, callback) {
             // console.log(ed.getValue());
             console.log(ed.getModel().getValueInRange(ed.getSelection()), ed.getSelection());
 
-            callback(ed.getSelection())
+            if (ed.getModel().getValueInRange(ed.getSelection()))
+                callback({editor: ed, section: ed.getSelection()})
         }
     });
 }

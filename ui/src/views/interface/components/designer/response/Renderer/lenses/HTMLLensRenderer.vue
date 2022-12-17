@@ -73,13 +73,13 @@ const editorOptions = ref(Object.assign({usedWith: 'response'}, MonacoOptions) )
 
 const selectionRef = ref({} as any)
 
-const responseExtractor = (selection) => {
-  console.log('responseExtractor', selection)
+const responseExtractor = (data) => {
+  console.log('responseExtractor', data)
   responseExtractorVisible.value = true
 }
 
-const requestReplace = (selection) => {
-  console.log('requestReplace', selection)
+const requestReplace = (data) => {
+  console.log('requestReplace', data)
   requestReplaceVisible.value = true
 }
 

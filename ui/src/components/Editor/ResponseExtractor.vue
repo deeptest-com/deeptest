@@ -16,12 +16,15 @@
 
         <a-form-item label="变量" v-bind="validateInfos.varName">
           <a-input-group compact>
-            <a-select v-model:value="modelRef.varId">
-              <a-select-option value="Zhejiang">Zhejiang</a-select-option>
-              <a-select-option value="Jiangsu">Jiangsu</a-select-option>
-            </a-select>
-            <a-input v-model:value="modelRef.varName" style="width: 50%"
+            <a-input v-model:value="modelRef.varName" style="width: 72%"
                      @blur="validate('varName', { trigger: 'blur' }).catch(() => {})"  />
+            <a-select v-model:value="modelRef.varId" style="width: 28%">
+              <a-select-option v-for="(item, idx) in environmentData.vars" :key="idx"
+                               :value="item.value">{{item.name}}</a-select-option>
+
+              <a-select-option v-for="(item, idx) in validExtractorVariablesData" :key="idx"
+                               :value="item.value">{{item.name}}</a-select-option>
+            </a-select>
           </a-input-group>
         </a-form-item>
 
@@ -42,13 +45,14 @@
 </template>
 
 <script setup lang="ts">
-import {defineProps, defineEmits, onMounted, reactive, ref, Ref} from "vue";
+import {defineProps, defineEmits, onMounted, reactive, ref, Ref, computed} from "vue";
 import {message, Form} from 'ant-design-vue';
 import {useI18n} from "vue-i18n";
 import {getEnvironment, saveEnvironment} from "@/views/interface/service";
 import {useStore} from "vuex";
 import {StateType as InterfaceStateType} from "@/views/interface/store";
 import {StateType as EnvironmentStateType} from "@/store/environment";
+import {Interface} from "@/views/interface/data";
 const useForm = Form.useForm;
 
 const props = defineProps({
@@ -78,6 +82,10 @@ const props = defineProps({
 const { t } = useI18n();
 
 const store = useStore<{ Interface: InterfaceStateType, Environment: EnvironmentStateType }>();
+const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
+
+const environmentData = computed<any>(() => store.state.Environment.environmentData); // environmentData.vars
+const validExtractorVariablesData = computed(() => store.state.Interface.validExtractorVariablesData);
 
 const rulesRef = reactive({
   xpath: [
@@ -107,6 +115,7 @@ const onSubmit = async () => {
 
 onMounted(()=> {
   console.log('onMounted')
+
 })
 
 // const emit = defineEmits(["update:dialogVisible"]);

@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import { defineComponent, computed, toRefs, ref } from 'vue'
+import { defineComponent, computed, toRefs, nextTick, ref } from 'vue'
 import * as monaco from 'monaco-editor'
 import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
@@ -107,15 +107,14 @@ export default defineComponent({
 
       editor.onDidChangeModelContent(event => {
         const value = editor.getValue()
+
         if (this.value !== value) {
           this.$emit('change', value, event)
         }
 
-        setTimeout(() => {
-          if (editor.getAction('editor.action.formatDocument'))
-            editor.getAction('editor.action.formatDocument').run()
-          console.log('format codes')
+        this.formatDocUpdate(editor)
 
+        setTimeout(() => {
           const elems= document.getElementsByClassName('monaco-editor-vue3');
           for(let i=0; i < elems.length; i++) {
             elems[i].style.maxWidth = 0 // elems[i].clientWidth - 200 + 'px'
@@ -125,12 +124,22 @@ export default defineComponent({
 
       this.$emit('editorDidMount', this.editor)
 
-      setTimeout(() => {
-        if (editor.getAction('editor.action.formatDocument'))
-          editor.getAction('editor.action.formatDocument').run()
-        console.log('format codes')
-      }, 100)
+      this.formatDocInit(editor)
     },
+
+    formatDocInit: (editor) => {
+      console.log('format codes - int')
+      nextTick(() => {
+        editor.getAction('editor.action.formatDocument')?.run()
+      })
+    },
+
+    formatDocUpdate: debounce((editor) => {
+      console.log('format codes - update')
+      nextTick(() => {
+        editor.getAction('editor.action.formatDocument')?.run()
+      })
+    }, 1000),
 
     _setModel(value, original) {
       const { language } = this;

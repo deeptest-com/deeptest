@@ -85,12 +85,10 @@ const responseExtractor = (data) => {
 
   frameDoc = initIFrame(data.html)
 
-  const elem = frameDoc.getElementById('abc')
-  elem?.setAttribute('data-dpkey', '123456')
+  frameDoc.getElementById('abc')?.setAttribute('data-dpkey', '123456')
+  const elem = frameDoc.querySelector('*[data-dpkey="123456"]')
 
-  const elem2 = frameDoc.querySelector('*[data-dpkey="123456"]')
-
-  console.log('==div===', elem2)
+  console.log('==div===', elem)
 }
 
 const requestReplace = (data) => {

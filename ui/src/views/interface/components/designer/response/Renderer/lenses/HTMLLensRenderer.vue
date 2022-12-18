@@ -62,6 +62,7 @@ import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
 import {MonacoOptions} from "@/utils/const";
 import {Interface, Response} from "@/views/interface/data";
 import ResponseExtractor from "@/components/Editor/ResponseExtractor.vue";
+import {initIFrame} from "@/services/parser-html";
 
 const {t} = useI18n();
 const store = useStore<{ Interface: StateType }>();
@@ -82,13 +83,7 @@ const responseExtractor = (data) => {
   console.log('responseExtractor', data)
   // responseExtractorVisible.value = true
 
-  frameElem = document.getElementById('iframe') as HTMLIFrameElement
-  frameDoc = frameElem.contentWindow?.document as Document
-
-  frameElem.src = "about:blank";
-  frameDoc.open();
-  frameDoc.write(data.html);
-  frameDoc.close();
+  frameDoc = initIFrame(data.html)
 
   const elem = frameDoc.getElementById('abc')
   elem?.setAttribute('data-dpkey', '123456')

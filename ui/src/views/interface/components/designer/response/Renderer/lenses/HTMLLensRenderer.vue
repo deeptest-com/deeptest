@@ -25,6 +25,8 @@
       </a-row>
     </div>
 
+    <iframe id="iframe" height="0"></iframe>
+
     <div class="body">
       <MonacoEditor
           class="editor"
@@ -73,17 +75,27 @@ const editorOptions = ref(Object.assign({usedWith: 'response'}, MonacoOptions) )
 
 const selectionRef = ref({} as any)
 
+let frameElem: HTMLIFrameElement
+let frameDoc: Document
+
 const responseExtractor = (data) => {
   console.log('responseExtractor', data)
   // responseExtractorVisible.value = true
 
-  // test xpath generator
-  // const div = document.createElement("div");
-  // div.innerHTML = data.html;
-  // console.log('======', div.childNodes[0].childNodes[0])
+  frameElem = document.getElementById('iframe') as HTMLIFrameElement
+  frameDoc = frameElem.contentWindow?.document as Document
 
-  let frag = document.createRange().createContextualFragment(data.html);
-  console.log('======', frag.getElementById('h1'))
+  frameElem.src = "about:blank";
+  frameDoc.open();
+  frameDoc.write(data.html);
+  frameDoc.close();
+
+  const elem = frameDoc.getElementById('abc')
+  elem?.setAttribute('data-dpkey', '123456')
+
+  const elem2 = frameDoc.querySelector('*[data-dpkey="123456"]')
+
+  console.log('==div===', elem2)
 }
 
 const requestReplace = (data) => {

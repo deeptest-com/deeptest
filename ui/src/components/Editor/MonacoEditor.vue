@@ -58,7 +58,7 @@ export default defineComponent({
       console.log('resizeIt')
       const container = document.getElementsByClassName('response-renderer')[0]
       const size = {width: container.clientWidth, height: container.clientHeight-30}
-      // console.log(size)
+
       this.editor.layout(size)
     }, 500);
 

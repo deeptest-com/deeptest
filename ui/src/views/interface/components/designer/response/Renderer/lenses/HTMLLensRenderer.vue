@@ -85,8 +85,8 @@ const responseExtractor = (data) => {
 
   frameDoc = initIFrame(data.html)
 
-  frameDoc.getElementById('abc')?.setAttribute('data-dpkey', '123456')
-  const elem = frameDoc.querySelector('*[data-dpkey="123456"]')
+  frameDoc.getElementById('abc')?.setAttribute('data-com-deeptest-selection', '123456')
+  const elem = frameDoc.querySelector('*[data-com-deeptest-selection="123456"]')
 
   console.log('==div===', elem)
 }

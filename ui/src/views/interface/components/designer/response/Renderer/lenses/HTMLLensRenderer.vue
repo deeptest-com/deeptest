@@ -84,25 +84,25 @@ const responseExtractor = (data) => {
   // console.log('responseExtractor', data)
   // responseExtractorVisible.value = true
 
-  // parseHtml({
-  //   docHtml: data.docHtml,
-  //   selectContent: data.selectContent,
+  parseHtml({
+    docHtml: data.docHtml,
+    selectContent: data.selectContent,
+
+    startLine: data.selectionObj.startLineNumber - 1,
+    endLine: data.selectionObj.endLineNumber - 1,
+    startColumn: data.selectionObj.startColumn - 1,
+    endColumn: data.selectionObj.endColumn - 1,
+  }).then((json) => {
+    console.log('json', json)
+  })
+
+  // const docHtml = updateElem(frameDoc, data.docHtml, data.selectContent, data.selectionObj)
+  // // console.log('after add elem prop', docHtml)
   //
-  //   startLine: data.selectionObj.startLineNumber - 1,
-  //   endLine: data.selectionObj.endLineNumber - 1,
-  //   startColumn: data.selectionObj.startColumn - 1,
-  //   endColumn: data.selectionObj.endColumn - 1,
-  // }).then((json) => {
-  //   console.log('json', json)
-  // })
-
-  const docHtml = updateElem(frameDoc, data.docHtml, data.selectContent, data.selectionObj)
-  // console.log('after add elem prop', docHtml)
-
-  frameDoc = initIFrame(docHtml)
-  const xpath = getXpath(frameDoc)
-
-  console.log('==xpath===', xpath)
+  // frameDoc = initIFrame(docHtml)
+  // const xpath = getXpath(frameDoc)
+  //
+  // console.log('==xpath===', xpath)
 }
 
 const requestReplace = (data) => {

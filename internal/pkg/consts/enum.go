@@ -504,3 +504,15 @@ const (
 func (e RoleType) String() string {
 	return string(e)
 }
+
+type NodeType string
+
+const (
+	Elem    NodeType = "elem"
+	Prop    NodeType = "prop"
+	Content NodeType = "content"
+)
+
+func (e NodeType) String() string {
+	return string(e)
+}

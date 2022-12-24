@@ -10,29 +10,36 @@ import (
 )
 
 type ParserService struct {
+	XPathService *XPathService `inject:""`
 }
 
 func (s *ParserService) ParseHtml(req *v1.ParserRequest) (ret string, err error) {
-	req.DocHtml = s.updateElem(req.DocHtml, req.SelectContent, req.StartLine, req.EndLine,
+	docHtml, selectionType := s.updateElem(req.DocHtml, req.SelectContent, req.StartLine, req.EndLine,
 		req.StartColumn, req.EndColumn)
+
+	req.DocHtml = docHtml
 
 	elem := s.getSelectedElem(req.DocHtml)
 
-	ret = s.getXpath(elem)
+	xpath, _ := s.XPathService.GetXPath(elem, req.SelectContent, selectionType, true)
+
+	testElem := s.queryElem(req.DocHtml, xpath)
+
+	fmt.Printf("%s - %s: %v", selectionType, xpath, s.XPathService.getAttr(testElem, consts.DeepestKey))
 
 	return
 }
 
 func (s *ParserService) updateElem(docHtml, selectContent string,
-	startLine, endLine, startColumn, endColumn int) (ret string) {
+	startLine, endLine, startColumn, endColumn int) (ret string, selectionType consts.NodeType) {
 	lines := strings.Split(docHtml, "\n")
 
-	selectionType := s.getSelectionType(lines, startLine, endLine, startColumn, endColumn)
+	selectionType = s.getSelectionType(lines, startLine, endLine, startColumn, endColumn)
 
 	line := lines[startLine]
 
 	if selectionType == "elem" {
-		newStr := selectContent + fmt.Sprintf(" %s=\"true\"", consts.DeepestKey)
+		newStr := selectContent + fmt.Sprintf(" %s=\"true\" ", consts.DeepestKey)
 		newLine := line[:startColumn] + newStr + line[endColumn:]
 
 		lines[startLine] = newLine
@@ -41,6 +48,13 @@ func (s *ParserService) updateElem(docHtml, selectContent string,
 		return
 
 	} else if selectionType == "prop" {
+		newStr := fmt.Sprintf(" %s=\"true\" ", consts.DeepestKey)
+		newLine := line[:startColumn] + newStr + line[startColumn:]
+
+		lines[startLine] = newLine
+
+		ret = strings.Join(lines, "\n")
+		return
 
 	} else if selectionType == "content" {
 
@@ -61,17 +75,26 @@ func (s *ParserService) getSelectedElem(docHtml string) (ret *html.Node) {
 	return
 }
 
-func (s *ParserService) getXpath(elem *html.Node) (xpath string) {
+func (s *ParserService) queryElem(docHtml, xpath string) (ret *html.Node) {
+	doc, err := htmlquery.Parse(strings.NewReader(docHtml))
+	if err != nil {
+		return
+	}
+
+	expr := fmt.Sprintf("//*[@%s]", consts.DeepestKey)
+	ret, err = htmlquery.Query(doc, expr)
 
 	return
 }
 
-func (s *ParserService) getSelectionType(lines []string, startLine, endLine, startColumn, endColumn int) (ret string) {
+func (s *ParserService) getSelectionType(lines []string, startLine, endLine, startColumn, endColumn int) (
+	ret consts.NodeType) {
+
 	leftNoSpaceChar := s.getLeftNoSpaceChar(lines, startLine, startColumn)
 	rightChar := s.getRightChar(lines, endLine, endColumn)
 
 	if leftNoSpaceChar == "<" && (rightChar == " " || rightChar == ">") {
-		ret = "elem"
+		ret = consts.Elem
 		return
 	}
 
@@ -79,11 +102,11 @@ func (s *ParserService) getSelectionType(lines []string, startLine, endLine, sta
 	rightNoSpaceChar := s.getRightNoSpaceChar(lines, endLine, endColumn)
 
 	if leftChar == " " && rightNoSpaceChar == "=" {
-		ret = "prop"
+		ret = consts.Prop
 		return
 	}
 
-	ret = "content"
+	ret = consts.Content
 	return
 }
 

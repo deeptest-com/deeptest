@@ -13,9 +13,9 @@ func TestXPath(t *testing.T) {
 		return
 	}
 
-	expression := "//a"
+	expression := `//*[@id="form"]/input/..`
 
-	elems, err := htmlquery.QueryAll(doc, expression)
+	elems, err := htmlquery.Query(doc, expression)
 	log.Print(elems)
 
 }

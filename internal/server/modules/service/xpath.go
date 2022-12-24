@@ -11,6 +11,10 @@ type XPathService struct {
 
 func (s *XPathService) GetXPath(node *html.Node,
 	selectContent string, selectionType consts.NodeType, optimized bool) (ret string, err error) {
+	if node == nil {
+		return
+	}
+
 	if node.Type == html.DocumentNode {
 		ret = "/"
 		return

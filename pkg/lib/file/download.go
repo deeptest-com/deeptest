@@ -2,8 +2,6 @@ package _fileUtils
 
 import (
 	"fmt"
-	_i118Utils "github.com/aaronchen2k/deeptest/pkg/lib/i118"
-	_logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"io/ioutil"
 	"net/http"
 	"path/filepath"
@@ -17,11 +15,11 @@ func Download(url string, dst string) (err error) {
 	var data []byte
 	data, err = HTTPDownload(url)
 	if err == nil {
-		_logUtils.Info(_i118Utils.Sprintf("file_downloaded", url))
+		fmt.Printf("file downloaded %s", url)
 
 		err = WriteDownloadFile(dst, data)
 		if err == nil {
-			_logUtils.Info(_i118Utils.Sprintf("file_download_saved", url, dst))
+			fmt.Printf("file %s saved to %s", url, dst)
 		}
 	}
 
@@ -31,12 +29,12 @@ func Download(url string, dst string) (err error) {
 func HTTPDownload(uri string) ([]byte, error) {
 	res, err := http.Get(uri)
 	if err != nil {
-		_logUtils.Error(err.Error())
+		fmt.Printf(err.Error())
 	}
 	defer res.Body.Close()
 	d, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		_logUtils.Error(err.Error())
+		fmt.Printf(err.Error())
 	}
 	return d, err
 }
@@ -44,7 +42,7 @@ func HTTPDownload(uri string) ([]byte, error) {
 func WriteDownloadFile(dst string, d []byte) error {
 	err := ioutil.WriteFile(dst, d, 0444)
 	if err != nil {
-		_logUtils.Error(err.Error())
+		fmt.Printf(err.Error())
 	}
 	return err
 }

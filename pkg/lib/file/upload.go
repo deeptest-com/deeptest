@@ -2,8 +2,7 @@ package _fileUtils
 
 import (
 	"bytes"
-	_i118Utils "github.com/aaronchen2k/deeptest/pkg/lib/i118"
-	_logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"mime/multipart"
@@ -33,13 +32,13 @@ func Upload(url string, files []string, extraParams map[string]string) {
 	defer resp.Body.Close()
 
 	if err != nil {
-		_logUtils.Error(_i118Utils.Sprintf("fail_to_upload_files", err.Error()))
+		fmt.Printf("failed to upload file %s", err.Error())
 	}
 
 	respBody, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		_logUtils.Error(_i118Utils.Sprintf("fail_to_parse_upload_response", err.Error()))
+		fmt.Printf("failed to parse upload response %s", err.Error())
 	}
 
-	_logUtils.Info(_i118Utils.Sprintf("upload_status", resp.Status, string(respBody)))
+	fmt.Printf("upload status %s, body %s", resp.Status, string(respBody))
 }

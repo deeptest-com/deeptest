@@ -3,6 +3,7 @@ package deeptest
 import (
 	"embed"
 	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
+	fileUtils "github.com/aaronchen2k/deeptest/pkg/lib/file"
 	"io/fs"
 	"os"
 )
@@ -14,6 +15,7 @@ func GetUiFileSys() (ret fs.FS, err error) {
 	if commonUtils.IsRelease() {
 		ret, err = fs.Sub(uiFileSys, "ui/dist")
 	} else {
+		fileUtils.MkDirIfNeeded("ui/dist")
 		ret = os.DirFS("ui/dist")
 	}
 

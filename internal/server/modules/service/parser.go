@@ -3,6 +3,7 @@ package service
 import (
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	queryHelper "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/query"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/antchfx/htmlquery"
 	"golang.org/x/net/html"
@@ -23,9 +24,9 @@ func (s *ParserService) ParseHtml(req *v1.ParserRequest) (ret string, err error)
 
 	xpath, _ := s.XPathService.GetXPath(elem, req.SelectContent, selectionType, true)
 
-	testElem := s.queryElem(req.DocHtml, xpath)
+	result := queryHelper.HtmlQuery(req.DocHtml, xpath)
 
-	fmt.Printf("%s - %s: %v", selectionType, xpath, testElem)
+	fmt.Printf("%s - %s: %v", selectionType, xpath, result)
 
 	return
 }

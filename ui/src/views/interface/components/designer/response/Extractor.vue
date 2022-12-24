@@ -216,7 +216,11 @@ const { resetFields, validate, validateInfos } = useForm(model, rules);
 
 const add = () => {
   editVisible.value = true
-  model.value = {src: ExtractorSrc.body, type: ExtractorType.boundary, expression: '', variable: '', scope: 'private'} as Extractor
+  model.value = {src: ExtractorSrc.body,
+    type: ExtractorType.boundary,
+    expression: '',
+    variable: '',
+    scope: 'local'} as Extractor
 
   selectSrc()
   if (responseData.value.contentLang === 'json') {

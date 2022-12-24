@@ -56,7 +56,7 @@ func (s *FileService) UploadFile(ctx iris.Context, fh *multipart.FileHeader, fol
 
 // GetFileName 获取文件名称
 func GetFileName(name string) (string, error) {
-	fns := strings.Split(strings.TrimLeft(name, "./"), ".")
+	fns := strings.Split(strings.TrimPrefix(name, "./"), ".")
 	if len(fns) != 2 {
 		logUtils.Errorf("文件名错误 %s", name)
 		return "", ErrEmpty

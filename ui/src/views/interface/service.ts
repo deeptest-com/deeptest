@@ -15,6 +15,8 @@ const apiShareVar = `${apiEnvironment}/shareVars`
 const apiExtractor = 'extractors'
 const apiCheckpoint = 'checkpoints'
 
+const apiParser = 'parser'
+
 // interface
 export async function saveInterface(interf: Interface): Promise<any> {
     return request({
@@ -379,5 +381,13 @@ export async function removeCheckpoint(id: number): Promise<any> {
     return request({
         url: `/${apiCheckpoint}/${id}`,
         method: 'DELETE',
+    });
+}
+
+export async function parseHtml(data): Promise<any> {
+    return request({
+        url: `/${apiParser}/parseHtml`,
+        method: 'POST',
+        data
     });
 }

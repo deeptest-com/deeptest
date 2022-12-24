@@ -53,7 +53,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, ref} from "vue";
+import {computed, ref, reactive} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import { DownloadOutlined, CopyOutlined, ClearOutlined } from '@ant-design/icons-vue';
@@ -62,7 +62,8 @@ import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
 import {MonacoOptions} from "@/utils/const";
 import {Interface, Response} from "@/views/interface/data";
 import ResponseExtractor from "@/components/Editor/ResponseExtractor.vue";
-import {initIFrame} from "@/services/parser-html";
+import {getXpath, initIFrame, updateElem} from "@/services/parser-html";
+import {parseHtml} from "@/views/interface/service";
 
 const {t} = useI18n();
 const store = useStore<{ Interface: StateType }>();
@@ -80,15 +81,28 @@ let frameElem: HTMLIFrameElement
 let frameDoc: Document
 
 const responseExtractor = (data) => {
-  console.log('responseExtractor', data)
+  // console.log('responseExtractor', data)
   // responseExtractorVisible.value = true
 
-  frameDoc = initIFrame(data.html)
+  // parseHtml({
+  //   docHtml: data.docHtml,
+  //   selectContent: data.selectContent,
+  //
+  //   startLine: data.selectionObj.startLineNumber - 1,
+  //   endLine: data.selectionObj.endLineNumber - 1,
+  //   startColumn: data.selectionObj.startColumn - 1,
+  //   endColumn: data.selectionObj.endColumn - 1,
+  // }).then((json) => {
+  //   console.log('json', json)
+  // })
 
-  frameDoc.getElementById('abc')?.setAttribute('data-com-deeptest-selection', '123456')
-  const elem = frameDoc.querySelector('*[data-com-deeptest-selection="123456"]')
+  const docHtml = updateElem(frameDoc, data.docHtml, data.selectContent, data.selectionObj)
+  // console.log('after add elem prop', docHtml)
 
-  console.log('==div===', elem)
+  frameDoc = initIFrame(docHtml)
+  const xpath = getXpath(frameDoc)
+
+  console.log('==xpath===', xpath)
 }
 
 const requestReplace = (data) => {

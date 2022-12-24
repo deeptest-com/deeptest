@@ -32,6 +32,9 @@ func HtmlQuery(content string, expression string) (result string) {
 		obj = htmlquery.SelectAttr(elem, propName)
 	} else {
 		obj = htmlquery.InnerText(elem)
+		if obj == "" {
+			obj = htmlquery.OutputHTML(elem, true)
+		}
 	}
 
 	result = fmt.Sprintf("%v", obj)
@@ -44,8 +47,8 @@ func GetExpressionForCssSelector(str string) (expression, propName string) {
 	lastSection := arr[len(arr)-1]
 
 	if strings.Index(lastSection, "@") == 0 {
-		propName = strings.TrimLeft(lastSection, "@")
-		expression = strings.TrimRight(str, "/"+lastSection)
+		propName = strings.TrimPrefix(lastSection, "@")
+		expression = strings.TrimSuffix(str, "/"+lastSection)
 	} else {
 		expression = str
 	}

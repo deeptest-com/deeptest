@@ -40,4 +40,6 @@ const (
 	EmailSmtpPort    = 465
 	EmailAccount     = "chenqi@deeptest.com"
 	EmailPassword    = ""
+
+	DeepestKey = "com_deeptest_prop_for_selection"
 )

@@ -21,7 +21,7 @@ func ConvertServersToEnvironments(servers openapi3.Servers) (vars []model.Enviro
 }
 
 func genUrl(url string, variables map[string]*openapi3.ServerVariable) (ret string) {
-	ret = strings.TrimRight(url, "/")
+	ret = strings.TrimSuffix(url, "/")
 
 	for name, svar := range variables {
 		ret = strings.ReplaceAll(ret, "${"+name+"}", svar.Default)

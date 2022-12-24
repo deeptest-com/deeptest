@@ -6,7 +6,6 @@ import (
 	"compress/zlib"
 	"crypto/tls"
 	"encoding/base64"
-	"encoding/json"
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils"
@@ -183,10 +182,10 @@ func posts(req v1.BaseRequest, method consts.HttpMethod, readRespData bool) (
 
 	var dataBytes []byte
 
-	formDatacontentType := ""
+	formDataContentType := ""
 	if strings.HasPrefix(bodyType.String(), consts.ContentTypeFormData.String()) {
 		formDataWriter, _ := utils.MultipartEncoder(bodyFormData)
-		formDatacontentType = utils.MultipartContentType(formDataWriter)
+		formDataContentType = utils.MultipartContentType(formDataWriter)
 
 		dataBytes = formDataWriter.Payload.Bytes()
 
@@ -200,7 +199,7 @@ func posts(req v1.BaseRequest, method consts.HttpMethod, readRespData bool) (
 
 	} else if strings.HasPrefix(bodyType.String(), consts.ContentTypeJSON.String()) {
 		// post json
-		dataBytes, err = json.Marshal(reqBody)
+		dataBytes = []byte(reqBody)
 		if err != nil {
 			return
 		}
@@ -241,7 +240,7 @@ func posts(req v1.BaseRequest, method consts.HttpMethod, readRespData bool) (
 	if strings.HasPrefix(bodyType.String(), consts.ContentTypeJSON.String()) {
 		request.Header.Set(consts.ContentType, fmt.Sprintf("%s; charset=utf-8", bodyType))
 	} else if strings.HasPrefix(bodyType.String(), consts.ContentTypeFormData.String()) {
-		request.Header.Set(consts.ContentType, formDatacontentType)
+		request.Header.Set(consts.ContentType, formDataContentType)
 	} else {
 		request.Header.Set(consts.ContentType, bodyType.String())
 	}
@@ -303,7 +302,12 @@ func addAuthorInfo(req v1.BaseRequest, request *http.Request) {
 		request.Header.Set(consts.Authorization, str)
 
 	} else if req.AuthorizationType == consts.BearerToken {
-		str := fmt.Sprintf("Bearer %s", req.BearerToken.Token)
+		str := req.BearerToken.Token
+
+		if !strings.HasPrefix(str, "Bearer ") {
+			str = fmt.Sprintf("Bearer %s", req.BearerToken.Token)
+		}
+
 		request.Header.Set(consts.Authorization, str)
 
 	} else if req.AuthorizationType == consts.OAuth2 {

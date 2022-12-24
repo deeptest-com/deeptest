@@ -30,6 +30,7 @@ type IndexModule struct {
 	EnvironmentModule *router.EnvironmentModule `inject:""`
 	ExtractorModule   *router.ExtractorModule   `inject:""`
 	CheckpointModule  *router.CheckpointModule  `inject:""`
+	ParserModule      *router.ParserModule      `inject:""`
 
 	ScenarioModule          *router.ScenarioModule          `inject:""`
 	ScenarioNodeModule      *router.ScenarioNodeModule      `inject:""`
@@ -71,6 +72,7 @@ func (m *IndexModule) Party() module.WebModule {
 		m.EnvironmentModule.Party(),
 		m.ExtractorModule.Party(),
 		m.CheckpointModule.Party(),
+		m.ParserModule.Party(),
 		m.ScenarioModule.Party(),
 		m.ScenarioNodeModule.Party(),
 		m.ScenarioProcessorModule.Party(),

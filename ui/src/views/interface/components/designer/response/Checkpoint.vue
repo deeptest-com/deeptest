@@ -305,13 +305,14 @@ const wrapperCol = { span: 16 }
   }
   .body {
     padding: 6px;
-    height: calc(100% - 30px)
-  }
+    height: calc(100% - 30px);
+    overflow-y: auto;
 
-  .item {
-    .ant-col {
-      padding: 0 3px;
-      word-break: break-all;
+    .item {
+      .ant-col {
+        padding: 0 3px;
+        word-break: break-all;
+      }
     }
   }
 }

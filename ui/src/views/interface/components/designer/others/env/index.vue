@@ -353,9 +353,11 @@ import {StateType as ProjectStateType} from "@/store/project";
     flex: 1;
     display: flex;
     flex-direction: column;
+    height: 0;
 
     .body {
       flex: 1;
+      height: 100%;
       overflow-y: auto;
 
       .btn-wrapper {

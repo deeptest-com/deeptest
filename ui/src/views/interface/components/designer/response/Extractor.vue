@@ -317,13 +317,14 @@ const wrapperCol = { span: 16 }
   .items {
     padding: 6px;
     height: calc(100% - 30px);
-  }
-  .item {
-    .ant-col {
-      padding: 0 3px;
-      word-break: break-all;
+    overflow-y: auto;
+
+    .item {
+      .ant-col {
+        padding: 0 3px;
+        word-break: break-all;
+      }
     }
   }
-
 }
 </style>

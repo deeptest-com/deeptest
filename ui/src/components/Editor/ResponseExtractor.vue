@@ -15,7 +15,7 @@
           <a-input v-model:value="modelRef.expression"
                    @blur="validate('expression', { trigger: 'blur' }).catch(() => {})" >
             <template #addonAfter>
-              <div @click="test" :disabled="!modelRef.expression" class="dp-link">测试</div>
+              <div @click="test" :class="{'dp-disabled':!modelRef.expression}" class="dp-link">测试</div>
             </template>
           </a-input>
         </a-form-item>
@@ -167,6 +167,7 @@ const onSubmit = async () => {
 
 const test  = async () => {
   console.log('test', modelRef.value)
+  if (!modelRef.value.expression) return
   props.onTest(modelRef.value.expression);
 }
 

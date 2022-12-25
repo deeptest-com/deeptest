@@ -84,8 +84,8 @@ func (c *ExtractorCtrl) Update(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: nil, Msg: _domain.NoErr.Msg})
 }
 
-// SaveOrUpdateResult 新建或更新结果
-func (c *ExtractorCtrl) SaveOrUpdateResult(ctx iris.Context) {
+// CreateOrUpdateResult 新建或更新结果
+func (c *ExtractorCtrl) CreateOrUpdateResult(ctx iris.Context) {
 	var extractor model.InterfaceExtractor
 	err := ctx.ReadJSON(&extractor)
 	if err != nil {
@@ -93,7 +93,7 @@ func (c *ExtractorCtrl) SaveOrUpdateResult(ctx iris.Context) {
 		return
 	}
 
-	err = c.ExtractorService.SaveOrUpdateResult(&extractor)
+	err = c.ExtractorService.CreateOrUpdateResult(&extractor)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: err.Error()})
 		return

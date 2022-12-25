@@ -18,7 +18,7 @@ import {
     listValidExtractorVariable,
     getExtractor,
     saveExtractor,
-    saveExtractorOrUpdateResult,
+    createExtractorOrUpdateResult,
     removeExtractor,
     removeShareVar, clearShareVar,
 
@@ -86,7 +86,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         listExtractor: Action<StateType, StateType>;
         getExtractor: Action<StateType, StateType>;
         saveExtractor: Action<StateType, StateType>;
-        saveExtractorOrUpdateResult: Action<StateType, StateType>;
+        createExtractorOrUpdateResult: Action<StateType, StateType>;
         removeExtractor: Action<StateType, StateType>;
         removeShareVar: Action<StateType, StateType>;
         clearShareVar: Action<StateType, StateType>;
@@ -353,9 +353,9 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
-        async saveExtractorOrUpdateResult({commit, dispatch, state}, payload: any) {
+        async createExtractorOrUpdateResult({commit, dispatch, state}, payload: any) {
             try {
-                await saveExtractorOrUpdateResult(payload);
+                await createExtractorOrUpdateResult(payload);
                 dispatch('listExtractor');
                 return true;
             } catch (error) {

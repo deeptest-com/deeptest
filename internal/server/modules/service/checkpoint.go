@@ -204,7 +204,7 @@ func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp v1.
 	// Extractor
 	if checkpoint.Type == consts.Extractor {
 		// get extractor variable value saved by previous extract opt
-		extractorPo, _ := s.ExtractorRepo.GetByVariable(checkpoint.ExtractorVariable, 0, checkpoint.InterfaceId)
+		extractorPo, _ := s.ExtractorRepo.GetByInterfaceVariable(checkpoint.ExtractorVariable, 0, checkpoint.InterfaceId)
 		checkpoint.ActualResult = extractorPo.Result
 
 		checkpoint.ResultStatus = utils.Compare(checkpoint.Operator, checkpoint.ActualResult, checkpoint.Value)

@@ -42,8 +42,8 @@ func (s *ExtractorService) Update(extractor *model.InterfaceExtractor) (err erro
 	return
 }
 
-func (s *ExtractorService) SaveOrUpdateResult(extractor *model.InterfaceExtractor) (err error) {
-	s.ExtractorRepo.SaveOrUpdateResult(extractor)
+func (s *ExtractorService) CreateOrUpdateResult(extractor *model.InterfaceExtractor) (err error) {
+	s.ExtractorRepo.CreateOrUpdateResult(extractor)
 
 	return
 }

@@ -273,10 +273,11 @@ func (s *ParserService) getLeftNoSpaceChar(lines []string, startLine, startColum
 	}
 
 	startLine -= 1
-	startColumn = len(lines[startLine])
 	if startLine < 0 {
 		return
 	}
+
+	startColumn = len(lines[startLine])
 
 	return s.getLeftNoSpaceChar(lines, startLine, startColumn)
 }

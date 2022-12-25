@@ -331,9 +331,9 @@ export async function saveExtractor(data): Promise<any> {
         data: data,
     });
 }
-export async function saveExtractorOrUpdateResult(data): Promise<any> {
+export async function createExtractorOrUpdateResult(data): Promise<any> {
     return request({
-        url: `/${apiExtractor}/saveOrUpdateResult`,
+        url: `/${apiExtractor}/createOrUpdateResult`,
         method: 'POST',
         data: data,
     });

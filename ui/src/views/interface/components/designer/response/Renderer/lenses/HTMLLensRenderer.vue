@@ -74,11 +74,10 @@ const interfaceData = computed<Interface>(() => store.state.Interface.interfaceD
 const responseData = computed<Response>(() => store.state.Interface.responseData);
 const extractorsData = computed(() => store.state.Interface.extractorsData);
 
-const responseExtractorVisible = ref(false)
-const requestReplaceVisible = ref(false)
-
 const editorOptions = ref(Object.assign({usedWith: 'response'}, MonacoOptions) )
 
+const responseExtractorVisible = ref(false)
+const requestReplaceVisible = ref(false)
 const xpath = ref('')
 const result = ref('')
 
@@ -110,10 +109,10 @@ const responseExtractor = (data) => {
   // console.log('==xpath===', xpath)
 }
 
-const requestReplace = (data) => {
-  console.log('requestReplace', data)
-  requestReplaceVisible.value = true
-}
+// const requestReplace = (data) => {
+//   console.log('requestReplace', data)
+//   requestReplaceVisible.value = true
+// }
 
 const testParse = (xpath) => {
   console.log('testXPath')
@@ -135,7 +134,7 @@ const responseExtractorFinish = (data) => {
 
   data.interfaceId = interfaceData.value.id
   data.projectId = interfaceData.value.projectId
-  store.dispatch('Interface/saveExtractor', data).then((result) => {
+  store.dispatch('Interface/saveExtractorOrUpdateResult', data).then((result) => {
     if (result) {
       responseExtractorVisible.value = false
     }

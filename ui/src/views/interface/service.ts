@@ -331,6 +331,14 @@ export async function saveExtractor(data): Promise<any> {
         data: data,
     });
 }
+export async function saveExtractorOrUpdateResult(data): Promise<any> {
+    return request({
+        url: `/${apiExtractor}/saveOrUpdateResult`,
+        method: 'POST',
+        data: data,
+    });
+}
+
 export async function removeExtractor(id: number): Promise<any> {
     return request({
         url: `/${apiExtractor}/${id}`,
@@ -387,6 +395,20 @@ export async function removeCheckpoint(id: number): Promise<any> {
 export async function parseHtml(data): Promise<any> {
     return request({
         url: `/${apiParser}/parseHtml`,
+        method: 'POST',
+        data
+    });
+}
+export async function parseXml(data): Promise<any> {
+    return request({
+        url: `/${apiParser}/parseXml`,
+        method: 'POST',
+        data
+    });
+}
+export async function parseJson(data): Promise<any> {
+    return request({
+        url: `/${apiParser}/parseJson`,
         method: 'POST',
         data
     });

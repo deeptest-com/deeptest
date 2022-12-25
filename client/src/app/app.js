@@ -78,7 +78,7 @@ export class DeepTestApp {
 
         // const url = await startUIService()
 
-        let url = 'http://110.42.146.127:8085'
+        let url = 'http://110.42.146.127:8085/ui'
         if (process.env.UI_SERVER_URL) {
             url = process.env.UI_SERVER_URL
         }

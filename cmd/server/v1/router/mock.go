@@ -17,18 +17,16 @@ func NewMockModule() *MockModule {
 // Party 脚本
 func (m *MockModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
-		index.PartyFunc("/json", func(party iris.Party) {
-			party.Get("/invoke", m.MockCtrl.Get).Name = "模拟接口测试"
-			party.Post("/invoke", m.MockCtrl.Request).Name = "模拟接口测试"
-			party.Put("/invoke", m.MockCtrl.Request).Name = "模拟接口测试"
-			party.Delete("/invoke", m.MockCtrl.Request).Name = "模拟接口测试"
+		index.Get("/invoke", m.MockCtrl.Get).Name = "模拟接口测试"
+		index.Post("/invoke", m.MockCtrl.Request).Name = "模拟接口测试"
+		index.Put("/invoke", m.MockCtrl.Request).Name = "模拟接口测试"
+		index.Delete("/invoke", m.MockCtrl.Request).Name = "模拟接口测试"
 
-			party.Patch("/invoke", m.MockCtrl.Request).Name = "模拟接口测试"
-			party.Head("/invoke", m.MockCtrl.Head).Name = "模拟接口测试"
+		index.Patch("/invoke", m.MockCtrl.Request).Name = "模拟接口测试"
+		index.Head("/invoke", m.MockCtrl.Head).Name = "模拟接口测试"
 
-			party.Connect("/invoke", m.MockCtrl.Connect).Name = "模拟接口测试"
-			party.Trace("/invoke", m.MockCtrl.Trace).Name = "模拟接口测试"
-		})
+		index.Connect("/invoke", m.MockCtrl.Connect).Name = "模拟接口测试"
+		index.Trace("/invoke", m.MockCtrl.Trace).Name = "模拟接口测试"
 	}
 	return module.NewModule("/mock", handler)
 }

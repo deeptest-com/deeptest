@@ -75,9 +75,27 @@ func (c *ExtractorCtrl) Update(ctx iris.Context) {
 		return
 	}
 
-	bizErr := c.ExtractorService.Update(&extractor)
+	err = c.ExtractorService.Update(&extractor)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: bizErr.Code, Data: nil})
+		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: nil, Msg: _domain.NoErr.Msg})
+}
+
+// SaveOrUpdateResult 新建或更新结果
+func (c *ExtractorCtrl) SaveOrUpdateResult(ctx iris.Context) {
+	var extractor model.InterfaceExtractor
+	err := ctx.ReadJSON(&extractor)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		return
+	}
+
+	err = c.ExtractorService.SaveOrUpdateResult(&extractor)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: err.Error()})
 		return
 	}
 

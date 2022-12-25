@@ -30,6 +30,42 @@ func (c *ParserCtrl) ParseHtml(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: resp, Msg: _domain.NoErr.Msg})
 }
 
+// ParseXml
+func (c *ParserCtrl) ParseXml(ctx iris.Context) {
+	req := v1.ParserRequest{}
+	err := ctx.ReadJSON(&req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		return
+	}
+
+	resp, err := c.ParserService.ParseXml(&req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.FailErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: resp, Msg: _domain.NoErr.Msg})
+}
+
+// ParseJson
+func (c *ParserCtrl) ParseJson(ctx iris.Context) {
+	req := v1.ParserRequest{}
+	err := ctx.ReadJSON(&req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		return
+	}
+
+	resp, err := c.ParserService.ParseJson(&req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.FailErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: resp, Msg: _domain.NoErr.Msg})
+}
+
 // TestXPath
 func (c *ParserCtrl) TestXPath(ctx iris.Context) {
 	req := v1.TestXPathRequest{}

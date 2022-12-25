@@ -83,6 +83,31 @@ func (r *ExtractorRepo) Save(extractor *model.InterfaceExtractor) (id uint, bizE
 	return
 }
 
+func (r *ExtractorRepo) Update(extractor *model.InterfaceExtractor) (err error) {
+	err = r.DB.Updates(extractor).Error
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+func (r *ExtractorRepo) SaveOrUpdateResult(extractor *model.InterfaceExtractor) (err error) {
+	po, _ := r.GetByVariable(extractor.Variable, extractor.ID, extractor.InterfaceId)
+	if po.ID > 0 {
+		extractor.ID = po.ID
+		r.UpdateResult(*extractor)
+		return
+	}
+
+	err = r.DB.Save(extractor).Error
+	if err != nil {
+		return
+	}
+
+	return
+}
+
 func (r *ExtractorRepo) Delete(id uint) (err error) {
 	err = r.DB.Model(&model.InterfaceExtractor{}).
 		Where("id=?", id).

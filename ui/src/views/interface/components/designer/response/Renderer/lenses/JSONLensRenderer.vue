@@ -32,12 +32,26 @@
           :language="responseData.contentLang"
           theme="vs"
           :options="editorOptions"
+
+          :onExtractor="responseExtractor"
+          :onReplace="responseExtractor"
       />
     </div>
+
+    <ResponseExtractor
+        v-if="responseExtractorVisible"
+        :interfaceId="interfaceData.id"
+        type="json"
+        :xpath="xpath"
+        :result="result"
+        :onTest="testParse"
+        :onFinish="responseExtractorFinish"
+        :onCancel="responseExtractorCancel"
+    />
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import {computed, ComputedRef, defineComponent, PropType, Ref, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
@@ -48,29 +62,69 @@ import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
 import {MonacoOptions} from "@/utils/const";
 import {Interface, Response} from "@/views/interface/data";
 
-export default defineComponent({
-  name: 'ResponseLensJson',
-  components: {
-    MonacoEditor,
-    CopyOutlined, DownloadOutlined, ClearOutlined,
-  },
+import {parseHtml, parseJson, testXPath} from "@/views/interface/service";
+import {ExtractorSrc, ExtractorType} from "@/utils/enum";
+import ResponseExtractor from "@/components/Editor/ResponseExtractor.vue";
 
-  computed: {
-  },
+const {t} = useI18n();
+const store = useStore<{ Interface: StateType }>();
+const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
+const responseData = computed<Response>(() => store.state.Interface.responseData);
+const editorOptions = ref(Object.assign({usedWith: 'response'}, MonacoOptions) )
 
-  setup(props) {
-    const {t} = useI18n();
-    const store = useStore<{ Interface: StateType }>();
-    const responseData = computed<Response>(() => store.state.Interface.responseData);
+const responseExtractorVisible = ref(false)
+const xpath = ref('')
+const result = ref('')
 
-    const editorOptions = ref(Object.assign({usedWith: 'response'}, MonacoOptions) )
+const responseExtractor = (data) => {
+  // console.log('responseExtractor', data)
+  result.value = ''
 
-    return {
-      responseData,
-      editorOptions,
+  parseJson({
+    docHtml: data.docHtml,
+    selectContent: data.selectContent,
+
+    startLine: data.selectionObj.startLineNumber - 1,
+    endLine: data.selectionObj.endLineNumber - 1,
+    startColumn: data.selectionObj.startColumn - 1,
+    endColumn: data.selectionObj.endColumn - 1,
+  }).then((json) => {
+    console.log('json', json)
+    responseExtractorVisible.value = true
+    xpath.value = json.data.xpath
+  })
+}
+
+const testParse = (xpath) => {
+  console.log('testXPath')
+  testXPath({
+    content: responseData.value.content,
+    type: responseData.value.contentLang,
+    xpath: xpath,
+  }).then((json) => {
+    console.log('json', json)
+    result.value = json.data.result
+  })
+}
+
+const responseExtractorFinish = (data) => {
+  console.log('responseExtractorFinish')
+  data.type = ExtractorType.htmlquery
+  data.src = ExtractorSrc.body
+  data.result = result.value
+
+  data.interfaceId = interfaceData.value.id
+  data.projectId = interfaceData.value.projectId
+  store.dispatch('Interface/saveExtractorOrUpdateResult', data).then((result) => {
+    if (result) {
+      responseExtractorVisible.value = false
     }
-  }
-})
+  })
+}
+const responseExtractorCancel = () => {
+  console.log('responseExtractorCancel')
+  responseExtractorVisible.value = false
+}
 
 </script>
 

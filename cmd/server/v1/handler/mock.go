@@ -2,7 +2,7 @@ package handler
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	mockHelper2 "github.com/aaronchen2k/deeptest/internal/server/modules/helper/mock"
+	mockHelper "github.com/aaronchen2k/deeptest/internal/server/modules/helper/mock"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
@@ -33,14 +33,14 @@ func (c *MockCtrl) Get(ctx iris.Context) {
 	value := ctx.GetHeader("k1")
 	logUtils.Infof("API KEY - %s: %s", "k1", value)
 
-	if respType == "json" {
-		ctx.JSON(mockHelper2.GetJsonData())
+	if respType == "html" {
+		ctx.HTML(mockHelper.GetHtmlData())
 	} else if respType == "xml" {
-		ctx.XML(mockHelper2.GetXmlData())
-	} else if respType == "html" {
-		ctx.HTML(mockHelper2.GetHtmlData())
+		ctx.XML(mockHelper.GetXmlData())
+	} else if respType == "json" {
+		ctx.JSON(mockHelper.GetJsonData())
 	} else {
-		ctx.HTML(mockHelper2.GetTextData())
+		ctx.HTML(mockHelper.GetTextData())
 	}
 }
 
@@ -69,10 +69,10 @@ func (c *MockCtrl) Request(ctx iris.Context) {
 		ctx.XML(_domain.Response{Code: _domain.NoErr.Code, Data: req, Msg: _domain.NoErr.Msg})
 	} else if reqBodyType == consts.ContentTypeHTML.String() {
 		ctx.Header(consts.ContentType, consts.ContentTypeHTML.String()+";charset=utf-8")
-		ctx.HTML(mockHelper2.GetHtmlData())
+		ctx.HTML(mockHelper.GetHtmlData())
 	} else {
 		ctx.Header(consts.ContentType, consts.ContentTypeTEXT.String()+";charset=utf-8")
-		ctx.Text(mockHelper2.GetTextData())
+		ctx.Text(mockHelper.GetTextData())
 	}
 }
 

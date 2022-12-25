@@ -157,12 +157,14 @@ const onVarSelected = (value) => {
   console.log('onVarSelected')
 
   const arr = value.split('-')
-  modelRef.value.varName = arr[1]
+  modelRef.value.variable = arr[1]
 };
 
 const onSubmit = async () => {
   console.log('onSubmit', modelRef.value)
-  props.onFinish(modelRef.value);
+  validate().then(() => {
+    props.onFinish(modelRef.value);
+  })
 }
 
 const test  = async () => {

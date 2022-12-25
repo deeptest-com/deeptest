@@ -36,8 +36,14 @@ func (s *ExtractorService) Create(extractor *model.InterfaceExtractor) (bizErr _
 	return
 }
 
-func (s *ExtractorService) Update(extractor *model.InterfaceExtractor) (err _domain.BizErr) {
-	_, err = s.ExtractorRepo.Save(extractor)
+func (s *ExtractorService) Update(extractor *model.InterfaceExtractor) (err error) {
+	s.ExtractorRepo.Update(extractor)
+
+	return
+}
+
+func (s *ExtractorService) SaveOrUpdateResult(extractor *model.InterfaceExtractor) (err error) {
+	s.ExtractorRepo.SaveOrUpdateResult(extractor)
 
 	return
 }

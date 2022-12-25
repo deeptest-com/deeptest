@@ -150,8 +150,8 @@
 
               <div class="val">
                 <a-tooltip class="val" overlayClassName="dp-tip-small">
-                  <template #title>{{item.rightValue}}</template>
-                  {{item.rightValue==='extractor_err'? t(item.rightValue+'_short') : item.rightValue}}
+                  <template #title>{{item.value}}</template>
+                  {{item.rightValue==='extractor_err'? t(item.rightValue+'_short') : item.value}}
                 </a-tooltip>
               </div>
             </div>

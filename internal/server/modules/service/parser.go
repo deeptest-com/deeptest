@@ -14,7 +14,7 @@ type ParserService struct {
 	XPathService *XPathService `inject:""`
 }
 
-func (s *ParserService) ParseHtml(req *v1.ParserRequest) (ret string, err error) {
+func (s *ParserService) ParseHtml(req *v1.ParserRequest) (ret v1.ParserResponse, err error) {
 	docHtml, selectionType := s.updateElem(req.DocHtml, req.SelectContent, req.StartLine, req.EndLine,
 		req.StartColumn, req.EndColumn)
 
@@ -27,6 +27,24 @@ func (s *ParserService) ParseHtml(req *v1.ParserRequest) (ret string, err error)
 	result := queryHelper.HtmlQuery(req.DocHtml, xpath)
 
 	fmt.Printf("%s - %s: %v", selectionType, xpath, result)
+
+	ret = v1.ParserResponse{
+		SelectionType: selectionType,
+		XPath:         xpath,
+	}
+
+	return
+}
+
+func (s *ParserService) TestXPath(req *v1.TestXPathRequest) (ret v1.TestXPathResponse, err error) {
+	result := "UNKNOWN"
+	if req.Type == consts.LangHTML {
+		result = queryHelper.HtmlQuery(req.Content, req.XPath)
+	}
+
+	ret = v1.TestXPathResponse{
+		Result: result,
+	}
 
 	return
 }
@@ -41,7 +59,7 @@ func (s *ParserService) updateElem(docHtml, selectContent string,
 	newStr := fmt.Sprintf(" %s=\"true\" ", consts.DeepestKey)
 
 	if selectionType == "elem" {
-		newLine := line[:startColumn] + newStr + line[endColumn:]
+		newLine := line[:startColumn] + selectContent + newStr + line[endColumn:]
 
 		lines[startLine] = newLine
 

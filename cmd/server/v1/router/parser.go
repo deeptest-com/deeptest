@@ -17,6 +17,8 @@ func (m *ParserModule) Party() module.WebModule {
 		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
 
 		index.Post("/parseHtml", m.ParserCtrl.ParseHtml).Name = "解析HTML"
+
+		index.Post("/testXPath", m.ParserCtrl.TestXPath).Name = "测试XPath"
 	}
 	return module.NewModule("/parser", handler)
 }

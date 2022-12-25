@@ -21,7 +21,29 @@ func (c *ParserCtrl) ParseHtml(ctx iris.Context) {
 		return
 	}
 
-	c.ParserService.ParseHtml(&req)
+	resp, err := c.ParserService.ParseHtml(&req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.FailErr.Code, Msg: err.Error()})
+		return
+	}
 
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: req, Msg: _domain.NoErr.Msg})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: resp, Msg: _domain.NoErr.Msg})
+}
+
+// TestXPath
+func (c *ParserCtrl) TestXPath(ctx iris.Context) {
+	req := v1.TestXPathRequest{}
+	err := ctx.ReadJSON(&req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		return
+	}
+
+	resp, err := c.ParserService.TestXPath(&req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.FailErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: resp, Msg: _domain.NoErr.Msg})
 }

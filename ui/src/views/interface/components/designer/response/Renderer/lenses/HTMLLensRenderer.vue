@@ -44,8 +44,10 @@
     <ResponseExtractor
         v-if="responseExtractorVisible"
         :interfaceId="interfaceData.id"
-        :content="responseData.content"
-        :selection="selectionRef"
+        type="html"
+        :xpath="xpath"
+        :result="result"
+        :onTest="testParse"
         :onFinish="responseExtractorFinish"
         :onCancel="responseExtractorCancel"
     />
@@ -63,26 +65,29 @@ import {MonacoOptions} from "@/utils/const";
 import {Interface, Response} from "@/views/interface/data";
 import ResponseExtractor from "@/components/Editor/ResponseExtractor.vue";
 import {getXpath, initIFrame, updateElem} from "@/services/parser-html";
-import {parseHtml} from "@/views/interface/service";
+import {parseHtml, testXPath} from "@/views/interface/service";
+import {ExtractorSrc, ExtractorType} from "@/utils/enum";
 
 const {t} = useI18n();
 const store = useStore<{ Interface: StateType }>();
 const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
 const responseData = computed<Response>(() => store.state.Interface.responseData);
+const extractorsData = computed(() => store.state.Interface.extractorsData);
 
 const responseExtractorVisible = ref(false)
 const requestReplaceVisible = ref(false)
 
 const editorOptions = ref(Object.assign({usedWith: 'response'}, MonacoOptions) )
 
-const selectionRef = ref({} as any)
+const xpath = ref('')
+const result = ref('')
 
-let frameElem: HTMLIFrameElement
-let frameDoc: Document
+// let frameElem: HTMLIFrameElement
+// let frameDoc: Document
 
 const responseExtractor = (data) => {
   // console.log('responseExtractor', data)
-  // responseExtractorVisible.value = true
+  result.value = ''
 
   parseHtml({
     docHtml: data.docHtml,
@@ -94,14 +99,14 @@ const responseExtractor = (data) => {
     endColumn: data.selectionObj.endColumn - 1,
   }).then((json) => {
     console.log('json', json)
+    responseExtractorVisible.value = true
+    xpath.value = json.data.xpath
   })
 
   // const docHtml = updateElem(frameDoc, data.docHtml, data.selectContent, data.selectionObj)
-  // // console.log('after add elem prop', docHtml)
-  //
+  // console.log('after add elem prop', docHtml)
   // frameDoc = initIFrame(docHtml)
   // const xpath = getXpath(frameDoc)
-  //
   // console.log('==xpath===', xpath)
 }
 
@@ -110,9 +115,31 @@ const requestReplace = (data) => {
   requestReplaceVisible.value = true
 }
 
-const responseExtractorFinish = () => {
+const testParse = (xpath) => {
+  console.log('testXPath')
+  testXPath({
+    content: responseData.value.content,
+    type: responseData.value.contentLang,
+    xpath: xpath,
+  }).then((json) => {
+    console.log('json', json)
+    result.value = json.data.result
+  })
+}
+
+const responseExtractorFinish = (data) => {
   console.log('responseExtractorFinish')
-  responseExtractorVisible.value = false
+  data.type = ExtractorType.htmlquery
+  data.src = ExtractorSrc.body
+  data.result = result.value
+
+  data.interfaceId = interfaceData.value.id
+  data.projectId = interfaceData.value.projectId
+  store.dispatch('Interface/saveExtractor', data).then((result) => {
+    if (result) {
+      responseExtractorVisible.value = false
+    }
+  })
 }
 const responseExtractorCancel = () => {
   console.log('responseExtractorCancel')

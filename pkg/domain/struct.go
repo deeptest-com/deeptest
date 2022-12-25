@@ -61,6 +61,7 @@ var (
 	ParamErr    = BizErr{2000, "参数解析失败"}
 
 	RequestErr = BizErr{3000, "请求失败"}
+	FailErr    = BizErr{3500, "处理失败"}
 	SystemErr  = BizErr{4000, "系统错误"}
 
 	ErrNoUser             = BizErr{10100, "找不到用户"}

@@ -6,19 +6,25 @@
       :visible="true"
       :onCancel="onCancel"
       :footer="null"
+      width="800px"
+      height="600px"
   >
     <div>
       <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
-        <a-form-item label="XPath" v-bind="validateInfos.xpath">
-          <a-input v-model:value="modelRef.xpath"
-                   @blur="validate('xpath', { trigger: 'blur' }).catch(() => {})" />
+        <a-form-item label="XPath" v-bind="validateInfos.expression">
+          <a-input v-model:value="modelRef.expression"
+                   @blur="validate('expression', { trigger: 'blur' }).catch(() => {})" >
+            <template #addonAfter>
+              <div @click="test" :disabled="!modelRef.expression" class="dp-link">测试</div>
+            </template>
+          </a-input>
         </a-form-item>
 
-        <a-form-item label="变量" v-bind="validateInfos.varName">
+        <a-form-item label="变量" v-bind="validateInfos.variable">
           <a-input-group compact>
-            <a-input v-model:value="modelRef.varName"
+            <a-input v-model:value="modelRef.variable"
                      @change="onVarChanged"
-                     @blur="validate('varName', { trigger: 'blur' }).catch(() => {})"
+                     @blur="validate('variable', { trigger: 'blur' }).catch(() => {})"
                      style="width: 72%"/>
 
             <a-select v-model:value="modelRef.code"
@@ -37,8 +43,19 @@
           </a-input-group>
         </a-form-item>
 
-        <a-form-item label="">
-          <a-button type="link">测试</a-button>
+        <a-form-item label="变量作用域">
+          <a-radio-group v-model:value="modelRef.scope">
+            <!--              <a-radio value="private">私有</a-radio>-->
+            <a-radio value="local">局部</a-radio>
+            <a-radio value="global">全局</a-radio>
+          </a-radio-group>
+          <div class="dp-input-tip">
+            局部变量在整个接口设计器及其诞生的场景目录下有效。
+          </div>
+        </a-form-item>
+
+        <a-form-item v-if="result" label="结果">
+          {{result}}
         </a-form-item>
 
         <a-form-item :wrapper-col="{ span: wrapperCol.span, offset: labelCol.span }">
@@ -69,12 +86,16 @@ const props = defineProps({
     type: Number,
     required: true
   },
-  content:{
+  type: {
+    String,
+    required: true
+  },
+  xpath:{
     type: String,
     required: true
   },
-  selection:{
-    type: Object,
+  result:{
+    type: String,
     required: true
   },
 
@@ -83,6 +104,10 @@ const props = defineProps({
     required: true
   },
   onFinish:{
+    type: Function,
+    required: true
+  },
+  onTest:{
     type: Function,
     required: true
   }
@@ -96,8 +121,9 @@ const interfaceData = computed<Interface>(() => store.state.Interface.interfaceD
 const validExtractorVariablesData = computed(() => store.state.Interface.validExtractorVariablesData);
 
 const modelRef = ref<any>({
-  xpath: '',
-  varName: '',
+  expression: props.xpath,
+  variable: '',
+  scope: 'local',
   code: '',
 })
 
@@ -135,13 +161,13 @@ const onVarSelected = (value) => {
 };
 
 const onSubmit = async () => {
-  console.log('onSubmit', modelRef)
+  console.log('onSubmit', modelRef.value)
+  props.onFinish(modelRef.value);
+}
 
-  validate().then(async () => {
-    store.dispatch('Interface/saveExtractor', modelRef.value).then(() => {
-      props.onFinish();
-    })
-  }).catch(err => { console.log('') })
+const test  = async () => {
+  console.log('test', modelRef.value)
+  props.onTest(modelRef.value.expression);
 }
 
 onMounted(()=> {
@@ -153,7 +179,7 @@ const rulesRef = reactive({
   xpath: [
     { required: true, message: '请输入XPath表达式', trigger: 'blur' },
   ],
-  varName: [
+  variable: [
     { required: true, message: '请输入变量名', trigger: 'blur' },
   ],
 });

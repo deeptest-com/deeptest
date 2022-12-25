@@ -391,3 +391,10 @@ export async function parseHtml(data): Promise<any> {
         data
     });
 }
+export async function testXPath(data): Promise<any> {
+    return request({
+        url: `/${apiParser}/testXPath`,
+        method: 'POST',
+        data
+    });
+}

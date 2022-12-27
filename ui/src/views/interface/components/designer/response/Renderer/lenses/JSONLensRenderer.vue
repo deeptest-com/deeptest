@@ -42,7 +42,8 @@
         v-if="responseExtractorVisible"
         :interfaceId="interfaceData.id"
         type="json"
-        :xpath="xpath"
+        :exprType="exprType"
+        :expr="expr"
         :result="result"
         :onTest="testParse"
         :onFinish="responseExtractorFinish"
@@ -73,7 +74,8 @@ const responseData = computed<Response>(() => store.state.Interface.responseData
 const editorOptions = ref(Object.assign({usedWith: 'response'}, MonacoOptions) )
 
 const responseExtractorVisible = ref(false)
-const xpath = ref('')
+const expr = ref('')
+const exprType = ref('')
 const result = ref('')
 
 const responseExtractor = (data) => {
@@ -91,7 +93,8 @@ const responseExtractor = (data) => {
   }).then((json) => {
     console.log('json', json)
     responseExtractorVisible.value = true
-    xpath.value = json.data.xpath
+    expr.value = json.data.expr
+    exprType.value = json.data.exprType
   })
 }
 
@@ -100,7 +103,8 @@ const testParse = (xpath) => {
   testXPath({
     content: responseData.value.content,
     type: responseData.value.contentLang,
-    xpath: xpath,
+    expr: expr,
+    exprType: exprType,
   }).then((json) => {
     console.log('json', json)
     result.value = json.data.result
@@ -109,7 +113,7 @@ const testParse = (xpath) => {
 
 const responseExtractorFinish = (data) => {
   console.log('responseExtractorFinish')
-  data.type = ExtractorType.htmlquery
+  data.type = data.expressionType === 'regx' ? ExtractorType.regx : ExtractorType.jsonquery
   data.src = ExtractorSrc.body
   data.result = result.value
 

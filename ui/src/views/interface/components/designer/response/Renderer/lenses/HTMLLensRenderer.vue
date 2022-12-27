@@ -77,7 +77,6 @@ const extractorsData = computed(() => store.state.Interface.extractorsData);
 const editorOptions = ref(Object.assign({usedWith: 'response'}, MonacoOptions) )
 
 const responseExtractorVisible = ref(false)
-const requestReplaceVisible = ref(false)
 const expr = ref('')
 const exprType = ref('')
 const result = ref('')

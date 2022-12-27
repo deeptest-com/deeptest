@@ -122,6 +122,7 @@ const validExtractorVariablesData = computed(() => store.state.Interface.validEx
 
 const modelRef = ref<any>({
   expression: props.expr,
+  expressionType: props.exprType,
   variable: '',
   scope: 'local',
   code: '',

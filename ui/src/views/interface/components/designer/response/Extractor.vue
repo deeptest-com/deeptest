@@ -106,7 +106,8 @@
             </a-form-item>
           </template>
 
-          <a-form-item v-if="model.src === 'body' && model.type !== 'boundary'" label="元素路径" v-bind="validateInfos.expression">
+          <a-form-item v-if="model.src === 'body' && model.type !== 'boundary'"
+                       :label="model.type==='regx'?'表达式':'XPath'" v-bind="validateInfos.expression">
             <a-input v-model:value="model.expression"
                      @blur="validate('expression', { trigger: 'blur' }).catch(() => {})" />
           </a-form-item>

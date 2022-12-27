@@ -266,7 +266,7 @@ const (
 	JsonQuery ExtractorType = "jsonquery"
 	HtmlQuery ExtractorType = "htmlquery"
 	XmlQuery  ExtractorType = "xmlquery"
-	//Regular   ExtractorType = "regular"
+	Regx      ExtractorType = "regx"
 	//FullText  ExtractorType = "fulltext"
 )
 

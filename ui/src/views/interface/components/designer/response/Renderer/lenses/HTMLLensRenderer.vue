@@ -132,7 +132,7 @@ const testParse = (expr, exprType) => {
 
 const responseExtractorFinish = (data) => {
   console.log('responseExtractorFinish')
-  data.type = ExtractorType.htmlquery
+  data.type = data.expressionType === 'regx' ? ExtractorType.regx : ExtractorType.htmlquery
   data.src = ExtractorSrc.body
   data.result = result.value
 

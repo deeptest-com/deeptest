@@ -120,7 +120,7 @@ export enum ExtractorType {
     jsonquery = 'jsonquery',
     htmlquery = 'htmlquery',
     xmlquery = 'xmlquery',
-    // regular = 'regular',
+    regx = 'regx',
     // fulltext = 'fulltext',
 }
 export enum CheckpointType {

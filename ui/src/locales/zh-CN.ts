@@ -58,7 +58,7 @@ export default {
     'jsonquery':  'JSON查询',
     'htmlquery':  'HTML查询',
     'xmlquery':  'XML查询',
-    'regular':  '正则表达式',
+    'regx':  '正则表达式',
     'boundary':  '边界选择器',
 
     'equal':  '=',

@@ -145,7 +145,7 @@ type ProcessorExtractor struct {
 	Key  string               `json:"key"` // form header
 
 	Expression string `json:"expression"`
-	//Prop       string `json:"prop"`
+	//NodeProp       string `json:"prop"`
 
 	BoundaryStart    string `json:"boundaryStart"`
 	BoundaryEnd      string `json:"boundaryEnd"`

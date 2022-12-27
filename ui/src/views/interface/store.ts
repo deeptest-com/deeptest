@@ -357,6 +357,7 @@ const StoreModel: ModuleType = {
             try {
                 await createExtractorOrUpdateResult(payload);
                 dispatch('listExtractor');
+                dispatch('listValidExtractorVariable', state.interfaceData.id);
                 return true;
             } catch (error) {
                 return false;

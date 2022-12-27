@@ -20,7 +20,7 @@ func HtmlQuery(content string, expression string) (result string) {
 		return
 	}
 
-	expression, propName := GetExpressionForCssSelector(expression)
+	expression, propName := GetExpressionForXpathSelector(expression)
 	elem, err := htmlquery.Query(doc, expression)
 	if err != nil || elem == nil {
 		result = consts.ExtractorErr
@@ -35,6 +35,11 @@ func HtmlQuery(content string, expression string) (result string) {
 		if obj == "" {
 			obj = htmlquery.OutputHTML(elem, true)
 		}
+		//if elem.FirstChild != nil {
+		//	obj = htmlquery.OutputHTML(elem, true)
+		//} else {
+		//	obj = htmlquery.InnerText(elem)
+		//}
 	}
 
 	result = fmt.Sprintf("%v", obj)
@@ -42,7 +47,7 @@ func HtmlQuery(content string, expression string) (result string) {
 	return
 }
 
-func GetExpressionForCssSelector(str string) (expression, propName string) {
+func GetExpressionForXpathSelector(str string) (expression, propName string) {
 	arr := strings.Split(str, "/")
 	lastSection := arr[len(arr)-1]
 

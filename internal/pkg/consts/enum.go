@@ -508,9 +508,10 @@ func (e RoleType) String() string {
 type NodeType string
 
 const (
-	Elem    NodeType = "elem"
-	Prop    NodeType = "prop"
-	Content NodeType = "content"
+	NodeElem    NodeType = "elem"
+	NodeProp    NodeType = "prop"
+	NodeContent NodeType = "content"
+	NodeText    NodeType = "text"
 )
 
 func (e NodeType) String() string {

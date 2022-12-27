@@ -44,8 +44,8 @@
     <ResponseExtractor
         v-if="responseExtractorVisible"
         :interfaceId="interfaceData.id"
-        type="html"
-        :xpath="xpath"
+        :exprType="exprType"
+        :expr="expr"
         :result="result"
         :onTest="testParse"
         :onFinish="responseExtractorFinish"
@@ -78,7 +78,8 @@ const editorOptions = ref(Object.assign({usedWith: 'response'}, MonacoOptions) )
 
 const responseExtractorVisible = ref(false)
 const requestReplaceVisible = ref(false)
-const xpath = ref('')
+const expr = ref('')
+const exprType = ref('')
 const result = ref('')
 
 // let frameElem: HTMLIFrameElement
@@ -89,7 +90,7 @@ const responseExtractor = (data) => {
   result.value = ''
 
   parseHtml({
-    docHtml: data.docHtml,
+    docContent: data.docContent,
     selectContent: data.selectContent,
 
     startLine: data.selectionObj.startLineNumber - 1,
@@ -99,7 +100,8 @@ const responseExtractor = (data) => {
   }).then((json) => {
     console.log('json', json)
     responseExtractorVisible.value = true
-    xpath.value = json.data.xpath
+    expr.value = json.data.expr
+    exprType.value = json.data.exprType
   })
 
   // const docHtml = updateElem(frameDoc, data.docHtml, data.selectContent, data.selectionObj)
@@ -114,12 +116,14 @@ const responseExtractor = (data) => {
 //   requestReplaceVisible.value = true
 // }
 
-const testParse = (xpath) => {
+const testParse = (expr, exprType) => {
   console.log('testXPath')
   testXPath({
     content: responseData.value.content,
     type: responseData.value.contentLang,
-    xpath: xpath,
+    expr: expr,
+    exprType: exprType,
+
   }).then((json) => {
     console.log('json', json)
     result.value = json.data.result

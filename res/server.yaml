@@ -27,8 +27,7 @@ system:
   level: debug
   serverAddress: 0.0.0.0:8085
   agentAddress: 0.0.0.0:8086
-  static-prefix: /upload
-  static-path: /static/upload
+  static-path: /static
   web-path: ui/dist
   db-type: mysql
   cache-type: redis

@@ -1,7 +1,7 @@
 package queryHelper
 
 import (
-	"fmt"
+	"encoding/json"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/antchfx/jsonquery"
 	"strings"
@@ -14,24 +14,25 @@ func JsonQuery(content string, expression string) (result string) {
 		return
 	}
 
-	expression, propName := GetExpressionForCssSelector(expression)
 	elem, err := jsonquery.Query(doc, expression)
 	if err != nil || elem == nil {
 		result = consts.ExtractorErr
 		return
 	}
 
-	var obj interface{}
-	if propName != "" {
-		mp, ok := elem.Value().(map[string]interface{})
-		if ok {
-			obj = mp[propName]
-		}
-	} else {
-		obj = elem.Value()
-	}
+	obj := elem.Value()
 
-	result = fmt.Sprintf("%v", obj)
+	switch obj.(type) {
+	case string:
+		result = obj.(string)
+	default:
+		bytes, err := json.Marshal(obj)
+		if err != nil {
+			result = err.Error()
+		} else {
+			result = string(bytes)
+		}
+	}
 
 	return
 }

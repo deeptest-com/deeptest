@@ -32,7 +32,7 @@ export function addExtractAction(editor, callback) {
 
             if (ed.getModel().getValueInRange(ed.getSelection()))
                 callback({
-                    docHtml: ed.getValue(),
+                    docContent: ed.getValue(),
                     selectContent: ed.getModel().getValueInRange(ed.getSelection()),
                     selectionObj: ed.getSelection()
                 })

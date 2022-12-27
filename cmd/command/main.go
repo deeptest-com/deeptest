@@ -35,6 +35,8 @@ func main() {
 
 	flagSet = flag.NewFlagSet("ztf", flag.ContinueOnError)
 
+	flagSet.StringVar(&scenario, "server", "", "")
+
 	flagSet.StringVar(&scenario, "s", "", "")
 	flagSet.StringVar(&scenario, "scenario", "", "")
 

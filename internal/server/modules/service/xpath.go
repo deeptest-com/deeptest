@@ -54,7 +54,7 @@ func (s *XPathService) GetHtmlXPath(node *html.Node,
 		}
 	}
 
-	if selectionType == consts.Prop {
+	if selectionType == consts.NodeProp {
 		ret += "/@" + selectContent
 	}
 
@@ -104,15 +104,14 @@ func (s *XPathService) GetXmlXPath(node *xmlquery.Node,
 		}
 	}
 
-	if selectionType == consts.Prop {
+	if selectionType == consts.NodeProp {
 		ret += "/@" + selectContent
 	}
 
 	return
 }
 
-func (s *XPathService) GetJsonXPath(node *jsonquery.Node,
-	selectContent string, selectionType consts.NodeType, optimized bool) (ret string, err error) {
+func (s *XPathService) GetJsonXPath(node *jsonquery.Node, selectContent string, optimized bool) (ret string, err error) {
 	if node == nil {
 		return
 	}
@@ -152,10 +151,6 @@ func (s *XPathService) GetJsonXPath(node *jsonquery.Node,
 		if index < len(steps)-1 {
 			ret += "/"
 		}
-	}
-
-	if selectionType == consts.Prop {
-		ret += "/@" + selectContent
 	}
 
 	return

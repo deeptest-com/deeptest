@@ -43,13 +43,6 @@ prepare: update_version
 
 update_version: update_version_in_config gen_version_file
 
-update_version_in_config:
-ifeq ($(PLATFORM),"mac")
-    @gsed -i "s/Version.*/Version = ${VERSION}/" conf/ztf.conf
-else
-	@sed -i "s/Version.*/Version = ${VERSION}/" conf/ztf.conf
-endif
-
 gen_version_file:
 	@echo 'gen version'
 	@mkdir -p ${QINIU_DIR}/${PROJECT}/

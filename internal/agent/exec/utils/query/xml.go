@@ -14,7 +14,7 @@ func XmlQuery(content string, expression string) (result string) {
 		return
 	}
 
-	expression, propName := GetExpressionForCssSelector(expression)
+	expression, propName := GetExpressionForXpathSelector(expression)
 	elem, err := xmlquery.Query(doc, expression)
 	if err != nil || elem == nil {
 		result = consts.ExtractorErr

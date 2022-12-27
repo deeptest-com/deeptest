@@ -9,6 +9,7 @@ type Project struct {
 	v1.ProjectBase
 
 	Spec          string `json:"spec"`
+	Spec2         string `json:"spec2"`
 	EnvironmentId uint   `json:"environmentId"`
 }
 

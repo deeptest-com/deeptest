@@ -82,7 +82,7 @@ func GetContentProps(resp *v1.InvocationResponse) {
 		}
 	}
 
-	//ret.Content = mockHelper.FormatXml(ret.Content)
+	//ret.NodeContent = mockHelper.FormatXml(ret.NodeContent)
 
 	return
 }

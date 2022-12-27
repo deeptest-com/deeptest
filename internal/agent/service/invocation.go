@@ -70,7 +70,7 @@ func (s *InvocationService) GetContentProps(ret *v1.InvocationResponse) {
 		}
 	}
 
-	//ret.Content = mockHelper.FormatXml(ret.Content)
+	//ret.NodeContent = mockHelper.FormatXml(ret.NodeContent)
 
 	return
 }

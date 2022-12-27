@@ -11,7 +11,7 @@
   >
     <div>
       <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
-        <a-form-item label="XPath" v-bind="validateInfos.expression">
+        <a-form-item :label="exprType === 'regx'?'正则表达式':'XPath'" v-bind="validateInfos.expression">
           <a-input v-model:value="modelRef.expression"
                    @blur="validate('expression', { trigger: 'blur' }).catch(() => {})" >
             <template #addonAfter>
@@ -86,11 +86,11 @@ const props = defineProps({
     type: Number,
     required: true
   },
-  type: {
+  exprType: {
     String,
     required: true
   },
-  xpath:{
+  expr:{
     type: String,
     required: true
   },
@@ -121,7 +121,7 @@ const interfaceData = computed<Interface>(() => store.state.Interface.interfaceD
 const validExtractorVariablesData = computed(() => store.state.Interface.validExtractorVariablesData);
 
 const modelRef = ref<any>({
-  expression: props.xpath,
+  expression: props.expr,
   variable: '',
   scope: 'local',
   code: '',
@@ -170,7 +170,7 @@ const onSubmit = async () => {
 const test  = async () => {
   console.log('test', modelRef.value)
   if (!modelRef.value.expression) return
-  props.onTest(modelRef.value.expression);
+  props.onTest(modelRef.value.expression, props.exprType);
 }
 
 onMounted(()=> {

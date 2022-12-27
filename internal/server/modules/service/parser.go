@@ -5,10 +5,6 @@ import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	queryHelper "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/query"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/antchfx/htmlquery"
-	"github.com/antchfx/jsonquery"
-	"github.com/antchfx/xmlquery"
-	"golang.org/x/net/html"
 	"strings"
 )
 
@@ -16,81 +12,19 @@ type ParserService struct {
 	XPathService *XPathService `inject:""`
 }
 
-func (s *ParserService) ParseHtml(req *v1.ParserRequest) (ret v1.ParserResponse, err error) {
-	docHtml, selectionType := s.updateHtmlElem(req.DocHtml, req.SelectContent, req.StartLine, req.EndLine,
-		req.StartColumn, req.EndColumn)
-
-	req.DocHtml = docHtml
-
-	elem := s.getHtmlSelectedElem(req.DocHtml, selectionType)
-
-	xpath, _ := s.XPathService.GetHtmlXPath(elem, req.SelectContent, selectionType, true)
-
-	result := queryHelper.HtmlQuery(req.DocHtml, xpath)
-
-	fmt.Printf("%s - %s: %v", selectionType, xpath, result)
-
-	ret = v1.ParserResponse{
-		SelectionType: selectionType,
-		XPath:         xpath,
-	}
-
-	return
-}
-
-func (s *ParserService) ParseXml(req *v1.ParserRequest) (ret v1.ParserResponse, err error) {
-	docHtml, selectionType := s.updateXmlElem(req.DocHtml, req.SelectContent, req.StartLine, req.EndLine,
-		req.StartColumn, req.EndColumn)
-
-	req.DocHtml = docHtml
-
-	elem := s.getXmlSelectedElem(req.DocHtml, selectionType)
-
-	xpath, _ := s.XPathService.GetXmlXPath(elem, req.SelectContent, selectionType, true)
-
-	result := queryHelper.HtmlQuery(req.DocHtml, xpath)
-
-	fmt.Printf("%s - %s: %v", selectionType, xpath, result)
-
-	ret = v1.ParserResponse{
-		SelectionType: selectionType,
-		XPath:         xpath,
-	}
-
-	return
-}
-
-func (s *ParserService) ParseJson(req *v1.ParserRequest) (ret v1.ParserResponse, err error) {
-	docHtml, selectionType := s.updateJsonElem(req.DocHtml, req.SelectContent, req.StartLine, req.EndLine,
-		req.StartColumn, req.EndColumn)
-
-	req.DocHtml = docHtml
-
-	elem := s.getJsonSelectedElem(req.DocHtml, selectionType)
-
-	xpath, _ := s.XPathService.GetJsonXPath(elem, req.SelectContent, selectionType, true)
-
-	result := queryHelper.JsonQuery(req.DocHtml, xpath)
-
-	fmt.Printf("%s - %s: %v", selectionType, xpath, result)
-
-	ret = v1.ParserResponse{
-		SelectionType: selectionType,
-		XPath:         xpath,
-	}
-
-	return
-}
-
 func (s *ParserService) TestXPath(req *v1.TestXPathRequest) (ret v1.TestXPathResponse, err error) {
 	var result interface{}
 
-	if req.Type == consts.LangHTML {
-		result = queryHelper.HtmlQuery(req.Content, req.XPath)
-	} else if req.Type == consts.LangXML {
-		result = queryHelper.XmlQuery(req.Content, req.XPath)
-	} else if req.Type == consts.LangJSON {
-		result = queryHelper.JsonQuery(req.Content, req.XPath)
+	if req.ExprType == "xpath" {
+		if req.Type == consts.LangHTML {
+			result = queryHelper.HtmlQuery(req.Content, req.Expr)
+		} else if req.Type == consts.LangXML {
+			result = queryHelper.XmlQuery(req.Content, req.Expr)
+		} else if req.Type == consts.LangJSON {
+			result = queryHelper.JsonQuery(req.Content, req.Expr)
+		}
+	} else if req.ExprType == "regx" {
+		result = queryHelper.RegxQuery(req.Content, req.Expr)
 	}
 
 	ret = v1.TestXPathResponse{
@@ -100,161 +34,53 @@ func (s *ParserService) TestXPath(req *v1.TestXPathRequest) (ret v1.TestXPathRes
 	return
 }
 
-func (s *ParserService) updateHtmlElem(docHtml, selectContent string,
-	startLine, endLine, startColumn, endColumn int) (ret string, selectionType consts.NodeType) {
-	lines := strings.Split(docHtml, "\n")
-
-	selectionType = s.getXmlSelectionType(lines, startLine, endLine, startColumn, endColumn)
-
+func (s *ParserService) getLeftCharsInSingleLine(lines []string, startLine, startColumn, num int, ret *string) {
 	line := lines[startLine]
-	newStr := fmt.Sprintf(" %s=\"true\" ", consts.DeepestKey)
-
-	if selectionType == consts.Elem {
-		newLine := line[:startColumn] + selectContent + newStr + line[endColumn:]
-
-		lines[startLine] = newLine
-
-	} else if selectionType == consts.Prop {
-		newLine := line[:startColumn] + newStr + line[startColumn:]
-
-		lines[startLine] = newLine
-
-	} else if selectionType == consts.Content {
-		newStr = fmt.Sprintf("[[%s]]", consts.DeepestKey)
-		newLine := line[:endColumn] + newStr + line[endColumn:]
-
-		lines[startLine] = newLine
-	}
-
-	ret = strings.Join(lines, "\n")
-
-	return
-}
-
-func (s *ParserService) updateXmlElem(docHtml, selectContent string,
-	startLine, endLine, startColumn, endColumn int) (ret string, selectionType consts.NodeType) {
-	lines := strings.Split(docHtml, "\n")
-
-	selectionType = s.getXmlSelectionType(lines, startLine, endLine, startColumn, endColumn)
-
-	line := lines[startLine]
-	newStr := fmt.Sprintf(" %s=\"true\" ", consts.DeepestKey)
-
-	if selectionType == consts.Elem {
-		newLine := line[:startColumn] + selectContent + newStr + line[endColumn:]
-
-		lines[startLine] = newLine
-
-	} else if selectionType == consts.Prop {
-		newLine := line[:startColumn] + newStr + line[startColumn:]
-
-		lines[startLine] = newLine
-
-	} else if selectionType == consts.Content {
-		newStr = fmt.Sprintf("[[%s]]", consts.DeepestKey)
-		newLine := line[:endColumn] + newStr + line[endColumn:]
-
-		lines[startLine] = newLine
-	}
-
-	ret = strings.Join(lines, "\n")
-	return
-}
-
-func (s *ParserService) updateJsonElem(docHtml, selectContent string,
-	startLine, endLine, startColumn, endColumn int) (ret string, selectionType consts.NodeType) {
-	lines := strings.Split(docHtml, "\n")
-
-	line := lines[startLine]
-
-	newStr := fmt.Sprintf("%s", consts.DeepestKey)
-	newLine := line[:startColumn] + newStr + line[startColumn:]
-
-	lines[startLine] = newLine
-
-	ret = strings.Join(lines, "\n")
-	return
-}
-
-func (s *ParserService) getHtmlSelectedElem(docHtml string, selectionType consts.NodeType) (ret *html.Node) {
-	doc, err := htmlquery.Parse(strings.NewReader(docHtml))
-	if err != nil {
+	if startLine == 0 && startColumn == 0 {
 		return
 	}
 
-	expr := ""
-	if selectionType == consts.Elem || selectionType == consts.Prop {
-		expr = fmt.Sprintf("//*[@%s]", consts.DeepestKey)
-	} else if selectionType == consts.Content {
-		expr = fmt.Sprintf("//text()[contains(.,\"%s\")]", consts.DeepestKey)
-	}
+	if startColumn > 0 {
+		leftOne := line[startColumn-1 : startColumn]
+		*ret = leftOne + *ret
 
-	ret, err = htmlquery.Query(doc, expr)
+		startColumn -= 1
 
-	return
-}
-func (s *ParserService) getXmlSelectedElem(docXml string, selectionType consts.NodeType) (ret *xmlquery.Node) {
-	doc, err := xmlquery.Parse(strings.NewReader(docXml))
-	if err != nil {
+		if len(*ret) > num {
+			return
+		}
+	} else if startColumn == 0 {
+		*ret = "^" + *ret
 		return
 	}
 
-	expr := ""
-	if selectionType == consts.Elem || selectionType == consts.Prop {
-		expr = fmt.Sprintf("//*[@%s]", consts.DeepestKey)
-	} else if selectionType == consts.Content {
-		expr = fmt.Sprintf("//text()[contains(.,\"%s\")]", consts.DeepestKey)
-	}
-
-	ret, err = xmlquery.Query(doc, expr)
-
-	return
-}
-func (s *ParserService) getJsonSelectedElem(docHtml string, selectionType consts.NodeType) (ret *jsonquery.Node) {
-	doc, err := jsonquery.Parse(strings.NewReader(docHtml))
-	if err != nil {
-		return
-	}
-
-	expr := fmt.Sprintf("//*[%s]", consts.DeepestKey)
-	ret, err = jsonquery.Query(doc, expr)
-
-	return
+	s.getLeftCharsInSingleLine(lines, startLine, startColumn, num, ret)
 }
 
-func (s *ParserService) queryElem(docHtml, xpath string) (ret *html.Node) {
-	doc, err := htmlquery.Parse(strings.NewReader(docHtml))
-	if err != nil {
+func (s *ParserService) getRightCharsInSingleLine(lines []string, endLine, endColumn int, num int, ret *string) {
+	line := lines[endLine]
+
+	if endLine == len(lines)-1 && endColumn == len(line)-1 {
 		return
 	}
 
-	expr := fmt.Sprintf(xpath)
-	ret, err = htmlquery.Query(doc, expr)
+	rightOne := ""
 
-	return
-}
+	if endColumn < len(line) {
+		rightOne = line[endColumn : endColumn+1]
+		*ret += rightOne
 
-func (s *ParserService) getXmlSelectionType(lines []string, startLine, endLine, startColumn, endColumn int) (
-	ret consts.NodeType) {
+		endColumn += 1
 
-	leftNoSpaceChar := s.getLeftNoSpaceChar(lines, startLine, startColumn)
-	rightChar := s.getRightChar(lines, endLine, endColumn)
-
-	if leftNoSpaceChar == "<" && (rightChar == " " || rightChar == ">") {
-		ret = consts.Elem
+		if len(*ret) > num {
+			return
+		}
+	} else if endColumn == len(line) {
+		*ret += "$"
 		return
 	}
 
-	leftChar := s.getLeftChar(lines, startLine, startColumn)
-	rightNoSpaceChar := s.getRightNoSpaceChar(lines, endLine, endColumn)
-
-	if leftChar == " " && rightNoSpaceChar == "=" {
-		ret = consts.Prop
-		return
-	}
-
-	ret = consts.Content
-	return
+	s.getRightCharsInSingleLine(lines, endLine, endColumn, num, ret)
 }
 
 func (s *ParserService) getLeftNoSpaceChar(lines []string, startLine, startColumn int) (ret string) {
@@ -299,7 +125,7 @@ func (s *ParserService) getRightNoSpaceChar(lines []string, endLine, endColumn i
 	}
 
 	endLine += 1
-	endColumn = -1
+	endColumn = 0
 	if endLine >= len(lines) {
 		return
 	}

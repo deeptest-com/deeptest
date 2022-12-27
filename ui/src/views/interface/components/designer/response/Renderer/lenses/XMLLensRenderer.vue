@@ -82,7 +82,7 @@ const responseExtractor = (data) => {
   result.value = ''
 
   parseXml({
-    docHtml: data.docHtml,
+    docContent: data.docContent,
     selectContent: data.selectContent,
 
     startLine: data.selectionObj.startLineNumber - 1,

@@ -360,13 +360,13 @@ func decodeResponseBody(resp *http.Response) (err error) {
 		if err != nil {
 			return err
 		}
-		resp.ContentLength = -1 // set to unknown to avoid Content-Length mismatched
+		resp.ContentLength = -1 // set to unknown to avoid NodeContent-Length mismatched
 	case "deflate":
 		resp.Body, err = zlib.NewReader(resp.Body)
 		if err != nil {
 			return err
 		}
-		resp.ContentLength = -1 // set to unknown to avoid Content-Length mismatched
+		resp.ContentLength = -1 // set to unknown to avoid NodeContent-Length mismatched
 	}
 	return nil
 }

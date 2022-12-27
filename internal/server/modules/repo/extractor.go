@@ -9,6 +9,7 @@ import (
 	"github.com/jinzhu/copier"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
+	"strings"
 )
 
 type ExtractorRepo struct {
@@ -118,6 +119,11 @@ func (r *ExtractorRepo) Delete(id uint) (err error) {
 }
 
 func (r *ExtractorRepo) UpdateResult(extractor model.InterfaceExtractor) (err error) {
+	extractor.Result = strings.TrimSpace(extractor.Result)
+	if extractor.Result == "" {
+		return
+	}
+
 	values := map[string]interface{}{
 		"result": extractor.Result,
 	}
@@ -148,7 +154,7 @@ func (r *ExtractorRepo) ListValidExtractorVariable(interfaceId, projectId uint) 
 	err = r.DB.Model(&model.InterfaceExtractor{}).
 		Select("id, variable AS name, result AS value, "+
 			"interface_id AS interfaceId, scope AS scope").
-		//Where("(is_share OR interface_id = ?) AND enable_share", interfaceId).
+		Where("interface_id = ? OR !disable_share", interfaceId).
 		Where("project_id=?", projectId).
 		Where("NOT deleted AND NOT disabled").
 		Order("created_at ASC").

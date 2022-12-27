@@ -3,7 +3,7 @@ package domain
 import "github.com/aaronchen2k/deeptest/internal/pkg/consts"
 
 type ParserRequest struct {
-	DocHtml       string `json:"docHtml" validate:"required"`
+	DocContent    string `json:"docContent" validate:"required"`
 	SelectContent string `json:"selectContent" validate:"required"`
 	StartLine     int    `json:"startLine"`
 	EndLine       int    `json:"endLine"`
@@ -13,15 +13,26 @@ type ParserRequest struct {
 
 type ParserResponse struct {
 	SelectionType consts.NodeType `json:"selectionType"`
-	XPath         string          `json:"xpath"`
+	Expr          string          `json:"expr"`
+	ExprType      string          `json:"exprType"`
 }
 
 type TestXPathRequest struct {
-	XPath   string                  `json:"xpath" validate:"required"`
-	Content string                  `json:"content" validate:"required"`
-	Type    consts.HttpRespLangType `json:"type" validate:"required"`
+	Expr     string                  `json:"expr" validate:"required"`
+	ExprType string                  `json:"exprType" validate:"required"`
+	Content  string                  `json:"content" validate:"required"`
+	Type     consts.HttpRespLangType `json:"type" validate:"required"`
 }
 
 type TestXPathResponse struct {
+	Result string `json:"result"`
+}
+
+type TestRegxRequest struct {
+	Expr    string `json:"expr" validate:"required"`
+	Content string `json:"content" validate:"required"`
+}
+
+type TestRegxResponse struct {
 	Result string `json:"result"`
 }

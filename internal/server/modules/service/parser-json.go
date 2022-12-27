@@ -10,7 +10,8 @@ import (
 )
 
 type ParserJsonService struct {
-	XPathService *XPathService `inject:""`
+	XPathService      *XPathService      `inject:""`
+	ParserRegxService *ParserRegxService `inject:""`
 }
 
 func (s *ParserJsonService) ParseJson(req *v1.ParserRequest) (ret v1.ParserResponse, err error) {
@@ -21,16 +22,24 @@ func (s *ParserJsonService) ParseJson(req *v1.ParserRequest) (ret v1.ParserRespo
 
 	elem := s.getJsonSelectedElem(req.DocContent)
 
-	parentXpath, _ := s.XPathService.GetJsonXPath(elem, req.SelectContent, true)
-	xpath := parentXpath + "/" + req.SelectContent
+	exprType := "expr"
+	expr, _ := s.XPathService.GetJsonXPath(elem, req.SelectContent, true)
+	if expr != "" {
+		expr = expr + "/" + req.SelectContent
 
-	result := queryHelper.JsonQuery(req.DocContent, xpath)
-
-	fmt.Printf("%s: %v", xpath, result)
+		result := queryHelper.JsonQuery(req.DocContent, expr)
+		fmt.Printf("%s: %v", expr, result)
+	} else {
+		expr, _ = s.ParserRegxService.getRegxExpr(req.DocContent, req.SelectContent,
+			req.StartLine, req.StartColumn,
+			req.EndLine, req.EndColumn)
+		exprType = "regx"
+	}
 
 	ret = v1.ParserResponse{
 		SelectionType: consts.NodeProp,
-		Expr:          xpath,
+		Expr:          expr,
+		ExprType:      exprType,
 	}
 
 	return

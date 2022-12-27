@@ -22,15 +22,15 @@ func (s *ParserHtmlService) ParseHtml(req *v1.ParserRequest) (ret v1.ParserRespo
 
 	elem := s.getHtmlSelectedElem(docHtml, selectionType)
 
-	exprType := "xpath"
-	xpath, _ := s.XPathService.GetHtmlXPath(elem, req.SelectContent, selectionType, true)
+	exprType := "expr"
+	expr, _ := s.XPathService.GetHtmlXPath(elem, req.SelectContent, selectionType, true)
 
-	if xpath != "" {
-		result := queryHelper.HtmlQuery(docHtml, xpath)
-		fmt.Printf("%s - %s: %v", selectionType, xpath, result)
+	if expr != "" {
+		result := queryHelper.HtmlQuery(docHtml, expr)
+		fmt.Printf("%s - %s: %v", selectionType, expr, result)
 
 	} else {
-		xpath, _ = s.ParserRegxService.getRegxExpr(req.DocContent, req.SelectContent,
+		expr, _ = s.ParserRegxService.getRegxExpr(req.DocContent, req.SelectContent,
 			req.StartLine, req.StartColumn,
 			req.EndLine, req.EndColumn)
 		exprType = "regx"
@@ -38,7 +38,7 @@ func (s *ParserHtmlService) ParseHtml(req *v1.ParserRequest) (ret v1.ParserRespo
 
 	ret = v1.ParserResponse{
 		SelectionType: selectionType,
-		Expr:          xpath,
+		Expr:          expr,
 		ExprType:      exprType,
 	}
 

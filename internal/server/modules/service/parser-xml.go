@@ -10,8 +10,9 @@ import (
 )
 
 type ParserXmlService struct {
-	ParserService *ParserService `inject:""`
-	XPathService  *XPathService  `inject:""`
+	ParserService     *ParserService     `inject:""`
+	XPathService      *XPathService      `inject:""`
+	ParserRegxService *ParserRegxService `inject:""`
 }
 
 func (s *ParserXmlService) ParseXml(req *v1.ParserRequest) (ret v1.ParserResponse, err error) {
@@ -22,15 +23,23 @@ func (s *ParserXmlService) ParseXml(req *v1.ParserRequest) (ret v1.ParserRespons
 
 	elem := s.getXmlSelectedElem(req.DocContent, selectionType)
 
-	xpath, _ := s.XPathService.GetXmlXPath(elem, req.SelectContent, selectionType, true)
+	exprType := "expr"
+	expr, _ := s.XPathService.GetXmlXPath(elem, req.SelectContent, selectionType, true)
 
-	result := queryHelper.XmlQuery(req.DocContent, xpath)
-
-	fmt.Printf("%s - %s: %v", selectionType, xpath, result)
+	if expr != "" {
+		result := queryHelper.XmlQuery(req.DocContent, expr)
+		fmt.Printf("%s - %s: %v", selectionType, expr, result)
+	} else {
+		expr, _ = s.ParserRegxService.getRegxExpr(req.DocContent, req.SelectContent,
+			req.StartLine, req.StartColumn,
+			req.EndLine, req.EndColumn)
+		exprType = "regx"
+	}
 
 	ret = v1.ParserResponse{
 		SelectionType: selectionType,
-		Expr:          xpath,
+		Expr:          expr,
+		ExprType:      exprType,
 	}
 
 	return

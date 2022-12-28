@@ -144,7 +144,7 @@ func (s *ExecService) SetEntityAndParent(root *agentExec.Processor) (err error) 
 	for _, processor := range processors {
 		processorMap[processor.ID] = processor
 
-		processor.UnmarshalEntity()
+		processor.RestoreEntity()
 	}
 
 	for _, obj := range processorMap {

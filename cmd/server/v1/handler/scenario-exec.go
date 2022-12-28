@@ -27,7 +27,7 @@ func (c *ScenarioExecCtrl) LoadExecData(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data, Msg: _domain.NoErr.Msg})
 }
 
-// loadExecScenario
+// LoadExecResult
 func (c *ScenarioExecCtrl) LoadExecResult(ctx iris.Context) {
 	scenarioId, err := ctx.URLParamInt("scenarioId")
 

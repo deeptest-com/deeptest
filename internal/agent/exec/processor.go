@@ -70,7 +70,7 @@ func (p *Processor) AddResultToParent() (err error) {
 	return
 }
 
-func (p *Processor) UnmarshalEntity() (err error) {
+func (p *Processor) RestoreEntity() (err error) {
 	bytes, err := p.EntityRaw.MarshalJSON()
 
 	switch p.EntityCategory {

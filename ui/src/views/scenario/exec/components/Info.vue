@@ -83,7 +83,6 @@ import bus from "@/utils/eventBus";
 import Log from "./Log.vue"
 import { momentShort } from "@/utils/datetime";
 import {useI18n} from "vue-i18n";
-import {loadExecScenario} from "@/views/scenario/service";
 import {getToken} from "@/utils/localToken";
 const { t } = useI18n();
 

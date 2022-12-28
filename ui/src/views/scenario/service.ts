@@ -49,15 +49,6 @@ export async function load(scenarioId): Promise<any> {
     });
 }
 
-export async function loadExecScenario(id): Promise<any> {
-    const params = {id}
-    return request({
-        url: `/${apiPathExec}/loadExecScenario`,
-        method: 'get',
-        params,
-    });
-}
-
 export async function loadExecResult(scenarioId): Promise<any> {
     const params = {scenarioId}
     return request({

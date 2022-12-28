@@ -47,11 +47,9 @@ import {StateType as GlobalStateType} from "@/store/global";
 const router = useRouter();
 const store = useStore<{ Scenario: ScenarioStateType; Global: GlobalStateType; }>();
 const collapsed = computed<boolean>(()=> store.state.Global.collapsed);
-const execData = computed<any>(()=> store.state.Scenario.execData);
+const execData = computed<any>(()=> store.state.Scenario.execResult);
 
 const id = ref(+router.currentRoute.value.params.id)
-
-// store.dispatch('Scenario/loadExecScenario', id.value);
 
 </script>
 

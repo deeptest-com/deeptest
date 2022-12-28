@@ -12,7 +12,7 @@ type ParserService struct {
 	XPathService *XPathService `inject:""`
 }
 
-func (s *ParserService) TestXPath(req *v1.TestXPathRequest) (ret v1.TestXPathResponse, err error) {
+func (s *ParserService) TestExpr(req *v1.TestExprRequest) (ret v1.TestExprResponse, err error) {
 	var result interface{}
 
 	if req.ExprType == "xpath" {
@@ -27,7 +27,7 @@ func (s *ParserService) TestXPath(req *v1.TestXPathRequest) (ret v1.TestXPathRes
 		result = queryHelper.RegxQuery(req.Content, req.Expr)
 	}
 
-	ret = v1.TestXPathResponse{
+	ret = v1.TestExprResponse{
 		Result: fmt.Sprintf("%v", result),
 	}
 
@@ -35,14 +35,14 @@ func (s *ParserService) TestXPath(req *v1.TestXPathRequest) (ret v1.TestXPathRes
 }
 
 func (s *ParserService) getLeftCharsInSingleLine(lines []string, startLine, startColumn, num int, ret *string) {
-	line := lines[startLine]
+	line := []rune(lines[startLine])
 	if startLine == 0 && startColumn == 0 {
 		return
 	}
 
 	if startColumn > 0 {
 		leftOne := line[startColumn-1 : startColumn]
-		*ret = leftOne + *ret
+		*ret = string(leftOne) + *ret
 
 		startColumn -= 1
 
@@ -58,7 +58,7 @@ func (s *ParserService) getLeftCharsInSingleLine(lines []string, startLine, star
 }
 
 func (s *ParserService) getRightCharsInSingleLine(lines []string, endLine, endColumn int, num int, ret *string) {
-	line := lines[endLine]
+	line := []rune(lines[endLine])
 
 	if endLine == len(lines)-1 && endColumn == len(line)-1 {
 		return
@@ -67,7 +67,7 @@ func (s *ParserService) getRightCharsInSingleLine(lines []string, endLine, endCo
 	rightOne := ""
 
 	if endColumn < len(line) {
-		rightOne = line[endColumn : endColumn+1]
+		rightOne = string(line[endColumn : endColumn+1])
 		*ret += rightOne
 
 		endColumn += 1
@@ -84,7 +84,7 @@ func (s *ParserService) getRightCharsInSingleLine(lines []string, endLine, endCo
 }
 
 func (s *ParserService) getLeftNoSpaceChar(lines []string, startLine, startColumn int) (ret string) {
-	line := lines[startLine]
+	line := []rune(lines[startLine])
 	if startLine == 0 && startColumn == 0 {
 		return ""
 	}
@@ -92,7 +92,7 @@ func (s *ParserService) getLeftNoSpaceChar(lines []string, startLine, startColum
 	leftOne := ""
 
 	if startColumn > 0 {
-		leftOne = line[startColumn-1 : startColumn]
+		leftOne = string(line[startColumn-1 : startColumn])
 		if s.isNotSpace(leftOne) {
 			return leftOne
 		}
@@ -109,7 +109,7 @@ func (s *ParserService) getLeftNoSpaceChar(lines []string, startLine, startColum
 }
 
 func (s *ParserService) getRightNoSpaceChar(lines []string, endLine, endColumn int) (ret string) {
-	line := lines[endLine]
+	line := []rune(lines[endLine])
 
 	if endLine == len(lines)-1 && endColumn == len(line)-1 {
 		return
@@ -118,7 +118,7 @@ func (s *ParserService) getRightNoSpaceChar(lines []string, endLine, endColumn i
 	rightOne := ""
 
 	if len(line) > endColumn {
-		rightOne = line[endColumn : endColumn+1]
+		rightOne = string(line[endColumn : endColumn+1])
 		if s.isNotSpace(rightOne) {
 			return rightOne
 		}
@@ -138,10 +138,10 @@ func (s *ParserService) getLeftChar(lines []string, startLine, startColumn int) 
 		return
 	}
 
-	line := lines[startLine]
+	line := []rune(lines[startLine])
 
 	if startColumn > 1 {
-		ret = line[startColumn-1 : startColumn]
+		ret = string(line[startColumn-1 : startColumn])
 		return
 	}
 
@@ -155,13 +155,13 @@ func (s *ParserService) getLeftChar(lines []string, startLine, startColumn int) 
 }
 
 func (s *ParserService) getRightChar(lines []string, endLine, endColumn int) (ret string) {
-	line := lines[endLine]
+	line := []rune(lines[endLine])
 	if endLine == len(lines)-1 && endColumn == len(line)-1 {
 		return
 	}
 
 	if len(line) > endColumn {
-		ret = line[endColumn : endColumn+1]
+		ret = string(line[endColumn : endColumn+1])
 		return
 	}
 

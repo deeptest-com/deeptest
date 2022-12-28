@@ -40,7 +40,7 @@ func Invoke(req v1.BaseRequest) (resp v1.InvocationResponse, err error) {
 }
 
 func GetRequestProps(req *v1.BaseRequest) {
-	req.BodyLang = consts.LangPlainTEXT
+	req.BodyLang = consts.LangTEXT
 
 	arr := strings.Split(string(req.BodyType), "/")
 	if len(arr) == 1 {
@@ -49,14 +49,14 @@ func GetRequestProps(req *v1.BaseRequest) {
 
 	typeName := arr[1]
 	if typeName == "text" || typeName == "plain" {
-		typeName = consts.LangPlainTEXT.String()
+		typeName = consts.LangTEXT.String()
 	}
 
 	req.BodyLang = consts.HttpRespLangType(typeName)
 }
 
 func GetContentProps(resp *v1.InvocationResponse) {
-	resp.ContentLang = consts.LangPlainTEXT
+	resp.ContentLang = consts.LangTEXT
 
 	if resp.ContentLang == "" {
 		return

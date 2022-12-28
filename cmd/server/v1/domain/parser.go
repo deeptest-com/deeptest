@@ -17,22 +17,13 @@ type ParserResponse struct {
 	ExprType      string          `json:"exprType"`
 }
 
-type TestXPathRequest struct {
+type TestExprRequest struct {
 	Expr     string                  `json:"expr" validate:"required"`
 	ExprType string                  `json:"exprType" validate:"required"`
 	Content  string                  `json:"content" validate:"required"`
 	Type     consts.HttpRespLangType `json:"type" validate:"required"`
 }
 
-type TestXPathResponse struct {
-	Result string `json:"result"`
-}
-
-type TestRegxRequest struct {
-	Expr    string `json:"expr" validate:"required"`
-	Content string `json:"content" validate:"required"`
-}
-
-type TestRegxResponse struct {
+type TestExprResponse struct {
 	Result string `json:"result"`
 }

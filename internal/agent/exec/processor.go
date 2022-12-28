@@ -14,6 +14,12 @@ var (
 )
 
 type ExecReq struct {
+	ServerUrl  string `json:"serverUrl"`
+	Token      string `json:"token"`
+	ScenarioId int    `json:"scenarioId"`
+}
+
+type ExecObj struct {
 	RootProcessor *Processor        `json:"rootProcessor"`
 	Variables     []domain.Variable `json:"variables"`
 	ServerUrl     string            `json:"serverUrl"`

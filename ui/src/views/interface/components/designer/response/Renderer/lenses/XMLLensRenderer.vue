@@ -62,7 +62,7 @@ import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
 import {MonacoOptions} from "@/utils/const";
 import {Interface, Response} from "@/views/interface/data";
 import {formatXml} from "@/utils/dom";
-import {parseHtml, parseXml, testXPath} from "@/views/interface/service";
+import {parseHtml, parseXml, testExpr} from "@/views/interface/service";
 import {ExtractorSrc, ExtractorType} from "@/utils/enum";
 import ResponseExtractor from "@/components/Editor/ResponseExtractor.vue";
 
@@ -99,8 +99,8 @@ const responseExtractor = (data) => {
 }
 
 const testParse = (xpath) => {
-  console.log('testXPath')
-  testXPath({
+  console.log('testParse')
+  testExpr({
     content: responseData.value.content,
     type: responseData.value.contentLang,
     expr: expr,

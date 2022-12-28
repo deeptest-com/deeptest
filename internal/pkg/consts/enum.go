@@ -178,10 +178,10 @@ func (e ClientAuthenticationWay) String() string {
 type HttpRespLangType string
 
 const (
-	LangJSON      HttpRespLangType = "json"
-	LangXML       HttpRespLangType = "xml"
-	LangHTML      HttpRespLangType = "html"
-	LangPlainTEXT HttpRespLangType = "plaintext"
+	LangJSON HttpRespLangType = "json"
+	LangXML  HttpRespLangType = "xml"
+	LangHTML HttpRespLangType = "html"
+	LangTEXT HttpRespLangType = "text"
 )
 
 func (e HttpRespLangType) String() string {

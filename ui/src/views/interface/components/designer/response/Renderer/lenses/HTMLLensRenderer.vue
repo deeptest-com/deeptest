@@ -65,7 +65,7 @@ import {MonacoOptions} from "@/utils/const";
 import {Interface, Response} from "@/views/interface/data";
 import ResponseExtractor from "@/components/Editor/ResponseExtractor.vue";
 import {getXpath, initIFrame, updateElem} from "@/services/parser-html";
-import {parseHtml, testXPath} from "@/views/interface/service";
+import {parseHtml, testExpr} from "@/views/interface/service";
 import {ExtractorSrc, ExtractorType} from "@/utils/enum";
 
 const {t} = useI18n();
@@ -116,8 +116,8 @@ const responseExtractor = (data) => {
 // }
 
 const testParse = (expr, exprType) => {
-  console.log('testXPath')
-  testXPath({
+  console.log('testParse')
+  testExpr({
     content: responseData.value.content,
     type: responseData.value.contentLang,
     expr: expr,

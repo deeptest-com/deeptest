@@ -34,7 +34,7 @@ func (s *ExecScenarioService) Load(scenarioId int) (result domain.Report, err er
 	return
 }
 
-func (s *ExecScenarioService) LoadExecData(scenarioId int) (execReq agentExec.ExecReq, err error) {
+func (s *ExecScenarioService) LoadExecData(scenarioId int) (execReq agentExec.ExecObj, err error) {
 	rootProcessor, _ := s.ScenarioNodeRepo.GetTree(uint(scenarioId), true)
 	execReq.Variables, _ = s.EnvironmentService.ListVariableForExec(uint(scenarioId))
 

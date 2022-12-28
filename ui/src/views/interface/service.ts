@@ -413,9 +413,16 @@ export async function parseJson(data): Promise<any> {
         data
     });
 }
-export async function testXPath(data): Promise<any> {
+export async function parseText(data): Promise<any> {
     return request({
-        url: `/${apiParser}/testXPath`,
+        url: `/${apiParser}/parseText`,
+        method: 'POST',
+        data
+    });
+}
+export async function testExpr(data): Promise<any> {
+    return request({
+        url: `/${apiParser}/testExpr`,
         method: 'POST',
         data
     });

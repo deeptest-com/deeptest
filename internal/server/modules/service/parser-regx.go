@@ -17,6 +17,7 @@ func (s *ParserRegxService) ParseRegx(req *v1.ParserRequest) (ret v1.ParserRespo
 	expr, _ := s.getRegxExpr(req.DocContent, req.SelectContent,
 		req.StartLine, req.StartColumn, req.EndLine, req.EndColumn)
 
+	exprType := "regx"
 	result := queryHelper.RegxQuery(req.DocContent, expr)
 
 	fmt.Printf("%s: %v", expr, result)
@@ -24,6 +25,7 @@ func (s *ParserRegxService) ParseRegx(req *v1.ParserRequest) (ret v1.ParserRespo
 	ret = v1.ParserResponse{
 		SelectionType: consts.NodeText,
 		Expr:          expr,
+		ExprType:      exprType,
 	}
 
 	return

@@ -98,14 +98,11 @@ store.dispatch('Scenario/loadExecResult', scenarioId.value);
 const execStart = async () => {
   console.log('execStart')
 
-  const json = await loadExecScenario(scenarioId.value)
-  if (json.code != 0) return
-
-  const data = json.data
-  data.serverUrl = process.env.VUE_APP_API_SERVER // used by agent to submit result to server
-  data.token = await getToken();
-
-  convertEntityToRawData(data.rootProcessor)
+  const data = {
+    serverUrl: process.env.VUE_APP_API_SERVER, // used by agent to submit result to server
+    token: await getToken(),
+    scenarioId: scenarioId.value,
+  }
 
   WebSocket.sentMsg(settings.webSocketRoom, JSON.stringify({act: 'execScenario', execReq: data}))
 }
@@ -119,17 +116,6 @@ const execCancel = () => {
 const design = () => {
   console.log('design')
   router.push(`/scenario/design/${scenarioId.value}`)
-}
-
-const convertEntityToRawData = (processor) => {
-  processor.entityRaw = processor.entity
-  processor.entity = null
-
-  if (!processor.children) return
-
-  for (let i = 0; i < processor.children.length; i++) {
-    convertEntityToRawData(processor.children[i])
-  }
 }
 
 onMounted(() => {

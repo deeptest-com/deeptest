@@ -41,7 +41,6 @@
     <ResponseExtractor
         v-if="responseExtractorVisible"
         :interfaceId="interfaceData.id"
-        type="json"
         :exprType="exprType"
         :expr="expr"
         :result="result"
@@ -63,7 +62,7 @@ import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
 import {MonacoOptions} from "@/utils/const";
 import {Interface, Response} from "@/views/interface/data";
 
-import {parseHtml, parseJson, testXPath} from "@/views/interface/service";
+import {parseHtml, parseJson, testExpr} from "@/views/interface/service";
 import {ExtractorSrc, ExtractorType} from "@/utils/enum";
 import ResponseExtractor from "@/components/Editor/ResponseExtractor.vue";
 
@@ -99,8 +98,8 @@ const responseExtractor = (data) => {
 }
 
 const testParse = (xpath) => {
-  console.log('testXPath')
-  testXPath({
+  console.log('testParse')
+  testExpr({
     content: responseData.value.content,
     type: responseData.value.contentLang,
     expr: expr,

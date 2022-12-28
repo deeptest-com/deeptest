@@ -24,7 +24,7 @@ type Session struct {
 	WsMsg *websocket.Message
 }
 
-func NewSession(req *ExecReq, failfast bool, wsMsg *websocket.Message) (ret *Session) {
+func NewSession(req *ExecObj, failfast bool, wsMsg *websocket.Message) (ret *Session) {
 	root := req.RootProcessor
 	variables := req.Variables
 

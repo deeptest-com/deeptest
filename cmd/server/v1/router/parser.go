@@ -19,10 +19,9 @@ func (m *ParserModule) Party() module.WebModule {
 		index.Post("/parseHtml", m.ParserCtrl.ParseHtml).Name = "解析HTML"
 		index.Post("/parseXml", m.ParserCtrl.ParseXml).Name = "解析XML"
 		index.Post("/parseJson", m.ParserCtrl.ParseJson).Name = "解析JSON"
-		index.Post("/parseText", m.ParserCtrl.ParseJson).Name = "解析TEXT"
+		index.Post("/parseText", m.ParserCtrl.ParseText).Name = "解析TEXT"
 
-		index.Post("/testXPath", m.ParserCtrl.TestXPath).Name = "测试XPath"
-		index.Post("/testRegx", m.ParserCtrl.TestXPath).Name = "测试正则表达式提取器"
+		index.Post("/testExpr", m.ParserCtrl.TestExpr).Name = "测试XPath或正则表达式"
 	}
 	return module.NewModule("/parser", handler)
 }

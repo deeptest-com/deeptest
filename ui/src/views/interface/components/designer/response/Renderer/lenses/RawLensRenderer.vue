@@ -32,12 +32,26 @@
           :language="responseData.contentLang"
           theme="vs"
           :options="editorOptions"
+
+          :onExtractor="responseExtractor"
+          :onReplace="responseExtractor"
+      />
+
+      <ResponseExtractor
+          v-if="responseExtractorVisible"
+          :interfaceId="interfaceData.id"
+          :exprType="exprType"
+          :expr="expr"
+          :result="result"
+          :onTest="testParse"
+          :onFinish="responseExtractorFinish"
+          :onCancel="responseExtractorCancel"
       />
     </div>
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import {computed, ComputedRef, defineComponent, PropType, Ref, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
@@ -47,30 +61,76 @@ import {isInArray} from "@/utils/array";
 import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
 import {MonacoOptions} from "@/utils/const";
 import {Interface, Response} from "@/views/interface/data";
+import ResponseExtractor from "@/components/Editor/ResponseExtractor.vue";
+import {parseHtml, parseText, testExpr} from "@/views/interface/service";
+import {ExtractorSrc, ExtractorType} from "@/utils/enum";
 
-export default defineComponent({
-  name: 'ResponseLensRaw',
-  components: {
-    MonacoEditor,
-    CopyOutlined, DownloadOutlined, ClearOutlined,
-  },
+const {t} = useI18n();
+const store = useStore<{ Interface: StateType }>();
+const responseData = computed<Response>(() => store.state.Interface.responseData);
+const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
+const extractorsData = computed(() => store.state.Interface.extractorsData);
 
-  computed: {
-  },
+const editorOptions = ref(Object.assign({usedWith: 'response'}, MonacoOptions) )
 
-  setup(props) {
-    const {t} = useI18n();
-    const store = useStore<{ Interface: StateType }>();
-    const responseData = computed<Response>(() => store.state.Interface.responseData);
+const responseExtractorVisible = ref(false)
+const expr = ref('')
+const exprType = ref('')
+const result = ref('')
 
-    const editorOptions = ref(Object.assign({usedWith: 'response'}, MonacoOptions) )
 
-    return {
-      responseData,
-      editorOptions,
+const responseExtractor = (data) => {
+  // console.log('responseExtractor', data)
+  result.value = ''
+
+  parseText({
+    docContent: data.docContent,
+    selectContent: data.selectContent,
+
+    startLine: data.selectionObj.startLineNumber - 1,
+    endLine: data.selectionObj.endLineNumber - 1,
+    startColumn: data.selectionObj.startColumn - 1,
+    endColumn: data.selectionObj.endColumn - 1,
+  }).then((json) => {
+    console.log('json', json)
+    responseExtractorVisible.value = true
+    expr.value = json.data.expr
+    exprType.value = json.data.exprType
+  })
+}
+
+const testParse = (expr, exprType) => {
+  console.log('testParse')
+  testExpr({
+    content: responseData.value.content,
+    type: responseData.value.contentLang,
+    expr: expr,
+    exprType: exprType,
+
+  }).then((json) => {
+    console.log('json', json)
+    result.value = json.data.result
+  })
+}
+
+const responseExtractorFinish = (data) => {
+  console.log('responseExtractorFinish')
+  data.type = data.expressionType === 'regx' ? ExtractorType.regx : ExtractorType.htmlquery
+  data.src = ExtractorSrc.body
+  data.result = result.value
+
+  data.interfaceId = interfaceData.value.id
+  data.projectId = interfaceData.value.projectId
+  store.dispatch('Interface/createExtractorOrUpdateResult', data).then((result) => {
+    if (result) {
+      responseExtractorVisible.value = false
     }
-  }
-})
+  })
+}
+const responseExtractorCancel = () => {
+  console.log('responseExtractorCancel')
+  responseExtractorVisible.value = false
+}
 
 </script>
 

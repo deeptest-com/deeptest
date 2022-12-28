@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"encoding/json"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
@@ -57,7 +58,11 @@ func (r *ScenarioNodeRepo) toTos(pos []*model.Processor, withDetail bool) (tos [
 		copier.CopyWithOption(&to, po, copier.Option{DeepCopy: true})
 
 		if withDetail {
-			to.Entity, _ = r.ScenarioProcessorRepo.GetEntityTo(&to)
+			entity, _ := r.ScenarioProcessorRepo.GetEntityTo(&to)
+
+			to.EntityRaw, _ = json.Marshal(entity)
+			to.Entity = &agentExec.ProcessorGroup{}
+
 		} else {
 			to.Entity = &agentExec.ProcessorGroup{} // just to avoid json marshal error for IProcessorEntity
 		}

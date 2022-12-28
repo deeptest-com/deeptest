@@ -2,7 +2,6 @@ package handler
 
 import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
-	queryHelper "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/query"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	"github.com/kataras/iris/v12"
@@ -13,6 +12,7 @@ type ParserCtrl struct {
 	ParserHtmlService *service.ParserHtmlService `inject:""`
 	ParserXmlService  *service.ParserXmlService  `inject:""`
 	ParserJsonService *service.ParserJsonService `inject:""`
+	ParserRegxService *service.ParserRegxService `inject:""`
 	BaseCtrl
 }
 
@@ -70,16 +70,16 @@ func (c *ParserCtrl) ParseJson(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: resp, Msg: _domain.NoErr.Msg})
 }
 
-// TestXPath
-func (c *ParserCtrl) TestXPath(ctx iris.Context) {
-	req := v1.TestXPathRequest{}
+// ParseText
+func (c *ParserCtrl) ParseText(ctx iris.Context) {
+	req := v1.ParserRequest{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
 		return
 	}
 
-	resp, err := c.ParserService.TestXPath(&req)
+	resp, err := c.ParserRegxService.ParseRegx(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.FailErr.Code, Msg: err.Error()})
 		return
@@ -88,16 +88,16 @@ func (c *ParserCtrl) TestXPath(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: resp, Msg: _domain.NoErr.Msg})
 }
 
-// TestRegx
-func (c *ParserCtrl) TestRegx(ctx iris.Context) {
-	req := v1.TestRegxRequest{}
+// TestExpr
+func (c *ParserCtrl) TestExpr(ctx iris.Context) {
+	req := v1.TestExprRequest{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
 		return
 	}
 
-	resp := queryHelper.RegxQuery(req.Content, req.Expr)
+	resp, err := c.ParserService.TestExpr(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.FailErr.Code, Msg: err.Error()})
 		return

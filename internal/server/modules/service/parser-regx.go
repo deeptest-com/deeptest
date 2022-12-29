@@ -5,6 +5,7 @@ import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	queryHelper "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/query"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"regexp"
 	"strings"
 )
 
@@ -37,12 +38,15 @@ func (s *ParserRegxService) getRegxExpr(docContent, selectContent string,
 	lines := strings.Split(docContent, "\n")
 
 	leftChars := ""
-	s.ParserService.getLeftCharsInSingleLine(lines, startLine, startColumn, 6, &leftChars)
+	prefix := s.ParserService.getLeftCharsInSingleLine(lines, startLine, startColumn, 6, &leftChars)
 
 	rightChars := ""
-	s.ParserService.getRightCharsInSingleLine(lines, endLine, endColumn, 6, &rightChars)
+	postfix := s.ParserService.getRightCharsInSingleLine(lines, endLine, endColumn, 6, &rightChars)
 
-	ret = fmt.Sprintf("%s(.+)%s", leftChars, rightChars)
+	expr := fmt.Sprintf("%s(.+)%s", leftChars, rightChars)
+	expr = regexp.QuoteMeta(expr)
+
+	expr = prefix + expr + postfix
 
 	return
 }

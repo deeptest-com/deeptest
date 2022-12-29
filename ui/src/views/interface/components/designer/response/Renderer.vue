@@ -1,5 +1,5 @@
 <template>
-  <div class="response-renderer">
+  <div class="response-renderer">=={{responseData.contentLang}}==
     <a-tabs v-model:activeKey="activeKey">
       <a-tab-pane key="1" :tab="title">
         <ResponseLensJson v-if="responseData.contentLang === 'json'"></ResponseLensJson>

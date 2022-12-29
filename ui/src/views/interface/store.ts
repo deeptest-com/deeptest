@@ -176,10 +176,14 @@ const StoreModel: ModuleType = {
 
             const response = await invoke(updatedRequest.data)
 
+            console.log('=invoke=', response.data)
+
             const submitResult = await submitInvokeResult({
                 request: updatedRequest.data,
                 response: response.data,
             })
+
+            console.log('=submitResult=', submitResult)
 
             if (submitResult.code === 0) {
                 commit('setResponse', response.data);

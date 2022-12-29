@@ -38,16 +38,20 @@ func (s *ParserRegxService) getRegxExpr(docContent, selectContent string,
 	lines := strings.Split(docContent, "\n")
 
 	leftChars := ""
-	prefix := s.ParserService.getLeftCharsInSingleLine(lines, startLine, startColumn, 6, &leftChars)
+	prefix := ""
+	s.ParserService.getLeftCharsInSingleLine(lines, startLine, startColumn, 6, &leftChars, &prefix)
 	leftChars = regexp.QuoteMeta(leftChars)
 
 	rightChars := ""
-	postfix := s.ParserService.getRightCharsInSingleLine(lines, endLine, endColumn, 6, &rightChars)
+	postfix := ""
+	s.ParserService.getRightCharsInSingleLine(lines, endLine, endColumn, 6, &rightChars, &postfix)
 	rightChars = regexp.QuoteMeta(rightChars)
 
 	expr := fmt.Sprintf("%s(.+)%s", leftChars, rightChars)
 
 	ret = prefix + expr + postfix
+
+	//ret = strings.TrimSpace(ret)
 
 	return
 }

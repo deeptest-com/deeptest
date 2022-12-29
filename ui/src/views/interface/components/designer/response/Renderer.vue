@@ -1,11 +1,11 @@
 <template>
-  <div class="response-renderer">=={{responseData.contentLang}}==
+  <div class="response-renderer">
     <a-tabs v-model:activeKey="activeKey">
       <a-tab-pane key="1" :tab="title">
         <ResponseLensJson v-if="responseData.contentLang === 'json'"></ResponseLensJson>
         <ResponseLensXml v-if="responseData.contentLang === 'xml'"></ResponseLensXml>
         <ResponseLensHtml v-if="responseData.contentLang === 'html'"></ResponseLensHtml>
-        <ResponseLensRaw v-if="responseData.contentLang === 'plaintext'"></ResponseLensRaw>
+        <ResponseLensRaw v-if="responseData.contentLang === 'text'"></ResponseLensRaw>
         <ResponseLensImage v-if="responseData.contentLang === 'image'"></ResponseLensImage>
       </a-tab-pane>
 

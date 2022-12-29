@@ -39,14 +39,15 @@ func (s *ParserRegxService) getRegxExpr(docContent, selectContent string,
 
 	leftChars := ""
 	prefix := s.ParserService.getLeftCharsInSingleLine(lines, startLine, startColumn, 6, &leftChars)
+	leftChars = regexp.QuoteMeta(leftChars)
 
 	rightChars := ""
 	postfix := s.ParserService.getRightCharsInSingleLine(lines, endLine, endColumn, 6, &rightChars)
+	rightChars = regexp.QuoteMeta(rightChars)
 
 	expr := fmt.Sprintf("%s(.+)%s", leftChars, rightChars)
-	expr = regexp.QuoteMeta(expr)
 
-	expr = prefix + expr + postfix
+	ret = prefix + expr + postfix
 
 	return
 }

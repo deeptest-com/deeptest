@@ -238,6 +238,8 @@ const StoreModel: ModuleType = {
 
             try {
                 const response = await get(payload.id);
+                console.log('=get interface=', response.data)
+
                 const {data} = response;
                 data.headers.push({name:'', value:''})
                 data.params.push({name:'', value:''})
@@ -252,6 +254,8 @@ const StoreModel: ModuleType = {
         },
         async getLastInvocationResp({commit, dispatch, state}, id: number) {
             const response = await getLastInvocationResp(id);
+            console.log('=getLastInvocationResp=', response.data)
+
             const {data} = response;
 
             commit('setResponse', data);

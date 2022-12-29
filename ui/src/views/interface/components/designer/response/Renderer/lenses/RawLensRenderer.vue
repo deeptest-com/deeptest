@@ -25,7 +25,7 @@
       </a-row>
     </div>
 
-    <div class="body">-{{responseData}}-
+    <div class="body">
       <MonacoEditor
           class="editor"
           :value="responseData.content"

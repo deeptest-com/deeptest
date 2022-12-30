@@ -1,5 +1,42 @@
 <template>
   <div class="scenario-detail-main">
+    <a-table :columns="columns" :data-source="data">
+      <template #name="{ text }">
+        <a>{{ text }}</a>
+      </template>
+      <template #customTitle>
+      <span>
+        <smile-outlined />
+        Name
+      </span>
+      </template>
+      <template #tags="{ text: tags }">
+      <span>
+        <a-tag
+            v-for="tag in tags"
+            :key="tag"
+            :color="tag === 'loser' ? 'volcano' : tag.length > 5 ? 'geekblue' : 'green'"
+        >
+          {{ tag.toUpperCase() }}
+        </a-tag>
+      </span>
+      </template>
+      <template #action="{ record }">
+      <span>
+        <a>Invite 一 {{ record.name }}</a>
+        <a-divider type="vertical" />
+        <a>Delete</a>
+        <a-divider type="vertical" />
+        <a class="ant-dropdown-link">
+          More actions
+          <down-outlined />
+        </a>
+      </span>
+      </template>
+    </a-table>
+  </div>
+
+  <div class="scenario-detail-main">
     <a-card :bordered="false" :bodyStyle="{paddingTop: '8px'}">
       <template #title>
         <div>报告详情 - {{modelRef.name}}</div>
@@ -13,40 +50,6 @@
       </div>
     </a-card>
   </div>
-  <a-table :columns="columns" :data-source="data">
-    <template #name="{ text }">
-      <a>{{ text }}</a>
-    </template>
-    <template #customTitle>
-      <span>
-        <smile-outlined />
-        Name
-      </span>
-    </template>
-    <template #tags="{ text: tags }">
-      <span>
-        <a-tag
-          v-for="tag in tags"
-          :key="tag"
-          :color="tag === 'loser' ? 'volcano' : tag.length > 5 ? 'geekblue' : 'green'"
-        >
-          {{ tag.toUpperCase() }}
-        </a-tag>
-      </span>
-    </template>
-    <template #action="{ record }">
-      <span>
-        <a>Invite 一 {{ record.name }}</a>
-        <a-divider type="vertical" />
-        <a>Delete</a>
-        <a-divider type="vertical" />
-        <a class="ant-dropdown-link">
-          More actions
-          <down-outlined />
-        </a>
-      </span>
-    </template>
-  </a-table>
 </template>
 
 <script setup lang="ts">

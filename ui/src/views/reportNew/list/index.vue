@@ -140,7 +140,7 @@ const getList = async (current: number): Promise<void> => {
 
 const view = (id: number) => {
   console.log('view')
-  router.push(`/report/${id}`)
+  router.push(`/reportNew/${id}`)
 }
 
 const remove = (id: number) => {

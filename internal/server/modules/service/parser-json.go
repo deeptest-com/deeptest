@@ -22,7 +22,7 @@ func (s *ParserJsonService) ParseJson(req *v1.ParserRequest) (ret v1.ParserRespo
 
 	elem := s.getJsonSelectedElem(req.DocContent)
 
-	exprType := "expr"
+	exprType := "xpath"
 	expr, _ := s.XPathService.GetJsonXPath(elem, req.SelectContent, true)
 	if expr != "" {
 		expr = expr + "/" + req.SelectContent
@@ -49,10 +49,10 @@ func (s *ParserJsonService) updateJsonElem(docJson, selectContent string,
 	startLine, endLine, startColumn, endColumn int) (ret string) {
 	lines := strings.Split(docJson, "\n")
 
-	line := lines[startLine]
+	line := []rune(lines[startLine])
 
 	newStr := fmt.Sprintf("%s-%s", consts.DeepestKey, selectContent)
-	newLine := line[:startColumn] + newStr + line[endColumn:]
+	newLine := string(line[:startColumn]) + newStr + string(line[endColumn:])
 
 	lines[startLine] = newLine
 

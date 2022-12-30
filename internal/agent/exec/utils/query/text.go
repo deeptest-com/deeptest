@@ -10,7 +10,7 @@ func RegxQuery(content string, expr string) (result string) {
 
 	arr := regx.FindAllStringSubmatch(content, -1)
 
-	if len(arr) == 0 {
+	if len(arr) == 0 || len(arr[0]) < 2 {
 		return
 	}
 

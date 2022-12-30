@@ -22,7 +22,7 @@ func (s *ParserHtmlService) ParseHtml(req *v1.ParserRequest) (ret v1.ParserRespo
 
 	elem := s.getHtmlSelectedElem(docHtml, selectionType)
 
-	exprType := "expr"
+	exprType := "xpath"
 	expr, _ := s.XPathService.GetHtmlXPath(elem, req.SelectContent, selectionType, true)
 
 	if expr != "" {
@@ -51,22 +51,22 @@ func (s *ParserHtmlService) updateHtmlElem(docHtml, selectContent string,
 
 	selectionType = s.getHtmlSelectionType(lines, startLine, endLine, startColumn, endColumn)
 
-	line := lines[startLine]
+	line := []rune(lines[startLine])
 	newStr := fmt.Sprintf(" %s=\"true\" ", consts.DeepestKey)
 
 	if selectionType == consts.NodeElem {
-		newLine := line[:startColumn] + selectContent + newStr + line[endColumn:]
+		newLine := string(line[:startColumn]) + selectContent + newStr + string(line[endColumn:])
 
 		lines[startLine] = newLine
 
 	} else if selectionType == consts.NodeProp {
-		newLine := line[:startColumn] + newStr + line[startColumn:]
+		newLine := string(line[:startColumn]) + newStr + string(line[startColumn:])
 
 		lines[startLine] = newLine
 
 	} else if selectionType == consts.NodeContent {
 		newStr = fmt.Sprintf("[[%s]]", consts.DeepestKey)
-		newLine := line[:endColumn] + newStr + line[endColumn:]
+		newLine := string(line[:endColumn]) + newStr + string(line[endColumn:])
 
 		lines[startLine] = newLine
 	}

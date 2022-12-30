@@ -34,7 +34,8 @@ func (s *ParserService) TestExpr(req *v1.TestExprRequest) (ret v1.TestExprRespon
 	return
 }
 
-func (s *ParserService) getLeftCharsInSingleLine(lines []string, startLine, startColumn, num int, ret *string) {
+func (s *ParserService) getLeftCharsInSingleLine(lines []string, startLine, startColumn, num int,
+	ret, prefix *string) {
 	line := []rune(lines[startLine])
 	if startLine == 0 && startColumn == 0 {
 		return
@@ -50,14 +51,16 @@ func (s *ParserService) getLeftCharsInSingleLine(lines []string, startLine, star
 			return
 		}
 	} else if startColumn == 0 {
-		*ret = "^" + *ret
+		*prefix = "^"
 		return
 	}
 
-	s.getLeftCharsInSingleLine(lines, startLine, startColumn, num, ret)
+	s.getLeftCharsInSingleLine(lines, startLine, startColumn, num, ret, prefix)
+
+	return
 }
 
-func (s *ParserService) getRightCharsInSingleLine(lines []string, endLine, endColumn int, num int, ret *string) {
+func (s *ParserService) getRightCharsInSingleLine(lines []string, endLine, endColumn int, num int, ret, postfix *string) {
 	line := []rune(lines[endLine])
 
 	if endLine == len(lines)-1 && endColumn == len(line)-1 {
@@ -76,11 +79,13 @@ func (s *ParserService) getRightCharsInSingleLine(lines []string, endLine, endCo
 			return
 		}
 	} else if endColumn == len(line) {
-		*ret += "$"
+		*postfix = "$"
 		return
 	}
 
-	s.getRightCharsInSingleLine(lines, endLine, endColumn, num, ret)
+	s.getRightCharsInSingleLine(lines, endLine, endColumn, num, ret, postfix)
+
+	return
 }
 
 func (s *ParserService) getLeftNoSpaceChar(lines []string, startLine, startColumn int) (ret string) {

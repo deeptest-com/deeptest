@@ -40,7 +40,7 @@ func (c *MockCtrl) Get(ctx iris.Context) {
 	} else if respType == "json" {
 		ctx.JSON(mockHelper.GetJsonData())
 	} else {
-		ctx.HTML(mockHelper.GetTextData())
+		ctx.Text(mockHelper.GetTextData())
 	}
 }
 

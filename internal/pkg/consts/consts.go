@@ -3,8 +3,8 @@ package consts
 const (
 	App = "deeptest"
 
-	ContentType   = "NodeContent-Type"
-	ContentLength = "NodeContent-Length"
+	ContentType   = "Content-Type"
+	ContentLength = "Content-Length"
 	Server        = "Server"
 	Allow         = "Allow"
 	Connection    = "Connection"

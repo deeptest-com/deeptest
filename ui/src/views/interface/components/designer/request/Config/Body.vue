@@ -62,16 +62,22 @@
         />
       </div>
     </div>
+
+    <RequestVariable
+        v-if="requestVariableVisible"
+        :interfaceId="interfaceData.id"
+        :onFinish="requestVariableSelectFinish"
+        :onCancel="requestVariableSelectCancel"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import {computed, ComputedRef, defineComponent, PropType, Ref, ref} from "vue";
+import {computed, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import { QuestionCircleOutlined, DeleteOutlined, ClearOutlined, ImportOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons-vue';
 import {StateType} from "@/views/interface/store";
-import {isInArray} from "@/utils/array";
 import {MonacoOptions} from "@/utils/const";
 import {Interface} from "@/views/interface/data";
 import {getCodeLangByType} from "@/views/interface/service";
@@ -79,6 +85,7 @@ import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
 import BodyFormUrlencoded from "./Body-FormUrlencoded.vue";
 import BodyFormData from "./Body-FormData.vue";
 import {getRequestBodyTypes} from "@/views/scenario/service";
+import RequestVariable from "@/components/Editor/RequestVariable.vue";
 
 const {t} = useI18n();
 const store = useStore<{ Interface: StateType }>();
@@ -101,6 +108,25 @@ const editorChange = (newScriptCode) => {
 
 const replaceRequest = (data) => {
   console.log('replaceRequest', data)
+  requestVariableVisible.value = true
+}
+
+const requestVariableVisible = ref(false)
+
+const requestVariableSelectFinish = (data) => {
+  console.log('requestVariableSelectFinish', data)
+
+  data.interfaceId = interfaceData.value.id
+  data.projectId = interfaceData.value.projectId
+  // store.dispatch('Interface/createExtractorOrUpdateResult', data).then((result) => {
+  //   if (result) {
+  //     requestVariableVisible.value = false
+  //   }
+  // })
+}
+const requestVariableSelectCancel = () => {
+  console.log('requestVariableSelectCancel')
+  requestVariableVisible.value = false
 }
 
 </script>

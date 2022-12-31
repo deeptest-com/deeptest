@@ -86,7 +86,7 @@ import { DownOutlined, UndoOutlined, SaveOutlined, LinkOutlined, CheckOutlined }
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import {StateType} from "@/views/interface/store";
-import {ExtractorSrc, ExtractorType, Methods} from "@/utils/enum";
+import {Methods} from "@/utils/enum";
 import {Interface} from "@/views/interface/data";
 import {prepareDataForRequest} from "@/views/interface/service";
 import {NotificationKeyCommon} from "@/utils/const"
@@ -216,15 +216,15 @@ const onMenuClick = (item) => {
 const requestVariableVisible = ref(false)
 
 const requestVariableSelectFinish = (data) => {
-  console.log('requestVariableSelectFinish')
+  console.log('requestVariableSelectFinish', data)
 
   data.interfaceId = interfaceData.value.id
   data.projectId = interfaceData.value.projectId
-  store.dispatch('Interface/createExtractorOrUpdateResult', data).then((result) => {
-    if (result) {
-      requestVariableVisible.value = false
-    }
-  })
+  // store.dispatch('Interface/createExtractorOrUpdateResult', data).then((result) => {
+  //   if (result) {
+  //     requestVariableVisible.value = false
+  //   }
+  // })
 }
 const requestVariableSelectCancel = () => {
   console.log('requestVariableSelectCancel')

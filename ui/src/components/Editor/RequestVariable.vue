@@ -18,7 +18,7 @@
         <a-col :flex="3">{{item.rightValue}}</a-col>
 
         <a-col flex="100px">
-          <span @click="editVar(item)" class="dp-link-primary">选择</span>
+          <span @click="select(item)" class="dp-link-primary">选择</span>
         </a-col>
       </a-row>
 
@@ -32,7 +32,7 @@
         <a-col :flex="3">{{item.rightValue==='extractor_err'? t(item.rightValue+'_short') : item.value}}</a-col>
 
         <a-col flex="100px">
-          <span @click="editVar(item)" class="dp-link-primary">选择</span>
+          <span @click="select(item)" class="dp-link-primary">选择</span>
         </a-col>
       </a-row>
 
@@ -51,7 +51,6 @@ import {StateType as InterfaceStateType} from "@/views/interface/store";
 import {StateType as EnvironmentStateType} from "@/store/environment";
 import {Interface} from "@/views/interface/data";
 import {StateType as ProjectStateType} from "@/store/project";
-
 
 const props = defineProps({
   interfaceId:{
@@ -76,11 +75,9 @@ const interfaceData = computed<Interface>(() => store.state.Interface.interfaceD
 const environmentData = computed<any>(() => store.state.Environment.environmentData);
 const validExtractorVariablesData = computed(() => store.state.Interface.validExtractorVariablesData);
 
-const variRef = ref<any>({})
-
-const onSubmit = async () => {
-  console.log('onSubmit', variRef.value)
-  props.onFinish(variRef.value);
+const select = async (item) => {
+  console.log('select', item)
+  props.onFinish(item);
 }
 
 onMounted(()=> {

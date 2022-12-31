@@ -104,6 +104,14 @@ export default defineComponent({
 
       // @event `change`
       const editor = this._getEditor()
+      // editor.onDidChangeCursorPosition((e) => {
+      //   console.log(JSON.stringify(e));
+      // });
+      // editor.onDidChangeCursorSelection((e) => {
+      //   console.log(e);
+      //   this.selection = this.editor.getModel().getValueInRange(this.editor.getSelection())
+      //   console.log(this.selection)
+      // });
 
       editor.onDidChangeModelContent(event => {
         const value = editor.getValue()

@@ -14,7 +14,7 @@
       </a-dropdown>
     </div>
     <div class="url">
-      <a-input v-model:value="interfaceData.url" class="dp-bg-light" />
+      <a-input v-model:value="interfaceData.url"  v-contextmenu="onContextMenuShow" class="dp-bg-light" />
     </div>
     <div class="send">
       <a-dropdown-button type="primary" trigger="click" @click="sendRequest">
@@ -62,11 +62,18 @@
         <template #icon><DownOutlined /></template>
       </a-dropdown-button>
     </div>
+
+    <div v-if="showContextMenu" :style="contextMenuStyle" class="context-menu">
+      <div @click="onMenuClick('replaceVari')" class="item">替换变量</div>
+      <div @click="onMenuClick('')" class="item">复制</div>
+      <div @click="onMenuClick('')" class="item">关闭</div>
+    </div>
+
   </div>
 </template>
 
-<script lang="ts">
-import {computed, ComputedRef, defineComponent, PropType} from "vue";
+<script setup lang="ts">
+import {computed, ref, defineComponent, PropType, onMounted, getCurrentInstance, onUnmounted, defineProps} from "vue";
 import { notification, message } from 'ant-design-vue';
 import { DownOutlined, UndoOutlined, SaveOutlined, LinkOutlined, CheckOutlined } from '@ant-design/icons-vue';
 import {useI18n} from "vue-i18n";
@@ -78,111 +85,124 @@ import {Interface} from "@/views/interface/data";
 import {prepareDataForRequest} from "@/views/interface/service";
 import {NotificationKeyCommon} from "@/utils/const";
 
-export default defineComponent({
-  name: 'RequestInvocation',
-  props: {
-    onSend: {
-      type: Function as PropType<(data) => void>,
-      required: true
-    },
-    onSave: {
-      type: Function as PropType<(data) => void>,
-      required: true
-    }
+const props = defineProps({
+  onSend: {
+    type: Function as PropType<(data) => void>,
+    required: true
   },
-  components: {
-    DownOutlined, UndoOutlined, SaveOutlined, LinkOutlined, CheckOutlined,
-  },
-  setup(props) {
-    const {t} = useI18n();
-    const store = useStore<{ Interface: StateType }>();
-    const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
-
-    const methods = Methods;
-
-    const selectMethod = (val) => {
-      console.log('selectMethod', val.key)
-      interfaceData.value.method = val.key
-    };
-
-    const sendRequest = (e) => {
-      console.log('--- interface data', interfaceData.value)
-
-      let data = JSON.parse(JSON.stringify(interfaceData.value))
-      data = prepareDataForRequest(data)
-      data.body = data.body.replaceAll('\n', '').replaceAll(' ', '')
-
-      if (validateInfo()) {
-        props.onSend(data)
-      }
-    };
-
-    const save = (e) => {
-      let data = JSON.parse(JSON.stringify(interfaceData.value))
-      console.log('save', data)
-      data = prepareDataForRequest(data)
-      console.log('save', data)
-
-      if (validateInfo()) {
-        props.onSave(data)
-      }
-    };
-
-    const saveName = (e) => {
-      console.log('saveName', e)
-      e.preventDefault();
-    };
-    const saveAs = (e) => {
-      console.log('saveAs', e)
-    };
-
-    const copyLink = (e) => {
-      console.log('copyLink', e)
-    };
-    const clearAll = (e) => {
-      console.log('clearAll', e)
-    };
-    const none = (e) => {
-      console.log('none', e)
-      e.preventDefault()
-    };
-
-    const validateInfo = () => {
-      let msg = ''
-      if (!interfaceData.value.url) {
-        msg = '请求地址不能为空'
-      }
-      // else if (!regxUrl.test(interfaceData.value.url)) {
-      //   msg = '请求地址格式错误'
-      // }
-
-      if (msg) {
-        notification.warn({
-          key: NotificationKeyCommon,
-          message: msg,
-          placement: 'bottomLeft'
-        });
-
-        return false
-      }
-
-      return true
-    };
-
-    return {
-      interfaceData,
-      methods,
-      selectMethod,
-      sendRequest,
-      save,
-      clearAll,
-      saveName,
-      copyLink,
-      saveAs,
-      none,
-    }
+  onSave: {
+    type: Function as PropType<(data) => void>,
+    required: true
   }
 })
+
+const {t} = useI18n();
+const store = useStore<{ Interface: StateType }>();
+const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
+
+const methods = Methods;
+
+const selectMethod = (val) => {
+  console.log('selectMethod', val.key)
+  interfaceData.value.method = val.key
+};
+
+const sendRequest = (e) => {
+  console.log('--- interface data', interfaceData.value)
+
+  let data = JSON.parse(JSON.stringify(interfaceData.value))
+  data = prepareDataForRequest(data)
+  data.body = data.body.replaceAll('\n', '').replaceAll(' ', '')
+
+  if (validateInfo()) {
+    props.onSend(data)
+  }
+};
+
+const save = (e) => {
+  let data = JSON.parse(JSON.stringify(interfaceData.value))
+  console.log('save', data)
+  data = prepareDataForRequest(data)
+  console.log('save', data)
+
+  if (validateInfo()) {
+    props.onSave(data)
+  }
+};
+
+const saveName = (e) => {
+  console.log('saveName', e)
+  e.preventDefault();
+};
+const saveAs = (e) => {
+  console.log('saveAs', e)
+};
+
+const copyLink = (e) => {
+  console.log('copyLink', e)
+};
+const clearAll = (e) => {
+  console.log('clearAll', e)
+};
+const none = (e) => {
+  console.log('none', e)
+  e.preventDefault()
+};
+
+const validateInfo = () => {
+  let msg = ''
+  if (!interfaceData.value.url) {
+    msg = '请求地址不能为空'
+  }
+  // else if (!regxUrl.test(interfaceData.value.url)) {
+  //   msg = '请求地址格式错误'
+  // }
+
+  if (msg) {
+    notification.warn({
+      key: NotificationKeyCommon,
+      message: msg,
+      placement: 'bottomLeft'
+    });
+
+    return false
+  }
+
+  return true
+};
+
+const clearMenu = () => {
+  console.log('clearMenu')
+  showContextMenu.value = false
+}
+onMounted(() => {
+  console.log('onMounted')
+  document.addEventListener("click", clearMenu)
+})
+onUnmounted(() => {
+  document.removeEventListener("click", clearMenu)
+})
+
+const showContextMenu = ref(false)
+let contextTarget = {} as any
+const contextMenuStyle = ref({} as any)
+
+const onContextMenuShow = (e, binding) => {
+  console.log('onContextMenuShow', e, binding)
+  contextMenuStyle.value.left = e.clientX + "px";
+  contextMenuStyle.value.top = e.clientY - 60 > 6 ? e.clientY - 60 : 6  + "px";
+  contextMenuStyle.value.maxHeight = "200px";
+
+  contextTarget = e.target
+
+  showContextMenu.value = true
+}
+
+const onMenuClick = (item) => {
+  console.log('onMenuClick', item,
+      contextTarget.value.substr(contextTarget.selectionStart, contextTarget.selectionEnd - contextTarget.selectionStart))
+  showContextMenu.value = true
+}
 
 </script>
 
@@ -220,6 +240,19 @@ export default defineComponent({
   }
   .save {
     width: 110px;
+  }
+
+  .context-menu {
+    position: fixed;
+    padding: 10px;
+    border: 1px solid #dedfe1;
+    background: #f0f2f5;
+    z-index: 99;
+
+    .item {
+      margin: 5px 0;
+      cursor: pointer;
+    }
   }
 }
 

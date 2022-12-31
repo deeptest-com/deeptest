@@ -58,6 +58,7 @@
             theme="vs"
             :options="editorOptions"
             @change="editorChange"
+            :onReplace="replaceRequest"
         />
       </div>
     </div>
@@ -85,7 +86,7 @@ const interfaceData = computed<Interface>(() => store.state.Interface.interfaceD
 const codeLang = computed(() => {
   return getCodeLang()
 })
-const editorOptions = ref(MonacoOptions)
+const editorOptions = ref(Object.assign({usedWith: 'request'}, MonacoOptions))
 
 const bodyTypes = ref(getRequestBodyTypes())
 
@@ -96,6 +97,10 @@ const getCodeLang = () => {
 
 const editorChange = (newScriptCode) => {
   interfaceData.value.body = newScriptCode;
+}
+
+const replaceRequest = (data) => {
+  console.log('replaceRequest', data)
 }
 
 </script>

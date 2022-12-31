@@ -3,8 +3,7 @@
       title="使用变量"
       :destroy-on-close="true"
       :mask-closable="false"
-      :visible="true"
-      :onCancel="onCancel"
+      :visible="requestVariableVisible"
       :footer="null"
       width="800px"
       height="600px"
@@ -42,7 +41,7 @@
 </template>
 
 <script setup lang="ts">
-import {defineProps, defineEmits, onMounted, reactive, ref, Ref, computed} from "vue";
+import {defineProps, defineEmits, onMounted, reactive, ref, Ref, computed, onUnmounted} from "vue";
 import {message, Form} from 'ant-design-vue';
 import {useI18n} from "vue-i18n";
 import {getEnvironment, saveEnvironment} from "@/views/interface/service";
@@ -51,22 +50,8 @@ import {StateType as InterfaceStateType} from "@/views/interface/store";
 import {StateType as EnvironmentStateType} from "@/store/environment";
 import {Interface} from "@/views/interface/data";
 import {StateType as ProjectStateType} from "@/store/project";
-
-const props = defineProps({
-  interfaceId:{
-    type: Number,
-    required: true
-  },
-
-  onCancel:{
-    type: Function,
-    required: true
-  },
-  onFinish:{
-    type: Function,
-    required: true
-  },
-});
+import bus from "@/utils/eventBus";
+import settings from "@/config/settings";
 
 const { t } = useI18n();
 
@@ -75,14 +60,29 @@ const interfaceData = computed<Interface>(() => store.state.Interface.interfaceD
 const environmentData = computed<any>(() => store.state.Environment.environmentData);
 const validExtractorVariablesData = computed(() => store.state.Interface.validExtractorVariablesData);
 
-const select = async (item) => {
-  console.log('select', item)
-  props.onFinish(item);
-}
+const requestVariableVisible = ref(false)
 
 onMounted(()=> {
   console.log('onMounted')
+  bus.on(settings.eventVariableSelectionStatus, onVariableSelectionStatus);
 })
+
+onUnmounted(() => {
+  console.log('onUnmounted')
+  bus.off(settings.eventVariableSelectionStatus, onVariableSelectionStatus);
+})
+
+const src = ref('')
+const onVariableSelectionStatus = (data) => {
+  src.value = data.src
+  requestVariableVisible.value = data.showVariableSelection
+}
+
+const select = async (item) => {
+  console.log('select', item)
+  bus.emit(settings.eventVariableSelectionResult, {src: src.value, item: item});
+  requestVariableVisible.value = false
+}
 
 const labelCol = { span: 6 }
 const wrapperCol = { span: 16 }

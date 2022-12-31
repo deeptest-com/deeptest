@@ -63,29 +63,24 @@
       </div>
     </div>
 
-    <RequestVariable
-        v-if="requestVariableVisible"
-        :interfaceId="interfaceData.id"
-        :onFinish="requestVariableSelectFinish"
-        :onCancel="requestVariableSelectCancel"
-    />
   </div>
 </template>
 
 <script setup lang="ts">
-import {computed, ref} from "vue";
+import {computed, onMounted, onUnmounted, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import { QuestionCircleOutlined, DeleteOutlined, ClearOutlined, ImportOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons-vue';
 import {StateType} from "@/views/interface/store";
 import {MonacoOptions} from "@/utils/const";
 import {Interface} from "@/views/interface/data";
+import bus from "@/utils/eventBus";
+import settings from "@/config/settings";
 import {getCodeLangByType} from "@/views/interface/service";
 import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
 import BodyFormUrlencoded from "./Body-FormUrlencoded.vue";
 import BodyFormData from "./Body-FormData.vue";
 import {getRequestBodyTypes} from "@/views/scenario/service";
-import RequestVariable from "@/components/Editor/RequestVariable.vue";
 
 const {t} = useI18n();
 const store = useStore<{ Interface: StateType }>();
@@ -108,25 +103,22 @@ const editorChange = (newScriptCode) => {
 
 const replaceRequest = (data) => {
   console.log('replaceRequest', data)
-  requestVariableVisible.value = true
+  bus.emit(settings.eventVariableSelectionStatus, {src: 'body', showVariableSelection: true});
 }
 
-const requestVariableVisible = ref(false)
+onMounted(() => {
+  console.log('onMounted')
+  bus.on(settings.eventVariableSelectionResult, onVariableSelectionResult);
+})
+onUnmounted(() => {
+  bus.off(settings.eventVariableSelectionResult, onVariableSelectionResult);
+})
 
-const requestVariableSelectFinish = (data) => {
-  console.log('requestVariableSelectFinish', data)
-
-  data.interfaceId = interfaceData.value.id
-  data.projectId = interfaceData.value.projectId
-  // store.dispatch('Interface/createExtractorOrUpdateResult', data).then((result) => {
-  //   if (result) {
-  //     requestVariableVisible.value = false
-  //   }
-  // })
-}
-const requestVariableSelectCancel = () => {
-  console.log('requestVariableSelectCancel')
-  requestVariableVisible.value = false
+const onVariableSelectionResult = (result) => {
+  console.log('onVariableSelectionResult', result.src, result.item)
+  if (result.src === 'body') {
+    console.log('for body',)
+  }
 }
 
 </script>

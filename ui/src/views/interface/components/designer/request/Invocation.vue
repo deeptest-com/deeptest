@@ -69,13 +69,6 @@
       <div @click="onMenuClick('')" class="item">关闭</div>
     </div>
 
-    <RequestVariable
-        v-if="requestVariableVisible"
-        :interfaceId="interfaceData.id"
-        :onFinish="requestVariableSelectFinish"
-        :onCancel="requestVariableSelectCancel"
-    />
-
   </div>
 </template>
 
@@ -87,10 +80,11 @@ import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import {StateType} from "@/views/interface/store";
 import {Methods} from "@/utils/enum";
+import bus from "@/utils/eventBus";
+import settings from "@/config/settings";
 import {Interface} from "@/views/interface/data";
 import {prepareDataForRequest} from "@/views/interface/service";
 import {NotificationKeyCommon} from "@/utils/const"
-import RequestVariable from "@/components/Editor/RequestVariable.vue";
 
 const props = defineProps({
   onSend: {
@@ -185,10 +179,19 @@ const clearMenu = () => {
 onMounted(() => {
   console.log('onMounted')
   document.addEventListener("click", clearMenu)
+  bus.on(settings.eventVariableSelectionResult, onVariableSelectionResult);
 })
 onUnmounted(() => {
   document.removeEventListener("click", clearMenu)
+  bus.off(settings.eventVariableSelectionResult, onVariableSelectionResult);
 })
+
+const onVariableSelectionResult = (result) => {
+  console.log('onVariableSelectionResult', result.src, result.item)
+  if (result.src === 'url') {
+    console.log('for url')
+  }
+}
 
 const showContextMenu = ref(false)
 let contextTarget = {} as any
@@ -210,25 +213,7 @@ const onMenuClick = (item) => {
       contextTarget.value.substr(contextTarget.selectionStart, contextTarget.selectionEnd - contextTarget.selectionStart))
   showContextMenu.value = false
 
-  requestVariableVisible.value = true
-}
-
-const requestVariableVisible = ref(false)
-
-const requestVariableSelectFinish = (data) => {
-  console.log('requestVariableSelectFinish', data)
-
-  data.interfaceId = interfaceData.value.id
-  data.projectId = interfaceData.value.projectId
-  // store.dispatch('Interface/createExtractorOrUpdateResult', data).then((result) => {
-  //   if (result) {
-  //     requestVariableVisible.value = false
-  //   }
-  // })
-}
-const requestVariableSelectCancel = () => {
-  console.log('requestVariableSelectCancel')
-  requestVariableVisible.value = false
+  bus.emit(settings.eventVariableSelectionStatus, {src: 'url', showVariableSelection: true});
 }
 
 </script>

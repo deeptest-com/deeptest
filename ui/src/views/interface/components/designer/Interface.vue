@@ -9,6 +9,8 @@
       <div id="bottom-panel">
         <InterfaceResponse v-if="interfaceData.id"></InterfaceResponse>
       </div>
+
+    <RequestVariable />
   </div>
 </template>
 
@@ -21,41 +23,40 @@ import {useStore} from "vuex";
 import {StateType} from "@/views/interface/store";
 import InterfaceRequest from './request/Index.vue';
 import InterfaceResponse from './response/Index.vue';
+import RequestVariable from '@/components/Editor/RequestVariable.vue';
 import {Interface} from "@/views/interface/data";
-import bus from "@/utils/eventBus";
-import settings from "@/config/settings";
-import debounce from "lodash.debounce";
 
-    const {t} = useI18n();
-    const store = useStore<{ Interface: StateType }>();
+const {t} = useI18n();
+const store = useStore<{ Interface: StateType }>();
 
-    const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
+const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
 
-    onMounted(() => {
-      console.log('onMounted interface')
-      resize()
+onMounted(() => {
+  console.log('onMounted interface')
+  resize()
 
-      window.addEventListener('resize', resizeHandler)
-    })
-    onUnmounted(() => {
-      console.log('onUnmounted interface')
-      window.removeEventListener('resize', resizeHandler)
-    })
+  window.addEventListener('resize', resizeHandler)
+})
+onUnmounted(() => {
+  console.log('onUnmounted interface')
+  window.removeEventListener('resize', resizeHandler)
+})
 
-    let id = interfaceData.value.id
-    watch(interfaceData, () => {
-      console.log('watch interfaceData', interfaceData.value.id)
+let id = interfaceData.value.id
+watch(interfaceData, () => {
+  console.log('watch interfaceData', interfaceData.value.id)
 
-      if (interfaceData.value.id !== id) {
-        store.dispatch('Interface/listValidExtractorVariable')
-      }
-      id = interfaceData.value.id
-    }, {deep: true})
+  if (interfaceData.value.id !== id) {
+    store.dispatch('Interface/listValidExtractorVariable')
+  }
+  id = interfaceData.value.id
+}, {deep: true})
 
-    const resize = () => {
-      resizeHeight('designer-interface-main', 'top-panel', 'design-splitter-v', 'bottom-panel',
-          200, 100)
-    }
+const resize = () => {
+  resizeHeight('designer-interface-main', 'top-panel', 'design-splitter-v', 'bottom-panel',
+      200, 100)
+}
+
 </script>
 
 <style lang="less" scoped>

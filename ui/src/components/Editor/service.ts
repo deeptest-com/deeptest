@@ -5,7 +5,7 @@ export function addExtractAction(editor, callback) {
 
     editor.addAction({
         id: 'extract-action',
-        label: '提取为变量',
+        label: '提取变量',
 
         keybindings: [
             monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_R,
@@ -42,7 +42,7 @@ export function addReplaceAction(editor, callback) {
     console.log('addReplaceAction')
     editor.addAction({
         id: 'replace-action',
-        label: '替换为变量',
+        label: '使用变量',
 
         keybindings: [
             monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_R,

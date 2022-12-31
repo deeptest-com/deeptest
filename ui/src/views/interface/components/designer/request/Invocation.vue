@@ -69,21 +69,28 @@
       <div @click="onMenuClick('')" class="item">关闭</div>
     </div>
 
+    <RequestVariable
+        v-if="requestVariableVisible"
+        :interfaceId="interfaceData.id"
+        :onFinish="requestVariableSelectFinish"
+        :onCancel="requestVariableSelectCancel"
+    />
+
   </div>
 </template>
 
 <script setup lang="ts">
-import {computed, ref, defineComponent, PropType, onMounted, getCurrentInstance, onUnmounted, defineProps} from "vue";
+import {computed, ref, PropType, onMounted, onUnmounted, defineProps} from "vue";
 import { notification, message } from 'ant-design-vue';
 import { DownOutlined, UndoOutlined, SaveOutlined, LinkOutlined, CheckOutlined } from '@ant-design/icons-vue';
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import {StateType} from "@/views/interface/store";
-import {Methods} from "@/utils/enum";
-import {regxUrl} from "@/utils/validation";
+import {ExtractorSrc, ExtractorType, Methods} from "@/utils/enum";
 import {Interface} from "@/views/interface/data";
 import {prepareDataForRequest} from "@/views/interface/service";
-import {NotificationKeyCommon} from "@/utils/const";
+import {NotificationKeyCommon} from "@/utils/const"
+import RequestVariable from "@/components/Editor/RequestVariable.vue";
 
 const props = defineProps({
   onSend: {
@@ -201,7 +208,27 @@ const onContextMenuShow = (e, binding) => {
 const onMenuClick = (item) => {
   console.log('onMenuClick', item,
       contextTarget.value.substr(contextTarget.selectionStart, contextTarget.selectionEnd - contextTarget.selectionStart))
-  showContextMenu.value = true
+  showContextMenu.value = false
+
+  requestVariableVisible.value = true
+}
+
+const requestVariableVisible = ref(false)
+
+const requestVariableSelectFinish = (data) => {
+  console.log('requestVariableSelectFinish')
+
+  data.interfaceId = interfaceData.value.id
+  data.projectId = interfaceData.value.projectId
+  store.dispatch('Interface/createExtractorOrUpdateResult', data).then((result) => {
+    if (result) {
+      requestVariableVisible.value = false
+    }
+  })
+}
+const requestVariableSelectCancel = () => {
+  console.log('requestVariableSelectCancel')
+  requestVariableVisible.value = false
 }
 
 </script>
@@ -244,7 +271,7 @@ const onMenuClick = (item) => {
 
   .context-menu {
     position: fixed;
-    padding: 10px;
+    padding: 6px 10px;
     border: 1px solid #dedfe1;
     background: #f0f2f5;
     z-index: 99;

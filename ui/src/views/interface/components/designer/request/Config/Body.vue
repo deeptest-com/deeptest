@@ -165,4 +165,5 @@ const requestVariableSelectCancel = () => {
     }
   }
 }
+
 </style>

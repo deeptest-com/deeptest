@@ -63,9 +63,11 @@
       </a-dropdown-button>
     </div>
 
-    <div v-if="showContextMenu" :style="contextMenuStyle" class="context-menu">
-      <div @click="onMenuClick('replaceVari')" class="item">使用变量</div>
-    </div>
+    <ContextMenu
+        :isShow="showContextMenu"
+        :style="contextMenuStyle"
+        :menu-click="onMenuClick">
+    </ContextMenu>
 
   </div>
 </template>
@@ -73,7 +75,7 @@
 <script setup lang="ts">
 import {computed, ref, PropType, onMounted, onUnmounted, defineProps} from "vue";
 import { notification, message } from 'ant-design-vue';
-import { DownOutlined, UndoOutlined, SaveOutlined, LinkOutlined, CheckOutlined } from '@ant-design/icons-vue';
+import { DownOutlined, UndoOutlined, SaveOutlined, LinkOutlined, CheckOutlined, EditOutlined } from '@ant-design/icons-vue';
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import {StateType} from "@/views/interface/store";
@@ -83,6 +85,7 @@ import settings from "@/config/settings";
 import {Interface} from "@/views/interface/data";
 import {getContextMenuStyle, prepareDataForRequest} from "@/views/interface/service";
 import {NotificationKeyCommon} from "@/utils/const"
+import ContextMenu from "@/components/Editor/ContextMenu.vue"
 
 const props = defineProps({
   onSend: {
@@ -176,22 +179,14 @@ const clearMenu = () => {
 }
 onMounted(() => {
   console.log('onMounted')
-  document.addEventListener("click", clearMenu)
 })
 onUnmounted(() => {
-  document.removeEventListener("click", clearMenu)
+  console.log('onUnmounted')
 })
 
 const showContextMenu = ref(false)
 let contextTarget = {} as any
 const contextMenuStyle = ref({} as any)
-
-const onMenuClick = (item) => {
-  console.log('onMenuClick', item)
-  showContextMenu.value = false
-
-  bus.emit(settings.eventVariableSelectionStatus, {src: 'url', data: contextTarget});
-}
 
 const onContextMenuShow = (e) => {
   console.log('getContextMenuStyle', e.target)
@@ -200,6 +195,15 @@ const onContextMenuShow = (e) => {
   contextTarget = e.target
 
   showContextMenu.value = true
+}
+
+const onMenuClick = (key) => {
+  console.log('onMenuClick', key)
+
+  if (key === 'use-variable') {
+    bus.emit(settings.eventVariableSelectionStatus, {src: 'url', data: contextTarget});
+  }
+  showContextMenu.value = false
 }
 
 </script>

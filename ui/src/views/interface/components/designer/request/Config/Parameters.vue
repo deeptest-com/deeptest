@@ -58,9 +58,11 @@
       </div>
     </div>
 
-    <div v-if="showContextMenu" :style="contextMenuStyle" class="context-menu">
-      <div @click="onMenuClick('replaceVari')" class="item">使用变量</div>
-    </div>
+    <ContextMenu
+        :isShow="showContextMenu"
+        :style="contextMenuStyle"
+        :menu-click="onMenuClick">
+    </ContextMenu>
 
   </div>
 </template>
@@ -75,41 +77,42 @@ import {Param, Interface} from "@/views/interface/data";
 import {getContextMenuStyle} from "@/views/interface/service";
 import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
+import ContextMenu from "@/components/Editor/ContextMenu.vue"
 
-    const {t} = useI18n();
-    const store = useStore<{ Interface: StateType }>();
-    const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
+const {t} = useI18n();
+const store = useStore<{ Interface: StateType }>();
+const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
 
-    const onParamChange = (idx) => {
-      console.log('onParamChange', idx)
-      if (interfaceData.value.params.length <= idx + 1
-            && (interfaceData.value.params[idx].name !== '' || interfaceData.value.params[idx].value !== '')) {
-        interfaceData.value.params.push({} as Param)
-      }
-    };
+const onParamChange = (idx) => {
+  console.log('onParamChange', idx)
+  if (interfaceData.value.params.length <= idx + 1
+        && (interfaceData.value.params[idx].name !== '' || interfaceData.value.params[idx].value !== '')) {
+    interfaceData.value.params.push({} as Param)
+  }
+};
 
-    const add = () => {
-      console.log('add')
-      interfaceData.value.params.push({} as Param)
-    }
-    const removeAll = () => {
-      console.log('removeAll', interfaceData.value.params)
-      interfaceData.value.params = [{} as Param]
-    }
+const add = () => {
+  console.log('add')
+  interfaceData.value.params.push({} as Param)
+}
+const removeAll = () => {
+  console.log('removeAll', interfaceData.value.params)
+  interfaceData.value.params = [{} as Param]
+}
 
-    const disable = (idx) => {
-      console.log('enable', idx)
-      interfaceData.value.params[idx].disabled = !interfaceData.value.params[idx].disabled
-    }
-    const remove = (idx) => {
-      console.log('remove')
-      interfaceData.value.params.splice(idx, 1)
-      add()
-    }
-    const insert = (idx) => {
-      console.log('insert')
-      interfaceData.value.params.splice(idx+1, 0, {} as Param)
-    }
+const disable = (idx) => {
+  console.log('enable', idx)
+  interfaceData.value.params[idx].disabled = !interfaceData.value.params[idx].disabled
+}
+const remove = (idx) => {
+  console.log('remove')
+  interfaceData.value.params.splice(idx, 1)
+  add()
+}
+const insert = (idx) => {
+  console.log('insert')
+  interfaceData.value.params.splice(idx+1, 0, {} as Param)
+}
 
 const showContextMenu = ref(false)
 const paramIndex = ref(-1)
@@ -127,11 +130,14 @@ const onContextMenuShow = (idx, e) => {
   showContextMenu.value = true
 }
 
-const onMenuClick = (item) => {
-  console.log('onMenuClick', item)
-  showContextMenu.value = false
+const onMenuClick = (key) => {
+  console.log('onMenuClick', key)
 
-  bus.emit(settings.eventVariableSelectionStatus, {src: 'param', index: paramIndex.value, data: contextTarget});
+  if (key === 'use-variable') {
+    bus.emit(settings.eventVariableSelectionStatus, {src: 'param', index: paramIndex.value, data: contextTarget});
+  }
+
+  showContextMenu.value = false
 }
 
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <div class="dp-tree-context-menu">
+  <div class="dp-tree-context-menu dp-context-menu">
     <a-menu @click="menuClick" mode="inline">
       <a-menu-item key="rename" class="menu-item" v-if="treeNode.parentId > 0">
         <EditOutlined />
@@ -82,16 +82,5 @@ export default defineComponent({
 </script>
 
 <style lang="less">
-.dp-tree-context-menu {
-  z-index: 9;
-  .ant-menu {
-    border: 1px solid #dedfe1;
-    background: #f0f2f5;
-    .ant-menu-item.menu-item {
-      padding-left: 12px !important;
-      height: 22px;
-      line-height: 21px;
-    }
-  }
-}
+
 </style>

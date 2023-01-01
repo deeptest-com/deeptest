@@ -433,7 +433,7 @@ export function getContextMenuStyle(e) {
 
     const style = {
         left: e.clientX + 'px',
-        top: (e.clientY - 20 > 6 ? e.clientY - 20 : 6)  + 'px',
+        top: (e.clientY - 12 > 6 ? e.clientY - 12 : 6)  + 'px',
     }
 
     return style

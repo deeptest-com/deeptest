@@ -59,9 +59,11 @@
       </div>
     </div>
 
-    <div v-if="showContextMenu" :style="contextMenuStyle" class="context-menu">
-      <div @click="onMenuClick('replaceVari')" class="item">使用变量</div>
-    </div>
+    <ContextMenu
+        :isShow="showContextMenu"
+        :style="contextMenuStyle"
+        :menu-click="onMenuClick">
+    </ContextMenu>
   </div>
 </template>
 
@@ -75,6 +77,7 @@ import {Header, Interface} from "@/views/interface/data";
 import {getContextMenuStyle} from "@/views/interface/service";
 import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
+import ContextMenu from "@/components/Editor/ContextMenu.vue"
 
 const {t} = useI18n();
 const store = useStore<{ Interface: StateType }>();
@@ -111,7 +114,6 @@ const insert = (idx) => {
   interfaceData.value.headers.splice(idx+1, 0, {} as Header)
 }
 
-
 const showContextMenu = ref(false)
 const headerIndex = ref(-1)
 let contextTarget = {} as any
@@ -128,11 +130,14 @@ const onContextMenuShow = (idx, e) => {
   showContextMenu.value = true
 }
 
-const onMenuClick = (item) => {
-  console.log('onMenuClick', item)
-  showContextMenu.value = false
+const onMenuClick = (key) => {
+  console.log('onMenuClick', key)
 
-  bus.emit(settings.eventVariableSelectionStatus, {src: 'header', index: headerIndex.value, data: contextTarget});
+  if (key === 'use-variable') {
+    bus.emit(settings.eventVariableSelectionStatus, {src: 'header', index: headerIndex.value, data: contextTarget});
+  }
+
+  showContextMenu.value = false
 }
 
 </script>

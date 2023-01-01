@@ -219,15 +219,16 @@ width: 100%;
     }
 }
 
-.context-menu {
+.dp-context-menu {
+    z-index: 9;
     position: fixed;
-    padding: 6px 10px;
-    border: 1px solid #dedfe1;
-    background: #f0f2f5;
-    z-index: 99;
-
-    .item {
-        margin: 5px 0;
-        cursor: pointer;
+    .ant-menu {
+        border: 1px solid #dedfe1;
+        background: #f0f2f5;
+        .ant-menu-item.menu-item {
+            padding-left: 12px !important;
+            height: 22px;
+            line-height: 21px;
+        }
     }
 }

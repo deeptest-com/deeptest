@@ -434,7 +434,6 @@ export function getContextMenuStyle(e) {
     const style = {
         left: e.clientX + 'px',
         top: (e.clientY - 20 > 6 ? e.clientY - 20 : 6)  + 'px',
-        maxHeight: '200px'
     }
 
     return style

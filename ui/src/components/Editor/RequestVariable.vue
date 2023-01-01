@@ -95,36 +95,37 @@ const onVariableSelectionStatus = (data) => {
 const select = async (item) => {
   console.log('select', item, interfaceData.value)
 
-  if (variableSelectionData.value.src === 'url') {
+  if (variableSelectionData.value.src === 'body') {
+    const body = getEditorContent(item.name)
+
+    await store.dispatch('Interface/updateBody', body)
+
+  } else if (variableSelectionData.value.src === 'url') {
     let url = interfaceData.value.url
-    url = url.substring(0, variableSelectionData.value.data.selectionStart) +
-        '${' + item.name + '}' +
-        url.substring(variableSelectionData.value.data.selectionEnd)
+
+    url = getInputContent(item.name, url,
+        variableSelectionData.value.data.selectionStart, variableSelectionData.value.data.selectionEnd)
 
     store.dispatch('Interface/updateUrl', url).then((res) => {
       console.log('res', res)
     })
-  } else if (variableSelectionData.value.src === 'body') {
-    const body = getEditorContent(item.name)
 
-    await store.dispatch('Interface/updateBody', body)
   } else if (variableSelectionData.value.src === 'param') {
     let param = interfaceData.value.params[variableSelectionData.value.index].value
 
-    param = param.substring(0, variableSelectionData.value.data.selectionStart) +
-        '${' + item.name + '}' +
-        param.substring(variableSelectionData.value.data.selectionEnd)
+    param = getInputContent(item.name, param,
+        variableSelectionData.value.data.selectionStart, variableSelectionData.value.data.selectionEnd)
 
     await store.dispatch('Interface/updateParam', {
       value: param,
       index: variableSelectionData.value.index,
     })
+
   } else if (variableSelectionData.value.src === 'header') {
     let header = interfaceData.value.headers[variableSelectionData.value.index].value
 
-    header = header.substring(0, variableSelectionData.value.data.selectionStart) +
-        '${' + item.name + '}' +
-        header.substring(variableSelectionData.value.data.selectionEnd)
+    header = getInputContent(item.name, header,
+            variableSelectionData.value.data.selectionStart, variableSelectionData.value.data.selectionEnd)
 
     await store.dispatch('Interface/updateHeader', {
       value: header,
@@ -133,6 +134,14 @@ const select = async (item) => {
   }
 
   requestVariableVisible.value = false
+}
+
+const getInputContent = (variName, val, start, end) => {
+  const ret = val.substring(0, variableSelectionData.value.data.selectionStart) +
+      '${' + variName + '}' +
+      val.substring(variableSelectionData.value.data.selectionEnd)
+
+  return ret
 }
 
 const getEditorContent = (variName) => {

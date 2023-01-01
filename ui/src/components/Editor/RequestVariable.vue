@@ -5,6 +5,7 @@
       :mask-closable="false"
       :visible="requestVariableVisible"
       :footer="null"
+      :onCancel="onCancel"
       width="800px"
       height="600px"
   >
@@ -35,6 +36,16 @@
         </a-col>
       </a-row>
 
+      <br/>
+
+      <a-row v-for="(item, idx) in validExtractorVariablesData" :key="idx" type="flex">
+        <a-col flex="100px"></a-col>
+        <a-col :flex="3" class="dp-center">
+          <a-button @click="() => onCancel()" type="primary">关闭</a-button>
+        </a-col>
+        <a-col flex="100px"></a-col>
+      </a-row>
+
     </div>
 
   </a-modal>
@@ -42,7 +53,7 @@
 
 <script setup lang="ts">
 import {defineProps, defineEmits, onMounted, reactive, ref, Ref, computed, onUnmounted} from "vue";
-import {message, Form} from 'ant-design-vue';
+import {message, Form, notification} from 'ant-design-vue';
 import {useI18n} from "vue-i18n";
 import {getEnvironment, saveEnvironment} from "@/views/interface/service";
 import {useStore} from "vuex";
@@ -52,6 +63,7 @@ import {Interface} from "@/views/interface/data";
 import {StateType as ProjectStateType} from "@/store/project";
 import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
+import {NotificationKeyCommon} from "@/utils/const";
 
 const { t } = useI18n();
 
@@ -72,15 +84,79 @@ onUnmounted(() => {
   bus.off(settings.eventVariableSelectionStatus, onVariableSelectionStatus);
 })
 
-const src = ref('')
+const variableSelectionData = ref({}as any)
 const onVariableSelectionStatus = (data) => {
-  src.value = data.src
-  requestVariableVisible.value = data.showVariableSelection
+  console.log('onVariableSelectionStatus', data)
+
+  variableSelectionData.value = data
+  requestVariableVisible.value = true
 }
 
 const select = async (item) => {
-  console.log('select', item)
-  bus.emit(settings.eventVariableSelectionResult, {src: src.value, item: item});
+  console.log('select', item, interfaceData.value)
+
+  if (variableSelectionData.value.src === 'url') {
+    let url = interfaceData.value.url
+    url = url.substring(0, variableSelectionData.value.data.selectionStart) +
+        '${' + item.name + '}' + url.substring(variableSelectionData.value.data.selectionEnd)
+
+    store.dispatch('Interface/updateUrl', url).then((res) => {
+      console.log('res', res)
+    })
+  } else if (variableSelectionData.value.src === 'body') {
+    const body = getEditorContent(item.name)
+
+    store.dispatch('Interface/updateBody', body).then((res) => {
+      console.log('res', res)
+    })
+  }
+
+  // requestVariableVisible.value = false
+}
+
+const getEditorContent = (variName) => {
+  console.log('getEditorContent', variName)
+
+  const docContent = variableSelectionData.value.data.docContent
+  const selectContent = variableSelectionData.value.data.selectContent
+  const selectionObj = variableSelectionData.value.data.selectionObj
+
+  const startLine = selectionObj.startLineNumber - 1
+  const startColumn = selectionObj.startColumn - 1
+  const endLine = selectionObj.endLineNumber - 1
+  const endColumn = selectionObj.endColumn - 1
+
+  const lines = docContent.split('\n')
+  if (startLine === endLine) {
+    let line = lines[startLine]
+    lines[startLine] = line.substring(0, startColumn) + '${' + variName + '}' + line.substring(endColumn)
+
+    return lines.join('\n')
+
+  } else if (startLine < endLine) {
+    let ret = [] as string[]
+
+    for (let i = startLine + 1; i++; i < endLine) {
+      if (i === startLine) {
+        ret.push(lines[i].substring(0, startColumn) + '${' + variName + '}')
+
+      } else if (i === endLine) {
+        ret.push(lines[i].substring(endColumn))
+
+      } else if (i < startLine || i > endLine) {
+        ret.push(lines[i])
+      } else if (i > startLine && i < endLine) {
+        // ignore
+      }
+    }
+
+    return ret.join('\n')
+  }
+
+
+}
+
+const onCancel = () => {
   requestVariableVisible.value = false
 }
 

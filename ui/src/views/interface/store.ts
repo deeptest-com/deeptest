@@ -65,6 +65,9 @@ export interface ModuleType extends StoreModuleType<StateType> {
 
         setCheckpoints: Mutation<StateType>;
         setCheckpoint: Mutation<StateType>;
+
+        setUrl: Mutation<StateType>;
+        setBody: Mutation<StateType>;
     };
     actions: {
         invoke: Action<StateType, StateType>;
@@ -96,6 +99,9 @@ export interface ModuleType extends StoreModuleType<StateType> {
         getCheckpoint: Action<StateType, StateType>;
         saveCheckpoint: Action<StateType, StateType>;
         removeCheckpoint: Action<StateType, StateType>;
+
+        updateUrl: Action<StateType, StateType>;
+        updateBody: Action<StateType, StateType>;
     };
 }
 
@@ -168,6 +174,13 @@ const StoreModel: ModuleType = {
         },
         setCheckpoint(state, payload) {
             state.checkpointData = payload;
+        },
+
+        setUrl(state, payload) {
+            state.interfaceData.url = payload;
+        },
+        setBody(state, payload) {
+            state.interfaceData.body = payload;
         },
     },
     actions: {
@@ -457,6 +470,15 @@ const StoreModel: ModuleType = {
             } catch (error) {
                 return false;
             }
+        },
+
+        async updateUrl({commit, dispatch, state}, url: string) {
+            commit('setUrl', url);
+            return true;
+        },
+        async updateBody({commit, dispatch, state}, body: string) {
+            commit('setBody', body);
+            return true;
         },
     }
 };

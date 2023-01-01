@@ -179,18 +179,16 @@ const clearMenu = () => {
 onMounted(() => {
   console.log('onMounted')
   document.addEventListener("click", clearMenu)
-  bus.on(settings.eventVariableSelectionResult, onVariableSelectionResult);
 })
 onUnmounted(() => {
   document.removeEventListener("click", clearMenu)
-  bus.off(settings.eventVariableSelectionResult, onVariableSelectionResult);
 })
 
-const onVariableSelectionResult = (result) => {
-  console.log('onVariableSelectionResult', result.src, result.item)
-  if (result.src === 'url') {
-    console.log('for url')
-  }
+const onMenuClick = (item) => {
+  console.log('onMenuClick', item)
+  showContextMenu.value = false
+
+  bus.emit(settings.eventVariableSelectionStatus, {src: 'url', data: contextTarget});
 }
 
 const showContextMenu = ref(false)
@@ -206,14 +204,6 @@ const onContextMenuShow = (e, binding) => {
   contextTarget = e.target
 
   showContextMenu.value = true
-}
-
-const onMenuClick = (item) => {
-  console.log('onMenuClick', item,
-      contextTarget.value.substr(contextTarget.selectionStart, contextTarget.selectionEnd - contextTarget.selectionStart))
-  showContextMenu.value = false
-
-  bus.emit(settings.eventVariableSelectionStatus, {src: 'url', showVariableSelection: true});
 }
 
 </script>

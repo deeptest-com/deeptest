@@ -59,7 +59,7 @@
     </div>
 
     <div v-if="showContextMenu" :style="contextMenuStyle" class="context-menu">
-      <div @click="onMenuClick('replaceVari')" class="item">替换变量</div>
+      <div @click="onMenuClick('replaceVari')" class="item">使用变量</div>
     </div>
 
   </div>

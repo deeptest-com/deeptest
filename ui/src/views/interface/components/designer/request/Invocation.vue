@@ -14,7 +14,7 @@
       </a-dropdown>
     </div>
     <div class="url">
-      <a-input v-model:value="interfaceData.url"  v-contextmenu="onContextMenuShow" class="dp-bg-light" />
+      <a-input v-model:value="interfaceData.url" v-contextmenu="onContextMenuShow" class="dp-bg-light" />
     </div>
     <div class="send">
       <a-dropdown-button type="primary" trigger="click" @click="sendRequest">
@@ -65,8 +65,6 @@
 
     <div v-if="showContextMenu" :style="contextMenuStyle" class="context-menu">
       <div @click="onMenuClick('replaceVari')" class="item">替换变量</div>
-      <div @click="onMenuClick('')" class="item">复制</div>
-      <div @click="onMenuClick('')" class="item">关闭</div>
     </div>
 
   </div>
@@ -83,7 +81,7 @@ import {Methods} from "@/utils/enum";
 import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
 import {Interface} from "@/views/interface/data";
-import {prepareDataForRequest} from "@/views/interface/service";
+import {getContextMenuStyle, prepareDataForRequest} from "@/views/interface/service";
 import {NotificationKeyCommon} from "@/utils/const"
 
 const props = defineProps({
@@ -184,6 +182,10 @@ onUnmounted(() => {
   document.removeEventListener("click", clearMenu)
 })
 
+const showContextMenu = ref(false)
+let contextTarget = {} as any
+const contextMenuStyle = ref({} as any)
+
 const onMenuClick = (item) => {
   console.log('onMenuClick', item)
   showContextMenu.value = false
@@ -191,16 +193,10 @@ const onMenuClick = (item) => {
   bus.emit(settings.eventVariableSelectionStatus, {src: 'url', data: contextTarget});
 }
 
-const showContextMenu = ref(false)
-let contextTarget = {} as any
-const contextMenuStyle = ref({} as any)
+const onContextMenuShow = (e) => {
+  console.log('getContextMenuStyle', e.target)
 
-const onContextMenuShow = (e, binding) => {
-  console.log('onContextMenuShow', e, binding)
-  contextMenuStyle.value.left = e.clientX + "px";
-  contextMenuStyle.value.top = e.clientY - 60 > 6 ? e.clientY - 60 : 6  + "px";
-  contextMenuStyle.value.maxHeight = "200px";
-
+  contextMenuStyle.value = getContextMenuStyle(e)
   contextTarget = e.target
 
   showContextMenu.value = true
@@ -242,19 +238,6 @@ const onContextMenuShow = (e, binding) => {
   }
   .save {
     width: 110px;
-  }
-
-  .context-menu {
-    position: fixed;
-    padding: 6px 10px;
-    border: 1px solid #dedfe1;
-    background: #f0f2f5;
-    z-index: 99;
-
-    .item {
-      margin: 5px 0;
-      cursor: pointer;
-    }
   }
 }
 

@@ -98,7 +98,8 @@ const select = async (item) => {
   if (variableSelectionData.value.src === 'url') {
     let url = interfaceData.value.url
     url = url.substring(0, variableSelectionData.value.data.selectionStart) +
-        '${' + item.name + '}' + url.substring(variableSelectionData.value.data.selectionEnd)
+        '${' + item.name + '}' +
+        url.substring(variableSelectionData.value.data.selectionEnd)
 
     store.dispatch('Interface/updateUrl', url).then((res) => {
       console.log('res', res)
@@ -106,12 +107,32 @@ const select = async (item) => {
   } else if (variableSelectionData.value.src === 'body') {
     const body = getEditorContent(item.name)
 
-    store.dispatch('Interface/updateBody', body).then((res) => {
-      console.log('res', res)
+    await store.dispatch('Interface/updateBody', body)
+  } else if (variableSelectionData.value.src === 'param') {
+    let param = interfaceData.value.params[variableSelectionData.value.index].value
+
+    param = param.substring(0, variableSelectionData.value.data.selectionStart) +
+        '${' + item.name + '}' +
+        param.substring(variableSelectionData.value.data.selectionEnd)
+
+    await store.dispatch('Interface/updateParam', {
+      value: param,
+      index: variableSelectionData.value.index,
+    })
+  } else if (variableSelectionData.value.src === 'header') {
+    let header = interfaceData.value.headers[variableSelectionData.value.index].value
+
+    header = header.substring(0, variableSelectionData.value.data.selectionStart) +
+        '${' + item.name + '}' +
+        header.substring(variableSelectionData.value.data.selectionEnd)
+
+    await store.dispatch('Interface/updateHeader', {
+      value: header,
+      index: variableSelectionData.value.index,
     })
   }
 
-  // requestVariableVisible.value = false
+  requestVariableVisible.value = false
 }
 
 const getEditorContent = (variName) => {

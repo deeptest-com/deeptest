@@ -28,7 +28,10 @@
             <a-input v-model:value="item.name" @change="onParamChange(idx)" class="dp-bg-input-transparent" />
           </a-col>
           <a-col flex="1">
-            <a-input v-model:value="item.value" @change="onParamChange(idx)" class="dp-bg-input-transparent" />
+            <a-input v-model:value="item.value"
+                     @change="onParamChange(idx)"
+                     v-contextmenu="e => onContextMenuShow(idx, e)"
+                     class="dp-bg-input-transparent" />
           </a-col>
           <a-col flex="80px" class="dp-right dp-icon-btn-container">
             <a-tooltip v-if="!item.disabled" @click="disable(idx)" overlayClassName="dp-tip-small">
@@ -54,23 +57,25 @@
         </a-row>
       </div>
     </div>
+
+    <div v-if="showContextMenu" :style="contextMenuStyle" class="context-menu">
+      <div @click="onMenuClick('replaceVari')" class="item">替换变量</div>
+    </div>
+
   </div>
 </template>
 
-<script lang="ts">
-import {computed, ComputedRef, defineComponent, PropType, Ref, ref} from "vue";
+<script setup lang="ts">
+import {computed, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import { QuestionCircleOutlined, DeleteOutlined, PlusOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons-vue';
 import {StateType} from "@/views/interface/store";
 import {Param, Interface} from "@/views/interface/data";
+import {getContextMenuStyle} from "@/views/interface/service";
+import bus from "@/utils/eventBus";
+import settings from "@/config/settings";
 
-export default defineComponent({
-  name: 'RequestParameters',
-  components: {
-    QuestionCircleOutlined, DeleteOutlined, PlusOutlined, CheckCircleOutlined, CloseCircleOutlined,
-  },
-  setup(props) {
     const {t} = useI18n();
     const store = useStore<{ Interface: StateType }>();
     const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
@@ -106,17 +111,28 @@ export default defineComponent({
       interfaceData.value.params.splice(idx+1, 0, {} as Param)
     }
 
-    return {
-      interfaceData,
-      onParamChange,
-      add,
-      removeAll,
-      disable,
-      remove,
-      insert,
-    }
-  }
-})
+const showContextMenu = ref(false)
+const paramIndex = ref(-1)
+let contextTarget = {} as any
+const contextMenuStyle = ref({} as any)
+
+const onContextMenuShow = (idx, e) => {
+  console.log('onContextMenuShow', idx, e.target)
+  if (!e) return
+
+  contextMenuStyle.value = getContextMenuStyle(e)
+  contextTarget = e.target
+  paramIndex.value = idx
+
+  showContextMenu.value = true
+}
+
+const onMenuClick = (item) => {
+  console.log('onMenuClick', item)
+  showContextMenu.value = false
+
+  bus.emit(settings.eventVariableSelectionStatus, {src: 'param', index: paramIndex.value, data: contextTarget});
+}
 
 </script>
 

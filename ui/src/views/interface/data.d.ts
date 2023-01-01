@@ -71,6 +71,7 @@ export interface OAuth20 {
     oidcDiscoveryURL: string; // OpenID Connect Discovery URL
     authURL: string; // Authentication URL
     accessTokenURL: string; // Access Token URL
+    accessToken: string,
     clientID: string; // Client ID
     scope: string; // Scope
 }

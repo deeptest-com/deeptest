@@ -210,11 +210,24 @@ width: 100%;
 }
 
 .editor-wrapper {
-height: 100%;
-overflow-x: hidden;
-overflow-y: hidden;
-
-& > div {
     height: 100%;
+    overflow-x: hidden;
+    overflow-y: hidden;
+
+    & > div {
+        height: 100%;
+    }
 }
+
+.context-menu {
+    position: fixed;
+    padding: 6px 10px;
+    border: 1px solid #dedfe1;
+    background: #f0f2f5;
+    z-index: 99;
+
+    .item {
+        margin: 5px 0;
+        cursor: pointer;
+    }
 }

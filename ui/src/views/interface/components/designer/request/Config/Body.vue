@@ -58,21 +58,24 @@
             theme="vs"
             :options="editorOptions"
             @change="editorChange"
+            :onReplace="replaceRequest"
         />
       </div>
     </div>
+
   </div>
 </template>
 
 <script setup lang="ts">
-import {computed, ComputedRef, defineComponent, PropType, Ref, ref} from "vue";
+import {computed, onMounted, onUnmounted, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import { QuestionCircleOutlined, DeleteOutlined, ClearOutlined, ImportOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons-vue';
 import {StateType} from "@/views/interface/store";
-import {isInArray} from "@/utils/array";
 import {MonacoOptions} from "@/utils/const";
 import {Interface} from "@/views/interface/data";
+import bus from "@/utils/eventBus";
+import settings from "@/config/settings";
 import {getCodeLangByType} from "@/views/interface/service";
 import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
 import BodyFormUrlencoded from "./Body-FormUrlencoded.vue";
@@ -85,7 +88,7 @@ const interfaceData = computed<Interface>(() => store.state.Interface.interfaceD
 const codeLang = computed(() => {
   return getCodeLang()
 })
-const editorOptions = ref(MonacoOptions)
+const editorOptions = ref(Object.assign({usedWith: 'request'}, MonacoOptions))
 
 const bodyTypes = ref(getRequestBodyTypes())
 
@@ -97,6 +100,26 @@ const getCodeLang = () => {
 const editorChange = (newScriptCode) => {
   interfaceData.value.body = newScriptCode;
 }
+
+const replaceRequest = (data) => {
+  console.log('replaceRequest', data)
+  bus.emit(settings.eventVariableSelectionStatus, {src: 'body', data: data});
+}
+
+onMounted(() => {
+  console.log('onMounted')
+  // bus.on(settings.eventVariableSelectionResult, onVariableSelectionResult);
+})
+onUnmounted(() => {
+  // bus.off(settings.eventVariableSelectionResult, onVariableSelectionResult);
+})
+
+// const onVariableSelectionResult = (result) => {
+//   console.log('onVariableSelectionResult', result.src, result.item)
+//   if (result.src === 'body') {
+//     console.log('for body',)
+//   }
+// }
 
 </script>
 
@@ -134,4 +157,5 @@ const editorChange = (newScriptCode) => {
     }
   }
 }
+
 </style>

@@ -1,6 +1,9 @@
 @import './antd-variables.less';
 @import './variables.less';
 
+.dp-border {
+    font-weight: bolder;
+}
 .dp-link {
     cursor: pointer;
 }
@@ -207,11 +210,25 @@ width: 100%;
 }
 
 .editor-wrapper {
-height: 100%;
-overflow-x: hidden;
-overflow-y: hidden;
-
-& > div {
     height: 100%;
+    overflow-x: hidden;
+    overflow-y: hidden;
+
+    & > div {
+        height: 100%;
+    }
 }
+
+.dp-context-menu {
+    z-index: 9;
+    position: fixed;
+    .ant-menu {
+        border: 1px solid #dedfe1;
+        background: #f0f2f5;
+        .ant-menu-item.menu-item {
+            padding-left: 12px !important;
+            height: 22px;
+            line-height: 21px;
+        }
+    }
 }

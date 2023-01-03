@@ -95,7 +95,7 @@ func generateGovaluateParamsWithVariables(expression string, variableMap map[str
 }
 
 func GetVariablesInVariablePlaceholder(expression string) (ret []string) {
-	re := regexp.MustCompile("(?siU){(.*)}")
+	re := regexp.MustCompile("(?siU)\\${(.*)}")
 	matchResultArr := re.FindAllStringSubmatch(expression, -1)
 
 	for _, childArr := range matchResultArr {

@@ -65,6 +65,11 @@ export interface ModuleType extends StoreModuleType<StateType> {
 
         setCheckpoints: Mutation<StateType>;
         setCheckpoint: Mutation<StateType>;
+
+        setUrl: Mutation<StateType>;
+        setBody: Mutation<StateType>;
+        setParam: Mutation<StateType>;
+        setHeader: Mutation<StateType>;
     };
     actions: {
         invoke: Action<StateType, StateType>;
@@ -96,6 +101,11 @@ export interface ModuleType extends StoreModuleType<StateType> {
         getCheckpoint: Action<StateType, StateType>;
         saveCheckpoint: Action<StateType, StateType>;
         removeCheckpoint: Action<StateType, StateType>;
+
+        updateUrl: Action<StateType, StateType>;
+        updateBody: Action<StateType, StateType>;
+        updateParam: Action<StateType, StateType>;
+        updateHeader: Action<StateType, StateType>;
     };
 }
 
@@ -169,21 +179,33 @@ const StoreModel: ModuleType = {
         setCheckpoint(state, payload) {
             state.checkpointData = payload;
         },
+
+        setUrl(state, payload) {
+            state.interfaceData.url = payload;
+        },
+        setBody(state, payload) {
+            state.interfaceData.body = payload;
+        },
+        setParam(state, payload) {
+            state.interfaceData.params[payload.index].value = payload.value;
+        },
+        setHeader(state, payload) {
+            console.log('setParam', payload)
+            state.interfaceData.headers[payload.index].value = payload.value;
+        },
     },
     actions: {
         async invoke({commit, dispatch, state}, request: any) {
             const updatedRequest = await loadExecData(request)
 
             const response = await invoke(updatedRequest.data)
-
-            console.log('=invoke=', response.data)
+            // console.log('=invoke=', response.data)
 
             const submitResult = await submitInvokeResult({
                 request: updatedRequest.data,
                 response: response.data,
             })
-
-            console.log('=submitResult=', submitResult)
+            // console.log('=submitResult=', submitResult)
 
             if (submitResult.code === 0) {
                 commit('setResponse', response.data);
@@ -457,6 +479,23 @@ const StoreModel: ModuleType = {
             } catch (error) {
                 return false;
             }
+        },
+
+        async updateUrl({commit, dispatch, state}, url: string) {
+            commit('setUrl', url);
+            return true;
+        },
+        async updateBody({commit, dispatch, state}, body: string) {
+            commit('setBody', body);
+            return true;
+        },
+        async updateParam({commit, dispatch, state}, data: any) {
+            commit('setParam', data);
+            return true;
+        },
+        async updateHeader({commit, dispatch, state}, data: any) {
+            commit('setHeader', data);
+            return true;
         },
     }
 };

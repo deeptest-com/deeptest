@@ -427,3 +427,14 @@ export async function testExpr(data): Promise<any> {
         data
     });
 }
+
+export function getContextMenuStyle(e) {
+    console.log('getContextMenuStyle', e.clientY)
+
+    const style = {
+        left: e.clientX + 'px',
+        top: (e.clientY - 12 > 6 ? e.clientY - 12 : 6)  + 'px',
+    }
+
+    return style
+}

@@ -3,7 +3,7 @@ import { createApp } from 'vue';
 // 全局样式
 import '@/assets/css/global.less';
 
-// 引入 Antd 
+// 引入 Antd
 import Antd from 'ant-design-vue';
 
 // 导入 svg
@@ -23,6 +23,27 @@ app.use(store);
 app.use(router)
 app.use(Antd);
 app.use(i18n);
+
+const callback=(el:any,binding:any)=>{
+    const {value} = binding
+    value && value(el)
+}
+
+app.directive('contextmenu', {
+    mounted: function (el:any, binding:any, ) {
+        el.addEventListener("contextmenu",(e: any)=>{
+            e.preventDefault()
+            callback(e, binding)
+        })
+    },
+    unmounted: function (el:any, binding:any,) {
+        el.removeEventListener("contextmenu",(e: any)=>{
+            e.preventDefault()
+            callback(e, binding)
+        })
+    }
+})
+
 app.mount('#app');
 
 const _emitter: Emitter = mitt();

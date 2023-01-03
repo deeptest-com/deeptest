@@ -37,7 +37,6 @@
           :options="editorOptions"
 
           :onExtractor="responseExtractor"
-          :onReplace="responseExtractor"
       />
     </div>
 

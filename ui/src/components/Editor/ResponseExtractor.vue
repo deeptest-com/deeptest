@@ -171,6 +171,7 @@ const onSubmit = async () => {
 const test  = async () => {
   console.log('test', modelRef.value)
   if (!modelRef.value.expression) return
+
   props.onTest(modelRef.value.expression, props.exprType);
 }
 

@@ -59,3 +59,10 @@ type Variable struct {
 	Value                 string `json:"value"`
 	AvailableForCurrScope bool   `json:"availableForCurrScope"`
 }
+
+type InterfaceYapiReq struct {
+	Target    int    `json:"target"`
+	YapiHost  string `json:"yapiHost"`
+	Token     string `json:"token"`
+	ProjectId int    `json:"projectId"`
+}

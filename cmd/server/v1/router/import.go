@@ -17,6 +17,7 @@ func (m *ImportModule) Party() module.WebModule {
 		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
 
 		index.Post("/importSpec", m.ImportCtrl.ImportSpec).Name = "导入OpenApi文件"
+		index.Post("/importYapi", m.ImportCtrl.ImportYapi).Name = "导入yapi项目接口"
 
 	}
 	return module.NewModule("/import", handler)

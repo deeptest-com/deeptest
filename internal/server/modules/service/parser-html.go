@@ -17,28 +17,42 @@ type ParserHtmlService struct {
 }
 
 func (s *ParserHtmlService) ParseHtml(req *v1.ParserRequest) (ret v1.ParserResponse, err error) {
-	docHtml, selectionType := s.updateHtmlElem(req.DocContent, req.SelectContent, req.StartLine, req.EndLine,
+	docHtml1, docHtml2, selectionType := s.updateHtmlElem(req.DocContent, req.SelectContent, req.StartLine, req.EndLine,
 		req.StartColumn, req.EndColumn)
 
-	elem := s.getHtmlSelectedElem(docHtml, selectionType)
+	var elem1 *html.Node
+	var elem2 *html.Node
+
+	elem1 = s.getHtmlSelectedElem(docHtml1, selectionType)
+	if selectionType == consts.NodeContent {
+		elem2 = s.getHtmlSelectedElem(docHtml2, selectionType)
+		if elem1 == nil || elem2 == nil || elem1.Type != elem2.Type { // must both pass
+			ret = s.ParserService.GetRegxResponse(req)
+			return
+		}
+	}
 
 	exprType := "xpath"
-	expr, _ := s.XPathService.GetHtmlXPath(elem, req.SelectContent, selectionType, true)
 
-	if expr != "" {
-		result := queryHelper.HtmlQuery(docHtml, expr)
-		fmt.Printf("%s - %s: %v", selectionType, expr, result)
+	var expr1 string
+	var expr2 string
+	expr1, _ = s.XPathService.GetHtmlXPath(elem1, req.SelectContent, selectionType, true)
 
-	} else {
-		expr, _ = s.ParserRegxService.getRegxExpr(req.DocContent, req.SelectContent,
-			req.StartLine, req.StartColumn,
-			req.EndLine, req.EndColumn)
-		exprType = "regx"
+	if selectionType == consts.NodeContent {
+		expr2, _ = s.XPathService.GetHtmlXPath(elem2, req.SelectContent, selectionType, true)
 	}
+
+	if expr1 == "" || (selectionType == consts.NodeContent && (expr2 == "" || expr1 != expr2)) {
+		ret = s.ParserService.GetRegxResponse(req)
+		return
+	}
+
+	result := queryHelper.HtmlQuery(req.DocContent, expr1)
+	fmt.Printf("%s - %s: %v", selectionType, expr1, result)
 
 	ret = v1.ParserResponse{
 		SelectionType: selectionType,
-		Expr:          expr,
+		Expr:          expr1,
 		ExprType:      exprType,
 	}
 
@@ -46,32 +60,45 @@ func (s *ParserHtmlService) ParseHtml(req *v1.ParserRequest) (ret v1.ParserRespo
 }
 
 func (s *ParserHtmlService) updateHtmlElem(docHtml, selectContent string,
-	startLine, endLine, startColumn, endColumn int) (ret string, selectionType consts.NodeType) {
+	startLineNum, endLineNum, startColumn, endColumn int) (ret1, ret2 string, selectionType consts.NodeType) {
 	lines := strings.Split(docHtml, "\n")
 
-	selectionType = s.getHtmlSelectionType(lines, startLine, endLine, startColumn, endColumn)
+	selectionType = s.getHtmlSelectionType(lines, startLineNum, endLineNum, startColumn, endColumn)
 
-	line := []rune(lines[startLine])
+	line := []rune(lines[startLineNum])
 	newStr := fmt.Sprintf(" %s=\"true\" ", consts.DeepestKey)
 
 	if selectionType == consts.NodeElem {
 		newLine := string(line[:startColumn]) + selectContent + newStr + string(line[endColumn:])
 
-		lines[startLine] = newLine
+		lines[startLineNum] = newLine
+		ret1 = strings.Join(lines, "\n")
 
 	} else if selectionType == consts.NodeProp {
 		newLine := string(line[:startColumn]) + newStr + string(line[startColumn:])
 
-		lines[startLine] = newLine
+		lines[startLineNum] = newLine
+		ret1 = strings.Join(lines, "\n")
 
 	} else if selectionType == consts.NodeContent {
-		newStr = fmt.Sprintf("[[%s]]", consts.DeepestKey)
-		newLine := string(line[:endColumn]) + newStr + string(line[endColumn:])
+		newStr := fmt.Sprintf("[[%s]]", consts.DeepestKey)
 
-		lines[startLine] = newLine
+		// 1
+		lines1 := strings.Split(docHtml, "\n")
+		startLine := []rune(lines1[startLineNum])
+
+		newStartLine := string(startLine[:startColumn]) + newStr + string(startLine[startColumn:])
+		lines1[startLineNum] = newStartLine
+		ret1 = strings.Join(lines1, "\n")
+
+		//2
+		lines2 := strings.Split(docHtml, "\n")
+		endLine := []rune(lines2[endLineNum])
+
+		newEndLine := string(endLine[:endColumn]) + newStr + string(endLine[endColumn:])
+		lines2[endLineNum] = newEndLine
+		ret2 = strings.Join(lines2, "\n")
 	}
-
-	ret = strings.Join(lines, "\n")
 
 	return
 }

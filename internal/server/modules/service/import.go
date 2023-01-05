@@ -117,6 +117,11 @@ func (s *ImportService) Create(interf *model.Interface) (err error) {
 		return err
 	}
 
+	err = s.InterfaceRepo.UpdateBodyFormData(interf.ID, interf.BodyFormData)
+	if err != nil {
+		return err
+	}
+
 	return
 }
 

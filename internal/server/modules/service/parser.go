@@ -9,7 +9,8 @@ import (
 )
 
 type ParserService struct {
-	XPathService *XPathService `inject:""`
+	XPathService      *XPathService      `inject:""`
+	ParserRegxService *ParserRegxService `inject:""`
 }
 
 func (s *ParserService) TestExpr(req *v1.TestExprRequest) (ret v1.TestExprResponse, err error) {
@@ -184,4 +185,18 @@ func (s *ParserService) isNotSpace(str string) bool {
 	temp := strings.TrimSpace(str)
 
 	return len(temp) > 0
+}
+
+func (s *ParserService) GetRegxResponse(req *v1.ParserRequest) (ret v1.ParserResponse) {
+	expr, _ := s.ParserRegxService.getRegxExpr(req.DocContent, req.SelectContent,
+		req.StartLine, req.StartColumn,
+		req.EndLine, req.EndColumn)
+
+	ret = v1.ParserResponse{
+		SelectionType: consts.NodeContent,
+		Expr:          expr,
+		ExprType:      "regx",
+	}
+
+	return
 }

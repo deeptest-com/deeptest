@@ -12,29 +12,26 @@ import (
 type ParserJsonService struct {
 	XPathService      *XPathService      `inject:""`
 	ParserRegxService *ParserRegxService `inject:""`
+	ParserService     *ParserService     `inject:""`
 }
 
 func (s *ParserJsonService) ParseJson(req *v1.ParserRequest) (ret v1.ParserResponse, err error) {
 	docJson := s.updateJsonElem(req.DocContent, req.SelectContent, req.StartLine, req.EndLine,
 		req.StartColumn, req.EndColumn)
 
-	req.DocContent = docJson
-
-	elem := s.getJsonSelectedElem(req.DocContent)
+	elem := s.getJsonSelectedElem(docJson, req.SelectContent)
 
 	exprType := "xpath"
 	expr, _ := s.XPathService.GetJsonXPath(elem, req.SelectContent, true)
-	if expr != "" {
-		expr = expr + "/" + req.SelectContent
-
-		result := queryHelper.JsonQuery(req.DocContent, expr)
-		fmt.Printf("%s: %v", expr, result)
-	} else {
-		expr, _ = s.ParserRegxService.getRegxExpr(req.DocContent, req.SelectContent,
-			req.StartLine, req.StartColumn,
-			req.EndLine, req.EndColumn)
-		exprType = "regx"
+	if expr == "" {
+		ret = s.ParserService.GetRegxResponse(req)
+		return
 	}
+
+	expr = strings.Replace(expr, consts.DeepestKey, req.SelectContent, 1)
+
+	result := queryHelper.JsonQuery(req.DocContent, expr)
+	fmt.Printf("%s: %v", expr, result)
 
 	ret = v1.ParserResponse{
 		SelectionType: consts.NodeProp,
@@ -51,8 +48,8 @@ func (s *ParserJsonService) updateJsonElem(docJson, selectContent string,
 
 	line := []rune(lines[startLine])
 
-	newStr := fmt.Sprintf("%s-%s", consts.DeepestKey, selectContent)
-	newLine := string(line[:startColumn]) + newStr + string(line[endColumn:])
+	key := fmt.Sprintf("%s", consts.DeepestKey)
+	newLine := string(line[:startColumn]) + key + string(line[endColumn:])
 
 	lines[startLine] = newLine
 
@@ -60,13 +57,13 @@ func (s *ParserJsonService) updateJsonElem(docJson, selectContent string,
 	return
 }
 
-func (s *ParserJsonService) getJsonSelectedElem(docJson string) (ret *jsonquery.Node) {
+func (s *ParserJsonService) getJsonSelectedElem(docJson, selectContent string) (ret *jsonquery.Node) {
 	doc, err := jsonquery.Parse(strings.NewReader(docJson))
 	if err != nil {
 		return
 	}
 
-	expr := fmt.Sprintf("//*[contains(.,'%s')]", consts.DeepestKey)
+	expr := fmt.Sprintf("//%s", consts.DeepestKey)
 	ret, err = jsonquery.Query(doc, expr)
 
 	return

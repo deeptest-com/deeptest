@@ -16,29 +16,43 @@ type ParserXmlService struct {
 }
 
 func (s *ParserXmlService) ParseXml(req *v1.ParserRequest) (ret v1.ParserResponse, err error) {
-	docXml, selectionType := s.updateXmlElem(req.DocContent, req.SelectContent, req.StartLine, req.EndLine,
+	docXml1, docXml2, selectionType := s.updateXmlElem(req.DocContent, req.SelectContent, req.StartLine, req.EndLine,
 		req.StartColumn, req.EndColumn)
 
-	req.DocContent = docXml
+	var elem1 *xmlquery.Node
+	var elem2 *xmlquery.Node
 
-	elem := s.getXmlSelectedElem(req.DocContent, selectionType)
+	elem1 = s.getXmlSelectedElem(docXml1, selectionType)
+	if selectionType == consts.NodeContent {
+		elem2 = s.getXmlSelectedElem(docXml2, selectionType)
+
+		if elem1 == nil || elem2 == nil { // must both pass
+			ret = s.ParserService.GetRegxResponse(req)
+			return
+		}
+	}
 
 	exprType := "xpath"
-	expr, _ := s.XPathService.GetXmlXPath(elem, req.SelectContent, selectionType, true)
 
-	if expr != "" {
-		result := queryHelper.XmlQuery(req.DocContent, expr)
-		fmt.Printf("%s - %s: %v", selectionType, expr, result)
-	} else {
-		expr, _ = s.ParserRegxService.getRegxExpr(req.DocContent, req.SelectContent,
-			req.StartLine, req.StartColumn,
-			req.EndLine, req.EndColumn)
-		exprType = "regx"
+	var expr1 string
+	var expr2 string
+
+	expr1, _ = s.XPathService.GetXmlXPath(elem1, docXml1, selectionType, true)
+	if selectionType == consts.NodeContent {
+		expr2, _ = s.XPathService.GetXmlXPath(elem2, req.SelectContent, selectionType, true)
 	}
+
+	if expr1 == "" || (selectionType == consts.NodeContent && (expr2 == "" || expr1 != expr2)) {
+		ret = s.ParserService.GetRegxResponse(req)
+		return
+	}
+
+	result := queryHelper.XmlQuery(req.DocContent, expr1)
+	fmt.Printf("%s - %s: %v", selectionType, expr1, result)
 
 	ret = v1.ParserResponse{
 		SelectionType: selectionType,
-		Expr:          expr,
+		Expr:          expr1,
 		ExprType:      exprType,
 	}
 
@@ -46,32 +60,46 @@ func (s *ParserXmlService) ParseXml(req *v1.ParserRequest) (ret v1.ParserRespons
 }
 
 func (s *ParserXmlService) updateXmlElem(docXml, selectContent string,
-	startLine, endLine, startColumn, endColumn int) (ret string, selectionType consts.NodeType) {
+	startLineNum, endLineNum, startColumn, endColumn int) (ret1, ret2 string, selectionType consts.NodeType) {
 	lines := strings.Split(docXml, "\n")
 
-	selectionType = s.getXmlSelectionType(lines, startLine, endLine, startColumn, endColumn)
+	selectionType = s.getXmlSelectionType(lines, startLineNum, endLineNum, startColumn, endColumn)
 
-	line := []rune(lines[startLine])
+	line := []rune(lines[startLineNum])
 	newStr := fmt.Sprintf(" %s=\"true\" ", consts.DeepestKey)
 
 	if selectionType == consts.NodeElem {
 		newLine := string(line[:startColumn]) + selectContent + newStr + string(line[endColumn:])
 
-		lines[startLine] = newLine
+		lines[startLineNum] = newLine
+		ret1 = strings.Join(lines, "\n")
 
 	} else if selectionType == consts.NodeProp {
 		newLine := string(line[:startColumn]) + newStr + string(line[startColumn:])
 
-		lines[startLine] = newLine
+		lines[startLineNum] = newLine
+		ret1 = strings.Join(lines, "\n")
 
 	} else if selectionType == consts.NodeContent {
-		newStr = fmt.Sprintf("[[%s]]", consts.DeepestKey)
-		newLine := string(line[:endColumn]) + newStr + string(line[endColumn:])
+		newStr := fmt.Sprintf("[[%s]]", consts.DeepestKey)
 
-		lines[startLine] = newLine
+		// 1
+		lines1 := strings.Split(docXml, "\n")
+		startLine := []rune(lines1[startLineNum])
+
+		newStartLine := string(startLine[:startColumn]) + newStr + string(startLine[startColumn:])
+		lines1[startLineNum] = newStartLine
+		ret1 = strings.Join(lines1, "\n")
+
+		//2
+		lines2 := strings.Split(docXml, "\n")
+		endLine := []rune(lines2[endLineNum])
+
+		newEndLine := string(endLine[:endColumn]) + newStr + string(endLine[endColumn:])
+		lines2[endLineNum] = newEndLine
+		ret2 = strings.Join(lines2, "\n")
 	}
 
-	ret = strings.Join(lines, "\n")
 	return
 }
 

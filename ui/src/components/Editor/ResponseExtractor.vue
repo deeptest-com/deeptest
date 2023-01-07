@@ -1,6 +1,6 @@
 <template>
   <a-modal
-      title="提取变量"
+      title="新建提取器"
       :destroy-on-close="true"
       :mask-closable="false"
       :visible="true"

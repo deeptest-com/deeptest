@@ -8,8 +8,9 @@ import (
 )
 
 type ScenarioModule struct {
-	ScenarioCtrl     *handler.ScenarioCtrl     `inject:""`
-	ScenarioNodeCtrl *handler.ScenarioNodeCtrl `inject:""`
+	ScenarioCtrl          *handler.ScenarioCtrl          `inject:""`
+	ScenarioNodeCtrl      *handler.ScenarioNodeCtrl      `inject:""`
+	ScenarioInterfaceCtrl *handler.ScenarioInterfaceCtrl `inject:""`
 }
 
 func NewScenarioModule() *ScenarioModule {
@@ -28,6 +29,9 @@ func (m *ScenarioModule) Party() module.WebModule {
 		index.Delete("/{id:uint}", m.ScenarioCtrl.Delete).Name = "删除场景"
 
 		index.Get("/load", m.ScenarioNodeCtrl.LoadTree).Name = "场景树状数据"
+
+		index.Get("/getInterface", m.ScenarioInterfaceCtrl.GetInterface).Name = "场景树状数据"
+		index.Get("/getInterface", m.ScenarioInterfaceCtrl.GetInterface).Name = "场景树状数据"
 	}
 
 	return module.NewModule("/scenarios", handler)

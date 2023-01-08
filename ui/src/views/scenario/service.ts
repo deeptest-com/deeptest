@@ -14,6 +14,7 @@ const apiPath = 'scenarios';
 const apiPathNodes = `${apiPath}/nodes`;
 const apiPathProcessors = `${apiPath}/processors`;
 const apiPathExec = `${apiPath}/exec`;
+const apiPathInterface = `${apiPath}/interfaces`
 
 export async function query(params?: QueryParams): Promise<any> {
     return request({
@@ -133,6 +134,25 @@ export async function saveProcessor(data: any): Promise<any> {
     });
 }
 
+export async function getInterface(interfaceId: number): Promise<any> {
+    const params = {interfaceId: interfaceId}
+
+    return request({
+        url: `/${apiPathInterface}/getInterface`,
+        method: 'GET',
+        params,
+    });
+}
+export async function listInvocation(interfaceId: number): Promise<any> {
+    const params = {interfaceId: interfaceId}
+
+    return request({
+        url: `/${apiPathInterface}/listInvocation`,
+        method: 'GET',
+        params,
+    });
+}
+
 export function getRequestBodyTypes() {
     return getEnumSelectItems(RequestBodyType)
 }
@@ -155,7 +175,6 @@ export function getProcessorTypeNames() {
         ...getEnumMap(ProcessorData),
     }
 }
-
 
 export const getEnumMap = (enumDef) => {
     const ret = {}

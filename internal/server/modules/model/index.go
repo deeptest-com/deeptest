@@ -62,6 +62,7 @@ var (
 		&ProcessorInterfaceExtractor{},
 		&ProcessorInterfaceCheckpoint{},
 
+		&ProcessorInvocation{},
 		&Report{},
 		&ExecLogProcessor{},
 		&ExecLogExtractor{},

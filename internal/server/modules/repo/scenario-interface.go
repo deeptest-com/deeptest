@@ -304,3 +304,13 @@ func (r *ScenarioInterfaceRepo) GetApiKey(id uint) (po model.ProcessorInterfaceA
 
 	return
 }
+
+func (r *ScenarioInterfaceRepo) ListInvocation(processorInterfaceId uint) (pos []model.ProcessorInvocation, err error) {
+	err = r.DB.
+		Select("id", "name").
+		Where("processor_interface_id=?", processorInterfaceId).
+		Where("NOT deleted").
+		Order("created_at DESC").
+		Find(&pos).Error
+	return
+}

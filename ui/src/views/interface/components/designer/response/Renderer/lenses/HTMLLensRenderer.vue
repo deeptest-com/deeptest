@@ -54,7 +54,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, ref, reactive} from "vue";
+import {computed, ref, reactive, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import { DownloadOutlined, CopyOutlined, ClearOutlined } from '@ant-design/icons-vue';

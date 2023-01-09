@@ -37,6 +37,7 @@ func (s *ParserXmlService) ParseXml(req *v1.ParserRequest) (ret v1.ParserRespons
 	var expr1 string
 	var expr2 string
 
+
 	expr1, _ = s.XPathService.GetXmlXPath(elem1, req.SelectContent, selectionType, true)
 	if selectionType == consts.NodeContent {
 		expr2, _ = s.XPathService.GetXmlXPath(elem2, req.SelectContent, selectionType, true)

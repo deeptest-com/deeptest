@@ -31,7 +31,9 @@ export default {
     'scenario.exec': '场景执行',
 
     'report': '报告',
+    'reportNew': '报告New',
     'report.detail': '报告细节',
+    'reportNew.detail': '报告细节New',
 
     'profile': '个人信息',
     'invite': '邀请用户',

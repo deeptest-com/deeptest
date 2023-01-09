@@ -28,11 +28,10 @@ func (s *YapiService) ImportYapiProject(req v1.InterfaceYapiReq) (err error) {
 	yapiCatMenuDatas := yapiCatMenu.Data
 	for i := 0; i < len(yapiCatMenuDatas); i++ {
 		yapiCatMenuData := yapiCatMenuDatas[i]
-		interf := m.Interface{
-			ProjectId: uint(projectId),
-			IsDir:     true,
-			Name:      yapiCatMenuData.Name,
-		}
+		interf := m.Interface{}
+		interf.ProjectId = uint(projectId)
+		interf.IsDir = true
+		interf.Name = yapiCatMenuData.Name
 		dropPos := serverConsts.Inner
 		interf.ParentId, interf.Ordr = s.InterfaceRepo.UpdateOrder(dropPos, uint(target))
 		err = s.InterfaceRepo.Save(&interf)
@@ -260,9 +259,9 @@ func getReqHeaders(reqHeaders []ReqHeaders) (header []m.InterfaceHeader) {
 	return
 }
 
-func getReqBodyForm(reqBodyForm []ReqBodyForm) (bodyFormData []m.BodyFormDataItem) {
+func getReqBodyForm(reqBodyForm []ReqBodyForm) (bodyFormData []m.InterfaceBodyFormDataItem) {
 	for i := 0; i < len(reqBodyForm); i++ {
-		bodyForm := m.BodyFormDataItem{}
+		bodyForm := m.InterfaceBodyFormDataItem{}
 		bodyForm.Name = reqBodyForm[i].Name
 		if reqBodyForm[i].Type == "text" {
 			bodyForm.Type = consts.FormDataTypeText

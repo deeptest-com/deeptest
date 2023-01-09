@@ -11,10 +11,10 @@ import (
 type ScenarioProcessorRepo struct {
 	DB *gorm.DB `inject:""`
 
-	ScenarioNodeRepo *ScenarioNodeRepo `inject:""`
-	ExtractorRepo    *ExtractorRepo    `inject:""`
-	CheckpointRepo   *CheckpointRepo   `inject:""`
-	InterfaceRepo    *InterfaceRepo    `inject:""`
+	ScenarioNodeRepo      *ScenarioNodeRepo      `inject:""`
+	ExtractorRepo         *ExtractorRepo         `inject:""`
+	CheckpointRepo        *CheckpointRepo        `inject:""`
+	ScenarioInterfaceRepo *ScenarioInterfaceRepo `inject:""`
 }
 
 func (r *ScenarioProcessorRepo) Get(id uint) (processor model.Processor, err error) {
@@ -76,10 +76,11 @@ func (r *ScenarioProcessorRepo) GetEntityTo(processorTo *agentExec.Processor) (r
 		copier.CopyWithOption(&ret, commEntityPo, copier.Option{DeepCopy: true})
 
 	case consts.ProcessorInterface:
-		interfacePo, _ := r.InterfaceRepo.GetDetail(processor.InterfaceId)
+		interfacePo, _ := r.ScenarioInterfaceRepo.GetDetail(processor.InterfaceId)
 
 		interfaceEntity := agentExec.ProcessorInterface{}
 		copier.CopyWithOption(&interfaceEntity, interfacePo, copier.Option{DeepCopy: true})
+
 		interfaceEntity.ProcessorID = processor.ID
 		interfaceEntity.ParentID = processor.ParentId
 		interfaceEntity.ProcessorCategory = consts.ProcessorInterface

@@ -5,7 +5,7 @@ export function addExtractAction(editor, callback) {
 
     editor.addAction({
         id: 'extract-action',
-        label: '提取变量',
+        label: '新建提取器',
 
         keybindings: [
             monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_R,

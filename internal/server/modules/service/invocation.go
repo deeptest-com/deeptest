@@ -91,9 +91,11 @@ func (s *InvocationService) GetAsInterface(id int) (interf model.Interface, err 
 func (s *InvocationService) Create(req v1.InvocationRequest,
 	resp v1.InvocationResponse, projectId int) (invocation model.Invocation, err error) {
 	invocation = model.Invocation{
-		Name:        time.Now().Format("01-02 15:04:05"),
-		InterfaceId: req.Id,
-		ProjectId:   uint(projectId),
+		InvocationBase: model.InvocationBase{
+			Name:        time.Now().Format("01-02 15:04:05"),
+			InterfaceId: req.Id,
+			ProjectId:   uint(projectId),
+		},
 	}
 
 	bytesReq, _ := json.Marshal(req)

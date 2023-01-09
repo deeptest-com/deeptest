@@ -52,7 +52,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, ComputedRef, defineComponent, PropType, Ref, ref} from "vue";
+import {computed, ComputedRef, defineComponent, onMounted, PropType, Ref, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import { DownloadOutlined, CopyOutlined, ClearOutlined } from '@ant-design/icons-vue';
@@ -65,6 +65,7 @@ import {Interface, Response} from "@/views/interface/data";
 import {parseHtml, parseJson, testExpr} from "@/views/interface/service";
 import {ExtractorSrc, ExtractorType} from "@/utils/enum";
 import ResponseExtractor from "@/components/Editor/ResponseExtractor.vue";
+import {resizeHeight} from "@/utils/dom";
 
 const {t} = useI18n();
 const store = useStore<{ Interface: StateType }>();
@@ -97,13 +98,13 @@ const responseExtractor = (data) => {
   })
 }
 
-const testParse = (xpath) => {
+const testParse = (expr1, exprType1) => {
   console.log('testParse')
   testExpr({
     content: responseData.value.content,
     type: responseData.value.contentLang,
-    expr: expr,
-    exprType: exprType,
+    expr: expr1,
+    exprType: exprType1,
   }).then((json) => {
     console.log('json', json)
     result.value = json.data.result

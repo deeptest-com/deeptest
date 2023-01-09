@@ -38,11 +38,16 @@ func (s *InterfaceService) Get(interfId uint) (interf model.Interface, err error
 		interf.ApiKey, _ = s.InterfaceRepo.GetApiKey(interfId)
 	}
 
-	interf.Headers = append(interf.Headers, model.InterfaceHeader{Name: "", Value: ""})
-	interf.Params = append(interf.Params, model.InterfaceParam{Name: "", Value: ""})
+	interf.Headers = append(interf.Headers, model.InterfaceHeader{
+		InterfaceHeaderBase: model.InterfaceHeaderBase{Name: "", Value: ""}})
+	interf.Params = append(interf.Params, model.InterfaceParam{
+		InterfaceParamBase: model.InterfaceParamBase{Name: "", Value: ""}})
 
-	interf.BodyFormData = append(interf.BodyFormData, model.BodyFormDataItem{Name: "", Value: "", Type: consts.FormDataTypeText})
-	interf.BodyFormUrlencoded = append(interf.BodyFormUrlencoded, model.BodyFormUrlEncodedItem{Name: "", Value: ""})
+	interf.BodyFormData = append(interf.BodyFormData, model.InterfaceBodyFormDataItem{
+		InterfaceBodyFormDataItemBase: model.InterfaceBodyFormDataItemBase{Name: "", Value: "", Type: consts.FormDataTypeText}})
+	interf.BodyFormUrlencoded = append(interf.BodyFormUrlencoded, model.InterfaceBodyFormUrlEncodedItem{
+		InterfaceBodyFormUrlEncodedItemBase: model.InterfaceBodyFormUrlEncodedItemBase{Name: "", Value: ""},
+	})
 
 	return
 }
@@ -54,9 +59,10 @@ func (s *InterfaceService) Save(interf *model.Interface) (err error) {
 }
 func (s *InterfaceService) Create(req v1.InterfaceReq) (interf *model.Interface, err error) {
 	interf = &model.Interface{
-		Name:      req.Name,
-		ProjectId: uint(req.ProjectId),
-		IsDir:     req.Type == serverConsts.Dir,
+		InterfaceBase: model.InterfaceBase{Name: req.Name,
+			ProjectId: uint(req.ProjectId),
+			IsDir:     req.Type == serverConsts.Dir,
+		},
 	}
 
 	var dropPos serverConsts.DropPos

@@ -4,10 +4,13 @@ import (
 	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
+	"github.com/jinzhu/copier"
 )
 
 type ScenarioProcessorService struct {
 	ScenarioProcessorRepo *repo.ScenarioProcessorRepo `inject:""`
+	ScenarioInterfaceRepo *repo.ScenarioInterfaceRepo `inject:""`
+	InterfaceRepo         *repo.InterfaceRepo         `inject:""`
 }
 
 func (s *ScenarioProcessorService) GetEntity(id int) (ret interface{}, err error) {
@@ -67,5 +70,27 @@ func (s *ScenarioProcessorService) SaveExtractor(req *model.ProcessorExtractor) 
 
 func (s *ScenarioProcessorService) SaveData(req *model.ProcessorData) (err error) {
 	err = s.ScenarioProcessorRepo.SaveData(req)
+	return
+}
+
+func (s *ScenarioProcessorService) CloneInterface(interfaceId uint) (ret model.ProcessorInterface, err error) {
+	interf, err := s.InterfaceRepo.Get(interfaceId)
+	if err != nil {
+		return
+	}
+
+	ret = s.CopyInterface(interf)
+
+	err = s.ScenarioInterfaceRepo.SaveInterface(&ret)
+
+	return
+}
+
+func (s *ScenarioProcessorService) CopyInterface(interf model.Interface) (ret model.ProcessorInterface) {
+	copier.CopyWithOption(&ret, interf, copier.Option{DeepCopy: true})
+
+	ret.CreatedAt = nil
+	ret.UpdatedAt = nil
+
 	return
 }

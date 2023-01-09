@@ -12,9 +12,10 @@ import (
 )
 
 type ScenarioNodeService struct {
-	ScenarioNodeRepo      *repo2.ScenarioNodeRepo      `inject:""`
-	ScenarioProcessorRepo *repo2.ScenarioProcessorRepo `inject:""`
-	ScenarioRepo          *repo2.ScenarioRepo          `inject:""`
+	ScenarioNodeRepo         *repo2.ScenarioNodeRepo      `inject:""`
+	ScenarioProcessorRepo    *repo2.ScenarioProcessorRepo `inject:""`
+	ScenarioProcessorService *ScenarioProcessorService    `inject:""`
+	ScenarioRepo             *repo2.ScenarioRepo          `inject:""`
 }
 
 func (s *ScenarioNodeService) GetTree(scenarioId int) (root *agentExec.Processor, err error) {
@@ -24,7 +25,7 @@ func (s *ScenarioNodeService) GetTree(scenarioId int) (root *agentExec.Processor
 	return
 }
 
-func (s *ScenarioNodeService) AddInterfaces(req v1.ScenarioAddInterfacesReq) (ret model.Processor, err *_domain.BizErr) {
+func (s *ScenarioNodeService) AddInterfaces(req v1.ScenarioAddInterfacesReq) (ret model.Processor, err error) {
 	targetProcessor, _ := s.ScenarioProcessorRepo.Get(req.TargetId)
 
 	if !s.ScenarioNodeRepo.IsDir(targetProcessor) {
@@ -85,7 +86,7 @@ func (s *ScenarioNodeService) AddProcessor(req v1.ScenarioAddScenarioReq) (ret m
 }
 
 func (s *ScenarioNodeService) createDirOrInterface(interfaceNode v1.InterfaceSimple, parentProcessor model.Processor) (
-	ret model.Processor, err *_domain.BizErr) {
+	ret model.Processor, err error) {
 
 	if interfaceNode.ParentId == 0 {
 		for _, child := range interfaceNode.Children {
@@ -109,15 +110,23 @@ func (s *ScenarioNodeService) createDirOrInterface(interfaceNode v1.InterfaceSim
 		}
 
 	} else {
+		interfaceProcessor := model.ProcessorInterface{}
+		interfaceProcessor, err = s.ScenarioProcessorService.CloneInterface(uint(interfaceNode.Id))
+		if err != nil {
+			return
+		}
+
 		processor := model.Processor{
 			Name:           interfaceNode.Name,
 			ScenarioId:     parentProcessor.ScenarioId,
 			EntityCategory: consts.ProcessorInterface,
 			EntityType:     consts.ProcessorInterfaceDefault,
+			EntityId:       interfaceProcessor.ID,
 			InterfaceId:    uint(interfaceNode.Id),
 			ParentId:       parentProcessor.ID,
 			ProjectId:      parentProcessor.ProjectId,
 		}
+
 		processor.Ordr = s.ScenarioNodeRepo.GetMaxOrder(processor.ParentId)
 		s.ScenarioNodeRepo.Save(&processor)
 

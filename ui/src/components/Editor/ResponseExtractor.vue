@@ -1,6 +1,6 @@
 <template>
   <a-modal
-      title="提取变量"
+      title="新建提取器"
       :destroy-on-close="true"
       :mask-closable="false"
       :visible="true"
@@ -171,6 +171,7 @@ const onSubmit = async () => {
 const test  = async () => {
   console.log('test', modelRef.value)
   if (!modelRef.value.expression) return
+
   props.onTest(modelRef.value.expression, props.exprType);
 }
 

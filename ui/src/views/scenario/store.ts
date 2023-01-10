@@ -17,9 +17,10 @@ import {
     addProcessor,
     saveProcessorName, saveProcessor,
 
-    loadExecResult,
+    loadExecResult, getInterface, listInvocation,
 } from './service';
 import {getNodeMap} from "@/services/tree";
+import {Response} from "@/views/interface/data";
 
 export interface StateType {
     scenarioId: number;
@@ -33,6 +34,9 @@ export interface StateType {
     nodeData: any;
 
     execResult: any;
+
+    responseData: Response;
+    invocationsData: any[];
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
@@ -51,6 +55,10 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setNode: Mutation<StateType>;
 
         setExecResult: Mutation<StateType>;
+
+        setResponse: Mutation<StateType>;
+        setInvocations: Mutation<StateType>;
+
     };
     actions: {
         listScenario: Action<StateType, StateType>;
@@ -77,6 +85,9 @@ export interface ModuleType extends StoreModuleType<StateType> {
 
         loadExecResult: Action<StateType, StateType>;
         updateExecResult: Action<StateType, StateType>;
+
+        getInterface: Action<StateType, StateType>;
+        listInvocation: Action<StateType, StateType>;
     };
 }
 const initState: StateType = {
@@ -99,6 +110,9 @@ const initState: StateType = {
     treeDataMap: {},
     nodeData: {},
     execResult: {},
+
+    responseData: {} as Response,
+    invocationsData: [],
 };
 
 const StoreModel: ModuleType = {
@@ -143,6 +157,13 @@ const StoreModel: ModuleType = {
         },
         setQueryParams(state, payload) {
             state.queryParams = payload;
+        },
+
+        setResponse(state, payload) {
+            state.responseData = payload;
+        },
+        setInvocations(state, payload) {
+            state.invocationsData = payload;
         },
     },
     actions: {
@@ -343,6 +364,45 @@ const StoreModel: ModuleType = {
             commit('setScenarioId', payload.scenarioId);
 
             return true;
+        },
+
+        async getInterface({commit}, payload: any) {
+            if (payload.isDir) {
+                commit('setInterface', {
+                    bodyType: 'application/json',
+                    headers: [{name:'', value:''}],
+                    params: [{name:'', value:''}],
+                    bodyFormData: [{name:'', value:'', type: 'text'}],
+                    bodyFormUrlencoded: [{name:'', value:''}],
+                });
+                commit('setResponse', {headers: [], contentLang: 'html', content: ''});
+                return true;
+            }
+
+            try {
+                const response = await getInterface(payload.id);
+
+                const {data} = response;
+                data.headers.push({name:'', value:''})
+                data.params.push({name:'', value:''})
+                data.bodyFormData.push({name:'', value:'', type: 'text'})
+                data.bodyFormUrlencoded.push({name:'', value:''})
+
+                commit('setInterface', data);
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+        async listInvocation({commit}, interfaceId: number) {
+            try {
+                const resp = await listInvocation(interfaceId);
+                const {data} = resp;
+                commit('setInvocations', data);
+                return true;
+            } catch (error) {
+                return false;
+            }
         },
     }
 };

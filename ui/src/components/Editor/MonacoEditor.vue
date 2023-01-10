@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import { defineComponent, computed, toRefs, nextTick, ref } from 'vue'
+import {defineComponent, computed, toRefs, nextTick, ref, onMounted} from 'vue'
 import * as monaco from 'monaco-editor'
 import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
@@ -44,6 +44,7 @@ export default defineComponent({
         'text-align': 'left'
       }
     })
+
     return {
       style,
     }
@@ -132,7 +133,9 @@ export default defineComponent({
 
       this.$emit('editorDidMount', this.editor)
 
-      this.formatDocInit(editor)
+      setTimeout(() => {
+        this.formatDocInit(editor)
+      }, 500)
     },
 
     formatDocInit: (editor) => {
@@ -191,6 +194,7 @@ export default defineComponent({
     },
 
     value() {
+      console.log('watch value')
       this.value !== this._getValue() && this._setValue(this.value);
     },
 
@@ -200,6 +204,8 @@ export default defineComponent({
 
     language() {
       if(!this.editor) return;
+
+      this.formatDocUpdate(this.editor)
 
       if (this.diffEditor) {
         const { original, modified } = this.editor.getModel();

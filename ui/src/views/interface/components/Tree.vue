@@ -380,6 +380,7 @@ export default defineComponent({
     const showYapiImport = ref(false)
     const importYapiSubmit = (data) => {
       console.log('importYapi', data)
+      data.target = targetModelId
       importYapi(data).then((json) => {
         if (json.code === 0) {
           showYapiImport.value = false

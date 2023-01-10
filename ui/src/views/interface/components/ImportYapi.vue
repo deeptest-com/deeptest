@@ -1,41 +1,42 @@
 <template>
-  <div class="import-spec5555">
+  <div class="import-spec">
     <a-modal title="导入yapi项目接口"
              :visible="isVisible"
              :onCancel="onCancel"
              class="import-yapi"
              width="700px">
 
-      <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
-        <a-form-item label="yapi域名" v-bind="validateInfos.name">
-          <a-input v-model:value="yapiDomian"></a-input>
+      <a-form ref="formRef" :rules="rules" :model="formYapi" :label-col="labelCol" :wrapper-col="wrapperCol" >
+        <a-form-item ref="name" label="yapi域名" name="yapiHost">
+          <a-input v-model:value="formYapi.yapiHost"></a-input>
         </a-form-item>
-        <a-form-item label="项目token" v-bind="validateInfos.rightValue">
-          <a-input v-model:value="modelRef.rightValue"
-                   @blur="validate('rightValue', { trigger: 'blur' }).catch(() => {})" />
+        <a-form-item label="项目token" name="token">
+          <a-input v-model:value="formYapi.token"></a-input>
         </a-form-item>
 
       </a-form>
 
       <template #footer>
-        <a-button :disabled="!modelRef.file" @click="onSubmit" type="primary">导入</a-button>
+        <a-button @click="onSubmit" type="primary">导入</a-button>
       </template>
     </a-modal>
   </div>
 </template>
 <script lang="ts">
-import {defineComponent, Ref, ref, PropType, onMounted, getCurrentInstance, onUnmounted, reactive} from "vue";
+import { ValidateErrorEntity } from 'ant-design-vue/es/form/interface';
+import {defineComponent, Ref, ref, PropType, onMounted, getCurrentInstance, onUnmounted, reactive,UnwrapRef } from "vue";
 import settings from "@/config/settings";
 import {Form} from "ant-design-vue";
 const useForm = Form.useForm;
-
+interface FormYapi {
+  // target: string;
+  yapiHost: string;
+  token: string;
+}
 export default defineComponent({
   name: 'ImportYapi',
   components: {},
   props: {
-    model: {
-      required: true
-    },
     isVisible: {
       type: Boolean,
       required: true
@@ -51,35 +52,32 @@ export default defineComponent({
   },
 
   setup(props) {
-    const isElectron = ref(!!window.require)
-    const rulesRef = reactive({
-      name: [
-        { required: true, message: '请输入yapi域名', trigger: 'blur' },
-      ],
-      rightValue: [
-        { required: true, message: '请输入项目token', trigger: 'blur' },
-      ],
+    const formRef = ref();
+    const formYapi: UnwrapRef<FormYapi> = reactive({
+      // target: '',
+      yapiHost: '',
+      token: '',
     });
-    // const model = props.model as any
-    // const modelRef = ref({type: 'openapi3'} as any)
-    const modelRef = ref(name: string,rightValue: model.rightValue,)
 
-    const { resetFields, validate, validateInfos } = useForm(modelRef, rulesRef);
+    const rules = {
+      yapiHost:[
+        { required: true, message: '请输入yapiHost', trigger: 'blur' }
+      ],
+      token: [
+        { required: true, message: '请输入项目token', trigger: 'blur' }
+      ],
+    };
 
-    let ipcRenderer = undefined as any
-    if (isElectron.value && !ipcRenderer) {
-      ipcRenderer = window.require('electron').ipcRenderer
-
-      ipcRenderer.on(settings.electronMsgReplay, (event, data) => {
-        console.log('from electron: ', data)
-        modelRef.value.file = data.file
-      })
-    }
-
-
-    const onSubmit  = () => {
+    const { resetFields, validate, validateInfos } = useForm(formRef, rules);
+    const onSubmit  = async () => {
       console.log('onSubmit')
-      props.submit(modelRef.value)
+      formRef.value.validate()
+          .then(async () => {
+            props.submit(formYapi);
+          })
+          .catch((error: ValidateErrorEntity<FormYapi>) => {
+            console.log('error', error);
+          });
     }
 
     const onCancel = () => {
@@ -96,12 +94,15 @@ export default defineComponent({
     })
 
     return {
-      isElectron,
-      modelRef,
       onSubmit,
       onCancel,
-      resetFields,
+      formYapi,
+      rules,
+      formRef,
+      validate,
       validateInfos,
+      resetFields,
+
 
       labelCol: { span: 4 },
       wrapperCol: { span: 18 },

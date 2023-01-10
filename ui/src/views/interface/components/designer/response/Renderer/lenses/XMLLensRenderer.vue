@@ -98,13 +98,13 @@ const responseExtractor = (data) => {
   })
 }
 
-const testParse = (xpath) => {
+const testParse = (expr1, exprType1) => {
   console.log('testParse')
   testExpr({
     content: responseData.value.content,
     type: responseData.value.contentLang,
-    expr: expr,
-    exprType: exprType,
+    expr: expr1,
+    exprType: exprType1,
   }).then((json) => {
     console.log('json', json)
     result.value = json.data.result

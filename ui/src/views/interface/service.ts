@@ -95,6 +95,14 @@ export async function importSpec(data, targetId): Promise<any> {
     });
 }
 
+export async function importYapi(data): Promise<any> {
+    return request({
+        url: `/${apiImport}/importYapi`,
+        method: 'POST',
+        data: data,
+    });
+}
+
 export async function move(data: any): Promise<any> {
     return request({
         url: `/${apiPath}/move`,

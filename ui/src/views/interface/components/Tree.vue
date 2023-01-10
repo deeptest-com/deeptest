@@ -69,6 +69,13 @@
         :cancel="importClose"
     />
 
+    <ImportYapi
+        v-if="showYapiImport"
+        :isVisible="showYapiImport"
+        :submit="importYapiSubmit"
+        :cancel="importYapiClose"
+    />
+
   </div>
 </template>
 
@@ -79,7 +86,7 @@ import {Form, notification} from 'ant-design-vue';
 import {CloseOutlined, FileOutlined, FolderOutlined, FolderOpenOutlined, CheckOutlined} from "@ant-design/icons-vue";
 import {Interface} from "@/views/interface/data";
 import throttle from "lodash.debounce";
-import {importSpec, updateNodeName} from "@/views/interface/service";
+import {importSpec, importYapi, updateNodeName} from "@/views/interface/service";
 import {expandAllKeys, expandOneKey, getNodeMap} from "@/services/tree";
 import {DropEvent, TreeDragEvent} from "ant-design-vue/es/tree/Tree";
 import {useStore} from "vuex";
@@ -88,6 +95,7 @@ import {StateType as ProjectStateType} from "@/store/project";
 
 import TreeContextMenu from "./TreeContextMenu.vue";
 import ImportModal from "./ImportModal.vue";
+import ImportYapi from "./ImportYapi.vue";
 import {getExpandedKeys, setExpandedKeys} from "@/utils/cache";
 import {getContextMenuStyle} from "@/utils/dom";
 import {NotificationKeyCommon} from "@/utils/const";
@@ -98,7 +106,7 @@ export default defineComponent({
   name: 'InterfaceTree',
   props: {},
   components: {
-    TreeContextMenu, ImportModal,
+    TreeContextMenu, ImportModal, ImportYapi,
     CloseOutlined, FileOutlined, FolderOutlined, FolderOpenOutlined, CheckOutlined,
   },
   setup(props) {
@@ -266,6 +274,11 @@ export default defineComponent({
         return
       }
 
+      if (menuKey === 'export_yapi') {
+        showYapiImport.value = true
+        return
+      }
+
       if (menuKey === 'rename') {
         renameNode()
         return
@@ -364,9 +377,34 @@ export default defineComponent({
       })
     }
 
+    const showYapiImport = ref(false)
+    const importYapiSubmit = (data) => {
+      console.log('importYapi', data)
+      importYapi(data).then((json) => {
+        if (json.code === 0) {
+          showYapiImport.value = false
+          store.dispatch('Interface/loadInterface').then((result) => {
+            console.log(result)
+            expandOneKey(treeDataMap.value, targetModelId, expandedKeys.value) // expend parent node
+            setExpandedKeys(currProject.value.id, expandedKeys.value)
+          })
+        } else {
+          notification.error({
+            key: NotificationKeyCommon,
+            message: '导入失败',
+          });
+        }
+      })
+    }
+
     const importClose = () => {
       console.log('showImportClose')
       showImport.value = false
+    }
+
+    const importYapiClose = () => {
+      console.log('showYapiImportClose')
+      showYapiImport.value = false
     }
 
     let currentInstance
@@ -410,6 +448,9 @@ export default defineComponent({
 
       showImport,
       importSubmit,
+      showYapiImport,
+      importYapiSubmit,
+      importYapiClose,
       importClose,
 
       tips,

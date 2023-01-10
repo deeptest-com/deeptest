@@ -164,15 +164,9 @@ const selectNode = (keys, e) => {
   }
 
   store.dispatch('Scenario/getNode', selectedData).then((ok) => {
-    console.log('===', selectedNode.value)
-
     if (ok && selectedNode.value.processorType === 'processor_interface_default') {
       const interfaceId = selectedNode.value.interfaceId
-      store.dispatch('Interface/getInterface', {
-        id: interfaceId
-      })
-
-      store.dispatch('Interface/listInvocation', interfaceId)
+      store.dispatch('Scenario/getInterface', interfaceId)
     }
   })
 }

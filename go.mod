@@ -23,7 +23,6 @@ require (
 	github.com/invopop/yaml v0.1.0
 	github.com/iris-contrib/middleware/cors v0.0.0-20210110101738-6d0a4d799b5d
 	github.com/jameskeane/bcrypt v0.0.0-20120420032655-c3cd44c1e20f
-	github.com/jinzhu/copier v0.3.4
 	github.com/kataras/iris/v12 v12.2.0-alpha3
 	github.com/kataras/neffos v0.0.18
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible
@@ -103,6 +102,7 @@ require (
 	github.com/jackc/pgservicefile v0.0.0-20200714003250-2b9c44734f2b // indirect
 	github.com/jackc/pgtype v1.9.0 // indirect
 	github.com/jackc/pgx/v4 v4.14.0 // indirect
+	github.com/jinzhu/copier v0.3.5 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.4 // indirect
 	github.com/jonboulle/clockwork v0.2.2 // indirect

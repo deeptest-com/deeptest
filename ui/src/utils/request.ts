@@ -129,7 +129,7 @@ requestAgent.interceptors.response.use(
  * 异常处理程序
  */
 const errorHandler = (axiosResponse: AxiosResponse) => {
-    console.log(axiosResponse)
+    console.log('=== ERROR ===', axiosResponse)
 
     if (!axiosResponse) axiosResponse = {status: 500} as AxiosResponse
 

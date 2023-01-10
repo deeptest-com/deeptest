@@ -23,8 +23,8 @@ var (
 type ExecService struct {
 }
 
-func (s *ExecService) ExecScenario(execReq *agentExec.ExecReq, wsMsg *websocket.Message) (err error) {
-	execObj := s.getExecObj(execReq)
+func (s *ExecService) ExecScenario(execReq *agentExec.ProcessorExecReq, wsMsg *websocket.Message) (err error) {
+	execObj := s.getScenarioToExec(execReq)
 
 	agentExec.InitScopeHierarchy(execObj.RootProcessor)
 	s.SetEntityAndParent(execObj.RootProcessor)
@@ -46,7 +46,7 @@ func (s *ExecService) ExecScenario(execReq *agentExec.ExecReq, wsMsg *websocket.
 	return
 }
 
-func (s *ExecService) getExecObj(req *agentExec.ExecReq) (ret *agentExec.ExecObj) {
+func (s *ExecService) getScenarioToExec(req *agentExec.ProcessorExecReq) (ret *agentExec.ProcessorExecObj) {
 	url := "scenarios/exec/loadExecScenario"
 
 	httpReq := v1.BaseRequest{

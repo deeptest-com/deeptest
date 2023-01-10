@@ -21,7 +21,7 @@ func (m *ScenarioInterfaceModule) Party() module.WebModule {
 		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
 
 		index.Get("/getInterface", m.ScenarioInterfaceCtrl.GetInterface).Name = "获取场景接口处理器"
-		index.Get("/istInvocation", m.ScenarioInterfaceCtrl.ListInvocation).Name = "获取场景接口调用历史"
+		index.Get("/listInvocation", m.ScenarioInterfaceCtrl.ListInvocation).Name = "获取场景接口调用历史"
 	}
 
 	return module.NewModule("/scenarios/interfaces", handler)

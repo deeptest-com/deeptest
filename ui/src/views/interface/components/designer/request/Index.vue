@@ -1,7 +1,7 @@
 <template>
   <div id="request-main">
     <RequestInvocation
-        :onSend="invoke"
+        :onSend="invokeInterface"
         :onSave="saveInterface">
     </RequestInvocation>
 
@@ -9,8 +9,8 @@
   </div>
 </template>
 
-<script lang="ts">
-import {computed, ComputedRef, defineComponent, onMounted, PropType, Ref} from "vue";
+<script setup lang="ts">
+import {computed, ComputedRef, defineComponent, inject, onMounted, PropType, Ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {Form, message, notification} from 'ant-design-vue';
 import {useStore} from "vuex";
@@ -19,54 +19,76 @@ import RequestInvocation from './Invocation.vue';
 import RequestConfig from './Config.vue';
 import {Interface} from "@/views/interface/data";
 import {NotificationKeyCommon} from "@/utils/const";
+import {UsedBy} from "@/utils/enum";
+import {StateType as ScenarioStateType} from "@/views/scenario/store";
+import {getToken} from "@/utils/localToken";
+import {prepareDataForRequest} from "@/views/interface/service";
 
 const useForm = Form.useForm;
 
-export default defineComponent({
-  name: 'InterfaceRequest',
-  props: {
-  },
-  components: {
-    RequestInvocation, RequestConfig,
-  },
-  setup(props) {
-    const {t} = useI18n();
-    const store = useStore<{ Interface: StateType }>();
-    const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
+const usedBy = inject('usedBy') as UsedBy
 
-    const invoke = (data) => {
-      console.log('invoke', data)
-      store.dispatch('Interface/invoke', data)
-    };
+const {t} = useI18n();
+const store = useStore<{ Interface: StateType; Scenario: ScenarioStateType }>();
+const interfaceData = computed<Interface>(
+    () => usedBy === UsedBy.interface ? store.state.Interface.interfaceData : store.state.Scenario.interfaceData);
 
-    const saveInterface = (data) => {
-      console.log('saveInterface', data)
-      store.dispatch('Interface/saveInterface', data).then((res) => {
-        if (res === true) {
-          notification.success({
-            key: NotificationKeyCommon,
-            message: `保存成功`,
-          });
-        } else {
-          notification.success({
-            key: NotificationKeyCommon,
-            message: `保存失败`,
-          });
-        }
-      })
-    };
+const invokeInterface = async () => {
+  console.log('invokeInterface', interfaceData.value)
 
-    onMounted(() => {
-      console.log('onMounted')
-    })
-
-    return {
-      interfaceData,
-      invoke,
-      saveInterface,
-    }
+  const data = {
+    serverUrl: process.env.VUE_APP_API_SERVER, // used by agent to submit result to server
+    token: await getToken(),
+    id: interfaceData.value.id,
+    usedBy: usedBy,
+    data: prepareDataForRequest(interfaceData.value),
   }
+
+  if (usedBy === UsedBy.interface) {
+    store.dispatch('Interface/invokeInterface', data)
+  } else {
+    store.dispatch('Scenario/invokeInterface', data)
+  }
+};
+
+const saveInterface = (data) => {
+  console.log('saveInterface', data)
+
+  if (usedBy === UsedBy.interface) {
+    store.dispatch('Interface/saveInterface', data).then((res) => {
+      if (res === true) {
+        notification.success({
+          key: NotificationKeyCommon,
+          message: `保存成功`,
+        });
+      } else {
+        notification.success({
+          key: NotificationKeyCommon,
+          message: `保存失败`,
+        });
+      }
+    })
+  } else {
+    store.dispatch('Scenario/saveInterface', data).then((res) => {
+      if (res === true) {
+        notification.success({
+          key: NotificationKeyCommon,
+          message: `保存成功`,
+        });
+      } else {
+        notification.success({
+          key: NotificationKeyCommon,
+          message: `保存失败`,
+        });
+      }
+    })
+  }
+};
+
+onMounted(() => {
+  console.log('onMounted')
 })
+
 </script>
 
 <style lang="less" scoped>

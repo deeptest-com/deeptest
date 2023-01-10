@@ -13,7 +13,7 @@ type InvocationModule struct {
 // Party 脚本
 func (m *InvocationModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
-		index.Post("/invoke", m.InvocationCtrl.Invoke).Name = "调用接口测试"
+		index.Post("/invokeInterface", m.InvocationCtrl.InvokeInterface).Name = "调用接口测试"
 	}
 	return module.NewModule("/invocations", handler)
 }

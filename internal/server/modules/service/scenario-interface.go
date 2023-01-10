@@ -14,7 +14,7 @@ func NewScenarioInterfaceService() *ScenarioInterfaceService {
 }
 
 func (s *ScenarioInterfaceService) GetById(id uint) (model.ProcessorInterface, error) {
-	return s.ScenarioInterfaceRepo.Get(id)
+	return s.ScenarioInterfaceRepo.GetDetail(id)
 }
 
 func (s *ScenarioInterfaceService) ListInvocation(id uint) (invocations []model.ProcessorInvocation, err error) {

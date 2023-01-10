@@ -32,12 +32,12 @@ func (s *InvocationService) LoadExecData(req v1.InvocationRequest) (ret v1.Invoc
 	return
 }
 
-func (s *InvocationService) SubmitInvokeResult(req v1.InvocationRequest, resp v1.InvocationResponse, projectId int) (err error) {
+func (s *InvocationService) SubmitInvokeResult(req v1.InvocationRequest, resp v1.InvocationResponse) (err error) {
 	interf, _ := s.InterfaceRepo.GetDetail(resp.Id)
 	s.ExtractorService.ExtractInterface(interf, resp, nil)
 	s.CheckpointService.CheckInterface(interf, resp, nil)
 
-	_, err = s.Create(req, resp, projectId)
+	_, err = s.Create(req, resp, interf.ProjectId)
 	if err != nil {
 		return
 	}
@@ -89,7 +89,7 @@ func (s *InvocationService) GetAsInterface(id int) (interf model.Interface, err 
 }
 
 func (s *InvocationService) Create(req v1.InvocationRequest,
-	resp v1.InvocationResponse, projectId int) (invocation model.Invocation, err error) {
+	resp v1.InvocationResponse, projectId uint) (invocation model.Invocation, err error) {
 	invocation = model.Invocation{
 		InvocationBase: model.InvocationBase{
 			Name:        time.Now().Format("01-02 15:04:05"),

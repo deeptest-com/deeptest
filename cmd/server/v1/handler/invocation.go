@@ -1,7 +1,7 @@
 package handler
 
 import (
-	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	service2 "github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	"github.com/kataras/iris/v12"
@@ -17,7 +17,7 @@ type InvocationCtrl struct {
 
 // LoadExecData
 func (c *InvocationCtrl) LoadExecData(ctx iris.Context) {
-	req := v1.InvocationRequest{}
+	req := domain.InvocationRequest{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
@@ -33,22 +33,16 @@ func (c *InvocationCtrl) LoadExecData(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data, Msg: _domain.NoErr.Msg})
 }
 
-// Invoke
+// SubmitInvokeResult
 func (c *InvocationCtrl) SubmitInvokeResult(ctx iris.Context) {
-	projectId, err := ctx.URLParamInt("currProjectId")
-	if projectId == 0 {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: "projectId"})
-		return
-	}
-
-	req := v1.SubmitInvocationResultRequest{}
-	err = ctx.ReadJSON(&req)
+	req := domain.SubmitInvocationResultRequest{}
+	err := ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
 		return
 	}
 
-	err = c.InvocationService.SubmitInvokeResult(req.Request, req.Response, projectId)
+	err = c.InvocationService.SubmitInvokeResult(req.Request, req.Response)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
 		return

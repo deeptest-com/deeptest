@@ -1,14 +1,118 @@
 package service
 
 import (
+	"encoding/json"
+	"fmt"
+	"github.com/aaronchen2k/deeptest/cmd/agent/v1/domain"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
+	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	"github.com/aaronchen2k/deeptest/pkg/lib/http"
+	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"strings"
 )
 
 type InvocationService struct {
+}
+
+func (s *InvocationService) Invoke(req domain.InvocationReq) (ret v1.InvocationResponse, err error) {
+	interfaceReq := s.getInterfaceToExec(req)
+
+	ret, err = s.Test(interfaceReq)
+
+	err = s.SubmitResult(req, ret, req.ServerUrl, req.Token)
+
+	return
+}
+
+func (s *InvocationService) getInterfaceToExec(req domain.InvocationReq) (ret v1.InvocationRequest) {
+	url := fmt.Sprintf("invocations/loadExecData")
+	body, err := json.Marshal(req.Data)
+	if err != nil {
+		logUtils.Infof("marshal request data failed, error, %s", err.Error())
+		return
+	}
+
+	httpReq := v1.BaseRequest{
+		Url:               _httpUtils.AddSepIfNeeded(req.ServerUrl) + url,
+		BodyType:          consts.ContentTypeJSON,
+		Body:              string(body),
+		AuthorizationType: consts.BearerToken,
+		BearerToken: v1.BearerToken{
+			Token: req.Token,
+		},
+	}
+
+	resp, err := httpHelper.Post(httpReq)
+	if err != nil {
+		logUtils.Infof("get interface obj failed, error, %s", err.Error())
+		return
+	}
+
+	if resp.StatusCode != consts.OK {
+		logUtils.Infof("get interface obj failed, response %v", resp)
+		return
+	}
+
+	respContent := _domain.Response{}
+	json.Unmarshal([]byte(resp.Content), &respContent)
+
+	if respContent.Code != 0 {
+		logUtils.Infof("get interface obj failed, response %v", resp.Content)
+		return
+	}
+
+	bytes, err := json.Marshal(respContent.Data)
+	if respContent.Code != 0 {
+		logUtils.Infof("get interface obj failed, response %v", resp.Content)
+		return
+	}
+
+	json.Unmarshal(bytes, &ret)
+
+	return
+}
+
+func (s *InvocationService) SubmitResult(reqOjb domain.InvocationReq, repsObj v1.InvocationResponse, serverUrl, token string) (err error) {
+	url := _httpUtils.AddSepIfNeeded(serverUrl) + fmt.Sprintf("invocations/submitInvokeResult")
+	data := v1.SubmitInvocationResultRequest{
+		Request:  reqOjb.Data,
+		Response: repsObj,
+	}
+
+	bodyBytes, _ := json.Marshal(data)
+
+	req := v1.BaseRequest{
+		Url:               url,
+		BodyType:          consts.ContentTypeJSON,
+		Body:              string(bodyBytes),
+		AuthorizationType: consts.BearerToken,
+		BearerToken: v1.BearerToken{
+			Token: token,
+		},
+	}
+
+	resp, err := httpHelper.Post(req)
+	if err != nil {
+		logUtils.Infof("submit result failed, error, %s", err.Error())
+		return
+	}
+
+	if resp.StatusCode != consts.OK {
+		logUtils.Infof("submit result failed, response %v", resp)
+		return
+	}
+
+	ret := _domain.Response{}
+	json.Unmarshal([]byte(resp.Content), &ret)
+
+	if ret.Code != 0 {
+		logUtils.Infof("submit result failed, response %v", resp.Content)
+		return
+	}
+
+	return
 }
 
 func (s *InvocationService) Test(req v1.InvocationRequest) (ret v1.InvocationResponse, err error) {

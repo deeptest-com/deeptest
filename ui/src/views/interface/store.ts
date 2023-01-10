@@ -4,7 +4,7 @@ import {StoreModuleType} from "@/utils/store";
 import {
     create,
     get,
-    invoke,
+    invokeInterface,
     listInvocation,
     getInvocationAsInterface,
     load,
@@ -25,7 +25,7 @@ import {
     listCheckpoint,
     getCheckpoint,
     saveCheckpoint,
-    removeCheckpoint, getLastInvocationResp, loadExecData, submitInvokeResult,
+    removeCheckpoint, getLastInvocationResp,
 } from './service';
 import {Checkpoint, Extractor, Interface, Response} from "@/views/interface/data";
 import {getNodeMap} from "@/services/tree";
@@ -72,7 +72,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setHeader: Mutation<StateType>;
     };
     actions: {
-        invoke: Action<StateType, StateType>;
+        invokeInterface: Action<StateType, StateType>;
         saveInterface: Action<StateType, StateType>;
         saveTreeMapItemProp: Action<StateType, StateType>;
 
@@ -195,24 +195,16 @@ const StoreModel: ModuleType = {
         },
     },
     actions: {
-        async invoke({commit, dispatch, state}, request: any) {
-            const updatedRequest = await loadExecData(request)
-
-            const response = await invoke(updatedRequest.data)
+        async invokeInterface({commit, dispatch, state}, data: any) {
+            const response = await invokeInterface(data)
             // console.log('=invoke=', response.data)
 
-            const submitResult = await submitInvokeResult({
-                request: updatedRequest.data,
-                response: response.data,
-            })
-            // console.log('=submitResult=', submitResult)
-
-            if (submitResult.code === 0) {
+            if (response.code === 0) {
                 commit('setResponse', response.data);
 
-                dispatch('listInvocation', request.id);
-                dispatch('listExtractor', request.id);
-                dispatch('listCheckpoint', request.id);
+                dispatch('listInvocation', data.id);
+                dispatch('listExtractor', data.id);
+                dispatch('listCheckpoint', data.id);
                 dispatch('listValidExtractorVariable', state.interfaceData.id);
 
                 return true;
@@ -260,7 +252,7 @@ const StoreModel: ModuleType = {
 
             try {
                 const response = await get(payload.id);
-                console.log('=get interface=', response.data)
+                // console.log('=get interface=', response.data)
 
                 const {data} = response;
                 data.headers.push({name:'', value:''})

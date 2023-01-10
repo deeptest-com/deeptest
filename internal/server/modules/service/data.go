@@ -8,8 +8,8 @@ import (
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/cache"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
-	repo2 "github.com/aaronchen2k/deeptest/internal/server/modules/repo"
-	source2 "github.com/aaronchen2k/deeptest/internal/server/modules/source"
+	repo "github.com/aaronchen2k/deeptest/internal/server/modules/repo"
+	source "github.com/aaronchen2k/deeptest/internal/server/modules/source"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/snowlyg/helper/str"
 	"github.com/spf13/viper"
@@ -22,12 +22,12 @@ var (
 )
 
 type DataService struct {
-	DataRepo          *repo2.DataRepo            `inject:""`
-	UserRepo          *repo2.UserRepo            `inject:""`
-	UserSource        *source2.UserSource        `inject:""`
-	RoleSource        *source2.RoleSource        `inject:""`
-	PermSource        *source2.PermSource        `inject:""`
-	ProjectRoleSource *source2.ProjectRoleSource `inject:""`
+	DataRepo          *repo.DataRepo            `inject:""`
+	UserRepo          *repo.UserRepo            `inject:""`
+	UserSource        *source.UserSource        `inject:""`
+	RoleSource        *source.RoleSource        `inject:""`
+	PermSource        *source.PermSource        `inject:""`
+	ProjectRoleSource *source.ProjectRoleSource `inject:""`
 }
 
 func NewDataService() *DataService {

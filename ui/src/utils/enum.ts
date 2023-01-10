@@ -151,3 +151,8 @@ export enum OAuth2ClientAuthenticationWay {
     'sendAsBasicAuthHeader' = 'Send as Basic Auth header',
     'sendClientCredentialsInBody' = 'Send client credentials in body',
 }
+
+export enum UsedBy {
+    'interface' = 'interface',
+    'scenario' = 'scenario',
+}

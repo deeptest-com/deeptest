@@ -74,7 +74,7 @@ func (s *ScenarioProcessorService) SaveData(req *model.ProcessorData) (err error
 }
 
 func (s *ScenarioProcessorService) CloneInterface(interfaceId uint) (ret model.ProcessorInterface, err error) {
-	interf, err := s.InterfaceRepo.Get(interfaceId)
+	interf, err := s.InterfaceRepo.GetDetail(interfaceId)
 	if err != nil {
 		return
 	}
@@ -88,9 +88,6 @@ func (s *ScenarioProcessorService) CloneInterface(interfaceId uint) (ret model.P
 
 func (s *ScenarioProcessorService) CopyInterface(interf model.Interface) (ret model.ProcessorInterface) {
 	copier.CopyWithOption(&ret, interf, copier.Option{DeepCopy: true})
-
-	ret.CreatedAt = nil
-	ret.UpdatedAt = nil
 
 	return
 }

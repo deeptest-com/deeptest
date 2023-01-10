@@ -7,8 +7,8 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
-	m "github.com/aaronchen2k/deeptest/internal/server/modules/model"
-	repo "github.com/aaronchen2k/deeptest/internal/server/modules/repo"
+	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
+	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/mitchellh/mapstructure"
 	"strconv"
@@ -26,12 +26,15 @@ func (s *YapiService) ImportYapiProject(req v1.InterfaceYapiReq) (err error) {
 	target := req.Target
 	yapiCatMenu := getYapiCatMenu(yapiHost, token)
 	yapiCatMenuDatas := yapiCatMenu.Data
+
 	for i := 0; i < len(yapiCatMenuDatas); i++ {
 		yapiCatMenuData := yapiCatMenuDatas[i]
-		interf := m.Interface{
-			ProjectId: uint(projectId),
-			IsDir:     true,
-			Name:      yapiCatMenuData.Name,
+		interf := model.Interface{
+			InterfaceBase: model.InterfaceBase{
+				ProjectId: uint(projectId),
+				IsDir:     true,
+				Name:      yapiCatMenuData.Name,
+			},
 		}
 		dropPos := serverConsts.Inner
 		interf.ParentId, interf.Ordr = s.InterfaceRepo.UpdateOrder(dropPos, uint(target))
@@ -142,7 +145,7 @@ func (s *YapiService) GetYapiInterface(yapiHost, token, interfaceId string) (ret
 	return resp
 }
 
-func (s *YapiService) YapiInterfaceInfoToInterf(ret v1.InvocationResponse) (interf m.Interface) {
+func (s *YapiService) YapiInterfaceInfoToInterf(ret v1.InvocationResponse) (interf model.Interface) {
 	//content := ret.Content
 	yapiRes := YapiRes{}
 	content := ret.Content
@@ -241,18 +244,18 @@ func getJsonbody(reqBodyOther ReqBodyOther) (reqBodyMap map[string]interface{}) 
 	return
 }
 
-func getReqParams(reqQuerys []ReqQuery) (param []m.InterfaceParam) {
+func getReqParams(reqQuerys []ReqQuery) (param []model.InterfaceParam) {
 	for i := 0; i < len(reqQuerys); i++ {
-		interfaceParam := m.InterfaceParam{}
+		interfaceParam := model.InterfaceParam{}
 		interfaceParam.Name = reqQuerys[i].Name
 		param = append(param, interfaceParam)
 	}
 	return
 }
 
-func getReqHeaders(reqHeaders []ReqHeaders) (header []m.InterfaceHeader) {
+func getReqHeaders(reqHeaders []ReqHeaders) (header []model.InterfaceHeader) {
 	for i := 0; i < len(reqHeaders); i++ {
-		interfaceHeader := m.InterfaceHeader{}
+		interfaceHeader := model.InterfaceHeader{}
 		interfaceHeader.Name = reqHeaders[i].Name
 		interfaceHeader.Value = reqHeaders[i].Value
 		header = append(header, interfaceHeader)
@@ -260,9 +263,9 @@ func getReqHeaders(reqHeaders []ReqHeaders) (header []m.InterfaceHeader) {
 	return
 }
 
-func getReqBodyForm(reqBodyForm []ReqBodyForm) (bodyFormData []m.BodyFormDataItem) {
+func getReqBodyForm(reqBodyForm []ReqBodyForm) (bodyFormData []model.InterfaceBodyFormDataItem) {
 	for i := 0; i < len(reqBodyForm); i++ {
-		bodyForm := m.BodyFormDataItem{}
+		bodyForm := model.InterfaceBodyFormDataItem{}
 		bodyForm.Name = reqBodyForm[i].Name
 		if reqBodyForm[i].Type == "text" {
 			bodyForm.Type = consts.FormDataTypeText

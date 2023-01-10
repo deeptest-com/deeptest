@@ -13,13 +13,13 @@ var (
 	breakMap sync.Map
 )
 
-type ExecReq struct {
+type ProcessorExecReq struct {
 	ServerUrl  string `json:"serverUrl"`
 	Token      string `json:"token"`
 	ScenarioId int    `json:"scenarioId"`
 }
 
-type ExecObj struct {
+type ProcessorExecObj struct {
 	RootProcessor *Processor        `json:"rootProcessor"`
 	Variables     []domain.Variable `json:"variables"`
 	ServerUrl     string            `json:"serverUrl"`

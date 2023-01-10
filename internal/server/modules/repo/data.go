@@ -36,3 +36,10 @@ func (s *DataRepo) CreateMySqlDb() error {
 	_, err = db.Exec(createSql)
 	return err
 }
+
+func (s *DataRepo) SetSqlMode() (err error) {
+	sql := "SET sql_mode = '';"
+	err = s.DB.Raw(sql).Error
+
+	return
+}

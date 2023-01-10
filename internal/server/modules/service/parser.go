@@ -104,6 +104,11 @@ func (s *ParserService) getLeftNoSpaceChar(lines []string, startLine, startColum
 		}
 	}
 
+	if startColumn > 1 {
+		startColumn -= 1
+		return s.getLeftNoSpaceChar(lines, startLine, startColumn)
+	}
+
 	startLine -= 1
 	if startLine < 0 {
 		return
@@ -128,6 +133,11 @@ func (s *ParserService) getRightNoSpaceChar(lines []string, endLine, endColumn i
 		if s.isNotSpace(rightOne) {
 			return rightOne
 		}
+	}
+
+	if endColumn < len(line)-1 {
+		endColumn += 1
+		return s.getRightNoSpaceChar(lines, endLine, endColumn)
 	}
 
 	endLine += 1

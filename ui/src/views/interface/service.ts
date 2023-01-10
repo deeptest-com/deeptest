@@ -33,15 +33,6 @@ export async function load(): Promise<any> {
     });
 }
 
-export async function loadExecInterface(id): Promise<any> {
-    const params = {id}
-    return request({
-        url: `/${apiInvocation}/loadExecData`,
-        method: 'get',
-        params,
-    });
-}
-
 export async function get(id: number): Promise<any> {
     return request({url: `/${apiPath}/${id}`});
 }
@@ -104,24 +95,10 @@ export async function move(data: any): Promise<any> {
 }
 
 // invocation
-export async function loadExecData(interf: Interface): Promise<any> {
-    return request({
-        url: `/${apiInvocation}/loadExecData`,
-        method: 'post',
-        data: interf,
-    });
-}
-export async function invoke(data): Promise<any> {
+export async function invokeInterface(data): Promise<any> {
     return requestToAgent({
-        url: `/${apiInvocation}/invoke`,
+        url: `/${apiInvocation}/invokeInterface`,
         method: 'POST',
-        data,
-    });
-}
-export async function submitInvokeResult(data: any): Promise<any> {
-    return request({
-        url: `/${apiInvocation}/submitInvokeResult`,
-        method: 'post',
         data,
     });
 }
@@ -284,6 +261,8 @@ export function prepareDataForRequest(data: any) {
             return !!item.name
         })
     }
+
+    data.body = data.body.replaceAll('\n', '').replaceAll(' ', '')
 
     return data
 }

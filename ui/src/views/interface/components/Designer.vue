@@ -1,7 +1,7 @@
 <template>
   <div id="designer-main" class="dp-splits-v">
     <div id="design-content">
-      <DesignInterface />
+      <DesignInterface :usedBy="designByInterface" />
     </div>
 
     <div id="design-splitter" class="splitter"></div>
@@ -38,7 +38,7 @@
 
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import {computed, ComputedRef, defineComponent, onMounted, PropType, Ref, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import {Form, message} from 'ant-design-vue';
@@ -51,43 +51,28 @@ import RequestEnv from './designer/others/env/index.vue';
 import RequestHistory from './designer/others/history/index.vue';
 import {Interface} from "@/views/interface/data";
 import {resizeWidth} from "@/utils/dom";
+import {UsedBy} from "@/utils/enum";
 
 const useForm = Form.useForm;
+const designByInterface = UsedBy.interface
 
-export default defineComponent({
-  name: 'InterfaceDesigner',
-  props: {
-  },
-  components: {
-    HistoryOutlined, EnvironmentOutlined,
-    DesignInterface,
-    RequestEnv, RequestHistory,
-  },
+const {t} = useI18n();
+const store = useStore<{ Interface: StateType }>();
 
-  setup(props) {
-    const {t} = useI18n();
-    const store = useStore<{ Interface: StateType }>();
+const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
 
-    const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
+const tabKey = ref('env')
 
-    const tabKey = ref('env')
-
-    onMounted(() => {
-      console.log('onMounted')
-      resize()
-    })
-
-    const resize = () => {
-      resizeWidth('designer-main',
-          'design-content', 'design-splitter', 'design-right', 500, 300)
-    }
-
-    return {
-      interfaceData,
-      tabKey
-    }
-  }
+onMounted(() => {
+  console.log('onMounted')
+  resize()
 })
+
+const resize = () => {
+  resizeWidth('designer-main',
+      'design-content', 'design-splitter', 'design-right', 500, 300)
+}
+
 </script>
 
 <style lang="less">

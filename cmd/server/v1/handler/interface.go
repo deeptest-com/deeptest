@@ -68,11 +68,11 @@ func (c *InterfaceCtrl) Get(ctx iris.Context) {
 	}
 
 	interf, err := c.InterfaceService.GetDetail(uint(id))
-
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: _domain.SystemErr.Msg})
 		return
 	}
+
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: interf})
 }
 

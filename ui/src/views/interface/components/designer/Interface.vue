@@ -15,21 +15,41 @@
 </template>
 
 <script setup lang="ts">
-import {computed, ComputedRef, defineComponent, onMounted, onUnmounted, PropType, Ref, ref, watch} from "vue";
+import {
+  computed,
+  ComputedRef,
+  provide,
+  defineProps,
+  onMounted,
+  onUnmounted,
+  PropType,
+  Ref,
+  ref,
+  watch
+} from "vue";
 import {useI18n} from "vue-i18n";
 import {resizeHandler, resizeHeight} from "@/utils/dom";
 import {useStore} from "vuex";
 
-import {StateType} from "@/views/interface/store";
+import {StateType as InterfaceStateType} from "@/views/interface/store";
+import {StateType as ScenarioStateType} from "@/views/scenario/store";
 import InterfaceRequest from './request/Index.vue';
 import InterfaceResponse from './response/Index.vue';
 import RequestVariable from '@/components/Editor/RequestVariable.vue';
 import {Interface} from "@/views/interface/data";
+import {UsedBy} from "@/utils/enum";
+
+const props = defineProps<{
+  usedBy: UsedBy,
+}>()
 
 const {t} = useI18n();
-const store = useStore<{ Interface: StateType }>();
+const store = useStore<{ Scenario: ScenarioStateType; Interface: InterfaceStateType }>();
 
-const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
+const interfaceData = computed<Interface>(
+    () => props.usedBy === UsedBy.interface ? store.state.Interface.interfaceData : store.state.Scenario.interfaceData);
+
+provide('usedBy', props.usedBy)
 
 onMounted(() => {
   console.log('onMounted interface')

@@ -17,10 +17,11 @@ import {
     addProcessor,
     saveProcessorName, saveProcessor,
 
-    loadExecResult, getInterface, listInvocation,
+    loadExecResult, getInterface,
 } from './service';
 import {getNodeMap} from "@/services/tree";
-import {Response} from "@/views/interface/data";
+import {Interface, Response} from "@/views/interface/data";
+import {invokeInterface, saveInterface} from "@/views/interface/service";
 
 export interface StateType {
     scenarioId: number;
@@ -35,8 +36,8 @@ export interface StateType {
 
     execResult: any;
 
+    interfaceData: Interface;
     responseData: Response;
-    invocationsData: any[];
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
@@ -56,9 +57,8 @@ export interface ModuleType extends StoreModuleType<StateType> {
 
         setExecResult: Mutation<StateType>;
 
+        setInterface: Mutation<StateType>;
         setResponse: Mutation<StateType>;
-        setInvocations: Mutation<StateType>;
-
     };
     actions: {
         listScenario: Action<StateType, StateType>;
@@ -87,7 +87,8 @@ export interface ModuleType extends StoreModuleType<StateType> {
         updateExecResult: Action<StateType, StateType>;
 
         getInterface: Action<StateType, StateType>;
-        listInvocation: Action<StateType, StateType>;
+        saveInterface: Action<StateType, StateType>;
+        invokeInterface: Action<StateType, StateType>;
     };
 }
 const initState: StateType = {
@@ -111,8 +112,8 @@ const initState: StateType = {
     nodeData: {},
     execResult: {},
 
+    interfaceData: {} as Interface,
     responseData: {} as Response,
-    invocationsData: [],
 };
 
 const StoreModel: ModuleType = {
@@ -159,11 +160,12 @@ const StoreModel: ModuleType = {
             state.queryParams = payload;
         },
 
+        setInterface(state, data) {
+            state.interfaceData = data;
+
+        },
         setResponse(state, payload) {
             state.responseData = payload;
-        },
-        setInvocations(state, payload) {
-            state.invocationsData = payload;
         },
     },
     actions: {
@@ -366,21 +368,9 @@ const StoreModel: ModuleType = {
             return true;
         },
 
-        async getInterface({commit}, payload: any) {
-            if (payload.isDir) {
-                commit('setInterface', {
-                    bodyType: 'application/json',
-                    headers: [{name:'', value:''}],
-                    params: [{name:'', value:''}],
-                    bodyFormData: [{name:'', value:'', type: 'text'}],
-                    bodyFormUrlencoded: [{name:'', value:''}],
-                });
-                commit('setResponse', {headers: [], contentLang: 'html', content: ''});
-                return true;
-            }
-
+        async getInterface({commit}, interfaceId: number) {
             try {
-                const response = await getInterface(payload.id);
+                const response = await getInterface(interfaceId);
 
                 const {data} = response;
                 data.headers.push({name:'', value:''})
@@ -394,14 +384,29 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
-        async listInvocation({commit}, interfaceId: number) {
-            try {
-                const resp = await listInvocation(interfaceId);
-                const {data} = resp;
-                commit('setInvocations', data);
+
+        async saveInterface({commit}, payload: any) {
+            const json = await  saveInterface(payload)
+            if (json.code === 0) {
                 return true;
-            } catch (error) {
-                return false;
+            } else {
+                return false
+            }
+        },
+        async invokeInterface({commit, dispatch, state}, data: any) {
+            const response = await invokeInterface(data)
+            // console.log('=invoke=', response.data)
+
+            if (response.code === 0) {
+                commit('setResponse', response.data);
+
+                dispatch('listInvocation', data.id);
+                dispatch('listExtractor', data.id);
+                dispatch('listCheckpoint', data.id);
+
+                return true;
+            } else {
+                return false
             }
         },
     }

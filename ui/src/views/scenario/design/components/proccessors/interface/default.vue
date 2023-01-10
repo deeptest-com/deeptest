@@ -1,22 +1,19 @@
 <template>
   <div class="processor_interface_default-main">
-    <DesignInterface />
+    <DesignInterface :usedBy="designByScenario" />
   </div>
 </template>
 
 <script setup lang="ts">
-import {computed, reactive, ref} from "vue";
 import {useRouter} from "vue-router";
-import {useStore} from "vuex";
 import {useI18n} from "vue-i18n";
 import DesignInterface from '@/views/interface/components/designer/Interface.vue';
-import {StateType as ScenarioStateType} from "../../../../store";
+import {UsedBy} from "@/utils/enum";
 
 const router = useRouter();
 const {t} = useI18n();
 
-const store = useStore<{ Scenario: ScenarioStateType; }>();
-const modelRef = computed<boolean>(() => store.state.Scenario.nodeData);
+const designByScenario = UsedBy.scenario
 
 </script>
 

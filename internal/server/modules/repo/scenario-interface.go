@@ -14,11 +14,12 @@ type ScenarioInterfaceRepo struct {
 	ScenarioInterfaceRepo *ScenarioInterfaceRepo `inject:""`
 }
 
-func (r *ScenarioInterfaceRepo) Get(interfaceId uint) (field model.ProcessorInterface, err error) {
+func (r *ScenarioInterfaceRepo) Get(interfaceId uint) (po model.ProcessorInterface, err error) {
 	err = r.DB.
 		Where("id=?", interfaceId).
 		Where("NOT deleted").
-		First(&field).Error
+		First(&po).Error
+
 	return
 }
 

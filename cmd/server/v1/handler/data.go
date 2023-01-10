@@ -29,11 +29,13 @@ func (c *DataCtrl) Init(ctx iris.Context) {
 			return
 		}
 	}
+
 	err := c.DataService.InitDB(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: _domain.SystemErr.Msg})
 		return
 	}
+
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: nil, Msg: _domain.NoErr.Msg})
 }
 

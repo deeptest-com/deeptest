@@ -73,7 +73,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, ref, PropType, onMounted, onUnmounted, defineProps} from "vue";
+import {computed, ref, PropType, onMounted, onUnmounted, defineProps, inject} from "vue";
 import { notification, message } from 'ant-design-vue';
 import { DownOutlined, UndoOutlined, SaveOutlined, LinkOutlined, CheckOutlined, EditOutlined } from '@ant-design/icons-vue';
 import {useI18n} from "vue-i18n";
@@ -89,7 +89,7 @@ import ContextMenu from "@/components/Editor/ContextMenu.vue"
 
 const props = defineProps({
   onSend: {
-    type: Function as PropType<(data) => void>,
+    type: Function as PropType<() => void>,
     required: true
   },
   onSave: {
@@ -112,12 +112,8 @@ const selectMethod = (val) => {
 const sendRequest = (e) => {
   console.log('--- interface data', interfaceData.value)
 
-  let data = JSON.parse(JSON.stringify(interfaceData.value))
-  data = prepareDataForRequest(data)
-  data.body = data.body.replaceAll('\n', '').replaceAll(' ', '')
-
   if (validateInfo()) {
-    props.onSend(data)
+    props.onSend()
   }
 };
 

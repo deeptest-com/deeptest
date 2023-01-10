@@ -167,7 +167,6 @@ export default defineComponent({
       store.dispatch('Interface/getInterface', {id: selectedData.id, isDir: selectedData.isDir})
       if (!selectedData.isDir) {
         store.dispatch('Interface/getLastInvocationResp', selectedData.id)
-
         store.dispatch('Interface/listInvocation', selectedData.id)
       }
     }

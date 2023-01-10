@@ -1,12 +1,7 @@
 package model
 
-import (
-	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
-)
-
 type ProcessorInterface struct {
 	BaseModel
-	agentExec.ProcessorEntityBase
 	InterfaceBase
 
 	Children []*ProcessorInterface `gorm:"-" json:"children"`

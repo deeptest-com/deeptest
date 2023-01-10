@@ -76,9 +76,7 @@ const extractorFail = computed(() => {
 })
 
 const checkpointFail = computed(() => {
-  console.log('===', checkpointsData.value)
   for (let val of checkpointsData.value) {
-    console.log('---', val.resultStatus)
     if (val.resultStatus==='fail') return true
   }
   return false

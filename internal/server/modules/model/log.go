@@ -14,6 +14,7 @@ type ExecLogProcessor struct {
 	ResultStatus   consts.ResultStatus   `json:"resultStatus" gorm:"default:pass"`
 	StartTime      *time.Time            `json:"startTime"`
 	EndTime        *time.Time            `json:"endTime"`
+	ExecTime       int                   `json:"execTime"`
 
 	ParentId uint `json:"parentId"`
 	ReportId uint `json:"reportId"`

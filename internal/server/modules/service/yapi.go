@@ -24,7 +24,7 @@ func (s *YapiService) ImportYapiProject(req v1.InterfaceYapiReq) (err error) {
 	token := req.Token
 	projectId := req.ProjectId
 	target := req.Target
-	yapiCatMenu := getYapiCatMenu(yapiHost, token)
+	yapiCatMenu := s.GetYapiCatMenu(yapiHost, token)
 	yapiCatMenuDatas := yapiCatMenu.Data
 	for i := 0; i < len(yapiCatMenuDatas); i++ {
 		yapiCatMenuData := yapiCatMenuDatas[i]
@@ -51,7 +51,6 @@ func (s *YapiService) ImportYapiProject(req v1.InterfaceYapiReq) (err error) {
 			err = s.ImportService.Create(&yapiInterf)
 			if err != nil {
 				logUtils.Infof("update yapiInterf to db error, %s", err.Error())
-				return
 			}
 		}
 
@@ -60,7 +59,7 @@ func (s *YapiService) ImportYapiProject(req v1.InterfaceYapiReq) (err error) {
 
 }
 
-func getYapiCatMenu(yapiHost, token string) (yapiCatMenu YapiCatMenu) {
+func (s *YapiService) GetYapiCatMenu(yapiHost, token string) (yapiCatMenu YapiCatMenu) {
 	var param []v1.Param
 	tokenParam := v1.Param{
 		Name:  "token",

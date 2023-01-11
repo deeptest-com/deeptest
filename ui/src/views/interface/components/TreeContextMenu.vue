@@ -36,6 +36,11 @@
         <PlusOutlined />
         <span>导入接口...</span>
       </a-menu-item>
+
+      <a-menu-item v-if="treeNode.isDir" key="export_yapi" class="menu-item">
+        <PlusOutlined />
+        <span>yapi导入接口...</span>
+      </a-menu-item>
     </a-menu>
   </div>
 </template>

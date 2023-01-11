@@ -161,7 +161,7 @@ watch(interfaceData, () => {
 }, {deep: true})
 
 const listCheckPoint = () => {
-  store.dispatch('Interface/listCheckpoint')
+  store.dispatch('Interface/listCheckpoint', usedBy)
 }
 listCheckPoint()
 

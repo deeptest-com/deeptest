@@ -173,12 +173,12 @@ const responseData = computed<any>(() => store.state.Interface.responseData);
 const extractorsData = computed(() => store.state.Interface.extractorsData);
 
 watch(interfaceData, () => {
-  console.log('watch interfaceData')
+  console.log('watch interfaceData', interfaceData.value.id, usedBy)
   listExtractor()
 }, {deep: true})
 
 const listExtractor = () => {
-  store.dispatch('Interface/listExtractor')
+  store.dispatch('Interface/listExtractor', usedBy)
 }
 listExtractor()
 

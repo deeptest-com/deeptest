@@ -346,9 +346,9 @@ const StoreModel: ModuleType = {
         },
 
         // extractor
-        async listExtractor({commit, dispatch, state}) {
+        async listExtractor({commit, dispatch, state}, usedBy) {
             try {
-                const resp = await listExtractor(state.interfaceData.id, UsedBy.interface);
+                const resp = await listExtractor(state.interfaceData.id, usedBy);
                 const {data} = resp;
                 commit('setExtractors', data);
                 return true;
@@ -433,9 +433,9 @@ const StoreModel: ModuleType = {
         },
 
         // checkpoint
-        async listCheckpoint({commit, state}) {
+        async listCheckpoint({commit, state}, usedBy) {
             try {
-                const resp = await listCheckpoint(state.interfaceData.id, UsedBy.interface);
+                const resp = await listCheckpoint(state.interfaceData.id, usedBy);
                 const {data} = resp;
                 commit('setCheckpoints', data);
                 return true;

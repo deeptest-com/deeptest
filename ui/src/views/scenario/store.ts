@@ -21,8 +21,7 @@ import {
 } from './service';
 import {getNodeMap} from "@/services/tree";
 import {Interface, Response} from "@/views/interface/data";
-import {invokeInterface, saveInterface, listExtractor, listCheckpoint} from "@/views/interface/service";
-import {UsedBy} from "@/utils/enum";
+import {invokeInterface, saveInterface} from "@/views/interface/service";
 
 export interface StateType {
     scenarioId: number;
@@ -94,9 +93,6 @@ export interface ModuleType extends StoreModuleType<StateType> {
         getInterface: Action<StateType, StateType>;
         saveInterface: Action<StateType, StateType>;
         invokeInterface: Action<StateType, StateType>;
-
-        listExtractor: Action<StateType, StateType>;
-        listCheckpoint: Action<StateType, StateType>;
     };
 }
 const initState: StateType = {
@@ -422,27 +418,6 @@ const StoreModel: ModuleType = {
                 return true;
             } else {
                 return false
-            }
-        },
-
-        async listExtractor({commit, dispatch, state}) {
-            try {
-                const resp = await listExtractor(state.interfaceData.id, UsedBy.scenario);
-                const {data} = resp;
-                commit('setExtractors', data);
-                return true;
-            } catch (error) {
-                return false;
-            }
-        },
-        async listCheckpoint({commit, state}) {
-            try {
-                const resp = await listCheckpoint(state.interfaceData.id, UsedBy.scenario);
-                const {data} = resp;
-                commit('setCheckpoints', data);
-                return true;
-            } catch (error) {
-                return false;
             }
         },
     }

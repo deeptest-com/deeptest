@@ -37,7 +37,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, ComputedRef, defineComponent, PropType, Ref, ref, watch} from "vue";
+import {computed, ComputedRef, defineComponent, inject, PropType, Ref, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import {StateType} from "@/views/interface/store";
@@ -50,7 +50,8 @@ import ResponseLensXml from "@/views/interface/components/designer/response/Rend
 import ResponseLensHtml from "@/views/interface/components/designer/response/Renderer/lenses/HTMLLensRenderer.vue";
 import ResponseLensImage from "@/views/interface/components/designer/response/Renderer/lenses/ImageLensRenderer.vue";
 import ResponseLensRaw from "@/views/interface/components/designer/response/Renderer/lenses/RawLensRenderer.vue";
-
+import {UsedBy} from "@/utils/enum";
+const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
 const store = useStore<{ Interface: StateType }>();
 const responseData = computed<any>(() => store.state.Interface.responseData);
@@ -81,12 +82,12 @@ const checkpointFail = computed(() => {
 })
 
 const listExtractor = () => {
-  store.dispatch('Interface/listExtractor')
+  store.dispatch('Interface/listExtractor', usedBy)
 }
 listExtractor()
 
 const listCheckPoint = () => {
-  store.dispatch('Interface/listCheckpoint')
+  store.dispatch('Interface/listCheckpoint', usedBy)
 }
 listCheckPoint()
 

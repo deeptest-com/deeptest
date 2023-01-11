@@ -8,9 +8,9 @@ import (
 )
 
 type ScenarioModule struct {
-	ScenarioCtrl          *handler.ScenarioCtrl          `inject:""`
-	ScenarioNodeCtrl      *handler.ScenarioNodeCtrl      `inject:""`
-	ScenarioInterfaceCtrl *handler.ScenarioInterfaceCtrl `inject:""`
+	ScenarioCtrl          *handler.ScenarioCtrl           `inject:""`
+	ScenarioNodeCtrl      *handler.ScenarioNodeCtrl       `inject:""`
+	ScenarioInterfaceCtrl *handler.ProcessorInterfaceCtrl `inject:""`
 }
 
 func NewScenarioModule() *ScenarioModule {

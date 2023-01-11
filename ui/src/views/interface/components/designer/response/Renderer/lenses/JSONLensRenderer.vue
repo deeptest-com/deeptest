@@ -52,7 +52,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, ComputedRef, defineComponent, onMounted, PropType, Ref, ref} from "vue";
+import {computed, ComputedRef, defineComponent, inject, onMounted, PropType, Ref, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import { DownloadOutlined, CopyOutlined, ClearOutlined } from '@ant-design/icons-vue';
@@ -63,13 +63,15 @@ import {MonacoOptions} from "@/utils/const";
 import {Interface, Response} from "@/views/interface/data";
 
 import {parseHtml, parseJson, testExpr} from "@/views/interface/service";
-import {ExtractorSrc, ExtractorType} from "@/utils/enum";
+import {ExtractorSrc, ExtractorType, UsedBy} from "@/utils/enum";
 import ResponseExtractor from "@/components/Editor/ResponseExtractor.vue";
 import {resizeHeight} from "@/utils/dom";
-
+import {StateType as ScenarioStateType} from "@/views/scenario/store";
+const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
-const store = useStore<{ Interface: StateType }>();
-const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
+const store = useStore<{ Interface: StateType, Scenario: ScenarioStateType }>();
+const interfaceData = computed<Interface>(
+    () => usedBy === UsedBy.interface ? store.state.Interface.interfaceData : store.state.Scenario.interfaceData);
 const responseData = computed<Response>(() => store.state.Interface.responseData);
 const editorOptions = ref(Object.assign({usedWith: 'response'}, MonacoOptions) )
 

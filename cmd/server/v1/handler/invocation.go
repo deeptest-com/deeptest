@@ -15,8 +15,8 @@ type InvocationCtrl struct {
 	BaseCtrl
 }
 
-// LoadExecData
-func (c *InvocationCtrl) LoadExecData(ctx iris.Context) {
+// LoadInterfaceExecData
+func (c *InvocationCtrl) LoadInterfaceExecData(ctx iris.Context) {
 	req := domain.InvocationRequest{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -24,7 +24,7 @@ func (c *InvocationCtrl) LoadExecData(ctx iris.Context) {
 		return
 	}
 
-	data, err := c.InvocationService.LoadExecData(req)
+	data, err := c.InvocationService.LoadInterfaceExecData(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -33,8 +33,8 @@ func (c *InvocationCtrl) LoadExecData(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data, Msg: _domain.NoErr.Msg})
 }
 
-// SubmitInvokeResult
-func (c *InvocationCtrl) SubmitInvokeResult(ctx iris.Context) {
+// SubmitInterfaceInvokeResult
+func (c *InvocationCtrl) SubmitInterfaceInvokeResult(ctx iris.Context) {
 	req := domain.SubmitInvocationResultRequest{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -42,7 +42,7 @@ func (c *InvocationCtrl) SubmitInvokeResult(ctx iris.Context) {
 		return
 	}
 
-	err = c.InvocationService.SubmitInvokeResult(req.Request, req.Response)
+	err = c.InvocationService.SubmitInterfaceInvokeResult(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
 		return

@@ -29,11 +29,11 @@
 </template>
 
 <script lang="ts">
-import {computed, ComputedRef, defineComponent, Ref, ref} from "vue";
+import {computed, ComputedRef, defineComponent, inject, Ref, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import {StateType} from "@/views/interface/store";
-import {Methods} from "@/utils/enum";
+import {Methods, UsedBy} from "@/utils/enum";
 
 import RequestParameters from "./Config/Parameters.vue";
 import RequestBody from "./Config/Body.vue";
@@ -42,6 +42,7 @@ import Authorization from "./Config/Authorization.vue";
 import PreRequestScript from "./Config/PreRequestScript.vue";
 import ValidationScript from "./Config/ValidationScript.vue";
 import {Interface} from "@/views/interface/data";
+import {StateType as ScenarioStateType} from "@/views/scenario/store";
 
 export default defineComponent({
   name: 'RequestConfig',
@@ -52,9 +53,11 @@ export default defineComponent({
     // PreRequestScript, ValidationScript,
   },
   setup(props) {
+    const usedBy = inject('usedBy') as UsedBy
     const {t} = useI18n();
-    const store = useStore<{ Interface: StateType }>();
-    const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
+    const store = useStore<{ Interface: StateType, Scenario: ScenarioStateType }>();
+    const interfaceData = computed<Interface>(
+        () => usedBy === UsedBy.interface ? store.state.Interface.interfaceData : store.state.Scenario.interfaceData);
     const activeKey = ref('1');
     const methods = Methods;
 

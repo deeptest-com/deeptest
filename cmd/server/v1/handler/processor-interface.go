@@ -6,12 +6,12 @@ import (
 	"github.com/kataras/iris/v12"
 )
 
-type ScenarioInterfaceCtrl struct {
-	ScenarioInterfaceService *service.ScenarioInterfaceService `inject:""`
+type ProcessorInterfaceCtrl struct {
+	ScenarioInterfaceService *service.ProcessorInterfaceService `inject:""`
 	BaseCtrl
 }
 
-func (c *ScenarioInterfaceCtrl) GetInterface(ctx iris.Context) {
+func (c *ProcessorInterfaceCtrl) GetInterface(ctx iris.Context) {
 	interfaceId, err := ctx.URLParamInt("interfaceId")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Data: nil, Msg: err.Error()})
@@ -27,7 +27,7 @@ func (c *ScenarioInterfaceCtrl) GetInterface(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: interf})
 }
 
-func (c *ScenarioInterfaceCtrl) ListInvocation(ctx iris.Context) {
+func (c *ProcessorInterfaceCtrl) ListInvocation(ctx iris.Context) {
 	interfaceId, err := ctx.URLParamInt("interfaceId")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Data: nil, Msg: err.Error()})

@@ -189,7 +189,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, defineComponent, ref, watch} from "vue";
+import {computed, defineComponent, inject, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import { QuestionCircleOutlined,ImportOutlined, MoreOutlined, ClearOutlined, PlusOutlined,
@@ -201,12 +201,17 @@ import {Interface} from "@/views/interface/data";
 import EnvEdit from "./edit.vue";
 import EnvVarEdit from "./edit-var.vue"
 import {StateType as ProjectStateType} from "@/store/project";
+import {UsedBy} from "@/utils/enum";
+import {StateType as ScenarioStateType} from "@/views/scenario/store";
+const usedBy = inject('usedBy') as UsedBy
 
     const {t} = useI18n();
-    const store = useStore<{ Interface: InterfaceStateType, ProjectGlobal: ProjectStateType, Environment: EnvironmentStateType }>();
+    const store = useStore<{ Interface: InterfaceStateType, Scenario: ScenarioStateType,  ProjectGlobal: ProjectStateType, Environment: EnvironmentStateType }>();
     const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
-    const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
-    const environmentsData = computed<any[]>(() => store.state.Environment.environmentsData);
+const interfaceData = computed<Interface>(
+    () => usedBy === UsedBy.interface ? store.state.Interface.interfaceData : store.state.Scenario.interfaceData);
+
+const environmentsData = computed<any[]>(() => store.state.Environment.environmentsData);
     const environmentData = computed<any>(() => store.state.Environment.environmentData);
     const validExtractorVariablesData = computed(() => store.state.Interface.validExtractorVariablesData);
 

@@ -48,7 +48,7 @@
 </template>
 
 <script lang="ts">
-import {computed, ComputedRef, defineComponent, PropType, Ref, ref} from "vue";
+import {computed, ComputedRef, defineComponent, inject, PropType, Ref, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import { QuestionCircleOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons-vue';
@@ -60,8 +60,9 @@ import RequestAuthorBasic from "./author/BasicAuthor.vue"
 import RequestAuthorBearerToken from "./author/BearerToken.vue"
 import RequestAuthorOAuth2 from "./author/OAuth2.vue"
 import RequestAuthorApiKey from "./author/ApiKey.vue"
-import {AuthorizationTypes} from "@/utils/enum";
+import {AuthorizationTypes, UsedBy} from "@/utils/enum";
 import {getEnumSelectItems} from "@/views/interface/service";
+import {StateType as ScenarioStateType} from "@/views/scenario/store";
 
 export default defineComponent({
   name: 'RequestAuthorization',
@@ -71,9 +72,11 @@ export default defineComponent({
     QuestionCircleOutlined, DeleteOutlined, PlusOutlined,
   },
   setup(props) {
+    const usedBy = inject('usedBy') as UsedBy
     const {t} = useI18n();
-    const store = useStore<{ Interface: StateType }>();
-    const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
+    const store = useStore<{ Interface: StateType, Scenario: ScenarioStateType }>();
+    const interfaceData = computed<Interface>(
+        () => usedBy === UsedBy.interface ? store.state.Interface.interfaceData : store.state.Scenario.interfaceData);
 
     const authorizationTypes = getEnumSelectItems(AuthorizationTypes)
 

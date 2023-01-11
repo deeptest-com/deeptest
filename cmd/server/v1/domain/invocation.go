@@ -32,6 +32,7 @@ type InvocationResponse struct {
 }
 
 type SubmitInvocationResultRequest struct {
+	UsedBy   string             `json:"usedBy"`
 	Request  InvocationRequest  `json:"request"`
 	Response InvocationResponse `json:"response"`
 }

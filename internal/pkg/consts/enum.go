@@ -252,6 +252,13 @@ func (e ProductStatus) String() string {
 	return string(e)
 }
 
+type UsedBy string
+
+const (
+	Interface UsedBy = "interface"
+	Scenario  UsedBy = "scenario"
+)
+
 type ExtractorSrc string
 
 const (

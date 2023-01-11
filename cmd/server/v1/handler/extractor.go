@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
@@ -15,12 +16,13 @@ type ExtractorCtrl struct {
 // List
 func (c *ExtractorCtrl) List(ctx iris.Context) {
 	interfaceId, err := ctx.URLParamInt("interfaceId")
-	if interfaceId == 0 {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: "interfaceId"})
+	usedBy := ctx.URLParam("usedBy")
+	if interfaceId == 0 || usedBy == "" {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: "interfaceId OR usedBy"})
 		return
 	}
 
-	data, err := c.ExtractorService.List(interfaceId)
+	data, err := c.ExtractorService.List(interfaceId, consts.UsedBy(usedBy))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
 		return
@@ -93,7 +95,7 @@ func (c *ExtractorCtrl) CreateOrUpdateResult(ctx iris.Context) {
 		return
 	}
 
-	err = c.ExtractorService.CreateOrUpdateResult(&extractor)
+	err = c.ExtractorService.CreateOrUpdateResult(&extractor, consts.Interface)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: err.Error()})
 		return

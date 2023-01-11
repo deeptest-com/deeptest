@@ -14,7 +14,8 @@ const apiPath = 'scenarios';
 const apiPathNodes = `${apiPath}/nodes`;
 const apiPathProcessors = `${apiPath}/processors`;
 const apiPathExec = `${apiPath}/exec`;
-const apiPathInterface = `${apiPath}/interfaces`
+
+const apiPathInterface = `processors/interfaces`
 
 export async function query(params?: QueryParams): Promise<any> {
     return request({

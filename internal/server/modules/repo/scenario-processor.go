@@ -11,10 +11,10 @@ import (
 type ScenarioProcessorRepo struct {
 	DB *gorm.DB `inject:""`
 
-	ScenarioNodeRepo      *ScenarioNodeRepo      `inject:""`
-	ExtractorRepo         *ExtractorRepo         `inject:""`
-	CheckpointRepo        *CheckpointRepo        `inject:""`
-	ScenarioInterfaceRepo *ScenarioInterfaceRepo `inject:""`
+	ScenarioNodeRepo      *ScenarioNodeRepo       `inject:""`
+	ExtractorRepo         *ExtractorRepo          `inject:""`
+	CheckpointRepo        *CheckpointRepo         `inject:""`
+	ScenarioInterfaceRepo *ProcessorInterfaceRepo `inject:""`
 }
 
 func (r *ScenarioProcessorRepo) Get(id uint) (processor model.Processor, err error) {

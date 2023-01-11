@@ -2,33 +2,34 @@ import {Action, Mutation} from 'vuex';
 import {StoreModuleType} from "@/utils/store";
 
 import {
+    clearShareVar,
     create,
+    createExtractorOrUpdateResult,
     get,
-    invokeInterface,
-    listInvocation,
+    getCheckpoint,
+    getExtractor,
     getInvocationAsInterface,
+    getLastInvocationResp,
+    invokeInterface,
+    listCheckpoint,
+    listExtractor,
+    listInvocation,
+    listValidExtractorVariable,
     load,
     move,
     remove,
+    removeCheckpoint,
+    removeExtractor,
     removeInvocation,
+    removeShareVar,
+    saveCheckpoint,
+    saveExtractor,
     saveInterface,
     update,
-
-    listExtractor,
-    listValidExtractorVariable,
-    getExtractor,
-    saveExtractor,
-    createExtractorOrUpdateResult,
-    removeExtractor,
-    removeShareVar, clearShareVar,
-
-    listCheckpoint,
-    getCheckpoint,
-    saveCheckpoint,
-    removeCheckpoint, getLastInvocationResp,
 } from './service';
 import {Checkpoint, Extractor, Interface, Response} from "@/views/interface/data";
 import {getNodeMap} from "@/services/tree";
+import {UsedBy} from "@/utils/enum";
 
 export interface StateType {
     treeData: any[];
@@ -347,7 +348,7 @@ const StoreModel: ModuleType = {
         // extractor
         async listExtractor({commit, dispatch, state}) {
             try {
-                const resp = await listExtractor(state.interfaceData.id);
+                const resp = await listExtractor(state.interfaceData.id, UsedBy.interface);
                 const {data} = resp;
                 commit('setExtractors', data);
                 return true;
@@ -434,7 +435,7 @@ const StoreModel: ModuleType = {
         // checkpoint
         async listCheckpoint({commit, state}) {
             try {
-                const resp = await listCheckpoint(state.interfaceData.id);
+                const resp = await listCheckpoint(state.interfaceData.id, UsedBy.interface);
                 const {data} = resp;
                 commit('setCheckpoints', data);
                 return true;

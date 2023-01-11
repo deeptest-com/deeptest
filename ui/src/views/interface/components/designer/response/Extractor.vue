@@ -142,7 +142,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, defineComponent, reactive, ref, watch} from "vue";
+import {computed, defineComponent, inject, reactive, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import {Form} from 'ant-design-vue';
@@ -156,16 +156,19 @@ import {
 import {StateType} from "@/views/interface/store";
 import {Extractor, Interface, Response} from "@/views/interface/data";
 import {getEnumSelectItems} from "@/views/interface/service";
-import {ExtractorSrc, ExtractorType} from "@/utils/enum";
+import {ExtractorSrc, ExtractorType, UsedBy} from "@/utils/enum";
+import {StateType as ScenarioStateType} from "@/views/scenario/store";
 
+const usedBy = inject('usedBy') as UsedBy
 const useForm = Form.useForm;
 const {t} = useI18n();
-const store = useStore<{ Interface: StateType }>();
+const store = useStore<{ Interface: StateType, Scenario: ScenarioStateType }>();
 
 const srcOptions = getEnumSelectItems(ExtractorSrc)
 const typeOptions = getEnumSelectItems(ExtractorType)
 
-const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
+const interfaceData = computed<Interface>(
+    () => usedBy === UsedBy.interface ? store.state.Interface.interfaceData : store.state.Scenario.interfaceData);
 const responseData = computed<any>(() => store.state.Interface.responseData);
 const extractorsData = computed(() => store.state.Interface.extractorsData);
 

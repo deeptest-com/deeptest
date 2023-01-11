@@ -10,9 +10,10 @@ import (
 )
 
 type InterfaceService struct {
-	InterfaceRepo   *repo.InterfaceRepo   `inject:""`
-	EnvironmentRepo *repo.EnvironmentRepo `inject:""`
-	ExtractorRepo   *repo.ExtractorRepo   `inject:""`
+	InterfaceRepo         *repo.InterfaceRepo          `inject:""`
+	ScenarioInterfaceRepo *repo.ProcessorInterfaceRepo `inject:""`
+	EnvironmentRepo       *repo.EnvironmentRepo        `inject:""`
+	ExtractorRepo         *repo.ExtractorRepo          `inject:""`
 
 	VariableService *VariableService `inject:""`
 }

@@ -79,13 +79,14 @@ import { DownOutlined, UndoOutlined, SaveOutlined, LinkOutlined, CheckOutlined, 
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import {StateType} from "@/views/interface/store";
-import {Methods} from "@/utils/enum";
+import {Methods, UsedBy} from "@/utils/enum";
 import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
 import {Interface} from "@/views/interface/data";
 import {getContextMenuStyle, prepareDataForRequest} from "@/views/interface/service";
 import {NotificationKeyCommon} from "@/utils/const"
 import ContextMenu from "@/components/Editor/ContextMenu.vue"
+import {StateType as ScenarioStateType} from "@/views/scenario/store";
 
 const props = defineProps({
   onSend: {
@@ -97,10 +98,11 @@ const props = defineProps({
     required: true
   }
 })
-
+const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
-const store = useStore<{ Interface: StateType }>();
-const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
+const store = useStore<{ Interface: StateType, Scenario: ScenarioStateType }>();
+const interfaceData = computed<Interface>(
+    () => usedBy === UsedBy.interface ? store.state.Interface.interfaceData : store.state.Scenario.interfaceData);
 
 const methods = Methods;
 

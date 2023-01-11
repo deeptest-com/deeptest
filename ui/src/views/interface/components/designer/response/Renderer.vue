@@ -67,9 +67,7 @@ watch(responseData, () => {
 const activeKey = ref('1');
 
 const extractorFail = computed(() => {
-  console.log('===', extractorsData.value)
   for (let val of extractorsData.value) {
-    console.log('===', val.result)
     if (val.result==='extractor_err') return true
   }
   return false

@@ -162,23 +162,26 @@
 </template>
 
 <script setup lang="ts">
-import {computed, defineComponent, onBeforeUnmount, onMounted, ref} from "vue";
+import {computed, defineComponent, inject, onBeforeUnmount, onMounted, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import { DownOutlined, ArrowRightOutlined, DeleteOutlined } from '@ant-design/icons-vue';
 import {StateType} from "@/views/interface/store";
 import {Interface} from "@/views/interface/data";
 import {genOAuth2AccessToken, getEnumSelectItems, listOAuth2Token, removeOAuth2Token} from "@/views/interface/service";
-import {AuthorizationTypes, OAuth2ClientAuthenticationWay, OAuth2GrantTypes} from "@/utils/enum";
+import {AuthorizationTypes, OAuth2ClientAuthenticationWay, OAuth2GrantTypes, UsedBy} from "@/utils/enum";
 import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
 import {WsMsg} from "@/types/data";
 import {StateType as ProjectStateType} from "@/store/project";
+import {StateType as ScenarioStateType} from "@/views/scenario/store";
 
+const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
-const store = useStore<{ Interface: StateType, ProjectGlobal: ProjectStateType }>();
+const store = useStore<{ Interface: StateType, Scenario: ScenarioStateType, ProjectGlobal: ProjectStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
-const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
+const interfaceData = computed<Interface>(
+    () => usedBy === UsedBy.interface ? store.state.Interface.interfaceData : store.state.Scenario.interfaceData);
 
 const oauth2GrantTypes = getEnumSelectItems(OAuth2GrantTypes)
 const oauth2ClientAuthWays = getEnumSelectItems(OAuth2ClientAuthenticationWay)

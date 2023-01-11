@@ -32,12 +32,13 @@ type IndexModule struct {
 	CheckpointModule  *router.CheckpointModule  `inject:""`
 	ParserModule      *router.ParserModule      `inject:""`
 
-	ScenarioModule          *router.ScenarioModule          `inject:""`
-	ScenarioNodeModule      *router.ScenarioNodeModule      `inject:""`
-	ScenarioProcessorModule *router.ScenarioProcessorModule `inject:""`
-	ScenarioExecModule      *router.ScenarioExecModule      `inject:""`
-	ScenarioInterfaceModule *router.ScenarioInterfaceModule `inject:""`
-	ReportModule            *router.ReportModule            `inject:""`
+	ScenarioModule           *router.ScenarioModule            `inject:""`
+	ScenarioNodeModule       *router.ScenarioNodeModule        `inject:""`
+	ScenarioProcessorModule  *router.ScenarioProcessorModule   `inject:""`
+	ScenarioExecModule       *router.ScenarioExecModule        `inject:""`
+	ScenarioInterfaceModule  *router.ProcessorInterfaceModule  `inject:""`
+	ScenarioInvocationModule *router.ProcessorInvocationModule `inject:""`
+	ReportModule             *router.ReportModule              `inject:""`
 }
 
 func NewIndexModule() *IndexModule {
@@ -79,6 +80,7 @@ func (m *IndexModule) Party() module.WebModule {
 		m.ScenarioProcessorModule.Party(),
 		m.ScenarioExecModule.Party(),
 		m.ScenarioInterfaceModule.Party(),
+		m.ScenarioInvocationModule.Party(),
 		m.ReportModule.Party(),
 	}
 	return module.NewModule(consts.ApiPath, handler, modules...)

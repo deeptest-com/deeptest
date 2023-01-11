@@ -2,6 +2,7 @@ import request from '@/utils/request';
 import {requestToAgent} from '@/utils/request';
 import {Interface, OAuth20} from "@/views/interface/data";
 import {isInArray} from "@/utils/array";
+import {UsedBy} from "@/utils/enum";
 
 const apiPath = 'interfaces';
 const apiImport = 'import';
@@ -288,8 +289,8 @@ export const getEnumSelectItems = (enumDef) => {
 }
 
 // extractor
-export async function listExtractor(interfaceId: number): Promise<any> {
-    const params = {interfaceId}
+export async function listExtractor(interfaceId: number, usedBy: UsedBy): Promise<any> {
+    const params = {interfaceId, usedBy}
 
     return request({
         url: `/${apiExtractor}`,
@@ -342,8 +343,8 @@ export async function listValidExtractorVariable(interfaceId: number): Promise<a
 }
 
 // checkpoint
-export async function listCheckpoint(interfaceId: number): Promise<any> {
-    const params = {interfaceId}
+export async function listCheckpoint(interfaceId: number, usedBy: UsedBy): Promise<any> {
+    const params = {interfaceId, usedBy}
 
     return request({
         url: `/${apiCheckpoint}`,

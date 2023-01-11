@@ -25,12 +25,14 @@
 </template>
 
 <script lang="ts">
-import {computed, defineComponent} from "vue";
+import {computed, defineComponent, inject} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import { DeleteOutlined } from '@ant-design/icons-vue';
 import {StateType} from "@/views/interface/store";
 import {Interface} from "@/views/interface/data";
+import {UsedBy} from "@/utils/enum";
+import {StateType as ScenarioStateType} from "@/views/scenario/store";
 
 export default defineComponent({
   name: 'RequestHistory',
@@ -42,9 +44,12 @@ export default defineComponent({
   },
 
   setup(props) {
+    const usedBy = inject('usedBy') as UsedBy
     const {t} = useI18n();
-    const store = useStore<{ Interface: StateType }>();
-    const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
+    const store = useStore<{ Interface: StateType, Scenario: ScenarioStateType }>();
+    const interfaceData = computed<Interface>(
+        () => usedBy === UsedBy.interface ? store.state.Interface.interfaceData : store.state.Scenario.interfaceData);
+
     const invocationsData = computed<any[]>(() => store.state.Interface.invocationsData);
 
     const getRequestAsInterface = (id) => {
@@ -58,11 +63,11 @@ export default defineComponent({
     }
 
     const mouseOver = (event) => {
-      console.log('mouseOver', event)
+      // console.log('mouseOver', event)
       event.currentTarget.querySelector(".link").style.display = 'block'
     }
      const mouseLeave = (event) => {
-       console.log('mouseLeave', event);
+       // console.log('mouseLeave', event);
        event.currentTarget.querySelector(".link").style.display = 'none'
     }
 

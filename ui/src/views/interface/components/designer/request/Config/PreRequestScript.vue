@@ -51,7 +51,7 @@
 </template>
 
 <script lang="ts">
-import {computed, ComputedRef, defineComponent, PropType, Ref, ref} from "vue";
+import {computed, ComputedRef, defineComponent, inject, PropType, Ref, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import { QuestionCircleOutlined, DeleteOutlined, ClearOutlined } from '@ant-design/icons-vue';
@@ -60,6 +60,8 @@ import ALink from "@/components/ALink/index.vue";
 import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
 import {MonacoOptions} from "@/utils/const";
 import {Interface} from "@/views/interface/data";
+import {UsedBy} from "@/utils/enum";
+import {StateType as ScenarioStateType} from "@/views/scenario/store";
 
 interface RequestPreRequestScriptSetupData {
   interfaceData: ComputedRef;
@@ -73,9 +75,11 @@ export default defineComponent({
     QuestionCircleOutlined, DeleteOutlined, ClearOutlined, MonacoEditor,
   },
   setup(props): RequestPreRequestScriptSetupData {
+    const usedBy = inject('usedBy') as UsedBy
     const {t} = useI18n();
-    const store = useStore<{ Interface: StateType }>();
-    const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
+    const store = useStore<{ Interface: StateType, Scenario: ScenarioStateType }>();
+    const interfaceData = computed<Interface>(
+        () => usedBy === UsedBy.interface ? store.state.Interface.interfaceData : store.state.Scenario.interfaceData);
     const editorOptions = ref(MonacoOptions)
 
     function onJsonChange (value) {

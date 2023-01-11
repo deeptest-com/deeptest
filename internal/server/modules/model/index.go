@@ -59,8 +59,6 @@ var (
 		&ProcessorInterfaceBearerToken{},
 		&ProcessorInterfaceOAuth20{},
 		&ProcessorInterfaceApiKey{},
-		&ProcessorInterfaceExtractor{},
-		&ProcessorInterfaceCheckpoint{},
 
 		&ProcessorInvocation{},
 		&Report{},

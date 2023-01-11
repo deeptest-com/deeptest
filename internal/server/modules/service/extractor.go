@@ -18,8 +18,8 @@ type ExtractorService struct {
 	InterfaceRepo *repo.InterfaceRepo `inject:""`
 }
 
-func (s *ExtractorService) List(interfaceId int) (extractors []model.InterfaceExtractor, err error) {
-	extractors, err = s.ExtractorRepo.List(uint(interfaceId))
+func (s *ExtractorService) List(interfaceId int, usedBy consts.UsedBy) (extractors []model.InterfaceExtractor, err error) {
+	extractors, err = s.ExtractorRepo.List(uint(interfaceId), usedBy)
 
 	return
 }
@@ -42,8 +42,8 @@ func (s *ExtractorService) Update(extractor *model.InterfaceExtractor) (err erro
 	return
 }
 
-func (s *ExtractorService) CreateOrUpdateResult(extractor *model.InterfaceExtractor) (err error) {
-	s.ExtractorRepo.CreateOrUpdateResult(extractor)
+func (s *ExtractorService) CreateOrUpdateResult(extractor *model.InterfaceExtractor, usedBy consts.UsedBy) (err error) {
+	s.ExtractorRepo.CreateOrUpdateResult(extractor, usedBy)
 
 	return
 }
@@ -54,12 +54,13 @@ func (s *ExtractorService) Delete(reqId uint) (err error) {
 	return
 }
 
-func (s *ExtractorService) ExtractInterface(interf model.Interface, resp v1.InvocationResponse,
-	interfaceExecLog *model.ExecLogProcessor) (logExtractors []domain.ExecInterfaceExtractor, err error) {
-	extractors, _ := s.ExtractorRepo.List(interf.ID)
+func (s *ExtractorService) ExtractInterface(interfaceId uint, resp v1.InvocationResponse,
+	interfaceExecLog *model.ExecLogProcessor, usedBy consts.UsedBy) (logExtractors []domain.ExecInterfaceExtractor, err error) {
+
+	extractors, _ := s.ExtractorRepo.List(interfaceId, usedBy)
 
 	for _, extractor := range extractors {
-		logExtractor, err := s.Extract(extractor, resp, interfaceExecLog)
+		logExtractor, err := s.Extract(extractor, resp, interfaceExecLog, usedBy)
 
 		if err == nil && interfaceExecLog != nil { // gen report for processor
 			interfaceExtractor := domain.ExecInterfaceExtractor{}
@@ -73,11 +74,11 @@ func (s *ExtractorService) ExtractInterface(interf model.Interface, resp v1.Invo
 }
 
 func (s *ExtractorService) Extract(extractor model.InterfaceExtractor, resp v1.InvocationResponse,
-	interfaceExecLog *model.ExecLogProcessor) (logExtractor model.ExecLogExtractor, err error) {
+	interfaceExecLog *model.ExecLogProcessor, usedBy consts.UsedBy) (logExtractor model.ExecLogExtractor, err error) {
 
 	s.ExtractValue(&extractor, resp)
 
-	s.ExtractorRepo.UpdateResult(extractor)
+	s.ExtractorRepo.UpdateResult(extractor, usedBy)
 
 	return
 }

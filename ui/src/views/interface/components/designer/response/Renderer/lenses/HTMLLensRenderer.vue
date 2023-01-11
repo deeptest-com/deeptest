@@ -54,7 +54,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, ref, reactive, watch} from "vue";
+import {computed, ref, reactive, watch, inject} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import { DownloadOutlined, CopyOutlined, ClearOutlined } from '@ant-design/icons-vue';
@@ -65,11 +65,14 @@ import {Interface, Response} from "@/views/interface/data";
 import ResponseExtractor from "@/components/Editor/ResponseExtractor.vue";
 import {getXpath, initIFrame, updateElem} from "@/services/parser-html";
 import {parseHtml, testExpr} from "@/views/interface/service";
-import {ExtractorSrc, ExtractorType} from "@/utils/enum";
+import {ExtractorSrc, ExtractorType, UsedBy} from "@/utils/enum";
+import {StateType as ScenarioStateType} from "@/views/scenario/store";
+const usedBy = inject('usedBy') as UsedBy
 
 const {t} = useI18n();
-const store = useStore<{ Interface: StateType }>();
-const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
+const store = useStore<{ Interface: StateType, Scenario: ScenarioStateType }>();
+const interfaceData = computed<Interface>(
+    () => usedBy === UsedBy.interface ? store.state.Interface.interfaceData : store.state.Scenario.interfaceData);
 const responseData = computed<Response>(() => store.state.Interface.responseData);
 const extractorsData = computed(() => store.state.Interface.extractorsData);
 

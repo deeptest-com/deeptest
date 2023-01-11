@@ -12,16 +12,19 @@ import (
 )
 
 type InvocationService struct {
-	InvocationRepo *repo.InvocationRepo `inject:""`
-	InterfaceRepo  *repo.InterfaceRepo  `inject:""`
+	InvocationRepo         *repo.InvocationRepo          `inject:""`
+	ScenarioInvocationRepo *repo.ProcessorInvocationRepo `inject:""`
+	InterfaceRepo          *repo.InterfaceRepo           `inject:""`
+	ScenarioInterfaceRepo  *repo.ProcessorInterfaceRepo  `inject:""`
 
-	InterfaceService  *InterfaceService  `inject:""`
-	ExtractorService  *ExtractorService  `inject:""`
-	CheckpointService *CheckpointService `inject:""`
-	VariableService   *VariableService   `inject:""`
+	InterfaceService         *InterfaceService          `inject:""`
+	ScenarioInterfaceService *ProcessorInterfaceService `inject:""`
+	ExtractorService         *ExtractorService          `inject:""`
+	CheckpointService        *CheckpointService         `inject:""`
+	VariableService          *VariableService           `inject:""`
 }
 
-func (s *InvocationService) LoadExecData(req v1.InvocationRequest) (ret v1.InvocationRequest, err error) {
+func (s *InvocationService) LoadInterfaceExecData(req v1.InvocationRequest) (ret v1.InvocationRequest, err error) {
 	err = s.InterfaceService.UpdateByInvocation(req)
 	if err != nil {
 		return
@@ -32,12 +35,14 @@ func (s *InvocationService) LoadExecData(req v1.InvocationRequest) (ret v1.Invoc
 	return
 }
 
-func (s *InvocationService) SubmitInvokeResult(req v1.InvocationRequest, resp v1.InvocationResponse) (err error) {
-	interf, _ := s.InterfaceRepo.GetDetail(resp.Id)
-	s.ExtractorService.ExtractInterface(interf, resp, nil)
-	s.CheckpointService.CheckInterface(interf, resp, nil)
+func (s *InvocationService) SubmitInterfaceInvokeResult(req v1.SubmitInvocationResultRequest) (err error) {
+	interf, _ := s.InterfaceRepo.GetDetail(req.Response.Id)
 
-	_, err = s.Create(req, resp, interf.ProjectId)
+	s.ExtractorService.ExtractInterface(interf.ID, req.Response, nil, consts.Interface)
+	s.CheckpointService.CheckInterface(interf.ID, req.Response, nil, consts.Interface)
+
+	_, err = s.CreateForInterface(req.Request, req.Response, interf.ProjectId)
+
 	if err != nil {
 		return
 	}
@@ -88,7 +93,7 @@ func (s *InvocationService) GetAsInterface(id int) (interf model.Interface, err 
 	return
 }
 
-func (s *InvocationService) Create(req v1.InvocationRequest,
+func (s *InvocationService) CreateForInterface(req v1.InvocationRequest,
 	resp v1.InvocationResponse, projectId uint) (invocation model.Invocation, err error) {
 	invocation = model.Invocation{
 		InvocationBase: model.InvocationBase{
@@ -109,7 +114,24 @@ func (s *InvocationService) Create(req v1.InvocationRequest,
 	return
 }
 
-func (s *InvocationService) Update(invocation model.Invocation) (err error) {
+func (s *InvocationService) CreateForScenarioInterface(req v1.InvocationRequest,
+	resp v1.InvocationResponse, projectId uint) (invocation model.ProcessorInvocation, err error) {
+
+	invocation = model.ProcessorInvocation{
+		InvocationBase: model.InvocationBase{
+			Name:        time.Now().Format("01-02 15:04:05"),
+			InterfaceId: req.Id,
+			ProjectId:   uint(projectId),
+		},
+	}
+
+	bytesReq, _ := json.Marshal(req)
+	invocation.ReqContent = string(bytesReq)
+
+	bytesReps, _ := json.Marshal(resp)
+	invocation.RespContent = string(bytesReps)
+
+	err = s.ScenarioInvocationRepo.Save(&invocation)
 
 	return
 }

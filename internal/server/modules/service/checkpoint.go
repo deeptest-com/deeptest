@@ -24,8 +24,8 @@ type CheckpointService struct {
 	VariableService *VariableService      `inject:""`
 }
 
-func (s *CheckpointService) List(interfaceId int) (checkpoints []model.InterfaceCheckpoint, err error) {
-	checkpoints, err = s.CheckpointRepo.List(uint(interfaceId))
+func (s *CheckpointService) List(interfaceId int, usedBy consts.UsedBy) (checkpoints []model.InterfaceCheckpoint, err error) {
+	checkpoints, err = s.CheckpointRepo.List(uint(interfaceId), usedBy)
 
 	return
 }
@@ -54,14 +54,15 @@ func (s *CheckpointService) Delete(reqId uint) (err error) {
 	return
 }
 
-func (s *CheckpointService) CheckInterface(interf model.Interface, resp v1.InvocationResponse,
-	interfaceExecLog *model.ExecLogProcessor) (
+func (s *CheckpointService) CheckInterface(interfaceId uint, resp v1.InvocationResponse,
+	interfaceExecLog *model.ExecLogProcessor, usedBy consts.UsedBy) (
 	logCheckpoints []domain.ExecInterfaceCheckpoint, status consts.ResultStatus, err error) {
-	checkpoints, _ := s.CheckpointRepo.List(interf.ID)
+
+	checkpoints, _ := s.CheckpointRepo.List(interfaceId, usedBy)
 
 	status = consts.Pass
 	for _, checkpoint := range checkpoints {
-		logCheckpoint, err := s.Check(checkpoint, resp, interfaceExecLog)
+		logCheckpoint, err := s.Check(checkpoint, resp, interfaceExecLog, usedBy)
 
 		if logCheckpoint.ResultStatus == consts.Fail {
 			status = consts.Fail
@@ -79,12 +80,12 @@ func (s *CheckpointService) CheckInterface(interf model.Interface, resp v1.Invoc
 }
 
 func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp v1.InvocationResponse,
-	interfaceExecLog *model.ExecLogProcessor) (logCheckpoint model.ExecLogCheckpoint, err error) {
+	interfaceExecLog *model.ExecLogProcessor, usedBy consts.UsedBy) (logCheckpoint model.ExecLogCheckpoint, err error) {
 	if checkpoint.Disabled {
 		checkpoint.ResultStatus = ""
 
 		if interfaceExecLog == nil { // run by interface
-			s.CheckpointRepo.UpdateResult(checkpoint)
+			s.CheckpointRepo.UpdateResult(checkpoint, usedBy)
 
 		} else { // run by processor
 			logCheckpoint, err = s.CheckpointRepo.UpdateResultToExecLog(checkpoint, interfaceExecLog)
@@ -109,7 +110,7 @@ func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp v1.
 		}
 
 		if interfaceExecLog == nil { // run by interface
-			s.CheckpointRepo.UpdateResult(checkpoint)
+			s.CheckpointRepo.UpdateResult(checkpoint, usedBy)
 		} else { // run by processor
 			logCheckpoint, err = s.CheckpointRepo.UpdateResultToExecLog(checkpoint, interfaceExecLog)
 		}
@@ -140,7 +141,7 @@ func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp v1.
 		}
 
 		if interfaceExecLog == nil { // run by interface
-			s.CheckpointRepo.UpdateResult(checkpoint)
+			s.CheckpointRepo.UpdateResult(checkpoint, usedBy)
 		} else { // run by processor
 			logCheckpoint, err = s.CheckpointRepo.UpdateResultToExecLog(checkpoint, interfaceExecLog)
 		}
@@ -166,7 +167,7 @@ func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp v1.
 		}
 
 		if interfaceExecLog == nil { // run by interface
-			s.CheckpointRepo.UpdateResult(checkpoint)
+			s.CheckpointRepo.UpdateResult(checkpoint, usedBy)
 		} else { // run by processor
 			logCheckpoint, err = s.CheckpointRepo.UpdateResultToExecLog(checkpoint, interfaceExecLog)
 		}
@@ -193,7 +194,7 @@ func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp v1.
 		checkpoint.ActualResult = fmt.Sprintf("%v", ret)
 
 		if interfaceExecLog == nil { // run by interface
-			s.CheckpointRepo.UpdateResult(checkpoint)
+			s.CheckpointRepo.UpdateResult(checkpoint, usedBy)
 		} else { // run by processor
 			logCheckpoint, err = s.CheckpointRepo.UpdateResultToExecLog(checkpoint, interfaceExecLog)
 		}
@@ -210,7 +211,7 @@ func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp v1.
 		checkpoint.ResultStatus = utils.Compare(checkpoint.Operator, checkpoint.ActualResult, checkpoint.Value)
 
 		if interfaceExecLog == nil { // run by interface
-			s.CheckpointRepo.UpdateResult(checkpoint)
+			s.CheckpointRepo.UpdateResult(checkpoint, usedBy)
 		} else { // run by processor
 			logCheckpoint, err = s.CheckpointRepo.UpdateResultToExecLog(checkpoint, interfaceExecLog)
 		}

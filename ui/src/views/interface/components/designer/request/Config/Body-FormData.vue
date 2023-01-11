@@ -56,7 +56,7 @@
 
 <script setup lang="ts">
 
-import {computed, ComputedRef, defineComponent, onMounted, PropType, Ref, ref} from "vue";
+import {computed, ComputedRef, defineComponent, inject, onMounted, PropType, Ref, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import {
@@ -67,10 +67,13 @@ import {Param, Interface, BodyFormDataItem} from "@/views/interface/data";
 import {notification} from "ant-design-vue";
 import {NotificationKeyCommon} from "@/utils/const";
 import settings from "@/config/settings";
-
+import {UsedBy} from "@/utils/enum";
+import {StateType as ScenarioStateType} from "@/views/scenario/store";
+const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
-const store = useStore<{ Interface: StateType }>();
-const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
+const store = useStore<{ Interface: StateType, Scenario: ScenarioStateType }>();
+const interfaceData = computed<Interface>(
+    () => usedBy === UsedBy.interface ? store.state.Interface.interfaceData : store.state.Scenario.interfaceData);
 
 let uploadRef = ref()
 const isElectron = ref(!!window.require)

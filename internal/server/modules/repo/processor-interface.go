@@ -5,16 +5,16 @@ import (
 	"gorm.io/gorm"
 )
 
-type ScenarioInterfaceRepo struct {
+type ProcessorInterfaceRepo struct {
 	DB *gorm.DB `inject:""`
 
-	ScenarioNodeRepo      *ScenarioNodeRepo      `inject:""`
-	ExtractorRepo         *ExtractorRepo         `inject:""`
-	CheckpointRepo        *CheckpointRepo        `inject:""`
-	ScenarioInterfaceRepo *ScenarioInterfaceRepo `inject:""`
+	ScenarioNodeRepo       *ScenarioNodeRepo       `inject:""`
+	ExtractorRepo          *ExtractorRepo          `inject:""`
+	CheckpointRepo         *CheckpointRepo         `inject:""`
+	ProcessorInterfaceRepo *ProcessorInterfaceRepo `inject:""`
 }
 
-func (r *ScenarioInterfaceRepo) Get(interfaceId uint) (po model.ProcessorInterface, err error) {
+func (r *ProcessorInterfaceRepo) Get(interfaceId uint) (po model.ProcessorInterface, err error) {
 	err = r.DB.
 		Where("id=?", interfaceId).
 		Where("NOT deleted").
@@ -23,7 +23,7 @@ func (r *ScenarioInterfaceRepo) Get(interfaceId uint) (po model.ProcessorInterfa
 	return
 }
 
-func (r *ScenarioInterfaceRepo) GetDetail(interfId uint) (interf model.ProcessorInterface, err error) {
+func (r *ProcessorInterfaceRepo) GetDetail(interfId uint) (interf model.ProcessorInterface, err error) {
 	if interfId > 0 {
 		interf, err = r.Get(interfId)
 
@@ -41,7 +41,7 @@ func (r *ScenarioInterfaceRepo) GetDetail(interfId uint) (interf model.Processor
 	return
 }
 
-func (r *ScenarioInterfaceRepo) SaveInterface(interfaceProcessor *model.ProcessorInterface) (err error) {
+func (r *ProcessorInterfaceRepo) SaveInterface(interfaceProcessor *model.ProcessorInterface) (err error) {
 	err = r.DB.Save(interfaceProcessor).Error
 
 	err = r.UpdateParams(interfaceProcessor.ID, interfaceProcessor.Params)
@@ -87,7 +87,7 @@ func (r *ScenarioInterfaceRepo) SaveInterface(interfaceProcessor *model.Processo
 	return
 }
 
-func (r *ScenarioInterfaceRepo) UpdateParams(id uint, params []model.ProcessorInterfaceParam) (err error) {
+func (r *ProcessorInterfaceRepo) UpdateParams(id uint, params []model.ProcessorInterfaceParam) (err error) {
 	err = r.RemoveParams(id)
 
 	if len(params) == 0 {
@@ -103,7 +103,7 @@ func (r *ScenarioInterfaceRepo) UpdateParams(id uint, params []model.ProcessorIn
 
 	return
 }
-func (r *ScenarioInterfaceRepo) RemoveParams(id uint) (err error) {
+func (r *ProcessorInterfaceRepo) RemoveParams(id uint) (err error) {
 	err = r.DB.
 		Where("interface_id = ?", id).
 		Delete(&model.ProcessorInterfaceParam{}, "").Error
@@ -111,7 +111,7 @@ func (r *ScenarioInterfaceRepo) RemoveParams(id uint) (err error) {
 	return
 }
 
-func (r *ScenarioInterfaceRepo) UpdateBodyFormData(id uint, items []model.ProcessorInterfaceBodyFormDataItem) (err error) {
+func (r *ProcessorInterfaceRepo) UpdateBodyFormData(id uint, items []model.ProcessorInterfaceBodyFormDataItem) (err error) {
 	err = r.RemoveBodyFormData(id)
 
 	if len(items) == 0 {
@@ -127,7 +127,7 @@ func (r *ScenarioInterfaceRepo) UpdateBodyFormData(id uint, items []model.Proces
 
 	return
 }
-func (r *ScenarioInterfaceRepo) RemoveBodyFormData(id uint) (err error) {
+func (r *ProcessorInterfaceRepo) RemoveBodyFormData(id uint) (err error) {
 	err = r.DB.
 		Where("interface_id = ?", id).
 		Delete(&model.ProcessorInterfaceBodyFormDataItem{}, "").Error
@@ -135,7 +135,7 @@ func (r *ScenarioInterfaceRepo) RemoveBodyFormData(id uint) (err error) {
 	return
 }
 
-func (r *ScenarioInterfaceRepo) UpdateBodyFormUrlencoded(id uint, items []model.ProcessorInterfaceBodyFormUrlEncodedItem) (err error) {
+func (r *ProcessorInterfaceRepo) UpdateBodyFormUrlencoded(id uint, items []model.ProcessorInterfaceBodyFormUrlEncodedItem) (err error) {
 	err = r.RemoveBodyFormUrlencoded(id)
 
 	if len(items) == 0 {
@@ -151,7 +151,7 @@ func (r *ScenarioInterfaceRepo) UpdateBodyFormUrlencoded(id uint, items []model.
 
 	return
 }
-func (r *ScenarioInterfaceRepo) RemoveBodyFormUrlencoded(id uint) (err error) {
+func (r *ProcessorInterfaceRepo) RemoveBodyFormUrlencoded(id uint) (err error) {
 	err = r.DB.
 		Where("interface_id = ?", id).
 		Delete(&model.ProcessorInterfaceBodyFormUrlEncodedItem{}, "").Error
@@ -159,7 +159,7 @@ func (r *ScenarioInterfaceRepo) RemoveBodyFormUrlencoded(id uint) (err error) {
 	return
 }
 
-func (r *ScenarioInterfaceRepo) UpdateHeaders(id uint, headers []model.ProcessorInterfaceHeader) (err error) {
+func (r *ProcessorInterfaceRepo) UpdateHeaders(id uint, headers []model.ProcessorInterfaceHeader) (err error) {
 	err = r.RemoveHeaders(id)
 
 	if len(headers) == 0 {
@@ -175,7 +175,7 @@ func (r *ScenarioInterfaceRepo) UpdateHeaders(id uint, headers []model.Processor
 
 	return
 }
-func (r *ScenarioInterfaceRepo) RemoveHeaders(id uint) (err error) {
+func (r *ProcessorInterfaceRepo) RemoveHeaders(id uint) (err error) {
 	err = r.DB.
 		Where("interface_id = ?", id).
 		Delete(&model.ProcessorInterfaceHeader{}, "").Error
@@ -183,13 +183,13 @@ func (r *ScenarioInterfaceRepo) RemoveHeaders(id uint) (err error) {
 	return
 }
 
-func (r *ScenarioInterfaceRepo) UpdateBasicAuth(id uint, payload model.ProcessorInterfaceBasicAuth) (err error) {
+func (r *ProcessorInterfaceRepo) UpdateBasicAuth(id uint, payload model.ProcessorInterfaceBasicAuth) (err error) {
 	payload.InterfaceId = id
 	err = r.DB.Save(&payload).Error
 
 	return
 }
-func (r *ScenarioInterfaceRepo) RemoveBasicAuth(id uint) (err error) {
+func (r *ProcessorInterfaceRepo) RemoveBasicAuth(id uint) (err error) {
 	err = r.DB.
 		Where("interface_id = ?", id).
 		Delete(&model.ProcessorInterfaceBasicAuth{}, "").Error
@@ -197,13 +197,13 @@ func (r *ScenarioInterfaceRepo) RemoveBasicAuth(id uint) (err error) {
 	return
 }
 
-func (r *ScenarioInterfaceRepo) UpdateBearerToken(id uint, payload model.ProcessorInterfaceBearerToken) (err error) {
+func (r *ProcessorInterfaceRepo) UpdateBearerToken(id uint, payload model.ProcessorInterfaceBearerToken) (err error) {
 	payload.InterfaceId = id
 	err = r.DB.Save(&payload).Error
 
 	return
 }
-func (r *ScenarioInterfaceRepo) RemoveBearerToken(id uint) (err error) {
+func (r *ProcessorInterfaceRepo) RemoveBearerToken(id uint) (err error) {
 	err = r.DB.
 		Where("interface_id = ?", id).
 		Delete(&model.ProcessorInterfaceBearerToken{}, "").Error
@@ -211,7 +211,7 @@ func (r *ScenarioInterfaceRepo) RemoveBearerToken(id uint) (err error) {
 	return
 }
 
-func (r *ScenarioInterfaceRepo) UpdateOAuth20(interfaceId uint, payload model.ProcessorInterfaceOAuth20) (err error) {
+func (r *ProcessorInterfaceRepo) UpdateOAuth20(interfaceId uint, payload model.ProcessorInterfaceOAuth20) (err error) {
 	r.RemoveOAuth20(interfaceId)
 
 	payload.InterfaceId = interfaceId
@@ -219,7 +219,7 @@ func (r *ScenarioInterfaceRepo) UpdateOAuth20(interfaceId uint, payload model.Pr
 
 	return
 }
-func (r *ScenarioInterfaceRepo) RemoveOAuth20(interfaceId uint) (err error) {
+func (r *ProcessorInterfaceRepo) RemoveOAuth20(interfaceId uint) (err error) {
 	err = r.DB.
 		Where("interface_id = ?", interfaceId).
 		Delete(&model.ProcessorInterfaceOAuth20{}).Error
@@ -227,13 +227,13 @@ func (r *ScenarioInterfaceRepo) RemoveOAuth20(interfaceId uint) (err error) {
 	return
 }
 
-func (r *ScenarioInterfaceRepo) UpdateApiKey(id uint, payload model.ProcessorInterfaceApiKey) (err error) {
+func (r *ProcessorInterfaceRepo) UpdateApiKey(id uint, payload model.ProcessorInterfaceApiKey) (err error) {
 	payload.InterfaceId = id
 	err = r.DB.Save(&payload).Error
 
 	return
 }
-func (r *ScenarioInterfaceRepo) RemoveApiKey(id uint) (err error) {
+func (r *ProcessorInterfaceRepo) RemoveApiKey(id uint) (err error) {
 	err = r.DB.
 		Where("interface_id = ?", id).
 		Delete(&model.ProcessorInterfaceApiKey{}, "").Error
@@ -241,7 +241,7 @@ func (r *ScenarioInterfaceRepo) RemoveApiKey(id uint) (err error) {
 	return
 }
 
-func (r *ScenarioInterfaceRepo) ListParams(interfaceId uint) (pos []model.ProcessorInterfaceParam, err error) {
+func (r *ProcessorInterfaceRepo) ListParams(interfaceId uint) (pos []model.ProcessorInterfaceParam, err error) {
 	err = r.DB.
 		Where("interface_id=?", interfaceId).
 		Where("NOT deleted").
@@ -249,16 +249,7 @@ func (r *ScenarioInterfaceRepo) ListParams(interfaceId uint) (pos []model.Proces
 		Find(&pos).Error
 	return
 }
-func (r *ScenarioInterfaceRepo) ListHeaders(interfaceId uint) (pos []model.ProcessorInterfaceHeader, err error) {
-	err = r.DB.
-		Where("interface_id=?", interfaceId).
-		Where("NOT deleted").
-		Order("id ASC").
-		Find(&pos).Error
-
-	return
-}
-func (r *ScenarioInterfaceRepo) ListBodyFormData(interfaceId uint) (pos []model.ProcessorInterfaceBodyFormDataItem, err error) {
+func (r *ProcessorInterfaceRepo) ListHeaders(interfaceId uint) (pos []model.ProcessorInterfaceHeader, err error) {
 	err = r.DB.
 		Where("interface_id=?", interfaceId).
 		Where("NOT deleted").
@@ -267,7 +258,16 @@ func (r *ScenarioInterfaceRepo) ListBodyFormData(interfaceId uint) (pos []model.
 
 	return
 }
-func (r *ScenarioInterfaceRepo) ListBodyFormUrlencoded(interfaceId uint) (pos []model.ProcessorInterfaceBodyFormUrlEncodedItem, err error) {
+func (r *ProcessorInterfaceRepo) ListBodyFormData(interfaceId uint) (pos []model.ProcessorInterfaceBodyFormDataItem, err error) {
+	err = r.DB.
+		Where("interface_id=?", interfaceId).
+		Where("NOT deleted").
+		Order("id ASC").
+		Find(&pos).Error
+
+	return
+}
+func (r *ProcessorInterfaceRepo) ListBodyFormUrlencoded(interfaceId uint) (pos []model.ProcessorInterfaceBodyFormUrlEncodedItem, err error) {
 	err = r.DB.
 		Where("interface_id=?", interfaceId).
 		Where("NOT deleted").
@@ -277,28 +277,28 @@ func (r *ScenarioInterfaceRepo) ListBodyFormUrlencoded(interfaceId uint) (pos []
 	return
 }
 
-func (r *ScenarioInterfaceRepo) GetBasicAuth(id uint) (po model.ProcessorInterfaceBasicAuth, err error) {
+func (r *ProcessorInterfaceRepo) GetBasicAuth(id uint) (po model.ProcessorInterfaceBasicAuth, err error) {
 	err = r.DB.
 		Where("interface_id = ?", id).
 		First(&po).Error
 
 	return
 }
-func (r *ScenarioInterfaceRepo) GetBearerToken(id uint) (po model.ProcessorInterfaceBearerToken, err error) {
+func (r *ProcessorInterfaceRepo) GetBearerToken(id uint) (po model.ProcessorInterfaceBearerToken, err error) {
 	err = r.DB.
 		Where("interface_id = ?", id).
 		First(&po).Error
 
 	return
 }
-func (r *ScenarioInterfaceRepo) GetOAuth20(id uint) (po model.ProcessorInterfaceOAuth20, err error) {
+func (r *ProcessorInterfaceRepo) GetOAuth20(id uint) (po model.ProcessorInterfaceOAuth20, err error) {
 	err = r.DB.
 		Where("interface_id = ?", id).
 		First(&po).Error
 
 	return
 }
-func (r *ScenarioInterfaceRepo) GetApiKey(id uint) (po model.ProcessorInterfaceApiKey, err error) {
+func (r *ProcessorInterfaceRepo) GetApiKey(id uint) (po model.ProcessorInterfaceApiKey, err error) {
 	err = r.DB.
 		Where("interface_id = ?", id).
 		First(&po).Error
@@ -306,12 +306,65 @@ func (r *ScenarioInterfaceRepo) GetApiKey(id uint) (po model.ProcessorInterfaceA
 	return
 }
 
-func (r *ScenarioInterfaceRepo) ListInvocation(processorInterfaceId uint) (pos []model.ProcessorInvocation, err error) {
+func (r *ProcessorInterfaceRepo) ListInvocation(processorInterfaceId uint) (pos []model.ProcessorInvocation, err error) {
 	err = r.DB.
 		Select("id", "name").
 		Where("processor_interface_id=?", processorInterfaceId).
 		Where("NOT deleted").
 		Order("created_at DESC").
 		Find(&pos).Error
+	return
+}
+
+func (r *ProcessorInterfaceRepo) Update(interf model.ProcessorInterface) (err error) {
+	r.DB.Transaction(func(tx *gorm.DB) error {
+		err = r.DB.Updates(interf).Error
+		if err != nil {
+			return err
+		}
+
+		err = r.UpdateParams(interf.ID, interf.Params)
+		if err != nil {
+			return err
+		}
+
+		err = r.UpdateBodyFormData(interf.ID, interf.BodyFormData)
+		if err != nil {
+			return err
+		}
+
+		err = r.UpdateBodyFormUrlencoded(interf.ID, interf.BodyFormUrlencoded)
+		if err != nil {
+			return err
+		}
+
+		err = r.UpdateHeaders(interf.ID, interf.Headers)
+		if err != nil {
+			return err
+		}
+
+		err = r.UpdateBasicAuth(interf.ID, interf.BasicAuth)
+		if err != nil {
+			return err
+		}
+
+		err = r.UpdateBearerToken(interf.ID, interf.BearerToken)
+		if err != nil {
+			return err
+		}
+
+		err = r.UpdateOAuth20(interf.ID, interf.OAuth20)
+		if err != nil {
+			return err
+		}
+
+		err = r.UpdateApiKey(interf.ID, interf.ApiKey)
+		if err != nil {
+			return err
+		}
+
+		return err
+	})
+
 	return
 }

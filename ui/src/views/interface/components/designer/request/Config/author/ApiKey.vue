@@ -42,12 +42,14 @@
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, ref} from "vue";
+import {computed, defineComponent, inject, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import {ArrowRightOutlined, DeleteOutlined, PlusOutlined, QuestionCircleOutlined} from '@ant-design/icons-vue';
 import {StateType} from "@/views/interface/store";
 import {Interface} from "@/views/interface/data";
+import {UsedBy} from "@/utils/enum";
+import {StateType as ScenarioStateType} from "@/views/scenario/store";
 
 export default defineComponent({
   name: 'RequestAuthorApiKey',
@@ -55,9 +57,11 @@ export default defineComponent({
     ArrowRightOutlined,
   },
   setup(props) {
+    const usedBy = inject('usedBy') as UsedBy
     const {t} = useI18n();
-    const store = useStore<{ Interface: StateType }>();
-    const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
+    const store = useStore<{ Interface: StateType, Scenario: ScenarioStateType }>();
+    const interfaceData = computed<Interface>(
+        () => usedBy === UsedBy.interface ? store.state.Interface.interfaceData : store.state.Scenario.interfaceData);
 
     return {
       interfaceData,

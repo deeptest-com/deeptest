@@ -2,6 +2,7 @@ package repo
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/jinzhu/copier"
 	"gorm.io/gorm"
@@ -11,10 +12,10 @@ type CheckpointRepo struct {
 	DB *gorm.DB `inject:""`
 }
 
-func (r *CheckpointRepo) List(interfaceId uint) (pos []model.InterfaceCheckpoint, err error) {
+func (r *CheckpointRepo) List(interfaceId uint, usedBy consts.UsedBy) (pos []model.InterfaceCheckpoint, err error) {
 	err = r.DB.
 		Where("interface_id=?", interfaceId).
-		Where("NOT deleted").
+		Where("used_by = ? AND NOT deleted", usedBy).
 		Order("created_at ASC").
 		Find(&pos).Error
 	return
@@ -79,11 +80,16 @@ func (r *CheckpointRepo) Delete(id uint) (err error) {
 	return
 }
 
-func (r *CheckpointRepo) UpdateResult(checkpoint model.InterfaceCheckpoint) (err error) {
+func (r *CheckpointRepo) UpdateResult(checkpoint model.InterfaceCheckpoint, usedBy consts.UsedBy) (err error) {
+	values := map[string]interface{}{
+		"actual_result": checkpoint.ActualResult,
+		"result_status": checkpoint.ResultStatus,
+		"used_by":       usedBy,
+	}
+
 	err = r.DB.Model(&checkpoint).
 		Where("id=?", checkpoint.ID).
-		Update("actual_result", checkpoint.ActualResult).
-		Update("result_status", checkpoint.ResultStatus).
+		Updates(values).
 		Error
 
 	return

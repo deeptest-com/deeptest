@@ -17,17 +17,21 @@ type InvocationService struct {
 }
 
 func (s *InvocationService) Invoke(req domain.InvocationReq) (ret v1.InvocationResponse, err error) {
-	interfaceReq := s.getInterfaceToExec(req)
-
-	ret, err = s.Test(interfaceReq)
-
-	err = s.SubmitResult(req, ret, req.ServerUrl, req.Token)
+	if req.UsedBy == "interface" {
+		interfaceReq := s.getInterfaceToExec(req)
+		ret, err = s.Test(interfaceReq)
+		err = s.SubmitInterfaceResult(req, ret, req.ServerUrl, req.Token)
+	} else {
+		interfaceReq := s.getProcessorInterfaceToExec(req)
+		ret, err = s.Test(interfaceReq)
+		err = s.SubmitProcessorInterfaceResult(req, ret, req.ServerUrl, req.Token)
+	}
 
 	return
 }
 
 func (s *InvocationService) getInterfaceToExec(req domain.InvocationReq) (ret v1.InvocationRequest) {
-	url := fmt.Sprintf("invocations/loadExecData")
+	url := fmt.Sprintf("invocations/loadInterfaceExecData")
 	body, err := json.Marshal(req.Data)
 	if err != nil {
 		logUtils.Infof("marshal request data failed, error, %s", err.Error())
@@ -74,8 +78,99 @@ func (s *InvocationService) getInterfaceToExec(req domain.InvocationReq) (ret v1
 	return
 }
 
-func (s *InvocationService) SubmitResult(reqOjb domain.InvocationReq, repsObj v1.InvocationResponse, serverUrl, token string) (err error) {
-	url := _httpUtils.AddSepIfNeeded(serverUrl) + fmt.Sprintf("invocations/submitInvokeResult")
+func (s *InvocationService) SubmitInterfaceResult(reqOjb domain.InvocationReq, repsObj v1.InvocationResponse, serverUrl, token string) (err error) {
+	url := _httpUtils.AddSepIfNeeded(serverUrl) + fmt.Sprintf("invocations/submitInterfaceInvokeResult")
+
+	data := v1.SubmitInvocationResultRequest{
+		Request:  reqOjb.Data,
+		Response: repsObj,
+	}
+
+	bodyBytes, _ := json.Marshal(data)
+
+	req := v1.BaseRequest{
+		Url:               url,
+		BodyType:          consts.ContentTypeJSON,
+		Body:              string(bodyBytes),
+		AuthorizationType: consts.BearerToken,
+		BearerToken: v1.BearerToken{
+			Token: token,
+		},
+	}
+
+	resp, err := httpHelper.Post(req)
+	if err != nil {
+		logUtils.Infof("submit result failed, error, %s", err.Error())
+		return
+	}
+
+	if resp.StatusCode != consts.OK {
+		logUtils.Infof("submit result failed, response %v", resp)
+		return
+	}
+
+	ret := _domain.Response{}
+	json.Unmarshal([]byte(resp.Content), &ret)
+
+	if ret.Code != 0 {
+		logUtils.Infof("submit result failed, response %v", resp.Content)
+		return
+	}
+
+	return
+}
+
+func (s *InvocationService) getProcessorInterfaceToExec(req domain.InvocationReq) (ret v1.InvocationRequest) {
+	url := fmt.Sprintf("processors/invocations/loadInterfaceExecData")
+	body, err := json.Marshal(req.Data)
+	if err != nil {
+		logUtils.Infof("marshal request data failed, error, %s", err.Error())
+		return
+	}
+
+	httpReq := v1.BaseRequest{
+		Url:               _httpUtils.AddSepIfNeeded(req.ServerUrl) + url,
+		BodyType:          consts.ContentTypeJSON,
+		Body:              string(body),
+		AuthorizationType: consts.BearerToken,
+		BearerToken: v1.BearerToken{
+			Token: req.Token,
+		},
+	}
+
+	resp, err := httpHelper.Post(httpReq)
+	if err != nil {
+		logUtils.Infof("get interface obj failed, error, %s", err.Error())
+		return
+	}
+
+	if resp.StatusCode != consts.OK {
+		logUtils.Infof("get interface obj failed, response %v", resp)
+		return
+	}
+
+	respContent := _domain.Response{}
+	json.Unmarshal([]byte(resp.Content), &respContent)
+
+	if respContent.Code != 0 {
+		logUtils.Infof("get interface obj failed, response %v", resp.Content)
+		return
+	}
+
+	bytes, err := json.Marshal(respContent.Data)
+	if respContent.Code != 0 {
+		logUtils.Infof("get interface obj failed, response %v", resp.Content)
+		return
+	}
+
+	json.Unmarshal(bytes, &ret)
+
+	return
+}
+
+func (s *InvocationService) SubmitProcessorInterfaceResult(reqOjb domain.InvocationReq, repsObj v1.InvocationResponse, serverUrl, token string) (err error) {
+	url := _httpUtils.AddSepIfNeeded(serverUrl) + fmt.Sprintf("processors/invocations/submitInterfaceInvokeResult")
+
 	data := v1.SubmitInvocationResultRequest{
 		Request:  reqOjb.Data,
 		Response: repsObj,

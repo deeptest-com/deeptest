@@ -21,7 +21,8 @@ import {
 } from './service';
 import {getNodeMap} from "@/services/tree";
 import {Interface, Response} from "@/views/interface/data";
-import {invokeInterface, saveInterface} from "@/views/interface/service";
+import {invokeInterface, saveInterface, listExtractor, listCheckpoint} from "@/views/interface/service";
+import {UsedBy} from "@/utils/enum";
 
 export interface StateType {
     scenarioId: number;
@@ -38,6 +39,8 @@ export interface StateType {
 
     interfaceData: Interface;
     responseData: Response;
+    extractorsData: any[];
+    checkpointsData: any[];
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
@@ -59,6 +62,8 @@ export interface ModuleType extends StoreModuleType<StateType> {
 
         setInterface: Mutation<StateType>;
         setResponse: Mutation<StateType>;
+        setExtractors: Mutation<StateType>;
+        setCheckpoints: Mutation<StateType>;
     };
     actions: {
         listScenario: Action<StateType, StateType>;
@@ -89,6 +94,9 @@ export interface ModuleType extends StoreModuleType<StateType> {
         getInterface: Action<StateType, StateType>;
         saveInterface: Action<StateType, StateType>;
         invokeInterface: Action<StateType, StateType>;
+
+        listExtractor: Action<StateType, StateType>;
+        listCheckpoint: Action<StateType, StateType>;
     };
 }
 const initState: StateType = {
@@ -114,6 +122,8 @@ const initState: StateType = {
 
     interfaceData: {} as Interface,
     responseData: {} as Response,
+    extractorsData: [],
+    checkpointsData: []
 };
 
 const StoreModel: ModuleType = {
@@ -166,6 +176,12 @@ const StoreModel: ModuleType = {
         },
         setResponse(state, payload) {
             state.responseData = payload;
+        },
+        setExtractors(state, payload) {
+            state.extractorsData = payload;
+        },
+        setCheckpoints(state, payload) {
+            state.checkpointsData = payload;
         },
     },
     actions: {
@@ -400,13 +416,33 @@ const StoreModel: ModuleType = {
             if (response.code === 0) {
                 commit('setResponse', response.data);
 
-                dispatch('listInvocation', data.id);
                 dispatch('listExtractor', data.id);
                 dispatch('listCheckpoint', data.id);
 
                 return true;
             } else {
                 return false
+            }
+        },
+
+        async listExtractor({commit, dispatch, state}) {
+            try {
+                const resp = await listExtractor(state.interfaceData.id, UsedBy.scenario);
+                const {data} = resp;
+                commit('setExtractors', data);
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+        async listCheckpoint({commit, state}) {
+            try {
+                const resp = await listCheckpoint(state.interfaceData.id, UsedBy.scenario);
+                const {data} = resp;
+                commit('setCheckpoints', data);
+                return true;
+            } catch (error) {
+                return false;
             }
         },
     }

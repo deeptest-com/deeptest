@@ -124,7 +124,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, ComputedRef, defineComponent, PropType, reactive, Ref, ref, watch} from "vue";
+import {computed, ComputedRef, defineComponent, inject, PropType, reactive, Ref, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import {message, Form} from 'ant-design-vue';
@@ -135,22 +135,24 @@ import {
   getEnumSelectItems,
   listExtractorVariable
 } from "@/views/interface/service";
-import {ComparisonOperator, CheckpointType} from "@/utils/enum";
+import {ComparisonOperator, CheckpointType, UsedBy} from "@/utils/enum";
 import {isInArray} from "@/utils/array";
 import {getResultCls} from "@/utils/dom"
 import {getCompareOptsForRespCode, getCompareOptsForString} from "@/utils/compare";
+import {StateType as ScenarioStateType} from "@/views/scenario/store";
 
 const useForm = Form.useForm;
-
+const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
-const store = useStore<{ Interface: StateType }>();
+const store = useStore<{ Interface: StateType, Scenario: ScenarioStateType }>();
 
 const types = getEnumSelectItems(CheckpointType)
 const operators = getEnumSelectItems(ComparisonOperator)
 const operatorsForString = getCompareOptsForString()
 const operatorsForCode = getCompareOptsForRespCode()
 
-const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
+const interfaceData = computed<Interface>(
+    () => usedBy === UsedBy.interface ? store.state.Interface.interfaceData : store.state.Scenario.interfaceData);
 const checkpointsData = computed(() => store.state.Interface.checkpointsData);
 
 watch(interfaceData, () => {

@@ -8,9 +8,9 @@ import (
 )
 
 type ScenarioProcessorService struct {
-	ScenarioProcessorRepo *repo.ScenarioProcessorRepo `inject:""`
-	ScenarioInterfaceRepo *repo.ScenarioInterfaceRepo `inject:""`
-	InterfaceRepo         *repo.InterfaceRepo         `inject:""`
+	ScenarioProcessorRepo *repo.ScenarioProcessorRepo  `inject:""`
+	ScenarioInterfaceRepo *repo.ProcessorInterfaceRepo `inject:""`
+	InterfaceRepo         *repo.InterfaceRepo          `inject:""`
 }
 
 func (s *ScenarioProcessorService) GetEntity(id int) (ret interface{}, err error) {

@@ -1,5 +1,7 @@
 package model
 
+import "github.com/aaronchen2k/deeptest/internal/pkg/consts"
+
 type Interface struct {
 	BaseModel
 
@@ -102,7 +104,28 @@ func (InterfaceApiKey) TableName() string {
 type InterfaceExtractor struct {
 	BaseModel
 
-	InterfaceExtractorBase
+	UsedBy consts.UsedBy `json:"usedBy"`
+
+	Src  consts.ExtractorSrc  `json:"src"`
+	Type consts.ExtractorType `json:"type"`
+	Key  string               `json:"key"`
+
+	Expression string `json:"expression"`
+	//NodeProp       string `json:"prop"`
+
+	BoundaryStart    string `json:"boundaryStart"`
+	BoundaryEnd      string `json:"boundaryEnd"`
+	BoundaryIndex    int    `json:"boundaryIndex"`
+	BoundaryIncluded bool   `json:"boundaryIncluded"`
+
+	Variable     string                `json:"variable"`
+	Scope        consts.ExtractorScope `json:"scope" gorm:"default:private"`
+	DisableShare bool                  `json:"disableShare"`
+
+	Result      string `json:"result" gorm:"type:text"`
+	InterfaceId uint   `json:"interfaceId"`
+
+	ProjectId uint `json:"projectId"`
 }
 
 func (InterfaceExtractor) TableName() string {
@@ -112,7 +135,18 @@ func (InterfaceExtractor) TableName() string {
 type InterfaceCheckpoint struct {
 	BaseModel
 
-	InterfaceCheckpointBase
+	UsedBy consts.UsedBy         `json:"usedBy"`
+	Type   consts.CheckpointType `json:"type"`
+
+	Expression        string `json:"expression"`
+	ExtractorVariable string `json:"extractorVariable"`
+
+	Operator consts.ComparisonOperator `json:"operator"`
+	Value    string                    `json:"value"`
+
+	ActualResult string              `json:"actualResult"`
+	ResultStatus consts.ResultStatus `json:"resultStatus"`
+	InterfaceId  uint                `json:"interfaceId"`
 }
 
 func (InterfaceCheckpoint) TableName() string {

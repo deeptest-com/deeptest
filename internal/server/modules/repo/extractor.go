@@ -3,6 +3,7 @@ package repo
 import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
@@ -17,10 +18,10 @@ type ExtractorRepo struct {
 	InterfaceRepo *InterfaceRepo `inject:""`
 }
 
-func (r *ExtractorRepo) List(interfaceId uint) (pos []model.InterfaceExtractor, err error) {
+func (r *ExtractorRepo) List(interfaceId uint, usedBy consts.UsedBy) (pos []model.InterfaceExtractor, err error) {
 	err = r.DB.
 		Where("interface_id=?", interfaceId).
-		Where("NOT deleted").
+		Where("used_by = ? AND NOT deleted", usedBy).
 		Order("created_at ASC").
 		Find(&pos).Error
 	return
@@ -93,11 +94,11 @@ func (r *ExtractorRepo) Update(extractor *model.InterfaceExtractor) (err error) 
 	return
 }
 
-func (r *ExtractorRepo) CreateOrUpdateResult(extractor *model.InterfaceExtractor) (err error) {
+func (r *ExtractorRepo) CreateOrUpdateResult(extractor *model.InterfaceExtractor, usedBy consts.UsedBy) (err error) {
 	po, _ := r.GetByInterfaceVariable(extractor.Variable, extractor.ID, extractor.InterfaceId)
 	if po.ID > 0 {
 		extractor.ID = po.ID
-		r.UpdateResult(*extractor)
+		r.UpdateResult(*extractor, usedBy)
 		return
 	}
 
@@ -118,14 +119,15 @@ func (r *ExtractorRepo) Delete(id uint) (err error) {
 	return
 }
 
-func (r *ExtractorRepo) UpdateResult(extractor model.InterfaceExtractor) (err error) {
+func (r *ExtractorRepo) UpdateResult(extractor model.InterfaceExtractor, usedBy consts.UsedBy) (err error) {
 	extractor.Result = strings.TrimSpace(extractor.Result)
 	if extractor.Result == "" {
 		return
 	}
 
 	values := map[string]interface{}{
-		"result": extractor.Result,
+		"result":  extractor.Result,
+		"used_by": usedBy,
 	}
 	err = r.DB.Model(&extractor).Where("id = ?", extractor.ID).
 		Updates(values).Error

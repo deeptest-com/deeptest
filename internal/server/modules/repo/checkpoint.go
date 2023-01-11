@@ -84,11 +84,10 @@ func (r *CheckpointRepo) UpdateResult(checkpoint model.InterfaceCheckpoint, used
 	values := map[string]interface{}{
 		"actual_result": checkpoint.ActualResult,
 		"result_status": checkpoint.ResultStatus,
-		"used_by":       usedBy,
 	}
 
 	err = r.DB.Model(&checkpoint).
-		Where("id=?", checkpoint.ID).
+		Where("id=? AND used_by=?", checkpoint.ID, usedBy).
 		Updates(values).
 		Error
 

@@ -126,10 +126,10 @@ func (r *ExtractorRepo) UpdateResult(extractor model.InterfaceExtractor, usedBy 
 	}
 
 	values := map[string]interface{}{
-		"result":  extractor.Result,
-		"used_by": usedBy,
+		"result": extractor.Result,
 	}
-	err = r.DB.Model(&extractor).Where("id = ?", extractor.ID).
+	err = r.DB.Model(&extractor).
+		Where("id = ? AND used_by=?", extractor.ID, usedBy).
 		Updates(values).Error
 	if err != nil {
 		logUtils.Errorf("update scenario error", zap.String("error:", err.Error()))

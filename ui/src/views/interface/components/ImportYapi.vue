@@ -33,6 +33,7 @@ interface FormYapi {
   yapiHost: string;
   token: string;
 }
+
 export default defineComponent({
   name: 'ImportYapi',
   components: {},
@@ -82,6 +83,7 @@ export default defineComponent({
 
     const onCancel = () => {
       console.log('onSubmit')
+
       props.cancel()
     }
 

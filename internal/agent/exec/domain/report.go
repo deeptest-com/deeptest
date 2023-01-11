@@ -15,6 +15,7 @@ type Report struct {
 
 	StartTime *time.Time `json:"startTime"`
 	EndTime   *time.Time `json:"endTime"`
+	ExecTime  int        `json:"execTime"`
 	Duration  int64      `json:"duration"` // sec
 
 	TotalInterfaceNum int `json:"totalInterfaceNum"`

@@ -203,10 +203,11 @@ const StoreModel: ModuleType = {
             if (response.code === 0) {
                 commit('setResponse', response.data);
 
-                dispatch('listInvocation', data.id);
-                dispatch('listExtractor', data.id);
-                dispatch('listCheckpoint', data.id);
+                dispatch('listInvocation', state.interfaceData.id);
                 dispatch('listValidExtractorVariable', state.interfaceData.id);
+
+                dispatch('listExtractor', data.usedBy);
+                dispatch('listCheckpoint', data.usedBy);
 
                 return true;
             } else {
@@ -370,7 +371,7 @@ const StoreModel: ModuleType = {
         async saveExtractor({commit, dispatch, state}, payload: any) {
             try {
                 await saveExtractor(payload);
-                dispatch('listExtractor');
+                dispatch('listExtractor', UsedBy.interface);
                 return true;
             } catch (error) {
                 return false;
@@ -457,7 +458,7 @@ const StoreModel: ModuleType = {
         async saveCheckpoint({commit, dispatch, state}, payload: any) {
             try {
                 await saveCheckpoint(payload);
-                dispatch('listCheckpoint', state.interfaceData.id);
+                dispatch('listCheckpoint', UsedBy.interface);
                 return true
             } catch (error) {
                 return false;
@@ -467,7 +468,7 @@ const StoreModel: ModuleType = {
             try {
                 await removeCheckpoint(id);
 
-                dispatch('listCheckpoint', state.interfaceData.id);
+                dispatch('listCheckpoint', UsedBy.interface);
                 return true;
             } catch (error) {
                 return false;

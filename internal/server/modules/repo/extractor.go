@@ -53,10 +53,10 @@ func (r *ExtractorRepo) Get(id uint) (extractor model.InterfaceExtractor, err er
 	return
 }
 
-func (r *ExtractorRepo) GetByInterfaceVariable(variable string, id uint, interfaceId uint) (extractor model.InterfaceExtractor, err error) {
+func (r *ExtractorRepo) GetByInterfaceVariable(variable string, id, interfaceId uint) (extractor model.InterfaceExtractor, err error) {
 	db := r.DB.Model(&extractor).
-		Where("variable = ? AND interface_id =? AND not deleted",
-			variable, interfaceId)
+		Where("variable = ? AND interface_id =? AND used_by = ? AND not deleted",
+			variable, interfaceId, consts.Interface)
 
 	if id > 0 {
 		db.Where("id != ?", id)
@@ -69,7 +69,7 @@ func (r *ExtractorRepo) GetByInterfaceVariable(variable string, id uint, interfa
 
 func (r *ExtractorRepo) Save(extractor *model.InterfaceExtractor) (id uint, bizErr _domain.BizErr) {
 	po, _ := r.GetByInterfaceVariable(extractor.Variable, extractor.ID, extractor.InterfaceId)
-	if po.ID > 0 {
+	if po.ID > 0 && extractor.UsedBy == consts.Interface {
 		bizErr.Code = _domain.ErrNameExist.Code
 		return
 	}

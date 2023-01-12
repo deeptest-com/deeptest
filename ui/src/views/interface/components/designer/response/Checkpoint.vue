@@ -11,7 +11,7 @@
         <a-col flex="100px">状态</a-col>
 
         <a-col flex="100px" class="dp-right">
-          <PlusOutlined @click.stop="add" class="dp-icon-btn dp-trans-80" />
+          <PlusOutlined v-if="usedBy==='interface'" @click.stop="add" class="dp-icon-btn dp-trans-80" />
         </a-col>
       </a-row>
     </div>
@@ -41,8 +41,8 @@
             <CloseCircleOutlined class="dp-icon-btn dp-trans-80 dp-light" />
           </a-tooltip>
 
-          <EditOutlined @click.stop="edit(item)" class="dp-icon-btn dp-trans-80" />
-          <DeleteOutlined @click.stop="remove(item)" class="dp-icon-btn dp-trans-80" />
+          <EditOutlined v-if="usedBy==='interface'" @click.stop="edit(item)" class="dp-icon-btn dp-trans-80" />
+          <DeleteOutlined v-if="usedBy==='interface'" @click.stop="remove(item)" class="dp-icon-btn dp-trans-80" />
         </a-col>
       </a-row>
     </div>
@@ -153,7 +153,8 @@ const operatorsForCode = getCompareOptsForRespCode()
 
 const interfaceData = computed<Interface>(
     () => usedBy === UsedBy.interface ? store.state.Interface.interfaceData : store.state.Scenario.interfaceData);
-const checkpointsData = computed(() => store.state.Interface.checkpointsData);
+const checkpointsData = computed(
+    () => usedBy === UsedBy.interface ? store.state.Interface.checkpointsData: store.state.Scenario.checkpointsData);
 
 watch(interfaceData, () => {
   console.log('watch interfaceData')
@@ -168,6 +169,7 @@ listCheckPoint()
 const model = ref({
   type: CheckpointType.responseStatus,
   expression: '',
+  usedBy: UsedBy.interface,
   extractorVariable: '',
   operator: ComparisonOperator.equal,
   value: ''} as Checkpoint)
@@ -197,7 +199,7 @@ const rules = reactive({
   ],
 } as any);
 
-const { resetFields, validate, validateInfos } = useForm(model, rules);
+let { resetFields, validate, validateInfos } = useForm(model, rules);
 
 const add = () => {
   console.log('add')
@@ -205,6 +207,7 @@ const add = () => {
   model.value = {
     type: CheckpointType.responseStatus,
     expression: '',
+    usedBy: UsedBy.interface,
     extractorVariable: '',
     operator: ComparisonOperator.equal,
     value: ''} as Checkpoint

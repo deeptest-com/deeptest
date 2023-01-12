@@ -46,7 +46,6 @@ var (
 		&ProcessorPrint{},
 		&ProcessorVariable{},
 		&ProcessorAssertion{},
-		&ProcessorExtractor{},
 		&ProcessorData{},
 		&ProcessorCookie{},
 

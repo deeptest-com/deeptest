@@ -22,7 +22,7 @@ func (c *CheckpointCtrl) List(ctx iris.Context) {
 		return
 	}
 
-	data, err := c.CheckpointService.List(interfaceId, consts.UsedBy(usedBy))
+	data, err := c.CheckpointService.List(uint(interfaceId), consts.UsedBy(usedBy))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
 		return

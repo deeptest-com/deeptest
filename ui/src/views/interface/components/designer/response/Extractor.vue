@@ -10,7 +10,7 @@
         <a-col flex="1">结果</a-col>
 
         <a-col flex="100px" class="dp-right">
-          <PlusOutlined @click.stop="add" class="dp-icon-btn dp-trans-80" />
+          <PlusOutlined v-if="usedBy==='interface'" @click.stop="add" class="dp-icon-btn dp-trans-80" />
         </a-col>
       </a-row>
     </div>
@@ -46,14 +46,14 @@
             <CloseCircleOutlined class="dp-icon-btn dp-trans-80 dp-light" />
           </a-tooltip>
 
-          <EditOutlined @click.stop="edit(item)" class="dp-icon-btn dp-trans-80" />
-          <DeleteOutlined @click.stop="remove(item)" class="dp-icon-btn dp-trans-80" />
+          <EditOutlined v-if="usedBy==='interface'" @click.stop="edit(item)" class="dp-icon-btn dp-trans-80" />
+          <DeleteOutlined v-if="usedBy==='interface'" @click.stop="remove(item)" class="dp-icon-btn dp-trans-80" />
         </a-col>
       </a-row>
     </div>
 
     <a-modal
-        :title="model.id ? '编辑' : '创建' + '变量'"
+        :title="model.id ? '编辑' : '创建' + '提取器'"
         :destroy-on-close="true"
         :mask-closable="false"
         :visible="editVisible"
@@ -170,7 +170,9 @@ const typeOptions = getEnumSelectItems(ExtractorType)
 const interfaceData = computed<Interface>(
     () => usedBy === UsedBy.interface ? store.state.Interface.interfaceData : store.state.Scenario.interfaceData);
 const responseData = computed<any>(() => store.state.Interface.responseData);
-const extractorsData = computed(() => store.state.Interface.extractorsData);
+
+const extractorsData = computed(
+    () => usedBy === UsedBy.interface ? store.state.Interface.extractorsData: store.state.Scenario.extractorsData);
 
 watch(interfaceData, () => {
   console.log('watch interfaceData', interfaceData.value.id, usedBy)
@@ -220,10 +222,12 @@ const { resetFields, validate, validateInfos } = useForm(model, rules);
 
 const add = () => {
   editVisible.value = true
-  model.value = {src: ExtractorSrc.body,
+  model.value = {
+    src: ExtractorSrc.body,
     type: ExtractorType.boundary,
     expression: '',
     variable: '',
+    usedBy: UsedBy.interface,
     scope: 'local'} as Extractor
 
   selectSrc()

@@ -1,4 +1,4 @@
-import {ComparisonOperator, CheckpointType, ExtractorSrc, ExtractorType} from "@/utils/enum";
+import {ComparisonOperator, CheckpointType, ExtractorSrc, ExtractorType, UsedBy} from "@/utils/enum";
 
 export interface Interface {
     id: number;
@@ -86,6 +86,7 @@ export interface Extractor {
     src: ExtractorSrc;
     type: ExtractorType;
     expression: string;
+    usedBy: UsedBy;
 
     boundaryStart: string;
     boundaryEnd: string;
@@ -102,6 +103,7 @@ export interface Checkpoint {
     id?: number;
     type: CheckpointType;
     expression: string;
+    usedBy: UsedBy;
 
     operator: ComparisonOperator;
     value: any;

@@ -18,8 +18,8 @@ type ExtractorService struct {
 	InterfaceRepo *repo.InterfaceRepo `inject:""`
 }
 
-func (s *ExtractorService) List(interfaceId int, usedBy consts.UsedBy) (extractors []model.InterfaceExtractor, err error) {
-	extractors, err = s.ExtractorRepo.List(uint(interfaceId), usedBy)
+func (s *ExtractorService) List(interfaceId uint, usedBy consts.UsedBy) (extractors []model.InterfaceExtractor, err error) {
+	extractors, err = s.ExtractorRepo.List(interfaceId, usedBy)
 
 	return
 }

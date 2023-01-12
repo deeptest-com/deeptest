@@ -2,6 +2,7 @@ package service
 
 import (
 	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"github.com/jinzhu/copier"
@@ -11,6 +12,11 @@ type ScenarioProcessorService struct {
 	ScenarioProcessorRepo *repo.ScenarioProcessorRepo  `inject:""`
 	ScenarioInterfaceRepo *repo.ProcessorInterfaceRepo `inject:""`
 	InterfaceRepo         *repo.InterfaceRepo          `inject:""`
+	ExtractorRepo         *repo.ExtractorRepo          `inject:""`
+	CheckpointRepo        *repo.CheckpointRepo         `inject:""`
+
+	ExtractorService  *ExtractorService  `inject:""`
+	CheckpointService *CheckpointService `inject:""`
 }
 
 func (s *ScenarioProcessorService) GetEntity(id int) (ret interface{}, err error) {
@@ -79,15 +85,45 @@ func (s *ScenarioProcessorService) CloneInterface(interfaceId uint) (ret model.P
 		return
 	}
 
-	ret = s.CopyInterface(interf)
-
+	copier.CopyWithOption(&ret, interf, copier.Option{DeepCopy: true})
 	err = s.ScenarioInterfaceRepo.SaveInterface(&ret)
+
+	s.CopyExtractors(interfaceId, ret.ID)
+	s.CopyCheckpoints(interfaceId, ret.ID)
 
 	return
 }
 
-func (s *ScenarioProcessorService) CopyInterface(interf model.Interface) (ret model.ProcessorInterface) {
-	copier.CopyWithOption(&ret, interf, copier.Option{DeepCopy: true})
+func (s *ScenarioProcessorService) CopyExtractors(interfaceId, processorInterfaceId uint) {
+	pos, _ := s.ExtractorService.List(interfaceId, consts.Interface)
+
+	for _, po := range pos {
+		extractor := model.InterfaceExtractor{}
+
+		copier.CopyWithOption(&extractor, po, copier.Option{DeepCopy: true})
+		extractor.ID = 0
+		extractor.UsedBy = consts.Scenario
+		extractor.InterfaceId = processorInterfaceId
+
+		s.ExtractorRepo.Save(&extractor)
+	}
+
+	return
+}
+
+func (s *ScenarioProcessorService) CopyCheckpoints(interfaceId, processorInterfaceId uint) {
+	pos, _ := s.CheckpointService.List(interfaceId, consts.Interface)
+
+	for _, po := range pos {
+		checkpoint := model.InterfaceCheckpoint{}
+
+		copier.CopyWithOption(&checkpoint, po, copier.Option{DeepCopy: true})
+		checkpoint.ID = 0
+		checkpoint.UsedBy = consts.Scenario
+		checkpoint.InterfaceId = processorInterfaceId
+
+		s.CheckpointRepo.Save(&checkpoint)
+	}
 
 	return
 }

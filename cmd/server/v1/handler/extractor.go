@@ -22,7 +22,7 @@ func (c *ExtractorCtrl) List(ctx iris.Context) {
 		return
 	}
 
-	data, err := c.ExtractorService.List(interfaceId, consts.UsedBy(usedBy))
+	data, err := c.ExtractorService.List(uint(interfaceId), consts.UsedBy(usedBy))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
 		return
@@ -57,10 +57,9 @@ func (c *ExtractorCtrl) Create(ctx iris.Context) {
 	}
 
 	bizErr := c.ExtractorService.Create(&extractor)
-	if err != nil {
+	if bizErr.Code > 0 {
 		ctx.JSON(_domain.Response{
 			Code: bizErr.Code,
-			Data: nil,
 		})
 		return
 	}

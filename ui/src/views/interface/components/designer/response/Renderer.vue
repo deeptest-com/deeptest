@@ -51,9 +51,10 @@ import ResponseLensHtml from "@/views/interface/components/designer/response/Ren
 import ResponseLensImage from "@/views/interface/components/designer/response/Renderer/lenses/ImageLensRenderer.vue";
 import ResponseLensRaw from "@/views/interface/components/designer/response/Renderer/lenses/RawLensRenderer.vue";
 import {UsedBy} from "@/utils/enum";
+import {StateType as ScenarioStateType} from "@/views/scenario/store";
 const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
-const store = useStore<{ Interface: StateType }>();
+const store = useStore<{ Interface: StateType, Scenario: ScenarioStateType }>();
 const responseData = computed<any>(() => store.state.Interface.responseData);
 const extractorsData = computed(() => store.state.Interface.extractorsData);
 const checkpointsData = computed(() => store.state.Interface.checkpointsData);
@@ -82,12 +83,14 @@ const checkpointFail = computed(() => {
 })
 
 const listExtractor = () => {
-  store.dispatch('Interface/listExtractor', usedBy)
+  usedBy === UsedBy.interface ? store.dispatch('Interface/listExtractor', usedBy) :
+      store.dispatch('Scenario/listExtractor', usedBy)
 }
 listExtractor()
 
 const listCheckPoint = () => {
-  store.dispatch('Interface/listCheckpoint', usedBy)
+  usedBy === UsedBy.interface ? store.dispatch('Interface/listCheckpoint', usedBy) :
+      store.dispatch('Scenario/listCheckpoint', usedBy)
 }
 listCheckPoint()
 

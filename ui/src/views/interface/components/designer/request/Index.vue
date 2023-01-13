@@ -44,11 +44,8 @@ const invokeInterface = async () => {
     data: prepareDataForRequest(interfaceData.value),
   }
 
-  if (usedBy === UsedBy.interface) {
-    store.dispatch('Interface/invokeInterface', data)
-  } else {
+  usedBy === UsedBy.interface ? store.dispatch('Interface/invokeInterface', data) :
     store.dispatch('Scenario/invokeInterface', data)
-  }
 };
 
 const saveInterface = (data) => {

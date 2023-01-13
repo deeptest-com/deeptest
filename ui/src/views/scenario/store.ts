@@ -426,7 +426,6 @@ const StoreModel: ModuleType = {
 
         async listExtractor({commit, dispatch, state}, usedBy) {
             try {
-                console.log('------', state.interfaceData)
                 const resp = await listExtractor(state.interfaceData.id, usedBy);
                 const {data} = resp;
                 commit('setExtractors', data);

@@ -180,7 +180,8 @@ watch(interfaceData, () => {
 }, {deep: true})
 
 const listExtractor = () => {
-  store.dispatch('Interface/listExtractor', usedBy)
+  usedBy === UsedBy.interface ? store.dispatch('Interface/listExtractor', usedBy) :
+      store.dispatch('Scenario/listExtractor', usedBy)
 }
 listExtractor()
 

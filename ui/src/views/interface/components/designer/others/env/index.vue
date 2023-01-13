@@ -205,103 +205,103 @@ import {UsedBy} from "@/utils/enum";
 import {StateType as ScenarioStateType} from "@/views/scenario/store";
 const usedBy = inject('usedBy') as UsedBy
 
-    const {t} = useI18n();
-    const store = useStore<{ Interface: InterfaceStateType, Scenario: ScenarioStateType,  ProjectGlobal: ProjectStateType, Environment: EnvironmentStateType }>();
-    const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
+const {t} = useI18n();
+const store = useStore<{ Interface: InterfaceStateType, Scenario: ScenarioStateType,  ProjectGlobal: ProjectStateType, Environment: EnvironmentStateType }>();
+const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const interfaceData = computed<Interface>(
     () => usedBy === UsedBy.interface ? store.state.Interface.interfaceData : store.state.Scenario.interfaceData);
 
 const environmentsData = computed<any[]>(() => store.state.Environment.environmentsData);
-    const environmentData = computed<any>(() => store.state.Environment.environmentData);
-    const validExtractorVariablesData = computed(() => store.state.Interface.validExtractorVariablesData);
+const environmentData = computed<any>(() => store.state.Environment.environmentData);
+const validExtractorVariablesData = computed(() => store.state.Interface.validExtractorVariablesData);
 
-    store.dispatch('Environment/listEnvironment')
-    if (currProject.value.id)
-      store.dispatch('Environment/getEnvironment', {id: 0, projectId: currProject.value.id})
+store.dispatch('Environment/listEnvironment')
+if (currProject.value.id)
+  store.dispatch('Environment/getEnvironment', {id: 0, projectId: currProject.value.id})
 
-    watch(currProject, () => {
-      console.log('watch currProject', currProject.value.id)
-      store.dispatch('Environment/getEnvironment', {id: 0, projectId: currProject.value.id})
-    }, {deep: false})
+watch(currProject, () => {
+  console.log('watch currProject', currProject.value.id)
+  store.dispatch('Environment/getEnvironment', {id: 0, projectId: currProject.value.id})
+}, {deep: false})
 
-    const envEditVisible = ref(false)
-    const modelId = ref(0)
+const envEditVisible = ref(false)
+const modelId = ref(0)
 
-    const envVarEditVisible = ref(false)
-    const envVal = ref({})
+const envVarEditVisible = ref(false)
+const envVal = ref({})
 
-    const select = (val) => {
-      console.log('select', val.key)
-      store.dispatch('Environment/changeEnvironment', {id: val.key, projectId: currProject.value.id})
-    }
+const select = (val) => {
+  console.log('select', val.key)
+  store.dispatch('Environment/changeEnvironment', {id: val.key, projectId: currProject.value.id})
+}
 
-    const create = () => {
-      console.log('create')
-      modelId.value = 0
-      envEditVisible.value = true
-    }
+const create = () => {
+  console.log('create')
+  modelId.value = 0
+  envEditVisible.value = true
+}
 
-    const edit = (val) => {
-      console.log('edit', val)
-      modelId.value = val.id
-      envEditVisible.value = true
-    }
+const edit = (val) => {
+  console.log('edit', val)
+  modelId.value = val.id
+  envEditVisible.value = true
+}
 
-    const remove = (item) => {
-      console.log('remove', item)
-      store.dispatch('Environment/removeEnvironment', item)
-    }
+const remove = (item) => {
+  console.log('remove', item)
+  store.dispatch('Environment/removeEnvironment', item)
+}
 
-    const copy = (item) => {
-      console.log('copy', item)
-      store.dispatch('Environment/copyEnvironment', item)
-    }
+const copy = (item) => {
+  console.log('copy', item)
+  store.dispatch('Environment/copyEnvironment', item)
+}
 
-    const envEditFinish = () => {
-      console.log('envEditFinish')
-      envEditVisible.value = false
-    }
-    const envEditCancel = () => {
-      console.log('envEditCancel')
-      envEditVisible.value = false
-    }
+const envEditFinish = () => {
+  console.log('envEditFinish')
+  envEditVisible.value = false
+}
+const envEditCancel = () => {
+  console.log('envEditCancel')
+  envEditVisible.value = false
+}
 
-    const createVar  = () => {
-      console.log('createVar')
-      envVarEditVisible.value = true
-    }
-    const editVar = (item) => {
-      console.log('editVar', item)
-      envVal.value = item
-      envVarEditVisible.value = true
-    }
-    const removeVar = (item) => {
-      console.log('removeVar', item)
-      store.dispatch('Environment/removeEnvironmentVar', item.id)
-    }
-    const clearVar  = () => {
-      console.log('clearVar')
-      store.dispatch('Environment/clearEnvironmentVar', environmentData.value.id)
-    }
-    const envVarEditFinish = () => {
-      console.log('envVarEditFinish')
-      envVal.value = {}
-      envVarEditVisible.value = false
-    }
-    const envVarEditCancel = () => {
-      console.log('envVarEditCancel')
-      envVal.value = {}
-      envVarEditVisible.value = false
-    }
+const createVar  = () => {
+  console.log('createVar')
+  envVarEditVisible.value = true
+}
+const editVar = (item) => {
+  console.log('editVar', item)
+  envVal.value = item
+  envVarEditVisible.value = true
+}
+const removeVar = (item) => {
+  console.log('removeVar', item)
+  store.dispatch('Environment/removeEnvironmentVar', item.id)
+}
+const clearVar  = () => {
+  console.log('clearVar')
+  store.dispatch('Environment/clearEnvironmentVar', environmentData.value.id)
+}
+const envVarEditFinish = () => {
+  console.log('envVarEditFinish')
+  envVal.value = {}
+  envVarEditVisible.value = false
+}
+const envVarEditCancel = () => {
+  console.log('envVarEditCancel')
+  envVal.value = {}
+  envVarEditVisible.value = false
+}
 
-    const clearShareVar  = () => {
-      console.log('clearShareVar')
-      store.dispatch('Interface/clearShareVar', interfaceData.value.id)
-    }
-    const removeShareVar = (item) => {
-      console.log('removeShareVar', item)
-      store.dispatch('Interface/removeShareVar', item.id)
-    }
+const clearShareVar  = () => {
+  console.log('clearShareVar')
+  store.dispatch('Interface/clearShareVar', interfaceData.value.id)
+}
+const removeShareVar = (item) => {
+  console.log('removeShareVar', item)
+  store.dispatch('Interface/removeShareVar', item.id)
+}
 
 </script>
 

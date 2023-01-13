@@ -27,16 +27,6 @@
             <RequestEnv></RequestEnv>
           </a-tab-pane>
 
-          <a-tab-pane key="history">
-            <template #tab>
-              <a-tooltip placement="left" overlayClassName="dp-tip-small">
-                <template #title>历史</template>
-                <HistoryOutlined/>
-              </a-tooltip>
-            </template>
-            <RequestHistory></RequestHistory>
-          </a-tab-pane>
-
         </a-tabs>
       </div>
     </div>
@@ -53,11 +43,12 @@ import {useStore} from "vuex";
 const router = useRouter();
 
 import {StateType} from "@/views/interface/store";
-import Processor from './Processor.vue';
 import {Interface} from "@/views/interface/data";
 import {resizeWidth} from "@/utils/dom";
 import {UsedBy} from "@/utils/enum";
 import {useRouter} from "vue-router";
+import RequestEnv from '@/views/interface/components/designer/others/env/index.vue';
+import Processor from './Processor.vue';
 
 const useForm = Form.useForm;
 const designByInterface = UsedBy.interface

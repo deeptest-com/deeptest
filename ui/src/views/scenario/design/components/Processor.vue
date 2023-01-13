@@ -1,5 +1,5 @@
 <template>
-  <div class="scenario-node-edit-main">
+  <div class="scenario-processor-edit-main">
     <!--    <ProcessorThreadDefault v-if="selectedNode.processorType === 'processor_thread_default'" />-->
 
     <ProcessorInterfaceDefault v-if="selectedNode.processorType === 'processor_interface_default'" />
@@ -87,7 +87,7 @@ const selectedNode = computed<any>(()=> store.state.Scenario.nodeData);
 </script>
 
 <style lang="less" scoped>
-.scenario-node-edit-main {
+.scenario-processor-edit-main {
   height: 100%;
   padding: 0;
 }

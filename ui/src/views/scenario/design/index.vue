@@ -7,11 +7,7 @@
     <div id="scenario-design-splitter" class="splitter"></div>
 
     <div id="scenario-design-right" class="right">
-      <div class="right-toolbar">
-        <a-button @click="exec" type="link">执行场景</a-button>
-      </div>
-
-      <Edit></Edit>
+        <Designer></Designer>
     </div>
   </div>
 </template>
@@ -30,13 +26,14 @@ import {StateType as ScenarioStateType} from "../store";
 import ScenarioTree from "./components/Tree.vue"
 import Edit from "./components/Edit.vue"
 import settings from "@/config/settings";
+import Designer from "./components/Designer.vue"
 
 const router = useRouter();
 const store = useStore<{ Scenario: ScenarioStateType; Global: GlobalStateType; }>();
 
-const collapsed = computed<boolean>(()=> store.state.Global.collapsed);
-
 const id = ref(+router.currentRoute.value.params.id)
+
+const collapsed = computed<boolean>(()=> store.state.Global.collapsed);
 
 onMounted(() => {
   console.log('onMounted')
@@ -51,10 +48,6 @@ watch(collapsed, () => {
   console.log('watch collapsed')
   resize()
 }, {deep: true})
-
-const exec = () => {
-  router.push(`/scenario/exec/${id.value}`)
-}
 
 const resize = () => {
   resizeWidth('scenario-design-main',
@@ -71,9 +64,6 @@ const resize = () => {
   }
   .right {
     flex: 1;
-    .right-toolbar {
-      text-align: right;
-    }
   }
 }
 </style>

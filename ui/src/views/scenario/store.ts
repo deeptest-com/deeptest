@@ -19,15 +19,17 @@ import {
 
     loadExecResult, getInterface, getLastInvocationResp,
 } from './service';
-import {getNodeMap} from "@/services/tree";
-import {Interface, Response} from "@/views/interface/data";
+
 import {
+    saveInterface,
     invokeInterface,
     listCheckpoint,
     listExtractor,
     listValidExtractorVariableForInterface,
-    saveInterface
 } from "@/views/interface/service";
+
+import {getNodeMap} from "@/services/tree";
+import {Interface, Response} from "@/views/interface/data";
 
 export interface StateType {
     scenarioId: number;

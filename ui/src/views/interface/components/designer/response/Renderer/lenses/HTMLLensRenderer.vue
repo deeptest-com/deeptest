@@ -67,14 +67,18 @@ import {getXpath, initIFrame, updateElem} from "@/services/parser-html";
 import {parseHtml, testExpr} from "@/views/interface/service";
 import {ExtractorSrc, ExtractorType, UsedBy} from "@/utils/enum";
 import {StateType as ScenarioStateType} from "@/views/scenario/store";
-const usedBy = inject('usedBy') as UsedBy
 
 const {t} = useI18n();
+
+const usedBy = inject('usedBy') as UsedBy
 const store = useStore<{ Interface: StateType, Scenario: ScenarioStateType }>();
 const interfaceData = computed<Interface>(
     () => usedBy === UsedBy.interface ? store.state.Interface.interfaceData : store.state.Scenario.interfaceData);
-const responseData = computed<Response>(() => store.state.Interface.responseData);
-const extractorsData = computed(() => store.state.Interface.extractorsData);
+
+const responseData = computed<Response>(() =>
+    usedBy === UsedBy.interface ? store.state.Interface.responseData : store.state.Scenario.responseData);
+const extractorsData = computed(() =>
+    usedBy === UsedBy.interface ? store.state.Interface.extractorsData : store.state.Scenario.extractorsData);
 
 const editorOptions = ref(Object.assign({usedWith: 'response'}, MonacoOptions) )
 

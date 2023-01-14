@@ -124,6 +124,7 @@ type InterfaceExtractor struct {
 
 	Result      string `json:"result" gorm:"type:text"`
 	InterfaceId uint   `json:"interfaceId"`
+	ProcessorId uint   `json:"processorId"`
 	ScenarioId  uint   `json:"scenarioId"`
 
 	ProjectId uint `json:"projectId"`

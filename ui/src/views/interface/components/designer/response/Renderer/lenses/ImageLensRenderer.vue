@@ -38,7 +38,7 @@
 </template>
 
 <script lang="ts">
-import {computed, ComputedRef, defineComponent, PropType, Ref, ref} from "vue";
+import {computed, ComputedRef, defineComponent, inject, PropType, Ref, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import { DownloadOutlined, CopyOutlined, ClearOutlined } from '@ant-design/icons-vue';
@@ -47,6 +47,8 @@ import {isInArray} from "@/utils/array";
 import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
 import {MonacoOptions} from "@/utils/const";
 import {Interface, Response} from "@/views/interface/data";
+import {UsedBy} from "@/utils/enum";
+import {StateType as ScenarioStateType} from "@/views/scenario/store";
 
 export default defineComponent({
   name: 'ResponseLensImage',
@@ -60,8 +62,10 @@ export default defineComponent({
 
   setup(props) {
     const {t} = useI18n();
-    const store = useStore<{ Interface: StateType }>();
-    const responseData = computed<Response>(() => store.state.Interface.responseData);
+    const usedBy = inject('usedBy') as UsedBy
+    const store = useStore<{ Interface: StateType, Scenario: ScenarioStateType }>();
+    const responseData = computed<Response>(() =>
+        usedBy === UsedBy.interface ? store.state.Interface.responseData : store.state.Scenario.responseData);
 
     const editorOptions = ref(Object.assign({usedWith: 'response'}, MonacoOptions) )
 

@@ -15,6 +15,7 @@ const apiPathNodes = `${apiPath}/nodes`;
 const apiPathProcessors = `${apiPath}/processors`;
 const apiPathExec = `${apiPath}/exec`;
 
+const apiInvocation = `processors/invocations`;
 const apiPathInterface = `processors/interfaces`
 
 export async function query(params?: QueryParams): Promise<any> {
@@ -27,7 +28,13 @@ export async function query(params?: QueryParams): Promise<any> {
 export async function get(id: number): Promise<any> {
     return request({url: `/${apiPath}/${id}`});
 }
-
+export async function getLastInvocationResp(id: number): Promise<any> {
+    const params = {id : id}
+    return request({
+        url: `/${apiInvocation}/getLastResp`,
+        params
+    });
+}
 export async function save(data: any): Promise<any> {
     return request({
         url: `/${apiPath}`,

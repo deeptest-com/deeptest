@@ -17,7 +17,7 @@ import {
     addProcessor,
     saveProcessorName, saveProcessor,
 
-    loadExecResult, getInterface,
+    loadExecResult, getInterface, getLastInvocationResp,
 } from './service';
 import {getNodeMap} from "@/services/tree";
 import {Interface, Response} from "@/views/interface/data";
@@ -101,6 +101,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         getInterface: Action<StateType, StateType>;
         saveInterface: Action<StateType, StateType>;
         invokeInterface: Action<StateType, StateType>;
+        getLastInvocationResp: Action<StateType, StateType>;
 
         listExtractor: Action<StateType, StateType>;
         listCheckpoint: Action<StateType, StateType>;
@@ -181,7 +182,6 @@ const StoreModel: ModuleType = {
 
         setInterface(state, data) {
             state.interfaceData = data;
-
         },
         setResponse(state, payload) {
             state.responseData = payload;
@@ -413,6 +413,16 @@ const StoreModel: ModuleType = {
             }
         },
 
+        async getLastInvocationResp({commit, dispatch, state}, id: number) {
+            const response = await getLastInvocationResp(id);
+            // console.log('=getLastInvocationResp=', response.data)
+
+            const {data} = response;
+
+            commit('setResponse', data);
+            return true;
+        },
+
         async saveInterface({commit}, payload: any) {
             const json = await  saveInterface(payload)
             if (json.code === 0) {
@@ -423,7 +433,7 @@ const StoreModel: ModuleType = {
         },
         async invokeInterface({commit, dispatch, state}, data: any) {
             const response = await invokeInterface(data)
-            // console.log('=invoke=', response.data)
+            // console.log('=invoke in processor=', response.data)
 
             if (response.code === 0) {
                 commit('setResponse', response.data);

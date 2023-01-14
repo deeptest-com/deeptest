@@ -13,3 +13,12 @@ func (r *ProcessorInvocationRepo) Save(invocation *model.ProcessorInvocation) (e
 	err = r.DB.Save(invocation).Error
 	return
 }
+
+func (r *ProcessorInvocationRepo) GetLast(interfaceId int) (invocation model.ProcessorInvocation, err error) {
+	err = r.DB.
+		Where("interface_id=?", interfaceId).
+		Where("NOT deleted").
+		Order("created_at DESC").
+		First(&invocation).Error
+	return
+}

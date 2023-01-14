@@ -5,7 +5,7 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import {computed, ComputedRef, defineComponent, onMounted, PropType, Ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {Form, message} from 'ant-design-vue';
@@ -17,22 +17,9 @@ import ResponseRenderer from './Renderer.vue';
 
 const useForm = Form.useForm;
 
-interface InterfaceRequestSetupData {
-  responseData: ComputedRef;
-  sendRequest: (e) => void;
-}
-
-export default defineComponent({
-  name: ' doSomething',
-  props: {
-  },
-  components: {
-    ResponseMeta, ResponseRenderer,
-  },
-  setup(props): InterfaceRequestSetupData {
     const {t} = useI18n();
-    const store = useStore<{ Interface: StateType }>();
-    const responseData = computed<any>(() => store.state.Interface.responseData);
+    // const store = useStore<{ Interface: StateType }>();
+    // const responseData = computed<any>(() => store.state.Interface.responseData);
 
     const sendRequest = (e) => {
       console.log('sendRequest')
@@ -43,12 +30,6 @@ export default defineComponent({
       resizeHeight('content', 'top-panel', 'splitter-v', 'bottom-panel', 200, 200)
     })
 
-    return {
-      responseData,
-      sendRequest,
-    }
-  }
-})
 </script>
 
 <style lang="less" scoped>

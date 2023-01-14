@@ -171,13 +171,37 @@ func (r *ExtractorRepo) ListValidExtractorVariableForInterface(interfaceId, proj
 
 	if usedBy == consts.Interface {
 		q.Where("project_id=?", projectId)
+
 	} else {
 		processorInterface, _ := r.ProcessorInterfaceRepo.Get(interfaceId)
-		q.Where("scenario_id=?", processorInterface.ScenarioId)
+
+		var parentIds []uint
+		r.GetParentIds(processorInterface.ProcessorId, &parentIds)
+
+		q.Where("scenario_id=?", processorInterface.ScenarioId).
+			Where("scope = ? OR processor_id IN(?)", consts.Global, parentIds)
 	}
 
 	err = q.Order("created_at ASC").
 		Find(&variables).Error
+
+	return
+}
+
+func (r *ExtractorRepo) GetParentIds(processorId uint, ids *[]uint) {
+	var po model.Processor
+
+	r.DB.Where("id = ?", processorId).
+		Where("NOT deleted AND NOT disabled").
+		First(&po)
+
+	if po.ID > 0 {
+		*ids = append(*ids, processorId)
+	}
+
+	if po.ParentId > 0 {
+		r.GetParentIds(po.ParentId, ids)
+	}
 
 	return
 }

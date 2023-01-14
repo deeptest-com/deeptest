@@ -6,16 +6,18 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
-	repo2 "github.com/aaronchen2k/deeptest/internal/server/modules/repo"
+	repo "github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	"github.com/jinzhu/copier"
 )
 
 type ScenarioNodeService struct {
-	ScenarioNodeRepo         *repo2.ScenarioNodeRepo      `inject:""`
-	ScenarioProcessorRepo    *repo2.ScenarioProcessorRepo `inject:""`
-	ScenarioProcessorService *ScenarioProcessorService    `inject:""`
-	ScenarioRepo             *repo2.ScenarioRepo          `inject:""`
+	ScenarioNodeRepo         *repo.ScenarioNodeRepo      `inject:""`
+	ScenarioProcessorRepo    *repo.ScenarioProcessorRepo `inject:""`
+	ScenarioProcessorService *ScenarioProcessorService   `inject:""`
+	ScenarioRepo             *repo.ScenarioRepo          `inject:""`
+
+	ProcessorInterfaceRepo *repo.ProcessorInterfaceRepo `inject:""`
 }
 
 func (s *ScenarioNodeService) GetTree(scenarioId int) (root *agentExec.Processor, err error) {
@@ -110,25 +112,26 @@ func (s *ScenarioNodeService) createDirOrInterface(interfaceNode v1.InterfaceSim
 		}
 
 	} else {
-		interfaceProcessor := model.ProcessorInterface{}
-		interfaceProcessor, err = s.ScenarioProcessorService.CloneInterface(uint(interfaceNode.Id), parentProcessor.ScenarioId)
-		if err != nil {
-			return
-		}
-
 		processor := model.Processor{
 			Name:           interfaceNode.Name,
 			ScenarioId:     parentProcessor.ScenarioId,
 			EntityCategory: consts.ProcessorInterface,
 			EntityType:     consts.ProcessorInterfaceDefault,
-			EntityId:       interfaceProcessor.ID,
-			InterfaceId:    uint(interfaceNode.Id),
-			ParentId:       parentProcessor.ID,
-			ProjectId:      parentProcessor.ProjectId,
+			//EntityId:       interfaceProcessor.ID,
+			InterfaceId: uint(interfaceNode.Id),
+			ParentId:    parentProcessor.ID,
+			ProjectId:   parentProcessor.ProjectId,
 		}
-
 		processor.Ordr = s.ScenarioNodeRepo.GetMaxOrder(processor.ParentId)
 		s.ScenarioNodeRepo.Save(&processor)
+
+		interfaceProcessor := model.ProcessorInterface{}
+		interfaceProcessor, err = s.ScenarioProcessorService.CloneInterface(uint(interfaceNode.Id), processor)
+		if err != nil {
+			return
+		}
+
+		s.ScenarioProcessorRepo.UpdateEntityId(processor.ID, interfaceProcessor.ID)
 
 		ret = processor
 	}

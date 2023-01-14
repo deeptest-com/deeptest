@@ -269,7 +269,7 @@ const cancel = () => {
 
 const remove = (item) => {
   console.log('remove')
-  store.dispatch('Interface/removeExtractor', item.id)
+  store.dispatch('Interface/removeExtractor', {id: item.id, usedBy: usedBy})
 }
 
 const disable = (item) => {

@@ -79,26 +79,28 @@ func (s *ScenarioProcessorService) SaveData(req *model.ProcessorData) (err error
 	return
 }
 
-func (s *ScenarioProcessorService) CloneInterface(interfaceId, scenarioId uint) (ret model.ProcessorInterface, err error) {
+func (s *ScenarioProcessorService) CloneInterface(interfaceId uint, processor model.Processor) (ret model.ProcessorInterface, err error) {
 	interf, err := s.InterfaceRepo.GetDetail(interfaceId)
 	if err != nil {
 		return
 	}
 
 	copier.CopyWithOption(&ret, interf, copier.Option{DeepCopy: true})
+
+	ret.ProcessorId = processor.ID
+	ret.ScenarioId = processor.ScenarioId
 	ret.ID = 0
-	ret.ScenarioId = scenarioId
 	ret.CreatedAt = nil
 
 	err = s.ScenarioInterfaceRepo.SaveInterface(&ret)
 
-	s.CopyExtractors(interfaceId, ret.ID, scenarioId)
-	s.CopyCheckpoints(interfaceId, ret.ID, scenarioId)
+	s.CopyExtractors(interfaceId, ret.ID, processor)
+	s.CopyCheckpoints(interfaceId, ret.ID, processor)
 
 	return
 }
 
-func (s *ScenarioProcessorService) CopyExtractors(interfaceId, processorInterfaceId, scenarioId uint) {
+func (s *ScenarioProcessorService) CopyExtractors(interfaceId, processorInterfaceId uint, processor model.Processor) {
 	pos, _ := s.ExtractorService.List(interfaceId, consts.Interface)
 
 	for _, po := range pos {
@@ -108,7 +110,8 @@ func (s *ScenarioProcessorService) CopyExtractors(interfaceId, processorInterfac
 		extractor.ID = 0
 		extractor.UsedBy = consts.Scenario
 		extractor.InterfaceId = processorInterfaceId
-		extractor.ScenarioId = scenarioId
+		extractor.ProcessorId = processor.ID
+		extractor.ScenarioId = processor.ScenarioId
 
 		s.ExtractorRepo.Save(&extractor)
 	}
@@ -116,7 +119,7 @@ func (s *ScenarioProcessorService) CopyExtractors(interfaceId, processorInterfac
 	return
 }
 
-func (s *ScenarioProcessorService) CopyCheckpoints(interfaceId, processorInterfaceId, scenarioId uint) {
+func (s *ScenarioProcessorService) CopyCheckpoints(interfaceId, processorInterfaceId uint, processor model.Processor) {
 	pos, _ := s.CheckpointService.List(interfaceId, consts.Interface)
 
 	for _, po := range pos {
@@ -126,7 +129,7 @@ func (s *ScenarioProcessorService) CopyCheckpoints(interfaceId, processorInterfa
 		checkpoint.ID = 0
 		checkpoint.UsedBy = consts.Scenario
 		checkpoint.InterfaceId = processorInterfaceId
-		checkpoint.ScenarioId = scenarioId
+		checkpoint.ScenarioId = processor.ScenarioId
 
 		s.CheckpointRepo.Save(&checkpoint)
 	}

@@ -25,8 +25,8 @@
   </div>
 </template>
 
-<script lang="ts">
-import {computed, ComputedRef, defineComponent, PropType, Ref, ref} from "vue";
+<script setup lang="ts">
+import {computed, ComputedRef, defineComponent, inject, PropType, Ref, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import {
@@ -39,27 +39,17 @@ import {
 } from '@ant-design/icons-vue';
 import {StateType} from "@/views/interface/store";
 import {Interface, Response} from "@/views/interface/data";
+import {UsedBy} from "@/utils/enum";
+import {StateType as ScenarioStateType} from "@/views/scenario/store";
+const usedBy = inject('usedBy') as UsedBy
+const {t} = useI18n();
+const store = useStore<{ Interface: StateType, Scenario: ScenarioStateType }>();
+const responseData = computed<Response>(
+    () =>  usedBy === UsedBy.interface ? store.state.Interface.responseData : store.state.Scenario.responseData);
 
-export default defineComponent({
-  name: 'ResponseHeaders',
-  components: {
-    CopyOutlined,
-  },
-  setup(props) {
-    const {t} = useI18n();
-    const store = useStore<{ Interface: StateType }>();
-    const responseData = computed<Response>(() => store.state.Interface.responseData);
-
-    const doSomething = (e) => {
-      console.log('doSomething', e)
-    };
-
-    return {
-      responseData,
-      doSomething,
-    }
-  }
-})
+const doSomething = (e) => {
+  console.log('doSomething', e)
+};
 
 </script>
 

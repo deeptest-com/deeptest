@@ -80,3 +80,17 @@ func (s *ProcessorInvocationService) ReplaceEnvironmentAndExtractorVariables(req
 
 	return
 }
+
+func (s *ProcessorInvocationService) GetLastResp(interfId int) (resp v1.InvocationResponse, err error) {
+	invocation, _ := s.ProcessorInvocationRepo.GetLast(interfId)
+	if invocation.ID > 0 {
+		json.Unmarshal([]byte(invocation.RespContent), &resp)
+	} else {
+		resp = v1.InvocationResponse{
+			ContentLang: consts.LangHTML,
+			Content:     "",
+		}
+	}
+
+	return
+}

@@ -55,9 +55,12 @@ import {StateType as ScenarioStateType} from "@/views/scenario/store";
 const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
 const store = useStore<{ Interface: StateType, Scenario: ScenarioStateType }>();
-const responseData = computed<any>(() => store.state.Interface.responseData);
-const extractorsData = computed(() => store.state.Interface.extractorsData);
-const checkpointsData = computed(() => store.state.Interface.checkpointsData);
+const responseData = computed<any>(
+    () => usedBy === UsedBy.interface ? store.state.Interface.responseData: store.state.Scenario.responseData);
+const extractorsData = computed(
+    () => usedBy === UsedBy.interface ? store.state.Interface.extractorsData: store.state.Scenario.extractorsData);
+const checkpointsData = computed(
+    () => usedBy === UsedBy.interface ? store.state.Interface.checkpointsData : store.state.Scenario.checkpointsData);
 
 const title = ref(t('text'))
 

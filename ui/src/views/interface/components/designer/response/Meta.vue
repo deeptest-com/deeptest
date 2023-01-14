@@ -19,6 +19,8 @@ import {computed, ComputedRef, defineComponent, PropType, Ref, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import {StateType} from "@/views/interface/store";
+import {UsedBy} from "@/utils/enum";
+import {StateType as ScenarioStateType} from "@/views/scenario/store";
 
 interface ResponseMetaSetupData {
   responseData: ComputedRef;
@@ -32,8 +34,9 @@ export default defineComponent({
   },
   setup(props): ResponseMetaSetupData {
     const {t} = useI18n();
-    const store = useStore<{ Interface: StateType }>();
-    const responseData = computed<any>(() => store.state.Interface.responseData);
+    const store = useStore<{ Interface: StateType; Scenario: ScenarioStateType }>();
+    const responseData = computed<any>(
+        () => UsedBy.interface ? store.state.Interface.responseData : store.state.Scenario.responseData);
 
     const doSomething = (e) => {
       console.log('doSomething', e)

@@ -198,7 +198,7 @@ const StoreModel: ModuleType = {
     actions: {
         async invokeInterface({commit, dispatch, state}, data: any) {
             const response = await invokeInterface(data)
-            // console.log('=invoke=', response.data)
+            // console.log('=invoke in interface=', response.data)
 
             if (response.code === 0) {
                 commit('setResponse', response.data);
@@ -276,7 +276,7 @@ const StoreModel: ModuleType = {
         },
         async getLastInvocationResp({commit, dispatch, state}, id: number) {
             const response = await getLastInvocationResp(id);
-            console.log('=getLastInvocationResp=', response.data)
+            // console.log('=getLastInvocationResp=', response.data)
 
             const {data} = response;
 
@@ -386,18 +386,18 @@ const StoreModel: ModuleType = {
         async createExtractorOrUpdateResult({commit, dispatch, state}, payload: any) {
             try {
                 await createExtractorOrUpdateResult(payload);
-                dispatch('listExtractor');
+                dispatch('listExtractor', payload.usedBy);
                 dispatch('listValidExtractorVariableForInterface', payload.usedBy);
                 return true;
             } catch (error) {
                 return false;
             }
         },
-        async removeExtractor({commit, dispatch, state}, id: number) {
+        async removeExtractor({commit, dispatch, state}, payload) {
             try {
-                await removeExtractor(id);
+                await removeExtractor(payload.id);
 
-                dispatch('listExtractor', state.interfaceData.id);
+                dispatch('listExtractor', payload.usedBy);
                 return true;
             } catch (error) {
                 return false;

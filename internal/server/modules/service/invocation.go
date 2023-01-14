@@ -30,7 +30,7 @@ func (s *InvocationService) LoadInterfaceExecData(req v1.InvocationRequest) (ret
 		return
 	}
 
-	ret, err = s.ReplaceEnvironmentExtractorAndExecVariables(req)
+	ret, err = s.ReplaceEnvironmentAndExtractorVariables(req)
 
 	return
 }
@@ -38,8 +38,8 @@ func (s *InvocationService) LoadInterfaceExecData(req v1.InvocationRequest) (ret
 func (s *InvocationService) SubmitInterfaceInvokeResult(req v1.SubmitInvocationResultRequest) (err error) {
 	interf, _ := s.InterfaceRepo.GetDetail(req.Response.Id)
 
-	s.ExtractorService.ExtractInterface(interf.ID, req.Response, nil, consts.Interface)
-	s.CheckpointService.CheckInterface(interf.ID, req.Response, nil, consts.Interface)
+	s.ExtractorService.ExtractInterface(interf.ID, req.Response, consts.Interface)
+	s.CheckpointService.CheckInterface(interf.ID, req.Response, consts.Interface)
 
 	_, err = s.CreateForInterface(req.Request, req.Response, interf.ProjectId)
 
@@ -150,9 +150,9 @@ func (s *InvocationService) CopyValueFromRequest(invocation *model.Invocation, r
 	return
 }
 
-func (s *InvocationService) ReplaceEnvironmentExtractorAndExecVariables(req v1.InvocationRequest) (
+func (s *InvocationService) ReplaceEnvironmentAndExtractorVariables(req v1.InvocationRequest) (
 	ret v1.InvocationRequest, err error) {
-	variableMap, _ := s.VariableService.GetVariablesByInterface(req.Id)
+	variableMap, _ := s.VariableService.GetVariablesByInterface(req.Id, consts.Interface)
 	agentExec.ReplaceAll(&req.BaseRequest, variableMap)
 
 	ret = req

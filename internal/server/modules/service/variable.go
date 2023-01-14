@@ -4,23 +4,25 @@ import (
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	agentExecDomain "github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
-	repo2 "github.com/aaronchen2k/deeptest/internal/server/modules/repo"
+	repo "github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 )
 
 type VariableService struct {
-	InterfaceRepo   *repo2.InterfaceRepo   `inject:""`
-	ExtractorRepo   *repo2.ExtractorRepo   `inject:""`
-	EnvironmentRepo *repo2.EnvironmentRepo `inject:""`
+	InterfaceRepo   *repo.InterfaceRepo   `inject:""`
+	ExtractorRepo   *repo.ExtractorRepo   `inject:""`
+	EnvironmentRepo *repo.EnvironmentRepo `inject:""`
 }
 
-func (s *VariableService) GetVariablesByInterface(interfaceId uint) (ret map[string]interface{}, err error) {
+func (s *VariableService) GetVariablesByInterface(interfaceId uint, usedBy consts.UsedBy) (ret map[string]interface{}, err error) {
 	interf, err := s.InterfaceRepo.Get(interfaceId)
 
 	environmentVariables, _ := s.EnvironmentRepo.ListVariableByProject(interf.ProjectId)
-	interfaceExtractorVariables, _ := s.ExtractorRepo.ListValidExtractorVariableForInterface(interfaceId, interf.ProjectId)
-	fmt.Println("environmentVariables", environmentVariables)
-	fmt.Println("interfaceExtractorVariables", interfaceExtractorVariables)
+
+	interfaceExtractorVariables, _ :=
+		s.ExtractorRepo.ListValidExtractorVariableForInterface(interfaceId, interf.ProjectId, usedBy)
+
 	ret = MergeVariables(environmentVariables, interfaceExtractorVariables, nil)
 
 	return

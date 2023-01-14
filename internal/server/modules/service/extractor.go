@@ -9,7 +9,6 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
-	"github.com/jinzhu/copier"
 	"strings"
 )
 
@@ -55,38 +54,26 @@ func (s *ExtractorService) Delete(reqId uint) (err error) {
 }
 
 func (s *ExtractorService) ExtractInterface(interfaceId uint, resp v1.InvocationResponse,
-	interfaceExecLog *model.ExecLogProcessor, usedBy consts.UsedBy) (logExtractors []domain.ExecInterfaceExtractor, err error) {
+	usedBy consts.UsedBy) (logExtractors []domain.ExecInterfaceExtractor, err error) {
 
 	extractors, _ := s.ExtractorRepo.List(interfaceId, usedBy)
 
 	for _, extractor := range extractors {
-		logExtractor, err := s.Extract(extractor, resp, interfaceExecLog, usedBy)
-
-		if err == nil && interfaceExecLog != nil { // gen report for processor
-			interfaceExtractor := domain.ExecInterfaceExtractor{}
-			copier.CopyWithOption(&interfaceExtractor, logExtractor, copier.Option{DeepCopy: true})
-
-			logExtractors = append(logExtractors, interfaceExtractor)
-		}
+		s.Extract(extractor, resp, usedBy)
 	}
 
 	return
 }
 
 func (s *ExtractorService) Extract(extractor model.InterfaceExtractor, resp v1.InvocationResponse,
-	interfaceExecLog *model.ExecLogProcessor, usedBy consts.UsedBy) (logExtractor model.ExecLogExtractor, err error) {
+	usedBy consts.UsedBy) (logExtractor model.ExecLogExtractor, err error) {
 
 	err = s.ExtractValue(&extractor, resp)
-
 	if err != nil {
 		return
 	}
 
-	if interfaceExecLog == nil { // run by interface
-		s.ExtractorRepo.UpdateResult(extractor, usedBy)
-	} else { // run by processor
-		logExtractor, err = s.ExtractorRepo.UpdateResultToExecLog(extractor, interfaceExecLog)
-	}
+	s.ExtractorRepo.UpdateResult(extractor, usedBy)
 
 	return
 }

@@ -11,7 +11,6 @@ import (
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	repo "github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
-	"github.com/jinzhu/copier"
 	"strings"
 )
 
@@ -54,25 +53,17 @@ func (s *CheckpointService) Delete(reqId uint) (err error) {
 	return
 }
 
-func (s *CheckpointService) CheckInterface(interfaceId uint, resp v1.InvocationResponse,
-	interfaceExecLog *model.ExecLogProcessor, usedBy consts.UsedBy) (
+func (s *CheckpointService) CheckInterface(interfaceId uint, resp v1.InvocationResponse, usedBy consts.UsedBy) (
 	logCheckpoints []domain.ExecInterfaceCheckpoint, status consts.ResultStatus, err error) {
 
 	checkpoints, _ := s.CheckpointRepo.List(interfaceId, usedBy)
 
 	status = consts.Pass
 	for _, checkpoint := range checkpoints {
-		logCheckpoint, err := s.Check(checkpoint, resp, interfaceExecLog, usedBy)
+		logCheckpoint, err := s.Check(checkpoint, resp, usedBy)
 
-		if logCheckpoint.ResultStatus == consts.Fail {
+		if err != nil || logCheckpoint.ResultStatus == consts.Fail {
 			status = consts.Fail
-		}
-
-		if err == nil && interfaceExecLog != nil { // gen report for processor
-			interfaceCheckpoint := domain.ExecInterfaceCheckpoint{}
-			copier.CopyWithOption(&interfaceCheckpoint, logCheckpoint, copier.Option{DeepCopy: true})
-
-			logCheckpoints = append(logCheckpoints, interfaceCheckpoint)
 		}
 	}
 
@@ -80,17 +71,11 @@ func (s *CheckpointService) CheckInterface(interfaceId uint, resp v1.InvocationR
 }
 
 func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp v1.InvocationResponse,
-	interfaceExecLog *model.ExecLogProcessor, usedBy consts.UsedBy) (logCheckpoint model.ExecLogCheckpoint, err error) {
+	usedBy consts.UsedBy) (logCheckpoint model.ExecLogCheckpoint, err error) {
 	if checkpoint.Disabled {
 		checkpoint.ResultStatus = ""
 
-		if interfaceExecLog == nil { // run by interface
-			s.CheckpointRepo.UpdateResult(checkpoint, usedBy)
-
-		} else { // run by processor
-			logCheckpoint, err = s.CheckpointRepo.UpdateResultToExecLog(checkpoint, interfaceExecLog)
-
-		}
+		s.CheckpointRepo.UpdateResult(checkpoint, usedBy)
 
 		return
 	}
@@ -109,11 +94,7 @@ func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp v1.
 			checkpoint.ResultStatus = consts.Fail
 		}
 
-		if interfaceExecLog == nil { // run by interface
-			s.CheckpointRepo.UpdateResult(checkpoint, usedBy)
-		} else { // run by processor
-			logCheckpoint, err = s.CheckpointRepo.UpdateResultToExecLog(checkpoint, interfaceExecLog)
-		}
+		s.CheckpointRepo.UpdateResult(checkpoint, usedBy)
 
 		return
 	}
@@ -140,11 +121,7 @@ func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp v1.
 			checkpoint.ResultStatus = consts.Fail
 		}
 
-		if interfaceExecLog == nil { // run by interface
-			s.CheckpointRepo.UpdateResult(checkpoint, usedBy)
-		} else { // run by processor
-			logCheckpoint, err = s.CheckpointRepo.UpdateResultToExecLog(checkpoint, interfaceExecLog)
-		}
+		s.CheckpointRepo.UpdateResult(checkpoint, usedBy)
 
 		return
 	}
@@ -166,24 +143,16 @@ func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp v1.
 			checkpoint.ResultStatus = consts.Fail
 		}
 
-		if interfaceExecLog == nil { // run by interface
-			s.CheckpointRepo.UpdateResult(checkpoint, usedBy)
-		} else { // run by processor
-			logCheckpoint, err = s.CheckpointRepo.UpdateResultToExecLog(checkpoint, interfaceExecLog)
-		}
+		s.CheckpointRepo.UpdateResult(checkpoint, usedBy)
 
 		return
 	}
 
 	// Judgement
 	if checkpoint.Type == consts.Judgement {
-		var result interface{}
-		if interfaceExecLog != nil { // run by processor
-			result, _ = agentExec.EvaluateGovaluateExpressionByScope(checkpoint.Expression, interfaceExecLog.ProcessorId)
-		} else {
-			variables, _ := s.VariableService.GetVariablesByInterface(checkpoint.InterfaceId)
-			result, _ = agentExec.EvaluateGovaluateExpressionWithVariables(checkpoint.Expression, variables)
-		}
+		variableMap, _ := s.VariableService.GetVariablesByInterface(checkpoint.InterfaceId, usedBy)
+
+		result, _ := agentExec.EvaluateGovaluateExpressionWithVariables(checkpoint.Expression, variableMap)
 
 		ret, ok := result.(bool)
 		if ok && ret {
@@ -193,11 +162,7 @@ func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp v1.
 		}
 		checkpoint.ActualResult = fmt.Sprintf("%v", ret)
 
-		if interfaceExecLog == nil { // run by interface
-			s.CheckpointRepo.UpdateResult(checkpoint, usedBy)
-		} else { // run by processor
-			logCheckpoint, err = s.CheckpointRepo.UpdateResultToExecLog(checkpoint, interfaceExecLog)
-		}
+		s.CheckpointRepo.UpdateResult(checkpoint, usedBy)
 
 		return
 	}
@@ -210,11 +175,7 @@ func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp v1.
 
 		checkpoint.ResultStatus = utils.Compare(checkpoint.Operator, checkpoint.ActualResult, checkpoint.Value)
 
-		if interfaceExecLog == nil { // run by interface
-			s.CheckpointRepo.UpdateResult(checkpoint, usedBy)
-		} else { // run by processor
-			logCheckpoint, err = s.CheckpointRepo.UpdateResultToExecLog(checkpoint, interfaceExecLog)
-		}
+		s.CheckpointRepo.UpdateResult(checkpoint, usedBy)
 
 		return
 	}

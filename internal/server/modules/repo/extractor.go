@@ -159,12 +159,14 @@ func (r *ExtractorRepo) ListExtractorVariableByInterface(interfaceId uint) (vari
 	return
 }
 
-func (r *ExtractorRepo) ListValidExtractorVariableForInterface(interfaceId, projectId uint) (variables []v1.Variable, err error) {
+func (r *ExtractorRepo) ListValidExtractorVariableForInterface(interfaceId, projectId uint, usedBy consts.UsedBy) (
+	variables []v1.Variable, err error) {
+
 	err = r.DB.Model(&model.InterfaceExtractor{}).
 		Select("id, variable AS name, result AS value, "+
 			"interface_id AS interfaceId, scope AS scope").
 		Where("interface_id = ? OR !disable_share", interfaceId).
-		Where("project_id=?", projectId).
+		Where("project_id=? AND used_by = ?", projectId, usedBy).
 		Where("NOT deleted AND NOT disabled").
 		Order("created_at ASC").
 		Find(&variables).Error

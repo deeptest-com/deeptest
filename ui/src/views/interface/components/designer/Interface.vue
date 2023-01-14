@@ -1,5 +1,5 @@
 <template>
-  <div id="designer-interface-main">{{usedBy}}
+  <div id="designer-interface-main">
       <div id="top-panel">
         <InterfaceRequest v-if="interfaceData.id"></InterfaceRequest>
       </div>

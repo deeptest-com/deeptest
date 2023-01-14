@@ -29,7 +29,7 @@ func (s *ProcessorInvocationService) LoadInterfaceExecData(req v1.InvocationRequ
 		return
 	}
 
-	ret, err = s.ReplaceEnvironmentExtractorAndExecVariables(req)
+	ret, err = s.ReplaceEnvironmentAndExtractorVariables(req)
 
 	return
 }
@@ -37,8 +37,8 @@ func (s *ProcessorInvocationService) LoadInterfaceExecData(req v1.InvocationRequ
 func (s *ProcessorInvocationService) SubmitInterfaceInvokeResult(req v1.SubmitInvocationResultRequest) (err error) {
 	processorInterface, _ := s.ProcessorInterfaceRepo.GetDetail(req.Response.Id)
 
-	s.ExtractorService.ExtractInterface(processorInterface.ID, req.Response, nil, consts.Scenario)
-	s.CheckpointService.CheckInterface(processorInterface.ID, req.Response, nil, consts.Scenario)
+	s.ExtractorService.ExtractInterface(processorInterface.ID, req.Response, consts.Scenario)
+	s.CheckpointService.CheckInterface(processorInterface.ID, req.Response, consts.Scenario)
 
 	_, err = s.CreateForScenarioInterface(req.Request, req.Response, processorInterface.ProjectId)
 
@@ -71,9 +71,9 @@ func (s *ProcessorInvocationService) CreateForScenarioInterface(req v1.Invocatio
 	return
 }
 
-func (s *ProcessorInvocationService) ReplaceEnvironmentExtractorAndExecVariables(req v1.InvocationRequest) (
+func (s *ProcessorInvocationService) ReplaceEnvironmentAndExtractorVariables(req v1.InvocationRequest) (
 	ret v1.InvocationRequest, err error) {
-	variableMap, _ := s.VariableService.GetVariablesByInterface(req.Id)
+	variableMap, _ := s.VariableService.GetVariablesByInterface(req.Id, consts.Scenario)
 	agentExec.ReplaceAll(&req.BaseRequest, variableMap)
 
 	ret = req

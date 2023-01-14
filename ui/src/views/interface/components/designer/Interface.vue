@@ -58,14 +58,16 @@ onUnmounted(() => {
 
 let id = interfaceData.value.id
 watch(interfaceData, () => {
-  console.log('watch interfaceData', interfaceData.value.id)
+  console.log('watch interfaceData', interfaceData.value)
 
-  if (interfaceData.value.id !== id) {
+  if (interfaceData.value?.id !== id) {
     usedBy === UsedBy.interface ? store.dispatch('Interface/listValidExtractorVariableForInterface', usedBy):
         store.dispatch('Scenario/listValidExtractorVariableForInterface', usedBy)
+
+    id = interfaceData.value.id
   }
 
-  id = interfaceData.value.id
+
 }, {deep: true})
 
 const resize = () => {

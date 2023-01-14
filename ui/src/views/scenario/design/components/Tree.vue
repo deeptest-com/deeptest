@@ -166,7 +166,6 @@ const selectNode = (keys, e) => {
 
   store.dispatch('Scenario/getNode', selectedData).then((ok) => {
     if (ok && selectedNode.value.processorType === 'processor_interface_default') {
-      console.log('============', selectedNode.value)
       const interfaceId = selectedNode.value.entityId
       store.dispatch('Scenario/getInterface', interfaceId)
     }

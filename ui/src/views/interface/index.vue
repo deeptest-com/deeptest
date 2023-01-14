@@ -38,6 +38,7 @@ export default defineComponent({
     onMounted(() => {
       console.log('onMounted')
       resize()
+      store.dispatch('Interface/getInterface', null)
     })
     onUnmounted(() => {
       console.log('onUnmounted')

@@ -4,14 +4,14 @@
       <a-button @click="exec" type="link">执行场景</a-button>
     </div>
 
-    <div id="main" class="main dp-splits-v">
-      <div id="design-processor">
+    <div id="scenario-design-content" class="dp-splits-v">
+      <div id="scenario-design-content-left">
         <Processor></Processor>
       </div>
 
-      <div id="design-splitter" class="splitter"></div>
+      <div id="scenario-design-content-splitter" class="splitter"></div>
 
-      <div id="design-right">
+      <div id="scenario-design-content-right">
         <a-tabs v-model:activeKey="tabKey"
                 tabPosition="right"
                 :tabBarGutter="0"
@@ -71,8 +71,8 @@ onMounted(() => {
 })
 
 const resize = () => {
-  resizeWidth('designer-main',
-      'design-content', 'design-splitter', 'design-right', 500, 300)
+  resizeWidth('scenario-design-content',
+      'scenario-design-content-left', 'scenario-design-content-splitter', 'scenario-design-content-right', 500, 300)
 }
 
 </script>
@@ -118,17 +118,17 @@ const resize = () => {
     text-align: right;
   }
 
-  #main {
+  #scenario-design-content {
     height: calc(100% - 32px);
     width: 100%;
 
-    #design-processor {
+    #scenario-design-content-left {
       flex: 1;
       width: 0;
       height: 100%;
     }
 
-    #design-right {
+    #scenario-design-content-right {
       width: 320px;
       height: 100%;
     }

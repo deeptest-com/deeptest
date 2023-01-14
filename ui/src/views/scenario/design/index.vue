@@ -35,6 +35,7 @@ const collapsed = computed<boolean>(()=> store.state.Global.collapsed);
 onMounted(() => {
   console.log('onMounted')
   resize()
+  store.dispatch('Scenario/getNode', null)
 })
 
 onUnmounted(() => {

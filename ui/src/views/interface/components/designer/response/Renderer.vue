@@ -63,7 +63,7 @@ const title = ref(t('text'))
 
 watch(responseData, () => {
   console.log('watch responseData')
-  title.value = t(responseData.value.contentLang)
+  title.value = t(responseData.value.contentLang ? responseData.value.contentLang : 'empty')
 }, {deep: true})
 
 const activeKey = ref('1');

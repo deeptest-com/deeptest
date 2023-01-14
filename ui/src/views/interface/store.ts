@@ -240,6 +240,12 @@ const StoreModel: ModuleType = {
             return true;
         },
         async getInterface({commit}, payload: any) {
+            if (!payload) {
+                commit('setInterface', {});
+                commit('setResponse', {});
+                return true;
+            }
+
             if (payload.isDir) {
                 commit('setInterface', {
                     bodyType: 'application/json',

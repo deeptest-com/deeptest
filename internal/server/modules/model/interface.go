@@ -118,12 +118,13 @@ type InterfaceExtractor struct {
 	BoundaryIndex    int    `json:"boundaryIndex"`
 	BoundaryIncluded bool   `json:"boundaryIncluded"`
 
-	Variable     string                `json:"variable"`
-	Scope        consts.ExtractorScope `json:"scope" gorm:"default:private"`
-	DisableShare bool                  `json:"disableShare"`
+	Variable string                `json:"variable"`
+	Scope    consts.ExtractorScope `json:"scope" gorm:"default:private"`
+	//DisableShare bool                  `json:"disableShare"`
 
 	Result      string `json:"result" gorm:"type:text"`
 	InterfaceId uint   `json:"interfaceId"`
+	ScenarioId  uint   `json:"scenarioId"`
 
 	ProjectId uint `json:"projectId"`
 }
@@ -147,6 +148,7 @@ type InterfaceCheckpoint struct {
 	ActualResult string              `json:"actualResult"`
 	ResultStatus consts.ResultStatus `json:"resultStatus"`
 	InterfaceId  uint                `json:"interfaceId"`
+	ScenarioId   uint                `json:"scenarioId"`
 }
 
 func (InterfaceCheckpoint) TableName() string {

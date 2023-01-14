@@ -173,6 +173,7 @@ func (r *ScenarioProcessorRepo) GetInterface(processor model.Processor) (ret mod
 	// processor refer to an interface using interfaceID,
 	// there is no ProcessorInterface obj, just return a common obj
 	ret = r.genProcessorComm(processor)
+	ret.EntityId = processor.EntityId
 
 	return
 }

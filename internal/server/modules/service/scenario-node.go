@@ -111,7 +111,7 @@ func (s *ScenarioNodeService) createDirOrInterface(interfaceNode v1.InterfaceSim
 
 	} else {
 		interfaceProcessor := model.ProcessorInterface{}
-		interfaceProcessor, err = s.ScenarioProcessorService.CloneInterface(uint(interfaceNode.Id))
+		interfaceProcessor, err = s.ScenarioProcessorService.CloneInterface(uint(interfaceNode.Id), parentProcessor.ScenarioId)
 		if err != nil {
 			return
 		}

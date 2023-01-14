@@ -203,5 +203,7 @@ func (ProcessorCookie) TableName() string {
 type ProcessorComm struct {
 	Id uint `json:"id" yaml:"id"`
 	agentExec.ProcessorEntityBase
+
+	EntityId    uint `json:"entityId"`
 	InterfaceId uint `json:"interfaceId"`
 }

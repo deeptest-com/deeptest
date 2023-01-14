@@ -14,8 +14,9 @@ import (
 )
 
 type ExtractorRepo struct {
-	DB            *gorm.DB       `inject:""`
-	InterfaceRepo *InterfaceRepo `inject:""`
+	DB                     *gorm.DB                `inject:""`
+	InterfaceRepo          *InterfaceRepo          `inject:""`
+	ProcessorInterfaceRepo *ProcessorInterfaceRepo `inject:""`
 }
 
 func (r *ExtractorRepo) List(interfaceId uint, usedBy consts.UsedBy) (pos []model.InterfaceExtractor, err error) {
@@ -162,13 +163,20 @@ func (r *ExtractorRepo) ListExtractorVariableByInterface(interfaceId uint) (vari
 func (r *ExtractorRepo) ListValidExtractorVariableForInterface(interfaceId, projectId uint, usedBy consts.UsedBy) (
 	variables []v1.Variable, err error) {
 
-	err = r.DB.Model(&model.InterfaceExtractor{}).
+	q := r.DB.Model(&model.InterfaceExtractor{}).
 		Select("id, variable AS name, result AS value, "+
 			"interface_id AS interfaceId, scope AS scope").
-		Where("interface_id = ? OR !disable_share", interfaceId).
-		Where("project_id=? AND used_by = ?", projectId, usedBy).
-		Where("NOT deleted AND NOT disabled").
-		Order("created_at ASC").
+		Where("used_by = ?", usedBy).
+		Where("NOT deleted AND NOT disabled")
+
+	if usedBy == consts.Interface {
+		q.Where("project_id=?", projectId)
+	} else {
+		processorInterface, _ := r.ProcessorInterfaceRepo.Get(interfaceId)
+		q.Where("scenario_id=?", processorInterface.ScenarioId)
+	}
+
+	err = q.Order("created_at ASC").
 		Find(&variables).Error
 
 	return

@@ -121,6 +121,7 @@ const responseExtractorFinish = (data) => {
 
   data.interfaceId = interfaceData.value.id
   data.projectId = interfaceData.value.projectId
+  data.usedBy = usedBy
   store.dispatch('Interface/createExtractorOrUpdateResult', data).then((result) => {
     if (result) {
       responseExtractorVisible.value = false

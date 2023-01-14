@@ -204,7 +204,7 @@ const StoreModel: ModuleType = {
                 commit('setResponse', response.data);
 
                 dispatch('listInvocation', state.interfaceData.id);
-                dispatch('listValidExtractorVariableForInterface', state.interfaceData.id);
+                dispatch('listValidExtractorVariableForInterface', data.usedBy);
 
                 dispatch('listExtractor', data.usedBy);
                 dispatch('listCheckpoint', data.usedBy);
@@ -381,7 +381,7 @@ const StoreModel: ModuleType = {
             try {
                 await createExtractorOrUpdateResult(payload);
                 dispatch('listExtractor');
-                dispatch('listValidExtractorVariableForInterface', state.interfaceData.id);
+                dispatch('listValidExtractorVariableForInterface', payload.usedBy);
                 return true;
             } catch (error) {
                 return false;
@@ -424,6 +424,7 @@ const StoreModel: ModuleType = {
 
         async listValidExtractorVariableForInterface({commit, dispatch, state}, usedBy) {
             try {
+                console.log('listValidExtractorVariableForInterface')
                 const resp = await listValidExtractorVariableForInterface(state.interfaceData.id, usedBy);
                 const {data} = resp;
                 commit('setValidExtractorVariables', data);

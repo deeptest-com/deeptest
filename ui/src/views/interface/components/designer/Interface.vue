@@ -61,7 +61,8 @@ watch(interfaceData, () => {
   console.log('watch interfaceData', interfaceData.value.id)
 
   if (interfaceData.value.id !== id) {
-    store.dispatch('Interface/listValidExtractorVariableForInterface', usedBy)
+    usedBy === UsedBy.interface ? store.dispatch('Interface/listValidExtractorVariableForInterface', usedBy):
+        store.dispatch('Scenario/listValidExtractorVariableForInterface', usedBy)
   }
   id = interfaceData.value.id
 }, {deep: true})

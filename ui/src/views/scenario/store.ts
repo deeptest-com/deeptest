@@ -21,7 +21,13 @@ import {
 } from './service';
 import {getNodeMap} from "@/services/tree";
 import {Interface, Response} from "@/views/interface/data";
-import {invokeInterface, listCheckpoint, listExtractor, saveInterface} from "@/views/interface/service";
+import {
+    invokeInterface,
+    listCheckpoint,
+    listExtractor,
+    listValidExtractorVariableForInterface,
+    saveInterface
+} from "@/views/interface/service";
 
 export interface StateType {
     scenarioId: number;
@@ -40,6 +46,7 @@ export interface StateType {
     responseData: Response;
     extractorsData: any[];
     checkpointsData: any[];
+    validExtractorVariablesData: any[];
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
@@ -63,6 +70,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setResponse: Mutation<StateType>;
         setExtractors: Mutation<StateType>;
         setCheckpoints: Mutation<StateType>;
+        setValidExtractorVariables: Mutation<StateType>;
     };
     actions: {
         listScenario: Action<StateType, StateType>;
@@ -96,6 +104,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
 
         listExtractor: Action<StateType, StateType>;
         listCheckpoint: Action<StateType, StateType>;
+        listValidExtractorVariableForInterface: Action<StateType, StateType>;
     };
 }
 const initState: StateType = {
@@ -122,7 +131,8 @@ const initState: StateType = {
     interfaceData: {} as Interface,
     responseData: {} as Response,
     extractorsData: [],
-    checkpointsData: []
+    checkpointsData: [],
+    validExtractorVariablesData: [],
 };
 
 const StoreModel: ModuleType = {
@@ -181,6 +191,9 @@ const StoreModel: ModuleType = {
         },
         setCheckpoints(state, payload) {
             state.checkpointsData = payload;
+        },
+        setValidExtractorVariables(state, payload) {
+            state.validExtractorVariablesData = payload;
         },
     },
     actions: {
@@ -439,6 +452,17 @@ const StoreModel: ModuleType = {
                 const resp = await listCheckpoint(state.interfaceData.id, usedBy);
                 const {data} = resp;
                 commit('setCheckpoints', data);
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+        async listValidExtractorVariableForInterface({commit, dispatch, state}, usedBy) {
+            try {
+                console.log('listValidExtractorVariableForInterface')
+                const resp = await listValidExtractorVariableForInterface(state.interfaceData.id, usedBy);
+                const {data} = resp;
+                commit('setValidExtractorVariables', data);
                 return true;
             } catch (error) {
                 return false;

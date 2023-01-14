@@ -399,22 +399,22 @@ const StoreModel: ModuleType = {
         },
 
         // extractor variable
-        async removeShareVar({commit, dispatch, state}, id: any) {
+        async clearShareVar({commit, dispatch, state}, payload: any) {
             try {
-                const resp = await removeShareVar(id);
+                const resp = await clearShareVar(state.interfaceData.id);
                 const {data} = resp;
-                dispatch('listValidExtractorVariableForInterface', state.interfaceData.id);
+                dispatch('listValidExtractorVariableForInterface', payload.usedBy);
 
                 return true;
             } catch (error) {
                 return false;
             }
         },
-        async clearShareVar({commit, dispatch, state}, interfaceId: any) {
+        async removeShareVar({commit, dispatch, state}, payload: any) {
             try {
-                const resp = await clearShareVar(interfaceId);
+                const resp = await removeShareVar(payload.id);
                 const {data} = resp;
-                dispatch('listValidExtractorVariableForInterface', state.interfaceData.id);
+                dispatch('listValidExtractorVariableForInterface', payload.usedBy);
 
                 return true;
             } catch (error) {
@@ -422,9 +422,9 @@ const StoreModel: ModuleType = {
             }
         },
 
-        async listValidExtractorVariableForInterface({commit, dispatch, state}) {
+        async listValidExtractorVariableForInterface({commit, dispatch, state}, usedBy) {
             try {
-                const resp = await listValidExtractorVariableForInterface(state.interfaceData.id);
+                const resp = await listValidExtractorVariableForInterface(state.interfaceData.id, usedBy);
                 const {data} = resp;
                 commit('setValidExtractorVariables', data);
                 return true;

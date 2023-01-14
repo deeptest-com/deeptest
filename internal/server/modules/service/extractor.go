@@ -118,9 +118,9 @@ func (s *ExtractorService) ListExtractorVariableByInterface(interfaceId int) (va
 	return
 }
 
-func (s *ExtractorService) ListValidExtractorVariableForInterface(interfaceId int) (variables []v1.Variable, err error) {
+func (s *ExtractorService) ListValidExtractorVariableForInterface(interfaceId int, usedBy consts.UsedBy) (variables []v1.Variable, err error) {
 	interf, _ := s.InterfaceRepo.Get(uint(interfaceId))
-	variables, err = s.ExtractorRepo.ListValidExtractorVariableForInterface(uint(interfaceId), interf.ProjectId)
+	variables, err = s.ExtractorRepo.ListValidExtractorVariableForInterface(uint(interfaceId), interf.ProjectId, usedBy)
 
 	return
 }

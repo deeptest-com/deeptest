@@ -333,8 +333,8 @@ export async function listExtractorVariable(interfaceId: number): Promise<any> {
         params,
     });
 }
-export async function listValidExtractorVariableForInterface(interfaceId: number): Promise<any> {
-    const params = {interfaceId}
+export async function listValidExtractorVariableForInterface(interfaceId: number, usedBy: UsedBy): Promise<any> {
+    const params = {interfaceId, usedBy}
     return request({
         url: `/${apiExtractor}/listValidExtractorVariableForInterface`,
         method: 'GET',

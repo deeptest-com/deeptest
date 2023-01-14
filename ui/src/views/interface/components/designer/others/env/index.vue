@@ -296,11 +296,11 @@ const envVarEditCancel = () => {
 
 const clearShareVar  = () => {
   console.log('clearShareVar')
-  store.dispatch('Interface/clearShareVar', interfaceData.value.id)
+  store.dispatch('Interface/clearShareVar', {usedBy: usedBy})
 }
 const removeShareVar = (item) => {
   console.log('removeShareVar', item)
-  store.dispatch('Interface/removeShareVar', item.id)
+  store.dispatch('Interface/removeShareVar', {id: item.id, usedBy: usedBy})
 }
 
 </script>

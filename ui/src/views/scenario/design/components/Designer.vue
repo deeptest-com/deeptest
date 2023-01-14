@@ -35,7 +35,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, ComputedRef, defineComponent, onMounted, PropType, Ref, ref, watch} from "vue";
+import {computed, ComputedRef, defineComponent, onMounted, PropType, provide, Ref, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import {Form, message} from 'ant-design-vue';
 import { HistoryOutlined, EnvironmentOutlined, LeftCircleOutlined, RightCircleOutlined } from '@ant-design/icons-vue';
@@ -45,13 +45,13 @@ const router = useRouter();
 import {StateType} from "@/views/interface/store";
 import {Interface} from "@/views/interface/data";
 import {resizeWidth} from "@/utils/dom";
-import {UsedBy} from "@/utils/enum";
 import {useRouter} from "vue-router";
 import RequestEnv from '@/views/interface/components/designer/others/env/index.vue';
 import Processor from './Processor.vue';
+import {UsedBy} from "@/utils/enum";
 
+provide('usedBy', UsedBy.scenario)
 const useForm = Form.useForm;
-const designByInterface = UsedBy.interface
 
 const {t} = useI18n();
 const store = useStore<{ Interface: StateType }>();

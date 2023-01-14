@@ -118,6 +118,7 @@ export default {
     'processor_extractor_jsonquery':  'JSON提取器',
     'processor_extractor_htmlquery':  'HTML提取器',
     'processor_extractor_xmlquery':  'XML提取器',
+    'processor_extractor_regx':  '正则表达式提取器',
 
     'processor_cookie_get':  '获取Cookie',
     'processor_cookie_set':  '设置Cookie',

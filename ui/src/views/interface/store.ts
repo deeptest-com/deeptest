@@ -14,7 +14,7 @@ import {
     listCheckpoint,
     listExtractor,
     listInvocation,
-    listValidExtractorVariable,
+    listValidExtractorVariableForInterface,
     load,
     move,
     remove,
@@ -96,7 +96,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         removeExtractor: Action<StateType, StateType>;
         removeShareVar: Action<StateType, StateType>;
         clearShareVar: Action<StateType, StateType>;
-        listValidExtractorVariable: Action<StateType, StateType>;
+        listValidExtractorVariableForInterface: Action<StateType, StateType>;
 
         listCheckpoint: Action<StateType, StateType>;
         getCheckpoint: Action<StateType, StateType>;
@@ -204,7 +204,7 @@ const StoreModel: ModuleType = {
                 commit('setResponse', response.data);
 
                 dispatch('listInvocation', state.interfaceData.id);
-                dispatch('listValidExtractorVariable', state.interfaceData.id);
+                dispatch('listValidExtractorVariableForInterface', state.interfaceData.id);
 
                 dispatch('listExtractor', data.usedBy);
                 dispatch('listCheckpoint', data.usedBy);
@@ -381,7 +381,7 @@ const StoreModel: ModuleType = {
             try {
                 await createExtractorOrUpdateResult(payload);
                 dispatch('listExtractor');
-                dispatch('listValidExtractorVariable', state.interfaceData.id);
+                dispatch('listValidExtractorVariableForInterface', state.interfaceData.id);
                 return true;
             } catch (error) {
                 return false;
@@ -403,7 +403,7 @@ const StoreModel: ModuleType = {
             try {
                 const resp = await removeShareVar(id);
                 const {data} = resp;
-                dispatch('listValidExtractorVariable', state.interfaceData.id);
+                dispatch('listValidExtractorVariableForInterface', state.interfaceData.id);
 
                 return true;
             } catch (error) {
@@ -414,7 +414,7 @@ const StoreModel: ModuleType = {
             try {
                 const resp = await clearShareVar(interfaceId);
                 const {data} = resp;
-                dispatch('listValidExtractorVariable', state.interfaceData.id);
+                dispatch('listValidExtractorVariableForInterface', state.interfaceData.id);
 
                 return true;
             } catch (error) {
@@ -422,9 +422,9 @@ const StoreModel: ModuleType = {
             }
         },
 
-        async listValidExtractorVariable({commit, dispatch, state}) {
+        async listValidExtractorVariableForInterface({commit, dispatch, state}) {
             try {
-                const resp = await listValidExtractorVariable(state.interfaceData.id);
+                const resp = await listValidExtractorVariableForInterface(state.interfaceData.id);
                 const {data} = resp;
                 commit('setValidExtractorVariables', data);
                 return true;

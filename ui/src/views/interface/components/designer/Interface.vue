@@ -1,5 +1,5 @@
 <template>
-  <div id="designer-interface-main">
+  <div id="designer-interface-main">{{usedBy}}
       <div id="top-panel">
         <InterfaceRequest v-if="interfaceData.id"></InterfaceRequest>
       </div>
@@ -25,7 +25,7 @@ import {
   PropType,
   Ref,
   ref,
-  watch
+  watch, inject
 } from "vue";
 import {useI18n} from "vue-i18n";
 import {resizeHandler, resizeHeight} from "@/utils/dom";
@@ -38,18 +38,12 @@ import InterfaceResponse from './response/Index.vue';
 import RequestVariable from '@/components/Editor/RequestVariable.vue';
 import {Interface} from "@/views/interface/data";
 import {UsedBy} from "@/utils/enum";
-
-const props = defineProps<{
-  usedBy: UsedBy,
-}>()
-
+const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
 const store = useStore<{ Scenario: ScenarioStateType; Interface: InterfaceStateType }>();
 
 const interfaceData = computed<Interface>(
-    () => props.usedBy === UsedBy.interface ? store.state.Interface.interfaceData : store.state.Scenario.interfaceData);
-
-provide('usedBy', props.usedBy)
+    () => usedBy === UsedBy.interface ? store.state.Interface.interfaceData : store.state.Scenario.interfaceData);
 
 onMounted(() => {
   console.log('onMounted interface')
@@ -67,7 +61,7 @@ watch(interfaceData, () => {
   console.log('watch interfaceData', interfaceData.value.id)
 
   if (interfaceData.value.id !== id) {
-    store.dispatch('Interface/listValidExtractorVariable')
+    store.dispatch('Interface/listValidExtractorVariableForInterface')
   }
   id = interfaceData.value.id
 }, {deep: true})

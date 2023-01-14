@@ -21,13 +21,8 @@ func (r *CheckpointRepo) List(interfaceId uint, usedBy consts.UsedBy) (pos []mod
 	return
 }
 
-func (r *CheckpointRepo) ListTo(interfaceId uint) (ret []domain.Checkpoint, err error) {
-	pos := make([]model.InterfaceCheckpoint, 0)
-
-	err = r.DB.
-		Where("interface_id=?", interfaceId).
-		Where("NOT deleted").
-		Find(&pos).Error
+func (r *CheckpointRepo) ListTo(interfaceId uint, usedBy consts.UsedBy) (ret []domain.Checkpoint, err error) {
+	pos, err := r.List(interfaceId, usedBy)
 
 	for _, po := range pos {
 		checkpoint := domain.Checkpoint{}
@@ -98,6 +93,7 @@ func (r *CheckpointRepo) UpdateResultToExecLog(checkpoint model.InterfaceCheckpo
 	logCheckpoint model.ExecLogCheckpoint, err error) {
 
 	copier.CopyWithOption(&logCheckpoint, checkpoint, copier.Option{DeepCopy: true})
+
 	logCheckpoint.ID = 0
 	logCheckpoint.LogId = log.ID
 	logCheckpoint.CreatedAt = nil

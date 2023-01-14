@@ -18,7 +18,7 @@ func (s *VariableService) GetVariablesByInterface(interfaceId uint) (ret map[str
 	interf, err := s.InterfaceRepo.Get(interfaceId)
 
 	environmentVariables, _ := s.EnvironmentRepo.ListVariableByProject(interf.ProjectId)
-	interfaceExtractorVariables, _ := s.ExtractorRepo.ListValidExtractorVariable(interfaceId, interf.ProjectId)
+	interfaceExtractorVariables, _ := s.ExtractorRepo.ListValidExtractorVariableForInterface(interfaceId, interf.ProjectId)
 	fmt.Println("environmentVariables", environmentVariables)
 	fmt.Println("interfaceExtractorVariables", interfaceExtractorVariables)
 	ret = MergeVariables(environmentVariables, interfaceExtractorVariables, nil)

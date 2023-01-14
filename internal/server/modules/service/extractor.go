@@ -76,9 +76,17 @@ func (s *ExtractorService) ExtractInterface(interfaceId uint, resp v1.Invocation
 func (s *ExtractorService) Extract(extractor model.InterfaceExtractor, resp v1.InvocationResponse,
 	interfaceExecLog *model.ExecLogProcessor, usedBy consts.UsedBy) (logExtractor model.ExecLogExtractor, err error) {
 
-	s.ExtractValue(&extractor, resp)
+	err = s.ExtractValue(&extractor, resp)
 
-	s.ExtractorRepo.UpdateResult(extractor, usedBy)
+	if err != nil {
+		return
+	}
+
+	if interfaceExecLog == nil { // run by interface
+		s.ExtractorRepo.UpdateResult(extractor, usedBy)
+	} else { // run by processor
+		logExtractor, err = s.ExtractorRepo.UpdateResultToExecLog(extractor, interfaceExecLog)
+	}
 
 	return
 }
@@ -117,15 +125,15 @@ func (s *ExtractorService) ExtractValue(extractor *model.InterfaceExtractor, res
 	return
 }
 
-func (s *ExtractorService) ListValidExtractorVariable(interfaceId int) (variables []v1.Variable, err error) {
-	interf, _ := s.InterfaceRepo.Get(uint(interfaceId))
-	variables, err = s.ExtractorRepo.ListValidExtractorVariable(uint(interfaceId), interf.ProjectId)
+func (s *ExtractorService) ListExtractorVariableByInterface(interfaceId int) (variables []v1.Variable, err error) {
+	variables, err = s.ExtractorRepo.ListExtractorVariableByInterface(uint(interfaceId))
 
 	return
 }
 
-func (s *ExtractorService) ListExtractorVariableByInterface(interfaceId int) (variables []v1.Variable, err error) {
-	variables, err = s.ExtractorRepo.ListExtractorVariableByInterface(uint(interfaceId))
+func (s *ExtractorService) ListValidExtractorVariableForInterface(interfaceId int) (variables []v1.Variable, err error) {
+	interf, _ := s.InterfaceRepo.Get(uint(interfaceId))
+	variables, err = s.ExtractorRepo.ListValidExtractorVariableForInterface(uint(interfaceId), interf.ProjectId)
 
 	return
 }

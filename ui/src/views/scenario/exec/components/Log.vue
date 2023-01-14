@@ -34,8 +34,8 @@
                   <a-row v-for="(extractor, idx) in item.extractorsResult" :key="idx" type="flex" class="item">
                     <a-col flex="50px">{{idx + 1}}</a-col>
                     <a-col flex="100px">{{ t(extractor.src) }}</a-col>
-                    <a-col flex="100px">{{ extractor.type ? t('processor_extractor_'+extractor.type) : '' }}</a-col>
-                    <a-col flex="100px">
+                    <a-col flex="200px">{{ extractor.type ? t('processor_extractor_'+extractor.type) : '' }}</a-col>
+                    <a-col flex="1">
                       <span v-if="item.src === ExtractorSrc.header">
                         {{ extractor.key }}
                       </span>
@@ -45,8 +45,8 @@
                                   extractor.expression }}
                       </span>
                     </a-col>
-                    <a-col flex="100px">{{ extractor.variable }}</a-col>
-                    <a-col :class="[extractor.result==='extractor_err'? 'dp-color-fail': '']" flex="1">
+                    <a-col flex="160px">{{ extractor.variable }}</a-col>
+                    <a-col flex="100px" :class="[extractor.result==='extractor_err'? 'dp-color-fail': '']">
                       {{extractor.result==='extractor_err'? t(extractor.result) : extractor.result}}
                     </a-col>
                   </a-row>
@@ -60,9 +60,9 @@
                   <a-row v-for="(checkpoint, idx) in item.checkpointsResult" :key="idx" type="flex" class="item">
                     <a-col flex="50px">{{idx + 1}}</a-col>
                     <a-col flex="100px">{{t(checkpoint.type)}}</a-col>
-                    <a-col flex="100px">{{ checkpoint.type === CheckpointType.extractor ? checkpoint.extractorVariable : checkpoint.expression }} </a-col>
-                    <a-col flex="100px">{{ t(checkpoint.operator) }}</a-col>
-                    <a-col flex="100px">{{ checkpoint.value }}</a-col>
+                    <a-col flex="200px">{{ checkpoint.type === CheckpointType.extractor ? checkpoint.extractorVariable : checkpoint.expression }} </a-col>
+                    <a-col flex="200px">{{ t(checkpoint.operator) }}</a-col>
+                    <a-col flex="200px">{{ checkpoint.value }}</a-col>
                     <a-col flex="1">
                       {{ checkpoint.actualResult }}
                     </a-col>

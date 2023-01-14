@@ -328,15 +328,15 @@ export async function removeExtractor(id: number): Promise<any> {
 export async function listExtractorVariable(interfaceId: number): Promise<any> {
     const params = {interfaceId}
     return request({
-        url: `/${apiExtractor}/listExtractorVariable`,
+        url: `/${apiExtractor}/listExtractorVariableForCheckpoint`,
         method: 'GET',
         params,
     });
 }
-export async function listValidExtractorVariable(interfaceId: number): Promise<any> {
+export async function listValidExtractorVariableForInterface(interfaceId: number): Promise<any> {
     const params = {interfaceId}
     return request({
-        url: `/${apiExtractor}/listValidExtractorVariable`,
+        url: `/${apiExtractor}/listValidExtractorVariableForInterface`,
         method: 'GET',
         params,
     });

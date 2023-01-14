@@ -1,7 +1,7 @@
 <template>
   <div id="designer-main" class="dp-splits-v">
     <div id="design-content">
-      <DesignInterface :usedBy="designByInterface" />
+      <DesignInterface />
     </div>
 
     <div id="design-splitter" class="splitter"></div>
@@ -39,7 +39,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, ComputedRef, defineComponent, onMounted, PropType, Ref, ref, watch} from "vue";
+import {computed, ComputedRef, defineComponent, onMounted, PropType, provide, Ref, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import {Form, message} from 'ant-design-vue';
 import { HistoryOutlined, EnvironmentOutlined, LeftCircleOutlined, RightCircleOutlined } from '@ant-design/icons-vue';
@@ -53,8 +53,8 @@ import {Interface} from "@/views/interface/data";
 import {resizeWidth} from "@/utils/dom";
 import {UsedBy} from "@/utils/enum";
 
+provide('usedBy', UsedBy.interface)
 const useForm = Form.useForm;
-const designByInterface = UsedBy.interface
 
 const {t} = useI18n();
 const store = useStore<{ Interface: StateType }>();

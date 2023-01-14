@@ -27,13 +27,8 @@ func (r *ExtractorRepo) List(interfaceId uint, usedBy consts.UsedBy) (pos []mode
 	return
 }
 
-func (r *ExtractorRepo) ListTo(interfaceId uint) (ret []domain.Extractor, err error) {
-	pos := make([]model.InterfaceExtractor, 0)
-
-	err = r.DB.
-		Where("interface_id=?", interfaceId).
-		Where("NOT deleted").
-		Find(&pos).Error
+func (r *ExtractorRepo) ListTo(interfaceId uint, usedBy consts.UsedBy) (ret []domain.Extractor, err error) {
+	pos, _ := r.List(interfaceId, usedBy)
 
 	for _, po := range pos {
 		extractor := domain.Extractor{}
@@ -142,6 +137,7 @@ func (r *ExtractorRepo) UpdateResultToExecLog(extractor model.InterfaceExtractor
 	logExtractor model.ExecLogExtractor, err error) {
 
 	copier.CopyWithOption(&logExtractor, extractor, copier.Option{DeepCopy: true})
+
 	logExtractor.ID = 0
 	logExtractor.LogId = log.ID
 	logExtractor.CreatedAt = nil
@@ -152,12 +148,10 @@ func (r *ExtractorRepo) UpdateResultToExecLog(extractor model.InterfaceExtractor
 	return
 }
 
-func (r *ExtractorRepo) ListValidExtractorVariable(interfaceId, projectId uint) (variables []v1.Variable, err error) {
+func (r *ExtractorRepo) ListExtractorVariableByInterface(interfaceId uint) (variables []v1.Variable, err error) {
 	err = r.DB.Model(&model.InterfaceExtractor{}).
-		Select("id, variable AS name, result AS value, "+
-			"interface_id AS interfaceId, scope AS scope").
-		Where("interface_id = ? OR !disable_share", interfaceId).
-		Where("project_id=?", projectId).
+		Select("id, variable AS name, result AS value").
+		Where("interface_id=?", interfaceId).
 		Where("NOT deleted AND NOT disabled").
 		Order("created_at ASC").
 		Find(&variables).Error
@@ -165,10 +159,12 @@ func (r *ExtractorRepo) ListValidExtractorVariable(interfaceId, projectId uint) 
 	return
 }
 
-func (r *ExtractorRepo) ListExtractorVariableByInterface(interfaceId uint) (variables []v1.Variable, err error) {
+func (r *ExtractorRepo) ListValidExtractorVariableForInterface(interfaceId, projectId uint) (variables []v1.Variable, err error) {
 	err = r.DB.Model(&model.InterfaceExtractor{}).
-		Select("id, variable AS name, result AS value").
-		Where("interface_id=?", interfaceId).
+		Select("id, variable AS name, result AS value, "+
+			"interface_id AS interfaceId, scope AS scope").
+		Where("interface_id = ? OR !disable_share", interfaceId).
+		Where("project_id=?", projectId).
 		Where("NOT deleted AND NOT disabled").
 		Order("created_at ASC").
 		Find(&variables).Error

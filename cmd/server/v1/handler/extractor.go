@@ -120,8 +120,8 @@ func (c *ExtractorCtrl) Delete(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 }
 
-// ListExtractorVariable
-func (c *ExtractorCtrl) ListExtractorVariable(ctx iris.Context) {
+// ListExtractorVariableForCheckpoint
+func (c *ExtractorCtrl) ListExtractorVariableForCheckpoint(ctx iris.Context) {
 	interfaceId, err := ctx.URLParamInt("interfaceId")
 	if interfaceId == 0 {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: "interfaceId"})
@@ -137,15 +137,15 @@ func (c *ExtractorCtrl) ListExtractorVariable(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data})
 }
 
-// ListValidExtractorVariable
-func (c *ExtractorCtrl) ListValidExtractorVariable(ctx iris.Context) {
+// ListValidExtractorVariableForInterface
+func (c *ExtractorCtrl) ListValidExtractorVariableForInterface(ctx iris.Context) {
 	interfaceId, err := ctx.URLParamInt("interfaceId")
 	if interfaceId == 0 {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: "interfaceId"})
 		return
 	}
 
-	data, err := c.ExtractorService.ListValidExtractorVariable(interfaceId)
+	data, err := c.ExtractorService.ListValidExtractorVariableForInterface(interfaceId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
 		return

@@ -16,12 +16,12 @@ import {
     addInterfaces,
     addProcessor,
     saveProcessorName, saveProcessor,
+    saveInterface,
 
     loadExecResult, getInterface, getLastInvocationResp,
 } from './service';
 
 import {
-    saveInterface,
     invokeInterface,
     listCheckpoint,
     listExtractor,

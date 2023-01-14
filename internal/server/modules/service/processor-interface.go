@@ -39,3 +39,12 @@ func (s *ProcessorInterfaceService) CopyValueFromRequest(interf *model.Processor
 
 	return
 }
+
+func (s *ProcessorInterfaceService) UpdateByConfig(req v1.InvocationRequest) (err error) {
+	interf := model.ProcessorInterface{}
+	s.CopyValueFromRequest(&interf, req)
+
+	err = s.ProcessorInterfaceRepo.Update(interf)
+
+	return
+}

@@ -9,6 +9,7 @@ import {
     ProcessorCategory,
     ProcessorVariable, ProcessorAssertion, RequestBodyType
 } from "@/utils/enum";
+import {Interface} from "@/views/interface/data";
 
 const apiPath = 'scenarios';
 const apiPathNodes = `${apiPath}/nodes`;
@@ -158,6 +159,14 @@ export async function listInvocation(interfaceId: number): Promise<any> {
         url: `/${apiPathInterface}/listInvocation`,
         method: 'GET',
         params,
+    });
+}
+
+export async function saveInterface(interf: Interface): Promise<any> {
+    return request({
+        url: `/${apiPathInterface}/saveInterface`,
+        method: 'post',
+        data: interf,
     });
 }
 

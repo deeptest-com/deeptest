@@ -169,6 +169,7 @@ const selectNode = (keys, e) => {
       const interfaceId = selectedNode.value.entityId
       store.dispatch('Scenario/getInterface', interfaceId)
       store.dispatch('Scenario/getLastInvocationResp', interfaceId)
+      store.dispatch('Scenario/listInvocation', interfaceId)
     }
   })
 }

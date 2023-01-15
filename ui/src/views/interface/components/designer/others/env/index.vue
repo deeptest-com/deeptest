@@ -213,6 +213,7 @@ const interfaceData = computed<Interface>(
 
 const environmentsData = computed<any[]>(() => store.state.Environment.environmentsData);
 const environmentData = computed<any>(() => store.state.Environment.environmentData);
+
 const validExtractorVariablesData = computed(
     () => usedBy === UsedBy.interface ? store.state.Interface.validExtractorVariablesData :
         store.state.Scenario.validExtractorVariablesData);

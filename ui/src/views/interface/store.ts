@@ -58,7 +58,6 @@ export interface ModuleType extends StoreModuleType<StateType> {
 
         setInterface: Mutation<StateType>;
         setResponse: Mutation<StateType>;
-
         setInvocations: Mutation<StateType>;
 
         setExtractors: Mutation<StateType>;

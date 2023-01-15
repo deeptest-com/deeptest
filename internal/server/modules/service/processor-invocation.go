@@ -7,11 +7,12 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
+	"github.com/jinzhu/copier"
 	"time"
 )
 
 type ProcessorInvocationService struct {
-	InvocationRepo          *repo.InvocationRepo          `inject:""`
+	//InvocationRepo          *repo.InvocationRepo          `inject:""`
 	ProcessorInvocationRepo *repo.ProcessorInvocationRepo `inject:""`
 	ProcessorInterfaceRepo  *repo.ProcessorInterfaceRepo  `inject:""`
 	InterfaceRepo           *repo.InterfaceRepo           `inject:""`
@@ -81,6 +82,12 @@ func (s *ProcessorInvocationService) ReplaceEnvironmentAndExtractorVariables(req
 	return
 }
 
+func (s *ProcessorInvocationService) ListByInterface(interfId int) (invocations []model.ProcessorInvocation, err error) {
+	invocations, err = s.ProcessorInvocationRepo.List(interfId)
+
+	return
+}
+
 func (s *ProcessorInvocationService) GetLastResp(interfId int) (resp v1.InvocationResponse, err error) {
 	invocation, _ := s.ProcessorInvocationRepo.GetLast(interfId)
 	if invocation.ID > 0 {
@@ -91,6 +98,29 @@ func (s *ProcessorInvocationService) GetLastResp(interfId int) (resp v1.Invocati
 			Content:     "",
 		}
 	}
+
+	return
+}
+
+func (s *ProcessorInvocationService) GetAsInterface(id int) (interf model.Interface, err error) {
+	invocation, err := s.ProcessorInvocationRepo.Get(uint(id))
+
+	interfReq := v1.InvocationRequest{}
+	interfResp := v1.InvocationResponse{}
+
+	json.Unmarshal([]byte(invocation.ReqContent), &interfReq)
+	json.Unmarshal([]byte(invocation.RespContent), &interfResp)
+
+	copier.CopyWithOption(&interf, interfResp, copier.Option{DeepCopy: true})
+	copier.CopyWithOption(&interf, interfReq, copier.Option{DeepCopy: true})
+
+	interf.ID = invocation.InterfaceId
+
+	return
+}
+
+func (s *ProcessorInvocationService) Delete(id uint) (err error) {
+	err = s.ProcessorInvocationRepo.Delete(id)
 
 	return
 }

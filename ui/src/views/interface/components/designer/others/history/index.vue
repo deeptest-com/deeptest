@@ -46,20 +46,23 @@ export default defineComponent({
   setup(props) {
     const usedBy = inject('usedBy') as UsedBy
     const {t} = useI18n();
+
     const store = useStore<{ Interface: StateType, Scenario: ScenarioStateType }>();
     const interfaceData = computed<Interface>(
         () => usedBy === UsedBy.interface ? store.state.Interface.interfaceData : store.state.Scenario.interfaceData);
-
-    const invocationsData = computed<any[]>(() => store.state.Interface.invocationsData);
+    const invocationsData = computed<any[]>(() =>
+        usedBy === UsedBy.interface ? store.state.Interface.invocationsData : store.state.Scenario.invocationsData);
 
     const getRequestAsInterface = (id) => {
       console.log('getRequestAsInterface', id)
-      store.dispatch('Interface/getInvocationAsInterface', id)
+      usedBy === UsedBy.interface ? store.dispatch('Interface/getInvocationAsInterface', id) :
+          store.dispatch('Scenario/getInvocationAsInterface', id)
     }
 
     const removeHistory = (id) => {
       console.log('removeHistory', id)
-      store.dispatch('Interface/removeInvocation', {id: id, interfaceId: interfaceData.value.id})
+      usedBy === UsedBy.interface ? store.dispatch('Interface/removeInvocation', {id: id, interfaceId: interfaceData.value.id}) :
+          store.dispatch('Scenario/removeInvocation', {id: id, interfaceId: interfaceData.value.id})
     }
 
     const mouseOver = (event) => {

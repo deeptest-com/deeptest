@@ -152,16 +152,28 @@ export async function getInterface(interfaceId: number): Promise<any> {
         params,
     });
 }
+
+// invocation
 export async function listInvocation(interfaceId: number): Promise<any> {
     const params = {interfaceId: interfaceId}
 
     return request({
-        url: `/${apiPathInterface}/listInvocation`,
+        url: `/${apiInvocation}`,
         method: 'GET',
         params,
     });
 }
+export async function getInvocationAsInterface(id: number): Promise<any> {
+    return request({url: `/${apiInvocation}/${id}`});
+}
+export async function removeInvocation(id: number): Promise<any> {
+    return request({
+        url: `/${apiInvocation}/${id}`,
+        method: 'DELETE',
+    });
+}
 
+// interface
 export async function saveInterface(interf: Interface): Promise<any> {
     return request({
         url: `/${apiPathInterface}/saveInterface`,

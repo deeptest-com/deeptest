@@ -68,22 +68,6 @@ func (c *InvocationCtrl) List(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data})
 }
 
-func (c *InvocationCtrl) GetLastResp(ctx iris.Context) {
-	id, err := ctx.URLParamInt("id")
-	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
-		return
-	}
-
-	resp, err := c.InvocationService.GetLastResp(id)
-
-	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: _domain.SystemErr.Msg})
-		return
-	}
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: resp})
-}
-
 // GetAsInterface 详情
 func (c *InvocationCtrl) GetAsInterface(ctx iris.Context) {
 	id, err := ctx.Params().GetInt("id")
@@ -100,8 +84,6 @@ func (c *InvocationCtrl) GetAsInterface(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: invocation})
 }
 
-// Created by interface test api
-
 // Delete 删除
 func (c *InvocationCtrl) Delete(ctx iris.Context) {
 	id, err := ctx.Params().GetInt("id")
@@ -117,4 +99,21 @@ func (c *InvocationCtrl) Delete(ctx iris.Context) {
 	}
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+}
+
+// GetLastResp
+func (c *InvocationCtrl) GetLastResp(ctx iris.Context) {
+	id, err := ctx.URLParamInt("id")
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		return
+	}
+
+	resp, err := c.InvocationService.GetLastResp(id)
+
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: _domain.SystemErr.Msg})
+		return
+	}
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: resp})
 }

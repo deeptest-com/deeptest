@@ -21,15 +21,16 @@ import {
     loadExecResult, getInterface, getLastInvocationResp,
 } from './service';
 
-import {
+import { // use same apis with interface controller
     invokeInterface,
-    listCheckpoint,
     listExtractor,
+    listCheckpoint,
     listValidExtractorVariableForInterface,
 } from "@/views/interface/service";
 
 import {getNodeMap} from "@/services/tree";
 import {Interface, Response} from "@/views/interface/data";
+import {UsedBy} from "@/utils/enum";
 
 export interface StateType {
     scenarioId: number;
@@ -440,8 +441,8 @@ const StoreModel: ModuleType = {
             if (response.code === 0) {
                 commit('setResponse', response.data);
 
-                dispatch('listExtractor', data.usedBy);
-                dispatch('listCheckpoint', data.usedBy);
+                dispatch('listExtractor');
+                dispatch('listCheckpoint');
 
                 return true;
             } else {
@@ -449,9 +450,9 @@ const StoreModel: ModuleType = {
             }
         },
 
-        async listExtractor({commit, dispatch, state}, usedBy) {
+        async listExtractor({commit, dispatch, state}) {
             try {
-                const resp = await listExtractor(state.interfaceData.id, usedBy);
+                const resp = await listExtractor(state.interfaceData.id, UsedBy.scenario);
                 const {data} = resp;
                 commit('setExtractors', data);
                 return true;
@@ -459,9 +460,9 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
-        async listCheckpoint({commit, state}, usedBy) {
+        async listCheckpoint({commit, state}) {
             try {
-                const resp = await listCheckpoint(state.interfaceData.id, usedBy);
+                const resp = await listCheckpoint(state.interfaceData.id, UsedBy.scenario);
                 const {data} = resp;
                 commit('setCheckpoints', data);
                 return true;
@@ -469,10 +470,10 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
-        async listValidExtractorVariableForInterface({commit, dispatch, state}, usedBy) {
+        async listValidExtractorVariableForInterface({commit, dispatch, state}) {
             try {
                 console.log('listValidExtractorVariableForInterface')
-                const resp = await listValidExtractorVariableForInterface(state.interfaceData.id, usedBy);
+                const resp = await listValidExtractorVariableForInterface(state.interfaceData.id, UsedBy.scenario);
                 const {data} = resp;
                 commit('setValidExtractorVariables', data);
                 return true;

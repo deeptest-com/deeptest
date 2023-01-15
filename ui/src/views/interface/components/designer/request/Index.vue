@@ -66,7 +66,6 @@ const saveInterface = (data) => {
       }
     })
   } else {
-    alert(usedBy)
     store.dispatch('Scenario/saveInterface', data).then((res) => {
       if (res === true) {
         notification.success({

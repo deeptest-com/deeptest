@@ -302,7 +302,7 @@ const clearShareVar  = () => {
 }
 const removeShareVar = (item) => {
   console.log('removeShareVar', item)
-  store.dispatch('Interface/removeShareVar', {id: item.id, usedBy: usedBy})
+  store.dispatch('Interface/removeShareVar', {id: item.id})
 }
 
 </script>

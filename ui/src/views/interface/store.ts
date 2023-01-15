@@ -10,11 +10,6 @@ import {
     getExtractor,
     getInvocationAsInterface,
     getLastInvocationResp,
-    invokeInterface,
-    listCheckpoint,
-    listExtractor,
-    listInvocation,
-    listValidExtractorVariableForInterface,
     load,
     move,
     remove,
@@ -26,6 +21,12 @@ import {
     saveExtractor,
     saveInterface,
     update,
+    listInvocation,
+
+    invokeInterface,
+    listExtractor,
+    listCheckpoint,
+    listValidExtractorVariableForInterface,
 } from './service';
 import {Checkpoint, Extractor, Interface, Response} from "@/views/interface/data";
 import {getNodeMap} from "@/services/tree";
@@ -204,10 +205,10 @@ const StoreModel: ModuleType = {
                 commit('setResponse', response.data);
 
                 dispatch('listInvocation', state.interfaceData.id);
-                dispatch('listValidExtractorVariableForInterface', data.usedBy);
+                dispatch('listValidExtractorVariableForInterface');
 
-                dispatch('listExtractor', data.usedBy);
-                dispatch('listCheckpoint', data.usedBy);
+                dispatch('listExtractor');
+                dispatch('listCheckpoint');
 
                 return true;
             } else {
@@ -353,9 +354,9 @@ const StoreModel: ModuleType = {
         },
 
         // extractor
-        async listExtractor({commit, dispatch, state}, usedBy) {
+        async listExtractor({commit, dispatch, state}) {
             try {
-                const resp = await listExtractor(state.interfaceData.id, usedBy);
+                const resp = await listExtractor(state.interfaceData.id, UsedBy.interface);
                 const {data} = resp;
                 commit('setExtractors', data);
                 return true;
@@ -386,8 +387,8 @@ const StoreModel: ModuleType = {
         async createExtractorOrUpdateResult({commit, dispatch, state}, payload: any) {
             try {
                 await createExtractorOrUpdateResult(payload);
-                dispatch('listExtractor', payload.usedBy);
-                dispatch('listValidExtractorVariableForInterface', payload.usedBy);
+                dispatch('listExtractor');
+                dispatch('listValidExtractorVariableForInterface');
                 return true;
             } catch (error) {
                 return false;
@@ -397,7 +398,7 @@ const StoreModel: ModuleType = {
             try {
                 await removeExtractor(payload.id);
 
-                dispatch('listExtractor', payload.usedBy);
+                dispatch('listExtractor');
                 return true;
             } catch (error) {
                 return false;
@@ -409,7 +410,7 @@ const StoreModel: ModuleType = {
             try {
                 const resp = await clearShareVar(state.interfaceData.id);
                 const {data} = resp;
-                dispatch('listValidExtractorVariableForInterface', payload.usedBy);
+                dispatch('listValidExtractorVariableForInterface');
 
                 return true;
             } catch (error) {
@@ -420,7 +421,7 @@ const StoreModel: ModuleType = {
             try {
                 const resp = await removeShareVar(payload.id);
                 const {data} = resp;
-                dispatch('listValidExtractorVariableForInterface', payload.usedBy);
+                dispatch('listValidExtractorVariableForInterface');
 
                 return true;
             } catch (error) {
@@ -428,10 +429,10 @@ const StoreModel: ModuleType = {
             }
         },
 
-        async listValidExtractorVariableForInterface({commit, dispatch, state}, usedBy) {
+        async listValidExtractorVariableForInterface({commit, dispatch, state}) {
             try {
                 console.log('listValidExtractorVariableForInterface')
-                const resp = await listValidExtractorVariableForInterface(state.interfaceData.id, usedBy);
+                const resp = await listValidExtractorVariableForInterface(state.interfaceData.id, UsedBy.interface);
                 const {data} = resp;
                 commit('setValidExtractorVariables', data);
                 return true;
@@ -441,9 +442,9 @@ const StoreModel: ModuleType = {
         },
 
         // checkpoint
-        async listCheckpoint({commit, state}, usedBy) {
+        async listCheckpoint({commit, state}) {
             try {
-                const resp = await listCheckpoint(state.interfaceData.id, usedBy);
+                const resp = await listCheckpoint(state.interfaceData.id, UsedBy.interface);
                 const {data} = resp;
                 commit('setCheckpoints', data);
                 return true;

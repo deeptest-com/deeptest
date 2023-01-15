@@ -162,8 +162,8 @@ watch(interfaceData, () => {
 }, {deep: true})
 
 const listCheckPoint = () => {
-  usedBy === UsedBy.interface ? store.dispatch('Interface/listCheckpoint', usedBy) :
-      store.dispatch('Scenario/listCheckpoint', usedBy)
+  usedBy === UsedBy.interface ? store.dispatch('Interface/listCheckpoint') :
+      store.dispatch('Scenario/listCheckpoint')
 }
 listCheckPoint()
 

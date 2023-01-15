@@ -180,8 +180,8 @@ watch(interfaceData, () => {
 }, {deep: true})
 
 const listExtractor = () => {
-  usedBy === UsedBy.interface ? store.dispatch('Interface/listExtractor', usedBy) :
-      store.dispatch('Scenario/listExtractor', usedBy)
+  usedBy === UsedBy.interface ? store.dispatch('Interface/listExtractor') :
+      store.dispatch('Scenario/listExtractor')
 }
 listExtractor()
 
@@ -269,7 +269,7 @@ const cancel = () => {
 
 const remove = (item) => {
   console.log('remove')
-  store.dispatch('Interface/removeExtractor', {id: item.id, usedBy: usedBy})
+  store.dispatch('Interface/removeExtractor', {id: item.id})
 }
 
 const disable = (item) => {

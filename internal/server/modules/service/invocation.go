@@ -76,16 +76,14 @@ func (s *InvocationService) Get(id int) (invocation model.Invocation, err error)
 	return
 }
 
-func (s *InvocationService) GetAsInterface(id int) (interf model.Interface, err error) {
+func (s *InvocationService) GetAsInterface(id int) (interf model.Interface, interfResp v1.InvocationResponse, err error) {
 	invocation, err := s.InvocationRepo.Get(uint(id))
 
 	interfReq := v1.InvocationRequest{}
-	interfResp := v1.InvocationResponse{}
 
 	json.Unmarshal([]byte(invocation.ReqContent), &interfReq)
 	json.Unmarshal([]byte(invocation.RespContent), &interfResp)
 
-	copier.CopyWithOption(&interf, interfResp, copier.Option{DeepCopy: true})
 	copier.CopyWithOption(&interf, interfReq, copier.Option{DeepCopy: true})
 
 	interf.ID = invocation.InterfaceId

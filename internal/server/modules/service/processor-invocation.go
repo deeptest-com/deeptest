@@ -102,16 +102,14 @@ func (s *ProcessorInvocationService) GetLastResp(interfId int) (resp v1.Invocati
 	return
 }
 
-func (s *ProcessorInvocationService) GetAsInterface(id int) (interf model.Interface, err error) {
+func (s *ProcessorInvocationService) GetAsInterface(id int) (interf model.ProcessorInterface, interfResp v1.InvocationResponse, err error) {
 	invocation, err := s.ProcessorInvocationRepo.Get(uint(id))
 
 	interfReq := v1.InvocationRequest{}
-	interfResp := v1.InvocationResponse{}
 
 	json.Unmarshal([]byte(invocation.ReqContent), &interfReq)
 	json.Unmarshal([]byte(invocation.RespContent), &interfResp)
 
-	copier.CopyWithOption(&interf, interfResp, copier.Option{DeepCopy: true})
 	copier.CopyWithOption(&interf, interfReq, copier.Option{DeepCopy: true})
 
 	interf.ID = invocation.InterfaceId

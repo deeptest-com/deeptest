@@ -76,12 +76,12 @@ func (c *ProcessorInvocationCtrl) GetAsInterface(ctx iris.Context) {
 		return
 	}
 
-	invocation, err := c.ScenarioInvocationService.GetAsInterface(id)
+	req, resp, err := c.ScenarioInvocationService.GetAsInterface(id)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: _domain.SystemErr.Msg})
 		return
 	}
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: invocation})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: iris.Map{"req": req, "resp": resp}})
 }
 
 // Delete 删除

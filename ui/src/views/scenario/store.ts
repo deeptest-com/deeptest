@@ -481,7 +481,9 @@ const StoreModel: ModuleType = {
             try {
                 const resp = await getInvocationAsInterface(id);
                 const {data} = resp;
-                commit('setInterface', data);
+
+                commit('setInterface', data.req);
+                commit('setResponse', data.resp);
                 return true;
             } catch (error) {
                 return false;

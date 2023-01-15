@@ -31,8 +31,6 @@ type ProcessorInterface struct {
 func (entity ProcessorInterface) Run(processor *Processor, session *Session) (err error) {
 	logUtils.Infof("interface entity")
 
-	//json.Unmarshal(processor.EntityRaw, &entity)
-
 	startTime := time.Now()
 	processor.Result = &domain.Result{
 		ID:                int(entity.ProcessorID),

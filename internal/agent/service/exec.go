@@ -25,9 +25,9 @@ type ExecService struct {
 
 func (s *ExecService) ExecScenario(execReq *agentExec.ProcessorExecReq, wsMsg *websocket.Message) (err error) {
 	execObj := s.getScenarioToExec(execReq)
+	s.RestoreEntityFromRawAndSetParent(execObj.RootProcessor)
 
 	agentExec.InitScopeHierarchy(execObj.RootProcessor)
-	s.SetEntityAndParent(execObj.RootProcessor)
 
 	// start msg
 	exec.SendStartMsg(wsMsg)
@@ -135,7 +135,7 @@ func (s *ExecService) CancelAndSendMsg(scenarioId int, wsMsg websocket.Message) 
 	return
 }
 
-func (s *ExecService) SetEntityAndParent(root *agentExec.Processor) (err error) {
+func (s *ExecService) RestoreEntityFromRawAndSetParent(root *agentExec.Processor) (err error) {
 	processors := make([]*agentExec.Processor, 0)
 
 	agentExec.GetProcessorList(root, &processors)

@@ -69,14 +69,8 @@ func (r *ScenarioProcessorRepo) GetEntityTo(processorTo *agentExec.Processor) (r
 	processor, _ := r.Get(processorTo.ID)
 
 	switch processor.EntityCategory {
-	case consts.ProcessorRoot:
-		commEntityPo, _ := r.GetRoot(processor)
-
-		ret = agentExec.ProcessorRoot{}
-		copier.CopyWithOption(&ret, commEntityPo, copier.Option{DeepCopy: true})
-
 	case consts.ProcessorInterface:
-		interfacePo, _ := r.ScenarioInterfaceRepo.GetDetail(processor.InterfaceId)
+		interfacePo, _ := r.ScenarioInterfaceRepo.GetDetail(processor.EntityId)
 
 		interfaceEntity := agentExec.ProcessorInterface{}
 		copier.CopyWithOption(&interfaceEntity, interfacePo, copier.Option{DeepCopy: true})
@@ -90,6 +84,12 @@ func (r *ScenarioProcessorRepo) GetEntityTo(processorTo *agentExec.Processor) (r
 		interfaceEntity.Checkpoints, _ = r.CheckpointRepo.ListTo(interfaceEntity.ID, consts.Scenario)
 
 		ret = &interfaceEntity
+
+	case consts.ProcessorRoot:
+		commEntityPo, _ := r.GetRoot(processor)
+
+		ret = agentExec.ProcessorRoot{}
+		copier.CopyWithOption(&ret, commEntityPo, copier.Option{DeepCopy: true})
 
 	case consts.ProcessorGroup:
 		entityPo, _ := r.GetGroup(processor)

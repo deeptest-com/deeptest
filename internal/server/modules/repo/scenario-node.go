@@ -60,6 +60,7 @@ func (r *ScenarioNodeRepo) toTos(pos []*model.Processor, withDetail bool) (tos [
 		if withDetail {
 			entity, _ := r.ScenarioProcessorRepo.GetEntityTo(&to)
 
+			// avoid json serialization error
 			to.EntityRaw, _ = json.Marshal(entity)
 			to.Entity = &agentExec.ProcessorGroup{}
 

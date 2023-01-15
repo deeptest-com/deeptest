@@ -13,9 +13,15 @@
         <div class="status">
           {{execResult.resultStatus ? t(execResult.resultStatus) : ''}}
         </div>
+
         <div class="opt">
-          <a-button v-if="execResult.progressStatus !== 'in_progress'" @click="execStart" type="link">开始执行</a-button>
-          <a-button v-if="execResult.progressStatus === 'in_progress'" @click="execCancel" type="link">停止执行</a-button>
+          <a-button v-if="execResult.progressStatus !== 'in_progress'" @click="execStart" type="link">
+            开始执行
+          </a-button>
+
+          <a-button v-if="execResult.progressStatus === 'in_progress'" @click="execCancel" type="link">
+            停止执行
+          </a-button>
 
           <a-button @click="design" type="link">返回设计</a-button>
         </div>
@@ -108,7 +114,7 @@ const execStart = async () => {
 
 const execCancel = () => {
   console.log('execCancel')
-  const msg = {act: 'stop', id: scenarioId.value}
+  const msg = {act: 'stop', execReq: {scenarioId: scenarioId.value}}
   WebSocket.sentMsg(settings.webSocketRoom, JSON.stringify(msg))
 }
 

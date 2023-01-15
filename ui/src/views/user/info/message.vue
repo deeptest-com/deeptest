@@ -2,7 +2,7 @@
   <div class="message-main">
     <a-card>
       <template #title>
-        <div>用户信息</div>
+        <div>用户消息</div>
       </template>
       <template #extra></template>
 

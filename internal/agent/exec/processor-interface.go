@@ -31,6 +31,8 @@ type ProcessorInterface struct {
 func (entity ProcessorInterface) Run(processor *Processor, session *Session) (err error) {
 	logUtils.Infof("interface entity")
 
+	//json.Unmarshal(processor.EntityRaw, &entity)
+
 	startTime := time.Now()
 	processor.Result = &domain.Result{
 		ID:                int(entity.ProcessorID),
@@ -44,13 +46,13 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 	variableMap := GetVariableMap(entity.ProcessorID)
 	ReplaceAll(&entity.BaseRequest, variableMap)
 
+	// invoke
 	GetRequestProps(&entity.BaseRequest)
 	entity.Response, err = Invoke(entity.BaseRequest)
 	GetContentProps(&entity.Response)
 
 	reqContent, _ := json.Marshal(entity.BaseRequest)
 	processor.Result.ReqContent = string(reqContent)
-
 	respContent, _ := json.Marshal(entity.Response)
 	processor.Result.RespContent = string(respContent)
 

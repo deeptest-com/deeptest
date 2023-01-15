@@ -89,13 +89,13 @@ func (c *WebSocketCtrl) OnChat(wsMsg websocket.Message) (err error) {
 			}
 		}
 
-		c.ExecService.CancelAndSendMsg(req.Id, wsMsg)
+		c.ExecService.CancelAndSendMsg(req.ExecReq.ScenarioId, wsMsg)
 
 		return
 	}
 
 	if exec.GetRunning() && (act == consts.ExecStart) { // already running
-		exec.SendAlreadyRunningMsg(req.Id, wsMsg)
+		exec.SendAlreadyRunningMsg(req.ExecReq.ScenarioId, wsMsg)
 		return
 	}
 

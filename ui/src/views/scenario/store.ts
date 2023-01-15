@@ -21,7 +21,8 @@ import {
     loadExecResult, getInterface, getLastInvocationResp,
 } from './service';
 
-import { // use same apis with interface controller
+// below use same apis with interface controller
+import {
     invokeInterface,
     listExtractor,
     listCheckpoint,

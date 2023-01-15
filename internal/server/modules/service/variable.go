@@ -10,18 +10,28 @@ import (
 )
 
 type VariableService struct {
-	InterfaceRepo   *repo.InterfaceRepo   `inject:""`
+	InterfaceRepo          *repo.InterfaceRepo          `inject:""`
+	ProcessorInterfaceRepo *repo.ProcessorInterfaceRepo `inject:""`
+
 	ExtractorRepo   *repo.ExtractorRepo   `inject:""`
 	EnvironmentRepo *repo.EnvironmentRepo `inject:""`
 }
 
 func (s *VariableService) GetVariablesByInterface(interfaceId uint, usedBy consts.UsedBy) (ret map[string]interface{}, err error) {
-	interf, err := s.InterfaceRepo.Get(interfaceId)
+	var projectId uint
 
-	environmentVariables, _ := s.EnvironmentRepo.ListVariableByProject(interf.ProjectId)
+	if usedBy == consts.Interface {
+		interf, _ := s.InterfaceRepo.Get(interfaceId)
+		projectId = interf.ProjectId
+	} else {
+		interf, _ := s.ProcessorInterfaceRepo.Get(interfaceId)
+		projectId = interf.ProjectId
+	}
+
+	environmentVariables, _ := s.EnvironmentRepo.ListVariableByProject(projectId)
 
 	interfaceExtractorVariables, _ :=
-		s.ExtractorRepo.ListValidExtractorVariableForInterface(interfaceId, interf.ProjectId, usedBy)
+		s.ExtractorRepo.ListValidExtractorVariableForInterface(interfaceId, projectId, usedBy)
 
 	ret = MergeVariables(environmentVariables, interfaceExtractorVariables, nil)
 

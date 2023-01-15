@@ -14,7 +14,7 @@ var (
 	breakMap sync.Map
 )
 
-type ExecScenarioService struct {
+type ScenarioExecService struct {
 	ScenarioRepo     *repo.ScenarioRepo     `inject:""`
 	ScenarioNodeRepo *repo.ScenarioNodeRepo `inject:""`
 	TestReportRepo   *repo.ReportRepo       `inject:""`
@@ -23,7 +23,7 @@ type ExecScenarioService struct {
 	EnvironmentService *EnvironmentService `inject:""`
 }
 
-func (s *ExecScenarioService) Load(scenarioId int) (result domain.Report, err error) {
+func (s *ScenarioExecService) Load(scenarioId int) (result domain.Report, err error) {
 	scenario, err := s.ScenarioRepo.Get(uint(scenarioId))
 	if err != nil {
 		return
@@ -34,7 +34,7 @@ func (s *ExecScenarioService) Load(scenarioId int) (result domain.Report, err er
 	return
 }
 
-func (s *ExecScenarioService) LoadExecData(scenarioId int) (execReq agentExec.ProcessorExecObj, err error) {
+func (s *ScenarioExecService) LoadExecData(scenarioId int) (execReq agentExec.ProcessorExecObj, err error) {
 	rootProcessor, _ := s.ScenarioNodeRepo.GetTree(uint(scenarioId), true)
 	execReq.Variables, _ = s.EnvironmentService.ListVariableForExec(uint(scenarioId))
 
@@ -43,7 +43,7 @@ func (s *ExecScenarioService) LoadExecData(scenarioId int) (execReq agentExec.Pr
 	return
 }
 
-func (s *ExecScenarioService) SaveReport(scenarioId int, rootResult execDomain.Result) (err error) {
+func (s *ScenarioExecService) SaveReport(scenarioId int, rootResult execDomain.Result) (err error) {
 	scenario, _ := s.ScenarioRepo.Get(uint(scenarioId))
 	rootResult.Name = scenario.Name
 
@@ -69,7 +69,7 @@ func (s *ExecScenarioService) SaveReport(scenarioId int, rootResult execDomain.R
 	return
 }
 
-func (s ExecScenarioService) countRequest(result execDomain.Result, report *model.Report) {
+func (s ScenarioExecService) countRequest(result execDomain.Result, report *model.Report) {
 	if result.ProcessorType == consts.ProcessorInterfaceDefault {
 		s.countInterface(result.InterfaceId, result.ResultStatus, report)
 
@@ -108,7 +108,7 @@ func (s ExecScenarioService) countRequest(result execDomain.Result, report *mode
 	}
 }
 
-func (s ExecScenarioService) countInterface(interfaceId uint, status consts.ResultStatus, report *model.Report) {
+func (s ScenarioExecService) countInterface(interfaceId uint, status consts.ResultStatus, report *model.Report) {
 	if report.InterfaceStatusMap == nil {
 		report.InterfaceStatusMap = map[uint]map[consts.ResultStatus]int{}
 	}
@@ -130,7 +130,7 @@ func (s ExecScenarioService) countInterface(interfaceId uint, status consts.Resu
 	}
 }
 
-func (s ExecScenarioService) summarizeInterface(report *model.Report) {
+func (s ScenarioExecService) summarizeInterface(report *model.Report) {
 	for _, val := range report.InterfaceStatusMap {
 		if val[consts.Fail] > 0 {
 			report.FailInterfaceNum++

@@ -8,7 +8,7 @@ import (
 )
 
 type RunAction struct {
-	ExecScenarioService *service.ExecScenarioService `inject:""`
+	ExecScenarioService *service.ScenarioExecService `inject:""`
 }
 
 func (s *RunAction) Run(scenarioIdOrName string) {

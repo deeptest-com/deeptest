@@ -9,7 +9,7 @@ import (
 )
 
 type ScenarioExecCtrl struct {
-	ScenarioExecService *service.ExecScenarioService `inject:""`
+	ScenarioExecService *service.ScenarioExecService `inject:""`
 
 	BaseCtrl
 }

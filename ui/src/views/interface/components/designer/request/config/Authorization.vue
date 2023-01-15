@@ -36,18 +36,18 @@
       </a-row>
     </div>
 
-      <template v-if="!interfaceData.authorizationType" class="none">
-        <EmptyPage desc="无授权信息"></EmptyPage>
-      </template>
+    <template v-if="!interfaceData.authorizationType" class="none">
+      <EmptyPage desc="无授权信息"></EmptyPage>
+    </template>
 
-      <RequestAuthorBasic v-if="interfaceData.authorizationType === 'basicAuth'"></RequestAuthorBasic>
-      <RequestAuthorBearerToken v-if="interfaceData.authorizationType === 'bearerToken'"></RequestAuthorBearerToken>
-      <RequestAuthorOAuth2 v-if="interfaceData.authorizationType === 'oAuth2'"></RequestAuthorOAuth2>
-      <RequestAuthorApiKey v-if="interfaceData.authorizationType === 'apiKey'"></RequestAuthorApiKey>
+    <RequestAuthorBasic v-if="interfaceData.authorizationType === 'basicAuth'"></RequestAuthorBasic>
+    <RequestAuthorBearerToken v-if="interfaceData.authorizationType === 'bearerToken'"></RequestAuthorBearerToken>
+    <RequestAuthorApiKey v-if="interfaceData.authorizationType === 'apiKey'"></RequestAuthorApiKey>
+<!--    <RequestAuthorOAuth2 v-if="interfaceData.authorizationType === 'oAuth2'"></RequestAuthorOAuth2>-->
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import {computed, ComputedRef, defineComponent, inject, PropType, Ref, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
@@ -64,14 +64,6 @@ import {AuthorizationTypes, UsedBy} from "@/utils/enum";
 import {getEnumSelectItems} from "@/views/interface/service";
 import {StateType as ScenarioStateType} from "@/views/scenario/store";
 
-export default defineComponent({
-  name: 'RequestAuthorization',
-  components: {
-    RequestAuthorBasic, RequestAuthorBearerToken, RequestAuthorOAuth2, RequestAuthorApiKey,
-    EmptyPage,
-    QuestionCircleOutlined, DeleteOutlined, PlusOutlined,
-  },
-  setup(props) {
     const usedBy = inject('usedBy') as UsedBy
     const {t} = useI18n();
     const store = useStore<{ Interface: StateType, Scenario: ScenarioStateType }>();
@@ -84,14 +76,6 @@ export default defineComponent({
       console.log('onParamChange', idx)
 
     };
-
-    return {
-      interfaceData,
-      authorizationTypes,
-      onParamChange,
-    }
-  }
-})
 
 </script>
 

@@ -53,13 +53,13 @@ import {useStore} from "vuex";
 const router = useRouter();
 
 import {StateType} from "@/views/interface/store";
-import {Interface} from "@/views/interface/data";
 import {resizeWidth} from "@/utils/dom";
 import {useRouter} from "vue-router";
+import {UsedBy} from "@/utils/enum";
+
 import RequestEnv from '@/views/interface/components/designer/others/env/index.vue';
 import RequestHistory from '@/views/interface/components/designer/others/history/index.vue';
-import Processor from './Processor.vue';
-import {UsedBy} from "@/utils/enum";
+import Processor from './components/Processor.vue';
 
 provide('usedBy', UsedBy.scenario)
 const useForm = Form.useForm;

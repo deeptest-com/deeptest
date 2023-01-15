@@ -22,8 +22,8 @@ import {useStore} from "vuex";
 import {StateType as GlobalStateType} from "@/store/global";
 import {StateType as ScenarioStateType} from "../store";
 
-import ScenarioTree from "./components/Tree.vue"
-import Designer from "./components/Designer.vue"
+import ScenarioTree from "./Tree.vue"
+import Designer from "./Designer.vue"
 
 const router = useRouter();
 const store = useStore<{ Scenario: ScenarioStateType; Global: GlobalStateType; }>();

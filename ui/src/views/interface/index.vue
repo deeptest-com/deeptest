@@ -12,25 +12,19 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import {computed, defineComponent, onMounted, onUnmounted, Ref, ref, watch} from "vue";
 
-import InterfaceDesigner from './components/Designer.vue';
 import {resizeWidth} from "@/utils/dom";
-import InterfaceTree from "./components/Tree.vue"
 import {useStore} from "vuex";
 import {StateType as GlobalStateType} from "@/store/global";
 import {StateType as UserStateType} from "@/store/user";
-import {StateType as ProjectStateType} from "@/store/project";
 import {Interface} from "@/views/interface/data";
 import {StateType} from "@/views/interface/store";
 
-export default defineComponent({
-  name: 'InterfaceIndexPage',
-  components: {
-    InterfaceTree, InterfaceDesigner,
-  },
-  setup() {
+import InterfaceDesigner from './Designer.vue';
+import InterfaceTree from "./Tree.vue"
+
     const store = useStore<{ Global: GlobalStateType, User: UserStateType, Interface: StateType }>();
     const collapsed = computed<boolean>(()=> store.state.Global.collapsed);
     const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
@@ -55,12 +49,6 @@ export default defineComponent({
           260, 800)
     }
 
-    return {
-      interfaceData
-    }
-  }
-
-})
 </script>
 
 <style lang="less" scoped>

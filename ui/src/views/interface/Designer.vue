@@ -46,12 +46,13 @@ import { HistoryOutlined, EnvironmentOutlined, LeftCircleOutlined, RightCircleOu
 import {useStore} from "vuex";
 
 import {StateType} from "@/views/interface/store";
-import DesignInterface from './designer/Interface.vue';
-import RequestEnv from './designer/others/env/index.vue';
-import RequestHistory from './designer/others/history/index.vue';
 import {Interface} from "@/views/interface/data";
 import {resizeWidth} from "@/utils/dom";
 import {UsedBy} from "@/utils/enum";
+
+import DesignInterface from './components/designer/Interface.vue';
+import RequestEnv from './components/designer/others/env/index.vue';
+import RequestHistory from './components/designer/others/history/index.vue';
 
 provide('usedBy', UsedBy.interface)
 const useForm = Form.useForm;

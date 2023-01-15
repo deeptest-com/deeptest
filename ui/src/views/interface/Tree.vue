@@ -86,11 +86,12 @@ import {useStore} from "vuex";
 import {StateType} from "@/views/interface/store";
 import {StateType as ProjectStateType} from "@/store/project";
 
-import TreeContextMenu from "./TreeContextMenu.vue";
-import ImportModal from "./ImportModal.vue";
 import {getExpandedKeys, setExpandedKeys} from "@/utils/cache";
 import {getContextMenuStyle} from "@/utils/dom";
 import {NotificationKeyCommon} from "@/utils/const";
+
+import TreeContextMenu from "./components/TreeContextMenu.vue";
+import ImportModal from "./components/ImportModal.vue";
 
 const useForm = Form.useForm;
 

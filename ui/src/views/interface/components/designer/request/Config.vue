@@ -28,31 +28,23 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import {computed, ComputedRef, defineComponent, inject, Ref, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import {StateType} from "@/views/interface/store";
 import {Methods, UsedBy} from "@/utils/enum";
 
-import RequestParameters from "./Config/Parameters.vue";
-import RequestBody from "./Config/Body.vue";
-import RequestHeaders from "./Config/Headers.vue";
-import Authorization from "./Config/Authorization.vue";
-import PreRequestScript from "./Config/PreRequestScript.vue";
-import ValidationScript from "./Config/ValidationScript.vue";
 import {Interface} from "@/views/interface/data";
 import {StateType as ScenarioStateType} from "@/views/scenario/store";
 
-export default defineComponent({
-  name: 'RequestConfig',
-  props: {
-  },
-  components: {
-    RequestParameters, RequestBody, RequestHeaders, Authorization,
-    // PreRequestScript, ValidationScript,
-  },
-  setup(props) {
+import RequestParameters from "./config/Parameters.vue";
+import RequestBody from "./config/Body.vue";
+import RequestHeaders from "./config/Headers.vue";
+import Authorization from "./config/Authorization.vue";
+import PreRequestScript from "./config/PreRequestScript.vue";
+import ValidationScript from "./config/ValidationScript.vue";
+
     const usedBy = inject('usedBy') as UsedBy
     const {t} = useI18n();
     const store = useStore<{ Interface: StateType, Scenario: ScenarioStateType }>();
@@ -84,22 +76,6 @@ export default defineComponent({
       console.log('none', e)
       e.preventDefault()
     };
-
-
-    return {
-      interfaceData,
-      activeKey,
-      methods,
-      selectMethod,
-      sendRequest,
-      clearAll,
-      saveName,
-      copyLink,
-      saveAs,
-      none,
-    }
-  }
-})
 
 </script>
 

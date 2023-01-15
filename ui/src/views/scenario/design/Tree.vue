@@ -80,27 +80,22 @@ import {computed, defineProps, onMounted, onUnmounted, ref, watch, getCurrentIns
 
 import {useI18n} from "vue-i18n";
 import {Form} from 'ant-design-vue';
+import {useStore} from "vuex";
+import debounce from "lodash.debounce";
 import {DropEvent, TreeDragEvent} from "ant-design-vue/es/tree/Tree";
-import {isRoot, isProcessor, isInterface} from '../../service'
 import {CloseOutlined, FileOutlined, FolderOutlined, FolderOpenOutlined, CheckOutlined} from "@ant-design/icons-vue";
 
-import debounce from "lodash.debounce";
+import {ProcessorCategory} from "@/utils/enum";
+import {StateType} from "@/views/interface/store";
 import {expandAllKeys, expandOneKey} from "@/services/tree";
-import {getProcessorTypeNames, updateNodeName} from "../../service";
-import {useStore} from "vuex";
-import {Scenario} from "../../data";
-
-import {StateType as ScenarioStateType} from "../../store";
 import {StateType as InterfaceStateType} from "@/views/interface/store";
-import {StateType as ProjectStateType} from "@/store/project";
 
 import {getExpandedKeys, setExpandedKeys} from "@/utils/cache";
-
-import TreeContextMenu from "./TreeContextMenu.vue";
-import InterfaceSelection from "./InterfaceSelection.vue";
-import {StateType} from "@/views/interface/store";
 import {getContextMenuStyle} from "@/utils/dom";
-import {ProcessorCategory} from "@/utils/enum";
+import {StateType as ScenarioStateType} from "../store";
+import {isRoot, updateNodeName, isInterface} from "../service";
+import TreeContextMenu from "./components/TreeContextMenu.vue";
+import InterfaceSelection from "./components/InterfaceSelection.vue";
 
 const props = defineProps<{ scenarioId: number }>()
 

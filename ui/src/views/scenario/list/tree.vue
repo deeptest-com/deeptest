@@ -139,13 +139,7 @@ const selectNode = (keys, e) => {
     return
   }
 
-  // root node
   const selectedData = treeDataMapCategory.value[selectedKeys.value[0]]
-  if (selectedData && selectedData.parentId === 0) {
-    store.dispatch('Scenario/getCategoryNode', null)
-    return
-  }
-
   store.dispatch('Scenario/getCategoryNode', selectedData)
 }
 

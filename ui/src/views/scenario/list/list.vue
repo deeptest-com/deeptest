@@ -140,7 +140,6 @@ const columns = [
 
 onMounted(() => {
   console.log('onMounted')
-  getList(1, nodeDataCategory.value.id);
 })
 
 const loading = ref<boolean>(true);

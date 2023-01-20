@@ -204,37 +204,6 @@ func (r *ScenarioCategoryRepo) GetMaxOrder(parentId uint) (order int) {
 	return
 }
 
-func (r *ScenarioCategoryRepo) GetScopeHierarchy(scenarioId uint, scopeHierarchyMap *map[uint]*[]uint) {
-	processors, err := r.ListByProject(scenarioId)
-	if err != nil {
-		return
-	}
-
-	childToParentIdMap := map[uint]uint{}
-	for _, processor := range processors {
-		childToParentIdMap[processor.ID] = processor.ParentId
-	}
-
-	for childId, parentId := range childToParentIdMap {
-		if (*scopeHierarchyMap)[childId] == nil {
-			arr := []uint{childId}
-			(*scopeHierarchyMap)[childId] = &arr
-		}
-		*(*scopeHierarchyMap)[childId] = append(*(*scopeHierarchyMap)[childId], parentId)
-
-		r.addSuperParent(childId, parentId, childToParentIdMap, scopeHierarchyMap)
-	}
-}
-
-func (r *ScenarioCategoryRepo) addSuperParent(id, parentId uint, childToParentIdMap map[uint]uint, scopeHierarchyMap *map[uint]*[]uint) {
-	superId, ok := childToParentIdMap[parentId]
-	if ok {
-		*(*scopeHierarchyMap)[id] = append(*(*scopeHierarchyMap)[id], superId)
-
-		r.addSuperParent(id, superId, childToParentIdMap, scopeHierarchyMap)
-	}
-}
-
 func (r *ScenarioCategoryRepo) IsLeaf(po model.Processor) (ret bool) {
 	isDir := po.EntityCategory == consts.ProcessorRoot ||
 		//po.EntityCategory == consts.ProcessorThread ||

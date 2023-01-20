@@ -1,0 +1,35 @@
+package repo
+
+import (
+	"fmt"
+	"gorm.io/gorm"
+)
+
+type BaseRepo struct {
+	DB *gorm.DB `inject:""`
+}
+
+func (r *BaseRepo) GetAllParentIds(id uint, tableName string) (ids []uint, err error) {
+	sql := `
+		WITH RECURSIVE temp AS
+		(
+			SELECT id, parent_id, name from %s a where a.id = %d
+		
+			UNION ALL
+		
+			SELECT b.id, b.parent_id, b.name 
+				from temp c
+				inner join %s b on b.id = c.parent_id
+		) 
+		select id from temp e;
+`
+
+	sql = fmt.Sprintf(sql, tableName, id, tableName)
+
+	err = r.DB.Raw(sql).Scan(&ids).Error
+	if err != nil {
+		return
+	}
+
+	return
+}

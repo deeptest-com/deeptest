@@ -14,6 +14,7 @@ import (
 
 type ScenarioRepo struct {
 	DB       *gorm.DB  `inject:""`
+	BaseRepo *BaseRepo `inject:""`
 	RoleRepo *RoleRepo `inject:""`
 }
 
@@ -24,24 +25,7 @@ func NewScenarioRepo() *ScenarioRepo {
 func (r *ScenarioRepo) Paginate(req v1.ScenarioReqPaginate, projectId int) (data _domain.PageData, err error) {
 	var count int64
 
-	sql := `
-		WITH RECURSIVE temp AS
-		(
-			SELECT id, parent_id, name from %s a where a.id = %d
-		
-			UNION ALL
-		
-			SELECT b.id, b.parent_id, b.name 
-				from temp c
-				inner join %s b on b.id = c.parent_id
-		) 
-		select id from temp e;
-`
-	table := model.ScenarioCategory{}.TableName()
-	sql = fmt.Sprintf(sql, table, req.CategoryId, table)
-
-	var ids []uint
-	err = r.DB.Raw(sql).Scan(&ids).Error
+	ids, err := r.BaseRepo.GetAllParentIds(req.CategoryId, model.ScenarioCategory{}.TableName())
 	if err != nil {
 		return
 	}

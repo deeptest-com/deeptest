@@ -24,8 +24,31 @@ func NewScenarioRepo() *ScenarioRepo {
 func (r *ScenarioRepo) Paginate(req v1.ScenarioReqPaginate, projectId int) (data _domain.PageData, err error) {
 	var count int64
 
+	sql := `
+		WITH RECURSIVE temp AS
+		(
+			SELECT id, parent_id, name from %s a where a.id = %d
+		
+			UNION ALL
+		
+			SELECT b.id, b.parent_id, b.name 
+				from temp c
+				inner join %s b on b.id = c.parent_id
+		) 
+		select id from temp e;
+`
+	table := model.ScenarioCategory{}.TableName()
+	sql = fmt.Sprintf(sql, table, req.CategoryId, table)
+
+	var ids []uint
+	err = r.DB.Raw(sql).Scan(&ids).Error
+	if err != nil {
+		return
+	}
+
 	db := r.DB.Model(&model.Scenario{}).
-		Where("category_id = ? && project_id = ? AND NOT deleted", req.CategoryId, projectId)
+		Where("category_id = ? && project_id = ? AND category_id IN(?) AND NOT deleted",
+			req.CategoryId, projectId, ids)
 
 	if req.Keywords != "" {
 		db = db.Where("name LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords))

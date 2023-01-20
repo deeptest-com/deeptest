@@ -246,7 +246,7 @@ const StoreModel: ModuleType = {
                 return true;
             }
 
-            if (payload.isDir) {
+            if (!payload.isLeaf) {
                 commit('setInterface', {
                     bodyType: 'application/json',
                     headers: [{name:'', value:''}],

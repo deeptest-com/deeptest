@@ -1,5 +1,5 @@
 <template>
-  <div class="scenario-tree-main">
+  <div class="scenario-tree-main dp-tree">
     <div class="toolbar">
       <div class="tips">
         <span>{{ tips }}</span>
@@ -52,7 +52,7 @@
         </template>
 
         <template #icon="slotProps">
-          <template v-if="slotProps.isDir">
+          <template v-if="!slotProps.isLeaf">
             <FolderOutlined v-if="!slotProps.expanded"/>
             <FolderOpenOutlined v-if="slotProps.expanded"/>
           </template>
@@ -210,7 +210,7 @@ const onRightClick = (e) => {
     id: node.eventKey,
     title: node.title,
     entityCategory: node.dataRef.entityCategory,
-    isDir: node.dataRef.isDir,
+    isLeaf: node.dataRef.isLeaf,
     entityType: node.dataRef.entityType,
     entityId: node.dataRef.entityId,
     interfaceId: node.dataRef.interfaceId,
@@ -421,29 +421,5 @@ onUnmounted(() => {
 <style lang="less" scoped>
 .scenario-tree-main {
   height: 100%;
-
-  .toolbar {
-    display: flex;
-    height: 32px;
-    border-bottom: 1px solid #D0D7DE;
-
-    .tips {
-      flex: 1;
-      padding: 0px 3px 0 6px;
-      line-height: 31px;
-      color: #5a5e66;
-    }
-
-    .buttons {
-      padding: 0px;
-      width: 100px;
-      text-align: right;
-    }
-  }
-
-  .tree-panel {
-    height: calc(100% - 32px);
-    overflow: auto;
-  }
 }
 </style>

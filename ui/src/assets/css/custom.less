@@ -232,3 +232,30 @@ width: 100%;
         }
     }
 }
+
+
+.dp-tree {
+    .toolbar {
+        display: flex;
+        height: 32px;
+        border-bottom: 1px solid #D0D7DE;
+
+        .tips {
+            flex: 1;
+            padding: 0px 3px 0 6px;
+            line-height: 31px;
+            color: #5a5e66;
+        }
+
+        .buttons {
+            padding: 0px;
+            width: 100px;
+            text-align: right;
+        }
+    }
+
+    .tree-panel {
+        height: calc(100% - 32px);
+        overflow: auto;
+    }
+}

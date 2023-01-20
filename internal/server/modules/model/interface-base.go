@@ -9,7 +9,7 @@ type InterfaceBase struct {
 	Name string `json:"name"`
 	Desc string `json:"desc"`
 
-	IsLeaf    bool `json:"isLeaf"`
+	//IsLeaf    bool `json:"isLeaf"`
 	ParentId  uint `json:"parentId"`
 	ProjectId uint `json:"projectId"`
 	UseID     uint `json:"useId"`

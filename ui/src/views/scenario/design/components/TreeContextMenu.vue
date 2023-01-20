@@ -1,5 +1,5 @@
 <template>
-  <div class="dp-tree-context-menu" :set="mode = treeNode.isDir ? 'child' : 'brother'">
+  <div class="dp-tree-context-menu" :set="mode = !treeNode.isLeaf ? 'child' : 'brother'">
     <a-menu @click="menuClick" trigger="['click']" mode="vertical">
       <template v-if="isRoot(treeNode.entityCategory)">
         <a-sub-menu @click.stop key="addProcessor" trigger="['click']" class="menu-item" popupClassName="dp-tree-context-submenu">

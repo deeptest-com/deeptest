@@ -219,18 +219,18 @@ const StoreModel: ModuleType = {
         },
 
         setTreeDataCategory(state, data) {
-            state.treeData = [data];
+            state.treeDataCategory = [data];
         },
         setTreeDataMapCategory(state, payload) {
-            state.treeDataMap = payload
+            state.treeDataMapCategory = payload
         },
         setTreeDataMapItemCategory(state, payload) {
-            if (!state.treeDataMap[payload.id]) return
-            state.treeDataMap[payload.id] = payload
+            if (!state.treeDataMapCategory[payload.id]) return
+            state.treeDataMapCategory[payload.id] = payload
         },
         setTreeDataMapItemPropCategory(state, payload) {
-            if (!state.treeDataMap[payload.id]) return
-            state.treeDataMap[payload.id][payload.prop] = payload.value
+            if (!state.treeDataMapCategory[payload.id]) return
+            state.treeDataMapCategory[payload.id][payload.prop] = payload.value
         },
         setNodeCategory(state, data) {
             state.nodeData = data;

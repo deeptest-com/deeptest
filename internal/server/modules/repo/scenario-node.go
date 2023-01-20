@@ -53,7 +53,7 @@ func (r *ScenarioNodeRepo) Get(id uint) (processor model.Processor, err error) {
 func (r *ScenarioNodeRepo) toTos(pos []*model.Processor, withDetail bool) (tos []*agentExec.Processor) {
 	for _, po := range pos {
 		to := agentExec.Processor{
-			IsDir: r.IsDir(*po),
+			IsLeaf: r.IsLeaf(*po),
 		}
 		copier.CopyWithOption(&to, po, copier.Option{DeepCopy: true})
 
@@ -239,13 +239,15 @@ func (r *ScenarioNodeRepo) addSuperParent(id, parentId uint, childToParentIdMap 
 	}
 }
 
-func (r *ScenarioNodeRepo) IsDir(po model.Processor) (ret bool) {
-	ret = po.EntityCategory == consts.ProcessorRoot ||
+func (r *ScenarioNodeRepo) IsLeaf(po model.Processor) (ret bool) {
+	isDir := po.EntityCategory == consts.ProcessorRoot ||
 		//po.EntityCategory == consts.ProcessorThread ||
 		po.EntityCategory == consts.ProcessorGroup ||
 		po.EntityCategory == consts.ProcessorLoop ||
 		po.EntityCategory == consts.ProcessorLogic ||
 		po.EntityCategory == consts.ProcessorData
+
+	ret = !isDir
 
 	return
 }

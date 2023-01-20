@@ -30,7 +30,6 @@ func (s *YapiService) ImportYapiProject(req v1.InterfaceYapiReq) (err error) {
 		yapiCatMenuData := yapiCatMenuDatas[i]
 		interf := m.Interface{}
 		interf.ProjectId = uint(projectId)
-		interf.IsLeaf = false
 		interf.Name = yapiCatMenuData.Name
 		dropPos := serverConsts.Inner
 		interf.ParentId, interf.Ordr = s.InterfaceRepo.UpdateOrder(dropPos, uint(target))
@@ -46,7 +45,6 @@ func (s *YapiService) ImportYapiProject(req v1.InterfaceYapiReq) (err error) {
 			ret := s.GetYapiInterface(yapiHost, token, interfaceId)
 			yapiInterf := s.YapiInterfaceInfoToInterf(ret)
 			yapiInterf.ProjectId = uint(projectId)
-			yapiInterf.IsLeaf = true
 			yapiInterf.ParentId, yapiInterf.Ordr = s.InterfaceRepo.UpdateOrder(dropPos, menuId)
 			err = s.ImportService.Create(&yapiInterf)
 			if err != nil {

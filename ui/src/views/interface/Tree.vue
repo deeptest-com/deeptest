@@ -1,5 +1,5 @@
 <template>
-  <div class="tree-main">
+  <div class="tree-main dp-tree">
     <div class="toolbar">
       <div class="tips">
         <span>{{ tips }}</span>
@@ -51,9 +51,9 @@
         </template>
 
         <template #icon="slotProps">
-          <FolderOutlined v-if="slotProps.isDir && !slotProps.expanded"/>
-          <FolderOpenOutlined v-if="slotProps.isDir && slotProps.expanded"/>
-          <FileOutlined v-if="!slotProps.isDir"/>
+          <FolderOutlined v-if="!slotProps.isLeaf && !slotProps.expanded"/>
+          <FolderOpenOutlined v-if="!slotProps.isLeaf && slotProps.expanded"/>
+          <FileOutlined v-if="slotProps.isLeaf"/>
         </template>
       </a-tree>
 
@@ -141,8 +141,8 @@ export default defineComponent({
 
     const editedData = ref<any>({})
 
-    const isDir = computed<boolean>(() => {
-      return contextNode.value && contextNode.value.isDir;
+    const isLeaf = computed<boolean>(() => {
+      return contextNode.value && contextNode.value.isLeaf;
     })
 
     let tree = ref(null)
@@ -158,15 +158,15 @@ export default defineComponent({
       }
 
       if (!selectedKeys.value || selectedKeys.value.length === 0) { // not to display the design page
-        store.dispatch('Interface/getInterface', {isDir: true})
+        store.dispatch('Interface/getInterface', {isLeaf: false})
         return
       }
 
       const selectedData = treeDataMap.value[selectedKeys.value[0]]
       if (!selectedData) return
 
-      store.dispatch('Interface/getInterface', {id: selectedData.id, isDir: selectedData.isDir})
-      if (!selectedData.isDir) {
+      store.dispatch('Interface/getInterface', {id: selectedData.id, isLeaf: selectedData.isLeaf})
+      if (selectedData.isLeaf) {
         store.dispatch('Interface/getLastInvocationResp', selectedData.id)
         store.dispatch('Interface/listInvocation', selectedData.id)
       }
@@ -208,7 +208,7 @@ export default defineComponent({
         pageY: y,
         id: node.eventKey,
         title: node.title,
-        isDir: contextNodeData.isDir,
+        isLeaf: contextNodeData.isLeaf,
         parentId: node.dataRef.parentId
       }
 
@@ -338,7 +338,7 @@ export default defineComponent({
       const dragKey = info.dragNode.eventKey;
       const dropPos = info.node.pos.split('-');
       let dropPosition = info.dropPosition - Number(dropPos[dropPos.length - 1]);
-      if (!treeDataMap.value[dropKey].isDir && dropPosition === 0) dropPosition = 1
+      if (treeDataMap.value[dropKey].isLeaf && dropPosition === 0) dropPosition = 1
       console.log(dragKey, dropKey, dropPosition);
 
       store.dispatch('Interface/moveInterface', {dragKey: dragKey, dropKey: dropKey, dropPos: dropPosition});
@@ -401,7 +401,7 @@ export default defineComponent({
       rightVisible,
       onRightClick,
       menuClick,
-      isDir,
+      isLeaf,
       onDragEnter,
       onDrop,
 
@@ -451,28 +451,6 @@ export default defineComponent({
 
 <style lang="less" scoped>
 .tree-main {
-  .toolbar {
-    display: flex;
-    height: 32px;
-    border-bottom: 1px solid #D0D7DE;
 
-    .tips {
-      flex: 1;
-      padding: 0px 3px 0 6px;
-      line-height: 31px;
-      color: #5a5e66;
-    }
-
-    .buttons {
-      padding: 0px;
-      width: 100px;
-      text-align: right;
-    }
-  }
-
-  .tree-panel {
-    height: calc(100% - 32px);
-    overflow: auto;
-  }
 }
 </style>

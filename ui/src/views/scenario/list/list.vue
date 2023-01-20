@@ -13,6 +13,7 @@
 
       <div>
         <a-table
+            v-if="list.length > 0"
             row-key="id"
             :columns="columns"
             :data-source="list"
@@ -46,6 +47,8 @@
           </template>
 
         </a-table>
+
+        <a-empty v-if="list.length === 0" :image="simpleImage" />
       </div>
     </a-card>
   </div>
@@ -53,6 +56,7 @@
 
 <script setup lang="ts">
 import {computed, onMounted, reactive, ref, watch} from "vue";
+import { Empty } from 'ant-design-vue';
 import {SelectTypes} from 'ant-design-vue/es/select';
 import {PaginationConfig, QueryParams, Scenario} from '../data.d';
 import {useStore} from "vuex";
@@ -62,6 +66,8 @@ import debounce from "lodash.debounce";
 import {useRouter} from "vue-router";
 import {message, Modal, notification} from "ant-design-vue";
 import {StateType as ProjectStateType} from "@/store/project";
+
+const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
 
 const statusArr = ref<SelectTypes['options']>([
   {

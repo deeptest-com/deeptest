@@ -45,7 +45,7 @@ type Processor struct {
 	Ordr      int              `json:"ordr"`
 	Children  []*Processor     `json:"children"`
 	Slots     iris.Map         `json:"slots"`
-	IsDir     bool             `json:"isDir"`
+	IsLeaf    bool             `json:"isLeaf"`
 	Entity    IProcessorEntity `json:"entity"`
 	EntityRaw json.RawMessage  `json:"entityRaw"`
 

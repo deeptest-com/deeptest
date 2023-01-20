@@ -7,7 +7,7 @@
     <div id="interface-design-splitter" class="splitter"></div>
 
     <div id="interface-design-right" class="right">
-      <InterfaceDesigner v-if="!interfaceData.isDir"></InterfaceDesigner>
+      <InterfaceDesigner v-if="interfaceData.isLeaf"></InterfaceDesigner>
     </div>
   </div>
 </template>

@@ -11,7 +11,7 @@
         <span>创建同级接口</span>
       </a-menu-item>
 
-      <a-menu-item key="add_child_node" class="menu-item" v-if="treeNode.isDir">
+      <a-menu-item key="add_child_node" class="menu-item" v-if="!treeNode.isLeaf">
         <PlusOutlined />
         <span>创建子接口</span>
       </a-menu-item>
@@ -21,18 +21,18 @@
         <span>创建同级目录</span>
       </a-menu-item>
 
-      <a-menu-item key="add_child_dir" class="menu-item" v-if="treeNode.isDir">
+      <a-menu-item key="add_child_dir" class="menu-item" v-if="!treeNode.isLeaf">
         <PlusOutlined />
         <span>创建子目录</span>
       </a-menu-item>
 
       <a-menu-item key="remove" class="menu-item" v-if="treeNode.parentId > 0">
         <CloseOutlined />
-        <span v-if="treeNode.isDir">删除目录</span>
-        <span v-if="!treeNode.isDir">删除节点</span>
+        <span v-if="!treeNode.isLeaf">删除目录</span>
+        <span v-if="treeNode.isLeaf">删除节点</span>
       </a-menu-item>
 
-      <a-menu-item v-if="treeNode.isDir" key="export_spec" class="menu-item">
+      <a-menu-item v-if="!treeNode.isLeaf" key="export_spec" class="menu-item">
         <PlusOutlined />
         <span>导入接口...</span>
       </a-menu-item>

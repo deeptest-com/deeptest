@@ -49,7 +49,6 @@ func (s *ImportService) GenerateInterface(doc *openapi3.T, targetId, projectId u
 	for _, interf := range interfaces {
 		interf.ProjectId = projectId
 		interf.ParentId = targetId
-		interf.IsLeaf = true
 
 		s.Create(&interf)
 	}

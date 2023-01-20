@@ -1,5 +1,5 @@
 <template>
-  <div class="scenario-tree-main">
+  <div class="scenario-tree-main dp-tree">
     <div class="toolbar">
       <div class="tips">
         <span>{{ tips }}</span>
@@ -14,12 +14,11 @@
     <div class="tree-panel">
       <a-tree
           ref="tree"
-          :tree-data="treeData"
+          :tree-data="treeDataCategory"
           :replace-fields="replaceFields"
           show-icon
           @expand="expandNode"
           @select="selectNode"
-          @check="checkNode"
           @rightClick="onRightClick"
 
           v-model:selectedKeys="selectedKeys"
@@ -33,7 +32,7 @@
           class="interface-tree"
       >
         <template #title="slotProps">
-          <span v-if="treeDataMap[slotProps.id] && treeDataMap[slotProps.id].isEdit" class="name-editor">
+          <span v-if="treeDataMapCategory[slotProps.id] && treeDataMapCategory[slotProps.id].isEdit" class="name-editor">
             <a-input v-model:value="editedData[slotProps.id]"
                      @keyup.enter=updateName(slotProps.id)
                      @click.stop
@@ -51,9 +50,9 @@
         </template>
 
         <template #icon="slotProps">
-          <FolderOutlined v-if="slotProps.isDir && !slotProps.expanded"/>
-          <FolderOpenOutlined v-if="slotProps.isDir && slotProps.expanded"/>
-          <FileOutlined v-if="!slotProps.isDir"/>
+          <FolderOutlined v-if="!slotProps.isLeaf && !slotProps.expanded"/>
+          <FolderOpenOutlined v-if="!slotProps.isLeaf && slotProps.expanded"/>
+          <FileOutlined v-if="slotProps.isLeaf"/>
         </template>
       </a-tree>
 
@@ -185,7 +184,7 @@ const onRightClick = (e) => {
     id: node.eventKey,
     title: node.title,
     entityCategory: node.dataRef.entityCategory,
-    isDir: node.dataRef.isDir,
+    isLeaf: node.dataRef.isLeaf,
     entityType: node.dataRef.entityType,
     entityId: node.dataRef.entityId,
     interfaceId: node.dataRef.interfaceId,
@@ -346,8 +345,7 @@ onUnmounted(() => {
 </script>
 
 <style lang="less">
-
-.scenario-tree-tree {
+.scenario-tree-main {
   .ant-tree-iconEle {
     height: 20px !important;
     line-height: 20px !important;
@@ -377,29 +375,6 @@ onUnmounted(() => {
 </style>
 
 <style lang="less" scoped>
-.tree-main {
-  .toolbar {
-    display: flex;
-    height: 32px;
-    border-bottom: 1px solid #D0D7DE;
-
-    .tips {
-      flex: 1;
-      padding: 0px 3px 0 6px;
-      line-height: 31px;
-      color: #5a5e66;
-    }
-
-    .buttons {
-      padding: 0px;
-      width: 100px;
-      text-align: right;
-    }
-  }
-
-  .tree-panel {
-    height: calc(100% - 32px);
-    overflow: auto;
-  }
+.scenario-tree-main {
 }
 </style>

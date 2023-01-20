@@ -15,8 +15,6 @@ type ScenarioCategoryRepo struct {
 }
 
 func (r *ScenarioCategoryRepo) GetTree(projectId uint) (root *v1.ScenarioCategory, err error) {
-	project, _ := r.ProjectRepo.Get(projectId)
-
 	pos, err := r.ListByProject(projectId)
 	if err != nil {
 		return
@@ -25,7 +23,6 @@ func (r *ScenarioCategoryRepo) GetTree(projectId uint) (root *v1.ScenarioCategor
 	tos := r.toTos(pos)
 
 	root = tos[0]
-	root.Name = project.Name
 	root.Slots = iris.Map{"icon": "icon"}
 
 	r.makeTree(tos[1:], root)
@@ -237,13 +234,15 @@ func (r *ScenarioCategoryRepo) addSuperParent(id, parentId uint, childToParentId
 	}
 }
 
-func (r *ScenarioCategoryRepo) IsDir(po model.Processor) (ret bool) {
-	ret = po.EntityCategory == consts.ProcessorRoot ||
+func (r *ScenarioCategoryRepo) IsLeaf(po model.Processor) (ret bool) {
+	isDir := po.EntityCategory == consts.ProcessorRoot ||
 		//po.EntityCategory == consts.ProcessorThread ||
 		po.EntityCategory == consts.ProcessorGroup ||
 		po.EntityCategory == consts.ProcessorLoop ||
 		po.EntityCategory == consts.ProcessorLogic ||
 		po.EntityCategory == consts.ProcessorData
+
+	ret = !isDir
 
 	return
 }

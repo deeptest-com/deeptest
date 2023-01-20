@@ -42,9 +42,9 @@
         </template>
 
         <template #icon="slotProps">
-          <FolderOutlined v-if="slotProps.isDir && !slotProps.expanded"/>
-          <FolderOpenOutlined v-if="slotProps.isDir && slotProps.expanded"/>
-          <FileOutlined v-if="!slotProps.isDir"/>
+          <FolderOutlined v-if="!slotProps.isLeaf && !slotProps.expanded"/>
+          <FolderOpenOutlined v-if="!slotProps.isLeaf && slotProps.expanded"/>
+          <FileOutlined v-if="slotProps.isLeaf"/>
         </template>
       </a-tree>
     </div>
@@ -161,7 +161,7 @@ const onSubmit = async () => {
   Object.keys(treeDataMap).forEach((id, index) => {
     if (!childrenMap[id] && isInArray(+id, checkedKeys.value)) {
       const node = treeDataMap[id]
-      if (!(node.isDir && !node.children)) {
+      if (!(!node.isLeaf && !node.children)) {
         selectedNodes.push(node)
       }
     }

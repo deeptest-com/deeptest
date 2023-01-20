@@ -30,7 +30,7 @@ func (s *ScenarioNodeService) GetTree(scenarioId int) (root *agentExec.Processor
 func (s *ScenarioNodeService) AddInterfaces(req v1.ScenarioAddInterfacesReq) (ret model.Processor, err error) {
 	targetProcessor, _ := s.ScenarioProcessorRepo.Get(req.TargetId)
 
-	if !s.ScenarioNodeRepo.IsDir(targetProcessor) {
+	if s.ScenarioNodeRepo.IsLeaf(targetProcessor) {
 		targetProcessor, _ = s.ScenarioProcessorRepo.Get(targetProcessor.ParentId)
 	}
 
@@ -95,7 +95,7 @@ func (s *ScenarioNodeService) createDirOrInterface(interfaceNode v1.InterfaceSim
 			s.createDirOrInterface(child, parentProcessor)
 		}
 
-	} else if interfaceNode.IsDir {
+	} else if !interfaceNode.IsLeaf {
 		processor := model.Processor{
 			Name:           interfaceNode.Name,
 			ScenarioId:     parentProcessor.ScenarioId,

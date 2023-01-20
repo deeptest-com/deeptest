@@ -266,7 +266,7 @@ func (r *ProjectRepo) AddProjectMember(projectId, userId uint, role string) (err
 }
 
 func (r *ProjectRepo) AddProjectRootInterface(projectId uint) (err error) {
-	interf := model.Interface{InterfaceBase: model.InterfaceBase{Name: "所有接口", ProjectId: projectId, IsLeaf: false}}
+	interf := model.Interface{InterfaceBase: model.InterfaceBase{Name: "所有接口", ProjectId: projectId}}
 	err = r.DB.Create(&interf).Error
 
 	return

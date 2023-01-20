@@ -102,12 +102,7 @@ components:
         NamespacedPID:
             title: Root Type for NamespacedPID
             description: |-
-                A process identifier (PID) valid only in the accompanying PID namespace,
-                referenced by the ID (inode number) of the PID namespace. Outside that PID
-                namespace the PID is invalid and might be confused with some other process that
-                happens to have the same PID in the other PID namespace. For instance, PID 1
-                can be found not only in the initial PID namespace, but usually also in all
-                other PID namespaces, but referencing completely different processes each time.
+                A process identifier (PID) valid only in the accompanying PID namespace.
             required:
                 - pid
                 - nsid

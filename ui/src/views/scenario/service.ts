@@ -13,6 +13,9 @@ import {Interface} from "@/views/interface/data";
 
 const apiPath = 'scenarios';
 const apiPathNodes = `${apiPath}/nodes`;
+
+const apiPathCategoryNodes = `${apiPath}/categories`;
+
 const apiPathProcessors = `${apiPath}/processors`;
 const apiPathExec = `${apiPath}/exec`;
 
@@ -50,15 +53,6 @@ export async function remove(id: number): Promise<any> {
     });
 }
 
-export async function load(scenarioId): Promise<any> {
-    const params = {scenarioId}
-    return request({
-        url: `/${apiPath}/load`,
-        method: 'get',
-        params,
-    });
-}
-
 export async function loadExecResult(scenarioId): Promise<any> {
     const params = {scenarioId}
     return request({
@@ -68,10 +62,54 @@ export async function loadExecResult(scenarioId): Promise<any> {
     });
 }
 
+// scenario tree
+export async function loadScenario(scenarioId): Promise<any> {
+    const params = {scenarioId}
+    return request({
+        url: `/${apiPath}/load`,
+        method: 'get',
+        params,
+    });
+}
 export async function getNode(id: number): Promise<any> {
     return request({url: `/${apiPathProcessors}/${id}`});
 }
+export async function createNode(data): Promise<any> {
+    return request({
+        url: `/${apiPathNodes}`,
+        method: 'POST',
+        data: data,
+    });
+}
+export async function updateNode(id: number, params: any): Promise<any> {
+    return request({
+        url: `/${apiPathNodes}/${id}`,
+        method: 'PUT',
+        data: params,
+    });
+}
+export async function updateNodeName(id: number, name: string): Promise<any> {
+    const data = {id: id, name: name}
 
+    return request({
+        url: `/${apiPathNodes}/${id}/updateName`,
+        method: 'PUT',
+        data: data,
+    });
+}
+export async function removeNode(id: number): Promise<any> {
+    return request({
+        url: `/${apiPathNodes}/${id}`,
+        method: 'delete',
+    });
+}
+export async function moveNode(data: any): Promise<any> {
+    return request({
+        url: `/${apiPathNodes}/move`,
+        method: 'post',
+        data: data,
+    });
+}
 export async function addInterfaces(data): Promise<any> {
     return request({
         url: `/${apiPathNodes}/addInterfaces`,
@@ -86,48 +124,20 @@ export async function addProcessor(data): Promise<any> {
         data: data,
     });
 }
-
-export async function createNode(data): Promise<any> {
+export async function saveInterface(interf: Interface): Promise<any> {
     return request({
-        url: `/${apiPathNodes}`,
-        method: 'POST',
-        data: data,
-    });
-}
-
-export async function updateNode(id: number, params: any): Promise<any> {
-    return request({
-        url: `/${apiPathNodes}/${id}`,
-        method: 'PUT',
-        data: params,
-    });
-}
-
-export async function updateNodeName(id: number, name: string): Promise<any> {
-    const data = {id: id, name: name}
-
-    return request({
-        url: `/${apiPathNodes}/${id}/updateName`,
-        method: 'PUT',
-        data: data,
-    });
-}
-
-export async function removeNode(id: number): Promise<any> {
-    return request({
-        url: `/${apiPathNodes}/${id}`,
-        method: 'delete',
-    });
-}
-
-export async function moveNode(data: any): Promise<any> {
-    return request({
-        url: `/${apiPathNodes}/move`,
+        url: `/${apiPathInterface}/saveInterface`,
         method: 'post',
+        data: interf,
+    });
+}
+export async function saveProcessor(data: any): Promise<any> {
+    return request({
+        url: `/${apiPathProcessors}/${data.processorCategory}/save`,
+        method: 'PUT',
         data: data,
     });
 }
-
 export async function saveProcessorName(data: any): Promise<any> {
     return request({
         url: `/${apiPathProcessors}/updateName`,
@@ -135,10 +145,52 @@ export async function saveProcessorName(data: any): Promise<any> {
         data: data,
     });
 }
-export async function saveProcessor(data: any): Promise<any> {
+
+// category tree
+export async function loadCategory(): Promise<any> {
+    const params = {}
     return request({
-        url: `/${apiPathProcessors}/${data.processorCategory}/save`,
+        url: `/${apiPathCategoryNodes}/load`,
+        method: 'get',
+        params,
+    });
+}
+export async function getCategory(id: number): Promise<any> {
+    return request({url: `/${apiPathCategoryNodes}/${id}`});
+}
+export async function createCategory(data): Promise<any> {
+    return request({
+        url: `/${apiPathCategoryNodes}`,
+        method: 'POST',
+        data: data,
+    });
+}
+export async function updateCategory(id: number, params: any): Promise<any> {
+    return request({
+        url: `/${apiPathCategoryNodes}/${id}`,
         method: 'PUT',
+        data: params,
+    });
+}
+export async function updateCategoryName(id: number, name: string): Promise<any> {
+    const data = {id: id, name: name}
+
+    return request({
+        url: `/${apiPathCategoryNodes}/${id}/updateName`,
+        method: 'PUT',
+        data: data,
+    });
+}
+export async function removeCategory(id: number): Promise<any> {
+    return request({
+        url: `/${apiPathCategoryNodes}/${id}`,
+        method: 'delete',
+    });
+}
+export async function moveCategory(data: any): Promise<any> {
+    return request({
+        url: `/${apiPathCategoryNodes}/move`,
+        method: 'post',
         data: data,
     });
 }
@@ -174,14 +226,6 @@ export async function removeInvocation(id: number): Promise<any> {
 }
 
 // interface
-export async function saveInterface(interf: Interface): Promise<any> {
-    return request({
-        url: `/${apiPathInterface}/saveInterface`,
-        method: 'post',
-        data: interf,
-    });
-}
-
 export function getRequestBodyTypes() {
     return getEnumSelectItems(RequestBodyType)
 }

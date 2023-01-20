@@ -37,6 +37,7 @@ import { useI18n } from "vue-i18n";
 import { Props, validateInfos } from 'ant-design-vue/lib/form/useForm';
 import {message, Form, notification} from 'ant-design-vue';
 const useForm = Form.useForm;
+import {StateType as UserStateType} from "@/store/user";
 import {StateType} from "../store";
 import {Project} from "@/views/project/data";
 import {NotificationKeyCommon} from "@/utils/const";
@@ -56,7 +57,7 @@ export default defineComponent({
         ],
       });
 
-      const store = useStore<{ Project: StateType }>();
+      const store = useStore<{ Project: StateType, User: UserStateType }>();
       const modelRef = computed<Partial<Project>>(() => store.state.Project.detailResult);
       const { resetFields, validate, validateInfos } = useForm(modelRef, rulesRef);
 
@@ -73,6 +74,8 @@ export default defineComponent({
           store.dispatch('Project/saveProject', modelRef.value).then((res) => {
             console.log('res', res)
             if (res === true) {
+              store.dispatch('User/fetchCurrent');
+
               notification.success({
                 key: NotificationKeyCommon,
                 message: `保存成功`,

@@ -15,9 +15,6 @@ import SecurityLayout from '@/layouts/SecurityLayout.vue';
 import IndexLayoutRoutes from '@/layouts/IndexLayout/routes';
 import IndexLayout from '@/layouts/IndexLayout/index.vue';
 
-import ExpressLayoutRoutes from '@/layouts/ExpressLayout/routes';
-import ExpressLayout from '@/layouts/ExpressLayout/index.vue';
-
 import UserLayoutRoutes from '@/layouts/UserLayout/routes';
 import UserLayout from '@/layouts/UserLayout/index.vue';
 import BlankLayout from "@/layouts/BlankLayout.vue";
@@ -67,14 +64,6 @@ const routes: RoutesDataItem[] = [
     title: 'app.global.menu.notfound',
     path: '/:pathMatch(.*)*',
     component: () => import('@/views/404/index.vue'),
-  },
-
-  {
-    title: 'empty',
-    path: '/express',
-    redirect: '/express/index',
-    component: ExpressLayout,
-    children: ExpressLayoutRoutes,
   },
 ]
 

@@ -71,6 +71,15 @@ func (r *ProjectRepo) FindById(id uint) (model.Project, error) {
 	return project, nil
 }
 
+func (r *ProjectRepo) Get(id uint) (project model.Project, err error) {
+	db := r.DB.Model(&model.Project{}).
+		Where("id = ?", id)
+
+	db.First(&project)
+
+	return
+}
+
 func (r *ProjectRepo) GetByName(projectName string, id uint) (project v1.ProjectResp, err error) {
 	db := r.DB.Model(&model.Project{}).
 		Where("name = ?", projectName)
@@ -121,7 +130,7 @@ func (r *ProjectRepo) Create(req v1.ProjectReq, userId uint) (id uint, bizErr *_
 		return
 	}
 
-	err = r.AddProjectMember(project.ID, userId)
+	err = r.AddProjectMember(project.ID, userId, "admin")
 	if err != nil {
 		logUtils.Errorf("添加项目角色错误", zap.String("错误:", err.Error()))
 		return
@@ -130,6 +139,12 @@ func (r *ProjectRepo) Create(req v1.ProjectReq, userId uint) (id uint, bizErr *_
 	err = r.AddProjectRootInterface(project.ID)
 	if err != nil {
 		logUtils.Errorf("添加接口错误", zap.String("错误:", err.Error()))
+		return
+	}
+
+	err = r.AddProjectRootScenarioCategory(project.ID)
+	if err != nil {
+		logUtils.Errorf("添加场景分类错误", zap.String("错误:", err.Error()))
 		return
 	}
 
@@ -236,8 +251,13 @@ func (r *ProjectRepo) ChangeProject(projectId, userId uint) (err error) {
 	return
 }
 
-func (r *ProjectRepo) AddProjectMember(projectId, userId uint) (err error) {
-	projectRole, _ := r.ProjectRoleRepo.GetUserRecord()
+func (r *ProjectRepo) AddProjectMember(projectId, userId uint, role string) (err error) {
+	var projectRole model.ProjectRole
+	if role == "admin" {
+		projectRole, _ = r.ProjectRoleRepo.GetAdminRecord()
+	} else if role == "user" {
+		projectRole, _ = r.ProjectRoleRepo.GetUserRecord()
+	}
 
 	projectMember := model.ProjectMember{UserId: userId, ProjectId: projectId, ProjectRoleId: projectRole.ID}
 	err = r.DB.Create(&projectMember).Error
@@ -246,8 +266,20 @@ func (r *ProjectRepo) AddProjectMember(projectId, userId uint) (err error) {
 }
 
 func (r *ProjectRepo) AddProjectRootInterface(projectId uint) (err error) {
-	interf := model.Interface{InterfaceBase: model.InterfaceBase{Name: "所有接口", ProjectId: projectId, IsDir: true}}
+	interf := model.Interface{InterfaceBase: model.InterfaceBase{Name: "所有接口", ProjectId: projectId, IsLeaf: false}}
 	err = r.DB.Create(&interf).Error
+
+	return
+}
+
+func (r *ProjectRepo) AddProjectRootScenarioCategory(projectId uint) (err error) {
+	category := model.ScenarioCategory{
+		Name:      "场景分类",
+		ProjectId: projectId,
+		IsLeaf:    false,
+	}
+
+	err = r.DB.Create(&category).Error
 
 	return
 }

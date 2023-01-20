@@ -36,7 +36,9 @@ var (
 
 		&Auth2Token{},
 
+		&ScenarioCategory{},
 		&Scenario{},
+
 		&Processor{},
 		//&ProcessorThreadGroup{},
 		&ProcessorGroup{},

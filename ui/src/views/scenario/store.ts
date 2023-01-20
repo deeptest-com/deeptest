@@ -7,19 +7,27 @@ import {
     get,
     save,
     remove,
-    load,
+
+    listInvocation, getInvocationAsInterface, removeInvocation,
+    loadExecResult, getInterface, getLastInvocationResp,
+
+    loadScenario,
     getNode,
     createNode,
     updateNode,
     removeNode,
     moveNode,
-    addInterfaces,
-    addProcessor,
-    saveProcessorName, saveProcessor,
-    saveInterface,
+    addInterfaces, addProcessor,
+    saveProcessorName, saveProcessor, saveInterface,
 
-    listInvocation, getInvocationAsInterface, removeInvocation,
-    loadExecResult, getInterface, getLastInvocationResp,
+    loadCategory,
+    getCategory,
+    createCategory,
+    updateCategory,
+    removeCategory,
+    moveCategory,
+    updateCategoryName,
+
 } from './service';
 
 // below use same apis with interface controller
@@ -45,6 +53,10 @@ export interface StateType {
     treeDataMap: any,
     nodeData: any;
 
+    treeDataCategory: any[];
+    treeDataMapCategory: any,
+    nodeDataCategory: any;
+
     execResult: any;
 
     interfaceData: Interface;
@@ -69,6 +81,12 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setTreeDataMapItem: Mutation<StateType>;
         setTreeDataMapItemProp: Mutation<StateType>;
         setNode: Mutation<StateType>;
+
+        setTreeDataCategory: Mutation<StateType>;
+        setTreeDataMapCategory: Mutation<StateType>;
+        setTreeDataMapItemCategory: Mutation<StateType>;
+        setTreeDataMapItemPropCategory: Mutation<StateType>;
+        setNodeCategory: Mutation<StateType>;
 
         setExecResult: Mutation<StateType>;
 
@@ -118,8 +136,18 @@ export interface ModuleType extends StoreModuleType<StateType> {
         listExtractor: Action<StateType, StateType>;
         listCheckpoint: Action<StateType, StateType>;
         listValidExtractorVariableForInterface: Action<StateType, StateType>;
-    };
+
+        loadCategory: Action<StateType, StateType>;
+        getCategoryNode: Action<StateType, StateType>;
+        createCategoryNode: Action<StateType, StateType>;
+        updateCategoryNode: Action<StateType, StateType>;
+        removeCategoryNode: Action<StateType, StateType>;
+        moveCategoryNode: Action<StateType, StateType>;
+        saveCategory: Action<StateType, StateType>;
+        updateCategoryName: Action<StateType, StateType>;
+    }
 }
+
 const initState: StateType = {
     scenarioId: 0,
 
@@ -139,6 +167,11 @@ const initState: StateType = {
     treeData: [],
     treeDataMap: {},
     nodeData: {},
+
+    treeDataCategory: [],
+    treeDataMapCategory: {},
+    nodeDataCategory: {},
+
     execResult: {},
 
     interfaceData: {} as Interface,
@@ -181,8 +214,25 @@ const StoreModel: ModuleType = {
             if (!state.treeDataMap[payload.id]) return
             state.treeDataMap[payload.id][payload.prop] = payload.value
         },
-
         setNode(state, data) {
+            state.nodeData = data;
+        },
+
+        setTreeDataCategory(state, data) {
+            state.treeData = [data];
+        },
+        setTreeDataMapCategory(state, payload) {
+            state.treeDataMap = payload
+        },
+        setTreeDataMapItemCategory(state, payload) {
+            if (!state.treeDataMap[payload.id]) return
+            state.treeDataMap[payload.id] = payload
+        },
+        setTreeDataMapItemPropCategory(state, payload) {
+            if (!state.treeDataMap[payload.id]) return
+            state.treeDataMap[payload.id][payload.prop] = payload.value
+        },
+        setNodeCategory(state, data) {
             state.nodeData = data;
         },
 
@@ -213,14 +263,14 @@ const StoreModel: ModuleType = {
         },
     },
     actions: {
-        async listScenario({ commit, dispatch }, params: QueryParams ) {
+        async listScenario({commit, dispatch}, params: QueryParams) {
             try {
                 const response: ResponseData = await query(params);
                 if (response.code != 0) return;
 
                 const data = response.data;
 
-                commit('setList',{
+                commit('setList', {
                     ...initState.listResult,
                     list: data.result || [],
                     pagination: {
@@ -237,18 +287,17 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
-
-        async getScenario({ commit }, id: number ) {
+        async getScenario({commit}, id: number) {
             if (id === 0) {
-                commit('setDetail',{
+                commit('setDetail', {
                     ...initState.detailResult,
                 })
                 return
             }
             try {
                 const response: ResponseData = await get(id);
-                const { data } = response;
-                commit('setDetail',{
+                const {data} = response;
+                commit('setDetail', {
                     ...initState.detailResult,
                     ...data,
                 });
@@ -273,43 +322,10 @@ const StoreModel: ModuleType = {
                 return false
             }
         },
-        async removeScenario({ commit, dispatch, state }, payload: number ) {
+        async removeScenario({commit, dispatch, state}, payload: number) {
             try {
                 await remove(payload);
                 await dispatch('listScenario', state.queryParams)
-                return true;
-            } catch (error) {
-                return false;
-            }
-        },
-
-        async loadScenario({commit}, scenarioId) {
-            const response = await load(scenarioId);
-            if (response.code != 0) return;
-
-            const {data} = response;
-            commit('setTreeData', data || {});
-            commit('setScenarioId', scenarioId );
-
-            const mp = {}
-            getNodeMap(data, mp)
-
-            commit('setTreeDataMap', mp);
-
-            return true;
-        },
-
-        async getNode({commit}, payload: any) {
-            try {
-                if (!payload) {
-                    commit('setNode', {});
-                    return true;
-                }
-
-                const response = await getNode(payload.id);
-                const {data} = response;
-
-                commit('setNode', data);
                 return true;
             } catch (error) {
                 return false;
@@ -337,6 +353,38 @@ const StoreModel: ModuleType = {
             }
         },
 
+        // scenario tree
+        async loadScenario({commit}, scenarioId) {
+            const response = await loadScenario(scenarioId);
+            if (response.code != 0) return;
+
+            const {data} = response;
+            commit('setTreeData', data || {});
+            commit('setScenarioId', scenarioId);
+
+            const mp = {}
+            getNodeMap(data, mp)
+
+            commit('setTreeDataMap', mp);
+
+            return true;
+        },
+        async getNode({commit}, payload: any) {
+            try {
+                if (!payload) {
+                    commit('setNode', {});
+                    return true;
+                }
+
+                const response = await getNode(payload.id);
+                const {data} = response;
+
+                commit('setNode', data);
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
         async createNode({commit, dispatch, state}, payload: any) {
             try {
                 const resp = await createNode(payload);
@@ -374,7 +422,6 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
-
         async saveProcessor({commit, dispatch, state}, payload: any) {
             const jsn = await saveProcessor(payload)
             if (jsn.code === 0) {
@@ -395,13 +442,101 @@ const StoreModel: ModuleType = {
             }
         },
 
+        // category tree
+        async loadCategory({commit}) {
+            const response = await loadCategory();
+            if (response.code != 0) return;
+
+            const {data} = response;
+            commit('setTreeDataCategory', data || {});
+
+            const mp = {}
+            getNodeMap(data, mp)
+
+            commit('setTreeDataMapCategory', mp);
+
+            return true;
+        },
+        async getCategoryNode({commit}, payload: any) {
+            try {
+                if (!payload) {
+                    commit('setCategoryNode', {});
+                    return true;
+                }
+
+                const response = await getCategory(payload.id);
+                const {data} = response;
+
+                commit('setCategoryNode', data);
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+        async createCategoryNode({commit, dispatch, state}, payload: any) {
+            try {
+                const resp = await createCategory(payload);
+
+                await dispatch('loadCategory');
+                return resp.data;
+            } catch (error) {
+                return false;
+            }
+        },
+        async updateCategoryNode({commit}, payload: any) {
+            try {
+                const {id, ...params} = payload;
+                await updateCategory(id, {...params});
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+        async removeCategoryNode({commit, dispatch, state}, payload: number) {
+            try {
+                await removeCategory(payload);
+                await dispatch('loadCategory');
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+        async moveCategoryNode({commit, dispatch, state}, payload: any) {
+            try {
+                await moveCategory(payload);
+                await dispatch('loadCategory');
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+        async saveCategory({commit, dispatch, state}, payload: any) {
+            const jsn = await saveProcessor(payload)
+            if (jsn.code === 0) {
+                commit('setCategory', jsn.data);
+                await dispatch('loadCategory');
+                return true;
+            } else {
+                return false
+            }
+        },
+        async updateCategoryName({commit, dispatch, state}, payload: any) {
+            const jsn = await updateCategoryName(payload.id, payload.name)
+            if (jsn.code === 0) {
+                await dispatch('loadCategory');
+                return true;
+            } else {
+                return false
+            }
+        },
+
         async loadExecResult({commit, dispatch, state}, scenarioId) {
             const response = await loadExecResult(scenarioId);
             if (response.code != 0) return;
 
             const {data} = response;
             commit('setExecResult', data || {});
-            commit('setScenarioId', scenarioId );
+            commit('setScenarioId', scenarioId);
 
             return true;
         },
@@ -417,10 +552,10 @@ const StoreModel: ModuleType = {
                 const response = await getInterface(interfaceId);
 
                 const {data} = response;
-                data.headers.push({name:'', value:''})
-                data.params.push({name:'', value:''})
-                data.bodyFormData.push({name:'', value:'', type: 'text'})
-                data.bodyFormUrlencoded.push({name:'', value:''})
+                data.headers.push({name: '', value: ''})
+                data.params.push({name: '', value: ''})
+                data.bodyFormData.push({name: '', value: '', type: 'text'})
+                data.bodyFormUrlencoded.push({name: '', value: ''})
 
                 commit('setInterface', data);
                 return true;
@@ -440,7 +575,7 @@ const StoreModel: ModuleType = {
         },
 
         async saveInterface({commit}, payload: any) {
-            const json = await  saveInterface(payload)
+            const json = await saveInterface(payload)
             if (json.code === 0) {
                 return true;
             } else {

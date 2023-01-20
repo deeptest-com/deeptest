@@ -302,7 +302,7 @@ func (r *UserRepo) InviteToProject(req domain.InviteUserReq) (user model.SysUser
 		return
 	}
 
-	err = r.ProjectRepo.AddProjectMember(uint(req.ProjectId), user.ID)
+	err = r.ProjectRepo.AddProjectMember(uint(req.ProjectId), user.ID, "user")
 	if err != nil {
 		return
 	}
@@ -434,7 +434,7 @@ func (r *UserRepo) AddProjectForUser(user *model.SysUser) (project model.Project
 		return
 	}
 
-	err = r.ProjectRepo.AddProjectMember(project.ID, user.ID)
+	err = r.ProjectRepo.AddProjectMember(project.ID, user.ID, "admin")
 	if err != nil {
 		logUtils.Errorf("添加项目角色错误", zap.String("错误:", err.Error()))
 		return

@@ -2,7 +2,7 @@
   <div class="scenario-list-main">
     <a-card :bordered="false">
       <template #title>
-        <a-button type="primary" @click="() => edit(0)">新建场景</a-button>
+        <a-button type="primary" @click="() => edit(0)">新建</a-button>
       </template>
       <template #extra>
         <a-select @change="onSearch" v-model:value="queryParams.enabled" :options="statusArr" class="status-select">

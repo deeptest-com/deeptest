@@ -32,6 +32,7 @@ type IndexModule struct {
 	CheckpointModule  *router.CheckpointModule  `inject:""`
 	ParserModule      *router.ParserModule      `inject:""`
 
+	CategoryModule           *router.CategoryModule            `inject:""`
 	ScenarioModule           *router.ScenarioModule            `inject:""`
 	ScenarioNodeModule       *router.ScenarioNodeModule        `inject:""`
 	ScenarioProcessorModule  *router.ScenarioProcessorModule   `inject:""`
@@ -75,12 +76,15 @@ func (m *IndexModule) Party() module.WebModule {
 		m.ExtractorModule.Party(),
 		m.CheckpointModule.Party(),
 		m.ParserModule.Party(),
+
+		m.CategoryModule.Party(),
 		m.ScenarioModule.Party(),
 		m.ScenarioNodeModule.Party(),
 		m.ScenarioProcessorModule.Party(),
 		m.ScenarioExecModule.Party(),
 		m.ScenarioInterfaceModule.Party(),
 		m.ScenarioInvocationModule.Party(),
+
 		m.ReportModule.Party(),
 	}
 	return module.NewModule(consts.ApiPath, handler, modules...)

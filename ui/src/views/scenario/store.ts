@@ -233,7 +233,7 @@ const StoreModel: ModuleType = {
             state.treeDataMapCategory[payload.id][payload.prop] = payload.value
         },
         setNodeCategory(state, data) {
-            state.nodeData = data;
+            state.nodeDataCategory = data;
         },
 
         setExecResult(state, data) {
@@ -460,14 +460,14 @@ const StoreModel: ModuleType = {
         async getCategoryNode({commit}, payload: any) {
             try {
                 if (!payload) {
-                    commit('setCategoryNode', {});
+                    commit('setNodeCategory', {});
                     return true;
                 }
 
                 const response = await getCategory(payload.id);
                 const {data} = response;
 
-                commit('setCategoryNode', data);
+                commit('setNodeCategory', data);
                 return true;
             } catch (error) {
                 return false;

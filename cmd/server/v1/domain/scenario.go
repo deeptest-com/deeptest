@@ -9,8 +9,10 @@ import (
 
 type ScenarioReqPaginate struct {
 	_domain.PaginateReq
-	Keywords string `json:"keywords"`
-	Enabled  string `json:"enabled"`
+
+	CategoryId uint   `json:"categoryId"`
+	Keywords   string `json:"keywords"`
+	Enabled    string `json:"enabled"`
 }
 
 type ScenarioAddInterfacesReq struct {
@@ -71,7 +73,7 @@ type ScenarioCategoryCreateReq struct {
 	Name string `json:"name"`
 	Mode string `json:"mode"`
 
-	TargetId  int  `json:"targetId"`
+	TargetId  uint `json:"targetId"`
 	ProjectId uint `json:"projectId"`
 }
 

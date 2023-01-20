@@ -87,6 +87,7 @@ const statusArr = ref<SelectTypes['options']>([
 const router = useRouter();
 const store = useStore<{ Scenario: StateType, ProjectGlobal: ProjectStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
+const nodeDataCategory = computed<any>(()=> store.state.Scenario.nodeDataCategory);
 
 const list = computed<Scenario[]>(() => store.state.Scenario.listResult.list);
 let pagination = computed<PaginationConfig>(() => store.state.Scenario.listResult.pagination);
@@ -95,9 +96,14 @@ let queryParams = reactive<QueryParams>({
   page: pagination.value.current, pageSize: pagination.value.pageSize
 });
 
+watch(nodeDataCategory, () => {
+  console.log('watch nodeDataCategory', nodeDataCategory.value.id)
+  getList(1, nodeDataCategory.value.id);
+}, {deep: false})
+
 watch(currProject, () => {
   console.log('watch currProject', currProject.value.id)
-  getList(1);
+  getList(1, nodeDataCategory.value.id);
 }, {deep: false})
 
 const columns = [
@@ -134,14 +140,15 @@ const columns = [
 
 onMounted(() => {
   console.log('onMounted')
-  getList(1);
+  getList(1, nodeDataCategory.value.id);
 })
 
 const loading = ref<boolean>(true);
-const getList = async (current: number): Promise<void> => {
+const getList = async (current: number, categoryId: number): Promise<void> => {
   loading.value = true;
 
   await store.dispatch('Scenario/listScenario', {
+    categoryId,
     keywords: queryParams.keywords,
     enabled: queryParams.enabled,
     pageSize: pagination.value.pageSize,

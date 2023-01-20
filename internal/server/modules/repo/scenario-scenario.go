@@ -39,17 +39,18 @@ func (r *ScenarioCategoryRepo) ListByProject(projectId uint) (pos []*model.Scena
 	return
 }
 
-func (r *ScenarioCategoryRepo) Get(id uint) (processor model.ScenarioCategory, err error) {
-	err = r.DB.Where("id = ?", id).First(&processor).Error
+func (r *ScenarioCategoryRepo) Get(id uint) (po model.ScenarioCategory, err error) {
+	err = r.DB.Where("id = ?", id).First(&po).Error
 	return
 }
 
 func (r *ScenarioCategoryRepo) toTos(pos []*model.ScenarioCategory) (tos []*v1.ScenarioCategory) {
 	for _, po := range pos {
 		to := v1.ScenarioCategory{
-			Id:   po.ID,
-			Name: po.Name,
-			Desc: po.Desc,
+			Id:       po.ID,
+			Name:     po.Name,
+			Desc:     po.Desc,
+			ParentId: po.ParentId,
 		}
 
 		tos = append(tos, &to)

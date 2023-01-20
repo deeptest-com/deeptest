@@ -19,28 +19,28 @@ func (s *ScenarioCategoryService) GetTree(projectId int) (root *v1.ScenarioCateg
 	return
 }
 
-func (s *ScenarioCategoryService) Get(scenarioId int) (root *v1.ScenarioCategory, err error) {
-	root, err = s.ScenarioCategoryRepo.GetTree(uint(scenarioId))
+func (s *ScenarioCategoryService) Get(scenarioId int) (root model.ScenarioCategory, err error) {
+	root, err = s.ScenarioCategoryRepo.Get(uint(scenarioId))
 
 	return
 }
 
 func (s *ScenarioCategoryService) Create(req v1.ScenarioCategoryCreateReq) (ret model.ScenarioCategory, err *_domain.BizErr) {
-	targetProcessor, _ := s.ScenarioCategoryRepo.Get(uint(req.TargetId))
-	if targetProcessor.ID == 0 {
+	target, _ := s.ScenarioCategoryRepo.Get(uint(req.TargetId))
+	if target.ID == 0 {
 		return
 	}
 
 	ret = model.ScenarioCategory{
-		Name: req.Name,
-
+		Name:      req.Name,
+		ParentId:  req.TargetId,
 		ProjectId: req.ProjectId,
 	}
 
 	if req.Mode == "child" {
-		ret.ParentId = targetProcessor.ID
+		ret.ParentId = target.ID
 	} else if req.Mode == "brother" {
-		ret.ParentId = targetProcessor.ParentId
+		ret.ParentId = target.ParentId
 	}
 
 	ret.Ordr = s.ScenarioCategoryRepo.GetMaxOrder(ret.ParentId)
@@ -48,8 +48,8 @@ func (s *ScenarioCategoryService) Create(req v1.ScenarioCategoryCreateReq) (ret 
 	s.ScenarioCategoryRepo.Save(&ret)
 
 	if req.Mode == "parent" { // move interface to new folder
-		targetProcessor.ParentId = ret.ID
-		s.ScenarioCategoryRepo.Save(&targetProcessor)
+		target.ParentId = ret.ID
+		s.ScenarioCategoryRepo.Save(&target)
 	}
 
 	return

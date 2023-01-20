@@ -8,33 +8,17 @@
 
       <a-menu-item key="add_brother_node" class="menu-item" v-if="treeNode.parentId > 0">
         <PlusOutlined />
-        <span>创建同级接口</span>
+        <span>创建同级分类</span>
       </a-menu-item>
 
       <a-menu-item key="add_child_node" class="menu-item" v-if="!treeNode.isLeaf">
         <PlusOutlined />
-        <span>创建子接口</span>
-      </a-menu-item>
-
-      <a-menu-item key="add_brother_dir" class="menu-item" v-if="treeNode.parentId > 0">
-        <PlusOutlined />
-        <span>创建同级目录</span>
-      </a-menu-item>
-
-      <a-menu-item key="add_child_dir" class="menu-item" v-if="!treeNode.isLeaf">
-        <PlusOutlined />
-        <span>创建子目录</span>
+        <span>创建子分类</span>
       </a-menu-item>
 
       <a-menu-item key="remove" class="menu-item" v-if="treeNode.parentId > 0">
         <CloseOutlined />
-        <span v-if="!treeNode.isLeaf">删除目录</span>
-        <span v-if="treeNode.isLeaf">删除节点</span>
-      </a-menu-item>
-
-      <a-menu-item v-if="!treeNode.isLeaf" key="export_spec" class="menu-item">
-        <PlusOutlined />
-        <span>导入接口...</span>
+        <span>删除分类</span>
       </a-menu-item>
     </a-menu>
   </div>

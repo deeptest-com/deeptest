@@ -94,13 +94,14 @@ const treeDataMapCategory = computed<any>(() => store.state.Scenario.treeDataMap
 const nodeDataCategory = computed<any>(()=> store.state.Scenario.nodeDataCategory);
 
 watch(treeDataCategory, () => {
-  console.log('watch', treeDataCategory)
+  console.log('watch treeDataCategory', treeDataCategory)
+
+  selectNode([treeDataCategory.value[0].id], null)
+  getExpandedKeysCall()
 
   if (!treeDataCategory.value[0].children || treeDataCategory.value[0].children.length === 0) {
     tips.value = '右键树状节点操作'
   }
-
-  getExpandedKeysCall()
 })
 
 const loadTree = debounce(async () => {
@@ -241,8 +242,6 @@ const menuClick = (menuKey: string, targetId: number) => {
     return
   }
 
-  // add-child-interface
-  // add-child-processor_logic-processor_logic_if
   const arr = menuKey.split('-')
   const mode = arr[1]
 

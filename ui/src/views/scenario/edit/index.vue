@@ -2,11 +2,10 @@
   <div class="scenario-edit-main">
     <a-card :bordered="false">
       <template #title>
-        <div>{{id === 0 ? '新建场景' : '编辑场景'}}</div>
+        <div>{{modelId > 0 ? '编辑场景' : '新建场景'}}</div>
       </template>
-      <template #extra>
-        <a-button type="link" @click="() => back()">返回</a-button>
-      </template>
+
+      <template #extra></template>
 
       <div>
         <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
@@ -14,11 +13,13 @@
             <a-input v-model:value="modelRef.name"
                      @blur="validate('name', { trigger: 'blur' }).catch(() => {})" />
           </a-form-item>
+
           <a-form-item label="描述" v-bind="validateInfos.desc">
             <a-input v-model:value="modelRef.desc"
                      @blur="validate('desc', { trigger: 'blur' }).catch(() => {})" />
           </a-form-item>
-          <a-form-item label="是否禁用">
+
+          <a-form-item v-if="modelId > 0" label="是否禁用">
             <a-switch v-model:checked="modelRef.disabled" />
           </a-form-item>
 
@@ -32,77 +33,80 @@
   </div>
 </template>
 
-<script lang="ts">
-import {defineComponent, computed, ref, reactive, ComputedRef} from "vue";
+<script setup lang="ts">
+import {defineComponent, computed, ref, reactive, ComputedRef, defineProps, PropType} from "vue";
 import {useRouter} from "vue-router";
 import {useStore} from "vuex";
 import { useI18n } from "vue-i18n";
-import { Props, validateInfos } from 'ant-design-vue/lib/form/useForm';
 import {message, Form, notification} from 'ant-design-vue';
 const useForm = Form.useForm;
 import {StateType} from "../store";
 import {Scenario} from "@/views/scenario/data";
+import {updateNodeName} from "@/views/interface/service";
+import {get} from "@/views/scenario/service";
 
-export default defineComponent({
-    name: 'ScriptEditPage',
-    setup() {
-      const router = useRouter();
-      const { t } = useI18n();
+const router = useRouter();
+const { t } = useI18n();
 
-      const rulesRef = reactive({
-        name: [
-          { required: true, message: '请输入名称', trigger: 'blur' },
-        ],
-      });
-
-      const store = useStore<{ Scenario: StateType }>();
-      const modelRef = computed<Partial<Scenario>>(() => store.state.Scenario.detailResult);
-      const { resetFields, validate, validateInfos } = useForm(modelRef, rulesRef);
-
-      const get = async (id: number): Promise<void> => {
-        await store.dispatch('Scenario/getScenario', id);
-      }
-      const id = ref(+router.currentRoute.value.params.id)
-      get(id.value)
-
-      const submitForm = async() => {
-        validate().then(() => {
-          console.log(modelRef);
-
-          store.dispatch('Scenario/saveScenario', modelRef.value).then((res) => {
-            console.log('res', res)
-            if (res === true) {
-              notification.success({
-                message: `保存成功`,
-              });
-              router.replace('/scenario/index')
-            }
-          })
-        })
-        .catch(err => {
-          console.log('error', err);
-        });
-      };
-
-      const back = ():void =>  {
-        router.replace(`/scenario/index`)
-      }
-
-      return {
-        labelCol: { span: 4 },
-        wrapperCol: { span: 14 },
-        id,
-        modelRef,
-        rulesRef,
-        resetFields,
-        validate,
-        validateInfos,
-        submitForm,
-
-        back,
-      }
-    }
+const props = defineProps({
+  modelId: {
+    type: Number,
+    required: true
+  },
+  categoryId: {
+    type: Number,
+    required: true
+  },
+  onFinish: {
+    type: Function as PropType<() => void>,
+    required: true
+  }
 })
+
+const rulesRef = reactive({
+  name: [
+    { required: true, message: '请输入名称', trigger: 'blur' },
+  ],
+});
+
+const store = useStore<{ Scenario: StateType }>();
+const modelRef = ref({} as any)
+const { resetFields, validate, validateInfos } = useForm(modelRef, rulesRef);
+
+const getData = (id: number) => {
+  if (id === 0) {
+    modelRef.value = {}
+    return
+  }
+
+  get(id).then((json) => {
+    if (json.code === 0) {
+      modelRef.value = json.data
+    }
+  })
+}
+getData(props.modelId)
+
+const submitForm = async() => {
+  validate().then(() => {
+    console.log(modelRef);
+    modelRef.value.categoryId = props.categoryId
+
+    store.dispatch('Scenario/saveScenario', modelRef.value).then((res) => {
+      console.log('res', res)
+      if (res === true) {
+        props.onFinish()
+      }
+    })
+  })
+  .catch(err => {
+    console.log('error', err);
+  });
+};
+
+const labelCol = { span: 4 }
+const wrapperCol = { span: 18 }
+
 </script>
 
 <style lang="less" scoped>

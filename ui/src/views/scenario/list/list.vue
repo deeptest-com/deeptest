@@ -21,11 +21,11 @@
             :pagination="{
                 ...pagination,
                 onChange: (page) => {
-                    getList(page);
+                    getList(page, nodeDataCategory.id);
                 },
                 onShowSizeChange: (page, size) => {
                     pagination.pageSize = size
-                    getList(page);
+                    getList(page, nodeDataCategory.id);
                 },
             }"
             class="dp-table"
@@ -52,6 +52,21 @@
       </div>
     </a-card>
   </div>
+
+  <div v-if="isEditVisible">
+    <a-modal title=""
+             :visible="true"
+             :onCancel="onEditFinish"
+             class="scenario-edit"
+             :footer="null"
+             width="600px">
+      <ScenarioEdit
+          :modelId="currModelId"
+          :categoryId="nodeDataCategory.id"
+          :onFinish="onEditFinish">
+      </ScenarioEdit>
+    </a-modal>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -66,6 +81,8 @@ import debounce from "lodash.debounce";
 import {useRouter} from "vue-router";
 import {message, Modal, notification} from "ant-design-vue";
 import {StateType as ProjectStateType} from "@/store/project";
+
+import ScenarioEdit from "../edit/index.vue";
 
 const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
 
@@ -96,6 +113,8 @@ let queryParams = reactive<QueryParams>({
   page: pagination.value.current, pageSize: pagination.value.pageSize
 });
 
+const currModelId = ref(0)
+
 watch(nodeDataCategory, () => {
   console.log('watch nodeDataCategory', nodeDataCategory.value.id)
   getList(1, nodeDataCategory.value.id);
@@ -105,6 +124,76 @@ watch(currProject, () => {
   console.log('watch currProject', currProject.value.id)
   getList(1, nodeDataCategory.value.id);
 }, {deep: false})
+
+const loading = ref<boolean>(true);
+const getList = async (current: number, categoryId: number): Promise<void> => {
+  loading.value = true;
+
+  await store.dispatch('Scenario/listScenario', {
+    categoryId,
+    keywords: queryParams.keywords,
+    enabled: queryParams.enabled,
+    pageSize: pagination.value.pageSize,
+    page: current,
+  });
+  loading.value = false;
+}
+
+const exec = (id: number) => {
+  console.log('exec')
+  router.push(`/scenario/exec/${id}`)
+}
+
+const design = (id: number) => {
+  console.log('edit')
+  router.push(`/scenario/design/${id}`)
+}
+
+const isEditVisible = ref(false)
+
+const edit = (id: number) => {
+  console.log('edit')
+  currModelId.value = id
+  isEditVisible.value = true
+}
+
+const onEditFinish = () => {
+  console.log('onEditFinish')
+  isEditVisible.value = false
+
+  getList(pagination.value.current, nodeDataCategory.value.id)
+}
+
+const remove = (id: number) => {
+  console.log('remove')
+
+  Modal.confirm({
+    title: '删除场景',
+    content: '确定删除指定的场景？',
+    okText: '确认',
+    cancelText: '取消',
+    onOk: async () => {
+      store.dispatch('Scenario/removeScenario', id).then((res) => {
+        console.log('res', res)
+        if (res === true) {
+          getList(1, nodeDataCategory.value.id)
+
+          notification.success({
+            message: `删除成功`,
+          });
+        } else {
+          notification.error({
+            message: `删除失败`,
+          });
+        }
+      })
+    }
+  });
+}
+
+const onSearch = debounce(() => {
+  getList(1, nodeDataCategory.value.id)
+}, 500);
 
 const columns = [
   {
@@ -137,69 +226,6 @@ const columns = [
     slots: {customRender: 'action'},
   },
 ];
-
-onMounted(() => {
-  console.log('onMounted')
-})
-
-const loading = ref<boolean>(true);
-const getList = async (current: number, categoryId: number): Promise<void> => {
-  loading.value = true;
-
-  await store.dispatch('Scenario/listScenario', {
-    categoryId,
-    keywords: queryParams.keywords,
-    enabled: queryParams.enabled,
-    pageSize: pagination.value.pageSize,
-    page: current,
-  });
-  loading.value = false;
-}
-
-const exec = (id: number) => {
-  console.log('exec')
-  router.push(`/scenario/exec/${id}`)
-}
-
-const design = (id: number) => {
-  console.log('edit')
-  router.push(`/scenario/design/${id}`)
-}
-
-const edit = (id: number) => {
-  console.log('edit')
-  router.push(`/scenario/edit/${id}`)
-}
-
-const remove = (id: number) => {
-  console.log('remove')
-
-  Modal.confirm({
-    title: '删除场景',
-    content: '确定删除指定的场景？',
-    okText: '确认',
-    cancelText: '取消',
-    onOk: async () => {
-      store.dispatch('Scenario/removeScenario', id).then((res) => {
-        console.log('res', res)
-        if (res === true) {
-          notification.success({
-            message: `删除成功`,
-          });
-          store.dispatch('Scenario/queryScenario', id)
-        } else {
-          notification.error({
-            message: `删除失败`,
-          });
-        }
-      })
-    }
-  });
-}
-
-const onSearch = debounce(() => {
-  getList(1)
-}, 500);
 
 onMounted(() => {
   console.log('onMounted')

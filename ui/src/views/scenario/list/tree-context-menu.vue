@@ -6,12 +6,12 @@
         <span>重命名</span>
       </a-menu-item>
 
-      <a-menu-item key="add_brother_node" class="menu-item" v-if="treeNode.parentId > 0">
+      <a-menu-item key="add-brother-node" class="menu-item" v-if="treeNode.parentId > 0">
         <PlusOutlined />
         <span>创建同级分类</span>
       </a-menu-item>
 
-      <a-menu-item key="add_child_node" class="menu-item" v-if="!treeNode.isLeaf">
+      <a-menu-item key="add-child-node" class="menu-item" v-if="!treeNode.isLeaf">
         <PlusOutlined />
         <span>创建子分类</span>
       </a-menu-item>

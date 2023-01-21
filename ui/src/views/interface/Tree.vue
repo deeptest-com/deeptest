@@ -217,7 +217,7 @@ export default defineComponent({
     }
 
     const getExpandedKeysCall = throttle(async () => {
-      getExpandedKeys(currProject.value.id).then(async keys => {
+      getExpandedKeys('interface', currProject.value.id).then(async keys => {
         console.log('keys', keys)
         if (keys)
           expandedKeys.value = keys
@@ -225,7 +225,7 @@ export default defineComponent({
         if (!expandedKeys.value || expandedKeys.value.length === 0) { // init, expend first level folder
           getOpenKeys(treeData.value[0], false)
           console.log('expandedKeys.value', expandedKeys.value)
-          await setExpandedKeys(currProject.value.id, expandedKeys.value)
+          await setExpandedKeys('interface', currProject.value.id, expandedKeys.value)
         }
       })
     }, 300)
@@ -246,14 +246,14 @@ export default defineComponent({
     const expandNode = (keys: string[], e: any) => {
       console.log('expandNode', keys[0], e)
 
-      setExpandedKeys(currProject.value.id, expandedKeys.value)
+      setExpandedKeys('interface', currProject.value.id, expandedKeys.value)
     }
     const expandAll = () => {
       console.log('expandAll')
       isExpand.value = !isExpand.value
       expandedKeys.value = expandAllKeys(treeDataMap.value, isExpand.value)
 
-      setExpandedKeys(currProject.value.id, expandedKeys.value)
+      setExpandedKeys('interface', currProject.value.id, expandedKeys.value)
     }
 
     let targetModelId = 0
@@ -261,7 +261,7 @@ export default defineComponent({
       console.log('menuClick', menuKey, targetId)
       targetModelId = targetId
 
-      if (menuKey === 'export_spec') {
+      if (menuKey === 'export-spec') {
         showImport.value = true
         return
       }
@@ -277,7 +277,7 @@ export default defineComponent({
       }
 
       // add
-      const arr = menuKey.split('_')
+      const arr = menuKey.split('-')
       const mode = arr[1]
       const type = arr[2]
 
@@ -316,7 +316,7 @@ export default defineComponent({
             // selectNode([newNode.id])
 
             expandOneKey(treeDataMap.value, newNode.parentId, expandedKeys.value) // expend new node
-            setExpandedKeys(currProject.value.id, expandedKeys.value)
+            setExpandedKeys('interface', currProject.value.id, expandedKeys.value)
           })
     }
     const removeNode = () => {
@@ -353,7 +353,7 @@ export default defineComponent({
           store.dispatch('Interface/loadInterface').then((result) => {
               console.log(result)
               expandOneKey(treeDataMap.value, targetModelId, expandedKeys.value) // expend parent node
-              setExpandedKeys(currProject.value.id, expandedKeys.value)
+              setExpandedKeys('interface', currProject.value.id, expandedKeys.value)
             })
         } else {
           notification.error({

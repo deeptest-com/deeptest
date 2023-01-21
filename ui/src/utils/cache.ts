@@ -1,9 +1,9 @@
 import {getCache, setCache} from './localCache';
 import settings from '@/config/settings';
 
-export const getExpandedKeys = async (projectId) => {
+export const getExpandedKeys = async (type, id) => {
     console.log('getExpandedKeys')
-    const key = `${projectId}`
+    const key = `${type}-${id}`
 
     const cachedData = await getCache(settings.expandedKeys);
     if (!cachedData || !cachedData[key]) {
@@ -15,9 +15,9 @@ export const getExpandedKeys = async (projectId) => {
     return [...keys]
 }
 
-export const setExpandedKeys = async (projectId, keys) => {
+export const setExpandedKeys = async (type, id, keys) => {
     console.log('setExpandedKeys')
-    const key = `${projectId}`
+    const key = `${type}-${id}`
 
     let cachedData = await getCache(settings.expandedKeys);
     if (!cachedData) cachedData = {}

@@ -2,7 +2,6 @@ package repo
 
 import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/kataras/iris/v12"
@@ -93,19 +92,6 @@ func (r *ScenarioCategoryRepo) hasChild(categories []*v1.ScenarioCategory, paren
 	return
 }
 
-func (r *ScenarioCategoryRepo) CreateDefault(scenarioId uint) (po model.Processor, err error) {
-	po = model.Processor{
-		ScenarioId:     scenarioId,
-		Name:           "root",
-		EntityCategory: consts.ProcessorRoot,
-		EntityType:     consts.ProcessorRootDefault,
-		EntityId:       0,
-	}
-	err = r.DB.Create(&po).Error
-
-	return
-}
-
 func (r *ScenarioCategoryRepo) Save(processor *model.ScenarioCategory) (err error) {
 	err = r.DB.Save(processor).Error
 
@@ -116,7 +102,7 @@ func (r *ScenarioCategoryRepo) UpdateOrder(pos serverConsts.DropPos, targetId ui
 	if pos == serverConsts.Inner {
 		parentId = targetId
 
-		var preChild model.Processor
+		var preChild model.ScenarioCategory
 		r.DB.Where("parent_id=?", parentId).
 			Order("ordr DESC").Limit(1).
 			First(&preChild)
@@ -127,7 +113,7 @@ func (r *ScenarioCategoryRepo) UpdateOrder(pos serverConsts.DropPos, targetId ui
 		brother, _ := r.Get(targetId)
 		parentId = brother.ParentId
 
-		r.DB.Model(&model.Processor{}).
+		r.DB.Model(&model.ScenarioCategory{}).
 			Where("NOT deleted AND parent_id=? AND ordr >= ?", parentId, brother.Ordr).
 			Update("ordr", gorm.Expr("ordr + 1"))
 
@@ -137,7 +123,7 @@ func (r *ScenarioCategoryRepo) UpdateOrder(pos serverConsts.DropPos, targetId ui
 		brother, _ := r.Get(targetId)
 		parentId = brother.ParentId
 
-		r.DB.Model(&model.Processor{}).
+		r.DB.Model(&model.ScenarioCategory{}).
 			Where("NOT deleted AND parent_id=? AND ordr > ?", parentId, brother.Ordr).
 			Update("ordr", gorm.Expr("ordr + 1"))
 
@@ -149,7 +135,7 @@ func (r *ScenarioCategoryRepo) UpdateOrder(pos serverConsts.DropPos, targetId ui
 }
 
 func (r *ScenarioCategoryRepo) UpdateName(id int, name string) (err error) {
-	err = r.DB.Model(&model.Processor{}).
+	err = r.DB.Model(&model.ScenarioCategory{}).
 		Where("id = ?", id).
 		Update("name", name).Error
 
@@ -168,7 +154,7 @@ func (r *ScenarioCategoryRepo) Update(req v1.ScenarioCategoryReq) (err error) {
 }
 
 func (r *ScenarioCategoryRepo) Delete(id uint) (err error) {
-	err = r.DB.Model(&model.Processor{}).
+	err = r.DB.Model(&model.ScenarioCategory{}).
 		Where("id=?", id).
 		Update("deleted", true).
 		Error
@@ -176,23 +162,23 @@ func (r *ScenarioCategoryRepo) Delete(id uint) (err error) {
 	return
 }
 
-func (r *ScenarioCategoryRepo) GetChildren(nodeId uint) (children []*model.Processor, err error) {
+func (r *ScenarioCategoryRepo) GetChildren(nodeId uint) (children []*model.ScenarioCategory, err error) {
 	err = r.DB.Where("parent_id=?", nodeId).Find(&children).Error
 	return
 }
 
 func (r *ScenarioCategoryRepo) UpdateOrdAndParent(node model.ScenarioCategory) (err error) {
 	err = r.DB.Model(&node).
-		Updates(model.Processor{Ordr: node.Ordr, ParentId: node.ParentId}).
+		Updates(model.ScenarioCategory{Ordr: node.Ordr, ParentId: node.ParentId}).
 		Error
 
 	return
 }
 
 func (r *ScenarioCategoryRepo) GetMaxOrder(parentId uint) (order int) {
-	node := model.Processor{}
+	node := model.ScenarioCategory{}
 
-	err := r.DB.Model(&model.Processor{}).
+	err := r.DB.Model(&model.ScenarioCategory{}).
 		Where("parent_id=?", parentId).
 		Order("ordr DESC").
 		First(&node).Error
@@ -200,19 +186,6 @@ func (r *ScenarioCategoryRepo) GetMaxOrder(parentId uint) (order int) {
 	if err == nil {
 		order = node.Ordr + 1
 	}
-
-	return
-}
-
-func (r *ScenarioCategoryRepo) IsLeaf(po model.Processor) (ret bool) {
-	isDir := po.EntityCategory == consts.ProcessorRoot ||
-		//po.EntityCategory == consts.ProcessorThread ||
-		po.EntityCategory == consts.ProcessorGroup ||
-		po.EntityCategory == consts.ProcessorLoop ||
-		po.EntityCategory == consts.ProcessorLogic ||
-		po.EntityCategory == consts.ProcessorData
-
-	ret = !isDir
 
 	return
 }

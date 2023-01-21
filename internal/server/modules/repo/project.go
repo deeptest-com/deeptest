@@ -273,12 +273,19 @@ func (r *ProjectRepo) AddProjectRootInterface(projectId uint) (err error) {
 }
 
 func (r *ProjectRepo) AddProjectRootScenarioCategory(projectId uint) (err error) {
-	category := model.ScenarioCategory{
-		Name:      "场景分类",
+	root := model.ScenarioCategory{
+		Name:      "所有场景",
 		ProjectId: projectId,
 		IsLeaf:    false,
 	}
+	err = r.DB.Create(&root).Error
 
+	category := model.ScenarioCategory{
+		Name:      "分类",
+		ParentId:  root.ID,
+		ProjectId: projectId,
+		IsLeaf:    false,
+	}
 	err = r.DB.Create(&category).Error
 
 	return

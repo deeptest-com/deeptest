@@ -80,7 +80,7 @@ import {getExpandedKeys, setExpandedKeys} from "@/utils/cache";
 import {getContextMenuStyle} from "@/utils/dom";
 import {StateType as ScenarioStateType} from "../store";
 import {StateType as ProjectStateType} from "@/store/project";
-import {isRoot, updateNodeName, isInterface} from "../service";
+import {isRoot, updateNodeName, isInterface, updateCategoryName} from "../service";
 import TreeContextMenu from "./tree-context-menu.vue";
 
 const useForm = Form.useForm;
@@ -120,7 +120,7 @@ let tree = ref(null)
 const expandNode = (keys: string[], e: any) => {
   console.log('expandNode', keys[0], e)
 
-  setExpandedKeys(treeDataCategory.value[0].scenarioId, expandedKeys.value)
+  setExpandedKeys('category', currProject.value.id, expandedKeys.value)
 }
 
 const selectNode = (keys, e) => {
@@ -147,10 +147,10 @@ const updateName = (id) => {
   const name = editedData.value[id]
   console.log('updateName', id, name)
 
-  updateNodeName(id, name).then((json) => {
+  updateCategoryName(id, name).then((json) => {
     if (json.code === 0) {
-      store.dispatch('Scenario/saveTreeMapItemProp', {id: id, prop: 'name', value: name})
-      store.dispatch('Scenario/saveTreeMapItemProp', {id: id, prop: 'isEdit', value: false})
+      store.dispatch('Scenario/saveTreeMapItemPropCategory', {id: id, prop: 'name', value: name})
+      store.dispatch('Scenario/saveTreeMapItemPropCategory', {id: id, prop: 'isEdit', value: false})
 
       if (id === nodeDataCategory.value.processorId) {
         store.dispatch('Scenario/getNode', {id: id})
@@ -160,7 +160,7 @@ const updateName = (id) => {
 }
 const cancelUpdate = (id) => {
   console.log('cancelUpdate', id)
-  store.dispatch('Scenario/saveTreeMapItemProp', {id: id, prop: 'isEdit', value: false})
+  store.dispatch('Scenario/saveTreeMapItemPropCategory', {id: id, prop: 'isEdit', value: false})
 }
 
 let contextNode = ref({} as any)
@@ -192,7 +192,7 @@ const onRightClick = (e) => {
 }
 
 const getExpandedKeysCall = debounce(async () => {
-  getExpandedKeys(treeDataCategory.value[0].scenarioId).then(async keys => {
+  getExpandedKeys('category', currProject.value.id).then(async keys => {
     console.log('keys', keys)
     if (keys)
       expandedKeys.value = keys
@@ -200,7 +200,7 @@ const getExpandedKeysCall = debounce(async () => {
     if (!expandedKeys.value || expandedKeys.value.length === 0) {
       getOpenKeys(treeDataCategory.value[0], false) // expend first level folder
       console.log('expandedKeys.value', expandedKeys.value)
-      await setExpandedKeys(treeDataCategory.value[0].scenarioId, expandedKeys.value)
+      await setExpandedKeys('category', currProject.value.id, expandedKeys.value)
     }
   })
 }, 500)
@@ -223,7 +223,7 @@ const expandAll = () => {
   isExpand.value = !isExpand.value
   expandedKeys.value = expandAllKeys(treeDataMapCategory.value, isExpand.value)
 
-  setExpandedKeys(treeDataCategory.value[0].scenarioId, expandedKeys.value)
+  setExpandedKeys('category', currProject.value.id, expandedKeys.value)
 }
 
 let targetModelId = 0
@@ -257,10 +257,9 @@ const renameNode = () => {
   editedData.value[targetModelId] = treeDataMapCategory.value[targetModelId].name
 
   Object.keys(treeDataMapCategory.value).forEach((key) => {
-    store.dispatch('Scenario/saveTreeMapItemProp', {id: key, prop: 'isEdit', value: false})
+    store.dispatch('Scenario/saveTreeMapItemPropCategory', {id: key, prop: 'isEdit', value: false})
   })
-  store.dispatch('Scenario/saveTreeMapItemProp', {id: targetModelId, prop: 'isEdit', value: true})
-
+  store.dispatch('Scenario/saveTreeMapItemPropCategory', {id: targetModelId, prop: 'isEdit', value: true})
   setTimeout(() => {
     console.log('==', currentInstance.ctx.$refs[`name-editor-${targetModelId}`])
     currentInstance.ctx.$refs[`name-editor-${targetModelId}`]?.focus()
@@ -275,7 +274,7 @@ const addNode = (mode, targetId) => {
       console.log('createCategoryNode successfully', newNode)
       selectNode([newNode.id], null)
       expandOneKey(treeDataMapCategory.value, mode === 'parent' ? newNode.id : newNode.parentId, expandedKeys.value) // expend new node
-      setExpandedKeys(currProject.value.id, expandedKeys.value)
+      setExpandedKeys('category', currProject.value.id, expandedKeys.value)
     })
 }
 
@@ -294,7 +293,7 @@ const interfaceSelectionFinish = (selectedNodes) => {
     interfaceSelectionVisible.value = false
     selectNode([newNode.id], null)
     expandOneKey(treeDataMapCategory.value, newNode.parentId, expandedKeys.value) // expend new node
-    setExpandedKeys(treeDataCategory.value[0].scenarioId, expandedKeys.value)
+    setExpandedKeys('category', currProject.value.id, expandedKeys.value)
   })
 }
 
@@ -305,7 +304,7 @@ const interfaceSelectionCancel = () => {
 
 const removeNode = () => {
   console.log('removeNode')
-  store.dispatch('Scenario/removeNode', targetModelId);
+  store.dispatch('Scenario/removeCategoryNode', targetModelId);
   selectNode([], null)
 }
 const clearMenu = () => {

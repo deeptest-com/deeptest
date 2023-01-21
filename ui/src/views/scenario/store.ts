@@ -114,12 +114,11 @@ export interface ModuleType extends StoreModuleType<StateType> {
         updateNode: Action<StateType, StateType>;
         removeNode: Action<StateType, StateType>;
         moveNode: Action<StateType, StateType>;
+        saveTreeMapItem: Action<StateType, StateType>;
+        saveTreeMapItemProp: Action<StateType, StateType>;
 
         saveProcessorName: Action<StateType, StateType>;
         saveProcessor: Action<StateType, StateType>;
-
-        saveTreeMapItem: Action<StateType, StateType>;
-        saveTreeMapItemProp: Action<StateType, StateType>;
 
         loadExecResult: Action<StateType, StateType>;
         updateExecResult: Action<StateType, StateType>;
@@ -143,6 +142,8 @@ export interface ModuleType extends StoreModuleType<StateType> {
         updateCategoryNode: Action<StateType, StateType>;
         removeCategoryNode: Action<StateType, StateType>;
         moveCategoryNode: Action<StateType, StateType>;
+        saveTreeMapItemCategory: Action<StateType, StateType>;
+        saveTreeMapItemPropCategory: Action<StateType, StateType>;
         saveCategory: Action<StateType, StateType>;
         updateCategoryName: Action<StateType, StateType>;
     }
@@ -307,13 +308,6 @@ const StoreModel: ModuleType = {
             }
         },
 
-        async saveTreeMapItem({commit}, payload: any) {
-            commit('setTreeDataMapItem', payload);
-        },
-        async saveTreeMapItemProp({commit}, payload: any) {
-            commit('setTreeDataMapItemProp', payload);
-        },
-
         async saveScenario({commit}, payload: any) {
             const jsn = await save(payload)
             if (jsn.code === 0) {
@@ -422,6 +416,12 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
+        async saveTreeMapItem({commit}, payload: any) {
+            commit('setTreeDataMapItem', payload);
+        },
+        async saveTreeMapItemProp({commit}, payload: any) {
+            commit('setTreeDataMapItemProp', payload);
+        },
         async saveProcessor({commit, dispatch, state}, payload: any) {
             const jsn = await saveProcessor(payload)
             if (jsn.code === 0) {
@@ -509,6 +509,12 @@ const StoreModel: ModuleType = {
             } catch (error) {
                 return false;
             }
+        },
+        async saveTreeMapItemCategory({commit}, payload: any) {
+            commit('setTreeDataMapItemCategory', payload);
+        },
+        async saveTreeMapItemPropCategory({commit}, payload: any) {
+            commit('setTreeDataMapItemPropCategory', payload);
         },
         async saveCategory({commit, dispatch, state}, payload: any) {
             const jsn = await saveProcessor(payload)

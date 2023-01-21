@@ -135,7 +135,7 @@ let tree = ref(null)
 const expandNode = (keys: string[], e: any) => {
   console.log('expandNode', keys[0], e)
 
-  setExpandedKeys(treeData.value[0].scenarioId, expandedKeys.value)
+  setExpandedKeys('scenario', treeData.value[0].scenarioId, expandedKeys.value)
 }
 
 const selectNode = (keys, e) => {
@@ -222,7 +222,7 @@ const onRightClick = (e) => {
 }
 
 const getExpandedKeysCall = debounce(async () => {
-  getExpandedKeys(treeData.value[0].scenarioId).then(async keys => {
+  getExpandedKeys('scenario', treeData.value[0].scenarioId).then(async keys => {
     console.log('keys', keys)
     if (keys)
       expandedKeys.value = keys
@@ -230,7 +230,7 @@ const getExpandedKeysCall = debounce(async () => {
     if (!expandedKeys.value || expandedKeys.value.length === 0) {
       getOpenKeys(treeData.value[0], false) // expend first level folder
       console.log('expandedKeys.value', expandedKeys.value)
-      await setExpandedKeys(treeData.value[0].scenarioId, expandedKeys.value)
+      await setExpandedKeys('scenario', treeData.value[0].scenarioId, expandedKeys.value)
     }
   })
 }, 500)
@@ -253,7 +253,7 @@ const expandAll = () => {
   isExpand.value = !isExpand.value
   expandedKeys.value = expandAllKeys(treeDataMap.value, isExpand.value)
 
-  setExpandedKeys(treeData.value[0].scenarioId, expandedKeys.value)
+  setExpandedKeys('scenario', treeData.value[0].scenarioId, expandedKeys.value)
 }
 
 let targetModelId = 0
@@ -323,7 +323,7 @@ const addNode = (mode, processorCategory, processorType,
           console.log('addProcessor successfully', newNode)
           selectNode([newNode.id], null)
           expandOneKey(treeDataMap.value, mode === 'parent' ? newNode.id : newNode.parentId, expandedKeys.value) // expend new node
-          setExpandedKeys(treeData.value[0].scenarioId, expandedKeys.value)
+          setExpandedKeys('scenario', treeData.value[0].scenarioId, expandedKeys.value)
         })
   }
 }
@@ -343,7 +343,7 @@ const interfaceSelectionFinish = (selectedNodes) => {
         interfaceSelectionVisible.value = false
         selectNode([newNode.id], null)
         expandOneKey(treeDataMap.value, newNode.parentId, expandedKeys.value) // expend new node
-        setExpandedKeys(treeData.value[0].scenarioId, expandedKeys.value)
+        setExpandedKeys('scenario', treeData.value[0].scenarioId, expandedKeys.value)
       })
 }
 

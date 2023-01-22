@@ -126,7 +126,10 @@ watch(currProject, () => {
 }, {deep: false})
 
 const loading = ref<boolean>(true);
-const getList = async (current: number, categoryId: number): Promise<void> => {
+
+const getList = debounce(async (current: number, categoryId: number): Promise<void> => {
+  console.log('getList')
+
   loading.value = true;
 
   await store.dispatch('Scenario/listScenario', {
@@ -136,8 +139,8 @@ const getList = async (current: number, categoryId: number): Promise<void> => {
     pageSize: pagination.value.pageSize,
     page: current,
   });
-  loading.value = false;
-}
+  loading.value = false
+}, 300)
 
 const exec = (id: number) => {
   console.log('exec')

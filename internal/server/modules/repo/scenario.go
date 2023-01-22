@@ -24,15 +24,22 @@ func NewScenarioRepo() *ScenarioRepo {
 
 func (r *ScenarioRepo) Paginate(req v1.ScenarioReqPaginate, projectId int) (data _domain.PageData, err error) {
 	var count int64
+	var categoryIds []uint
 
-	categoryIds, err := r.BaseRepo.GetAllChildIds(req.CategoryId, model.ScenarioCategory{}.TableName())
-	if err != nil {
-		return
+	if req.CategoryId > 0 {
+		categoryIds, err = r.BaseRepo.GetAllChildIds(req.CategoryId, model.ScenarioCategory{}.TableName())
+		if err != nil {
+			return
+		}
 	}
 
 	db := r.DB.Model(&model.Scenario{}).
-		Where("project_id = ? AND category_id IN(?) AND NOT deleted",
-			projectId, categoryIds)
+		Where("project_id = ? AND NOT deleted",
+			projectId)
+
+	if len(categoryIds) > 0 {
+		db.Where("category_id IN(?)", categoryIds)
+	}
 
 	if req.Keywords != "" {
 		db = db.Where("name LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords))

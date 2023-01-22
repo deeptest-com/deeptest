@@ -25,14 +25,14 @@ func NewScenarioRepo() *ScenarioRepo {
 func (r *ScenarioRepo) Paginate(req v1.ScenarioReqPaginate, projectId int) (data _domain.PageData, err error) {
 	var count int64
 
-	ids, err := r.BaseRepo.GetAllChildIds(req.CategoryId, model.ScenarioCategory{}.TableName())
+	categoryIds, err := r.BaseRepo.GetAllChildIds(req.CategoryId, model.ScenarioCategory{}.TableName())
 	if err != nil {
 		return
 	}
 
 	db := r.DB.Model(&model.Scenario{}).
-		Where("category_id = ? && project_id = ? AND category_id IN(?) AND NOT deleted",
-			req.CategoryId, projectId, ids)
+		Where("project_id = ? AND category_id IN(?) AND NOT deleted",
+			projectId, categoryIds)
 
 	if req.Keywords != "" {
 		db = db.Where("name LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords))
@@ -74,7 +74,7 @@ func (r *ScenarioRepo) Get(id uint) (scenario model.Scenario, err error) {
 
 func (r *ScenarioRepo) FindByName(scenarioName string, id uint) (scenario model.Scenario, err error) {
 	db := r.DB.Model(&model.Scenario{}).
-		Where("name = ?", scenarioName)
+		Where("name = ? AND NOT deleted", scenarioName)
 
 	if id > 0 {
 		db.Where("id != ?", id)
@@ -86,13 +86,13 @@ func (r *ScenarioRepo) FindByName(scenarioName string, id uint) (scenario model.
 }
 
 func (r *ScenarioRepo) Create(scenario model.Scenario) (ret model.Scenario, bizErr *_domain.BizErr) {
-	po, err := r.FindByName(scenario.Name, 0)
-	if po.Name != "" {
-		bizErr = &_domain.BizErr{Code: _domain.ErrNameExist.Code}
-		return
-	}
+	//po, err := r.FindByName(scenario.Name, 0)
+	//if po.Name != "" {
+	//	bizErr = &_domain.BizErr{Code: _domain.ErrNameExist.Code}
+	//	return
+	//}
 
-	err = r.DB.Model(&model.Scenario{}).Create(&scenario).Error
+	err := r.DB.Model(&model.Scenario{}).Create(&scenario).Error
 	if err != nil {
 		logUtils.Errorf("add scenario error", zap.String("error:", err.Error()))
 		bizErr = &_domain.BizErr{Code: _domain.SystemErr.Code}

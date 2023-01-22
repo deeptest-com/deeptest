@@ -26,7 +26,8 @@ func (c *ScenarioCtrl) List(ctx iris.Context) {
 	}
 
 	var req v1.ScenarioReqPaginate
-	if err := ctx.ReadQuery(&req); err != nil {
+	err = ctx.ReadQuery(&req)
+	if err != nil {
 		errs := validate.ValidRequest(err)
 		if len(errs) > 0 {
 			logUtils.Errorf("参数验证失败", zap.String("错误", strings.Join(errs, ";")))

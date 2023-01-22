@@ -38,13 +38,14 @@ func (r *BaseRepo) GetAllChildIds(id uint, tableName string) (ids []uint, err er
 	sql := `
 		WITH RECURSIVE temp AS
 		(
-			SELECT id, parent_id, name from %s a where a.id = %d
+			SELECT id, parent_id, name from %s a where a.id = %d AND NOT a.deleted
 		
 			UNION ALL
 		
 			SELECT b.id, b.parent_id, b.name 
 				from temp c
 				inner join %s b on b.parent_id = c.id
+				WHERE NOT b.deleted
 		) 
 		select id from temp e;
 `

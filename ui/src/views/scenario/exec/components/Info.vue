@@ -23,7 +23,8 @@
             停止执行
           </a-button>
 
-          <a-button @click="design" type="link">返回设计</a-button>
+          <a-button @click="design" type="link">设计</a-button>
+          <a-button href="#/scenario/index" type="link">返回</a-button>
         </div>
       </div>
 
@@ -191,7 +192,7 @@ const OnWebSocketMsg = (data: any) => {
         width: 100px;
       }
       .opt {
-        width: 200px;
+        width: 260px;
         text-align: right;
       }
     }

@@ -1,7 +1,8 @@
 <template>
   <div id="scenario-design-main">
     <div class="toolbar">
-      <a-button @click="exec" type="link">执行场景</a-button>
+      <a-button @click="exec" type="link">执行</a-button>
+      <a-button href="#/scenario/index" type="link">返回</a-button>
     </div>
 
     <div id="scenario-design-content" class="dp-splits-v">

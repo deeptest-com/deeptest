@@ -154,7 +154,7 @@ const updateName = (id) => {
       store.dispatch('Scenario/saveTreeMapItemPropCategory', {id: id, prop: 'isEdit', value: false})
 
       if (id === nodeDataCategory.value.processorId) {
-        store.dispatch('Scenario/getNode', {id: id})
+        store.dispatch('Scenario/getCategory', {id: id})
       }
     }
   })
@@ -277,30 +277,6 @@ const addNode = (mode, targetId) => {
     })
 }
 
-const interfaceSelectionVisible = ref(false)
-const interfaceSelectionFinish = (selectedNodes) => {
-  const targetNode = treeDataMapCategory.value[targetModelId]
-  console.log('interfaceSelectionFinish', selectedNodes, targetNode)
-
-  store.dispatch('Scenario/addInterfaces',
-      {
-        selectedNodes: selectedNodes,
-        targetId: targetNode.id,
-      }).then((newNode) => {
-    console.log('addInterfaces successfully', newNode)
-
-    interfaceSelectionVisible.value = false
-    selectNode([newNode.id], null)
-    expandOneKey(treeDataMapCategory.value, newNode.parentId, expandedKeys.value) // expend new node
-    setExpandedKeys('category', currProject.value.id, expandedKeys.value)
-  })
-}
-
-const interfaceSelectionCancel = () => {
-  console.log('interfaceSelectionCancel')
-  interfaceSelectionVisible.value = false
-}
-
 const removeNode = () => {
   console.log('removeNode')
   store.dispatch('Scenario/removeCategoryNode', targetModelId);
@@ -323,7 +299,14 @@ const onDrop = (info: DropEvent) => {
   if (isInterface(treeDataMapCategory.value[dropKey].processorCategory) && dropPosition === 0) dropPosition = 1
   console.log(dragKey, dropKey, dropPosition);
 
-  store.dispatch('Scenario/moveNode', {dragKey: dragKey, dropKey: dropKey, dropPos: dropPosition});
+  store.dispatch('Scenario/moveCategoryNode', {dragKey: dragKey, dropKey: dropKey, dropPos: dropPosition}).then(
+      (result) => {
+        if (result) {
+          expandOneKey(treeDataMapCategory.value, dropKey, expandedKeys.value) // expend parent node
+          setExpandedKeys('category', currProject.value.id, expandedKeys.value)
+        }
+      }
+  )
 }
 
 let currentInstance

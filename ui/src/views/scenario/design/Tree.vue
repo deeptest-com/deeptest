@@ -374,7 +374,14 @@ const onDrop = (info: DropEvent) => {
   if (isInterface(treeDataMap.value[dropKey].processorCategory) && dropPosition === 0) dropPosition = 1
   console.log(dragKey, dropKey, dropPosition);
 
-  store.dispatch('Scenario/moveNode', {dragKey: dragKey, dropKey: dropKey, dropPos: dropPosition});
+  store.dispatch('Scenario/moveNode', {dragKey: dragKey, dropKey: dropKey, dropPos: dropPosition}).then(
+      (result) => {
+        if (result) {
+          expandOneKey(treeDataMap.value, dropKey, expandedKeys.value) // expend parent node
+          setExpandedKeys('category', treeData.value[0].scenarioId, expandedKeys.value)
+        }
+      }
+  )
 }
 
 let currentInstance

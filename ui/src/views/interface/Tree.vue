@@ -339,9 +339,15 @@ export default defineComponent({
       const dropPos = info.node.pos.split('-');
       let dropPosition = info.dropPosition - Number(dropPos[dropPos.length - 1]);
       if (treeDataMap.value[dropKey].isLeaf && dropPosition === 0) dropPosition = 1
-      console.log(dragKey, dropKey, dropPosition);
 
-      store.dispatch('Interface/moveInterface', {dragKey: dragKey, dropKey: dropKey, dropPos: dropPosition});
+      store.dispatch('Interface/moveInterface', {dragKey: dragKey, dropKey: dropKey, dropPos: dropPosition}).then(
+          (result) => {
+            if (result) {
+              expandOneKey(treeDataMap.value, dropKey, expandedKeys.value) // expend parent node
+              setExpandedKeys('category', treeData.value[0].scenarioId, expandedKeys.value)
+            }
+          }
+      )
     }
 
     const showImport = ref(false)

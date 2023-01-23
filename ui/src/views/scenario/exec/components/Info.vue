@@ -23,8 +23,8 @@
             停止执行
           </a-button>
 
-          <a-button @click="design" type="link">设计</a-button>
-          <a-button href="#/scenario/index" type="link">返回</a-button>
+          <a-button @click="design" type="link" class="dp-btn-group">设计</a-button>
+          <a-button href="#/scenario/index" type="link" class="dp-btn-group">返回</a-button>
         </div>
       </div>
 

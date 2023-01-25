@@ -7,7 +7,7 @@ import {
   getEnvironment, listEnvironment,
   removeEnvironment, removeEnvironmentVar,
   saveEnvironment, saveEnvironmentVar
-} from "@/views/interface/service";
+} from "@/services/environment";
 
 export interface StateType {
   environmentsData: [],

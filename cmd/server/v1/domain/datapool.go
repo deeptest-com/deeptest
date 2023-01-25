@@ -13,3 +13,8 @@ type DatapoolReq struct {
 
 	ProjectId uint `json:"projectId"`
 }
+
+type DatapoolUploadResp struct {
+	Path string `json:"path"`
+	Data string `json:"data"`
+}

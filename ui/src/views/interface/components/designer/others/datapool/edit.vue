@@ -1,6 +1,6 @@
 <template>
   <a-modal
-      :title="modelRef.id ? '编辑' : '创建' + '环境'"
+      :title="modelRef.id ? '编辑' : '创建' + '数据池'"
       :destroy-on-close="true"
       :mask-closable="false"
       :visible="true"
@@ -19,6 +19,10 @@
           <a-button @click="() => onCancel()" class="dp-btn-gap">取消</a-button>
         </a-form-item>
 
+        <a-form-item :wrapper-col="{ span: wrapperCol.span, offset: labelCol.span }">
+          数据内容
+        </a-form-item>
+
       </a-form>
 
     </div>
@@ -26,23 +30,23 @@
   </a-modal>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import {defineProps, onMounted, PropType, reactive, ref} from "vue";
-import {Form} from 'ant-design-vue';
+import {Form, notification} from 'ant-design-vue';
 import {useI18n} from "vue-i18n";
-import {getEnvironment} from "@/services/environment";
+import {getDatapool} from "@/services/datapool";
 import {useStore} from "vuex";
 import {StateType as InterfaceStateType} from "@/views/interface/store";
-import {StateType as EnvironmentStateType} from "@/store/environment";
+import {StateType as DatapoolStateType} from "@/store/environment";
+import settings from "@/config/settings";
+import {NotificationKeyCommon} from "@/utils/const";
+import {getServerUrl} from "@/utils/request";
+import {getToken} from "@/utils/localToken";
 
 const useForm = Form.useForm;
 
 const props = defineProps({
   modelId: {
-    type: Number,
-    required: true
-  },
-  interfaceId: {
     type: Number,
     required: true
   },
@@ -58,7 +62,7 @@ const props = defineProps({
 })
 
 const {t} = useI18n();
-const store = useStore<{ Interface: InterfaceStateType, Environment: EnvironmentStateType }>();
+const store = useStore<{ Interface: InterfaceStateType, Datapool: DatapoolStateType }>();
 
 const rulesRef = reactive({
   name: [
@@ -72,9 +76,9 @@ const {resetFields, validate, validateInfos} = useForm(modelRef, rulesRef);
 
 const getModel = async () => {
   if (props.modelId === 0) {
-    modelRef.value = {name: '', interfaceId: props.interfaceId}
+    modelRef.value = {name: '', id: props.modelId}
   } else {
-    getEnvironment(props.modelId, 0).then((json) => {
+    getDatapool(props.modelId, 0).then((json) => {
       console.log('json', json)
       modelRef.value = json.data
     })
@@ -82,11 +86,42 @@ const getModel = async () => {
 }
 getModel()
 
+const isElectron = ref(!!window.require)
+let ipcRenderer = undefined as any
+if (isElectron.value && !ipcRenderer) {
+  ipcRenderer = window.require('electron').ipcRenderer
+
+  ipcRenderer.on(settings.electronMsgReplay, (event, data) => {
+    console.log('from electron: ', data.data)
+  })
+}
+
+const uploadFile = () => {
+  console.log('uploadFile')
+
+  if (isElectron.value) {
+    const data = {
+      act: 'uploadDatapoolFile',
+      url: getServerUrl() + '/datapools/' + props.modelId,
+      id: props.modelId,
+      token: getToken()
+    }
+
+    ipcRenderer.send(settings.electronMsg, data)
+
+  } else {
+    notification.warn({
+      key: NotificationKeyCommon,
+      message: `请使用客户端上传文件`,
+    });
+  }
+}
+
 const onSubmit = async () => {
   console.log('onSubmit', modelRef)
 
   validate().then(async () => {
-    store.dispatch('Environment/saveEnvironment', modelRef.value).then(() => {
+    store.dispatch('Datapool/saveDatapool', modelRef.value).then(() => {
       props.onFinish();
     })
   }).catch(err => {

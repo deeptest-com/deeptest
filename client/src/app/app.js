@@ -8,6 +8,7 @@ import Lang, {initLang} from './core/lang';
 import {startUIService} from "./core/ui";
 import {startAgent, killAgent} from "./core/deeptest";
 import { nanoid } from 'nanoid'
+import {uploadDatapoolFile} from "./utils/upload";
 
 const cp = require('child_process');
 const fs = require('fs');
@@ -89,11 +90,14 @@ export class DeepTestApp {
         ipcMain.on(electronMsg, (event, arg) => {
             logInfo('msg from renderer', JSON.stringify(arg))
 
-            if (arg.act == 'loadSpec') {
+            if (arg.act == 'loadSpec') { // load openapi spec
                 this.loadSpec(event, arg)
                 return
-            } else if (arg.act == 'uploadFile') {
-                this.uploadFile(event, arg)
+            } else if (arg.act == 'chooseFile') { // choose file for interface form
+                this.chooseFile(event, arg)
+                return
+            } else if (arg.act == 'uploadDatapoolFile') { // upload datapool file
+                this.uploadDatapoolFile(event, arg)
                 return
             }
 
@@ -192,13 +196,28 @@ export class DeepTestApp {
         });
     }
 
-    // upload file
-    async uploadFile(event, arg) {
+    // choose file
+    async chooseFile(event, arg) {
         const result = await dialog.showOpenDialog({properties: ['openFile']})
 
         if (result.filePaths && result.filePaths.length > 0) {
             event.reply(electronMsgReplay, {
                 filepath: result.filePaths[0],
+            });
+        }
+    }
+
+    // upload datapool file
+    async uploadDatapoolFile(event, arg) {
+        const result = await dialog.showOpenDialog({properties: ['openFile']})
+
+        if (result.filePaths && result.filePaths.length > 0) {
+            const resp = uploadDatapoolFile(arg.url, arg.token, result.filePaths[0], {
+                datapoolId: arg.id
+            })
+
+            event.reply(electronMsgReplay, {
+                resp: resp,
             });
         }
     }
@@ -263,12 +282,6 @@ export class DeepTestApp {
         })
     }
 
-    replyFile(event, result)  {
-        if (result.filePaths && result.filePaths.length > 0) {
-            event.reply(electronMsgReplay, result.filePaths[0]);
-        }
-    }
-
     showFolderSelection(event) {
         dialog.showOpenDialog({
             properties: ['openDirectory']
@@ -277,6 +290,12 @@ export class DeepTestApp {
         }).catch(err => {
             logErr(err)
         })
+    }
+
+    replyFile(event, result)  {
+        if (result.filePaths && result.filePaths.length > 0) {
+            event.reply(electronMsgReplay, result.filePaths[0]);
+        }
     }
 
     openInExplore(path) {

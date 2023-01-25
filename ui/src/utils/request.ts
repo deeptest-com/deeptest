@@ -26,12 +26,12 @@ export interface ResultErr {
  * 配置request请求时的默认参数
  */
 
-const getServerUrl = () => {
+export const getServerUrl = () => {
     let apiUrl = process.env.VUE_APP_API_SERVER
 
-    console.log(process.env.NODE_ENV, window.location.href)
-
     if (process.env.NODE_ENV === 'production') {
+        console.log(process.env.NODE_ENV, window.location.href)
+
         const location = unescape(window.location.href);
 
         let serverUrl = location.split('#')[0].split('index.html')[0];

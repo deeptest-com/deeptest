@@ -126,7 +126,7 @@ const selectFile = (index) => {
   selectedItemIndex.value = index
 
   if (isElectron.value) {
-    const data = {act: 'uploadFile'} as any
+    const data = {act: 'chooseFile'} as any
     ipcRenderer.send(settings.electronMsg, data)
   } else {
     notification.warn({

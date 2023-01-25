@@ -23,6 +23,7 @@ type IndexModule struct {
 	MockModule *router.MockModule `inject:""`
 
 	ProjectModule     *router.ProjectModule     `inject:""`
+	DatapoolModule    *router.DatapoolModule    `inject:""`
 	InterfaceModule   *router.InterfaceModule   `inject:""`
 	ImportModule      *router.ImportModule      `inject:""`
 	InvocationModule  *router.InvocationModule  `inject:""`
@@ -68,6 +69,8 @@ func (m *IndexModule) Party() module.WebModule {
 		m.MockModule.Party(),
 
 		m.ProjectModule.Party(),
+		m.DatapoolModule.Party(),
+
 		m.InterfaceModule.Party(),
 		m.ImportModule.Party(),
 		m.InvocationModule.Party(),

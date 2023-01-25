@@ -25,8 +25,8 @@ func (s *ProjectService) Paginate(req v1.ProjectReqPaginate, userId uint) (ret _
 	return
 }
 
-func (s *ProjectService) GetById(id uint) (model.Project, error) {
-	return s.ProjectRepo.FindById(id)
+func (s *ProjectService) Get(id uint) (model.Project, error) {
+	return s.ProjectRepo.Get(id)
 }
 
 func (s *ProjectService) Create(req v1.ProjectReq, userId uint) (uint, *_domain.BizErr) {

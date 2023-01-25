@@ -48,7 +48,7 @@ func (c *ProjectCtrl) Get(ctx iris.Context) {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
-	project, err := c.ProjectService.GetById(req.Id)
+	project, err := c.ProjectService.Get(req.Id)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return

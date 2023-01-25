@@ -60,22 +60,10 @@ func (r *ProjectRepo) Paginate(req v1.ProjectReqPaginate, userId uint) (data _do
 	return
 }
 
-func (r *ProjectRepo) FindById(id uint) (model.Project, error) {
-	project := model.Project{}
-	err := r.DB.Model(&model.Project{}).Where("id = ?", id).First(&project).Error
-	if err != nil {
-		logUtils.Errorf("find project by id error", zap.String("error:", err.Error()))
-		return project, err
-	}
-
-	return project, nil
-}
-
 func (r *ProjectRepo) Get(id uint) (project model.Project, err error) {
-	db := r.DB.Model(&model.Project{}).
-		Where("id = ?", id)
-
-	db.First(&project)
+	err = r.DB.Model(&model.Project{}).
+		Where("id = ?", id).
+		First(&project).Error
 
 	return
 }

@@ -25,6 +25,7 @@ func (m *DatapoolModule) Party() module.WebModule {
 		index.Post("/", m.DatapoolCtrl.Create).Name = "保存数据池"
 		index.Put("/", m.DatapoolCtrl.SaveData).Name = "保存数据池数据"
 		index.Delete("/{id:uint}", m.DatapoolCtrl.Delete).Name = "删除数据池"
+		index.Post("/{id:uint}/upload", m.DatapoolCtrl.Upload).Name = "上传数据池文件"
 	}
 	return module.NewModule("/datapools", handler)
 }

@@ -1,5 +1,7 @@
 package consts
 
+import "path/filepath"
+
 const (
 	App = "deeptest"
 
@@ -42,4 +44,11 @@ const (
 	EmailPassword    = ""
 
 	DeepestKey = "com_deeptest_prop_for_selection"
+
+	DirStatic = "static"
+)
+
+var (
+	DirUpload   = filepath.Join(DirStatic, "upload")
+	DirDatapool = filepath.Join(DirUpload, "datapool")
 )

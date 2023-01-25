@@ -5,6 +5,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
+	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/kataras/iris/v12"
 )
 
@@ -100,4 +101,28 @@ func (c *DatapoolCtrl) Delete(ctx iris.Context) {
 	}
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+}
+
+func (c *DatapoolCtrl) Upload(ctx iris.Context) {
+	id, err := ctx.Params().GetInt("id")
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		return
+	}
+
+	f, fh, err := ctx.FormFile("file")
+	if err != nil {
+		logUtils.Errorf("文件上传失败", err.Error())
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+	defer f.Close()
+
+	pth, err := c.DatapoolService.Upload(ctx, fh, id)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: iris.Map{"path": pth}, Msg: _domain.NoErr.Msg})
 }

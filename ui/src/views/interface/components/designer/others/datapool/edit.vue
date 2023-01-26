@@ -6,6 +6,8 @@
       :visible="true"
       :onCancel="onCancel"
       :footer="null"
+      width="700px"
+      height="500px"
   >
     <div class="data-pool-main">
       <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
@@ -24,7 +26,9 @@
         </a-form-item>
 
         <a-form-item :wrapper-col="{ span: wrapperCol.span, offset: labelCol.span }">
-            <HandsonTable></HandsonTable>
+          <div class="handson-table-wrapper">
+            <HandsonTable :data="data"></HandsonTable>
+          </div>
         </a-form-item>
 
         <a-form-item :wrapper-col="{ span: wrapperCol.span, offset: labelCol.span }">
@@ -53,7 +57,7 @@ import {NotificationKeyCommon} from "@/utils/const";
 import {getServerUrl} from "@/utils/request";
 import {getToken} from "@/utils/localToken";
 
-import HandsonTable from "@/components/sheet/handsontable";
+import HandsonTable from "@/components/sheet/handsontable.vue";
 
 const useForm = Form.useForm;
 
@@ -83,6 +87,22 @@ const rulesRef = reactive({
 });
 
 const modelRef = ref<any>({name: ''})
+
+const data = ref([
+  ['', 'Ford', 'Volvo', 'Toyota', 'Honda'],
+  ['2016', 10, 11, 12, 13],
+  ['2017', 20, 11, 14, 13],
+  ['2018', 30, 15, 12, 13],
+  ['2016', 10, 11, 12, 13],
+  ['2017', 20, 11, 14, 13],
+  ['2018', 30, 15, 12, 13],
+  ['2016', 10, 11, 12, 13],
+  ['2017', 20, 11, 14, 13],
+  ['2018', 30, 15, 12, 13],
+  ['2016', 10, 11, 12, 13],
+  ['2017', 20, 11, 14, 13],
+  ['2018', 30, 15, 12, 13],
+])
 
 const {resetFields, validate, validateInfos} = useForm(modelRef, rulesRef);
 
@@ -137,7 +157,7 @@ const getFileName = (path) => {
 }
 
 const onSubmit = async () => {
-  console.log('onSubmit', modelRef)
+  console.log('onSubmit', modelRef.value, data.value)
 
   validate().then(async () => {
     store.dispatch('Datapool/saveDatapool', modelRef.value).then(() => {
@@ -152,12 +172,12 @@ onMounted(() => {
   console.log('onMounted')
 })
 
-const labelCol = {span: 6}
-const wrapperCol = {span: 16}
+const labelCol = {span: 4}
+const wrapperCol = {span: 20}
 
 </script>
 
-<style lang="less" >
+<style lang="less" scoped>
 .data-pool-main {
   .flow {
     line-height: 32px;
@@ -184,4 +204,9 @@ const wrapperCol = {span: 16}
   }
 }
 
+.handson-table-wrapper {
+  height: 200px;
+}
 </style>
+
+<style src="@/../node_modules/handsontable/dist/handsontable.css"></style>

@@ -216,7 +216,7 @@ export class DeepTestApp {
 
         if (result.filePaths && result.filePaths.length > 0) {
             const resp = uploadFile(arg.url, arg.token, result.filePaths[0], {
-                datapoolId: arg.id
+                // datapoolId: arg.id
             })
 
             event.reply(electronMsgReplay, {

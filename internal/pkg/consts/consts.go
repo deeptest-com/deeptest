@@ -49,6 +49,6 @@ const (
 )
 
 var (
-	DirUpload   = filepath.Join(DirStatic, "upload")
-	DirDatapool = filepath.Join(DirUpload, "datapool")
+	DirUpload = filepath.Join(DirStatic, "upload")
+	DirData   = filepath.Join(DirUpload, "data")
 )

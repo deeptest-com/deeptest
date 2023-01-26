@@ -120,7 +120,7 @@ const uploadFile = () => {
   if (isElectron.value) {
     const data = {
       act: 'uploadFile',
-      url: getServerUrl() + '/upload',
+      url: getServerUrl() + '/processors/data/upload',
       token: getToken(),
       filters: [
         {name: 'Excel Files', extensions: ['xlsx', 'xls']},

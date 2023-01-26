@@ -134,8 +134,7 @@ const uploadFile = () => {
   if (isElectron.value) {
     const data = {
       act: 'uploadFile',
-      url: getServerUrl() + '/datapools/' + props.modelId,
-      id: props.modelId,
+      url: getServerUrl() + '/datapools/upload',
       token: getToken(),
       filters: [
         {name: 'Excel Files', extensions: ['xlsx', 'xls']},

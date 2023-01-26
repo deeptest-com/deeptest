@@ -7,7 +7,7 @@
       :onCancel="onCancel"
       :footer="null"
   >
-    <div>
+    <div class="data-pool-main">
       <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-form-item label="名称" v-bind="validateInfos.name">
           <a-input v-model:value="modelRef.name"
@@ -15,14 +15,22 @@
         </a-form-item>
 
         <a-form-item :wrapper-col="{ span: wrapperCol.span, offset: labelCol.span }">
-          <a-button type="primary" @click="onSubmit" class="dp-btn-gap">保存</a-button> &nbsp;
-          <a-button @click="() => onCancel()" class="dp-btn-gap">取消</a-button>
+          <div class="flow">
+            <a-input v-model:value="modelRef.path" class="dp-bg-input-transparent" />
+            <a-button @click="uploadFile()">
+              <UploadOutlined />
+            </a-button>
+          </div>
         </a-form-item>
 
         <a-form-item :wrapper-col="{ span: wrapperCol.span, offset: labelCol.span }">
-          数据内容
+          <LuckySheet></LuckySheet>
         </a-form-item>
 
+        <a-form-item :wrapper-col="{ span: wrapperCol.span, offset: labelCol.span }">
+          <a-button type="primary" @click="onSubmit" class="dp-btn-gap">保存</a-button> &nbsp;
+          <a-button @click="() => onCancel()" class="dp-btn-gap">取消</a-button>
+        </a-form-item>
       </a-form>
 
     </div>
@@ -36,6 +44,9 @@ import {Form, notification} from 'ant-design-vue';
 import {useI18n} from "vue-i18n";
 import {getDatapool} from "@/services/datapool";
 import {useStore} from "vuex";
+import { UploadOutlined} from '@ant-design/icons-vue';
+import LuckySheet from '@/components/sheet/LuckySheet.vue'
+
 import {StateType as InterfaceStateType} from "@/views/interface/store";
 import {StateType as DatapoolStateType} from "@/store/environment";
 import settings from "@/config/settings";
@@ -117,6 +128,13 @@ const uploadFile = () => {
   }
 }
 
+const getFileName = (path) => {
+  if (!path) {
+    return ''
+  }
+  return path.replace(/^.*[\\\\/]/, '')
+}
+
 const onSubmit = async () => {
   console.log('onSubmit', modelRef)
 
@@ -137,3 +155,32 @@ const labelCol = {span: 6}
 const wrapperCol = {span: 16}
 
 </script>
+
+<style lang="less" >
+.data-pool-main {
+  .flow {
+    line-height: 32px;
+    input {
+      width: calc(100% - 46px)
+    }
+    .filename {
+      padding: 0 10px;
+    }
+    .ant-btn {
+      position: absolute;
+      right: 0;
+      z-index: 99;
+
+      background: transparent;
+      color: rgba(0, 0, 0, 0.65);
+      border-color: #d9d9d9;
+      &:hover, &:active {
+        background: transparent;
+        color: rgba(0, 0, 0, 0.65);
+        border-color: #d9d9d9;
+      }
+    }
+  }
+}
+
+</style>

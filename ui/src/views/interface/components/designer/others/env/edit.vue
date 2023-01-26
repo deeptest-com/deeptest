@@ -26,7 +26,7 @@
   </a-modal>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import {defineProps, onMounted, PropType, reactive, ref} from "vue";
 import {Form} from 'ant-design-vue';
 import {useI18n} from "vue-i18n";

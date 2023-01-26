@@ -136,10 +136,6 @@ const selectFile = (index) => {
   }
 }
 
-const getUploadFile = (e) => {
-  console.log('getUploadFile',  e.target.files[0])
-}
-
 const getFileName = (path) => {
   if (!path) {
     return ''

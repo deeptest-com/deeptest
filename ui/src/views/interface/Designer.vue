@@ -32,6 +32,16 @@
           <RequestHistory></RequestHistory>
         </a-tab-pane>
 
+        <a-tab-pane key="datapool">
+          <template #tab>
+            <a-tooltip placement="left" overlayClassName="dp-tip-small">
+              <template #title>数据池</template>
+              <TableOutlined />
+            </a-tooltip>
+          </template>
+          <Datapool></Datapool>
+        </a-tab-pane>
+
       </a-tabs>
     </div>
   </div>
@@ -42,7 +52,7 @@
 import {computed, ComputedRef, defineComponent, onMounted, PropType, provide, Ref, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import {Form, message} from 'ant-design-vue';
-import { HistoryOutlined, EnvironmentOutlined, LeftCircleOutlined, RightCircleOutlined } from '@ant-design/icons-vue';
+import { HistoryOutlined, EnvironmentOutlined, TableOutlined } from '@ant-design/icons-vue';
 import {useStore} from "vuex";
 
 import {StateType} from "@/views/interface/store";
@@ -53,6 +63,7 @@ import {UsedBy} from "@/utils/enum";
 import DesignInterface from './components/designer/Interface.vue';
 import RequestEnv from './components/designer/others/env/index.vue';
 import RequestHistory from './components/designer/others/history/index.vue';
+import Datapool from './components/designer/others/datapool/index.vue';
 
 provide('usedBy', UsedBy.interface)
 const useForm = Form.useForm;

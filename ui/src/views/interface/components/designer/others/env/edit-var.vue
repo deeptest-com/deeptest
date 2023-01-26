@@ -34,7 +34,7 @@
 import {computed, ComputedRef, defineComponent, onMounted, PropType, reactive, ref, Ref} from "vue";
 import {message, Form} from 'ant-design-vue';
 import {useI18n} from "vue-i18n";
-import {getEnvironment, saveEnvironment} from "@/views/interface/service";
+import {getEnvironment, saveEnvironment} from "@/services/environment";
 import {useStore} from "vuex";
 import {StateType as InterfaceStateType} from "@/views/interface/store";
 import {StateType as EnvironmentStateType} from "@/store/environment";

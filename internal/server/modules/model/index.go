@@ -17,6 +17,9 @@ var (
 		&Org{},
 		&Project{},
 		&ProjectMember{},
+		&Datapool{},
+		&Environment{},
+		&EnvironmentVar{},
 
 		&Interface{},
 		&InterfaceParam{},
@@ -31,9 +34,6 @@ var (
 		&InterfaceCheckpoint{},
 
 		&Invocation{},
-		&Environment{},
-		&EnvironmentVar{},
-
 		&Auth2Token{},
 
 		&ScenarioCategory{},

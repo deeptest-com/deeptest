@@ -3,48 +3,25 @@
     <div class="datapool-var">
       <div class="head">
         <div class="title">
-        <span @click="create" class="dp-link">
-          <a-tooltip overlayClassName="dp-tip-small">
-            <template #title>新建环境</template>
-            <PlusOutlined class="dp-icon-btn dp-trans-80"/>
-          </a-tooltip>
-        </span>
+          <span class="dp-link">
+            <span>数据池</span>
+          </span>
         </div>
         <div class="acts">
+          <a-tooltip overlayClassName="dp-tip-small">
+            <template #title>新建</template>
+            <PlusOutlined @click="create" class="dp-icon-btn dp-trans-80"/>
+          </a-tooltip>
+
           <a-tooltip overlayClassName="dp-tip-small">
             <template #title>帮助</template>
             <QuestionCircleOutlined class="dp-icon-btn dp-trans-80"/>
           </a-tooltip>
-
-          <a-tooltip overlayClassName="dp-tip-small">
-            <template #title>导入/导出</template>
-            <ImportOutlined class="dp-icon-btn dp-trans-60" />
-          </a-tooltip>
         </div>
       </div>
       <div class="body">
-        <div v-if="datapoolData.id" class="datapools">
-          <div class="datapool header">
-            <div class="left">
-              环境变量
-            </div>
-            <div class="right" style="width: 48px;">
-            <span @click="clearVar" class="dp-link">
-              <a-tooltip overlayClassName="dp-tip-small">
-                <template #title>清除变量</template>
-                <ClearOutlined class="dp-icon-btn dp-trans-80"/>
-              </a-tooltip>
-            </span>
-              <span @click="createVar" class="dp-link">
-              <a-tooltip overlayClassName="dp-tip-small">
-                <template #title>添加变量</template>
-                <PlusOutlined class="dp-icon-btn dp-trans-80"/>
-              </a-tooltip>
-            </span>
-            </div>
-          </div>
-
-          <div v-for="(item, idx) in datapoolData.vars" :key="idx" class="datapool">
+        <div class="datapools">
+          <div v-for="(item, idx) in datapoolsData" :key="idx" class="datapool">
             <div class="left">
               <div class="name">
                 <a-tooltip class="name" overlayClassName="dp-tip-small">
@@ -52,15 +29,8 @@
                   {{item.name}}
                 </a-tooltip>
               </div>
-
-              <div class="val">
-                <a-tooltip class="val" overlayClassName="dp-tip-small">
-                  <template #title>{{item.rightValue}}</template>
-                  {{item.rightValue}}
-                </a-tooltip>
-              </div>
-
             </div>
+
             <div class="right">
               <a-dropdown>
                 <a class="more dp-color-text" @click.prevent>
@@ -68,8 +38,8 @@
                 </a>
                 <template #overlay>
                   <a-menu>
-                    <a-menu-item @click="editVar(item)" key="edit">编辑</a-menu-item>
-                    <a-menu-item @click="removeVar(item)" key="edit">删除</a-menu-item>
+                    <a-menu-item @click="edit(item)" key="edit">编辑</a-menu-item>
+                    <a-menu-item @click="remove(item)" key="edit">删除</a-menu-item>
                   </a-menu>
                 </template>
               </a-dropdown>
@@ -77,17 +47,16 @@
           </div>
         </div>
 
-        <div v-if="datapoolData.vars?.length == 0">
+        <div v-if="datapoolsData?.length == 0">
           <Empty></Empty>
         </div>
 
       </div>
     </div>
 
-    <EnvEdit
+    <DatapoolEdit
         v-if="datapoolEditVisible"
         :modelId="modelId"
-        :interfaceId="interfaceData.id"
         :onFinish="datapoolEditFinish"
         :onCancel="datapoolEditCancel"
     />
@@ -103,7 +72,7 @@ import { QuestionCircleOutlined,ImportOutlined, MoreOutlined, ClearOutlined, Plu
 
 import {StateType as DatapoolStateType} from "@/store/datapool";
 import Empty from "@/components/others/empty.vue";
-import EnvEdit from "./edit.vue";
+import DatapoolEdit from "./edit.vue";
 
 import {StateType as ProjectStateType} from "@/store/project";
 import {UsedBy} from "@/utils/enum";
@@ -113,15 +82,14 @@ const {t} = useI18n();
 const store = useStore<{ ProjectGlobal: ProjectStateType, Datapool: DatapoolStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 
-const datapoolsData = computed<any[]>(() => store.state.Datapool.datapoolData);
+const datapoolsData = computed<any[]>(() => store.state.Datapool.datapoolsData);
 
-store.dispatch('Datapool/listDatapool')
 if (currProject.value.id)
-  store.dispatch('Datapool/getDatapool', {id: 0, projectId: currProject.value.id})
+  store.dispatch('Datapool/listDatapool')
 
 watch(currProject, () => {
   console.log('watch currProject', currProject.value.id)
-  store.dispatch('Datapool/getDatapool', {id: 0, projectId: currProject.value.id})
+  store.dispatch('Datapool/listDatapool')
 }, {deep: false})
 
 const datapoolEditVisible = ref(false)

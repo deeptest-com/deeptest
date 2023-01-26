@@ -16,7 +16,7 @@
 
         <a-form-item :wrapper-col="{ span: wrapperCol.span, offset: labelCol.span }">
           <div class="flow">
-            <a-input v-model:value="modelRef.path" class="dp-bg-input-transparent" />
+            <a-input v-model:value="modelRef.path" readonly="readonly" />
             <a-button @click="uploadFile()">
               <UploadOutlined />
             </a-button>

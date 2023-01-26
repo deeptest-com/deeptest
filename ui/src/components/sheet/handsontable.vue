@@ -1,6 +1,7 @@
 <template>
   <div class="handsontable-main">
-    <hot-table :data="data" :rowHeaders="true" :colHeaders="true"></hot-table>
+    <hot-table :settings="settings"
+               :data="data" :rowHeaders="true" :colHeaders="true"></hot-table>
 
   </div>
 </template>
@@ -10,6 +11,11 @@ import { HotTable } from '@handsontable/vue3';
 import {registerAllModules} from "handsontable/registry";
 
 registerAllModules();
+
+const settings = {
+  licenseKey: 'non-commercial-and-evaluation',
+  //... other options
+}
 
 const data = [
   ['', 'Ford', 'Volvo', 'Toyota', 'Honda'],
@@ -23,6 +29,8 @@ const data = [
 .handsontable-main {
 
 }
+
+
 </style>
 
-<style src="../../../node_modules/handsontable/dist/handsontable.full.css"></style>
+<style src="../../../node_modules/handsontable/dist/handsontable.css"></style>

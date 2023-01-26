@@ -209,7 +209,13 @@ export class DeepTestApp {
 
     // upload datapool file
     async uploadDatapoolFile(event, arg) {
-        const result = await dialog.showOpenDialog({properties: ['openFile']})
+        const result = await dialog.showOpenDialog({
+            properties: ['openFile'],
+            filters: [
+                {name: 'Excel Files', extensions: ['xlsx', 'xls']},
+                {name: 'CSV Files', extensions: ['csv']},
+            ]
+        })
 
         if (result.filePaths && result.filePaths.length > 0) {
             const resp = uploadDatapoolFile(arg.url, arg.token, result.filePaths[0], {

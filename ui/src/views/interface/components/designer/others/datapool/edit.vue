@@ -24,7 +24,7 @@
         </a-form-item>
 
         <a-form-item :wrapper-col="{ span: wrapperCol.span, offset: labelCol.span }">
-          <LuckySheet></LuckySheet>
+            <HandsonTable></HandsonTable>
         </a-form-item>
 
         <a-form-item :wrapper-col="{ span: wrapperCol.span, offset: labelCol.span }">
@@ -45,7 +45,6 @@ import {useI18n} from "vue-i18n";
 import {getDatapool} from "@/services/datapool";
 import {useStore} from "vuex";
 import { UploadOutlined} from '@ant-design/icons-vue';
-import LuckySheet from '@/components/sheet/LuckySheet.vue'
 
 import {StateType as InterfaceStateType} from "@/views/interface/store";
 import {StateType as DatapoolStateType} from "@/store/environment";
@@ -53,6 +52,8 @@ import settings from "@/config/settings";
 import {NotificationKeyCommon} from "@/utils/const";
 import {getServerUrl} from "@/utils/request";
 import {getToken} from "@/utils/localToken";
+
+import HandsonTable from "@/components/sheet/handsontable";
 
 const useForm = Form.useForm;
 

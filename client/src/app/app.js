@@ -8,7 +8,7 @@ import Lang, {initLang} from './core/lang';
 import {startUIService} from "./core/ui";
 import {startAgent, killAgent} from "./core/deeptest";
 import { nanoid } from 'nanoid'
-import {uploadDatapoolFile} from "./utils/upload";
+import {uploadDatapoolFile, uploadFile} from "./utils/upload";
 
 const cp = require('child_process');
 const fs = require('fs');
@@ -96,8 +96,8 @@ export class DeepTestApp {
             } else if (arg.act == 'chooseFile') { // choose file for interface form
                 this.chooseFile(event, arg)
                 return
-            } else if (arg.act == 'uploadDatapoolFile') { // upload datapool file
-                this.uploadDatapoolFile(event, arg)
+            } else if (arg.act == 'uploadFile') { // upload file
+                this.uploadFile(event, arg)
                 return
             }
 
@@ -207,18 +207,15 @@ export class DeepTestApp {
         }
     }
 
-    // upload datapool file
-    async uploadDatapoolFile(event, arg) {
+    // upload file
+    async uploadFile(event, arg) {
         const result = await dialog.showOpenDialog({
             properties: ['openFile'],
-            filters: [
-                {name: 'Excel Files', extensions: ['xlsx', 'xls']},
-                {name: 'CSV Files', extensions: ['csv']},
-            ]
+            filters: arg.filters,
         })
 
         if (result.filePaths && result.filePaths.length > 0) {
-            const resp = uploadDatapoolFile(arg.url, arg.token, result.filePaths[0], {
+            const resp = uploadFile(arg.url, arg.token, result.filePaths[0], {
                 datapoolId: arg.id
             })
 

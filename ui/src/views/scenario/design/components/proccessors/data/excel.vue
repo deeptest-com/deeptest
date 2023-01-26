@@ -13,9 +13,14 @@
                      @blur="validate('variableName', { trigger: 'blur' }).catch(() => {})"/>
           </a-form-item>
 
-          <a-form-item label="文件路径" v-bind="validateInfos.url">
-            <a-input v-model:value="modelRef.url"
-                     @blur="validate('url', { trigger: 'blur' }).catch(() => {})"/>
+          <a-form-item label="选择文件" v-bind="validateInfos.url">
+            <div class="flow-file-input">
+              <a-input v-model:value="modelRef.url" readonly="readonly"
+                       @blur="validate('url', { trigger: 'blur' }).catch(() => {})"/>
+              <a-button @click="uploadFile()">
+                <UploadOutlined />
+              </a-button>
+            </div>
           </a-form-item>
 
           <a-form-item label="重复次数" v-bind="validateInfos.repeatTimes">
@@ -55,6 +60,9 @@ import {Form, message, notification} from 'ant-design-vue';
 import {StateType as ScenarioStateType} from "../../../../store";
 import {EditOutlined, CheckOutlined, CloseOutlined} from "@ant-design/icons-vue";
 import {NotificationKeyCommon} from "@/utils/const";
+import settings from "@/config/settings";
+import {getServerUrl} from "@/utils/request";
+import {getToken} from "@/utils/localToken";
 
 const useForm = Form.useForm;
 
@@ -95,6 +103,39 @@ const submitForm = async () => {
         })
       })
 };
+
+const isElectron = ref(!!window.require)
+let ipcRenderer = undefined as any
+if (isElectron.value && !ipcRenderer) {
+  ipcRenderer = window.require('electron').ipcRenderer
+
+  ipcRenderer.on(settings.electronMsgReplay, (event, data) => {
+    console.log('from electron: ', data.data)
+  })
+}
+
+const uploadFile = () => {
+  console.log('uploadFile')
+
+  if (isElectron.value) {
+    const data = {
+      act: 'uploadFile',
+      url: getServerUrl() + '/upload',
+      token: getToken(),
+      filters: [
+        {name: 'Excel Files', extensions: ['xlsx', 'xls']},
+      ]
+    }
+
+    ipcRenderer.send(settings.electronMsg, data)
+
+  } else {
+    notification.warn({
+      key: NotificationKeyCommon,
+      message: `请使用客户端上传文件`,
+    });
+  }
+}
 
 onMounted(() => {
   console.log('onMounted')

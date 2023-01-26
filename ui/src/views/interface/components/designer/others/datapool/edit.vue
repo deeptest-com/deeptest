@@ -17,7 +17,7 @@
         </a-form-item>
 
         <a-form-item :wrapper-col="{ span: wrapperCol.span, offset: labelCol.span }">
-          <div class="flow">
+          <div class="flow-file-input">
             <a-input v-model:value="modelRef.path" readonly="readonly" />
             <a-button @click="uploadFile()">
               <UploadOutlined />
@@ -133,10 +133,14 @@ const uploadFile = () => {
 
   if (isElectron.value) {
     const data = {
-      act: 'uploadDatapoolFile',
+      act: 'uploadFile',
       url: getServerUrl() + '/datapools/' + props.modelId,
       id: props.modelId,
-      token: getToken()
+      token: getToken(),
+      filters: [
+        {name: 'Excel Files', extensions: ['xlsx', 'xls']},
+        {name: 'CSV Files', extensions: ['csv']},
+      ]
     }
 
     ipcRenderer.send(settings.electronMsg, data)
@@ -179,33 +183,9 @@ const wrapperCol = {span: 20}
 
 <style lang="less" scoped>
 .data-pool-main {
-  .flow {
-    line-height: 32px;
-    input {
-      width: calc(100% - 46px)
-    }
-    .filename {
-      padding: 0 10px;
-    }
-    .ant-btn {
-      position: absolute;
-      right: 0;
-      z-index: 99;
-
-      background: transparent;
-      color: rgba(0, 0, 0, 0.65);
-      border-color: #d9d9d9;
-      &:hover, &:active {
-        background: transparent;
-        color: rgba(0, 0, 0, 0.65);
-        border-color: #d9d9d9;
-      }
-    }
+  .handson-table-wrapper {
+    height: 200px;
   }
-}
-
-.handson-table-wrapper {
-  height: 200px;
 }
 </style>
 

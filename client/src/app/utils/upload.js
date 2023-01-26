@@ -1,7 +1,7 @@
 const fs = require('fs');
 const axios = require('axios')
 
-export async function uploadDatapoolFile(url, token, path, params) {
+export async function uploadFile(url, token, path, params) {
     const data = new FormData();
 
     data.append('file', fs.createReadStream(path));

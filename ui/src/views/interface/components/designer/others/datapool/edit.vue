@@ -110,10 +110,10 @@ setTimeout(()=>{
   console.log('====')
 
   data.value = {
-    headers: ['Foo'],
+    headers: ['abc'],
     rows: [['2016']],
   }
-}, 5000)
+}, 3000)
 
 const {resetFields, validate, validateInfos} = useForm(modelRef, rulesRef);
 
@@ -137,7 +137,8 @@ if (isElectron.value && !ipcRenderer) {
   ipcRenderer.on(settings.electronMsgReplay, (event, result) => {
     console.log('from electron: ', result)
     if (result.code === 0) {
-      data.value = result.data.content
+      data.value = result.data
+      modelRef.value.path = result.data.path
     }
   })
 }

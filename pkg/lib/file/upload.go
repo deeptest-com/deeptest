@@ -2,12 +2,19 @@ package _fileUtils
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
+	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"github.com/oklog/ulid/v2"
+	"github.com/snowlyg/helper/str"
 	"io"
 	"io/ioutil"
+	"math/rand"
 	"mime/multipart"
 	"net/http"
 	"os"
+	"strings"
+	"time"
 )
 
 func Upload(url string, files []string, extraParams map[string]string) {
@@ -41,4 +48,27 @@ func Upload(url string, files []string, extraParams map[string]string) {
 	}
 
 	fmt.Printf("upload status %s, body %s", resp.Status, string(respBody))
+}
+
+func GetUploadFileName(name string) (ret string, err error) {
+	fns := strings.Split(strings.TrimPrefix(name, "./"), ".")
+	if len(fns) != 2 {
+		msg := fmt.Sprintf("文件名错误 %s", name)
+
+		logUtils.Info(msg)
+		err = errors.New(msg)
+
+		return
+	}
+
+	base := fns[0]
+	ext := fns[1]
+
+	entropy := rand.New(rand.NewSource(time.Now().UnixNano()))
+	ms := ulid.Timestamp(time.Now())
+	rand, _ := ulid.New(ms, entropy)
+
+	ret = str.Join(base, "-", strings.ToLower(rand.String()), ".", ext)
+
+	return
 }

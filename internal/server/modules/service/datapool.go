@@ -1,18 +1,16 @@
 package service
 
 import (
-	"errors"
-	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	dateUtils "github.com/aaronchen2k/deeptest/pkg/lib/date"
+	_fileUtils "github.com/aaronchen2k/deeptest/pkg/lib/file"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
-	stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"github.com/kataras/iris/v12"
 	"github.com/snowlyg/helper/dir"
-	"github.com/snowlyg/helper/str"
+	"github.com/xuri/excelize/v2"
 	"mime/multipart"
 	"path/filepath"
 	"strings"
@@ -51,14 +49,14 @@ func (s *DatapoolService) Delete(id uint) (err error) {
 
 // Upload 上传文件
 func (s *DatapoolService) Upload(ctx iris.Context, fh *multipart.FileHeader) (ret v1.DatapoolUploadResp, err error) {
-	filename, err := GetFileName(fh.Filename)
+	filename, err := _fileUtils.GetUploadFileName(fh.Filename)
 	if err != nil {
 		logUtils.Errorf("获取文件名失败，错误%s", err.Error())
 		return
 	}
 
 	targetDir := filepath.Join(consts.DirData, dateUtils.DateStr(time.Now()))
-	targetDir = filepath.Join(dir.GetCurrentAbPath(), targetDir)
+	absDir := filepath.Join(dir.GetCurrentAbPath(), targetDir)
 
 	err = dir.InsureDir(targetDir)
 	if err != nil {
@@ -66,35 +64,45 @@ func (s *DatapoolService) Upload(ctx iris.Context, fh *multipart.FileHeader) (re
 		return
 	}
 
-	pth := filepath.Join(targetDir, filename)
+	pth := filepath.Join(absDir, filename)
 	_, err = ctx.SaveFormFile(fh, pth)
 	if err != nil {
 		logUtils.Errorf("文件上传失败，错误%s", "保存文件到本地")
 		return
 	}
 
-	ret.Path = pth
-	ret.Content = ""
+	ret.Path = filepath.Join(targetDir, filename)
+
+	ret.Headers, ret.Rows, _ = s.ReadExcel(fh)
 
 	return
 }
 
-// GetFileName 获取文件名称
-func GetFileName(name string) (ret string, err error) {
-	fns := strings.Split(strings.TrimPrefix(name, "./"), ".")
-	if len(fns) != 2 {
-		msg := fmt.Sprintf("文件名错误 %s", name)
-
-		logUtils.Info(msg)
-		err = errors.New(msg)
-
+func (s *DatapoolService) ReadExcel(fh *multipart.FileHeader) (headers []string, rows [][]string, err error) {
+	h, err := fh.Open()
+	excl, err := excelize.OpenReader(h)
+	if err != nil {
+		logUtils.Info("read upload file as excel failed")
 		return
 	}
 
-	base := fns[0]
-	ext := fns[1]
+	sht := excl.GetSheetList()[0]
+	lines, err := excl.GetRows(sht)
 
-	ret = str.Join(base, "-", stringUtils.Uuid(), ".", ext)
+	for lineIndex, line := range lines {
+		if lineIndex == 0 {
+			for _, col := range line {
+				headers = append(headers, strings.TrimSpace(col))
+			}
+		} else {
+			var row []string
+			for _, col := range line {
+				row = append(row, strings.TrimSpace(col))
+			}
+
+			rows = append(rows, line)
+		}
+	}
 
 	return
 }

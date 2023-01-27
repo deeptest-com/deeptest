@@ -49,7 +49,11 @@ watch(() => props.data, () => {
   settings.colHeaders = props.data.headers
   settings.data = props.data.rows
 
-  handsontableRef.value.loadData(settings.data)
+  handsontableRef.value.updateSettings({
+    colHeaders: settings.colHeaders,
+    data: settings.data,
+  })
+  handsontableRef.value.render()
 }, {deep: false})
 
 onMounted(() => {

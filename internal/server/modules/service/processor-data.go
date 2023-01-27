@@ -4,6 +4,7 @@ import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	dateUtils "github.com/aaronchen2k/deeptest/pkg/lib/date"
+	_fileUtils "github.com/aaronchen2k/deeptest/pkg/lib/file"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/kataras/iris/v12"
 	"github.com/snowlyg/helper/dir"
@@ -21,7 +22,7 @@ func NewProcessorDataService() *ProcessorDataService {
 
 // Upload 上传文件
 func (s *ProcessorDataService) Upload(ctx iris.Context, fh *multipart.FileHeader) (ret v1.ProcessorDataUploadResp, err error) {
-	filename, err := GetFileName(fh.Filename)
+	filename, err := _fileUtils.GetUploadFileName(fh.Filename)
 	if err != nil {
 		logUtils.Errorf("获取文件名失败，错误%s", err.Error())
 		return

@@ -23,6 +23,7 @@ func (m *DatapoolModule) Party() module.WebModule {
 		index.Get("/", m.DatapoolCtrl.List).Name = "数据池列表"
 		index.Get("/{id:uint}", m.DatapoolCtrl.Get).Name = "数据池详情"
 		index.Post("/", m.DatapoolCtrl.Save).Name = "保存数据池"
+		index.Put("/", m.DatapoolCtrl.Save).Name = "保存数据池"
 		index.Delete("/{id:uint}", m.DatapoolCtrl.Delete).Name = "删除数据池"
 		index.Post("/upload", m.DatapoolCtrl.Upload).Name = "上传数据池文件"
 	}

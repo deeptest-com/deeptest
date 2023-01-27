@@ -99,6 +99,7 @@ const getModel = async () => {
     getDatapool(props.modelId, 0).then((json) => {
       console.log('json', json)
       modelRef.value = json.data
+      data.value = JSON.parse(json.data.data)
     })
   }
 }

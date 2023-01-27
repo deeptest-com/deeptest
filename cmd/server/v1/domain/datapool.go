@@ -15,8 +15,6 @@ type DatapoolReq struct {
 }
 
 type DatapoolUploadResp struct {
-	Path string `json:"path"`
-
-	Headers []string   `json:"headers"`
-	Rows    [][]string `json:"rows"`
+	Path string          `json:"path"`
+	Data [][]interface{} `json:"data"`
 }

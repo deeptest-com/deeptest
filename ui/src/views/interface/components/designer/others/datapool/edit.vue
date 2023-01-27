@@ -113,7 +113,7 @@ if (isElectron.value && !ipcRenderer) {
   ipcRenderer.on(settings.electronMsgReplay, (event, result) => {
     console.log('from electron: ', result)
     if (result.code === 0) {
-      data.value = result.data
+      data.value = result.data.data
       modelRef.value.path = result.data.path
     }
   })

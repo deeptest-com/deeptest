@@ -6,8 +6,8 @@
       :visible="true"
       :onCancel="onCancel"
       :footer="null"
-      width="700px"
-      height="500px"
+      width="800px"
+      height="600px"
   >
     <div class="data-pool-main">
       <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
@@ -16,7 +16,7 @@
                    @blur="validate('name', { trigger: 'blur' }).catch(() => {})"/>
         </a-form-item>
 
-        <a-form-item :wrapper-col="{ span: wrapperCol.span, offset: labelCol.span }">
+        <a-form-item label="上传文件" :wrapper-col="wrapperCol">
           <div class="flow-file-input">
             <a-input v-model:value="modelRef.path" readonly="readonly" />
             <a-button @click="uploadFile()">
@@ -27,7 +27,7 @@
 
         <a-form-item :wrapper-col="{ span: wrapperCol.span, offset: labelCol.span }">
           <div class="handson-table-wrapper">
-            <HandsonTable :data="data"></HandsonTable>
+            <HandsonTable :headers="headers" :data="data"></HandsonTable>
           </div>
         </a-form-item>
 
@@ -88,8 +88,8 @@ const rulesRef = reactive({
 
 const modelRef = ref<any>({name: ''})
 
-const data = ref([
-  ['', 'Ford', 'Volvo', 'Toyota', 'Honda'],
+const headers = ['Foo', 'Ford', 'Volvo', 'Toyota', 'Honda']
+const data = ref(JSON.parse(JSON.stringify([
   ['2016', 10, 11, 12, 13],
   ['2017', 20, 11, 14, 13],
   ['2018', 30, 15, 12, 13],
@@ -102,7 +102,7 @@ const data = ref([
   ['2016', 10, 11, 12, 13],
   ['2017', 20, 11, 14, 13],
   ['2018', 30, 15, 12, 13],
-])
+])))
 
 const {resetFields, validate, validateInfos} = useForm(modelRef, rulesRef);
 

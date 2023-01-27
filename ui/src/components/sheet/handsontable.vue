@@ -2,20 +2,29 @@
   <div class="handsontable-main">
     <hot-table :settings="settings"
                :data="data"
-               :rowHeaders="true"
-               :colHeaders="true"
     ></hot-table>
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { HotTable } from '@handsontable/vue3';
 import {registerAllModules} from "handsontable/registry";
+import {
+  registerLanguageDictionary,
+  zhCN,
+} from 'handsontable/i18n';
 import {defineProps} from "vue";
+import {useI18n} from "vue-i18n";
 
 registerAllModules();
+registerLanguageDictionary(zhCN);
+
+const { t } = useI18n();
 
 const props = defineProps({
+  headers: {
+    required: true
+  },
   data: {
     required: true
   }
@@ -23,7 +32,11 @@ const props = defineProps({
 
 const settings = {
   licenseKey: 'non-commercial-and-evaluation',
-  height: 'auto'
+  rowHeaders: [],
+  colHeaders: props.headers,
+  height: 'auto',
+  contextMenu: true,
+  language: t('lang'),
 }
 
 </script>

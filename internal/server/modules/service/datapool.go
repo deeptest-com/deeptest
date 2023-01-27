@@ -73,14 +73,13 @@ func (s *DatapoolService) Upload(ctx iris.Context, fh *multipart.FileHeader) (re
 
 	ret.Path = filepath.Join(targetDir, filename)
 
-	ret.Headers, ret.Rows, _ = s.ReadExcel(fh)
+	ret.Headers, ret.Rows, _ = s.ReadExcel(ret.Path)
 
 	return
 }
 
-func (s *DatapoolService) ReadExcel(fh *multipart.FileHeader) (headers []string, rows [][]string, err error) {
-	h, err := fh.Open()
-	excl, err := excelize.OpenReader(h)
+func (s *DatapoolService) ReadExcel(pth string) (headers []string, rows [][]string, err error) {
+	excl, err := excelize.OpenFile(pth)
 	if err != nil {
 		logUtils.Info("read upload file as excel failed")
 		return

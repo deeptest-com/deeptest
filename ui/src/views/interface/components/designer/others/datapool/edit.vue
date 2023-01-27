@@ -152,8 +152,7 @@ const uploadFile = async () => {
       url: getServerUrl() + '/datapools/upload',
       token: await getToken(),
       filters: [
-        {name: 'Excel Files', extensions: ['xlsx', 'xls']},
-        {name: 'CSV Files', extensions: ['csv']},
+        {name: 'Excel Files', extensions: ['xlsx']},
       ]
     }
 

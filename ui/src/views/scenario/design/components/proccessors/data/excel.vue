@@ -123,7 +123,7 @@ const uploadFile = () => {
       url: getServerUrl() + '/processors/data/upload',
       token: getToken(),
       filters: [
-        {name: 'Excel Files', extensions: ['xlsx', 'xls']},
+        {name: 'Excel Files', extensions: ['xlsx']},
       ]
     }
 

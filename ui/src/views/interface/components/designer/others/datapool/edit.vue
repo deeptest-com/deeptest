@@ -16,7 +16,7 @@
                    @blur="validate('name', { trigger: 'blur' }).catch(() => {})"/>
         </a-form-item>
 
-        <a-form-item label="上传文件" :wrapper-col="wrapperCol">
+        <a-form-item label="从文件导入" :wrapper-col="wrapperCol">
           <div class="flow-file-input">
             <a-input v-model:value="modelRef.path" readonly="readonly" />
             <a-button @click="uploadFile()">

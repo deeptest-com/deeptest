@@ -1,7 +1,5 @@
 package consts
 
-import "path/filepath"
-
 const (
 	App = "deeptest"
 
@@ -49,6 +47,5 @@ const (
 )
 
 var (
-	DirUpload = filepath.Join(DirStatic, "upload")
-	DirData   = filepath.Join(DirUpload, "data")
+	DirUpload = "upload"
 )

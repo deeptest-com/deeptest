@@ -20,7 +20,9 @@ func NewFileModule() *FileModule {
 func (m *FileModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
 		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
-		index.Post("/", iris.LimitRequestBodySize(config.CONFIG.MaxSize+1<<20), m.FileCtrl.Upload).Name = "上传文件"
+
+		index.Post("/", iris.LimitRequestBodySize(config.CONFIG.MaxSize+1<<20),
+			m.FileCtrl.Upload).Name = "上传文件"
 	}
 	return module.NewModule("/upload", handler)
 }

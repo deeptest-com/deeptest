@@ -13,10 +13,9 @@
                      @blur="validate('variableName', { trigger: 'blur' }).catch(() => {})"/>
           </a-form-item>
 
-          <a-form-item label="选择文件" v-bind="validateInfos.url">
+          <a-form-item label="上传文件" v-bind="validateInfos.url">
             <div class="flow-file-input">
-              <a-input v-model:value="modelRef.url" readonly="readonly"
-                       @blur="validate('url', { trigger: 'blur' }).catch(() => {})"/>
+              <a-input v-model:value="modelRef.url" readonly="readonly" />
               <a-button @click="uploadFile()">
                 <UploadOutlined />
               </a-button>
@@ -58,7 +57,7 @@ import {useStore} from "vuex";
 import {useI18n} from "vue-i18n";
 import {Form, message, notification} from 'ant-design-vue';
 import {StateType as ScenarioStateType} from "../../../../store";
-import {EditOutlined, CheckOutlined, CloseOutlined} from "@ant-design/icons-vue";
+import {UploadOutlined} from "@ant-design/icons-vue";
 import {NotificationKeyCommon} from "@/utils/const";
 import settings from "@/config/settings";
 import {getServerUrl} from "@/utils/request";
@@ -109,19 +108,22 @@ let ipcRenderer = undefined as any
 if (isElectron.value && !ipcRenderer) {
   ipcRenderer = window.require('electron').ipcRenderer
 
-  ipcRenderer.on(settings.electronMsgReplay, (event, data) => {
-    console.log('from electron: ', data.data)
+  ipcRenderer.on(settings.electronMsgReplay, (event, result) => {
+    console.log('from electron: ', result)
+    if (result.code === 0) {
+      modelRef.value.url = result.data.path
+    }
   })
 }
 
-const uploadFile = () => {
+const uploadFile = async () => {
   console.log('uploadFile')
 
   if (isElectron.value) {
     const data = {
       act: 'uploadFile',
-      url: getServerUrl() + '/processors/data/upload',
-      token: getToken(),
+      url: getServerUrl() + '/upload',
+      token: await getToken(),
       filters: [
         {name: 'Excel Files', extensions: ['xlsx']},
       ]

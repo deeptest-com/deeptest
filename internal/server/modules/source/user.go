@@ -28,7 +28,7 @@ func (s *UserSource) GetSources() ([]v1.UserReq, error) {
 				Username: serverConsts.AdminUserName,
 				Name:     "管理员",
 				Intro:    "超级管理员",
-				Avatar:   "images/avatar-m.svg",
+				Avatar:   "upload/images/avatar-m.svg",
 				Password: serverConsts.AdminUserPassword,
 				RoleIds:  roleIds,
 			},

@@ -86,40 +86,15 @@ const rulesRef = reactive({
   ],
 });
 
-const modelRef = ref<any>({name: ''})
+const modelRef = ref<any>({name: '', path: ''})
 
-const data = ref({
-  headers: ['Foo', 'Ford', 'Volvo', 'Toyota', 'Honda'],
-  rows: [
-    ['2016', 10, 11, 12, 13],
-    ['2017', 20, 11, 14, 13],
-    ['2018', 30, 15, 12, 13],
-    ['2016', 10, 11, 12, 13],
-    ['2017', 20, 11, 14, 13],
-    ['2018', 30, 15, 12, 13],
-    ['2016', 10, 11, 12, 13],
-    ['2017', 20, 11, 14, 13],
-    ['2018', 30, 15, 12, 13],
-    ['2016', 10, 11, 12, 13],
-    ['2017', 20, 11, 14, 13],
-    ['2018', 30, 15, 12, 13],
-  ],
-})
-
-setTimeout(()=>{
-  console.log('====')
-
-  data.value = {
-    headers: ['abc'],
-    rows: [['2016']],
-  }
-}, 3000)
+const data = ref<any[][]>([['A','B','C'], [1,2,3]])
 
 const {resetFields, validate, validateInfos} = useForm(modelRef, rulesRef);
 
 const getModel = async () => {
   if (props.modelId === 0) {
-    modelRef.value = {name: '', id: props.modelId}
+    modelRef.value = {name: '', path: ''}
   } else {
     getDatapool(props.modelId, 0).then((json) => {
       console.log('json', json)
@@ -166,22 +141,25 @@ const uploadFile = async () => {
   }
 }
 
-const getFileName = (path) => {
-  if (!path) {
-    return ''
-  }
-  return path.replace(/^.*[\\\\/]/, '')
-}
-
 const onSubmit = async () => {
-  console.log('onSubmit', modelRef.value, data.value)
+  console.log('onSubmit', modelRef.value)
 
   validate().then(async () => {
+    if (data.value.length < 2) {
+      notification.warn({
+        key: NotificationKeyCommon,
+        message: `表格至少包含标题和数据两行。`,
+      });
+      return
+    }
+
+    modelRef.value.data = JSON.stringify(data.value)
+
     store.dispatch('Datapool/saveDatapool', modelRef.value).then(() => {
       props.onFinish();
     })
   }).catch(err => {
-    console.log('')
+    console.log(err)
   })
 }
 

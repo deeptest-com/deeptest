@@ -5,12 +5,12 @@
         </h1>
         <a-form :wrapper-col="{span:24}">
             <a-form-item label="" v-bind="validateInfos.username">
-                <a-input v-model:value="modelRef.username" :placeholder="t('page.user.login.form-item-username')" @keyup.enter="handleSubmit">
+                <a-input v-model:value="modelRef.username" @keyup.enter="handleSubmit">
                     <template #prefix><user-outlined /></template>
                 </a-input>
             </a-form-item>
             <a-form-item label="" v-bind="validateInfos.password">
-                <a-input-password v-model:value="modelRef.password" :placeholder="t('page.user.login.form-item-password')" @keyup.enter="handleSubmit">
+                <a-input-password v-model:value="modelRef.password" @keyup.enter="handleSubmit">
                     <template #prefix><unlock-outlined /></template>
                 </a-input-password>
             </a-form-item>

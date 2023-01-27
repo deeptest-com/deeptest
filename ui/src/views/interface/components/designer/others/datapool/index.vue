@@ -157,5 +157,35 @@ const datapoolEditCancel = () => {
     }
   }
 
+  .datapools {
+    .datapool {
+      display: flex;
+      padding: 3px 2px 4px 4px;
+      line-height: 20px;
+      border-bottom: 1px solid #eaeaee;
+
+      .left {
+        flex: 1;
+        display: flex;
+
+        .name {
+          margin-left: 0;
+          flex: 2;
+          overflow: hidden;
+          white-space:nowrap;
+          text-overflow :ellipsis;
+        }
+      }
+      .right {
+        text-align: center;
+        width: 24px;
+        .more {
+          display: inline-block;
+          font-weight: bolder;
+          font-size: 16px;
+        }
+      }
+    }
+  }
 }
 </style>

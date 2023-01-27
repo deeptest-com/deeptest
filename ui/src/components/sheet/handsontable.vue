@@ -33,11 +33,12 @@ const props = defineProps({
 const settings = {
   licenseKey: 'non-commercial-and-evaluation',
   language: t('lang'),
-  rowHeaders: [],
   height: 'auto',
   contextMenu: true,
-  colHeaders: props.data.headers,
-  data: props.data.rows
+  rowHeaders: false,
+  colHeaders: false,
+  fixedRowsTop: 1,
+  data: props.data
 }
 
 const wrapperRef = ref()
@@ -46,8 +47,7 @@ const handsontableRef = ref()
 watch(() => props.data, () => {
   console.log('watch data')
 
-  settings.colHeaders = props.data.headers
-  settings.data = props.data.rows
+  settings.data = props.data
 
   handsontableRef.value.updateSettings({
     colHeaders: settings.colHeaders,
@@ -74,6 +74,12 @@ onUnmounted(() => {
 
   .wtHolder {
     min-width: 100%;
+
+    tbody {
+      tr:first-child td  {
+        background-color: #f0f0f0 !important;
+      }
+    }
   }
 }
 

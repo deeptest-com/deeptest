@@ -75,7 +75,6 @@ const StoreModel: ModuleType = {
         const resp = await saveDatapool(payload);
 
         dispatch('listDatapool');
-        dispatch('getDatapool', {id: 0, projectId: payload.projectId})
         return resp.data;
       } catch (error) {
         return false;
@@ -87,7 +86,6 @@ const StoreModel: ModuleType = {
         await removeDatapool(payload.id);
 
         dispatch('listDatapool', payload.id);
-        dispatch('getDatapool', {id: 0, projectId: payload.projectId})
         return true;
       } catch (error) {
         return false;

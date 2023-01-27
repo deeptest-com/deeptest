@@ -5,8 +5,9 @@ type Datapool struct {
 
 	Name string `json:"name"`
 	Desc string `json:"desc"`
-	Data string `json:"data"`
+
 	Path string `json:"path"`
+	Data string `json:"data"`
 
 	ProjectId uint `json:"projectId"`
 }

@@ -17,3 +17,4 @@ tmp/
 /static/dist/
 /rbac_model.conf
 /server.yaml
+/static/upload/data/

@@ -1,13 +1,16 @@
 package utils
 
 import (
-	fileUtils "github.com/aaronchen2k/deeptest/pkg/lib/file"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/aaronchen2k/deeptest/pkg/lib/file"
 	"github.com/xuri/excelize/v2"
+	"path"
+	"path/filepath"
 	"strings"
 )
 
 func ReadDataFromText(url, separator string) (ret []map[string]interface{}, err error) {
-	content := fileUtils.ReadFile(url)
+	content := _fileUtils.ReadFile(url)
 	arr := strings.Split(strings.ReplaceAll(content, "\r\n", "\n"), "\n")
 	if len(arr) < 2 {
 		return
@@ -69,6 +72,17 @@ func ReadDataFromExcel(url string) (ret []map[string]interface{}, err error) {
 		}
 		ret = append(ret, mp)
 	}
+
+	return
+}
+
+func DownloadUploadedFile(uri string) (ret string, err error) {
+	url := path.Join(consts.ServerUrl, uri)
+
+	_, name := path.Split(uri)
+	dist := filepath.Join(consts.TmpDir, "download", name)
+
+	_fileUtils.Download(url, dist)
 
 	return
 }

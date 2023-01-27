@@ -84,10 +84,15 @@ func (entity *ProcessorData) getIterator() (iterator domain.ExecIterator, msg st
 }
 
 func (entity *ProcessorData) GenerateLoopList() (ret domain.ExecIterator, err error) {
+	pth, _ := utils.DownloadUploadedFile(entity.Url)
+	if err != nil {
+		logUtils.Infof("Download file %s failed", pth)
+	}
+
 	if entity.ProcessorType == consts.ProcessorDataText {
-		ret.Data, err = utils.ReadDataFromText(entity.Url, entity.Separator)
+		ret.Data, err = utils.ReadDataFromText(pth, entity.Separator)
 	} else if entity.ProcessorType == consts.ProcessorDataExcel {
-		ret.Data, err = utils.ReadDataFromExcel(entity.Url)
+		ret.Data, err = utils.ReadDataFromExcel(pth)
 	}
 
 	return

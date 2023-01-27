@@ -159,20 +159,16 @@ func (webServer *WebServer) AddWebUi() {
 	})
 }
 
-// AddUploadStatic 添加上传文件访问
-func (webServer *WebServer) AddUploadStatic() {
-	fsOrDir := iris.Dir(filepath.Join(dir.GetCurrentAbPath(), filepath.Join(webServer.staticPath, "upload")))
-	webServer.addStatic("/upload", fsOrDir)
+// AddUpload 添加上传文件访问
+func (webServer *WebServer) AddUpload() {
+	fsOrDir := iris.Dir(filepath.Join(dir.GetCurrentAbPath(), consts.DirUpload))
+	webServer.app.HandleDir("/upload", fsOrDir)
 }
 
-// AddTestStatic 添加测试文件访问
-func (webServer *WebServer) AddTestStatic() {
+// AddTest 添加测试文件访问
+func (webServer *WebServer) AddTest() {
 	fsOrDir := iris.Dir(filepath.Join(dir.GetCurrentAbPath(), filepath.Join(webServer.staticPath, "test")))
-	webServer.addStatic("/test", fsOrDir)
-}
-
-func (webServer *WebServer) addStatic(requestPath string, fsOrDir interface{}, opts ...iris.DirOptions) {
-	webServer.app.HandleDir(requestPath, fsOrDir, opts...)
+	webServer.app.HandleDir("/test", fsOrDir)
 }
 
 // GetModules 获取模块

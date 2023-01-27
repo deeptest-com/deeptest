@@ -44,8 +44,8 @@ func (webServer *WebServer) InitRouter() error {
 		webServer.initModule()
 
 		webServer.AddWebUi()
-		webServer.AddUploadStatic()
-		webServer.AddTestStatic()
+		webServer.AddUpload()
+		webServer.AddTest()
 
 		err := webServer.app.Build()
 		if err != nil {

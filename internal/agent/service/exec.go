@@ -24,6 +24,9 @@ type ExecService struct {
 }
 
 func (s *ExecService) ExecScenario(execReq *agentExec.ProcessorExecReq, wsMsg *websocket.Message) (err error) {
+	consts.ServerUrl = execReq.ServerUrl
+	consts.ServerToken = execReq.Token
+
 	execObj := s.getScenarioToExec(execReq)
 	s.RestoreEntityFromRawAndSetParent(execObj.RootProcessor)
 

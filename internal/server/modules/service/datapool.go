@@ -50,7 +50,7 @@ func (s *DatapoolService) Delete(id uint) (err error) {
 }
 
 // Upload 上传文件
-func (s *DatapoolService) Upload(ctx iris.Context, fh *multipart.FileHeader, datapoolId int) (ret v1.DatapoolUploadResp, err error) {
+func (s *DatapoolService) Upload(ctx iris.Context, fh *multipart.FileHeader) (ret v1.DatapoolUploadResp, err error) {
 	filename, err := GetFileName(fh.Filename)
 	if err != nil {
 		logUtils.Errorf("获取文件名失败，错误%s", err.Error())
@@ -66,14 +66,15 @@ func (s *DatapoolService) Upload(ctx iris.Context, fh *multipart.FileHeader, dat
 		return
 	}
 
-	_, err = ctx.SaveFormFile(fh, filepath.Join(targetDir, filename))
+	pth := filepath.Join(targetDir, filename)
+	_, err = ctx.SaveFormFile(fh, pth)
 	if err != nil {
 		logUtils.Errorf("文件上传失败，错误%s", "保存文件到本地")
 		return
 	}
 
-	ret.Path = filepath.Join(targetDir, filename)
-	ret.Data = ""
+	ret.Path = pth
+	ret.Content = ""
 
 	return
 }

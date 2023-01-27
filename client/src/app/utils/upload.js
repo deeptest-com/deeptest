@@ -1,5 +1,6 @@
 const fs = require('fs');
 const axios = require('axios')
+const FormData = require('form-data')
 
 export async function uploadFile(url, token, path, params) {
     const data = new FormData();
@@ -21,6 +22,7 @@ export async function uploadFile(url, token, path, params) {
         }
     };
 
-    const res = await axios.post(url, data, config)
-    console.log('===', res)
+    const resp = await axios.post(url, data, config)
+
+    return resp.data
 }

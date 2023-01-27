@@ -215,13 +215,12 @@ export class DeepTestApp {
         })
 
         if (result.filePaths && result.filePaths.length > 0) {
-            const resp = uploadFile(arg.url, arg.token, result.filePaths[0], {
+            const resp = await uploadFile(arg.url, arg.token, result.filePaths[0], {
                 // datapoolId: arg.id
             })
+            console.log('uploadFile resp: ', resp)
 
-            event.reply(electronMsgReplay, {
-                resp: resp,
-            });
+            event.reply(electronMsgReplay, resp);
         }
     }
 

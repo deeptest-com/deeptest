@@ -104,12 +104,6 @@ func (c *DatapoolCtrl) Delete(ctx iris.Context) {
 }
 
 func (c *DatapoolCtrl) Upload(ctx iris.Context) {
-	id, err := ctx.Params().GetInt("id")
-	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
-		return
-	}
-
 	f, fh, err := ctx.FormFile("file")
 	if err != nil {
 		logUtils.Errorf("文件上传失败", err.Error())
@@ -118,7 +112,7 @@ func (c *DatapoolCtrl) Upload(ctx iris.Context) {
 	}
 	defer f.Close()
 
-	ret, err := c.DatapoolService.Upload(ctx, fh, id)
+	ret, err := c.DatapoolService.Upload(ctx, fh)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

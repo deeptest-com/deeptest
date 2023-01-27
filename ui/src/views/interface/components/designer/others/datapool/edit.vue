@@ -27,7 +27,7 @@
 
         <a-form-item :wrapper-col="{ span: wrapperCol.span, offset: labelCol.span }">
           <div class="handson-table-wrapper">
-            <HandsonTable :headers="headers" :data="data"></HandsonTable>
+            <HandsonTable :data="data"></HandsonTable>
           </div>
         </a-form-item>
 
@@ -88,21 +88,32 @@ const rulesRef = reactive({
 
 const modelRef = ref<any>({name: ''})
 
-const headers = ['Foo', 'Ford', 'Volvo', 'Toyota', 'Honda']
-const data = ref(JSON.parse(JSON.stringify([
-  ['2016', 10, 11, 12, 13],
-  ['2017', 20, 11, 14, 13],
-  ['2018', 30, 15, 12, 13],
-  ['2016', 10, 11, 12, 13],
-  ['2017', 20, 11, 14, 13],
-  ['2018', 30, 15, 12, 13],
-  ['2016', 10, 11, 12, 13],
-  ['2017', 20, 11, 14, 13],
-  ['2018', 30, 15, 12, 13],
-  ['2016', 10, 11, 12, 13],
-  ['2017', 20, 11, 14, 13],
-  ['2018', 30, 15, 12, 13],
-])))
+const data = ref({
+  headers: ['Foo', 'Ford', 'Volvo', 'Toyota', 'Honda'],
+  rows: [
+    ['2016', 10, 11, 12, 13],
+    ['2017', 20, 11, 14, 13],
+    ['2018', 30, 15, 12, 13],
+    ['2016', 10, 11, 12, 13],
+    ['2017', 20, 11, 14, 13],
+    ['2018', 30, 15, 12, 13],
+    ['2016', 10, 11, 12, 13],
+    ['2017', 20, 11, 14, 13],
+    ['2018', 30, 15, 12, 13],
+    ['2016', 10, 11, 12, 13],
+    ['2017', 20, 11, 14, 13],
+    ['2018', 30, 15, 12, 13],
+  ],
+})
+
+setTimeout(()=>{
+  console.log('====')
+
+  data.value = {
+    headers: ['Foo'],
+    rows: [['2016']],
+  }
+}, 5000)
 
 const {resetFields, validate, validateInfos} = useForm(modelRef, rulesRef);
 
@@ -123,19 +134,22 @@ let ipcRenderer = undefined as any
 if (isElectron.value && !ipcRenderer) {
   ipcRenderer = window.require('electron').ipcRenderer
 
-  ipcRenderer.on(settings.electronMsgReplay, (event, data) => {
-    console.log('from electron: ', data.data)
+  ipcRenderer.on(settings.electronMsgReplay, (event, result) => {
+    console.log('from electron: ', result)
+    if (result.code === 0) {
+      data.value = result.data.content
+    }
   })
 }
 
-const uploadFile = () => {
+const uploadFile = async () => {
   console.log('uploadFile')
 
   if (isElectron.value) {
     const data = {
       act: 'uploadFile',
       url: getServerUrl() + '/datapools/upload',
-      token: getToken(),
+      token: await getToken(),
       filters: [
         {name: 'Excel Files', extensions: ['xlsx', 'xls']},
         {name: 'CSV Files', extensions: ['csv']},

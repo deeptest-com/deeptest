@@ -20,8 +20,8 @@ type ScenarioNodeService struct {
 	ProcessorInterfaceRepo *repo.ProcessorInterfaceRepo `inject:""`
 }
 
-func (s *ScenarioNodeService) GetTree(scenarioId int) (root *agentExec.Processor, err error) {
-	root, err = s.ScenarioNodeRepo.GetTree(uint(scenarioId), false)
+func (s *ScenarioNodeService) GetTree(scenario model.Scenario) (root *agentExec.Processor, err error) {
+	root, err = s.ScenarioNodeRepo.GetTree(scenario, false)
 	root.Session = agentExec.Session{}
 
 	return

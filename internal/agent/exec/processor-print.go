@@ -29,8 +29,8 @@ func (entity ProcessorPrint) Run(processor *Processor, session *Session) (err er
 		ParentId:          int(entity.ParentID),
 	}
 
-	variableMap := GetVariableMap(processor.ID)
-	value := ReplaceVariableValue(entity.Expression, variableMap)
+	variableMap := GetCachedVariableMapInContext(processor.ID)
+	value := ReplaceVariableValue(entity.Expression, variableMap, Datapools)
 
 	processor.Result.Summary = strings.ReplaceAll(fmt.Sprintf("%s为\"%v\"。",
 		entity.Expression, value), "<nil>", "空")

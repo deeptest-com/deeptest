@@ -22,6 +22,7 @@ type ProcessorInvocationService struct {
 	ExtractorService          *ExtractorService          `inject:""`
 	CheckpointService         *CheckpointService         `inject:""`
 	VariableService           *VariableService           `inject:""`
+	DatapoolService           *DatapoolService           `inject:""`
 }
 
 func (s *ProcessorInvocationService) LoadInterfaceExecData(req v1.InvocationRequest) (ret v1.InvocationRequest, err error) {
@@ -38,8 +39,8 @@ func (s *ProcessorInvocationService) LoadInterfaceExecData(req v1.InvocationRequ
 func (s *ProcessorInvocationService) SubmitInterfaceInvokeResult(req v1.SubmitInvocationResultRequest) (err error) {
 	processorInterface, _ := s.ProcessorInterfaceRepo.GetDetail(req.Response.Id)
 
-	s.ExtractorService.ExtractInterface(processorInterface.ID, req.Response, consts.Scenario)
-	s.CheckpointService.CheckInterface(processorInterface.ID, req.Response, consts.Scenario)
+	s.ExtractorService.ExtractInterface(processorInterface.ID, req.Response, consts.UsedByScenario)
+	s.CheckpointService.CheckInterface(processorInterface.ID, req.Response, consts.UsedByScenario)
 
 	_, err = s.CreateForScenarioInterface(req.Request, req.Response, processorInterface.ProjectId)
 
@@ -74,8 +75,13 @@ func (s *ProcessorInvocationService) CreateForScenarioInterface(req v1.Invocatio
 
 func (s *ProcessorInvocationService) ReplaceEnvironmentAndExtractorVariables(req v1.InvocationRequest) (
 	ret v1.InvocationRequest, err error) {
-	variableMap, _ := s.VariableService.GetVariablesByInterface(req.Id, consts.Scenario)
-	agentExec.ReplaceAll(&req.BaseRequest, variableMap)
+
+	variableMap, _ := s.VariableService.GetVariablesByInterface(req.Id, consts.UsedByScenario)
+
+	interf, _ := s.ProcessorInterfaceRepo.Get(req.Id)
+	datapools, _ := s.DatapoolService.ListForExec(interf.ProjectId)
+
+	agentExec.ReplaceAll(&req.BaseRequest, variableMap, datapools)
 
 	ret = req
 

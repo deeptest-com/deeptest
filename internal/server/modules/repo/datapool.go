@@ -28,6 +28,7 @@ func (r *DatapoolRepo) List(projectId uint) (ret []v1.DatapoolReq, err error) {
 			},
 			Name: po.Name,
 			Desc: po.Desc,
+			Data: po.Data,
 		}
 
 		ret = append(ret, to)

@@ -11,6 +11,7 @@ import (
 
 type ScenarioNodeCtrl struct {
 	ScenarioNodeService *service.ScenarioNodeService `inject:""`
+	ScenarioService     *service.ScenarioService     `inject:""`
 	BaseCtrl
 }
 
@@ -18,7 +19,13 @@ type ScenarioNodeCtrl struct {
 func (c *ScenarioNodeCtrl) LoadTree(ctx iris.Context) {
 	scenarioId, err := ctx.URLParamInt("scenarioId")
 
-	data, err := c.ScenarioNodeService.GetTree(scenarioId)
+	scenario, err := c.ScenarioService.GetById(uint(scenarioId))
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		return
+	}
+
+	data, err := c.ScenarioNodeService.GetTree(scenario)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
 		return

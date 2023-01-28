@@ -20,7 +20,7 @@ type VariableService struct {
 func (s *VariableService) GetVariablesByInterface(interfaceId uint, usedBy consts.UsedBy) (ret map[string]interface{}, err error) {
 	var projectId uint
 
-	if usedBy == consts.Interface {
+	if usedBy == consts.UsedByInterface {
 		interf, _ := s.InterfaceRepo.Get(interfaceId)
 		projectId = interf.ProjectId
 	} else {

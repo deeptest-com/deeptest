@@ -21,10 +21,12 @@ func (s *InvocationService) Invoke(req domain.InvocationReq) (ret v1.InvocationR
 		interfaceReq := s.getInterfaceToExec(req)
 		ret, err = s.Test(interfaceReq)
 		err = s.SubmitInterfaceResult(req, ret, req.ServerUrl, req.Token)
+
 	} else {
 		interfaceReq := s.getProcessorInterfaceToExec(req)
 		ret, err = s.Test(interfaceReq)
 		err = s.SubmitProcessorInterfaceResult(req, ret, req.ServerUrl, req.Token)
+
 	}
 
 	return

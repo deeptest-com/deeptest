@@ -22,7 +22,7 @@ func (c *FileCtrl) Upload(ctx iris.Context) {
 	}
 	defer f.Close()
 
-	pth, err := c.FileService.UploadFile(ctx, fh, "files")
+	pth, err := c.FileService.UploadFile(ctx, fh)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
 		return

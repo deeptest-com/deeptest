@@ -14,10 +14,13 @@ var (
 	ScopeHierarchy  = map[uint]*[]uint{}
 	ScopedVariables = map[uint][]domain.ExecVariable{}
 	ScopedCookies   = map[uint][]domain.ExecCookie{}
+
+	Datapools = map[string][]map[string]interface{}{}
 )
 
-func InitScopeHierarchy(processor *Processor) (variables []domain.ExecVariable) {
-	GetScopeHierarchy(processor, &ScopeHierarchy)
+func InitScopeHierarchy(execObj *ProcessorExecObj) (variables []domain.ExecVariable) {
+	GetScopeHierarchy(execObj.RootProcessor, &ScopeHierarchy)
+	Datapools = execObj.Datapools
 
 	ScopedVariables = map[uint][]domain.ExecVariable{}
 	ScopedCookies = map[uint][]domain.ExecCookie{}
@@ -44,7 +47,7 @@ func ListCachedVariable(processorId uint) (variables []domain.ExecVariable) {
 
 	return
 }
-func GetVariableMap(processorId uint) (ret map[string]interface{}) {
+func GetCachedVariableMapInContext(processorId uint) (ret map[string]interface{}) {
 	ret = map[string]interface{}{}
 
 	variables := ListCachedVariable(processorId)

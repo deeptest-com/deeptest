@@ -1,6 +1,7 @@
 package service
 
 import (
+	"encoding/json"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
@@ -90,6 +91,44 @@ func (s *DatapoolService) ReadExcel(pth string) (ret [][]interface{}, err error)
 		}
 
 		ret = append(ret, row)
+	}
+
+	return
+}
+
+func (s *DatapoolService) ListForExec(projectId uint) (ret map[string][]map[string]interface{}, error interface{}) {
+	ret = map[string][]map[string]interface{}{}
+
+	pos, err := s.DatapoolRepo.List(projectId)
+	if err != nil {
+		return
+	}
+
+	for _, po := range pos {
+		var arr [][]string
+		json.Unmarshal([]byte(po.Data), &arr)
+
+		var headers []string
+		for _, col := range arr[0] {
+			headers = append(headers, col)
+		}
+
+		var items []map[string]interface{}
+
+		for rowIndex, row := range arr {
+			if rowIndex == 0 {
+				continue
+			}
+
+			item := map[string]interface{}{}
+			for colIndex, col := range row {
+				item[headers[colIndex]] = col
+			}
+
+			items = append(items, item)
+		}
+
+		ret[po.Name] = items
 	}
 
 	return

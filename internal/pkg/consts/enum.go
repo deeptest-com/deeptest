@@ -255,8 +255,8 @@ func (e ProductStatus) String() string {
 type UsedBy string
 
 const (
-	Interface UsedBy = "interface"
-	Scenario  UsedBy = "scenario"
+	UsedByInterface UsedBy = "interface"
+	UsedByScenario  UsedBy = "scenario"
 )
 
 type ExtractorSrc string
@@ -522,5 +522,28 @@ const (
 )
 
 func (e NodeType) String() string {
+	return string(e)
+}
+
+type PlaceholderPrefix string
+
+const (
+	PlaceholderPrefixDatapool PlaceholderPrefix = "_dp"
+	PlaceholderPrefixFunction PlaceholderPrefix = "_func"
+)
+
+func (e PlaceholderPrefix) String() string {
+	return string(e)
+}
+
+type PlaceholderType string
+
+const (
+	PlaceholderTypeVariable PlaceholderType = "variable"
+	PlaceholderTypeDatapool PlaceholderType = "datapool"
+	PlaceholderTypeFunction PlaceholderType = "function"
+)
+
+func (e PlaceholderType) String() string {
 	return string(e)
 }

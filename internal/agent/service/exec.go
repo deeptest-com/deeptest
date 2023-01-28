@@ -30,7 +30,7 @@ func (s *ExecService) ExecScenario(execReq *agentExec.ProcessorExecReq, wsMsg *w
 	execObj := s.getScenarioToExec(execReq)
 	s.RestoreEntityFromRawAndSetParent(execObj.RootProcessor)
 
-	agentExec.InitScopeHierarchy(execObj.RootProcessor)
+	agentExec.InitScopeHierarchy(execObj)
 
 	// start msg
 	exec.SendStartMsg(wsMsg)

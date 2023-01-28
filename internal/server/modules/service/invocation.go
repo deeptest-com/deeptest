@@ -22,6 +22,7 @@ type InvocationService struct {
 	ExtractorService         *ExtractorService          `inject:""`
 	CheckpointService        *CheckpointService         `inject:""`
 	VariableService          *VariableService           `inject:""`
+	DatapoolService          *DatapoolService           `inject:""`
 }
 
 func (s *InvocationService) LoadInterfaceExecData(req v1.InvocationRequest) (ret v1.InvocationRequest, err error) {
@@ -38,8 +39,8 @@ func (s *InvocationService) LoadInterfaceExecData(req v1.InvocationRequest) (ret
 func (s *InvocationService) SubmitInterfaceInvokeResult(req v1.SubmitInvocationResultRequest) (err error) {
 	interf, _ := s.InterfaceRepo.GetDetail(req.Response.Id)
 
-	s.ExtractorService.ExtractInterface(interf.ID, req.Response, consts.Interface)
-	s.CheckpointService.CheckInterface(interf.ID, req.Response, consts.Interface)
+	s.ExtractorService.ExtractInterface(interf.ID, req.Response, consts.UsedByInterface)
+	s.CheckpointService.CheckInterface(interf.ID, req.Response, consts.UsedByInterface)
 
 	_, err = s.CreateForInterface(req.Request, req.Response, interf.ProjectId)
 
@@ -150,8 +151,13 @@ func (s *InvocationService) CopyValueFromRequest(invocation *model.Invocation, r
 
 func (s *InvocationService) ReplaceEnvironmentAndExtractorVariables(req v1.InvocationRequest) (
 	ret v1.InvocationRequest, err error) {
-	variableMap, _ := s.VariableService.GetVariablesByInterface(req.Id, consts.Interface)
-	agentExec.ReplaceAll(&req.BaseRequest, variableMap)
+
+	interf, _ := s.InterfaceRepo.Get(req.Id)
+
+	variableMap, _ := s.VariableService.GetVariablesByInterface(req.Id, consts.UsedByInterface)
+	datapools, _ := s.DatapoolService.ListForExec(interf.ProjectId)
+
+	agentExec.ReplaceAll(&req.BaseRequest, variableMap, datapools)
 
 	ret = req
 

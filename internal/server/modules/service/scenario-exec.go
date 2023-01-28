@@ -21,9 +21,10 @@ type ScenarioExecService struct {
 	TestLogRepo      *repo.LogRepo          `inject:""`
 
 	EnvironmentService *EnvironmentService `inject:""`
+	DatapoolService    *DatapoolService    `inject:""`
 }
 
-func (s *ScenarioExecService) Load(scenarioId int) (result domain.Report, err error) {
+func (s *ScenarioExecService) LoadExecResult(scenarioId int) (result domain.Report, err error) {
 	scenario, err := s.ScenarioRepo.Get(uint(scenarioId))
 	if err != nil {
 		return
@@ -34,11 +35,17 @@ func (s *ScenarioExecService) Load(scenarioId int) (result domain.Report, err er
 	return
 }
 
-func (s *ScenarioExecService) LoadExecData(scenarioId int) (execReq agentExec.ProcessorExecObj, err error) {
-	rootProcessor, _ := s.ScenarioNodeRepo.GetTree(uint(scenarioId), true)
-	execReq.Variables, _ = s.EnvironmentService.ListVariableForExec(uint(scenarioId))
+func (s *ScenarioExecService) LoadExecData(scenarioId int) (execObj agentExec.ProcessorExecObj, err error) {
+	scenario, err := s.ScenarioRepo.Get(uint(scenarioId))
+	if err != nil {
+		return
+	}
 
-	execReq.RootProcessor = rootProcessor
+	rootProcessor, _ := s.ScenarioNodeRepo.GetTree(scenario, true)
+	execObj.Variables, _ = s.EnvironmentService.ListVariableForExec(scenario)
+	execObj.Datapools, _ = s.DatapoolService.ListForExec(scenario.ProjectId)
+
+	execObj.RootProcessor = rootProcessor
 
 	return
 }

@@ -17,10 +17,8 @@ type ScenarioNodeRepo struct {
 	ScenarioRepo          *ScenarioRepo          `inject:""`
 }
 
-func (r *ScenarioNodeRepo) GetTree(scenarioId uint, withEntity bool) (root *agentExec.Processor, err error) {
-	scenario, err := r.ScenarioRepo.Get(scenarioId)
-
-	pos, err := r.ListByScenario(scenarioId)
+func (r *ScenarioNodeRepo) GetTree(scenario model.Scenario, withEntity bool) (root *agentExec.Processor, err error) {
+	pos, err := r.ListByScenario(scenario.ID)
 	if err != nil {
 		return
 	}

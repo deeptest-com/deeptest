@@ -94,7 +94,7 @@ func (c *ExtractorCtrl) CreateOrUpdateResult(ctx iris.Context) {
 		return
 	}
 
-	err = c.ExtractorService.CreateOrUpdateResult(&extractor, consts.Interface)
+	err = c.ExtractorService.CreateOrUpdateResult(&extractor, consts.UsedByInterface)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: err.Error()})
 		return

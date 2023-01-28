@@ -62,6 +62,7 @@ func (s *InterfaceService) Create(req v1.InterfaceReq) (interf *model.Interface,
 	interf = &model.Interface{
 		InterfaceBase: model.InterfaceBase{Name: req.Name,
 			ProjectId: uint(req.ProjectId),
+			IsLeaf:    true,
 		},
 	}
 

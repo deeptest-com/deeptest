@@ -21,6 +21,9 @@ func (c *MockCtrl) OAuth2Callback(ctx iris.Context) {
 
 func (c *MockCtrl) Get(ctx iris.Context) {
 	respType := ctx.URLParam("respType")
+	test := ctx.URLParam("test")
+
+	logUtils.Infof(test)
 
 	username, password, ok := ctx.Request().BasicAuth()
 	if ok {

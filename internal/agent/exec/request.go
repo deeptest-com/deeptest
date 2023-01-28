@@ -6,9 +6,11 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
 	_httpUtils "github.com/aaronchen2k/deeptest/pkg/lib/http"
-	"log"
+	"math/rand"
 	"regexp"
+	"strconv"
 	"strings"
+	"time"
 )
 
 func Invoke(req v1.BaseRequest) (resp v1.InvocationResponse, err error) {
@@ -88,9 +90,7 @@ func GetContentProps(resp *v1.InvocationResponse) {
 	return
 }
 
-func ReplaceAll(req *v1.BaseRequest, variableMap map[string]interface{},
-	datapools map[string][]map[string]interface{}) {
-
+func ReplaceAll(req *v1.BaseRequest, variableMap map[string]interface{}, datapools map[string][]map[string]interface{}) {
 	replaceUrl(req, variableMap, datapools)
 	replaceParams(req, variableMap, datapools)
 	replaceHeaders(req, variableMap, datapools)
@@ -137,8 +137,7 @@ func replaceAuthor(req *v1.BaseRequest, variableMap map[string]interface{}, data
 	}
 }
 
-func ReplaceVariableValue(value string, variableMap map[string]interface{},
-	datapools map[string][]map[string]interface{}) (ret string) {
+func ReplaceVariableValue(value string, variableMap map[string]interface{}, datapools map[string][]map[string]interface{}) (ret string) {
 
 	variablePlaceholders := GetVariablesInVariablePlaceholder(value)
 	ret = value
@@ -155,8 +154,7 @@ func ReplaceVariableValue(value string, variableMap map[string]interface{},
 	return
 }
 
-func getPlaceholderValue(placeholder string, variableMap map[string]interface{},
-	datapools map[string][]map[string]interface{}) (ret string) {
+func getPlaceholderValue(placeholder string, variableMap map[string]interface{}, datapools map[string][]map[string]interface{}) (ret string) {
 
 	typ := getPlaceholderType(placeholder)
 
@@ -181,10 +179,54 @@ func getDatapoolValue(placeholder string, datapools map[string][]map[string]inte
 	// _dp(name, col, <1 | seq | rand>)
 
 	regex := regexp.MustCompile(fmt.Sprintf("(?Ui)%s\\((.+),(.+),(.+)\\)", consts.PlaceholderPrefixDatapool))
-
 	arrs := regex.FindAllStringSubmatch(placeholder, -1)
 
-	log.Print(arrs)
+	if !(len(arrs) == 1 && len(arrs[0]) == 4) {
+		return
+	}
+
+	dpName := strings.TrimSpace(arrs[0][1])
+	dpCol := strings.TrimSpace(arrs[0][2])
+	dpSeq := strings.TrimSpace(arrs[0][3])
+
+	dp := datapools[dpName]
+	if dp == nil {
+		ret = fmt.Sprintf("${%s}", placeholder)
+		return
+	}
+
+	rowIndex := getDatapoolRow(dpName, dpSeq, datapools)
+
+	val := datapools[dpName][rowIndex][dpCol]
+	if val == nil {
+		val = "NOT_FOUND"
+	}
+
+	ret = fmt.Sprintf("%v", val)
+
+	return
+}
+
+func getDatapoolRow(dpName, seq string, datapools map[string][]map[string]interface{}) (ret int) {
+	dp := datapools[dpName]
+	if dp == nil {
+		return
+	}
+
+	total := len(dp)
+
+	if seq == "seq" {
+		ret = DatapoolCursor[dpName] % total
+		DatapoolCursor[dpName]++
+
+	} else if seq == "rand" {
+		rand.Seed(time.Now().Unix())
+		ret = rand.Intn(total)
+
+	} else {
+		seqInt, _ := strconv.Atoi(seq)
+		ret = seqInt % total
+	}
 
 	return
 }

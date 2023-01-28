@@ -15,7 +15,8 @@ var (
 	ScopedVariables = map[uint][]domain.ExecVariable{}
 	ScopedCookies   = map[uint][]domain.ExecCookie{}
 
-	Datapools = map[string][]map[string]interface{}{}
+	Datapools      = map[string][]map[string]interface{}{}
+	DatapoolCursor = map[string]int{}
 )
 
 func InitScopeHierarchy(execObj *ProcessorExecObj) (variables []domain.ExecVariable) {

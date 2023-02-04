@@ -7,6 +7,8 @@ type Interface struct {
 
 	InterfaceBase
 
+	//ReqBodySpec InterfaceReqBodySpec `gorm:"-" json:"basicAuth"`
+
 	Children []*Interface `gorm:"-" json:"children"`
 
 	Params  []InterfaceParam  `gorm:"-" json:"params"`

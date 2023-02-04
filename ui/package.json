@@ -27,7 +27,7 @@
     "moment": "^2.29.4",
     "monaco-editor": "^0.25.2",
     "monaco-editor-webpack-plugin": "^6.0.0",
-    "neffos.js": "^0.1.25",
+    "neffos.js": "0.1.32",
     "node-fetch": "2.6.6",
     "nprogress": "^0.2.0",
     "vue": "^3.2.18",

@@ -31,8 +31,8 @@
       <div class="codes">
         <MonacoEditor
             class="editor"
-            :value="interfaceData.preRequestScript"
-            language="javascript"
+            v-model:value="interfaceData.preRequestScript"
+            language="typescript"
             theme="vs"
             :options="editorOptions"
             @change="editorChange"

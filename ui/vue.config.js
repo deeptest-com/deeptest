@@ -33,8 +33,8 @@ module.exports = {
                 app.use(bodyParser.json());
                 // create application/x-www-form-urlencoded parser
                 app.use(bodyParser.urlencoded({ extended: false}));
-                mockServer(app);            
-            }            
+                mockServer(app);
+            }
         }
     },
     css: {
@@ -86,7 +86,7 @@ module.exports = {
         config.plugin('monaco-editor').use(MonacoWebpackPlugin, [
             {
                 languages: [
-                    'javascript',
+                    'javascript', 'typescript',
                     'html',
                     'xml',
                     'json',

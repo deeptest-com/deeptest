@@ -11,6 +11,7 @@ export interface Interface {
     bodyFormUrlencoded: BodyFormUrlEncodedItem[];
     bodyFormData: BodyFormDataItem[];
     bodyType: string;
+    preRequestScript: string,
 
     authorizationType: string
     basicAuth: BasicAuth;

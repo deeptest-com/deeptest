@@ -17,13 +17,13 @@
         <Authorization v-if="activeKey === '4'"></Authorization>
       </a-tab-pane>
 
-<!--      <a-tab-pane key="5" tab="预处理">
+      <a-tab-pane key="5" tab="预处理">
         <PreRequestScript v-if="activeKey === '5'"></PreRequestScript>
       </a-tab-pane>
 
-      <a-tab-pane key="6" tab="验证">
-        <ValidationScript v-if="activeKey === '6'"></ValidationScript>
-      </a-tab-pane>-->
+      <!--      <a-tab-pane key="6" tab="验证">
+              <ValidationScript v-if="activeKey === '6'"></ValidationScript>
+            </a-tab-pane>-->
     </a-tabs>
   </div>
 </template>

@@ -32,6 +32,7 @@ var (
 		&InterfaceApiKey{},
 		&InterfaceExtractor{},
 		&InterfaceCheckpoint{},
+		&Snippet{},
 
 		&Invocation{},
 		&Auth2Token{},

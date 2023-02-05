@@ -35,6 +35,7 @@
             language="javascript"
             theme="vs"
             :options="editorOptions"
+            @change="editorChange"
         />
       </div>
 
@@ -43,14 +44,20 @@
 
         <div class="title">代码片段：</div>
         <div>
-          <a-link to="">Environment: Set an environment variable</a-link>
+          <div @click="addSnippet('setEnvVar')" class="dp-link-primary">Set an environment variable</div>
+          <div @click="addSnippet('getEnvVar')" class="dp-link-primary">Get an environment variable</div>
+          <div @click="addSnippet('clearEnvVar')" class="dp-link-primary">Clear an environment variable</div>
+
+          <div @click="addSnippet('setVar')" class="dp-link-primary">Set an variable</div>
+          <div @click="addSnippet('getVar')" class="dp-link-primary">Get an variable</div>
+          <div @click="addSnippet('clearVar')" class="dp-link-primary">Clear an variable</div>
         </div>
       </div>
     </div>
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import {computed, ComputedRef, defineComponent, inject, PropType, Ref, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
@@ -58,40 +65,35 @@ import { QuestionCircleOutlined, DeleteOutlined, ClearOutlined } from '@ant-desi
 import {StateType} from "@/views/interface/store";
 import ALink from "@/components/ALink/index.vue";
 import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
-import {MonacoOptions} from "@/utils/const";
+import {MonacoOptions, NotificationKeyCommon} from "@/utils/const";
 import {Interface} from "@/views/interface/data";
 import {UsedBy} from "@/utils/enum";
 import {StateType as ScenarioStateType} from "@/views/scenario/store";
+import {inviteUser} from "@/views/user/info/service";
+import {notification} from "ant-design-vue";
+import {getSnippet} from "@/views/interface/service";
 
-interface RequestPreRequestScriptSetupData {
-  interfaceData: ComputedRef;
-  editorOptions: Ref
+const usedBy = inject('usedBy') as UsedBy
+const {t} = useI18n();
+const store = useStore<{ Interface: StateType, Scenario: ScenarioStateType }>();
+const interfaceData = computed<Interface>(
+    () => usedBy === UsedBy.interface ? store.state.Interface.interfaceData : store.state.Scenario.interfaceData);
+
+const editorOptions = ref(Object.assign({
+    usedWith: 'request',
+    minimap: {
+      enabled: false
+    }
+  }, MonacoOptions
+))
+
+const addSnippet = (name) => {
+  store.dispatch('Interface/addSnippet', name)
 }
 
-export default defineComponent({
-  name: 'RequestPreRequestScript',
-  components: {
-    ALink,
-    QuestionCircleOutlined, DeleteOutlined, ClearOutlined, MonacoEditor,
-  },
-  setup(props): RequestPreRequestScriptSetupData {
-    const usedBy = inject('usedBy') as UsedBy
-    const {t} = useI18n();
-    const store = useStore<{ Interface: StateType, Scenario: ScenarioStateType }>();
-    const interfaceData = computed<Interface>(
-        () => usedBy === UsedBy.interface ? store.state.Interface.interfaceData : store.state.Scenario.interfaceData);
-    const editorOptions = ref(MonacoOptions)
-
-    function onJsonChange (value) {
-      console.log('value:', value)
-    }
-
-    return {
-      interfaceData,
-      editorOptions,
-    }
-  }
-})
+const editorChange = (newScriptCode) => {
+  interfaceData.value.preRequestScript = newScriptCode;
+}
 
 </script>
 
@@ -113,8 +115,9 @@ export default defineComponent({
       flex: 1;
     }
     .refer {
-      width: 300px;
+      width: 260px;
       padding: 10px;
+      overflow-y: auto;
 
       .title {
         margin-top: 12px;

@@ -26,7 +26,7 @@ import {
     invokeInterface,
     listExtractor,
     listCheckpoint,
-    listValidExtractorVariableForInterface,
+    listValidExtractorVariableForInterface, getSnippet,
 } from './service';
 import {Checkpoint, Extractor, Interface, Response} from "@/views/interface/data";
 import {getNodeMap} from "@/services/tree";
@@ -71,6 +71,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setBody: Mutation<StateType>;
         setParam: Mutation<StateType>;
         setHeader: Mutation<StateType>;
+        setPreRequestScript: Mutation<StateType>;
     };
     actions: {
         invokeInterface: Action<StateType, StateType>;
@@ -107,6 +108,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         updateBody: Action<StateType, StateType>;
         updateParam: Action<StateType, StateType>;
         updateHeader: Action<StateType, StateType>;
+        addSnippet: Action<StateType, StateType>;
     };
 }
 
@@ -193,6 +195,10 @@ const StoreModel: ModuleType = {
         setHeader(state, payload) {
             console.log('setParam', payload)
             state.interfaceData.headers[payload.index].value = payload.value;
+        },
+        setPreRequestScript(state, payload) {
+            console.log('setPreRequestScript', payload)
+            state.interfaceData.preRequestScript = payload;
         },
     },
     actions: {
@@ -498,6 +504,16 @@ const StoreModel: ModuleType = {
         },
         async updateHeader({commit, dispatch, state}, data: any) {
             commit('setHeader', data);
+            return true;
+        },
+        async addSnippet({commit, dispatch, state}, name: string) {
+            const json = await getSnippet(name)
+            if (json.code === 0) {
+                let script = state.interfaceData.preRequestScript + '\n' +  json.data.script
+                script = script.trim()
+                commit('setPreRequestScript', script);
+            }
+
             return true;
         },
     }

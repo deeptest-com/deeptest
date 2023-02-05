@@ -12,6 +12,7 @@ const apiAuth = 'auth';
 const apiEnvironment = 'environments'
 const apiEnvironmentVar = `${apiEnvironment}/vars`
 const apiShareVar = `${apiEnvironment}/shareVars`
+const apiSnippets = 'snippets'
 
 const apiExtractor = 'extractors'
 const apiCheckpoint = 'checkpoints'
@@ -333,6 +334,16 @@ export async function testExpr(data): Promise<any> {
         url: `/${apiParser}/testExpr`,
         method: 'POST',
         data
+    });
+}
+
+export async function getSnippet(name): Promise<any> {
+    const params = {name: name}
+
+    return request({
+        url: `/${apiSnippets}`,
+        method: 'GET',
+        params
     });
 }
 

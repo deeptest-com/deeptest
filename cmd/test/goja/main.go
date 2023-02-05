@@ -21,40 +21,59 @@ func main() {
 	registry := new(require.Registry) // registry 能夠被 多個 goja.Runtime 共用
 	// 創建 虛擬機
 	vm := goja.New()
-	vm.Set(`println`, func(args ...interface{}) {
-		fmt.Println(args...)
+
+	//vm.Set(`println`, func(args ...interface{}) {
+	//	fmt.Println(args...)
+	//})
+	//vm.Set("login", func(name, password string) string {
+	//	return fmt.Sprintf("%s-%s", name, password)
+	//})
+	//
+	//req := registry.Enable(vm) // 爲 Runtime 啓用模塊
+	//
+	//m, err := req.Require("./underscore-min.js")
+	//if err != nil {
+	//	log.Panic(err)
+	//}
+	//vm.Set("_", m)
+	//
+	//shortid, err := req.Require("./shortid.js")
+	//if err != nil {
+	//	log.Panic(err)
+	//}
+	//vm.Set("shortid", shortid)
+
+	vm.Set("getVariable", func(name string) string {
+		return fmt.Sprintf("getVariable(%s)", name)
 	})
-	vm.Set("login", func(name, password string) string {
-		return fmt.Sprintf("%s-%s", name, password)
+	vm.Set("setVariable", func(name, val string) string {
+		return fmt.Sprintf("setVariable(%s, %s)", name, val)
 	})
 
-	req := registry.Enable(vm) // 爲 Runtime 啓用模塊
-
-	m, err := req.Require("./underscore-min.js")
+	req := registry.Enable(vm)
+	dp, err := req.Require("./lib/dp.js")
 	if err != nil {
 		log.Panic(err)
 	}
-	vm.Set("_", m)
+	vm.Set("dp", dp)
 
-	shortid, err := req.Require("./shortid.js")
-	if err != nil {
-		log.Panic(err)
-	}
-	vm.Set("shortid", shortid)
+	//app, err := req.Require("./app.js")
+	//if err != nil {
+	//	log.Panic(err)
+	//}
+	//
+	//ob := app.ToObject(vm)
+	//fmt.Println(ob.Get("filteruser").String())
+	//fmt.Println(ob.Get("id").String())
+	//fmt.Println(ob.Get("id2").String())
 
-	app, err := req.Require("./app.js")
-	if err != nil {
-		log.Panic(err)
-	}
+	script := `
+const key = 'foo';
+const val = dp.variable.get(key);
+val;
+`
 
-	ob := app.ToObject(vm)
-	fmt.Println(ob.Get("filteruser").String())
-	fmt.Println(ob.Get("id").String())
-	fmt.Println(ob.Get("id2").String())
-
-	fmt.Println(ob.Get("id2").String())
-
-	val, err := vm.RunString("var a= 1111; a += shortid.generate(); a;")
+	val, err := vm.RunString(script)
 	if err != nil {
 		log.Panic(err)
 	}

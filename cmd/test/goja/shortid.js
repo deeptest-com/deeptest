@@ -14,6 +14,8 @@
         } else {
             g = this
         }
+
+        consoel.log('===', g)
         g.shortid = f()
     }
 })(function () {

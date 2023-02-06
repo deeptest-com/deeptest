@@ -88,11 +88,56 @@ export default defineComponent({
           horizontalScrollbarSize: 6
         }})
 
+      const libSource =
+        `
+        // function foo() {
+        // }
+        //
+        // function bar() {
+        // }
+        //
+        // export default {
+        //     foo,
+        //     bar
+        // };
+
+        // declare module 'DeepTest' {
+        //    interface MyInterface {}
+        //    const fooBar:() => void
+        // }
+
+        declare global {
+          const dp: {
+            environment: {
+              get: (variable_name: string) => {},
+              set: (variable_name: string, variable_value: any) => {},
+              clear: (variable_name: string) => {},
+            },
+            variables: {
+              get: (variable_name: string) => {},
+              set: (variable_name: string, variable_value: any) => {},
+              clear: (variable_name: string) => {},
+            }
+          }
+        }
+
+        export default {};
+`;
+
+      const src =
+      `
+      import * as dp from "DeepTest";
+      dp.fooBar();
+`
+      // const externalDTSFilename = 'ex.d.ts';
+      // monaco.languages.typescript.typescriptDefaults.addExtraLib(libSource, `inmemory://model/${externalDTSFilename}`);
+      monaco.languages.typescript.typescriptDefaults.addExtraLib(libSource);
+
       this.editor = monaco.editor[this.diffEditor ? 'createDiffEditor' : 'create'](this.$el, {
         value: value,
         language: language,
         theme: theme,
-        ...options
+        ...options,
       });
 
       this.diffEditor && this._setModel(this.value, this.original);

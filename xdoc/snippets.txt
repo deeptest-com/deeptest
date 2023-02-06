@@ -1,0 +1,29 @@
+declare global {
+  const dp: {
+    environment: {
+      get: (variable_name: string) => {},
+      set: (variable_name: string, variable_value: any) => {},
+      clear: (variable_name: string) => {},
+    },
+    variables: {
+      get: (variable_name: string) => {},
+      set: (variable_name: string, variable_value: any) => {},
+      clear: (variable_name: string) => {},
+    }
+  }
+}
+
+export default {};
+
+declare module 'DeepTest' {
+  interface Foo {}
+  const bar:() => void
+}
+
+dp.environment.get("variable_name");
+dp.environment.set("variable_name", "variable_value");
+dp.environment.clear("variable_name");
+
+dp.variables.get("variable_name");
+dp.variables.set("variable_name", "variable_value");
+dp.variables.clear("variable_name");

@@ -44,13 +44,13 @@
 
         <div class="title">代码片段：</div>
         <div>
-          <div @click="addSnippet('setEnvVar')" class="dp-link-primary">Set an environment variable</div>
-          <div @click="addSnippet('getEnvVar')" class="dp-link-primary">Get an environment variable</div>
-          <div @click="addSnippet('clearEnvVar')" class="dp-link-primary">Clear an environment variable</div>
+          <div @click="addSnippet('environment_get')" class="dp-link-primary">Set an environment variable</div>
+          <div @click="addSnippet('environment_set')" class="dp-link-primary">Get an environment variable</div>
+          <div @click="addSnippet('environment_clear')" class="dp-link-primary">Clear an environment variable</div>
 
-          <div @click="addSnippet('setVar')" class="dp-link-primary">Set an variable</div>
-          <div @click="addSnippet('getVar')" class="dp-link-primary">Get an variable</div>
-          <div @click="addSnippet('clearVar')" class="dp-link-primary">Clear an variable</div>
+          <div @click="addSnippet('variables_get')" class="dp-link-primary">Set an variable</div>
+          <div @click="addSnippet('variables_set')" class="dp-link-primary">Get an variable</div>
+          <div @click="addSnippet('variables_clear')" class="dp-link-primary">Clear an variable</div>
         </div>
       </div>
     </div>
@@ -81,9 +81,10 @@ const interfaceData = computed<Interface>(
 
 const editorOptions = ref(Object.assign({
     usedWith: 'request',
+    allowNonTsExtensions: true,
     minimap: {
       enabled: false
-    }
+    },
   }, MonacoOptions
 ))
 

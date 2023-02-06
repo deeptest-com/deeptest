@@ -9,6 +9,7 @@ import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
 import debounce from "lodash.debounce";
 import {addExtractAction, addReplaceAction} from "@/components/Editor/service";
+import {getSnippet} from "@/views/interface/service";
 
 export default defineComponent({
   name: "MonacoEditor",
@@ -77,61 +78,28 @@ export default defineComponent({
   },
 
   methods: {
-    initMonaco(){
+    async initMonaco() {
       this.$emit('editorWillMount', this.monaco)
 
-      const { interfaceId, value, language, theme, options } = this;
-      Object.assign(options, {scrollbar: {
+      const {interfaceId, value, language, theme, options} = this;
+      Object.assign(options, {
+        scrollbar: {
           useShadows: false,
           automaticLayout: true,
           verticalScrollbarSize: 6,
           horizontalScrollbarSize: 6
-        }})
-
-      const libSource =
-        `
-        // function foo() {
-        // }
-        //
-        // function bar() {
-        // }
-        //
-        // export default {
-        //     foo,
-        //     bar
-        // };
-
-        // declare module 'DeepTest' {
-        //    interface MyInterface {}
-        //    const fooBar:() => void
-        // }
-
-        declare global {
-          const dp: {
-            environment: {
-              get: (variable_name: string) => {},
-              set: (variable_name: string, variable_value: any) => {},
-              clear: (variable_name: string) => {},
-            },
-            variables: {
-              get: (variable_name: string) => {},
-              set: (variable_name: string, variable_value: any) => {},
-              clear: (variable_name: string) => {},
-            }
-          }
         }
+      })
 
-        export default {};
-`;
-
-      const src =
-      `
-      import * as dp from "DeepTest";
-      dp.fooBar();
-`
-      // const externalDTSFilename = 'ex.d.ts';
-      // monaco.languages.typescript.typescriptDefaults.addExtraLib(libSource, `inmemory://model/${externalDTSFilename}`);
-      monaco.languages.typescript.typescriptDefaults.addExtraLib(libSource);
+      if (options.initTsModules) {
+        const json = await getSnippet('global')
+        console.log('------')
+        if (json.code === 0) {
+          // const externalDtsFileName = 'ex.d.ts';
+          // monaco.languages.typescript.typescriptDefaults.addExtraLib(libSource, `inmemory://model/${externalDtsFileName}`);
+          monaco.languages.typescript.typescriptDefaults.addExtraLib(json.data.script);
+        }
+      }
 
       this.editor = monaco.editor[this.diffEditor ? 'createDiffEditor' : 'create'](this.$el, {
         value: value,
@@ -169,8 +137,8 @@ export default defineComponent({
         this.formatDocUpdate(editor)
 
         setTimeout(() => {
-          const elems= document.getElementsByClassName('monaco-editor-vue3');
-          for(let i=0; i < elems.length; i++) {
+          const elems = document.getElementsByClassName('monaco-editor-vue3');
+          for (let i = 0; i < elems.length; i++) {
             elems[i].style.maxWidth = 0 // elems[i].clientWidth - 200 + 'px'
           }
         }, 100)
@@ -234,6 +202,7 @@ export default defineComponent({
     options: {
       deep: true,
       handler(options) {
+        if (!this.editor) return
         this.editor.updateOptions(options);
       }
     },

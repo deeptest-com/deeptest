@@ -81,6 +81,8 @@ const interfaceData = computed<Interface>(
 
 const editorOptions = ref(Object.assign({
     usedWith: 'request',
+    initTsModules: true,
+
     allowNonTsExtensions: true,
     minimap: {
       enabled: false

@@ -11,17 +11,19 @@ import (
 )
 
 var (
-	ScopeHierarchy  = map[uint]*[]uint{}
-	ScopedVariables = map[uint][]domain.ExecVariable{}
-	ScopedCookies   = map[uint][]domain.ExecCookie{}
+	Variables = map[string]interface{}{}
 
-	Datapools      = map[string][]map[string]interface{}{}
-	DatapoolCursor = map[string]int{}
+	ScopeHierarchy  = map[uint]*[]uint{}               // only for scenario
+	ScopedVariables = map[uint][]domain.ExecVariable{} // only for scenario
+	ScopedCookies   = map[uint][]domain.ExecCookie{}   // only for scenario
+
+	DatapoolData   = map[string][]map[string]interface{}{}
+	DatapoolCursor = map[string]int{} // only for scenario
 )
 
-func InitScopeHierarchy(execObj *ProcessorExecObj) (variables []domain.ExecVariable) {
+func InitExecContext(execObj *ProcessorExecObj) (variables []domain.ExecVariable) {
 	GetScopeHierarchy(execObj.RootProcessor, &ScopeHierarchy)
-	Datapools = execObj.Datapools
+	DatapoolData = execObj.Datapools
 
 	ScopedVariables = map[uint][]domain.ExecVariable{}
 	ScopedCookies = map[uint][]domain.ExecCookie{}
@@ -110,17 +112,17 @@ func EvaluateVariableExpressionValue(variable domain.ExecVariable, variablePath 
 	return
 }
 
-func ImportVariables(processorId uint, variables []domain.Variable, scope consts.ExtractorScope) (err error) {
-	for _, item := range variables {
+func ImportVariables(processorId uint, variables map[string]interface{}, scope consts.ExtractorScope) (err error) {
+	for key, val := range variables {
 		newVariable := domain.ExecVariable{
-			Name:  item.Name,
-			Value: item.Value,
+			Name:  key,
+			Value: val,
 			Scope: scope,
 		}
 
 		found := false
 		for i := 0; i < len(ScopedVariables[processorId]); i++ {
-			if ScopedVariables[processorId][i].Name == item.Name {
+			if ScopedVariables[processorId][i].Name == key {
 				ScopedVariables[processorId][i] = newVariable
 
 				found = true

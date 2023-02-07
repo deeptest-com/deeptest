@@ -35,17 +35,17 @@ func (s *ScenarioExecService) LoadExecResult(scenarioId int) (result domain.Repo
 	return
 }
 
-func (s *ScenarioExecService) LoadExecData(scenarioId int) (execObj agentExec.ProcessorExecObj, err error) {
+func (s *ScenarioExecService) LoadExecData(scenarioId int) (ret agentExec.ProcessorExecObj, err error) {
 	scenario, err := s.ScenarioRepo.Get(uint(scenarioId))
 	if err != nil {
 		return
 	}
 
 	rootProcessor, _ := s.ScenarioNodeRepo.GetTree(scenario, true)
-	execObj.Variables, _ = s.EnvironmentService.ListVariableForExec(scenario)
-	execObj.Datapools, _ = s.DatapoolService.ListForExec(scenario.ProjectId)
+	ret.Variables, _ = s.EnvironmentService.ListVariableForExec(scenario)
+	ret.Datapools, _ = s.DatapoolService.ListForExec(scenario.ProjectId)
 
-	execObj.RootProcessor = rootProcessor
+	ret.RootProcessor = rootProcessor
 
 	return
 }

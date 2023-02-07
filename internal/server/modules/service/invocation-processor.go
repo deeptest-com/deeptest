@@ -11,8 +11,7 @@ import (
 	"time"
 )
 
-type ProcessorInvocationService struct {
-	//InvocationRepo          *repo.InvocationRepo          `inject:""`
+type InvocationProcessorService struct {
 	ProcessorInvocationRepo *repo.ProcessorInvocationRepo `inject:""`
 	ProcessorInterfaceRepo  *repo.ProcessorInterfaceRepo  `inject:""`
 	InterfaceRepo           *repo.InterfaceRepo           `inject:""`
@@ -25,7 +24,7 @@ type ProcessorInvocationService struct {
 	DatapoolService           *DatapoolService           `inject:""`
 }
 
-func (s *ProcessorInvocationService) LoadInterfaceExecData(req v1.InvocationRequest) (ret v1.InvocationRequest, err error) {
+func (s *InvocationProcessorService) LoadInterfaceExecData(req v1.InvocationRequest) (ret v1.InvocationRequest, err error) {
 	err = s.ProcessorInterfaceService.UpdateByInvocation(req)
 	if err != nil {
 		return
@@ -36,7 +35,7 @@ func (s *ProcessorInvocationService) LoadInterfaceExecData(req v1.InvocationRequ
 	return
 }
 
-func (s *ProcessorInvocationService) SubmitInterfaceInvokeResult(req v1.SubmitInvocationResultRequest) (err error) {
+func (s *InvocationProcessorService) SubmitInterfaceInvokeResult(req v1.SubmitInvocationResultRequest) (err error) {
 	processorInterface, _ := s.ProcessorInterfaceRepo.GetDetail(req.Response.Id)
 
 	s.ExtractorService.ExtractInterface(processorInterface.ID, req.Response, consts.UsedByScenario)
@@ -51,7 +50,7 @@ func (s *ProcessorInvocationService) SubmitInterfaceInvokeResult(req v1.SubmitIn
 	return
 }
 
-func (s *ProcessorInvocationService) CreateForScenarioInterface(req v1.InvocationRequest,
+func (s *InvocationProcessorService) CreateForScenarioInterface(req v1.InvocationRequest,
 	resp v1.InvocationResponse, projectId uint) (invocation model.ProcessorInvocation, err error) {
 
 	invocation = model.ProcessorInvocation{
@@ -73,12 +72,12 @@ func (s *ProcessorInvocationService) CreateForScenarioInterface(req v1.Invocatio
 	return
 }
 
-func (s *ProcessorInvocationService) ReplaceEnvironmentAndExtractorVariables(req v1.InvocationRequest) (
+func (s *InvocationProcessorService) ReplaceEnvironmentAndExtractorVariables(req v1.InvocationRequest) (
 	ret v1.InvocationRequest, err error) {
 
-	variableMap, _ := s.VariableService.GetVariablesByInterface(req.Id, consts.UsedByScenario)
-
 	interf, _ := s.ProcessorInterfaceRepo.Get(req.Id)
+
+	variableMap, _ := s.VariableService.GetVariablesByInterface(req.Id, consts.UsedByScenario)
 	datapools, _ := s.DatapoolService.ListForExec(interf.ProjectId)
 
 	agentExec.ReplaceAll(&req.BaseRequest, variableMap, datapools)
@@ -88,13 +87,13 @@ func (s *ProcessorInvocationService) ReplaceEnvironmentAndExtractorVariables(req
 	return
 }
 
-func (s *ProcessorInvocationService) ListByInterface(interfId int) (invocations []model.ProcessorInvocation, err error) {
+func (s *InvocationProcessorService) ListByInterface(interfId int) (invocations []model.ProcessorInvocation, err error) {
 	invocations, err = s.ProcessorInvocationRepo.List(interfId)
 
 	return
 }
 
-func (s *ProcessorInvocationService) GetLastResp(interfId int) (resp v1.InvocationResponse, err error) {
+func (s *InvocationProcessorService) GetLastResp(interfId int) (resp v1.InvocationResponse, err error) {
 	invocation, _ := s.ProcessorInvocationRepo.GetLast(interfId)
 	if invocation.ID > 0 {
 		json.Unmarshal([]byte(invocation.RespContent), &resp)
@@ -108,7 +107,7 @@ func (s *ProcessorInvocationService) GetLastResp(interfId int) (resp v1.Invocati
 	return
 }
 
-func (s *ProcessorInvocationService) GetAsInterface(id int) (interf model.ProcessorInterface, interfResp v1.InvocationResponse, err error) {
+func (s *InvocationProcessorService) GetAsInterface(id int) (interf model.ProcessorInterface, interfResp v1.InvocationResponse, err error) {
 	invocation, err := s.ProcessorInvocationRepo.Get(uint(id))
 
 	interfReq := v1.InvocationRequest{}
@@ -123,7 +122,7 @@ func (s *ProcessorInvocationService) GetAsInterface(id int) (interf model.Proces
 	return
 }
 
-func (s *ProcessorInvocationService) Delete(id uint) (err error) {
+func (s *InvocationProcessorService) Delete(id uint) (err error) {
 	err = s.ProcessorInvocationRepo.Delete(id)
 
 	return

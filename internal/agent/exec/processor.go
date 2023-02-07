@@ -20,8 +20,8 @@ type ProcessorExecReq struct {
 }
 
 type ProcessorExecObj struct {
-	RootProcessor *Processor        `json:"rootProcessor"`
-	Variables     []domain.Variable `json:"variables"`
+	RootProcessor *Processor             `json:"rootProcessor"`
+	Variables     map[string]interface{} `json:"variables"`
 	Datapools     map[string][]map[string]interface{}
 	ServerUrl     string `json:"serverUrl"`
 	Token         string `json:"token"`

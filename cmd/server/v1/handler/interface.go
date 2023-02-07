@@ -13,8 +13,8 @@ import (
 )
 
 type InterfaceCtrl struct {
-	InterfaceService  *service.InterfaceService  `inject:""`
-	InvocationService *service.InvocationService `inject:""`
+	InterfaceService  *service.InterfaceService           `inject:""`
+	InvocationService *service.InvocationInterfaceService `inject:""`
 
 	FileService *commService.FileService `inject:""`
 

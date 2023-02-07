@@ -7,16 +7,16 @@ import (
 	"github.com/kataras/iris/v12"
 )
 
-type ProcessorInvocationCtrl struct {
-	ScenarioInvocationService *service.ProcessorInvocationService `inject:""`
-	InterfaceService          *service.InterfaceService           `inject:""`
-	ExtractorService          *service.ExtractorService           `inject:""`
-	CheckpointService         *service.CheckpointService          `inject:""`
+type InvocationProcessorCtrl struct {
+	InvocationProcessorService *service.InvocationProcessorService `inject:""`
+	InterfaceService           *service.InterfaceService           `inject:""`
+	ExtractorService           *service.ExtractorService           `inject:""`
+	CheckpointService          *service.CheckpointService          `inject:""`
 	BaseCtrl
 }
 
 // LoadInterfaceExecData
-func (c *ProcessorInvocationCtrl) LoadInterfaceExecData(ctx iris.Context) {
+func (c *InvocationProcessorCtrl) LoadInterfaceExecData(ctx iris.Context) {
 	req := domain.InvocationRequest{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -24,7 +24,7 @@ func (c *ProcessorInvocationCtrl) LoadInterfaceExecData(ctx iris.Context) {
 		return
 	}
 
-	data, err := c.ScenarioInvocationService.LoadInterfaceExecData(req)
+	data, err := c.InvocationProcessorService.LoadInterfaceExecData(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -34,7 +34,7 @@ func (c *ProcessorInvocationCtrl) LoadInterfaceExecData(ctx iris.Context) {
 }
 
 // SubmitInterfaceInvokeResult
-func (c *ProcessorInvocationCtrl) SubmitInterfaceInvokeResult(ctx iris.Context) {
+func (c *InvocationProcessorCtrl) SubmitInterfaceInvokeResult(ctx iris.Context) {
 	req := domain.SubmitInvocationResultRequest{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -42,7 +42,7 @@ func (c *ProcessorInvocationCtrl) SubmitInterfaceInvokeResult(ctx iris.Context) 
 		return
 	}
 
-	err = c.ScenarioInvocationService.SubmitInterfaceInvokeResult(req)
+	err = c.InvocationProcessorService.SubmitInterfaceInvokeResult(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
 		return
@@ -52,14 +52,14 @@ func (c *ProcessorInvocationCtrl) SubmitInterfaceInvokeResult(ctx iris.Context) 
 }
 
 // List
-func (c *ProcessorInvocationCtrl) List(ctx iris.Context) {
+func (c *InvocationProcessorCtrl) List(ctx iris.Context) {
 	interfaceId, err := ctx.URLParamInt("interfaceId")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Data: nil, Msg: err.Error()})
 		return
 	}
 
-	data, err := c.ScenarioInvocationService.ListByInterface(interfaceId)
+	data, err := c.InvocationProcessorService.ListByInterface(interfaceId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
 		return
@@ -69,14 +69,14 @@ func (c *ProcessorInvocationCtrl) List(ctx iris.Context) {
 }
 
 // GetAsInterface 详情
-func (c *ProcessorInvocationCtrl) GetAsInterface(ctx iris.Context) {
+func (c *InvocationProcessorCtrl) GetAsInterface(ctx iris.Context) {
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Data: nil, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
-	req, resp, err := c.ScenarioInvocationService.GetAsInterface(id)
+	req, resp, err := c.InvocationProcessorService.GetAsInterface(id)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: _domain.SystemErr.Msg})
 		return
@@ -85,14 +85,14 @@ func (c *ProcessorInvocationCtrl) GetAsInterface(ctx iris.Context) {
 }
 
 // Delete 删除
-func (c *ProcessorInvocationCtrl) Delete(ctx iris.Context) {
+func (c *InvocationProcessorCtrl) Delete(ctx iris.Context) {
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
 		return
 	}
 
-	err = c.ScenarioInvocationService.Delete(uint(id))
+	err = c.InvocationProcessorService.Delete(uint(id))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -102,14 +102,14 @@ func (c *ProcessorInvocationCtrl) Delete(ctx iris.Context) {
 }
 
 // GetLastResp
-func (c *ProcessorInvocationCtrl) GetLastResp(ctx iris.Context) {
+func (c *InvocationProcessorCtrl) GetLastResp(ctx iris.Context) {
 	id, err := ctx.URLParamInt("id")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
 		return
 	}
 
-	resp, err := c.ScenarioInvocationService.GetLastResp(id)
+	resp, err := c.InvocationProcessorService.GetLastResp(id)
 
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: _domain.SystemErr.Msg})

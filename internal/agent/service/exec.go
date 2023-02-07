@@ -23,24 +23,28 @@ var (
 type ExecService struct {
 }
 
-func (s *ExecService) ExecScenario(execReq *agentExec.ProcessorExecReq, wsMsg *websocket.Message) (err error) {
-	consts.ServerUrl = execReq.ServerUrl
-	consts.ServerToken = execReq.Token
+func (s *ExecService) ExecScenario(req *agentExec.ProcessorExecReq, wsMsg *websocket.Message) (err error) {
+	consts.ServerUrl = req.ServerUrl
+	consts.ServerToken = req.Token
 
-	execObj := s.getScenarioToExec(execReq)
-	s.RestoreEntityFromRawAndSetParent(execObj.RootProcessor)
+	scenarioExecReq := s.getScenarioToExec(req)
+	agentExec.Variables = scenarioExecReq.Variables
+	agentExec.DatapoolData = scenarioExecReq.Datapools
 
-	agentExec.InitScopeHierarchy(execObj)
+	s.RestoreEntityFromRawAndSetParent(scenarioExecReq.RootProcessor)
+
+	agentExec.InitExecContext(scenarioExecReq)
+	agentExec.InitJsRuntime()
 
 	// start msg
 	exec.SendStartMsg(wsMsg)
 
 	// execution
-	session := agentExec.NewSession(execObj, false, wsMsg)
+	session := agentExec.NewSession(scenarioExecReq, false, wsMsg)
 	session.Run()
 
 	// submit result
-	s.SubmitResult(*session.RootProcessor.Result, execObj.RootProcessor.ScenarioId, execObj.ServerUrl, execObj.Token)
+	s.SubmitResult(*session.RootProcessor.Result, scenarioExecReq.RootProcessor.ScenarioId, scenarioExecReq.ServerUrl, scenarioExecReq.Token)
 	s.sendSubmitResult(session.RootProcessor.ID, session.WsMsg)
 
 	// end msg

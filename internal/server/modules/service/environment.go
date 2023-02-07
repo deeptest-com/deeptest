@@ -2,7 +2,6 @@ package service
 
 import (
 	"errors"
-	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	repo2 "github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 )
@@ -20,8 +19,8 @@ func (s *EnvironmentService) List() (envs []model.Environment, err error) {
 	return
 }
 
-func (s *EnvironmentService) ListVariableForExec(scenario model.Scenario) (ret []domain.Variable, err error) {
-	ret = make([]domain.Variable, 0)
+func (s *EnvironmentService) ListVariableForExec(scenario model.Scenario) (ret map[string]interface{}, err error) {
+	ret = map[string]interface{}{}
 
 	pos, err := s.EnvironmentRepo.ListVariableByProject(scenario.ProjectId)
 	if err != nil {
@@ -29,11 +28,7 @@ func (s *EnvironmentService) ListVariableForExec(scenario model.Scenario) (ret [
 	}
 
 	for _, po := range pos {
-		ret = append(ret, domain.Variable{
-			ID:    po.ID,
-			Name:  po.Name,
-			Value: po.RightValue,
-		})
+		ret[po.Name] = po.RightValue
 	}
 
 	return

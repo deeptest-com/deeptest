@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-type InvocationService struct {
+type InvocationInterfaceService struct {
 	InvocationRepo         *repo.InvocationRepo          `inject:""`
 	ScenarioInvocationRepo *repo.ProcessorInvocationRepo `inject:""`
 	InterfaceRepo          *repo.InterfaceRepo           `inject:""`
@@ -25,7 +25,7 @@ type InvocationService struct {
 	DatapoolService          *DatapoolService           `inject:""`
 }
 
-func (s *InvocationService) LoadInterfaceExecData(req v1.InvocationRequest) (ret v1.InvocationRequest, err error) {
+func (s *InvocationInterfaceService) LoadInterfaceExecData(req v1.InvocationRequest) (ret v1.InvocationRequest, err error) {
 	err = s.InterfaceService.UpdateByInvocation(req)
 	if err != nil {
 		return
@@ -36,7 +36,7 @@ func (s *InvocationService) LoadInterfaceExecData(req v1.InvocationRequest) (ret
 	return
 }
 
-func (s *InvocationService) SubmitInterfaceInvokeResult(req v1.SubmitInvocationResultRequest) (err error) {
+func (s *InvocationInterfaceService) SubmitInterfaceInvokeResult(req v1.SubmitInvocationResultRequest) (err error) {
 	interf, _ := s.InterfaceRepo.GetDetail(req.Response.Id)
 
 	s.ExtractorService.ExtractInterface(interf.ID, req.Response, consts.UsedByInterface)
@@ -51,13 +51,13 @@ func (s *InvocationService) SubmitInterfaceInvokeResult(req v1.SubmitInvocationR
 	return
 }
 
-func (s *InvocationService) ListByInterface(interfId int) (invocations []model.Invocation, err error) {
+func (s *InvocationInterfaceService) ListByInterface(interfId int) (invocations []model.Invocation, err error) {
 	invocations, err = s.InvocationRepo.List(interfId)
 
 	return
 }
 
-func (s *InvocationService) GetLastResp(interfId int) (resp v1.InvocationResponse, err error) {
+func (s *InvocationInterfaceService) GetLastResp(interfId int) (resp v1.InvocationResponse, err error) {
 	invocation, _ := s.InvocationRepo.GetLast(interfId)
 	if invocation.ID > 0 {
 		json.Unmarshal([]byte(invocation.RespContent), &resp)
@@ -71,13 +71,13 @@ func (s *InvocationService) GetLastResp(interfId int) (resp v1.InvocationRespons
 	return
 }
 
-func (s *InvocationService) Get(id int) (invocation model.Invocation, err error) {
+func (s *InvocationInterfaceService) Get(id int) (invocation model.Invocation, err error) {
 	invocation, err = s.InvocationRepo.Get(uint(id))
 
 	return
 }
 
-func (s *InvocationService) GetAsInterface(id int) (interf model.Interface, interfResp v1.InvocationResponse, err error) {
+func (s *InvocationInterfaceService) GetAsInterface(id int) (interf model.Interface, interfResp v1.InvocationResponse, err error) {
 	invocation, err := s.InvocationRepo.Get(uint(id))
 
 	interfReq := v1.InvocationRequest{}
@@ -92,7 +92,7 @@ func (s *InvocationService) GetAsInterface(id int) (interf model.Interface, inte
 	return
 }
 
-func (s *InvocationService) CreateForInterface(req v1.InvocationRequest,
+func (s *InvocationInterfaceService) CreateForInterface(req v1.InvocationRequest,
 	resp v1.InvocationResponse, projectId uint) (invocation model.Invocation, err error) {
 	invocation = model.Invocation{
 		InvocationBase: model.InvocationBase{
@@ -113,7 +113,7 @@ func (s *InvocationService) CreateForInterface(req v1.InvocationRequest,
 	return
 }
 
-func (s *InvocationService) CreateForScenarioInterface(req v1.InvocationRequest,
+func (s *InvocationInterfaceService) CreateForScenarioInterface(req v1.InvocationRequest,
 	resp v1.InvocationResponse, projectId uint) (invocation model.ProcessorInvocation, err error) {
 
 	invocation = model.ProcessorInvocation{
@@ -135,13 +135,13 @@ func (s *InvocationService) CreateForScenarioInterface(req v1.InvocationRequest,
 	return
 }
 
-func (s *InvocationService) Delete(id uint) (err error) {
+func (s *InvocationInterfaceService) Delete(id uint) (err error) {
 	err = s.InvocationRepo.Delete(id)
 
 	return
 }
 
-func (s *InvocationService) CopyValueFromRequest(invocation *model.Invocation, req v1.InvocationRequest) (err error) {
+func (s *InvocationInterfaceService) CopyValueFromRequest(invocation *model.Invocation, req v1.InvocationRequest) (err error) {
 	invocation.ID = req.Id
 
 	copier.CopyWithOption(invocation, req, copier.Option{DeepCopy: true})
@@ -149,7 +149,7 @@ func (s *InvocationService) CopyValueFromRequest(invocation *model.Invocation, r
 	return
 }
 
-func (s *InvocationService) ReplaceEnvironmentAndExtractorVariables(req v1.InvocationRequest) (
+func (s *InvocationInterfaceService) ReplaceEnvironmentAndExtractorVariables(req v1.InvocationRequest) (
 	ret v1.InvocationRequest, err error) {
 
 	interf, _ := s.InterfaceRepo.Get(req.Id)

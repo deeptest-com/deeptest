@@ -6,12 +6,12 @@ import (
 )
 
 type InvocationRequest struct {
-	Id   uint   `gorm:"-" json:"id"`
-	Name string `json:"name"`
+	Id uint `gorm:"-" json:"id"`
+
+	Variables map[string]interface{}              `gorm:"-" json:"variables"`
+	Datapools map[string][]map[string]interface{} `gorm:"-" json:"datapools"`
 
 	BaseRequest
-
-	//ProjectId uint `json:"projectId"`
 }
 
 type InvocationResponse struct {

@@ -1,6 +1,12 @@
 "use strict";
 
 // environment
+const datapool = {};
+
+datapool.get = getDatapoolVariable;
+datapool.get.prototype = {};
+
+// environment
 const environment = {};
 
 environment.get = getEnvironmentVariable;
@@ -25,6 +31,7 @@ variables.clear = clearVariable;
 variables.clear.prototype = {};
 
 module.exports = {
+    datapool: datapool,
     variables: variables,
     environment: environment,
 }

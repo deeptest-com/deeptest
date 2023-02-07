@@ -2,21 +2,21 @@ package handler
 
 import (
 	"github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
-	service2 "github.com/aaronchen2k/deeptest/internal/server/modules/service"
+	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	"github.com/kataras/iris/v12"
 )
 
-type InvocationCtrl struct {
-	InvocationService *service2.InvocationService `inject:""`
-	InterfaceService  *service2.InterfaceService  `inject:""`
-	ExtractorService  *service2.ExtractorService  `inject:""`
-	CheckpointService *service2.CheckpointService `inject:""`
+type InvocationInterfaceCtrl struct {
+	InvocationInterfaceService *service.InvocationInterfaceService `inject:""`
+	InterfaceService           *service.InterfaceService           `inject:""`
+	ExtractorService           *service.ExtractorService           `inject:""`
+	CheckpointService          *service.CheckpointService          `inject:""`
 	BaseCtrl
 }
 
 // LoadInterfaceExecData
-func (c *InvocationCtrl) LoadInterfaceExecData(ctx iris.Context) {
+func (c *InvocationInterfaceCtrl) LoadInterfaceExecData(ctx iris.Context) {
 	req := domain.InvocationRequest{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -24,7 +24,7 @@ func (c *InvocationCtrl) LoadInterfaceExecData(ctx iris.Context) {
 		return
 	}
 
-	data, err := c.InvocationService.LoadInterfaceExecData(req)
+	data, err := c.InvocationInterfaceService.LoadInterfaceExecData(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -34,7 +34,7 @@ func (c *InvocationCtrl) LoadInterfaceExecData(ctx iris.Context) {
 }
 
 // SubmitInterfaceInvokeResult
-func (c *InvocationCtrl) SubmitInterfaceInvokeResult(ctx iris.Context) {
+func (c *InvocationInterfaceCtrl) SubmitInterfaceInvokeResult(ctx iris.Context) {
 	req := domain.SubmitInvocationResultRequest{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -42,7 +42,7 @@ func (c *InvocationCtrl) SubmitInterfaceInvokeResult(ctx iris.Context) {
 		return
 	}
 
-	err = c.InvocationService.SubmitInterfaceInvokeResult(req)
+	err = c.InvocationInterfaceService.SubmitInterfaceInvokeResult(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
 		return
@@ -52,14 +52,14 @@ func (c *InvocationCtrl) SubmitInterfaceInvokeResult(ctx iris.Context) {
 }
 
 // List
-func (c *InvocationCtrl) List(ctx iris.Context) {
+func (c *InvocationInterfaceCtrl) List(ctx iris.Context) {
 	interfaceId, err := ctx.URLParamInt("interfaceId")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Data: nil, Msg: err.Error()})
 		return
 	}
 
-	data, err := c.InvocationService.ListByInterface(interfaceId)
+	data, err := c.InvocationInterfaceService.ListByInterface(interfaceId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
 		return
@@ -69,14 +69,14 @@ func (c *InvocationCtrl) List(ctx iris.Context) {
 }
 
 // GetAsInterface 详情
-func (c *InvocationCtrl) GetAsInterface(ctx iris.Context) {
+func (c *InvocationInterfaceCtrl) GetAsInterface(ctx iris.Context) {
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Data: nil, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
-	req, resp, err := c.InvocationService.GetAsInterface(id)
+	req, resp, err := c.InvocationInterfaceService.GetAsInterface(id)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: _domain.SystemErr.Msg})
 		return
@@ -86,14 +86,14 @@ func (c *InvocationCtrl) GetAsInterface(ctx iris.Context) {
 }
 
 // Delete 删除
-func (c *InvocationCtrl) Delete(ctx iris.Context) {
+func (c *InvocationInterfaceCtrl) Delete(ctx iris.Context) {
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
 		return
 	}
 
-	err = c.InvocationService.Delete(uint(id))
+	err = c.InvocationInterfaceService.Delete(uint(id))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -103,14 +103,14 @@ func (c *InvocationCtrl) Delete(ctx iris.Context) {
 }
 
 // GetLastResp
-func (c *InvocationCtrl) GetLastResp(ctx iris.Context) {
+func (c *InvocationInterfaceCtrl) GetLastResp(ctx iris.Context) {
 	id, err := ctx.URLParamInt("id")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
 		return
 	}
 
-	resp, err := c.InvocationService.GetLastResp(id)
+	resp, err := c.InvocationInterfaceService.GetLastResp(id)
 
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: _domain.SystemErr.Msg})

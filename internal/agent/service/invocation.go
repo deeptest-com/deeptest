@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/aaronchen2k/deeptest/cmd/agent/v1/domain"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
@@ -17,13 +18,21 @@ type InvocationService struct {
 }
 
 func (s *InvocationService) Invoke(req domain.InvocationReq) (ret v1.InvocationResponse, err error) {
-	if req.UsedBy == "interface" {
-		interfaceReq := s.getInterfaceToExec(req)
-		ret, err = s.Test(interfaceReq)
+	if req.UsedBy == consts.UsedByInterface {
+		interfaceExecReq := s.getInterfaceToExec(req)
+
+		agentExec.Variables = interfaceExecReq.Variables
+		agentExec.DatapoolData = interfaceExecReq.Datapools
+
+		ret, err = s.Test(interfaceExecReq)
 		err = s.SubmitInterfaceResult(req, ret, req.ServerUrl, req.Token)
 
-	} else {
+	} else if req.UsedBy == consts.UsedByScenario {
 		interfaceReq := s.getProcessorInterfaceToExec(req)
+
+		agentExec.Variables = interfaceReq.Variables
+		agentExec.DatapoolData = interfaceReq.Datapools
+
 		ret, err = s.Test(interfaceReq)
 		err = s.SubmitProcessorInterfaceResult(req, ret, req.ServerUrl, req.Token)
 
@@ -213,6 +222,10 @@ func (s *InvocationService) SubmitProcessorInterfaceResult(reqOjb domain.Invocat
 }
 
 func (s *InvocationService) Test(req v1.InvocationRequest) (ret v1.InvocationResponse, err error) {
+	// exec pre-request script
+	agentExec.ExecJs(req.PreRequestScript, req.Variables, req.Datapools)
+
+	// send request
 	req.Url, err = _httpUtils.AddDefaultUrlSchema(req.Url)
 	if err != nil {
 		return

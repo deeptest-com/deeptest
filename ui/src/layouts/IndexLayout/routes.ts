@@ -64,6 +64,8 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
         icon: 'list',
         title: 'interfaceV2',
         path: 'index',
+        component: () => import('@/views/interfaceV2/index.vue'),
+        hidden: false,
       },
     ],
   },

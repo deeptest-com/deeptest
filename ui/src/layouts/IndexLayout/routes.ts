@@ -38,7 +38,6 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
       },
     ],
   },
-
   {
     title: 'index-layout.menu',
     path: '/interface',
@@ -51,6 +50,20 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
         path: 'index',
         component: () => import('@/views/interface/index.vue'),
         hidden: false,
+      },
+    ],
+  },
+  //  接口管理列表页面
+  {
+    title: '接口管理列表页面',
+    path: '/interfaceV2',
+    redirect: '/interfaceV2/index',
+    component: BlankLayout,
+    children: [
+      {
+        icon: 'list',
+        title: 'interfaceV2',
+        path: 'index',
       },
     ],
   },

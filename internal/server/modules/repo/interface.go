@@ -177,6 +177,7 @@ func (r *InterfaceRepo) UpdateHeaders(id uint, headers []model.InterfaceHeader) 
 
 	return
 }
+
 func (r *InterfaceRepo) RemoveHeaders(id uint) (err error) {
 	err = r.DB.
 		Where("interface_id = ?", id).
@@ -205,6 +206,31 @@ func (r *InterfaceRepo) RemoveParams(id uint) (err error) {
 	err = r.DB.
 		Where("interface_id = ?", id).
 		Delete(&model.InterfaceParam{}, "").Error
+
+	return
+}
+
+func (r *InterfaceRepo) UpdateCookies(id uint, cookies []model.InterfaceCookie) (err error) {
+	err = r.RemoveCookie(id)
+
+	if len(cookies) == 0 {
+		return
+	}
+
+	for idx, _ := range cookies {
+		cookies[idx].ID = 0
+		cookies[idx].InterfaceId = id
+	}
+
+	err = r.DB.Create(&cookies).Error
+
+	return
+}
+
+func (r *InterfaceRepo) RemoveCookie(id uint) (err error) {
+	err = r.DB.
+		Where("interface_id = ?", id).
+		Delete(&model.InterfaceCookie{}, "").Error
 
 	return
 }
@@ -466,37 +492,12 @@ func (r *InterfaceRepo) SaveInterface(interf model.Interface) (err error) {
 			return err
 		}
 
-		err = r.UpdateBodyFormData(interf.ID, interf.BodyFormData)
-		if err != nil {
-			return err
-		}
-
-		err = r.UpdateBodyFormUrlencoded(interf.ID, interf.BodyFormUrlencoded)
-		if err != nil {
-			return err
-		}
-
 		err = r.UpdateHeaders(interf.ID, interf.Headers)
 		if err != nil {
 			return err
 		}
 
-		err = r.UpdateBasicAuth(interf.ID, interf.BasicAuth)
-		if err != nil {
-			return err
-		}
-
-		err = r.UpdateBearerToken(interf.ID, interf.BearerToken)
-		if err != nil {
-			return err
-		}
-
-		err = r.UpdateOAuth20(interf.ID, interf.OAuth20)
-		if err != nil {
-			return err
-		}
-
-		err = r.UpdateApiKey(interf.ID, interf.ApiKey)
+		err = r.UpdateCookies(interf.ID, interf.Cookies)
 		if err != nil {
 			return err
 		}

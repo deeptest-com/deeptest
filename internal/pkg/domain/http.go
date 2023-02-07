@@ -18,9 +18,9 @@ type Header struct {
 	Disabled bool   `json:"disabled"`
 }
 type RequestBody struct {
-	MediaType   string     `json:"mediaType"`
+	MediaType   string     `json:"media_type"`
 	Description string     `json:"description"`
-	SchemaRefId int64      `json:"schemaRefId"`
+	SchemaRefId int64      `json:"schema_ref_id"`
 	SchemaItem  SchemaItem `json:"schema_item"`
 	Examples    string     `json:"examples"`
 }

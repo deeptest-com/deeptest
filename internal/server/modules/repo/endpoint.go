@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
@@ -24,14 +25,15 @@ func (r *EndpointRepo) Paginate(req v1.EndpointReqPaginate) (ret _domain.PageDat
 	var count int64
 	db := r.DB.Model(&model.Endpoint{}).Where("project_id = ? AND NOT deleted", req.ProjectId)
 
-	/*
-		if req.Keywords != "" {
-			db = db.Where("name LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords))
-		}
-		if req.ScenarioId != 0 {
-			db = db.Where("scenario_id = ?", req.ScenarioId)
-		}
-	*/
+	if req.Title != "" {
+		db = db.Where("title LIKE ?", fmt.Sprintf("%%%s%%", req.Title))
+	}
+	if req.UserId != 0 {
+		db = db.Where("user_id = ?", req.UserId)
+	}
+	if req.Status != 0 {
+		db = db.Where("status = ?", req.UserId)
+	}
 
 	err = db.Count(&count).Error
 	if err != nil {

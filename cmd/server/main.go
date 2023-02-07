@@ -16,7 +16,6 @@ var (
 	BuildTime  string
 	GoVersion  string
 	GitHash    string
-
 	flagSet *flag.FlagSet
 )
 

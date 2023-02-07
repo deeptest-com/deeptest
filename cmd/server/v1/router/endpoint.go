@@ -19,7 +19,7 @@ func (m *EndpointModule) Party() module.WebModule {
 	handler := func(public iris.Party) {
 		//public.Use(middleware.InitCheck())
 		//public.Use(middleware.JwtHandler())
-		public.Get("/index", m.EndpointCtrl.Index)
+		public.Post("/index", m.EndpointCtrl.Index)
 		public.Post("/save", m.EndpointCtrl.Save)
 
 		//public.Use(middleware.JwtHandler(), middleware.Casbin(), middleware.OperationRecord())

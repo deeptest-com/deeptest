@@ -7,29 +7,29 @@ import (
 
 type EndpointReqPaginate struct {
 	_domain.PaginateReq
-	ProjectId    string `json:"project_id"`
+	ProjectId    int64  `json:"project_id"`
 	CategoryPath string `json:"category_path"`
-	Status       string `json:"status"`
-	UserId       string `json:"user_id"`
+	Status       int64  `json:"status"`
+	UserId       int64  `json:"user_id"`
 	Title        string `json:"title"`
 }
 
 type EndpointReq struct {
-	ProjectId  string          `json:"project_id"`
-	Status     string          `json:"status"`
+	ProjectId  int64           `json:"project_id"`
+	Status     int64           `json:"status"`
 	Title      string          `json:"title"`
 	Path       string          `json:"path"`
 	Version    string          `json:"version"`
-	ParentId   string          `json:"ParentId"`
+	ParentId   int64           `json:"ParentId"`
 	PathParams []domain.Param  `json:"path_params"`
 	Interfaces []InterfaceResp `json:"interfaces"`
 }
 
 type EndpointRes struct {
-	ProjectId  string          `json:"project_id"`
-	Status     string          `json:"status"`
+	ProjectId  int64           `json:"project_id"`
+	Status     int64           `json:"status"`
 	CreateUser string          `json:"create_user"`
-	Name       string          `json:"name"`
+	Title      string          `json:"tile"`
 	Version    string          `json:"version"`
 	Interfaces []InterfaceResp `json:"interfaces"`
 }

@@ -13,6 +13,7 @@ type Interface struct {
 
 	Params      []InterfaceParam     `gorm:"-" json:"params"`
 	Headers     []InterfaceHeader    `gorm:"-" json:"headers"`
+	Cookies     []InterfaceCookie    `gorm:"-" json:"cookies"`
 	RequestBody InterfaceRequestBody `gorm:"-" json:"requestBody"`
 
 	BodyFormData       []InterfaceBodyFormDataItem       `gorm:"-" json:"bodyFormData"`
@@ -65,6 +66,15 @@ type InterfaceHeader struct {
 
 func (InterfaceHeader) TableName() string {
 	return "biz_interface_header"
+}
+
+type InterfaceCookie struct {
+	BaseModel
+	InterfaceCookieBase
+}
+
+func (InterfaceCookie) TableName() string {
+	return "biz_interface_cookie"
 }
 
 type InterfaceBasicAuth struct {

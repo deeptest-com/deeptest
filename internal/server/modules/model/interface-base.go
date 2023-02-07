@@ -61,6 +61,14 @@ type InterfaceHeaderBase struct {
 	InterfaceId uint   `json:"interfaceId"`
 }
 
+type InterfaceCookieBase struct {
+	Name        string `json:"name"`
+	Desc        string `json:"desc"`
+	Value       string `json:"value"`
+	Type        string `json:"type"`
+	InterfaceId uint   `json:"interfaceId"`
+}
+
 type InterfaceBasicAuthBase struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
@@ -104,7 +112,7 @@ type InterfaceRequestBodyBase struct {
 	InterfaceId uint   `json:"interfaceId"`
 	MediaType   string `json:"mediaType"`
 	Description string `json:"description"`
-	SchemaRefId string `json:"schemaRefId"`
+	SchemaRefId int64  `json:"schemaRefId"`
 	SchemaItem  string `json:"SchemaItem"`
 	Examples    string `json:"examples"`
 }

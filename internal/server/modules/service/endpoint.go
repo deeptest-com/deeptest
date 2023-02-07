@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
@@ -24,6 +25,7 @@ func (s *EndpointService) Paginate(req v1.EndpointReqPaginate) (ret _domain.Page
 func (s *EndpointService) Save(req v1.EndpointReq) (res model.Endpoint, err error) {
 	var endpoint model.Endpoint
 	copier.CopyWithOption(&endpoint, req, copier.Option{DeepCopy: true})
+	fmt.Println(endpoint, "++++++++++++++++")
 	err = s.EndpointRepo.SaveAll(endpoint)
 	return endpoint, err
 }

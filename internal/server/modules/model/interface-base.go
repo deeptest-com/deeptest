@@ -6,13 +6,14 @@ import (
 )
 
 type InterfaceBase struct {
-	Name string `json:"name"`
-	Desc string `json:"desc"`
-
-	IsLeaf    bool `json:"isLeaf"`
-	ParentId  uint `json:"parentId"`
-	ProjectId uint `json:"projectId"`
-	UseID     uint `json:"useId"`
+	Name       string `json:"name"`
+	Desc       string `json:"desc"`
+	EndpointId int64  `json:"endpoint_id"`
+	SecurityId int64  `json:"security_id"`
+	IsLeaf     bool   `json:"isLeaf"`
+	ParentId   uint   `json:"parentId"`
+	ProjectId  uint   `json:"projectId"`
+	UseID      uint   `json:"useId"`
 
 	Ordr int `json:"ordr"`
 
@@ -97,4 +98,19 @@ type InterfaceApiKeyBase struct {
 	TransferMode string `json:"transferMode"`
 
 	InterfaceId uint `json:"interfaceId"`
+}
+
+type InterfaceRequestBodyBase struct {
+	InterfaceId uint   `json:"interfaceId"`
+	MediaType   string `json:"mediaType"`
+	Description string `json:"description"`
+	SchemaRefId string `json:"schemaRefId"`
+	SchemaItem  string `json:"SchemaItem"`
+	Examples    string `json:"examples"`
+}
+
+type InterfaceRequestBodyItemBase struct {
+	Name    string `json:"name"`
+	Type    string `json:"type"`
+	Content string `json:"content"`
 }

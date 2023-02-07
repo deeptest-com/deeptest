@@ -7,13 +7,22 @@ import (
 type Param struct {
 	Name     string `json:"name"`
 	Value    string `json:"value"`
+	Type     string `json:"type"`
 	Disabled bool   `json:"disabled"`
 }
 
 type Header struct {
 	Name     string `json:"name"`
 	Value    string `json:"value"`
+	Type     string `json:"type"`
 	Disabled bool   `json:"disabled"`
+}
+type RequestBody struct {
+	MediaType   string     `json:"mediaType"`
+	Description string     `json:"description"`
+	SchemaRefId int64      `json:"schemaRefId"`
+	SchemaItem  SchemaItem `json:"schema_item"`
+	Examples    string     `json:"examples"`
 }
 
 type BasicAuth struct {
@@ -43,4 +52,9 @@ type ApiKey struct {
 	Key          string `json:"key"`
 	Value        string `json:"value"`
 	TransferMode string `json:"transferMode"`
+}
+type SchemaItem struct {
+	Name    string `json:"name"`
+	Type    string `json:"type"`
+	Content string `json:"content"`
 }

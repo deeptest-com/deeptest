@@ -11,8 +11,9 @@ type Interface struct {
 
 	Children []*Interface `gorm:"-" json:"children"`
 
-	Params  []InterfaceParam  `gorm:"-" json:"params"`
-	Headers []InterfaceHeader `gorm:"-" json:"headers"`
+	Params      []InterfaceParam     `gorm:"-" json:"params"`
+	Headers     []InterfaceHeader    `gorm:"-" json:"headers"`
+	RequestBody InterfaceRequestBody `gorm:"-" json:"requestBody"`
 
 	BodyFormData       []InterfaceBodyFormDataItem       `gorm:"-" json:"bodyFormData"`
 	BodyFormUrlencoded []InterfaceBodyFormUrlEncodedItem `gorm:"-" json:"bodyFormUrlencoded"`
@@ -101,6 +102,25 @@ type InterfaceApiKey struct {
 
 func (InterfaceApiKey) TableName() string {
 	return "biz_interface_apikey"
+}
+
+type InterfaceRequestBodyItem struct {
+	BaseModel
+	InterfaceRequestBodyItemBase
+}
+
+func (InterfaceRequestBodyItem) TableName() string {
+	return "biz_interface_request_body_item"
+}
+
+type InterfaceRequestBody struct {
+	BaseModel
+	InterfaceRequestBodyBase
+	RequestBodyItem InterfaceRequestBodyItem `gorm:"-" json:"requestBodyItem"`
+}
+
+func (InterfaceRequestBody) TableName() string {
+	return "biz_interface_request_body"
 }
 
 type InterfaceExtractor struct {

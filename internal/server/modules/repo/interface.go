@@ -8,7 +8,8 @@ import (
 )
 
 type InterfaceRepo struct {
-	DB *gorm.DB `inject:""`
+	*BaseRepo `inject:""`
+	DB        *gorm.DB `inject:""`
 }
 
 func (r *InterfaceRepo) GetInterfaceTree(projectId int) (root *model.Interface, err error) {
@@ -449,5 +450,75 @@ func (r *InterfaceRepo) GetApiKey(id uint) (po model.InterfaceApiKey, err error)
 		Where("interface_id = ?", id).
 		First(&po).Error
 
+	return
+}
+
+func (r *InterfaceRepo) SaveInterface(interf model.Interface) (err error) {
+
+	r.DB.Transaction(func(tx *gorm.DB) error {
+		err = r.UpdateInterface(&interf)
+		if err != nil {
+			return err
+		}
+
+		err = r.UpdateParams(interf.ID, interf.Params)
+		if err != nil {
+			return err
+		}
+
+		err = r.UpdateBodyFormData(interf.ID, interf.BodyFormData)
+		if err != nil {
+			return err
+		}
+
+		err = r.UpdateBodyFormUrlencoded(interf.ID, interf.BodyFormUrlencoded)
+		if err != nil {
+			return err
+		}
+
+		err = r.UpdateHeaders(interf.ID, interf.Headers)
+		if err != nil {
+			return err
+		}
+
+		err = r.UpdateBasicAuth(interf.ID, interf.BasicAuth)
+		if err != nil {
+			return err
+		}
+
+		err = r.UpdateBearerToken(interf.ID, interf.BearerToken)
+		if err != nil {
+			return err
+		}
+
+		err = r.UpdateOAuth20(interf.ID, interf.OAuth20)
+		if err != nil {
+			return err
+		}
+
+		err = r.UpdateApiKey(interf.ID, interf.ApiKey)
+		if err != nil {
+			return err
+		}
+
+		interf.RequestBody.InterfaceId = interf.ID
+		err = r.UpdateRequestBody(&interf.RequestBody)
+		if err != nil {
+			return err
+		}
+
+		return err
+	})
+
+	return
+}
+
+func (r *InterfaceRepo) UpdateRequestBody(requestBody *model.InterfaceRequestBody) (err error) {
+	err = r.BaseRepo.Save(requestBody.ID, requestBody)
+	return
+}
+
+func (r *InterfaceRepo) UpdateInterface(interf *model.Interface) (err error) {
+	err = r.BaseRepo.Save(interf.ID, interf)
 	return
 }

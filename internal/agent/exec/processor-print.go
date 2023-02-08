@@ -20,7 +20,7 @@ func (entity ProcessorPrint) Run(processor *Processor, session *Session) (err er
 	logUtils.Infof("print entity")
 
 	startTime := time.Now()
-	processor.Result = &domain.Result{
+	processor.Result = &agentDomain.Result{
 		ID:                int(entity.ProcessorID),
 		Name:              entity.Name,
 		ProcessorCategory: entity.ProcessorCategory,
@@ -36,7 +36,7 @@ func (entity ProcessorPrint) Run(processor *Processor, session *Session) (err er
 		entity.Expression, value), "<nil>", "空")
 
 	processor.AddResultToParent()
-	exec.SendExecMsg(*processor.Result, session.WsMsg)
+	execUtils.SendExecMsg(*processor.Result, session.WsMsg)
 
 	endTime := time.Now()
 	processor.Result.EndTime = &endTime

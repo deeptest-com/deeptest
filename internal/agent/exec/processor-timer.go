@@ -19,7 +19,7 @@ func (entity ProcessorTimer) Run(processor *Processor, session *Session) (err er
 	logUtils.Infof("timer entity")
 
 	startTime := time.Now()
-	processor.Result = &domain.Result{
+	processor.Result = &agentDomain.Result{
 		ID:                int(entity.ProcessorID),
 		Name:              entity.Name,
 		ProcessorCategory: entity.ProcessorCategory,
@@ -30,7 +30,7 @@ func (entity ProcessorTimer) Run(processor *Processor, session *Session) (err er
 
 	processor.Result.Summary = fmt.Sprintf("等待\"%d\"秒。", entity.SleepTime)
 	processor.AddResultToParent()
-	exec.SendExecMsg(*processor.Result, session.WsMsg)
+	execUtils.SendExecMsg(*processor.Result, session.WsMsg)
 
 	<-time.After(time.Duration(entity.SleepTime) * time.Second)
 

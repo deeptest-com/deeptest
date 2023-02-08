@@ -4,6 +4,7 @@ import (
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
 	_httpUtils "github.com/aaronchen2k/deeptest/pkg/lib/http"
 	"math/rand"
@@ -90,7 +91,7 @@ func GetContentProps(resp *v1.InvocationResponse) {
 	return
 }
 
-func ReplaceAll(req *v1.BaseRequest, variableMap map[string]interface{}, datapools map[string][]map[string]interface{}) {
+func ReplaceAll(req *v1.BaseRequest, variableMap domain.Variables, datapools domain.Datapools) {
 	replaceUrl(req, variableMap, datapools)
 	replaceParams(req, variableMap, datapools)
 	replaceHeaders(req, variableMap, datapools)
@@ -98,23 +99,23 @@ func ReplaceAll(req *v1.BaseRequest, variableMap map[string]interface{}, datapoo
 	replaceAuthor(req, variableMap, datapools)
 }
 
-func replaceUrl(req *v1.BaseRequest, variableMap map[string]interface{}, datapools map[string][]map[string]interface{}) {
+func replaceUrl(req *v1.BaseRequest, variableMap domain.Variables, datapools domain.Datapools) {
 	req.Url = ReplaceVariableValue(req.Url, variableMap, datapools)
 }
-func replaceParams(req *v1.BaseRequest, variableMap map[string]interface{}, datapools map[string][]map[string]interface{}) {
+func replaceParams(req *v1.BaseRequest, variableMap domain.Variables, datapools domain.Datapools) {
 	for idx, param := range req.Params {
 		req.Params[idx].Value = ReplaceVariableValue(param.Value, variableMap, datapools)
 	}
 }
-func replaceHeaders(req *v1.BaseRequest, variableMap map[string]interface{}, datapools map[string][]map[string]interface{}) {
+func replaceHeaders(req *v1.BaseRequest, variableMap domain.Variables, datapools domain.Datapools) {
 	for idx, header := range req.Headers {
 		req.Headers[idx].Value = ReplaceVariableValue(header.Value, variableMap, datapools)
 	}
 }
-func replaceBody(req *v1.BaseRequest, variableMap map[string]interface{}, datapools map[string][]map[string]interface{}) {
+func replaceBody(req *v1.BaseRequest, variableMap domain.Variables, datapools domain.Datapools) {
 	req.Body = ReplaceVariableValue(req.Body, variableMap, datapools)
 }
-func replaceAuthor(req *v1.BaseRequest, variableMap map[string]interface{}, datapools map[string][]map[string]interface{}) {
+func replaceAuthor(req *v1.BaseRequest, variableMap domain.Variables, datapools domain.Datapools) {
 	if req.AuthorizationType == consts.BasicAuth {
 		req.BasicAuth.Username = ReplaceVariableValue(req.BasicAuth.Username, variableMap, datapools)
 		req.BasicAuth.Password = ReplaceVariableValue(req.BasicAuth.Password, variableMap, datapools)
@@ -137,7 +138,7 @@ func replaceAuthor(req *v1.BaseRequest, variableMap map[string]interface{}, data
 	}
 }
 
-func ReplaceVariableValue(value string, variableMap map[string]interface{}, datapools map[string][]map[string]interface{}) (ret string) {
+func ReplaceVariableValue(value string, variableMap domain.Variables, datapools domain.Datapools) (ret string) {
 
 	variablePlaceholders := GetVariablesInVariablePlaceholder(value)
 	ret = value
@@ -154,7 +155,7 @@ func ReplaceVariableValue(value string, variableMap map[string]interface{}, data
 	return
 }
 
-func getPlaceholderValue(placeholder string, variableMap map[string]interface{}, datapools map[string][]map[string]interface{}) (ret string) {
+func getPlaceholderValue(placeholder string, variableMap domain.Variables, datapools domain.Datapools) (ret string) {
 
 	typ := getPlaceholderType(placeholder)
 
@@ -170,12 +171,12 @@ func getPlaceholderValue(placeholder string, variableMap map[string]interface{},
 	return
 }
 
-func getVariableValue(placeholder string, variableMap map[string]interface{}) (ret string) {
+func getVariableValue(placeholder string, variableMap domain.Variables) (ret string) {
 	ret = fmt.Sprintf("%v", variableMap[placeholder])
 	return
 }
 
-func getDatapoolValue(placeholder string, datapools map[string][]map[string]interface{}) (ret string) {
+func getDatapoolValue(placeholder string, datapools domain.Datapools) (ret string) {
 	// _dp(name, col, <1 | seq | rand>)
 
 	regex := regexp.MustCompile(fmt.Sprintf("(?Ui)%s\\((.+),(.+),(.+)\\)", consts.PlaceholderPrefixDatapool))
@@ -207,7 +208,7 @@ func getDatapoolValue(placeholder string, datapools map[string][]map[string]inte
 	return
 }
 
-func getDatapoolRow(dpName, seq string, datapools map[string][]map[string]interface{}) (ret int) {
+func getDatapoolRow(dpName, seq string, datapools domain.Datapools) (ret int) {
 	dp := datapools[dpName]
 	if dp == nil {
 		return
@@ -240,40 +241,3 @@ func getPlaceholderType(placeholder string) (ret consts.PlaceholderType) {
 
 	return consts.PlaceholderTypeVariable
 }
-
-//func ReplaceExpressionAndVariableValue(value string, variableMap map[string]interface{},
-//	expressionValueMapCache *map[string]interface{}) (ret string) {
-//
-//	ret = ReplaceExpressionValue(value, variableMap, expressionValueMapCache)
-//	ret = ReplaceVariableValue(ret, variableMap)
-//
-//	return
-//}
-//
-//func ReplaceExpressionValue(value string, variableMap map[string]interface{}, expressionValueMap *map[string]interface{}) (
-//	ret string) {
-//
-//	ret = value
-//
-//	regex := regexp.MustCompile(`(?Ui)\$expr\("(.*)"\)`) // $expr("uuid()")
-//	arrOfArr := regex.FindAllStringSubmatch(ret, -1)
-//
-//	if len(arrOfArr) == 0 {
-//		return
-//	}
-//
-//	for _, arr := range arrOfArr {
-//		expressionWithSymbol := arr[0]
-//		expressionWithoutSymbol := arr[1]
-//
-//		expressionValue, ok := (*expressionValueMap)[expressionWithoutSymbol]
-//		if !ok {
-//			expressionValue, _ = EvaluateGovaluateExpressionWithVariables(expressionWithoutSymbol, variableMap)
-//			(*expressionValueMap)[expressionWithoutSymbol] = expressionValue
-//		}
-//
-//		ret = strings.ReplaceAll(ret, expressionWithSymbol, fmt.Sprintf("%v", expressionValue))
-//	}
-//
-//	return
-//}

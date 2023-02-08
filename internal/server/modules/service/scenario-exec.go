@@ -76,7 +76,7 @@ func (s *ScenarioExecService) SaveReport(scenarioId int, rootResult execDomain.R
 	return
 }
 
-func (s ScenarioExecService) countRequest(result execDomain.Result, report *model.Report) {
+func (s *ScenarioExecService) countRequest(result execDomain.Result, report *model.Report) {
 	if result.ProcessorType == consts.ProcessorInterfaceDefault {
 		s.countInterface(result.InterfaceId, result.ResultStatus, report)
 
@@ -115,7 +115,7 @@ func (s ScenarioExecService) countRequest(result execDomain.Result, report *mode
 	}
 }
 
-func (s ScenarioExecService) countInterface(interfaceId uint, status consts.ResultStatus, report *model.Report) {
+func (s *ScenarioExecService) countInterface(interfaceId uint, status consts.ResultStatus, report *model.Report) {
 	if report.InterfaceStatusMap == nil {
 		report.InterfaceStatusMap = map[uint]map[consts.ResultStatus]int{}
 	}
@@ -137,7 +137,7 @@ func (s ScenarioExecService) countInterface(interfaceId uint, status consts.Resu
 	}
 }
 
-func (s ScenarioExecService) summarizeInterface(report *model.Report) {
+func (s *ScenarioExecService) summarizeInterface(report *model.Report) {
 	for _, val := range report.InterfaceStatusMap {
 		if val[consts.Fail] > 0 {
 			report.FailInterfaceNum++

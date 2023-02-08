@@ -81,7 +81,7 @@ func (c *WebSocketCtrl) OnChat(wsMsg websocket.Message) (err error) {
 
 	if act == consts.ExecStop {
 		if ch != nil {
-			if !exec.GetRunning() {
+			if !execUtils.GetRunning() {
 				ch = nil
 			} else {
 				ch <- 1
@@ -94,8 +94,8 @@ func (c *WebSocketCtrl) OnChat(wsMsg websocket.Message) (err error) {
 		return
 	}
 
-	if exec.GetRunning() && (act == consts.ExecStart) { // already running
-		exec.SendAlreadyRunningMsg(req.ExecReq.ScenarioId, wsMsg)
+	if execUtils.GetRunning() && (act == consts.ExecStart) { // already running
+		execUtils.SendAlreadyRunningMsg(req.ExecReq.ScenarioId, wsMsg)
 		return
 	}
 
@@ -115,7 +115,7 @@ func sendErr(err error, wsMsg *websocket.Message) {
 		Name:    "执行失败",
 		Summary: fmt.Sprintf("错误：%s", err.Error()),
 	}
-	exec.SendExecMsg(root, wsMsg)
+	execUtils.SendExecMsg(root, wsMsg)
 
 	result := execDomain.Result{
 		ID:       -2,
@@ -123,5 +123,5 @@ func sendErr(err error, wsMsg *websocket.Message) {
 		Name:     "执行失败",
 		Summary:  fmt.Sprintf("错误：%s", err.Error()),
 	}
-	exec.SendExecMsg(result, wsMsg)
+	execUtils.SendExecMsg(result, wsMsg)
 }

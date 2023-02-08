@@ -3,21 +3,21 @@ package agentExec
 import (
 	"errors"
 	"fmt"
-	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	_intUtils "github.com/aaronchen2k/deeptest/pkg/lib/int"
 	"strings"
 	"time"
 )
 
 var (
-	Variables = map[string]interface{}{}
+	Variables = domain.Variables{}
 
 	ScopeHierarchy  = map[uint]*[]uint{}               // only for scenario
 	ScopedVariables = map[uint][]domain.ExecVariable{} // only for scenario
 	ScopedCookies   = map[uint][]domain.ExecCookie{}   // only for scenario
 
-	DatapoolData   = map[string][]map[string]interface{}{}
+	DatapoolData   = domain.Datapools{}
 	DatapoolCursor = map[string]int{} // only for scenario
 )
 
@@ -50,13 +50,13 @@ func ListCachedVariable(processorId uint) (variables []domain.ExecVariable) {
 
 	return
 }
-func GetCachedVariableMapInContext(processorId uint) (ret map[string]interface{}) {
-	ret = map[string]interface{}{}
+func GetCachedVariableMapInContext(processorId uint) (ret domain.Variables) {
+	ret = domain.Variables{}
 
 	variables := ListCachedVariable(processorId)
 
 	for _, item := range variables {
-		valMap, isMap := item.Value.(map[string]interface{})
+		valMap, isMap := item.Value.(domain.Variables)
 
 		if isMap {
 			for propKey, v := range valMap {
@@ -102,7 +102,7 @@ func EvaluateVariableExpressionValue(variable domain.ExecVariable, variablePath 
 
 		if len(arr) > 1 {
 			variableProp := arr[1]
-			ret.Value = variable.Value.(map[string]interface{})[variableProp]
+			ret.Value = variable.Value.(domain.Variables)[variableProp]
 		}
 
 		ok = true
@@ -112,7 +112,7 @@ func EvaluateVariableExpressionValue(variable domain.ExecVariable, variablePath 
 	return
 }
 
-func ImportVariables(processorId uint, variables map[string]interface{}, scope consts.ExtractorScope) (err error) {
+func ImportVariables(processorId uint, variables domain.Variables, scope consts.ExtractorScope) (err error) {
 	for key, val := range variables {
 		newVariable := domain.ExecVariable{
 			Name:  key,

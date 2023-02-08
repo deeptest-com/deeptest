@@ -42,7 +42,7 @@ func (entity ProcessorExtractor) Run(processor *Processor, session *Session) (er
 	logUtils.Infof("extractor entity")
 
 	startTime := time.Now()
-	processor.Result = &domain.Result{
+	processor.Result = &agentDomain.Result{
 		ID:                int(entity.ProcessorID),
 		Name:              entity.Name,
 		ProcessorCategory: entity.ProcessorCategory,
@@ -55,7 +55,7 @@ func (entity ProcessorExtractor) Run(processor *Processor, session *Session) (er
 	if !ok || brother.EntityType != consts.ProcessorInterfaceDefault {
 		processor.Result.Summary = fmt.Sprintf("先前节点不是接口，无法应用提取器。")
 		processor.AddResultToParent()
-		exec.SendExecMsg(*processor.Result, session.WsMsg)
+		execUtils.SendExecMsg(*processor.Result, session.WsMsg)
 		return
 	}
 
@@ -69,7 +69,7 @@ func (entity ProcessorExtractor) Run(processor *Processor, session *Session) (er
 	if err != nil {
 		processor.Result.Summary = fmt.Sprintf("%s提取器解析错误 %s。", entity.ProcessorType, err.Error())
 		processor.AddResultToParent()
-		exec.SendExecMsg(*processor.Result, session.WsMsg)
+		execUtils.SendExecMsg(*processor.Result, session.WsMsg)
 		return
 	}
 
@@ -77,7 +77,7 @@ func (entity ProcessorExtractor) Run(processor *Processor, session *Session) (er
 
 	processor.Result.Summary = fmt.Sprintf("将结果\"%v\"赋予变量\"%s\"。", entity.Result, entity.Variable)
 	processor.AddResultToParent()
-	exec.SendExecMsg(*processor.Result, session.WsMsg)
+	execUtils.SendExecMsg(*processor.Result, session.WsMsg)
 
 	endTime := time.Now()
 	processor.Result.EndTime = &endTime
@@ -100,16 +100,16 @@ func ExtractValue(extractor *ProcessorExtractor, resp v1.InvocationResponse) (er
 		}
 	} else {
 		if httpHelper.IsJsonContent(resp.ContentType.String()) && extractor.Type == consts.JsonQuery {
-			extractor.Result = queryHelper.JsonQuery(resp.Content, extractor.Expression)
+			extractor.Result = queryUtils.JsonQuery(resp.Content, extractor.Expression)
 
 		} else if httpHelper.IsHtmlContent(resp.ContentType.String()) && extractor.Type == consts.HtmlQuery {
-			extractor.Result = queryHelper.HtmlQuery(resp.Content, extractor.Expression)
+			extractor.Result = queryUtils.HtmlQuery(resp.Content, extractor.Expression)
 
 		} else if httpHelper.IsXmlContent(resp.ContentType.String()) && extractor.Type == consts.XmlQuery {
-			extractor.Result = queryHelper.XmlQuery(resp.Content, extractor.Expression)
+			extractor.Result = queryUtils.XmlQuery(resp.Content, extractor.Expression)
 
 		} else if extractor.Type == consts.Boundary {
-			extractor.Result = queryHelper.BoundaryQuery(resp.Content, extractor.BoundaryStart, extractor.BoundaryEnd,
+			extractor.Result = queryUtils.BoundaryQuery(resp.Content, extractor.BoundaryStart, extractor.BoundaryEnd,
 				extractor.BoundaryIndex, extractor.BoundaryIncluded)
 		}
 	}

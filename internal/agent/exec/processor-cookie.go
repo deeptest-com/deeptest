@@ -27,7 +27,7 @@ func (entity ProcessorCookie) Run(processor *Processor, session *Session) (err e
 	logUtils.Infof("cookie entity")
 
 	startTime := time.Now()
-	processor.Result = &domain.Result{
+	processor.Result = &agentDomain.Result{
 		ID:                int(entity.ProcessorID),
 		Name:              entity.Name,
 		ProcessorCategory: entity.ProcessorCategory,
@@ -66,7 +66,7 @@ func (entity ProcessorCookie) Run(processor *Processor, session *Session) (err e
 		if err != nil {
 			processor.Result.Summary = fmt.Sprintf("获取Cookie %s的值错误 %s。", cookieName, err.Error())
 			processor.AddResultToParent()
-			exec.SendExecMsg(*processor.Result, session.WsMsg)
+			execUtils.SendExecMsg(*processor.Result, session.WsMsg)
 			return
 		}
 
@@ -83,7 +83,7 @@ func (entity ProcessorCookie) Run(processor *Processor, session *Session) (err e
 	}
 
 	processor.AddResultToParent()
-	exec.SendExecMsg(*processor.Result, session.WsMsg)
+	execUtils.SendExecMsg(*processor.Result, session.WsMsg)
 
 	endTime := time.Now()
 	processor.Result.EndTime = &endTime

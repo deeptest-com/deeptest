@@ -3,6 +3,7 @@ package agentExec
 import (
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	scriptHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/script"
 	fileUtils "github.com/aaronchen2k/deeptest/pkg/lib/file"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
@@ -63,7 +64,15 @@ func InitJsRuntime() {
 	MyVm.JsRuntime.Set("dp", dp)
 }
 
-func ExecJs(script string, variables map[string]interface{}, datapools map[string][]map[string]interface{}) (ret goja.Value) {
+func ExecJs(script string, variables domain.Variables, datapools domain.Datapools) (ret goja.Value) {
+	if MyVm.JsRuntime == nil {
+		InitJsRuntime()
+	}
+
+	if script == "" {
+		return
+	}
+
 	ret, err := MyVm.JsRuntime.RunString(script)
 	if err != nil {
 		logUtils.Info(err.Error())

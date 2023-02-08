@@ -33,7 +33,7 @@ func (entity ProcessorData) Run(processor *Processor, session *Session) (err err
 	logUtils.Infof("data entity")
 
 	startTime := time.Now()
-	processor.Result = &domain.Result{
+	processor.Result = &agentDomain.Result{
 		ID:                int(entity.ProcessorID),
 		Name:              entity.Name,
 		ProcessorCategory: entity.ProcessorCategory,
@@ -45,7 +45,7 @@ func (entity ProcessorData) Run(processor *Processor, session *Session) (err err
 	processor.Result.Iterator, processor.Result.Summary = entity.getIterator()
 
 	processor.AddResultToParent()
-	exec.SendExecMsg(*processor.Result, session.WsMsg)
+	execUtils.SendExecMsg(*processor.Result, session.WsMsg)
 
 	entity.runDataItems(session, processor, processor.Result.Iterator)
 
@@ -57,7 +57,7 @@ func (entity ProcessorData) Run(processor *Processor, session *Session) (err err
 	return
 }
 
-func (entity *ProcessorData) runDataItems(session *Session, processor *Processor, iterator domain.ExecIterator) (err error) {
+func (entity *ProcessorData) runDataItems(session *Session, processor *Processor, iterator agentDomain.ExecIterator) (err error) {
 	for _, item := range iterator.Data {
 		SetVariable(processor.ID, iterator.VariableName, item, consts.Local)
 
@@ -69,7 +69,7 @@ func (entity *ProcessorData) runDataItems(session *Session, processor *Processor
 	return
 }
 
-func (entity *ProcessorData) getIterator() (iterator domain.ExecIterator, msg string) {
+func (entity *ProcessorData) getIterator() (iterator agentDomain.ExecIterator, msg string) {
 	if entity.ID == 0 {
 		msg = "执行前请先配置处理器。"
 		return
@@ -83,16 +83,16 @@ func (entity *ProcessorData) getIterator() (iterator domain.ExecIterator, msg st
 	return
 }
 
-func (entity *ProcessorData) GenerateLoopList() (ret domain.ExecIterator, err error) {
-	pth, _ := utils.DownloadUploadedFile(entity.Url)
+func (entity *ProcessorData) GenerateLoopList() (ret agentDomain.ExecIterator, err error) {
+	pth, _ := agentUtils.DownloadUploadedFile(entity.Url)
 	if err != nil {
 		logUtils.Infof("Download file %s failed", pth)
 	}
 
 	if entity.ProcessorType == consts.ProcessorDataText {
-		ret.Data, err = utils.ReadDataFromText(pth, entity.Separator)
+		ret.Data, err = agentUtils.ReadDataFromText(pth, entity.Separator)
 	} else if entity.ProcessorType == consts.ProcessorDataExcel {
-		ret.Data, err = utils.ReadDataFromExcel(pth)
+		ret.Data, err = agentUtils.ReadDataFromExcel(pth)
 	}
 
 	return

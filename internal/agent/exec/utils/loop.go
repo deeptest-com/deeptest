@@ -1,8 +1,8 @@
-package utils
+package agentUtils
 
 import (
 	"errors"
-	valueGen2 "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/value"
+	valueUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/value"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"strconv"
 	"strings"
@@ -10,13 +10,13 @@ import (
 
 func GenerateRangeItems(start, end, step interface{}, precision int, isRand bool, typ consts.DataType) (ret []interface{}, err error) {
 	if typ == consts.Int {
-		ret = valueGen2.GenerateIntItems(start.(int64), end.(int64), int(step.(int64)), isRand, 1, "")
+		ret = valueUtils.GenerateIntItems(start.(int64), end.(int64), int(step.(int64)), isRand, 1, "")
 
 	} else if typ == consts.Float {
-		ret = valueGen2.GenerateFloatItems(start.(float64), end.(float64), step.(float64), isRand, precision, 1, "")
+		ret = valueUtils.GenerateFloatItems(start.(float64), end.(float64), step.(float64), isRand, precision, 1, "")
 
 	} else if typ == consts.String {
-		ret = valueGen2.GenerateByteItems(start.(byte), end.(byte), step.(int), isRand, 1, "")
+		ret = valueUtils.GenerateByteItems(start.(byte), end.(byte), step.(int), isRand, 1, "")
 
 	}
 
@@ -93,8 +93,8 @@ func GetRange(rangeStr, stepStr string) (start, end, step interface{}, precision
 	stepFloat, floatErr3 := strconv.ParseInt(endStr, 10, 64)
 	if floatErr1 == nil && floatErr2 == nil && floatErr3 == nil {
 
-		precisionStart, step1 := valueGen2.GetPrecision(startFloat, stepFloat)
-		precisionEnd, step2 := valueGen2.GetPrecision(endFloat, stepFloat)
+		precisionStart, step1 := valueUtils.GetPrecision(startFloat, stepFloat)
+		precisionEnd, step2 := valueUtils.GetPrecision(endFloat, stepFloat)
 		if precisionStart < precisionEnd {
 			precision = precisionEnd
 			step = step2

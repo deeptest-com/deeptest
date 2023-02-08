@@ -45,7 +45,7 @@ func (c *ScenarioExecCtrl) SubmitResult(ctx iris.Context) {
 	//scenarioId, err := ctx.URLParamInt("id")
 	scenarioId, err := ctx.Params().GetInt("id")
 
-	result := domain.Result{}
+	result := agentDomain.Result{}
 	err = ctx.ReadJSON(&result)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})

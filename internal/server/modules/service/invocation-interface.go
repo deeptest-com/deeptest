@@ -154,10 +154,10 @@ func (s *InvocationInterfaceService) ReplaceEnvironmentAndExtractorVariables(req
 
 	interf, _ := s.InterfaceRepo.Get(req.Id)
 
-	variableMap, _ := s.VariableService.GetVariablesByInterface(req.Id, consts.UsedByInterface)
-	datapools, _ := s.DatapoolService.ListForExec(interf.ProjectId)
+	req.Variables, _ = s.VariableService.GetVariablesByInterface(req.Id, consts.UsedByInterface)
+	req.Datapools, _ = s.DatapoolService.ListForExec(interf.ProjectId)
 
-	agentExec.ReplaceAll(&req.BaseRequest, variableMap, datapools)
+	agentExec.ReplaceAll(&req.BaseRequest, req.Variables, req.Datapools)
 
 	ret = req
 

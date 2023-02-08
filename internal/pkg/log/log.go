@@ -21,7 +21,7 @@ func Init(app string) {
 		logDir = config.CONFIG.Zap.Director
 	}
 
-	if !dir.IsExist(logDir) { // 幕布不能存在创建
+	if !dir.IsExist(logDir) {
 		dir.InsureDir(logDir)
 	}
 

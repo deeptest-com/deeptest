@@ -16,7 +16,7 @@ func (entity ProcessorRoot) Run(processor *Processor, session *Session) (err err
 	logUtils.Infof("root entity")
 
 	startTime := time.Now()
-	processor.Result = &domain.Result{
+	processor.Result = &agentDomain.Result{
 		ID:                int(entity.ProcessorID),
 		Name:              entity.Name,
 		ProcessorCategory: entity.ProcessorCategory,
@@ -25,7 +25,7 @@ func (entity ProcessorRoot) Run(processor *Processor, session *Session) (err err
 		ParentId:          int(entity.ParentID),
 	}
 
-	exec.SendExecMsg(*processor.Result, session.WsMsg)
+	execUtils.SendExecMsg(*processor.Result, session.WsMsg)
 
 	for _, child := range processor.Children {
 		child.Run(session)

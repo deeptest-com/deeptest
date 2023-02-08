@@ -21,7 +21,7 @@ func (entity ProcessorVariable) Run(processor *Processor, session *Session) (err
 	logUtils.Infof("variable entity")
 
 	startTime := time.Now()
-	processor.Result = &domain.Result{
+	processor.Result = &agentDomain.Result{
 		ID:                int(entity.ProcessorID),
 		Name:              entity.Name,
 		ProcessorCategory: entity.ProcessorCategory,
@@ -47,7 +47,7 @@ func (entity ProcessorVariable) Run(processor *Processor, session *Session) (err
 	}
 
 	processor.AddResultToParent()
-	exec.SendExecMsg(*processor.Result, session.WsMsg)
+	execUtils.SendExecMsg(*processor.Result, session.WsMsg)
 
 	endTime := time.Now()
 	processor.Result.EndTime = &endTime

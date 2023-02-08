@@ -21,11 +21,11 @@ func (r *CheckpointRepo) List(interfaceId uint, usedBy consts.UsedBy) (pos []mod
 	return
 }
 
-func (r *CheckpointRepo) ListTo(interfaceId uint, usedBy consts.UsedBy) (ret []domain.Checkpoint, err error) {
+func (r *CheckpointRepo) ListTo(interfaceId uint, usedBy consts.UsedBy) (ret []agentDomain.Checkpoint, err error) {
 	pos, err := r.List(interfaceId, usedBy)
 
 	for _, po := range pos {
-		checkpoint := domain.Checkpoint{}
+		checkpoint := agentDomain.Checkpoint{}
 		copier.CopyWithOption(&checkpoint, po, copier.Option{DeepCopy: true})
 
 		ret = append(ret, checkpoint)

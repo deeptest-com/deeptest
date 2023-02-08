@@ -28,11 +28,11 @@ func (r *ExtractorRepo) List(interfaceId uint, usedBy consts.UsedBy) (pos []mode
 	return
 }
 
-func (r *ExtractorRepo) ListTo(interfaceId uint, usedBy consts.UsedBy) (ret []domain.Extractor, err error) {
+func (r *ExtractorRepo) ListTo(interfaceId uint, usedBy consts.UsedBy) (ret []agentDomain.Extractor, err error) {
 	pos, _ := r.List(interfaceId, usedBy)
 
 	for _, po := range pos {
-		extractor := domain.Extractor{}
+		extractor := agentDomain.Extractor{}
 		copier.CopyWithOption(&extractor, po, copier.Option{DeepCopy: true})
 
 		ret = append(ret, extractor)

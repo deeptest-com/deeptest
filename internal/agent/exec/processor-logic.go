@@ -19,7 +19,7 @@ func (entity ProcessorLogic) Run(processor *Processor, session *Session) (err er
 	logUtils.Infof("logic entity")
 
 	startTime := time.Now()
-	processor.Result = &domain.Result{
+	processor.Result = &agentDomain.Result{
 		ID:                int(entity.ProcessorID),
 		Name:              entity.Name,
 		ProcessorCategory: entity.ProcessorCategory,
@@ -49,7 +49,7 @@ func (entity ProcessorLogic) Run(processor *Processor, session *Session) (err er
 
 	processor.Result.ResultStatus, processor.Result.Summary = getResultStatus(pass)
 	processor.AddResultToParent()
-	exec.SendExecMsg(*processor.Result, session.WsMsg)
+	execUtils.SendExecMsg(*processor.Result, session.WsMsg)
 
 	if pass {
 		for _, child := range processor.Children {

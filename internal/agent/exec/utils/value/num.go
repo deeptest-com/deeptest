@@ -1,4 +1,4 @@
-package valueGen
+package valueUtils
 
 import (
 	"math/rand"

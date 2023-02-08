@@ -37,7 +37,7 @@ func (s *ExecService) ExecScenario(req *agentExec.ProcessorExecReq, wsMsg *webso
 	agentExec.InitJsRuntime()
 
 	// start msg
-	exec.SendStartMsg(wsMsg)
+	execUtils.SendStartMsg(wsMsg)
 
 	// execution
 	session := agentExec.NewSession(scenarioExecReq, false, wsMsg)
@@ -48,7 +48,7 @@ func (s *ExecService) ExecScenario(req *agentExec.ProcessorExecReq, wsMsg *webso
 	s.sendSubmitResult(session.RootProcessor.ID, session.WsMsg)
 
 	// end msg
-	exec.SendEndMsg(wsMsg)
+	execUtils.SendEndMsg(wsMsg)
 
 	return
 }
@@ -103,7 +103,7 @@ func (s *ExecService) getScenarioToExec(req *agentExec.ProcessorExecReq) (ret *a
 	return
 }
 
-func (s *ExecService) SubmitResult(result domain.Result, scenarioId uint, serverUrl, token string) (err error) {
+func (s *ExecService) SubmitResult(result agentDomain.Result, scenarioId uint, serverUrl, token string) (err error) {
 	bodyBytes, _ := json.Marshal(result)
 	req := v1.BaseRequest{
 		Url:               _httpUtils.AddSepIfNeeded(serverUrl) + fmt.Sprintf("scenarios/exec/submitResult/%d", scenarioId),
@@ -138,7 +138,7 @@ func (s *ExecService) SubmitResult(result domain.Result, scenarioId uint, server
 }
 
 func (s *ExecService) CancelAndSendMsg(scenarioId int, wsMsg websocket.Message) (err error) {
-	exec.SendCancelMsg(wsMsg)
+	execUtils.SendCancelMsg(wsMsg)
 	return
 }
 
@@ -162,13 +162,13 @@ func (s *ExecService) RestoreEntityFromRawAndSetParent(root *agentExec.Processor
 }
 
 func (s *ExecService) sendSubmitResult(rootId uint, wsMsg *websocket.Message) (err error) {
-	result := domain.Result{
+	result := agentDomain.Result{
 		ID:       -3,
 		ParentId: int(rootId),
 		Name:     "提交执行结果成功",
 		//Summary:  fmt.Sprintf("错误：%s", err.Error()),
 	}
-	exec.SendExecMsg(result, wsMsg)
+	execUtils.SendExecMsg(result, wsMsg)
 
 	return
 }

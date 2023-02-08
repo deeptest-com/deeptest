@@ -8,8 +8,8 @@ import (
 type InvocationRequest struct {
 	Id uint `gorm:"-" json:"id"`
 
-	Variables map[string]interface{}              `gorm:"-" json:"variables"`
-	Datapools map[string][]map[string]interface{} `gorm:"-" json:"datapools"`
+	Variables domain.Variables `gorm:"-" json:"variables"`
+	Datapools domain.Datapools `gorm:"-" json:"datapools"`
 
 	BaseRequest
 }

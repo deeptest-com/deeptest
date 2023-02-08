@@ -516,6 +516,12 @@ func (r *InterfaceRepo) SaveInterface(interf model.Interface) (err error) {
 
 func (r *InterfaceRepo) UpdateRequestBody(requestBody *model.InterfaceRequestBody) (err error) {
 	err = r.BaseRepo.Save(requestBody.ID, requestBody)
+	if err != nil {
+		return
+	}
+	schemaItem := requestBody.SchemaItem
+	schemaItem.RequestBodyId = requestBody.ID
+	err = r.BaseRepo.Save(schemaItem.ID, &schemaItem)
 	return
 }
 

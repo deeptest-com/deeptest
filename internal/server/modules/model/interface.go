@@ -126,7 +126,7 @@ func (InterfaceRequestBodyItem) TableName() string {
 type InterfaceRequestBody struct {
 	BaseModel
 	InterfaceRequestBodyBase
-	RequestBodyItem InterfaceRequestBodyItem `gorm:"-" json:"requestBodyItem"`
+	SchemaItem InterfaceRequestBodyItem `gorm:"-" json:"schemaItem"`
 }
 
 func (InterfaceRequestBody) TableName() string {

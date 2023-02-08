@@ -40,6 +40,7 @@ type InterfaceImportReq struct {
 
 type InterfaceResp struct {
 	Url               string                 `json:"url"`
+	Name              string                 `json:"name"`
 	Method            string                 `gorm:"default:GET" json:"method"`
 	Params            []domain.Param         `gorm:"-" json:"params"`
 	Headers           []domain.Header        `gorm:"-" json:"headers"`

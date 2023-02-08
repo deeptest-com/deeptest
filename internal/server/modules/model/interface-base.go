@@ -113,12 +113,12 @@ type InterfaceRequestBodyBase struct {
 	MediaType   string `json:"mediaType"`
 	Description string `json:"description"`
 	SchemaRefId int64  `json:"schemaRefId"`
-	SchemaItem  string `json:"SchemaItem"`
 	Examples    string `json:"examples"`
 }
 
 type InterfaceRequestBodyItemBase struct {
-	Name    string `json:"name"`
-	Type    string `json:"type"`
-	Content string `json:"content"`
+	Name          string `json:"name"`
+	Type          string `json:"type"`
+	Content       string `json:"content"`
+	RequestBodyId uint   `json:"RequestBodyId"`
 }

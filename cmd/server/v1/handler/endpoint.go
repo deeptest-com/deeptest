@@ -1,10 +1,10 @@
 package handler
 
 import (
-	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
+	"github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	"github.com/kataras/iris/v12"
 )
 
@@ -41,5 +41,7 @@ func (c *EndpointCtrl) Delete(ctx iris.Context) {
 
 //构造参数构造auth，BasicAuth,BearerToken,OAuth20,ApiKey
 func (c *EndpointCtrl) requestParser(req *v1.EndpointReq) {
-	fmt.Println(req, "+++++++++++++++")
+	for key, item := range req.Interfaces {
+		req.Interfaces[key].RequestBody.SchemaItem.Content = _commUtils.JsonEncode(item.RequestBody.SchemaItem.Content)
+	}
 }

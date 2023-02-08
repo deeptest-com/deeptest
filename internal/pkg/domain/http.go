@@ -18,10 +18,10 @@ type Header struct {
 	Disabled bool   `json:"disabled"`
 }
 type RequestBody struct {
-	MediaType   string     `json:"media_type"`
+	MediaType   string     `json:"mediaType"`
 	Description string     `json:"description"`
-	SchemaRefId int64      `json:"schema_ref_id"`
-	SchemaItem  SchemaItem `json:"schema_item"`
+	SchemaRefId int64      `json:"schemaRefId"`
+	SchemaItem  SchemaItem `json:"schemaItem"`
 	Examples    string     `json:"examples"`
 }
 
@@ -54,7 +54,7 @@ type ApiKey struct {
 	TransferMode string `json:"transferMode"`
 }
 type SchemaItem struct {
-	Name    string `json:"name"`
-	Type    string `json:"type"`
-	Content string `json:"content"`
+	Name    string      `json:"name"`
+	Type    string      `json:"type"`
+	Content interface{} `json:"content"`
 }

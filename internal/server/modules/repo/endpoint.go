@@ -53,20 +53,20 @@ func (r *EndpointRepo) Paginate(req v1.EndpointReqPaginate) (ret _domain.PageDat
 	return
 }
 
-func (r *EndpointRepo) SaveAll(endpoint model.Endpoint) (err error) {
+func (r *EndpointRepo) SaveAll(endpoint *model.Endpoint) (err error) {
 	r.DB.Transaction(func(tx *gorm.DB) error {
 		//更新终端
-		err = r.saveEndpoint(&endpoint)
+		err = r.saveEndpoint(endpoint)
 		if err != nil {
 			return err
 		}
 		//保存路径参数
-		err = r.saveEndpointParams(endpoint.Id, endpoint.PathParams)
+		err = r.saveEndpointParams(endpoint.ID, endpoint.PathParams)
 		if err != nil {
 			return err
 		}
 		//保存接口
-		err = r.saveInterfaces(endpoint.Id, endpoint.Interfaces)
+		err = r.saveInterfaces(endpoint.ID, endpoint.Interfaces)
 		if err != nil {
 			return err
 		}
@@ -83,7 +83,7 @@ func (r *EndpointRepo) saveEndpoint(endpoint *model.Endpoint) (err error) {
 }
 
 //保存路径参数
-func (r *EndpointRepo) saveEndpointParams(endpointId int64, params []model.EndpointPathParam) (err error) {
+func (r *EndpointRepo) saveEndpointParams(endpointId uint, params []model.EndpointPathParam) (err error) {
 	for _, item := range params {
 		item.EndpointId = endpointId
 		err = r.Save(item.ID, &item)
@@ -95,7 +95,7 @@ func (r *EndpointRepo) saveEndpointParams(endpointId int64, params []model.Endpo
 }
 
 //保存接口信息
-func (r *EndpointRepo) saveInterfaces(endpointId int64, interfaces []model.Interface) (err error) {
+func (r *EndpointRepo) saveInterfaces(endpointId uint, interfaces []model.Interface) (err error) {
 	for _, item := range interfaces {
 		item.EndpointId = endpointId
 		err = r.InterfaceRepo.SaveInterface(item)
@@ -104,5 +104,26 @@ func (r *EndpointRepo) saveInterfaces(endpointId int64, interfaces []model.Inter
 			return err
 		}
 	}
+	return
+}
+
+func (r *EndpointRepo) GetAll(id uint) (endpoint model.Endpoint, err error) {
+	endpoint, err = r.Get(id)
+	if err != nil {
+		return
+	}
+	endpoint.PathParams, _ = r.GetEndpointParams(id)
+	endpoint.Interfaces, _ = r.InterfaceRepo.GetByEndpointId(id)
+
+	return
+}
+
+func (r *EndpointRepo) Get(id uint) (res model.Endpoint, err error) {
+	err = r.DB.First(&res, id).Error
+	return
+}
+
+func (r *EndpointRepo) GetEndpointParams(endpointId uint) (pathParam []model.EndpointPathParam, err error) {
+	err = r.DB.Find(&pathParam, "endpoint_id=?", endpointId).Error
 	return
 }

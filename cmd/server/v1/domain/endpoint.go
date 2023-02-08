@@ -15,21 +15,22 @@ type EndpointReqPaginate struct {
 }
 
 type EndpointReq struct {
+	ID         int64           `json:"id"`
 	ProjectId  int64           `json:"project_id"`
 	Status     int64           `json:"status"`
 	Title      string          `json:"title"`
 	Path       string          `json:"path"`
 	Version    string          `json:"version"`
 	ParentId   int64           `json:"ParentId"`
-	PathParams []domain.Param  `json:"path_params"`
+	PathParams []domain.Param  `json:"pathParams"`
 	Interfaces []InterfaceResp `json:"interfaces"`
 }
 
 type EndpointRes struct {
 	ProjectId  int64           `json:"project_id"`
 	Status     int64           `json:"status"`
-	CreateUser string          `json:"create_user"`
-	Title      string          `json:"tile"`
+	Title      string          `json:"title"`
 	Version    string          `json:"version"`
+	PathParams []domain.Param  `json:"pathParams"`
 	Interfaces []InterfaceResp `json:"interfaces"`
 }

@@ -21,6 +21,7 @@ func (m *EndpointModule) Party() module.WebModule {
 		//public.Use(middleware.JwtHandler())
 		public.Post("/index", m.EndpointCtrl.Index)
 		public.Post("/save", m.EndpointCtrl.Save)
+		public.Get("/detail", m.EndpointCtrl.Detail)
 
 		//public.Use(middleware.JwtHandler(), middleware.Casbin(), middleware.OperationRecord())
 	}

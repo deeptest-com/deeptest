@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/kataras/iris/v12"
@@ -431,6 +432,15 @@ func (r *InterfaceRepo) ListHeaders(interfaceId uint) (pos []model.InterfaceHead
 
 	return
 }
+func (r *InterfaceRepo) ListCookies(interfaceId uint) (pos []model.InterfaceCookie, err error) {
+	err = r.DB.
+		Where("interface_id=?", interfaceId).
+		Where("NOT deleted").
+		Order("id ASC").
+		Find(&pos).Error
+
+	return
+}
 func (r *InterfaceRepo) ListBodyFormData(interfaceId uint) (pos []model.InterfaceBodyFormDataItem, err error) {
 	err = r.DB.
 		Where("interface_id=?", interfaceId).
@@ -527,5 +537,45 @@ func (r *InterfaceRepo) UpdateRequestBody(requestBody *model.InterfaceRequestBod
 
 func (r *InterfaceRepo) UpdateInterface(interf *model.Interface) (err error) {
 	err = r.BaseRepo.Save(interf.ID, interf)
+	return
+}
+
+func (r *InterfaceRepo) GetByEndpointId(endpointId uint) (interfaces []model.Interface, err error) {
+
+	interfaces, err = r.GetEndpointId(endpointId)
+	for key, interf := range interfaces {
+		interfaces[key].Params, _ = r.ListParams(interf.ID)
+		interfaces[key].Headers, _ = r.ListHeaders(interf.ID)
+		interfaces[key].Cookies, _ = r.ListCookies(interf.ID)
+		interfaces[key].RequestBody, _ = r.ListRequestBody(interf.ID)
+	}
+
+	return
+}
+
+func (r *InterfaceRepo) GetEndpointId(endpointId uint) (field []model.Interface, err error) {
+	err = r.DB.
+		Where("endpoint_id=?", endpointId).
+		Where("NOT deleted").
+		Find(&field).Error
+	return
+}
+
+func (r *InterfaceRepo) ListRequestBody(interfaceId uint) (requestBody model.InterfaceRequestBody, err error) {
+	err = r.DB.First(&requestBody, "interface_id = ?", interfaceId).Error
+	if err != nil {
+		return
+	}
+
+	requestBody.SchemaItem, err = r.ListRequestBodyItem(requestBody.ID)
+	if err != nil {
+		//requestBody.SchemaItem.Content = _commUtils.JsonDecode(builtin.Interface2String(requestBody.SchemaItem.Content))
+	}
+	return
+}
+func (r *InterfaceRepo) ListRequestBodyItem(requestBodyId uint) (requestBodyItem model.InterfaceRequestBodyItem, err error) {
+	fmt.Println(requestBodyId, "+++++++++++++")
+	err = r.DB.First(&requestBodyItem, "request_body_id = ?", requestBodyId).Error
+	fmt.Println(err)
 	return
 }

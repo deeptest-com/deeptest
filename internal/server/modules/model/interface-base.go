@@ -8,7 +8,7 @@ import (
 type InterfaceBase struct {
 	Name       string `json:"name"`
 	Desc       string `json:"desc"`
-	EndpointId int64  `json:"endpoint_id"`
+	EndpointId uint   `json:"endpoint_id"`
 	SecurityId int64  `json:"security_id"`
 	IsLeaf     bool   `json:"isLeaf"`
 	ParentId   uint   `json:"parentId"`

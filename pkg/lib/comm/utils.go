@@ -122,7 +122,14 @@ func JsonEncode(data interface{}) (res string) {
 	if resByte, err := json.Marshal(data); err == nil {
 		res = string(resByte)
 	}
-	//fmt.Println(data, res, "+++++++++")
+	return
+
+}
+
+func JsonDecode(str string) (res interface{}) {
+
+	json.Unmarshal([]byte(str), &res)
+
 	return
 
 }

@@ -2,7 +2,6 @@ package model
 
 type Endpoint struct {
 	BaseModel
-	Id         int64               `json:"id"`
 	Title      string              `json:"title"`
 	ProjectId  int64               `json:"projectId"`
 	ParentId   int64               `json:"parentId"`
@@ -18,11 +17,10 @@ func (Endpoint) TableName() string {
 
 type EndpointPathParam struct {
 	BaseModel
-	Id         int64  `json:"id"`
 	Name       string `json:"name"`
 	Value      string `json:"type"`
 	Type       string `json:"type"`
-	EndpointId int64  `json:"endpointId"`
+	EndpointId uint   `json:"endpointId"`
 }
 
 func (EndpointPathParam) TableName() string {

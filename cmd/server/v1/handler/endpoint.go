@@ -26,13 +26,23 @@ func (c *EndpointCtrl) Index(ctx iris.Context) {
 func (c *EndpointCtrl) Save(ctx iris.Context) {
 	var req v1.EndpointReq
 	if err := ctx.ReadJSON(&req); err == nil {
-		c.requestParser(&req)
+		//c.requestParser(&req)
 		res, _ := c.EndpointService.Save(req)
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res})
 	} else {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 	}
 	return
+}
+
+func (c *EndpointCtrl) Detail(ctx iris.Context) {
+	id := ctx.URLParamUint64("id")
+	if id != 0 {
+		res := c.EndpointService.GetById(uint(id))
+		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res})
+	} else {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
+	}
 }
 
 func (c *EndpointCtrl) Delete(ctx iris.Context) {

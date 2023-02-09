@@ -36,11 +36,10 @@
             :columns="columns"
             :data-source="data"
         >
-
           <template #title="{text}">
             <div class="customTitleColRender">
-              <span>{{text}}</span>
-              <span class="edit" @click="addInterface"><EditOutlined /></span>
+              <span>{{ text }}</span>
+              <span class="edit" @click="addInterface"><EditOutlined/></span>
             </div>
           </template>
 
@@ -55,52 +54,31 @@
         </a-table>
       </div>
     </div>
-
-    <a-drawer
-        title="[接口编号] 接口名称"
-        :placement="right"
-        :width="1000"
-        :closable="true"
-        :visible="drawerVisible"
-        @close="onCloseDrawer"
-    >
-      接口定义
-    </a-drawer>
-
-    <!--  创建Tag，  -->
-    <a-modal v-model:visible="createTagModalvisible" title="新建分类" @ok="createTagModalvisible=false">
-      <a-form-item label="分类名称">
-        <a-input placeholder="分类名称"/>
-      </a-form-item>
-      <a-form-item label="备注">
-        <a-input placeholder="备注"/>
-      </a-form-item>
-    </a-modal>
-
-    <!--  创建新接口弹框，  -->
-    <a-modal v-model:visible="createApiModalvisible" title="新建接口" @ok="createApiModalvisible=false">
-      <a-form-item label="接口分类">
-        <a-select placeholder="请选择接口分类">
-          <a-select-option value="shanghai">接口类型1</a-select-option>
-          <a-select-option value="beijing">接口类型2</a-select-option>
-        </a-select>
-      </a-form-item>
-
-      <a-form-item label="接口路径">
-        <a-input placeholder="请输入接口路径"/>
-      </a-form-item>
-
-      <a-form-item label="接口名称">
-        <a-input placeholder="接口名称"/>
-      </a-form-item>
-    </a-modal>
+    <!-- 编辑接口时，展开抽屉   -->
+    <EditInterfaceDrawer :visible="drawerVisible" @close="onCloseDrawer"/>
+    <!--  创建接口 Tag  -->
+    <CreateTagModal
+        :visible="createTagModalvisible"
+        @cancal="handleCancalCreateTag"
+        @ok="handleCreateTag"/>
+    <!--  创建新接口弹框  -->
+    <CreateApiModal
+        :visible="createApiModalvisible"
+        @cancal="handleCancalCreateApi"
+        @ok="handleCreateApi"/>
 
   </div>
 </template>
 <script setup lang="ts">
 import {computed, reactive, toRefs, ref} from 'vue';
 import {ColumnProps} from 'ant-design-vue/es/table/interface';
-import {PlusOutlined,EditOutlined} from '@ant-design/icons-vue';
+import {PlusOutlined, EditOutlined} from '@ant-design/icons-vue';
+import {requestMethodOpts} from '@/config/constant';
+
+import CreateApiModal from './components/CreateApiModal.vue';
+import CreateTagModal from './components/CreateTagModal.vue'
+import EditInterfaceDrawer from './components/EditInterfaceDrawer.vue'
+
 
 type Key = ColumnProps['key'];
 
@@ -258,7 +236,7 @@ function importApi() {
 }
 
 /**
- * 打开抽屉
+ * 关闭抽屉
  * */
 function onCloseDrawer() {
   drawerVisible.value = false;
@@ -282,6 +260,24 @@ function addApiTag() {
 function addApi() {
   createApiModalvisible.value = true;
 }
+
+
+function handleCreateApi() {
+  createApiModalvisible.value = false;
+}
+
+function handleCancalCreateApi() {
+  createApiModalvisible.value = false;
+}
+function handleCreateTag() {
+  createTagModalvisible.value = false;
+}
+function handleCancalCreateTag() {
+  createTagModalvisible.value = false;
+}
+
+
+
 </script>
 
 <style scoped lang="less">
@@ -340,12 +336,18 @@ function addApi() {
   display: flex;
 }
 
-.customTitleColRender{
+.customTitleColRender {
   display: flex;
-  .edit{
-    margin-left: 8px;
-    cursor:pointer;
-  }
 
+  .edit {
+    margin-left: 8px;
+    cursor: pointer;
+  }
+}
+
+.form-item-con {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>

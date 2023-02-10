@@ -1,46 +1,84 @@
 <template>
-  <div>
-    <div style="margin-bottom: 16px">
-      <a-button class="action-new" type="primary"  :loading="loading" @click="addInterface">
-        新建接口
-      </a-button>
-      <a-button class="action-import" type="primary" :disabled="!hasSelected" :loading="loading" @click="importApi">
-        导入
-      </a-button>
-    </div>
-    <a-table
-        :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
-        :columns="columns"
-        :data-source="data"
-    >
-      <template #action>
-        <div class="action-btn">
-          <a-button type="link"  @click="copy">复制</a-button>
-          <a-button type="link"  @click="del">删除</a-button>
-          <a-button type="link"   @click="disabled">过时</a-button>
+  <div class="container">
+    <div class="content">
+      <div class="left tree">
+        <div class="tag-filter-form">
+          <a-input-search
+              class="search-input"
+              v-model:value="searchValue"
+              placeholder="搜索接口分类"/>
+          <div class="add-btn" @click="addApiTag">
+            <PlusOutlined style="font-size: 16px;"/>
+          </div>
         </div>
-      </template>
+        <a-tree
+            :tree-data="treeData"
+        >
+          <template #title="{ title, key }">
+            <span v-if="key === '0-0-0'" style="color: #1890ff">{{ title }}</span>
 
-    </a-table>
+            <template v-else>{{ title }}</template>
+          </template>
+        </a-tree>
+      </div>
+      <div class="right">
+        <!--  头部区域  -->
+        <div class="top-action">
+          <a-button class="action-new" type="primary" :loading="loading" @click="addApi">
+            新建接口
+          </a-button>
+          <a-button class="action-import" type="primary" :disabled="!hasSelected" :loading="loading" @click="importApi">
+            导入
+          </a-button>
+        </div>
+        <a-table
+            :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
+            :columns="columns"
+            :data-source="data"
+        >
+          <template #title="{text}">
+            <div class="customTitleColRender">
+              <span>{{ text }}</span>
+              <span class="edit" @click="addInterface"><EditOutlined/></span>
+            </div>
+          </template>
 
-    <a-drawer
-        title="[接口编号] 接口名称"
-        :placement="right"
-        :width="1000"
-        :closable="true"
-        :visible="drawerVisible"
-        @close="onCloseDrawer"
-    >
+          <template #action>
+            <div class="action-btns">
+              <a-button type="link" @click="copy">复制</a-button>
+              <a-button type="link" @click="del">删除</a-button>
+              <a-button type="link" @click="disabled">过时</a-button>
+            </div>
+          </template>
 
-      接口定义
-
-    </a-drawer>
+        </a-table>
+      </div>
+    </div>
+    <!-- 编辑接口时，展开抽屉   -->
+    <EditInterfaceDrawer :visible="drawerVisible" @close="onCloseDrawer"/>
+    <!--  创建接口 Tag  -->
+    <CreateTagModal
+        :visible="createTagModalvisible"
+        @cancal="handleCancalCreateTag"
+        @ok="handleCreateTag"/>
+    <!--  创建新接口弹框  -->
+    <CreateApiModal
+        :visible="createApiModalvisible"
+        @cancal="handleCancalCreateApi"
+        @ok="handleCreateApi"/>
 
   </div>
 </template>
 <script setup lang="ts">
-import {computed, reactive, toRefs,ref} from 'vue';
+import {computed, reactive, toRefs, ref} from 'vue';
 import {ColumnProps} from 'ant-design-vue/es/table/interface';
+import {PlusOutlined, EditOutlined} from '@ant-design/icons-vue';
+import {requestMethodOpts} from '@/config/constant';
+
+import CreateApiModal from './components/CreateApiModal.vue';
+import CreateTagModal from './components/CreateTagModal.vue'
+import EditInterfaceDrawer from './components/EditInterfaceDrawer.vue'
+
 
 type Key = ColumnProps['key'];
 
@@ -62,6 +100,7 @@ const columns = [
   {
     title: '接口名称',
     dataIndex: 'title',
+    slots: {customRender: 'title'},
   },
   {
     title: '状态',
@@ -89,11 +128,50 @@ const columns = [
 ];
 
 
+const treeData = [
+  {
+    title: '接口分类1',
+    key: '0-0',
+    children: [
+      {
+        title: '接口0-0-0',
+        key: '0-0-0',
+        children: [
+          {title: '接口0-0-0-0', key: '0-0-0-0'},
+          {title: '接口0-0-0-1', key: '0-0-0-1'},
+          {title: '接口0-0-0-2', key: '0-0-0-2'},
+        ],
+      },
+      {
+        title: '接口0-0-1',
+        key: '0-0-1',
+        children: [
+          {title: '接口0-0-1-0', key: '0-0-1-0'},
+          {title: '接口0-0-1-1', key: '0-0-1-1'},
+          {title: '接口0-0-1-2', key: '0-0-1-2'},
+        ],
+      },
+    ],
+  },
+  {
+    title: '接口分类2',
+    key: '0-1',
+  },
+  {
+    title: '接口分类3',
+    key: '0-2',
+  },
+  {
+    title: '接口分类4',
+    key: '0-3',
+  },
+];
+
 const data: DataType[] = [];
 for (let i = 0; i < 46; i++) {
   data.push({
     key: i,
-    title:`接口 ${i}`,
+    title: `接口 ${i}`,
     name: `用户 ${i}`,
     index: i + 1,
     age: 32,
@@ -103,8 +181,7 @@ for (let i = 0; i < 46; i++) {
 }
 
 
-
-const selectedRowKeys:Key[] = ref([]);
+const selectedRowKeys: Key[] = ref([]);
 const loading = false;
 
 // 是否批量选中了
@@ -159,22 +236,118 @@ function importApi() {
 }
 
 /**
- * 打开抽屉
+ * 关闭抽屉
  * */
 function onCloseDrawer() {
-    drawerVisible.value = false;
+  drawerVisible.value = false;
 }
+
+
+const createTagModalvisible = ref(false);
+const createApiModalvisible = ref(false);
+
+/**
+ * 添加接口分类
+ * */
+function addApiTag() {
+  createTagModalvisible.value = true;
+}
+
+
+/**
+ * 添加接口
+ * */
+function addApi() {
+  createApiModalvisible.value = true;
+}
+
+
+function handleCreateApi() {
+  createApiModalvisible.value = false;
+}
+
+function handleCancalCreateApi() {
+  createApiModalvisible.value = false;
+}
+function handleCreateTag() {
+  createTagModalvisible.value = false;
+}
+function handleCancalCreateTag() {
+  createTagModalvisible.value = false;
+}
+
+
+
 </script>
 
 <style scoped lang="less">
-.action-new{
-  margin-right: 8px;
+.container {
+  margin: 16px;
+  background: #ffffff;
 }
-.action-btn {
-  .ant-btn {
-    display: inline-block;
+
+.tag-filter-form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 60px;
+
+  .search-input {
+    margin-left: 8px;
   }
 
+  .add-btn {
+    margin-left: 12px;
+    margin-right: 16px;
+    cursor: pointer;
+  }
+}
 
+.content {
+  display: flex;
+  width: 100%;
+
+  .left {
+    width: 300px;
+    border-right: 1px solid #f0f0f0;
+  }
+
+  .right {
+    flex: 1
+  }
+}
+
+.action-new {
+  margin-right: 8px;
+}
+
+.top-action {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  margin-left: 16px;
+
+  .ant-btn {
+    margin-right: 16px;
+  }
+}
+
+.action-btns {
+  display: flex;
+}
+
+.customTitleColRender {
+  display: flex;
+
+  .edit {
+    margin-left: 8px;
+    cursor: pointer;
+  }
+}
+
+.form-item-con {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>

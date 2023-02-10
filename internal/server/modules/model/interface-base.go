@@ -9,7 +9,7 @@ type InterfaceBase struct {
 	Name       string `json:"name"`
 	Desc       string `json:"desc"`
 	EndpointId uint   `json:"endpoint_id"`
-	SecurityId int64  `json:"security_id"`
+	Security   string `json:"security"`
 	IsLeaf     bool   `json:"isLeaf"`
 	ParentId   uint   `json:"parentId"`
 	ProjectId  uint   `json:"projectId"`
@@ -116,9 +116,33 @@ type InterfaceRequestBodyBase struct {
 	Examples    string `json:"examples"`
 }
 
+type InterfaceResponseBodyBase struct {
+	Code        uint   `json:"code"`
+	InterfaceId uint   `json:"interfaceId"`
+	MediaType   string `json:"mediaType"`
+	Description string `json:"description"`
+	SchemaRefId int64  `json:"schemaRefId"`
+	Examples    string `json:"examples"`
+}
+
 type InterfaceRequestBodyItemBase struct {
 	Name          string `json:"name"`
 	Type          string `json:"type"`
 	Content       string `json:"content"`
-	RequestBodyId uint   `json:"RequestBodyId"`
+	RequestBodyId uint   `json:"requestBodyId"`
+}
+
+type InterfaceResponseBodyItemBase struct {
+	Name           string `json:"name"`
+	Type           string `json:"type"`
+	Content        string `json:"content"`
+	ResponseBodyId uint   `json:"ResponseBodyId"`
+}
+
+type InterfaceResponseBodyHeaderBase struct {
+	Name           string `json:"name"`
+	Desc           string `json:"desc"`
+	Value          string `json:"value"`
+	Type           string `json:"type"`
+	ResponseBodyId uint   `json:"responseBodyId"`
 }

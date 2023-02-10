@@ -18,7 +18,7 @@ func (Endpoint) TableName() string {
 type EndpointPathParam struct {
 	BaseModel
 	Name       string `json:"name"`
-	Value      string `json:"type"`
+	Value      string `json:"value"`
 	Type       string `json:"type"`
 	EndpointId uint   `json:"endpointId"`
 }

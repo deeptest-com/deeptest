@@ -98,7 +98,7 @@ func (r *EndpointRepo) saveEndpointParams(endpointId uint, params []model.Endpoi
 func (r *EndpointRepo) saveInterfaces(endpointId uint, interfaces []model.Interface) (err error) {
 	for _, item := range interfaces {
 		item.EndpointId = endpointId
-		err = r.InterfaceRepo.SaveInterface(item)
+		err = r.InterfaceRepo.SaveInterfaces(item)
 		//fmt.Println(item)
 		if err != nil {
 			return err

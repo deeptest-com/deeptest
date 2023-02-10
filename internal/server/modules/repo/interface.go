@@ -1,7 +1,6 @@
 package repo
 
 import (
-	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/kataras/iris/v12"
@@ -489,7 +488,7 @@ func (r *InterfaceRepo) GetApiKey(id uint) (po model.InterfaceApiKey, err error)
 	return
 }
 
-func (r *InterfaceRepo) SaveInterface(interf model.Interface) (err error) {
+func (r *InterfaceRepo) SaveInterfaces(interf model.Interface) (err error) {
 
 	r.DB.Transaction(func(tx *gorm.DB) error {
 		err = r.UpdateInterface(&interf)
@@ -518,6 +517,11 @@ func (r *InterfaceRepo) SaveInterface(interf model.Interface) (err error) {
 			return err
 		}
 
+		err = r.UpdateResponseBodies(interf.ID, interf.ResponseBodies)
+		if err != nil {
+			return err
+		}
+
 		return err
 	})
 
@@ -535,6 +539,33 @@ func (r *InterfaceRepo) UpdateRequestBody(requestBody *model.InterfaceRequestBod
 	return
 }
 
+func (r *InterfaceRepo) UpdateResponseBodies(interfaceId uint, responseBodies []model.InterfaceResponseBody) (err error) {
+	for _, responseBody := range responseBodies {
+		responseBody.InterfaceId = interfaceId
+		err = r.BaseRepo.Save(responseBody.ID, &responseBody)
+		if err != nil {
+			return
+		}
+		schemaItem := responseBody.SchemaItem
+		schemaItem.ResponseBodyId = responseBody.ID
+		err = r.BaseRepo.Save(schemaItem.ID, &schemaItem)
+		if err != nil {
+			return
+		}
+
+		responseBodyHeaders := responseBody.Headers
+		for _, header := range responseBodyHeaders {
+			header.ResponseBodyId = responseBody.ID
+			err = r.BaseRepo.Save(header.ID, &header)
+			if err != nil {
+				return
+			}
+		}
+
+	}
+	return
+}
+
 func (r *InterfaceRepo) UpdateInterface(interf *model.Interface) (err error) {
 	err = r.BaseRepo.Save(interf.ID, interf)
 	return
@@ -548,6 +579,7 @@ func (r *InterfaceRepo) GetByEndpointId(endpointId uint) (interfaces []model.Int
 		interfaces[key].Headers, _ = r.ListHeaders(interf.ID)
 		interfaces[key].Cookies, _ = r.ListCookies(interf.ID)
 		interfaces[key].RequestBody, _ = r.ListRequestBody(interf.ID)
+		interfaces[key].ResponseBodies, _ = r.ListResponseBodies(interf.ID)
 	}
 
 	return
@@ -574,8 +606,40 @@ func (r *InterfaceRepo) ListRequestBody(interfaceId uint) (requestBody model.Int
 	return
 }
 func (r *InterfaceRepo) ListRequestBodyItem(requestBodyId uint) (requestBodyItem model.InterfaceRequestBodyItem, err error) {
-	fmt.Println(requestBodyId, "+++++++++++++")
+	//fmt.Println(requestBodyId, "+++++++++++++")
 	err = r.DB.First(&requestBodyItem, "request_body_id = ?", requestBodyId).Error
-	fmt.Println(err)
+	//fmt.Println(err)
+	return
+}
+
+func (r *InterfaceRepo) ListResponseBodies(interfaceId uint) (responseBodies []model.InterfaceResponseBody, err error) {
+	err = r.DB.Find(&responseBodies, "interface_id = ?", interfaceId).Error
+	if err != nil {
+		return
+	}
+
+	for key, responseBody := range responseBodies {
+		responseBodies[key].SchemaItem, err = r.ListResponseBodyItem(responseBody.ID)
+		if err != nil {
+			return
+		}
+
+		responseBodies[key].Headers, err = r.ListResponseBodyHeaders(responseBody.ID)
+		if err != nil {
+			return
+		}
+	}
+
+	return
+}
+
+func (r *InterfaceRepo) ListResponseBodyItem(requestBodyId uint) (responseBodyItem model.InterfaceResponseBodyItem, err error) {
+	err = r.DB.First(&responseBodyItem, "response_body_id = ?", requestBodyId).Error
+	//fmt.Println(err)
+	return
+}
+
+func (r *InterfaceRepo) ListResponseBodyHeaders(requestBodyId uint) (responseBodyHeaders []model.InterfaceResponseBodyHeader, err error) {
+	err = r.DB.Find(&responseBodyHeaders, "response_body_id = ?", requestBodyId).Error
 	return
 }

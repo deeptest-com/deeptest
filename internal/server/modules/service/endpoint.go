@@ -24,6 +24,7 @@ func (s *EndpointService) Paginate(req v1.EndpointReqPaginate) (ret _domain.Page
 func (s *EndpointService) Save(req v1.EndpointReq) (res uint, err error) {
 	var endpoint model.Endpoint
 	copier.CopyWithOption(&endpoint, req, copier.Option{DeepCopy: true})
+	//fmt.Println(_commUtils.JsonEncode(endpoint), "++++++", _commUtils.JsonEncode(req))
 	err = s.EndpointRepo.SaveAll(&endpoint)
 	return endpoint.ID, err
 }

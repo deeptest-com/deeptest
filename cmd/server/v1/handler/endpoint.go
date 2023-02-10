@@ -47,7 +47,13 @@ func (c *EndpointCtrl) Detail(ctx iris.Context) {
 }
 
 func (c *EndpointCtrl) Delete(ctx iris.Context) {
-
+	id := ctx.URLParamUint64("id")
+	err := c.EndpointService.DeleteById(uint(id))
+	if err == nil {
+		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+	} else {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
+	}
 }
 
 //构造参数构造auth，BasicAuth,BearerToken,OAuth20,ApiKey
@@ -55,5 +61,15 @@ func (c *EndpointCtrl) requestParser(req *v1.EndpointReq) {
 	for _, item := range req.Interfaces {
 		fmt.Println(_commUtils.JsonEncode(item.ResponseBodies))
 		//req.Interfaces[key].RequestBody.SchemaItem.Content = _commUtils.JsonEncode(item.RequestBody.SchemaItem.Content)
+	}
+}
+
+func (c *EndpointCtrl) Expire(ctx iris.Context) {
+	id := ctx.URLParamUint64("id")
+	err := c.EndpointService.DisableById(uint(id))
+	if err == nil {
+		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+	} else {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 	}
 }

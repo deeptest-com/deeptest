@@ -23,7 +23,7 @@ func (r *EndpointRepo) Paginate(req v1.EndpointReqPaginate) (ret _domain.PageDat
 	//fmt.Println(r.DB.Model(&model.SysUser{}))
 	//err = r.DB.Where("id=?", id).Where("name=?", name).Find(&res).Error
 	var count int64
-	db := r.DB.Model(&model.Endpoint{}).Where("project_id = ? AND NOT deleted", req.ProjectId)
+	db := r.DB.Model(&model.Endpoint{}).Where("project_id = ? AND NOT deleted AND NOT disabled", req.ProjectId)
 
 	if req.Title != "" {
 		db = db.Where("title LIKE ?", fmt.Sprintf("%%%s%%", req.Title))
@@ -126,4 +126,12 @@ func (r *EndpointRepo) Get(id uint) (res model.Endpoint, err error) {
 func (r *EndpointRepo) GetEndpointParams(endpointId uint) (pathParam []model.EndpointPathParam, err error) {
 	err = r.DB.Find(&pathParam, "endpoint_id=?", endpointId).Error
 	return
+}
+
+func (r *EndpointRepo) DeleteById(id uint) error {
+	return r.DB.Model(&model.Endpoint{}).Where("id = ?", id).Update("deleted", 1).Error
+}
+
+func (r *EndpointRepo) DisableById(id uint) error {
+	return r.DB.Model(&model.Endpoint{}).Where("id = ?", id).Update("disabled", 1).Error
 }

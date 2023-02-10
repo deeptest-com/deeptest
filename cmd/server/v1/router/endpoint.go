@@ -22,6 +22,8 @@ func (m *EndpointModule) Party() module.WebModule {
 		public.Post("/index", m.EndpointCtrl.Index)
 		public.Post("/save", m.EndpointCtrl.Save)
 		public.Get("/detail", m.EndpointCtrl.Detail)
+		public.Delete("/delete", m.EndpointCtrl.Delete)
+		public.Put("/expire", m.EndpointCtrl.Expire)
 
 		//public.Use(middleware.JwtHandler(), middleware.Casbin(), middleware.OperationRecord())
 	}

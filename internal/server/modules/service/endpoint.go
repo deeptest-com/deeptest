@@ -33,3 +33,13 @@ func (s *EndpointService) GetById(id uint) (res model.Endpoint) {
 	res, _ = s.EndpointRepo.GetAll(id)
 	return
 }
+
+func (s *EndpointService) DeleteById(id uint) (err error) {
+	err = s.EndpointRepo.DeleteById(id)
+	return
+}
+
+func (s *EndpointService) DisableById(id uint) (err error) {
+	err = s.EndpointRepo.DisableById(id)
+	return
+}

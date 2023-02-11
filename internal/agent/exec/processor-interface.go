@@ -41,8 +41,12 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 		ParentId:          int(entity.ParentID),
 	}
 
-	variableMap := GetCachedVariableMapInContext(entity.ProcessorID)
-	ReplaceAll(&entity.BaseRequest, Environment, variableMap, DatapoolData)
+	// exec pre-request script
+	ExecJs(entity.PreRequestScript)
+
+	// replace variables
+	variables := GetCachedVariableMapInContext(entity.ProcessorID)
+	ReplaceAll(&entity.BaseRequest, Environment, variables, DatapoolData)
 
 	// invoke
 	GetRequestProps(&entity.BaseRequest)

@@ -85,9 +85,7 @@ func main() {
 	//fmt.Println(ob.Get("id2").String())
 
 	script := `
-const key = 'foo';
-const val = dp.variables.get(key);
-val;
+dp.environment.set("a", "123");
 `
 
 	val, err := vm.RunString(script)

@@ -3,7 +3,6 @@ package service
 import (
 	"encoding/json"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
-	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
@@ -77,10 +76,9 @@ func (s *InvocationProcessorService) ReplaceEnvironmentAndExtractorVariables(req
 
 	interf, _ := s.ProcessorInterfaceRepo.Get(req.Id)
 
+	req.Environment, _ = s.VariableService.GetEnvironmentVariablesByInterface(req.Id, consts.UsedByScenario)
 	req.Variables, _ = s.VariableService.GetVariablesByInterface(req.Id, consts.UsedByScenario)
 	req.Datapools, _ = s.DatapoolService.ListForExec(interf.ProjectId)
-
-	agentExec.ReplaceAll(&req.BaseRequest, req.Variables, req.Datapools)
 
 	ret = req
 

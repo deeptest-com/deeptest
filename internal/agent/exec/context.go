@@ -11,7 +11,8 @@ import (
 )
 
 var (
-	Variables = domain.Variables{}
+	Environment = domain.Environment{}
+	Variables   = domain.Variables{} // only for invocation
 
 	ScopeHierarchy  = map[uint]*[]uint{}               // only for scenario
 	ScopedVariables = map[uint][]domain.ExecVariable{} // only for scenario

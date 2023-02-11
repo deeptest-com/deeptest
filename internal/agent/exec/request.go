@@ -91,54 +91,54 @@ func GetContentProps(resp *v1.InvocationResponse) {
 	return
 }
 
-func ReplaceAll(req *v1.BaseRequest, variableMap domain.Variables, datapools domain.Datapools) {
-	replaceUrl(req, variableMap, datapools)
-	replaceParams(req, variableMap, datapools)
-	replaceHeaders(req, variableMap, datapools)
-	replaceBody(req, variableMap, datapools)
-	replaceAuthor(req, variableMap, datapools)
+func ReplaceAll(req *v1.BaseRequest, environment domain.Environment, variables domain.Variables, datapools domain.Datapools) {
+	replaceUrl(req, environment, variables, datapools)
+	replaceParams(req, environment, variables, datapools)
+	replaceHeaders(req, environment, variables, datapools)
+	replaceBody(req, environment, variables, datapools)
+	replaceAuthor(req, environment, variables, datapools)
 }
 
-func replaceUrl(req *v1.BaseRequest, variableMap domain.Variables, datapools domain.Datapools) {
-	req.Url = ReplaceVariableValue(req.Url, variableMap, datapools)
+func replaceUrl(req *v1.BaseRequest, environment domain.Environment, variables domain.Variables, datapools domain.Datapools) {
+	req.Url = ReplaceVariableValue(req.Url, environment, variables, datapools)
 }
-func replaceParams(req *v1.BaseRequest, variableMap domain.Variables, datapools domain.Datapools) {
+func replaceParams(req *v1.BaseRequest, environment domain.Environment, variables domain.Variables, datapools domain.Datapools) {
 	for idx, param := range req.Params {
-		req.Params[idx].Value = ReplaceVariableValue(param.Value, variableMap, datapools)
+		req.Params[idx].Value = ReplaceVariableValue(param.Value, environment, variables, datapools)
 	}
 }
-func replaceHeaders(req *v1.BaseRequest, variableMap domain.Variables, datapools domain.Datapools) {
+func replaceHeaders(req *v1.BaseRequest, environment domain.Environment, variables domain.Variables, datapools domain.Datapools) {
 	for idx, header := range req.Headers {
-		req.Headers[idx].Value = ReplaceVariableValue(header.Value, variableMap, datapools)
+		req.Headers[idx].Value = ReplaceVariableValue(header.Value, environment, variables, datapools)
 	}
 }
-func replaceBody(req *v1.BaseRequest, variableMap domain.Variables, datapools domain.Datapools) {
-	req.Body = ReplaceVariableValue(req.Body, variableMap, datapools)
+func replaceBody(req *v1.BaseRequest, environment domain.Environment, variables domain.Variables, datapools domain.Datapools) {
+	req.Body = ReplaceVariableValue(req.Body, environment, variables, datapools)
 }
-func replaceAuthor(req *v1.BaseRequest, variableMap domain.Variables, datapools domain.Datapools) {
+func replaceAuthor(req *v1.BaseRequest, environment domain.Environment, variables domain.Variables, datapools domain.Datapools) {
 	if req.AuthorizationType == consts.BasicAuth {
-		req.BasicAuth.Username = ReplaceVariableValue(req.BasicAuth.Username, variableMap, datapools)
-		req.BasicAuth.Password = ReplaceVariableValue(req.BasicAuth.Password, variableMap, datapools)
+		req.BasicAuth.Username = ReplaceVariableValue(req.BasicAuth.Username, environment, variables, datapools)
+		req.BasicAuth.Password = ReplaceVariableValue(req.BasicAuth.Password, environment, variables, datapools)
 
 	} else if req.AuthorizationType == consts.BearerToken {
-		req.BearerToken.Token = ReplaceVariableValue(req.BearerToken.Token, variableMap, datapools)
+		req.BearerToken.Token = ReplaceVariableValue(req.BearerToken.Token, environment, variables, datapools)
 
 	} else if req.AuthorizationType == consts.OAuth2 {
-		req.OAuth20.Name = ReplaceVariableValue(req.OAuth20.Name, variableMap, datapools)
-		req.OAuth20.CallbackUrl = ReplaceVariableValue(req.OAuth20.CallbackUrl, variableMap, datapools)
-		req.OAuth20.AuthURL = ReplaceVariableValue(req.OAuth20.AuthURL, variableMap, datapools)
-		req.OAuth20.AccessTokenURL = ReplaceVariableValue(req.OAuth20.AccessTokenURL, variableMap, datapools)
-		req.OAuth20.ClientID = ReplaceVariableValue(req.OAuth20.ClientID, variableMap, datapools)
-		req.OAuth20.Scope = ReplaceVariableValue(req.OAuth20.Scope, variableMap, datapools)
+		req.OAuth20.Name = ReplaceVariableValue(req.OAuth20.Name, environment, variables, datapools)
+		req.OAuth20.CallbackUrl = ReplaceVariableValue(req.OAuth20.CallbackUrl, environment, variables, datapools)
+		req.OAuth20.AuthURL = ReplaceVariableValue(req.OAuth20.AuthURL, environment, variables, datapools)
+		req.OAuth20.AccessTokenURL = ReplaceVariableValue(req.OAuth20.AccessTokenURL, environment, variables, datapools)
+		req.OAuth20.ClientID = ReplaceVariableValue(req.OAuth20.ClientID, environment, variables, datapools)
+		req.OAuth20.Scope = ReplaceVariableValue(req.OAuth20.Scope, environment, variables, datapools)
 
 	} else if req.AuthorizationType == consts.ApiKey {
-		req.ApiKey.Key = ReplaceVariableValue(req.ApiKey.Key, variableMap, datapools)
-		req.ApiKey.Value = ReplaceVariableValue(req.ApiKey.Value, variableMap, datapools)
-		req.ApiKey.TransferMode = ReplaceVariableValue(req.ApiKey.TransferMode, variableMap, datapools)
+		req.ApiKey.Key = ReplaceVariableValue(req.ApiKey.Key, environment, variables, datapools)
+		req.ApiKey.Value = ReplaceVariableValue(req.ApiKey.Value, environment, variables, datapools)
+		req.ApiKey.TransferMode = ReplaceVariableValue(req.ApiKey.TransferMode, environment, variables, datapools)
 	}
 }
 
-func ReplaceVariableValue(value string, variableMap domain.Variables, datapools domain.Datapools) (ret string) {
+func ReplaceVariableValue(value string, environment domain.Environment, variables domain.Variables, datapools domain.Datapools) (ret string) {
 
 	variablePlaceholders := GetVariablesInVariablePlaceholder(value)
 	ret = value
@@ -147,7 +147,7 @@ func ReplaceVariableValue(value string, variableMap domain.Variables, datapools 
 		variablePlaceholder := fmt.Sprintf("${%s}", placeholder)
 
 		oldVal := variablePlaceholder
-		newVal := getPlaceholderValue(placeholder, variableMap, datapools)
+		newVal := getPlaceholderValue(placeholder, environment, variables, datapools)
 
 		ret = strings.ReplaceAll(ret, oldVal, newVal)
 	}
@@ -155,12 +155,15 @@ func ReplaceVariableValue(value string, variableMap domain.Variables, datapools 
 	return
 }
 
-func getPlaceholderValue(placeholder string, variableMap domain.Variables, datapools domain.Datapools) (ret string) {
+func getPlaceholderValue(placeholder string, environment domain.Environment, variables domain.Variables, datapools domain.Datapools) (ret string) {
 
 	typ := getPlaceholderType(placeholder)
 
-	if typ == consts.PlaceholderTypeVariable {
-		ret = getVariableValue(placeholder, variableMap)
+	if typ == consts.PlaceholderTypeEnvironmentVariable {
+		ret = getEnvironmentVariableValue(placeholder, environment)
+
+	} else if typ == consts.PlaceholderTypeVariable {
+		ret = getVariableValue(placeholder, variables)
 
 	} else if typ == consts.PlaceholderTypeDatapool {
 		ret = getDatapoolValue(placeholder, datapools)
@@ -171,8 +174,13 @@ func getPlaceholderValue(placeholder string, variableMap domain.Variables, datap
 	return
 }
 
-func getVariableValue(placeholder string, variableMap domain.Variables) (ret string) {
-	ret = fmt.Sprintf("%v", variableMap[placeholder])
+func getEnvironmentVariableValue(placeholder string, environment domain.Environment) (ret string) {
+	ret = fmt.Sprintf("%v", environment[placeholder])
+	return
+}
+
+func getVariableValue(placeholder string, variables domain.Variables) (ret string) {
+	ret = fmt.Sprintf("%v", variables[placeholder])
 	return
 }
 

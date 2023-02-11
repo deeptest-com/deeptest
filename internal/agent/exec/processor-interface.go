@@ -42,7 +42,7 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 	}
 
 	variableMap := GetCachedVariableMapInContext(entity.ProcessorID)
-	ReplaceAll(&entity.BaseRequest, variableMap, DatapoolData)
+	ReplaceAll(&entity.BaseRequest, Environment, variableMap, DatapoolData)
 
 	// invoke
 	GetRequestProps(&entity.BaseRequest)

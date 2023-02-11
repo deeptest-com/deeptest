@@ -539,9 +539,10 @@ func (e PlaceholderPrefix) String() string {
 type PlaceholderType string
 
 const (
-	PlaceholderTypeVariable PlaceholderType = "variable"
-	PlaceholderTypeDatapool PlaceholderType = "datapool"
-	PlaceholderTypeFunction PlaceholderType = "function"
+	PlaceholderTypeEnvironmentVariable PlaceholderType = "environment_variable"
+	PlaceholderTypeVariable            PlaceholderType = "variable"
+	PlaceholderTypeDatapool            PlaceholderType = "datapool"
+	PlaceholderTypeFunction            PlaceholderType = "function"
 )
 
 func (e PlaceholderType) String() string {

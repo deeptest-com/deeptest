@@ -36,42 +36,42 @@ func GetScript(name ScriptType) string {
 
 	} else if name == ScriptEnvironmentGet {
 		if EnvironmentGet == "" {
-			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "snippet", "environment_get"))
+			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "snippet", "environment_get.txt"))
 			EnvironmentGet = string(bytes)
 		}
 		return EnvironmentGet
 
 	} else if name == ScriptEnvironmentSet {
 		if EnvironmentSet == "" {
-			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "snippet", "environment_set"))
+			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "snippet", "environment_set.txt"))
 			EnvironmentSet = string(bytes)
 		}
 		return EnvironmentSet
 
 	} else if name == ScriptEnvironmentClear {
 		if EnvironmentClear == "" {
-			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "snippet", "environment_clear"))
+			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "snippet", "environment_clear.txt"))
 			EnvironmentClear = string(bytes)
 		}
 		return EnvironmentClear
 
 	} else if name == ScriptVariablesGet {
 		if VariablesGet == "" {
-			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "snippet", "variables_get"))
+			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "snippet", "variables_get.txt"))
 			VariablesGet = string(bytes)
 		}
 		return VariablesGet
 
 	} else if name == ScriptVariablesSet {
 		if VariablesSet == "" {
-			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "snippet", "variables_set"))
+			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "snippet", "variables_set.txt"))
 			VariablesSet = string(bytes)
 		}
 		return VariablesSet
 
 	} else if name == ScriptVariablesClear {
 		if VariablesClear == "" {
-			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "snippet", "variables_clear"))
+			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "snippet", "variables_clear.txt"))
 			VariablesClear = string(bytes)
 		}
 		return VariablesClear

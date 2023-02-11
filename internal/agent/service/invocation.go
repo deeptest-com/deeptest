@@ -21,6 +21,7 @@ func (s *InvocationService) Invoke(req domain.InvocationReq) (ret v1.InvocationR
 	if req.UsedBy == consts.UsedByInterface {
 		interfaceExecReq := s.getInterfaceToExec(req)
 
+		agentExec.Environment = interfaceExecReq.Environment
 		agentExec.Variables = interfaceExecReq.Variables
 		agentExec.DatapoolData = interfaceExecReq.Datapools
 
@@ -28,12 +29,13 @@ func (s *InvocationService) Invoke(req domain.InvocationReq) (ret v1.InvocationR
 		err = s.SubmitInterfaceResult(req, ret, req.ServerUrl, req.Token)
 
 	} else if req.UsedBy == consts.UsedByScenario {
-		interfaceReq := s.getProcessorInterfaceToExec(req)
+		interfaceProcessorExecReq := s.getProcessorInterfaceToExec(req)
 
-		agentExec.Variables = interfaceReq.Variables
-		agentExec.DatapoolData = interfaceReq.Datapools
+		agentExec.Environment = interfaceProcessorExecReq.Environment
+		agentExec.Variables = interfaceProcessorExecReq.Variables
+		agentExec.DatapoolData = interfaceProcessorExecReq.Datapools
 
-		ret, err = s.Test(interfaceReq)
+		ret, err = s.Test(interfaceProcessorExecReq)
 		err = s.SubmitProcessorInterfaceResult(req, ret, req.ServerUrl, req.Token)
 
 	}
@@ -223,7 +225,10 @@ func (s *InvocationService) SubmitProcessorInterfaceResult(reqOjb domain.Invocat
 
 func (s *InvocationService) Test(req v1.InvocationRequest) (ret v1.InvocationResponse, err error) {
 	// exec pre-request script
-	agentExec.ExecJs(req.PreRequestScript, req.Variables, req.Datapools)
+	agentExec.ExecJs(req.PreRequestScript)
+
+	// replace variables
+	agentExec.ReplaceAll(&req.BaseRequest, agentExec.Environment, agentExec.Variables, agentExec.DatapoolData)
 
 	// send request
 	req.Url, err = _httpUtils.AddDefaultUrlSchema(req.Url)

@@ -76,7 +76,7 @@ import {CloseOutlined, FileOutlined, FolderOutlined, FolderOpenOutlined, CheckOu
 
 import {expandAllKeys, expandOneKey} from "@/services/tree";
 
-import {getExpandedKeys, setExpandedKeys} from "@/utils/cache";
+import {getExpandedKeys, getSelectedKey, setExpandedKeys, setSelectedKey} from "@/utils/cache";
 import {getContextMenuStyle} from "@/utils/dom";
 import {StateType as ScenarioStateType} from "../store";
 import {StateType as ProjectStateType} from "@/store/project";
@@ -96,7 +96,7 @@ const nodeDataCategory = computed<any>(()=> store.state.Scenario.nodeDataCategor
 watch(treeDataCategory, () => {
   console.log('watch treeDataCategory', treeDataCategory)
 
-  selectNode([treeDataCategory.value[0].id], null)
+  selectStoredKeyCall()
   getExpandedKeysCall()
 
   if (!treeDataCategory.value[0].children || treeDataCategory.value[0].children.length === 0) {
@@ -125,7 +125,7 @@ const expandNode = (keys: string[], e: any) => {
 }
 
 const selectNode = (keys, e) => {
-  console.log('selectNode', keys, e?.node.dataRef.id)
+  console.log('selectNode', keys)
 
   if (keys.length === 0 && e) {
     selectedKeys.value = [e.node.dataRef.id] // cancel un-select
@@ -134,11 +134,7 @@ const selectNode = (keys, e) => {
     selectedKeys.value = keys
   }
 
-  // unselect
-  if (!selectedKeys.value || selectedKeys.value.length === 0) {
-    store.dispatch('Scenario/getCategoryNode', null)
-    return
-  }
+  setSelectedKey('category', currProject.value.id, selectedKeys.value[0])
 
   const selectedData = treeDataMapCategory.value[selectedKeys.value[0]]
   store.dispatch('Scenario/getCategoryNode', selectedData)
@@ -204,7 +200,16 @@ const getExpandedKeysCall = debounce(async () => {
       await setExpandedKeys('category', currProject.value.id, expandedKeys.value)
     }
   })
-}, 500)
+}, 300)
+
+const selectStoredKeyCall = debounce(async () => {
+  console.log('selectStoredKeyCall')
+  getSelectedKey('category', currProject.value.id).then(async key => {
+    console.log('key', key)
+    if (key)
+      selectNode([key], null)
+  })
+}, 300)
 
 const getOpenKeys = (treeNode, isAll) => {
   if (!treeNode) return

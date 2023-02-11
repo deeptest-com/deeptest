@@ -72,7 +72,7 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import {computed, defineComponent, getCurrentInstance, onMounted, onUnmounted, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import {Form, notification} from 'ant-design-vue';
@@ -95,14 +95,6 @@ import ImportModal from "./components/ImportModal.vue";
 
 const useForm = Form.useForm;
 
-export default defineComponent({
-  name: 'InterfaceTree',
-  props: {},
-  components: {
-    TreeContextMenu, ImportModal,
-    CloseOutlined, FileOutlined, FolderOutlined, FolderOpenOutlined, CheckOutlined,
-  },
-  setup(props) {
     const {t} = useI18n();
 
     const store = useStore<{ Interface: StateType, ProjectGlobal: ProjectStateType }>();
@@ -155,11 +147,6 @@ export default defineComponent({
         return
       } else {
         selectedKeys.value = keys
-      }
-
-      if (!selectedKeys.value || selectedKeys.value.length === 0) { // not to display the design page
-        store.dispatch('Interface/getInterface', {isLeaf: false})
-        return
       }
 
       const selectedData = treeDataMap.value[selectedKeys.value[0]]
@@ -386,42 +373,6 @@ export default defineComponent({
       document.removeEventListener("click", clearMenu)
     })
 
-    return {
-      treeData,
-      treeDataMap,
-      interfaceData,
-      editedData,
-
-      replaceFields,
-      expandedKeys,
-      selectedKeys,
-      checkedKeys,
-      isExpand,
-      expandAll,
-      expandNode,
-      selectNode,
-      checkNode,
-      tree,
-      contextNode,
-      menuStyle,
-      rightVisible,
-      onRightClick,
-      menuClick,
-      isLeaf,
-      onDragEnter,
-      onDrop,
-
-      updateName,
-      cancelUpdate,
-
-      showImport,
-      importSubmit,
-      importClose,
-
-      tips,
-    }
-  }
-})
 </script>
 
 <style lang="less">

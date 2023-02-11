@@ -42,6 +42,7 @@ export interface SettingsType {
 
     settings: string;
     expandedKeys: string;
+    selectedKey: string;
 
     eventNotify,
     eventWebSocketConnStatus: string,
@@ -85,6 +86,7 @@ const settings: SettingsType = {
 
     settings: 'settings',
     expandedKeys: 'deeptest-expandedKeys',
+    selectedKey: 'deeptest-selectedKey',
 
     eventNotify: 'eventNotify',
     eventWebSocketConnStatus: 'eventWebSocketStatus',

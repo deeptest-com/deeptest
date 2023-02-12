@@ -81,7 +81,7 @@ export async function remove(id: number): Promise<any> {
 
 export async function parseSpecInLocalAgent(data, targetId): Promise<any> {
     data.targetId = targetId
-    data.serverUrl = process.env.VUE_APP_API_SERVER // used by agent to submit result to server
+    data.serverUrl = process.env.VUE_APP_API_SERVER // used by agent to request server
     data.token = await getToken()
 
     return requestToAgent({

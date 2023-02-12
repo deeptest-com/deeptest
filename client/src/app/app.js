@@ -254,13 +254,13 @@ export class DeepTestApp {
         }
     }
 
-    async replyLoadApiSpec(event, type, src, file, url) {
-        console.log(`replyLoadApiSpec`, type, src, file, url)
+    async replyLoadApiSpec(event, spaceType, spaceSrc, file, url) {
+        console.log(`replyLoadApiSpec`, spaceType, spaceSrc, file, url)
 
         // load the content to check that if it is a postman file
         let content = fs.readFileSync(file).toString()
 
-        const isPostMan = type === 'postman' || content.indexOf('"_postman_id"') > -1
+        const isPostMan = spaceType === 'postman' || content.indexOf('"_postman_id"') > -1
 
         if (isPostMan) {
             if (!postmanToOpenApi) postmanToOpenApi = require('postman-to-openapi')
@@ -270,7 +270,7 @@ export class DeepTestApp {
             await postmanToOpenApi(oldFile, file, {defaultTag: 'General'})
         }
 
-        event.reply(electronMsgReplay, {src: src, type: type, file: file, url: url});
+        event.reply(electronMsgReplay, {src: spaceSrc, type: spaceType, file: file, url: url});
     }
 
     // common file selection

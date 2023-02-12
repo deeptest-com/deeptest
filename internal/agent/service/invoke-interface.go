@@ -14,10 +14,10 @@ import (
 	"strings"
 )
 
-type InvocationService struct {
+type InvokeInterfaceService struct {
 }
 
-func (s *InvocationService) Invoke(req domain.InvocationReq) (ret v1.InvocationResponse, err error) {
+func (s *InvokeInterfaceService) Invoke(req domain.InvocationReq) (ret v1.InvocationResponse, err error) {
 	if req.UsedBy == consts.UsedByInterface {
 		interfaceExecReq := s.getInterfaceToExec(req)
 
@@ -43,7 +43,7 @@ func (s *InvocationService) Invoke(req domain.InvocationReq) (ret v1.InvocationR
 	return
 }
 
-func (s *InvocationService) getInterfaceToExec(req domain.InvocationReq) (ret v1.InvocationRequest) {
+func (s *InvokeInterfaceService) getInterfaceToExec(req domain.InvocationReq) (ret v1.InvocationRequest) {
 	url := fmt.Sprintf("invocations/loadInterfaceExecData")
 	body, err := json.Marshal(req.Data)
 	if err != nil {
@@ -91,7 +91,7 @@ func (s *InvocationService) getInterfaceToExec(req domain.InvocationReq) (ret v1
 	return
 }
 
-func (s *InvocationService) SubmitInterfaceResult(reqOjb domain.InvocationReq, repsObj v1.InvocationResponse, serverUrl, token string) (err error) {
+func (s *InvokeInterfaceService) SubmitInterfaceResult(reqOjb domain.InvocationReq, repsObj v1.InvocationResponse, serverUrl, token string) (err error) {
 	url := _httpUtils.AddSepIfNeeded(serverUrl) + fmt.Sprintf("invocations/submitInterfaceInvokeResult")
 
 	data := v1.SubmitInvocationResultRequest{
@@ -133,7 +133,7 @@ func (s *InvocationService) SubmitInterfaceResult(reqOjb domain.InvocationReq, r
 	return
 }
 
-func (s *InvocationService) getProcessorInterfaceToExec(req domain.InvocationReq) (ret v1.InvocationRequest) {
+func (s *InvokeInterfaceService) getProcessorInterfaceToExec(req domain.InvocationReq) (ret v1.InvocationRequest) {
 	url := fmt.Sprintf("processors/invocations/loadInterfaceExecData")
 	body, err := json.Marshal(req.Data)
 	if err != nil {
@@ -181,7 +181,7 @@ func (s *InvocationService) getProcessorInterfaceToExec(req domain.InvocationReq
 	return
 }
 
-func (s *InvocationService) SubmitProcessorInterfaceResult(reqOjb domain.InvocationReq, repsObj v1.InvocationResponse, serverUrl, token string) (err error) {
+func (s *InvokeInterfaceService) SubmitProcessorInterfaceResult(reqOjb domain.InvocationReq, repsObj v1.InvocationResponse, serverUrl, token string) (err error) {
 	url := _httpUtils.AddSepIfNeeded(serverUrl) + fmt.Sprintf("processors/invocations/submitInterfaceInvokeResult")
 
 	data := v1.SubmitInvocationResultRequest{
@@ -223,7 +223,7 @@ func (s *InvocationService) SubmitProcessorInterfaceResult(reqOjb domain.Invocat
 	return
 }
 
-func (s *InvocationService) Test(req v1.InvocationRequest) (ret v1.InvocationResponse, err error) {
+func (s *InvokeInterfaceService) Test(req v1.InvocationRequest) (ret v1.InvocationResponse, err error) {
 	// exec pre-request script
 	agentExec.ExecJs(req.PreRequestScript)
 
@@ -263,7 +263,7 @@ func (s *InvocationService) Test(req v1.InvocationRequest) (ret v1.InvocationRes
 	return
 }
 
-func (s *InvocationService) GetContentProps(ret *v1.InvocationResponse) {
+func (s *InvokeInterfaceService) GetContentProps(ret *v1.InvocationResponse) {
 	ret.ContentLang = consts.LangTEXT
 
 	if ret.ContentLang == "" {

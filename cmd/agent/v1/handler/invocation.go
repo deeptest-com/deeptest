@@ -8,7 +8,7 @@ import (
 )
 
 type InvocationCtrl struct {
-	InvocationService *service.InvocationService `inject:""`
+	InvocationService *service.InvokeInterfaceService `inject:""`
 }
 
 // InvokeInterface

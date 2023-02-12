@@ -12,7 +12,6 @@ import (
 )
 
 type IndexModule struct {
-	FileModule       *router.FileModule       `inject:""`
 	SpecModule       *router.SpecModule       `inject:""`
 	InvocationModule *router.InvocationModule `inject:""`
 }
@@ -33,7 +32,6 @@ func (m *IndexModule) Party() module.WebModule {
 		}
 	}
 	modules := []module.WebModule{
-		m.FileModule.Party(),
 		m.SpecModule.Party(),
 		m.InvocationModule.Party(),
 	}

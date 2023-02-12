@@ -20,10 +20,10 @@ var (
 	breakMap sync.Map
 )
 
-type ExecService struct {
+type ExecScenarioService struct {
 }
 
-func (s *ExecService) ExecScenario(req *agentExec.ProcessorExecReq, wsMsg *websocket.Message) (err error) {
+func (s *ExecScenarioService) ExecScenario(req *agentExec.ProcessorExecReq, wsMsg *websocket.Message) (err error) {
 	consts.ServerUrl = req.ServerUrl
 	consts.ServerToken = req.Token
 
@@ -53,7 +53,7 @@ func (s *ExecService) ExecScenario(req *agentExec.ProcessorExecReq, wsMsg *webso
 	return
 }
 
-func (s *ExecService) getScenarioToExec(req *agentExec.ProcessorExecReq) (ret *agentExec.ProcessorExecObj) {
+func (s *ExecScenarioService) getScenarioToExec(req *agentExec.ProcessorExecReq) (ret *agentExec.ProcessorExecObj) {
 	url := "scenarios/exec/loadExecScenario"
 
 	httpReq := v1.BaseRequest{
@@ -103,7 +103,7 @@ func (s *ExecService) getScenarioToExec(req *agentExec.ProcessorExecReq) (ret *a
 	return
 }
 
-func (s *ExecService) SubmitResult(result agentDomain.Result, scenarioId uint, serverUrl, token string) (err error) {
+func (s *ExecScenarioService) SubmitResult(result agentDomain.Result, scenarioId uint, serverUrl, token string) (err error) {
 	bodyBytes, _ := json.Marshal(result)
 	req := v1.BaseRequest{
 		Url:               _httpUtils.AddSepIfNeeded(serverUrl) + fmt.Sprintf("scenarios/exec/submitResult/%d", scenarioId),
@@ -137,12 +137,12 @@ func (s *ExecService) SubmitResult(result agentDomain.Result, scenarioId uint, s
 	return
 }
 
-func (s *ExecService) CancelAndSendMsg(scenarioId int, wsMsg websocket.Message) (err error) {
+func (s *ExecScenarioService) CancelAndSendMsg(scenarioId int, wsMsg websocket.Message) (err error) {
 	execUtils.SendCancelMsg(wsMsg)
 	return
 }
 
-func (s *ExecService) RestoreEntityFromRawAndSetParent(root *agentExec.Processor) (err error) {
+func (s *ExecScenarioService) RestoreEntityFromRawAndSetParent(root *agentExec.Processor) (err error) {
 	processors := make([]*agentExec.Processor, 0)
 
 	agentExec.GetProcessorList(root, &processors)
@@ -161,7 +161,7 @@ func (s *ExecService) RestoreEntityFromRawAndSetParent(root *agentExec.Processor
 	return
 }
 
-func (s *ExecService) sendSubmitResult(rootId uint, wsMsg *websocket.Message) (err error) {
+func (s *ExecScenarioService) sendSubmitResult(rootId uint, wsMsg *websocket.Message) (err error) {
 	result := agentDomain.Result{
 		ID:       -3,
 		ParentId: int(rootId),

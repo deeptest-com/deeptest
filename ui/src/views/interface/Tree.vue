@@ -79,7 +79,7 @@ import {Form, notification} from 'ant-design-vue';
 import {CloseOutlined, FileOutlined, FolderOutlined, FolderOpenOutlined, CheckOutlined} from "@ant-design/icons-vue";
 import {Interface} from "@/views/interface/data";
 import throttle from "lodash.debounce";
-import {importSpec, updateNodeName} from "@/views/interface/service";
+import {parseSpecInLocalAgent, updateNodeName} from "@/views/interface/service";
 import {expandAllKeys, expandOneKey, getNodeMap} from "@/services/tree";
 import {DropEvent, TreeDragEvent} from "ant-design-vue/es/tree/Tree";
 import {useStore} from "vuex";
@@ -338,23 +338,22 @@ const useForm = Form.useForm;
     }
 
     const showImport = ref(false)
-    const importSubmit = (data) => {
+    const importSubmit = async (data) => {
       console.log('importSpec', data)
-      importSpec(data, targetModelId).then((json) => {
-        if (json.code === 0) {
-          showImport.value = false
-          store.dispatch('Interface/loadInterface').then((result) => {
-              console.log(result)
-              expandOneKey(treeDataMap.value, targetModelId, expandedKeys.value) // expend parent node
-              setExpandedKeys('interface', currProject.value.id, expandedKeys.value)
-            })
-        } else {
-          notification.error({
-            key: NotificationKeyCommon,
-            message: '导入失败',
-          });
-        }
-      })
+      const parseResult = await parseSpecInLocalAgent(data, targetModelId)
+
+      if (parseResult.code === 0) {
+        store.dispatch('Interface/loadInterface').then((result) => {
+          console.log(result)
+          expandOneKey(treeDataMap.value, targetModelId, expandedKeys.value) // expend parent node
+          setExpandedKeys('interface', currProject.value.id, expandedKeys.value)
+        })
+      } else {
+        notification.error({
+          key: NotificationKeyCommon,
+          message: '解析失败',
+        });
+      }
     }
 
     const importClose = () => {

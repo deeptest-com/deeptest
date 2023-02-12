@@ -10,7 +10,9 @@ import (
 	"strings"
 )
 
-func ConvertPathsToInterfaces(doc *openapi3.T) (interfaces []model.Interface, err error) {
+func ConvertPathsToInterfaces(doc openapi3.T) (interfaces []model.Interface, err error) {
+	// TODO: convert to new openapi3 style models and save
+
 	for pth, item := range doc.Paths {
 		url := "${server}"
 		url = path.Join(url, pth)
@@ -100,8 +102,11 @@ func convertOperations(url string, pth *openapi3.PathItem) (interfaces []model.I
 
 func convertOperation(url string, operation *openapi3.Operation) (interf model.Interface, err error) {
 	// common
-	interf.Name = operation.Summary
 	interf.Url = url
+	interf.Name = operation.Summary
+	if interf.Name == "" {
+		interf.Name = "新接口"
+	}
 
 	// headers and params
 	for _, item := range operation.Parameters {

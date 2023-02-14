@@ -4,6 +4,7 @@ type Endpoint struct {
 	BaseModel
 	Title      string              `json:"title"`
 	ProjectId  int64               `json:"projectId"`
+	ServeId    uint                `json:"serveId"`
 	ParentId   int64               `json:"parentId"`
 	Path       string              `json:"path"`
 	Version    string              `json:"version"`

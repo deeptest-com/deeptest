@@ -10,7 +10,7 @@ type EndpointModule struct {
 	EndpointCtrl *handler.EndpointCtrl `inject:""`
 }
 
-func NewDemoModule() *EndpointModule {
+func NewEndpointModule() *EndpointModule {
 	return &EndpointModule{}
 }
 
@@ -24,6 +24,8 @@ func (m *EndpointModule) Party() module.WebModule {
 		public.Get("/detail", m.EndpointCtrl.Detail)
 		public.Delete("/delete", m.EndpointCtrl.Delete)
 		public.Put("/expire", m.EndpointCtrl.Expire)
+		public.Get("/copy", m.EndpointCtrl.Copy)
+		public.Post("/yaml", m.EndpointCtrl.Yaml)
 
 		//public.Use(middleware.JwtHandler(), middleware.Casbin(), middleware.OperationRecord())
 	}

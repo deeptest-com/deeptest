@@ -529,20 +529,52 @@ func (r *InterfaceRepo) SaveInterfaces(interf model.Interface) (err error) {
 }
 
 func (r *InterfaceRepo) UpdateRequestBody(requestBody *model.InterfaceRequestBody) (err error) {
+	err = r.removeRequestBody(requestBody.InterfaceId)
+	if err != nil {
+		return
+	}
 	err = r.BaseRepo.Save(requestBody.ID, requestBody)
 	if err != nil {
 		return
 	}
 	schemaItem := requestBody.SchemaItem
 	schemaItem.RequestBodyId = requestBody.ID
+	err = r.removeRequestBodyItem(requestBody.ID)
+	if err != nil {
+		return
+	}
 	err = r.BaseRepo.Save(schemaItem.ID, &schemaItem)
 	return
 }
 
+func (r *InterfaceRepo) removeRequestBodyItem(requestBodyId uint) (err error) {
+	err = r.DB.
+		Where("request_body_id = ?", requestBodyId).
+		Delete(&model.InterfaceRequestBodyItem{}).Error
+
+	return
+}
+
+func (r *InterfaceRepo) removeRequestBody(interId uint) (err error) {
+	err = r.DB.
+		Where("interface_id = ?", interId).
+		Delete(&model.InterfaceRequestBody{}).Error
+
+	return
+}
+
 func (r *InterfaceRepo) UpdateResponseBodies(interfaceId uint, responseBodies []model.InterfaceResponseBody) (err error) {
+	err = r.removeResponseBodies(interfaceId)
+	if err != nil {
+		return
+	}
 	for _, responseBody := range responseBodies {
 		responseBody.InterfaceId = interfaceId
 		err = r.BaseRepo.Save(responseBody.ID, &responseBody)
+		if err != nil {
+			return
+		}
+		err = r.removeRequestBodyItem(responseBody.ID)
 		if err != nil {
 			return
 		}
@@ -552,7 +584,10 @@ func (r *InterfaceRepo) UpdateResponseBodies(interfaceId uint, responseBodies []
 		if err != nil {
 			return
 		}
-
+		err = r.removeResponseBodyHeader(responseBody.ID)
+		if err != nil {
+			return
+		}
 		responseBodyHeaders := responseBody.Headers
 		for _, header := range responseBodyHeaders {
 			header.ResponseBodyId = responseBody.ID
@@ -563,6 +598,30 @@ func (r *InterfaceRepo) UpdateResponseBodies(interfaceId uint, responseBodies []
 		}
 
 	}
+	return
+}
+
+func (r *InterfaceRepo) removeResponseBodies(interId uint) (err error) {
+	err = r.DB.
+		Where("interface_id = ?", interId).
+		Delete(&model.InterfaceResponseBody{}).Error
+
+	return
+}
+
+func (r *InterfaceRepo) removeResponseBodyItem(responseBodyId uint) (err error) {
+	err = r.DB.
+		Where("response_body_id = ?", responseBodyId).
+		Delete(&model.InterfaceResponseBodyItem{}).Error
+
+	return
+}
+
+func (r *InterfaceRepo) removeResponseBodyHeader(responseBodyId uint) (err error) {
+	err = r.DB.
+		Where("response_body_id = ?", responseBodyId).
+		Delete(&model.InterfaceResponseBodyHeader{}).Error
+
 	return
 }
 

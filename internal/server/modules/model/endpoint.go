@@ -8,6 +8,8 @@ type Endpoint struct {
 	ParentId   int64               `json:"parentId"`
 	Path       string              `json:"path"`
 	Version    string              `json:"version"`
+	CreateUser string              `json:"createUser"`
+	Status     int64               `json:"status"`
 	PathParams []EndpointPathParam `gorm:"-" json:"pathParams"`
 	Interfaces []Interface         `gorm:"-" json:"interfaces"`
 }

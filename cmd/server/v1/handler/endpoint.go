@@ -29,6 +29,8 @@ func (c *EndpointCtrl) Index(ctx iris.Context) {
 func (c *EndpointCtrl) Save(ctx iris.Context) {
 	var req v1.EndpointReq
 	if err := ctx.ReadJSON(&req); err == nil {
+		//req.CreateUser = multi.GetUsername(ctx)
+		req.CreateUser = "admin"
 		endpoint := c.requestParser(&req)
 		res, _ := c.EndpointService.Save(endpoint)
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res})
@@ -60,7 +62,6 @@ func (c *EndpointCtrl) Delete(ctx iris.Context) {
 
 //构造参数构造auth，BasicAuth,BearerToken,OAuth20,ApiKey
 func (c *EndpointCtrl) requestParser(req *v1.EndpointReq) (endpoint model.Endpoint) {
-
 	for _, item := range req.Interfaces {
 		fmt.Println(_commUtils.JsonEncode(item.ResponseBodies))
 		//req.Interfaces[key].RequestBody.SchemaItem.Content = _commUtils.JsonEncode(item.RequestBody.SchemaItem.Content)

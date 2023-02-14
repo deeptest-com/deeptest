@@ -24,9 +24,7 @@
       <div class="right">
         <!--  头部区域  -->
         <div class="top-action">
-          <a-button class="action-new" type="primary" :loading="loading" @click="addApi">
-            新建接口
-          </a-button>
+          <a-button class="action-new" type="primary" :loading="loading" @click="addApi">新建接口</a-button>
           <a-button class="action-import" type="primary" :disabled="!hasSelected" :loading="loading" @click="importApi">
             导入
           </a-button>
@@ -34,16 +32,14 @@
         <a-table
             :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
             :columns="columns"
-            :data-source="data"
-        >
-          <template #title="{text}">
+            :data-source="data">
+          <template #colTitle="{text,record}">
             <div class="customTitleColRender">
               <span>{{ text }}</span>
-              <span class="edit" @click="addInterface"><EditOutlined/></span>
+              <span class="edit" @click="editInterface(record)"><EditOutlined/></span>
             </div>
           </template>
-
-          <template #action>
+          <template #action="{}">
             <div class="action-btns">
               <a-button type="link" @click="copy">复制</a-button>
               <a-button type="link" @click="del">删除</a-button>
@@ -55,7 +51,11 @@
       </div>
     </div>
     <!-- 编辑接口时，展开抽屉   -->
-    <EditInterfaceDrawer :visible="drawerVisible" @close="onCloseDrawer"/>
+    <EditInterfaceDrawer
+        :destroyOnClose="true"
+        :interfaceId="editInterfaceId"
+        :visible="drawerVisible"
+        @close="onCloseDrawer"/>
     <!--  创建接口 Tag  -->
     <CreateTagModal
         :visible="createTagModalvisible"
@@ -70,18 +70,19 @@
   </div>
 </template>
 <script setup lang="ts">
-import {computed, reactive, toRefs, ref} from 'vue';
+import {computed, reactive, toRefs, ref, onMounted} from 'vue';
 import {ColumnProps} from 'ant-design-vue/es/table/interface';
 import {PlusOutlined, EditOutlined} from '@ant-design/icons-vue';
 import {requestMethodOpts} from '@/config/constant';
-
+import {momentUtc} from '@/utils/datetime';
+import {getInterfaceList} from './service';
 import CreateApiModal from './components/CreateApiModal.vue';
 import CreateTagModal from './components/CreateTagModal.vue'
 import EditInterfaceDrawer from './components/EditInterfaceDrawer.vue'
 
-
 type Key = ColumnProps['key'];
 
+// todo 待处理接口类型定义
 interface DataType {
   key: Key;
   name: string;
@@ -100,7 +101,7 @@ const columns = [
   {
     title: '接口名称',
     dataIndex: 'title',
-    slots: {customRender: 'title'},
+    slots: {customRender: 'colTitle'},
   },
   {
     title: '状态',
@@ -112,7 +113,7 @@ const columns = [
   },
   {
     title: '接口路径',
-    dataIndex: 'address',
+    dataIndex: 'path',
   },
   {
     title: '最近更新',
@@ -126,7 +127,6 @@ const columns = [
     slots: {customRender: 'action'},
   },
 ];
-
 
 const treeData = [
   {
@@ -167,18 +167,43 @@ const treeData = [
   },
 ];
 
-const data: DataType[] = [];
-for (let i = 0; i < 46; i++) {
-  data.push({
-    key: i,
-    title: `接口 ${i}`,
-    name: `用户 ${i}`,
-    index: i + 1,
-    age: 32,
-    address: `api/${i}`,
-    updatedAt: new Date(),
+// const data: DataType[] = [];
+// for (let i = 0; i < 46; i++) {
+//   data.push({
+//     key: i,
+//     title: `接口 ${i}`,
+//     name: `用户 ${i}`,
+//     index: i + 1,
+//     age: 32,
+//     address: `api/${i}`,
+//     updatedAt: new Date(),
+//   });
+// }
+
+const data = ref([]);
+onMounted(async () => {
+  let res = await getInterfaceList({
+    "prjectId": 0,
+    "page": 1,
+    "pageSize": 2,
+    "status": 0,
+    "userId": 0,
+    // "title": "接口名称"
   });
-}
+  const {result, total} = res.data;
+
+  result.forEach((item, index) => {
+    item.index = index + 1;
+    item.updatedAt = momentUtc(item.updatedAt);
+  })
+  data.value = result;
+
+  // TODO 待处理分页逻辑
+
+  console.log('832', result);
+
+
+})
 
 
 const selectedRowKeys: Key[] = ref([]);
@@ -198,11 +223,14 @@ const onSelectChange = (selectedRowKeys: Key[]) => {
 };
 
 
+const editInterfaceId = ref('');
+
 /**
- * 新建接口
+ * 接口编辑
  * */
-function addInterface() {
-  console.log('addInterface')
+function editInterface(record) {
+  console.log('editInterface');
+  editInterfaceId.value = record.id;
   drawerVisible.value = true;
 }
 
@@ -253,7 +281,6 @@ function addApiTag() {
   createTagModalvisible.value = true;
 }
 
-
 /**
  * 添加接口
  * */
@@ -269,15 +296,14 @@ function handleCreateApi() {
 function handleCancalCreateApi() {
   createApiModalvisible.value = false;
 }
+
 function handleCreateTag() {
   createTagModalvisible.value = false;
 }
+
 function handleCancalCreateTag() {
   createTagModalvisible.value = false;
 }
-
-
-
 </script>
 
 <style scoped lang="less">

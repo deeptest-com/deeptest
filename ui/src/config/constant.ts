@@ -31,3 +31,71 @@ export const requestMethodOpts = [
         value: "PATCH",
     },
 ]
+
+/**
+ * path params 数据类型
+ * */
+export const pathParamsDataTypesOpts = [
+    {
+        label: "any",
+        value: "any",
+    },
+    {
+        label: "string",
+        value: "string",
+    },
+    {
+        label: "number",
+        value: "number",
+    },
+    {
+        label: "integer",
+        value: "integer",
+    },
+    {
+        label: "boolean",
+        value: "boolean",
+    },
+    {
+        label: "any",
+        value: "any",
+    },
+    {
+        label: "object",
+        value: "object",
+    },
+]
+
+/**
+ * openApi 数据类型
+ * */
+export const openApiDataTypesOpts = [
+    {
+        label: "any",
+        value: "any",
+    },
+    {
+        label: "string",
+        value: "string",
+    },
+    {
+        label: "number",
+        value: "number",
+    },
+    {
+        label: "interger",
+        value: "interger",
+    },
+    {
+        label: "boolean",
+        value: "boolean",
+    },
+    {
+        label: "any",
+        value: "any",
+    },
+    {
+        label: "object",
+        value: "object",
+    },
+]

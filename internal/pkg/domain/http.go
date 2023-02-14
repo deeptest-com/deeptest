@@ -5,6 +5,7 @@ import (
 )
 
 type Param struct {
+	ID       int64  `json:"id"`
 	Name     string `json:"name"`
 	Value    string `json:"value"`
 	Type     string `json:"type"`
@@ -12,16 +13,37 @@ type Param struct {
 }
 
 type Header struct {
+	ID       int64  `json:"id"`
 	Name     string `json:"name"`
 	Value    string `json:"value"`
 	Type     string `json:"type"`
 	Disabled bool   `json:"disabled"`
 }
+
+type Cookie struct {
+	ID       int64  `json:"id"`
+	Name     string `json:"name"`
+	Value    string `json:"value"`
+	Type     string `json:"type"`
+	Disabled bool   `json:"disabled"`
+}
+
 type RequestBody struct {
+	ID          int64      `json:"id"`
 	MediaType   string     `json:"mediaType"`
 	Description string     `json:"description"`
 	SchemaRefId int64      `json:"schemaRefId"`
 	SchemaItem  SchemaItem `json:"schemaItem"`
+	Examples    string     `json:"examples"`
+}
+
+type ResponseBody struct {
+	ID          int64      `json:"id"`
+	MediaType   string     `json:"mediaType"`
+	Code        int64      `json:"code"`
+	SchemaRefId int64      `json:"schemaRefId"`
+	SchemaItem  SchemaItem `json:"schemaItem"`
+	Headers     []Header   `json:"headers"`
 	Examples    string     `json:"examples"`
 }
 

@@ -16,11 +16,13 @@ type EndpointReqPaginate struct {
 
 type EndpointReq struct {
 	ID         int64           `json:"id"`
-	ProjectId  int64           `json:"project_id"`
+	ProjectId  int64           `json:"projectId"`
+	ServeId    int64           `json:"serveId"`
 	Status     int64           `json:"status"`
 	Title      string          `json:"title"`
 	Path       string          `json:"path"`
 	Version    string          `json:"version"`
+	CreateUser string          `json:"CreateUser"`
 	ParentId   int64           `json:"ParentId"`
 	PathParams []domain.Param  `json:"pathParams"`
 	Interfaces []InterfaceResp `json:"interfaces"`

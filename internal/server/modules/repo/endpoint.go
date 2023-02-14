@@ -23,7 +23,7 @@ func (r *EndpointRepo) Paginate(req v1.EndpointReqPaginate) (ret _domain.PageDat
 	//fmt.Println(r.DB.Model(&model.SysUser{}))
 	//err = r.DB.Where("id=?", id).Where("name=?", name).Find(&res).Error
 	var count int64
-	db := r.DB.Model(&model.Endpoint{}).Where("project_id = ? AND NOT deleted", req.ProjectId)
+	db := r.DB.Model(&model.Endpoint{}).Where("project_id = ? AND NOT deleted AND NOT disabled", req.ProjectId)
 
 	if req.Title != "" {
 		db = db.Where("title LIKE ?", fmt.Sprintf("%%%s%%", req.Title))
@@ -84,6 +84,10 @@ func (r *EndpointRepo) saveEndpoint(endpoint *model.Endpoint) (err error) {
 
 //保存路径参数
 func (r *EndpointRepo) saveEndpointParams(endpointId uint, params []model.EndpointPathParam) (err error) {
+	err = r.removeEndpointParams(endpointId)
+	if err != nil {
+		return
+	}
 	for _, item := range params {
 		item.EndpointId = endpointId
 		err = r.Save(item.ID, &item)
@@ -94,16 +98,35 @@ func (r *EndpointRepo) saveEndpointParams(endpointId uint, params []model.Endpoi
 	return
 }
 
+func (r *EndpointRepo) removeEndpointParams(endpointId uint) (err error) {
+	err = r.DB.
+		Where("endpoint_id = ?", endpointId).
+		Delete(&model.EndpointPathParam{}, "").Error
+
+	return
+}
+
 //保存接口信息
 func (r *EndpointRepo) saveInterfaces(endpointId uint, interfaces []model.Interface) (err error) {
+	err = r.removeInterfaces(endpointId)
+	if err != nil {
+		return
+	}
 	for _, item := range interfaces {
 		item.EndpointId = endpointId
-		err = r.InterfaceRepo.SaveInterface(item)
-		//fmt.Println(item)
+		err = r.InterfaceRepo.SaveInterfaces(item)
 		if err != nil {
 			return err
 		}
 	}
+	return
+}
+
+func (r *EndpointRepo) removeInterfaces(endpointId uint) (err error) {
+	err = r.DB.
+		Where("endpoint_id = ?", endpointId).
+		Delete(&model.Interface{}, "").Error
+
 	return
 }
 
@@ -126,4 +149,12 @@ func (r *EndpointRepo) Get(id uint) (res model.Endpoint, err error) {
 func (r *EndpointRepo) GetEndpointParams(endpointId uint) (pathParam []model.EndpointPathParam, err error) {
 	err = r.DB.Find(&pathParam, "endpoint_id=?", endpointId).Error
 	return
+}
+
+func (r *EndpointRepo) DeleteById(id uint) error {
+	return r.DB.Model(&model.Endpoint{}).Where("id = ?", id).Update("deleted", 1).Error
+}
+
+func (r *EndpointRepo) DisableById(id uint) error {
+	return r.DB.Model(&model.Endpoint{}).Where("id = ?", id).Update("disabled", 1).Error
 }

@@ -3,7 +3,7 @@
     <a-input v-model:value="fieldState.name"
              @change="handleChangeName"
              style="width: 300px"
-             placeholder="path params">
+             placeholder="name">
       <template #addonAfter>
         <a-select
             v-model:value="fieldState.type"
@@ -13,7 +13,7 @@
     </a-input>
 
     <a-input v-model:value="fieldState.desc"
-             placeholder="path params description"
+             placeholder="description"
              style="width: 300px">
       <template #addonAfter>
         <a-space :size="8">

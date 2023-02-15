@@ -117,7 +117,7 @@ type InterfaceRequestBodyBase struct {
 }
 
 type InterfaceResponseBodyBase struct {
-	Code        uint   `json:"code"`
+	Code        string `json:"code"`
 	InterfaceId uint   `json:"interfaceId"`
 	MediaType   string `json:"mediaType"`
 	Description string `json:"description"`

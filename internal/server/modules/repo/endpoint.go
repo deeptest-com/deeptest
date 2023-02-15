@@ -156,5 +156,5 @@ func (r *EndpointRepo) DeleteById(id uint) error {
 }
 
 func (r *EndpointRepo) DisableById(id uint) error {
-	return r.DB.Model(&model.Endpoint{}).Where("id = ?", id).Update("disabled", 1).Error
+	return r.DB.Model(&model.Endpoint{}).Where("id = ?", id).Update("status", 4).Error
 }

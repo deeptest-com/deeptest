@@ -126,9 +126,11 @@ func JsonEncode(data interface{}) (res string) {
 
 }
 
-func JsonDecode(str string) (res interface{}) {
+func JsonDecode(str string, res interface{}) {
 
-	json.Unmarshal([]byte(str), &res)
+	if err := json.Unmarshal([]byte(str), res); err != nil {
+		panic(err)
+	}
 
 	return
 

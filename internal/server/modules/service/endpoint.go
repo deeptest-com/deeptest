@@ -50,7 +50,7 @@ func (s *EndpointService) Copy(id uint) (res uint, err error) {
 	//s.removeIds(&endpoint)
 	//fmt.Println(endpoint)
 	err = s.EndpointRepo.SaveAll(&endpoint)
-	fmt.Println(endpoint.PathParams[0].ID)
+	//fmt.Println(endpoint.PathParams[0].ID)
 	return endpoint.ID, err
 }
 

@@ -40,7 +40,7 @@ type RequestBody struct {
 type ResponseBody struct {
 	ID          int64      `json:"id"`
 	MediaType   string     `json:"mediaType"`
-	Code        int64      `json:"code"`
+	Code        string     `json:"code"`
 	SchemaRefId int64      `json:"schemaRefId"`
 	SchemaItem  SchemaItem `json:"schemaItem"`
 	Headers     []Header   `json:"headers"`

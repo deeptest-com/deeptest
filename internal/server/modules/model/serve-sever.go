@@ -9,5 +9,5 @@ type ServeServer struct {
 }
 
 func (ServeServer) TableName() string {
-	return "biz_serve_server"
+	return "biz_project_serve_server"
 }

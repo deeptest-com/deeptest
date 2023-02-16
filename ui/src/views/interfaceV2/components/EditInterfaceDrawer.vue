@@ -32,10 +32,10 @@
         title="基本信息">
       <template #extra><a href="#">more</a></template>
       <a-descriptions :title="null">
-        <a-descriptions-item label="创建人">Zhou Maomao</a-descriptions-item>
+        <a-descriptions-item label="创建人">{{ interfaceDetail.createUser }}</a-descriptions-item>
         <a-descriptions-item label="创建时间">{{ interfaceDetail.createdAt }}</a-descriptions-item>
-        <a-descriptions-item label="状态">Hangzhou, Zhejiang</a-descriptions-item>
-        <a-descriptions-item label="服务版本">empty</a-descriptions-item>
+        <a-descriptions-item label="状态">{{ interfaceStatusDesc }}</a-descriptions-item>
+        <a-descriptions-item label="服务版本">{{ 'V1.0' }}</a-descriptions-item>
         <a-descriptions-item label="最近更新">{{ interfaceDetail.updatedAt }}</a-descriptions-item>
       </a-descriptions>
     </a-card>
@@ -49,194 +49,430 @@
     >
       <div v-if="key === 'request'">
         <!-- ::::路径定义方式 -->
-        <a-form-item class="request-module" label="路径">
-          <a-input v-model:value="interfaceDetail.path">
-            <template #addonBefore>
-              <a-select :value="'http://localhost:3000'" style="width: 200px">
-                <a-select-option value="http://localhost:3000">http://localhost:3000</a-select-option>
-                <a-select-option value="http://localhost:3001">http://localhost:3001</a-select-option>
-              </a-select>
-            </template>
-            <template #addonAfter>
-              <a-button type="primary" @click="addPathParams">
-                <template #icon>
-                  <PlusOutlined/>
-                </template>
-                路径参数
-              </a-button>
-            </template>
-          </a-input>
-        </a-form-item>
-        <!-- ::::路径参数 -->
-        <div class="pathParam">
-          <div v-for="item in interfaceDetail.pathParams" :key="item.id">
-            <FieldItem :fieldData="item"
-                       @del="deletePathParams"
-                       @paramsNameChange="paramsNameChange"
-                       @settingOther="settingOtherForPathParams"
-                       @setRef="setRefForPathParams"
-                       @setRequire="setPathParamsRequire"/>
-          </div>
-        </div>
-        <!-- ::::请求方式定义 -->
-        <a-form-item class="request-module" label="请求方式">
-          <a-radio-group
-              @change="selectedMethodChange"
-              v-model:value="selectedMethod" button-style="solid">
-            <a-radio-button :key="method.value" v-for="method in requestMethodOpts" :value="method.value">
-              {{ method.label }}
-            </a-radio-button>
-          </a-radio-group>
-        </a-form-item>
-
-        <div class="request-module-method-defined">
-          <div v-if="selectedMethodDetail">
-            <a-form-item label="OPERATION ID">
-              <a-input v-model:value="selectedMethodDetail.name"/>
-            </a-form-item>
-            <a-form-item label="DESCRIPTION">
-              <a-input v-model:value="selectedMethodDetail.desc"/>
-            </a-form-item>
-            <div class="params-defined">
-              <div class="params-defined-btns">
-                <a-button type="primary" @click="setSecurity">
-                  <template #icon>
-                    <PlusOutlined/>
-                  </template>
-                  {{ `Security` }}
-                </a-button>
-                <a-button type="primary" @click="addHeader">
-                  <template #icon>
-                    <PlusOutlined/>
-                  </template>
-                  {{ `Header` }}
-                </a-button>
-                <a-button type="primary" @click="addQueryParams">
-                  <template #icon>
-                    <PlusOutlined/>
-                  </template>
-                  {{ `Query Params` }}
-                </a-button>
-                <a-button type="primary" @click="addCookie">
-                  <template #icon>
-                    <PlusOutlined/>
-                  </template>
-                  {{ `Cookie` }}
-                </a-button>
-              </div>
-              <div class="params-defined-content">
-                <div class="params-defined-item" v-if="selectedMethodDetail?.headers?.length">
-                  <div>Header</div>
-                  <div class="header-defined ">
-                    <div v-for="item in selectedMethodDetail.headers" :key="item.id">
-                      <FieldItem
-                          :fieldData="item"
-                          @del="deletePathParams"
-                          @paramsNameChange="paramsNameChange"
-                          @settingOther="settingOtherForPathParams"
-                          @setRef="setRefForPathParams"
-                          @setRequire="setPathParamsRequire"/>
-                    </div>
-                  </div>
-                </div>
-                <div class="params-defined-item" v-if="selectedMethodDetail?.params?.length">
-                  <div>Query Params</div>
-                  <div class="header-defined ">
-                    <div v-for="item in selectedMethodDetail.params" :key="item.id">
-                      <FieldItem
-                          :fieldData="item"
-                          @del="deletePathParams"
-                          @paramsNameChange="paramsNameChange"
-                          @settingOther="settingOtherForPathParams"
-                          @setRef="setRefForPathParams"
-                          @setRequire="setPathParamsRequire"/>
-                    </div>
-                  </div>
-                </div>
-                <div class="params-defined-item" v-if="selectedMethodDetail?.cookies?.length">
-                  <div>Cookie</div>
-                  <div class="header-defined ">
-                    <div v-for="item in selectedMethodDetail.cookies" :key="item.id">
-                      <FieldItem :fieldData="item"
-                                 @del="deletePathParams"
-                                 @paramsNameChange="paramsNameChange"
-                                 @settingOther="settingOtherForPathParams"
-                                 @setRef="setRefForPathParams"
-                                 @setRequire="setPathParamsRequire"/>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="body-defined">
-              <div class="body-defined-btns">
-                <a-button type="primary" @click="addBody">
-                  <template #icon>
-                    <PlusOutlined/>
-                  </template>
-                  {{ `addBody` }}
-                </a-button>
-              </div>
-              <div class="body-defined-content">
-                <div class="params-defined-item" v-if="selectedMethodDetail?.headers?.length">
-                  <div>Header</div>
-                  <div class="header-defined ">
-                    <div v-for="item in selectedMethodDetail.headers" :key="item.id">
-                      <FieldItem
-                          :fieldData="item"
-                          @del="deletePathParams"
-                          @paramsNameChange="paramsNameChange"
-                          @settingOther="settingOtherForPathParams"
-                          @setRef="setRefForPathParams"
-                          @setRequire="setPathParamsRequire"/>
-                    </div>
-                  </div>
-                </div>
-                <div class="params-defined-item" v-if="selectedMethodDetail?.params?.length">
-                  <div>Query Params</div>
-                  <div class="header-defined ">
-                    <div v-for="item in selectedMethodDetail.params" :key="item.id">
-                      <FieldItem
-                          :fieldData="item"
-                          @del="deletePathParams"
-                          @paramsNameChange="paramsNameChange"
-                          @settingOther="settingOtherForPathParams"
-                          @setRef="setRefForPathParams"
-                          @setRequire="setPathParamsRequire"/>
-                    </div>
-                  </div>
-                </div>
-                <div class="params-defined-item" v-if="selectedMethodDetail?.cookies?.length">
-                  <div>Cookie</div>
-                  <div class="header-defined ">
-                    <div v-for="item in selectedMethodDetail.cookies" :key="item.id">
-                      <FieldItem :fieldData="item"
-                                 @del="deletePathParams"
-                                 @paramsNameChange="paramsNameChange"
-                                 @settingOther="settingOtherForPathParams"
-                                 @setRef="setRefForPathParams"
-                                 @setRequire="setPathParamsRequire"/>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-          </div>
-          <div class="no-defined" v-else>
-            <a-button type="primary">
-              <template #icon>
-                <PlusOutlined/>
+        <a-row class="request-module">
+          <a-col :span="2" class="path-defined-label">路径</a-col>
+          <a-col :span="22">
+            <a-input v-model:value="interfaceDetail.path">
+              <template #addonBefore>
+                <a-select :value="'http://localhost:3000'" style="width: 200px">
+                  <a-select-option value="http://localhost:3000">http://localhost:3000</a-select-option>
+                  <a-select-option value="http://localhost:3001">http://localhost:3001</a-select-option>
+                </a-select>
               </template>
-              {{ `${selectedMethod} Operation` }}
-            </a-button>
-          </div>
-        </div>
+              <template #addonAfter>
+                <a-button type="primary" @click="addPathParams">
+                  <template #icon>
+                    <PlusOutlined/>
+                  </template>
+                  路径参数
+                </a-button>
+              </template>
+            </a-input>
+            <!-- ::::路径参数 -->
+            <div class="pathParam">
+              <div v-for="item in interfaceDetail.pathParams" :key="item.id">
+                <FieldItem :fieldData="item"
+                           @del="deletePathParams"
+                           @paramsNameChange="paramsNameChange"
+                           @settingOther="settingOtherForPathParams"
+                           @setRef="setRefForPathParams"
+                           @setRequire="setPathParamsRequire"/>
+              </div>
+            </div>
+          </a-col>
+        </a-row>
+        <!-- ::::请求方式定义 -->
+        <a-row class="request-module">
+          <a-col :span="2" class="path-defined-label">请求方式</a-col>
+          <a-col :span="22">
+            <!-- ::::请求方法定义 -->
+            <a-radio-group
+                @change="selectedMethodChange"
+                v-model:value="selectedMethod" button-style="solid">
+              <a-radio-button :key="method.value" v-for="method in requestMethodOpts" :value="method.value">
+                {{ method.label }}
+              </a-radio-button>
+            </a-radio-group>
+            <div class="request-module-method-defined">
+              <div v-if="selectedMethodDetail">
+                <!-- ::::Operation ID -->
+                <a-row class="method-item">
+                  <a-col :span="4" class="method-item-label">
+                    Operation ID
+                  </a-col>
+                  <a-col :span="18">
+                    <a-input v-model:value="selectedMethodDetail.name"/>
+                  </a-col>
+                </a-row>
+                <!-- ::::Description -->
+                <a-row class="method-item">
+                  <a-col :span="4" class="method-item-label">
+                    Description
+                  </a-col>
+                  <a-col :span="18">
+                    <a-input v-model:value="selectedMethodDetail.desc"/>
+                  </a-col>
+                </a-row>
+                <!-- ::::增加请求参数 -->
+                <a-row class="method-item">
+                  <a-col :span="4" class="method-item-label">
+                    增加请求参数
+                  </a-col>
+                  <a-col :span="18">
+                    <div class="params-defined-btns">
+                      <a-button type="primary" @click="setSecurity">
+                        <template #icon>
+                          <PlusOutlined/>
+                        </template>
+                        {{ `Security` }}
+                      </a-button>
+                      <a-button type="primary" @click="addHeader">
+                        <template #icon>
+                          <PlusOutlined/>
+                        </template>
+                        {{ `Header` }}
+                      </a-button>
+                      <a-button type="primary" @click="addQueryParams">
+                        <template #icon>
+                          <PlusOutlined/>
+                        </template>
+                        {{ `Query Params` }}
+                      </a-button>
+                      <a-button type="primary" @click="addCookie">
+                        <template #icon>
+                          <PlusOutlined/>
+                        </template>
+                        {{ `Cookie` }}
+                      </a-button>
+                    </div>
+                  </a-col>
+                </a-row>
+                <!-- ::::请求参数展示：headers、cookies、query params等 -->
+                <a-row class="method-item">
+                  <a-col :span="1"></a-col>
+                  <a-col :span="20">
+                    <div class="params-defined">
+                      <div class="params-defined-content">
+                        <div class="params-defined-item" v-if="selectedMethodDetail?.headers?.length">
+                          <div class="params-defined-item-header">
+                            <span>Header</span>
+                          </div>
+                          <div class="header-defined header-defined-items">
+                            <div v-for="item in selectedMethodDetail.headers" :key="item.id">
+                              <FieldItem
+                                  :fieldData="item"
+                                  @del="deletePathParams"
+                                  @paramsNameChange="paramsNameChange"
+                                  @settingOther="settingOtherForPathParams"
+                                  @setRef="setRefForPathParams"
+                                  @setRequire="setPathParamsRequire"/>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="params-defined-item" v-if="selectedMethodDetail?.params?.length">
+                          <div class="params-defined-item-header">
+                            <span>Query Params</span>
+                          </div>
+                          <div class="header-defined ">
+                            <div v-for="item in selectedMethodDetail.params" :key="item.id">
+                              <FieldItem
+                                  :fieldData="item"
+                                  @del="deletePathParams"
+                                  @paramsNameChange="paramsNameChange"
+                                  @settingOther="settingOtherForPathParams"
+                                  @setRef="setRefForPathParams"
+                                  @setRequire="setPathParamsRequire"/>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="params-defined-item" v-if="selectedMethodDetail?.cookies?.length">
+                          <div class="params-defined-item-header">
+                            <span>Cookie</span>
+                          </div>
+                          <div class="header-defined ">
+                            <div v-for="item in selectedMethodDetail.cookies" :key="item.id">
+                              <FieldItem :fieldData="item"
+                                         @del="deletePathParams"
+                                         @paramsNameChange="paramsNameChange"
+                                         @settingOther="settingOtherForPathParams"
+                                         @setRef="setRefForPathParams"
+                                         @setRequire="setPathParamsRequire"/>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </a-col>
+                </a-row>
 
+                <!-- ::::增加请求体 -->
+                <a-row class="method-item">
+                  <a-col :span="4" class="method-item-label">
+                    增加请求体
+                  </a-col>
+                  <a-col :span="18">
+                    <a-select
+                        placeholder="请选择格式"
+                        v-if="selectedMethodDetail.requestBody"
+                        v-model:value="selectedMethodDetail.requestBody.mediaType"
+                        style="width: 300px"
+                        :options="mediaTypesOpts"
+                    ></a-select>
+                    <a-button
+                        v-if="!selectedMethodDetail.requestBody"
+                        type="primary" @click="addReqBody">
+                      <template #icon>
+                        <PlusOutlined/>
+                      </template>
+                      {{ `添加` }}
+                    </a-button>
+
+                  </a-col>
+                </a-row>
+
+                <!-- ::::增加请求体 - 描述  -->
+                <a-row class="method-item">
+                  <a-col :span="1" class="method-item-label"></a-col>
+                  <a-col :span="18">
+                    <a-input placeholder="请输入描述" v-model:value="selectedMethodDetail.requestBody.description"/>
+                  </a-col>
+                </a-row>
+
+                <!-- ::::增加请求体 - scheme定义 -->
+                <a-row class="method-item">
+                  <a-col :span="1" class="method-item-label"></a-col>
+                  <a-col :span="18">
+                    <a-tabs type="card" v-model:activeKey="activeKey">
+                      <a-tab-pane key="1" tab="Schema">
+                        <MonacoEditor
+                            class="editor"
+                            :value="selectedMethodDetail?.requestBody?.schemaItem?.content"
+                            :language="'json'"
+                            :height="600"
+                            theme="vs"
+                            :options="{...MonacoOptions,minimap:false}"
+                            @change="editorChange"
+                        />
+                      </a-tab-pane>
+                      <a-tab-pane key="2" tab="Examples">
+
+                      </a-tab-pane>
+                    </a-tabs>
+                  </a-col>
+                </a-row>
+
+              </div>
+
+
+              <div class="no-defined" v-else>
+                <a-button type="primary">
+                  <template #icon>
+                    <PlusOutlined/>
+                  </template>
+                  {{ `${selectedMethod} Operation` }}
+                </a-button>
+              </div>
+            </div>
+          </a-col>
+        </a-row>
       </div>
 
 
-      <div v-else-if="key === 'response'">response content</div>
+      <div v-else-if="key === 'response'">
+        <a-row class="request-module">
+          <a-col :span="2" class="path-defined-label">选择响应代码</a-col>
+          <a-col :span="22">
+            <!-- ::::请求方法定义 -->
+            <a-radio-group
+                @change="selectedCodeChange"
+                v-model:value="selectedCode" button-style="solid">
+              <a-radio-button :key="code.value" v-for="code in repCodeOpts" :value="code.value">
+                {{ code.label }}
+              </a-radio-button>
+            </a-radio-group>
+            <div class="request-module-method-defined">
+              <div v-if="selectedMethodDetail">
+                <!-- ::::Operation ID -->
+                <a-row class="method-item">
+                  <a-col :span="4" class="method-item-label">
+                    Operation ID
+                  </a-col>
+                  <a-col :span="18">
+                    <a-input v-model:value="selectedMethodDetail.name"/>
+                  </a-col>
+                </a-row>
+                <!-- ::::Description -->
+                <a-row class="method-item">
+                  <a-col :span="4" class="method-item-label">
+                    Description
+                  </a-col>
+                  <a-col :span="18">
+                    <a-input v-model:value="selectedMethodDetail.desc"/>
+                  </a-col>
+                </a-row>
+                <!-- ::::增加请求参数 -->
+                <a-row class="method-item">
+                  <a-col :span="4" class="method-item-label">
+                    增加请求参数
+                  </a-col>
+                  <a-col :span="18">
+                    <div class="params-defined-btns">
+                      <a-button type="primary" @click="setSecurity">
+                        <template #icon>
+                          <PlusOutlined/>
+                        </template>
+                        {{ `Security` }}
+                      </a-button>
+                      <a-button type="primary" @click="addHeader">
+                        <template #icon>
+                          <PlusOutlined/>
+                        </template>
+                        {{ `Header` }}
+                      </a-button>
+                      <a-button type="primary" @click="addQueryParams">
+                        <template #icon>
+                          <PlusOutlined/>
+                        </template>
+                        {{ `Query Params` }}
+                      </a-button>
+                      <a-button type="primary" @click="addCookie">
+                        <template #icon>
+                          <PlusOutlined/>
+                        </template>
+                        {{ `Cookie` }}
+                      </a-button>
+                    </div>
+                  </a-col>
+                </a-row>
+                <!-- ::::请求参数展示：headers、cookies、query params等 -->
+                <a-row class="method-item">
+                  <a-col :span="1"></a-col>
+                  <a-col :span="20">
+                    <div class="params-defined">
+                      <div class="params-defined-content">
+                        <div class="params-defined-item" v-if="selectedMethodDetail?.headers?.length">
+                          <div class="params-defined-item-header">
+                            <span>Header</span>
+                          </div>
+                          <div class="header-defined header-defined-items">
+                            <div v-for="item in selectedMethodDetail.headers" :key="item.id">
+                              <FieldItem
+                                  :fieldData="item"
+                                  @del="deletePathParams"
+                                  @paramsNameChange="paramsNameChange"
+                                  @settingOther="settingOtherForPathParams"
+                                  @setRef="setRefForPathParams"
+                                  @setRequire="setPathParamsRequire"/>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="params-defined-item" v-if="selectedMethodDetail?.params?.length">
+                          <div class="params-defined-item-header">
+                            <span>Query Params</span>
+                          </div>
+                          <div class="header-defined ">
+                            <div v-for="item in selectedMethodDetail.params" :key="item.id">
+                              <FieldItem
+                                  :fieldData="item"
+                                  @del="deletePathParams"
+                                  @paramsNameChange="paramsNameChange"
+                                  @settingOther="settingOtherForPathParams"
+                                  @setRef="setRefForPathParams"
+                                  @setRequire="setPathParamsRequire"/>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="params-defined-item" v-if="selectedMethodDetail?.cookies?.length">
+                          <div class="params-defined-item-header">
+                            <span>Cookie</span>
+                          </div>
+                          <div class="header-defined ">
+                            <div v-for="item in selectedMethodDetail.cookies" :key="item.id">
+                              <FieldItem :fieldData="item"
+                                         @del="deletePathParams"
+                                         @paramsNameChange="paramsNameChange"
+                                         @settingOther="settingOtherForPathParams"
+                                         @setRef="setRefForPathParams"
+                                         @setRequire="setPathParamsRequire"/>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </a-col>
+                </a-row>
+
+                <!-- ::::增加请求体 -->
+                <a-row class="method-item">
+                  <a-col :span="4" class="method-item-label">
+                    增加请求体
+                  </a-col>
+                  <a-col :span="18">
+                    <a-select
+                        placeholder="请选择格式"
+                        v-if="selectedMethodDetail.requestBody"
+                        v-model:value="selectedMethodDetail.requestBody.mediaType"
+                        style="width: 300px"
+                        :options="mediaTypesOpts"
+                    ></a-select>
+                    <a-button
+                        v-if="!selectedMethodDetail.requestBody"
+                        type="primary" @click="addReqBody">
+                      <template #icon>
+                        <PlusOutlined/>
+                      </template>
+                      {{ `添加` }}
+                    </a-button>
+
+                  </a-col>
+                </a-row>
+
+                <!-- ::::增加请求体 - 描述  -->
+                <a-row class="method-item">
+                  <a-col :span="1" class="method-item-label"></a-col>
+                  <a-col :span="18">
+                    <a-input placeholder="请输入描述" v-model:value="selectedMethodDetail.requestBody.description"/>
+                  </a-col>
+                </a-row>
+
+                <!-- ::::增加请求体 - scheme定义 -->
+                <a-row class="method-item">
+                  <a-col :span="1" class="method-item-label"></a-col>
+                  <a-col :span="18">
+                    <a-tabs type="card" v-model:activeKey="activeKey">
+                      <a-tab-pane key="1" tab="Schema">
+                        <MonacoEditor
+                            class="editor"
+                            :value="selectedMethodDetail?.requestBody?.schemaItem?.content"
+                            :language="'json'"
+                            :height="600"
+                            theme="vs"
+                            :options="{...MonacoOptions,minimap:false}"
+                            @change="editorChange"
+                        />
+                      </a-tab-pane>
+                      <a-tab-pane key="2" tab="Examples">
+
+                      </a-tab-pane>
+                    </a-tabs>
+                  </a-col>
+                </a-row>
+
+              </div>
+
+
+              <div class="no-defined" v-else>
+                <a-button type="primary">
+                  <template #icon>
+                    <PlusOutlined/>
+                  </template>
+                  {{ `${selectedMethod} Operation` }}
+                </a-button>
+              </div>
+            </div>
+          </a-col>
+        </a-row>
+      </div>
       <div v-else-if="key === 'run'">run content</div>
       <div v-else-if="key === 'mock'">mock content</div>
 
@@ -259,13 +495,16 @@
 
 <script lang="ts" setup>
 import {ValidateErrorEntity} from 'ant-design-vue/es/form/interface';
-import {defineComponent, reactive, ref, toRaw, UnwrapRef, defineProps, defineEmits, watch} from 'vue';
-import {requestMethodOpts} from '@/config/constant';
+import {defineComponent, reactive, ref, toRaw, UnwrapRef, defineProps, defineEmits, watch, computed} from 'vue';
+import {requestMethodOpts, interfaceStatus, mediaTypesOpts,repCodeOpts} from '@/config/constant';
 import {getInterfaceDetail} from '../service';
 import {PlusOutlined, EditOutlined} from '@ant-design/icons-vue';
 import contenteditable from 'vue-contenteditable';
 import FieldItem from './FieldItem.vue'
 import {momentUtc} from '@/utils/datetime';
+import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
+import {MonacoOptions} from '@/utils/const'
+
 
 const props = defineProps({
   visible: {
@@ -286,11 +525,21 @@ const activeKey = ref('1');
 const selectedMethod = ref('GET');
 const interfaceNameEditable = ref(false);
 
+
 function onCloseDrawer() {
   emit('close');
 }
 
-const selectedMethodDetail:any = ref(null);
+const selectedMethodDetail: any = ref(null);
+
+
+function editorChange(newScriptCode) {
+  console.log(832,interfaceDetail.value)
+  // if (selectedMethodDetail.value?.requestBody?.schemaItem?.content) {
+  //   selectedMethodDetail.value?.requestBody?.schemaItem?.content = newScriptCode
+  // }
+
+}
 
 function selectedMethodChange(e) {
   console.log(e.target.value);
@@ -300,16 +549,53 @@ function selectedMethodChange(e) {
   selectedMethodDetail.value = curInterface;
 }
 
+function selectedCodeChange(e) {
+  // let curInterface = interfaceDetail.value.interfaces.find((item) => {
+  //   return item.method === e.target.value;
+  // })
+  // selectedMethodDetail.value = curInterface;
+}
+
+
+const tree = JSON.stringify({
+  "root": {
+    "type": "object",
+    "title": "条件",
+    "properties": {
+      "name": {
+        "type": "string",
+        "title": "名称",
+        "maxLength": 10,
+        "minLength": 2
+      },
+      "appId": {
+        "type": "integer",
+        "title": "应用ID"
+      },
+      "credate": {
+        "type": "string",
+        "title": "创建日期",
+        "format": "date"
+      }
+    },
+    "required": [
+      "name",
+      "appId",
+      "credate"
+    ]
+  }
+})
 
 function setSecurity() {
   console.log('setSecurity')
 }
 
 function addCookie() {
-  selectedMethodDetail.value.cookes.push({
+  selectedMethodDetail.value.cookies.push({
     name: '',
     value: '',
-    desc: ''
+    desc: '',
+    type: 'string',
   })
 }
 
@@ -317,7 +603,8 @@ function addQueryParams() {
   selectedMethodDetail.value.params.push({
     name: '',
     value: '',
-    desc: ''
+    desc: '',
+    type: 'string',
   })
 }
 
@@ -325,7 +612,8 @@ function addHeader() {
   selectedMethodDetail.value.headers.push({
     name: '',
     value: '',
-    desc: ''
+    desc: '',
+    type: 'string',
   })
 }
 
@@ -413,6 +701,9 @@ interface FormState {
   remark: string | undefined;
 }
 
+const interfaceStatusDesc = computed(() => {
+  return interfaceStatus.get(interfaceDetail.value.status);
+})
 
 const tabList = [
   {
@@ -469,6 +760,11 @@ const rules = {
 };
 
 
+function addReqBody() {
+  console.log('add request body');
+
+}
+
 /**
  * 监控接口ID，如果变化，需要重新请求接口详情信息
  * */
@@ -494,6 +790,7 @@ watch(() => {
 
 .drawer {
   margin-bottom: 60px;
+
   .title {
     width: auto;
 
@@ -580,18 +877,58 @@ watch(() => {
 }
 
 .pathParam {
-  margin-left: 40px;
   margin-bottom: 32px;
+  margin-top: 16px;
 }
 
 .request-module-method-defined {
+  margin-top: 32px;
+
   .no-defined {
     margin: 100px auto;
     text-align: center;
   }
 }
 
-.params-defined-item{
-  
+.params-defined-item {
+
 }
+
+.params-defined-item-header {
+  //margin:32px;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.header-defined-items {
+  //margin: 32px;
+}
+
+.path-defined-label {
+  height: 32px;
+  line-height: 32px;
+  font-weight: 600;
+}
+
+.method-item {
+  margin: 16px auto;
+}
+
+.method-item-label {
+  height: 32px;
+  line-height: 32px;
+  font-weight: 600;
+}
+
+.schema {
+  margin-left: 20px;
+  width: 50%;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  border: 1px solid rgba(0, 0, 0, .1);
+  border-radius: 8px;
+  padding: 12px;
+}
+
 </style>

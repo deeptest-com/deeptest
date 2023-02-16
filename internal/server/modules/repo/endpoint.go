@@ -34,7 +34,7 @@ func (r *EndpointRepo) Paginate(req v1.EndpointReqPaginate) (ret _domain.PageDat
 	if req.Status != 0 {
 		db = db.Where("status = ?", req.UserId)
 	}
-
+	db = db.Order("created_at desc")
 	err = db.Count(&count).Error
 	if err != nil {
 		logUtils.Errorf("count report error %s", err.Error())

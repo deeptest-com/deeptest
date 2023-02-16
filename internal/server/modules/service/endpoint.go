@@ -7,7 +7,6 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
-	"reflect"
 )
 
 type EndpointService struct {
@@ -47,51 +46,40 @@ func (s *EndpointService) DisableById(id uint) (err error) {
 
 func (s *EndpointService) Copy(id uint) (res uint, err error) {
 	endpoint, _ := s.EndpointRepo.GetAll(id)
-	//s.removeIds(&endpoint)
-	//fmt.Println(endpoint)
+	s.removeIds(&endpoint)
 	err = s.EndpointRepo.SaveAll(&endpoint)
-	//fmt.Println(endpoint.PathParams[0].ID)
 	return endpoint.ID, err
 }
 
-func (s *EndpointService) removeIds(object interface{}) interface{} {
-	//fmt.Println(reflect.ValueOf(object).Kind(), "++++++")
-
-	//fmt.Println("canset++++++", c.Kind(), reflect.Struct)
-	T := reflect.TypeOf(object)
-	V := reflect.ValueOf(object)
-	if T.Kind() == reflect.Ptr {
-		T = T.Elem()
-		V = V.Elem()
+func (s *EndpointService) removeIds(endpoint *model.Endpoint) {
+	endpoint.ID = 0
+	endpoint.CreatedAt = nil
+	endpoint.UpdatedAt = nil
+	for key, _ := range endpoint.PathParams {
+		endpoint.PathParams[key].ID = 0
 	}
-	fmt.Println(T.Kind(), "+++")
-	if T.Kind() == reflect.Struct {
-		/*
-			if V.FieldByName("ID").CanSet() {
-				V.FieldByName("ID").SetUint(0)
-				fmt.Println("-----")
-				//fmt.Println(object.ID, "+++++")
-			}
-		*/
-		for i := 0; i < T.NumField(); i++ {
-			fmt.Println(T.Field(i).Type.Kind(), T.Field(i).Name)
-			if T.Field(i).Type.Kind() == reflect.Struct {
-				s.removeIds(V.FieldByName(T.Field(i).Name))
-			} else if T.Field(i).Type.Kind() == reflect.Slice {
-				//fmt.Println(T.Field(i).Name, T.Field(i).Type.Kind(), V.FieldByName(T.Field(i).Name), reflect.TypeOf(V.FieldByName(T.Field(i).Name).Interface()))
-				s.removeIds(V.FieldByName(T.Field(i).Name).Interface())
-			} else if T.Field(i).Type.Kind() == reflect.Uint && T.Field(i).Name == "ID" {
-
-				V.FieldByName("ID").SetUint(0)
+	for key, _ := range endpoint.Interfaces {
+		endpoint.Interfaces[key].ID = 0
+		endpoint.Interfaces[key].RequestBody.ID = 0
+		endpoint.Interfaces[key].RequestBody.SchemaItem.ID = 0
+		for key1, _ := range endpoint.Interfaces[key].Headers {
+			endpoint.Interfaces[key].Headers[key1].ID = 0
+		}
+		for key1, _ := range endpoint.Interfaces[key].Cookies {
+			endpoint.Interfaces[key].Cookies[key1].ID = 0
+		}
+		for key1, _ := range endpoint.Interfaces[key].Params {
+			endpoint.Interfaces[key].Params[key1].ID = 0
+		}
+		for key1, _ := range endpoint.Interfaces[key].ResponseBodies {
+			endpoint.Interfaces[key].ResponseBodies[key1].ID = 0
+			endpoint.Interfaces[key].ResponseBodies[key1].SchemaItem.ID = 0
+			for key2, _ := range endpoint.Interfaces[key].ResponseBodies[key1].Headers {
+				endpoint.Interfaces[key].ResponseBodies[key1].Headers[key2].ID = 0
 			}
 		}
-	} else if T.Kind() == reflect.Slice {
-		for i := 0; i < V.Len(); i++ {
-			fmt.Println(i, V.Index(i).Interface())
-			s.removeIds(V.Index(i).Addr())
-		}
 	}
-	return object
+
 }
 
 func (s *EndpointService) Yaml(endpoint model.Endpoint) (res interface{}) {

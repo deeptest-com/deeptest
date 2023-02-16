@@ -10,5 +10,5 @@ type ComponentSchemaSecurity struct {
 }
 
 func (ComponentSchemaSecurity) TableName() string {
-	return "biz_component_schema_security"
+	return "biz_project_serve_component_security"
 }

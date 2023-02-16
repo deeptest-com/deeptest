@@ -6,9 +6,6 @@ import '@/assets/css/global.less';
 // 引入 Antd
 import Antd from 'ant-design-vue';
 
-import JsonSchemaEditor from 'json-schema-editor-vue3'
-import 'json-schema-editor-vue3/lib/json-schema-editor-vue3.css'
-// Vue.use(JsonSchemaEditor)
 
 // 导入 svg
 import { importAllSvg } from "@/components/IconSvg/index";
@@ -22,7 +19,7 @@ import i18n from '@/config/i18n';
 import _ from "lodash";
 import mitt, {Emitter} from "@/utils/mitt";
 
-const app = createApp(App).use(JsonSchemaEditor);
+const app = createApp(App);
 app.use(store);
 app.use(router)
 app.use(Antd);

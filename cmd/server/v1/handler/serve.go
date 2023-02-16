@@ -47,7 +47,7 @@ func (c *ServeCtrl) Detail(ctx iris.Context) {
 }
 
 // Clone 克隆服务
-func (c *ServeCtrl) Clone(ctx iris.Context) {
+func (c *ServeCtrl) Copy(ctx iris.Context) {
 
 }
 
@@ -121,12 +121,18 @@ func (c *ServeCtrl) SaveSchema(ctx iris.Context) {
 }
 
 /*
-//构造参数构造auth，BasicAuth,BearerToken,OAuth20,ApiKey
-func (c *ServeCtrl) requestParser(req *v1.ServeReq) {
-	for _, item := range req.Interfaces {
-		fmt.Println(_commUtils.JsonEncode(item.ResponseBodies))
-		//req.Interfaces[key].RequestBody.SchemaItem.Content = _commUtils.JsonEncode(item.RequestBody.SchemaItem.Content)
+func (c *ServeCtrl) SaveServer(ctx iris.Context) {
+	var req v1.ServeSeverReq
+	if err := ctx.ReadJSON(&req); err == nil {
+		res, _ := c.ServeService.SaveVersion(req)
+		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res})
+	} else {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 	}
+	return
 }
-
 */
+
+func (c *ServeCtrl) ListServer(ctx iris.Context) {
+
+}

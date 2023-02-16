@@ -26,3 +26,19 @@ type ServeVersionReq struct {
 	UserId      int64  `json:"userId"`
 	Description string `json:"description"`
 }
+
+type ServeSchemaReq struct {
+	ID       uint   `json:"id"`
+	ServeId  int64  `json:"serveId"`
+	Name     string `json:"name"`
+	Content  string `json:"content"`
+	Examples string `json:"examples"`
+	Type     string `json:"type"`
+}
+
+type ServeServerReq struct {
+	ID          uint   `json:"id"`
+	ServeId     int64  `json:"serveId"`
+	Url         string `json:"url"`
+	Description string `json:"description"`
+}

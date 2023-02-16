@@ -45,11 +45,11 @@ require (
 	github.com/spf13/viper v1.8.1
 	github.com/stretchr/testify v1.7.1
 	github.com/xuri/excelize/v2 v2.6.1
+	github.com/zwgblue/yaml-encoder v0.0.0-20221226083717-a0bdbda0d998
 	go.uber.org/zap v1.19.1
 	golang.org/x/crypto v0.0.0-20220817201139-bc19a97f63c8
 	golang.org/x/net v0.4.0
 	golang.org/x/text v0.5.0
-	gopkg.in/go-playground/validator.v9 v9.31.0
 	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
 	gopkg.in/yaml.v3 v3.0.1
 	gorm.io/driver/mysql v1.2.2
@@ -178,7 +178,6 @@ require (
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	google.golang.org/protobuf v1.27.1 // indirect
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
-	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 	gopkg.in/ini.v1 v1.63.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gorm.io/driver/postgres v1.2.3 // indirect

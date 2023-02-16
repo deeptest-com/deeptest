@@ -11,9 +11,7 @@
             <PlusOutlined style="font-size: 16px;"/>
           </div>
         </div>
-        <a-tree
-            :tree-data="treeData"
-        >
+        <a-tree :tree-data="treeData">
           <template #title="{ title, key }">
             <span v-if="key === '0-0-0'" style="color: #1890ff">{{ title }}</span>
 
@@ -59,6 +57,7 @@
         :destroyOnClose="true"
         :interfaceId="editInterfaceId"
         :visible="drawerVisible"
+        :key="clickTag"
         @close="onCloseDrawer"/>
     <!--  创建接口 Tag  -->
     <CreateTagModal
@@ -174,19 +173,6 @@ const treeData = [
   },
 ];
 
-// const data: DataType[] = [];
-// for (let i = 0; i < 46; i++) {
-//   data.push({
-//     key: i,
-//     title: `接口 ${i}`,
-//     name: `用户 ${i}`,
-//     index: i + 1,
-//     age: 32,
-//     address: `api/${i}`,
-//     updatedAt: new Date(),
-//   });
-// }
-
 const data = ref([]);
 
 
@@ -233,6 +219,8 @@ const onSelectChange = (selectedRowKeys: Key[]) => {
 
 const editInterfaceId = ref('');
 
+
+const clickTag = ref(0);
 /**
  * 接口编辑
  * */
@@ -240,6 +228,7 @@ function editInterface(record) {
   console.log('editInterface');
   editInterfaceId.value = record.id;
   drawerVisible.value = true;
+  clickTag.value++;
 }
 
 /**

@@ -14,20 +14,18 @@
         :label-col="labelCol"
         :wrapper-col="wrapperCol"
     >
-
       <a-form-item label="接口分类" name="tag">
         <a-select placeholder="请选择接口分类" v-model:value="formState.tag">
           <a-select-option value="shanghai">接口类型1</a-select-option>
           <a-select-option value="beijing">接口类型2</a-select-option>
         </a-select>
       </a-form-item>
-
-      <a-form-item label="接口名称" name="name">
-        <a-input placeholder="接口名称" v-model:value="formState.name"/>
+      <a-form-item label="接口名称" name="title">
+        <a-input placeholder="接口名称" v-model:value="formState.title"/>
       </a-form-item>
 
       <a-form-item label="接口路径" name="path">
-        <a-input v-model:value="formState.path" class="form-item-con">
+        <a-input v-model:value="formState.path" class="form-item-con" placeholder="请输入接口路径">
           <template #addonBefore>
             <a-select
                 style="width: 120px"
@@ -82,12 +80,12 @@ watch(() => {
  *
  *   tag: '接口类型1',
  *   value: 1,
- *   name: '用户详情信息',
+ *   title: '用户详情信息',
  *   method:'GET',
  *   path:'/api/user/:userId'
  * */
 interface FormState {
-  name: string;
+  title: string;
   tag: string | undefined;
   method: string | undefined;
   path: string | undefined;
@@ -96,11 +94,11 @@ interface FormState {
 
 
 function ok() {
-  emit('ok');
+  emit('ok',formState);
 }
 
 function cancal() {
-  emit('cancal');
+  emit('cancal',formState);
 }
 
 const formRef = ref();
@@ -108,13 +106,13 @@ const formRef = ref();
 const formState: UnwrapRef<FormState> = reactive({
   tag: '接口类型1',
   value: '1',
-  name: '用户详情信息',
+  title: '',
   method: 'GET',
-  path: '/api/user/:userId'
+  path: ''
 });
 
 const rules = {
-  name: [
+  title: [
     {required: true, message: '请输入接口名称', trigger: 'blur'},
     {min: 3, max: 50, message: '最长多少个字符', trigger: 'blur'},
   ],

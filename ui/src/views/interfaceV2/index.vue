@@ -39,14 +39,18 @@
               <span class="edit" @click="editInterface(record)"><EditOutlined/></span>
             </div>
           </template>
-          <template #action="{}">
-            <div class="action-btns">
-              <a-button type="link" @click="copy">复制</a-button>
-              <a-button type="link" @click="del">删除</a-button>
-              <a-button type="link" @click="disabled">过时</a-button>
+          <template #colStatus="{record}">
+            <div class="customTitleColRender">
+              <span>{{ interfaceStatus.get(record.status) }}</span>
             </div>
           </template>
-
+          <template #action="{record}">
+            <div class="action-btns">
+              <a-button type="link" @click="copy(record)">复制</a-button>
+              <a-button type="link" @click="del(record)">删除</a-button>
+              <a-button type="link" @click="disabled(record)">过时</a-button>
+            </div>
+          </template>
         </a-table>
       </div>
     </div>
@@ -73,9 +77,11 @@
 import {computed, reactive, toRefs, ref, onMounted} from 'vue';
 import {ColumnProps} from 'ant-design-vue/es/table/interface';
 import {PlusOutlined, EditOutlined} from '@ant-design/icons-vue';
-import {requestMethodOpts} from '@/config/constant';
+import {requestMethodOpts, interfaceStatus} from '@/config/constant';
 import {momentUtc} from '@/utils/datetime';
-import {getInterfaceList} from './service';
+import {message} from 'ant-design-vue';
+
+import {getInterfaceList, saveInterface, expireInterface, deleteInterface, copyInterface, getYaml} from './service';
 import CreateApiModal from './components/CreateApiModal.vue';
 import CreateTagModal from './components/CreateTagModal.vue'
 import EditInterfaceDrawer from './components/EditInterfaceDrawer.vue'
@@ -105,11 +111,12 @@ const columns = [
   },
   {
     title: '状态',
-    dataIndex: 'state',
+    dataIndex: 'status',
+    slots: {customRender: 'colStatus'},
   },
   {
     title: '创建人',
-    dataIndex: 'name',
+    dataIndex: 'createUser',
   },
   {
     title: '接口路径',
@@ -181,11 +188,13 @@ const treeData = [
 // }
 
 const data = ref([]);
-onMounted(async () => {
+
+
+async function reloadList() {
   let res = await getInterfaceList({
     "prjectId": 0,
     "page": 1,
-    "pageSize": 2,
+    "pageSize": 100,
     "status": 0,
     "userId": 0,
     // "title": "接口名称"
@@ -197,12 +206,11 @@ onMounted(async () => {
     item.updatedAt = momentUtc(item.updatedAt);
   })
   data.value = result;
-
   // TODO 待处理分页逻辑
+}
 
-  console.log('832', result);
-
-
+onMounted(async () => {
+  await reloadList();
 })
 
 
@@ -241,19 +249,32 @@ function batchHandle() {
   console.log('batchHandle')
 }
 
-function copy() {
-  console.log()
+async function copy(record: any) {
+  let res = await copyInterface(record.id);
+  if (res.code === 0) {
+    message.success('复制成功');
+    await reloadList();
+
+  }
 }
 
-function disabled() {
-  console.log(1)
+async function disabled(record: any) {
+  let res = await expireInterface(record.id);
+  if (res.code === 0) {
+    message.success('置为无效成功');
+    await reloadList();
+  }
 }
 
 /**
  * 删除接口
  * */
-function del() {
-  console.log('删除接口')
+async function del(record: any) {
+  let res =await deleteInterface(record.id);
+  if (res.code === 0) {
+    message.success('删除成功');
+    await reloadList();
+  }
 }
 
 /**
@@ -289,8 +310,127 @@ function addApi() {
 }
 
 
-function handleCreateApi() {
+async function handleCreateApi(data) {
+  // const mock = {
+  //   "id": 0,
+  //   "projectId": 1,
+  //   "serveId": 1,
+  //   "path": "/v1/api/test/{user_id}",
+  //   "title": "新建接口11",
+  //   "version": "v1.0.0",
+  //   "parentd": 1,
+  //   "status": 0,
+  //   "pathParams": [
+  //     {
+  //       "id": 0,
+  //       "name": "user_id",
+  //       "type": "integer",
+  //       "value": "1"
+  //     }
+  //   ],
+  //   "interfaces": [
+  //     {
+  //       "id": 0,
+  //       "name": "新接口11",
+  //       "projectId": 1,
+  //       "serveId": "1",
+  //       "useId": 0,
+  //       "method": "POST",
+  //       "security": "token,api_key",
+  //       "requestBody": {
+  //         "mediaType": "application/json",
+  //         "description": "添加",
+  //         "schemaRefId": 11,
+  //         "examples": "json",
+  //         "schemaItem": {
+  //           "id": 0,
+  //           "name": "name",
+  //           "type": "object",
+  //           "content":"{\"id\":{\"type\":\"integer\",\"format\":\"string\"},\"name\":{\"type\":\"string\",\"format\":\"string\"}}"
+  //         }
+  //       },
+  //       "responseBodies": [
+  //         {
+  //           "id": 0,
+  //           "code": 200,
+  //           "mediaType": "application/json",
+  //           "examples": "json",
+  //           "SchemaRefId": 1,
+  //           "schemaItem": {
+  //             "id": 0,
+  //             "name": "name",
+  //             "type": "object",
+  //             "content":"{\"id\":{\"type\":\"integer\",\"format\":\"string\"},\"name\":{\"type\":\"string\",\"format\":\"string\"}}"
+  //           }
+  //         }
+  //       ],
+  //       "bodyType": "application/json",
+  //       "params": [
+  //         {
+  //           "id": 0,
+  //           "name": "name",
+  //           "value": "111",
+  //           "type": "string",
+  //           "desc": ""
+  //         },
+  //         {
+  //           "id": 0,
+  //           "name": "id",
+  //           "value": "1",
+  //           "type": "string",
+  //           "desc": ""
+  //         }
+  //       ],
+  //       "headers": [
+  //         {
+  //           "id": 0,
+  //           "name": "token",
+  //           "desc": "",
+  //           "value": "11111",
+  //           "type": "string"
+  //         },
+  //         {
+  //           "id": 0,
+  //           "name": "acction",
+  //           "desc": "",
+  //           "value": "aaaa",
+  //           "type": "string"
+  //         }
+  //       ],
+  //       "cookies": [
+  //         {
+  //           "id": 0,
+  //           "name": "token",
+  //           "desc": "",
+  //           "value": "11111",
+  //           "type": "string"
+  //         },
+  //         {
+  //           "id": 0,
+  //           "name": "acction",
+  //           "desc": "",
+  //           "value": "aaaa",
+  //           "type": "string"
+  //         }
+  //       ]
+  //     }
+  //   ]
+  // };
+  let res = await saveInterface({
+    // "prjectId": 0,
+    // "page": 1,
+    // "pageSize": 2,
+    // "status": 0,
+    // "userId": 0,
+    "serveId": 1,
+    "path": data.path,
+    "title": data.title,
+  });
   createApiModalvisible.value = false;
+  if (res.code === 0) {
+    message.success('新建接口成功');
+    await reloadList();
+  }
 }
 
 function handleCancalCreateApi() {

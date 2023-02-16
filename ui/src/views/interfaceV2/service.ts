@@ -40,8 +40,10 @@ interface InterfaceListReqParams {
 
 // todo liguwe 待整理
 interface SaveInterfaceReqParams {
-    project_id?: number,
-    serve_id?: number,
+    // project_id?: number,
+    serveId?: number,
+    title?:string,
+    path?:string
 }
 
 
@@ -78,6 +80,30 @@ export async function deleteInterface(id: Number): Promise<any> {
 
 
 /**
+ * 复制接口
+ * */
+export async function copyInterface(id: Number): Promise<any> {
+    return request({
+        url: `/endpoint/copy?id=${id}`,
+        method: 'get',
+    });
+}
+
+
+
+/**
+ * 获取yaml展示
+ * */
+export async function getYaml(data: any): Promise<any> {
+    return request({
+        url: `/endpoint/yaml`,
+        method: 'post',
+        data: data
+    });
+}
+
+
+/**
  * 接口过时
  * */
 export async function expireInterface(id: Number): Promise<any> {
@@ -86,7 +112,6 @@ export async function expireInterface(id: Number): Promise<any> {
         method: 'put',
     });
 }
-
 
 /**
  * 保存接口

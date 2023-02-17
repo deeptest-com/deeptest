@@ -511,7 +511,7 @@ const props = defineProps({
     // type: an,
   }
 })
-const emit = defineEmits(['ok', 'close']);
+const emit = defineEmits(['ok', 'close','refreshList']);
 const collapseActiveKey = ref(['1']);
 const activeKey = ref('1');
 const activeResCodeKey = ref('1');
@@ -843,6 +843,7 @@ async function save() {
   if (res.code === 0) {
     message.success('保存成功');
     emit('close');
+    emit('refreshList')
   }
 }
 

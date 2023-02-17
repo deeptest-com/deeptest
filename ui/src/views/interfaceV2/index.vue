@@ -61,7 +61,10 @@
 
         </div>
         <a-table
-            :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
+            :row-selection="{
+          selectedRowKeys: selectedRowKeys,
+          onChange: onSelectChange
+        }"
             :columns="columns"
             :data-source="data">
           <template #colTitle="{text,record}">
@@ -91,6 +94,7 @@
         :interfaceId="editInterfaceId"
         :visible="drawerVisible"
         :key="clickTag"
+        @refreshList="refreshList"
         @close="onCloseDrawer"/>
     <!--  创建接口 Tag  -->
     <CreateTagModal
@@ -222,6 +226,7 @@ async function reloadList() {
 
   result.forEach((item, index) => {
     item.index = index + 1;
+    item.key = `${index + 1}`;
     item.updatedAt = momentUtc(item.updatedAt);
   })
   data.value = result;
@@ -233,7 +238,12 @@ onMounted(async () => {
 })
 
 
-const selectedRowKeys: Key[] = ref([]);
+async function refreshList() {
+  await reloadList();
+}
+
+// const selectedRowKeys: Key[] = ref([]);
+const selectedRowKeys = ref<Key[]>([]);
 const loading = false;
 
 // 是否批量选中了
@@ -244,9 +254,9 @@ const hasSelected = false;
 // 抽屉是否打开
 const drawerVisible = ref<boolean>(false);
 
-const onSelectChange = (selectedRowKeys: Key[]) => {
-  console.log('selectedRowKeys changed: ', selectedRowKeys);
-  selectedRowKeys.value = selectedRowKeys;
+const onSelectChange = (keys: Key[],rows:any) => {
+  console.log('selectedRowKeys changed: ', keys,rows);
+  selectedRowKeys.value = [...keys];
 };
 
 
@@ -312,6 +322,7 @@ function importApi() {
  * */
 function onCloseDrawer() {
   drawerVisible.value = false;
+
 }
 
 

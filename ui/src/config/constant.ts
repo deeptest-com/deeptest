@@ -133,7 +133,31 @@ export const openApiDataTypesOpts = [
 ]
 
 
-export const interfaceStatus = new Map([[0, '未知'],[1, '设计中'], [2, '开发中'], [3, '已发布'], [4, '已过时']])
+export const interfaceStatus = new Map([[0, '未知'], [1, '设计中'], [2, '开发中'], [3, '已发布'], [4, '已过时']])
+
+
+export const interfaceStatusOpts = [
+    {
+        label: "未知",
+        value: "0",
+    },
+    {
+        label: "设计中",
+        value: "1",
+    },
+    {
+        label: "开发中",
+        value: "2",
+    },
+    {
+        label: "已发布",
+        value: "3",
+    },
+    {
+        label: "已过时",
+        value: "4",
+    }
+]
 
 
 export const mediaTypesOpts = [

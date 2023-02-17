@@ -10,27 +10,47 @@
       @close="onCloseDrawer">
     <!-- 头部信息  -->
     <template #title>
-      <div class="title">
-        <a-space :size="8">
-          <contenteditable
-              tag="div"
-              :ref="interfaceDetailNameRef"
-              class="interfaceName"
-              :contenteditable="true"
-              v-model="interfaceDetail.title"
-              :no-nl="true"
-              :no-html="true"
-              @returned="enterPressed"/>
-          <EditOutlined @click="editInterfaceDetailName"/>
-        </a-space>
-      </div>
+      <a-row type="flex" style="align-items: center;width: 100%">
+        <a-col :span="8">
+          <div class="title">
+            <a-space :size="8">
+              <contenteditable
+                  tag="div"
+                  :ref="interfaceDetailNameRef"
+                  class="interfaceName"
+                  :contenteditable="true"
+                  v-model="interfaceDetail.title"
+                  :no-nl="true"
+                  :no-html="true"
+                  @returned="enterPressed"/>
+              <EditOutlined @click="editInterfaceDetailName"/>
+            </a-space>
+          </div>
+        </a-col>
+        <a-col :span="15" style="display: flex;justify-content: end;">
+          <a-form-item label="接口版本" style="margin-bottom: 0;width: 300px">
+            <a-select placeholder="请选择接口版本">
+              <a-select-option value="V1.0">V1.0</a-select-option>
+              <a-select-option value="V1.1">V1.1</a-select-option>
+              <a-select-option value="V1.2">V1.2</a-select-option>
+            </a-select>
+          </a-form-item>
+        </a-col>
+        <a-col :span="1"></a-col>
+      </a-row>
+
     </template>
     <!-- 基本信息 -->
     <a-card
         class="card-baseInfo"
         :bordered="false"
         title="基本信息">
-      <template #extra><a href="#">more</a></template>
+      <template #extra>
+        <div style="display: flex;align-items: center;">
+          仅内部可见&nbsp;<a-switch v-model:checked="checked1" />
+        </div>
+
+      </template>
       <a-descriptions :title="null">
         <a-descriptions-item label="创建人">{{ interfaceDetail.createUser }}</a-descriptions-item>
         <a-descriptions-item label="创建时间">{{ interfaceDetail.createdAt }}</a-descriptions-item>
@@ -102,7 +122,7 @@
                       Operation ID
                     </a-col>
                     <a-col :span="12">
-                      <a-input v-model:value="selectedMethodDetail.name"/>
+                      <a-input v-model:value="selectedMethodDetail.operationId"/>
                     </a-col>
                   </a-row>
                   <!-- ::::Description -->
@@ -111,7 +131,7 @@
                       Description
                     </a-col>
                     <a-col :span="12">
-                      <a-input v-model:value="selectedMethodDetail.desc"/>
+                      <a-input v-model:value="selectedMethodDetail.description"/>
                     </a-col>
                   </a-row>
                   <!-- ::::增加请求参数 -->
@@ -352,7 +372,7 @@
                           <a-row class="method-item">
                             <a-col :span="4" class="method-item-label"></a-col>
                             <a-col :span="20">
-                              <a-tabs type="card" v-model:activeKey="activeKey">
+                              <a-tabs type="card" v-model:activeKey="activeResCodeKey">
                                 <a-tab-pane key="1" tab="Schema">
                                   <div style="border: 1px solid #f0f0f0; padding: 8px 0;">
                                     <MonacoEditor
@@ -362,7 +382,7 @@
                                         :height="200"
                                         theme="vs"
                                         :options="{...MonacoOptions,minimap:false}"
-                                        @change="() => {}"
+                                        @change="handleResSchemeEditorChange"
                                     />
                                   </div>
                                 </a-tab-pane>
@@ -370,14 +390,12 @@
                                   <div style="border: 1px solid #f0f0f0; padding: 8px 0;">
                                     <MonacoEditor
                                         class="editor"
-                                        :value="selectedCodeDetail?.schemaItem?.content"
+                                        :value="selectedCodeDetail?.examples"
                                         :language="'json'"
                                         :height="200"
                                         theme="vs"
                                         :options="{...MonacoOptions,minimap:false}"
-                                        @change="() => {
-
-                                      }"
+                                        @change="handleResExpEditorChange"
                                     />
                                   </div>
                                 </a-tab-pane>
@@ -496,10 +514,11 @@ const props = defineProps({
 const emit = defineEmits(['ok', 'close']);
 const collapseActiveKey = ref(['1']);
 const activeKey = ref('1');
+const activeResCodeKey = ref('1');
 const selectedMethod = ref('GET');
 const selectedCode = ref('200');
 const interfaceNameEditable = ref(false);
-
+const checked1 = ref(false);
 function onCloseDrawer() {
   emit('close');
 }
@@ -590,14 +609,14 @@ function addCodeResponse() {
     "mediaType": "",
     "description": "",
     // "schemaRefId": 1,
-    "examples": "json",
+    "examples": "{\"user\":{\"value\":{\"id\":1,\"name\":\"王大锤\"}},\"product\":{\"value\":{\"id\":1,\"name\":\"服装\"}}}",
     "schemaItem": {
       // "id": 3,
       "createdAt": "2023-02-10T10:30:30+08:00",
       "updatedAt": "2023-02-10T10:30:30+08:00",
       "name": "name",
       "type": "object",
-      "content": "content",
+      "content": "{\"id\":{\"type\":\"integer\",\"format\":\"string\"},\"name\":{\"type\":\"string\",\"format\":\"string\"}}",
       // "ResponseBodyId": 3
     },
     "headers": []
@@ -670,7 +689,16 @@ function addInterface() {
     "params": [],
     "headers": [],
     "cookies": [],
-    "requestBody": {},
+    "requestBody": {
+      "mediaType": "application/json",
+      "description": "",
+      "examples": "{\"user\":{\"value\":{\"id\":1,\"name\":\"王大锤\"}},\"product\":{\"value\":{\"id\":1,\"name\":\"服装\"}}}",
+      "schemaItem": {
+        "name": "name",
+        "type": "object",
+        "content":"{\"id\":{\"type\":\"integer\",\"format\":\"string\"},\"name\":{\"type\":\"string\",\"format\":\"string\"}}"
+      }
+    },
     "responseBodies": []
   };
   interfaceDetail.value.interfaces.push(tpl);
@@ -711,7 +739,16 @@ function handleReqSchemeEditorChange(val) {
 }
 
 function handleReqExpEditorChange(val) {
-  selectedMethodDetail.value.requestBody.example = val;
+  selectedMethodDetail.value.requestBody.examples = val;
+}
+
+function handleResExpEditorChange(val) {
+  selectedCodeDetail.value.schemaItem.content = val;
+}
+
+
+function handleResSchemeEditorChange(val) {
+  selectedCodeDetail.value.examples = val;
 }
 
 function paramsNameChange(val) {

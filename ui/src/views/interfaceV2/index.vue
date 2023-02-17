@@ -22,10 +22,43 @@
       <div class="right">
         <!--  头部区域  -->
         <div class="top-action">
-          <a-button class="action-new" type="primary" :loading="loading" @click="addApi">新建接口</a-button>
-          <a-button class="action-import" type="primary" :disabled="!hasSelected" :loading="loading" @click="importApi">
-            导入
-          </a-button>
+          <a-row type="flex" style="align-items: center;width: 100%">
+            <a-col :span="4">
+              <a-button class="action-new" type="primary" :loading="loading" @click="addApi">新建接口</a-button>
+              <a-button class="action-import" type="primary" :disabled="!hasSelected" :loading="loading"
+                        @click="importApi">
+                导入
+              </a-button>
+            </a-col>
+            <a-col :span="1"/>
+            <a-col :span="4">
+              <a-form-item label="创建人" style="margin-bottom: 0;">
+                <a-select placeholder="请选择创建人">
+                  <a-select-option value="admin"> admin</a-select-option>
+                  <a-select-option value="superAdmin">super admin</a-select-option>
+                </a-select>
+              </a-form-item>
+            </a-col>
+            <a-col :span="1"/>
+            <a-col :span="4">
+              <a-form-item label="状态" style="margin-bottom: 0;">
+                <a-select placeholder="请选择创建人" :options="interfaceStatusOpts"/>
+              </a-form-item>
+            </a-col>
+            <a-col :span="2"/>
+            <a-col :span="7" style="margin-right: 8px;">
+              <a-input-search
+                  placeholder="请输入你需要搜索的接口文档"
+                  enter-button
+                  @search="() => {
+
+                  }"
+              />
+            </a-col>
+
+          </a-row>
+
+
         </div>
         <a-table
             :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
@@ -76,7 +109,7 @@
 import {computed, reactive, toRefs, ref, onMounted} from 'vue';
 import {ColumnProps} from 'ant-design-vue/es/table/interface';
 import {PlusOutlined, EditOutlined} from '@ant-design/icons-vue';
-import {requestMethodOpts, interfaceStatus} from '@/config/constant';
+import {requestMethodOpts, interfaceStatus, interfaceStatusOpts} from '@/config/constant';
 import {momentUtc} from '@/utils/datetime';
 import {message} from 'ant-design-vue';
 
@@ -221,6 +254,7 @@ const editInterfaceId = ref('');
 
 
 const clickTag = ref(0);
+
 /**
  * 接口编辑
  * */
@@ -259,7 +293,7 @@ async function disabled(record: any) {
  * 删除接口
  * */
 async function del(record: any) {
-  let res =await deleteInterface(record.id);
+  let res = await deleteInterface(record.id);
   if (res.code === 0) {
     message.success('删除成功');
     await reloadList();
@@ -300,117 +334,7 @@ function addApi() {
 
 
 async function handleCreateApi(data) {
-  // const mock = {
-  //   "id": 0,
-  //   "projectId": 1,
-  //   "serveId": 1,
-  //   "path": "/v1/api/test/{user_id}",
-  //   "title": "新建接口11",
-  //   "version": "v1.0.0",
-  //   "parentd": 1,
-  //   "status": 0,
-  //   "pathParams": [
-  //     {
-  //       "id": 0,
-  //       "name": "user_id",
-  //       "type": "integer",
-  //       "value": "1"
-  //     }
-  //   ],
-  //   "interfaces": [
-  //     {
-  //       "id": 0,
-  //       "name": "新接口11",
-  //       "projectId": 1,
-  //       "serveId": "1",
-  //       "useId": 0,
-  //       "method": "POST",
-  //       "security": "token,api_key",
-  //       "requestBody": {
-  //         "mediaType": "application/json",
-  //         "description": "添加",
-  //         "schemaRefId": 11,
-  //         "examples": "json",
-  //         "schemaItem": {
-  //           "id": 0,
-  //           "name": "name",
-  //           "type": "object",
-  //           "content":"{\"id\":{\"type\":\"integer\",\"format\":\"string\"},\"name\":{\"type\":\"string\",\"format\":\"string\"}}"
-  //         }
-  //       },
-  //       "responseBodies": [
-  //         {
-  //           "id": 0,
-  //           "code": 200,
-  //           "mediaType": "application/json",
-  //           "examples": "json",
-  //           "SchemaRefId": 1,
-  //           "schemaItem": {
-  //             "id": 0,
-  //             "name": "name",
-  //             "type": "object",
-  //             "content":"{\"id\":{\"type\":\"integer\",\"format\":\"string\"},\"name\":{\"type\":\"string\",\"format\":\"string\"}}"
-  //           }
-  //         }
-  //       ],
-  //       "bodyType": "application/json",
-  //       "params": [
-  //         {
-  //           "id": 0,
-  //           "name": "name",
-  //           "value": "111",
-  //           "type": "string",
-  //           "desc": ""
-  //         },
-  //         {
-  //           "id": 0,
-  //           "name": "id",
-  //           "value": "1",
-  //           "type": "string",
-  //           "desc": ""
-  //         }
-  //       ],
-  //       "headers": [
-  //         {
-  //           "id": 0,
-  //           "name": "token",
-  //           "desc": "",
-  //           "value": "11111",
-  //           "type": "string"
-  //         },
-  //         {
-  //           "id": 0,
-  //           "name": "acction",
-  //           "desc": "",
-  //           "value": "aaaa",
-  //           "type": "string"
-  //         }
-  //       ],
-  //       "cookies": [
-  //         {
-  //           "id": 0,
-  //           "name": "token",
-  //           "desc": "",
-  //           "value": "11111",
-  //           "type": "string"
-  //         },
-  //         {
-  //           "id": 0,
-  //           "name": "acction",
-  //           "desc": "",
-  //           "value": "aaaa",
-  //           "type": "string"
-  //         }
-  //       ]
-  //     }
-  //   ]
-  // };
   let res = await saveInterface({
-    // "prjectId": 0,
-    // "page": 1,
-    // "pageSize": 2,
-    // "status": 0,
-    // "userId": 0,
     "serveId": 1,
     "path": data.path,
     "title": data.title,

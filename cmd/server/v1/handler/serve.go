@@ -134,5 +134,21 @@ func (c *ServeCtrl) SaveServer(ctx iris.Context) {
 */
 
 func (c *ServeCtrl) ListServer(ctx iris.Context) {
+	serveId := ctx.URLParamUint64("serveId")
+	res, err := c.ServeService.ListServer(uint(serveId))
+	if err == nil {
+		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
+	} else {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
+	}
+}
 
+func (c *ServeCtrl) SaveServer(ctx iris.Context) {
+	var req v1.ServeServerReq
+	if err := ctx.ReadJSON(&req); err == nil {
+		res, _ := c.ServeService.SaveServer(req)
+		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
+	} else {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
+	}
 }

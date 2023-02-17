@@ -29,6 +29,7 @@ func (m *ServeModule) Party() module.WebModule {
 		public.Post("/version/save", m.ServeCtrl.SaveVersion)
 		public.Delete("/version/delete", m.ServeCtrl.DeleteVersion)
 		public.Put("/version/expire", m.ServeCtrl.ExpireVersion)
+		public.Get("/server/list", m.ServeCtrl.ListServer)
 
 		//public.Use(middleware.JwtHandler(), middleware.Casbin(), middleware.OperationRecord())
 	}

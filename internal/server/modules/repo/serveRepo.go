@@ -68,3 +68,8 @@ func (r *ServeRepo) DeleteVersionById(id uint) error {
 func (r *ServeRepo) DisableVersionById(id uint) error {
 	return r.DB.Model(&model.ServeVersion{}).Where("id = ?", id).Update("disabled", 1).Error
 }
+
+func (r *ServeRepo) ListServer(serveId uint) (res []model.ServeServer, err error) {
+	err = r.DB.Where("serve_id = ? AND NOT deleted AND not disabled", serveId).Find(&res).Error
+	return
+}

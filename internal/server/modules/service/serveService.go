@@ -63,3 +63,15 @@ func (s *ServeService) DisableVersionById(id uint) (err error) {
 	err = s.ServeRepo.DisableVersionById(id)
 	return
 }
+
+func (s *ServeService) ListServer(serveId uint) (res []model.ServeServer, err error) {
+	res, err = s.ServeRepo.ListServer(serveId)
+	return
+}
+
+func (s *ServeService) SaveServer(req v1.ServeServerReq) (res uint, err error) {
+	var serve model.ServeServer
+	copier.CopyWithOption(&serve, req, copier.Option{DeepCopy: true})
+	err = s.ServeRepo.Save(serve.ID, &serve)
+	return serve.ID, err
+}

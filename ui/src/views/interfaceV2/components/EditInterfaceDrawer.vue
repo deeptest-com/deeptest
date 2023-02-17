@@ -326,19 +326,18 @@
                             <a-col :span="18">
                               <a-select
                                   placeholder="请选择格式"
-                                  v-if="selectedCodeDetail?.mediaType"
                                   v-model:value="selectedCodeDetail.mediaType"
                                   style="width: 300px"
                                   :options="mediaTypesOpts"
                               ></a-select>
-                              <a-button
-                                  v-if="!selectedCodeDetail.mediaType"
-                                  type="primary" @click="addResBody">
-                                <template #icon>
-                                  <PlusOutlined/>
-                                </template>
-                                {{ `添加` }}
-                              </a-button>
+<!--                              <a-button-->
+<!--                                  v-if="!selectedCodeDetail.mediaType"-->
+<!--                                  type="primary" @click="addResBody">-->
+<!--                                <template #icon>-->
+<!--                                  <PlusOutlined/>-->
+<!--                                </template>-->
+<!--                                {{ `添加` }}-->
+<!--                              </a-button>-->
 
                             </a-col>
                           </a-row>
@@ -583,49 +582,28 @@ function addResponseHeader() {
 }
 
 function addCodeResponse() {
-  selectedMethodDetail.value.responseBodies.push(
-      {
-        "id": 3,
-        "createdAt": "2023-02-10T10:30:30+08:00",
-        "updatedAt": "2023-02-10T10:30:30+08:00",
-        "code": 200,
-        "interfaceId": 49,
-        "mediaType": "application/json",
-        "description": "",
-        "schemaRefId": 1,
-        "examples": "json",
-        "schemaItem": {
-          "id": 3,
-          "createdAt": "2023-02-10T10:30:30+08:00",
-          "updatedAt": "2023-02-10T10:30:30+08:00",
-          "name": "name",
-          "type": "object",
-          "content": "[{\"format\":\"int64\",\"name\":\"id\",\"type\":\"integer\"},{\"format\":\"string\",\"name\":\"name\",\"type\":\"string\"}]",
-          "ResponseBodyId": 3
-        },
-        "headers": [
-          {
-            "id": 1,
-            "createdAt": "2023-02-10T10:30:30+08:00",
-            "updatedAt": "2023-02-10T10:30:30+08:00",
-            "name": "token",
-            "desc": "",
-            "value": "11111",
-            "type": "string",
-            "responseBodyId": 3
-          },
-          {
-            "id": 2,
-            "createdAt": "2023-02-10T10:30:30+08:00",
-            "updatedAt": "2023-02-10T10:30:30+08:00",
-            "name": "acction",
-            "desc": "",
-            "value": "aaaa",
-            "type": "string",
-            "responseBodyId": 3
-          }
-        ]
-      })
+  const tpl = {
+    "createdAt": "2023-02-10T10:30:30+08:00",
+    "updatedAt": "2023-02-10T10:30:30+08:00",
+    "code": selectedCode.value,
+    // "interfaceId": 49,
+    "mediaType": "",
+    "description": "",
+    // "schemaRefId": 1,
+    "examples": "json",
+    "schemaItem": {
+      // "id": 3,
+      "createdAt": "2023-02-10T10:30:30+08:00",
+      "updatedAt": "2023-02-10T10:30:30+08:00",
+      "name": "name",
+      "type": "object",
+      "content": "content",
+      // "ResponseBodyId": 3
+    },
+    "headers": []
+  };
+  selectedMethodDetail.value.responseBodies.push(tpl)
+  selectedCodeDetail.value = tpl;
 }
 
 const interfaceDetailNameRef: any = ref(null)
@@ -667,174 +645,39 @@ function addPathParams() {
 
 
 function addInterface() {
-  // let tpl = {
-  //   "name": "",
-  //   "projectId": 1,
-  //   "serveId": "1",
-  //   "useId": 0,
-  //   "method": selectedMethod.value,
-  //   "security": "token,api_key",
-  //   "requestBody": {},
-  //   "responseBodies": [],
-  //   "bodyType": "",
-  //   "params": [],
-  //   "headers": [],
-  //   "cookies": []
-  // }
   const tpl = {
-    "id":49,
-    "createdAt":"2023-02-10T10:30:30+08:00",
-    "updatedAt":"2023-02-10T10:30:30+08:00",
-    "name":"新接口11",
-    "desc":"",
-    "endpoint_id":34,
-    "security":"token,api_key",
-    "isLeaf":false,
-    "parentId":0,
-    "projectId":0,
-    "useId":0,
-    "ordr":0,
-    "slots":null,
-    "url":"",
-    "method":"POST",
-    "body":"{}",
-    "bodyType":"application/json",
-    "authorizationType":"",
-    "preRequestScript":"",
-    "validationScript":"",
-    "children":null,
-    "params":[
-      {
-        "id":102,
-        "createdAt":"2023-02-10T10:30:30+08:00",
-        "updatedAt":"2023-02-10T10:30:30+08:00",
-        "name":"name",
-        "value":"111",
-        "type":"string",
-        "desc":"",
-        "interfaceId":49
-      },
-      {
-        "id":103,
-        "createdAt":"2023-02-10T10:30:30+08:00",
-        "updatedAt":"2023-02-10T10:30:30+08:00",
-        "name":"id",
-        "value":"1",
-        "type":"string",
-        "desc":"",
-        "interfaceId":49
-      }
-    ],
-    "headers":[
-      {
-        "id":83,
-        "createdAt":"2023-02-10T10:30:30+08:00",
-        "updatedAt":"2023-02-10T10:30:30+08:00",
-        "name":"token",
-        "desc":"",
-        "value":"11111",
-        "type":"string",
-        "interfaceId":49
-      },
-      {
-        "id":84,
-        "createdAt":"2023-02-10T10:30:30+08:00",
-        "updatedAt":"2023-02-10T10:30:30+08:00",
-        "name":"acction",
-        "desc":"",
-        "value":"aaaa",
-        "type":"string",
-        "interfaceId":49
-      }
-    ],
-    "cookies":[
-      {
-        "id":3,
-        "createdAt":"2023-02-10T10:30:30+08:00",
-        "updatedAt":"2023-02-10T10:30:30+08:00",
-        "name":"token",
-        "desc":"",
-        "value":"11111",
-        "type":"string",
-        "interfaceId":49
-      },
-      {
-        "id":4,
-        "createdAt":"2023-02-10T10:30:30+08:00",
-        "updatedAt":"2023-02-10T10:30:30+08:00",
-        "name":"acction",
-        "desc":"",
-        "value":"aaaa",
-        "type":"string",
-        "interfaceId":49
-      }
-    ],
-    "requestBody":{
-      "id":13,
-      "createdAt":"2023-02-10T10:30:30+08:00",
-      "updatedAt":"2023-02-10T10:30:30+08:00",
-      "interfaceId":49,
-      "mediaType":"application/json",
-      "description":"添加",
-      "schemaRefId":11,
-      "examples":"json",
-      "schemaItem":{
-        "id":13,
-        "createdAt":"2023-02-10T10:30:30+08:00",
-        "updatedAt":"2023-02-10T10:30:30+08:00",
-        "name":"name",
-        "type":"object",
-        "content":"{\"id\":{\"type\":\"integer\",\"format\":\"string\"},\"name\":{\"type\":\"string\",\"format\":\"string\"}}",
-        "requestBodyId":13
-      }
-    },
-    "responseBodies":[
-      {
-        "id":3,
-        "createdAt":"2023-02-10T10:30:30+08:00",
-        "updatedAt":"2023-02-10T10:30:30+08:00",
-        "code":200,
-        "interfaceId":49,
-        "mediaType":"application/json",
-        "description":"",
-        "schemaRefId":1,
-        "examples":"json",
-        "schemaItem":{
-          "id":3,
-          "createdAt":"2023-02-10T10:30:30+08:00",
-          "updatedAt":"2023-02-10T10:30:30+08:00",
-          "name":"name",
-          "type":"object",
-          "content":"[{\"format\":\"int64\",\"name\":\"id\",\"type\":\"integer\"},{\"format\":\"string\",\"name\":\"name\",\"type\":\"string\"}]",
-          "ResponseBodyId":3
-        },
-        "headers":[
-          {
-            "id":1,
-            "createdAt":"2023-02-10T10:30:30+08:00",
-            "updatedAt":"2023-02-10T10:30:30+08:00",
-            "name":"token",
-            "desc":"",
-            "value":"11111",
-            "type":"string",
-            "responseBodyId":3
-          },
-          {
-            "id":2,
-            "createdAt":"2023-02-10T10:30:30+08:00",
-            "updatedAt":"2023-02-10T10:30:30+08:00",
-            "name":"acction",
-            "desc":"",
-            "value":"aaaa",
-            "type":"string",
-            "responseBodyId":3
-          }
-        ]
-      }
-    ]
+    // "id": 49,
+    "createdAt": "2023-02-10T10:30:30+08:00",
+    "updatedAt": "2023-02-10T10:30:30+08:00",
+    "name": "",
+    "desc": "",
+    "endpoint_id": 34,
+    "security": "token,api_key",
+    "isLeaf": false,
+    "parentId": 0,
+    "projectId": 0,
+    "useId": 0,
+    "ordr": 0,
+    "slots": null,
+    "url": "",
+    "method": selectedMethod.value,
+    "body": "{}",
+    "bodyType": "",
+    "authorizationType": "",
+    "preRequestScript": "",
+    "validationScript": "",
+    "children": null,
+    "params": [],
+    "headers": [],
+    "cookies": [],
+    "requestBody": {},
+    "responseBodies": []
   };
   interfaceDetail.value.interfaces.push(tpl);
   selectedMethodDetail.value = tpl;
+  selectedCode.value = '200';
+  selectedCodeDetail.value = null
+
 }
 
 /**
@@ -998,7 +841,20 @@ watch(() => {
     let data = res.data;
     data.createdAt = momentUtc(data.createdAt);
     data.updatedAt = momentUtc(data.updatedAt);
-    interfaceDetail.value = {...res.data}
+    interfaceDetail.value = {...res.data};
+
+
+    // todo 默认选中第一个有值的method ，临时方案，应该高亮展示一些场景
+    if (interfaceDetail.value.interfaces[0]?.method) {
+      selectedMethod.value = interfaceDetail.value.interfaces[0].method;
+      selectedMethodDetail.value = interfaceDetail.value.interfaces[0];
+    }
+    if (selectedMethodDetail.value?.responseBodies[0]?.code) {
+      selectedCode.value = selectedMethodDetail.value?.responseBodies[0]?.code;
+      selectedCodeDetail.value = selectedMethodDetail.value?.responseBodies[0];
+    }
+
+
   } else {
     // interfaceDetail.value = null;
     // selectedMethodDetail.value = null;

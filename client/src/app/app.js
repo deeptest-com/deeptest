@@ -8,7 +8,7 @@ import Lang, {initLang} from './core/lang';
 import {startUIService} from "./core/ui";
 import {startAgent, killAgent} from "./core/deeptest";
 import { nanoid } from 'nanoid'
-import {uploadDatapoolFile, uploadFile} from "./utils/upload";
+import {uploadFile} from "./utils/upload";
 
 const cp = require('child_process');
 const fs = require('fs');

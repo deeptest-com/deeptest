@@ -77,17 +77,17 @@ export class DeepTestApp {
 
         this._windows.set('main', mainWin);
 
-        // const url = await startUIService()
-        logInfo('===' + path.resolve(process.resourcesPath, 'uiiii'))
-        fs.mkdirSync(path.resolve(process.resourcesPath, 'uiiii'));
-
-        let url = 'http://110.42.146.127:8085/ui'
-        if (process.env.UI_SERVER_URL) {
-            url = process.env.UI_SERVER_URL
-        }
-        logInfo('load ' + url)
-
+        const url = await startUIService()
         await mainWin.loadURL(url);
+
+        // const temp = path.resolve(process.resourcesPath, 'ui_temp')
+        // logInfo('===' + temp)
+        // fs.mkdirSync(temp);
+        // let url = 'http://110.42.146.127:8085/ui'
+        // if (process.env.UI_SERVER_URL) {
+        //     url = process.env.UI_SERVER_URL
+        // }
+        // logInfo('load ' + url)
 
         ipcMain.on(electronMsg, (event, arg) => {
             logInfo('msg from renderer', JSON.stringify(arg))

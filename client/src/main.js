@@ -8,15 +8,9 @@ if (require('electron-squirrel-startup')) { // eslint-disable-line global-requir
   app.quit();
 }
 
-logInfo(`DEBUG=${DEBUG}`)
-logInfo('===' + __dirname)
-
 const isDev = require('electron-is-dev')
 const mode = isDev ? 'development' : 'production'
 logInfo(`Start DeepTest v${app.getVersion()} in ${mode} mode ...`)
-
-const { autoUpdater } = require("electron-updater")
-autoUpdater.logger = logger
 
 const deeptestApp = new DeepTestApp();
 app.on('ready', () => {

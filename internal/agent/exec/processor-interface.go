@@ -48,10 +48,8 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 	variables := GetCachedVariableMapInContext(entity.ProcessorID)
 	ReplaceAll(&entity.BaseRequest, Environment, variables, DatapoolData)
 
-	// invoke
-	GetRequestProps(&entity.BaseRequest)
-	entity.Response, err = Invoke(entity.BaseRequest)
-	GetContentProps(&entity.Response)
+	// send request
+	entity.Response, err = Invoke(&entity.BaseRequest)
 
 	reqContent, _ := json.Marshal(entity.BaseRequest)
 	processor.Result.ReqContent = string(reqContent)

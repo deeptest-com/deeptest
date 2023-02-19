@@ -14,31 +14,35 @@ import (
 	"time"
 )
 
-func Invoke(req v1.BaseRequest) (resp v1.InvocationResponse, err error) {
+func Invoke(req *v1.BaseRequest) (resp v1.InvocationResponse, err error) {
+	GetRequestProps(req)
+
 	req.Url, err = _httpUtils.AddDefaultUrlSchema(req.Url)
 	if err != nil {
 		return
 	}
 
 	if req.Method == consts.GET {
-		resp, err = httpHelper.Get(req)
+		resp, err = httpHelper.Get(*req)
 	} else if req.Method == consts.POST {
-		resp, err = httpHelper.Post(req)
+		resp, err = httpHelper.Post(*req)
 	} else if req.Method == consts.PUT {
-		resp, err = httpHelper.Put(req)
+		resp, err = httpHelper.Put(*req)
 	} else if req.Method == consts.DELETE {
-		resp, err = httpHelper.Delete(req)
+		resp, err = httpHelper.Delete(*req)
 	} else if req.Method == consts.PATCH {
-		resp, err = httpHelper.Patch(req)
+		resp, err = httpHelper.Patch(*req)
 	} else if req.Method == consts.HEAD {
-		resp, err = httpHelper.Head(req)
+		resp, err = httpHelper.Head(*req)
 	} else if req.Method == consts.CONNECT {
-		resp, err = httpHelper.Connect(req)
+		resp, err = httpHelper.Connect(*req)
 	} else if req.Method == consts.OPTIONS {
-		resp, err = httpHelper.Options(req)
+		resp, err = httpHelper.Options(*req)
 	} else if req.Method == consts.TRACE {
-		resp, err = httpHelper.Trace(req)
+		resp, err = httpHelper.Trace(*req)
 	}
+
+	GetContentProps(&resp)
 
 	return
 }

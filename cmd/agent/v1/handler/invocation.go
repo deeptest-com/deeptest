@@ -8,7 +8,7 @@ import (
 )
 
 type InvocationCtrl struct {
-	InvocationService *service.InvokeInterfaceService `inject:""`
+	InvocationService *service.InterfaceService `inject:""`
 }
 
 // InvokeInterface
@@ -20,7 +20,7 @@ func (c *InvocationCtrl) InvokeInterface(ctx iris.Context) {
 		return
 	}
 
-	resp, err := c.InvocationService.Invoke(req)
+	resp, err := c.InvocationService.Run(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
 		return

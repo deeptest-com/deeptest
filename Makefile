@@ -41,7 +41,7 @@ mac:   prepare build_gui_mac                          compile_server_mac   copy_
 
 prepare: update_version
 
-update_version: update_version_in_config gen_version_file
+update_version: gen_version_file
 
 gen_version_file:
 	@echo 'gen version'

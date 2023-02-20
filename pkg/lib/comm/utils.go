@@ -129,7 +129,7 @@ func JsonEncode(data interface{}) (res string) {
 func JsonDecode(str string, res interface{}) {
 
 	if err := json.Unmarshal([]byte(str), res); err != nil {
-		panic(err)
+		//panic(err)
 	}
 
 	return

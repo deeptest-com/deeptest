@@ -4,6 +4,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	"github.com/getkin/kin-openapi/openapi3"
+	"strings"
 )
 
 type serve2conv struct {
@@ -54,16 +55,18 @@ func (s *serve2conv) paths() (paths openapi3.Paths) {
 			switch item.Method {
 			case "GET":
 				paths[endpoint.Path].Get = new(openapi3.Operation)
-				paths[endpoint.Path].Get.Description = item.Name
-				paths[endpoint.Path].Get.Summary = item.Name
+				/*				paths[endpoint.Path].Get.OperationID = item.OperationId
+								paths[endpoint.Path].Get.Description = item.Description
+								paths[endpoint.Path].Get.Summary = item.Description*/
 				paths[endpoint.Path].Get.Responses = s.responsesBody(item.ResponseBodies)
 				paths[endpoint.Path].Get.Security = nil
 				paths[endpoint.Path].Get.Parameters = s.parameters(item.Cookies, item.Headers, item.Params)
 
 			case "POST":
 				paths[endpoint.Path].Post = new(openapi3.Operation)
-				paths[endpoint.Path].Post.Description = item.Name
-				paths[endpoint.Path].Post.Summary = item.Name
+				//paths[endpoint.Path].Get.OperationID = item.OperationId
+				//paths[endpoint.Path].Get.Description = item.Description
+				//paths[endpoint.Path].Get.Summary = item.Description
 				paths[endpoint.Path].Post.RequestBody = s.requestBody(item.RequestBody)
 				paths[endpoint.Path].Post.Responses = s.responsesBody(item.ResponseBodies)
 				paths[endpoint.Path].Post.Security = nil
@@ -138,6 +141,7 @@ func (s *serve2conv) requestBody(body model.InterfaceRequestBody) (requestBody *
 	requestBody.Value.Content[body.MediaType].Schema = new(openapi3.SchemaRef)
 	//if body.SchemaItem.RequestBodyId != 0 {
 	requestBody.Value.Content[body.MediaType].Schema.Value = s.requestBodySchema(body.SchemaItem)
+	requestBody.Value.Content[body.MediaType].Examples = s.requestBodyExamples(body.Examples)
 	//}
 	return
 }
@@ -154,6 +158,12 @@ func (s *serve2conv) requestBodySchema(item model.InterfaceRequestBodyItem) (sch
 		_commUtils.JsonDecode(item.Content, &items)
 		schema.Items = items
 	}
+	return
+}
+
+func (s *serve2conv) requestBodyExamples(examplesStr string) (examples openapi3.Examples) {
+	examplesStr = "{\"user\":{\"value\":{\"id\":1,\"name\":\"王大锤\"}},\"product\":{\"value\":{\"id\":1,\"name\":\"服装\"}}}"
+	_commUtils.JsonDecode(examplesStr, &examples)
 	return
 }
 
@@ -178,7 +188,7 @@ func (s *serve2conv) responsesBodySchema(item model.InterfaceResponseBodyItem) (
 	if item.Type == "object" {
 		//schema.Properties = openapi3.Schemas{}
 		var schemas openapi3.Schemas
-
+		item.Content = strings.ReplaceAll(item.Content, "\n", "")
 		_commUtils.JsonDecode(item.Content, &schemas)
 		//fmt.Println(item.Content, &schemas)
 		//for _,val := range content{

@@ -1,9 +1,9 @@
 package service
 
 import (
-	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi"
+	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
@@ -40,7 +40,17 @@ func (s *EndpointService) DeleteById(id uint) (err error) {
 }
 
 func (s *EndpointService) DisableById(id uint) (err error) {
-	err = s.EndpointRepo.DisableById(id)
+	err = s.EndpointRepo.UpdateStatus(id, serverConsts.Abandoned)
+	return
+}
+
+func (s *EndpointService) Publish(id uint) (err error) {
+	err = s.EndpointRepo.UpdateStatus(id, serverConsts.Published)
+	return
+}
+
+func (s *EndpointService) Develop(id uint) (err error) {
+	err = s.EndpointRepo.UpdateStatus(id, serverConsts.Developing)
 	return
 }
 
@@ -89,6 +99,6 @@ func (s *EndpointService) Yaml(endpoint model.Endpoint) (res interface{}) {
 	}
 	serve2conv := openapi.NewServe2conv(serve, []model.Endpoint{endpoint})
 	res = serve2conv.ToV3()
-	fmt.Println(res, "+++++++++++++++++++")
+	//fmt.Println(res, "+++++++++++++++++++")
 	return
 }

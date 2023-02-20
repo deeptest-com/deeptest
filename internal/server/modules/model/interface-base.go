@@ -6,14 +6,16 @@ import (
 )
 
 type InterfaceBase struct {
-	Name       string `json:"name"`
-	Desc       string `json:"desc"`
-	EndpointId uint   `json:"endpoint_id"`
-	Security   string `json:"security"`
-	IsLeaf     bool   `json:"isLeaf"`
-	ParentId   uint   `json:"parentId"`
-	ProjectId  uint   `json:"projectId"`
-	UseID      uint   `json:"useId"`
+	Name        string `json:"name"`
+	OperationId string `json:"operationId"`
+	Description string `json:"description"`
+	Desc        string `json:"desc"`
+	EndpointId  uint   `json:"endpoint_id"`
+	Security    string `json:"security"`
+	IsLeaf      bool   `json:"isLeaf"`
+	ParentId    uint   `json:"parentId"`
+	ProjectId   uint   `json:"projectId"`
+	UseID       uint   `json:"useId"`
 
 	Ordr int `json:"ordr"`
 

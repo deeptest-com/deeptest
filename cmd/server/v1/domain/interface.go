@@ -41,6 +41,8 @@ type InterfaceResp struct {
 	ID             int64                 `json:"id"`
 	Url            string                `json:"url"`
 	Name           string                `json:"name"`
+	OperationId    string                `json:"operationId"`
+	Description    string                `json:"description"`
 	Security       string                `json:"security"`
 	Method         string                `gorm:"default:GET" json:"method"`
 	Params         []domain.Param        `gorm:"-" json:"params"`

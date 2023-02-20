@@ -13,3 +13,10 @@ var (
 		"":        "ASC",
 	}
 )
+
+const (
+	Designing  = 1
+	Developing = 2
+	Published  = 3
+	Abandoned  = 4
+)

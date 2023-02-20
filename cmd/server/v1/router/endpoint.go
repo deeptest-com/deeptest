@@ -24,6 +24,8 @@ func (m *EndpointModule) Party() module.WebModule {
 		public.Get("/detail", m.EndpointCtrl.Detail)
 		public.Delete("/delete", m.EndpointCtrl.Delete)
 		public.Put("/expire", m.EndpointCtrl.Expire)
+		public.Put("/publish", m.EndpointCtrl.Publish)
+		public.Put("/develop", m.EndpointCtrl.Develop)
 		public.Get("/copy", m.EndpointCtrl.Copy)
 		public.Post("/yaml", m.EndpointCtrl.Yaml)
 

@@ -70,6 +70,22 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
     ],
   },
 
+  //  项目管理 页面
+  {
+    title: '项目管理',
+    path: '/projectSetting',
+    redirect: '/projectSetting/index',
+    component: BlankLayout,
+    children: [
+      {
+        icon: 'list',
+        title: 'projectSetting',
+        path: 'index',
+        component: () => import('@/views/projectSetting/index.vue'),
+        hidden: false,
+      },
+    ],
+  },
   {
     title: 'index-layout.menu',
     path: '/scenario',

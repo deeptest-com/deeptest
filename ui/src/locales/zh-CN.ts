@@ -27,6 +27,7 @@ export default {
 
     'interface': '接口',
     'interfaceV2': '接口管理', // 新版 接口模块
+    'projectSetting': '项目管理', // 新版 接口模块
     'scenario': '场景',
     'scenario.edit': '场景编辑',
     'scenario.design': '场景设计',

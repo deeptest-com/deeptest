@@ -21,8 +21,8 @@ func (c *ScenarioCategoryCtrl) LoadTree(ctx iris.Context) {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: "projectId"})
 		return
 	}
-
-	data, err := c.ScenarioCategoryService.GetTree(projectId)
+	serveId, _ := ctx.URLParamInt("serveId")
+	data, err := c.ScenarioCategoryService.GetTree(projectId, serveId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
 		return

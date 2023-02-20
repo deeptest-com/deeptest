@@ -13,8 +13,8 @@ type ScenarioCategoryService struct {
 	ScenarioCategoryRepo *repo.ScenarioCategoryRepo `inject:""`
 }
 
-func (s *ScenarioCategoryService) GetTree(projectId int) (root *v1.ScenarioCategory, err error) {
-	root, err = s.ScenarioCategoryRepo.GetTree(uint(projectId))
+func (s *ScenarioCategoryService) GetTree(projectId, serveId int) (root *v1.ScenarioCategory, err error) {
+	root, err = s.ScenarioCategoryRepo.GetTree(uint(projectId), uint(serveId))
 
 	return
 }
@@ -92,8 +92,8 @@ func (s *ScenarioCategoryService) deleteScenarioNodeAndChildren(nodeId uint) (er
 	return
 }
 
-func (s *ScenarioCategoryService) ListToByScenario(id uint) (ret []*model.ScenarioCategory, err error) {
-	pos, _ := s.ScenarioCategoryRepo.ListByProject(id)
+func (s *ScenarioCategoryService) ListToByScenario(id, serveId uint) (ret []*model.ScenarioCategory, err error) {
+	pos, _ := s.ScenarioCategoryRepo.ListByProject(id, serveId)
 
 	for _, po := range pos {
 		to := model.ScenarioCategory{}

@@ -48,6 +48,58 @@ func (r *ServeRepo) Paginate(req v1.ServeReqPaginate) (ret _domain.PageData, err
 	return
 }
 
+func (r *ServeRepo) PaginateVersion(req v1.ServeVersionPaginate) (ret _domain.PageData, err error) {
+	var count int64
+	db := r.DB.Model(&model.ServeVersion{}).Where("serve_id = ? AND NOT deleted AND NOT disabled", req.ServeId)
+
+	if req.Version != "" {
+		db = db.Where("value LIKE ?", fmt.Sprintf("%%%s%%", req.Version))
+	}
+
+	if req.CreateUser != "" {
+		db = db.Where("creat_user = ?", fmt.Sprintf("%s", req.CreateUser))
+	}
+
+	err = db.Count(&count).Error
+	if err != nil {
+		logUtils.Errorf("count report error %s", err.Error())
+		return
+	}
+
+	results := make([]*model.ServeVersion, 0)
+
+	err = db.Scopes(dao.PaginateScope(req.Page, req.PageSize, req.Order, req.Field)).Find(&results).Error
+	if err != nil {
+		logUtils.Errorf("query report error %s", err.Error())
+		return
+	}
+	ret.Populate(results, count, req.Page, req.PageSize)
+
+	return
+}
+
+func (r *ServeRepo) PaginateSchema(req v1.ServeSchemaPaginate) (ret _domain.PageData, err error) {
+	var count int64
+	db := r.DB.Model(&model.ComponentSchema{}).Where("serve_id = ? AND NOT deleted AND NOT disabled", req.ServeId)
+
+	err = db.Count(&count).Error
+	if err != nil {
+		logUtils.Errorf("count report error %s", err.Error())
+		return
+	}
+
+	results := make([]*model.ComponentSchema, 0)
+
+	err = db.Scopes(dao.PaginateScope(req.Page, req.PageSize, req.Order, req.Field)).Find(&results).Error
+	if err != nil {
+		logUtils.Errorf("query report error %s", err.Error())
+		return
+	}
+	ret.Populate(results, count, req.Page, req.PageSize)
+
+	return
+}
+
 func (r *ServeRepo) Get(id uint) (res model.Serve, err error) {
 	err = r.DB.Where("NOT deleted AND not disabled").First(&res, id).Error
 	return

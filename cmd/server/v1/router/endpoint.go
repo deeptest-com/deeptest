@@ -28,6 +28,8 @@ func (m *EndpointModule) Party() module.WebModule {
 		public.Put("/develop", m.EndpointCtrl.Develop)
 		public.Get("/copy", m.EndpointCtrl.Copy)
 		public.Post("/yaml", m.EndpointCtrl.Yaml)
+		public.Put("/updateStatus", m.EndpointCtrl.UpdateStatus)
+		public.Delete("/batchDelete", m.EndpointCtrl.BatchDelete)
 
 		//public.Use(middleware.JwtHandler(), middleware.Casbin(), middleware.OperationRecord())
 	}

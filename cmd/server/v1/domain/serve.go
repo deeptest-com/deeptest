@@ -23,14 +23,22 @@ type ServeVersionReq struct {
 	ServeId     int64  `json:"serveId"`
 	value       string `json:"value"`
 	ID          uint   `json:"id"`
-	UserId      int64  `json:"userId"`
+	CreateUser  string `json:"createUser"`
 	Description string `json:"description"`
+}
+
+type ServeVersionPaginate struct {
+	_domain.PaginateReq
+	ServeId    int64  `json:"serveId"`
+	Version    string `json:"version"`
+	CreateUser string `json:"createUser"`
 }
 
 type ServeSchemaReq struct {
 	ID       uint   `json:"id"`
 	ServeId  int64  `json:"serveId"`
 	Name     string `json:"name"`
+	Tag      string `json:"tag"`
 	Content  string `json:"content"`
 	Examples string `json:"examples"`
 	Type     string `json:"type"`
@@ -41,4 +49,18 @@ type ServeServerReq struct {
 	ServeId     int64  `json:"serveId"`
 	Url         string `json:"url"`
 	Description string `json:"description"`
+}
+
+type ServeSchemaPaginate struct {
+	_domain.PaginateReq
+	ServeId int64  `json:"serveId"`
+	Tag     string `json:"tag"`
+}
+
+type JsonContent struct {
+	Data string `json:"data"`
+}
+
+type SchemaContent struct {
+	Data string
 }

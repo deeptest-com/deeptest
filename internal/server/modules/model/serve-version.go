@@ -3,9 +3,9 @@ package model
 type ServeVersion struct {
 	BaseModel
 	Description string `json:"description"`
-	UserId      int64  `json:"userId"`
+	CreateUser  string `json:"createUser"`
 	Value       string `json:"value"`
-	ServeId     int64  `json:"serve_id"`
+	ServeId     int64  `json:"serveId"`
 }
 
 func (ServeVersion) TableName() string {

@@ -46,9 +46,15 @@ func (c *ServeCtrl) Detail(ctx iris.Context) {
 	}
 }
 
-// Clone 克隆服务
+// Copy 克隆服务
 func (c *ServeCtrl) Copy(ctx iris.Context) {
-
+	id := ctx.URLParamUint64("id")
+	if id != 0 {
+		res := c.ServeService.Copy(uint(id))
+		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res})
+	} else {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
+	}
 }
 
 // Delete 删除服务
@@ -87,9 +93,9 @@ func (c *ServeCtrl) SaveVersion(ctx iris.Context) {
 
 // ListVersion 获取版本列表
 func (c *ServeCtrl) ListVersion(ctx iris.Context) {
-	id := ctx.URLParamUint64("serveId")
-	res, err := c.ServeService.ListVersion(uint(id))
-	if err == nil {
+	var req v1.ServeVersionPaginate
+	if err := ctx.ReadJSON(&req); err == nil {
+		res, _ := c.ServeService.PaginateVersion(req)
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
 	} else {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
@@ -117,21 +123,25 @@ func (c *ServeCtrl) ExpireVersion(ctx iris.Context) {
 }
 
 func (c *ServeCtrl) SaveSchema(ctx iris.Context) {
-
-}
-
-/*
-func (c *ServeCtrl) SaveServer(ctx iris.Context) {
-	var req v1.ServeSeverReq
+	var req v1.ServeSchemaReq
 	if err := ctx.ReadJSON(&req); err == nil {
-		res, _ := c.ServeService.SaveVersion(req)
-		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res})
+		res, _ := c.ServeService.SaveSchema(req)
+		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
 	} else {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 	}
-	return
 }
-*/
+
+// ListSchema 获取版本列表
+func (c *ServeCtrl) ListSchema(ctx iris.Context) {
+	var req v1.ServeSchemaPaginate
+	if err := ctx.ReadJSON(&req); err == nil {
+		res, _ := c.ServeService.PaginateSchema(req)
+		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
+	} else {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
+	}
+}
 
 func (c *ServeCtrl) ListServer(ctx iris.Context) {
 	serveId := ctx.URLParamUint64("serveId")
@@ -147,6 +157,36 @@ func (c *ServeCtrl) SaveServer(ctx iris.Context) {
 	var req v1.ServeServerReq
 	if err := ctx.ReadJSON(&req); err == nil {
 		res, _ := c.ServeService.SaveServer(req)
+		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
+	} else {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
+	}
+}
+
+func (c *ServeCtrl) ExampleToSchema(ctx iris.Context) {
+	var req v1.JsonContent
+	if err := ctx.ReadJSON(&req); err == nil {
+		res := c.ServeService.Example2Schema(req.Data)
+		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
+	} else {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
+	}
+}
+
+func (c *ServeCtrl) SchemaToExample(ctx iris.Context) {
+	var req v1.JsonContent
+	if err := ctx.ReadJSON(&req); err == nil {
+		res := c.ServeService.Schema2Example(req.Data)
+		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
+	} else {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
+	}
+}
+
+func (c *ServeCtrl) SchemaToYaml(ctx iris.Context) {
+	var req v1.JsonContent
+	if err := ctx.ReadJSON(&req); err == nil {
+		res := c.ServeService.Schema2Yaml(req.Data)
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
 	} else {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})

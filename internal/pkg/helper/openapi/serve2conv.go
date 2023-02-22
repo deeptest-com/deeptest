@@ -149,7 +149,7 @@ func (s *serve2conv) requestBody(body model.InterfaceRequestBody) (requestBody *
 func (s *serve2conv) requestBodySchema(item model.InterfaceRequestBodyItem) (schema *openapi3.Schema) {
 	schema = new(openapi3.Schema)
 	schema.Type = item.Type
-	if item.Type == "object" {
+	if item.Type == openapi3.TypeObject {
 		var schemas openapi3.Schemas
 		_commUtils.JsonDecode(item.Content, &schemas)
 		schema.Properties = schemas
@@ -162,7 +162,7 @@ func (s *serve2conv) requestBodySchema(item model.InterfaceRequestBodyItem) (sch
 }
 
 func (s *serve2conv) requestBodyExamples(examplesStr string) (examples openapi3.Examples) {
-	examplesStr = "{\"user\":{\"value\":{\"id\":1,\"name\":\"王大锤\"}},\"product\":{\"value\":{\"id\":1,\"name\":\"服装\"}}}"
+	//examplesStr = "{\"user\":{\"value\":{\"id\":1,\"name\":\"王大锤\"}},\"product\":{\"value\":{\"id\":1,\"name\":\"服装\"}}}"
 	_commUtils.JsonDecode(examplesStr, &examples)
 	return
 }

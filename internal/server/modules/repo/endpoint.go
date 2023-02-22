@@ -162,3 +162,7 @@ func (r *EndpointRepo) DisableById(id uint) error {
 func (r *EndpointRepo) UpdateStatus(id uint, status int64) error {
 	return r.DB.Model(&model.Endpoint{}).Where("id = ?", id).Update("status", status).Error
 }
+
+func (r *EndpointRepo) DeleteByIds(ids []uint) error {
+	return r.DB.Model(&model.Endpoint{}).Where("id IN ?", ids).Update("deleted", 1).Error
+}

@@ -79,11 +79,11 @@ export default defineComponent({
     onMounted(() => {
       console.log('onMounted')
 
-      // const isElectron = ref(!!window.require)
-      // if (isElectron.value) {
-      //   const remote = window.require('@electron/remote')
-      //   version.value = remote.getGlobal('sharedObj').version
-      // }
+      const isElectron = ref(!!window.require)
+      if (isElectron.value) {
+        const remote = window.require('@electron/remote')
+        version.value = remote.getGlobal('sharedObj').version
+      }
     })
 
     // 所有菜单路由

@@ -92,7 +92,7 @@ export default defineComponent({
     }
 
     const onCancel = () => {
-      console.log('onSubmit')
+      console.log('onCancel')
       props.cancel()
     }
 

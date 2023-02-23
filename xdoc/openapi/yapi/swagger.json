@@ -1,0 +1,5222 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "cne-api",
+    "version": "last"
+  },
+  "basePath": "/api/cne",
+  "tags": [
+    {
+      "name": "公共分类",
+      "description": "公共分类"
+    },
+    {
+      "name": "应用管理",
+      "description": null
+    },
+    {
+      "name": "空间管理",
+      "description": null
+    },
+    {
+      "name": "中间件管理",
+      "description": null
+    },
+    {
+      "name": "数据统计",
+      "description": null
+    },
+    {
+      "name": "备份还原",
+      "description": null
+    },
+    {
+      "name": "组件管理",
+      "description": null
+    },
+    {
+      "name": "系统管理",
+      "description": null
+    },
+    {
+      "name": "配置片段",
+      "description": null
+    },
+    {
+      "name": "Mock测试",
+      "description": "备注"
+    }
+  ],
+  "schemes": [
+    "http"
+  ],
+  "paths": {
+    "/qweq": {
+      "get": {
+        "tags": [
+          "公共分类"
+        ],
+        "summary": "是大大说的",
+        "description": "企鹅企鹅1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "object",
+              "title": "empty object",
+              "properties": {}
+            }
+          }
+        }
+      }
+    },
+    "/app/install": {
+      "post": {
+        "tags": [
+          "应用管理"
+        ],
+        "summary": "应用安装",
+        "description": "",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "root",
+            "in": "body",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "cluster": {
+                  "type": "string",
+                  "title": "集群标示",
+                  "description": "可为空，默认本地集群"
+                },
+                "namespace": {
+                  "type": "string",
+                  "title": "对应命名空间",
+                  "mock": {
+                    "mock": "test"
+                  }
+                },
+                "name": {
+                  "type": "string",
+                  "title": "应用实例化名称",
+                  "description": "唯一,应以chart名称打头加随机字符串"
+                },
+                "chart": {
+                  "type": "string",
+                  "title": "被安装的应用名称",
+                  "description": "helm应用名称，纯ying wen"
+                },
+                "channel": {
+                  "type": "string",
+                  "title": "应用仓库标签",
+                  "description": "cloud 渠成私有, test 测试, stable 用户可见",
+                  "mock": {
+                    "mock": "test"
+                  }
+                },
+                "username": {
+                  "type": "string",
+                  "mock": {
+                    "mock": "admin"
+                  },
+                  "title": "创建者名称",
+                  "description": "非必填，为渠成平台业务层冗余数据"
+                },
+                "version": {
+                  "type": "string",
+                  "title": "应用版本号",
+                  "description": "如为空，将默认选择最新版本"
+                },
+                "settings": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "key": {
+                        "type": "string",
+                        "title": "参数名",
+                        "description": "对应helm values文件中的yaml路径"
+                      },
+                      "value": {
+                        "type": "string",
+                        "title": "参数值"
+                      }
+                    }
+                  },
+                  "title": "自定义参数"
+                },
+                "settings_map": {
+                  "type": "object",
+                  "properties": {},
+                  "title": "map结构的自定义参数"
+                },
+                "settings_snippets": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "title": "配置片段名称",
+                  "description": "目前由后端提供名称"
+                }
+              },
+              "required": [
+                "namespace",
+                "name",
+                "chart",
+                "channel"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                },
+                "code": {
+                  "type": "number"
+                },
+                "timestamp": {
+                  "type": "number"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/app/uninstall": {
+      "post": {
+        "tags": [
+          "应用管理"
+        ],
+        "summary": "应用卸载",
+        "description": "",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "root",
+            "in": "body",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "cluster": {
+                  "type": "string",
+                  "title": "集群标示",
+                  "description": "可为空，默认本地集群"
+                },
+                "namespace": {
+                  "type": "string",
+                  "title": "对应命名空间",
+                  "mock": {
+                    "mock": "test"
+                  }
+                },
+                "name": {
+                  "type": "string",
+                  "title": "应用实例化名称",
+                  "mock": {
+                    "mock": "@word"
+                  }
+                }
+              },
+              "required": [
+                "namespace",
+                "name"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                },
+                "code": {
+                  "type": "number"
+                },
+                "timestamp": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "message",
+                "code",
+                "timestamp"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "/app/start": {
+      "post": {
+        "tags": [
+          "应用管理"
+        ],
+        "summary": "应用启动",
+        "description": "可以请求多次，如果应用已启动会返回成功。",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "root",
+            "in": "body",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "cluster": {
+                  "type": "string",
+                  "title": "集群标示",
+                  "description": "可为空，默认本地集群"
+                },
+                "namespace": {
+                  "type": "string",
+                  "title": "对应命名空间",
+                  "mock": {
+                    "mock": "test"
+                  }
+                },
+                "name": {
+                  "type": "string",
+                  "title": "应用实例化名称",
+                  "mock": {
+                    "mock": "@word"
+                  }
+                },
+                "channel": {
+                  "type": "string",
+                  "description": "cloud 渠成私有, test 测试, stable 用户可见",
+                  "title": "应用仓库标签",
+                  "mock": {
+                    "mock": "test"
+                  }
+                },
+                "chart": {
+                  "type": "string",
+                  "title": "被安装的应用名称",
+                  "mock": {
+                    "mock": "@word"
+                  }
+                }
+              },
+              "required": [
+                "namespace",
+                "name",
+                "chart",
+                "channel"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                },
+                "code": {
+                  "type": "number"
+                },
+                "timestamp": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "message",
+                "code",
+                "timestamp"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "/app/stop": {
+      "post": {
+        "tags": [
+          "应用管理"
+        ],
+        "summary": "应用关闭",
+        "description": "",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "root",
+            "in": "body",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "cluster": {
+                  "type": "string",
+                  "title": "集群标示",
+                  "description": "可为空，默认本地集群"
+                },
+                "namespace": {
+                  "type": "string",
+                  "title": "对应命名空间",
+                  "mock": {
+                    "mock": "test"
+                  }
+                },
+                "name": {
+                  "type": "string",
+                  "title": "应用实例化名称",
+                  "mock": {
+                    "mock": "@word"
+                  }
+                },
+                "channel": {
+                  "type": "string",
+                  "title": "应用仓库标签",
+                  "description": "cloud 渠成私有, test 测试, stable 用户可见",
+                  "mock": {
+                    "mock": "test"
+                  }
+                },
+                "chart": {
+                  "type": "string",
+                  "title": "被安装的应用名称",
+                  "mock": {
+                    "mock": "@word"
+                  }
+                }
+              },
+              "required": [
+                "namespace",
+                "name",
+                "chart",
+                "channel"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                },
+                "code": {
+                  "type": "number"
+                },
+                "timestamp": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "message",
+                "code",
+                "timestamp"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "/app/suspend": {
+      "post": {
+        "tags": [
+          "应用管理"
+        ],
+        "summary": "应用休眠",
+        "description": "",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "root",
+            "in": "body",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "cluster": {
+                  "type": "string",
+                  "title": "集群标示",
+                  "description": "可为空，默认本地集群"
+                },
+                "namespace": {
+                  "type": "string",
+                  "title": "对应命名空间",
+                  "mock": {
+                    "mock": "test"
+                  }
+                },
+                "name": {
+                  "type": "string",
+                  "title": "应用实例化名称",
+                  "mock": {
+                    "mock": "@word"
+                  }
+                },
+                "channel": {
+                  "type": "string",
+                  "title": "应用仓库标签",
+                  "description": "cloud 渠成私有, test 测试, stable 用户可见",
+                  "mock": {
+                    "mock": "test"
+                  }
+                },
+                "chart": {
+                  "type": "string",
+                  "title": "被安装的应用名称",
+                  "mock": {
+                    "mock": "@word"
+                  }
+                }
+              },
+              "required": [
+                "namespace",
+                "name",
+                "chart",
+                "channel"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                },
+                "code": {
+                  "type": "number"
+                },
+                "timestamp": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "message",
+                "code",
+                "timestamp"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "/app/restart": {
+      "post": {
+        "tags": [
+          "应用管理"
+        ],
+        "summary": "应用重启",
+        "description": "",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "root",
+            "in": "body",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "cluster": {
+                  "type": "string",
+                  "title": "集群标示",
+                  "description": "可为空，默认本地集群"
+                },
+                "namespace": {
+                  "type": "string",
+                  "title": "对应命名空间",
+                  "mock": {
+                    "mock": "test"
+                  }
+                },
+                "name": {
+                  "type": "string",
+                  "title": "应用实例化名称",
+                  "mock": {
+                    "mock": "@word"
+                  }
+                },
+                "channel": {
+                  "type": "string",
+                  "title": "应用仓库标签",
+                  "description": "cloud 渠成私有, test 测试, stable 用户可见",
+                  "mock": {
+                    "mock": "test"
+                  }
+                },
+                "chart": {
+                  "type": "string",
+                  "title": "被安装的应用名称",
+                  "mock": {
+                    "mock": "@word"
+                  }
+                }
+              },
+              "required": [
+                "namespace",
+                "name",
+                "chart",
+                "channel"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                },
+                "code": {
+                  "type": "number"
+                },
+                "timestamp": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "message",
+                "code",
+                "timestamp"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "/app/status": {
+      "get": {
+        "tags": [
+          "应用管理"
+        ],
+        "summary": "应用状态",
+        "description": "| 单词 | 状态 | 来源 | 介绍 |\n| --- | --- | --- | --- |\n| initializing | 初始化中 | - |  |\n| starting | 启动中 |  |  |\n| running | 运行中 | 平台层 |  |\n| stopping | 关闭中 | 平台层 |  |\n| stopped | 已关闭 | 平台层 |  |\n| destroying | 销毁中 | 业务层 |  |\n| destroyed | 已销毁 | 业务层 |  |\n| suspending | 暂停中 | 平台层 |  |\n| suspended | 已暂停 | 平台层 | 休眠，调用休眠接口后才会发生 |\n| pulling | 下载中 | 平台层 | 重试拉取镜像中，判断条件是pod异常，且原因是 ImagePullBackOff |\n| upgrading | 升级中 | 平台层 | 判断条件 pod 个数大于设定数，常见于滚动升级 |\n| abnormal | 异常 | 平台层 |  |",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "cluster",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "type": "string"
+          },
+          {
+            "name": "namespace",
+            "in": "query",
+            "required": true,
+            "description": "",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "required": true,
+            "description": "应用实例名称",
+            "type": "string"
+          },
+          {
+            "name": "root",
+            "in": "body",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "cluster": {
+                  "type": "string",
+                  "title": "集群标示",
+                  "description": "可为空，默认本地集群"
+                },
+                "namespace": {
+                  "type": "string",
+                  "title": "对应命名空间"
+                },
+                "name": {
+                  "type": "string",
+                  "title": "应用实例化名称"
+                }
+              },
+              "required": [
+                "namespace",
+                "name"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "number"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "age": {
+                      "type": "number"
+                    },
+                    "version": {
+                      "type": "string",
+                      "description": "当前版本号"
+                    },
+                    "access_host": {
+                      "type": "string"
+                    },
+                    "components": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string"
+                          },
+                          "kind": {
+                            "type": "string"
+                          },
+                          "status": {
+                            "type": "string"
+                          },
+                          "replicas": {
+                            "type": "number"
+                          },
+                          "age": {
+                            "type": "number"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "message": {
+                  "type": "string"
+                },
+                "timestamp": {
+                  "type": "number"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/app/status/multi": {
+      "post": {
+        "tags": [
+          "应用管理"
+        ],
+        "summary": "多应用状态",
+        "description": "支持查询多个应用",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "root",
+            "in": "body",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "apps": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "namespace": {
+                        "type": "string",
+                        "description": "命名空间"
+                      },
+                      "name": {
+                        "type": "string",
+                        "description": "服务名称"
+                      }
+                    },
+                    "required": [
+                      "namespace",
+                      "name"
+                    ]
+                  }
+                },
+                "cluster": {
+                  "type": "string",
+                  "title": "集群名称",
+                  "description": "当前非必需"
+                }
+              },
+              "required": [
+                "apps"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "number"
+                },
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "namespace": {
+                        "type": "string"
+                      },
+                      "status": {
+                        "type": "string"
+                      },
+                      "version": {
+                        "type": "string"
+                      },
+                      "age": {
+                        "type": "number"
+                      },
+                      "access_host": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "namespace",
+                      "status",
+                      "version",
+                      "age",
+                      "access_host"
+                    ]
+                  }
+                },
+                "message": {
+                  "type": "string"
+                },
+                "timestamp": {
+                  "type": "number"
+                },
+                "traceId": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/app/metric": {
+      "get": {
+        "tags": [
+          "应用管理"
+        ],
+        "summary": "应用指标",
+        "description": "",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "cluster",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "type": "string"
+          },
+          {
+            "name": "namespace",
+            "in": "query",
+            "required": true,
+            "description": "",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "required": true,
+            "description": "应用实例名称",
+            "type": "string"
+          },
+          {
+            "name": "root",
+            "in": "body",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "cluster": {
+                  "type": "string",
+                  "title": "集群标示",
+                  "description": "可为空，默认本地集群"
+                },
+                "namespace": {
+                  "type": "string",
+                  "title": "对应命名空间"
+                },
+                "name": {
+                  "type": "string",
+                  "title": "应用实例化名称"
+                }
+              },
+              "required": [
+                "namespace",
+                "name"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "number"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "cpu": {
+                      "type": "object",
+                      "properties": {
+                        "usage": {
+                          "type": "number",
+                          "title": "当前使用量",
+                          "description": "如 0.00134"
+                        },
+                        "limit": {
+                          "type": "number",
+                          "title": "限制使用量",
+                          "description": "如 1.00000"
+                        }
+                      }
+                    },
+                    "memory": {
+                      "type": "object",
+                      "properties": {
+                        "usage": {
+                          "type": "number",
+                          "title": "当前使用量",
+                          "description": "整数，以byte为单位"
+                        },
+                        "limit": {
+                          "type": "number",
+                          "title": "限制使用量",
+                          "description": "整数，以byte为单位"
+                        }
+                      }
+                    }
+                  }
+                },
+                "message": {
+                  "type": "string"
+                },
+                "timestamp": {
+                  "type": "number"
+                },
+                "traceId": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/app/account": {
+      "get": {
+        "tags": [
+          "应用管理"
+        ],
+        "summary": "应用账号",
+        "description": "",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "cluster",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "type": "string"
+          },
+          {
+            "name": "namespace",
+            "in": "query",
+            "required": true,
+            "description": "",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "required": true,
+            "description": "应用实例名称",
+            "type": "string"
+          },
+          {
+            "name": "component",
+            "in": "query",
+            "required": false,
+            "description": "组件或子chart",
+            "type": "string"
+          },
+          {
+            "name": "root",
+            "in": "body",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "cluster": {
+                  "type": "string",
+                  "title": "集群标示",
+                  "description": "可为空，默认本地集群"
+                },
+                "namespace": {
+                  "type": "string",
+                  "title": "对应命名空间"
+                },
+                "name": {
+                  "type": "string",
+                  "title": "应用实例化名称"
+                }
+              },
+              "required": [
+                "namespace",
+                "name"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "number"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "password": {
+                      "type": "string"
+                    },
+                    "username": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "message": {
+                  "type": "string"
+                },
+                "timestamp": {
+                  "type": "number"
+                },
+                "traceId": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/app/domain": {
+      "get": {
+        "tags": [
+          "应用管理"
+        ],
+        "summary": "应用域名",
+        "description": "",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "cluster",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "type": "string"
+          },
+          {
+            "name": "namespace",
+            "in": "query",
+            "required": true,
+            "description": "",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "required": true,
+            "description": "应用实例名称",
+            "type": "string"
+          },
+          {
+            "name": "component",
+            "in": "query",
+            "required": false,
+            "description": "组件或子chart",
+            "type": "string"
+          },
+          {
+            "name": "root",
+            "in": "body",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "cluster": {
+                  "type": "string",
+                  "title": "集群标示",
+                  "description": "可为空，默认本地集群"
+                },
+                "namespace": {
+                  "type": "string",
+                  "title": "对应命名空间"
+                },
+                "name": {
+                  "type": "string",
+                  "title": "应用实例化名称"
+                }
+              },
+              "required": [
+                "namespace",
+                "name"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "number"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "internal_host": {
+                      "type": "string"
+                    },
+                    "access_host": {
+                      "type": "string"
+                    },
+                    "extra_hosts": {
+                      "type": "object",
+                      "properties": {
+                        "api": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                },
+                "message": {
+                  "type": "string"
+                },
+                "timestamp": {
+                  "type": "number"
+                },
+                "traceId": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/app/settings": {
+      "post": {
+        "tags": [
+          "应用管理"
+        ],
+        "summary": "应用配置更新",
+        "description": "## 通用settings表\n\n| key | value示例 | 默认值 | 说明 |\n| --- | ------- | --- | --- |\n| <span class=\"colour\" style=\"color:rgb(86, 156, 214)\">replicas</span> | 1 | 1 | 副本数，用于控制启动多少个实例 |\n| image.<span class=\"colour\" style=\"color:rgb(86, 156, 214)\">repository</span> | apps/wordpress | 应用内部定义 | 镜像仓库，如果value里没有域名，会自动填充 hub.qucheng.com，实际生成<br>[hub.qucheng.com/apps/wordpress](http://hub.qucheng.com/apps/wordpress) |\n| image.tag | v6.0 | 应用内部定义 | 镜像tag，用于控制版本 |\n| image.<span class=\"colour\" style=\"color:rgb(86, 156, 214)\">pullPolicy</span> | <span class=\"colour\" style=\"color:rgb(206, 145, 120)\">IfNotPresent\\|Always</span> | <span class=\"colour\" style=\"color:rgb(206, 145, 120)\">IfNotPresent</span> | 默认策略：如果本机有镜像就不再尝试拉取。如果你的image.tag为固定值，应设置为Always |\n| <span class=\"colour\" style=\"color:rgb(86, 156, 214)\">resources.cpu</span> | 0\\.1\\|1\\|500m | 应用内部定义 | cpu资源分配 |\n| resources.memory | 256Mi\\|1Gi\\|134217728 | 应用内部定义 | 内存分配 |\n| <span class=\"colour\" style=\"color:rgb(86, 156, 214)\">ingress.enabled</span> | true\\|false | false | 是否启用http域名 |\n| <span class=\"colour\" style=\"color:rgb(86, 156, 214)\">ingress.host</span> | x.y.z | 用户自定义 | 和 ingress.enabled=true 同时配置 |\n| env.FOO | BAR |  | 要注入的环境变量，按应用实际情况定义 |\n\n补充：\ningressHost 域名字段，推荐使用，但仍依赖 ingress.enabled=true\n\n### zendas专用环境变量\n\n暂列在此处，未来在应用市场页面展示\n\n| key | 说明 |\n| --- | --- |\n| env.MYSQL_HOST | mysql主机地址 |\n| env.MYSQL_PORT | mysql端口 |\n| env.MYSQL_USER | mysql用户名 |\n| env.MYSQL_PASSWORD | mysql密码 |\n| env.MYSQL_DB | mysql库名 |\n\n## demo\n\n#### 修改环境变量\n\n``` javascript\n{\n    \"name\": \"workpress-ins-1\",\n    \"chart\": \"workpress\",\n    \"namespace\": \"default\",\n    \"settings\": [\n    \t{\"key\": \"env.MYSQL_HOST\", \"value\": \"192.168.x.y\"},\n        {\"key\": \"env.MYSQL_PORT\", \"value\": \"3306\"}\n    ]\n}\n```\n\n#### 修改镜像\n\n```\n{\n    \"name\": \"workpress-ins-1\",\n    \"chart\": \"workpress\",\n    \"namespace\": \"default\",\n    \"settings\": [\n    \t{\"key\": \"image.tag\", \"value\": \"latest\"},\n        {\"key\": \"image.repository\", \"value\": \"apps/wordpress\"}\n    ]\n}\n```\n\n#### 修改副本数\n\n```\n{\n    \"name\": \"workpress-ins-1\",\n    \"chart\": \"workpress\",\n    \"namespace\": \"default\",\n    \"settings\": [\n    \t{\"key\": \"replicas\", \"value\": \"2\"}\n    ]\n}\n```",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "root",
+            "in": "body",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "cluster": {
+                  "type": "string",
+                  "title": "集群标示",
+                  "description": "可为空，默认本地集群"
+                },
+                "namespace": {
+                  "type": "string",
+                  "title": "对应命名空间"
+                },
+                "name": {
+                  "type": "string",
+                  "title": "应用实例化名称",
+                  "description": "唯一,应以chart名称打头加随机字符串"
+                },
+                "channel": {
+                  "type": "string",
+                  "title": "应用仓库标签",
+                  "description": "cloud 渠成私有, test 测试, stable 用户可见"
+                },
+                "chart": {
+                  "type": "string",
+                  "title": "被安装的应用名称",
+                  "description": "helm应用名称，纯英文"
+                },
+                "version": {
+                  "type": "string",
+                  "description": "如为空，将默认选择最新版本",
+                  "title": "应用版本号"
+                },
+                "force_restart": {
+                  "type": "boolean",
+                  "title": "是否强制重启",
+                  "description": "如为 true，该应用下所有pod将重建"
+                },
+                "settings": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "key": {
+                        "type": "string",
+                        "title": "参数名",
+                        "description": "对应helm values文件中的yaml路径"
+                      },
+                      "value": {
+                        "type": "string",
+                        "title": "参数值",
+                        "description": "数字、布尔值也都要转换为字符串"
+                      }
+                    }
+                  },
+                  "title": "自定义参数"
+                },
+                "settings_map": {
+                  "type": "object",
+                  "properties": {},
+                  "title": "map结构的自定义参数"
+                },
+                "settings_snippets": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "title": "配置片段名称",
+                  "description": "目前由后端提供名称"
+                }
+              },
+              "required": [
+                "namespace",
+                "name",
+                "chart",
+                "channel",
+                "settings_map",
+                "settings_snippets"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                },
+                "code": {
+                  "type": "number"
+                },
+                "timestamp": {
+                  "type": "number"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/app/settings/simple": {
+      "get": {
+        "tags": [
+          "应用管理"
+        ],
+        "summary": "应用配置(简要)",
+        "description": "mode=list\n\n```\n{\n    \"code\": 200,\n    \"message\": \"\",\n    \"timestamp\": 12345678,\n    \"data\": [\n    \t{\"key\": \"resources.cpu\", \"value\": \"0.5\"}\n    ]\n}\n```\n\nmode=map\n\n```\n{\n    \"code\": 200,\n    \"message\": \"\",\n    \"timestamp\": 12345678,\n    \"data\": {\n    \t\"resources.cpu\": \"0.5\",\n        \"env.MYSQL_PORT\": \"3306\"\n    }\n}\n```\n\nvalue 均为字符串",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "cluster",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "type": "string"
+          },
+          {
+            "name": "namespace",
+            "in": "query",
+            "required": true,
+            "description": "",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "required": true,
+            "description": "应用实例名称",
+            "type": "string"
+          },
+          {
+            "name": "mode",
+            "in": "query",
+            "required": false,
+            "description": "以列表或字典形式返回数据",
+            "type": "string"
+          },
+          {
+            "name": "root",
+            "in": "body",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "cluster": {
+                  "type": "string",
+                  "title": "集群标示",
+                  "description": "可为空，默认本地集群"
+                },
+                "namespace": {
+                  "type": "string",
+                  "title": "对应命名空间"
+                },
+                "name": {
+                  "type": "string",
+                  "title": "应用实例化名称"
+                }
+              },
+              "required": [
+                "namespace",
+                "name"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "number"
+                },
+                "message": {
+                  "type": "string"
+                },
+                "timestamp": {
+                  "type": "number"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/app/settings/common": {
+      "get": {
+        "tags": [
+          "应用管理"
+        ],
+        "summary": "应用配置(通用)",
+        "description": "查看服务通用配置，包含了副本数、cpu、内存、域名等，",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "cluster",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "type": "string"
+          },
+          {
+            "name": "namespace",
+            "in": "query",
+            "required": true,
+            "description": "",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "required": true,
+            "description": "应用实例名称",
+            "type": "string"
+          },
+          {
+            "name": "root",
+            "in": "body",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "cluster": {
+                  "type": "string",
+                  "title": "集群标示",
+                  "description": "可为空，默认本地集群"
+                },
+                "namespace": {
+                  "type": "string",
+                  "title": "对应命名空间"
+                },
+                "name": {
+                  "type": "string",
+                  "title": "应用实例化名称"
+                }
+              },
+              "required": [
+                "namespace",
+                "name"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "number"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "ingress": {
+                      "type": "object",
+                      "properties": {
+                        "enabled": {
+                          "type": "boolean"
+                        },
+                        "host": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "replicas": {
+                      "type": "number"
+                    },
+                    "resources": {
+                      "type": "object",
+                      "properties": {
+                        "cpu": {
+                          "type": "number",
+                          "mock": {
+                            "mock": "0.2"
+                          }
+                        },
+                        "memory": {
+                          "type": "number",
+                          "mock": {
+                            "mock": "268435456"
+                          }
+                        }
+                      }
+                    },
+                    "oversold": {
+                      "type": "object",
+                      "properties": {
+                        "cpu": {
+                          "type": "string"
+                        },
+                        "memory": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "资源超卖，也是最低需求"
+                    }
+                  }
+                },
+                "message": {
+                  "type": "string"
+                },
+                "timestamp": {
+                  "type": "number"
+                },
+                "traceId": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/app/settings/custom": {
+      "get": {
+        "tags": [
+          "应用管理"
+        ],
+        "summary": "应用配置(自定义)",
+        "description": "比如当前接口返回\n`{`\n`\"data\": [`\n       {\n          \"name\": \"site\", \"default\": \"My Site!\", \"label\": \"站点\"\n       }\n`]`\n`}`\n\n表单页用label显示字段名，用default填充内容。\n用户如修改字段内容，即调用应用配置更新接口，数据结构如下:\n\n`{`\n   .....\n   \"<span class=\"colour\" style=\"color:rgba(13, 27, 62, 0.65)\">settings_map</span>\": {\n      \"custom\": {\n          \"site\": \"Changed My Site Name!\"\n      }\n   }\n`}`\n\n再次调用当前接口，返回\n`{`\n`\"data\": [`\n       {\n          \"name\": \"site\", \"default\": \"Changed My Site Name!\", \"label\": \"站点\"\n       }\n`]`\n`}`",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "cluster",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "type": "string"
+          },
+          {
+            "name": "namespace",
+            "in": "query",
+            "required": true,
+            "description": "",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "required": true,
+            "description": "应用实例名称",
+            "type": "string"
+          },
+          {
+            "name": "root",
+            "in": "body",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "cluster": {
+                  "type": "string",
+                  "title": "集群标示",
+                  "description": "可为空，默认本地集群"
+                },
+                "namespace": {
+                  "type": "string",
+                  "title": "对应命名空间"
+                },
+                "name": {
+                  "type": "string",
+                  "title": "应用实例化名称"
+                }
+              },
+              "required": [
+                "namespace",
+                "name"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "number"
+                },
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "唯一，用于调用更新接口"
+                      },
+                      "default": {
+                        "type": [
+                          "null",
+                          "string"
+                        ],
+                        "description": "默认值，或者是当前设定值。"
+                      },
+                      "label": {
+                        "type": "string",
+                        "description": "中文简称"
+                      },
+                      "desc": {
+                        "type": "string",
+                        "description": "描述信息"
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "default",
+                      "label",
+                      "desc"
+                    ]
+                  }
+                },
+                "message": {
+                  "type": "string"
+                },
+                "timestamp": {
+                  "type": "number"
+                },
+                "traceId": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/app/settings/mapping": {
+      "post": {
+        "tags": [
+          "应用管理"
+        ],
+        "summary": "应用配置(映射)",
+        "description": "比如发起请求\n\n```\n{\n  \"namespace\": \"default\", \"name\": \"gogs-qadmin-xxxxx\",\n  \"mappings\": [\n      {\n        \"key\": \"env.GIT_USERNAME\",\n        \"type\": \"helm\",\n        \"path\": \"auth.username\"\n      }\n    ]\n}\n```\n\n将读取name为gogs-qadmin-xxxxx的应用，将helm values内容里的 auth.username 的值，赋值给 env.GIT_USERNAME\n\n返回字典结构\n\n```\n{\n    \"data\": {\n        \"env.GIT_USERNAME\": \"gogs-admin\"\n    }\n}\n```",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "cluster",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "type": "string"
+          },
+          {
+            "name": "namespace",
+            "in": "query",
+            "required": true,
+            "description": "",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "required": true,
+            "description": "应用实例名称",
+            "type": "string"
+          },
+          {
+            "name": "root",
+            "in": "body",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "namespace": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "mappings": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "key": {
+                        "type": "string",
+                        "description": "用来生成返回结果的key"
+                      },
+                      "type": {
+                        "type": "string",
+                        "title": "配置类型",
+                        "description": "helm / secret"
+                      },
+                      "path": {
+                        "type": "string",
+                        "title": "从当前配置中读取路径",
+                        "description": "yaml路径，或者secret data里的key名称"
+                      }
+                    },
+                    "required": [
+                      "key",
+                      "type",
+                      "path"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "number"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {}
+                },
+                "message": {
+                  "type": "string"
+                },
+                "timestamp": {
+                  "type": "number"
+                },
+                "traceId": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/app/dbs": {
+      "get": {
+        "tags": [
+          "应用管理"
+        ],
+        "summary": "应用数据库列表(db)",
+        "description": "",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "cluster",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "type": "string"
+          },
+          {
+            "name": "namespace",
+            "in": "query",
+            "required": true,
+            "description": "",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "required": true,
+            "description": "应用实例名称",
+            "type": "string"
+          },
+          {
+            "name": "root",
+            "in": "body",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "cluster": {
+                  "type": "string",
+                  "title": "集群标示",
+                  "description": "可为空，默认本地集群"
+                },
+                "namespace": {
+                  "type": "string",
+                  "title": "对应命名空间"
+                },
+                "name": {
+                  "type": "string",
+                  "title": "应用实例化名称"
+                }
+              },
+              "required": [
+                "namespace",
+                "name"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "number"
+                },
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "title": "db资源名称",
+                        "description": "用于详情接口db字段"
+                      },
+                      "namespace": {
+                        "type": "string",
+                        "title": "db资源空间"
+                      },
+                      "db_type": {
+                        "type": "string",
+                        "title": "数据库类型"
+                      },
+                      "db_name": {
+                        "type": "string",
+                        "title": "数据库名称"
+                      },
+                      "ready": {
+                        "type": "boolean",
+                        "description": "表明数据库当前连接与认证可用性"
+                      }
+                    },
+                    "required": [
+                      "ready"
+                    ]
+                  }
+                },
+                "message": {
+                  "type": "string"
+                },
+                "timestamp": {
+                  "type": "number"
+                },
+                "traceId": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/app/dbs/detail": {
+      "get": {
+        "tags": [
+          "应用管理"
+        ],
+        "summary": "应用数据库详情(db)",
+        "description": "",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "cluster",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "type": "string"
+          },
+          {
+            "name": "namespace",
+            "in": "query",
+            "required": true,
+            "description": "",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "required": true,
+            "description": "应用实例名称",
+            "type": "string"
+          },
+          {
+            "name": "db",
+            "in": "query",
+            "required": true,
+            "description": "db资源名称",
+            "type": "string"
+          },
+          {
+            "name": "root",
+            "in": "body",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "cluster": {
+                  "type": "string",
+                  "title": "集群标示",
+                  "description": "可为空，默认本地集群"
+                },
+                "namespace": {
+                  "type": "string",
+                  "title": "对应命名空间"
+                },
+                "name": {
+                  "type": "string",
+                  "title": "应用实例化名称"
+                }
+              },
+              "required": [
+                "namespace",
+                "name"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "number"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "namespace": {
+                      "type": "string"
+                    },
+                    "host": {
+                      "type": "string"
+                    },
+                    "port": {
+                      "type": "number"
+                    },
+                    "username": {
+                      "type": "string"
+                    },
+                    "password": {
+                      "type": "string"
+                    },
+                    "database": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "message": {
+                  "type": "string"
+                },
+                "timestamp": {
+                  "type": "number"
+                },
+                "traceId": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/app/components": {
+      "get": {
+        "tags": [
+          "应用管理"
+        ],
+        "summary": "服务组件列表",
+        "description": "",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "cluster",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "type": "string"
+          },
+          {
+            "name": "namespace",
+            "in": "query",
+            "required": true,
+            "description": "",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "required": true,
+            "description": "应用实例名称",
+            "type": "string"
+          },
+          {
+            "name": "root",
+            "in": "body",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "cluster": {
+                  "type": "string",
+                  "title": "集群标示",
+                  "description": "可为空，默认本地集群"
+                },
+                "namespace": {
+                  "type": "string",
+                  "title": "对应命名空间"
+                },
+                "name": {
+                  "type": "string",
+                  "title": "应用实例化名称"
+                }
+              },
+              "required": [
+                "namespace",
+                "name"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "number"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "cpu": {
+                      "type": "object",
+                      "properties": {
+                        "usage": {
+                          "type": "number",
+                          "title": "当前使用量",
+                          "description": "如 0.00134"
+                        },
+                        "limit": {
+                          "type": "number",
+                          "title": "限制使用量",
+                          "description": "如 1.00000"
+                        }
+                      }
+                    },
+                    "memory": {
+                      "type": "object",
+                      "properties": {
+                        "usage": {
+                          "type": "number",
+                          "title": "当前使用量",
+                          "description": "整数，以byte为单位"
+                        },
+                        "limit": {
+                          "type": "number",
+                          "title": "限制使用量",
+                          "description": "整数，以byte为单位"
+                        }
+                      }
+                    }
+                  }
+                },
+                "message": {
+                  "type": "string"
+                },
+                "timestamp": {
+                  "type": "number"
+                },
+                "traceId": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/app/component/schema": {
+      "get": {
+        "tags": [
+          "应用管理"
+        ],
+        "summary": "服务schema内容",
+        "description": "",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "cluster",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "type": "string"
+          },
+          {
+            "name": "namespace",
+            "in": "query",
+            "required": true,
+            "description": "",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "required": true,
+            "description": "应用实例名称",
+            "type": "string"
+          },
+          {
+            "name": "component",
+            "in": "query",
+            "required": true,
+            "description": "",
+            "type": "string"
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "required": true,
+            "description": "",
+            "type": "string"
+          },
+          {
+            "name": "root",
+            "in": "body",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "cluster": {
+                  "type": "string",
+                  "title": "集群标示",
+                  "description": "可为空，默认本地集群"
+                },
+                "namespace": {
+                  "type": "string",
+                  "title": "对应命名空间"
+                },
+                "name": {
+                  "type": "string",
+                  "title": "应用实例化名称"
+                }
+              },
+              "required": [
+                "namespace",
+                "name"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "number"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "cpu": {
+                      "type": "object",
+                      "properties": {
+                        "usage": {
+                          "type": "number",
+                          "title": "当前使用量",
+                          "description": "如 0.00134"
+                        },
+                        "limit": {
+                          "type": "number",
+                          "title": "限制使用量",
+                          "description": "如 1.00000"
+                        }
+                      }
+                    },
+                    "memory": {
+                      "type": "object",
+                      "properties": {
+                        "usage": {
+                          "type": "number",
+                          "title": "当前使用量",
+                          "description": "整数，以byte为单位"
+                        },
+                        "limit": {
+                          "type": "number",
+                          "title": "限制使用量",
+                          "description": "整数，以byte为单位"
+                        }
+                      }
+                    }
+                  }
+                },
+                "message": {
+                  "type": "string"
+                },
+                "timestamp": {
+                  "type": "number"
+                },
+                "traceId": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/app/component/categories": {
+      "get": {
+        "tags": [
+          "应用管理"
+        ],
+        "summary": "服务schema分类",
+        "description": "",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "cluster",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "type": "string"
+          },
+          {
+            "name": "namespace",
+            "in": "query",
+            "required": true,
+            "description": "",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "required": true,
+            "description": "应用实例名称",
+            "type": "string"
+          },
+          {
+            "name": "component",
+            "in": "query",
+            "required": true,
+            "description": "",
+            "type": "string"
+          },
+          {
+            "name": "root",
+            "in": "body",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "cluster": {
+                  "type": "string",
+                  "title": "集群标示",
+                  "description": "可为空，默认本地集群"
+                },
+                "namespace": {
+                  "type": "string",
+                  "title": "对应命名空间"
+                },
+                "name": {
+                  "type": "string",
+                  "title": "应用实例化名称"
+                }
+              },
+              "required": [
+                "namespace",
+                "name"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "number"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "cpu": {
+                      "type": "object",
+                      "properties": {
+                        "usage": {
+                          "type": "number",
+                          "title": "当前使用量",
+                          "description": "如 0.00134"
+                        },
+                        "limit": {
+                          "type": "number",
+                          "title": "限制使用量",
+                          "description": "如 1.00000"
+                        }
+                      }
+                    },
+                    "memory": {
+                      "type": "object",
+                      "properties": {
+                        "usage": {
+                          "type": "number",
+                          "title": "当前使用量",
+                          "description": "整数，以byte为单位"
+                        },
+                        "limit": {
+                          "type": "number",
+                          "title": "限制使用量",
+                          "description": "整数，以byte为单位"
+                        }
+                      }
+                    }
+                  }
+                },
+                "message": {
+                  "type": "string"
+                },
+                "timestamp": {
+                  "type": "number"
+                },
+                "traceId": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/app/pvc": {
+      "get": {
+        "tags": [
+          "应用管理"
+        ],
+        "summary": "应用pvc列表",
+        "description": "",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "cluster",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "type": "string"
+          },
+          {
+            "name": "namespace",
+            "in": "query",
+            "required": true,
+            "description": "",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "required": true,
+            "description": "应用实例名称",
+            "type": "string"
+          },
+          {
+            "name": "root",
+            "in": "body",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "cluster": {
+                  "type": "string",
+                  "title": "集群标示",
+                  "description": "可为空，默认本地集群"
+                },
+                "namespace": {
+                  "type": "string",
+                  "title": "对应命名空间"
+                },
+                "name": {
+                  "type": "string",
+                  "title": "应用实例化名称"
+                }
+              },
+              "required": [
+                "namespace",
+                "name"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "number"
+                },
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "pvc_name": {
+                        "type": "string"
+                      },
+                      "pvc_volume": {
+                        "type": "string"
+                      },
+                      "pvc_access_modes": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "pvc_storage_class": {
+                        "type": "string"
+                      },
+                      "pvc_storage_size": {
+                        "type": "number"
+                      },
+                      "pvc_path": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "pvc_name",
+                      "pvc_volume",
+                      "pvc_access_modes",
+                      "pvc_storage_class",
+                      "pvc_storage_size",
+                      "pvc_path"
+                    ]
+                  }
+                },
+                "message": {
+                  "type": "string"
+                },
+                "timestamp": {
+                  "type": "number"
+                },
+                "traceId": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/namespace/create": {
+      "post": {
+        "tags": [
+          "空间管理"
+        ],
+        "summary": "创建空间",
+        "description": "",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "root",
+            "in": "body",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "cluster": {
+                  "type": "string",
+                  "description": "集群名称, 可为空，默认本地集群"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "要创建的namespace名称"
+                }
+              },
+              "required": [
+                "name"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "number"
+                },
+                "message": {
+                  "type": "string"
+                },
+                "timestamp": {
+                  "type": "number"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/namespace/recycle": {
+      "post": {
+        "tags": [
+          "空间管理"
+        ],
+        "summary": "回收空间",
+        "description": "",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "root",
+            "in": "body",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "cluster": {
+                  "type": "string",
+                  "description": "集群名称, 可为空，默认本地集群"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "要创建的namespace名称"
+                }
+              },
+              "required": [
+                "name"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "number"
+                },
+                "message": {
+                  "type": "string"
+                },
+                "timestamp": {
+                  "type": "number"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/namespace": {
+      "get": {
+        "tags": [
+          "空间管理"
+        ],
+        "summary": "获取空间信息",
+        "description": "",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "cluster",
+            "in": "query",
+            "required": false,
+            "description": "集群名称，可为空，默认本地集群",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "required": true,
+            "description": "要查询的命名空间名称",
+            "type": "string"
+          },
+          {
+            "name": "root",
+            "in": "body",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "cluster": {
+                  "type": "string",
+                  "description": "集群名称, 可为空，默认本地集群"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "要创建的namespace名称"
+                }
+              },
+              "required": [
+                "name"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "number"
+                },
+                "message": {
+                  "type": "string"
+                },
+                "timestamp": {
+                  "type": "number"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/middleware/install": {
+      "post": {
+        "tags": [
+          "中间件管理"
+        ],
+        "summary": "创建中间件",
+        "description": "",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "root",
+            "in": "body",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "title": "名称",
+                  "description": "name应唯一",
+                  "mock": {
+                    "mock": "@word"
+                  }
+                },
+                "type": {
+                  "type": "string",
+                  "title": "类型",
+                  "mock": {
+                    "mock": "mysql"
+                  },
+                  "description": "当前只支持mysql"
+                }
+              },
+              "required": [
+                "name",
+                "type"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "number"
+                },
+                "message": {
+                  "type": "string"
+                },
+                "timestamp": {
+                  "type": "number"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/middleware/uninstall": {
+      "post": {
+        "tags": [
+          "中间件管理"
+        ],
+        "summary": "卸载中间件",
+        "description": "",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "root",
+            "in": "body",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "mock": {
+                    "mock": "@string"
+                  },
+                  "title": "名称",
+                  "description": "name应唯一"
+                },
+                "type": {
+                  "type": "string",
+                  "title": "类型",
+                  "description": "当前只支持mysql",
+                  "mock": {
+                    "mock": "mysql"
+                  }
+                }
+              },
+              "required": [
+                "name",
+                "type"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "number"
+                },
+                "message": {
+                  "type": "string"
+                },
+                "timestamp": {
+                  "type": "number"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/statistics/app": {
+      "post": {
+        "tags": [
+          "数据统计"
+        ],
+        "summary": "应用状态分析",
+        "description": "支持查询多个应用",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "root",
+            "in": "body",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "apps": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "namespace": {
+                        "type": "string",
+                        "description": "命名空间"
+                      },
+                      "name": {
+                        "type": "string",
+                        "description": "服务名称"
+                      }
+                    },
+                    "required": [
+                      "namespace",
+                      "name"
+                    ]
+                  }
+                },
+                "cluster": {
+                  "type": "string",
+                  "title": "集群名称",
+                  "description": "当前非必需"
+                }
+              },
+              "required": [
+                "apps"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "number"
+                },
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "namespace": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "metrics": {
+                        "type": "object",
+                        "properties": {
+                          "cpu": {
+                            "type": "object",
+                            "properties": {
+                              "usage": {
+                                "type": "number"
+                              },
+                              "limit": {
+                                "type": "number"
+                              }
+                            }
+                          },
+                          "memory": {
+                            "type": "object",
+                            "properties": {
+                              "usage": {
+                                "type": "number"
+                              },
+                              "limit": {
+                                "type": "number"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "status": {
+                        "type": "string"
+                      },
+                      "age": {
+                        "type": "number"
+                      }
+                    },
+                    "required": [
+                      "namespace",
+                      "name",
+                      "metrics",
+                      "status",
+                      "age"
+                    ]
+                  }
+                },
+                "message": {
+                  "type": "string"
+                },
+                "timestamp": {
+                  "type": "number"
+                },
+                "traceId": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/statistics/cluster": {
+      "get": {
+        "tags": [
+          "数据统计"
+        ],
+        "summary": "集群状态分析",
+        "description": "",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "cluster",
+            "in": "query",
+            "required": false,
+            "description": "集群名称",
+            "type": "string"
+          },
+          {
+            "name": "root",
+            "in": "body",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "apps": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "namespace": {
+                        "type": "string",
+                        "description": "命名空间"
+                      },
+                      "name": {
+                        "type": "string",
+                        "description": "服务名称"
+                      }
+                    },
+                    "required": [
+                      "namespace",
+                      "name"
+                    ]
+                  }
+                },
+                "cluster": {
+                  "type": "string",
+                  "title": "集群名称",
+                  "description": "当前非必需"
+                }
+              },
+              "required": [
+                "apps"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "number"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "title": "集群状态",
+                      "description": "normal、abnormal"
+                    },
+                    "node_count": {
+                      "type": "number",
+                      "title": "节点数"
+                    },
+                    "metrics": {
+                      "type": "object",
+                      "properties": {
+                        "cpu": {
+                          "type": "object",
+                          "properties": {
+                            "usage": {
+                              "type": "number",
+                              "title": "当前使用"
+                            },
+                            "capacity": {
+                              "type": "number",
+                              "title": "容量总计"
+                            },
+                            "allocatable": {
+                              "type": "number",
+                              "title": "可分配容量"
+                            }
+                          }
+                        },
+                        "memory": {
+                          "type": "object",
+                          "properties": {
+                            "usage": {
+                              "type": "number",
+                              "title": "当前使用"
+                            },
+                            "capacity": {
+                              "type": "number",
+                              "title": "容量总计"
+                            },
+                            "allocatable": {
+                              "type": "number",
+                              "title": "可分配容量"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "message": {
+                  "type": "string"
+                },
+                "timestamp": {
+                  "type": "number"
+                },
+                "traceId": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/app/backup": {
+      "post": {
+        "tags": [
+          "备份还原"
+        ],
+        "summary": "应用备份",
+        "description": "###",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "root",
+            "in": "body",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "cluster": {
+                  "type": "string",
+                  "title": "集群标示",
+                  "description": "可为空，默认本地集群"
+                },
+                "namespace": {
+                  "type": "string",
+                  "title": "对应命名空间",
+                  "mock": {
+                    "mock": "test"
+                  }
+                },
+                "name": {
+                  "type": "string",
+                  "title": "应用实例化名称",
+                  "description": "唯一,应以chart名称打头加随机字符串"
+                },
+                "username": {
+                  "type": "string",
+                  "title": "操作用户"
+                }
+              },
+              "required": [
+                "namespace",
+                "name"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "number"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "backup_name": {
+                      "type": "string"
+                    },
+                    "create_time": {
+                      "type": "number"
+                    }
+                  }
+                },
+                "message": {
+                  "type": "string"
+                },
+                "timestamp": {
+                  "type": "number"
+                },
+                "traceId": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/app/backup/remove": {
+      "post": {
+        "tags": [
+          "备份还原"
+        ],
+        "summary": "应用备份删除",
+        "description": "状态列表\n\n1. Pending 等待中\n2. Processing 进行中\n3. Completed  完成\n4. ExecuteFailed 执行失败\n5. Uploading 上传中\n6. UploadFailed 上传失败\n\n简化版：\n1\\. pending 等待中\n2. inprogress 进行中\n3\\. completed 完成\n4\\. failed 失败",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "root",
+            "in": "body",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "cluster": {
+                  "type": "string",
+                  "title": "集群标示",
+                  "description": "可为空，默认本地集群"
+                },
+                "namespace": {
+                  "type": "string",
+                  "title": "对应命名空间"
+                },
+                "name": {
+                  "type": "string",
+                  "title": "应用实例化名称"
+                },
+                "backup_name": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "namespace",
+                "name",
+                "backup_name"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "number"
+                },
+                "message": {
+                  "type": "string"
+                },
+                "timestamp": {
+                  "type": "number"
+                },
+                "traceId": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/app/backup/status": {
+      "get": {
+        "tags": [
+          "备份还原"
+        ],
+        "summary": "应用备份状态",
+        "description": "状态列表\n\n1. Pending 等待中\n2. Processing 进行中\n3. Completed  完成\n4. ExecuteFailed 执行失败\n5. Uploading 上传中\n6. UploadFailed 上传失败\n\n简化版：\n1\\. pending 等待中\n2. inprogress 进行中\n3\\. completed 完成\n4\\. failed 失败",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "cluster",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "type": "string"
+          },
+          {
+            "name": "namespace",
+            "in": "query",
+            "required": true,
+            "description": "",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "required": true,
+            "description": "应用实例名称",
+            "type": "string"
+          },
+          {
+            "name": "backup_name",
+            "in": "query",
+            "required": true,
+            "description": "",
+            "type": "string"
+          },
+          {
+            "name": "root",
+            "in": "body",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "cluster": {
+                  "type": "string",
+                  "title": "集群标示",
+                  "description": "可为空，默认本地集群"
+                },
+                "namespace": {
+                  "type": "string",
+                  "title": "对应命名空间"
+                },
+                "name": {
+                  "type": "string",
+                  "title": "应用实例化名称"
+                }
+              },
+              "required": [
+                "namespace",
+                "name"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "number"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "reason": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "message": {
+                  "type": "string"
+                },
+                "timestamp": {
+                  "type": "number"
+                },
+                "traceId": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/app/backups": {
+      "get": {
+        "tags": [
+          "备份还原"
+        ],
+        "summary": "应用备份列表",
+        "description": "db、volume备份与还原状态码\n\n1\\. pending 等待中\n2. inprogress 进行中\n3\\. completed 完成\n4\\. failed 失败",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "cluster",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "type": "string"
+          },
+          {
+            "name": "namespace",
+            "in": "query",
+            "required": true,
+            "description": "",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "required": true,
+            "description": "应用实例名称",
+            "type": "string"
+          },
+          {
+            "name": "root",
+            "in": "body",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "cluster": {
+                  "type": "string",
+                  "title": "集群标示",
+                  "description": "可为空，默认本地集群"
+                },
+                "namespace": {
+                  "type": "string",
+                  "title": "对应命名空间"
+                },
+                "name": {
+                  "type": "string",
+                  "title": "应用实例化名称"
+                }
+              },
+              "required": [
+                "namespace",
+                "name"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "number"
+                },
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "creator": {
+                        "type": "string"
+                      },
+                      "create_time": {
+                        "type": "number"
+                      },
+                      "status": {
+                        "type": "string"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "backup_details": {
+                        "type": "object",
+                        "properties": {
+                          "db": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "db_type": {
+                                  "type": "string",
+                                  "description": "数据库类型，mysql|postgresql"
+                                },
+                                "db_name": {
+                                  "type": "string",
+                                  "description": "数据库名称"
+                                },
+                                "status": {
+                                  "type": "string",
+                                  "description": "备份状态"
+                                },
+                                "cost": {
+                                  "type": "number",
+                                  "description": "备份耗时，单位秒"
+                                },
+                                "size": {
+                                  "type": "number",
+                                  "description": "备份数据文件大小，单位字节"
+                                }
+                              }
+                            },
+                            "description": "数据库明细"
+                          },
+                          "volume": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "pvc_name": {
+                                  "type": "string",
+                                  "description": "数据卷名称"
+                                },
+                                "volume": {
+                                  "type": "string",
+                                  "description": "pod挂载名"
+                                },
+                                "status": {
+                                  "type": "string",
+                                  "description": "备份状态"
+                                },
+                                "cost": {
+                                  "type": "number",
+                                  "description": "备份耗时，单位秒"
+                                },
+                                "total_bytes": {
+                                  "type": "number",
+                                  "description": "计算出的备份数据大小，单位字节"
+                                },
+                                "doneBytes": {
+                                  "type": "number",
+                                  "description": "已完成的备份数据大小，单位字节"
+                                }
+                              }
+                            },
+                            "description": "数据卷明细"
+                          }
+                        }
+                      },
+                      "restores": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "type": "string"
+                            },
+                            "creator": {
+                              "type": "string"
+                            },
+                            "create_time": {
+                              "type": "number"
+                            },
+                            "status": {
+                              "type": "string"
+                            },
+                            "message": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "message": {
+                  "type": "string"
+                },
+                "timestamp": {
+                  "type": "number"
+                },
+                "traceId": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/app/restore": {
+      "post": {
+        "tags": [
+          "备份还原"
+        ],
+        "summary": "应用还原",
+        "description": "###",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "root",
+            "in": "body",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "cluster": {
+                  "type": "string",
+                  "title": "集群标示",
+                  "description": "可为空，默认本地集群"
+                },
+                "namespace": {
+                  "type": "string",
+                  "title": "对应命名空间",
+                  "mock": {
+                    "mock": "test"
+                  }
+                },
+                "name": {
+                  "type": "string",
+                  "title": "应用实例化名称",
+                  "description": "唯一,应以chart名称打头加随机字符串"
+                },
+                "username": {
+                  "type": "string",
+                  "title": "操作用户"
+                },
+                "backup_name": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "namespace",
+                "name",
+                "backup_name"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "number"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "restore_name": {
+                      "type": "string"
+                    },
+                    "create_time": {
+                      "type": "number"
+                    }
+                  }
+                },
+                "message": {
+                  "type": "string"
+                },
+                "timestamp": {
+                  "type": "number"
+                },
+                "traceId": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/app/restore/status": {
+      "get": {
+        "tags": [
+          "备份还原"
+        ],
+        "summary": "应用还原状态",
+        "description": "状态列表\n\n1. Pending 等待中\n2. Processing 进行中\n3. Completed  完成\n4. ExecuteFailed 执行失败\n5. Downloading 下载中\n6. DownloadFailed 下载失败",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "cluster",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "type": "string"
+          },
+          {
+            "name": "namespace",
+            "in": "query",
+            "required": true,
+            "description": "",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "required": true,
+            "description": "应用实例名称",
+            "type": "string"
+          },
+          {
+            "name": "restore_name",
+            "in": "query",
+            "required": true,
+            "description": "",
+            "type": "string"
+          },
+          {
+            "name": "root",
+            "in": "body",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "cluster": {
+                  "type": "string",
+                  "title": "集群标示",
+                  "description": "可为空，默认本地集群"
+                },
+                "namespace": {
+                  "type": "string",
+                  "title": "对应命名空间"
+                },
+                "name": {
+                  "type": "string",
+                  "title": "应用实例化名称"
+                }
+              },
+              "required": [
+                "namespace",
+                "name"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "number"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "reason": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "message": {
+                  "type": "string"
+                },
+                "timestamp": {
+                  "type": "number"
+                },
+                "traceId": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/component/gdb": {
+      "get": {
+        "tags": [
+          "组件管理"
+        ],
+        "summary": "共享数据库列表",
+        "description": "",
+        "parameters": [
+          {
+            "name": "kind",
+            "in": "query",
+            "required": true,
+            "description": "数据库类型，如mysql、postgres、mongodb",
+            "type": "string"
+          },
+          {
+            "name": "namespace",
+            "in": "query",
+            "required": false,
+            "description": "留空，以后支持当前空间的公共数据库",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "number"
+                },
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "namespace": {
+                        "type": "string"
+                      },
+                      "alias": {
+                        "type": "string"
+                      },
+                      "status": {
+                        "type": "object",
+                        "properties": {
+                          "address": {
+                            "type": "string"
+                          },
+                          "network": {
+                            "type": "boolean"
+                          },
+                          "auth": {
+                            "type": "boolean"
+                          },
+                          "ready": {
+                            "type": "boolean"
+                          }
+                        }
+                      },
+                      "create_time": {
+                        "type": "number"
+                      },
+                      "source": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string"
+                          },
+                          "namespace": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "message": {
+                  "type": "string"
+                },
+                "timestamp": {
+                  "type": "number"
+                },
+                "traceId": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/component/gdb/validation": {
+      "get": {
+        "tags": [
+          "组件管理"
+        ],
+        "summary": "共享数据库参数校验",
+        "description": "检查目标数据库是否已占用应用默认的库名以及用户名，\n如没有，应使用默认库名+用户名进行应用安装",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "required": true,
+            "description": "示例 ：qucheng-mysql",
+            "type": "string"
+          },
+          {
+            "name": "namespace",
+            "in": "query",
+            "required": true,
+            "description": "",
+            "type": "string"
+          },
+          {
+            "name": "user",
+            "in": "query",
+            "required": true,
+            "description": "应用默认用户名",
+            "type": "string"
+          },
+          {
+            "name": "database",
+            "in": "query",
+            "required": true,
+            "description": "应用默认库名",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "number"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "host": {
+                      "type": "string"
+                    },
+                    "port": {
+                      "type": "number"
+                    },
+                    "validation": {
+                      "type": "object",
+                      "properties": {
+                        "user": {
+                          "type": "boolean",
+                          "description": "为true，表明可安全使用"
+                        },
+                        "database": {
+                          "type": "boolean",
+                          "description": "为true，表明可安全使用"
+                        }
+                      }
+                    }
+                  }
+                },
+                "message": {
+                  "type": "string"
+                },
+                "timestamp": {
+                  "type": "number"
+                },
+                "traceId": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/component/dbservice": {
+      "get": {
+        "tags": [
+          "组件管理"
+        ],
+        "summary": "数据库列表(dbservice)",
+        "description": "",
+        "parameters": [
+          {
+            "name": "namespace",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "type": "string"
+          },
+          {
+            "name": "global",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "number"
+                },
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "title": "dbservice名称"
+                      },
+                      "namespace": {
+                        "type": "string"
+                      },
+                      "release": {
+                        "type": "string",
+                        "title": "服务名称",
+                        "description": "与业务层服务名称对应"
+                      },
+                      "db_type": {
+                        "type": "string",
+                        "title": "数据库类型",
+                        "description": "mysql、mongodb、postgresql"
+                      },
+                      "alias": {
+                        "type": "string",
+                        "title": "资源别名",
+                        "description": "不为空时，应优先使用，适合展示qucheng公共数据库"
+                      },
+                      "status": {
+                        "type": "string",
+                        "title": "服务状态（待废弃）",
+                        "description": "必须为running状态才可访问"
+                      },
+                      "ready": {
+                        "type": "boolean",
+                        "title": "数据库状态",
+                        "description": "表明数据库当前连接与认证可用性"
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "namespace",
+                      "release",
+                      "db_type",
+                      "alias",
+                      "status",
+                      "ready"
+                    ]
+                  }
+                },
+                "message": {
+                  "type": "string"
+                },
+                "timestamp": {
+                  "type": "number"
+                },
+                "traceId": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/component/dbservice/detail": {
+      "get": {
+        "tags": [
+          "组件管理"
+        ],
+        "summary": "数据库详情(dbservice)",
+        "description": "",
+        "parameters": [
+          {
+            "name": "namespace",
+            "in": "query",
+            "required": true,
+            "description": "",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "required": true,
+            "description": "dbservice名称",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "number"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "title": "dbservice名称"
+                    },
+                    "namespace": {
+                      "type": "string"
+                    },
+                    "host": {
+                      "type": "string"
+                    },
+                    "port": {
+                      "type": "number"
+                    },
+                    "username": {
+                      "type": "string"
+                    },
+                    "password": {
+                      "type": "string"
+                    },
+                    "database": {
+                      "type": "string"
+                    }
+                  },
+                  "required": []
+                },
+                "message": {
+                  "type": "string"
+                },
+                "timestamp": {
+                  "type": "number"
+                },
+                "traceId": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/system/update": {
+      "post": {
+        "tags": [
+          "系统管理"
+        ],
+        "summary": "系统升级",
+        "description": "",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "root",
+            "in": "body",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "channel": {
+                  "type": "string",
+                  "description": "test,stable",
+                  "mock": {
+                    "mock": "test"
+                  }
+                },
+                "version": {
+                  "type": "string",
+                  "description": "渠成版本号"
+                }
+              },
+              "required": [
+                "channel",
+                "version"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "number"
+                },
+                "message": {
+                  "type": "string"
+                },
+                "timestamp": {
+                  "type": "number"
+                },
+                "traceId": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/system/app-full-list": {
+      "get": {
+        "tags": [
+          "系统管理"
+        ],
+        "summary": "完整服务列表",
+        "description": "",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "root",
+            "in": "body",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "channel": {
+                  "type": "string",
+                  "description": "test,stable",
+                  "mock": {
+                    "mock": "test"
+                  }
+                },
+                "version": {
+                  "type": "string",
+                  "description": "渠成版本号"
+                }
+              },
+              "required": [
+                "channel",
+                "version"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "number"
+                },
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "namespace": {
+                        "type": "string"
+                      },
+                      "chart": {
+                        "type": "string"
+                      },
+                      "version": {
+                        "type": "string"
+                      },
+                      "channel": {
+                        "type": "string",
+                        "description": "旧的应用可能为空值，需业务层取默认值填充"
+                      },
+                      "username": {
+                        "type": "string",
+                        "description": "旧的应用可能为空值，需业务层取默认值填充"
+                      },
+                      "values": {
+                        "type": "object",
+                        "properties": {},
+                        "description": "当前配置项，map结构，内容不定，可直接作为安装接口里 settings_map 的内容"
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "namespace",
+                      "chart",
+                      "version",
+                      "channel",
+                      "username",
+                      "values"
+                    ]
+                  }
+                },
+                "message": {
+                  "type": "string"
+                },
+                "timestamp": {
+                  "type": "number"
+                },
+                "traceId": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/system/scheduler/policy": {
+      "post": {
+        "tags": [
+          "系统管理"
+        ],
+        "summary": "增加调度策略",
+        "description": "",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "root",
+            "in": "body",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "content": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name",
+                "content"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "object",
+              "title": "title",
+              "properties": {}
+            }
+          }
+        }
+      }
+    },
+    "/system/smtp/validator": {
+      "post": {
+        "tags": [
+          "系统管理"
+        ],
+        "summary": "邮件账号校验(SMTP)",
+        "description": "",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "root",
+            "in": "body",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "host": {
+                  "type": "string"
+                },
+                "port": {
+                  "type": "string"
+                },
+                "user": {
+                  "type": "string"
+                },
+                "pass": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "object",
+              "title": "title",
+              "properties": {}
+            }
+          }
+        }
+      }
+    },
+    "/system/qlb/config": {
+      "post": {
+        "tags": [
+          "系统管理"
+        ],
+        "summary": "配置负载均衡",
+        "description": "kubectl get svc \\-A \\| grep Loadb\nkubectl get <span class=\"colour\" style=\"color: rgb(197, 200, 198);\">IPAddressPool -n cne-system</span>",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "root",
+            "in": "body",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "ippool": {
+                  "type": "string",
+                  "title": "192.168.10.0/24或者192.168.10.0-192.168.10.100"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "namespace": {
+                  "type": "string"
+                },
+                "cluster": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name",
+                "ippool",
+                "namespace",
+                "cluster"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "object",
+              "title": "title",
+              "properties": {}
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "系统管理"
+        ],
+        "summary": "查看负载均衡配置",
+        "description": "",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "namespace",
+            "in": "query",
+            "required": true,
+            "description": "",
+            "type": "string"
+          },
+          {
+            "name": "cluster",
+            "in": "query",
+            "required": true,
+            "description": "",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "required": true,
+            "description": "",
+            "type": "string"
+          },
+          {
+            "name": "root",
+            "in": "body",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "ippool": {
+                  "type": "string",
+                  "title": "192.168.10.0/24或者192.168.10.0-192.168.10.100"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "namespace": {
+                  "type": "string"
+                },
+                "cluster": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name",
+                "ippool",
+                "namespace",
+                "cluster"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "object",
+              "title": "title",
+              "properties": {}
+            }
+          }
+        }
+      }
+    },
+    "/system/tls/validator": {
+      "post": {
+        "tags": [
+          "系统管理"
+        ],
+        "summary": "证书校验",
+        "description": "code 返回码\n\n* 41001   证书过期\n* 41002   证书不匹配\n* 41003   证书链不完整\n* 41004   私钥与证书不匹配\n* 41005   证书解析失败\n* 41006   密钥解析失败",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "root",
+            "in": "body",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "title": "在集群里的命名",
+                  "description": "以tls打头，域名中 . 转化为 -",
+                  "mock": {
+                    "mock": "tls-haogs-cn"
+                  }
+                },
+                "certificate_pem": {
+                  "type": "string"
+                },
+                "private_key_pem": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "certificate_pem",
+                "private_key_pem",
+                "name"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "number"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "sans": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "其它名称"
+                    },
+                    "not_before": {
+                      "type": "number",
+                      "description": "颁发日期"
+                    },
+                    "not_after": {
+                      "type": "number",
+                      "description": "截止日期"
+                    },
+                    "subject": {
+                      "type": "object",
+                      "properties": {
+                        "cn": {
+                          "type": "string",
+                          "description": "公用名"
+                        },
+                        "o": {
+                          "type": "string",
+                          "description": "组织"
+                        },
+                        "ou": {
+                          "type": "string",
+                          "description": "组织单位"
+                        }
+                      },
+                      "required": []
+                    }
+                  }
+                },
+                "message": {
+                  "type": "string"
+                },
+                "timestamp": {
+                  "type": "number"
+                },
+                "traceId": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/system/tls/upload": {
+      "post": {
+        "tags": [
+          "系统管理"
+        ],
+        "summary": "证书上传",
+        "description": "code 返回码\n\n* 41001   证书过期\n* 41002   证书不匹配\n* 41003   证书链不完整\n* 41004   私钥与证书不匹配",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "root",
+            "in": "body",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "title": "在集群里的命名",
+                  "description": "以tls打头，域名中 . 转化为 -",
+                  "mock": {
+                    "mock": "tls-haogs-cn"
+                  }
+                },
+                "certificate_pem": {
+                  "type": "string"
+                },
+                "private_key_pem": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "certificate_pem",
+                "private_key_pem",
+                "name"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "number"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "sans": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "其它名称"
+                    },
+                    "not_before": {
+                      "type": "number",
+                      "description": "颁发日期"
+                    },
+                    "not_after": {
+                      "type": "number",
+                      "description": "截止日期"
+                    },
+                    "subject": {
+                      "type": "object",
+                      "properties": {
+                        "cn": {
+                          "type": "string",
+                          "description": "公用名"
+                        },
+                        "o": {
+                          "type": "string",
+                          "description": "组织"
+                        },
+                        "ou": {
+                          "type": "string",
+                          "description": "组织单位"
+                        }
+                      },
+                      "required": []
+                    }
+                  }
+                },
+                "message": {
+                  "type": "string"
+                },
+                "timestamp": {
+                  "type": "number"
+                },
+                "traceId": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/system/tls/info": {
+      "get": {
+        "tags": [
+          "系统管理"
+        ],
+        "summary": "查看证书",
+        "description": "",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "cluster",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "required": true,
+            "description": "证书名称",
+            "type": "string"
+          },
+          {
+            "name": "root",
+            "in": "body",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "title": "在集群里的命名",
+                  "description": "以tls打头，域名中 . 转化为 -",
+                  "mock": {
+                    "mock": "tls-haogs-cn"
+                  }
+                },
+                "certificate_pem": {
+                  "type": "string"
+                },
+                "private_key_pem": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "certificate_pem",
+                "private_key_pem",
+                "name"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "number"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "sans": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "其它名称"
+                    },
+                    "not_before": {
+                      "type": "number",
+                      "description": "颁发日期"
+                    },
+                    "not_after": {
+                      "type": "number",
+                      "description": "截止日期"
+                    },
+                    "subject": {
+                      "type": "object",
+                      "properties": {
+                        "cn": {
+                          "type": "string",
+                          "description": "公用名"
+                        },
+                        "o": {
+                          "type": "string",
+                          "description": "组织"
+                        },
+                        "ou": {
+                          "type": "string",
+                          "description": "组织单位"
+                        }
+                      },
+                      "required": []
+                    }
+                  }
+                },
+                "message": {
+                  "type": "string"
+                },
+                "timestamp": {
+                  "type": "number"
+                },
+                "traceId": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/snippet/add": {
+      "post": {
+        "tags": [
+          "配置片段"
+        ],
+        "summary": "创建片段",
+        "description": "",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "root",
+            "in": "body",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "mock": {
+                    "mock": "@word"
+                  }
+                },
+                "namespace": {
+                  "type": "string",
+                  "mock": {
+                    "mock": "@word"
+                  }
+                },
+                "values": {
+                  "type": "object",
+                  "properties": {}
+                },
+                "category": {
+                  "type": "string"
+                },
+                "auto_import": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "name",
+                "namespace",
+                "values",
+                "auto_import"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "object",
+              "title": "title",
+              "properties": {}
+            }
+          }
+        }
+      }
+    },
+    "/snippet/read": {
+      "get": {
+        "tags": [
+          "配置片段"
+        ],
+        "summary": "查看片段",
+        "description": "",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "required": true,
+            "description": "",
+            "type": "string"
+          },
+          {
+            "name": "namespace",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "type": "string"
+          },
+          {
+            "name": "root",
+            "in": "body",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "namespace": {
+                  "type": "string"
+                },
+                "values": {
+                  "type": "object",
+                  "properties": {}
+                },
+                "category": {
+                  "type": "string"
+                },
+                "auto-import": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "name",
+                "namespace",
+                "values"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "object",
+              "title": "title",
+              "properties": {}
+            }
+          }
+        }
+      }
+    },
+    "/snippet/update": {
+      "post": {
+        "tags": [
+          "配置片段"
+        ],
+        "summary": "更新片段",
+        "description": "",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "root",
+            "in": "body",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "namespace": {
+                  "type": "string"
+                },
+                "values": {
+                  "type": "object",
+                  "properties": {}
+                },
+                "category": {
+                  "type": "string"
+                },
+                "auto-import": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "name",
+                "namespace",
+                "values"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "object",
+              "title": "title",
+              "properties": {}
+            }
+          }
+        }
+      }
+    },
+    "/snippet": {
+      "get": {
+        "tags": [
+          "配置片段"
+        ],
+        "summary": "片段列表",
+        "description": "",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "namespace",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "type": "string"
+          },
+          {
+            "name": "root",
+            "in": "body",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "namespace": {
+                  "type": "string"
+                },
+                "content": {
+                  "type": "string"
+                },
+                "category": {
+                  "type": "string"
+                },
+                "auto-import": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "name",
+                "namespace",
+                "content"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "number"
+                },
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "namespace": {
+                        "type": "string"
+                      },
+                      "values": {
+                        "type": "object",
+                        "properties": {}
+                      }
+                    }
+                  }
+                },
+                "message": {
+                  "type": "string"
+                },
+                "timestamp": {
+                  "type": "number"
+                },
+                "traceId": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/snippet/remove": {
+      "post": {
+        "tags": [
+          "配置片段"
+        ],
+        "summary": "删除片段",
+        "description": "",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "root",
+            "in": "body",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "namespace": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name",
+                "namespace"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "object",
+              "title": "title",
+              "properties": {}
+            }
+          }
+        }
+      }
+    },
+    "/app/install_1676858607861": {
+      "post": {
+        "tags": [
+          "Mock测试"
+        ],
+        "summary": "应用安装2",
+        "description": "### 自定义参数传递说明\n\n支持两种结构的传递，列表和字典\n\n#### settings\n\n为列表结构，列表元素为字典，参数项和参数值分别作为key 和 values 的值\n\n``` javascript\n[\n    {\n    \t\"key\": \"replicas\", \"value\": \"2\"\n    },\n    {\n        \"key\": \"mysql.resource.memory\", \"value\": \"1Gi\"\n    }\n]\n```\n\n### settings_map (已实现)\n\n为字典结构，字典第一层为组件名，内容为具体的参数 map 结构，以zentao为例\n\n```\n{\n    \"zentao\": {\n        \"replicas\": 1\n    },\n    \"mysql\": {\n        \"resources\": {\n            \"memory\": \"1Gi\"\n        }\n    }\n}\n```\n\n经 cne 处理过后，最终参数变为\n\n``` yaml\nreplicas: 1\n\nmysql:\n  resources:\n    memory: 1Gi\n```",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "param1",
+            "in": "query",
+            "required": true,
+            "description": "param1备注",
+            "type": "string"
+          },
+          {
+            "name": "root",
+            "in": "body",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "cluster": {
+                  "type": "string",
+                  "title": "集群标示",
+                  "description": "可为空，默认本地集群"
+                },
+                "namespace": {
+                  "type": "string",
+                  "title": "对应命名空间",
+                  "mock": {
+                    "mock": "test"
+                  }
+                },
+                "name": {
+                  "type": "string",
+                  "title": "应用实例化名称",
+                  "description": "唯一,应以chart名称打头加随机字符串"
+                },
+                "chart": {
+                  "type": "string",
+                  "title": "被安装的应用名称",
+                  "description": "helm应用名称，纯ying wen"
+                },
+                "channel": {
+                  "type": "string",
+                  "title": "应用仓库标签",
+                  "description": "cloud 渠成私有, test 测试, stable 用户可见",
+                  "mock": {
+                    "mock": "test"
+                  }
+                },
+                "username": {
+                  "type": "string",
+                  "mock": {
+                    "mock": "admin"
+                  },
+                  "title": "创建者名称",
+                  "description": "非必填，为渠成平台业务层冗余数据"
+                },
+                "version": {
+                  "type": "string",
+                  "title": "应用版本号",
+                  "description": "如为空，将默认选择最新版本"
+                },
+                "settings": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "key": {
+                        "type": "string",
+                        "title": "参数名",
+                        "description": "对应helm values文件中的yaml路径"
+                      },
+                      "value": {
+                        "type": "string",
+                        "title": "参数值"
+                      }
+                    }
+                  },
+                  "title": "自定义参数"
+                },
+                "settings_map": {
+                  "type": "object",
+                  "properties": {},
+                  "title": "map结构的自定义参数"
+                },
+                "settings_snippets": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "title": "配置片段名称",
+                  "description": "目前由后端提供名称"
+                }
+              },
+              "required": [
+                "namespace",
+                "name",
+                "chart",
+                "channel"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                },
+                "code": {
+                  "type": "number"
+                },
+                "timestamp": {
+                  "type": "number"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

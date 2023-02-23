@@ -1,0 +1,62 @@
+[
+  {
+    "index": 0,
+    "name": "Mock测试",
+    "desc": "备注",
+    "add_time": 1676858627,
+    "up_time": 1676858627,
+    "list": [
+      {
+        "query_path": {
+          "path": "/app/install_1676858607861",
+          "params": []
+        },
+        "edit_uid": 0,
+        "status": "undone",
+        "type": "static",
+        "req_body_is_json_schema": true,
+        "res_body_is_json_schema": true,
+        "api_opened": false,
+        "index": 17,
+        "tag": [
+          "mock"
+        ],
+        "_id": 12,
+        "method": "POST",
+        "catid": 7,
+        "title": "应用安装2",
+        "path": "/app/install_1676858607861",
+        "project_id": 21,
+        "req_params": [],
+        "res_body_type": "json",
+        "req_query": [
+          {
+            "required": "1",
+            "_id": "63f2dcfc5f95a800392f73e1",
+            "name": "param1",
+            "example": "value1",
+            "desc": "param1备注"
+          }
+        ],
+        "req_headers": [
+          {
+            "required": "1",
+            "_id": "63f2dcfc5f95a800392f73e2",
+            "name": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "req_body_form": [],
+        "desc": "<h3>自定义参数传递说明</h3>\n<p>支持两种结构的传递，列表和字典</p>\n<h4>settings</h4>\n<p>为列表结构，列表元素为字典，参数项和参数值分别作为key 和 values 的值</p>\n<pre><code data-language=\"javascript\" class=\"lang-javascript\">[\n    {\n    \t\"key\": \"replicas\", \"value\": \"2\"\n    },\n    {\n        \"key\": \"mysql.resource.memory\", \"value\": \"1Gi\"\n    }\n]\n</code></pre>\n<h3>settings_map (已实现)</h3>\n<p>为字典结构，字典第一层为组件名，内容为具体的参数 map 结构，以zentao为例</p>\n<pre><code>{\n    \"zentao\": {\n        \"replicas\": 1\n    },\n    \"mysql\": {\n        \"resources\": {\n            \"memory\": \"1Gi\"\n        }\n    }\n}\n</code></pre>\n<p>经 cne 处理过后，最终参数变为</p>\n<pre><code data-language=\"yaml\" class=\"lang-yaml\">replicas: 1\n\nmysql:\n  resources:\n    memory: 1Gi\n</code></pre>\n",
+        "markdown": "### 自定义参数传递说明\n\n支持两种结构的传递，列表和字典\n\n#### settings\n\n为列表结构，列表元素为字典，参数项和参数值分别作为key 和 values 的值\n\n``` javascript\n[\n    {\n    \t\"key\": \"replicas\", \"value\": \"2\"\n    },\n    {\n        \"key\": \"mysql.resource.memory\", \"value\": \"1Gi\"\n    }\n]\n```\n\n### settings_map (已实现)\n\n为字典结构，字典第一层为组件名，内容为具体的参数 map 结构，以zentao为例\n\n```\n{\n    \"zentao\": {\n        \"replicas\": 1\n    },\n    \"mysql\": {\n        \"resources\": {\n            \"memory\": \"1Gi\"\n        }\n    }\n}\n```\n\n经 cne 处理过后，最终参数变为\n\n``` yaml\nreplicas: 1\n\nmysql:\n  resources:\n    memory: 1Gi\n```",
+        "req_body_other": "{\"$schema\":\"http://json-schema.org/draft-04/schema#\",\"type\":\"object\",\"properties\":{\"cluster\":{\"type\":\"string\",\"title\":\"集群标示\",\"description\":\"可为空，默认本地集群\"},\"namespace\":{\"type\":\"string\",\"title\":\"对应命名空间\",\"mock\":{\"mock\":\"test\"}},\"name\":{\"type\":\"string\",\"title\":\"应用实例化名称\",\"description\":\"唯一,应以chart名称打头加随机字符串\"},\"chart\":{\"type\":\"string\",\"title\":\"被安装的应用名称\",\"description\":\"helm应用名称，纯ying wen\"},\"channel\":{\"type\":\"string\",\"title\":\"应用仓库标签\",\"description\":\"cloud 渠成私有, test 测试, stable 用户可见\",\"mock\":{\"mock\":\"test\"}},\"username\":{\"type\":\"string\",\"mock\":{\"mock\":\"admin\"},\"title\":\"创建者名称\",\"description\":\"非必填，为渠成平台业务层冗余数据\"},\"version\":{\"type\":\"string\",\"title\":\"应用版本号\",\"description\":\"如为空，将默认选择最新版本\"},\"settings\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"key\":{\"type\":\"string\",\"title\":\"参数名\",\"description\":\"对应helm values文件中的yaml路径\"},\"value\":{\"type\":\"string\",\"title\":\"参数值\"}}},\"title\":\"自定义参数\"},\"settings_map\":{\"type\":\"object\",\"properties\":{},\"title\":\"map结构的自定义参数\"},\"settings_snippets\":{\"type\":\"array\",\"items\":{\"type\":\"string\"},\"title\":\"配置片段名称\",\"description\":\"目前由后端提供名称\"}},\"required\":[\"namespace\",\"name\",\"chart\",\"channel\"]}",
+        "req_body_type": "json",
+        "res_body": "{\"$schema\":\"http://json-schema.org/draft-04/schema#\",\"type\":\"object\",\"properties\":{\"message\":{\"type\":\"string\"},\"code\":{\"type\":\"number\"},\"timestamp\":{\"type\":\"number\"}}}",
+        "uid": 29,
+        "add_time": 1676858610,
+        "up_time": 1676860668,
+        "__v": 0
+      }
+    ]
+  }
+]

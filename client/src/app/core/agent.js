@@ -6,6 +6,7 @@ import {execSync, spawn} from 'child_process';
 import {DEBUG, portAgent, uuid} from '../utils/consts';
 import {IS_WINDOWS_OS} from "../utils/env";
 import {logErr, logInfo} from '../utils/log';
+import {getBinPath} from "../utils/comm";
 
 let _agentProcess;
 
@@ -19,14 +20,16 @@ export async function startAgent() {
     }
 
     let {SERVER_EXE_PATH: agentExePath} = process.env;
+    logInfo(1, agentExePath)
     if (!agentExePath && !DEBUG) {
-        const platform = os.platform(); // 'darwin', 'linux', 'win32'
-        const exePath = `bin/${platform}/deeptest${platform === 'win32' ? '.exe' : ''}`;
-        agentExePath = path.join(process.resourcesPath, exePath);
+        agentExePath = getBinPath('agent');
+        logInfo(2, agentExePath)
     }
+
     if (agentExePath) {
         if (!path.isAbsolute(agentExePath)) {
             agentExePath = path.resolve(app.getAppPath(), agentExePath);
+            logInfo(3, agentExePath)
         }
         return new Promise((resolve, reject) => {
             const cwd = process.env.AGENT_CWD_PATH || path.dirname(agentExePath);

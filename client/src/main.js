@@ -1,7 +1,7 @@
 import {app, dialog} from 'electron';
-import {DEBUG} from './app/utils/consts';
 import {DeepTestApp} from "./app/app";
 import {logInfo, logErr, logger} from "./app/utils/log";
+import {getCurrVersion} from "./app/utils/comm";
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) { // eslint-disable-line global-require

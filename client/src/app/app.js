@@ -1,14 +1,23 @@
 import {app, BrowserWindow, ipcMain, Menu, shell, dialog, globalShortcut} from 'electron';
 const path = require('path');
-import {DEBUG, electronMsg, electronMsgReplay, minimumSizeHeight, minimumSizeWidth} from './utils/consts';
+import {
+    DEBUG,
+    electronMsg,
+    electronMsgReplay,
+    electronMsgUpdate,
+    minimumSizeHeight,
+    minimumSizeWidth
+} from './utils/consts';
 import {IS_MAC_OSX, IS_LINUX, IS_WINDOWS_OS} from './utils/env';
 import {logInfo, logErr} from './utils/log';
 import Config from './utils/config';
 import Lang, {initLang} from './core/lang';
 import {startUIService} from "./core/ui";
-import {startAgent, killAgent} from "./core/deeptest";
+import {startAgent, killAgent} from "./core/agent";
 import { nanoid } from 'nanoid'
 import {uploadFile} from "./utils/upload";
+import {getCurrVersion, mkdir} from "./utils/comm";
+import {checkUpdate, updateApp} from "./utils/hot-update";
 
 const cp = require('child_process');
 const fs = require('fs');
@@ -19,12 +28,7 @@ const getBuffer = bent('buffer')
 
 let postmanToOpenApi = null
 
-const workDir = pth.join(require("os").homedir(), 'deeptest');
-const convertedDir = pth.join(workDir, 'converted');
-fs.mkdir(convertedDir,function(err){
-    if (err) return console.error(err);
-    console.log(`mkdir ${convertedDir} successfully`);
-});
+mkdir('converted')
 
 export class DeepTestApp {
     constructor() {
@@ -67,8 +71,14 @@ export class DeepTestApp {
             webPreferences: {
                 nodeIntegration: true,
                 contextIsolation: false,
+                enableRemoteModule: true,
             }
         })
+
+        require('@electron/remote/main').initialize()
+        require('@electron/remote/main').enable(mainWin.webContents)
+        const {currVersionStr} = getCurrVersion()
+        global.sharedObj =  { version : currVersionStr};
 
         mainWin.setSize(minimumSizeWidth, minimumSizeHeight)
         mainWin.setMovable(true)
@@ -171,6 +181,17 @@ export class DeepTestApp {
              const mainWin = this._windows.get('main');
              mainWin.toggleDevTools()
          })
+
+         ipcMain.on(electronMsgUpdate, (event, arg) => {
+             logInfo('update confirm from renderer', arg)
+
+             const mainWin = this._windows.get('main');
+             updateApp(arg.newVersion, mainWin)
+         });
+
+         setInterval(async () => {
+             await checkUpdate(this._windows.get('main'))
+         }, 6000);
     }
 
     quit() {

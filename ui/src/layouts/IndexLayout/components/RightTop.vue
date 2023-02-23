@@ -21,6 +21,7 @@
     </div>
 
     <RightTopWebsocket/>
+    <RightTopUpdate />
   </div>
 </template>
 <script lang="ts">
@@ -31,6 +32,7 @@ import {MenuFoldOutlined, MenuUnfoldOutlined} from '@ant-design/icons-vue';
 import RightTopProject from './RightTopProject.vue';
 import RightTopSettings from './RightTopSettings.vue';
 import RightTopWebsocket from './RightTopWebsocket.vue';
+import RightTopUpdate from './RightTopUpdate.vue';
 import useTopMenuWidth from "../composables/useTopMenuWidth";
 
 export default defineComponent({
@@ -39,7 +41,7 @@ export default defineComponent({
     MenuFoldOutlined, MenuUnfoldOutlined,
     RightTopProject,
     RightTopSettings,
-    RightTopWebsocket,
+    RightTopWebsocket, RightTopUpdate,
   },
   props: {
     collapsed: {

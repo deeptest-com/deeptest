@@ -18,7 +18,7 @@
       </sider-menu>
     </div>
 
-    <div class="version">
+    <div v-if="version" class="version">
       V{{version}}
     </div>
 

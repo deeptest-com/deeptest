@@ -12,37 +12,23 @@
           @search="onSearch"
       />
     </div>
-
     <a-table bordered :data-source="dataSource" :columns="columns">
       <template #name="{ text, record }">
         <div class="editable-cell">
           <div class="editable-cell-text-wrapper">
-            {{ text || ' ' }}
-            <edit-outlined class="editable-cell-icon" @click="edit(record.key)"/>
+            <a href="javascript:void (0)" @click="edit(record)">{{ text }}</a>
           </div>
         </div>
       </template>
       <template #operation="{ record }">
         <a-space>
-          <a-popconfirm
-              v-if="dataSource.length"
-              title="Sure to delete?"
-              @confirm="onDelete(record.key)"
-          >
-            <a>克隆</a>
-          </a-popconfirm>
-        <a-popconfirm
-            v-if="dataSource.length"
-            title="Sure to delete?"
-            @confirm="onDelete(record.key)"
-        >
-          <a>删除</a>
-        </a-popconfirm>
+          <a href="javascript:void (0)" @click="onCopy(record)">复制</a>
+          <a href="javascript:void (0)" @click="onDelete(record)">删除</a>
         </a-space>
-
       </template>
     </a-table>
 
+    <!-- ::::新建组件 -->
     <a-modal v-model:visible="visible"
              @cancel="handleCancel"
              title="新建组件"
@@ -52,21 +38,25 @@
           <a-input v-model:value="formState.name" placeholder="请输入内容"/>
         </a-form-item>
         <a-form-item label="描述">
-          <a-textarea
-              v-model:value="formState.desc"
-              placeholder="请输入内容"
-              :auto-size="{ minRows: 2, maxRows: 5 }"
-          />
+          <a-select
+              v-model:value="formState.tags"
+              mode="tags"
+              style="width: 100%"
+              placeholder="Tags Mode"
+              :options="[]"
+              @change="handleTagChange"
+          >
+          </a-select>
         </a-form-item>
       </a-form>
     </a-modal>
 
+    <!-- ::::编辑scheme组件 -->
     <a-modal v-model:visible="schemeVisible"
              @cancel="handleCancel"
              title="组件编辑"
              width="1000px"
              @ok="handleOk">
-
       <div class="editModal-content">
         <div class="btns">
           <a-button :type="showMode === 'form' ? 'primary' : 'default'" @click="switchMode('form')">
@@ -82,26 +72,48 @@
             YAML
           </a-button>
         </div>
-
       </div>
-
-
     </a-modal>
 
   </div>
 </template>
 <script setup lang="ts">
 
-import {computed, defineComponent, defineEmits, defineProps, reactive, Ref, ref, UnwrapRef} from 'vue';
+import {
+  computed,
+  defineComponent,
+  defineEmits,
+  defineProps,
+  onMounted,
+  reactive,
+  Ref,
+  ref,
+  UnwrapRef,
+  watch
+} from 'vue';
 import {CheckOutlined, EditOutlined} from '@ant-design/icons-vue';
 import {getYaml} from "@/views/interfaceV2/service";
+import {
+  saveSchema,
+  deleteSchema,
+  disableSchema,
+  copySchema,
+  getSchemaList,
+} from '../service';
+import {message} from "ant-design-vue";
 
-const props = defineProps({})
+const props = defineProps({
+  serveId:{
+    type: String,
+    required: true
+  },
+})
 const emit = defineEmits(['ok', 'close', 'refreshList']);
 
 interface FormState {
   name: string;
-  desc: string;
+  description: string;
+  tags: Array<string>,
 }
 
 interface DataItem {
@@ -114,11 +126,13 @@ interface DataItem {
 
 const formState: UnwrapRef<FormState> = reactive({
   name: '',
-  desc: '',
+  description: '',
+  tags: [],
 });
 
 const visible = ref(false);
 const schemeVisible = ref(false);
+
 
 const columns = [
   {
@@ -129,11 +143,7 @@ const columns = [
   },
   {
     title: '标签',
-    dataIndex: 'age',
-  },
-  {
-    title: '应用范围',
-    dataIndex: 'address',
+    dataIndex: 'type',
   },
   {
     title: '操作',
@@ -142,20 +152,7 @@ const columns = [
   },
 ];
 
-const dataSource: Ref<DataItem[]> = ref([
-  {
-    key: '0',
-    name: 'Edward King 0',
-    age: 32,
-    address: 'London, Park Lane no. 0',
-  },
-  {
-    key: '1',
-    name: 'Edward King 1',
-    age: 32,
-    address: 'London, Park Lane no. 1',
-  },
-]);
+const dataSource: Ref<DataItem[]> = ref([]);
 const count = computed(() => dataSource.value.length + 1);
 const editableData: UnwrapRef<Record<string, DataItem>> = reactive({});
 
@@ -166,6 +163,7 @@ function onSearch(e) {
 
 const showMode = ref('form');
 const yamlCode = ref('');
+
 async function switchMode(val) {
   showMode.value = val;
   // 需求去请求YAML格式
@@ -185,7 +183,7 @@ function onClose() {
 
 }
 
-const edit = (key: string) => {
+const edit = (record: string) => {
   schemeVisible.value = true;
 };
 
@@ -205,23 +203,79 @@ const save = (key: string) => {
   // delete editableData[key];
 };
 
-const onDelete = (key: string) => {
-  dataSource.value = dataSource.value.filter(item => item.key !== key);
-};
 
 const handleAdd = () => {
   visible.value = true;
 };
 
-// 确定
-function handleOk() {
-  visible.value = false;
+// 保存组件
+async function handleOk() {
+  const res = await saveSchema({
+    "name": formState.name,
+    "serveId": props.serveId,
+    "tags":formState.tags.join(','),
+  });
+  if (res.code === 0) {
+    message.success('保存成功');
+    visible.value = false;
+    await getList();
+  } else {
+    message.error('保存失败');
+  }
+
+}
+
+
+function handleTagChange(value: string) {
+  console.log(`832 ${value}`);
 }
 
 // 取消
 function handleCancel() {
   visible.value = false;
 }
+
+async function getList() {
+  const res = await getSchemaList({
+    "serveId": props.serveId,
+    "page": 1,
+    "pageSize": 20
+  });
+  if (res.code === 0) {
+    dataSource.value = res.data.result;
+  }
+}
+
+
+async function onDelete(record: any) {
+  const res = await deleteSchema(record.id);
+  if (res.code === 0) {
+    message.success('删除成功');
+    await getList();
+  } else {
+    message.error('删除失败');
+  }
+}
+
+
+async function onCopy(record: any) {
+  const res = await copySchema(record.id);
+  if (res.code === 0) {
+    message.success('复制服务成功');
+    await getList();
+  } else {
+    message.error('复制服务失败');
+  }
+}
+
+
+watch(() => {
+  return props.serveId
+},async () => {
+  await getList();
+},{
+  immediate:true
+})
 
 </script>
 
@@ -237,12 +291,13 @@ function handleCancel() {
   }
 }
 
-.editModal-content{
+.editModal-content {
   min-height: 200px;
   position: relative;
-  .btns{
+
+  .btns {
     position: absolute;
-    top:8px;
+    top: 8px;
     right: 8px;
   }
 

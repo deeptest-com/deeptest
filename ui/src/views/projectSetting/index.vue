@@ -1,11 +1,5 @@
 <template>
   <div class="container">
-
-<!--    <div class="tree">-->
-<!--      <SchemeEditor/>-->
-<!--    </div>-->
-
-
     <a-tabs v-model:activeKey="activeKey">
       <a-tab-pane key="1" tab="测试环境">测试环境</a-tab-pane>
       <a-tab-pane key="2" tab="数据池" force-render>数据池</a-tab-pane>
@@ -23,6 +17,8 @@ import SchemeEditor from './components/SchemeEditor/index'
 
 const expandedKeys = ref<string[]>(['0-0-0']);
 const selectedKeys = ref<string[]>([]);
+
+const activeKey = ref('3');
 
 </script>
 

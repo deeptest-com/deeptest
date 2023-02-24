@@ -135,6 +135,8 @@ export const openApiDataTypesOpts = [
 
 export const interfaceStatus = new Map([[0, '未知'], [1, '设计中'], [2, '开发中'], [3, '已发布'], [4, '已过时']])
 
+export const serveStatus = new Map([[0, '未知'],[1, '新建'], [2, '设计中'], [3, '已发布'], [4, ' 已禁用']])
+
 
 export const interfaceStatusOpts = [
     {

@@ -1,17 +1,32 @@
 <template>
   <div class="content">
     <div class="header">
-      <a-button class="editable-add-btn"
-                @click="handleAdd"
-                style="margin-bottom: 8px">
-        添加版本
-      </a-button>
-      <a-input-search
-          v-model:value="keyword"
-          placeholder="输入组件名称搜索"
-          style="width: 300px"
-          @search="onSearch"
-      />
+      <a-form layout="inline" :model="formState">
+        <a-form-item>
+          <a-input v-model:value="formState.name" placeholder="版本号，格式如: 1.2.1"/>
+        </a-form-item>
+        <a-form-item>
+          <a-select
+              v-model:value="formState.createUser"
+              show-search
+              placeholder="请选择负责人"
+              style="width: 200px"
+              :options="userListOptions"
+              @focus="selectUserFocus"
+              @blur="handleBlur"
+              @change="handleChange"
+          >
+          </a-select>
+        </a-form-item>
+        <a-form-item>
+          <a-input v-model:value="formState.description" style="width: 300px" placeholder="输入描述"/>
+        </a-form-item>
+        <a-button class="editable-add-btn"
+                  @click="handleAdd"
+                  style="margin-bottom: 8px">
+          添加版本
+        </a-button>
+      </a-form>
     </div>
     <a-table bordered :data-source="dataSource" :columns="columns">
       <template #name="{ text, record }">
@@ -24,84 +39,70 @@
       </template>
       <template #operation="{ record }">
         <a-space>
-          <a-popconfirm
-              v-if="dataSource.length"
-              title="Sure to delete?"
-              @confirm="onDelete(record.key)"
-          >
-            <a>过期</a>
-          </a-popconfirm>
-          <a-popconfirm
-              v-if="dataSource.length"
-              title="Sure to delete?"
-              @confirm="onDelete(record.key)"
-          >
-            <a>删除</a>
-          </a-popconfirm>
+          <a href="javascript:void (0)" @click="onDisabled(record)">过期</a>
+          <a href="javascript:void (0)" @click="onDelete(record)">删除</a>
         </a-space>
       </template>
     </a-table>
-
-    <a-modal v-model:visible="visible"
-             @cancel="handleCancel"
-             title="添加版本"
-             @ok="handleOk">
-      <a-form :model="formState" :label-col="{ span: 6 }" :wrapper-col=" { span: 15 }">
-        <a-form-item label="版本号">
-          <a-input v-model:value="formState.name" placeholder="请输入内容"/>
-        </a-form-item>
-        <a-form-item label="版本号">
-          <a-select
-              v-model:value="value"
-              show-search
-              placeholder="Select a person"
-              style="width: 200px"
-              :options="options"
-              @focus="handleFocus"
-              @blur="handleBlur"
-              @change="handleChange"
-          >
-          </a-select>
-        </a-form-item>
-        <a-form-item label="描述">
-          <a-textarea
-              v-model:value="formState.desc"
-              placeholder="请输入内容"
-              :auto-size="{ minRows: 2, maxRows: 5 }"
-          />
-        </a-form-item>
-      </a-form>
-    </a-modal>
-
   </div>
 
 </template>
 <script setup lang="ts">
 
-import {computed, defineComponent, defineEmits, defineProps, reactive, Ref, ref, UnwrapRef} from 'vue';
+import {
+  computed,
+  defineComponent,
+  defineEmits,
+  defineProps,
+  onMounted,
+  reactive,
+  Ref,
+  ref,
+  UnwrapRef,
+  watch
+} from 'vue';
 import {CheckOutlined, EditOutlined} from '@ant-design/icons-vue';
-import { SelectTypes } from 'ant-design-vue/es/select';
+import {SelectTypes} from 'ant-design-vue/es/select';
+import {
+  getServeVersionList,
+  deleteServeVersion,
+  disableServeVersions,
+  saveServeVersion,
+  deleteServe,
+  getUserList,
+  disableServe
+} from '../service';
+import {message} from "ant-design-vue";
 
-
-const props = defineProps({})
+const props = defineProps({
+  serveId: {
+    type: String,
+    required: true
+  },
+})
 const emit = defineEmits(['ok', 'close', 'refreshList']);
 
 interface FormState {
   name: string;
-  desc: string;
+  createUser:string,
+  description: string;
 }
 
+
 interface DataItem {
-  key: string;
-  name: string;
-  age: number;
-  address: string;
+  updatedAt: string;
+  value: string;
+  createUser: number;
+  createdAt: string;
+  id: string;
+  serveId: string;
 }
 
 
 const formState: UnwrapRef<FormState> = reactive({
   name: '',
-  desc: '',
+  description: '',
+  createUser: '',
 });
 
 const visible = ref(false);
@@ -110,17 +111,17 @@ const drawerVisible = ref(false);
 const columns = [
   {
     title: '版本号',
-    dataIndex: 'name',
+    dataIndex: 'value',
     width: '30%',
-    slots: {customRender: 'name'},
+    slots: {customRender: 'value'},
   },
   {
     title: '负责人',
-    dataIndex: 'age',
+    dataIndex: 'createUser',
   },
   {
     title: '描述',
-    dataIndex: 'address',
+    dataIndex: 'description',
   },
   {
     title: '操作',
@@ -129,20 +130,8 @@ const columns = [
   },
 ];
 
-const dataSource: Ref<DataItem[]> = ref([
-  {
-    key: '0',
-    name: 'Edward King 0',
-    age: 32,
-    address: 'London, Park Lane no. 0',
-  },
-  {
-    key: '1',
-    name: 'Edward King 1',
-    age: 32,
-    address: 'London, Park Lane no. 1',
-  },
-]);
+
+const dataSource: Ref<DataItem[]> = ref();
 const count = computed(() => dataSource.value.length + 1);
 const editableData: UnwrapRef<Record<string, DataItem>> = reactive({});
 
@@ -160,11 +149,9 @@ function onClose() {
 
 }
 
-const options = ref<SelectTypes['options']>([
-  { value: 'jack', label: 'Jack' },
-  { value: 'lucy', label: 'Lucy' },
-  { value: 'tom', label: 'Tom' },
-]);
+const userListOptions = ref<SelectTypes['options']>([]);
+
+
 const handleChange = (value: string) => {
   console.log(`selected ${value}`);
 };
@@ -173,9 +160,6 @@ const handleBlur = () => {
 };
 const handleFocus = () => {
   console.log('focus');
-};
-const filterOption = (input: string, option: any) => {
-  return option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0;
 };
 
 const edit = (key: string) => {
@@ -193,28 +177,77 @@ function editServiceName() {
   isEditServiceName.value = true;
 }
 
-const save = (key: string) => {
-  // Object.assign(dataSource.value.filter(item => key === item.key)[0], editableData[key]);
-  // delete editableData[key];
-};
-
-const onDelete = (key: string) => {
-  dataSource.value = dataSource.value.filter(item => item.key !== key);
-};
-
-const handleAdd = () => {
-  visible.value = true;
-};
-
-// 确定
-function handleOk() {
-  visible.value = false;
+async function handleAdd() {
+  const res = await saveServeVersion({
+    "serveId": props.serveId,
+    "value": formState.name,
+    "createUser": formState.createUser,
+    "description": formState.description
+  });
+  if (res.code === 0) {
+    message.success('保存成功');
+    await getList();
+  } else {
+    message.error('保存失败');
+  }
 }
 
-// 取消
-function handleCancel() {
-  visible.value = false;
+
+async function getList() {
+  const res = await getServeVersionList({
+    "serveId": props.serveId,
+    "createUser": "",
+    "version": "",
+    "page": 1,
+    "pageSize": 20
+  });
+  if (res.code === 0) {
+    dataSource.value = res.data.result;
+  }
 }
+
+async function onDelete(record: any) {
+  const res = await deleteServeVersion(record.id);
+  if (res.code === 0) {
+    message.success('删除版本成功');
+    await getList();
+  } else {
+    message.error('删除版本失败');
+  }
+}
+
+async function onDisabled(record: any) {
+  const res = await disableServe(record.id);
+  if (res.code === 0) {
+    message.success('禁用版本成功');
+    await getList();
+  } else {
+    message.error('禁用版本失败');
+  }
+}
+
+async function setUserListOptions() {
+  const res = await getUserList('');
+  if (res.code === 0) {
+    res.data.result.forEach((item) => {
+      item.label = item.name;
+      item.value = item.username
+    })
+    userListOptions.value = res.data.result;
+  }
+}
+
+async function selectUserFocus(e) {
+  await setUserListOptions();
+}
+
+watch(() => {
+  return props.serveId
+}, async () => {
+  await getList();
+}, {
+  immediate: true
+})
 
 </script>
 

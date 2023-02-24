@@ -13,6 +13,7 @@ import {
 import {isInArray} from "@/utils/array";
 import {UsedBy} from "@/utils/enum";
 
+
 const apiPath = 'interfaces';
 const apiImport = 'import';
 const apiSpec = 'spec';
@@ -48,78 +49,208 @@ interface SaveInterfaceReqParams {
 
 
 /**
- * 接口列表
+ * 保存服务
  * */
-export async function getInterfaceList(data: InterfaceListReqParams): Promise<any> {
+export async function saveServe(data: any): Promise<any> {
     return request({
-        url: `/endpoint/index`,
+        url: `/serve/save`,
         method: 'post',
         data: data
     });
 }
 
 /**
- * 接口详情
+ * 服务列表
  * */
-export async function getInterfaceDetail(id: Number | String | any): Promise<any> {
+export async function getServeList(data:any): Promise<any> {
     return request({
-        url: `/endpoint/detail?id=${id}`,
-        method: 'get',
+        url: `/serve/index`,
+        method: 'post',
+        data:data,
     });
 }
 
 /**
- * 删除接口
+ * 删除服务
  * */
-export async function deleteInterface(id: Number): Promise<any> {
+export async function deleteServe(id: Number): Promise<any> {
     return request({
-        url: `/endpoint/delete?id=${id}`,
+        url: `/serve/delete?id=${id}`,
         method: 'delete',
     });
 }
 
-
 /**
- * 复制接口
+ * 禁用服务
  * */
-export async function copyInterface(id: Number): Promise<any> {
+export async function disableServe(id: any): Promise<any> {
     return request({
-        url: `/endpoint/copy?id=${id}`,
-        method: 'get',
-    });
-}
-
-
-
-/**
- * 获取yaml展示
- * */
-export async function getYaml(data: any): Promise<any> {
-    return request({
-        url: `/endpoint/yaml`,
-        method: 'post',
-        data: data
-    });
-}
-
-
-/**
- * 接口过时
- * */
-export async function expireInterface(id: Number): Promise<any> {
-    return request({
-        url: `/endpoint/expire?id=${id}`,
+        url: `/serve/expire?id=${id}`,
         method: 'put',
     });
 }
 
 /**
- * 保存接口
+ * 复制服务
  * */
-export async function saveInterface(data: SaveInterfaceReqParams): Promise<any> {
+export async function copyServe(id: any): Promise<any> {
     return request({
-        url: `/endpoint/save`,
+        url: `/serve/copy?id=${id}`,
+        method: 'get',
+    });
+}
+
+
+/**
+ * 保存服务版本
+ * */
+export async function saveServeVersion(data: any): Promise<any> {
+    return request({
+        url: `/serve/version/save`,
+        method: 'post',
+        data:data,
+    });
+}
+
+
+/**
+ * 服务版本列表
+ * */
+export async function getServeVersionList(data: any): Promise<any> {
+    return request({
+        url: `/serve/version/list`,
+        method: 'post',
+        data:data
+    });
+}
+
+/**
+ * 服务版本禁用
+ * */
+export async function disableServeVersions(id: any): Promise<any> {
+    return request({
+        url: `/serve/version/expire?id=${id}`,
+        method: 'put',
+    });
+}
+
+/**
+ * 服务版本删除
+ * */
+export async function deleteServeVersion(id: any): Promise<any> {
+    return request({
+        url: `/serve/version/delete?id=${id}`,
+        method: 'delete',
+    });
+}
+
+
+
+
+/**
+ * 服务环境列表
+ * */
+export async function serverList(data: SaveInterfaceReqParams): Promise<any> {
+    return request({
+        url: `/serve/server/list`,
         method: 'post',
         data: data
     });
 }
+
+/**
+ * 用户列表
+ * */
+export async function getUserList(name: any): Promise<any> {
+    return request({
+        url: `/users`,
+        method: 'get',
+    });
+}
+
+/**
+ *  保存组件
+ * */
+export async function saveSchema(data: any): Promise<any> {
+    return request({
+        url: `/serve/schema/save`,
+        method: 'post',
+        data:data
+    });
+}
+/**
+ *  组件列表
+ * */
+export async function getSchemaList(data: any): Promise<any> {
+    return request({
+        url: `/serve/schema/list`,
+        method: 'post',
+        data:data
+    });
+}
+
+/**
+ * 删除服务
+ * */
+export async function deleteSchema(id: Number): Promise<any> {
+    return request({
+        url: `/serve/schema/delete?id=${id}`,
+        method: 'delete',
+    });
+}
+
+/**
+ * 禁用schema
+ * */
+export async function disableSchema(id: any): Promise<any> {
+    return request({
+        url: `/serve/schema/expire?id=${id}`,
+        method: 'put',
+    });
+}
+
+/**
+ * 复制服务
+ * */
+export async function copySchema(id: any): Promise<any> {
+    return request({
+        url: `/serve/schema/copy?id=${id}`,
+        method: 'put',
+    });
+}
+
+
+/**
+ *  example转schema
+ * */
+export async function example2schema(data: any): Promise<any> {
+    return request({
+        url: `serve/schema/example2schema`,
+        method: 'post',
+        data:data
+    });
+}
+/**
+ *   schema转example
+ * */
+export async function schema2example(data: any): Promise<any> {
+    return request({
+        url: `/serve/schema/schema2example`,
+        method: 'post',
+        data:data
+    });
+}
+/**
+ *   schema转yaml
+ * */
+export async function schema2yaml(data: any): Promise<any> {
+    return request({
+        url: `/serve/schema/schema2yaml`,
+        method: 'post',
+        data:data
+    });
+}
+
+
+
+

@@ -99,6 +99,15 @@ func (s *EndpointService) Yaml(endpoint model.Endpoint) (res interface{}) {
 	}
 	serve2conv := openapi.NewServe2conv(serve, []model.Endpoint{endpoint})
 	res = serve2conv.ToV3()
-	//fmt.Println(res, "+++++++++++++++++++")
+	return
+}
+
+func (s *EndpointService) UpdateStatus(id uint, status int64) (err error) {
+	err = s.EndpointRepo.UpdateStatus(id, status)
+	return
+}
+
+func (s *EndpointService) BatchDelete(ids []uint) (err error) {
+	err = s.EndpointRepo.DeleteByIds(ids)
 	return
 }

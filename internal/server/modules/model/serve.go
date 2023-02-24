@@ -4,7 +4,7 @@ type Serve struct {
 	BaseModel
 	Name        string `json:"name"`
 	ProjectId   uint   `json:"projectId"`
-	UserId      int64  `json:"userId"`
+	CreateUser  string `json:"createUser"`
 	Status      int64  `json:"status"`
 	Description string `json:"description"`
 }

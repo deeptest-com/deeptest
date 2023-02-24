@@ -59,6 +59,16 @@ func (c *EndpointCtrl) Delete(ctx iris.Context) {
 	}
 }
 
+func (c *EndpointCtrl) BatchDelete(ctx iris.Context) {
+	var req []uint
+	if err := ctx.ReadJSON(&req); err == nil {
+		c.EndpointService.BatchDelete(req)
+		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+	} else {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
+	}
+}
+
 //构造参数构造auth，BasicAuth,BearerToken,OAuth20,ApiKey
 func (c *EndpointCtrl) requestParser(req v1.EndpointReq) (endpoint model.Endpoint) {
 	/*	for _, item := range req.Interfaces {
@@ -122,4 +132,15 @@ func (c *EndpointCtrl) Yaml(ctx iris.Context) {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 	}
 	return
+}
+
+func (c *EndpointCtrl) UpdateStatus(ctx iris.Context) {
+	id := ctx.URLParamUint64("id")
+	status := ctx.URLParamUint64("status")
+	err := c.EndpointService.UpdateStatus(uint(id), int64(status))
+	if err == nil {
+		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+	} else {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
+	}
 }

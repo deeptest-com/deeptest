@@ -114,6 +114,11 @@ func (s *ServeService) Example2Schema(data string) (schema openapi3.Schema) {
 	return
 }
 
+func (s *ServeService) DeleteSchemaById(id uint) (err error) {
+	err = s.ServeRepo.DeleteSchemaById(id)
+	return
+}
+
 func (s *ServeService) Schema2Example(data string) (obj interface{}) {
 	schema2conv := openapi.NewSchema2conv()
 	schema := openapi3.Schema{}
@@ -131,4 +136,16 @@ func (s *ServeService) Schema2Yaml(data string) (res string) {
 	_commUtils.JsonDecode(data, &schema)
 	content, _ := encoder.NewEncoder(schema).Encode()
 	return string(content)
+}
+
+func (s *ServeService) CopySchema(id uint) (schema model.ComponentSchema, err error) {
+	schema, err = s.ServeRepo.GetSchema(id)
+	if err != nil {
+		return
+	}
+	schema.ID = 0
+	schema.CreatedAt = nil
+	schema.UpdatedAt = nil
+	err = s.ServeRepo.Save(0, &schema)
+	return
 }

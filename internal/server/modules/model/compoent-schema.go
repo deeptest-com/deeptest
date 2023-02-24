@@ -7,6 +7,7 @@ type ComponentSchema struct {
 	Content  string `json:"content"`
 	ServeId  int64  `json:"serveId"`
 	Examples string `json:"examples"`
+	Tags     string `json:"tags"`
 }
 
 func (ComponentSchema) TableName() string {

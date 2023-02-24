@@ -13,8 +13,8 @@ type ScenarioCategoryRepo struct {
 	ProjectRepo *ProjectRepo `inject:""`
 }
 
-func (r *ScenarioCategoryRepo) GetTree(projectId, serveId uint) (root *v1.ScenarioCategory, err error) {
-	pos, err := r.ListByProject(projectId, serveId)
+func (r *ScenarioCategoryRepo) GetTree(moduleId, projectId, serveId uint) (root *v1.ScenarioCategory, err error) {
+	pos, err := r.ListByProject(moduleId, projectId, serveId)
 	if err != nil {
 		return
 	}
@@ -29,10 +29,11 @@ func (r *ScenarioCategoryRepo) GetTree(projectId, serveId uint) (root *v1.Scenar
 	return
 }
 
-func (r *ScenarioCategoryRepo) ListByProject(projectId, serveId uint) (pos []*model.ScenarioCategory, err error) {
+func (r *ScenarioCategoryRepo) ListByProject(moduleId, projectId, serveId uint) (pos []*model.ScenarioCategory, err error) {
 	err = r.DB.
 		Where("project_id=?", projectId).
 		Where("serve_id=?", serveId).
+		Where("module_id=?", moduleId).
 		Where("NOT deleted").
 		Order("parent_id ASC, ordr ASC").
 		Find(&pos).Error

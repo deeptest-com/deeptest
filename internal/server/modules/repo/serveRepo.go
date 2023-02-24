@@ -105,12 +105,17 @@ func (r *ServeRepo) Get(id uint) (res model.Serve, err error) {
 	return
 }
 
+func (r *ServeRepo) GetSchema(id uint) (res model.ComponentSchema, err error) {
+	err = r.DB.Where("NOT deleted AND not disabled").First(&res, id).Error
+	return
+}
+
 func (r *ServeRepo) DeleteById(id uint) error {
 	return r.DB.Model(&model.Serve{}).Where("id = ?", id).Update("deleted", 1).Error
 }
 
 func (r *ServeRepo) DisableById(id uint) error {
-	return r.DB.Model(&model.Serve{}).Where("id = ?", id).Update("disabled", 1).Error
+	return r.DB.Model(&model.Serve{}).Where("id = ?", id).Update("status", 4).Error
 }
 
 func (r *ServeRepo) DeleteVersionById(id uint) error {
@@ -124,4 +129,8 @@ func (r *ServeRepo) DisableVersionById(id uint) error {
 func (r *ServeRepo) ListServer(serveId uint) (res []model.ServeServer, err error) {
 	err = r.DB.Where("serve_id = ? AND NOT deleted AND not disabled", serveId).Find(&res).Error
 	return
+}
+
+func (r *ServeRepo) DeleteSchemaById(id uint) error {
+	return r.DB.Model(&model.ComponentSchema{}).Where("id = ?", id).Update("deleted", 1).Error
 }

@@ -27,6 +27,7 @@ func (c *ServeCtrl) Index(ctx iris.Context) {
 func (c *ServeCtrl) Save(ctx iris.Context) {
 	var req v1.ServeReq
 	if err := ctx.ReadJSON(&req); err == nil {
+		req.CreateUser = "admin"
 		res, _ := c.ServeService.Save(req)
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res})
 	} else {
@@ -143,6 +144,16 @@ func (c *ServeCtrl) ListSchema(ctx iris.Context) {
 	}
 }
 
+func (c *ServeCtrl) DeleteSchema(ctx iris.Context) {
+	id := ctx.URLParamUint64("id")
+	err := c.ServeService.DeleteSchemaById(uint(id))
+	if err == nil {
+		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+	} else {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
+	}
+}
+
 func (c *ServeCtrl) ListServer(ctx iris.Context) {
 	serveId := ctx.URLParamUint64("serveId")
 	res, err := c.ServeService.ListServer(uint(serveId))
@@ -188,6 +199,16 @@ func (c *ServeCtrl) SchemaToYaml(ctx iris.Context) {
 	if err := ctx.ReadJSON(&req); err == nil {
 		res := c.ServeService.Schema2Yaml(req.Data)
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
+	} else {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
+	}
+}
+
+func (c *ServeCtrl) CopySchema(ctx iris.Context) {
+	id := ctx.URLParamUint64("id")
+	if id != 0 {
+		res, _ := c.ServeService.CopySchema(uint(id))
+		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res.ID})
 	} else {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 	}

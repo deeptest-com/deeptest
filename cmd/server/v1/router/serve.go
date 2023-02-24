@@ -32,6 +32,8 @@ func (m *ServeModule) Party() module.WebModule {
 		public.Get("/server/list", m.ServeCtrl.ListServer)
 		public.Post("/schema/save", m.ServeCtrl.SaveSchema)
 		public.Post("/schema/list", m.ServeCtrl.ListSchema)
+		public.Delete("/schema/delete", m.ServeCtrl.DeleteSchema)
+		public.Put("/schema/copy", m.ServeCtrl.CopySchema)
 		public.Post("/schema/example2schema", m.ServeCtrl.ExampleToSchema)
 		public.Post("/schema/schema2example", m.ServeCtrl.SchemaToExample)
 		public.Post("/schema/schema2yaml", m.ServeCtrl.SchemaToYaml)

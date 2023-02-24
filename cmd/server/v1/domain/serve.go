@@ -15,13 +15,13 @@ type ServeReq struct {
 	Name        string `json:"name" validate:"required"`
 	Status      int64  `json:"status"`
 	ID          int64  `json:"id"`
-	UserId      int64  `json:"userId"`
+	CreateUser  string `json:"createUser"`
 	Description string `json:"description"`
 }
 
 type ServeVersionReq struct {
 	ServeId     int64  `json:"serveId"`
-	value       string `json:"value"`
+	Value       string `json:"value"`
 	ID          uint   `json:"id"`
 	CreateUser  string `json:"createUser"`
 	Description string `json:"description"`
@@ -42,6 +42,7 @@ type ServeSchemaReq struct {
 	Content  string `json:"content"`
 	Examples string `json:"examples"`
 	Type     string `json:"type"`
+	Tags     string `json:"tags"`
 }
 
 type ServeServerReq struct {

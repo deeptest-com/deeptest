@@ -40,6 +40,9 @@ var (
 		&ScenarioCategory{},
 		&Scenario{},
 
+		&PlanCategory{},
+		&Plan{},
+
 		&Processor{},
 		//&ProcessorThreadGroup{},
 		&ProcessorGroup{},

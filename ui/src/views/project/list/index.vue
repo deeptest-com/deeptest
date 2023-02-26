@@ -40,7 +40,10 @@
             <a-button type="link" @click="() => edit(record.id)"
                       :disabled="currentUser.projectRoles[record.id] !== 'admin'">编辑</a-button>
             <a-button type="link" @click="() => remove(record.id)"
-                      :disabled="currentUser.projectRoles[record.id] !== 'admin'">删除</a-button>
+                      :title="currProject.id === record.id ? '不能删除当前项目' : ''"
+                      :disabled="currProject.id === record.id || currentUser.projectRoles[record.id] !== 'admin'">
+              <span>删除</span>
+            </a-button>
           </template>
 
         </a-table>
@@ -61,6 +64,7 @@ import {useRouter} from "vue-router";
 import {message, Modal, notification} from "ant-design-vue";
 import {NotificationKeyCommon} from "@/utils/const";
 import {StateType as UserStateType} from "@/store/user";
+import {StateType as ProjectStateType} from "@/store/project";
 
     const statusArr = ref<SelectTypes['options']>([
       {
@@ -78,8 +82,9 @@ import {StateType as UserStateType} from "@/store/user";
     ]);
 
     const router = useRouter();
-    const store = useStore<{ Project: StateType, User: UserStateType }>();
+    const store = useStore<{ ProjectGlobal: ProjectStateType, Project: StateType, User: UserStateType }>();
     const currentUser = computed<any>(()=> store.state.User.currentUser);
+   const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 
     const list = computed<Project[]>(() => store.state.Project.queryResult.list);
     let pagination = computed<PaginationConfig>(() => store.state.Project.queryResult.pagination);

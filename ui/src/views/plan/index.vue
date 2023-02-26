@@ -1,13 +1,13 @@
 <template>
-  <div id="scenario-index-main" class="dp-splits-v">
-    <div id="scenario-index-left">
-      <ScenarioTree />
+  <div id="plan-index-main" class="dp-splits-v">
+    <div id="plan-index-left">
+      <PlanTree />
     </div>
 
-    <div id="scenario-index-splitter" class="splitter"></div>
+    <div id="plan-index-splitter" class="splitter"></div>
 
-    <div id="scenario-index-right">
-        <ScenarioList />
+    <div id="plan-index-right">
+        <PlanList />
     </div>
   </div>
 </template>
@@ -19,10 +19,9 @@ import {Form} from 'ant-design-vue';
 import {resizeWidth} from "@/utils/dom";
 import {UsedBy} from "@/utils/enum";
 
-import ScenarioTree from './list/tree.vue';
-import ScenarioList from './list/list.vue';
+import PlanTree from './list/tree.vue';
+import PlanList from './list/list.vue';
 
-provide('usedBy', UsedBy.interface)
 const useForm = Form.useForm;
 
 const {t} = useI18n();
@@ -33,23 +32,23 @@ onMounted(() => {
 })
 
 const resize = () => {
-  resizeWidth('scenario-index-main',
-      'scenario-index-left', 'scenario-index-splitter', 'scenario-index-right', 320, 600)
+  resizeWidth('plan-index-main',
+      'plan-index-left', 'plan-index-splitter', 'plan-index-right', 320, 600)
 }
 
 </script>
 
 <style lang="less" scoped>
-#scenario-index-main {
+#plan-index-main {
   display: flex;
   height: 100%;
 
-  #scenario-index-left {
+  #plan-index-left {
     width: 260px;
     height: 100%;
   }
 
-  #scenario-index-right {
+  #plan-index-right {
     flex: 1;
     width: 0;
     height: 100%;

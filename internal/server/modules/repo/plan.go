@@ -12,27 +12,27 @@ import (
 	"gorm.io/gorm"
 )
 
-type ScenarioRepo struct {
+type PlanRepo struct {
 	DB       *gorm.DB  `inject:""`
 	BaseRepo *BaseRepo `inject:""`
 }
 
-func NewScenarioRepo() *ScenarioRepo {
-	return &ScenarioRepo{}
+func NewPlanRepo() *PlanRepo {
+	return &PlanRepo{}
 }
 
-func (r *ScenarioRepo) Paginate(req v1.ScenarioReqPaginate, projectId int) (data _domain.PageData, err error) {
+func (r *PlanRepo) Paginate(req v1.PlanReqPaginate, projectId int) (data _domain.PageData, err error) {
 	var count int64
 	var categoryIds []uint
 
 	if req.CategoryId > 0 {
-		categoryIds, err = r.BaseRepo.GetAllChildIds(req.CategoryId, model.ScenarioCategory{}.TableName())
+		categoryIds, err = r.BaseRepo.GetAllChildIds(req.CategoryId, model.PlanCategory{}.TableName())
 		if err != nil {
 			return
 		}
 	}
 
-	db := r.DB.Model(&model.Scenario{}).
+	db := r.DB.Model(&model.Plan{}).
 		Where("project_id = ? AND NOT deleted",
 			projectId)
 
@@ -53,7 +53,7 @@ func (r *ScenarioRepo) Paginate(req v1.ScenarioReqPaginate, projectId int) (data
 		return
 	}
 
-	scenarios := make([]*model.Scenario, 0)
+	scenarios := make([]*model.Plan, 0)
 
 	err = db.
 		Scopes(dao.PaginateScope(req.Page, req.PageSize, req.Order, req.Field)).
@@ -68,8 +68,8 @@ func (r *ScenarioRepo) Paginate(req v1.ScenarioReqPaginate, projectId int) (data
 	return
 }
 
-func (r *ScenarioRepo) Get(id uint) (scenario model.Scenario, err error) {
-	err = r.DB.Model(&model.Scenario{}).Where("id = ?", id).First(&scenario).Error
+func (r *PlanRepo) Get(id uint) (scenario model.Plan, err error) {
+	err = r.DB.Model(&model.Plan{}).Where("id = ?", id).First(&scenario).Error
 	if err != nil {
 		logUtils.Errorf("find scenario by id error", zap.String("error:", err.Error()))
 		return scenario, err
@@ -78,8 +78,8 @@ func (r *ScenarioRepo) Get(id uint) (scenario model.Scenario, err error) {
 	return scenario, nil
 }
 
-func (r *ScenarioRepo) FindByName(scenarioName string, id uint) (scenario model.Scenario, err error) {
-	db := r.DB.Model(&model.Scenario{}).
+func (r *PlanRepo) FindByName(scenarioName string, id uint) (scenario model.Plan, err error) {
+	db := r.DB.Model(&model.Plan{}).
 		Where("name = ? AND NOT deleted", scenarioName)
 
 	if id > 0 {
@@ -91,14 +91,14 @@ func (r *ScenarioRepo) FindByName(scenarioName string, id uint) (scenario model.
 	return
 }
 
-func (r *ScenarioRepo) Create(scenario model.Scenario) (ret model.Scenario, bizErr *_domain.BizErr) {
+func (r *PlanRepo) Create(scenario model.Plan) (ret model.Plan, bizErr *_domain.BizErr) {
 	//po, err := r.FindByName(scenario.Name, 0)
 	//if po.Name != "" {
 	//	bizErr = &_domain.BizErr{Code: _domain.ErrNameExist.Code}
 	//	return
 	//}
 
-	err := r.DB.Model(&model.Scenario{}).Create(&scenario).Error
+	err := r.DB.Model(&model.Plan{}).Create(&scenario).Error
 	if err != nil {
 		logUtils.Errorf("add scenario error", zap.String("error:", err.Error()))
 		bizErr = &_domain.BizErr{Code: _domain.SystemErr.Code}
@@ -111,7 +111,7 @@ func (r *ScenarioRepo) Create(scenario model.Scenario) (ret model.Scenario, bizE
 	return
 }
 
-func (r *ScenarioRepo) Update(req model.Scenario) error {
+func (r *PlanRepo) Update(req model.Plan) error {
 	values := map[string]interface{}{
 		"name":     req.Name,
 		"desc":     req.Desc,
@@ -126,8 +126,8 @@ func (r *ScenarioRepo) Update(req model.Scenario) error {
 	return nil
 }
 
-func (r *ScenarioRepo) DeleteById(id uint) (err error) {
-	err = r.DB.Model(&model.Scenario{}).Where("id = ?", id).
+func (r *PlanRepo) DeleteById(id uint) (err error) {
+	err = r.DB.Model(&model.Plan{}).Where("id = ?", id).
 		Updates(map[string]interface{}{"deleted": true}).Error
 	if err != nil {
 		logUtils.Errorf("delete scenario by id error", zap.String("error:", err.Error()))
@@ -137,8 +137,8 @@ func (r *ScenarioRepo) DeleteById(id uint) (err error) {
 	return
 }
 
-func (r *ScenarioRepo) DeleteChildren(ids []int, tx *gorm.DB) (err error) {
-	err = tx.Model(&model.Scenario{}).Where("id IN (?)", ids).
+func (r *PlanRepo) DeleteChildren(ids []int, tx *gorm.DB) (err error) {
+	err = tx.Model(&model.Plan{}).Where("id IN (?)", ids).
 		Updates(map[string]interface{}{"deleted": true}).Error
 	if err != nil {
 		logUtils.Errorf("batch delete scenario error", zap.String("error:", err.Error()))
@@ -148,7 +148,7 @@ func (r *ScenarioRepo) DeleteChildren(ids []int, tx *gorm.DB) (err error) {
 	return nil
 }
 
-func (r *ScenarioRepo) GetChildrenIds(id uint) (ids []int, err error) {
+func (r *PlanRepo) GetChildrenIds(id uint) (ids []int, err error) {
 	tmpl := `
 		WITH RECURSIVE scenario AS (
 			SELECT * FROM biz_scenario WHERE id = %d

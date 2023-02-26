@@ -31,6 +31,9 @@ export default {
     'scenario.design': '场景设计',
     'scenario.exec': '场景执行',
 
+    'plan': '计划',
+    'plan.edit': '计划编辑',
+
     'report': '报告',
     'reportNew': '报告New',
     'report.detail': '报告细节',

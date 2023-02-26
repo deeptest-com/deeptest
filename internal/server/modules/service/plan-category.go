@@ -2,6 +2,7 @@ package service
 
 import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	repo "github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
@@ -77,6 +78,28 @@ func (s *PlanCategoryService) ListToByPlan(id uint) (ret []*model.PlanCategory, 
 		copier.CopyWithOption(&to, po, copier.Option{DeepCopy: true})
 
 		ret = append(ret, &to)
+	}
+
+	return
+}
+
+func (s *PlanCategoryService) Move(srcId, targetId uint, pos serverConsts.DropPos, projectId uint) (
+	srcPlanNode model.PlanCategory, err error) {
+	srcPlanNode, err = s.PlanCategoryRepo.Get(srcId)
+
+	srcPlanNode.ParentId, srcPlanNode.Ordr = s.PlanCategoryRepo.UpdateOrder(pos, targetId)
+	err = s.PlanCategoryRepo.UpdateOrdAndParent(srcPlanNode)
+
+	return
+}
+
+func (s *PlanCategoryService) deleteNodeAndChildren(nodeId uint) (err error) {
+	err = s.PlanCategoryRepo.Delete(nodeId)
+	if err == nil {
+		children, _ := s.PlanCategoryRepo.GetChildren(nodeId)
+		for _, child := range children {
+			s.deleteNodeAndChildren(child.ID)
+		}
 	}
 
 	return

@@ -22,6 +22,7 @@ func (m *PlanCategoryModule) Party() module.WebModule {
 		index.Put("/", m.PlanCategoryCtrl.Update).Name = "更新分类"
 		index.Put("/{id:uint}/updateName", m.PlanCategoryCtrl.UpdateName).Name = "更新节点名称"
 		index.Delete("/{id:uint}", m.PlanCategoryCtrl.Delete).Name = "删除节点"
+		index.Post("/move", m.PlanCategoryCtrl.Move).Name = "移动节点"
 	}
 
 	return module.NewModule("/plans/categories", handler)

@@ -130,3 +130,23 @@ func (c *PlanCategoryCtrl) Delete(ctx iris.Context) {
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 }
+
+// Mode 移动
+func (c *PlanCategoryCtrl) Move(ctx iris.Context) {
+	projectId, _ := ctx.URLParamInt("currProjectId")
+
+	var req v1.ScenarioCategoryMoveReq
+	err := ctx.ReadJSON(&req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	_, err = c.PlanCategoryService.Move(uint(req.DragKey), uint(req.DropKey), req.DropPos, uint(projectId))
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+}

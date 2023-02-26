@@ -7,76 +7,70 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
-	"sync"
 )
 
-var (
-	breakMap sync.Map
-)
-
-type ScenarioExecService struct {
-	ScenarioRepo       *repo.ScenarioRepo       `inject:""`
-	ScenarioNodeRepo   *repo.ScenarioNodeRepo   `inject:""`
-	ScenarioReportRepo *repo.ScenarioReportRepo `inject:""`
-	TestLogRepo        *repo.LogRepo            `inject:""`
+type PlanExecService struct {
+	PlanRepo       *repo.PlanRepo       `inject:""`
+	PlanReportRepo *repo.PlanReportRepo `inject:""`
+	TestLogRepo    *repo.LogRepo        `inject:""`
 
 	EnvironmentService *EnvironmentService `inject:""`
 	DatapoolService    *DatapoolService    `inject:""`
 }
 
-func (s *ScenarioExecService) LoadExecResult(scenarioId int) (result domain.Report, err error) {
-	scenario, err := s.ScenarioRepo.Get(uint(scenarioId))
+func (s *PlanExecService) LoadExecResult(planId int) (result domain.Report, err error) {
+	plan, err := s.PlanRepo.Get(uint(planId))
 	if err != nil {
 		return
 	}
 
-	result.Name = scenario.Name
+	result.Name = plan.Name
 
 	return
 }
 
-func (s *ScenarioExecService) LoadExecData(scenarioId int) (ret agentExec.ProcessorExecObj, err error) {
-	scenario, err := s.ScenarioRepo.Get(uint(scenarioId))
-	if err != nil {
-		return
-	}
+func (s *PlanExecService) LoadExecData(planId int) (ret agentExec.ProcessorExecObj, err error) {
+	//plan, err := s.PlanRepo.Get(uint(planId))
+	//if err != nil {
+	//	return
+	//}
 
-	rootProcessor, _ := s.ScenarioNodeRepo.GetTree(scenario, true)
-	ret.Variables, _ = s.EnvironmentService.ListVariableForExec(scenario)
-	ret.Datapools, _ = s.DatapoolService.ListForExec(scenario.ProjectId)
-
-	ret.RootProcessor = rootProcessor
-
-	return
-}
-
-func (s *ScenarioExecService) SaveReport(scenarioId int, rootResult execDomain.Result) (err error) {
-	scenario, _ := s.ScenarioRepo.Get(uint(scenarioId))
-	rootResult.Name = scenario.Name
-
-	report := model.ScenarioReport{
-		Name:      scenario.Name,
-		StartTime: rootResult.StartTime,
-		EndTime:   rootResult.EndTime,
-		Duration:  rootResult.EndTime.Unix() - rootResult.StartTime.Unix(),
-
-		ProgressStatus: rootResult.ProgressStatus,
-		ResultStatus:   rootResult.ResultStatus,
-
-		ScenarioId: scenario.ID,
-		ProjectId:  scenario.ProjectId,
-	}
-
-	s.countRequest(rootResult, &report)
-	s.summarizeInterface(&report)
-
-	s.ScenarioReportRepo.Create(&report)
-	s.TestLogRepo.CreateLogs(rootResult, &report)
+	//rootProcessor, _ := s.PlanNodeRepo.GetTree(plan, true)
+	//ret.Variables, _ = s.EnvironmentService.ListVariableForExec(plan)
+	//ret.Datapools, _ = s.DatapoolService.ListForExec(plan.ProjectId)
+	//
+	//ret.RootProcessor = rootProcessor
 
 	return
 }
 
-func (s *ScenarioExecService) countRequest(result execDomain.Result, report *model.ScenarioReport) {
+func (s *PlanExecService) SaveReport(planId int, rootResult execDomain.Result) (err error) {
+	//plan, _ := s.PlanRepo.Get(uint(planId))
+	//rootResult.Name = plan.Name
+	//
+	//report := model.PlanReport{
+	//	Name:      plan.Name,
+	//	StartTime: rootResult.StartTime,
+	//	EndTime:   rootResult.EndTime,
+	//	Duration:  rootResult.EndTime.Unix() - rootResult.StartTime.Unix(),
+	//
+	//	ProgressStatus: rootResult.ProgressStatus,
+	//	ResultStatus:   rootResult.ResultStatus,
+	//
+	//	PlanId:    plan.ID,
+	//	ProjectId: plan.ProjectId,
+	//}
+	//
+	//s.countRequest(rootResult, &report)
+	//s.summarizeInterface(&report)
+	//
+	//s.PlanReportRepo.Create(&report)
+	//s.TestLogRepo.CreateLogs(rootResult, &report)
+
+	return
+}
+
+func (s *PlanExecService) countRequest(result execDomain.Result, report *model.PlanReport) {
 	if result.ProcessorType == consts.ProcessorInterfaceDefault {
 		s.countInterface(result.InterfaceId, result.ResultStatus, report)
 
@@ -115,7 +109,7 @@ func (s *ScenarioExecService) countRequest(result execDomain.Result, report *mod
 	}
 }
 
-func (s *ScenarioExecService) countInterface(interfaceId uint, status consts.ResultStatus, report *model.ScenarioReport) {
+func (s *PlanExecService) countInterface(interfaceId uint, status consts.ResultStatus, report *model.PlanReport) {
 	if report.InterfaceStatusMap == nil {
 		report.InterfaceStatusMap = map[uint]map[consts.ResultStatus]int{}
 	}
@@ -137,7 +131,7 @@ func (s *ScenarioExecService) countInterface(interfaceId uint, status consts.Res
 	}
 }
 
-func (s *ScenarioExecService) summarizeInterface(report *model.ScenarioReport) {
+func (s *PlanExecService) summarizeInterface(report *model.PlanReport) {
 	for _, val := range report.InterfaceStatusMap {
 		if val[consts.Fail] > 0 {
 			report.FailInterfaceNum++

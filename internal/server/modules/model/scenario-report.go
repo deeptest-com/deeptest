@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-type Report struct {
+type ScenarioReport struct {
 	BaseModel
 
 	Name string `json:"name"`
@@ -40,6 +40,6 @@ type Report struct {
 	Logs []*ExecLogProcessor `gorm:"-" json:"logs"`
 }
 
-func (Report) TableName() string {
-	return "biz_report"
+func (ScenarioReport) TableName() string {
+	return "biz_scenario_report"
 }

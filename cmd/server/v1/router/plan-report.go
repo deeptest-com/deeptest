@@ -7,16 +7,16 @@ import (
 	"github.com/kataras/iris/v12"
 )
 
-type ReportModule struct {
-	ReportCtrl *handler.ReportCtrl `inject:""`
+type PlanReportModule struct {
+	ReportCtrl *handler.PlanReportCtrl `inject:""`
 }
 
-func NewReportModule() *ReportModule {
-	return &ReportModule{}
+func NewReportModule() *PlanReportModule {
+	return &PlanReportModule{}
 }
 
-// Party 场景
-func (m *ReportModule) Party() module.WebModule {
+// Party
+func (m *PlanReportModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
 		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
 		index.Get("/", m.ReportCtrl.List).Name = "结果列表"
@@ -24,5 +24,5 @@ func (m *ReportModule) Party() module.WebModule {
 		index.Delete("/{id:uint}", m.ReportCtrl.Delete).Name = "删除场景"
 	}
 
-	return module.NewModule("/reports", handler)
+	return module.NewModule("/plans/reports", handler)
 }

@@ -29,10 +29,11 @@ export default {
     'scenario': '场景',
     'scenario.edit': '场景编辑',
     'scenario.design': '场景设计',
-    'scenario.exec': '场景执行',
+    'scenario.exec': '执行测试场景',
 
     'plan': '计划',
     'plan.edit': '计划编辑',
+    'plan.exec': '执行测试计划',
 
     'report': '报告',
     'reportNew': '报告New',

@@ -11,7 +11,7 @@ type PlanCategoryModule struct {
 	PlanCategoryCtrl *handler.PlanCategoryCtrl `inject:""`
 }
 
-// Party 场景
+// Party
 func (m *PlanCategoryModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
 		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())

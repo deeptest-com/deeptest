@@ -13,6 +13,7 @@ import {Interface} from "@/views/interface/data";
 
 const apiPath = 'plans';
 const apiPathCategoryNodes = `${apiPath}/categories`;
+const apiPathExec = `${apiPath}/exec`;
 
 export async function query(params?: QueryParams): Promise<any> {
     return request({
@@ -35,6 +36,14 @@ export async function remove(id: number): Promise<any> {
     return request({
         url: `/${apiPath}/${id}`,
         method: 'delete',
+    });
+}
+export async function loadExecResult(planId): Promise<any> {
+    const params = {planId}
+    return request({
+        url: `/${apiPathExec}/loadExecResult`,
+        method: 'get',
+        params,
     });
 }
 

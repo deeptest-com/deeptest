@@ -45,8 +45,10 @@ type IndexModule struct {
 
 	PlanCategoryModule *router.PlanCategoryModule `inject:""`
 	PlanModule         *router.PlanModule         `inject:""`
+	PlanExecModule     *router.PlanExecModule     `inject:""`
 
-	ReportModule *router.ReportModule `inject:""`
+	ScenarioReportModule *router.ScenarioReportModule `inject:""`
+	PlanReportModule     *router.PlanReportModule     `inject:""`
 }
 
 func NewIndexModule() *IndexModule {
@@ -97,8 +99,10 @@ func (m *IndexModule) Party() module.WebModule {
 
 		m.PlanCategoryModule.Party(),
 		m.PlanModule.Party(),
+		m.PlanExecModule.Party(),
 
-		m.ReportModule.Party(),
+		m.ScenarioReportModule.Party(),
+		m.PlanReportModule.Party(),
 	}
 	return module.NewModule(consts.ApiPath, handler, modules...)
 }

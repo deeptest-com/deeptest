@@ -12,12 +12,12 @@ import (
 	"go.uber.org/zap"
 )
 
-type ReportCtrl struct {
-	ReportService *service.ReportService `inject:""`
+type ScenarioReportCtrl struct {
+	ReportService *service.PlanReportService `inject:""`
 	BaseCtrl
 }
 
-func (c *ReportCtrl) List(ctx iris.Context) {
+func (c *ScenarioReportCtrl) List(ctx iris.Context) {
 	projectId, err := ctx.URLParamInt("currProjectId")
 	if projectId == 0 {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: "projectId"})
@@ -44,7 +44,7 @@ func (c *ReportCtrl) List(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data, Msg: _domain.NoErr.Msg})
 }
 
-func (c *ReportCtrl) Get(ctx iris.Context) {
+func (c *ScenarioReportCtrl) Get(ctx iris.Context) {
 	var req _domain.ReqId
 	if err := ctx.ReadParams(&req); err != nil {
 		logUtils.Errorf("参数解析失败", zap.String("错误:", err.Error()))
@@ -59,7 +59,7 @@ func (c *ReportCtrl) Get(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: report, Msg: _domain.NoErr.Msg})
 }
 
-func (c *ReportCtrl) Delete(ctx iris.Context) {
+func (c *ScenarioReportCtrl) Delete(ctx iris.Context) {
 	var req _domain.ReqId
 	err := ctx.ReadParams(&req)
 	if err != nil {

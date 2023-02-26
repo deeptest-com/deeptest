@@ -54,7 +54,7 @@ func (r *LogRepo) DeleteById(id uint) (err error) {
 	return
 }
 
-func (r *LogRepo) CreateLogs(rootResult agentDomain.Result, report *model.Report) (err error) {
+func (r *LogRepo) CreateLogs(rootResult agentDomain.Result, report *model.ScenarioReport) (err error) {
 	r.CreateLog(rootResult, 0, report.ID)
 
 	return

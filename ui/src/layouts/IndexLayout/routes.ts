@@ -98,6 +98,13 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
         component: () => import('@/views/plan/index.vue'),
         hidden: false,
       },
+      {
+        icon: 'plan',
+        title: 'plan.exec',
+        path: 'exec/:id',
+        component: () => import('@/views/plan/exec/index.vue'),
+        hidden: true,
+      },
     ],
   },
 

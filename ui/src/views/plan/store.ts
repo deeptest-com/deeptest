@@ -16,6 +16,8 @@ import {
     moveCategory,
     updateCategoryName,
 
+    loadExecResult,
+
 } from './service';
 
 import {getNodeMap} from "@/services/tree";
@@ -26,6 +28,8 @@ export interface StateType {
     listResult: QueryResult;
     detailResult: Plan;
     queryParams: any;
+
+    execResult: any;
 
     treeDataCategory: any[];
     treeDataMapCategory: any,
@@ -40,6 +44,8 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setList: Mutation<StateType>;
         setDetail: Mutation<StateType>;
         setQueryParams: Mutation<StateType>;
+
+        setExecResult: Mutation<StateType>;
 
         setTreeDataCategory: Mutation<StateType>;
         setTreeDataMapCategory: Mutation<StateType>;
@@ -63,6 +69,9 @@ export interface ModuleType extends StoreModuleType<StateType> {
         saveTreeMapItemPropCategory: Action<StateType, StateType>;
         saveCategory: Action<StateType, StateType>;
         updateCategoryName: Action<StateType, StateType>;
+
+        loadExecResult: Action<StateType, StateType>;
+        updateExecResult: Action<StateType, StateType>;
     }
 }
 
@@ -81,6 +90,7 @@ const initState: StateType = {
     },
     detailResult: {} as Plan,
     queryParams: {},
+    execResult: {},
 
     treeDataCategory: [],
     treeDataMapCategory: {},
@@ -103,6 +113,10 @@ const StoreModel: ModuleType = {
         },
         setDetail(state, payload) {
             state.detailResult = payload;
+        },
+
+        setExecResult(state, data) {
+            state.execResult = data;
         },
 
         setTreeDataCategory(state, data) {
@@ -188,6 +202,23 @@ const StoreModel: ModuleType = {
             } catch (error) {
                 return false;
             }
+        },
+
+        async loadExecResult({commit, dispatch, state}, scenarioId) {
+            const response = await loadExecResult(scenarioId);
+            if (response.code != 0) return;
+
+            const {data} = response;
+            commit('setExecResult', data || {});
+            commit('setPlanId', scenarioId);
+
+            return true;
+        },
+        async updateExecResult({commit, dispatch, state}, payload) {
+            commit('setExecResult', payload);
+            commit('setPlanId', payload.scenarioId);
+
+            return true;
         },
 
         // category tree

@@ -66,7 +66,7 @@ var (
 		&ProcessorInterfaceApiKey{},
 
 		&ProcessorInvocation{},
-		&Report{},
+		&ScenarioReport{},
 		&ExecLogProcessor{},
 		&ExecLogExtractor{},
 		&ExecLogCheckpoint{},

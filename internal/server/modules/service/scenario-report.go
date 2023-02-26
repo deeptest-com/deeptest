@@ -8,8 +8,8 @@ import (
 )
 
 type ReportService struct {
-	ReportRepo *repo2.ReportRepo `inject:""`
-	LogRepo    *repo2.LogRepo    `inject:""`
+	ReportRepo *repo2.PlanReportRepo `inject:""`
+	LogRepo    *repo2.LogRepo        `inject:""`
 }
 
 func NewReportService() *ReportService {
@@ -21,7 +21,7 @@ func (s *ReportService) Paginate(req v1.ReportReqPaginate, projectId int) (ret _
 	return
 }
 
-func (s *ReportService) GetById(id uint) (report model.Report, err error) {
+func (s *ReportService) GetById(id uint) (report model.ScenarioReport, err error) {
 	report, err = s.ReportRepo.Get(id)
 	return
 }

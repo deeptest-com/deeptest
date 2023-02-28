@@ -20,7 +20,7 @@ func (entity ProcessorPrint) Run(processor *Processor, session *Session) (err er
 	logUtils.Infof("print entity")
 
 	startTime := time.Now()
-	processor.Result = &domain.Result{
+	processor.Result = &agentDomain.Result{
 		ID:                int(entity.ProcessorID),
 		Name:              entity.Name,
 		ProcessorCategory: entity.ProcessorCategory,
@@ -30,13 +30,13 @@ func (entity ProcessorPrint) Run(processor *Processor, session *Session) (err er
 	}
 
 	variableMap := GetCachedVariableMapInContext(processor.ID)
-	value := ReplaceVariableValue(entity.Expression, variableMap, nil)
+	value := ReplaceVariableValue(entity.Expression, Environment, variableMap, nil)
 
 	processor.Result.Summary = strings.ReplaceAll(fmt.Sprintf("%s为\"%v\"。",
 		entity.Expression, value), "<nil>", "空")
 
 	processor.AddResultToParent()
-	exec.SendExecMsg(*processor.Result, session.WsMsg)
+	execUtils.SendExecMsg(*processor.Result, session.WsMsg)
 
 	endTime := time.Now()
 	processor.Result.EndTime = &endTime

@@ -45,7 +45,7 @@ const resize = () => {
   height: 100%;
 
   #scenario-index-left {
-    width: 320px;
+    width: 260px;
     height: 100%;
   }
 

@@ -1,8 +1,6 @@
 package service
 
 import (
-	"context"
-	"github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
@@ -16,16 +14,8 @@ type ImportService struct {
 	InterfaceService *InterfaceService     `inject:""`
 }
 
-func (s *ImportService) Import(req domain.InterfaceImportReq, targetId int) (err error) {
+func (s *ImportService) Import(doc3 openapi3.T, targetId int) (err error) {
 	interf, _ := s.InterfaceRepo.Get(uint(targetId))
-
-	ctx := context.Background()
-	loader := &openapi3.Loader{Context: ctx, IsExternalRefsAllowed: true}
-
-	doc3, err := loader.LoadFromFile(req.File)
-	if err != nil {
-		return
-	}
 
 	err = s.GenerateInterface(doc3, uint(targetId), interf.ProjectId)
 	if err != nil {
@@ -40,13 +30,14 @@ func (s *ImportService) Import(req domain.InterfaceImportReq, targetId int) (err
 	return
 }
 
-func (s *ImportService) GenerateInterface(doc *openapi3.T, targetId, projectId uint) (err error) {
+func (s *ImportService) GenerateInterface(doc openapi3.T, targetId, projectId uint) (err error) {
 	interfaces, err := openapi.ConvertPathsToInterfaces(doc)
 	if err != nil {
 		return
 	}
 
 	for _, interf := range interfaces {
+		interf.IsLeaf = true
 		interf.ProjectId = projectId
 		interf.ParentId = targetId
 
@@ -56,7 +47,7 @@ func (s *ImportService) GenerateInterface(doc *openapi3.T, targetId, projectId u
 	return
 }
 
-func (s *ImportService) GenerateEnvironment(doc *openapi3.T, projectId uint) (err error) {
+func (s *ImportService) GenerateEnvironment(doc openapi3.T, projectId uint) (err error) {
 	env, err := s.EnvironmentRepo.GetByProject(projectId)
 	if err != nil {
 		return

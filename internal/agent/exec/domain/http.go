@@ -1,4 +1,4 @@
-package domain
+package agentDomain
 
 //type Request struct {
 //	BaseRequest

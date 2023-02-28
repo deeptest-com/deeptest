@@ -27,9 +27,10 @@ export interface ResultErr {
  */
 
 export const getServerUrl = () => {
+    const nodeEnv = process.env.NODE_ENV
     let apiUrl = process.env.VUE_APP_API_SERVER
 
-    if (process.env.NODE_ENV === 'production') {
+    if (nodeEnv === 'production' && (!apiUrl || apiUrl.trim() == '')) {
         console.log(process.env.NODE_ENV, window.location.href)
 
         const location = unescape(window.location.href);
@@ -40,9 +41,9 @@ export const getServerUrl = () => {
         }
 
         apiUrl = serverUrl + 'api/v1'
-
-        console.log('on prod env, server url is ' + apiUrl)
     }
+
+    console.log(`on ${nodeEnv} env, server url is ${apiUrl}.`)
 
     return apiUrl
 }

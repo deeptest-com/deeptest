@@ -90,3 +90,14 @@ type ScenarioCategoryMoveReq struct {
 	DropKey int                  `json:"dropKey"`
 	DropPos serverConsts.DropPos `json:"dropPos"`
 }
+
+type ScenarioSimple struct {
+	Id        int    `json:"id"`
+	Name      string `json:"name"`
+	ParentId  int    `json:"parentId"`
+	ProjectId int    `json:"projectId"`
+	IsLeaf    bool   `json:"isLeaf"`
+
+	Ordr     int              `json:"ordr"`
+	Children []ScenarioSimple `json:"children"`
+}

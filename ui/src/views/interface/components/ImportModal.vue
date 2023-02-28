@@ -71,6 +71,7 @@ export default defineComponent({
       ipcRenderer.on(settings.electronMsgReplay, (event, data) => {
         console.log('from electron: ', data)
         modelRef.value.file = data.file
+        modelRef.value.src = data.src
       })
     }
 
@@ -91,7 +92,7 @@ export default defineComponent({
     }
 
     const onCancel = () => {
-      console.log('onSubmit')
+      console.log('onCancel')
       props.cancel()
     }
 

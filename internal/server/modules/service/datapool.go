@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	dateUtils "github.com/aaronchen2k/deeptest/pkg/lib/date"
@@ -96,8 +97,8 @@ func (s *DatapoolService) ReadExcel(pth string) (ret [][]interface{}, err error)
 	return
 }
 
-func (s *DatapoolService) ListForExec(projectId uint) (ret map[string][]map[string]interface{}, error interface{}) {
-	ret = map[string][]map[string]interface{}{}
+func (s *DatapoolService) ListForExec(projectId uint) (ret domain.Datapools, error interface{}) {
+	ret = domain.Datapools{}
 
 	pos, err := s.DatapoolRepo.List(projectId)
 	if err != nil {

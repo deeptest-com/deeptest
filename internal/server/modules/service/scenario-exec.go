@@ -15,10 +15,10 @@ var (
 )
 
 type ScenarioExecService struct {
-	ScenarioRepo     *repo.ScenarioRepo     `inject:""`
-	ScenarioNodeRepo *repo.ScenarioNodeRepo `inject:""`
-	TestReportRepo   *repo.ReportRepo       `inject:""`
-	TestLogRepo      *repo.LogRepo          `inject:""`
+	ScenarioRepo       *repo.ScenarioRepo       `inject:""`
+	ScenarioNodeRepo   *repo.ScenarioNodeRepo   `inject:""`
+	ScenarioReportRepo *repo.ScenarioReportRepo `inject:""`
+	TestLogRepo        *repo.LogRepo            `inject:""`
 
 	EnvironmentService *EnvironmentService `inject:""`
 	DatapoolService    *DatapoolService    `inject:""`
@@ -35,17 +35,17 @@ func (s *ScenarioExecService) LoadExecResult(scenarioId int) (result domain.Repo
 	return
 }
 
-func (s *ScenarioExecService) LoadExecData(scenarioId int) (execObj agentExec.ProcessorExecObj, err error) {
+func (s *ScenarioExecService) LoadExecData(scenarioId int) (ret agentExec.ProcessorExecObj, err error) {
 	scenario, err := s.ScenarioRepo.Get(uint(scenarioId))
 	if err != nil {
 		return
 	}
 
 	rootProcessor, _ := s.ScenarioNodeRepo.GetTree(scenario, true)
-	execObj.Variables, _ = s.EnvironmentService.ListVariableForExec(scenario)
-	execObj.Datapools, _ = s.DatapoolService.ListForExec(scenario.ProjectId)
+	ret.Variables, _ = s.EnvironmentService.ListVariableForExec(scenario)
+	ret.Datapools, _ = s.DatapoolService.ListForExec(scenario.ProjectId)
 
-	execObj.RootProcessor = rootProcessor
+	ret.RootProcessor = rootProcessor
 
 	return
 }
@@ -54,7 +54,7 @@ func (s *ScenarioExecService) SaveReport(scenarioId int, rootResult execDomain.R
 	scenario, _ := s.ScenarioRepo.Get(uint(scenarioId))
 	rootResult.Name = scenario.Name
 
-	report := model.Report{
+	report := model.ScenarioReport{
 		Name:      scenario.Name,
 		StartTime: rootResult.StartTime,
 		EndTime:   rootResult.EndTime,
@@ -70,13 +70,13 @@ func (s *ScenarioExecService) SaveReport(scenarioId int, rootResult execDomain.R
 	s.countRequest(rootResult, &report)
 	s.summarizeInterface(&report)
 
-	s.TestReportRepo.Create(&report)
+	s.ScenarioReportRepo.Create(&report)
 	s.TestLogRepo.CreateLogs(rootResult, &report)
 
 	return
 }
 
-func (s ScenarioExecService) countRequest(result execDomain.Result, report *model.Report) {
+func (s *ScenarioExecService) countRequest(result execDomain.Result, report *model.ScenarioReport) {
 	if result.ProcessorType == consts.ProcessorInterfaceDefault {
 		s.countInterface(result.InterfaceId, result.ResultStatus, report)
 
@@ -115,7 +115,7 @@ func (s ScenarioExecService) countRequest(result execDomain.Result, report *mode
 	}
 }
 
-func (s ScenarioExecService) countInterface(interfaceId uint, status consts.ResultStatus, report *model.Report) {
+func (s *ScenarioExecService) countInterface(interfaceId uint, status consts.ResultStatus, report *model.ScenarioReport) {
 	if report.InterfaceStatusMap == nil {
 		report.InterfaceStatusMap = map[uint]map[consts.ResultStatus]int{}
 	}
@@ -137,7 +137,7 @@ func (s ScenarioExecService) countInterface(interfaceId uint, status consts.Resu
 	}
 }
 
-func (s ScenarioExecService) summarizeInterface(report *model.Report) {
+func (s *ScenarioExecService) summarizeInterface(report *model.ScenarioReport) {
 	for _, val := range report.InterfaceStatusMap {
 		if val[consts.Fail] > 0 {
 			report.FailInterfaceNum++

@@ -1,10 +1,10 @@
 module.exports = {
     electronPackagerConfig: {
-        "name": "DeepTest",
+        "name": "deeptest",
         "icon": "./ui/favicon.ico"
     },
     packagerConfig: {
-        "name": "DeepTest",
+        "name": "deeptest",
         "icon": "./icon/favicon",
         extraResource: [
             './bin',
@@ -65,6 +65,13 @@ module.exports = {
                         // }
                     ]
                 }
+            }
+        ],
+        [
+            "@timfish/forge-externals-plugin",
+            {
+                "externals": ["@electron/remote"],
+                "includeDeps": true
             }
         ]
     ]

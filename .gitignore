@@ -18,3 +18,5 @@ tmp/
 /rbac_model.conf
 /server.yaml
 /upload/
+/cmd/test/nodejs/node_modules/
+/cmd/test/nodejs/package-lock.json

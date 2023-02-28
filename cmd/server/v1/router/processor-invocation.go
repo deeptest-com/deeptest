@@ -8,7 +8,7 @@ import (
 )
 
 type ProcessorInvocationModule struct {
-	ProcessorInvocationCtrl *handler.ProcessorInvocationCtrl `inject:""`
+	ProcessorInvocationCtrl *handler.InvocationProcessorCtrl `inject:""`
 }
 
 // Party 脚本

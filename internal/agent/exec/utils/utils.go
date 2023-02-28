@@ -1,4 +1,4 @@
-package utils
+package agentUtils
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"

@@ -35,16 +35,21 @@ type IndexModule struct {
 	CheckpointModule  *router.CheckpointModule  `inject:""`
 	ParserModule      *router.ParserModule      `inject:""`
 
-	CategoryModule           *router.CategoryModule            `inject:""`
+	ScenarioCategoryModule   *router.ScenarioCategoryModule    `inject:""`
 	ScenarioModule           *router.ScenarioModule            `inject:""`
 	ScenarioNodeModule       *router.ScenarioNodeModule        `inject:""`
 	ScenarioProcessorModule  *router.ScenarioProcessorModule   `inject:""`
 	ScenarioExecModule       *router.ScenarioExecModule        `inject:""`
 	ScenarioInterfaceModule  *router.ProcessorInterfaceModule  `inject:""`
 	ScenarioInvocationModule *router.ProcessorInvocationModule `inject:""`
-	ReportModule             *router.ReportModule              `inject:""`
-	EndpointModule           *router.EndpointModule            `inject:""`
-	ServeModule              *router.ServeModule               `inject:""`
+	//ReportModule             *router.ReportModule              `inject:""`
+	EndpointModule       *router.EndpointModule       `inject:""`
+	ServeModule          *router.ServeModule          `inject:""`
+	PlanCategoryModule   *router.PlanCategoryModule   `inject:""`
+	PlanModule           *router.PlanModule           `inject:""`
+	PlanExecModule       *router.PlanExecModule       `inject:""`
+	ScenarioReportModule *router.ScenarioReportModule `inject:""`
+	PlanReportModule     *router.PlanReportModule     `inject:""`
 }
 
 func NewIndexModule() *IndexModule {
@@ -85,7 +90,7 @@ func (m *IndexModule) Party() module.WebModule {
 		m.CheckpointModule.Party(),
 		m.ParserModule.Party(),
 
-		m.CategoryModule.Party(),
+		m.ScenarioCategoryModule.Party(),
 		m.ScenarioModule.Party(),
 		m.ScenarioNodeModule.Party(),
 		m.ScenarioProcessorModule.Party(),
@@ -93,9 +98,16 @@ func (m *IndexModule) Party() module.WebModule {
 		m.ScenarioInterfaceModule.Party(),
 		m.ScenarioInvocationModule.Party(),
 
-		m.ReportModule.Party(),
+		//m.ReportModule.Party(),
 		m.EndpointModule.Party(),
 		m.ServeModule.Party(),
+
+		m.PlanCategoryModule.Party(),
+		m.PlanModule.Party(),
+		m.PlanExecModule.Party(),
+
+		m.ScenarioReportModule.Party(),
+		m.PlanReportModule.Party(),
 	}
 	return module.NewModule(consts.ApiPath, handler, modules...)
 }

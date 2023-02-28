@@ -42,6 +42,9 @@ export interface SettingsType {
 
     settings: string;
     expandedKeys: string;
+    selectedKey: string;
+    skippedVersion: string;
+    ignoreUtil: string,
 
     eventNotify,
     eventWebSocketConnStatus: string,
@@ -52,6 +55,8 @@ export interface SettingsType {
     webSocketRoom: string,
     electronMsg: string,
     electronMsgReplay: string,
+    electronMsgUpdate: string,
+    electronMsgDownloading: string,
 
     /**
      * Ajax请求头发送Token 的 Key值
@@ -85,6 +90,9 @@ const settings: SettingsType = {
 
     settings: 'settings',
     expandedKeys: 'deeptest-expandedKeys',
+    selectedKey: 'deeptest-selectedKey',
+    skippedVersion: 'skippedVersion',
+    ignoreUtil: 'ignoreUtil',
 
     eventNotify: 'eventNotify',
     eventWebSocketConnStatus: 'eventWebSocketStatus',
@@ -95,6 +103,8 @@ const settings: SettingsType = {
     webSocketRoom: 'webSocketRoom',
     electronMsg: 'electronMsg',
     electronMsgReplay: 'electronMsgReplay',
+    electronMsgUpdate: 'electronMsgUpdate',
+    electronMsgDownloading: 'electronMsgDownloading',
 
     // ajaxHeadersTokenKey: 'x-token',
     ajaxHeadersTokenKey: 'Authorization',

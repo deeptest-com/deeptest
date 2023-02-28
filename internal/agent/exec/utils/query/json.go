@@ -1,4 +1,4 @@
-package queryHelper
+package queryUtils
 
 import (
 	"encoding/json"

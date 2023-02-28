@@ -1,14 +1,16 @@
-import {app} from 'electron';
-import {DEBUG} from './app/utils/consts';
+import {app, dialog} from 'electron';
 import {DeepTestApp} from "./app/app";
-import {logInfo} from "./app/utils/log";
+import {logInfo, logErr, logger} from "./app/utils/log";
+import {getCurrVersion} from "./app/utils/comm";
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) { // eslint-disable-line global-require
   app.quit();
 }
 
-logInfo(`DEBUG=${DEBUG}`)
+const isDev = require('electron-is-dev')
+const mode = isDev ? 'development' : 'production'
+logInfo(`Start DeepTest v${app.getVersion()} in ${mode} mode ...`)
 
 const deeptestApp = new DeepTestApp();
 app.on('ready', () => {

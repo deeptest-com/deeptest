@@ -66,7 +66,7 @@ func (s *ScenarioCategoryService) UpdateName(req v1.ScenarioCategoryReq) (err er
 }
 
 func (s *ScenarioCategoryService) Delete(id uint) (err error) {
-	err = s.deleteScenarioNodeAndChildren(id)
+	err = s.deleteNodeAndChildren(id)
 	return
 }
 
@@ -80,12 +80,12 @@ func (s *ScenarioCategoryService) Move(srcId, targetId uint, pos serverConsts.Dr
 	return
 }
 
-func (s *ScenarioCategoryService) deleteScenarioNodeAndChildren(nodeId uint) (err error) {
+func (s *ScenarioCategoryService) deleteNodeAndChildren(nodeId uint) (err error) {
 	err = s.ScenarioCategoryRepo.Delete(nodeId)
 	if err == nil {
 		children, _ := s.ScenarioCategoryRepo.GetChildren(nodeId)
 		for _, child := range children {
-			s.deleteScenarioNodeAndChildren(child.ID)
+			s.deleteNodeAndChildren(child.ID)
 		}
 	}
 

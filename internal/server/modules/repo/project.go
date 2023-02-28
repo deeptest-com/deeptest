@@ -135,6 +135,11 @@ func (r *ProjectRepo) Create(req v1.ProjectReq, userId uint) (id uint, bizErr *_
 		logUtils.Errorf("添加场景分类错误", zap.String("错误:", err.Error()))
 		return
 	}
+	err = r.AddProjectRootPlanCategory(project.ID)
+	if err != nil {
+		logUtils.Errorf("添加场景分类错误", zap.String("错误:", err.Error()))
+		return
+	}
 
 	id = project.ID
 
@@ -269,6 +274,25 @@ func (r *ProjectRepo) AddProjectRootScenarioCategory(projectId uint) (err error)
 	err = r.DB.Create(&root).Error
 
 	category := model.ScenarioCategory{
+		Name:      "分类",
+		ParentId:  root.ID,
+		ProjectId: projectId,
+		IsLeaf:    false,
+	}
+	err = r.DB.Create(&category).Error
+
+	return
+}
+
+func (r *ProjectRepo) AddProjectRootPlanCategory(projectId uint) (err error) {
+	root := model.PlanCategory{
+		Name:      "所有计划",
+		ProjectId: projectId,
+		IsLeaf:    false,
+	}
+	err = r.DB.Create(&root).Error
+
+	category := model.PlanCategory{
 		Name:      "分类",
 		ParentId:  root.ID,
 		ProjectId: projectId,

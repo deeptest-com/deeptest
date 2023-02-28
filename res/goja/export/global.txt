@@ -1,0 +1,19 @@
+declare global {
+  const dp: {
+      datapool: {
+        get: (datapool_name: string, variable_name: string, seq: string) => {},
+      },
+    environment: {
+      get: (variable_name: string) => {},
+      set: (variable_name: string, variable_value: any) => {},
+      clear: (variable_name: string) => {},
+    },
+    variables: {
+      get: (variable_name: string) => {},
+      set: (variable_name: string, variable_value: any) => {},
+      clear: (variable_name: string) => {},
+    }
+  }
+}
+
+export default {};

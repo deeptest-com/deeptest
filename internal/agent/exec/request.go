@@ -4,6 +4,7 @@ import (
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
 	_httpUtils "github.com/aaronchen2k/deeptest/pkg/lib/http"
 	"math/rand"
@@ -13,31 +14,35 @@ import (
 	"time"
 )
 
-func Invoke(req v1.BaseRequest) (resp v1.InvocationResponse, err error) {
+func Invoke(req *v1.BaseRequest) (resp v1.InvocationResponse, err error) {
+	GetRequestProps(req)
+
 	req.Url, err = _httpUtils.AddDefaultUrlSchema(req.Url)
 	if err != nil {
 		return
 	}
 
 	if req.Method == consts.GET {
-		resp, err = httpHelper.Get(req)
+		resp, err = httpHelper.Get(*req)
 	} else if req.Method == consts.POST {
-		resp, err = httpHelper.Post(req)
+		resp, err = httpHelper.Post(*req)
 	} else if req.Method == consts.PUT {
-		resp, err = httpHelper.Put(req)
+		resp, err = httpHelper.Put(*req)
 	} else if req.Method == consts.DELETE {
-		resp, err = httpHelper.Delete(req)
+		resp, err = httpHelper.Delete(*req)
 	} else if req.Method == consts.PATCH {
-		resp, err = httpHelper.Patch(req)
+		resp, err = httpHelper.Patch(*req)
 	} else if req.Method == consts.HEAD {
-		resp, err = httpHelper.Head(req)
+		resp, err = httpHelper.Head(*req)
 	} else if req.Method == consts.CONNECT {
-		resp, err = httpHelper.Connect(req)
+		resp, err = httpHelper.Connect(*req)
 	} else if req.Method == consts.OPTIONS {
-		resp, err = httpHelper.Options(req)
+		resp, err = httpHelper.Options(*req)
 	} else if req.Method == consts.TRACE {
-		resp, err = httpHelper.Trace(req)
+		resp, err = httpHelper.Trace(*req)
 	}
+
+	GetContentProps(&resp)
 
 	return
 }
@@ -90,54 +95,54 @@ func GetContentProps(resp *v1.InvocationResponse) {
 	return
 }
 
-func ReplaceAll(req *v1.BaseRequest, variableMap map[string]interface{}, datapools map[string][]map[string]interface{}) {
-	replaceUrl(req, variableMap, datapools)
-	replaceParams(req, variableMap, datapools)
-	replaceHeaders(req, variableMap, datapools)
-	replaceBody(req, variableMap, datapools)
-	replaceAuthor(req, variableMap, datapools)
+func ReplaceAll(req *v1.BaseRequest, environment domain.Environment, variables domain.Variables, datapools domain.Datapools) {
+	replaceUrl(req, environment, variables, datapools)
+	replaceParams(req, environment, variables, datapools)
+	replaceHeaders(req, environment, variables, datapools)
+	replaceBody(req, environment, variables, datapools)
+	replaceAuthor(req, environment, variables, datapools)
 }
 
-func replaceUrl(req *v1.BaseRequest, variableMap map[string]interface{}, datapools map[string][]map[string]interface{}) {
-	req.Url = ReplaceVariableValue(req.Url, variableMap, datapools)
+func replaceUrl(req *v1.BaseRequest, environment domain.Environment, variables domain.Variables, datapools domain.Datapools) {
+	req.Url = ReplaceVariableValue(req.Url, environment, variables, datapools)
 }
-func replaceParams(req *v1.BaseRequest, variableMap map[string]interface{}, datapools map[string][]map[string]interface{}) {
+func replaceParams(req *v1.BaseRequest, environment domain.Environment, variables domain.Variables, datapools domain.Datapools) {
 	for idx, param := range req.Params {
-		req.Params[idx].Value = ReplaceVariableValue(param.Value, variableMap, datapools)
+		req.Params[idx].Value = ReplaceVariableValue(param.Value, environment, variables, datapools)
 	}
 }
-func replaceHeaders(req *v1.BaseRequest, variableMap map[string]interface{}, datapools map[string][]map[string]interface{}) {
+func replaceHeaders(req *v1.BaseRequest, environment domain.Environment, variables domain.Variables, datapools domain.Datapools) {
 	for idx, header := range req.Headers {
-		req.Headers[idx].Value = ReplaceVariableValue(header.Value, variableMap, datapools)
+		req.Headers[idx].Value = ReplaceVariableValue(header.Value, environment, variables, datapools)
 	}
 }
-func replaceBody(req *v1.BaseRequest, variableMap map[string]interface{}, datapools map[string][]map[string]interface{}) {
-	req.Body = ReplaceVariableValue(req.Body, variableMap, datapools)
+func replaceBody(req *v1.BaseRequest, environment domain.Environment, variables domain.Variables, datapools domain.Datapools) {
+	req.Body = ReplaceVariableValue(req.Body, environment, variables, datapools)
 }
-func replaceAuthor(req *v1.BaseRequest, variableMap map[string]interface{}, datapools map[string][]map[string]interface{}) {
+func replaceAuthor(req *v1.BaseRequest, environment domain.Environment, variables domain.Variables, datapools domain.Datapools) {
 	if req.AuthorizationType == consts.BasicAuth {
-		req.BasicAuth.Username = ReplaceVariableValue(req.BasicAuth.Username, variableMap, datapools)
-		req.BasicAuth.Password = ReplaceVariableValue(req.BasicAuth.Password, variableMap, datapools)
+		req.BasicAuth.Username = ReplaceVariableValue(req.BasicAuth.Username, environment, variables, datapools)
+		req.BasicAuth.Password = ReplaceVariableValue(req.BasicAuth.Password, environment, variables, datapools)
 
 	} else if req.AuthorizationType == consts.BearerToken {
-		req.BearerToken.Token = ReplaceVariableValue(req.BearerToken.Token, variableMap, datapools)
+		req.BearerToken.Token = ReplaceVariableValue(req.BearerToken.Token, environment, variables, datapools)
 
 	} else if req.AuthorizationType == consts.OAuth2 {
-		req.OAuth20.Name = ReplaceVariableValue(req.OAuth20.Name, variableMap, datapools)
-		req.OAuth20.CallbackUrl = ReplaceVariableValue(req.OAuth20.CallbackUrl, variableMap, datapools)
-		req.OAuth20.AuthURL = ReplaceVariableValue(req.OAuth20.AuthURL, variableMap, datapools)
-		req.OAuth20.AccessTokenURL = ReplaceVariableValue(req.OAuth20.AccessTokenURL, variableMap, datapools)
-		req.OAuth20.ClientID = ReplaceVariableValue(req.OAuth20.ClientID, variableMap, datapools)
-		req.OAuth20.Scope = ReplaceVariableValue(req.OAuth20.Scope, variableMap, datapools)
+		req.OAuth20.Name = ReplaceVariableValue(req.OAuth20.Name, environment, variables, datapools)
+		req.OAuth20.CallbackUrl = ReplaceVariableValue(req.OAuth20.CallbackUrl, environment, variables, datapools)
+		req.OAuth20.AuthURL = ReplaceVariableValue(req.OAuth20.AuthURL, environment, variables, datapools)
+		req.OAuth20.AccessTokenURL = ReplaceVariableValue(req.OAuth20.AccessTokenURL, environment, variables, datapools)
+		req.OAuth20.ClientID = ReplaceVariableValue(req.OAuth20.ClientID, environment, variables, datapools)
+		req.OAuth20.Scope = ReplaceVariableValue(req.OAuth20.Scope, environment, variables, datapools)
 
 	} else if req.AuthorizationType == consts.ApiKey {
-		req.ApiKey.Key = ReplaceVariableValue(req.ApiKey.Key, variableMap, datapools)
-		req.ApiKey.Value = ReplaceVariableValue(req.ApiKey.Value, variableMap, datapools)
-		req.ApiKey.TransferMode = ReplaceVariableValue(req.ApiKey.TransferMode, variableMap, datapools)
+		req.ApiKey.Key = ReplaceVariableValue(req.ApiKey.Key, environment, variables, datapools)
+		req.ApiKey.Value = ReplaceVariableValue(req.ApiKey.Value, environment, variables, datapools)
+		req.ApiKey.TransferMode = ReplaceVariableValue(req.ApiKey.TransferMode, environment, variables, datapools)
 	}
 }
 
-func ReplaceVariableValue(value string, variableMap map[string]interface{}, datapools map[string][]map[string]interface{}) (ret string) {
+func ReplaceVariableValue(value string, environment domain.Environment, variables domain.Variables, datapools domain.Datapools) (ret string) {
 
 	variablePlaceholders := GetVariablesInVariablePlaceholder(value)
 	ret = value
@@ -146,7 +151,7 @@ func ReplaceVariableValue(value string, variableMap map[string]interface{}, data
 		variablePlaceholder := fmt.Sprintf("${%s}", placeholder)
 
 		oldVal := variablePlaceholder
-		newVal := getPlaceholderValue(placeholder, variableMap, datapools)
+		newVal := getPlaceholderValue(placeholder, environment, variables, datapools)
 
 		ret = strings.ReplaceAll(ret, oldVal, newVal)
 	}
@@ -154,12 +159,15 @@ func ReplaceVariableValue(value string, variableMap map[string]interface{}, data
 	return
 }
 
-func getPlaceholderValue(placeholder string, variableMap map[string]interface{}, datapools map[string][]map[string]interface{}) (ret string) {
+func getPlaceholderValue(placeholder string, environment domain.Environment, variables domain.Variables, datapools domain.Datapools) (ret string) {
 
 	typ := getPlaceholderType(placeholder)
 
-	if typ == consts.PlaceholderTypeVariable {
-		ret = getVariableValue(placeholder, variableMap)
+	if typ == consts.PlaceholderTypeEnvironmentVariable {
+		ret = getEnvironmentVariableValue(placeholder, environment)
+
+	} else if typ == consts.PlaceholderTypeVariable {
+		ret = getVariableValue(placeholder, variables)
 
 	} else if typ == consts.PlaceholderTypeDatapool {
 		ret = getDatapoolValue(placeholder, datapools)
@@ -170,12 +178,17 @@ func getPlaceholderValue(placeholder string, variableMap map[string]interface{},
 	return
 }
 
-func getVariableValue(placeholder string, variableMap map[string]interface{}) (ret string) {
-	ret = fmt.Sprintf("%v", variableMap[placeholder])
+func getEnvironmentVariableValue(placeholder string, environment domain.Environment) (ret string) {
+	ret = fmt.Sprintf("%v", environment[placeholder])
 	return
 }
 
-func getDatapoolValue(placeholder string, datapools map[string][]map[string]interface{}) (ret string) {
+func getVariableValue(placeholder string, variables domain.Variables) (ret string) {
+	ret = fmt.Sprintf("%v", variables[placeholder])
+	return
+}
+
+func getDatapoolValue(placeholder string, datapools domain.Datapools) (ret string) {
 	// _dp(name, col, <1 | seq | rand>)
 
 	regex := regexp.MustCompile(fmt.Sprintf("(?Ui)%s\\((.+),(.+),(.+)\\)", consts.PlaceholderPrefixDatapool))
@@ -207,7 +220,7 @@ func getDatapoolValue(placeholder string, datapools map[string][]map[string]inte
 	return
 }
 
-func getDatapoolRow(dpName, seq string, datapools map[string][]map[string]interface{}) (ret int) {
+func getDatapoolRow(dpName, seq string, datapools domain.Datapools) (ret int) {
 	dp := datapools[dpName]
 	if dp == nil {
 		return
@@ -240,40 +253,3 @@ func getPlaceholderType(placeholder string) (ret consts.PlaceholderType) {
 
 	return consts.PlaceholderTypeVariable
 }
-
-//func ReplaceExpressionAndVariableValue(value string, variableMap map[string]interface{},
-//	expressionValueMapCache *map[string]interface{}) (ret string) {
-//
-//	ret = ReplaceExpressionValue(value, variableMap, expressionValueMapCache)
-//	ret = ReplaceVariableValue(ret, variableMap)
-//
-//	return
-//}
-//
-//func ReplaceExpressionValue(value string, variableMap map[string]interface{}, expressionValueMap *map[string]interface{}) (
-//	ret string) {
-//
-//	ret = value
-//
-//	regex := regexp.MustCompile(`(?Ui)\$expr\("(.*)"\)`) // $expr("uuid()")
-//	arrOfArr := regex.FindAllStringSubmatch(ret, -1)
-//
-//	if len(arrOfArr) == 0 {
-//		return
-//	}
-//
-//	for _, arr := range arrOfArr {
-//		expressionWithSymbol := arr[0]
-//		expressionWithoutSymbol := arr[1]
-//
-//		expressionValue, ok := (*expressionValueMap)[expressionWithoutSymbol]
-//		if !ok {
-//			expressionValue, _ = EvaluateGovaluateExpressionWithVariables(expressionWithoutSymbol, variableMap)
-//			(*expressionValueMap)[expressionWithoutSymbol] = expressionValue
-//		}
-//
-//		ret = strings.ReplaceAll(ret, expressionWithSymbol, fmt.Sprintf("%v", expressionValue))
-//	}
-//
-//	return
-//}

@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
-	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils"
+	agentUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	queryHelper "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/query"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
@@ -24,15 +24,15 @@ type ProcessorInterface struct {
 	v1.BaseRequest
 	Response v1.InvocationResponse `json:"response"`
 
-	Extractors  []domain.Extractor
-	Checkpoints []domain.Checkpoint
+	Extractors  []agentDomain.Extractor
+	Checkpoints []agentDomain.Checkpoint
 }
 
 func (entity ProcessorInterface) Run(processor *Processor, session *Session) (err error) {
 	logUtils.Infof("interface entity")
 
 	startTime := time.Now()
-	processor.Result = &domain.Result{
+	processor.Result = &agentDomain.Result{
 		ID:                int(entity.ProcessorID),
 		Name:              entity.Name,
 		ProcessorCategory: entity.ProcessorCategory,
@@ -41,13 +41,15 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 		ParentId:          int(entity.ParentID),
 	}
 
-	variableMap := GetCachedVariableMapInContext(entity.ProcessorID)
-	ReplaceAll(&entity.BaseRequest, variableMap, Datapools)
+	// exec pre-request script
+	ExecJs(entity.PreRequestScript)
 
-	// invoke
-	GetRequestProps(&entity.BaseRequest)
-	entity.Response, err = Invoke(entity.BaseRequest)
-	GetContentProps(&entity.Response)
+	// replace variables
+	variables := GetCachedVariableMapInContext(entity.ProcessorID)
+	ReplaceAll(&entity.BaseRequest, Environment, variables, DatapoolData)
+
+	// send request
+	entity.Response, err = Invoke(&entity.BaseRequest)
 
 	reqContent, _ := json.Marshal(entity.BaseRequest)
 	processor.Result.ReqContent = string(reqContent)
@@ -58,7 +60,7 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 		processor.Result.ResultStatus = consts.Fail
 		processor.Result.Summary = err.Error()
 		processor.AddResultToParent()
-		exec.SendErrorMsg(*processor.Result, session.WsMsg)
+		execUtils.SendErrorMsg(*processor.Result, session.WsMsg)
 		return
 	}
 
@@ -66,7 +68,7 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 	entity.CheckInterface(processor, session)
 
 	processor.AddResultToParent()
-	exec.SendExecMsg(*processor.Result, session.WsMsg)
+	execUtils.SendExecMsg(*processor.Result, session.WsMsg)
 
 	endTime := time.Now()
 	processor.Result.EndTime = &endTime
@@ -107,7 +109,7 @@ func (entity *ProcessorInterface) CheckInterface(processor *Processor, session *
 	return
 }
 
-func (entity *ProcessorInterface) Extract(extractor *domain.Extractor, resp v1.InvocationResponse) (err error) {
+func (entity *ProcessorInterface) Extract(extractor *agentDomain.Extractor, resp v1.InvocationResponse) (err error) {
 	extractor.Result = ""
 
 	if extractor.Disabled {
@@ -142,7 +144,7 @@ func (entity *ProcessorInterface) Extract(extractor *domain.Extractor, resp v1.I
 	return
 }
 
-func (entity *ProcessorInterface) Check(checkpoint *domain.Checkpoint, resp v1.InvocationResponse) (err error) {
+func (entity *ProcessorInterface) Check(checkpoint *agentDomain.Checkpoint, resp v1.InvocationResponse) (err error) {
 	if checkpoint.Disabled {
 		checkpoint.ResultStatus = ""
 		return
@@ -231,7 +233,7 @@ func (entity *ProcessorInterface) Check(checkpoint *domain.Checkpoint, resp v1.I
 		variable, _ := GetVariable(entity.ProcessorID, checkpoint.ExtractorVariable)
 		checkpoint.ActualResult = variable.Value.(string)
 
-		checkpoint.ResultStatus = utils.Compare(checkpoint.Operator, checkpoint.ActualResult, checkpoint.Value)
+		checkpoint.ResultStatus = agentUtils.Compare(checkpoint.Operator, checkpoint.ActualResult, checkpoint.Value)
 
 		return
 	}

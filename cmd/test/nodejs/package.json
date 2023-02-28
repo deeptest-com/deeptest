@@ -1,0 +1,26 @@
+{
+  "name": "deeptest",
+  "productName": "deeptest",
+  "version": "1.0.0",
+  "type": "module",
+  "config": {
+    "forge": "./forge.config.js"
+  },
+  "devDependencies": {},
+  "dependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.3",
+    "babel-preset-env": "^1.7.0",
+    "fs": "0.0.1-security",
+    "fs-extra": "^11.1.0",
+    "got": "^12.5.3"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "main": "main.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}

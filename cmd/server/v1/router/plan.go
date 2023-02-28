@@ -1,0 +1,31 @@
+package router
+
+import (
+	"github.com/aaronchen2k/deeptest/cmd/server/v1/handler"
+	"github.com/aaronchen2k/deeptest/internal/pkg/core/module"
+	"github.com/aaronchen2k/deeptest/internal/server/middleware"
+	"github.com/kataras/iris/v12"
+)
+
+type PlanModule struct {
+	PlanCtrl *handler.PlanCtrl `inject:""`
+}
+
+func NewPlanModule() *PlanModule {
+	return &PlanModule{}
+}
+
+// Party 计划
+func (m *PlanModule) Party() module.WebModule {
+	handler := func(index iris.Party) {
+		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
+
+		index.Get("/", m.PlanCtrl.List).Name = "计划列表"
+		index.Get("/{id:uint}", m.PlanCtrl.Get).Name = "计划详情"
+		index.Post("/", m.PlanCtrl.Create).Name = "新建计划"
+		index.Put("/", m.PlanCtrl.Update).Name = "更新计划"
+		index.Delete("/{id:uint}", m.PlanCtrl.Delete).Name = "删除计划"
+	}
+
+	return module.NewModule("/plans", handler)
+}

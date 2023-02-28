@@ -1,4 +1,4 @@
-package domain
+package agentDomain
 
 type Variable struct {
 	ID uint `json:"id"`

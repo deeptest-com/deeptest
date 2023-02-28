@@ -7,6 +7,7 @@
         :selectedKeys="selectedKeys"
         :openKeys="leftOpenKeys"
         :menuData="permissionMenuData"
+        :version="version"
         :onOpenChange="onOpenChange"
     >
     </left>
@@ -36,7 +37,7 @@
   </div>
 </template>
 <script lang="ts">
-import {computed, defineComponent, nextTick, ref, watch} from "vue";
+import {computed, defineComponent, nextTick, onMounted, ref, watch} from "vue";
 import {useStore} from 'vuex';
 import {useRoute} from 'vue-router';
 import {StateType as GlobalStateType} from '@/store/global';
@@ -59,6 +60,7 @@ import Permission from '@/components/Permission/index.vue';
 import Left from '@/layouts/IndexLayout/components/Left.vue';
 import RightTop from '@/layouts/IndexLayout/components/RightTop.vue';
 import RightFooter from '@/layouts/IndexLayout/components/RightFooter.vue';
+import {useI18n} from "vue-i18n";
 
 export default defineComponent({
   name: 'IndexLayout',
@@ -71,6 +73,18 @@ export default defineComponent({
   setup() {
     const store = useStore<{ Global: GlobalStateType; User: UserStateType; }>();
     const route = useRoute();
+
+    const version = ref('')
+
+    onMounted(() => {
+      console.log('onMounted')
+
+      const isElectron = ref(!!window.require)
+      if (isElectron.value) {
+        const remote = window.require('@electron/remote')
+        version.value = remote.getGlobal('sharedObj').version
+      }
+    })
 
     // 所有菜单路由
     const menuData: RoutesDataItem[] = vueRoutes(IndexLayoutRoutes);
@@ -143,6 +157,7 @@ export default defineComponent({
       leftOpenKeys,
       breadCrumbs,
       permissionMenuData,
+      version,
       onOpenChange,
       routeItem
     }

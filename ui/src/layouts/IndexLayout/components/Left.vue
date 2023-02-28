@@ -14,23 +14,28 @@
           :selectedKeys="selectedKeys"
           :openKeys="openKeys"
           :onOpenChange="onOpenChange"
-          :menuData="menuData"
-      >
+          :menuData="menuData">
       </sider-menu>
+    </div>
+
+    <div v-if="version" class="version">
+      V{{version}}
     </div>
 
 <!--    <div class="indexlayout-left-menu-bottom">
       <SettingsMenu></SettingsMenu>
     </div>-->
+
   </div>
 </template>
 
 <script lang="ts">
 
-import { defineComponent, PropType} from "vue";
+import {defineComponent, onMounted, PropType, ref} from "vue";
 import { RoutesDataItem } from '@/utils/routes';
 import SiderMenu from './SiderMenu.vue';
 import SettingsMenu from './SettingsMenu.vue'
+import {useI18n} from "vue-i18n";
 
 export default defineComponent({
   name: 'Left',
@@ -67,12 +72,17 @@ export default defineComponent({
       default: () => {
         return [];
       }
-    }
+    },
+    version: {
+      type: String
+    },
   },
   components: {
     SiderMenu,
   },
+
 })
+
 </script>
 
 <style lang="less" scoped>
@@ -131,5 +141,11 @@ export default defineComponent({
 
   .scrollbar();
 
+  .version {
+    position: absolute;
+    bottom: 0;
+    width: @leftSideBarWidth;
+    text-align: center;
+  }
 }
 </style>

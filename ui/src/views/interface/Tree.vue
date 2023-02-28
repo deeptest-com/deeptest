@@ -72,14 +72,14 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import {computed, defineComponent, getCurrentInstance, onMounted, onUnmounted, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import {Form, notification} from 'ant-design-vue';
 import {CloseOutlined, FileOutlined, FolderOutlined, FolderOpenOutlined, CheckOutlined} from "@ant-design/icons-vue";
 import {Interface} from "@/views/interface/data";
 import throttle from "lodash.debounce";
-import {importSpec, updateNodeName} from "@/views/interface/service";
+import {parseSpecInLocalAgent, updateNodeName} from "@/views/interface/service";
 import {expandAllKeys, expandOneKey, getNodeMap} from "@/services/tree";
 import {DropEvent, TreeDragEvent} from "ant-design-vue/es/tree/Tree";
 import {useStore} from "vuex";
@@ -95,14 +95,6 @@ import ImportModal from "./components/ImportModal.vue";
 
 const useForm = Form.useForm;
 
-export default defineComponent({
-  name: 'InterfaceTree',
-  props: {},
-  components: {
-    TreeContextMenu, ImportModal,
-    CloseOutlined, FileOutlined, FolderOutlined, FolderOpenOutlined, CheckOutlined,
-  },
-  setup(props) {
     const {t} = useI18n();
 
     const store = useStore<{ Interface: StateType, ProjectGlobal: ProjectStateType }>();
@@ -155,11 +147,6 @@ export default defineComponent({
         return
       } else {
         selectedKeys.value = keys
-      }
-
-      if (!selectedKeys.value || selectedKeys.value.length === 0) { // not to display the design page
-        store.dispatch('Interface/getInterface', {isLeaf: false})
-        return
       }
 
       const selectedData = treeDataMap.value[selectedKeys.value[0]]
@@ -351,23 +338,22 @@ export default defineComponent({
     }
 
     const showImport = ref(false)
-    const importSubmit = (data) => {
+    const importSubmit = async (data) => {
       console.log('importSpec', data)
-      importSpec(data, targetModelId).then((json) => {
-        if (json.code === 0) {
-          showImport.value = false
-          store.dispatch('Interface/loadInterface').then((result) => {
-              console.log(result)
-              expandOneKey(treeDataMap.value, targetModelId, expandedKeys.value) // expend parent node
-              setExpandedKeys('interface', currProject.value.id, expandedKeys.value)
-            })
-        } else {
-          notification.error({
-            key: NotificationKeyCommon,
-            message: '导入失败',
-          });
-        }
-      })
+      const parseResult = await parseSpecInLocalAgent(data, targetModelId)
+
+      if (parseResult.code === 0) {
+        store.dispatch('Interface/loadInterface').then((result) => {
+          console.log(result)
+          expandOneKey(treeDataMap.value, targetModelId, expandedKeys.value) // expend parent node
+          setExpandedKeys('interface', currProject.value.id, expandedKeys.value)
+        })
+      } else {
+        notification.error({
+          key: NotificationKeyCommon,
+          message: '解析失败',
+        });
+      }
     }
 
     const importClose = () => {
@@ -386,42 +372,6 @@ export default defineComponent({
       document.removeEventListener("click", clearMenu)
     })
 
-    return {
-      treeData,
-      treeDataMap,
-      interfaceData,
-      editedData,
-
-      replaceFields,
-      expandedKeys,
-      selectedKeys,
-      checkedKeys,
-      isExpand,
-      expandAll,
-      expandNode,
-      selectNode,
-      checkNode,
-      tree,
-      contextNode,
-      menuStyle,
-      rightVisible,
-      onRightClick,
-      menuClick,
-      isLeaf,
-      onDragEnter,
-      onDrop,
-
-      updateName,
-      cancelUpdate,
-
-      showImport,
-      importSubmit,
-      importClose,
-
-      tips,
-    }
-  }
-})
 </script>
 
 <style lang="less">

@@ -191,16 +191,6 @@ func (webServer *WebServer) GetTestAuth(t *testing.T) *tests.Client {
 	return client
 }
 
-// GetTestLogin 测试登录web服务
-func (webServer *WebServer) GetTestLogin(t *testing.T, url string, res tests.Responses, datas ...map[string]interface{}) *tests.Client {
-	client := webServer.GetTestAuth(t)
-	err := client.Login(url, res, datas...)
-	if err != nil {
-		t.Fatal(err)
-	}
-	return client
-}
-
 // Init 加载模块
 func initWebSocket(irisApp *iris.Application) {
 	websocketCtrl := handler.NewWebsocketCtrl()

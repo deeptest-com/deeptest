@@ -1,4 +1,4 @@
-package exec
+package execUtils
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
@@ -23,7 +23,7 @@ func SendEndMsg(wsMsg *websocket.Message) (err error) {
 	return
 }
 
-func SendResultMsg(report domain.ReportSimple, wsMsg *websocket.Message) (err error) {
+func SendResultMsg(report agentDomain.ReportSimple, wsMsg *websocket.Message) (err error) {
 	websocketHelper.SendExecResult(report, wsMsg)
 
 	return
@@ -39,13 +39,13 @@ func SendCancelMsg(wsMsg websocket.Message) (err error) {
 
 func SendAlreadyRunningMsg(scenarioId int, wsMsg websocket.Message) (err error) {
 	msg := _i118Utils.Sprintf("pls_stop_previous")
-	websocketHelper.SendExecMsg(msg, domain.Result{ProgressStatus: consts.InProgress}, &wsMsg)
+	websocketHelper.SendExecMsg(msg, agentDomain.Result{ProgressStatus: consts.InProgress}, &wsMsg)
 	_logUtils.Infof(msg)
 
 	return
 }
 
-func SendExecMsg(log domain.Result, wsMsg *websocket.Message) (err error) {
+func SendExecMsg(log agentDomain.Result, wsMsg *websocket.Message) (err error) {
 	SetRunning(true)
 	msg := _i118Utils.Sprintf("exec")
 	websocketHelper.SendExecMsg(msg, log, wsMsg)
@@ -53,7 +53,7 @@ func SendExecMsg(log domain.Result, wsMsg *websocket.Message) (err error) {
 	return
 }
 
-func SendErrorMsg(log domain.Result, wsMsg *websocket.Message) (err error) {
+func SendErrorMsg(log agentDomain.Result, wsMsg *websocket.Message) (err error) {
 	msg := _i118Utils.Sprintf("exec_fail")
 	websocketHelper.SendExecMsg(msg, log, wsMsg)
 

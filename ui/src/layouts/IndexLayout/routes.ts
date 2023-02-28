@@ -118,6 +118,29 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
 
   {
     title: 'index-layout.menu',
+    path: '/plan',
+    redirect: '/plan/index',
+    component: BlankLayout,
+    children: [
+      {
+        icon: 'plan',
+        title: 'plan',
+        path: 'index',
+        component: () => import('@/views/plan/index.vue'),
+        hidden: false,
+      },
+      {
+        icon: 'plan',
+        title: 'plan.exec',
+        path: 'exec/:id',
+        component: () => import('@/views/plan/exec/index.vue'),
+        hidden: true,
+      },
+    ],
+  },
+
+  {
+    title: 'index-layout.menu',
     path: '/report',
     redirect: '/report/index',
     component: BlankLayout,

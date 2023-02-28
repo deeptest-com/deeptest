@@ -29,3 +29,26 @@ export const setExpandedKeys = async (type, id, keys) => {
     cachedData[key] = items
     await setCache(settings.expandedKeys, cachedData);
 }
+
+export const getSelectedKey = async (type, projectId) => {
+    console.log('getSelectedKey')
+    const key = `${type}-${projectId}`
+
+    const cachedData = await getCache(settings.selectedKey);
+    if (!cachedData || !cachedData[key]) {
+        return null
+    }
+
+    return cachedData[key]
+}
+
+export const setSelectedKey = async (type, projectId, selectedKey) => {
+    console.log('setSelectedKey')
+    const key = `${type}-${projectId}`
+
+    let cachedData = await getCache(settings.selectedKey);
+    if (!cachedData) cachedData = {}
+
+    cachedData[key] = selectedKey
+    await setCache(settings.selectedKey, cachedData);
+}

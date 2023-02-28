@@ -15,7 +15,6 @@ import (
 type ScenarioRepo struct {
 	DB       *gorm.DB  `inject:""`
 	BaseRepo *BaseRepo `inject:""`
-	RoleRepo *RoleRepo `inject:""`
 }
 
 func NewScenarioRepo() *ScenarioRepo {

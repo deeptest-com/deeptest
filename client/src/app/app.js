@@ -1,14 +1,23 @@
 import {app, BrowserWindow, ipcMain, Menu, shell, dialog, globalShortcut} from 'electron';
 const path = require('path');
-import {DEBUG, electronMsg, electronMsgReplay, minimumSizeHeight, minimumSizeWidth} from './utils/consts';
+import {
+    DEBUG,
+    electronMsg,
+    electronMsgReplay,
+    electronMsgUpdate,
+    minimumSizeHeight,
+    minimumSizeWidth
+} from './utils/consts';
 import {IS_MAC_OSX, IS_LINUX, IS_WINDOWS_OS} from './utils/env';
 import {logInfo, logErr} from './utils/log';
 import Config from './utils/config';
 import Lang, {initLang} from './core/lang';
 import {startUIService} from "./core/ui";
-import {startAgent, killAgent} from "./core/deeptest";
+import {startAgent, killAgent} from "./core/agent";
 import { nanoid } from 'nanoid'
-import {uploadDatapoolFile, uploadFile} from "./utils/upload";
+import {uploadFile} from "./utils/upload";
+import {getCurrVersion, mkdir} from "./utils/comm";
+import {checkUpdate, updateApp} from "./utils/hot-update";
 
 const cp = require('child_process');
 const fs = require('fs');
@@ -19,12 +28,7 @@ const getBuffer = bent('buffer')
 
 let postmanToOpenApi = null
 
-const workDir = pth.join(require("os").homedir(), 'deeptest');
-const convertedDir = pth.join(workDir, 'converted');
-fs.mkdir(convertedDir,function(err){
-    if (err) return console.error(err);
-    console.log(`mkdir ${convertedDir} successfully`);
-});
+mkdir('converted')
 
 export class DeepTestApp {
     constructor() {
@@ -67,8 +71,14 @@ export class DeepTestApp {
             webPreferences: {
                 nodeIntegration: true,
                 contextIsolation: false,
+                enableRemoteModule: true,
             }
         })
+
+        require('@electron/remote/main').initialize()
+        require('@electron/remote/main').enable(mainWin.webContents)
+        const {currVersionStr} = getCurrVersion()
+        global.sharedObj =  { version : currVersionStr};
 
         mainWin.setSize(minimumSizeWidth, minimumSizeHeight)
         mainWin.setMovable(true)
@@ -77,15 +87,17 @@ export class DeepTestApp {
 
         this._windows.set('main', mainWin);
 
-        // const url = await startUIService()
-
-        let url = 'http://110.42.146.127:8085/ui'
-        if (process.env.UI_SERVER_URL) {
-            url = process.env.UI_SERVER_URL
-        }
-        logInfo('load ' + url)
-
+        const url = await startUIService()
         await mainWin.loadURL(url);
+
+        // const temp = path.resolve(process.resourcesPath, 'ui_temp')
+        // logInfo('===' + temp)
+        // fs.mkdirSync(temp);
+        // let url = 'http://110.42.146.127:8085/ui'
+        // if (process.env.UI_SERVER_URL) {
+        //     url = process.env.UI_SERVER_URL
+        // }
+        // logInfo('load ' + url)
 
         ipcMain.on(electronMsg, (event, arg) => {
             logInfo('msg from renderer', JSON.stringify(arg))
@@ -169,6 +181,17 @@ export class DeepTestApp {
              const mainWin = this._windows.get('main');
              mainWin.toggleDevTools()
          })
+
+         ipcMain.on(electronMsgUpdate, (event, arg) => {
+             logInfo('update confirm from renderer', arg)
+
+             const mainWin = this._windows.get('main');
+             updateApp(arg.newVersion, mainWin)
+         });
+
+         setInterval(async () => {
+             await checkUpdate(this._windows.get('main'))
+         }, 6000);
     }
 
     quit() {
@@ -254,13 +277,13 @@ export class DeepTestApp {
         }
     }
 
-    async replyLoadApiSpec(event, type, src, file, url) {
-        console.log(`replyLoadApiSpec`, type, src, file, url)
+    async replyLoadApiSpec(event, spaceType, spaceSrc, file, url) {
+        console.log(`replyLoadApiSpec`, spaceType, spaceSrc, file, url)
 
         // load the content to check that if it is a postman file
         let content = fs.readFileSync(file).toString()
 
-        const isPostMan = type === 'postman' || content.indexOf('"_postman_id"') > -1
+        const isPostMan = spaceType === 'postman' || content.indexOf('"_postman_id"') > -1
 
         if (isPostMan) {
             if (!postmanToOpenApi) postmanToOpenApi = require('postman-to-openapi')
@@ -270,7 +293,7 @@ export class DeepTestApp {
             await postmanToOpenApi(oldFile, file, {defaultTag: 'General'})
         }
 
-        event.reply(electronMsgReplay, {src: src, type: type, file: file, url: url});
+        event.reply(electronMsgReplay, {src: spaceSrc, type: spaceType, file: file, url: url});
     }
 
     // common file selection

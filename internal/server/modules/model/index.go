@@ -40,6 +40,9 @@ var (
 		&ScenarioCategory{},
 		&Scenario{},
 
+		&PlanCategory{},
+		&Plan{},
+
 		&Processor{},
 		//&ProcessorThreadGroup{},
 		&ProcessorGroup{},
@@ -63,7 +66,7 @@ var (
 		&ProcessorInterfaceApiKey{},
 
 		&ProcessorInvocation{},
-		&Report{},
+		&ScenarioReport{},
 		&ExecLogProcessor{},
 		&ExecLogExtractor{},
 		&ExecLogCheckpoint{},

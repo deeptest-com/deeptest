@@ -3,9 +3,9 @@ import {requestToAgent} from '@/utils/request';
 import {Interface, OAuth20} from "@/views/interface/data";
 import {isInArray} from "@/utils/array";
 import {UsedBy} from "@/utils/enum";
+import {getToken} from "@/utils/localToken";
 
 const apiPath = 'interfaces';
-const apiImport = 'import';
 const apiSpec = 'spec';
 const apiInvocation = 'invocations';
 const apiAuth = 'auth';
@@ -79,11 +79,15 @@ export async function remove(id: number): Promise<any> {
     });
 }
 
-export async function importSpec(data, targetId): Promise<any> {
-    return request({
-        url: `/${apiImport}/importSpec`,
+export async function parseSpecInLocalAgent(data, targetId): Promise<any> {
+    data.targetId = targetId
+    data.serverUrl = process.env.VUE_APP_API_SERVER // used by agent to request server
+    data.token = await getToken()
+
+    return requestToAgent({
+        url: `/${apiSpec}/parseSpec`,
         method: 'POST',
-        params: {targetId: targetId, type: data.type},
+        params: {targetId: targetId},
         data: data,
     });
 }

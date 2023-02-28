@@ -148,11 +148,6 @@ const selectNode = (keys, e) => {
     selectedKeys.value = keys
   }
 
-  if (!selectedKeys.value || selectedKeys.value.length === 0) {
-    store.dispatch('Scenario/getNode', null)
-    return
-  }
-
   const selectedData = treeDataMap.value[selectedKeys.value[0]]
   if (selectedData && isRoot(selectedData.entityCategory)) {
     store.dispatch('Scenario/getNode', null)

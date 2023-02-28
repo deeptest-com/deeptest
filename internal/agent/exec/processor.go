@@ -2,9 +2,10 @@ package agentExec
 
 import (
 	"encoding/json"
-	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
+	execDomain "github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
+	"github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/kataras/iris/v12"
 	"sync"
 )
@@ -20,9 +21,9 @@ type ProcessorExecReq struct {
 }
 
 type ProcessorExecObj struct {
-	RootProcessor *Processor        `json:"rootProcessor"`
-	Variables     []domain.Variable `json:"variables"`
-	Datapools     map[string][]map[string]interface{}
+	RootProcessor *Processor       `json:"rootProcessor"`
+	Variables     domain.Variables `json:"variables"`
+	Datapools     domain.Datapools
 	ServerUrl     string `json:"serverUrl"`
 	Token         string `json:"token"`
 }
@@ -50,14 +51,14 @@ type Processor struct {
 	Entity    IProcessorEntity `json:"entity"`
 	EntityRaw json.RawMessage  `json:"entityRaw"`
 
-	Parent *Processor     `json:"-"`
-	Result *domain.Result `json:"result"`
+	Parent *Processor         `json:"-"`
+	Result *execDomain.Result `json:"result"`
 
 	Session Session `json:"-"`
 }
 
 func (p *Processor) Run(s *Session) (err error) {
-	logUtils.Infof("%s - %s", p.Name, p.EntityType)
+	_logUtils.Infof("%s - %s", p.Name, p.EntityType)
 
 	if p.Entity != nil {
 		p.Entity.Run(p, s)
@@ -149,7 +150,7 @@ func (p *Processor) AppendNewChildProcessor(category consts.ProcessorCategory, t
 		ParentId:       p.ID,
 	}
 
-	child.Result = &domain.Result{
+	child.Result = &execDomain.Result{
 		ProcessorCategory: child.EntityCategory,
 		ProcessorType:     child.EntityType,
 		ParentId:          int(p.ID),

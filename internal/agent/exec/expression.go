@@ -2,9 +2,9 @@ package agentExec
 
 import (
 	"github.com/Knetic/govaluate"
-	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
-	commUtils "github.com/aaronchen2k/deeptest/internal/pkg/utils"
-	_stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/utils"
+	"github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"regexp"
 )
 
@@ -64,7 +64,7 @@ func EvaluateGovaluateExpressionWithVariables(expression string, variables map[s
 	return
 }
 
-func generateGovaluateParamsByScope(expression string, scopeId uint) (ret map[string]interface{}, err error) {
+func generateGovaluateParamsByScope(expression string, scopeId uint) (ret domain.Variables, err error) {
 	ret = make(map[string]interface{}, 8)
 
 	variables := GetVariablesInVariablePlaceholder(expression)

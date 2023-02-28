@@ -184,8 +184,8 @@ func posts(req v1.BaseRequest, method consts.HttpMethod, readRespData bool) (
 
 	formDataContentType := ""
 	if strings.HasPrefix(bodyType.String(), consts.ContentTypeFormData.String()) {
-		formDataWriter, _ := utils.MultipartEncoder(bodyFormData)
-		formDataContentType = utils.MultipartContentType(formDataWriter)
+		formDataWriter, _ := agentUtils.MultipartEncoder(bodyFormData)
+		formDataContentType = agentUtils.MultipartContentType(formDataWriter)
 
 		dataBytes = formDataWriter.Payload.Bytes()
 

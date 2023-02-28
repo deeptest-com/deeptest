@@ -7,6 +7,7 @@ import (
 	service "github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/kataras/iris/v12"
 )
 
@@ -25,7 +26,7 @@ func (c *ImportCtrl) ImportSpec(ctx iris.Context) {
 		return
 	}
 
-	req := domain.InterfaceImportReq{}
+	var req openapi3.T
 	err = ctx.ReadJSON(&req)
 	if err != nil {
 		logUtils.Errorf("参数验证失败", err.Error())

@@ -93,16 +93,16 @@ func (s *ExtractorService) ExtractValue(extractor *model.InterfaceExtractor, res
 		}
 	} else {
 		if httpHelper.IsJsonContent(resp.ContentType.String()) && extractor.Type == consts.JsonQuery {
-			extractor.Result = queryHelper.JsonQuery(resp.Content, extractor.Expression)
+			extractor.Result = queryUtils.JsonQuery(resp.Content, extractor.Expression)
 
 		} else if httpHelper.IsHtmlContent(resp.ContentType.String()) && extractor.Type == consts.HtmlQuery {
-			extractor.Result = queryHelper.HtmlQuery(resp.Content, extractor.Expression)
+			extractor.Result = queryUtils.HtmlQuery(resp.Content, extractor.Expression)
 
 		} else if httpHelper.IsXmlContent(resp.ContentType.String()) && extractor.Type == consts.XmlQuery {
-			extractor.Result = queryHelper.XmlQuery(resp.Content, extractor.Expression)
+			extractor.Result = queryUtils.XmlQuery(resp.Content, extractor.Expression)
 
 		} else if extractor.Type == consts.Boundary {
-			extractor.Result = queryHelper.BoundaryQuery(resp.Content, extractor.BoundaryStart, extractor.BoundaryEnd,
+			extractor.Result = queryUtils.BoundaryQuery(resp.Content, extractor.BoundaryStart, extractor.BoundaryEnd,
 				extractor.BoundaryIndex, extractor.BoundaryIncluded)
 		}
 	}

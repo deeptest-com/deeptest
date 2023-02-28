@@ -43,11 +43,28 @@ func main() {
 	//}
 	//vm.Set("shortid", shortid)
 
+	vm.Set("getDatapoolVariable", func(datapool, field, seq string) string {
+		return fmt.Sprintf("getDatapoolVariable(%s, %s, %s)", datapool, field, seq)
+	})
+
+	vm.Set("getEnvironmentVariable", func(name string) string {
+		return fmt.Sprintf("getVariable(%s)", name)
+	})
+	vm.Set("setEnvironmentVariable", func(name, val string) string {
+		return fmt.Sprintf("setVariable(%s, %s)", name, val)
+	})
+	vm.Set("clearEnvironmentVariable", func(name string) string {
+		return fmt.Sprintf("clearEnvironmentVariable(%s)", name)
+	})
+
 	vm.Set("getVariable", func(name string) string {
 		return fmt.Sprintf("getVariable(%s)", name)
 	})
 	vm.Set("setVariable", func(name, val string) string {
 		return fmt.Sprintf("setVariable(%s, %s)", name, val)
+	})
+	vm.Set("clearVariable", func(name string) string {
+		return fmt.Sprintf("clearVariable(%s)", name)
 	})
 
 	req := registry.Enable(vm)
@@ -68,9 +85,7 @@ func main() {
 	//fmt.Println(ob.Get("id2").String())
 
 	script := `
-const key = 'foo';
-const val = dp.variable.get(key);
-val;
+dp.environment.set("a", "123");
 `
 
 	val, err := vm.RunString(script)

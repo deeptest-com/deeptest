@@ -7,12 +7,12 @@ import (
 	"github.com/kataras/iris/v12"
 )
 
-type CategoryModule struct {
+type ScenarioCategoryModule struct {
 	ScenarioCategoryCtrl *handler.ScenarioCategoryCtrl `inject:""`
 }
 
 // Party 场景
-func (m *CategoryModule) Party() module.WebModule {
+func (m *ScenarioCategoryModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
 		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
 

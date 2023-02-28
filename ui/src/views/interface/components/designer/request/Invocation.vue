@@ -112,8 +112,7 @@ const selectMethod = (val) => {
 };
 
 const sendRequest = (e) => {
-  console.log('--- interface data', interfaceData.value)
-
+  console.log('sendRequest', interfaceData.value)
   if (validateInfo()) {
     props.onSend()
   }

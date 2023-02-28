@@ -1,7 +1,8 @@
-package domain
+package agentDomain
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"time"
 )
 
@@ -67,9 +68,9 @@ type ExecIterator struct {
 	VariableName      string `json:"variableName,omitempty"`
 
 	// loop range
-	Items    []interface{}            `json:"items"`
-	Data     []map[string]interface{} `json:"data"`
-	DataType consts.DataType          `json:"dataType"`
+	Items    []interface{}      `json:"items"`
+	Data     []domain.Variables `json:"data"`
+	DataType consts.DataType    `json:"dataType"`
 
 	// loop condition
 	UntilExpression string `json:"untilExpression"`

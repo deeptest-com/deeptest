@@ -9,6 +9,7 @@ import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
 import debounce from "lodash.debounce";
 import {addExtractAction, addReplaceAction} from "@/components/Editor/service";
+import {getSnippet} from "@/views/interface/service";
 
 export default defineComponent({
   name: "MonacoEditor",
@@ -77,22 +78,34 @@ export default defineComponent({
   },
 
   methods: {
-    initMonaco(){
+    async initMonaco() {
       this.$emit('editorWillMount', this.monaco)
 
-      const { interfaceId, value, language, theme, options } = this;
-      Object.assign(options, {scrollbar: {
+      const {interfaceId, value, language, theme, options} = this;
+      Object.assign(options, {
+        scrollbar: {
           useShadows: false,
           automaticLayout: true,
           verticalScrollbarSize: 6,
           horizontalScrollbarSize: 6
-        }})
+        }
+      })
+
+      if (options.initTsModules) {
+        const json = await getSnippet('global')
+        console.log('------')
+        if (json.code === 0) {
+          // const externalDtsFileName = 'ex.d.ts';
+          // monaco.languages.typescript.typescriptDefaults.addExtraLib(libSource, `inmemory://model/${externalDtsFileName}`);
+          monaco.languages.typescript.typescriptDefaults.addExtraLib(json.data.script);
+        }
+      }
 
       this.editor = monaco.editor[this.diffEditor ? 'createDiffEditor' : 'create'](this.$el, {
         value: value,
         language: language,
         theme: theme,
-        ...options
+        ...options,
       });
 
       this.diffEditor && this._setModel(this.value, this.original);
@@ -124,8 +137,8 @@ export default defineComponent({
         this.formatDocUpdate(editor)
 
         setTimeout(() => {
-          const elems= document.getElementsByClassName('monaco-editor-vue3');
-          for(let i=0; i < elems.length; i++) {
+          const elems = document.getElementsByClassName('monaco-editor-vue3');
+          for (let i = 0; i < elems.length; i++) {
             elems[i].style.maxWidth = 0 // elems[i].clientWidth - 200 + 'px'
           }
         }, 100)
@@ -189,6 +202,7 @@ export default defineComponent({
     options: {
       deep: true,
       handler(options) {
+        if (!this.editor) return
         this.editor.updateOptions(options);
       }
     },

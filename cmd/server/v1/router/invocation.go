@@ -8,7 +8,7 @@ import (
 )
 
 type InvocationModule struct {
-	InvocationCtrl *handler.InvocationCtrl `inject:""`
+	InvocationCtrl *handler.InvocationInterfaceCtrl `inject:""`
 }
 
 // Party 脚本

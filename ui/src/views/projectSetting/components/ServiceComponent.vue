@@ -143,7 +143,7 @@ const columns = [
   },
   {
     title: '标签',
-    dataIndex: 'type',
+    dataIndex: 'tags',
   },
   {
     title: '操作',

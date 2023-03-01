@@ -7,6 +7,7 @@ import (
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	"github.com/jinzhu/copier"
 	"github.com/kataras/iris/v12"
+	"github.com/snowlyg/multi"
 	encoder "github.com/zwgblue/yaml-encoder"
 )
 
@@ -28,8 +29,8 @@ func (c *EndpointCtrl) Index(ctx iris.Context) {
 func (c *EndpointCtrl) Save(ctx iris.Context) {
 	var req v1.EndpointReq
 	if err := ctx.ReadJSON(&req); err == nil {
-		//req.CreateUser = multi.GetUsername(ctx)
-		req.CreateUser = "admin"
+		req.CreateUser = multi.GetUsername(ctx)
+		//req.CreateUser = "admin"
 		endpoint := c.requestParser(req)
 		res, _ := c.EndpointService.Save(endpoint)
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res})

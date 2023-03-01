@@ -5,6 +5,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	"github.com/kataras/iris/v12"
+	"github.com/snowlyg/multi"
 )
 
 type ServeCtrl struct {
@@ -27,7 +28,8 @@ func (c *ServeCtrl) Index(ctx iris.Context) {
 func (c *ServeCtrl) Save(ctx iris.Context) {
 	var req v1.ServeReq
 	if err := ctx.ReadJSON(&req); err == nil {
-		req.CreateUser = "admin"
+		//req.CreateUser = "admin"
+		req.CreateUser = multi.GetUsername(ctx)
 		res, _ := c.ServeService.Save(req)
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res})
 	} else {

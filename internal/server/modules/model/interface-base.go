@@ -26,7 +26,7 @@ type InterfaceBase struct {
 	Body     string                 `gorm:"type:text;default:{}" json:"body"`
 	BodyType consts.HttpContentType `gorm:"default:''" json:"bodyType"`
 
-	AuthorizationType string `gorm:"default:''" json:"authorizationType"`git 
+	AuthorizationType string `gorm:"default:''" json:"authorizationType"`
 	PreRequestScript  string `gorm:"default:''" json:"preRequestScript"`
 	ValidationScript  string `gorm:"default:''" json:"validationScript"`
 }

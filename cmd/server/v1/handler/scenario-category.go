@@ -16,13 +16,18 @@ type ScenarioCategoryCtrl struct {
 
 // LoadTree
 func (c *ScenarioCategoryCtrl) LoadTree(ctx iris.Context) {
+	moduleId := ctx.URLParamIntDefault("moduleId", 1)
+	if moduleId == 0 {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: "moduleId"})
+		return
+	}
 	projectId, err := ctx.URLParamInt("currProjectId")
 	if projectId == 0 {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: "projectId"})
 		return
 	}
-
-	data, err := c.ScenarioCategoryService.GetTree(projectId)
+	serveId := ctx.URLParamIntDefault("serveId", 0)
+	data, err := c.ScenarioCategoryService.GetTree(moduleId, projectId, serveId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
 		return

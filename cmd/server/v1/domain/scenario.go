@@ -70,11 +70,12 @@ type ScenarioCategory struct {
 }
 
 type ScenarioCategoryCreateReq struct {
-	Name string `json:"name"`
-	Mode string `json:"mode"`
-
-	TargetId  uint `json:"targetId"`
-	ProjectId uint `json:"projectId"`
+	Name      string `json:"name"`
+	Mode      string `json:"mode"`
+	ServeId   uint   `json:"serveId"`
+	ModuleId  string `json:"moduleId"`
+	TargetId  uint   `json:"targetId"`
+	ProjectId uint   `json:"projectId"`
 }
 
 type ScenarioCategoryReq struct {

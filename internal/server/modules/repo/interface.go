@@ -8,7 +8,8 @@ import (
 )
 
 type InterfaceRepo struct {
-	DB *gorm.DB `inject:""`
+	*BaseRepo `inject:""`
+	DB        *gorm.DB `inject:""`
 }
 
 func (r *InterfaceRepo) GetInterfaceTree(projectId int) (root *model.Interface, err error) {
@@ -176,6 +177,7 @@ func (r *InterfaceRepo) UpdateHeaders(id uint, headers []model.InterfaceHeader) 
 
 	return
 }
+
 func (r *InterfaceRepo) RemoveHeaders(id uint) (err error) {
 	err = r.DB.
 		Where("interface_id = ?", id).
@@ -204,6 +206,31 @@ func (r *InterfaceRepo) RemoveParams(id uint) (err error) {
 	err = r.DB.
 		Where("interface_id = ?", id).
 		Delete(&model.InterfaceParam{}, "").Error
+
+	return
+}
+
+func (r *InterfaceRepo) UpdateCookies(id uint, cookies []model.InterfaceCookie) (err error) {
+	err = r.RemoveCookie(id)
+
+	if len(cookies) == 0 {
+		return
+	}
+
+	for idx, _ := range cookies {
+		cookies[idx].ID = 0
+		cookies[idx].InterfaceId = id
+	}
+
+	err = r.DB.Create(&cookies).Error
+
+	return
+}
+
+func (r *InterfaceRepo) RemoveCookie(id uint) (err error) {
+	err = r.DB.
+		Where("interface_id = ?", id).
+		Delete(&model.InterfaceCookie{}, "").Error
 
 	return
 }
@@ -404,6 +431,15 @@ func (r *InterfaceRepo) ListHeaders(interfaceId uint) (pos []model.InterfaceHead
 
 	return
 }
+func (r *InterfaceRepo) ListCookies(interfaceId uint) (pos []model.InterfaceCookie, err error) {
+	err = r.DB.
+		Where("interface_id=?", interfaceId).
+		Where("NOT deleted").
+		Order("id ASC").
+		Find(&pos).Error
+
+	return
+}
 func (r *InterfaceRepo) ListBodyFormData(interfaceId uint) (pos []model.InterfaceBodyFormDataItem, err error) {
 	err = r.DB.
 		Where("interface_id=?", interfaceId).
@@ -449,5 +485,220 @@ func (r *InterfaceRepo) GetApiKey(id uint) (po model.InterfaceApiKey, err error)
 		Where("interface_id = ?", id).
 		First(&po).Error
 
+	return
+}
+
+func (r *InterfaceRepo) SaveInterfaces(interf model.Interface) (err error) {
+
+	r.DB.Transaction(func(tx *gorm.DB) error {
+		err = r.UpdateInterface(&interf)
+		if err != nil {
+			return err
+		}
+
+		err = r.UpdateParams(interf.ID, interf.Params)
+		if err != nil {
+			return err
+		}
+
+		err = r.UpdateHeaders(interf.ID, interf.Headers)
+		if err != nil {
+			return err
+		}
+
+		err = r.UpdateCookies(interf.ID, interf.Cookies)
+		if err != nil {
+			return err
+		}
+
+		interf.RequestBody.InterfaceId = interf.ID
+		err = r.UpdateRequestBody(&interf.RequestBody)
+		if err != nil {
+			return err
+		}
+
+		err = r.UpdateResponseBodies(interf.ID, interf.ResponseBodies)
+		if err != nil {
+			return err
+		}
+
+		return err
+	})
+
+	return
+}
+
+func (r *InterfaceRepo) UpdateRequestBody(requestBody *model.InterfaceRequestBody) (err error) {
+	err = r.removeRequestBody(requestBody.InterfaceId)
+	if err != nil {
+		return
+	}
+	err = r.BaseRepo.Save(requestBody.ID, requestBody)
+	if err != nil {
+		return
+	}
+	schemaItem := requestBody.SchemaItem
+	schemaItem.RequestBodyId = requestBody.ID
+	err = r.removeRequestBodyItem(requestBody.ID)
+	if err != nil {
+		return
+	}
+	err = r.BaseRepo.Save(schemaItem.ID, &schemaItem)
+	return
+}
+
+func (r *InterfaceRepo) removeRequestBodyItem(requestBodyId uint) (err error) {
+	err = r.DB.
+		Where("request_body_id = ?", requestBodyId).
+		Delete(&model.InterfaceRequestBodyItem{}).Error
+
+	return
+}
+
+func (r *InterfaceRepo) removeRequestBody(interId uint) (err error) {
+	err = r.DB.
+		Where("interface_id = ?", interId).
+		Delete(&model.InterfaceRequestBody{}).Error
+
+	return
+}
+
+func (r *InterfaceRepo) UpdateResponseBodies(interfaceId uint, responseBodies []model.InterfaceResponseBody) (err error) {
+	err = r.removeResponseBodies(interfaceId)
+	if err != nil {
+		return
+	}
+	for _, responseBody := range responseBodies {
+		responseBody.InterfaceId = interfaceId
+		err = r.BaseRepo.Save(responseBody.ID, &responseBody)
+		if err != nil {
+			return
+		}
+		err = r.removeRequestBodyItem(responseBody.ID)
+		if err != nil {
+			return
+		}
+		schemaItem := responseBody.SchemaItem
+		schemaItem.ResponseBodyId = responseBody.ID
+		err = r.BaseRepo.Save(schemaItem.ID, &schemaItem)
+		if err != nil {
+			return
+		}
+		err = r.removeResponseBodyHeader(responseBody.ID)
+		if err != nil {
+			return
+		}
+		responseBodyHeaders := responseBody.Headers
+		for _, header := range responseBodyHeaders {
+			header.ResponseBodyId = responseBody.ID
+			err = r.BaseRepo.Save(header.ID, &header)
+			if err != nil {
+				return
+			}
+		}
+
+	}
+	return
+}
+
+func (r *InterfaceRepo) removeResponseBodies(interId uint) (err error) {
+	err = r.DB.
+		Where("interface_id = ?", interId).
+		Delete(&model.InterfaceResponseBody{}).Error
+
+	return
+}
+
+func (r *InterfaceRepo) removeResponseBodyItem(responseBodyId uint) (err error) {
+	err = r.DB.
+		Where("response_body_id = ?", responseBodyId).
+		Delete(&model.InterfaceResponseBodyItem{}).Error
+
+	return
+}
+
+func (r *InterfaceRepo) removeResponseBodyHeader(responseBodyId uint) (err error) {
+	err = r.DB.
+		Where("response_body_id = ?", responseBodyId).
+		Delete(&model.InterfaceResponseBodyHeader{}).Error
+
+	return
+}
+
+func (r *InterfaceRepo) UpdateInterface(interf *model.Interface) (err error) {
+	err = r.BaseRepo.Save(interf.ID, interf)
+	return
+}
+
+func (r *InterfaceRepo) GetByEndpointId(endpointId uint) (interfaces []model.Interface, err error) {
+
+	interfaces, err = r.GetEndpointId(endpointId)
+	for key, interf := range interfaces {
+		interfaces[key].Params, _ = r.ListParams(interf.ID)
+		interfaces[key].Headers, _ = r.ListHeaders(interf.ID)
+		interfaces[key].Cookies, _ = r.ListCookies(interf.ID)
+		interfaces[key].RequestBody, _ = r.ListRequestBody(interf.ID)
+		interfaces[key].ResponseBodies, _ = r.ListResponseBodies(interf.ID)
+	}
+
+	return
+}
+
+func (r *InterfaceRepo) GetEndpointId(endpointId uint) (field []model.Interface, err error) {
+	err = r.DB.
+		Where("endpoint_id=?", endpointId).
+		Where("NOT deleted").
+		Find(&field).Error
+	return
+}
+
+func (r *InterfaceRepo) ListRequestBody(interfaceId uint) (requestBody model.InterfaceRequestBody, err error) {
+	err = r.DB.First(&requestBody, "interface_id = ?", interfaceId).Error
+	if err != nil {
+		return
+	}
+
+	requestBody.SchemaItem, err = r.ListRequestBodyItem(requestBody.ID)
+	if err != nil {
+		//requestBody.SchemaItem.Content = _commUtils.JsonDecode(builtin.Interface2String(requestBody.SchemaItem.Content))
+	}
+	return
+}
+func (r *InterfaceRepo) ListRequestBodyItem(requestBodyId uint) (requestBodyItem model.InterfaceRequestBodyItem, err error) {
+	//fmt.Println(requestBodyId, "+++++++++++++")
+	err = r.DB.First(&requestBodyItem, "request_body_id = ?", requestBodyId).Error
+	//fmt.Println(err)
+	return
+}
+
+func (r *InterfaceRepo) ListResponseBodies(interfaceId uint) (responseBodies []model.InterfaceResponseBody, err error) {
+	err = r.DB.Find(&responseBodies, "interface_id = ?", interfaceId).Error
+	if err != nil {
+		return
+	}
+
+	for key, responseBody := range responseBodies {
+		responseBodies[key].SchemaItem, err = r.ListResponseBodyItem(responseBody.ID)
+		if err != nil {
+			return
+		}
+
+		responseBodies[key].Headers, err = r.ListResponseBodyHeaders(responseBody.ID)
+		if err != nil {
+			return
+		}
+	}
+
+	return
+}
+
+func (r *InterfaceRepo) ListResponseBodyItem(requestBodyId uint) (responseBodyItem model.InterfaceResponseBodyItem, err error) {
+	err = r.DB.First(&responseBodyItem, "response_body_id = ?", requestBodyId).Error
+	//fmt.Println(err)
+	return
+}
+
+func (r *InterfaceRepo) ListResponseBodyHeaders(requestBodyId uint) (responseBodyHeaders []model.InterfaceResponseBodyHeader, err error) {
+	err = r.DB.Find(&responseBodyHeaders, "response_body_id = ?", requestBodyId).Error
 	return
 }

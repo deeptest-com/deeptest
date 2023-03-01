@@ -59,3 +59,17 @@ func (r *BaseRepo) GetAllChildIds(id uint, tableName string) (ids []uint, err er
 
 	return
 }
+
+func (r *BaseRepo) Save(id uint, entity interface{}) (err error) {
+	var count int64
+	err = r.DB.Model(&entity).Where("id = ?", id).Count(&count).Error
+	if err != nil {
+		return
+	}
+	if count == 0 {
+		err = r.DB.Create(entity).Error
+	} else {
+		err = r.DB.Updates(entity).Error
+	}
+	return
+}

@@ -38,7 +38,6 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
       },
     ],
   },
-
   {
     title: 'index-layout.menu',
     path: '/interface',
@@ -54,7 +53,39 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
       },
     ],
   },
+  //  接口管理列表页面
+  {
+    title: '接口管理列表页面',
+    path: '/interfaceV2',
+    redirect: '/interfaceV2/index',
+    component: BlankLayout,
+    children: [
+      {
+        icon: 'list',
+        title: 'interfaceV2',
+        path: 'index',
+        component: () => import('@/views/interfaceV2/index.vue'),
+        hidden: false,
+      },
+    ],
+  },
 
+  //  项目管理 页面
+  {
+    title: '项目管理',
+    path: '/projectSetting',
+    redirect: '/projectSetting/index',
+    component: BlankLayout,
+    children: [
+      {
+        icon: 'list',
+        title: 'projectSetting',
+        path: 'index',
+        component: () => import('@/views/projectSetting/index.vue'),
+        hidden: false,
+      },
+    ],
+  },
   {
     title: 'index-layout.menu',
     path: '/scenario',

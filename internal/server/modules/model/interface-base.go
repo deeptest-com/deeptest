@@ -6,13 +6,16 @@ import (
 )
 
 type InterfaceBase struct {
-	Name string `json:"name"`
-	Desc string `json:"desc"`
-
-	IsLeaf    bool `json:"isLeaf"`
-	ParentId  uint `json:"parentId"`
-	ProjectId uint `json:"projectId"`
-	UseID     uint `json:"useId"`
+	Name        string `json:"name"`
+	OperationId string `json:"operationId"`
+	Description string `json:"description"`
+	Desc        string `json:"desc"`
+	EndpointId  uint   `json:"endpoint_id"`
+	Security    string `json:"security"`
+	IsLeaf      bool   `json:"isLeaf"`
+	ParentId    uint   `json:"parentId"`
+	ProjectId   uint   `json:"projectId"`
+	UseID       uint   `json:"useId"`
 
 	Ordr int `json:"ordr"`
 
@@ -60,6 +63,14 @@ type InterfaceHeaderBase struct {
 	InterfaceId uint   `json:"interfaceId"`
 }
 
+type InterfaceCookieBase struct {
+	Name        string `json:"name"`
+	Desc        string `json:"desc"`
+	Value       string `json:"value"`
+	Type        string `json:"type"`
+	InterfaceId uint   `json:"interfaceId"`
+}
+
 type InterfaceBasicAuthBase struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
@@ -97,4 +108,43 @@ type InterfaceApiKeyBase struct {
 	TransferMode string `json:"transferMode"`
 
 	InterfaceId uint `json:"interfaceId"`
+}
+
+type InterfaceRequestBodyBase struct {
+	InterfaceId uint   `json:"interfaceId"`
+	MediaType   string `json:"mediaType"`
+	Description string `json:"description"`
+	SchemaRefId int64  `json:"schemaRefId"`
+	Examples    string `json:"examples"`
+}
+
+type InterfaceResponseBodyBase struct {
+	Code        string `json:"code"`
+	InterfaceId uint   `json:"interfaceId"`
+	MediaType   string `json:"mediaType"`
+	Description string `json:"description"`
+	SchemaRefId int64  `json:"schemaRefId"`
+	Examples    string `json:"examples"`
+}
+
+type InterfaceRequestBodyItemBase struct {
+	Name          string `json:"name"`
+	Type          string `json:"type"`
+	Content       string `json:"content"`
+	RequestBodyId uint   `json:"requestBodyId"`
+}
+
+type InterfaceResponseBodyItemBase struct {
+	Name           string `json:"name"`
+	Type           string `json:"type"`
+	Content        string `json:"content"`
+	ResponseBodyId uint   `json:"ResponseBodyId"`
+}
+
+type InterfaceResponseBodyHeaderBase struct {
+	Name           string `json:"name"`
+	Desc           string `json:"desc"`
+	Value          string `json:"value"`
+	Type           string `json:"type"`
+	ResponseBodyId uint   `json:"responseBodyId"`
 }

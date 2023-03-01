@@ -6,6 +6,7 @@ import '@/assets/css/global.less';
 // 引入 Antd
 import Antd from 'ant-design-vue';
 
+
 // 导入 svg
 import { importAllSvg } from "@/components/IconSvg/index";
 importAllSvg();
@@ -18,7 +19,7 @@ import i18n from '@/config/i18n';
 import _ from "lodash";
 import mitt, {Emitter} from "@/utils/mitt";
 
-const app = createApp(App)
+const app = createApp(App);
 app.use(store);
 app.use(router)
 app.use(Antd);

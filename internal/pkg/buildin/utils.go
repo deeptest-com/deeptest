@@ -451,3 +451,13 @@ func SplitInteger(m, n int) (ints []int) {
 	}
 	return
 }
+
+func Interface2String(data interface{}) (res string) {
+	if data != nil {
+		switch data.(type) {
+		case string:
+			res = data.(string)
+		}
+	}
+	return
+}

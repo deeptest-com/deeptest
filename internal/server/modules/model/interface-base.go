@@ -23,7 +23,7 @@ type InterfaceBase struct {
 
 	Url      string                 `json:"url"`
 	Method   consts.HttpMethod      `gorm:"default:GET" json:"method"`
-	Body     string                 `gorm:"type:text;default:{}" json:"body"`
+	Body     string                 `gorm:"type:text" json:"body"`
 	BodyType consts.HttpContentType `gorm:"default:''" json:"bodyType"`
 
 	AuthorizationType string `gorm:"default:''" json:"authorizationType"`
@@ -123,20 +123,20 @@ type InterfaceResponseBodyBase struct {
 	MediaType   string `json:"mediaType"`
 	Description string `json:"description"`
 	SchemaRefId int64  `json:"schemaRefId"`
-	Examples    string `json:"examples"`
+	Examples    string `gorm:"type:text" json:"examples"`
 }
 
 type InterfaceRequestBodyItemBase struct {
 	Name          string `json:"name"`
 	Type          string `json:"type"`
-	Content       string `json:"content"`
+	Content       string `gorm:"type:text" json:"content"`
 	RequestBodyId uint   `json:"requestBodyId"`
 }
 
 type InterfaceResponseBodyItemBase struct {
 	Name           string `json:"name"`
 	Type           string `json:"type"`
-	Content        string `json:"content"`
+	Content        string `gorm:"type:text" json:"content"`
 	ResponseBodyId uint   `json:"ResponseBodyId"`
 }
 

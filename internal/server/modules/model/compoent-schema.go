@@ -6,7 +6,7 @@ type ComponentSchema struct {
 	Type     string `json:"type"`
 	Content  string `json:"content"`
 	ServeId  int64  `json:"serveId"`
-	Examples string `json:"examples"`
+	Examples string `json:"examples" gorm:"tpe:text"`
 	Tags     string `json:"tags"`
 }
 

@@ -21,13 +21,12 @@ type InterfaceBase struct {
 
 	Slots iris.Map `gorm:"-" json:"slots"`
 
-	Url    string            `json:"url"`
-	Method consts.HttpMethod `gorm:"default:GET" json:"method"`
-
-	Body     string                 `gorm:"default:{}" json:"body"`
+	Url      string                 `json:"url"`
+	Method   consts.HttpMethod      `gorm:"default:GET" json:"method"`
+	Body     string                 `gorm:"type:text;default:{}" json:"body"`
 	BodyType consts.HttpContentType `gorm:"default:''" json:"bodyType"`
 
-	AuthorizationType string `gorm:"default:''" json:"authorizationType"`
+	AuthorizationType string `gorm:"default:''" json:"authorizationType"`git 
 	PreRequestScript  string `gorm:"default:''" json:"preRequestScript"`
 	ValidationScript  string `gorm:"default:''" json:"validationScript"`
 }

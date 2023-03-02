@@ -1,6 +1,7 @@
 package _commUtils
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/emirpasic/gods/maps"
 	"net"
@@ -114,4 +115,23 @@ func IsDisable(enable string) bool {
 	} else {
 		return true
 	}
+}
+
+func JsonEncode(data interface{}) (res string) {
+
+	if resByte, err := json.Marshal(data); err == nil {
+		res = string(resByte)
+	}
+	return
+
+}
+
+func JsonDecode(str string, res interface{}) {
+
+	if err := json.Unmarshal([]byte(str), res); err != nil {
+		//panic(err)
+	}
+
+	return
+
 }

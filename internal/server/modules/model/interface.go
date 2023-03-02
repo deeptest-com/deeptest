@@ -11,8 +11,11 @@ type Interface struct {
 
 	Children []*Interface `gorm:"-" json:"children"`
 
-	Params  []InterfaceParam  `gorm:"-" json:"params"`
-	Headers []InterfaceHeader `gorm:"-" json:"headers"`
+	Params         []InterfaceParam        `gorm:"-" json:"params"`
+	Headers        []InterfaceHeader       `gorm:"-" json:"headers"`
+	Cookies        []InterfaceCookie       `gorm:"-" json:"cookies"`
+	RequestBody    InterfaceRequestBody    `gorm:"-" json:"requestBody"`
+	ResponseBodies []InterfaceResponseBody `gorm:"-" json:"responseBodies"`
 
 	BodyFormData       []InterfaceBodyFormDataItem       `gorm:"-" json:"bodyFormData"`
 	BodyFormUrlencoded []InterfaceBodyFormUrlEncodedItem `gorm:"-" json:"bodyFormUrlencoded"`
@@ -66,6 +69,15 @@ func (InterfaceHeader) TableName() string {
 	return "biz_interface_header"
 }
 
+type InterfaceCookie struct {
+	BaseModel
+	InterfaceCookieBase
+}
+
+func (InterfaceCookie) TableName() string {
+	return "biz_interface_cookie"
+}
+
 type InterfaceBasicAuth struct {
 	BaseModel
 	InterfaceBasicAuthBase
@@ -101,6 +113,54 @@ type InterfaceApiKey struct {
 
 func (InterfaceApiKey) TableName() string {
 	return "biz_interface_apikey"
+}
+
+type InterfaceRequestBodyItem struct {
+	BaseModel
+	InterfaceRequestBodyItemBase
+}
+
+func (InterfaceRequestBodyItem) TableName() string {
+	return "biz_interface_request_body_item"
+}
+
+type InterfaceResponseBodyItem struct {
+	BaseModel
+	InterfaceResponseBodyItemBase
+}
+
+func (InterfaceResponseBodyItem) TableName() string {
+	return "biz_interface_response_body_item"
+}
+
+type InterfaceResponseBodyHeader struct {
+	BaseModel
+	InterfaceResponseBodyHeaderBase
+}
+
+func (InterfaceResponseBodyHeader) TableName() string {
+	return "biz_interface_response_body_header"
+}
+
+type InterfaceRequestBody struct {
+	BaseModel
+	InterfaceRequestBodyBase
+	SchemaItem InterfaceRequestBodyItem `gorm:"-" json:"schemaItem"`
+}
+
+func (InterfaceRequestBody) TableName() string {
+	return "biz_interface_request_body"
+}
+
+type InterfaceResponseBody struct {
+	BaseModel
+	InterfaceResponseBodyBase
+	SchemaItem InterfaceResponseBodyItem     `gorm:"-" json:"schemaItem"`
+	Headers    []InterfaceResponseBodyHeader `gorm:"-" json:"headers"`
+}
+
+func (InterfaceResponseBody) TableName() string {
+	return "biz_interface_response_body"
 }
 
 type InterfaceExtractor struct {

@@ -70,5 +70,18 @@ var (
 		&ExecLogProcessor{},
 		&ExecLogExtractor{},
 		&ExecLogCheckpoint{},
+
+		&ComponentSchema{},
+		&ComponentSchemaSecurity{},
+		&InterfaceCookie{},
+		&Endpoint{},
+		&EndpointPathParam{},
+		&InterfaceRequestBody{},
+		&InterfaceRequestBodyItem{},
+		&InterfaceResponseBodyItem{},
+		&InterfaceResponseBodyHeader{},
+		&Serve{},
+		&ServeServer{},
+		&ServeVersion{},
 	}
 )

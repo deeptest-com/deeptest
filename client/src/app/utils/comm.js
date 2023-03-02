@@ -62,7 +62,8 @@ export async function getRemoteVersion() {
 }
 
 export function changeVersion(newVersion) {
-    const pth = path.resolve(ResDir, 'version.json');
+    const pth = path.join(ResDir, 'version.json');
+    logInfo(`ResDir=${ResDir}, pth=${pth}`)
 
     let json = {}
     if (fs.existsSync(pth)) {
@@ -84,10 +85,10 @@ export function restart() {
 export function getResPath() {
     const versionPath = path.resolve(ResDir, 'version.json')
     const uiPath =  path.resolve(ResDir, 'ui');
-    const agentPath = getBinPath('agent')
+    const serverPath = getBinPath('server')
 
     return {
-        versionPath, uiPath, agentPath
+        versionPath, uiPath, serverPath
     }
 }
 
@@ -103,8 +104,8 @@ export function computerFileMd5(pth) {
     const buffer = fs.readFileSync(pth);
     const hash = crypto.createHash('md5');
     hash.update(buffer, 'utf8');
-    const md5 = hash.digest('hex');
-    return md5
+    const md5 = hash.digest('hex') + '';
+    return md5.trim()
 }
 
 export function getVersionUrl() {
@@ -113,19 +114,33 @@ export function getVersionUrl() {
     return url
 }
 export function getAppUrl(version) {
-    const platform = os.platform(); // 'darwin', 'linux', 'win32'
+    const platform = getPlatform(); // 'darwin', 'linux', 'win32', 'win64'
+    logInfo(`platform=${platform}`)
     const url = new URL(`${App}/${version}/${platform}/${App}-upgrade.zip`, downloadUrl) + '?ts=' + Date.now();
     logInfo(`appUrl=${url}`)
     return url
 }
 
-export async function checkMd5(version, file) {
-    const platform = os.platform(); // 'darwin', 'linux', 'win32'
-    const url = new URL(`${App}/${version}/${platform}/${App}-upgrade.zip.md5`, downloadUrl);
+export function getPlatform() {
+    let platform = os.platform(); // 'darwin', 'linux', 'win32'
 
-    const md5Remote = await got.get(url).text();
+    if (platform === 'win32' && ['arm64', 'ppc64', 'x64', 's390x'].includes(os.arch())) {
+        platform = 'win64'
+    }
+
+    return platform
+}
+
+export async function checkMd5(version, file) {
+    const platform = getPlatform(); // 'darwin', 'linux', 'win32'
+    const url = new URL(`${App}/${version}/${platform}/${App}-upgrade.zip.md5`, downloadUrl) + '?ts=' + Date.now();
+
+    logInfo(`md5Url=${url}, file=${file}`)
+
+    const md5Remote = (await got.get(url).text() + '').trim();
     const md5File = computerFileMd5(file)
     const pass = md5Remote === md5File
+
     logInfo(`md5Remote=${md5Remote}, md5File=${md5File}, pass=${pass}`)
 
     return pass

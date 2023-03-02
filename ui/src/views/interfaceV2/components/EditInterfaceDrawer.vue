@@ -497,7 +497,7 @@ import contenteditable from 'vue-contenteditable';
 import FieldItem from './FieldItem.vue'
 import {momentUtc} from '@/utils/datetime';
 import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
-import {MonacoOptions} from '@/utils/const'
+import {MonacoOptions} from '@/utils/const';
 import _default from "ant-design-vue/lib/color-picker";
 import unmounted = _default.unmounted;
 

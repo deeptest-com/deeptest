@@ -3,6 +3,7 @@
     <div class="header">
       <a-button class="editable-add-btn"
                 @click="handleAdd"
+                type="primary"
                 style="margin-bottom: 8px">新建组件
       </a-button>
       <a-input-search
@@ -32,6 +33,7 @@
     <a-modal v-model:visible="visible"
              @cancel="handleCancel"
              title="新建组件"
+             :bodyStyle="{position:'relative'}"
              @ok="handleOk">
       <a-form :model="formState" :label-col="{ span: 6 }" :wrapper-col=" { span: 15 }">
         <a-form-item label="组件名称">
@@ -53,24 +55,72 @@
 
     <!-- ::::编辑scheme组件 -->
     <a-modal v-model:visible="schemeVisible"
-             @cancel="handleCancel"
-             title="组件编辑"
-             width="1000px"
-             @ok="handleOk">
+             @cancel="handleSchemeCancel"
+             width="882px"
+             :closable="false"
+             :key="schemeVisibleKey"
+             @ok="handleEdit">
       <div class="editModal-content">
-        <div class="btns">
-          <a-button :type="showMode === 'form' ? 'primary' : 'default'" @click="switchMode('form')">
-            <template #icon>
-              <BarsOutlined/>
-            </template>
-            图形
-          </a-button>
-          <a-button :type="showMode === 'code' ? 'primary' : 'default'" @click="switchMode('code')">
-            <template #icon>
-              <CodeOutlined/>
-            </template>
-            YAML
-          </a-button>
+        <div class="modal-header">
+          <div class="header-desc">
+            <div class="name" v-if="showMode === 'form'">
+              <a-input
+                  @focusout="updateModelInfo"
+                  @pressEnter="updateModelInfo"
+                  @change="(e) => {
+                    changeModelInfo('name',e)
+                  }"
+                  :value="activeSchema?.name"
+                  placeholder="请输入内容"/>
+            </div>
+            <div class="desc" v-if="showMode === 'form'">
+              <a-input
+                  @focusout="updateModelInfo"
+                  @pressEnter="updateModelInfo"
+                  @change="(e) => {
+                    changeModelInfo('desc',e)
+                  }"
+                  :value="activeSchema?.description"
+                  placeholder="请输入内容"/>
+            </div>
+          </div>
+          <div class="btns">
+            <a-button :type="showMode === 'form' ? 'primary' : 'default'" @click="switchMode('form')">
+              <template #icon>
+                <BarsOutlined/>
+              </template>
+              图形
+            </a-button>
+            <a-button :type="showMode === 'code' ? 'primary' : 'default'" @click="switchMode('code')">
+              <template #icon>
+                <CodeOutlined/>
+              </template>
+              YAML
+            </a-button>
+          </div>
+        </div>
+        <!-- ::::表单模式 -->
+        <div class="content-form" v-if="showMode === 'form'">
+          <SchemaEditor
+              @generateFromJSON="generateFromJSON"
+              @exampleChange="handleExampleChange"
+              @schemaTypeChange="handleSchemaTypeChange"
+              @contentChange="handleContentChange"
+              :value="activeSchema"/>
+        </div>
+        <!-- ::::代码模式 -->
+        <div class="content-code" v-if="showMode === 'code'">
+          <div style="border: 1px solid #f0f0f0; padding: 8px 0;">
+            <MonacoEditor
+                class="editor"
+                :value="yamlCode"
+                :language="'json'"
+                :height="200"
+                theme="vs"
+                :options="{...MonacoOptions}"
+                @change="handleCodeChange"
+            />
+          </div>
         </div>
       </div>
     </a-modal>
@@ -98,12 +148,15 @@ import {
   deleteSchema,
   disableSchema,
   copySchema,
-  getSchemaList,
+  getSchemaList, saveServe, example2schema,
 } from '../service';
+import SchemaEditor from '@/components/SchemaEditor/index.vue';
 import {message} from "ant-design-vue";
+import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
+import {MonacoOptions} from '@/utils/const';
 
 const props = defineProps({
-  serveId:{
+  serveId: {
     type: String,
     required: true
   },
@@ -132,7 +185,12 @@ const formState: UnwrapRef<FormState> = reactive({
 
 const visible = ref(false);
 const schemeVisible = ref(false);
+const activeSchema: any = ref(null);
 
+
+const contentStr = ref('');
+const schemaType = ref('object');
+const exampleStr = ref('');
 
 const columns = [
   {
@@ -154,10 +212,35 @@ const columns = [
 
 const dataSource: Ref<DataItem[]> = ref([]);
 const count = computed(() => dataSource.value.length + 1);
-const editableData: UnwrapRef<Record<string, DataItem>> = reactive({});
 
-function onSearch(e) {
+async function onSearch(e) {
+  await getList();
   console.log(e.target.value)
+}
+
+async function changeModelInfo(type, e) {
+  if (type === 'desc') {
+    activeSchema.value.description = e.target.value;
+  }
+  if (type === 'name') {
+    activeSchema.value.name = e.target.value;
+  }
+}
+
+async function updateModelInfo() {
+  // isEditModelName.value = false;
+  // isEditModelDesc.value = false;
+  // if (activeSchema.value.name && activeSchema.value.description) {
+  //   const res = await saveSchema({
+  //     "projectId": 1,
+  //     "name": activeSchema.value.name,
+  //     "description": activeSchema.value.description,
+  //     "id": props.serveId,
+  //   });
+  //   if (res.code === 0) {
+  //     await getList();
+  //   }
+  // }
 }
 
 
@@ -167,10 +250,22 @@ const yamlCode = ref('');
 async function switchMode(val) {
   showMode.value = val;
   // 需求去请求YAML格式
-  // if (val === 'code') {
-  //   let res = await getYaml(interfaceDetail.value);
-  //   yamlCode.value = res.data;
-  // }
+  // const content = activeSchema.value.content;
+  let content = {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "number"
+      },
+      "name": {
+        "type": "string"
+      }
+    }
+  };
+  if (val === 'code') {
+    let res = await getYaml(content);
+    yamlCode.value = res.data;
+  }
 }
 
 const keyword = ref('');
@@ -180,27 +275,96 @@ const activeKey = ref('1');
 function onClose() {
   console.log('xxx')
   schemeVisible.value = false;
-
 }
 
-const edit = (record: string) => {
+const schemeVisibleKey = ref(0);
+const edit = (record: any) => {
   schemeVisible.value = true;
-};
 
-const isEditServiceDesc = ref(false);
-const isEditServiceName = ref(false);
+  record.content = record.content ? JSON.parse(record.content) : null;
+  record.examples = record.examples ? JSON.parse(record.examples) : null;
 
-function editServiceDesc() {
-  isEditServiceDesc.value = true;
-}
+  // const obj = {
+  //   "type": "object",
+  //   "required": [
+  //     "name"
+  //   ],
+  //   "properties": {
+  //     "name": {
+  //       "type": "string",
+  //     },
+  //     "age": {
+  //       "type": "integer",
+  //       "format": "int32",
+  //       "minimum": 0,
+  //
+  //     },
+  //     'obj1': {
+  //       "type": "object",
+  //       "required": [
+  //         "name"
+  //       ],
+  //       "properties": {
+  //         "name1": {
+  //           "type": "string",
+  //         },
+  //         "age1": {
+  //           "type": "integer",
+  //           "format": "int32",
+  //           "minimum": 0,
+  //
+  //         },
+  //         'obj2': {
+  //           "type": "object",
+  //
+  //           "required": [
+  //             "name11"
+  //           ],
+  //           "properties": {
+  //             "name3232": {
+  //               "type": "string",
+  //
+  //             },
+  //             // "address": {
+  //             //     "$ref": "#/components/schemas/Address"
+  //             // },
+  //             "age3333": {
+  //               "type": "integer",
+  //               "format": "int32",
+  //               "minimum": 0,
+  //
+  //             },
+  //             'obj4341': {
+  //               "type": "object",
+  //
+  //               "required": [
+  //                 "name"
+  //               ],
+  //               "properties": {
+  //                 "name1332323": {
+  //                   "type": "string",
+  //
+  //                 },
+  //                 "age22221": {
+  //                   "type": "integer",
+  //                   "format": "int32",
+  //                   "minimum": 0,
+  //
+  //                 },
+  //               }
+  //             }
+  //           }
+  //         }
+  //       }
+  //     }
+  //   }
+  // };
+  activeSchema.value = record;
+  contentStr.value = record?.content || '';
+  exampleStr.value = record?.examples || '';
+  schemaType.value = record?.type || '';
+  schemeVisibleKey.value++;
 
-function editServiceName() {
-  isEditServiceName.value = true;
-}
-
-const save = (key: string) => {
-  // Object.assign(dataSource.value.filter(item => key === item.key)[0], editableData[key]);
-  // delete editableData[key];
 };
 
 
@@ -213,16 +377,36 @@ async function handleOk() {
   const res = await saveSchema({
     "name": formState.name,
     "serveId": props.serveId,
-    "tags":formState.tags.join(','),
+    "tags": formState.tags.join(','),
   });
   if (res.code === 0) {
-    message.success('保存成功');
+    message.success('新建组件成功');
     visible.value = false;
     await getList();
   } else {
-    message.error('保存失败');
+    message.error('新建组件失败');
   }
+}
 
+async function handleEdit() {
+  const res = await saveSchema({
+    "name": activeSchema.value.name,
+    "id": activeSchema.value.id,
+    "serveId": props.serveId,
+    "tags": activeSchema.value.tabs,
+    "content": contentStr.value,
+    "examples": exampleStr.value,
+    "type": schemaType.value,
+    "description": activeSchema.value.description
+  });
+  if (res.code === 0) {
+    schemeVisible.value = false;
+    message.success('修改组件成功');
+    visible.value = false;
+    await getList();
+  } else {
+    message.error('修改组件失败');
+  }
 }
 
 
@@ -230,16 +414,20 @@ function handleTagChange(value: string) {
   console.log(`832 ${value}`);
 }
 
-// 取消
 function handleCancel() {
   visible.value = false;
+}
+
+function handleSchemeCancel() {
+  schemeVisible.value = false;
 }
 
 async function getList() {
   const res = await getSchemaList({
     "serveId": props.serveId,
     "page": 1,
-    "pageSize": 20
+    "pageSize": 20,
+    name: keyword.value
   });
   if (res.code === 0) {
     dataSource.value = res.data.result;
@@ -269,13 +457,42 @@ async function onCopy(record: any) {
 }
 
 
+function handleCodeChange() {
+  console.log('代码改变');
+}
+
+async function generateFromJSON(JSONStr: string) {
+  const res = await example2schema({
+    data: JSONStr
+  });
+  if (res.code === 0) {
+    activeSchema.value.content = res.data;
+    contentStr.value = JSON.stringify(res.data);
+    schemaType.value = res.data.type;
+  }
+}
+
+function handleContentChange(str: string) {
+  contentStr.value = str;
+}
+
+function handleSchemaTypeChange(str: string) {
+  schemaType.value = str;
+}
+
+function handleExampleChange(str: string) {
+  debugger;
+  exampleStr.value = str;
+}
+
 watch(() => {
   return props.serveId
-},async () => {
+}, async () => {
   await getList();
-},{
-  immediate:true
+}, {
+  immediate: true
 })
+
 
 </script>
 
@@ -291,15 +508,70 @@ watch(() => {
   }
 }
 
+.btns {
+  display: flex;
+  justify-content: flex-end;
+
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+}
+
 .editModal-content {
   min-height: 200px;
-  position: relative;
 
-  .btns {
-    position: absolute;
-    top: 8px;
-    right: 8px;
+}
+
+.content-form {
+  //margin-top: 32px;
+}
+
+.content-code {
+  //margin-top: 32px;
+}
+
+.header-desc {
+  flex: 1;
+  margin-right: 36px;
+
+  .name {
+    height: 24px;
+    line-height: 24px;
+    font-weight: bold;
+    font-size: 18px;
+    margin-bottom: 16px;
+
+    input {
+      border: none;
+      height: 32px;
+      line-height: 32px;
+      font-size: 18px;
+
+      &:hover {
+        border: 1px solid #1aa391;
+      }
+    }
   }
 
+  .desc {
+    height: 16px;
+    line-height: 16px;
+    font-weight: bold;
+    font-size: 14px;
+    margin-bottom: 32px;
+
+    input {
+      border: none;
+      height: 24px;
+      line-height: 24px;
+      font-size: 12px;
+
+      &:hover {
+        border: 1px solid #1aa391;
+      }
+    }
+  }
 }
 </style>

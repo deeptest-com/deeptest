@@ -10,8 +10,7 @@
           v-model:value="keyword"
           placeholder="输入组件名称搜索"
           style="width: 300px"
-          @search="onSearch"
-      />
+          @search="onSearch"/>
     </div>
     <a-table bordered :data-source="dataSource" :columns="columns">
       <template #name="{ text, record }">
@@ -28,7 +27,6 @@
         </a-space>
       </template>
     </a-table>
-
     <!-- ::::新建组件 -->
     <a-modal v-model:visible="visible"
              @cancel="handleCancel"
@@ -46,8 +44,7 @@
               style="width: 100%"
               placeholder="Tags Mode"
               :options="[]"
-              @change="handleTagChange"
-          >
+              @change="handleTagChange">
           </a-select>
         </a-form-item>
       </a-form>
@@ -102,8 +99,10 @@
         <!-- ::::表单模式 -->
         <div class="content-form" v-if="showMode === 'form'">
           <SchemaEditor
+              :schemeVisibleKey="schemeVisibleKey"
               @generateFromJSON="generateFromJSON"
               @exampleChange="handleExampleChange"
+              @generateExample="handleGenerateExample"
               @schemaTypeChange="handleSchemaTypeChange"
               @contentChange="handleContentChange"
               :value="activeSchema"/>
@@ -114,12 +113,11 @@
             <MonacoEditor
                 class="editor"
                 :value="yamlCode"
-                :language="'json'"
-                :height="200"
+                :language="'yaml'"
+                :height="400"
                 theme="vs"
                 :options="{...MonacoOptions}"
-                @change="handleCodeChange"
-            />
+                @change="handleCodeChange"/>
           </div>
         </div>
       </div>
@@ -142,13 +140,17 @@ import {
   watch
 } from 'vue';
 import {CheckOutlined, EditOutlined} from '@ant-design/icons-vue';
-import {getYaml} from "@/views/interfaceV2/service";
+// import {getYaml} from "@/views/interfaceV2/service";
 import {
   saveSchema,
   deleteSchema,
   disableSchema,
   copySchema,
-  getSchemaList, saveServe, example2schema,
+  getSchemaList,
+  saveServe,
+  example2schema,
+  schema2example,
+  schema2yaml,
 } from '../service';
 import SchemaEditor from '@/components/SchemaEditor/index.vue';
 import {message} from "ant-design-vue";
@@ -186,8 +188,6 @@ const formState: UnwrapRef<FormState> = reactive({
 const visible = ref(false);
 const schemeVisible = ref(false);
 const activeSchema: any = ref(null);
-
-
 const contentStr = ref('');
 const schemaType = ref('object');
 const exampleStr = ref('');
@@ -250,20 +250,11 @@ const yamlCode = ref('');
 async function switchMode(val) {
   showMode.value = val;
   // 需求去请求YAML格式
-  // const content = activeSchema.value.content;
-  let content = {
-    "type": "object",
-    "properties": {
-      "id": {
-        "type": "number"
-      },
-      "name": {
-        "type": "string"
-      }
-    }
-  };
+  const content = activeSchema.value.content;
   if (val === 'code') {
-    let res = await getYaml(content);
+    let res = await schema2yaml({
+      data: JSON.stringify(content)
+    });
     yamlCode.value = res.data;
   }
 }
@@ -280,91 +271,13 @@ function onClose() {
 const schemeVisibleKey = ref(0);
 const edit = (record: any) => {
   schemeVisible.value = true;
-
-  record.content = record.content ? JSON.parse(record.content) : null;
-  record.examples = record.examples ? JSON.parse(record.examples) : null;
-
-  // const obj = {
-  //   "type": "object",
-  //   "required": [
-  //     "name"
-  //   ],
-  //   "properties": {
-  //     "name": {
-  //       "type": "string",
-  //     },
-  //     "age": {
-  //       "type": "integer",
-  //       "format": "int32",
-  //       "minimum": 0,
-  //
-  //     },
-  //     'obj1': {
-  //       "type": "object",
-  //       "required": [
-  //         "name"
-  //       ],
-  //       "properties": {
-  //         "name1": {
-  //           "type": "string",
-  //         },
-  //         "age1": {
-  //           "type": "integer",
-  //           "format": "int32",
-  //           "minimum": 0,
-  //
-  //         },
-  //         'obj2': {
-  //           "type": "object",
-  //
-  //           "required": [
-  //             "name11"
-  //           ],
-  //           "properties": {
-  //             "name3232": {
-  //               "type": "string",
-  //
-  //             },
-  //             // "address": {
-  //             //     "$ref": "#/components/schemas/Address"
-  //             // },
-  //             "age3333": {
-  //               "type": "integer",
-  //               "format": "int32",
-  //               "minimum": 0,
-  //
-  //             },
-  //             'obj4341': {
-  //               "type": "object",
-  //
-  //               "required": [
-  //                 "name"
-  //               ],
-  //               "properties": {
-  //                 "name1332323": {
-  //                   "type": "string",
-  //
-  //                 },
-  //                 "age22221": {
-  //                   "type": "integer",
-  //                   "format": "int32",
-  //                   "minimum": 0,
-  //
-  //                 },
-  //               }
-  //             }
-  //           }
-  //         }
-  //       }
-  //     }
-  //   }
-  // };
+  record.content =  record.content &&  typeof record.content === 'string' ? JSON.parse(record.content) : {type: 'object'};
+  record.examples = record.examples && typeof record.examples === 'string' ? JSON.parse(record.examples) : [];
   activeSchema.value = record;
-  contentStr.value = record?.content || '';
-  exampleStr.value = record?.examples || '';
+  contentStr.value = JSON.stringify(record?.content || '');
+  exampleStr.value = JSON.stringify(record?.examples || '');
   schemaType.value = record?.type || '';
   schemeVisibleKey.value++;
-
 };
 
 
@@ -481,14 +394,35 @@ function handleSchemaTypeChange(str: string) {
 }
 
 function handleExampleChange(str: string) {
-  debugger;
   exampleStr.value = str;
+}
+
+async function handleGenerateExample(examples: any) {
+  const res = await schema2example({
+    data: contentStr.value
+  });
+
+  const example = {
+    name: `Example ${examples.length + 1}`,
+    content: JSON.stringify(res.data),
+  };
+
+  if (res.code === 0) {
+    activeSchema.value.examples.push(example);
+  }
 }
 
 watch(() => {
   return props.serveId
 }, async () => {
   await getList();
+}, {
+  immediate: true
+})
+watch(() => {
+  return schemeVisible.value
+}, () => {
+  schemeVisibleKey.value++
 }, {
   immediate: true
 })
@@ -511,7 +445,6 @@ watch(() => {
 .btns {
   display: flex;
   justify-content: flex-end;
-
 }
 
 .modal-header {
@@ -521,7 +454,6 @@ watch(() => {
 
 .editModal-content {
   min-height: 200px;
-
 }
 
 .content-form {
@@ -529,7 +461,7 @@ watch(() => {
 }
 
 .content-code {
-  //margin-top: 32px;
+  // margin-top: 32px;
 }
 
 .header-desc {

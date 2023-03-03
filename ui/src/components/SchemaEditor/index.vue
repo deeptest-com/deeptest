@@ -17,10 +17,13 @@ import {MonacoOptions} from '@/utils/const';
 
 const props = defineProps<{
   value: object,
+  tabContentStyle?: object,
+  schemeVisibleKey?: string | number,
 }>();
 
 const emit = defineEmits<{
   (e: 'generateFromJSON', jsonStr?: string): void,
+  (e: 'generateExample', jsonStr?: string): void,
   (e: 'contentChange', jsonStr?: string): void,
   (e: 'exampleChange', jsonStr?: string): void,
   (e: 'schemaTypeChange', type?: string): void
@@ -29,19 +32,13 @@ const emit = defineEmits<{
 const content: any = ref(null);
 const examples: any = ref([]);
 
-function addExample() {
-  const data = {
-    name: `Example ${examples.value.length + 1}`,
-    content: `{
-      "a":1
-    }`
-  };
-  examples.value.push(data);
-  activeExample.value = examples.value[examples.value.length - 1];
-}
-
 
 const activeExample: any = ref(null);
+
+function addExample() {
+  emit('generateExample', examples.value);
+}
+
 
 function clickExampleItem(item: any) {
   activeExample.value = item;
@@ -68,16 +65,10 @@ function deleteExample(value) {
     return item.name === value.name;
   })
   examples.value.splice(index, 1);
-  if (examples.value.length === 1) {
-    activeExample.value = examples.value[0];
-  }
-  if (examples.value.length === 0) {
-    activeExample.value = null;
-  }
 }
 
-function handleExampleContentChange() {
-  console.log('编辑器改变')
+function handleExampleContentChange(val) {
+  activeExample.value.content = val;
 }
 
 const exampleJsonStr = ref('');
@@ -96,23 +87,25 @@ function generate() {
   emit('generateFromJSON', exampleJsonStr.value);
 }
 
-const key = ref(0)
+const schemaEditorKey = ref(0)
 
 
 watch(() => {
   return props.value
 }, (newVal: any) => {
-  key.value++;
-  content.value = newVal?.content || null;
+  console.log(832333,JSON.stringify(newVal));
+  content.value = newVal?.content || {
+    type: 'object',
+  };
   examples.value = newVal?.examples || [];
 }, {
-  immediate: true
+  immediate: true,
+  deep: true
 });
 
 watch(() => {
   return content.value
 }, (newVal: any) => {
-  // let newObj = JSON.parse(JSON.stringify(newVal));
   emit('contentChange', JSON.stringify(newVal));
   emit('schemaTypeChange', newVal.type);
 }, {
@@ -131,10 +124,18 @@ watch(() => {
 });
 
 
+watch(() => {
+  return examples.value.length
+}, (newVal) => {
+  activeExample.value = newVal > 0 ? examples.value[newVal - 1] : null;
+}, {
+  immediate: true
+})
+
 </script>
 
 <template>
-  <div class="tab-content">
+  <div class="tab-content" :style="tabContentStyle">
     <div class="tab-header" v-if="!activeGenSchemaMode">
       <div>
         <a-button :type="activeTab === 'schema' ? 'link': 'text'" :size="'small'" @click="switchTab('schema')">Schema
@@ -161,7 +162,10 @@ watch(() => {
     <div class="tab-body" v-if="!activeGenSchemaMode">
       <!-- ::::Schema Tab -->
       <div class="tab-body-schema" v-if="activeTab=== 'schema'">
-        <SchemaEditor :value="content"/>
+        <SchemaEditor
+            :key="props.schemeVisibleKey"
+            :value="content"
+            :contentStyle="tabContentStyle"/>
       </div>
       <!--::::示例Tab -->
       <div class="tab-body-examples" v-if="activeTab=== 'examples'">
@@ -184,15 +188,18 @@ watch(() => {
 
         </div>
         <div class="right">
-          <div v-if="!activeExample?.content" class="nodata-tip" title="Your operation has been executed">
+          <div v-if="!activeExample?.content"
+               class="nodata-tip"
+               title="Your operation has been executed">
             <InfoCircleOutlined class="tip-icon"/>
             <div class="tip-text">No Example. Click '+ New Example' to get started.</div>
           </div>
           <div class="activeExampleInfo" v-if="activeExample?.content">
             <div class="activeExampleInfo-header">
-              <a-input class="input exampleName-input"
-                       v-model:value="activeExample.name"
-                       placeholder="Basic usage"/>
+              <a-input
+                  class="input exampleName-input"
+                  v-model:value="activeExample.name"
+                  placeholder="Basic usage"/>
               <div class="btns">
                 <a-button type="text" @click="copyExample(activeExample)">
                   <template #icon>

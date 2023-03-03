@@ -126,7 +126,6 @@ interface DataItem {
 const formState: UnwrapRef<FormState> = reactive({
   name: '',
   description: '',
-
 });
 
 const editFormState: UnwrapRef<FormState> = reactive({

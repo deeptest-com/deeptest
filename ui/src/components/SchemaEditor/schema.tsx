@@ -37,9 +37,10 @@ export default defineComponent({
     name: 'SchemeEditor',
     props: {
         value: Object,
+        contentStyle: Object
     },
     setup(props) {
-        const data:any = ref(null);
+        const data: any = ref(null);
         const expandIt = (tree: any, e: any) => {
             if (tree?.extraViewInfo) {
                 tree.extraViewInfo.isExpand = !tree.extraViewInfo.isExpand;
@@ -122,23 +123,12 @@ export default defineComponent({
             visible.value = true;
             computePosition(e.target, floating.value, {
                 placement: 'right-start',
-                middleware: [
-
-                ],
+                middleware: [],
             }).then(({x, y, middlewareData}) => {
                 Object.assign(floating.value.style, {
                     left: `${8 + x}px`,
                     top: `${y}px`,
                 });
-                // if (middlewareData.arrow) {
-                //     // let x1 = middlewareData.arrow.x;
-                //     let y1 = middlewareData.arrow.y;
-                //     console.log(832, middlewareData.arrow)
-                //     Object.assign(floatingArrow.value.style, {
-                //         left: '-10px',
-                //         top: y1 ? `${y1}px` : '0px',
-                //     });
-                // }
 
             });
         };
@@ -149,7 +139,7 @@ export default defineComponent({
                 // 如果单击事件不是发生在目标元素或其后代元素上
                 // visible.value = floatingCon?.value.contains(event.target);
                 const target: any = event?.target;
-                if (target?.className?.includes('setDataTypeAction')) {
+                if (target?.className && target?.className?.includes && target?.className?.includes('setDataTypeAction')) {
                     return;
                 }
                 if (!floatingCon?.value?.contains(event.target)) {
@@ -157,13 +147,14 @@ export default defineComponent({
                 }
             });
         })
+
         onUnmounted(() => {
-            console.log('销毁')
+            console.log(832, '销毁')
         })
 
         function adaptValue(val) {
-            if(!val){
-                return  null
+            if (!val) {
+                return null
             }
             val.extraViewInfo = {
                 "isExpand": true,
@@ -171,9 +162,10 @@ export default defineComponent({
                 "name": "root",
                 "depth": 1,
             };
-            function fn(obj:any, depth) {
+
+            function fn(obj: any, depth) {
                 if (obj.properties && obj.type === 'object') {
-                    Object.entries(obj.properties).forEach(([key, value]:any) => {
+                    Object.entries(obj.properties).forEach(([key, value]: any) => {
                         value.extraViewInfo = {
                             "isExpand": true,
                             "isRoot": false,
@@ -186,6 +178,7 @@ export default defineComponent({
                     })
                 }
             }
+
             fn(val, 2);
             return val;
         }
@@ -193,15 +186,17 @@ export default defineComponent({
         watch(() => {
             return props.value
         }, (newVal) => {
-            data.value = adaptValue(newVal);
+            const val = JSON.parse(JSON.stringify(newVal));
+            data.value = adaptValue(val);
         }, {
-            immediate: true
+            immediate: true,
+            deep: true
         })
 
         const treeLevelWidth = 24;
         const renderTree = (tree: any, option: any) => {
-            console.log('832 tree',tree)
-            if(!tree){
+            console.log('832 tree', tree)
+            if (!tree) {
                 return null
             }
             const {keyIndex, parent, isFirst, isLast, keyName} = option;
@@ -226,7 +221,7 @@ export default defineComponent({
                                onClick={showSettingPropsModal.bind(this, tree)}
                                class={[tree.type, 'setDataTypeAction']}
                             >{tree.type}</a>
-                            <span class={'baseInfoSpace'}>{`{${Object.keys(tree.properties).length}}`}</span>
+                            <span class={'baseInfoSpace'}>{`{${Object.keys(tree.properties || {}).length}}`}</span>
                             <PlusOutlined onClick={addProps.bind(this, tree)} class={'addIcon'}/>
                         </div>
                         <div class={'action'}>
@@ -252,7 +247,7 @@ export default defineComponent({
                         'directoryContainerFold': !isExpand
                     }}>
                         {
-                            Object.entries(tree.properties).map(([key, value]: any, index: number, arr: any) => {
+                            tree.properties && Object.entries(tree.properties).map(([key, value]: any, index: number, arr: any) => {
                                 const isFirst = index === 0;
                                 const isLast = index === arr.length - 1;
                                 const depth = value.extraViewInfo.depth;
@@ -306,7 +301,7 @@ export default defineComponent({
         }
 
         return () => (
-            <div class={'schemaEditor-content'}>
+            <div class={'schemaEditor-content'} style={props.contentStyle}>
                 {renderTree(data.value, {})}
                 <div ref={floatingCon}>
                     <div

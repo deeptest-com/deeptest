@@ -249,6 +249,17 @@
                   <a-row class="method-item">
                     <a-col :span="3" class="method-item-label"></a-col>
                     <a-col :span="21">
+                      <SchemaEditor
+                          @generateFromJSON="generateFromJSON"
+                          @exampleChange="handleExampleChange"
+                          @generateExample="handleGenerateExample"
+                          @schemaTypeChange="handleSchemaTypeChange"
+                          @contentChange="handleContentChange"
+                          :tab-content-style="{width:'700px'}"
+                          :value="activeSchema"/>
+                    </a-col>
+                  <!--                    <a-col :span="3" class="method-item-label"></a-col>
+                    <a-col :span="21">
                       <a-tabs type="card" v-model:activeKey="activeKey">
                         <a-tab-pane key="1" tab="Schema">
                           <div style="border: 1px solid #f0f0f0; padding: 8px 0;">
@@ -277,7 +288,7 @@
                           </div>
                         </a-tab-pane>
                       </a-tabs>
-                    </a-col>
+                    </a-col>-->
                   </a-row>
                   <!-- ::::响应定义  -->
                   <a-row class="method-item">
@@ -358,7 +369,6 @@
 <!--                                </template>-->
 <!--                                {{ `添加` }}-->
 <!--                              </a-button>-->
-
                             </a-col>
                           </a-row>
                           <!-- ::::增加响应体 - 描述  -->
@@ -372,34 +382,43 @@
                           <a-row class="method-item">
                             <a-col :span="4" class="method-item-label"></a-col>
                             <a-col :span="20">
-                              <a-tabs type="card" v-model:activeKey="activeResCodeKey">
-                                <a-tab-pane key="1" tab="Schema">
-                                  <div style="border: 1px solid #f0f0f0; padding: 8px 0;">
-                                    <MonacoEditor
-                                        class="editor"
-                                        :value="selectedCodeDetail?.schemaItem?.content"
-                                        :language="'json'"
-                                        :height="200"
-                                        theme="vs"
-                                        :options="{...MonacoOptions,minimap:false}"
-                                        @change="handleResSchemeEditorChange"
-                                    />
-                                  </div>
-                                </a-tab-pane>
-                                <a-tab-pane key="2" tab="Examples">
-                                  <div style="border: 1px solid #f0f0f0; padding: 8px 0;">
-                                    <MonacoEditor
-                                        class="editor"
-                                        :value="selectedCodeDetail?.examples"
-                                        :language="'json'"
-                                        :height="200"
-                                        theme="vs"
-                                        :options="{...MonacoOptions,minimap:false}"
-                                        @change="handleResExpEditorChange"
-                                    />
-                                  </div>
-                                </a-tab-pane>
-                              </a-tabs>
+                              <SchemaEditor
+                                  @generateFromJSON="generateFromJSON"
+                                  @exampleChange="handleExampleChange"
+                                  @generateExample="handleGenerateExample"
+                                  @schemaTypeChange="handleSchemaTypeChange"
+                                  @contentChange="handleContentChange"
+                                  :tab-content-style="{width:'600px'}"
+                                  :value="activeSchema"/>
+
+<!--                              <a-tabs type="card" v-model:activeKey="activeResCodeKey">-->
+<!--                                <a-tab-pane key="1" tab="Schema">-->
+<!--                                  <div style="border: 1px solid #f0f0f0; padding: 8px 0;">-->
+<!--                                    <MonacoEditor-->
+<!--                                        class="editor"-->
+<!--                                        :value="selectedCodeDetail?.schemaItem?.content"-->
+<!--                                        :language="'json'"-->
+<!--                                        :height="200"-->
+<!--                                        theme="vs"-->
+<!--                                        :options="{...MonacoOptions,minimap:false}"-->
+<!--                                        @change="handleResSchemeEditorChange"-->
+<!--                                    />-->
+<!--                                  </div>-->
+<!--                                </a-tab-pane>-->
+<!--                                <a-tab-pane key="2" tab="Examples">-->
+<!--                                  <div style="border: 1px solid #f0f0f0; padding: 8px 0;">-->
+<!--                                    <MonacoEditor-->
+<!--                                        class="editor"-->
+<!--                                        :value="selectedCodeDetail?.examples"-->
+<!--                                        :language="'json'"-->
+<!--                                        :height="200"-->
+<!--                                        theme="vs"-->
+<!--                                        :options="{...MonacoOptions,minimap:false}"-->
+<!--                                        @change="handleResExpEditorChange"-->
+<!--                                    />-->
+<!--                                  </div>-->
+<!--                                </a-tab-pane>-->
+<!--                              </a-tabs>-->
                             </a-col>
                           </a-row>
 
@@ -500,6 +519,8 @@ import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
 import {MonacoOptions} from '@/utils/const';
 import _default from "ant-design-vue/lib/color-picker";
 import unmounted = _default.unmounted;
+import SchemaEditor from '@/components/SchemaEditor/index.vue';
+import {example2schema, schema2example} from "@/views/projectSetting/service";
 
 const props = defineProps({
   visible: {
@@ -846,6 +867,86 @@ async function save() {
     emit('refreshList')
   }
 }
+
+
+
+const activeSchema: any = ref({
+  content:{
+    "type": "object",
+    "properties": {
+      "a": {
+        "type": "string"
+      },
+      "b": {
+        "properties": {
+          "c": {
+            "properties": {
+              "d": {
+                "type": "number"
+              }
+            },
+            "type": "object"
+          }
+        },
+        "type": "object"
+      }
+    }
+  },
+  examples:[
+    {
+      name:'example 1',
+      content:'{"a":"string","b":{"c":{"d":0}}}'
+    },
+    {
+      name:'example 2',
+      content:'{"a":"string","b":{"c":{"d":0}}}'
+    }
+  ],
+  type:'object'
+});
+const contentStr = ref('');
+const schemaType = ref('object');
+const exampleStr = ref('');
+
+
+async function generateFromJSON(JSONStr: string) {
+  const res = await example2schema({
+    data: JSONStr
+  });
+  if (res.code === 0) {
+    // activeSchema.value.content = res.data;
+    // contentStr.value = JSON.stringify(res.data);
+    // schemaType.value = res.data.type;
+  }
+}
+
+async function handleGenerateExample(examples:any) {
+  const res = await schema2example({
+    data: contentStr.value
+  });
+
+  const example = {
+    name: `Example ${examples.length + 1}`,
+    content: JSON.stringify(res.data),
+  };
+
+  if (res.code === 0) {
+    activeSchema.value.examples.push(example);
+  }
+}
+
+function handleContentChange(str: string) {
+  contentStr.value = str;
+}
+
+function handleSchemaTypeChange(str: string) {
+  schemaType.value = str;
+}
+
+function handleExampleChange(str: string) {
+  exampleStr.value = str;
+}
+
 
 // onUnmounted(() => {
 //

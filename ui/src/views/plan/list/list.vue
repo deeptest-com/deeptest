@@ -42,8 +42,6 @@
 
           <template #action="{ record }">
             <a-button type="link" @click="() => exec(record.id)">执行</a-button>
-
-            <a-button type="link" @click="() => design(record.id)">设计</a-button>
             <a-button type="link" @click="() => remove(record.id)">删除</a-button>
           </template>
 
@@ -154,11 +152,6 @@ const getList = debounce(async (current: number, categoryId: number): Promise<vo
 const exec = (id: number) => {
   console.log('exec')
   router.push(`/plan/exec/${id}`)
-}
-
-const design = (id: number) => {
-  console.log('edit')
-  router.push(`/plan/design/${id}`)
 }
 
 interface FormState {

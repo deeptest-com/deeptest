@@ -28,11 +28,13 @@
                     getList(page, nodeDataCategory.id);
                 },
             }"
-            class="dp-table"
-        >
-          <template #name="{ text  }">
+            class="dp-table">
+
+          <template #name="{ text, record  }">
             {{ text }}
+            <edit-outlined class="editable-cell-icon" @click="edit(record)"/>
           </template>
+
           <template #status="{ record }">
             <a-tag v-if="record.disabled" color="green">禁用</a-tag>
             <a-tag v-else color="cyan">启用</a-tag>
@@ -42,7 +44,6 @@
             <a-button type="link" @click="() => exec(record.id)">执行</a-button>
 
             <a-button type="link" @click="() => design(record.id)">设计</a-button>
-            <a-button type="link" @click="() => edit(record.id)">编辑</a-button>
             <a-button type="link" @click="() => remove(record.id)">删除</a-button>
           </template>
 
@@ -53,24 +54,30 @@
     </a-card>
   </div>
 
-  <div v-if="isEditVisible">
-    <a-modal title=""
-             :visible="true"
-             :onCancel="onEditFinish"
-             class="plan-edit"
-             :footer="null"
-             width="600px">
+  <a-drawer
+      :closable="true"
+      :width="1000"
+      :key="currModel.id"
+      :visible="drawerVisible"
+      @close="onEditFinish"
+  >
+    <template #title>
+      <div class="drawer-header">
+        <div>计划编辑</div>
+      </div>
+    </template>
+    <div class="drawer-content">
       <PlanEdit
-          :modelId="currModelId"
+          :modelId="currModel.id"
           :categoryId="nodeDataCategory.id"
-          :onFinish="onEditFinish">
+          :onFieldSaved="onFieldSaved">
       </PlanEdit>
-    </a-modal>
-  </div>
+    </div>
+  </a-drawer>
 </template>
 
 <script setup lang="ts">
-import {computed, onMounted, reactive, ref, watch} from "vue";
+import {computed, onMounted, reactive, ref, UnwrapRef, watch} from "vue";
 import { Empty } from 'ant-design-vue';
 import {SelectTypes} from 'ant-design-vue/es/select';
 import {PaginationConfig, QueryParams, Plan} from '../data.d';
@@ -80,6 +87,7 @@ import {StateType} from "../store";
 import debounce from "lodash.debounce";
 import {useRouter} from "vue-router";
 import {message, Modal, notification} from "ant-design-vue";
+import {CheckOutlined, EditOutlined} from '@ant-design/icons-vue';
 import {StateType as ProjectStateType} from "@/store/project";
 
 import PlanEdit from "../edit/index.vue";
@@ -113,7 +121,8 @@ let queryParams = reactive<QueryParams>({
   page: pagination.value.current, pageSize: pagination.value.pageSize
 });
 
-const currModelId = ref(0)
+
+const currModel = ref({})
 
 watch(nodeDataCategory, () => {
   console.log('watch nodeDataCategory', nodeDataCategory.value.id)
@@ -152,19 +161,38 @@ const design = (id: number) => {
   router.push(`/plan/design/${id}`)
 }
 
-const isEditVisible = ref(false)
+interface FormState {
+  name: string;
+  description: string;
+  serveId?:string,
 
-const edit = (id: number) => {
-  console.log('edit')
-  currModelId.value = id
-  isEditVisible.value = true
 }
 
+const drawerVisible = ref(false);
+const editFormState: UnwrapRef<FormState> = reactive({
+  name: '',
+  description: '',
+  serveId:'',
+});
+
+const edit = (record) => {
+  console.log('edit')
+  currModel.value = record
+
+  drawerVisible.value = true;
+  editFormState.name = record.name;
+  editFormState.description = record.description;
+  editFormState.serveId = record.id;
+}
+
+const onFieldSaved = () => {
+  console.log('onFieldSaved')
+  getList(pagination.value.current, nodeDataCategory.value.id)
+}
 const onEditFinish = () => {
   console.log('onEditFinish')
-  isEditVisible.value = false
-
   getList(pagination.value.current, nodeDataCategory.value.id)
+  drawerVisible.value = false
 }
 
 const remove = (id: number) => {

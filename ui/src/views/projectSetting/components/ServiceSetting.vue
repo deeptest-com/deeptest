@@ -204,8 +204,6 @@ function editServiceName() {
   isEditServiceName.value = true;
 }
 
-
-
 async function changeServiceInfo(e) {
   isEditServiceDesc.value = false;
   isEditServiceName.value = false;

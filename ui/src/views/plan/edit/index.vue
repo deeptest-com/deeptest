@@ -1,7 +1,7 @@
 <template>
   <div class="plan-edit-main">
     <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
-      <a-form-item label="名称" v-bind="validateInfos.name">
+      <a-form-item label="名称">
         <a-input v-if="editField==='name'"
                  v-model:value="modelRef.name"
                  @focusout="saveName"
@@ -13,7 +13,7 @@
             </span>
       </a-form-item>
 
-      <a-form-item label="描述" v-bind="validateInfos.desc">
+      <a-form-item label="描述">
         <a-input v-if="editField==='desc'"
                  v-model:value="modelRef.desc"
                  @focusout="saveDesc"
@@ -23,6 +23,23 @@
               {{ modelRef.desc }}
               <edit-outlined class="editable-cell-icon" @click="edit('desc')"/>
             </span>
+      </a-form-item>
+
+      <a-form-item label="场景">
+        <br />
+        <div class="scenario-list">
+          <div v-for="(item, idx) in scenarios" :key="item.id" class="scenario-item">
+            <div class="no">
+              {{idx+1}}
+            </div>
+            <div class="name">
+              {{item.name}}
+            </div>
+            <div class="interface-count">
+              {{item.interfaceCount}}
+            </div>
+          </div>
+        </div>
       </a-form-item>
     </a-form>
   </div>
@@ -58,15 +75,9 @@ const props = defineProps({
   }
 })
 
-const rulesRef = reactive({
-  name: [
-    {required: true, message: '请输入名称', trigger: 'blur'},
-  ],
-});
-
 const store = useStore<{ Plan: StateType }>();
 const modelRef = ref({} as any)
-const {resetFields, validate, validateInfos} = useForm(modelRef, rulesRef);
+const scenarios = ref([{id: 1, name: '场景', interfaceCount: 3}, {id: 2, name: '场景', interfaceCount: 3}])
 
 const editField = ref('')
 
@@ -96,7 +107,6 @@ const saveName = () => {
 }
 const saveDesc = () => {
   console.log('saveDesc')
-  if (!modelRef.value.desc) return
   saveModel()
 }
 
@@ -111,13 +121,32 @@ const saveModel = async () => {
   })
 };
 
-const labelCol = {span: 2}
-const wrapperCol = {span: 15}
+const labelCol = {span: 3}
+const wrapperCol = {span: 21}
 
 </script>
 
 <style lang="less" scoped>
 .plan-edit-main {
+  .scenario-list {
+    padding: 16px 0;
 
+    .scenario-item {
+      display: flex;
+      padding: 5px;
+      .no {
+        width: 100px;
+      }
+      .name {
+        flex: 1;
+      }
+      .interface-count {
+        width: 100px;
+      }
+      &:nth-child(even) {
+        background-color: #fafafa;
+      }
+    }
+  }
 }
 </style>

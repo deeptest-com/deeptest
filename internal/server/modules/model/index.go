@@ -42,6 +42,7 @@ var (
 
 		&PlanCategory{},
 		&Plan{},
+		&RelaPlanScenario{},
 
 		&Processor{},
 		//&ProcessorThreadGroup{},

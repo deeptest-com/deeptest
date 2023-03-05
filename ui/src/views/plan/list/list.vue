@@ -32,7 +32,7 @@
 
           <template #name="{ text, record  }">
             {{ text }}
-            <edit-outlined class="editable-cell-icon" @click="edit(record)"/>
+            <edit-outlined class="dp-primary" @click="edit(record)"/>
           </template>
 
           <template #status="{ record }">
@@ -118,7 +118,6 @@ let queryParams = reactive<QueryParams>({
   keywords: '', enabled: '1',
   page: pagination.value.current, pageSize: pagination.value.pageSize
 });
-
 
 const currModel = ref({})
 

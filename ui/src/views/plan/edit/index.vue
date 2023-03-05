@@ -2,32 +2,40 @@
   <div class="plan-edit-main">
     <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
       <a-form-item label="名称">
-        <a-input v-if="editField==='name'"
+        <a-input v-if="fieldName==='name'"
                  v-model:value="modelRef.name"
                  @focusout="saveName"
-                 @pressEnter="saveName"/>
+                 @pressEnter="saveName" />
 
         <span v-else>
-              {{ modelRef.name }}
-              <edit-outlined class="editable-cell-icon" @click="edit('name')"/>
-            </span>
+          {{ modelRef.name }}
+          <edit-outlined class="editable-cell-icon" @click="editField('name')"/>
+        </span>
       </a-form-item>
 
       <a-form-item label="描述">
-        <a-input v-if="editField==='desc'"
+        <a-input v-if="fieldName==='desc'"
                  v-model:value="modelRef.desc"
                  @focusout="saveDesc"
-                 @pressEnter="saveDesc"/>
+                 @pressEnter="saveDesc" />
 
         <span v-else>
               {{ modelRef.desc }}
-              <edit-outlined class="editable-cell-icon" @click="edit('desc')"/>
+              <edit-outlined class="editable-cell-icon" @click="editField('desc')"/>
             </span>
       </a-form-item>
 
       <a-form-item label="场景">
-        <br />
         <div class="scenario-list">
+          <div class="scenario-item">
+            <div class="no"></div>
+            <div class="name"></div>
+            <div class="count"></div>
+            <div class="opt">
+              <span @click="selectScenario()" class="dp-link-primary">导入场景</span>
+            </div>
+          </div>
+
           <div v-for="(item, idx) in scenarios" :key="item.id" class="scenario-item">
             <div class="no">
               {{idx+1}}
@@ -35,25 +43,38 @@
             <div class="name">
               {{item.name}}
             </div>
-            <div class="interface-count">
+            <div class="count">
               {{item.interfaceCount}}
+            </div>
+            <div class="opt">
+              <span>
+                <DeleteOutlined @click="removeScenario(item)" class="dp-primary"/>
+              </span>
             </div>
           </div>
         </div>
       </a-form-item>
     </a-form>
+
+    <SelectScenario
+        v-if="modalVisible"
+        :isVisible="modalVisible"
+        :submit="addScenarios"
+        :cancel="() => modalVisible = false"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import {defineProps, PropType, reactive, ref} from "vue";
-import {EditOutlined} from '@ant-design/icons-vue';
+import {EditOutlined, DeleteOutlined} from '@ant-design/icons-vue';
 import {useRouter} from "vue-router";
 import {useStore} from "vuex";
 import {useI18n} from "vue-i18n";
 import {Form} from 'ant-design-vue';
 import {StateType} from "../store";
 import {get} from "@/views/plan/service";
+import SelectScenario from "./select-scenario.vue"
 
 const useForm = Form.useForm;
 
@@ -79,7 +100,8 @@ const store = useStore<{ Plan: StateType }>();
 const modelRef = ref({} as any)
 const scenarios = ref([{id: 1, name: '场景', interfaceCount: 3}, {id: 2, name: '场景', interfaceCount: 3}])
 
-const editField = ref('')
+const fieldName = ref('')
+const modalVisible = ref(false);
 
 const getData = (id: number) => {
   if (id === 0) {
@@ -95,9 +117,21 @@ const getData = (id: number) => {
 }
 getData(props.modelId)
 
-const edit = (field) => {
+const editField = (field) => {
   console.log('edit')
-  editField.value = field
+  fieldName.value = field
+}
+
+const selectScenario = () => {
+  console.log('selectScenario')
+  modalVisible.value = true
+}
+const addScenarios = (serviceId, scenarios) => {
+  console.log('addScenarios', serviceId, scenarios)
+}
+
+const removeScenario = (item) => {
+  console.log('removeScenario')
 }
 
 const saveName = () => {
@@ -114,7 +148,7 @@ const saveModel = async () => {
   console.log('saveModel');
   store.dispatch('Plan/savePlan', modelRef.value).then((res) => {
     console.log('res', res)
-    editField.value = ''
+    fieldName.value = ''
     if (res === true) {
       props.onFieldSaved()
     }
@@ -140,8 +174,11 @@ const wrapperCol = {span: 21}
       .name {
         flex: 1;
       }
-      .interface-count {
+      .count {
         width: 100px;
+      }
+      .opt {
+        width: 60px;
       }
       &:nth-child(even) {
         background-color: #fafafa;

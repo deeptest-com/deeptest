@@ -42,3 +42,8 @@ func (s *PlanService) Update(req model.Plan) error {
 func (s *PlanService) DeleteById(id uint) error {
 	return s.PlanRepo.DeleteById(id)
 }
+
+func (s *PlanService) AddScenarios(planId int, scenarioIds []int) (err error) {
+	err = s.PlanRepo.AddScenarios(planId, scenarioIds)
+	return
+}

@@ -166,3 +166,19 @@ func (r *PlanRepo) GetChildrenIds(id uint) (ids []int, err error) {
 
 	return
 }
+
+func (r *PlanRepo) AddScenarios(planId int, scenarioIds []int) (err error) {
+	var pos []model.RelaPlanScenario
+
+	for _, id := range scenarioIds {
+		po := model.RelaPlanScenario{
+			PlanId:     uint(planId),
+			ScenarioId: uint(id),
+		}
+		pos = append(pos, po)
+	}
+
+	err = r.DB.Create(&pos).Error
+
+	return
+}

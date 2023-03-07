@@ -117,3 +117,22 @@ func (c *PlanCtrl) Delete(ctx iris.Context) {
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: nil, Msg: _domain.NoErr.Msg})
 }
+
+func (c *PlanCtrl) AddScenarios(ctx iris.Context) {
+	planId, _ := ctx.Params().GetInt("id")
+
+	var scenarioIds []int
+	err := ctx.ReadQuery(&scenarioIds)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: "ids"})
+		return
+	}
+
+	err = c.PlanService.AddScenarios(planId, scenarioIds)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code})
+}

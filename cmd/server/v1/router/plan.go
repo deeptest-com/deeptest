@@ -25,6 +25,8 @@ func (m *PlanModule) Party() module.WebModule {
 		index.Post("/", m.PlanCtrl.Create).Name = "新建计划"
 		index.Put("/", m.PlanCtrl.Update).Name = "更新计划"
 		index.Delete("/{id:uint}", m.PlanCtrl.Delete).Name = "删除计划"
+
+		index.Post("/{id:uint}/addScenarios", m.PlanCtrl.AddScenarios).Name = "添加场景"
 	}
 
 	return module.NewModule("/plans", handler)

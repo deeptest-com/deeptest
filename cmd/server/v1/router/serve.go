@@ -19,8 +19,11 @@ func (m *ServeModule) Party() module.WebModule {
 	handler := func(public iris.Party) {
 		//public.Use(middleware.InitCheck())
 		//public.Use(middleware.JwtHandler())
-		public.Post("/save", m.ServeCtrl.Save)
+
+		public.Post("/listByProject", m.ServeCtrl.ListByProject)
+
 		public.Post("/index", m.ServeCtrl.Index)
+		public.Post("/save", m.ServeCtrl.Save)
 		public.Get("/detail", m.ServeCtrl.Detail)
 		public.Delete("/delete", m.ServeCtrl.Delete)
 		public.Put("/expire", m.ServeCtrl.Expire)

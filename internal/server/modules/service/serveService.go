@@ -20,6 +20,11 @@ func NewServeService() *ServeService {
 	return &ServeService{}
 }
 
+func (s *ServeService) ListByProject(projectId int) (ret model.Serve, err error) {
+	ret, err = s.ServeRepo.ListByProject(projectId)
+	return
+}
+
 func (s *ServeService) Paginate(req v1.ServeReqPaginate) (ret _domain.PageData, err error) {
 	ret, err = s.ServeRepo.Paginate(req)
 	return

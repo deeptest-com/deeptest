@@ -11,6 +11,25 @@ type ServeCtrl struct {
 	ServeService *service.ServeService `inject:""`
 }
 
+// 项目服务列表
+func (c *ServeCtrl) ListByProject(ctx iris.Context) {
+	projectId, err := ctx.URLParamInt("currProjectId")
+	if projectId == 0 {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: "projectId"})
+		return
+	}
+
+	res, err := c.ServeService.ListByProject(projectId)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res})
+
+	return
+}
+
 // Index 服务列表
 func (c *ServeCtrl) Index(ctx iris.Context) {
 	var req v1.ServeReqPaginate

@@ -7,6 +7,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"gorm.io/gorm"
 )
 
 type ServeRepo struct {
@@ -101,12 +102,18 @@ func (r *ServeRepo) PaginateSchema(req v1.ServeSchemaPaginate) (ret _domain.Page
 }
 
 func (r *ServeRepo) Get(id uint) (res model.Serve, err error) {
-	err = r.DB.Where("NOT deleted AND not disabled").First(&res, id).Error
+	//err = r.DB.Where("NOT deleted AND not disabled").First(&res, id).Error
+	err = r.DB.Where("NOT deleted").First(&res, id).Error
 	return
 }
 
 func (r *ServeRepo) GetSchema(id uint) (res model.ComponentSchema, err error) {
 	err = r.DB.Where("NOT deleted AND not disabled").First(&res, id).Error
+	return
+}
+
+func (r *ServeRepo) GetSchemasByServeId(id uint) (res []model.ComponentSchema, err error) {
+	err = r.DB.Where("NOT deleted AND not disabled").Find(&res, id).Error
 	return
 }
 
@@ -133,4 +140,27 @@ func (r *ServeRepo) ListServer(serveId uint) (res []model.ServeServer, err error
 
 func (r *ServeRepo) DeleteSchemaById(id uint) error {
 	return r.DB.Model(&model.ComponentSchema{}).Where("id = ?", id).Update("deleted", 1).Error
+}
+
+func (r *ServeRepo) SaveServeEndpointVersions(versions []model.ServeEndpointVersion) error {
+	return r.DB.Create(&versions).Error
+}
+
+func (r *ServeRepo) DeleteSaveServeEndpointVersions(serveId int64, version string) error {
+	return r.DB.Delete(&model.ServeEndpointVersion{}, "serve_id=? and serve_version=?", serveId, version).Error
+}
+
+func (r *ServeRepo) BindEndpoint(serveId int64, serveVersion string, serveEndpointVersion []model.ServeEndpointVersion) (err error) {
+	r.DB.Transaction(func(tx *gorm.DB) error {
+		err = r.DeleteSaveServeEndpointVersions(serveId, serveVersion)
+		if err != nil {
+			return err
+		}
+		err = r.SaveServeEndpointVersions(serveEndpointVersion)
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+	return
 }

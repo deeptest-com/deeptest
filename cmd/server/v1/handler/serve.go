@@ -215,3 +215,13 @@ func (c *ServeCtrl) CopySchema(ctx iris.Context) {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 	}
 }
+
+func (c *ServeCtrl) BindEndpoint(ctx iris.Context) {
+	var req v1.ServeVersionBindEndpointReq
+	if err := ctx.ReadJSON(&req); err == nil {
+		c.ServeService.BindEndpoint(req)
+		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+	} else {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
+	}
+}

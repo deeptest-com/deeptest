@@ -12,6 +12,7 @@ type Endpoint struct {
 	Status     int64               `json:"status"`
 	PathParams []EndpointPathParam `gorm:"-" json:"pathParams"`
 	Interfaces []Interface         `gorm:"-" json:"interfaces"`
+	Versions   []EndpointVersion   `gorm:"-" json:"versions"`
 }
 
 func (Endpoint) TableName() string {
@@ -28,4 +29,14 @@ type EndpointPathParam struct {
 
 func (EndpointPathParam) TableName() string {
 	return "biz_endpoint_path_param"
+}
+
+type EndpointVersion struct {
+	BaseModel
+	Version    string `json:"version"`
+	EndpointId uint   `json:"endpointId"`
+}
+
+func (EndpointVersion) TableName() string {
+	return "biz_endpoint_version"
 }

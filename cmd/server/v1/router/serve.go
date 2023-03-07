@@ -27,6 +27,7 @@ func (m *ServeModule) Party() module.WebModule {
 		public.Get("/copy", m.ServeCtrl.Copy)
 		public.Post("/version/list", m.ServeCtrl.ListVersion)
 		public.Post("/version/save", m.ServeCtrl.SaveVersion)
+		public.Post("/version/bindEndpoint", m.ServeCtrl.BindEndpoint)
 		public.Delete("/version/delete", m.ServeCtrl.DeleteVersion)
 		public.Put("/version/expire", m.ServeCtrl.ExpireVersion)
 		public.Get("/server/list", m.ServeCtrl.ListServer)

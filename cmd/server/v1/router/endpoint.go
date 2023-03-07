@@ -30,6 +30,8 @@ func (m *EndpointModule) Party() module.WebModule {
 		public.Post("/yaml", m.EndpointCtrl.Yaml)
 		public.Put("/updateStatus", m.EndpointCtrl.UpdateStatus)
 		public.Delete("/batchDelete", m.EndpointCtrl.BatchDelete)
+		public.Post("/version/add", m.EndpointCtrl.AddVersion)
+		public.Get("/version/list", m.EndpointCtrl.ListVersions)
 	}
 	return module.NewModule("/endpoint", handler)
 }

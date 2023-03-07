@@ -35,14 +35,15 @@ type ServeVersionPaginate struct {
 }
 
 type ServeSchemaReq struct {
-	ID       uint   `json:"id"`
-	ServeId  int64  `json:"serveId"`
-	Name     string `json:"name"`
-	Tag      string `json:"tag"`
-	Content  string `json:"content"`
-	Examples string `json:"examples"`
-	Type     string `json:"type"`
-	Tags     string `json:"tags"`
+	ID          uint   `json:"id"`
+	ServeId     int64  `json:"serveId"`
+	Name        string `json:"name"`
+	Tag         string `json:"tag"`
+	Content     string `json:"content"`
+	Examples    string `json:"examples"`
+	Type        string `json:"type"`
+	Tags        string `json:"tags"`
+	Description string `json:"description"`
 }
 
 type ServeServerReq struct {
@@ -64,4 +65,15 @@ type JsonContent struct {
 
 type SchemaContent struct {
 	Data string
+}
+
+type EndpointVersions struct {
+	EndpointId int64  `json:"endpointId"`
+	Version    string `json:"version"`
+}
+
+type ServeVersionBindEndpointReq struct {
+	ServeId          int64              `json:"serveId"`
+	ServeVersion     string             `json:"serveVersion"`
+	EndpointVersions []EndpointVersions `json:"endpointVersions"`
 }

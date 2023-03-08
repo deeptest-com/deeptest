@@ -46,21 +46,25 @@ type ServeSchemaReq struct {
 	Description string `json:"description"`
 }
 
+type EnvironmentReq struct {
+	ID           uint
+	ProjectId    uint                  `json:"projectId"`
+	Name         string                `json:"name"`
+	ServeServers []ServeServer         `json:"serveServers"`
+	Vars         []EnvironmentVariable `json:"vars"`
+}
+
+type ServeServer struct {
+	ID      uint   `json:"id"`
+	ServeId uint   `json:"serveId"`
+	Url     string `json:"url"`
+}
+
 type EnvironmentVariable struct {
 	Name        string `json:"name"`
 	LocalValue  string `json:"localValue"`
 	RemoteValue string `json:"remoteValue"`
 	Description string `json:"description"`
-}
-
-type ServeServerReq struct {
-	ID                   uint                  `json:"id"`
-	ProjectId            uint                  `json:"projectId"`
-	ServeIds             []int64               `json:"serveId"`
-	Url                  string                `json:"url"`
-	Description          string                `json:"description"`
-	Name                 string                `json:"name"`
-	EnvironmentVariables []EnvironmentVariable `json:"EnvironmentVariable"`
 }
 
 type ServeSchemaPaginate struct {

@@ -73,7 +73,7 @@ func (s *ServeService) ListServer(serveId uint) (res []model.ServeServer, err er
 	return
 }
 
-func (s *ServeService) SaveServer(req v1.ServeServerReq) (res uint, err error) {
+func (s *ServeService) SaveServer(req v1.ServeServer) (res uint, err error) {
 	var serve model.ServeServer
 	copier.CopyWithOption(&serve, req, copier.Option{DeepCopy: true})
 	err = s.ServeRepo.Save(serve.ID, &serve)

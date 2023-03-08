@@ -167,7 +167,7 @@ func (c *ServeCtrl) ListServer(ctx iris.Context) {
 }
 
 func (c *ServeCtrl) SaveServer(ctx iris.Context) {
-	var req v1.ServeServerReq
+	var req v1.ServeServer
 	if err := ctx.ReadJSON(&req); err == nil {
 		res, _ := c.ServeService.SaveServer(req)
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})

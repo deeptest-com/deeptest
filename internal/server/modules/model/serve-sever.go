@@ -2,10 +2,9 @@ package model
 
 type ServeServer struct {
 	BaseModel
-	Name        string `json:"name"`
-	ServerId    uint   `json:"serverId"`
-	Url         string `json:"url"`
-	Description string `json:"description"`
+	EnvironmentId uint   `json:"environmentId"`
+	ServeId       uint   `json:"serveId"`
+	Url           string `json:"url"`
 }
 
 func (ServeServer) TableName() string {

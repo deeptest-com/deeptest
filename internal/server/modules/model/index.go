@@ -85,5 +85,8 @@ var (
 		&ServeVersion{},
 		&EndpointVersion{},
 		&ServeEndpointVersion{},
+		&SummaryBugs{},
+		&SummaryDetails{},
+		&SummaryProjectUserRanking{},
 	}
 )

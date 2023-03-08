@@ -1,6 +1,7 @@
 package handler
 
 import (
+	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
@@ -255,4 +256,50 @@ func (c *EnvironmentCtrl) ClearShareVar(ctx iris.Context) {
 
 	env, err := c.EnvironmentService.Get(uint(interfaceId), 0)
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: env, Msg: _domain.NoErr.Msg})
+}
+
+func (c *EnvironmentCtrl) Save(ctx iris.Context) {
+	var req v1.EnvironmentReq
+	if err := ctx.ReadJSON(&req); err == nil {
+		if err = c.EnvironmentService.Save(req); err == nil {
+			ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+		} else {
+			ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		}
+	} else {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+	}
+}
+
+func (c *EnvironmentCtrl) ListAll(ctx iris.Context) {
+	projectId := ctx.URLParamIntDefault("projectId", 0)
+	if res, err := c.EnvironmentService.ListAll(uint(projectId)); err == nil {
+		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res, Msg: _domain.NoErr.Msg})
+	} else {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+	}
+}
+
+func (c *EnvironmentCtrl) SaveGlobal(ctx iris.Context) {
+	var req []v1.EnvironmentVariable
+	projectId := ctx.URLParamIntDefault("projectId", 0)
+	if err := ctx.ReadJSON(&req); err == nil {
+		if err = c.EnvironmentService.SaveGlobal(uint(projectId), req); err == nil {
+			ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+		} else {
+			ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		}
+	} else {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+	}
+}
+
+func (c *EnvironmentCtrl) ListGlobal(ctx iris.Context) {
+	projectId := ctx.URLParamIntDefault("projectId", 0)
+	res, err := c.EnvironmentService.ListGlobal(uint(projectId))
+	if err == nil {
+		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res, Msg: _domain.NoErr.Msg})
+	} else {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+	}
 }

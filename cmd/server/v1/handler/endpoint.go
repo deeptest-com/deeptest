@@ -42,8 +42,9 @@ func (c *EndpointCtrl) Save(ctx iris.Context) {
 
 func (c *EndpointCtrl) Detail(ctx iris.Context) {
 	id := ctx.URLParamUint64("id")
+	version := ctx.URLParamDefault("version", c.EndpointService.GetLatestVersion(uint(id)))
 	if id != 0 {
-		res := c.EndpointService.GetById(uint(id))
+		res := c.EndpointService.GetById(uint(id), version)
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res})
 	} else {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
@@ -114,7 +115,8 @@ func (c *EndpointCtrl) Develop(ctx iris.Context) {
 
 func (c *EndpointCtrl) Copy(ctx iris.Context) {
 	id := ctx.URLParamUint64("id")
-	res, err := c.EndpointService.Copy(uint(id))
+	version := ctx.URLParamDefault("version", "v1.0.0")
+	res, err := c.EndpointService.Copy(uint(id), version)
 	if err == nil {
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res, Msg: _domain.NoErr.Msg})
 	} else {
@@ -143,5 +145,31 @@ func (c *EndpointCtrl) UpdateStatus(ctx iris.Context) {
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 	} else {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
+	}
+}
+
+func (c *EndpointCtrl) AddVersion(ctx iris.Context) {
+	var req v1.EndpointVersionReq
+	if err := ctx.ReadJSON(&req); err == nil {
+		var version model.EndpointVersion
+		copier.CopyWithOption(&version, &req, copier.Option{IgnoreEmpty: true, DeepCopy: true})
+		err = c.EndpointService.AddVersion(&version)
+		if err == nil {
+			ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: req.Version})
+		} else {
+			ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		}
+	} else {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+	}
+}
+
+func (c *EndpointCtrl) ListVersions(ctx iris.Context) {
+	id := ctx.URLParamUint64("id")
+	res, err := c.EndpointService.GetVersionsByEndpointId(uint(id))
+	if err == nil {
+		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res})
+	} else {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 	}
 }

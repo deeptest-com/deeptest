@@ -29,6 +29,7 @@ type InterfaceBase struct {
 	AuthorizationType string `gorm:"default:''" json:"authorizationType"`
 	PreRequestScript  string `gorm:"default:''" json:"preRequestScript"`
 	ValidationScript  string `gorm:"default:''" json:"validationScript"`
+	Version           string `gorm:"default:''" json:"Version"`
 }
 
 type InterfaceParamBase struct {

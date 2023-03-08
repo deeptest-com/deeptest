@@ -73,7 +73,7 @@ func (s *ServeService) ListServer(serveId uint) (res []model.ServeServer, err er
 	return
 }
 
-func (s *ServeService) SaveServer(req v1.ServeServerReq) (res uint, err error) {
+func (s *ServeService) SaveServer(req v1.ServeServer) (res uint, err error) {
 	var serve model.ServeServer
 	copier.CopyWithOption(&serve, req, copier.Option{DeepCopy: true})
 	err = s.ServeRepo.Save(serve.ID, &serve)
@@ -104,7 +104,7 @@ func (s *ServeService) Example2Schema(data string) (schema openapi3.Schema) {
 	var obj interface{}
 	schema = openapi3.Schema{}
 	_commUtils.JsonDecode(data, &obj)
-	_commUtils.JsonDecode("{\"id\":1,\"name\":\"user\"}", &obj)
+	//_commUtils.JsonDecode("{\"id\":1,\"name\":\"user\"}", &obj)
 	//_commUtils.JsonDecode("[\"0，2，3\"]", &obj)
 	//_commUtils.JsonDecode("[]", &obj)
 	//_commUtils.JsonDecode("[{\"id\":1,\"name\":\"user\"}]", &obj)
@@ -147,5 +147,14 @@ func (s *ServeService) CopySchema(id uint) (schema model.ComponentSchema, err er
 	schema.CreatedAt = nil
 	schema.UpdatedAt = nil
 	err = s.ServeRepo.Save(0, &schema)
+	return
+}
+
+func (s *ServeService) BindEndpoint(req v1.ServeVersionBindEndpointReq) (err error) {
+	var serveEndpointVersion []model.ServeEndpointVersion
+	for _, endpointVersion := range req.EndpointVersions {
+		serveEndpointVersion = append(serveEndpointVersion, model.ServeEndpointVersion{EndpointId: endpointVersion.EndpointId, EndpointVersion: endpointVersion.Version, ServeId: req.ServeId, ServeVersion: req.ServeVersion})
+	}
+	err = s.ServeRepo.BindEndpoint(req.ServeId, req.ServeVersion, serveEndpointVersion)
 	return
 }

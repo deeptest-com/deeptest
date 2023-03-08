@@ -2,8 +2,10 @@ package service
 
 import (
 	"errors"
+	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	repo2 "github.com/aaronchen2k/deeptest/internal/server/modules/repo"
+	"github.com/jinzhu/copier"
 )
 
 type EnvironmentService struct {
@@ -133,5 +135,29 @@ func (s *EnvironmentService) DisableAllShareVar(interfaceId uint) (err error) {
 
 	err = s.EnvironmentRepo.DisableAllShareVar(interf.ProjectId)
 
+	return
+}
+
+func (s *EnvironmentService) Save(req v1.EnvironmentReq) (err error) {
+	var environment model.Environment
+	copier.CopyWithOption(&environment, req, copier.Option{DeepCopy: true})
+	err = s.EnvironmentRepo.SaveEnvironment(environment)
+	return
+}
+
+func (s *EnvironmentService) ListAll(projectId uint) (res []model.Environment, err error) {
+	res, err = s.EnvironmentRepo.GetListByProjectId(projectId)
+	return
+}
+
+func (s *EnvironmentService) SaveGlobal(projectId uint, req []v1.EnvironmentVariable) (err error) {
+	var vars []model.EnvironmentVar
+	copier.CopyWithOption(&vars, req, copier.Option{DeepCopy: true})
+	err = s.EnvironmentRepo.SaveVars(projectId, 0, vars)
+	return
+}
+
+func (s *EnvironmentService) ListGlobal(projectId uint) (res []model.EnvironmentVar, err error) {
+	res, err = s.EnvironmentRepo.ListGlobal(projectId)
 	return
 }

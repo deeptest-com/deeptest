@@ -20,7 +20,7 @@ func (m *ServeModule) Party() module.WebModule {
 		//public.Use(middleware.InitCheck())
 		//public.Use(middleware.JwtHandler())
 
-		public.Post("/listByProject", m.ServeCtrl.ListByProject)
+		public.Get("/listByProject", m.ServeCtrl.ListByProject)
 
 		public.Post("/index", m.ServeCtrl.Index)
 		public.Post("/save", m.ServeCtrl.Save)

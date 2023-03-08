@@ -16,7 +16,7 @@ func NewScenarioService() *ScenarioService {
 	return &ScenarioService{}
 }
 
-func (s *ScenarioService) ListByServe(serveId int) (pos model.Scenario, err error) {
+func (s *ScenarioService) ListByServe(serveId int) (pos []model.Scenario, err error) {
 	pos, err = s.ScenarioRepo.ListByServe(serveId)
 	return
 }

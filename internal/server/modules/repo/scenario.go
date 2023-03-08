@@ -21,7 +21,7 @@ func NewScenarioRepo() *ScenarioRepo {
 	return &ScenarioRepo{}
 }
 
-func (r *ScenarioRepo) ListByServe(serveId int) (pos model.Scenario, err error) {
+func (r *ScenarioRepo) ListByServe(serveId int) (pos []model.Scenario, err error) {
 	err = r.DB.
 		Where("serve_id=?", serveId).
 		Where("NOT deleted").

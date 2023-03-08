@@ -9,6 +9,7 @@ type Scenario struct {
 
 	Processor  Processor `json:"processor" yaml:"processor" gorm:"-"`
 	CategoryId uint      `json:"categoryId"`
+	ServeId    uint      `json:"serveId"`
 	ProjectId  uint      `json:"projectId"`
 }
 

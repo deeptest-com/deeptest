@@ -1,19 +1,12 @@
 import request from '@/utils/request';
 import {QueryParams} from "@/views/project/data";
-import {getEnumSelectItems} from "@/views/interface/service";
-import {
-    ProcessorCookie, ProcessorData,
-    ProcessorExtractor,
-    ProcessorLogic,
-    ProcessorLoop, ProcessorGroup, ProcessorTimer, ProcessorPrint,
-    ProcessorCategory,
-    ProcessorVariable, ProcessorAssertion, RequestBodyType
-} from "@/utils/enum";
-import {Interface} from "@/views/interface/data";
 
 const apiPath = 'plans';
 const apiPathCategoryNodes = `${apiPath}/categories`;
 const apiPathExec = `${apiPath}/exec`;
+
+const apiPathScenario = `scenarios`;
+const apiPathServe = `serve`;
 
 export async function query(params?: QueryParams): Promise<any> {
     return request({
@@ -95,3 +88,29 @@ export async function moveCategory(data: any): Promise<any> {
         data: data,
     });
 }
+
+
+// for scenario selection
+export async function addScenarios(planId, scenariosIds): Promise<any> {
+    return request({
+        url: `/${apiPath}/`,
+        method: 'post',
+        data: {planId, scenariosIds},
+    });
+}
+
+export async function listServe(): Promise<any> {
+    return request({
+        url: `/${apiPathServe}/listByProject`,
+        method: 'get',
+    });
+}
+
+export async function listScenario(serveId): Promise<any> {
+    return request({
+        url: `/${apiPathScenario}/listByServe`,
+        method: 'get',
+        params: {serveId},
+    });
+}
+

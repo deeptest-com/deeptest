@@ -20,7 +20,7 @@ func NewServeService() *ServeService {
 	return &ServeService{}
 }
 
-func (s *ServeService) ListByProject(projectId int) (ret model.Serve, err error) {
+func (s *ServeService) ListByProject(projectId int) (ret []model.Serve, err error) {
 	ret, err = s.ServeRepo.ListByProject(projectId)
 	return
 }

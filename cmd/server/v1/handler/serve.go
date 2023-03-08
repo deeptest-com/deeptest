@@ -19,13 +19,13 @@ func (c *ServeCtrl) ListByProject(ctx iris.Context) {
 		return
 	}
 
-	res, err := c.ServeService.ListByProject(projectId)
+	serves, err := c.ServeService.ListByProject(projectId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: serves})
 
 	return
 }

@@ -21,19 +21,16 @@
 
       <div class="body">
         <div class="scenario-list">
-          <div v-for="(item, idx) in scenarios" :key="item.id" class="scenario-item">
-            <div class="no">
-              {{ idx + 1 }}
+          <a-checkbox-group v-model:value="checkedScenarios">
+            <div v-for="item in scenarios" :key="item.id" class="scenario-item">
+              <div class="no">
+                <a-checkbox :value="item.id" />
+              </div>
+              <div class="name">
+                {{ item.name }}
+              </div>
             </div>
-            <div class="name">
-              {{ item.name }}
-            </div>
-            <div class="opt">
-              <span>
-                <DeleteOutlined @click="removeScenario(item)" class="dp-primary"/>
-              </span>
-            </div>
-          </div>
+          </a-checkbox-group>
         </div>
       </div>
 
@@ -66,6 +63,7 @@ const props = defineProps({
 const serveId = ref(0)
 const serves = ref([]);
 const scenarios = ref([]);
+const checkedScenarios = ref([]);
 
 const loadServe = async () => {
   listServe().then((json) => {
@@ -88,8 +86,8 @@ const selectServe = async () => {
 }
 
 const onSubmit = () => {
-  console.log('onSubmit')
-  props.submit(serveId, scenarios)
+  console.log('onSubmit', checkedScenarios.value)
+  props.submit(serveId.value, checkedScenarios.value)
 }
 
 const onCancel = () => {
@@ -112,7 +110,7 @@ const onCancel = () => {
   }
 
   .body {
-    height: 300px;
+    height: 200px;
     overflow-y: auto;
 
     .scenario-list {

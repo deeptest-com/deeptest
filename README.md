@@ -7,7 +7,7 @@ DeepTest is Continue Testing Platform written in Go with Iris, Gorm, MySQL and V
 https://deeptest.com
 
 ### Licenses
-All source code is licensed under the [AGPLv3 License](LICENSE.md).
+All source code is licensed under the [Apache License 2.0](LICENSE).
 
 ## Thanks
 Thank you [JetBrains](https://www.jetbrains.com) for providing free open source licenses.

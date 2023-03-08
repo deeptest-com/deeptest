@@ -20,3 +20,4 @@ tmp/
 /upload/
 /cmd/test/nodejs/node_modules/
 /cmd/test/nodejs/package-lock.json
+.yarn

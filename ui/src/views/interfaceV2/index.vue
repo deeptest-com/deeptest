@@ -11,10 +11,13 @@
             <PlusOutlined style="font-size: 16px;"/>
           </div>
         </div>
-        <a-tree :tree-data="treeData">
+        <a-tree
+            draggable
+            @dragenter="onDragEnter"
+            @drop="onDrop"
+            :tree-data="treeData">
           <template #title="{ title, key }">
             <span v-if="key === '0-0-0'" style="color: #1890ff">{{ title }}</span>
-
             <template v-else>{{ title }}</template>
           </template>
         </a-tree>
@@ -116,11 +119,25 @@ import {PlusOutlined, EditOutlined} from '@ant-design/icons-vue';
 import {requestMethodOpts, interfaceStatus, interfaceStatusOpts} from '@/config/constant';
 import {momentUtc} from '@/utils/datetime';
 import {message} from 'ant-design-vue';
-
-import {getInterfaceList, saveInterface, expireInterface, deleteInterface, copyInterface, getYaml} from './service';
+import {
+  getInterfaceList,
+  saveInterface,
+  expireInterface,
+  deleteInterface,
+  copyInterface,
+  getYaml,
+  moveCategories,
+  getCategories,
+  deleteCategories,
+  editCategories,
+  newCategories
+} from './service';
 import CreateApiModal from './components/CreateApiModal.vue';
 import CreateTagModal from './components/CreateTagModal.vue'
 import EditInterfaceDrawer from './components/EditInterfaceDrawer.vue'
+
+
+import {TreeDataItem, TreeDragEvent, DropEvent} from 'ant-design-vue/es/tree/Tree';
 
 type Key = ColumnProps['key'];
 
@@ -171,44 +188,47 @@ const columns = [
   },
 ];
 
-const treeData = [
-  {
-    title: '接口分类1',
-    key: '0-0',
-    children: [
-      {
-        title: '接口0-0-0',
-        key: '0-0-0',
-        children: [
-          {title: '接口0-0-0-0', key: '0-0-0-0'},
-          {title: '接口0-0-0-1', key: '0-0-0-1'},
-          {title: '接口0-0-0-2', key: '0-0-0-2'},
-        ],
-      },
-      {
-        title: '接口0-0-1',
-        key: '0-0-1',
-        children: [
-          {title: '接口0-0-1-0', key: '0-0-1-0'},
-          {title: '接口0-0-1-1', key: '0-0-1-1'},
-          {title: '接口0-0-1-2', key: '0-0-1-2'},
-        ],
-      },
-    ],
-  },
-  {
-    title: '接口分类2',
-    key: '0-1',
-  },
-  {
-    title: '接口分类3',
-    key: '0-2',
-  },
-  {
-    title: '接口分类4',
-    key: '0-3',
-  },
-];
+// const treeData = [
+//   {
+//     title: '接口分类1',
+//     key: '0-0',
+//     children: [
+//       {
+//         title: '接口0-0-0',
+//         key: '0-0-0',
+//         children: [
+//           {title: '接口0-0-0-0', key: '0-0-0-0'},
+//           {title: '接口0-0-0-1', key: '0-0-0-1'},
+//           {title: '接口0-0-0-2', key: '0-0-0-2'},
+//         ],
+//       },
+//       {
+//         title: '接口0-0-1',
+//         key: '0-0-1',
+//         children: [
+//           {title: '接口0-0-1-0', key: '0-0-1-0'},
+//           {title: '接口0-0-1-1', key: '0-0-1-1'},
+//           {title: '接口0-0-1-2', key: '0-0-1-2'},
+//         ],
+//       },
+//     ],
+//   },
+//   {
+//     title: '接口分类2',
+//     key: '0-1',
+//   },
+//   {
+//     title: '接口分类3',
+//     key: '0-2',
+//   },
+//   {
+//     title: '接口分类4',
+//     key: '0-3',
+//   },
+// ];
+
+
+const treeData = ref([])
 
 const data = ref([]);
 
@@ -233,13 +253,57 @@ async function reloadList() {
   // TODO 待处理分页逻辑
 }
 
+async function loadCategories() {
+  let res = await getCategories({
+    currProjectId: 1,
+    // serveId, moduleId=2
+    moduleId: 2
+  });
+  const {result, total} = res.data;
+
+  result.forEach((item, index) => {
+    item.index = index + 1;
+    item.key = `${index + 1}`;
+    item.updatedAt = momentUtc(item.updatedAt);
+  })
+}
+
+
+function onDragEnter(info: TreeDragEvent) {
+  console.log(info);
+
+}
+
+function onDrop(info: DropEvent) {
+  console.log(info);
+  const dropKey = info.node.eventKey;
+  const dragKey = info.dragNode.eventKey;
+  const dropPos = info.node.pos.split('-');
+  const dropPosition = info.dropPosition - Number(dropPos[dropPos.length - 1]);
+  const loop = (data: TreeDataItem[], key: string, callback: any) => {
+    data.forEach((item, index, arr) => {
+      if (item.key === key) {
+        return callback(item, index, arr);
+      }
+      if (item.children) {
+        return loop(item.children, key, callback);
+      }
+    });
+
+
+  };
+}
+
+
 onMounted(async () => {
   await reloadList();
+  await loadCategories();
 })
 
 
 async function refreshList() {
   await reloadList();
+
 }
 
 // const selectedRowKeys: Key[] = ref([]);
@@ -254,8 +318,8 @@ const hasSelected = false;
 // 抽屉是否打开
 const drawerVisible = ref<boolean>(false);
 
-const onSelectChange = (keys: Key[],rows:any) => {
-  console.log('selectedRowKeys changed: ', keys,rows);
+const onSelectChange = (keys: Key[], rows: any) => {
+  console.log('selectedRowKeys changed: ', keys, rows);
   selectedRowKeys.value = [...keys];
 };
 
@@ -322,7 +386,6 @@ function importApi() {
  * */
 function onCloseDrawer() {
   drawerVisible.value = false;
-
 }
 
 

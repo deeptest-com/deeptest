@@ -13,7 +13,7 @@ type ScenarioCategory struct {
 
 	ParentId  uint `json:"parentId"`
 	ProjectId uint `json:"projectId"`
-	ServerId  uint `json:"serveId"`
+	ServeId   uint `json:"serveId"`
 	UseID     uint `json:"useId"`
 
 	Ordr     int          `json:"ordr"`

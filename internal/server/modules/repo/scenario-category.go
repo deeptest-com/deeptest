@@ -20,6 +20,9 @@ func (r *ScenarioCategoryRepo) GetTree(moduleId, projectId, serveId uint) (root 
 	}
 
 	tos := r.toTos(pos)
+	if len(tos) == 0 {
+		return
+	}
 
 	root = tos[0]
 	root.Slots = iris.Map{"icon": "icon"}

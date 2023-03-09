@@ -1,19 +1,16 @@
 <template>
-
   <a-modal
       width="600px"
       :visible="visible"
       @ok="ok"
       @cancel="cancal"
       title="新建分类/修改分类">
-
     <a-form
         ref="formRef"
         :model="formState"
         :rules="rules"
         :label-col="{ span: 4 }"
         :wrapper-col="{ span: 14 }">
-
       <a-form-item label="接口名称" name="name">
         <a-input placeholder="接口名称" v-model:value="formState.name"/>
       </a-form-item>
@@ -48,17 +45,11 @@ watch(() => {
   console.log('832', props.visible)
 })
 
-/**
- *
- *   tag: '接口类型1',
- *   value: 1,
- *   name: '用户详情信息',
- *   method:'GET',
- *   path:'/api/user/:userId'
- * */
+
 interface FormState {
   name: string;
-  remark: string | undefined;
+  desc: string | undefined;
+
 }
 
 

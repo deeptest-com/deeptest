@@ -19,7 +19,6 @@ func NewSummaryModule() *SummaryModule {
 func (m *SummaryModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
 		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
-
 		index.Get("/card/{projectId:uint}", m.SummaryCtrl.Card).Name = "汇总卡片位信息"
 		index.Get("/bugs/{projectId:uint}", m.SummaryCtrl.Bugs).Name = "汇总bug信息"
 		index.Get("/details/{userId:uint}", m.SummaryCtrl.Details).Name = "汇总项目详情"

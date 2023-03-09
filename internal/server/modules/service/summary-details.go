@@ -22,7 +22,8 @@ func (s *SummaryDetailsService) FindByProjectId(projectId uint) (summaryDetails 
 }
 
 func (s *SummaryDetailsService) UpdateByProjectId(projectId uint, key string, value string) (err error) {
-	return s.SummaryDetailsRepo.UpdateByProjectId(projectId, key, value)
+	//return s.SummaryDetailsRepo.UpdateByProjectId(projectId, key, value)
+	return nil
 }
 
 func (s *SummaryDetailsService) Create(summaryDetails model.SummaryDetails) (err error) {

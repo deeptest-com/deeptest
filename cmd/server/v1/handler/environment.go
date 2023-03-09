@@ -303,3 +303,26 @@ func (c *EnvironmentCtrl) ListGlobal(ctx iris.Context) {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 	}
 }
+
+func (c *EnvironmentCtrl) SaveParams(ctx iris.Context) {
+	var req v1.EnvironmentParamsReq
+	if err := ctx.ReadJSON(&req); err == nil {
+		if err = c.EnvironmentService.SaveParams(req); err == nil {
+			ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+		} else {
+			ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		}
+	} else {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+	}
+}
+
+func (c *EnvironmentCtrl) ListParams(ctx iris.Context) {
+	projectId := ctx.URLParamIntDefault("projectId", 0)
+	res, err := c.EnvironmentService.ListParams(uint(projectId))
+	if err == nil {
+		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res, Msg: _domain.NoErr.Msg})
+	} else {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+	}
+}

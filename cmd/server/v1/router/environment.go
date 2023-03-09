@@ -16,6 +16,8 @@ func (m *EnvironmentModule) Party() module.WebModule {
 		//index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
 		index.Post("/save", m.EnvironmentCtrl.Save).Name = "保存环境"
 		index.Get("/list", m.EnvironmentCtrl.ListAll).Name = "环境列表"
+		index.Post("/param", m.EnvironmentCtrl.SaveParams).Name = "保存全局参数"
+		index.Get("/param", m.EnvironmentCtrl.ListParams).Name = "全局参数列表"
 
 		index.Get("/", m.EnvironmentCtrl.List).Name = "环境列表"
 		index.Get("/{id:uint}", m.EnvironmentCtrl.Get).Name = "环境详情"

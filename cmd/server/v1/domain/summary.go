@@ -23,5 +23,9 @@ type SummaryBugsReq struct {
 }
 
 type ReqProjectId struct {
-	ProjectId uint `json:"projectId" param:"projectId"`
+	ProjectId int64 `json:"projectId" param:"projectId"`
+}
+
+type ResProjectId struct {
+	ProjectId int64 `json:"projectId" param:"projectId"`
 }

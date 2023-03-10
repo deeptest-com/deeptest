@@ -18,7 +18,7 @@ func NewServeModule() *ServeModule {
 // Party 注册模块
 func (m *ServeModule) Party() module.WebModule {
 	handler := func(public iris.Party) {
-		public.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord())
+		public.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
 		public.Post("/save", m.ServeCtrl.Save)
 		public.Post("/index", m.ServeCtrl.Index)
 		public.Get("/detail", m.ServeCtrl.Detail)

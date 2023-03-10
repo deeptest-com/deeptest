@@ -179,3 +179,86 @@ func (r *ServeRepo) SaveServer(environmentId uint, servers []model.ServeServer) 
 	}
 	return
 }
+
+func (r *ServeRepo) ServeExist(id uint, name string) (res bool) {
+	var count int64
+	err := r.DB.Model(&model.Serve{}).Where("id = 0 and name = ?", id, name).Count(&count).Error
+	if err != nil {
+		return false
+	}
+	return count > 0
+
+}
+
+func (r *ServeRepo) VersionExist(id uint, value string) (res bool) {
+	var count int64
+	err := r.DB.Model(&model.ServeVersion{}).Where("id = 0 and value = ?", id, value).Count(&count).Error
+	if err != nil {
+		return false
+	}
+	return count > 0
+
+}
+
+func (r *ServeRepo) SaveVersion(id uint, version model.ServeVersion) (err error) {
+	if id == 0 {
+		err = r.CopyEndpointsVersionRef(version)
+		if err != nil {
+			return
+		}
+	}
+	err = r.Save(id, &version)
+	if err != nil {
+		return err
+	}
+	return
+}
+
+func (r *ServeRepo) GetLatestVersion(serveId uint) (res model.ServeVersion, err error) {
+	var version model.ServeVersion
+	err = r.DB.Take(&version, "server_id=?", serveId).Order("value desc").Error
+	if err != nil {
+		return
+	}
+	return
+}
+
+func (r *ServeRepo) GetBindEndpoints(serveId uint, version string) (endpoints []model.ServeEndpointVersion, err error) {
+	err = r.DB.Find(&endpoints, "serve_id=? and serve_version=?", serveId, version).Error
+	return
+}
+
+func (r *ServeRepo) CopyEndpoints(endpoints []model.ServeEndpointVersion, version string) (err error) {
+	for key, _ := range endpoints {
+		endpoints[key].ID = 0
+		endpoints[key].ServeVersion = version
+	}
+	return r.DB.Create(endpoints).Error
+}
+
+func (r *ServeRepo) CopyEndpointsVersionRef(version model.ServeVersion) (err error) {
+	var latestVersion model.ServeVersion
+	latestVersion, err = r.GetLatestVersion(uint(version.ServeId))
+	if err != nil {
+		return
+	}
+	if latestVersion.Value != "" {
+		var endpoints []model.ServeEndpointVersion
+		endpoints, err = r.GetBindEndpoints(uint(version.ServeId), latestVersion.Value)
+		if err != nil {
+			err = r.CopyEndpoints(endpoints, version.Value)
+			if err != nil {
+				return
+			}
+		}
+	}
+	return err
+}
+func (r *ServeRepo) GetBindEndpointIds(serveId uint, version string) (ids []int64, err error) {
+	var endpointVersions []model.ServeEndpointVersion
+	endpointVersions, err = r.GetBindEndpoints(serveId, version)
+	for _, endpointVersion := range endpointVersions {
+		ids = append(ids, endpointVersion.EndpointId)
+	}
+	return
+}

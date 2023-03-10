@@ -13,6 +13,7 @@ import (
 type EndpointRepo struct {
 	*BaseRepo     `inject:""`
 	InterfaceRepo *InterfaceRepo `inject:""`
+	ServeRepo     *ServeRepo     `inject:""`
 }
 
 func NewEndpointRepo() *EndpointRepo {
@@ -32,8 +33,15 @@ func (r *EndpointRepo) Paginate(req v1.EndpointReqPaginate) (ret _domain.PageDat
 		db = db.Where("user_id = ?", req.UserId)
 	}
 	if req.Status != 0 {
-		db = db.Where("status = ?", req.UserId)
+		db = db.Where("status = ?", req.Status)
 	}
+	if req.ServeId != 0 {
+		db = db.Where("serve_id = ?", req.ServeId)
+	}
+	if req.ServeVersion != "" {
+		//ServeRepo.GetBindEndpointIds(req.ServeId, req.ServeVersion)
+	}
+
 	db = db.Order("created_at desc")
 	err = db.Count(&count).Error
 	if err != nil {

@@ -7,20 +7,56 @@
               class="search-input"
               v-model:value="searchValue"
               placeholder="搜索接口分类"/>
-          <div class="add-btn" @click="addApiTag">
-            <PlusOutlined style="font-size: 16px;"/>
-          </div>
+          <!--          <div class="add-btn" @click="addApiTag">-->
+          <!--            <PlusOutlined style="font-size: 16px;"/>-->
+          <!--          </div>-->
         </div>
-        <a-tree
-            draggable
-            @dragenter="onDragEnter"
-            @drop="onDrop"
-            :tree-data="treeData">
-          <template #title="{ title, key }">
-            <span v-if="key === '0-0-0'" style="color: #1890ff">{{ title }}</span>
-            <template v-else>{{ title }}</template>
-          </template>
-        </a-tree>
+        <div style="margin: 0 8px;">
+          <a-tree
+              draggable
+              showLine
+              blockNode
+              showIcon
+              :expandedKeys="expandedKeys"
+              :auto-expand-parent="autoExpandParent"
+              @dragenter="onDragEnter"
+              @drop="onDrop"
+              @expand="onExpand"
+              @select="selectTreeItem"
+              :tree-data="treeData">
+            <template #switcherIcon>
+              <CaretDownOutlined/>
+            </template>
+            <template #title="nodeProps">
+              <div>
+                <span v-if="nodeProps.title.indexOf(searchValue) > -1">
+                  {{ nodeProps.title.substr(0, nodeProps.title.indexOf(searchValue)) }}<span style="color: #f50">{{
+                    searchValue
+                  }}</span>{{ nodeProps.title.substr(nodeProps.title.indexOf(searchValue) + searchValue.length) }}
+                </span>
+                <span v-else>{{ nodeProps.title }}</span>
+                <span class="more-icon">
+                  <a-dropdown>
+                       <EllipsisOutlined/>
+                      <template #overlay>
+                        <a-menu>
+                          <a-menu-item key="0" @click="newCategorie(nodeProps)">
+                             新建子分类
+                          </a-menu-item>
+                          <a-menu-item key="1" @click="deleteCategorie(nodeProps)">
+                            删除分类
+                          </a-menu-item>
+                          <a-menu-item key="1" @click="editCategorie(nodeProps)">
+                            编辑分类
+                          </a-menu-item>
+                        </a-menu>
+                      </template>
+                    </a-dropdown>
+                </span>
+              </div>
+            </template>
+          </a-tree>
+        </div>
       </div>
       <div class="right">
         <!--  头部区域  -->
@@ -102,6 +138,8 @@
     <!--  创建接口 Tag  -->
     <CreateTagModal
         :visible="createTagModalvisible"
+        :nodeInfo="currentNode"
+        :mode="tagModalMode"
         @cancal="handleCancalCreateTag"
         @ok="handleCreateTag"/>
     <!--  创建新接口弹框  -->
@@ -113,12 +151,22 @@
   </div>
 </template>
 <script setup lang="ts">
-import {computed, reactive, toRefs, ref, onMounted} from 'vue';
+import {
+  computed, reactive, toRefs, ref, onMounted,
+  watch
+} from 'vue';
 import {ColumnProps} from 'ant-design-vue/es/table/interface';
-import {PlusOutlined, EditOutlined} from '@ant-design/icons-vue';
+import contenteditable from 'vue-contenteditable';
+import {
+  PlusOutlined,
+  EditOutlined,
+  CaretLeftOutlined,
+  CaretDownOutlined,
+  EllipsisOutlined
+} from '@ant-design/icons-vue';
 import {requestMethodOpts, interfaceStatus, interfaceStatusOpts} from '@/config/constant';
 import {momentUtc} from '@/utils/datetime';
-import {message} from 'ant-design-vue';
+import {message, Modal} from 'ant-design-vue';
 import {
   getInterfaceList,
   saveInterface,
@@ -188,50 +236,13 @@ const columns = [
   },
 ];
 
-// const treeData = [
-//   {
-//     title: '接口分类1',
-//     key: '0-0',
-//     children: [
-//       {
-//         title: '接口0-0-0',
-//         key: '0-0-0',
-//         children: [
-//           {title: '接口0-0-0-0', key: '0-0-0-0'},
-//           {title: '接口0-0-0-1', key: '0-0-0-1'},
-//           {title: '接口0-0-0-2', key: '0-0-0-2'},
-//         ],
-//       },
-//       {
-//         title: '接口0-0-1',
-//         key: '0-0-1',
-//         children: [
-//           {title: '接口0-0-1-0', key: '0-0-1-0'},
-//           {title: '接口0-0-1-1', key: '0-0-1-1'},
-//           {title: '接口0-0-1-2', key: '0-0-1-2'},
-//         ],
-//       },
-//     ],
-//   },
-//   {
-//     title: '接口分类2',
-//     key: '0-1',
-//   },
-//   {
-//     title: '接口分类3',
-//     key: '0-2',
-//   },
-//   {
-//     title: '接口分类4',
-//     key: '0-3',
-//   },
-// ];
+const searchValue = ref('');
+const expandedKeys = ref<string[]>([]);
+const autoExpandParent = ref<boolean>(false);
+const treeData: any = ref(null)
 
-
-const treeData = ref([])
 
 const data = ref([]);
-
 
 async function reloadList() {
   let res = await getInterfaceList({
@@ -243,7 +254,6 @@ async function reloadList() {
     // "title": "接口名称"
   });
   const {result, total} = res.data;
-
   result.forEach((item, index) => {
     item.index = index + 1;
     item.key = `${index + 1}`;
@@ -256,43 +266,297 @@ async function reloadList() {
 async function loadCategories() {
   let res = await getCategories({
     currProjectId: 1,
-    // serveId, moduleId=2
+    serveId: 1,
     moduleId: 2
   });
-  const {result, total} = res.data;
+  if (res.code === 0 && res.data) {
+    // const data = [res.data];
+    const data = [
+      {
+        "id": '1',
+        "name": "根节点",
+        "desc": "",
+        "parentId": '0',
+        "children": [
+          {
+            "id": '1-1',
+            "name": "目录1-1",
+            "desc": "",
+            "parentId": '1',
+            "children": [
+              {
+                "id": '1-1-1',
+                "name": "目录1-1-1",
+                "desc": "",
+                "parentId": '1-1',
+                "children": null,
+              },
+              {
+                "id": '1-1-2',
+                "name": "目录1-1-2",
+                "desc": "",
+                "parentId": '1-1',
+                "children": null,
+              }
+            ]
+          },
+          {
+            "id": '1-2',
+            "name": "目录1-2",
+            "desc": "",
+            "parentId": '1',
+            "children": [
+              {
+                "id": '1-2-1',
+                "name": "目录1-2-1",
+                "desc": "",
+                "parentId": '1-2',
+                "children": null,
+              },
+              {
+                "id": '1-2-2',
+                "name": "目录1-2-2",
+                "desc": "",
+                "parentId": '1-2',
+                "children": [
+                  {
+                    "id": '1-2-2-1',
+                    "name": "目录1-2-2-1",
+                    "desc": "",
+                    "parentId": '1-2-2',
+                    "children": null,
+                  },
+                  {
+                    "id": '1-2-2-2',
+                    "name": "目录1-2-2-2",
+                    "desc": "",
+                    "parentId": '1-2-2',
+                    "children": null,
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "slots": {
+          "icon": "icon"
+        }
+      }
+    ]
 
-  result.forEach((item, index) => {
-    item.index = index + 1;
-    item.key = `${index + 1}`;
-    item.updatedAt = momentUtc(item.updatedAt);
-  })
+    // eslint-disable-next-line no-inner-declarations
+    function fn(arr: any) {
+      if (!Array.isArray(arr)) {
+        return;
+      }
+      arr.forEach((item, index) => {
+        item.key = item.id;
+        item.title = item.name;
+        if (Array.isArray(item.children)) {
+          fn(item.children)
+        }
+      });
+    }
+
+    fn(data);
+    treeData.value = data;
+  }
+}
+
+watch(() => {
+  return searchValue.value
+}, (newVal) => {
+
+  // const expanded = treeData.value
+  //     .map((item: any) => {
+  //       if ((item.title as string).indexOf(value) > -1) {
+  //         return getParentKey(item.key as string, treeData.value);
+  //       }
+  //       return null;
+  //     })
+  //     .filter((item, i, self) => item && self.indexOf(item) === i);
+
+  console.log(832, newVal)
+
+  // 打平树形结构
+  function flattenTree(tree) {
+    const nodes: Array<any> = [];
+
+    function traverse(node) {
+      nodes.push(node);
+      if (node.children) {
+        node.children.forEach(traverse);
+      }
+    }
+
+    traverse(tree);
+    return nodes;
+  }
+
+  const flattenTreeList = flattenTree(treeData.value[0]);
+
+  function findParentIds(nodeId, tree) {
+    let current: any = tree.find(node => node.id === nodeId);
+    let parentIds: Array<string> = [];
+    while (current && current.parentId) {
+      parentIds.unshift(current.parentId); // unshift 方法可以将新元素添加到数组的开头
+      current = tree.find(node => node.id === current.parentId);
+    }
+    console.log(832, parentIds);
+    return parentIds;
+  }
+
+  let parentKeys: any = [];
+  for (let i = 0; i < flattenTreeList.length; i++) {
+    let node = flattenTreeList[i];
+    if (node.title.includes(newVal)) {
+      parentKeys.push(node.parentId);
+      parentKeys = parentKeys.concat(findParentIds(node.parentId, flattenTreeList));
+    }
+  }
+
+  parentKeys = [...new Set(parentKeys)];
+  expandedKeys.value = parentKeys;
+  autoExpandParent.value = true;
+
+});
+
+const onExpand = (keys: string[]) => {
+  expandedKeys.value = keys;
+  autoExpandParent.value = false;
+};
+
+function selectTreeItem(selectedKeys) {
+  console.log(832, selectedKeys);
+  // ::::TODO 发送请求
+
 }
 
 
-function onDragEnter(info: TreeDragEvent) {
-  console.log(info);
+function findNodeById(id, tree) {
+  if (tree.id === id) {
+    return tree;
+  }
+  if (tree.children) {
+    for (const child of tree.children) {
+      const node = findNodeById(id, child);
+      if (node) {
+        return node;
+      }
+    }
+  }
+  return null;
+}
+
+function deleteNodeById(id, tree: any) {
+  if (!tree.children) {
+    return;
+  }
+  tree.children = tree.children.filter(child => child.id !== id);
+
+  if (tree.children) {
+    for (const child of tree.children) {
+      deleteNodeById(id, child);
+    }
+  }
+}
+
+const currentNode = ref(null);
+const tagModalMode = ref('new');
+
+// 删除分类
+async function deleteCategorie(node) {
+  Modal.confirm({
+    title: () => 'Are you sure delete this task?',
+    content: () => 'Some descriptions',
+    okText: () => 'Yes',
+    okType: 'danger',
+    cancelText: () => 'No',
+    onOk: async () => {
+      const res = await deleteCategories({
+        id: node.id
+      });
+      if (res.data.code === 0) {
+        deleteNodeById(node.id, treeData.value[0]);
+        message.success('删除成功');
+      } else {
+        message.success('删除失败');
+      }
+    },
+    onCancel() {
+      console.log('Cancel');
+    },
+  });
 
 }
+
+// 新建分类
+function newCategorie(node) {
+  tagModalMode.value = 'new';
+  createTagModalvisible.value = true;
+  currentNode.value = node;
+}
+
+//编辑分类
+function editCategorie(node) {
+  tagModalMode.value = 'edit';
+  createTagModalvisible.value = true;
+  currentNode.value = node;
+}
+
+function moveNode(fromId, toId, tree) {
+  if (tree.id === fromId) {
+    const nodeToMove = findNodeById(fromId, tree);
+    const parent = findNodeById(toId, tree);
+    if (parent) {
+      parent.children.push(nodeToMove);
+      deleteNodeById(fromId, tree);
+    }
+    return;
+  }
+  if (tree.children) {
+    for (const child of tree.children) {
+      moveNode(fromId, toId, child);
+    }
+  }
+}
+
+function swapNodes(firstId, secondId, tree) {
+  if (tree.children) {
+    const firstNode = findNodeById(firstId, tree);
+    const secondNode = findNodeById(secondId, tree);
+    if (firstNode && secondNode) {
+      const firstIndex = tree.children.findIndex(node => node.id === firstId);
+      const secondIndex = tree.children.findIndex(node => node.id === secondId);
+      if (firstIndex !== -1 && secondIndex !== -1) {
+        tree.children[firstIndex] = secondNode;
+        tree.children[secondIndex] = firstNode;
+      }
+    }
+    for (const child of tree.children) {
+      swapNodes(firstId, secondId, child);
+    }
+  }
+}
+
 
 function onDrop(info: DropEvent) {
-  console.log(info);
-  const dropKey = info.node.eventKey;
+  console.log(832, info.dragNode);
+  console.log(832, info.node);
   const dragKey = info.dragNode.eventKey;
-  const dropPos = info.node.pos.split('-');
-  const dropPosition = info.dropPosition - Number(dropPos[dropPos.length - 1]);
-  const loop = (data: TreeDataItem[], key: string, callback: any) => {
-    data.forEach((item, index, arr) => {
-      if (item.key === key) {
-        return callback(item, index, arr);
-      }
-      if (item.children) {
-        return loop(item.children, key, callback);
-      }
-    });
-
-
-  };
+  const dropKey = info.node.eventKey;
+  // ::::根据是否同级，如果同级则移动。
+  moveNode(dragKey, dropKey, treeData.value[0]);
+  swapNodes(dragKey, dropKey, treeData.value[0])
+  console.log(832, dragKey, dropKey);
 }
+
+const onDragEnter = (info: TreeDragEvent) => {
+  // console.log(832,info);
+  console.log(832);
+  // expandedKeys 需要展开时
+  // expandedKeys.value = info.expandedKeys
+};
 
 
 onMounted(async () => {
@@ -303,7 +567,6 @@ onMounted(async () => {
 
 async function refreshList() {
   await reloadList();
-
 }
 
 // const selectedRowKeys: Key[] = ref([]);
@@ -314,7 +577,6 @@ const loading = false;
 // const hasSelected = computed(() => state.selectedRowKeys.length > 0);
 const hasSelected = false;
 
-
 // 抽屉是否打开
 const drawerVisible = ref<boolean>(false);
 
@@ -322,7 +584,6 @@ const onSelectChange = (keys: Key[], rows: any) => {
   console.log('selectedRowKeys changed: ', keys, rows);
   selectedRowKeys.value = [...keys];
 };
-
 
 const editInterfaceId = ref('');
 
@@ -424,19 +685,36 @@ function handleCancalCreateApi() {
   createApiModalvisible.value = false;
 }
 
-function handleCreateTag() {
-  createTagModalvisible.value = false;
+async function handleCreateTag(obj) {
+  const res = await editCategories({
+    "id": obj.id,
+    "name": obj.name,
+    "desc": obj.description,
+    "parent": obj.parentId
+  });
+  if (res.code === 0) {
+    createTagModalvisible.value = false;
+    message.success('修改成功');
+  } else {
+    message.success('修改失败');
+  }
 }
 
 function handleCancalCreateTag() {
   createTagModalvisible.value = false;
 }
+
+
 </script>
 
 <style scoped lang="less">
 .container {
   margin: 16px;
   background: #ffffff;
+
+  //:deep(.ant-tree-switcher-noop) {
+  //  display: none;
+  //}
 }
 
 .tag-filter-form {
@@ -447,6 +725,7 @@ function handleCancalCreateTag() {
 
   .search-input {
     margin-left: 8px;
+    margin-right: 8px;
   }
 
   .add-btn {
@@ -503,4 +782,11 @@ function handleCancalCreateTag() {
   justify-content: center;
   align-items: center;
 }
+
+.more-icon {
+  position: absolute;
+  right: 8px;
+}
+
+
 </style>

@@ -12,6 +12,9 @@ type EndpointReqPaginate struct {
 	Status       int64  `json:"status"`
 	UserId       int64  `json:"user_id"`
 	Title        string `json:"title"`
+	ServeId      uint   `json:"serveId"`
+	
+	ServeVersion string `json:"serveVersion"`
 }
 
 type EndpointReq struct {

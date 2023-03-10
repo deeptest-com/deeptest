@@ -88,5 +88,6 @@ var (
 		&SummaryBugs{},
 		&SummaryDetails{},
 		&SummaryProjectUserRanking{},
+		&EnvironmentParam{},
 	}
 )

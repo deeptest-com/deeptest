@@ -53,12 +53,16 @@ func (c *PlanCtrl) Get(ctx iris.Context) {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Data: nil, Msg: _domain.ParamErr.Msg})
 		return
 	}
-	scenario, err := c.PlanService.GetById(req.Id)
+
+	detail, _ := ctx.URLParamBool("detail")
+
+	plan, err := c.PlanService.GetById(req.Id, detail)
+
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: _domain.SystemErr.Msg})
 		return
 	}
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: scenario, Msg: _domain.NoErr.Msg})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: plan, Msg: _domain.NoErr.Msg})
 }
 
 func (c *PlanCtrl) Create(ctx iris.Context) {
@@ -121,14 +125,28 @@ func (c *PlanCtrl) Delete(ctx iris.Context) {
 func (c *PlanCtrl) AddScenarios(ctx iris.Context) {
 	planId, _ := ctx.Params().GetInt("id")
 
-	var scenarioIds []int
-	err := ctx.ReadQuery(&scenarioIds)
+	scenarioIds := make([]int, 0)
+	err := ctx.ReadJSON(&scenarioIds)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: "ids"})
 		return
 	}
 
 	err = c.PlanService.AddScenarios(planId, scenarioIds)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code})
+}
+
+func (c *PlanCtrl) RemoveScenario(ctx iris.Context) {
+	planId, _ := ctx.Params().GetInt("id")
+
+	scenarioId, err := ctx.URLParamInt("scenarioId")
+
+	err = c.PlanService.RemoveScenario(planId, scenarioId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
 		return

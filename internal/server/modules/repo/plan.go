@@ -168,9 +168,19 @@ func (r *PlanRepo) GetChildrenIds(id uint) (ids []int, err error) {
 }
 
 func (r *PlanRepo) AddScenarios(planId int, scenarioIds []int) (err error) {
+	relations, _ := r.ListScenarioRelation(uint(planId))
+	existMap := map[uint]bool{}
+	for _, item := range relations {
+		existMap[item.ScenarioId] = true
+	}
+
 	var pos []model.RelaPlanScenario
 
 	for _, id := range scenarioIds {
+		if existMap[uint(id)] {
+			continue
+		}
+
 		po := model.RelaPlanScenario{
 			PlanId:     uint(planId),
 			ScenarioId: uint(id),
@@ -179,6 +189,35 @@ func (r *PlanRepo) AddScenarios(planId int, scenarioIds []int) (err error) {
 	}
 
 	err = r.DB.Create(&pos).Error
+
+	return
+}
+
+func (r *PlanRepo) ListScenario(id uint) (pos []model.Scenario, err error) {
+	relations, _ := r.ListScenarioRelation(uint(id))
+	var scenarioIds []uint
+	for _, item := range relations {
+		scenarioIds = append(scenarioIds, item.ScenarioId)
+	}
+
+	err = r.DB.
+		Where("id IN (?)", scenarioIds).
+		Where("NOT deleted").
+		Find(&pos).Error
+
+	return
+}
+
+func (r *PlanRepo) ListScenarioRelation(id uint) (pos []model.RelaPlanScenario, err error) {
+	err = r.DB.
+		Where("plan_id=?", id).
+		Where("NOT deleted").
+		Find(&pos).Error
+	return
+}
+
+func (r *PlanRepo) RemoveScenario(planId int, scenarioId int) (err error) {
+	r.DB.Where("plan_id = ? && scenario_id = ?", planId, scenarioId).Delete(&model.RelaPlanScenario{})
 
 	return
 }

@@ -1,22 +1,31 @@
 <template>
   <div class="select-scenario-main">
     <a-modal title="导入场景"
-             :visible="isVisible"
+             :visible="true"
              :onCancel="onCancel"
              class="select-scenario-modal"
              width="800px">
 
       <div class="header">
-        <a-select
-            v-model:value="serveId"
-            @change="selectServe"
-            :dropdownMatchSelectWidth="false"
-            :bordered="false">
-          <a-select-option :key="0" :value="0">请选择</a-select-option>
-          <a-select-option v-for="(item) in serves" :key="item.id" :value="item.id">
-            {{ item.name }}
-          </a-select-option>
-        </a-select>
+        <div class="space">
+          <a-checkbox :checked="isCheckAll" @change="selectAll" />&nbsp;&nbsp;
+        </div>
+        <div class="left">
+          选择所有
+        </div>
+
+        <div class="right">
+          <a-select
+              v-model:value="serveId"
+              @change="selectServe"
+              :dropdownMatchSelectWidth="false"
+              :bordered="false">
+            <a-select-option :key="0" :value="0">请选择</a-select-option>
+            <a-select-option v-for="(item) in serves" :key="item.id" :value="item.id">
+              {{ item.name }}
+            </a-select-option>
+          </a-select>
+        </div>
       </div>
 
       <div class="body">
@@ -41,13 +50,13 @@
   </div>
 </template>
 <script setup lang="ts">
-import {defineProps, ref} from "vue";
+import {defineProps, ref, watch} from "vue";
 import {DeleteOutlined} from '@ant-design/icons-vue';
 import {listScenario, listServe} from "@/views/plan/service";
 
 const props = defineProps({
-  isVisible: {
-    type: Boolean,
+  scenariosInServe: {
+    type: Array,
     required: true
   },
   submit: {
@@ -61,14 +70,20 @@ const props = defineProps({
 })
 
 const serveId = ref(0)
-const serves = ref([]);
-const scenarios = ref([]);
-const checkedScenarios = ref([]);
+const serves = ref([] as any[]);
+const scenarios = ref([] as any[]);
+const checkedScenarios = ref([] as number[]);
+const isCheckAll = ref(false)
 
 const loadServe = async () => {
   listServe().then((json) => {
     console.log('listServe', json)
     serves.value = json.data
+
+    if (serves.value.length > 0) {
+      serveId.value = serves.value[0].id
+      selectServe()
+    }
   })
 }
 loadServe()
@@ -82,12 +97,39 @@ const selectServe = async () => {
   listScenario(serveId.value).then((json) => {
     console.log('listScenario', json)
     scenarios.value = json.data
+
+    props.scenariosInServe.forEach((item, index) => {
+      checkedScenarios.value.push(+item.id)
+    })
   })
 }
 
+const selectAll = () => {
+  console.log('selectAll')
+
+  checkedScenarios.value = []
+
+  if (isCheckAll.value) {
+    return
+  }
+
+  scenarios.value.forEach((item, index) => {
+    checkedScenarios.value.push(+item.id)
+  })
+}
+
+watch(checkedScenarios, () => {
+  console.log('watch checkedScenarios', checkedScenarios.value)
+  if (checkedScenarios.value.length == scenarios.value.length) {
+    isCheckAll.value = true
+  } else {
+    isCheckAll.value = false
+  }
+})
+
 const onSubmit = () => {
   console.log('onSubmit', checkedScenarios.value)
-  props.submit(serveId.value, checkedScenarios.value)
+  props.submit(checkedScenarios.value)
 }
 
 const onCancel = () => {
@@ -106,7 +148,18 @@ const onCancel = () => {
 <style lang="less">
 .select-scenario-modal {
   .header {
-    text-align: right;
+    display: flex;
+    padding: 0 5px;
+    .space {
+      width: 60px;
+    }
+    .left {
+      flex: 1;
+    }
+    .right {
+      width: 100px;
+      text-align: right;
+    }
   }
 
   .body {
@@ -114,14 +167,12 @@ const onCancel = () => {
     overflow-y: auto;
 
     .scenario-list {
-      padding: 16px 0;
-
       .scenario-item {
         display: flex;
         padding: 5px;
 
         .no {
-          width: 100px;
+          width: 60px;
         }
 
         .name {

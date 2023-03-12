@@ -58,8 +58,8 @@
 
     <SelectScenario
         v-if="modalVisible"
-        :isVisible="modalVisible"
-        :submit="addScenarios"
+        :scenariosInServe="scenarios"
+        :submit="addScenarioToServe"
         :cancel="() => modalVisible = false"
     />
   </div>
@@ -71,10 +71,11 @@ import {EditOutlined, DeleteOutlined} from '@ant-design/icons-vue';
 import {useRouter} from "vue-router";
 import {useStore} from "vuex";
 import {useI18n} from "vue-i18n";
-import {Form} from 'ant-design-vue';
+import {Form, notification} from 'ant-design-vue';
 import {StateType} from "../store";
-import {get} from "@/views/plan/service";
+import {addScenarios, get, getDetail, removeScenarioFromPlan} from "@/views/plan/service";
 import SelectScenario from "./select-scenario.vue"
+import {NotificationKeyCommon} from "@/utils/const";
 
 const useForm = Form.useForm;
 
@@ -98,7 +99,7 @@ const props = defineProps({
 
 const store = useStore<{ Plan: StateType }>();
 const modelRef = ref({} as any)
-const scenarios = ref([{id: 1, name: '场景', interfaceCount: 3}, {id: 2, name: '场景', interfaceCount: 3}])
+const scenarios = ref([])
 
 const fieldName = ref('')
 const modalVisible = ref(false);
@@ -109,9 +110,10 @@ const getData = (id: number) => {
     return
   }
 
-  get(id).then((json) => {
+  getDetail(id).then((json) => {
     if (json.code === 0) {
       modelRef.value = json.data
+      scenarios.value = json.data.scenarios
     }
   })
 }
@@ -126,12 +128,23 @@ const selectScenario = () => {
   console.log('selectScenario')
   modalVisible.value = true
 }
-const addScenarios = (serviceId, scenarios) => {
-  console.log('addScenarios', serviceId, scenarios)
+const addScenarioToServe = (scenarios) => {
+  console.log('addScenarios', props.modelId, scenarios)
+  addScenarios(props.modelId, scenarios).then((json) => {
+    if (json.code === 0) {
+      modalVisible.value = false
+      getData(props.modelId)
+    }
+  })
 }
 
 const removeScenario = (item) => {
   console.log('removeScenario')
+  removeScenarioFromPlan(props.modelId, item.id).then((json) => {
+    if (json.code === 0) {
+      getData(props.modelId)
+    }
+  })
 }
 
 const saveName = () => {

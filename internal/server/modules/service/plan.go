@@ -25,8 +25,14 @@ func (s *PlanService) Paginate(req v1.PlanReqPaginate, projectId int) (ret _doma
 	return
 }
 
-func (s *PlanService) GetById(id uint) (model.Plan, error) {
-	return s.PlanRepo.Get(id)
+func (s *PlanService) GetById(id uint, detail bool) (ret model.Plan, err error) {
+	ret, err = s.PlanRepo.Get(id)
+
+	if detail {
+		ret.Scenarios, _ = s.PlanRepo.ListScenario(id)
+	}
+
+	return
 }
 
 func (s *PlanService) Create(req model.Plan) (po model.Plan, bizErr *_domain.BizErr) {
@@ -45,5 +51,10 @@ func (s *PlanService) DeleteById(id uint) error {
 
 func (s *PlanService) AddScenarios(planId int, scenarioIds []int) (err error) {
 	err = s.PlanRepo.AddScenarios(planId, scenarioIds)
+	return
+}
+
+func (s *PlanService) RemoveScenario(planId int, scenarioId int) (err error) {
+	err = s.PlanRepo.RemoveScenario(planId, scenarioId)
 	return
 }

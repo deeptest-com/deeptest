@@ -18,6 +18,12 @@ export async function query(params?: QueryParams): Promise<any> {
 export async function get(id: number): Promise<any> {
     return request({url: `/${apiPath}/${id}`});
 }
+export async function getDetail(id: number): Promise<any> {
+    const params = {
+        detail: true,
+    }
+    return request({url: `/${apiPath}/${id}`, params});
+}
 export async function save(data: any): Promise<any> {
     return request({
         url: `/${apiPath}`,
@@ -93,9 +99,17 @@ export async function moveCategory(data: any): Promise<any> {
 // for scenario selection
 export async function addScenarios(planId, scenariosIds): Promise<any> {
     return request({
-        url: `/${apiPath}/`,
+        url: `/${apiPath}/${planId}/addScenarios`,
         method: 'post',
-        data: {planId, scenariosIds},
+        data: scenariosIds,
+    });
+}
+
+export async function removeScenarioFromPlan(planId, scenarioId): Promise<any> {
+    return request({
+        url: `/${apiPath}/${planId}/removeScenario`,
+        method: 'post',
+        params: {scenarioId},
     });
 }
 
@@ -113,4 +127,3 @@ export async function listScenario(serveId): Promise<any> {
         params: {serveId},
     });
 }
-

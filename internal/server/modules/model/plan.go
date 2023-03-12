@@ -9,6 +9,8 @@ type Plan struct {
 
 	CategoryId uint `json:"categoryId"`
 	ProjectId  uint `json:"projectId"`
+
+	Scenarios []Scenario `gorm:"-" json:"scenarios"`
 }
 
 func (Plan) TableName() string {
@@ -18,11 +20,11 @@ func (Plan) TableName() string {
 type RelaPlanScenario struct {
 	BaseModel
 
-	PlanId     uint `json:"plan_id"`
-	ScenarioId uint `json:"scenario_id"`
+	PlanId     uint `json:"planId"`
+	ScenarioId uint `json:"scenarioId"`
 
-	ServiceId uint `json:"service_id"`
-	ProjectId uint `json:"project_id"`
+	ServiceId uint `json:"serviceId"`
+	ProjectId uint `json:"projectId"`
 }
 
 func (RelaPlanScenario) TableName() string {

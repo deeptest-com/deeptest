@@ -23,6 +23,14 @@ func (r *ServeRepo) ListVersion(serveId uint) (res []model.ServeVersion, err err
 	return
 }
 
+func (r *ServeRepo) ListByProject(projectId int) (pos []model.Serve, err error) {
+	err = r.DB.
+		Where("project_id=?", projectId).
+		Where("NOT deleted").
+		Find(&pos).Error
+	return
+}
+
 func (r *ServeRepo) Paginate(req v1.ServeReqPaginate) (ret _domain.PageData, err error) {
 	var count int64
 	db := r.DB.Model(&model.Serve{}).Where("project_id = ? AND NOT deleted AND NOT disabled", req.ProjectId)

@@ -37,6 +37,7 @@
     "vue-loader-v16": "^16.0.0-beta.5.4",
     "vue-router": "4.0.12",
     "vue3-json-editor": "^1.1.4",
+    "vuedraggable": "next",
     "vuex": "^4.0.2"
   },
   "devDependencies": {

@@ -73,7 +73,7 @@ import {
   deleteServe,
   getUserList,
   disableServe
-} from '../service';
+} from '../../service';
 import {message} from "ant-design-vue";
 
 const props = defineProps({

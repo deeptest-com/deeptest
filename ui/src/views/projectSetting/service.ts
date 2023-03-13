@@ -43,8 +43,8 @@ interface InterfaceListReqParams {
 interface SaveInterfaceReqParams {
     // project_id?: number,
     serveId?: number,
-    title?:string,
-    path?:string
+    title?: string,
+    path?: string
 }
 
 
@@ -62,11 +62,11 @@ export async function saveServe(data: any): Promise<any> {
 /**
  * 服务列表
  * */
-export async function getServeList(data:any): Promise<any> {
+export async function getServeList(data: any): Promise<any> {
     return request({
         url: `/serve/index`,
         method: 'post',
-        data:data,
+        data: data,
     });
 }
 
@@ -108,7 +108,7 @@ export async function saveServeVersion(data: any): Promise<any> {
     return request({
         url: `/serve/version/save`,
         method: 'post',
-        data:data,
+        data: data,
     });
 }
 
@@ -120,7 +120,7 @@ export async function getServeVersionList(data: any): Promise<any> {
     return request({
         url: `/serve/version/list`,
         method: 'post',
-        data:data
+        data: data
     });
 }
 
@@ -143,8 +143,6 @@ export async function deleteServeVersion(id: any): Promise<any> {
         method: 'delete',
     });
 }
-
-
 
 
 /**
@@ -175,9 +173,10 @@ export async function saveSchema(data: any): Promise<any> {
     return request({
         url: `/serve/schema/save`,
         method: 'post',
-        data:data
+        data: data
     });
 }
+
 /**
  *  组件列表
  * */
@@ -185,7 +184,7 @@ export async function getSchemaList(data: any): Promise<any> {
     return request({
         url: `/serve/schema/list`,
         method: 'post',
-        data:data
+        data: data
     });
 }
 
@@ -227,9 +226,10 @@ export async function example2schema(data: any): Promise<any> {
     return request({
         url: `serve/schema/example2schema`,
         method: 'post',
-        data:data
+        data: data
     });
 }
+
 /**
  *   schema转example
  * */
@@ -237,9 +237,10 @@ export async function schema2example(data: any): Promise<any> {
     return request({
         url: `/serve/schema/schema2example`,
         method: 'post',
-        data:data
+        data: data
     });
 }
+
 /**
  *   schema转yaml
  * */
@@ -247,10 +248,72 @@ export async function schema2yaml(data: any): Promise<any> {
     return request({
         url: `/serve/schema/schema2yaml`,
         method: 'post',
-        data:data
+        data: data
     });
 }
 
 
+/**
+ *   保存环境
+ * */
+export async function saveEnv(data: any): Promise<any> {
+    return request({
+        url: `/environments/save`,
+        method: 'post',
+        data: data
+    });
+}
+
+/**
+ *   环境列表
+ * */
+export async function getEnvList(data: any): Promise<any> {
+    return request({
+        url: `/environments/list?projectId=${data.projectId}`,
+        method: 'get',
+    });
+}
+
+/**
+ *   保存全局变量
+ * */
+export async function saveGlobalVars(data: any): Promise<any> {
+    return request({
+        url: `/environments/vars/global`,
+        method: 'post',
+        data: data
+    });
+}
 
 
+/**
+ *   全局变量列表
+ * */
+export async function getGlobalVarsList(data: any): Promise<any> {
+    return request({
+        url: `/environments/vars/global?projectId=${data.projectId}`,
+        method: 'get',
+    });
+}
+
+
+/**
+ *   保存全局变量
+ * */
+export async function saveEnvironmentsParam(data: any): Promise<any> {
+    return request({
+        url: `/environments/param`,
+        method: 'post',
+        data: data
+    });
+}
+
+/**
+ *   获取全局变量
+ * */
+export async function getEnvironmentsParamList(data: any): Promise<any> {
+    return request({
+        url: `/environments/param?projectId=${data.projectId}`,
+        method: 'get',
+    });
+}

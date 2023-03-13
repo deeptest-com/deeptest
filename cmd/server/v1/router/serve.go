@@ -3,6 +3,7 @@ package router
 import (
 	"github.com/aaronchen2k/deeptest/cmd/server/v1/handler"
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/module"
+	"github.com/aaronchen2k/deeptest/internal/server/middleware"
 	"github.com/kataras/iris/v12"
 )
 
@@ -15,12 +16,10 @@ func NewServeModule() *ServeModule {
 }
 
 // Party 注册模块
-func (m *ServeModule) Party() module.WebModule {
+func (m *ServeModule) Party() module.WebModule { 
 	handler := func(public iris.Party) {
-		//public.Use(middleware.InitCheck())
-		//public.Use(middleware.JwtHandler())
-
-		public.Get("/listByProject", m.ServeCtrl.ListByProject)
+		public.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
+    public.Get("/listByProject", m.ServeCtrl.ListByProject)
 
 		public.Post("/index", m.ServeCtrl.Index)
 		public.Post("/save", m.ServeCtrl.Save)
@@ -30,6 +29,7 @@ func (m *ServeModule) Party() module.WebModule {
 		public.Get("/copy", m.ServeCtrl.Copy)
 		public.Post("/version/list", m.ServeCtrl.ListVersion)
 		public.Post("/version/save", m.ServeCtrl.SaveVersion)
+		public.Post("/version/bindEndpoint", m.ServeCtrl.BindEndpoint)
 		public.Delete("/version/delete", m.ServeCtrl.DeleteVersion)
 		public.Put("/version/expire", m.ServeCtrl.ExpireVersion)
 		public.Get("/server/list", m.ServeCtrl.ListServer)

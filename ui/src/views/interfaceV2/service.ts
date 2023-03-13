@@ -38,12 +38,12 @@ interface InterfaceListReqParams {
     "title"?: string
 }
 
-// todo liguwe 待整理
+//todo liguwe 待整理
 interface SaveInterfaceReqParams {
     // project_id?: number,
     serveId?: number,
-    title?:string,
-    path?:string
+    title?: string,
+    path?: string
 }
 
 
@@ -90,7 +90,6 @@ export async function copyInterface(id: Number): Promise<any> {
 }
 
 
-
 /**
  * 获取yaml展示
  * */
@@ -121,5 +120,59 @@ export async function saveInterface(data: SaveInterfaceReqParams): Promise<any> 
         url: `/endpoint/save`,
         method: 'post',
         data: data
+    });
+}
+
+/**
+ * 创建分类
+ * */
+export async function newCategories(data: any): Promise<any> {
+    return request({
+        url: `/scenarios/categories`,
+        method: 'post',
+        data: data
+    });
+}
+
+/**
+ * 修改分类
+ * */
+export async function editCategories(data: any): Promise<any> {
+    return request({
+        url: `scenarios/categories/${data.id}/updateName`,
+        method: 'put',
+        data: data
+    });
+}
+
+/**
+ * 删除分类
+ * */
+export async function deleteCategories(data: any): Promise<any> {
+    return request({
+        url: `/scenarios/categories/${data.id}`,
+        method: 'put',
+    });
+}
+
+/**
+ * 移动分类
+ * */
+export async function moveCategories(data: any): Promise<any> {
+    return request({
+        url: `/scenarios/categories/move`,
+        method: 'post',
+        data: data
+    });
+}
+
+/**
+ * 获取分类
+ * */
+export async function getCategories(params: any): Promise<any> {
+    return request({
+        url: `/scenarios/categories/load`,
+        method: 'get',
+        params,
     });
 }

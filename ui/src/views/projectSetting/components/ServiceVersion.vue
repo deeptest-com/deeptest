@@ -21,9 +21,11 @@
         <a-form-item>
           <a-input v-model:value="formState.description" style="width: 300px" placeholder="输入描述"/>
         </a-form-item>
-        <a-button class="editable-add-btn"
-                  @click="handleAdd"
-                  style="margin-bottom: 8px">
+        <a-button
+            class="editable-add-btn"
+            @click="handleAdd"
+            type="primary"
+            style="margin-bottom: 8px">
           添加版本
         </a-button>
       </a-form>
@@ -84,7 +86,7 @@ const emit = defineEmits(['ok', 'close', 'refreshList']);
 
 interface FormState {
   name: string;
-  createUser:string,
+  createUser: string,
   description: string;
 }
 
@@ -185,7 +187,11 @@ async function handleAdd() {
     "description": formState.description
   });
   if (res.code === 0) {
-    message.success('保存成功');
+    message.success('添加版本号成功');
+    // 清空表单中的数据
+    formState.name = '';
+    formState.createUser = '';
+    formState.description = '';
     await getList();
   } else {
     message.error('保存失败');

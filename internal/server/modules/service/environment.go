@@ -2,8 +2,10 @@ package service
 
 import (
 	"errors"
+	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	repo2 "github.com/aaronchen2k/deeptest/internal/server/modules/repo"
+	"github.com/jinzhu/copier"
 )
 
 type EnvironmentService struct {
@@ -134,4 +136,62 @@ func (s *EnvironmentService) DisableAllShareVar(interfaceId uint) (err error) {
 	err = s.EnvironmentRepo.DisableAllShareVar(interf.ProjectId)
 
 	return
+}
+
+func (s *EnvironmentService) Save(req v1.EnvironmentReq) (err error) {
+	var environment model.Environment
+	copier.CopyWithOption(&environment, req, copier.Option{DeepCopy: true})
+	err = s.EnvironmentRepo.SaveEnvironment(environment)
+	return
+}
+
+func (s *EnvironmentService) ListAll(projectId uint) (res []model.Environment, err error) {
+	res, err = s.EnvironmentRepo.GetListByProjectId(projectId)
+	return
+}
+
+func (s *EnvironmentService) SaveGlobal(projectId uint, req []v1.EnvironmentVariable) (err error) {
+	var vars []model.EnvironmentVar
+	copier.CopyWithOption(&vars, req, copier.Option{DeepCopy: true})
+	err = s.EnvironmentRepo.SaveVars(projectId, 0, vars)
+	return
+}
+
+func (s *EnvironmentService) ListGlobal(projectId uint) (res []model.EnvironmentVar, err error) {
+	res, err = s.EnvironmentRepo.ListGlobal(projectId)
+	return
+}
+
+func (s *EnvironmentService) SaveParams(req v1.EnvironmentParamsReq) (err error) {
+	var params []model.EnvironmentParam
+	if req.Header != nil {
+		params = append(params, s.getParams(req.ProjectId, "header", req.Header)...)
+	}
+	if req.Cookie != nil {
+		params = append(params, s.getParams(req.ProjectId, "cookie", req.Cookie)...)
+	}
+	if req.Query != nil {
+		params = append(params, s.getParams(req.ProjectId, "query", req.Query)...)
+	}
+	if req.Body != nil {
+		params = append(params, s.getParams(req.ProjectId, "body", req.Body)...)
+	}
+	err = s.EnvironmentRepo.SaveParams(req.ProjectId, params)
+	return
+}
+
+func (s *EnvironmentService) getParams(projectId uint, in string, ReqParams []v1.EnvironmentParam) (params []model.EnvironmentParam) {
+	for _, item := range ReqParams {
+		var param model.EnvironmentParam
+		copier.CopyWithOption(&param, item, copier.Option{DeepCopy: true})
+		param.ProjectId = projectId
+		param.In = in
+		params = append(params, param)
+	}
+	return
+}
+
+func (s *EnvironmentService) ListParams(projectId uint) (res map[string]interface{}, err error) {
+	return s.EnvironmentRepo.ListParams(projectId)
+
 }

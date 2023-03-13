@@ -3,6 +3,7 @@
     <div class="header">
       <a-button class="editable-add-btn"
                 @click="handleAdd"
+                type="primary"
                 style="margin-bottom: 8px">新建服务
       </a-button>
       <a-input-search
@@ -65,7 +66,7 @@
                 @pressEnter="changeServiceInfo"
                 v-model:value="editFormState.name"
                 placeholder="请输入内容"/>
-            <span v-else>{{editFormState.name}}
+            <span v-else>{{ editFormState.name }}
               <edit-outlined class="editable-cell-icon" @click="editServiceName"/></span>
           </a-form-item>
           <a-form-item label="描述">
@@ -75,10 +76,9 @@
                 v-if="isEditServiceDesc"
                 v-model:value="editFormState.description"
                 placeholder="请输入内容"/>
-            <span v-if="!isEditServiceDesc">{{editFormState.description}}
+            <span v-if="!isEditServiceDesc">{{ editFormState.description }}
               <edit-outlined class="editable-cell-icon" @click="editServiceDesc"/> </span>
           </a-form-item>
-
           <a-tabs v-model:activeKey="activeKey">
             <a-tab-pane key="1" tab="服务版本">
               <ServiceVersion :serveId="editFormState.serveId"/>
@@ -87,7 +87,6 @@
               <ServiceComponent :serveId="editFormState.serveId"/>
             </a-tab-pane>
           </a-tabs>
-
         </a-form>
       </div>
     </a-drawer>
@@ -99,8 +98,8 @@
 
 import {computed, defineComponent, defineEmits, defineProps, onMounted, reactive, Ref, ref, UnwrapRef} from 'vue';
 import {CheckOutlined, EditOutlined} from '@ant-design/icons-vue';
-import ServiceVersion from './ServiceVersion';
-import ServiceComponent from './ServiceComponent';
+import ServiceVersion from './ServiceVersion.vue';
+import ServiceComponent from './ServiceComponent.vue';
 import {getServeList, deleteServe, copyServe, disableServe, saveServe} from '../service';
 import {momentUtc} from '@/utils/datetime';
 import {message} from "ant-design-vue";
@@ -112,7 +111,7 @@ const emit = defineEmits(['ok', 'close', 'refreshList']);
 interface FormState {
   name: string;
   description: string;
-  serveId?:string,
+  serveId?: string,
 
 }
 
@@ -127,13 +126,12 @@ interface DataItem {
 const formState: UnwrapRef<FormState> = reactive({
   name: '',
   description: '',
-
 });
 
 const editFormState: UnwrapRef<FormState> = reactive({
   name: '',
   description: '',
-  serveId:'',
+  serveId: '',
 });
 
 
@@ -157,7 +155,7 @@ const columns = [
   },
   {
     title: '创建人',
-    dataIndex: 'userId',
+    dataIndex: 'createUser',
   },
   {
     title: '创建时间',
@@ -173,10 +171,6 @@ const dataSource: Ref<DataItem[]> = ref([]);
 const count = computed(() => dataSource.value.length + 1);
 const editKey = ref(0);
 
-function onSearch(e) {
-  console.log(e.target.value)
-}
-
 const keyword = ref('');
 
 const activeKey = ref('1');
@@ -185,6 +179,12 @@ function onClose() {
   drawerVisible.value = false;
 
 }
+
+
+async function onSearch(e) {
+  await getList();
+}
+
 
 const edit = (record: any) => {
   editKey.value++;
@@ -196,6 +196,7 @@ const edit = (record: any) => {
 
 const isEditServiceDesc = ref(false);
 const isEditServiceName = ref(false);
+
 function editServiceDesc() {
   isEditServiceDesc.value = true;
 }
@@ -207,12 +208,12 @@ function editServiceName() {
 async function changeServiceInfo(e) {
   isEditServiceDesc.value = false;
   isEditServiceName.value = false;
-  if(editFormState.name && editFormState.description){
+  if (editFormState.name && editFormState.description) {
     const res = await saveServe({
       "projectId": 1,
       "name": editFormState.name,
       "description": editFormState.description,
-      "id":editFormState.serveId,
+      "id": editFormState.serveId,
     });
     if (res.code === 0) {
       // message.success('修改服务描述成功');
@@ -284,7 +285,8 @@ async function getList() {
   let res = await getServeList({
     "projectId": 1,
     "page": 0,
-    "pageSize": 100
+    "pageSize": 100,
+    "name": keyword.value,
   });
   if (res.code === 0) {
     res.data.result.forEach((item) => {
@@ -293,8 +295,6 @@ async function getList() {
     })
     dataSource.value = res.data.result;
   }
-
-
 }
 
 onMounted(async () => {
@@ -321,11 +321,11 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   justify-content: space-between;
+
   .btns {
     //border-bottom: 1px solid #e9e9e9;
     //padding: 10px 16px;
     //background: #fff;
-
     //margin-bottom: 8px;
   }
 }

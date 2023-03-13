@@ -57,13 +57,13 @@ func (s *schema2conv) Schema2Example(schema openapi3.Schema) (object interface{}
 		object = make([]interface{}, 1)
 		object.([]interface{})[0] = s.Schema2Example(*schema.Items.Value)
 	case openapi3.TypeString:
-		object = ""
+		object = "string"
 	case openapi3.TypeBoolean:
 		object = true
 	case openapi3.TypeInteger:
-		object = 1
+		object = 0
 	case openapi3.TypeNumber:
-		object = 3.14
+		object = 0.0
 	}
 	return
 }

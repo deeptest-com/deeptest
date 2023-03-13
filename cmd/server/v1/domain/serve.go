@@ -35,20 +35,35 @@ type ServeVersionPaginate struct {
 }
 
 type ServeSchemaReq struct {
-	ID       uint   `json:"id"`
-	ServeId  int64  `json:"serveId"`
-	Name     string `json:"name"`
-	Tag      string `json:"tag"`
-	Content  string `json:"content"`
-	Examples string `json:"examples"`
-	Type     string `json:"type"`
-	Tags     string `json:"tags"`
-}
-
-type ServeServerReq struct {
 	ID          uint   `json:"id"`
 	ServeId     int64  `json:"serveId"`
-	Url         string `json:"url"`
+	Name        string `json:"name"`
+	Tag         string `json:"tag"`
+	Content     string `json:"content"`
+	Examples    string `json:"examples"`
+	Type        string `json:"type"`
+	Tags        string `json:"tags"`
+	Description string `json:"description"`
+}
+
+type EnvironmentReq struct {
+	ID           uint
+	ProjectId    uint                  `json:"projectId"`
+	Name         string                `json:"name"`
+	ServeServers []ServeServer         `json:"serveServers"`
+	Vars         []EnvironmentVariable `json:"vars"`
+}
+
+type ServeServer struct {
+	ID      uint   `json:"id"`
+	ServeId uint   `json:"serveId"`
+	Url     string `json:"url"`
+}
+
+type EnvironmentVariable struct {
+	Name        string `json:"name"`
+	LocalValue  string `json:"localValue"`
+	RemoteValue string `json:"remoteValue"`
 	Description string `json:"description"`
 }
 
@@ -64,4 +79,31 @@ type JsonContent struct {
 
 type SchemaContent struct {
 	Data string
+}
+
+type EndpointVersions struct {
+	EndpointId int64  `json:"endpointId"`
+	Version    string `json:"version"`
+}
+
+type ServeVersionBindEndpointReq struct {
+	ServeId          int64              `json:"serveId"`
+	ServeVersion     string             `json:"serveVersion"`
+	EndpointVersions []EndpointVersions `json:"endpointVersions"`
+}
+
+type EnvironmentParam struct {
+	Name         string `json:"name"`
+	Type         string `json:"type"`
+	Required     bool   `json:"required"`
+	DefaultValue string `json:"defaultValue"`
+	Description  string `json:"description"`
+}
+
+type EnvironmentParamsReq struct {
+	ProjectId uint               `json:"projectId"`
+	Header    []EnvironmentParam `json:"header"`
+	Cookie    []EnvironmentParam `json:"cookie"`
+	Query     []EnvironmentParam `json:"query"`
+	Body      []EnvironmentParam `json:"body"`
 }

@@ -3,7 +3,6 @@ package router
 import (
 	"github.com/aaronchen2k/deeptest/cmd/server/v1/handler"
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/module"
-	"github.com/aaronchen2k/deeptest/internal/server/middleware"
 	"github.com/kataras/iris/v12"
 )
 
@@ -14,7 +13,11 @@ type EnvironmentModule struct {
 // Party 脚本
 func (m *EnvironmentModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
-		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
+		//index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
+		index.Post("/save", m.EnvironmentCtrl.Save).Name = "保存环境"
+		index.Get("/list", m.EnvironmentCtrl.ListAll).Name = "环境列表"
+		index.Post("/param", m.EnvironmentCtrl.SaveParams).Name = "保存全局参数"
+		index.Get("/param", m.EnvironmentCtrl.ListParams).Name = "全局参数列表"
 
 		index.Get("/", m.EnvironmentCtrl.List).Name = "环境列表"
 		index.Get("/{id:uint}", m.EnvironmentCtrl.Get).Name = "环境详情"
@@ -29,6 +32,8 @@ func (m *EnvironmentModule) Party() module.WebModule {
 			party.Put("/", m.EnvironmentCtrl.UpdateVar).Name = "更新环境变量"
 			party.Delete("/{id:uint}", m.EnvironmentCtrl.DeleteVar).Name = "删除环境变量"
 			party.Post("/clear", m.EnvironmentCtrl.ClearVar).Name = "清空环境变量"
+			party.Post("/global", m.EnvironmentCtrl.SaveGlobal).Name = "保存全局变量"
+			party.Get("/global", m.EnvironmentCtrl.ListGlobal).Name = "保存全局变量"
 		})
 
 		index.PartyFunc("/shareVars", func(party iris.Party) {

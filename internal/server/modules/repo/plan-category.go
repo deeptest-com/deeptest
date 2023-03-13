@@ -20,7 +20,9 @@ func (r *PlanCategoryRepo) GetTree(projectId uint) (root *v1.PlanCategory, err e
 	}
 
 	tos := r.toTos(pos)
-
+	if len(tos) == 0 {
+		return
+	}
 	root = tos[0]
 	root.Slots = iris.Map{"icon": "icon"}
 

@@ -12,6 +12,8 @@ type EndpointReqPaginate struct {
 	Status       int64  `json:"status"`
 	UserId       int64  `json:"user_id"`
 	Title        string `json:"title"`
+	ServeId      uint   `json:"serveId"`
+	ServeVersion string `json:"serveVersion"`
 }
 
 type EndpointReq struct {
@@ -19,7 +21,7 @@ type EndpointReq struct {
 	ProjectId  int64           `json:"projectId"`
 	ServeId    int64           `json:"serveId"`
 	Status     int64           `json:"status"`
-	Title      string          `json:"title"`
+	Title      string          `json:"title" validate:"required"`
 	Path       string          `json:"path"`
 	Version    string          `json:"version"`
 	CreateUser string          `json:"CreateUser"`
@@ -35,4 +37,9 @@ type EndpointRes struct {
 	Version    string          `json:"version"`
 	PathParams []domain.Param  `json:"pathParams"`
 	Interfaces []InterfaceResp `json:"interfaces"`
+}
+
+type EndpointVersionReq struct {
+	EndpointId int64  `json:"endpointId"`
+	Version    string `json:"version"`
 }

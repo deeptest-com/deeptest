@@ -1,0 +1,194 @@
+
+@import "var.less";
+.schemaEditor-content {
+  width: @content-width;
+  height: auto;
+  .directoryNode {
+    display: block;
+    position: relative;
+    overflow: hidden;
+  }
+  .directoryContainerExpand {
+    display: block;
+  }
+
+  .directoryContainerFold {
+    display: none;
+  }
+
+  .directoryContainerFold ~ .verticalLine {
+    display: none;
+  }
+
+  .leafNode {
+    position: relative;
+    height: @height;
+    line-height: @height;
+    display: flex;
+    justify-content: space-between;
+
+    &:hover {
+      background-color: @hover-bg-color;
+      .action{
+        display: block;
+      }
+      input {
+        background-color: @hover-bg-color;
+        text-decoration: 4px solid underline;
+
+      }
+    }
+  }
+
+  .directoryText {
+    position: relative;
+    height: @height;
+    line-height: @height;
+    display: flex;
+    justify-content: space-between;
+
+    &:hover {
+      background-color: @hover-bg-color;
+      .action{
+        display: block;
+      }
+      input {
+        background-color: @hover-bg-color;
+      }
+    }
+  }
+
+  input {
+    border: none;
+    outline: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .expandIcon, .addIcon {
+    cursor: pointer;
+    font-size: 12px;
+    margin: 0 2px;
+  }
+
+  .horizontalLine {
+    position: absolute;
+    height: 1px;
+    background: @border-color;
+    top: 16px;
+    left: 30px;
+    width: 15px;
+    z-index: 2;
+  }
+
+  .leafNodeHorizontalLine {
+    position: absolute;
+    height: 1px;
+    background: @border-color;
+    top: 16px;
+    left: 30px;
+    width: 30px;
+    z-index: 2;
+  }
+
+  .leafNodeHorizontalLine ~ .baseInfo{
+    margin-left: 16px;
+  }
+
+  .horizontalLine ~ .baseInfo{
+    //margin-left: -16px;
+  }
+
+  .verticalLine {
+    position: absolute;
+    top: 24px;
+    height: 100%;
+    width: 1px;
+    background: @border-color;
+    z-index: 2;
+  }
+
+  .baseInfo {
+    flex: 1;
+  }
+
+  .action {
+    //display: none;
+    width: 150px;
+  }
+
+  .extraAction {
+    width: 72px;
+    margin-right: 8px;
+  }
+  .add-tag {
+    display: inline-block;
+    position: relative;
+    span {
+      display: inline-block;
+      min-width: 32px;
+      height: 100%;
+    }
+    input {
+      position: absolute;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      caret-color: #426BF2;
+      ::-webkit-input-placeholder {
+        color: #aaa;
+      }
+    }
+  }
+
+  .baseInfoSpace{
+    display: inline-block;
+    margin: 0 2px;
+  }
+
+  .setDataTypeAction{
+    &:hover{
+      background-color: @hover-bg-color;
+    }
+    //todo 设置不同数据类型的的颜色
+  }
+
+  .floatingSetting{
+    background-color: #ffffff;
+    z-index: 22;
+    width: 520px;
+    max-height: 600px;
+    //overflow-x: visible;
+    //overflow-y:scroll ;
+    background-color: #fff;
+    background-clip: padding-box;
+    border-radius: 2px;
+    box-shadow: 0 2px 8px #00000026;
+
+
+  }
+  .floatingSetting-card{
+    //padding: 12px;
+  }
+
+  .floatingSetting-arrow{
+    //position: absolute;
+    //z-index: 99;
+    //top:4px;
+    //left: -6px;
+    //width: 12px;
+    //background-color: #ffffff;
+    //height: 12px;
+    //border-top-color: transparent;
+    //border-right-color: transparent;
+    //transform: rotate(45deg);
+    //border-bottom-color: #fff;
+    //border-left-color: #fff;
+    //box-shadow: -3px 3px 7px #00000012;
+
+
+
+  }
+
+}
+

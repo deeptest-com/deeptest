@@ -9,8 +9,10 @@ import (
 )
 
 type EnvironmentRepo struct {
+	*BaseRepo   `inject:""`
 	DB          *gorm.DB     `inject:""`
 	ProjectRepo *ProjectRepo `inject:""`
+	ServeRepo   *ServeRepo   `inject:""`
 }
 
 func (r *EnvironmentRepo) List() (pos []model.Environment, err error) {
@@ -245,5 +247,101 @@ func (r *EnvironmentRepo) ListVariableByProject(projectId uint) (vars []model.En
 	environment, _ := r.GetByProject(projectId)
 	vars, _ = r.GetVars(environment.ID)
 
+	return
+}
+
+func (r *EnvironmentRepo) SaveEnvironment(environment model.Environment) (err error) {
+	return r.DB.Transaction(func(tx *gorm.DB) error {
+		err = r.BaseRepo.Save(environment.ID, &environment)
+		if err != nil {
+			return err
+		}
+		err = r.ServeRepo.SaveServer(environment.ID, environment.ServeServers)
+		if err != nil {
+			return err
+		}
+		err = r.SaveVars(environment.ProjectId, environment.ID, environment.Vars)
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+}
+
+func (r *EnvironmentRepo) SaveVars(projectId, environmentId uint, environmentVars []model.EnvironmentVar) (err error) {
+	err = r.DB.Delete(&model.EnvironmentVar{}, "environment_id=? and project_id=?", environmentId, projectId).Error
+	if err != nil {
+		return err
+	}
+	for key, _ := range environmentVars {
+		environmentVars[key].EnvironmentId = environmentId
+		environmentVars[key].ProjectId = projectId
+	}
+	err = r.DB.Create(environmentVars).Error
+	if err != nil {
+		return err
+	}
+	return
+}
+
+func (r *EnvironmentRepo) GetListByProjectId(projectId uint) (environments []model.Environment, err error) {
+	err = r.DB.Find(&environments, "project_id=?", projectId).Error
+	if err != nil {
+		return
+	}
+	for key, _ := range environments {
+		var vars []model.EnvironmentVar
+		err = r.DB.Find(&vars, "environment_id=?", environments[key].ID).Error
+		if err != nil {
+			return
+		}
+		environments[key].Vars = vars
+
+		var servers []model.ServeServer
+		err = r.DB.Find(&servers, "environment_id=?", environments[key].ID).Error
+		if err != nil {
+			return
+		}
+		environments[key].ServeServers = servers
+
+	}
+	return
+}
+
+func (r *EnvironmentRepo) ListGlobal(projectId uint) (vars []model.EnvironmentVar, err error) {
+	err = r.DB.Find(&vars, "project_id=? and environment_id=0", projectId).Error
+	return
+}
+
+func (r *EnvironmentRepo) SaveParams(projectId uint, params []model.EnvironmentParam) (err error) {
+	return r.DB.Transaction(func(tx *gorm.DB) error {
+		err = r.DB.Delete(&model.EnvironmentParam{}, " project_id=?", projectId).Error
+		if err != nil {
+			return err
+		}
+		err = r.DB.Create(params).Error
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+}
+
+func (r *EnvironmentRepo) ListParams(projectId uint) (res map[string]interface{}, err error) {
+	res = map[string]interface{}{}
+	var params []model.EnvironmentParam
+	err = r.DB.Find(&params, "project_id=?", projectId).Error
+	if err != nil {
+		return
+	}
+	for _, param := range params {
+		res["projectId"] = param.ProjectId
+		if res[param.In] == nil {
+			res[param.In] = []model.EnvironmentParam{param}
+		} else {
+			res[param.In] = append(res[param.In].([]model.EnvironmentParam), param)
+		}
+
+	}
 	return
 }

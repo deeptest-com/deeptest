@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
@@ -29,8 +30,8 @@ func (s *EndpointService) Save(endpoint model.Endpoint) (res uint, err error) {
 	return endpoint.ID, err
 }
 
-func (s *EndpointService) GetById(id uint) (res model.Endpoint) {
-	res, _ = s.EndpointRepo.GetAll(id)
+func (s *EndpointService) GetById(id uint, version string) (res model.Endpoint) {
+	res, _ = s.EndpointRepo.GetAll(id, version)
 	return
 }
 
@@ -54,8 +55,8 @@ func (s *EndpointService) Develop(id uint) (err error) {
 	return
 }
 
-func (s *EndpointService) Copy(id uint) (res uint, err error) {
-	endpoint, _ := s.EndpointRepo.GetAll(id)
+func (s *EndpointService) Copy(id uint, version string) (res uint, err error) {
+	endpoint, _ := s.EndpointRepo.GetAll(id, version)
 	s.removeIds(&endpoint)
 	err = s.EndpointRepo.SaveAll(&endpoint)
 	return endpoint.ID, err
@@ -97,6 +98,12 @@ func (s *EndpointService) Yaml(endpoint model.Endpoint) (res interface{}) {
 	if err != nil {
 		return
 	}
+	/*
+		serveComponent,err := s.ServeRepo.GetSchemasByServeId(serve.ID)
+		if err != nil {
+			return
+		}
+	*/
 	serve2conv := openapi.NewServe2conv(serve, []model.Endpoint{endpoint})
 	res = serve2conv.ToV3()
 	return
@@ -109,5 +116,28 @@ func (s *EndpointService) UpdateStatus(id uint, status int64) (err error) {
 
 func (s *EndpointService) BatchDelete(ids []uint) (err error) {
 	err = s.EndpointRepo.DeleteByIds(ids)
+	return
+}
+
+func (s *EndpointService) GetVersionsByEndpointId(endpointId uint) (res []model.EndpointVersion, err error) {
+	res, err = s.EndpointRepo.GetVersionsByEndpointId(endpointId)
+	return
+}
+
+func (s *EndpointService) GetLatestVersion(endpointId uint) (version string) {
+	version = "v0.1.0"
+	if res, err := s.EndpointRepo.GetLatestVersion(endpointId); err != nil {
+		version = res.Version
+	}
+	return
+}
+
+func (s *EndpointService) AddVersion(version *model.EndpointVersion) (err error) {
+	err = s.EndpointRepo.FindVersion(version)
+	if err != nil {
+		err = s.EndpointRepo.Save(0, version)
+	} else {
+		err = fmt.Errorf("version already exists")
+	}
 	return
 }

@@ -5,6 +5,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	"github.com/kataras/iris/v12"
+	"github.com/snowlyg/multi"
 )
 
 type ServeCtrl struct {
@@ -46,7 +47,8 @@ func (c *ServeCtrl) Index(ctx iris.Context) {
 func (c *ServeCtrl) Save(ctx iris.Context) {
 	var req v1.ServeReq
 	if err := ctx.ReadJSON(&req); err == nil {
-		req.CreateUser = "admin"
+		//req.CreateUser = "admin"
+		req.CreateUser = multi.GetUsername(ctx)
 		res, _ := c.ServeService.Save(req)
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res})
 	} else {
@@ -184,7 +186,7 @@ func (c *ServeCtrl) ListServer(ctx iris.Context) {
 }
 
 func (c *ServeCtrl) SaveServer(ctx iris.Context) {
-	var req v1.ServeServerReq
+	var req v1.ServeServer
 	if err := ctx.ReadJSON(&req); err == nil {
 		res, _ := c.ServeService.SaveServer(req)
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
@@ -228,6 +230,16 @@ func (c *ServeCtrl) CopySchema(ctx iris.Context) {
 	if id != 0 {
 		res, _ := c.ServeService.CopySchema(uint(id))
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res.ID})
+	} else {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
+	}
+}
+
+func (c *ServeCtrl) BindEndpoint(ctx iris.Context) {
+	var req v1.ServeVersionBindEndpointReq
+	if err := ctx.ReadJSON(&req); err == nil {
+		c.ServeService.BindEndpoint(req)
+		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 	} else {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 	}

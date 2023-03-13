@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
@@ -32,6 +33,10 @@ func (s *ServeService) Paginate(req v1.ServeReqPaginate) (ret _domain.PageData, 
 
 func (s *ServeService) Save(req v1.ServeReq) (res uint, err error) {
 	var serve model.Serve
+	if s.ServeRepo.ServeExist(uint(req.ID), req.Name) {
+		err = fmt.Errorf("serve name already exist")
+		return
+	}
 	copier.CopyWithOption(&serve, req, copier.Option{DeepCopy: true})
 	err = s.ServeRepo.Save(serve.ID, &serve)
 	return serve.ID, err
@@ -58,8 +63,12 @@ func (s *ServeService) PaginateVersion(req v1.ServeVersionPaginate) (ret _domain
 
 func (s *ServeService) SaveVersion(req v1.ServeVersionReq) (res uint, err error) {
 	var serveVersion model.ServeVersion
+	if s.ServeRepo.VersionExist(uint(req.ID), req.Value) {
+		err = fmt.Errorf("serve versionsss already exist")
+		return
+	}
 	copier.CopyWithOption(&serveVersion, req, copier.Option{DeepCopy: true})
-	err, res = s.ServeRepo.Save(serveVersion.ID, &serveVersion), serveVersion.ID
+	err, res = s.ServeRepo.SaveVersion(serveVersion.ID, serveVersion), serveVersion.ID
 	return
 }
 
@@ -78,7 +87,7 @@ func (s *ServeService) ListServer(serveId uint) (res []model.ServeServer, err er
 	return
 }
 
-func (s *ServeService) SaveServer(req v1.ServeServerReq) (res uint, err error) {
+func (s *ServeService) SaveServer(req v1.ServeServer) (res uint, err error) {
 	var serve model.ServeServer
 	copier.CopyWithOption(&serve, req, copier.Option{DeepCopy: true})
 	err = s.ServeRepo.Save(serve.ID, &serve)
@@ -109,7 +118,7 @@ func (s *ServeService) Example2Schema(data string) (schema openapi3.Schema) {
 	var obj interface{}
 	schema = openapi3.Schema{}
 	_commUtils.JsonDecode(data, &obj)
-	_commUtils.JsonDecode("{\"id\":1,\"name\":\"user\"}", &obj)
+	//_commUtils.JsonDecode("{\"id\":1,\"name\":\"user\"}", &obj)
 	//_commUtils.JsonDecode("[\"0，2，3\"]", &obj)
 	//_commUtils.JsonDecode("[]", &obj)
 	//_commUtils.JsonDecode("[{\"id\":1,\"name\":\"user\"}]", &obj)
@@ -152,5 +161,14 @@ func (s *ServeService) CopySchema(id uint) (schema model.ComponentSchema, err er
 	schema.CreatedAt = nil
 	schema.UpdatedAt = nil
 	err = s.ServeRepo.Save(0, &schema)
+	return
+}
+
+func (s *ServeService) BindEndpoint(req v1.ServeVersionBindEndpointReq) (err error) {
+	var serveEndpointVersion []model.ServeEndpointVersion
+	for _, endpointVersion := range req.EndpointVersions {
+		serveEndpointVersion = append(serveEndpointVersion, model.ServeEndpointVersion{EndpointId: endpointVersion.EndpointId, EndpointVersion: endpointVersion.Version, ServeId: req.ServeId, ServeVersion: req.ServeVersion})
+	}
+	err = s.ServeRepo.BindEndpoint(req.ServeId, req.ServeVersion, serveEndpointVersion)
 	return
 }

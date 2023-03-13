@@ -1,27 +1,21 @@
 <template>
-
   <a-modal
       width="600px"
       :visible="visible"
       @ok="ok"
       @cancel="cancal"
-      title="新建分类/修改分类">
-
+      :title="mode === 'new' ? '新建分类' : '修改分类'">
     <a-form
         ref="formRef"
-        :model="formState"
         :rules="rules"
-        :label-col="{ span: 4 }"
+        :label-col="{ span: 6 }"
         :wrapper-col="{ span: 14 }">
-
-      <a-form-item label="接口名称" name="name">
-        <a-input placeholder="接口名称" v-model:value="formState.name"/>
+      <a-form-item label="接口分类名称" name="name">
+        <a-input placeholder="请输入接口分类名称" v-model:value="formState.name"/>
       </a-form-item>
-
-      <a-form-item label="备注" name="remark">
-        <a-input placeholder="备注" v-model:value="formState.remark"/>
+      <a-form-item label="备注信息" name="description">
+        <a-input placeholder="请输入备注信息" v-model:value="formState.description"/>
       </a-form-item>
-
     </a-form>
   </a-modal>
 
@@ -36,46 +30,44 @@ const props = defineProps({
   visible: {
     required: true,
     type: Boolean,
+  },
+  nodeInfo: {
+    required: true,
+    type: Object,
+  },
+  mode: {
+    required: true,
+    type: String,
   }
 })
 
 const emit = defineEmits(['ok', 'cancal']);
 
 
+const formState: any = ref(null);
+
 watch(() => {
   return props.visible
-}, () => {
-  console.log('832', props.visible)
+}, (newVal) => {
+  if(newVal){
+    formState.value = props.nodeInfo;
+    if (props.mode === 'new') {
+      formState.value.name = '';
+      formState.value.description = '';
+    }
+  }
 })
 
-/**
- *
- *   tag: '接口类型1',
- *   value: 1,
- *   name: '用户详情信息',
- *   method:'GET',
- *   path:'/api/user/:userId'
- * */
-interface FormState {
-  name: string;
-  remark: string | undefined;
-}
-
-
 function ok() {
-  emit('ok');
+  emit('ok', formState.value);
 }
 
 function cancal() {
-  emit('cancal');
+  emit('cancal', formState.value);
 }
 
-const formRef = ref();
+// const formRef = ref();
 
-const formState: UnwrapRef<FormState> = reactive({
-  name: '接口类型1',
-  remark: '用户信息相关',
-});
 
 const rules = {
   name: [
@@ -86,19 +78,21 @@ const rules = {
   tag: [{required: true, message: 'Please select activity resource', trigger: 'change'}],
 };
 
-const onSubmit = () => {
-  formRef.value
-      .validate()
-      .then(() => {
-        console.log('values', formState, toRaw(formState));
-      })
-      .catch((error: ValidateErrorEntity<FormState>) => {
-        console.log('error', error);
-      });
-};
-const resetForm = () => {
-  formRef.value.resetFields();
-};
+// const onSubmit = () => {
+//   formRef.value
+//       .validate()
+//       .then(() => {
+//         console.log('values', formState, toRaw(formState));
+//       })
+//       .catch((error: ValidateErrorEntity<FormState>) => {
+//         console.log('error', error);
+//       });
+// };
+
+// const resetForm = () => {
+//   formRef.value.resetFields();
+// };
+
 </script>
 
 <style lang="less" scoped>

@@ -3,6 +3,7 @@ package router
 import (
 	"github.com/aaronchen2k/deeptest/cmd/server/v1/handler"
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/module"
+	"github.com/aaronchen2k/deeptest/internal/server/middleware"
 	"github.com/kataras/iris/v12"
 )
 
@@ -17,8 +18,7 @@ func NewEndpointModule() *EndpointModule {
 // Party 注册模块
 func (m *EndpointModule) Party() module.WebModule {
 	handler := func(public iris.Party) {
-		//public.Use(middleware.InitCheck())
-		//public.Use(middleware.JwtHandler())
+		public.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
 		public.Post("/index", m.EndpointCtrl.Index)
 		public.Post("/save", m.EndpointCtrl.Save)
 		public.Get("/detail", m.EndpointCtrl.Detail)
@@ -30,8 +30,8 @@ func (m *EndpointModule) Party() module.WebModule {
 		public.Post("/yaml", m.EndpointCtrl.Yaml)
 		public.Put("/updateStatus", m.EndpointCtrl.UpdateStatus)
 		public.Delete("/batchDelete", m.EndpointCtrl.BatchDelete)
-
-		//public.Use(middleware.JwtHandler(), middleware.Casbin(), middleware.OperationRecord())
+		public.Post("/version/add", m.EndpointCtrl.AddVersion)
+		public.Get("/version/list", m.EndpointCtrl.ListVersions)
 	}
 	return module.NewModule("/endpoint", handler)
 }

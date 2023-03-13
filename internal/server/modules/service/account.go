@@ -58,6 +58,7 @@ func (s *AccountService) Login(req v1.LoginReq) (ret v1.LoginResp, err error) {
 		CreationDate:  time.Now().Local().Unix(),
 		ExpiresIn:     multi.RedisSessionTimeoutWeb.Milliseconds(),
 	}
+
 	ret.Token, _, err = multi.AuthDriver.GenerateToken(claims)
 	if err != nil {
 		return

@@ -151,7 +151,7 @@ import {
   example2schema,
   schema2example,
   schema2yaml,
-} from '../service';
+} from '../../service';
 import SchemaEditor from '@/components/SchemaEditor/index.vue';
 import {message} from "ant-design-vue";
 import MonacoEditor from "@/components/Editor/MonacoEditor.vue";

@@ -1,7 +1,9 @@
 <template>
   <div class="container">
     <a-tabs v-model:activeKey="activeKey">
-      <a-tab-pane key="1" tab="测试环境">测试环境</a-tab-pane>
+      <a-tab-pane key="1" tab="环境管理">
+        <EnvSetting/>
+      </a-tab-pane>
       <a-tab-pane key="2" tab="数据池" >
         <div style="height: 90vh;">
         </div>
@@ -15,12 +17,13 @@
 <script setup lang="ts">
 import { computed, defineComponent, reactive, Ref, ref, UnwrapRef } from 'vue';
 import { CheckOutlined, EditOutlined,DownOutlined } from '@ant-design/icons-vue';
-import ServiceSetting from './components/ServiceSetting.vue';
+import ServiceSetting from './components/ServiceSetting/index.vue';
+import EnvSetting from './components/EnvSetting/index.vue';
 import SchemaEditor from '@/components/SchemaEditor/index.vue'
 const expandedKeys = ref<string[]>(['0-0-0']);
 const selectedKeys = ref<string[]>([]);
 
-const activeKey = ref('3');
+const activeKey = ref('1');
 
 </script>
 
@@ -30,13 +33,18 @@ const activeKey = ref('3');
   background: #ffffff;
   min-height: 100vh;
 }
-.content{
-  margin: 20px;
-  .header{
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 8px;
+::v-deep{
+  .ant-tabs-bar{
+    margin: 0;
   }
 }
+//.content{
+//  margin: 20px;
+//  .header{
+//    display: flex;
+//    align-items: center;
+//    justify-content: space-between;
+//    margin-bottom: 8px;
+//  }
+//}
 </style>

@@ -98,9 +98,10 @@
 
 import {computed, defineComponent, defineEmits, defineProps, onMounted, reactive, Ref, ref, UnwrapRef} from 'vue';
 import {CheckOutlined, EditOutlined} from '@ant-design/icons-vue';
-import ServiceVersion from './ServiceVersion.vue';
-import ServiceComponent from './ServiceComponent.vue';
-import {getServeList, deleteServe, copyServe, disableServe, saveServe} from '../service';
+import ServiceVersion from './Version.vue';
+import ServiceComponent from './Component.vue';
+
+import {getServeList, deleteServe, copyServe, disableServe, saveServe} from '../../service';
 import {momentUtc} from '@/utils/datetime';
 import {message} from "ant-design-vue";
 import {serveStatus} from "@/config/constant";

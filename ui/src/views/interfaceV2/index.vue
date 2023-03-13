@@ -140,8 +140,8 @@
         :visible="createTagModalvisible"
         :nodeInfo="currentNode"
         :mode="tagModalMode"
-        @cancal="handleCancalCreateTag"
-        @ok="handleCreateTag"/>
+        @cancal="handleCancalTagModalCancal"
+        @ok="handleTagModalOk"/>
     <!--  创建新接口弹框  -->
     <CreateApiModal
         :visible="createApiModalvisible"
@@ -186,6 +186,10 @@ import EditInterfaceDrawer from './components/EditInterfaceDrawer.vue'
 
 
 import {TreeDataItem, TreeDragEvent, DropEvent} from 'ant-design-vue/es/tree/Tree';
+
+
+const createTagModalvisible = ref(false);
+const createApiModalvisible = ref(false);
 
 type Key = ColumnProps['key'];
 
@@ -363,63 +367,63 @@ async function loadCategories() {
   }
 }
 
-watch(() => {
-  return searchValue.value
-}, (newVal) => {
+watch(
+    () => {
+      return searchValue.value
+    },
+    (newVal) => {
+      // const expanded = treeData.value
+      //     .map((item: any) => {
+      //       if ((item.title as string).indexOf(value) > -1) {
+      //         return getParentKey(item.key as string, treeData.value);
+      //       }
+      //       return null;
+      //     })
+      //     .filter((item, i, self) => item && self.indexOf(item) === i);
+      console.log(832, newVal)
 
-  // const expanded = treeData.value
-  //     .map((item: any) => {
-  //       if ((item.title as string).indexOf(value) > -1) {
-  //         return getParentKey(item.key as string, treeData.value);
-  //       }
-  //       return null;
-  //     })
-  //     .filter((item, i, self) => item && self.indexOf(item) === i);
+      // 打平树形结构
+      function flattenTree(tree) {
+        const nodes: Array<any> = [];
 
-  console.log(832, newVal)
+        function traverse(node) {
+          nodes.push(node);
+          if (node.children) {
+            node.children.forEach(traverse);
+          }
+        }
 
-  // 打平树形结构
-  function flattenTree(tree) {
-    const nodes: Array<any> = [];
-
-    function traverse(node) {
-      nodes.push(node);
-      if (node.children) {
-        node.children.forEach(traverse);
+        traverse(tree);
+        return nodes;
       }
-    }
 
-    traverse(tree);
-    return nodes;
-  }
+      const flattenTreeList = flattenTree(treeData.value[0]);
 
-  const flattenTreeList = flattenTree(treeData.value[0]);
+      function findParentIds(nodeId, tree) {
+        let current: any = tree.find(node => node.id === nodeId);
+        let parentIds: Array<string> = [];
+        while (current && current.parentId) {
+          parentIds.unshift(current.parentId); // unshift 方法可以将新元素添加到数组的开头
+          current = tree.find(node => node.id === current.parentId);
+        }
+        console.log(832, parentIds);
+        return parentIds;
+      }
 
-  function findParentIds(nodeId, tree) {
-    let current: any = tree.find(node => node.id === nodeId);
-    let parentIds: Array<string> = [];
-    while (current && current.parentId) {
-      parentIds.unshift(current.parentId); // unshift 方法可以将新元素添加到数组的开头
-      current = tree.find(node => node.id === current.parentId);
-    }
-    console.log(832, parentIds);
-    return parentIds;
-  }
+      let parentKeys: any = [];
+      for (let i = 0; i < flattenTreeList.length; i++) {
+        let node = flattenTreeList[i];
+        if (node.title.includes(newVal)) {
+          parentKeys.push(node.parentId);
+          parentKeys = parentKeys.concat(findParentIds(node.parentId, flattenTreeList));
+        }
+      }
 
-  let parentKeys: any = [];
-  for (let i = 0; i < flattenTreeList.length; i++) {
-    let node = flattenTreeList[i];
-    if (node.title.includes(newVal)) {
-      parentKeys.push(node.parentId);
-      parentKeys = parentKeys.concat(findParentIds(node.parentId, flattenTreeList));
-    }
-  }
+      parentKeys = [...new Set(parentKeys)];
+      expandedKeys.value = parentKeys;
+      autoExpandParent.value = true;
 
-  parentKeys = [...new Set(parentKeys)];
-  expandedKeys.value = parentKeys;
-  autoExpandParent.value = true;
-
-});
+    });
 
 const onExpand = (keys: string[]) => {
   expandedKeys.value = keys;
@@ -453,7 +457,6 @@ function deleteNodeById(id, tree: any) {
     return;
   }
   tree.children = tree.children.filter(child => child.id !== id);
-
   if (tree.children) {
     for (const child of tree.children) {
       deleteNodeById(id, child);
@@ -504,59 +507,131 @@ function editCategorie(node) {
   currentNode.value = node;
 }
 
-function moveNode(fromId, toId, tree) {
-  if (tree.id === fromId) {
-    const nodeToMove = findNodeById(fromId, tree);
-    const parent = findNodeById(toId, tree);
-    if (parent) {
-      parent.children.push(nodeToMove);
-      deleteNodeById(fromId, tree);
+async function handleTagModalOk(obj) {
+  // 修改
+  if (tagModalMode.value === 'edit') {
+    const res = await editCategories({
+      "id": obj.id,
+      "name": obj.name,
+      "desc": obj.description,
+      "parent": obj.parentId
+    });
+    if (res.code === 0) {
+      createTagModalvisible.value = false;
+      // 修改数据
+      let targetNode = findNodeById(obj.id, treeData.value[0]);
+      targetNode = {
+        ...targetNode,
+        "name": obj.name,
+        "desc": obj.description,
+      };
+      message.success('修改成功');
+    } else {
+      message.success('修改失败');
     }
+    //  创建
+  } else {
+    const res = await newCategories({
+      "name": obj.name,
+      "Mode": "child",
+      "targetId": obj.id,
+      "projectId": 0,
+      "serveId": 0,
+      "moduleId": "2"
+    });
+    if (res.code === 0) {
+      let targetNode = findNodeById(obj.id, treeData.value[0]);
+      targetNode.children.push({
+        ...res.data
+      })
+      createTagModalvisible.value = false;
+      message.success('新建成功成功');
+    } else {
+      message.success('新建失败失败');
+    }
+  }
+}
+
+function handleCancalTagModalCancal() {
+  createTagModalvisible.value = false;
+}
+
+
+/**
+ * 添加接口分类
+ * */
+function addApiTag() {
+  createTagModalvisible.value = true;
+}
+
+
+async function onDrop(info: DropEvent) {
+  // console.log(info);
+  const dropKey = info.node.eventKey;
+  const dragKey = info.dragNode.eventKey;
+  const dropPos = info.node.pos.split('-');
+  const dropPosition = info.dropPosition - Number(dropPos[dropPos.length - 1]);
+
+  const res = await moveCategories({
+    "currProjectId": 1,
+    "dragKey": 10,
+    "dropKey": 7,
+    "dropPos": 1
+  });
+
+  if (res.code !== 0) {
     return;
   }
-  if (tree.children) {
-    for (const child of tree.children) {
-      moveNode(fromId, toId, child);
-    }
-  }
-}
 
-function swapNodes(firstId, secondId, tree) {
-  if (tree.children) {
-    const firstNode = findNodeById(firstId, tree);
-    const secondNode = findNodeById(secondId, tree);
-    if (firstNode && secondNode) {
-      const firstIndex = tree.children.findIndex(node => node.id === firstId);
-      const secondIndex = tree.children.findIndex(node => node.id === secondId);
-      if (firstIndex !== -1 && secondIndex !== -1) {
-        tree.children[firstIndex] = secondNode;
-        tree.children[secondIndex] = firstNode;
+  const loop = (data: TreeDataItem[], key: string, callback: any) => {
+    data.forEach((item, index, arr) => {
+      if (item.key === key) {
+        return callback(item, index, arr);
       }
-    }
-    for (const child of tree.children) {
-      swapNodes(firstId, secondId, child);
+      if (item.children) {
+        return loop(item.children, key, callback);
+      }
+    });
+  };
+  const data = [...treeData.value];
+  // Find dragObject
+  let dragObj: TreeDataItem = {};
+  loop(data, dragKey, (item: TreeDataItem, index: number, arr: TreeDataItem[]) => {
+    arr.splice(index, 1);
+    dragObj = item;
+  });
+  if (!info.dropToGap) {
+    // Drop on the content
+    loop(data, dropKey, (item: TreeDataItem) => {
+      item.children = item.children || [];
+      // where to insert 示例添加到尾部，可以是随意位置
+      item.children.push(dragObj);
+    });
+  } else if (
+      (info.node.children || []).length > 0 && // Has children
+      info.node.expanded && // Is expanded
+      dropPosition === 1 // On the bottom gap
+  ) {
+    loop(data, dropKey, (item: TreeDataItem) => {
+      item.children = item.children || [];
+      // where to insert 示例添加到尾部，可以是随意位置
+      item.children.unshift(dragObj);
+    });
+  } else {
+    let ar: TreeDataItem[] = [];
+    let i = 0;
+    loop(data, dropKey, (item: TreeDataItem, index: number, arr: TreeDataItem[]) => {
+      ar = arr;
+      i = index;
+    });
+    if (dropPosition === -1) {
+      ar.splice(i, 0, dragObj);
+    } else {
+      ar.splice(i + 1, 0, dragObj);
     }
   }
+  treeData.value = data;
 }
-
-
-function onDrop(info: DropEvent) {
-  console.log(832, info.dragNode);
-  console.log(832, info.node);
-  const dragKey = info.dragNode.eventKey;
-  const dropKey = info.node.eventKey;
-  // ::::根据是否同级，如果同级则移动。
-  moveNode(dragKey, dropKey, treeData.value[0]);
-  swapNodes(dragKey, dropKey, treeData.value[0])
-  console.log(832, dragKey, dropKey);
-}
-
-const onDragEnter = (info: TreeDragEvent) => {
-  // console.log(832,info);
-  console.log(832);
-  // expandedKeys 需要展开时
-  // expandedKeys.value = info.expandedKeys
-};
 
 
 onMounted(async () => {
@@ -612,7 +687,6 @@ async function copy(record: any) {
   if (res.code === 0) {
     message.success('复制成功');
     await reloadList();
-
   }
 }
 
@@ -650,16 +724,6 @@ function onCloseDrawer() {
 }
 
 
-const createTagModalvisible = ref(false);
-const createApiModalvisible = ref(false);
-
-/**
- * 添加接口分类
- * */
-function addApiTag() {
-  createTagModalvisible.value = true;
-}
-
 /**
  * 添加接口
  * */
@@ -685,25 +749,6 @@ function handleCancalCreateApi() {
   createApiModalvisible.value = false;
 }
 
-async function handleCreateTag(obj) {
-  const res = await editCategories({
-    "id": obj.id,
-    "name": obj.name,
-    "desc": obj.description,
-    "parent": obj.parentId
-  });
-  if (res.code === 0) {
-    createTagModalvisible.value = false;
-    message.success('修改成功');
-  } else {
-    message.success('修改失败');
-  }
-}
-
-function handleCancalCreateTag() {
-  createTagModalvisible.value = false;
-}
-
 
 </script>
 
@@ -711,10 +756,6 @@ function handleCancalCreateTag() {
 .container {
   margin: 16px;
   background: #ffffff;
-
-  //:deep(.ant-tree-switcher-noop) {
-  //  display: none;
-  //}
 }
 
 .tag-filter-form {

@@ -29,3 +29,12 @@ type ReqProjectId struct {
 type ResProjectId struct {
 	ProjectId int64 `json:"projectId" param:"projectId"`
 }
+
+type ResSummaryBugs struct {
+	Total    int64 `gorm:"default:0" json:"total"`
+	Critical int64 `gorm:"default:0" json:"critical"`
+	Blocker  int64 `gorm:"default:0" json:"blocker"`
+	Deadly   int64 `gorm:"default:0" json:"deadly"`
+	Major    int64 `gorm:"default:0" json:"major"`
+	Minor    int64 `gorm:"default:0" json:"minor"`
+}

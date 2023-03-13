@@ -15,6 +15,11 @@ type SummaryBugs struct {
 	Logs []*ExecLogProcessor `gorm:"-" json:"logs"`
 }
 
+type SummaryBugsSeverity struct {
+	Count       int64  `gorm:"column:count" json:"count"`
+	BugSeverity string `gorm:"column:severity" json:"severity"`
+}
+
 func (SummaryBugs) TableName() string {
 	return "biz_summary_bugs"
 }

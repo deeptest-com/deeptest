@@ -312,3 +312,36 @@ func (r *EnvironmentRepo) ListGlobal(projectId uint) (vars []model.EnvironmentVa
 	err = r.DB.Find(&vars, "project_id=? and environment_id=0", projectId).Error
 	return
 }
+
+func (r *EnvironmentRepo) SaveParams(projectId uint, params []model.EnvironmentParam) (err error) {
+	return r.DB.Transaction(func(tx *gorm.DB) error {
+		err = r.DB.Delete(&model.EnvironmentParam{}, " project_id=?", projectId).Error
+		if err != nil {
+			return err
+		}
+		err = r.DB.Create(params).Error
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+}
+
+func (r *EnvironmentRepo) ListParams(projectId uint) (res map[string]interface{}, err error) {
+	res = map[string]interface{}{}
+	var params []model.EnvironmentParam
+	err = r.DB.Find(&params, "project_id=?", projectId).Error
+	if err != nil {
+		return
+	}
+	for _, param := range params {
+		res["projectId"] = param.ProjectId
+		if res[param.In] == nil {
+			res[param.In] = []model.EnvironmentParam{param}
+		} else {
+			res[param.In] = append(res[param.In].([]model.EnvironmentParam), param)
+		}
+
+	}
+	return
+}

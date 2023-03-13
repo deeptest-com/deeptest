@@ -91,3 +91,19 @@ type ServeVersionBindEndpointReq struct {
 	ServeVersion     string             `json:"serveVersion"`
 	EndpointVersions []EndpointVersions `json:"endpointVersions"`
 }
+
+type EnvironmentParam struct {
+	Name         string `json:"name"`
+	Type         string `json:"type"`
+	Required     bool   `json:"required"`
+	DefaultValue string `json:"defaultValue"`
+	Description  string `json:"description"`
+}
+
+type EnvironmentParamsReq struct {
+	ProjectId uint               `json:"projectId"`
+	Header    []EnvironmentParam `json:"header"`
+	Cookie    []EnvironmentParam `json:"cookie"`
+	Query     []EnvironmentParam `json:"query"`
+	Body      []EnvironmentParam `json:"body"`
+}

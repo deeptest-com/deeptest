@@ -161,3 +161,37 @@ func (s *EnvironmentService) ListGlobal(projectId uint) (res []model.Environment
 	res, err = s.EnvironmentRepo.ListGlobal(projectId)
 	return
 }
+
+func (s *EnvironmentService) SaveParams(req v1.EnvironmentParamsReq) (err error) {
+	var params []model.EnvironmentParam
+	if req.Header != nil {
+		params = append(params, s.getParams(req.ProjectId, "header", req.Header)...)
+	}
+	if req.Cookie != nil {
+		params = append(params, s.getParams(req.ProjectId, "cookie", req.Cookie)...)
+	}
+	if req.Query != nil {
+		params = append(params, s.getParams(req.ProjectId, "query", req.Query)...)
+	}
+	if req.Body != nil {
+		params = append(params, s.getParams(req.ProjectId, "body", req.Body)...)
+	}
+	err = s.EnvironmentRepo.SaveParams(req.ProjectId, params)
+	return
+}
+
+func (s *EnvironmentService) getParams(projectId uint, in string, ReqParams []v1.EnvironmentParam) (params []model.EnvironmentParam) {
+	for _, item := range ReqParams {
+		var param model.EnvironmentParam
+		copier.CopyWithOption(&param, item, copier.Option{DeepCopy: true})
+		param.ProjectId = projectId
+		param.In = in
+		params = append(params, param)
+	}
+	return
+}
+
+func (s *EnvironmentService) ListParams(projectId uint) (res map[string]interface{}, err error) {
+	return s.EnvironmentRepo.ListParams(projectId)
+
+}

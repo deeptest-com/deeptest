@@ -21,6 +21,14 @@ func NewScenarioRepo() *ScenarioRepo {
 	return &ScenarioRepo{}
 }
 
+func (r *ScenarioRepo) ListByServe(serveId int) (pos []model.Scenario, err error) {
+	err = r.DB.
+		Where("serve_id=?", serveId).
+		Where("NOT deleted").
+		Find(&pos).Error
+	return
+}
+
 func (r *ScenarioRepo) Paginate(req v1.ScenarioReqPaginate, projectId int) (data _domain.PageData, err error) {
 	var count int64
 	var categoryIds []uint

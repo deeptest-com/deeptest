@@ -18,6 +18,24 @@ type ScenarioCtrl struct {
 	BaseCtrl
 }
 
+func (c *ScenarioCtrl) ListByServe(ctx iris.Context) {
+	serveId, err := ctx.URLParamInt("serveId")
+	if serveId == 0 {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: "serveId"})
+		return
+	}
+
+	res, err := c.ScenarioService.ListByServe(serveId)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res})
+
+	return
+}
+
 func (c *ScenarioCtrl) List(ctx iris.Context) {
 	projectId, err := ctx.URLParamInt("currProjectId")
 	if projectId == 0 {

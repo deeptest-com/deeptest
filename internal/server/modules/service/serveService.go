@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
@@ -20,6 +21,11 @@ func NewServeService() *ServeService {
 	return &ServeService{}
 }
 
+func (s *ServeService) ListByProject(projectId int) (ret []model.Serve, err error) {
+	ret, err = s.ServeRepo.ListByProject(projectId)
+	return
+}
+
 func (s *ServeService) Paginate(req v1.ServeReqPaginate) (ret _domain.PageData, err error) {
 	ret, err = s.ServeRepo.Paginate(req)
 	return
@@ -27,6 +33,10 @@ func (s *ServeService) Paginate(req v1.ServeReqPaginate) (ret _domain.PageData, 
 
 func (s *ServeService) Save(req v1.ServeReq) (res uint, err error) {
 	var serve model.Serve
+	if s.ServeRepo.ServeExist(uint(req.ID), req.Name) {
+		err = fmt.Errorf("serve name already exist")
+		return
+	}
 	copier.CopyWithOption(&serve, req, copier.Option{DeepCopy: true})
 	err = s.ServeRepo.Save(serve.ID, &serve)
 	return serve.ID, err
@@ -53,8 +63,12 @@ func (s *ServeService) PaginateVersion(req v1.ServeVersionPaginate) (ret _domain
 
 func (s *ServeService) SaveVersion(req v1.ServeVersionReq) (res uint, err error) {
 	var serveVersion model.ServeVersion
+	if s.ServeRepo.VersionExist(uint(req.ID), req.Value) {
+		err = fmt.Errorf("serve versionsss already exist")
+		return
+	}
 	copier.CopyWithOption(&serveVersion, req, copier.Option{DeepCopy: true})
-	err, res = s.ServeRepo.Save(serveVersion.ID, &serveVersion), serveVersion.ID
+	err, res = s.ServeRepo.SaveVersion(serveVersion.ID, serveVersion), serveVersion.ID
 	return
 }
 

@@ -13,7 +13,7 @@
           @search="onSearch"
       />
     </div>
-    <a-table bordered :data-source="dataSource" :columns="columns">
+    <a-table bordered :data-source="dataSource" :columns="columns" rowKey="id">
       <template #name="{ text, record }">
         <div class="editable-cell">
           <div class="editable-cell-text-wrapper">
@@ -205,7 +205,6 @@ function editServiceDesc() {
 function editServiceName() {
   isEditServiceName.value = true;
 }
-
 
 async function changeServiceInfo(e) {
   isEditServiceDesc.value = false;

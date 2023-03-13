@@ -16,6 +16,11 @@ func NewScenarioService() *ScenarioService {
 	return &ScenarioService{}
 }
 
+func (s *ScenarioService) ListByServe(serveId int) (pos []model.Scenario, err error) {
+	pos, err = s.ScenarioRepo.ListByServe(serveId)
+	return
+}
+
 func (s *ScenarioService) Paginate(req v1.ScenarioReqPaginate, projectId int) (ret _domain.PageData, err error) {
 	ret, err = s.ScenarioRepo.Paginate(req, projectId)
 

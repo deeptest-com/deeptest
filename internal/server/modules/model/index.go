@@ -42,6 +42,7 @@ var (
 
 		&PlanCategory{},
 		&Plan{},
+		&RelaPlanScenario{},
 
 		&Processor{},
 		//&ProcessorThreadGroup{},
@@ -88,5 +89,6 @@ var (
 		&SummaryBugs{},
 		&SummaryDetails{},
 		&SummaryProjectUserRanking{},
+		&EnvironmentParam{},
 	}
 )

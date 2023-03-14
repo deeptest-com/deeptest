@@ -370,3 +370,22 @@ func (r *ProjectRepo) FindRolesByUser(userId uint) (ret []model.ProjectMember, e
 
 	return
 }
+
+func (r *ProjectRepo) GetProjectsAndRolesByUser(userId uint) (projectIds, roleIds []uint) {
+	var members []model.ProjectMember
+	r.DB.Model(&model.ProjectMember{}).
+		Where("user_id = ?", userId).
+		Find(&members)
+
+	roleIdsMap := make(map[uint]uint)
+
+	for _, member := range members {
+		projectIds = append(projectIds, member.ProjectId)
+		roleIdsMap[member.UserId] = member.UserId
+	}
+	for _, v := range roleIdsMap {
+		roleIds = append(roleIds, v)
+	}
+
+	return
+}

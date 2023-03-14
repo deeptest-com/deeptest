@@ -90,5 +90,7 @@ var (
 		&SummaryDetails{},
 		&SummaryProjectUserRanking{},
 		&EnvironmentParam{},
+		&Message{},
+		&MessageRead{},
 	}
 )

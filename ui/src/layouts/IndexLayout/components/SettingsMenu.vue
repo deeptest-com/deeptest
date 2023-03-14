@@ -11,7 +11,6 @@
       <template #title>
         <span class="title" :class="[{hide: collapsed}]">设置</span>
       </template>
-
 <!--  <a-menu-item key="lang">
         <icon-svg type="language-outline" class="icon-svg" />
         <span>界面语言</span>

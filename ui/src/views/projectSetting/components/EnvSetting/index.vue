@@ -28,7 +28,7 @@
                 @click="showEnvDetail(element)"
                 class="env-item" :key="index">
               <MenuOutlined class="handle"/>
-              <span class="text">{{ element.name }} </span>
+              <span class="text"> {{ element.displayName }} </span>
             </li>
           </template>
         </draggable>
@@ -57,86 +57,280 @@
       <!-- ::::全局变量 -->
       <div class="globalVars" v-if="isShowGlobalVars">
         <div class="title">全局变量</div>
-        <a-table :columns="globalVarsColumns" :data-source="globalVarsData">
-          <template #customName="{ text }">
-            <a-input :value="text" placeholder="请输入参数名"/>
+        <a-table :pagination="false" :columns="globalVarsColumns" :data-source="globalVarsData">
+          <template #customName="{ text,index }">
+            <a-input @change="(e) => {
+                handleGlobalVarsChange('name',index,e);
+                }" :value="text" placeholder="请输入参数名"/>
+          </template>
+          <template #customLocalValue="{ text,index }">
+            <a-input :value="text" @change="(e) => {
+              handleGlobalVarsChange('localValue',index,e);
+              }" placeholder="请输入本地值"/>
+          </template>
+          <template #customRemoteValue="{ text,index }">
+            <a-input :value="text" @change="(e) => {
+            handleGlobalVarsChange('remoteValue',index,e);
+            }" placeholder="请输入远程值"/>
+          </template>
+          <template #customDescription="{ text,index }">
+            <a-input :value="text" @change="(e) => {
+              handleGlobalVarsChange('description',index,e);
+            }" placeholder="说明"/>
           </template>
         </a-table>
+        <a-button
+            class="envDetail-btn"
+            @click="addGlobalVar"
+            type="text">
+          <template #icon>
+            <PlusOutlined/>
+          </template>
+          添加全局变量
+        </a-button>
+
+        <div class="envDetail-footer">
+          <a-button class="save-btn" @click="handleSaveGlobalVars" type="primary">保存</a-button>
+        </div>
+
       </div>
       <!-- ::::全局参数 -->
       <div class="globalParams" v-if="isShowGlobalParams">
         <div class="title">全局参数</div>
-        <a-tabs v-model:activeKey="activeKey">
-          <a-tab-pane key="1" tab="Header">
-            <a-table :columns="globalParamscolumns" :data-source="globalParamsData?.header || []">
-              <template #customName="{ text }">
-                <a-input :value="text" placeholder="请输入参数名"/>
+        <a-tabs :pagination="false" v-model:activeKey="globalParamsActiveKey">
+          <a-tab-pane key="header" tab="Header">
+            <a-table :pagination="false" :columns="globalParamscolumns" :data-source="globalParamsData?.header || []">
+              <template #customName="{ text,index }">
+                <a-input :value="text" @change="(e) => {
+                  handleGlobalParamsChange('header','name',index,e);
+              }" placeholder="请输入参数名"/>
               </template>
-              <template #customRequired="{ text }">
-                {{ text ? '是' : '否' }}
+              <template #customType="{ text,index }">
+                <a-select
+                    ref="select"
+                    :value="text"
+                    style="width: 120px"
+                    @change="(e) => {
+                    handleGlobalParamsChange('header','type',index,e)
+                    }">
+                  <a-select-option value="string">string</a-select-option>
+                  <a-select-option value="number">number</a-select-option>
+                  <a-select-option value="integer">integer</a-select-option>
+                </a-select>
+              </template>
+              <template #customRequired="{ text,index }">
+                <a-switch :checked="text" @change="(checked) => {
+                    handleGlobalParamsChange('header','required',index,checked)
+                    }"/>
+              </template>
+              <template #customDefaultValue="{ text,index }">
+                <a-input :value="text" @change="(e) => {
+                  handleGlobalParamsChange('header','defaultValue',index,e);
+                }" placeholder="默认值"/>
+              </template>
+              <template #customDescription="{ text,index }">
+                <a-input :value="text" @change="(e) => {
+                  handleGlobalParamsChange('header','description',index,e);
+              }" placeholder="说明"/>
               </template>
             </a-table>
           </a-tab-pane>
-          <a-tab-pane key="2" tab="Cookie">
-            <a-table :columns="globalParamscolumns" :data-source="globalParamsData?.cookie || []">
-              <template #customName="{ text }">
-                <a-input :value="text" placeholder="请输入参数名"/>
+          <a-tab-pane key="cookie" tab="Cookie">
+            <a-table :pagination="false" :columns="globalParamscolumns" :data-source="globalParamsData?.cookie || []">
+              <template #customName="{ text,index }">
+                <a-input :value="text" @change="(e) => {
+                  handleGlobalParamsChange('cookie','name',index,e);
+              }" placeholder="请输入参数名"/>
               </template>
-              <template #customRequired="{ text }">
-                {{ text ? '是' : '否' }}
+              <template #customType="{ text,index }">
+                <a-select
+                    ref="select"
+                    :value="text"
+                    style="width: 120px"
+                    @change="(e) => {
+                    handleGlobalParamsChange('cookie','type',index,e)
+                    }">
+                  <a-select-option value="string">string</a-select-option>
+                  <a-select-option value="number">number</a-select-option>
+                  <a-select-option value="integer">integer</a-select-option>
+                </a-select>
+              </template>
+              <template #customRequired="{ text,index }">
+                <a-switch :checked="text" @change="(checked) => {
+                    handleGlobalParamsChange('cookie','required',index,checked)
+                    }"/>
+              </template>
+              <template #customDefaultValue="{ text,index }">
+                <a-input :value="text" @change="(e) => {
+                  handleGlobalParamsChange('cookie','defaultValue',index,e);
+                }" placeholder="默认值"/>
+              </template>
+              <template #customDescription="{ text,index }">
+                <a-input :value="text" @change="(e) => {
+                  handleGlobalParamsChange('cookie','description',index,e);
+              }" placeholder="说明"/>
               </template>
             </a-table>
           </a-tab-pane>
-          <a-tab-pane key="3" tab="Query">
-            <a-table :columns="globalParamscolumns" :data-source="globalParamsData?.query || []">
-              <template #customName="{ text }">
-                <a-input :value="text" placeholder="请输入参数名"/>
+          <a-tab-pane key="query" tab="Query">
+            <a-table :pagination="false" :columns="globalParamscolumns" :data-source="globalParamsData?.query || []">
+              <template #customName="{ text,index }">
+                <a-input :value="text" @change="(e) => {
+                  handleGlobalParamsChange('query','name',index,e);
+              }" placeholder="请输入参数名"/>
               </template>
-              <template #customRequired="{ text }">
-                {{ text ? '是' : '否' }}
+              <template #customType="{ text,index }">
+                <a-select
+                    ref="select"
+                    :value="text"
+                    style="width: 120px"
+                    @change="(e) => {
+                    handleGlobalParamsChange('query','type',index,e)
+                    }">
+                  <a-select-option value="string">string</a-select-option>
+                  <a-select-option value="number">number</a-select-option>
+                  <a-select-option value="integer">integer</a-select-option>
+                </a-select>
+              </template>
+              <template #customRequired="{ text,index }">
+                <a-switch :checked="text" @change="(checked) => {
+                    handleGlobalParamsChange('query','required',index,checked)
+                    }"/>
+              </template>
+              <template #customDefaultValue="{ text,index }">
+                <a-input :value="text" @change="(e) => {
+                  handleGlobalParamsChange('query','defaultValue',index,e);
+                }" placeholder="默认值"/>
+              </template>
+              <template #customDescription="{ text,index }">
+                <a-input :value="text" @change="(e) => {
+                  handleGlobalParamsChange('query','description',index,e);
+              }" placeholder="说明"/>
               </template>
             </a-table>
           </a-tab-pane>
-          <a-tab-pane key="4" tab="Body">
-            <a-table :columns="globalParamscolumns" :data-source="globalParamsData?.body || []">
-              <template #customName="{ text }">
-                <a-input :value="text" placeholder="请输入参数名"/>
+          <a-tab-pane key="body" tab="Body">
+            <a-table :pagination="false" :columns="globalParamscolumns" :data-source="globalParamsData?.body || []">
+              <template #customName="{ text,index }">
+                <a-input :value="text" @change="(e) => {
+                  handleGlobalParamsChange('body','name',index,e);
+              }" placeholder="请输入参数名"/>
               </template>
-              <template #customRequired="{ text }">
-                {{ text ? '是' : '否' }}
+              <template #customType="{ text,index }">
+                <a-select
+                    ref="select"
+                    :value="text"
+                    style="width: 120px"
+                    @change="(e) => {
+                    handleGlobalParamsChange('cookie','type',index,e)
+                    }">
+                  <a-select-option value="string">string</a-select-option>
+                  <a-select-option value="number">number</a-select-option>
+                  <a-select-option value="integer">integer</a-select-option>
+                </a-select>
+              </template>
+              <template #customRequired="{ text,index }">
+                <a-switch :checked="text" @change="(checked) => {
+                    handleGlobalParamsChange('body','required',index,checked)
+                    }"/>
+              </template>
+              <template #customDefaultValue="{ text,index }">
+                <a-input :value="text" @change="(e) => {
+                  handleGlobalParamsChange('body','defaultValue',index,e);
+                }" placeholder="默认值"/>
+              </template>
+              <template #customDescription="{ text,index }">
+                <a-input :value="text" @change="(e) => {
+                  handleGlobalParamsChange('body','description',index,e);
+              }" placeholder="说明"/>
               </template>
             </a-table>
           </a-tab-pane>
         </a-tabs>
-
+        <a-button
+            class="envDetail-btn"
+            @click="addGlobalParams"
+            type="text">
+          <template #icon>
+            <PlusOutlined/>
+          </template>
+          添加全局变量
+        </a-button>
+        <div class="envDetail-footer">
+          <a-button class="save-btn" @click="handleSaveGlobalParams" type="primary">保存</a-button>
+        </div>
       </div>
       <!-- ::::环境详情 -->
       <div class="envDetail" v-if="isShowEnvDetail && activeEnvDetail">
-        <div class="title">{{ activeEnvDetail.name }}</div>
+        <div class="title">{{ activeEnvDetail.displayName }}</div>
         <div class="envDetail-content">
           <a-form-item :labelCol="{span: 4}" :wrapperCol="{span: 14}" label="环境名称">
-            <a-input :value="activeEnvDetail.name"/>
+            <a-input v-model:value="activeEnvDetail.name"/>
           </a-form-item>
           <div class="serveServers">
             <div class="serveServers-header">服务 (前置URL)</div>
-            <a-table :columns="serveServersColumns" :data-source="activeEnvDetail.serveServers">
-              <template #customName="{ text }">
-                <a-input :value="text" placeholder="请输入参数名"/>
+            <a-table :pagination="false" :columns="serveServersColumns" :data-source="activeEnvDetail.serveServers">
+              <template #customName="{ text,index }">
+
+                <a-input :value="text" @change="(e) => {
+                handleEnvChange('serveServers','name',index,e);
+                }" placeholder="请输入参数名"/>
               </template>
-              <template #customUrl="{ text }">
-                <a-input :value="text" placeholder="请输入参数名"/>
+
+              <template #customUrl="{ text,index }">
+                <a-input :value="text"
+                         @change="(e) => {
+                            handleEnvChange('serveServers','url',index,e);
+                         }"
+                         placeholder="http 或 https 起始的合法 URL"/>
               </template>
+
+
             </a-table>
+            <a-button
+                class="envDetail-btn"
+                @click="addService"
+                type="text">
+              <template #icon>
+                <PlusOutlined/>
+              </template>
+              关联服务
+            </a-button>
           </div>
           <div class="vars">
             <div class="vars-header">环境变量</div>
-            <a-table :columns="globalVarsColumns" :data-source="activeEnvDetail.vars">
-              <template #customName="{ text }">
-                <a-input :value="text" placeholder="请输入参数名"/>
+            <a-table :pagination="false" :columns="globalVarsColumns" :data-source="activeEnvDetail.vars">
+              <template #customName="{ text,index }">
+                <a-input @change="(e) => {
+                handleEnvChange('vars','name',index,e);
+                }" :value="text" placeholder="请输入参数名"/>
+              </template>
+              <template #customLocalValue="{ text,index }">
+                <a-input :value="text" @change="(e) => {
+              handleEnvChange('vars','localValue',index,e);
+              }" placeholder="请输入本地值"/>
+              </template>
+              <template #customRemoteValue="{ text,index }">
+                <a-input :value="text" @change="(e) => {
+            handleEnvChange('vars','remoteValue',index,e);
+            }" placeholder="请输入远程值"/>
+              </template>
+              <template #customDescription="{ text,index }">
+                <a-input :value="text" @change="(e) => {
+              handleEnvChange('vars','description',index,e);
+            }" placeholder="说明"/>
               </template>
             </a-table>
+            <a-button
+                class="envDetail-btn"
+                @click="addVar"
+                type="text">
+              <template #icon>
+                <PlusOutlined/>
+              </template>
+              添加环境变量
+            </a-button>
           </div>
-
         </div>
         <div class="envDetail-footer">
           <a-button class="save-btn" @click="addEnvData" type="primary">保存</a-button>
@@ -144,6 +338,16 @@
       </div>
     </div>
   </div>
+  <a-modal
+      v-model:visible="addServiceModalVisible"
+      title="关联服务"
+      @ok="handleAddServiceOk">
+    <a-select
+        v-model:value="selectedService"
+        :options="serviceOptions"
+        placeholder="请选择服务"
+        style="width: 200px"/>
+  </a-modal>
 </template>
 <script setup lang="ts">
 
@@ -158,7 +362,9 @@ import {
   disableServe,
   getGlobalVarsList,
   getEnvironmentsParamList,
-  getEnvList,
+  getEnvList, saveEnv,
+  saveGlobalVars,
+  saveEnvironmentsParam,
 } from '../../service';
 import {momentUtc} from '@/utils/datetime';
 import {message} from "ant-design-vue";
@@ -197,6 +403,9 @@ onMounted(async () => {
   const res = await getEnvList({
     projectId: 1
   });
+  res.data.forEach((item) => {
+    item.displayName = item.name;
+  })
   if (res.code === 0) {
     envList.value = res.data;
   }
@@ -207,10 +416,11 @@ function showEnvDetail(item, isAdd?: boolean) {
     isShowAddEnv.value = true;
     isShowEnvDetail.value = true;
     activeEnvDetail.value = {
+      displayName: "新建环境",
       name: "",
       serveServers: [
         {
-          "id": 2,
+          // "id": 2,
           // "createdAt": "2023-03-08T14:41:31+08:00",
           // "updatedAt": "2023-03-08T14:41:31+08:00",
           // "environmentId": 7,
@@ -221,7 +431,7 @@ function showEnvDetail(item, isAdd?: boolean) {
       ],
       vars: [
         {
-          "id": 1,
+          // "id": 1,
           "name": "",
           "rightValue": "",
           "localValue": "",
@@ -235,10 +445,73 @@ function showEnvDetail(item, isAdd?: boolean) {
     isShowEnvDetail.value = true;
     isShowAddEnv.value = false;
     activeEnvDetail.value = item;
+    activeEnvDetail.value.displayName = item.name;
   }
   isShowGlobalParams.value = false;
   isShowGlobalVars.value = false;
 
+}
+
+const addServiceModalVisible = ref(false);
+const serviceOptions = ref([]);
+const selectedService = ref('');
+
+async function addService() {
+  addServiceModalVisible.value = true;
+}
+
+function addVar() {
+  activeEnvDetail.value.vars.push({
+    // "id": 1,
+    // "createdAt": "2023-03-08T14:41:31+08:00",
+    // "updatedAt": "2023-03-08T14:41:31+08:00",
+    "name": "var1",
+    "rightValue": "rightValue",
+    "localValue": "1",
+    "remoteValue": "2",
+    // "environmentId": 7
+  })
+}
+
+onMounted(async () => {
+  // 请求服务列表
+  let res = await getServeList({
+    "projectId": 1,
+    "page": 0,
+    "pageSize": 100,
+  });
+  if (res.code === 0) {
+    res.data.result.forEach((item) => {
+      item.label = item.name;
+      item.value = item.id;
+    })
+    serviceOptions.value = res.data.result;
+  }
+})
+
+function handleAddServiceOk() {
+  addServiceModalVisible.value = false;
+  const selectServe: any = serviceOptions.value.find((item: any) => {
+    return selectedService.value === item.id;
+  })
+  activeEnvDetail.value.serveServers.push({
+    // "createdAt": "2023-03-08T14:41:31+08:00",
+    // "updatedAt": "2023-03-08T14:41:31+08:00",
+    // "environmentId": 7,
+    "url": "",
+    ...selectServe
+  })
+}
+
+async function addEnvData() {
+  let res = await saveEnv(activeEnvDetail.value);
+  if (res.code === 0) {
+    debugger;
+  }
+}
+
+function handleEnvChange(type, field, index, e) {
+  activeEnvDetail.value[type][index][field] = e.target.value;
 }
 
 /*************************************************
@@ -247,34 +520,9 @@ function showEnvDetail(item, isAdd?: boolean) {
 
 
 /*************************************************
- * ::::新建环境 start
+ * ::::全局参数+全局变量  逻辑 start
  ************************************************/
-const addEnvVisible = ref(false);
-
-function addEnv() {
-  addEnvVisible.value = false;
-}
-
-function addEnvData() {
-  console.log('保存数据');
-}
-
-function onCloseEnvDrawer() {
-  addEnvVisible.value = false
-}
-
-/*************************************************
- * ::::新建环境  end
- ************************************************/
-
-
-
-
-// ::::
-/*************************************************
- * ::::全局参数 + 全局变量  逻辑 start
- ************************************************/
-const activeKey = ref('1');
+const globalParamsActiveKey = ref('header');
 const isShowGlobalParams: any = ref(false);
 const globalParamscolumns: any = [
   //    "id": 6,
@@ -297,6 +545,7 @@ const globalParamscolumns: any = [
     title: '类型',
     dataIndex: 'type',
     key: 'type',
+    slots: {customRender: 'customType'},
   },
   {
     title: '必须',
@@ -308,6 +557,7 @@ const globalParamscolumns: any = [
     title: '默认值',
     key: 'defaultValue',
     dataIndex: 'defaultValue',
+    slots: {customRender: 'customDefaultValue'},
   },
   // {
   //   title: '默认启用',
@@ -318,6 +568,7 @@ const globalParamscolumns: any = [
     title: '说明',
     key: 'description',
     dataIndex: 'description',
+    slots: {customRender: 'customDescription'},
   },
 ];
 const globalParamsData: any = ref({
@@ -338,20 +589,22 @@ const globalVarsColumns = [
     title: '远程值',
     dataIndex: 'remoteValue',
     key: 'remoteValue',
+    slots: {customRender: 'customRemoteValue'},
   },
   {
     title: '本地值',
     dataIndex: 'localValue',
     key: 'localValue',
+    slots: {customRender: 'customLocalValue'},
   },
   {
     title: '说明',
     key: 'description',
     dataIndex: 'description',
-    slots: {customRender: 'description'},
+    slots: {customRender: 'customDescription'},
   },
 ];
-const globalVarsData = ref([]);
+const globalVarsData: any = ref([]);
 
 async function showGlobalParams() {
   isShowGlobalParams.value = true;
@@ -379,12 +632,56 @@ async function showGlobalVars() {
   }
 }
 
+function addGlobalVar() {
+  console.log(3)
+  globalVarsData.value.push({
+    // "id":1,
+    // "createdAt":"2023-03-08T14:41:31+08:00",
+    // "updatedAt":"2023-03-08T14:41:31+08:00",
+    "name": "var1111",
+    "rightValue": "232323",
+    "localValue": "13232",
+    "remoteValue": "22222"
+  })
+}
+
+function addGlobalParams() {
+  globalParamsData.value[globalParamsActiveKey.value].push({
+    "name": "var1",
+    "type": "string",
+    "defaultValue": "1",
+    "description": "var1",
+    "required": false
+  })
+}
+
+async function handleSaveGlobalParams() {
+  let res = await saveEnvironmentsParam(globalParamsData.value);
+  if (res.code === 0) {
+    debugger;
+  }
+}
+
+async function handleSaveGlobalVars() {
+  let res = await saveGlobalVars(globalVarsData.value);
+  if (res.code === 0) {
+    debugger;
+  }
+}
+
+function handleGlobalVarsChange(field, index, e) {
+  globalVarsData.value[index][field] = e.target.value;
+}
+
+function handleGlobalParamsChange(type, field, index, e) {
+  globalParamsData.value[type][index][field] = ["string", "boolean"].includes(typeof e) ? e : e.target.value;
+}
+
 /*************************************************
- * ::::全局参数 + 全局变量 逻辑 end
+ * ::::::::全局参数+全局变量 + 全局变量 逻辑 end
  ************************************************/
 
 </script>
-
 <style scoped lang="less">
 .content {
   display: flex;
@@ -438,14 +735,14 @@ async function showGlobalVars() {
       margin-right: 8px;
     }
 
-    &.env-item-active {
+    &:hover, &.env-item-active {
       background-color: #1aa391;
       border-radius: 6px;
-    }
+      color: #FFFFFF;
 
-    &:hover {
-      background-color: #1aa391;
-      border-radius: 6px;
+      .btn {
+        color: #FFFFFF;
+      }
     }
 
     .handle {

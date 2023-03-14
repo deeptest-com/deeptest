@@ -78,7 +78,7 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
     component: BlankLayout,
     children: [
       {
-        icon: 'list',
+        icon:'set',
         title: 'projectSetting',
         path: 'index',
         component: () => import('@/views/projectSetting/index.vue'),

@@ -109,13 +109,15 @@ export default defineComponent({
     height: @headerHeight;
     background-color: @menu-dark-bg;
     color: #c0c4cc;
-
     .indexlayout-flexible {
       width: 16px;
-      height: 50px;
-      line-height: 50px;
+      //height: 50px;
+      //line-height: 50px;
       text-align: center;
       cursor: pointer;
+      display: flex;
+      align-items: center;
+
     }
 
     .indexlayout-left-logo {

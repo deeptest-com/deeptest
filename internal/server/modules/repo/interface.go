@@ -15,7 +15,7 @@ type InterfaceRepo struct {
 func (r *InterfaceRepo) GetInterfaceTree(projectId int) (root *model.Interface, err error) {
 	pos, err := r.ListByProject(projectId)
 
-	if err != nil {
+	if err != nil || len(pos) == 0 {
 		return
 	}
 

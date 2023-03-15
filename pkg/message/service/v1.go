@@ -1,8 +1,8 @@
 package service
 
 import (
-	"message/domain"
-	"message/repo"
+	"github.com/aaronchen2k/deeptest/pkg/message/domain"
+	"github.com/aaronchen2k/deeptest/pkg/message/repo"
 )
 
 type MessageServiceV1 struct {

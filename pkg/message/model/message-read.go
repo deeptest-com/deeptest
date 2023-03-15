@@ -1,6 +1,6 @@
 package model
 
-import "message/domain"
+import "github.com/aaronchen2k/deeptest/pkg/message/domain"
 
 type MessageRead struct {
 	Base

@@ -28,6 +28,7 @@ type MysqlConf struct {
 }
 
 func (c *Client) CheckRedis() error {
+
 	universalOptions := &redis.UniversalOptions{
 		Addrs:       strings.Split(c.Redis.Address, ","),
 		Password:    c.Redis.Password,
@@ -56,7 +57,7 @@ func (c *Client) InitMysql() error {
 	if c.Db != nil {
 		return nil
 	}
-
+	return nil
 	if c.Mysql.Url == "" || c.Mysql.Dbname == "" || c.Mysql.Username == "" || c.Mysql.Password == "" {
 		return errors.New("mysql的url,dbname,username,password必须赋值！")
 	}

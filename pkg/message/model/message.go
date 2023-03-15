@@ -1,7 +1,7 @@
 package model
 
 import (
-	"message/domain"
+	"github.com/aaronchen2k/deeptest/pkg/message/domain"
 	"time"
 )
 

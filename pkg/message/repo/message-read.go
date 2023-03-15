@@ -1,9 +1,9 @@
 package repo
 
 import (
+	"github.com/aaronchen2k/deeptest/pkg/message/domain"
+	"github.com/aaronchen2k/deeptest/pkg/message/model"
 	"gorm.io/gorm"
-	"message/domain"
-	"message/model"
 )
 
 type MessageReadRepo struct {

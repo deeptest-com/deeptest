@@ -72,75 +72,37 @@ func (s *serve2conv) paths() (paths openapi3.Paths) {
 		for _, item := range endpoint.Interfaces {
 			switch item.Method {
 			case "GET":
-				paths[endpoint.Path].Get = new(openapi3.Operation)
-				/*				paths[endpoint.Path].Get.OperationID = item.OperationId
-								paths[endpoint.Path].Get.Description = item.Description
-								paths[endpoint.Path].Get.Summary = item.Description*/
-				paths[endpoint.Path].Get.Responses = s.responsesBody(item.ResponseBodies)
-				paths[endpoint.Path].Get.Security = nil
-				paths[endpoint.Path].Get.Parameters = s.parameters(item.Cookies, item.Headers, item.Params)
-
+				paths[endpoint.Path].Get = s.operation(item)
 			case "POST":
-				paths[endpoint.Path].Post = new(openapi3.Operation)
-				//paths[endpoint.Path].Get.OperationID = item.OperationId
-				//paths[endpoint.Path].Get.Description = item.Description
-				//paths[endpoint.Path].Get.Summary = item.Description
-				paths[endpoint.Path].Post.RequestBody = s.requestBody(item.RequestBody)
-				paths[endpoint.Path].Post.Responses = s.responsesBody(item.ResponseBodies)
-				paths[endpoint.Path].Post.Security = nil
-				paths[endpoint.Path].Post.Parameters = s.parameters(item.Cookies, item.Headers, item.Params)
+				paths[endpoint.Path].Post = s.operation(item)
 			case "PUT":
-				paths[endpoint.Path].Get = new(openapi3.Operation)
-				/*				paths[endpoint.Path].Get.OperationID = item.OperationId
-								paths[endpoint.Path].Get.Description = item.Description
-								paths[endpoint.Path].Get.Summary = item.Description*/
-				paths[endpoint.Path].Get.Responses = s.responsesBody(item.ResponseBodies)
-				paths[endpoint.Path].Get.Security = nil
-				paths[endpoint.Path].Get.Parameters = s.parameters(item.Cookies, item.Headers, item.Params)
+				paths[endpoint.Path].Put = s.operation(item)
 			case "PATCH":
-				paths[endpoint.Path].Get = new(openapi3.Operation)
-				/*				paths[endpoint.Path].Get.OperationID = item.OperationId
-								paths[endpoint.Path].Get.Description = item.Description
-								paths[endpoint.Path].Get.Summary = item.Description*/
-				paths[endpoint.Path].Get.Responses = s.responsesBody(item.ResponseBodies)
-				paths[endpoint.Path].Get.Security = nil
-				paths[endpoint.Path].Get.Parameters = s.parameters(item.Cookies, item.Headers, item.Params)
+				paths[endpoint.Path].Patch = s.operation(item)
 			case "DELETE":
-				paths[endpoint.Path].Get = new(openapi3.Operation)
-				/*				paths[endpoint.Path].Get.OperationID = item.OperationId
-								paths[endpoint.Path].Get.Description = item.Description
-								paths[endpoint.Path].Get.Summary = item.Description*/
-				paths[endpoint.Path].Get.Responses = s.responsesBody(item.ResponseBodies)
-				paths[endpoint.Path].Get.Security = nil
-				paths[endpoint.Path].Get.Parameters = s.parameters(item.Cookies, item.Headers, item.Params)
+				paths[endpoint.Path].Delete = s.operation(item)
 			case "HEAD":
-				paths[endpoint.Path].Get = new(openapi3.Operation)
-				/*				paths[endpoint.Path].Get.OperationID = item.OperationId
-								paths[endpoint.Path].Get.Description = item.Description
-								paths[endpoint.Path].Get.Summary = item.Description*/
-				paths[endpoint.Path].Get.Responses = s.responsesBody(item.ResponseBodies)
-				paths[endpoint.Path].Get.Security = nil
-				paths[endpoint.Path].Get.Parameters = s.parameters(item.Cookies, item.Headers, item.Params)
+				paths[endpoint.Path].Head = s.operation(item)
 			case "OPTIONS":
-				paths[endpoint.Path].Get = new(openapi3.Operation)
-				/*				paths[endpoint.Path].Get.OperationID = item.OperationId
-								paths[endpoint.Path].Get.Description = item.Description
-								paths[endpoint.Path].Get.Summary = item.Description*/
-				paths[endpoint.Path].Get.Responses = s.responsesBody(item.ResponseBodies)
-				paths[endpoint.Path].Get.Security = nil
-				paths[endpoint.Path].Get.Parameters = s.parameters(item.Cookies, item.Headers, item.Params)
+				paths[endpoint.Path].Options = s.operation(item)
 			case "TRACE":
-				paths[endpoint.Path].Get = new(openapi3.Operation)
-				/*				paths[endpoint.Path].Get.OperationID = item.OperationId
-								paths[endpoint.Path].Get.Description = item.Description
-								paths[endpoint.Path].Get.Summary = item.Description*/
-				paths[endpoint.Path].Get.Responses = s.responsesBody(item.ResponseBodies)
-				paths[endpoint.Path].Get.Security = nil
-				paths[endpoint.Path].Get.Parameters = s.parameters(item.Cookies, item.Headers, item.Params)
+				paths[endpoint.Path].Trace = s.operation(item)
 			}
 
 		}
 	}
+	return
+}
+
+func (s *serve2conv) operation(item model.Interface) (operation *openapi3.Operation) {
+	operation = new(openapi3.Operation)
+	operation.OperationID = item.OperationId
+	operation.Description = item.Description
+	operation.Summary = item.Description
+	operation.RequestBody = s.requestBody(item.RequestBody)
+	operation.Responses = s.responsesBody(item.ResponseBodies)
+	operation.Security = nil
+	operation.Parameters = s.parameters(item.Cookies, item.Headers, item.Params)
 	return
 }
 

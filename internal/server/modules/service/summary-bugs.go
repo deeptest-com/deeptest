@@ -62,7 +62,7 @@ func (s *SummaryBugsService) FindGroupByBugSeverity() (summaryBugsSeverity []mod
 }
 
 // Create
-func (s *SummaryBugsService) Create(req v1.SummaryBugsReq) (err error) {
+func (s *SummaryBugsService) Create(req v1.ReqSummaryBugs) (err error) {
 	var summaryBugs model.SummaryBugs
 	copier.CopyWithOption(&summaryBugs, req, copier.Option{DeepCopy: true})
 	return s.SummaryBugsRepo.Create(&summaryBugs)

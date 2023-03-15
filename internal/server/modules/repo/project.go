@@ -381,7 +381,7 @@ func (r *ProjectRepo) GetProjectsAndRolesByUser(userId uint) (projectIds, roleId
 
 	for _, member := range members {
 		projectIds = append(projectIds, member.ProjectId)
-		roleIdsMap[member.UserId] = member.UserId
+		roleIdsMap[member.ProjectRoleId] = member.ProjectRoleId
 	}
 	for _, v := range roleIdsMap {
 		roleIds = append(roleIds, v)

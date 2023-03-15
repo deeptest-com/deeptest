@@ -1,8 +1,6 @@
 package message
 
-import (
-	"message/domain"
-)
+import "github.com/aaronchen2k/deeptest/pkg/message/domain"
 
 type Handler interface {
 	Create(req domain.MessageReq) (uint, error)

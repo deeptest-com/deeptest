@@ -105,8 +105,11 @@ func (c *ServeCtrl) Expire(ctx iris.Context) {
 func (c *ServeCtrl) SaveVersion(ctx iris.Context) {
 	var req v1.ServeVersionReq
 	if err := ctx.ReadJSON(&req); err == nil {
-		res, _ := c.ServeService.SaveVersion(req)
-		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res})
+		if res, err := c.ServeService.SaveVersion(req); err != nil {
+			ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		} else {
+			ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res})
+		}
 	} else {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 	}

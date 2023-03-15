@@ -1,12 +1,14 @@
 package handler
 
+/*
+
 import (
 	"github.com/aaronchen2k/deeptest/internal/server/core/web/validate"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/aaronchen2k/deeptest/pkg/message"
-	messageDomain "github.com/aaronchen2k/deeptest/pkg/message/Domain"
+	messageDomain "github.com/aaronchen2k/deeptest/pkg/message/domain"
 	messageService "github.com/aaronchen2k/deeptest/pkg/message/service"
 	"github.com/kataras/iris/v12"
 	"github.com/snowlyg/multi"
@@ -88,3 +90,5 @@ func (c *MessageCtrl) OperateRead(ctx iris.Context) {
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: iris.Map{"id": id}, Msg: _domain.NoErr.Msg})
 }
+
+*/

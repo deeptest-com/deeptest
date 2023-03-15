@@ -1,8 +1,8 @@
 package message
 
 import (
+	"github.com/aaronchen2k/deeptest/pkg/message/domain"
 	"gorm.io/gorm"
-	"message/domain"
 )
 
 type Client struct {

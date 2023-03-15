@@ -10,7 +10,7 @@ type InterfaceBase struct {
 	OperationId string `json:"operationId"`
 	Description string `json:"description"`
 	Desc        string `json:"desc"`
-	EndpointId  uint   `json:"endpoint_id"`
+	EndpointId  uint   `json:"endpointId"`
 	Security    string `json:"security"`
 	IsLeaf      bool   `json:"isLeaf"`
 	ParentId    uint   `json:"parentId"`

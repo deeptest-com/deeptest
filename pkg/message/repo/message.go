@@ -2,9 +2,9 @@ package repo
 
 import (
 	"fmt"
+	"github.com/aaronchen2k/deeptest/pkg/message/domain"
+	"github.com/aaronchen2k/deeptest/pkg/message/model"
 	"gorm.io/gorm"
-	"message/domain"
-	"message/model"
 	"strings"
 )
 

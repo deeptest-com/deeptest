@@ -7,6 +7,10 @@ import (
 type ProjectReq struct {
 	_domain.Model
 	ProjectBase
+	Logo           string `json:"logo"`
+	ShortName      string `json:"shortName"`
+	IncludeExample bool   `json:"includeExample"`
+	AdminId        uint   `json:"AdminId"`
 }
 
 type ProjectReqPaginate struct {

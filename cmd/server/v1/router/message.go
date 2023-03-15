@@ -1,5 +1,6 @@
 package router
 
+/*
 import (
 	"github.com/aaronchen2k/deeptest/cmd/server/v1/handler"
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/module"
@@ -26,3 +27,5 @@ func (m *MessageModule) Party() module.WebModule {
 	}
 	return module.NewModule("/message", handler)
 }
+
+*/

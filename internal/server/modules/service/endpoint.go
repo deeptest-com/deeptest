@@ -98,12 +98,18 @@ func (s *EndpointService) Yaml(endpoint model.Endpoint) (res interface{}) {
 	if err != nil {
 		return
 	}
-	/*
-		serveComponent,err := s.ServeRepo.GetSchemasByServeId(serve.ID)
-		if err != nil {
-			return
-		}
-	*/
+
+	serveComponent, err := s.ServeRepo.GetSchemasByServeId(serve.ID)
+	if err != nil {
+		return
+	}
+	serve.Components = serveComponent
+	serveServer, err := s.ServeRepo.ListServer(serve.ID)
+	if err != nil {
+		return
+	}
+	serve.Servers = serveServer
+
 	serve2conv := openapi.NewServe2conv(serve, []model.Endpoint{endpoint})
 	res = serve2conv.ToV3()
 	return

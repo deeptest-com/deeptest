@@ -256,7 +256,7 @@ func (r *EnvironmentRepo) SaveEnvironment(environment model.Environment) (err er
 		if err != nil {
 			return err
 		}
-		err = r.ServeRepo.SaveServer(environment.ID, environment.ServeServers)
+		err = r.ServeRepo.SaveServer(environment.ID, environment.Name, environment.ServeServers)
 		if err != nil {
 			return err
 		}

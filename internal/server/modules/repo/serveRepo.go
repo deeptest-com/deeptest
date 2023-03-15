@@ -120,8 +120,8 @@ func (r *ServeRepo) GetSchema(id uint) (res model.ComponentSchema, err error) {
 	return
 }
 
-func (r *ServeRepo) GetSchemasByServeId(id uint) (res []model.ComponentSchema, err error) {
-	err = r.DB.Where("NOT deleted AND not disabled").Find(&res, id).Error
+func (r *ServeRepo) GetSchemasByServeId(serveId uint) (res []model.ComponentSchema, err error) {
+	err = r.DB.Where("NOT deleted AND not disabled AND serve_id = ?", serveId).Find(&res).Error
 	return
 }
 
@@ -173,13 +173,14 @@ func (r *ServeRepo) BindEndpoint(serveId int64, serveVersion string, serveEndpoi
 	return
 }
 
-func (r *ServeRepo) SaveServer(environmentId uint, servers []model.ServeServer) (err error) {
+func (r *ServeRepo) SaveServer(environmentId uint, environmentName string, servers []model.ServeServer) (err error) {
 	err = r.DB.Delete(&model.ServeServer{}, "environment_id=?", environmentId).Error
 	if err != nil {
 		return err
 	}
 	for key, _ := range servers {
 		servers[key].EnvironmentId = environmentId
+		servers[key].Description = environmentName
 	}
 	err = r.DB.Create(servers).Error
 	if err != nil {
@@ -200,7 +201,7 @@ func (r *ServeRepo) ServeExist(id uint, name string) (res bool) {
 
 func (r *ServeRepo) VersionExist(id uint, value string) (res bool) {
 	var count int64
-	err := r.DB.Model(&model.ServeVersion{}).Where("id = 0 and value = ?", id, value).Count(&count).Error
+	err := r.DB.Model(&model.ServeVersion{}).Where("id = ? and value = ?", id, value).Count(&count).Error
 	if err != nil {
 		return false
 	}
@@ -208,11 +209,11 @@ func (r *ServeRepo) VersionExist(id uint, value string) (res bool) {
 
 }
 
-func (r *ServeRepo) SaveVersion(id uint, version model.ServeVersion) (err error) {
+func (r *ServeRepo) SaveVersion(id uint, version *model.ServeVersion) (err error) {
 	if id == 0 {
 		err = r.CopyEndpointsVersionRef(version)
 		if err != nil {
-			return
+			return err
 		}
 	}
 	err = r.Save(id, &version)
@@ -224,7 +225,7 @@ func (r *ServeRepo) SaveVersion(id uint, version model.ServeVersion) (err error)
 
 func (r *ServeRepo) GetLatestVersion(serveId uint) (res model.ServeVersion, err error) {
 	var version model.ServeVersion
-	err = r.DB.Take(&version, "server_id=?", serveId).Order("value desc").Error
+	err = r.DB.Take(&version, "serve_id=?", serveId).Order("value desc").Error
 	if err != nil {
 		return
 	}
@@ -244,7 +245,7 @@ func (r *ServeRepo) CopyEndpoints(endpoints []model.ServeEndpointVersion, versio
 	return r.DB.Create(endpoints).Error
 }
 
-func (r *ServeRepo) CopyEndpointsVersionRef(version model.ServeVersion) (err error) {
+func (r *ServeRepo) CopyEndpointsVersionRef(version *model.ServeVersion) (err error) {
 	var latestVersion model.ServeVersion
 	latestVersion, err = r.GetLatestVersion(uint(version.ServeId))
 	if err != nil {

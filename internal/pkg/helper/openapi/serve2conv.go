@@ -38,11 +38,29 @@ func (s *serve2conv) info() (info *openapi3.Info) {
 
 func (s *serve2conv) components() (components openapi3.Components) {
 	components = openapi3.Components{}
+	components.Schemas = openapi3.Schemas{}
+	for _, component := range s.serve.Components {
+		schema := new(openapi3.Schema)
+		if component.Type == openapi3.TypeObject {
+			var schemas openapi3.Schemas
+			_commUtils.JsonDecode(component.Content, &schemas)
+			schema.Properties = schemas
+		} else {
+			var items *openapi3.SchemaRef
+			_commUtils.JsonDecode(component.Content, &items)
+			schema.Items = items
+		}
+		components.Schemas[component.Name] = openapi3.NewSchemaRef("", schema)
+	}
+
 	return
 }
 
 func (s *serve2conv) servers() (servers openapi3.Servers) {
-	servers = openapi3.Servers{&openapi3.Server{URL: "localhost:3000"}}
+	servers = openapi3.Servers{}
+	for _, server := range s.serve.Servers {
+		servers = append(servers, &openapi3.Server{URL: server.Url, Description: server.Description})
+	}
 	return
 }
 

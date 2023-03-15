@@ -1,19 +1,6 @@
 package handler
 
 /*
-import (
-	"github.com/aaronchen2k/deeptest/internal/server/core/web/validate"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
-	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
-	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
-	"github.com/aaronchen2k/deeptest/pkg/message"
-	"github.com/kataras/iris/v12"
-	"github.com/snowlyg/multi"
-	"go.uber.org/zap"
-	"gorm.io/gorm"
-	"strings"
-)
-
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/server/core/web/validate"

@@ -64,11 +64,11 @@ func (s *ServeService) PaginateVersion(req v1.ServeVersionPaginate) (ret _domain
 func (s *ServeService) SaveVersion(req v1.ServeVersionReq) (res uint, err error) {
 	var serveVersion model.ServeVersion
 	if s.ServeRepo.VersionExist(uint(req.ID), req.Value) {
-		err = fmt.Errorf("serve versionsss already exist")
+		err = fmt.Errorf("serve version already exist")
 		return
 	}
 	copier.CopyWithOption(&serveVersion, req, copier.Option{DeepCopy: true})
-	err, res = s.ServeRepo.SaveVersion(serveVersion.ID, serveVersion), serveVersion.ID
+	err, res = s.ServeRepo.SaveVersion(serveVersion.ID, &serveVersion), serveVersion.ID
 	return
 }
 

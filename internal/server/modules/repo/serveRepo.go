@@ -52,6 +52,16 @@ func (r *ServeRepo) Paginate(req v1.ServeReqPaginate) (ret _domain.PageData, err
 		logUtils.Errorf("query report error %s", err.Error())
 		return
 	}
+
+	//关联环境
+	for key, result := range results {
+		results[key].Servers, err = r.ListServer(result.ID)
+		if err != nil {
+			return
+		}
+
+	}
+
 	ret.Populate(results, count, req.Page, req.PageSize)
 
 	return

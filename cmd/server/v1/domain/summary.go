@@ -10,7 +10,7 @@ type SummaryReqPaginate struct {
 	Name      string `json:"name"`
 }
 
-type SummaryBugsReq struct {
+type ReqSummaryBugs struct {
 	ProjectId     int64  `json:"project_id" validate:"required"`
 	BugId         string `gorm:"type:text" json:"bug_id"`
 	Source        string `gorm:"type:text" json:"source"`
@@ -37,4 +37,8 @@ type ResSummaryBugs struct {
 	Deadly   int64 `gorm:"default:0" json:"deadly"`
 	Major    int64 `gorm:"default:0" json:"major"`
 	Minor    int64 `gorm:"default:0" json:"minor"`
+}
+type ReqUserList struct {
+	UserId   int64  `json:"user_id"`
+	UserName string `gorm:"type:text" json:"user_name"`
 }

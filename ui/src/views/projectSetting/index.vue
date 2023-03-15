@@ -29,9 +29,9 @@ const activeKey = ref('1');
 
 <style scoped lang="less">
 .container{
-  margin: 20px;
+  margin: 16px;
   background: #ffffff;
-  min-height: 100vh;
+  min-height: calc(100vh - 92px);
 }
 ::v-deep{
   .ant-tabs-bar{

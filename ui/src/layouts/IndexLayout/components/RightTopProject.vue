@@ -4,7 +4,7 @@
       ref="select"
       v-model:value="currProject.id"
       :bordered="true"
-      style="width: 160px"
+      style="width: 280px;margin-left: 16px;"
       @change="selectProject"
   >
     <a-select-option v-for="item in projects" :key="item.id" :value="item.id">{{ item.name }}</a-select-option>

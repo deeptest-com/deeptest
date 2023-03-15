@@ -7,12 +7,16 @@
               class="search-input"
               v-model:value="searchValue"
               placeholder="搜索接口分类"/>
-          <!--          <div class="add-btn" @click="addApiTag">-->
-          <!--            <PlusOutlined style="font-size: 16px;"/>-->
-          <!--          </div>-->
+          <div
+              @click="addApiTag"
+              class="add-btn"
+              type="link">
+            <PlusOutlined style="font-size: 12px;"/>
+          </div>
         </div>
         <div style="margin: 0 8px;">
           <a-tree
+              v-if="treeData"
               draggable
               showLine
               blockNode
@@ -56,50 +60,65 @@
               </div>
             </template>
           </a-tree>
+          <div v-else style="padding: 4px 32px 0 0;">
+            <a-alert
+                message="提示"
+                closable
+                description="您还未有添加接口分类，请点击上方添加按钮添加！"
+                type="info"
+                show-icon
+            />
+          </div>
         </div>
       </div>
+      <!--  头部搜索区域  -->
       <div class="right">
-        <!--  头部区域  -->
         <div class="top-action">
           <a-row type="flex" style="align-items: center;width: 100%">
             <a-col :span="4">
               <a-button class="action-new" type="primary" :loading="loading" @click="addApi">新建接口</a-button>
               <a-button class="action-import" type="primary" :disabled="!hasSelected" :loading="loading"
                         @click="importApi">
-                导入
+                批量操作
               </a-button>
             </a-col>
-            <a-col :span="1"/>
+          </a-row>
+        </div>
+        <div class="top-search">
+          <a-row type="flex" :gutter="16" style="width: 100%" justify="space-between" >
             <a-col :span="4">
-              <a-form-item label="创建人" style="margin-bottom: 0;">
-                <a-select placeholder="请选择创建人">
+              <a-form-item label="创建人" style="margin-bottom: 0">
+                <a-select style="width: 140px;"   placeholder="请选择创建人">
                   <a-select-option value="admin"> admin</a-select-option>
                   <a-select-option value="superAdmin">super admin</a-select-option>
                 </a-select>
               </a-form-item>
             </a-col>
-            <a-col :span="1"/>
             <a-col :span="4">
               <a-form-item label="状态" style="margin-bottom: 0;">
-                <a-select placeholder="请选择创建人" :options="interfaceStatusOpts"/>
+                <a-select  style="width: 140px;"  placeholder="请选择状态" :options="interfaceStatusOpts"/>
               </a-form-item>
             </a-col>
-            <a-col :span="2"/>
-            <a-col :span="7" style="margin-right: 8px;">
+            <a-col :span="8">
+              <a-form-item label="服务版本" style="margin-bottom: 0;">
+                <a-select placeholder="选择服务" style="margin-right: 8px;width: 140px;" :options="interfaceStatusOpts"/>
+                <a-select placeholder="选择服务版本" style="width: 140px;"  :options="interfaceStatusOpts"/>
+              </a-form-item>
+            </a-col>
+            <a-col :span="8" >
               <a-input-search
-                  placeholder="请输入你需要搜索的接口文档"
+                  style="width: 300px;display: flex;justify-content: end;"
+                  placeholder="请输入关键词"
                   enter-button
                   @search="() => {
 
                   }"
               />
             </a-col>
-
           </a-row>
-
-
         </div>
         <a-table
+            style="margin: 0 16px;"
             :row-selection="{
           selectedRowKeys: selectedRowKeys,
           onChange: onSelectChange
@@ -147,7 +166,6 @@
         :visible="createApiModalvisible"
         @cancal="handleCancalCreateApi"
         @ok="handleCreateApi"/>
-
   </div>
 </template>
 <script setup lang="ts">
@@ -161,6 +179,7 @@ import {
   PlusOutlined,
   EditOutlined,
   CaretLeftOutlined,
+  InfoCircleOutlined,
   CaretDownOutlined,
   EllipsisOutlined
 } from '@ant-design/icons-vue';
@@ -183,14 +202,14 @@ import {
 import CreateApiModal from './components/CreateApiModal.vue';
 import CreateTagModal from './components/CreateTagModal.vue'
 import EditInterfaceDrawer from './components/EditInterfaceDrawer.vue'
-
-
 import {TreeDataItem, TreeDragEvent, DropEvent} from 'ant-design-vue/es/tree/Tree';
+import {StateType as ProjectStateType} from "@/store/project";
+import {useStore} from "vuex";
 
-
+const store = useStore<{ ProjectGlobal: ProjectStateType }>();
+const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const createTagModalvisible = ref(false);
 const createApiModalvisible = ref(false);
-
 type Key = ColumnProps['key'];
 
 // todo 待处理接口类型定义
@@ -239,42 +258,22 @@ const columns = [
     slots: {customRender: 'action'},
   },
 ];
-
+/*************************************************
+ * :::: 左侧区域按接口分类搜索树形结构 逻辑  start
+ ************************************************/
 const searchValue = ref('');
 const expandedKeys = ref<string[]>([]);
-const autoExpandParent = ref<boolean>(false);
+const autoExpandParent = ref<boolean>(true);
 const treeData: any = ref(null)
-
-
 const data = ref([]);
-
-async function reloadList() {
-  let res = await getInterfaceList({
-    "prjectId": 0,
-    "page": 1,
-    "pageSize": 100,
-    "status": 0,
-    "userId": 0,
-    // "title": "接口名称"
-  });
-  const {result, total} = res.data;
-  result.forEach((item, index) => {
-    item.index = index + 1;
-    item.key = `${index + 1}`;
-    item.updatedAt = momentUtc(item.updatedAt);
-  })
-  data.value = result;
-  // TODO 待处理分页逻辑
-}
 
 async function loadCategories() {
   let res = await getCategories({
-    currProjectId: 1,
+    currProjectId: currProject.value.id,
     serveId: 1,
     moduleId: 2
   });
   if (res.code === 0 && res.data) {
-    // const data = [res.data];
     const data = [
       {
         "id": '1',
@@ -364,24 +363,14 @@ async function loadCategories() {
 
     fn(data);
     treeData.value = data;
+  } else {
+    treeData.value = null;
   }
 }
 
-watch(
-    () => {
+watch(() => {
       return searchValue.value
-    },
-    (newVal) => {
-      // const expanded = treeData.value
-      //     .map((item: any) => {
-      //       if ((item.title as string).indexOf(value) > -1) {
-      //         return getParentKey(item.key as string, treeData.value);
-      //       }
-      //       return null;
-      //     })
-      //     .filter((item, i, self) => item && self.indexOf(item) === i);
-      console.log(832, newVal)
-
+    }, (newVal) => {
       // 打平树形结构
       function flattenTree(tree) {
         const nodes: Array<any> = [];
@@ -418,11 +407,9 @@ watch(
           parentKeys = parentKeys.concat(findParentIds(node.parentId, flattenTreeList));
         }
       }
-
       parentKeys = [...new Set(parentKeys)];
       expandedKeys.value = parentKeys;
       autoExpandParent.value = true;
-
     });
 
 const onExpand = (keys: string[]) => {
@@ -435,7 +422,6 @@ function selectTreeItem(selectedKeys) {
   // ::::TODO 发送请求
 
 }
-
 
 function findNodeById(id, tree) {
   if (tree.id === id) {
@@ -535,7 +521,7 @@ async function handleTagModalOk(obj) {
       "name": obj.name,
       "Mode": "child",
       "targetId": obj.id,
-      "projectId": 0,
+      "projectId": currProject.value.id,
       "serveId": 0,
       "moduleId": "2"
     });
@@ -556,14 +542,9 @@ function handleCancalTagModalCancal() {
   createTagModalvisible.value = false;
 }
 
-
-/**
- * 添加接口分类
- * */
 function addApiTag() {
   createTagModalvisible.value = true;
 }
-
 
 async function onDrop(info: DropEvent) {
   // console.log(info);
@@ -571,18 +552,15 @@ async function onDrop(info: DropEvent) {
   const dragKey = info.dragNode.eventKey;
   const dropPos = info.node.pos.split('-');
   const dropPosition = info.dropPosition - Number(dropPos[dropPos.length - 1]);
-
   const res = await moveCategories({
-    "currProjectId": 1,
+    "currProjectId": currProject.value.id,
     "dragKey": 10,
     "dropKey": 7,
     "dropPos": 1
   });
-
   if (res.code !== 0) {
     return;
   }
-
   const loop = (data: TreeDataItem[], key: string, callback: any) => {
     data.forEach((item, index, arr) => {
       if (item.key === key) {
@@ -633,43 +611,41 @@ async function onDrop(info: DropEvent) {
   treeData.value = data;
 }
 
-
-onMounted(async () => {
-  await reloadList();
-  await loadCategories();
-})
+/*************************************************
+ * :::::::: 左侧区域按接口分类搜索树形结构 逻辑  send
+ ************************************************/
 
 
-async function refreshList() {
-  await reloadList();
-}
+/*************************************************
+ * ::::表格筛选区域 逻辑 start
+ ************************************************/
 
-// const selectedRowKeys: Key[] = ref([]);
+/*************************************************
+ * ::::表格筛选区域 逻辑 end
+ ************************************************/
+
+
+/*************************************************
+ * ::::表格区域 逻辑 start
+ ************************************************/
 const selectedRowKeys = ref<Key[]>([]);
 const loading = false;
-
 // 是否批量选中了
 // const hasSelected = computed(() => state.selectedRowKeys.length > 0);
 const hasSelected = false;
-
 // 抽屉是否打开
 const drawerVisible = ref<boolean>(false);
-
 const onSelectChange = (keys: Key[], rows: any) => {
   console.log('selectedRowKeys changed: ', keys, rows);
   selectedRowKeys.value = [...keys];
 };
-
 const editInterfaceId = ref('');
-
-
 const clickTag = ref(0);
 
 /**
  * 接口编辑
  * */
 function editInterface(record) {
-  console.log('editInterface');
   editInterfaceId.value = record.id;
   drawerVisible.value = true;
   clickTag.value++;
@@ -723,14 +699,12 @@ function onCloseDrawer() {
   drawerVisible.value = false;
 }
 
-
 /**
  * 添加接口
  * */
 function addApi() {
   createApiModalvisible.value = true;
 }
-
 
 async function handleCreateApi(data) {
   let res = await saveInterface({
@@ -749,13 +723,51 @@ function handleCancalCreateApi() {
   createApiModalvisible.value = false;
 }
 
+async function reloadList() {
+  let res = await getInterfaceList({
+    "projectId": currProject.value.id,
+    "page": 1,
+    "pageSize": 100,
+    // "status": 0,
+    // "userId": 0,
+  });
+  const {result, total} = res.data;
+  result.forEach((item, index) => {
+    item.index = index + 1;
+    item.key = `${index + 1}`;
+    item.updatedAt = momentUtc(item.updatedAt);
+  })
+  data.value = result;
+  // TODO 待处理分页逻辑
+}
+
+/*************************************************
+ * ::::表格区域 逻辑 end
+ ************************************************/
+
+
+
+// 实时监听项目切换，如果项目切换了则重新请求数据
+watch(() => {
+  return currProject.value;
+}, async (newVal) => {
+  await reloadList();
+  await loadCategories();
+}, {
+  immediate: true
+})
+
+async function refreshList() {
+  await reloadList();
+}
+
 
 </script>
-
 <style scoped lang="less">
 .container {
   margin: 16px;
   background: #ffffff;
+  min-height: calc(100vh - 80px);
 }
 
 .tag-filter-form {
@@ -766,7 +778,7 @@ function handleCancalCreateApi() {
 
   .search-input {
     margin-left: 8px;
-    margin-right: 8px;
+    //margin-right: 8px;
   }
 
   .add-btn {
@@ -783,6 +795,7 @@ function handleCancalCreateApi() {
   .left {
     width: 300px;
     border-right: 1px solid #f0f0f0;
+    height: calc(100vh - 80px);
   }
 
   .right {
@@ -794,12 +807,20 @@ function handleCancalCreateApi() {
   margin-right: 8px;
 }
 
+.top-search {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  margin-left: 16px;
+  margin-bottom: 8px;
+}
+
 .top-action {
   height: 60px;
   display: flex;
   align-items: center;
   margin-left: 16px;
-
+  margin-top: 8px;
   .ant-btn {
     margin-right: 16px;
   }
@@ -829,5 +850,23 @@ function handleCancalCreateApi() {
   right: 8px;
 }
 
+
+::v-deep{
+  .ant-alert-info{
+    padding: 12px;
+  }
+  .ant-alert-icon{
+    font-size: 14px;
+    position: relative;
+    top: 4px;
+    left: 8px;
+  }
+  .ant-alert-message{
+    font-size: 14px;
+  }
+  .ant-alert-description{
+    font-size: 12px;
+  }
+}
 
 </style>

@@ -1,57 +1,67 @@
 <template>
   <div class="content">
+
     <div class="left-content">
-      <ul class="global">
-        <li class="header">全局</li>
-        <ul>
-          <li :class="{'env-item':true,'env-item-active':isShowGlobalVars}" @click="showGlobalVars"><i class="var-icon">V</i>全局变量
-          </li>
-          <li :class="{'env-item':true,'env-item-active':isShowGlobalParams}" @click="showGlobalParams"><i
-              class="param-icon">P</i>全局参数
-          </li>
-        </ul>
-      </ul>
+      <div class="global">
+        <div class="header">全局</div>
+        <a-button :class="{'env-item':true,'env-item-active':isShowGlobalVars}"
+                  @click="showGlobalVars"
+                  :type="isShowGlobalVars ? 'primary' : 'text'">
+          <template #icon>
+            <i class="var-icon">V</i>
+          </template>
+          全局变量
+        </a-button>
+        <a-button :class="{'env-item':true,'env-item-active':isShowGlobalParams}"
+                  @click="showGlobalParams"
+                  :type="isShowGlobalParams ? 'primary' : 'text'">
+          <template #icon>
+            <i class="var-icon">V</i>
+          </template>
+          全局参数
+        </a-button>
+      </div>
+
       <div style="margin: 0 16px;">
         <a-divider class="divider"/>
       </div>
-      <ul class="env">
-        <li class="header">环境</li>
+      <div class="env">
+        <div class="header">环境</div>
         <draggable
-            tag="ul"
+            tag="div"
             :list="envList"
             class="list-group"
             handle=".handle"
             item-key="name">
           <template #item="{ element, index }">
-            <li
+            <a-button
                 :class="{'env-item':true,'env-item-active':activeEnvDetail?.name === element.name}"
+                :type="activeEnvDetail?.name === element.name ? 'primary' : 'text'"
                 @click="showEnvDetail(element)"
                 class="env-item" :key="index">
               <MenuOutlined class="handle"/>
               <span class="text"> {{ element.displayName }} </span>
-            </li>
+            </a-button>
+
           </template>
         </draggable>
         <div style="margin: 0 16px;">
           <a-divider class="divider"/>
         </div>
-        <li
+        <a-button
+
+            :type="isShowAddEnv ? 'primary' : 'text'"
             :class="{
-          'env-item':true,
-          'env-item-footer':true,
-          'env-item-active':isShowAddEnv}"
+            'env-item':true,
+            'env-item-footer':true,
+            'env-item-active':isShowAddEnv}"
             @click="showEnvDetail(null,true)">
-          <a-button
-              class="btn"
-              @click="addEnv"
-              type="text">
-            <template #icon>
-              <PlusOutlined/>
-            </template>
-            新建环境
-          </a-button>
-        </li>
-      </ul>
+          <template #icon>
+            <PlusOutlined/>
+          </template>
+          新建环境
+        </a-button>
+      </div>
     </div>
     <div class="right-content">
       <!-- ::::全局变量 -->
@@ -688,12 +698,12 @@ function handleGlobalParamsChange(type, field, index, e) {
 }
 
 .left-content {
-  min-height: calc(100vh - 96px);
+  min-height: calc(100vh - 138px);
   height: 100%;
   background-color: #F9F9F9;
   width: 240px;
 
-  ul {
+  div {
     list-style: none;
     margin: 0;
     padding: 0;
@@ -710,6 +720,7 @@ function handleGlobalParamsChange(type, field, index, e) {
     .header {
       margin-left: 16px;
       margin-top: 16px;
+      margin-bottom: 16px;
       opacity: 0.5;
     }
 
@@ -718,9 +729,21 @@ function handleGlobalParamsChange(type, field, index, e) {
     }
   }
 
+  button.env-item {
+    width: 200px;
+    text-align: left;
+    margin-bottom: 8px;
+    border-radius: 6px;
+  }
+
   .env-item {
     margin: 0 16px;
-    padding: 0 16px;
+    //padding: 0 16px;
+    padding-left: 8px;
+
+    //&:hover{
+    //  color: #1677ff;
+    //}
 
     i {
       width: 18px;
@@ -735,15 +758,6 @@ function handleGlobalParamsChange(type, field, index, e) {
       margin-right: 8px;
     }
 
-    &:hover, &.env-item-active {
-      background-color: #1aa391;
-      border-radius: 6px;
-      color: #FFFFFF;
-
-      .btn {
-        color: #FFFFFF;
-      }
-    }
 
     .handle {
       margin-right: 8px;
@@ -755,16 +769,16 @@ function handleGlobalParamsChange(type, field, index, e) {
     margin: 16px 0;
   }
 
-  .env-item-footer {
-    padding: 0;
-  }
+  //.env-item-footer {
+  //  padding: 0;
+  //}
 }
 
 .right-content {
   flex: 1;
-  min-height: calc(100vh - 116px);
-  margin: 16px;
-
+  min-height: calc(100vh - 138px);
+  //margin: 16px;
+  padding: 16px;
   .globalVars, .globalParams, .envDetail {
     .title {
       font-weight: bold;

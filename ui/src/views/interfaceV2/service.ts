@@ -50,7 +50,7 @@ interface SaveInterfaceReqParams {
 /**
  * 接口列表
  * */
-export async function getInterfaceList(data: InterfaceListReqParams): Promise<any> {
+export async function getInterfaceList(data: any): Promise<any> {
     return request({
         url: `/endpoint/index`,
         method: 'post',

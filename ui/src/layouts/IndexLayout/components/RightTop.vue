@@ -8,14 +8,14 @@
                 }
               }"
       >
-        <MenuUnfoldOutlined v-if="collapsed"/>
-        <MenuFoldOutlined v-else/>
+        <MenuUnfoldOutlined style="fontSize: 18px; " v-if="collapsed"/>
+        <MenuFoldOutlined style="fontSize: 18px; "  v-else/>
       </div>
 
       <div class="indexlayout-top-menu">
+        <RightTopProject/>
       </div>
       <div class="indexlayout-top-menu-right">
-        <RightTopProject/>
         <RightTopSettings/>
       </div>
     </div>
@@ -28,7 +28,7 @@
 import {defineComponent, PropType, toRefs} from "vue";
 import {useI18n} from "vue-i18n";
 import {BreadcrumbType, RoutesDataItem} from '@/utils/routes';
-import {MenuFoldOutlined, MenuUnfoldOutlined} from '@ant-design/icons-vue';
+import {MenuFoldOutlined, MenuUnfoldOutlined,UserOutlined} from '@ant-design/icons-vue';
 import RightTopProject from './RightTopProject.vue';
 import RightTopSettings from './RightTopSettings.vue';
 import RightTopWebsocket from './RightTopWebsocket.vue';
@@ -110,13 +110,14 @@ export default defineComponent({
     background-color: @menu-dark-bg;
     color: #c0c4cc;
     .indexlayout-flexible {
-      width: 16px;
+      width: 18px;
       //height: 50px;
       //line-height: 50px;
       text-align: center;
       cursor: pointer;
       display: flex;
       align-items: center;
+      margin-left: 8px;
 
     }
 
@@ -155,6 +156,7 @@ export default defineComponent({
       /* display: flex; */
       overflow: hidden;
       overflow-x: auto;
+      width: 280px;
 
       .indexlayout-top-menu-li {
         display: inline-block;
@@ -179,25 +181,27 @@ export default defineComponent({
 
     .indexlayout-top-menu-right {
       width: 280px;
-
+      height: @headerHeight;
+      line-height: @headerHeight;
       .indexlayout-top-project {
         float: left;
         padding: 10px 10px;
       }
-
       .indexlayout-top-settings {
-        float: right;
-        padding: 15px 0 15px 16px;
-        width: 100px;
-        color: #c0c4cc;
-
+        //float: right;
+        //padding: 15px 0 15px 16px;
+        //width: 100px;
+        //color: #c0c4cc;
+        color: #FFFFFF;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
         .msgs {
-          float: left;
+          //float: left;
           width: 40px;
         }
-
         .indexlayout-top-usermenu {
-          float: left;
+          //float: left;
           color: #c0c4cc;
         }
       }

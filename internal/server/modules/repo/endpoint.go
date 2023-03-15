@@ -39,7 +39,9 @@ func (r *EndpointRepo) Paginate(req v1.EndpointReqPaginate) (ret _domain.PageDat
 		db = db.Where("serve_id = ?", req.ServeId)
 	}
 	if req.ServeVersion != "" {
-		//ServeRepo.GetBindEndpointIds(req.ServeId, req.ServeVersion)
+		if ids, err := r.ServeRepo.GetBindEndpointIds(req.ServeId, req.ServeVersion); err != nil {
+			db = db.Where("id in ?", ids)
+		}
 	}
 
 	db = db.Order("created_at desc")
@@ -59,8 +61,11 @@ func (r *EndpointRepo) Paginate(req v1.EndpointReqPaginate) (ret _domain.PageDat
 
 	for key, result := range results {
 		var versions []model.EndpointVersion
-		r.DB.Find(&versions, "endpoint_id=?", result.ID)
+		r.DB.Find(&versions, "endpoint_id=?", result.ID).Order("version desc")
 		results[key].Versions = versions
+		if len(versions) > 0 {
+			results[key].Version = versions[0].Version
+		}
 	}
 
 	ret.Populate(results, count, req.Page, req.PageSize)

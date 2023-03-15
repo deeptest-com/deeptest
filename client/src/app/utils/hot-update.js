@@ -9,6 +9,8 @@ import {
 } from "./comm";
 import {electronMsgDownloading, electronMsgUpdate, WorkDir} from "./consts";
 import path from "path";
+import {execSync} from 'child_process';
+import {IS_WINDOWS_OS} from "../utils/env";
 import fse from 'fs-extra'
 import {logErr, logInfo} from "./log";
 
@@ -19,7 +21,7 @@ export async function checkUpdate(mainWin) {
 
     const {newVersion, newVersionStr, forceUpdate} = await getRemoteVersion()
     logInfo(`currVersion=${currVersion}, newVersion=${newVersion}, forceUpdate=${forceUpdate}`)
-
+    logInfo(currVersion < newVersion)
     if (currVersion < newVersion) {
         if (forceUpdate) {
             // logInfo('forceUpdate')
@@ -35,9 +37,10 @@ export const updateApp = (version, mainWin) => {
     downLoadApp(version, mainWin, doUpdate)
 }
 
-const doUpdate = (downloadPath, version)=>{
-    copyFiles(downloadPath);
+const doUpdate = async (downloadPath, version) => {
+    await copyFiles(downloadPath);
     changeVersion(version);
+
     restart();
 }
 
@@ -49,7 +52,7 @@ import fs from 'node:fs';
 import got from 'got';
 import {cpSync} from "fs";
 import os from "os";
-import {killAgent} from "../core/agent";
+import {killZdServer} from "../core/zd";
 const pipeline = promisify(stream.pipeline);
 
 mkdir(path.join('tmp', 'download'))
@@ -67,10 +70,10 @@ const downLoadApp = (version, mainWin, cb) => {
         mainWin.webContents.send(electronMsgDownloading, {percent})
     });
 
-    pipeline(downloadStream, fileWriterStream).then(() => {
+    pipeline(downloadStream, fileWriterStream).then(async () => {
         logInfo(`success to downloaded to ${downloadPath}`)
 
-        const md5Pass = checkMd5(version, downloadPath)
+        const md5Pass = await checkMd5(version, downloadPath)
         if (md5Pass) {
             cb(downloadPath, version)
         } else {
@@ -82,23 +85,35 @@ const downLoadApp = (version, mainWin, cb) => {
     });
 }
 
-const copyFiles = (downloadPath) => {
+const copyFiles = async (downloadPath) => {
     const downloadDir = path.dirname(downloadPath)
 
     const extractedPath = path.resolve(downloadDir, 'extracted')
     logInfo(`downloadPath=${downloadPath}, extractedPath=${extractedPath}`)
 
-    const unzip = new admZip(downloadPath);
-    unzip.extractAllTo(extractedPath, true);
+    const unzip = new admZip(downloadPath, {});
+    let pass = ''
+    await unzip.extractAllTo(extractedPath, true, true, pass);
+    logInfo(pass)
 
-    const {uiPath, agentPath} = getResPath()
-    logInfo(`uiPath=${uiPath}, agentPath=${agentPath}`)
+    const {uiPath, serverPath} = getResPath()
+    logInfo(`uiPath=${uiPath}, serverPath=${serverPath}`)
 
-    killAgent();
-    fs.rmSync(agentPath)
-    fs.rmSync(uiPath, { recursive:true })
+    killZdServer();
+    fs.rmSync(uiPath, {recursive: true})
+    fs.rmSync(serverPath)
 
-    const agentFile = `agent${os.platform() === 'win32' ? '.exe' : ''}`
-    fse.copySync(path.resolve(downloadDir, 'extracted', 'ui'), path.resolve(path.dirname(uiPath), 'ui'), { recursive: true })
-    fse.copySync(path.resolve(downloadDir, 'extracted', agentFile), path.resolve(path.dirname(agentPath), agentFile))
+    const serverFile = `server${os.platform() === 'win32' ? '.exe' : ''}`
+    const serverDir = path.dirname(serverPath)
+    logInfo(`serverDir=${serverDir}`)
+    const serverDist = path.join(serverDir, serverFile)
+    logInfo(`serverFile=${serverFile}, serverDist=${serverDist}`)
+
+    fse.copySync(path.resolve(downloadDir, 'extracted', 'ui'), path.resolve(path.dirname(uiPath), 'ui'), {recursive: true})
+    fse.copySync(path.resolve(downloadDir, 'extracted', serverFile), serverDist)
+
+    if (!IS_WINDOWS_OS) {
+        const cmd = `chmod +x ${serverDist}`
+        execSync(cmd, {windowsHide: true})
+    }
 }

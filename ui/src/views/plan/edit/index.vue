@@ -1,52 +1,86 @@
 <template>
   <div class="plan-edit-main">
-    <a-card :bordered="false">
-      <template #title>
-        <div>{{modelId > 0 ? '编辑计划' : '新建计划'}}</div>
-      </template>
+    <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
+      <a-form-item label="名称">
+        <a-input v-if="fieldName==='name'"
+                 v-model:value="modelRef.name"
+                 @focusout="saveName"
+                 @pressEnter="saveName" />
 
-      <template #extra></template>
+        <span v-else>
+          {{ modelRef.name }}
+          <edit-outlined class="editable-cell-icon" @click="editField('name')"/>
+        </span>
+      </a-form-item>
 
-      <div>
-        <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
-          <a-form-item label="名称" v-bind="validateInfos.name">
-            <a-input v-model:value="modelRef.name"
-                     @blur="validate('name', { trigger: 'blur' }).catch(() => {})" />
-          </a-form-item>
+      <a-form-item label="描述">
+        <a-input v-if="fieldName==='desc'"
+                 v-model:value="modelRef.desc"
+                 @focusout="saveDesc"
+                 @pressEnter="saveDesc" />
 
-          <a-form-item label="描述" v-bind="validateInfos.desc">
-            <a-input v-model:value="modelRef.desc"
-                     @blur="validate('desc', { trigger: 'blur' }).catch(() => {})" />
-          </a-form-item>
+        <span v-else>
+              {{ modelRef.desc }}
+              <edit-outlined class="editable-cell-icon" @click="editField('desc')"/>
+            </span>
+      </a-form-item>
 
-          <a-form-item v-if="modelId > 0" label="是否禁用">
-            <a-switch v-model:checked="modelRef.disabled" />
-          </a-form-item>
+      <a-form-item label="场景">
+        <div class="scenario-list">
+          <div class="scenario-item">
+            <div class="no"></div>
+            <div class="name"></div>
+            <div class="count"></div>
+            <div class="opt">
+              <span @click="selectScenario()" class="dp-link-primary">导入场景</span>
+            </div>
+          </div>
 
-          <a-form-item :wrapper-col="{ span: 14, offset: 4 }">
-            <a-button type="primary" @click.prevent="submitForm">保存</a-button>
-            <a-button style="margin-left: 10px" @click="resetFields">重置</a-button>
-          </a-form-item>
-        </a-form>
-      </div>
-    </a-card>
+          <div v-for="(item, idx) in scenarios" :key="item.id" class="scenario-item">
+            <div class="no">
+              {{idx+1}}
+            </div>
+            <div class="name">
+              {{item.name}}
+            </div>
+            <div class="count">
+              {{item.interfaceCount}}
+            </div>
+            <div class="opt">
+              <span>
+                <DeleteOutlined @click="removeScenario(item)" class="dp-primary"/>
+              </span>
+            </div>
+          </div>
+        </div>
+      </a-form-item>
+    </a-form>
+
+    <SelectScenario
+        v-if="modalVisible"
+        :scenariosInServe="scenarios"
+        :submit="addScenarioToServe"
+        :cancel="() => modalVisible = false"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import {defineComponent, computed, ref, reactive, ComputedRef, defineProps, PropType} from "vue";
+import {defineProps, PropType, reactive, ref} from "vue";
+import {EditOutlined, DeleteOutlined} from '@ant-design/icons-vue';
 import {useRouter} from "vue-router";
 import {useStore} from "vuex";
-import { useI18n } from "vue-i18n";
-import {message, Form, notification} from 'ant-design-vue';
-const useForm = Form.useForm;
+import {useI18n} from "vue-i18n";
+import {Form, notification} from 'ant-design-vue';
 import {StateType} from "../store";
-import {Plan} from "@/views/plan/data";
-import {updateNodeName} from "@/views/interface/service";
-import {get} from "@/views/plan/service";
+import {addScenarios, get, getDetail, removeScenarioFromPlan} from "@/views/plan/service";
+import SelectScenario from "./select-scenario.vue"
+import {NotificationKeyCommon} from "@/utils/const";
+
+const useForm = Form.useForm;
 
 const router = useRouter();
-const { t } = useI18n();
+const {t} = useI18n();
 
 const props = defineProps({
   modelId: {
@@ -57,21 +91,18 @@ const props = defineProps({
     type: Number,
     required: true
   },
-  onFinish: {
+  onFieldSaved: {
     type: Function as PropType<() => void>,
     required: true
   }
 })
 
-const rulesRef = reactive({
-  name: [
-    { required: true, message: '请输入名称', trigger: 'blur' },
-  ],
-});
-
 const store = useStore<{ Plan: StateType }>();
 const modelRef = ref({} as any)
-const { resetFields, validate, validateInfos } = useForm(modelRef, rulesRef);
+const scenarios = ref([])
+
+const fieldName = ref('')
+const modalVisible = ref(false);
 
 const getData = (id: number) => {
   if (id === 0) {
@@ -79,38 +110,93 @@ const getData = (id: number) => {
     return
   }
 
-  get(id).then((json) => {
+  getDetail(id).then((json) => {
     if (json.code === 0) {
       modelRef.value = json.data
+      scenarios.value = json.data.scenarios
     }
   })
 }
 getData(props.modelId)
 
-const submitForm = async() => {
-  validate().then(() => {
-    console.log(modelRef);
-    modelRef.value.categoryId = props.categoryId
+const editField = (field) => {
+  console.log('edit')
+  fieldName.value = field
+}
 
-    store.dispatch('Plan/savePlan', modelRef.value).then((res) => {
-      console.log('res', res)
-      if (res === true) {
-        props.onFinish()
-      }
-    })
+const selectScenario = () => {
+  console.log('selectScenario')
+  modalVisible.value = true
+}
+const addScenarioToServe = (scenarios) => {
+  console.log('addScenarios', props.modelId, scenarios)
+  addScenarios(props.modelId, scenarios).then((json) => {
+    if (json.code === 0) {
+      modalVisible.value = false
+      getData(props.modelId)
+    }
   })
-  .catch(err => {
-    console.log('error', err);
-  });
+}
+
+const removeScenario = (item) => {
+  console.log('removeScenario')
+  removeScenarioFromPlan(props.modelId, item.id).then((json) => {
+    if (json.code === 0) {
+      getData(props.modelId)
+    }
+  })
+}
+
+const saveName = () => {
+  console.log('saveName')
+  if (!modelRef.value.name) return
+  saveModel()
+}
+const saveDesc = () => {
+  console.log('saveDesc')
+  saveModel()
+}
+
+const saveModel = async () => {
+  console.log('saveModel');
+  store.dispatch('Plan/savePlan', modelRef.value).then((res) => {
+    console.log('res', res)
+    fieldName.value = ''
+    if (res === true) {
+      props.onFieldSaved()
+    }
+  })
 };
 
-const labelCol = { span: 4 }
-const wrapperCol = { span: 18 }
+const labelCol = {span: 3}
+const wrapperCol = {span: 21}
 
 </script>
 
 <style lang="less" scoped>
 .plan-edit-main {
+  .scenario-list {
+    padding: 16px 0;
 
+    .scenario-item {
+      display: flex;
+      padding: 5px;
+      .no {
+        width: 100px;
+      }
+      .name {
+        flex: 1;
+      }
+      .count {
+        width: 100px;
+      }
+      .opt {
+        width: 60px;
+      }
+      &:nth-child(even) {
+        background-color: #fafafa;
+      }
+    }
+  }
 }
 </style>

@@ -1,19 +1,12 @@
 import request from '@/utils/request';
 import {QueryParams} from "@/views/project/data";
-import {getEnumSelectItems} from "@/views/interface/service";
-import {
-    ProcessorCookie, ProcessorData,
-    ProcessorExtractor,
-    ProcessorLogic,
-    ProcessorLoop, ProcessorGroup, ProcessorTimer, ProcessorPrint,
-    ProcessorCategory,
-    ProcessorVariable, ProcessorAssertion, RequestBodyType
-} from "@/utils/enum";
-import {Interface} from "@/views/interface/data";
 
 const apiPath = 'plans';
 const apiPathCategoryNodes = `${apiPath}/categories`;
 const apiPathExec = `${apiPath}/exec`;
+
+const apiPathScenario = `scenarios`;
+const apiPathServe = `serve`;
 
 export async function query(params?: QueryParams): Promise<any> {
     return request({
@@ -24,6 +17,12 @@ export async function query(params?: QueryParams): Promise<any> {
 }
 export async function get(id: number): Promise<any> {
     return request({url: `/${apiPath}/${id}`});
+}
+export async function getDetail(id: number): Promise<any> {
+    const params = {
+        detail: true,
+    }
+    return request({url: `/${apiPath}/${id}`, params});
 }
 export async function save(data: any): Promise<any> {
     return request({
@@ -93,5 +92,38 @@ export async function moveCategory(data: any): Promise<any> {
         url: `/${apiPathCategoryNodes}/move`,
         method: 'post',
         data: data,
+    });
+}
+
+
+// for scenario selection
+export async function addScenarios(planId, scenariosIds): Promise<any> {
+    return request({
+        url: `/${apiPath}/${planId}/addScenarios`,
+        method: 'post',
+        data: scenariosIds,
+    });
+}
+
+export async function removeScenarioFromPlan(planId, scenarioId): Promise<any> {
+    return request({
+        url: `/${apiPath}/${planId}/removeScenario`,
+        method: 'post',
+        params: {scenarioId},
+    });
+}
+
+export async function listServe(): Promise<any> {
+    return request({
+        url: `/${apiPathServe}/listByProject`,
+        method: 'get',
+    });
+}
+
+export async function listScenario(serveId): Promise<any> {
+    return request({
+        url: `/${apiPathScenario}/listByServe`,
+        method: 'get',
+        params: {serveId},
     });
 }

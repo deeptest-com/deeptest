@@ -13,7 +13,7 @@
           @search="onSearch"
       />
     </div>
-    <a-table bordered :data-source="dataSource" :columns="columns">
+    <a-table bordered :data-source="dataSource" :columns="columns" rowKey="id">
       <template #name="{ text, record }">
         <div class="editable-cell">
           <div class="editable-cell-text-wrapper">
@@ -98,9 +98,10 @@
 
 import {computed, defineComponent, defineEmits, defineProps, onMounted, reactive, Ref, ref, UnwrapRef} from 'vue';
 import {CheckOutlined, EditOutlined} from '@ant-design/icons-vue';
-import ServiceVersion from './ServiceVersion.vue';
-import ServiceComponent from './ServiceComponent.vue';
-import {getServeList, deleteServe, copyServe, disableServe, saveServe} from '../service';
+import ServiceVersion from './Version.vue';
+import ServiceComponent from './Component.vue';
+
+import {getServeList, deleteServe, copyServe, disableServe, saveServe} from '../../service';
 import {momentUtc} from '@/utils/datetime';
 import {message} from "ant-design-vue";
 import {serveStatus} from "@/config/constant";
@@ -204,7 +205,6 @@ function editServiceDesc() {
 function editServiceName() {
   isEditServiceName.value = true;
 }
-
 
 async function changeServiceInfo(e) {
   isEditServiceDesc.value = false;

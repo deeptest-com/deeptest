@@ -42,6 +42,7 @@ var (
 
 		&PlanCategory{},
 		&Plan{},
+		&RelaPlanScenario{},
 
 		&Processor{},
 		//&ProcessorThreadGroup{},
@@ -89,5 +90,7 @@ var (
 		&SummaryDetails{},
 		&SummaryProjectUserRanking{},
 		&EnvironmentParam{},
+		&Message{},
+		&MessageRead{},
 	}
 )

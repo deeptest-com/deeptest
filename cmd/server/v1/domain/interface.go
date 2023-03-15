@@ -50,8 +50,8 @@ type InterfaceResp struct {
 	Cookies        []domain.Cookie       `gorm:"-" json:"cookies"`
 	RequestBody    domain.RequestBody    `gorm:"default:{}" json:"requestBody"`
 	ResponseBodies []domain.ResponseBody `gorm:"default:{}" json:"ResponseBodies"`
-	//Body              string                 `gorm:"default:{}" json:"body"`
-	//BodyType          consts.HttpContentType `gorm:"default:''" json:"bodyType"`
+	Body           string                `gorm:"default:{}" json:"body"`
+	BodyType       string                `gorm:"default:''" json:"bodyType"`
 	//AuthorizationType string                 `gorm:"default:''" json:"authorizationType"`
 	//PreRequestScript  string                 `gorm:"default:''" json:"preRequestScript"`
 	//ValidationScript  string                 `gorm:"default:''" json:"validationScript"`

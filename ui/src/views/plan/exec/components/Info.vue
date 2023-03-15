@@ -24,7 +24,7 @@
           </a-button>
 
           <a-button @click="design" type="link" class="dp-btn-group">设计</a-button>
-          <a-button href="#/scenario/index" type="link" class="dp-btn-group">返回</a-button>
+          <a-button href="#/plan/index" type="link" class="dp-btn-group">返回</a-button>
         </div>
       </div>
 

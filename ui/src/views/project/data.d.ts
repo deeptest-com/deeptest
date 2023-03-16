@@ -2,6 +2,10 @@ export interface Project {
   id: number;
   name: string;
   desc: string;
+  logo:string
+  shortName:string
+  adminId:number
+  includeExample:bool
 }
 
 export interface QueryResult {

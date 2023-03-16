@@ -7,8 +7,8 @@ import (
 
 type EndpointReqPaginate struct {
 	_domain.PaginateReq
-	ProjectId    int64  `json:"project_id"`
-	CategoryPath string `json:"category_path"`
+	ProjectId    int64  `json:"projectId"`
+	CategoryPath string `json:"categoryPath"`
 	Status       int64  `json:"status"`
 	UserId       int64  `json:"user_id"`
 	Title        string `json:"title"`

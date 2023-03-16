@@ -44,3 +44,11 @@ export async function removeMember(userId: number, projectId: number): Promise<a
         data: {userId: userId, projectId: projectId}
     });
 }
+
+
+export async function getUserList(name: any): Promise<any> {
+    return request({
+        url: `/users`,
+        method: 'get',
+    });
+}

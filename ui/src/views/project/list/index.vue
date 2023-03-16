@@ -50,7 +50,12 @@
       </div>
     </a-card>
   </div>
+  <a-modal v-model:visible="visible" @ok="handleOk" :footer="null">
+  <editModal :currentProjectId="currentProjectId" :getList="getList" :closeModal="closeModal"/>
+</a-modal>
 </template>
+
+
 
 <script setup lang="ts">
 import {computed, ComputedRef, defineComponent, onMounted, reactive, Ref, ref} from "vue";
@@ -65,6 +70,7 @@ import {message, Modal, notification} from "ant-design-vue";
 import {NotificationKeyCommon} from "@/utils/const";
 import {StateType as UserStateType} from "@/store/user";
 import {StateType as ProjectStateType} from "@/store/project";
+import editModal from "../edit/edit.vue"
 
     const statusArr = ref<SelectTypes['options']>([
       {
@@ -141,6 +147,7 @@ import {StateType as ProjectStateType} from "@/store/project";
         page: current,
       });
       loading.value = false;
+      await store.dispatch('Project/getUserList');
     }
 
     const members = (id: number) => {
@@ -148,9 +155,22 @@ import {StateType as ProjectStateType} from "@/store/project";
       router.push(`/project/members/${id}`)
     }
 
+    const visible = ref(false)
+    const currentProjectId = ref(0)
     const edit = (id: number) => {
       console.log('edit')
-      router.push(`/project/edit/${id}`)
+      //router.push(`/project/edit/${id}`)
+      currentProjectId.value = id
+      console.log("currentProjectId",currentProjectId.value)
+      visible.value = true
+    }
+    const handleOk = (e: MouseEvent) => {
+      console.log(e);
+      visible.value = false;
+    };
+
+    const closeModal = () => {
+      visible.value = false;
     }
 
     const remove = (id: number) => {

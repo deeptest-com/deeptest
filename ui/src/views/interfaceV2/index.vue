@@ -203,11 +203,14 @@ import CreateApiModal from './components/CreateApiModal.vue';
 import CreateTagModal from './components/CreateTagModal.vue'
 import EditInterfaceDrawer from './components/EditInterfaceDrawer.vue'
 import {TreeDataItem, TreeDragEvent, DropEvent} from 'ant-design-vue/es/tree/Tree';
+
+
 import {StateType as ProjectStateType} from "@/store/project";
 import {useStore} from "vuex";
-
 const store = useStore<{ ProjectGlobal: ProjectStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
+
+
 const createTagModalvisible = ref(false);
 const createApiModalvisible = ref(false);
 type Key = ColumnProps['key'];
@@ -368,7 +371,8 @@ async function loadCategories() {
   }
 }
 
-watch(() => {
+watch(
+    () => {
       return searchValue.value
     }, (newVal) => {
       // 打平树形结构
@@ -756,6 +760,7 @@ watch(() => {
 }, {
   immediate: true
 })
+
 
 async function refreshList() {
   await reloadList();

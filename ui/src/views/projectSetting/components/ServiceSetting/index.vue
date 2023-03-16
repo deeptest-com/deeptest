@@ -96,7 +96,18 @@
 </template>
 <script setup lang="ts">
 
-import {computed, defineComponent, defineEmits, defineProps, onMounted, reactive, Ref, ref, UnwrapRef} from 'vue';
+import {
+  computed,
+  defineComponent,
+  defineEmits,
+  defineProps,
+  onMounted,
+  reactive,
+  Ref,
+  ref,
+  UnwrapRef,
+  watch
+} from 'vue';
 import {CheckOutlined, EditOutlined} from '@ant-design/icons-vue';
 import ServiceVersion from './Version.vue';
 import ServiceComponent from './Component.vue';
@@ -105,7 +116,11 @@ import {getServeList, deleteServe, copyServe, disableServe, saveServe} from '../
 import {momentUtc} from '@/utils/datetime';
 import {message} from "ant-design-vue";
 import {serveStatus} from "@/config/constant";
+import {StateType as ProjectStateType} from "@/store/project";
+import {useStore} from "vuex";
 
+const store = useStore<{ ProjectGlobal: ProjectStateType }>();
+const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const props = defineProps({})
 const emit = defineEmits(['ok', 'close', 'refreshList']);
 
@@ -211,7 +226,7 @@ async function changeServiceInfo(e) {
   isEditServiceName.value = false;
   if (editFormState.name && editFormState.description) {
     const res = await saveServe({
-      "projectId": 1,
+      "projectId": currProject.value.id,
       "name": editFormState.name,
       "description": editFormState.description,
       "id": editFormState.serveId,
@@ -264,7 +279,7 @@ async function handleOk() {
   visible.value = false;
   // :::: todo 需要更换数据
   const res = await saveServe({
-    "projectId": 1,
+    "projectId": currProject.value.id,
     "name": formState.name,
     "description": formState.description
   });
@@ -284,7 +299,7 @@ function handleCancel() {
 
 async function getList() {
   let res = await getServeList({
-    "projectId": 1,
+    "projectId": currProject.value.id,
     "page": 0,
     "pageSize": 100,
     "name": keyword.value,
@@ -298,8 +313,17 @@ async function getList() {
   }
 }
 
-onMounted(async () => {
+// onMounted(async () => {
+//   await getList()
+// })
+
+// 实时监听项目切换，如果项目切换了则重新请求数据
+watch(() => {
+  return currProject.value;
+}, async (newVal) => {
   await getList()
+}, {
+  immediate: true
 })
 
 </script>

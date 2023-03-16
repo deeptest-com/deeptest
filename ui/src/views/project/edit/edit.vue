@@ -5,7 +5,7 @@
             <div>编辑项目</div>
           </template>
           <template #extra>
-            <a-button type="link" @click="() => back()">返回</a-button>
+           <!-- <a-button type="link" @click="() => back()">返回</a-button>  --> 
           </template>
 
           <div>
@@ -30,11 +30,10 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, computed, ref, reactive, ComputedRef} from "vue";
+import {defineComponent, computed, ref, reactive, ComputedRef,watchEffect} from "vue";
 import {useRouter} from "vue-router";
 import {useStore} from "vuex";
 import { useI18n } from "vue-i18n";
-import { Props, validateInfos } from 'ant-design-vue/lib/form/useForm';
 import {message, Form, notification} from 'ant-design-vue';
 const useForm = Form.useForm;
 import {StateType as UserStateType} from "@/store/user";
@@ -44,7 +43,8 @@ import {NotificationKeyCommon} from "@/utils/const";
 
 export default defineComponent({
     name: 'ScriptEditPage',
-    setup() {
+    props:{ currentProjectId:  Number,getList:Function,closeModal:Function},
+    setup(props:any) {
       const router = useRouter();
 
       const { t } = useI18n();
@@ -64,8 +64,13 @@ export default defineComponent({
       const get = async (id: number): Promise<void> => {
         await store.dispatch('Project/getProject', id);
       }
-      const id = +router.currentRoute.value.params.id
-      get(id)
+      //const id = +router.currentRoute.value.params.id
+      watchEffect(() => {
+      console.log(`currentProjectId is: ` + props.currentProjectId)
+      get(props.currentProjectId)
+    })
+     // get(id.value)
+      
 
       const submitForm = async() => {
         validate().then(() => {
@@ -75,18 +80,21 @@ export default defineComponent({
             console.log('res', res)
             if (res === true) {
               store.dispatch('User/fetchCurrent');
-
-              notification.success({
-                key: NotificationKeyCommon,
-                message: `保存成功`,
-              });
-              router.replace('/project/index')
+              message.success("保存成功")
+              //notification.success({
+               // key: NotificationKeyCommon,
+              //  message: `保存成功`,
+             // });
+              props.getList(1)
+              //router.replace('/project/index')
             } else {
-              notification.success({
-                key: NotificationKeyCommon,
-                message: `保存失败`,
-              });
+              message.error("保存失败")
+              //notification.success({
+              //  key: NotificationKeyCommon,
+               // message: `保存失败`,
+              //});
             }
+            props.closeModal()
           })
         })
         .catch(err => {

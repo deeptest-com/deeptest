@@ -298,7 +298,7 @@ func (r *EnvironmentRepo) GetListByProjectId(projectId uint) (environments []mod
 		environments[key].Vars = vars
 
 		var servers []model.ServeServer
-		err = r.DB.Find(&servers, "environment_id=?", environments[key].ID).Error
+		err = r.DB.Select("`biz_project_serve_server`.`id`,`biz_project_serve_server`.`created_at`,`biz_project_serve_server`.`updated_at`,`biz_project_serve_server`.`deleted`,`biz_project_serve_server`.`disabled`,`biz_project_serve_server`.`environment_id`,`biz_project_serve_server`.`serve_id`,`biz_project_serve_server`.`url`,`biz_project_serve_server`.`description`,biz_project_serve.name serve_name").Joins("left join biz_project_serve on biz_project_serve_server.serve_id = biz_project_serve.id").Find(&servers, "environment_id=?", environments[key].ID).Error
 		if err != nil {
 			return
 		}

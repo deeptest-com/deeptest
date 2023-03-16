@@ -147,6 +147,7 @@ import editModal from "../edit/edit.vue"
         page: current,
       });
       loading.value = false;
+      await store.dispatch('Project/getUserList');
     }
 
     const members = (id: number) => {

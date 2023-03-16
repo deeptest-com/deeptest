@@ -1,15 +1,17 @@
 import { Mutation, Action } from 'vuex';
 import { StoreModuleType } from "@/utils/store";
 import { ResponseData } from '@/utils/request';
+import {SelectTypes} from 'ant-design-vue/es/select';
 import { Project, QueryResult, QueryParams, PaginationConfig } from './data.d';
 import {
-    query, save, remove, detail,
+    query, save, remove, detail, getUserList,
 } from './service';
 
 export interface StateType {
     queryResult: QueryResult;
     detailResult: Project;
     queryParams: any;
+    userList:SelectTypes["options"];
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
@@ -18,12 +20,14 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setList: Mutation<StateType>;
         setItem: Mutation<StateType>;
         setQueryParams: Mutation<StateType>;
+        setUserList:Mutation<StateType>;
     };
     actions: {
         queryProject: Action<StateType, StateType>;
         getProject: Action<StateType, StateType>;
         saveProject: Action<StateType, StateType>;
         removeProject: Action<StateType, StateType>;
+        getUserList: Action<StateType, StateType>;
     };
 }
 const initState: StateType = {
@@ -39,6 +43,7 @@ const initState: StateType = {
     },
     detailResult: {} as Project,
     queryParams: {},
+    userList:[] as SelectTypes["options"] ,
 };
 
 const StoreModel: ModuleType = {
@@ -56,6 +61,10 @@ const StoreModel: ModuleType = {
         },
         setQueryParams(state, payload) {
             state.queryParams = payload;
+        },
+        setUserList(state, payload) {
+            state.userList = payload;
+            console.log(payload,"---------",state.userList )
         },
     },
     actions: {
@@ -117,6 +126,17 @@ const StoreModel: ModuleType = {
             } catch (error) {
                 return false;
             }
+        },
+        async getUserList({ commit }) {
+            const response: ResponseData = await getUserList('');
+            const { data } = response;
+            if (response.code === 0) {
+                data.result.forEach((item) => {
+                  item.label = item.name;
+                  item.value = item.id
+                })
+                commit('setUserList',data.result);
+              }
         },
     }
 };

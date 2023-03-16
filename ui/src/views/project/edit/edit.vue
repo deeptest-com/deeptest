@@ -10,11 +10,23 @@
 
           <div>
             <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
-              <a-form-item label="名称" v-bind="validateInfos.name">
+              <a-form-item label="项目名称" v-bind="validateInfos.name">
                 <a-input v-model:value="modelRef.name"
                          @blur="validate('name', { trigger: 'blur' }).catch(() => {})" />
               </a-form-item>
-              <a-form-item label="描述" v-bind="validateInfos.desc">
+              <a-form-item label="项目logo" v-bind="validateInfos.logo">
+                <a-input v-model:value="modelRef.logo"
+                         @blur="validate('name', { trigger: 'blur' }).catch(() => {})" />
+              </a-form-item>
+              <a-form-item label="英文缩写" v-bind="validateInfos.shortName">
+                <a-input v-model:value="modelRef.shortName"
+                         @blur="validate('name', { trigger: 'blur' }).catch(() => {})" />
+              </a-form-item>
+              <a-form-item label="管理员" v-bind="validateInfos.adminId">
+                <a-select v-model:value="modelRef.adminId" show-search placeholder="请选择" style="width: 250px" :options="options"
+  >            </a-select>         
+              </a-form-item>
+              <a-form-item label="项目简介" v-bind="validateInfos.desc">
                 <a-input v-model:value="modelRef.desc"
                          @blur="validate('desc', { trigger: 'blur' }).catch(() => {})" />
               </a-form-item>
@@ -39,7 +51,7 @@ const useForm = Form.useForm;
 import {StateType as UserStateType} from "@/store/user";
 import {StateType} from "../store";
 import {Project} from "@/views/project/data";
-import {NotificationKeyCommon} from "@/utils/const";
+import {SelectTypes} from 'ant-design-vue/es/select';
 
 export default defineComponent({
     name: 'ScriptEditPage',
@@ -55,6 +67,15 @@ export default defineComponent({
         name: [
           { required: true, message: '请输入名称', trigger: 'blur' },
         ],
+        logo: [
+          { required: true, message: '请输入logo', trigger: 'blur' },
+        ],
+        shortName: [
+          { required: true, message: '大写英文字母开头,仅限字母和数字,<=10位,不可修改', trigger: 'blur' },
+        ],
+        adminId: [
+       //   { required: true, message: '请选择用户', trigger: 'blur' },
+        ],
       });
 
       const store = useStore<{ Project: StateType, User: UserStateType }>();
@@ -66,12 +87,13 @@ export default defineComponent({
       }
       //const id = +router.currentRoute.value.params.id
       watchEffect(() => {
-      console.log(`currentProjectId is: ` + props.currentProjectId)
       get(props.currentProjectId)
+      //store.dispatch('Project/getUserList')
     })
      // get(id.value)
-      
 
+     const options = computed<SelectTypes["options"]>(()=>store.state.Project.userList);
+    
       const submitForm = async() => {
         validate().then(() => {
           console.log(modelRef);
@@ -117,6 +139,7 @@ export default defineComponent({
         validateInfos,
         submitForm,
         back,
+        options,
       }
     }
 })

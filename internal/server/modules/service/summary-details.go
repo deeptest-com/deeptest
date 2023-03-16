@@ -1,9 +1,12 @@
 package service
 
 import (
+	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
+	"strconv"
+	"time"
 )
 
 type SummaryDetailsService struct {
@@ -14,13 +17,110 @@ func NewSummaryDetailsService() *SummaryDetailsService {
 	return &SummaryDetailsService{}
 }
 
-func (s *SummaryDetailsService) Card(projectId int64) (res v1.ResSummaryBugs, err error) {
+func (s *SummaryDetailsService) Card(projectId int64) (res v1.ResSummaryCard, err error) {
+	var scenarioTotal int64
+	var interfaceTotal int64
+	var execTotal int64
+	var passRate float64
+	var coverage float64
+	var oldCoverage float64
+	var oldScenarioTotal int64
+	var oldInterfaceTotal int64
+
+	var summaryCardTotal model.SummaryCardTotal
+	var oldSummaryCardTotal model.SummaryCardTotal
+	var summaryDetails model.SummaryDetails
+	var oldSummaryDetails model.SummaryDetails
+	date := time.Now().AddDate(0, 0, -30)
+	year, month, day := date.Date()
+	startTime := strconv.Itoa(year) + "-" + strconv.Itoa(int(month)) + "-" + strconv.Itoa(day) + " 00:00:00"
+	endTime := strconv.Itoa(year) + "-" + strconv.Itoa(int(month)) + "-" + strconv.Itoa(day) + " 23:59:59"
+	if projectId == 0 {
+		summaryCardTotal, err = s.SummaryCard()
+		res.ProjectTotal, err = s.Count()
+		oldSummaryCardTotal, err = s.SummaryCardByDate(startTime, endTime)
+
+		coverage = summaryCardTotal.Coverage
+		interfaceTotal = summaryCardTotal.InterfaceTotal
+		execTotal = summaryCardTotal.ExecTotal
+		passRate = summaryCardTotal.PassRate
+		scenarioTotal = summaryCardTotal.ScenarioTotal
+		oldCoverage = oldSummaryCardTotal.Coverage
+		oldScenarioTotal = oldSummaryCardTotal.ScenarioTotal
+		oldInterfaceTotal = oldSummaryCardTotal.InterfaceTotal
+
+	} else {
+		summaryDetails, err = s.FindByProjectId(projectId)
+		res.ProjectTotal = 1
+		oldSummaryDetails, err = s.FindByProjectIdAndDate(startTime, endTime, projectId)
+
+		coverage = summaryDetails.Coverage
+		interfaceTotal = summaryDetails.InterfaceTotal
+		execTotal = summaryDetails.ExecTotal
+		passRate = summaryDetails.PassRate
+		scenarioTotal = summaryDetails.ScenarioTotal
+		oldCoverage = oldSummaryDetails.Coverage
+		oldScenarioTotal = oldSummaryDetails.ScenarioTotal
+		oldInterfaceTotal = oldSummaryDetails.InterfaceTotal
+	}
+
+	res.Coverage = coverage
+	res.InterfaceTotal = interfaceTotal
+	res.ExecTotal = execTotal
+	res.PassRate = passRate
+	res.ScenarioTotal = scenarioTotal
+
+	if oldCoverage != 0 {
+		res.CoverageHb = DecimalHB(coverage, oldCoverage)
+		res.CoverageHb, _ = strconv.ParseFloat(fmt.Sprintf("%.1f", res.CoverageHb), 64)
+	} else {
+		res.CoverageHb = 0.0
+	}
+
+	if oldInterfaceTotal != 0 {
+		res.InterfaceHb = DecimalHB(float64(interfaceTotal), float64(oldInterfaceTotal))
+		res.InterfaceHb, _ = strconv.ParseFloat(fmt.Sprintf("%.1f", res.InterfaceHb), 64)
+	} else {
+		res.CoverageHb = 0.0
+	}
+
+	if oldScenarioTotal != 0 {
+		res.ScenarioHb = DecimalHB(float64(scenarioTotal), float64(oldScenarioTotal))
+		res.ScenarioHb, _ = strconv.ParseFloat(fmt.Sprintf("%.1f", res.ScenarioHb), 64)
+	} else {
+		res.CoverageHb = 0.0
+	}
+
 	return
 }
 
-func (s *SummaryDetailsService) Details(projectId int64) (res v1.ResSummaryBugs, err error) {
+func (s *SummaryDetailsService) Details(userId int64) (res v1.ResSummaryDetail, err error) {
+	var req model.SummaryDetails
+	var user model.SummaryUserList
+	user.UserId = 1
+	user.UserName = "yanggggggg"
+	req.Coverage = 10.1
+	req.UserList = append(req.UserList, user)
+
+	if userId == 10 {
+		//s.CreateByDate()
+	}
+
+	//if userId == 0 {
+	//	res.ProjectTotal, err = s.Count()
+	//
+	//} else {
+	//	res.ProjectTotal, err = s.CountByUserId(userId)
+	//}
 	return
 }
+
+func DecimalHB(newValue float64, oldValue float64) float64 {
+	value := newValue / oldValue
+	value = value - 1
+	return value * 100
+}
+
 func (s *SummaryDetailsService) CreateByDate(req model.SummaryDetails) (err error) {
 	return s.SummaryDetailsRepo.CreateByDate(req)
 }
@@ -53,11 +153,11 @@ func (s *SummaryDetailsService) FindByProjectIds(projectIds []int64) (details []
 	return s.SummaryDetailsRepo.FindByProjectIds(projectIds)
 }
 
-func (s *SummaryDetailsService) SummaryCard() (summaryCardTotal []model.SummaryCardTotal, err error) {
+func (s *SummaryDetailsService) SummaryCard() (summaryCardTotal model.SummaryCardTotal, err error) {
 	return s.SummaryDetailsRepo.SummaryCard()
 }
 
-func (s *SummaryDetailsService) SummaryCardByDate(startTime string, endTime string) (summaryDetails []model.SummaryDetails, err error) {
+func (s *SummaryDetailsService) SummaryCardByDate(startTime string, endTime string) (summaryCardTotal model.SummaryCardTotal, err error) {
 	return s.SummaryDetailsRepo.SummaryCardByDate(startTime, endTime)
 }
 

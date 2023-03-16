@@ -2,10 +2,11 @@ package service
 
 import (
 	"errors"
+	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
-	"github.com/jinzhu/copier"
+	"strconv"
 )
 
 type SummaryBugsService struct {
@@ -31,15 +32,20 @@ func (s *SummaryBugsService) Bugs(projectId int64) (res v1.ResSummaryBugs, err e
 		for _, result := range summaryBugsSeverity {
 			switch result.BugSeverity {
 			case "critical":
-				res.Critical = result.Count
+				res.Critical = DecimalPer(result.Count, res.Total)
+				res.Critical, _ = strconv.ParseFloat(fmt.Sprintf("%.1f", res.Critical), 64)
 			case "blocker":
-				res.Blocker = result.Count
+				res.Blocker = DecimalPer(result.Count, res.Total)
+				res.Blocker, _ = strconv.ParseFloat(fmt.Sprintf("%.1f", res.Blocker), 64)
 			case "deadly":
-				res.Deadly = result.Count
+				res.Deadly = DecimalPer(result.Count, res.Total)
+				res.Deadly, _ = strconv.ParseFloat(fmt.Sprintf("%.1f", res.Deadly), 64)
 			case "major":
-				res.Major = result.Count
+				res.Major = DecimalPer(result.Count, res.Total)
+				res.Major, _ = strconv.ParseFloat(fmt.Sprintf("%.1f", res.Major), 64)
 			case "minor":
-				res.Minor = result.Count
+				res.Minor = DecimalPer(result.Count, res.Total)
+				res.Minor, _ = strconv.ParseFloat(fmt.Sprintf("%.1f", res.Minor), 64)
 			default:
 				errors.New("Bug严重程度错误,请检查数据")
 			}
@@ -47,6 +53,11 @@ func (s *SummaryBugsService) Bugs(projectId int64) (res v1.ResSummaryBugs, err e
 	}
 
 	return
+}
+
+func DecimalPer(number int64, total int64) float64 {
+	value := float64(number) / float64(total)
+	return value * 100.0
 }
 
 // FindByProjectId
@@ -62,10 +73,8 @@ func (s *SummaryBugsService) FindGroupByBugSeverity() (summaryBugsSeverity []mod
 }
 
 // Create
-func (s *SummaryBugsService) Create(req v1.ReqSummaryBugs) (err error) {
-	var summaryBugs model.SummaryBugs
-	copier.CopyWithOption(&summaryBugs, req, copier.Option{DeepCopy: true})
-	return s.SummaryBugsRepo.Create(&summaryBugs)
+func (s *SummaryBugsService) Create(req model.SummaryBugs) (err error) {
+	return s.SummaryBugsRepo.Create(req)
 }
 
 // Count

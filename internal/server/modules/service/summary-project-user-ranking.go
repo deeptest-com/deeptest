@@ -13,6 +13,11 @@ func NewSummaryProjectUserRankingService() *SummaryProjectUserRankingService {
 	return &SummaryProjectUserRankingService{}
 }
 
+func (s *SummaryProjectUserRankingService) ProjectUserRanking(projectId int64) (summaryProjectUserRanking model.SummaryProjectUserRanking, err error) {
+	return
+
+}
+
 // FindByProjectId
 func (s *SummaryProjectUserRankingService) FindByProjectId(projectId uint) (summaryProjectUserRanking []model.SummaryProjectUserRanking, err error) {
 	return s.SummaryProjectUserRankingRepo.FindByProjectId(projectId)

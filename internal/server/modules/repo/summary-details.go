@@ -53,13 +53,13 @@ func (r *SummaryDetailsRepo) FindByProjectIds(projectIds []int64) (summaryDetail
 	return
 }
 
-func (r *SummaryDetailsRepo) SummaryCard() (summaryCardTotal []model.SummaryCardTotal, err error) {
-	err = r.DB.Model(&model.SummaryDetails{}).Raw("select SUM(scenario_total) as scenario_total,sum(interface_total) as interface_total,sum(exec_total) as exec_total,AVG(pass_rate) as pass_rate,AVG(coverage) as coverage from (deeptest.biz_summary_details) where id in (SELECT max(id) FROM deeptest.biz_summary_details where NOT deleted AND not disabled group by project_id);").Find(&summaryCardTotal).Error
+func (r *SummaryDetailsRepo) SummaryCard() (summaryCardTotal model.SummaryCardTotal, err error) {
+	err = r.DB.Model(&model.SummaryDetails{}).Raw("select SUM(scenario_total) as scenario_total,sum(interface_total) as interface_total,sum(exec_total) as exec_total,cast(AVG(pass_rate) as decimal(64,1)) as pass_rate,cast(AVG(coverage) as decimal(64,1)) as coverage from (deeptest.biz_summary_details) where id in (SELECT max(id) FROM deeptest.biz_summary_details where NOT deleted AND not disabled group by project_id);").Find(&summaryCardTotal).Error
 	return
 }
 
-func (r *SummaryDetailsRepo) SummaryCardByDate(startTime string, endTime string) (summaryDetails []model.SummaryDetails, err error) {
-	err = r.DB.Model(&model.SummaryDetails{}).Raw("select SUM(scenario_total) as scenario_total,sum(interface_total) as interface_total,sum(exec_total) as exec_total,AVG(pass_rate) as pass_rate,AVG(coverage) as coverage from (deeptest.biz_summary_details) where id in (SELECT max(id) FROM deeptest.biz_summary_details where created_at > ? and created_at < ? AND NOT deleted AND not disabled group by project_id);", startTime, endTime).Find(&summaryDetails).Error
+func (r *SummaryDetailsRepo) SummaryCardByDate(startTime string, endTime string) (summaryCardTotal model.SummaryCardTotal, err error) {
+	err = r.DB.Model(&model.SummaryDetails{}).Raw("select SUM(scenario_total) as scenario_total,sum(interface_total) as interface_total,sum(exec_total) as exec_total,cast(AVG(pass_rate) as decimal(64,1)) as pass_rate,cast(AVG(coverage) as decimal(64,1)) as coverage from (deeptest.biz_summary_details) where id in (SELECT max(id) FROM deeptest.biz_summary_details where created_at > ? and created_at < ? AND NOT deleted AND not disabled group by project_id);", startTime, endTime).Find(&summaryCardTotal).Error
 	return
 }
 

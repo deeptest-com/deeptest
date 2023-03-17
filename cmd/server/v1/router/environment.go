@@ -18,6 +18,8 @@ func (m *EnvironmentModule) Party() module.WebModule {
 		index.Get("/list", m.EnvironmentCtrl.ListAll).Name = "环境列表"
 		index.Post("/param", m.EnvironmentCtrl.SaveParams).Name = "保存全局参数"
 		index.Get("/param", m.EnvironmentCtrl.ListParams).Name = "全局参数列表"
+		index.Delete("/delete", m.EnvironmentCtrl.DeleteEnvironment).Name = "删除环境"
+		index.Get("/copy", m.EnvironmentCtrl.Clone).Name = "复制环境"
 
 		index.Get("/", m.EnvironmentCtrl.List).Name = "环境列表"
 		index.Get("/{id:uint}", m.EnvironmentCtrl.Get).Name = "环境详情"

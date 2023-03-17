@@ -271,6 +271,26 @@ func (c *EnvironmentCtrl) Save(ctx iris.Context) {
 	}
 }
 
+func (c *EnvironmentCtrl) Clone(ctx iris.Context) {
+	id := ctx.URLParamIntDefault("id", 0)
+	if id != 0 {
+		if err := c.EnvironmentService.Clone(uint(id)); err != nil {
+			ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		}
+	}
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+}
+
+func (c *EnvironmentCtrl) DeleteEnvironment(ctx iris.Context) {
+	id := ctx.URLParamIntDefault("id", 0)
+	if id != 0 {
+		if err := c.EnvironmentService.DeleteEnvironment(uint(id)); err != nil {
+			ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		}
+	}
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+}
+
 func (c *EnvironmentCtrl) ListAll(ctx iris.Context) {
 	projectId := ctx.URLParamIntDefault("projectId", 0)
 	if res, err := c.EnvironmentService.ListAll(uint(projectId)); err == nil {

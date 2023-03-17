@@ -141,7 +141,27 @@ func (s *EnvironmentService) DisableAllShareVar(interfaceId uint) (err error) {
 func (s *EnvironmentService) Save(req v1.EnvironmentReq) (err error) {
 	var environment model.Environment
 	copier.CopyWithOption(&environment, req, copier.Option{DeepCopy: true})
+	err = s.EnvironmentRepo.SaveEnvironment(&environment)
+	return
+}
+
+func (s *EnvironmentService) Clone(id uint) (err error) {
+	var environment *model.Environment
+	environment, err = s.EnvironmentRepo.GetEnvironmentById(id)
+	if err != nil {
+		return
+	}
+	err = s.EnvironmentRepo.GetEnvironment(environment)
+	if err != nil {
+		return
+	}
+	environment.ID = 0
 	err = s.EnvironmentRepo.SaveEnvironment(environment)
+	return
+}
+
+func (s *EnvironmentService) DeleteEnvironment(id uint) (err error) {
+	err = s.EnvironmentRepo.DeleteEnvironment(id)
 	return
 }
 

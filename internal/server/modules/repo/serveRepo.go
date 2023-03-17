@@ -184,11 +184,15 @@ func (r *ServeRepo) BindEndpoint(serveId int64, serveVersion string, serveEndpoi
 }
 
 func (r *ServeRepo) SaveServer(environmentId uint, environmentName string, servers []model.ServeServer) (err error) {
+	if len(servers) == 0 {
+		return
+	}
 	err = r.DB.Delete(&model.ServeServer{}, "environment_id=?", environmentId).Error
 	if err != nil {
 		return err
 	}
 	for key, _ := range servers {
+		servers[key].ID = 0
 		servers[key].EnvironmentId = environmentId
 		servers[key].Description = environmentName
 	}

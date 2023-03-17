@@ -17,6 +17,7 @@ type ProjectRepo struct {
 	RoleRepo        *RoleRepo        `inject:""`
 	ProjectRoleRepo *ProjectRoleRepo `inject:""`
 	EnvironmentRepo *EnvironmentRepo `inject:""`
+	UserRepo        *UserRepo        `inject:""`
 }
 
 func NewProjectRepo() *ProjectRepo {
@@ -53,6 +54,11 @@ func (r *ProjectRepo) Paginate(req v1.ProjectReqPaginate, userId uint) (data _do
 	if err != nil {
 		logUtils.Errorf("query project error", zap.String("error:", err.Error()))
 		return
+	}
+
+	for key, project := range projects {
+		user, _ := r.UserRepo.FindById(project.AdminId)
+		projects[key].AdminName = user.Name
 	}
 
 	data.Populate(projects, count, req.Page, req.PageSize)

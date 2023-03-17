@@ -145,8 +145,7 @@ func (s *EnvironmentService) Save(req v1.EnvironmentReq) (err error) {
 	return
 }
 
-func (s *EnvironmentService) Clone(id uint) (err error) {
-	var environment *model.Environment
+func (s *EnvironmentService) Clone(id uint) (environment *model.Environment, err error) {
 	environment, err = s.EnvironmentRepo.GetEnvironmentById(id)
 	if err != nil {
 		return
@@ -156,6 +155,7 @@ func (s *EnvironmentService) Clone(id uint) (err error) {
 		return
 	}
 	environment.ID = 0
+	environment.Name = environment.Name + "_copy"
 	err = s.EnvironmentRepo.SaveEnvironment(environment)
 	return
 }

@@ -35,4 +35,5 @@ type ProjectBase struct {
 	ShortName      string `json:"shortName"`
 	IncludeExample bool   `json:"includeExample"`
 	AdminId        uint   `json:"adminId"`
+	AdminName      string `gorm:"-" json:"adminName"`
 }

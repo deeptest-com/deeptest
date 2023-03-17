@@ -32,13 +32,14 @@
             {{ text }}
           </template>
           <template #status="{ record }">
-            <a-tag v-if="record.disabled == 0" color="green">启用</a-tag>
-            <a-tag v-else color="cyan">禁用</a-tag>
+            <a-tag v-if="record.disabled" color="green">禁用</a-tag>
+            <a-tag v-else color="cyan">启用</a-tag>
           </template>
           <template #action="{ record }">
             <a-button type="link" @click="() => members(record.id)">成员</a-button>
             <a-button type="link" @click="() => edit(record.id)"
-                      :disabled="currentUser.projectRoles[record.id] !== 'admin'">编辑</a-button>
+                      :disabled="currentUser.projectRoles[record.id] !== 'admin'">编辑
+            </a-button>
             <a-button type="link" @click="() => remove(record.id)"
                       :title="currProject.id === record.id ? '不能删除当前项目' : ''"
                       :disabled="currProject.id === record.id || currentUser.projectRoles[record.id] !== 'admin'">
@@ -50,171 +51,184 @@
       </div>
     </a-card>
   </div>
-  <a-modal v-model:visible="visible" @ok="handleOk" :footer="null">
-  <editModal :currentProjectId="currentProjectId" :getList="getList" :closeModal="closeModal"/>
-</a-modal>
+
+  <a-modal
+      v-model:visible="visible"
+      @ok="handleOk"
+      width="700px"
+      :footer="null">
+
+    <EditPage
+        :currentProjectId="currentProjectId"
+        :getList="getList"
+        :closeModal="closeModal" />
+
+  </a-modal>
+
 </template>
 
 
-
 <script setup lang="ts">
-import {computed, ComputedRef, defineComponent, onMounted, reactive, Ref, ref} from "vue";
+import {computed, onMounted, reactive, ref} from "vue";
 import {SelectTypes} from 'ant-design-vue/es/select';
-import {PaginationConfig, QueryParams, Project} from '../data.d';
+import {PaginationConfig, Project, QueryParams} from '../data.d';
 import {useStore} from "vuex";
 
 import {StateType} from "../store";
 import debounce from "lodash.debounce";
 import {useRouter} from "vue-router";
-import {message, Modal, notification} from "ant-design-vue";
+import {Modal, notification} from "ant-design-vue";
 import {NotificationKeyCommon} from "@/utils/const";
 import {StateType as UserStateType} from "@/store/user";
 import {StateType as ProjectStateType} from "@/store/project";
-import editModal from "../edit/edit.vue"
+import EditPage from "../edit/edit.vue";
 
-    const statusArr = ref<SelectTypes['options']>([
-      {
-        label: '所有状态',
-        value: '',
-      },
-      {
-        label: '启用',
-        value: '1',
-      },
-      {
-        label: '禁用',
-        value: '0',
-      },
-    ]);
+const statusArr = ref<SelectTypes['options']>([
+  {
+    label: '所有状态',
+    value: '',
+  },
+  {
+    label: '启用',
+    value: '1',
+  },
+  {
+    label: '禁用',
+    value: '0',
+  },
+]);
 
-    const router = useRouter();
-    const store = useStore<{ ProjectGlobal: ProjectStateType, Project: StateType, User: UserStateType }>();
-    const currentUser = computed<any>(()=> store.state.User.currentUser);
-   const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
+const router = useRouter();
+const store = useStore<{ ProjectGlobal: ProjectStateType, Project: StateType, User: UserStateType }>();
+const projects = computed<any>(() => store.state.ProjectGlobal.projects);
+const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
+const currentUser = computed<any>(() => store.state.User.currentUser);
 
-    const list = computed<Project[]>(() => store.state.Project.queryResult.list);
-    let pagination = computed<PaginationConfig>(() => store.state.Project.queryResult.pagination);
-    let queryParams = reactive<QueryParams>({
-      keywords: '', enabled: '1',
-      page: pagination.value.current, pageSize: pagination.value.pageSize
-    });
+const list = computed<Project[]>(() => store.state.Project.queryResult.list);
+let pagination = computed<PaginationConfig>(() => store.state.Project.queryResult.pagination);
+let queryParams = reactive<QueryParams>({
+  keywords: '', enabled: '1',
+  page: pagination.value.current, pageSize: pagination.value.pageSize
+});
 
-    const columns = [
-      {
-        title: '序号',
-        dataIndex: 'index',
-        width: 80,
-        customRender: ({
-                         text,
-                         index
-                       }: { text: any; index: number }) => (pagination.value.current - 1) * pagination.value.pageSize + index + 1,
-      },
-      {
-        title: '名称',
-        dataIndex: 'name',
-        slots: {customRender: 'name'},
-      },
-      {
-        title: '英文缩写',
-        dataIndex: 'shortName',
-      },
-      {
-        title: '管理员',
-        dataIndex: 'adminName',
-      },
-      {
-        title: '描述',
-        dataIndex: 'desc',
-      },
-      {
-        title: '状态',
-        dataIndex: 'status',
-        slots: {customRender: 'status'},
-      },
-      {
-        title: '操作',
-        key: 'action',
-        width: 260,
-        slots: {customRender: 'action'},
-      },
-    ];
+const columns = [
+  {
+    title: '序号',
+    dataIndex: 'index',
+    width: 80,
+    customRender: ({
+                     text,
+                     index
+                   }: { text: any; index: number }) => (pagination.value.current - 1) * pagination.value.pageSize + index + 1,
+  },
+  {
+    title: '名称',
+    dataIndex: 'name',
+    slots: {customRender: 'name'},
+  },
+  {
+    title: '英文缩写',
+    dataIndex: 'shortName',
+  },
+  {
+    title: '管理员',
+    dataIndex: 'adminName',
+  },
+  {
+    title: '描述',
+    dataIndex: 'desc',
+  },
+  {
+    title: '状态',
+    dataIndex: 'status',
+    slots: {customRender: 'status'},
+  },
+  {
+    title: '操作',
+    key: 'action',
+    width: 260,
+    slots: {customRender: 'action'},
+  },
+];
 
-    onMounted(() => {
-      console.log('onMounted')
-      getList(1);
-    })
+onMounted(() => {
+  console.log('onMounted')
+  getList(1);
+})
 
-    const loading = ref<boolean>(true);
-    const getList = async (current: number): Promise<void> => {
-      loading.value = true;
+const loading = ref<boolean>(true);
+const getList = async (current: number): Promise<void> => {
+  loading.value = true;
 
-      await store.dispatch('Project/queryProject', {
-        keywords: queryParams.keywords,
-        enabled: queryParams.enabled,
-        pageSize: pagination.value.pageSize,
-        page: current,
-      });
-      loading.value = false;
-      await store.dispatch('Project/getUserList');
-    }
+  await store.dispatch('Project/queryProject', {
+    keywords: queryParams.keywords,
+    enabled: queryParams.enabled,
+    pageSize: pagination.value.pageSize,
+    page: current,
+  });
+  loading.value = false;
+  await store.dispatch('Project/getUserList');
 
-    const members = (id: number) => {
-      console.log('members')
-      router.push(`/project/members/${id}`)
-    }
+  store.dispatch("ProjectGlobal/fetchProject");
+}
 
-    const visible = ref(false)
-    const currentProjectId = ref(0)
-    const edit = (id: number) => {
-      console.log('edit')
-      //router.push(`/project/edit/${id}`)
-      currentProjectId.value = id
-      console.log("currentProjectId",currentProjectId.value)
-      visible.value = true
-    }
-    const handleOk = (e: MouseEvent) => {
-      console.log(e);
-      visible.value = false;
-    };
+const members = (id: number) => {
+  console.log('members')
+  router.push(`/project/members/${id}`)
+}
 
-    const closeModal = () => {
-      visible.value = false;
-    }
+const visible = ref(false)
+const currentProjectId = ref(0)
+const edit = (id: number) => {
+  console.log('edit')
+  //router.push(`/project/edit/${id}`)
+  currentProjectId.value = id
+  console.log("currentProjectId", currentProjectId.value)
+  visible.value = true
+}
+const handleOk = (e: MouseEvent) => {
+  console.log(e);
+  visible.value = false;
+};
 
-    const remove = (id: number) => {
-      console.log('remove')
+const closeModal = () => {
+  visible.value = false;
+}
 
-      Modal.confirm({
-        title: '删除项目',
-        content: '确定删除指定的项目？',
-        okText: '确认',
-        cancelText: '取消',
-        onOk: async () => {
-          store.dispatch('Project/removeProject', id).then((res) => {
-            console.log('res', res)
-            if (res === true) {
-              notification.success({
-                key: NotificationKeyCommon,
-                message: `删除成功`,
-              });
-            } else {
-              notification.error({
-                key: NotificationKeyCommon,
-                message: `删除失败`,
-              });
-            }
-          })
+const remove = (id: number) => {
+  console.log('remove')
+
+  Modal.confirm({
+    title: '删除项目',
+    content: '确定删除指定的项目？',
+    okText: '确认',
+    cancelText: '取消',
+    onOk: async () => {
+      store.dispatch('Project/removeProject', id).then((res) => {
+        console.log('res', res)
+        if (res === true) {
+          notification.success({
+            key: NotificationKeyCommon,
+            message: `删除成功`,
+          });
+        } else {
+          notification.error({
+            key: NotificationKeyCommon,
+            message: `删除失败`,
+          });
         }
-      });
+      })
     }
+  });
+}
 
-    const onSearch = debounce(() => {
-      getList(1)
-    }, 500);
+const onSearch = debounce(() => {
+  getList(1)
+}, 500);
 
-    onMounted(() => {
-      getList(1);
-    })
+onMounted(() => {
+  getList(1);
+})
 
 </script>
 

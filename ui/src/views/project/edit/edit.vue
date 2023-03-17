@@ -5,7 +5,7 @@
             <div>编辑项目</div>
           </template>
           <template #extra>
-           <!-- <a-button type="link" @click="() => back()">返回</a-button>  --> 
+           <!-- <a-button type="link" @click="() => back()">返回</a-button>  -->
           </template>
 
           <div>
@@ -14,26 +14,26 @@
                 <a-input v-model:value="modelRef.name"
                          @blur="validate('name', { trigger: 'blur' }).catch(() => {})" />
               </a-form-item>
-              <a-form-item label="项目logo" v-bind="validateInfos.logo">
+<!--              <a-form-item label="项目LOGO" v-bind="validateInfos.logo">
                 <a-input v-model:value="modelRef.logo"
                          @blur="validate('logo', { trigger: 'blur' }).catch(() => {})" />
-              </a-form-item>
+              </a-form-item>-->
               <a-form-item label="英文缩写" v-bind="validateInfos.shortName">
                 <a-input v-model:value="modelRef.shortName"
                          @blur="validate('shortName', { trigger: 'blur' }).catch(() => {})" />
               </a-form-item>
               <a-form-item label="管理员" v-bind="validateInfos.adminId">
-                <a-select v-model:value="modelRef.adminId" show-search style="width: 250px" 
+                <a-select v-model:value="modelRef.adminId" show-search
                  @blur="validate('adminId', { trigger: 'blur' }).catch(() => {})">
                  <a-select-option  v-for="(option,key) in options" :key=key :value="option.value">{{option.label}}</a-select-option>
-                </a-select>     
+                </a-select>
               </a-form-item>
               <a-form-item label="项目简介" v-bind="validateInfos.desc">
                 <a-input v-model:value="modelRef.desc"
                          @blur="validate('desc', { trigger: 'blur' }).catch(() => {})" />
               </a-form-item>
 
-              <a-form-item :wrapper-col="{ span: 14, offset: 4 }">
+              <a-form-item :wrapper-col="{ offset: labelCol.span, span: wrapperCol.span}">
                 <a-button type="primary" @click.prevent="submitForm">保存</a-button>
                 <a-button style="margin-left: 10px" @click="resetFields">重置</a-button>
               </a-form-item>
@@ -56,7 +56,7 @@ import {Project} from "@/views/project/data";
 import {SelectTypes} from 'ant-design-vue/es/select';
 
 export default defineComponent({
-    name: 'ScriptEditPage',
+    name: 'ProjectEditPage',
     props:{ currentProjectId:  Number,getList:Function,closeModal:Function},
     setup(props:any) {
       const router = useRouter();
@@ -95,7 +95,7 @@ export default defineComponent({
      // get(id.value)
 
      const options = computed<SelectTypes["options"]>(()=>store.state.Project.userList);
-    
+
       const submitForm = async() => {
         validate().then(() => {
           console.log(modelRef);
@@ -131,7 +131,7 @@ export default defineComponent({
       }
 
       return {
-        labelCol: { span: 4 },
+        labelCol: { span: 6 },
         wrapperCol: { span: 14 },
         formRef,
         modelRef,

@@ -41,35 +41,15 @@ func (s *PlanService) ExecPlan(req *agentExec.PlanExecReq, wsMsg *websocket.Mess
 	return
 }
 
-func (s *PlanService) CancelAndSendMsg(scenarioId int, wsMsg websocket.Message) (err error) {
+func (s *PlanService) CancelAndSendMsg(planId int, wsMsg websocket.Message) (err error) {
 	execUtils.SendCancelMsg(wsMsg)
 	return
 }
 
-func (s *PlanService) RestoreEntityFromRawAndSetParent(root *agentExec.Processor) (err error) {
-	processors := make([]*agentExec.Processor, 0)
-
-	agentExec.GetProcessorList(root, &processors)
-
-	processorMap := map[uint]*agentExec.Processor{}
-	for _, processor := range processors {
-		processorMap[processor.ID] = processor
-
-		processor.RestoreEntity()
-	}
-
-	for _, obj := range processorMap {
-		obj.Parent = processorMap[obj.ParentId]
-	}
-
-	return
-}
-
-func (s *PlanService) sendSubmitResult(rootId uint, wsMsg *websocket.Message) (err error) {
-	result := agentDomain.ScenarioExecResult{
-		ID:       -3,
-		ParentId: int(rootId),
-		Name:     "提交执行结果成功",
+func (s *PlanService) sendSubmitResult(planId uint, wsMsg *websocket.Message) (err error) {
+	result := agentDomain.PlanExecResult{
+		ID:   planId,
+		Name: "提交执行结果成功",
 		//Summary:  fmt.Sprintf("错误：%s", err.Error()),
 	}
 	execUtils.SendExecMsg(result, wsMsg)

@@ -45,7 +45,7 @@ func SendAlreadyRunningMsg(scenarioId int, wsMsg websocket.Message) (err error) 
 	return
 }
 
-func SendExecMsg(log agentDomain.ScenarioExecResult, wsMsg *websocket.Message) (err error) {
+func SendExecMsg(log interface{}, wsMsg *websocket.Message) (err error) {
 	SetRunning(true)
 	msg := _i118Utils.Sprintf("exec")
 	websocketHelper.SendExecMsg(msg, log, wsMsg)

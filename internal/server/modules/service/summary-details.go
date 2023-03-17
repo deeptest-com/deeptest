@@ -5,6 +5,7 @@ import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
+	"github.com/jinzhu/copier"
 	"strconv"
 	"time"
 )
@@ -95,23 +96,28 @@ func (s *SummaryDetailsService) Card(projectId int64) (res v1.ResSummaryCard, er
 }
 
 func (s *SummaryDetailsService) Details(userId int64) (res v1.ResSummaryDetail, err error) {
-	var req model.SummaryDetails
-	var user model.SummaryUserList
-	user.UserId = 1
-	user.UserName = "yanggggggg"
-	req.Coverage = 10.1
-	req.UserList = append(req.UserList, user)
+	var resDetail v1.ResSummaryDetails
+	var resDetails []v1.ResSummaryDetails
+	var allDetails []model.SummaryDetails
+	if userId == 0 {
+		res.ProjectTotal, err = s.Count()
+		allDetails, err = s.Find()
 
-	if userId == 10 {
-		//s.CreateByDate()
+	} else {
+		var projectIds []int64
+		res.ProjectTotal, err = s.CountByUserId(userId)
+		projectIds, err = s.FindProjectIdsByUserId(userId)
+		allDetails, err = s.FindByProjectIds(projectIds)
 	}
 
-	//if userId == 0 {
-	//	res.ProjectTotal, err = s.Count()
-	//
-	//} else {
-	//	res.ProjectTotal, err = s.CountByUserId(userId)
-	//}
+	for _, detail := range allDetails {
+		copier.CopyWithOption(&resDetail, detail, copier.Option{DeepCopy: true})
+		resDetail.Id = detail.ID
+		resDetail.CreatedAt = time.Unix(detail.CreatedAt.Unix(), 0).Format("2006-01-02 15:04:05")
+		resDetail.Disabled = detail.Disabled
+		resDetails = append(resDetails, resDetail)
+	}
+	res.ProjectList = resDetails
 	return
 }
 
@@ -122,6 +128,26 @@ func DecimalHB(newValue float64, oldValue float64) float64 {
 }
 
 func (s *SummaryDetailsService) CreateByDate(req model.SummaryDetails) (err error) {
+
+	//
+	//var user v1.ResUserList
+	//var userA v1.ResUserList
+	//user.UserId = 1
+	//user.UserName = "yanggggggg"
+	//userA.UserId = 2
+	//userA.UserName = "xiggggg"
+	//resDetails.Coverage = 10.1
+	//resDetails.InterfaceTotal = 5
+	//resDetails.ScenarioTotal = 10
+	//resDetails.PassRate = 11.5
+	//resDetails.ExecTotal = 15
+	//resDetails.AdminUser = "auto"
+	//resDetails.ProjectCreateTime = "2023-03-17 09:15:15"
+	//resDetails.ProjectName = "projectAuto"
+	//resDetails.ProjectChineseName = "自动化创建"
+	//resDetails.ProjectDes = "miaoshu"
+	//resDetails.ProjectId = 10
+
 	return s.SummaryDetailsRepo.CreateByDate(req)
 }
 

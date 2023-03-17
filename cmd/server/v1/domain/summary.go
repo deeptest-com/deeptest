@@ -58,24 +58,24 @@ type ResSummaryDetail struct {
 }
 
 type ResSummaryDetails struct {
-	Id                 int64         `gorm:"default:0" json:"id"`
+	Id                 uint          `gorm:"default:0" json:"id"`
 	ProjectId          int64         `gorm:"default:0" json:"project_id"`
-	ProjectName        int64         `gorm:"default:0" json:"project_name"`
-	ProjectDes         int64         `gorm:"default:0" json:"project_des"`
-	ProjectChineseName int64         `gorm:"default:0" json:"project_chinese_name"`
-	Enable             int64         `gorm:"default:0" json:"enable"`
-	AdminUser          int64         `gorm:"default:0" json:"admin_user"`
-	InterfaceTotal     int64         `gorm:"default:0" json:"interface_total"`
+	ProjectName        string        `gorm:"default:" json:"project_name"`
+	ProjectDes         string        `gorm:"default:0" json:"project_des"`
+	ProjectChineseName string        `gorm:"default:0" json:"project_chinese_name"`
 	ScenarioTotal      int64         `gorm:"default:0" json:"scenario_total"`
-	CreateTime         int64         `gorm:"default:0" json:"create_time"`
-	PassRate           int64         `gorm:"default:0" json:"pass_rate"`
+	InterfaceTotal     int64         `gorm:"default:0" json:"interface_total"`
 	ExecTotal          int64         `gorm:"default:0" json:"exec_total"`
-	Coverage           int64         `gorm:"default:0" json:"coverage"`
+	PassRate           float64       `gorm:"default:0" json:"pass_rate"`
+	Coverage           float64       `gorm:"default:0" json:"coverage"`
+	Disabled           bool          `gorm:"default:false" json:"disabled"`
+	AdminUser          string        `gorm:"default:0" json:"admin_user"`
+	CreatedAt          string        `gorm:"default:0" json:"createdAt"`
 	BugTotal           int64         `gorm:"default:0" json:"bug_total"`
-	UserList           []ReqUserList `json:"user_list"`
+	UserList           []ResUserList `json:"user_list"`
 }
 
-type ReqUserList struct {
+type ResUserList struct {
 	UserId   int64  `json:"user_id"`
-	UserName string `gorm:"type:text" json:"user_name"`
+	UserName string `json:"user_name"`
 }

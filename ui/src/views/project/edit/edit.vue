@@ -16,15 +16,17 @@
               </a-form-item>
               <a-form-item label="项目logo" v-bind="validateInfos.logo">
                 <a-input v-model:value="modelRef.logo"
-                         @blur="validate('name', { trigger: 'blur' }).catch(() => {})" />
+                         @blur="validate('logo', { trigger: 'blur' }).catch(() => {})" />
               </a-form-item>
               <a-form-item label="英文缩写" v-bind="validateInfos.shortName">
                 <a-input v-model:value="modelRef.shortName"
-                         @blur="validate('name', { trigger: 'blur' }).catch(() => {})" />
+                         @blur="validate('shortName', { trigger: 'blur' }).catch(() => {})" />
               </a-form-item>
               <a-form-item label="管理员" v-bind="validateInfos.adminId">
-                <a-select v-model:value="modelRef.adminId" show-search placeholder="请选择" style="width: 250px" :options="options"
-  >            </a-select>         
+                <a-select v-model:value="modelRef.adminId" show-search style="width: 250px" 
+                 @blur="validate('adminId', { trigger: 'blur' }).catch(() => {})">
+                 <a-select-option  v-for="(option,key) in options" :key=key :value="option.value">{{option.label}}</a-select-option>
+                </a-select>     
               </a-form-item>
               <a-form-item label="项目简介" v-bind="validateInfos.desc">
                 <a-input v-model:value="modelRef.desc"
@@ -74,7 +76,7 @@ export default defineComponent({
           { required: true, message: '大写英文字母开头,仅限字母和数字,<=10位,不可修改', trigger: 'blur' },
         ],
         adminId: [
-       //   { required: true, message: '请选择用户', trigger: 'blur' },
+          { required: true, message: '请选择管理员'},
         ],
       });
 

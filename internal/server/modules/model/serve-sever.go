@@ -6,7 +6,7 @@ type ServeServer struct {
 	ServeId       uint   `json:"serveId"`
 	Url           string `json:"url"`
 	Description   string `json:"description"`
-	ServeName     string `json:"serveName"`
+	ServeName     string `gorm:"-" json:"serveName"`
 }
 
 func (ServeServer) TableName() string {

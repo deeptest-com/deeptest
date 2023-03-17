@@ -115,6 +115,14 @@ import editModal from "../edit/edit.vue"
         slots: {customRender: 'name'},
       },
       {
+        title: '英文缩写',
+        dataIndex: 'shortName',
+      },
+      {
+        title: '管理员',
+        dataIndex: 'adminName',
+      },
+      {
         title: '描述',
         dataIndex: 'desc',
       },

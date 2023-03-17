@@ -76,7 +76,7 @@ export default defineComponent({
           { required: true, message: '大写英文字母开头,仅限字母和数字,<=10位,不可修改', trigger: 'blur' },
         ],
         adminId: [
-          { required: true, message: '请选择管理员',trigger: 'blur'},
+          { required: true, message: '请选择管理员'},
         ],
       });
 

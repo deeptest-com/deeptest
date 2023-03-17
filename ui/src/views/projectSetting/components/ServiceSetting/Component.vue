@@ -1,15 +1,33 @@
 <template>
   <div class="content">
     <div class="header">
-      <a-button class="editable-add-btn"
-                @click="handleAdd"
-                type="primary"
-                style="margin-bottom: 8px">新建组件
-      </a-button>
+      <a-form  layout="inline" :model="formState" >
+        <a-form-item >
+          <a-input    style="width: 150px" v-model:value="formState.name" placeholder="请输入组件名称"/>
+        </a-form-item>
+        <a-form-item>
+          <a-select
+              v-model:value="formState.tags"
+              mode="tags"
+              style="width: 150px"
+              placeholder="标签"
+              :options="[]"
+              @change="handleTagChange">
+          </a-select>
+        </a-form-item>
+        <a-form-item>
+          <a-button class="editable-add-btn"
+                    @click="handleOk"
+                    type="primary"
+                    style="margin-bottom: 8px">新建组件
+          </a-button>
+        </a-form-item>
+      </a-form>
+
       <a-input-search
           v-model:value="keyword"
           placeholder="输入组件名称搜索"
-          style="width: 300px"
+          style="width: 200px"
           @search="onSearch"/>
     </div>
     <a-table bordered :data-source="dataSource" :columns="columns">
@@ -28,27 +46,13 @@
       </template>
     </a-table>
     <!-- ::::新建组件 -->
-    <a-modal v-model:visible="visible"
-             @cancel="handleCancel"
-             title="新建组件"
-             :bodyStyle="{position:'relative'}"
-             @ok="handleOk">
-      <a-form :model="formState" :label-col="{ span: 6 }" :wrapper-col=" { span: 15 }">
-        <a-form-item label="组件名称">
-          <a-input v-model:value="formState.name" placeholder="请输入内容"/>
-        </a-form-item>
-        <a-form-item label="描述">
-          <a-select
-              v-model:value="formState.tags"
-              mode="tags"
-              style="width: 100%"
-              placeholder="Tags Mode"
-              :options="[]"
-              @change="handleTagChange">
-          </a-select>
-        </a-form-item>
-      </a-form>
-    </a-modal>
+<!--    <a-modal v-model:visible="visible"-->
+<!--             @cancel="handleCancel"-->
+<!--             title="新建组件"-->
+<!--             :bodyStyle="{position:'relative'}"-->
+<!--             @ok="handleOk">-->
+
+<!--    </a-modal>-->
 
     <!-- ::::编辑scheme组件 -->
     <a-modal v-model:visible="schemeVisible"

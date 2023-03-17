@@ -115,7 +115,7 @@ export async function expireInterface(id: Number): Promise<any> {
 /**
  * 保存接口
  * */
-export async function saveInterface(data: SaveInterfaceReqParams): Promise<any> {
+export async function saveInterface(data: any): Promise<any> {
     return request({
         url: `/endpoint/save`,
         method: 'post',

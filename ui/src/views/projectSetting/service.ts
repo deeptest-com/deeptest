@@ -275,6 +275,27 @@ export async function getEnvList(data: any): Promise<any> {
 }
 
 /**
+ *   删除环境
+ * */
+export async function deleteEnv(data: any): Promise<any> {
+    return request({
+        url: `/environments/delete?id=${data.id}`,
+        method: 'delete',
+    });
+}
+
+/**
+ *   复制环境信息
+ * */
+export async function copyEnv(data: any): Promise<any> {
+    return request({
+        url: `/environments/copy?id=${data.id}`,
+        method: 'get',
+    });
+}
+
+
+/**
  *   保存全局变量
  * */
 export async function saveGlobalVars(data: any): Promise<any> {

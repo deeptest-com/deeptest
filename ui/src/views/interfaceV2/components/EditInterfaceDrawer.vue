@@ -462,9 +462,6 @@
           />
         </div>
       </div>
-      <div v-else-if="key === 'response'">
-        res
-      </div>
       <div v-else-if="key === 'run'">run content</div>
       <div v-else-if="key === 'mock'">mock content</div>
       <template #extra>
@@ -481,7 +478,6 @@
           YAML
         </a-button>
       </template>
-
     </a-card>
     <!-- ::::接口提交按钮 -->
     <div class="drawer-btns">
@@ -811,17 +807,17 @@ const interfaceStatusDesc = computed(() => {
 const tabList = [
   {
     key: 'request',
-    tab: '请求定义',
+    tab: '定义',
     slots: {tab: 'customRenderRequest'},
   },
-  {
-    key: 'response',
-    tab: '响应定义',
-    slots: {tab: 'customRenderResponse'},
-  },
+  // {
+  //   key: 'response',
+  //   tab: '响应定义',
+  //   slots: {tab: 'customRenderResponse'},
+  // },
   {
     key: 'run',
-    tab: '运行调试',
+    tab: '调试',
     slots: {tab: 'customRenderRun'},
 
   },

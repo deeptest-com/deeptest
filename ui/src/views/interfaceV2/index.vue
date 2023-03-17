@@ -102,7 +102,7 @@
             <a-col :span="8">
               <a-form-item label="服务版本" style="margin-bottom: 0;">
                 <a-select placeholder="选择服务" style="margin-right: 8px;width: 140px;" :options="interfaceStatusOpts"/>
-                <a-select placeholder="选择服务版本" style="width: 140px;"  :options="interfaceStatusOpts"/>
+                <a-select placeholder="选择服务版本" style="width: 140px;"  :options="serviceOptions"/>
               </a-form-item>
             </a-col>
             <a-col :span="8" >
@@ -133,15 +133,32 @@
           </template>
           <template #colStatus="{record}">
             <div class="customTitleColRender">
-              <span>{{ interfaceStatus.get(record.status) }}</span>
+              <!-- ::::todo 不同状态对应不同颜色 -->
+              <a-tag color="red">{{ interfaceStatus.get(record.status) }}</a-tag>
+            </div>
+          </template>
+          <template #colPath="{text}">
+            <div class="customTitleColRender">
+              <a-tag >{{ text }}</a-tag>
             </div>
           </template>
           <template #action="{record}">
-            <div class="action-btns">
-              <a-button type="link" @click="copy(record)">复制</a-button>
-              <a-button type="link" @click="del(record)">删除</a-button>
-              <a-button type="link" @click="disabled(record)">过时</a-button>
-            </div>
+            <a-dropdown @click="handleButtonClick">
+              <MoreOutlined/>
+              <template #overlay>
+                <a-menu @click="handleMenuClick">
+                  <a-menu-item key="1">
+                    <a-button style="width: 80px" type="link" size="small" @click="copy(record)">复制</a-button>
+                  </a-menu-item>
+                  <a-menu-item key="2">
+                    <a-button style="width: 80px" type="link" size="small"  @click="del(record)">删除</a-button>
+                  </a-menu-item>
+                  <a-menu-item key="3">
+                    <a-button style="width: 80px" type="link" size="small"  @click="disabled(record)">过时</a-button>
+                  </a-menu-item>
+                </a-menu>
+              </template>
+            </a-dropdown>
           </template>
         </a-table>
       </div>
@@ -181,7 +198,8 @@ import {
   CaretLeftOutlined,
   InfoCircleOutlined,
   CaretDownOutlined,
-  EllipsisOutlined
+  EllipsisOutlined,
+  MoreOutlined
 } from '@ant-design/icons-vue';
 import {requestMethodOpts, interfaceStatus, interfaceStatusOpts} from '@/config/constant';
 import {momentUtc} from '@/utils/datetime';
@@ -197,8 +215,11 @@ import {
   getCategories,
   deleteCategories,
   editCategories,
-  newCategories
+  newCategories,
 } from './service';
+import {
+  getServeList
+} from '../../views/projectSetting/service';
 import CreateApiModal from './components/CreateApiModal.vue';
 import CreateTagModal from './components/CreateTagModal.vue'
 import EditInterfaceDrawer from './components/EditInterfaceDrawer.vue'
@@ -244,10 +265,16 @@ const columns = [
   {
     title: '创建人',
     dataIndex: 'createUser',
+
   },
   {
     title: '接口路径',
     dataIndex: 'path',
+    slots: {customRender: 'colPath'},
+  },
+  {
+    title: '所属服务',
+    dataIndex: 'serveName',
   },
   {
     title: '最近更新',
@@ -265,7 +292,7 @@ const columns = [
  * :::: 左侧区域按接口分类搜索树形结构 逻辑  start
  ************************************************/
 const searchValue = ref('');
-const expandedKeys = ref<string[]>([]);
+const expandedKeys:any = ref<string[]>([]);
 const autoExpandParent = ref<boolean>(true);
 const treeData: any = ref(null)
 const data = ref([]);
@@ -277,79 +304,7 @@ async function loadCategories() {
     moduleId: 2
   });
   if (res.code === 0 && res.data) {
-    const data = [
-      {
-        "id": '1',
-        "name": "根节点",
-        "desc": "",
-        "parentId": '0',
-        "children": [
-          {
-            "id": '1-1',
-            "name": "目录1-1",
-            "desc": "",
-            "parentId": '1',
-            "children": [
-              {
-                "id": '1-1-1',
-                "name": "目录1-1-1",
-                "desc": "",
-                "parentId": '1-1',
-                "children": null,
-              },
-              {
-                "id": '1-1-2',
-                "name": "目录1-1-2",
-                "desc": "",
-                "parentId": '1-1',
-                "children": null,
-              }
-            ]
-          },
-          {
-            "id": '1-2',
-            "name": "目录1-2",
-            "desc": "",
-            "parentId": '1',
-            "children": [
-              {
-                "id": '1-2-1',
-                "name": "目录1-2-1",
-                "desc": "",
-                "parentId": '1-2',
-                "children": null,
-              },
-              {
-                "id": '1-2-2',
-                "name": "目录1-2-2",
-                "desc": "",
-                "parentId": '1-2',
-                "children": [
-                  {
-                    "id": '1-2-2-1',
-                    "name": "目录1-2-2-1",
-                    "desc": "",
-                    "parentId": '1-2-2',
-                    "children": null,
-                  },
-                  {
-                    "id": '1-2-2-2',
-                    "name": "目录1-2-2-2",
-                    "desc": "",
-                    "parentId": '1-2-2',
-                    "children": null,
-                  }
-                ]
-              }
-            ]
-          }
-        ],
-        "slots": {
-          "icon": "icon"
-        }
-      }
-    ]
-
+    const allKeys:any = [];
     // eslint-disable-next-line no-inner-declarations
     function fn(arr: any) {
       if (!Array.isArray(arr)) {
@@ -357,15 +312,18 @@ async function loadCategories() {
       }
       arr.forEach((item, index) => {
         item.key = item.id;
+        allKeys.push(item.id);
         item.title = item.name;
         if (Array.isArray(item.children)) {
           fn(item.children)
         }
       });
+
     }
 
-    fn(data);
-    treeData.value = data;
+    fn([res.data]);
+    treeData.value = [res.data];
+    expandedKeys.value = [...new Set(allKeys)];
   } else {
     treeData.value = null;
   }
@@ -423,8 +381,7 @@ const onExpand = (keys: string[]) => {
 
 function selectTreeItem(selectedKeys) {
   console.log(832, selectedKeys);
-  // ::::TODO 发送请求
-
+  // ::::TODO 发送请求 待确定参数
 }
 
 function findNodeById(id, tree) {
@@ -460,11 +417,11 @@ const tagModalMode = ref('new');
 // 删除分类
 async function deleteCategorie(node) {
   Modal.confirm({
-    title: () => 'Are you sure delete this task?',
-    content: () => 'Some descriptions',
-    okText: () => 'Yes',
+    title: () => '提示',
+    content: () => '确定，删除该分类吗？',
+    okText: () => '确定',
     okType: 'danger',
-    cancelText: () => 'No',
+    cancelText: () => '取消',
     onOk: async () => {
       const res = await deleteCategories({
         id: node.id
@@ -624,6 +581,25 @@ async function onDrop(info: DropEvent) {
  * ::::表格筛选区域 逻辑 start
  ************************************************/
 
+const serviceOptions = ref([]);
+async function getServersList() {
+  // 请求服务列表
+  let res = await getServeList({
+    projectId: currProject.value.id,
+    "page": 0,
+    "pageSize": 100,
+  });
+  if (res.code === 0) {
+    res.data.result.forEach((item) => {
+      item.label = item.name;
+      item.value = item.id;
+    })
+    serviceOptions.value = res.data.result;
+  }
+}
+
+
+
 /*************************************************
  * ::::表格筛选区域 逻辑 end
  ************************************************/
@@ -715,6 +691,7 @@ async function handleCreateApi(data) {
     "serveId": 1,
     "path": data.path,
     "title": data.title,
+    "projectId": currProject.value.id,
   });
   createApiModalvisible.value = false;
   if (res.code === 0) {
@@ -757,6 +734,7 @@ watch(() => {
 }, async (newVal) => {
   await reloadList();
   await loadCategories();
+  await getServersList();
 }, {
   immediate: true
 })

@@ -33,8 +33,8 @@
             item-key="name">
           <template #item="{ element, index }">
             <a-button
-                :class="{'env-item':true,'env-item-active':activeEnvDetail?.name === element.name}"
-                :type="activeEnvDetail?.name === element.name ? 'primary' : 'text'"
+                :class="{'env-item':true,'env-item-active':activeEnvDetail?.id === element.id}"
+                :type="activeEnvDetail?.id === element.id ? 'primary' : 'text'"
                 @click="showEnvDetail(element)"
                 class="env-item" :key="index">
               <MenuOutlined class="handle"/>
@@ -94,7 +94,7 @@
           <template #customDescription="{ text,index }">
             <a-input :value="text" @change="(e) => {
               handleGlobalVarsChange('description',index,e);
-            }" placeholder="说明"/>
+            }" placeholder="请输入描述信息"/>
           </template>
           <template #customAction="{index }">
             <a-button danger
@@ -214,7 +214,7 @@
               <template #customDescription="{ text,index }">
                 <a-input :value="text" @change="(e) => {
                   handleGlobalParamsChange('cookie','description',index,e);
-              }" placeholder="说明"/>
+              }" placeholder="请输入描述信息"/>
               </template>
               <template #customAction="{index }">
                 <a-button danger
@@ -269,7 +269,7 @@
               <template #customDescription="{ text,index }">
                 <a-input :value="text" @change="(e) => {
                   handleGlobalParamsChange('query','description',index,e);
-              }" placeholder="说明"/>
+              }" placeholder="请输入描述信息"/>
               </template>
               <template #customAction="{index }">
                 <a-button danger
@@ -324,7 +324,7 @@
               <template #customDescription="{ text,index }">
                 <a-input :value="text" @change="(e) => {
                   handleGlobalParamsChange('body','description',index,e);
-              }" placeholder="说明"/>
+              }" placeholder="请输入描述信息"/>
               </template>
               <template #customAction="{index }">
                 <a-button danger
@@ -346,7 +346,8 @@
         <div class="title">{{ activeEnvDetail.displayName }}</div>
         <div class="envDetail-content">
           <a-form-item :labelCol="{span: 2}" :wrapperCol="{span: 10}" label="环境名称">
-            <a-input class="env-name" :value="activeEnvDetail.name || ''" @change="handleEnvNameChange" placeholder="请输入环境名称"/>
+            <a-input class="env-name" :value="activeEnvDetail.name || ''" @change="handleEnvNameChange"
+                     placeholder="请输入环境名称"/>
           </a-form-item>
           <div class="serveServers">
             <div class="serveServers-header">服务 (前置URL)</div>
@@ -377,10 +378,7 @@
                          }"
                          placeholder="http 或 https 起始的合法 URL"/>
               </template>
-
-
             </a-table>
-
           </div>
           <div class="vars">
             <div class="vars-header">环境变量</div>
@@ -417,7 +415,7 @@
               <template #customDescription="{ text,index }">
                 <a-input :value="text" @change="(e) => {
               handleEnvChange('vars','description',index,e);
-            }" placeholder="说明"/>
+            }" placeholder="请输入描述信息"/>
               </template>
               <template #customAction="{index }">
                 <a-button danger
@@ -430,6 +428,8 @@
           </div>
         </div>
         <div class="envDetail-footer">
+          <a-button v-if="activeEnvDetail.id" class="save-btn" @click="deleteEnvData" type="danger">删除</a-button>
+          <a-button v-if="activeEnvDetail.id" class="save-btn" @click="copyEnvData" type="primary">复制</a-button>
           <a-button class="save-btn" @click="addEnvData" type="primary">保存</a-button>
         </div>
       </div>
@@ -475,6 +475,8 @@ import {
   getEnvList, saveEnv,
   saveGlobalVars,
   saveEnvironmentsParam,
+  copyEnv,
+  deleteEnv,
 } from '../../service';
 import {momentUtc} from '@/utils/datetime';
 import {message} from "ant-design-vue";
@@ -592,8 +594,8 @@ function handleAddServiceOk() {
   activeEnvDetail.value.serveServers.push({
     // "environmentId": 7,
     "url": "",
-    "serveName":selectServe.name,
-    "serveId":selectServe.id,
+    "serveName": selectServe.name,
+    "serveId": selectServe.id,
   })
 }
 
@@ -607,7 +609,35 @@ async function addEnvData() {
     "vars": activeEnvDetail.value?.vars || [],
   });
   if (res.code === 0) {
-    message.success('保存环境成功')
+    message.success('保存环境成功');
+    await getEnvsList();
+    showEnvDetail(null, true)
+  }
+}
+
+
+async function deleteEnvData() {
+  let res = await deleteEnv({
+    id: activeEnvDetail.value?.id,
+  });
+  if (res.code === 0) {
+    message.success('删除环境成功');
+    await getEnvsList();
+    showEnvDetail(null, true)
+  }
+}
+
+async function copyEnvData() {
+  let res = await copyEnv({
+    id: activeEnvDetail.value?.id,
+  });
+  if (res.code === 0) {
+    message.success('复制环境成功');
+    await getEnvsList();
+    const newEnv = envList.value.find((item: any) => {
+      return item.id === res.data;
+    })
+    showEnvDetail(newEnv, false)
   }
 }
 
@@ -904,6 +934,8 @@ watch(() => {
   padding: 16px;
 
   .globalVars, .globalParams, .envDetail {
+    padding: 8px;
+
     .title {
       font-weight: bold;
       font-size: 18px;
@@ -918,12 +950,13 @@ watch(() => {
   .envDetail-footer {
     height: 60px;
     position: absolute;
-    top: 0;
-    right: 0;
-    width: 100px;
+    top: 8px;
+    right: 8px;
+    width: 300px;
     display: flex;
     align-items: center;
     justify-content: flex-end;
+
     .save-btn {
       margin-right: 16px;
     }

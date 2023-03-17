@@ -1,11 +1,45 @@
 <template>
   <div class="content">
     <div class="header">
-      <a-button class="editable-add-btn"
-                @click="handleAdd"
-                type="primary"
-                style="margin-bottom: 8px">新建服务
-      </a-button>
+      <a-form layout="inline" :model="formState">
+        <a-form-item>
+            <span style="cursor: pointer;font-weight: bold">新建服务
+              <a-tooltip placement="topLeft" arrow-point-at-center
+                         title="一个产品服务端通常对应一个或多个服务(微服务)，服务可以有多个版本并行，新的服务默认起始版本为v0.1.0。">
+              <QuestionCircleOutlined class="icon"
+                                      style="position: relative;top:-8px; font-size: 12px;transform: scale(0.9)"/>
+              </a-tooltip>
+            </span>
+        </a-form-item>
+        <a-form-item>
+          <a-input v-model:value="formState.name" placeholder="服务名称"/>
+        </a-form-item>
+        <a-form-item>
+          <a-select
+              v-model:value="formState.userId"
+              show-search
+              placeholder="负责人(默认创建人)"
+              style="width: 200px"
+              :options="userListOptions"
+              @focus="selectUserFocus">
+          </a-select>
+        </a-form-item>
+        <a-form-item>
+          <a-input v-if="editServiceDesc"
+                   v-model:value="formState.description"
+                   placeholder="输入描述"/>
+        </a-form-item>
+        <a-form-item>
+          <a-button class="editable-add-btn"
+                    @click="handleOk"
+                    type="primary"
+                    style="margin-bottom: 8px">
+            确定
+          </a-button>
+        </a-form-item>
+      </a-form>
+
+
       <a-input-search
           v-model:value="keyword"
           placeholder="输入服务名称搜索"
@@ -13,7 +47,8 @@
           @search="onSearch"
       />
     </div>
-    <a-table bordered :data-source="dataSource" :columns="columns" rowKey="id">
+    <a-table  :data-source="dataSource" :columns="columns" rowKey="id">
+
       <template #name="{ text, record }">
         <div class="editable-cell">
           <div class="editable-cell-text-wrapper">
@@ -22,12 +57,34 @@
           </div>
         </div>
       </template>
+      <template #customServers="{ record }">
+        <span v-if="record?.servers.length > 0">
+               <span  v-for="server in record.servers" :key="server.id">
+          {{server.name || server.description}}
+        </span>
+        </span>
+        <span v-else>暂无关联服务</span>
+      </template>
+      <template #customStatus="{ text,record }">
+        <a-tag :color="record.statusTag">{{ text }}</a-tag>
+      </template>
       <template #operation="{ record }">
-        <a-space>
-          <a href="javascript:void (0)" @click="onDisabled(record)">禁用</a>
-          <a href="javascript:void (0)" @click="onCopy(record)">复制</a>
-          <a href="javascript:void (0)" @click="onDelete(record)">删除</a>
-        </a-space>
+        <a-dropdown>
+          <MoreOutlined/>
+          <template #overlay>
+            <a-menu>
+              <a-menu-item key="1">
+                <a class="operation-a"  href="javascript:void (0)" @click="onDisabled(record)">禁用</a>
+              </a-menu-item>
+              <a-menu-item key="2">
+                <a  class="operation-a"  href="javascript:void (0)" @click="onCopy(record)">复制</a>
+              </a-menu-item>
+              <a-menu-item key="3">
+                <a  class="operation-a"  href="javascript:void (0)" @click="onDelete(record)">删除</a>
+              </a-menu-item>
+            </a-menu>
+          </template>
+        </a-dropdown>
       </template>
     </a-table>
     <!-- ::::新建服务弹框 -->
@@ -92,7 +149,6 @@
     </a-drawer>
 
   </div>
-
 </template>
 <script setup lang="ts">
 
@@ -108,16 +164,17 @@ import {
   UnwrapRef,
   watch
 } from 'vue';
-import {CheckOutlined, EditOutlined} from '@ant-design/icons-vue';
+import {CheckOutlined, EditOutlined, ExclamationOutlined, QuestionCircleOutlined,MoreOutlined} from '@ant-design/icons-vue';
 import ServiceVersion from './Version.vue';
 import ServiceComponent from './Component.vue';
 
-import {getServeList, deleteServe, copyServe, disableServe, saveServe} from '../../service';
+import {getServeList, deleteServe, copyServe, disableServe, saveServe, getUserList,} from '../../service';
 import {momentUtc} from '@/utils/datetime';
 import {message} from "ant-design-vue";
-import {serveStatus} from "@/config/constant";
+import {serveStatus,serveStatusTagColor} from "@/config/constant";
 import {StateType as ProjectStateType} from "@/store/project";
 import {useStore} from "vuex";
+import {SelectTypes} from "ant-design-vue/es/select";
 
 const store = useStore<{ ProjectGlobal: ProjectStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
@@ -129,6 +186,7 @@ interface FormState {
   description: string;
   serveId?: string,
 
+
 }
 
 interface DataItem {
@@ -139,12 +197,13 @@ interface DataItem {
 }
 
 
-const formState: UnwrapRef<FormState> = reactive({
+const formState: UnwrapRef<any> = reactive({
   name: '',
   description: '',
+  userId: null,
 });
 
-const editFormState: UnwrapRef<FormState> = reactive({
+const editFormState: UnwrapRef<any> = reactive({
   name: '',
   description: '',
   serveId: '',
@@ -158,16 +217,21 @@ const columns = [
   {
     title: '服务名称',
     dataIndex: 'name',
-    width: '30%',
-    slots: {customRender: 'name'},
+    slots: {customRender: 'name',title:'fdshfh'},
   },
   {
     title: '描述',
     dataIndex: 'description',
   },
   {
+    title: '关联服务',
+    dataIndex: 'servers',
+    slots: {customRender: 'customServers'},
+  },
+  {
     title: '状态',
     dataIndex: 'statusDesc',
+    slots: {customRender: 'customStatus'},
   },
   {
     title: '创建人',
@@ -176,6 +240,10 @@ const columns = [
   {
     title: '创建时间',
     dataIndex: 'createdAt',
+  },
+  {
+    title: '最近更新时间',
+    dataIndex: 'updatedAt',
   },
   {
     title: '操作',
@@ -197,9 +265,34 @@ function onClose() {
 }
 
 
+/*************************************************
+ * ::::新建服务逻辑 start
+ ************************************************/
+const userListOptions = ref<SelectTypes['options']>([]);
+
+async function setUserListOptions() {
+  const res = await getUserList('');
+  if (res.code === 0) {
+    res.data.result.forEach((item) => {
+      item.label = item.name;
+      item.value = item.id
+    })
+    console.log(832,res.data.result);
+    userListOptions.value = res.data.result;
+  }
+}
+
+async function selectUserFocus(e) {
+  await setUserListOptions();
+}
+
 async function onSearch(e) {
   await getList();
 }
+
+/*************************************************
+ * ::::新建服务逻辑 end
+ ************************************************/
 
 
 const edit = (record: any) => {
@@ -281,7 +374,8 @@ async function handleOk() {
   const res = await saveServe({
     "projectId": currProject.value.id,
     "name": formState.name,
-    "description": formState.description
+    "description": formState.description,
+    "userId": formState.userId,
   });
   if (res.code === 0) {
     message.success('新建服务成功');
@@ -307,7 +401,9 @@ async function getList() {
   if (res.code === 0) {
     res.data.result.forEach((item) => {
       item.statusDesc = serveStatus.get(item.status);
+      item.statusTag = serveStatusTagColor.get(item.status);
       item.createdAt = momentUtc(item.createdAt)
+      item.updatedAt = momentUtc(item.updatedAt)
     })
     dataSource.value = res.data.result;
   }
@@ -338,8 +434,6 @@ watch(() => {
     justify-content: space-between;
     margin-bottom: 8px;
   }
-
-
 }
 
 .drawer-header {
@@ -353,6 +447,12 @@ watch(() => {
     //background: #fff;
     //margin-bottom: 8px;
   }
+}
+
+.operation-a{
+  text-align: center;
+  display: inline-block;
+  width: 80px;
 }
 
 </style>

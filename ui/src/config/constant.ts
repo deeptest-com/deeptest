@@ -138,6 +138,9 @@ export const interfaceStatus = new Map([[0, '未知'], [1, '设计中'], [2, '�
 export const serveStatus = new Map([[0, '未知'],[1, '新建'], [2, '设计中'], [3, '已发布'], [4, ' 已禁用']])
 
 
+export const serveStatusTagColor = new Map([[0, 'default'],[1, 'default'], [2, 'processing'], [3, 'success'], [4, 'error']])
+
+
 export const interfaceStatusOpts = [
     {
         label: "未知",

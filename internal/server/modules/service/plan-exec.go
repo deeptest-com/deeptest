@@ -2,7 +2,7 @@ package service
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/agent/exec"
-	execDomain "github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
+	agentDomain "github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
@@ -44,7 +44,7 @@ func (s *PlanExecService) LoadExecData(planId int) (ret agentExec.ProcessorExecO
 	return
 }
 
-func (s *PlanExecService) SaveReport(planId int, rootResult execDomain.Result) (err error) {
+func (s *PlanExecService) SaveReport(planId int, result map[uint]*agentDomain.ScenarioExecResult) (err error) {
 	//plan, _ := s.PlanRepo.Get(uint(planId))
 	//rootResult.Name = plan.Name
 	//
@@ -70,7 +70,7 @@ func (s *PlanExecService) SaveReport(planId int, rootResult execDomain.Result) (
 	return
 }
 
-func (s *PlanExecService) countRequest(result execDomain.Result, report *model.PlanReport) {
+func (s *PlanExecService) countRequest(result agentDomain.ScenarioExecResult, report *model.PlanReport) {
 	if result.ProcessorType == consts.ProcessorInterfaceDefault {
 		s.countInterface(result.InterfaceId, result.ResultStatus, report)
 

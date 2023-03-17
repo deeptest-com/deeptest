@@ -4,7 +4,6 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
-	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/kataras/iris/v12"
 )
 
@@ -43,18 +42,16 @@ func (c *PlanExecCtrl) LoadExecResult(ctx iris.Context) {
 // SubmitResult
 func (c *PlanExecCtrl) SubmitResult(ctx iris.Context) {
 	//scenarioId, err := ctx.URLParamInt("id")
-	scenarioId, err := ctx.Params().GetInt("id")
+	planId, err := ctx.Params().GetInt("id")
 
-	result := agentDomain.Result{}
+	result := map[uint]*agentDomain.ScenarioExecResult{}
 	err = ctx.ReadJSON(&result)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
 		return
 	}
 
-	c.PlanExecService.SaveReport(scenarioId, result)
-
-	logUtils.Infof("%v", scenarioId)
+	c.PlanExecService.SaveReport(planId, result)
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 }

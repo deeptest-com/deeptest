@@ -54,13 +54,13 @@ func (r *LogRepo) DeleteById(id uint) (err error) {
 	return
 }
 
-func (r *LogRepo) CreateLogs(rootResult agentDomain.Result, report *model.ScenarioReport) (err error) {
+func (r *LogRepo) CreateLogs(rootResult agentDomain.ScenarioExecResult, report *model.ScenarioReport) (err error) {
 	r.CreateLog(rootResult, 0, report.ID)
 
 	return
 }
 
-func (r *LogRepo) CreateLog(result agentDomain.Result, parentId, reportId uint) (id uint, err error) {
+func (r *LogRepo) CreateLog(result agentDomain.ScenarioExecResult, parentId, reportId uint) (id uint, err error) {
 	if result.ProcessorCategory == consts.ProcessorInterface {
 		id, _ = r.CreateInterfaceLog(result, parentId, reportId)
 	} else {
@@ -75,7 +75,7 @@ func (r *LogRepo) CreateLog(result agentDomain.Result, parentId, reportId uint) 
 	return
 }
 
-func (r *LogRepo) CreateInterfaceLog(result agentDomain.Result, parentId, reportId uint) (id uint, err error) {
+func (r *LogRepo) CreateInterfaceLog(result agentDomain.ScenarioExecResult, parentId, reportId uint) (id uint, err error) {
 	po := model.ExecLogProcessor{
 		Name:              result.Name,
 		ProcessorCategory: result.ProcessorCategory,
@@ -97,7 +97,7 @@ func (r *LogRepo) CreateInterfaceLog(result agentDomain.Result, parentId, report
 	return
 }
 
-func (r *LogRepo) CreateCommonLog(result agentDomain.Result, parentId, reportId uint) (id uint, err error) {
+func (r *LogRepo) CreateCommonLog(result agentDomain.ScenarioExecResult, parentId, reportId uint) (id uint, err error) {
 	po := model.ExecLogProcessor{
 		Name:              result.Name,
 		ProcessorCategory: result.ProcessorCategory,

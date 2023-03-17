@@ -2,7 +2,7 @@ package agentExec
 
 import (
 	"encoding/json"
-	execDomain "github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
+	agentDomain "github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/pkg/lib/log"
@@ -51,8 +51,8 @@ type Processor struct {
 	Entity    IProcessorEntity `json:"entity"`
 	EntityRaw json.RawMessage  `json:"entityRaw"`
 
-	Parent *Processor         `json:"-"`
-	Result *execDomain.Result `json:"result"`
+	Parent *Processor                      `json:"-"`
+	Result *agentDomain.ScenarioExecResult `json:"result"`
 
 	Session Session `json:"-"`
 }
@@ -150,7 +150,7 @@ func (p *Processor) AppendNewChildProcessor(category consts.ProcessorCategory, t
 		ParentId:       p.ID,
 	}
 
-	child.Result = &execDomain.Result{
+	child.Result = &agentDomain.ScenarioExecResult{
 		ProcessorCategory: child.EntityCategory,
 		ProcessorType:     child.EntityType,
 		ParentId:          int(p.ID),

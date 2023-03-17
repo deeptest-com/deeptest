@@ -104,20 +104,25 @@ func (c *WebSocketCtrl) OnChat(wsMsg websocket.Message) (err error) {
 		go func() {
 			c.ExecService.ExecScenario(&req.ExecReq, &wsMsg)
 		}()
+	} else if act == consts.ExecScenario {
+		ch = make(chan int, 1)
+		go func() {
+			c.ExecService.ExecScenario(&req.ExecReq, &wsMsg)
+		}()
 	}
 
 	return
 }
 
 func sendErr(err error, wsMsg *websocket.Message) {
-	root := execDomain.Result{
+	root := execDomain.ScenarioExecResult{
 		ID:      -1,
 		Name:    "执行失败",
 		Summary: fmt.Sprintf("错误：%s", err.Error()),
 	}
 	execUtils.SendExecMsg(root, wsMsg)
 
-	result := execDomain.Result{
+	result := execDomain.ScenarioExecResult{
 		ID:       -2,
 		ParentId: -1,
 		Name:     "执行失败",

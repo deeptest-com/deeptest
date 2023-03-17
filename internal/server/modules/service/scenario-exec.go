@@ -50,7 +50,7 @@ func (s *ScenarioExecService) LoadExecData(scenarioId int) (ret agentExec.Proces
 	return
 }
 
-func (s *ScenarioExecService) SaveReport(scenarioId int, rootResult execDomain.Result) (err error) {
+func (s *ScenarioExecService) SaveReport(scenarioId int, rootResult execDomain.ScenarioExecResult) (err error) {
 	scenario, _ := s.ScenarioRepo.Get(uint(scenarioId))
 	rootResult.Name = scenario.Name
 
@@ -76,7 +76,7 @@ func (s *ScenarioExecService) SaveReport(scenarioId int, rootResult execDomain.R
 	return
 }
 
-func (s *ScenarioExecService) countRequest(result execDomain.Result, report *model.ScenarioReport) {
+func (s *ScenarioExecService) countRequest(result execDomain.ScenarioExecResult, report *model.ScenarioReport) {
 	if result.ProcessorType == consts.ProcessorInterfaceDefault {
 		s.countInterface(result.InterfaceId, result.ResultStatus, report)
 

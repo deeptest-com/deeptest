@@ -33,13 +33,22 @@ func (r *ScenarioCategoryRepo) GetTree(moduleId, projectId, serveId uint) (root 
 }
 
 func (r *ScenarioCategoryRepo) ListByProject(moduleId, projectId, serveId uint) (pos []*model.ScenarioCategory, err error) {
-	err = r.DB.
+	db := r.DB.
 		Where("project_id=?", projectId).
-		Where("serve_id=?", serveId).
-		Where("module_id=?", moduleId).
-		Where("NOT deleted").
+		Where("NOT deleted")
+
+	if serveId > 0 {
+		db.Where("serve_id=?", serveId)
+	}
+
+	if moduleId > 0 {
+		db.Where("module_id=?", moduleId)
+	}
+
+	err = db.
 		Order("parent_id ASC, ordr ASC").
 		Find(&pos).Error
+
 	return
 }
 

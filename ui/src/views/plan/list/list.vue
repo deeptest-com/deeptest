@@ -2,7 +2,7 @@
   <div class="plan-list-main">
     <a-card :bordered="false">
       <template #title>
-        <a-button type="primary" @click="() => edit(0)">新建</a-button>
+        <a-button type="primary" @click="() => create()">新建</a-button>
       </template>
       <template #extra>
         <a-select @change="onSearch" v-model:value="queryParams.enabled" :options="statusArr" class="status-select">
@@ -56,7 +56,26 @@
       :closable="true"
       :width="1000"
       :key="currModel.id"
-      :visible="drawerVisible"
+      :visible="createDrawerVisible"
+  >
+    <template #title>
+      <div class="drawer-header">
+        <div>新建计划</div>
+      </div>
+    </template>
+    <div class="drawer-content">
+      <PlanCreate
+          :categoryId="nodeDataCategory.id"
+          :onSaved="onSaved">
+      </PlanCreate>
+    </div>
+  </a-drawer>
+
+  <a-drawer
+      :closable="true"
+      :width="1000"
+      :key="currModel.id"
+      :visible="editDrawerVisible"
       @close="onEditFinish"
   >
     <template #title>
@@ -72,6 +91,7 @@
       </PlanEdit>
     </div>
   </a-drawer>
+
 </template>
 
 <script setup lang="ts">
@@ -88,7 +108,8 @@ import {message, Modal, notification} from "ant-design-vue";
 import {CheckOutlined, EditOutlined} from '@ant-design/icons-vue';
 import {StateType as ProjectStateType} from "@/store/project";
 
-import PlanEdit from "../edit/index.vue";
+import PlanCreate from "../edit/create.vue";
+import PlanEdit from "../edit/edit.vue";
 
 const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
 
@@ -146,7 +167,7 @@ const getList = debounce(async (current: number, categoryId: number): Promise<vo
     page: current,
   });
   loading.value = false
-}, 300)
+}, 600)
 
 const exec = (id: number) => {
   console.log('exec')
@@ -160,7 +181,18 @@ interface FormState {
 
 }
 
-const drawerVisible = ref(false);
+const createDrawerVisible = ref(false);
+const create = () => {
+  console.log('create')
+  createDrawerVisible.value = true;
+}
+const onSaved = () => {
+  console.log('onSaved')
+  getList(pagination.value.current, nodeDataCategory.value.id)
+  createDrawerVisible.value = false
+}
+
+const editDrawerVisible = ref(false);
 const editFormState: UnwrapRef<FormState> = reactive({
   name: '',
   description: '',
@@ -171,7 +203,7 @@ const edit = (record) => {
   console.log('edit')
   currModel.value = record
 
-  drawerVisible.value = true;
+  editDrawerVisible.value = true;
   editFormState.name = record.name;
   editFormState.description = record.description;
   editFormState.serveId = record.id;
@@ -184,7 +216,7 @@ const onFieldSaved = () => {
 const onEditFinish = () => {
   console.log('onEditFinish')
   getList(pagination.value.current, nodeDataCategory.value.id)
-  drawerVisible.value = false
+  editDrawerVisible.value = false
 }
 
 const remove = (id: number) => {

@@ -17,6 +17,7 @@ export const getExpandedKeys = async (type, id) => {
 
 export const setExpandedKeys = async (type, id, keys) => {
     console.log('setExpandedKeys')
+    if (!keys) keys = []
     const key = `${type}-${id}`
 
     let cachedData = await getCache(settings.expandedKeys);

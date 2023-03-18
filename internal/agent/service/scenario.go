@@ -12,7 +12,7 @@ type ScenarioService struct {
 	RemoteService *RemoteService `inject:""`
 }
 
-func (s *ScenarioService) ExecScenario(req *agentExec.ProcessorExecReq, wsMsg *websocket.Message) (err error) {
+func (s *ScenarioService) ExecScenario(req *agentExec.ScenarioExecReq, wsMsg *websocket.Message) (err error) {
 	consts.ServerUrl = req.ServerUrl
 	consts.ServerToken = req.Token
 
@@ -21,8 +21,10 @@ func (s *ScenarioService) ExecScenario(req *agentExec.ProcessorExecReq, wsMsg *w
 	session, err := s.Exec(scenarioExecObj, wsMsg)
 
 	// submit result
-	s.RemoteService.SubmitScenarioResult(*session.RootProcessor.Result, scenarioExecObj.RootProcessor.ScenarioId,
+	report, _ := s.RemoteService.SubmitScenarioResult(*session.RootProcessor.Result, scenarioExecObj.RootProcessor.ScenarioId,
 		scenarioExecObj.ServerUrl, scenarioExecObj.Token)
+
+	execUtils.SendResultMsg(report, session.WsMsg)
 	s.sendSubmitResult(session.RootProcessor.ID, session.WsMsg)
 
 	// end msg
@@ -31,7 +33,7 @@ func (s *ScenarioService) ExecScenario(req *agentExec.ProcessorExecReq, wsMsg *w
 	return
 }
 
-func (s *ScenarioService) Exec(execObj *agentExec.ProcessorExecObj, wsMsg *websocket.Message) (
+func (s *ScenarioService) Exec(execObj *agentExec.ScenarioExecObj, wsMsg *websocket.Message) (
 	session *agentExec.Session, err error) {
 	agentExec.Variables = execObj.Variables
 	agentExec.DatapoolData = execObj.Datapools
@@ -82,6 +84,7 @@ func (s *ScenarioService) sendSubmitResult(rootId uint, wsMsg *websocket.Message
 		Name:     "提交执行结果成功",
 		//Summary:  fmt.Sprintf("错误：%s", err.Error()),
 	}
+
 	execUtils.SendExecMsg(result, wsMsg)
 
 	return

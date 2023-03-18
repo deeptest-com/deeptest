@@ -6,6 +6,6 @@ import (
 )
 
 type WsReq struct {
-	Act     consts.ExecType            `json:"act"`
-	ExecReq agentExec.ProcessorExecReq `json:"execReq"`
+	Act     consts.ExecType           `json:"act"`
+	ExecReq agentExec.ScenarioExecReq `json:"execReq"`
 }

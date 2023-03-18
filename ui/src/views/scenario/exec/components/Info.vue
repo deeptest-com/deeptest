@@ -32,7 +32,7 @@
         <Log v-if="logTreeData.logs" :logs="logTreeData.logs"></Log>
       </div>
 
-      <div v-if="result.totalRequestNum > 0" class="result">
+      <div v-if="result.startTime" class="result">
         <a-row>
           <a-col :span="4">开始时间</a-col>
           <a-col :span="4">{{ momentShort(result.startTime) }}</a-col>
@@ -199,8 +199,9 @@ const OnWebSocketMsg = (data: any) => {
     .logs {
       padding: 0px 12px;
     }
+
     .result {
-      padding: 5px 12px 6px 12px;
+      padding: 5px 23px 6px 23px;
       .ant-row {
         margin: 6px 0;
       }

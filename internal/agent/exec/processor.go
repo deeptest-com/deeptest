@@ -4,29 +4,9 @@ import (
 	"encoding/json"
 	agentDomain "github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/kataras/iris/v12"
-	"sync"
 )
-
-var (
-	breakMap sync.Map
-)
-
-type ProcessorExecReq struct {
-	ServerUrl  string `json:"serverUrl"`
-	Token      string `json:"token"`
-	ScenarioId int    `json:"scenarioId"`
-}
-
-type ProcessorExecObj struct {
-	RootProcessor *Processor       `json:"rootProcessor"`
-	Variables     domain.Variables `json:"variables"`
-	Datapools     domain.Datapools
-	ServerUrl     string `json:"serverUrl"`
-	Token         string `json:"token"`
-}
 
 type Processor struct {
 	ID uint `json:"id"`

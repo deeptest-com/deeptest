@@ -1,13 +1,15 @@
 package agentExec
 
 type PlanExecReq struct {
+	PlanId uint `json:"planId"`
+
 	ServerUrl string `json:"serverUrl"`
 	Token     string `json:"token"`
-	PlanId    uint   `json:"planId"`
 }
 
 type PlanExecObj struct {
-	Scenarios []ProcessorExecObj `json:"scenarios"`
-	ServerUrl string             `json:"serverUrl"`
-	Token     string             `json:"token"`
+	Scenarios []ScenarioExecObj `json:"scenarios"`
+
+	ServerUrl string `json:"serverUrl"`
+	Token     string `json:"token"`
 }

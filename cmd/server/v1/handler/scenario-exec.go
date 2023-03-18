@@ -4,7 +4,6 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
-	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/kataras/iris/v12"
 )
 
@@ -52,9 +51,7 @@ func (c *ScenarioExecCtrl) SubmitResult(ctx iris.Context) {
 		return
 	}
 
-	c.ScenarioExecService.SaveReport(scenarioId, result)
+	report, err := c.ScenarioExecService.SaveReport(scenarioId, result)
 
-	logUtils.Infof("%v", scenarioId)
-
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: report})
 }

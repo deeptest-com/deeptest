@@ -200,7 +200,7 @@ func (s *RemoteService) SubmitProcessorInterfaceResult(reqOjb domain.InvocationR
 }
 
 // for scenario exec
-func (s *RemoteService) GetScenarioToExec(req *agentExec.ProcessorExecReq) (ret *agentExec.ProcessorExecObj) {
+func (s *RemoteService) GetScenarioToExec(req *agentExec.ScenarioExecReq) (ret *agentExec.ScenarioExecObj) {
 	url := "scenarios/exec/loadExecScenario"
 
 	httpReq := v1.BaseRequest{
@@ -250,7 +250,9 @@ func (s *RemoteService) GetScenarioToExec(req *agentExec.ProcessorExecReq) (ret 
 	return
 }
 
-func (s *RemoteService) SubmitScenarioResult(result agentDomain.ScenarioExecResult, scenarioId uint, serverUrl, token string) (err error) {
+func (s *RemoteService) SubmitScenarioResult(result agentDomain.ScenarioExecResult, scenarioId uint, serverUrl, token string) (
+	report agentDomain.ReportSimple, err error) {
+
 	bodyBytes, _ := json.Marshal(result)
 	req := v1.BaseRequest{
 		Url:               _httpUtils.AddSepIfNeeded(serverUrl) + fmt.Sprintf("scenarios/exec/submitResult/%d", scenarioId),
@@ -280,6 +282,10 @@ func (s *RemoteService) SubmitScenarioResult(result agentDomain.ScenarioExecResu
 		logUtils.Infof("submit result failed, response %v", resp.Content)
 		return
 	}
+
+	reportContent, _ := json.Marshal(ret.Data)
+	report = agentDomain.ReportSimple{}
+	json.Unmarshal(reportContent, &report)
 
 	return
 }

@@ -22,7 +22,7 @@ var (
 	DatapoolCursor = map[string]int{} // only for scenario
 )
 
-func InitExecContext(execObj *ProcessorExecObj) (variables []domain.ExecVariable) {
+func InitExecContext(execObj *ScenarioExecObj) (variables []domain.ExecVariable) {
 	GetScopeHierarchy(execObj.RootProcessor, &ScopeHierarchy)
 	DatapoolData = execObj.Datapools
 

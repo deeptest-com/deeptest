@@ -29,7 +29,7 @@ func (s *PlanExecService) LoadExecResult(planId int) (result domain.Report, err 
 	return
 }
 
-func (s *PlanExecService) LoadExecData(planId int) (ret agentExec.ProcessorExecObj, err error) {
+func (s *PlanExecService) LoadExecData(planId int) (ret agentExec.ScenarioExecObj, err error) {
 	//plan, err := s.PlanRepo.Get(uint(planId))
 	//if err != nil {
 	//	return

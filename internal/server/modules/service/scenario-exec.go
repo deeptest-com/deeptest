@@ -35,7 +35,7 @@ func (s *ScenarioExecService) LoadExecResult(scenarioId int) (result domain.Repo
 	return
 }
 
-func (s *ScenarioExecService) LoadExecData(scenarioId int) (ret agentExec.ProcessorExecObj, err error) {
+func (s *ScenarioExecService) LoadExecData(scenarioId int) (ret agentExec.ScenarioExecObj, err error) {
 	scenario, err := s.ScenarioRepo.Get(uint(scenarioId))
 	if err != nil {
 		return
@@ -50,11 +50,11 @@ func (s *ScenarioExecService) LoadExecData(scenarioId int) (ret agentExec.Proces
 	return
 }
 
-func (s *ScenarioExecService) SaveReport(scenarioId int, rootResult execDomain.ScenarioExecResult) (err error) {
+func (s *ScenarioExecService) SaveReport(scenarioId int, rootResult execDomain.ScenarioExecResult) (report model.ScenarioReport, err error) {
 	scenario, _ := s.ScenarioRepo.Get(uint(scenarioId))
 	rootResult.Name = scenario.Name
 
-	report := model.ScenarioReport{
+	report = model.ScenarioReport{
 		Name:      scenario.Name,
 		StartTime: rootResult.StartTime,
 		EndTime:   rootResult.EndTime,

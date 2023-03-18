@@ -28,7 +28,8 @@ type WebSocketCtrl struct {
 	Namespace         string
 	*websocket.NSConn `stateless:"true"`
 
-	ExecService *service.ScenarioService `inject:""`
+	ScenarioService *service.ScenarioService `inject:""`
+	PlanService     *service.PlanService     `inject:""`
 }
 
 func NewWebsocketCtrl() *WebSocketCtrl {
@@ -89,7 +90,7 @@ func (c *WebSocketCtrl) OnChat(wsMsg websocket.Message) (err error) {
 			}
 		}
 
-		c.ExecService.CancelAndSendMsg(req.ExecReq.ScenarioId, wsMsg)
+		c.ScenarioService.CancelAndSendMsg(req.ExecReq.ScenarioId, wsMsg)
 
 		return
 	}
@@ -102,12 +103,12 @@ func (c *WebSocketCtrl) OnChat(wsMsg websocket.Message) (err error) {
 	if act == consts.ExecScenario {
 		ch = make(chan int, 1)
 		go func() {
-			c.ExecService.ExecScenario(&req.ExecReq, &wsMsg)
+			c.ScenarioService.ExecScenario(&req.ExecReq, &wsMsg)
 		}()
-	} else if act == consts.ExecScenario {
+	} else if act == consts.ExecPlan {
 		ch = make(chan int, 1)
 		go func() {
-			c.ExecService.ExecScenario(&req.ExecReq, &wsMsg)
+			//c.PlanService.ExecPlan(&req.ExecReq, &wsMsg)
 		}()
 	}
 

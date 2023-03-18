@@ -80,7 +80,7 @@ import {getExpandedKeys, getSelectedKey, setExpandedKeys, setSelectedKey} from "
 import {getContextMenuStyle} from "@/utils/dom";
 import {StateType as PlanStateType} from "../store";
 import {StateType as ProjectStateType} from "@/store/project";
-import {updateCategoryName} from "../service";
+import {updateCategoryName} from "@/services/category";
 import TreeContextMenu from "./tree-context-menu.vue";
 
 const useForm = Form.useForm;
@@ -121,7 +121,7 @@ let tree = ref(null)
 const expandNode = (keys: string[], e: any) => {
   console.log('expandNode', keys[0], e)
 
-  setExpandedKeys('category', currProject.value.id, expandedKeys.value)
+  setExpandedKeys('category-plan', currProject.value.id, expandedKeys.value)
 }
 
 const selectNode = (keys, e) => {
@@ -134,7 +134,7 @@ const selectNode = (keys, e) => {
     selectedKeys.value = keys
   }
 
-  setSelectedKey('category', currProject.value.id, selectedKeys.value[0])
+  setSelectedKey('category-plan', currProject.value.id, selectedKeys.value[0])
 
   const selectedData = treeDataMapCategory.value[selectedKeys.value[0]]
   store.dispatch('Plan/getCategoryNode', selectedData)
@@ -189,7 +189,7 @@ const onRightClick = (e) => {
 }
 
 const getExpandedKeysCall = debounce(async () => {
-  getExpandedKeys('category', currProject.value.id).then(async keys => {
+  getExpandedKeys('category-plan', currProject.value.id).then(async keys => {
     console.log('keys', keys)
     if (keys)
       expandedKeys.value = keys
@@ -197,15 +197,16 @@ const getExpandedKeysCall = debounce(async () => {
     if (!expandedKeys.value || expandedKeys.value.length === 0) {
       getOpenKeys(treeDataCategory.value[0], false) // expend first level folder
       console.log('expandedKeys.value', expandedKeys.value)
-      await setExpandedKeys('category', currProject.value.id, expandedKeys.value)
+      await setExpandedKeys('category-plan', currProject.value.id, expandedKeys.value)
     }
   })
 }, 300)
 
 const selectStoredKeyCall = debounce(async () => {
   console.log('selectStoredKeyCall')
-  getSelectedKey('category', currProject.value.id).then(async key => {
+  getSelectedKey('category-plan', currProject.value.id).then(async key => {
     console.log('key', key)
+    key = key ? key : treeDataCategory.value[0].id
     if (key)
       selectNode([key], null)
   })
@@ -229,7 +230,7 @@ const expandAll = () => {
   isExpand.value = !isExpand.value
   expandedKeys.value = expandAllKeys(treeDataMapCategory.value, isExpand.value)
 
-  setExpandedKeys('category', currProject.value.id, expandedKeys.value)
+  setExpandedKeys('category-plan', currProject.value.id, expandedKeys.value)
 }
 
 let targetModelId = 0
@@ -279,7 +280,7 @@ const addNode = (mode, targetId) => {
       console.log('createCategoryNode successfully', newNode)
       selectNode([newNode.id], null)
       expandOneKey(treeDataMapCategory.value, mode === 'parent' ? newNode.id : newNode.parentId, expandedKeys.value) // expend new node
-      setExpandedKeys('category', currProject.value.id, expandedKeys.value)
+      setExpandedKeys('category-plan', currProject.value.id, expandedKeys.value)
     })
 }
 
@@ -312,7 +313,7 @@ const onDrop = (info: DropEvent) => {
       (result) => {
         if (result) {
           expandOneKey(treeDataMapCategory.value, dropKey, expandedKeys.value) // expend parent node
-          setExpandedKeys('category', currProject.value.id, expandedKeys.value)
+          setExpandedKeys('category-plan', currProject.value.id, expandedKeys.value)
         }
       }
   )

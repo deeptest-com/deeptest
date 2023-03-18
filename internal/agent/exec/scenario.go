@@ -16,9 +16,10 @@ type ScenarioExecReq struct {
 }
 
 type ScenarioExecObj struct {
-	RootProcessor *Processor       `json:"rootProcessor"`
-	Variables     domain.Variables `json:"variables"`
-	Datapools     domain.Datapools
-	ServerUrl     string `json:"serverUrl"`
-	Token         string `json:"token"`
+	RootProcessor *Processor `json:"rootProcessor"`
+
+	Variables domain.Variables `json:"variables"`
+	Datapools domain.Datapools
+	ServerUrl string `json:"serverUrl"`
+	Token     string `json:"token"`
 }

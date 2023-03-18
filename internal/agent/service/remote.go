@@ -341,7 +341,8 @@ func (s *RemoteService) GetPlanToExec(req *agentExec.PlanExecReq) (ret *agentExe
 	return
 }
 
-func (s *RemoteService) SubmitPlanResult(result agentDomain.PlanExecResult, planId uint, serverUrl, token string) (err error) {
+func (s *RemoteService) SubmitPlanResult(result agentDomain.PlanExecResult, planId uint, serverUrl, token string) (
+	report agentDomain.ReportSimple, err error) {
 	bodyBytes, _ := json.Marshal(result)
 	req := v1.BaseRequest{
 		Url:               _httpUtils.AddSepIfNeeded(serverUrl) + fmt.Sprintf("plans/exec/submitResult/%d", planId),
@@ -371,6 +372,10 @@ func (s *RemoteService) SubmitPlanResult(result agentDomain.PlanExecResult, plan
 		logUtils.Infof("submit result failed, response %v", resp.Content)
 		return
 	}
+
+	reportContent, _ := json.Marshal(ret.Data)
+	report = agentDomain.ReportSimple{}
+	json.Unmarshal(reportContent, &report)
 
 	return
 }

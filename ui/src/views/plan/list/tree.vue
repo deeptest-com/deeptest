@@ -274,7 +274,8 @@ const renameNode = () => {
 const addNode = (mode, targetId) => {
   console.log('addNode', mode, targetId)
 
-    store.dispatch('Plan/createCategoryNode', {mode, targetId, name: '新分类'}).then((newNode) => {
+    store.dispatch('Plan/createCategoryNode',
+        {mode, targetId, name: '新分类', type: 'plan'}).then((newNode) => {
       console.log('createCategoryNode successfully', newNode)
       selectNode([newNode.id], null)
       expandOneKey(treeDataMapCategory.value, mode === 'parent' ? newNode.id : newNode.parentId, expandedKeys.value) // expend new node
@@ -306,7 +307,8 @@ const onDrop = (info: DropEvent) => {
   }
   console.log(dragKey, dropKey, dropPosition);
 
-  store.dispatch('Plan/moveCategoryNode', {dragKey: dragKey, dropKey: dropKey, dropPos: dropPosition}).then(
+  store.dispatch('Plan/moveCategoryNode',
+      {dragKey: dragKey, dropKey: dropKey, dropPos: dropPosition, type: 'plan'}).then(
       (result) => {
         if (result) {
           expandOneKey(treeDataMapCategory.value, dropKey, expandedKeys.value) // expend parent node

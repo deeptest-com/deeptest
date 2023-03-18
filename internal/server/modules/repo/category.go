@@ -8,13 +8,13 @@ import (
 	"gorm.io/gorm"
 )
 
-type ScenarioCategoryRepo struct {
+type CategoryRepo struct {
 	DB          *gorm.DB     `inject:""`
 	ProjectRepo *ProjectRepo `inject:""`
 }
 
-func (r *ScenarioCategoryRepo) GetTree(moduleId, projectId, serveId uint) (root *v1.ScenarioCategory, err error) {
-	pos, err := r.ListByProject(moduleId, projectId, serveId)
+func (r *CategoryRepo) GetTree(typ serverConsts.CategoryDiscriminator, projectId, serveId uint) (root *v1.Category, err error) {
+	pos, err := r.ListByProject(typ, projectId, serveId)
 	if err != nil {
 		return
 	}
@@ -32,17 +32,14 @@ func (r *ScenarioCategoryRepo) GetTree(moduleId, projectId, serveId uint) (root 
 	return
 }
 
-func (r *ScenarioCategoryRepo) ListByProject(moduleId, projectId, serveId uint) (pos []*model.ScenarioCategory, err error) {
+func (r *CategoryRepo) ListByProject(typ serverConsts.CategoryDiscriminator, projectId, serveId uint) (pos []*model.Category, err error) {
 	db := r.DB.
 		Where("project_id=?", projectId).
+		Where("type=?", typ).
 		Where("NOT deleted")
 
 	if serveId > 0 {
 		db.Where("serve_id=?", serveId)
-	}
-
-	if moduleId > 0 {
-		db.Where("module_id=?", moduleId)
 	}
 
 	err = db.
@@ -52,14 +49,14 @@ func (r *ScenarioCategoryRepo) ListByProject(moduleId, projectId, serveId uint) 
 	return
 }
 
-func (r *ScenarioCategoryRepo) Get(id uint) (po model.ScenarioCategory, err error) {
+func (r *CategoryRepo) Get(id uint) (po model.Category, err error) {
 	err = r.DB.Where("id = ?", id).First(&po).Error
 	return
 }
 
-func (r *ScenarioCategoryRepo) toTos(pos []*model.ScenarioCategory) (tos []*v1.ScenarioCategory) {
+func (r *CategoryRepo) toTos(pos []*model.Category) (tos []*v1.Category) {
 	for _, po := range pos {
-		to := v1.ScenarioCategory{
+		to := v1.Category{
 			Id:       po.ID,
 			Name:     po.Name,
 			Desc:     po.Desc,
@@ -72,7 +69,7 @@ func (r *ScenarioCategoryRepo) toTos(pos []*model.ScenarioCategory) (tos []*v1.S
 	return
 }
 
-func (r *ScenarioCategoryRepo) makeTree(findIn []*v1.ScenarioCategory, parent *v1.ScenarioCategory) { //参数为父节点，添加父节点的子节点指针切片
+func (r *CategoryRepo) makeTree(findIn []*v1.Category, parent *v1.Category) { //参数为父节点，添加父节点的子节点指针切片
 	children, _ := r.hasChild(findIn, parent) // 判断节点是否有子节点并返回
 
 	if children != nil {
@@ -87,8 +84,8 @@ func (r *ScenarioCategoryRepo) makeTree(findIn []*v1.ScenarioCategory, parent *v
 	}
 }
 
-func (r *ScenarioCategoryRepo) hasChild(categories []*v1.ScenarioCategory, parent *v1.ScenarioCategory) (
-	ret []*v1.ScenarioCategory, yes bool) {
+func (r *CategoryRepo) hasChild(categories []*v1.Category, parent *v1.Category) (
+	ret []*v1.Category, yes bool) {
 
 	for _, item := range categories {
 		if item.ParentId == parent.Id {
@@ -106,18 +103,19 @@ func (r *ScenarioCategoryRepo) hasChild(categories []*v1.ScenarioCategory, paren
 	return
 }
 
-func (r *ScenarioCategoryRepo) Save(processor *model.ScenarioCategory) (err error) {
+func (r *CategoryRepo) Save(processor *model.Category) (err error) {
 	err = r.DB.Save(processor).Error
 
 	return
 }
 
-func (r *ScenarioCategoryRepo) UpdateOrder(pos serverConsts.DropPos, targetId uint) (parentId uint, ordr int) {
+func (r *CategoryRepo) UpdateOrder(pos serverConsts.DropPos, targetId uint, typ serverConsts.CategoryDiscriminator, projectId uint) (
+	parentId uint, ordr int) {
 	if pos == serverConsts.Inner {
 		parentId = targetId
 
-		var preChild model.ScenarioCategory
-		r.DB.Where("parent_id=?", parentId).
+		var preChild model.Category
+		r.DB.Where("parent_id=? AND type = ? AND project_id = ?", parentId, typ, projectId).
 			Order("ordr DESC").Limit(1).
 			First(&preChild)
 
@@ -127,8 +125,9 @@ func (r *ScenarioCategoryRepo) UpdateOrder(pos serverConsts.DropPos, targetId ui
 		brother, _ := r.Get(targetId)
 		parentId = brother.ParentId
 
-		r.DB.Model(&model.ScenarioCategory{}).
-			Where("NOT deleted AND parent_id=? AND ordr >= ?", parentId, brother.Ordr).
+		r.DB.Model(&model.Category{}).
+			Where("NOT deleted AND parent_id=? AND type = ? AND project_id = ? AND ordr >= ?",
+				parentId, typ, projectId, brother.Ordr).
 			Update("ordr", gorm.Expr("ordr + 1"))
 
 		ordr = brother.Ordr
@@ -137,8 +136,9 @@ func (r *ScenarioCategoryRepo) UpdateOrder(pos serverConsts.DropPos, targetId ui
 		brother, _ := r.Get(targetId)
 		parentId = brother.ParentId
 
-		r.DB.Model(&model.ScenarioCategory{}).
-			Where("NOT deleted AND parent_id=? AND ordr > ?", parentId, brother.Ordr).
+		r.DB.Model(&model.Category{}).
+			Where("NOT deleted AND parent_id=? AND type = ? AND project_id = ? AND ordr > ?",
+				parentId, parentId, typ, brother.Ordr).
 			Update("ordr", gorm.Expr("ordr + 1"))
 
 		ordr = brother.Ordr + 1
@@ -148,16 +148,16 @@ func (r *ScenarioCategoryRepo) UpdateOrder(pos serverConsts.DropPos, targetId ui
 	return
 }
 
-func (r *ScenarioCategoryRepo) UpdateName(id int, name string) (err error) {
-	err = r.DB.Model(&model.ScenarioCategory{}).
+func (r *CategoryRepo) UpdateName(id int, name string) (err error) {
+	err = r.DB.Model(&model.Category{}).
 		Where("id = ?", id).
 		Update("name", name).Error
 
 	return
 }
 
-func (r *ScenarioCategoryRepo) Update(req v1.ScenarioCategoryReq) (err error) {
-	po := model.ScenarioCategory{
+func (r *CategoryRepo) Update(req v1.CategoryReq) (err error) {
+	po := model.Category{
 		Name: req.Name,
 		Desc: req.Desc,
 	}
@@ -167,8 +167,8 @@ func (r *ScenarioCategoryRepo) Update(req v1.ScenarioCategoryReq) (err error) {
 	return
 }
 
-func (r *ScenarioCategoryRepo) Delete(id uint) (err error) {
-	err = r.DB.Model(&model.ScenarioCategory{}).
+func (r *CategoryRepo) Delete(id uint) (err error) {
+	err = r.DB.Model(&model.Category{}).
 		Where("id=?", id).
 		Update("deleted", true).
 		Error
@@ -176,24 +176,24 @@ func (r *ScenarioCategoryRepo) Delete(id uint) (err error) {
 	return
 }
 
-func (r *ScenarioCategoryRepo) GetChildren(nodeId uint) (children []*model.ScenarioCategory, err error) {
+func (r *CategoryRepo) GetChildren(nodeId uint) (children []*model.Category, err error) {
 	err = r.DB.Where("parent_id=?", nodeId).Find(&children).Error
 	return
 }
 
-func (r *ScenarioCategoryRepo) UpdateOrdAndParent(node model.ScenarioCategory) (err error) {
+func (r *CategoryRepo) UpdateOrdAndParent(node model.Category) (err error) {
 	err = r.DB.Model(&node).
-		Updates(model.ScenarioCategory{Ordr: node.Ordr, ParentId: node.ParentId}).
+		Updates(model.Category{Ordr: node.Ordr, ParentId: node.ParentId}).
 		Error
 
 	return
 }
 
-func (r *ScenarioCategoryRepo) GetMaxOrder(parentId uint) (order int) {
-	node := model.ScenarioCategory{}
+func (r *CategoryRepo) GetMaxOrder(parentId uint, typ serverConsts.CategoryDiscriminator, projectId uint) (order int) {
+	node := model.Category{}
 
-	err := r.DB.Model(&model.ScenarioCategory{}).
-		Where("parent_id=?", parentId).
+	err := r.DB.Model(&model.Category{}).
+		Where("parent_id=? AND type = ? AND project_id = ?", parentId, typ, projectId).
 		Order("ordr DESC").
 		First(&node).Error
 

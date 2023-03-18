@@ -146,55 +146,6 @@ export async function saveProcessorName(data: any): Promise<any> {
     });
 }
 
-// category tree
-export async function loadCategory(): Promise<any> {
-    const params = {}
-    return request({
-        url: `/${apiPathCategoryNodes}/load`,
-        method: 'get',
-        params,
-    });
-}
-export async function getCategory(id: number): Promise<any> {
-    return request({url: `/${apiPathCategoryNodes}/${id}`});
-}
-export async function createCategory(data): Promise<any> {
-    return request({
-        url: `/${apiPathCategoryNodes}`,
-        method: 'POST',
-        data: data,
-    });
-}
-export async function updateCategory(id: number, params: any): Promise<any> {
-    return request({
-        url: `/${apiPathCategoryNodes}/${id}`,
-        method: 'PUT',
-        data: params,
-    });
-}
-export async function updateCategoryName(id: number, name: string): Promise<any> {
-    const data = {id: id, name: name}
-
-    return request({
-        url: `/${apiPathCategoryNodes}/${id}/updateName`,
-        method: 'PUT',
-        data: data,
-    });
-}
-export async function removeCategory(id: number): Promise<any> {
-    return request({
-        url: `/${apiPathCategoryNodes}/${id}`,
-        method: 'delete',
-    });
-}
-export async function moveCategory(data: any): Promise<any> {
-    return request({
-        url: `/${apiPathCategoryNodes}/move`,
-        method: 'post',
-        data: data,
-    });
-}
-
 export async function getInterface(interfaceId: number): Promise<any> {
     const params = {interfaceId: interfaceId}
 

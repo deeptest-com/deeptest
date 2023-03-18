@@ -3,6 +3,7 @@ package repo
 import (
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
@@ -268,43 +269,38 @@ func (r *ProjectRepo) AddProjectRootInterface(projectId uint) (err error) {
 	interf := model.Interface{InterfaceBase: model.InterfaceBase{Name: "所有接口", ProjectId: projectId}}
 	err = r.DB.Create(&interf).Error
 
+	// TODO: use this
+	//root := model.Category{
+	//	Name:      "分类",
+	//	Type:      serverConsts.InterfaceCategory,
+	//	ProjectId: projectId,
+	//	IsLeaf:    false,
+	//}
+	//err = r.DB.Create(&root).Error
+
 	return
 }
 
 func (r *ProjectRepo) AddProjectRootScenarioCategory(projectId uint) (err error) {
-	root := model.ScenarioCategory{
-		Name:      "所有场景",
+	root := model.Category{
+		Name:      "分类",
+		Type:      serverConsts.ScenarioCategory,
 		ProjectId: projectId,
 		IsLeaf:    false,
 	}
 	err = r.DB.Create(&root).Error
-
-	category := model.ScenarioCategory{
-		Name:      "分类",
-		ParentId:  root.ID,
-		ProjectId: projectId,
-		IsLeaf:    false,
-	}
-	err = r.DB.Create(&category).Error
 
 	return
 }
 
 func (r *ProjectRepo) AddProjectRootPlanCategory(projectId uint) (err error) {
-	root := model.PlanCategory{
-		Name:      "所有计划",
+	root := model.Category{
+		Name:      "分类",
+		Type:      serverConsts.PlanCategory,
 		ProjectId: projectId,
 		IsLeaf:    false,
 	}
 	err = r.DB.Create(&root).Error
-
-	category := model.PlanCategory{
-		Name:      "分类",
-		ParentId:  root.ID,
-		ProjectId: projectId,
-		IsLeaf:    false,
-	}
-	err = r.DB.Create(&category).Error
 
 	return
 }

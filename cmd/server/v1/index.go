@@ -35,7 +35,7 @@ type IndexModule struct {
 	CheckpointModule  *router.CheckpointModule  `inject:""`
 	ParserModule      *router.ParserModule      `inject:""`
 
-	ScenarioCategoryModule   *router.ScenarioCategoryModule    `inject:""`
+	CategoryModule           *router.CategoryModule            `inject:""`
 	ScenarioModule           *router.ScenarioModule            `inject:""`
 	ScenarioNodeModule       *router.ScenarioNodeModule        `inject:""`
 	ScenarioProcessorModule  *router.ScenarioProcessorModule   `inject:""`
@@ -45,7 +45,6 @@ type IndexModule struct {
 	//ReportModule             *router.ReportModule              `inject:""`
 	EndpointModule       *router.EndpointModule       `inject:""`
 	ServeModule          *router.ServeModule          `inject:""`
-	PlanCategoryModule   *router.PlanCategoryModule   `inject:""`
 	PlanModule           *router.PlanModule           `inject:""`
 	PlanExecModule       *router.PlanExecModule       `inject:""`
 	ScenarioReportModule *router.ScenarioReportModule `inject:""`
@@ -92,7 +91,7 @@ func (m *IndexModule) Party() module.WebModule {
 		m.CheckpointModule.Party(),
 		m.ParserModule.Party(),
 
-		m.ScenarioCategoryModule.Party(),
+		m.CategoryModule.Party(),
 		m.ScenarioModule.Party(),
 		m.ScenarioNodeModule.Party(),
 		m.ScenarioProcessorModule.Party(),
@@ -104,7 +103,6 @@ func (m *IndexModule) Party() module.WebModule {
 		m.EndpointModule.Party(),
 		m.ServeModule.Party(),
 
-		m.PlanCategoryModule.Party(),
 		m.PlanModule.Party(),
 		m.PlanExecModule.Party(),
 

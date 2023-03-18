@@ -19,16 +19,16 @@ import {
     moveNode,
     addInterfaces, addProcessor,
     saveProcessorName, saveProcessor, saveInterface,
+} from './service';
 
+import {
     loadCategory,
     getCategory,
     createCategory,
     updateCategory,
     removeCategory,
     moveCategory,
-    updateCategoryName,
-
-} from './service';
+    updateCategoryName} from "@/services/category";
 
 // below use same apis with interface controller
 import {
@@ -444,7 +444,7 @@ const StoreModel: ModuleType = {
 
         // category tree
         async loadCategory({commit}) {
-            const response = await loadCategory();
+            const response = await loadCategory("scenario");
             if (response.code != 0) return;
 
             const {data} = response;

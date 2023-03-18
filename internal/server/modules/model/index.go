@@ -37,10 +37,9 @@ var (
 		&Invocation{},
 		&Auth2Token{},
 
-		&ScenarioCategory{},
+		&Category{},
 		&Scenario{},
 
-		&PlanCategory{},
 		&Plan{},
 		&RelaPlanScenario{},
 

@@ -80,7 +80,8 @@ import {getExpandedKeys, getSelectedKey, setExpandedKeys, setSelectedKey} from "
 import {getContextMenuStyle} from "@/utils/dom";
 import {StateType as ScenarioStateType} from "../store";
 import {StateType as ProjectStateType} from "@/store/project";
-import {isRoot, updateNodeName, isInterface, updateCategoryName} from "../service";
+import {isInterface} from "../service";
+import {updateCategoryName} from "@/services/category";
 import TreeContextMenu from "./tree-context-menu.vue";
 
 const useForm = Form.useForm;
@@ -274,7 +275,8 @@ const renameNode = () => {
 const addNode = (mode, targetId) => {
   console.log('addNode', mode, targetId)
 
-    store.dispatch('Scenario/createCategoryNode', {mode, targetId, name: '新分类'}).then((newNode) => {
+    store.dispatch('Scenario/createCategoryNode',
+        {mode, targetId, name: '新分类', type: 'scenario'}).then((newNode) => {
       console.log('createCategoryNode successfully', newNode)
       selectNode([newNode.id], null)
       expandOneKey(treeDataMapCategory.value, mode === 'parent' ? newNode.id : newNode.parentId, expandedKeys.value) // expend new node
@@ -304,7 +306,8 @@ const onDrop = (info: DropEvent) => {
   if (isInterface(treeDataMapCategory.value[dropKey].processorCategory) && dropPosition === 0) dropPosition = 1
   console.log(dragKey, dropKey, dropPosition);
 
-  store.dispatch('Scenario/moveCategoryNode', {dragKey: dragKey, dropKey: dropKey, dropPos: dropPosition}).then(
+  store.dispatch('Scenario/moveCategoryNode',
+      {dragKey: dragKey, dropKey: dropKey, dropPos: dropPosition, type: 'scenario'}).then(
       (result) => {
         if (result) {
           expandOneKey(treeDataMapCategory.value, dropKey, expandedKeys.value) // expend parent node

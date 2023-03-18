@@ -33,3 +33,15 @@ const (
 func (e DropPos) Int() int {
 	return int(e)
 }
+
+type CategoryDiscriminator string
+
+const (
+	PlanCategory      CategoryDiscriminator = "plan"
+	ScenarioCategory  CategoryDiscriminator = "scenario"
+	InterfaceCategory CategoryDiscriminator = "interface"
+)
+
+func (e CategoryDiscriminator) String() string {
+	return string(e)
+}

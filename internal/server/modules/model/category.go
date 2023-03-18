@@ -1,10 +1,11 @@
 package model
 
 import (
+	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/kataras/iris/v12"
 )
 
-type ScenarioCategory struct {
+type Category struct {
 	BaseModel
 
 	Name   string `json:"name"`
@@ -20,9 +21,9 @@ type ScenarioCategory struct {
 	Children []*Processor `gorm:"-" json:"children"`
 	Slots    iris.Map     `gorm:"-" json:"slots"`
 
-	ModuleId uint `json:"moduleId"`
+	Type serverConsts.CategoryDiscriminator `json:"type"`
 }
 
-func (ScenarioCategory) TableName() string {
-	return "biz_scenario_category"
+func (Category) TableName() string {
+	return "biz_category"
 }

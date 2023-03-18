@@ -8,6 +8,7 @@ type PlanExecReq struct {
 }
 
 type PlanExecObj struct {
+	Name      string            `json:"name"`
 	Scenarios []ScenarioExecObj `json:"scenarios"`
 
 	ServerUrl string `json:"serverUrl"`

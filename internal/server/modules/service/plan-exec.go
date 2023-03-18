@@ -14,6 +14,8 @@ type PlanExecService struct {
 	PlanReportRepo *repo.PlanReportRepo `inject:""`
 	TestLogRepo    *repo.LogRepo        `inject:""`
 
+	ScenarioExecService *ScenarioExecService `inject:""`
+
 	EnvironmentService *EnvironmentService `inject:""`
 	DatapoolService    *DatapoolService    `inject:""`
 }
@@ -29,17 +31,19 @@ func (s *PlanExecService) LoadExecResult(planId int) (result domain.Report, err 
 	return
 }
 
-func (s *PlanExecService) LoadExecData(planId int) (ret agentExec.ScenarioExecObj, err error) {
-	//plan, err := s.PlanRepo.Get(uint(planId))
-	//if err != nil {
-	//	return
-	//}
+func (s *PlanExecService) LoadExecData(planId int) (ret agentExec.PlanExecObj, err error) {
+	plan, err := s.PlanRepo.Get(uint(planId))
+	if err != nil {
+		return
+	}
 
-	//rootProcessor, _ := s.PlanNodeRepo.GetTree(plan, true)
-	//ret.Variables, _ = s.EnvironmentService.ListVariableForExec(plan)
-	//ret.Datapools, _ = s.DatapoolService.ListForExec(plan.ProjectId)
-	//
-	//ret.RootProcessor = rootProcessor
+	scenarios, err := s.PlanRepo.ListScenario(plan.ID)
+	for _, scenario := range scenarios {
+		scenarioExecObj, _ := s.ScenarioExecService.LoadExecData(scenario.ID)
+		ret.Scenarios = append(ret.Scenarios, scenarioExecObj)
+	}
+
+	ret.Name = plan.Name
 
 	return
 }

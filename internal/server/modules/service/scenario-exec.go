@@ -35,8 +35,8 @@ func (s *ScenarioExecService) LoadExecResult(scenarioId int) (result domain.Repo
 	return
 }
 
-func (s *ScenarioExecService) LoadExecData(scenarioId int) (ret agentExec.ScenarioExecObj, err error) {
-	scenario, err := s.ScenarioRepo.Get(uint(scenarioId))
+func (s *ScenarioExecService) LoadExecData(scenarioId uint) (ret agentExec.ScenarioExecObj, err error) {
+	scenario, err := s.ScenarioRepo.Get(scenarioId)
 	if err != nil {
 		return
 	}

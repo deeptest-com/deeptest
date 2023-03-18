@@ -98,8 +98,8 @@ const store = useStore<{ Plan: PlanStateType, Global: GlobalStateType, Exec: Exe
 const collapsed = computed<boolean>(()=> store.state.Global.collapsed);
 const execResult = computed<any>(()=> store.state.Plan.execResult);
 
-const scenarioId = ref(+router.currentRoute.value.params.id)
-store.dispatch('Plan/loadExecResult', scenarioId.value);
+const planId = ref(+router.currentRoute.value.params.id)
+store.dispatch('Plan/loadExecResult', planId.value);
 
 const execStart = async () => {
   console.log('execStart')
@@ -107,21 +107,21 @@ const execStart = async () => {
   const data = {
     serverUrl: process.env.VUE_APP_API_SERVER, // used by agent to submit result to server
     token: await getToken(),
-    scenarioId: scenarioId.value,
+    planId: planId.value,
   }
 
-  WebSocket.sentMsg(settings.webSocketRoom, JSON.stringify({act: 'execPlan', execReq: data}))
+  WebSocket.sentMsg(settings.webSocketRoom, JSON.stringify({act: 'execPlan', planExecReq: data}))
 }
 
 const execCancel = () => {
   console.log('execCancel')
-  const msg = {act: 'stop', execReq: {scenarioId: scenarioId.value}}
+  const msg = {act: 'stop', execReq: {scenarioId: planId.value}}
   WebSocket.sentMsg(settings.webSocketRoom, JSON.stringify(msg))
 }
 
 const design = () => {
   console.log('design')
-  router.push(`/scenario/design/${scenarioId.value}`)
+  router.push(`/scenario/design/${planId.value}`)
 }
 
 onMounted(() => {

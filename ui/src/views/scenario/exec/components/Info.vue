@@ -110,7 +110,7 @@ const execStart = async () => {
     scenarioId: scenarioId.value,
   }
 
-  WebSocket.sentMsg(settings.webSocketRoom, JSON.stringify({act: 'execScenario', execReq: data}))
+  WebSocket.sentMsg(settings.webSocketRoom, JSON.stringify({act: 'execScenario', scenarioExecReq: data}))
 }
 
 const execCancel = () => {

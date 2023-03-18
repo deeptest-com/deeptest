@@ -28,7 +28,7 @@ func (s *PlanService) ExecPlan(req *agentExec.PlanExecReq, wsMsg *websocket.Mess
 	}
 	for _, scenario := range planExecObj.Scenarios {
 		session, _ := s.ScenarioService.Exec(&scenario, wsMsg)
-		results.Scenarios[scenario.RootProcessor.ScenarioId] = session.RootProcessor.Result
+		results.Scenarios = append(results.Scenarios, session.RootProcessor.Result)
 	}
 
 	// submit result

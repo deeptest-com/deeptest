@@ -90,25 +90,25 @@ func (c *WebSocketCtrl) OnChat(wsMsg websocket.Message) (err error) {
 			}
 		}
 
-		c.ScenarioService.CancelAndSendMsg(req.ExecReq.ScenarioId, wsMsg)
+		c.ScenarioService.CancelAndSendMsg(req.ScenarioExecReq.ScenarioId, wsMsg)
 
 		return
 	}
 
 	if execUtils.GetRunning() && (act == consts.ExecStart) { // already running
-		execUtils.SendAlreadyRunningMsg(req.ExecReq.ScenarioId, wsMsg)
+		execUtils.SendAlreadyRunningMsg(req.ScenarioExecReq.ScenarioId, wsMsg)
 		return
 	}
 
 	if act == consts.ExecScenario {
 		ch = make(chan int, 1)
 		go func() {
-			c.ScenarioService.ExecScenario(&req.ExecReq, &wsMsg)
+			c.ScenarioService.ExecScenario(&req.ScenarioExecReq, &wsMsg)
 		}()
 	} else if act == consts.ExecPlan {
 		ch = make(chan int, 1)
 		go func() {
-			//c.PlanService.ExecPlan(&req.ExecReq, &wsMsg)
+			c.PlanService.ExecPlan(&req.PlanExecReq, &wsMsg)
 		}()
 	}
 

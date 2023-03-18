@@ -41,10 +41,9 @@ func (c *PlanExecCtrl) LoadExecResult(ctx iris.Context) {
 
 // SubmitResult
 func (c *PlanExecCtrl) SubmitResult(ctx iris.Context) {
-	//scenarioId, err := ctx.URLParamInt("id")
 	planId, err := ctx.Params().GetInt("id")
 
-	result := map[uint]*agentDomain.PlanExecResult{}
+	result := agentDomain.PlanExecResult{}
 	err = ctx.ReadJSON(&result)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})

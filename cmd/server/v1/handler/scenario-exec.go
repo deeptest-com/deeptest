@@ -41,7 +41,6 @@ func (c *ScenarioExecCtrl) LoadExecResult(ctx iris.Context) {
 
 // SubmitResult
 func (c *ScenarioExecCtrl) SubmitResult(ctx iris.Context) {
-	//scenarioId, err := ctx.URLParamInt("id")
 	scenarioId, err := ctx.Params().GetInt("id")
 
 	result := agentDomain.ScenarioExecResult{}

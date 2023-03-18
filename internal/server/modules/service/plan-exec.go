@@ -48,7 +48,7 @@ func (s *PlanExecService) LoadExecData(planId int) (ret agentExec.PlanExecObj, e
 	return
 }
 
-func (s *PlanExecService) SaveReport(planId int, result map[uint]*agentDomain.PlanExecResult) (
+func (s *PlanExecService) SaveReport(planId int, result agentDomain.PlanExecResult) (
 	report model.PlanReport, err error) {
 	//plan, _ := s.PlanRepo.Get(uint(planId))
 	//rootResult.Name = plan.Name

@@ -196,6 +196,7 @@ const OnWebSocketMsg = (data: any) => {
         text-align: right;
       }
     }
+
     .logs {
       padding: 0px 12px;
     }

@@ -155,7 +155,7 @@ const OnWebSocketMsg = (data: any) => {
   const log = wsMsg.data
   logMap.value[log.id] = log
 
-  if (log.parentId === 0) {
+  if (log.parentId === 0) { // root
     logTreeData.value = log
     logTreeData.value.name = execResult.value.name
   } else {

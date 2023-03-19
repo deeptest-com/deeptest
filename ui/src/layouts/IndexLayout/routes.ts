@@ -68,7 +68,7 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
       },
     ],
   },
-  //  接口管理列表页面
+  //  接口管理
   {
     title: '接口管理列表页面',
     path: '/interfaceV2',
@@ -84,7 +84,7 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
       },
     ],
   },
-  //  项目管理
+  // 项目管理
   {
     title: '项目设置',
     path: '/projectSetting',

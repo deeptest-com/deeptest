@@ -64,45 +64,44 @@ func (s *PlanExecService) SaveReport(planId int, result agentDomain.PlanExecResu
 
 	return
 }
-func (s *PlanExecService) CombineReport(scenarioReport model.ScenarioReport, planReport *model.PlanReport) (
-	report model.PlanReport, err error) {
+func (s *PlanExecService) CombineReport(scenarioReport model.ScenarioReport, planReport *model.PlanReport) (err error) {
 
-	report.InterfaceStatusMap = map[uint]map[consts.ResultStatus]int{}
+	planReport.InterfaceStatusMap = map[uint]map[consts.ResultStatus]int{}
 
-	if report.StartTime == nil || report.StartTime.Unix() > scenarioReport.StartTime.Unix() {
-		report.StartTime = scenarioReport.StartTime
+	if planReport.StartTime == nil || planReport.StartTime.Unix() > scenarioReport.StartTime.Unix() {
+		planReport.StartTime = scenarioReport.StartTime
 	}
-	if report.EndTime == nil || report.EndTime.Unix() < scenarioReport.EndTime.Unix() {
-		report.EndTime = scenarioReport.EndTime
+	if planReport.EndTime == nil || planReport.EndTime.Unix() < scenarioReport.EndTime.Unix() {
+		planReport.EndTime = scenarioReport.EndTime
 	}
 
 	if scenarioReport.ProgressStatus != consts.End {
-		report.ProgressStatus = scenarioReport.ProgressStatus
+		planReport.ProgressStatus = scenarioReport.ProgressStatus
 	}
 	if scenarioReport.ResultStatus != consts.Pass {
-		report.ResultStatus = scenarioReport.ResultStatus
+		planReport.ResultStatus = scenarioReport.ResultStatus
 	}
 
-	report.TotalRequestNum += scenarioReport.TotalRequestNum
-	report.PassRequestNum += scenarioReport.PassRequestNum
-	report.FailRequestNum += scenarioReport.FailRequestNum
+	planReport.TotalRequestNum += scenarioReport.TotalRequestNum
+	planReport.PassRequestNum += scenarioReport.PassRequestNum
+	planReport.FailRequestNum += scenarioReport.FailRequestNum
 
-	report.TotalAssertionNum += scenarioReport.TotalAssertionNum
-	report.PassAssertionNum += scenarioReport.PassAssertionNum
-	report.FailAssertionNum += scenarioReport.FailAssertionNum
+	planReport.TotalAssertionNum += scenarioReport.TotalAssertionNum
+	planReport.PassAssertionNum += scenarioReport.PassAssertionNum
+	planReport.FailAssertionNum += scenarioReport.FailAssertionNum
 
 	for keyId := range scenarioReport.InterfaceStatusMap {
-		if report.InterfaceStatusMap[keyId] == nil {
-			report.InterfaceStatusMap[keyId] = map[consts.ResultStatus]int{}
-			report.InterfaceStatusMap[keyId][consts.Pass] = 0
-			report.InterfaceStatusMap[keyId][consts.Fail] = 0
+		if planReport.InterfaceStatusMap[keyId] == nil {
+			planReport.InterfaceStatusMap[keyId] = map[consts.ResultStatus]int{}
+			planReport.InterfaceStatusMap[keyId][consts.Pass] = 0
+			planReport.InterfaceStatusMap[keyId][consts.Fail] = 0
 		}
 
 		if _, ok := scenarioReport.InterfaceStatusMap[keyId][consts.Pass]; ok {
-			report.InterfaceStatusMap[keyId][consts.Pass] += scenarioReport.InterfaceStatusMap[keyId][consts.Pass]
+			planReport.InterfaceStatusMap[keyId][consts.Pass] += scenarioReport.InterfaceStatusMap[keyId][consts.Pass]
 		}
 		if _, ok := scenarioReport.InterfaceStatusMap[keyId][consts.Fail]; ok {
-			report.InterfaceStatusMap[keyId][consts.Fail] += scenarioReport.InterfaceStatusMap[keyId][consts.Fail]
+			planReport.InterfaceStatusMap[keyId][consts.Fail] += scenarioReport.InterfaceStatusMap[keyId][consts.Fail]
 		}
 
 	}

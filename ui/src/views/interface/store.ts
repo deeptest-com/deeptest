@@ -1,132 +1,99 @@
-import {Action, Mutation} from 'vuex';
-import {StoreModuleType} from "@/utils/store";
+import { Mutation, Action } from 'vuex';
+import { StoreModuleType } from "@/utils/store";
+import { ResponseData } from '@/utils/request';
+import { Interface, QueryResult, QueryParams, PaginationConfig } from './data.d';
+import {
+    query,
+    get,
+    save,
+    remove,
+    loadExecResult,
+} from './service';
 
 import {
-    clearShareVar,
-    create,
-    createExtractorOrUpdateResult,
-    get,
-    getCheckpoint,
-    getExtractor,
-    getInvocationAsInterface,
-    getLastInvocationResp,
-    load,
-    move,
-    remove,
-    removeCheckpoint,
-    removeExtractor,
-    removeInvocation,
-    removeShareVar,
-    saveCheckpoint,
-    saveExtractor,
-    saveInterface,
-    update,
-    listInvocation,
+    loadCategory,
+    getCategory,
+    createCategory,
+    updateCategory,
+    removeCategory,
+    moveCategory,
+    updateCategoryName} from "@/services/category";
 
-    invokeInterface,
-    listExtractor,
-    listCheckpoint,
-    listValidExtractorVariableForInterface, getSnippet,
-} from './service';
-import {Checkpoint, Extractor, Interface, Response} from "@/views/interface/data";
 import {getNodeMap} from "@/services/tree";
-import {UsedBy} from "@/utils/enum";
 
 export interface StateType {
-    treeData: any[];
-    treeDataMap: any,
-    interfaceData: Interface;
-    responseData: Response;
+    interfaceId: number;
 
-    invocationsData: any[];
+    listResult: QueryResult;
+    detailResult: Interface;
+    queryParams: any;
 
-    extractorsData: any[];
-    extractorData: any;
-    validExtractorVariablesData: any[];
+    execResult: any;
 
-    checkpointsData: any[];
-    checkpointData: any;
+    treeDataCategory: any[];
+    treeDataMapCategory: any,
+    nodeDataCategory: any;
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
     state: StateType;
     mutations: {
-        setTreeData: Mutation<StateType>;
-        setTreeDataMap: Mutation<StateType>;
-        setTreeDataMapItem: Mutation<StateType>;
-        setTreeDataMapItemProp: Mutation<StateType>;
+        setInterfaceId: Mutation<StateType>;
 
-        setInterface: Mutation<StateType>;
-        setResponse: Mutation<StateType>;
-        setInvocations: Mutation<StateType>;
+        setList: Mutation<StateType>;
+        setDetail: Mutation<StateType>;
+        setQueryParams: Mutation<StateType>;
 
-        setExtractors: Mutation<StateType>;
-        setExtractor: Mutation<StateType>;
-        setValidExtractorVariables: Mutation<StateType>;
+        setExecResult: Mutation<StateType>;
 
-        setCheckpoints: Mutation<StateType>;
-        setCheckpoint: Mutation<StateType>;
-
-        setUrl: Mutation<StateType>;
-        setBody: Mutation<StateType>;
-        setParam: Mutation<StateType>;
-        setHeader: Mutation<StateType>;
-        setPreRequestScript: Mutation<StateType>;
+        setTreeDataCategory: Mutation<StateType>;
+        setTreeDataMapCategory: Mutation<StateType>;
+        setTreeDataMapItemCategory: Mutation<StateType>;
+        setTreeDataMapItemPropCategory: Mutation<StateType>;
+        setNodeCategory: Mutation<StateType>;
     };
     actions: {
-        invokeInterface: Action<StateType, StateType>;
-        saveInterface: Action<StateType, StateType>;
-        saveTreeMapItemProp: Action<StateType, StateType>;
-
-        loadInterface: Action<StateType, StateType>;
+        listInterface: Action<StateType, StateType>;
         getInterface: Action<StateType, StateType>;
-        getLastInvocationResp: Action<StateType, StateType>;
-        createInterface: Action<StateType, StateType>;
-        updateInterface: Action<StateType, StateType>;
-        deleteInterface: Action<StateType, StateType>;
-        moveInterface: Action<StateType, StateType>;
+        saveInterface: Action<StateType, StateType>;
+        removeInterface: Action<StateType, StateType>;
 
-        listInvocation: Action<StateType, StateType>;
-        getInvocationAsInterface: Action<StateType, StateType>;
-        removeInvocation: Action<StateType, StateType>;
+        loadCategory: Action<StateType, StateType>;
+        getCategoryNode: Action<StateType, StateType>;
+        createCategoryNode: Action<StateType, StateType>;
+        updateCategoryNode: Action<StateType, StateType>;
+        removeCategoryNode: Action<StateType, StateType>;
+        moveCategoryNode: Action<StateType, StateType>;
+        saveTreeMapItemCategory: Action<StateType, StateType>;
+        saveTreeMapItemPropCategory: Action<StateType, StateType>;
+        saveCategory: Action<StateType, StateType>;
+        updateCategoryName: Action<StateType, StateType>;
 
-        listExtractor: Action<StateType, StateType>;
-        getExtractor: Action<StateType, StateType>;
-        saveExtractor: Action<StateType, StateType>;
-        createExtractorOrUpdateResult: Action<StateType, StateType>;
-        removeExtractor: Action<StateType, StateType>;
-        removeShareVar: Action<StateType, StateType>;
-        clearShareVar: Action<StateType, StateType>;
-        listValidExtractorVariableForInterface: Action<StateType, StateType>;
-
-        listCheckpoint: Action<StateType, StateType>;
-        getCheckpoint: Action<StateType, StateType>;
-        saveCheckpoint: Action<StateType, StateType>;
-        removeCheckpoint: Action<StateType, StateType>;
-
-        updateUrl: Action<StateType, StateType>;
-        updateBody: Action<StateType, StateType>;
-        updateParam: Action<StateType, StateType>;
-        updateHeader: Action<StateType, StateType>;
-        addSnippet: Action<StateType, StateType>;
-    };
+        loadExecResult: Action<StateType, StateType>;
+        updateExecResult: Action<StateType, StateType>;
+    }
 }
 
 const initState: StateType = {
-    treeData: [],
-    treeDataMap: {},
+    interfaceId: 0,
 
-    interfaceData: {} as Interface,
-    responseData: {} as Response,
+    listResult: {
+        list: [],
+        pagination: {
+            total: 0,
+            current: 1,
+            pageSize: 10,
+            showSizeChanger: true,
+            showQuickJumper: true,
+        },
+    },
+    detailResult: {} as Interface,
+    queryParams: {},
+    execResult: {},
 
-    invocationsData: [],
-
-    extractorsData: [],
-    extractorData: {} as Extractor,
-    validExtractorVariablesData: [],
-
-    checkpointsData: [],
-    checkpointData: {} as Checkpoint,
+    treeDataCategory: [],
+    treeDataMapCategory: {},
+    nodeDataCategory: {},
 };
 
 const StoreModel: ModuleType = {
@@ -136,385 +103,215 @@ const StoreModel: ModuleType = {
         ...initState
     },
     mutations: {
-        setTreeData(state, payload) {
-            payload.name = '所有接口'
-            state.treeData = [payload];
-        },
-        setTreeDataMap(state, payload) {
-            state.treeDataMap = payload
-        },
-        setTreeDataMapItem(state, payload) {
-            if (!state.treeDataMap[payload.id]) return
-            state.treeDataMap[payload.id] = payload
-        },
-        setTreeDataMapItemProp(state, payload) {
-            if (!state.treeDataMap[payload.id]) return
-            state.treeDataMap[payload.id][payload.prop] = payload.value
+        setInterfaceId(state, id) {
+            state.interfaceId = id;
         },
 
-        setInterface(state, data) {
-            state.interfaceData = data;
-
+        setList(state, payload) {
+            state.listResult = payload;
         },
-        setResponse(state, payload) {
-            state.responseData = payload;
-        },
-
-        setInvocations(state, payload) {
-            state.invocationsData = payload;
+        setDetail(state, payload) {
+            state.detailResult = payload;
         },
 
-        setExtractors(state, payload) {
-            state.extractorsData = payload;
+        setExecResult(state, data) {
+            state.execResult = data;
         },
 
-        setExtractor(state, payload) {
-            state.extractorData = payload;
+        setTreeDataCategory(state, data) {
+            state.treeDataCategory = [data];
+        },
+        setTreeDataMapCategory(state, payload) {
+            state.treeDataMapCategory = payload
+        },
+        setTreeDataMapItemCategory(state, payload) {
+            if (!state.treeDataMapCategory[payload.id]) return
+            state.treeDataMapCategory[payload.id] = payload
+        },
+        setTreeDataMapItemPropCategory(state, payload) {
+            if (!state.treeDataMapCategory[payload.id]) return
+            state.treeDataMapCategory[payload.id][payload.prop] = payload.value
+        },
+        setNodeCategory(state, data) {
+            state.nodeDataCategory = data;
         },
 
-        setValidExtractorVariables(state, payload) {
-            state.validExtractorVariablesData = payload;
-        },
-
-        setCheckpoints(state, payload) {
-            state.checkpointsData = payload;
-        },
-        setCheckpoint(state, payload) {
-            state.checkpointData = payload;
-        },
-
-        setUrl(state, payload) {
-            state.interfaceData.url = payload;
-        },
-        setBody(state, payload) {
-            state.interfaceData.body = payload;
-        },
-        setParam(state, payload) {
-            state.interfaceData.params[payload.index].value = payload.value;
-        },
-        setHeader(state, payload) {
-            console.log('setParam', payload)
-            state.interfaceData.headers[payload.index].value = payload.value;
-        },
-        setPreRequestScript(state, payload) {
-            console.log('setPreRequestScript', payload)
-            state.interfaceData.preRequestScript = payload;
+        setQueryParams(state, payload) {
+            state.queryParams = payload;
         },
     },
     actions: {
-        async invokeInterface({commit, dispatch, state}, data: any) {
-            const response = await invokeInterface(data)
-            // console.log('=invoke in interface=', response.data)
-
-            if (response.code === 0) {
-                commit('setResponse', response.data);
-
-                dispatch('listInvocation', state.interfaceData.id);
-                dispatch('listValidExtractorVariableForInterface');
-
-                dispatch('listExtractor');
-                dispatch('listCheckpoint');
-
-                return true;
-            } else {
-                return false
-            }
-        },
-        async saveInterface({commit}, payload: any) {
-            const json = await  saveInterface(payload)
-            if (json.code === 0) {
-                return true;
-            } else {
-                return false
-            }
-        },
-        async saveTreeMapItemProp({commit}, payload: any) {
-            commit('setTreeDataMapItemProp', payload);
-        },
-
-        async loadInterface({commit, dispatch, state}) {
-            const response = await load();
-            if (response.code != 0) return;
-
-            const {data} = response;
-            commit('setTreeData', data || {});
-
-            const mp = {}
-            getNodeMap(data, mp)
-            commit('setTreeDataMap', mp);
-
-            return true;
-        },
-        async getInterface({commit}, payload: any) {
-            if (!payload) {
-                commit('setInterface', {});
-                commit('setResponse', {});
-                return true;
-            }
-
-            if (!payload.isLeaf) {
-                commit('setInterface', {
-                    bodyType: 'application/json',
-                    headers: [{name:'', value:''}],
-                    params: [{name:'', value:''}],
-                    bodyFormData: [{name:'', value:'', type: 'text'}],
-                    bodyFormUrlencoded: [{name:'', value:''}],
-                });
-                commit('setResponse', {headers: [], contentLang: 'html', content: ''});
-                return true;
-            }
-
+        async listInterface({commit, dispatch}, params: QueryParams) {
             try {
-                const response = await get(payload.id);
-                // console.log('=get interface=', response.data)
+                const response: ResponseData = await query(params);
+                if (response.code != 0) return;
 
-                const {data} = response;
-                data.headers.push({name:'', value:''})
-                data.params.push({name:'', value:''})
-                data.bodyFormData.push({name:'', value:'', type: 'text'})
-                data.bodyFormUrlencoded.push({name:'', value:''})
+                const data = response.data;
 
-                commit('setInterface', data);
+                commit('setList', {
+                    ...initState.listResult,
+                    list: data.result || [],
+                    pagination: {
+                        ...initState.listResult.pagination,
+                        current: params.page,
+                        pageSize: params.pageSize,
+                        total: data.total || 0,
+                    },
+                });
+                commit('setQueryParams', params);
+
                 return true;
             } catch (error) {
                 return false;
             }
         },
-        async getLastInvocationResp({commit, dispatch, state}, id: number) {
-            const response = await getLastInvocationResp(id);
-            // console.log('=getLastInvocationResp=', response.data)
+        async getInterface({commit}, id: number) {
+            if (id === 0) {
+                commit('setDetail', {
+                    ...initState.detailResult,
+                })
+                return
+            }
+            try {
+                const response: ResponseData = await get(id);
+                const {data} = response;
+                commit('setDetail', {
+                    ...initState.detailResult,
+                    ...data,
+                });
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+
+        async saveInterface({commit}, payload: any) {
+            const jsn = await save(payload)
+            if (jsn.code === 0) {
+                return true;
+            } else {
+                return false
+            }
+        },
+        async removeInterface({commit, dispatch, state}, payload: number) {
+            try {
+                await remove(payload);
+                await dispatch('listInterface', state.queryParams)
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+
+        async loadExecResult({commit, dispatch, state}, scenarioId) {
+            const response = await loadExecResult(scenarioId);
+            if (response.code != 0) return;
 
             const {data} = response;
+            commit('setExecResult', data || {});
+            commit('setInterfaceId', scenarioId);
 
-            commit('setResponse', data);
             return true;
         },
-        async createInterface({commit, dispatch, state}, payload: any) {
-            try {
-                const resp = await create(payload);
+        async updateExecResult({commit, dispatch, state}, payload) {
+            commit('setExecResult', payload);
+            commit('setInterfaceId', payload.scenarioId);
 
-                await dispatch('loadInterface');
+            return true;
+        },
+
+        // category tree
+        async loadCategory({commit}) {
+            const response = await loadCategory('interface');
+            if (response.code != 0) return;
+
+            const {data} = response;
+            commit('setTreeDataCategory', data || {});
+
+            const mp = {}
+            getNodeMap(data, mp)
+
+            commit('setTreeDataMapCategory', mp);
+
+            return true;
+        },
+        async getCategoryNode({commit}, payload: any) {
+            try {
+                if (!payload) {
+                    commit('setNodeCategory', {});
+                    return true;
+                }
+
+                const response = await getCategory(payload.id);
+                const {data} = response;
+
+                commit('setNodeCategory', data);
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+        async createCategoryNode({commit, dispatch, state}, payload: any) {
+            try {
+                const resp = await createCategory(payload);
+
+                await dispatch('loadCategory');
                 return resp.data;
             } catch (error) {
                 return false;
             }
         },
-        async updateInterface({commit}, payload: any) {
+        async updateCategoryNode({commit}, payload: any) {
             try {
                 const {id, ...params} = payload;
-                await update(id, {...params});
+                await updateCategory(id, {...params});
                 return true;
             } catch (error) {
                 return false;
             }
         },
-        async deleteInterface({commit, dispatch, state}, payload: number) {
+        async removeCategoryNode({commit, dispatch, state}, payload: number) {
             try {
-                await remove(payload);
-                await dispatch('loadInterface');
+                await removeCategory(payload);
+                await dispatch('loadCategory');
                 return true;
             } catch (error) {
                 return false;
             }
         },
-        async moveInterface({commit, dispatch, state}, payload: any) {
+        async moveCategoryNode({commit, dispatch, state}, payload: any) {
             try {
-                await move(payload);
-                await dispatch('loadInterface');
+                await moveCategory(payload);
+                await dispatch('loadCategory');
                 return true;
             } catch (error) {
                 return false;
             }
         },
-
-        // invocation
-        async listInvocation({commit}, interfaceId: number) {
-            try {
-                const resp = await listInvocation(interfaceId);
-                const {data} = resp;
-                commit('setInvocations', data);
+        async saveTreeMapItemCategory({commit}, payload: any) {
+            commit('setTreeDataMapItemCategory', payload);
+        },
+        async saveTreeMapItemPropCategory({commit}, payload: any) {
+            commit('setTreeDataMapItemPropCategory', payload);
+        },
+        async saveCategory({commit, dispatch, state}, payload: any) {
+            const jsn = await updateCategory(payload.id, payload)
+            if (jsn.code === 0) {
+                commit('setCategory', jsn.data);
+                await dispatch('loadCategory');
                 return true;
-            } catch (error) {
-                return false;
+            } else {
+                return false
             }
         },
-        async getInvocationAsInterface({commit}, id: number) {
-            try {
-                const resp = await getInvocationAsInterface(id);
-                const {data} = resp;
-
-                commit('setInterface', data.req);
-                commit('setResponse', data.resp);
+        async updateCategoryName({commit, dispatch, state}, payload: any) {
+            const jsn = await updateCategoryName(payload.id, payload.name)
+            if (jsn.code === 0) {
+                await dispatch('loadCategory');
                 return true;
-            } catch (error) {
-                return false;
+            } else {
+                return false
             }
-        },
-        async removeInvocation({commit, dispatch, state}, data: any) {
-            try {
-                await removeInvocation(data.id);
-                dispatch('listInvocation', data.interfaceId);
-                return true;
-            } catch (error) {
-                return false;
-            }
-        },
-
-        // extractor
-        async listExtractor({commit, dispatch, state}) {
-            try {
-                const resp = await listExtractor(state.interfaceData.id, UsedBy.interface);
-                const {data} = resp;
-                commit('setExtractors', data);
-                return true;
-            } catch (error) {
-                return false;
-            }
-        },
-        async getExtractor({commit}, id: number) {
-            try {
-                const response = await getExtractor(id);
-                const {data} = response;
-
-                commit('setExtractor', data);
-                return true;
-            } catch (error) {
-                return false;
-            }
-        },
-        async saveExtractor({commit, dispatch, state}, payload: any) {
-            try {
-                await saveExtractor(payload);
-                dispatch('listExtractor', UsedBy.interface);
-                return true;
-            } catch (error) {
-                return false;
-            }
-        },
-        async createExtractorOrUpdateResult({commit, dispatch, state}, payload: any) {
-            try {
-                await createExtractorOrUpdateResult(payload);
-                dispatch('listExtractor');
-                dispatch('listValidExtractorVariableForInterface');
-                return true;
-            } catch (error) {
-                return false;
-            }
-        },
-        async removeExtractor({commit, dispatch, state}, payload) {
-            try {
-                await removeExtractor(payload.id);
-
-                dispatch('listExtractor');
-                return true;
-            } catch (error) {
-                return false;
-            }
-        },
-
-        // extractor variable
-        async clearShareVar({commit, dispatch, state}, payload: any) {
-            try {
-                const resp = await clearShareVar(state.interfaceData.id);
-                const {data} = resp;
-                dispatch('listValidExtractorVariableForInterface');
-
-                return true;
-            } catch (error) {
-                return false;
-            }
-        },
-        async removeShareVar({commit, dispatch, state}, payload: any) {
-            try {
-                const resp = await removeShareVar(payload.id);
-                const {data} = resp;
-                dispatch('listValidExtractorVariableForInterface');
-
-                return true;
-            } catch (error) {
-                return false;
-            }
-        },
-
-        async listValidExtractorVariableForInterface({commit, dispatch, state}) {
-            try {
-                console.log('listValidExtractorVariableForInterface')
-                const resp = await listValidExtractorVariableForInterface(state.interfaceData.id, UsedBy.interface);
-                const {data} = resp;
-                commit('setValidExtractorVariables', data);
-                return true;
-            } catch (error) {
-                return false;
-            }
-        },
-
-        // checkpoint
-        async listCheckpoint({commit, state}) {
-            try {
-                const resp = await listCheckpoint(state.interfaceData.id, UsedBy.interface);
-                const {data} = resp;
-                commit('setCheckpoints', data);
-                return true;
-            } catch (error) {
-                return false;
-            }
-        },
-        async getCheckpoint({commit}, id: number) {
-            try {
-                const response = await getCheckpoint(id);
-                const {data} = response;
-
-                commit('setCheckpoint', data);
-                return true;
-            } catch (error) {
-                return false;
-            }
-        },
-        async saveCheckpoint({commit, dispatch, state}, payload: any) {
-            try {
-                await saveCheckpoint(payload);
-                dispatch('listCheckpoint', UsedBy.interface);
-                return true
-            } catch (error) {
-                return false;
-            }
-        },
-        async removeCheckpoint({commit, dispatch, state}, id: number) {
-            try {
-                await removeCheckpoint(id);
-
-                dispatch('listCheckpoint', UsedBy.interface);
-                return true;
-            } catch (error) {
-                return false;
-            }
-        },
-
-        async updateUrl({commit, dispatch, state}, url: string) {
-            commit('setUrl', url);
-            return true;
-        },
-        async updateBody({commit, dispatch, state}, body: string) {
-            commit('setBody', body);
-            return true;
-        },
-        async updateParam({commit, dispatch, state}, data: any) {
-            commit('setParam', data);
-            return true;
-        },
-        async updateHeader({commit, dispatch, state}, data: any) {
-            commit('setHeader', data);
-            return true;
-        },
-        async addSnippet({commit, dispatch, state}, name: string) {
-            const json = await getSnippet(name)
-            if (json.code === 0) {
-                let script = state.interfaceData.preRequestScript + '\n' +  json.data.script
-                script = script.trim()
-                commit('setPreRequestScript', script);
-            }
-
-            return true;
         },
     }
 };

@@ -36,10 +36,10 @@ import {
     listExtractor,
     listCheckpoint,
     listValidExtractorVariableForInterface,
-} from "@/views/interface/service";
+} from "@/views/interface1/service";
 
 import {getNodeMap} from "@/services/tree";
-import {Interface, Response} from "@/views/interface/data";
+import {Interface, Response} from "@/views/interface1/data";
 import {UsedBy} from "@/utils/enum";
 
 export interface StateType {

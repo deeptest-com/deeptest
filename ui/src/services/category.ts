@@ -1,6 +1,6 @@
 import request from '@/utils/request';
 import {QueryParams} from "@/views/project/data";
-import {getEnumSelectItems} from "@/views/interface/service";
+import {getEnumSelectItems} from "@/views/interface1/service";
 import {
     ProcessorCookie, ProcessorData,
     ProcessorExtractor,

@@ -1,6 +1,6 @@
 import request from '@/utils/request';
 import {QueryParams} from "@/views/project/data";
-import {getEnumSelectItems} from "@/views/interface/service";
+import {getEnumSelectItems} from "@/views/interface1/service";
 import {
     ProcessorCookie, ProcessorData,
     ProcessorExtractor,
@@ -9,7 +9,7 @@ import {
     ProcessorCategory,
     ProcessorVariable, ProcessorAssertion, RequestBodyType
 } from "@/utils/enum";
-import {Interface} from "@/views/interface/data";
+import {Interface} from "@/views/interface1/data";
 
 const apiPath = 'scenarios';
 const apiPathNodes = `${apiPath}/nodes`;

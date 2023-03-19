@@ -1,64 +1,58 @@
 <template>
-  <div id="interface-design-main" class="interface-design-main dp-splits-v">
-    <div id="interface-design-left" class="left">
-      <InterfaceTree/>
+  <div id="interface-index-main" class="dp-splits-v">
+    <div id="interface-index-left">
+      <InterfaceTree />
     </div>
 
-    <div id="interface-design-splitter" class="splitter"></div>
+    <div id="interface-index-splitter" class="splitter"></div>
 
-    <div id="interface-design-right" class="right">
-      <InterfaceDesigner v-if="interfaceData.isLeaf"></InterfaceDesigner>
+    <div id="interface-index-right">
+        <InterfaceList />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import {computed, onMounted, onUnmounted, watch} from "vue";
-
+import {computed, onMounted, provide, ref} from "vue";
+import {useI18n} from "vue-i18n";
+import {Form} from 'ant-design-vue';
 import {resizeWidth} from "@/utils/dom";
-import {useStore} from "vuex";
-import {StateType as GlobalStateType} from "@/store/global";
-import {StateType as UserStateType} from "@/store/user";
-import {Interface} from "@/views/interface/data";
-import {StateType} from "@/views/interface/store";
+import {UsedBy} from "@/utils/enum";
 
-import InterfaceDesigner from './Designer.vue';
-import InterfaceTree from "./Tree.vue"
+import InterfaceTree from './list/tree.vue';
+import InterfaceList from './list/list.vue';
 
-const store = useStore<{ Global: GlobalStateType, User: UserStateType, Interface: StateType }>();
-const collapsed = computed<boolean>(() => store.state.Global.collapsed);
-const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
+const useForm = Form.useForm;
+
+const {t} = useI18n();
 
 onMounted(() => {
   console.log('onMounted')
   resize()
-  store.dispatch('Interface/getInterface', null)
 })
-onUnmounted(() => {
-  console.log('onUnmounted')
-})
-
-watch(collapsed, () => {
-  console.log('watch collapsed')
-  resize()
-}, {deep: true})
 
 const resize = () => {
-  resizeWidth('interface-design-main',
-      'interface-design-left', 'interface-design-splitter', 'interface-design-right',
-      260, 800)
+  resizeWidth('interface-index-main',
+      'interface-index-left', 'interface-index-splitter', 'interface-index-right', 320, 600)
 }
 
 </script>
 
 <style lang="less" scoped>
-.interface-design-main {
-  .left {
+#interface-index-main {
+  display: flex;
+  height: 100%;
+
+  #interface-index-left {
     width: 260px;
+    height: 100%;
   }
 
-  .right {
+  #interface-index-right {
     flex: 1;
+    width: 0;
+    height: 100%;
   }
 }
+
 </style>

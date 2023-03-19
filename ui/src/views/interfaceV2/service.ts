@@ -9,7 +9,7 @@ import {
     Interface,
     OAuth20,
     Param
-} from "@/views/interface/data";
+} from "@/views/interface1/data";
 import {isInArray} from "@/utils/array";
 import {UsedBy} from "@/utils/enum";
 

@@ -35,6 +35,7 @@
               <div class="no">
                 <a-checkbox :value="item.id" />
               </div>
+
               <div class="name">
                 {{ item.name }}
               </div>

@@ -62,14 +62,14 @@ import {Form, message} from 'ant-design-vue';
 import { HistoryOutlined, EnvironmentOutlined, TableOutlined } from '@ant-design/icons-vue';
 import {useStore} from "vuex";
 
-import {StateType} from "@/views/interface/store";
+import {StateType} from "@/views/interface1/store";
 import {resizeWidth} from "@/utils/dom";
 import {useRouter} from "vue-router";
 import {UsedBy} from "@/utils/enum";
 
-import RequestEnv from '@/views/interface/components/designer/others/env/index.vue';
-import RequestHistory from '@/views/interface/components/designer/others/history/index.vue';
-import Datapool from '@/views/interface/components/designer/others/datapool/index.vue';
+import RequestEnv from '@/views/interface1/components/designer/others/env/index.vue';
+import RequestHistory from '@/views/interface1/components/designer/others/history/index.vue';
+import Datapool from '@/views/interface1/components/designer/others/datapool/index.vue';
 import Processor from './components/Processor.vue';
 
 const router = useRouter();

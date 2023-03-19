@@ -266,17 +266,13 @@ func (r *ProjectRepo) AddProjectMember(projectId, userId uint, role string) (err
 }
 
 func (r *ProjectRepo) AddProjectRootInterface(projectId uint) (err error) {
-	interf := model.Interface{InterfaceBase: model.InterfaceBase{Name: "所有接口", ProjectId: projectId}}
-	err = r.DB.Create(&interf).Error
-
-	// TODO: use this
-	//root := model.Category{
-	//	Name:      "分类",
-	//	Type:      serverConsts.InterfaceCategory,
-	//	ProjectId: projectId,
-	//	IsLeaf:    false,
-	//}
-	//err = r.DB.Create(&root).Error
+	root := model.Category{
+		Name:      "分类",
+		Type:      serverConsts.InterfaceCategory,
+		ProjectId: projectId,
+		IsLeaf:    false,
+	}
+	err = r.DB.Create(&root).Error
 
 	return
 }

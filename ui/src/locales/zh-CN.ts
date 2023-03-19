@@ -26,6 +26,7 @@ export default {
     'project.invite': '邀请成员',
 
     'interface': '接口',
+    'interface1': '接口旧',
     'interfaceV2': '接口管理', // 新版 接口模块
     'projectSetting': '项目设置', // 新版 接口模块
     'scenario': '场景',

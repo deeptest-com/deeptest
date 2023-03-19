@@ -29,7 +29,10 @@
       </div>
 
       <div class="logs">
-        <Log v-if="logTreeData.logs" :logs="logTreeData.logs"></Log>
+        <div v-for="(data, idx) in logTreeData" :key="idx" class="scenario-item">
+          <div class="scenario-name">场景：{{data.name}}</div>
+          <Log v-if="data.logs" :logs="data.logs"></Log>
+        </div>
       </div>
 
       <div v-if="result.totalRequestNum > 0" class="result">
@@ -96,13 +99,14 @@ const { t } = useI18n();
 const router = useRouter();
 const store = useStore<{ Plan: PlanStateType, Global: GlobalStateType, Exec: ExecStatus; }>();
 const collapsed = computed<boolean>(()=> store.state.Global.collapsed);
-const execResult = computed<any>(()=> store.state.Plan.execResult);
 
 const planId = ref(+router.currentRoute.value.params.id)
 store.dispatch('Plan/loadExecResult', planId.value);
 
 const execStart = async () => {
   console.log('execStart')
+
+  logTreeData.value = []
 
   const data = {
     serverUrl: process.env.VUE_APP_API_SERVER, // used by agent to submit result to server
@@ -134,21 +138,24 @@ onUnmounted(() => {
   bus.off(settings.eventWebSocketMsg, OnWebSocketMsg);
 })
 
+const execResult = computed<any>(()=> store.state.Plan.execResult);
 const result = ref({} as any)
 const logMap = ref({} as any)
-const logTreeData = ref({} as any)
+const logTreeData = ref([] as any[])
 const OnWebSocketMsg = (data: any) => {
   console.log('--- WebsocketMsgEvent in exec info', data)
 
   if (!data.msg) return
 
   const wsMsg = JSON.parse(data.msg) as WsMsg
-  if (wsMsg.category == 'result') {
+  if (wsMsg.category == 'result') { // update result
     result.value = wsMsg.data
     return
-  } else if (wsMsg.category != '') {
+  } else if (wsMsg.category != '') { // update status
     execResult.value.progressStatus = wsMsg.category
-    if (wsMsg.category === 'in_progress') result.value = {}
+    if (wsMsg.category === 'in_progress') {
+      result.value = {}
+    }
     return
   }
 
@@ -156,8 +163,7 @@ const OnWebSocketMsg = (data: any) => {
   logMap.value[log.id] = log
 
   if (log.parentId === 0) { // root
-    logTreeData.value = log
-    logTreeData.value.name = execResult.value.name
+    logTreeData.value.push(log)
   } else {
     if (!logMap.value[log.parentId]) logMap.value[log.parentId] = {}
     if (!logMap.value[log.parentId].logs) logMap.value[log.parentId].logs = []
@@ -198,6 +204,11 @@ const OnWebSocketMsg = (data: any) => {
     }
     .logs {
       padding: 0px 12px;
+      .scenario-item {
+        .scenario-name {
+          padding: 10px 0 0 0;
+        }
+      }
     }
     .result {
       padding: 5px 12px 6px 12px;

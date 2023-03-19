@@ -96,7 +96,6 @@ const { t } = useI18n();
 const router = useRouter();
 const store = useStore<{ Scenario: ScenarioStateType, Global: GlobalStateType, Exec: ExecStatus; }>();
 const collapsed = computed<boolean>(()=> store.state.Global.collapsed);
-const execResult = computed<any>(()=> store.state.Scenario.execResult);
 
 const scenarioId = ref(+router.currentRoute.value.params.id)
 store.dispatch('Scenario/loadExecResult', scenarioId.value);
@@ -134,6 +133,7 @@ onUnmounted(() => {
   bus.off(settings.eventWebSocketMsg, OnWebSocketMsg);
 })
 
+const execResult = computed<any>(()=> store.state.Scenario.execResult);
 const result = ref({} as any)
 const logMap = ref({} as any)
 const logTreeData = ref({} as any)
@@ -143,10 +143,10 @@ const OnWebSocketMsg = (data: any) => {
   if (!data.msg) return
 
   const wsMsg = JSON.parse(data.msg) as WsMsg
-  if (wsMsg.category == 'result') {
+  if (wsMsg.category == 'result') { // update result
     result.value = wsMsg.data
     return
-  } else if (wsMsg.category != '') {
+  } else if (wsMsg.category != '') { // root
     execResult.value.progressStatus = wsMsg.category
     if (wsMsg.category === 'in_progress') result.value = {}
     return

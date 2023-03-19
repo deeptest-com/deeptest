@@ -46,6 +46,7 @@ func (s *ScenarioExecService) LoadExecData(scenarioId uint) (ret agentExec.Scena
 	ret.Datapools, _ = s.DatapoolService.ListForExec(scenario.ProjectId)
 
 	ret.RootProcessor = rootProcessor
+	ret.Name = scenario.Name
 
 	return
 }

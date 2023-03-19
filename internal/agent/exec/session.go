@@ -32,7 +32,7 @@ func NewSession(req *ScenarioExecObj, failfast bool, wsMsg *websocket.Message) (
 
 	session := Session{
 		ScenarioId:    root.ScenarioId,
-		Name:          root.Name,
+		Name:          req.Name,
 		RootProcessor: root,
 		Failfast:      failfast,
 		WsMsg:         wsMsg,

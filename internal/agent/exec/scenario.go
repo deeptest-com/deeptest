@@ -16,6 +16,7 @@ type ScenarioExecReq struct {
 }
 
 type ScenarioExecObj struct {
+	Name          string     `json:"name"`
 	RootProcessor *Processor `json:"rootProcessor"`
 
 	Variables domain.Variables `json:"variables"`

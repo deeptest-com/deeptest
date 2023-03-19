@@ -68,6 +68,22 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
       },
     ],
   },
+  //  接口管理列表页面
+  {
+    title: '接口管理列表页面',
+    path: '/interfaceV2',
+    redirect: '/interfaceV2/index',
+    component: BlankLayout,
+    children: [
+      {
+        icon: 'list',
+        title: 'interfaceV2',
+        path: 'index',
+        component: () => import('@/views/interfaceV2/index.vue'),
+        hidden: false,
+      },
+    ],
+  },
   //  项目管理
   {
     title: '项目设置',

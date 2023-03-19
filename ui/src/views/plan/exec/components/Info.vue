@@ -35,7 +35,7 @@
         </div>
       </div>
 
-      <div v-if="result.totalRequestNum > 0" class="result">
+      <div v-if="result.startTime" class="result">
         <a-row>
           <a-col :span="4">开始时间</a-col>
           <a-col :span="4">{{ momentShort(result.startTime) }}</a-col>
@@ -150,6 +150,7 @@ const OnWebSocketMsg = (data: any) => {
   const wsMsg = JSON.parse(data.msg) as WsMsg
   if (wsMsg.category == 'result') { // update result
     result.value = wsMsg.data
+    console.log('=====', result.value)
     return
   } else if (wsMsg.category != '') { // update status
     execResult.value.progressStatus = wsMsg.category

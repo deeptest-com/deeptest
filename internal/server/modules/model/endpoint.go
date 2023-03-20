@@ -13,6 +13,7 @@ type Endpoint struct {
 	PathParams []EndpointPathParam `gorm:"-" json:"pathParams"`
 	Interfaces []Interface         `gorm:"-" json:"interfaces"`
 	Versions   []EndpointVersion   `gorm:"-" json:"versions"`
+	ServeName  string              `gorm:"-" json:"serveName"`
 }
 
 func (Endpoint) TableName() string {

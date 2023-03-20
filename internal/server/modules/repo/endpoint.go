@@ -59,6 +59,8 @@ func (r *EndpointRepo) Paginate(req v1.EndpointReqPaginate) (ret _domain.PageDat
 		return
 	}
 
+	serveNames := map[uint]string{}
+
 	for key, result := range results {
 		var versions []model.EndpointVersion
 		r.DB.Find(&versions, "endpoint_id=?", result.ID).Order("version desc")
@@ -66,6 +68,13 @@ func (r *EndpointRepo) Paginate(req v1.EndpointReqPaginate) (ret _domain.PageDat
 		if len(versions) > 0 {
 			results[key].Version = versions[0].Version
 		}
+
+		if _, ok := serveNames[result.ServeId]; !ok {
+			var serve model.Serve
+			r.DB.Find(&serve, "id=?", result.ServeId)
+			serveNames[result.ServeId] = serve.Name
+		}
+		results[key].ServeName = serveNames[result.ServeId]
 	}
 
 	ret.Populate(results, count, req.Page, req.PageSize)

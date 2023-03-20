@@ -1,19 +1,16 @@
 <template>
-
   <a-modal
       width="600px"
       :visible="visible"
       @ok="ok"
       @cancel="cancal"
       title="新建接口">
-
     <a-form
         ref="formRef"
         :model="formState"
         :rules="rules"
         :label-col="labelCol"
-        :wrapper-col="wrapperCol"
-    >
+        :wrapper-col="wrapperCol">
       <a-form-item label="接口分类" name="tag">
         <a-select placeholder="请选择接口分类" v-model:value="formState.tag">
           <a-select-option value="shanghai">接口类型1</a-select-option>
@@ -130,9 +127,11 @@ const onSubmit = () => {
         console.log('error', error);
       });
 };
+
 const resetForm = () => {
   formRef.value.resetFields();
 };
+
 </script>
 
 <style lang="less" scoped>

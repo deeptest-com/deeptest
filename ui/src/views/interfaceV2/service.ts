@@ -1,50 +1,7 @@
 import request from '@/utils/request';
-import {requestToAgent} from '@/utils/request';
-import {
-    ApiKey,
-    BasicAuth, BearerToken,
-    BodyFormDataItem,
-    BodyFormUrlEncodedItem, Checkpoint, Extractor,
-    Header,
-    Interface,
-    OAuth20,
-    Param
-} from "@/views/interface1/data";
-import {isInArray} from "@/utils/array";
-import {UsedBy} from "@/utils/enum";
-
-const apiPath = 'interfaces';
-const apiImport = 'import';
-const apiSpec = 'spec';
-const apiInvocation = 'invocations';
-const apiAuth = 'auth';
-const apiEnvironment = 'environments'
-const apiEnvironmentVar = `${apiEnvironment}/vars`
-const apiShareVar = `${apiEnvironment}/shareVars`
-const apiSnippets = 'snippets'
-
-const apiExtractor = 'extractors'
-const apiCheckpoint = 'checkpoints'
-
-const apiParser = 'parser'
 
 
-interface InterfaceListReqParams {
-    "prjectId"?: number,
-    "page"?: number,
-    "pageSize"?: number,
-    "status"?: number,
-    "userId"?: number,
-    "title"?: string
-}
 
-//todo liguwe 待整理
-interface SaveInterfaceReqParams {
-    // project_id?: number,
-    serveId?: number,
-    title?: string,
-    path?: string
-}
 
 
 /**
@@ -122,3 +79,4 @@ export async function saveInterface(data: any): Promise<any> {
         data: data
     });
 }
+

@@ -2,129 +2,42 @@
   <div class="container">
     <div class="content">
       <div class="left tree">
-        <div class="tag-filter-form">
-          <a-input-search
-              class="search-input"
-              v-model:value="searchValue"
-              placeholder="搜索接口分类"/>
-          <div
-              @click="addApiTag"
-              class="add-btn"
-              type="link">
-            <PlusOutlined style="font-size: 12px;"/>
-          </div>
-        </div>
-        <div style="margin: 0 8px;">
-          <a-tree
-              v-if="treeData"
-              draggable
-              showLine
-              blockNode
-              showIcon
-              :expandedKeys="expandedKeys"
-              :auto-expand-parent="autoExpandParent"
-              @dragenter="onDragEnter"
-              @drop="onDrop"
-              @expand="onExpand"
-              @select="selectTreeItem"
-              :tree-data="treeData">
-            <template #switcherIcon>
-              <CaretDownOutlined/>
-            </template>
-            <template #title="nodeProps">
-              <div>
-                <span v-if="nodeProps.title.indexOf(searchValue) > -1">
-                  {{ nodeProps.title.substr(0, nodeProps.title.indexOf(searchValue)) }}<span style="color: #f50">{{
-                    searchValue
-                  }}</span>{{ nodeProps.title.substr(nodeProps.title.indexOf(searchValue) + searchValue.length) }}
-                </span>
-                <span v-else>{{ nodeProps.title }}</span>
-                <span class="more-icon">
-                  <a-dropdown>
-                       <EllipsisOutlined/>
-                      <template #overlay>
-                        <a-menu>
-                          <a-menu-item key="0" @click="newCategorie(nodeProps)">
-                             新建子分类
-                          </a-menu-item>
-                          <a-menu-item key="1" @click="deleteCategorie(nodeProps)">
-                            删除分类
-                          </a-menu-item>
-                          <a-menu-item key="1" @click="editCategorie(nodeProps)">
-                            编辑分类
-                          </a-menu-item>
-                        </a-menu>
-                      </template>
-                    </a-dropdown>
-                </span>
-              </div>
-            </template>
-          </a-tree>
-          <div v-else style="padding: 4px 32px 0 0;">
-            <a-alert
-                message="提示"
-                closable
-                description="您还未有添加接口分类，请点击上方添加按钮添加！"
-                type="info"
-                show-icon
-            />
-          </div>
-        </div>
+        左侧区域 待添加，公共树形结构
       </div>
       <!--  头部搜索区域  -->
       <div class="right">
         <div class="top-action">
-          <a-row type="flex" style="align-items: center;width: 100%">
-            <a-col :span="4">
-              <a-button class="action-new" type="primary" :loading="loading" @click="addApi">新建接口</a-button>
-              <a-button class="action-import" type="primary" :disabled="!hasSelected" :loading="loading"
-                        @click="importApi">
-                批量操作
-              </a-button>
-            </a-col>
-          </a-row>
+          <a-button
+              class="action-new"
+              type="primary"
+              :loading="loading"
+              @click="createApiModaVisible = true;">新建接口
+          </a-button>
+          <a-button class="action-import" type="primary" :disabled="!hasSelected" :loading="loading"
+                    @click="importApi">批量操作
+          </a-button>
         </div>
         <div class="top-search">
-          <a-row type="flex" :gutter="16" style="width: 100%" justify="space-between" >
-            <a-col :span="4">
-              <a-form-item label="创建人" style="margin-bottom: 0">
-                <a-select style="width: 140px;"   placeholder="请选择创建人">
-                  <a-select-option value="admin"> admin</a-select-option>
-                  <a-select-option value="superAdmin">super admin</a-select-option>
-                </a-select>
-              </a-form-item>
-            </a-col>
-            <a-col :span="4">
-              <a-form-item label="状态" style="margin-bottom: 0;">
-                <a-select  style="width: 140px;"  placeholder="请选择状态" :options="interfaceStatusOpts"/>
-              </a-form-item>
-            </a-col>
-            <a-col :span="8">
-              <a-form-item label="服务版本" style="margin-bottom: 0;">
-                <a-select placeholder="选择服务" style="margin-right: 8px;width: 140px;" :options="interfaceStatusOpts"/>
-                <a-select placeholder="选择服务版本" style="width: 140px;"  :options="serviceOptions"/>
-              </a-form-item>
-            </a-col>
-            <a-col :span="8" >
-              <a-input-search
-                  style="width: 300px;display: flex;justify-content: end;"
-                  placeholder="请输入关键词"
-                  enter-button
-                  @search="() => {
-
-                  }"
-              />
-            </a-col>
-          </a-row>
+          <TableFilter @filter="handleTableFilter"/>
         </div>
         <a-table
             style="margin: 0 16px;"
             :row-selection="{
-          selectedRowKeys: selectedRowKeys,
-          onChange: onSelectChange
-        }"
+              selectedRowKeys: selectedRowKeys,
+              onChange: onSelectChange
+            }"
+            :pagination="{
+                ...pagination,
+                onChange:async (page) => {
+                  await loadList(currProject.id,page,pagination.pageSize);
+                },
+                onShowSizeChange: async (page, size) => {
+                   await loadList(currProject.id,page,size);
+                },
+            }"
             :columns="columns"
-            :data-source="data">
+            :data-source="list"
+        >
           <template #colTitle="{text,record}">
             <div class="customTitleColRender">
               <span>{{ text }}</span>
@@ -139,7 +52,7 @@
           </template>
           <template #colPath="{text}">
             <div class="customTitleColRender">
-              <a-tag >{{ text }}</a-tag>
+              <a-tag>{{ text }}</a-tag>
             </div>
           </template>
           <template #action="{record}">
@@ -151,10 +64,10 @@
                     <a-button style="width: 80px" type="link" size="small" @click="copy(record)">复制</a-button>
                   </a-menu-item>
                   <a-menu-item key="2">
-                    <a-button style="width: 80px" type="link" size="small"  @click="del(record)">删除</a-button>
+                    <a-button style="width: 80px" type="link" size="small" @click="del(record)">删除</a-button>
                   </a-menu-item>
                   <a-menu-item key="3">
-                    <a-button style="width: 80px" type="link" size="small"  @click="disabled(record)">过时</a-button>
+                    <a-button style="width: 80px" type="link" size="small" @click="disabled(record)">过时</a-button>
                   </a-menu-item>
                 </a-menu>
               </template>
@@ -163,6 +76,11 @@
         </a-table>
       </div>
     </div>
+    <!--  创建新接口弹框  -->
+    <CreateApiModal
+        :visible="createApiModaVisible"
+        @cancal="createApiModaVisible = false;"
+        @ok="handleCreateApi"/>
     <!-- 编辑接口时，展开抽屉   -->
     <EditInterfaceDrawer
         :destroyOnClose="true"
@@ -170,19 +88,8 @@
         :visible="drawerVisible"
         :key="clickTag"
         @refreshList="refreshList"
-        @close="onCloseDrawer"/>
-    <!--  创建接口 Tag  -->
-    <CreateTagModal
-        :visible="createTagModalvisible"
-        :nodeInfo="currentNode"
-        :mode="tagModalMode"
-        @cancal="handleCancalTagModalCancal"
-        @ok="handleTagModalOk"/>
-    <!--  创建新接口弹框  -->
-    <CreateApiModal
-        :visible="createApiModalvisible"
-        @cancal="handleCancalCreateApi"
-        @ok="handleCreateApi"/>
+        @close="drawerVisible = false;"/>
+
   </div>
 </template>
 <script setup lang="ts">
@@ -191,58 +98,25 @@ import {
   watch
 } from 'vue';
 import {ColumnProps} from 'ant-design-vue/es/table/interface';
-import contenteditable from 'vue-contenteditable';
 import {
-  PlusOutlined,
   EditOutlined,
-  CaretLeftOutlined,
-  InfoCircleOutlined,
-  CaretDownOutlined,
-  EllipsisOutlined,
   MoreOutlined
 } from '@ant-design/icons-vue';
-import {requestMethodOpts, interfaceStatus, interfaceStatusOpts} from '@/config/constant';
-import {momentUtc} from '@/utils/datetime';
-import {message, Modal} from 'ant-design-vue';
-import {
-  getInterfaceList,
-  saveInterface,
-  expireInterface,
-  deleteInterface,
-  copyInterface,
-  getYaml,
-  moveCategories,
-  getCategories,
-  deleteCategories,
-  editCategories,
-  newCategories,
-} from './service';
-import {
-  getServeList
-} from '../../views/projectSetting/service';
+import {interfaceStatus} from '@/config/constant';
 import CreateApiModal from './components/CreateApiModal.vue';
-import CreateTagModal from './components/CreateTagModal.vue'
+import TableFilter from './components/TableFilter.vue';
 import EditInterfaceDrawer from './components/EditInterfaceDrawer.vue'
-import {TreeDataItem, TreeDragEvent, DropEvent} from 'ant-design-vue/es/tree/Tree';
-
-
-import {StateType as ProjectStateType} from "@/store/project";
 import {useStore} from "vuex";
-const store = useStore<{ ProjectGlobal: ProjectStateType }>();
+import {Interface, PaginationConfig} from "@/views/interface/data";
+const store = useStore<{ InterfaceV2, ProjectGlobal }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
+const list = computed<Interface[]>(() => store.state.InterfaceV2.listResult.list);
+let pagination = computed<PaginationConfig>(() => store.state.InterfaceV2.listResult.pagination);
 
 
-const createTagModalvisible = ref(false);
-const createApiModalvisible = ref(false);
+const createApiModaVisible = ref(false);
 type Key = ColumnProps['key'];
 
-// todo 待处理接口类型定义
-interface DataType {
-  key: Key;
-  name: string;
-  age: number;
-  address: string;
-}
 
 /**
  * 表格数据
@@ -288,326 +162,7 @@ const columns = [
     slots: {customRender: 'action'},
   },
 ];
-/*************************************************
- * :::: 左侧区域按接口分类搜索树形结构 逻辑  start
- ************************************************/
-const searchValue = ref('');
-const expandedKeys:any = ref<string[]>([]);
-const autoExpandParent = ref<boolean>(true);
-const treeData: any = ref(null)
-const data = ref([]);
 
-async function loadCategories() {
-  let res = await getCategories({
-    currProjectId: currProject.value.id,
-    serveId: 1,
-    moduleId: 2
-  });
-  if (res.code === 0 && res.data) {
-    const allKeys:any = [];
-    // eslint-disable-next-line no-inner-declarations
-    function fn(arr: any) {
-      if (!Array.isArray(arr)) {
-        return;
-      }
-      arr.forEach((item, index) => {
-        item.key = item.id;
-        allKeys.push(item.id);
-        item.title = item.name;
-        if (Array.isArray(item.children)) {
-          fn(item.children)
-        }
-      });
-
-    }
-
-    fn([res.data]);
-    treeData.value = [res.data];
-    expandedKeys.value = [...new Set(allKeys)];
-  } else {
-    treeData.value = null;
-  }
-}
-
-watch(
-    () => {
-      return searchValue.value
-    }, (newVal) => {
-      // 打平树形结构
-      function flattenTree(tree) {
-        const nodes: Array<any> = [];
-
-        function traverse(node) {
-          nodes.push(node);
-          if (node.children) {
-            node.children.forEach(traverse);
-          }
-        }
-
-        traverse(tree);
-        return nodes;
-      }
-
-      const flattenTreeList = flattenTree(treeData.value[0]);
-
-      function findParentIds(nodeId, tree) {
-        let current: any = tree.find(node => node.id === nodeId);
-        let parentIds: Array<string> = [];
-        while (current && current.parentId) {
-          parentIds.unshift(current.parentId); // unshift 方法可以将新元素添加到数组的开头
-          current = tree.find(node => node.id === current.parentId);
-        }
-        console.log(832, parentIds);
-        return parentIds;
-      }
-
-      let parentKeys: any = [];
-      for (let i = 0; i < flattenTreeList.length; i++) {
-        let node = flattenTreeList[i];
-        if (node.title.includes(newVal)) {
-          parentKeys.push(node.parentId);
-          parentKeys = parentKeys.concat(findParentIds(node.parentId, flattenTreeList));
-        }
-      }
-      parentKeys = [...new Set(parentKeys)];
-      expandedKeys.value = parentKeys;
-      autoExpandParent.value = true;
-    });
-
-const onExpand = (keys: string[]) => {
-  expandedKeys.value = keys;
-  autoExpandParent.value = false;
-};
-
-function selectTreeItem(selectedKeys) {
-  console.log(832, selectedKeys);
-  // ::::TODO 发送请求 待确定参数
-}
-
-function findNodeById(id, tree) {
-  if (tree.id === id) {
-    return tree;
-  }
-  if (tree.children) {
-    for (const child of tree.children) {
-      const node = findNodeById(id, child);
-      if (node) {
-        return node;
-      }
-    }
-  }
-  return null;
-}
-
-function deleteNodeById(id, tree: any) {
-  if (!tree.children) {
-    return;
-  }
-  tree.children = tree.children.filter(child => child.id !== id);
-  if (tree.children) {
-    for (const child of tree.children) {
-      deleteNodeById(id, child);
-    }
-  }
-}
-
-const currentNode = ref(null);
-const tagModalMode = ref('new');
-
-// 删除分类
-async function deleteCategorie(node) {
-  Modal.confirm({
-    title: () => '提示',
-    content: () => '确定，删除该分类吗？',
-    okText: () => '确定',
-    okType: 'danger',
-    cancelText: () => '取消',
-    onOk: async () => {
-      const res = await deleteCategories({
-        id: node.id
-      });
-      if (res.data.code === 0) {
-        deleteNodeById(node.id, treeData.value[0]);
-        message.success('删除成功');
-      } else {
-        message.success('删除失败');
-      }
-    },
-    onCancel() {
-      console.log('Cancel');
-    },
-  });
-
-}
-
-// 新建分类
-function newCategorie(node) {
-  tagModalMode.value = 'new';
-  createTagModalvisible.value = true;
-  currentNode.value = node;
-}
-
-//编辑分类
-function editCategorie(node) {
-  tagModalMode.value = 'edit';
-  createTagModalvisible.value = true;
-  currentNode.value = node;
-}
-
-async function handleTagModalOk(obj) {
-  // 修改
-  if (tagModalMode.value === 'edit') {
-    const res = await editCategories({
-      "id": obj.id,
-      "name": obj.name,
-      "desc": obj.description,
-      "parent": obj.parentId
-    });
-    if (res.code === 0) {
-      createTagModalvisible.value = false;
-      // 修改数据
-      let targetNode = findNodeById(obj.id, treeData.value[0]);
-      targetNode = {
-        ...targetNode,
-        "name": obj.name,
-        "desc": obj.description,
-      };
-      message.success('修改成功');
-    } else {
-      message.success('修改失败');
-    }
-    //  创建
-  } else {
-    const res = await newCategories({
-      "name": obj.name,
-      "Mode": "child",
-      "targetId": obj.id,
-      "projectId": currProject.value.id,
-      "serveId": 0,
-      "moduleId": "2"
-    });
-    if (res.code === 0) {
-      let targetNode = findNodeById(obj.id, treeData.value[0]);
-      targetNode.children.push({
-        ...res.data
-      })
-      createTagModalvisible.value = false;
-      message.success('新建成功成功');
-    } else {
-      message.success('新建失败失败');
-    }
-  }
-}
-
-function handleCancalTagModalCancal() {
-  createTagModalvisible.value = false;
-}
-
-function addApiTag() {
-  createTagModalvisible.value = true;
-}
-
-async function onDrop(info: DropEvent) {
-  // console.log(info);
-  const dropKey = info.node.eventKey;
-  const dragKey = info.dragNode.eventKey;
-  const dropPos = info.node.pos.split('-');
-  const dropPosition = info.dropPosition - Number(dropPos[dropPos.length - 1]);
-  const res = await moveCategories({
-    "currProjectId": currProject.value.id,
-    "dragKey": 10,
-    "dropKey": 7,
-    "dropPos": 1
-  });
-  if (res.code !== 0) {
-    return;
-  }
-  const loop = (data: TreeDataItem[], key: string, callback: any) => {
-    data.forEach((item, index, arr) => {
-      if (item.key === key) {
-        return callback(item, index, arr);
-      }
-      if (item.children) {
-        return loop(item.children, key, callback);
-      }
-    });
-  };
-  const data = [...treeData.value];
-  // Find dragObject
-  let dragObj: TreeDataItem = {};
-  loop(data, dragKey, (item: TreeDataItem, index: number, arr: TreeDataItem[]) => {
-    arr.splice(index, 1);
-    dragObj = item;
-  });
-  if (!info.dropToGap) {
-    // Drop on the content
-    loop(data, dropKey, (item: TreeDataItem) => {
-      item.children = item.children || [];
-      // where to insert 示例添加到尾部，可以是随意位置
-      item.children.push(dragObj);
-    });
-  } else if (
-      (info.node.children || []).length > 0 && // Has children
-      info.node.expanded && // Is expanded
-      dropPosition === 1 // On the bottom gap
-  ) {
-    loop(data, dropKey, (item: TreeDataItem) => {
-      item.children = item.children || [];
-      // where to insert 示例添加到尾部，可以是随意位置
-      item.children.unshift(dragObj);
-    });
-  } else {
-    let ar: TreeDataItem[] = [];
-    let i = 0;
-    loop(data, dropKey, (item: TreeDataItem, index: number, arr: TreeDataItem[]) => {
-      ar = arr;
-      i = index;
-    });
-    if (dropPosition === -1) {
-      ar.splice(i, 0, dragObj);
-    } else {
-      ar.splice(i + 1, 0, dragObj);
-    }
-  }
-  treeData.value = data;
-}
-
-/*************************************************
- * :::::::: 左侧区域按接口分类搜索树形结构 逻辑  send
- ************************************************/
-
-
-/*************************************************
- * ::::表格筛选区域 逻辑 start
- ************************************************/
-
-const serviceOptions = ref([]);
-async function getServersList() {
-  // 请求服务列表
-  let res = await getServeList({
-    projectId: currProject.value.id,
-    "page": 0,
-    "pageSize": 100,
-  });
-  if (res.code === 0) {
-    res.data.result.forEach((item) => {
-      item.label = item.name;
-      item.value = item.id;
-    })
-    serviceOptions.value = res.data.result;
-  }
-}
-
-
-
-/*************************************************
- * ::::表格筛选区域 逻辑 end
- ************************************************/
-
-
-/*************************************************
- * ::::表格区域 逻辑 start
- ************************************************/
 const selectedRowKeys = ref<Key[]>([]);
 const loading = false;
 // 是否批量选中了
@@ -616,53 +171,32 @@ const hasSelected = false;
 // 抽屉是否打开
 const drawerVisible = ref<boolean>(false);
 const onSelectChange = (keys: Key[], rows: any) => {
-  console.log('selectedRowKeys changed: ', keys, rows);
+
   selectedRowKeys.value = [...keys];
 };
 const editInterfaceId = ref('');
 const clickTag = ref(0);
 
-/**
- * 接口编辑
- * */
+
 function editInterface(record) {
   editInterfaceId.value = record.id;
   drawerVisible.value = true;
   clickTag.value++;
 }
 
-/**
- * 批量操作
- * */
-function batchHandle() {
-  console.log('batchHandle')
-}
-
 async function copy(record: any) {
-  let res = await copyInterface(record.id);
-  if (res.code === 0) {
-    message.success('复制成功');
-    await reloadList();
-  }
+  await store.dispatch('InterfaceV2/copy', record);
 }
 
 async function disabled(record: any) {
-  let res = await expireInterface(record.id);
-  if (res.code === 0) {
-    message.success('置为无效成功');
-    await reloadList();
-  }
+  await store.dispatch('InterfaceV2/disabled', record);
 }
 
 /**
  * 删除接口
  * */
 async function del(record: any) {
-  let res = await deleteInterface(record.id);
-  if (res.code === 0) {
-    message.success('删除成功');
-    await reloadList();
-  }
+  await store.dispatch('InterfaceV2/del', record);
 }
 
 /**
@@ -672,76 +206,44 @@ function importApi() {
   console.log('导入')
 }
 
-/**
- * 关闭抽屉
- * */
-function onCloseDrawer() {
-  drawerVisible.value = false;
-}
-
-/**
- * 添加接口
- * */
-function addApi() {
-  createApiModalvisible.value = true;
-}
-
 async function handleCreateApi(data) {
-  let res = await saveInterface({
+  await store.dispatch('InterfaceV2/createApi', {
     "serveId": 1,
     "path": data.path,
     "title": data.title,
     "projectId": currProject.value.id,
   });
-  createApiModalvisible.value = false;
-  if (res.code === 0) {
-    message.success('新建接口成功');
-    await reloadList();
-  }
+  createApiModaVisible.value = false;
 }
 
-function handleCancalCreateApi() {
-  createApiModalvisible.value = false;
-}
-
-async function reloadList() {
-  let res = await getInterfaceList({
-    "projectId": currProject.value.id,
-    "page": 1,
-    "pageSize": 100,
-    // "status": 0,
-    // "userId": 0,
+async function loadList(currProjectId, page, size,opts?:any) {
+  await store.dispatch('InterfaceV2/loadList', {
+    currProjectId,
+    "page": page,
+    "pageSize": size,
+    "status":opts.status || '' ,
+    "createUser": opts.createUser || '',
+    "title": opts.title || ''
   });
-  const {result, total} = res.data;
-  result.forEach((item, index) => {
-    item.index = index + 1;
-    item.key = `${index + 1}`;
-    item.updatedAt = momentUtc(item.updatedAt);
-  })
-  data.value = result;
-  // TODO 待处理分页逻辑
 }
 
-/*************************************************
- * ::::表格区域 逻辑 end
- ************************************************/
-
-
+async function handleTableFilter(state) {
+  await loadList(currProject.value.id, pagination.value.current, pagination.value.pageSize);
+}
 
 // 实时监听项目切换，如果项目切换了则重新请求数据
 watch(() => {
   return currProject.value;
 }, async (newVal) => {
-  await reloadList();
-  await loadCategories();
-  await getServersList();
+  if (newVal.id) {
+    await loadList(newVal.id, pagination.value.current, pagination.value.pageSize);
+  }
 }, {
   immediate: true
 })
 
-
 async function refreshList() {
-  await reloadList();
+  await loadList(currProject.value.id, pagination.value.current, pagination.value.pageSize);
 }
 
 
@@ -804,6 +306,7 @@ async function refreshList() {
   align-items: center;
   margin-left: 16px;
   margin-top: 8px;
+
   .ant-btn {
     margin-right: 16px;
   }
@@ -834,20 +337,23 @@ async function refreshList() {
 }
 
 
-::v-deep{
-  .ant-alert-info{
+::v-deep {
+  .ant-alert-info {
     padding: 12px;
   }
-  .ant-alert-icon{
+
+  .ant-alert-icon {
     font-size: 14px;
     position: relative;
     top: 4px;
     left: 8px;
   }
-  .ant-alert-message{
+
+  .ant-alert-message {
     font-size: 14px;
   }
-  .ant-alert-description{
+
+  .ant-alert-description {
     font-size: 12px;
   }
 }

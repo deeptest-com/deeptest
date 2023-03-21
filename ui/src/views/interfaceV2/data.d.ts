@@ -1,4 +1,3 @@
-
 interface InterfaceListReqParams {
     "prjectId"?: number,
     "page"?: number,
@@ -28,7 +27,7 @@ export interface QueryResult {
 }
 
 export interface QueryParams {
-    keywords:  string,
+    keywords: string,
     enabled: string,
     page: number,
     pageSize: number,
@@ -40,4 +39,18 @@ export interface PaginationConfig {
     pageSize: number;
     showSizeChanger: boolean;
     showQuickJumper: boolean;
+}
+
+
+export interface filterFormState {
+    status: string | null,
+    createUser: string | null,
+    title: string | null,
+}
+
+
+interface NewInterfaceFormState {
+    title: string;
+    parentId: string | null;
+    description: string | undefined;
 }

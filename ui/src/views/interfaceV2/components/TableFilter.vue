@@ -8,16 +8,16 @@
             }"
             placeholder="请选择创建人"
             :options="userList"
-            :value="fieldState.createUser"/>
+            :value="formState?.createUser"/>
       </a-form-item>
     </a-col>
     <a-col :span="8">
-      <a-form-item label="状态" style="margin-bottom: 0;" :value="fieldState.status">
+      <a-form-item label="状态" style="margin-bottom: 0;">
         <a-select
             @change="(e) => {
               handleFilterChange('status',e);
             }"
-            :value="fieldState.status"
+            :value="formState?.status"
             placeholder="请选择状态"
             :options="interfaceStatusOpts"/>
       </a-form-item>
@@ -27,12 +27,12 @@
           style="display: flex;justify-content: end;"
           placeholder="请输入关键词"
           enter-button
-          :value="fieldState.title"
+          :value="formState?.title"
           @change="(e) => {
               handleFilterChange('title',e);
             }"
-          @search="() => {
-            handleFilter()
+          @search="async () => {
+            await handleFilter()
           }"/>
     </a-col>
   </a-row>
@@ -40,47 +40,59 @@
 
 <script lang="ts" setup>
 import {interfaceStatusOpts} from '@/config/constant';
+import {filterFormState} from "../data";
 import {
-  ref,
-  defineEmits,
-  onMounted, computed
+  defineEmits, ref,
+  onMounted, computed, watch, Ref
 } from 'vue';
 
 const store = useStore<{ InterfaceV2, ProjectGlobal, Project }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 let userList = computed<any>(() => store.state.Project.userList);
+let filterState = computed<any>(() => store.state.InterfaceV2.filterState);
 
 import {useStore} from "vuex";
 
 const emit = defineEmits(['filter']);
 
-
-// todo 提到 store 中去
-const fieldState = ref({
-  "status": null,
-  "createUser": null,
-  "title": null
+const formState: Ref<filterFormState> = ref({
+  "status": "",
+  "createUser": "",
+  "title": ""
 });
 
-
-function handleFilter() {
-  emit('filter', fieldState.value);
-}
-
-function handleFilterChange(type, e) {
+async function handleFilterChange(type, e) {
   if (type === 'status') {
-    fieldState.value.status = e;
-  } else if (type === 'createUser') {
-    fieldState.value.createUser = e;
-  } else if (type === 'title') {
-    fieldState.value.title = e.target.value;
+    formState.value.status = e;
+    await handleFilter();
+  }
+  if (type === 'createUser') {
+    formState.value.createUser = e;
+    await handleFilter();
+  }
+  if (type === 'title') {
+    formState.value.title = e.target.value;
   }
 }
+
+async function handleFilter() {
+  emit('filter', {
+    ...filterState.value,
+    ...formState.value
+  });
+}
+
+watch(() => {
+  return filterState.value
+}, (newVal) => {
+  formState.value = {...newVal}
+}, {
+  immediate: true,
+})
 
 onMounted(async () => {
   await store.dispatch('Project/getUserList');
 })
-
 
 </script>
 

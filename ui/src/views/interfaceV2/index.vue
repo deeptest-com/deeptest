@@ -36,8 +36,7 @@
                 },
             }"
             :columns="columns"
-            :data-source="list"
-        >
+            :data-source="list">
           <template #colTitle="{text,record}">
             <div class="customTitleColRender">
               <span>{{ text }}</span>
@@ -46,8 +45,7 @@
           </template>
           <template #colStatus="{record}">
             <div class="customTitleColRender">
-              <!-- ::::todo 不同状态对应不同颜色 -->
-              <a-tag color="red">{{ interfaceStatus.get(record.status) }}</a-tag>
+              <a-tag :color="interfaceStatusColor.get(record.status)">{{ interfaceStatus.get(record.status) }}</a-tag>
             </div>
           </template>
           <template #colPath="{text}">
@@ -56,10 +54,10 @@
             </div>
           </template>
           <template #action="{record}">
-            <a-dropdown @click="handleButtonClick">
+            <a-dropdown>
               <MoreOutlined/>
               <template #overlay>
-                <a-menu @click="handleMenuClick">
+                <a-menu>
                   <a-menu-item key="1">
                     <a-button style="width: 80px" type="link" size="small" @click="copy(record)">复制</a-button>
                   </a-menu-item>
@@ -82,14 +80,12 @@
         @cancal="createApiModaVisible = false;"
         @ok="handleCreateApi"/>
     <!-- 编辑接口时，展开抽屉   -->
-    <EditInterfaceDrawer
+    <Drawer
         :destroyOnClose="true"
         :interfaceId="editInterfaceId"
         :visible="drawerVisible"
-        :key="clickTag"
         @refreshList="refreshList"
         @close="drawerVisible = false;"/>
-
   </div>
 </template>
 <script setup lang="ts">
@@ -102,21 +98,20 @@ import {
   EditOutlined,
   MoreOutlined
 } from '@ant-design/icons-vue';
-import {interfaceStatus} from '@/config/constant';
+import {interfaceStatus, interfaceStatusColor} from '@/config/constant';
 import CreateApiModal from './components/CreateApiModal.vue';
 import TableFilter from './components/TableFilter.vue';
-import EditInterfaceDrawer from './components/EditInterfaceDrawer.vue'
+import Drawer from './components/Drawer/index.vue'
 import {useStore} from "vuex";
 import {Interface, PaginationConfig} from "@/views/interface/data";
+import {filterFormState} from "@/views/interfaceV2/data";
+
 const store = useStore<{ InterfaceV2, ProjectGlobal }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const list = computed<Interface[]>(() => store.state.InterfaceV2.listResult.list);
 let pagination = computed<PaginationConfig>(() => store.state.InterfaceV2.listResult.pagination);
-
-
 const createApiModaVisible = ref(false);
 type Key = ColumnProps['key'];
-
 
 /**
  * 表格数据
@@ -162,7 +157,6 @@ const columns = [
     slots: {customRender: 'action'},
   },
 ];
-
 const selectedRowKeys = ref<Key[]>([]);
 const loading = false;
 // 是否批量选中了
@@ -171,17 +165,14 @@ const hasSelected = false;
 // 抽屉是否打开
 const drawerVisible = ref<boolean>(false);
 const onSelectChange = (keys: Key[], rows: any) => {
-
   selectedRowKeys.value = [...keys];
 };
 const editInterfaceId = ref('');
-const clickTag = ref(0);
 
-
-function editInterface(record) {
+async function editInterface(record) {
   editInterfaceId.value = record.id;
+  await store.dispatch('InterfaceV2/getInterfaceDetail', {id:record.id});
   drawerVisible.value = true;
-  clickTag.value++;
 }
 
 async function copy(record: any) {
@@ -199,36 +190,32 @@ async function del(record: any) {
   await store.dispatch('InterfaceV2/del', record);
 }
 
-/**
- * 接口导入逻辑
- * */
+
 function importApi() {
   console.log('导入')
 }
 
 async function handleCreateApi(data) {
   await store.dispatch('InterfaceV2/createApi', {
-    "serveId": 1,
-    "path": data.path,
     "title": data.title,
     "projectId": currProject.value.id,
+    "description": data.description || null,
+    "parentId": data.parentId || null,
   });
   createApiModaVisible.value = false;
 }
 
-async function loadList(currProjectId, page, size,opts?:any) {
+async function loadList(currProjectId, page, size, opts?: filterFormState) {
   await store.dispatch('InterfaceV2/loadList', {
     currProjectId,
     "page": page,
     "pageSize": size,
-    "status":opts.status || '' ,
-    "createUser": opts.createUser || '',
-    "title": opts.title || ''
+    opts,
   });
 }
 
-async function handleTableFilter(state) {
-  await loadList(currProject.value.id, pagination.value.current, pagination.value.pageSize);
+async function handleTableFilter(filterState) {
+  await loadList(currProject.value.id, pagination.value.current, pagination.value.pageSize, filterState);
 }
 
 // 实时监听项目切换，如果项目切换了则重新请求数据
@@ -237,6 +224,7 @@ watch(() => {
 }, async (newVal) => {
   if (newVal.id) {
     await loadList(newVal.id, pagination.value.current, pagination.value.pageSize);
+    await store.dispatch('InterfaceV2/loadCategory');
   }
 }, {
   immediate: true
@@ -263,7 +251,6 @@ async function refreshList() {
 
   .search-input {
     margin-left: 8px;
-    //margin-right: 8px;
   }
 
   .add-btn {

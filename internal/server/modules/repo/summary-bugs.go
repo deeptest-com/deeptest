@@ -13,7 +13,7 @@ func NewSummaryBugsRepo() *SummaryBugsRepo {
 	return &SummaryBugsRepo{}
 }
 
-func (r *SummaryBugsRepo) Create(bugs interface{}) (err error) {
+func (r *SummaryBugsRepo) CreateByDate(bugs interface{}) (err error) {
 	err = r.DB.Model(&model.SummaryBugs{}).Create(bugs).Error
 	return
 }

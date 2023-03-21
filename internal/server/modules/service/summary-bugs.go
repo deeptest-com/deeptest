@@ -73,8 +73,8 @@ func (s *SummaryBugsService) FindGroupByBugSeverity() (summaryBugsSeverity []mod
 }
 
 // Create
-func (s *SummaryBugsService) Create(req model.SummaryBugs) (err error) {
-	return s.SummaryBugsRepo.Create(req)
+func (s *SummaryBugsService) CreateByDate(req model.SummaryBugs) (err error) {
+	return s.SummaryBugsRepo.CreateByDate(req)
 }
 
 // Count

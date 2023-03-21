@@ -60,8 +60,8 @@ func (s *SummaryProjectUserRankingService) ProjectUserRanking(projectId int64, c
 	return
 }
 
-func (s *SummaryProjectUserRankingService) Create(summaryProjectUserRanking model.SummaryProjectUserRanking) (err error) {
-	return s.SummaryProjectUserRankingRepo.Create(summaryProjectUserRanking)
+func (s *SummaryProjectUserRankingService) CreateByDate(summaryProjectUserRanking model.SummaryProjectUserRanking) (err error) {
+	return s.SummaryProjectUserRankingRepo.CreateByDate(summaryProjectUserRanking)
 }
 
 func (s *SummaryProjectUserRankingService) FindByProjectId(projectId int64) (summaryProjectUserRanking []model.SummaryProjectUserRanking, err error) {

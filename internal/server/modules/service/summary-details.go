@@ -123,26 +123,6 @@ func DecimalHB(newValue float64, oldValue float64) float64 {
 }
 
 func (s *SummaryDetailsService) CreateByDate(req model.SummaryDetails) (err error) {
-
-	//
-	//var user v1.ResUserIdAndName
-	//var userA v1.ResUserIdAndName
-	//user.UserId = 1
-	//user.UserName = "yanggggggg"
-	//userA.UserId = 2
-	//userA.UserName = "xiggggg"
-	//resDetails.Coverage = 10.1
-	//resDetails.InterfaceTotal = 5
-	//resDetails.ScenarioTotal = 10
-	//resDetails.PassRate = 11.5
-	//resDetails.ExecTotal = 15
-	//resDetails.AdminUser = "auto"
-	//resDetails.ProjectCreateTime = "2023-03-17 09:15:15"
-	//resDetails.ProjectName = "projectAuto"
-	//resDetails.ProjectChineseName = "自动化创建"
-	//resDetails.ProjectDes = "miaoshu"
-	//resDetails.ProjectId = 10
-
 	return s.SummaryDetailsRepo.CreateByDate(req)
 }
 

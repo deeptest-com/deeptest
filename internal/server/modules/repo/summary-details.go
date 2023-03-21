@@ -1,6 +1,7 @@
 package repo
 
 import (
+	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"gorm.io/gorm"
 )
@@ -53,6 +54,11 @@ func (r *SummaryDetailsRepo) FindUserIdsGroupByProjectId() (userIdsGroupByProjec
 	return
 }
 
+func (r *SummaryDetailsRepo) FindUserIdAndNameByProjectId(projectId int64) (userIdAndName []v1.ResUserIdAndName, err error) {
+	err = r.DB.Model(&model.ProjectMember{}).Raw("select sys_user.id as user_id,sys_user.name as user_name from sys_user inner join biz_project_member on sys_user.id = biz_project_member.user_id where project_id = ?", projectId).Find(&userIdAndName).Error
+	return
+}
+
 func (r *SummaryDetailsRepo) FindByProjectId(projectId int64) (summaryDetail model.SummaryDetails, err error) {
 	err = r.DB.Model(&model.SummaryDetails{}).Where("project_id = ? AND NOT deleted", projectId).Last(&summaryDetail).Error
 	return
@@ -80,5 +86,10 @@ func (r *SummaryDetailsRepo) SummaryCardByDate(startTime string, endTime string)
 
 func (r *SummaryDetailsRepo) FindByProjectIdAndDate(startTime string, endTime string, projectId int64) (summaryDetails model.SummaryDetails, err error) {
 	err = r.DB.Model(&model.SummaryDetails{}).Raw("select * from (deeptest.biz_summary_details) where id in (SELECT max(id) FROM deeptest.biz_summary_details where project_id = ? and created_at > ? and created_at < ? AND NOT deleted group by project_id);", projectId, startTime, endTime).Find(&summaryDetails).Error
+	return
+}
+
+func (r *SummaryDetailsRepo) CountBugsByProjectId(projectId int64) (count int64, err error) {
+	err = r.DB.Model(&model.SummaryBugs{}).Select("count(id)").Where("project_id = ? AND NOT deleted AND not disabled", projectId).Find(&count).Error
 	return
 }

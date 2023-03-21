@@ -72,24 +72,15 @@ func (s *SummaryDetailsService) Card(projectId int64) (res v1.ResSummaryCard, er
 	res.ScenarioTotal = scenarioTotal
 
 	if oldCoverage != 0 {
-		res.CoverageHb = DecimalHB(coverage, oldCoverage)
-		res.CoverageHb, _ = strconv.ParseFloat(fmt.Sprintf("%.1f", res.CoverageHb), 64)
-	} else {
-		res.CoverageHb = 0.0
+		res.CoverageHb, _ = strconv.ParseFloat(fmt.Sprintf("%.1f", DecimalHB(coverage, oldCoverage)), 64)
 	}
 
 	if oldInterfaceTotal != 0 {
-		res.InterfaceHb = DecimalHB(float64(interfaceTotal), float64(oldInterfaceTotal))
-		res.InterfaceHb, _ = strconv.ParseFloat(fmt.Sprintf("%.1f", res.InterfaceHb), 64)
-	} else {
-		res.CoverageHb = 0.0
+		res.InterfaceHb, _ = strconv.ParseFloat(fmt.Sprintf("%.1f", DecimalHB(float64(interfaceTotal), float64(oldInterfaceTotal))), 64)
 	}
 
 	if oldScenarioTotal != 0 {
-		res.ScenarioHb = DecimalHB(float64(scenarioTotal), float64(oldScenarioTotal))
-		res.ScenarioHb, _ = strconv.ParseFloat(fmt.Sprintf("%.1f", res.ScenarioHb), 64)
-	} else {
-		res.CoverageHb = 0.0
+		res.ScenarioHb, _ = strconv.ParseFloat(fmt.Sprintf("%.1f", DecimalHB(float64(scenarioTotal), float64(oldScenarioTotal))), 64)
 	}
 
 	return
@@ -115,9 +106,13 @@ func (s *SummaryDetailsService) Details(userId int64) (res v1.ResSummaryDetail, 
 		resDetail.Id = detail.ID
 		resDetail.CreatedAt = time.Unix(detail.CreatedAt.Unix(), 0).Format("2006-01-02 15:04:05")
 		resDetail.Disabled = detail.Disabled
+		resDetail.BugTotal, _ = s.CountBugsByProjectId(detail.ProjectId)
+		userList, _ := s.FindUserIdAndNameByProjectId(detail.ProjectId)
+		resDetail.UserList = userList
 		resDetails = append(resDetails, resDetail)
 	}
 	res.ProjectList = resDetails
+
 	return
 }
 
@@ -130,8 +125,8 @@ func DecimalHB(newValue float64, oldValue float64) float64 {
 func (s *SummaryDetailsService) CreateByDate(req model.SummaryDetails) (err error) {
 
 	//
-	//var user v1.ResUserList
-	//var userA v1.ResUserList
+	//var user v1.ResUserIdAndName
+	//var userA v1.ResUserIdAndName
 	//user.UserId = 1
 	//user.UserName = "yanggggggg"
 	//userA.UserId = 2
@@ -189,4 +184,12 @@ func (s *SummaryDetailsService) SummaryCardByDate(startTime string, endTime stri
 
 func (s *SummaryDetailsService) FindByProjectIdAndDate(startTime string, endTime string, projectId int64) (summaryDetails model.SummaryDetails, err error) {
 	return s.SummaryDetailsRepo.FindByProjectIdAndDate(startTime, endTime, projectId)
+}
+
+func (s *SummaryDetailsService) FindUserIdAndNameByProjectId(projectId int64) (userIdAndName []v1.ResUserIdAndName, err error) {
+	return s.SummaryDetailsRepo.FindUserIdAndNameByProjectId(projectId)
+}
+
+func (s *SummaryDetailsService) CountBugsByProjectId(projectId int64) (count int64, err error) {
+	return s.SummaryDetailsRepo.CountBugsByProjectId(projectId)
 }

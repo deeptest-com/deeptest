@@ -66,6 +66,11 @@ type UserIdsGroupByProjectId struct {
 	UserId     string `gorm:"-" json:"user_id"`
 }
 
+type UserIdAndName struct {
+	UserId   int64  `json:"user_id"`
+	UserName string `json:"user_name"`
+}
+
 func (SummaryDetails) TableName() string {
 	return "biz_summary_details"
 }

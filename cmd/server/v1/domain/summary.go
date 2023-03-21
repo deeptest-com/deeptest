@@ -2,6 +2,7 @@ package domain
 
 import (
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
+	"time"
 )
 
 type SummaryReqPaginate struct {
@@ -80,16 +81,16 @@ type ResUserIdAndName struct {
 	UserName string `json:"user_name"`
 }
 
-type ResURankingList struct {
-	UserRankingList ResUserRanking `json:"user_ranking_list"`
+type ResRankingList struct {
+	UserRankingList []ResUserRanking `json:"user_ranking_list"`
 }
 
 type ResUserRanking struct {
-	Sort          int64  `json:"sort"`
-	UserId        string `json:"user_id"`
-	UserName      string `json:"user_name"`
-	ScenarioTotal int64  `json:"scenario_total"`
-	TestcaseTotal int64  `json:"testcase_total"`
-	Hb            int64  `json:"hb"`
-	UpdateTime    string `json:"update_time"`
+	Sort           int64      `gorm:"default:0" json:"sort"`
+	UserId         int64      `gorm:"default:0" json:"user_id"`
+	UserName       string     `json:"user_name"`
+	ScenarioTotal  int64      `gorm:"default:0" json:"scenario_total"`
+	TestcasesTotal int64      `gorm:"default:0" json:"testcases_total"`
+	Hb             int64      `gorm:"default:0" json:"hb"`
+	UpdateTime     *time.Time `json:"update_time"`
 }

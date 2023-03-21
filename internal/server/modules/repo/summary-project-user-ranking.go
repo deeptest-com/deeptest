@@ -13,7 +13,7 @@ func NewSummaryProjectUserRankingRepo() *SummaryProjectUserRankingRepo {
 	return &SummaryProjectUserRankingRepo{}
 }
 
-func (r *SummaryProjectUserRankingRepo) Create(summaryProjectUserRanking model.SummaryProjectUserRanking) (err error) {
+func (r *SummaryProjectUserRankingRepo) CreateByDate(summaryProjectUserRanking model.SummaryProjectUserRanking) (err error) {
 	err = r.DB.Model(&model.SummaryProjectUserRanking{}).Create(summaryProjectUserRanking).Error
 	return
 }

@@ -9,9 +9,7 @@ import (
 )
 
 type SummaryCtrl struct {
-	SummaryDetailsService            *service.SummaryDetailsService            `inject:""`
-	SummaryBugsService               *service.SummaryBugsService               `inject:""`
-	SummaryProjectUserRankingService *service.SummaryProjectUserRankingService `inject:""`
+	SummaryService *service.SummaryService `inject:""`
 	BaseCtrl
 }
 
@@ -26,7 +24,7 @@ func (c *SummaryCtrl) Card(ctx iris.Context) {
 		return
 	}
 
-	data, err := c.SummaryDetailsService.Card(projectId)
+	data, err := c.SummaryService.Card(projectId)
 
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
@@ -48,7 +46,7 @@ func (c *SummaryCtrl) Bugs(ctx iris.Context) {
 		return
 	}
 
-	data, err := c.SummaryBugsService.Bugs(projectId)
+	data, err := c.SummaryService.Bugs(projectId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
 		return
@@ -69,7 +67,7 @@ func (c *SummaryCtrl) Details(ctx iris.Context) {
 		return
 	}
 
-	data, err := c.SummaryDetailsService.Details(userId)
+	data, err := c.SummaryService.Details(userId)
 
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
@@ -91,7 +89,7 @@ func (c *SummaryCtrl) ProjectUserRanking(ctx iris.Context) {
 		return
 	}
 
-	data, err := c.SummaryProjectUserRankingService.ProjectUserRanking(projectId, cycle)
+	data, err := c.SummaryService.ProjectUserRanking(projectId, cycle)
 
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})

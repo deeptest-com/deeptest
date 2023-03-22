@@ -16,10 +16,9 @@ func NewServeModule() *ServeModule {
 }
 
 // Party 注册模块
-func (m *ServeModule) Party() module.WebModule { 
+func (m *ServeModule) Party() module.WebModule {
 	handler := func(public iris.Party) {
 		public.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
-    public.Get("/listByProject", m.ServeCtrl.ListByProject)
 
 		public.Post("/index", m.ServeCtrl.Index)
 		public.Post("/save", m.ServeCtrl.Save)
@@ -40,7 +39,10 @@ func (m *ServeModule) Party() module.WebModule {
 		public.Post("/schema/example2schema", m.ServeCtrl.ExampleToSchema)
 		public.Post("/schema/schema2example", m.ServeCtrl.SchemaToExample)
 		public.Post("/schema/schema2yaml", m.ServeCtrl.SchemaToYaml)
-		//public.Use(middleware.JwtHandler(), middleware.Casbin(), middleware.OperationRecord())
+
+		public.Get("/listByProject", m.ServeCtrl.ListByProject)
+		public.Post("/changeServe", m.ServeCtrl.ChangeServe).Name = "切换用户当前服务"
 	}
-	return module.NewModule("/serve", handler)
+
+	return module.NewModule("/serves", handler)
 }

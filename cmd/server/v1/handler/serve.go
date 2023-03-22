@@ -14,19 +14,22 @@ type ServeCtrl struct {
 
 // 项目服务列表
 func (c *ServeCtrl) ListByProject(ctx iris.Context) {
+	userId := multi.GetUserId(ctx)
+
 	projectId, err := ctx.URLParamInt("currProjectId")
 	if projectId == 0 {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: "projectId"})
 		return
 	}
 
-	serves, err := c.ServeService.ListByProject(projectId)
+	serves, currServe, err := c.ServeService.ListByProject(projectId, userId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: serves})
+	ret := iris.Map{"serves": serves, "currServe": currServe}
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: ret})
 
 	return
 }
@@ -246,4 +249,23 @@ func (c *ServeCtrl) BindEndpoint(ctx iris.Context) {
 	} else {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 	}
+}
+
+func (c *ServeCtrl) ChangeServe(ctx iris.Context) {
+	userId := multi.GetUserId(ctx)
+
+	req := v1.ProjectReq{}
+	err := ctx.ReadJSON(&req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	currServe, err := c.ServeService.ChangeServe(req.Id, userId)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: currServe, Msg: _domain.NoErr.Msg})
 }

@@ -5,7 +5,6 @@ const apiPath = 'interfaces';
 const apiPathExec = `${apiPath}/exec`;
 
 const apiPathScenario = `scenarios`;
-const apiPathServe = `serve`;
 
 export async function query(params?: QueryParams): Promise<any> {
     return request({
@@ -59,13 +58,6 @@ export async function removeScenarioFromInterface(interfaceId, scenarioId): Prom
         url: `/${apiPath}/${interfaceId}/removeScenario`,
         method: 'post',
         params: {scenarioId},
-    });
-}
-
-export async function listServe(): Promise<any> {
-    return request({
-        url: `/${apiPathServe}/listByProject`,
-        method: 'get',
     });
 }
 

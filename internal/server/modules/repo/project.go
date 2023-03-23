@@ -19,6 +19,7 @@ type ProjectRepo struct {
 	ProjectRoleRepo *ProjectRoleRepo `inject:""`
 	EnvironmentRepo *EnvironmentRepo `inject:""`
 	UserRepo        *UserRepo        `inject:""`
+	ServeRepo       *ServeRepo       `inject:""`
 }
 
 func NewProjectRepo() *ProjectRepo {
@@ -131,7 +132,12 @@ func (r *ProjectRepo) Create(req v1.ProjectReq, userId uint) (id uint, bizErr *_
 		return
 	}
 
-	err = r.AddProjectRootInterface(project.ID)
+	serve, err := r.AddProjectDefaultServe(project.ID, userId)
+	if err != nil {
+		logUtils.Errorf("添加默认服务错误", zap.String("错误:", err.Error()))
+		return
+	}
+	err = r.AddProjectRootInterface(serve.ID, project.ID)
 	if err != nil {
 		logUtils.Errorf("添加接口错误", zap.String("错误:", err.Error()))
 		return
@@ -265,10 +271,11 @@ func (r *ProjectRepo) AddProjectMember(projectId, userId uint, role string) (err
 	return
 }
 
-func (r *ProjectRepo) AddProjectRootInterface(projectId uint) (err error) {
+func (r *ProjectRepo) AddProjectRootInterface(serveId, projectId uint) (err error) {
 	root := model.Category{
 		Name:      "分类",
 		Type:      serverConsts.InterfaceCategory,
+		ServeId:   serveId,
 		ProjectId: projectId,
 		IsLeaf:    false,
 	}
@@ -384,6 +391,19 @@ func (r *ProjectRepo) GetProjectsAndRolesByUser(userId uint) (projectIds, roleId
 	for _, v := range roleIdsMap {
 		roleIds = append(roleIds, v)
 	}
+
+	return
+}
+
+func (r *ProjectRepo) AddProjectDefaultServe(projectId, userId uint) (serve model.Serve, err error) {
+	po := model.Serve{
+		Name:      "默认服务",
+		ProjectId: projectId,
+	}
+
+	err = r.DB.Create(&po).Error
+
+	r.ServeRepo.SetCurrServeByUser(po.ID, userId)
 
 	return
 }

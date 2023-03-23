@@ -1,14 +1,23 @@
 <template>
   <div class="indexlayout-top-project">
-  <a-select
-      ref="select"
-      v-model:value="currProject.id"
-      :bordered="true"
-      style="width: 280px;margin-left: 16px;"
-      @change="selectProject"
-  >
-    <a-select-option v-for="item in projects" :key="item.id" :value="item.id">{{ item.name }}</a-select-option>
-  </a-select>
+
+    <a-select
+        v-model:value="currProject.id"
+        :bordered="true"
+        style="width: 280px;margin-left: 16px;"
+        @change="selectProject">
+      <a-select-option v-for="item in projects" :key="item.id" :value="item.id">{{ item.name }}</a-select-option>
+    </a-select>
+
+    <a-select
+        v-model:value="currServe.id"
+        :bordered="true"
+        style="width: 280px;margin-left: 16px;"
+        @change="selectServe">
+<!--      <a-select-option :key="0" :value="0">请选择</a-select-option>-->
+      <a-select-option v-for="item in serves" :key="item.id" :value="item.id">{{ item.name }}</a-select-option>
+    </a-select>
+
   </div>
 </template>
 
@@ -18,16 +27,23 @@ import {useStore} from "vuex";
 import router from '@/config/routes';
 import {StateType as UserStateType} from "@/store/user";
 import {StateType as ProjectStateType} from "@/store/project";
+import {StateType as ServeStateType} from "@/store/serve";
 import {StateType as EnvironmentStateType} from "@/store/environment";
 
-const store = useStore<{ User: UserStateType, ProjectGlobal: ProjectStateType, Environment: EnvironmentStateType }>();
+const store = useStore<{ User: UserStateType,
+  ProjectGlobal: ProjectStateType, ServeGlobal: ServeStateType, Environment: EnvironmentStateType }>();
 
 const message = computed<number>(() => store.state.User.message);
+
 const projects = computed<any>(() => store.state.ProjectGlobal.projects);
+const serves = computed<any>(() => store.state.ServeGlobal.serves);
+
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
+const currServe = computed<any>(() => store.state.ServeGlobal.currServe);
 
 store.dispatch("User/fetchMessage");
 store.dispatch("ProjectGlobal/fetchProject");
+store.dispatch("ServeGlobal/fetchServe");
 
 const selectProject = (value): void => {
   console.log('selectProject', value)
@@ -37,6 +53,11 @@ const selectProject = (value): void => {
   if(router.currentRoute.value.path.indexOf('/scenario/') > -1) {
     router.replace('/scenario/index')
   }
+}
+
+const selectServe = (value): void => {
+  console.log('selectServe', value)
+  store.dispatch('ServeGlobal/changeServe', value);
 }
 
 </script>

@@ -5,7 +5,6 @@ const apiPath = 'plans';
 const apiPathExec = `${apiPath}/exec`;
 
 const apiPathScenario = `scenarios`;
-const apiPathServe = `serve`;
 
 export async function query(params?: QueryParams): Promise<any> {
     return request({
@@ -62,12 +61,7 @@ export async function removeScenarioFromPlan(planId, scenarioId): Promise<any> {
     });
 }
 
-export async function listServe(): Promise<any> {
-    return request({
-        url: `/${apiPathServe}/listByProject`,
-        method: 'get',
-    });
-}
+
 
 export async function listScenario(serveId): Promise<any> {
     return request({

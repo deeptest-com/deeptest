@@ -39,6 +39,7 @@ export interface SettingsType {
      * 站点本地存储当前项目 的 Key值
      */
     currProjectId: string;
+    currServeId: string,
 
     settings: string;
     expandedKeys: string;
@@ -87,6 +88,7 @@ const settings: SettingsType = {
     },
     siteTokenKey: 'admin_antd_vue_token',
     currProjectId: 'curr_project_id',
+    currServeId: 'curr_serve_id',
 
     settings: 'settings',
     expandedKeys: 'deeptest-expandedKeys',

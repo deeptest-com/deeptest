@@ -21,8 +21,11 @@ func NewServeService() *ServeService {
 	return &ServeService{}
 }
 
-func (s *ServeService) ListByProject(projectId int) (ret []model.Serve, err error) {
+func (s *ServeService) ListByProject(projectId int, userId uint) (ret []model.Serve, currServe model.Serve, err error) {
 	ret, err = s.ServeRepo.ListByProject(projectId)
+
+	currServe, err = s.ServeRepo.GetCurrServeByUser(userId)
+
 	return
 }
 
@@ -170,5 +173,11 @@ func (s *ServeService) BindEndpoint(req v1.ServeVersionBindEndpointReq) (err err
 		serveEndpointVersion = append(serveEndpointVersion, model.ServeEndpointVersion{EndpointId: endpointVersion.EndpointId, EndpointVersion: endpointVersion.Version, ServeId: req.ServeId, ServeVersion: req.ServeVersion})
 	}
 	err = s.ServeRepo.BindEndpoint(req.ServeId, req.ServeVersion, serveEndpointVersion)
+	return
+}
+
+func (s *ServeService) ChangeServe(projectId, userId uint) (serve model.Serve, err error) {
+	serve, err = s.ServeRepo.ChangeServe(projectId, userId)
+
 	return
 }

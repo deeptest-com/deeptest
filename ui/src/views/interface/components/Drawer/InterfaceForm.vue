@@ -342,8 +342,8 @@ import FieldItem from './FieldItem.vue'
 import {momentUtc} from '@/utils/datetime';
 import {Interface} from "@/views/interface/data";
 
-const store = useStore<{ InterfaceV2, ProjectGlobal }>();
-const interfaceDetail = computed<Interface[]>(() => store.state.InterfaceV2.interfaceDetail);
+const store = useStore<{ Interface, ProjectGlobal }>();
+const interfaceDetail = computed<Interface[]>(() => store.state.Interface.interfaceDetail);
 import SchemaEditor from '@/components/SchemaEditor/index.vue';
 import {example2schema, schema2example} from "@/views/projectSetting/service";
 

@@ -46,10 +46,10 @@ import {
   onMounted, computed, watch, Ref
 } from 'vue';
 
-const store = useStore<{ InterfaceV2, ProjectGlobal, Project }>();
+const store = useStore<{ Interface, ProjectGlobal, Project }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 let userList = computed<any>(() => store.state.Project.userList);
-let filterState = computed<any>(() => store.state.InterfaceV2.filterState);
+let filterState = computed<any>(() => store.state.Interface.filterState);
 
 import {useStore} from "vuex";
 

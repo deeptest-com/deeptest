@@ -97,8 +97,8 @@ import {example2schema, schema2example} from "@/views/projectSetting/service";
 import {useStore} from "vuex";
 
 import {Interface, PaginationConfig} from "@/views/interface/data";
-const store = useStore<{ InterfaceV2, ProjectGlobal }>();
-const interfaceDetail = computed<Interface[]>(() => store.state.InterfaceV2.interfaceDetail);
+const store = useStore<{ Interface, ProjectGlobal }>();
+const interfaceDetail = computed<Interface[]>(() => store.state.Interface.interfaceDetail);
 const props = defineProps({
   visible: {
     required: true,

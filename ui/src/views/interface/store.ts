@@ -1,7 +1,7 @@
 import { Mutation, Action } from 'vuex';
 import { StoreModuleType } from "@/utils/store";
 import { ResponseData } from '@/utils/request';
-import { Interface, QueryResult, QueryParams, PaginationConfig } from './data.d';
+import { Interface, QueryResult, QueryParams, PaginationConfig,InterfaceListReqParams, SaveInterfaceReqParams,filterFormState } from './data.d';
 import {
     query,
     get,
@@ -19,7 +19,17 @@ import {
     moveCategory,
     updateCategoryName} from "@/services/category";
 
+
+import {
+    copyInterface,
+    deleteInterface,
+    expireInterface, getInterfaceDetail,
+    getInterfaceList,
+    saveInterface,
+} from './service';
+
 import {getNodeMap} from "@/services/tree";
+import {momentUtc} from "@/utils/datetime";
 
 export interface StateType {
     interfaceId: number;
@@ -33,6 +43,9 @@ export interface StateType {
     treeDataCategory: any[];
     treeDataMapCategory: any,
     nodeDataCategory: any;
+    filterState:filterFormState,
+    interFaceCategoryOpt:any[],
+    interfaceDetail:any,
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
@@ -51,6 +64,14 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setTreeDataMapItemCategory: Mutation<StateType>;
         setTreeDataMapItemPropCategory: Mutation<StateType>;
         setNodeCategory: Mutation<StateType>;
+
+        /*************************************************
+         * ::::
+         ************************************************/
+
+        setFilterState: Mutation<StateType>;
+        setInterfaceCategory: Mutation<StateType>;
+        setInterfaceDetail: Mutation<StateType>;
     };
     actions: {
         listInterface: Action<StateType, StateType>;
@@ -71,6 +92,17 @@ export interface ModuleType extends StoreModuleType<StateType> {
 
         loadExecResult: Action<StateType, StateType>;
         updateExecResult: Action<StateType, StateType>;
+
+        /*************************************************
+         * ::::
+         ************************************************/
+
+        loadList: Action<StateType, StateType>;
+        createApi: Action<StateType, StateType>;
+        disabled: Action<StateType, StateType>;
+        del: Action<StateType, StateType>;
+        copy: Action<StateType, StateType>;
+        getInterfaceDetail: Action<StateType, StateType>;
     }
 }
 
@@ -94,6 +126,18 @@ const initState: StateType = {
     treeDataCategory: [],
     treeDataMapCategory: {},
     nodeDataCategory: {},
+
+    /*************************************************
+     * ::::
+     ************************************************/
+    filterState: {
+        "status": null,
+        "createUser": null,
+        "title": null,
+    },
+    interFaceCategoryOpt: [],
+    interfaceDetail:null,
+
 };
 
 const StoreModel: ModuleType = {
@@ -138,6 +182,20 @@ const StoreModel: ModuleType = {
 
         setQueryParams(state, payload) {
             state.queryParams = payload;
+        },
+
+        /*************************************************
+         * ::::
+         ************************************************/
+
+        setFilterState(state, payload) {
+            state.filterState = payload;
+        },
+        setInterfaceCategory(state, payload) {
+            state.interFaceCategoryOpt = payload;
+        },
+        setInterfaceDetail(state, payload) {
+            state.interfaceDetail = payload;
         },
     },
     actions: {
@@ -184,7 +242,6 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
-
         async saveInterface({commit}, payload: any) {
             const jsn = await save(payload)
             if (jsn.code === 0) {
@@ -202,7 +259,6 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
-
         async loadExecResult({commit, dispatch, state}, scenarioId) {
             const response = await loadExecResult(scenarioId);
             if (response.code != 0) return;
@@ -219,7 +275,6 @@ const StoreModel: ModuleType = {
 
             return true;
         },
-
         // category tree
         async loadCategory({commit}) {
             const response = await loadCategory('interface');
@@ -309,6 +364,91 @@ const StoreModel: ModuleType = {
             if (jsn.code === 0) {
                 await dispatch('loadCategory');
                 return true;
+            } else {
+                return false
+            }
+        },
+
+        /*************************************************
+         * ::::
+         ************************************************/
+        async loadList({commit, dispatch, state}, {currProjectId, page, pageSize, opts}: any) {
+            page = page || state.listResult.pagination.current;
+            pageSize = pageSize || state.listResult.pagination.pageSize;
+            const otherParams = {...state.filterState, ...opts};
+
+            console.log(832, 832, opts, state.filterState)
+            const res = await getInterfaceList({
+                "projectId": currProjectId,
+                "page": page,
+                "pageSize": pageSize,
+                ...otherParams,
+            });
+            if (res.code === 0) {
+                const {result, total} = res.data;
+                result.forEach((item, index) => {
+                    item.index = index + 1;
+                    item.key = `${index + 1}`;
+                    item.updatedAt = momentUtc(item.updatedAt);
+                })
+                commit('setList', {
+                    list: result || [],
+                    pagination: {
+                        ...initState.listResult.pagination,
+                        "current": page,
+                        "pageSize": pageSize,
+                        total: total || 0,
+                    },
+                });
+                commit('setFilterState', {
+                    ...otherParams
+                });
+                return true;
+            } else {
+                return false
+            }
+        },
+        async createApi({commit, dispatch, state}, params: any) {
+            const res = await saveInterface({
+                ...params
+            });
+            if (res.code === 0) {
+                dispatch('loadList', {currProjectId: params.projectId});
+            } else {
+                return false
+            }
+        },
+        async disabled({commit, dispatch, state}, payload: any) {
+            const res = await expireInterface(payload.id);
+            if (res.code === 0) {
+                dispatch('loadList', {currProjectId: payload.projectId});
+            } else {
+                return false
+            }
+        },
+        async del({commit, dispatch, state}, payload: any) {
+            const res = await deleteInterface(payload.id);
+            if (res.code === 0) {
+                dispatch('loadList', {currProjectId: payload.projectId});
+            } else {
+                return false
+            }
+        },
+        async copy({commit, dispatch, state}, payload: any) {
+            const res = await copyInterface(payload.id);
+            if (res.code === 0) {
+                dispatch('loadList', {currProjectId: payload.projectId});
+            } else {
+                return false
+            }
+        },
+        // 用于新建接口时选择接口分类
+        async getInterfaceDetail({commit},payload: any) {
+            const res = await getInterfaceDetail(payload.id);
+            res.data.createdAt = momentUtc(res.data.createdAt);
+            res.data.updatedAt = momentUtc(res.data.updatedAt);
+            if (res.code === 0) {
+                commit('setInterfaceDetail', res.data || null);
             } else {
                 return false
             }

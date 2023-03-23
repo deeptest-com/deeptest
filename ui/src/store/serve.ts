@@ -38,7 +38,7 @@ const StoreModel: ModuleType = {
 
       setCache(settings.currServeId, payload.currServe.id);
 
-      state.serves = payload.projects;
+      state.serves = payload.serves;
       state.currServe = payload.currServe;
     },
   },

@@ -53,10 +53,10 @@ import {
   computed
 } from 'vue';
 import {useStore} from "vuex";
-import {NewInterfaceFormState} from "@/views/interfaceV2/data";
+import {NewInterfaceFormState} from "@/views/Interface/data";
 
-const store = useStore<{ InterfaceV2, ProjectGlobal, Project }>();
-let interFaceCategoryOpt = computed<any>(() => store.state.InterfaceV2.interFaceCategoryOpt);
+const store = useStore<{ Interface, ProjectGlobal, Project }>();
+let interFaceCategoryOpt = computed<any>(() => store.state.Interface.interFaceCategoryOpt);
 
 const props = defineProps({
   visible: {

@@ -3,6 +3,7 @@ package repo
 import (
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
@@ -11,7 +12,8 @@ import (
 )
 
 type ServeRepo struct {
-	*BaseRepo `inject:""`
+	*BaseRepo    `inject:""`
+	CategoryRepo *CategoryRepo `inject:""`
 }
 
 func NewServeRepo() *ServeRepo {
@@ -316,4 +318,21 @@ func (r *ServeRepo) SetCurrServeByUser(serveId, userId uint) (err error) {
 		Update("curr_serve_id", serveId).Error
 
 	return
+}
+
+func (r *ServeRepo) SaveServe(serve *model.Serve) (err error) {
+	return r.DB.Transaction(func(tx *gorm.DB) error {
+		if serve.ID == 0 { //生成目录树跟节点
+			category := model.Category{Name: "所属分类", ProjectId: serve.ProjectId, Type: serverConsts.InterfaceCategory}
+			err = r.CategoryRepo.Save(&category)
+			if err != nil {
+				return err
+			}
+		}
+		err = r.Save(serve.ID, &serve)
+		if err != nil {
+			return err
+		}
+		return nil
+	})
 }

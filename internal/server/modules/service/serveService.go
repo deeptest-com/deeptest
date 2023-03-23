@@ -41,7 +41,7 @@ func (s *ServeService) Save(req v1.ServeReq) (res uint, err error) {
 		return
 	}
 	copier.CopyWithOption(&serve, req, copier.Option{DeepCopy: true})
-	err = s.ServeRepo.Save(serve.ID, &serve)
+	err = s.ServeRepo.SaveServe(&serve)
 	return serve.ID, err
 }
 

@@ -3,6 +3,7 @@ package repo
 import (
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
@@ -42,6 +43,18 @@ func (r *EndpointRepo) Paginate(req v1.EndpointReqPaginate) (ret _domain.PageDat
 		if ids, err := r.ServeRepo.GetBindEndpointIds(req.ServeId, req.ServeVersion); err != nil {
 			db = db.Where("id in ?", ids)
 		}
+	}
+	var categoryIds []uint
+	if req.CategoryId > 0 {
+		categoryIds, err = r.BaseRepo.GetAllChildIds(req.CategoryId, model.Category{}.TableName(),
+			serverConsts.ScenarioCategory, int(req.ProjectId))
+		if err != nil {
+			return
+		}
+	}
+
+	if len(categoryIds) > 0 {
+		db.Where("category_id IN(?)", categoryIds)
 	}
 
 	db = db.Order("created_at desc")
@@ -168,6 +181,8 @@ func (r *EndpointRepo) saveInterfaces(endpointId uint, version string, interface
 		if err != nil {
 			return err
 		}
+		//保存执行器信息
+
 	}
 	return
 }

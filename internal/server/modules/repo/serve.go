@@ -285,3 +285,35 @@ func (r *ServeRepo) GetBindEndpointIds(serveId uint, version string) (ids []int6
 	}
 	return
 }
+
+func (r *ServeRepo) ChangeServe(serveId, userId uint) (serve model.Serve, err error) {
+	err = r.DB.Model(&model.SysUserProfile{}).Where("user_id = ?", userId).
+		Updates(map[string]interface{}{"curr_serve_id": serveId}).Error
+
+	serve, err = r.Get(serveId)
+
+	return
+}
+
+func (r *ServeRepo) GetCurrServeByUser(userId uint) (currServe model.Serve, err error) {
+	var user model.SysUser
+	err = r.DB.Preload("Profile").
+		Where("id = ?", userId).
+		First(&user).
+		Error
+
+	// may be null
+	r.DB.Model(&model.Serve{}).
+		Where("id = ?", user.Profile.CurrServeId).
+		First(&currServe)
+
+	return
+}
+
+func (r *ServeRepo) SetCurrServeByUser(serveId, userId uint) (err error) {
+	err = r.DB.Model(&model.SysUserProfile{}).
+		Where("user_id = ?", userId).
+		Update("curr_serve_id", serveId).Error
+
+	return
+}

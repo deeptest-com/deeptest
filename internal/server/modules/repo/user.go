@@ -446,7 +446,13 @@ func (r *UserRepo) AddProjectForUser(user *model.SysUser) (project model.Project
 		return
 	}
 
-	err = r.ProjectRepo.AddProjectRootInterface(project.ID)
+	serve, err := r.ProjectRepo.AddProjectDefaultServe(project.ID, user.ID)
+	if err != nil {
+		logUtils.Errorf("添加默认服务错误", zap.String("错误:", err.Error()))
+		return
+	}
+
+	err = r.ProjectRepo.AddProjectRootInterface(project.ID, serve.ID)
 	if err != nil {
 		logUtils.Errorf("添加接口错误", zap.String("错误:", err.Error()))
 		return

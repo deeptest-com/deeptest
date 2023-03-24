@@ -13,28 +13,36 @@ type InterfaceService struct {
 }
 
 func (s *InterfaceService) Run(req domain.InvocationReq) (ret v1.InvocationResponse, err error) {
-	if req.UsedBy == consts.UsedByInterface {
-		interfaceExecReq := s.RemoteService.GetInterfaceToExec(req)
+	//单接口调试和多接口调试统一使用一套执行器表结构
+	interfaceProcessorExecReq := s.RemoteService.GetProcessorInterfaceToExec(req)
+	agentExec.Environment = interfaceProcessorExecReq.Environment
+	agentExec.Variables = interfaceProcessorExecReq.Variables
+	agentExec.DatapoolData = interfaceProcessorExecReq.Datapools
+	ret, err = s.Request(interfaceProcessorExecReq)
+	err = s.RemoteService.SubmitProcessorInterfaceResult(req, ret, req.ServerUrl, req.Token)
+	/*
+		if req.UsedBy == consts.UsedByInterface {
+			interfaceExecReq := s.RemoteService.GetInterfaceToExec(req)
 
-		agentExec.Environment = interfaceExecReq.Environment
-		agentExec.Variables = interfaceExecReq.Variables
-		agentExec.DatapoolData = interfaceExecReq.Datapools
+			agentExec.Environment = interfaceExecReq.Environment
+			agentExec.Variables = interfaceExecReq.Variables
+			agentExec.DatapoolData = interfaceExecReq.Datapools
 
-		ret, err = s.Request(interfaceExecReq)
-		err = s.RemoteService.SubmitInterfaceResult(req, ret, req.ServerUrl, req.Token)
+			ret, err = s.Request(interfaceExecReq)
+			err = s.RemoteService.SubmitInterfaceResult(req, ret, req.ServerUrl, req.Token)
 
-	} else if req.UsedBy == consts.UsedByScenario {
-		interfaceProcessorExecReq := s.RemoteService.GetProcessorInterfaceToExec(req)
+		} else if req.UsedBy == consts.UsedByScenario {
+			interfaceProcessorExecReq := s.RemoteService.GetProcessorInterfaceToExec(req)
 
-		agentExec.Environment = interfaceProcessorExecReq.Environment
-		agentExec.Variables = interfaceProcessorExecReq.Variables
-		agentExec.DatapoolData = interfaceProcessorExecReq.Datapools
+			agentExec.Environment = interfaceProcessorExecReq.Environment
+			agentExec.Variables = interfaceProcessorExecReq.Variables
+			agentExec.DatapoolData = interfaceProcessorExecReq.Datapools
 
-		ret, err = s.Request(interfaceProcessorExecReq)
-		err = s.RemoteService.SubmitProcessorInterfaceResult(req, ret, req.ServerUrl, req.Token)
+			ret, err = s.Request(interfaceProcessorExecReq)
+			err = s.RemoteService.SubmitProcessorInterfaceResult(req, ret, req.ServerUrl, req.Token)
 
-	}
-
+		}
+	*/
 	return
 }
 

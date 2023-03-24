@@ -488,10 +488,10 @@ func (r *InterfaceRepo) GetApiKey(id uint) (po model.InterfaceApiKey, err error)
 	return
 }
 
-func (r *InterfaceRepo) SaveInterfaces(interf model.Interface) (err error) {
+func (r *InterfaceRepo) SaveInterfaces(interf *model.Interface) (err error) {
 
 	r.DB.Transaction(func(tx *gorm.DB) error {
-		err = r.UpdateInterface(&interf)
+		err = r.UpdateInterface(interf)
 		if err != nil {
 			return err
 		}

@@ -12,9 +12,10 @@ import (
 )
 
 type EndpointRepo struct {
-	*BaseRepo     `inject:""`
-	InterfaceRepo *InterfaceRepo `inject:""`
-	ServeRepo     *ServeRepo     `inject:""`
+	*BaseRepo              `inject:""`
+	InterfaceRepo          *InterfaceRepo          `inject:""`
+	ServeRepo              *ServeRepo              `inject:""`
+	ProcessorInterfaceRepo *ProcessorInterfaceRepo `inject:""`
 }
 
 func NewEndpointRepo() *EndpointRepo {
@@ -30,8 +31,8 @@ func (r *EndpointRepo) Paginate(req v1.EndpointReqPaginate) (ret _domain.PageDat
 	if req.Title != "" {
 		db = db.Where("title LIKE ?", fmt.Sprintf("%%%s%%", req.Title))
 	}
-	if req.UserId != 0 {
-		db = db.Where("user_id = ?", req.UserId)
+	if req.CreateUser != "" {
+		db = db.Where("create_user = ?", req.CreateUser)
 	}
 	if req.Status != 0 {
 		db = db.Where("status = ?", req.Status)
@@ -113,7 +114,7 @@ func (r *EndpointRepo) SaveAll(endpoint *model.Endpoint) (err error) {
 			return err
 		}
 		//保存接口
-		err = r.saveInterfaces(endpoint.ID, endpoint.Version, endpoint.Interfaces)
+		err = r.saveInterfaces(endpoint.ID, endpoint.Path, endpoint.Version, endpoint.Interfaces)
 		if err != nil {
 			return err
 		}
@@ -169,7 +170,7 @@ func (r *EndpointRepo) removeEndpointParams(endpointId uint) (err error) {
 }
 
 //保存接口信息
-func (r *EndpointRepo) saveInterfaces(endpointId uint, version string, interfaces []model.Interface) (err error) {
+func (r *EndpointRepo) saveInterfaces(endpointId uint, path, version string, interfaces []model.Interface) (err error) {
 	err = r.removeInterfaces(endpointId)
 	if err != nil {
 		return
@@ -177,11 +178,16 @@ func (r *EndpointRepo) saveInterfaces(endpointId uint, version string, interface
 	for _, item := range interfaces {
 		item.EndpointId = endpointId
 		item.Version = version
-		err = r.InterfaceRepo.SaveInterfaces(item)
+		item.Url = path
+		err = r.InterfaceRepo.SaveInterfaces(&item)
 		if err != nil {
 			return err
 		}
-		//保存执行器信息
+
+		err = r.ProcessorInterfaceRepo.SaveProcessor(item)
+		if err != nil {
+			return err
+		}
 
 	}
 	return

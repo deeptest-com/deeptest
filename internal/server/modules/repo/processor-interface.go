@@ -1,6 +1,8 @@
 package repo
 
 import (
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"gorm.io/gorm"
 )
@@ -365,6 +367,46 @@ func (r *ProcessorInterfaceRepo) Update(interf model.ProcessorInterface) (err er
 
 		return err
 	})
+
+	return
+}
+
+func (r *ProcessorInterfaceRepo) GetProcessor(scenarioId, endpointId uint, method consts.HttpMethod) (processor model.ProcessorInterface, err error) {
+	err = r.DB.Where("scenario_id = ? AND endpoint_id = ? AND method = ?", scenarioId, endpointId, method).First(&processor).Error
+	return
+}
+
+func (r *ProcessorInterfaceRepo) SaveProcessor(interf model.Interface) (err error) {
+	var processor model.ProcessorInterface
+	processor, err = r.GetProcessor(0, interf.EndpointId, interf.Method)
+	if err != nil {
+		return err
+	}
+	interfaces2Processor := openapi.NewInterfaces2Processor(interf)
+	processorInterface := interfaces2Processor.Convert()
+	if processor.ID == 0 {
+		err = r.SaveInterface(processorInterface)
+	} else {
+		processorInterface.ID = processor.ID
+		err = r.Update(*processorInterface)
+	}
+	if err != nil {
+		return err
+	}
+	return
+}
+
+func (r *ProcessorInterfaceRepo) GetList(projectId, scenarioId uint) (processors []model.ProcessorInterface, err error) {
+	err = r.DB.Where("project_id=? and scenario_id=?", projectId, scenarioId).Find(&processors).Error
+	if err != nil {
+		return
+	}
+	for key, processor := range processors {
+		processors[key], err = r.GetDetail(processor.ID)
+		if err != nil {
+			return
+		}
+	}
 
 	return
 }

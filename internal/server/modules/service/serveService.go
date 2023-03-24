@@ -26,6 +26,12 @@ func (s *ServeService) ListByProject(projectId int, userId uint) (ret []model.Se
 
 	currServe, err = s.ServeRepo.GetCurrServeByUser(userId)
 
+	if currServe.ProjectId != uint(projectId) { //重新更新默认服务
+		if len(ret) > 0 {
+			currServe, err = s.ServeRepo.ChangeServe(ret[0].ID, userId)
+		}
+	}
+
 	return
 }
 
@@ -176,8 +182,8 @@ func (s *ServeService) BindEndpoint(req v1.ServeVersionBindEndpointReq) (err err
 	return
 }
 
-func (s *ServeService) ChangeServe(projectId, userId uint) (serve model.Serve, err error) {
-	serve, err = s.ServeRepo.ChangeServe(projectId, userId)
+func (s *ServeService) ChangeServe(serveId, userId uint) (serve model.Serve, err error) {
+	serve, err = s.ServeRepo.ChangeServe(serveId, userId)
 
 	return
 }

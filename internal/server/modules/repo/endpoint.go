@@ -3,6 +3,7 @@ package repo
 import (
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
@@ -43,6 +44,18 @@ func (r *EndpointRepo) Paginate(req v1.EndpointReqPaginate) (ret _domain.PageDat
 			db = db.Where("id in ?", ids)
 		}
 	}
+	var categoryIds []uint
+	if req.CategoryId > 0 {
+		categoryIds, err = r.BaseRepo.GetAllChildIds(req.CategoryId, model.Category{}.TableName(),
+			serverConsts.ScenarioCategory, int(req.ProjectId))
+		if err != nil {
+			return
+		}
+	}
+
+	if len(categoryIds) > 0 {
+		db.Where("category_id IN(?)", categoryIds)
+	}
 
 	db = db.Order("created_at desc")
 	err = db.Count(&count).Error
@@ -59,6 +72,8 @@ func (r *EndpointRepo) Paginate(req v1.EndpointReqPaginate) (ret _domain.PageDat
 		return
 	}
 
+	serveNames := map[uint]string{}
+
 	for key, result := range results {
 		var versions []model.EndpointVersion
 		r.DB.Find(&versions, "endpoint_id=?", result.ID).Order("version desc")
@@ -66,6 +81,13 @@ func (r *EndpointRepo) Paginate(req v1.EndpointReqPaginate) (ret _domain.PageDat
 		if len(versions) > 0 {
 			results[key].Version = versions[0].Version
 		}
+
+		if _, ok := serveNames[result.ServeId]; !ok {
+			var serve model.Serve
+			r.DB.Find(&serve, "id=?", result.ServeId)
+			serveNames[result.ServeId] = serve.Name
+		}
+		results[key].ServeName = serveNames[result.ServeId]
 	}
 
 	ret.Populate(results, count, req.Page, req.PageSize)
@@ -159,6 +181,8 @@ func (r *EndpointRepo) saveInterfaces(endpointId uint, version string, interface
 		if err != nil {
 			return err
 		}
+		//保存执行器信息
+
 	}
 	return
 }

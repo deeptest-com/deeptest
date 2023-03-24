@@ -145,3 +145,7 @@ func (s *InterfaceService) CopyValueFromRequest(interf *model.Interface, req v1.
 func (s *InterfaceService) GetDetail(id uint) (interf model.Interface, err error) {
 	return s.InterfaceRepo.GetDetail(id)
 }
+
+func (s *InterfaceService) GetById(id uint) (interf model.Interface, err error) {
+	return s.InterfaceRepo.GetById(id)
+}

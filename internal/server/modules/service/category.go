@@ -34,6 +34,7 @@ func (s *CategoryService) Create(req v1.CategoryCreateReq) (ret model.Category, 
 		Name:      req.Name,
 		ParentId:  req.TargetId,
 		ProjectId: req.ProjectId,
+		Type:      req.Type,
 	}
 
 	if req.Mode == "child" {

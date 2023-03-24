@@ -11,7 +11,6 @@ require (
 	github.com/bndr/gojenkins v1.1.0
 	github.com/casbin/casbin/v2 v2.37.2
 	github.com/casbin/gorm-adapter/v3 v3.4.2
-	github.com/codewangz/goutils v1.0.9
 	github.com/d5/tengo/v2 v2.13.0
 	github.com/dlclark/regexp2 v1.7.0
 	github.com/dop251/goja v0.0.0-20230203172422-5460598cfa32

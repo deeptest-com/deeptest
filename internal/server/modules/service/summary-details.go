@@ -19,19 +19,11 @@ func NewSummaryDetailsService() *SummaryDetailsService {
 }
 
 func (s *SummaryDetailsService) Card(projectId int64) (res v1.ResSummaryCard, err error) {
-	var scenarioTotal int64
-	var interfaceTotal int64
-	var execTotal int64
-	var passRate float64
-	var coverage float64
-	var oldCoverage float64
-	var oldScenarioTotal int64
-	var oldInterfaceTotal int64
+	var scenarioTotal, interfaceTotal, execTotal, oldScenarioTotal, oldInterfaceTotal int64
+	var passRate, coverage, oldCoverage float64
+	var summaryCardTotal, oldSummaryCardTotal model.SummaryCardTotal
+	var summaryDetails, oldSummaryDetails model.SummaryDetails
 
-	var summaryCardTotal model.SummaryCardTotal
-	var oldSummaryCardTotal model.SummaryCardTotal
-	var summaryDetails model.SummaryDetails
-	var oldSummaryDetails model.SummaryDetails
 	date := time.Now().AddDate(0, 0, -30)
 	year, month, day := date.Date()
 	startTime := strconv.Itoa(year) + "-" + strconv.Itoa(int(month)) + "-" + strconv.Itoa(day) + " 00:00:00"
@@ -90,6 +82,7 @@ func (s *SummaryDetailsService) Details(userId int64) (res v1.ResSummaryDetail, 
 	var resDetail v1.ResSummaryDetails
 	var resDetails []v1.ResSummaryDetails
 	var allDetails []model.SummaryDetails
+
 	if userId == 0 {
 		res.ProjectTotal, err = s.Count()
 		allDetails, err = s.Find()
@@ -122,8 +115,22 @@ func DecimalHB(newValue float64, oldValue float64) float64 {
 	return value * 100
 }
 
+func (s *SummaryDetailsService) Create(req model.SummaryDetails) (err error) {
+	return s.SummaryDetailsRepo.Create(req)
+}
+
 func (s *SummaryDetailsService) CreateByDate(req model.SummaryDetails) (err error) {
-	return s.SummaryDetailsRepo.CreateByDate(req)
+	now := time.Now()
+	year, month, day := now.Date()
+	startTime := strconv.Itoa(year) + "-" + strconv.Itoa(int(month)) + "-" + strconv.Itoa(day) + " 00:00:00"
+	endTime := strconv.Itoa(year) + "-" + strconv.Itoa(int(month)) + "-" + strconv.Itoa(day) + " 23:59:59"
+	ret, err := s.LastByDate(startTime, endTime)
+	if ret {
+		err = s.Create(req)
+	} else {
+		err = s.UpdateColumnsByDate(req, startTime, endTime)
+	}
+	return
 }
 
 func (s *SummaryDetailsService) UpdateColumnsByDate(req model.SummaryDetails, startTime string, endTime string) (err error) {
@@ -140,6 +147,14 @@ func (s *SummaryDetailsService) CountByUserId(userId int64) (count int64, err er
 
 func (s *SummaryDetailsService) FindProjectIdsByUserId(userId int64) (count []int64, err error) {
 	return s.SummaryDetailsRepo.FindProjectIdsByUserId(userId)
+}
+
+func (s *SummaryDetailsService) FindInterfaceIdsByProjectId(projectId int64) (ids []int64, err error) {
+	return s.SummaryDetailsRepo.FindInterfaceIdsByProjectId(projectId)
+}
+
+func (s *SummaryDetailsService) CoverageByProjectId(projectId int64, interfaceIds []int64) (count int64, err error) {
+	return s.SummaryDetailsRepo.CoverageByProjectId(projectId, interfaceIds)
 }
 
 func (s *SummaryDetailsService) FindByProjectId(projectId int64) (summaryDetail model.SummaryDetails, err error) {
@@ -170,6 +185,73 @@ func (s *SummaryDetailsService) FindUserIdAndNameByProjectId(projectId int64) (u
 	return s.SummaryDetailsRepo.FindUserIdAndNameByProjectId(projectId)
 }
 
+func (s *SummaryDetailsService) FindCreateUserNameByProjectId(projectId int64) (userName string, err error) {
+	return s.SummaryDetailsRepo.FindCreateUserNameByProjectId(projectId)
+}
+
 func (s *SummaryDetailsService) CountBugsByProjectId(projectId int64) (count int64, err error) {
 	return s.SummaryDetailsRepo.CountBugsByProjectId(projectId)
+}
+
+func (s *SummaryDetailsService) CountScenarioTotalProjectId(projectId int64) (count int64, err error) {
+	return s.SummaryDetailsRepo.CountScenarioTotalProjectId(projectId)
+}
+
+func (s *SummaryDetailsService) CountInterfaceTotalProjectId(projectId int64) (count int64, err error) {
+	return s.SummaryDetailsRepo.CountInterfaceTotalProjectId(projectId)
+}
+
+func (s *SummaryDetailsService) CountExecTotalProjectId(projectId int64) (count int64, err error) {
+	return s.SummaryDetailsRepo.CountExecTotalProjectId(projectId)
+}
+
+func (s *SummaryDetailsService) FindPassRate(projectId int64) (passRate float64, err error) {
+	return s.SummaryDetailsRepo.FindPassRate(projectId)
+}
+
+func (s *SummaryDetailsService) LastByDate(startTime string, endTiem string) (ret bool, err error) {
+	return s.SummaryDetailsRepo.LastByDate(startTime, endTiem)
+}
+
+func (s *SummaryDetailsService) CheckCardUpdated(oldTime *time.Time) (result bool, err error) {
+	return s.SummaryDetailsRepo.CheckCardUpdated(oldTime)
+}
+
+//检查是否有今日数据,没有则copy最后一条,然后进行数据是否更新检查
+func (s *SummaryDetailsService) CheckDetailsUpdated(oldTime *time.Time) (result bool, err error) {
+	now := time.Now()
+	year, month, day := now.Date()
+	startTime := strconv.Itoa(year) + "-" + strconv.Itoa(int(month)) + "-" + strconv.Itoa(day) + " 00:00:00"
+	endTime := strconv.Itoa(year) + "-" + strconv.Itoa(int(month)) + "-" + strconv.Itoa(day) + " 23:59:59"
+	ret, err := s.LastByDate(startTime, endTime)
+	if ret {
+		details, _ := s.Find()
+		for _, detail := range details {
+			newDetail := s.CopyDetailsWithoutBaseModel(detail)
+			s.Create(newDetail)
+		}
+	}
+
+	return s.SummaryDetailsRepo.CheckDetailsUpdated(oldTime)
+}
+
+func (s *SummaryDetailsService) CopyDetailsWithoutBaseModel(detail model.SummaryDetails) (ret model.SummaryDetails) {
+	var newDetail model.SummaryDetails
+	newDetail.ScenarioTotal = detail.ScenarioTotal
+	newDetail.ProjectId = detail.ProjectId
+	newDetail.Coverage = detail.Coverage
+	newDetail.ProjectChineseName = detail.ProjectChineseName
+	newDetail.ProjectName = detail.ProjectName
+	newDetail.ProjectCreateTime = detail.ProjectCreateTime
+	newDetail.AdminUser = detail.AdminUser
+	newDetail.ExecTotal = detail.ExecTotal
+	newDetail.PassRate = detail.PassRate
+	newDetail.InterfaceTotal = detail.InterfaceTotal
+	newDetail.ProjectDes = detail.ProjectDes
+	ret = newDetail
+	return
+}
+
+func (s *SummaryDetailsService) CollectionProjectInfo() (details []model.SummaryDetails, err error) {
+	return s.SummaryDetailsRepo.CollectionProjectInfo()
 }

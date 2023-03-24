@@ -94,3 +94,8 @@ type ResUserRanking struct {
 	Hb             int64      `gorm:"default:0" json:"hb"`
 	UpdateTime     *time.Time `json:"update_time"`
 }
+
+type SummaryDataCheck struct {
+	CacheKey   string     `json:"key"`
+	CacheValue *time.Time `json:"value"`
+}

@@ -17,13 +17,13 @@ type SummaryDetails struct {
 	ProjectName        string  `gorm:"type:text" json:"project_name"`
 	ProjectDes         string  `gorm:"type:text" json:"project_des"`
 	ProjectChineseName string  `gorm:"type:text" json:"project_chinese_name"`
+	ProjectCreateTime  string  `gorm:"type:text" json:"project_create_time"`
 	ScenarioTotal      int64   `json:"scenario_total"`
 	InterfaceTotal     int64   `json:"interface_total"`
 	ExecTotal          int64   `json:"exec_total"`
 	PassRate           float64 `json:"pass_rate"`
 	Coverage           float64 `json:"coverage"`
 	AdminUser          string  `gorm:"type:text" json:"admin_user"`
-	ProjectCreateTime  string  `gorm:"type:text" json:"project_create_time"`
 
 	Logs []*ExecLogProcessor `gorm:"-" json:"logs"`
 }

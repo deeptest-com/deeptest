@@ -59,9 +59,30 @@ func (s *SummaryProjectUserRankingService) ProjectUserRanking(projectId int64, c
 	}
 	return
 }
+func (s *SummaryProjectUserRankingService) Create(req model.SummaryProjectUserRanking) (err error) {
+	return s.SummaryProjectUserRankingRepo.Create(req)
+}
 
-func (s *SummaryProjectUserRankingService) CreateByDate(summaryProjectUserRanking model.SummaryProjectUserRanking) (err error) {
-	return s.SummaryProjectUserRankingRepo.CreateByDate(summaryProjectUserRanking)
+func (s *SummaryProjectUserRankingService) CreateByDate(req model.SummaryProjectUserRanking) (err error) {
+	now := time.Now()
+	year, month, day := now.Date()
+	startTime := strconv.Itoa(year) + "-" + strconv.Itoa(int(month)) + "-" + strconv.Itoa(day) + " 00:00:00"
+	endTime := strconv.Itoa(year) + "-" + strconv.Itoa(int(month)) + "-" + strconv.Itoa(day) + " 23:59:59"
+	ret, err := s.LastByDate(startTime, endTime)
+	if ret {
+		err = s.Create(req)
+	} else {
+		err = s.UpdateColumnsByDate(req, startTime, endTime)
+	}
+	return
+}
+
+func (s *SummaryProjectUserRankingService) UpdateColumnsByDate(req model.SummaryProjectUserRanking, startTime string, endTime string) (err error) {
+	return s.SummaryProjectUserRankingRepo.UpdateColumnsByDate(req, startTime, endTime)
+}
+
+func (s *SummaryProjectUserRankingService) LastByDate(startTime string, endTiem string) (ret bool, err error) {
+	return s.SummaryProjectUserRankingRepo.LastByDate(startTime, endTiem)
 }
 
 func (s *SummaryProjectUserRankingService) FindByProjectId(projectId int64) (summaryProjectUserRanking []model.SummaryProjectUserRanking, err error) {
@@ -70,4 +91,8 @@ func (s *SummaryProjectUserRankingService) FindByProjectId(projectId int64) (sum
 
 func (s *SummaryProjectUserRankingService) FindByDateAndProjectId(startTime string, endTime string, projectId int64) (summaryProjectUserRanking []model.SummaryProjectUserRanking, err error) {
 	return s.SummaryProjectUserRankingRepo.FindByDateAndProjectId(startTime, endTime, projectId)
+}
+
+func (s *SummaryProjectUserRankingService) CheckUpdated(oldTime *time.Time) (result bool, err error) {
+	return s.SummaryProjectUserRankingRepo.CheckUpdated(oldTime)
 }

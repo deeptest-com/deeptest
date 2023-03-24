@@ -7,6 +7,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"strconv"
+	"time"
 )
 
 type SummaryBugsService struct {
@@ -72,9 +73,30 @@ func (s *SummaryBugsService) FindGroupByBugSeverity() (summaryBugsSeverity []mod
 	return
 }
 
-// Create
+func (s *SummaryBugsService) Create(req model.SummaryBugs) (err error) {
+	return s.SummaryBugsRepo.Create(req)
+}
+
 func (s *SummaryBugsService) CreateByDate(req model.SummaryBugs) (err error) {
-	return s.SummaryBugsRepo.CreateByDate(req)
+	now := time.Now()
+	year, month, day := now.Date()
+	startTime := strconv.Itoa(year) + "-" + strconv.Itoa(int(month)) + "-" + strconv.Itoa(day) + " 00:00:00"
+	endTime := strconv.Itoa(year) + "-" + strconv.Itoa(int(month)) + "-" + strconv.Itoa(day) + " 23:59:59"
+	ret, err := s.LastByDate(startTime, endTime)
+	if ret {
+		err = s.Create(req)
+	} else {
+		err = s.UpdateColumnsByDate(req, startTime, endTime)
+	}
+	return
+}
+
+func (s *SummaryBugsService) UpdateColumnsByDate(req model.SummaryBugs, startTime string, endTime string) (err error) {
+	return s.SummaryBugsRepo.UpdateColumnsByDate(req, startTime, endTime)
+}
+
+func (s *SummaryBugsService) LastByDate(startTime string, endTiem string) (ret bool, err error) {
+	return s.SummaryBugsRepo.LastByDate(startTime, endTiem)
 }
 
 // Count
@@ -85,4 +107,8 @@ func (s *SummaryBugsService) Count() (count int64, err error) {
 // CountByProjectId
 func (s *SummaryBugsService) CountByProjectId(projectId int64) (count int64, err error) {
 	return s.SummaryBugsRepo.CountByProjectId(projectId)
+}
+
+func (s *SummaryBugsService) CheckUpdated(oldTime *time.Time) (result bool, err error) {
+	return s.SummaryBugsRepo.CheckUpdated(oldTime)
 }

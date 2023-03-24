@@ -23,8 +23,9 @@ const (
 	WsChatEvent        = "OnChat"
 	WsMessageEvent     = "OnMessage"
 
-	WebCheckInterval = 60 * 60
-	MaxNum           = 10000
+	WebCheckInterval         = 60 * 60
+	SummaryDataCheckInterval = 60
+	MaxNum                   = 10000
 
 	ConfigFileName = "server.yaml"
 	CasbinFileName = "rbac_model.conf" // casbin 规则文件名称

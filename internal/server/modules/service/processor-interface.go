@@ -48,3 +48,7 @@ func (s *ProcessorInterfaceService) UpdateByConfig(req v1.InvocationRequest) (er
 
 	return
 }
+
+func (s *ProcessorInterfaceService) Copy() (err error) {
+	return
+}

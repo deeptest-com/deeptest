@@ -10,7 +10,7 @@ type EndpointReqPaginate struct {
 	ProjectId    int64  `json:"projectId"`
 	CategoryId   uint   `json:"categoryId"`
 	Status       int64  `json:"status"`
-	UserId       int64  `json:"userId"`
+	CreateUser   string `json:"createUser"`
 	Title        string `json:"title"`
 	ServeId      uint   `json:"serveId"`
 	ServeVersion string `json:"serveVersion"`

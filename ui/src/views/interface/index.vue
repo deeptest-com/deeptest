@@ -209,6 +209,7 @@ watch(() => {
   if (newVal.id) {
     await loadList(newVal.id, pagination.value.current, pagination.value.pageSize);
     await store.dispatch('Interface/loadCategory');
+    await store.dispatch('Interface/getServerList',newVal.id);
   }
 }, {
   immediate: true

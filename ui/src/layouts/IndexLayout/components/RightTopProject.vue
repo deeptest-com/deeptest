@@ -38,6 +38,7 @@ const message = computed<number>(() => store.state.User.message);
 const projects = computed<any>(() => store.state.ProjectGlobal.projects);
 const serves = computed<any>(() => store.state.ServeGlobal.serves);
 
+
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const currServe = computed<any>(() => store.state.ServeGlobal.currServe);
 
@@ -48,7 +49,10 @@ store.dispatch("ServeGlobal/fetchServe");
 const selectProject = (value): void => {
   console.log('selectProject', value)
   store.dispatch('ProjectGlobal/changeProject', value);
-  store.dispatch('Environment/getEnvironment', {id: 0, projectId: value})
+  store.dispatch('Environment/getEnvironment', {id: 0, projectId: value});
+
+  // 项目切换后，需要重新更新可选服务列表
+  store.dispatch("ServeGlobal/fetchServe");
 
   if(router.currentRoute.value.path.indexOf('/scenario/') > -1) {
     router.replace('/scenario/index')

@@ -95,10 +95,8 @@ const nodeDataCategory = computed<any>(()=> store.state.Interface.nodeDataCatego
 
 watch(treeDataCategory, () => {
   console.log('watch treeDataCategory', treeDataCategory)
-
   selectStoredKeyCall()
   getExpandedKeysCall()
-
   if (!treeDataCategory.value[0].children || treeDataCategory.value[0].children.length === 0) {
     tips.value = '右键树状节点操作'
   }

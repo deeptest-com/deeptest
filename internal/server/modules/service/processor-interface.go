@@ -49,6 +49,7 @@ func (s *ProcessorInterfaceService) UpdateByConfig(req v1.InvocationRequest) (er
 	return
 }
 
-func (s *ProcessorInterfaceService) Copy() (err error) {
+func (s *ProcessorInterfaceService) GetList(projectId, scenarioId uint) (res []model.ProcessorInterface, err error) {
+	res, err = s.ProcessorInterfaceRepo.GetList(projectId, scenarioId)
 	return
 }

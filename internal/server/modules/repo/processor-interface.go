@@ -395,3 +395,18 @@ func (r *ProcessorInterfaceRepo) SaveProcessor(interf model.Interface) (err erro
 	}
 	return
 }
+
+func (r *ProcessorInterfaceRepo) GetList(projectId, scenarioId uint) (processors []model.ProcessorInterface, err error) {
+	err = r.DB.Where("project_id=? and scenario_id=?", projectId, scenarioId).Find(&processors).Error
+	if err != nil {
+		return
+	}
+	for key, processor := range processors {
+		processors[key], err = r.GetDetail(processor.ID)
+		if err != nil {
+			return
+		}
+	}
+
+	return
+}

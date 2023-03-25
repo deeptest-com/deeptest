@@ -133,7 +133,7 @@ const StoreModel: ModuleType = {
             if (response.code === 0) {
                 data.result.forEach((item) => {
                   item.label = item.name;
-                  item.value = item.id
+                  item.value = item.username
                 })
                 commit('setUserList',data.result);
               }

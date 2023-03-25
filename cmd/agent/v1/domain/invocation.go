@@ -2,14 +2,12 @@ package domain
 
 import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 )
 
 type InvocationReq struct {
-	ServerUrl string        `json:"serverUrl"`
-	Token     string        `json:"token"`
-	Id        int           `json:"id"`
-	UsedBy    consts.UsedBy `json:"usedBy"`
+	ServerUrl string `json:"serverUrl"`
+	Token     string `json:"token"`
+	Id        int    `json:"id"`
 
 	Data v1.InvocationRequest `json:"data"`
 }

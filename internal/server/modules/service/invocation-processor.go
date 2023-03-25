@@ -76,8 +76,8 @@ func (s *InvocationProcessorService) ReplaceEnvironmentAndExtractorVariables(req
 
 	interf, _ := s.ProcessorInterfaceRepo.Get(req.Id)
 
-	req.Environment, _ = s.VariableService.GetEnvironmentVariablesByInterface(req.Id, consts.UsedByScenario)
-	req.Variables, _ = s.VariableService.GetVariablesByInterface(req.Id, consts.UsedByScenario)
+	req.Environment, _ = s.VariableService.GetEnvironmentVariablesByInterface(req.Id, req.UsedBy)
+	req.Variables, _ = s.VariableService.GetVariablesByInterface(req.Id, req.UsedBy)
 	req.Datapools, _ = s.DatapoolService.ListForExec(interf.ProjectId)
 
 	ret = req

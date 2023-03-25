@@ -65,7 +65,6 @@ func (s *RemoteService) GetInterfaceToExec(req domain.InvocationReq) (ret v1.Inv
 
 	return
 }
-
 func (s *RemoteService) SubmitInterfaceResult(reqOjb domain.InvocationReq, repsObj v1.InvocationResponse, serverUrl, token string) (err error) {
 	url := _httpUtils.AddSepIfNeeded(serverUrl) + fmt.Sprintf("invocations/submitInterfaceInvokeResult")
 

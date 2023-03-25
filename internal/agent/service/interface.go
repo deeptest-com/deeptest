@@ -20,6 +20,7 @@ func (s *InterfaceService) Run(req domain.InvocationReq) (ret v1.InvocationRespo
 	agentExec.DatapoolData = interfaceProcessorExecReq.Datapools
 	ret, err = s.Request(interfaceProcessorExecReq)
 	err = s.RemoteService.SubmitProcessorInterfaceResult(req, ret, req.ServerUrl, req.Token)
+
 	/*
 		if req.UsedBy == consts.UsedByInterface {
 			interfaceExecReq := s.RemoteService.GetInterfaceToExec(req)

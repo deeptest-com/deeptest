@@ -12,6 +12,8 @@ type InvocationRequest struct {
 	Variables   domain.Variables   `gorm:"-" json:"variables"`
 	Datapools   domain.Datapools   `gorm:"-" json:"datapools"`
 
+	UsedBy consts.UsedBy `json:"usedBy"`
+
 	BaseRequest
 }
 

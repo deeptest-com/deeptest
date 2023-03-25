@@ -40,8 +40,8 @@ const invokeInterface = async () => {
     serverUrl: process.env.VUE_APP_API_SERVER, // used by agent to submit result to server
     token: await getToken(),
     id: interfaceData.value.id,
-    usedBy: usedBy,
-    data: prepareDataForRequest(interfaceData.value),
+    // usedBy: usedBy,
+    data: prepareDataForRequest(Object.assign({usedBy}, interfaceData.value)),
   }
 
   usedBy === UsedBy.interface ? store.dispatch('Interface1/invokeInterface', data) :

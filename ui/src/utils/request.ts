@@ -89,7 +89,7 @@ const requestInterceptors = async (config: AxiosRequestConfig & { cType?: boolea
         config.params = { ...config.params, currProjectId: projectId, lang: i18n.global.locale.value };
     }
 
-    console.log('=== request ===', config)
+    console.log('=== request ===', config.url, config)
     return config;
 }
 request.interceptors.request.use(

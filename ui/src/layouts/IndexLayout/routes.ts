@@ -10,7 +10,7 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
     children: [
       {
         icon: 'project',
-        title: 'project',
+        title: 'project.management',
         path: 'index',
         component: () => import('@/views/project/list/index.vue'),
         hidden: false,

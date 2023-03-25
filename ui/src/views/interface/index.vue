@@ -22,11 +22,11 @@
             }"
             :pagination="{
                 ...pagination,
-                onChange:async (page) => {
-                  await loadList(currProject.id,page,pagination.pageSize);
+                onChange: (page) => {
+                  loadList(currProject.id,page,pagination.pageSize);
                 },
-                onShowSizeChange: async (page, size) => {
-                   await loadList(currProject.id,page,size);
+                onShowSizeChange: (page, size) => {
+                  loadList(currProject.id,page,size);
                 },
             }"
             :columns="columns"

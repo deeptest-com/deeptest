@@ -4,8 +4,9 @@
       <div class="left tree">
         <InterfaceTree/>
       </div>
-      <!--  头部搜索区域  -->
+
       <div class="right">
+        <!--  头部搜索区域  -->
         <div class="top-action">
           <a-button class="action-new" type="primary" :loading="loading"
                     @click="createApiModaVisible = true;">新建接口
@@ -73,6 +74,7 @@
         :visible="createApiModaVisible"
         @cancal="createApiModaVisible = false;"
         @ok="handleCreateApi"/>
+
     <!-- 编辑接口时，展开抽屉   -->
     <Drawer
         :destroyOnClose="true"

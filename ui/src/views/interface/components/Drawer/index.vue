@@ -27,7 +27,7 @@
         @tabChange="key => onTabChange(key, 'key')"
     >
       <div v-if="key === 'request'">
-        <InterfaceForm  v-if="showMode === 'form'" />
+        <InterfaceForm v-if="showMode === 'form'" />
         <div class="interface-code" v-if="showMode === 'code'">
           <MonacoEditor
               class="editor"

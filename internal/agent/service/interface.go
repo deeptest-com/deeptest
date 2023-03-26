@@ -12,7 +12,7 @@ type InterfaceService struct {
 	RemoteService *RemoteService `inject:""`
 }
 
-func (s *InterfaceService) Run(req domain.InvocationReq) (ret v1.InvocationResponse, err error) {
+func (s *InterfaceService) Run(req domain.InvocationReq) (ret v1.DebugResponse, err error) {
 	//单接口调试和多接口调试统一使用一套执行器表结构
 	interfaceProcessorExecReq := s.RemoteService.GetProcessorInterfaceToExec(req)
 	agentExec.Environment = interfaceProcessorExecReq.Environment
@@ -47,7 +47,7 @@ func (s *InterfaceService) Run(req domain.InvocationReq) (ret v1.InvocationRespo
 	return
 }
 
-func (s *InterfaceService) Request(req v1.InvocationRequest) (ret v1.InvocationResponse, err error) {
+func (s *InterfaceService) Request(req v1.DebugRequest) (ret v1.DebugResponse, err error) {
 	// exec pre-request script
 	agentExec.ExecJs(req.PreRequestScript)
 
@@ -62,7 +62,7 @@ func (s *InterfaceService) Request(req v1.InvocationRequest) (ret v1.InvocationR
 	return
 }
 
-func (s *InterfaceService) GetContentProps(ret *v1.InvocationResponse) {
+func (s *InterfaceService) GetContentProps(ret *v1.DebugResponse) {
 	ret.ContentLang = consts.LangTEXT
 
 	if ret.ContentLang == "" {

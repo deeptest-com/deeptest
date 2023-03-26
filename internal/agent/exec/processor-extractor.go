@@ -59,7 +59,7 @@ func (entity ProcessorExtractor) Run(processor *Processor, session *Session) (er
 		return
 	}
 
-	resp := v1.InvocationResponse{}
+	resp := v1.DebugResponse{}
 	json.Unmarshal([]byte(brother.Result.RespContent), &resp)
 
 	entity.Src = consts.Body
@@ -85,7 +85,7 @@ func (entity ProcessorExtractor) Run(processor *Processor, session *Session) (er
 	return
 }
 
-func ExtractValue(extractor *ProcessorExtractor, resp v1.InvocationResponse) (err error) {
+func ExtractValue(extractor *ProcessorExtractor, resp v1.DebugResponse) (err error) {
 	if extractor.Disabled {
 		extractor.Result = ""
 		return

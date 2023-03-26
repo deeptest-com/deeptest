@@ -53,7 +53,7 @@ func (s *CheckpointService) Delete(reqId uint) (err error) {
 	return
 }
 
-func (s *CheckpointService) CheckInterface(interfaceId uint, resp v1.InvocationResponse, usedBy consts.UsedBy) (
+func (s *CheckpointService) CheckInterface(interfaceId uint, resp v1.DebugResponse, usedBy consts.UsedBy) (
 	logCheckpoints []domain.ExecInterfaceCheckpoint, status consts.ResultStatus, err error) {
 
 	checkpoints, _ := s.CheckpointRepo.List(interfaceId, usedBy)
@@ -70,7 +70,7 @@ func (s *CheckpointService) CheckInterface(interfaceId uint, resp v1.InvocationR
 	return
 }
 
-func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp v1.InvocationResponse,
+func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp v1.DebugResponse,
 	usedBy consts.UsedBy) (logCheckpoint model.ExecLogCheckpoint, err error) {
 	if checkpoint.Disabled {
 		checkpoint.ResultStatus = ""

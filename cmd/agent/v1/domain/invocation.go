@@ -9,7 +9,7 @@ type InvocationReq struct {
 	Token     string `json:"token"`
 	Id        int    `json:"id"`
 
-	Data v1.InvocationRequest `json:"data"`
+	Data v1.DebugRequest `json:"data"`
 }
 
 type InvocationObject struct {

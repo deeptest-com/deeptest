@@ -10,10 +10,10 @@ import (
 	"time"
 )
 
-type InvocationProcessorService struct {
-	ProcessorInvocationRepo *repo.ProcessorInvocationRepo `inject:""`
-	ProcessorInterfaceRepo  *repo.ProcessorInterfaceRepo  `inject:""`
-	InterfaceRepo           *repo.InterfaceRepo           `inject:""`
+type DebugService struct {
+	DebugRepo              *repo.DebugRepo              `inject:""`
+	InterfaceRepo          *repo.InterfaceRepo          `inject:""`
+	ProcessorInterfaceRepo *repo.ProcessorInterfaceRepo `inject:""`
 
 	InterfaceService          *InterfaceService          `inject:""`
 	ProcessorInterfaceService *ProcessorInterfaceService `inject:""`
@@ -23,7 +23,7 @@ type InvocationProcessorService struct {
 	DatapoolService           *DatapoolService           `inject:""`
 }
 
-func (s *InvocationProcessorService) LoadInterfaceExecData(req v1.DebugRequest) (ret v1.DebugRequest, err error) {
+func (s *DebugService) LoadData(req v1.DebugRequest) (ret v1.DebugRequest, err error) {
 	err = s.ProcessorInterfaceService.UpdateByInvocation(req)
 	if err != nil {
 		return
@@ -34,7 +34,7 @@ func (s *InvocationProcessorService) LoadInterfaceExecData(req v1.DebugRequest) 
 	return
 }
 
-func (s *InvocationProcessorService) SubmitInterfaceInvokeResult(req v1.SubmitDebugResultRequest) (err error) {
+func (s *DebugService) SubmitResult(req v1.SubmitDebugResultRequest) (err error) {
 	processorInterface, _ := s.ProcessorInterfaceRepo.GetDetail(req.Response.Id)
 
 	s.ExtractorService.ExtractInterface(processorInterface.ID, req.Response, consts.UsedByScenario)
@@ -49,10 +49,10 @@ func (s *InvocationProcessorService) SubmitInterfaceInvokeResult(req v1.SubmitDe
 	return
 }
 
-func (s *InvocationProcessorService) CreateForScenarioInterface(req v1.DebugRequest,
-	resp v1.DebugResponse, projectId uint) (invocation model.ProcessorInvocation, err error) {
+func (s *DebugService) CreateForScenarioInterface(req v1.DebugRequest,
+	resp v1.DebugResponse, projectId uint) (invocation model.Debug, err error) {
 
-	invocation = model.ProcessorInvocation{
+	invocation = model.Debug{
 		InvocationBase: model.InvocationBase{
 			Name:        time.Now().Format("01-02 15:04:05"),
 			InterfaceId: req.Id,
@@ -66,12 +66,12 @@ func (s *InvocationProcessorService) CreateForScenarioInterface(req v1.DebugRequ
 	bytesReps, _ := json.Marshal(resp)
 	invocation.RespContent = string(bytesReps)
 
-	err = s.ProcessorInvocationRepo.Save(&invocation)
+	err = s.DebugRepo.Save(&invocation)
 
 	return
 }
 
-func (s *InvocationProcessorService) ReplaceEnvironmentAndExtractorVariables(req v1.DebugRequest) (
+func (s *DebugService) ReplaceEnvironmentAndExtractorVariables(req v1.DebugRequest) (
 	ret v1.DebugRequest, err error) {
 
 	interf, _ := s.ProcessorInterfaceRepo.Get(req.Id)
@@ -85,14 +85,14 @@ func (s *InvocationProcessorService) ReplaceEnvironmentAndExtractorVariables(req
 	return
 }
 
-func (s *InvocationProcessorService) ListByInterface(interfId int) (invocations []model.ProcessorInvocation, err error) {
-	invocations, err = s.ProcessorInvocationRepo.List(interfId)
+func (s *DebugService) ListByInterface(interfId int) (invocations []model.Debug, err error) {
+	invocations, err = s.DebugRepo.List(interfId)
 
 	return
 }
 
-func (s *InvocationProcessorService) GetLastResp(interfId int) (resp v1.DebugResponse, err error) {
-	invocation, _ := s.ProcessorInvocationRepo.GetLast(interfId)
+func (s *DebugService) GetLastResp(interfId int) (resp v1.DebugResponse, err error) {
+	invocation, _ := s.DebugRepo.GetLast(interfId)
 	if invocation.ID > 0 {
 		json.Unmarshal([]byte(invocation.RespContent), &resp)
 	} else {
@@ -105,8 +105,8 @@ func (s *InvocationProcessorService) GetLastResp(interfId int) (resp v1.DebugRes
 	return
 }
 
-func (s *InvocationProcessorService) GetAsInterface(id int) (interf model.ProcessorInterface, interfResp v1.DebugResponse, err error) {
-	invocation, err := s.ProcessorInvocationRepo.Get(uint(id))
+func (s *DebugService) GetAsInterface(id int) (interf model.ProcessorInterface, interfResp v1.DebugResponse, err error) {
+	invocation, err := s.DebugRepo.Get(uint(id))
 
 	interfReq := v1.DebugRequest{}
 
@@ -120,8 +120,8 @@ func (s *InvocationProcessorService) GetAsInterface(id int) (interf model.Proces
 	return
 }
 
-func (s *InvocationProcessorService) Delete(id uint) (err error) {
-	err = s.ProcessorInvocationRepo.Delete(id)
+func (s *DebugService) Delete(id uint) (err error) {
+	err = s.DebugRepo.Delete(id)
 
 	return
 }

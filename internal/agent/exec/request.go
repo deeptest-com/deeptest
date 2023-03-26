@@ -14,7 +14,7 @@ import (
 	"time"
 )
 
-func Invoke(req *v1.BaseRequest) (resp v1.InvocationResponse, err error) {
+func Invoke(req *v1.BaseRequest) (resp v1.DebugResponse, err error) {
 	GetRequestProps(req)
 
 	req.Url, err = _httpUtils.AddDefaultUrlSchema(req.Url)
@@ -63,7 +63,7 @@ func GetRequestProps(req *v1.BaseRequest) {
 	req.BodyLang = consts.HttpRespLangType(typeName)
 }
 
-func GetContentProps(resp *v1.InvocationResponse) {
+func GetContentProps(resp *v1.DebugResponse) {
 	resp.ContentLang = consts.LangTEXT
 
 	if resp.ContentLang == "" {

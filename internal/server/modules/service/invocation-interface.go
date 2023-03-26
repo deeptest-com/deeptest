@@ -11,10 +11,10 @@ import (
 )
 
 type InvocationInterfaceService struct {
-	InvocationRepo         *repo.InvocationRepo          `inject:""`
-	ScenarioInvocationRepo *repo.ProcessorInvocationRepo `inject:""`
-	InterfaceRepo          *repo.InterfaceRepo           `inject:""`
-	ScenarioInterfaceRepo  *repo.ProcessorInterfaceRepo  `inject:""`
+	InvocationRepo          *repo.InvocationRepo          `inject:""`
+	ProcessorInvocationRepo *repo.ProcessorInvocationRepo `inject:""`
+	InterfaceRepo           *repo.InterfaceRepo           `inject:""`
+	ScenarioInterfaceRepo   *repo.ProcessorInterfaceRepo  `inject:""`
 
 	InterfaceService         *InterfaceService          `inject:""`
 	ScenarioInterfaceService *ProcessorInterfaceService `inject:""`
@@ -24,7 +24,7 @@ type InvocationInterfaceService struct {
 	DatapoolService          *DatapoolService           `inject:""`
 }
 
-func (s *InvocationInterfaceService) LoadInterfaceExecData(req v1.InvocationRequest) (ret v1.InvocationRequest, err error) {
+func (s *InvocationInterfaceService) LoadInterfaceExecData(req v1.DebugRequest) (ret v1.DebugRequest, err error) {
 	err = s.InterfaceService.UpdateByInvocation(req)
 	if err != nil {
 		return
@@ -35,7 +35,7 @@ func (s *InvocationInterfaceService) LoadInterfaceExecData(req v1.InvocationRequ
 	return
 }
 
-func (s *InvocationInterfaceService) SubmitInterfaceInvokeResult(req v1.SubmitInvocationResultRequest) (err error) {
+func (s *InvocationInterfaceService) SubmitInterfaceInvokeResult(req v1.SubmitDebugResultRequest) (err error) {
 	interf, _ := s.InterfaceRepo.GetDetail(req.Response.Id)
 
 	s.ExtractorService.ExtractInterface(interf.ID, req.Response, consts.UsedByInterface)
@@ -56,12 +56,12 @@ func (s *InvocationInterfaceService) ListByInterface(interfId int) (invocations 
 	return
 }
 
-func (s *InvocationInterfaceService) GetLastResp(interfId int) (resp v1.InvocationResponse, err error) {
+func (s *InvocationInterfaceService) GetLastResp(interfId int) (resp v1.DebugResponse, err error) {
 	invocation, _ := s.InvocationRepo.GetLast(interfId)
 	if invocation.ID > 0 {
 		json.Unmarshal([]byte(invocation.RespContent), &resp)
 	} else {
-		resp = v1.InvocationResponse{
+		resp = v1.DebugResponse{
 			ContentLang: consts.LangHTML,
 			Content:     "",
 		}
@@ -76,10 +76,10 @@ func (s *InvocationInterfaceService) Get(id int) (invocation model.Invocation, e
 	return
 }
 
-func (s *InvocationInterfaceService) GetAsInterface(id int) (interf model.Interface, interfResp v1.InvocationResponse, err error) {
+func (s *InvocationInterfaceService) GetAsInterface(id int) (interf model.Interface, interfResp v1.DebugResponse, err error) {
 	invocation, err := s.InvocationRepo.Get(uint(id))
 
-	interfReq := v1.InvocationRequest{}
+	interfReq := v1.DebugRequest{}
 
 	json.Unmarshal([]byte(invocation.ReqContent), &interfReq)
 	json.Unmarshal([]byte(invocation.RespContent), &interfResp)
@@ -91,8 +91,8 @@ func (s *InvocationInterfaceService) GetAsInterface(id int) (interf model.Interf
 	return
 }
 
-func (s *InvocationInterfaceService) CreateForInterface(req v1.InvocationRequest,
-	resp v1.InvocationResponse, projectId uint) (invocation model.Invocation, err error) {
+func (s *InvocationInterfaceService) CreateForInterface(req v1.DebugRequest,
+	resp v1.DebugResponse, projectId uint) (invocation model.Invocation, err error) {
 	invocation = model.Invocation{
 		InvocationBase: model.InvocationBase{
 			Name:        time.Now().Format("01-02 15:04:05"),
@@ -112,8 +112,8 @@ func (s *InvocationInterfaceService) CreateForInterface(req v1.InvocationRequest
 	return
 }
 
-func (s *InvocationInterfaceService) CreateForScenarioInterface(req v1.InvocationRequest,
-	resp v1.InvocationResponse, projectId uint) (invocation model.ProcessorInvocation, err error) {
+func (s *InvocationInterfaceService) CreateForScenarioInterface(req v1.DebugRequest,
+	resp v1.DebugResponse, projectId uint) (invocation model.ProcessorInvocation, err error) {
 
 	invocation = model.ProcessorInvocation{
 		InvocationBase: model.InvocationBase{
@@ -129,7 +129,7 @@ func (s *InvocationInterfaceService) CreateForScenarioInterface(req v1.Invocatio
 	bytesReps, _ := json.Marshal(resp)
 	invocation.RespContent = string(bytesReps)
 
-	err = s.ScenarioInvocationRepo.Save(&invocation)
+	err = s.ProcessorInvocationRepo.Save(&invocation)
 
 	return
 }
@@ -140,7 +140,7 @@ func (s *InvocationInterfaceService) Delete(id uint) (err error) {
 	return
 }
 
-func (s *InvocationInterfaceService) CopyValueFromRequest(invocation *model.Invocation, req v1.InvocationRequest) (err error) {
+func (s *InvocationInterfaceService) CopyValueFromRequest(invocation *model.Invocation, req v1.DebugRequest) (err error) {
 	invocation.ID = req.Id
 
 	copier.CopyWithOption(invocation, req, copier.Option{DeepCopy: true})
@@ -148,8 +148,8 @@ func (s *InvocationInterfaceService) CopyValueFromRequest(invocation *model.Invo
 	return
 }
 
-func (s *InvocationInterfaceService) ReplaceEnvironmentAndExtractorVariables(req v1.InvocationRequest) (
-	ret v1.InvocationRequest, err error) {
+func (s *InvocationInterfaceService) ReplaceEnvironmentAndExtractorVariables(req v1.DebugRequest) (
+	ret v1.DebugRequest, err error) {
 
 	interf, _ := s.InterfaceRepo.Get(req.Id)
 

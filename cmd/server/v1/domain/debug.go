@@ -5,7 +5,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 )
 
-type InvocationRequest struct {
+type DebugRequest struct {
 	Id uint `gorm:"-" json:"id"`
 
 	Environment domain.Environment `gorm:"-" json:"environment"`
@@ -17,7 +17,7 @@ type InvocationRequest struct {
 	BaseRequest
 }
 
-type InvocationResponse struct {
+type DebugResponse struct {
 	Id uint `json:"id"`
 
 	StatusCode    consts.HttpRespCode `json:"statusCode"`
@@ -34,10 +34,10 @@ type InvocationResponse struct {
 	Time int64 `json:"time"`
 }
 
-type SubmitInvocationResultRequest struct {
-	UsedBy   string             `json:"usedBy"`
-	Request  InvocationRequest  `json:"request"`
-	Response InvocationResponse `json:"response"`
+type SubmitDebugResultRequest struct {
+	UsedBy   string        `json:"usedBy"`
+	Request  DebugRequest  `json:"request"`
+	Response DebugResponse `json:"response"`
 }
 
 type BaseRequest struct {

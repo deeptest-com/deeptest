@@ -13,7 +13,7 @@ import (
 
 type EndpointRepo struct {
 	*BaseRepo              `inject:""`
-	InterfaceRepo          *InterfaceRepo          `inject:""`
+	EndpoitInterfaceRepo   *EndpoitInterfaceRepo   `inject:""`
 	ServeRepo              *ServeRepo              `inject:""`
 	ProcessorInterfaceRepo *ProcessorInterfaceRepo `inject:""`
 }
@@ -170,7 +170,7 @@ func (r *EndpointRepo) removeEndpointParams(endpointId uint) (err error) {
 }
 
 //保存接口信息
-func (r *EndpointRepo) saveInterfaces(endpointId uint, path, version string, interfaces []model.Interface) (err error) {
+func (r *EndpointRepo) saveInterfaces(endpointId uint, path, version string, interfaces []model.EndpointInterface) (err error) {
 	err = r.removeInterfaces(endpointId)
 	if err != nil {
 		return
@@ -179,15 +179,17 @@ func (r *EndpointRepo) saveInterfaces(endpointId uint, path, version string, int
 		item.EndpointId = endpointId
 		item.Version = version
 		item.Url = path
-		err = r.InterfaceRepo.SaveInterfaces(&item)
+		err = r.EndpoitInterfaceRepo.SaveInterfaces(&item)
 		if err != nil {
 			return err
 		}
 
-		err = r.ProcessorInterfaceRepo.SaveProcessor(item)
-		if err != nil {
-			return err
-		}
+		/*
+			err = r.ProcessorInterfaceRepo.SaveProcessor(item)
+			if err != nil {
+				return err
+			}
+		*/
 
 	}
 	return
@@ -207,7 +209,7 @@ func (r *EndpointRepo) GetAll(id uint, version string) (endpoint model.Endpoint,
 		return
 	}
 	endpoint.PathParams, _ = r.GetEndpointParams(id)
-	endpoint.Interfaces, _ = r.InterfaceRepo.GetByEndpointId(id, version)
+	endpoint.Interfaces, _ = r.EndpoitInterfaceRepo.GetByEndpointId(id, version)
 
 	return
 }

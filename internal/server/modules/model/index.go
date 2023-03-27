@@ -93,6 +93,7 @@ var (
 		&EndpointInterfaceRequestBodyItem{},
 		&EndpointInterfaceResponseBodyItem{},
 		&EndpointInterfaceResponseBodyHeader{},
+		&EndpointInterfaceResponseBody{},
 		&EndpointInterface{},
 		&EndpointInterfaceParam{},
 		&EndpointInterfaceCookie{},

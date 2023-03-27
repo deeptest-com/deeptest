@@ -17,7 +17,7 @@ type EndpointCtrl struct {
 
 func (c *EndpointCtrl) Index(ctx iris.Context) {
 	var req v1.EndpointReqPaginate
-	if err := ctx.ReadJSON(&req); err == nil {
+	if err := ctx.ReadJSON(&req); err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}

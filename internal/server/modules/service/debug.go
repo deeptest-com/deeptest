@@ -24,6 +24,7 @@ type DebugService struct {
 }
 
 func (s *DebugService) LoadData(req v1.DebugRequest) (ret v1.DebugRequest, err error) {
+
 	err = s.ProcessorInterfaceService.UpdateByInvocation(req)
 	if err != nil {
 		return

@@ -3,7 +3,6 @@ package router
 import (
 	"github.com/aaronchen2k/deeptest/cmd/server/v1/handler"
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/module"
-	"github.com/aaronchen2k/deeptest/internal/server/middleware"
 	"github.com/kataras/iris/v12"
 )
 
@@ -14,7 +13,7 @@ type DebugModule struct {
 // Party 脚本
 func (m *DebugModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
-		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
+		//index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
 
 		index.Post("/loadData", m.DebugCtrl.LoadData).Name = "获取接口执行数据"
 		index.Post("/submitResult", m.DebugCtrl.SubmitResult).Name = "提交接口执行结果"

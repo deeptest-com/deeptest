@@ -15,13 +15,13 @@ func NewInterfaces2debug(inter model.EndpointInterface) *interfaces2debug {
 	return &interfaces2debug{Inter: inter}
 }
 
-func (i *interfaces2debug) Convert() (DebugInterface *model.DebugInterface) {
-	DebugInterface = new(model.DebugInterface)
-	copier.CopyWithOption(DebugInterface, i.Inter, copier.Option{DeepCopy: true})
-	DebugInterface.ID = 0
-	DebugInterface.BodyFormData = i.BodyFormData(i.Inter)
-	DebugInterface.BodyFormUrlencoded = i.BodyFormUrlencoded(i.Inter)
-	DebugInterface.Body = i.Body(i.Inter)
+func (i *interfaces2debug) Convert() (debugInterface *model.DebugInterface) {
+	debugInterface = new(model.DebugInterface)
+	copier.CopyWithOption(debugInterface, &i.Inter, copier.Option{DeepCopy: true})
+	debugInterface.ID = 0
+	debugInterface.BodyFormData = i.BodyFormData(i.Inter)
+	debugInterface.BodyFormUrlencoded = i.BodyFormUrlencoded(i.Inter)
+	debugInterface.Body = i.Body(i.Inter)
 	return
 }
 

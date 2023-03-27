@@ -28,6 +28,18 @@ func (r *EndpointInterfaceRepo) Get(interfaceId uint) (field model.EndpointInter
 	return
 }
 
+func (r *EndpointInterfaceRepo) GetDetail(interfId uint) (interf model.EndpointInterface, err error) {
+	if interfId > 0 {
+		interf, err = r.Get(interfId)
+		interf.Params, _ = r.ListParams(interfId)
+		interf.Headers, _ = r.ListHeaders(interfId)
+		interf.Cookies, _ = r.ListCookies(interfId)
+		interf.RequestBody, _ = r.ListRequestBody(interfId)
+		interf.ResponseBodies, _ = r.ListResponseBodies(interfId)
+	}
+	return
+}
+
 func (r *EndpointInterfaceRepo) Save(interf *model.EndpointInterface) (err error) {
 	err = r.DB.Save(interf).Error
 	return

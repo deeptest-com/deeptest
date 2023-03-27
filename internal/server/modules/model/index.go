@@ -110,5 +110,7 @@ var (
 		&EnvironmentParam{},
 		&Message{},
 		&MessageRead{},
+
+		&Debug{},
 	}
 )

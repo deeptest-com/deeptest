@@ -11,26 +11,24 @@ import (
 )
 
 type DebugService struct {
-	DebugRepo              *repo.DebugRepo              `inject:""`
-	DebugInterfaceRepo     *repo.InterfaceRepo          `inject:""`
-	ProcessorInterfaceRepo *repo.ProcessorInterfaceRepo `inject:""`
-
-	InterfaceService          *InterfaceService          `inject:""`
-	ProcessorInterfaceService *ProcessorInterfaceService `inject:""`
-	ExtractorService          *ExtractorService          `inject:""`
-	CheckpointService         *CheckpointService         `inject:""`
-	VariableService           *VariableService           `inject:""`
-	DatapoolService           *DatapoolService           `inject:""`
-	EndpointService           *EndpointService           `inject:""`
+	DebugRepo                 *repo.DebugRepo              `inject:""`
+	DebugInterfaceRepo        *repo.InterfaceRepo          `inject:""`
+	ProcessorInterfaceRepo    *repo.ProcessorInterfaceRepo `inject:""`
+	InterfaceService          *InterfaceService            `inject:""`
+	ProcessorInterfaceService *ProcessorInterfaceService   `inject:""`
+	ExtractorService          *ExtractorService            `inject:""`
+	CheckpointService         *CheckpointService           `inject:""`
+	VariableService           *VariableService             `inject:""`
+	DatapoolService           *DatapoolService             `inject:""`
+	EndpointService           *EndpointService             `inject:""`
 }
 
 func (s *DebugService) LoadData(req v1.DebugRequest) (ret v1.DebugRequest, err error) {
 	var tested bool
-	tested, err = s.DebugRepo.Tested(req.Id)
-	if tested == false {
-		ret, err = s.EndpointService.GetReq(req.Id, req.EndpointId)
+	if tested, err = s.DebugRepo.Tested(req.Id); !tested {
+		req, err = s.EndpointService.GetReq(req.Id, req.EndpointId)
 	} else {
-		ret, err = s.GetLastReq(int(req.Id))
+		req, err = s.GetLastReq(int(req.Id))
 	}
 	/*
 		err = s.ProcessorInterfaceService.UpdateByInvocation(req)
@@ -145,8 +143,4 @@ func (s *DebugService) Delete(id uint) (err error) {
 	err = s.DebugRepo.Delete(id)
 
 	return
-}
-
-func (s *DebugService) GetInterface(id uint) {
-
 }

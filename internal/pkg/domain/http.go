@@ -10,6 +10,8 @@ type Param struct {
 	Value    string `json:"value"`
 	Type     string `json:"type"`
 	Disabled bool   `json:"disabled"`
+	Desc     string `json:"desc"`
+	Required bool   `json:"required"`
 }
 
 type Header struct {
@@ -18,6 +20,8 @@ type Header struct {
 	Value    string `json:"value"`
 	Type     string `json:"type"`
 	Disabled bool   `json:"disabled"`
+	Desc     string `json:"desc"`
+	Required bool   `json:"required"`
 }
 
 type Cookie struct {
@@ -26,6 +30,8 @@ type Cookie struct {
 	Value    string `json:"value"`
 	Type     string `json:"type"`
 	Disabled bool   `json:"disabled"`
+	Desc     string `json:"desc"`
+	Required bool   `json:"required"`
 }
 
 type RequestBody struct {

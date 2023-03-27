@@ -26,6 +26,8 @@ type EndpointPathParam struct {
 	Value      string `json:"value"`
 	Type       string `json:"type"`
 	EndpointId uint   `json:"endpointId"`
+	Desc       string `json:"desc"`
+	Required   bool   `json:"required"`
 }
 
 func (EndpointPathParam) TableName() string {

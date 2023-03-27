@@ -20,6 +20,10 @@ type IndexModule struct {
 	RoleModule    *router.RoleModule    `inject:""`
 	PermModule    *router.PermModule    `inject:""`
 
+	DebugModule               *router.DebugModule               `inject:""`
+	InvocationModule          *router.InvocationModule          `inject:""`
+	ProcessorInvocationModule *router.ProcessorInvocationModule `inject:""`
+
 	MockModule *router.MockModule `inject:""`
 
 	ProjectModule  *router.ProjectModule  `inject:""`
@@ -28,20 +32,20 @@ type IndexModule struct {
 
 	InterfaceModule   *router.InterfaceModule   `inject:""`
 	ImportModule      *router.ImportModule      `inject:""`
-	InvocationModule  *router.InvocationModule  `inject:""`
 	AuthModule        *router.AuthModule        `inject:""`
 	EnvironmentModule *router.EnvironmentModule `inject:""`
 	ExtractorModule   *router.ExtractorModule   `inject:""`
 	CheckpointModule  *router.CheckpointModule  `inject:""`
 	ParserModule      *router.ParserModule      `inject:""`
 
-	CategoryModule           *router.CategoryModule            `inject:""`
-	ScenarioModule           *router.ScenarioModule            `inject:""`
-	ScenarioNodeModule       *router.ScenarioNodeModule        `inject:""`
-	ScenarioProcessorModule  *router.ScenarioProcessorModule   `inject:""`
-	ScenarioExecModule       *router.ScenarioExecModule        `inject:""`
-	ScenarioInterfaceModule  *router.ProcessorInterfaceModule  `inject:""`
-	ScenarioInvocationModule *router.ProcessorInvocationModule `inject:""`
+	CategoryModule          *router.CategoryModule          `inject:""`
+	ScenarioModule          *router.ScenarioModule          `inject:""`
+	ScenarioNodeModule      *router.ScenarioNodeModule      `inject:""`
+	ScenarioProcessorModule *router.ScenarioProcessorModule `inject:""`
+	ScenarioExecModule      *router.ScenarioExecModule      `inject:""`
+
+	ScenarioInterfaceModule  *router.ProcessorInterfaceModule `inject:""`
+	ScenarioInvocationModule *router.DebugModule              `inject:""`
 	//ReportModule             *router.ReportModule              `inject:""`
 	EndpointModule       *router.EndpointModule       `inject:""`
 	ServeModule          *router.ServeModule          `inject:""`
@@ -84,7 +88,6 @@ func (m *IndexModule) Party() module.WebModule {
 
 		m.InterfaceModule.Party(),
 		m.ImportModule.Party(),
-		m.InvocationModule.Party(),
 		m.AuthModule.Party(),
 		m.EnvironmentModule.Party(),
 		m.ExtractorModule.Party(),
@@ -110,6 +113,10 @@ func (m *IndexModule) Party() module.WebModule {
 		m.PlanReportModule.Party(),
 		m.SummaryModule.Party(),
 		//m.MessageModule.Party(),
+
+		m.DebugModule.Party(),
+		m.InvocationModule.Party(),
+		m.ProcessorInvocationModule.Party(),
 	}
 	return module.NewModule(consts.ApiPath, handler, modules...)
 }

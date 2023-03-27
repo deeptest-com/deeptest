@@ -26,52 +26,52 @@ import (
 	"time"
 )
 
-func Get(req v1.BaseRequest) (ret v1.InvocationResponse, err error) {
+func Get(req v1.BaseRequest) (ret v1.DebugResponse, err error) {
 	return gets(req, consts.GET, true)
 }
 
 func Post(req v1.BaseRequest) (
-	ret v1.InvocationResponse, err error) {
+	ret v1.DebugResponse, err error) {
 
 	return posts(req, consts.POST, true)
 }
 
 func Put(req v1.BaseRequest) (
-	ret v1.InvocationResponse, err error) {
+	ret v1.DebugResponse, err error) {
 
 	return posts(req, consts.PUT, true)
 }
 
 func Patch(req v1.BaseRequest) (
-	ret v1.InvocationResponse, err error) {
+	ret v1.DebugResponse, err error) {
 
 	return posts(req, consts.PATCH, true)
 }
 
 func Delete(req v1.BaseRequest) (
-	ret v1.InvocationResponse, err error) {
+	ret v1.DebugResponse, err error) {
 
 	return posts(req, consts.DELETE, true)
 }
 
-func Head(req v1.BaseRequest) (ret v1.InvocationResponse, err error) {
+func Head(req v1.BaseRequest) (ret v1.DebugResponse, err error) {
 	return gets(req, consts.HEAD, false)
 }
 
-func Connect(req v1.BaseRequest) (ret v1.InvocationResponse, err error) {
+func Connect(req v1.BaseRequest) (ret v1.DebugResponse, err error) {
 	return gets(req, consts.CONNECT, false)
 }
 
-func Options(req v1.BaseRequest) (ret v1.InvocationResponse, err error) {
+func Options(req v1.BaseRequest) (ret v1.DebugResponse, err error) {
 	return gets(req, consts.OPTIONS, false)
 }
 
-func Trace(req v1.BaseRequest) (ret v1.InvocationResponse, err error) {
+func Trace(req v1.BaseRequest) (ret v1.DebugResponse, err error) {
 	return gets(req, consts.TRACE, false)
 }
 
 func gets(req v1.BaseRequest, method consts.HttpMethod, readRespData bool) (
-	ret v1.InvocationResponse, err error) {
+	ret v1.DebugResponse, err error) {
 
 	reqUrl := commUtils.RemoveLeftVariableSymbol(req.Url)
 	reqParams := req.Params
@@ -156,7 +156,7 @@ func gets(req v1.BaseRequest, method consts.HttpMethod, readRespData bool) (
 }
 
 func posts(req v1.BaseRequest, method consts.HttpMethod, readRespData bool) (
-	ret v1.InvocationResponse, err error) {
+	ret v1.DebugResponse, err error) {
 
 	reqUrl := commUtils.RemoveLeftVariableSymbol(req.Url)
 	reqHeaders := req.Headers
@@ -345,7 +345,7 @@ func UpdateUrl(url string) string {
 	return url
 }
 
-func wrapperErrInResp(code consts.HttpRespCode, statusContent string, content string, resp *v1.InvocationResponse) {
+func wrapperErrInResp(code consts.HttpRespCode, statusContent string, content string, resp *v1.DebugResponse) {
 	resp.StatusCode = code
 	resp.StatusContent = fmt.Sprintf("%d %s", code, statusContent)
 	resp.Content, _ = url.QueryUnescape(content)

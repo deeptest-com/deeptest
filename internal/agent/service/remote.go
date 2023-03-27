@@ -18,7 +18,7 @@ type RemoteService struct {
 }
 
 // for interface invocation
-func (s *RemoteService) GetInterfaceToExec(req domain.InvocationReq) (ret v1.InvocationRequest) {
+func (s *RemoteService) GetInterfaceToExec(req domain.InvocationReq) (ret v1.DebugRequest) {
 	url := fmt.Sprintf("invocations/loadInterfaceExecData")
 	body, err := json.Marshal(req.Data)
 	if err != nil {
@@ -65,11 +65,10 @@ func (s *RemoteService) GetInterfaceToExec(req domain.InvocationReq) (ret v1.Inv
 
 	return
 }
-
-func (s *RemoteService) SubmitInterfaceResult(reqOjb domain.InvocationReq, repsObj v1.InvocationResponse, serverUrl, token string) (err error) {
+func (s *RemoteService) SubmitInterfaceResult(reqOjb domain.InvocationReq, repsObj v1.DebugResponse, serverUrl, token string) (err error) {
 	url := _httpUtils.AddSepIfNeeded(serverUrl) + fmt.Sprintf("invocations/submitInterfaceInvokeResult")
 
-	data := v1.SubmitInvocationResultRequest{
+	data := v1.SubmitDebugResultRequest{
 		Request:  reqOjb.Data,
 		Response: repsObj,
 	}
@@ -109,7 +108,7 @@ func (s *RemoteService) SubmitInterfaceResult(reqOjb domain.InvocationReq, repsO
 }
 
 // for processor interface invocation
-func (s *RemoteService) GetProcessorInterfaceToExec(req domain.InvocationReq) (ret v1.InvocationRequest) {
+func (s *RemoteService) GetProcessorInterfaceToExec(req domain.InvocationReq) (ret v1.DebugRequest) {
 	url := fmt.Sprintf("processors/invocations/loadInterfaceExecData")
 	body, err := json.Marshal(req.Data)
 	if err != nil {
@@ -157,10 +156,10 @@ func (s *RemoteService) GetProcessorInterfaceToExec(req domain.InvocationReq) (r
 	return
 }
 
-func (s *RemoteService) SubmitProcessorInterfaceResult(reqOjb domain.InvocationReq, repsObj v1.InvocationResponse, serverUrl, token string) (err error) {
+func (s *RemoteService) SubmitProcessorInterfaceResult(reqOjb domain.InvocationReq, repsObj v1.DebugResponse, serverUrl, token string) (err error) {
 	url := _httpUtils.AddSepIfNeeded(serverUrl) + fmt.Sprintf("processors/invocations/submitInterfaceInvokeResult")
 
-	data := v1.SubmitInvocationResultRequest{
+	data := v1.SubmitDebugResultRequest{
 		Request:  reqOjb.Data,
 		Response: repsObj,
 	}

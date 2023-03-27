@@ -22,7 +22,7 @@ type ProcessorInterface struct {
 	ProcessorEntityBase
 
 	v1.BaseRequest
-	Response v1.InvocationResponse `json:"response"`
+	Response v1.DebugResponse `json:"response"`
 
 	Extractors  []agentDomain.Extractor
 	Checkpoints []agentDomain.Checkpoint
@@ -109,7 +109,7 @@ func (entity *ProcessorInterface) CheckInterface(processor *Processor, session *
 	return
 }
 
-func (entity *ProcessorInterface) Extract(extractor *agentDomain.Extractor, resp v1.InvocationResponse) (err error) {
+func (entity *ProcessorInterface) Extract(extractor *agentDomain.Extractor, resp v1.DebugResponse) (err error) {
 	extractor.Result = ""
 
 	if extractor.Disabled {
@@ -144,7 +144,7 @@ func (entity *ProcessorInterface) Extract(extractor *agentDomain.Extractor, resp
 	return
 }
 
-func (entity *ProcessorInterface) Check(checkpoint *agentDomain.Checkpoint, resp v1.InvocationResponse) (err error) {
+func (entity *ProcessorInterface) Check(checkpoint *agentDomain.Checkpoint, resp v1.DebugResponse) (err error) {
 	if checkpoint.Disabled {
 		checkpoint.ResultStatus = ""
 		return

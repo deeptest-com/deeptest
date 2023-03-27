@@ -52,7 +52,7 @@ func (c *ProcessorInterfaceCtrl) SaveInterface(ctx iris.Context) {
 		return
 	}
 
-	req := domain.InvocationRequest{}
+	req := domain.DebugRequest{}
 	err = ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})

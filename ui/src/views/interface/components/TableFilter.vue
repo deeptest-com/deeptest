@@ -72,6 +72,7 @@ async function handleFilterChange(type, e) {
   }
   if (type === 'title') {
     formState.value.title = e.target.value;
+    await handleFilter();
   }
 }
 

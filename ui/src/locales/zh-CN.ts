@@ -20,6 +20,7 @@ export default {
     'menu': '菜单',
 
     'project': '项目',
+    'project.management': '项目管理',
     'project.list': '项目列表',
     'project.edit': '项目编辑',
     'project.members': '项目成员',

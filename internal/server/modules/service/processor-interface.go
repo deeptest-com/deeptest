@@ -23,7 +23,7 @@ func (s *ProcessorInterfaceService) ListInvocation(id uint) (invocations []model
 	return s.ProcessorInterfaceRepo.ListInvocation(id)
 }
 
-func (s *ProcessorInterfaceService) UpdateByInvocation(req v1.InvocationRequest) (err error) {
+func (s *ProcessorInterfaceService) UpdateByInvocation(req v1.DebugRequest) (err error) {
 	interf := model.ProcessorInterface{}
 	s.CopyValueFromRequest(&interf, req)
 
@@ -32,7 +32,7 @@ func (s *ProcessorInterfaceService) UpdateByInvocation(req v1.InvocationRequest)
 	return
 }
 
-func (s *ProcessorInterfaceService) CopyValueFromRequest(interf *model.ProcessorInterface, req v1.InvocationRequest) (err error) {
+func (s *ProcessorInterfaceService) CopyValueFromRequest(interf *model.ProcessorInterface, req v1.DebugRequest) (err error) {
 	interf.ID = req.Id
 
 	copier.CopyWithOption(interf, req, copier.Option{DeepCopy: true})
@@ -40,7 +40,7 @@ func (s *ProcessorInterfaceService) CopyValueFromRequest(interf *model.Processor
 	return
 }
 
-func (s *ProcessorInterfaceService) UpdateByConfig(req v1.InvocationRequest) (err error) {
+func (s *ProcessorInterfaceService) UpdateByConfig(req v1.DebugRequest) (err error) {
 	interf := model.ProcessorInterface{}
 	s.CopyValueFromRequest(&interf, req)
 

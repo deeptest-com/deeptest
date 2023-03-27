@@ -117,7 +117,7 @@ func (s *InterfaceService) Update(id int, req v1.InterfaceReq) (err error) {
 	return
 }
 
-func (s *InterfaceService) UpdateByConfig(req v1.InvocationRequest) (err error) {
+func (s *InterfaceService) UpdateByConfig(req v1.DebugRequest) (err error) {
 	interf := model.Interface{}
 	s.CopyValueFromRequest(&interf, req)
 
@@ -125,7 +125,7 @@ func (s *InterfaceService) UpdateByConfig(req v1.InvocationRequest) (err error) 
 
 	return
 }
-func (s *InterfaceService) UpdateByInvocation(req v1.InvocationRequest) (err error) {
+func (s *InterfaceService) UpdateByInvocation(req v1.DebugRequest) (err error) {
 	interf := model.Interface{}
 	s.CopyValueFromRequest(&interf, req)
 
@@ -134,7 +134,7 @@ func (s *InterfaceService) UpdateByInvocation(req v1.InvocationRequest) (err err
 	return
 }
 
-func (s *InterfaceService) CopyValueFromRequest(interf *model.Interface, req v1.InvocationRequest) (err error) {
+func (s *InterfaceService) CopyValueFromRequest(interf *model.Interface, req v1.DebugRequest) (err error) {
 	interf.ID = req.Id
 
 	copier.CopyWithOption(interf, req, copier.Option{DeepCopy: true})

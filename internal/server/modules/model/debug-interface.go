@@ -9,7 +9,7 @@ type DebugInterface struct {
 
 	//ReqBodySpec InterfaceReqBodySpec `gorm:"-" json:"basicAuth"`
 
-	Children []*Interface `gorm:"-" json:"children"`
+	Children []*DebugInterface `gorm:"-" json:"children"`
 
 	Params  []DebugInterfaceParam  `gorm:"-" json:"params"`
 	Headers []DebugInterfaceHeader `gorm:"-" json:"headers"`
@@ -18,10 +18,10 @@ type DebugInterface struct {
 	BodyFormData       []DebugInterfaceBodyFormDataItem       `gorm:"-" json:"bodyFormData"`
 	BodyFormUrlencoded []DebugInterfaceBodyFormUrlEncodedItem `gorm:"-" json:"bodyFormUrlencoded"`
 
-	BasicAuth   InterfaceBasicAuth   `gorm:"-" json:"basicAuth"`
-	BearerToken InterfaceBearerToken `gorm:"-" json:"bearerToken"`
-	OAuth20     InterfaceOAuth20     `gorm:"-" json:"oauth20"`
-	ApiKey      InterfaceApiKey      `gorm:"-" json:"apiKey"`
+	BasicAuth   DebugInterfaceBasicAuth   `gorm:"-" json:"basicAuth"`
+	BearerToken DebugInterfaceBearerToken `gorm:"-" json:"bearerToken"`
+	OAuth20     DebugInterfaceOAuth20     `gorm:"-" json:"oauth20"`
+	ApiKey      DebugInterfaceApiKey      `gorm:"-" json:"apiKey"`
 
 	InterfaceExtractors  []DebugInterfaceExtractor  `gorm:"-" json:"interfaceExtractors"`
 	InterfaceCheckpoints []DebugInterfaceCheckpoint `gorm:"-" json:"interfaceCheckpoints"`

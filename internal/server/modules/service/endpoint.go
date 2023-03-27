@@ -157,6 +157,8 @@ func (s *EndpointService) GetReq(interfaceId, endpointId uint) (req v1.DebugRequ
 		interf, err = s.EndpointInterfaceRepo.GetDetail(interfaceId)
 	} else if endpointId != 0 {
 		interf, err = s.EndpointRepo.GetFirstMethod(endpointId)
+	} else {
+		return
 	}
 	if err != nil {
 		return

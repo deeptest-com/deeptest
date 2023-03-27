@@ -61,9 +61,6 @@ const props = defineProps({
     required: true,
     type: Boolean,
   },
-  interfaceId: {
-    required: true,
-  }
 })
 const emit = defineEmits(['ok', 'close', 'refreshList']);
 const activeKey = ref('1');

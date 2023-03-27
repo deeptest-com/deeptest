@@ -4,11 +4,12 @@
     <a-row class="form-item">
       <a-col :span="2" class="form-label">路径</a-col>
       <a-col :span="16">
-        <a-input :value="interfaceDetail.path" @change="updatePath">
+        <a-input :value="interfaceDetail.path" @change="updatePath" placeholder="请输入路径">
           <template #addonBefore>
-            <a-select :value="'http://localhost:3000'" style="width: 200px">
-              <a-select-option value="http://localhost:3000">http://localhost:3000</a-select-option>
-            </a-select>
+            <a-select
+                :options="serveServers"
+                placeholder="请选择服务器"
+                style="width: 200px;text-align: left"/>
           </template>
           <template #addonAfter>
             <a-button @click="addPathParams">
@@ -23,11 +24,9 @@
         <div class="path-param-list">
           <div v-for="(item,index) in interfaceDetail.pathParams" :key="item.id">
             <FieldItem
-                :fieldData="item"
-                @del="deletePathParams(index)"
+                :fieldData="{...item,index:index}"
+                @del="deletePathParams"
                 @paramsNameChange="paramsNameChange"
-                @settingOther="settingOtherForPathParams"
-                @setRef="setRefForPathParams"
                 @setRequire="setPathParamsRequire"/>
           </div>
         </div>
@@ -328,7 +327,7 @@ import {
   computed,
 } from 'vue';
 import {useStore} from "vuex";
-import {requestMethodOpts, interfaceStatus, mediaTypesOpts, repCodeOpts} from '@/config/constant';
+import {requestMethodOpts, interfaceStatus, mediaTypesOpts, repCodeOpts, defaultPathParams} from '@/config/constant';
 import {saveInterface} from '../../service';
 import {PlusOutlined, EditOutlined, CodeOutlined, BarsOutlined} from '@ant-design/icons-vue';
 import {message} from 'ant-design-vue';
@@ -337,8 +336,10 @@ import {momentUtc} from '@/utils/datetime';
 import {Interface} from "@/views/interface/data";
 
 const store = useStore<{ Interface, ProjectGlobal }>();
-const interfaceDetail: any = computed<Interface[]>(() => store.state.Interface.interfaceDetail);
+const interfaceDetail: any = computed<Interface>(() => store.state.Interface.interfaceDetail);
+const serveServers: any = computed<Interface>(() => store.state.Interface.serveServers);
 import SchemaEditor from '@/components/SchemaEditor/index.vue';
+
 import {example2schema, schema2example} from "@/views/projectSetting/service";
 
 const props = defineProps({
@@ -350,6 +351,7 @@ const props = defineProps({
     required: true,
   }
 });
+
 const emit = defineEmits(['ok', 'close', 'refreshList']);
 const activeKey = ref('1');
 const selectedMethod = ref('GET');
@@ -372,7 +374,7 @@ function selectedCodeChange(e) {
 }
 
 function setSecurity() {
-  console.log('setSecurity')
+  console.log('setSecurity');
 }
 
 function addCookie() {
@@ -439,29 +441,66 @@ function addCodeResponse() {
  * 添加路径参数
  * */
 function addPathParams() {
-  interfaceDetail.value.pathParams.push({
-    name: '',
-    type: 'string',
-    desc: ''
+  interfaceDetail.value.pathParams.push(defaultPathParams);
+  store.commit('Interface/setInterfaceDetail', {
+    ...interfaceDetail.value,
+    pathParams: interfaceDetail.value.pathParams
   })
-  // if (interfaceDetail.value?.pathParams?.length > 0) {
-  //
-  // } else {
-  //   interfaceDetail.value.pathParams = [
-  //     {
-  //       name: '',
-  //       type: 'string',
-  //       desc: ''
-  //     }
-  //   ]
+}
+
+/**
+ * 删除路径参数
+ * */
+function deletePathParams(data) {
+  interfaceDetail.value.pathParams.splice(data.index, 1);
+  store.commit('Interface/setInterfaceDetail', {
+    ...interfaceDetail.value,
+    pathParams: interfaceDetail.value.pathParams
+  })
+}
+
+/**
+ * 更新路径参数的 require 为 true
+ * */
+function setPathParamsRequire(data) {
+  interfaceDetail.value.pathParams[data.index] = data;
+  store.commit('Interface/setInterfaceDetail', {
+    ...interfaceDetail.value,
+    pathParams: interfaceDetail.value.pathParams
+  })
+}
+
+/**
+ * 更新参数名称
+ * */
+function paramsNameChange(data) {
+  interfaceDetail.value.pathParams[data.index] = data;
+  store.commit('Interface/setInterfaceDetail', {
+    ...interfaceDetail.value,
+    pathParams: interfaceDetail.value.pathParams
+  })
+}
+
+/**
+ * 处理 path 与 pathParams 字段联动的情况
+ * */
+function handlePathLink() {
+  // ::::todo 待补充
+  // let parsePathReg = /\{(\w+)\}/g
+  // let path = interfaceDetail.value.path;
+  // let params = path.match(parsePathReg);
+  // if (data.name) {
+  //   params.push(data.name)
   // }
-  // 同步替换删除path中的param参数
-  // interfaceDetail.value.path = path.replace(`{${data.name}}`, '');
+  console.log('handlePathLink');
+}
+
+function deleteParams(type, index) {
+  selectedMethodDetail.value[type].splice(index, 1);
 }
 
 function addInterface() {
   const tpl = {
-// "id": 49,
     "createdAt": "2023-02-10T10:30:30+08:00",
     "updatedAt": "2023-02-10T10:30:30+08:00",
     "name": "",
@@ -503,58 +542,10 @@ function addInterface() {
   selectedCodeDetail.value = null
 }
 
-/**
- * 删除路径参数
- * */
-function deletePathParams(index) {
-// let index = interfaceDetail.value.pathParams.find((item) => {
-//   return item.id === data.id;
-// })
-  interfaceDetail.value.pathParams.splice(index, 1);
-
-//同步替换删除path中的param参数
-// let path = interfaceDetail.value.path;
-// interfaceDetail.value.path = path.replace(`{${data.name}}`, '');
-
-}
-
-function deleteParams(type, index) {
-// let index = selectedMethodDetail.value[type].find((item) => {
-//   return item.id === id;
-// })
-  selectedMethodDetail.value[type].splice(index, 1);
-}
-
 function deleteResHeader(index) {
   selectedCodeDetail.value.headers.splice(index, 1);
 }
 
-function paramsNameChange(val) {
-// todo 待解析，联动接口字段
-// var a = 'api/user/{id}/{detailID}'
-// 解析path 中的参数
-// let parsePathReg = /\{(\w+)\}/g
-// let path = interfaceDetail.value.path;
-// let params = path.match(parsePathReg);
-// if (val) {
-//   params.push(`{${val}}`)
-// }
-// // todo 需要处理，几个表单项的联动场景
-// console.log(832, params, val);
-// interfaceDetail.value.path = path.replace(`{${data.name}}`, '');
-}
-
-function settingOtherForPathParams() {
-  console.log('settingOtherForPathParams')
-}
-
-function setRefForPathParams() {
-  console.log('setRefForPathParams')
-}
-
-function setPathParamsRequire() {
-  console.log('setPathParamsRequire')
-}
 
 function updatePath(e) {
   store.commit('Interface/setInterfaceDetail', {

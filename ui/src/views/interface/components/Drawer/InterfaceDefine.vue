@@ -49,15 +49,7 @@ import SchemaEditor from '@/components/SchemaEditor/index.vue';
 import {example2schema, schema2example} from "@/views/projectSetting/service";
 import InterfaceForm from './InterfaceForm.vue'
 
-const props = defineProps({
-  visible: {
-    required: true,
-    type: Boolean,
-  },
-  interfaceId: {
-    required: true,
-  }
-});
+const props = defineProps({});
 const emit = defineEmits(['ok', 'close', 'refreshList']);
 const showMode = ref('form');
 const yamlCode = ref('');

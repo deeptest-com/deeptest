@@ -28,7 +28,7 @@ import {
 
 import {getNodeMap} from "@/services/tree";
 import {momentUtc} from "@/utils/datetime";
-import {getEnvList} from "@/views/projectSetting/service";
+import {getEnvList, serverList} from "@/views/projectSetting/service";
 
 export interface StateType {
     interfaceId: number;
@@ -43,7 +43,6 @@ export interface StateType {
     treeDataMapCategory: any,
     nodeDataCategory: any;
     filterState:filterFormState,
-    interFaceCategoryOpt:any[],
     interfaceDetail:any,
     serveServers:any[], // serve list
 }
@@ -66,7 +65,6 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setNodeCategory: Mutation<StateType>;
 
         setFilterState: Mutation<StateType>;
-        setInterfaceCategory: Mutation<StateType>;
         setInterfaceDetail: Mutation<StateType>;
         setServerList: Mutation<StateType>;
     };
@@ -97,6 +95,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         del: Action<StateType, StateType>;
         copy: Action<StateType, StateType>;
         getInterfaceDetail: Action<StateType, StateType>;
+        updateInterfaceDetail: Action<StateType, StateType>;
         getServerList: Action<StateType, StateType>;
     }
 }
@@ -126,7 +125,6 @@ const initState: StateType = {
         "createUser": null,
         "title": null,
     },
-    interFaceCategoryOpt: [],
     interfaceDetail:null,
     serveServers:[],
 };
@@ -177,9 +175,7 @@ const StoreModel: ModuleType = {
         setFilterState(state, payload) {
             state.filterState = payload;
         },
-        setInterfaceCategory(state, payload) {
-            state.interFaceCategoryOpt = payload;
-        },
+
         setInterfaceDetail(state, payload) {
             state.interfaceDetail = payload;
         },
@@ -271,6 +267,7 @@ const StoreModel: ModuleType = {
             if (response.code != 0) return;
 
             const {data} = response;
+
             commit('setTreeDataCategory', data || {});
 
             const mp = {}
@@ -364,7 +361,6 @@ const StoreModel: ModuleType = {
             pageSize = pageSize || state.listResult.pagination.pageSize;
             const otherParams = {...state.filterState, ...opts};
 
-            console.log(832, 832, opts, state.filterState)
             const res = await getInterfaceList({
                 "projectId": currProjectId,
                 "page": page,
@@ -400,7 +396,7 @@ const StoreModel: ModuleType = {
                 ...params
             });
             if (res.code === 0) {
-                dispatch('loadList', {currProjectId: params.projectId});
+                await dispatch('loadList', {currProjectId: params.projectId});
             } else {
                 return false
             }
@@ -408,7 +404,7 @@ const StoreModel: ModuleType = {
         async disabled({commit, dispatch, state}, payload: any) {
             const res = await expireInterface(payload.id);
             if (res.code === 0) {
-                dispatch('loadList', {currProjectId: payload.projectId});
+                await dispatch('loadList', {currProjectId: payload.projectId});
             } else {
                 return false
             }
@@ -416,7 +412,7 @@ const StoreModel: ModuleType = {
         async del({commit, dispatch, state}, payload: any) {
             const res = await deleteInterface(payload.id);
             if (res.code === 0) {
-                dispatch('loadList', {currProjectId: payload.projectId});
+                await dispatch('loadList', {currProjectId: payload.projectId});
             } else {
                 return false
             }
@@ -424,7 +420,7 @@ const StoreModel: ModuleType = {
         async copy({commit, dispatch, state}, payload: any) {
             const res = await copyInterface(payload.id);
             if (res.code === 0) {
-                dispatch('loadList', {currProjectId: payload.projectId});
+                await dispatch('loadList', {currProjectId: payload.projectId});
             } else {
                 return false
             }
@@ -440,18 +436,36 @@ const StoreModel: ModuleType = {
                 return false
             }
         },
-        // 获取项目的服务
-        async getServerList({commit},payload: any) {
-            const res = await getEnvList( {
-                projectId:payload.id
+
+        // 用于新建接口时选择接口分类
+        async updateInterfaceDetail({commit,dispatch},payload: any) {
+            const res = await saveInterface({
+                ...payload
             });
             if (res.code === 0) {
-                commit('setServerList', res.data || null);
+                await dispatch('loadList', {currProjectId: payload.projectId});
             } else {
                 return false
             }
         },
 
+        // 获取项目的服务
+        async getServerList({commit},payload: any) {
+            const res = await serverList( {
+                serveId:payload.id
+            });
+
+
+            if (res.code === 0) {
+                res.data.forEach((item:any) => {
+                    item.label = item.url;
+                    item.value = item.url;
+                })
+                commit('setServerList', res.data || null);
+            } else {
+                return false
+            }
+        },
 
     }
 };

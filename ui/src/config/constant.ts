@@ -194,3 +194,15 @@ export const mediaTypesOpts = [
     },
 
 ]
+
+
+export const defaultPathParams = {
+    name: '',
+    type: 'string',
+    description: '',
+    required: false,
+}
+
+export const defaultQueryParams = {
+
+}

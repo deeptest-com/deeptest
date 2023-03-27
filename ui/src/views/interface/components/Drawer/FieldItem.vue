@@ -6,7 +6,7 @@
     <a-input v-model:value="fieldState.name"
              @change="handleChangeName"
              style="width: 300px"
-             placeholder="name">
+             placeholder="输入字段名称">
       <template #addonAfter>
         <a-select
             v-model:value="fieldState.type"
@@ -15,32 +15,20 @@
       </template>
     </a-input>
     <a-input v-model:value="fieldState.desc"
-             placeholder="description"
+             placeholder="输入描述信息"
              style="width: 300px">
       <template #addonAfter>
         <a-space :size="8">
-          <a-popconfirm placement="topLeft" ok-text="Yes" cancel-text="No" @confirm="confirm">
-            <template #title>
-              设置 ref
-            </template>
-            <a-tooltip placement="topLeft" arrow-point-at-center title="Reference">
-              <LinkOutlined @click="setRef"/>
-            </a-tooltip>
-          </a-popconfirm>
-          <a-tooltip placement="topLeft" arrow-point-at-center title="其他属性设置">
-            <setting-outlined @click="settingOther"/>
-          </a-tooltip>
           <a-tooltip placement="topLeft" arrow-point-at-center title="是否必填">
             <InfoCircleOutlined v-if="fieldState.required" @click="setRequire"/>
             <InfoCircleTwoTone v-if="!fieldState.required" @click="setRequire"/>
           </a-tooltip>
           <a-tooltip placement="topLeft" arrow-point-at-center title="删除">
-            <DeleteOutlined @click="del(fieldState)"/>
+            <DeleteOutlined @click="del"/>
           </a-tooltip>
         </a-space>
       </template>
     </a-input>
-
   </div>
 </template>
 
@@ -49,10 +37,10 @@ import {
   ref,
   defineProps,
   defineEmits,
-  onMounted
+  onMounted, watch
 } from 'vue';
-import {requestMethodOpts, pathParamsDataTypesOpts} from '@/config/constant';
 
+import {requestMethodOpts, pathParamsDataTypesOpts} from '@/config/constant';
 
 import {
   SettingOutlined,
@@ -66,34 +54,51 @@ const props = defineProps(['fieldData'])
 
 const emit = defineEmits(['del', 'setRequire', 'setRef', 'settingOther', 'paramsNameChange']);
 
-const fieldState = ref({});
+interface fieldStateType {
+  name: string;
+  required: boolean;
+  type: string;
+  description: string;
+}
 
-onMounted(() => {
-  fieldState.value = props.fieldData;
+
+const fieldState = ref<fieldStateType>({});
+
+
+watch(() => {
+  return props.fieldData
+}, (newVal) => {
+  fieldState.value = newVal;
+}, {
+  immediate: true
 })
 
 function handleChangeName(e) {
-  emit('paramsNameChange',e.target.value);
+  emit('paramsNameChange',fieldState.value);
 }
+
 /**
  * 设置该属性为必填项
  * */
 function setRequire() {
   fieldState.value.required = !fieldState.value.required;
-  emit('setRequire');
+  emit('setRequire', fieldState.value);
 }
+
 /**
  * 设置属性格式
  * */
 function settingOther(data) {
   emit('settingOther', data);
 }
+
 /**
  * 删除
  */
-function del(data) {
-  emit('del', data);
+function del() {
+  emit('del', fieldState.value);
 }
+
 /**
  * ref
  * */

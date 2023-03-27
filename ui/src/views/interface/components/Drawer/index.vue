@@ -29,7 +29,9 @@
       <div v-if="key === 'request'">
         <InterfaceDefine/>
       </div>
-      <div v-else-if="key === 'run'">run content</div>
+      <div v-else-if="key === 'run'">
+        <!-- ::::TODO 调试模块 -->
+      </div>
       <div v-else-if="key === 'mock'">mock content</div>
     </a-card>
     <div class="drawer-btns">
@@ -47,6 +49,7 @@ import {
   defineProps,
   defineEmits,
   computed,
+  onMounted,
 } from 'vue';
 import InterfaceBasicInfo from './InterfaceBasicInfo.vue';
 import EditAndShowField from './EditAndShowField.vue';
@@ -54,8 +57,10 @@ import InterfaceDefine from './InterfaceDefine.vue';
 import {useStore} from "vuex";
 import {Interface} from "@/views/interface/data";
 
-const store = useStore<{ Interface, ProjectGlobal }>();
-const interfaceDetail = computed<Interface[]>(() => store.state.Interface.interfaceDetail);
+const store = useStore<{ Interface, ProjectGlobal,ServeGlobal }>();
+const interfaceDetail = computed<Interface>(() => store.state.Interface.interfaceDetail);
+
+
 const props = defineProps({
   visible: {
     required: true,
@@ -63,15 +68,16 @@ const props = defineProps({
   },
 })
 const emit = defineEmits(['ok', 'close', 'refreshList']);
-const activeKey = ref('1');
 
 function onCloseDrawer() {
   emit('close');
 }
 
-function updateTitle(title) {
-  // ::::todo dispatch一个东西
-  // interfaceDetail.title = title
+async function updateTitle(title) {
+  await store.dispatch('Interface/updateInterfaceDetail',
+      {...interfaceDetail.value, title: title}
+  );
+  await store.dispatch('Interface/getInterfaceDetail', {id: interfaceDetail.value.id});
 }
 
 const tabList = [
@@ -92,28 +98,32 @@ const tabList = [
     slots: {tab: 'customRenderMock'},
   },
 ];
+
 const key = ref('request');
 const onTabChange = (value: string, type: string) => {
   if (type === 'key') {
     key.value = value;
   }
 };
-// 取消
+
 async function cancal() {
   emit('close');
 }
-// 保存
+
 async function save() {
   console.log('save');
 }
-const loading = ref(false);
+
+
 
 </script>
 <style lang="less" scoped>
 .drawer {
   margin-bottom: 60px;
+
   .title {
     width: auto;
+
     .ant-input-affix-wrapper {
       width: auto;
       border: none;
@@ -138,6 +148,7 @@ const loading = ref(false);
     }
   }
 }
+
 .drawer-btns {
   background: #ffffff;
   border-top: 1px solid rgba(0, 0, 0, 0.06);

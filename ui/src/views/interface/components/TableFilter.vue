@@ -8,6 +8,7 @@
             }"
             placeholder="请选择创建人"
             :options="userList"
+            option-label-prop="username"
             :value="formState?.createUser"/>
       </a-form-item>
     </a-col>
@@ -72,7 +73,7 @@ async function handleFilterChange(type, e) {
   }
   if (type === 'title') {
     formState.value.title = e.target.value;
-    await handleFilter();
+    // await handleFilter();
   }
 }
 

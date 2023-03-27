@@ -16,19 +16,20 @@
       </a-form-item>
       <a-form-item label="所属分类" name="parentId">
         <a-tree-select
-            v-model:value="formState.parentId"
+            @change="selectedCategory"
+            :value="formState.parentId"
             show-search
-            :treeData="interFaceCategoryOpt"
+            :treeData="treeDataCategory"
             style="width: 100%"
+            :treeDefaultExpandAll="true"
+            :replaceFields="{ title: 'name',value:'id'}"
             :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
             placeholder="请选择所属分类"
-            allow-clear
-            tree-default-expand-all
-        />
+            allow-clear/>
       </a-form-item>
       <a-form-item label="描述" name="description">
         <a-textarea
-            v-model:value="formState.path"
+            v-model:value="formState.description"
             placeholder="清输入接口描述信息"
             :auto-size="{ minRows: 2, maxRows: 5 }"
         />
@@ -46,17 +47,16 @@ import {ValidateErrorEntity} from 'ant-design-vue/es/form/interface';
 import {
   reactive,
   ref,
-  toRaw,
   UnwrapRef,
   defineProps,
   defineEmits,
-  computed
+  computed,
 } from 'vue';
 import {useStore} from "vuex";
 import {NewInterfaceFormState} from "@/views/Interface/data";
 
-const store = useStore<{ Interface, ProjectGlobal, Project }>();
-let interFaceCategoryOpt = computed<any>(() => store.state.Interface.interFaceCategoryOpt);
+const store = useStore<{ Interface }>();
+const treeDataCategory = computed<any>(() => store.state.Interface.treeDataCategory);
 
 const props = defineProps({
   visible: {
@@ -66,7 +66,6 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['ok', 'cancal']);
-
 
 const formRef = ref();
 
@@ -87,6 +86,10 @@ function cancal() {
   formRef.value.resetFields();
 }
 
+function selectedCategory(value) {
+  formState.parentId = value;
+}
+
 const formState: UnwrapRef<NewInterfaceFormState> = reactive({
   title: '',
   parentId: null,
@@ -98,8 +101,8 @@ const rules = {
     {required: true, message: '请输入接口名称', trigger: 'blur'},
     {min: 1, max: 50, message: '最少 1 个字符，最长 100 个字符', trigger: 'blur'},
   ],
-  parentId: [{required: false, message: '请选择', trigger: 'change'}],
-  description: [{required: false, message: '请输入描述', trigger: 'change'}],
+  parentId: [{required: false}],
+  description: [{required: false}],
 };
 
 

@@ -2,7 +2,6 @@ package repo
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"gorm.io/gorm"
 )
@@ -376,14 +375,15 @@ func (r *ProcessorInterfaceRepo) GetProcessor(scenarioId, endpointId uint, metho
 	return
 }
 
+/*
 func (r *ProcessorInterfaceRepo) SaveProcessor(interf model.Interface) (err error) {
-	var processor model.ProcessorInterface
+	var processor model.interfaces2debug
 	processor, err = r.GetProcessor(0, interf.EndpointId, interf.Method)
 	if err != nil {
 		return err
 	}
-	interfaces2Processor := openapi.NewInterfaces2Processor(interf)
-	processorInterface := interfaces2Processor.Convert()
+	processor := openapi.interfaces2debug(interf)
+	processorInterface := interfaces2debug.Convert()
 	if processor.ID == 0 {
 		err = r.SaveInterface(processorInterface)
 	} else {
@@ -395,6 +395,8 @@ func (r *ProcessorInterfaceRepo) SaveProcessor(interf model.Interface) (err erro
 	}
 	return
 }
+
+*/
 
 func (r *ProcessorInterfaceRepo) GetList(projectId, scenarioId uint) (processors []model.ProcessorInterface, err error) {
 	err = r.DB.Where("project_id=? and scenario_id=?", projectId, scenarioId).Find(&processors).Error

@@ -13,7 +13,7 @@ import (
 
 type EndpointRepo struct {
 	*BaseRepo              `inject:""`
-	EndpoitInterfaceRepo   *EndpoitInterfaceRepo   `inject:""`
+	EndpointInterfaceRepo  *EndpointInterfaceRepo  `inject:""`
 	ServeRepo              *ServeRepo              `inject:""`
 	ProcessorInterfaceRepo *ProcessorInterfaceRepo `inject:""`
 }
@@ -179,7 +179,7 @@ func (r *EndpointRepo) saveInterfaces(endpointId uint, path, version string, int
 		item.EndpointId = endpointId
 		item.Version = version
 		item.Url = path
-		err = r.EndpoitInterfaceRepo.SaveInterfaces(&item)
+		err = r.EndpointInterfaceRepo.SaveInterfaces(&item)
 		if err != nil {
 			return err
 		}
@@ -209,7 +209,7 @@ func (r *EndpointRepo) GetAll(id uint, version string) (endpoint model.Endpoint,
 		return
 	}
 	endpoint.PathParams, _ = r.GetEndpointParams(id)
-	endpoint.Interfaces, _ = r.EndpoitInterfaceRepo.GetByEndpointId(id, version)
+	endpoint.Interfaces, _ = r.EndpointInterfaceRepo.GetByEndpointId(id, version)
 
 	return
 }
@@ -251,5 +251,14 @@ func (r *EndpointRepo) GetLatestVersion(endpointId uint) (res model.EndpointVers
 }
 func (r *EndpointRepo) FindVersion(res *model.EndpointVersion) (err error) {
 	err = r.DB.Where("endpoint_id=? and version=?", res.EndpointId, res.Version).First(&res).Error
+	return
+}
+
+func (r *EndpointRepo) GetFirstMethod(id uint) (res model.EndpointInterface, err error) {
+	var interfs []model.EndpointInterface
+	interfs, err = r.EndpointInterfaceRepo.GetByEndpointId(id, "v0.1.0")
+	if len(interfs) > 0 {
+		res = interfs[0]
+	}
 	return
 }

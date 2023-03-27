@@ -8,11 +8,13 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
+	"github.com/jinzhu/copier"
 )
 
 type EndpointService struct {
-	EndpointRepo *repo.EndpointRepo `inject:""`
-	ServeRepo    *repo.ServeRepo    `inject:""`
+	EndpointRepo          *repo.EndpointRepo          `inject:""`
+	ServeRepo             *repo.ServeRepo             `inject:""`
+	EndpointInterfaceRepo *repo.EndpointInterfaceRepo `inject:""`
 }
 
 func NewEndpointService() *EndpointService {
@@ -145,5 +147,21 @@ func (s *EndpointService) AddVersion(version *model.EndpointVersion) (err error)
 	} else {
 		err = fmt.Errorf("version already exists")
 	}
+	return
+}
+
+func (s *EndpointService) GetReq(interfaceId, endpointId uint) (req v1.DebugRequest, err error) {
+	var interf model.EndpointInterface
+	if interfaceId != 0 {
+		interf, err = s.EndpointInterfaceRepo.Get(interfaceId)
+	} else if endpointId != 0 {
+		interf, err = s.EndpointRepo.GetFirstMethod(endpointId)
+	}
+	if err != nil {
+		return
+	}
+	interfaces2debug := openapi.NewInterfaces2debug(interf)
+	debugInterface := interfaces2debug.Convert()
+	copier.CopyWithOption(&req, &debugInterface, copier.Option{IgnoreEmpty: true, DeepCopy: true})
 	return
 }

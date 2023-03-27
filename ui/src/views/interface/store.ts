@@ -1,7 +1,15 @@
-import { Mutation, Action } from 'vuex';
-import { StoreModuleType } from "@/utils/store";
-import { ResponseData } from '@/utils/request';
-import { Interface, QueryResult, QueryParams, PaginationConfig,InterfaceListReqParams, SaveInterfaceReqParams,filterFormState } from './data.d';
+import {Mutation, Action} from 'vuex';
+import {StoreModuleType} from "@/utils/store";
+import {ResponseData} from '@/utils/request';
+import {
+    Interface,
+    QueryResult,
+    QueryParams,
+    PaginationConfig,
+    InterfaceListReqParams,
+    SaveInterfaceReqParams,
+    filterFormState
+} from './data.d';
 import {
     query,
     get,
@@ -17,7 +25,8 @@ import {
     updateCategory,
     removeCategory,
     moveCategory,
-    updateCategoryName} from "@/services/category";
+    updateCategoryName
+} from "@/services/category";
 import {
     copyInterface,
     deleteInterface,
@@ -42,9 +51,9 @@ export interface StateType {
     treeDataCategory: any[];
     treeDataMapCategory: any,
     nodeDataCategory: any;
-    filterState:filterFormState,
-    interfaceDetail:any,
-    serveServers:any[], // serve list
+    filterState: filterFormState,
+    interfaceDetail: any,
+    serveServers: any[], // serve list
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
@@ -66,6 +75,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
 
         setFilterState: Mutation<StateType>;
         setInterfaceDetail: Mutation<StateType>;
+        setInterfaceDetailByIndex: Mutation<StateType>;
         setServerList: Mutation<StateType>;
     };
     actions: {
@@ -125,8 +135,8 @@ const initState: StateType = {
         "createUser": null,
         "title": null,
     },
-    interfaceDetail:null,
-    serveServers:[],
+    interfaceDetail: null,
+    serveServers: [],
 };
 
 const StoreModel: ModuleType = {
@@ -175,9 +185,14 @@ const StoreModel: ModuleType = {
         setFilterState(state, payload) {
             state.filterState = payload;
         },
-
         setInterfaceDetail(state, payload) {
             state.interfaceDetail = payload;
+        },
+        setInterfaceDetailByIndex(state, payload) {
+            if (payload.codeIndex === -1 || payload.codeIndex) {
+                payload.codeIndex = state.interfaceDetail.interfaces[payload.methodIndex]['responseBodies'].length;
+            }
+            state.interfaceDetail.interfaces[payload.methodIndex]['responseBodies'][payload.codeIndex] = payload.value;
         },
         setServerList(state, payload) {
             state.serveServers = payload;
@@ -426,7 +441,7 @@ const StoreModel: ModuleType = {
             }
         },
         // 用于新建接口时选择接口分类
-        async getInterfaceDetail({commit},payload: any) {
+        async getInterfaceDetail({commit}, payload: any) {
             const res = await getInterfaceDetail(payload.id);
             res.data.createdAt = momentUtc(res.data.createdAt);
             res.data.updatedAt = momentUtc(res.data.updatedAt);
@@ -438,7 +453,7 @@ const StoreModel: ModuleType = {
         },
 
         // 用于新建接口时选择接口分类
-        async updateInterfaceDetail({commit,dispatch},payload: any) {
+        async updateInterfaceDetail({commit, dispatch}, payload: any) {
             const res = await saveInterface({
                 ...payload
             });
@@ -450,14 +465,14 @@ const StoreModel: ModuleType = {
         },
 
         // 获取项目的服务
-        async getServerList({commit},payload: any) {
-            const res = await serverList( {
-                serveId:payload.id
+        async getServerList({commit}, payload: any) {
+            const res = await serverList({
+                serveId: payload.id
             });
 
 
             if (res.code === 0) {
-                res.data.forEach((item:any) => {
+                res.data.forEach((item: any) => {
                     item.label = item.url;
                     item.value = item.url;
                 })

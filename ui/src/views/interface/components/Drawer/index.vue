@@ -57,7 +57,7 @@ import InterfaceDefine from './InterfaceDefine.vue';
 import {useStore} from "vuex";
 import {Interface} from "@/views/interface/data";
 
-const store = useStore<{ Interface, ProjectGlobal,ServeGlobal }>();
+const store = useStore<{ Interface, ProjectGlobal, ServeGlobal }>();
 const interfaceDetail = computed<Interface>(() => store.state.Interface.interfaceDetail);
 
 
@@ -111,9 +111,11 @@ async function cancal() {
 }
 
 async function save() {
-  console.log('save');
+  await store.dispatch('Interface/updateInterfaceDetail',
+      {...interfaceDetail.value}
+  );
+  emit('close');
 }
-
 
 
 </script>

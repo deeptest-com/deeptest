@@ -8,6 +8,7 @@
           <template #addonBefore>
             <a-select
                 :options="serveServers"
+                :value="serveServers?.[0]?.value"
                 placeholder="请选择服务器"
                 style="width: 200px;text-align: left"/>
           </template>
@@ -25,6 +26,7 @@
           <div v-for="(item,index) in interfaceDetail.pathParams" :key="item.id">
             <FieldItem
                 :fieldData="{...item,index:index}"
+                :showRequire="true"
                 @del="deletePathParams"
                 @paramsNameChange="paramsNameChange"
                 @setRequire="setPathParamsRequire"/>
@@ -37,9 +39,7 @@
       <a-col :span="2" class="form-label">请求方式</a-col>
       <a-col :span="22">
         <!-- ::::请求方法定义 -->
-        <a-radio-group
-            @change="selectedMethodChange"
-            v-model:value="selectedMethod" button-style="solid">
+        <a-radio-group v-model:value="selectedMethod" button-style="solid">
           <a-radio-button :key="method.value" v-for="method in requestMethodOpts" :value="method.value">
             {{ method.label }}
           </a-radio-button>
@@ -186,7 +186,7 @@
                     @schemaTypeChange="handleSchemaTypeChange"
                     @contentChange="handleContentChange"
                     :tab-content-style="{width:'700px'}"
-                    :value="activeSchema"/>
+                    :value="selectedMethodDetail.requestBody.schemaItem.content"/>
               </a-col>
             </a-row>
             <!-- ::::响应定义  -->
@@ -195,9 +195,7 @@
                 选择响应代码
               </a-col>
               <a-col :span="21">
-                <a-radio-group
-                    @change="selectedCodeChange"
-                    v-model:value="selectedCode" button-style="solid">
+                <a-radio-group v-model:value="selectedCode" button-style="solid">
                   <a-radio-button :key="code.value" v-for="code in repCodeOpts" :value="code.value">
                     {{ code.label }}
                   </a-radio-button>
@@ -291,7 +289,6 @@
                             :value="activeSchema"/>
                       </a-col>
                     </a-row>
-
                   </div>
                   <div v-if="!selectedCodeDetail">
                     <a-button type="primary" @click="addCodeResponse">
@@ -327,80 +324,77 @@ import {
   computed,
 } from 'vue';
 import {useStore} from "vuex";
-import {requestMethodOpts, interfaceStatus, mediaTypesOpts, repCodeOpts, defaultPathParams} from '@/config/constant';
-import {saveInterface} from '../../service';
-import {PlusOutlined, EditOutlined, CodeOutlined, BarsOutlined} from '@ant-design/icons-vue';
+import {
+  requestMethodOpts,
+  mediaTypesOpts,
+  repCodeOpts,
+  defaultCookieParams,
+  defaultHeaderParams,
+  defaultQueryParams,
+  defaultPathParams
+} from '@/config/constant';
+import {PlusOutlined} from '@ant-design/icons-vue';
 import {message} from 'ant-design-vue';
 import FieldItem from './FieldItem.vue'
-import {momentUtc} from '@/utils/datetime';
 import {Interface} from "@/views/interface/data";
 
-const store = useStore<{ Interface, ProjectGlobal }>();
+const store = useStore<{ Interface, ProjectGlobal, User }>();
 const interfaceDetail: any = computed<Interface>(() => store.state.Interface.interfaceDetail);
+const currentUser: any = computed<Interface>(() => store.state.User.currentUser);
 const serveServers: any = computed<Interface>(() => store.state.Interface.serveServers);
 import SchemaEditor from '@/components/SchemaEditor/index.vue';
 
-import {example2schema, schema2example} from "@/views/projectSetting/service";
+const props = defineProps({});
+const emit = defineEmits([]);
 
-const props = defineProps({
-  visible: {
-    required: true,
-    type: Boolean,
-  },
-  interfaceId: {
-    required: true,
-  }
-});
-
-const emit = defineEmits(['ok', 'close', 'refreshList']);
-const activeKey = ref('1');
 const selectedMethod = ref('GET');
 const selectedCode = ref('200');
-const selectedMethodDetail: any = ref(null);
-const selectedCodeDetail: any = ref(null);
-
-function selectedMethodChange(e) {
-  let curInterface = interfaceDetail.value.interfaces.find((item) => {
-    return item.method === e.target.value;
+// 当前选中的请求方法详情
+const selectedMethodDetail: any = computed(() => {
+  return interfaceDetail?.value?.interfaces?.find((item) => {
+    return item.method === selectedMethod.value;
   })
-  selectedMethodDetail.value = curInterface;
-}
-
-function selectedCodeChange(e) {
-  let curCode = selectedMethodDetail.value.responseBodies.find((item) => {
-    return item.code == e.target.value;
+});
+const selectedMethodIndex: any = computed(() => {
+  return interfaceDetail?.value?.interfaces?.findIndex((item) => {
+    return item.method === selectedMethod.value;
   })
-  selectedCodeDetail.value = curCode;
-}
+});
+// 当前选中的请求方法的响应体详情
+const selectedCodeDetail: any = computed(() => {
+  return selectedMethodDetail?.value?.responseBodies?.find((item) => {
+    return item.code === selectedCode?.value;
+  })
+});
+
+const selectedCodeIndex: any = computed(() => {
+  return selectedMethodDetail?.value?.responseBodies?.findIndex((item) => {
+    return item.code === selectedCode?.value;
+  })
+});
 
 function setSecurity() {
   console.log('setSecurity');
 }
 
 function addCookie() {
-  selectedMethodDetail.value.cookies.push({
-    name: '',
-    value: '',
-    desc: '',
-    type: 'string',
+  selectedMethodDetail.value.cookies.push(defaultCookieParams);
+  store.commit('Interface/setInterfaceDetail', {
+    ...interfaceDetail.value,
   })
 }
 
 function addQueryParams() {
-  selectedMethodDetail.value.params.push({
-    name: '',
-    value: '',
-    desc: '',
-    type: 'string',
+  selectedMethodDetail.value.params.push(defaultQueryParams);
+  store.commit('Interface/setInterfaceDetail', {
+    ...interfaceDetail.value,
   })
 }
 
 function addHeader() {
-  selectedMethodDetail.value.headers.push({
-    name: '',
-    value: '',
-    desc: '',
-    type: 'string',
+  selectedMethodDetail.value.headers.push(defaultHeaderParams);
+  store.commit('Interface/setInterfaceDetail', {
+    ...interfaceDetail.value,
   })
 }
 
@@ -414,27 +408,26 @@ function addResponseHeader() {
 
 function addCodeResponse() {
   const tpl = {
-    "createdAt": "2023-02-10T10:30:30+08:00",
-    "updatedAt": "2023-02-10T10:30:30+08:00",
     "code": selectedCode.value,
-// "interfaceId": 49,
-    "mediaType": "",
+    "interfaceId": selectedMethodDetail.value.id,
+    "mediaType": "application/json",
     "description": "",
-// "schemaRefId": 1,
-    "examples": "{\"user\":{\"value\":{\"id\":1,\"name\":\"王大锤\"}},\"product\":{\"value\":{\"id\":1,\"name\":\"服装\"}}}",
+    "schemaRefId": null,
+    "examples": "",
     "schemaItem": {
-// "id": 3,
-      "createdAt": "2023-02-10T10:30:30+08:00",
-      "updatedAt": "2023-02-10T10:30:30+08:00",
-      "name": "name",
+      "id": null,
+      "name": "",
       "type": "object",
-      "content": "{\"id\":{\"type\":\"integer\",\"format\":\"string\"},\"name\":{\"type\":\"string\",\"format\":\"string\"}}",
-// "ResponseBodyId": 3
+      "content": "",
+      "ResponseBodyId": null
     },
     "headers": []
   };
-  selectedMethodDetail.value.responseBodies.push(tpl)
-  selectedCodeDetail.value = tpl;
+  store.commit('Interface/setInterfaceDetailByIndex', {
+    methodIndex:selectedMethodIndex.value,
+    codeIndex:selectedCodeIndex.value,
+    value:tpl
+  })
 }
 
 /**
@@ -463,7 +456,7 @@ function deletePathParams(data) {
  * 更新路径参数的 require 为 true
  * */
 function setPathParamsRequire(data) {
-  interfaceDetail.value.pathParams[data.index] = data;
+  interfaceDetail.value.pathParams[data.index] = {...data};
   store.commit('Interface/setInterfaceDetail', {
     ...interfaceDetail.value,
     pathParams: interfaceDetail.value.pathParams
@@ -500,46 +493,43 @@ function deleteParams(type, index) {
 }
 
 function addInterface() {
-  const tpl = {
-    "createdAt": "2023-02-10T10:30:30+08:00",
-    "updatedAt": "2023-02-10T10:30:30+08:00",
+  const defaultInterfaceDetail = {
     "name": "",
-    "desc": "",
-    "endpoint_id": 34,
-    "security": "token,api_key",
-    "isLeaf": false,
-    "parentId": 0,
-    "projectId": 0,
-    "useId": 0,
-    "ordr": 0,
-    "slots": null,
-    "url": "",
+    "projectId": interfaceDetail.value.projectId,
+    "serveId": interfaceDetail.value.serveId,
+    "useId": currentUser.value.id,
     "method": selectedMethod.value,
-    "body": "{}",
-    "bodyType": "",
-    "authorizationType": "",
-    "preRequestScript": "",
-    "validationScript": "",
-    "children": null,
-    "params": [],
-    "headers": [],
-    "cookies": [],
+    "description": "",
+    "operationId": "",
+    "security": "token,api_key",
     "requestBody": {
-      "mediaType": "application/json",
+      "id": null,
+      "interfaceId": null,
+      "mediaType": "",
       "description": "",
-      "examples": "{\"user\":{\"value\":{\"id\":1,\"name\":\"王大锤\"}},\"product\":{\"value\":{\"id\":1,\"name\":\"服装\"}}}",
+      "schemaRefId": null,
+      "examples": "",
       "schemaItem": {
-        "name": "name",
+        "id": null,
+        "name": "",
         "type": "object",
-        "content": "{\"id\":{\"type\":\"integer\",\"format\":\"string\"},\"name\":{\"type\":\"string\",\"format\":\"string\"}}"
+        "content": "",
+        "requestBodyId": null
       }
     },
-    "responseBodies": []
-  };
-  interfaceDetail.value.interfaces.push(tpl);
-  selectedMethodDetail.value = tpl;
-  selectedCode.value = '200';
-  selectedCodeDetail.value = null
+    "responseBodies": [],
+    "bodyType": "application/json", // todo 确定 UI 交互
+    "params": [],
+    "headers": [],
+    "cookies": []
+  }
+  interfaceDetail.value.interfaces.push(defaultInterfaceDetail);
+
+  store.commit('Interface/setInterfaceDetail', {
+    ...interfaceDetail.value,
+    interfaces: [...interfaceDetail.value.interfaces],
+  })
+
 }
 
 function deleteResHeader(index) {
@@ -554,7 +544,6 @@ function updatePath(e) {
   })
 }
 
-const key = ref('request');
 
 function addReqBody() {
   console.log('add request body');
@@ -564,83 +553,17 @@ function addResBody() {
   console.log('add request body');
 }
 
-// 取消
-async function cancal() {
-  emit('close');
-}
 
-// 保存
-async function save() {
-  let res = await saveInterface(interfaceDetail.value);
-  if (res.code === 0) {
-    message.success('保存成功');
-    emit('close');
-    emit('refreshList')
-  }
-}
-
-const activeSchema: any = ref({
-  content: {
-    "type": "object",
-    "properties": {
-      "a": {
-        "type": "string"
-      },
-      "b": {
-        "properties": {
-          "c": {
-            "properties": {
-              "d": {
-                "type": "number"
-              }
-            },
-            "type": "object"
-          }
-        },
-        "type": "object"
-      }
-    }
-  },
-  examples: [
-    {
-      name: 'example 1',
-      content: '{"a":"string","b":{"c":{"d":0}}}'
-    },
-    {
-      name: 'example 2',
-      content: '{"a":"string","b":{"c":{"d":0}}}'
-    }
-  ],
-  type: 'object'
-});
 const contentStr = ref('');
 const schemaType = ref('object');
 const exampleStr = ref('');
 
 async function generateFromJSON(JSONStr: string) {
-  const res = await example2schema({
-    data: JSONStr
-  });
-  if (res.code === 0) {
-// activeSchema.value.content = res.data;
-// contentStr.value = JSON.stringify(res.data);
-// schemaType.value = res.data.type;
-  }
+  console.log('generateFromJSON');
 }
 
 async function handleGenerateExample(examples: any) {
-  const res = await schema2example({
-    data: contentStr.value
-  });
-
-  const example = {
-    name: `Example ${examples.length + 1}`,
-    content: JSON.stringify(res.data),
-  };
-
-  if (res.code === 0) {
-    activeSchema.value.examples.push(example);
-  }
+  console.log('handleGenerateExample');
 }
 
 function handleContentChange(str: string) {
@@ -691,5 +614,10 @@ function handleExampleChange(str: string) {
       align-items: center;
     }
   }
+}
+
+.params-defined-item-header {
+  font-weight: bold;
+  margin-bottom: 8px;
 }
 </style>

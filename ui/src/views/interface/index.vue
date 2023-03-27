@@ -73,11 +73,9 @@
         :visible="createApiModaVisible"
         @cancal="createApiModaVisible = false;"
         @ok="handleCreateApi"/>
-
     <!-- 编辑接口时，展开抽屉   -->
     <Drawer
         :destroyOnClose="true"
-        :interfaceId="editInterfaceId"
         :visible="drawerVisible"
         @refreshList="refreshList"
         @close="drawerVisible = false;"/>
@@ -162,10 +160,8 @@ const drawerVisible = ref<boolean>(false);
 const onSelectChange = (keys: Key[], rows: any) => {
   selectedRowKeys.value = [...keys];
 };
-const editInterfaceId = ref('');
 
 async function editInterface(record) {
-  editInterfaceId.value = record.id;
   await store.dispatch('Interface/getInterfaceDetail', {id: record.id});
   drawerVisible.value = true;
 }

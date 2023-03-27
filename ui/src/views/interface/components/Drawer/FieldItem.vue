@@ -19,7 +19,7 @@
              style="width: 300px">
       <template #addonAfter>
         <a-space :size="8">
-          <a-tooltip placement="topLeft" arrow-point-at-center title="是否必填">
+          <a-tooltip v-if="showRequire" placement="topLeft" arrow-point-at-center title="是否必填">
             <InfoCircleOutlined v-if="fieldState.required" @click="setRequire"/>
             <InfoCircleTwoTone v-if="!fieldState.required" @click="setRequire"/>
           </a-tooltip>
@@ -50,7 +50,7 @@ import {
   InfoCircleTwoTone
 } from '@ant-design/icons-vue';
 
-const props = defineProps(['fieldData'])
+const props = defineProps(['fieldData','showRequire'])
 
 const emit = defineEmits(['del', 'setRequire', 'setRef', 'settingOther', 'paramsNameChange']);
 

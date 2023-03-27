@@ -61,7 +61,6 @@ export const repCodeOpts = [
         label: "503",
         value: "503",
     },
-
 ]
 
 /**
@@ -135,12 +134,12 @@ export const openApiDataTypesOpts = [
 
 export const interfaceStatus = new Map([[0, '未知'], [1, '设计中'], [2, '开发中'], [3, '已发布'], [4, '已过时']])
 
-export const serveStatus = new Map([[0, '未知'],[1, '新建'], [2, '设计中'], [3, '已发布'], [4, ' 已禁用']])
+export const serveStatus = new Map([[0, '未知'], [1, '新建'], [2, '设计中'], [3, '已发布'], [4, ' 已禁用']])
 
 
-export const serveStatusTagColor = new Map([[0, 'default'],[1, 'default'], [2, 'processing'], [3, 'success'], [4, 'error']])
+export const serveStatusTagColor = new Map([[0, 'default'], [1, 'default'], [2, 'processing'], [3, 'success'], [4, 'error']])
 
-export const interfaceStatusColor = new Map([[0, 'default'],[1, 'default'], [2, 'processing'], [3, 'success'], [4, 'error']])
+export const interfaceStatusColor = new Map([[0, 'default'], [1, 'default'], [2, 'processing'], [3, 'success'], [4, 'error']])
 
 
 export const interfaceStatusOpts = [
@@ -204,5 +203,25 @@ export const defaultPathParams = {
 }
 
 export const defaultQueryParams = {
-
+    name: '',
+    type: 'string',
+    description: '',
+    required: false,
 }
+
+export const defaultHeaderParams = {
+    name: '',
+    type: 'string',
+    description: '',
+    required: false,
+}
+
+
+export const defaultCookieParams = {
+    name: '',
+    type: 'string',
+    description: '',
+    required: false,
+}
+
+

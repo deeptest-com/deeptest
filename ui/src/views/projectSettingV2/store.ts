@@ -2,7 +2,10 @@ import { Mutation, Action } from 'vuex';
 import { StoreModuleType } from "@/utils/store";
 import {
     copyEnv,
+    copyServe,
     deleteEnv,
+    deleteServe,
+    disableServe,
     getEnvironmentsParamList,
     getEnvList,
     getGlobalVarsList,
@@ -16,7 +19,7 @@ import {
 import { message } from 'ant-design-vue';
 import { ParamsChangeState, VarsChangeState } from './data';
 import { serveStatus, serveStatusTagColor } from '@/config/constant';
-import {momentUtc} from '@/utils/datetime';
+import { momentUtc } from '@/utils/datetime';
 
 export interface StateType {
     envList: any;
@@ -50,7 +53,10 @@ export interface ModuleType extends StoreModuleType<StateType> {
         handleGlobalVarsChange: Action<StateType, StateType>,
         handleGlobalParamsChange: Action<StateType, StateType>,
         getUserOptionsList: Action<StateType, StateType>,
-        createServe: Action<StateType, StateType>,
+        saveStoreServe: Action<StateType, StateType>,
+        deleteStoreServe: Action<StateType, StateType>,
+        copyStoreServe: Action<StateType, StateType>,
+        disabledStoreServe: Action<StateType, StateType>,
     }
 }
 
@@ -276,20 +282,48 @@ const StoreModel: ModuleType = {
                 commit('setUserList', res.data.result);
             }
         },
-        async createServe({ commit, state, dispatch }, { projectId, formState }: any) {
-            const res = await saveServe({
-                "projectId": projectId,
-                "name": formState.name,
-                "description": formState.description,
-                "userId": formState.userId,
-            });
+        async saveStoreServe({ commit, state, dispatch }, params: any) {
+            const res = await saveServe(params);
             if (res.code === 0) {
                 message.success('新建服务成功');
                 await dispatch('getServersList', {
-                    projectId
+                    projectId: params.projectId
                 })
             } else {
                 message.error('新建服务失败');
+            }
+        },
+        async deleteStoreServe({ dispatch }, params: any) {
+            const res = await deleteServe(params.id);
+            if (res.code === 0) {
+                message.success('删除成功');
+                await dispatch('getServersList', {
+                    projectId: params.projectId
+                })
+            } else {
+                message.error('删除失败');
+            }
+        },
+        async copyStoreServe({ dispatch }, params: any) {
+            const res = await copyServe(params.id);
+            if (res.code === 0) {
+                message.success('复制服务成功');
+                await dispatch('getServersList', {
+                    projectId: params.projectId
+                })
+            } else {
+                message.error('复制服务失败');
+            }
+        },
+        async disabledStoreServe({ dispatch }, params: any) {
+            const res = await disableServe(params.id);
+            if (res.code === 0) {
+                message.success('禁用服务成功');
+                await dispatch('getServersList', {
+                    projectId: params.projectId
+                })
+            } else {
+                message.error('禁用服务失败');
             }
         }
 

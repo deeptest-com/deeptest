@@ -66,7 +66,7 @@ async function handleOk() {
         message.error('服务名不能为空');
         return;
     }
-    await store.dispatch('ProjectSettingV2/createServe', {
+    await store.dispatch('ProjectSettingV2/saveStoreServe', {
         projectId: currProject.value.id,
         formState
     })

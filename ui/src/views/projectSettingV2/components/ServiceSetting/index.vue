@@ -165,49 +165,25 @@ async function changeServiceInfo(e) {
   isEditServiceDesc.value = false;
   isEditServiceName.value = false;
   if (editFormState.name && editFormState.description) {
-    const res = await saveServe({
+    await store.dispatch('ProjectSettingV2/saveStoreServe', {
       "projectId": currProject.value.id,
       "name": editFormState.name,
       "description": editFormState.description,
       "id": editFormState.serveId,
     });
-    if (res.code === 0) {
-      // message.success('修改服务描述成功');
-      await getList();
-    } else {
-      // message.error('修改服务描述失败');
-    }
   }
 }
 
 async function onDelete(record: any) {
-  const res = await deleteServe(record.id);
-  if (res.code === 0) {
-    message.success('删除成功');
-    await getList();
-  } else {
-    message.error('删除失败');
-  }
+  store.dispatch('ProjectSettingV2/deleteStoreServe', { id: record.id, projectId: currProject.value.id });
 }
 
 async function onDisabled(record: any) {
-  const res = await disableServe(record.id);
-  if (res.code === 0) {
-    message.success('禁用服务成功');
-    await getList();
-  } else {
-    message.error('禁用服务失败');
-  }
+  store.dispatch('ProjectSettingV2/disabledStoreServe', { id: record.id, projectId: currProject.value.id });
 }
 
 async function onCopy(record: any) {
-  const res = await copyServe(record.id);
-  if (res.code === 0) {
-    message.success('复制服务成功');
-    await getList();
-  } else {
-    message.error('复制服务失败');
-  }
+  store.dispatch('ProjectSettingV2/copyStoreServe', { id: record.id, projectId: currProject.value.id });
 }
 
 async function getList() {

@@ -95,7 +95,7 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
         icon:'set',
         title: 'projectSetting',
         path: 'index',
-        component: () => import('@/views/projectSetting/index.vue'),
+        component: () => import('@/views/projectSettingV2/index.vue'),
         hidden: false,
       },
     ],

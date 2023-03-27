@@ -144,6 +144,7 @@ import {
   watch
 } from 'vue';
 import {CheckOutlined, EditOutlined} from '@ant-design/icons-vue';
+// import {getYaml} from "@/views/interfaceV2/service";
 import {
   saveSchema,
   deleteSchema,

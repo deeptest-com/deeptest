@@ -74,8 +74,8 @@
         </a-button>
 
         <a-table bordered size="small" :pagination="false"
-                 :columns="globalVarsColumns"
-                 :data-source="globalVarsData">
+          :columns="globalVarsColumns"
+          :data-source="globalVarsData">
           <template #customName="{ text,index }">
             <a-input @change="(e) => {
                 handleGlobalVarsChange('name',index,e);
@@ -114,7 +114,7 @@
         <div class="title">全局参数</div>
 
         <a-tabs :pagination="false" v-model:activeKey="globalParamsActiveKey">
-          <a-tab-pane key="header" tab="Header">
+          <a-tab-pane v-for="(tabItem) in tabPaneList" :key="tabItem.type" :tab="tabItem.name">
 
             <a-button
                 class="envDetail-btn"
@@ -127,10 +127,10 @@
             </a-button>
 
             <a-table size="small" bordered :pagination="false" :columns="globalParamscolumns"
-                     :data-source="globalParamsData?.header || []">
+                     :data-source="globalParamsData?.[tabItem.name] || []">
               <template #customName="{ text,index }">
                 <a-input :value="text" @change="(e) => {
-                  handleGlobalParamsChange('header','name',index,e);
+                  handleGlobalParamsChange(tabItem.name,'name',index,e);
               }" placeholder="请输入参数名"/>
               </template>
               <template #customType="{ text,index }">
@@ -139,7 +139,7 @@
                     :value="text"
                     style="width: 120px"
                     @change="(e) => {
-                    handleGlobalParamsChange('header','type',index,e)
+                    handleGlobalParamsChange(tabItem.name,'type',index,e)
                     }">
                   <a-select-option value="string">string</a-select-option>
                   <a-select-option value="number">number</a-select-option>
@@ -148,188 +148,23 @@
               </template>
               <template #customRequired="{ text,index }">
                 <a-switch :checked="text" @change="(checked) => {
-                    handleGlobalParamsChange('header','required',index,checked)
+                    handleGlobalParamsChange(tabItem.name,'required',index,checked)
                     }"/>
               </template>
               <template #customDefaultValue="{ text,index }">
                 <a-input :value="text" @change="(e) => {
-                  handleGlobalParamsChange('header','defaultValue',index,e);
+                  handleGlobalParamsChange(tabItem.name,'defaultValue',index,e);
                 }" placeholder="默认值"/>
               </template>
               <template #customDescription="{ text,index }">
                 <a-input :value="text" @change="(e) => {
-                  handleGlobalParamsChange('header','description',index,e);
+                  handleGlobalParamsChange(tabItem.name,'description',index,e);
               }" placeholder="说明"/>
               </template>
               <template #customAction="{index }">
                 <a-button danger
                           type="text"
-                          @click="handleGlobalParamsChange('header','',index,'','delete');"
-                          :size="'small'">删除
-                </a-button>
-              </template>
-            </a-table>
-          </a-tab-pane>
-          <a-tab-pane key="cookie" tab="Cookie">
-            <a-button
-                class="envDetail-btn"
-                @click="addGlobalParams"
-            >
-              <template #icon>
-                <PlusOutlined/>
-              </template>
-              添加
-            </a-button>
-            <a-table size="small" bordered :pagination="false" :columns="globalParamscolumns"
-                     :data-source="globalParamsData?.cookie || []">
-              <template #customName="{ text,index }">
-                <a-input :value="text" @change="(e) => {
-                  handleGlobalParamsChange('cookie','name',index,e);
-              }" placeholder="请输入参数名"/>
-              </template>
-              <template #customType="{ text,index }">
-                <a-select
-                    ref="select"
-                    class="custom-select"
-                    :value="text"
-                    style="width: 120px"
-                    @change="(e) => {
-                    handleGlobalParamsChange('cookie','type',index,e)
-                    }">
-                  <a-select-option value="string">string</a-select-option>
-                  <a-select-option value="number">number</a-select-option>
-                  <a-select-option value="integer">integer</a-select-option>
-                </a-select>
-              </template>
-              <template #customRequired="{ text,index }">
-                <a-switch :checked="text" @change="(checked) => {
-                    handleGlobalParamsChange('cookie','required',index,checked)
-                    }"/>
-              </template>
-              <template #customDefaultValue="{ text,index }">
-                <a-input :value="text" @change="(e) => {
-                  handleGlobalParamsChange('cookie','defaultValue',index,e);
-                }" placeholder="默认值"/>
-              </template>
-              <template #customDescription="{ text,index }">
-                <a-input :value="text" @change="(e) => {
-                  handleGlobalParamsChange('cookie','description',index,e);
-              }" placeholder="请输入描述信息"/>
-              </template>
-              <template #customAction="{index }">
-                <a-button danger
-                          type="text"
-                          @click="handleGlobalParamsChange('cookie','',index,'','delete');"
-                          :size="'small'">删除
-                </a-button>
-              </template>
-            </a-table>
-          </a-tab-pane>
-          <a-tab-pane key="query" tab="Query">
-            <a-button
-                class="envDetail-btn"
-                @click="addGlobalParams"
-            >
-              <template #icon>
-                <PlusOutlined/>
-              </template>
-              添加
-            </a-button>
-            <a-table size="small" bordered :pagination="false" :columns="globalParamscolumns"
-                     :data-source="globalParamsData?.query || []">
-              <template #customName="{ text,index }">
-                <a-input :value="text" @change="(e) => {
-                  handleGlobalParamsChange('query','name',index,e);
-              }" placeholder="请输入参数名"/>
-              </template>
-              <template #customType="{ text,index }">
-                <a-select
-                    ref="select"
-                    :value="text"
-                    class="custom-select"
-                    style="width: 120px"
-                    @change="(e) => {
-                    handleGlobalParamsChange('query','type',index,e)
-                    }">
-                  <a-select-option value="string">string</a-select-option>
-                  <a-select-option value="number">number</a-select-option>
-                  <a-select-option value="integer">integer</a-select-option>
-                </a-select>
-              </template>
-              <template #customRequired="{ text,index }">
-                <a-switch :checked="text" @change="(checked) => {
-                    handleGlobalParamsChange('query','required',index,checked)
-                    }"/>
-              </template>
-              <template #customDefaultValue="{ text,index }">
-                <a-input :value="text" @change="(e) => {
-                  handleGlobalParamsChange('query','defaultValue',index,e);
-                }" placeholder="默认值"/>
-              </template>
-              <template #customDescription="{ text,index }">
-                <a-input :value="text" @change="(e) => {
-                  handleGlobalParamsChange('query','description',index,e);
-              }" placeholder="请输入描述信息"/>
-              </template>
-              <template #customAction="{index }">
-                <a-button danger
-                          type="text"
-                          @click="handleGlobalParamsChange('cookie','',index,'','delete');"
-                          :size="'small'">删除
-                </a-button>
-              </template>
-            </a-table>
-          </a-tab-pane>
-          <a-tab-pane key="body" tab="Body">
-            <a-button
-                class="envDetail-btn"
-                @click="addGlobalParams"
-            >
-              <template #icon>
-                <PlusOutlined/>
-              </template>
-              添加
-            </a-button>
-            <a-table size="small" bordered :pagination="false" :columns="globalParamscolumns"
-                     :data-source="globalParamsData?.body || []">
-              <template #customName="{ text,index }">
-                <a-input :value="text" @change="(e) => {
-                  handleGlobalParamsChange('body','name',index,e);
-              }" placeholder="请输入参数名"/>
-              </template>
-              <template #customType="{ text,index }">
-                <a-select
-                    ref="select"
-                    :value="text"
-                    class="custom-select"
-                    style="width: 120px"
-                    @change="(e) => {
-                    handleGlobalParamsChange('cookie','type',index,e)
-                    }">
-                  <a-select-option value="string">string</a-select-option>
-                  <a-select-option value="number">number</a-select-option>
-                  <a-select-option value="integer">integer</a-select-option>
-                </a-select>
-              </template>
-              <template #customRequired="{ text,index }">
-                <a-switch :checked="text" @change="(checked) => {
-                    handleGlobalParamsChange('body','required',index,checked)
-                    }"/>
-              </template>
-              <template #customDefaultValue="{ text,index }">
-                <a-input :value="text" @change="(e) => {
-                  handleGlobalParamsChange('body','defaultValue',index,e);
-                }" placeholder="默认值"/>
-              </template>
-              <template #customDescription="{ text,index }">
-                <a-input :value="text" @change="(e) => {
-                  handleGlobalParamsChange('body','description',index,e);
-              }" placeholder="请输入描述信息"/>
-              </template>
-              <template #customAction="{index }">
-                <a-button danger
-                          type="text"
-                          @click="handleGlobalParamsChange('cookie','',index,'','delete');"
+                          @click="handleGlobalParamsChange(tabItem.name,'',index,'','delete');"
                           :size="'small'">删除
                 </a-button>
               </template>
@@ -453,139 +288,98 @@
 
 import {
   computed,
-  defineComponent,
   defineEmits,
   defineProps,
-  onMounted,
-  reactive,
-  Ref,
   ref,
-  UnwrapRef,
   watch
 } from 'vue';
-import {CheckOutlined, EditOutlined, MenuOutlined, BorderlessTableOutlined, PlusOutlined} from '@ant-design/icons-vue';
+import {MenuOutlined, PlusOutlined} from '@ant-design/icons-vue';
 
-import {
-  getServeList,
-  deleteServe,
-  copyServe,
-  disableServe,
-  getGlobalVarsList,
-  getEnvironmentsParamList,
-  getEnvList, saveEnv,
-  saveGlobalVars,
-  saveEnvironmentsParam,
-  copyEnv,
-  deleteEnv,
-} from '../../service';
-import {momentUtc} from '@/utils/datetime';
-import {message} from "ant-design-vue";
-import {serveStatus} from "@/config/constant";
 import draggable from 'vuedraggable'
 import Combobox from "ant-design-vue/es/vc-select/examples/combobox";
 import mounted = Combobox.mounted;
+import { useGlobalEnv } from '../../hooks/globalEnv';
+import { useGlobalVarAndParams } from '../../hooks/globalVar';
+import {globalParamscolumns, globalVarsColumns, serveServersColumns, tabPaneList} from '@/views/ProjectSetting/config';
 
 const props = defineProps({})
 const emit = defineEmits(['ok', 'close', 'refreshList']);
 
 
 import {StateType as ProjectStateType} from "@/store/project";
+import {StateType as ProjectSettingStateType} from "@/views/ProjectSetting/store";
 import {useStore} from "vuex";
 
-const store = useStore<{ ProjectGlobal: ProjectStateType }>();
+// store 相关
+const store = useStore<{ ProjectGlobal: ProjectStateType, ProjectSetting:  ProjectSettingStateType}>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
+const globalParamsData = computed<any>(() => store.state.ProjectSetting.globalParamsData);
+const globalVarsData = computed<any>(() => store.state.ProjectSetting.globalVarsData);
+const serviceOptions = computed<any>(() => store.state.ProjectSetting.serviceOptions);
+const envList = computed<any>(() => store.state.ProjectSetting.envList);
 
-/*************************************************
- * ::::环境列表 管理 start
- ************************************************/
-const envList = ref([]);
-const isShowEnvDetail = ref(false);
-const isShowAddEnv = ref(false);
-const activeEnvDetail: any = ref(null);
-const serveServersColumns: any = [
-  {
-    title: '服务名',
-    dataIndex: 'serveName',
-    key: 'serveName',
-    slots: {customRender: 'customName'},
-  },
-  {
-    title: '前置 URL ',
-    dataIndex: 'url',
-    key: 'url',
-    slots: {customRender: 'customUrl'},
-  },
-];
-
-// 请求环境列表
-async function getEnvsList() {
-  const res = await getEnvList({
-    projectId: currProject.value.id
-  });
-  res.data.forEach((item) => {
-    item.displayName = item.name;
-  })
-  if (res.code === 0) {
-    envList.value = res.data;
-  }
-}
-
-function showEnvDetail(item, isAdd?: boolean) {
-  if (isAdd) {
-    isShowAddEnv.value = true;
-    isShowEnvDetail.value = true;
-    activeEnvDetail.value = {
-      displayName: "新建环境",
-      name: "",
-      serveServers: [],
-      vars: [],
-    };
-  } else {
-    isShowEnvDetail.value = true;
-    isShowAddEnv.value = false;
-    activeEnvDetail.value = item;
-    activeEnvDetail.value.name = item.name || '';
-    activeEnvDetail.value.displayName = item.name || '';
-  }
-  isShowGlobalParams.value = false;
-  isShowGlobalVars.value = false;
-}
-
+// 页面state相关
+const isShowGlobalVars = ref(false);
+const isShowGlobalParams: any = ref(false);
 const addServiceModalVisible = ref(false);
-const serviceOptions = ref([]);
 const selectedService = ref('');
 
+const globalParamsActiveKey = ref('header');
+
+
+// 环境设置相关
+const { 
+  isShowAddEnv,
+  isShowEnvDetail,
+  activeEnvDetail,
+  getEnvsList,
+  showEnvDetail,
+  addVar,
+  addEnvData,
+  deleteEnvData,
+  copyEnvData,
+  handleEnvChange,
+  handleEnvNameChange
+} = useGlobalEnv({ isShowGlobalParams, isShowGlobalVars});
+
+// 全局变量和全局参数相关
+const { 
+  showGlobalParams,
+  showGlobalVars,
+  addGlobalVar,
+  addGlobalParams,
+  handleSaveGlobalParams,
+  handleSaveGlobalVars,
+  handleGlobalVarsChange,
+  handleGlobalParamsChange
+} = useGlobalVarAndParams({ 
+  isShowAddEnv, 
+  isShowEnvDetail, 
+  activeEnvDetail, 
+  isShowGlobalParams, 
+  isShowGlobalVars,
+  globalParamsActiveKey
+});
+
+/**
+ * 请求服务列表
+ */
+async function getServersList() {
+  await store.dispatch('ProjectSetting/getServersList', {
+    projectId: currProject.value.id,
+    page: 0,
+    pageSize: 100
+  })
+} 
+
+// 添加服务弹窗操作 
 async function addService() {
   addServiceModalVisible.value = true;
 }
 
-function addVar() {
-  activeEnvDetail.value.vars.push({
-    "name": "",
-    "rightValue": "",
-    "localValue": "",
-    "remoteValue": "",
-    // "environmentId": 7
-  })
-}
-
-
-async function getServersList() {
-  // 请求服务列表
-  let res = await getServeList({
-    projectId: currProject.value.id,
-    "page": 0,
-    "pageSize": 100,
-  });
-  if (res.code === 0) {
-    res.data.result.forEach((item) => {
-      item.label = item.name;
-      item.value = item.id;
-    })
-    serviceOptions.value = res.data.result;
-  }
-}
-
+/**
+ * modal弹窗确认选择服务后操作
+ */
 function handleAddServiceOk() {
   addServiceModalVisible.value = false;
   const selectServe: any = serviceOptions.value.find((item: any) => {
@@ -598,237 +392,6 @@ function handleAddServiceOk() {
     "serveId": selectServe.id,
   })
 }
-
-async function addEnvData() {
-  // const serveServers = activeEnvDetail.value?.serveServers.
-  let res = await saveEnv({
-    id: activeEnvDetail.value?.id,
-    projectId: currProject.value.id,
-    name: activeEnvDetail.value?.name,
-    "serveServers": activeEnvDetail.value?.serveServers || [],
-    "vars": activeEnvDetail.value?.vars || [],
-  });
-  if (res.code === 0) {
-    message.success('保存环境成功');
-    await getEnvsList();
-    showEnvDetail(null, true)
-  }
-}
-
-
-async function deleteEnvData() {
-  let res = await deleteEnv({
-    id: activeEnvDetail.value?.id,
-  });
-  if (res.code === 0) {
-    message.success('删除环境成功');
-    await getEnvsList();
-    showEnvDetail(null, true)
-  }
-}
-
-async function copyEnvData() {
-  let res = await copyEnv({
-    id: activeEnvDetail.value?.id,
-  });
-  if (res.code === 0) {
-    message.success('复制环境成功');
-    await getEnvsList();
-    const newEnv = envList.value.find((item: any) => {
-      return item.id === res.data;
-    })
-    showEnvDetail(newEnv, false)
-  }
-}
-
-function handleEnvChange(type, field, index, e, action) {
-  if (action === 'delete') {
-    activeEnvDetail.value[type].splice(index, 1);
-  } else {
-    activeEnvDetail.value[type][index][field] = e.target.value;
-  }
-
-}
-
-function handleEnvNameChange(e) {
-  activeEnvDetail.value.name = e.target.value;
-}
-
-/*************************************************
- * ::::环境列表 管理 end
- ************************************************/
-
-
-/*************************************************
- * ::::全局参数+全局变量  逻辑 start
- ************************************************/
-const globalParamsActiveKey = ref('header');
-const isShowGlobalParams: any = ref(false);
-const globalParamscolumns: any = [
-  {
-    title: '参数名',
-    dataIndex: 'name',
-    key: 'name',
-    slots: {customRender: 'customName'},
-  },
-  {
-    title: '类型',
-    dataIndex: 'type',
-    key: 'type',
-    slots: {customRender: 'customType'},
-  },
-  {
-    title: '必须',
-    dataIndex: 'required',
-    key: 'required',
-    slots: {customRender: 'customRequired'},
-  },
-  {
-    title: '默认值',
-    key: 'defaultValue',
-    dataIndex: 'defaultValue',
-    slots: {customRender: 'customDefaultValue'},
-  },
-  // {
-  //   title: '默认启用',
-  //   key: 'description',
-  //   dataIndex: 'description',
-  // },
-  {
-    title: '说明',
-    key: 'description',
-    dataIndex: 'description',
-    slots: {customRender: 'customDescription'},
-  },
-  {
-    title: '操作',
-    key: 'action',
-    slots: {customRender: 'customAction'},
-  },
-];
-const globalParamsData: any = ref({
-  header: [],
-  cookie: [],
-  body: [],
-  query: []
-});
-const isShowGlobalVars = ref(false);
-const globalVarsColumns = [
-  {
-    title: '变量名',
-    dataIndex: 'name',
-    key: 'name',
-    slots: {customRender: 'customName'},
-  },
-  {
-    title: '远程值',
-    dataIndex: 'remoteValue',
-    key: 'remoteValue',
-    slots: {customRender: 'customRemoteValue'},
-  },
-  {
-    title: '本地值',
-    dataIndex: 'localValue',
-    key: 'localValue',
-    slots: {customRender: 'customLocalValue'},
-  },
-  {
-    title: '说明',
-    key: 'description',
-    dataIndex: 'description',
-    slots: {customRender: 'customDescription'},
-  },
-  {
-    title: '操作',
-    key: 'action',
-    slots: {customRender: 'customAction'},
-  },
-];
-const globalVarsData: any = ref([]);
-
-async function showGlobalParams() {
-  isShowGlobalParams.value = true;
-  isShowGlobalVars.value = false;
-  isShowAddEnv.value = false;
-  isShowEnvDetail.value = false;
-
-  activeEnvDetail.value = null;
-  const res = await getEnvironmentsParamList({
-    projectId: 1
-  });
-  if (res.code === 0) {
-    globalParamsData.value = res.data;
-  }
-}
-
-async function showGlobalVars() {
-  isShowGlobalParams.value = false;
-  isShowGlobalVars.value = true;
-  isShowAddEnv.value = false;
-  isShowEnvDetail.value = false;
-  const res = await getGlobalVarsList({
-    projectId: currProject.value.id
-  });
-  if (res.code === 0) {
-    globalVarsData.value = res.data;
-  }
-}
-
-function addGlobalVar() {
-  globalVarsData.value.push({
-    "name": "",
-    "rightValue": "",
-    "localValue": "",
-    "remoteValue": ""
-  })
-}
-
-function addGlobalParams() {
-  globalParamsData.value[globalParamsActiveKey.value].push({
-    "name": "",
-    "type": "string",
-    "defaultValue": "",
-    "description": "",
-    "required": false
-  })
-}
-
-async function handleSaveGlobalParams() {
-  let res = await saveEnvironmentsParam(globalParamsData.value);
-  if (res.code === 0) {
-    message.success('保存全局参数成功');
-  }
-}
-
-async function handleSaveGlobalVars() {
-  let res = await saveGlobalVars(globalVarsData.value);
-  if (res.code === 0) {
-    message.success('保存全局变量成功');
-  }
-}
-
-function handleGlobalVarsChange(field, index, e, action?: string) {
-  // 删除
-  if (action === 'delete') {
-    globalVarsData.value.splice(index, 1);
-  } else {
-    globalVarsData.value[index][field] = e.target.value;
-  }
-}
-
-function handleGlobalParamsChange(type, field, index, e, action?: string) {
-  if (action === 'delete') {
-    globalParamsData.value[type].splice(index, 1);
-  } else {
-    globalParamsData.value[type][index][field] = ["string", "boolean"].includes(typeof e) ? e : e.target.value;
-  }
-}
-
-/*************************************************
- * ::::::::全局参数+全局变量 + 全局变量 逻辑 end
- ************************************************/
-
-
 
 // 实时监听项目切换，如果项目切换了则重新请求数据
 watch(() => {
@@ -874,10 +437,6 @@ watch(() => {
       margin-top: 16px;
       margin-bottom: 16px;
       opacity: 0.5;
-    }
-
-    .footer {
-
     }
   }
 

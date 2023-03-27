@@ -133,7 +133,7 @@ const columns = [
 ];
 
 
-const dataSource: Ref<DataItem[]> = ref();
+const dataSource: Ref<DataItem[]> = ref([]);
 const count = computed(() => dataSource.value.length + 1);
 const editableData: UnwrapRef<Record<string, DataItem>> = reactive({});
 

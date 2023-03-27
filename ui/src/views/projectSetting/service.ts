@@ -53,7 +53,7 @@ interface SaveInterfaceReqParams {
  * */
 export async function saveServe(data: any): Promise<any> {
     return request({
-        url: `/serve/save`,
+        url: `/serves/save`,
         method: 'post',
         data: data
     });
@@ -64,7 +64,7 @@ export async function saveServe(data: any): Promise<any> {
  * */
 export async function getServeList(data: any): Promise<any> {
     return request({
-        url: `/serve/index`,
+        url: `/serves/index`,
         method: 'post',
         data: data,
     });
@@ -148,10 +148,11 @@ export async function deleteServeVersion(id: any): Promise<any> {
 /**
  * 服务环境列表
  * */
-export async function serverList(data: any): Promise<any> {
+export async function serverList(data: SaveInterfaceReqParams): Promise<any> {
     return request({
-        url: `/serves/server/list?serveId=${data.serveId}`,
-        method: 'get',
+        url: `/serve/server/list`,
+        method: 'post',
+        data: data
     });
 }
 
@@ -190,7 +191,7 @@ export async function getSchemaList(data: any): Promise<any> {
 /**
  * 删除服务
  * */
-export async function deleteSchema(id: Number): Promise<any> {
+export async function deleteSchema(id: Number | String | any): Promise<any> {
     return request({
         url: `/serve/schema/delete?id=${id}`,
         method: 'delete',
@@ -200,7 +201,7 @@ export async function deleteSchema(id: Number): Promise<any> {
 /**
  * 禁用schema
  * */
-export async function disableSchema(id: any): Promise<any> {
+export async function disableSchema(id: any | Number | String): Promise<any> {
     return request({
         url: `/serve/schema/expire?id=${id}`,
         method: 'put',
@@ -210,7 +211,7 @@ export async function disableSchema(id: any): Promise<any> {
 /**
  * 复制服务
  * */
-export async function copySchema(id: any): Promise<any> {
+export async function copySchema(id: any | Number | String): Promise<any> {
     return request({
         url: `/serve/schema/copy?id=${id}`,
         method: 'put',

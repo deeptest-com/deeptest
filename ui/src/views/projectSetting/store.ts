@@ -75,7 +75,7 @@ const initState: StateType = {
 
 const StoreModel: ModuleType = {
     namespaced: true,
-    name: 'ProjectSettingV2',
+    name: 'ProjectSetting',
     state: {
         ...initState
     },

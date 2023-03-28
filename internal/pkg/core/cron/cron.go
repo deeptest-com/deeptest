@@ -3,7 +3,6 @@ package cron
 import (
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	"github.com/aaronchen2k/deeptest/pkg/lib/cron"
 	"github.com/aaronchen2k/deeptest/pkg/lib/date"
 	"github.com/aaronchen2k/deeptest/pkg/lib/log"
@@ -72,11 +71,11 @@ func (s *ServerCron) Init() {
 			s.syncMap.Store("isRunning", true)
 
 			// do somethings
-			summaryService := service.SummaryService{}
+			//summaryService := service.SummaryService{}
 			//err := summaryService.SummaryDataCheck()
-			if err != nil {
-				return
-			}
+			//if err != nil {
+			//	return
+			//}
 
 			s.syncMap.Store("isRunning", false)
 			s.syncMap.Store("lastCompletedTime", time.Now().Unix())

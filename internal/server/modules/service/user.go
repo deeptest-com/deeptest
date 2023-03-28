@@ -75,18 +75,6 @@ func (s *UserService) UpdateAvatar(id uint, avatar string) error {
 }
 
 func (s *UserService) Invite(req v1.InviteUserReq) (user model.SysUser, bizErr *_domain.BizErr) {
-	po1, _ := s.UserRepo.FindByEmail(req.Email)
-	if po1.Id > 0 {
-		bizErr = &_domain.ErrEmailExist
-		return
-	}
-
-	po2, _ := s.UserRepo.FindByUserName(req.Username)
-	if po2.Id > 0 {
-		bizErr = &_domain.ErrUsernameExist
-		return
-	}
-
 	s.UserRepo.InviteToProject(req)
 
 	vcode, _ := s.UserRepo.GenAndUpdateVcode(user.ID)

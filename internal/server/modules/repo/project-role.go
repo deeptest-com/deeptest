@@ -9,7 +9,8 @@ import (
 )
 
 type ProjectRoleRepo struct {
-	DB *gorm.DB `inject:""`
+	DB          *gorm.DB     `inject:""`
+	ProjectRepo *ProjectRepo `inject:""`
 }
 
 func NewProjectRoleRepo() *ProjectRoleRepo {
@@ -53,6 +54,24 @@ func (r *ProjectRoleRepo) Create(projectRole model.ProjectRole) (err error) {
 		logUtils.Errorf("创建项目角色失败%s", err.Error())
 		return
 	}
+
+	return
+}
+
+func (r *ProjectRoleRepo) ProjectUserRoleList(userId, projectId uint) (projectRole model.ProjectRole, err error) {
+	//获取用户在项目中拥有的角色
+	projectMemberRole, err := r.ProjectRepo.FindRolesByProjectAndUser(projectId, userId)
+	if err != nil {
+		return
+	}
+
+	err = r.DB.Model(&model.ProjectRole{}).Where("id = ?", projectMemberRole.ProjectRoleId).Scan(&projectRole).Error
+
+	return
+}
+
+func (r *ProjectRoleRepo) AllRoleList() (projectRoles []model.ProjectRole, err error) {
+	err = r.DB.Model(&model.ProjectRole{}).Scan(&projectRoles).Error
 
 	return
 }

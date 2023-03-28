@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"errors"
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
@@ -406,4 +407,37 @@ func (r *ProjectRepo) AddProjectDefaultServe(projectId, userId uint) (serve mode
 	r.ServeRepo.SetCurrServeByUser(po.ID, userId)
 
 	return
+}
+
+func (r *ProjectRepo) FindRolesByProjectAndUser(projectId, userId uint) (projectMember model.ProjectMember, err error) {
+	err = r.DB.Model(&model.ProjectMember{}).
+		Where("project_id = ?", projectId).
+		Where("user_id = ?", userId).
+		Scan(&projectMember).Error
+	return
+}
+
+func (r *ProjectRepo) UpdateUserRole(req v1.UpdateProjectMemberReq) (err error) {
+	err = r.DB.Model(&model.ProjectMember{}).
+		Where("project_id = ?", req.ProjectId).
+		Where("user_id = ?", req.UserId).
+		Updates(map[string]interface{}{"project_role_id": req.ProjectRoleId}).Error
+
+	if err != nil {
+		logUtils.Errorf("update project user role error", err.Error())
+		return err
+	}
+
+	return
+}
+
+func (r *ProjectRepo) GetCurrProjectMemberRoleByUser(userId uint) (ret model.ProjectMember, err error) {
+	curProject, err := r.GetCurrProjectByUser(userId)
+	if err != nil {
+		return
+	}
+	if curProject.ID == 0 {
+		return ret, errors.New("current project is not existed")
+	}
+	return r.FindRolesByProjectAndUser(curProject.ID, userId)
 }

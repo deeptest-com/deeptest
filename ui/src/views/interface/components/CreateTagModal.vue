@@ -22,9 +22,7 @@
 
 </template>
 <script lang="ts" setup>
-import {ValidateErrorEntity} from 'ant-design-vue/es/form/interface';
 import {defineComponent, reactive, ref, toRaw, UnwrapRef, defineProps, defineEmits, watch} from 'vue';
-import {requestMethodOpts} from '@/config/constant';
 
 const props = defineProps({
   visible: {

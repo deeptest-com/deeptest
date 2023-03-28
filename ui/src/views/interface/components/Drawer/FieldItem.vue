@@ -1,9 +1,12 @@
+<!-- ::::
+  参数设置器
+ -->
 <template>
   <div style="margin-bottom: 16px;">
     <a-input v-model:value="fieldState.name"
              @change="handleChangeName"
              style="width: 300px"
-             placeholder="name">
+             placeholder="输入字段名称">
       <template #addonAfter>
         <a-select
             v-model:value="fieldState.type"
@@ -11,54 +14,33 @@
             style="width: 100px"></a-select>
       </template>
     </a-input>
-
     <a-input v-model:value="fieldState.desc"
-             placeholder="description"
+             placeholder="输入描述信息"
              style="width: 300px">
       <template #addonAfter>
         <a-space :size="8">
-          <a-popconfirm placement="topLeft" ok-text="Yes" cancel-text="No" @confirm="confirm">
-            <template #title>
-              设置 ref
-            </template>
-            <a-tooltip placement="topLeft" arrow-point-at-center title="Reference">
-              <LinkOutlined @click="setRef"/>
-            </a-tooltip>
-          </a-popconfirm>
-          <a-tooltip placement="topLeft" arrow-point-at-center title="其他属性设置">
-            <setting-outlined @click="settingOther"/>
-          </a-tooltip>
-          <a-tooltip placement="topLeft" arrow-point-at-center title="是否必填">
+          <a-tooltip v-if="showRequire" placement="topLeft" arrow-point-at-center title="是否必填">
             <InfoCircleOutlined v-if="fieldState.required" @click="setRequire"/>
             <InfoCircleTwoTone v-if="!fieldState.required" @click="setRequire"/>
           </a-tooltip>
           <a-tooltip placement="topLeft" arrow-point-at-center title="删除">
-            <DeleteOutlined @click="del(fieldState)"/>
+            <DeleteOutlined @click="del"/>
           </a-tooltip>
         </a-space>
       </template>
     </a-input>
-
   </div>
 </template>
 
 <script lang="ts" setup>
-import {ValidateErrorEntity} from 'ant-design-vue/es/form/interface';
 import {
-  defineComponent,
-  reactive,
   ref,
-  toRaw,
-  UnwrapRef,
   defineProps,
   defineEmits,
-  watch,
-  onUnmounted,
-  onMounted
+  onMounted, watch
 } from 'vue';
+
 import {requestMethodOpts, pathParamsDataTypesOpts} from '@/config/constant';
-import {PlusOutlined, EditOutlined} from '@ant-design/icons-vue';
-import contenteditable from 'vue-contenteditable'
 
 import {
   SettingOutlined,
@@ -68,21 +50,31 @@ import {
   InfoCircleTwoTone
 } from '@ant-design/icons-vue';
 
-
-const props = defineProps(['fieldData'])
-
+const props = defineProps(['fieldData','showRequire'])
 
 const emit = defineEmits(['del', 'setRequire', 'setRef', 'settingOther', 'paramsNameChange']);
 
-const fieldState = ref({});
+interface fieldStateType {
+  name: string;
+  required: boolean;
+  type: string;
+  description: string;
+}
 
-onMounted(() => {
-  fieldState.value = props.fieldData;
+
+const fieldState = ref<fieldStateType>({});
+
+
+watch(() => {
+  return props.fieldData
+}, (newVal) => {
+  fieldState.value = newVal;
+}, {
+  immediate: true
 })
 
-
 function handleChangeName(e) {
-  emit('paramsNameChange',e.target.value);
+  emit('paramsNameChange',fieldState.value);
 }
 
 /**
@@ -90,7 +82,7 @@ function handleChangeName(e) {
  * */
 function setRequire() {
   fieldState.value.required = !fieldState.value.required;
-  emit('setRequire');
+  emit('setRequire', fieldState.value);
 }
 
 /**
@@ -103,8 +95,8 @@ function settingOther(data) {
 /**
  * 删除
  */
-function del(data) {
-  emit('del', data);
+function del() {
+  emit('del', fieldState.value);
 }
 
 /**
@@ -113,7 +105,6 @@ function del(data) {
 function setRef(data) {
   emit('setRef', data);
 }
-
 
 </script>
 

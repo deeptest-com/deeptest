@@ -1,7 +1,15 @@
-import { Mutation, Action } from 'vuex';
-import { StoreModuleType } from "@/utils/store";
-import { ResponseData } from '@/utils/request';
-import { Interface, QueryResult, QueryParams, PaginationConfig,InterfaceListReqParams, SaveInterfaceReqParams,filterFormState } from './data.d';
+import {Mutation, Action} from 'vuex';
+import {StoreModuleType} from "@/utils/store";
+import {ResponseData} from '@/utils/request';
+import {
+    Interface,
+    QueryResult,
+    QueryParams,
+    PaginationConfig,
+    InterfaceListReqParams,
+    SaveInterfaceReqParams,
+    filterFormState
+} from './data.d';
 import {
     query,
     get,
@@ -17,9 +25,8 @@ import {
     updateCategory,
     removeCategory,
     moveCategory,
-    updateCategoryName} from "@/services/category";
-
-
+    updateCategoryName
+} from "@/services/category";
 import {
     copyInterface,
     deleteInterface,
@@ -30,6 +37,7 @@ import {
 
 import {getNodeMap} from "@/services/tree";
 import {momentUtc} from "@/utils/datetime";
+import {getEnvList, serverList} from "@/views/projectSetting/service";
 
 export interface StateType {
     interfaceId: number;
@@ -43,9 +51,9 @@ export interface StateType {
     treeDataCategory: any[];
     treeDataMapCategory: any,
     nodeDataCategory: any;
-    filterState:filterFormState,
-    interFaceCategoryOpt:any[],
-    interfaceDetail:any,
+    filterState: filterFormState,
+    interfaceDetail: any,
+    serveServers: any[], // serve list
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
@@ -65,13 +73,10 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setTreeDataMapItemPropCategory: Mutation<StateType>;
         setNodeCategory: Mutation<StateType>;
 
-        /*************************************************
-         * ::::
-         ************************************************/
-
         setFilterState: Mutation<StateType>;
-        setInterfaceCategory: Mutation<StateType>;
         setInterfaceDetail: Mutation<StateType>;
+        setInterfaceDetailByIndex: Mutation<StateType>;
+        setServerList: Mutation<StateType>;
     };
     actions: {
         listInterface: Action<StateType, StateType>;
@@ -93,9 +98,6 @@ export interface ModuleType extends StoreModuleType<StateType> {
         loadExecResult: Action<StateType, StateType>;
         updateExecResult: Action<StateType, StateType>;
 
-        /*************************************************
-         * ::::
-         ************************************************/
 
         loadList: Action<StateType, StateType>;
         createApi: Action<StateType, StateType>;
@@ -103,6 +105,8 @@ export interface ModuleType extends StoreModuleType<StateType> {
         del: Action<StateType, StateType>;
         copy: Action<StateType, StateType>;
         getInterfaceDetail: Action<StateType, StateType>;
+        updateInterfaceDetail: Action<StateType, StateType>;
+        getServerList: Action<StateType, StateType>;
     }
 }
 
@@ -126,18 +130,13 @@ const initState: StateType = {
     treeDataCategory: [],
     treeDataMapCategory: {},
     nodeDataCategory: {},
-
-    /*************************************************
-     * ::::
-     ************************************************/
     filterState: {
         "status": null,
         "createUser": null,
         "title": null,
     },
-    interFaceCategoryOpt: [],
-    interfaceDetail:null,
-
+    interfaceDetail: null,
+    serveServers: [],
 };
 
 const StoreModel: ModuleType = {
@@ -183,20 +182,22 @@ const StoreModel: ModuleType = {
         setQueryParams(state, payload) {
             state.queryParams = payload;
         },
-
-        /*************************************************
-         * ::::
-         ************************************************/
-
         setFilterState(state, payload) {
             state.filterState = payload;
-        },
-        setInterfaceCategory(state, payload) {
-            state.interFaceCategoryOpt = payload;
         },
         setInterfaceDetail(state, payload) {
             state.interfaceDetail = payload;
         },
+        setInterfaceDetailByIndex(state, payload) {
+            if (payload.codeIndex === -1 || payload.codeIndex) {
+                payload.codeIndex = state.interfaceDetail.interfaces[payload.methodIndex]['responseBodies'].length;
+            }
+            state.interfaceDetail.interfaces[payload.methodIndex]['responseBodies'][payload.codeIndex] = payload.value;
+        },
+        setServerList(state, payload) {
+            state.serveServers = payload;
+        },
+
     },
     actions: {
         async listInterface({commit, dispatch}, params: QueryParams) {
@@ -281,6 +282,7 @@ const StoreModel: ModuleType = {
             if (response.code != 0) return;
 
             const {data} = response;
+
             commit('setTreeDataCategory', data || {});
 
             const mp = {}
@@ -369,15 +371,11 @@ const StoreModel: ModuleType = {
             }
         },
 
-        /*************************************************
-         * ::::
-         ************************************************/
         async loadList({commit, dispatch, state}, {currProjectId, page, pageSize, opts}: any) {
             page = page || state.listResult.pagination.current;
             pageSize = pageSize || state.listResult.pagination.pageSize;
             const otherParams = {...state.filterState, ...opts};
 
-            console.log(832, 832, opts, state.filterState)
             const res = await getInterfaceList({
                 "projectId": currProjectId,
                 "page": page,
@@ -413,7 +411,7 @@ const StoreModel: ModuleType = {
                 ...params
             });
             if (res.code === 0) {
-                dispatch('loadList', {currProjectId: params.projectId});
+                await dispatch('loadList', {currProjectId: params.projectId});
             } else {
                 return false
             }
@@ -421,7 +419,7 @@ const StoreModel: ModuleType = {
         async disabled({commit, dispatch, state}, payload: any) {
             const res = await expireInterface(payload.id);
             if (res.code === 0) {
-                dispatch('loadList', {currProjectId: payload.projectId});
+                await dispatch('loadList', {currProjectId: payload.projectId});
             } else {
                 return false
             }
@@ -429,7 +427,7 @@ const StoreModel: ModuleType = {
         async del({commit, dispatch, state}, payload: any) {
             const res = await deleteInterface(payload.id);
             if (res.code === 0) {
-                dispatch('loadList', {currProjectId: payload.projectId});
+                await dispatch('loadList', {currProjectId: payload.projectId});
             } else {
                 return false
             }
@@ -437,13 +435,13 @@ const StoreModel: ModuleType = {
         async copy({commit, dispatch, state}, payload: any) {
             const res = await copyInterface(payload.id);
             if (res.code === 0) {
-                dispatch('loadList', {currProjectId: payload.projectId});
+                await dispatch('loadList', {currProjectId: payload.projectId});
             } else {
                 return false
             }
         },
         // 用于新建接口时选择接口分类
-        async getInterfaceDetail({commit},payload: any) {
+        async getInterfaceDetail({commit}, payload: any) {
             const res = await getInterfaceDetail(payload.id);
             res.data.createdAt = momentUtc(res.data.createdAt);
             res.data.updatedAt = momentUtc(res.data.updatedAt);
@@ -453,6 +451,37 @@ const StoreModel: ModuleType = {
                 return false
             }
         },
+
+        // 用于新建接口时选择接口分类
+        async updateInterfaceDetail({commit, dispatch}, payload: any) {
+            const res = await saveInterface({
+                ...payload
+            });
+            if (res.code === 0) {
+                await dispatch('loadList', {currProjectId: payload.projectId});
+            } else {
+                return false
+            }
+        },
+
+        // 获取项目的服务
+        async getServerList({commit}, payload: any) {
+            const res = await serverList({
+                serveId: payload.id
+            });
+
+
+            if (res.code === 0) {
+                res.data.forEach((item: any) => {
+                    item.label = item.url;
+                    item.value = item.url;
+                })
+                commit('setServerList', res.data || null);
+            } else {
+                return false
+            }
+        },
+
     }
 };
 

@@ -18,7 +18,7 @@ export function useGlobalEnv({ isShowGlobalParams, isShowGlobalVars }) {
         await store.dispatch('ProjectSetting/getEnvsList', { projectId: currProject.value.id });
     }
 
-    function showEnvDetail(item, isAdd?: boolean) {
+    function showEnvDetail(item:any, isAdd?: boolean) {
         if (isAdd) {
             isShowAddEnv.value = true;
             isShowEnvDetail.value = true;

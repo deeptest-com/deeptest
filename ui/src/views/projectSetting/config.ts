@@ -153,10 +153,29 @@ const serviceColumns = [
     },
 ];
 
+const schemaColumns = [
+    {
+        title: '组件名称',
+        dataIndex: 'name',
+        width: '30%',
+        slots: { customRender: 'name' },
+    },
+    {
+        title: '标签',
+        dataIndex: 'tags',
+    },
+    {
+        title: '操作',
+        dataIndex: 'operation',
+        slots: { customRender: 'operation' },
+    },
+];
+
 export {
     globalParamscolumns,
     globalVarsColumns,
     serveServersColumns,
     tabPaneList,
-    serviceColumns
+    serviceColumns,
+    schemaColumns
 }

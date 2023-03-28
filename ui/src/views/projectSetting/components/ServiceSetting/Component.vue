@@ -1,36 +1,9 @@
 <template>
   <div class="content">
     <div class="header">
-      <a-form  layout="inline" :model="formState" >
-        <a-form-item >
-          <a-input    style="width: 150px" v-model:value="formState.name" placeholder="请输入组件名称"/>
-        </a-form-item>
-        <a-form-item>
-          <a-select
-              v-model:value="formState.tags"
-              mode="tags"
-              style="width: 150px"
-              placeholder="标签"
-              :options="[]"
-              @change="handleTagChange">
-          </a-select>
-        </a-form-item>
-        <a-form-item>
-          <a-button class="editable-add-btn"
-                    @click="handleOk"
-                    type="primary"
-                    style="margin-bottom: 8px">新建组件
-          </a-button>
-        </a-form-item>
-      </a-form>
-
-      <a-input-search
-          v-model:value="keyword"
-          placeholder="输入组件名称搜索"
-          style="width: 200px"
-          @search="onSearch"/>
+      <Filter :search-place-holder="'输入组件名称搜索'" :form-schema-list="schemaList" :need-search="true"  @handleSearch="onSearch"/>
     </div>
-    <a-table bordered :data-source="dataSource" :columns="columns">
+    <a-table bordered :data-source="dataSource" :columns="schemaColumns">
       <template #name="{ text, record }">
         <div class="editable-cell">
           <div class="editable-cell-text-wrapper">
@@ -45,14 +18,6 @@
         </a-space>
       </template>
     </a-table>
-    <!-- ::::新建组件 -->
-<!--    <a-modal v-model:visible="visible"-->
-<!--             @cancel="handleCancel"-->
-<!--             title="新建组件"-->
-<!--             :bodyStyle="{position:'relative'}"-->
-<!--             @ok="handleOk">-->
-
-<!--    </a-modal>-->
 
     <!-- ::::编辑scheme组件 -->
     <a-modal v-model:visible="schemeVisible"
@@ -133,33 +98,24 @@
 
 import {
   computed,
-  defineComponent,
   defineEmits,
   defineProps,
-  onMounted,
   reactive,
   Ref,
   ref,
   UnwrapRef,
   watch
 } from 'vue';
-import {CheckOutlined, EditOutlined} from '@ant-design/icons-vue';
-// import {getYaml} from "@/views/interfaceV2/service";
-import {
-  saveSchema,
-  deleteSchema,
-  disableSchema,
-  copySchema,
-  getSchemaList,
-  saveServe,
-  example2schema,
-  schema2example,
-  schema2yaml,
-} from '../../service';
+import {schema2yaml} from '../../service';
 import SchemaEditor from '@/components/SchemaEditor/index.vue';
-import {message} from "ant-design-vue";
 import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
+import Filter from '../commom/Filter.vue';
 import {MonacoOptions} from '@/utils/const';
+import { schemaColumns } from '../../config';
+import { useStore } from 'vuex';
+import {StateType as ProjectSettingStateType} from '../../store';
+import { Schema } from '../../data';
+import { message } from 'ant-design-vue';
 
 const props = defineProps({
   serveId: {
@@ -171,7 +127,6 @@ const emit = defineEmits(['ok', 'close', 'refreshList']);
 
 interface FormState {
   name: string;
-  description: string;
   tags: Array<string>,
 }
 
@@ -185,41 +140,45 @@ interface DataItem {
 
 const formState: UnwrapRef<FormState> = reactive({
   name: '',
-  description: '',
   tags: [],
 });
 
-const visible = ref(false);
+const schemaList: Schema[] = [
+  {
+    type: 'input',
+    stateName: 'name',
+    placeholder: '请输入组件名称',
+    valueType: 'string'
+  },
+  {
+    type: 'select',
+    stateName: 'tags',
+    placeholder: '标签',
+    options: [],
+    valueType: 'array'
+  },
+  {
+    type: 'button',
+    text: '新建组件',
+    stateName: '',
+    action: handleOk
+  }
+]
+
 const schemeVisible = ref(false);
 const activeSchema: any = ref(null);
 const contentStr = ref('');
 const schemaType = ref('object');
 const exampleStr = ref('');
+const keyword = ref('');
 
-const columns = [
-  {
-    title: '组件名称',
-    dataIndex: 'name',
-    width: '30%',
-    slots: {customRender: 'name'},
-  },
-  {
-    title: '标签',
-    dataIndex: 'tags',
-  },
-  {
-    title: '操作',
-    dataIndex: 'operation',
-    slots: {customRender: 'operation'},
-  },
-];
 
-const dataSource: Ref<DataItem[]> = ref([]);
-const count = computed(() => dataSource.value.length + 1);
+const store = useStore<{ ProjectSetting: ProjectSettingStateType }>();
+const dataSource = computed<any>(() => store.state.ProjectSetting.schemaList);
 
-async function onSearch(e) {
+async function onSearch(e: any) {
+  keyword.value = e;
   await getList();
-  console.log(e.target.value)
 }
 
 async function changeModelInfo(type, e) {
@@ -263,15 +222,6 @@ async function switchMode(val) {
   }
 }
 
-const keyword = ref('');
-
-const activeKey = ref('1');
-
-function onClose() {
-  console.log('xxx')
-  schemeVisible.value = false;
-}
-
 const schemeVisibleKey = ref(0);
 const edit = (record: any) => {
   schemeVisible.value = true;
@@ -284,55 +234,48 @@ const edit = (record: any) => {
   schemeVisibleKey.value++;
 };
 
-
-const handleAdd = () => {
-  visible.value = true;
-};
-
 // 保存组件
-async function handleOk() {
-  const res = await saveSchema({
-    "name": formState.name,
-    "serveId": props.serveId,
-    "tags": formState.tags.join(','),
-  });
-  if (res.code === 0) {
-    message.success('新建组件成功');
-    visible.value = false;
+async function handleOk(evt: any, formState: any) {
+  if (!formState.name) {
+    message.error('组件名称不能为空');
+    return;
+  }
+  const result = await store.dispatch('ProjectSetting/saveSchema', {
+    schemaInfo: {
+      "name": formState.name,
+      "serveId": props.serveId,
+      "tags": formState.tags.join(','),
+    },
+    action: 'create',
+    serveId: props.serveId,
+    name: keyword.value
+  })
+  console.log(result);
+  if (result) {
     await getList();
-  } else {
-    message.error('新建组件失败');
   }
 }
 
 async function handleEdit() {
-  const res = await saveSchema({
-    "name": activeSchema.value.name,
-    "id": activeSchema.value.id,
-    "serveId": props.serveId,
-    "tags": activeSchema.value.tabs,
-    "content": contentStr.value,
-    "examples": exampleStr.value,
-    "type": schemaType.value,
-    "description": activeSchema.value.description
-  });
-  if (res.code === 0) {
+  const result = await store.dispatch('ProjectSetting/saveSchema', {
+    schemaInfo: {
+      "name": activeSchema.value.name,
+      "id": activeSchema.value.id,
+      "serveId": props.serveId,
+      "tags": activeSchema.value.tabs,
+      "content": contentStr.value,
+      "examples": exampleStr.value,
+      "type": schemaType.value,
+      "description": activeSchema.value.description
+    },
+    action: 'update',
+    serveId: props.serveId,
+    name: keyword.value
+  })
+  if (result) {
     schemeVisible.value = false;
-    message.success('修改组件成功');
-    visible.value = false;
     await getList();
-  } else {
-    message.error('修改组件失败');
   }
-}
-
-
-function handleTagChange(value: string) {
-  console.log(`832 ${value}`);
-}
-
-function handleCancel() {
-  visible.value = false;
 }
 
 function handleSchemeCancel() {
@@ -340,37 +283,28 @@ function handleSchemeCancel() {
 }
 
 async function getList() {
-  const res = await getSchemaList({
-    "serveId": props.serveId,
-    "page": 1,
-    "pageSize": 20,
+  await store.dispatch('ProjectSetting/getSchemaList', {
+    serveId: props.serveId,
     name: keyword.value
-  });
-  if (res.code === 0) {
-    dataSource.value = res.data.result;
-  }
+  })
 }
 
 
 async function onDelete(record: any) {
-  const res = await deleteSchema(record.id);
-  if (res.code === 0) {
-    message.success('删除成功');
-    await getList();
-  } else {
-    message.error('删除失败');
-  }
+  await store.dispatch('ProjectSetting/deleteSchema', {
+    id: record.id,
+    serveId: props.serveId,
+    name: keyword.value
+  })
 }
 
 
 async function onCopy(record: any) {
-  const res = await copySchema(record.id);
-  if (res.code === 0) {
-    message.success('复制服务成功');
-    await getList();
-  } else {
-    message.error('复制服务失败');
-  }
+  await store.dispatch('ProjectSetting/copySchema', {
+    id: record.id,
+    serveId: props.serveId,
+    name: keyword.value
+  })
 }
 
 
@@ -379,13 +313,13 @@ function handleCodeChange() {
 }
 
 async function generateFromJSON(JSONStr: string) {
-  const res = await example2schema({
+  const result = await store.dispatch('ProjectSetting/generateSchema', {
     data: JSONStr
-  });
-  if (res.code === 0) {
-    activeSchema.value.content = res.data;
-    contentStr.value = JSON.stringify(res.data);
-    schemaType.value = res.data.type;
+  })
+  if (result) {
+    activeSchema.value.content = result;
+    contentStr.value = JSON.stringify(result);
+    schemaType.value = result.type;
   }
 }
 
@@ -402,16 +336,14 @@ function handleExampleChange(str: string) {
 }
 
 async function handleGenerateExample(examples: any) {
-  const res = await schema2example({
+  const result = await store.dispatch('ProjectSetting/generateExample', {
     data: contentStr.value
-  });
-
-  const example = {
-    name: `Example ${examples.length + 1}`,
-    content: JSON.stringify(res.data),
-  };
-
-  if (res.code === 0) {
+  })
+  if (result) {
+    const example = {
+      name: `Example ${examples.length + 1}`,
+      content: JSON.stringify(result),
+    };
     activeSchema.value.examples.push(example);
   }
 }

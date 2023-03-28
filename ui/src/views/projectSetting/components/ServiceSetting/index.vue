@@ -106,20 +106,18 @@ import {
 import {EditOutlined,MoreOutlined} from '@ant-design/icons-vue';
 import ServiceVersion from './Version.vue';
 import TableFilter from '../commom/TableFilter.vue';
+import Filter from '../commom/Filter.vue';
 import ServiceComponent from './Component.vue';
 
-import {deleteServe, copyServe, disableServe, saveServe,} from '../../service';
-import {message} from "ant-design-vue";
 import {StateType as ProjectStateType} from "@/store/project";
 import {StateType as ProjectSettingStateType} from '../../store';
 import {useStore} from "vuex";
 import { serviceColumns } from '../../config';
+import { Schema } from '../../data';
 
 const store = useStore<{ ProjectGlobal: ProjectStateType, ProjectSetting: ProjectSettingStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const dataSource = computed<any>(() => store.state.ProjectSetting.serviceOptions);
-const props = defineProps({})
-const emit = defineEmits(['ok', 'close', 'refreshList']);
 
 const formState: UnwrapRef<any> = reactive({
   name: '',
@@ -132,6 +130,37 @@ const editFormState: UnwrapRef<any> = reactive({
   description: '',
   serveId: '',
 });
+
+const schemaList: Schema[] = [
+  {
+    type: 'tooltip',
+    text: '新建组件',
+    title: '一个产品服务端通常对应一个或多个服务(微服务)，服务可以有多个版本并行，新的服务默认起始版本为v0.1.0。'
+  },
+  {
+    type: 'input',
+    stateName: 'name',
+    placeholder: '服务名称',
+    valueType: 'string'
+  },
+  {
+    type: 'select',
+    stateName: 'serveId',
+    placeholder: '负责人(默认创建人)',
+    options: [],
+    valueType: 'string'
+  },
+  {
+    type: 'input',
+    stateName: 'description',
+    placeholder: '输入描述',
+    valueType: 'string'
+  },
+  {
+    type: 'button',
+    text: '确定',
+  },
+] 
 
 const drawerVisible = ref(false);
 const editKey = ref(0);
@@ -226,13 +255,6 @@ watch(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-
-  .btns {
-    //border-bottom: 1px solid #e9e9e9;
-    //padding: 10px 16px;
-    //background: #fff;
-    //margin-bottom: 8px;
-  }
 }
 
 .operation-a{

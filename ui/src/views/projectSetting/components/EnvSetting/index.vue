@@ -294,18 +294,10 @@ import {
   watch
 } from 'vue';
 import {MenuOutlined, PlusOutlined} from '@ant-design/icons-vue';
-
 import draggable from 'vuedraggable'
-import Combobox from "ant-design-vue/es/vc-select/examples/combobox";
-import mounted = Combobox.mounted;
 import { useGlobalEnv } from '../../hooks/globalEnv';
 import { useGlobalVarAndParams } from '../../hooks/globalVar';
-import {globalParamscolumns, globalVarsColumns, serveServersColumns, tabPaneList} from '@/views/ProjectSetting/config';
-
-const props = defineProps({})
-const emit = defineEmits(['ok', 'close', 'refreshList']);
-
-
+import {globalParamscolumns, globalVarsColumns, serveServersColumns, tabPaneList} from '../../config';
 import {StateType as ProjectStateType} from "@/store/project";
 import {StateType as ProjectSettingStateType} from "@/views/ProjectSetting/store";
 import {useStore} from "vuex";

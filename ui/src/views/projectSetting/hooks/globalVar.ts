@@ -2,7 +2,7 @@ import { getEnvironmentsParamList, getGlobalVarsList, saveEnvironmentsParam, sav
 import { message } from "ant-design-vue";
 import { computed, ref } from "vue";
 import { useStore } from "vuex";
-import {StateType as ProjectSettingStateType} from "@/views/projectSettingV2/store";
+import {StateType as ProjectSettingStateType} from "@/views/ProjectSetting/store";
 import {StateType as ProjectStateType} from "@/store/project";
 
 interface GlobaleProps {
@@ -15,7 +15,7 @@ interface GlobaleProps {
 }
 
 export function useGlobalVarAndParams({ isShowAddEnv, isShowEnvDetail, activeEnvDetail, isShowGlobalParams, isShowGlobalVars, globalParamsActiveKey }: GlobaleProps) {
-    const store = useStore<{ ProjectSettingV2: ProjectSettingStateType, ProjectGlobal: ProjectStateType }>();
+    const store = useStore<{ ProjectSetting: ProjectSettingStateType, ProjectGlobal: ProjectStateType }>();
     const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
     console.log('%c[GET ENV LIST] --  currProject [gloablVars.ts -- 21]', 'color: red', currProject.value);
     /**
@@ -28,7 +28,7 @@ export function useGlobalVarAndParams({ isShowAddEnv, isShowEnvDetail, activeEnv
         isShowEnvDetail.value = false;
 
         activeEnvDetail.value = null;
-        await store.dispatch('ProjectSettingV2/getEnvironmentsParamList', { projectId: currProject.value.id });
+        await store.dispatch('ProjectSetting/getEnvironmentsParamList', { projectId: currProject.value.id });
     }
 
     /**
@@ -40,41 +40,41 @@ export function useGlobalVarAndParams({ isShowAddEnv, isShowEnvDetail, activeEnv
         isShowAddEnv.value = false;
         isShowEnvDetail.value = false;
         console.log(currProject);
-        await store.dispatch('ProjectSettingV2/getGlobalVarsList', { projectId: currProject.value.id });
+        await store.dispatch('ProjectSetting/getGlobalVarsList', { projectId: currProject.value.id });
     }
 
     /**
      * 前端模拟添加全局变量
      */
     function addGlobalVar() {
-        store.dispatch('ProjectSettingV2/addGlobalVars');
+        store.dispatch('ProjectSetting/addGlobalVars');
     }
 
     /**
      * 前端模拟添加全局参数
      */
     function addGlobalParams() {
-        store.dispatch('ProjectSettingV2/addGlobalParams', { globalParamsActiveKey });
+        store.dispatch('ProjectSetting/addGlobalParams', { globalParamsActiveKey });
     }
 
     /**
      * 保存全局参数
      */
     async function handleSaveGlobalParams() {
-        await store.dispatch('ProjectSettingV2/saveEnvironmentsParam', { projectId: currProject.value.id });
+        await store.dispatch('ProjectSetting/saveEnvironmentsParam', { projectId: currProject.value.id });
     }
 
     async function handleSaveGlobalVars() {
-        await store.dispatch('ProjectSettingV2/saveGlobalVars');
+        await store.dispatch('ProjectSetting/saveGlobalVars');
     }
 
     function handleGlobalVarsChange(field, index, e, action?: string) {
-        store.dispatch('ProjectSettingV2/handleGlobalVarsChange', { field, index, e, action });
+        store.dispatch('ProjectSetting/handleGlobalVarsChange', { field, index, e, action });
     }
 
 
     function handleGlobalParamsChange(type: string, field: string, index: number, e: any, action?: string) {
-        store.dispatch('ProjectSettingV2/handleGlobalParamsChange', { type, field, index, e, action });
+        store.dispatch('ProjectSetting/handleGlobalParamsChange', { type, field, index, e, action });
     }
 
     return {

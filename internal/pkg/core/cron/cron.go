@@ -73,7 +73,7 @@ func (s *ServerCron) Init() {
 
 			// do somethings
 			summaryService := service.SummaryService{}
-			err := summaryService.SummaryDataCheck()
+			//err := summaryService.SummaryDataCheck()
 			if err != nil {
 				return
 			}

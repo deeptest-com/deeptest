@@ -115,14 +115,24 @@ func (s *SummaryService) Collection(scope string) (err error) {
 }
 
 func (s *SummaryService) CollectionRanking() (err error) {
+
 	//res, err := s.SummaryDetailsService.Card(0)
 	//cache.SetCache("summaryDetails-"+strconv.FormatInt(user.UserId, 36), resDetail, time.Duration(rand.Int63n(50)+50))
 	return
 }
 
 func (s *SummaryService) CollectionBugs() (err error) {
-	//res, err := s.SummaryDetailsService.Card(0)
-	//cache.SetCache("summaryDetails-"+strconv.FormatInt(user.UserId, 36), resDetail, time.Duration(rand.Int63n(50)+50))
+	//配置地址
+
+	//请求对应系统,获取bug信息
+
+	//bug转化,配置字段映射关系
+	bugs := model.SummaryBugs{}
+
+	//调用存储
+
+	s.SummaryBugsService.Create(bugs)
+	cache.SetCache("summaryDetails-"+strconv.FormatInt(bugs.ProjectId, 36), bugs, time.Duration(rand.Int63n(50)+50))
 	return
 }
 
@@ -130,15 +140,10 @@ func (s *SummaryService) CollectionDetails() (err error) {
 
 	var details []model.SummaryDetails
 
+	//从project表获取所有项目id、name、描述、简称、创建时间
 	details, err = s.SummaryDetailsService.CollectionProjectInfo()
-	for index, detail := range details {
 
-		//从project表获取所有项目id、name、描述、简称、创建时间
-		//detail.ProjectChineseName
-		//detail.ProjectId
-		//detail.ProjectDes
-		//detail.ProjectName
-		//detail.ProjectCreateTime
+	for index, detail := range details {
 
 		//根据projectid获取所有用户列表,将id最小的名字赋值进来,现成的方法返回getusersByprojectid
 

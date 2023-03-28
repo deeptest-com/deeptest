@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"gorm.io/gorm"
 	"time"
@@ -11,7 +12,8 @@ type SummaryBugsRepo struct {
 }
 
 func NewSummaryBugsRepo() *SummaryBugsRepo {
-	return &SummaryBugsRepo{}
+	db := dao.GetDB()
+	return &SummaryBugsRepo{db}
 }
 
 func (r *SummaryBugsRepo) Create(bugs model.SummaryBugs) (err error) {
@@ -26,7 +28,7 @@ func (r *SummaryBugsRepo) UpdateColumnsByDate(bugs model.SummaryBugs, startTime 
 
 func (r *SummaryBugsRepo) LastByDate(startTime string, endTime string) (ret bool, err error) {
 	var count int64
-	err = r.DB.Model(&model.SummaryBugs{}).Raw("select count(id) from (deeptest.biz_summary_bugs) where created_at > ? and created_at < ? AND NOT deleted);", startTime, endTime).Last(&count).Error
+	err = r.DB.Model(&model.SummaryBugs{}).Raw("select count(id) from deeptest.biz_summary_bugs where created_at > ? and created_at < ? AND NOT deleted;", startTime, endTime).Last(&count).Error
 	if count == 0 {
 		ret = true
 	}

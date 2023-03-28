@@ -15,7 +15,7 @@ type SummaryBugsService struct {
 }
 
 func NewSummaryBugsService() *SummaryBugsService {
-	return &SummaryBugsService{}
+	return new(SummaryBugsService)
 }
 
 func (s *SummaryBugsService) Bugs(projectId int64) (res v1.ResSummaryBugs, err error) {
@@ -63,18 +63,21 @@ func DecimalPer(number int64, total int64) float64 {
 
 // FindByProjectId
 func (s *SummaryBugsService) FindByProjectIdGroupByBugSeverity(projectId int64) (summaryBugsSeverity []model.SummaryBugsSeverity, err error) {
-	summaryBugsSeverity, err = s.SummaryBugsRepo.FindByProjectIdGroupByBugSeverity(projectId)
+	r := repo.NewSummaryBugsRepo()
+	summaryBugsSeverity, err = r.FindByProjectIdGroupByBugSeverity(projectId)
 	return
 }
 
 // FindGroupByBugSeverity
 func (s *SummaryBugsService) FindGroupByBugSeverity() (summaryBugsSeverity []model.SummaryBugsSeverity, err error) {
-	summaryBugsSeverity, err = s.SummaryBugsRepo.FindGroupByBugSeverity()
+	r := repo.NewSummaryBugsRepo()
+	summaryBugsSeverity, err = r.FindGroupByBugSeverity()
 	return
 }
 
 func (s *SummaryBugsService) Create(req model.SummaryBugs) (err error) {
-	return s.SummaryBugsRepo.Create(req)
+	r := repo.NewSummaryBugsRepo()
+	return r.Create(req)
 }
 
 func (s *SummaryBugsService) CreateByDate(req model.SummaryBugs) (err error) {
@@ -92,23 +95,28 @@ func (s *SummaryBugsService) CreateByDate(req model.SummaryBugs) (err error) {
 }
 
 func (s *SummaryBugsService) UpdateColumnsByDate(req model.SummaryBugs, startTime string, endTime string) (err error) {
-	return s.SummaryBugsRepo.UpdateColumnsByDate(req, startTime, endTime)
+	r := repo.NewSummaryBugsRepo()
+	return r.UpdateColumnsByDate(req, startTime, endTime)
 }
 
 func (s *SummaryBugsService) LastByDate(startTime string, endTiem string) (ret bool, err error) {
-	return s.SummaryBugsRepo.LastByDate(startTime, endTiem)
+	r := repo.NewSummaryBugsRepo()
+	return r.LastByDate(startTime, endTiem)
 }
 
 // Count
 func (s *SummaryBugsService) Count() (count int64, err error) {
-	return s.SummaryBugsRepo.Count()
+	r := repo.NewSummaryBugsRepo()
+	return r.Count()
 }
 
 // CountByProjectId
 func (s *SummaryBugsService) CountByProjectId(projectId int64) (count int64, err error) {
-	return s.SummaryBugsRepo.CountByProjectId(projectId)
+	r := repo.NewSummaryBugsRepo()
+	return r.CountByProjectId(projectId)
 }
 
 func (s *SummaryBugsService) CheckUpdated(oldTime *time.Time) (result bool, err error) {
-	return s.SummaryBugsRepo.CheckUpdated(oldTime)
+	r := *repo.NewSummaryBugsRepo()
+	return r.CheckUpdated(oldTime)
 }

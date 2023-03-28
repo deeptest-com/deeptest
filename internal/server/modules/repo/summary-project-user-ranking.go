@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"gorm.io/gorm"
 	"time"
@@ -11,7 +12,8 @@ type SummaryProjectUserRankingRepo struct {
 }
 
 func NewSummaryProjectUserRankingRepo() *SummaryProjectUserRankingRepo {
-	return &SummaryProjectUserRankingRepo{}
+	db := dao.GetDB()
+	return &SummaryProjectUserRankingRepo{db}
 }
 
 func (r *SummaryProjectUserRankingRepo) Create(summaryProjectUserRanking model.SummaryProjectUserRanking) (err error) {
@@ -26,7 +28,7 @@ func (r *SummaryProjectUserRankingRepo) UpdateColumnsByDate(summaryProjectUserRa
 
 func (r *SummaryProjectUserRankingRepo) LastByDate(startTime string, endTime string) (ret bool, err error) {
 	var count int64
-	err = r.DB.Model(&model.SummaryProjectUserRanking{}).Raw("select count(id) from (deeptest.biz_summary_project_user_ranking) where created_at > ? and created_at < ? AND NOT deleted);", startTime, endTime).Last(&count).Error
+	err = r.DB.Model(&model.SummaryProjectUserRanking{}).Raw("select count(id) from deeptest.biz_summary_project_user_ranking where created_at > ? and created_at < ? AND NOT deleted;", startTime, endTime).Last(&count).Error
 	if count == 0 {
 		ret = true
 	}

@@ -227,7 +227,7 @@ export const defaultCookieParams = {
 export const defaultCodeResponse = {
     "code": "",
     "interfaceId": "",
-    "mediaType": "application/json",
+    "mediaType": "",
     "description": "",
     "schemaRefId": null,
     "examples": "",

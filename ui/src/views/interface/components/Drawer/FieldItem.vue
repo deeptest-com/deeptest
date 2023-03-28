@@ -52,7 +52,7 @@ import {
 
 const props = defineProps(['fieldData','showRequire'])
 
-const emit = defineEmits(['del', 'setRequire', 'setRef', 'settingOther', 'paramsNameChange']);
+const emit = defineEmits(['del', 'setRef', 'settingOther', 'change']);
 
 interface fieldStateType {
   name: string;
@@ -61,9 +61,7 @@ interface fieldStateType {
   description: string;
 }
 
-
-const fieldState = ref<fieldStateType>({});
-
+const fieldState = ref<fieldStateType | any>({});
 
 watch(() => {
   return props.fieldData
@@ -74,7 +72,7 @@ watch(() => {
 })
 
 function handleChangeName(e) {
-  emit('paramsNameChange',fieldState.value);
+  emit('change',fieldState.value);
 }
 
 /**
@@ -82,7 +80,7 @@ function handleChangeName(e) {
  * */
 function setRequire() {
   fieldState.value.required = !fieldState.value.required;
-  emit('setRequire', fieldState.value);
+  emit('change',fieldState.value);
 }
 
 /**

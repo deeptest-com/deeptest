@@ -469,8 +469,6 @@ const StoreModel: ModuleType = {
             const res = await serverList({
                 serveId: payload.id
             });
-
-
             if (res.code === 0) {
                 res.data.forEach((item: any) => {
                     item.label = item.url;

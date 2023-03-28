@@ -134,11 +134,10 @@ export async function deleteServeVersion(id: Number | String | any): Promise<any
 /**
  * 服务环境列表
  * */
-export async function serverList(data: SaveInterfaceReqParams): Promise<any> {
+export async function serverList(data: any): Promise<any> {
     return request({
-        url: `/serves/server/list`,
-        method: 'post',
-        data: data
+        url: `/serves/server/list?serveId=${data.serveId}`,
+        method: 'get',
     });
 }
 

@@ -37,9 +37,9 @@ import {StateType as ProjectSettingStateType} from '../../store';
 import { useStore } from 'vuex';
 import { message } from 'ant-design-vue';
 
-const store = useStore<{ ProjectGlobal: ProjectStateType, ProjectSettingV2: ProjectSettingStateType }>();
+const store = useStore<{ ProjectGlobal: ProjectStateType, ProjectSetting: ProjectSettingStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
-const userListOptions = computed<any>(() => store.state.ProjectSettingV2.userListOptions);
+const userListOptions = computed<any>(() => store.state.ProjectSetting.userListOptions);
 const keyword = ref('');
 const formState: UnwrapRef<any> = reactive({
   name: '',
@@ -48,7 +48,7 @@ const formState: UnwrapRef<any> = reactive({
 });
 
 async function getList() {
-    await store.dispatch('ProjectSettingV2/getServersList', {
+    await store.dispatch('ProjectSetting/getServersList', {
         projectId: currProject.value.id,
         page: 0,
         pageSize: 100,
@@ -57,7 +57,7 @@ async function getList() {
 }
 
 async function selectUserFocus(e) {
-  await store.dispatch('ProjectSettingV2/getUserOptionsList')
+  await store.dispatch('ProjectSetting/getUserOptionsList')
 }
 
 // 确定
@@ -66,7 +66,7 @@ async function handleOk() {
         message.error('服务名不能为空');
         return;
     }
-    await store.dispatch('ProjectSettingV2/saveStoreServe', {
+    await store.dispatch('ProjectSetting/saveStoreServe', {
         projectId: currProject.value.id,
         formState
     })

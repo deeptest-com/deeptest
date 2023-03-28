@@ -3,21 +3,27 @@ import { StoreModuleType } from "@/utils/store";
 import {
     copyEnv,
     copyServe,
+    copySchema,
     deleteEnv,
     deleteServe,
+    deleteSchema,
     disableServe,
+    example2schema,
     getEnvironmentsParamList,
     getEnvList,
     getGlobalVarsList,
     getServeList,
     getUserList,
+    getSchemaList,
     saveEnv,
     saveEnvironmentsParam,
     saveGlobalVars,
-    saveServe
+    saveServe,
+    saveSchema,
+    schema2example
 } from './service';
 import { message } from 'ant-design-vue';
-import { ParamsChangeState, VarsChangeState } from './data';
+import { BasicSchemaParams, ParamsChangeState, SaveSchemaReqParams, SchemaListReqParams, VarsChangeState } from './data';
 import { serveStatus, serveStatusTagColor } from '@/config/constant';
 import { momentUtc } from '@/utils/datetime';
 
@@ -27,6 +33,7 @@ export interface StateType {
     globalVarsData: any;
     globalParamsData: any;
     userListOptions: any;
+    schemaList: any;
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
@@ -37,6 +44,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setGlobalParamsList: Mutation<StateType>,
         setServersList: Mutation<StateType>,
         setUserList: Mutation<StateType>,
+        setSchemaList: Mutation<StateType>,
     };
     actions: {
         getEnvsList: Action<StateType, StateType>,
@@ -57,6 +65,12 @@ export interface ModuleType extends StoreModuleType<StateType> {
         deleteStoreServe: Action<StateType, StateType>,
         copyStoreServe: Action<StateType, StateType>,
         disabledStoreServe: Action<StateType, StateType>,
+        getSchemaList: Action<StateType, StateType>,
+        copySchema: Action<StateType, StateType>,
+        deleteSchema: Action<StateType, StateType>,
+        saveSchema: Action<StateType, StateType>,
+        generateSchema: Action<StateType, StateType>,
+        generateExample: Action<StateType, StateType>
     }
 }
 
@@ -71,11 +85,12 @@ const initState: StateType = {
     },
     globalVarsData: [],
     userListOptions: [],
+    schemaList: []
 };
 
 const StoreModel: ModuleType = {
     namespaced: true,
-    name: 'ProjectSettingV2',
+    name: 'ProjectSetting',
     state: {
         ...initState
     },
@@ -94,6 +109,9 @@ const StoreModel: ModuleType = {
         },
         setUserList(state, payload) {
             state.userListOptions = payload;
+        },
+        setSchemaList(state, payload) {
+            state.schemaList = payload;
         }
     },
     actions: {
@@ -325,8 +343,63 @@ const StoreModel: ModuleType = {
             } else {
                 message.error('禁用服务失败');
             }
+        },
+        async getSchemaList({ commit }, params: SchemaListReqParams) {
+            const reqParams = { ...params, page: 1, pageSize: 20 };
+            const res = await getSchemaList(reqParams);
+            if (res.code === 0) {
+                console.log('%c getSchemaList request success===== sucessData', 'color: red', res);
+                commit('setSchemaList', res.data.result);
+            } else {
+                console.log('%c getSchemaList request failed===== failedData', 'color: green', res);
+            }
+        },
+        async deleteSchema({ dispatch }, data: BasicSchemaParams) {
+            const { id, serveId, name } = data;
+            const res = await deleteSchema(id);
+            if (res.code === 0) {
+                message.success('删除成功');
+                await dispatch('getSchemaList', { serveId, name });
+            } else {
+                message.error('删除失败');
+            }
+        },
+        async copySchema({ dispatch }, params: BasicSchemaParams) {
+            const { id, serveId, name } = params;
+            const res = await copySchema(id);
+            if (res.code === 0) {
+                message.success('复制成功');
+                await dispatch('getSchemaList', { serveId, name });
+            } else {
+                message.error('复制失败');
+            }
+        },
+        async saveSchema({ dispatch }, data: SaveSchemaReqParams) {
+            const { schemaInfo, action, serveId, name } = data;
+            const tips = { delete: '删除', update: '修改' };
+            const res = await saveSchema(schemaInfo);
+            if (res.code === 0) {
+                message.success(`${tips[action]}组件成功`);
+                return true;
+            } else {
+                message.error(`${tips[action]}组件失败`);
+                return false;
+            }
+        },
+        async generateSchema({ dispatch }, { data }: BasicSchemaParams) {
+            const res = await example2schema({ data });
+            if (res.code === 0) {
+                return res.data;
+            }
+            return null;
+        },
+        async generateExample({ dispatch }, { data }: BasicSchemaParams) {
+            const res = await schema2example({ data });
+            if (res.code === 0) {
+                return res.data;
+            }
+            return null;
         }
-
     }
 };
 

@@ -1,53 +1,9 @@
 <template>
   <div class="content">
     <div class="header">
-      <a-form layout="inline" :model="formState">
-        <a-form-item>
-            <span style="cursor: pointer;font-weight: bold">新建服务
-              <a-tooltip placement="topLeft" arrow-point-at-center
-                         title="一个产品服务端通常对应一个或多个服务(微服务)，服务可以有多个版本并行，新的服务默认起始版本为v0.1.0。">
-              <QuestionCircleOutlined class="icon"
-                                      style="position: relative;top:-8px; font-size: 12px;transform: scale(0.9)"/>
-              </a-tooltip>
-            </span>
-        </a-form-item>
-        <a-form-item>
-          <a-input v-model:value="formState.name" placeholder="服务名称"/>
-        </a-form-item>
-        <a-form-item>
-          <a-select
-              v-model:value="formState.userId"
-              show-search
-              placeholder="负责人(默认创建人)"
-              style="width: 200px"
-              :options="userListOptions"
-              @focus="selectUserFocus">
-          </a-select>
-        </a-form-item>
-        <a-form-item>
-          <a-input v-if="editServiceDesc"
-                   v-model:value="formState.description"
-                   placeholder="输入描述"/>
-        </a-form-item>
-        <a-form-item>
-          <a-button class="editable-add-btn"
-                    @click="handleOk"
-                    type="primary"
-                    style="margin-bottom: 8px">
-            确定
-          </a-button>
-        </a-form-item>
-      </a-form>
-
-
-      <a-input-search
-          v-model:value="keyword"
-          placeholder="输入服务名称搜索"
-          style="width: 300px"
-          @search="onSearch"
-      />
+      <TableFilter />
     </div>
-    <a-table  :data-source="dataSource" :columns="columns" rowKey="id">
+    <a-table  :data-source="dataSource" :columns="serviceColumns" rowKey="id">
 
       <template #name="{ text, record }">
         <div class="editable-cell">
@@ -87,20 +43,6 @@
         </a-dropdown>
       </template>
     </a-table>
-    <!-- ::::新建服务弹框 -->
-    <a-modal v-model:visible="visible"
-             @cancel="handleCancel"
-             title="新建服务"
-             @ok="handleOk">
-      <a-form :model="formState" :label-col="{ span: 6 }" :wrapper-col=" { span: 15 }">
-        <a-form-item label="服务名称">
-          <a-input v-model:value="formState.name" placeholder="请输入内容"/>
-        </a-form-item>
-        <a-form-item label="描述">
-          <a-input v-if="editServiceDesc" v-model:value="formState.description" placeholder="请输入内容"/>
-        </a-form-item>
-      </a-form>
-    </a-modal>
 
     <a-drawer
         :closable="true"
@@ -154,48 +96,28 @@
 
 import {
   computed,
-  defineComponent,
   defineEmits,
   defineProps,
-  onMounted,
   reactive,
-  Ref,
   ref,
   UnwrapRef,
   watch
 } from 'vue';
-import {CheckOutlined, EditOutlined, ExclamationOutlined, QuestionCircleOutlined,MoreOutlined} from '@ant-design/icons-vue';
+import {EditOutlined,MoreOutlined} from '@ant-design/icons-vue';
 import ServiceVersion from './Version.vue';
+import TableFilter from '../commom/TableFilter.vue';
+import Filter from '../commom/Filter.vue';
 import ServiceComponent from './Component.vue';
 
-import {getServeList, deleteServe, copyServe, disableServe, saveServe, getUserList,} from '../../service';
-import {momentUtc} from '@/utils/datetime';
-import {message} from "ant-design-vue";
-import {serveStatus,serveStatusTagColor} from "@/config/constant";
 import {StateType as ProjectStateType} from "@/store/project";
+import {StateType as ProjectSettingStateType} from '../../store';
 import {useStore} from "vuex";
-import {SelectTypes} from "ant-design-vue/es/select";
+import { serviceColumns } from '../../config';
+import { Schema } from '../../data';
 
-const store = useStore<{ ProjectGlobal: ProjectStateType }>();
+const store = useStore<{ ProjectGlobal: ProjectStateType, ProjectSetting: ProjectSettingStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
-const props = defineProps({})
-const emit = defineEmits(['ok', 'close', 'refreshList']);
-
-interface FormState {
-  name: string;
-  description: string;
-  serveId?: string,
-
-
-}
-
-interface DataItem {
-  key: string;
-  name: string;
-  age: number;
-  address: string;
-}
-
+const dataSource = computed<any>(() => store.state.ProjectSetting.serviceOptions);
 
 const formState: UnwrapRef<any> = reactive({
   name: '',
@@ -209,91 +131,45 @@ const editFormState: UnwrapRef<any> = reactive({
   serveId: '',
 });
 
+const schemaList: Schema[] = [
+  {
+    type: 'tooltip',
+    text: '新建组件',
+    title: '一个产品服务端通常对应一个或多个服务(微服务)，服务可以有多个版本并行，新的服务默认起始版本为v0.1.0。'
+  },
+  {
+    type: 'input',
+    stateName: 'name',
+    placeholder: '服务名称',
+    valueType: 'string'
+  },
+  {
+    type: 'select',
+    stateName: 'serveId',
+    placeholder: '负责人(默认创建人)',
+    options: [],
+    valueType: 'string'
+  },
+  {
+    type: 'input',
+    stateName: 'description',
+    placeholder: '输入描述',
+    valueType: 'string'
+  },
+  {
+    type: 'button',
+    text: '确定',
+  },
+] 
 
-const visible = ref(false);
 const drawerVisible = ref(false);
-
-const columns = [
-  {
-    title: '服务名称',
-    dataIndex: 'name',
-    slots: {customRender: 'name',title:'fdshfh'},
-  },
-  {
-    title: '描述',
-    dataIndex: 'description',
-  },
-  {
-    title: '关联服务',
-    dataIndex: 'servers',
-    slots: {customRender: 'customServers'},
-  },
-  {
-    title: '状态',
-    dataIndex: 'statusDesc',
-    slots: {customRender: 'customStatus'},
-  },
-  {
-    title: '创建人',
-    dataIndex: 'createUser',
-  },
-  {
-    title: '创建时间',
-    dataIndex: 'createdAt',
-  },
-  {
-    title: '最近更新时间',
-    dataIndex: 'updatedAt',
-  },
-  {
-    title: '操作',
-    dataIndex: 'operation',
-    slots: {customRender: 'operation'},
-  },
-];
-const dataSource: Ref<DataItem[]> = ref([]);
-const count = computed(() => dataSource.value.length + 1);
 const editKey = ref(0);
-
-const keyword = ref('');
-
 const activeKey = ref('1');
 
 function onClose() {
   drawerVisible.value = false;
 
 }
-
-
-/*************************************************
- * ::::新建服务逻辑 start
- ************************************************/
-const userListOptions = ref<SelectTypes['options']>([]);
-
-async function setUserListOptions() {
-  const res = await getUserList('');
-  if (res.code === 0) {
-    res.data.result.forEach((item) => {
-      item.label = item.name;
-      item.value = item.id
-    })
-    console.log(832,res.data.result);
-    userListOptions.value = res.data.result;
-  }
-}
-
-async function selectUserFocus(e) {
-  await setUserListOptions();
-}
-
-async function onSearch(e) {
-  await getList();
-}
-
-/*************************************************
- * ::::新建服务逻辑 end
- ************************************************/
-
 
 const edit = (record: any) => {
   editKey.value++;
@@ -318,95 +194,34 @@ async function changeServiceInfo(e) {
   isEditServiceDesc.value = false;
   isEditServiceName.value = false;
   if (editFormState.name && editFormState.description) {
-    const res = await saveServe({
+    await store.dispatch('ProjectSetting/saveStoreServe', {
       "projectId": currProject.value.id,
       "name": editFormState.name,
       "description": editFormState.description,
       "id": editFormState.serveId,
     });
-    if (res.code === 0) {
-      // message.success('修改服务描述成功');
-      await getList();
-    } else {
-      // message.error('修改服务描述失败');
-    }
   }
 }
 
 async function onDelete(record: any) {
-  const res = await deleteServe(record.id);
-  if (res.code === 0) {
-    message.success('删除成功');
-    await getList();
-  } else {
-    message.error('删除失败');
-  }
+  store.dispatch('ProjectSetting/deleteStoreServe', { id: record.id, projectId: currProject.value.id });
 }
 
 async function onDisabled(record: any) {
-  const res = await disableServe(record.id);
-  if (res.code === 0) {
-    message.success('禁用服务成功');
-    await getList();
-  } else {
-    message.error('禁用服务失败');
-  }
+  store.dispatch('ProjectSetting/disabledStoreServe', { id: record.id, projectId: currProject.value.id });
 }
 
 async function onCopy(record: any) {
-  const res = await copyServe(record.id);
-  if (res.code === 0) {
-    message.success('复制服务成功');
-    await getList();
-  } else {
-    message.error('复制服务失败');
-  }
+  store.dispatch('ProjectSetting/copyStoreServe', { id: record.id, projectId: currProject.value.id });
 }
-
-const handleAdd = () => {
-  visible.value = true;
-};
-
-// 确定
-async function handleOk() {
-  visible.value = false;
-  // :::: todo 需要更换数据
-  const res = await saveServe({
-    "projectId": currProject.value.id,
-    "name": formState.name,
-    "description": formState.description,
-    "userId": formState.userId,
-  });
-  if (res.code === 0) {
-    message.success('新建服务成功');
-    await getList();
-  } else {
-    message.error('新建服务失败');
-  }
-}
-
-// 取消
-function handleCancel() {
-  visible.value = false;
-}
-
 
 async function getList() {
-  let res = await getServeList({
-    "projectId": currProject.value.id,
-    "page": 0,
-    "pageSize": 100,
-    "name": keyword.value,
-  });
-  if (res.code === 0) {
-    res.data.result.forEach((item) => {
-      item.statusDesc = serveStatus.get(item.status);
-      item.statusTag = serveStatusTagColor.get(item.status);
-      item.createdAt = momentUtc(item.createdAt)
-      item.updatedAt = momentUtc(item.updatedAt)
-    })
-    dataSource.value = res.data.result;
-  }
+  await store.dispatch('ProjectSetting/getServersList', {
+    projectId: currProject.value.id,
+    page: 0,
+    pageSize: 100,
+    name: ''
+  })
 }
 
 // onMounted(async () => {
@@ -440,13 +255,6 @@ watch(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-
-  .btns {
-    //border-bottom: 1px solid #e9e9e9;
-    //padding: 10px 16px;
-    //background: #fff;
-    //margin-bottom: 8px;
-  }
 }
 
 .operation-a{

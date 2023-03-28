@@ -1,13 +1,13 @@
 import { computed, ref } from "vue";
 import { useStore } from "vuex";
-import {StateType as ProjectSettingStateType} from "@/views/projectSettingV2/store";
+import {StateType as ProjectSettingStateType} from "@/views/ProjectSetting/store";
 import {StateType as ProjectStateType} from "@/store/project";
 import { message } from "ant-design-vue";
 
 export function useGlobalEnv({ isShowGlobalParams, isShowGlobalVars }) {
-    const store = useStore<{ ProjectSettingV2: ProjectSettingStateType, ProjectGlobal: ProjectStateType }>();
+    const store = useStore<{ ProjectSetting: ProjectSettingStateType, ProjectGlobal: ProjectStateType }>();
     const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
-    const envList = computed<any>(() => store.state.ProjectSettingV2.envList);
+    const envList = computed<any>(() => store.state.ProjectSetting.envList);
     const isShowEnvDetail = ref(false);
     const isShowAddEnv = ref(false);
     const activeEnvDetail: any = ref(null);
@@ -15,10 +15,10 @@ export function useGlobalEnv({ isShowGlobalParams, isShowGlobalVars }) {
     // 请求环境列表
     async function getEnvsList() {
         console.log('%c[GET ENV LIST] --  currProject [globalEnv.ts -- 16]', 'color: red', currProject.value);
-        await store.dispatch('ProjectSettingV2/getEnvsList', { projectId: currProject.value.id });
+        await store.dispatch('ProjectSetting/getEnvsList', { projectId: currProject.value.id });
     }
 
-    function showEnvDetail(item, isAdd?: boolean) {
+    function showEnvDetail(item:any, isAdd?: boolean) {
         if (isAdd) {
             isShowAddEnv.value = true;
             isShowEnvDetail.value = true;
@@ -60,7 +60,7 @@ export function useGlobalEnv({ isShowGlobalParams, isShowGlobalVars }) {
             message.error('变量名参数不能为空');
             return;
         }
-        const result = await store.dispatch('ProjectSettingV2/addEnvData', {
+        const result = await store.dispatch('ProjectSetting/addEnvData', {
             id: activeEnvDetail.value?.id,
             projectId: currProject.value.id,
             name: activeEnvDetail.value?.name,
@@ -76,7 +76,7 @@ export function useGlobalEnv({ isShowGlobalParams, isShowGlobalVars }) {
      * 删除环境变量
      */
     async function deleteEnvData() {
-        const result = await store.dispatch('ProjectSettingV2/deleteEnvData', {
+        const result = await store.dispatch('ProjectSetting/deleteEnvData', {
             activeEnvId: activeEnvDetail.value?.id,
             projectId: currProject.value.id
         })
@@ -89,7 +89,7 @@ export function useGlobalEnv({ isShowGlobalParams, isShowGlobalVars }) {
      * 复制环境变量
      */
     async function copyEnvData() {
-        const result = await store.dispatch('ProjectSettingV2/copyEnvData', {
+        const result = await store.dispatch('ProjectSetting/copyEnvData', {
             activeEnvId: activeEnvDetail.value?.id,
             projectId: currProject.value.id
         })

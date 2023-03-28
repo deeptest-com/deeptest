@@ -133,22 +133,10 @@ const columns = [
 ];
 
 
-const dataSource: Ref<DataItem[]> = ref();
-const count = computed(() => dataSource.value.length + 1);
-const editableData: UnwrapRef<Record<string, DataItem>> = reactive({});
+const dataSource: Ref<DataItem[]> = ref([]);
 
 function onSearch(e) {
   console.log(e.target.value)
-}
-
-const keyword = ref('');
-
-const activeKey = ref('1');
-
-function onClose() {
-  console.log('xxx')
-  drawerVisible.value = false;
-
 }
 
 const userListOptions = ref<SelectTypes['options']>([]);
@@ -160,9 +148,6 @@ const handleChange = (value: string) => {
 const handleBlur = () => {
   console.log('blur');
 };
-const handleFocus = () => {
-  console.log('focus');
-};
 
 const edit = (key: string) => {
   drawerVisible.value = true;
@@ -170,14 +155,6 @@ const edit = (key: string) => {
 
 const isEditServiceDesc = ref(false);
 const isEditServiceName = ref(false);
-
-function editServiceDesc() {
-  isEditServiceDesc.value = true;
-}
-
-function editServiceName() {
-  isEditServiceName.value = true;
-}
 
 async function handleAdd() {
   const res = await saveServeVersion({

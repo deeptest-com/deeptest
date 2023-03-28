@@ -137,6 +137,7 @@ func (s *SummaryService) CollectionBugs() (err error) {
 }
 
 func (s *SummaryService) CollectionDetails() (err error) {
+	//SummaryDetailsService := NewSummaryDetailsService()
 
 	var details []model.SummaryDetails
 
@@ -165,7 +166,12 @@ func (s *SummaryService) CollectionDetails() (err error) {
 		//从biz_interface需要获取当前项目的所有接口,然后从biz_processor_interface检查哪些在场景中出现过
 		interfaceIds, _ := s.SummaryDetailsService.FindInterfaceIdsByProjectId(detail.ProjectId)
 		count, _ := s.SummaryDetailsService.CoverageByProjectId(detail.ProjectId, interfaceIds)
-		coverage := float64(count / detail.InterfaceTotal)
+		var coverage float64
+		if detail.InterfaceTotal != 0 {
+			coverage = float64(count / detail.InterfaceTotal)
+		} else {
+			coverage = 0
+		}
 		detail.Coverage, _ = strconv.ParseFloat(fmt.Sprintf("%.1f", coverage), 64)
 
 		s.SummaryDetailsService.CreateByDate(detail)
@@ -177,7 +183,8 @@ func (s *SummaryService) CollectionDetails() (err error) {
 			var resDetail v1.ResSummaryDetails
 			copier.CopyWithOption(&resDetail, detail, copier.Option{DeepCopy: true})
 			resDetail.Id = detail.ID
-			resDetail.CreatedAt = time.Unix(detail.CreatedAt.Unix(), 0).Format("2006-01-02 15:04:05")
+			t, _ := time.ParseInLocation("2006-01-02 15:04:05", detail.ProjectCreateTime, time.Local)
+			resDetail.CreatedAt = t.Format("2006-01-02 15:04:05")
 			resDetail.Disabled = detail.Disabled
 			resDetail.BugTotal, _ = s.SummaryDetailsService.CountBugsByProjectId(detail.ProjectId)
 			resDetail.UserList = userList
@@ -191,6 +198,11 @@ func (s *SummaryService) CollectionDetails() (err error) {
 
 // SummaryDataCheck corn task
 func (s *SummaryService) SummaryDataCheck() (err error) {
+
+	//SummaryBugsService := NewSummaryBugsService()
+	//SummaryDetailsService := NewSummaryDetailsService()
+	//SummaryProjectUserRankingService := NewSummaryProjectUserRankingService()
+
 	var checks []v1.SummaryDataCheck
 
 	values, err := cache.GetCacheBytes("summaryDataUpdatedAt")

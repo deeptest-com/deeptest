@@ -13,7 +13,7 @@ type SummaryProjectUserRankingService struct {
 }
 
 func NewSummaryProjectUserRankingService() *SummaryProjectUserRankingService {
-	return &SummaryProjectUserRankingService{}
+	return new(SummaryProjectUserRankingService)
 }
 
 func (s *SummaryProjectUserRankingService) ProjectUserRanking(projectId int64, cycle int64) (resRankingList v1.ResRankingList, err error) {
@@ -60,7 +60,8 @@ func (s *SummaryProjectUserRankingService) ProjectUserRanking(projectId int64, c
 	return
 }
 func (s *SummaryProjectUserRankingService) Create(req model.SummaryProjectUserRanking) (err error) {
-	return s.SummaryProjectUserRankingRepo.Create(req)
+	r := repo.NewSummaryProjectUserRankingRepo()
+	return r.Create(req)
 }
 
 func (s *SummaryProjectUserRankingService) CreateByDate(req model.SummaryProjectUserRanking) (err error) {
@@ -78,21 +79,26 @@ func (s *SummaryProjectUserRankingService) CreateByDate(req model.SummaryProject
 }
 
 func (s *SummaryProjectUserRankingService) UpdateColumnsByDate(req model.SummaryProjectUserRanking, startTime string, endTime string) (err error) {
-	return s.SummaryProjectUserRankingRepo.UpdateColumnsByDate(req, startTime, endTime)
+	r := repo.NewSummaryProjectUserRankingRepo()
+	return r.UpdateColumnsByDate(req, startTime, endTime)
 }
 
 func (s *SummaryProjectUserRankingService) LastByDate(startTime string, endTiem string) (ret bool, err error) {
-	return s.SummaryProjectUserRankingRepo.LastByDate(startTime, endTiem)
+	r := repo.NewSummaryProjectUserRankingRepo()
+	return r.LastByDate(startTime, endTiem)
 }
 
 func (s *SummaryProjectUserRankingService) FindByProjectId(projectId int64) (summaryProjectUserRanking []model.SummaryProjectUserRanking, err error) {
-	return s.SummaryProjectUserRankingRepo.FindByProjectId(projectId)
+	r := repo.NewSummaryProjectUserRankingRepo()
+	return r.FindByProjectId(projectId)
 }
 
 func (s *SummaryProjectUserRankingService) FindByDateAndProjectId(startTime string, endTime string, projectId int64) (summaryProjectUserRanking []model.SummaryProjectUserRanking, err error) {
-	return s.SummaryProjectUserRankingRepo.FindByDateAndProjectId(startTime, endTime, projectId)
+	r := repo.NewSummaryProjectUserRankingRepo()
+	return r.FindByDateAndProjectId(startTime, endTime, projectId)
 }
 
 func (s *SummaryProjectUserRankingService) CheckUpdated(oldTime *time.Time) (result bool, err error) {
-	return s.SummaryProjectUserRankingRepo.CheckUpdated(oldTime)
+	r := *repo.NewSummaryProjectUserRankingRepo()
+	return r.CheckUpdated(oldTime)
 }

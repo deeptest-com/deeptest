@@ -94,7 +94,7 @@ func (s *serve2conv) paths() (paths openapi3.Paths) {
 	return
 }
 
-func (s *serve2conv) operation(item model.Interface) (operation *openapi3.Operation) {
+func (s *serve2conv) operation(item model.EndpointInterface) (operation *openapi3.Operation) {
 	operation = new(openapi3.Operation)
 	operation.OperationID = item.OperationId
 	operation.Description = item.Description
@@ -122,7 +122,7 @@ func (s *serve2conv) pathParameters(params []model.EndpointPathParam) (parameter
 	return
 }
 
-func (s *serve2conv) parameters(cookies []model.InterfaceCookie, headers []model.InterfaceHeader, params []model.InterfaceParam) (parameters openapi3.Parameters) {
+func (s *serve2conv) parameters(cookies []model.EndpointInterfaceCookie, headers []model.EndpointInterfaceHeader, params []model.EndpointInterfaceParam) (parameters openapi3.Parameters) {
 	parameters = openapi3.Parameters{}
 	for _, param := range params {
 		parameterRef := new(openapi3.ParameterRef)
@@ -160,7 +160,7 @@ func (s *serve2conv) parameters(cookies []model.InterfaceCookie, headers []model
 	return
 }
 
-func (s *serve2conv) requestBody(body model.InterfaceRequestBody) (requestBody *openapi3.RequestBodyRef) {
+func (s *serve2conv) requestBody(body model.EndpointInterfaceRequestBody) (requestBody *openapi3.RequestBodyRef) {
 	requestBody = new(openapi3.RequestBodyRef)
 	requestBody.Value = new(openapi3.RequestBody)
 	requestBody.Value.Description = ""
@@ -174,7 +174,7 @@ func (s *serve2conv) requestBody(body model.InterfaceRequestBody) (requestBody *
 	return
 }
 
-func (s *serve2conv) requestBodySchema(item model.InterfaceRequestBodyItem) (schema *openapi3.Schema) {
+func (s *serve2conv) requestBodySchema(item model.EndpointInterfaceRequestBodyItem) (schema *openapi3.Schema) {
 	schema = new(openapi3.Schema)
 	schema.Type = item.Type
 	if item.Type == openapi3.TypeObject {
@@ -195,7 +195,7 @@ func (s *serve2conv) requestBodyExamples(examplesStr string) (examples openapi3.
 	return
 }
 
-func (s *serve2conv) responsesBody(bodies []model.InterfaceResponseBody) (responsesBody openapi3.Responses) {
+func (s *serve2conv) responsesBody(bodies []model.EndpointInterfaceResponseBody) (responsesBody openapi3.Responses) {
 	responsesBody = openapi3.Responses{}
 	for _, body := range bodies {
 		responsesBody[body.Code] = new(openapi3.ResponseRef)
@@ -209,7 +209,7 @@ func (s *serve2conv) responsesBody(bodies []model.InterfaceResponseBody) (respon
 	return
 }
 
-func (s *serve2conv) responsesBodySchema(item model.InterfaceResponseBodyItem) (schema *openapi3.Schema) {
+func (s *serve2conv) responsesBodySchema(item model.EndpointInterfaceResponseBodyItem) (schema *openapi3.Schema) {
 	schema = new(openapi3.Schema)
 	schema.Type = item.Type
 	//fmt.Println(item, "++++++++++++++++")

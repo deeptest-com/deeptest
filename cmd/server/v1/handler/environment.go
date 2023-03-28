@@ -303,7 +303,7 @@ func (c *EnvironmentCtrl) ListAll(ctx iris.Context) {
 
 func (c *EnvironmentCtrl) SaveGlobal(ctx iris.Context) {
 	var req []v1.EnvironmentVariable
-	projectId := ctx.URLParamIntDefault("projectId", 0)
+	projectId := ctx.URLParamIntDefault("currProjectId", 0)
 	if err := ctx.ReadJSON(&req); err == nil {
 		if err = c.EnvironmentService.SaveGlobal(uint(projectId), req); err == nil {
 			ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})

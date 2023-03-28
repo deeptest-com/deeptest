@@ -11,23 +11,31 @@ import (
 )
 
 type DebugService struct {
-	DebugRepo              *repo.DebugRepo              `inject:""`
-	InterfaceRepo          *repo.InterfaceRepo          `inject:""`
-	ProcessorInterfaceRepo *repo.ProcessorInterfaceRepo `inject:""`
-
-	InterfaceService          *InterfaceService          `inject:""`
-	ProcessorInterfaceService *ProcessorInterfaceService `inject:""`
-	ExtractorService          *ExtractorService          `inject:""`
-	CheckpointService         *CheckpointService         `inject:""`
-	VariableService           *VariableService           `inject:""`
-	DatapoolService           *DatapoolService           `inject:""`
+	DebugRepo                 *repo.DebugRepo              `inject:""`
+	DebugInterfaceRepo        *repo.InterfaceRepo          `inject:""`
+	ProcessorInterfaceRepo    *repo.ProcessorInterfaceRepo `inject:""`
+	InterfaceService          *InterfaceService            `inject:""`
+	ProcessorInterfaceService *ProcessorInterfaceService   `inject:""`
+	ExtractorService          *ExtractorService            `inject:""`
+	CheckpointService         *CheckpointService           `inject:""`
+	VariableService           *VariableService             `inject:""`
+	DatapoolService           *DatapoolService             `inject:""`
+	EndpointService           *EndpointService             `inject:""`
 }
 
 func (s *DebugService) LoadData(req v1.DebugRequest) (ret v1.DebugRequest, err error) {
-	err = s.ProcessorInterfaceService.UpdateByInvocation(req)
-	if err != nil {
-		return
+	var tested bool
+	if tested, err = s.DebugRepo.Tested(req.Id); !tested {
+		req, err = s.EndpointService.GetReq(req.Id, req.EndpointId)
+	} else {
+		req, err = s.GetLastReq(int(req.Id))
 	}
+	/*
+		err = s.ProcessorInterfaceService.UpdateByInvocation(req)
+		if err != nil {
+			return
+		}
+	*/
 
 	ret, err = s.ReplaceEnvironmentAndExtractorVariables(req)
 
@@ -100,6 +108,17 @@ func (s *DebugService) GetLastResp(interfId int) (resp v1.DebugResponse, err err
 			ContentLang: consts.LangHTML,
 			Content:     "",
 		}
+	}
+
+	return
+}
+
+func (s *DebugService) GetLastReq(interfId int) (req v1.DebugRequest, err error) {
+	invocation, _ := s.DebugRepo.GetLast(interfId)
+	if invocation.ID > 0 {
+		json.Unmarshal([]byte(invocation.ReqContent), &req)
+	} else {
+		req = v1.DebugRequest{}
 	}
 
 	return

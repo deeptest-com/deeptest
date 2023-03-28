@@ -32,6 +32,19 @@ var (
 		&InterfaceApiKey{},
 		&InterfaceExtractor{},
 		&InterfaceCheckpoint{},
+
+		&DebugInterface{},
+		&DebugInterfaceParam{},
+		&DebugInterfaceBodyFormDataItem{},
+		&DebugInterfaceBodyFormUrlEncodedItem{},
+		&DebugInterfaceHeader{},
+		&DebugInterfaceBasicAuth{},
+		&DebugInterfaceBearerToken{},
+		&DebugInterfaceOAuth20{},
+		&DebugInterfaceApiKey{},
+		&DebugInterfaceExtractor{},
+		&DebugInterfaceCheckpoint{},
+
 		&Snippet{},
 
 		&Invocation{},
@@ -73,13 +86,19 @@ var (
 
 		&ComponentSchema{},
 		&ComponentSchemaSecurity{},
-		&InterfaceCookie{},
+
 		&Endpoint{},
 		&EndpointPathParam{},
-		&InterfaceRequestBody{},
-		&InterfaceRequestBodyItem{},
-		&InterfaceResponseBodyItem{},
-		&InterfaceResponseBodyHeader{},
+		&EndpointInterfaceRequestBody{},
+		&EndpointInterfaceRequestBodyItem{},
+		&EndpointInterfaceResponseBodyItem{},
+		&EndpointInterfaceResponseBodyHeader{},
+		&EndpointInterfaceResponseBody{},
+		&EndpointInterface{},
+		&EndpointInterfaceParam{},
+		&EndpointInterfaceCookie{},
+		&EndpointInterfaceHeader{},
+
 		&Serve{},
 		&ServeServer{},
 		&ServeVersion{},
@@ -91,5 +110,7 @@ var (
 		&EnvironmentParam{},
 		&Message{},
 		&MessageRead{},
+
+		&Debug{},
 	}
 )

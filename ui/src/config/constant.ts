@@ -224,4 +224,50 @@ export const defaultCookieParams = {
     required: false,
 }
 
+export const defaultCodeResponse = {
+    "code": "",
+    "interfaceId": "",
+    "mediaType": "application/json",
+    "description": "",
+    "schemaRefId": null,
+    "examples": "",
+    "schemaItem": {
+        "id": null,
+        "name": "",
+        "type": "object",
+        "content": "",
+        "ResponseBodyId": null
+    },
+    "headers": []
+}
 
+
+export const defaultInterfaceDetail = {
+    "name": "",
+    "projectId": "",
+    "serveId": "",
+    "useId": "",
+    "method": "",
+    "description": "",
+    "operationId": "",
+    "security": "",
+    "requestBody": {
+        "id": null,
+        "interfaceId": null,
+        "mediaType": "",
+        "description": "",
+        "schemaRefId": null,
+        "examples": "",
+        "schemaItem": {
+            "id": null,
+            "name": "",
+            "type": "object",
+            "content": "",
+            "requestBodyId": null
+        }
+    },
+    "responseBodies": [],
+    "params": [],
+    "headers": [],
+    "cookies": []
+}

@@ -40,7 +40,9 @@
       <a-col :span="22">
         <!-- ::::请求方法定义 -->
         <a-radio-group v-model:value="selectedMethod" button-style="solid">
-          <a-radio-button :key="method.value" v-for="method in requestMethodOpts" :value="method.value">
+          <a-radio-button
+              :class="{'has-defined': hasDefinedMethod(method.value)}"
+              :key="method.value" v-for="method in requestMethodOpts" :value="method.value">
             {{ method.label }}
           </a-radio-button>
         </a-radio-group>
@@ -196,7 +198,10 @@
               </a-col>
               <a-col :span="21">
                 <a-radio-group v-model:value="selectedCode" button-style="solid">
-                  <a-radio-button :key="code.value" v-for="code in repCodeOpts" :value="code.value">
+                  <a-radio-button
+                      :class="{'has-defined': hasDefinedCode(code.value)}"
+                      :key="code.value" v-for="code in repCodeOpts"
+                      :value="code.value">
                     {{ code.label }}
                   </a-radio-button>
                 </a-radio-group>
@@ -331,7 +336,9 @@ import {
   defaultCookieParams,
   defaultHeaderParams,
   defaultQueryParams,
-  defaultPathParams
+  defaultPathParams,
+  defaultInterfaceDetail,
+  defaultCodeResponse,
 } from '@/config/constant';
 import {PlusOutlined} from '@ant-design/icons-vue';
 import {message} from 'ant-design-vue';
@@ -349,6 +356,21 @@ const emit = defineEmits([]);
 
 const selectedMethod = ref('GET');
 const selectedCode = ref('200');
+
+// 是否定义了请求方法
+function hasDefinedMethod(method: string) {
+  return interfaceDetail?.value?.interfaces?.some((item) => {
+    return item.method === method;
+  })
+}
+
+// 是否定义了请求方法的响应体
+function hasDefinedCode(code: string) {
+  return selectedMethodDetail?.value?.responseBodies?.some((item) => {
+    return item.code === code;
+  })
+}
+
 // 当前选中的请求方法详情
 const selectedMethodDetail: any = computed(() => {
   return interfaceDetail?.value?.interfaces?.find((item) => {
@@ -366,7 +388,6 @@ const selectedCodeDetail: any = computed(() => {
     return item.code === selectedCode?.value;
   })
 });
-
 const selectedCodeIndex: any = computed(() => {
   return selectedMethodDetail?.value?.responseBodies?.findIndex((item) => {
     return item.code === selectedCode?.value;
@@ -407,26 +428,14 @@ function addResponseHeader() {
 }
 
 function addCodeResponse() {
-  const tpl = {
-    "code": selectedCode.value,
-    "interfaceId": selectedMethodDetail.value.id,
-    "mediaType": "application/json",
-    "description": "",
-    "schemaRefId": null,
-    "examples": "",
-    "schemaItem": {
-      "id": null,
-      "name": "",
-      "type": "object",
-      "content": "",
-      "ResponseBodyId": null
-    },
-    "headers": []
-  };
   store.commit('Interface/setInterfaceDetailByIndex', {
-    methodIndex:selectedMethodIndex.value,
-    codeIndex:selectedCodeIndex.value,
-    value:tpl
+    methodIndex: selectedMethodIndex.value,
+    codeIndex: selectedCodeIndex.value,
+    value: {
+      ...defaultCodeResponse,
+      "code": selectedCode.value,
+      "interfaceId": selectedMethodDetail.value.id,
+    }
   })
 }
 
@@ -493,49 +502,22 @@ function deleteParams(type, index) {
 }
 
 function addInterface() {
-  const defaultInterfaceDetail = {
-    "name": "",
+  interfaceDetail.value.interfaces.push({
+    ...defaultInterfaceDetail,
     "projectId": interfaceDetail.value.projectId,
     "serveId": interfaceDetail.value.serveId,
     "useId": currentUser.value.id,
     "method": selectedMethod.value,
-    "description": "",
-    "operationId": "",
-    "security": "token,api_key",
-    "requestBody": {
-      "id": null,
-      "interfaceId": null,
-      "mediaType": "",
-      "description": "",
-      "schemaRefId": null,
-      "examples": "",
-      "schemaItem": {
-        "id": null,
-        "name": "",
-        "type": "object",
-        "content": "",
-        "requestBodyId": null
-      }
-    },
-    "responseBodies": [],
-    "bodyType": "application/json", // todo 确定 UI 交互
-    "params": [],
-    "headers": [],
-    "cookies": []
-  }
-  interfaceDetail.value.interfaces.push(defaultInterfaceDetail);
-
+  });
   store.commit('Interface/setInterfaceDetail', {
     ...interfaceDetail.value,
     interfaces: [...interfaceDetail.value.interfaces],
   })
-
 }
 
 function deleteResHeader(index) {
   selectedCodeDetail.value.headers.splice(index, 1);
 }
-
 
 function updatePath(e) {
   store.commit('Interface/setInterfaceDetail', {
@@ -578,7 +560,6 @@ function handleExampleChange(str: string) {
   exampleStr.value = str;
 }
 
-
 </script>
 <style lang="less" scoped>
 .content {
@@ -619,5 +600,10 @@ function handleExampleChange(str: string) {
 .params-defined-item-header {
   font-weight: bold;
   margin-bottom: 8px;
+}
+
+.has-defined{
+  color: #1890ff;
+  //font-weight: bold;
 }
 </style>

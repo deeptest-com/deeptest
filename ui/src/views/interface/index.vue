@@ -184,7 +184,7 @@ async function handleCreateApi(data) {
     "projectId": currProject.value.id,
     "serveId": currServe.value.id,
     "description": data.description || null,
-    "parentId": data.parentId || null,
+    "categoryId": data.categoryId || null,
   });
   createApiModaVisible.value = false;
 }

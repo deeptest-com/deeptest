@@ -192,9 +192,10 @@ func (c *ServeCtrl) DeleteSchema(ctx iris.Context) {
 }
 
 func (c *ServeCtrl) ListServer(ctx iris.Context) {
-	serveId := ctx.URLParamUint64("serveId")
-	res, err := c.ServeService.ListServer(uint(serveId))
-	if err == nil {
+	var req v1.ServeServer
+	//serveId := ctx.URLParamUint64("serveId")
+	if err := ctx.ReadJSON(&req); err == nil {
+		res, _ := c.ServeService.ListServer(uint(req.ServeId))
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
 	} else {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})

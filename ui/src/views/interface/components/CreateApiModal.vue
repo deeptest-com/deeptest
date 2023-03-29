@@ -17,7 +17,7 @@
       <a-form-item label="所属分类" name="parentId">
         <a-tree-select
             @change="selectedCategory"
-            :value="formState.parentId"
+            :value="formState.categoryId"
             show-search
             :treeData="treeDataCategory"
             style="width: 100%"
@@ -87,12 +87,12 @@ function cancal() {
 }
 
 function selectedCategory(value) {
-  formState.parentId = value;
+  formState.categoryId = value;
 }
 
 const formState: UnwrapRef<NewInterfaceFormState> = reactive({
   title: '',
-  parentId: null,
+  categoryId: null,
   description: '',
 });
 

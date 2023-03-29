@@ -15,7 +15,7 @@ import {
     get,
     save,
     remove,
-    loadExecResult,
+    loadExecResult, getYaml, updateStatus
 } from './service';
 
 import {
@@ -51,8 +51,9 @@ export interface StateType {
     nodeDataCategory: any;
     filterState: filterFormState,
     interfaceDetail: any,
+    interfaceDetailYamlCode: any,
     serveServers: any[], // serve list
-    securityOpts:any[]
+    securityOpts: any[]
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
@@ -62,27 +63,25 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setList: Mutation<StateType>;
         setDetail: Mutation<StateType>;
         setQueryParams: Mutation<StateType>;
-
         setExecResult: Mutation<StateType>;
-
         setTreeDataCategory: Mutation<StateType>;
         setTreeDataMapCategory: Mutation<StateType>;
         setTreeDataMapItemCategory: Mutation<StateType>;
         setTreeDataMapItemPropCategory: Mutation<StateType>;
         setNodeCategory: Mutation<StateType>;
-
         setFilterState: Mutation<StateType>;
         setInterfaceDetail: Mutation<StateType>;
         setInterfaceDetailByIndex: Mutation<StateType>;
         setServerList: Mutation<StateType>;
         setSecurityOpts: Mutation<StateType>;
+        setYamlCode: Mutation<StateType>;
+        setStatus: Mutation<StateType>;
     };
     actions: {
         listInterface: Action<StateType, StateType>;
         getInterface: Action<StateType, StateType>;
         saveInterface: Action<StateType, StateType>;
         removeInterface: Action<StateType, StateType>;
-
         loadCategory: Action<StateType, StateType>;
         getCategoryNode: Action<StateType, StateType>;
         createCategoryNode: Action<StateType, StateType>;
@@ -93,11 +92,8 @@ export interface ModuleType extends StoreModuleType<StateType> {
         saveTreeMapItemPropCategory: Action<StateType, StateType>;
         saveCategory: Action<StateType, StateType>;
         updateCategoryName: Action<StateType, StateType>;
-
         loadExecResult: Action<StateType, StateType>;
         updateExecResult: Action<StateType, StateType>;
-
-
         loadList: Action<StateType, StateType>;
         createApi: Action<StateType, StateType>;
         disabled: Action<StateType, StateType>;
@@ -107,6 +103,8 @@ export interface ModuleType extends StoreModuleType<StateType> {
         updateInterfaceDetail: Action<StateType, StateType>;
         getServerList: Action<StateType, StateType>;
         getSecurityList: Action<StateType, StateType>;
+        getYamlCode: Action<StateType, StateType>;
+        updateStatus: Action<StateType, StateType>;
     }
 }
 
@@ -134,8 +132,9 @@ const initState: StateType = {
         "title": null,
     },
     interfaceDetail: null,
+    interfaceDetailYamlCode: null,
     serveServers: [],
-    securityOpts:[],
+    securityOpts: [],
 };
 
 const StoreModel: ModuleType = {
@@ -174,7 +173,6 @@ const StoreModel: ModuleType = {
         setNodeCategory(state, data) {
             state.nodeDataCategory = data;
         },
-
         setQueryParams(state, payload) {
             state.queryParams = payload;
         },
@@ -195,6 +193,16 @@ const StoreModel: ModuleType = {
         },
         setSecurityOpts(state, payload) {
             state.securityOpts = payload;
+        },
+        setYamlCode(state, payload) {
+            state.interfaceDetailYamlCode = payload;
+        },
+        setStatus(state, payload) {
+            state.listResult.list.forEach((item) => {
+                if (item.id === payload.id) {
+                    item.status = payload.status;
+                }
+            });
         },
     },
     actions: {
@@ -477,8 +485,8 @@ const StoreModel: ModuleType = {
         async getSecurityList({commit}, payload: any) {
             const res = await getSecurityList({
                 serveId: payload.id,
-                "page":1,
-                "pageSize":100
+                "page": 1,
+                "pageSize": 100
             });
             if (res.code === 0) {
                 res.data.result.forEach((item: any) => {
@@ -486,6 +494,22 @@ const StoreModel: ModuleType = {
                     item.value = item.name;
                 })
                 commit('setSecurityOpts', res.data.result || []);
+            } else {
+                return false
+            }
+        },
+        async getYamlCode({commit}, payload: any) {
+            const res = await getYaml(payload);
+            if (res.code === 0) {
+                commit('setYamlCode', res.data);
+            } else {
+                return false
+            }
+        },
+        async updateStatus({commit}, payload: any) {
+            const res = await updateStatus(payload);
+            if (res.code === 0) {
+                commit('setStatus', payload);
             } else {
                 return false
             }

@@ -39,7 +39,17 @@
           </template>
           <template #colStatus="{record}">
             <div class="customTitleColRender">
-              <a-tag :color="interfaceStatusColor.get(record.status)">{{ interfaceStatus.get(record.status) }}</a-tag>
+              <a-select
+                  :value="record?.status"
+                  style="width: 100px"
+                  :size="'small'"
+                  placeholder="请修改接口状态"
+                  :options="interfaceStatusOpts"
+                  @change="(val) => {
+                  handleChangeStatus(val,record);
+                  }"
+              >
+              </a-select>
             </div>
           </template>
           <template #colPath="{text}">
@@ -92,7 +102,7 @@ import {
   EditOutlined,
   MoreOutlined
 } from '@ant-design/icons-vue';
-import {interfaceStatus, interfaceStatusColor} from '@/config/constant';
+import {interfaceStatusOpts} from '@/config/constant';
 import CreateApiModal from './components/CreateApiModal.vue';
 import TableFilter from './components/TableFilter.vue';
 import Drawer from './components/Drawer/index.vue'
@@ -160,6 +170,14 @@ const drawerVisible = ref<boolean>(false);
 const onSelectChange = (keys: Key[], rows: any) => {
   selectedRowKeys.value = [...keys];
 };
+
+
+async function handleChangeStatus(value: any, record: any,) {
+  await store.dispatch('Interface/updateStatus', {
+    id:record.id,
+    status: value
+  });
+}
 
 async function editInterface(record) {
   await store.dispatch('Interface/getInterfaceDetail', {id: record.id});

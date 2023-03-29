@@ -1,18 +1,4 @@
 import request from '@/utils/request';
-import {requestToAgent} from '@/utils/request';
-import {
-    ApiKey,
-    BasicAuth, BearerToken,
-    BodyFormDataItem,
-    BodyFormUrlEncodedItem, Checkpoint, Extractor,
-    Header,
-    Interface,
-    OAuth20,
-    Param
-} from "@/views/interface1/data";
-import {isInArray} from "@/utils/array";
-import {UsedBy} from "@/utils/enum";
-
 
 const apiPath = 'interfaces';
 const apiImport = 'import';
@@ -53,7 +39,7 @@ interface SaveInterfaceReqParams {
  * */
 export async function saveServe(data: any): Promise<any> {
     return request({
-        url: `/serve/save`,
+        url: `/serves/save`,
         method: 'post',
         data: data
     });
@@ -75,7 +61,7 @@ export async function getServeList(data: any): Promise<any> {
  * */
 export async function deleteServe(id: Number): Promise<any> {
     return request({
-        url: `/serve/delete?id=${id}`,
+        url: `/serves/delete?id=${id}`,
         method: 'delete',
     });
 }
@@ -85,7 +71,7 @@ export async function deleteServe(id: Number): Promise<any> {
  * */
 export async function disableServe(id: any): Promise<any> {
     return request({
-        url: `/serve/expire?id=${id}`,
+        url: `/serves/expire?id=${id}`,
         method: 'put',
     });
 }
@@ -95,7 +81,7 @@ export async function disableServe(id: any): Promise<any> {
  * */
 export async function copyServe(id: any): Promise<any> {
     return request({
-        url: `/serve/copy?id=${id}`,
+        url: `/serves/copy?id=${id}`,
         method: 'get',
     });
 }
@@ -106,7 +92,7 @@ export async function copyServe(id: any): Promise<any> {
  * */
 export async function saveServeVersion(data: any): Promise<any> {
     return request({
-        url: `/serve/version/save`,
+        url: `/serves/version/save`,
         method: 'post',
         data: data,
     });
@@ -116,9 +102,9 @@ export async function saveServeVersion(data: any): Promise<any> {
 /**
  * 服务版本列表
  * */
-export async function getServeVersionList(data: any): Promise<any> {
+export async function getServeVersionList(data): Promise<any> {
     return request({
-        url: `/serve/version/list`,
+        url: `/serves/version/list`,
         method: 'post',
         data: data
     });
@@ -127,9 +113,9 @@ export async function getServeVersionList(data: any): Promise<any> {
 /**
  * 服务版本禁用
  * */
-export async function disableServeVersions(id: any): Promise<any> {
+export async function disableServeVersions(id: Number | String | any): Promise<any> {
     return request({
-        url: `/serve/version/expire?id=${id}`,
+        url: `/serves/version/expire?id=${id}`,
         method: 'put',
     });
 }
@@ -137,9 +123,9 @@ export async function disableServeVersions(id: any): Promise<any> {
 /**
  * 服务版本删除
  * */
-export async function deleteServeVersion(id: any): Promise<any> {
+export async function deleteServeVersion(id: Number | String | any): Promise<any> {
     return request({
-        url: `/serve/version/delete?id=${id}`,
+        url: `/serves/version/delete?id=${id}`,
         method: 'delete',
     });
 }
@@ -150,7 +136,7 @@ export async function deleteServeVersion(id: any): Promise<any> {
  * */
 export async function serverList(data: SaveInterfaceReqParams): Promise<any> {
     return request({
-        url: `/serve/server/list`,
+        url: `/serves/server/list`,
         method: 'post',
         data: data
     });
@@ -159,7 +145,7 @@ export async function serverList(data: SaveInterfaceReqParams): Promise<any> {
 /**
  * 用户列表
  * */
-export async function getUserList(name: any): Promise<any> {
+export async function getUserList(name): Promise<any> {
     return request({
         url: `/users`,
         method: 'get',
@@ -169,9 +155,9 @@ export async function getUserList(name: any): Promise<any> {
 /**
  *  保存组件
  * */
-export async function saveSchema(data: any): Promise<any> {
+export async function saveSchema(data): Promise<any> {
     return request({
-        url: `/serve/schema/save`,
+        url: `/serves/schema/save`,
         method: 'post',
         data: data
     });
@@ -180,9 +166,9 @@ export async function saveSchema(data: any): Promise<any> {
 /**
  *  组件列表
  * */
-export async function getSchemaList(data: any): Promise<any> {
+export async function getSchemaList(data): Promise<any> {
     return request({
-        url: `/serve/schema/list`,
+        url: `/serves/schema/list`,
         method: 'post',
         data: data
     });
@@ -191,9 +177,9 @@ export async function getSchemaList(data: any): Promise<any> {
 /**
  * 删除服务
  * */
-export async function deleteSchema(id: Number): Promise<any> {
+export async function deleteSchema(id: Number | String | any): Promise<any> {
     return request({
-        url: `/serve/schema/delete?id=${id}`,
+        url: `/serves/schema/delete?id=${id}`,
         method: 'delete',
     });
 }
@@ -201,9 +187,9 @@ export async function deleteSchema(id: Number): Promise<any> {
 /**
  * 禁用schema
  * */
-export async function disableSchema(id: any): Promise<any> {
+export async function disableSchema(id: any | Number | String): Promise<any> {
     return request({
-        url: `/serve/schema/expire?id=${id}`,
+        url: `/serves/schema/expire?id=${id}`,
         method: 'put',
     });
 }
@@ -211,9 +197,9 @@ export async function disableSchema(id: any): Promise<any> {
 /**
  * 复制服务
  * */
-export async function copySchema(id: any): Promise<any> {
+export async function copySchema(id: any | Number | String): Promise<any> {
     return request({
-        url: `/serve/schema/copy?id=${id}`,
+        url: `/serves/schema/copy?id=${id}`,
         method: 'put',
     });
 }
@@ -222,9 +208,9 @@ export async function copySchema(id: any): Promise<any> {
 /**
  *  example转schema
  * */
-export async function example2schema(data: any): Promise<any> {
+export async function example2schema(data): Promise<any> {
     return request({
-        url: `serve/schema/example2schema`,
+        url: `serves/schema/example2schema`,
         method: 'post',
         data: data
     });
@@ -233,9 +219,9 @@ export async function example2schema(data: any): Promise<any> {
 /**
  *   schema转example
  * */
-export async function schema2example(data: any): Promise<any> {
+export async function schema2example(data): Promise<any> {
     return request({
-        url: `/serve/schema/schema2example`,
+        url: `/serves/schema/schema2example`,
         method: 'post',
         data: data
     });
@@ -244,9 +230,9 @@ export async function schema2example(data: any): Promise<any> {
 /**
  *   schema转yaml
  * */
-export async function schema2yaml(data: any): Promise<any> {
+export async function schema2yaml(data): Promise<any> {
     return request({
-        url: `/serve/schema/schema2yaml`,
+        url: `/serves/schema/schema2yaml`,
         method: 'post',
         data: data
     });
@@ -256,7 +242,7 @@ export async function schema2yaml(data: any): Promise<any> {
 /**
  *   保存环境
  * */
-export async function saveEnv(data: any): Promise<any> {
+export async function saveEnv(data): Promise<any> {
     return request({
         url: `/environments/save`,
         method: 'post',
@@ -267,7 +253,7 @@ export async function saveEnv(data: any): Promise<any> {
 /**
  *   环境列表
  * */
-export async function getEnvList(data: any): Promise<any> {
+export async function getEnvList(data): Promise<any> {
     return request({
         url: `/environments/list?projectId=${data.projectId}`,
         method: 'get',
@@ -277,7 +263,7 @@ export async function getEnvList(data: any): Promise<any> {
 /**
  *   删除环境
  * */
-export async function deleteEnv(data: any): Promise<any> {
+export async function deleteEnv(data): Promise<any> {
     return request({
         url: `/environments/delete?id=${data.id}`,
         method: 'delete',
@@ -287,7 +273,7 @@ export async function deleteEnv(data: any): Promise<any> {
 /**
  *   复制环境信息
  * */
-export async function copyEnv(data: any): Promise<any> {
+export async function copyEnv(data): Promise<any> {
     return request({
         url: `/environments/copy?id=${data.id}`,
         method: 'get',
@@ -298,7 +284,7 @@ export async function copyEnv(data: any): Promise<any> {
 /**
  *   保存全局变量
  * */
-export async function saveGlobalVars(data: any): Promise<any> {
+export async function saveGlobalVars(data): Promise<any> {
     return request({
         url: `/environments/vars/global`,
         method: 'post',
@@ -310,7 +296,7 @@ export async function saveGlobalVars(data: any): Promise<any> {
 /**
  *   全局变量列表
  * */
-export async function getGlobalVarsList(data: any): Promise<any> {
+export async function getGlobalVarsList(data): Promise<any> {
     return request({
         url: `/environments/vars/global?projectId=${data.projectId}`,
         method: 'get',
@@ -321,7 +307,7 @@ export async function getGlobalVarsList(data: any): Promise<any> {
 /**
  *   保存全局变量
  * */
-export async function saveEnvironmentsParam(data: any): Promise<any> {
+export async function saveEnvironmentsParam(data): Promise<any> {
     return request({
         url: `/environments/param`,
         method: 'post',
@@ -332,7 +318,7 @@ export async function saveEnvironmentsParam(data: any): Promise<any> {
 /**
  *   获取全局变量
  * */
-export async function getEnvironmentsParamList(data: any): Promise<any> {
+export async function getEnvironmentsParamList(data): Promise<any> {
     return request({
         url: `/environments/param?projectId=${data.projectId}`,
         method: 'get',

@@ -65,7 +65,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, defineProps, onMounted, onUnmounted, ref, watch, getCurrentInstance} from "vue";
+import {computed, defineProps, onMounted, onUnmounted, ref, watch, getCurrentInstance, defineEmits} from "vue";
 
 import {useI18n} from "vue-i18n";
 import {Form} from 'ant-design-vue';
@@ -92,6 +92,9 @@ const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const treeDataCategory = computed<any>(() => store.state.Interface.treeDataCategory);
 const treeDataMapCategory = computed<any>(() => store.state.Interface.treeDataMapCategory);
 const nodeDataCategory = computed<any>(()=> store.state.Interface.nodeDataCategory);
+
+const emit = defineEmits(['select']);
+
 
 watch(treeDataCategory, () => {
   console.log('watch treeDataCategory', treeDataCategory)
@@ -133,6 +136,8 @@ const selectNode = (keys, e) => {
   }
 
   setSelectedKey('category-interface', currProject.value.id, selectedKeys.value[0])
+
+  emit('select', selectedKeys.value[0]);
 
   const selectedData = treeDataMapCategory.value[selectedKeys.value[0]]
   store.dispatch('Interface/getCategoryNode', selectedData)

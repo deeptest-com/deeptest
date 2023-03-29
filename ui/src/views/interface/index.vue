@@ -2,9 +2,8 @@
   <div class="container">
     <div class="content">
       <div class="left tree">
-        <InterfaceTree/>
+        <InterfaceTree @select="selectNode"/>
       </div>
-
       <div class="right">
         <!--  头部搜索区域  -->
         <div class="top-action">
@@ -74,11 +73,9 @@
         :visible="createApiModaVisible"
         @cancal="createApiModaVisible = false;"
         @ok="handleCreateApi"/>
-
     <!-- 编辑接口时，展开抽屉   -->
     <Drawer
         :destroyOnClose="true"
-        :interfaceId="editInterfaceId"
         :visible="drawerVisible"
         @refreshList="refreshList"
         @close="drawerVisible = false;"/>
@@ -102,11 +99,13 @@ import Drawer from './components/Drawer/index.vue'
 import {useStore} from "vuex";
 import {Interface, PaginationConfig} from "@/views/interface/data";
 import {filterFormState} from "@/views/Interface/data";
+import {StateType as ServeStateType} from "@/store/serve";
 
-const store = useStore<{ Interface, ProjectGlobal }>();
+const store = useStore<{ Interface, ProjectGlobal, ServeGlobal: ServeStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const list = computed<Interface[]>(() => store.state.Interface.listResult.list);
 let pagination = computed<PaginationConfig>(() => store.state.Interface.listResult.pagination);
+const currServe = computed<any>(() => store.state.ServeGlobal.currServe);
 const createApiModaVisible = ref(false);
 type Key = ColumnProps['key'];
 
@@ -161,10 +160,8 @@ const drawerVisible = ref<boolean>(false);
 const onSelectChange = (keys: Key[], rows: any) => {
   selectedRowKeys.value = [...keys];
 };
-const editInterfaceId = ref('');
 
 async function editInterface(record) {
-  editInterfaceId.value = record.id;
   await store.dispatch('Interface/getInterfaceDetail', {id: record.id});
   drawerVisible.value = true;
 }
@@ -185,13 +182,21 @@ async function handleCreateApi(data) {
   await store.dispatch('Interface/createApi', {
     "title": data.title,
     "projectId": currProject.value.id,
+    "serveId": currServe.value.id,
     "description": data.description || null,
     "parentId": data.parentId || null,
   });
   createApiModaVisible.value = false;
 }
 
-async function loadList(currProjectId, page, size, opts?: filterFormState) {
+async function selectNode(id) {
+  await loadList(currProject.value.id, pagination.value.current, pagination.value.pageSize, {
+    categoryId: id,
+    serveId: currServe.value.id,
+  });
+}
+
+async function loadList(currProjectId, page, size, opts?: any) {
   await store.dispatch('Interface/loadList', {
     currProjectId,
     "page": page,
@@ -210,7 +215,20 @@ watch(() => {
 }, async (newVal) => {
   if (newVal.id) {
     await loadList(newVal.id, pagination.value.current, pagination.value.pageSize);
-    await store.dispatch('Interface/loadCategory');
+  }
+}, {
+  immediate: true
+})
+
+// 实时监听服务 ID，如果项目切换了则重新请求数据
+watch(() => {
+  return currServe.value.id;
+}, async (newVal) => {
+  if (newVal) {
+    await loadList(newVal.id, pagination.value.current, pagination.value.pageSize, {
+      serveId: newVal,
+    });
+    await store.dispatch('Interface/getServerList', {id: currServe.value.id});
   }
 }, {
   immediate: true

@@ -92,6 +92,6 @@ export interface filterFormState {
 
 interface NewInterfaceFormState {
     title: string;
-    parentId: string | null;
+    categoryId: string | null;
     description: string | undefined;
 }

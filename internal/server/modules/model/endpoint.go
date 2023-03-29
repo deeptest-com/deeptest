@@ -5,11 +5,11 @@ type Endpoint struct {
 	Title      string              `json:"title"`
 	ProjectId  int64               `json:"projectId"`
 	ServeId    uint                `json:"serveId"`
-	ParentId   int64               `json:"parentId"`
 	Path       string              `json:"path"`
 	Version    string              `json:"version"`
 	CreateUser string              `json:"createUser"`
 	Status     int64               `json:"status"`
+	CategoryId uint                `json:"categoryId"`
 	PathParams []EndpointPathParam `gorm:"-" json:"pathParams"`
 	Interfaces []EndpointInterface `gorm:"-" json:"interfaces"`
 	Versions   []EndpointVersion   `gorm:"-" json:"versions"`

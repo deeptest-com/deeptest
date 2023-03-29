@@ -25,7 +25,7 @@ type EndpointReq struct {
 	Path       string          `json:"path"`
 	Version    string          `json:"version"`
 	CreateUser string          `json:"CreateUser"`
-	ParentId   int64           `json:"ParentId"`
+	CategoryId uint            `json:"categoryId"`
 	PathParams []domain.Param  `gorm:"-" json:"pathParams"`
 	Interfaces []InterfaceResp `gorm:"-" json:"interfaces"`
 }

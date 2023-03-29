@@ -113,6 +113,12 @@ func (s *EndpointService) Yaml(endpoint model.Endpoint) (res interface{}) {
 	}
 	serve.Servers = serveServer
 
+	Securities, err := s.ServeRepo.ListSecurity(serve.ID)
+	if err != nil {
+		return
+	}
+	serve.Securities = Securities
+
 	serve2conv := openapi.NewServe2conv(serve, []model.Endpoint{endpoint})
 	res = serve2conv.ToV3()
 	return
@@ -164,7 +170,19 @@ func (s *EndpointService) GetReq(interfaceId, endpointId uint) (req v1.DebugRequ
 		return
 	}
 	//fmt.Println(interf.Params, "+++++++++++")
-	interfaces2debug := openapi.NewInterfaces2debug(interf)
+	var endpoint model.Endpoint
+	var serve model.Serve
+	endpoint, err = s.EndpointRepo.Get(interf.EndpointId)
+	serve, err = s.ServeRepo.Get(endpoint.ServeId)
+	if err != nil {
+		return
+	}
+	Securities, err := s.ServeRepo.ListSecurity(serve.ID)
+	if err != nil {
+		return
+	}
+	serve.Securities = Securities
+	interfaces2debug := openapi.NewInterfaces2debug(interf, serve)
 	debugInterface := interfaces2debug.Convert()
 	//fmt.Println(debugInterface.Params, "+++++++++++")
 	copier.CopyWithOption(&req, &debugInterface, copier.Option{DeepCopy: true})

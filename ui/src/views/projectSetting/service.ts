@@ -64,7 +64,7 @@ export async function saveServe(data: any): Promise<any> {
  * */
 export async function getServeList(data: any): Promise<any> {
     return request({
-        url: `/serve/index`,
+        url: `/serves/index`,
         method: 'post',
         data: data,
     });

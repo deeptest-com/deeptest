@@ -1,6 +1,7 @@
 package domain
 
 import (
+	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 )
 
@@ -106,4 +107,26 @@ type EnvironmentParamsReq struct {
 	Cookie    []EnvironmentParam `json:"cookie"`
 	Query     []EnvironmentParam `json:"query"`
 	Body      []EnvironmentParam `json:"body"`
+}
+
+type ServeSecurityPaginate struct {
+	_domain.PaginateReq
+	ServeId int64  `json:"serveId"`
+	Name    string `json:"name"`
+}
+
+type ServeSecurityReq struct {
+	ID          uint                  `json:"id"`
+	Name        string                `json:"name"`
+	Type        serverConsts.AuthType `json:"type"`
+	ProjectId   int64                 `json:"project_id"`
+	ServeId     int64                 `json:"serve_id"`
+	Description string                `json:"description"`
+	In          string                `json:"in"`
+	Key         string                `json:"key"`
+	Value       string                `json:"value"`
+	Token       string                `json:"token"`
+	Username    string                `json:"username"`
+	Password    string                `json:"password"`
+	Default     bool                  `json:"default"`
 }

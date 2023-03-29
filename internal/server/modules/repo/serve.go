@@ -121,6 +121,28 @@ func (r *ServeRepo) PaginateSchema(req v1.ServeSchemaPaginate) (ret _domain.Page
 	return
 }
 
+func (r *ServeRepo) PaginateSecurity(req v1.ServeSecurityPaginate) (ret _domain.PageData, err error) {
+	var count int64
+	db := r.DB.Model(&model.ComponentSchemaSecurity{}).Where("serve_id = ? AND NOT deleted AND NOT disabled", req.ServeId)
+
+	err = db.Count(&count).Error
+	if err != nil {
+		logUtils.Errorf("count report error %s", err.Error())
+		return
+	}
+
+	results := make([]*model.ComponentSchemaSecurity, 0)
+
+	err = db.Scopes(dao.PaginateScope(req.Page, req.PageSize, req.Order, req.Field)).Find(&results).Error
+	if err != nil {
+		logUtils.Errorf("query report error %s", err.Error())
+		return
+	}
+	ret.Populate(results, count, req.Page, req.PageSize)
+
+	return
+}
+
 func (r *ServeRepo) Get(id uint) (res model.Serve, err error) {
 	//err = r.DB.Where("NOT deleted AND not disabled").First(&res, id).Error
 	err = r.DB.Where("NOT deleted").First(&res, id).Error
@@ -158,8 +180,17 @@ func (r *ServeRepo) ListServer(serveId uint) (res []model.ServeServer, err error
 	return
 }
 
+func (r *ServeRepo) ListSecurity(serveId uint) (res []model.ComponentSchemaSecurity, err error) {
+	err = r.DB.Where("serve_id = ? AND NOT deleted AND not disabled", serveId).Find(&res).Error
+	return
+}
+
 func (r *ServeRepo) DeleteSchemaById(id uint) error {
 	return r.DB.Model(&model.ComponentSchema{}).Where("id = ?", id).Update("deleted", 1).Error
+}
+
+func (r *ServeRepo) DeleteSecurityId(id uint) error {
+	return r.DB.Model(&model.ComponentSchemaSecurity{}).Where("id = ?", id).Update("deleted", 1).Error
 }
 
 func (r *ServeRepo) SaveServeEndpointVersions(versions []model.ServeEndpointVersion) error {
@@ -215,9 +246,19 @@ func (r *ServeRepo) ServeExist(id uint, name string) (res bool) {
 
 }
 
-func (r *ServeRepo) VersionExist(id uint, value string) (res bool) {
+func (r *ServeRepo) VersionExist(id, serveId uint, value string) (res bool) {
 	var count int64
-	err := r.DB.Model(&model.ServeVersion{}).Where("id = ? and value = ?", id, value).Count(&count).Error
+	err := r.DB.Model(&model.ServeVersion{}).Where("id != ? and value = ? and serve_id=?", id, value, serveId).Count(&count).Error
+	if err != nil {
+		return false
+	}
+	return count > 0
+
+}
+
+func (r *ServeRepo) SecurityExist(id, serveId uint, name string) (res bool) {
+	var count int64
+	err := r.DB.Model(&model.ComponentSchemaSecurity{}).Where("id != ? and name = ? and serve_id=?", id, name, serveId).Count(&count).Error
 	if err != nil {
 		return false
 	}
@@ -263,10 +304,7 @@ func (r *ServeRepo) CopyEndpoints(endpoints []model.ServeEndpointVersion, versio
 
 func (r *ServeRepo) CopyEndpointsVersionRef(version *model.ServeVersion) (err error) {
 	var latestVersion model.ServeVersion
-	latestVersion, err = r.GetLatestVersion(uint(version.ServeId))
-	if err != nil {
-		return
-	}
+	latestVersion, _ = r.GetLatestVersion(uint(version.ServeId))
 	if latestVersion.Value != "" {
 		var endpoints []model.ServeEndpointVersion
 		endpoints, err = r.GetBindEndpoints(uint(version.ServeId), latestVersion.Value)

@@ -40,7 +40,7 @@
     </div>
 </template>
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed ,defineEmits} from "vue";
 import { useStore } from "vuex";
 import { globalVarsColumns } from '../../config';
 import { StateType as ProjectStateType } from "@/store/project";

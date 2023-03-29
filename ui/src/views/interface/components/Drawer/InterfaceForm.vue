@@ -223,7 +223,7 @@
                     @generateExample="handleGenerateExample"
                     @schemaTypeChange="handleSchemaTypeChange"
                     @contentChange="handleContentChange"
-                    :tab-content-style="{width:'700px'}"
+                    :tab-content-style="{width:'100%'}"
                     :value="selectedMethodDetail.requestBody.schemaItem.content"/>
               </a-col>
             </a-row>
@@ -304,14 +304,6 @@
                             style="width: 300px"
                             :options="mediaTypesOpts"
                         ></a-select>
-                        <!--                              <a-button-->
-                        <!--                                  v-if="!selectedCodeDetail.mediaType"-->
-                        <!--                                  type="primary" @click="addResBody">-->
-                        <!--                                <template #icon>-->
-                        <!--                                  <PlusOutlined/>-->
-                        <!--                                </template>-->
-                        <!--                                {{ `添加` }}-->
-                        <!--                              </a-button>-->
                       </a-col>
                     </a-row>
                     <!-- ::::增加响应体 - 描述  -->

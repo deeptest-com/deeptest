@@ -1,6 +1,6 @@
 <template>
   <a-row type="flex" :gutter="16" justify="space-between" style="width: 100%">
-    <a-col :span="6" >
+    <a-col :span="8">
       <a-form-item label="创建人" style="margin-bottom: 0;">
         <a-select
             @change="(e) => {
@@ -12,7 +12,7 @@
             :value="formState?.createUser"/>
       </a-form-item>
     </a-col>
-    <a-col :span="6" >
+    <a-col :span="8">
       <a-form-item label="状态" style="margin-bottom: 0;">
         <a-select
             @change="(e) => {
@@ -23,8 +23,7 @@
             :options="interfaceStatusOpts"/>
       </a-form-item>
     </a-col>
-    <a-col :span="6" />
-    <a-col :span="6">
+    <a-col :span="8">
       <a-input-search
           style="display: flex;justify-content: end;"
           placeholder="请输入关键词"

@@ -229,6 +229,8 @@ watch(() => {
       serveId: newVal,
     });
     await store.dispatch('Interface/getServerList', {id: currServe.value.id});
+    // 获取授权列表
+    await store.dispatch('Interface/getSecurityList', {id: currServe.value.id});
   }
 }, {
   immediate: true

@@ -105,6 +105,32 @@
               <a-col :span="21">
                 <div class="params-defined">
                   <div class="params-defined-content">
+                    <div class="params-defined-item" v-if="showSecurity">
+                      <div class="params-defined-item-header">
+                        <span>Security</span>
+                      </div>
+                      <div class="header-defined header-defined-items">
+                        <a-select @change="securityChange"
+                                  allowClear
+                                  :value="selectedMethodDetail.security"
+                                  :options="securityOpts" style="width: 300px;"/>
+                        <a-tooltip placement="topLeft" arrow-point-at-center title="删除 Security">
+                          <a-button @click="delSecurity">
+                            <template #icon>
+                              <DeleteOutlined/>
+                            </template>
+                          </a-button>
+                        </a-tooltip>
+                        <a-tooltip placement="topLeft" arrow-point-at-center title="去添加或编辑 Security">
+                          <a-button @click="goEditSecurity">
+                            <template #icon>
+                              <PlusOutlined/>
+                            </template>
+                            Security
+                          </a-button>
+                        </a-tooltip>
+                      </div>
+                    </div>
                     <div class="params-defined-item" v-if="selectedMethodDetail?.headers?.length">
                       <div class="params-defined-item-header">
                         <span>Header</span>
@@ -355,7 +381,7 @@ import {
   defaultInterfaceDetail,
   defaultCodeResponse,
 } from '@/config/constant';
-import {PlusOutlined} from '@ant-design/icons-vue';
+import {PlusOutlined, DeleteOutlined} from '@ant-design/icons-vue';
 import FieldItem from './FieldItem.vue'
 import {Interface} from "@/views/interface/data";
 
@@ -363,6 +389,7 @@ const store = useStore<{ Interface, ProjectGlobal, User }>();
 const interfaceDetail: any = computed<Interface>(() => store.state.Interface.interfaceDetail);
 const currentUser: any = computed<Interface>(() => store.state.User.currentUser);
 const serveServers: any = computed<Interface>(() => store.state.Interface.serveServers);
+const securityOpts: any = computed<any>(() => store.state.Interface.securityOpts);
 import SchemaEditor from '@/components/SchemaEditor/index.vue';
 import {cloneByJSON} from "@/utils/object";
 
@@ -390,7 +417,8 @@ function hasDefinedCode(code: string) {
 const selectedMethodDetail: any = ref(null);
 // 当前选中的请求方法的响应体详情
 const selectedCodeDetail: any = ref(null);
-
+// 是否展示安全定义
+const showSecurity = ref(false);
 watch(() => {
   return selectedMethod.value
 }, (newVal, oldVal) => {
@@ -398,6 +426,7 @@ watch(() => {
     return item.method === newVal;
   })
   if (selectedMethodDetail.value) {
+    showSecurity.value = !!selectedMethodDetail.value.security;
     selectedCodeDetail.value = selectedMethodDetail?.value?.responseBodies?.find((item) => {
       return item.code === selectedCode.value;
     })
@@ -423,8 +452,23 @@ const selectedCodeIndex: any = computed(() => {
   })
 });
 
+
+function goEditSecurity() {
+  // todo 跳转到安全定义页面
+  console.log('goEditSecurity');
+}
+
+function delSecurity() {
+  showSecurity.value = false;
+  selectedMethodDetail.value.security = null;
+}
+
+function securityChange(val) {
+  selectedMethodDetail.value.security = val || null;
+}
+
 function setSecurity() {
-  console.log('setSecurity');
+  showSecurity.value = true;
 }
 
 function addCookie() {
@@ -533,12 +577,15 @@ function handlePathLink() {
 function deleteParams(type, index) {
   selectedMethodDetail.value[type].splice(index, 1);
 }
+
 function handleParamsChange(type, data) {
   selectedMethodDetail.value[type][data.index] = {...data};
 }
+
 function deleteResHeader(index) {
   selectedCodeDetail.value.headers.splice(index, 1);
 }
+
 function handleResHeaderChange(data) {
   selectedCodeDetail.value.headers[data.index] = {...data};
 }
@@ -622,6 +669,7 @@ function handleExampleChange(str: string) {
 .params-defined-item-header {
   font-weight: bold;
   margin-bottom: 8px;
+  margin-top: 8px;
 }
 
 .has-defined {

@@ -142,6 +142,17 @@ export async function serverList(data: any): Promise<any> {
 }
 
 /**
+ * 获取授权列表
+ * */
+export async function getSecurityList(data: any): Promise<any> {
+    return request({
+        url: `/serves/security/list`,
+        method: 'post',
+        data,
+    });
+}
+
+/**
  * 用户列表
  * */
 export async function getUserList(name): Promise<any> {

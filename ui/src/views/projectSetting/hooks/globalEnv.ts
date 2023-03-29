@@ -1,10 +1,11 @@
-import { computed, ref } from "vue";
+import { computed, Ref, ref } from "vue";
 import { useStore } from "vuex";
 import {StateType as ProjectSettingStateType} from "@/views/ProjectSetting/store";
 import {StateType as ProjectStateType} from "@/store/project";
 import { message } from "ant-design-vue";
+import { EnvHookParams, EnvReturnData, VarDataItem } from "../data";
 
-export function useGlobalEnv({ isShowGlobalParams, isShowGlobalVars }) {
+export function useGlobalEnv({ isShowGlobalParams, isShowGlobalVars }: EnvHookParams): EnvReturnData {
     const store = useStore<{ ProjectSetting: ProjectSettingStateType, ProjectGlobal: ProjectStateType }>();
     const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
     const envList = computed<any>(() => store.state.ProjectSetting.envList);
@@ -54,10 +55,13 @@ export function useGlobalEnv({ isShowGlobalParams, isShowGlobalVars }) {
      */
     async function addEnvData() {
         console.log('%c[ADD ENV DATA] --  envVars [globalEnv.ts -- 90]', 'color: red', activeEnvDetail.value.vars);
+        if (!activeEnvDetail.value?.name) {
+            return;
+        }
         const envVars = activeEnvDetail.value?.vars || [];
-        const hasEmptyVars = envVars.some((e: any) => e.name === '');
+        const hasEmptyVars = envVars.some((e: VarDataItem) => e.name === '' || e.remoteValue === '' || e.localValue === '');
         if (hasEmptyVars) {
-            message.error('变量名参数不能为空');
+            message.error('变量名参数/远程值/本地值不能为空');
             return;
         }
         const result = await store.dispatch('ProjectSetting/addEnvData', {
@@ -102,15 +106,7 @@ export function useGlobalEnv({ isShowGlobalParams, isShowGlobalVars }) {
         }
     }
 
-    /**
-     * 切换环境
-     * @param type 
-     * @param field 
-     * @param index 
-     * @param e 
-     * @param action 
-     */
-    function handleEnvChange(type, field, index, e, action?:any) {
+    function handleEnvChange(type: string, field: string, index: number, e: any, action?:string) {
         if (action === 'delete') {
             activeEnvDetail.value[type].splice(index, 1);
         } else {
@@ -119,7 +115,7 @@ export function useGlobalEnv({ isShowGlobalParams, isShowGlobalVars }) {
 
     }
 
-    function handleEnvNameChange(e) {
+    function handleEnvNameChange(e: any) {
         activeEnvDetail.value.name = e.target.value;
     }
 

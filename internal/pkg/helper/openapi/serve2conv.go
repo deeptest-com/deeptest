@@ -37,7 +37,7 @@ func (s *serve2conv) info() (info *openapi3.Info) {
 }
 
 func (s *serve2conv) components() (components openapi3.Components) {
-	components = openapi3.Components{}
+	components = openapi3.NewComponents()
 	components.Schemas = openapi3.Schemas{}
 	for _, component := range s.serve.Components {
 		schema := new(openapi3.Schema)
@@ -52,7 +52,35 @@ func (s *serve2conv) components() (components openapi3.Components) {
 		}
 		components.Schemas[component.Name] = openapi3.NewSchemaRef("", schema)
 	}
+	components.SecuritySchemes = s.security()
+	return
+}
 
+func (s *serve2conv) security() (securitySchemes openapi3.SecuritySchemes) {
+	securitySchemes = openapi3.SecuritySchemes{}
+	for _, security := range s.serve.Securities {
+		securityScheme := openapi3.NewSecurityScheme()
+		securityScheme.Type = security.Type
+		switch security.Type {
+		case "apiKey":
+			securityScheme.In = security.In
+			securityScheme.Name = security.Key
+		case "bearerToken":
+			securityScheme.Type = "http"
+			securityScheme.Scheme = "bearer"
+			securityScheme.BearerFormat = "jwt"
+		case "basicAuth":
+			securityScheme.Type = "http"
+			securityScheme.Scheme = "basic"
+			securityScheme.BearerFormat = ""
+		}
+		if security.Default {
+			securityRequirement := openapi3.NewSecurityRequirement()
+			securityRequirement[securityScheme.Name] = nil
+			s.doc3.Security = openapi3.SecurityRequirements{securityRequirement}
+		}
+		securitySchemes[security.Name] = &openapi3.SecuritySchemeRef{Value: securityScheme}
+	}
 	return
 }
 
@@ -101,8 +129,12 @@ func (s *serve2conv) operation(item model.EndpointInterface) (operation *openapi
 	operation.Summary = item.Description
 	operation.RequestBody = s.requestBody(item.RequestBody)
 	operation.Responses = s.responsesBody(item.ResponseBodies)
-	operation.Security = nil
 	operation.Parameters = s.parameters(item.Cookies, item.Headers, item.Params)
+	if item.Security != "" {
+		securityRequirement := openapi3.NewSecurityRequirement()
+		securityRequirement[item.Security] = nil
+		operation.Security = &openapi3.SecurityRequirements{securityRequirement}
+	}
 	return
 }
 

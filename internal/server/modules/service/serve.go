@@ -72,7 +72,7 @@ func (s *ServeService) PaginateVersion(req v1.ServeVersionPaginate) (ret _domain
 
 func (s *ServeService) SaveVersion(req v1.ServeVersionReq) (res uint, err error) {
 	var serveVersion model.ServeVersion
-	if s.ServeRepo.VersionExist(uint(req.ID), req.Value) {
+	if s.ServeRepo.VersionExist(uint(req.ID), uint(req.ServeId), req.Value) {
 		err = fmt.Errorf("serve version already exist")
 		return
 	}
@@ -118,8 +118,23 @@ func (s *ServeService) SaveSchema(req v1.ServeSchemaReq) (res uint, err error) {
 	return serveSchema.ID, err
 }
 
+func (s *ServeService) SaveSecurity(req v1.ServeSecurityReq) (res uint, err error) {
+	var serveSecurity model.ComponentSchemaSecurity
+	if s.ServeRepo.SecurityExist(uint(req.ID), uint(req.ServeId), req.Name) {
+		err = fmt.Errorf("security name already exist")
+		return
+	}
+	copier.CopyWithOption(&serveSecurity, req, copier.Option{DeepCopy: true})
+	err = s.ServeRepo.Save(serveSecurity.ID, &serveSecurity)
+	return serveSecurity.ID, err
+}
+
 func (s *ServeService) PaginateSchema(req v1.ServeSchemaPaginate) (ret _domain.PageData, err error) {
 	return s.ServeRepo.PaginateSchema(req)
+}
+
+func (s *ServeService) PaginateSecurity(req v1.ServeSecurityPaginate) (ret _domain.PageData, err error) {
+	return s.ServeRepo.PaginateSecurity(req)
 }
 
 func (s *ServeService) Example2Schema(data string) (schema openapi3.Schema) {
@@ -139,6 +154,11 @@ func (s *ServeService) Example2Schema(data string) (schema openapi3.Schema) {
 
 func (s *ServeService) DeleteSchemaById(id uint) (err error) {
 	err = s.ServeRepo.DeleteSchemaById(id)
+	return
+}
+
+func (s *ServeService) DeleteSecurityId(id uint) (err error) {
+	err = s.ServeRepo.DeleteSecurityId(id)
 	return
 }
 

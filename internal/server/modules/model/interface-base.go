@@ -16,6 +16,7 @@ type InterfaceBase struct {
 	ParentId    uint   `json:"parentId"`
 	ProjectId   uint   `json:"projectId"`
 	UseID       uint   `json:"useId"`
+	//ServeId     uint   `json:"serveId"`
 
 	Ordr int `json:"ordr"`
 

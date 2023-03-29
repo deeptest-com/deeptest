@@ -45,3 +45,15 @@ const (
 func (e CategoryDiscriminator) String() string {
 	return string(e)
 }
+
+type AuthType string
+
+const (
+	ApiKey      AuthType = "apiKey"
+	BearerToken AuthType = "bearerToken"
+	BasicAuth   AuthType = "basicAuth"
+)
+
+func (e AuthType) String() string {
+	return string(e)
+}

@@ -160,6 +160,16 @@ func (c *ServeCtrl) SaveSchema(ctx iris.Context) {
 	}
 }
 
+func (c *ServeCtrl) SaveSecurity(ctx iris.Context) {
+	var req v1.ServeSecurityReq
+	if err := ctx.ReadJSON(&req); err == nil {
+		res, _ := c.ServeService.SaveSecurity(req)
+		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
+	} else {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+	}
+}
+
 // ListSchema 获取版本列表
 func (c *ServeCtrl) ListSchema(ctx iris.Context) {
 	var req v1.ServeSchemaPaginate
@@ -268,4 +278,24 @@ func (c *ServeCtrl) ChangeServe(ctx iris.Context) {
 	}
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: currServe, Msg: _domain.NoErr.Msg})
+}
+
+func (c *ServeCtrl) ListSecurity(ctx iris.Context) {
+	var req v1.ServeSecurityPaginate
+	if err := ctx.ReadJSON(&req); err == nil {
+		res, _ := c.ServeService.PaginateSecurity(req)
+		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
+	} else {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
+	}
+}
+
+func (c *ServeCtrl) DeleteSecurity(ctx iris.Context) {
+	id := ctx.URLParamUint64("id")
+	err := c.ServeService.DeleteSecurityId(uint(id))
+	if err == nil {
+		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+	} else {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
+	}
 }

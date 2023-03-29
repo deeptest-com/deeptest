@@ -145,3 +145,14 @@ export async function saveInterface(data: any): Promise<any> {
     });
 }
 
+
+
+/**
+ * 更新接口状态
+ * */
+export async function updateStatus(data: any): Promise<any> {
+    return request({
+        url: `/endpoint/updateStatus?id=${data.id}&status=${data.status}`,
+        method: 'put',
+    });
+}

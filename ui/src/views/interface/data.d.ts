@@ -12,6 +12,7 @@ export interface Interface {
     id: number;
     name: string;
     desc: string;
+    status: number;
     interfaces: Array<Interfaces>,
     pathParams: any[],
 }

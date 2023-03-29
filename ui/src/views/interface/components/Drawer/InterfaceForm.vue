@@ -28,8 +28,7 @@
                 :fieldData="{...item,index:index}"
                 :showRequire="true"
                 @del="deletePathParams"
-                @paramsNameChange="paramsNameChange"
-                @setRequire="setPathParamsRequire"/>
+                @change="pathParamsNameChange"/>
           </div>
         </div>
       </a-col>
@@ -106,6 +105,32 @@
               <a-col :span="21">
                 <div class="params-defined">
                   <div class="params-defined-content">
+                    <div class="params-defined-item" v-if="showSecurity">
+                      <div class="params-defined-item-header">
+                        <span>Security</span>
+                      </div>
+                      <div class="header-defined header-defined-items">
+                        <a-select @change="securityChange"
+                                  allowClear
+                                  :value="selectedMethodDetail.security"
+                                  :options="securityOpts" style="width: 300px;"/>
+                        <a-tooltip placement="topLeft" arrow-point-at-center title="删除 Security">
+                          <a-button @click="delSecurity">
+                            <template #icon>
+                              <DeleteOutlined/>
+                            </template>
+                          </a-button>
+                        </a-tooltip>
+                        <a-tooltip placement="topLeft" arrow-point-at-center title="去添加或编辑 Security">
+                          <a-button @click="goEditSecurity">
+                            <template #icon>
+                              <PlusOutlined/>
+                            </template>
+                            Security
+                          </a-button>
+                        </a-tooltip>
+                      </div>
+                    </div>
                     <div class="params-defined-item" v-if="selectedMethodDetail?.headers?.length">
                       <div class="params-defined-item-header">
                         <span>Header</span>
@@ -113,9 +138,12 @@
                       <div class="header-defined header-defined-items">
                         <div v-for="(item,index) in selectedMethodDetail.headers" :key="item.id">
                           <FieldItem
-                              :fieldData="item"
+                              :fieldData="{...item,index:index}"
+                              :showRequire="true"
                               @del="deleteParams('headers',index)"
-                          />
+                              @change="(val) => {
+                                handleParamsChange('headers',val);
+                              }"/>
                         </div>
                       </div>
                     </div>
@@ -126,8 +154,12 @@
                       <div class="header-defined ">
                         <div v-for="(item,index) in selectedMethodDetail.params" :key="item.id">
                           <FieldItem
-                              :fieldData="item"
-                              @del="deleteParams('params',index)"/>
+                              :fieldData="{...item,index:index}"
+                              :showRequire="true"
+                              @del="deleteParams('params',index)"
+                              @change="(val) => {
+                                handleParamsChange('params',val);
+                              }"/>
                         </div>
                       </div>
                     </div>
@@ -137,8 +169,13 @@
                       </div>
                       <div class="header-defined ">
                         <div v-for="(item,index) in selectedMethodDetail.cookies" :key="item.id">
-                          <FieldItem :fieldData="item"
-                                     @del="deleteParams('cookies',index)"/>
+                          <FieldItem
+                              :fieldData="{...item,index:index}"
+                              :showRequire="true"
+                              @del="deleteParams('cookies',index)"
+                              @change="(val) => {
+                                handleParamsChange('cookies',val);
+                              }"/>
                         </div>
                       </div>
                     </div>
@@ -167,7 +204,6 @@
                   </template>
                   {{ `添加` }}
                 </a-button>
-
               </a-col>
             </a-row>
             <!-- ::::增加请求体 - 描述  -->
@@ -187,7 +223,7 @@
                     @generateExample="handleGenerateExample"
                     @schemaTypeChange="handleSchemaTypeChange"
                     @contentChange="handleContentChange"
-                    :tab-content-style="{width:'700px'}"
+                    :tab-content-style="{width:'100%'}"
                     :value="selectedMethodDetail.requestBody.schemaItem.content"/>
               </a-col>
             </a-row>
@@ -242,8 +278,13 @@
                               <div class="header-defined header-defined-items">
                                 <div v-for="(item,index) in selectedCodeDetail.headers" :key="item.id">
                                   <FieldItem
-                                      :fieldData="item"
-                                      @del="deleteResHeader(index)"/>
+                                      :fieldData="{...item,index:index}"
+                                      :showRequire="false"
+                                      @del="deleteResHeader(index)"
+                                      @change="(val) => {
+                                        handleResHeaderChange(val);
+                                      }"/>
+
                                 </div>
                               </div>
                             </div>
@@ -263,14 +304,6 @@
                             style="width: 300px"
                             :options="mediaTypesOpts"
                         ></a-select>
-                        <!--                              <a-button-->
-                        <!--                                  v-if="!selectedCodeDetail.mediaType"-->
-                        <!--                                  type="primary" @click="addResBody">-->
-                        <!--                                <template #icon>-->
-                        <!--                                  <PlusOutlined/>-->
-                        <!--                                </template>-->
-                        <!--                                {{ `添加` }}-->
-                        <!--                              </a-button>-->
                       </a-col>
                     </a-row>
                     <!-- ::::增加响应体 - 描述  -->
@@ -340,8 +373,7 @@ import {
   defaultInterfaceDetail,
   defaultCodeResponse,
 } from '@/config/constant';
-import {PlusOutlined} from '@ant-design/icons-vue';
-import {message} from 'ant-design-vue';
+import {PlusOutlined, DeleteOutlined} from '@ant-design/icons-vue';
 import FieldItem from './FieldItem.vue'
 import {Interface} from "@/views/interface/data";
 
@@ -349,7 +381,9 @@ const store = useStore<{ Interface, ProjectGlobal, User }>();
 const interfaceDetail: any = computed<Interface>(() => store.state.Interface.interfaceDetail);
 const currentUser: any = computed<Interface>(() => store.state.User.currentUser);
 const serveServers: any = computed<Interface>(() => store.state.Interface.serveServers);
+const securityOpts: any = computed<any>(() => store.state.Interface.securityOpts);
 import SchemaEditor from '@/components/SchemaEditor/index.vue';
+import {cloneByJSON} from "@/utils/object";
 
 const props = defineProps({});
 const emit = defineEmits([]);
@@ -372,20 +406,36 @@ function hasDefinedCode(code: string) {
 }
 
 // 当前选中的请求方法详情
-const selectedMethodDetail: any = computed(() => {
-  return interfaceDetail?.value?.interfaces?.find((item) => {
-    return item.method === selectedMethod.value;
+const selectedMethodDetail: any = ref(null);
+// 当前选中的请求方法的响应体详情
+const selectedCodeDetail: any = ref(null);
+// 是否展示安全定义
+const showSecurity = ref(false);
+watch(() => {
+  return selectedMethod.value
+}, (newVal, oldVal) => {
+  selectedMethodDetail.value = interfaceDetail?.value?.interfaces?.find((item) => {
+    return item.method === newVal;
   })
-});
+  if (selectedMethodDetail.value) {
+    showSecurity.value = !!selectedMethodDetail.value.security;
+    selectedCodeDetail.value = selectedMethodDetail?.value?.responseBodies?.find((item) => {
+      return item.code === selectedCode.value;
+    })
+  }
+}, {immediate: true});
+
+watch(() => {
+  return selectedCode.value
+}, (newVal, oldVal) => {
+  selectedCodeDetail.value = selectedMethodDetail?.value?.responseBodies?.find((item) => {
+    return item.code === newVal;
+  })
+}, {immediate: true});
+
 const selectedMethodIndex: any = computed(() => {
   return interfaceDetail?.value?.interfaces?.findIndex((item) => {
     return item.method === selectedMethod.value;
-  })
-});
-// 当前选中的请求方法的响应体详情
-const selectedCodeDetail: any = computed(() => {
-  return selectedMethodDetail?.value?.responseBodies?.find((item) => {
-    return item.code === selectedCode?.value;
   })
 });
 const selectedCodeIndex: any = computed(() => {
@@ -394,48 +444,77 @@ const selectedCodeIndex: any = computed(() => {
   })
 });
 
+
+function goEditSecurity() {
+  // todo 跳转到安全定义页面
+  console.log('goEditSecurity');
+}
+
+function delSecurity() {
+  showSecurity.value = false;
+  selectedMethodDetail.value.security = null;
+}
+
+function securityChange(val) {
+  selectedMethodDetail.value.security = val || null;
+}
+
 function setSecurity() {
-  console.log('setSecurity');
+  showSecurity.value = true;
 }
 
 function addCookie() {
-  selectedMethodDetail.value.cookies.push(defaultCookieParams);
+  selectedMethodDetail.value.cookies.push(cloneByJSON(defaultCookieParams));
   store.commit('Interface/setInterfaceDetail', {
     ...interfaceDetail.value,
   })
 }
 
 function addQueryParams() {
-  selectedMethodDetail.value.params.push(defaultQueryParams);
+  selectedMethodDetail.value.params.push(cloneByJSON(defaultQueryParams));
   store.commit('Interface/setInterfaceDetail', {
     ...interfaceDetail.value,
   })
 }
 
 function addHeader() {
-  selectedMethodDetail.value.headers.push(defaultHeaderParams);
+  selectedMethodDetail.value.headers.push(cloneByJSON(defaultHeaderParams));
   store.commit('Interface/setInterfaceDetail', {
     ...interfaceDetail.value,
   })
 }
 
 function addResponseHeader() {
-  selectedCodeDetail.value.headers.push({
-    name: '',
-    desc: '',
-    type: 'string',
-  })
+  selectedCodeDetail.value.headers.push(cloneByJSON(defaultHeaderParams));
 }
 
 function addCodeResponse() {
+  const item = {
+    ...cloneByJSON(defaultCodeResponse),
+    "code": selectedCode.value,
+    "interfaceId": selectedMethodDetail.value.id,
+  }
   store.commit('Interface/setInterfaceDetailByIndex', {
     methodIndex: selectedMethodIndex.value,
     codeIndex: selectedCodeIndex.value,
-    value: {
-      ...defaultCodeResponse,
-      "code": selectedCode.value,
-      "interfaceId": selectedMethodDetail.value.id,
-    }
+    value: item
+  })
+  selectedCodeDetail.value = item;
+}
+
+function addInterface() {
+  const item = {
+    ...cloneByJSON(defaultInterfaceDetail),
+    "projectId": interfaceDetail.value.projectId,
+    "serveId": interfaceDetail.value.serveId,
+    "useId": currentUser.value.id,
+    "method": selectedMethod.value,
+  }
+  selectedMethodDetail.value = item;
+  selectedCode.value = '200';
+  store.commit('Interface/setInterfaceDetail', {
+    ...interfaceDetail.value,
+    interfaces: [...interfaceDetail.value.interfaces, item],
   })
 }
 
@@ -443,7 +522,7 @@ function addCodeResponse() {
  * 添加路径参数
  * */
 function addPathParams() {
-  interfaceDetail.value.pathParams.push(defaultPathParams);
+  interfaceDetail.value.pathParams.push(cloneByJSON(defaultPathParams));
   store.commit('Interface/setInterfaceDetail', {
     ...interfaceDetail.value,
     pathParams: interfaceDetail.value.pathParams
@@ -461,21 +540,11 @@ function deletePathParams(data) {
   })
 }
 
-/**
- * 更新路径参数的 require 为 true
- * */
-function setPathParamsRequire(data) {
-  interfaceDetail.value.pathParams[data.index] = {...data};
-  store.commit('Interface/setInterfaceDetail', {
-    ...interfaceDetail.value,
-    pathParams: interfaceDetail.value.pathParams
-  })
-}
 
 /**
  * 更新参数名称
  * */
-function paramsNameChange(data) {
+function pathParamsNameChange(data) {
   interfaceDetail.value.pathParams[data.index] = data;
   store.commit('Interface/setInterfaceDetail', {
     ...interfaceDetail.value,
@@ -501,22 +570,16 @@ function deleteParams(type, index) {
   selectedMethodDetail.value[type].splice(index, 1);
 }
 
-function addInterface() {
-  interfaceDetail.value.interfaces.push({
-    ...defaultInterfaceDetail,
-    "projectId": interfaceDetail.value.projectId,
-    "serveId": interfaceDetail.value.serveId,
-    "useId": currentUser.value.id,
-    "method": selectedMethod.value,
-  });
-  store.commit('Interface/setInterfaceDetail', {
-    ...interfaceDetail.value,
-    interfaces: [...interfaceDetail.value.interfaces],
-  })
+function handleParamsChange(type, data) {
+  selectedMethodDetail.value[type][data.index] = {...data};
 }
 
 function deleteResHeader(index) {
   selectedCodeDetail.value.headers.splice(index, 1);
+}
+
+function handleResHeaderChange(data) {
+  selectedCodeDetail.value.headers[data.index] = {...data};
 }
 
 function updatePath(e) {
@@ -526,7 +589,6 @@ function updatePath(e) {
   })
 }
 
-
 function addReqBody() {
   console.log('add request body');
 }
@@ -534,7 +596,6 @@ function addReqBody() {
 function addResBody() {
   console.log('add request body');
 }
-
 
 const contentStr = ref('');
 const schemaType = ref('object');
@@ -600,9 +661,10 @@ function handleExampleChange(str: string) {
 .params-defined-item-header {
   font-weight: bold;
   margin-bottom: 8px;
+  margin-top: 8px;
 }
 
-.has-defined{
+.has-defined {
   color: #1890ff;
   //font-weight: bold;
 }

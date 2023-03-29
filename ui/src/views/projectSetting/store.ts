@@ -20,10 +20,14 @@ import {
     saveGlobalVars,
     saveServe,
     saveSchema,
-    schema2example
+    schema2example,
+    getServeVersionList,
+    saveServeVersion,
+    deleteServeVersion,
+    disableServeVersions
 } from './service';
 import { message } from 'ant-design-vue';
-import { BasicSchemaParams, ParamsChangeState, SaveSchemaReqParams, SchemaListReqParams, VarsChangeState } from './data';
+import { BasicSchemaParams, EnvDataItem, EnvReqParams, ParamsChangeState, SaveSchemaReqParams, SaveVersionParams, SchemaListReqParams, ServeDetail, ServeListParams, ServeReqParams, StoreServeParams, VarsChangeState, VarsReqParams } from './data';
 import { serveStatus, serveStatusTagColor } from '@/config/constant';
 import { momentUtc } from '@/utils/datetime';
 
@@ -34,6 +38,8 @@ export interface StateType {
     globalParamsData: any;
     userListOptions: any;
     schemaList: any;
+    selectServiceDetail: any;
+    serveVersionsList: any;
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
@@ -45,8 +51,11 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setServersList: Mutation<StateType>,
         setUserList: Mutation<StateType>,
         setSchemaList: Mutation<StateType>,
+        setServiceDetail: Mutation<StateType>,
+        setVersionList: Mutation<StateType>,
     };
     actions: {
+        // 环境-全局变量-全局参数相关
         getEnvsList: Action<StateType, StateType>,
         getServersList: Action<StateType, StateType>,
         addEnvData: Action<StateType, StateType>,
@@ -60,17 +69,26 @@ export interface ModuleType extends StoreModuleType<StateType> {
         addGlobalVars: Action<StateType, StateType>,
         handleGlobalVarsChange: Action<StateType, StateType>,
         handleGlobalParamsChange: Action<StateType, StateType>,
+        // 用户相关
         getUserOptionsList: Action<StateType, StateType>,
+        // 服务相关
         saveStoreServe: Action<StateType, StateType>,
         deleteStoreServe: Action<StateType, StateType>,
         copyStoreServe: Action<StateType, StateType>,
         disabledStoreServe: Action<StateType, StateType>,
+        // 服务组件相关
         getSchemaList: Action<StateType, StateType>,
         copySchema: Action<StateType, StateType>,
         deleteSchema: Action<StateType, StateType>,
         saveSchema: Action<StateType, StateType>,
         generateSchema: Action<StateType, StateType>,
-        generateExample: Action<StateType, StateType>
+        generateExample: Action<StateType, StateType>,
+        setServiceDetail: Action<StateType, StateType>,
+        // 服务版本相关
+        getVersionList: Action<StateType, StateType>,
+        deleteVersion: Action<StateType, StateType>,
+        disabledVersion: Action<StateType, StateType>,
+        saveVersion: Action<StateType, StateType>
     }
 }
 
@@ -85,7 +103,13 @@ const initState: StateType = {
     },
     globalVarsData: [],
     userListOptions: [],
-    schemaList: []
+    schemaList: [],
+    selectServiceDetail: {
+        name: '',
+        description: '',
+        serveId: ''
+    },
+    serveVersionsList: []
 };
 
 const StoreModel: ModuleType = {
@@ -112,10 +136,16 @@ const StoreModel: ModuleType = {
         },
         setSchemaList(state, payload) {
             state.schemaList = payload;
+        },
+        setServiceDetail(state, payload) {
+            state.selectServiceDetail = payload;
+        },
+        setVersionList(state, payload) {
+            state.serveVersionsList = payload;
         }
     },
     actions: {
-        async getEnvsList({ commit, dispatch, state }, { projectId }: { projectId: number | string }) {
+        async getEnvsList({ commit }, { projectId }: EnvReqParams) {
             const res = await getEnvList({
                 projectId
             });
@@ -129,7 +159,7 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
-        async getServersList({ commit, dispatch, state }, { projectId, page, pageSize, name }: any) {
+        async getServersList({ commit }, { projectId, page, pageSize, name }: ServeListParams) {
             const res = await getServeList({
                 projectId,
                 page: page || 0,
@@ -151,7 +181,7 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
-        async addEnvData({ commit, dispatch, state }, { id, projectId, name, serveServers, vars }: any) {
+        async addEnvData({ dispatch }, { id, projectId, name, serveServers, vars }: EnvDataItem) {
             const res = await saveEnv({
                 id,
                 projectId,
@@ -167,7 +197,7 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
-        async deleteEnvData({ dispatch }, { activeEnvId, projectId }: any) {
+        async deleteEnvData({ dispatch }, { activeEnvId, projectId }: EnvReqParams) {
             const res = await deleteEnv({
                 id: activeEnvId,
             });
@@ -177,7 +207,7 @@ const StoreModel: ModuleType = {
                 return true;
             }
         },
-        async copyEnvData({ commit, dispatch, state }, { activeEnvId, projectId }: any) {
+        async copyEnvData({ commit, dispatch, state }, { activeEnvId }: EnvReqParams) {
             const res = await copyEnv({
                 id: activeEnvId,
             });
@@ -188,7 +218,7 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
-        async getEnvironmentsParamList({ commit, state }, { projectId }: any) {
+        async getEnvironmentsParamList({ commit, state }, { projectId }: VarsReqParams) {
             const res = await getEnvironmentsParamList({
                 projectId
             });
@@ -203,7 +233,7 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
-        async getGlobalVarsList({ commit, state, dispatch }, { projectId }: any) {
+        async getGlobalVarsList({ commit, state, dispatch }, { projectId }: VarsReqParams) {
             const res = await getGlobalVarsList({
                 projectId
             });
@@ -214,7 +244,7 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
-        async saveEnvironmentsParam({ commit, state }, { projectId }) {
+        async saveEnvironmentsParam({ state }, { projectId }: VarsReqParams) {
             // 校验
             try {
                 Object.keys(state.globalParamsData).forEach(key => {
@@ -235,11 +265,11 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
-        async saveGlobalVars({ commit, state }) {
+        async saveGlobalVars({ state }) {
             // 校验
-            const hasEmptyVarsData = state.globalVarsData.some(e => e.name === '');
+            const hasEmptyVarsData = state.globalVarsData.some((e: any) => e.name === '' || e.remoteValue === '' || e.localValue === '');
             if (hasEmptyVarsData) {
-                message.error('全局变量不能为空');
+                message.error('全局变量/远程值/本地值不能为空');
                 return false;
             }
             const res = await saveGlobalVars(state.globalVarsData);
@@ -271,7 +301,8 @@ const StoreModel: ModuleType = {
             })
             commit('setGlobalParamsList', globalParamsData);
         },
-        handleGlobalVarsChange({ commit, state }, { field, index, e, action }: VarsChangeState) {
+        handleGlobalVarsChange({ commit, state }, payload: VarsChangeState) {
+            const { field, index, e, action } = payload;
             // 删除
             const storeGlobalVarsData = JSON.parse(JSON.stringify(state.globalVarsData));
             if (action && action === 'delete') {
@@ -281,7 +312,8 @@ const StoreModel: ModuleType = {
             }
             commit('setGlobalVarsList', JSON.parse(JSON.stringify(storeGlobalVarsData)));
         },
-        handleGlobalParamsChange({ commit, state }, { type, field, index, e, action }: ParamsChangeState) {
+        handleGlobalParamsChange({ commit, state }, payload: ParamsChangeState) {
+            const { type, field, index, e, action } = payload;
             const storeGlobalParamsData = JSON.parse(JSON.stringify(state.globalParamsData));
             if (action === 'delete') {
                 storeGlobalParamsData[type].splice(index, 1);
@@ -290,55 +322,60 @@ const StoreModel: ModuleType = {
             }
             commit('setGlobalParamsList', JSON.parse(JSON.stringify(storeGlobalParamsData)));
         },
-        async getUserOptionsList({ commit }, params: any) {
-            const res = await getUserList('');
+        async getUserOptionsList({ commit }) {
+            const res = await getUserList();
             if (res.code === 0) {
                 res.data.result.forEach((item) => {
-                    item.label = item.name;
-                    item.value = item.id
+                    item.label = item.username;
+                    item.value = item.username
                 })
                 commit('setUserList', res.data.result);
             }
         },
-        async saveStoreServe({ commit, state, dispatch }, params: any) {
-            const res = await saveServe(params);
+        async saveStoreServe({ dispatch }, params: StoreServeParams) {
+            const { formState, projectId, action = 'create' } = params;
+            const tips = { 'create': '新建服务', 'update': '修改服务' };
+            const res = await saveServe({ ...formState, projectId });
             if (res.code === 0) {
-                message.success('新建服务成功');
+                message.success(`${tips[action]}成功`);
                 await dispatch('getServersList', {
-                    projectId: params.projectId
+                    projectId
                 })
             } else {
-                message.error('新建服务失败');
+                message.error(`${tips[action]}失败`);
             }
         },
-        async deleteStoreServe({ dispatch }, params: any) {
-            const res = await deleteServe(params.id);
+        async deleteStoreServe({ dispatch }, params: ServeReqParams) {
+            const { id, projectId } = params;
+            const res = await deleteServe(id);
             if (res.code === 0) {
                 message.success('删除成功');
                 await dispatch('getServersList', {
-                    projectId: params.projectId
+                    projectId
                 })
             } else {
                 message.error('删除失败');
             }
         },
-        async copyStoreServe({ dispatch }, params: any) {
-            const res = await copyServe(params.id);
+        async copyStoreServe({ dispatch }, params: ServeReqParams) {
+            const { id, projectId } = params;
+            const res = await copyServe(id);
             if (res.code === 0) {
                 message.success('复制服务成功');
                 await dispatch('getServersList', {
-                    projectId: params.projectId
+                    projectId
                 })
             } else {
                 message.error('复制服务失败');
             }
         },
-        async disabledStoreServe({ dispatch }, params: any) {
-            const res = await disableServe(params.id);
+        async disabledStoreServe({ dispatch }, params: ServeReqParams) {
+            const { id, projectId } = params;
+            const res = await disableServe(id);
             if (res.code === 0) {
                 message.success('禁用服务成功');
                 await dispatch('getServersList', {
-                    projectId: params.projectId
+                    projectId
                 })
             } else {
                 message.error('禁用服务失败');
@@ -375,7 +412,7 @@ const StoreModel: ModuleType = {
             }
         },
         async saveSchema({ dispatch }, data: SaveSchemaReqParams) {
-            const { schemaInfo, action, serveId, name } = data;
+            const { schemaInfo, action } = data;
             const tips = { delete: '删除', update: '修改' };
             const res = await saveSchema(schemaInfo);
             if (res.code === 0) {
@@ -399,6 +436,47 @@ const StoreModel: ModuleType = {
                 return res.data;
             }
             return null;
+        },
+        setServiceDetail({ commit }, payload: ServeDetail) {
+            commit('setServiceDetail', payload);
+        },
+        async getVersionList({ commit, state }) {
+            const res = await getServeVersionList({
+                "serveId": state.selectServiceDetail.id,
+                "createUser": "",
+                "version": "",
+                "page": 1,
+                "pageSize": 100
+            });
+            if (res.code === 0) {
+                commit('setVersionList', res.data.result);
+                return true;
+            }
+            return false;
+        },
+        async saveVersion({ commit }, payload: SaveVersionParams) {
+            const res = await saveServeVersion(payload);
+            if (res.code === 0) {
+                commit('setVersionList', res.data.result);
+                return true;
+            }
+            return false;
+        },
+        async deleteVersion({ commit }, id: string | number) {
+            const res = await deleteServeVersion(id);
+            if (res.code === 0) {
+                commit('getVersionList');
+                return true;
+            }
+            return false;
+        },
+        async disabledVersion({ commit }, id: string | number) {
+            const res = await disableServeVersions(id);
+            if (res.code === 0) {
+                commit('getVersionList');
+                return true;
+            }
+            return false;
         }
     }
 };

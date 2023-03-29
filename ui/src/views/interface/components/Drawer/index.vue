@@ -17,7 +17,7 @@
       </a-row>
     </template>
     <!-- 基本信息 -->
-    <InterfaceBasicInfo :interfaceDetail="interfaceDetail"/>
+    <InterfaceBasicInfo :interfaceDetail="interfaceDetail" @changeStatus="changeStatus"/>
     <!-- 接口设计区域 -->
     <a-card
         style="width: 100%"
@@ -49,7 +49,6 @@ import {
   defineProps,
   defineEmits,
   computed,
-  onMounted,
 } from 'vue';
 import InterfaceBasicInfo from './InterfaceBasicInfo.vue';
 import EditAndShowField from './EditAndShowField.vue';
@@ -59,7 +58,6 @@ import {Interface} from "@/views/interface/data";
 
 const store = useStore<{ Interface, ProjectGlobal, ServeGlobal }>();
 const interfaceDetail = computed<Interface>(() => store.state.Interface.interfaceDetail);
-
 
 const props = defineProps({
   visible: {
@@ -71,6 +69,13 @@ const emit = defineEmits(['ok', 'close', 'refreshList']);
 
 function onCloseDrawer() {
   emit('close');
+}
+
+async function changeStatus(status) {
+  await store.dispatch('Interface/updateStatus',
+      {id:interfaceDetail.value.id, status: status}
+  );
+  await store.dispatch('Interface/getInterfaceDetail', {id: interfaceDetail.value.id});
 }
 
 async function updateTitle(title) {

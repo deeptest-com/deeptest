@@ -31,8 +31,6 @@
           <div class="header-desc">
             <div class="name" v-if="showMode === 'form'">
               <a-input
-                  @focusout="updateModelInfo"
-                  @pressEnter="updateModelInfo"
                   @change="(e) => {
                     changeModelInfo('name',e)
                   }"
@@ -41,8 +39,6 @@
             </div>
             <div class="desc" v-if="showMode === 'form'">
               <a-input
-                  @focusout="updateModelInfo"
-                  @pressEnter="updateModelInfo"
                   @change="(e) => {
                     changeModelInfo('desc',e)
                   }"
@@ -98,12 +94,8 @@
 
 import {
   computed,
-  defineEmits,
   defineProps,
-  reactive,
-  Ref,
   ref,
-  UnwrapRef,
   watch
 } from 'vue';
 import {schema2yaml} from '../../service';
@@ -123,39 +115,23 @@ const props = defineProps({
     required: true
   },
 })
-const emit = defineEmits(['ok', 'close', 'refreshList']);
-
-interface FormState {
-  name: string;
-  tags: Array<string>,
-}
-
-interface DataItem {
-  key: string;
-  name: string;
-  age: number;
-  address: string;
-}
-
-
-const formState: UnwrapRef<FormState> = reactive({
-  name: '',
-  tags: [],
-});
 
 const schemaList: Schema[] = [
   {
     type: 'input',
     stateName: 'name',
     placeholder: '请输入组件名称',
-    valueType: 'string'
+    valueType: 'string',
+    required: true,
+    message: '组件名称不能为空'
   },
   {
     type: 'select',
     stateName: 'tags',
     placeholder: '标签',
     options: [],
-    valueType: 'array'
+    valueType: 'array',
+    mode: 'tags',
   },
   {
     type: 'button',
@@ -190,27 +166,10 @@ async function changeModelInfo(type, e) {
   }
 }
 
-async function updateModelInfo() {
-  // isEditModelName.value = false;
-  // isEditModelDesc.value = false;
-  // if (activeSchema.value.name && activeSchema.value.description) {
-  //   const res = await saveSchema({
-  //     "projectId": 1,
-  //     "name": activeSchema.value.name,
-  //     "description": activeSchema.value.description,
-  //     "id": props.serveId,
-  //   });
-  //   if (res.code === 0) {
-  //     await getList();
-  //   }
-  // }
-}
-
-
 const showMode = ref('form');
 const yamlCode = ref('');
 
-async function switchMode(val) {
+async function switchMode(val: any) {
   showMode.value = val;
   // 需求去请求YAML格式
   const content = activeSchema.value.content;
@@ -237,7 +196,6 @@ const edit = (record: any) => {
 // 保存组件
 async function handleOk(evt: any, formState: any) {
   if (!formState.name) {
-    message.error('组件名称不能为空');
     return;
   }
   const result = await store.dispatch('ProjectSetting/saveSchema', {
@@ -246,11 +204,8 @@ async function handleOk(evt: any, formState: any) {
       "serveId": props.serveId,
       "tags": formState.tags.join(','),
     },
-    action: 'create',
-    serveId: props.serveId,
-    name: keyword.value
+    action: 'create'
   })
-  console.log(result);
   if (result) {
     await getList();
   }
@@ -268,9 +223,7 @@ async function handleEdit() {
       "type": schemaType.value,
       "description": activeSchema.value.description
     },
-    action: 'update',
-    serveId: props.serveId,
-    name: keyword.value
+    action: 'update'
   })
   if (result) {
     schemeVisible.value = false;

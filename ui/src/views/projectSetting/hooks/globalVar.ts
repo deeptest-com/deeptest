@@ -1,20 +1,11 @@
-import { getEnvironmentsParamList, getGlobalVarsList, saveEnvironmentsParam, saveGlobalVars } from "@/views/projectSetting/service";
-import { message } from "ant-design-vue";
-import { computed, ref } from "vue";
+import { computed, Ref } from "vue";
 import { useStore } from "vuex";
 import {StateType as ProjectSettingStateType} from "@/views/ProjectSetting/store";
 import {StateType as ProjectStateType} from "@/store/project";
+import { GlobalVarsProps, VarsReturnData } from "../data";
 
-interface GlobaleProps {
-    isShowAddEnv: any,
-    isShowEnvDetail: any,
-    activeEnvDetail: any,
-    isShowGlobalParams: any,
-    isShowGlobalVars: any,
-    globalParamsActiveKey: any
-}
-
-export function useGlobalVarAndParams({ isShowAddEnv, isShowEnvDetail, activeEnvDetail, isShowGlobalParams, isShowGlobalVars, globalParamsActiveKey }: GlobaleProps) {
+export function useGlobalVarAndParams(props: GlobalVarsProps): VarsReturnData {
+    const { isShowAddEnv, isShowEnvDetail, activeEnvDetail, isShowGlobalParams, isShowGlobalVars, globalParamsActiveKey } = props;
     const store = useStore<{ ProjectSetting: ProjectSettingStateType, ProjectGlobal: ProjectStateType }>();
     const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
     console.log('%c[GET ENV LIST] --  currProject [gloablVars.ts -- 21]', 'color: red', currProject.value);
@@ -53,8 +44,8 @@ export function useGlobalVarAndParams({ isShowAddEnv, isShowEnvDetail, activeEnv
     /**
      * 前端模拟添加全局参数
      */
-    function addGlobalParams() {
-        store.dispatch('ProjectSetting/addGlobalParams', { globalParamsActiveKey });
+    function addGlobalParams(data: { globalParamsActiveKey: string }) {
+        store.dispatch('ProjectSetting/addGlobalParams', data);
     }
 
     /**
@@ -68,7 +59,7 @@ export function useGlobalVarAndParams({ isShowAddEnv, isShowEnvDetail, activeEnv
         await store.dispatch('ProjectSetting/saveGlobalVars');
     }
 
-    function handleGlobalVarsChange(field, index, e, action?: string) {
+    function handleGlobalVarsChange(field: string, index: number, e: any, action?: string) {
         store.dispatch('ProjectSetting/handleGlobalVarsChange', { field, index, e, action });
     }
 

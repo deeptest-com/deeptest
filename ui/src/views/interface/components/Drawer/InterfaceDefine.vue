@@ -19,12 +19,12 @@
     <div class="interface-code" v-if="showMode === 'code'">
       <MonacoEditor
           class="editor"
-          :value="yamlCode"
+          :value="interfaceDetailYamlCode"
           :language="'yaml'"
           :height="600"
           theme="vs"
           :options="{...MonacoOptions}"
-          @change="() => {}"
+          @change="handleYamlCodeChange"
       />
     </div>
   </div>
@@ -34,42 +34,46 @@ import {
   ref,
   defineProps,
   defineEmits,
-  watch,
   computed,
-  onUnmounted
 } from 'vue';
 import {useStore} from "vuex";
-import {getInterfaceDetail, saveInterface, getYaml} from '../../service';
-import {PlusOutlined, EditOutlined, CodeOutlined, BarsOutlined} from '@ant-design/icons-vue';
+import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
+import {CodeOutlined, BarsOutlined} from '@ant-design/icons-vue';
 import {Interface} from "@/views/interface/data";
 import {MonacoOptions} from '@/utils/const';
+
 const store = useStore<{ Interface, ProjectGlobal }>();
 const interfaceDetail = computed<Interface[]>(() => store.state.Interface.interfaceDetail);
-import SchemaEditor from '@/components/SchemaEditor/index.vue';
-import {example2schema, schema2example} from "@/views/projectSetting/service";
+const interfaceDetailYamlCode = computed<Interface[]>(() => store.state.Interface.interfaceDetailYamlCode);
 import InterfaceForm from './InterfaceForm.vue'
 
 const props = defineProps({});
 const emit = defineEmits(['ok', 'close', 'refreshList']);
 const showMode = ref('form');
-const yamlCode = ref('');
+
 async function switchMode(val) {
   showMode.value = val;
   // 需求去请求YAML格式
   if (val === 'code') {
-    let res = await getYaml(interfaceDetail.value);
-    yamlCode.value = res.data;
+    await store.dispatch('Interface/getYamlCode', interfaceDetail.value);
   }
 }
+
+function handleYamlCodeChange(code) {
+  store.commit("Interface/setYamlCode", code);
+}
+
 </script>
 
 <style lang="less" scoped>
 .content {
   position: relative;
   min-height: 50vh;
+
   .mode-btns {
     position: absolute;
     right: 16px;
+    z-index: 999;
   }
 }
 </style>

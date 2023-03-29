@@ -85,6 +85,9 @@
             <a-tab-pane key="2" tab="服务组件">
               <ServiceComponent :serveId="editFormState.serveId"/>
             </a-tab-pane>
+            <a-tab-pane key="3" tab="Security">
+              <ServiceSecurity :serveId="editFormState.serveId"/>
+            </a-tab-pane>
           </a-tabs>
         </a-form>
       </div>
@@ -108,6 +111,7 @@ import ServiceVersion from './Version.vue';
 import TableFilter from '../commom/TableFilter.vue';
 import Filter from '../commom/Filter.vue';
 import ServiceComponent from './Component.vue';
+import ServiceSecurity from './Security.vue';
 
 import {StateType as ProjectStateType} from "@/store/project";
 import {StateType as ProjectSettingStateType} from '../../store';

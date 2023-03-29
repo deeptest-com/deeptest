@@ -74,3 +74,10 @@ export interface SearchInfo {
     placeholder: string;
     action: any;
 }
+export interface SecurityListReqParams {
+    serveId: number | string;
+    page?: number;
+    pageSize?: number;
+    id?: string;
+   
+}

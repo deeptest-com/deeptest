@@ -9,11 +9,11 @@
                 </a-tooltip>
             </span>
         </a-form-item>
-        <a-form-item>
+        <a-form-item name="name" :rules="[{ required: true, message: '服务名称不能为空' }]">
             <a-input v-model:value="formState.name" placeholder="服务名称" />
         </a-form-item>
         <a-form-item>
-            <a-select v-model:value="formState.userId" show-search placeholder="负责人(默认创建人)" style="width: 200px"
+            <a-select v-model:value="formState.username" show-search placeholder="负责人(默认创建人)" style="width: 200px"
                 :options="userListOptions" @focus="selectUserFocus">
             </a-select>
         </a-form-item>
@@ -21,7 +21,7 @@
             <a-input v-model:value="formState.description" placeholder="输入描述" />
         </a-form-item>
         <a-form-item>
-            <a-button class="editable-add-btn" @click="handleOk" type="primary" style="margin-bottom: 8px">
+            <a-button class="editable-add-btn" @click="handleOk" type="primary" html-type="submit" style="margin-bottom: 8px">
                 确定
             </a-button>
         </a-form-item>
@@ -35,7 +35,6 @@ import { reactive, UnwrapRef, ref, computed } from 'vue';
 import {StateType as ProjectStateType} from "@/store/project";
 import {StateType as ProjectSettingStateType} from '../../store';
 import { useStore } from 'vuex';
-import { message } from 'ant-design-vue';
 
 const store = useStore<{ ProjectGlobal: ProjectStateType, ProjectSetting: ProjectSettingStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
@@ -44,7 +43,7 @@ const keyword = ref('');
 const formState: UnwrapRef<any> = reactive({
   name: '',
   description: '',
-  userId: null,
+  username: null,
 });
 
 async function getList() {
@@ -56,19 +55,25 @@ async function getList() {
     })
 }
 
-async function selectUserFocus(e) {
+async function selectUserFocus() {
   await store.dispatch('ProjectSetting/getUserOptionsList')
 }
 
 // 确定
 async function handleOk() {
-    if (!formState.name) {
-        message.error('服务名不能为空');
+    const { name, username, description } = formState;
+    if (!name) {
         return;
     }
+    const result = userListOptions.value.filter((e: any) => e.value === username);
     await store.dispatch('ProjectSetting/saveStoreServe', {
         projectId: currProject.value.id,
-        formState
+        formState: {
+            userId: result && result[0] && result[0].id,
+            name,
+            description
+        },
+        action: 'create'
     })
 }
 

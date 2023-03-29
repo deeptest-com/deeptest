@@ -2,7 +2,7 @@
   <div class="content">
     <div class="header">
       <a-form layout="inline" :model="formState">
-        <a-form-item>
+        <a-form-item name="name"  :rules="[{ required: true, message: '请设置版本号' }]">
           <a-input v-model:value="formState.name" placeholder="版本号，格式如: 1.2.1"/>
         </a-form-item>
         <a-form-item>
@@ -13,8 +13,6 @@
               style="width: 200px"
               :options="userListOptions"
               @focus="selectUserFocus"
-              @blur="handleBlur"
-              @change="handleChange"
           >
           </a-select>
         </a-form-item>
@@ -25,17 +23,17 @@
             class="editable-add-btn"
             @click="handleAdd"
             type="primary"
+            html-type="submit"
             style="margin-bottom: 8px">
           添加版本
         </a-button>
       </a-form>
     </div>
     <a-table bordered :data-source="dataSource" :columns="columns">
-      <template #name="{ text, record }">
+      <template #name="{ text }">
         <div class="editable-cell">
           <div class="editable-cell-text-wrapper">
             {{ text || ' ' }}
-            <edit-outlined class="editable-cell-icon" @click="edit(record.key)"/>
           </div>
         </div>
       </template>
@@ -52,29 +50,18 @@
 <script setup lang="ts">
 
 import {
-  computed,
-  defineComponent,
   defineEmits,
   defineProps,
-  onMounted,
   reactive,
   Ref,
   ref,
   UnwrapRef,
-  watch
+  watch,
+  computed
 } from 'vue';
-import {CheckOutlined, EditOutlined} from '@ant-design/icons-vue';
-import {SelectTypes} from 'ant-design-vue/es/select';
-import {
-  getServeVersionList,
-  deleteServeVersion,
-  disableServeVersions,
-  saveServeVersion,
-  deleteServe,
-  getUserList,
-  disableServe
-} from '../../service';
+import { useStore } from 'vuex';
 import {message} from "ant-design-vue";
+import { StateType as ProjectSettingStateType } from '../../store';
 
 const props = defineProps({
   serveId: {
@@ -82,11 +69,10 @@ const props = defineProps({
     required: true
   },
 })
-const emit = defineEmits(['ok', 'close', 'refreshList']);
 
 interface FormState {
   name: string;
-  createUser: string,
+  createUser: string | null | undefined,
   description: string;
 }
 
@@ -100,15 +86,16 @@ interface DataItem {
   serveId: string;
 }
 
+const store = useStore<{ ProjectSetting: ProjectSettingStateType }>();
+const dataSource = computed<DataItem[]>(() => store.state.ProjectSetting.serveVersionsList);
+const userListOptions = computed<any[]>(() => store.state.ProjectSetting.userListOptions);
+
 
 const formState: UnwrapRef<FormState> = reactive({
   name: '',
   description: '',
-  createUser: '',
+  createUser: null,
 });
-
-const visible = ref(false);
-const drawerVisible = ref(false);
 
 const columns = [
   {
@@ -132,42 +119,21 @@ const columns = [
   },
 ];
 
-
-const dataSource: Ref<DataItem[]> = ref([]);
-
-function onSearch(e) {
-  console.log(e.target.value)
-}
-
-const userListOptions = ref<SelectTypes['options']>([]);
-
-
-const handleChange = (value: string) => {
-  console.log(`selected ${value}`);
-};
-const handleBlur = () => {
-  console.log('blur');
-};
-
-const edit = (key: string) => {
-  drawerVisible.value = true;
-};
-
-const isEditServiceDesc = ref(false);
-const isEditServiceName = ref(false);
-
 async function handleAdd() {
-  const res = await saveServeVersion({
+  if (!formState.name) {
+    return;
+  }
+  const result = await store.dispatch('ProjectSetting/saveVersion', {
     "serveId": props.serveId,
     "value": formState.name,
     "createUser": formState.createUser,
     "description": formState.description
   });
-  if (res.code === 0) {
+  if (result) {
     message.success('添加版本号成功');
     // 清空表单中的数据
     formState.name = '';
-    formState.createUser = '';
+    formState.createUser = null;
     formState.description = '';
     await getList();
   } else {
@@ -177,51 +143,25 @@ async function handleAdd() {
 
 
 async function getList() {
-  const res = await getServeVersionList({
-    "serveId": props.serveId,
-    "createUser": "",
-    "version": "",
-    "page": 1,
-    "pageSize": 20
-  });
-  if (res.code === 0) {
-    dataSource.value = res.data.result;
-  }
+  await store.dispatch('ProjectSetting/getVersionList');
 }
 
 async function onDelete(record: any) {
-  const res = await deleteServeVersion(record.id);
-  if (res.code === 0) {
-    message.success('删除版本成功');
+  const result = await store.dispatch('ProjectSetting/deleteVersion', record.id);
+  if (result) {
     await getList();
-  } else {
-    message.error('删除版本失败');
   }
 }
 
-async function onDisabled(record: any) {
-  const res = await disableServe(record.id);
-  if (res.code === 0) {
-    message.success('禁用版本成功');
+async function onDisabled(record: any) { 
+  const result = await store.dispatch('ProjectSetting/disabledVersion', record.id);
+  if (result) {
     await getList();
-  } else {
-    message.error('禁用版本失败');
   }
 }
 
-async function setUserListOptions() {
-  const res = await getUserList('');
-  if (res.code === 0) {
-    res.data.result.forEach((item) => {
-      item.label = item.name;
-      item.value = item.username
-    })
-    userListOptions.value = res.data.result;
-  }
-}
-
-async function selectUserFocus(e) {
-  await setUserListOptions();
+async function selectUserFocus() {
+  await store.dispatch('ProjectSetting/getUserOptionsList');
 }
 
 watch(() => {

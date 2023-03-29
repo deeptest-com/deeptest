@@ -15,13 +15,9 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, defineComponent, reactive, Ref, ref, UnwrapRef } from 'vue';
-import { CheckOutlined, EditOutlined,DownOutlined } from '@ant-design/icons-vue';
+import { ref } from 'vue';
 import ServiceSetting from './components/ServiceSetting/index.vue';
 import EnvSetting from './components/EnvSetting/index.vue';
-import SchemaEditor from '@/components/SchemaEditor/index.vue'
-const expandedKeys = ref<string[]>(['0-0-0']);
-const selectedKeys = ref<string[]>([]);
 
 const activeKey = ref('1');
 
@@ -38,13 +34,4 @@ const activeKey = ref('1');
     margin: 0;
   }
 }
-//.content{
-//  margin: 20px;
-//  .header{
-//    display: flex;
-//    align-items: center;
-//    justify-content: space-between;
-//    margin-bottom: 8px;
-//  }
-//}
 </style>

@@ -72,7 +72,7 @@ import {
 import { useStore } from "vuex";
 import { Modal } from 'ant-design-vue';
 import { EditOutlined, ExclamationCircleOutlined, MoreOutlined } from '@ant-design/icons-vue';
-import CustomForm from '@/components/CustomForm/index.vue';
+import CustomForm from '../common/CustomForm.vue';
 import Drawer from './Drawer.vue';
 import { StateType as ProjectStateType } from "@/store/project";
 import { StateType as ProjectSettingStateType } from '../../store';

@@ -33,7 +33,7 @@ import {
 import { useStore } from 'vuex';
 import { message, Modal } from "ant-design-vue";
 import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
-import CustomForm from '@/components/CustomForm/index.vue';
+import CustomForm from '../common/CustomForm.vue';
 import { StateType as ProjectSettingStateType } from '../../store';
 import { versionColumns } from '../../config';
 

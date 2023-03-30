@@ -37,20 +37,10 @@
         <div class="modal-header">
           <div class="header-desc">
             <div class="name" v-if="showMode === 'form'">
-              <a-input
-                  @change="(e) => {
-                    changeModelInfo('name',e)
-                  }"
-                  :value="activeSchema?.name"
-                  placeholder="请输入内容"/>
+              <EditAndShowField :placeholder="'请输入内容'" :value="activeSchema?.name" @update="(e: string) => changeModelInfo('name', e)" />
             </div>
             <div class="desc" v-if="showMode === 'form'">
-              <a-input
-                  @change="(e) => {
-                    changeModelInfo('desc',e)
-                  }"
-                  :value="activeSchema?.description"
-                  placeholder="请输入内容"/>
+              <EditAndShowField :placeholder="'请输入内容'" :value="activeSchema?.description" @update="(e: string) => changeModelInfo('desc', e)" />
             </div>
           </div>
           <div class="btns">
@@ -112,8 +102,8 @@ import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import {schema2yaml} from '../../service';
 import SchemaEditor from '@/components/SchemaEditor/index.vue';
 import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
-import Filter from '../commom/Filter.vue';
-import CustomForm from '@/components/CustomForm/index.vue';
+import CustomForm from '../common/CustomForm.vue';
+import EditAndShowField from '@/components/EditAndShow/index.vue';
 import {MonacoOptions} from '@/utils/const';
 import { schemaColumns } from '../../config';
 import {StateType as ProjectSettingStateType} from '../../store';
@@ -174,10 +164,10 @@ async function onSearch(e: any) {
 
 async function changeModelInfo(type, e) {
   if (type === 'desc') {
-    activeSchema.value.description = e.target.value;
+    activeSchema.value.description = e;
   }
   if (type === 'name') {
-    activeSchema.value.name = e.target.value;
+    activeSchema.value.name = e;
   }
 }
 

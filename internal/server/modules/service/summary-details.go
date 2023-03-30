@@ -254,7 +254,6 @@ func (s *SummaryDetailsService) CheckDetailsUpdated(oldTime *time.Time) (result 
 			s.Create(newDetail)
 		}
 	}
-
 	return r.CheckDetailsUpdated(oldTime)
 }
 
@@ -276,6 +275,7 @@ func (s *SummaryDetailsService) CopyDetailsWithoutBaseModel(detail model.Summary
 }
 
 func (s *SummaryDetailsService) CollectionProjectInfo() (details []model.SummaryDetails, err error) {
-	r := *repo.NewSummaryDetailsRepo()
-	return r.CollectionProjectInfo()
+	//r := *repo.NewSummaryDetailsRepo()
+	//return r.CollectionProjectInfo()
+	return s.SummaryDetailsRepo.CollectionProjectInfo()
 }

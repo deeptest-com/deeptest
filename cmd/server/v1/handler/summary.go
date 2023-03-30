@@ -13,6 +13,12 @@ type SummaryCtrl struct {
 	BaseCtrl
 }
 
+func (c *SummaryCtrl) Summary() {
+	c.SummaryService.SummaryDataCheck()
+	//service.NewSummaryService().SummaryDataCheck()
+	return
+}
+
 func (c *SummaryCtrl) Card(ctx iris.Context) {
 
 	var projectId int64

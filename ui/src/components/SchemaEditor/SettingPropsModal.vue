@@ -106,7 +106,6 @@ function changeTab(index, key) {
 }
 
 function changeType(index: any, e: any) {
-  console.log(index, e.target.value)
   let type = e.target.value;
   selectedTypes.value[index] = type;
   if (type === 'array') {
@@ -169,7 +168,6 @@ const emit = defineEmits(['ok', 'cancal']);
 const handleOk = (e: MouseEvent) => {
   emit('ok');
 };
-
 
 function handleCancel() {
   emit('cancal');

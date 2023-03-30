@@ -15,7 +15,8 @@ import {
 import Actions from "./Actions.vue";
 import ExtraActions from "./ExtraActions.vue";
 import SettingPropsModal from './SettingPropsModal.vue';
-import {computePosition, autoPlacement, arrow, flip, size} from '@floating-ui/dom';
+import {computePosition} from '@floating-ui/dom';
+import {cloneByJSON} from "@/utils/object";
 
 
 function isLeafNode(type: string) {
@@ -142,9 +143,10 @@ export default defineComponent({
         })
 
         onUnmounted(() => {
-            console.log(832, '销毁')
+            console.log('销毁')
         })
 
+        // 适配数据结构
         function adaptValue(val) {
             if (!val) {
                 return null
@@ -177,8 +179,9 @@ export default defineComponent({
         watch(() => {
             return props.value
         }, (newVal) => {
-            const val = JSON.parse(JSON.stringify(newVal));
+            const val = cloneByJSON(newVal);
             data.value = adaptValue(val);
+            console.log('data value 832',data.value);
         }, {
             immediate: true,
             deep: true
@@ -186,7 +189,6 @@ export default defineComponent({
 
         const treeLevelWidth = 24;
         const renderTree = (tree: any, option: any) => {
-            console.log('832 tree', tree)
             if (!tree) {
                 return null
             }

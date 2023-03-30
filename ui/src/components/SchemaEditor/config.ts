@@ -583,11 +583,11 @@ export const schemaSettingInfo = [
         subLabel:'Components',
         value: 'components',
     },
-    {
-        label: 'Combine Schemas',
-        subLabel: 'Combine Schemas',
-        value: 'combineSchemas',
-    },
+    // {
+    //     label: 'Combine Schemas',
+    //     subLabel: 'Combine Schemas',
+    //     value: 'combineSchemas',
+    // },
 ]
 
 

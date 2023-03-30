@@ -108,9 +108,7 @@ import TableFilter from './components/TableFilter.vue';
 import Drawer from './components/Drawer/index.vue'
 import {useStore} from "vuex";
 import {Interface, PaginationConfig} from "@/views/interface/data";
-import {filterFormState} from "@/views/Interface/data";
 import {StateType as ServeStateType} from "@/store/serve";
-
 const store = useStore<{ Interface, ProjectGlobal, ServeGlobal: ServeStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const list = computed<Interface[]>(() => store.state.Interface.listResult.list);
@@ -118,6 +116,7 @@ let pagination = computed<PaginationConfig>(() => store.state.Interface.listResu
 const currServe = computed<any>(() => store.state.ServeGlobal.currServe);
 const createApiModaVisible = ref(false);
 type Key = ColumnProps['key'];
+
 
 /**
  * 表格数据
@@ -174,7 +173,7 @@ const onSelectChange = (keys: Key[], rows: any) => {
 
 async function handleChangeStatus(value: any, record: any,) {
   await store.dispatch('Interface/updateStatus', {
-    id:record.id,
+    id: record.id,
     status: value
   });
 }

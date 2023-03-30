@@ -8,10 +8,9 @@ import {computed, defineProps, defineEmits} from "vue";
 
 
 const props = defineProps<{
-  isFirst: boolean,
-  isLast: boolean,
-  isRoot: boolean
-
+  isFirst?: boolean | undefined,
+  isLast?: boolean | undefined,
+  isRoot?: boolean | undefined
 }>();
 
 const emit = defineEmits<{

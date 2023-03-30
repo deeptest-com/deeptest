@@ -1,15 +1,6 @@
 import request from '@/utils/request';
 import { BasicSchemaInfo, BasicSchemaParams, EnvDataItem, EnvReqParams, GlobalParamsReqData, SaveVersionParams, SchemaListReqParams, ServeListParams, ServeReqParams, VarsReqParams, VersionListReqParams } from './data';
 
-// todo liguwe 待整理
-interface SaveInterfaceReqParams {
-    // project_id?: number,
-    serveId?: number,
-    title?: string,
-    path?: string
-}
-
-
 /**
  * 保存服务
  * */

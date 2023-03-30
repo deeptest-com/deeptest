@@ -38,7 +38,7 @@ import {
 
 import {getNodeMap} from "@/services/tree";
 import {momentUtc} from "@/utils/datetime";
-import {getEnvList, getSecurityList, serverList} from "@/views/projectSetting/service";
+import {example2schema,schema2example, getEnvList, getSecurityList, serverList} from "@/views/projectSetting/service";
 
 export interface StateType {
     interfaceId: number;
@@ -105,6 +105,8 @@ export interface ModuleType extends StoreModuleType<StateType> {
         getSecurityList: Action<StateType, StateType>;
         getYamlCode: Action<StateType, StateType>;
         updateStatus: Action<StateType, StateType>;
+        example2schema: Action<StateType, StateType>;
+        schema2example: Action<StateType, StateType>;
     }
 }
 
@@ -512,6 +514,22 @@ const StoreModel: ModuleType = {
                 commit('setStatus', payload);
             } else {
                 return false
+            }
+        },
+        async example2schema({commit}, payload: any) {
+            const res = await example2schema(payload);
+            if (res.code === 0) {
+                return  res.data;
+            } else {
+                return null
+            }
+        },
+        async schema2example({commit}, payload: any) {
+            const res = await schema2example(payload);
+            if (res.code === 0) {
+                return  res.data;
+            } else {
+                return null
             }
         },
 

@@ -131,7 +131,8 @@ export default defineComponent({
         const value = editor.getValue()
 
         if (this.value !== value) {
-          this.$emit('change', value, event)
+          // 添加最后最后一个参数，标识是否有语法错误
+          this.$emit('change', value, event, monaco?.editor?.getModelMarkers({})?.length === 0)
         }
 
         this.formatDocUpdate(editor)
@@ -208,7 +209,7 @@ export default defineComponent({
     },
 
     value() {
-      console.log('watch value')
+      console.log('watch value');
       this.value !== this._getValue() && this._setValue(this.value);
     },
 

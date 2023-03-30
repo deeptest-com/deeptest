@@ -196,14 +196,6 @@
                     style="width: 300px"
                     :options="mediaTypesOpts"
                 ></a-select>
-                <a-button
-                    v-if="!selectedMethodDetail.requestBody"
-                    type="primary" @click="addReqBody">
-                  <template #icon>
-                    <PlusOutlined/>
-                  </template>
-                  {{ `添加` }}
-                </a-button>
               </a-col>
             </a-row>
             <!-- ::::增加请求体 - 描述  -->
@@ -219,12 +211,11 @@
               <a-col :span="21">
                 <SchemaEditor
                     @generateFromJSON="generateFromJSON"
-                    @exampleChange="handleExampleChange"
+                    @examplesChange="handleExamplesChange"
                     @generateExample="handleGenerateExample"
-                    @schemaTypeChange="handleSchemaTypeChange"
                     @contentChange="handleContentChange"
                     :tab-content-style="{width:'100%'}"
-                    :value="selectedMethodDetail.requestBody.schemaItem.content"/>
+                    :value="activeSchema"/>
               </a-col>
             </a-row>
             <!-- ::::响应定义  -->
@@ -387,7 +378,6 @@ import {cloneByJSON} from "@/utils/object";
 
 const props = defineProps({});
 const emit = defineEmits([]);
-
 const selectedMethod = ref('GET');
 const selectedCode = ref('200');
 
@@ -589,36 +579,48 @@ function updatePath(e) {
   })
 }
 
-function addReqBody() {
-  console.log('add request body');
-}
-
-function addResBody() {
-  console.log('add request body');
-}
-
-const contentStr = ref('');
-const schemaType = ref('object');
-const exampleStr = ref('');
+const activeSchema: any = ref({
+  content: null,
+  examples: [],
+  type: 'object'
+});
+watch(() => {
+  return selectedMethodDetail?.value?.requestBody
+}, (newVal, oldValue) => {
+  if (!newVal?.schemaItem?.content) return;
+  activeSchema.value = {
+    content: JSON.parse(newVal.schemaItem.content),
+    examples: JSON.parse(newVal.examples),
+    type: newVal.schemaItem.type
+  }
+}, {immediate: true, deep: true});
 
 async function generateFromJSON(JSONStr: string) {
-  console.log('generateFromJSON');
+  const res = await store.dispatch('Interface/example2schema',
+      {data: JSONStr}
+  );
+  activeSchema.value.content = res;
+  activeSchema.value.type = res.type;
 }
 
 async function handleGenerateExample(examples: any) {
-  console.log('handleGenerateExample');
+  const res = await store.dispatch('Interface/schema2example',
+      {data: JSON.stringify(activeSchema.value.content)}
+  );
+  const example = {
+    name: `Example ${examples.length + 1}`,
+    content: JSON.stringify(res),
+  };
+  activeSchema.value.examples.push(example);
 }
 
-function handleContentChange(str: string) {
-  contentStr.value = str;
+function handleContentChange(json: any) {
+  activeSchema.value.content = json;
+  activeSchema.value.type = json.type;
 }
 
-function handleSchemaTypeChange(str: string) {
-  schemaType.value = str;
-}
-
-function handleExampleChange(str: string) {
-  exampleStr.value = str;
+function handleExamplesChange(array: Array<any>) {
+  activeSchema.value.examples = array;
 }
 
 </script>

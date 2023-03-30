@@ -168,6 +168,7 @@ async function save() {
   justify-content: flex-end;
   align-items: center;
   margin-right: 16px;
+  z-index: 99;
 }
 
 </style>

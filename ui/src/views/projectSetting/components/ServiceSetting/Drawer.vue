@@ -37,7 +37,7 @@ import { useStore } from 'vuex';
 import { message } from 'ant-design-vue';
 import ServiceVersion from './Version.vue';
 import ServiceComponent from './Component.vue';
-import EditAndShowField from '../commom/EditAndShowField.vue'; 
+import EditAndShowField from '@/components/EditAndShow/index.vue'; 
 import { StateType as ProjectStateType } from "@/store/project";
 import { StateType as ProjectSettingStateType } from '../../store';
 import { ServeDetail } from '../../data';
@@ -46,7 +46,7 @@ const store = useStore<{ ProjectGlobal: ProjectStateType, ProjectSetting: Projec
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const formState = computed<ServeDetail>(() => store.state.ProjectSetting.selectServiceDetail);
 
-const props = defineProps<{
+defineProps<{
     drawerVisible: boolean
     editKey?: number
 }>();
@@ -64,7 +64,6 @@ function onClose() {
 }
 
 async function changeServiceInfo(updateFieldInfo: any) {
-    console.log(formState.value);
     isEditServiceDesc.value = false;
     isEditServiceName.value = false;
     const serviceInfo = { ...formState.value, ...updateFieldInfo };

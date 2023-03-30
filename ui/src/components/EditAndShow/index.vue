@@ -60,7 +60,6 @@ watch(() => {
 
 <style lang="less" scoped>
 .editor {
-  width: 200px;
   display: flex;
   align-items: center;
   .input {

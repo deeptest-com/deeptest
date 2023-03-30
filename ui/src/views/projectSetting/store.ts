@@ -192,7 +192,7 @@ const StoreModel: ModuleType = {
             if (res.code === 0) {
                 message.success('保存环境成功');
                 dispatch('getEnvsList', { projectId });
-                return true;
+                return res.data;
             } else {
                 return false;
             }
@@ -212,6 +212,7 @@ const StoreModel: ModuleType = {
                 id: activeEnvId,
             });
             if (res.code === 0) {
+                console.log(res);
                 message.success('复制环境成功');
                 return res.data;
             } else {
@@ -413,7 +414,7 @@ const StoreModel: ModuleType = {
         },
         async saveSchema({ dispatch }, data: SaveSchemaReqParams) {
             const { schemaInfo, action } = data;
-            const tips = { delete: '删除', update: '修改' };
+            const tips = { create: '新建', update: '修改' };
             const res = await saveSchema(schemaInfo);
             if (res.code === 0) {
                 message.success(`${tips[action]}组件成功`);

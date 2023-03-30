@@ -1,8 +1,9 @@
-import { computed, Ref, ref } from "vue";
+import { computed, createVNode, ref } from "vue";
 import { useStore } from "vuex";
-import {StateType as ProjectSettingStateType} from "@/views/ProjectSetting/store";
-import {StateType as ProjectStateType} from "@/store/project";
-import { message } from "ant-design-vue";
+import { message, Modal } from "ant-design-vue";
+import { ExclamationCircleOutlined } from "@ant-design/icons-vue";
+import { StateType as ProjectSettingStateType } from "@/views/ProjectSetting/store";
+import { StateType as ProjectStateType } from "@/store/project";
 import { EnvHookParams, EnvReturnData, VarDataItem } from "../data";
 
 export function useGlobalEnv({ isShowGlobalParams, isShowGlobalVars }: EnvHookParams): EnvReturnData {
@@ -19,7 +20,7 @@ export function useGlobalEnv({ isShowGlobalParams, isShowGlobalVars }: EnvHookPa
         await store.dispatch('ProjectSetting/getEnvsList', { projectId: currProject.value.id });
     }
 
-    function showEnvDetail(item:any, isAdd?: boolean) {
+    function showEnvDetail(item: any, isAdd?: boolean) {
         if (isAdd) {
             isShowAddEnv.value = true;
             isShowEnvDetail.value = true;
@@ -36,6 +37,7 @@ export function useGlobalEnv({ isShowGlobalParams, isShowGlobalVars }: EnvHookPa
             activeEnvDetail.value.name = item.name || '';
             activeEnvDetail.value.displayName = item.name || '';
         }
+        console.log(activeEnvDetail);
         isShowGlobalParams.value = false;
         isShowGlobalVars.value = false;
     }
@@ -48,6 +50,14 @@ export function useGlobalEnv({ isShowGlobalParams, isShowGlobalVars }: EnvHookPa
             "remoteValue": "",
             // "environmentId": 7
         })
+    }
+
+    async function setShowEnvDetail(result) {
+        await store.dispatch('ProjectSetting/getEnvsList', { projectId: currProject.value.id })
+        const newEnv = envList.value.find((item: any) => {
+            return item.id === result;
+        })
+        showEnvDetail(newEnv, false)
     }
 
     /**
@@ -72,7 +82,7 @@ export function useGlobalEnv({ isShowGlobalParams, isShowGlobalVars }: EnvHookPa
             "vars": envVars,
         })
         if (result) {
-            showEnvDetail(null, true)
+            setShowEnvDetail(result);
         }
     }
 
@@ -80,13 +90,22 @@ export function useGlobalEnv({ isShowGlobalParams, isShowGlobalVars }: EnvHookPa
      * 删除环境变量
      */
     async function deleteEnvData() {
-        const result = await store.dispatch('ProjectSetting/deleteEnvData', {
-            activeEnvId: activeEnvDetail.value?.id,
-            projectId: currProject.value.id
-        })
-        if (result) {
-            showEnvDetail(null, true)
+        const successCallBack = async () => {
+            const result = await store.dispatch('ProjectSetting/deleteEnvData', {
+                activeEnvId: activeEnvDetail.value?.id,
+                projectId: currProject.value.id
+            })
+            if (result) {
+                showEnvDetail(null, true)
+            }
         }
+        Modal.confirm({
+            title: '确认要删除该环境吗',
+            icon: createVNode(ExclamationCircleOutlined),
+            onOk() {
+                successCallBack();
+            },
+        });
     }
 
     /**
@@ -98,15 +117,11 @@ export function useGlobalEnv({ isShowGlobalParams, isShowGlobalVars }: EnvHookPa
             projectId: currProject.value.id
         })
         if (result) {
-            await store.dispatch('ProjectSetting/getEnvsList', { projectId: currProject.value.id })
-            const newEnv = envList.value.find((item: any) => {
-                return item.id === result;
-            })
-            showEnvDetail(newEnv, false)
+            setShowEnvDetail(result);
         }
     }
 
-    function handleEnvChange(type: string, field: string, index: number, e: any, action?:string) {
+    function handleEnvChange(type: string, field: string, index: number, e: any, action?: string) {
         if (action === 'delete') {
             activeEnvDetail.value[type].splice(index, 1);
         } else {

@@ -3,7 +3,6 @@ package cron
 import (
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	"github.com/aaronchen2k/deeptest/pkg/lib/cron"
 	"github.com/aaronchen2k/deeptest/pkg/lib/date"
 	"github.com/aaronchen2k/deeptest/pkg/lib/log"
@@ -51,32 +50,6 @@ func (s *ServerCron) Init() {
 			s.syncMap.Store("isRunning", true)
 
 			// do somethings
-
-			s.syncMap.Store("isRunning", false)
-			s.syncMap.Store("lastCompletedTime", time.Now().Unix())
-		},
-	)
-
-	_cronUtils.AddTask(
-		"summaryCheck",
-		fmt.Sprintf("@every %ds", consts.SummaryDataCheckInterval),
-		func() {
-			isRunning, _ := s.syncMap.Load("isRunning")
-			lastCompletedTime, _ := s.syncMap.Load("lastCompletedTime")
-
-			if isRunning.(bool) || time.Now().Unix()-lastCompletedTime.(int64) < consts.SummaryDataCheckInterval {
-				_logUtils.Infof("skip this iteration " + _dateUtils.DateTimeStr(time.Now()))
-				return
-			}
-
-			s.syncMap.Store("isRunning", true)
-
-			// do somethings
-			summaryService := service.SummaryService{}
-			err := summaryService.SummaryDataCheck()
-			if err != nil {
-				return
-			}
 
 			s.syncMap.Store("isRunning", false)
 			s.syncMap.Store("lastCompletedTime", time.Now().Unix())

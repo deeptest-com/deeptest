@@ -20,13 +20,13 @@ const emit = defineEmits<{
 }>()
 
 const disableSetRequire = computed(() => {
-  return props.isRoot;
+  return props.isRoot || true;
 });
 const disableAddDesc = computed(() => {
-  return false
+  return true
 });
 const disableDel = computed(() => {
-  return props.isRoot;
+  return props.isRoot ;
 });
 
 </script>

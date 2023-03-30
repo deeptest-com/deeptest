@@ -1,35 +1,9 @@
 <template>
   <div class="content">
     <div class="header">
-      <a-form layout="inline" :model="formState">
-        <a-form-item name="name"  :rules="[{ required: true, message: '请设置版本号' }]">
-          <a-input v-model:value="formState.name" placeholder="版本号，格式如: 1.2.1"/>
-        </a-form-item>
-        <a-form-item>
-          <a-select
-              v-model:value="formState.createUser"
-              show-search
-              placeholder="请选择负责人"
-              style="width: 200px"
-              :options="userListOptions"
-              @focus="selectUserFocus"
-          >
-          </a-select>
-        </a-form-item>
-        <a-form-item>
-          <a-input v-model:value="formState.description" style="width: 300px" placeholder="输入描述"/>
-        </a-form-item>
-        <a-button
-            class="editable-add-btn"
-            @click="handleAdd"
-            type="primary"
-            html-type="submit"
-            style="margin-bottom: 8px">
-          添加版本
-        </a-button>
-      </a-form>
+      <CustomForm :form-config="formConfig" :rules="rules" @handle-ok="handleAdd" />
     </div>
-    <a-table bordered :data-source="dataSource" :columns="columns">
+    <a-table bordered :data-source="dataSource" :columns="versionColumns">
       <template #name="{ text }">
         <div class="editable-cell">
           <div class="editable-cell-text-wrapper">
@@ -45,23 +19,24 @@
       </template>
     </a-table>
   </div>
-
 </template>
 <script setup lang="ts">
 
 import {
-  defineEmits,
   defineProps,
   reactive,
-  Ref,
-  ref,
   UnwrapRef,
   watch,
-  computed
+  computed,
+  createVNode
 } from 'vue';
 import { useStore } from 'vuex';
-import {message} from "ant-design-vue";
+import { message, Modal } from "ant-design-vue";
+import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
+import CustomForm from '../common/CustomForm.vue';
 import { StateType as ProjectSettingStateType } from '../../store';
+import { versionColumns } from '../../config';
+
 
 const props = defineProps({
   serveId: {
@@ -69,13 +44,6 @@ const props = defineProps({
     required: true
   },
 })
-
-interface FormState {
-  name: string;
-  createUser: string | null | undefined,
-  description: string;
-}
-
 
 interface DataItem {
   updatedAt: string;
@@ -90,37 +58,57 @@ const store = useStore<{ ProjectSetting: ProjectSettingStateType }>();
 const dataSource = computed<DataItem[]>(() => store.state.ProjectSetting.serveVersionsList);
 const userListOptions = computed<any[]>(() => store.state.ProjectSetting.userListOptions);
 
+let validateVersion = async (_rule: any, value: string) => {
+  if (value === '') {
+    return Promise.reject('版本号不能为空');
+  } else {
+    if (!/^(\d+\.){2}\d+/.test(value)) {
+      return Promise.reject('请输入正确格式的版本号');
+    }
+    return Promise.resolve();
+  }
+};
 
-const formState: UnwrapRef<FormState> = reactive({
-  name: '',
-  description: '',
-  createUser: null,
-});
+const rules = {
+  name: [{
+    required: true,
+    validator: validateVersion
+  }]
+}
 
-const columns = [
+const formConfig = [
   {
-    title: '版本号',
-    dataIndex: 'value',
-    width: '30%',
-    slots: {customRender: 'value'},
+    type: 'input',
+    modelName: 'name',
+    valueType: 'string',
+    placeholder: '版本号，格式如: 1.2.1',
+    attrs: "width: 200px"
   },
   {
-    title: '负责人',
-    dataIndex: 'createUser',
+    type: 'select',
+    modelName: 'createUser',
+    valueType: 'string',
+    options: userListOptions.value,
+    mode: 'combobox',
+    placeholder: '请选择负责人',
+    attrs: "width: 200px"
   },
   {
-    title: '描述',
-    dataIndex: 'description',
+    type: 'input',
+    modelName: 'description',
+    valueType: 'string',
+    placeholder: '输入描述',
+    attrs: "width: 300px"
   },
   {
-    title: '操作',
-    dataIndex: 'operation',
-    slots: {customRender: 'operation'},
+    type: 'button',
+    text: '添加版本'
   },
-];
+]
 
-async function handleAdd() {
-  if (!formState.name) {
+async function handleAdd(formState: any) {
+  if (!/^(\d+\.){2}\d+/.test(formState.name)) {
+    message.error('请输入正确格式的版本号');
     return;
   }
   const result = await store.dispatch('ProjectSetting/saveVersion', {
@@ -147,13 +135,22 @@ async function getList() {
 }
 
 async function onDelete(record: any) {
-  const result = await store.dispatch('ProjectSetting/deleteVersion', record.id);
-  if (result) {
-    await getList();
+  const confirmCallBack = async () => {
+    const result = await store.dispatch('ProjectSetting/deleteVersion', record.id);
+    if (result) {
+      await getList();
+    }
   }
+  Modal.confirm({
+    title: '确认要删除版本号吗',
+    icon: createVNode(ExclamationCircleOutlined),
+    onOk() {
+      confirmCallBack();
+    }
+  })
 }
 
-async function onDisabled(record: any) { 
+async function onDisabled(record: any) {
   const result = await store.dispatch('ProjectSetting/disabledVersion', record.id);
   if (result) {
     await getList();

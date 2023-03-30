@@ -117,8 +117,8 @@ import draggable from 'vuedraggable'
 import EnvDetail from './EnvDetail.vue';
 import GlobalParamsCom from './GlobalParams.vue';
 import GlobalVarCom from './GlobalVar.vue';
-import { useGlobalEnv } from '../../hooks/globalEnv';
-import { useGlobalVarAndParams } from '../../hooks/globalVar';
+import { useGlobalEnv } from '../../hooks/useGlobalEnv';
+import { useGlobalVarAndParams } from '../../hooks/useGlobalVar';
 import {StateType as ProjectStateType} from "@/store/project";
 import {StateType as ProjectSettingStateType} from "@/views/ProjectSetting/store";
 import {useStore} from "vuex";

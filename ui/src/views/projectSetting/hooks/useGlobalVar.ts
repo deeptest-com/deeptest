@@ -1,7 +1,9 @@
-import { computed, Ref } from "vue";
+import { computed, createVNode } from "vue";
+import { Modal } from "ant-design-vue";
+import { ExclamationCircleOutlined } from "@ant-design/icons-vue";
 import { useStore } from "vuex";
-import {StateType as ProjectSettingStateType} from "@/views/ProjectSetting/store";
-import {StateType as ProjectStateType} from "@/store/project";
+import { StateType as ProjectSettingStateType } from "@/views/ProjectSetting/store";
+import { StateType as ProjectStateType } from "@/store/project";
 import { GlobalVarsProps, VarsReturnData } from "../data";
 
 export function useGlobalVarAndParams(props: GlobalVarsProps): VarsReturnData {
@@ -60,12 +62,34 @@ export function useGlobalVarAndParams(props: GlobalVarsProps): VarsReturnData {
     }
 
     function handleGlobalVarsChange(field: string, index: number, e: any, action?: string) {
-        store.dispatch('ProjectSetting/handleGlobalVarsChange', { field, index, e, action });
+        const confirmCallBack = () => store.dispatch('ProjectSetting/handleGlobalVarsChange', { field, index, e, action });
+        if (action && action === 'delete') {
+            Modal.confirm({
+                title: '确认要删除该全局变量吗',
+                icon: createVNode(ExclamationCircleOutlined),
+                onOk() {
+                    confirmCallBack()
+                },
+            });
+        } else {
+            confirmCallBack();
+        }
     }
 
 
     function handleGlobalParamsChange(type: string, field: string, index: number, e: any, action?: string) {
-        store.dispatch('ProjectSetting/handleGlobalParamsChange', { type, field, index, e, action });
+        const confirmCallBack = () => store.dispatch('ProjectSetting/handleGlobalParamsChange', { type, field, index, e, action });
+        if (action && action === 'delete') {
+            Modal.confirm({
+                title: '确认要删除该参数吗',
+                icon: createVNode(ExclamationCircleOutlined),
+                onOk() {
+                    confirmCallBack();
+                },
+            });
+        } else {
+            confirmCallBack();
+        }
     }
 
     return {

@@ -65,7 +65,7 @@ function handleExampleContentChange(val) {
 }
 
 function handleContentChange(val) {
-  content.value = val;
+  // content.value = val;
 }
 
 const exampleJsonStr = ref('');

@@ -22,12 +22,15 @@ var (
 )
 
 type DataService struct {
-	DataRepo          *repo.DataRepo            `inject:""`
-	UserRepo          *repo.UserRepo            `inject:""`
-	UserSource        *source.UserSource        `inject:""`
-	RoleSource        *source.RoleSource        `inject:""`
-	PermSource        *source.PermSource        `inject:""`
-	ProjectRoleSource *source.ProjectRoleSource `inject:""`
+	DataRepo              *repo.DataRepo                `inject:""`
+	UserRepo              *repo.UserRepo                `inject:""`
+	UserSource            *source.UserSource            `inject:""`
+	RoleSource            *source.RoleSource            `inject:""`
+	PermSource            *source.PermSource            `inject:""`
+	ProjectRoleSource     *source.ProjectRoleSource     `inject:""`
+	ProjectPermSource     *source.ProjectPermSource     `inject:""`
+	ProjectRolePermSource *source.ProjectRolePermSource `inject:""`
+	ProjectRoleMenuSource *source.ProjectRoleMenuSource `inject:""`
 }
 
 func NewDataService() *DataService {
@@ -103,6 +106,9 @@ func (s *DataService) InitDB(req v1.DataReq) error {
 			s.RoleSource,
 			s.ProjectRoleSource,
 			s.UserSource,
+			s.ProjectPermSource,
+			s.ProjectRolePermSource,
+			s.ProjectRoleMenuSource,
 		)
 		if err != nil {
 			logUtils.Errorf("填充数据错误", zap.String("错误:", err.Error()))

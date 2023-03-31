@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"fmt"
 	"github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
@@ -85,5 +86,30 @@ func (r *ProjectRolePermRepo) GetByRoleAndPerm(roleId, permId uint) (ret model.P
 		Where("project_role_id = ?", roleId).
 		Where("project_perm_id = ?", permId).
 		First(&ret).Error
+	return
+}
+
+// GetProjectPermsForRole TODO:每个角色需要的权限需要改动
+func (r *ProjectRolePermRepo) GetProjectPermsForRole() (res map[uint][]uint, err error) {
+	var permIds []uint
+	err = r.DB.Model(&model.ProjectPerm{}).Select("id").Find(&permIds).Error
+	res = map[uint][]uint{
+		1: permIds,
+		2: permIds,
+	}
+
+	return
+}
+
+func (r *ProjectRolePermRepo) AddPermForProjectRole(id uint, perms []uint) (successCount int, failItems []string) {
+	for _, perm := range perms {
+		permModel := &model.ProjectRolePerm{ProjectRolePermBase: domain.ProjectRolePermBase{ProjectRoleId: id, ProjectPermId: perm}}
+		err := r.DB.Model(&model.ProjectRolePerm{}).Create(&permModel).Error
+		if err != nil {
+			failItems = append(failItems, fmt.Sprintf("为角色%d添加权限%d失败，错误%s", id, perm, err.Error()))
+		} else {
+			successCount++
+		}
+	}
 	return
 }

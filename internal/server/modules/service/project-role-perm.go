@@ -9,7 +9,6 @@ import (
 
 type ProjectRolePermService struct {
 	ProjectRepo         *repo.ProjectRepo         `inject:""`
-	ProjectPerm         *repo.ProjectPerm         `inject:""`
 	ProjectRolePermRepo *repo.ProjectRolePermRepo `inject:""`
 	ProjectRoleRepo     *repo.ProjectRoleRepo     `inject:""`
 	ProjectRoleMenuRepo *repo.ProjectRoleMenuRepo `inject:""`

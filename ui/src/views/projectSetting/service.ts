@@ -256,6 +256,18 @@ export async function copyEnv(data: EnvReqParams): Promise<any> {
     });
 }
 
+/**
+ * 排序环境列表
+ * @param data 环境的id列表
+ * @returns promise
+ */
+export async function sortEnv(data: number[]): Promise<any> {
+    return request({
+        url: `/environments/order`,
+        method: 'post',
+        data
+    })
+}
 
 /**
  *   保存全局变量

@@ -24,7 +24,8 @@ import {
     getServeVersionList,
     saveServeVersion,
     deleteServeVersion,
-    disableServeVersions
+    disableServeVersions,
+    sortEnv
 } from './service';
 import { message } from 'ant-design-vue';
 import { BasicSchemaParams, EnvDataItem, EnvReqParams, ParamsChangeState, SaveSchemaReqParams, SaveVersionParams, SchemaListReqParams, ServeDetail, ServeListParams, ServeReqParams, StoreServeParams, VarsChangeState, VarsReqParams } from './data';
@@ -57,6 +58,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
     actions: {
         // 环境-全局变量-全局参数相关
         getEnvsList: Action<StateType, StateType>,
+        sortEnvList: Action<StateType, StateType>,
         getServersList: Action<StateType, StateType>,
         addEnvData: Action<StateType, StateType>,
         deleteEnvData: Action<StateType, StateType>,
@@ -157,6 +159,12 @@ const StoreModel: ModuleType = {
                 return true;
             } else {
                 return false;
+            }
+        },
+        async sortEnvList({ dispatch }, { data, projectId }: { data: number[], projectId: string | number }) {
+            const res = await sortEnv(data);
+            if (res.code === 0) {
+                dispatch('getEnvsList', { projectId });
             }
         },
         async getServersList({ commit }, { projectId, page, pageSize, name }: ServeListParams) {

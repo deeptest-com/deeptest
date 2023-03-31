@@ -88,24 +88,24 @@ const emits = defineEmits(['deleteEnvData', 'copyEnvData', 'addEnvData', 'handle
 function deleteEnvData() {
     emits('deleteEnvData');
 }
-function copyEnvData() { 
+function copyEnvData() {
     emits('copyEnvData');
 }
-function addEnvData() { 
+function addEnvData() {
     emits('addEnvData');
 }
 
 function handleEnvChange(type: string, filed: string, index: number, e: any, action?: string) {
     emits('handleEnvChange', type, filed, index, e, action);
 }
-function handleEnvNameChange(e: any) { 
+function handleEnvNameChange(e: any) {
     emits('handleEnvNameChange', e);
 }
 
-function addVar() { 
+function addVar() {
     emits('addVar');
 }
-function addService() { 
+function addService() {
     emits('addService');
 }
 </script>
@@ -162,29 +162,22 @@ function addService() {
         margin-right: 16px;
     }
 }
+:deep(.ant-input:not(.env-name):hover),
+:deep(.ant-input:active),
+:deep(.ant-input:focus) {
+    border: 1px solid #4096ff !important
+}
 
-::v-deep {
+:deep(.ant-input:not(.env-name)) {
+    border: 1px solid transparent !important
+}
 
-    .custom-select {
-        .ant-select-selector {
-            border: 1px solid transparent !important;
-        }
+:deep(.custom-select .ant-select-selector) {
+    border: 1px solid transparent !important;
+}
 
-        .ant-select-selector:hover,
-        .ant-select-selector:active,
-        .ant-select-selector:focus {
-            border: 1px solid #4096ff !important
-        }
-    }
-
-
-    .ant-input:not(.env-name) {
-        border: 1px solid transparent !important;
-    }
-
-    .ant-input:not(.env-name):hover,
-    .ant-input:active,
-    .ant-input:focus {
-        border: 1px solid #4096ff !important
-    }
+:deep(.custom-select .ant-select-selector:hover),
+:deep(.custom-select .ant-select-selector:active),
+:deep(.custom-select .ant-select-selector:focus) {
+    border: 1px solid #4096ff !important
 }</style>

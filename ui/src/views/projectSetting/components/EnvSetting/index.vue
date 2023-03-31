@@ -3,17 +3,15 @@
     <div class="left-content">
       <div class="global">
         <div class="header">全局</div>
-        <a-button :class="{'env-item':true,'env-item-active':isShowGlobalVars}"
-                  @click="showGlobalVars"
-                  :type="isShowGlobalVars ? 'primary' : 'text'">
+        <a-button :class="{ 'env-item': true, 'env-item-active': isShowGlobalVars }" @click="showGlobalVars"
+          :type="isShowGlobalVars ? 'primary' : 'text'">
           <template #icon>
             <i class="var-icon">V</i>
           </template>
           全局变量
         </a-button>
-        <a-button :class="{'env-item':true,'env-item-active':isShowGlobalParams}"
-                  @click="showGlobalParams"
-                  :type="isShowGlobalParams ? 'primary' : 'text'">
+        <a-button :class="{ 'env-item': true, 'env-item-active': isShowGlobalParams }" @click="showGlobalParams"
+          :type="isShowGlobalParams ? 'primary' : 'text'">
           <template #icon>
             <i class="var-icon">P</i>
           </template>
@@ -21,39 +19,30 @@
         </a-button>
       </div>
       <div style="margin: 0 16px;">
-        <a-divider class="divider"/>
+        <a-divider class="divider" />
       </div>
       <div class="env">
         <div class="header">环境</div>
-        <draggable
-            tag="div"
-            :list="envList"
-            class="list-group"
-            handle=".handle"
-            item-key="name">
+        <draggable tag="div" :list="envList" class="list-group" handle=".handle" item-key="name" @end="handleDragEnd">
           <template #item="{ element, index }">
-            <a-button
-                :class="{'env-item':true,'env-item-active':activeEnvDetail?.id === element.id}"
-                :type="activeEnvDetail?.id === element.id ? 'primary' : 'text'"
-                @click="showEnvDetail(element)"
-                class="env-item" :key="index">
-              <MenuOutlined class="handle"/>
+            <a-button :class="{ 'env-item': true, 'env-item-active': activeEnvDetail?.id === element.id }"
+              :type="activeEnvDetail?.id === element.id ? 'primary' : 'text'" @click="showEnvDetail(element)"
+              class="env-item" :key="index">
+              <MenuOutlined class="handle" />
               <span class="text"> {{ element.displayName }} </span>
             </a-button>
           </template>
         </draggable>
         <div style="margin: 0 16px;">
-          <a-divider class="divider"/>
+          <a-divider class="divider" />
         </div>
-        <a-button
-            :type="isShowAddEnv ? 'primary' : 'text'"
-            :class="{
-            'env-item':true,
-            'env-item-footer':true,
-            'env-item-active':isShowAddEnv}"
-            @click="showEnvDetail(null,true)">
+        <a-button :type="isShowAddEnv ? 'primary' : 'text'" :class="{
+          'env-item': true,
+          'env-item-footer': true,
+          'env-item-active': isShowAddEnv
+        }" @click="showEnvDetail(null, true)">
           <template #icon>
-            <PlusOutlined/>
+            <PlusOutlined />
           </template>
           新建环境
         </a-button>
@@ -62,45 +51,25 @@
     <div class="right-content">
       <!-- ::::全局变量 -->
       <div class="globalVars" v-if="isShowGlobalVars">
-        <GlobalVarCom 
-          @handle-global-vars-change="handleGlobalVarsChange"
-          @handle-save-global-vars="handleSaveGlobalVars"
-          @add-global-var="addGlobalVar"
-        />
+        <GlobalVarCom @handle-global-vars-change="handleGlobalVarsChange" @handle-save-global-vars="handleSaveGlobalVars"
+          @add-global-var="addGlobalVar" />
       </div>
       <!-- ::::全局参数 -->
       <div class="globalParams" v-if="isShowGlobalParams">
-        <GlobalParamsCom 
-          @handle-global-params-change="handleGlobalParamsChange"
-          @handle-save-global-params="handleSaveGlobalParams"
-          @add-global-params="addGlobalParams"
-        />
+        <GlobalParamsCom @handle-global-params-change="handleGlobalParamsChange"
+          @handle-save-global-params="handleSaveGlobalParams" @add-global-params="addGlobalParams" />
       </div>
 
       <div class="envDetail" v-if="isShowEnvDetail && activeEnvDetail">
-        <EnvDetail 
-          :activeEnvDetail="activeEnvDetail"
-          @deleteEnvData="deleteEnvData"
-          @copyEnvData="copyEnvData"
-          @addEnvData="addEnvData"
-          @handleEnvChange="handleEnvChange"
-          @handleEnvNameChange="handleEnvNameChange"
-          @addVar="addVar"
-          @addService="addService"
-        />
+        <EnvDetail :activeEnvDetail="activeEnvDetail" @deleteEnvData="deleteEnvData" @copyEnvData="copyEnvData"
+          @addEnvData="addEnvData" @handleEnvChange="handleEnvChange" @handleEnvNameChange="handleEnvNameChange"
+          @addVar="addVar" @addService="addService" />
       </div>
     </div>
   </div>
-  <a-modal
-      v-model:visible="addServiceModalVisible"
-      title="关联服务"
-      @ok="handleAddServiceOk">
-    <a-form-item class="select-service" :labelCol="{span: 6}" :wrapperCol="{span: 16}" label="请选择服务">
-      <a-select
-          v-model:value="selectedService"
-          :options="serviceOptions"
-          placeholder="请选择服务"
-          style="width: 200px"/>
+  <a-modal v-model:visible="addServiceModalVisible" title="关联服务" @ok="handleAddServiceOk">
+    <a-form-item class="select-service" :labelCol="{ span: 6 }" :wrapperCol="{ span: 16 }" label="请选择服务">
+      <a-select v-model:value="selectedService" :options="serviceOptions" placeholder="请选择服务" style="width: 200px" />
     </a-form-item>
 
   </a-modal>
@@ -112,19 +81,20 @@ import {
   ref,
   watch
 } from 'vue';
-import {MenuOutlined, PlusOutlined} from '@ant-design/icons-vue';
+import { MenuOutlined, PlusOutlined } from '@ant-design/icons-vue';
 import draggable from 'vuedraggable'
 import EnvDetail from './EnvDetail.vue';
 import GlobalParamsCom from './GlobalParams.vue';
 import GlobalVarCom from './GlobalVar.vue';
 import { useGlobalEnv } from '../../hooks/useGlobalEnv';
 import { useGlobalVarAndParams } from '../../hooks/useGlobalVar';
-import {StateType as ProjectStateType} from "@/store/project";
-import {StateType as ProjectSettingStateType} from "@/views/ProjectSetting/store";
-import {useStore} from "vuex";
+import { StateType as ProjectStateType } from "@/store/project";
+import { StateType as ProjectSettingStateType } from "@/views/ProjectSetting/store";
+import { useStore } from "vuex";
+import { EnvDataItem } from '../../data';
 
 // store 相关
-const store = useStore<{ ProjectGlobal: ProjectStateType, ProjectSetting:  ProjectSettingStateType}>();
+const store = useStore<{ ProjectGlobal: ProjectStateType, ProjectSetting: ProjectSettingStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const serviceOptions = computed<any>(() => store.state.ProjectSetting.serviceOptions);
 const envList = computed<any>(() => store.state.ProjectSetting.envList);
@@ -139,7 +109,7 @@ const globalParamsActiveKey = ref('header');
 
 
 // 环境设置相关
-const { 
+const {
   isShowAddEnv,
   isShowEnvDetail,
   activeEnvDetail,
@@ -151,10 +121,10 @@ const {
   copyEnvData,
   handleEnvChange,
   handleEnvNameChange
-} = useGlobalEnv({ isShowGlobalParams, isShowGlobalVars});
+} = useGlobalEnv({ isShowGlobalParams, isShowGlobalVars });
 
 // 全局变量和全局参数相关
-const { 
+const {
   showGlobalParams,
   showGlobalVars,
   addGlobalVar,
@@ -163,14 +133,24 @@ const {
   handleSaveGlobalVars,
   handleGlobalVarsChange,
   handleGlobalParamsChange
-} = useGlobalVarAndParams({ 
-  isShowAddEnv, 
-  isShowEnvDetail, 
-  activeEnvDetail, 
-  isShowGlobalParams, 
+} = useGlobalVarAndParams({
+  isShowAddEnv,
+  isShowEnvDetail,
+  activeEnvDetail,
+  isShowGlobalParams,
   isShowGlobalVars,
   globalParamsActiveKey
 });
+
+function handleDragEnd(_e: any) {
+  const envIdList = envList.value.map((e: EnvDataItem) => {
+    return e.id;
+  })
+  store.dispatch('ProjectSetting/sortEnvList', {
+    data: envIdList,
+    projectId: currProject.value.id,
+  })
+}
 
 /**
  * 请求服务列表
@@ -181,7 +161,7 @@ async function getServersList() {
     page: 0,
     pageSize: 100
   })
-} 
+}
 
 // 添加服务弹窗操作 
 async function addService() {
@@ -293,7 +273,9 @@ watch(() => {
   position: relative;
   padding: 16px;
 
-  .globalVars, .globalParams, .envDetail {
+  .globalVars,
+  .globalParams,
+  .envDetail {
     padding: 8px;
   }
 }
@@ -302,26 +284,23 @@ watch(() => {
   display: inline-block;
 }
 
-::v-deep {
-
-  .custom-select {
-    .ant-select-selector {
-      border: 1px solid transparent !important;
-    }
-
-    .ant-select-selector:hover, .ant-select-selector:active, .ant-select-selector:focus {
-      border: 1px solid #4096ff !important
-    }
-  }
-
-
-  .ant-input:not(.env-name) {
-    border: 1px solid transparent !important;
-  }
-
-  .ant-input:not(.env-name):hover, .ant-input:active, .ant-input:focus {
-    border: 1px solid #4096ff !important
-  }
+:deep(.ant-input:not(.env-name):hover),
+:deep(.ant-input:active),
+:deep(.ant-input:focus) {
+  border: 1px solid #4096ff !important
 }
 
+:deep(.ant-input:not(.env-name)) {
+  border: 1px solid transparent !important
+}
+
+:deep(.custom-select .ant-select-selector) {
+  border: 1px solid transparent !important;
+}
+
+:deep(.custom-select .ant-select-selector:hover),
+:deep(.custom-select .ant-select-selector:active),
+:deep(.ant-select-selector:focus) {
+  border: 1px solid #4096ff !important
+}
 </style>

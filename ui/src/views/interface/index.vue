@@ -331,26 +331,23 @@ async function refreshList() {
   right: 8px;
 }
 
+:deep(.ant-alert-info) {
+  padding: 12px;
+}
 
-::v-deep {
-  .ant-alert-info {
-    padding: 12px;
-  }
+:deep(.ant-alert-icon) {
+  font-size: 14px;
+  position: relative;
+  top: 4px;
+  left: 8px;
+}
 
-  .ant-alert-icon {
-    font-size: 14px;
-    position: relative;
-    top: 4px;
-    left: 8px;
-  }
+:deep(.ant-alert-message) {
+  font-size: 14px;
+}
 
-  .ant-alert-message {
-    font-size: 14px;
-  }
-
-  .ant-alert-description {
-    font-size: 12px;
-  }
+:deep(.ant-alert-description) {
+  font-size: 12px;
 }
 
 </style>

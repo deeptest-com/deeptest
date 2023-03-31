@@ -39,9 +39,8 @@ async function getUserList() {
   min-height: calc(100vh - 92px);
   min-width: 1200px;
 }
-::v-deep{
-  .ant-tabs-bar{
-    margin: 0;
-  }
+
+:deep(.ant-tabs-bar) {
+  margin: 0;
 }
 </style>

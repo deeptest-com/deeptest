@@ -177,3 +177,9 @@ func (c *EndpointCtrl) ListVersions(ctx iris.Context) {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 	}
 }
+
+/*
+func (c *EndpointCtrl) List() {
+	c.EndpointService.GetVersionsByEndpointId(1)
+}
+*/

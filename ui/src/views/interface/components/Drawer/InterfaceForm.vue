@@ -443,8 +443,7 @@ const selectedCodeIndex: any = computed(() => {
 });
 
 function goEditSecurity() {
-  // todo 跳转到安全定义页面
-  console.log('goEditSecurity');
+  window.open(`/#/projectSetting/index?firtab=3&sectab=3&serveId=${interfaceDetail.value.serveId}`,'_blank')
 }
 
 function delSecurity() {

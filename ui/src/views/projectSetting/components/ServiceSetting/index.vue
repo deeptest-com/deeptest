@@ -58,7 +58,7 @@
       </template>
     </a-table>
     <!-- 抽屉 -->
-    <Drawer :params="routerObj" :edit-key="editKey" :drawer-visible="drawerVisible" @onClose="onClose" />
+    <Drawer :params="params" :edit-key="editKey" :drawer-visible="drawerVisible" @onClose="onClose" />
   </div>
 </template>
 <script setup lang="ts">
@@ -86,7 +86,6 @@ const userListOptions = computed<any>(() => store.state.ProjectSetting.userListO
 
 const drawerVisible = ref(false);
 const editKey = ref(0);
-const routerObj=ref({});
 
 const props = defineProps({
   params: {
@@ -220,8 +219,7 @@ async function isHasProps(){
       }
     })
     await edit(record)
-    routerObj.value={...record,...props.params}
-     
+  
   }
 
 }

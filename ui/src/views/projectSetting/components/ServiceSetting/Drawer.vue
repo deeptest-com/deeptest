@@ -69,10 +69,12 @@ const isEditServiceDesc = ref(false);
 const isEditServiceName = ref(false);
 
 onMounted(()=>{
+    console.log('~~~~~~~~~drawer props.params',props.params)
     if(props.params?.sectab){
-        const sectab:any=props.params?.sectab 
+        const sectab:string=props.params?.sectab 
         activeKey.value=sectab
     }  
+    
 })
 
 function onClose() {

@@ -21,7 +21,7 @@
        
         <a-button
             class="editable-add-btn"
-            @click="handleSave"
+            @click="handleSave(0)"
             type="primary"
             style="margin-bottom: 8px">
           添加Security
@@ -50,7 +50,7 @@
              width="882px"
              :closable="false"
              :key="securityVisibleKey"
-             @ok="handleSave">
+             @ok="handleSave(1)">
       <div class="editModal-content">
         <div class="modal-header">
           <div class="header-desc">
@@ -129,16 +129,11 @@ import {
   UnwrapRef,
   watch
 } from 'vue';
-import {schema2yaml,saveSecurityInfo} from '../../service';
-import SchemaEditor from '@/components/SchemaEditor/index.vue';
-import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
-import Filter from '../commom/Filter.vue';
-import {MonacoOptions} from '@/utils/const';
+import {saveSecurityInfo} from '../../service';
 import { securityColumns } from '../../config';
 import { useStore } from 'vuex';
 import {StateType as ProjectStateType} from "@/store/project";
 import {StateType as ProjectSettingStateType} from '../../store';
-import { Schema } from '../../data';
 import { message } from 'ant-design-vue';
 import {SelectTypes} from 'ant-design-vue/es/select';
 
@@ -152,8 +147,9 @@ const props = defineProps({
 const emit = defineEmits(['ok', 'close', 'refreshList']);
 
 interface FormState {
-  name: string;
+  name: string,
   type: string,
+  id?:number,
   description?:string,
   in?:string,
   key?:string,
@@ -211,15 +207,7 @@ const addPositionOptions:SelectTypes['options']=[
  
 ]
 
-
-
-
 const securityVisible = ref(false);
-const contentStr = ref('');
-const schemaType = ref('object');
-const exampleStr = ref('');
-const keyword = ref('');
-const isCheckAll = ref(false)
 const store = useStore<{ ProjectGlobal: ProjectStateType, ProjectSetting: ProjectSettingStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const dataSource = computed<any>(() => store.state.ProjectSetting.securityList);
@@ -229,8 +217,8 @@ const edit = (record: any) => {
   securityVisible.value = true;
   formState.name=record.name;
   formState.type=record.type;
+  formState.id=record.id;
   formState.default=record.default;
-
   switch (record.type) {
     case 'apiKey': 
       formState.in=record.in;
@@ -251,7 +239,7 @@ const edit = (record: any) => {
 };
 
 // 保存security
-async function handleSave() {
+async function handleSave(type:number) {
    if (!formState.name) {
     message.error('security名称不能为空');
     return;
@@ -259,6 +247,9 @@ async function handleSave() {
    if (!formState.type) {
     message.error('security类型不能为空');
     return;
+  }
+  if(type==0){
+    delete formState.id
   }
   const res = await saveSecurityInfo({
     "projectId": currProject.value.id,
@@ -306,9 +297,6 @@ function  changeDefault() {
 }
 
 
-
-
-
 watch(() => {
   return props.serveId
 }, async () => {
@@ -339,11 +327,6 @@ watch(() => {
   }
 }
 
-.btns {
-  display: flex;
-  justify-content: flex-end;
-}
-
 .modal-header {
   display: flex;
   justify-content: space-between;
@@ -354,14 +337,6 @@ watch(() => {
   .default{
     float: right;
   }
-}
-
-.content-form {
-  //margin-top: 32px;
-}
-
-.content-code {
-  // margin-top: 32px;
 }
 
 .header-desc {

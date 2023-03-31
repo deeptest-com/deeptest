@@ -104,8 +104,9 @@ import {
   reactive,
   ref,
   UnwrapRef,
-  watch
+  watch,
 } from 'vue';
+import { useRouter } from "vue-router";
 import {EditOutlined,MoreOutlined} from '@ant-design/icons-vue';
 import ServiceVersion from './Version.vue';
 import TableFilter from '../commom/TableFilter.vue';
@@ -118,7 +119,12 @@ import {StateType as ProjectSettingStateType} from '../../store';
 import {useStore} from "vuex";
 import { serviceColumns } from '../../config';
 import { Schema } from '../../data';
-
+const props = defineProps({
+  params: {
+    type: Object,
+  },
+})
+const router = useRouter();
 const store = useStore<{ ProjectGlobal: ProjectStateType, ProjectSetting: ProjectSettingStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const dataSource = computed<any>(() => store.state.ProjectSetting.serviceOptions);
@@ -172,6 +178,7 @@ const activeKey = ref('1');
 
 function onClose() {
   drawerVisible.value = false;
+  router.currentRoute.value.query={}
 
 }
 
@@ -228,18 +235,32 @@ async function getList() {
   })
 }
 
-// onMounted(async () => {
-//   await getList()
-// })
+
 
 // 实时监听项目切换，如果项目切换了则重新请求数据
 watch(() => {
   return currProject.value;
 }, async (newVal) => {
   await getList()
+  await isHasProps()
+
 }, {
   immediate: true
 })
+
+// 判断是否携带参数，用于security模块
+async function isHasProps(){
+  if(JSON.stringify(props.params) !=='{}'){
+    let record={}  
+    dataSource?.value?.map((item)=>{
+      if(item.id==props.params?.serveId*1){
+          record=  item
+      }
+    })
+    await edit(record)
+    activeKey.value=props.params?.sectab       
+  }
+}
 
 </script>
 

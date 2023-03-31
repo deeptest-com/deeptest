@@ -9,22 +9,35 @@
         </div>
       </a-tab-pane>
       <a-tab-pane key="3" tab="服务管理">
-        <ServiceSetting/>
+        <ServiceSetting :params='router?.currentRoute.value?.query'/>
       </a-tab-pane>
     </a-tabs>
   </div>
 </template>
 <script setup lang="ts">
-import { computed, defineComponent, reactive, Ref, ref, UnwrapRef } from 'vue';
+import { computed, defineComponent, reactive, Ref, ref, UnwrapRef ,watch} from 'vue';
+import { useRouter } from "vue-router";
 import { CheckOutlined, EditOutlined,DownOutlined } from '@ant-design/icons-vue';
 import ServiceSetting from './components/ServiceSetting/index.vue';
 import EnvSetting from './components/EnvSetting/index.vue';
 import SchemaEditor from '@/components/SchemaEditor/index.vue'
+
 const expandedKeys = ref<string[]>(['0-0-0']);
 const selectedKeys = ref<string[]>([]);
-
 const activeKey = ref('1');
+const router = useRouter();
 
+// 监听路由中是否携带参数，用于security模块
+watch(() => {
+  return router.currentRoute.value.query;
+}, async (newVal) => {
+ if(router.currentRoute.value.query?.firtab){
+    const  firtab:any=router.currentRoute.value.query.firtab
+    activeKey.value=firtab
+}   
+}, {
+  immediate: true
+})
 </script>
 
 <style scoped lang="less">

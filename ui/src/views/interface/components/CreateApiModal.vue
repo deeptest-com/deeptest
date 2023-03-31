@@ -14,7 +14,7 @@
       <a-form-item label="接口名称" name="title">
         <a-input placeholder="请输入接口名称" v-model:value="formState.title"/>
       </a-form-item>
-      <a-form-item label="所属分类" name="parentId">
+      <a-form-item label="所属分类" name="categoryId">
         <a-tree-select
             @change="selectedCategory"
             :value="formState.categoryId"
@@ -50,7 +50,7 @@ import {
   UnwrapRef,
   defineProps,
   defineEmits,
-  computed,
+  computed, watch,
 } from 'vue';
 import {useStore} from "vuex";
 import {NewInterfaceFormState} from "@/views/Interface/data";
@@ -62,6 +62,10 @@ const props = defineProps({
   visible: {
     required: true,
     type: Boolean,
+  },
+  selectedCategoryId:{
+    required: true,
+    type: String,
   }
 })
 
@@ -96,12 +100,22 @@ const formState: UnwrapRef<NewInterfaceFormState> = reactive({
   description: '',
 });
 
+watch(() => {
+  return props.visible
+}, (newVal) => {
+  if (newVal) {
+    formState.categoryId = props.selectedCategoryId;
+  }
+},{
+  immediate:true
+})
+
 const rules = {
   title: [
     {required: true, message: '请输入接口名称', trigger: 'blur'},
     {min: 1, max: 50, message: '最少 1 个字符，最长 100 个字符', trigger: 'blur'},
   ],
-  parentId: [{required: false}],
+  categoryId: [{required: true}],
   description: [{required: false}],
 };
 

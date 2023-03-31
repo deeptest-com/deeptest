@@ -210,12 +210,17 @@
               <a-col :span="3" class="form-label"></a-col>
               <a-col :span="21">
                 <SchemaEditor
-                    @generateFromJSON="generateFromJSON"
-                    @examplesChange="handleExamplesChange"
-                    @generateExample="handleGenerateExample"
-                    @contentChange="handleContentChange"
+                    @generateFromJSON="(data) => {
+                      generateFromJSON('req',data);
+                    }"
+                    @generateExample="(data) => {
+                       handleGenerateExample('req',data);
+                    }"
+                    @change="(data) => {
+                      handleChange('req',data);
+                    }"
                     :tab-content-style="{width:'100%'}"
-                    :value="activeSchema"/>
+                    :value="activeReqBodySchema"/>
               </a-col>
             </a-row>
             <!-- ::::响应定义  -->
@@ -275,7 +280,6 @@
                                       @change="(val) => {
                                         handleResHeaderChange(val);
                                       }"/>
-
                                 </div>
                               </div>
                             </div>
@@ -309,13 +313,17 @@
                       <a-col :span="4" class="form-label"></a-col>
                       <a-col :span="20">
                         <SchemaEditor
-                            @generateFromJSON="generateFromJSON"
-                            @exampleChange="handleExampleChange"
-                            @generateExample="handleGenerateExample"
-                            @schemaTypeChange="handleSchemaTypeChange"
-                            @contentChange="handleContentChange"
+                            @generateFromJSON="(data) => {
+                                 generateFromJSON('res',data);
+                            }"
+                            @change="(data) => {
+                               handleChange('res',data);
+                            }"
+                            @generateExample="(data) => {
+                               handleGenerateExample('res',data);
+                            }"
                             :tab-content-style="{width:'600px'}"
-                            :value="activeSchema"/>
+                            :value="activeResBodySchema"/>
                       </a-col>
                     </a-row>
                   </div>
@@ -433,7 +441,6 @@ const selectedCodeIndex: any = computed(() => {
     return item.code === selectedCode?.value;
   })
 });
-
 
 function goEditSecurity() {
   // todo 跳转到安全定义页面
@@ -579,48 +586,99 @@ function updatePath(e) {
   })
 }
 
-const activeSchema: any = ref({
+const activeReqBodySchema: any = ref({
   content: null,
   examples: [],
-  type: 'object'
 });
-watch(() => {
-  return selectedMethodDetail?.value?.requestBody
-}, (newVal, oldValue) => {
-  if (!newVal?.schemaItem?.content) return;
-  activeSchema.value = {
-    content: JSON.parse(newVal.schemaItem.content),
-    examples: JSON.parse(newVal.examples),
-    type: newVal.schemaItem.type
-  }
-}, {immediate: true, deep: true});
 
-async function generateFromJSON(JSONStr: string) {
+const activeResBodySchema: any = ref({
+  content: null,
+  examples: [],
+});
+
+
+watch(() => {
+  return selectedMethodDetail?.value?.requestBody?.schemaItem?.content
+}, (newVal, oldValue) => {
+  activeReqBodySchema.value.content = JSON.parse(newVal || 'null')
+}, {immediate: true});
+
+watch(() => {
+  return selectedMethodDetail?.value?.requestBody?.examples
+}, (newVal, oldValue) => {
+  activeReqBodySchema.value.examples = JSON.parse(newVal || '[]')
+}, {immediate: true});
+
+watch(() => {
+  return selectedCodeDetail?.value?.schemaItem?.content
+}, (newVal, oldValue) => {
+  activeResBodySchema.value.content = JSON.parse(newVal || 'null')
+}, {immediate: true});
+
+watch(() => {
+  return selectedCodeDetail?.value?.examples
+}, (newVal, oldValue) => {
+  activeResBodySchema.value.examples = JSON.parse(newVal || '[]')
+}, {immediate: true});
+
+
+async function generateFromJSON(type: string, JSONStr: string) {
   const res = await store.dispatch('Interface/example2schema',
       {data: JSONStr}
   );
-  activeSchema.value.content = res;
-  activeSchema.value.type = res.type;
+  if (type === 'req') {
+    activeReqBodySchema.value.content = res;
+  }
+  if (type === 'res') {
+    activeResBodySchema.value.content = res;
+  }
 }
 
-async function handleGenerateExample(examples: any) {
+async function handleGenerateExample(type: string, examples: any) {
   const res = await store.dispatch('Interface/schema2example',
-      {data: JSON.stringify(activeSchema.value.content)}
+      {data: JSON.stringify(type === 'req' ? activeReqBodySchema.value.content : activeResBodySchema.value.content)}
   );
   const example = {
     name: `Example ${examples.length + 1}`,
     content: JSON.stringify(res),
   };
-  activeSchema.value.examples.push(example);
+  if (type === 'req') {
+    activeReqBodySchema.value.examples.push(example);
+  }
+  if (type === 'res') {
+    activeResBodySchema.value.examples.push(example);
+  }
 }
 
-function handleContentChange(json: any) {
-  activeSchema.value.content = json;
-  activeSchema.value.type = json.type;
-}
-
-function handleExamplesChange(array: Array<any>) {
-  activeSchema.value.examples = array;
+function handleChange(type, json: any) {
+  const {content, examples} = json;
+  if (type === 'req') {
+    // activeReqBodySchema.value.content = content;
+    // activeReqBodySchema.value.type = content.type;
+    if(selectedMethodDetail?.value?.requestBody){
+      selectedMethodDetail.value.requestBody.schemaItem.content = JSON.stringify(content);
+      selectedMethodDetail.value.requestBody.examples = JSON.stringify(examples);
+      selectedMethodDetail.value.requestBody.schemaItem.type = content.type;
+    }
+    // store.commit('Interface/setInterfaceDetail', {
+    //   ...interfaceDetail.value,
+    // });
+  }
+  if (type === 'res') {
+    // activeResBodySchema.value.content = content;
+    // activeResBodySchema.value.type = content.type;
+    // activeResBodySchema.value.examples = examples;
+    if(selectedCodeDetail?.value){
+      selectedCodeDetail.value.schemaItem.content = JSON.stringify(content);
+      selectedCodeDetail.value.examples = JSON.stringify(examples);
+      selectedCodeDetail.value.schemaItem.type = content.type;
+    }
+    // store.commit('Interface/setInterfaceDetailByIndex', {
+    //   methodIndex: selectedMethodIndex.value,
+    //   codeIndex: selectedCodeIndex.value,
+    //   value: selectedCodeDetail.value
+    // })
+  }
 }
 
 </script>

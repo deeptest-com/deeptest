@@ -81,6 +81,7 @@
     <!--  创建新接口弹框  -->
     <CreateApiModal
         :visible="createApiModaVisible"
+        :selectedCategoryId="selectedCategoryId"
         @cancal="createApiModaVisible = false;"
         @ok="handleCreateApi"/>
     <!-- 编辑接口时，展开抽屉   -->
@@ -166,6 +167,7 @@ const selectedRowKeys = ref<Key[]>([]);
 const loading = false;
 // 抽屉是否打开
 const drawerVisible = ref<boolean>(false);
+const selectedCategoryId = ref<string>('');
 const onSelectChange = (keys: Key[], rows: any) => {
   selectedRowKeys.value = [...keys];
 };
@@ -207,6 +209,7 @@ async function handleCreateApi(data) {
 }
 
 async function selectNode(id) {
+  selectedCategoryId.value = id;
   await loadList(currProject.value.id, pagination.value.current, pagination.value.pageSize, {
     categoryId: id,
     serveId: currServe.value.id,

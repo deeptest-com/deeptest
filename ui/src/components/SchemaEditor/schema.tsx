@@ -31,7 +31,8 @@ export default defineComponent({
         value: Object,
         contentStyle: Object
     },
-    setup(props) {
+    emits: ['change'],
+    setup(props, {emit}) {
         const data: any = ref(null);
         const expandIt = (tree: any, e: any) => {
             if (tree?.extraViewInfo) {
@@ -154,10 +155,8 @@ export default defineComponent({
                     left: `${8 + x}px`,
                     top: `${y}px`,
                 });
-
             });
         };
-
 
         onMounted(() => {
             // 添加点击事件监听器
@@ -189,7 +188,6 @@ export default defineComponent({
                 "name": "root",
                 "depth": 1,
             };
-
             function fn(obj: any, depth) {
                 if (obj.properties && obj.type === 'object') {
                     Object.entries(obj.properties).forEach(([key, value]: any) => {
@@ -205,8 +203,29 @@ export default defineComponent({
                     })
                 }
             }
-
             fn(val, 2);
+            return val;
+        }
+        function removeExtraInfoForValue(val) {
+            if (!val) {
+                return null
+            }
+            if(val.extraViewInfo){
+                delete val.extraViewInfo;
+            }
+            function fn(obj: any) {
+                if (obj.properties && obj.type === 'object') {
+                    Object.entries(obj.properties).forEach(([key, value]: any) => {
+                        if(value.extraViewInfo){
+                            delete value.extraViewInfo;
+                        }
+                        if (value.type === 'object') {
+                            fn(value);
+                        }
+                    })
+                }
+            }
+            fn(val);
             return val;
         }
 
@@ -215,7 +234,6 @@ export default defineComponent({
         }, (newVal) => {
             const val = cloneByJSON(newVal);
             data.value = adaptValue(val);
-            console.log('watch props value 832', data.value);
         }, {
             immediate: true,
             deep: true
@@ -224,7 +242,8 @@ export default defineComponent({
         watch(() => {
             return data.value
         }, (newVal) => {
-            console.log('watch data value 832', newVal);
+            const newObj = removeExtraInfoForValue(cloneByJSON(newVal));
+            emit('change',newObj);
         }, {
             immediate: true,
             deep: true
@@ -263,8 +282,8 @@ export default defineComponent({
                         <div class={'action'}>
                             <Actions
                                 isRoot={isRoot}
-                                isFirst={isFirst}
-                                isLast={isLast}
+                                isFirst={isFirst || false}
+                                isLast={isLast || false}
                                 onMoveDown={moveDown.bind(this, keyIndex, parent)}
                                 onMoveUp={moveUp.bind(this, keyIndex, parent)}
                                 onCopy={copy.bind(this, keyIndex, parent)}/>
@@ -312,8 +331,8 @@ export default defineComponent({
                                         </div>
                                         <div class={'action'}>
                                             <Actions
-                                                isFirst={isFirst}
-                                                isLast={isLast}
+                                                isFirst={isFirst || false}
+                                                isLast={isLast || false}
                                                 isRoot={false}
                                                 onMoveDown={moveDown.bind(this, index, tree)}
                                                 onCopy={copy.bind(this, index, tree)}
@@ -355,7 +374,7 @@ export default defineComponent({
                             <SettingPropsModal
                                 onOk={handleModalOk}
                                 onCancel={handleModalCancel}
-                                value={activeTree.value}
+                                value={activeTree.value || {}}
                                 visible={visible.value}/>
                         </a-card>
                         <div ref={floatingArrow} class="floatingSetting-arrow"></div>

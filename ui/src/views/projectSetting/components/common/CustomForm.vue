@@ -93,19 +93,20 @@ const handleSearch = (e: string) => {
 
 </script>
 <style scoped lang="less">
-::v-deep {
-    .ant-form-inline .ant-form-item-with-help {
-        margin-bottom: 0 !important;
-        display: none;
-    }
+:deep(.ant-form-inline .ant-form-item-with-help) {
+    margin-bottom: 0 !important ;
+    display: none;
+}
 
-    .ant-form-item-explain.ant-form-item-explain-success {
-        display: none;
-    }
+:deep(.ant-form-item-explain.ant-form-item-explain-success) {
+    display: none;
+}
 
-    .ant-row.ant-form-item.ant-form-item-has-error.ant-form-item-with-help,
-    .ant-row.ant-form-item.ant-form-item-with-help.ant-form-item-has-success {
-        margin-bottom: 0 !important;
-    }
+:deep(.ant-row.ant-form-item.ant-form-item-has-error.ant-form-item-with-help) {
+    margin-bottom: 0 !important;
+}
+
+:deep(.ant-row.ant-form-item.ant-form-item-with-help.ant-form-item-has-success) {
+    margin-bottom: 0 !important;
 }
 </style>

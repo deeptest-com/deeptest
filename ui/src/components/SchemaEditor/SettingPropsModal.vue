@@ -159,15 +159,15 @@ watch(() => {
 </script>
 <style lang="less" scoped>
 
-::v-deep(.ant-modal-body) {
+:deep(.ant-modal-body) {
   padding: 0;
 }
 
-::v-deep(.ant-input-number) {
+:deep(.ant-input-number) {
   width: 100%
 }
 
-::v-deep(.ant-form-item-label) {
+:deep(.ant-form-item-label) {
   label {
     font-weight: bold;
   }

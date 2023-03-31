@@ -50,12 +50,14 @@ func (r *DebugRepo) GetLast(interfaceId int) (debug model.Debug, err error) {
 	return
 }
 
-func (r *DebugRepo) Tested(interfaceId uint) (res bool, err error) {
+func (r *DebugRepo) IsInterfaceHasDebug(interfaceId uint) (res bool, err error) {
 	var count int64
 	err = r.DB.Model(&model.Debug{}).Where("interface_id=?", interfaceId).Count(&count).Error
 	if err != nil {
 		return
 	}
+
 	res = count > 0
+
 	return
 }

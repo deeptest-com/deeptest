@@ -41,8 +41,8 @@ const StoreModel: ModuleType = {
         setInterfaceId(state, id) {
             state.interfaceId = id;
         },
-        setDebugData(state, id) {
-            state.interfaceId = id;
+        setDebugData(state, payload) {
+            state.debugData = payload;
         }
     },
     actions: {

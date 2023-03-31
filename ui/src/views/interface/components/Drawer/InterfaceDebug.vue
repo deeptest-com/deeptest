@@ -24,7 +24,7 @@ const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const interfaceDetail = computed<any>(() => store.state.Interface.interfaceDetail);
 const debugData = computed<any>(() => store.state.Debug.debugData);
 
-store.dispatch('Debug/loadDebugData', {id: interfaceDetail.value.id});
+store.dispatch('Debug/loadDebugData', {endpointId: interfaceDetail.value.id});
 
 </script>
 

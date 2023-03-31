@@ -24,12 +24,14 @@ type DebugService struct {
 }
 
 func (s *DebugService) LoadData(req v1.DebugRequest) (ret v1.DebugRequest, err error) {
-	var tested bool
-	if tested, err = s.DebugRepo.Tested(req.Id); !tested {
+	isInterfaceHasDebug, err := s.DebugRepo.IsInterfaceHasDebug(req.Id)
+
+	if !isInterfaceHasDebug {
 		req, err = s.EndpointService.GetReq(req.Id, req.EndpointId)
 	} else {
 		req, err = s.GetLastReq(int(req.Id))
 	}
+
 	/*
 		err = s.ProcessorInterfaceService.UpdateByInvocation(req)
 		if err != nil {
@@ -115,6 +117,7 @@ func (s *DebugService) GetLastResp(interfId int) (resp v1.DebugResponse, err err
 
 func (s *DebugService) GetLastReq(interfId int) (req v1.DebugRequest, err error) {
 	invocation, _ := s.DebugRepo.GetLast(interfId)
+
 	if invocation.ID > 0 {
 		json.Unmarshal([]byte(invocation.ReqContent), &req)
 	} else {

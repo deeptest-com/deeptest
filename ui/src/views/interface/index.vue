@@ -8,7 +8,7 @@
         <!--  头部搜索区域  -->
         <div class="top-action">
           <a-button class="action-new" type="primary" :loading="loading"
-                    @click="createApiModaVisible = true;">新建接口
+                    @click="createApiModalVisible = true;">新建接口
           </a-button>
         </div>
         <div class="top-search">
@@ -80,8 +80,8 @@
     </div>
     <!--  创建新接口弹框  -->
     <CreateApiModal
-        :visible="createApiModaVisible"
-        @cancal="createApiModaVisible = false;"
+        :visible="createApiModalVisible"
+        @cancal="createApiModalVisible = false;"
         @ok="handleCreateApi"/>
     <!-- 编辑接口时，展开抽屉   -->
     <Drawer
@@ -96,6 +96,7 @@ import {
   computed, reactive, toRefs, ref, onMounted,
   watch
 } from 'vue';
+import debounce from "lodash.debounce";
 import InterfaceTree from './list/tree.vue';
 import {ColumnProps} from 'ant-design-vue/es/table/interface';
 import {
@@ -116,7 +117,7 @@ const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const list = computed<Interface[]>(() => store.state.Interface.listResult.list);
 let pagination = computed<PaginationConfig>(() => store.state.Interface.listResult.pagination);
 const currServe = computed<any>(() => store.state.ServeGlobal.currServe);
-const createApiModaVisible = ref(false);
+const createApiModalVisible = ref(false);
 type Key = ColumnProps['key'];
 
 /**
@@ -171,7 +172,6 @@ const onSelectChange = (keys: Key[], rows: any) => {
   selectedRowKeys.value = [...keys];
 };
 
-
 async function handleChangeStatus(value: any, record: any,) {
   await store.dispatch('Interface/updateStatus', {
     id:record.id,
@@ -204,7 +204,7 @@ async function handleCreateApi(data) {
     "description": data.description || null,
     "categoryId": data.categoryId || null,
   });
-  createApiModaVisible.value = false;
+  createApiModalVisible.value = false;
 }
 
 async function selectNode(id) {
@@ -214,14 +214,14 @@ async function selectNode(id) {
   });
 }
 
-async function loadList(currProjectId, page, size, opts?: any) {
+const loadList = debounce(async (currProjectId, page, size, opts?: any) => {
   await store.dispatch('Interface/loadList', {
     currProjectId,
     "page": page,
     "pageSize": size,
     opts,
   });
-}
+}, 300)
 
 async function handleTableFilter(filterState) {
   await loadList(currProject.value.id, pagination.value.current, pagination.value.pageSize, filterState);

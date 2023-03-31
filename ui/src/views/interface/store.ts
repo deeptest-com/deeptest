@@ -5,9 +5,6 @@ import {
     Interface,
     QueryResult,
     QueryParams,
-    PaginationConfig,
-    InterfaceListReqParams,
-    SaveInterfaceReqParams,
     filterFormState
 } from './data.d';
 import {
@@ -17,7 +14,6 @@ import {
     remove,
     loadExecResult, getYaml, updateStatus
 } from './service';
-
 import {
     loadCategory,
     getCategory,

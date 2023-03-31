@@ -26,15 +26,17 @@
 
 import {
   defineProps,
-  defineEmits,
+  defineEmits, computed,
 } from 'vue';
 import {interfaceStatusOpts} from '@/config/constant';
+import {useStore} from "vuex";
+import {Interface} from "@/views/interface/data";
 const props = defineProps({
-  interfaceDetail: {
-    required: true,
-    type: Object,
-  }
 })
+
+const store = useStore<{ Interface }>();
+const interfaceDetail = computed<Interface>(() => store.state.Interface.interfaceDetail);
+
 const emit = defineEmits(['changeStatus']);
 function handleChangeStatus(val) {
   emit('changeStatus',val);

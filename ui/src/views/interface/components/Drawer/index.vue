@@ -17,7 +17,7 @@
       </a-row>
     </template>
     <!-- 基本信息 -->
-    <InterfaceBasicInfo :interfaceDetail="interfaceDetail" @changeStatus="changeStatus"/>
+    <InterfaceBasicInfo @changeStatus="changeStatus"/>
     <!-- 接口设计区域 -->
     <a-card
         style="width: 100%"
@@ -30,7 +30,7 @@
         <InterfaceDefine/>
       </div>
       <div v-else-if="key === 'run'">
-        <!-- ::::TODO 调试模块 -->
+        <InterfaceDebug></InterfaceDebug>
       </div>
       <div v-else-if="key === 'mock'">mock content</div>
     </a-card>
@@ -53,6 +53,7 @@ import {
 import InterfaceBasicInfo from './InterfaceBasicInfo.vue';
 import EditAndShowField from './EditAndShowField.vue';
 import InterfaceDefine from './InterfaceDefine.vue';
+import InterfaceDebug from './InterfaceDebug.vue';
 import {useStore} from "vuex";
 import {Interface} from "@/views/interface/data";
 

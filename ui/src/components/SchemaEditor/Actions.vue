@@ -38,7 +38,7 @@ const disableMoveDown = computed(() => {
   return false;
 });
 const disableCopy = computed(() => {
-  return !!props.isRoot;
+  return props.isRoot;
 });
 
 </script>

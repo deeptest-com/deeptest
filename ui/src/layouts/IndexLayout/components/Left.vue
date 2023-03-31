@@ -172,14 +172,9 @@ export default defineComponent({
     text-align: center;
   }
 
-  ::v-deep {
-    .ant-menu-item {
-      margin-top: 0;
-      margin-bottom: 8px;
-      //margin: 0 8px 8px 8px;
-      //border-radius: 8px;
-      //width: fit-content;
-    }
+  :deep(.ant-menu-item) {
+    margin-top: 0;
+    margin-bottom: 8px;
   }
 }
 </style>

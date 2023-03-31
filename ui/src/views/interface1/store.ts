@@ -22,7 +22,6 @@ import {
     saveInterface,
     update,
     listInvocation,
-
     invokeInterface,
     listExtractor,
     listCheckpoint,

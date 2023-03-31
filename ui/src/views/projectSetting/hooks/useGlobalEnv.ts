@@ -1,10 +1,12 @@
-import { computed, ref } from "vue";
+import { computed, createVNode, ref } from "vue";
 import { useStore } from "vuex";
-import {StateType as ProjectSettingStateType} from "@/views/ProjectSetting/store";
-import {StateType as ProjectStateType} from "@/store/project";
-import { message } from "ant-design-vue";
+import { message, Modal } from "ant-design-vue";
+import { ExclamationCircleOutlined } from "@ant-design/icons-vue";
+import { StateType as ProjectSettingStateType } from "@/views/ProjectSetting/store";
+import { StateType as ProjectStateType } from "@/store/project";
+import { EnvHookParams, EnvReturnData, VarDataItem } from "../data";
 
-export function useGlobalEnv({ isShowGlobalParams, isShowGlobalVars }) {
+export function useGlobalEnv({ isShowGlobalParams, isShowGlobalVars }: EnvHookParams): EnvReturnData {
     const store = useStore<{ ProjectSetting: ProjectSettingStateType, ProjectGlobal: ProjectStateType }>();
     const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
     const envList = computed<any>(() => store.state.ProjectSetting.envList);
@@ -18,7 +20,7 @@ export function useGlobalEnv({ isShowGlobalParams, isShowGlobalVars }) {
         await store.dispatch('ProjectSetting/getEnvsList', { projectId: currProject.value.id });
     }
 
-    function showEnvDetail(item:any, isAdd?: boolean) {
+    function showEnvDetail(item: any, isAdd?: boolean) {
         if (isAdd) {
             isShowAddEnv.value = true;
             isShowEnvDetail.value = true;
@@ -35,6 +37,7 @@ export function useGlobalEnv({ isShowGlobalParams, isShowGlobalVars }) {
             activeEnvDetail.value.name = item.name || '';
             activeEnvDetail.value.displayName = item.name || '';
         }
+        console.log(activeEnvDetail);
         isShowGlobalParams.value = false;
         isShowGlobalVars.value = false;
     }
@@ -49,15 +52,26 @@ export function useGlobalEnv({ isShowGlobalParams, isShowGlobalVars }) {
         })
     }
 
+    async function setShowEnvDetail(result) {
+        await store.dispatch('ProjectSetting/getEnvsList', { projectId: currProject.value.id })
+        const newEnv = envList.value.find((item: any) => {
+            return item.id === result;
+        })
+        showEnvDetail(newEnv, false)
+    }
+
     /**
      * 增加环境变量
      */
     async function addEnvData() {
         console.log('%c[ADD ENV DATA] --  envVars [globalEnv.ts -- 90]', 'color: red', activeEnvDetail.value.vars);
+        if (!activeEnvDetail.value?.name) {
+            return;
+        }
         const envVars = activeEnvDetail.value?.vars || [];
-        const hasEmptyVars = envVars.some((e: any) => e.name === '');
+        const hasEmptyVars = envVars.some((e: VarDataItem) => e.name === '' || e.remoteValue === '' || e.localValue === '');
         if (hasEmptyVars) {
-            message.error('变量名参数不能为空');
+            message.error('变量名参数/远程值/本地值不能为空');
             return;
         }
         const result = await store.dispatch('ProjectSetting/addEnvData', {
@@ -68,7 +82,7 @@ export function useGlobalEnv({ isShowGlobalParams, isShowGlobalVars }) {
             "vars": envVars,
         })
         if (result) {
-            showEnvDetail(null, true)
+            setShowEnvDetail(result);
         }
     }
 
@@ -76,13 +90,22 @@ export function useGlobalEnv({ isShowGlobalParams, isShowGlobalVars }) {
      * 删除环境变量
      */
     async function deleteEnvData() {
-        const result = await store.dispatch('ProjectSetting/deleteEnvData', {
-            activeEnvId: activeEnvDetail.value?.id,
-            projectId: currProject.value.id
-        })
-        if (result) {
-            showEnvDetail(null, true)
+        const successCallBack = async () => {
+            const result = await store.dispatch('ProjectSetting/deleteEnvData', {
+                activeEnvId: activeEnvDetail.value?.id,
+                projectId: currProject.value.id
+            })
+            if (result) {
+                showEnvDetail(null, true)
+            }
         }
+        Modal.confirm({
+            title: '确认要删除该环境吗',
+            icon: createVNode(ExclamationCircleOutlined),
+            onOk() {
+                successCallBack();
+            },
+        });
     }
 
     /**
@@ -94,23 +117,11 @@ export function useGlobalEnv({ isShowGlobalParams, isShowGlobalVars }) {
             projectId: currProject.value.id
         })
         if (result) {
-            await store.dispatch('ProjectSetting/getEnvsList', { projectId: currProject.value.id })
-            const newEnv = envList.value.find((item: any) => {
-                return item.id === result;
-            })
-            showEnvDetail(newEnv, false)
+            setShowEnvDetail(result);
         }
     }
 
-    /**
-     * 切换环境
-     * @param type 
-     * @param field 
-     * @param index 
-     * @param e 
-     * @param action 
-     */
-    function handleEnvChange(type, field, index, e, action?:any) {
+    function handleEnvChange(type: string, field: string, index: number, e: any, action?: string) {
         if (action === 'delete') {
             activeEnvDetail.value[type].splice(index, 1);
         } else {
@@ -119,7 +130,7 @@ export function useGlobalEnv({ isShowGlobalParams, isShowGlobalVars }) {
 
     }
 
-    function handleEnvNameChange(e) {
+    function handleEnvNameChange(e: any) {
         activeEnvDetail.value.name = e.target.value;
     }
 

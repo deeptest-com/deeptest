@@ -15,17 +15,26 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, defineComponent, reactive, Ref, ref, UnwrapRef ,watch} from 'vue';
+
+import { ref,watch } from 'vue';
+import { useStore } from "vuex";
 import { useRouter } from "vue-router";
-import { CheckOutlined, EditOutlined,DownOutlined } from '@ant-design/icons-vue';
+import { StateType as ProjectSettingStateType } from './store';
 import ServiceSetting from './components/ServiceSetting/index.vue';
 import EnvSetting from './components/EnvSetting/index.vue';
-import SchemaEditor from '@/components/SchemaEditor/index.vue'
-
 const expandedKeys = ref<string[]>(['0-0-0']);
 const selectedKeys = ref<string[]>([]);
+
+
+const store = useStore<{ ProjectSetting: ProjectSettingStateType }>();
 const activeKey = ref('1');
 const router = useRouter();
+
+
+getUserList();
+async function getUserList() {
+  await store.dispatch('ProjectSetting/getUserOptionsList')
+}
 
 // 监听路由中是否携带参数，用于security模块
 watch(() => {
@@ -45,19 +54,10 @@ watch(() => {
   margin: 16px;
   background: #ffffff;
   min-height: calc(100vh - 92px);
+  min-width: 1200px;
 }
-::v-deep{
-  .ant-tabs-bar{
-    margin: 0;
-  }
+
+:deep(.ant-tabs-bar) {
+  margin: 0;
 }
-//.content{
-//  margin: 20px;
-//  .header{
-//    display: flex;
-//    align-items: center;
-//    justify-content: space-between;
-//    margin-bottom: 8px;
-//  }
-//}
 </style>

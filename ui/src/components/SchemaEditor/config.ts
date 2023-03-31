@@ -7,6 +7,7 @@ export const JSONSchemaDataTypes = [
         label: "string",
         value: "string",
         color: 'pink',
+        active: false,
         props: {
             label: 'Properties',
             options: [
@@ -178,6 +179,7 @@ export const JSONSchemaDataTypes = [
         label: "number",
         value: "number",
         color: 'cyan',
+        active: false,
         props: {
             label: 'Properties',
             options: [
@@ -305,6 +307,7 @@ export const JSONSchemaDataTypes = [
         label: "integer",
         value: "integer",
         color: 'green',
+        active: false,
         props: {
             label: 'Properties',
             options: [
@@ -432,6 +435,7 @@ export const JSONSchemaDataTypes = [
         label: "object",
         value: "object",
         color: 'blue',
+        active: false,
         props: {
             label: 'Properties',
             options: [
@@ -472,6 +476,7 @@ export const JSONSchemaDataTypes = [
         label: "array",
         value: "array",
         color: 'orange',
+        active: false,
         props: {
             label: 'Properties',
             options: [
@@ -513,6 +518,7 @@ export const JSONSchemaDataTypes = [
         label: "boolean",
         value: "boolean",
         color: 'red',
+        active: false,
         props: {
             label: 'Properties',
             options: [
@@ -563,7 +569,6 @@ export const JSONSchemaDataTypes = [
                     value: false,
                 },
             ],
-
         }
     },
 ];
@@ -574,19 +579,16 @@ export const JSONSchemaDataTypes = [
 export const schemaSettingInfo = [
     {
         label: 'Type',
-        subLabel:'SubType',
+        subLabel: 'SubType',
         value: 'type',
+        active: true,
         props: JSONSchemaDataTypes
     },
     {
         label: 'Components',
-        subLabel:'Components',
+        active: false,
+        subLabel: 'Components',
         value: 'components',
-    },
-    {
-        label: 'Combine Schemas',
-        subLabel: 'Combine Schemas',
-        value: 'combineSchemas',
     },
 ]
 

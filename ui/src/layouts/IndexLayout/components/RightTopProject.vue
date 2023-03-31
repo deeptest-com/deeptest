@@ -10,6 +10,7 @@
     </a-select>
 
     <a-select
+        v-if="showServeSelect"
         v-model:value="currServe.id"
         :bordered="true"
         style="width: 280px;margin-left: 16px;"
@@ -22,8 +23,9 @@
 </template>
 
 <script setup lang="ts">
-import {computed, ComputedRef, defineComponent, onMounted} from "vue";
+import {computed, watch, ref, onMounted} from "vue";
 import {useStore} from "vuex";
+import {useRoute} from "vue-router";
 import router from '@/config/routes';
 import {StateType as UserStateType} from "@/store/user";
 import {StateType as ProjectStateType} from "@/store/project";
@@ -33,6 +35,8 @@ import {StateType as EnvironmentStateType} from "@/store/environment";
 const store = useStore<{ User: UserStateType,
   ProjectGlobal: ProjectStateType, ServeGlobal: ServeStateType, Environment: EnvironmentStateType }>();
 
+const route = useRoute();  
+
 const message = computed<number>(() => store.state.User.message);
 
 const projects = computed<any>(() => store.state.ProjectGlobal.projects);
@@ -41,6 +45,8 @@ const serves = computed<any>(() => store.state.ServeGlobal.serves);
 
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const currServe = computed<any>(() => store.state.ServeGlobal.currServe);
+
+const showServeSelect = ref<boolean>(true);
 
 store.dispatch("User/fetchMessage");
 store.dispatch("ProjectGlobal/fetchProject");
@@ -64,4 +70,14 @@ const selectServe = (value): void => {
   store.dispatch('ServeGlobal/changeServe', value);
 }
 
+onMounted(() => {
+  showServeSelect.value = !route.path.includes('projectSetting');
+}) 
+
+watch(
+  () => route.path,
+  (val: any) => {
+    showServeSelect.value = !val.includes('projectSetting');
+  }
+)
 </script>

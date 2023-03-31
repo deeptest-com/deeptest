@@ -31,7 +31,7 @@ func (m *ServeModule) Party() module.WebModule {
 		public.Post("/version/bindEndpoint", m.ServeCtrl.BindEndpoint).Name = "关联接口"
 		public.Delete("/version/delete", m.ServeCtrl.DeleteVersion).Name = "删除版本"
 		public.Put("/version/expire", m.ServeCtrl.ExpireVersion).Name = "禁用版本"
-		public.Get("/server/list", m.ServeCtrl.ListServer).Name = "服务列表"
+		public.Post("/server/list", m.ServeCtrl.ListServer).Name = "服务列表"
 		public.Post("/schema/save", m.ServeCtrl.SaveSchema).Name = "保存Schema"
 		public.Post("/schema/list", m.ServeCtrl.ListSchema).Name = "Schema列表"
 		public.Delete("/schema/delete", m.ServeCtrl.DeleteSchema).Name = "删除Schema列表"

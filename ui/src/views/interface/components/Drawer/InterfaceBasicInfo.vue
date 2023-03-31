@@ -6,7 +6,15 @@
       <a-descriptions :title="null">
         <a-descriptions-item label="创建人">{{ interfaceDetail?.createUser }}</a-descriptions-item>
         <a-descriptions-item label="状态">
-          <a-tag :color="interfaceStatusColor.get(interfaceDetail?.status || 0)">{{ interfaceStatus.get(interfaceDetail?.status || 0) }}</a-tag>
+          <a-select
+              :value="interfaceDetail?.status"
+              style="width: 100px"
+              :size="'small'"
+              placeholder="请修改接口状态"
+              :options="interfaceStatusOpts"
+              @change="handleChangeStatus"
+          >
+          </a-select>
         </a-descriptions-item>
         <a-descriptions-item label="描述">{{ interfaceDetail?.description || '暂无' }}</a-descriptions-item>
         <a-descriptions-item label="创建时间">{{ interfaceDetail?.createdAt }}</a-descriptions-item>
@@ -20,14 +28,17 @@ import {
   defineProps,
   defineEmits,
 } from 'vue';
-import {interfaceStatus, interfaceStatusColor} from '@/config/constant';
+import {interfaceStatusOpts} from '@/config/constant';
 const props = defineProps({
   interfaceDetail: {
     required: true,
     type: Object,
   }
 })
-const emit = defineEmits([]);
+const emit = defineEmits(['changeStatus']);
+function handleChangeStatus(val) {
+  emit('changeStatus',val);
+}
 </script>
 
 <style lang="less" scoped>

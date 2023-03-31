@@ -39,7 +39,17 @@
           </template>
           <template #colStatus="{record}">
             <div class="customTitleColRender">
-              <a-tag :color="interfaceStatusColor.get(record.status)">{{ interfaceStatus.get(record.status) }}</a-tag>
+              <a-select
+                  :value="record?.status"
+                  style="width: 100px"
+                  :size="'small'"
+                  placeholder="请修改接口状态"
+                  :options="interfaceStatusOpts"
+                  @change="(val) => {
+                  handleChangeStatus(val,record);
+                  }"
+              >
+              </a-select>
             </div>
           </template>
           <template #colPath="{text}">
@@ -92,15 +102,13 @@ import {
   EditOutlined,
   MoreOutlined
 } from '@ant-design/icons-vue';
-import {interfaceStatus, interfaceStatusColor} from '@/config/constant';
+import {interfaceStatusOpts} from '@/config/constant';
 import CreateApiModal from './components/CreateApiModal.vue';
 import TableFilter from './components/TableFilter.vue';
 import Drawer from './components/Drawer/index.vue'
 import {useStore} from "vuex";
 import {Interface, PaginationConfig} from "@/views/interface/data";
-import {filterFormState} from "@/views/Interface/data";
 import {StateType as ServeStateType} from "@/store/serve";
-
 const store = useStore<{ Interface, ProjectGlobal, ServeGlobal: ServeStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const list = computed<Interface[]>(() => store.state.Interface.listResult.list);
@@ -108,6 +116,7 @@ let pagination = computed<PaginationConfig>(() => store.state.Interface.listResu
 const currServe = computed<any>(() => store.state.ServeGlobal.currServe);
 const createApiModaVisible = ref(false);
 type Key = ColumnProps['key'];
+
 
 /**
  * 表格数据
@@ -161,6 +170,14 @@ const onSelectChange = (keys: Key[], rows: any) => {
   selectedRowKeys.value = [...keys];
 };
 
+
+async function handleChangeStatus(value: any, record: any,) {
+  await store.dispatch('Interface/updateStatus', {
+    id: record.id,
+    status: value
+  });
+}
+
 async function editInterface(record) {
   await store.dispatch('Interface/getInterfaceDetail', {id: record.id});
   drawerVisible.value = true;
@@ -184,7 +201,7 @@ async function handleCreateApi(data) {
     "projectId": currProject.value.id,
     "serveId": currServe.value.id,
     "description": data.description || null,
-    "parentId": data.parentId || null,
+    "categoryId": data.categoryId || null,
   });
   createApiModaVisible.value = false;
 }
@@ -229,6 +246,8 @@ watch(() => {
       serveId: newVal,
     });
     await store.dispatch('Interface/getServerList', {id: currServe.value.id});
+    // 获取授权列表
+    await store.dispatch('Interface/getSecurityList', {id: currServe.value.id});
   }
 }, {
   immediate: true
@@ -327,26 +346,23 @@ async function refreshList() {
   right: 8px;
 }
 
+:deep(.ant-alert-info) {
+  padding: 12px;
+}
 
-::v-deep {
-  .ant-alert-info {
-    padding: 12px;
-  }
+:deep(.ant-alert-icon) {
+  font-size: 14px;
+  position: relative;
+  top: 4px;
+  left: 8px;
+}
 
-  .ant-alert-icon {
-    font-size: 14px;
-    position: relative;
-    top: 4px;
-    left: 8px;
-  }
+:deep(.ant-alert-message) {
+  font-size: 14px;
+}
 
-  .ant-alert-message {
-    font-size: 14px;
-  }
-
-  .ant-alert-description {
-    font-size: 12px;
-  }
+:deep(.ant-alert-description) {
+  font-size: 12px;
 }
 
 </style>

@@ -3,17 +3,15 @@
     <div class="left-content">
       <div class="global">
         <div class="header">全局</div>
-        <a-button :class="{'env-item':true,'env-item-active':isShowGlobalVars}"
-                  @click="showGlobalVars"
-                  :type="isShowGlobalVars ? 'primary' : 'text'">
+        <a-button :class="{ 'env-item': true, 'env-item-active': isShowGlobalVars }" @click="showGlobalVars"
+          :type="isShowGlobalVars ? 'primary' : 'text'">
           <template #icon>
             <i class="var-icon">V</i>
           </template>
           全局变量
         </a-button>
-        <a-button :class="{'env-item':true,'env-item-active':isShowGlobalParams}"
-                  @click="showGlobalParams"
-                  :type="isShowGlobalParams ? 'primary' : 'text'">
+        <a-button :class="{ 'env-item': true, 'env-item-active': isShowGlobalParams }" @click="showGlobalParams"
+          :type="isShowGlobalParams ? 'primary' : 'text'">
           <template #icon>
             <i class="var-icon">P</i>
           </template>
@@ -21,39 +19,30 @@
         </a-button>
       </div>
       <div style="margin: 0 16px;">
-        <a-divider class="divider"/>
+        <a-divider class="divider" />
       </div>
       <div class="env">
         <div class="header">环境</div>
-        <draggable
-            tag="div"
-            :list="envList"
-            class="list-group"
-            handle=".handle"
-            item-key="name">
+        <draggable tag="div" :list="envList" class="list-group" handle=".handle" item-key="name" @end="handleDragEnd">
           <template #item="{ element, index }">
-            <a-button
-                :class="{'env-item':true,'env-item-active':activeEnvDetail?.id === element.id}"
-                :type="activeEnvDetail?.id === element.id ? 'primary' : 'text'"
-                @click="showEnvDetail(element)"
-                class="env-item" :key="index">
-              <MenuOutlined class="handle"/>
+            <a-button :class="{ 'env-item': true, 'env-item-active': activeEnvDetail?.id === element.id }"
+              :type="activeEnvDetail?.id === element.id ? 'primary' : 'text'" @click="showEnvDetail(element)"
+              class="env-item" :key="index">
+              <MenuOutlined class="handle" />
               <span class="text"> {{ element.displayName }} </span>
             </a-button>
           </template>
         </draggable>
         <div style="margin: 0 16px;">
-          <a-divider class="divider"/>
+          <a-divider class="divider" />
         </div>
-        <a-button
-            :type="isShowAddEnv ? 'primary' : 'text'"
-            :class="{
-            'env-item':true,
-            'env-item-footer':true,
-            'env-item-active':isShowAddEnv}"
-            @click="showEnvDetail(null,true)">
+        <a-button :type="isShowAddEnv ? 'primary' : 'text'" :class="{
+          'env-item': true,
+          'env-item-footer': true,
+          'env-item-active': isShowAddEnv
+        }" @click="showEnvDetail(null, true)">
           <template #icon>
-            <PlusOutlined/>
+            <PlusOutlined />
           </template>
           新建环境
         </a-button>
@@ -62,224 +51,25 @@
     <div class="right-content">
       <!-- ::::全局变量 -->
       <div class="globalVars" v-if="isShowGlobalVars">
-        <div class="title">全局变量</div>
-        <a-button
-            class="envDetail-btn"
-            @click="addGlobalVar"
-        >
-          <template #icon>
-            <PlusOutlined/>
-          </template>
-          添加
-        </a-button>
-
-        <a-table bordered size="small" :pagination="false"
-          :columns="globalVarsColumns"
-          :data-source="globalVarsData">
-          <template #customName="{ text,index }">
-            <a-input @change="(e) => {
-                handleGlobalVarsChange('name',index,e);
-                }" :value="text" placeholder="请输入参数名"/>
-          </template>
-          <template #customLocalValue="{ text,index }">
-            <a-input :value="text" @change="(e) => {
-              handleGlobalVarsChange('localValue',index,e);
-              }" placeholder="请输入本地值"/>
-          </template>
-          <template #customRemoteValue="{ text,index }">
-            <a-input :value="text" @change="(e) => {
-            handleGlobalVarsChange('remoteValue',index,e);
-            }" placeholder="请输入远程值"/>
-          </template>
-          <template #customDescription="{ text,index }">
-            <a-input :value="text" @change="(e) => {
-              handleGlobalVarsChange('description',index,e);
-            }" placeholder="请输入描述信息"/>
-          </template>
-          <template #customAction="{index }">
-            <a-button danger
-                      type="text"
-                      @click="handleGlobalVarsChange('description',index,'','delete');"
-                      :size="'small'">删除
-            </a-button>
-          </template>
-        </a-table>
-
-        <div class="envDetail-footer">
-          <a-button class="save-btn" @click="handleSaveGlobalVars" type="primary">保存</a-button>
-        </div>
+        <GlobalVarCom @handle-global-vars-change="handleGlobalVarsChange" @handle-save-global-vars="handleSaveGlobalVars"
+          @add-global-var="addGlobalVar" />
       </div>
       <!-- ::::全局参数 -->
       <div class="globalParams" v-if="isShowGlobalParams">
-        <div class="title">全局参数</div>
-
-        <a-tabs :pagination="false" v-model:activeKey="globalParamsActiveKey">
-          <a-tab-pane v-for="(tabItem) in tabPaneList" :key="tabItem.type" :tab="tabItem.name">
-
-            <a-button
-                class="envDetail-btn"
-                @click="addGlobalParams"
-            >
-              <template #icon>
-                <PlusOutlined/>
-              </template>
-              添加
-            </a-button>
-
-            <a-table size="small" bordered :pagination="false" :columns="globalParamscolumns"
-                     :data-source="globalParamsData?.[tabItem.name] || []">
-              <template #customName="{ text,index }">
-                <a-input :value="text" @change="(e) => {
-                  handleGlobalParamsChange(tabItem.name,'name',index,e);
-              }" placeholder="请输入参数名"/>
-              </template>
-              <template #customType="{ text,index }">
-                <a-select
-                    class="custom-select"
-                    :value="text"
-                    style="width: 120px"
-                    @change="(e) => {
-                    handleGlobalParamsChange(tabItem.name,'type',index,e)
-                    }">
-                  <a-select-option value="string">string</a-select-option>
-                  <a-select-option value="number">number</a-select-option>
-                  <a-select-option value="integer">integer</a-select-option>
-                </a-select>
-              </template>
-              <template #customRequired="{ text,index }">
-                <a-switch :checked="text" @change="(checked) => {
-                    handleGlobalParamsChange(tabItem.name,'required',index,checked)
-                    }"/>
-              </template>
-              <template #customDefaultValue="{ text,index }">
-                <a-input :value="text" @change="(e) => {
-                  handleGlobalParamsChange(tabItem.name,'defaultValue',index,e);
-                }" placeholder="默认值"/>
-              </template>
-              <template #customDescription="{ text,index }">
-                <a-input :value="text" @change="(e) => {
-                  handleGlobalParamsChange(tabItem.name,'description',index,e);
-              }" placeholder="说明"/>
-              </template>
-              <template #customAction="{index }">
-                <a-button danger
-                          type="text"
-                          @click="handleGlobalParamsChange(tabItem.name,'',index,'','delete');"
-                          :size="'small'">删除
-                </a-button>
-              </template>
-            </a-table>
-          </a-tab-pane>
-        </a-tabs>
-
-        <div class="envDetail-footer">
-          <a-button class="save-btn" @click="handleSaveGlobalParams" type="primary">保存</a-button>
-        </div>
+        <GlobalParamsCom @handle-global-params-change="handleGlobalParamsChange"
+          @handle-save-global-params="handleSaveGlobalParams" @add-global-params="addGlobalParams" />
       </div>
-      <!-- ::::环境详情 -->
-      <div class="envDetail" v-if="isShowEnvDetail && activeEnvDetail">
-        <div class="title">{{ activeEnvDetail.displayName }}</div>
-        <div class="envDetail-content">
-          <a-form-item :labelCol="{span: 2}" :wrapperCol="{span: 10}" label="环境名称">
-            <a-input class="env-name" :value="activeEnvDetail.name || ''" @change="handleEnvNameChange"
-                     placeholder="请输入环境名称"/>
-          </a-form-item>
-          <div class="serveServers">
-            <div class="serveServers-header">服务 (前置URL)</div>
-            <a-button
-                class="envDetail-btn"
-                @click="addService"
-            >
-              <template #icon>
-                <PlusOutlined/>
-              </template>
-              关联服务
-            </a-button>
-            <a-table v-if="activeEnvDetail.serveServers.length > 0"
-                     size="small"
-                     bordered :pagination="false"
-                     :columns="serveServersColumns"
-                     :data-source="activeEnvDetail.serveServers">
-              <template #customName="{ text,index }">
-                <a-input :value="text" @change="(e) => {
-                handleEnvChange('serveServers','serveName',index,e);
-                }" placeholder="请输入参数名"/>
-              </template>
 
-              <template #customUrl="{ text,index }">
-                <a-input :value="text"
-                         @change="(e) => {
-                            handleEnvChange('serveServers','url',index,e);
-                         }"
-                         placeholder="http 或 https 起始的合法 URL"/>
-              </template>
-            </a-table>
-          </div>
-          <div class="vars">
-            <div class="vars-header">环境变量</div>
-            <a-button
-                class="envDetail-btn"
-                @click="addVar"
-            >
-              <template #icon>
-                <PlusOutlined/>
-              </template>
-              添加
-            </a-button>
-            <a-table
-                v-if="activeEnvDetail.vars.length > 0"
-                bordered size="small"
-                :pagination="false"
-                :columns="globalVarsColumns"
-                :data-source="activeEnvDetail.vars">
-              <template #customName="{ text,index }">
-                <a-input @change="(e) => {
-                handleEnvChange('vars','name',index,e);
-                }" :value="text" placeholder="请输入参数名"/>
-              </template>
-              <template #customLocalValue="{ text,index }">
-                <a-input :value="text" @change="(e) => {
-              handleEnvChange('vars','localValue',index,e);
-              }" placeholder="请输入本地值"/>
-              </template>
-              <template #customRemoteValue="{ text,index }">
-                <a-input :value="text" @change="(e) => {
-            handleEnvChange('vars','remoteValue',index,e);
-            }" placeholder="请输入远程值"/>
-              </template>
-              <template #customDescription="{ text,index }">
-                <a-input :value="text" @change="(e) => {
-              handleEnvChange('vars','description',index,e);
-            }" placeholder="请输入描述信息"/>
-              </template>
-              <template #customAction="{index }">
-                <a-button danger
-                          type="text"
-                          @click="handleEnvChange('vars','',index,'','delete');"
-                          :size="'small'">删除
-                </a-button>
-              </template>
-            </a-table>
-          </div>
-        </div>
-        <div class="envDetail-footer">
-          <a-button v-if="activeEnvDetail.id" class="save-btn" @click="deleteEnvData" type="danger">删除</a-button>
-          <a-button v-if="activeEnvDetail.id" class="save-btn" @click="copyEnvData" type="primary">复制</a-button>
-          <a-button class="save-btn" @click="addEnvData" type="primary">保存</a-button>
-        </div>
+      <div class="envDetail" v-if="isShowEnvDetail && activeEnvDetail">
+        <EnvDetail :activeEnvDetail="activeEnvDetail" @deleteEnvData="deleteEnvData" @copyEnvData="copyEnvData"
+          @addEnvData="addEnvData" @handleEnvChange="handleEnvChange" @handleEnvNameChange="handleEnvNameChange"
+          @addVar="addVar" @addService="addService" />
       </div>
     </div>
   </div>
-  <a-modal
-      v-model:visible="addServiceModalVisible"
-      title="关联服务"
-      @ok="handleAddServiceOk">
-    <a-form-item class="select-service" :labelCol="{span: 6}" :wrapperCol="{span: 16}" label="请选择服务">
-      <a-select
-          v-model:value="selectedService"
-          :options="serviceOptions"
-          placeholder="请选择服务"
-          style="width: 200px"/>
+  <a-modal v-model:visible="addServiceModalVisible" title="关联服务" @ok="handleAddServiceOk">
+    <a-form-item class="select-service" :labelCol="{ span: 6 }" :wrapperCol="{ span: 16 }" label="请选择服务">
+      <a-select v-model:value="selectedService" :options="serviceOptions" placeholder="请选择服务" style="width: 200px" />
     </a-form-item>
 
   </a-modal>
@@ -288,25 +78,24 @@
 
 import {
   computed,
-  defineEmits,
-  defineProps,
   ref,
   watch
 } from 'vue';
-import {MenuOutlined, PlusOutlined} from '@ant-design/icons-vue';
+import { MenuOutlined, PlusOutlined } from '@ant-design/icons-vue';
 import draggable from 'vuedraggable'
-import { useGlobalEnv } from '../../hooks/globalEnv';
-import { useGlobalVarAndParams } from '../../hooks/globalVar';
-import {globalParamscolumns, globalVarsColumns, serveServersColumns, tabPaneList} from '../../config';
-import {StateType as ProjectStateType} from "@/store/project";
-import {StateType as ProjectSettingStateType} from "@/views/ProjectSetting/store";
-import {useStore} from "vuex";
+import EnvDetail from './EnvDetail.vue';
+import GlobalParamsCom from './GlobalParams.vue';
+import GlobalVarCom from './GlobalVar.vue';
+import { useGlobalEnv } from '../../hooks/useGlobalEnv';
+import { useGlobalVarAndParams } from '../../hooks/useGlobalVar';
+import { StateType as ProjectStateType } from "@/store/project";
+import { StateType as ProjectSettingStateType } from "@/views/ProjectSetting/store";
+import { useStore } from "vuex";
+import { EnvDataItem } from '../../data';
 
 // store 相关
-const store = useStore<{ ProjectGlobal: ProjectStateType, ProjectSetting:  ProjectSettingStateType}>();
+const store = useStore<{ ProjectGlobal: ProjectStateType, ProjectSetting: ProjectSettingStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
-const globalParamsData = computed<any>(() => store.state.ProjectSetting.globalParamsData);
-const globalVarsData = computed<any>(() => store.state.ProjectSetting.globalVarsData);
 const serviceOptions = computed<any>(() => store.state.ProjectSetting.serviceOptions);
 const envList = computed<any>(() => store.state.ProjectSetting.envList);
 
@@ -320,7 +109,7 @@ const globalParamsActiveKey = ref('header');
 
 
 // 环境设置相关
-const { 
+const {
   isShowAddEnv,
   isShowEnvDetail,
   activeEnvDetail,
@@ -332,10 +121,10 @@ const {
   copyEnvData,
   handleEnvChange,
   handleEnvNameChange
-} = useGlobalEnv({ isShowGlobalParams, isShowGlobalVars});
+} = useGlobalEnv({ isShowGlobalParams, isShowGlobalVars });
 
 // 全局变量和全局参数相关
-const { 
+const {
   showGlobalParams,
   showGlobalVars,
   addGlobalVar,
@@ -344,14 +133,24 @@ const {
   handleSaveGlobalVars,
   handleGlobalVarsChange,
   handleGlobalParamsChange
-} = useGlobalVarAndParams({ 
-  isShowAddEnv, 
-  isShowEnvDetail, 
-  activeEnvDetail, 
-  isShowGlobalParams, 
+} = useGlobalVarAndParams({
+  isShowAddEnv,
+  isShowEnvDetail,
+  activeEnvDetail,
+  isShowGlobalParams,
   isShowGlobalVars,
   globalParamsActiveKey
 });
+
+function handleDragEnd(_e: any) {
+  const envIdList = envList.value.map((e: EnvDataItem) => {
+    return e.id;
+  })
+  store.dispatch('ProjectSetting/sortEnvList', {
+    data: envIdList,
+    projectId: currProject.value.id,
+  })
+}
 
 /**
  * 请求服务列表
@@ -362,7 +161,7 @@ async function getServersList() {
     page: 0,
     pageSize: 100
   })
-} 
+}
 
 // 添加服务弹窗操作 
 async function addService() {
@@ -441,12 +240,7 @@ watch(() => {
 
   .env-item {
     margin: 0 16px;
-    //padding: 0 16px;
     padding-left: 8px;
-    //display: inline-block;
-    //&:hover{
-    //  color: #1677ff;
-    //}
 
     i {
       width: 18px;
@@ -470,10 +264,6 @@ watch(() => {
   .divider {
     margin: 16px 0;
   }
-
-  //.env-item-footer {
-  //  padding: 0;
-  //}
 }
 
 .right-content {
@@ -481,89 +271,36 @@ watch(() => {
   height: calc(100vh - 138px);
   overflow-y: scroll;
   position: relative;
-  //margin: 16px;
   padding: 16px;
 
-  .globalVars, .globalParams, .envDetail {
+  .globalVars,
+  .globalParams,
+  .envDetail {
     padding: 8px;
-
-    .title {
-      font-weight: bold;
-      font-size: 18px;
-      margin-bottom: 16px;
-    }
   }
-
-  .envDetail-content {
-    position: relative;
-  }
-
-  .envDetail-footer {
-    height: 60px;
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    width: 300px;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-
-    .save-btn {
-      margin-right: 16px;
-    }
-  }
-}
-
-.vars-header, .serveServers-header {
-  padding: 0 0 8px;
-  line-height: 1.4;
-  white-space: normal;
-  text-align: left;
-  margin-bottom: 8px;
 }
 
 .var-icon {
   display: inline-block;
 }
 
-.envDetail-btn {
-  margin-top: 16px;
-  margin-bottom: 16px;
+:deep(.ant-input:not(.env-name):hover),
+:deep(.ant-input:active),
+:deep(.ant-input:focus) {
+  border: 1px solid #4096ff !important
 }
 
-.serveServers-header, .vars-header {
-  font-weight: bold;
-  margin-bottom: 0;
-  margin-top: 16px;
+:deep(.ant-input:not(.env-name)) {
+  border: 1px solid transparent !important
 }
 
-
-.select-service {
-  .ant-select-selector {
-    border: 1px solid #d9d9d9;
-  }
+:deep(.custom-select .ant-select-selector) {
+  border: 1px solid transparent !important;
 }
 
-::v-deep {
-
-  .custom-select {
-    .ant-select-selector {
-      border: 1px solid transparent !important;
-    }
-
-    .ant-select-selector:hover, .ant-select-selector:active, .ant-select-selector:focus {
-      border: 1px solid #4096ff !important
-    }
-  }
-
-
-  .ant-input:not(.env-name) {
-    border: 1px solid transparent !important;
-  }
-
-  .ant-input:not(.env-name):hover, .ant-input:active, .ant-input:focus {
-    border: 1px solid #4096ff !important
-  }
+:deep(.custom-select .ant-select-selector:hover),
+:deep(.custom-select .ant-select-selector:active),
+:deep(.ant-select-selector:focus) {
+  border: 1px solid #4096ff !important
 }
-
 </style>

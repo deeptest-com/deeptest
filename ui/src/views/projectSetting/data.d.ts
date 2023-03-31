@@ -1,3 +1,5 @@
+import { Ref } from 'vue';
+
 interface BasicSchemaInfo {
     name: string;
     serveId: number | string;
@@ -22,17 +24,60 @@ export interface DataItem {
     address: string;
 }
 
+export interface VarDataItem {
+    name: string;
+    localValue: string | number;
+    remoteValue: string | number;
+    rightValue?: string;
+}
+
+export interface EnvReqParams {
+    id?: string | number;
+    activeEnvId?: string | number;
+    projectId?: string | number;
+}
+
+export interface EnvDataItem {
+    id: string | number;
+    projectId: string | number;
+    name: string;
+    serveServers: any[];
+    vars: any[];
+}
+
+export interface VarsReqParams {
+    projectId: string | number;
+}
+
+export interface GlobalParamsReqData {
+    header: any[];
+    body: any[];
+    query: any[];
+    cookie: any[];
+    projectId?: string | number;
+}
+
+export interface ServeListParams {
+    "projectId"?: number | string,
+    "page"?: number,
+    "pageSize"?: number,
+    "status"?: number,
+    "userId"?: number,
+    "title"?: string,
+    "name"?: string;
+}
+
 export interface VarsChangeState {
     field: string;
     index: number;
-    e: any; 
+    e: any;
     action?: string;
 }
 
 export interface ParamsChangeState {
     field: string;
     index: number;
-    e: any; 
+    e: any;
     type: string;
     action?: string;
 }
@@ -52,9 +97,9 @@ export interface SchemaListReqParams {
 }
 
 export interface BasicSchemaParams {
-    name: string; // 搜索关键字
+    name?: string; // 搜索关键字
     serveId?: number | string;
-    id?: string;
+    id?: string | number | undefined;
     data?: string;
 }
 
@@ -68,6 +113,10 @@ export interface Schema {
     text?: string;
     valueType?: string;
     title?: string;
+    mode?: string;
+    focusType?: string;
+    required?: boolean;
+    message?: string;
 }
 export interface SearchInfo {
     keyword: string;
@@ -80,4 +129,78 @@ export interface SecurityListReqParams {
     pageSize?: number;
     id?: string;
    
+}
+
+export interface StoreServeParams {
+    projectId: string | number;
+    formState?: any;
+    id?: string | number | undefined;
+    action?: string;
+}
+
+export interface ServeReqParams {
+    projectId: string | number;
+    name: string;
+    description?: string;
+    id?: number;
+}
+
+export interface ServeDetail {
+    name: string;
+    id: string;
+    description: string;
+}
+
+export interface SaveVersionParams {
+    serveId: string | number;
+    value: string;
+    createUser?: string;
+    description?: string;
+}
+
+export interface EnvHookParams {
+    isShowGlobalParams: Ref<boolean>;
+    isShowGlobalVars: Ref<boolean>;
+}
+
+export interface EnvReturnData {
+    isShowAddEnv: Ref<boolean>;
+    isShowEnvDetail: Ref<boolean>;
+    activeEnvDetail: any;
+    getEnvsList: () => Promise<void>;
+    showEnvDetail: (item: any, isAdd?: boolean) => void;
+    addVar: () => void;
+    addEnvData: () => void;
+    deleteEnvData: () => void;
+    copyEnvData: () => void;
+    handleEnvChange: (type: string, field: string, index: number, e: any, action?: string) => void;
+    handleEnvNameChange: (e: any) => void;
+}
+
+export interface GlobalVarsProps {
+    isShowAddEnv: Ref<boolean>,
+    isShowEnvDetail: Ref<boolean>,
+    activeEnvDetail: Ref<any>,
+    isShowGlobalParams: Ref<boolean>,
+    isShowGlobalVars: Ref<boolean>,
+    globalParamsActiveKey: Ref<string>
+}
+
+export interface VarsReturnData {
+    showGlobalParams: () => void;
+    showGlobalVars: () => void;
+    addGlobalVar: () => void;
+    addGlobalParams: (data: any) => void;
+    handleSaveGlobalParams: () => void;
+    handleSaveGlobalVars: () => void;
+    handleGlobalVarsChange: (field: string, index: number, e: any, action?: string) => void;
+    handleGlobalParamsChange: (type: string, field: string, index: number, e: any, action?: string) => void;
+}
+
+export interface VersionListReqParams {
+    serveId: string | number;
+    createUser: string;
+    version?: string;
+    page?: number;
+    pageSize?: number;            
 }

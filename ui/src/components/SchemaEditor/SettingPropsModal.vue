@@ -6,15 +6,16 @@
             changeTab(infoIndex,targetKey)
         }"
         v-for="(info,infoIndex) in moduleInfo"
-        v-model:activeKey="activeKey[infoIndex]"
-    >
+        v-model:activeKey="activeKey[infoIndex]">
+
       <a-tab-pane v-for="(tab) in info" :key="tab.value"
                   :tab="infoIndex === 0 ? tab.label : tab.subLabel">
+
         <a-form :layout="'vertical'" v-if="tab.value === 'type'">
-          <a-radio-group
+            <a-radio-group
               @change="(e) => {
-              changeType(infoIndex,e)
-             }"
+                changeType(infoIndex,e)
+              }"
               :value="selectedTypes[infoIndex]"
               button-style="solid">
             <a-radio-button
@@ -22,12 +23,13 @@
                 :key="item.value"
                 :value="item.value">{{ item.label }}
             </a-radio-button>
+
           </a-radio-group>
           <div v-for="(item,itemIndex) in tab.props" :key="itemIndex">
             <div v-if="item.value === selectedTypes[infoIndex]">
               <div class="card-title">{{ item.props.label }}</div>
               <a-card
-                  :bodyStyle="{padding:'16px'}"
+                  :bodyStyle="{padding:'0 16px 16px 16px'}"
                   :title="null">
                 <a-row
                     type="flex"
@@ -73,12 +75,12 @@
             </div>
           </div>
         </a-form>
+
         <a-form v-if="tab.value === 'components'">
           <a-select
               label-in-value
               placeholder="Select users"
               style="width: 100%"
-
           >
           </a-select>
         </a-form>
@@ -86,10 +88,21 @@
     </a-tabs>
   </div>
 </template>
-
 <script lang="ts" setup>
 import {defineComponent, ref, defineProps, defineEmits, watch, reactive, toRaw, UnwrapRef, computed} from 'vue';
 import {schemaSettingInfo} from './config';
+const props = defineProps({
+  visible: {
+    required: true,
+    type: Boolean,
+  },
+  value: {
+    required: true,
+    type: Object
+  },
+})
+
+const emit = defineEmits(['ok', 'cancal']);
 
 // 根据传入的数据生成模块数据
 function genModuleInfo() {
@@ -97,16 +110,16 @@ function genModuleInfo() {
 }
 
 const moduleInfo: any = ref([genModuleInfo()]);
+// 选中的类型，用于构造数据
 const selectedTypes: any = ref(['string']);
 const activeKey = ref(['type']);
-
+const treeInfo:any = ref(null);
 
 function changeTab(index, key) {
   console.log(index, key);
 }
 
 function changeType(index: any, e: any) {
-  console.log(index, e.target.value)
   let type = e.target.value;
   selectedTypes.value[index] = type;
   if (type === 'array') {
@@ -121,71 +134,40 @@ function changeType(index: any, e: any) {
   }
 }
 
-// 选择中的数据类型
-// const selectedDataTypeConfig: any = ref(null);
-
-// const selectedDataTypeConfig = computed(() => {
-//   let type = selectedTypes.value[0];
-//   if (type && moduleInfo.value[0] && moduleInfo.value[0][0]?.props) {
-//     const i = moduleInfo.value[0][0].props.find((item: any) => {
-//       return item.value === type;
-//     })
-//     console.log(832,i)
-//     return i;
-//   }
-//
-//   return null;
-// })
 watch(() => {
   return selectedTypes.value
 }, (newVal) => {
-
-  console.log(832, newVal[0])
-
+  console.log(832, newVal[0]);
 }, {
   immediate: true
 })
-// watch(() => {
-//   return props.visible
-// }, () => {
-//   let type = newVal[0];
-//   if(type && moduleInfo.value[0] && moduleInfo.value[0][0]?.props){
-//     selectedDataTypeConfig.value = moduleInfo.value[0][0].props.find((item: any) => {
-//       return item.value === newVal;
-//     })
-//     console.log(832,selectedDataTypeConfig.value)
-//   }
-// })
 
-const props = defineProps({
-  visible: {
-    required: true,
-    type: Boolean,
-  }
+watch(() => {
+  return props.value
+}, (newVal) => {
+  treeInfo.value = newVal;
+  console.log(moduleInfo.value)
 })
 
-const emit = defineEmits(['ok', 'cancal']);
+watch(() => {
+  return props.visible
+}, () => {
+  console.log(8329999, props.visible);
+})
 
-const handleOk = (e: MouseEvent) => {
-  emit('ok');
-};
 
-
-function handleCancel() {
-  emit('cancal');
-}
 </script>
 <style lang="less" scoped>
 
-::v-deep(.ant-modal-body) {
+:deep(.ant-modal-body) {
   padding: 0;
 }
 
-::v-deep(.ant-input-number) {
+:deep(.ant-input-number) {
   width: 100%
 }
 
-::v-deep(.ant-form-item-label) {
+:deep(.ant-form-item-label) {
   label {
     font-weight: bold;
   }

@@ -12,6 +12,7 @@ export interface Interface {
     id: number;
     name: string;
     desc: string;
+    status: number;
     interfaces: Array<Interfaces>,
     pathParams: any[],
 }
@@ -92,6 +93,6 @@ export interface filterFormState {
 
 interface NewInterfaceFormState {
     title: string;
-    parentId: string | null;
+    categoryId: string | null;
     description: string | undefined;
 }

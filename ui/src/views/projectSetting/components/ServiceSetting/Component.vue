@@ -1,7 +1,14 @@
 <template>
   <div class="content">
     <div class="header">
-      <Filter :search-place-holder="'输入组件名称搜索'" :form-schema-list="schemaList" :need-search="true"  @handleSearch="onSearch"/>
+      <CustomForm 
+        :form-config="formConfig"
+        :rules="rules"
+        :search-placeholder="'输入组件名称搜索'"
+        :show-search="true"
+        @handle-ok="handleAdd"
+        @handle-search="onSearch"
+      />
     </div>
     <a-table bordered :data-source="dataSource" :columns="schemaColumns">
       <template #name="{ text, record }">
@@ -30,24 +37,10 @@
         <div class="modal-header">
           <div class="header-desc">
             <div class="name" v-if="showMode === 'form'">
-              <a-input
-                  @focusout="updateModelInfo"
-                  @pressEnter="updateModelInfo"
-                  @change="(e) => {
-                    changeModelInfo('name',e)
-                  }"
-                  :value="activeSchema?.name"
-                  placeholder="请输入内容"/>
+              <EditAndShowField :placeholder="'请输入内容'" :value="activeSchema?.name" @update="(e: string) => changeModelInfo('name', e)" />
             </div>
             <div class="desc" v-if="showMode === 'form'">
-              <a-input
-                  @focusout="updateModelInfo"
-                  @pressEnter="updateModelInfo"
-                  @change="(e) => {
-                    changeModelInfo('desc',e)
-                  }"
-                  :value="activeSchema?.description"
-                  placeholder="请输入内容"/>
+              <EditAndShowField :placeholder="'请输入内容'" :value="activeSchema?.description" @update="(e: string) => changeModelInfo('desc', e)" />
             </div>
           </div>
           <div class="btns">
@@ -98,24 +91,22 @@
 
 import {
   computed,
-  defineEmits,
   defineProps,
-  reactive,
-  Ref,
   ref,
-  UnwrapRef,
-  watch
+  watch,
+  createVNode
 } from 'vue';
+import { useStore } from 'vuex';
+import { Modal } from 'ant-design-vue';
+import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import {schema2yaml} from '../../service';
 import SchemaEditor from '@/components/SchemaEditor/index.vue';
 import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
-import Filter from '../commom/Filter.vue';
+import CustomForm from '../common/CustomForm.vue';
+import EditAndShowField from '@/components/EditAndShow/index.vue';
 import {MonacoOptions} from '@/utils/const';
 import { schemaColumns } from '../../config';
-import { useStore } from 'vuex';
 import {StateType as ProjectSettingStateType} from '../../store';
-import { Schema } from '../../data';
-import { message } from 'ant-design-vue';
 
 const props = defineProps({
   serveId: {
@@ -123,45 +114,35 @@ const props = defineProps({
     required: true
   },
 })
-const emit = defineEmits(['ok', 'close', 'refreshList']);
 
-interface FormState {
-  name: string;
-  tags: Array<string>,
+const rules = {
+  name: [
+    {
+      required: true,
+      message: '组件名称不能为空'
+    }
+  ]
 }
 
-interface DataItem {
-  key: string;
-  name: string;
-  age: number;
-  address: string;
-}
-
-
-const formState: UnwrapRef<FormState> = reactive({
-  name: '',
-  tags: [],
-});
-
-const schemaList: Schema[] = [
+const formConfig = [
   {
     type: 'input',
-    stateName: 'name',
+    modelName: 'name',
     placeholder: '请输入组件名称',
     valueType: 'string'
   },
   {
     type: 'select',
-    stateName: 'tags',
+    modelName: 'tags',
     placeholder: '标签',
     options: [],
-    valueType: 'array'
+    valueType: 'array',
+    mode: 'tags',
   },
   {
     type: 'button',
     text: '新建组件',
-    stateName: '',
-    action: handleOk
+    modelName: ''
   }
 ]
 
@@ -183,34 +164,17 @@ async function onSearch(e: any) {
 
 async function changeModelInfo(type, e) {
   if (type === 'desc') {
-    activeSchema.value.description = e.target.value;
+    activeSchema.value.description = e;
   }
   if (type === 'name') {
-    activeSchema.value.name = e.target.value;
+    activeSchema.value.name = e;
   }
 }
-
-async function updateModelInfo() {
-  // isEditModelName.value = false;
-  // isEditModelDesc.value = false;
-  // if (activeSchema.value.name && activeSchema.value.description) {
-  //   const res = await saveSchema({
-  //     "projectId": 1,
-  //     "name": activeSchema.value.name,
-  //     "description": activeSchema.value.description,
-  //     "id": props.serveId,
-  //   });
-  //   if (res.code === 0) {
-  //     await getList();
-  //   }
-  // }
-}
-
 
 const showMode = ref('form');
 const yamlCode = ref('');
 
-async function switchMode(val) {
+async function switchMode(val: any) {
   showMode.value = val;
   // 需求去请求YAML格式
   const content = activeSchema.value.content;
@@ -235,22 +199,15 @@ const edit = (record: any) => {
 };
 
 // 保存组件
-async function handleOk(evt: any, formState: any) {
-  if (!formState.name) {
-    message.error('组件名称不能为空');
-    return;
-  }
+async function handleAdd(formState: any) {
   const result = await store.dispatch('ProjectSetting/saveSchema', {
     schemaInfo: {
       "name": formState.name,
       "serveId": props.serveId,
       "tags": formState.tags.join(','),
     },
-    action: 'create',
-    serveId: props.serveId,
-    name: keyword.value
+    action: 'create'
   })
-  console.log(result);
   if (result) {
     await getList();
   }
@@ -268,9 +225,7 @@ async function handleEdit() {
       "type": schemaType.value,
       "description": activeSchema.value.description
     },
-    action: 'update',
-    serveId: props.serveId,
-    name: keyword.value
+    action: 'update'
   })
   if (result) {
     schemeVisible.value = false;
@@ -291,10 +246,16 @@ async function getList() {
 
 
 async function onDelete(record: any) {
-  await store.dispatch('ProjectSetting/deleteSchema', {
-    id: record.id,
-    serveId: props.serveId,
-    name: keyword.value
+  Modal.confirm({
+    title: '确认要删除该组件吗',
+    icon: createVNode(ExclamationCircleOutlined),
+    onOk() {
+      store.dispatch('ProjectSetting/deleteSchema', {
+        id: record.id,
+        serveId: props.serveId,
+        name: keyword.value
+      })
+    }
   })
 }
 
@@ -391,15 +352,6 @@ watch(() => {
 .editModal-content {
   min-height: 200px;
 }
-
-.content-form {
-  //margin-top: 32px;
-}
-
-.content-code {
-  // margin-top: 32px;
-}
-
 .header-desc {
   flex: 1;
   margin-right: 36px;

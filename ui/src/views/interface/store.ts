@@ -15,7 +15,7 @@ import {
     get,
     save,
     remove,
-    loadExecResult,
+    loadExecResult, getYaml, updateStatus
 } from './service';
 
 import {
@@ -30,60 +30,58 @@ import {
 import {
     copyInterface,
     deleteInterface,
-    expireInterface, getInterfaceDetail,
+    expireInterface,
+    getInterfaceDetail,
     getInterfaceList,
     saveInterface,
 } from './service';
 
 import {getNodeMap} from "@/services/tree";
 import {momentUtc} from "@/utils/datetime";
-import {getEnvList, serverList} from "@/views/projectSetting/service";
+import {example2schema,schema2example, getEnvList, getSecurityList, serverList} from "@/views/projectSetting/service";
 
 export interface StateType {
     interfaceId: number;
-
     listResult: QueryResult;
     detailResult: Interface;
     queryParams: any;
-
     execResult: any;
-
     treeDataCategory: any[];
     treeDataMapCategory: any,
     nodeDataCategory: any;
     filterState: filterFormState,
     interfaceDetail: any,
+    interfaceDetailYamlCode: any,
     serveServers: any[], // serve list
+    securityOpts: any[]
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
     state: StateType;
     mutations: {
         setInterfaceId: Mutation<StateType>;
-
         setList: Mutation<StateType>;
         setDetail: Mutation<StateType>;
         setQueryParams: Mutation<StateType>;
-
         setExecResult: Mutation<StateType>;
-
         setTreeDataCategory: Mutation<StateType>;
         setTreeDataMapCategory: Mutation<StateType>;
         setTreeDataMapItemCategory: Mutation<StateType>;
         setTreeDataMapItemPropCategory: Mutation<StateType>;
         setNodeCategory: Mutation<StateType>;
-
         setFilterState: Mutation<StateType>;
         setInterfaceDetail: Mutation<StateType>;
         setInterfaceDetailByIndex: Mutation<StateType>;
         setServerList: Mutation<StateType>;
+        setSecurityOpts: Mutation<StateType>;
+        setYamlCode: Mutation<StateType>;
+        setStatus: Mutation<StateType>;
     };
     actions: {
         listInterface: Action<StateType, StateType>;
         getInterface: Action<StateType, StateType>;
         saveInterface: Action<StateType, StateType>;
         removeInterface: Action<StateType, StateType>;
-
         loadCategory: Action<StateType, StateType>;
         getCategoryNode: Action<StateType, StateType>;
         createCategoryNode: Action<StateType, StateType>;
@@ -94,11 +92,8 @@ export interface ModuleType extends StoreModuleType<StateType> {
         saveTreeMapItemPropCategory: Action<StateType, StateType>;
         saveCategory: Action<StateType, StateType>;
         updateCategoryName: Action<StateType, StateType>;
-
         loadExecResult: Action<StateType, StateType>;
         updateExecResult: Action<StateType, StateType>;
-
-
         loadList: Action<StateType, StateType>;
         createApi: Action<StateType, StateType>;
         disabled: Action<StateType, StateType>;
@@ -107,12 +102,16 @@ export interface ModuleType extends StoreModuleType<StateType> {
         getInterfaceDetail: Action<StateType, StateType>;
         updateInterfaceDetail: Action<StateType, StateType>;
         getServerList: Action<StateType, StateType>;
+        getSecurityList: Action<StateType, StateType>;
+        getYamlCode: Action<StateType, StateType>;
+        updateStatus: Action<StateType, StateType>;
+        example2schema: Action<StateType, StateType>;
+        schema2example: Action<StateType, StateType>;
     }
 }
 
 const initState: StateType = {
     interfaceId: 0,
-
     listResult: {
         list: [],
         pagination: {
@@ -126,7 +125,6 @@ const initState: StateType = {
     detailResult: {} as Interface,
     queryParams: {},
     execResult: {},
-
     treeDataCategory: [],
     treeDataMapCategory: {},
     nodeDataCategory: {},
@@ -136,7 +134,9 @@ const initState: StateType = {
         "title": null,
     },
     interfaceDetail: null,
+    interfaceDetailYamlCode: null,
     serveServers: [],
+    securityOpts: [],
 };
 
 const StoreModel: ModuleType = {
@@ -149,18 +149,15 @@ const StoreModel: ModuleType = {
         setInterfaceId(state, id) {
             state.interfaceId = id;
         },
-
         setList(state, payload) {
             state.listResult = payload;
         },
         setDetail(state, payload) {
             state.detailResult = payload;
         },
-
         setExecResult(state, data) {
             state.execResult = data;
         },
-
         setTreeDataCategory(state, data) {
             state.treeDataCategory = [data];
         },
@@ -178,7 +175,6 @@ const StoreModel: ModuleType = {
         setNodeCategory(state, data) {
             state.nodeDataCategory = data;
         },
-
         setQueryParams(state, payload) {
             state.queryParams = payload;
         },
@@ -197,7 +193,19 @@ const StoreModel: ModuleType = {
         setServerList(state, payload) {
             state.serveServers = payload;
         },
-
+        setSecurityOpts(state, payload) {
+            state.securityOpts = payload;
+        },
+        setYamlCode(state, payload) {
+            state.interfaceDetailYamlCode = payload;
+        },
+        setStatus(state, payload) {
+            state.listResult.list.forEach((item) => {
+                if (item.id === payload.id) {
+                    item.status = payload.status;
+                }
+            });
+        },
     },
     actions: {
         async listInterface({commit, dispatch}, params: QueryParams) {
@@ -370,7 +378,6 @@ const StoreModel: ModuleType = {
                 return false
             }
         },
-
         async loadList({commit, dispatch, state}, {currProjectId, page, pageSize, opts}: any) {
             page = page || state.listResult.pagination.current;
             pageSize = pageSize || state.listResult.pagination.pageSize;
@@ -451,7 +458,6 @@ const StoreModel: ModuleType = {
                 return false
             }
         },
-
         // 用于新建接口时选择接口分类
         async updateInterfaceDetail({commit, dispatch}, payload: any) {
             const res = await saveInterface({
@@ -463,14 +469,11 @@ const StoreModel: ModuleType = {
                 return false
             }
         },
-
         // 获取项目的服务
         async getServerList({commit}, payload: any) {
             const res = await serverList({
                 serveId: payload.id
             });
-
-
             if (res.code === 0) {
                 res.data.forEach((item: any) => {
                     item.label = item.url;
@@ -479,6 +482,54 @@ const StoreModel: ModuleType = {
                 commit('setServerList', res.data || null);
             } else {
                 return false
+            }
+        },
+        async getSecurityList({commit}, payload: any) {
+            const res = await getSecurityList({
+                serveId: payload.id,
+                "page": 1,
+                "pageSize": 100
+            });
+            if (res.code === 0) {
+                res.data.result.forEach((item: any) => {
+                    item.label = item.name;
+                    item.value = item.name;
+                })
+                commit('setSecurityOpts', res.data.result || []);
+            } else {
+                return false
+            }
+        },
+        async getYamlCode({commit}, payload: any) {
+            const res = await getYaml(payload);
+            if (res.code === 0) {
+                commit('setYamlCode', res.data);
+            } else {
+                return false
+            }
+        },
+        async updateStatus({commit}, payload: any) {
+            const res = await updateStatus(payload);
+            if (res.code === 0) {
+                commit('setStatus', payload);
+            } else {
+                return false
+            }
+        },
+        async example2schema({commit}, payload: any) {
+            const res = await example2schema(payload);
+            if (res.code === 0) {
+                return  res.data;
+            } else {
+                return null
+            }
+        },
+        async schema2example({commit}, payload: any) {
+            const res = await schema2example(payload);
+            if (res.code === 0) {
+                return  res.data;
+            } else {
+                return null
             }
         },
 

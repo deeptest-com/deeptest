@@ -21,6 +21,9 @@
                     <a-tab-pane key="2" tab="服务组件">
                         <ServiceComponent :serveId="formState.id" />
                     </a-tab-pane>
+                    <a-tab-pane key="3" tab="Security">
+                        <ServiceSecurity :serveId="formState.id"/>
+                    </a-tab-pane>
                 </a-tabs>
             </a-form>
         </div>
@@ -32,11 +35,13 @@ import {
     computed,
     defineEmits,
     defineProps,
+    onMounted
 } from 'vue';
 import { useStore } from 'vuex';
 import { message } from 'ant-design-vue';
 import ServiceVersion from './Version.vue';
 import ServiceComponent from './Component.vue';
+import ServiceSecurity from './Security.vue';
 import EditAndShowField from '@/components/EditAndShow/index.vue'; 
 import { StateType as ProjectStateType } from "@/store/project";
 import { StateType as ProjectSettingStateType } from '../../store';
@@ -47,18 +52,28 @@ const store = useStore<{ ProjectGlobal: ProjectStateType, ProjectSetting: Projec
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const formState = computed<ServeDetail>(() => store.state.ProjectSetting.selectServiceDetail);
 
-defineProps<{
+const props = defineProps<{
     drawerVisible: boolean
     editKey?: number
+    params:any
+    
+   
 }>();
 
 const emits = defineEmits(['onClose', 'update:formState']);
 
+    
 
 const activeKey = ref('1');
 const isEditServiceDesc = ref(false);
 const isEditServiceName = ref(false);
 
+onMounted(()=>{
+    if(props.params?.sectab){
+        const sectab:any=props.params?.sectab 
+        activeKey.value=sectab
+    }  
+})
 
 function onClose() {
     emits('onClose');

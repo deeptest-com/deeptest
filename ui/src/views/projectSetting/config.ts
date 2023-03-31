@@ -206,6 +206,27 @@ const schemaColumns = [
         slots: { customRender: 'operation' },
     },
 ];
+const securityColumns = [
+    {
+        title: 'Security名称',
+        dataIndex: 'name',
+        width: '30%',
+        slots: { customRender: 'name' },
+    },
+    {
+        title: 'Security类型',
+        dataIndex: 'type',
+    },
+    {
+        title: '应用范围',
+        dataIndex: 'description',
+    },
+    {
+        title: '操作',
+        dataIndex: 'operation',
+        slots: { customRender: 'operation' },
+    },
+];
 
 const versionColumns = [
     {
@@ -237,5 +258,6 @@ export {
     tabPaneList,
     serviceColumns,
     schemaColumns,
+    securityColumns,
     versionColumns
 }

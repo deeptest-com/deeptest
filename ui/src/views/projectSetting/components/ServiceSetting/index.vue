@@ -58,7 +58,7 @@
       </template>
     </a-table>
     <!-- 抽屉 -->
-    <Drawer :edit-key="editKey" :drawer-visible="drawerVisible" @onClose="onClose" />
+    <Drawer :params="routerObj" :edit-key="editKey" :drawer-visible="drawerVisible" @onClose="onClose" />
   </div>
 </template>
 <script setup lang="ts">
@@ -67,7 +67,8 @@ import {
   computed,
   ref,
   watch,
-  createVNode
+  createVNode,
+  defineProps,
 } from 'vue';
 import { useStore } from "vuex";
 import { Modal } from 'ant-design-vue';
@@ -85,6 +86,15 @@ const userListOptions = computed<any>(() => store.state.ProjectSetting.userListO
 
 const drawerVisible = ref(false);
 const editKey = ref(0);
+const routerObj=ref({});
+
+const props = defineProps({
+  params: {
+    type: Object,
+    required: true,
+   
+  },
+})
 
 const formConfig = [
   {
@@ -187,14 +197,34 @@ async function getList(name = '') {
   })
 }
 
+
+
 // 实时监听项目切换，如果项目切换了则重新请求数据
 watch(() => {
   return currProject.value;
 }, async (newVal) => {
   await getList()
+  await isHasProps()
+
 }, {
   immediate: true
 })
+
+// 判断是否携带参数，用于security模块
+async function isHasProps(){
+  if(JSON.stringify(props.params) !=='{}'){
+    let record={}  
+    dataSource?.value?.map((item)=>{
+      if(item.id==props.params?.serveId*1){
+          record=  item
+      }
+    })
+    await edit(record)
+    routerObj.value={...record,...props.params}
+     
+  }
+
+}
 
 </script>
 

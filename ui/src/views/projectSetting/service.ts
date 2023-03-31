@@ -314,3 +314,26 @@ export async function getEnvironmentsParamList(data: VarsReqParams): Promise<any
         method: 'get',
     });
 }
+
+/**
+ *   保存授权信息
+ * */
+ export async function saveSecurityInfo(data): Promise<any> {
+    return request({
+        url: `/serves/security/save`,
+        method: 'post',
+        data: data
+    });
+}
+
+
+
+/**
+ * 删除授权
+ * */
+ export async function deleteSecurity(id: Number | String | any): Promise<any> {
+    return request({
+        url: `/serves/security/delete?id=${id}`,
+        method: 'delete',
+    });
+}

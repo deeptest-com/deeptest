@@ -7,6 +7,7 @@ import {
     deleteEnv,
     deleteServe,
     deleteSchema,
+    deleteSecurity,
     disableServe,
     example2schema,
     getEnvironmentsParamList,
@@ -21,6 +22,7 @@ import {
     saveServe,
     saveSchema,
     schema2example,
+    getSecurityList,
     getServeVersionList,
     saveServeVersion,
     deleteServeVersion,
@@ -28,7 +30,7 @@ import {
     sortEnv
 } from './service';
 import { message } from 'ant-design-vue';
-import { BasicSchemaParams, EnvDataItem, EnvReqParams, ParamsChangeState, SaveSchemaReqParams, SaveVersionParams, SchemaListReqParams, ServeDetail, ServeListParams, ServeReqParams, StoreServeParams, VarsChangeState, VarsReqParams } from './data';
+import { BasicSchemaParams,SecurityListReqParams, EnvDataItem, EnvReqParams, ParamsChangeState, SaveSchemaReqParams, SaveVersionParams, SchemaListReqParams, ServeDetail, ServeListParams, ServeReqParams, StoreServeParams, VarsChangeState, VarsReqParams } from './data';
 import { serveStatus, serveStatusTagColor } from '@/config/constant';
 import { momentUtc } from '@/utils/datetime';
 
@@ -39,6 +41,7 @@ export interface StateType {
     globalParamsData: any;
     userListOptions: any;
     schemaList: any;
+    securityList: any;
     selectServiceDetail: any;
     serveVersionsList: any;
 }
@@ -52,6 +55,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setServersList: Mutation<StateType>,
         setUserList: Mutation<StateType>,
         setSchemaList: Mutation<StateType>,
+        setSecurityList: Mutation<StateType>,
         setServiceDetail: Mutation<StateType>,
         setVersionList: Mutation<StateType>,
     };
@@ -81,10 +85,14 @@ export interface ModuleType extends StoreModuleType<StateType> {
         // 服务组件相关
         getSchemaList: Action<StateType, StateType>,
         copySchema: Action<StateType, StateType>,
-        deleteSchema: Action<StateType, StateType>,
+        deleteSchema: Action<StateType, StateType>, 
         saveSchema: Action<StateType, StateType>,
         generateSchema: Action<StateType, StateType>,
         generateExample: Action<StateType, StateType>,
+        // security相关
+        getSecurityList: Action<StateType, StateType>,
+        deleteSecurity: Action<StateType, StateType>,
+        
         setServiceDetail: Action<StateType, StateType>,
         // 服务版本相关
         getVersionList: Action<StateType, StateType>,
@@ -106,6 +114,7 @@ const initState: StateType = {
     globalVarsData: [],
     userListOptions: [],
     schemaList: [],
+    securityList:[],
     selectServiceDetail: {
         name: '',
         description: '',
@@ -138,6 +147,9 @@ const StoreModel: ModuleType = {
         },
         setSchemaList(state, payload) {
             state.schemaList = payload;
+        },
+        setSecurityList(state, payload) {
+            state.securityList = payload;
         },
         setServiceDetail(state, payload) {
             state.selectServiceDetail = payload;
@@ -400,6 +412,7 @@ const StoreModel: ModuleType = {
                 console.log('%c getSchemaList request failed===== failedData', 'color: green', res);
             }
         },
+        
         async deleteSchema({ dispatch }, data: BasicSchemaParams) {
             const { id, serveId, name } = data;
             const res = await deleteSchema(id);
@@ -445,6 +458,27 @@ const StoreModel: ModuleType = {
                 return res.data;
             }
             return null;
+        },
+
+        async getSecurityList({ commit }, params: SecurityListReqParams) {
+            const reqParams = { ...params, page: 1, pageSize: 20 };
+            const res = await getSecurityList(reqParams);
+            if (res.code === 0) {
+                console.log('%c getSecurityList request success===== sucessData', 'color: red', res);
+                commit('setSecurityList', res.data.result);
+            } else {
+                console.log('%c getSecurityList request failed===== failedData', 'color: green', res);
+            }
+        },
+        async deleteSecurity({ dispatch }, data: SecurityListReqParams) {
+            const { id, serveId } = data;
+            const res = await deleteSecurity(id);
+            if (res.code === 0) {
+                message.success('删除成功');
+                await dispatch('getSecurityList', { serveId });
+            } else {
+                message.error('删除失败');
+            }
         },
         setServiceDetail({ commit }, payload: ServeDetail) {
             commit('setServiceDetail', payload);

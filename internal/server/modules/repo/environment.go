@@ -307,7 +307,7 @@ func (r *EnvironmentRepo) SaveVars(projectId, environmentId uint, environmentVar
 }
 
 func (r *EnvironmentRepo) GetListByProjectId(projectId uint) (environments []model.Environment, err error) {
-	err = r.DB.Find(&environments, "project_id=?", projectId).Error
+	err = r.DB.Order("sort").Find(&environments, "project_id=?", projectId).Error
 	if err != nil {
 		return
 	}
@@ -383,4 +383,16 @@ func (r *EnvironmentRepo) ListParams(projectId uint) (res map[string]interface{}
 
 	}
 	return
+}
+
+func (r *EnvironmentRepo) SaveOrder(ids []uint) (err error) {
+	return r.DB.Transaction(func(tx *gorm.DB) error {
+		for key, id := range ids {
+			err = r.DB.Model(&model.Environment{}).Where("id=?", id).Update("sort", key).Error
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	})
 }

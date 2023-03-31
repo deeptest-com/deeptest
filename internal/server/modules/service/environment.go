@@ -138,10 +138,11 @@ func (s *EnvironmentService) DisableAllShareVar(interfaceId uint) (err error) {
 	return
 }
 
-func (s *EnvironmentService) Save(req v1.EnvironmentReq) (err error) {
+func (s *EnvironmentService) Save(req v1.EnvironmentReq) (id uint, err error) {
 	var environment model.Environment
 	copier.CopyWithOption(&environment, req, copier.Option{DeepCopy: true})
 	err = s.EnvironmentRepo.SaveEnvironment(&environment)
+	id = environment.ID
 	return
 }
 
@@ -213,5 +214,8 @@ func (s *EnvironmentService) getParams(projectId uint, in string, ReqParams []v1
 
 func (s *EnvironmentService) ListParams(projectId uint) (res map[string]interface{}, err error) {
 	return s.EnvironmentRepo.ListParams(projectId)
+}
 
+func (s *EnvironmentService) SaveOrder(req v1.EnvironmentIdsReq) (err error) {
+	return s.EnvironmentRepo.SaveOrder(req)
 }

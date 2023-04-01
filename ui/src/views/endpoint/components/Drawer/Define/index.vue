@@ -15,7 +15,9 @@
         YAML
       </a-button>
     </div>
+
     <EndpointForm v-if="showMode === 'form'"/>
+
     <div class="endpoint-code" v-if="showMode === 'code'">
       <MonacoEditor
           class="editor"
@@ -29,6 +31,7 @@
     </div>
   </div>
 </template>
+
 <script lang="ts" setup>
 import {
   ref,
@@ -45,7 +48,7 @@ import {MonacoOptions} from '@/utils/const';
 const store = useStore<{ Endpoint, ProjectGlobal }>();
 const endpointDetail = computed<Endpoint[]>(() => store.state.Endpoint.endpointDetail);
 const endpointDetailYamlCode = computed<Endpoint[]>(() => store.state.Endpoint.endpointDetailYamlCode);
-import EndpointForm from './EndpointForm.vue'
+import EndpointForm from './Form.vue'
 
 const props = defineProps({});
 const emit = defineEmits(['ok', 'close', 'refreshList']);

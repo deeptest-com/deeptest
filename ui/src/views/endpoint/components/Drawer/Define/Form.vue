@@ -1,5 +1,6 @@
 <template>
   <div class="content">
+
     <!-- ::::路径定义方式 -->
     <a-row class="form-item">
       <a-col :span="2" class="form-label">路径</a-col>
@@ -10,8 +11,9 @@
                 :options="serveServers"
                 :value="serveServers?.[0]?.value"
                 placeholder="请选择服务器"
-                style="width: 200px;text-align: left"/>
+                style="width: 200px;text-align: left" />
           </template>
+
           <template #addonAfter>
             <a-button @click="addPathParams">
               <template #icon>
@@ -24,7 +26,7 @@
         <!-- ::::路径参数 -->
         <div class="path-param-list">
           <div v-for="(item,index) in endpointDetail.pathParams" :key="item.id">
-            <FieldItem
+            <Field
                 :fieldData="{...item,index:index}"
                 :showRequire="true"
                 @del="deletePathParams"
@@ -33,6 +35,7 @@
         </div>
       </a-col>
     </a-row>
+
     <!-- ::::请求方式定义 -->
     <a-row class="form-item">
       <a-col :span="2" class="form-label">请求方式</a-col>
@@ -137,7 +140,7 @@
                       </div>
                       <div class="header-defined header-defined-items">
                         <div v-for="(item,index) in selectedMethodDetail.headers" :key="item.id">
-                          <FieldItem
+                          <Field
                               :fieldData="{...item,index:index}"
                               :showRequire="true"
                               @del="deleteParams('headers',index)"
@@ -153,7 +156,7 @@
                       </div>
                       <div class="header-defined ">
                         <div v-for="(item,index) in selectedMethodDetail.params" :key="item.id">
-                          <FieldItem
+                          <Field
                               :fieldData="{...item,index:index}"
                               :showRequire="true"
                               @del="deleteParams('params',index)"
@@ -169,7 +172,7 @@
                       </div>
                       <div class="header-defined ">
                         <div v-for="(item,index) in selectedMethodDetail.cookies" :key="item.id">
-                          <FieldItem
+                          <Field
                               :fieldData="{...item,index:index}"
                               :showRequire="true"
                               @del="deleteParams('cookies',index)"
@@ -277,7 +280,7 @@
                             <div class="params-defined-item" v-if="selectedCodeDetail?.headers?.length">
                               <div class="header-defined header-defined-items">
                                 <div v-for="(item,index) in selectedCodeDetail.headers" :key="item.id">
-                                  <FieldItem
+                                  <Field
                                       :fieldData="{...item,index:index}"
                                       :showRequire="false"
                                       @del="deleteResHeader(index)"
@@ -374,7 +377,7 @@ import {
   defaultCodeResponse,
 } from '@/config/constant';
 import {PlusOutlined, DeleteOutlined} from '@ant-design/icons-vue';
-import FieldItem from './FieldItem.vue'
+import Field from './Field.vue'
 import {Endpoint} from "@/views/endpoint/data";
 
 const store = useStore<{ Endpoint, ProjectGlobal, User }>();

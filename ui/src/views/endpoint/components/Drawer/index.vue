@@ -8,7 +8,7 @@
       wrapClassName="drawer-1"
       :bodyStyle="{padding:0,marginBottom:'60px'}"
       @close="onCloseDrawer">
-    
+
     <!-- 头部信息  -->
     <template #title>
       <a-row type="flex" style="align-items: center;width: 100%">
@@ -29,12 +29,15 @@
         :bodyStyle="{padding:'16px'}"
         :active-tab-key="key"
         @tabChange="key => onTabChange(key, 'key')">
+
       <div v-if="key === 'request'">
         <EndpointDefine/>
       </div>
+
       <div v-else-if="key === 'run'">
         <EndpointDebug></EndpointDebug>
       </div>
+
     </a-card>
 
     <div class="drawer-btns">
@@ -55,8 +58,10 @@ import {
 } from 'vue';
 import EndpointBasicInfo from './EndpointBasicInfo.vue';
 import EditAndShowField from './EditAndShowField.vue';
-import EndpointDefine from './EndpointDefine.vue';
-import EndpointDebug from './EndpointDebug.vue';
+
+import EndpointDefine from './Define/index.vue';
+import EndpointDebug from './Debug/index.vue';
+
 import {useStore} from "vuex";
 import {Endpoint} from "@/views/endpoint/data";
 

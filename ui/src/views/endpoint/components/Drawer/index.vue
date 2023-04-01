@@ -8,6 +8,7 @@
       wrapClassName="drawer-1"
       :bodyStyle="{padding:0,marginBottom:'60px'}"
       @close="onCloseDrawer">
+    
     <!-- 头部信息  -->
     <template #title>
       <a-row type="flex" style="align-items: center;width: 100%">
@@ -16,8 +17,10 @@
         </a-col>
       </a-row>
     </template>
+
     <!-- 基本信息 -->
     <EndpointBasicInfo @changeStatus="changeStatus"/>
+
     <!-- 接口设计区域 -->
     <a-card
         style="width: 100%"
@@ -32,8 +35,8 @@
       <div v-else-if="key === 'run'">
         <EndpointDebug></EndpointDebug>
       </div>
-      <div v-else-if="key === 'mock'">mock content</div>
     </a-card>
+
     <div class="drawer-btns">
       <a-space>
         <a-button type="primary" @click="save">保存</a-button>
@@ -97,11 +100,6 @@ const tabList = [
     tab: '调试',
     slots: {tab: 'customRenderRun'},
 
-  },
-  {
-    key: 'mock',
-    tab: 'Mock',
-    slots: {tab: 'customRenderMock'},
   },
 ];
 

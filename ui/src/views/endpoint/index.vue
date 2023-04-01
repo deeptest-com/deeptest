@@ -2,7 +2,7 @@
   <div class="container">
     <div class="content">
       <div class="left tree">
-        <InterfaceTree @select="selectNode"/>
+        <EndpointTree @select="selectNode"/>
       </div>
       <div class="right">
         <!--  头部搜索区域  -->
@@ -34,7 +34,7 @@
           <template #colTitle="{text,record}">
             <div class="customTitleColRender">
               <span>{{ text }}</span>
-              <span class="edit" @click="editInterface(record)"><EditOutlined/></span>
+              <span class="edit" @click="editEndpoint(record)"><EditOutlined/></span>
             </div>
           </template>
           <template #colStatus="{record}">
@@ -44,7 +44,7 @@
                   style="width: 100px"
                   :size="'small'"
                   placeholder="请修改接口状态"
-                  :options="interfaceStatusOpts"
+                  :options="endpointStatusOpts"
                   @change="(val) => {
                   handleChangeStatus(val,record);
                   }"
@@ -97,25 +97,25 @@ import {
   watch
 } from 'vue';
 import debounce from "lodash.debounce";
-import InterfaceTree from './list/tree.vue';
-import {ColumnProps} from 'ant-design-vue/es/table/interface';
+import EndpointTree from './list/tree.vue';
+import {ColumnProps} from 'ant-design-vue/es/table/endpoint';
 import {
   EditOutlined,
   MoreOutlined
 } from '@ant-design/icons-vue';
-import {interfaceStatusOpts} from '@/config/constant';
+import {endpointStatusOpts} from '@/config/constant';
 import CreateApiModal from './components/CreateApiModal.vue';
 import TableFilter from './components/TableFilter.vue';
 import Drawer from './components/Drawer/index.vue'
 import {useStore} from "vuex";
-import {Interface, PaginationConfig} from "@/views/interface/data";
-import {filterFormState} from "@/views/Interface/data";
+import {Endpoint, PaginationConfig} from "@/views/endpoint/data";
+import {filterFormState} from "@/views/Endpoint/data";
 import {StateType as ServeStateType} from "@/store/serve";
 
-const store = useStore<{ Interface, ProjectGlobal, ServeGlobal: ServeStateType }>();
+const store = useStore<{ Endpoint, ProjectGlobal, ServeGlobal: ServeStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
-const list = computed<Interface[]>(() => store.state.Interface.listResult.list);
-let pagination = computed<PaginationConfig>(() => store.state.Interface.listResult.pagination);
+const list = computed<Endpoint[]>(() => store.state.Endpoint.listResult.list);
+let pagination = computed<PaginationConfig>(() => store.state.Endpoint.listResult.pagination);
 const currServe = computed<any>(() => store.state.ServeGlobal.currServe);
 const createApiModalVisible = ref(false);
 type Key = ColumnProps['key'];
@@ -173,31 +173,31 @@ const onSelectChange = (keys: Key[], rows: any) => {
 };
 
 async function handleChangeStatus(value: any, record: any,) {
-  await store.dispatch('Interface/updateStatus', {
+  await store.dispatch('Endpoint/updateStatus', {
     id:record.id,
     status: value
   });
 }
 
-async function editInterface(record) {
-  await store.dispatch('Interface/getInterfaceDetail', {id: record.id});
+async function editEndpoint(record) {
+  await store.dispatch('Endpoint/getEndpointDetail', {id: record.id});
   drawerVisible.value = true;
 }
 
 async function copy(record: any) {
-  await store.dispatch('Interface/copy', record);
+  await store.dispatch('Endpoint/copy', record);
 }
 
 async function disabled(record: any) {
-  await store.dispatch('Interface/disabled', record);
+  await store.dispatch('Endpoint/disabled', record);
 }
 
 async function del(record: any) {
-  await store.dispatch('Interface/del', record);
+  await store.dispatch('Endpoint/del', record);
 }
 
 async function handleCreateApi(data) {
-  await store.dispatch('Interface/createApi', {
+  await store.dispatch('Endpoint/createApi', {
     "title": data.title,
     "projectId": currProject.value.id,
     "serveId": currServe.value.id,
@@ -215,7 +215,7 @@ async function selectNode(id) {
 }
 
 const loadList = debounce(async (currProjectId, page, size, opts?: any) => {
-  await store.dispatch('Interface/loadList', {
+  await store.dispatch('Endpoint/loadList', {
     currProjectId,
     "page": page,
     "pageSize": size,
@@ -246,9 +246,9 @@ watch(() => {
     await loadList(newVal.id, pagination.value.current, pagination.value.pageSize, {
       serveId: newVal,
     });
-    await store.dispatch('Interface/getServerList', {id: currServe.value.id});
+    await store.dispatch('Endpoint/getServerList', {id: currServe.value.id});
     // 获取授权列表
-    await store.dispatch('Interface/getSecurityList', {id: currServe.value.id});
+    await store.dispatch('Endpoint/getSecurityList', {id: currServe.value.id});
   }
 }, {
   immediate: true

@@ -4,7 +4,7 @@
     <a-row class="form-item">
       <a-col :span="2" class="form-label">路径</a-col>
       <a-col :span="16">
-        <a-input :value="interfaceDetail.path" @change="updatePath" placeholder="请输入路径">
+        <a-input :value="endpointDetail.path" @change="updatePath" placeholder="请输入路径">
           <template #addonBefore>
             <a-select
                 :options="serveServers"
@@ -23,7 +23,7 @@
         </a-input>
         <!-- ::::路径参数 -->
         <div class="path-param-list">
-          <div v-for="(item,index) in interfaceDetail.pathParams" :key="item.id">
+          <div v-for="(item,index) in endpointDetail.pathParams" :key="item.id">
             <FieldItem
                 :fieldData="{...item,index:index}"
                 :showRequire="true"
@@ -341,7 +341,7 @@
             </a-row>
           </div>
           <div class="no-defined" v-else>
-            <a-button type="primary" @click="addInterface">
+            <a-button type="primary" @click="addEndpoint">
               <template #icon>
                 <PlusOutlined/>
               </template>
@@ -370,18 +370,18 @@ import {
   defaultHeaderParams,
   defaultQueryParams,
   defaultPathParams,
-  defaultInterfaceDetail,
+  defaultEndpointDetail,
   defaultCodeResponse,
 } from '@/config/constant';
 import {PlusOutlined, DeleteOutlined} from '@ant-design/icons-vue';
 import FieldItem from './FieldItem.vue'
-import {Interface} from "@/views/interface/data";
+import {Endpoint} from "@/views/endpoint/data";
 
-const store = useStore<{ Interface, ProjectGlobal, User }>();
-const interfaceDetail: any = computed<Interface>(() => store.state.Interface.interfaceDetail);
-const currentUser: any = computed<Interface>(() => store.state.User.currentUser);
-const serveServers: any = computed<Interface>(() => store.state.Interface.serveServers);
-const securityOpts: any = computed<any>(() => store.state.Interface.securityOpts);
+const store = useStore<{ Endpoint, ProjectGlobal, User }>();
+const endpointDetail: any = computed<Endpoint>(() => store.state.Endpoint.endpointDetail);
+const currentUser: any = computed<Endpoint>(() => store.state.User.currentUser);
+const serveServers: any = computed<Endpoint>(() => store.state.Endpoint.serveServers);
+const securityOpts: any = computed<any>(() => store.state.Endpoint.securityOpts);
 import SchemaEditor from '@/components/SchemaEditor/index.vue';
 import {cloneByJSON} from "@/utils/object";
 
@@ -393,7 +393,7 @@ const selectedCode = ref('200');
 
 // 是否定义了请求方法
 function hasDefinedMethod(method: string) {
-  return interfaceDetail?.value?.interfaces?.some((item) => {
+  return endpointDetail?.value?.endpoints?.some((item) => {
     return item.method === method;
   })
 }
@@ -414,7 +414,7 @@ const showSecurity = ref(false);
 watch(() => {
   return selectedMethod.value
 }, (newVal, oldVal) => {
-  selectedMethodDetail.value = interfaceDetail?.value?.interfaces?.find((item) => {
+  selectedMethodDetail.value = endpointDetail?.value?.endpoints?.find((item) => {
     return item.method === newVal;
   })
   if (selectedMethodDetail.value) {
@@ -434,7 +434,7 @@ watch(() => {
 }, {immediate: true});
 
 const selectedMethodIndex: any = computed(() => {
-  return interfaceDetail?.value?.interfaces?.findIndex((item) => {
+  return endpointDetail?.value?.endpoints?.findIndex((item) => {
     return item.method === selectedMethod.value;
   })
 });
@@ -465,22 +465,22 @@ function setSecurity() {
 
 function addCookie() {
   selectedMethodDetail.value.cookies.push(cloneByJSON(defaultCookieParams));
-  store.commit('Interface/setInterfaceDetail', {
-    ...interfaceDetail.value,
+  store.commit('Endpoint/setEndpointDetail', {
+    ...endpointDetail.value,
   })
 }
 
 function addQueryParams() {
   selectedMethodDetail.value.params.push(cloneByJSON(defaultQueryParams));
-  store.commit('Interface/setInterfaceDetail', {
-    ...interfaceDetail.value,
+  store.commit('Endpoint/setEndpointDetail', {
+    ...endpointDetail.value,
   })
 }
 
 function addHeader() {
   selectedMethodDetail.value.headers.push(cloneByJSON(defaultHeaderParams));
-  store.commit('Interface/setInterfaceDetail', {
-    ...interfaceDetail.value,
+  store.commit('Endpoint/setEndpointDetail', {
+    ...endpointDetail.value,
   })
 }
 
@@ -492,9 +492,9 @@ function addCodeResponse() {
   const item = {
     ...cloneByJSON(defaultCodeResponse),
     "code": selectedCode.value,
-    "interfaceId": selectedMethodDetail.value.id,
+    "endpointId": selectedMethodDetail.value.id,
   }
-  store.commit('Interface/setInterfaceDetailByIndex', {
+  store.commit('Endpoint/setEndpointDetailByIndex', {
     methodIndex: selectedMethodIndex.value,
     codeIndex: selectedCodeIndex.value,
     value: item
@@ -502,19 +502,19 @@ function addCodeResponse() {
   selectedCodeDetail.value = item;
 }
 
-function addInterface() {
+function addEndpoint() {
   const item = {
-    ...cloneByJSON(defaultInterfaceDetail),
-    "projectId": interfaceDetail.value.projectId,
-    "serveId": interfaceDetail.value.serveId,
+    ...cloneByJSON(defaultEndpointDetail),
+    "projectId": endpointDetail.value.projectId,
+    "serveId": endpointDetail.value.serveId,
     "useId": currentUser.value.id,
     "method": selectedMethod.value,
   }
   selectedMethodDetail.value = item;
   selectedCode.value = '200';
-  store.commit('Interface/setInterfaceDetail', {
-    ...interfaceDetail.value,
-    interfaces: [...interfaceDetail.value.interfaces, item],
+  store.commit('Endpoint/setEndpointDetail', {
+    ...endpointDetail.value,
+    endpoints: [...endpointDetail.value.endpoints, item],
   })
 }
 
@@ -522,10 +522,10 @@ function addInterface() {
  * 添加路径参数
  * */
 function addPathParams() {
-  interfaceDetail.value.pathParams.push(cloneByJSON(defaultPathParams));
-  store.commit('Interface/setInterfaceDetail', {
-    ...interfaceDetail.value,
-    pathParams: interfaceDetail.value.pathParams
+  endpointDetail.value.pathParams.push(cloneByJSON(defaultPathParams));
+  store.commit('Endpoint/setEndpointDetail', {
+    ...endpointDetail.value,
+    pathParams: endpointDetail.value.pathParams
   })
 }
 
@@ -533,10 +533,10 @@ function addPathParams() {
  * 删除路径参数
  * */
 function deletePathParams(data) {
-  interfaceDetail.value.pathParams.splice(data.index, 1);
-  store.commit('Interface/setInterfaceDetail', {
-    ...interfaceDetail.value,
-    pathParams: interfaceDetail.value.pathParams
+  endpointDetail.value.pathParams.splice(data.index, 1);
+  store.commit('Endpoint/setEndpointDetail', {
+    ...endpointDetail.value,
+    pathParams: endpointDetail.value.pathParams
   })
 }
 
@@ -545,10 +545,10 @@ function deletePathParams(data) {
  * 更新参数名称
  * */
 function pathParamsNameChange(data) {
-  interfaceDetail.value.pathParams[data.index] = data;
-  store.commit('Interface/setInterfaceDetail', {
-    ...interfaceDetail.value,
-    pathParams: interfaceDetail.value.pathParams
+  endpointDetail.value.pathParams[data.index] = data;
+  store.commit('Endpoint/setEndpointDetail', {
+    ...endpointDetail.value,
+    pathParams: endpointDetail.value.pathParams
   })
 }
 
@@ -558,7 +558,7 @@ function pathParamsNameChange(data) {
 function handlePathLink() {
   // ::::todo 待补充
   // let parsePathReg = /\{(\w+)\}/g
-  // let path = interfaceDetail.value.path;
+  // let path = endpointDetail.value.path;
   // let params = path.match(parsePathReg);
   // if (data.name) {
   //   params.push(data.name)
@@ -583,8 +583,8 @@ function handleResHeaderChange(data) {
 }
 
 function updatePath(e) {
-  store.commit('Interface/setInterfaceDetail', {
-    ...interfaceDetail.value,
+  store.commit('Endpoint/setEndpointDetail', {
+    ...endpointDetail.value,
     path: e.target.value,
   })
 }

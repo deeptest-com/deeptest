@@ -15,11 +15,11 @@
         YAML
       </a-button>
     </div>
-    <InterfaceForm v-if="showMode === 'form'"/>
-    <div class="interface-code" v-if="showMode === 'code'">
+    <EndpointForm v-if="showMode === 'form'"/>
+    <div class="endpoint-code" v-if="showMode === 'code'">
       <MonacoEditor
           class="editor"
-          :value="interfaceDetailYamlCode"
+          :value="endpointDetailYamlCode"
           :language="'yaml'"
           :height="600"
           theme="vs"
@@ -39,13 +39,13 @@ import {
 import {useStore} from "vuex";
 import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
 import {CodeOutlined, BarsOutlined} from '@ant-design/icons-vue';
-import {Interface} from "@/views/interface/data";
+import {Endpoint} from "@/views/endpoint/data";
 import {MonacoOptions} from '@/utils/const';
 
-const store = useStore<{ Interface, ProjectGlobal }>();
-const interfaceDetail = computed<Interface[]>(() => store.state.Interface.interfaceDetail);
-const interfaceDetailYamlCode = computed<Interface[]>(() => store.state.Interface.interfaceDetailYamlCode);
-import InterfaceForm from './InterfaceForm.vue'
+const store = useStore<{ Endpoint, ProjectGlobal }>();
+const endpointDetail = computed<Endpoint[]>(() => store.state.Endpoint.endpointDetail);
+const endpointDetailYamlCode = computed<Endpoint[]>(() => store.state.Endpoint.endpointDetailYamlCode);
+import EndpointForm from './EndpointForm.vue'
 
 const props = defineProps({});
 const emit = defineEmits(['ok', 'close', 'refreshList']);
@@ -55,12 +55,12 @@ async function switchMode(val) {
   showMode.value = val;
   // 需求去请求YAML格式
   if (val === 'code') {
-    await store.dispatch('Interface/getYamlCode', interfaceDetail.value);
+    await store.dispatch('Endpoint/getYamlCode', endpointDetail.value);
   }
 }
 
 function handleYamlCodeChange(code) {
-  store.commit("Interface/setYamlCode", code);
+  store.commit("Endpoint/setYamlCode", code);
 }
 
 </script>

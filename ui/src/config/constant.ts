@@ -132,17 +132,17 @@ export const openApiDataTypesOpts = [
 ]
 
 
-export const interfaceStatus = new Map([[0, '未知'], [1, '设计中'], [2, '开发中'], [3, '已发布'], [4, '已过时']])
+export const endpointStatus = new Map([[0, '未知'], [1, '设计中'], [2, '开发中'], [3, '已发布'], [4, '已过时']])
 
 export const serveStatus = new Map([[0, '未知'], [1, '新建'], [2, '设计中'], [3, '已发布'], [4, ' 已禁用']])
 
 
 export const serveStatusTagColor = new Map([[0, 'default'], [1, 'default'], [2, 'processing'], [3, 'success'], [4, 'error']])
 
-export const interfaceStatusColor = new Map([[0, 'default'], [1, 'default'], [2, 'processing'], [3, 'success'], [4, 'error']])
+export const endpointStatusColor = new Map([[0, 'default'], [1, 'default'], [2, 'processing'], [3, 'success'], [4, 'error']])
 
 
-export const interfaceStatusOpts = [
+export const endpointStatusOpts = [
     {
         label: "未知",
         value: 0,
@@ -226,7 +226,7 @@ export const defaultCookieParams = {
 
 export const defaultCodeResponse = {
     "code": "",
-    "interfaceId": "",
+    "endpointId": "",
     "mediaType": "",
     "description": "",
     "schemaRefId": null,
@@ -242,7 +242,7 @@ export const defaultCodeResponse = {
 }
 
 
-export const defaultInterfaceDetail = {
+export const defaultEndpointDetail = {
     "name": "",
     "projectId": "",
     "serveId": "",
@@ -253,7 +253,7 @@ export const defaultInterfaceDetail = {
     "security": "",
     "requestBody": {
         "id": null,
-        "interfaceId": null,
+        "endpointId": null,
         "mediaType": "",
         "description": "",
         "schemaRefId": null,

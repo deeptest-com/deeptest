@@ -1,10 +1,7 @@
 import request from '@/utils/request';
 import {QueryParams} from "@/views/project/data";
 
-const apiPath = 'interfaces';
-const apiPathExec = `${apiPath}/exec`;
-
-const apiPathScenario = `scenarios`;
+const apiPath = 'endpoints';
 
 export async function query(params?: QueryParams): Promise<any> {
     return request({
@@ -35,44 +32,11 @@ export async function remove(id: number): Promise<any> {
         method: 'delete',
     });
 }
-export async function loadExecResult(interfaceId): Promise<any> {
-    const params = {interfaceId}
-    return request({
-        url: `/${apiPathExec}/loadExecResult`,
-        method: 'get',
-        params,
-    });
-}
-
-// for scenario selection
-export async function addScenarios(interfaceId, scenariosIds): Promise<any> {
-    return request({
-        url: `/${apiPath}/${interfaceId}/addScenarios`,
-        method: 'post',
-        data: scenariosIds,
-    });
-}
-
-export async function removeScenarioFromInterface(interfaceId, scenarioId): Promise<any> {
-    return request({
-        url: `/${apiPath}/${interfaceId}/removeScenario`,
-        method: 'post',
-        params: {scenarioId},
-    });
-}
-
-export async function listScenario(serveId): Promise<any> {
-    return request({
-        url: `/${apiPathScenario}/listByServe`,
-        method: 'get',
-        params: {serveId},
-    });
-}
 
 /**
  * 接口列表
  * */
-export async function getInterfaceList(data: any): Promise<any> {
+export async function getEndpointList(data: any): Promise<any> {
     return request({
         url: `/endpoint/index`,
         method: 'post',
@@ -83,7 +47,7 @@ export async function getInterfaceList(data: any): Promise<any> {
 /**
  * 接口详情
  * */
-export async function getInterfaceDetail(id: Number | String | any): Promise<any> {
+export async function getEndpointDetail(id: Number | String | any): Promise<any> {
     return request({
         url: `/endpoint/detail?id=${id}`,
         method: 'get',
@@ -93,7 +57,7 @@ export async function getInterfaceDetail(id: Number | String | any): Promise<any
 /**
  * 删除接口
  * */
-export async function deleteInterface(id: Number): Promise<any> {
+export async function deleteEndpoint(id: Number): Promise<any> {
     return request({
         url: `/endpoint/delete?id=${id}`,
         method: 'delete',
@@ -104,7 +68,7 @@ export async function deleteInterface(id: Number): Promise<any> {
 /**
  * 复制接口
  * */
-export async function copyInterface(id: Number): Promise<any> {
+export async function copyEndpoint(id: Number): Promise<any> {
     return request({
         url: `/endpoint/copy?id=${id}`,
         method: 'get',
@@ -127,7 +91,7 @@ export async function getYaml(data: any): Promise<any> {
 /**
  * 接口过时
  * */
-export async function expireInterface(id: Number): Promise<any> {
+export async function expireEndpoint(id: Number): Promise<any> {
     return request({
         url: `/endpoint/expire?id=${id}`,
         method: 'put',
@@ -137,7 +101,7 @@ export async function expireInterface(id: Number): Promise<any> {
 /**
  * 保存接口
  * */
-export async function saveInterface(data: any): Promise<any> {
+export async function saveEndpoint(data: any): Promise<any> {
     return request({
         url: `/endpoint/save`,
         method: 'post',

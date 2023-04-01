@@ -1,5 +1,5 @@
 <template>
-  <div class="interface-debug">
+  <div class="endpoint-debug">
     {{debugData}}
   </div>
 </template>
@@ -11,25 +11,25 @@ import {
   computed,
 } from 'vue';
 import {useStore} from "vuex";
-import {StateType as Interface} from "../../store";
+import {StateType as Endpoint} from "../../store";
 import {StateType as Debug} from "@/store/debug";
 import {StateType as ProjectGlobal} from "@/store/project";
 
 const props = defineProps({});
-const store = useStore<{ Debug, ProjectGlobal, Interface  }>();
+const store = useStore<{ Debug, ProjectGlobal, Endpoint  }>();
 
 console.log(store.state.ProjectGlobal)
 
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
-const interfaceDetail = computed<any>(() => store.state.Interface.interfaceDetail);
+const endpointDetail = computed<any>(() => store.state.Endpoint.endpointDetail);
 const debugData = computed<any>(() => store.state.Debug.debugData);
 
-store.dispatch('Debug/loadDebugData', {endpointId: interfaceDetail.value.id});
+store.dispatch('Debug/loadDebugData', {endpointId: endpointDetail.value.id});
 
 </script>
 
 <style lang="less" scoped>
-.interface-debug {
+.endpoint-debug {
 
 }
 </style>

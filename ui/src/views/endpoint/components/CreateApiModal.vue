@@ -43,7 +43,7 @@
   </a-modal>
 </template>
 <script lang="ts" setup>
-import {ValidateErrorEntity} from 'ant-design-vue/es/form/interface';
+import {ValidateErrorEntity} from 'ant-design-vue/es/form/endpoint';
 import {
   reactive,
   ref,
@@ -53,10 +53,10 @@ import {
   computed,
 } from 'vue';
 import {useStore} from "vuex";
-import {NewInterfaceFormState} from "@/views/Interface/data";
+import {NewEndpointFormState} from "@/views/Endpoint/data";
 
-const store = useStore<{ Interface }>();
-const treeDataCategory = computed<any>(() => store.state.Interface.treeDataCategory);
+const store = useStore<{ Endpoint }>();
+const treeDataCategory = computed<any>(() => store.state.Endpoint.treeDataCategory);
 
 const props = defineProps({
   visible: {
@@ -76,7 +76,7 @@ function ok() {
         emit('ok', formState);
         formRef.value.resetFields();
       })
-      .catch((error: ValidateErrorEntity<NewInterfaceFormState>) => {
+      .catch((error: ValidateErrorEntity<NewEndpointFormState>) => {
         console.log('error', error);
       });
 }
@@ -90,7 +90,7 @@ function selectedCategory(value) {
   formState.categoryId = value;
 }
 
-const formState: UnwrapRef<NewInterfaceFormState> = reactive({
+const formState: UnwrapRef<NewEndpointFormState> = reactive({
   title: '',
   categoryId: null,
   description: '',

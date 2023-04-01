@@ -2,7 +2,7 @@ import {Mutation, Action} from 'vuex';
 import {StoreModuleType} from "@/utils/store";
 import {ResponseData} from '@/utils/request';
 import {
-    Interface,
+    Endpoint,
     QueryResult,
     QueryParams,
     filterFormState
@@ -12,7 +12,7 @@ import {
     get,
     save,
     remove,
-    loadExecResult, getYaml, updateStatus
+    getYaml, updateStatus
 } from './service';
 import {
     loadCategory,
@@ -24,12 +24,12 @@ import {
     updateCategoryName
 } from "@/services/category";
 import {
-    copyInterface,
-    deleteInterface,
-    expireInterface,
-    getInterfaceDetail,
-    getInterfaceList,
-    saveInterface,
+    copyEndpoint,
+    deleteEndpoint,
+    expireEndpoint,
+    getEndpointDetail,
+    getEndpointList,
+    saveEndpoint,
 } from './service';
 
 import {getNodeMap} from "@/services/tree";
@@ -37,17 +37,17 @@ import {momentUtc} from "@/utils/datetime";
 import {getEnvList, getSecurityList, serverList} from "@/views/projectSetting/service";
 
 export interface StateType {
-    interfaceId: number;
+    endpointId: number;
     listResult: QueryResult;
-    detailResult: Interface;
+    detailResult: Endpoint;
     queryParams: any;
     execResult: any;
     treeDataCategory: any[];
     treeDataMapCategory: any,
     nodeDataCategory: any;
     filterState: filterFormState,
-    interfaceDetail: any,
-    interfaceDetailYamlCode: any,
+    endpointDetail: any,
+    endpointDetailYamlCode: any,
     serveServers: any[], // serve list
     securityOpts: any[]
 }
@@ -55,7 +55,7 @@ export interface StateType {
 export interface ModuleType extends StoreModuleType<StateType> {
     state: StateType;
     mutations: {
-        setInterfaceId: Mutation<StateType>;
+        setEndpointId: Mutation<StateType>;
         setList: Mutation<StateType>;
         setDetail: Mutation<StateType>;
         setQueryParams: Mutation<StateType>;
@@ -66,18 +66,18 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setTreeDataMapItemPropCategory: Mutation<StateType>;
         setNodeCategory: Mutation<StateType>;
         setFilterState: Mutation<StateType>;
-        setInterfaceDetail: Mutation<StateType>;
-        setInterfaceDetailByIndex: Mutation<StateType>;
+        setEndpointDetail: Mutation<StateType>;
+        setEndpointDetailByIndex: Mutation<StateType>;
         setServerList: Mutation<StateType>;
         setSecurityOpts: Mutation<StateType>;
         setYamlCode: Mutation<StateType>;
         setStatus: Mutation<StateType>;
     };
     actions: {
-        listInterface: Action<StateType, StateType>;
-        getInterface: Action<StateType, StateType>;
-        saveInterface: Action<StateType, StateType>;
-        removeInterface: Action<StateType, StateType>;
+        listEndpoint: Action<StateType, StateType>;
+        getEndpoint: Action<StateType, StateType>;
+        saveEndpoint: Action<StateType, StateType>;
+        removeEndpoint: Action<StateType, StateType>;
         loadCategory: Action<StateType, StateType>;
         getCategoryNode: Action<StateType, StateType>;
         createCategoryNode: Action<StateType, StateType>;
@@ -88,15 +88,14 @@ export interface ModuleType extends StoreModuleType<StateType> {
         saveTreeMapItemPropCategory: Action<StateType, StateType>;
         saveCategory: Action<StateType, StateType>;
         updateCategoryName: Action<StateType, StateType>;
-        loadExecResult: Action<StateType, StateType>;
         updateExecResult: Action<StateType, StateType>;
         loadList: Action<StateType, StateType>;
         createApi: Action<StateType, StateType>;
         disabled: Action<StateType, StateType>;
         del: Action<StateType, StateType>;
         copy: Action<StateType, StateType>;
-        getInterfaceDetail: Action<StateType, StateType>;
-        updateInterfaceDetail: Action<StateType, StateType>;
+        getEndpointDetail: Action<StateType, StateType>;
+        updateEndpointDetail: Action<StateType, StateType>;
         getServerList: Action<StateType, StateType>;
         getSecurityList: Action<StateType, StateType>;
         getYamlCode: Action<StateType, StateType>;
@@ -105,7 +104,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
 }
 
 const initState: StateType = {
-    interfaceId: 0,
+    endpointId: 0,
     listResult: {
         list: [],
         pagination: {
@@ -116,7 +115,7 @@ const initState: StateType = {
             showQuickJumper: true,
         },
     },
-    detailResult: {} as Interface,
+    detailResult: {} as Endpoint,
     queryParams: {},
     execResult: {},
     treeDataCategory: [],
@@ -127,21 +126,21 @@ const initState: StateType = {
         "createUser": null,
         "title": null,
     },
-    interfaceDetail: null,
-    interfaceDetailYamlCode: null,
+    endpointDetail: null,
+    endpointDetailYamlCode: null,
     serveServers: [],
     securityOpts: [],
 };
 
 const StoreModel: ModuleType = {
     namespaced: true,
-    name: 'Interface',
+    name: 'Endpoint',
     state: {
         ...initState
     },
     mutations: {
-        setInterfaceId(state, id) {
-            state.interfaceId = id;
+        setEndpointId(state, id) {
+            state.endpointId = id;
         },
         setList(state, payload) {
             state.listResult = payload;
@@ -175,14 +174,14 @@ const StoreModel: ModuleType = {
         setFilterState(state, payload) {
             state.filterState = payload;
         },
-        setInterfaceDetail(state, payload) {
-            state.interfaceDetail = payload;
+        setEndpointDetail(state, payload) {
+            state.endpointDetail = payload;
         },
-        setInterfaceDetailByIndex(state, payload) {
+        setEndpointDetailByIndex(state, payload) {
             if (payload.codeIndex === -1 || payload.codeIndex) {
-                payload.codeIndex = state.interfaceDetail.interfaces[payload.methodIndex]['responseBodies'].length;
+                payload.codeIndex = state.endpointDetail.endpoints[payload.methodIndex]['responseBodies'].length;
             }
-            state.interfaceDetail.interfaces[payload.methodIndex]['responseBodies'][payload.codeIndex] = payload.value;
+            state.endpointDetail.endpoints[payload.methodIndex]['responseBodies'][payload.codeIndex] = payload.value;
         },
         setServerList(state, payload) {
             state.serveServers = payload;
@@ -191,7 +190,7 @@ const StoreModel: ModuleType = {
             state.securityOpts = payload;
         },
         setYamlCode(state, payload) {
-            state.interfaceDetailYamlCode = payload;
+            state.endpointDetailYamlCode = payload;
         },
         setStatus(state, payload) {
             state.listResult.list.forEach((item) => {
@@ -202,7 +201,7 @@ const StoreModel: ModuleType = {
         },
     },
     actions: {
-        async listInterface({commit, dispatch}, params: QueryParams) {
+        async listEndpoint({commit, dispatch}, params: QueryParams) {
             try {
                 const response: ResponseData = await query(params);
                 if (response.code != 0) return;
@@ -226,7 +225,7 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
-        async getInterface({commit}, id: number) {
+        async getEndpoint({commit}, id: number) {
             if (id === 0) {
                 commit('setDetail', {
                     ...initState.detailResult,
@@ -245,7 +244,7 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
-        async saveInterface({commit}, payload: any) {
+        async saveEndpoint({commit}, payload: any) {
             const jsn = await save(payload)
             if (jsn.code === 0) {
                 return true;
@@ -253,34 +252,25 @@ const StoreModel: ModuleType = {
                 return false
             }
         },
-        async removeInterface({commit, dispatch, state}, payload: number) {
+        async removeEndpoint({commit, dispatch, state}, payload: number) {
             try {
                 await remove(payload);
-                await dispatch('listInterface', state.queryParams)
+                await dispatch('listEndpoint', state.queryParams)
                 return true;
             } catch (error) {
                 return false;
             }
         },
-        async loadExecResult({commit, dispatch, state}, scenarioId) {
-            const response = await loadExecResult(scenarioId);
-            if (response.code != 0) return;
 
-            const {data} = response;
-            commit('setExecResult', data || {});
-            commit('setInterfaceId', scenarioId);
-
-            return true;
-        },
         async updateExecResult({commit, dispatch, state}, payload) {
             commit('setExecResult', payload);
-            commit('setInterfaceId', payload.scenarioId);
+            commit('setEndpointId', payload.scenarioId);
 
             return true;
         },
         // category tree
         async loadCategory({commit}) {
-            const response = await loadCategory('interface');
+            const response = await loadCategory('endpoint');
             if (response.code != 0) return;
 
             const {data} = response;
@@ -377,7 +367,7 @@ const StoreModel: ModuleType = {
             pageSize = pageSize || state.listResult.pagination.pageSize;
             const otherParams = {...state.filterState, ...opts};
 
-            const res = await getInterfaceList({
+            const res = await getEndpointList({
                 "projectId": currProjectId,
                 "page": page,
                 "pageSize": pageSize,
@@ -408,7 +398,7 @@ const StoreModel: ModuleType = {
             }
         },
         async createApi({commit, dispatch, state}, params: any) {
-            const res = await saveInterface({
+            const res = await saveEndpoint({
                 ...params
             });
             if (res.code === 0) {
@@ -418,7 +408,7 @@ const StoreModel: ModuleType = {
             }
         },
         async disabled({commit, dispatch, state}, payload: any) {
-            const res = await expireInterface(payload.id);
+            const res = await expireEndpoint(payload.id);
             if (res.code === 0) {
                 await dispatch('loadList', {currProjectId: payload.projectId});
             } else {
@@ -426,7 +416,7 @@ const StoreModel: ModuleType = {
             }
         },
         async del({commit, dispatch, state}, payload: any) {
-            const res = await deleteInterface(payload.id);
+            const res = await deleteEndpoint(payload.id);
             if (res.code === 0) {
                 await dispatch('loadList', {currProjectId: payload.projectId});
             } else {
@@ -434,7 +424,7 @@ const StoreModel: ModuleType = {
             }
         },
         async copy({commit, dispatch, state}, payload: any) {
-            const res = await copyInterface(payload.id);
+            const res = await copyEndpoint(payload.id);
             if (res.code === 0) {
                 await dispatch('loadList', {currProjectId: payload.projectId});
             } else {
@@ -442,19 +432,19 @@ const StoreModel: ModuleType = {
             }
         },
         // 用于新建接口时选择接口分类
-        async getInterfaceDetail({commit}, payload: any) {
-            const res = await getInterfaceDetail(payload.id);
+        async getEndpointDetail({commit}, payload: any) {
+            const res = await getEndpointDetail(payload.id);
             res.data.createdAt = momentUtc(res.data.createdAt);
             res.data.updatedAt = momentUtc(res.data.updatedAt);
             if (res.code === 0) {
-                commit('setInterfaceDetail', res.data || null);
+                commit('setEndpointDetail', res.data || null);
             } else {
                 return false
             }
         },
         // 用于新建接口时选择接口分类
-        async updateInterfaceDetail({commit, dispatch}, payload: any) {
-            const res = await saveInterface({
+        async updateEndpointDetail({commit, dispatch}, payload: any) {
+            const res = await saveEndpoint({
                 ...payload
             });
             if (res.code === 0) {

@@ -1,5 +1,5 @@
 
-export interface Interfaces {
+export interface Endpoints {
   "responseBodies": any[],
   "requestBody": any,
   params: any[],
@@ -8,18 +8,18 @@ export interface Interfaces {
   method: string |undefined,
 }
 
-export interface Interface {
+export interface Endpoint {
     id: number;
     name: string;
     desc: string;
     status: number;
-    interfaces: Array<Interfaces>,
+    endpoints: Array<Endpoints>,
     pathParams: any[],
 }
 
 
 export interface QueryResult {
-    list: Interface[];
+    list: Endpoint[];
     pagination: PaginationConfig;
 }
 
@@ -40,7 +40,7 @@ export interface PaginationConfig {
 
 
 
-interface InterfaceListReqParams {
+interface EndpointListReqParams {
     "prjectId"?: number,
     "page"?: number,
     "pageSize"?: number,
@@ -49,7 +49,7 @@ interface InterfaceListReqParams {
     "title"?: string
 }
 
-interface SaveInterfaceReqParams {
+interface SaveEndpointReqParams {
     project_id?: number,
     serveId?: number,
     title?: string,
@@ -57,14 +57,14 @@ interface SaveInterfaceReqParams {
 }
 
 
-export interface Interface {
+export interface Endpoint {
     id: number;
     name: string;
     desc: string;
 }
 
 export interface QueryResult {
-    list: Interface[];
+    list: Endpoint[];
     pagination: PaginationConfig;
 }
 
@@ -91,7 +91,7 @@ export interface filterFormState {
 }
 
 
-interface NewInterfaceFormState {
+interface NewEndpointFormState {
     title: string;
     categoryId: string | null;
     description: string | undefined;

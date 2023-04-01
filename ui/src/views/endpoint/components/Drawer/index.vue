@@ -12,12 +12,12 @@
     <template #title>
       <a-row type="flex" style="align-items: center;width: 100%">
         <a-col :span="8">
-          <EditAndShowField :value="interfaceDetail.title" @update="updateTitle"/>
+          <EditAndShowField :value="endpointDetail.title" @update="updateTitle"/>
         </a-col>
       </a-row>
     </template>
     <!-- 基本信息 -->
-    <InterfaceBasicInfo @changeStatus="changeStatus"/>
+    <EndpointBasicInfo @changeStatus="changeStatus"/>
     <!-- 接口设计区域 -->
     <a-card
         style="width: 100%"
@@ -27,10 +27,10 @@
         :active-tab-key="key"
         @tabChange="key => onTabChange(key, 'key')">
       <div v-if="key === 'request'">
-        <InterfaceDefine/>
+        <EndpointDefine/>
       </div>
       <div v-else-if="key === 'run'">
-        <InterfaceDebug></InterfaceDebug>
+        <EndpointDebug></EndpointDebug>
       </div>
       <div v-else-if="key === 'mock'">mock content</div>
     </a-card>
@@ -50,15 +50,15 @@ import {
   defineEmits,
   computed,
 } from 'vue';
-import InterfaceBasicInfo from './InterfaceBasicInfo.vue';
+import EndpointBasicInfo from './EndpointBasicInfo.vue';
 import EditAndShowField from './EditAndShowField.vue';
-import InterfaceDefine from './InterfaceDefine.vue';
-import InterfaceDebug from './InterfaceDebug.vue';
+import EndpointDefine from './EndpointDefine.vue';
+import EndpointDebug from './EndpointDebug.vue';
 import {useStore} from "vuex";
-import {Interface} from "@/views/interface/data";
+import {Endpoint} from "@/views/endpoint/data";
 
-const store = useStore<{ Interface, ProjectGlobal, ServeGlobal }>();
-const interfaceDetail = computed<Interface>(() => store.state.Interface.interfaceDetail);
+const store = useStore<{ Endpoint, ProjectGlobal, ServeGlobal }>();
+const endpointDetail = computed<Endpoint>(() => store.state.Endpoint.endpointDetail);
 
 const props = defineProps({
   visible: {
@@ -73,17 +73,17 @@ function onCloseDrawer() {
 }
 
 async function changeStatus(status) {
-  await store.dispatch('Interface/updateStatus',
-      {id:interfaceDetail.value.id, status: status}
+  await store.dispatch('Endpoint/updateStatus',
+      {id:endpointDetail.value.id, status: status}
   );
-  await store.dispatch('Interface/getInterfaceDetail', {id: interfaceDetail.value.id});
+  await store.dispatch('Endpoint/getEndpointDetail', {id: endpointDetail.value.id});
 }
 
 async function updateTitle(title) {
-  await store.dispatch('Interface/updateInterfaceDetail',
-      {...interfaceDetail.value, title: title}
+  await store.dispatch('Endpoint/updateEndpointDetail',
+      {...endpointDetail.value, title: title}
   );
-  await store.dispatch('Interface/getInterfaceDetail', {id: interfaceDetail.value.id});
+  await store.dispatch('Endpoint/getEndpointDetail', {id: endpointDetail.value.id});
 }
 
 const tabList = [
@@ -117,8 +117,8 @@ async function cancal() {
 }
 
 async function save() {
-  await store.dispatch('Interface/updateInterfaceDetail',
-      {...interfaceDetail.value}
+  await store.dispatch('Endpoint/updateEndpointDetail',
+      {...endpointDetail.value}
   );
   emit('close');
 }

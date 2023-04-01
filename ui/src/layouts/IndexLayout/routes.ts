@@ -40,6 +40,21 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
   },
   {
     title: 'index-layout.menu',
+    path: '/endpoint',
+    redirect: '/endpoint/index',
+    component: BlankLayout,
+    children: [
+      {
+        icon: 'endpoint',
+        title: 'endpoint',
+        path: 'index',
+        component: () => import('@/views/endpoint/index.vue'),
+        hidden: false,
+      },
+    ],
+  },
+  {
+    title: 'index-layout.menu',
     path: '/interface1',
     redirect: '/interface1/index',
     component: BlankLayout,
@@ -49,21 +64,6 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
         title: 'interface1',
         path: 'index',
         component: () => import('@/views/interface1/index.vue'),
-        hidden: false,
-      },
-    ],
-  },
-  {
-    title: 'index-layout.menu',
-    path: '/interface',
-    redirect: '/interface/index',
-    component: BlankLayout,
-    children: [
-      {
-        icon: 'interface',
-        title: 'interface',
-        path: 'index',
-        component: () => import('@/views/interface/index.vue'),
         hidden: false,
       },
     ],

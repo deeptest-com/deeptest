@@ -37,7 +37,7 @@ import { useStore } from 'vuex';
 import { message } from 'ant-design-vue';
 import ServiceVersion from './Version.vue';
 import ServiceComponent from './Component.vue';
-import EditAndShowField from '../commom/EditAndShowField.vue'; 
+import EditAndShowField from '../commom/EditAndShowField.vue';
 import { StateType as ProjectStateType } from "@/store/project";
 import { StateType as ProjectSettingStateType } from '../../store';
 import { ServeDetail } from '../../data';

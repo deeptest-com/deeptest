@@ -1,15 +1,17 @@
 <template>
   <div class="container">
     <a-tabs v-model:activeKey="activeKey">
-      <a-tab-pane key="1" tab="环境管理">
+      <a-tab-pane key="1" tab="服务管理">
+        <ServiceSetting/>
+      </a-tab-pane>
+
+      <a-tab-pane key="2" tab="环境管理">
         <EnvSetting/>
       </a-tab-pane>
-      <a-tab-pane key="2" tab="数据池" >
+
+      <a-tab-pane key="3" tab="数据池" >
         <div style="height: 90vh;">
         </div>
-      </a-tab-pane>
-      <a-tab-pane key="3" tab="服务管理">
-        <ServiceSetting/>
       </a-tab-pane>
     </a-tabs>
   </div>

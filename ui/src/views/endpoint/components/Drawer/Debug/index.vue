@@ -64,6 +64,11 @@ const changeMethod = () => {
     })
   }
 
+  store.dispatch('Debug/setInterface', {
+    id: methodToIdMap[selectedMethod.value],
+    method: selectedMethod.value,
+  });
+
   store.dispatch('Debug/loadDebugData', {
     endpointId: currEndpointId.value, interfaceId: methodToIdMap[selectedMethod.value],
   });

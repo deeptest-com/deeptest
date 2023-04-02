@@ -48,29 +48,20 @@ console.log(store.state.ProjectGlobal)
 
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const endpointDetail = computed<any>(() => store.state.Endpoint.endpointDetail);
+const interfaceMethodToObjMap = computed<any>(() => store.state.Endpoint.interfaceMethodToObjMap);
 
 const currEndpointId = computed<number>(() => store.state.Debug.currEndpointId);
 const currInterface = computed<any>(() => store.state.Debug.currInterface);
 const debugData = computed<any>(() => store.state.Debug.debugData);
 
 const selectedMethod = ref(currInterface.value?.method ? currInterface.value?.method : 'GET');
-const methodToIdMap = ref(null as any)
 
 const changeMethod = () => {
-  console.log('changeMethod', selectedMethod.value)
-  if (!methodToIdMap.value) {
-    endpointDetail?.value?.interfaces?.forEach((item, index) => {
-      methodToIdMap[item.method] = item.id
-    })
-  }
+  console.log('changeMethod', selectedMethod.value, interfaceMethodToObjMap)
 
-  store.dispatch('Debug/setInterface', {
-    id: methodToIdMap[selectedMethod.value],
-    method: selectedMethod.value,
-  });
-
+  store.dispatch('Debug/setInterface', interfaceMethodToObjMap.value[selectedMethod.value]);
   store.dispatch('Debug/loadDebugData', {
-    endpointId: currEndpointId.value, interfaceId: methodToIdMap[selectedMethod.value],
+    endpointId: currEndpointId.value, interfaceId: interfaceMethodToObjMap.value[selectedMethod.value].id,
   });
 }
 

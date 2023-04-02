@@ -50,6 +50,8 @@ export interface StateType {
     endpointDetailYamlCode: any,
     serveServers: any[], // serve list
     securityOpts: any[]
+
+    interfaceMethodToObjMap: any;
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
@@ -72,6 +74,8 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setSecurityOpts: Mutation<StateType>;
         setYamlCode: Mutation<StateType>;
         setStatus: Mutation<StateType>;
+
+        setInterfaceMethodToObjMap: Mutation<StateType>;
     };
     actions: {
         listEndpoint: Action<StateType, StateType>;
@@ -130,6 +134,8 @@ const initState: StateType = {
     endpointDetailYamlCode: null,
     serveServers: [],
     securityOpts: [],
+
+    interfaceMethodToObjMap: {},
 };
 
 const StoreModel: ModuleType = {
@@ -199,6 +205,10 @@ const StoreModel: ModuleType = {
                 }
             });
         },
+
+        setInterfaceMethodToObjMap(state, payload) {
+            state.interfaceMethodToObjMap = payload;
+        },
     },
     actions: {
         async listEndpoint({commit, dispatch}, params: QueryParams) {
@@ -225,7 +235,7 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
-        async getEndpoint({commit}, id: number) {
+        async getEndpoint({commit, state}, id: number) {
             if (id === 0) {
                 commit('setDetail', {
                     ...initState.detailResult,
@@ -239,6 +249,7 @@ const StoreModel: ModuleType = {
                     ...initState.detailResult,
                     ...data,
                 });
+
                 return true;
             } catch (error) {
                 return false;
@@ -432,13 +443,20 @@ const StoreModel: ModuleType = {
             }
         },
         // 用于新建接口时选择接口分类
-        async getEndpointDetail({commit}, payload: any) {
+        async getEndpointDetail({commit, state}, payload: any) {
             const res = await getEndpointDetail(payload.id);
             res.data.createdAt = momentUtc(res.data.createdAt);
             res.data.updatedAt = momentUtc(res.data.updatedAt);
 
             if (res.code === 0) {
-                commit('setEndpointDetail', res.data || null);
+                await commit('setEndpointDetail', res.data || null);
+                console.log('++++', state.endpointDetail)
+                const map = {}
+                state.endpointDetail?.interfaces?.forEach((item) => {
+                    map[item.method] = item;
+                })
+                commit('setInterfaceMethodToObjMap', map);
+
             } else {
                 return false
             }
@@ -502,7 +520,6 @@ const StoreModel: ModuleType = {
                 return false
             }
         },
-
     }
 };
 

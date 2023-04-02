@@ -389,6 +389,8 @@ import {cloneByJSON} from "@/utils/object";
 
 const store = useStore<{ Endpoint, Debug, ProjectGlobal, User }>();
 const endpointDetail: any = computed<Endpoint>(() => store.state.Endpoint.endpointDetail);
+const interfaceMethodToObjMap = computed<any>(() => store.state.Endpoint.interfaceMethodToObjMap);
+
 const currInterface = computed<any>(() => store.state.Debug.currInterface);
 
 const currentUser: any = computed<Endpoint>(() => store.state.User.currentUser);
@@ -425,19 +427,13 @@ const showSecurity = ref(false);
 watch(() => {
   return selectedMethod.value
 }, (newVal, oldVal) => {
-  console.log('watch selectedMethod', newVal, endpointDetail?.value?.interfaces)
+  console.log('watch selectedMethod', newVal)
 
-  selectedMethodDetail.value = endpointDetail?.value?.interfaces?.find((item) => {
-    return item.method === newVal;
-  })
+  selectedMethodDetail.value = interfaceMethodToObjMap.value[newVal]
+  console.log('watch selectedMethod', interfaceMethodToObjMap.value)
 
   if (selectedMethodDetail.value) {
-    console.log('selectedMethodDetail.value.id', selectedMethodDetail.value)
-
-    store.dispatch('Debug/setInterface', {
-      id: selectedMethodDetail.value.id,
-      method: selectedMethodDetail.value.method,
-    });
+    store.dispatch('Debug/setInterface', selectedMethodDetail.value);
 
     showSecurity.value = !!selectedMethodDetail.value.security;
     selectedCodeDetail.value = selectedMethodDetail?.value?.responseBodies?.find((item) => {

@@ -17,7 +17,6 @@ export interface Endpoint {
     pathParams: any[],
 }
 
-
 export interface QueryResult {
     list: Endpoint[];
     pagination: PaginationConfig;

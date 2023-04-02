@@ -45,7 +45,7 @@ const StoreModel: ModuleType = {
         },
         setDebugData(state, payload) {
             state.debugData = payload;
-        }
+        },
     },
     actions: {
         async loadDebugData({commit, dispatch}, data) {

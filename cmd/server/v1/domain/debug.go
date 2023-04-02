@@ -6,8 +6,9 @@ import (
 )
 
 type DebugRequest struct {
-	InterfaceId uint               `gorm:"-" json:"id"`
-	EndpointId  uint               `json:"endpointId"`
+	InterfaceId uint `gorm:"-" json:"id"`
+	EndpointId  uint `json:"endpointId"`
+
 	Environment domain.Environment `gorm:"-" json:"environment"`
 	Variables   domain.Variables   `gorm:"-" json:"variables"`
 	Datapools   domain.Datapools   `gorm:"-" json:"datapools"`

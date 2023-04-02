@@ -1,11 +1,14 @@
 <template>
   <div class="endpoint-debug">
     <a-radio-group v-model:value="selectedMethod" button-style="solid">
-      <a-radio-button
-          :class="{'has-defined': hasDefinedMethod(method.value)}"
-          :key="method.value" v-for="method in requestMethodOpts" :value="method.value">
-        {{ method.label }}
-      </a-radio-button>
+      <template v-for="method in requestMethodOpts" :key="method.value">
+        <a-radio-button
+            v-if="hasDefinedMethod(method.value)"
+            :value="method.value"
+            class="has-defined">
+          {{ method.label }}
+        </a-radio-button>
+      </template>
     </a-radio-group>
 
     <div>{{currEndpointId}}</div>
@@ -47,7 +50,7 @@ const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const endpointDetail = computed<any>(() => store.state.Endpoint.endpointDetail);
 
 const currEndpointId = computed<number>(() => store.state.Debug.currEndpointId);
-const currInterface = computed<number>(() => store.state.Debug.currInterface);
+const currInterface = computed<any>(() => store.state.Debug.currInterface);
 const debugData = computed<any>(() => store.state.Debug.debugData);
 
 const selectedMethod = ref('GET');
@@ -57,7 +60,9 @@ watch(() => {
 }, (newVal, oldVal) => {
   console.log('watch selectedMethod in debug', newVal)
 
-  store.dispatch('Debug/loadDebugData', {endpointId: endpointDetail.value.id});
+  store.dispatch('Debug/loadDebugData', {
+    endpointId: currEndpointId.value, interfaceId: currInterface.value.id,
+  });
 }, {immediate: true});
 
 function hasDefinedMethod(method: string) {

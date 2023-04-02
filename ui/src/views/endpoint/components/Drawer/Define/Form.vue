@@ -389,6 +389,8 @@ import {cloneByJSON} from "@/utils/object";
 
 const store = useStore<{ Endpoint, Debug, ProjectGlobal, User }>();
 const endpointDetail: any = computed<Endpoint>(() => store.state.Endpoint.endpointDetail);
+const currInterface = computed<any>(() => store.state.Debug.currInterface);
+
 const currentUser: any = computed<Endpoint>(() => store.state.User.currentUser);
 const serveServers: any = computed<Endpoint>(() => store.state.Endpoint.serveServers);
 const securityOpts: any = computed<any>(() => store.state.Endpoint.securityOpts);
@@ -396,7 +398,7 @@ const securityOpts: any = computed<any>(() => store.state.Endpoint.securityOpts)
 const props = defineProps({});
 const emit = defineEmits([]);
 
-const selectedMethod = ref('GET');
+const selectedMethod = ref(currInterface.value?.method ? currInterface.value?.method : 'GET');
 const selectedCode = ref('200');
 
 // 是否定义了请求方法

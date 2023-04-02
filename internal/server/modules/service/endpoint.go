@@ -171,7 +171,6 @@ func (s *EndpointService) GetReq(interfaceId, endpointId uint) (req v1.DebugRequ
 		return
 	}
 
-	//fmt.Println(interf.Params, "+++++++++++")
 	var endpoint model.Endpoint
 	var serve model.Serve
 

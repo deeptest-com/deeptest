@@ -1,6 +1,6 @@
 <template>
   <div class="endpoint-debug">
-    <a-radio-group v-model:value="selectedMethod" button-style="solid">
+    <a-radio-group @change="changeMethod" v-model:value="selectedMethod" button-style="solid">
       <template v-for="method in requestMethodOpts" :key="method.value">
         <a-radio-button
             v-if="hasDefinedMethod(method.value)"
@@ -53,17 +53,21 @@ const currEndpointId = computed<number>(() => store.state.Debug.currEndpointId);
 const currInterface = computed<any>(() => store.state.Debug.currInterface);
 const debugData = computed<any>(() => store.state.Debug.debugData);
 
-const selectedMethod = ref('GET');
+const selectedMethod = ref(currInterface.value?.method ? currInterface.value?.method : 'GET');
+const methodToIdMap = ref(null as any)
 
-watch(() => {
-  return selectedMethod.value
-}, (newVal, oldVal) => {
-  console.log('watch selectedMethod in debug', newVal)
+const changeMethod = () => {
+  console.log('changeMethod', selectedMethod.value)
+  if (!methodToIdMap.value) {
+    endpointDetail?.value?.interfaces?.forEach((item, index) => {
+      methodToIdMap[item.method] = item.id
+    })
+  }
 
   store.dispatch('Debug/loadDebugData', {
-    endpointId: currEndpointId.value, interfaceId: currInterface.value.id,
+    endpointId: currEndpointId.value, interfaceId: methodToIdMap[selectedMethod.value],
   });
-}, {immediate: true});
+}
 
 function hasDefinedMethod(method: string) {
   return endpointDetail?.value?.interfaces?.some((item) => {

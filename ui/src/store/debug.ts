@@ -63,8 +63,8 @@ const StoreModel: ModuleType = {
         async setEndpointId({commit, dispatch}, id) {
             commit('setEndpointId', id);
         },
-        async setInterface({commit, dispatch}, id) {
-            commit('setInterface', id);
+        async setInterface({commit, dispatch}, payload) {
+            commit('setInterface', payload);
         },
     }
 };

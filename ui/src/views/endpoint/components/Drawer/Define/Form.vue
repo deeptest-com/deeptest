@@ -430,7 +430,6 @@ watch(() => {
   console.log('watch selectedMethod', newVal)
 
   selectedMethodDetail.value = interfaceMethodToObjMap.value[newVal]
-  console.log('watch selectedMethod', interfaceMethodToObjMap.value)
 
   if (selectedMethodDetail.value) {
     store.dispatch('Debug/setInterface', selectedMethodDetail.value);

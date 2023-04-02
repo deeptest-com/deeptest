@@ -34,9 +34,12 @@
           <template #colTitle="{text,record}">
             <div class="customTitleColRender">
               <span>{{ text }}</span>
-              <span class="edit" @click="editEndpoint(record)"><EditOutlined/></span>
+              <span class="edit" @click="editEndpoint(record)">
+                <EditOutlined/>
+              </span>
             </div>
           </template>
+
           <template #colStatus="{record}">
             <div class="customTitleColRender">
               <a-select
@@ -52,11 +55,13 @@
               </a-select>
             </div>
           </template>
+
           <template #colPath="{text}">
             <div class="customTitleColRender">
               <a-tag>{{ text }}</a-tag>
             </div>
           </template>
+
           <template #action="{record}">
             <a-dropdown>
               <MoreOutlined/>
@@ -78,11 +83,12 @@
         </a-table>
       </div>
     </div>
-    <!--  创建新接口弹框  -->
-    <CreateApiModal
+
+    <CreateEndpointModal
         :visible="createApiModalVisible"
         @cancal="createApiModalVisible = false;"
         @ok="handleCreateApi"/>
+
     <!-- 编辑接口时，展开抽屉   -->
     <Drawer
         :destroyOnClose="true"
@@ -98,25 +104,28 @@ import {
 } from 'vue';
 import debounce from "lodash.debounce";
 import EndpointTree from './list/tree.vue';
-import {ColumnProps} from 'ant-design-vue/es/table/endpoint';
+import {ColumnProps} from 'ant-design-vue/es/table/interface';
 import {
   EditOutlined,
   MoreOutlined
 } from '@ant-design/icons-vue';
 import {endpointStatusOpts} from '@/config/constant';
-import CreateApiModal from './components/CreateApiModal.vue';
+import CreateEndpointModal from './components/CreateEndpointModal.vue';
 import TableFilter from './components/TableFilter.vue';
 import Drawer from './components/Drawer/index.vue'
 import {useStore} from "vuex";
 import {Endpoint, PaginationConfig} from "@/views/endpoint/data";
-import {filterFormState} from "@/views/Endpoint/data";
-import {StateType as ServeStateType} from "@/store/serve";
 
-const store = useStore<{ Endpoint, ProjectGlobal, ServeGlobal: ServeStateType }>();
+import {StateType as ServeStateType} from "@/store/serve";
+import {StateType as Debug} from "@/store/debug";
+
+const store = useStore<{ Endpoint, ProjectGlobal, Debug: Debug, ServeGlobal: ServeStateType }>();
+
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
+const currServe = computed<any>(() => store.state.ServeGlobal.currServe);
 const list = computed<Endpoint[]>(() => store.state.Endpoint.listResult.list);
 let pagination = computed<PaginationConfig>(() => store.state.Endpoint.listResult.pagination);
-const currServe = computed<any>(() => store.state.ServeGlobal.currServe);
+
 const createApiModalVisible = ref(false);
 type Key = ColumnProps['key'];
 
@@ -180,6 +189,7 @@ async function handleChangeStatus(value: any, record: any,) {
 }
 
 async function editEndpoint(record) {
+  await store.dispatch('Debug/setEndpointId', record.id);
   await store.dispatch('Endpoint/getEndpointDetail', {id: record.id});
   drawerVisible.value = true;
 }

@@ -5,8 +5,8 @@ import {ResponseData} from '@/utils/request';
 import {loadData} from "@/services/debug";
 
 export interface StateType {
-    endpointId: number;
-    interfaceId: number;
+    currEndpointId: number;
+    currInterface: any;
     debugData: any;
 }
 
@@ -14,17 +14,19 @@ export interface ModuleType extends StoreModuleType<StateType> {
     state: StateType;
     mutations: {
         setEndpointId: Mutation<StateType>;
-        setInterfaceId: Mutation<StateType>;
+        setInterface: Mutation<StateType>;
         setDebugData: Mutation<StateType>;
     };
     actions: {
         loadDebugData: Action<StateType, StateType>;
+        setEndpointId: Action<StateType, StateType>;
+        setInterface: Action<StateType, StateType>;
     }
 }
 
 const initState: StateType = {
-    endpointId: 0,
-    interfaceId: 0,
+    currEndpointId: 0,
+    currInterface: {},
     debugData: {},
 };
 
@@ -36,10 +38,10 @@ const StoreModel: ModuleType = {
     },
     mutations: {
         setEndpointId(state, id) {
-            state.interfaceId = id;
+            state.currEndpointId = id;
         },
-        setInterfaceId(state, id) {
-            state.interfaceId = id;
+        setInterface(state, payload) {
+            state.currInterface = payload;
         },
         setDebugData(state, payload) {
             state.debugData = payload;
@@ -57,6 +59,12 @@ const StoreModel: ModuleType = {
             } catch (error) {
                 return false;
             }
+        },
+        async setEndpointId({commit, dispatch}, id) {
+            commit('setEndpointId', id);
+        },
+        async setInterface({commit, dispatch}, id) {
+            commit('setInterface', id);
         },
     }
 };

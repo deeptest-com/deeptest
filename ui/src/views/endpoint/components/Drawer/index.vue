@@ -43,7 +43,7 @@
     <div class="drawer-btns">
       <a-space>
         <a-button type="primary" @click="save">保存</a-button>
-        <a-button @click="cancal">取消</a-button>
+        <a-button @click="cancel">取消</a-button>
       </a-space>
     </div>
   </a-drawer>
@@ -115,7 +115,7 @@ const onTabChange = (value: string, type: string) => {
   }
 };
 
-async function cancal() {
+async function cancel() {
   emit('close');
 }
 

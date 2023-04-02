@@ -43,7 +43,7 @@
   </a-modal>
 </template>
 <script lang="ts" setup>
-import {ValidateErrorEntity} from 'ant-design-vue/es/form/endpoint';
+import {ValidateErrorEntity} from 'ant-design-vue/es/form/interface';
 import {
   reactive,
   ref,

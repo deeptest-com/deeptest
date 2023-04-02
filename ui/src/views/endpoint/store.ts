@@ -436,6 +436,7 @@ const StoreModel: ModuleType = {
             const res = await getEndpointDetail(payload.id);
             res.data.createdAt = momentUtc(res.data.createdAt);
             res.data.updatedAt = momentUtc(res.data.updatedAt);
+
             if (res.code === 0) {
                 commit('setEndpointDetail', res.data || null);
             } else {

@@ -23,6 +23,7 @@
             </a-button>
           </template>
         </a-input>
+
         <!-- ::::路径参数 -->
         <div class="path-param-list">
           <div v-for="(item,index) in endpointDetail.pathParams" :key="item.id">
@@ -48,6 +49,7 @@
             {{ method.label }}
           </a-radio-button>
         </a-radio-group>
+
         <div class="form-item-request">
           <div v-if="selectedMethodDetail">
             <!-- ::::Operation ID -->
@@ -68,6 +70,7 @@
                 <a-input v-model:value="selectedMethodDetail.description"/>
               </a-col>
             </a-row>
+
             <!-- ::::增加请求参数 -->
             <a-row class="form-item-request-item">
               <a-col :span="3" class="form-label">
@@ -102,6 +105,7 @@
                 </div>
               </a-col>
             </a-row>
+
             <!-- ::::请求参数展示：headers、cookies、query params等 -->
             <a-row class="form-item-request-item">
               <a-col :span="3"></a-col>
@@ -379,14 +383,15 @@ import {
 import {PlusOutlined, DeleteOutlined} from '@ant-design/icons-vue';
 import Field from './Field.vue'
 import {Endpoint} from "@/views/endpoint/data";
+import {StateType as Debug} from "@/store/debug";
+import SchemaEditor from '@/components/SchemaEditor/index.vue';
+import {cloneByJSON} from "@/utils/object";
 
-const store = useStore<{ Endpoint, ProjectGlobal, User }>();
+const store = useStore<{ Endpoint, Debug, ProjectGlobal, User }>();
 const endpointDetail: any = computed<Endpoint>(() => store.state.Endpoint.endpointDetail);
 const currentUser: any = computed<Endpoint>(() => store.state.User.currentUser);
 const serveServers: any = computed<Endpoint>(() => store.state.Endpoint.serveServers);
 const securityOpts: any = computed<any>(() => store.state.Endpoint.securityOpts);
-import SchemaEditor from '@/components/SchemaEditor/index.vue';
-import {cloneByJSON} from "@/utils/object";
 
 const props = defineProps({});
 const emit = defineEmits([]);
@@ -396,7 +401,7 @@ const selectedCode = ref('200');
 
 // 是否定义了请求方法
 function hasDefinedMethod(method: string) {
-  return endpointDetail?.value?.endpoints?.some((item) => {
+  return endpointDetail?.value?.interfaces?.some((item) => {
     return item.method === method;
   })
 }
@@ -414,18 +419,32 @@ const selectedMethodDetail: any = ref(null);
 const selectedCodeDetail: any = ref(null);
 // 是否展示安全定义
 const showSecurity = ref(false);
+
 watch(() => {
   return selectedMethod.value
 }, (newVal, oldVal) => {
-  selectedMethodDetail.value = endpointDetail?.value?.endpoints?.find((item) => {
+  console.log('watch selectedMethod', newVal, endpointDetail?.value?.interfaces)
+
+  selectedMethodDetail.value = endpointDetail?.value?.interfaces?.find((item) => {
     return item.method === newVal;
   })
+
   if (selectedMethodDetail.value) {
+    console.log('selectedMethodDetail.value.id', selectedMethodDetail.value)
+
+    store.dispatch('Debug/setInterface', {
+      id: selectedMethodDetail.value.id,
+      method: selectedMethodDetail.value.method,
+    });
+
     showSecurity.value = !!selectedMethodDetail.value.security;
     selectedCodeDetail.value = selectedMethodDetail?.value?.responseBodies?.find((item) => {
       return item.code === selectedCode.value;
     })
+  } else {
+    store.dispatch('Debug/setInterface', {});
   }
+
 }, {immediate: true});
 
 watch(() => {
@@ -437,7 +456,7 @@ watch(() => {
 }, {immediate: true});
 
 const selectedMethodIndex: any = computed(() => {
-  return endpointDetail?.value?.endpoints?.findIndex((item) => {
+  return endpointDetail?.value?.interfaces?.findIndex((item) => {
     return item.method === selectedMethod.value;
   })
 });
@@ -517,7 +536,7 @@ function addEndpoint() {
   selectedCode.value = '200';
   store.commit('Endpoint/setEndpointDetail', {
     ...endpointDetail.value,
-    endpoints: [...endpointDetail.value.endpoints, item],
+    interfaces: [...endpointDetail.value.interfaces, item],
   })
 }
 

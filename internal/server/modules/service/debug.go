@@ -24,12 +24,14 @@ type DebugService struct {
 }
 
 func (s *DebugService) LoadData(req v1.DebugRequest) (ret v1.DebugRequest, err error) {
-	var tested bool
-	if tested, err = s.DebugRepo.Tested(req.Id); !tested {
-		req, err = s.EndpointService.GetReq(req.Id, req.EndpointId)
+	isInterfaceHasDebug, err := s.DebugRepo.IsInterfaceHasDebug(req.InterfaceId)
+
+	if !isInterfaceHasDebug {
+		req, err = s.EndpointService.GetReq(req.InterfaceId, req.EndpointId)
 	} else {
-		req, err = s.GetLastReq(int(req.Id))
+		req, err = s.GetLastReq(int(req.InterfaceId))
 	}
+
 	/*
 		err = s.ProcessorInterfaceService.UpdateByInvocation(req)
 		if err != nil {
@@ -63,7 +65,7 @@ func (s *DebugService) CreateForScenarioInterface(req v1.DebugRequest,
 	invocation = model.Debug{
 		InvocationBase: model.InvocationBase{
 			Name:        time.Now().Format("01-02 15:04:05"),
-			InterfaceId: req.Id,
+			InterfaceId: req.InterfaceId,
 			ProjectId:   uint(projectId),
 		},
 	}
@@ -82,10 +84,10 @@ func (s *DebugService) CreateForScenarioInterface(req v1.DebugRequest,
 func (s *DebugService) ReplaceEnvironmentAndExtractorVariables(req v1.DebugRequest) (
 	ret v1.DebugRequest, err error) {
 
-	interf, _ := s.ProcessorInterfaceRepo.Get(req.Id)
+	interf, _ := s.ProcessorInterfaceRepo.Get(req.InterfaceId)
 
-	req.Environment, _ = s.VariableService.GetEnvironmentVariablesByInterface(req.Id, req.UsedBy)
-	req.Variables, _ = s.VariableService.GetVariablesByInterface(req.Id, req.UsedBy)
+	req.Environment, _ = s.VariableService.GetEnvironmentVariablesByInterface(req.InterfaceId, req.UsedBy)
+	req.Variables, _ = s.VariableService.GetVariablesByInterface(req.InterfaceId, req.UsedBy)
 	req.Datapools, _ = s.DatapoolService.ListForExec(interf.ProjectId)
 
 	ret = req
@@ -115,6 +117,7 @@ func (s *DebugService) GetLastResp(interfId int) (resp v1.DebugResponse, err err
 
 func (s *DebugService) GetLastReq(interfId int) (req v1.DebugRequest, err error) {
 	invocation, _ := s.DebugRepo.GetLast(interfId)
+
 	if invocation.ID > 0 {
 		json.Unmarshal([]byte(invocation.ReqContent), &req)
 	} else {

@@ -6,6 +6,7 @@ type Environment struct {
 	Name         string           `json:"name"`
 	Vars         []EnvironmentVar `gorm:"-" json:"vars"`
 	ServeServers []ServeServer    `gorm:"-" json:"serveServers"`
+	Sort         uint             `json:"sort"`
 }
 
 type EnvironmentVar struct {

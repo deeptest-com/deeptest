@@ -33,7 +33,7 @@ func (s *ProcessorInterfaceService) UpdateByInvocation(req v1.DebugRequest) (err
 }
 
 func (s *ProcessorInterfaceService) CopyValueFromRequest(interf *model.ProcessorInterface, req v1.DebugRequest) (err error) {
-	interf.ID = req.Id
+	interf.ID = req.InterfaceId
 
 	copier.CopyWithOption(interf, req, copier.Option{DeepCopy: true})
 

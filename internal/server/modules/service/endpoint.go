@@ -166,21 +166,25 @@ func (s *EndpointService) GetReq(interfaceId, endpointId uint) (req v1.DebugRequ
 	} else {
 		return
 	}
+
 	if err != nil {
 		return
 	}
-	//fmt.Println(interf.Params, "+++++++++++")
+
 	var endpoint model.Endpoint
 	var serve model.Serve
+
 	endpoint, err = s.EndpointRepo.Get(interf.EndpointId)
 	serve, err = s.ServeRepo.Get(endpoint.ServeId)
 	if err != nil {
 		return
 	}
+
 	Securities, err := s.ServeRepo.ListSecurity(serve.ID)
 	if err != nil {
 		return
 	}
+
 	serve.Securities = Securities
 	interfaces2debug := openapi.NewInterfaces2debug(interf, serve)
 	debugInterface := interfaces2debug.Convert()
@@ -190,5 +194,6 @@ func (s *EndpointService) GetReq(interfaceId, endpointId uint) (req v1.DebugRequ
 	//req.Params = debugInterface.Params
 	//fmt.Println(req.Params, "-----------")
 	req.UsedBy = consts.UsedByInterface
+
 	return
 }

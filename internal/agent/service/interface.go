@@ -57,7 +57,7 @@ func (s *InterfaceService) Request(req v1.DebugRequest) (ret v1.DebugResponse, e
 	// send request
 	ret, err = agentExec.Invoke(&req.BaseRequest)
 
-	ret.Id = req.Id
+	ret.Id = req.InterfaceId
 
 	return
 }

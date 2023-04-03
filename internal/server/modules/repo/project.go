@@ -274,7 +274,7 @@ func (r *ProjectRepo) AddProjectMember(projectId, userId uint, role string) (err
 func (r *ProjectRepo) AddProjectRootInterface(serveId, projectId uint) (err error) {
 	root := model.Category{
 		Name:      "分类",
-		Type:      serverConsts.InterfaceCategory,
+		Type:      serverConsts.EndpointCategory,
 		ServeId:   serveId,
 		ProjectId: projectId,
 		IsLeaf:    false,

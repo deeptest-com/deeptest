@@ -83,8 +83,8 @@ const settings: SettingsType = {
     homeRouteItem: {
         icon: 'interface',
         title: 'interface',
-        path: '/interface/index',
-        component: ()=> import('@/views/interface/index.vue')
+        path: '/endpoint/index',
+        component: ()=> import('@/views/endpoint/index.vue')
     },
     siteTokenKey: 'admin_antd_vue_token',
     currProjectId: 'curr_project_id',

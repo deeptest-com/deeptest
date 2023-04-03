@@ -8,16 +8,19 @@
       wrapClassName="drawer-1"
       :bodyStyle="{padding:0,marginBottom:'60px'}"
       @close="onCloseDrawer">
+
     <!-- 头部信息  -->
     <template #title>
       <a-row type="flex" style="align-items: center;width: 100%">
         <a-col :span="8">
-          <EditAndShowField :value="interfaceDetail.title" @update="updateTitle"/>
+          <EditAndShowField :value="endpointDetail.title" @update="updateTitle"/>
         </a-col>
       </a-row>
     </template>
+
     <!-- 基本信息 -->
-    <InterfaceBasicInfo :interfaceDetail="interfaceDetail" @changeStatus="changeStatus"/>
+    <EndpointBasicInfo @changeStatus="changeStatus"/>
+
     <!-- 接口设计区域 -->
     <a-card
         style="width: 100%"
@@ -26,18 +29,21 @@
         :bodyStyle="{padding:'16px'}"
         :active-tab-key="key"
         @tabChange="key => onTabChange(key, 'key')">
+
       <div v-if="key === 'request'">
-        <InterfaceDefine/>
+        <EndpointDefine/>
       </div>
+
       <div v-else-if="key === 'run'">
-        <!-- ::::TODO 调试模块 -->
+        <EndpointDebug></EndpointDebug>
       </div>
-      <div v-else-if="key === 'mock'">mock content</div>
+
     </a-card>
+
     <div class="drawer-btns">
       <a-space>
         <a-button type="primary" @click="save">保存</a-button>
-        <a-button @click="cancal">取消</a-button>
+        <a-button @click="cancel">取消</a-button>
       </a-space>
     </div>
   </a-drawer>
@@ -50,14 +56,17 @@ import {
   defineEmits,
   computed,
 } from 'vue';
-import InterfaceBasicInfo from './InterfaceBasicInfo.vue';
+import EndpointBasicInfo from './EndpointBasicInfo.vue';
 import EditAndShowField from './EditAndShowField.vue';
-import InterfaceDefine from './InterfaceDefine.vue';
-import {useStore} from "vuex";
-import {Interface} from "@/views/interface/data";
 
-const store = useStore<{ Interface, ProjectGlobal, ServeGlobal }>();
-const interfaceDetail = computed<Interface>(() => store.state.Interface.interfaceDetail);
+import EndpointDefine from './Define/index.vue';
+import EndpointDebug from './Debug/index.vue';
+
+import {useStore} from "vuex";
+import {Endpoint} from "@/views/endpoint/data";
+
+const store = useStore<{ Endpoint, ProjectGlobal, ServeGlobal }>();
+const endpointDetail = computed<Endpoint>(() => store.state.Endpoint.endpointDetail);
 
 const props = defineProps({
   visible: {
@@ -72,17 +81,17 @@ function onCloseDrawer() {
 }
 
 async function changeStatus(status) {
-  await store.dispatch('Interface/updateStatus',
-      {id:interfaceDetail.value.id, status: status}
+  await store.dispatch('Endpoint/updateStatus',
+      {id:endpointDetail.value.id, status: status}
   );
-  await store.dispatch('Interface/getInterfaceDetail', {id: interfaceDetail.value.id});
+  await store.dispatch('Endpoint/getEndpointDetail', {id: endpointDetail.value.id});
 }
 
 async function updateTitle(title) {
-  await store.dispatch('Interface/updateInterfaceDetail',
-      {...interfaceDetail.value, title: title}
+  await store.dispatch('Endpoint/updateEndpointDetail',
+      {...endpointDetail.value, title: title}
   );
-  await store.dispatch('Interface/getInterfaceDetail', {id: interfaceDetail.value.id});
+  await store.dispatch('Endpoint/getEndpointDetail', {id: endpointDetail.value.id});
 }
 
 const tabList = [
@@ -97,11 +106,6 @@ const tabList = [
     slots: {tab: 'customRenderRun'},
 
   },
-  {
-    key: 'mock',
-    tab: 'Mock',
-    slots: {tab: 'customRenderMock'},
-  },
 ];
 
 const key = ref('request');
@@ -111,13 +115,13 @@ const onTabChange = (value: string, type: string) => {
   }
 };
 
-async function cancal() {
+async function cancel() {
   emit('close');
 }
 
 async function save() {
-  await store.dispatch('Interface/updateInterfaceDetail',
-      {...interfaceDetail.value}
+  await store.dispatch('Endpoint/updateEndpointDetail',
+      {...endpointDetail.value}
   );
   emit('close');
 }

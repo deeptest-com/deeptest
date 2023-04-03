@@ -1,17 +1,19 @@
 <template>
   <div class="content">
+
     <!-- ::::路径定义方式 -->
     <a-row class="form-item">
       <a-col :span="2" class="form-label">路径</a-col>
       <a-col :span="16">
-        <a-input :value="interfaceDetail.path" @change="updatePath" placeholder="请输入路径">
+        <a-input :value="endpointDetail.path" @change="updatePath" placeholder="请输入路径">
           <template #addonBefore>
             <a-select
                 :options="serveServers"
                 :value="serveServers?.[0]?.value"
                 placeholder="请选择服务器"
-                style="width: 200px;text-align: left"/>
+                style="width: 200px;text-align: left" />
           </template>
+
           <template #addonAfter>
             <a-button @click="addPathParams">
               <template #icon>
@@ -21,10 +23,11 @@
             </a-button>
           </template>
         </a-input>
+
         <!-- ::::路径参数 -->
         <div class="path-param-list">
-          <div v-for="(item,index) in interfaceDetail.pathParams" :key="item.id">
-            <FieldItem
+          <div v-for="(item,index) in endpointDetail.pathParams" :key="item.id">
+            <Field
                 :fieldData="{...item,index:index}"
                 :showRequire="true"
                 @del="deletePathParams"
@@ -33,6 +36,7 @@
         </div>
       </a-col>
     </a-row>
+
     <!-- ::::请求方式定义 -->
     <a-row class="form-item">
       <a-col :span="2" class="form-label">请求方式</a-col>
@@ -45,6 +49,7 @@
             {{ method.label }}
           </a-radio-button>
         </a-radio-group>
+
         <div class="form-item-request">
           <div v-if="selectedMethodDetail">
             <!-- ::::Operation ID -->
@@ -65,6 +70,7 @@
                 <a-input v-model:value="selectedMethodDetail.description"/>
               </a-col>
             </a-row>
+
             <!-- ::::增加请求参数 -->
             <a-row class="form-item-request-item">
               <a-col :span="3" class="form-label">
@@ -99,6 +105,7 @@
                 </div>
               </a-col>
             </a-row>
+
             <!-- ::::请求参数展示：headers、cookies、query params等 -->
             <a-row class="form-item-request-item">
               <a-col :span="3"></a-col>
@@ -137,7 +144,7 @@
                       </div>
                       <div class="header-defined header-defined-items">
                         <div v-for="(item,index) in selectedMethodDetail.headers" :key="item.id">
-                          <FieldItem
+                          <Field
                               :fieldData="{...item,index:index}"
                               :showRequire="true"
                               @del="deleteParams('headers',index)"
@@ -153,7 +160,7 @@
                       </div>
                       <div class="header-defined ">
                         <div v-for="(item,index) in selectedMethodDetail.params" :key="item.id">
-                          <FieldItem
+                          <Field
                               :fieldData="{...item,index:index}"
                               :showRequire="true"
                               @del="deleteParams('params',index)"
@@ -169,7 +176,7 @@
                       </div>
                       <div class="header-defined ">
                         <div v-for="(item,index) in selectedMethodDetail.cookies" :key="item.id">
-                          <FieldItem
+                          <Field
                               :fieldData="{...item,index:index}"
                               :showRequire="true"
                               @del="deleteParams('cookies',index)"
@@ -273,7 +280,7 @@
                             <div class="params-defined-item" v-if="selectedCodeDetail?.headers?.length">
                               <div class="header-defined header-defined-items">
                                 <div v-for="(item,index) in selectedCodeDetail.headers" :key="item.id">
-                                  <FieldItem
+                                  <Field
                                       :fieldData="{...item,index:index}"
                                       :showRequire="false"
                                       @del="deleteResHeader(index)"
@@ -340,7 +347,7 @@
             </a-row>
           </div>
           <div class="no-defined" v-else>
-            <a-button type="primary" @click="addInterface">
+            <a-button type="primary" @click="addEndpoint">
               <template #icon>
                 <PlusOutlined/>
               </template>
@@ -369,29 +376,35 @@ import {
   defaultHeaderParams,
   defaultQueryParams,
   defaultPathParams,
-  defaultInterfaceDetail,
+  defaultEndpointDetail,
   defaultCodeResponse,
 } from '@/config/constant';
 import {PlusOutlined, DeleteOutlined} from '@ant-design/icons-vue';
-import FieldItem from './FieldItem.vue'
-import {Interface} from "@/views/interface/data";
-
-const store = useStore<{ Interface, ProjectGlobal, User }>();
-const interfaceDetail: any = computed<Interface>(() => store.state.Interface.interfaceDetail);
-const currentUser: any = computed<Interface>(() => store.state.User.currentUser);
-const serveServers: any = computed<Interface>(() => store.state.Interface.serveServers);
-const securityOpts: any = computed<any>(() => store.state.Interface.securityOpts);
+import Field from './Field.vue'
+import {Endpoint} from "@/views/endpoint/data";
+import {StateType as Debug} from "@/store/debug";
 import SchemaEditor from '@/components/SchemaEditor/index.vue';
 import {cloneByJSON} from "@/utils/object";
 
+const store = useStore<{ Endpoint, Debug, ProjectGlobal, User }>();
+const endpointDetail: any = computed<Endpoint>(() => store.state.Endpoint.endpointDetail);
+const interfaceMethodToObjMap = computed<any>(() => store.state.Endpoint.interfaceMethodToObjMap);
+
+const currInterface = computed<any>(() => store.state.Debug.currInterface);
+
+const currentUser: any = computed<Endpoint>(() => store.state.User.currentUser);
+const serveServers: any = computed<Endpoint>(() => store.state.Endpoint.serveServers);
+const securityOpts: any = computed<any>(() => store.state.Endpoint.securityOpts);
+
 const props = defineProps({});
 const emit = defineEmits([]);
-const selectedMethod = ref('GET');
+
+const selectedMethod = ref(currInterface.value?.method ? currInterface.value?.method : 'GET');
 const selectedCode = ref('200');
 
 // 是否定义了请求方法
 function hasDefinedMethod(method: string) {
-  return interfaceDetail?.value?.interfaces?.some((item) => {
+  return endpointDetail?.value?.interfaces?.some((item) => {
     return item.method === method;
   })
 }
@@ -409,18 +422,25 @@ const selectedMethodDetail: any = ref(null);
 const selectedCodeDetail: any = ref(null);
 // 是否展示安全定义
 const showSecurity = ref(false);
+
 watch(() => {
   return selectedMethod.value
 }, (newVal, oldVal) => {
-  selectedMethodDetail.value = interfaceDetail?.value?.interfaces?.find((item) => {
-    return item.method === newVal;
-  })
+  console.log('watch selectedMethod', newVal)
+
+  selectedMethodDetail.value = interfaceMethodToObjMap.value[newVal]
+
   if (selectedMethodDetail.value) {
+    store.dispatch('Debug/setInterface', selectedMethodDetail.value);
+
     showSecurity.value = !!selectedMethodDetail.value.security;
     selectedCodeDetail.value = selectedMethodDetail?.value?.responseBodies?.find((item) => {
       return item.code === selectedCode.value;
     })
+  } else {
+    store.dispatch('Debug/setInterface', {});
   }
+
 }, {immediate: true});
 
 watch(() => {
@@ -432,7 +452,7 @@ watch(() => {
 }, {immediate: true});
 
 const selectedMethodIndex: any = computed(() => {
-  return interfaceDetail?.value?.interfaces?.findIndex((item) => {
+  return endpointDetail?.value?.interfaces?.findIndex((item) => {
     return item.method === selectedMethod.value;
   })
 });
@@ -461,22 +481,22 @@ function setSecurity() {
 
 function addCookie() {
   selectedMethodDetail.value.cookies.push(cloneByJSON(defaultCookieParams));
-  store.commit('Interface/setInterfaceDetail', {
-    ...interfaceDetail.value,
+  store.commit('Endpoint/setEndpointDetail', {
+    ...endpointDetail.value,
   })
 }
 
 function addQueryParams() {
   selectedMethodDetail.value.params.push(cloneByJSON(defaultQueryParams));
-  store.commit('Interface/setInterfaceDetail', {
-    ...interfaceDetail.value,
+  store.commit('Endpoint/setEndpointDetail', {
+    ...endpointDetail.value,
   })
 }
 
 function addHeader() {
   selectedMethodDetail.value.headers.push(cloneByJSON(defaultHeaderParams));
-  store.commit('Interface/setInterfaceDetail', {
-    ...interfaceDetail.value,
+  store.commit('Endpoint/setEndpointDetail', {
+    ...endpointDetail.value,
   })
 }
 
@@ -488,9 +508,9 @@ function addCodeResponse() {
   const item = {
     ...cloneByJSON(defaultCodeResponse),
     "code": selectedCode.value,
-    "interfaceId": selectedMethodDetail.value.id,
+    "endpointId": selectedMethodDetail.value.id,
   }
-  store.commit('Interface/setInterfaceDetailByIndex', {
+  store.commit('Endpoint/setEndpointDetailByIndex', {
     methodIndex: selectedMethodIndex.value,
     codeIndex: selectedCodeIndex.value,
     value: item
@@ -498,19 +518,19 @@ function addCodeResponse() {
   selectedCodeDetail.value = item;
 }
 
-function addInterface() {
+function addEndpoint() {
   const item = {
-    ...cloneByJSON(defaultInterfaceDetail),
-    "projectId": interfaceDetail.value.projectId,
-    "serveId": interfaceDetail.value.serveId,
+    ...cloneByJSON(defaultEndpointDetail),
+    "projectId": endpointDetail.value.projectId,
+    "serveId": endpointDetail.value.serveId,
     "useId": currentUser.value.id,
     "method": selectedMethod.value,
   }
   selectedMethodDetail.value = item;
   selectedCode.value = '200';
-  store.commit('Interface/setInterfaceDetail', {
-    ...interfaceDetail.value,
-    interfaces: [...interfaceDetail.value.interfaces, item],
+  store.commit('Endpoint/setEndpointDetail', {
+    ...endpointDetail.value,
+    interfaces: [...endpointDetail.value.interfaces, item],
   })
 }
 
@@ -518,10 +538,10 @@ function addInterface() {
  * 添加路径参数
  * */
 function addPathParams() {
-  interfaceDetail.value.pathParams.push(cloneByJSON(defaultPathParams));
-  store.commit('Interface/setInterfaceDetail', {
-    ...interfaceDetail.value,
-    pathParams: interfaceDetail.value.pathParams
+  endpointDetail.value.pathParams.push(cloneByJSON(defaultPathParams));
+  store.commit('Endpoint/setEndpointDetail', {
+    ...endpointDetail.value,
+    pathParams: endpointDetail.value.pathParams
   })
 }
 
@@ -529,10 +549,10 @@ function addPathParams() {
  * 删除路径参数
  * */
 function deletePathParams(data) {
-  interfaceDetail.value.pathParams.splice(data.index, 1);
-  store.commit('Interface/setInterfaceDetail', {
-    ...interfaceDetail.value,
-    pathParams: interfaceDetail.value.pathParams
+  endpointDetail.value.pathParams.splice(data.index, 1);
+  store.commit('Endpoint/setEndpointDetail', {
+    ...endpointDetail.value,
+    pathParams: endpointDetail.value.pathParams
   })
 }
 
@@ -541,10 +561,10 @@ function deletePathParams(data) {
  * 更新参数名称
  * */
 function pathParamsNameChange(data) {
-  interfaceDetail.value.pathParams[data.index] = data;
-  store.commit('Interface/setInterfaceDetail', {
-    ...interfaceDetail.value,
-    pathParams: interfaceDetail.value.pathParams
+  endpointDetail.value.pathParams[data.index] = data;
+  store.commit('Endpoint/setEndpointDetail', {
+    ...endpointDetail.value,
+    pathParams: endpointDetail.value.pathParams
   })
 }
 
@@ -554,7 +574,7 @@ function pathParamsNameChange(data) {
 function handlePathLink() {
   // ::::todo 待补充
   // let parsePathReg = /\{(\w+)\}/g
-  // let path = interfaceDetail.value.path;
+  // let path = endpointDetail.value.path;
   // let params = path.match(parsePathReg);
   // if (data.name) {
   //   params.push(data.name)
@@ -579,8 +599,8 @@ function handleResHeaderChange(data) {
 }
 
 function updatePath(e) {
-  store.commit('Interface/setInterfaceDetail', {
-    ...interfaceDetail.value,
+  store.commit('Endpoint/setEndpointDetail', {
+    ...endpointDetail.value,
     path: e.target.value,
   })
 }

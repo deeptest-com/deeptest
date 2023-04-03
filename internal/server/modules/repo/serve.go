@@ -361,7 +361,7 @@ func (r *ServeRepo) SetCurrServeByUser(serveId, userId uint) (err error) {
 func (r *ServeRepo) SaveServe(serve *model.Serve) (err error) {
 	return r.DB.Transaction(func(tx *gorm.DB) error {
 		if serve.ID == 0 { //生成目录树跟节点
-			category := model.Category{Name: "所属分类", ProjectId: serve.ProjectId, Type: serverConsts.InterfaceCategory}
+			category := model.Category{Name: "所属分类", ProjectId: serve.ProjectId, Type: serverConsts.EndpointCategory}
 			err = r.CategoryRepo.Save(&category)
 			if err != nil {
 				return err

@@ -20,6 +20,17 @@ func NewServerCron() *ServerCron {
 	return inst
 }
 
+func (s *ServerCron) AddTask(name string, intervalSecond int64, f func()) {
+	_cronUtils.AddTask(
+		name,
+		fmt.Sprintf("@every %ds", intervalSecond),
+		f,
+	)
+	iris.RegisterOnInterrupt(func() {
+		_cronUtils.Stop()
+	})
+}
+
 func (s *ServerCron) Init() {
 	s.syncMap.Store("isRunning", false)
 	s.syncMap.Store("lastCompletedTime", int64(0))

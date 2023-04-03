@@ -2,13 +2,13 @@
   <div class="container">
     <div class="content">
       <div class="left tree">
-        <InterfaceTree @select="selectNode"/>
+        <EndpointTree @select="selectNode"/>
       </div>
       <div class="right">
         <!--  头部搜索区域  -->
         <div class="top-action">
           <a-button class="action-new" type="primary" :loading="loading"
-                    @click="createApiModaVisible = true;">新建接口
+                    @click="createApiModalVisible = true;">新建接口
           </a-button>
         </div>
         <div class="top-search">
@@ -34,9 +34,12 @@
           <template #colTitle="{text,record}">
             <div class="customTitleColRender">
               <span>{{ text }}</span>
-              <span class="edit" @click="editInterface(record)"><EditOutlined/></span>
+              <span class="edit" @click="editEndpoint(record)">
+                <EditOutlined/>
+              </span>
             </div>
           </template>
+
           <template #colStatus="{record}">
             <div class="customTitleColRender">
               <a-select
@@ -44,7 +47,7 @@
                   style="width: 100px"
                   :size="'small'"
                   placeholder="请修改接口状态"
-                  :options="interfaceStatusOpts"
+                  :options="endpointStatusOpts"
                   @change="(val) => {
                   handleChangeStatus(val,record);
                   }"
@@ -52,11 +55,13 @@
               </a-select>
             </div>
           </template>
+
           <template #colPath="{text}">
             <div class="customTitleColRender">
               <a-tag>{{ text }}</a-tag>
             </div>
           </template>
+
           <template #action="{record}">
             <a-dropdown>
               <MoreOutlined/>
@@ -78,12 +83,12 @@
         </a-table>
       </div>
     </div>
-    <!--  创建新接口弹框  -->
-    <CreateApiModal
-        :visible="createApiModaVisible"
-        :selectedCategoryId="selectedCategoryId"
-        @cancal="createApiModaVisible = false;"
+
+    <CreateEndpointModal
+        :visible="createApiModalVisible"
+        @cancal="createApiModalVisible = false;"
         @ok="handleCreateApi"/>
+
     <!-- 编辑接口时，展开抽屉   -->
     <Drawer
         :destroyOnClose="true"
@@ -97,25 +102,31 @@ import {
   computed, reactive, toRefs, ref, onMounted,
   watch
 } from 'vue';
-import InterfaceTree from './list/tree.vue';
+import debounce from "lodash.debounce";
+import EndpointTree from './list/tree.vue';
 import {ColumnProps} from 'ant-design-vue/es/table/interface';
 import {
   EditOutlined,
   MoreOutlined
 } from '@ant-design/icons-vue';
-import {interfaceStatusOpts} from '@/config/constant';
-import CreateApiModal from './components/CreateApiModal.vue';
+import {endpointStatusOpts} from '@/config/constant';
+import CreateEndpointModal from './components/CreateEndpointModal.vue';
 import TableFilter from './components/TableFilter.vue';
 import Drawer from './components/Drawer/index.vue'
 import {useStore} from "vuex";
-import {Interface, PaginationConfig} from "@/views/interface/data";
+import {Endpoint, PaginationConfig} from "@/views/endpoint/data";
+
 import {StateType as ServeStateType} from "@/store/serve";
-const store = useStore<{ Interface, ProjectGlobal, ServeGlobal: ServeStateType }>();
+import {StateType as Debug} from "@/store/debug";
+
+const store = useStore<{ Endpoint, ProjectGlobal, Debug: Debug, ServeGlobal: ServeStateType }>();
+
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
-const list = computed<Interface[]>(() => store.state.Interface.listResult.list);
-let pagination = computed<PaginationConfig>(() => store.state.Interface.listResult.pagination);
 const currServe = computed<any>(() => store.state.ServeGlobal.currServe);
-const createApiModaVisible = ref(false);
+const list = computed<Endpoint[]>(() => store.state.Endpoint.listResult.list);
+let pagination = computed<PaginationConfig>(() => store.state.Endpoint.listResult.pagination);
+
+const createApiModalVisible = ref(false);
 type Key = ColumnProps['key'];
 
 
@@ -172,40 +183,40 @@ const onSelectChange = (keys: Key[], rows: any) => {
   selectedRowKeys.value = [...keys];
 };
 
-
 async function handleChangeStatus(value: any, record: any,) {
-  await store.dispatch('Interface/updateStatus', {
-    id: record.id,
+  await store.dispatch('Endpoint/updateStatus', {
+    id:record.id,
     status: value
   });
 }
 
-async function editInterface(record) {
-  await store.dispatch('Interface/getInterfaceDetail', {id: record.id});
+async function editEndpoint(record) {
+  await store.dispatch('Debug/setEndpointId', record.id);
+  await store.dispatch('Endpoint/getEndpointDetail', {id: record.id});
   drawerVisible.value = true;
 }
 
 async function copy(record: any) {
-  await store.dispatch('Interface/copy', record);
+  await store.dispatch('Endpoint/copy', record);
 }
 
 async function disabled(record: any) {
-  await store.dispatch('Interface/disabled', record);
+  await store.dispatch('Endpoint/disabled', record);
 }
 
 async function del(record: any) {
-  await store.dispatch('Interface/del', record);
+  await store.dispatch('Endpoint/del', record);
 }
 
 async function handleCreateApi(data) {
-  await store.dispatch('Interface/createApi', {
+  await store.dispatch('Endpoint/createApi', {
     "title": data.title,
     "projectId": currProject.value.id,
     "serveId": currServe.value.id,
     "description": data.description || null,
     "categoryId": data.categoryId || null,
   });
-  createApiModaVisible.value = false;
+  createApiModalVisible.value = false;
 }
 
 async function selectNode(id) {
@@ -216,14 +227,14 @@ async function selectNode(id) {
   });
 }
 
-async function loadList(currProjectId, page, size, opts?: any) {
-  await store.dispatch('Interface/loadList', {
+const loadList = debounce(async (currProjectId, page, size, opts?: any) => {
+  await store.dispatch('Endpoint/loadList', {
     currProjectId,
     "page": page,
     "pageSize": size,
     opts,
   });
-}
+}, 300)
 
 async function handleTableFilter(filterState) {
   await loadList(currProject.value.id, pagination.value.current, pagination.value.pageSize, filterState);
@@ -248,9 +259,9 @@ watch(() => {
     await loadList(newVal.id, pagination.value.current, pagination.value.pageSize, {
       serveId: newVal,
     });
-    await store.dispatch('Interface/getServerList', {id: currServe.value.id});
+    await store.dispatch('Endpoint/getServerList', {id: currServe.value.id});
     // 获取授权列表
-    await store.dispatch('Interface/getSecurityList', {id: currServe.value.id});
+    await store.dispatch('Endpoint/getSecurityList', {id: currServe.value.id});
   }
 }, {
   immediate: true

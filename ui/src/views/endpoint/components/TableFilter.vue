@@ -22,7 +22,7 @@
             }"
             :value="formState?.status"
             placeholder="请选择状态"
-            :options="interfaceStatusOpts"/>
+            :options="endpointStatusOpts"/>
       </a-form-item>
     </a-col>
     <a-col :span="8">
@@ -42,17 +42,17 @@
 </template>
 
 <script lang="ts" setup>
-import {interfaceStatusOpts} from '@/config/constant';
+import {endpointStatusOpts} from '@/config/constant';
 import {filterFormState} from "../data";
 import {
   defineEmits, ref,
   onMounted, computed, watch, Ref
 } from 'vue';
 
-const store = useStore<{ Interface, ProjectGlobal, Project }>();
+const store = useStore<{ Endpoint, ProjectGlobal, Project }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 let userList = computed<any>(() => store.state.Project.userList);
-let filterState = computed<any>(() => store.state.Interface.filterState);
+let filterState = computed<any>(() => store.state.Endpoint.filterState);
 
 import {useStore} from "vuex";
 

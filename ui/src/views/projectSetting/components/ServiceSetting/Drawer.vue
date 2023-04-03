@@ -42,7 +42,7 @@ import { message } from 'ant-design-vue';
 import ServiceVersion from './Version.vue';
 import ServiceComponent from './Component.vue';
 import ServiceSecurity from './Security.vue';
-import EditAndShowField from '@/components/EditAndShow/index.vue'; 
+import EditAndShowField from '../commom/EditAndShowField.vue';
 import { StateType as ProjectStateType } from "@/store/project";
 import { StateType as ProjectSettingStateType } from '../../store';
 import { ServeDetail } from '../../data';

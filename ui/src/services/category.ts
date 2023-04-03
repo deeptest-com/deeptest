@@ -1,16 +1,4 @@
 import request from '@/utils/request';
-import {QueryParams} from "@/views/project/data";
-import {getEnumSelectItems} from "@/views/interface1/service";
-import {
-    ProcessorCookie, ProcessorData,
-    ProcessorExtractor,
-    ProcessorLogic,
-    ProcessorLoop, ProcessorGroup, ProcessorTimer, ProcessorPrint,
-    ProcessorCategory,
-    ProcessorVariable, ProcessorAssertion, RequestBodyType
-} from "@/utils/enum";
-import {Interface} from "@/views/interface/data";
-
 const apiPath = 'categories';
 
 export async function loadCategory(type): Promise<any> {

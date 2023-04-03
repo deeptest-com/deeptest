@@ -96,8 +96,8 @@ func (s *InvocationInterfaceService) CreateForInterface(req v1.DebugRequest,
 	invocation = model.Invocation{
 		InvocationBase: model.InvocationBase{
 			Name:        time.Now().Format("01-02 15:04:05"),
-			InterfaceId: req.Id,
-			ProjectId:   uint(projectId),
+			InterfaceId: req.InterfaceId,
+			ProjectId:   projectId,
 		},
 	}
 
@@ -118,7 +118,7 @@ func (s *InvocationInterfaceService) CreateForScenarioInterface(req v1.DebugRequ
 	invocation = model.ProcessorInvocation{
 		InvocationBase: model.InvocationBase{
 			Name:        time.Now().Format("01-02 15:04:05"),
-			InterfaceId: req.Id,
+			InterfaceId: req.InterfaceId,
 			ProjectId:   uint(projectId),
 		},
 	}
@@ -141,7 +141,7 @@ func (s *InvocationInterfaceService) Delete(id uint) (err error) {
 }
 
 func (s *InvocationInterfaceService) CopyValueFromRequest(invocation *model.Invocation, req v1.DebugRequest) (err error) {
-	invocation.ID = req.Id
+	invocation.ID = req.InterfaceId
 
 	copier.CopyWithOption(invocation, req, copier.Option{DeepCopy: true})
 
@@ -151,10 +151,10 @@ func (s *InvocationInterfaceService) CopyValueFromRequest(invocation *model.Invo
 func (s *InvocationInterfaceService) ReplaceEnvironmentAndExtractorVariables(req v1.DebugRequest) (
 	ret v1.DebugRequest, err error) {
 
-	interf, _ := s.InterfaceRepo.Get(req.Id)
+	interf, _ := s.InterfaceRepo.Get(req.InterfaceId)
 
-	req.Environment, _ = s.VariableService.GetEnvironmentVariablesByInterface(req.Id, consts.UsedByInterface)
-	req.Variables, _ = s.VariableService.GetVariablesByInterface(req.Id, consts.UsedByInterface)
+	req.Environment, _ = s.VariableService.GetEnvironmentVariablesByInterface(req.InterfaceId, consts.UsedByInterface)
+	req.Variables, _ = s.VariableService.GetVariablesByInterface(req.InterfaceId, consts.UsedByInterface)
 	req.Datapools, _ = s.DatapoolService.ListForExec(interf.ProjectId)
 
 	ret = req

@@ -75,13 +75,13 @@ const props = defineProps<{
   onFinish: Function,
 }>()
 
-const store = useStore<{ Interface: StateType, ProjectGlobal: ProjectStateType }>();
+const store = useStore<{ Interface1: StateType, ProjectGlobal: ProjectStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
-const treeData = computed<any>(() => store.state.Interface.treeData);
-const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
+const treeData = computed<any>(() => store.state.Interface1.treeData != undefined ? store.state.Interface1.treeData : []);
+const interfaceData = computed<Interface>(() => store.state.Interface1.interfaceData);
 
 const queryTree = async () => {
-  await store.dispatch('Interface/loadInterface');
+  await store.dispatch('Interface1/loadInterface');
 }
 queryTree();
 
@@ -116,10 +116,11 @@ const getOpenKeys = (treeNode, isAll) => {
     })
   }
 }
+
 getOpenKeys(treeData.value[0], false)
 
 watch(treeData, () => {
-  console.log('watch', treeData)
+  console.log('watch treedata', treeData)
   getNodeMapCall()
 
   getExpandedKeys('selection_' + currProject.value.id).then(async keys => {
@@ -133,7 +134,7 @@ watch(treeData, () => {
       await setExpandedKeys('selection_' + currProject.value.id, expandedKeys.value)
     }
   })
-})
+}, {deep:true,immediate:true})
 
 const expandAll = () => {
   console.log('expandAll')

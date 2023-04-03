@@ -2,10 +2,11 @@ package handler
 
 import (
 	"fmt"
+
 	domain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	commService "github.com/aaronchen2k/deeptest/internal/pkg/service"
 	service "github.com/aaronchen2k/deeptest/internal/server/modules/service"
-	"github.com/aaronchen2k/deeptest/pkg/domain"
+	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/kataras/iris/v12"
@@ -34,7 +35,11 @@ func (c *ImportCtrl) ImportSpec(ctx iris.Context) {
 		return
 	}
 
-	c.ImportService.Import(req, targetId)
+	err = c.ImportService.Import(req, targetId)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Data: nil, Msg: err.Error()})
+		return
+	}
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: nil, Msg: _domain.NoErr.Msg})
 

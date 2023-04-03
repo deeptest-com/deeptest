@@ -125,7 +125,7 @@ watch(currProject, () => {
   getList(1, nodeDataCategory.value.id);
 }, {deep: false})
 
-const loading = ref<boolean>(true);
+const loading = ref<boolean>(false);
 
 const getList = debounce(async (current: number, categoryId: number): Promise<void> => {
   console.log('getList')

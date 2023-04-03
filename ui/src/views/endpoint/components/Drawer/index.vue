@@ -19,7 +19,7 @@
     </template>
 
     <!-- 基本信息 -->
-    <EndpointBasicInfo @changeStatus="changeStatus"/>
+    <EndpointBasicInfo @changeStatus="changeStatus" @change-description="changeDescription"/>
 
     <!-- 接口设计区域 -->
     <a-card
@@ -90,6 +90,13 @@ async function changeStatus(status) {
 async function updateTitle(title) {
   await store.dispatch('Endpoint/updateEndpointDetail',
       {...endpointDetail.value, title: title}
+  );
+  await store.dispatch('Endpoint/getEndpointDetail', {id: endpointDetail.value.id});
+}
+
+async function changeDescription(description) {
+  await store.dispatch('Endpoint/updateEndpointDetail',
+      {...endpointDetail.value, description}
   );
   await store.dispatch('Endpoint/getEndpointDetail', {id: endpointDetail.value.id});
 }

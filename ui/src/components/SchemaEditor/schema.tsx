@@ -60,8 +60,13 @@ export default defineComponent({
             })
             parent.properties = {...newObj};
         }
-        const dataTypeChange = (key, tree) => {
-            console.log(key, tree);
+        const dataTypeChange = (tree:any, newVal) => {
+            const [key, value]:any = Object.entries(newVal)[0];
+            if (key) {
+                tree.type = key;
+                tree = Object.assign(tree, value);
+            }
+            console.log('832', key, value,tree)
         }
         const moveUp = (keyIndex: any, parent: any) => {
             const keys = Object.keys(parent.properties);
@@ -134,6 +139,7 @@ export default defineComponent({
             return data.value
         }, (newVal) => {
             const newObj = removeExtraInfo(cloneByJSON(newVal));
+            console.log('832 emit change',newObj);
             emit('change', newObj);
         }, {
             immediate: true,
@@ -161,9 +167,10 @@ export default defineComponent({
             </div>
         }
 
-        const renderDataTypeSetting = (tree, keyName) => {
-            return <DataTypeSetting refsOptions={props.refsOptions} value={tree}
-                                    onChange={dataTypeChange.bind(this, keyName, tree)}/>
+        const renderDataTypeSetting = (tree) => {
+            return <DataTypeSetting refsOptions={props.refsOptions}
+                                    value={tree}
+                                    onChange={dataTypeChange.bind(this, tree)}/>
         }
 
         const treeLevelWidth = 24;
@@ -189,14 +196,12 @@ export default defineComponent({
                                              contenteditable={true}
                                              onInput={updateKeyName.bind(this, keyName, keyIndex, parent)}>{keyName}</span> : null}
                             {!isRoot ? <span class={'baseInfoSpace'}>:</span> : null}
-                            {renderDataTypeSetting(tree, keyName)}
+                            {renderDataTypeSetting(tree)}
                             <span class={'baseInfoSpace'}>{`{${Object.keys(tree.properties || {}).length}}`}</span>
                             <PlusOutlined onClick={addProps.bind(this, tree)} class={'addIcon'}/>
                         </div>
-
                         {renderAction(isRoot, isFirst, isLast, keyIndex, parent)}
                         {renderExtraAction(isRoot, keyIndex, parent)}
-
                     </div>
                     <div class={{
                         'directoryContainer': tree,
@@ -227,7 +232,7 @@ export default defineComponent({
                                             <span class={'baseInfoKey'} contenteditable={true}
                                                   onInput={updateKeyName.bind(this, key, index, tree)}>{key}</span>
                                             <span class={'baseInfoSpace'}>:</span>
-                                            {renderDataTypeSetting(tree, key)}
+                                            {renderDataTypeSetting(value)}
                                         </div>
                                         {renderAction(isRoot, isFirst, isLast, index, tree)}
                                         {renderExtraAction(isRoot, index, tree)}
@@ -255,7 +260,7 @@ export default defineComponent({
                                              contenteditable={true}
                                              onInput={updateKeyName.bind(this, keyName, keyIndex, parent)}>{keyName}</span> : null}
                             {!isRoot ? <span class={'baseInfoSpace'}>:</span> : null}
-                            {renderDataTypeSetting(tree, keyName)}
+                            {renderDataTypeSetting(tree)}
                             <span class={'baseInfoSpace'}>{`{${Object.keys(tree.properties || {}).length}}`}</span>
                             <PlusOutlined onClick={addProps.bind(this, tree)} class={'addIcon'}/>
                         </div>
@@ -293,7 +298,7 @@ export default defineComponent({
                                             <span class={'baseInfoKey'} contenteditable={true}
                                                   onInput={updateKeyName.bind(this, key, index, tree)}>{key}</span>
                                             <span class={'baseInfoSpace'}>:</span>
-                                            {renderDataTypeSetting(tree, key)}
+                                            {renderDataTypeSetting(value)}
                                         </div>
                                         {renderAction(isRoot, isFirst, isLast, index, tree)}
                                         {renderExtraAction(isRoot, index, tree)}

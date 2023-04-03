@@ -591,3 +591,4 @@ export const schemaSettingInfo = [
     },
 ]
 
+export const typeOpts = ['string', 'number', 'boolean', 'array', 'object', 'integer'];

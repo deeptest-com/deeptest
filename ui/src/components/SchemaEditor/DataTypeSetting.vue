@@ -1,9 +1,7 @@
 <script lang="ts" setup>
-
 import {ref, defineProps, defineEmits, watch, reactive, toRaw, computed, onMounted} from 'vue';
-import {JSONSchemaDataTypes, schemaSettingInfo} from "./config";
+import {schemaSettingInfo,typeOpts} from "./config";
 import {cloneByJSON} from "@/utils/object";
-
 const props = defineProps({
   value: {
     required: true,
@@ -16,7 +14,6 @@ const props = defineProps({
 })
 const emit = defineEmits(['change']);
 const tabsList: any = ref([]);
-const treeInfo: any = ref(null);
 const visible: any = ref(false);
 
 function changeType(tabsIndex: any, e: any) {
@@ -24,7 +21,6 @@ function changeType(tabsIndex: any, e: any) {
   if (type === 'array') {
     if (tabsList.value.length === tabsIndex + 1) {
       tabsList.value.push(cloneByJSON(schemaSettingInfo));
-      console.log(832, cloneByJSON(schemaSettingInfo));
     }
   } else {
     if (tabsIndex < tabsList.value.length) {
@@ -33,22 +29,8 @@ function changeType(tabsIndex: any, e: any) {
   }
 }
 
-watch(() => {
-  return tabsList.value
-}, (newVal) => {
-  console.log('tabsList value change: ', newVal);
-}, {
-  deep: true
-})
 
-onMounted(() => {
-  console.log(832, 'open');
-})
-
-const typeOpts = ['string', 'number', 'boolean', 'array', 'object', 'integer'];
-
-function initTabsList(types: any,treeInfo: any) {
-  console.log(treeInfo,222);
+function initTabsList(types: any, treeInfo: any) {
   let tabsList: any = [];
   types.forEach((type: string) => {
     const defaultTabs: any = cloneByJSON(schemaSettingInfo);
@@ -60,15 +42,12 @@ function initTabsList(types: any,treeInfo: any) {
       activeTabProps.props.options.forEach((opt: any) => {
         opt.value = treeInfo[opt.name] || opt.value;
       })
-      console.log('hello',defaultTabs[0],treeInfo,treeInfo['enum'],treeInfo['enum']?.length );
-      // console.log('hello',activeTabProps);
     } else {
       defaultTabs[1].active = true;
       defaultTabs[1].value = type;
     }
     tabsList.push(defaultTabs)
   });
-
   // 如果是数组，还需加一项
   if (types[types.length - 1] === 'array') {
     const arrayItems: any = cloneByJSON(schemaSettingInfo);
@@ -87,7 +66,6 @@ function getValueFromTabsList(tabsList: any) {
       res[activeTab.value][opt.name] = opt.value;
     })
   })
-  console.log(832 ,'res', res);
   return res;
 }
 
@@ -98,7 +76,7 @@ watch(() => {
   if (newVal && props.value.type) {
     // 处理如 array[array[object]] 的场景
     const types = props.value.type.match(/\w+/g);
-    tabsList.value = [...initTabsList(types,props.value)];
+    tabsList.value = [...initTabsList(types, props.value)];
   }
   // 关闭了，触发change事件
   else {

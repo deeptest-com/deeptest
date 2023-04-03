@@ -4,10 +4,12 @@ import (
 	"errors"
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
+	_commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"go.uber.org/zap"
@@ -258,12 +260,11 @@ func (r *ProjectRepo) ChangeProject(projectId, userId uint) (err error) {
 	return
 }
 
-func (r *ProjectRepo) AddProjectMember(projectId, userId uint, role string) (err error) {
+func (r *ProjectRepo) AddProjectMember(projectId, userId uint, role consts.RoleType) (err error) {
 	var projectRole model.ProjectRole
-	if role == "admin" {
-		projectRole, _ = r.ProjectRoleRepo.GetAdminRecord()
-	} else if role == "user" {
-		projectRole, _ = r.ProjectRoleRepo.GetUserRecord()
+	projectRole, err = r.ProjectRoleRepo.FindByName(role)
+	if err != nil {
+		return
 	}
 
 	projectMember := model.ProjectMember{UserId: userId, ProjectId: projectId, ProjectRoleId: projectRole.ID}
@@ -310,10 +311,27 @@ func (r *ProjectRepo) AddProjectRootPlanCategory(projectId uint) (err error) {
 }
 
 func (r *ProjectRepo) Members(req v1.ProjectReqPaginate, projectId int) (data _domain.PageData, err error) {
-	var userIds []uint
+	var userIds, roleIds []uint
+	var projectMembers []model.ProjectMember
 	r.DB.Model(&model.ProjectMember{}).
-		Select("user_id").
-		Where("project_id = ? AND NOT deleted", projectId).Scan(&userIds)
+		Select("user_id,project_role_id").
+		Where("project_id = ? AND NOT deleted", projectId).Scan(&projectMembers)
+	for _, v := range projectMembers {
+		userIds = append(userIds, v.UserId)
+		roleIds = append(roleIds, v.ProjectRoleId)
+	}
+	roleIds = _commonUtils.ArrayRemoveUintDuplication(roleIds)
+
+	roles, err := r.ProjectRoleRepo.FindByIds(roleIds)
+	if err != nil {
+		logUtils.Errorf("get roles error", zap.String("error:", err.Error()))
+		return
+	}
+
+	roleIdNameMap := make(map[uint]consts.RoleType)
+	for _, v := range roles {
+		roleIdNameMap[v.ID] = v.Name
+	}
 
 	db := r.DB.Model(&model.SysUser{}).
 		Select("id, username, email").
@@ -338,6 +356,12 @@ func (r *ProjectRepo) Members(req v1.ProjectReqPaginate, projectId int) (data _d
 	if err != nil {
 		logUtils.Errorf("query users error", zap.String("error:", err.Error()))
 		return
+	}
+
+	for k, v := range users {
+		if roleName, ok := roleIdNameMap[v.Id]; ok {
+			users[k].Role = roleName
+		}
 	}
 
 	data.Populate(users, count, req.Page, req.PageSize)

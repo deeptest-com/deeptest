@@ -302,8 +302,19 @@ func (r *UserRepo) InviteToProject(req domain.InviteUserReq) (user model.SysUser
 		err = errors.New("用户已经存在于项目中")
 		return
 	}
+	var roleName consts.RoleType
+	if req.RoleName == "" {
+		roleName = "user"
+	} else {
+		role, err := r.ProjectRoleRepo.FindByName(req.RoleName)
+		if err != nil || role.ID == 0 {
+			err = errors.New("角色不存在")
+			return user, err
+		}
+		roleName = req.RoleName
+	}
 
-	err = r.ProjectRepo.AddProjectMember(uint(req.ProjectId), user.ID, "user")
+	err = r.ProjectRepo.AddProjectMember(uint(req.ProjectId), user.ID, roleName)
 	if err != nil {
 		return
 	}

@@ -75,3 +75,10 @@ func (r *ProjectRoleRepo) AllRoleList() (projectRoles []model.ProjectRole, err e
 
 	return
 }
+
+func (r *ProjectRoleRepo) FindByIds(ids []uint) (projectRoles []model.ProjectRole, err error) {
+	db := r.DB.Model(&model.ProjectRole{}).Where("id IN (?)", ids)
+
+	err = db.First(&projectRoles).Error
+	return
+}

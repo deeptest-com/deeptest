@@ -85,7 +85,7 @@ func (s *SummaryBugsService) CreateByDate(req model.SummaryBugs) (err error) {
 	year, month, day := now.Date()
 	startTime := strconv.Itoa(year) + "-" + strconv.Itoa(int(month)) + "-" + strconv.Itoa(day) + " 00:00:00"
 	endTime := strconv.Itoa(year) + "-" + strconv.Itoa(int(month)) + "-" + strconv.Itoa(day) + " 23:59:59"
-	ret, err := s.LastByDate(startTime, endTime)
+	ret, err := s.HasDataOfDate(startTime, endTime)
 	if ret {
 		err = s.Create(req)
 	} else {
@@ -99,9 +99,9 @@ func (s *SummaryBugsService) UpdateColumnsByDate(req model.SummaryBugs, startTim
 	return r.UpdateColumnsByDate(req, startTime, endTime)
 }
 
-func (s *SummaryBugsService) LastByDate(startTime string, endTiem string) (ret bool, err error) {
+func (s *SummaryBugsService) HasDataOfDate(startTime string, endTiem string) (ret bool, err error) {
 	r := repo.NewSummaryBugsRepo()
-	return r.LastByDate(startTime, endTiem)
+	return r.HasDataOfDate(startTime, endTiem)
 }
 
 // Count

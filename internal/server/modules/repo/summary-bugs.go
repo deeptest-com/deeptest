@@ -26,7 +26,7 @@ func (r *SummaryBugsRepo) UpdateColumnsByDate(bugs model.SummaryBugs, startTime 
 	return
 }
 
-func (r *SummaryBugsRepo) LastByDate(startTime string, endTime string) (ret bool, err error) {
+func (r *SummaryBugsRepo) HasDataOfDate(startTime string, endTime string) (ret bool, err error) {
 	var count int64
 	err = r.DB.Model(&model.SummaryBugs{}).Raw("select count(id) from deeptest.biz_summary_bugs where created_at > ? and created_at < ? AND NOT deleted;", startTime, endTime).Last(&count).Error
 	if count == 0 {

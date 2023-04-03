@@ -69,7 +69,7 @@ func (s *SummaryProjectUserRankingService) CreateByDate(req model.SummaryProject
 	year, month, day := now.Date()
 	startTime := strconv.Itoa(year) + "-" + strconv.Itoa(int(month)) + "-" + strconv.Itoa(day) + " 00:00:00"
 	endTime := strconv.Itoa(year) + "-" + strconv.Itoa(int(month)) + "-" + strconv.Itoa(day) + " 23:59:59"
-	ret, err := s.LastByDate(startTime, endTime)
+	ret, err := s.HasDataOfDate(startTime, endTime)
 	if ret {
 		err = s.Create(req)
 	} else {
@@ -83,9 +83,9 @@ func (s *SummaryProjectUserRankingService) UpdateColumnsByDate(req model.Summary
 	return r.UpdateColumnsByDate(req, startTime, endTime)
 }
 
-func (s *SummaryProjectUserRankingService) LastByDate(startTime string, endTiem string) (ret bool, err error) {
+func (s *SummaryProjectUserRankingService) HasDataOfDate(startTime string, endTiem string) (ret bool, err error) {
 	r := repo.NewSummaryProjectUserRankingRepo()
-	return r.LastByDate(startTime, endTiem)
+	return r.HasDataOfDate(startTime, endTiem)
 }
 
 func (s *SummaryProjectUserRankingService) FindByProjectId(projectId int64) (summaryProjectUserRanking []model.SummaryProjectUserRanking, err error) {

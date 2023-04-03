@@ -55,10 +55,6 @@ func (s *SummaryService) Bugs(projectId int64) (res v1.ResSummaryBugs, err error
 		res, err = s.SummaryBugsService.Bugs(projectId)
 		value, _ := json.Marshal(res)
 		s.cache().Set(context.Background(), "summaryBugs-"+strconv.FormatInt(projectId, 36), value, time.Duration(rand.Int63n(50)+50))
-		fmt.Println("------------------Bugs----------------------------------")
-		fmt.Println(s.cache().Set(context.Background(), "summaryBugs-"+strconv.FormatInt(projectId, 36), value, time.Duration(rand.Int63n(50)+50)))
-		fmt.Println(s.cache().Get(context.Background(), "summaryBugs-"+strconv.FormatInt(projectId, 36)))
-		fmt.Println("------------------Bugs----------------------------------")
 
 	} else {
 		json.Unmarshal(bugsCache, &res)
@@ -75,9 +71,6 @@ func (s *SummaryService) Details(userId int64) (res v1.ResSummaryDetail, err err
 		value, _ := json.Marshal(res)
 		s.cache().Set(context.Background(), "summaryDetails-"+strconv.FormatInt(userId, 36), value, time.Duration(rand.Int63n(50)+50))
 
-		fmt.Println("-------------------Details---------------------------------")
-		fmt.Println(s.cache().Get(context.Background(), "summaryDetails-"+strconv.FormatInt(userId, 36)))
-		fmt.Println("-------------------Details---------------------------------")
 	} else {
 		json.Unmarshal(detailsCache, &res)
 	}
@@ -93,10 +86,6 @@ func (s *SummaryService) ProjectUserRanking(projectId int64, cycle int64) (res v
 		value, _ := json.Marshal(res)
 		s.cache().Set(context.Background(), "summaryRanking-"+strconv.FormatInt(projectId, 36), value, time.Duration(rand.Int63n(50)+50))
 
-		fmt.Println("--------------------ProjectUserRanking--------------------------------")
-		fmt.Println(s.cache().Set(context.Background(), "summaryRanking-"+strconv.FormatInt(projectId, 36), value, time.Duration(rand.Int63n(50)+50)))
-		fmt.Println(s.cache().Get(context.Background(), "summaryRanking-"+strconv.FormatInt(projectId, 36)))
-		fmt.Println("--------------------ProjectUserRanking--------------------------------")
 	} else {
 		json.Unmarshal(rankingCache, &res)
 	}
@@ -111,21 +100,11 @@ func (s *SummaryService) Card(projectId int64) (res v1.ResSummaryCard, err error
 		res, err = s.SummaryDetailsService.Card(projectId)
 		value, _ := json.Marshal(res)
 		s.cache().Set(context.Background(), "summaryCard-"+strconv.FormatInt(projectId, 36), value, time.Duration(rand.Int63n(50)+50))
-
-		fmt.Println("--------------------Card--------------------------------")
-		fmt.Println(s.cache().Set(context.Background(), "summaryCard-"+strconv.FormatInt(projectId, 36), value, time.Duration(rand.Int63n(50)+50)))
-		fmt.Println(s.cache().Get(context.Background(), "summaryCard-"+strconv.FormatInt(projectId, 36)))
-		fmt.Println("--------------------Card--------------------------------")
 	} else {
 		json.Unmarshal(cardCache, &res)
 		s.cache().Del(context.Background(), "summaryCard-"+strconv.FormatInt(projectId, 36))
 		s.cache().Set(context.Background(), "summaryCard-"+strconv.FormatInt(projectId, 36), res, time.Duration(rand.Int63n(50)+50))
 
-		fmt.Println("---------------------Card-------------------------------")
-		fmt.Println(s.cache().Set(context.Background(), "summaryCard-"+strconv.FormatInt(projectId, 36), res, time.Duration(rand.Int63n(50)+50)))
-		fmt.Println(res)
-		fmt.Println(s.cache().Get(context.Background(), "summaryCard-"+strconv.FormatInt(projectId, 36)))
-		fmt.Println("---------------------Card-------------------------------")
 	}
 
 	return
@@ -163,6 +142,9 @@ func (s *SummaryService) CollectionRanking() (err error) {
 
 	//res, err := s.SummaryDetailsService.Card(0)
 	//s.cache().Set(context.Background(),"summaryDetails-"+strconv.FormatInt(user.UserId, 36), resDetail, time.Duration(rand.Int63n(50)+50))
+	checkTime := time.Now().Local()
+	checked := v1.SummaryDataCheck{CacheKey: "ranking", CacheValue: &checkTime}
+	s.cache().Set(context.Background(), "summaryDataUpdatedAt", checked, time.Duration(rand.Int63n(50)+50))
 	return
 }
 
@@ -179,12 +161,9 @@ func (s *SummaryService) CollectionBugs() (err error) {
 	s.SummaryBugsService.Create(bugs)
 	value, _ := json.Marshal(bugs)
 	s.cache().Set(context.Background(), "summaryBugs-"+strconv.FormatInt(bugs.ProjectId, 36), value, time.Duration(rand.Int63n(50)+50))
-
-	fmt.Println("--------------------CollectionBugs--------------------------------")
-	fmt.Println(s.cache().Set(context.Background(), "summaryBugs-"+strconv.FormatInt(bugs.ProjectId, 36), value, time.Duration(rand.Int63n(50)+50)))
-	fmt.Println(s.cache().Get(context.Background(), "summaryBugs-"+strconv.FormatInt(bugs.ProjectId, 36)))
-	fmt.Println("---------------------CollectionBugs-------------------------------")
-
+	checkTime := time.Now().Local()
+	checked := v1.SummaryDataCheck{CacheKey: "bugs", CacheValue: &checkTime}
+	s.cache().Set(context.Background(), "summaryDataUpdatedAt", checked, time.Duration(rand.Int63n(50)+50))
 	return
 }
 
@@ -212,7 +191,7 @@ func (s *SummaryService) CollectionDetails() (err error) {
 		detail.ExecTotal, _ = s.SummaryDetailsService.CountExecTotalProjectId(detail.ProjectId)
 
 		//从biz_scenario_report拿到assertion的相关数据,计算后存储
-		passRate, _ := s.SummaryDetailsService.FindPassRate(detail.ProjectId)
+		passRate, _ := s.SummaryDetailsService.FindPassRateByProjectId(detail.ProjectId)
 		detail.PassRate, _ = strconv.ParseFloat(fmt.Sprintf("%.1f", passRate), 64)
 
 		//从biz_interface需要获取当前项目的所有接口,然后从biz_processor_interface检查哪些在场景中出现过
@@ -246,13 +225,11 @@ func (s *SummaryService) CollectionDetails() (err error) {
 			s.cache().Del(context.Background(), "summaryDetails-"+strconv.FormatInt(user.UserId, 36))
 			s.cache().Set(context.Background(), "summaryDetails-"+strconv.FormatInt(user.UserId, 36), value, time.Duration(rand.Int63n(50)+50))
 
-			fmt.Println("-------------------CollectionDetails---------------------------------")
-			fmt.Println(s.cache().Set(context.Background(), "summaryDetails-"+strconv.FormatInt(user.UserId, 36), value, time.Duration(rand.Int63n(50)+50)))
-			fmt.Println(s.cache().Get(context.Background(), "summaryDetails-"+strconv.FormatInt(user.UserId, 36)))
-			fmt.Println("-------------------CollectionDetails---------------------------------")
-
 		}
 	}
+	checkTime := time.Now().Local()
+	checked := v1.SummaryDataCheck{CacheKey: "details", CacheValue: &checkTime}
+	s.cache().Set(context.Background(), "summaryDataUpdatedAt", checked, time.Duration(rand.Int63n(50)+50))
 	return
 }
 
@@ -261,17 +238,12 @@ func (s *SummaryService) SummaryDataCheck() (err error) {
 
 	var checks []v1.SummaryDataCheck
 	values, err := s.cache().Get(context.Background(), "summaryDataUpdatedAt").Bytes()
-	fmt.Println("--------------------SummaryDataCheck--------------------------------")
-	fmt.Println(s.cache().Get(context.Background(), "summaryDataUpdatedAt"))
-	fmt.Println("--------------------SummaryDataCheck--------------------------------")
 
 	if err != nil || len(values) == 0 {
 		s.Collection("all")
 	} else {
 		json.Unmarshal(values, &checks)
-		var checksUpdate []v1.SummaryDataCheck
 		for _, value := range checks {
-			var Update v1.SummaryDataCheck
 			switch value.CacheKey {
 			//由于所有数据都基于details表抓取,所以details表需要特殊处理
 			case "details":
@@ -279,53 +251,18 @@ func (s *SummaryService) SummaryDataCheck() (err error) {
 				if err == nil && ret != false {
 					s.Collection("details")
 				}
-				Update.CacheKey = "details"
-				t := time.Now().Local()
-				Update.CacheValue = &t
-				checksUpdate = append(checksUpdate, Update)
-
-			case "card":
-				ret, err := s.SummaryDetailsService.CheckCardUpdated(value.CacheValue)
-				if err == nil && ret != false {
-					s.Collection("card")
-				}
-
-				Update.CacheKey = "card"
-				t := time.Now().Local()
-				Update.CacheValue = &t
-				checksUpdate = append(checksUpdate, Update)
-
 			case "ranking":
 				ret, err := s.SummaryProjectUserRankingService.CheckUpdated(value.CacheValue)
 				if err == nil && ret != false {
 					s.Collection("ranking")
 				}
-
-				Update.CacheKey = "ranking"
-				t := time.Now().Local()
-				Update.CacheValue = &t
-				checksUpdate = append(checksUpdate, Update)
-
 			case "bugs":
 				ret, err := s.SummaryBugsService.CheckUpdated(value.CacheValue)
 				if err == nil && ret != false {
 					s.Collection("bugs")
 				}
-
-				Update.CacheKey = "bugs"
-				t := time.Now().Local()
-				Update.CacheValue = &t
-				checksUpdate = append(checksUpdate, Update)
-
 			}
 		}
-
-		value, _ := json.Marshal(checksUpdate)
-		fmt.Println("--------------------SummaryDataCheck--------------------------------")
-		s.cache().Set(context.Background(), "summaryDataUpdatedAt", value, time.Duration(rand.Int63n(50)+50))
-		s.cache().Get(context.Background(), "summaryDataUpdatedAt")
-		fmt.Println("--------------------SummaryDataCheck--------------------------------")
-
 	}
 	return
 }

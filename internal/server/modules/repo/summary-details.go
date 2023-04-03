@@ -28,7 +28,7 @@ func (r *SummaryDetailsRepo) UpdateColumnsByDate(summaryDetails model.SummaryDet
 	return
 }
 
-func (r *SummaryDetailsRepo) LastByDate(startTime string, endTime string) (ret bool, err error) {
+func (r *SummaryDetailsRepo) HasDataOfDate(startTime string, endTime string) (ret bool, err error) {
 	var count int64
 	err = r.DB.Model(&model.SummaryDetails{}).Raw("select count(id) from (deeptest.biz_summary_details) where created_at > ? and created_at < ? AND NOT deleted;", startTime, endTime).Last(&count).Error
 	if count == 0 {
@@ -108,7 +108,7 @@ func (r *SummaryDetailsRepo) FindByProjectIdAndDate(startTime string, endTime st
 	return
 }
 
-func (r *SummaryDetailsRepo) FindPassRate(projectId int64) (float64, error) {
+func (r *SummaryDetailsRepo) FindPassRateByProjectId(projectId int64) (float64, error) {
 	var passRate sql.NullFloat64
 	err := r.DB.Model(&model.ScenarioReport{}).Raw("select (SUM(pass_assertion_num)/SUM(total_assertion_num))*100 from (deeptest.biz_scenario_report) where project_id = ?;", projectId).Find(&passRate).Error
 	return passRate.Float64, err

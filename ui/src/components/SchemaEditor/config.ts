@@ -1,7 +1,6 @@
 /**
  * 可参考：https://json-schema.apifox.cn/#%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B
  * */
-
 export const JSONSchemaDataTypes = [
     {
         label: "string",
@@ -18,7 +17,6 @@ export const JSONSchemaDataTypes = [
                     type: 'array',
                     placeholder: '输入文本后按回车添加',
                     value: [],
-
                 },
                 {
                     label: 'format',
@@ -101,7 +99,6 @@ export const JSONSchemaDataTypes = [
                             value: 'byte',
                         },
                     ],
-
                 },
                 {
                     label: 'behavior',
@@ -580,25 +577,17 @@ export const schemaSettingInfo = [
     {
         label: 'Type',
         subLabel: 'SubType',
-        value: 'type',
+        type: 'type',
+        value: 'string',
         active: true,
         props: JSONSchemaDataTypes
     },
     {
         label: 'Components',
+        type: '$ref',
+        value: '',
         active: false,
         subLabel: 'Components',
-        value: 'components',
     },
 ]
-
-
-
-
-
-
-
-
-
-
 

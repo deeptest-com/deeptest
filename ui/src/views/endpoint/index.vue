@@ -86,6 +86,7 @@
 
     <CreateEndpointModal
         :visible="createApiModalVisible"
+        :selectedCategoryId="selectedCategoryId"
         @cancal="createApiModalVisible = false;"
         @ok="handleCreateApi"/>
 

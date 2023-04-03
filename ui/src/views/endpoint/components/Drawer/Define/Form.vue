@@ -1,6 +1,5 @@
 <template>
   <div class="content">
-
     <!-- ::::路径定义方式 -->
     <a-row class="form-item">
       <a-col :span="2" class="form-label">路径</a-col>
@@ -13,7 +12,6 @@
                 placeholder="请选择服务器"
                 style="width: 200px;text-align: left" />
           </template>
-
           <template #addonAfter>
             <a-button @click="addPathParams">
               <template #icon>
@@ -23,16 +21,23 @@
             </a-button>
           </template>
         </a-input>
-
         <!-- ::::路径参数 -->
         <div class="path-param-list">
-          <div v-for="(item,index) in endpointDetail.pathParams" :key="item.id">
             <Field
+                v-for="(item,index) in endpointDetail.pathParams"
+                :key="item.id"
                 :fieldData="{...item,index:index}"
                 :showRequire="true"
-                @del="deletePathParams"
+                :refsOptions="[
+                    {
+                    label: '组件 1',
+                    value: 'COM1'
+                  }, {
+                    label: '组件 2',
+                    value: 'COM2'
+                  }]"
+                @del="deletePathParams(index)"
                 @change="pathParamsNameChange"/>
-          </div>
         </div>
       </a-col>
     </a-row>
@@ -463,7 +468,7 @@ const selectedCodeIndex: any = computed(() => {
 });
 
 function goEditSecurity() {
-  window.open(`/#/projectSetting/index?firtab=3&sectab=3&serveId=${interfaceDetail.value.serveId}`,'_blank')
+  window.open(`/#/projectSetting/index?firtab=3&sectab=3&serveId=${endpointDetail.value.serveId}`,'_blank')
 }
 
 function delSecurity() {
@@ -561,6 +566,7 @@ function deletePathParams(data) {
  * 更新参数名称
  * */
 function pathParamsNameChange(data) {
+  console.log(data);
   endpointDetail.value.pathParams[data.index] = data;
   store.commit('Endpoint/setEndpointDetail', {
     ...endpointDetail.value,
@@ -642,7 +648,7 @@ watch(() => {
 
 
 async function generateFromJSON(type: string, JSONStr: string) {
-  const res = await store.dispatch('Interface/example2schema',
+  const res = await store.dispatch('Endpoint/example2schema',
       {data: JSONStr}
   );
   if (type === 'req') {
@@ -654,7 +660,7 @@ async function generateFromJSON(type: string, JSONStr: string) {
 }
 
 async function handleGenerateExample(type: string, examples: any) {
-  const res = await store.dispatch('Interface/schema2example',
+  const res = await store.dispatch('Endpoint/schema2example',
       {data: JSON.stringify(type === 'req' ? activeReqBodySchema.value.content : activeResBodySchema.value.content)}
   );
   const example = {
@@ -679,7 +685,7 @@ function handleChange(type, json: any) {
       selectedMethodDetail.value.requestBody.examples = JSON.stringify(examples);
       selectedMethodDetail.value.requestBody.schemaItem.type = content.type;
     }
-    // store.commit('Interface/setInterfaceDetail', {
+    // store.commit('Endpoint/setInterfaceDetail', {
     //   ...interfaceDetail.value,
     // });
   }
@@ -692,7 +698,7 @@ function handleChange(type, json: any) {
       selectedCodeDetail.value.examples = JSON.stringify(examples);
       selectedCodeDetail.value.schemaItem.type = content.type;
     }
-    // store.commit('Interface/setInterfaceDetailByIndex', {
+    // store.commit('Endpoint/setInterfaceDetailByIndex', {
     //   methodIndex: selectedMethodIndex.value,
     //   codeIndex: selectedCodeIndex.value,
     //   value: selectedCodeDetail.value

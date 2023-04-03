@@ -42,7 +42,7 @@ import { message } from 'ant-design-vue';
 import ServiceVersion from './Version.vue';
 import ServiceComponent from './Component.vue';
 import ServiceSecurity from './Security.vue';
-import EditAndShowField from '../commom/EditAndShowField.vue';
+import EditAndShowField from '@/components/EditAndShow/index.vue';
 import { StateType as ProjectStateType } from "@/store/project";
 import { StateType as ProjectSettingStateType } from '../../store';
 import { ServeDetail } from '../../data';
@@ -56,13 +56,13 @@ const props = defineProps<{
     drawerVisible: boolean
     editKey?: number
     params:any
-    
-   
+
+
 }>();
 
 const emits = defineEmits(['onClose', 'update:formState']);
 
-    
+
 
 const activeKey = ref('1');
 const isEditServiceDesc = ref(false);
@@ -70,9 +70,9 @@ const isEditServiceName = ref(false);
 
 onMounted(()=>{
     if(props.params?.sectab){
-        const sectab:any=props.params?.sectab 
+        const sectab:any=props.params?.sectab
         activeKey.value=sectab
-    }  
+    }
 })
 
 function onClose() {

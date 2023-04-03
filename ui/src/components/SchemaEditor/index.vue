@@ -65,7 +65,10 @@ function handleExampleContentChange(val) {
 }
 
 function handleContentChange(val) {
-  // content.value = val;
+  emit('change', {
+    examples:examples.value,
+    content:val
+  });
 }
 
 const exampleJsonStr = ref('');
@@ -99,18 +102,6 @@ watch(() => {
   deep: true
 });
 
-watch(() => {
-  return content.value
-}, (newVal: any) => {
-  emit('change', {
-    examples:examples.value,
-    content:newVal
-  });
-}, {
-  immediate: false,
-  deep: true
-});
-
 
 watch(() => {
   return examples.value
@@ -123,7 +114,6 @@ watch(() => {
   immediate: false,
   deep: true
 });
-
 
 watch(() => {
   return examples.value.length
@@ -163,6 +153,11 @@ watch(() => {
         <SchemaEditor
             :key="props.schemeVisibleKey"
             :value="content"
+            :refsOptions="[
+              {
+                label: '组件 1',
+                value: 'COM1'
+              }]"
             @change="handleContentChange"
             :contentStyle="tabContentStyle"/>
       </div>

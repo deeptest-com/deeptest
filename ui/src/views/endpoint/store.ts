@@ -187,9 +187,9 @@ const StoreModel: ModuleType = {
         },
         setEndpointDetailByIndex(state, payload) {
             if (payload.codeIndex === -1 || payload.codeIndex) {
-                payload.codeIndex = state.endpointDetail.endpoints[payload.methodIndex]['responseBodies'].length;
+                payload.codeIndex = state.endpointDetail.interfaces[payload.methodIndex]['responseBodies'].length;
             }
-            state.endpointDetail.endpoints[payload.methodIndex]['responseBodies'][payload.codeIndex] = payload.value;
+            state.endpointDetail.interfaces[payload.methodIndex]['responseBodies'][payload.codeIndex] = payload.value;
         },
         setServerList(state, payload) {
             state.serveServers = payload;
@@ -213,7 +213,7 @@ const StoreModel: ModuleType = {
         },
     },
     actions: {
-        async listEndpoint({commit, dispatch}, params: QueryParams) {
+        async listEndpoint({commit, dispatch,state}, params: QueryParams) {
             try {
                 const response: ResponseData = await query(params);
                 if (response.code != 0) return;
@@ -520,6 +520,22 @@ const StoreModel: ModuleType = {
                 commit('setStatus', payload);
             } else {
                 return false
+            }
+        },
+        async example2schema({commit}, payload: any) {
+            const res = await example2schema(payload);
+            if (res.code === 0) {
+                return  res.data;
+            } else {
+                return null
+            }
+        },
+        async schema2example({commit}, payload: any) {
+            const res = await schema2example(payload);
+            if (res.code === 0) {
+                return  res.data;
+            } else {
+                return null
             }
         },
     }

@@ -1,6 +1,6 @@
 import { computed, Ref, ref } from "vue";
 import { useStore } from "vuex";
-import {StateType as ProjectSettingStateType} from "@/views/ProjectSetting/store";
+import {StateType as ProjectSettingStateType} from "@/views/project-setting/store";
 import {StateType as ProjectStateType} from "@/store/project";
 import { message } from "ant-design-vue";
 import { EnvHookParams, EnvReturnData, VarDataItem } from "../data";

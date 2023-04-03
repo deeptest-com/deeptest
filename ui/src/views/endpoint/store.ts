@@ -34,7 +34,7 @@ import {
 
 import {getNodeMap} from "@/services/tree";
 import {momentUtc} from "@/utils/datetime";
-import {getEnvList, getSecurityList, serverList} from "@/views/projectSetting/service";
+import {getEnvList, getSecurityList, serverList} from "@/views/project-setting/service";
 
 export interface StateType {
     endpointId: number;

@@ -11,6 +11,7 @@
           </template>
           全局变量
         </a-button>
+
         <a-button :class="{'env-item':true,'env-item-active':isShowGlobalParams}"
                   @click="showGlobalParams"
                   :type="isShowGlobalParams ? 'primary' : 'text'">
@@ -20,6 +21,7 @@
           全局参数
         </a-button>
       </div>
+
       <div style="margin: 0 16px;">
         <a-divider class="divider"/>
       </div>
@@ -42,6 +44,7 @@
             </a-button>
           </template>
         </draggable>
+
         <div style="margin: 0 16px;">
           <a-divider class="divider"/>
         </div>
@@ -62,7 +65,7 @@
     <div class="right-content">
       <!-- ::::全局变量 -->
       <div class="globalVars" v-if="isShowGlobalVars">
-        <GlobalVarCom 
+        <GlobalVarCom
           @handle-global-vars-change="handleGlobalVarsChange"
           @handle-save-global-vars="handleSaveGlobalVars"
           @add-global-var="addGlobalVar"
@@ -70,7 +73,7 @@
       </div>
       <!-- ::::全局参数 -->
       <div class="globalParams" v-if="isShowGlobalParams">
-        <GlobalParamsCom 
+        <GlobalParamsCom
           @handle-global-params-change="handleGlobalParamsChange"
           @handle-save-global-params="handleSaveGlobalParams"
           @add-global-params="addGlobalParams"
@@ -78,7 +81,7 @@
       </div>
 
       <div class="envDetail" v-if="isShowEnvDetail && activeEnvDetail">
-        <EnvDetail 
+        <EnvDetail
           :activeEnvDetail="activeEnvDetail"
           @deleteEnvData="deleteEnvData"
           @copyEnvData="copyEnvData"
@@ -89,9 +92,11 @@
           @addService="addService"
         />
       </div>
+
     </div>
   </div>
-  <a-modal
+
+<!--  <a-modal
       v-model:visible="addServiceModalVisible"
       title="关联服务"
       @ok="handleAddServiceOk">
@@ -103,7 +108,7 @@
           style="width: 200px"/>
     </a-form-item>
 
-  </a-modal>
+  </a-modal>-->
 </template>
 <script setup lang="ts">
 
@@ -120,7 +125,7 @@ import GlobalVarCom from './GlobalVar.vue';
 import { useGlobalEnv } from '../../hooks/globalEnv';
 import { useGlobalVarAndParams } from '../../hooks/globalVar';
 import {StateType as ProjectStateType} from "@/store/project";
-import {StateType as ProjectSettingStateType} from "@/views/ProjectSetting/store";
+import {StateType as ProjectSettingStateType} from "@/views/project-setting/store";
 import {useStore} from "vuex";
 
 // store 相关
@@ -139,7 +144,7 @@ const globalParamsActiveKey = ref('header');
 
 
 // 环境设置相关
-const { 
+const {
   isShowAddEnv,
   isShowEnvDetail,
   activeEnvDetail,
@@ -154,7 +159,7 @@ const {
 } = useGlobalEnv({ isShowGlobalParams, isShowGlobalVars});
 
 // 全局变量和全局参数相关
-const { 
+const {
   showGlobalParams,
   showGlobalVars,
   addGlobalVar,
@@ -163,11 +168,11 @@ const {
   handleSaveGlobalVars,
   handleGlobalVarsChange,
   handleGlobalParamsChange
-} = useGlobalVarAndParams({ 
-  isShowAddEnv, 
-  isShowEnvDetail, 
-  activeEnvDetail, 
-  isShowGlobalParams, 
+} = useGlobalVarAndParams({
+  isShowAddEnv,
+  isShowEnvDetail,
+  activeEnvDetail,
+  isShowGlobalParams,
   isShowGlobalVars,
   globalParamsActiveKey
 });
@@ -181,9 +186,9 @@ async function getServersList() {
     page: 0,
     pageSize: 100
   })
-} 
+}
 
-// 添加服务弹窗操作 
+// 添加服务弹窗操作
 async function addService() {
   addServiceModalVisible.value = true;
 }

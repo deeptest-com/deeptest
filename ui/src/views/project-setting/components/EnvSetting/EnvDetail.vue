@@ -8,7 +8,14 @@
                 <a-input class="env-name" :value="activeEnvDetail.name || ''" @change="handleEnvNameChange"
                     placeholder="请输入环境名称" />
             </a-form-item>
-            <div class="serveServers">
+
+          <a-form-item :labelCol="{ span: 2 }" :wrapperCol="{ span: 10 }" label="访问地址" name="url"
+                       :rules="[{ required: true, message: '访问地址不能为空' }]">
+            <a-input class="env-name" :value="activeEnvDetail.name || ''" @change="handleEnvNameChange"
+                     placeholder="请输入环境名称" />
+          </a-form-item>
+
+<!--            <div class="serveServers">
                 <div class="serveServers-header">服务 (前置URL)</div>
                 <a-button class="envDetail-btn" @click="addService">
                     <template #icon>
@@ -30,7 +37,8 @@
                         }" placeholder="http 或 https 起始的合法 URL" />
                     </template>
                 </a-table>
-            </div>
+            </div>-->
+
             <div class="vars">
                 <div class="vars-header">环境变量</div>
                 <a-button class="envDetail-btn" @click="addVar">
@@ -88,24 +96,24 @@ const emits = defineEmits(['deleteEnvData', 'copyEnvData', 'addEnvData', 'handle
 function deleteEnvData() {
     emits('deleteEnvData');
 }
-function copyEnvData() { 
+function copyEnvData() {
     emits('copyEnvData');
 }
-function addEnvData() { 
+function addEnvData() {
     emits('addEnvData');
 }
 
 function handleEnvChange(type: string, filed: string, index: number, e: any, action?: string) {
     emits('handleEnvChange', type, filed, index, e, action);
 }
-function handleEnvNameChange(e: any) { 
+function handleEnvNameChange(e: any) {
     emits('handleEnvNameChange', e);
 }
 
-function addVar() { 
+function addVar() {
     emits('addVar');
 }
-function addService() { 
+function addService() {
     emits('addService');
 }
 </script>

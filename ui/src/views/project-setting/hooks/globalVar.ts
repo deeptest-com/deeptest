@@ -1,11 +1,14 @@
 import { computed, Ref } from "vue";
 import { useStore } from "vuex";
-import {StateType as ProjectSettingStateType} from "@/views/ProjectSetting/store";
+import {StateType as ProjectSettingStateType} from "@/views/project-setting/store";
 import {StateType as ProjectStateType} from "@/store/project";
 import { GlobalVarsProps, VarsReturnData } from "../data";
 
 export function useGlobalVarAndParams(props: GlobalVarsProps): VarsReturnData {
-    const { isShowAddEnv, isShowEnvDetail, activeEnvDetail, isShowGlobalParams, isShowGlobalVars, globalParamsActiveKey } = props;
+    const {
+        isShowAddEnv, isShowEnvDetail, activeEnvDetail, isShowGlobalParams, isShowGlobalVars, globalParamsActiveKey
+    } = props;
+
     const store = useStore<{ ProjectSetting: ProjectSettingStateType, ProjectGlobal: ProjectStateType }>();
     const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
     console.log('%c[GET ENV LIST] --  currProject [gloablVars.ts -- 21]', 'color: red', currProject.value);

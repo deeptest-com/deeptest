@@ -225,6 +225,7 @@ async function selectNode(id) {
 }
 
 const loadList = debounce(async (currProjectId, page, size, opts?: any) => {
+  console.log('==== loadList')
   await store.dispatch('Endpoint/loadList', {
     currProjectId,
     "page": page,

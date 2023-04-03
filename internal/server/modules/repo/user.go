@@ -293,6 +293,7 @@ func (r *UserRepo) Update(id uint, req domain.UserReq) error {
 func (r *UserRepo) InviteToProject(req domain.InviteUserReq) (user model.SysUser, err error) {
 	user, err = r.GetByUsernameOrPassword(req.Username)
 	if err != nil {
+		err = errors.New("用户不存在，请先创建用户")
 		return
 	}
 

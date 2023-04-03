@@ -120,7 +120,7 @@ export default defineComponent({
   .screen-padding {
     padding-top: 20px;
   }
-  ::v-deep(.ant-table.ant-table-bordered) > .ant-table-content {
+  :deep(.ant-table.ant-table-bordered .ant-table-content) {
     border-bottom: 1px solid #f0f0f0;
   }
 }

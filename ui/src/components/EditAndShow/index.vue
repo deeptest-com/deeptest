@@ -1,6 +1,6 @@
 <template>
   <div class="editor" v-if="isEditing">
-    <a-input class="input" placeholder="请输入接口名称" v-model:value="fieldValue"/>
+    <a-input class="input" :placeholder="placeholder || '请输入内容'" v-model:value="fieldValue"/>
     <a-space :size="8">
       <CloseOutlined @click.stop="cancelEdit"/>
       <CheckOutlined
@@ -9,7 +9,7 @@
     </a-space>
   </div>
   <div class="editor" v-else>
-    <span>{{ fieldValue }}</span> &nbsp;
+    <span>{{ fieldValue || '什么都没写呢~' }}</span> &nbsp;
     <EditOutlined @click.stop="isEditing = true"/>
   </div>
 </template>
@@ -28,6 +28,10 @@ const isEditing = ref(false);
 const fieldValue = ref('');
 const props = defineProps({
   value: {
+    required: true,
+    type: String,
+  },
+  placeholder: {
     required: true,
     type: String,
   }
@@ -60,7 +64,6 @@ watch(() => {
 
 <style lang="less" scoped>
 .editor {
-  width: 200px;
   display: flex;
   align-items: center;
   .input {

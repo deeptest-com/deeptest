@@ -158,6 +158,7 @@ const serviceColumns = [
     {
         title: '描述',
         dataIndex: 'description',
+        slots: { customRender: 'description' },
     },
     {
         title: '关联服务',
@@ -205,6 +206,49 @@ const schemaColumns = [
         slots: { customRender: 'operation' },
     },
 ];
+const securityColumns = [
+    {
+        title: 'Security名称',
+        dataIndex: 'name',
+        width: '30%',
+        slots: { customRender: 'name' },
+    },
+    {
+        title: 'Security类型',
+        dataIndex: 'type',
+    },
+    {
+        title: '应用范围',
+        dataIndex: 'description',
+    },
+    {
+        title: '操作',
+        dataIndex: 'operation',
+        slots: { customRender: 'operation' },
+    },
+];
+
+const versionColumns = [
+    {
+      title: '版本号',
+      dataIndex: 'value',
+      width: '30%',
+      slots: { customRender: 'value' },
+    },
+    {
+      title: '负责人',
+      dataIndex: 'createUser',
+    },
+    {
+      title: '描述',
+      dataIndex: 'description',
+    },
+    {
+      title: '操作',
+      dataIndex: 'operation',
+      slots: { customRender: 'operation' },
+    },
+  ];
 
 
 export {
@@ -213,5 +257,7 @@ export {
     serveServersColumns,
     tabPaneList,
     serviceColumns,
-    schemaColumns
+    schemaColumns,
+    securityColumns,
+    versionColumns
 }

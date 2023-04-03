@@ -1,15 +1,6 @@
 import request from '@/utils/request';
 import { BasicSchemaInfo, BasicSchemaParams, EnvDataItem, EnvReqParams, GlobalParamsReqData, SaveVersionParams, SchemaListReqParams, ServeListParams, ServeReqParams, VarsReqParams, VersionListReqParams } from './data';
 
-// todo liguwe 待整理
-interface SaveInterfaceReqParams {
-    // project_id?: number,
-    serveId?: number,
-    title?: string,
-    path?: string
-}
-
-
 /**
  * 保存服务
  * */
@@ -267,6 +258,18 @@ export async function copyEnv(data: EnvReqParams): Promise<any> {
     });
 }
 
+/**
+ * 排序环境列表
+ * @param data 环境的id列表
+ * @returns promise
+ */
+export async function sortEnv(data: number[]): Promise<any> {
+    return request({
+        url: `/environments/order`,
+        method: 'post',
+        data
+    })
+}
 
 /**
  *   保存全局变量
@@ -309,5 +312,28 @@ export async function getEnvironmentsParamList(data: VarsReqParams): Promise<any
     return request({
         url: `/environments/param?projectId=${data.projectId}`,
         method: 'get',
+    });
+}
+
+/**
+ *   保存授权信息
+ * */
+ export async function saveSecurityInfo(data): Promise<any> {
+    return request({
+        url: `/serves/security/save`,
+        method: 'post',
+        data: data
+    });
+}
+
+
+
+/**
+ * 删除授权
+ * */
+ export async function deleteSecurity(id: Number | String | any): Promise<any> {
+    return request({
+        url: `/serves/security/delete?id=${id}`,
+        method: 'delete',
     });
 }

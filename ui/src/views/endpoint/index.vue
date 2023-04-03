@@ -86,6 +86,7 @@
 
     <CreateEndpointModal
         :visible="createApiModalVisible"
+        :selectedCategoryId="selectedCategoryId"
         @cancal="createApiModalVisible = false;"
         @ok="handleCreateApi"/>
 
@@ -128,6 +129,7 @@ let pagination = computed<PaginationConfig>(() => store.state.Endpoint.listResul
 
 const createApiModalVisible = ref(false);
 type Key = ColumnProps['key'];
+
 
 /**
  * 表格数据
@@ -177,6 +179,7 @@ const selectedRowKeys = ref<Key[]>([]);
 const loading = false;
 // 抽屉是否打开
 const drawerVisible = ref<boolean>(false);
+const selectedCategoryId = ref<string>('');
 const onSelectChange = (keys: Key[], rows: any) => {
   selectedRowKeys.value = [...keys];
 };
@@ -218,6 +221,7 @@ async function handleCreateApi(data) {
 }
 
 async function selectNode(id) {
+  selectedCategoryId.value = id;
   await loadList(currProject.value.id, pagination.value.current, pagination.value.pageSize, {
     categoryId: id,
     serveId: currServe.value.id,
@@ -225,7 +229,6 @@ async function selectNode(id) {
 }
 
 const loadList = debounce(async (currProjectId, page, size, opts?: any) => {
-  console.log('==== loadList')
   await store.dispatch('Endpoint/loadList', {
     currProjectId,
     "page": page,
@@ -358,26 +361,23 @@ async function refreshList() {
   right: 8px;
 }
 
+:deep(.ant-alert-info) {
+  padding: 12px;
+}
 
-::v-deep {
-  .ant-alert-info {
-    padding: 12px;
-  }
+:deep(.ant-alert-icon) {
+  font-size: 14px;
+  position: relative;
+  top: 4px;
+  left: 8px;
+}
 
-  .ant-alert-icon {
-    font-size: 14px;
-    position: relative;
-    top: 4px;
-    left: 8px;
-  }
+:deep(.ant-alert-message) {
+  font-size: 14px;
+}
 
-  .ant-alert-message {
-    font-size: 14px;
-  }
-
-  .ant-alert-description {
-    font-size: 12px;
-  }
+:deep(.ant-alert-description) {
+  font-size: 12px;
 }
 
 </style>

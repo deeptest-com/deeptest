@@ -1,12 +1,12 @@
 /**
  * 可参考：https://json-schema.apifox.cn/#%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B
  * */
-
 export const JSONSchemaDataTypes = [
     {
         label: "string",
         value: "string",
         color: 'pink',
+        active: false,
         props: {
             label: 'Properties',
             options: [
@@ -17,7 +17,6 @@ export const JSONSchemaDataTypes = [
                     type: 'array',
                     placeholder: '输入文本后按回车添加',
                     value: [],
-
                 },
                 {
                     label: 'format',
@@ -100,7 +99,6 @@ export const JSONSchemaDataTypes = [
                             value: 'byte',
                         },
                     ],
-
                 },
                 {
                     label: 'behavior',
@@ -178,6 +176,7 @@ export const JSONSchemaDataTypes = [
         label: "number",
         value: "number",
         color: 'cyan',
+        active: false,
         props: {
             label: 'Properties',
             options: [
@@ -305,6 +304,7 @@ export const JSONSchemaDataTypes = [
         label: "integer",
         value: "integer",
         color: 'green',
+        active: false,
         props: {
             label: 'Properties',
             options: [
@@ -432,6 +432,7 @@ export const JSONSchemaDataTypes = [
         label: "object",
         value: "object",
         color: 'blue',
+        active: false,
         props: {
             label: 'Properties',
             options: [
@@ -472,6 +473,7 @@ export const JSONSchemaDataTypes = [
         label: "array",
         value: "array",
         color: 'orange',
+        active: false,
         props: {
             label: 'Properties',
             options: [
@@ -513,6 +515,7 @@ export const JSONSchemaDataTypes = [
         label: "boolean",
         value: "boolean",
         color: 'red',
+        active: false,
         props: {
             label: 'Properties',
             options: [
@@ -563,7 +566,6 @@ export const JSONSchemaDataTypes = [
                     value: false,
                 },
             ],
-
         }
     },
 ];
@@ -574,29 +576,19 @@ export const JSONSchemaDataTypes = [
 export const schemaSettingInfo = [
     {
         label: 'Type',
-        subLabel:'SubType',
-        value: 'type',
+        subLabel: 'SubType',
+        type: 'type',
+        value: 'string',
+        active: true,
         props: JSONSchemaDataTypes
     },
     {
         label: 'Components',
-        subLabel:'Components',
-        value: 'components',
-    },
-    {
-        label: 'Combine Schemas',
-        subLabel: 'Combine Schemas',
-        value: 'combineSchemas',
+        type: '$ref',
+        value: '',
+        active: false,
+        subLabel: 'Components',
     },
 ]
 
-
-
-
-
-
-
-
-
-
-
+export const typeOpts = ['string', 'number', 'boolean', 'array', 'object', 'integer'];

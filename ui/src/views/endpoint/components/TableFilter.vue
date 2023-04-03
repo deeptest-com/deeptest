@@ -3,6 +3,7 @@
     <a-col :span="8">
       <a-form-item label="创建人" style="margin-bottom: 0;">
         <a-select
+            allowClear
             @change="(e) => {
               handleFilterChange('createUser',e);
             }"
@@ -15,6 +16,7 @@
     <a-col :span="8">
       <a-form-item label="状态" style="margin-bottom: 0;">
         <a-select
+            allowClear
             @change="(e) => {
               handleFilterChange('status',e);
             }"

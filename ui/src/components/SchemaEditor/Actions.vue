@@ -8,8 +8,8 @@ import {computed, defineProps, defineEmits} from "vue";
 
 
 const props = defineProps<{
-  isFirst: boolean,
-  isLast: boolean,
+  isFirst: boolean ,
+  isLast: boolean ,
   isRoot: boolean
 }>();
 
@@ -38,7 +38,7 @@ const disableMoveDown = computed(() => {
   return false;
 });
 const disableCopy = computed(() => {
-  return !!props.isRoot;
+  return props.isRoot;
 });
 
 </script>

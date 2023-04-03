@@ -1,0 +1,276 @@
+<template>
+  <div class="content">
+    <!-- header -->
+    <div class="header">
+      <CustomForm 
+        :form-config="formConfig" 
+        :form-data="formData" 
+        :rules="rules"
+        :show-search="true" 
+        :search-placeholder="'输入服务名称搜索'"
+        @handle-ok="handleAdd" 
+        @handle-search="handleSearch" />
+    </div>
+    <!-- content -->
+    <a-table :data-source="dataSource" :columns="serviceColumns" rowKey="id">
+
+      <template #name="{ text, record }">
+        <div class="serve-name">
+          <div class="serve-name-text">
+            {{ text || ' ' }}
+          </div>
+          <edit-outlined class="editable-cell-icon" @click="edit(record)" />
+        </div>
+      </template>
+      <template #description="{ text }">
+        <div class="serve-description">
+          {{ text || '' }}
+        </div>
+      </template>
+      <template #customServers="{ record }">
+        <span v-if="record?.servers.length > 0">
+          <span v-for="server in record.servers" :key="server.id">
+            {{ server.name || server.description }}
+          </span>
+        </span>
+        <span v-else>暂无关联服务</span>
+      </template>
+      <template #customStatus="{ text, record }">
+        <a-tag :color="record.statusTag">{{ text }}</a-tag>
+      </template>
+      <template #operation="{ record }">
+        <a-dropdown>
+          <MoreOutlined />
+          <template #overlay>
+            <a-menu>
+              <a-menu-item key="1">
+                <a class="operation-a" href="javascript:void (0)" @click="onDisabled(record)">禁用</a>
+              </a-menu-item>
+              <a-menu-item key="2">
+                <a class="operation-a" href="javascript:void (0)" @click="onCopy(record)">复制</a>
+              </a-menu-item>
+              <a-menu-item key="3">
+                <a class="operation-a" href="javascript:void (0)" @click="onDelete(record)">删除</a>
+              </a-menu-item>
+            </a-menu>
+          </template>
+        </a-dropdown>
+      </template>
+    </a-table>
+    <!-- 抽屉 -->
+    <Drawer :params="routerObj" :edit-key="editKey" :drawer-visible="drawerVisible" @onClose="onClose" />
+  </div>
+</template>
+<script setup lang="ts">
+
+import {
+  computed,
+  ref,
+  watch,
+  createVNode,
+  defineProps,
+} from 'vue';
+import { useStore } from "vuex";
+import { Modal } from 'ant-design-vue';
+import { EditOutlined, ExclamationCircleOutlined, MoreOutlined } from '@ant-design/icons-vue';
+import CustomForm from '../common/CustomForm.vue';
+import Drawer from './Drawer.vue';
+import { StateType as ProjectStateType } from "@/store/project";
+import { StateType as ProjectSettingStateType } from '../../store';
+import { serviceColumns } from '../../config';
+
+const store = useStore<{ ProjectGlobal: ProjectStateType, ProjectSetting: ProjectSettingStateType }>();
+const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
+const dataSource = computed<any>(() => store.state.ProjectSetting.serviceOptions);
+const userListOptions = computed<any>(() => store.state.ProjectSetting.userListOptions);
+
+const drawerVisible = ref(false);
+const editKey = ref(0);
+const routerObj=ref({});
+
+const props = defineProps({
+  params: {
+    type: Object,
+    required: true,
+   
+  },
+})
+
+const formConfig = [
+  {
+    type: 'tooltip',
+    title: '一个产品服务端通常对应一个或多个服务(微服务)，服务可以有多个版本并行，新的服务默认起始版本为v0.1.0。',
+    text: '新建服务'
+  },
+  {
+    type: 'input',
+    modelName: 'name',
+    placeholder: '服务名称',
+    valueType: 'string'
+  },
+  {
+    type: 'select',
+    modelName: 'username',
+    placeholder: '负责人(默认创建人)',
+    options: userListOptions.value,
+    valueType: 'string',
+    mode: 'combobox'
+  },
+  {
+    type: 'input',
+    modelName: 'description',
+    placeholder: '输入描述',
+    valueType: 'string'
+  },
+  {
+    type: 'button',
+    text: '确定'
+  }
+];
+
+const rules = {
+  name: [
+    {
+      required: true,
+      message: '服务名称不能为空'
+    }
+  ]
+};
+
+async function handleAdd(formData: any) {
+  console.log('点击了确认');
+  const { name, username, description } = formData;
+    const result = userListOptions.value.filter((e: any) => e.value === username);
+    await store.dispatch('ProjectSetting/saveStoreServe', {
+        projectId: currProject.value.id,
+        formState: {
+            userId: result && result[0] && result[0].id,
+            name,
+            description
+        },
+        action: 'create'
+    })
+}
+
+function onClose() {
+  drawerVisible.value = false;
+}
+
+function handleSearch(value: any) {
+  getList(value);
+} 
+
+function edit(record: any) {
+  store.dispatch('ProjectSetting/setServiceDetail', {
+    name: record.name,
+    description: record.description,
+    id: record.id
+  })
+  editKey.value++;
+  drawerVisible.value = true;
+}
+
+async function onDelete(record: any) {
+  Modal.confirm({
+    title: '确认要删除该服务吗',
+    icon: createVNode(ExclamationCircleOutlined),
+    onOk() {
+      store.dispatch('ProjectSetting/deleteStoreServe', { id: record.id, projectId: currProject.value.id });
+    }
+  })
+}
+
+async function onDisabled(record: any) {
+  store.dispatch('ProjectSetting/disabledStoreServe', { id: record.id, projectId: currProject.value.id });
+}
+
+async function onCopy(record: any) {
+  store.dispatch('ProjectSetting/copyStoreServe', { id: record.id, projectId: currProject.value.id });
+}
+
+async function getList(name = '') {
+  await store.dispatch('ProjectSetting/getServersList', {
+    projectId: currProject.value.id,
+    page: 0,
+    pageSize: 100,
+    name
+  })
+}
+
+
+
+// 实时监听项目切换，如果项目切换了则重新请求数据
+watch(() => {
+  return currProject.value;
+}, async (newVal) => {
+  await getList()
+  await isHasProps()
+
+}, {
+  immediate: true
+})
+
+// 判断是否携带参数，用于security模块
+async function isHasProps(){
+  if(JSON.stringify(props.params) !=='{}'){
+    let record={}  
+    dataSource?.value?.map((item)=>{
+      if(item.id==props.params?.serveId*1){
+          record=  item
+      }
+    })
+    await edit(record)
+    routerObj.value={...record,...props.params}
+     
+  }
+
+}
+
+</script>
+
+<style scoped lang="less">
+.content {
+  margin: 20px;
+
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+}
+
+.drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.operation-a {
+  text-align: center;
+  display: inline-block;
+  width: 80px;
+}
+
+.serve-name {
+  display: flex;
+  align-items: center;
+
+  .serve-name-text {
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.serve-description {
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+</style>

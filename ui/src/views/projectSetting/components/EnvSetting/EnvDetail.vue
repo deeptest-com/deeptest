@@ -8,14 +8,7 @@
                 <a-input class="env-name" :value="activeEnvDetail.name || ''" @change="handleEnvNameChange"
                     placeholder="请输入环境名称" />
             </a-form-item>
-
-          <a-form-item :labelCol="{ span: 2 }" :wrapperCol="{ span: 10 }" label="访问地址" name="url"
-                       :rules="[{ required: true, message: '访问地址不能为空' }]">
-            <a-input class="env-name" :value="activeEnvDetail.name || ''" @change="handleEnvNameChange"
-                     placeholder="请输入环境名称" />
-          </a-form-item>
-
-<!--            <div class="serveServers">
+            <div class="serveServers">
                 <div class="serveServers-header">服务 (前置URL)</div>
                 <a-button class="envDetail-btn" @click="addService">
                     <template #icon>
@@ -37,8 +30,7 @@
                         }" placeholder="http 或 https 起始的合法 URL" />
                     </template>
                 </a-table>
-            </div>-->
-
+            </div>
             <div class="vars">
                 <div class="vars-header">环境变量</div>
                 <a-button class="envDetail-btn" @click="addVar">
@@ -170,29 +162,22 @@ function addService() {
         margin-right: 16px;
     }
 }
+:deep(.ant-input:not(.env-name):hover),
+:deep(.ant-input:active),
+:deep(.ant-input:focus) {
+    border: 1px solid #4096ff !important
+}
 
-::v-deep {
+:deep(.ant-input:not(.env-name)) {
+    border: 1px solid transparent !important
+}
 
-    .custom-select {
-        .ant-select-selector {
-            border: 1px solid transparent !important;
-        }
+:deep(.custom-select .ant-select-selector) {
+    border: 1px solid transparent !important;
+}
 
-        .ant-select-selector:hover,
-        .ant-select-selector:active,
-        .ant-select-selector:focus {
-            border: 1px solid #4096ff !important
-        }
-    }
-
-
-    .ant-input:not(.env-name) {
-        border: 1px solid transparent !important;
-    }
-
-    .ant-input:not(.env-name):hover,
-    .ant-input:active,
-    .ant-input:focus {
-        border: 1px solid #4096ff !important
-    }
+:deep(.custom-select .ant-select-selector:hover),
+:deep(.custom-select .ant-select-selector:active),
+:deep(.custom-select .ant-select-selector:focus) {
+    border: 1px solid #4096ff !important
 }</style>

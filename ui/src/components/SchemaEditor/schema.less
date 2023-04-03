@@ -3,6 +3,7 @@
 .schemaEditor-content {
   width: @content-width;
   height: auto;
+  border: 1px solid @border-color;
   .directoryNode {
     display: block;
     position: relative;
@@ -166,7 +167,6 @@
     box-shadow: 0 2px 8px #00000026;
   }
   .floatingSetting-card{
-    //padding: 12px;
   }
   .floatingSetting-arrow{
     //position: absolute;
@@ -184,5 +184,11 @@
     //box-shadow: -3px 3px 7px #00000012;
   }
 
+}
+.baseInfoKey{
+  &:focus,&:active,&:hover{
+    border:none;
+    outline: none;
+  }
 }
 

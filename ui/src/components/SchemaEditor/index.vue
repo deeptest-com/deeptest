@@ -24,24 +24,22 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'generateFromJSON', jsonStr?: string): void,
   (e: 'generateExample', jsonStr?: string): void,
-  (e: 'contentChange', jsonStr?: string): void,
-  (e: 'exampleChange', jsonStr?: string): void,
-  (e: 'schemaTypeChange', type?: string): void
+  (e: 'change', json?: object): void,
 }>();
 
-const content: any = ref(null);
+const content: any = ref({type: 'object', properties: {}});
 const examples: any = ref([]);
 
-
 const activeExample: any = ref(null);
+const activeExampleIndex: any = ref(0);
 
 function addExample() {
   emit('generateExample', examples.value);
 }
 
-
-function clickExampleItem(item: any) {
-  activeExample.value = item;
+function clickExampleItem(index: number) {
+  activeExampleIndex.value = index;
+  activeExample.value = examples.value[index];
 }
 
 const activeTab = ref('schema');
@@ -50,33 +48,36 @@ function switchTab(tab) {
   activeTab.value = tab;
 }
 
-function copyExample() {
-  message.info('复制成功');
-}
-
 const activeGenSchemaMode: any = ref(false);
 
 function genSchema() {
   activeGenSchemaMode.value = true;
 }
 
-function deleteExample(value) {
-  let index = examples.value.findIndex((item) => {
-    return item.name === value.name;
-  })
-  examples.value.splice(index, 1);
+function deleteExample() {
+  examples.value.splice(activeExampleIndex.value, 1);
+  activeExampleIndex.value = activeExampleIndex.value - 1 === -1 ? 0 : activeExampleIndex.value - 1;
+  activeExample.value = examples.value[activeExampleIndex.value] || null;
 }
 
 function handleExampleContentChange(val) {
   activeExample.value.content = val;
 }
 
-const exampleJsonStr = ref('');
-
-function handleJSONDemoChange(val) {
-  exampleJsonStr.value = val;
+function handleContentChange(val) {
+  emit('change', {
+    examples:examples.value,
+    content:val
+  });
 }
 
+const exampleJsonStr = ref('');
+const hasSyntaxError = ref(true);
+
+function handleJSONDemoChange(val,event,syntaxError) {
+  exampleJsonStr.value = val;
+  hasSyntaxError.value = !syntaxError;
+}
 
 function cancalGen() {
   activeGenSchemaMode.value = false;
@@ -84,18 +85,16 @@ function cancalGen() {
 
 function generate() {
   activeGenSchemaMode.value = false;
+  activeTab.value = 'schema';
   emit('generateFromJSON', exampleJsonStr.value);
 }
-
-const schemaEditorKey = ref(0)
 
 
 watch(() => {
   return props.value
 }, (newVal: any) => {
-  console.log(832333,JSON.stringify(newVal));
-  content.value = newVal?.content || {
-    type: 'object',
+  content.value = newVal?.content?.type ? newVal?.content  : {
+    type: 'object'
   };
   examples.value = newVal?.examples || [];
 }, {
@@ -103,26 +102,18 @@ watch(() => {
   deep: true
 });
 
-watch(() => {
-  return content.value
-}, (newVal: any) => {
-  emit('contentChange', JSON.stringify(newVal));
-  emit('schemaTypeChange', newVal.type);
-}, {
-  immediate: false,
-  deep: true
-});
-
 
 watch(() => {
   return examples.value
 }, (newVal: any) => {
-  emit('exampleChange', JSON.stringify(newVal));
+  emit('change', {
+    examples:newVal,
+    content:content.value
+  });
 }, {
   immediate: false,
   deep: true
 });
-
 
 watch(() => {
   return examples.value.length
@@ -143,9 +134,6 @@ watch(() => {
         <a-button :type="activeTab === 'examples' ? 'link': 'text'" :size="'small'" @click="switchTab('examples')">
           Examples
         </a-button>
-        <a-button :type="activeTab === 'extensions' ? 'link': 'text'" :size="'small'" @click="switchTab('extensions')">
-          Extensions
-        </a-button>
       </div>
       <div>
         <a-button class="gen-btn"
@@ -165,6 +153,12 @@ watch(() => {
         <SchemaEditor
             :key="props.schemeVisibleKey"
             :value="content"
+            :refsOptions="[
+              {
+                label: '组件 1',
+                value: 'COM1'
+              }]"
+            @change="handleContentChange"
             :contentStyle="tabContentStyle"/>
       </div>
       <!--::::示例Tab -->
@@ -176,16 +170,14 @@ watch(() => {
             </template>
             New Example
           </a-button>
-
-          <a-button v-for="item in examples"
-                    :key="item.name"
+          <a-button v-for="(item,index) in examples"
+                    :key="item.name + index"
                     class="new-btn tab-btn"
                     size="small"
-                    :type="activeExample?.name === item.name ? 'primary': 'text'"
-                    @click="clickExampleItem(item)">
+                    :type="activeExampleIndex === index ? 'primary': 'text'"
+                    @click="clickExampleItem(index)">
             {{ item.name }}
           </a-button>
-
         </div>
         <div class="right">
           <div v-if="!activeExample?.content"
@@ -201,12 +193,7 @@ watch(() => {
                   v-model:value="activeExample.name"
                   placeholder="Basic usage"/>
               <div class="btns">
-                <a-button type="text" @click="copyExample(activeExample)">
-                  <template #icon>
-                    <CopyOutlined/>
-                  </template>
-                </a-button>
-                <a-button type="text" @click="deleteExample(activeExample)">
+                <a-button type="text" @click="deleteExample">
                   <template #icon>
                     <DeleteOutlined/>
                   </template>
@@ -229,24 +216,10 @@ watch(() => {
           </div>
         </div>
       </div>
-      <!--::::扩展 -->
-      <div class="tab-body-extensions" v-if="activeTab=== 'extensions'">
-        <div class="left">
-          <a-button class="new-btn" size="small" type="text">
-            <template #icon>
-              <PlusOutlined/>
-            </template>
-            New Extension
-          </a-button>
-        </div>
-        <div class="right">
-
-        </div>
-      </div>
     </div>
     <div class="genSchemaFromCode" v-if="activeGenSchemaMode">
       <div class="btns">
-        <a-button @click="generate">
+        <a-button @click="generate" type="primary" :disabled="hasSyntaxError">
           <template #icon>
             <EditOutlined/>
           </template>
@@ -274,8 +247,6 @@ watch(() => {
             @change="handleJSONDemoChange"
         />
       </div>
-
-
     </div>
   </div>
 </template>
@@ -284,9 +255,7 @@ watch(() => {
 @import "var.less";
 
 .tab-content {
-  //overflow: hidden;
   border: 1px solid @border-color;
-  //overflow: hidden;
   border-radius: 3px;
   width: @content-width;
 }

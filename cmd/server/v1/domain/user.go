@@ -40,7 +40,7 @@ type UpdateUserReq struct {
 }
 
 type InviteUserReq struct {
-	Username  string
+	UserId    uint
 	Email     string
 	ProjectId int
 	RoleName  consts.RoleType

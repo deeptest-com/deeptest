@@ -291,7 +291,7 @@ func (r *UserRepo) Update(id uint, req domain.UserReq) error {
 }
 
 func (r *UserRepo) InviteToProject(req domain.InviteUserReq) (user model.SysUser, err error) {
-	user, err = r.GetByUsernameOrPassword(req.Username)
+	user, err = r.GetByUserId(req.UserId)
 	if err != nil {
 		err = errors.New("用户不存在，请先创建用户")
 		return
@@ -360,6 +360,19 @@ func (r *UserRepo) GetByUsernameOrPassword(usernameOrPassword string) (user mode
 	err = r.DB.Model(&model.SysUser{}).
 		Where("NOT deleted").
 		Where("username = ? OR email = ?", usernameOrPassword, usernameOrPassword).
+		First(&user).Error
+
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+func (r *UserRepo) GetByUserId(id uint) (user model.SysUser, err error) {
+	err = r.DB.Model(&model.SysUser{}).
+		Where("NOT deleted").
+		Where("id = ?", id).
 		First(&user).Error
 
 	if err != nil {

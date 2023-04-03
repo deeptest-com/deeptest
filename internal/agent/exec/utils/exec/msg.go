@@ -29,6 +29,12 @@ func SendResultMsg(report agentDomain.ReportSimple, wsMsg *websocket.Message) (e
 	return
 }
 
+func SendResult(data interface{}, wsMsg *websocket.Message) (err error) {
+	websocketHelper.SendExecResult(data, wsMsg)
+
+	return
+}
+
 func SendCancelMsg(wsMsg websocket.Message) (err error) {
 	SetRunning(false)
 

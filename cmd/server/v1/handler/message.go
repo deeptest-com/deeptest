@@ -2,7 +2,6 @@ package handler
 
 import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/web/validate"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
@@ -53,12 +52,7 @@ func (c *MessageCtrl) UnreadCount(ctx iris.Context) {
 
 	ret := iris.Map{"count": count}
 
-	c.WebSocketService.SendMsg(
-		consts.WsDefaultNameSpace,
-		consts.WsMessageEvent,
-		ret)
-
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: ret, Msg: _domain.NoErr.Msg})
 }
 
 func (c *MessageCtrl) OperateRead(ctx iris.Context) {

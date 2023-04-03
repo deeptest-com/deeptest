@@ -21,7 +21,6 @@ const (
 	WsDefaultNameSpace = "default"
 	WsDefaultRoom      = "default"
 	WsChatEvent        = "OnChat"
-	WsMessageEvent     = "OnMessage"
 
 	WebCheckInterval         = 60 * 60
 	SummaryDataCheckInterval = 60

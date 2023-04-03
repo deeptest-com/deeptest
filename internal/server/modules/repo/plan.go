@@ -3,6 +3,7 @@ package repo
 import (
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
@@ -26,7 +27,8 @@ func (r *PlanRepo) Paginate(req v1.PlanReqPaginate, projectId int) (data _domain
 	var categoryIds []uint
 
 	if req.CategoryId > 0 {
-		categoryIds, err = r.BaseRepo.GetAllChildIds(req.CategoryId, model.PlanCategory{}.TableName())
+		categoryIds, err = r.BaseRepo.GetAllChildIds(req.CategoryId, model.Category{}.TableName(),
+			serverConsts.PlanCategory, projectId)
 		if err != nil {
 			return
 		}

@@ -39,6 +39,7 @@ export interface SettingsType {
      * 站点本地存储当前项目 的 Key值
      */
     currProjectId: string;
+    currServeId: string,
 
     settings: string;
     expandedKeys: string;
@@ -82,11 +83,12 @@ const settings: SettingsType = {
     homeRouteItem: {
         icon: 'interface',
         title: 'interface',
-        path: '/interface/index',
-        component: ()=> import('@/views/interface/index.vue')
+        path: '/endpoint/index',
+        component: ()=> import('@/views/endpoint/index.vue')
     },
     siteTokenKey: 'admin_antd_vue_token',
     currProjectId: 'curr_project_id',
+    currServeId: 'curr_serve_id',
 
     settings: 'settings',
     expandedKeys: 'deeptest-expandedKeys',

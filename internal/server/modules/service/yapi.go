@@ -117,7 +117,7 @@ func (s *YapiService) GetYapiMenuInterfaceList(yapiHost, token, catid string) (y
 	return
 }
 
-func (s *YapiService) GetYapiInterface(yapiHost, token, interfaceId string) (ret v1.InvocationResponse) {
+func (s *YapiService) GetYapiInterface(yapiHost, token, interfaceId string) (ret v1.DebugResponse) {
 	var param []v1.Param
 	tokenParam := v1.Param{
 		Name:  "token",
@@ -139,7 +139,7 @@ func (s *YapiService) GetYapiInterface(yapiHost, token, interfaceId string) (ret
 	return resp
 }
 
-func (s *YapiService) YapiInterfaceInfoToInterf(ret v1.InvocationResponse) (interf m.Interface) {
+func (s *YapiService) YapiInterfaceInfoToInterf(ret v1.DebugResponse) (interf m.Interface) {
 	//content := ret.Content
 	yapiRes := YapiRes{}
 	content := ret.Content

@@ -483,6 +483,7 @@ const (
 	ExecStop  ExecType = "stop"
 
 	ExecScenario ExecType = "execScenario"
+	ExecPlan     ExecType = "execPlan"
 )
 
 func (e ExecType) String() string {

@@ -10,7 +10,7 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
     children: [
       {
         icon: 'project',
-        title: 'project',
+        title: 'project.management',
         path: 'index',
         component: () => import('@/views/project/list/index.vue'),
         hidden: false,
@@ -40,37 +40,36 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
   },
   {
     title: 'index-layout.menu',
-    path: '/interface',
-    redirect: '/interface/index',
+    path: '/endpoint',
+    redirect: '/endpoint/index',
     component: BlankLayout,
     children: [
       {
-        icon: 'interface',
-        title: 'interface',
+        icon: 'endpoint',
+        title: 'endpoint',
         path: 'index',
-        component: () => import('@/views/interface/index.vue'),
+        component: () => import('@/views/endpoint/index.vue'),
         hidden: false,
       },
     ],
   },
-  //  接口管理列表页面
   {
-    title: '接口管理列表页面',
-    path: '/interfaceV2',
-    redirect: '/interfaceV2/index',
+    title: 'index-layout.menu',
+    path: '/interface1',
+    redirect: '/interface1/index',
     component: BlankLayout,
     children: [
       {
-        icon: 'list',
-        title: 'interfaceV2',
+        icon: 'interface',
+        title: 'interface1',
         path: 'index',
-        component: () => import('@/views/interfaceV2/index.vue'),
+        component: () => import('@/views/interface1/index.vue'),
         hidden: false,
       },
     ],
   },
 
-  //  项目管理 页面
+  // 项目管理
   {
     title: '项目设置',
     path: '/projectSetting',
@@ -81,7 +80,7 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
         icon:'set',
         title: 'projectSetting',
         path: 'index',
-        component: () => import('@/views/projectSetting/index.vue'),
+        component: () => import('@/views/project-setting/index.vue'),
         hidden: false,
       },
     ],

@@ -17,7 +17,7 @@ type InvocationInterfaceCtrl struct {
 
 // LoadInterfaceExecData
 func (c *InvocationInterfaceCtrl) LoadInterfaceExecData(ctx iris.Context) {
-	req := domain.InvocationRequest{}
+	req := domain.DebugRequest{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
@@ -35,7 +35,7 @@ func (c *InvocationInterfaceCtrl) LoadInterfaceExecData(ctx iris.Context) {
 
 // SubmitInterfaceInvokeResult
 func (c *InvocationInterfaceCtrl) SubmitInterfaceInvokeResult(ctx iris.Context) {
-	req := domain.SubmitInvocationResultRequest{}
+	req := domain.SubmitDebugResultRequest{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})

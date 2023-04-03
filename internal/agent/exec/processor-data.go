@@ -33,7 +33,7 @@ func (entity ProcessorData) Run(processor *Processor, session *Session) (err err
 	logUtils.Infof("data entity")
 
 	startTime := time.Now()
-	processor.Result = &agentDomain.Result{
+	processor.Result = &agentDomain.ScenarioExecResult{
 		ID:                int(entity.ProcessorID),
 		Name:              entity.Name,
 		ProcessorCategory: entity.ProcessorCategory,
@@ -52,7 +52,7 @@ func (entity ProcessorData) Run(processor *Processor, session *Session) (err err
 	endTime := time.Now()
 	processor.Result.EndTime = &endTime
 
-	//result = *processor.Result
+	//result = *processor.ScenarioExecResult
 
 	return
 }

@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-type Result struct {
+type ScenarioExecResult struct {
 	ID int `json:"id" yaml:"id"`
 
 	Name           string                `json:"name"`
@@ -44,5 +44,14 @@ type Result struct {
 
 	Summary string `json:"summary,omitempty"`
 
-	Children []*Result `json:"logs,omitempty"`
+	Children []*ScenarioExecResult `json:"logs,omitempty"`
+}
+
+type PlanExecResult struct {
+	ID uint `json:"id" yaml:"id"`
+
+	Name string `json:"name"`
+	Desc string `json:"desc,omitempty"`
+
+	Scenarios []*ScenarioExecResult `json:"scenarios"`
 }

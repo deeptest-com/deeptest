@@ -12,33 +12,42 @@ type InterfaceService struct {
 	RemoteService *RemoteService `inject:""`
 }
 
-func (s *InterfaceService) Run(req domain.InvocationReq) (ret v1.InvocationResponse, err error) {
-	if req.UsedBy == consts.UsedByInterface {
-		interfaceExecReq := s.RemoteService.GetInterfaceToExec(req)
+func (s *InterfaceService) Run(req domain.InvocationReq) (ret v1.DebugResponse, err error) {
+	//单接口调试和多接口调试统一使用一套执行器表结构
+	interfaceProcessorExecReq := s.RemoteService.GetProcessorInterfaceToExec(req)
+	agentExec.Environment = interfaceProcessorExecReq.Environment
+	agentExec.Variables = interfaceProcessorExecReq.Variables
+	agentExec.DatapoolData = interfaceProcessorExecReq.Datapools
+	ret, err = s.Request(interfaceProcessorExecReq)
+	err = s.RemoteService.SubmitProcessorInterfaceResult(req, ret, req.ServerUrl, req.Token)
 
-		agentExec.Environment = interfaceExecReq.Environment
-		agentExec.Variables = interfaceExecReq.Variables
-		agentExec.DatapoolData = interfaceExecReq.Datapools
+	/*
+		if req.UsedBy == consts.UsedByInterface {
+			interfaceExecReq := s.RemoteService.GetInterfaceToExec(req)
 
-		ret, err = s.Request(interfaceExecReq)
-		err = s.RemoteService.SubmitInterfaceResult(req, ret, req.ServerUrl, req.Token)
+			agentExec.Environment = interfaceExecReq.Environment
+			agentExec.Variables = interfaceExecReq.Variables
+			agentExec.DatapoolData = interfaceExecReq.Datapools
 
-	} else if req.UsedBy == consts.UsedByScenario {
-		interfaceProcessorExecReq := s.RemoteService.GetProcessorInterfaceToExec(req)
+			ret, err = s.Request(interfaceExecReq)
+			err = s.RemoteService.SubmitInterfaceResult(req, ret, req.ServerUrl, req.Token)
 
-		agentExec.Environment = interfaceProcessorExecReq.Environment
-		agentExec.Variables = interfaceProcessorExecReq.Variables
-		agentExec.DatapoolData = interfaceProcessorExecReq.Datapools
+		} else if req.UsedBy == consts.UsedByScenario {
+			interfaceProcessorExecReq := s.RemoteService.GetProcessorInterfaceToExec(req)
 
-		ret, err = s.Request(interfaceProcessorExecReq)
-		err = s.RemoteService.SubmitProcessorInterfaceResult(req, ret, req.ServerUrl, req.Token)
+			agentExec.Environment = interfaceProcessorExecReq.Environment
+			agentExec.Variables = interfaceProcessorExecReq.Variables
+			agentExec.DatapoolData = interfaceProcessorExecReq.Datapools
 
-	}
+			ret, err = s.Request(interfaceProcessorExecReq)
+			err = s.RemoteService.SubmitProcessorInterfaceResult(req, ret, req.ServerUrl, req.Token)
 
+		}
+	*/
 	return
 }
 
-func (s *InterfaceService) Request(req v1.InvocationRequest) (ret v1.InvocationResponse, err error) {
+func (s *InterfaceService) Request(req v1.DebugRequest) (ret v1.DebugResponse, err error) {
 	// exec pre-request script
 	agentExec.ExecJs(req.PreRequestScript)
 
@@ -48,12 +57,12 @@ func (s *InterfaceService) Request(req v1.InvocationRequest) (ret v1.InvocationR
 	// send request
 	ret, err = agentExec.Invoke(&req.BaseRequest)
 
-	ret.Id = req.Id
+	ret.Id = req.InterfaceId
 
 	return
 }
 
-func (s *InterfaceService) GetContentProps(ret *v1.InvocationResponse) {
+func (s *InterfaceService) GetContentProps(ret *v1.DebugResponse) {
 	ret.ContentLang = consts.LangTEXT
 
 	if ret.ContentLang == "" {

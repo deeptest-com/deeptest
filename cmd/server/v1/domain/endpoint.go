@@ -7,10 +7,10 @@ import (
 
 type EndpointReqPaginate struct {
 	_domain.PaginateReq
-	ProjectId    int64  `json:"project_id"`
-	CategoryPath string `json:"category_path"`
+	ProjectId    int64  `json:"projectId"`
+	CategoryId   uint   `json:"categoryId"`
 	Status       int64  `json:"status"`
-	UserId       int64  `json:"user_id"`
+	CreateUser   string `json:"createUser"`
 	Title        string `json:"title"`
 	ServeId      uint   `json:"serveId"`
 	ServeVersion string `json:"serveVersion"`
@@ -25,7 +25,7 @@ type EndpointReq struct {
 	Path       string          `json:"path"`
 	Version    string          `json:"version"`
 	CreateUser string          `json:"CreateUser"`
-	ParentId   int64           `json:"ParentId"`
+	CategoryId uint            `json:"categoryId"`
 	PathParams []domain.Param  `gorm:"-" json:"pathParams"`
 	Interfaces []InterfaceResp `gorm:"-" json:"interfaces"`
 }

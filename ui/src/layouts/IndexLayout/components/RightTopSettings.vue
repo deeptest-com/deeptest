@@ -1,37 +1,42 @@
 <template>
   <div class="indexlayout-top-settings">
+
     <div class="msgs">
       <a @click="gotoMessage">
         <a-badge count="100" :overflowCount="99" show-zero
-                 :numberStyle="{fontSize: '12px', minWidth: '16px', height: '16px', lineHeight: '15px', padding: '0 4px'}">
-            <BellOutlined class="dp-light" :style="{ fontSize: '20px' }" />
+                 :numberStyle="{fontSize: '12px', minWidth: '12px', height: '10px', lineHeight: '10px', padding: '0 4px','box-shadow':'none'}">
+          <BellOutlined  class="dp-light user-icon" :style="{ fontSize: '16px',color:'#fff',left:'-2px',position:'relative' }"/>
         </a-badge>
       </a>
     </div>
 
-    <a-dropdown>
-      <a class="indexlayout-top-usermenu ant-dropdown-link">
-        <SettingOutlined class="settings" />
-        <DownOutlined/>
-      </a>
+    <div class="user-info">
+      <a-dropdown>
+        <a class="indexlayout-top-usermenu ant-dropdown-link">
+          <UserOutlined class="user-icon"/>
+          <span class="user-name">{{ currentUser.name }}</span>
+          <DownOutlined class="user-icon"/>
+        </a>
+        <template #overlay>
+          <a-menu @click="onMenuClick">
+            <a-menu-item key="profile">
+              <SettingOutlined class="settings"/>个人信息
+            </a-menu-item>
+            <a-menu-item key="logout">
+              <LogoutOutlined/> 登出
+            </a-menu-item>
+          </a-menu>
+        </template>
+      </a-dropdown>
+    </div>
 
-      <template #overlay>
-        <a-menu @click="onMenuClick">
-          <a-menu-item key="profile">
-            个人信息
-          </a-menu-item>
-          <a-menu-item key="logout">
-            登出
-          </a-menu-item>
-        </a-menu>
-      </template>
-    </a-dropdown>
+
   </div>
 </template>
 <script lang="ts">
 import {computed, defineComponent, ref} from "vue";
 import {useStore} from "vuex";
-import {DownOutlined, BellOutlined, SettingOutlined} from '@ant-design/icons-vue';
+import {DownOutlined, BellOutlined, SettingOutlined, UserOutlined,LogoutOutlined} from '@ant-design/icons-vue';
 
 import {useI18n} from "vue-i18n";
 import {CurrentUser, StateType as UserStateType} from "@/store/user";
@@ -41,7 +46,7 @@ export default defineComponent({
   name: 'RightTopSettings',
   components: {
     DownOutlined,
-    BellOutlined, SettingOutlined
+    BellOutlined, SettingOutlined, UserOutlined,LogoutOutlined
   },
   setup() {
     const {t} = useI18n();
@@ -50,6 +55,7 @@ export default defineComponent({
 
     // 获取当前登录用户信息
     const currentUser = computed<CurrentUser>(() => store.state.User.currentUser);
+
 
     const selectLangVisible = ref(false)
     const closeSelectLang = async (event: any) => {
@@ -64,6 +70,8 @@ export default defineComponent({
     // 点击菜单
     const onMenuClick = (event: any) => {
       console.log('onMenuClick')
+
+      // console.log(currentUser.value);
 
       const {key} = event;
 
@@ -97,11 +105,37 @@ export default defineComponent({
 </script>
 
 <style lang="less" scoped>
-  .msgs {
-    text-align: left;
-  }
-  .settings {
+.user-info {
+  .user-name {
+    margin-left: 4px;
+    margin-right: 4px;
     display: inline-block;
-    margin-right: 3px;
+    color: #FFFFFF;
   }
+  .user-info{
+    color: #FFFFFF;
+  }
+  .user-icon{
+    color: #FFFFFF;
+    //font-size: 18px;
+    //margin-left: 4px;
+  }
+  margin-right: 24px;
+
+}
+
+.msgs {
+  text-align: center;
+  margin-right: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  top:2px;
+}
+
+.settings {
+  display: inline-block;
+  margin-right: 16px;
+}
 </style>

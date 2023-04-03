@@ -250,13 +250,13 @@ func (r *EnvironmentRepo) ListVariableByProject(projectId uint) (vars []model.En
 	return
 }
 
-func (r *EnvironmentRepo) SaveEnvironment(environment model.Environment) (err error) {
+func (r *EnvironmentRepo) SaveEnvironment(environment *model.Environment) (err error) {
 	return r.DB.Transaction(func(tx *gorm.DB) error {
-		err = r.BaseRepo.Save(environment.ID, &environment)
+		err = r.BaseRepo.Save(environment.ID, environment)
 		if err != nil {
 			return err
 		}
-		err = r.ServeRepo.SaveServer(environment.ID, environment.ServeServers)
+		err = r.ServeRepo.SaveServer(environment.ID, environment.Name, environment.ServeServers)
 		if err != nil {
 			return err
 		}
@@ -268,12 +268,34 @@ func (r *EnvironmentRepo) SaveEnvironment(environment model.Environment) (err er
 	})
 }
 
+func (r *EnvironmentRepo) DeleteEnvironment(id uint) (err error) {
+	return r.DB.Transaction(func(tx *gorm.DB) error {
+		err = r.DB.Delete(&model.Environment{}, id).Error
+		if err != nil {
+			return err
+		}
+		err = r.DB.Delete(&model.ServeServer{}, "environment_id=?", id).Error
+		if err != nil {
+			return err
+		}
+		err = r.DB.Delete(&model.EnvironmentVar{}, "environment_id=?", id).Error
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+}
+
 func (r *EnvironmentRepo) SaveVars(projectId, environmentId uint, environmentVars []model.EnvironmentVar) (err error) {
+	if len(environmentVars) == 0 {
+		return
+	}
 	err = r.DB.Delete(&model.EnvironmentVar{}, "environment_id=? and project_id=?", environmentId, projectId).Error
 	if err != nil {
 		return err
 	}
 	for key, _ := range environmentVars {
+		environmentVars[key].ID = 0
 		environmentVars[key].EnvironmentId = environmentId
 		environmentVars[key].ProjectId = projectId
 	}
@@ -285,26 +307,43 @@ func (r *EnvironmentRepo) SaveVars(projectId, environmentId uint, environmentVar
 }
 
 func (r *EnvironmentRepo) GetListByProjectId(projectId uint) (environments []model.Environment, err error) {
-	err = r.DB.Find(&environments, "project_id=?", projectId).Error
+	err = r.DB.Order("sort").Find(&environments, "project_id=?", projectId).Error
 	if err != nil {
 		return
 	}
 	for key, _ := range environments {
-		var vars []model.EnvironmentVar
-		err = r.DB.Find(&vars, "environment_id=?", environments[key].ID).Error
+		err = r.GetEnvironment(&environments[key])
 		if err != nil {
 			return
 		}
-		environments[key].Vars = vars
-
-		var servers []model.ServeServer
-		err = r.DB.Find(&servers, "environment_id=?", environments[key].ID).Error
-		if err != nil {
-			return
-		}
-		environments[key].ServeServers = servers
-
 	}
+	return
+}
+
+func (r *EnvironmentRepo) GetEnvironmentById(id uint) (env *model.Environment, err error) {
+	err = r.DB.First(&env, id).Error
+	return
+}
+
+func (r *EnvironmentRepo) GetEnvironment(env *model.Environment) (err error) {
+	var vars []model.EnvironmentVar
+	err = r.DB.Find(&vars, "environment_id=?", env.ID).Error
+	if err != nil {
+		return
+	}
+	env.Vars = vars
+
+	var servers []model.ServeServer
+	err = r.DB.Find(&servers, "environment_id=?", env.ID).Error
+	if err != nil {
+		return
+	}
+	for key, server := range servers {
+		var serve model.Serve
+		r.DB.First(&serve, "id=?", server.ServeId)
+		servers[key].ServeName = serve.Name
+	}
+	env.ServeServers = servers
 	return
 }
 
@@ -344,4 +383,16 @@ func (r *EnvironmentRepo) ListParams(projectId uint) (res map[string]interface{}
 
 	}
 	return
+}
+
+func (r *EnvironmentRepo) SaveOrder(ids []uint) (err error) {
+	return r.DB.Transaction(func(tx *gorm.DB) error {
+		for key, id := range ids {
+			err = r.DB.Model(&model.Environment{}).Where("id=?", id).Update("sort", key).Error
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	})
 }

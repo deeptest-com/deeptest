@@ -6,43 +6,49 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/kataras/iris/v12/websocket"
-	"sync"
-)
-
-var (
-	breakMap sync.Map
 )
 
 type ScenarioService struct {
 	RemoteService *RemoteService `inject:""`
 }
 
-func (s *ScenarioService) ExecScenario(req *agentExec.ProcessorExecReq, wsMsg *websocket.Message) (err error) {
+func (s *ScenarioService) ExecScenario(req *agentExec.ScenarioExecReq, wsMsg *websocket.Message) (err error) {
 	consts.ServerUrl = req.ServerUrl
 	consts.ServerToken = req.Token
 
-	scenarioExecReq := s.RemoteService.GetScenarioToExec(req)
-	agentExec.Variables = scenarioExecReq.Variables
-	agentExec.DatapoolData = scenarioExecReq.Datapools
+	scenarioExecObj := s.RemoteService.GetScenarioToExec(req)
 
-	s.RestoreEntityFromRawAndSetParent(scenarioExecReq.RootProcessor)
+	session, err := s.Exec(scenarioExecObj, wsMsg)
 
-	agentExec.InitExecContext(scenarioExecReq)
+	// submit result
+	report, _ := s.RemoteService.SubmitScenarioResult(*session.RootProcessor.Result, scenarioExecObj.RootProcessor.ScenarioId,
+		scenarioExecObj.ServerUrl, scenarioExecObj.Token)
+
+	execUtils.SendResultMsg(report, session.WsMsg)
+	s.sendSubmitResult(session.RootProcessor.ID, session.WsMsg)
+
+	// end msg
+	execUtils.SendEndMsg(wsMsg)
+
+	return
+}
+
+func (s *ScenarioService) Exec(execObj *agentExec.ScenarioExecObj, wsMsg *websocket.Message) (
+	session *agentExec.Session, err error) {
+	agentExec.Variables = execObj.Variables
+	agentExec.DatapoolData = execObj.Datapools
+
+	s.RestoreEntityFromRawAndSetParent(execObj.RootProcessor)
+
+	agentExec.InitExecContext(execObj)
 	agentExec.InitJsRuntime()
 
 	// start msg
 	execUtils.SendStartMsg(wsMsg)
 
 	// execution
-	session := agentExec.NewSession(scenarioExecReq, false, wsMsg)
+	session = agentExec.NewSession(execObj, false, wsMsg)
 	session.Run()
-
-	// submit result
-	s.RemoteService.SubmitScenarioResult(*session.RootProcessor.Result, scenarioExecReq.RootProcessor.ScenarioId, scenarioExecReq.ServerUrl, scenarioExecReq.Token)
-	s.sendSubmitResult(session.RootProcessor.ID, session.WsMsg)
-
-	// end msg
-	execUtils.SendEndMsg(wsMsg)
 
 	return
 }
@@ -72,12 +78,13 @@ func (s *ScenarioService) RestoreEntityFromRawAndSetParent(root *agentExec.Proce
 }
 
 func (s *ScenarioService) sendSubmitResult(rootId uint, wsMsg *websocket.Message) (err error) {
-	result := agentDomain.Result{
+	result := agentDomain.ScenarioExecResult{
 		ID:       -3,
 		ParentId: int(rootId),
 		Name:     "提交执行结果成功",
 		//Summary:  fmt.Sprintf("错误：%s", err.Error()),
 	}
+
 	execUtils.SendExecMsg(result, wsMsg)
 
 	return

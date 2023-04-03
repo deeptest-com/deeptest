@@ -3,6 +3,7 @@ package repo
 import (
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
@@ -11,9 +12,10 @@ import (
 )
 
 type EndpointRepo struct {
-	*BaseRepo     `inject:""`
-	InterfaceRepo *InterfaceRepo `inject:""`
-	ServeRepo     *ServeRepo     `inject:""`
+	*BaseRepo              `inject:""`
+	EndpointInterfaceRepo  *EndpointInterfaceRepo  `inject:""`
+	ServeRepo              *ServeRepo              `inject:""`
+	ProcessorInterfaceRepo *ProcessorInterfaceRepo `inject:""`
 }
 
 func NewEndpointRepo() *EndpointRepo {
@@ -29,8 +31,8 @@ func (r *EndpointRepo) Paginate(req v1.EndpointReqPaginate) (ret _domain.PageDat
 	if req.Title != "" {
 		db = db.Where("title LIKE ?", fmt.Sprintf("%%%s%%", req.Title))
 	}
-	if req.UserId != 0 {
-		db = db.Where("user_id = ?", req.UserId)
+	if req.CreateUser != "" {
+		db = db.Where("create_user = ?", req.CreateUser)
 	}
 	if req.Status != 0 {
 		db = db.Where("status = ?", req.Status)
@@ -42,6 +44,18 @@ func (r *EndpointRepo) Paginate(req v1.EndpointReqPaginate) (ret _domain.PageDat
 		if ids, err := r.ServeRepo.GetBindEndpointIds(req.ServeId, req.ServeVersion); err != nil {
 			db = db.Where("id in ?", ids)
 		}
+	}
+	var categoryIds []uint
+	if req.CategoryId > 0 {
+		categoryIds, err = r.BaseRepo.GetAllChildIds(req.CategoryId, model.Category{}.TableName(),
+			serverConsts.EndpointCategory, int(req.ProjectId))
+		if err != nil {
+			return
+		}
+	}
+
+	if len(categoryIds) > 0 {
+		db.Where("category_id IN(?)", categoryIds)
 	}
 
 	db = db.Order("created_at desc")
@@ -59,6 +73,8 @@ func (r *EndpointRepo) Paginate(req v1.EndpointReqPaginate) (ret _domain.PageDat
 		return
 	}
 
+	serveNames := map[uint]string{}
+
 	for key, result := range results {
 		var versions []model.EndpointVersion
 		r.DB.Find(&versions, "endpoint_id=?", result.ID).Order("version desc")
@@ -66,6 +82,13 @@ func (r *EndpointRepo) Paginate(req v1.EndpointReqPaginate) (ret _domain.PageDat
 		if len(versions) > 0 {
 			results[key].Version = versions[0].Version
 		}
+
+		if _, ok := serveNames[result.ServeId]; !ok {
+			var serve model.Serve
+			r.DB.Find(&serve, "id=?", result.ServeId)
+			serveNames[result.ServeId] = serve.Name
+		}
+		results[key].ServeName = serveNames[result.ServeId]
 	}
 
 	ret.Populate(results, count, req.Page, req.PageSize)
@@ -91,7 +114,7 @@ func (r *EndpointRepo) SaveAll(endpoint *model.Endpoint) (err error) {
 			return err
 		}
 		//保存接口
-		err = r.saveInterfaces(endpoint.ID, endpoint.Version, endpoint.Interfaces)
+		err = r.saveInterfaces(endpoint.ID, endpoint.Path, endpoint.Version, endpoint.Interfaces)
 		if err != nil {
 			return err
 		}
@@ -147,7 +170,7 @@ func (r *EndpointRepo) removeEndpointParams(endpointId uint) (err error) {
 }
 
 //保存接口信息
-func (r *EndpointRepo) saveInterfaces(endpointId uint, version string, interfaces []model.Interface) (err error) {
+func (r *EndpointRepo) saveInterfaces(endpointId uint, path, version string, interfaces []model.EndpointInterface) (err error) {
 	err = r.removeInterfaces(endpointId)
 	if err != nil {
 		return
@@ -155,10 +178,19 @@ func (r *EndpointRepo) saveInterfaces(endpointId uint, version string, interface
 	for _, item := range interfaces {
 		item.EndpointId = endpointId
 		item.Version = version
-		err = r.InterfaceRepo.SaveInterfaces(item)
+		item.Url = path
+		err = r.EndpointInterfaceRepo.SaveInterfaces(&item)
 		if err != nil {
 			return err
 		}
+
+		/*
+			err = r.ProcessorInterfaceRepo.SaveProcessor(item)
+			if err != nil {
+				return err
+			}
+		*/
+
 	}
 	return
 }
@@ -177,7 +209,7 @@ func (r *EndpointRepo) GetAll(id uint, version string) (endpoint model.Endpoint,
 		return
 	}
 	endpoint.PathParams, _ = r.GetEndpointParams(id)
-	endpoint.Interfaces, _ = r.InterfaceRepo.GetByEndpointId(id, version)
+	endpoint.Interfaces, _ = r.EndpointInterfaceRepo.GetByEndpointId(id, version)
 
 	return
 }
@@ -219,5 +251,14 @@ func (r *EndpointRepo) GetLatestVersion(endpointId uint) (res model.EndpointVers
 }
 func (r *EndpointRepo) FindVersion(res *model.EndpointVersion) (err error) {
 	err = r.DB.Where("endpoint_id=? and version=?", res.EndpointId, res.Version).First(&res).Error
+	return
+}
+
+func (r *EndpointRepo) GetFirstMethod(id uint) (res model.EndpointInterface, err error) {
+	var interfs []model.EndpointInterface
+	interfs, err = r.EndpointInterfaceRepo.GetByEndpointId(id, "v0.1.0")
+	if len(interfs) > 0 {
+		res = interfs[0]
+	}
 	return
 }

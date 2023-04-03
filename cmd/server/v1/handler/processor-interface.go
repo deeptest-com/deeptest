@@ -52,7 +52,7 @@ func (c *ProcessorInterfaceCtrl) SaveInterface(ctx iris.Context) {
 		return
 	}
 
-	req := domain.InvocationRequest{}
+	req := domain.DebugRequest{}
 	err = ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
@@ -67,4 +67,21 @@ func (c *ProcessorInterfaceCtrl) SaveInterface(ctx iris.Context) {
 	}
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code})
+}
+
+func (c *ProcessorInterfaceCtrl) Index(ctx iris.Context) {
+	currProjectId, err := ctx.URLParamInt("currProjectId")
+	scenarioId := ctx.URLParamIntDefault("scenarioId", 0)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Data: nil, Msg: err.Error()})
+		return
+	}
+
+	res, err := c.ProcessorInterfaceService.GetList(uint(currProjectId), uint(scenarioId))
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: _domain.SystemErr.Msg})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res})
 }

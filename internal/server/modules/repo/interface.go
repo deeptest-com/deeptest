@@ -488,10 +488,10 @@ func (r *InterfaceRepo) GetApiKey(id uint) (po model.InterfaceApiKey, err error)
 	return
 }
 
-func (r *InterfaceRepo) SaveInterfaces(interf model.Interface) (err error) {
+func (r *InterfaceRepo) SaveInterfaces(interf *model.Interface) (err error) {
 
 	r.DB.Transaction(func(tx *gorm.DB) error {
-		err = r.UpdateInterface(&interf)
+		err = r.UpdateInterface(interf)
 		if err != nil {
 			return err
 		}
@@ -700,5 +700,21 @@ func (r *InterfaceRepo) ListResponseBodyItem(requestBodyId uint) (responseBodyIt
 
 func (r *InterfaceRepo) ListResponseBodyHeaders(requestBodyId uint) (responseBodyHeaders []model.InterfaceResponseBodyHeader, err error) {
 	err = r.DB.Find(&responseBodyHeaders, "response_body_id = ?", requestBodyId).Error
+	return
+}
+
+func (r *InterfaceRepo) GetById(interfId uint) (interf model.Interface, err error) {
+	if interfId > 0 {
+		interf, err = r.Get(interfId)
+		interf.Params, _ = r.ListParams(interfId)
+		interf.Headers, _ = r.ListHeaders(interfId)
+		interf.BodyFormData, _ = r.ListBodyFormData(interfId)
+		interf.BodyFormUrlencoded, _ = r.ListBodyFormUrlencoded(interfId)
+		interf.BasicAuth, _ = r.GetBasicAuth(interfId)
+		interf.BearerToken, _ = r.GetBearerToken(interfId)
+		interf.OAuth20, _ = r.GetOAuth20(interfId)
+		interf.ApiKey, _ = r.GetApiKey(interfId)
+	}
+
 	return
 }

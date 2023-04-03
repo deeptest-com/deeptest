@@ -16,7 +16,7 @@ func (entity ProcessorGroup) Run(processor *Processor, session *Session) (err er
 	logUtils.Infof("group entity")
 
 	startTime := time.Now()
-	processor.Result = &agentDomain.Result{
+	processor.Result = &agentDomain.ScenarioExecResult{
 		ID:                int(entity.ProcessorID),
 		Name:              entity.Name,
 		ProcessorCategory: entity.ProcessorCategory,

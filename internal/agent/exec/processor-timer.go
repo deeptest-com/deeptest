@@ -19,7 +19,7 @@ func (entity ProcessorTimer) Run(processor *Processor, session *Session) (err er
 	logUtils.Infof("timer entity")
 
 	startTime := time.Now()
-	processor.Result = &agentDomain.Result{
+	processor.Result = &agentDomain.ScenarioExecResult{
 		ID:                int(entity.ProcessorID),
 		Name:              entity.Name,
 		ProcessorCategory: entity.ProcessorCategory,

@@ -53,7 +53,7 @@ func (s *ExtractorService) Delete(reqId uint) (err error) {
 	return
 }
 
-func (s *ExtractorService) ExtractInterface(interfaceId uint, resp v1.InvocationResponse,
+func (s *ExtractorService) ExtractInterface(interfaceId uint, resp v1.DebugResponse,
 	usedBy consts.UsedBy) (logExtractors []domain.ExecInterfaceExtractor, err error) {
 
 	extractors, _ := s.ExtractorRepo.List(interfaceId, usedBy)
@@ -65,7 +65,7 @@ func (s *ExtractorService) ExtractInterface(interfaceId uint, resp v1.Invocation
 	return
 }
 
-func (s *ExtractorService) Extract(extractor model.InterfaceExtractor, resp v1.InvocationResponse,
+func (s *ExtractorService) Extract(extractor model.InterfaceExtractor, resp v1.DebugResponse,
 	usedBy consts.UsedBy) (logExtractor model.ExecLogExtractor, err error) {
 
 	err = s.ExtractValue(&extractor, resp)
@@ -78,7 +78,7 @@ func (s *ExtractorService) Extract(extractor model.InterfaceExtractor, resp v1.I
 	return
 }
 
-func (s *ExtractorService) ExtractValue(extractor *model.InterfaceExtractor, resp v1.InvocationResponse) (err error) {
+func (s *ExtractorService) ExtractValue(extractor *model.InterfaceExtractor, resp v1.DebugResponse) (err error) {
 	if extractor.Disabled {
 		extractor.Result = ""
 		return

@@ -27,7 +27,7 @@ func (entity ProcessorCookie) Run(processor *Processor, session *Session) (err e
 	logUtils.Infof("cookie entity")
 
 	startTime := time.Now()
-	processor.Result = &agentDomain.Result{
+	processor.Result = &agentDomain.ScenarioExecResult{
 		ID:                int(entity.ProcessorID),
 		Name:              entity.Name,
 		ProcessorCategory: entity.ProcessorCategory,

@@ -37,12 +37,58 @@ func (s *serve2conv) info() (info *openapi3.Info) {
 }
 
 func (s *serve2conv) components() (components openapi3.Components) {
-	components = openapi3.Components{}
+	components = openapi3.NewComponents()
+	components.Schemas = openapi3.Schemas{}
+	for _, component := range s.serve.Components {
+		schema := new(openapi3.Schema)
+		if component.Type == openapi3.TypeObject {
+			var schemas openapi3.Schemas
+			_commUtils.JsonDecode(component.Content, &schemas)
+			schema.Properties = schemas
+		} else {
+			var items *openapi3.SchemaRef
+			_commUtils.JsonDecode(component.Content, &items)
+			schema.Items = items
+		}
+		components.Schemas[component.Name] = openapi3.NewSchemaRef("", schema)
+	}
+	components.SecuritySchemes = s.security()
+	return
+}
+
+func (s *serve2conv) security() (securitySchemes openapi3.SecuritySchemes) {
+	securitySchemes = openapi3.SecuritySchemes{}
+	for _, security := range s.serve.Securities {
+		securityScheme := openapi3.NewSecurityScheme()
+		securityScheme.Type = security.Type
+		switch security.Type {
+		case "apiKey":
+			securityScheme.In = security.In
+			securityScheme.Name = security.Key
+		case "bearerToken":
+			securityScheme.Type = "http"
+			securityScheme.Scheme = "bearer"
+			securityScheme.BearerFormat = "jwt"
+		case "basicAuth":
+			securityScheme.Type = "http"
+			securityScheme.Scheme = "basic"
+			securityScheme.BearerFormat = ""
+		}
+		if security.Default {
+			securityRequirement := openapi3.NewSecurityRequirement()
+			securityRequirement[securityScheme.Name] = nil
+			s.doc3.Security = openapi3.SecurityRequirements{securityRequirement}
+		}
+		securitySchemes[security.Name] = &openapi3.SecuritySchemeRef{Value: securityScheme}
+	}
 	return
 }
 
 func (s *serve2conv) servers() (servers openapi3.Servers) {
-	servers = openapi3.Servers{&openapi3.Server{URL: "localhost:3000"}}
+	servers = openapi3.Servers{}
+	for _, server := range s.serve.Servers {
+		servers = append(servers, &openapi3.Server{URL: server.Url, Description: server.Description})
+	}
 	return
 }
 
@@ -54,74 +100,40 @@ func (s *serve2conv) paths() (paths openapi3.Paths) {
 		for _, item := range endpoint.Interfaces {
 			switch item.Method {
 			case "GET":
-				paths[endpoint.Path].Get = new(openapi3.Operation)
-				/*				paths[endpoint.Path].Get.OperationID = item.OperationId
-								paths[endpoint.Path].Get.Description = item.Description
-								paths[endpoint.Path].Get.Summary = item.Description*/
-				paths[endpoint.Path].Get.Responses = s.responsesBody(item.ResponseBodies)
-				paths[endpoint.Path].Get.Security = nil
-				paths[endpoint.Path].Get.Parameters = s.parameters(item.Cookies, item.Headers, item.Params)
-
+				paths[endpoint.Path].Get = s.operation(item)
 			case "POST":
-				paths[endpoint.Path].Post = new(openapi3.Operation)
-				//paths[endpoint.Path].Get.OperationID = item.OperationId
-				//paths[endpoint.Path].Get.Description = item.Description
-				//paths[endpoint.Path].Get.Summary = item.Description
-				paths[endpoint.Path].Post.RequestBody = s.requestBody(item.RequestBody)
-				paths[endpoint.Path].Post.Responses = s.responsesBody(item.ResponseBodies)
-				paths[endpoint.Path].Post.Security = nil
-				paths[endpoint.Path].Post.Parameters = s.parameters(item.Cookies, item.Headers, item.Params)
+				paths[endpoint.Path].Post = s.operation(item)
 			case "PUT":
-				paths[endpoint.Path].Get = new(openapi3.Operation)
-				/*				paths[endpoint.Path].Get.OperationID = item.OperationId
-								paths[endpoint.Path].Get.Description = item.Description
-								paths[endpoint.Path].Get.Summary = item.Description*/
-				paths[endpoint.Path].Get.Responses = s.responsesBody(item.ResponseBodies)
-				paths[endpoint.Path].Get.Security = nil
-				paths[endpoint.Path].Get.Parameters = s.parameters(item.Cookies, item.Headers, item.Params)
+				paths[endpoint.Path].Put = s.operation(item)
 			case "PATCH":
-				paths[endpoint.Path].Get = new(openapi3.Operation)
-				/*				paths[endpoint.Path].Get.OperationID = item.OperationId
-								paths[endpoint.Path].Get.Description = item.Description
-								paths[endpoint.Path].Get.Summary = item.Description*/
-				paths[endpoint.Path].Get.Responses = s.responsesBody(item.ResponseBodies)
-				paths[endpoint.Path].Get.Security = nil
-				paths[endpoint.Path].Get.Parameters = s.parameters(item.Cookies, item.Headers, item.Params)
+				paths[endpoint.Path].Patch = s.operation(item)
 			case "DELETE":
-				paths[endpoint.Path].Get = new(openapi3.Operation)
-				/*				paths[endpoint.Path].Get.OperationID = item.OperationId
-								paths[endpoint.Path].Get.Description = item.Description
-								paths[endpoint.Path].Get.Summary = item.Description*/
-				paths[endpoint.Path].Get.Responses = s.responsesBody(item.ResponseBodies)
-				paths[endpoint.Path].Get.Security = nil
-				paths[endpoint.Path].Get.Parameters = s.parameters(item.Cookies, item.Headers, item.Params)
+				paths[endpoint.Path].Delete = s.operation(item)
 			case "HEAD":
-				paths[endpoint.Path].Get = new(openapi3.Operation)
-				/*				paths[endpoint.Path].Get.OperationID = item.OperationId
-								paths[endpoint.Path].Get.Description = item.Description
-								paths[endpoint.Path].Get.Summary = item.Description*/
-				paths[endpoint.Path].Get.Responses = s.responsesBody(item.ResponseBodies)
-				paths[endpoint.Path].Get.Security = nil
-				paths[endpoint.Path].Get.Parameters = s.parameters(item.Cookies, item.Headers, item.Params)
+				paths[endpoint.Path].Head = s.operation(item)
 			case "OPTIONS":
-				paths[endpoint.Path].Get = new(openapi3.Operation)
-				/*				paths[endpoint.Path].Get.OperationID = item.OperationId
-								paths[endpoint.Path].Get.Description = item.Description
-								paths[endpoint.Path].Get.Summary = item.Description*/
-				paths[endpoint.Path].Get.Responses = s.responsesBody(item.ResponseBodies)
-				paths[endpoint.Path].Get.Security = nil
-				paths[endpoint.Path].Get.Parameters = s.parameters(item.Cookies, item.Headers, item.Params)
+				paths[endpoint.Path].Options = s.operation(item)
 			case "TRACE":
-				paths[endpoint.Path].Get = new(openapi3.Operation)
-				/*				paths[endpoint.Path].Get.OperationID = item.OperationId
-								paths[endpoint.Path].Get.Description = item.Description
-								paths[endpoint.Path].Get.Summary = item.Description*/
-				paths[endpoint.Path].Get.Responses = s.responsesBody(item.ResponseBodies)
-				paths[endpoint.Path].Get.Security = nil
-				paths[endpoint.Path].Get.Parameters = s.parameters(item.Cookies, item.Headers, item.Params)
+				paths[endpoint.Path].Trace = s.operation(item)
 			}
 
 		}
+	}
+	return
+}
+
+func (s *serve2conv) operation(item model.EndpointInterface) (operation *openapi3.Operation) {
+	operation = new(openapi3.Operation)
+	operation.OperationID = item.OperationId
+	operation.Description = item.Description
+	operation.Summary = item.Description
+	operation.RequestBody = s.requestBody(item.RequestBody)
+	operation.Responses = s.responsesBody(item.ResponseBodies)
+	operation.Parameters = s.parameters(item.Cookies, item.Headers, item.Params)
+	if item.Security != "" {
+		securityRequirement := openapi3.NewSecurityRequirement()
+		securityRequirement[item.Security] = nil
+		operation.Security = &openapi3.SecurityRequirements{securityRequirement}
 	}
 	return
 }
@@ -142,7 +154,7 @@ func (s *serve2conv) pathParameters(params []model.EndpointPathParam) (parameter
 	return
 }
 
-func (s *serve2conv) parameters(cookies []model.InterfaceCookie, headers []model.InterfaceHeader, params []model.InterfaceParam) (parameters openapi3.Parameters) {
+func (s *serve2conv) parameters(cookies []model.EndpointInterfaceCookie, headers []model.EndpointInterfaceHeader, params []model.EndpointInterfaceParam) (parameters openapi3.Parameters) {
 	parameters = openapi3.Parameters{}
 	for _, param := range params {
 		parameterRef := new(openapi3.ParameterRef)
@@ -180,7 +192,7 @@ func (s *serve2conv) parameters(cookies []model.InterfaceCookie, headers []model
 	return
 }
 
-func (s *serve2conv) requestBody(body model.InterfaceRequestBody) (requestBody *openapi3.RequestBodyRef) {
+func (s *serve2conv) requestBody(body model.EndpointInterfaceRequestBody) (requestBody *openapi3.RequestBodyRef) {
 	requestBody = new(openapi3.RequestBodyRef)
 	requestBody.Value = new(openapi3.RequestBody)
 	requestBody.Value.Description = ""
@@ -194,7 +206,7 @@ func (s *serve2conv) requestBody(body model.InterfaceRequestBody) (requestBody *
 	return
 }
 
-func (s *serve2conv) requestBodySchema(item model.InterfaceRequestBodyItem) (schema *openapi3.Schema) {
+func (s *serve2conv) requestBodySchema(item model.EndpointInterfaceRequestBodyItem) (schema *openapi3.Schema) {
 	schema = new(openapi3.Schema)
 	schema.Type = item.Type
 	if item.Type == openapi3.TypeObject {
@@ -215,7 +227,7 @@ func (s *serve2conv) requestBodyExamples(examplesStr string) (examples openapi3.
 	return
 }
 
-func (s *serve2conv) responsesBody(bodies []model.InterfaceResponseBody) (responsesBody openapi3.Responses) {
+func (s *serve2conv) responsesBody(bodies []model.EndpointInterfaceResponseBody) (responsesBody openapi3.Responses) {
 	responsesBody = openapi3.Responses{}
 	for _, body := range bodies {
 		responsesBody[body.Code] = new(openapi3.ResponseRef)
@@ -229,7 +241,7 @@ func (s *serve2conv) responsesBody(bodies []model.InterfaceResponseBody) (respon
 	return
 }
 
-func (s *serve2conv) responsesBodySchema(item model.InterfaceResponseBodyItem) (schema *openapi3.Schema) {
+func (s *serve2conv) responsesBodySchema(item model.EndpointInterfaceResponseBodyItem) (schema *openapi3.Schema) {
 	schema = new(openapi3.Schema)
 	schema.Type = item.Type
 	//fmt.Println(item, "++++++++++++++++")

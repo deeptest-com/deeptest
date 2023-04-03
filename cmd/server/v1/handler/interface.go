@@ -29,7 +29,7 @@ func (c *InterfaceCtrl) SaveInterface(ctx iris.Context) {
 		return
 	}
 
-	req := domain.InvocationRequest{}
+	req := domain.DebugRequest{}
 	err = ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
@@ -68,6 +68,22 @@ func (c *InterfaceCtrl) Get(ctx iris.Context) {
 	}
 
 	interf, err := c.InterfaceService.GetDetail(uint(id))
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: _domain.SystemErr.Msg})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: interf})
+}
+
+func (c *InterfaceCtrl) Detail(ctx iris.Context) {
+	id, err := ctx.Params().GetInt("id")
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Data: nil, Msg: _domain.ParamErr.Msg})
+		return
+	}
+
+	interf, err := c.InterfaceService.GetById(uint(id))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: _domain.SystemErr.Msg})
 		return

@@ -23,7 +23,7 @@ type InvocationProcessorService struct {
 	DatapoolService           *DatapoolService           `inject:""`
 }
 
-func (s *InvocationProcessorService) LoadInterfaceExecData(req v1.InvocationRequest) (ret v1.InvocationRequest, err error) {
+func (s *InvocationProcessorService) LoadInterfaceExecData(req v1.DebugRequest) (ret v1.DebugRequest, err error) {
 	err = s.ProcessorInterfaceService.UpdateByInvocation(req)
 	if err != nil {
 		return
@@ -34,7 +34,7 @@ func (s *InvocationProcessorService) LoadInterfaceExecData(req v1.InvocationRequ
 	return
 }
 
-func (s *InvocationProcessorService) SubmitInterfaceInvokeResult(req v1.SubmitInvocationResultRequest) (err error) {
+func (s *InvocationProcessorService) SubmitInterfaceInvokeResult(req v1.SubmitDebugResultRequest) (err error) {
 	processorInterface, _ := s.ProcessorInterfaceRepo.GetDetail(req.Response.Id)
 
 	s.ExtractorService.ExtractInterface(processorInterface.ID, req.Response, consts.UsedByScenario)
@@ -49,13 +49,13 @@ func (s *InvocationProcessorService) SubmitInterfaceInvokeResult(req v1.SubmitIn
 	return
 }
 
-func (s *InvocationProcessorService) CreateForScenarioInterface(req v1.InvocationRequest,
-	resp v1.InvocationResponse, projectId uint) (invocation model.ProcessorInvocation, err error) {
+func (s *InvocationProcessorService) CreateForScenarioInterface(req v1.DebugRequest,
+	resp v1.DebugResponse, projectId uint) (invocation model.ProcessorInvocation, err error) {
 
 	invocation = model.ProcessorInvocation{
 		InvocationBase: model.InvocationBase{
 			Name:        time.Now().Format("01-02 15:04:05"),
-			InterfaceId: req.Id,
+			InterfaceId: req.InterfaceId,
 			ProjectId:   uint(projectId),
 		},
 	}
@@ -71,13 +71,13 @@ func (s *InvocationProcessorService) CreateForScenarioInterface(req v1.Invocatio
 	return
 }
 
-func (s *InvocationProcessorService) ReplaceEnvironmentAndExtractorVariables(req v1.InvocationRequest) (
-	ret v1.InvocationRequest, err error) {
+func (s *InvocationProcessorService) ReplaceEnvironmentAndExtractorVariables(req v1.DebugRequest) (
+	ret v1.DebugRequest, err error) {
 
-	interf, _ := s.ProcessorInterfaceRepo.Get(req.Id)
+	interf, _ := s.ProcessorInterfaceRepo.Get(req.InterfaceId)
 
-	req.Environment, _ = s.VariableService.GetEnvironmentVariablesByInterface(req.Id, consts.UsedByScenario)
-	req.Variables, _ = s.VariableService.GetVariablesByInterface(req.Id, consts.UsedByScenario)
+	req.Environment, _ = s.VariableService.GetEnvironmentVariablesByInterface(req.InterfaceId, req.UsedBy)
+	req.Variables, _ = s.VariableService.GetVariablesByInterface(req.InterfaceId, req.UsedBy)
 	req.Datapools, _ = s.DatapoolService.ListForExec(interf.ProjectId)
 
 	ret = req
@@ -91,12 +91,12 @@ func (s *InvocationProcessorService) ListByInterface(interfId int) (invocations 
 	return
 }
 
-func (s *InvocationProcessorService) GetLastResp(interfId int) (resp v1.InvocationResponse, err error) {
+func (s *InvocationProcessorService) GetLastResp(interfId int) (resp v1.DebugResponse, err error) {
 	invocation, _ := s.ProcessorInvocationRepo.GetLast(interfId)
 	if invocation.ID > 0 {
 		json.Unmarshal([]byte(invocation.RespContent), &resp)
 	} else {
-		resp = v1.InvocationResponse{
+		resp = v1.DebugResponse{
 			ContentLang: consts.LangHTML,
 			Content:     "",
 		}
@@ -105,10 +105,10 @@ func (s *InvocationProcessorService) GetLastResp(interfId int) (resp v1.Invocati
 	return
 }
 
-func (s *InvocationProcessorService) GetAsInterface(id int) (interf model.ProcessorInterface, interfResp v1.InvocationResponse, err error) {
+func (s *InvocationProcessorService) GetAsInterface(id int) (interf model.ProcessorInterface, interfResp v1.DebugResponse, err error) {
 	invocation, err := s.ProcessorInvocationRepo.Get(uint(id))
 
-	interfReq := v1.InvocationRequest{}
+	interfReq := v1.DebugRequest{}
 
 	json.Unmarshal([]byte(invocation.ReqContent), &interfReq)
 	json.Unmarshal([]byte(invocation.RespContent), &interfResp)

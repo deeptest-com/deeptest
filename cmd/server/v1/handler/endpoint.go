@@ -17,12 +17,14 @@ type EndpointCtrl struct {
 
 func (c *EndpointCtrl) Index(ctx iris.Context) {
 	var req v1.EndpointReqPaginate
-	if err := ctx.ReadJSON(&req); err == nil {
-		res, _ := c.EndpointService.Paginate(req)
-		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res})
-	} else {
+	if err := ctx.ReadJSON(&req); err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
 	}
+
+	res, _ := c.EndpointService.Paginate(req)
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res})
+
 	return
 }
 
@@ -175,3 +177,9 @@ func (c *EndpointCtrl) ListVersions(ctx iris.Context) {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 	}
 }
+
+/*
+func (c *EndpointCtrl) List() {
+	c.EndpointService.GetVersionsByEndpointId(1)
+}
+*/

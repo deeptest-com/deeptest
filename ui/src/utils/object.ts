@@ -1,8 +1,8 @@
 /**
  * 浅比较两个object, json的key是否一致
- * @param obj1 
- * @param obj2 
- * @returns 
+ * @param obj1
+ * @param obj2
+ * @returns
  */
 export function equalObjectKey(obj1: Object, obj2: Object): boolean{
     const obj1Keys: string[] = Object.keys(obj1);
@@ -24,9 +24,9 @@ export function equalObjectKey(obj1: Object, obj2: Object): boolean{
 
 /**
  * 浅比较两个对象是否相等，这两个对象的值只能是数字或字符串
- * @param obj1 
- * @param obj2 
- * @returns 
+ * @param obj1
+ * @param obj2
+ * @returns
  */
 export function  equalObject(obj1: Object, obj2: Object): boolean {
     const obj1Keys: string[] = Object.keys(obj1);
@@ -42,5 +42,13 @@ export function  equalObject(obj1: Object, obj2: Object): boolean {
     }
 
     return !obj1Keys.some(key => obj1[key] != obj2[key])
-    
+
+}
+
+/**
+ * @description 通过 json 的方式实现深拷贝
+ * @param {Object} obj
+ * */
+export function cloneByJSON(obj) {
+    return JSON.parse(JSON.stringify(obj));
 }

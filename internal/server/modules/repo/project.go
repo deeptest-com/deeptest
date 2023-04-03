@@ -3,6 +3,7 @@ package repo
 import (
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
@@ -17,6 +18,8 @@ type ProjectRepo struct {
 	RoleRepo        *RoleRepo        `inject:""`
 	ProjectRoleRepo *ProjectRoleRepo `inject:""`
 	EnvironmentRepo *EnvironmentRepo `inject:""`
+	UserRepo        *UserRepo        `inject:""`
+	ServeRepo       *ServeRepo       `inject:""`
 }
 
 func NewProjectRepo() *ProjectRepo {
@@ -53,6 +56,11 @@ func (r *ProjectRepo) Paginate(req v1.ProjectReqPaginate, userId uint) (data _do
 	if err != nil {
 		logUtils.Errorf("query project error", zap.String("error:", err.Error()))
 		return
+	}
+
+	for key, project := range projects {
+		user, _ := r.UserRepo.FindById(project.AdminId)
+		projects[key].AdminName = user.Name
 	}
 
 	data.Populate(projects, count, req.Page, req.PageSize)
@@ -124,7 +132,12 @@ func (r *ProjectRepo) Create(req v1.ProjectReq, userId uint) (id uint, bizErr *_
 		return
 	}
 
-	err = r.AddProjectRootInterface(project.ID)
+	serve, err := r.AddProjectDefaultServe(project.ID, userId)
+	if err != nil {
+		logUtils.Errorf("添加默认服务错误", zap.String("错误:", err.Error()))
+		return
+	}
+	err = r.AddProjectRootInterface(serve.ID, project.ID)
 	if err != nil {
 		logUtils.Errorf("添加接口错误", zap.String("错误:", err.Error()))
 		return
@@ -258,47 +271,39 @@ func (r *ProjectRepo) AddProjectMember(projectId, userId uint, role string) (err
 	return
 }
 
-func (r *ProjectRepo) AddProjectRootInterface(projectId uint) (err error) {
-	interf := model.Interface{InterfaceBase: model.InterfaceBase{Name: "所有接口", ProjectId: projectId}}
-	err = r.DB.Create(&interf).Error
+func (r *ProjectRepo) AddProjectRootInterface(serveId, projectId uint) (err error) {
+	root := model.Category{
+		Name:      "分类",
+		Type:      serverConsts.EndpointCategory,
+		ServeId:   serveId,
+		ProjectId: projectId,
+		IsLeaf:    false,
+	}
+	err = r.DB.Create(&root).Error
 
 	return
 }
 
 func (r *ProjectRepo) AddProjectRootScenarioCategory(projectId uint) (err error) {
-	root := model.ScenarioCategory{
-		Name:      "所有场景",
+	root := model.Category{
+		Name:      "分类",
+		Type:      serverConsts.ScenarioCategory,
 		ProjectId: projectId,
 		IsLeaf:    false,
 	}
 	err = r.DB.Create(&root).Error
-
-	category := model.ScenarioCategory{
-		Name:      "分类",
-		ParentId:  root.ID,
-		ProjectId: projectId,
-		IsLeaf:    false,
-	}
-	err = r.DB.Create(&category).Error
 
 	return
 }
 
 func (r *ProjectRepo) AddProjectRootPlanCategory(projectId uint) (err error) {
-	root := model.PlanCategory{
-		Name:      "所有计划",
+	root := model.Category{
+		Name:      "分类",
+		Type:      serverConsts.PlanCategory,
 		ProjectId: projectId,
 		IsLeaf:    false,
 	}
 	err = r.DB.Create(&root).Error
-
-	category := model.PlanCategory{
-		Name:      "分类",
-		ParentId:  root.ID,
-		ProjectId: projectId,
-		IsLeaf:    false,
-	}
-	err = r.DB.Create(&category).Error
 
 	return
 }
@@ -386,6 +391,19 @@ func (r *ProjectRepo) GetProjectsAndRolesByUser(userId uint) (projectIds, roleId
 	for _, v := range roleIdsMap {
 		roleIds = append(roleIds, v)
 	}
+
+	return
+}
+
+func (r *ProjectRepo) AddProjectDefaultServe(projectId, userId uint) (serve model.Serve, err error) {
+	po := model.Serve{
+		Name:      "默认服务",
+		ProjectId: projectId,
+	}
+
+	err = r.DB.Create(&po).Error
+
+	r.ServeRepo.SetCurrServeByUser(po.ID, userId)
 
 	return
 }

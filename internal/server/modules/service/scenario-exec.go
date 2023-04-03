@@ -35,8 +35,8 @@ func (s *ScenarioExecService) LoadExecResult(scenarioId int) (result domain.Repo
 	return
 }
 
-func (s *ScenarioExecService) LoadExecData(scenarioId int) (ret agentExec.ProcessorExecObj, err error) {
-	scenario, err := s.ScenarioRepo.Get(uint(scenarioId))
+func (s *ScenarioExecService) LoadExecData(scenarioId uint) (ret agentExec.ScenarioExecObj, err error) {
+	scenario, err := s.ScenarioRepo.Get(scenarioId)
 	if err != nil {
 		return
 	}
@@ -46,15 +46,16 @@ func (s *ScenarioExecService) LoadExecData(scenarioId int) (ret agentExec.Proces
 	ret.Datapools, _ = s.DatapoolService.ListForExec(scenario.ProjectId)
 
 	ret.RootProcessor = rootProcessor
+	ret.Name = scenario.Name
 
 	return
 }
 
-func (s *ScenarioExecService) SaveReport(scenarioId int, rootResult execDomain.Result) (err error) {
+func (s *ScenarioExecService) SaveReport(scenarioId int, rootResult execDomain.ScenarioExecResult) (report model.ScenarioReport, err error) {
 	scenario, _ := s.ScenarioRepo.Get(uint(scenarioId))
 	rootResult.Name = scenario.Name
 
-	report := model.ScenarioReport{
+	report = model.ScenarioReport{
 		Name:      scenario.Name,
 		StartTime: rootResult.StartTime,
 		EndTime:   rootResult.EndTime,
@@ -76,7 +77,7 @@ func (s *ScenarioExecService) SaveReport(scenarioId int, rootResult execDomain.R
 	return
 }
 
-func (s *ScenarioExecService) countRequest(result execDomain.Result, report *model.ScenarioReport) {
+func (s *ScenarioExecService) countRequest(result execDomain.ScenarioExecResult, report *model.ScenarioReport) {
 	if result.ProcessorType == consts.ProcessorInterfaceDefault {
 		s.countInterface(result.InterfaceId, result.ResultStatus, report)
 

@@ -35,6 +35,7 @@
               <div class="no">
                 <a-checkbox :value="item.id" />
               </div>
+
               <div class="name">
                 {{ item.name }}
               </div>
@@ -52,7 +53,8 @@
 <script setup lang="ts">
 import {defineProps, ref, watch} from "vue";
 import {DeleteOutlined} from '@ant-design/icons-vue';
-import {listScenario, listServe} from "@/views/plan/service";
+import {listScenario} from "@/views/plan/service";
+import {listServe} from "@/services/serve";
 
 const props = defineProps({
   scenariosInServe: {

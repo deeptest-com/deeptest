@@ -1,12 +1,6 @@
 import {
-    computed,
     defineComponent,
-    defineEmits,
-    defineProps,
-    reactive,
-    Ref,
     ref,
-    UnwrapRef,
     onMounted,
     onUnmounted,
     watch,
@@ -21,7 +15,6 @@ import {
 import Actions from "./Actions.vue";
 import ExtraActions from "./ExtraActions.vue";
 import SettingPropsModal from './SettingPropsModal.vue';
-// import DataTypeLink from './DataTypeLink.vue';
 import {computePosition, autoPlacement, arrow, flip, size} from '@floating-ui/dom';
 
 
@@ -162,7 +155,6 @@ export default defineComponent({
                 "name": "root",
                 "depth": 1,
             };
-
             function fn(obj: any, depth) {
                 if (obj.properties && obj.type === 'object') {
                     Object.entries(obj.properties).forEach(([key, value]: any) => {
@@ -178,7 +170,6 @@ export default defineComponent({
                     })
                 }
             }
-
             fn(val, 2);
             return val;
         }

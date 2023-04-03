@@ -61,7 +61,6 @@ export const repCodeOpts = [
         label: "503",
         value: "503",
     },
-
 ]
 
 /**
@@ -133,31 +132,36 @@ export const openApiDataTypesOpts = [
 ]
 
 
-export const interfaceStatus = new Map([[0, '未知'], [1, '设计中'], [2, '开发中'], [3, '已发布'], [4, '已过时']])
+export const endpointStatus = new Map([[0, '未知'], [1, '设计中'], [2, '开发中'], [3, '已发布'], [4, '已过时']])
 
-export const serveStatus = new Map([[0, '未知'],[1, '新建'], [2, '设计中'], [3, '已发布'], [4, ' 已禁用']])
+export const serveStatus = new Map([[0, '未知'], [1, '新建'], [2, '设计中'], [3, '已发布'], [4, ' 已禁用']])
 
 
-export const interfaceStatusOpts = [
+export const serveStatusTagColor = new Map([[0, 'default'], [1, 'default'], [2, 'processing'], [3, 'success'], [4, 'error']])
+
+export const endpointStatusColor = new Map([[0, 'default'], [1, 'default'], [2, 'processing'], [3, 'success'], [4, 'error']])
+
+
+export const endpointStatusOpts = [
     {
         label: "未知",
-        value: "0",
+        value: 0,
     },
     {
         label: "设计中",
-        value: "1",
+        value: 1,
     },
     {
         label: "开发中",
-        value: "2",
+        value: 2,
     },
     {
         label: "已发布",
-        value: "3",
+        value: 3,
     },
     {
         label: "已过时",
-        value: "4",
+        value: 4,
     }
 ]
 
@@ -189,3 +193,81 @@ export const mediaTypesOpts = [
     },
 
 ]
+
+
+export const defaultPathParams = {
+    name: '',
+    type: 'string',
+    description: '',
+    required: false,
+}
+
+export const defaultQueryParams = {
+    name: '',
+    type: 'string',
+    description: '',
+    required: false,
+}
+
+export const defaultHeaderParams = {
+    name: '',
+    type: 'string',
+    description: '',
+    required: false,
+}
+
+
+export const defaultCookieParams = {
+    name: '',
+    type: 'string',
+    description: '',
+    required: false,
+}
+
+export const defaultCodeResponse = {
+    "code": "",
+    "endpointId": "",
+    "mediaType": "",
+    "description": "",
+    "schemaRefId": null,
+    "examples": "",
+    "schemaItem": {
+        "id": null,
+        "name": "",
+        "type": "object",
+        "content": "",
+        "ResponseBodyId": null
+    },
+    "headers": []
+}
+
+
+export const defaultEndpointDetail = {
+    "name": "",
+    "projectId": "",
+    "serveId": "",
+    "useId": "",
+    "method": "",
+    "description": "",
+    "operationId": "",
+    "security": "",
+    "requestBody": {
+        "id": null,
+        "endpointId": null,
+        "mediaType": "",
+        "description": "",
+        "schemaRefId": null,
+        "examples": "",
+        "schemaItem": {
+            "id": null,
+            "name": "",
+            "type": "object",
+            "content": "",
+            "requestBodyId": null
+        }
+    },
+    "responseBodies": [],
+    "params": [],
+    "headers": [],
+    "cookies": []
+}

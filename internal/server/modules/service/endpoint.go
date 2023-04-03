@@ -3,16 +3,19 @@ package service
 import (
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
+	"github.com/jinzhu/copier"
 )
 
 type EndpointService struct {
-	EndpointRepo *repo.EndpointRepo `inject:""`
-	ServeRepo    *repo.ServeRepo    `inject:""`
+	EndpointRepo          *repo.EndpointRepo          `inject:""`
+	ServeRepo             *repo.ServeRepo             `inject:""`
+	EndpointInterfaceRepo *repo.EndpointInterfaceRepo `inject:""`
 }
 
 func NewEndpointService() *EndpointService {
@@ -98,12 +101,24 @@ func (s *EndpointService) Yaml(endpoint model.Endpoint) (res interface{}) {
 	if err != nil {
 		return
 	}
-	/*
-		serveComponent,err := s.ServeRepo.GetSchemasByServeId(serve.ID)
-		if err != nil {
-			return
-		}
-	*/
+
+	serveComponent, err := s.ServeRepo.GetSchemasByServeId(serve.ID)
+	if err != nil {
+		return
+	}
+	serve.Components = serveComponent
+	serveServer, err := s.ServeRepo.ListServer(serve.ID)
+	if err != nil {
+		return
+	}
+	serve.Servers = serveServer
+
+	Securities, err := s.ServeRepo.ListSecurity(serve.ID)
+	if err != nil {
+		return
+	}
+	serve.Securities = Securities
+
 	serve2conv := openapi.NewServe2conv(serve, []model.Endpoint{endpoint})
 	res = serve2conv.ToV3()
 	return
@@ -139,5 +154,46 @@ func (s *EndpointService) AddVersion(version *model.EndpointVersion) (err error)
 	} else {
 		err = fmt.Errorf("version already exists")
 	}
+	return
+}
+
+func (s *EndpointService) GetReq(interfaceId, endpointId uint) (req v1.DebugRequest, err error) {
+	var interf model.EndpointInterface
+	if interfaceId != 0 {
+		interf, err = s.EndpointInterfaceRepo.GetDetail(interfaceId)
+	} else if endpointId != 0 {
+		interf, err = s.EndpointRepo.GetFirstMethod(endpointId)
+	} else {
+		return
+	}
+
+	if err != nil {
+		return
+	}
+
+	var endpoint model.Endpoint
+	var serve model.Serve
+
+	endpoint, err = s.EndpointRepo.Get(interf.EndpointId)
+	serve, err = s.ServeRepo.Get(endpoint.ServeId)
+	if err != nil {
+		return
+	}
+
+	Securities, err := s.ServeRepo.ListSecurity(serve.ID)
+	if err != nil {
+		return
+	}
+
+	serve.Securities = Securities
+	interfaces2debug := openapi.NewInterfaces2debug(interf, serve)
+	debugInterface := interfaces2debug.Convert()
+	//fmt.Println(debugInterface.Params, "+++++++++++")
+	copier.CopyWithOption(&req, &debugInterface, copier.Option{DeepCopy: true})
+	//req.Url = debugInterface.Url
+	//req.Params = debugInterface.Params
+	//fmt.Println(req.Params, "-----------")
+	req.UsedBy = consts.UsedByInterface
+
 	return
 }

@@ -14,19 +14,22 @@ type ServeCtrl struct {
 
 // 项目服务列表
 func (c *ServeCtrl) ListByProject(ctx iris.Context) {
+	userId := multi.GetUserId(ctx)
+
 	projectId, err := ctx.URLParamInt("currProjectId")
 	if projectId == 0 {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: "projectId"})
 		return
 	}
 
-	serves, err := c.ServeService.ListByProject(projectId)
+	serves, currServe, err := c.ServeService.ListByProject(projectId, userId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: serves})
+	ret := iris.Map{"serves": serves, "currServe": currServe}
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: ret})
 
 	return
 }
@@ -105,8 +108,11 @@ func (c *ServeCtrl) Expire(ctx iris.Context) {
 func (c *ServeCtrl) SaveVersion(ctx iris.Context) {
 	var req v1.ServeVersionReq
 	if err := ctx.ReadJSON(&req); err == nil {
-		res, _ := c.ServeService.SaveVersion(req)
-		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res})
+		if res, err := c.ServeService.SaveVersion(req); err != nil {
+			ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		} else {
+			ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res})
+		}
 	} else {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 	}
@@ -154,6 +160,16 @@ func (c *ServeCtrl) SaveSchema(ctx iris.Context) {
 	}
 }
 
+func (c *ServeCtrl) SaveSecurity(ctx iris.Context) {
+	var req v1.ServeSecurityReq
+	if err := ctx.ReadJSON(&req); err == nil {
+		res, _ := c.ServeService.SaveSecurity(req)
+		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
+	} else {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+	}
+}
+
 // ListSchema 获取版本列表
 func (c *ServeCtrl) ListSchema(ctx iris.Context) {
 	var req v1.ServeSchemaPaginate
@@ -176,9 +192,10 @@ func (c *ServeCtrl) DeleteSchema(ctx iris.Context) {
 }
 
 func (c *ServeCtrl) ListServer(ctx iris.Context) {
-	serveId := ctx.URLParamUint64("serveId")
-	res, err := c.ServeService.ListServer(uint(serveId))
-	if err == nil {
+	var req v1.ServeServer
+
+	if err := ctx.ReadJSON(&req); err == nil {
+		res, _ := c.ServeService.ListServer(req.ServeId)
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
 	} else {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
@@ -239,6 +256,45 @@ func (c *ServeCtrl) BindEndpoint(ctx iris.Context) {
 	var req v1.ServeVersionBindEndpointReq
 	if err := ctx.ReadJSON(&req); err == nil {
 		c.ServeService.BindEndpoint(req)
+		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+	} else {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
+	}
+}
+
+func (c *ServeCtrl) ChangeServe(ctx iris.Context) {
+	userId := multi.GetUserId(ctx)
+
+	req := v1.ProjectReq{}
+	err := ctx.ReadJSON(&req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	currServe, err := c.ServeService.ChangeServe(req.Id, userId)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: currServe, Msg: _domain.NoErr.Msg})
+}
+
+func (c *ServeCtrl) ListSecurity(ctx iris.Context) {
+	var req v1.ServeSecurityPaginate
+	if err := ctx.ReadJSON(&req); err == nil {
+		res, _ := c.ServeService.PaginateSecurity(req)
+		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
+	} else {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
+	}
+}
+
+func (c *ServeCtrl) DeleteSecurity(ctx iris.Context) {
+	id := ctx.URLParamUint64("id")
+	err := c.ServeService.DeleteSecurityId(uint(id))
+	if err == nil {
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 	} else {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})

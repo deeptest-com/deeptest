@@ -20,13 +20,14 @@ export default {
     'menu': '菜单',
 
     'project': '项目',
+    'project.management': '项目管理',
     'project.list': '项目列表',
     'project.edit': '项目编辑',
     'project.members': '项目成员',
     'project.invite': '邀请成员',
 
-    'interface': '接口',
-    'interfaceV2': '接口管理', // 新版 接口模块
+    'endpoint': '接口管理',
+    'interface1': '接口旧',
     'projectSetting': '项目设置', // 新版 接口模块
     'scenario': '场景',
     'scenario.edit': '场景编辑',

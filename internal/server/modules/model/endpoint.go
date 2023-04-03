@@ -5,14 +5,15 @@ type Endpoint struct {
 	Title      string              `json:"title"`
 	ProjectId  int64               `json:"projectId"`
 	ServeId    uint                `json:"serveId"`
-	ParentId   int64               `json:"parentId"`
 	Path       string              `json:"path"`
 	Version    string              `json:"version"`
 	CreateUser string              `json:"createUser"`
 	Status     int64               `json:"status"`
+	CategoryId uint                `json:"categoryId"`
 	PathParams []EndpointPathParam `gorm:"-" json:"pathParams"`
-	Interfaces []Interface         `gorm:"-" json:"interfaces"`
+	Interfaces []EndpointInterface `gorm:"-" json:"interfaces"`
 	Versions   []EndpointVersion   `gorm:"-" json:"versions"`
+	ServeName  string              `gorm:"-" json:"serveName"`
 }
 
 func (Endpoint) TableName() string {
@@ -25,6 +26,8 @@ type EndpointPathParam struct {
 	Value      string `json:"value"`
 	Type       string `json:"type"`
 	EndpointId uint   `json:"endpointId"`
+	Desc       string `json:"desc"`
+	Required   bool   `json:"required"`
 }
 
 func (EndpointPathParam) TableName() string {

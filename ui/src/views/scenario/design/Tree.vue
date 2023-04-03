@@ -86,9 +86,9 @@ import {DropEvent, TreeDragEvent} from "ant-design-vue/es/tree/Tree";
 import {CloseOutlined, FileOutlined, FolderOutlined, FolderOpenOutlined, CheckOutlined} from "@ant-design/icons-vue";
 
 import {ProcessorCategory} from "@/utils/enum";
-import {StateType} from "@/views/interface/store";
+import {StateType} from "@/views/interface1/store";
 import {expandAllKeys, expandOneKey} from "@/services/tree";
-import {StateType as InterfaceStateType} from "@/views/interface/store";
+import {StateType as InterfaceStateType} from "@/views/interface1/store";
 
 import {getExpandedKeys, setExpandedKeys} from "@/utils/cache";
 import {getContextMenuStyle} from "@/utils/dom";

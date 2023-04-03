@@ -42,7 +42,7 @@ import {message, Form, notification} from 'ant-design-vue';
 const useForm = Form.useForm;
 import {StateType} from "../store";
 import {Scenario} from "@/views/scenario/data";
-import {updateNodeName} from "@/views/interface/service";
+import {updateNodeName} from "@/views/interface1/service";
 import {get} from "@/views/scenario/service";
 
 const router = useRouter();

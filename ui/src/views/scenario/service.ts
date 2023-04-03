@@ -1,6 +1,6 @@
 import request from '@/utils/request';
 import {QueryParams} from "@/views/project/data";
-import {getEnumSelectItems} from "@/views/interface/service";
+import {getEnumSelectItems} from "@/views/interface1/service";
 import {
     ProcessorCookie, ProcessorData,
     ProcessorExtractor,
@@ -9,7 +9,7 @@ import {
     ProcessorCategory,
     ProcessorVariable, ProcessorAssertion, RequestBodyType
 } from "@/utils/enum";
-import {Interface} from "@/views/interface/data";
+import {Interface} from "@/views/interface1/data";
 
 const apiPath = 'scenarios';
 const apiPathNodes = `${apiPath}/nodes`;
@@ -142,55 +142,6 @@ export async function saveProcessorName(data: any): Promise<any> {
     return request({
         url: `/${apiPathProcessors}/updateName`,
         method: 'PUT',
-        data: data,
-    });
-}
-
-// category tree
-export async function loadCategory(): Promise<any> {
-    const params = {}
-    return request({
-        url: `/${apiPathCategoryNodes}/load`,
-        method: 'get',
-        params,
-    });
-}
-export async function getCategory(id: number): Promise<any> {
-    return request({url: `/${apiPathCategoryNodes}/${id}`});
-}
-export async function createCategory(data): Promise<any> {
-    return request({
-        url: `/${apiPathCategoryNodes}`,
-        method: 'POST',
-        data: data,
-    });
-}
-export async function updateCategory(id: number, params: any): Promise<any> {
-    return request({
-        url: `/${apiPathCategoryNodes}/${id}`,
-        method: 'PUT',
-        data: params,
-    });
-}
-export async function updateCategoryName(id: number, name: string): Promise<any> {
-    const data = {id: id, name: name}
-
-    return request({
-        url: `/${apiPathCategoryNodes}/${id}/updateName`,
-        method: 'PUT',
-        data: data,
-    });
-}
-export async function removeCategory(id: number): Promise<any> {
-    return request({
-        url: `/${apiPathCategoryNodes}/${id}`,
-        method: 'delete',
-    });
-}
-export async function moveCategory(data: any): Promise<any> {
-    return request({
-        url: `/${apiPathCategoryNodes}/move`,
-        method: 'post',
         data: data,
     });
 }

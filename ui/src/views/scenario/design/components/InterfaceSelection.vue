@@ -58,12 +58,12 @@
 <script setup lang="ts">
 import {computed, defineProps, onMounted, onUnmounted, PropType, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
-import {Interface} from "@/views/interface/data";
+import {Interface} from "@/views/interface1/data";
 import throttle from "lodash.debounce";
 import {expandAllKeys, getNodeMap} from "@/services/tree";
 import {useStore} from "vuex";
 import {CloseOutlined, FileOutlined, FolderOutlined, FolderOpenOutlined, CheckOutlined} from "@ant-design/icons-vue";
-import {StateType} from "@/views/interface/store";
+import {StateType} from "@/views/interface1/store";
 import {StateType as ProjectStateType} from "@/store/project";
 import {getExpandedKeys, setExpandedKeys} from "@/utils/cache";
 import {isInArray} from "@/utils/array";

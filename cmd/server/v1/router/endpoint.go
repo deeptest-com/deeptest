@@ -19,6 +19,7 @@ func NewEndpointModule() *EndpointModule {
 func (m *EndpointModule) Party() module.WebModule {
 	handler := func(public iris.Party) {
 		public.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
+
 		public.Post("/index", m.EndpointCtrl.Index)
 		public.Post("/save", m.EndpointCtrl.Save)
 		public.Get("/detail", m.EndpointCtrl.Detail)

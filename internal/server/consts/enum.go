@@ -33,3 +33,27 @@ const (
 func (e DropPos) Int() int {
 	return int(e)
 }
+
+type CategoryDiscriminator string
+
+const (
+	EndpointCategory CategoryDiscriminator = "endpoint"
+	ScenarioCategory CategoryDiscriminator = "scenario"
+	PlanCategory     CategoryDiscriminator = "plan"
+)
+
+func (e CategoryDiscriminator) String() string {
+	return string(e)
+}
+
+type AuthType string
+
+const (
+	ApiKey      AuthType = "apiKey"
+	BearerToken AuthType = "bearerToken"
+	BasicAuth   AuthType = "basicAuth"
+)
+
+func (e AuthType) String() string {
+	return string(e)
+}

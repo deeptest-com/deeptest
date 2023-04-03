@@ -32,7 +32,7 @@
         <Log v-if="logTreeData.logs" :logs="logTreeData.logs"></Log>
       </div>
 
-      <div v-if="result.totalRequestNum > 0" class="result">
+      <div v-if="result.startTime" class="result">
         <a-row>
           <a-col :span="4">开始时间</a-col>
           <a-col :span="4">{{ momentShort(result.startTime) }}</a-col>
@@ -96,7 +96,6 @@ const { t } = useI18n();
 const router = useRouter();
 const store = useStore<{ Scenario: ScenarioStateType, Global: GlobalStateType, Exec: ExecStatus; }>();
 const collapsed = computed<boolean>(()=> store.state.Global.collapsed);
-const execResult = computed<any>(()=> store.state.Scenario.execResult);
 
 const scenarioId = ref(+router.currentRoute.value.params.id)
 store.dispatch('Scenario/loadExecResult', scenarioId.value);
@@ -110,7 +109,7 @@ const execStart = async () => {
     scenarioId: scenarioId.value,
   }
 
-  WebSocket.sentMsg(settings.webSocketRoom, JSON.stringify({act: 'execScenario', execReq: data}))
+  WebSocket.sentMsg(settings.webSocketRoom, JSON.stringify({act: 'execScenario', scenarioExecReq: data}))
 }
 
 const execCancel = () => {
@@ -134,6 +133,7 @@ onUnmounted(() => {
   bus.off(settings.eventWebSocketMsg, OnWebSocketMsg);
 })
 
+const execResult = computed<any>(()=> store.state.Scenario.execResult);
 const result = ref({} as any)
 const logMap = ref({} as any)
 const logTreeData = ref({} as any)
@@ -143,10 +143,10 @@ const OnWebSocketMsg = (data: any) => {
   if (!data.msg) return
 
   const wsMsg = JSON.parse(data.msg) as WsMsg
-  if (wsMsg.category == 'result') {
+  if (wsMsg.category == 'result') { // update result
     result.value = wsMsg.data
     return
-  } else if (wsMsg.category != '') {
+  } else if (wsMsg.category != '') { // root
     execResult.value.progressStatus = wsMsg.category
     if (wsMsg.category === 'in_progress') result.value = {}
     return
@@ -196,11 +196,13 @@ const OnWebSocketMsg = (data: any) => {
         text-align: right;
       }
     }
+
     .logs {
       padding: 0px 12px;
     }
+
     .result {
-      padding: 5px 12px 6px 12px;
+      padding: 5px 23px 6px 23px;
       .ant-row {
         margin: 6px 0;
       }

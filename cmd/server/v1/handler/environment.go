@@ -261,14 +261,36 @@ func (c *EnvironmentCtrl) ClearShareVar(ctx iris.Context) {
 func (c *EnvironmentCtrl) Save(ctx iris.Context) {
 	var req v1.EnvironmentReq
 	if err := ctx.ReadJSON(&req); err == nil {
-		if err = c.EnvironmentService.Save(req); err == nil {
-			ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+		var id uint
+		if id, err = c.EnvironmentService.Save(req); err == nil {
+			ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: id, Msg: _domain.NoErr.Msg})
 		} else {
 			ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		}
 	} else {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 	}
+}
+
+func (c *EnvironmentCtrl) Clone(ctx iris.Context) {
+	id := ctx.URLParamIntDefault("id", 0)
+	if id != 0 {
+		if env, err := c.EnvironmentService.Clone(uint(id)); err != nil {
+			ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		} else {
+			ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: env.ID, Msg: _domain.NoErr.Msg})
+		}
+	}
+}
+
+func (c *EnvironmentCtrl) DeleteEnvironment(ctx iris.Context) {
+	id := ctx.URLParamIntDefault("id", 0)
+	if id != 0 {
+		if err := c.EnvironmentService.DeleteEnvironment(uint(id)); err != nil {
+			ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		}
+	}
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 }
 
 func (c *EnvironmentCtrl) ListAll(ctx iris.Context) {
@@ -282,7 +304,7 @@ func (c *EnvironmentCtrl) ListAll(ctx iris.Context) {
 
 func (c *EnvironmentCtrl) SaveGlobal(ctx iris.Context) {
 	var req []v1.EnvironmentVariable
-	projectId := ctx.URLParamIntDefault("projectId", 0)
+	projectId := ctx.URLParamIntDefault("currProjectId", 0)
 	if err := ctx.ReadJSON(&req); err == nil {
 		if err = c.EnvironmentService.SaveGlobal(uint(projectId), req); err == nil {
 			ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
@@ -322,6 +344,19 @@ func (c *EnvironmentCtrl) ListParams(ctx iris.Context) {
 	res, err := c.EnvironmentService.ListParams(uint(projectId))
 	if err == nil {
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res, Msg: _domain.NoErr.Msg})
+	} else {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+	}
+}
+
+func (c *EnvironmentCtrl) Order(ctx iris.Context) {
+	var req v1.EnvironmentIdsReq
+	if err := ctx.ReadJSON(&req); err == nil {
+		if err = c.EnvironmentService.SaveOrder(req); err == nil {
+			ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+		} else {
+			ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		}
 	} else {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 	}

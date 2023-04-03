@@ -8,17 +8,18 @@ import {
     save,
     remove,
 
+    loadExecResult,
+
+} from './service';
+
+import {
     loadCategory,
     getCategory,
     createCategory,
     updateCategory,
     removeCategory,
     moveCategory,
-    updateCategoryName,
-
-    loadExecResult,
-
-} from './service';
+    updateCategoryName} from "@/services/category";
 
 import {getNodeMap} from "@/services/tree";
 
@@ -223,7 +224,7 @@ const StoreModel: ModuleType = {
 
         // category tree
         async loadCategory({commit}) {
-            const response = await loadCategory();
+            const response = await loadCategory('plan');
             if (response.code != 0) return;
 
             const {data} = response;

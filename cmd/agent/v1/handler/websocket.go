@@ -28,7 +28,8 @@ type WebSocketCtrl struct {
 	Namespace         string
 	*websocket.NSConn `stateless:"true"`
 
-	ExecService *service.ScenarioService `inject:""`
+	ScenarioService *service.ScenarioService `inject:""`
+	PlanService     *service.PlanService     `inject:""`
 }
 
 func NewWebsocketCtrl() *WebSocketCtrl {
@@ -89,20 +90,25 @@ func (c *WebSocketCtrl) OnChat(wsMsg websocket.Message) (err error) {
 			}
 		}
 
-		c.ExecService.CancelAndSendMsg(req.ExecReq.ScenarioId, wsMsg)
+		c.ScenarioService.CancelAndSendMsg(req.ScenarioExecReq.ScenarioId, wsMsg)
 
 		return
 	}
 
 	if execUtils.GetRunning() && (act == consts.ExecStart) { // already running
-		execUtils.SendAlreadyRunningMsg(req.ExecReq.ScenarioId, wsMsg)
+		execUtils.SendAlreadyRunningMsg(req.ScenarioExecReq.ScenarioId, wsMsg)
 		return
 	}
 
 	if act == consts.ExecScenario {
 		ch = make(chan int, 1)
 		go func() {
-			c.ExecService.ExecScenario(&req.ExecReq, &wsMsg)
+			c.ScenarioService.ExecScenario(&req.ScenarioExecReq, &wsMsg)
+		}()
+	} else if act == consts.ExecPlan {
+		ch = make(chan int, 1)
+		go func() {
+			c.PlanService.ExecPlan(&req.PlanExecReq, &wsMsg)
 		}()
 	}
 
@@ -110,14 +116,14 @@ func (c *WebSocketCtrl) OnChat(wsMsg websocket.Message) (err error) {
 }
 
 func sendErr(err error, wsMsg *websocket.Message) {
-	root := execDomain.Result{
+	root := execDomain.ScenarioExecResult{
 		ID:      -1,
 		Name:    "执行失败",
 		Summary: fmt.Sprintf("错误：%s", err.Error()),
 	}
 	execUtils.SendExecMsg(root, wsMsg)
 
-	result := execDomain.Result{
+	result := execDomain.ScenarioExecResult{
 		ID:       -2,
 		ParentId: -1,
 		Name:     "执行失败",

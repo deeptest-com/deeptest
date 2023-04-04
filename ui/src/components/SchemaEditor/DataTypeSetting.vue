@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import {ref, defineProps, defineEmits, watch, reactive, toRaw, computed, onMounted} from 'vue';
-import {schemaSettingInfo,typeOpts} from "./config";
+import {schemaSettingInfo,typeOpts} from "./utils";
 import {cloneByJSON} from "@/utils/object";
 const props = defineProps({
   value: {

@@ -37,11 +37,10 @@
 </template>
 
 <script setup lang="ts">
-import {computed, ComputedRef, defineComponent, inject, PropType, Ref, ref, watch} from "vue";
+import {computed, inject, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
-import {StateType} from "@/views/interface1/store";
-import { ExclamationOutlined } from '@ant-design/icons-vue';
+
 import ResponseLensJson from "./Renderer/lenses/JSONLensRenderer.vue";
 import ResponseHeaders from "./Renderer/Headers.vue";
 import ResponseExtractor from "./Extractor.vue";
@@ -51,16 +50,17 @@ import ResponseLensHtml from "@/views/interface1/components/designer/response/Re
 import ResponseLensImage from "@/views/interface1/components/designer/response/Renderer/lenses/ImageLensRenderer.vue";
 import ResponseLensRaw from "@/views/interface1/components/designer/response/Renderer/lenses/RawLensRenderer.vue";
 import {UsedBy} from "@/utils/enum";
-import {StateType as ScenarioStateType} from "@/views/scenario/store";
 const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
-const store = useStore<{ Interface1: StateType, Scenario: ScenarioStateType }>();
-const responseData = computed<any>(
-    () => usedBy === UsedBy.interface ? store.state.Interface1.responseData: store.state.Scenario.responseData);
-const extractorsData = computed(
-    () => usedBy === UsedBy.interface ? store.state.Interface1.extractorsData: store.state.Scenario.extractorsData);
-const checkpointsData = computed(
-    () => usedBy === UsedBy.interface ? store.state.Interface1.checkpointsData : store.state.Scenario.checkpointsData);
+
+import {Param} from "@/views/component/debug/data";
+import {StateType as Debug} from "@/views/component/debug/store";
+const store = useStore<{  Debug: Debug }>();
+
+const debugData = computed<any>(() => store.state.Debug.debugData);
+const responseData = computed<any>(() => store.state.Debug.responseData);
+const extractorsData = computed<any>(() => store.state.Debug.extractorsData);
+const checkpointsData = computed<any>(() => store.state.Debug.checkpointsData);
 
 const title = ref(t('text'))
 

@@ -162,20 +162,20 @@ import {StateType as ScenarioStateType} from "@/views/scenario/store";
 const usedBy = inject('usedBy') as UsedBy
 const useForm = Form.useForm;
 const {t} = useI18n();
-const store = useStore<{ Interface1: StateType, Scenario: ScenarioStateType }>();
 
 const srcOptions = getEnumSelectItems(ExtractorSrc)
 const typeOptions = getEnumSelectItems(ExtractorType)
 
-const interfaceData = computed<Interface>(
-    () => usedBy === UsedBy.interface ? store.state.Interface1.interfaceData : store.state.Scenario.interfaceData);
-const responseData = computed<any>(() => store.state.Interface1.responseData);
+import {Param} from "@/views/component/debug/data";
+import {StateType as Debug} from "@/views/component/debug/store";
+const store = useStore<{  Debug: Debug }>();
 
-const extractorsData = computed(
-    () => usedBy === UsedBy.interface ? store.state.Interface1.extractorsData: store.state.Scenario.extractorsData);
+const debugData = computed<any>(() => store.state.Debug.debugData);
+const responseData = computed<any>(() => store.state.Debug.responseData);
+const extractorsData = computed(() => store.state.Debug.extractorsData);
 
-watch(interfaceData, () => {
-  console.log('watch interfaceData', interfaceData.value.id, usedBy)
+watch(debugData, () => {
+  console.log('watch debugData', debugData.value.id, usedBy)
   listExtractor()
 }, {deep: true})
 
@@ -252,8 +252,8 @@ const edit = (item) => {
 const save = () => {
   console.log('save')
   validate().then(() => {
-    model.value.interfaceId = interfaceData.value.id
-    model.value.projectId = interfaceData.value.projectId
+    model.value.interfaceId = debugData.value.id
+    model.value.projectId = debugData.value.projectId
     store.dispatch('Interface1/saveExtractor', model.value).then((result) => {
       if (result) {
         editVisible.value = false

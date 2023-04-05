@@ -40,7 +40,7 @@
 
     <ResponseExtractor
         v-if="responseExtractorVisible"
-        :interfaceId="interfaceData.id"
+        :interfaceId="debugData.id"
         :exprType="exprType"
         :expr="expr"
         :result="result"
@@ -52,29 +52,26 @@
 </template>
 
 <script setup lang="ts">
-import {computed, ComputedRef, defineComponent, inject, PropType, Ref, ref, watch} from "vue";
+import {computed, inject, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import { DownloadOutlined, CopyOutlined, ClearOutlined } from '@ant-design/icons-vue';
-import {StateType} from "@/views/interface1/store";
-import {isInArray} from "@/utils/array";
 import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
 import {MonacoOptions} from "@/utils/const";
-import {Interface, Response} from "@/views/interface1/data";
 import {formatXml} from "@/utils/dom";
-import {parseHtml, parseXml, testExpr} from "@/views/interface1/service";
+import {parseXml, testExpr} from "@/views/interface1/service";
 import {ExtractorSrc, ExtractorType, UsedBy} from "@/utils/enum";
 import ResponseExtractor from "@/components/Editor/ResponseExtractor.vue";
-import {StateType as ScenarioStateType} from "@/views/scenario/store";
 const usedBy = inject('usedBy') as UsedBy
 
 const {t} = useI18n();
 
-const store = useStore<{ Interface1: StateType, Scenario: ScenarioStateType }>();
-const interfaceData = computed<Interface>(
-    () => usedBy === UsedBy.interface ? store.state.Interface1.interfaceData : store.state.Scenario.interfaceData);
-const responseData = computed<Response>(() =>
-    usedBy === UsedBy.interface ? store.state.Interface1.responseData : store.state.Scenario.responseData);
+import {Param} from "@/views/component/debug/data";
+import {StateType as Debug} from "@/views/component/debug/store";
+const store = useStore<{  Debug: Debug }>();
+
+const debugData = computed<any>(() => store.state.Debug.debugData);
+const responseData = computed<any>(() => store.state.Debug.responseData);
 
 const editorOptions = ref(Object.assign({usedWith: 'response'}, MonacoOptions) )
 const content = ref(formatXml(responseData.value.content))
@@ -85,7 +82,6 @@ const exprType = ref('')
 const result = ref('')
 
 const responseExtractor = (data) => {
-  // console.log('responseExtractor', data)
   result.value = ''
 
   parseXml({
@@ -123,8 +119,8 @@ const responseExtractorFinish = (data) => {
   data.src = ExtractorSrc.body
   data.result = result.value
 
-  data.interfaceId = interfaceData.value.id
-  data.projectId = interfaceData.value.projectId
+  data.interfaceId = debugData.value.id
+  data.projectId = debugData.value.projectId
   data.usedBy = usedBy
   store.dispatch('Interface1/createExtractorOrUpdateResult', data).then((result) => {
     if (result) {

@@ -29,53 +29,50 @@
 </template>
 
 <script setup lang="ts">
-import {computed, ComputedRef, defineComponent, inject, Ref, ref} from "vue";
+import {computed, inject, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
-import {StateType} from "@/views/interface1/store";
 import {Methods, UsedBy} from "@/utils/enum";
-
-import {Interface} from "@/views/interface1/data";
-import {StateType as ScenarioStateType} from "@/views/scenario/store";
 
 import RequestParameters from "./config/Parameters.vue";
 import RequestBody from "./config/Body.vue";
 import RequestHeaders from "./config/Headers.vue";
 import Authorization from "./config/Authorization.vue";
 import PreRequestScript from "./config/PreRequestScript.vue";
-import ValidationScript from "./config/ValidationScript.vue";
+import {StateType as Debug} from "@/views/component/debug/store";
 
-    const usedBy = inject('usedBy') as UsedBy
-    const {t} = useI18n();
-    const store = useStore<{ Interface1: StateType, Scenario: ScenarioStateType }>();
-    const interfaceData = computed<Interface>(
-        () => usedBy === UsedBy.interface ? store.state.Interface1.interfaceData : store.state.Scenario.interfaceData);
-    const activeKey = ref('1');
-    const methods = Methods;
+const usedBy = inject('usedBy') as UsedBy
+const {t} = useI18n();
 
-    const selectMethod = (e) => {
-      console.log('selectMethod', e)
-    };
-    const sendRequest = (e) => {
-      console.log('sendRequest', e)
-    };
-    const clearAll = (e) => {
-      console.log('clearAll', e)
-    };
-    const saveName = (e) => {
-      console.log('saveName', e)
-      e.preventDefault();
-    };
-    const copyLink = (e) => {
-      console.log('copyLink', e)
-    };
-    const saveAs = (e) => {
-      console.log('saveAs', e)
-    };
-    const none = (e) => {
-      console.log('none', e)
-      e.preventDefault()
-    };
+const store = useStore<{ Debug: Debug }>();
+const debugData = computed<any>(() => store.state.Debug.debugData);
+
+const activeKey = ref('1');
+const methods = Methods;
+
+const selectMethod = (e) => {
+  console.log('selectMethod', e)
+};
+const sendRequest = (e) => {
+  console.log('sendRequest', e)
+};
+const clearAll = (e) => {
+  console.log('clearAll', e)
+};
+const saveName = (e) => {
+  console.log('saveName', e)
+  e.preventDefault();
+};
+const copyLink = (e) => {
+  console.log('copyLink', e)
+};
+const saveAs = (e) => {
+  console.log('saveAs', e)
+};
+const none = (e) => {
+  console.log('none', e)
+  e.preventDefault()
+};
 
 </script>
 
@@ -85,6 +82,7 @@ import ValidationScript from "./config/ValidationScript.vue";
 
   .ant-tabs-line {
     height: 100%;
+
     .ant-tabs-top-content {
       height: calc(100% - 61px);
     }
@@ -95,6 +93,7 @@ import ValidationScript from "./config/ValidationScript.vue";
 <style lang="less" scoped>
 .config-main {
   padding: 3px;
+
   .ant-tabs-tabpane-active {
     height: 100%;
   }

@@ -10,7 +10,7 @@
           <a-select
               ref="bodyType"
               :options="bodyTypes"
-              v-model:value="interfaceData.bodyType"
+              v-model:value="debugData.bodyType"
               size="small"
               :dropdownMatchSelectWidth="false"
               :bordered="false"
@@ -43,17 +43,17 @@
     </div>
 
     <div class="body">
-      <div v-if="interfaceData.bodyType === 'multipart/form-data'">
+      <div v-if="debugData.bodyType === 'multipart/form-data'">
         <BodyFormData></BodyFormData>
       </div>
-      <div v-if="interfaceData.bodyType === 'application/x-www-form-urlencoded'">
+      <div v-if="debugData.bodyType === 'application/x-www-form-urlencoded'">
         <BodyFormUrlencoded></BodyFormUrlencoded>
       </div>
 
       <div v-else>
         <MonacoEditor
             class="editor"
-            v-model:value="interfaceData.body"
+            v-model:value="debugData.body"
             :language="codeLang"
             theme="vs"
             :options="editorOptions"
@@ -73,7 +73,6 @@ import {useStore} from "vuex";
 import { QuestionCircleOutlined, DeleteOutlined, ClearOutlined, ImportOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons-vue';
 import {StateType} from "@/views/interface1/store";
 import {MonacoOptions} from "@/utils/const";
-import {Interface} from "@/views/interface1/data";
 import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
 import {getCodeLangByType} from "@/views/interface1/service";
@@ -82,12 +81,14 @@ import BodyFormUrlencoded from "./Body-FormUrlencoded.vue";
 import BodyFormData from "./Body-FormData.vue";
 import {getRequestBodyTypes} from "@/views/scenario/service";
 import {UsedBy} from "@/utils/enum";
-import {StateType as ScenarioStateType} from "@/views/scenario/store";
 const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
-const store = useStore<{ Interface1: StateType, Scenario: ScenarioStateType }>();
-const interfaceData = computed<Interface>(
-    () => usedBy === UsedBy.interface ? store.state.Interface1.interfaceData : store.state.Scenario.interfaceData);
+
+import {StateType as Debug} from "@/views/component/debug/store";
+const store = useStore<{  Debug: Debug }>();
+
+const debugData = computed<any>(() => store.state.Debug.debugData);
+
 const codeLang = computed(() => {
   return getCodeLang()
 })
@@ -96,12 +97,12 @@ const editorOptions = ref(Object.assign({usedWith: 'request'}, MonacoOptions))
 const bodyTypes = ref(getRequestBodyTypes())
 
 const getCodeLang = () => {
-  console.log('interfaceData.value.bodyType', interfaceData.value.bodyType)
-  return getCodeLangByType(interfaceData.value.bodyType)
+  console.log('debugData.value.bodyType', debugData.value.bodyType)
+  return getCodeLangByType(debugData.value.bodyType)
 }
 
 const editorChange = (newScriptCode) => {
-  interfaceData.value.body = newScriptCode;
+  debugData.value.body = newScriptCode;
 }
 
 const replaceRequest = (data) => {

@@ -7,7 +7,7 @@
         </a-col>
 
         <a-col flex="1">
-          <a-input v-model:value="interfaceData.apiKey.key" class="dp-bg-input-transparent" />
+          <a-input v-model:value="debugData.apiKey.key" class="dp-bg-input-transparent" />
         </a-col>
       </a-row>
       <a-row class="param">
@@ -16,14 +16,14 @@
         </a-col>
 
         <a-col flex="1">
-          <a-input v-model:value="interfaceData.apiKey.value" class="dp-bg-input-transparent" />
+          <a-input v-model:value="debugData.apiKey.value" class="dp-bg-input-transparent" />
         </a-col>
       </a-row>
       <a-row class="param">
         <a-col flex="80px">传递方式</a-col>
         <a-col flex="1">
           <a-select
-              v-model:value="interfaceData.apiKey.transferMode"
+              v-model:value="debugData.apiKey.transferMode"
               size="small"
               :dropdownMatchSelectWidth="false"
               :bordered="false"
@@ -41,33 +41,21 @@
   </div>
 </template>
 
-<script lang="ts">
-import {computed, defineComponent, inject, ref} from "vue";
+<script setup lang="ts">
+import {computed, inject} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
-import {ArrowRightOutlined, DeleteOutlined, PlusOutlined, QuestionCircleOutlined} from '@ant-design/icons-vue';
-import {StateType} from "@/views/interface1/store";
-import {Interface} from "@/views/interface1/data";
+import {ArrowRightOutlined} from '@ant-design/icons-vue';
 import {UsedBy} from "@/utils/enum";
-import {StateType as ScenarioStateType} from "@/views/scenario/store";
 
-export default defineComponent({
-  name: 'RequestAuthorApiKey',
-  components: {
-    ArrowRightOutlined,
-  },
-  setup(props) {
-    const usedBy = inject('usedBy') as UsedBy
-    const {t} = useI18n();
-    const store = useStore<{ Interface1: StateType, Scenario: ScenarioStateType }>();
-    const interfaceData = computed<Interface>(
-        () => usedBy === UsedBy.interface ? store.state.Interface1.interfaceData : store.state.Scenario.interfaceData);
+const usedBy = inject('usedBy') as UsedBy
+const {t} = useI18n();
 
-    return {
-      interfaceData,
-    }
-  }
-})
+import {Param} from "@/views/component/debug/data";
+import {StateType as Debug} from "@/views/component/debug/store";
+const store = useStore<{  Debug: Debug }>();
+
+const debugData = computed<any>(() => store.state.Debug.debugData);
 
 </script>
 

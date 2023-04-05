@@ -72,17 +72,18 @@ import {computed, inject, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import { QuestionCircleOutlined, DeleteOutlined, PlusOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons-vue';
-import {StateType} from "@/views/interface1/store";
-import {Param, Interface} from "@/views/interface1/data";
+
 import {getContextMenuStyle} from "@/views/interface1/service";
 import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
 import ContextMenu from "@/components/Editor/ContextMenu.vue"
-import {StateType as Debug} from "@/store/debug";
 
 import {UsedBy} from "@/utils/enum";
 const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
+
+import {Param} from "@/views/component/debug/data";
+import {StateType as Debug} from "@/views/component/debug/store";
 const store = useStore<{  Debug: Debug }>();
 
 const debugData = computed<any>(() => store.state.Debug.debugData);

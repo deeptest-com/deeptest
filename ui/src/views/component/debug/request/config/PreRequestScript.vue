@@ -31,7 +31,7 @@
       <div class="codes">
         <MonacoEditor
             class="editor"
-            v-model:value="interfaceData.preRequestScript"
+            v-model:value="debugData.preRequestScript"
             language="typescript"
             theme="vs"
             :options="editorOptions"
@@ -58,26 +58,23 @@
 </template>
 
 <script setup lang="ts">
-import {computed, ComputedRef, defineComponent, inject, PropType, Ref, ref} from "vue";
+import {computed, inject, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
-import { QuestionCircleOutlined, DeleteOutlined, ClearOutlined } from '@ant-design/icons-vue';
-import {StateType} from "@/views/interface1/store";
-import ALink from "@/components/ALink/index.vue";
-import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
-import {MonacoOptions, NotificationKeyCommon} from "@/utils/const";
-import {Interface} from "@/views/interface1/data";
+import {MonacoOptions} from "@/utils/const";
 import {UsedBy} from "@/utils/enum";
-import {StateType as ScenarioStateType} from "@/views/scenario/store";
-import {inviteUser} from "@/views/user/info/service";
-import {notification} from "ant-design-vue";
-import {getSnippet} from "@/views/interface1/service";
+
+import { QuestionCircleOutlined, DeleteOutlined, ClearOutlined } from '@ant-design/icons-vue';
+import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
 
 const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
-const store = useStore<{ Interface1: StateType, Scenario: ScenarioStateType }>();
-const interfaceData = computed<Interface>(
-    () => usedBy === UsedBy.interface ? store.state.Interface.interfaceData : store.state.Scenario.interfaceData);
+
+import {Param} from "@/views/component/debug/data";
+import {StateType as Debug} from "@/views/component/debug/store";
+const store = useStore<{  Debug: Debug }>();
+
+const debugData = computed<any>(() => store.state.Debug.debugData);
 
 const editorOptions = ref(Object.assign({
     usedWith: 'request',
@@ -91,11 +88,11 @@ const editorOptions = ref(Object.assign({
 ))
 
 const addSnippet = (name) => {
-  store.dispatch('Interface1/addSnippet', name)
+  store.dispatch('Debug/addSnippet', name)
 }
 
 const editorChange = (newScriptCode) => {
-  interfaceData.value.preRequestScript = newScriptCode;
+  debugData.value.preRequestScript = newScriptCode;
 }
 
 </script>

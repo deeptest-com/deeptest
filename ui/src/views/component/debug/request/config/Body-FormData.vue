@@ -2,7 +2,7 @@
   <div class="formdata-main">
     <div class="dp-param-grid">
       <div class="params">
-        <a-row v-for="(item, idx) in interfaceData.bodyFormData" :key="idx" type="flex" class="param">
+        <a-row v-for="(item, idx) in debugData.bodyFormData" :key="idx" type="flex" class="param">
           <a-col flex="1">
             <a-input v-model:value="item.name" @change="onFormDataChange(idx)" class="dp-bg-input-transparent" />
           </a-col>
@@ -62,51 +62,51 @@ import {useStore} from "vuex";
 import {
   CheckCircleOutlined, CloseCircleOutlined,  UploadOutlined, DeleteOutlined, PlusOutlined
 } from '@ant-design/icons-vue';
-import {StateType} from "@/views/interface1/store";
-import {Param, Interface, BodyFormDataItem} from "@/views/interface1/data";
 import {notification} from "ant-design-vue";
 import {NotificationKeyCommon} from "@/utils/const";
 import settings from "@/config/settings";
 import {UsedBy} from "@/utils/enum";
-import {StateType as ScenarioStateType} from "@/views/scenario/store";
 const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
-const store = useStore<{ Interface1: StateType, Scenario: ScenarioStateType }>();
-const interfaceData = computed<Interface>(
-    () => usedBy === UsedBy.interface ? store.state.Interface1.interfaceData : store.state.Scenario.interfaceData);
+
+import {BodyFormDataItem} from "@/views/component/debug/data";
+import {StateType as Debug} from "@/views/component/debug/store";
+const store = useStore<{  Debug: Debug }>();
+
+const debugData = computed<any>(() => store.state.Debug.debugData);
 
 let uploadRef = ref()
 const isElectron = ref(!!window.require)
 
 const onFormDataChange = (idx) => {
   console.log('onFormDataChange', idx)
-  if (interfaceData.value.bodyFormData.length <= idx + 1
-      && (interfaceData.value.bodyFormData[idx].name !== '' || interfaceData.value.bodyFormData[idx].value !== '')) {
-    interfaceData.value.bodyFormData.push({type: 'text'} as BodyFormDataItem)
+  if (debugData.value.bodyFormData.length <= idx + 1
+      && (debugData.value.bodyFormData[idx].name !== '' || debugData.value.bodyFormData[idx].value !== '')) {
+    debugData.value.bodyFormData.push({type: 'text'} as BodyFormDataItem)
   }
 }
 
 const add = () => {
   console.log('add')
-  interfaceData.value.bodyFormData.push({type: 'text'} as BodyFormDataItem)
+  debugData.value.bodyFormData.push({type: 'text'} as BodyFormDataItem)
 }
 const removeAll = () => {
-  console.log('removeAll', interfaceData.value.bodyFormData)
-  interfaceData.value.bodyFormData = [{type: 'text'} as BodyFormDataItem]
+  console.log('removeAll', debugData.value.bodyFormData)
+  debugData.value.bodyFormData = [{type: 'text'} as BodyFormDataItem]
 }
 
 const disable = (idx) => {
   console.log('enable', idx)
-  interfaceData.value.bodyFormData[idx].disabled = !interfaceData.value.bodyFormData[idx].disabled
+  debugData.value.bodyFormData[idx].disabled = !debugData.value.bodyFormData[idx].disabled
 }
 const remove = (idx) => {
   console.log('remove')
-  interfaceData.value.bodyFormData.splice(idx, 1)
+  debugData.value.bodyFormData.splice(idx, 1)
   add()
 }
 const insert = (idx) => {
   console.log('insert')
-  interfaceData.value.bodyFormData.splice(idx + 1, 0, {type: 'text'} as BodyFormDataItem)
+  debugData.value.bodyFormData.splice(idx + 1, 0, {type: 'text'} as BodyFormDataItem)
 }
 
 const selectedItemIndex = ref(0)
@@ -117,7 +117,7 @@ if (isElectron.value && !ipcRenderer) {
 
   ipcRenderer.on(settings.electronMsgReplay, (event, data) => {
     console.log('from electron: ', data)
-    interfaceData.value.bodyFormData[selectedItemIndex.value].value = data.filepath
+    debugData.value.bodyFormData[selectedItemIndex.value].value = data.filepath
   })
 }
 

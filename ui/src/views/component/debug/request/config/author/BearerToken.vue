@@ -7,7 +7,7 @@
         </a-col>
 
         <a-col flex="1">
-          <a-input v-model:value="interfaceData.bearerToken.token" class="dp-bg-input-transparent" />
+          <a-input v-model:value="debugData.bearerToken.token" class="dp-bg-input-transparent" />
         </a-col>
       </a-row>
     </div>
@@ -18,33 +18,21 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import {computed, defineComponent, inject, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
-import {ArrowRightOutlined, DeleteOutlined, PlusOutlined, QuestionCircleOutlined} from '@ant-design/icons-vue';
-import {StateType} from "@/views/interface1/store";
-import {Interface} from "@/views/interface1/data";
+import {ArrowRightOutlined} from '@ant-design/icons-vue';
 import {UsedBy} from "@/utils/enum";
-import {StateType as ScenarioStateType} from "@/views/scenario/store";
 
-export default defineComponent({
-  name: 'RequestAuthorBearerToken',
-  components: {
-    ArrowRightOutlined,
-  },
-  setup(props) {
-    const usedBy = inject('usedBy') as UsedBy
-    const {t} = useI18n();
-    const store = useStore<{ Interface1: StateType, Scenario: ScenarioStateType }>();
-    const interfaceData = computed<Interface>(
-        () => usedBy === UsedBy.interface ? store.state.Interface1.interfaceData : store.state.Scenario.interfaceData);
+import {Param} from "@/views/component/debug/data";
+import {StateType as Debug} from "@/views/component/debug/store";
+const store = useStore<{  Debug: Debug }>();
 
-    return {
-      interfaceData,
-    }
-  }
-})
+const debugData = computed<any>(() => store.state.Debug.debugData);
+
+const usedBy = inject('usedBy') as UsedBy
+const {t} = useI18n();
 
 </script>
 

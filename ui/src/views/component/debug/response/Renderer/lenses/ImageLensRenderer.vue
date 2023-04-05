@@ -37,7 +37,7 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import {computed, ComputedRef, defineComponent, inject, PropType, Ref, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
@@ -50,31 +50,17 @@ import {Interface, Response} from "@/views/interface1/data";
 import {UsedBy} from "@/utils/enum";
 import {StateType as ScenarioStateType} from "@/views/scenario/store";
 
-export default defineComponent({
-  name: 'ResponseLensImage',
-  components: {
-    MonacoEditor,
-    CopyOutlined, DownloadOutlined, ClearOutlined,
-  },
+const {t} = useI18n();
+const usedBy = inject('usedBy') as UsedBy
 
-  computed: {
-  },
+import {Param} from "@/views/component/debug/data";
+import {StateType as Debug} from "@/views/component/debug/store";
+const store = useStore<{  Debug: Debug }>();
 
-  setup(props) {
-    const {t} = useI18n();
-    const usedBy = inject('usedBy') as UsedBy
-    const store = useStore<{ Interface1: StateType, Scenario: ScenarioStateType }>();
-    const responseData = computed<Response>(() =>
-        usedBy === UsedBy.interface ? store.state.Interface1.responseData : store.state.Scenario.responseData);
+const debugData = computed<any>(() => store.state.Debug.debugData);
+const responseData = computed<any>(() => store.state.Debug.responseData);
 
-    const editorOptions = ref(Object.assign({usedWith: 'response'}, MonacoOptions) )
-
-    return {
-      responseData,
-      editorOptions,
-    }
-  }
-})
+const editorOptions = ref(Object.assign({usedWith: 'response'}, MonacoOptions) )
 
 </script>
 

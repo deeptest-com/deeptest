@@ -23,7 +23,7 @@
         </a-row>
       </div>
       <div class="params">
-        <a-row v-for="(item, idx) in interfaceData.headers" :key="idx" type="flex" class="param">
+        <a-row v-for="(item, idx) in debugData.headers" :key="idx" type="flex" class="param">
           <a-col flex="1">
             <a-input v-model:value="item.name" @change="onParamChange(idx)" class="dp-bg-input-transparent" />
           </a-col>
@@ -72,49 +72,50 @@ import {computed, ComputedRef, defineComponent, inject, PropType, Ref, ref} from
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import { QuestionCircleOutlined, DeleteOutlined, PlusOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons-vue';
-import {StateType} from "@/views/interface1/store";
-import {Header, Interface} from "@/views/interface1/data";
+
 import {getContextMenuStyle} from "@/views/interface1/service";
 import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
 import ContextMenu from "@/components/Editor/ContextMenu.vue"
 import {UsedBy} from "@/utils/enum";
-import {StateType as ScenarioStateType} from "@/views/scenario/store";
 const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
-const store = useStore<{ Interface1: StateType, Scenario: ScenarioStateType }>();
-const interfaceData = computed<Interface>(
-    () => usedBy === UsedBy.interface ? store.state.Interface1.interfaceData : store.state.Scenario.interfaceData);
+
+import {Header} from "@/views/component/debug/data";
+import {StateType as Debug} from "@/views/component/debug/store";
+const store = useStore<{  Debug: Debug }>();
+
+const debugData = computed<any>(() => store.state.Debug.debugData);
 
 const onParamChange = (idx) => {
   console.log('onParamChange', idx)
-  if (interfaceData.value.headers.length <= idx + 1
-      && (interfaceData.value.headers[idx].name !== '' || interfaceData.value.headers[idx].value !== '')) {
-    interfaceData.value.headers.push({} as Header)
+  if (debugData.value.headers.length <= idx + 1
+      && (debugData.value.headers[idx].name !== '' || debugData.value.headers[idx].value !== '')) {
+    debugData.value.headers.push({} as Header)
   }
 };
 
 const add = () => {
   console.log('add')
-  interfaceData.value.params.push({} as Header)
+  debugData.value.params.push({} as Header)
 }
 const removeAll = () => {
-  console.log('removeAll', interfaceData.value.headers)
-  interfaceData.value.headers = [{} as Header]
+  console.log('removeAll', debugData.value.headers)
+  debugData.value.headers = [{} as Header]
 }
 
 const disable = (idx) => {
   console.log('enable', idx)
-  interfaceData.value.headers[idx].disabled = !interfaceData.value.headers[idx].disabled
+  debugData.value.headers[idx].disabled = !debugData.value.headers[idx].disabled
 }
 const remove = (idx) => {
   console.log('remove')
-  interfaceData.value.headers.splice(idx, 1)
+  debugData.value.headers.splice(idx, 1)
   add()
 }
 const insert = (idx) => {
   console.log('insert')
-  interfaceData.value.headers.splice(idx+1, 0, {} as Header)
+  debugData.value.headers.splice(idx+1, 0, {} as Header)
 }
 
 const showContextMenu = ref(false)

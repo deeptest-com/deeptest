@@ -8,13 +8,13 @@
           </a-menu>
         </template>
         <a-button class="dp-bg-light">
-          <span class="curr-method">{{ interfaceData.method }}</span>
+          <span class="curr-method">{{ debugData.method }}</span>
           <DownOutlined />
         </a-button>
       </a-dropdown>
     </div>
     <div class="url">
-      <a-input v-model:value="interfaceData.url" v-contextmenu="onContextMenuShow" class="dp-bg-light" />
+      <a-input v-model:value="debugData.url" v-contextmenu="onContextMenuShow" class="dp-bg-light" />
     </div>
     <div class="send">
       <a-dropdown-button type="primary" trigger="click" @click="sendRequest">
@@ -40,7 +40,7 @@
             <a-menu-item @click.prevent="none" key="copyLink" class="edit-name">
               <div class="dp-edit-interface-name">
                 <div class="left">
-                  <a-input @click.stop v-model:value="interfaceData.name" />
+                  <a-input @click.stop v-model:value="debugData.name" />
                 </div>
                 <div class="right">
                   <CheckOutlined @click.stop="saveName" class="save-button" />
@@ -78,15 +78,20 @@ import { notification, message } from 'ant-design-vue';
 import { DownOutlined, UndoOutlined, SaveOutlined, LinkOutlined, CheckOutlined, EditOutlined } from '@ant-design/icons-vue';
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
-import {StateType} from "@/views/interface1/store";
 import {Methods, UsedBy} from "@/utils/enum";
 import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
-import {Interface} from "@/views/interface1/data";
-import {getContextMenuStyle, prepareDataForRequest} from "@/views/interface1/service";
+import {getContextMenuStyle, prepareDataForRequest} from "@/views/component/debug/service";
 import {NotificationKeyCommon} from "@/utils/const"
 import ContextMenu from "@/components/Editor/ContextMenu.vue"
-import {StateType as ScenarioStateType} from "@/views/scenario/store";
+
+import {Param} from "@/views/component/debug/data";
+import {StateType as Debug} from "@/views/component/debug/store";
+const store = useStore<{  Debug: Debug }>();
+
+const debugData = computed<any>(() => store.state.Debug.debugData);
+
+const methods = Methods;
 
 const props = defineProps({
   onSend: {
@@ -100,26 +105,21 @@ const props = defineProps({
 })
 const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
-const store = useStore<{ Interface1: StateType, Scenario: ScenarioStateType }>();
-const interfaceData = computed<Interface>(
-    () => usedBy === UsedBy.interface ? store.state.Interface1.interfaceData : store.state.Scenario.interfaceData);
-
-const methods = Methods;
 
 const selectMethod = (val) => {
   console.log('selectMethod', val.key)
-  interfaceData.value.method = val.key
+  debugData.value.method = val.key
 };
 
 const sendRequest = (e) => {
-  console.log('sendRequest', interfaceData.value)
+  console.log('sendRequest', debugData.value)
   if (validateInfo()) {
     props.onSend()
   }
 };
 
 const save = (e) => {
-  let data = JSON.parse(JSON.stringify(interfaceData.value))
+  let data = JSON.parse(JSON.stringify(debugData.value))
   console.log('save', data)
   data = prepareDataForRequest(data)
   console.log('save', data)
@@ -150,10 +150,10 @@ const none = (e) => {
 
 const validateInfo = () => {
   let msg = ''
-  if (!interfaceData.value.url) {
+  if (!debugData.value.url) {
     msg = '请求地址不能为空'
   }
-  // else if (!regxUrl.test(interfaceData.value.url)) {
+  // else if (!regxUrl.test(debugData.value.url)) {
   //   msg = '请求地址格式错误'
   // }
 

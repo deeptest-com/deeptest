@@ -13,7 +13,7 @@
     </div>
 
     <div class="items">
-      <a-row v-for="(item, idx) in responseData.headers" :key="idx" type="flex" class="item">
+      <a-row v-for="(item, idx) in debugData.headers" :key="idx" type="flex" class="item">
         <a-col flex="1">
           <a-input v-model:value="item.name" class="dp-bg-input-transparent" />
         </a-col>
@@ -26,30 +26,19 @@
 </template>
 
 <script setup lang="ts">
-import {computed, ComputedRef, defineComponent, inject, PropType, Ref, ref} from "vue";
+import {computed, inject} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
-import {
-  QuestionCircleOutlined,
-  DeleteOutlined,
-  PlusOutlined,
-  CheckCircleOutlined,
-  CloseCircleOutlined,
-  CopyOutlined
-} from '@ant-design/icons-vue';
-import {StateType} from "@/views/interface1/store";
-import {Interface, Response} from "@/views/interface1/data";
+import {CopyOutlined} from '@ant-design/icons-vue';
 import {UsedBy} from "@/utils/enum";
-import {StateType as ScenarioStateType} from "@/views/scenario/store";
 const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
-const store = useStore<{ Interface1: StateType, Scenario: ScenarioStateType }>();
-const responseData = computed<Response>(
-    () =>  usedBy === UsedBy.interface ? store.state.Interface1.responseData : store.state.Scenario.responseData);
 
-const doSomething = (e) => {
-  console.log('doSomething', e)
-};
+import {Param} from "@/views/component/debug/data";
+import {StateType as Debug} from "@/views/component/debug/store";
+const store = useStore<{  Debug: Debug }>();
+
+const debugData = computed<any>(() => store.state.Debug.debugData);
 
 </script>
 

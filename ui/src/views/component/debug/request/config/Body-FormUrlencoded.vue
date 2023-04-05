@@ -2,7 +2,7 @@
   <div class="formurlencoded-main">
     <div class="dp-param-grid">
       <div class="params">
-        <a-row v-for="(item, idx) in interfaceData.bodyFormUrlencoded" :key="idx" type="flex" class="param">
+        <a-row v-for="(item, idx) in debugData.bodyFormUrlencoded" :key="idx" type="flex" class="param">
           <a-col flex="1">
             <a-input v-model:value="item.name" @change="onFormUrlencoded(idx)" class="dp-bg-input-transparent" />
           </a-col>
@@ -40,46 +40,47 @@
 import {computed, ComputedRef, defineComponent, inject, PropType, Ref, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
-import { QuestionCircleOutlined, DeleteOutlined, PlusOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons-vue';
-import {StateType} from "@/views/interface1/store";
-import {Param, Interface, BodyFormUrlEncodedItem} from "@/views/interface1/data";
+import { DeleteOutlined, PlusOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons-vue';
+
 import {UsedBy} from "@/utils/enum";
-import {StateType as ScenarioStateType} from "@/views/scenario/store";
 const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
-const store = useStore<{ Interface1: StateType, Scenario: ScenarioStateType }>();
-const interfaceData = computed<Interface>(
-    () => usedBy === UsedBy.interface ? store.state.Interface1.interfaceData : store.state.Scenario.interfaceData);
+
+import {Param, BodyFormUrlEncodedItem} from "@/views/component/debug/data";
+import {StateType as Debug} from "@/views/component/debug/store";
+const store = useStore<{  Debug: Debug }>();
+
+const debugData = computed<any>(() => store.state.Debug.debugData);
 
 const onFormUrlencoded = (idx) => {
   console.log('onFormUrlencoded', idx)
-  if (interfaceData.value.bodyFormUrlencoded.length <= idx + 1
-        && (interfaceData.value.bodyFormUrlencoded[idx].name !== '' || interfaceData.value.bodyFormUrlencoded[idx].value !== '')) {
-    interfaceData.value.bodyFormUrlencoded.push({} as BodyFormUrlEncodedItem)
+  if (debugData.value.bodyFormUrlencoded.length <= idx + 1
+        && (debugData.value.bodyFormUrlencoded[idx].name !== '' || debugData.value.bodyFormUrlencoded[idx].value !== '')) {
+    debugData.value.bodyFormUrlencoded.push({} as BodyFormUrlEncodedItem)
   }
 }
 
 const add = () => {
   console.log('add')
-  interfaceData.value.bodyFormUrlencoded.push({} as BodyFormUrlEncodedItem)
+  debugData.value.bodyFormUrlencoded.push({} as BodyFormUrlEncodedItem)
 }
 const removeAll = () => {
-  console.log('removeAll', interfaceData.value.bodyFormUrlencoded)
-  interfaceData.value.bodyFormUrlencoded = [{} as BodyFormUrlEncodedItem]
+  console.log('removeAll', debugData.value.bodyFormUrlencoded)
+  debugData.value.bodyFormUrlencoded = [{} as BodyFormUrlEncodedItem]
 }
 
 const disable = (idx) => {
   console.log('enable', idx)
-  interfaceData.value.bodyFormUrlencoded[idx].disabled = !interfaceData.value.bodyFormUrlencoded[idx].disabled
+  debugData.value.bodyFormUrlencoded[idx].disabled = !debugData.value.bodyFormUrlencoded[idx].disabled
 }
 const remove = (idx) => {
   console.log('remove')
-  interfaceData.value.bodyFormUrlencoded.splice(idx, 1)
+  debugData.value.bodyFormUrlencoded.splice(idx, 1)
   add()
 }
 const insert = (idx) => {
   console.log('insert')
-  interfaceData.value.bodyFormUrlencoded.splice(idx+1, 0, {} as Param)
+  debugData.value.bodyFormUrlencoded.splice(idx+1, 0, {} as Param)
 }
 
 </script>

@@ -27,10 +27,9 @@ import { CloseOutlined } from '@ant-design/icons-vue';
 import {StateType} from "@/views/interface1/store";
 import {Interface, Response} from "@/views/interface1/data";
 import {UsedBy} from "@/utils/enum";
+
 const usedBy = inject('usedBy') as UsedBy
-    const {t} = useI18n();
-    // const store = useStore<{ Interface1: StateType }>();
-    // const responseData = computed<Response>(() => store.state.Interface1.responseData);
+const {t} = useI18n();
 
 </script>
 

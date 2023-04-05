@@ -16,19 +16,16 @@ import ResponseMeta from './Meta.vue';
 import ResponseRenderer from './Renderer.vue';
 
 const useForm = Form.useForm;
+const {t} = useI18n();
 
-    const {t} = useI18n();
-    // const store = useStore<{ Interface1: StateType }>();
-    // const responseData = computed<any>(() => store.state.Interface1.responseData);
+const sendRequest = (e) => {
+  console.log('sendRequest')
+};
 
-    const sendRequest = (e) => {
-      console.log('sendRequest')
-    };
-
-    onMounted(() => {
-      console.log('onMounted')
-      resizeHeight('content', 'top-panel', 'splitter-v', 'bottom-panel', 200, 200)
-    })
+onMounted(() => {
+  console.log('onMounted')
+  resizeHeight('content', 'top-panel', 'splitter-v', 'bottom-panel', 200, 200)
+})
 
 </script>
 

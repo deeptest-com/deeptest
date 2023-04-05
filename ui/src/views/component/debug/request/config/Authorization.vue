@@ -9,7 +9,7 @@
 
           <a-select
               ref="authorizationType"
-              v-model:value="interfaceData.authorizationType"
+              v-model:value="debugData.authorizationType"
               :options="authorizationTypes"
               size="small"
               :dropdownMatchSelectWidth="false"
@@ -36,24 +36,22 @@
       </a-row>
     </div>
 
-    <template v-if="!interfaceData.authorizationType" class="none">
+    <template v-if="!debugData.authorizationType" class="none">
       <EmptyPage desc="无授权信息"></EmptyPage>
     </template>
 
-    <RequestAuthorBasic v-if="interfaceData.authorizationType === 'basicAuth'"></RequestAuthorBasic>
-    <RequestAuthorBearerToken v-if="interfaceData.authorizationType === 'bearerToken'"></RequestAuthorBearerToken>
-    <RequestAuthorApiKey v-if="interfaceData.authorizationType === 'apiKey'"></RequestAuthorApiKey>
-<!--    <RequestAuthorOAuth2 v-if="interfaceData.authorizationType === 'oAuth2'"></RequestAuthorOAuth2>-->
+    <RequestAuthorBasic v-if="debugData.authorizationType === 'basicAuth'"></RequestAuthorBasic>
+    <RequestAuthorBearerToken v-if="debugData.authorizationType === 'bearerToken'"></RequestAuthorBearerToken>
+    <RequestAuthorApiKey v-if="debugData.authorizationType === 'apiKey'"></RequestAuthorApiKey>
+<!--    <RequestAuthorOAuth2 v-if="debugData.authorizationType === 'oAuth2'"></RequestAuthorOAuth2>-->
   </div>
 </template>
 
 <script setup lang="ts">
-import {computed, ComputedRef, defineComponent, inject, PropType, Ref, ref} from "vue";
+import {computed, inject} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import { QuestionCircleOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons-vue';
-import {StateType} from "@/views/interface1/store";
-import {Interface} from "@/views/interface1/data";
 
 import EmptyPage from "@/components/others/empty.vue";
 import RequestAuthorBasic from "./author/BasicAuthor.vue"
@@ -62,20 +60,22 @@ import RequestAuthorOAuth2 from "./author/OAuth2.vue"
 import RequestAuthorApiKey from "./author/ApiKey.vue"
 import {AuthorizationTypes, UsedBy} from "@/utils/enum";
 import {getEnumSelectItems} from "@/views/interface1/service";
-import {StateType as ScenarioStateType} from "@/views/scenario/store";
 
-    const usedBy = inject('usedBy') as UsedBy
-    const {t} = useI18n();
-    const store = useStore<{ Interface1: StateType, Scenario: ScenarioStateType }>();
-    const interfaceData = computed<Interface>(
-        () => usedBy === UsedBy.interface ? store.state.Interface1.interfaceData : store.state.Scenario.interfaceData);
+const usedBy = inject('usedBy') as UsedBy
+const {t} = useI18n();
 
-    const authorizationTypes = getEnumSelectItems(AuthorizationTypes)
+import {Param} from "@/views/component/debug/data";
+import {StateType as Debug} from "@/views/component/debug/store";
+const store = useStore<{  Debug: Debug }>();
 
-    const onParamChange = (idx) => {
-      console.log('onParamChange', idx)
+const debugData = computed<any>(() => store.state.Debug.debugData);
 
-    };
+const authorizationTypes = getEnumSelectItems(AuthorizationTypes)
+
+const onParamChange = (idx) => {
+  console.log('onParamChange', idx)
+
+};
 
 </script>
 

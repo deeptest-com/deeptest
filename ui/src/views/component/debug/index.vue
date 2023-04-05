@@ -44,7 +44,7 @@ import {useStore} from "vuex";
 
 import {requestMethodOpts} from '@/config/constant';
 import {StateType as ProjectGlobal} from "@/store/project";
-import {StateType as Debug} from "@/store/debug";
+import {StateType as Debug} from "@/views/component/debug/store";
 import {StateType as Endpoint} from "../../endpoint/store";
 import InterfaceRequest from './request/Index.vue';
 import InterfaceResponse from './response/Index.vue';

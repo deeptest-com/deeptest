@@ -14,40 +14,17 @@
   </div>
 </template>
 
-<script lang="ts">
-import {computed, ComputedRef, defineComponent, PropType, Ref, ref} from "vue";
+<script setup lang="ts">
+import {computed} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
-import {StateType} from "@/views/interface1/store";
-import {UsedBy} from "@/utils/enum";
-import {StateType as ScenarioStateType} from "@/views/scenario/store";
+const {t} = useI18n();
 
-interface ResponseMetaSetupData {
-  responseData: ComputedRef;
+import {Param} from "@/views/component/debug/data";
+import {StateType as Debug} from "@/views/component/debug/store";
+const store = useStore<{  Debug: Debug }>();
 
-  doSomething: (e) => void;
-}
-
-export default defineComponent({
-  name: 'ResponseMeta',
-  components: {
-  },
-  setup(props): ResponseMetaSetupData {
-    const {t} = useI18n();
-    const store = useStore<{ Interface1: StateType; Scenario: ScenarioStateType }>();
-    const responseData = computed<any>(
-        () => UsedBy.interface ? store.state.Interface1.responseData : store.state.Scenario.responseData);
-
-    const doSomething = (e) => {
-      console.log('doSomething', e)
-    };
-
-    return {
-      responseData,
-      doSomething,
-    }
-  }
-})
+const responseData = computed<any>(() => store.state.Debug.responseData);
 
 </script>
 

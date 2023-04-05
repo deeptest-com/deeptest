@@ -10,7 +10,7 @@
           <a-dropdown class="dropdown-access-token-button"
                       overlayClassName="dropdown-access-token-menu">
             <span>
-              <span class="text">{{ accessTokenMap[interfaceData.oauth20.accessToken] }}</span>
+              <span class="text">{{ accessTokenMap[debugData.oauth20.accessToken] }}</span>
               <span class="action"><DownOutlined /></span>
             </span>
             <template #overlay>
@@ -28,7 +28,7 @@
       <a-row class="param">
         <a-col flex="160px"></a-col>
         <a-col flex="1">
-          <a-input v-model:value="interfaceData.oauth20.accessToken" class="dp-bg-input-transparent" />
+          <a-input v-model:value="debugData.oauth20.accessToken" class="dp-bg-input-transparent" />
         </a-col>
       </a-row>
 
@@ -37,7 +37,7 @@
           <span class="label">Header Prefix</span>
         </a-col>
         <a-col flex="1">
-          <a-input v-model:value="interfaceData.oauth20.headerPrefix" class="dp-bg-input-transparent" />
+          <a-input v-model:value="debugData.oauth20.headerPrefix" class="dp-bg-input-transparent" />
         </a-col>
       </a-row>
 
@@ -56,7 +56,7 @@
           <span class="label">Token Name</span>
         </a-col>
         <a-col flex="1">
-          <a-input v-model:value="interfaceData.oauth20.name" class="dp-bg-input-transparent" />
+          <a-input v-model:value="debugData.oauth20.name" class="dp-bg-input-transparent" />
         </a-col>
       </a-row>
 
@@ -66,7 +66,7 @@
         </a-col>
         <a-col flex="1">
           <a-select
-              v-model:value="interfaceData.oauth20.grantType"
+              v-model:value="debugData.oauth20.grantType"
               :options="oauth2GrantTypes"
               size="small"
               :bordered="false"
@@ -81,7 +81,7 @@
           <span class="label">Callback URL</span>
         </a-col>
         <a-col flex="1">
-          <a-input v-model:value="interfaceData.oauth20.callbackUrl" class="dp-bg-input-transparent" />
+          <a-input v-model:value="debugData.oauth20.callbackUrl" class="dp-bg-input-transparent" />
         </a-col>
       </a-row>
 
@@ -90,7 +90,7 @@
           <span class="label">Authentication URL</span>
         </a-col>
         <a-col flex="1">
-          <a-input v-model:value="interfaceData.oauth20.authURL" class="dp-bg-input-transparent" />
+          <a-input v-model:value="debugData.oauth20.authURL" class="dp-bg-input-transparent" />
         </a-col>
       </a-row>
       <a-row class="param">
@@ -98,7 +98,7 @@
           <span class="label">Access Token URL</span>
         </a-col>
         <a-col flex="1">
-          <a-input v-model:value="interfaceData.oauth20.accessTokenURL" class="dp-bg-input-transparent" />
+          <a-input v-model:value="debugData.oauth20.accessTokenURL" class="dp-bg-input-transparent" />
         </a-col>
       </a-row>
 
@@ -107,7 +107,7 @@
           <span class="label">Client ID</span>
         </a-col>
         <a-col flex="1">
-          <a-input v-model:value="interfaceData.oauth20.clientID" class="dp-bg-input-transparent" />
+          <a-input v-model:value="debugData.oauth20.clientID" class="dp-bg-input-transparent" />
         </a-col>
       </a-row>
       <a-row class="param">
@@ -115,7 +115,7 @@
           <span class="label">Client Secret</span>
         </a-col>
         <a-col flex="1">
-          <a-input v-model:value="interfaceData.oauth20.clientSecret" class="dp-bg-input-transparent" />
+          <a-input v-model:value="debugData.oauth20.clientSecret" class="dp-bg-input-transparent" />
         </a-col>
       </a-row>
 
@@ -124,7 +124,7 @@
           <span class="label">Scope</span>
         </a-col>
         <a-col flex="1">
-          <a-input v-model:value="interfaceData.oauth20.scope" class="dp-bg-input-transparent" />
+          <a-input v-model:value="debugData.oauth20.scope" class="dp-bg-input-transparent" />
         </a-col>
       </a-row>
 
@@ -133,7 +133,7 @@
           <span class="label">State</span>
         </a-col>
         <a-col flex="1">
-          <a-input v-model:value="interfaceData.oauth20.state" class="dp-bg-input-transparent" />
+          <a-input v-model:value="debugData.oauth20.state" class="dp-bg-input-transparent" />
         </a-col>
       </a-row>
 
@@ -143,7 +143,7 @@
         </a-col>
         <a-col flex="1">
           <a-select
-              v-model:value="interfaceData.oauth20.clientAuthentication"
+              v-model:value="debugData.oauth20.clientAuthentication"
               :options="oauth2ClientAuthWays"
               size="small"
               :bordered="false"
@@ -166,29 +166,30 @@ import {computed, defineComponent, inject, onBeforeUnmount, onMounted, ref} from
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import { DownOutlined, ArrowRightOutlined, DeleteOutlined } from '@ant-design/icons-vue';
-import {StateType} from "@/views/interface1/store";
-import {Interface} from "@/views/interface1/data";
 import {genOAuth2AccessToken, getEnumSelectItems, listOAuth2Token, removeOAuth2Token} from "@/views/interface1/service";
-import {AuthorizationTypes, OAuth2ClientAuthenticationWay, OAuth2GrantTypes, UsedBy} from "@/utils/enum";
+import {OAuth2ClientAuthenticationWay, OAuth2GrantTypes, UsedBy} from "@/utils/enum";
 import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
 import {WsMsg} from "@/types/data";
-import {StateType as ProjectStateType} from "@/store/project";
-import {StateType as ScenarioStateType} from "@/views/scenario/store";
 
 const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
-const store = useStore<{ Interface1: StateType, Scenario: ScenarioStateType, ProjectGlobal: ProjectStateType }>();
+
+import {Param} from "@/views/component/debug/data";
+import {StateType as Debug} from "@/views/component/debug/store";
+import {StateType as ProjectStateType} from "@/store/project";
+
+const store = useStore<{  Debug: Debug, ProjectGlobal: ProjectStateType }>();
+
+const debugData = computed<any>(() => store.state.Debug.debugData);
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
-const interfaceData = computed<Interface>(
-    () => usedBy === UsedBy.interface ? store.state.Interface1.interfaceData : store.state.Scenario.interfaceData);
 
 const oauth2GrantTypes = getEnumSelectItems(OAuth2GrantTypes)
 const oauth2ClientAuthWays = getEnumSelectItems(OAuth2ClientAuthenticationWay)
 
 const selectAccessToken = (e) => {
   console.log('selectAccessToken', e.key)
-  interfaceData.value.oauth20.accessToken = e.key
+  debugData.value.oauth20.accessToken = e.key
 }
 
 const removeToken = (id) => {
@@ -219,9 +220,9 @@ const listToken = () => {
 listToken()
 
 const generateToken = () => {
-  console.log('generateToken', interfaceData.value.oauth20)
+  console.log('generateToken', debugData.value.oauth20)
 
-  genOAuth2AccessToken(interfaceData.value.oauth20).then((result) => {
+  genOAuth2AccessToken(debugData.value.oauth20).then((result) => {
     console.log(result)
     if (result.code === 0) {
       window.open(result.data.url, '_blank');
@@ -245,12 +246,10 @@ const OnWebSocketMsg = (data: any) => {
   const jsn = JSON.parse(data.msg) as WsMsg
   console.log(jsn)
   if (jsn.token) {
-    interfaceData.value.oauth20.accessToken = jsn.token
+    debugData.value.oauth20.accessToken = jsn.token
     if (jsn.tokenType === 'bearer') {
-      interfaceData.value.oauth20.headerPrefix = 'Bearer'
+      debugData.value.oauth20.headerPrefix = 'Bearer'
     }
-
-
   }
 }
 

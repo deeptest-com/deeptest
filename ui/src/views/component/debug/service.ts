@@ -5,7 +5,7 @@ import {isInArray} from "@/utils/array";
 import {UsedBy} from "@/utils/enum";
 import {getToken} from "@/utils/localToken";
 
-const apiPath = 'interfaces';
+const apiPath = 'debugs';
 const apiSpec = 'spec';
 const apiInvocation = 'invocations';
 const apiAuth = 'auth';
@@ -19,22 +19,16 @@ const apiCheckpoint = 'checkpoints'
 
 const apiParser = 'parser'
 
+// debug
+export async function loadData(data): Promise<any> {
+    return request({
+        url: `/${apiPath}/loadData`,
+        method: 'POST',
+        data,
+    });
+}
+
 // interface
-export async function saveInterface(interf: Interface): Promise<any> {
-    return request({
-        url: `/${apiPath}/saveInterface`,
-        method: 'post',
-        data: interf,
-    });
-}
-
-export async function load(): Promise<any> {
-    return request({
-        url: `/${apiPath}`,
-        method: 'get',
-    });
-}
-
 export async function get(id: number): Promise<any> {
     return request({url: `/${apiPath}/${id}`});
 }
@@ -47,38 +41,6 @@ export async function getLastInvocationResp(id: number): Promise<any> {
     });
 }
 
-export async function create(data): Promise<any> {
-    return request({
-        url: `/${apiPath}`,
-        method: 'POST',
-        data: data,
-    });
-}
-
-export async function update(id: number, params: any): Promise<any> {
-    return request({
-        url: `/${apiPath}/${id}`,
-        method: 'PUT',
-        data: params,
-    });
-}
-
-export async function updateNodeName(id: number, name: string): Promise<any> {
-    const data = {id: id, name: name}
-    return request({
-        url: `/${apiPath}/updateName`,
-        method: 'PUT',
-        data: data,
-    });
-}
-
-export async function remove(id: number): Promise<any> {
-    return request({
-        url: `/${apiPath}/${id}`,
-        method: 'delete',
-    });
-}
-
 export async function parseSpecInLocalAgent(data, targetId): Promise<any> {
     data.targetId = targetId
     data.serverUrl = process.env.VUE_APP_API_SERVER // used by agent to request server
@@ -88,14 +50,6 @@ export async function parseSpecInLocalAgent(data, targetId): Promise<any> {
         url: `/${apiSpec}/parseSpec`,
         method: 'POST',
         params: {targetId: targetId},
-        data: data,
-    });
-}
-
-export async function move(data: any): Promise<any> {
-    return request({
-        url: `/${apiPath}/move`,
-        method: 'post',
         data: data,
     });
 }

@@ -144,20 +144,21 @@ import {StateType as ScenarioStateType} from "@/views/scenario/store";
 const useForm = Form.useForm;
 const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
-const store = useStore<{ Interface1: StateType, Scenario: ScenarioStateType }>();
+
+import {Param} from "@/views/component/debug/data";
+import {StateType as Debug} from "@/views/component/debug/store";
+const store = useStore<{  Debug: Debug }>();
+
+const debugData = computed<any>(() => store.state.Debug.debugData);
+const checkpointsData = computed(() => store.state.Debug.checkpointsData);
 
 const types = getEnumSelectItems(CheckpointType)
 const operators = getEnumSelectItems(ComparisonOperator)
 const operatorsForString = getCompareOptsForString()
 const operatorsForCode = getCompareOptsForRespCode()
 
-const interfaceData = computed<Interface>(
-    () => usedBy === UsedBy.interface ? store.state.Interface1.interfaceData : store.state.Scenario.interfaceData);
-const checkpointsData = computed(
-    () => usedBy === UsedBy.interface ? store.state.Interface1.checkpointsData: store.state.Scenario.checkpointsData);
-
-watch(interfaceData, () => {
-  console.log('watch interfaceData')
+watch(debugData, () => {
+  console.log('watch debugData')
   listCheckPoint()
 }, {deep: true})
 
@@ -226,7 +227,7 @@ const edit = (item) => {
 const save = () => {
   console.log('save')
   validate().then(() => {
-    model.value.interfaceId = interfaceData.value.id
+    model.value.interfaceId = debugData.value.id
     store.dispatch('Interface1/saveCheckpoint', model.value).then((result) => {
       if (result) {
         editVisible.value = false
@@ -284,7 +285,7 @@ const loadExtractorVariable = () => {
   if (model.value.type === CheckpointType.extractor) {
     rules.extractorVariable = [extractorVariableRequired]
 
-    listExtractorVariable(interfaceData.value.id).then((jsn) => {
+    listExtractorVariable(debugData.value.id).then((jsn) => {
       variables.value = jsn.data
     })
   } else {

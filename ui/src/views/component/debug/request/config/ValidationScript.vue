@@ -31,7 +31,7 @@
       <div class="codes">
         <MonacoEditor
             class="editor"
-            :value="interfaceData.validationScript"
+            :value="debugData.validationScript"
             language="javascript"
             theme="vs"
             :options="editorOptions"
@@ -49,43 +49,32 @@
   </div>
 </template>
 
-<script lang="ts">
-import {computed, ComputedRef, defineComponent, inject, PropType, Ref, ref} from "vue";
+<script setup lang="ts">
+import {computed, defineComponent, inject, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import { QuestionCircleOutlined, DeleteOutlined, ClearOutlined } from '@ant-design/icons-vue';
-import {StateType} from "@/views/interface1/store";
+
+import {MonacoOptions} from "@/utils/const";
 import ALink from "@/components/ALink/index.vue";
 import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
-import {MonacoOptions} from "@/utils/const";
-import {Interface} from "@/views/interface1/data";
 import {UsedBy} from "@/utils/enum";
-import {StateType as ScenarioStateType} from "@/views/scenario/store";
 
-export default defineComponent({
-  name: 'RequestValidationScript',
-  components: {
-    ALink,
-    QuestionCircleOutlined, DeleteOutlined, ClearOutlined, MonacoEditor,
-  },
-  setup(props) {
-    const usedBy = inject('usedBy') as UsedBy
-    const {t} = useI18n();
-    const store = useStore<{ Interface1: StateType, Scenario: ScenarioStateType }>();
-    const interfaceData = computed<Interface>(
-        () => usedBy === UsedBy.interface ? store.state.Interface1.interfaceData : store.state.Scenario.interfaceData);
-    const editorOptions = ref(MonacoOptions)
+import {Param} from "@/views/component/debug/data";
+import {StateType as Debug} from "@/views/component/debug/store";
 
-    function onJsonChange (value) {
-      console.log('value:', value)
-    }
+const usedBy = inject('usedBy') as UsedBy
+const {t} = useI18n();
 
-    return {
-      interfaceData,
-      editorOptions,
-    }
-  }
-})
+const store = useStore<{  Debug: Debug }>();
+
+const debugData = computed<any>(() => store.state.Debug.debugData);
+
+const editorOptions = ref(MonacoOptions)
+
+const onJsonChange = (value) => {
+  console.log('value:', value)
+}
 
 </script>
 

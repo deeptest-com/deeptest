@@ -157,7 +157,7 @@ func (s *EndpointService) AddVersion(version *model.EndpointVersion) (err error)
 	return
 }
 
-func (s *EndpointService) GetReq(interfaceId, endpointId uint) (req v1.DebugRequest, err error) {
+func (s *EndpointService) GenerateReq(interfaceId, endpointId uint) (req v1.DebugRequest, err error) {
 	var interf model.EndpointInterface
 
 	if interfaceId != 0 {

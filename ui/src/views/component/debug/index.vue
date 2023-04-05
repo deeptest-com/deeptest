@@ -15,13 +15,13 @@
 
     <div id="debug-form">
       <div id="top-panel">
-        <InterfaceRequest v-if="debugData.id"></InterfaceRequest>
+        <InterfaceRequest v-if="debugData.interfaceId"></InterfaceRequest>
       </div>
 
-      <div id="design-splitter-v" :hidden="!debugData.id"></div>
+      <div id="design-splitter-v" :hidden="!debugData.interfaceId"></div>
 
       <div id="bottom-panel">
-        <InterfaceResponse v-if="debugData.id"></InterfaceResponse>
+        <InterfaceResponse v-if="debugData.interfaceId"></InterfaceResponse>
       </div>
 
       <RequestVariable/>
@@ -112,6 +112,7 @@ const resize = () => {
 
   #debug-form {
     flex: 1;
+    padding: 5px;
 
     flex-direction: column;
     position: relative;

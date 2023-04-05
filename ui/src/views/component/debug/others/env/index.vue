@@ -172,7 +172,7 @@
     <EnvEdit
         v-if="envEditVisible"
         :modelId="modelId"
-        :interfaceId="interfaceData.id"
+        :interfaceId="debugData.id"
         :onFinish="envEditFinish"
         :onCancel="envEditCancel"
     />
@@ -206,17 +206,17 @@ import {StateType as ScenarioStateType} from "@/views/scenario/store";
 const usedBy = inject('usedBy') as UsedBy
 
 const {t} = useI18n();
-const store = useStore<{ Interface1: InterfaceStateType, Scenario: ScenarioStateType,  ProjectGlobal: ProjectStateType, Environment: EnvironmentStateType }>();
-const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
-const interfaceData = computed<Interface>(
-    () => usedBy === UsedBy.interface ? store.state.Interface1.interfaceData : store.state.Scenario.interfaceData);
 
+import {Param} from "@/views/component/debug/data";
+import {StateType as Debug} from "@/views/component/debug/store";
+const store = useStore<{  Debug: Debug, ProjectGlobal: ProjectStateType, Environment: EnvironmentStateType }>();
+
+const debugData = computed<any>(() => store.state.Debug.debugData);
 const environmentsData = computed<any[]>(() => store.state.Environment.environmentsData);
 const environmentData = computed<any>(() => store.state.Environment.environmentData);
+const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 
-const validExtractorVariablesData = computed(
-    () => usedBy === UsedBy.interface ? store.state.Interface1.validExtractorVariablesData :
-        store.state.Scenario.validExtractorVariablesData);
+const validExtractorVariablesData = computed(() => store.state.Debug.validExtractorVariablesData);
 
 store.dispatch('Environment/listEnvironment')
 if (currProject.value.id)

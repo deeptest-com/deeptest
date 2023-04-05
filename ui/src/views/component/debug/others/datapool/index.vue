@@ -79,9 +79,9 @@ import {UsedBy} from "@/utils/enum";
 const usedBy = inject('usedBy') as UsedBy
 
 const {t} = useI18n();
+
 const store = useStore<{ ProjectGlobal: ProjectStateType, Datapool: DatapoolStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
-
 const datapoolsData = computed<any[]>(() => store.state.Datapool.datapoolsData);
 
 if (currProject.value.id)

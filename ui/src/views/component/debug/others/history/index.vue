@@ -24,7 +24,7 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import {computed, defineComponent, inject} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
@@ -34,57 +34,31 @@ import {Interface} from "@/views/interface1/data";
 import {UsedBy} from "@/utils/enum";
 import {StateType as ScenarioStateType} from "@/views/scenario/store";
 
-export default defineComponent({
-  name: 'RequestHistory',
-  components: {
-    DeleteOutlined,
-  },
-
-  computed: {
-  },
-
-  setup(props) {
     const usedBy = inject('usedBy') as UsedBy
     const {t} = useI18n();
 
-    const store = useStore<{ Interface1: StateType, Scenario: ScenarioStateType }>();
-    const interfaceData = computed<Interface>(
-        () => usedBy === UsedBy.interface ? store.state.Interface1.interfaceData : store.state.Scenario.interfaceData);
-    const invocationsData = computed<any[]>(() =>
-        usedBy === UsedBy.interface ? store.state.Interface1.invocationsData : store.state.Scenario.invocationsData);
+import {Param} from "@/views/component/debug/data";
+import {StateType as Debug} from "@/views/component/debug/store";
+const store = useStore<{  Debug: Debug }>();
 
-    const getRequestAsInterface = (id) => {
-      console.log('getRequestAsInterface', id)
-      usedBy === UsedBy.interface ? store.dispatch('Interface1/getInvocationAsInterface', id) :
-          store.dispatch('Scenario/getInvocationAsInterface', id)
-    }
+const debugData = computed<any>(() => store.state.Debug.debugData);
+const invocationsData = computed<any[]>(() => store.state.Debug.invocationsData);
 
-    const removeHistory = (id) => {
-      console.log('removeHistory', id)
-      usedBy === UsedBy.interface ? store.dispatch('Interface1/removeInvocation', {id: id, interfaceId: interfaceData.value.id}) :
-          store.dispatch('Scenario/removeInvocation', {id: id, interfaceId: interfaceData.value.id})
-    }
+const getRequestAsInterface = (id) => {store.dispatch('Debug/getInvocationAsInterface', id)}
 
-    const mouseOver = (event) => {
-      // console.log('mouseOver', event)
-      event.currentTarget.querySelector(".link").style.display = 'block'
-    }
-     const mouseLeave = (event) => {
-       // console.log('mouseLeave', event);
-       event.currentTarget.querySelector(".link").style.display = 'none'
-    }
+const removeHistory = (id) => {
+  console.log('removeHistory', id)
+  store.dispatch('Debug/removeInvocation', {id: id, interfaceId: debugData.value.id})
+}
 
-    return {
-      interfaceData,
-      invocationsData,
-
-      getRequestAsInterface,
-      removeHistory,
-      mouseOver,
-      mouseLeave
-    }
-  }
-})
+const mouseOver = (event) => {
+  // console.log('mouseOver', event)
+  event.currentTarget.querySelector(".link").style.display = 'block'
+}
+ const mouseLeave = (event) => {
+   // console.log('mouseLeave', event);
+   event.currentTarget.querySelector(".link").style.display = 'none'
+}
 
 </script>
 

@@ -31,12 +31,12 @@
 </template>
 
 <script lang="ts">
-import {computed, ComputedRef, defineComponent, onMounted, PropType, reactive, ref, Ref} from "vue";
-import {message, Form} from 'ant-design-vue';
+import {defineComponent, onMounted, PropType, reactive} from "vue";
+import {Form} from 'ant-design-vue';
 import {useI18n} from "vue-i18n";
 import {getEnvironment, saveEnvironment} from "@/services/environment";
 import {useStore} from "vuex";
-import {StateType as InterfaceStateType} from "@/views/interface1/store";
+import {StateType as Debug} from "@/views/component/debug/store";
 import {StateType as EnvironmentStateType} from "@/store/environment";
 const useForm = Form.useForm;
 
@@ -66,7 +66,7 @@ export default defineComponent({
   setup(props) {
     const { t } = useI18n();
 
-    const store = useStore<{ Interface1: InterfaceStateType, Environment: EnvironmentStateType }>();
+    const store = useStore<{  Debug: Debug, Environment: EnvironmentStateType }>();
 
     const rulesRef = reactive({
       name: [

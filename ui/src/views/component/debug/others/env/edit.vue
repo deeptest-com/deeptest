@@ -32,8 +32,10 @@ import {Form} from 'ant-design-vue';
 import {useI18n} from "vue-i18n";
 import {getEnvironment} from "@/services/environment";
 import {useStore} from "vuex";
-import {StateType as InterfaceStateType} from "@/views/interface1/store";
+import {StateType as Debug} from "@/views/component/debug/store";
 import {StateType as EnvironmentStateType} from "@/store/environment";
+
+const store = useStore<{  Debug: Debug, Environment: EnvironmentStateType }>();
 
 const useForm = Form.useForm;
 
@@ -58,7 +60,6 @@ const props = defineProps({
 })
 
 const {t} = useI18n();
-const store = useStore<{ Interface1: InterfaceStateType, Environment: EnvironmentStateType }>();
 
 const rulesRef = reactive({
   name: [

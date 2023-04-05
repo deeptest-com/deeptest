@@ -50,14 +50,16 @@ import {getDatapool} from "@/services/datapool";
 import {useStore} from "vuex";
 import { UploadOutlined} from '@ant-design/icons-vue';
 
-import {StateType as InterfaceStateType} from "@/views/interface1/store";
-import {StateType as DatapoolStateType} from "@/store/environment";
 import settings from "@/config/settings";
 import {NotificationKeyCommon} from "@/utils/const";
 import {getServerUrl} from "@/utils/request";
 import {getToken} from "@/utils/localToken";
 
 import HandsonTable from "@/components/sheet/handsontable.vue";
+
+import {StateType as Debug} from "@/views/component/debug/store";
+import {StateType as DatapoolStateType} from "@/store/environment";
+const store = useStore<{ Debug: Debug, Datapool: DatapoolStateType }>();
 
 const useForm = Form.useForm;
 
@@ -78,7 +80,6 @@ const props = defineProps({
 })
 
 const {t} = useI18n();
-const store = useStore<{ Interface1: InterfaceStateType, Datapool: DatapoolStateType }>();
 
 const rulesRef = reactive({
   name: [

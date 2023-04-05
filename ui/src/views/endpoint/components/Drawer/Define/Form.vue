@@ -387,7 +387,7 @@ import {
 import {PlusOutlined, DeleteOutlined} from '@ant-design/icons-vue';
 import Field from './Field.vue'
 import {Endpoint} from "@/views/endpoint/data";
-import {StateType as Debug} from "@/store/debug";
+import {StateType as Debug} from "@/views/component/debug/store";
 import SchemaEditor from '@/components/SchemaEditor/index.vue';
 import {cloneByJSON} from "@/utils/object";
 
@@ -395,7 +395,7 @@ const store = useStore<{ Endpoint, Debug, ProjectGlobal, User }>();
 const endpointDetail: any = computed<Endpoint>(() => store.state.Endpoint.endpointDetail);
 const interfaceMethodToObjMap = computed<any>(() => store.state.Endpoint.interfaceMethodToObjMap);
 
-const currInterface = computed<any>(() => store.state.Debug.currInterface);
+const currInterface = computed<any>(() => store.state.Debug?.currInterface);
 
 const currentUser: any = computed<Endpoint>(() => store.state.User.currentUser);
 const serveServers: any = computed<Endpoint>(() => store.state.Endpoint.serveServers);

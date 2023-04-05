@@ -119,7 +119,7 @@ const initState: StateType = {
 
 const StoreModel: ModuleType = {
     namespaced: true,
-    name: 'Interface1',
+    name: 'Debug',
     state: {
         ...initState
     },

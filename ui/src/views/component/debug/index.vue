@@ -1,5 +1,5 @@
 <template>
-  <div id="debug-main">
+  <div class="debug-main">
     <div class="debug-methods">
       <a-radio-group @change="changeMethod" v-model:value="selectedMethod" button-style="solid">
         <template v-for="method in requestMethodOpts" :key="method.value">
@@ -27,11 +27,11 @@
       <RequestVariable/>
     </div>
 
-    <div>{{currEndpointId}}</div>
+<!--    <div>{{currEndpointId}}</div>
     <hr>
     <div>{{currInterface}}</div>
     <hr>
-    <div>{{debugData}}</div>
+    <div>{{debugData}}</div>-->
 
   </div>
 </template>
@@ -51,7 +51,6 @@ import InterfaceResponse from './response/Index.vue';
 import RequestVariable from '@/components/Editor/RequestVariable.vue';
 
 import {UsedBy} from "@/utils/enum";
-
 const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
 const store = useStore<{  Debug: Debug, ProjectGlobal: ProjectGlobal, Endpoint: Endpoint }>();
@@ -120,6 +119,7 @@ const resize = () => {
 
     #top-panel {
       height: 50%;
+      min-height: 200px;
       width: 100%;
       padding: 0;
     }

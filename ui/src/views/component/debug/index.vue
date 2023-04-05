@@ -126,6 +126,7 @@ const resize = () => {
 
     #bottom-panel {
       height: 50%;
+      min-height: 100px;
       width: 100%;
       padding: 4px;
       overflow: auto;

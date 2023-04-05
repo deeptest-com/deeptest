@@ -24,9 +24,9 @@ type DebugService struct {
 }
 
 func (s *DebugService) LoadData(req v1.DebugRequest) (ret v1.DebugRequest, err error) {
-	isInterfaceHasDebug, err := s.DebugRepo.IsInterfaceHasDebug(req.InterfaceId)
+	isInterfaceHasDebugRecord, err := s.DebugRepo.IsInterfaceHasDebug(req.InterfaceId)
 
-	if !isInterfaceHasDebug {
+	if !isInterfaceHasDebugRecord {
 		req, err = s.EndpointService.GetReq(req.InterfaceId, req.EndpointId)
 	} else {
 		req, err = s.GetLastReq(int(req.InterfaceId))

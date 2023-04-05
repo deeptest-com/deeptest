@@ -19,13 +19,16 @@ func NewInterfaces2debug(inter model.EndpointInterface, serve model.Serve) *inte
 
 func (i *interfaces2debug) Convert() (debugInterface *model.DebugInterface) {
 	debugInterface = new(model.DebugInterface)
+
 	copier.CopyWithOption(debugInterface, &i.Inter, copier.Option{DeepCopy: true})
+
 	debugInterface.ID = 0
 	debugInterface.BodyFormData = i.BodyFormData()
 	debugInterface.BodyFormUrlencoded = i.BodyFormUrlencoded()
 	debugInterface.Body = i.Body()
 	debugInterface.BodyType = i.BodyType()
 	debugInterface.ApiKey, debugInterface.OAuth20, debugInterface.BearerToken, debugInterface.BasicAuth = i.security()
+
 	return
 }
 

@@ -159,6 +159,7 @@ func (s *EndpointService) AddVersion(version *model.EndpointVersion) (err error)
 
 func (s *EndpointService) GetReq(interfaceId, endpointId uint) (req v1.DebugRequest, err error) {
 	var interf model.EndpointInterface
+
 	if interfaceId != 0 {
 		interf, err = s.EndpointInterfaceRepo.GetDetail(interfaceId)
 	} else if endpointId != 0 {
@@ -188,11 +189,10 @@ func (s *EndpointService) GetReq(interfaceId, endpointId uint) (req v1.DebugRequ
 	serve.Securities = Securities
 	interfaces2debug := openapi.NewInterfaces2debug(interf, serve)
 	debugInterface := interfaces2debug.Convert()
-	//fmt.Println(debugInterface.Params, "+++++++++++")
+
 	copier.CopyWithOption(&req, &debugInterface, copier.Option{DeepCopy: true})
-	//req.Url = debugInterface.Url
-	//req.Params = debugInterface.Params
-	//fmt.Println(req.Params, "-----------")
+
+	req.InterfaceId = interfaceId
 	req.UsedBy = consts.UsedByInterface
 
 	return

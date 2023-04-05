@@ -28,7 +28,9 @@
     </div>
 
     <div>{{currEndpointId}}</div>
+    <hr>
     <div>{{currInterface}}</div>
+    <hr>
     <div>{{debugData}}</div>
 
   </div>
@@ -72,6 +74,7 @@ const changeMethod = () => {
     endpointId: currEndpointId.value, interfaceId: interfaceMethodToObjMap.value[selectedMethod.value].id,
   });
 }
+changeMethod()
 
 function hasDefinedMethod(method: string) {
   return endpointDetail?.value?.interfaces?.some((item) => {

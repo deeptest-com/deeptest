@@ -1,52 +1,12 @@
 <template>
   <div class="content">
-    <!-- ::::路径定义方式 -->
-    <a-row class="form-item">
-      <a-col :span="2" class="form-label">路径</a-col>
-      <a-col :span="16">
-        <a-input :value="endpointDetail.path" @change="updatePath" placeholder="请输入路径">
-          <template #addonBefore>
-            <a-select
-                :options="serveServers"
-                :value="serveServers?.[0]?.value"
-                placeholder="请选择服务器"
-                style="width: 200px;text-align: left" />
-          </template>
-          <template #addonAfter>
-            <a-button @click="addPathParams">
-              <template #icon>
-                <PlusOutlined/>
-              </template>
-              路径参数
-            </a-button>
-          </template>
-        </a-input>
-        <!-- ::::路径参数 -->
-        <div class="path-param-list">
-            <Field
-                v-for="(item,index) in endpointDetail.pathParams"
-                :key="item.id"
-                :fieldData="{...item,index:index}"
-                :showRequire="true"
-                :refsOptions="[
-                    {
-                    label: '组件 1',
-                    value: 'COM1'
-                  }, {
-                    label: '组件 2',
-                    value: 'COM2'
-                  }]"
-                @del="deletePathParams(index)"
-                @change="pathParamsNameChange"/>
-        </div>
-      </a-col>
-    </a-row>
-
-    <!-- ::::请求方式定义 -->
+    <!-- 路径定义方式 -->
+    <PathDefine/>
+    <!-- 请求方式定义 -->
     <a-row class="form-item">
       <a-col :span="2" class="form-label">请求方式</a-col>
       <a-col :span="22">
-        <!-- ::::请求方法定义 -->
+        <!-- 请求方法定义 -->
         <a-radio-group v-model:value="selectedMethod" button-style="solid">
           <a-radio-button
               :class="{'has-defined': hasDefinedMethod(method.value)}"
@@ -57,7 +17,7 @@
 
         <div class="form-item-request">
           <div v-if="selectedMethodDetail">
-            <!-- ::::Operation ID -->
+            <!-- Operation ID -->
             <a-row class="form-item-request-item">
               <a-col :span="3" class="form-label">
                 Operation ID
@@ -66,7 +26,7 @@
                 <a-input v-model:value="selectedMethodDetail.operationId"/>
               </a-col>
             </a-row>
-            <!-- ::::Description -->
+            <!-- Description -->
             <a-row class="form-item-request-item">
               <a-col :span="3" class="form-label">
                 Description
@@ -76,7 +36,7 @@
               </a-col>
             </a-row>
 
-            <!-- ::::增加请求参数 -->
+            <!-- 增加请求参数 -->
             <a-row class="form-item-request-item">
               <a-col :span="3" class="form-label">
                 增加请求参数
@@ -111,7 +71,7 @@
               </a-col>
             </a-row>
 
-            <!-- ::::请求参数展示：headers、cookies、query params等 -->
+            <!-- 请求参数展示：headers、cookies、query params等 -->
             <a-row class="form-item-request-item">
               <a-col :span="3"></a-col>
               <a-col :span="21">
@@ -195,7 +155,7 @@
                 </div>
               </a-col>
             </a-row>
-            <!-- ::::增加请求体 -->
+            <!-- 增加请求体 -->
             <a-row class="form-item-request-item">
               <a-col :span="3" class="form-label">
                 增加请求体
@@ -210,14 +170,14 @@
                 ></a-select>
               </a-col>
             </a-row>
-            <!-- ::::增加请求体 - 描述  -->
+            <!-- 增加请求体 - 描述  -->
             <a-row class="form-item-request-item">
               <a-col :span="3" class="form-label"></a-col>
               <a-col :span="20">
                 <a-input placeholder="请输入描述" v-model:value="selectedMethodDetail.requestBody.description"/>
               </a-col>
             </a-row>
-            <!-- ::::增加请求体 - scheme定义 -->
+            <!-- 增加请求体 - scheme定义 -->
             <a-row class="form-item-request-item">
               <a-col :span="3" class="form-label"></a-col>
               <a-col :span="21">
@@ -235,7 +195,7 @@
                     :value="activeReqBodySchema"/>
               </a-col>
             </a-row>
-            <!-- ::::响应定义  -->
+            <!-- 响应定义  -->
             <a-row class="form-item-response">
               <a-col :span="3" class="form-label">
                 选择响应代码
@@ -251,7 +211,7 @@
                 </a-radio-group>
                 <div class="form-item-response">
                   <div v-if="selectedCodeDetail">
-                    <!-- ::::Description -->
+                    <!-- Description -->
                     <a-row class="form-item-response-item">
                       <a-col :span="4" class="form-label">
                         Description
@@ -260,7 +220,7 @@
                         <a-input v-model:value="selectedCodeDetail.desc"/>
                       </a-col>
                     </a-row>
-                    <!-- ::::增加响应头 -->
+                    <!-- 增加响应头 -->
                     <a-row class="form-item-response-item">
                       <a-col :span="4" class="form-label">
                         增加响应头
@@ -276,7 +236,7 @@
                         </div>
                       </a-col>
                     </a-row>
-                    <!-- ::::响应头展示-->
+                    <!-- 响应头展示-->
                     <a-row class="form-item-response-item">
                       <a-col :span="4"></a-col>
                       <a-col :span="20">
@@ -299,7 +259,7 @@
                         </div>
                       </a-col>
                     </a-row>
-                    <!-- ::::增加响应体体 -->
+                    <!-- 增加响应体体 -->
                     <a-row class="form-item-response-item">
                       <a-col :span="4" class="form-label">
                         增加响应体
@@ -313,14 +273,14 @@
                         ></a-select>
                       </a-col>
                     </a-row>
-                    <!-- ::::增加响应体 - 描述  -->
+                    <!-- 增加响应体 - 描述  -->
                     <a-row class="form-item-response-item">
                       <a-col :span="4" class="form-label"></a-col>
                       <a-col :span="18">
                         <a-input placeholder="请输入描述" v-model:value="selectedCodeDetail.description"/>
                       </a-col>
                     </a-row>
-                    <!-- ::::增加响应体 - scheme定义 -->
+                    <!-- 增加响应体 - scheme定义 -->
                     <a-row class="form-item-response-item">
                       <a-col :span="4" class="form-label"></a-col>
                       <a-col :span="20">
@@ -380,13 +340,14 @@ import {
   defaultCookieParams,
   defaultHeaderParams,
   defaultQueryParams,
-  defaultPathParams,
   defaultEndpointDetail,
   defaultCodeResponse,
 } from '@/config/constant';
 import {PlusOutlined, DeleteOutlined} from '@ant-design/icons-vue';
 import Field from './Field.vue'
 import {Endpoint} from "@/views/endpoint/data";
+import PathDefine  from './Path.vue';
+import RequestDefine  from './Request.vue';
 import {StateType as Debug} from "@/views/component/debug/store";
 import SchemaEditor from '@/components/SchemaEditor/index.vue';
 import {cloneByJSON} from "@/utils/object";
@@ -396,9 +357,7 @@ const endpointDetail: any = computed<Endpoint>(() => store.state.Endpoint.endpoi
 const interfaceMethodToObjMap = computed<any>(() => store.state.Endpoint.interfaceMethodToObjMap);
 
 const currInterface = computed<any>(() => store.state.Debug?.currInterface);
-
 const currentUser: any = computed<Endpoint>(() => store.state.User.currentUser);
-const serveServers: any = computed<Endpoint>(() => store.state.Endpoint.serveServers);
 const securityOpts: any = computed<any>(() => store.state.Endpoint.securityOpts);
 
 const props = defineProps({});
@@ -539,54 +498,6 @@ function addEndpoint() {
   })
 }
 
-/**
- * 添加路径参数
- * */
-function addPathParams() {
-  endpointDetail.value.pathParams.push(cloneByJSON(defaultPathParams));
-  store.commit('Endpoint/setEndpointDetail', {
-    ...endpointDetail.value,
-    pathParams: endpointDetail.value.pathParams
-  })
-}
-
-/**
- * 删除路径参数
- * */
-function deletePathParams(data) {
-  endpointDetail.value.pathParams.splice(data.index, 1);
-  store.commit('Endpoint/setEndpointDetail', {
-    ...endpointDetail.value,
-    pathParams: endpointDetail.value.pathParams
-  })
-}
-
-
-/**
- * 更新参数名称
- * */
-function pathParamsNameChange(data) {
-  console.log(data);
-  endpointDetail.value.pathParams[data.index] = data;
-  store.commit('Endpoint/setEndpointDetail', {
-    ...endpointDetail.value,
-    pathParams: endpointDetail.value.pathParams
-  })
-}
-
-/**
- * 处理 path 与 pathParams 字段联动的情况
- * */
-function handlePathLink() {
-  // ::::todo 待补充
-  // let parsePathReg = /\{(\w+)\}/g
-  // let path = endpointDetail.value.path;
-  // let params = path.match(parsePathReg);
-  // if (data.name) {
-  //   params.push(data.name)
-  // }
-  console.log('handlePathLink');
-}
 
 function deleteParams(type, index) {
   selectedMethodDetail.value[type].splice(index, 1);

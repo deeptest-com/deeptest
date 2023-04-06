@@ -34,7 +34,14 @@ import {
 
 import {getNodeMap} from "@/services/tree";
 import {momentUtc} from "@/utils/datetime";
-import {example2schema,schema2example, getEnvList, getSecurityList, serverList} from "@/views/projectSetting/service";
+import {
+    example2schema,
+    schema2example,
+    getEnvList,
+    getSecurityList,
+    serverList,
+    getSchemaList
+} from "@/views/projectSetting/service";
 
 export interface StateType {
     endpointId: number;
@@ -50,8 +57,10 @@ export interface StateType {
     endpointDetailYamlCode: any,
     serveServers: any[], // serve list
     securityOpts: any[]
-
     interfaceMethodToObjMap: any;
+    refsOptions: any;
+    selectedMethodDetail:any,
+    selectedCodeDetail:any,
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
@@ -76,6 +85,9 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setStatus: Mutation<StateType>;
 
         setInterfaceMethodToObjMap: Mutation<StateType>;
+        setRefsOptions: Mutation<StateType>;
+        setSelectedMethodDetail: Mutation<StateType>;
+        setSelectedCodeDetail: Mutation<StateType>;
     };
     actions: {
         listEndpoint: Action<StateType, StateType>;
@@ -106,6 +118,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         updateStatus: Action<StateType, StateType>;
         example2schema: Action<StateType, StateType>;
         schema2example: Action<StateType, StateType>;
+        getRefsOptions: Action<StateType, StateType>;
     }
 }
 
@@ -136,8 +149,10 @@ const initState: StateType = {
     endpointDetailYamlCode: null,
     serveServers: [],
     securityOpts: [],
-
     interfaceMethodToObjMap: {},
+    refsOptions: {},
+    selectedMethodDetail:{},
+    selectedCodeDetail:{},
 };
 
 const StoreModel: ModuleType = {
@@ -211,9 +226,18 @@ const StoreModel: ModuleType = {
         setInterfaceMethodToObjMap(state, payload) {
             state.interfaceMethodToObjMap = payload;
         },
+        setRefsOptions(state, payload) {
+            state.refsOptions[payload.type] = payload.options;
+        },
+        setSelectedMethodDetail(state, payload) {
+            state.selectedMethodDetail = payload;
+        },
+        setSelectedCodeDetail(state, payload) {
+            state.selectedCodeDetail = payload;
+        }
     },
     actions: {
-        async listEndpoint({commit, dispatch,state}, params: QueryParams) {
+        async listEndpoint({commit, dispatch, state}, params: QueryParams) {
             try {
                 const response: ResponseData = await query(params);
                 if (response.code != 0) return;
@@ -525,7 +549,7 @@ const StoreModel: ModuleType = {
         async example2schema({commit}, payload: any) {
             const res = await example2schema(payload);
             if (res.code === 0) {
-                return  res.data;
+                return res.data;
             } else {
                 return null
             }
@@ -533,7 +557,26 @@ const StoreModel: ModuleType = {
         async schema2example({commit}, payload: any) {
             const res = await schema2example(payload);
             if (res.code === 0) {
-                return  res.data;
+                return res.data;
+            } else {
+                return null
+            }
+        },
+        async getRefsOptions({commit}, payload: any) {
+            const res = await getSchemaList({
+                ...payload,
+                "page":1,
+                "pageSize":100
+            });
+            if (res.code === 0) {
+                res.data.result.forEach((item: any) => {
+                    item.label = item.url;
+                    item.value = item.url;
+                })
+                commit('setRefsOptions', {
+                    type: payload.type,
+                    options: res.data.result
+                });
             } else {
                 return null
             }

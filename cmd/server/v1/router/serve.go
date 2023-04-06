@@ -3,7 +3,6 @@ package router
 import (
 	"github.com/aaronchen2k/deeptest/cmd/server/v1/handler"
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/module"
-	"github.com/aaronchen2k/deeptest/internal/server/middleware"
 	"github.com/kataras/iris/v12"
 )
 
@@ -18,7 +17,7 @@ func NewServeModule() *ServeModule {
 // Party 注册模块
 func (m *ServeModule) Party() module.WebModule {
 	handler := func(public iris.Party) {
-		public.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
+		//public.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
 
 		public.Post("/index", m.ServeCtrl.Index).Name = "服务列表"
 		public.Post("/save", m.ServeCtrl.Save).Name = "保存服务"
@@ -34,6 +33,7 @@ func (m *ServeModule) Party() module.WebModule {
 		public.Post("/server/list", m.ServeCtrl.ListServer).Name = "服务列表"
 		public.Post("/schema/save", m.ServeCtrl.SaveSchema).Name = "保存Schema"
 		public.Post("/schema/list", m.ServeCtrl.ListSchema).Name = "Schema列表"
+		public.Post("/schema/detail", m.ServeCtrl.GetSchemaByRef).Name = "获取Schema"
 		public.Delete("/schema/delete", m.ServeCtrl.DeleteSchema).Name = "删除Schema列表"
 		public.Post("/security/save", m.ServeCtrl.SaveSecurity).Name = "保存授权"
 		public.Post("/security/list", m.ServeCtrl.ListSecurity).Name = "授权列表"

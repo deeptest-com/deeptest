@@ -114,6 +114,7 @@ func (s *ServeService) Copy(id uint) (err error) {
 func (s *ServeService) SaveSchema(req v1.ServeSchemaReq) (res uint, err error) {
 	var serveSchema model.ComponentSchema
 	copier.CopyWithOption(&serveSchema, req, copier.Option{DeepCopy: true})
+	serveSchema.Ref = "#/components/schemas/" + serveSchema.Name
 	err = s.ServeRepo.Save(serveSchema.ID, &serveSchema)
 	return serveSchema.ID, err
 }
@@ -131,6 +132,10 @@ func (s *ServeService) SaveSecurity(req v1.ServeSecurityReq) (res uint, err erro
 
 func (s *ServeService) PaginateSchema(req v1.ServeSchemaPaginate) (ret _domain.PageData, err error) {
 	return s.ServeRepo.PaginateSchema(req)
+}
+
+func (s *ServeService) GetSchema(serverId uint, ref string) (schema model.ComponentSchema, err error) {
+	return s.ServeRepo.GetSchemaByRef(serverId, ref)
 }
 
 func (s *ServeService) PaginateSecurity(req v1.ServeSecurityPaginate) (ret _domain.PageData, err error) {

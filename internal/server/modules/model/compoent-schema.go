@@ -9,6 +9,7 @@ type ComponentSchema struct {
 	Examples    string `json:"examples" gorm:"type:text"`
 	Tags        string `json:"tags"`
 	Description string `json:"description"`
+	Ref         string `json:"ref"`
 }
 
 func (ComponentSchema) TableName() string {

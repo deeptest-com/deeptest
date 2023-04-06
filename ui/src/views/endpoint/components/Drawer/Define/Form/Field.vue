@@ -1,8 +1,6 @@
-<!-- ::::
-  参数设置器
- -->
+<!-- ::::参数设置器-->
 <template>
-  <div style="margin-bottom: 16px;">
+  <div class="main">
     <a-input v-model:value="fieldState.name"
              @change="handleChangeName"
              style="width: 300px"
@@ -25,16 +23,18 @@
           <a-popover v-if="!hideRef" v-model:visible="showRef" :title="null" trigger="click">
             <template #content>
               <div class="ref-content">
-                <a-form-item label="关联组件">
-                  <a-select
-                      :value="fieldState.$ref"
-                      style="width: 200px"
-                      :allowClear="true"
-                      placeholder="请选择需要关联的组件"
-                      @change="handleRefChange"
-                      :options="refsOptions"
-                  ></a-select>
-                </a-form-item>
+                <a-form :layout="'vertical'">
+                  <a-form-item label="关联组件">
+                    <a-select
+                        :value="fieldState.$ref"
+                        style="width: 300px"
+                        :allowClear="true"
+                        placeholder="请选择需要关联的组件"
+                        @change="handleRefChange"
+                        :options="refsOptions?.[fieldState.type] || []"
+                    ></a-select>
+                  </a-form-item>
+                </a-form>
               </div>
             </template>
             <a-tooltip v-if="!hideRef" placement="topLeft" arrow-point-at-center title="关联组件">
@@ -48,55 +48,55 @@
           <a-popover v-if="!hideOther" v-model:visible="showOther" :title="null" trigger="click">
             <template #content>
               <div class="other-props-content">
-                <a-form v-if="otherProps?.value === fieldState.type">
+                <a-form :layout='"vertical"' v-if="otherProps?.value === fieldState.type">
                   <div class="card-title">Other {{ otherProps.props.label }}</div>
-                  <div class="card-content" v-for="opt in otherProps.props.options" :key="opt.name">
-                    <a-form-item
-                        class="card-content-form-item"
-                        :labelAlign="'right'"
-                        :labelCol="{ span: 6 }"
-                        :wrapperCol="{ span: 16 }"
-                        :label="opt.label">
-                      <a-select
-                          v-if="opt.component === 'selectTag'"
-                          :value="fieldState[opt.name] || []"
-                          mode="tags"
-                          :placeholder="opt.placeholder"
-                          @change="(val) => {
+                  <a-row type="flex" :gutter="24">
+                    <a-col :span="12" class="card-content" v-for="opt in otherProps.props.options" :key="opt.name">
+                      <a-form-item
+                          class="card-content-form-item"
+                          :labelAlign="'right'"
+                          :label="opt.label">
+                        <a-select
+                            v-if="opt.component === 'selectTag'"
+                            :value="fieldState[opt.name] || []"
+                            mode="tags"
+                            :placeholder="opt.placeholder"
+                            @change="(val) => {
                             handleOthersPropsChange(opt.name, val);
                           }"/>
-                      <a-select
-                          v-if="opt.component === 'select'"
-                          :value="fieldState[opt.name] || null"
-                          :options="opt.options"
-                          :placeholder="opt.placeholder"
-                          @change="(val) => {
+                        <a-select
+                            v-if="opt.component === 'select'"
+                            :value="fieldState[opt.name] || null"
+                            :options="opt.options"
+                            :placeholder="opt.placeholder"
+                            @change="(val) => {
                             handleOthersPropsChange(opt.name,val);
                           }"
-                      />
-                      <a-input
-                          v-if="opt.component === 'input'"
-                          :value="fieldState[opt.name] || null"
-                          @change="(e) => {
+                        />
+                        <a-input
+                            v-if="opt.component === 'input'"
+                            :value="fieldState[opt.name] || null"
+                            @change="(e) => {
                             handleOthersPropsChange(opt.name, e.target.value);
                           }"
-                          :placeholder="opt.placeholder"/>
-                      <a-input-number
-                          v-if="opt.component === 'inputNumber'"
-                          :value="fieldState[opt.name] || null"
-                          id="inputNumber"
-                          @change="(val) => {
+                            :placeholder="opt.placeholder"/>
+                        <a-input-number
+                            v-if="opt.component === 'inputNumber'"
+                            :value="fieldState[opt.name] || null"
+                            class="input-number"
+                            @change="(val) => {
                             handleOthersPropsChange(opt.name,val);
                           }"
-                          :placeholder="opt.placeholder"/>
-                      <a-switch
-                          v-if="opt.component === 'switch'"
-                          :checked="fieldState[opt.name] || false"
-                          @change="(val) => {
+                            :placeholder="opt.placeholder"/>
+                        <a-switch
+                            v-if="opt.component === 'switch'"
+                            :checked="fieldState[opt.name] || false"
+                            @change="(val) => {
                             handleOthersPropsChange(opt.name,val);
                           }"/>
-                    </a-form-item>
-                  </div>
+                      </a-form-item>
+                    </a-col>
+                  </a-row>
                 </a-form>
               </div>
             </template>
@@ -118,8 +118,7 @@ import {
   ref,
   defineProps,
   defineEmits,
-  onMounted,
-  watch
+  watch, computed
 } from 'vue';
 
 import {pathParamsDataTypesOpts, paramsSchemaDataTypes} from '@/config/constant';
@@ -132,10 +131,8 @@ import {
   InfoCircleTwoTone
 } from '@ant-design/icons-vue';
 import {cloneByJSON} from "@/utils/object";
-
-const props = defineProps(['fieldData', 'hideRequire', 'hideRef', 'hideOther', 'hideDel', 'refsOptions']);
-
-const emit = defineEmits(['del', 'setRef', 'settingOther', 'change']);
+import {useStore} from "vuex";
+import {Endpoint} from "@/views/endpoint/data";
 
 interface fieldStateType {
   name: string;
@@ -150,6 +147,12 @@ interface fieldStateType {
   minLength: number
   maxLength: number
 }
+const props = defineProps(['fieldData', 'hideRequire', 'hideRef', 'hideOther', 'hideDel']);
+const emit = defineEmits(['del', 'setRef', 'settingOther', 'change']);
+
+const store = useStore<{ Endpoint, ProjectGlobal, ServeGlobal }>();
+const refsOptions: any = computed<Endpoint>(() => store.state.Endpoint.refsOptions);
+const currServe = computed<any>(() => store.state.ServeGlobal.currServe);
 
 const fieldState = ref<fieldStateType | any>({
   name: '',
@@ -165,9 +168,7 @@ const fieldState = ref<fieldStateType | any>({
 
 const showRef = ref(false);
 const otherProps: any = ref({});
-
 const showOther = ref(false);
-
 
 function handleChangeName(e: any) {
   emit('change', fieldState.value);
@@ -220,9 +221,12 @@ function del() {
 /**
  * ref
  * */
-function setRef(data: any) {
+async function setRef(data: any) {
   showRef.value = true;
-  // emit('setRef', data);
+  await store.dispatch('Endpoint/getRefsOptions', {
+    serveId: currServe.value.id,
+    type: fieldState.value.type
+  });
 }
 
 watch(() => {
@@ -249,6 +253,10 @@ watch(() => {
 </script>
 
 <style lang="less" scoped>
+.main {
+  margin: 16px auto;
+}
+
 .requireActived {
   color: #0000cc;
 }
@@ -264,6 +272,14 @@ watch(() => {
     font-weight: bold;
     margin-bottom: 16px;
   }
+}
+
+.card-content-form-item {
+  margin-bottom: 12px;
+}
+
+.input-number {
+  width: 100%;
 }
 
 </style>

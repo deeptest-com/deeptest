@@ -311,16 +311,45 @@ func (r *ProjectRepo) AddProjectRootPlanCategory(projectId uint) (err error) {
 }
 
 func (r *ProjectRepo) Members(req v1.ProjectReqPaginate, projectId int) (data _domain.PageData, err error) {
-	var userIds, roleIds []uint
-	var projectMembers []model.ProjectMember
-	userRoleMap := make(map[uint]uint)
-	r.DB.Model(&model.ProjectMember{}).
-		Select("user_id,project_role_id").
-		Where("project_id = ? AND NOT deleted", projectId).Scan(&projectMembers)
-	for _, v := range projectMembers {
-		userIds = append(userIds, v.UserId)
+	req.Order = "sys_user.created_at"
+	db := r.DB.Model(&model.SysUser{}).
+		Select("sys_user.id, sys_user.username, sys_user.email, m.project_role_id").
+		Joins("left join biz_project_member m on sys_user.id=m.user_id").
+		Where("m.project_id = ?", projectId)
+	if req.Keywords != "" {
+		db = db.Where("sys_user.username LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords))
+	}
+
+	var count int64
+	err = db.Count(&count).Error
+	if err != nil {
+		logUtils.Errorf("count users error", zap.String("error:", err.Error()))
+		return
+	}
+
+	users := make([]v1.MemberResp, 0)
+	err = db.
+		Scopes(dao.PaginateScope(req.Page, req.PageSize, "", req.Order)).
+		Scan(&users).Error
+	if err != nil {
+		logUtils.Errorf("query users error", zap.String("error:", err.Error()))
+		return
+	}
+
+	users, err = r.AddRoleForProjectMembers(users)
+	if err != nil {
+		logUtils.Errorf("add role for project members error", zap.String("error:", err.Error()))
+		return
+	}
+	data.Populate(users, count, req.Page, req.PageSize)
+
+	return
+}
+
+func (r *ProjectRepo) AddRoleForProjectMembers(users []v1.MemberResp) (res []v1.MemberResp, err error) {
+	var roleIds []uint
+	for _, v := range users {
 		roleIds = append(roleIds, v.ProjectRoleId)
-		userRoleMap[v.UserId] = v.ProjectRoleId
 	}
 	roleIds = _commonUtils.ArrayRemoveUintDuplication(roleIds)
 
@@ -335,45 +364,14 @@ func (r *ProjectRepo) Members(req v1.ProjectReqPaginate, projectId int) (data _d
 		roleIdNameMap[v.ID] = v.Name
 	}
 
-	db := r.DB.Model(&model.SysUser{}).
-		Select("id, username, email").
-		Where("NOT deleted AND id IN (?)", userIds)
-
-	if req.Keywords != "" {
-		db = db.Where("username LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords))
-	}
-
-	var count int64
-	err = db.Count(&count).Error
-	if err != nil {
-		logUtils.Errorf("count users error", zap.String("error:", err.Error()))
-		return
-	}
-
-	users := make([]v1.MemberResp, 0)
-
-	err = db.
-		Scopes(dao.PaginateScope(req.Page, req.PageSize, req.Order, req.Field)).
-		Scan(&users).Error
-	if err != nil {
-		logUtils.Errorf("query users error", zap.String("error:", err.Error()))
-		return
-	}
-
 	for k, v := range users {
-		if roleId, ok := userRoleMap[v.Id]; ok {
-			users[k].RoleId = roleId
-			if roleName, ok1 := roleIdNameMap[roleId]; ok1 {
-				users[k].RoleName = roleName
-			}
+		if roleName, ok := roleIdNameMap[v.ProjectRoleId]; ok {
+			users[k].RoleName = roleName
 		}
 	}
-
-	data.Populate(users, count, req.Page, req.PageSize)
-
+	res = users
 	return
 }
-
 func (r *ProjectRepo) RemoveMember(userId, projectId int) (err error) {
 	err = r.DB.Model(&model.ProjectMember{}).
 		Where("user_id = ? AND project_id = ?", userId, projectId).

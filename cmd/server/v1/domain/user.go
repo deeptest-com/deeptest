@@ -18,11 +18,11 @@ type UserReqPaginate struct {
 }
 
 type MemberResp struct {
-	Id       uint            `json:"id"`
-	Username string          `json:"username"`
-	Email    string          `json:"email"`
-	RoleName consts.RoleType `json:"roleName"`
-	RoleId   uint            `json:"roleId"`
+	Id            uint            `json:"id"`
+	Username      string          `json:"username"`
+	Email         string          `json:"email"`
+	RoleName      consts.RoleType `json:"roleName"`
+	ProjectRoleId uint            `json:"roleId"`
 }
 
 type UserResp struct {

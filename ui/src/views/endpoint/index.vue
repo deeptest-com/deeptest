@@ -118,7 +118,7 @@ import {useStore} from "vuex";
 import {Endpoint, PaginationConfig} from "@/views/endpoint/data";
 
 import {StateType as ServeStateType} from "@/store/serve";
-import {StateType as Debug} from "@/store/debug";
+import {StateType as Debug} from "@/views/component/debug/store";
 
 const store = useStore<{ Endpoint, ProjectGlobal, Debug: Debug, ServeGlobal: ServeStateType }>();
 

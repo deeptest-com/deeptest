@@ -24,12 +24,12 @@ type DebugService struct {
 }
 
 func (s *DebugService) LoadData(req v1.DebugRequest) (ret v1.DebugRequest, err error) {
-	isInterfaceHasDebug, err := s.DebugRepo.IsInterfaceHasDebug(req.InterfaceId)
+	isInterfaceHasDebugRecord, err := s.DebugRepo.IsInterfaceHasDebug(req.InterfaceId)
 
-	if !isInterfaceHasDebug {
-		req, err = s.EndpointService.GetReq(req.InterfaceId, req.EndpointId)
+	if isInterfaceHasDebugRecord {
+		req, err = s.GetLastReq(req.InterfaceId)
 	} else {
-		req, err = s.GetLastReq(int(req.InterfaceId))
+		req, err = s.EndpointService.GenerateReq(req.InterfaceId, req.EndpointId)
 	}
 
 	/*
@@ -101,7 +101,7 @@ func (s *DebugService) ListByInterface(interfId int) (invocations []model.Debug,
 	return
 }
 
-func (s *DebugService) GetLastResp(interfId int) (resp v1.DebugResponse, err error) {
+func (s *DebugService) GetLastResp(interfId uint) (resp v1.DebugResponse, err error) {
 	invocation, _ := s.DebugRepo.GetLast(interfId)
 	if invocation.ID > 0 {
 		json.Unmarshal([]byte(invocation.RespContent), &resp)
@@ -115,7 +115,7 @@ func (s *DebugService) GetLastResp(interfId int) (resp v1.DebugResponse, err err
 	return
 }
 
-func (s *DebugService) GetLastReq(interfId int) (req v1.DebugRequest, err error) {
+func (s *DebugService) GetLastReq(interfId uint) (req v1.DebugRequest, err error) {
 	invocation, _ := s.DebugRepo.GetLast(interfId)
 
 	if invocation.ID > 0 {

@@ -65,7 +65,7 @@ const props = defineProps({
   },
   selectedCategoryId:{
     required: true,
-    type: Number
+    type: Number,
   }
 })
 

@@ -41,7 +41,7 @@ func (r *DebugRepo) Delete(id uint) (err error) {
 	return
 }
 
-func (r *DebugRepo) GetLast(interfaceId int) (debug model.Debug, err error) {
+func (r *DebugRepo) GetLast(interfaceId uint) (debug model.Debug, err error) {
 	err = r.DB.
 		Where("interface_id=?", interfaceId).
 		Where("NOT deleted").

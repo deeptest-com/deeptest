@@ -313,12 +313,14 @@ func (r *ProjectRepo) AddProjectRootPlanCategory(projectId uint) (err error) {
 func (r *ProjectRepo) Members(req v1.ProjectReqPaginate, projectId int) (data _domain.PageData, err error) {
 	var userIds, roleIds []uint
 	var projectMembers []model.ProjectMember
+	userRoleMap := make(map[uint]uint)
 	r.DB.Model(&model.ProjectMember{}).
 		Select("user_id,project_role_id").
 		Where("project_id = ? AND NOT deleted", projectId).Scan(&projectMembers)
 	for _, v := range projectMembers {
 		userIds = append(userIds, v.UserId)
 		roleIds = append(roleIds, v.ProjectRoleId)
+		userRoleMap[v.UserId] = v.ProjectRoleId
 	}
 	roleIds = _commonUtils.ArrayRemoveUintDuplication(roleIds)
 
@@ -359,8 +361,11 @@ func (r *ProjectRepo) Members(req v1.ProjectReqPaginate, projectId int) (data _d
 	}
 
 	for k, v := range users {
-		if roleName, ok := roleIdNameMap[v.Id]; ok {
-			users[k].Role = roleName
+		if roleId, ok := userRoleMap[v.Id]; ok {
+			users[k].RoleId = roleId
+			if roleName, ok1 := roleIdNameMap[roleId]; ok1 {
+				users[k].RoleName = roleName
+			}
 		}
 	}
 

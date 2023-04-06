@@ -21,7 +21,8 @@ type MemberResp struct {
 	Id       uint            `json:"id"`
 	Username string          `json:"username"`
 	Email    string          `json:"email"`
-	Role     consts.RoleType `json:"role"`
+	RoleName consts.RoleType `json:"roleName"`
+	RoleId   uint            `json:"roleId"`
 }
 
 type UserResp struct {

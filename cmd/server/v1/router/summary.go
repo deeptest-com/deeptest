@@ -2,7 +2,6 @@ package router
 
 import (
 	"github.com/aaronchen2k/deeptest/cmd/server/v1/handler"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/cron"
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/module"
 	"github.com/aaronchen2k/deeptest/internal/server/middleware"
@@ -27,8 +26,8 @@ func (m *SummaryModule) Party() module.WebModule {
 		index.Get("/details/{userId:uint}", m.SummaryCtrl.Details).Name = "汇总项目详情"
 		index.Get("/projectUserRanking/{cycle:uint}/{projectId:uint}", m.SummaryCtrl.ProjectUserRanking).Name = "汇总项目用户排行数据"
 	}
-	m.Cron.AddTask("summary", consts.SummaryDataCheckInterval, func() {
-		m.SummaryCtrl.Summary()
-	})
+	//m.Cron.AddTask("summary", consts.SummaryDataCheckInterval, func() {
+	//	m.SummaryCtrl.Summary()
+	//})
 	return module.NewModule("/summary", handler)
 }

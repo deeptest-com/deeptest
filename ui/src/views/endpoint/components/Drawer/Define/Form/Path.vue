@@ -98,8 +98,8 @@ function addPathParams() {
 /**
  * 删除路径参数
  * */
-function deletePathParams(data) {
-  endpointDetail.value.pathParams.splice(data.index, 1);
+function deletePathParams(index) {
+  endpointDetail.value.pathParams.splice(index, 1);
   store.commit('Endpoint/setEndpointDetail', {
     ...endpointDetail.value,
     pathParams: endpointDetail.value.pathParams
@@ -123,7 +123,8 @@ function handleChange(data) {
  * path 变动，联动 pathParams
  * */
 function handlePathLinkParams() {
-  let reg = /\{(\w+)\}/g
+  // 支持字母下划线及中划线
+  let reg = /\{([\w-]+)\}/g
   let path = endpointDetail.value.path;
   let pathParams = endpointDetail.value?.pathParams || [];
   const params: any = [];
@@ -160,7 +161,8 @@ function handleParamsLinkPath() {
   let path = endpointDetail.value.path;
   let pathParams = endpointDetail.value.pathParams || [];
   let params = pathParams.map(item => item.name);
-  let paths = path.split(/(\{\w*\})/g);
+  // 正则支持字母下划线及中划线组成的路径参数
+  let paths = path.split(/(\{[\w-]*\})/g);
 
   let idx = 0;
   paths.forEach((item, index) => {

@@ -21,7 +21,7 @@ type OpenApiParam struct {
 	Format      string `json:"format"`
 	Example     string `json:"example"`
 	Pattern     string `json:"pattern"`
-	MinLength   string `json:"minLength"`
+	MinLength   int64  `json:"minLength"`
 	MaxLength   int64  `json:"maxLength"`
 	Default     string `json:"default"`
 	MultipleOf  int64  `json:"multipleOf"`

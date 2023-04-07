@@ -103,6 +103,10 @@ func (r *ServeRepo) PaginateSchema(req v1.ServeSchemaPaginate) (ret _domain.Page
 	var count int64
 	db := r.DB.Model(&model.ComponentSchema{}).Where("serve_id = ? AND NOT deleted AND NOT disabled", req.ServeId)
 
+	if req.Type != "" {
+		db.Where("type=?", req.Type)
+	}
+
 	err = db.Count(&count).Error
 	if err != nil {
 		logUtils.Errorf("count report error %s", err.Error())
@@ -373,4 +377,9 @@ func (r *ServeRepo) SaveServe(serve *model.Serve) (err error) {
 		}
 		return nil
 	})
+}
+
+func (r *ServeRepo) GetSchemaByRef(serveId uint, ref string) (res model.ComponentSchema, err error) {
+	err = r.DB.Where("serve_id = ? AND NOT deleted AND not disabled and ref = ?", serveId, ref).Find(&res).Error
+	return
 }

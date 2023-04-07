@@ -181,6 +181,16 @@ func (c *ServeCtrl) ListSchema(ctx iris.Context) {
 	}
 }
 
+func (c *ServeCtrl) GetSchemaByRef(ctx iris.Context) {
+	var req v1.ServeSchemaReq
+	if err := ctx.ReadJSON(&req); err == nil {
+		res, _ := c.ServeService.GetSchema(uint(req.ServeId), req.Ref)
+		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
+	} else {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
+	}
+}
+
 func (c *ServeCtrl) DeleteSchema(ctx iris.Context) {
 	id := ctx.URLParamUint64("id")
 	err := c.ServeService.DeleteSchemaById(uint(id))

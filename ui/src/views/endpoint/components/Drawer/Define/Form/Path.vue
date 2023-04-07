@@ -6,29 +6,36 @@
       <DownOutlined v-if="collapse" @click="collapse = !collapse"/>
       <span class="label-name">路径</span>
     </a-col>
-    <a-col :span="16">
-      <a-input :value="endpointDetail.path" @change="updatePath" placeholder="请输入路径">
-        <template #addonBefore>
-          <a-select
-              :options="serveServers"
-              :value="serveServers?.[0]?.value"
-              placeholder="请选择服务器"
-              style="width: 200px;text-align: left"/>
-        </template>
-        <template #addonAfter>
-          <a-button @click="addPathParams">
-            <template #icon>
-              <PlusOutlined/>
-            </template>
-            路径参数
-          </a-button>
-        </template>
-      </a-input>
+    <a-col :span="17">
+      <div class="path-param-header">
+        <a-input class="path-param-header-input" :value="endpointDetail.path" @change="updatePath" placeholder="请输入路径">
+          <template #addonBefore>
+            <a-select
+                :options="serveServers"
+                v-model:value="currentEnvURL"
+                placeholder="请选择环境"
+                style="width: 120px;text-align: left">
+              <template #notFoundContent>
+                <a-button type="link" @click="addEnv" class="add-env-btn">
+                  <PlusOutlined/>&nbsp;去新建
+                </a-button>
+              </template>
+            </a-select>
+            <span v-if="currentEnvURL" style="width: 150px;display: inline-block" class="currentEnvURL">{{currentEnvURL || '---'}}</span>
+          </template>
+        </a-input>
+        <a-button @click="addPathParams" class="path-param-header-btn">
+          <template #icon>
+            <PlusOutlined/>
+          </template>
+          路径参数
+        </a-button>
+      </div>
       <!-- 路径参数 -->
       <div class="path-param-list" v-if="collapse && endpointDetail?.pathParams?.length > 0">
         <Field
             v-for="(item,index) in endpointDetail.pathParams"
-            :key="item.id +index"
+            :key="item.id + '' + index"
             :fieldData="{...item,index:index}"
             :showRequire="true"
             @del="deletePathParams(index)"
@@ -62,8 +69,18 @@ const endpointDetail: any = computed<Endpoint>(() => store.state.Endpoint.endpoi
 const currentUser: any = computed<Endpoint>(() => store.state.User.currentUser);
 const serveServers: any = computed<Endpoint>(() => store.state.Endpoint.serveServers);
 
+const currentEnvURL = ref(serveServers?.value[0]?.value);
+
+
 // 是否折叠,默认展开
 const collapse = ref(true);
+
+/**
+ * 跳转去新建环境
+ * */
+function addEnv() {
+  window.open(`/#/projectSetting/index?firtab=3&sectab=2&serveId=${endpointDetail.value.serveId}`, '_blank')
+}
 
 /**
  * 添加路径参数
@@ -188,7 +205,7 @@ function updatePath(e) {
 
 .form-item {
   margin-bottom: 16px;
-  align-items: baseline;
+  //align-items: baseline;
 }
 
 .label-name {
@@ -199,9 +216,26 @@ function updatePath(e) {
   margin-top: 16px;
   //padding-top: 16px;
 }
+.path-param-header{
+  display: inline-block;
+  overflow: hidden;
+  width: 100%;
+}
+.path-param-header-input{
+  width: 85%;
+}
+.path-param-header-btn{
+  width: 15%;
+}
 
 .form-label {
   font-weight: bold;
+}
+.add-env-btn{
+
+}
+.currentEnvURL{
+
 }
 
 </style>

@@ -164,6 +164,9 @@ const selectedMethodIndex: any = computed(() => {
     return item.method === selectedMethodDetail.value.method;
   })
 });
+
+
+
 const selectedCodeIndex: any = computed(() => {
   return selectedMethodDetail?.value?.responseBodies?.findIndex((item) => {
     return item.code === selectedCode?.value;
@@ -180,7 +183,6 @@ function addCodeResponse() {
     "code": selectedCode.value,
     "endpointId": selectedMethodDetail.value.id,
   }
-  debugger;
   store.commit('Endpoint/setEndpointDetailByIndex', {
     methodIndex: selectedMethodIndex.value,
     codeIndex: selectedCodeIndex.value,
@@ -222,7 +224,7 @@ async function generateFromJSON(type: string, JSONStr: string) {
   activeResBodySchema.value.content = res;
 }
 
-async function handleGenerateExample(type: string, examples: any) {
+async function handleGenerateExample(examples: any) {
   const res = await store.dispatch('Endpoint/schema2example',
       {data: JSON.stringify(activeResBodySchema.value.content)}
   );
@@ -233,7 +235,7 @@ async function handleGenerateExample(type: string, examples: any) {
   activeResBodySchema.value.examples.push(example);
 }
 
-function handleChange(type, json: any) {
+function handleChange( json: any) {
   const {content, examples} = json;
   // activeResBodySchema.value.content = content;
   // activeResBodySchema.value.type = content.type;

@@ -225,6 +225,7 @@ import Response from './Response.vue';
 import {Endpoint} from "@/views/endpoint/data";
 import SchemaEditor from '@/components/SchemaEditor/index.vue';
 import {cloneByJSON} from "@/utils/object";
+
 const store = useStore<{ Endpoint, Debug, ProjectGlobal, User }>();
 const endpointDetail: any = computed<Endpoint>(() => store.state.Endpoint.endpointDetail);
 const interfaceMethodToObjMap = computed<any>(() => store.state.Endpoint.interfaceMethodToObjMap);
@@ -236,6 +237,7 @@ const emit = defineEmits([]);
 const selectedMethod = ref(currInterface.value?.method ? currInterface.value?.method : 'GET');
 // 是否折叠,默认展开
 const collapse = ref(true);
+
 // 是否定义了请求方法
 function hasDefinedMethod(method: string) {
   return endpointDetail?.value?.interfaces?.some((item) => {
@@ -310,6 +312,12 @@ function addEndpoint() {
     "method": selectedMethod.value,
   }
   selectedMethodDetail.value = item;
+  store.dispatch('Debug/setInterface', selectedMethodDetail.value);
+  store.commit('Endpoint/setInterfaceMethodToObjMap', {
+    method: item.method,
+    value: item,
+  });
+  store.commit('Endpoint/setSelectedMethodDetail', selectedMethodDetail.value);
   store.commit('Endpoint/setEndpointDetail', {
     ...endpointDetail.value,
     interfaces: [...endpointDetail.value.interfaces, item],

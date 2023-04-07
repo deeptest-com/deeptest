@@ -224,7 +224,7 @@ const StoreModel: ModuleType = {
         },
 
         setInterfaceMethodToObjMap(state, payload) {
-            state.interfaceMethodToObjMap = payload;
+            state.interfaceMethodToObjMap[payload.method] = payload.value;
         },
         setRefsOptions(state, payload) {
             state.refsOptions[payload.type] = payload.options;
@@ -479,9 +479,13 @@ const StoreModel: ModuleType = {
                 console.log('++++', state.endpointDetail)
                 const map = {}
                 state.endpointDetail?.interfaces?.forEach((item) => {
-                    map[item.method] = item;
+                    // map[item.method] = item;
+                    commit('setInterfaceMethodToObjMap', {
+                        method: item.method,
+                        value: item,
+                    });
                 })
-                commit('setInterfaceMethodToObjMap', map);
+
 
             } else {
                 return false
@@ -506,7 +510,7 @@ const StoreModel: ModuleType = {
             });
             if (res.code === 0) {
                 res.data.forEach((item: any) => {
-                    item.label = item.url;
+                    item.label = item.description;
                     item.value = item.url;
                 })
                 commit('setServerList', res.data || null);
@@ -570,12 +574,12 @@ const StoreModel: ModuleType = {
             });
             if (res.code === 0) {
                 res.data.result.forEach((item: any) => {
-                    item.label = item.url;
-                    item.value = item.url;
+                    item.label = item.ref;
+                    item.value = item.ref;
                 })
                 commit('setRefsOptions', {
                     type: payload.type,
-                    options: res.data.result
+                    options: [...res.data.result]
                 });
             } else {
                 return null

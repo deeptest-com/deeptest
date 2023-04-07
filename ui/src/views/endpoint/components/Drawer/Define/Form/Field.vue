@@ -4,29 +4,33 @@
     <a-input v-model:value="fieldState.name"
              @change="handleChangeName"
              style="width: 300px"
+             :disabled="hasRef"
              placeholder="输入字段名称">
       <template #addonAfter>
         <a-select
             :value="fieldState.type"
             placeholder="请选择类型"
             @change="handleTypeChange"
+            :disabled="hasRef"
             :options="pathParamsDataTypesOpts"
             style="width: 100px"/>
       </template>
     </a-input>
     <a-input :value="fieldState.description"
              placeholder="输入描述信息"
+             :disabled="hasRef"
              @change="handleDescChange"
              style="width: 300px">
       <template #addonAfter>
         <a-space :size="8">
+          <!-- ::::关联组件 -->
           <a-popover v-if="!hideRef" v-model:visible="showRef" :title="null" trigger="click">
             <template #content>
               <div class="ref-content">
                 <a-form :layout="'vertical'">
                   <a-form-item label="关联组件">
                     <a-select
-                        :value="fieldState.$ref"
+                        :value="fieldState.ref"
                         style="width: 300px"
                         :allowClear="true"
                         placeholder="请选择需要关联的组件"
@@ -38,12 +42,13 @@
               </div>
             </template>
             <a-tooltip v-if="!hideRef" placement="topLeft" arrow-point-at-center title="关联组件">
-              <LinkOutlined @click="setRef"/>
+              <LinkOutlined @click="setRef" :class="{'ref-active':hasRef}"/>
             </a-tooltip>
           </a-popover>
+          <!-- ::::是否必填 -->
           <a-tooltip v-if="!hideRequire" placement="topLeft" arrow-point-at-center title="是否必填">
-            <InfoCircleOutlined v-if="!fieldState.required" @click="setRequire"/>
-            <InfoCircleTwoTone v-if="fieldState.required" @click="setRequire"/>
+            <InfoCircleOutlined :class="{'disabled':hasRef}" v-if="!fieldState.required" @click="setRequire"/>
+            <InfoCircleTwoTone  :class="{'disabled':hasRef}" v-if="fieldState.required" @click="setRequire"/>
           </a-tooltip>
           <a-popover v-if="!hideOther" v-model:visible="showOther" :title="null" trigger="click">
             <template #content>
@@ -61,6 +66,7 @@
                             :value="fieldState[opt.name] || []"
                             mode="tags"
                             :placeholder="opt.placeholder"
+                            :disabled="hasRef"
                             @change="(val) => {
                             handleOthersPropsChange(opt.name, val);
                           }"/>
@@ -68,6 +74,7 @@
                             v-if="opt.component === 'select'"
                             :value="fieldState[opt.name] || null"
                             :options="opt.options"
+                            :disabled="hasRef"
                             :placeholder="opt.placeholder"
                             @change="(val) => {
                             handleOthersPropsChange(opt.name,val);
@@ -76,6 +83,7 @@
                         <a-input
                             v-if="opt.component === 'input'"
                             :value="fieldState[opt.name] || null"
+                            :disabled="hasRef"
                             @change="(e) => {
                             handleOthersPropsChange(opt.name, e.target.value);
                           }"
@@ -83,6 +91,7 @@
                         <a-input-number
                             v-if="opt.component === 'inputNumber'"
                             :value="fieldState[opt.name] || null"
+                            :disabled="hasRef"
                             class="input-number"
                             @change="(val) => {
                             handleOthersPropsChange(opt.name,val);
@@ -91,6 +100,7 @@
                         <a-switch
                             v-if="opt.component === 'switch'"
                             :checked="fieldState[opt.name] || false"
+                            :disabled="hasRef"
                             @change="(val) => {
                             handleOthersPropsChange(opt.name,val);
                           }"/>
@@ -101,7 +111,7 @@
               </div>
             </template>
             <a-tooltip v-if="!hideOther" placement="topLeft" arrow-point-at-center title="设置其他属性">
-              <SettingOutlined @click="showOther = true"/>
+              <SettingOutlined @click="setOtherProps"/>
             </a-tooltip>
           </a-popover>
           <a-tooltip v-if="!hideDel" placement="topLeft" arrow-point-at-center title="删除">
@@ -133,13 +143,14 @@ import {
 import {cloneByJSON} from "@/utils/object";
 import {useStore} from "vuex";
 import {Endpoint} from "@/views/endpoint/data";
+import {message} from "ant-design-vue";
 
 interface fieldStateType {
   name: string;
   required: boolean;
   type: string;
   description: string | null
-  $ref: string | null;
+  ref: string | null;
   format: string,
   default: string,
   example: string
@@ -159,7 +170,7 @@ const fieldState = ref<fieldStateType | any>({
   required: false,
   type: 'string',
   description: null,
-  $ref: null,
+  ref: null,
   format: '',
   default: '',
   example: '',
@@ -169,6 +180,10 @@ const fieldState = ref<fieldStateType | any>({
 const showRef = ref(false);
 const otherProps: any = ref({});
 const showOther = ref(false);
+
+const hasRef = computed(() => {
+  return fieldState.value.ref && fieldState.value.ref !== '';
+});
 
 function handleChangeName(e: any) {
   emit('change', fieldState.value);
@@ -186,7 +201,17 @@ function handleDescChange(e: any) {
 
 
 function handleRefChange(val: any) {
-  fieldState.value.$ref = val;
+  fieldState.value.ref = val;
+  const selectedRefDetail =  refsOptions.value?.[fieldState.value.type]?.find((item: any) => {
+      return item.ref === val;
+  });
+  const content = JSON.parse(selectedRefDetail.content);
+  fieldState.value.name = selectedRefDetail.name;
+  fieldState.value.description = selectedRefDetail.description || '';
+  fieldState.value = {
+    ...fieldState.value,
+    ...content
+  }
   emit('change', fieldState.value);
 }
 
@@ -200,8 +225,17 @@ function handleOthersPropsChange(key: string, val: any) {
  * 设置该属性为必填项
  * */
 function setRequire() {
+  if(hasRef.value) {
+    message.info('引用组件时不可修改');
+    return;
+  }
   fieldState.value.required = !fieldState.value.required;
   emit('change', fieldState.value);
+}
+
+function setOtherProps() {
+  if(hasRef.value) return;
+  showOther.value = true;
 }
 
 /**
@@ -282,4 +316,11 @@ watch(() => {
   width: 100%;
 }
 
+
+:deep(.ref-active svg){
+  color: #0000cc;
+}
+.disabled{
+  cursor: not-allowed;
+}
 </style>

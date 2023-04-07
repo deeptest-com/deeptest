@@ -59,8 +59,8 @@ export interface StateType {
     securityOpts: any[]
     interfaceMethodToObjMap: any;
     refsOptions: any;
-    selectedMethodDetail:any,
-    selectedCodeDetail:any,
+    selectedMethodDetail: any,
+    selectedCodeDetail: any,
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
@@ -78,7 +78,6 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setNodeCategory: Mutation<StateType>;
         setFilterState: Mutation<StateType>;
         setEndpointDetail: Mutation<StateType>;
-        setEndpointDetailByIndex: Mutation<StateType>;
         setServerList: Mutation<StateType>;
         setSecurityOpts: Mutation<StateType>;
         setYamlCode: Mutation<StateType>;
@@ -151,8 +150,8 @@ const initState: StateType = {
     securityOpts: [],
     interfaceMethodToObjMap: {},
     refsOptions: {},
-    selectedMethodDetail:{},
-    selectedCodeDetail:{},
+    selectedMethodDetail: {},
+    selectedCodeDetail: {},
 };
 
 const StoreModel: ModuleType = {
@@ -200,12 +199,6 @@ const StoreModel: ModuleType = {
         setEndpointDetail(state, payload) {
             state.endpointDetail = payload;
         },
-        setEndpointDetailByIndex(state, payload) {
-            if (payload.codeIndex === -1 || payload.codeIndex) {
-                payload.codeIndex = state.endpointDetail.interfaces[payload.methodIndex]['responseBodies'].length;
-            }
-            state.endpointDetail.interfaces[payload.methodIndex]['responseBodies'][payload.codeIndex] = payload.value;
-        },
         setServerList(state, payload) {
             state.serveServers = payload;
         },
@@ -222,7 +215,6 @@ const StoreModel: ModuleType = {
                 }
             });
         },
-
         setInterfaceMethodToObjMap(state, payload) {
             state.interfaceMethodToObjMap[payload.method] = payload.value;
         },
@@ -231,9 +223,29 @@ const StoreModel: ModuleType = {
         },
         setSelectedMethodDetail(state, payload) {
             state.selectedMethodDetail = payload;
+            // 同步到接口详情
+            const interfaces: any = [];
+            state.endpointDetail.interfaces.forEach((item) => {
+                if (item.method === payload) {
+                    interfaces.push(payload);
+                } else {
+                    interfaces.push(item);
+                }
+            })
+            state.endpointDetail.interfaces = [...interfaces];
         },
         setSelectedCodeDetail(state, payload) {
             state.selectedCodeDetail = payload;
+            const methodIndex = state.endpointDetail?.interfaces?.findIndex((item) => item.method === state.selectedMethodDetail.method);
+            const codeIndex = state.selectedMethodDetail?.responseBodies?.findIndex((item) => item.code === payload?.code);
+            // 修改
+            if (methodIndex !== -1 && codeIndex !== -1) {
+                state.endpointDetail.interfaces[methodIndex]['responseBodies'][codeIndex] = {...payload};
+            }
+            // 新增
+            if(methodIndex !== -1 && codeIndex === -1 && payload?.code) {
+                state.endpointDetail.interfaces[methodIndex]['responseBodies'].push({...payload});
+            }
         }
     },
     actions: {
@@ -569,8 +581,8 @@ const StoreModel: ModuleType = {
         async getRefsOptions({commit}, payload: any) {
             const res = await getSchemaList({
                 ...payload,
-                "page":1,
-                "pageSize":100
+                "page": 1,
+                "pageSize": 100
             });
             if (res.code === 0) {
                 res.data.result.forEach((item: any) => {

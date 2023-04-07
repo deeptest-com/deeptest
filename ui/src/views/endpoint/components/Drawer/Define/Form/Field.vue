@@ -170,7 +170,7 @@ const fieldState = ref<fieldStateType | any>({
   required: false,
   type: 'string',
   description: null,
-  ref: null,
+  ref: '',
   format: '',
   default: '',
   example: '',
@@ -182,7 +182,7 @@ const otherProps: any = ref({});
 const showOther = ref(false);
 
 const hasRef = computed(() => {
-  return fieldState.value.ref && fieldState.value.ref !== '';
+  return !!fieldState?.value?.ref;
 });
 
 function handleChangeName(e: any) {

@@ -1,7 +1,7 @@
 <!-- ::::参数设置器-->
 <template>
   <div class="main">
-    <a-input v-model:value="fieldState.name"
+    <a-input :value="fieldState.name"
              @change="handleChangeName"
              style="width: 300px"
              :disabled="hasRef"
@@ -128,7 +128,7 @@ import {
   ref,
   defineProps,
   defineEmits,
-  watch, computed
+  watch, computed,
 } from 'vue';
 
 import {pathParamsDataTypesOpts, paramsSchemaDataTypes} from '@/config/constant';
@@ -186,6 +186,12 @@ const hasRef = computed(() => {
 });
 
 function handleChangeName(e: any) {
+  const name = e.target.value;
+  const reg = /^[\w-]*$/;
+  if (!reg.test(name)) {
+    return;
+  }
+  fieldState.value.name = name;
   emit('change', fieldState.value);
 }
 

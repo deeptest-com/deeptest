@@ -115,7 +115,7 @@ const rules = {
     {required: true, message: '请输入接口名称', trigger: 'blur'},
     {min: 1, max: 50, message: '最少 1 个字符，最长 100 个字符', trigger: 'blur'},
   ],
-  categoryId: [{required: true}],
+  categoryId: [{required: true,message: '请选择接口分类'}],
   description: [{required: false}],
 };
 

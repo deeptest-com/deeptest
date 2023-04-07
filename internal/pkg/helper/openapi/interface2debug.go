@@ -56,6 +56,10 @@ func (i *interfaces2debug) BodyType() (mediaType consts.HttpContentType) {
 	return
 }
 
+func (i *interfaces2debug) params() {
+
+}
+
 func (i *interfaces2debug) security() (apiKey model.DebugInterfaceApiKey, oAuth20 model.DebugInterfaceOAuth20, bearerToken model.DebugInterfaceBearerToken, basicAuth model.DebugInterfaceBasicAuth) {
 	security := i.Inter.Security
 	var securityInfo model.ComponentSchemaSecurity

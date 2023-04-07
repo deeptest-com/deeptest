@@ -10,23 +10,23 @@ type EndpointInterface struct {
 	ResponseBodies []EndpointInterfaceResponseBody `gorm:"-" json:"responseBodies"`
 }
 type SchemaParam struct {
-	Name        string `json:"name"`
-	Value       string `json:"value"`
-	Type        string `json:"type"`
-	Desc        string `json:"desc"`
-	InterfaceId uint   `json:"interfaceId"`
-	Format      string `json:"format"`
-	Example     string `json:"example"`
-	Pattern     string `json:"pattern"`
-	MinLength   int64  `json:"minLength"`
-	MaxLength   int64  `json:"maxLength"`
-	Default     string `json:"default"`
-	Required    bool   `json:"required"`
-	MultipleOf  int64  `json:"multipleOf"`
-	MinItems    int64  `json:"minItems"`
-	MaxItems    int64  `json:"maxItems"`
-	UniqueItems bool   `json:"uniqueItems"`
-	Ref         string `json:"ref"`
+	Name        string  `json:"name"`
+	Value       string  `json:"value"`
+	Type        string  `json:"type"`
+	Desc        string  `json:"desc"`
+	InterfaceId uint    `json:"interfaceId"`
+	Format      string  `json:"format"`
+	Example     string  `json:"example"`
+	Pattern     string  `json:"pattern"`
+	MinLength   uint64  `json:"minLength"`
+	MaxLength   uint64  `json:"maxLength"`
+	Default     string  `json:"default"`
+	Required    bool    `json:"required"`
+	MultipleOf  float64 `json:"multipleOf"`
+	MinItems    uint64  `json:"minItems"`
+	MaxItems    uint64  `json:"maxItems"`
+	UniqueItems bool    `json:"uniqueItems"`
+	Ref         string  `json:"ref"`
 }
 
 func (EndpointInterface) TableName() string {

@@ -157,38 +157,45 @@ func (s *serve2conv) pathParameters(params []model.EndpointPathParam) (parameter
 func (s *serve2conv) parameters(cookies []model.EndpointInterfaceCookie, headers []model.EndpointInterfaceHeader, params []model.EndpointInterfaceParam) (parameters openapi3.Parameters) {
 	parameters = openapi3.Parameters{}
 	for _, param := range params {
-		parameterRef := new(openapi3.ParameterRef)
-		parameterRef.Value = new(openapi3.Parameter)
-		parameterRef.Value.In = "query"
-		parameterRef.Value.Name = param.Name
-		parameterRef.Value.Required = true
-		parameterRef.Value.Schema = new(openapi3.SchemaRef)
-		parameterRef.Value.Schema.Value = new(openapi3.Schema)
-		parameterRef.Value.Schema.Value.Type = param.Type
+		parameterRef := s.parameterRef("query", param)
 		parameters = append(parameters, parameterRef)
 	}
 	for _, header := range headers {
-		parameterRef := new(openapi3.ParameterRef)
-		parameterRef.Value = new(openapi3.Parameter)
-		parameterRef.Value.In = "header"
-		parameterRef.Value.Name = header.Name
-		parameterRef.Value.Required = true
-		parameterRef.Value.Schema = new(openapi3.SchemaRef)
-		parameterRef.Value.Schema.Value = new(openapi3.Schema)
-		parameterRef.Value.Schema.Value.Type = header.Type
+		parameterRef := s.parameterRef("header", model.EndpointInterfaceParam(header))
 		parameters = append(parameters, parameterRef)
 	}
 	for _, cookie := range cookies {
-		parameterRef := new(openapi3.ParameterRef)
-		parameterRef.Value = new(openapi3.Parameter)
-		parameterRef.Value.In = "cookie"
-		parameterRef.Value.Name = cookie.Name
-		parameterRef.Value.Required = true
-		parameterRef.Value.Schema = new(openapi3.SchemaRef)
-		parameterRef.Value.Schema.Value = new(openapi3.Schema)
-		parameterRef.Value.Schema.Value.Type = cookie.Type
+		parameterRef := s.parameterRef("cookie", model.EndpointInterfaceParam(cookie))
 		parameters = append(parameters, parameterRef)
 	}
+	return
+}
+
+func (s *serve2conv) parameterRef(in string, param model.EndpointInterfaceParam) (parameterRef *openapi3.ParameterRef) {
+	parameterRef = new(openapi3.ParameterRef)
+	parameterRef.Value = new(openapi3.Parameter)
+	parameterRef.Value.In = in
+	parameterRef.Value.Name = param.Name
+	parameterRef.Value.Required = true
+	parameterRef.Value.Schema = new(openapi3.SchemaRef)
+	parameterRef.Value.Schema.Ref = param.Ref
+	parameterRef.Value.Required = param.Required
+	parameterRef.Value.Schema.Value = s.schemaValue(param)
+	return
+}
+
+func (s *serve2conv) schemaValue(param model.EndpointInterfaceParam) (schema *openapi3.Schema) {
+	schema = new(openapi3.Schema)
+	schema.Example = param.Example
+	schema.Pattern = param.Pattern
+	schema.MinLength = param.MinLength
+	schema.MaxLength = &param.MaxLength
+	schema.Default = param.Default
+	schema.MultipleOf = &param.MultipleOf
+	schema.MinItems = param.MinItems
+	schema.MaxItems = &param.MaxItems
+	schema.UniqueItems = param.UniqueItems
+	schema.Type = param.Type
 	return
 }
 

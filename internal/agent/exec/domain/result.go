@@ -55,3 +55,8 @@ type PlanExecResult struct {
 
 	Scenarios []*ScenarioExecResult `json:"scenarios"`
 }
+
+type MessageExecResult struct {
+	UserId uint   `json:"userId"`
+	Name   string `json:"name"`
+}

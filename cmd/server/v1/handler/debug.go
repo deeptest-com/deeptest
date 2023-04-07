@@ -109,7 +109,7 @@ func (c *DebugCtrl) GetLastResp(ctx iris.Context) {
 		return
 	}
 
-	resp, err := c.DebugService.GetLastResp(id)
+	resp, err := c.DebugService.GetLastResp(uint(id))
 
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: _domain.SystemErr.Msg})

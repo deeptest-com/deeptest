@@ -1,8 +1,10 @@
 package repo
 
 import (
+	"errors"
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
@@ -257,12 +259,11 @@ func (r *ProjectRepo) ChangeProject(projectId, userId uint) (err error) {
 	return
 }
 
-func (r *ProjectRepo) AddProjectMember(projectId, userId uint, role string) (err error) {
+func (r *ProjectRepo) AddProjectMember(projectId, userId uint, role consts.RoleType) (err error) {
 	var projectRole model.ProjectRole
-	if role == "admin" {
-		projectRole, _ = r.ProjectRoleRepo.GetAdminRecord()
-	} else if role == "user" {
-		projectRole, _ = r.ProjectRoleRepo.GetUserRecord()
+	projectRole, err = r.ProjectRoleRepo.FindByName(role)
+	if err != nil {
+		return
 	}
 
 	projectMember := model.ProjectMember{UserId: userId, ProjectId: projectId, ProjectRoleId: projectRole.ID}
@@ -309,17 +310,14 @@ func (r *ProjectRepo) AddProjectRootPlanCategory(projectId uint) (err error) {
 }
 
 func (r *ProjectRepo) Members(req v1.ProjectReqPaginate, projectId int) (data _domain.PageData, err error) {
-	var userIds []uint
-	r.DB.Model(&model.ProjectMember{}).
-		Select("user_id").
-		Where("project_id = ? AND NOT deleted", projectId).Scan(&userIds)
-
+	req.Order = "sys_user.created_at"
 	db := r.DB.Model(&model.SysUser{}).
-		Select("id, username, email").
-		Where("NOT deleted AND id IN (?)", userIds)
-
+		Select("sys_user.id, sys_user.username, sys_user.email, m.project_role_id, r.name").
+		Joins("left join biz_project_member m on sys_user.id=m.user_id").
+		Joins("left join biz_project_role r on m.project_role_id=r.id").
+		Where("m.project_id = ?", projectId)
 	if req.Keywords != "" {
-		db = db.Where("username LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords))
+		db = db.Where("sys_user.username LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords))
 	}
 
 	var count int64
@@ -330,9 +328,8 @@ func (r *ProjectRepo) Members(req v1.ProjectReqPaginate, projectId int) (data _d
 	}
 
 	users := make([]v1.MemberResp, 0)
-
 	err = db.
-		Scopes(dao.PaginateScope(req.Page, req.PageSize, req.Order, req.Field)).
+		Scopes(dao.PaginateScope(req.Page, req.PageSize, "", req.Order)).
 		Scan(&users).Error
 	if err != nil {
 		logUtils.Errorf("query users error", zap.String("error:", err.Error()))
@@ -345,16 +342,17 @@ func (r *ProjectRepo) Members(req v1.ProjectReqPaginate, projectId int) (data _d
 }
 
 func (r *ProjectRepo) RemoveMember(userId, projectId int) (err error) {
-	err = r.DB.Model(&model.ProjectMember{}).
-		Where("user_id = ? AND project_id = ?", userId, projectId).
-		Updates(map[string]interface{}{"deleted": true}).Error
-	if err != nil {
-		return
-	}
-
-	//err = r.DB.
-	//	Where("user_id = ? AND project_id", userId, projectId).
-	//	Delete(&model.ProjectMember{}).Error
+	/*
+		err = r.DB.Model(&model.ProjectMember{}).
+			Where("user_id = ? AND project_id = ?", userId, projectId).
+			Updates(map[string]interface{}{"deleted": true}).Error
+		if err != nil {
+			return
+		}
+	*/
+	err = r.DB.
+		Where("user_id = ? AND project_id=?", userId, projectId).
+		Delete(&model.ProjectMember{}).Error
 
 	return
 }
@@ -386,7 +384,7 @@ func (r *ProjectRepo) GetProjectsAndRolesByUser(userId uint) (projectIds, roleId
 
 	for _, member := range members {
 		projectIds = append(projectIds, member.ProjectId)
-		roleIdsMap[member.UserId] = member.UserId
+		roleIdsMap[member.ProjectRoleId] = member.ProjectRoleId
 	}
 	for _, v := range roleIdsMap {
 		roleIds = append(roleIds, v)
@@ -406,4 +404,37 @@ func (r *ProjectRepo) AddProjectDefaultServe(projectId, userId uint) (serve mode
 	r.ServeRepo.SetCurrServeByUser(po.ID, userId)
 
 	return
+}
+
+func (r *ProjectRepo) FindRolesByProjectAndUser(projectId, userId uint) (projectMember model.ProjectMember, err error) {
+	err = r.DB.Model(&model.ProjectMember{}).
+		Where("project_id = ?", projectId).
+		Where("user_id = ?", userId).
+		Scan(&projectMember).Error
+	return
+}
+
+func (r *ProjectRepo) UpdateUserRole(req v1.UpdateProjectMemberReq) (err error) {
+	err = r.DB.Model(&model.ProjectMember{}).
+		Where("project_id = ?", req.ProjectId).
+		Where("user_id = ?", req.UserId).
+		Updates(map[string]interface{}{"project_role_id": req.ProjectRoleId}).Error
+
+	if err != nil {
+		logUtils.Errorf("update project user role error", err.Error())
+		return err
+	}
+
+	return
+}
+
+func (r *ProjectRepo) GetCurrProjectMemberRoleByUser(userId uint) (ret model.ProjectMember, err error) {
+	curProject, err := r.GetCurrProjectByUser(userId)
+	if err != nil {
+		return
+	}
+	if curProject.ID == 0 {
+		return ret, errors.New("current project is not existed")
+	}
+	return r.FindRolesByProjectAndUser(curProject.ID, userId)
 }

@@ -89,7 +89,7 @@ import GlobalVarCom from './GlobalVar.vue';
 import { useGlobalEnv } from '../../hooks/useGlobalEnv';
 import { useGlobalVarAndParams } from '../../hooks/useGlobalVar';
 import { StateType as ProjectStateType } from "@/store/project";
-import { StateType as ProjectSettingStateType } from "@/views/ProjectSetting/store";
+import { StateType as ProjectSettingStateType } from "@/views/projectSetting/store";
 import { useStore } from "vuex";
 import { EnvDataItem } from '../../data';
 
@@ -163,7 +163,7 @@ async function getServersList() {
   })
 }
 
-// 添加服务弹窗操作 
+// 添加服务弹窗操作
 async function addService() {
   addServiceModalVisible.value = true;
 }

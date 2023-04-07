@@ -81,15 +81,12 @@ func (r *RoleRepo) FindFirstAdminUser() (v1.RoleResp, error) {
 func (r *RoleRepo) Create(req v1.RoleReq) (uint, error) {
 	role := model.SysRole{RoleBase: req.RoleBase}
 	_, err := r.FindByName(req.Name)
-	if !errors.Is(err, gorm.ErrRecordNotFound) {
-		logUtils.Errorf("角色名称已经被使用")
-		return 0, err
-	}
-
-	err = r.DB.Create(&role).Error
-	if err != nil {
-		logUtils.Errorf("create data err ", zap.String("错误:", err.Error()))
-		return 0, err
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		err = r.DB.Create(&role).Error
+		if err != nil {
+			logUtils.Errorf("create data err ", zap.String("错误:", err.Error()))
+			return 0, err
+		}
 	}
 
 	err = r.AddPermForRole(role.ID, req.Perms)

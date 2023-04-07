@@ -48,7 +48,7 @@ import {MonacoOptions} from '@/utils/const';
 const store = useStore<{ Endpoint, ProjectGlobal }>();
 const endpointDetail = computed<Endpoint[]>(() => store.state.Endpoint.endpointDetail);
 const endpointDetailYamlCode = computed<Endpoint[]>(() => store.state.Endpoint.endpointDetailYamlCode);
-import EndpointForm from './Form.vue'
+import EndpointForm from './Form/index.vue'
 
 const props = defineProps({});
 const emit = defineEmits(['ok', 'close', 'refreshList']);

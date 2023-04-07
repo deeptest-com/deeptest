@@ -45,6 +45,7 @@ type ServeSchemaReq struct {
 	Type        string `json:"type"`
 	Tags        string `json:"tags"`
 	Description string `json:"description"`
+	Ref         string `json:"ref"`
 }
 
 type EnvironmentReq struct {
@@ -72,6 +73,7 @@ type ServeSchemaPaginate struct {
 	_domain.PaginateReq
 	ServeId int64  `json:"serveId"`
 	Tag     string `json:"tag"`
+	Type    string `json:"type"`
 }
 
 type JsonContent struct {

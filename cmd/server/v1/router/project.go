@@ -31,6 +31,8 @@ func (m *ProjectModule) Party() module.WebModule {
 
 		index.Get("/members", m.ProjectCtrl.Members).Name = "获取项目成员"
 		index.Post("/removeMember", m.ProjectCtrl.RemoveMember).Name = "删除项目成员"
+		index.Post("/changeUserRole", m.ProjectCtrl.ChangeUserRole).Name = "更新项目成员的角色"
+
 	}
 	return module.NewModule("/projects", handler)
 }

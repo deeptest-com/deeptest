@@ -109,6 +109,7 @@ func (r *EndpointInterfaceRepo) UpdateParams(id uint, params []model.EndpointInt
 	for idx, _ := range params {
 		params[idx].ID = 0
 		params[idx].InterfaceId = id
+		params[idx].Value = params[idx].Example
 	}
 
 	err = r.DB.Create(&params).Error

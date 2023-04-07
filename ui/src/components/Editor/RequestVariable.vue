@@ -13,7 +13,7 @@
       <a-row>
         <a-col flex="100px" class="dp-border">环境变量</a-col>
       </a-row>
-      <a-row v-for="(item, idx) in environmentData.vars" :key="idx" type="flex">
+      <a-row v-for="(item, idx) in environmentData?.vars" :key="idx" type="flex">
         <a-col flex="100px">{{item.name}}</a-col>
         <a-col :flex="3">{{item.rightValue}}</a-col>
 
@@ -52,25 +52,22 @@
 </template>
 
 <script setup lang="ts">
-import {defineProps, defineEmits, onMounted, reactive, ref, Ref, computed, onUnmounted} from "vue";
-import {message, Form, notification} from 'ant-design-vue';
+import {onMounted, ref, computed, onUnmounted} from "vue";
 import {useI18n} from "vue-i18n";
-import {getEnvironment, saveEnvironment} from "@/views/interface/service";
 import {useStore} from "vuex";
-import {StateType as InterfaceStateType} from "@/views/interface/store";
-import {StateType as EnvironmentStateType} from "@/store/environment";
-import {Interface} from "@/views/interface/data";
-import {StateType as ProjectStateType} from "@/store/project";
 import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
-import {NotificationKeyCommon} from "@/utils/const";
+
+import {Interface} from "@/views/component/debug/data";
+import {StateType as InterfaceStateType} from "@/views/component/debug/store";
+import {StateType as EnvironmentStateType} from "@/store/environment";
 
 const { t } = useI18n();
 
-const store = useStore<{ Interface: InterfaceStateType, ProjectGlobal: ProjectStateType, Environment: EnvironmentStateType }>();
-const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
-const environmentData = computed<any>(() => store.state.Environment.environmentData);
-const validExtractorVariablesData = computed(() => store.state.Interface.validExtractorVariablesData);
+const store = useStore<{ InterfaceState: InterfaceStateType, EnvironmentState: EnvironmentStateType }>();
+const interfaceData = computed<Interface>(() => store.state.InterfaceState?.interfaceData);
+const validExtractorVariablesData = computed<any>(() => store.state.InterfaceState?.validExtractorVariablesData);
+const environmentData = computed<any>(() => store.state.EnvironmentState?.environmentData);
 
 const requestVariableVisible = ref(false)
 

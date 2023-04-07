@@ -60,7 +60,7 @@ import { ref, computed, defineEmits } from 'vue';
 import { useStore } from 'vuex';
 import { globalParamscolumns, tabPaneList } from '../../config';
 import { StateType as ProjectStateType } from "@/store/project";
-import { StateType as ProjectSettingStateType } from "@/views/ProjectSetting/store";
+import { StateType as ProjectSettingStateType } from "@/views/projectSetting/store";
 
 const emits = defineEmits(['addGlobalParams', 'handleGlobalParamsChange', 'handleSaveGlobalParams']);
 

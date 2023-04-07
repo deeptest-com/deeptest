@@ -13,7 +13,7 @@
     <template #title>
       <a-row type="flex" style="align-items: center;width: 100%">
         <a-col :span="8">
-          <EditAndShowField :value="endpointDetail.title" @update="updateTitle"/>
+          <EditAndShowField placeholder="修改标题" :value="endpointDetail.title" @update="updateTitle"/>
         </a-col>
       </a-row>
     </template>
@@ -57,7 +57,7 @@ import {
   computed,
 } from 'vue';
 import EndpointBasicInfo from './EndpointBasicInfo.vue';
-import EditAndShowField from './EditAndShowField.vue';
+import EditAndShowField from '@/components/EditAndShow/index.vue';
 
 import EndpointDefine from './Define/index.vue';
 import EndpointDebug from './Debug/index.vue';

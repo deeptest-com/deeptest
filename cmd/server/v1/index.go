@@ -26,9 +26,10 @@ type IndexModule struct {
 
 	MockModule *router.MockModule `inject:""`
 
-	ProjectModule  *router.ProjectModule  `inject:""`
-	DatapoolModule *router.DatapoolModule `inject:""`
-	SnippetModule  *router.SnippetModule  `inject:""`
+	ProjectModule    *router.ProjectModule     `inject:""`
+	ProjectPerModule *router.ProjectPermModule `inject:""`
+	DatapoolModule   *router.DatapoolModule    `inject:""`
+	SnippetModule    *router.SnippetModule     `inject:""`
 
 	InterfaceModule   *router.InterfaceModule   `inject:""`
 	ImportModule      *router.ImportModule      `inject:""`
@@ -54,7 +55,7 @@ type IndexModule struct {
 	ScenarioReportModule *router.ScenarioReportModule `inject:""`
 	PlanReportModule     *router.PlanReportModule     `inject:""`
 	SummaryModule        *router.SummaryModule        `inject:""`
-	//MessageModule        *router.MessageModule        `inject:""`
+	MessageModule        *router.MessageModule        `inject:""`
 }
 
 func NewIndexModule() *IndexModule {
@@ -83,6 +84,7 @@ func (m *IndexModule) Party() module.WebModule {
 		m.MockModule.Party(),
 
 		m.ProjectModule.Party(),
+		m.ProjectPerModule.Party(),
 		m.DatapoolModule.Party(),
 		m.SnippetModule.Party(),
 
@@ -112,11 +114,11 @@ func (m *IndexModule) Party() module.WebModule {
 		m.ScenarioReportModule.Party(),
 		m.PlanReportModule.Party(),
 		m.SummaryModule.Party(),
-		//m.MessageModule.Party(),
 
 		m.DebugModule.Party(),
 		m.InvocationModule.Party(),
 		m.ProcessorInvocationModule.Party(),
+		m.MessageModule.Party(),
 	}
 	return module.NewModule(consts.ApiPath, handler, modules...)
 }

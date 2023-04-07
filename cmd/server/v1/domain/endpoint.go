@@ -16,18 +16,34 @@ type EndpointReqPaginate struct {
 	ServeVersion string `json:"serveVersion"`
 }
 
+type OpenApiParam struct {
+	domain.Param
+	Format      string `json:"format"`
+	Example     string `json:"example"`
+	Pattern     string `json:"pattern"`
+	MinLength   int64  `json:"minLength"`
+	MaxLength   int64  `json:"maxLength"`
+	Default     string `json:"default"`
+	MultipleOf  int64  `json:"multipleOf"`
+	MinItems    int64  `json:"minItems"`
+	MaxItems    int64  `json:"maxItems"`
+	UniqueItems bool   `json:"uniqueItems"`
+	Ref         string `json:"ref"`
+}
+
 type EndpointReq struct {
-	ID         int64           `json:"id"`
-	ProjectId  int64           `json:"projectId"`
-	ServeId    int64           `json:"serveId"`
-	Status     int64           `json:"status"`
-	Title      string          `json:"title" validate:"required"`
-	Path       string          `json:"path"`
-	Version    string          `json:"version"`
-	CreateUser string          `json:"CreateUser"`
-	CategoryId uint            `json:"categoryId"`
-	PathParams []domain.Param  `gorm:"-" json:"pathParams"`
-	Interfaces []InterfaceResp `gorm:"-" json:"interfaces"`
+	ID          int64           `json:"id"`
+	ProjectId   int64           `json:"projectId"`
+	ServeId     int64           `json:"serveId"`
+	Status      int64           `json:"status"`
+	Title       string          `json:"title" validate:"required"`
+	Path        string          `json:"path"`
+	Version     string          `json:"version"`
+	CreateUser  string          `json:"CreateUser"`
+	CategoryId  uint            `json:"categoryId"`
+	PathParams  []OpenApiParam  `gorm:"-" json:"pathParams"`
+	Interfaces  []InterfaceResp `gorm:"-" json:"interfaces"`
+	Description string          `json:"description"`
 }
 
 type EndpointRes struct {
@@ -35,7 +51,7 @@ type EndpointRes struct {
 	Status     int64           `json:"status"`
 	Title      string          `json:"title"`
 	Version    string          `json:"version"`
-	PathParams []domain.Param  `json:"pathParams"`
+	PathParams []OpenApiParam  `json:"pathParams"`
 	Interfaces []InterfaceResp `json:"interfaces"`
 }
 

@@ -52,3 +52,19 @@ export async function getUserList(name: any): Promise<any> {
         method: 'get',
     });
 }
+
+export async function getRoles(): Promise<any> {
+    return request({
+        url: `/${apiPath}/perms/rolesList`,
+        method: 'get',
+    });
+}
+
+
+export async function changeRole(params:object): Promise<any> {
+    return request({
+        url: `/${apiPath}/changeUserRole`,
+        method: 'post',
+        data:params
+    });
+}

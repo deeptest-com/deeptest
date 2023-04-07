@@ -27,3 +27,10 @@ export interface PaginationConfig {
   showSizeChanger: boolean;
   showQuickJumper: boolean;
 }
+
+export interface Member {
+  username:string;
+  email:string;
+  roleName:string;
+  userId:number;
+}

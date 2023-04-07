@@ -4,6 +4,9 @@ export interface WsMsg {
   data: any
   time: string
 
+  token: string
+  tokenType: string
+
   conn: string
 }
 

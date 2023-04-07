@@ -44,7 +44,7 @@ import { computed ,defineEmits} from "vue";
 import { useStore } from "vuex";
 import { globalVarsColumns } from '../../config';
 import { StateType as ProjectStateType } from "@/store/project";
-import { StateType as ProjectSettingStateType } from "@/views/ProjectSetting/store";
+import { StateType as ProjectSettingStateType } from "@/views/projectSetting/store";
 
 // store 相关
 const store = useStore<{ ProjectGlobal: ProjectStateType, ProjectSetting: ProjectSettingStateType }>();

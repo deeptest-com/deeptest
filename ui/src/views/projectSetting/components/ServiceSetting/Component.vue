@@ -1,7 +1,7 @@
 <template>
   <div class="content">
     <div class="header">
-      <CustomForm 
+      <CustomForm
         :form-config="formConfig"
         :rules="rules"
         :search-placeholder="'输入组件名称搜索'"
@@ -98,7 +98,7 @@ import {
 } from 'vue';
 import { useStore } from 'vuex';
 import { Modal } from 'ant-design-vue';
-import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
+import { ExclamationCircleOutlined,CodeOutlined,BarsOutlined } from '@ant-design/icons-vue';
 import {schema2yaml} from '../../service';
 import SchemaEditor from '@/components/SchemaEditor/index.vue';
 import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
@@ -200,6 +200,20 @@ const edit = (record: any) => {
 
 // 保存组件
 async function handleAdd(formState: any) {
+  if(formState.name) {
+    formState.name = formState.name.trim();
+  }
+  // 判断组件名称必须是英文，复合 URL 规则
+  // 匹配由数字、26个英文字母或者下划线或者 - 组成的字符串
+  const reg = /^[a-zA-Z][\w-]*$/;
+  if (!reg.test(formState.name)) {
+    Modal.error({
+      title: '组件名称必须是英文、下划线或 -',
+      icon: createVNode(ExclamationCircleOutlined)
+    });
+    return;
+  }
+
   const result = await store.dispatch('ProjectSetting/saveSchema', {
     schemaInfo: {
       "name": formState.name,

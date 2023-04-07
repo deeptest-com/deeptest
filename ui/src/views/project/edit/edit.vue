@@ -25,7 +25,7 @@
               <a-form-item label="管理员" v-bind="validateInfos.adminId">
                 <a-select v-model:value="modelRef.adminId" show-search
                  @blur="validate('adminId', { trigger: 'blur' }).catch(() => {})">
-                 <a-select-option  v-for="(option,key) in options" :key=key :value="option.value">{{option.label}}</a-select-option>
+                 <a-select-option  v-for="(option,key) in options" :key=key :value="option.id">{{option.label}}</a-select-option>
                 </a-select>
               </a-form-item>
               <a-form-item label="项目简介" v-bind="validateInfos.desc">

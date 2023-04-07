@@ -65,3 +65,13 @@ func (s *ProjectService) RemoveMember(req v1.ProjectMemberRemoveReq) (err error)
 
 	return
 }
+
+func (s *ProjectService) UpdateMemberRole(req v1.UpdateProjectMemberReq) (err error) {
+	return s.ProjectRepo.UpdateUserRole(req)
+}
+
+func (s *ProjectService) GetCurrProjectByUser(userId uint) (currProject model.Project, err error) {
+	currProject, err = s.ProjectRepo.GetCurrProjectByUser(userId)
+
+	return
+}

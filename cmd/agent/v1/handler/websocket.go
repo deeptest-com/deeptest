@@ -30,6 +30,7 @@ type WebSocketCtrl struct {
 
 	ScenarioService *service.ScenarioService `inject:""`
 	PlanService     *service.PlanService     `inject:""`
+	MessageService  *service.MessageService  `inject:""`
 }
 
 func NewWebsocketCtrl() *WebSocketCtrl {
@@ -109,6 +110,11 @@ func (c *WebSocketCtrl) OnChat(wsMsg websocket.Message) (err error) {
 		ch = make(chan int, 1)
 		go func() {
 			c.PlanService.ExecPlan(&req.PlanExecReq, &wsMsg)
+		}()
+	} else if act == consts.ExecMessage {
+		ch = make(chan int, 1)
+		go func() {
+			c.MessageService.ExecMessage(&req.MessageReq, &wsMsg)
 		}()
 	}
 

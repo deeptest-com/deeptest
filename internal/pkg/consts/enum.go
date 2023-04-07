@@ -484,6 +484,7 @@ const (
 
 	ExecScenario ExecType = "execScenario"
 	ExecPlan     ExecType = "execPlan"
+	ExecMessage  ExecType = "execMessage"
 )
 
 func (e ExecType) String() string {

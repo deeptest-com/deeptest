@@ -12,8 +12,8 @@ import {
 import Actions from "./Actions.vue";
 import ExtraActions from "./ExtraActions.vue";
 import DataTypeSetting from './DataTypeSetting.vue';
-import {cloneByJSON} from "@/utils/object";
-import {removeExtraInfo, addExtraInfo, isArray, isObject} from './utils'
+import cloneDeep from "lodash/cloneDeep";
+import {removeExtraInfo, addExtraInfo, isArray, isObject,treeLevelWidth} from './utils';
 
 export default defineComponent({
     name: 'SchemeEditor',
@@ -60,13 +60,12 @@ export default defineComponent({
             })
             parent.properties = {...newObj};
         }
-        const dataTypeChange = (tree:any, newVal) => {
-            const [key, value]:any = Object.entries(newVal)[0];
+        const dataTypeChange = (tree: any, newVal) => {
+            const [key, value]: any = Object.entries(newVal)[0];
             if (key) {
                 tree.type = key;
                 tree = Object.assign(tree, value);
             }
-            console.log('832', key, value,tree)
         }
         const moveUp = (keyIndex: any, parent: any) => {
             const keys = Object.keys(parent.properties);
@@ -110,10 +109,8 @@ export default defineComponent({
                 parent.required.push(key);
             }
         };
-        const addDesc = (keyIndex: any, parent: any) => {
-            const keys = Object.keys(parent.properties);
-            const key = keys[keyIndex];
-            // ::::todo 添加描述逻辑
+        const addDesc = (tree: any, desc: string) => {
+            tree.description = desc;
         };
         const del = (keyIndex: any, parent: any) => {
             const keys = Object.keys(parent.properties);
@@ -124,28 +121,25 @@ export default defineComponent({
             })
             parent.properties = {...newObj};
         };
-
         watch(() => {
             return props.value
         }, (newVal) => {
-            const val = cloneByJSON(newVal);
+            const val = cloneDeep(newVal);
             data.value = addExtraInfo(val);
         }, {
             immediate: true,
             deep: true
         });
-
         watch(() => {
             return data.value
         }, (newVal) => {
-            const newObj = removeExtraInfo(cloneByJSON(newVal));
-            console.log('832 emit change',newObj);
+            const newObj = removeExtraInfo(cloneDeep(newVal));
+            console.log('832 emit change', newObj);
             emit('change', newObj);
         }, {
             immediate: true,
             deep: true
         });
-
         const renderAction = (isRoot: any, isFirst: any, isLast: boolean, keyIndex: number, parent: any) => {
             return <div class={'action'}>
                 <Actions
@@ -157,52 +151,96 @@ export default defineComponent({
                     onCopy={copy.bind(this, keyIndex, parent)}/>
             </div>
         }
-        const renderExtraAction = (isRoot: any, keyIndex: number, parent: any) => {
+        const renderExtraAction = (isRoot: any, keyIndex: number, parent: any, tree: any) => {
             return <div class={'extraAction'}>
                 <ExtraActions
                     isRoot={isRoot}
-                    onAddDesc={addDesc.bind(this, keyIndex, parent)}
+                    value={tree}
+                    onAddDesc={addDesc.bind(this, tree)}
                     onDel={del.bind(this, keyIndex, parent)}
                     onSetRequire={setRequire.bind(this, keyIndex, parent)}/>
             </div>
         }
-
         const renderDataTypeSetting = (tree) => {
-            return <DataTypeSetting refsOptions={props.refsOptions}
-                                    value={tree}
-                                    onChange={dataTypeChange.bind(this, tree)}/>
+            return <>
+                <DataTypeSetting refsOptions={props.refsOptions}
+                                 value={tree}
+                                 onChange={dataTypeChange.bind(this, tree)}/>
+                {isObject(tree.type) ?
+                    <span class={'baseInfoSpace'}>{`{${Object.keys(tree.properties || {}).length}}`}</span> : null}
+            </>
         }
-
-        const treeLevelWidth = 24;
+        const renderKeyName = (depth: number, keyName: string, keyIndex: number, parent: any) => {
+            if (depth === 1) return null;
+            return <>
+                <span class={'baseInfoKey'}
+                      contenteditable={true}
+                      onInput={updateKeyName.bind(this, keyName, keyIndex, parent)}>
+                    {keyName}
+                </span>
+                <span class={'baseInfoSpace'}>:</span>
+            </>
+        }
+        const renderExpandIcon = (isExpand: boolean, tree: any) => {
+            if (isExpand) {
+                return <DownOutlined onClick={expandIt.bind(this, tree)} class={'expandIcon'}/>
+            } else {
+                return <RightOutlined onClick={expandIt.bind(this, tree)} class={'expandIcon'}/>
+            }
+        }
+        const renderHorizontalLine = (depth: number) => {
+            if (depth === 1) return null;
+            return <div class={'horizontalLine'}
+                        style={{left: `${(depth - 1) * treeLevelWidth + 8}px`}}/>
+        }
+        const renderNormalType = (options: any) => {
+            return (<div key={options.index}
+                         class={'leafNode'} style={{'paddingLeft': `${options.depth * treeLevelWidth}px`}}>
+                <div class={'leafNodeHorizontalLine'}
+                     style={{left: `${(options.depth - 1) * treeLevelWidth + 8}px`}}/>
+                <div class={'baseInfo'}>
+                    {renderKeyName(options.depth, options.key, options.index, options.tree)}
+                    {renderDataTypeSetting(options.value)}
+                </div>
+                {renderAction(options.isRoot, options.isFirst, options.isLast, options.index, options.tree)}
+                {renderExtraAction(options.isRoot, options.index, options.tree, options.value)}
+            </div>)
+        }
+        const renderDirectoryText = (options) => {
+            const {depth, tree, keyName, keyIndex, isFirst, isLast, parent, isRoot, isExpand} = options;
+            return <div class={'directoryText'}
+                        style={{'paddingLeft': `${depth * treeLevelWidth}px`}}>
+                {renderHorizontalLine(depth)}
+                <div class={'baseInfo'}>
+                    {renderExpandIcon(isExpand, tree)}
+                    {renderKeyName(depth, keyName, keyIndex, parent)}
+                    {renderDataTypeSetting(tree)}
+                    {isObject(tree.type) ? <PlusOutlined onClick={addProps.bind(this, tree)} class={'addIcon'}/> : null}
+                </div>
+                {renderAction(isRoot, isFirst, isLast, keyIndex, parent)}
+                {renderExtraAction(isRoot, keyIndex, parent, tree)}
+            </div>
+        }
         const renderTree = (tree: any, option: any) => {
             if (!tree) {
                 return null
             }
             const {keyIndex, parent, isFirst, isLast, keyName} = option;
+            // 渲染对象类型节点
             if (isObject(tree.type)) {
                 const {isRoot, isExpand, depth} = tree?.extraViewInfo || {};
                 return <div class={{'directoryNode': true, "rootNode": isRoot}}>
-                    <div class={'directoryText'}
-                         style={{'paddingLeft': `${depth * treeLevelWidth}px`}}>
-                        {!isRoot ?
-                            <div class={'horizontalLine'}
-                                 style={{left: `${(depth - 1) * treeLevelWidth + 8}px`}}></div> : null}
-
-                        <div class={'baseInfo'}>
-                            {isExpand ? <DownOutlined onClick={expandIt.bind(this, tree)} class={'expandIcon'}/> : null}
-                            {!isExpand ?
-                                <RightOutlined onClick={expandIt.bind(this, tree)} class={'expandIcon'}/> : null}
-                            {!isRoot ? <span class={'baseInfoKey'}
-                                             contenteditable={true}
-                                             onInput={updateKeyName.bind(this, keyName, keyIndex, parent)}>{keyName}</span> : null}
-                            {!isRoot ? <span class={'baseInfoSpace'}>:</span> : null}
-                            {renderDataTypeSetting(tree)}
-                            <span class={'baseInfoSpace'}>{`{${Object.keys(tree.properties || {}).length}}`}</span>
-                            <PlusOutlined onClick={addProps.bind(this, tree)} class={'addIcon'}/>
-                        </div>
-                        {renderAction(isRoot, isFirst, isLast, keyIndex, parent)}
-                        {renderExtraAction(isRoot, keyIndex, parent)}
-                    </div>
+                    {renderDirectoryText({
+                        depth,
+                        tree,
+                        keyName,
+                        keyIndex,
+                        isFirst,
+                        isLast,
+                        parent,
+                        isRoot,
+                        isExpand
+                    })}
                     <div class={{
                         'directoryContainer': tree,
                         'directoryContainerExpand': isExpand,
@@ -223,86 +261,15 @@ export default defineComponent({
                                         isLast: isLast,
                                     });
                                 } else {
-                                    return (<div
-                                        key={index}
-                                        class={'leafNode'} style={{'paddingLeft': `${depth * treeLevelWidth}px`}}>
-                                        <div class={'leafNodeHorizontalLine'}
-                                             style={{left: `${(depth - 1) * treeLevelWidth + 8}px`}}/>
-                                        <div class={'baseInfo'}>
-                                            <span class={'baseInfoKey'} contenteditable={true}
-                                                  onInput={updateKeyName.bind(this, key, index, tree)}>{key}</span>
-                                            <span class={'baseInfoSpace'}>:</span>
-                                            {renderDataTypeSetting(value)}
-                                        </div>
-                                        {renderAction(isRoot, isFirst, isLast, index, tree)}
-                                        {renderExtraAction(isRoot, index, tree)}
-                                    </div>)
-                                }
-                            })
-                        }
-                    </div>
-                    <div class={'verticalLine'} style={{left: `${depth * treeLevelWidth + 8}px`}}></div>
-                </div>
-            }
-            if (isArray(tree.type)) {
-                const {isRoot, isExpand, depth} = tree?.extraViewInfo || {};
-                return <div class={{'directoryNode': true, "rootNode": isRoot}}>
-                    <div class={'directoryText'}
-                         style={{'paddingLeft': `${depth * treeLevelWidth}px`}}>
-                        {!isRoot ? <div class={'horizontalLine'}
-                                        style={{left: `${(depth - 1) * treeLevelWidth + 8}px`}}></div> : null}
-                        <div class={'baseInfo'}>
-                            {isExpand ?
-                                <DownOutlined onClick={expandIt.bind(this, tree)} class={'expandIcon'}/> : null}
-                            {!isExpand ?
-                                <RightOutlined onClick={expandIt.bind(this, tree)} class={'expandIcon'}/> : null}
-                            {!isRoot ? <span class={'baseInfoKey'}
-                                             contenteditable={true}
-                                             onInput={updateKeyName.bind(this, keyName, keyIndex, parent)}>{keyName}</span> : null}
-                            {!isRoot ? <span class={'baseInfoSpace'}>:</span> : null}
-                            {renderDataTypeSetting(tree)}
-                            <span class={'baseInfoSpace'}>{`{${Object.keys(tree.properties || {}).length}}`}</span>
-                            <PlusOutlined onClick={addProps.bind(this, tree)} class={'addIcon'}/>
-                        </div>
-
-                        {renderAction(isRoot, isFirst, isLast, keyIndex, parent)}
-                        {renderExtraAction(isRoot, keyIndex, parent)}
-
-                    </div>
-                    <div class={{
-                        'directoryContainer': tree,
-                        'directoryContainerExpand': isExpand,
-                        'directoryContainerFold': !isExpand
-                    }}>
-                        {
-                            tree.items && Object.entries(tree.items.properties).map(([key, value]: any, index: number, arr: any) => {
-                                const isFirst = index === 0;
-                                const isLast = index === arr.length - 1;
-                                const depth = value.extraViewInfo.depth;
-                                if (isObject(value.type)) {
-                                    return renderTree(value, {
-                                        keyName: key,
-                                        keyIndex: index,
-                                        tree: true,
-                                        parent: tree,
+                                    return renderNormalType({
+                                        index: key,
+                                        depth: depth,
+                                        key: key,
+                                        tree: tree,
+                                        value: value,
                                         isFirst: isFirst,
                                         isLast: isLast,
-                                    });
-                                } else {
-                                    return (<div
-                                        key={index}
-                                        class={'leafNode'} style={{'paddingLeft': `${depth * treeLevelWidth}px`}}>
-                                        <div class={'leafNodeHorizontalLine'}
-                                             style={{left: `${(depth - 1) * treeLevelWidth + 8}px`}}/>
-                                        <div class={'baseInfo'}>
-                                            <span class={'baseInfoKey'} contenteditable={true}
-                                                  onInput={updateKeyName.bind(this, key, index, tree)}>{key}</span>
-                                            <span class={'baseInfoSpace'}>:</span>
-                                            {renderDataTypeSetting(value)}
-                                        </div>
-                                        {renderAction(isRoot, isFirst, isLast, index, tree)}
-                                        {renderExtraAction(isRoot, index, tree)}
-                                    </div>)
+                                    })
                                 }
                             })
                         }
@@ -310,6 +277,48 @@ export default defineComponent({
                     <div class={'verticalLine'} style={{left: `${depth * treeLevelWidth + 8}px`}}></div>
                 </div>
             }
+            // 渲染数组类型节点
+            // if (isArray(tree.type)) {
+            //     const {isRoot, isExpand, depth} = tree?.extraViewInfo || {};
+            //     return <div class={{'directoryNode': true, "rootNode": isRoot}}>
+            //         {renderDirectoryText({depth, tree, keyName, keyIndex, isFirst, isLast, parent, isRoot, isExpand})}
+            //         <div class={{
+            //             'directoryContainer': tree,
+            //             'directoryContainerExpand': isExpand,
+            //             'directoryContainerFold': !isExpand
+            //         }}>
+            //             {
+            //                 tree.items && Object.entries(tree.items.properties).map(([key, value]: any, index: number, arr: any) => {
+            //                     const isFirst = index === 0;
+            //                     const isLast = index === arr.length - 1;
+            //                     const depth = value.extraViewInfo.depth;
+            //                     if (isObject(value.type)) {
+            //                         return renderTree(value, {
+            //                             keyName: key,
+            //                             keyIndex: index,
+            //                             tree: true,
+            //                             parent: tree,
+            //                             isFirst: isFirst,
+            //                             isLast: isLast,
+            //                         });
+            //                     } else {
+            //                         return renderNormalType({
+            //                             index: key,
+            //                             depth: depth,
+            //                             key: key,
+            //                             tree: tree,
+            //                             value: value,
+            //                             isFirst: isFirst,
+            //                             isLast: isLast,
+            //                             isRoot: isRoot,
+            //                         })
+            //                     }
+            //                 })
+            //             }
+            //         </div>
+            //         <div class={'verticalLine'} style={{left: `${depth * treeLevelWidth + 8}px`}}></div>
+            //     </div>
+            // }
         }
         return () => (
             <div class={'schemaEditor-content'} style={props.contentStyle}>

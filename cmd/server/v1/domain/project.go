@@ -37,3 +37,13 @@ type ProjectBase struct {
 	AdminId        uint   `json:"adminId"`
 	AdminName      string `gorm:"-" json:"adminName"`
 }
+
+type ProjectUserPermsPaginate struct {
+	_domain.PaginateReq
+}
+
+type UpdateProjectMemberReq struct {
+	ProjectId     uint `json:"projectId"`
+	ProjectRoleId uint `json:"projectRoleId"`
+	UserId        uint `json:"userId"`
+}

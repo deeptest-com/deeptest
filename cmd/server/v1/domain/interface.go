@@ -37,6 +37,9 @@ type InterfaceImportReq struct {
 	File string `json:"file"`
 }
 
+type OpenApiHeader OpenApiParam
+type OpenApiCookie OpenApiParam
+
 type InterfaceResp struct {
 	ID             int64                 `json:"id"`
 	Url            string                `json:"url"`
@@ -45,9 +48,9 @@ type InterfaceResp struct {
 	Description    string                `json:"description"`
 	Security       string                `json:"security"`
 	Method         string                `gorm:"default:GET" json:"method"`
-	Params         []domain.Param        `gorm:"-" json:"params"`
-	Headers        []domain.Header       `gorm:"-" json:"headers"`
-	Cookies        []domain.Cookie       `gorm:"-" json:"cookies"`
+	Params         []OpenApiParam        `gorm:"-" json:"params"`
+	Headers        []OpenApiHeader       `gorm:"-" json:"headers"`
+	Cookies        []OpenApiCookie       `gorm:"-" json:"cookies"`
 	RequestBody    domain.RequestBody    `gorm:"default:{}" json:"requestBody"`
 	ResponseBodies []domain.ResponseBody `gorm:"default:{}" json:"ResponseBodies"`
 	Body           string                `gorm:"default:{}" json:"body"`

@@ -4,7 +4,7 @@ import { ResponseData } from '@/utils/request';
 import {SelectTypes} from 'ant-design-vue/es/select';
 import { Project, QueryResult, QueryParams, PaginationConfig } from './data.d';
 import {
-    query, save, remove, detail, getUserList,
+    query, save, remove, detail, getUserList,getRoles
 } from './service';
 
 export interface StateType {
@@ -12,6 +12,7 @@ export interface StateType {
     detailResult: Project;
     queryParams: any;
     userList:SelectTypes["options"];
+    roles:SelectTypes["options"];
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
@@ -21,6 +22,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setItem: Mutation<StateType>;
         setQueryParams: Mutation<StateType>;
         setUserList:Mutation<StateType>;
+        setRoles:Mutation<StateType>;
     };
     actions: {
         queryProject: Action<StateType, StateType>;
@@ -28,6 +30,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         saveProject: Action<StateType, StateType>;
         removeProject: Action<StateType, StateType>;
         getUserList: Action<StateType, StateType>;
+        getRoles:Action<StateType, StateType>;
     };
 }
 const initState: StateType = {
@@ -44,6 +47,7 @@ const initState: StateType = {
     detailResult: {} as Project,
     queryParams: {},
     userList:[] as SelectTypes["options"] ,
+    roles:[] as SelectTypes["options"],
 };
 
 const StoreModel: ModuleType = {
@@ -64,8 +68,12 @@ const StoreModel: ModuleType = {
         },
         setUserList(state, payload) {
             state.userList = payload;
-            console.log(payload,"---------",state.userList )
         },
+        setRoles(state, payload) {
+            state.roles = payload;
+        },
+        
+        
     },
     actions: {
         async queryProject({ commit }, params: QueryParams ) {
@@ -136,6 +144,17 @@ const StoreModel: ModuleType = {
                   item.value = item.username
                 })
                 commit('setUserList',data.result);
+              }
+        },
+        async getRoles({ commit }) {
+            const response: ResponseData = await getRoles();
+            const { data } = response;
+            if (response.code === 0) {
+                data.result.forEach((item) => {
+                  item.label = item.displayName;
+                  item.value = item.name
+                })
+                commit('setRoles',data.result);
               }
         },
     }

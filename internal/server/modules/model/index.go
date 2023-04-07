@@ -110,7 +110,9 @@ var (
 		&EnvironmentParam{},
 		&Message{},
 		&MessageRead{},
-
 		&Debug{},
+		&ProjectPerm{},
+		&ProjectRolePerm{},
+		&ProjectRoleMenu{},
 	}
 )

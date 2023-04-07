@@ -32,17 +32,18 @@ type OpenApiParam struct {
 }
 
 type EndpointReq struct {
-	ID         int64           `json:"id"`
-	ProjectId  int64           `json:"projectId"`
-	ServeId    int64           `json:"serveId"`
-	Status     int64           `json:"status"`
-	Title      string          `json:"title" validate:"required"`
-	Path       string          `json:"path"`
-	Version    string          `json:"version"`
-	CreateUser string          `json:"CreateUser"`
-	CategoryId uint            `json:"categoryId"`
-	PathParams []OpenApiParam  `gorm:"-" json:"pathParams"`
-	Interfaces []InterfaceResp `gorm:"-" json:"interfaces"`
+	ID          int64           `json:"id"`
+	ProjectId   int64           `json:"projectId"`
+	ServeId     int64           `json:"serveId"`
+	Status      int64           `json:"status"`
+	Title       string          `json:"title" validate:"required"`
+	Path        string          `json:"path"`
+	Version     string          `json:"version"`
+	CreateUser  string          `json:"CreateUser"`
+	CategoryId  uint            `json:"categoryId"`
+	PathParams  []OpenApiParam  `gorm:"-" json:"pathParams"`
+	Interfaces  []InterfaceResp `gorm:"-" json:"interfaces"`
+	Description string          `json:"description"`
 }
 
 type EndpointRes struct {

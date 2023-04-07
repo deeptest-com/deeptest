@@ -2,18 +2,19 @@ package model
 
 type Endpoint struct {
 	BaseModel
-	Title      string              `json:"title"`
-	ProjectId  int64               `json:"projectId"`
-	ServeId    uint                `json:"serveId"`
-	Path       string              `json:"path"`
-	Version    string              `json:"version"`
-	CreateUser string              `json:"createUser"`
-	Status     int64               `json:"status"`
-	CategoryId uint                `json:"categoryId"`
-	PathParams []EndpointPathParam `gorm:"-" json:"pathParams"`
-	Interfaces []EndpointInterface `gorm:"-" json:"interfaces"`
-	Versions   []EndpointVersion   `gorm:"-" json:"versions"`
-	ServeName  string              `gorm:"-" json:"serveName"`
+	Title       string              `json:"title"`
+	ProjectId   int64               `json:"projectId"`
+	ServeId     uint                `json:"serveId"`
+	Path        string              `json:"path"`
+	Version     string              `json:"version"`
+	CreateUser  string              `json:"createUser"`
+	Status      int64               `json:"status"`
+	CategoryId  uint                `json:"categoryId"`
+	PathParams  []EndpointPathParam `gorm:"-" json:"pathParams"`
+	Interfaces  []EndpointInterface `gorm:"-" json:"interfaces"`
+	Versions    []EndpointVersion   `gorm:"-" json:"versions"`
+	ServeName   string              `gorm:"-" json:"serveName"`
+	Description string              `json:"description"`
 }
 
 func (Endpoint) TableName() string {

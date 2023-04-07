@@ -76,6 +76,7 @@ func (s *UserService) UpdateAvatar(id uint, avatar string) error {
 
 func (s *UserService) Invite(req v1.InviteUserReq) (user model.SysUser, bizErr *_domain.BizErr) {
 	_, err := s.UserRepo.InviteToProject(req)
+
 	if err != nil {
 		bizErr = &_domain.BizErr{Code: _domain.ErrNoUser.Code}
 		return

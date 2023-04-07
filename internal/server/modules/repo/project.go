@@ -373,16 +373,17 @@ func (r *ProjectRepo) AddRoleForProjectMembers(users []v1.MemberResp) (res []v1.
 	return
 }
 func (r *ProjectRepo) RemoveMember(userId, projectId int) (err error) {
-	err = r.DB.Model(&model.ProjectMember{}).
-		Where("user_id = ? AND project_id = ?", userId, projectId).
-		Updates(map[string]interface{}{"deleted": true}).Error
-	if err != nil {
-		return
-	}
-
-	//err = r.DB.
-	//	Where("user_id = ? AND project_id", userId, projectId).
-	//	Delete(&model.ProjectMember{}).Error
+	/*
+		err = r.DB.Model(&model.ProjectMember{}).
+			Where("user_id = ? AND project_id = ?", userId, projectId).
+			Updates(map[string]interface{}{"deleted": true}).Error
+		if err != nil {
+			return
+		}
+	*/
+	err = r.DB.
+		Where("user_id = ? AND project_id=?", userId, projectId).
+		Delete(&model.ProjectMember{}).Error
 
 	return
 }

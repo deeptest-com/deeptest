@@ -105,7 +105,7 @@ const rulesRef = reactive({
   ]
 });
 
-const {resetFields, validate, validateInfos} = useForm(modelRef, rulesRef);
+const { validate, validateInfos} = useForm(modelRef, rulesRef);
 
 const submit = async (e: MouseEvent) => {
   validate().then(() => {
@@ -123,6 +123,7 @@ const submit = async (e: MouseEvent) => {
           message: `保存失败`,
         });
       }
+      close()
     })
   })
 }

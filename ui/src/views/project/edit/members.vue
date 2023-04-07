@@ -35,16 +35,18 @@
           </template>
 
           
-          <template #role="{text}">
+          <template #role="{record}">
             <div class="customTitleColRender">
               <a-select
-                  :value="text"
+                  :value="record.roleId"
                   style="width: 100px"
                   :size="'small'"
-                  placeholder="请修改接口状态"
-                  @change="handleChangeRole"
+                  placeholder="请选中角色"
+                  @change="(val) => {
+                  handleChangeRole(val,record);
+                  }"
               >
-              <a-select-option  v-for="(option,key) in roles" :key=key :value="option.value">{{option.label}}</a-select-option>
+              <a-select-option  v-for="(option,key) in roles" :key=key :value="option.id">{{option.label}}</a-select-option>
               </a-select>
             </div>
           </template>
@@ -235,12 +237,12 @@ const getRoles = ()=>{
 const title = ref("邀请用户")
 const cancal = ()=>{
   visible.value = false
+  getMembers(1)
+  
 }
 
-const handleChangeRole = (val:any)=>{
-  console.log(val)
- // changeRole({projectId:projectId,projectRoleId})
-
+const handleChangeRole = async (val:any,record:any)=>{
+  await changeRole({projectId:projectId,projectRoleId:val,userId:record.id})
 }
 
 

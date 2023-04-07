@@ -18,9 +18,11 @@ type UserReqPaginate struct {
 }
 
 type MemberResp struct {
-	Id       uint   `json:"id"`
-	Username string `json:"username"`
-	Email    string `json:"email"`
+	Id            uint            `json:"id"`
+	Username      string          `json:"username"`
+	Email         string          `json:"email"`
+	Name          consts.RoleType `json:"roleName"`
+	ProjectRoleId uint            `json:"roleId"`
 }
 
 type UserResp struct {
@@ -39,9 +41,10 @@ type UpdateUserReq struct {
 }
 
 type InviteUserReq struct {
-	Username  string
+	UserId    uint
 	Email     string
 	ProjectId int
+	RoleName  consts.RoleType
 }
 
 type UserBase struct {

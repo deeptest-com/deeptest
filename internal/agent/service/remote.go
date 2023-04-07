@@ -378,3 +378,44 @@ func (s *RemoteService) SubmitPlanResult(result agentDomain.PlanExecResult, plan
 
 	return
 }
+
+func (s *RemoteService) GetMessageToExec(req *agentExec.MessageExecReq) (ret *agentExec.MessageExecObj) {
+	url := "message/unreadCount"
+
+	httpReq := v1.BaseRequest{
+		Url:               _httpUtils.AddSepIfNeeded(req.ServerUrl) + url,
+		AuthorizationType: consts.BearerToken,
+		BearerToken: v1.BearerToken{
+			Token: req.Token,
+		},
+	}
+
+	resp, err := httpHelper.Get(httpReq)
+	if err != nil {
+		logUtils.Infof("get exec obj failed, error, %s", err.Error())
+		return
+	}
+
+	if resp.StatusCode != consts.OK {
+		logUtils.Infof("get exec obj failed, response %v", resp)
+		return
+	}
+
+	respContent := _domain.Response{}
+	json.Unmarshal([]byte(resp.Content), &respContent)
+
+	if respContent.Code != 0 {
+		logUtils.Infof("get exec obj failed, response %v", resp.Content)
+		return
+	}
+
+	bytes, err := json.Marshal(respContent.Data)
+	if respContent.Code != 0 {
+		logUtils.Infof("get exec obj failed, response %v", resp.Content)
+		return
+	}
+
+	json.Unmarshal(bytes, &ret)
+
+	return
+}

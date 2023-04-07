@@ -319,11 +319,6 @@ func (r *UserRepo) InviteToProject(req domain.InviteUserReq) (user model.SysUser
 		return
 	}
 
-	err = r.AddProfileForUser(&user, uint(req.ProjectId))
-	if err != nil {
-		return
-	}
-
 	return
 }
 

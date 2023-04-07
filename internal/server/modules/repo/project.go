@@ -9,7 +9,6 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
-	_commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"go.uber.org/zap"
@@ -313,8 +312,9 @@ func (r *ProjectRepo) AddProjectRootPlanCategory(projectId uint) (err error) {
 func (r *ProjectRepo) Members(req v1.ProjectReqPaginate, projectId int) (data _domain.PageData, err error) {
 	req.Order = "sys_user.created_at"
 	db := r.DB.Model(&model.SysUser{}).
-		Select("sys_user.id, sys_user.username, sys_user.email, m.project_role_id").
+		Select("sys_user.id, sys_user.username, sys_user.email, m.project_role_id, r.name").
 		Joins("left join biz_project_member m on sys_user.id=m.user_id").
+		Joins("left join biz_project_role r on m.project_role_id=r.id").
 		Where("m.project_id = ?", projectId)
 	if req.Keywords != "" {
 		db = db.Where("sys_user.username LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords))
@@ -336,42 +336,11 @@ func (r *ProjectRepo) Members(req v1.ProjectReqPaginate, projectId int) (data _d
 		return
 	}
 
-	users, err = r.AddRoleForProjectMembers(users)
-	if err != nil {
-		logUtils.Errorf("add role for project members error", zap.String("error:", err.Error()))
-		return
-	}
 	data.Populate(users, count, req.Page, req.PageSize)
 
 	return
 }
 
-func (r *ProjectRepo) AddRoleForProjectMembers(users []v1.MemberResp) (res []v1.MemberResp, err error) {
-	var roleIds []uint
-	for _, v := range users {
-		roleIds = append(roleIds, v.ProjectRoleId)
-	}
-	roleIds = _commonUtils.ArrayRemoveUintDuplication(roleIds)
-
-	roles, err := r.ProjectRoleRepo.FindByIds(roleIds)
-	if err != nil {
-		logUtils.Errorf("get roles error", zap.String("error:", err.Error()))
-		return
-	}
-
-	roleIdNameMap := make(map[uint]consts.RoleType)
-	for _, v := range roles {
-		roleIdNameMap[v.ID] = v.Name
-	}
-
-	for k, v := range users {
-		if roleName, ok := roleIdNameMap[v.ProjectRoleId]; ok {
-			users[k].RoleName = roleName
-		}
-	}
-	res = users
-	return
-}
 func (r *ProjectRepo) RemoveMember(userId, projectId int) (err error) {
 	/*
 		err = r.DB.Model(&model.ProjectMember{}).

@@ -19,7 +19,8 @@
               <EnvironmentOutlined/>
             </a-tooltip>
           </template>
-          <RequestEnv></RequestEnv>
+
+          <RequestEnv v-if="tabKey==='env'"></RequestEnv>
         </a-tab-pane>
 
         <a-tab-pane key="history">
@@ -29,7 +30,8 @@
               <HistoryOutlined/>
             </a-tooltip>
           </template>
-          <RequestHistory></RequestHistory>
+
+          <RequestHistory v-if="tabKey==='history'"></RequestHistory>
         </a-tab-pane>
 
         <a-tab-pane key="datapool">
@@ -39,7 +41,8 @@
               <TableOutlined />
             </a-tooltip>
           </template>
-          <Datapool></Datapool>
+
+          <Datapool v-if="tabKey==='datapool'"></Datapool>
         </a-tab-pane>
 
       </a-tabs>
@@ -70,9 +73,6 @@ provide('usedBy', UsedBy.interface)
 const useForm = Form.useForm;
 
 const {t} = useI18n();
-const store = useStore<{ Interface1: StateType }>();
-
-const interfaceData = computed<Interface>(() => store.state.Interface1.interfaceData);
 
 const tabKey = ref('env')
 

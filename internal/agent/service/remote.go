@@ -17,9 +17,9 @@ import (
 type RemoteService struct {
 }
 
-// for interface invocation
+// for interface invocation in both endpoint and scenario
 func (s *RemoteService) GetInterfaceToExec(req domain.InvocationReq) (ret v1.DebugRequest) {
-	url := fmt.Sprintf("invocations/loadInterfaceExecData")
+	url := fmt.Sprintf("debugs/loadData")
 	body, err := json.Marshal(req.Data)
 	if err != nil {
 		logUtils.Infof("marshal request data failed, error, %s", err.Error())
@@ -66,7 +66,7 @@ func (s *RemoteService) GetInterfaceToExec(req domain.InvocationReq) (ret v1.Deb
 	return
 }
 func (s *RemoteService) SubmitInterfaceResult(reqOjb domain.InvocationReq, repsObj v1.DebugResponse, serverUrl, token string) (err error) {
-	url := _httpUtils.AddSepIfNeeded(serverUrl) + fmt.Sprintf("invocations/submitInterfaceInvokeResult")
+	url := fmt.Sprintf("debugs/submitResult")
 
 	data := v1.SubmitDebugResultRequest{
 		Request:  reqOjb.Data,
@@ -76,7 +76,7 @@ func (s *RemoteService) SubmitInterfaceResult(reqOjb domain.InvocationReq, repsO
 	bodyBytes, _ := json.Marshal(data)
 
 	req := v1.BaseRequest{
-		Url:               url,
+		Url:               _httpUtils.AddSepIfNeeded(serverUrl) + url,
 		BodyType:          consts.ContentTypeJSON,
 		Body:              string(bodyBytes),
 		AuthorizationType: consts.BearerToken,
@@ -108,95 +108,94 @@ func (s *RemoteService) SubmitInterfaceResult(reqOjb domain.InvocationReq, repsO
 }
 
 // for processor interface invocation
-func (s *RemoteService) GetProcessorInterfaceToExec(req domain.InvocationReq) (ret v1.DebugRequest) {
-	url := fmt.Sprintf("processors/invocations/loadInterfaceExecData")
-	body, err := json.Marshal(req.Data)
-	if err != nil {
-		logUtils.Infof("marshal request data failed, error, %s", err.Error())
-		return
-	}
-
-	httpReq := v1.BaseRequest{
-		Url:               _httpUtils.AddSepIfNeeded(req.ServerUrl) + url,
-		BodyType:          consts.ContentTypeJSON,
-		Body:              string(body),
-		AuthorizationType: consts.BearerToken,
-		BearerToken: v1.BearerToken{
-			Token: req.Token,
-		},
-	}
-
-	resp, err := httpHelper.Post(httpReq)
-	if err != nil {
-		logUtils.Infof("get interface obj failed, error, %s", err.Error())
-		return
-	}
-
-	if resp.StatusCode != consts.OK {
-		logUtils.Infof("get interface obj failed, response %v", resp)
-		return
-	}
-
-	respContent := _domain.Response{}
-	json.Unmarshal([]byte(resp.Content), &respContent)
-
-	if respContent.Code != 0 {
-		logUtils.Infof("get interface obj failed, response %v", resp.Content)
-		return
-	}
-
-	bytes, err := json.Marshal(respContent.Data)
-	if respContent.Code != 0 {
-		logUtils.Infof("get interface obj failed, response %v", resp.Content)
-		return
-	}
-
-	json.Unmarshal(bytes, &ret)
-
-	return
-}
-
-func (s *RemoteService) SubmitProcessorInterfaceResult(reqOjb domain.InvocationReq, repsObj v1.DebugResponse, serverUrl, token string) (err error) {
-	url := _httpUtils.AddSepIfNeeded(serverUrl) + fmt.Sprintf("processors/invocations/submitInterfaceInvokeResult")
-
-	data := v1.SubmitDebugResultRequest{
-		Request:  reqOjb.Data,
-		Response: repsObj,
-	}
-
-	bodyBytes, _ := json.Marshal(data)
-
-	req := v1.BaseRequest{
-		Url:               url,
-		BodyType:          consts.ContentTypeJSON,
-		Body:              string(bodyBytes),
-		AuthorizationType: consts.BearerToken,
-		BearerToken: v1.BearerToken{
-			Token: token,
-		},
-	}
-
-	resp, err := httpHelper.Post(req)
-	if err != nil {
-		logUtils.Infof("submit result failed, error, %s", err.Error())
-		return
-	}
-
-	if resp.StatusCode != consts.OK {
-		logUtils.Infof("submit result failed, response %v", resp)
-		return
-	}
-
-	ret := _domain.Response{}
-	json.Unmarshal([]byte(resp.Content), &ret)
-
-	if ret.Code != 0 {
-		logUtils.Infof("submit result failed, response %v", resp.Content)
-		return
-	}
-
-	return
-}
+//func (s *RemoteService) GetProcessorInterfaceToExec(req domain.InvocationReq) (ret v1.DebugRequest) {
+//	url := fmt.Sprintf("processors/invocations/loadInterfaceExecData")
+//	body, err := json.Marshal(req.Data)
+//	if err != nil {
+//		logUtils.Infof("marshal request data failed, error, %s", err.Error())
+//		return
+//	}
+//
+//	httpReq := v1.BaseRequest{
+//		Url:               _httpUtils.AddSepIfNeeded(req.ServerUrl) + url,
+//		BodyType:          consts.ContentTypeJSON,
+//		Body:              string(body),
+//		AuthorizationType: consts.BearerToken,
+//		BearerToken: v1.BearerToken{
+//			Token: req.Token,
+//		},
+//	}
+//
+//	resp, err := httpHelper.Post(httpReq)
+//	if err != nil {
+//		logUtils.Infof("get interface obj failed, error, %s", err.Error())
+//		return
+//	}
+//
+//	if resp.StatusCode != consts.OK {
+//		logUtils.Infof("get interface obj failed, response %v", resp)
+//		return
+//	}
+//
+//	respContent := _domain.Response{}
+//	json.Unmarshal([]byte(resp.Content), &respContent)
+//
+//	if respContent.Code != 0 {
+//		logUtils.Infof("get interface obj failed, response %v", resp.Content)
+//		return
+//	}
+//
+//	bytes, err := json.Marshal(respContent.Data)
+//	if respContent.Code != 0 {
+//		logUtils.Infof("get interface obj failed, response %v", resp.Content)
+//		return
+//	}
+//
+//	json.Unmarshal(bytes, &ret)
+//
+//	return
+//}
+//func (s *RemoteService) SubmitProcessorInterfaceResult(reqOjb domain.InvocationReq, repsObj v1.DebugResponse, serverUrl, token string) (err error) {
+//	url := _httpUtils.AddSepIfNeeded(serverUrl) + fmt.Sprintf("processors/invocations/submitInterfaceInvokeResult")
+//
+//	data := v1.SubmitDebugResultRequest{
+//		Request:  reqOjb.Data,
+//		Response: repsObj,
+//	}
+//
+//	bodyBytes, _ := json.Marshal(data)
+//
+//	req := v1.BaseRequest{
+//		Url:               url,
+//		BodyType:          consts.ContentTypeJSON,
+//		Body:              string(bodyBytes),
+//		AuthorizationType: consts.BearerToken,
+//		BearerToken: v1.BearerToken{
+//			Token: token,
+//		},
+//	}
+//
+//	resp, err := httpHelper.Post(req)
+//	if err != nil {
+//		logUtils.Infof("submit result failed, error, %s", err.Error())
+//		return
+//	}
+//
+//	if resp.StatusCode != consts.OK {
+//		logUtils.Infof("submit result failed, response %v", resp)
+//		return
+//	}
+//
+//	ret := _domain.Response{}
+//	json.Unmarshal([]byte(resp.Content), &ret)
+//
+//	if ret.Code != 0 {
+//		logUtils.Infof("submit result failed, response %v", resp.Content)
+//		return
+//	}
+//
+//	return
+//}
 
 // for scenario exec
 func (s *RemoteService) GetScenarioToExec(req *agentExec.ScenarioExecReq) (ret *agentExec.ScenarioExecObj) {

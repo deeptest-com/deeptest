@@ -15,6 +15,10 @@ export const requestMethodOpts = [
         value: "PUT",
     },
     {
+        label: "PATCH",
+        value: "PATCH",
+    },
+    {
         label: "DELETE",
         value: "DELETE",
     },
@@ -23,12 +27,16 @@ export const requestMethodOpts = [
         value: "HEAD",
     },
     {
-        label: "OPTION",
-        value: "OPTION",
+        label: "OPTIONS",
+        value: "OPTIONS",
     },
     {
-        label: "PATCH",
-        value: "PATCH",
+        label: "TRACE",
+        value: "TRACE",
+    },
+    {
+        label: "CONNECT",
+        value: "CONNECT",
     },
 ]
 
@@ -631,7 +639,6 @@ export const mediaTypesOpts = [
         label: "application/x-www-form-urlencoded",
         value: "application/x-www-form-urlencoded",
     },
-
 ]
 
 

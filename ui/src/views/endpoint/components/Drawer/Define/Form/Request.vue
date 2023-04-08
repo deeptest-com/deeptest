@@ -35,160 +35,11 @@
               <a-input v-model:value="selectedMethodDetail.description"/>
             </a-col>
           </a-row>
-          <!-- 增加请求参数 -->
-          <a-row class="form-item-request-item">
-            <a-col :span="3" class="form-label">
-              增加请求参数
-            </a-col>
-            <a-col :span="15">
-              <div class="params-defined-btns">
-                <a-button @click="setSecurity">
-                  <template #icon>
-                    <PlusOutlined/>
-                  </template>
-                  {{ `Security` }}
-                </a-button>
-                <a-button @click="addHeader">
-                  <template #icon>
-                    <PlusOutlined/>
-                  </template>
-                  {{ `Header` }}
-                </a-button>
-                <a-button @click="addQueryParams">
-                  <template #icon>
-                    <PlusOutlined/>
-                  </template>
-                  {{ `Query Params` }}
-                </a-button>
-                <a-button @click="addCookie">
-                  <template #icon>
-                    <PlusOutlined/>
-                  </template>
-                  {{ `Cookie` }}
-                </a-button>
-              </div>
-            </a-col>
-          </a-row>
-          <!-- 请求参数展示：headers、cookies、query params等 -->
-          <a-row class="form-item-request-item">
-            <a-col :span="3"></a-col>
-            <a-col :span="21">
-              <div class="params-defined">
-                <div class="params-defined-content">
-                  <div class="params-defined-item" v-if="showSecurity">
-                    <div class="params-defined-item-header">
-                      <span>Security</span>
-                    </div>
-                    <div class="header-defined header-defined-items">
-                      <a-select @change="securityChange"
-                                allowClear
-                                :value="selectedMethodDetail.security"
-                                :options="securityOpts" style="width: 300px;"/>
-                      <a-tooltip placement="topLeft" arrow-point-at-center title="删除 Security">
-                        <a-button @click="delSecurity">
-                          <template #icon>
-                            <DeleteOutlined/>
-                          </template>
-                        </a-button>
-                      </a-tooltip>
-                      <a-tooltip placement="topLeft" arrow-point-at-center title="去添加或编辑 Security">
-                        <a-button @click="goEditSecurity">
-                          <template #icon>
-                            <PlusOutlined/>
-                          </template>
-                          Security
-                        </a-button>
-                      </a-tooltip>
-                    </div>
-                  </div>
-                  <div class="params-defined-item" v-if="selectedMethodDetail?.headers?.length">
-                    <div class="params-defined-item-header">
-                      <span>Header</span>
-                    </div>
-                    <div class="header-defined header-defined-items">
-                      <div v-for="(item,index) in selectedMethodDetail.headers" :key="item.id">
-                        <Field
-                            :fieldData="{...item,index:index}"
-                            :showRequire="true"
-                            @del="deleteParams('headers',index)"
-                            @change="(val) => {
-                                handleParamsChange('headers',val);
-                              }"/>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="params-defined-item" v-if="selectedMethodDetail?.params?.length">
-                    <div class="params-defined-item-header">
-                      <span>Query Params</span>
-                    </div>
-                    <div class="header-defined ">
-                      <div v-for="(item,index) in selectedMethodDetail.params" :key="item.id">
-                        <Field
-                            :fieldData="{...item,index:index}"
-                            :showRequire="true"
-                            @del="deleteParams('params',index)"
-                            @change="(val) => {
-                                handleParamsChange('params',val);
-                              }"/>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="params-defined-item" v-if="selectedMethodDetail?.cookies?.length">
-                    <div class="params-defined-item-header">
-                      <span>Cookie</span>
-                    </div>
-                    <div class="header-defined ">
-                      <div v-for="(item,index) in selectedMethodDetail.cookies" :key="item.id">
-                        <Field
-                            :fieldData="{...item,index:index}"
-                            :showRequire="true"
-                            @del="deleteParams('cookies',index)"
-                            @change="(val) => {
-                                handleParamsChange('cookies',val);
-                              }"/>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </a-col>
-          </a-row>
+          <RequestParams/>
           <!-- 增加请求体 -->
-          <a-row class="form-item-request-item">
-            <a-col :span="3" class="form-label">
-              增加请求体
-            </a-col>
-            <a-col :span="18">
-              <a-select
-                  placeholder="请选择格式"
-                  v-if="selectedMethodDetail.requestBody"
-                  v-model:value="selectedMethodDetail.requestBody.mediaType"
-                  style="width: 300px"
-                  :options="mediaTypesOpts"
-              ></a-select>
-            </a-col>
-          </a-row>
-          <!-- 增加请求体 - 描述  -->
-          <a-row class="form-item-request-item">
-            <a-col :span="3" class="form-label"></a-col>
-            <a-col :span="20">
-              <a-input placeholder="请输入描述" v-model:value="selectedMethodDetail.requestBody.description"/>
-            </a-col>
-          </a-row>
-          <!-- 增加请求体 - scheme定义 -->
-          <a-row class="form-item-request-item">
-            <a-col :span="3" class="form-label"></a-col>
-            <a-col :span="21">
-              <SchemaEditor
-                  @generateFromJSON="generateFromJSON"
-                  @generateExample="handleGenerateExample"
-                  @change="handleChange"
-                  :tab-content-style="{width:'100%'}"
-                  :value="activeReqBodySchema"/>
-            </a-col>
-          </a-row>
+          <RequestBody/>
           <!-- 响应定义  -->
-          <Response :method="selectedMethod"/>
+          <Response/>
         </div>
         <div class="no-defined" v-else>
           <a-button type="primary" @click="addEndpoint">
@@ -214,14 +65,12 @@ import {useStore} from "vuex";
 import {
   requestMethodOpts,
   mediaTypesOpts,
-  defaultCookieParams,
-  defaultHeaderParams,
-  defaultQueryParams,
   defaultEndpointDetail,
 } from '@/config/constant';
-import {PlusOutlined, DeleteOutlined, RightOutlined, DownOutlined} from '@ant-design/icons-vue';
-import Field from './Field.vue'
+import {PlusOutlined, RightOutlined, DownOutlined} from '@ant-design/icons-vue';
 import Response from './Response.vue';
+import RequestParams from './RequestParams.vue';
+import RequestBody from './RequestBody.vue';
 import {Endpoint} from "@/views/endpoint/data";
 import SchemaEditor from '@/components/SchemaEditor/index.vue';
 import {cloneByJSON} from "@/utils/object";
@@ -231,25 +80,19 @@ const endpointDetail: any = computed<Endpoint>(() => store.state.Endpoint.endpoi
 const interfaceMethodToObjMap = computed<any>(() => store.state.Endpoint.interfaceMethodToObjMap);
 const currInterface = computed<any>(() => store.state.Debug?.currInterface);
 const currentUser: any = computed<Endpoint>(() => store.state.User.currentUser);
-const securityOpts: any = computed<any>(() => store.state.Endpoint.securityOpts);
 const props = defineProps({});
 const emit = defineEmits([]);
 const selectedMethod = ref(currInterface.value?.method ? currInterface.value?.method : 'GET');
 // 是否折叠,默认展开
 const collapse = ref(true);
-
 // 是否定义了请求方法
 function hasDefinedMethod(method: string) {
   return endpointDetail?.value?.interfaces?.some((item) => {
     return item.method === method;
   })
 }
-
 // 当前选中的请求方法详情
 const selectedMethodDetail: any = ref(null);
-// 是否展示安全定义
-const showSecurity = ref(false);
-
 watch(() => {
   return selectedMethod.value
 }, (newVal, oldVal) => {
@@ -257,51 +100,11 @@ watch(() => {
   if (selectedMethodDetail.value) {
     store.dispatch('Debug/setInterface', selectedMethodDetail.value);
     store.commit('Endpoint/setSelectedMethodDetail', selectedMethodDetail.value);
-    showSecurity.value = !!selectedMethodDetail.value.security;
   } else {
     store.dispatch('Debug/setInterface', {});
     store.commit('Endpoint/setSelectedMethodDetail', {});
   }
 }, {immediate: true});
-
-
-function goEditSecurity() {
-  window.open(`/#/projectSetting/index?firtab=3&sectab=3&serveId=${endpointDetail.value.serveId}`, '_blank')
-}
-
-function delSecurity() {
-  showSecurity.value = false;
-  selectedMethodDetail.value.security = null;
-}
-
-function securityChange(val) {
-  selectedMethodDetail.value.security = val || null;
-}
-
-function setSecurity() {
-  showSecurity.value = true;
-}
-
-function addCookie() {
-  selectedMethodDetail.value.cookies.push(cloneByJSON(defaultCookieParams));
-  store.commit('Endpoint/setEndpointDetail', {
-    ...endpointDetail.value,
-  })
-}
-
-function addQueryParams() {
-  selectedMethodDetail.value.params.push(cloneByJSON(defaultQueryParams));
-  store.commit('Endpoint/setEndpointDetail', {
-    ...endpointDetail.value,
-  })
-}
-
-function addHeader() {
-  selectedMethodDetail.value.headers.push(cloneByJSON(defaultHeaderParams));
-  store.commit('Endpoint/setEndpointDetail', {
-    ...endpointDetail.value,
-  })
-}
 
 function addEndpoint() {
   const item = {
@@ -324,20 +127,10 @@ function addEndpoint() {
   })
 }
 
-
-function deleteParams(type, index) {
-  selectedMethodDetail.value[type].splice(index, 1);
-}
-
-function handleParamsChange(type, data) {
-  selectedMethodDetail.value[type][data.index] = {...data};
-}
-
 const activeReqBodySchema: any = ref({
   content: null,
   examples: [],
 });
-
 
 watch(() => {
   return selectedMethodDetail?.value?.requestBody?.schemaItem?.content

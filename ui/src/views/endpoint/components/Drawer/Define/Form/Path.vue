@@ -21,7 +21,8 @@
                 </a-button>
               </template>
             </a-select>
-            <span v-if="currentEnvURL" style="width: 150px;display: inline-block" class="currentEnvURL">{{currentEnvURL || '---'}}</span>
+            <span v-if="currentEnvURL" style="width: 150px;display: inline-block"
+                  class="currentEnvURL">{{ currentEnvURL || '---' }}</span>
           </template>
         </a-input>
         <a-button @click="addPathParams" class="path-param-header-btn">
@@ -87,7 +88,10 @@ function addEnv() {
  * */
 function addPathParams() {
   collapse.value = true;
-  endpointDetail.value.pathParams.push(cloneByJSON(defaultPathParams));
+  endpointDetail.value.pathParams.push(cloneByJSON({
+    ...defaultPathParams,
+    name: 'path' + (endpointDetail.value.pathParams.length + 1)
+  }));
   store.commit('Endpoint/setEndpointDetail', {
     ...endpointDetail.value,
     pathParams: endpointDetail.value.pathParams
@@ -218,25 +222,30 @@ function updatePath(e) {
   margin-top: 16px;
   //padding-top: 16px;
 }
-.path-param-header{
+
+.path-param-header {
   display: inline-block;
   overflow: hidden;
   width: 100%;
 }
-.path-param-header-input{
+
+.path-param-header-input {
   width: 85%;
 }
-.path-param-header-btn{
+
+.path-param-header-btn {
   width: 15%;
 }
 
 .form-label {
   font-weight: bold;
 }
-.add-env-btn{
+
+.add-env-btn {
 
 }
-.currentEnvURL{
+
+.currentEnvURL {
 
 }
 

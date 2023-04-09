@@ -12,17 +12,6 @@
               :tabBarGutter="0"
               class="right-tab">
 
-        <a-tab-pane key="env">
-          <template #tab>
-            <a-tooltip placement="left" overlayClassName="dp-tip-small">
-              <template #title>环境</template>
-              <EnvironmentOutlined/>
-            </a-tooltip>
-          </template>
-
-          <RequestEnv v-if="tabKey==='env'"></RequestEnv>
-        </a-tab-pane>
-
         <a-tab-pane key="history">
           <template #tab>
             <a-tooltip placement="left" overlayClassName="dp-tip-small">
@@ -55,17 +44,13 @@
 import {computed, onMounted, provide, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {Form} from 'ant-design-vue';
-import { HistoryOutlined, EnvironmentOutlined, TableOutlined } from '@ant-design/icons-vue';
-import {useStore} from "vuex";
+import { HistoryOutlined, TableOutlined } from '@ant-design/icons-vue';
 
-import {StateType} from "@/views/interface1/store";
-import {Interface} from "@/views/interface1/data";
 import {resizeWidth} from "@/utils/dom";
 import {UsedBy} from "@/utils/enum";
 
 import DesignInterface from './interface.vue';
 
-import RequestEnv from './others/env/index.vue';
 import RequestHistory from './others/history/index.vue';
 import Datapool from './others/datapool/index.vue';
 
@@ -74,7 +59,7 @@ const useForm = Form.useForm;
 
 const {t} = useI18n();
 
-const tabKey = ref('env')
+const tabKey = ref('history')
 
 onMounted(() => {
   console.log('onMounted')

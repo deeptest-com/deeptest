@@ -1,5 +1,7 @@
 <template>
   <div class="debug-main">
+    <Path/>
+
     <div class="debug-methods">
       <a-radio-group @change="changeMethod" v-model:value="selectedMethod" button-style="solid">
         <template v-for="method in requestMethodOpts" :key="method.value">
@@ -46,6 +48,8 @@ import {requestMethodOpts} from '@/config/constant';
 import {StateType as ProjectGlobal} from "@/store/project";
 import {StateType as Debug} from "@/views/component/debug/store";
 import {StateType as Endpoint} from "../../endpoint/store";
+
+import Path  from './path.vue';
 import InterfaceRequest from './request/Index.vue';
 import InterfaceResponse from './response/Index.vue';
 import RequestVariable from '@/components/Editor/RequestVariable.vue';

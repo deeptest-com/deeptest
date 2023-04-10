@@ -260,13 +260,13 @@ func (c *EnvironmentCtrl) ClearShareVar(ctx iris.Context) {
 
 func (c *EnvironmentCtrl) Save(ctx iris.Context) {
 	var req v1.EnvironmentReq
-	if err := ctx.ReadJSON(&req); err == nil {
-		var id uint
-		if id, err = c.EnvironmentService.Save(req); err == nil {
-			ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: id, Msg: _domain.NoErr.Msg})
-		} else {
-			ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
-		}
+	if err := ctx.ReadJSON(&req); err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	if id, err := c.EnvironmentService.Save(req); err == nil {
+		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: id, Msg: _domain.NoErr.Msg})
 	} else {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 	}

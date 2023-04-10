@@ -56,29 +56,51 @@
     </div>
 </template>
 <script setup lang="ts">
-import { ref, computed, defineEmits } from 'vue';
+import { ref, computed, createVNode, watch } from 'vue';
 import { useStore } from 'vuex';
+import { Modal } from 'ant-design-vue';
+import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import { globalParamscolumns, tabPaneList } from '../../config';
 import { StateType as ProjectStateType } from "@/store/project";
 import { StateType as ProjectSettingStateType } from "@/views/projectSetting/store";
 
-const emits = defineEmits(['addGlobalParams', 'handleGlobalParamsChange', 'handleSaveGlobalParams']);
-
 const store = useStore<{ ProjectGlobal: ProjectStateType, ProjectSetting: ProjectSettingStateType }>();
 const globalParamsData = computed<any>(() => store.state.ProjectSetting.globalParamsData);
+const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const globalParamsActiveKey = ref('header');
 
-function addGlobalParams() {
-    emits('addGlobalParams', { globalParamsActiveKey });
+function getParamsData() {
+    store.dispatch('ProjectSetting/getEnvironmentsParamList', { projectId: currProject.value.id });
 }
 
-function handleGlobalParamsChange(type: string, filed: string, index: number, e: any, action?: string) {
-    emits('handleGlobalParamsChange', type, filed, index, e, action);
+function addGlobalParams() {
+    store.dispatch('ProjectSetting/addGlobalParams', { globalParamsActiveKey });
+}
+
+function handleGlobalParamsChange(type: string, field: string, index: number, e: any, action?: string) {
+    const confirmCallBack = () => store.dispatch('ProjectSetting/handleGlobalParamsChange', { type, field, index, e, action });
+    if (action && action === 'delete') {
+        Modal.confirm({
+            title: '确认要删除该参数吗',
+            icon: createVNode(ExclamationCircleOutlined),
+            onOk() {
+                confirmCallBack();
+            },
+        });
+    } else {
+        confirmCallBack();
+    }
 }
 
 function handleSaveGlobalParams() {
-    emits('handleSaveGlobalParams');
+    store.dispatch('ProjectSetting/saveEnvironmentsParam', { projectId: currProject.value.id });
 }
+
+watch(() => {
+    return currProject.value
+}, () => {
+    getParamsData();
+})
 </script>
 <style scoped lang="less">
 .title {

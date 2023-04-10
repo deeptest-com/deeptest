@@ -75,39 +75,55 @@
             <a-button class="save-btn" @click="addEnvData" html-type="submit" type="primary">保存</a-button>
         </div>
     </a-form>
+    <a-modal v-model:visible="addServiceModalVisible" title="关联服务" @ok="handleAddServiceOk">
+        <a-form-item class="select-service" :labelCol="{ span: 6 }" :wrapperCol="{ span: 16 }" label="请选择服务">
+            <a-select v-model:value="selectedService" :options="serviceOptions" placeholder="请选择服务" style="width: 200px" />
+        </a-form-item>
+
+    </a-modal>
 </template>
 <script setup lang="ts">
-import { ref, defineEmits, defineProps } from 'vue';
+import { ref, computed, watch } from 'vue';
+import { useStore } from "vuex";
 import { globalVarsColumns, serveServersColumns } from '../../config';
+import { useGlobalEnv } from '../../hooks/useGlobalEnv';
+import { StateType as ProjectSettingStateType } from "@/views/ProjectSetting/store";
 
-const props = defineProps<{
-    activeEnvDetail: any
-}>();
-const emits = defineEmits(['deleteEnvData', 'copyEnvData', 'addEnvData', 'handleEnvChange', 'handleEnvNameChange', 'addVar', 'addService']);
+const store = useStore<{ ProjectSetting: ProjectSettingStateType }>();
+const serviceOptions = computed<any>(() => store.state.ProjectSetting.serviceOptions);
+const envList = computed<any>(() => store.state.ProjectSetting.envList);
+const addServiceModalVisible = ref(false);
+const selectedService = ref('');
 
-function deleteEnvData() {
-    emits('deleteEnvData');
-}
-function copyEnvData() {
-    emits('copyEnvData');
-}
-function addEnvData() {
-    emits('addEnvData');
+
+const {
+    activeEnvDetail,
+    addVar,
+    addEnvData,
+    deleteEnvData,
+    copyEnvData,
+    handleEnvChange,
+    handleEnvNameChange
+} = useGlobalEnv();
+
+// 添加服务弹窗操作 
+async function addService() {
+    addServiceModalVisible.value = true;
 }
 
-function handleEnvChange(type: string, filed: string, index: number, e: any, action?: string) {
-    emits('handleEnvChange', type, filed, index, e, action);
-}
-function handleEnvNameChange(e: any) {
-    emits('handleEnvNameChange', e);
+function handleAddServiceOk() {
+    addServiceModalVisible.value = false;
+    const selectServe: any = serviceOptions.value.find((item: any) => {
+        return selectedService.value === item.id;
+    })
+    activeEnvDetail.value.serveServers.push({
+        // "environmentId": 7,
+        "url": "",
+        "serveName": selectServe.name,
+        "serveId": selectServe.id,
+    })
 }
 
-function addVar() {
-    emits('addVar');
-}
-function addService() {
-    emits('addService');
-}
 </script>
 
 <style scoped lang="less">
@@ -162,6 +178,7 @@ function addService() {
         margin-right: 16px;
     }
 }
+
 :deep(.ant-input:not(.env-name):hover),
 :deep(.ant-input:active),
 :deep(.ant-input:focus) {
@@ -180,4 +197,5 @@ function addService() {
 :deep(.custom-select .ant-select-selector:active),
 :deep(.custom-select .ant-select-selector:focus) {
     border: 1px solid #4096ff !important
-}</style>
+}
+</style>

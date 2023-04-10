@@ -4,7 +4,6 @@
     <div class="header">
       <CustomForm 
         :form-config="formConfig" 
-        :form-data="formData" 
         :rules="rules"
         :show-search="true" 
         :search-placeholder="'输入服务名称搜索'"
@@ -161,6 +160,10 @@ function handleSearch(value: any) {
 } 
 
 function edit(record: any) {
+  console.log(record);
+  if (!record || (record && Object.keys(record).length === 0)) {
+    return;
+  } 
   store.dispatch('ProjectSetting/setServiceDetail', {
     name: record.name,
     description: record.description,

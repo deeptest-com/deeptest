@@ -70,6 +70,8 @@ export interface ModuleType extends StoreModuleType<StateType> {
         deleteEnvData: Action<StateType, StateType>,
         copyEnvData: Action<StateType, StateType>,
         setEnvDetail: Action<StateType, StateType>,
+        addEnvServe: Action<StateType, StateType>,
+        addEnvVar: Action<StateType, StateType>,
         getEnvironmentsParamList: Action<StateType, StateType>,
         getGlobalVarsList: Action<StateType, StateType>,
         saveEnvironmentsParam: Action<StateType, StateType>,
@@ -542,6 +544,16 @@ const StoreModel: ModuleType = {
                 vars: []
             };
             commit('setEnvDetail', envData || initEnvData);
+        },
+        addEnvServe({ commit, state }, serveData: any) {
+            const newEnvDetail = JSON.parse(JSON.stringify(state.activeEnvDetail));
+            newEnvDetail.serveServers.push(serveData);
+            commit('setEnvDetail', newEnvDetail);
+        },
+        addEnvVar({ commit, state }, varData: any) {
+            const newEnvDetail = JSON.parse(JSON.stringify(state.activeEnvDetail));
+            newEnvDetail.vars.push(varData);
+            commit('setEnvDetail', newEnvDetail);
         }
     }
 };

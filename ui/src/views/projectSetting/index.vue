@@ -57,6 +57,7 @@ watch(() => {
   if(router.currentRoute.value.path === '/project-setting/enviroment') {
     router.push('/project-setting/enviroment/var')
     store.dispatch('ProjectSetting/setEnvDetail', null);
+    activeKey.value = setActiveKey();
   }   
 }, {
   immediate: true

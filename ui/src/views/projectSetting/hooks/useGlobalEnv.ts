@@ -38,15 +38,13 @@ export function useGlobalEnv(): EnvReturnData {
     }
 
     function addVar() {
-        const newActiveEnvDetail = JSON.parse(JSON.stringify(activeEnvDetail.value));
-        newActiveEnvDetail.vars.push({
+        store.dispatch('ProjectSetting/addEnvVar', {
             "name": "",
             "rightValue": "",
             "localValue": "",
             "remoteValue": "",
             // "environmentId": 7
-        })
-        store.dispatch('ProjectSetting/setEnvDetail', newActiveEnvDetail);
+        });
     }
 
     async function setShowEnvDetail(result) {

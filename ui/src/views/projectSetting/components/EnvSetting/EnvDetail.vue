@@ -88,10 +88,10 @@ import { useStore } from "vuex";
 import { globalVarsColumns, serveServersColumns } from '../../config';
 import { useGlobalEnv } from '../../hooks/useGlobalEnv';
 import { StateType as ProjectSettingStateType } from "@/views/ProjectSetting/store";
+import { message } from 'ant-design-vue';
 
 const store = useStore<{ ProjectSetting: ProjectSettingStateType }>();
 const serviceOptions = computed<any>(() => store.state.ProjectSetting.serviceOptions);
-const envList = computed<any>(() => store.state.ProjectSetting.envList);
 const addServiceModalVisible = ref(false);
 const selectedService = ref('');
 
@@ -112,16 +112,24 @@ async function addService() {
 }
 
 function handleAddServiceOk() {
-    addServiceModalVisible.value = false;
     const selectServe: any = serviceOptions.value.find((item: any) => {
         return selectedService.value === item.id;
     })
-    activeEnvDetail.value.serveServers.push({
-        // "environmentId": 7,
-        "url": "",
-        "serveName": selectServe.name,
-        "serveId": selectServe.id,
-    })
+    const envDetail = JSON.parse(JSON.stringify(activeEnvDetail.value));
+    const isExsitServe = envDetail.serveServers.find((item: any) => {
+        return item.serveId === selectServe.id;
+    });
+    if (!isExsitServe) {
+        store.dispatch('ProjectSetting/addEnvServe', {
+            "url": "",
+            "serveName": selectServe.name,
+            "serveId": selectServe.id,
+        })
+        addServiceModalVisible.value = false;
+    } else {
+        message.error('不可添加重复的服务,请重新选择~');
+    }
+   
 }
 
 </script>

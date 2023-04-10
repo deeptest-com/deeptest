@@ -159,11 +159,13 @@ watch(() => {
 watch(() => {
   return router.currentRoute.value
 }, (val) => {
-  console.log('160----', val);
   const { params: { id }, name } = val;
   isShowAddEnv.value = id && id === '-1';
   isShowGlobalVars.value = name === 'enviroment.var';
   isShowGlobalParams.value = name === 'enviroment.params';
+  if (name === 'enviroment.var' || name === 'enviroment.params') {
+    store.dispatch('ProjectSetting/setEnvDetail', null);
+  }
 }, {
   immediate: true
 })

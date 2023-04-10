@@ -11,7 +11,7 @@
       <a-radio-group v-model:value="selectedCode" button-style="solid">
         <a-radio-button
             :class="{'has-defined': hasDefinedCode(code.value)}"
-            :key="code.value" v-for="code in repCodeOpts"
+            :key="code.value" v-for="code in responseCodes.filter(item => item.enabled)"
             :value="code.value">
           {{ code.label }}
         </a-radio-button>
@@ -90,7 +90,7 @@ import {
 } from 'vue';
 import {useStore} from "vuex";
 import {
-  repCodeOpts,
+  responseCodes,
   defaultHeaderParams,
   defaultCodeResponse,
 } from '@/config/constant';

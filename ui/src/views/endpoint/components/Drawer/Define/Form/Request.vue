@@ -37,7 +37,7 @@
           </a-row>
           <RequestParams/>
           <!-- 增加请求体 -->
-          <RequestBody/>
+          <RequestBody v-if="showRequestBody"/>
           <!-- 响应定义  -->
           <Response/>
         </div>
@@ -93,6 +93,8 @@ function hasDefinedMethod(method: string) {
 
 // 当前选中的请求方法详情
 const selectedMethodDetail: any = ref(null);
+// 是否展示请求体设置，比如 get 请求是不需要请求体的
+const showRequestBody = ref(false);
 watch(() => {
   return selectedMethod.value
 }, (newVal, oldVal) => {
@@ -104,6 +106,8 @@ watch(() => {
     store.dispatch('Debug/setInterface', {});
     store.commit('Endpoint/setSelectedMethodDetail', {});
   }
+  // 根据选中的请求方法决定是否展示请求体设置，暂定以下三种方法是不需要请求体的
+  showRequestBody.value = ['POST', 'PUT', 'PATCH'].includes(newVal);
 }, {immediate: true});
 
 function addEndpoint() {

@@ -10,7 +10,7 @@
     <a-col :span="18">
       <a-select
           v-if="selectedMethodDetail.requestBody"
-          :value="selectedMethodDetail.requestBody.mediaType"
+          :value="selectedMethodDetail.requestBody.mediaType || null"
           @change="handleChangeMediaType"
           placeholder="请选择请求格式"
           style="width: 300px"
@@ -23,7 +23,7 @@
     <a-col :span="3" class="form-label"></a-col>
     <a-col :span="20">
       <a-input @change="handleChangeDesc"
-               placeholder="请输入描述"
+               placeholder="描述信息"
                :value="selectedMethodDetail.requestBody.description"/>
     </a-col>
   </a-row>

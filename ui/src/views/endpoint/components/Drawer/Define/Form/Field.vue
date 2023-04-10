@@ -46,11 +46,11 @@
             </a-tooltip>
           </a-popover>
           <!-- ::::是否必填 -->
-          <a-tooltip v-if="!hideRequire" placement="topLeft" arrow-point-at-center :title="hasRef ? '引用类型不支持修改' : '是否必填'">
+          <a-tooltip v-if="!hideRequire" placement="top" arrow-point-at-center :title="hasRef ? '引用类型不支持修改' : '是否必填'">
             <InfoCircleOutlined :class="{'disabled':hasRef}" v-if="!fieldState.required" @click="setRequire"/>
             <InfoCircleTwoTone  :class="{'disabled':hasRef}" v-if="fieldState.required" @click="setRequire"/>
           </a-tooltip>
-          <a-popover v-if="!hideOther" v-model:visible="showOther" :title="null" trigger="click">
+          <a-popover v-if="!hideOther" v-model:visible="showOther" placement="topLeft" :title="null" trigger="click">
             <template #content>
               <div class="other-props-content">
                 <a-form :layout='"vertical"' v-if="otherProps?.value === fieldState.type">

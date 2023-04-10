@@ -76,11 +76,11 @@ const activeEnvDetail = computed<any>(() => store.state.ProjectSetting.activeEnv
 const router = useRouter();
 
 const params = router.currentRoute.value.params;
-const routePath = router.currentRoute.value.path.split('/');
+const routeName = router.currentRoute.value.name;
 
 // 页面state相关
-const isShowGlobalVars = ref(routePath[3] && routePath[3] === 'var');
-const isShowGlobalParams: any = ref(routePath[3] && routePath[3] === 'params');
+const isShowGlobalVars = ref(routeName === 'enviroment.var');
+const isShowGlobalParams: any = ref(routeName === 'enviroment.params');
 const isShowAddEnv = ref(params.id && params.id === '-1');
 
 
@@ -97,12 +97,14 @@ function handleDragEnd(_e: any) {
 async function toVarPage() {
   isShowGlobalVars.value = true;
   isShowGlobalParams.value = false;
+  store.dispatch('ProjectSetting/setEnvDetail', null);
   router.push('/project-setting/enviroment/var');
 }
 
 async function toParamsPage() {
   isShowGlobalParams.value = true;
   isShowGlobalVars.value = false;
+  store.dispatch('ProjectSetting/setEnvDetail', null);
   router.push('/project-setting/enviroment/params');
 }
 
@@ -157,8 +159,11 @@ watch(() => {
 watch(() => {
   return router.currentRoute.value
 }, (val) => {
-  const { params: { id } } = val;
+  console.log('160----', val);
+  const { params: { id }, name } = val;
   isShowAddEnv.value = id && id === '-1';
+  isShowGlobalVars.value = name === 'enviroment.var';
+  isShowGlobalParams.value = name === 'enviroment.params';
 }, {
   immediate: true
 })

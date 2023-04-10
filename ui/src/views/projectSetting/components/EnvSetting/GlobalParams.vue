@@ -100,6 +100,8 @@ watch(() => {
     return currProject.value
 }, () => {
     getParamsData();
+}, {
+    immediate: true
 })
 </script>
 <style scoped lang="less">

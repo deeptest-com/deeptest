@@ -19,10 +19,6 @@ import { ref,watch } from 'vue';
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { StateType as ProjectSettingStateType } from './store';
-import ServiceSetting from './components/ServiceSetting/index.vue';
-import EnvSetting from './components/EnvSetting/index.vue';
-const expandedKeys = ref<string[]>(['0-0-0']);
-const selectedKeys = ref<string[]>([]);
 
 const router = useRouter();
 
@@ -60,6 +56,7 @@ watch(() => {
   }
   if(router.currentRoute.value.path === '/project-setting/enviroment') {
     router.push('/project-setting/enviroment/var')
+    store.dispatch('ProjectSetting/setEnvDetail', null);
   }   
 }, {
   immediate: true

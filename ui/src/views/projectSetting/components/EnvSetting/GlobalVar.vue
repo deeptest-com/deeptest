@@ -40,29 +40,44 @@
     </div>
 </template>
 <script setup lang="ts">
-import { computed ,defineEmits} from "vue";
+import { computed, createVNode, onMounted } from "vue";
 import { useStore } from "vuex";
+import { Modal } from "ant-design-vue";
+import { ExclamationCircleOutlined } from "@ant-design/icons-vue";
 import { globalVarsColumns } from '../../config';
 import { StateType as ProjectStateType } from "@/store/project";
-import { StateType as ProjectSettingStateType } from "@/views/projectSetting/store";
+import { StateType as ProjectSettingStateType } from "@/views/ProjectSetting/store";
 
 // store 相关
 const store = useStore<{ ProjectGlobal: ProjectStateType, ProjectSetting: ProjectSettingStateType }>();
 const globalVarsData = computed<any>(() => store.state.ProjectSetting.globalVarsData);
+const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 
-const emits = defineEmits(['addGlobalVar', 'handleSaveGlobalVars', 'handleGlobalVarsChange']);
+onMounted(() => {
+    store.dispatch('ProjectSetting/getGlobalVarsList', { projectId: currProject.value.id });
+})
 
 function addGlobalVar() {
-    emits('addGlobalVar');
+    store.dispatch('ProjectSetting/addGlobalVars');
 }
 
 function handleSaveGlobalVars() {
-    emits('handleSaveGlobalVars');
+    store.dispatch('ProjectSetting/saveGlobalVars');
 }
 
 function handleGlobalVarsChange(field: string, index: number, e: any, action?: string) {
-    emits('handleGlobalVarsChange', field, index, e, action);
-
+    const confirmCallBack = () => store.dispatch('ProjectSetting/handleGlobalVarsChange', { field, index, e, action });
+    if (action && action === 'delete') {
+        Modal.confirm({
+            title: '确认要删除该全局变量吗',
+            icon: createVNode(ExclamationCircleOutlined),
+            onOk() {
+                confirmCallBack()
+            },
+        });
+    } else {
+        confirmCallBack();
+    }
 }
 </script>
 <style lang="less" scoped>

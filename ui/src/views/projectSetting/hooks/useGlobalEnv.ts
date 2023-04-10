@@ -1,18 +1,20 @@
-import { computed, createVNode, ref } from "vue";
+import { computed, createVNode, reactive, ref } from "vue";
 import { useStore } from "vuex";
+import { useRouter } from "vue-router";
 import { message, Modal } from "ant-design-vue";
 import { ExclamationCircleOutlined } from "@ant-design/icons-vue";
 import { StateType as ProjectSettingStateType } from "@/views/projectSetting/store";
 import { StateType as ProjectStateType } from "@/store/project";
-import { EnvHookParams, EnvReturnData, VarDataItem } from "../data";
+import { EnvReturnData, VarDataItem } from "../data";
 
-export function useGlobalEnv({ isShowGlobalParams, isShowGlobalVars }: EnvHookParams): EnvReturnData {
+export function useGlobalEnv(): EnvReturnData {
     const store = useStore<{ ProjectSetting: ProjectSettingStateType, ProjectGlobal: ProjectStateType }>();
     const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
     const envList = computed<any>(() => store.state.ProjectSetting.envList);
+    const activeEnvDetail = computed<any>(() => store.state.ProjectSetting.activeEnvDetail);
     const isShowEnvDetail = ref(false);
     const isShowAddEnv = ref(false);
-    const activeEnvDetail: any = ref(null);
+    const router = useRouter();
 
     // 请求环境列表
     async function getEnvsList() {
@@ -21,35 +23,28 @@ export function useGlobalEnv({ isShowGlobalParams, isShowGlobalVars }: EnvHookPa
     }
 
     function showEnvDetail(item: any, isAdd?: boolean) {
-        if (isAdd) {
-            isShowAddEnv.value = true;
-            isShowEnvDetail.value = true;
-            activeEnvDetail.value = {
-                displayName: "新建环境",
-                name: "",
-                serveServers: [],
-                vars: [],
-            };
+        if (item) {
+            router.push(`/project-setting/enviroment/envdetail/${item.id}`)
         } else {
-            isShowEnvDetail.value = true;
-            isShowAddEnv.value = false;
-            activeEnvDetail.value = item;
-            activeEnvDetail.value.name = item.name || '';
-            activeEnvDetail.value.displayName = item.name || '';
+            router.replace('/project-setting/enviroment/envdetail/-1')
         }
-        console.log(activeEnvDetail);
-        isShowGlobalParams.value = false;
-        isShowGlobalVars.value = false;
+        
+        if (isAdd) {
+            store.dispatch('ProjectSetting/setEnvDetail', null);
+        } else {
+            item.displayName = item.name;
+            store.dispatch('ProjectSetting/setEnvDetail', item);
+        }
     }
 
     function addVar() {
-        activeEnvDetail.value.vars.push({
+        store.dispatch('ProjectSetting/addEnvVar', {
             "name": "",
             "rightValue": "",
             "localValue": "",
             "remoteValue": "",
             // "environmentId": 7
-        })
+        });
     }
 
     async function setShowEnvDetail(result) {

@@ -44,6 +44,7 @@ export interface StateType {
     securityList: any;
     selectServiceDetail: any;
     serveVersionsList: any;
+    activeEnvDetail: any;
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
@@ -58,6 +59,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setSecurityList: Mutation<StateType>,
         setServiceDetail: Mutation<StateType>,
         setVersionList: Mutation<StateType>,
+        setEnvDetail: Mutation<StateType>
     };
     actions: {
         // 环境-全局变量-全局参数相关
@@ -67,6 +69,9 @@ export interface ModuleType extends StoreModuleType<StateType> {
         addEnvData: Action<StateType, StateType>,
         deleteEnvData: Action<StateType, StateType>,
         copyEnvData: Action<StateType, StateType>,
+        setEnvDetail: Action<StateType, StateType>,
+        addEnvServe: Action<StateType, StateType>,
+        addEnvVar: Action<StateType, StateType>,
         getEnvironmentsParamList: Action<StateType, StateType>,
         getGlobalVarsList: Action<StateType, StateType>,
         saveEnvironmentsParam: Action<StateType, StateType>,
@@ -120,7 +125,13 @@ const initState: StateType = {
         description: '',
         serveId: ''
     },
-    serveVersionsList: []
+    serveVersionsList: [],
+    activeEnvDetail: {
+        displayName: "新建环境",
+        name: "",
+        serveServers: [],
+        vars: [],
+    }
 };
 
 const StoreModel: ModuleType = {
@@ -156,7 +167,11 @@ const StoreModel: ModuleType = {
         },
         setVersionList(state, payload) {
             state.serveVersionsList = payload;
+        },
+        setEnvDetail(state, payload) {
+            state.activeEnvDetail = payload;
         }
+
     },
     actions: {
         async getEnvsList({ commit }, { projectId }: EnvReqParams) {
@@ -520,6 +535,25 @@ const StoreModel: ModuleType = {
                 return true;
             }
             return false;
+        },
+        async setEnvDetail({ commit }, envData: any) {
+            const initEnvData = {
+                displayName: "新建环境",
+                name: "",
+                serveServers: [],
+                vars: []
+            };
+            commit('setEnvDetail', envData || initEnvData);
+        },
+        addEnvServe({ commit, state }, serveData: any) {
+            const newEnvDetail = JSON.parse(JSON.stringify(state.activeEnvDetail));
+            newEnvDetail.serveServers.push(serveData);
+            commit('setEnvDetail', newEnvDetail);
+        },
+        addEnvVar({ commit, state }, varData: any) {
+            const newEnvDetail = JSON.parse(JSON.stringify(state.activeEnvDetail));
+            newEnvDetail.vars.push(varData);
+            commit('setEnvDetail', newEnvDetail);
         }
     }
 };

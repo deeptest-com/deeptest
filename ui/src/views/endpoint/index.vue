@@ -136,8 +136,8 @@ type Key = ColumnProps['key'];
  * */
 const columns = [
   {
-    title: '序号',
-    dataIndex: 'index',
+    title: '编号',
+    dataIndex: 'serialNumber',
   },
   {
     title: '接口名称',

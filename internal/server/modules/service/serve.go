@@ -42,7 +42,7 @@ func (s *ServeService) Paginate(req v1.ServeReqPaginate) (ret _domain.PageData, 
 
 func (s *ServeService) Save(req v1.ServeReq) (res uint, err error) {
 	var serve model.Serve
-	if s.ServeRepo.ServeExist(uint(req.ID), req.Name) {
+	if s.ServeRepo.ServeExist(uint(req.ID), req.ProjectId, req.Name) {
 		err = fmt.Errorf("serve name already exist")
 		return
 	}
@@ -106,6 +106,7 @@ func (s *ServeService) SaveServer(req v1.ServeServer) (res uint, err error) {
 func (s *ServeService) Copy(id uint) (err error) {
 	serve, _ := s.ServeRepo.Get(id)
 	serve.ID = 0
+	serve.Name += "_copy"
 	serve.CreatedAt = nil
 	serve.UpdatedAt = nil
 	return s.ServeRepo.Save(0, &serve)

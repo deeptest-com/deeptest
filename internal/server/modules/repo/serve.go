@@ -228,6 +228,7 @@ func (r *ServeRepo) SaveServer(environmentId uint, environmentName string, serve
 	if err != nil {
 		return err
 	}
+
 	for key, _ := range servers {
 		servers[key].ID = 0
 		servers[key].EnvironmentId = environmentId
@@ -240,9 +241,9 @@ func (r *ServeRepo) SaveServer(environmentId uint, environmentName string, serve
 	return
 }
 
-func (r *ServeRepo) ServeExist(id uint, name string) (res bool) {
+func (r *ServeRepo) ServeExist(id, projectId uint, name string) (res bool) {
 	var count int64
-	err := r.DB.Model(&model.Serve{}).Where("id = 0 and name = ?", id, name).Count(&count).Error
+	err := r.DB.Model(&model.Serve{}).Where("id != ? and name = ? and project_id = ?", id, name, projectId).Count(&count).Error
 	if err != nil {
 		return false
 	}

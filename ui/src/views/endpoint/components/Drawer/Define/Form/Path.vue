@@ -12,17 +12,17 @@
           <template #addonBefore>
             <a-select
                 :options="serveServers"
-                v-model:value="currentEnvURL"
+                :value="currentServerId"
+                @change="changeServer"
                 placeholder="请选择环境"
-                style="width: 120px;text-align: left">
+                class="select-env">
               <template #notFoundContent>
                 <a-button type="link" @click="addEnv" class="add-env-btn">
                   <PlusOutlined/>&nbsp;去新建
                 </a-button>
               </template>
             </a-select>
-            <span v-if="currentEnvURL" style="width: 150px;display: inline-block"
-                  class="currentEnvURL">{{ currentEnvURL || '---' }}</span>
+            <span v-if="currentEnvURL" class="current-env-url">{{ currentEnvURL || '---' }}</span>
           </template>
         </a-input>
         <a-button @click="addPathParams" class="path-param-header-btn">
@@ -70,8 +70,12 @@ const endpointDetail: any = computed<Endpoint>(() => store.state.Endpoint.endpoi
 const currentUser: any = computed<Endpoint>(() => store.state.User.currentUser);
 const serveServers: any = computed<Endpoint>(() => store.state.Endpoint.serveServers);
 
-const currentEnvURL = ref(serveServers?.value[0]?.value);
-
+const currentServerId = ref(endpointDetail?.value?.serverId || serveServers?.value[0]?.value || '');
+const currentEnvURL = computed(() => {
+  return serveServers.value?.find((item) => {
+    return currentServerId.value === item.id;
+  })?.url
+});
 
 // 是否折叠,默认展开
 const collapse = ref(true);
@@ -81,6 +85,14 @@ const collapse = ref(true);
  * */
 function addEnv() {
   window.open(`/#/projectSetting/index?firtab=3&sectab=2&serveId=${endpointDetail.value.serveId}`, '_blank')
+}
+
+function changeServer(val) {
+  currentServerId.value = val;
+  endpointDetail.value.serverId = val;
+  store.commit('Endpoint/setEndpointDetail', {
+    ...endpointDetail.value,
+  })
 }
 
 /**
@@ -211,6 +223,7 @@ function updatePath(e) {
 
 .form-item {
   margin-bottom: 16px;
+
   .form-label {
     line-height: 26px;
   }
@@ -243,12 +256,15 @@ function updatePath(e) {
   font-weight: bold;
 }
 
-.add-env-btn {
-
+.select-env {
+  min-width: 80px;
+  text-align: left
 }
 
-.currentEnvURL {
-
+.current-env-url {
+  min-width: 120px;
+  padding-left: 16px;
+  display: inline-block
 }
 
 </style>

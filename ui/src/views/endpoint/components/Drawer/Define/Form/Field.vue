@@ -46,7 +46,7 @@
             </a-tooltip>
           </a-popover>
           <!-- ::::是否必填 -->
-          <a-tooltip v-if="!hideRequire" placement="topLeft" arrow-point-at-center title="是否必填">
+          <a-tooltip v-if="!hideRequire" placement="topLeft" arrow-point-at-center :title="hasRef ? '引用类型不支持修改' : '是否必填'">
             <InfoCircleOutlined :class="{'disabled':hasRef}" v-if="!fieldState.required" @click="setRequire"/>
             <InfoCircleTwoTone  :class="{'disabled':hasRef}" v-if="fieldState.required" @click="setRequire"/>
           </a-tooltip>
@@ -232,7 +232,6 @@ function handleOthersPropsChange(key: string, val: any) {
  * */
 function setRequire() {
   if(hasRef.value) {
-    message.info('引用组件时不可修改');
     return;
   }
   fieldState.value.required = !fieldState.value.required;

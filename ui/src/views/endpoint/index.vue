@@ -126,11 +126,8 @@ const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const currServe = computed<any>(() => store.state.ServeGlobal.currServe);
 const list = computed<Endpoint[]>(() => store.state.Endpoint.listResult.list);
 let pagination = computed<PaginationConfig>(() => store.state.Endpoint.listResult.pagination);
-
 const createApiModalVisible = ref(false);
 type Key = ColumnProps['key'];
-
-
 /**
  * 表格数据
  * */

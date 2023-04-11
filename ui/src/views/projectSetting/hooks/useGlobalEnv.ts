@@ -7,7 +7,7 @@ import { StateType as ProjectSettingStateType } from "@/views/projectSetting/sto
 import { StateType as ProjectStateType } from "@/store/project";
 import { EnvReturnData, VarDataItem } from "../data";
 
-export function useGlobalEnv(): EnvReturnData {
+export function useGlobalEnv(formRef: any): EnvReturnData {
     const store = useStore<{ ProjectSetting: ProjectSettingStateType, ProjectGlobal: ProjectStateType }>();
     const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
     const envList = computed<any>(() => store.state.ProjectSetting.envList);
@@ -28,7 +28,7 @@ export function useGlobalEnv(): EnvReturnData {
         } else {
             router.replace('/project-setting/enviroment/envdetail/-1')
         }
-        
+
         if (isAdd) {
             store.dispatch('ProjectSetting/setEnvDetail', null);
         } else {
@@ -59,25 +59,22 @@ export function useGlobalEnv(): EnvReturnData {
      * 增加环境变量
      */
     async function addEnvData() {
-        console.log('%c[ADD ENV DATA] --  envVars [globalEnv.ts -- 90]', 'color: red', activeEnvDetail.value.vars);
-        if (!activeEnvDetail.value?.name) {
-            return;
-        }
-        const envVars = activeEnvDetail.value?.vars || [];
-        const hasEmptyVars = envVars.some((e: VarDataItem) => e.name === '' || e.remoteValue === '' || e.localValue === '');
-        if (hasEmptyVars) {
-            message.error('变量名参数/远程值/本地值不能为空');
-            return;
-        }
-        const result = await store.dispatch('ProjectSetting/addEnvData', {
-            id: activeEnvDetail.value?.id,
-            projectId: currProject.value.id,
-            name: activeEnvDetail.value?.name,
-            "serveServers": activeEnvDetail.value?.serveServers || [],
-            "vars": envVars,
-        })
-        if (result) {
-            setShowEnvDetail(result);
+        try {
+            const success = await formRef.value.validateFields();
+            console.log('addEnvData validate success---', success);
+            const envVars = activeEnvDetail.value?.vars || [];
+            const result = await store.dispatch('ProjectSetting/addEnvData', {
+                id: activeEnvDetail.value?.id,
+                projectId: currProject.value.id,
+                name: activeEnvDetail.value?.name,
+                "serveServers": activeEnvDetail.value?.serveServers || [],
+                "vars": envVars,
+            })
+            if (result) {
+                setShowEnvDetail(result);
+            }
+        } catch (err) {
+            console.log('addEnvData validate validateFiled--', err);
         }
     }
 

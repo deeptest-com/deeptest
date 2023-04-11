@@ -124,6 +124,7 @@ const serveServersColumns: any = [
         dataIndex: 'serveName',
         key: 'serveName',
         slots: { customRender: 'customName' },
+        width: 200
     },
     {
         title: '前置 URL ',

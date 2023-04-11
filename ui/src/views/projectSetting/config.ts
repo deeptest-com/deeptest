@@ -1,38 +1,3 @@
-import { Schema } from "./data";
-
-const schemaList: Schema[] = [
-    {
-        type: 'tooltip',
-        text: '新建服务',
-        title: '一个产品服务端通常对应一个或多个服务(微服务)，服务可以有多个版本并行，新的服务默认起始版本为v0.1.0。'
-    },
-    {
-        type: 'input',
-        stateName: 'name',
-        placeholder: '服务名称',
-        valueType: 'string'
-    },
-    {
-        type: 'select',
-        stateName: 'serveId',
-        placeholder: '负责人(默认创建人)',
-        options: [],
-        valueType: 'string',
-        mode: 'combobox',
-        focusType: 'userListOptions'
-    },
-    {
-        type: 'input',
-        stateName: 'description',
-        placeholder: '输入描述',
-        valueType: 'string'
-    },
-    {
-        type: 'button',
-        text: '确定',
-    },
-];
-
 const globalVarsColumns = [
     {
         title: '变量名',
@@ -231,25 +196,25 @@ const securityColumns = [
 
 const versionColumns = [
     {
-      title: '版本号',
-      dataIndex: 'value',
-      width: '30%',
-      slots: { customRender: 'value' },
+        title: '版本号',
+        dataIndex: 'value',
+        width: '30%',
+        slots: { customRender: 'value' },
     },
     {
-      title: '负责人',
-      dataIndex: 'createUser',
+        title: '负责人',
+        dataIndex: 'createUser',
     },
     {
-      title: '描述',
-      dataIndex: 'description',
+        title: '描述',
+        dataIndex: 'description',
     },
     {
-      title: '操作',
-      dataIndex: 'operation',
-      slots: { customRender: 'operation' },
+        title: '操作',
+        dataIndex: 'operation',
+        slots: { customRender: 'operation' },
     },
-  ];
+];
 
 
 export {

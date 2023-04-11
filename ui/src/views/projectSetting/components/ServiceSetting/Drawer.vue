@@ -14,14 +14,14 @@
                 <a-form-item label="描述">
                     <EditAndShowField :placeholder="'请输入服务简介描述'" :value="formState.description" @update="(e: string) => changeServiceInfo({ description: e })"/>
                 </a-form-item>
-                <a-tabs v-model:activeKey="activeKey">
-                    <a-tab-pane key="1" tab="服务版本">
+                <a-tabs :activeKey="activeKey" @change="handleTabChange">
+                    <a-tab-pane key="service-version" tab="服务版本">
                         <ServiceVersion :serveId="formState.id" />
                     </a-tab-pane>
-                    <a-tab-pane key="2" tab="服务组件">
+                    <a-tab-pane key="service-component" tab="服务组件">
                         <ServiceComponent :serveId="formState.id" />
                     </a-tab-pane>
-                    <a-tab-pane key="3" tab="Security">
+                    <a-tab-pane key="service-security" tab="Security">
                         <ServiceSecurity :serveId="formState.id"/>
                     </a-tab-pane>
                 </a-tabs>
@@ -35,7 +35,8 @@ import {
     computed,
     defineEmits,
     defineProps,
-    onMounted
+    onMounted,
+    watch
 } from 'vue';
 import { useStore } from 'vuex';
 import { message } from 'ant-design-vue';
@@ -46,7 +47,6 @@ import EditAndShowField from '@/components/EditAndShow/index.vue';
 import { StateType as ProjectStateType } from "@/store/project";
 import { StateType as ProjectSettingStateType } from '../../store';
 import { ServeDetail } from '../../data';
-import { placeholder } from '@babel/types';
 
 const store = useStore<{ ProjectGlobal: ProjectStateType, ProjectSetting: ProjectSettingStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
@@ -54,17 +54,14 @@ const formState = computed<ServeDetail>(() => store.state.ProjectSetting.selectS
 
 const props = defineProps<{
     drawerVisible: boolean
-    editKey?: number
     params:any
-
-
+    tabKey: string
+    editKey?: number
 }>();
 
-const emits = defineEmits(['onClose', 'update:formState']);
-
-
-
-const activeKey = ref('1');
+const emits = defineEmits(['onClose', 'update:formState', 'update:tabKey']);
+console.log('props-------- tabKey', props.tabKey);
+const activeKey = ref('service-version');
 const isEditServiceDesc = ref(false);
 const isEditServiceName = ref(false);
 
@@ -92,4 +89,16 @@ async function changeServiceInfo(updateFieldInfo: any) {
         action: 'update'
     });
 }
+
+function handleTabChange(value: string) {
+    emits('update:tabKey', value);
+}
+
+watch(() => {
+    return props.tabKey;
+}, (val) => {
+    activeKey.value = val || 'service-version';
+}, {
+    immediate: true
+})
 </script>

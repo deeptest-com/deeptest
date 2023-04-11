@@ -43,12 +43,21 @@
           <template #overlay>
             <a-menu>
               <a-menu-item key="1">
-                <a class="operation-a" href="javascript:void (0)" @click="onDisabled(record)">禁用</a>
+                <a class="operation-a" href="javascript:void (0)" @click="onOpenComponent(record)">服务组件</a>
               </a-menu-item>
               <a-menu-item key="2">
-                <a class="operation-a" href="javascript:void (0)" @click="onCopy(record)">复制</a>
+                <a class="operation-a" href="javascript:void (0)" @click="onOpenVersion(record)">服务版本</a>
               </a-menu-item>
               <a-menu-item key="3">
+                <a class="operation-a" href="javascript:void (0)" @click="onOpenSecurity(record)">security</a>
+              </a-menu-item>
+              <a-menu-item key="4">
+                <a class="operation-a" href="javascript:void (0)" @click="onDisabled(record)">禁用</a>
+              </a-menu-item>
+              <a-menu-item key="5">
+                <a class="operation-a" href="javascript:void (0)" @click="onCopy(record)">复制</a>
+              </a-menu-item>
+              <a-menu-item key="6">
                 <a class="operation-a" href="javascript:void (0)" @click="onDelete(record)">删除</a>
               </a-menu-item>
             </a-menu>
@@ -57,7 +66,7 @@
       </template>
     </a-table>
     <!-- 抽屉 -->
-    <Drawer :params="routerObj" :edit-key="editKey" :drawer-visible="drawerVisible" @onClose="onClose" />
+    <Drawer :params="routerObj" :edit-key="editKey" :drawer-visible="drawerVisible" @onClose="onClose" :tab-key="currentTabKey" @update:tab-key="handleUpdateTabKey" />
   </div>
 </template>
 <script setup lang="ts">
@@ -86,6 +95,7 @@ const userListOptions = computed<any>(() => store.state.ProjectSetting.userListO
 const drawerVisible = ref(false);
 const editKey = ref(0);
 const routerObj=ref({});
+const currentTabKey = ref('');
 
 const props = defineProps({
   params: {
@@ -137,7 +147,6 @@ const rules = {
 };
 
 async function handleAdd(formData: any) {
-  console.log('点击了确认');
   const { name, username, description } = formData;
     const result = userListOptions.value.filter((e: any) => e.value === username);
     await store.dispatch('ProjectSetting/saveStoreServe', {
@@ -160,7 +169,6 @@ function handleSearch(value: any) {
 } 
 
 function edit(record: any) {
-  console.log(record);
   if (!record || (record && Object.keys(record).length === 0)) {
     return;
   } 
@@ -171,6 +179,25 @@ function edit(record: any) {
   })
   editKey.value++;
   drawerVisible.value = true;
+}
+
+function onOpenComponent(record: any) {
+  edit(record);
+  currentTabKey.value = 'service-component';
+}
+
+function onOpenSecurity(record: any) {
+  edit(record);
+  currentTabKey.value = 'service-security'; 
+}
+
+function onOpenVersion(record: any) {
+  edit(record);
+  currentTabKey.value = 'service-version';
+}
+
+function handleUpdateTabKey(val: string) {
+  currentTabKey.value = val;
 }
 
 async function onDelete(record: any) {

@@ -135,7 +135,7 @@ func (s *InterfaceService) UpdateByInvocation(req v1.DebugRequest) (err error) {
 }
 
 func (s *InterfaceService) CopyValueFromRequest(interf *model.Interface, req v1.DebugRequest) (err error) {
-	interf.ID = req.Id
+	interf.ID = req.InterfaceId
 
 	copier.CopyWithOption(interf, req, copier.Option{DeepCopy: true})
 

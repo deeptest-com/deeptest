@@ -55,7 +55,7 @@ func (s *InvocationProcessorService) CreateForScenarioInterface(req v1.DebugRequ
 	invocation = model.ProcessorInvocation{
 		InvocationBase: model.InvocationBase{
 			Name:        time.Now().Format("01-02 15:04:05"),
-			InterfaceId: req.Id,
+			InterfaceId: req.InterfaceId,
 			ProjectId:   uint(projectId),
 		},
 	}
@@ -74,10 +74,10 @@ func (s *InvocationProcessorService) CreateForScenarioInterface(req v1.DebugRequ
 func (s *InvocationProcessorService) ReplaceEnvironmentAndExtractorVariables(req v1.DebugRequest) (
 	ret v1.DebugRequest, err error) {
 
-	interf, _ := s.ProcessorInterfaceRepo.Get(req.Id)
+	interf, _ := s.ProcessorInterfaceRepo.Get(req.InterfaceId)
 
-	req.Environment, _ = s.VariableService.GetEnvironmentVariablesByInterface(req.Id, req.UsedBy)
-	req.Variables, _ = s.VariableService.GetVariablesByInterface(req.Id, req.UsedBy)
+	req.Environment, _ = s.VariableService.GetEnvironmentVariablesByInterface(req.InterfaceId, req.UsedBy)
+	req.Variables, _ = s.VariableService.GetVariablesByInterface(req.InterfaceId, req.UsedBy)
 	req.Datapools, _ = s.DatapoolService.ListForExec(interf.ProjectId)
 
 	ret = req

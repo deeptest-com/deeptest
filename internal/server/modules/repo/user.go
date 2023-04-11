@@ -245,6 +245,11 @@ func (r *UserRepo) Create(req domain.UserReq) (uint, error) {
 		return 0, err
 	}
 
+	if len(user.RoleIds) == 0 {
+		role, _ := r.RoleRepo.FindByName("user")
+		user.RoleIds = append(user.RoleIds, role.Id)
+	}
+
 	if err := r.AddRoleForUser(&user); err != nil {
 		return 0, err
 	}
@@ -263,6 +268,14 @@ func (r *UserRepo) Update(id uint, req domain.UserReq) error {
 	}
 
 	user := model.SysUser{UserBase: req.UserBase}
+	if req.Password != "" {
+		hash, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
+		if err != nil {
+			return err
+		}
+		user.Password = string(hash)
+	}
+
 	err := r.DB.Model(&model.SysUser{}).Where("id = ?", id).Updates(&user).Error
 	if err != nil {
 		logUtils.Errorf("更新用户错误", zap.String("错误:", err.Error()))
@@ -278,41 +291,30 @@ func (r *UserRepo) Update(id uint, req domain.UserReq) error {
 }
 
 func (r *UserRepo) InviteToProject(req domain.InviteUserReq) (user model.SysUser, err error) {
-	user = model.SysUser{
-		UserBase: domain.UserBase{
-			Username: req.Username,
-			Email:    req.Email,
-		},
-		Password: _stringUtils.RandStr(6),
-	}
-
-	if len(user.RoleIds) == 0 {
-		role, _ := r.RoleRepo.FindByName("user")
-		user.RoleIds = append(user.RoleIds, role.Id)
-	}
-
-	hash, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	user, err = r.GetByUserId(req.UserId)
 	if err != nil {
+		err = errors.New("用户不存在，请先创建用户")
 		return
 	}
 
-	user.Password = string(hash)
-	err = r.DB.Model(&model.SysUser{}).Create(&user).Error
-	if err != nil {
+	projectMemberRole, err := r.ProjectRepo.FindRolesByProjectAndUser(uint(req.ProjectId), user.ID)
+	if projectMemberRole.ID != 0 {
+		err = errors.New("用户已经存在于项目中")
 		return
 	}
-
-	err = r.ProjectRepo.AddProjectMember(uint(req.ProjectId), user.ID, "user")
-	if err != nil {
-		return
+	var roleName consts.RoleType
+	if req.RoleName == "" {
+		roleName = "user"
+	} else {
+		role, err := r.ProjectRoleRepo.FindByName(req.RoleName)
+		if err != nil || role.ID == 0 {
+			err = errors.New("角色不存在")
+			return user, err
+		}
+		roleName = req.RoleName
 	}
 
-	err = r.AddProfileForUser(&user, uint(req.ProjectId))
-	if err != nil {
-		return
-	}
-
-	err = r.AddRoleForUser(&user)
+	err = r.ProjectRepo.AddProjectMember(uint(req.ProjectId), user.ID, roleName)
 	if err != nil {
 		return
 	}
@@ -353,6 +355,19 @@ func (r *UserRepo) GetByUsernameOrPassword(usernameOrPassword string) (user mode
 	err = r.DB.Model(&model.SysUser{}).
 		Where("NOT deleted").
 		Where("username = ? OR email = ?", usernameOrPassword, usernameOrPassword).
+		First(&user).Error
+
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+func (r *UserRepo) GetByUserId(id uint) (user model.SysUser, err error) {
+	err = r.DB.Model(&model.SysUser{}).
+		Where("NOT deleted").
+		Where("id = ?", id).
 		First(&user).Error
 
 	if err != nil {

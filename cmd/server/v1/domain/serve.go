@@ -45,6 +45,7 @@ type ServeSchemaReq struct {
 	Type        string `json:"type"`
 	Tags        string `json:"tags"`
 	Description string `json:"description"`
+	Ref         string `json:"ref"`
 }
 
 type EnvironmentReq struct {
@@ -72,6 +73,7 @@ type ServeSchemaPaginate struct {
 	_domain.PaginateReq
 	ServeId int64  `json:"serveId"`
 	Tag     string `json:"tag"`
+	Type    string `json:"type"`
 }
 
 type JsonContent struct {
@@ -109,6 +111,8 @@ type EnvironmentParamsReq struct {
 	Body      []EnvironmentParam `json:"body"`
 }
 
+type EnvironmentIdsReq []uint
+
 type ServeSecurityPaginate struct {
 	_domain.PaginateReq
 	ServeId int64  `json:"serveId"`
@@ -119,8 +123,8 @@ type ServeSecurityReq struct {
 	ID          uint                  `json:"id"`
 	Name        string                `json:"name"`
 	Type        serverConsts.AuthType `json:"type"`
-	ProjectId   int64                 `json:"project_id"`
-	ServeId     int64                 `json:"serve_id"`
+	ProjectId   int64                 `json:"projectId"`
+	ServeId     int64                 `json:"serveId"`
 	Description string                `json:"description"`
 	In          string                `json:"in"`
 	Key         string                `json:"key"`

@@ -14,19 +14,20 @@ import SchemaEditor from './schema';
 import {message} from "ant-design-vue";
 import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
 import {MonacoOptions} from '@/utils/const';
+
 const props = defineProps<{
   value: object,
   tabContentStyle?: object,
   schemeVisibleKey?: string | number,
 }>();
+
 const emit = defineEmits<{
   (e: 'generateFromJSON', jsonStr?: string): void,
   (e: 'generateExample', jsonStr?: string): void,
-  (e: 'contentChange', json?: object): void,
-  (e: 'examplesChange', json?: object): void,
+  (e: 'change', json?: object): void,
 }>();
 
-const content: any = ref(null);
+const content: any = ref({type: 'object', properties: {}});
 const examples: any = ref([]);
 
 const activeExample: any = ref(null);
@@ -63,6 +64,13 @@ function handleExampleContentChange(val) {
   activeExample.value.content = val;
 }
 
+function handleContentChange(val) {
+  emit('change', {
+    examples:examples.value,
+    content:val
+  });
+}
+
 const exampleJsonStr = ref('');
 const hasSyntaxError = ref(true);
 
@@ -85,8 +93,8 @@ function generate() {
 watch(() => {
   return props.value
 }, (newVal: any) => {
-  content.value = newVal?.content || {
-    type: 'object',
+  content.value = newVal?.content?.type ? newVal?.content  : {
+    type: 'object'
   };
   examples.value = newVal?.examples || [];
 }, {
@@ -94,25 +102,18 @@ watch(() => {
   deep: true
 });
 
-watch(() => {
-  return content.value
-}, (newVal: any) => {
-  emit('contentChange', newVal);
-}, {
-  immediate: false,
-  deep: true
-});
-
 
 watch(() => {
   return examples.value
 }, (newVal: any) => {
-  emit('examplesChange', newVal);
+  emit('change', {
+    examples:newVal,
+    content:content.value
+  });
 }, {
   immediate: false,
   deep: true
 });
-
 
 watch(() => {
   return examples.value.length
@@ -152,6 +153,12 @@ watch(() => {
         <SchemaEditor
             :key="props.schemeVisibleKey"
             :value="content"
+            :refsOptions="[
+              {
+                label: '组件 1',
+                value: 'COM1'
+              }]"
+            @change="handleContentChange"
             :contentStyle="tabContentStyle"/>
       </div>
       <!--::::示例Tab -->

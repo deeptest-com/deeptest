@@ -2,7 +2,7 @@
   <div class="project-members">
     <a-card :bordered="false">
       <template #title>
-        <a-button type="primary" @click="() => invite(0)">邀请</a-button>
+        <a-button type="primary" @click="() => invite()">邀请</a-button>
       </template>
       <template #extra>
         <a-input-search @change="onSearch" @search="onSearch" v-model:value="queryParams.keywords"
@@ -34,20 +34,40 @@
             {{ text }}
           </template>
 
+          
+          <template #role="{record}">
+            <div class="customTitleColRender">
+              <a-select
+                  :value="record.roleId"
+                  style="width: 100px"
+                  :size="'small'"
+                  placeholder="请选中角色"
+                  @change="(val) => {
+                  handleChangeRole(val,record);
+                  }"
+              >
+              <a-select-option  v-for="(option,key) in roles" :key=key :value="option.id">{{option.label}}</a-select-option>
+              </a-select>
+            </div>
+          </template>
+
           <template #action="{ record }">
             <a-button type="link" @click="() => remove(record.id)"
-                      :disabled="currentUser.projectRoles[projectId] !== 'admin'">移除</a-button>
+                      :disabled="currentUser.projectRoles[projectId] !== 'admin'">移除</a-button>       
           </template>
 
         </a-table>
       </div>
     </a-card>
   </div>
+
+  <EditPage :record="data" :title="title" :visible="visible" @cancal="cancal" />
+
 </template>
 
 <script setup lang="ts">
 import {computed, onMounted, reactive, Ref, ref} from "vue";
-import {PaginationConfig, QueryParams, Project} from '../data.d';
+import {PaginationConfig, QueryParams, Project, Member} from '../data.d';
 import {useStore} from "vuex";
 
 import {StateType} from "../store";
@@ -55,8 +75,10 @@ import debounce from "lodash.debounce";
 import {useRouter} from "vue-router";
 import {Modal, notification} from "ant-design-vue";
 import {NotificationKeyCommon} from "@/utils/const";
-import {query, queryMembers, removeMember} from "@/views/project/service";
+import {queryMembers, removeMember,changeRole} from "@/views/project/service";
 import {StateType as UserStateType} from "@/store/user";
+import EditPage from "../edit/invite.vue";
+import { SelectTypes } from "ant-design-vue/lib/select";
 
 const router = useRouter();
 const store = useStore<{ Project: StateType, User: UserStateType }>();
@@ -70,6 +92,13 @@ let queryParams = reactive<QueryParams>({
 });
 
 const members = ref({});
+const data = reactive<Member>({
+  userId:0,
+  email:"",
+  roleName:"",
+  username:""
+
+});
 
 const projectId = +router.currentRoute.value.params.id
 
@@ -89,6 +118,11 @@ const columns = [
     slots: {customRender: 'username'},
   },
   {
+    title: '角色',
+    dataIndex: 'role',
+    slots: {customRender: 'role'},
+  },
+  {
     title: '邮箱',
     dataIndex: 'email',
     slots: {customRender: 'email'},
@@ -101,14 +135,18 @@ const columns = [
   },
 ];
 
-const invite = () => {
-  console.log('invite')
-  router.push(`/project/invite/${projectId}`)
+
+const invite = ()=> {
+  title.value = "邀请用户"
+  data.email = "";
+  data.userId = 0;
+  visible.value = true;
 }
 
 onMounted(() => {
   console.log('onMounted')
   getMembers(1);
+  getRoles();
 })
 
 const initState: StateType = {
@@ -184,6 +222,29 @@ const remove = (userId: number) => {
 const onSearch = debounce(() => {
   getMembers(1)
 }, 500);
+
+const visible = ref(false)
+
+const roles = computed<SelectTypes["options"]>(()=>store.state.Project.roles);
+
+//角色列表
+const getRoles = ()=>{
+  store.dispatch('Project/getUserList');
+  store.dispatch('Project/getRoles')
+  return 
+}
+
+const title = ref("邀请用户")
+const cancal = ()=>{
+  visible.value = false
+  getMembers(1)
+  
+}
+
+const handleChangeRole = async (val:any,record:any)=>{
+  await changeRole({projectId:projectId,projectRoleId:val,userId:record.id})
+}
+
 
 </script>
 

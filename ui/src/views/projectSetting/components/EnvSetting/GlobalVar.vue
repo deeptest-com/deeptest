@@ -122,6 +122,8 @@ watch(() => {
     if (val.id) {
         getGloablVarsList();
     }
+}, {
+    immediate: true
 })
 </script>
 <style lang="less" scoped>

@@ -2,13 +2,8 @@
   <div class="content">
     <!-- header -->
     <div class="header">
-      <CustomForm 
-        :form-config="formConfig" 
-        :rules="rules"
-        :show-search="true" 
-        :search-placeholder="'输入服务名称搜索'"
-        @handle-ok="handleAdd" 
-        @handle-search="handleSearch" />
+      <CustomForm :form-config="formConfig" :rules="rules" :show-search="true" :search-placeholder="'输入服务名称搜索'"
+        @handle-ok="handleAdd" @handle-search="handleSearch" />
     </div>
     <!-- content -->
     <a-table :data-source="dataSource" :columns="serviceColumns" rowKey="id">
@@ -66,7 +61,7 @@
       </template>
     </a-table>
     <!-- 抽屉 -->
-    <Drawer :params="routerObj" :edit-key="editKey" :drawer-visible="drawerVisible" @onClose="onClose" :tab-key="currentTabKey" @update:tab-key="handleUpdateTabKey" />
+    <Drawer :edit-key="editKey" :drawer-visible="drawerVisible" :tab-key="currentTabKey" @update:tab-key="handleUpdateTabKey" @onClose="onClose" />
   </div>
 </template>
 <script setup lang="ts">
@@ -79,6 +74,7 @@ import {
   defineProps,
 } from 'vue';
 import { useStore } from "vuex";
+import { useRouter } from 'vue-router';
 import { Modal } from 'ant-design-vue';
 import { EditOutlined, ExclamationCircleOutlined, MoreOutlined } from '@ant-design/icons-vue';
 import CustomForm from '../common/CustomForm.vue';
@@ -91,19 +87,11 @@ const store = useStore<{ ProjectGlobal: ProjectStateType, ProjectSetting: Projec
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const dataSource = computed<any>(() => store.state.ProjectSetting.serviceOptions);
 const userListOptions = computed<any>(() => store.state.ProjectSetting.userListOptions);
+const route = useRouter();
 
 const drawerVisible = ref(false);
 const editKey = ref(0);
-const routerObj=ref({});
 const currentTabKey = ref('');
-
-const props = defineProps({
-  params: {
-    type: Object,
-    required: true,
-   
-  },
-})
 
 const formConfig = [
   {
@@ -148,16 +136,16 @@ const rules = {
 
 async function handleAdd(formData: any) {
   const { name, username, description } = formData;
-    const result = userListOptions.value.filter((e: any) => e.value === username);
-    await store.dispatch('ProjectSetting/saveStoreServe', {
-        projectId: currProject.value.id,
-        formState: {
-            userId: result && result[0] && result[0].id,
-            name,
-            description
-        },
-        action: 'create'
-    })
+  const result = userListOptions.value.filter((e: any) => e.value === username);
+  await store.dispatch('ProjectSetting/saveStoreServe', {
+    projectId: currProject.value.id,
+    formState: {
+      userId: result && result[0] && result[0].id,
+      name,
+      description
+    },
+    action: 'create'
+  })
 }
 
 function onClose() {
@@ -166,13 +154,13 @@ function onClose() {
 
 function handleSearch(value: any) {
   getList(value);
-} 
+}
 
-function edit(record: any) {
+async function edit(record: any) {
   if (!record || (record && Object.keys(record).length === 0)) {
     return;
-  } 
-  store.dispatch('ProjectSetting/setServiceDetail', {
+  }
+  await store.dispatch('ProjectSetting/setServiceDetail', {
     name: record.name,
     description: record.description,
     id: record.id
@@ -181,18 +169,18 @@ function edit(record: any) {
   drawerVisible.value = true;
 }
 
-function onOpenComponent(record: any) {
-  edit(record);
+async function onOpenComponent(record: any) {
+  await edit(record);
   currentTabKey.value = 'service-component';
 }
 
-function onOpenSecurity(record: any) {
-  edit(record);
-  currentTabKey.value = 'service-security'; 
+async function onOpenSecurity(record: any) {
+  await edit(record);
+  currentTabKey.value = 'service-security';
 }
 
-function onOpenVersion(record: any) {
-  edit(record);
+async function onOpenVersion(record: any) {
+  await edit(record);
   currentTabKey.value = 'service-version';
 }
 
@@ -241,19 +229,18 @@ watch(() => {
 })
 
 // 判断是否携带参数，用于security模块
-async function isHasProps(){
-  if(JSON.stringify(props.params) !=='{}'){
-    let record={}  
-    dataSource?.value?.map((item)=>{
-      if(item.id==props.params?.serveId*1){
-          record=  item
+async function isHasProps() {
+  const { query: { serveId = '', sectab = '' } = {} }: any = route.currentRoute.value;
+  if (serveId) {
+    let record = {}
+    dataSource?.value?.map((item) => {
+      if (item.id == serveId * 1) {
+        record = item
       }
     })
     await edit(record)
-    routerObj.value={...record,...props.params}
-     
+    currentTabKey.value = sectab;
   }
-
 }
 
 </script>

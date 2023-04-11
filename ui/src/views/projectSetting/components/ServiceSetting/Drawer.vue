@@ -35,7 +35,6 @@ import {
     computed,
     defineEmits,
     defineProps,
-    onMounted,
     watch
 } from 'vue';
 import { useStore } from 'vuex';
@@ -54,7 +53,6 @@ const formState = computed<ServeDetail>(() => store.state.ProjectSetting.selectS
 
 const props = defineProps<{
     drawerVisible: boolean
-    params:any
     tabKey: string
     editKey?: number
 }>();
@@ -64,13 +62,6 @@ console.log('props-------- tabKey', props.tabKey);
 const activeKey = ref('service-version');
 const isEditServiceDesc = ref(false);
 const isEditServiceName = ref(false);
-
-onMounted(()=>{
-    if(props.params?.sectab){
-        const sectab:any=props.params?.sectab
-        activeKey.value=sectab
-    }
-})
 
 function onClose() {
     emits('onClose');

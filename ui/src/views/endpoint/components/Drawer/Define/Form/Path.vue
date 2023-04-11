@@ -80,7 +80,7 @@ const collapse = ref(true);
  * 跳转去新建环境
  * */
 function addEnv() {
-  window.open(`/#/projectSetting/index?firtab=3&sectab=2&serveId=${endpointDetail.value.serveId}`, '_blank')
+  window.open(`/#/project-setting/enviroment/envdetail/-1`, '_blank')
 }
 
 /**

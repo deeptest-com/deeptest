@@ -30,6 +30,10 @@
               class="env-item" :key="index">
               <MenuOutlined class="handle" />
               <span class="text"> {{ element.displayName }} </span>
+              <span class="action">
+                <copy-outlined class="copy" @click.stop="copyEnvData(element)" />
+                <delete-outlined class="delete" @click.stop="deleteEnvData(element)" />
+              </span>
             </a-button>
           </template>
         </draggable>
@@ -58,21 +62,24 @@
 import {
   computed,
   ref,
-  watch
+  watch,
+  createVNode
 } from 'vue';
-import { MenuOutlined, PlusOutlined } from '@ant-design/icons-vue';
+import { MenuOutlined, PlusOutlined, CopyOutlined, DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import draggable from 'vuedraggable'
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { StateType as ProjectStateType } from "@/store/project";
 import { StateType as ProjectSettingStateType } from "@/views/ProjectSetting/store";
 import { EnvDataItem } from '../../data';
+import { Modal } from 'ant-design-vue';
+import { useGlobalEnv } from '../../hooks/useGlobalEnv';
 
+const { activeEnvDetail, deleteEnvData, copyEnvData } = useGlobalEnv();
 // store 相关
 const store = useStore<{ ProjectGlobal: ProjectStateType, ProjectSetting: ProjectSettingStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const envList = computed<any>(() => store.state.ProjectSetting.envList);
-const activeEnvDetail = computed<any>(() => store.state.ProjectSetting.activeEnvDetail);
 const router = useRouter();
 
 const params = router.currentRoute.value.params;
@@ -114,6 +121,28 @@ async function toEnvDetail(env: any) {
   isShowAddEnv.value = !env;
   await store.dispatch('ProjectSetting/setEnvDetail', env);
   router.push(`/project-setting/enviroment/envdetail${env ? `/${env.id}` : '/-1'}`);
+}
+
+function handleCopy(evt: any, env: any) {
+  evt.stopPropagation();
+  store.dispatch('ProjectSetting/copyEnvData', {
+      activeEnvId: env?.id,
+      projectId: currProject.value.id
+  })
+}
+
+function handleDelete(evt: any, env: any) {
+  evt.stopPropagation();
+  Modal.confirm({
+      title: '确认要删除该环境吗',
+      icon: createVNode(ExclamationCircleOutlined),
+      onOk() {
+        store.dispatch('ProjectSetting/deleteEnvData', {
+            activeEnvId: env?.id,
+            projectId: currProject.value.id
+        })
+      },
+  });
 }
 
 /**
@@ -214,6 +243,8 @@ watch(() => {
   .env-item {
     margin: 0 16px;
     padding-left: 8px;
+    display: flex;
+    align-items: center;
 
     i {
       width: 18px;
@@ -231,6 +262,20 @@ watch(() => {
     .handle {
       margin-right: 8px;
       cursor: pointer;
+    }
+
+    .text {
+      flex: 1;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+      padding-right: 6px;
+    }
+
+    .action {
+      .copy {
+        margin-right: 6px;
+      }
     }
   }
 

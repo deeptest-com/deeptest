@@ -17,7 +17,7 @@
                     关联服务
                 </a-button>
                 <a-table v-if="activeEnvDetail.serveServers.length > 0" size="small" bordered :pagination="false"
-                    :columns="serveServersColumns" :data-source="activeEnvDetail.serveServers">
+                    :columns="serveServersColumns" :data-source="activeEnvDetail.serveServers" :rowKey="(_record, index) => index">
                     <template #customUrl="{ text, index }">
                         <a-form-item :name="['serveServers', index, 'url']"
                             :rules="[{ required: true, validator: urlValidator }]">
@@ -25,6 +25,11 @@
                                 handleEnvChange('serveServers', 'url', index, e);
                             }" placeholder="http 或 https 起始的合法 URL" />
                         </a-form-item>
+                    </template>
+                    <template #customAction="{ index }">
+                        <a-button danger type="text" @click="handleEnvChange('serveServers', '', index, '', 'delete');"
+                            :size="'small'">解除关联
+                        </a-button>
                     </template>
                 </a-table>
             </div>
@@ -37,7 +42,7 @@
                     添加
                 </a-button>
                 <a-table v-if="activeEnvDetail.vars.length > 0" bordered size="small" :pagination="false"
-                    :columns="globalVarsColumns" :data-source="activeEnvDetail.vars">
+                    :columns="globalVarsColumns" :data-source="activeEnvDetail.vars" :rowKey="(_record, index) => index">
                     <template #customName="{ text, index }">
                         <a-form-item :name="['vars', index, 'name']"
                             :rules="[{ required: true, message: '参数名不可为空' }]">
@@ -76,8 +81,6 @@
             </div>
         </div>
         <div class="envDetail-footer">
-            <a-button v-if="activeEnvDetail.id" class="save-btn" @click="deleteEnvData" type="danger">删除</a-button>
-            <a-button v-if="activeEnvDetail.id" class="save-btn" @click="copyEnvData" type="primary">复制</a-button>
             <a-button class="save-btn" @click="addEnvData" html-type="submit" type="primary">保存</a-button>
         </div>
     </a-form>
@@ -107,8 +110,6 @@ const {
     activeEnvDetail,
     addVar,
     addEnvData,
-    deleteEnvData,
-    copyEnvData,
     handleEnvChange,
     handleEnvNameChange
 } = useGlobalEnv(formRef);

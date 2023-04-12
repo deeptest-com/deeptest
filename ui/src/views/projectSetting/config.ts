@@ -97,6 +97,12 @@ const serveServersColumns: any = [
         key: 'url',
         slots: { customRender: 'customUrl' },
     },
+    {
+        title: '操作',
+        dataIndex: 'operation',
+        slots: { customRender: 'customAction' }
+
+    }
 ];
 
 // 全局参数tab切换列表

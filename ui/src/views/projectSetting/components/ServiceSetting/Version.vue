@@ -89,7 +89,6 @@ const formConfig = [
     modelName: 'createUser',
     valueType: 'string',
     options: userListOptions.value,
-    mode: 'combobox',
     placeholder: '请选择负责人',
     attrs: "width: 200px"
   },

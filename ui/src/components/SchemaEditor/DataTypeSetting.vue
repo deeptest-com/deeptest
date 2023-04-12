@@ -1,7 +1,8 @@
 <script lang="ts" setup>
 import {ref, defineProps, defineEmits, watch, reactive, toRaw, computed, onMounted} from 'vue';
-import {schemaSettingInfo,typeOpts} from "./utils";
-import {cloneByJSON} from "@/utils/object";
+import {schemaSettingInfo, typeOpts} from "./utils";
+import cloneDeep from "lodash/cloneDeep";
+
 const props = defineProps({
   value: {
     required: true,
@@ -15,12 +16,27 @@ const props = defineProps({
 const emit = defineEmits(['change']);
 const tabsList: any = ref([]);
 const visible: any = ref(false);
+// 返回
+const typesLabel: any = computed(() => {
+  const {type, types} = props.value || {};
+  if (!type) {
+    return '';
+  }
+  const labels = Array.isArray(types) ? [...types, type] : [type];
+  const result = labels.reduceRight((acc, cur, index) => {
+    if (index === labels.length - 1) {
+      return [cur];
+    }
+    return [cur, acc];
+  }, []);
+  return JSON.stringify(result).replace(/[",]/g, '').replace(/^\[/, '').replace(/\]$/, '');
+});
 
 function changeType(tabsIndex: any, e: any) {
   let type = e.target.value;
   if (type === 'array') {
     if (tabsList.value.length === tabsIndex + 1) {
-      tabsList.value.push(cloneByJSON(schemaSettingInfo));
+      tabsList.value.push(cloneDeep(schemaSettingInfo));
     }
   } else {
     if (tabsIndex < tabsList.value.length) {
@@ -29,11 +45,10 @@ function changeType(tabsIndex: any, e: any) {
   }
 }
 
-
 function initTabsList(types: any, treeInfo: any) {
   let tabsList: any = [];
   types.forEach((type: string) => {
-    const defaultTabs: any = cloneByJSON(schemaSettingInfo);
+    const defaultTabs: any = cloneDeep(schemaSettingInfo);
     // 默认选中了类型
     if (typeOpts.includes(type)) {
       defaultTabs[0].active = typeOpts.includes(type);
@@ -50,23 +65,27 @@ function initTabsList(types: any, treeInfo: any) {
   });
   // 如果是数组，还需加一项
   if (types[types.length - 1] === 'array') {
-    const arrayItems: any = cloneByJSON(schemaSettingInfo);
+    const arrayItems: any = cloneDeep(schemaSettingInfo);
     tabsList.push(arrayItems);
   }
   return tabsList;
 }
 
 function getValueFromTabsList(tabsList: any) {
-  const res: any = {};
+  const result: any = [];
   tabsList.forEach((tabs: any) => {
     const activeTab = tabs.find((tab: any) => tab.active);
-    res[activeTab.value] = {};
+    let res: any = {
+      type: activeTab.value
+    };
+    // ::::TODO 需要处理选中了ref的情况
     const activeTabProps = activeTab?.props?.find((prop: any) => prop.value === activeTab.value);
     activeTabProps.props.options.forEach((opt: any) => {
-      res[activeTab.value][opt.name] = opt.value;
+      res[opt.name] = opt.value;
     })
+    result.push(res);
   })
-  return res;
+  return result;
 }
 
 watch(() => {
@@ -74,9 +93,9 @@ watch(() => {
 }, (newVal: any) => {
   // 打开时，初始化数据
   if (newVal && props.value.type) {
-    // 处理如 array[array[object]] 的场景
-    const types = props.value.type.match(/\w+/g);
-    tabsList.value = [...initTabsList(types, props.value)];
+    const {type, types} = props.value || {};
+    const allTypes = [...(types || []), type];
+    tabsList.value = [...initTabsList(allTypes, props.value)];
   }
   // 关闭了，触发change事件
   else {
@@ -97,7 +116,7 @@ function selectTab(tabs: any, tabIndex: number) {
              trigger="click"
              v-model:visible="visible"
              placement="left"
-             :overlayClassName="'container'">
+             :overlayClassName="'data-type-setting-container'">
     <template #content>
       <div class="content" v-for="(tabs,tabsIndex) in tabsList" :key="tabsIndex">
         <div class="header">
@@ -117,6 +136,7 @@ function selectTab(tabs: any, tabIndex: number) {
                v-show="tab.active"
                :key="tab.value">
             <a-radio-group
+                :size="'small'"
                 v-model:value="tab.value"
                 @change="(event) => changeType(tabsIndex, event)"
                 button-style="solid">
@@ -126,7 +146,6 @@ function selectTab(tabs: any, tabIndex: number) {
                   :value="item.value">{{ item.label }}
               </a-radio-button>
             </a-radio-group>
-
             <a-form :layout="'vertical'" v-if="tab.type === 'type' && tab.active">
               <div v-for="(item,itemIndex) in tab.props" :key="itemIndex">
                 <div v-if="item.value === tab.value">
@@ -189,7 +208,7 @@ function selectTab(tabs: any, tabIndex: number) {
         </div>
       </div>
     </template>
-    <a href="javascript:void(0)">{{ value.type }}</a>
+    <a href="javascript:void(0)">{{ typesLabel }}</a>
   </a-popover>
 </template>
 
@@ -199,10 +218,10 @@ function selectTab(tabs: any, tabIndex: number) {
   padding: 0;
 }
 
+
 .content {
-  width: 600px;
-  //height: 380px;
-  //overflow-y: scroll;
+  width: 480px;
+  overflow-y: scroll;
 }
 
 :deep(.ant-input-number) {
@@ -253,6 +272,16 @@ function selectTab(tabs: any, tabIndex: number) {
   }
 }
 
+</style>
 
+<style lang="less">
+
+.data-type-setting-container {
+  .ant-popover-inner {
+    max-height: 480px;
+    overflow-y: scroll;
+  }
+
+}
 </style>
 

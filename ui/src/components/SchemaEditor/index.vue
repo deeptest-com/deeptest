@@ -65,6 +65,7 @@ function handleExampleContentChange(val) {
 }
 
 function handleContentChange(val) {
+  console.log('handleContentChange', val);
   emit('change', {
     examples:examples.value,
     content:val

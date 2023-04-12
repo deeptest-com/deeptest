@@ -120,6 +120,9 @@ function hasDefinedCode(code: string) {
 watch(() => {
   return selectedCode.value
 }, (newVal, oldVal) => {
+  if(newVal !== oldVal) {
+    collapse.value = true;
+  }
   const detail = selectedMethodDetail?.value?.responseBodies?.find((item) => {
     return item.code === newVal;
   })

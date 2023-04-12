@@ -1,6 +1,6 @@
 <template>
     <!-- ::::环境详情 -->
-    <a-form :model="activeEnvDetail">
+    <a-form :model="activeEnvDetail" ref="formRef">
         <div class="title">{{ activeEnvDetail.displayName }}</div>
         <div class="envDetail-content">
             <a-form-item :labelCol="{ span: 2 }" :wrapperCol="{ span: 10 }" label="环境名称" name="name"
@@ -18,16 +18,13 @@
                 </a-button>
                 <a-table v-if="activeEnvDetail.serveServers.length > 0" size="small" bordered :pagination="false"
                     :columns="serveServersColumns" :data-source="activeEnvDetail.serveServers">
-                    <template #customName="{ text, index }">
-                        <a-input :value="text" @change="(e) => {
-                            handleEnvChange('serveServers', 'serveName', index, e);
-                        }" placeholder="请输入参数名" />
-                    </template>
-
                     <template #customUrl="{ text, index }">
-                        <a-input :value="text" @change="(e) => {
-                            handleEnvChange('serveServers', 'url', index, e);
-                        }" placeholder="http 或 https 起始的合法 URL" />
+                        <a-form-item :name="['serveServers', index, 'url']"
+                            :rules="[{ required: true, validator: urlValidator }]">
+                            <a-input :value="text" @change="(e) => {
+                                handleEnvChange('serveServers', 'url', index, e);
+                            }" placeholder="http 或 https 起始的合法 URL" />
+                        </a-form-item>
                     </template>
                 </a-table>
             </div>
@@ -42,19 +39,28 @@
                 <a-table v-if="activeEnvDetail.vars.length > 0" bordered size="small" :pagination="false"
                     :columns="globalVarsColumns" :data-source="activeEnvDetail.vars">
                     <template #customName="{ text, index }">
-                        <a-input @change="(e) => {
-                            handleEnvChange('vars', 'name', index, e);
-                        }" :value="text" placeholder="请输入参数名" />
+                        <a-form-item :name="['vars', index, 'name']"
+                            :rules="[{ required: true, message: '参数名不可为空' }]">
+                            <a-input @change="(e) => {
+                                handleEnvChange('vars', 'name', index, e);
+                            }" :value="text" placeholder="请输入参数名" />
+                        </a-form-item>
                     </template>
                     <template #customLocalValue="{ text, index }">
-                        <a-input :value="text" @change="(e) => {
-                            handleEnvChange('vars', 'localValue', index, e);
-                        }" placeholder="请输入本地值" />
+                        <a-form-item :name="['vars', index, 'localValue']"
+                            :rules="[{ required: true, message: '本地值不可为空' }]">
+                            <a-input :value="text" @change="(e) => {
+                                handleEnvChange('vars', 'localValue', index, e);
+                            }" placeholder="请输入本地值" />
+                        </a-form-item>
                     </template>
                     <template #customRemoteValue="{ text, index }">
-                        <a-input :value="text" @change="(e) => {
-                            handleEnvChange('vars', 'remoteValue', index, e);
-                        }" placeholder="请输入远程值" />
+                        <a-form-item :name="['vars', index, 'remoteValue']"
+                            :rules="[{ required: true, message: '远程值不可为空' }]">
+                            <a-input :value="text" @change="(e) => {
+                                handleEnvChange('vars', 'remoteValue', index, e);
+                            }" placeholder="请输入远程值" />
+                        </a-form-item>
                     </template>
                     <template #customDescription="{ text, index }">
                         <a-input :value="text" @change="(e) => {
@@ -83,17 +89,18 @@
     </a-modal>
 </template>
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue';
+import { ref, computed } from 'vue';
 import { useStore } from "vuex";
+import { message } from 'ant-design-vue';
 import { globalVarsColumns, serveServersColumns } from '../../config';
 import { useGlobalEnv } from '../../hooks/useGlobalEnv';
 import { StateType as ProjectSettingStateType } from "@/views/ProjectSetting/store";
-import { message } from 'ant-design-vue';
 
 const store = useStore<{ ProjectSetting: ProjectSettingStateType }>();
 const serviceOptions = computed<any>(() => store.state.ProjectSetting.serviceOptions);
 const addServiceModalVisible = ref(false);
 const selectedService = ref('');
+const formRef = ref<any>();
 
 
 const {
@@ -104,11 +111,24 @@ const {
     copyEnvData,
     handleEnvChange,
     handleEnvNameChange
-} = useGlobalEnv();
+} = useGlobalEnv(formRef);
 
 // 添加服务弹窗操作 
 async function addService() {
     addServiceModalVisible.value = true;
+}
+
+function urlValidator(...arg: any[]) {
+    const value = arg[1];
+    const urlReg = /(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?/; // eslint-disable-line
+    if (value === '') {
+        return Promise.reject('url不能为空');
+    } else {
+        if (!urlReg.test(value)) {
+            return Promise.reject('url格式错误，请参考 http(s)://www.test.com ');
+        }
+        return Promise.resolve();
+    }
 }
 
 function handleAddServiceOk() {
@@ -129,7 +149,7 @@ function handleAddServiceOk() {
     } else {
         message.error('不可添加重复的服务,请重新选择~');
     }
-   
+
 }
 
 </script>
@@ -205,5 +225,15 @@ function handleAddServiceOk() {
 :deep(.custom-select .ant-select-selector:active),
 :deep(.custom-select .ant-select-selector:focus) {
     border: 1px solid #4096ff !important
+}
+
+:deep(.serveServers .ant-row.ant-form-item),
+:deep(.vars .ant-row.ant-form-item) {
+    margin-bottom: 0 !important;
+}
+
+:deep(.vars .ant-row.ant-form-item-has-error .ant-form-item-control-input),
+:deep(.serveServers .ant-row.ant-form-item-has-error .ant-form-item-control-input) {
+    border: 1px solid #f5222d;
 }
 </style>

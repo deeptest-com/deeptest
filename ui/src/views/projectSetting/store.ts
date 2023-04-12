@@ -281,33 +281,15 @@ const StoreModel: ModuleType = {
             }
         },
         async saveEnvironmentsParam({ state }, { projectId }: VarsReqParams) {
-            // 校验
-            try {
-                Object.keys(state.globalParamsData).forEach(key => {
-                    const hasEmptyParams = state.globalParamsData[key].some(e => e.name === '');
-                    if (hasEmptyParams) {
-                        throw Error('全局参数不能为空');
-                    }
-                });
-                const res = await saveEnvironmentsParam({ ...state.globalParamsData, projectId });
-                if (res.code === 0) {
-                    message.success('保存全局参数成功');
-                    return true;
-                } else {
-                    return false;
-                }
-            } catch (e: any) {
-                message.error(e.message);
+            const res = await saveEnvironmentsParam({ ...state.globalParamsData, projectId });
+            if (res.code === 0) {
+                message.success('保存全局参数成功');
+                return true;
+            } else {
                 return false;
             }
         },
         async saveGlobalVars({ state }) {
-            // 校验
-            const hasEmptyVarsData = state.globalVarsData.some((e: any) => e.name === '' || e.remoteValue === '' || e.localValue === '');
-            if (hasEmptyVarsData) {
-                message.error('全局变量/远程值/本地值不能为空');
-                return false;
-            }
             const res = await saveGlobalVars(state.globalVarsData);
             if (res.code === 0) {
                 message.success('保存全局变量成功');

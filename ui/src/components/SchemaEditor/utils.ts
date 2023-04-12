@@ -596,28 +596,28 @@ export const treeLevelWidth = 24;
 /**
  * 是否是对象类型
  * */
-export function isObject(type: string):boolean {
+export function isObject(type: string): boolean {
     return type === 'object';
 }
 
 /**
  * 是否是数组类型
  * */
-export function isArray(type: string):boolean {
+export function isArray(type: string): boolean {
     return type === 'array';
 }
 
 /**
  * 普通类型
  * */
-export function isNormalType(type: string):boolean {
+export function isNormalType(type: string): boolean {
     return !['array', 'object'].includes(type);
 }
 
 /**
  * 根据传入的 schema 结构信息，添加需要额外的渲染属性
  * */
-export function addExtraViewInfo(val:Object | any | undefined | null ):any {
+export function addExtraViewInfo(val: Object | any | undefined | null): any {
     if (!val) {
         return null
     }
@@ -645,7 +645,7 @@ export function addExtraViewInfo(val:Object | any | undefined | null ):any {
             return;
         }
         // 处理对象类型
-        if (isObject(obj.type) && obj.properties) {
+        if (isObject(obj.type)) {
             obj.extraViewInfo = {
                 "isExpand": true,
                 "depth": depth,
@@ -653,7 +653,7 @@ export function addExtraViewInfo(val:Object | any | undefined | null ):any {
                 "parent": parent,
                 ...options
             }
-            Object.entries(obj.properties).forEach(([keyName, value]: any, keyIndex: number) => {
+            Object.entries(obj.properties || {}).forEach(([keyName, value]: any, keyIndex: number) => {
                 traverse(value, depth + 1, obj, {
                         keyName,
                         keyIndex,
@@ -689,37 +689,37 @@ export function removeExtraViewInfo(val: Object | any): object | null {
     if (!val) {
         return null
     }
-    if (val.extraViewInfo) {
-        delete val.extraViewInfo;
-    }
+    delete val?.extraViewInfo;
 
     function traverse(obj: any) {
         // base Case 普通类型，递归结束，
         if (isNormalType(obj.type)) {
-            delete obj.extraViewInfo;
+            delete obj?.extraViewInfo;
+            // 普通类型，需要删除 items 属性
+            delete obj?.items;
             return;
         }
         // 处理对象类型
-        if (isObject(obj.type) && obj.properties) {
-            delete obj.extraViewInfo;
-            Object.entries(obj.properties).forEach(([keyName, value]: any, keyIndex: number) => {
+        if (isObject(obj.type)) {
+            delete obj?.extraViewInfo;
+            Object.entries(obj.properties || {}).forEach(([keyName, value]: any, keyIndex: number) => {
                 traverse(value);
             })
         }
         // 处理数组类型
-        if (isArray(obj.type) && obj.items) {
-            // 找到最后一个非数组类型的节点
-            const {node} = findLastNotArrayNode(obj);
-            if (node) {
-                delete node.types;
-                traverse(node);
-            }
+        if (isArray(obj.type)) {
+            (function fn(obj: any) {
+                if (!isArray(obj.type)) {
+                    traverse(obj);
+                    return;
+                }
+                delete obj?.extraViewInfo;
+                fn(obj.items);
+            })(obj);
         }
     }
 
-    if (!isNormalType(val.type)) {
-        traverse(val);
-    }
+    traverse(val);
     return val;
 }
 
@@ -753,12 +753,11 @@ export function findLastNotArrayNode(tree: Object): any {
 export const generateSchemaByArray = (arr: any[]): any => {
     const res = {};
     arr.reduce((prev, next, index, array) => {
-        console.log(prev, next, index);
         if (index === 0) {
             prev = Object.assign(prev, next);
             return prev;
-        }else {
-            prev.items = Object.assign( {}, next);
+        } else {
+            prev.items = Object.assign({}, next);
             return prev.items;
         }
     }, res);
@@ -768,7 +767,7 @@ export const generateSchemaByArray = (arr: any[]): any => {
  * 移动光标在最后一个位置
  *
  * */
-export const moveCursorToEnd = (dom:Object):void => {
+export const moveCursorToEnd = (dom: Object): void => {
     let range;
     if (window.getSelection) {//ie11 10 9 ff safari
         range = window.getSelection();//创建range

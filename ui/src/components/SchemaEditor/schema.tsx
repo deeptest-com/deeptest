@@ -64,13 +64,8 @@ export default defineComponent({
             data.value = addExtraViewInfo(data.value);
         }
         const dataTypeChange = (options?: any, newProps?: any) => {
-
             const {parent, keyName, depth, ancestor} = options;
-            console.log('options', options);
-            console.log('newVal', newProps);
-
             const firstType = newProps?.[0]?.type;
-
             // 如果是根节点
             if (parent === null && depth === 1) {
                 if (isArray(firstType)) {
@@ -166,7 +161,6 @@ export default defineComponent({
         }, (newVal) => {
             const val = cloneDeep(newVal);
             data.value = addExtraViewInfo(val);
-            console.log('832 watch val addExtraViewInfo', val);
         }, {
             immediate: true,
             deep: true
@@ -175,7 +169,6 @@ export default defineComponent({
             return data.value
         }, (newVal) => {
             const newObj = removeExtraViewInfo(cloneDeep(newVal));
-            console.log('832 emit change', newObj);
             emit('change', newObj);
         }, {
             immediate: true,
@@ -293,7 +286,7 @@ export default defineComponent({
                             return renderTree(value)
                         })
                     }
-                    {isExpand && renderVerticalLine(options)}
+                    {isExpand && Object.keys(tree?.properties || {}).length > 0 && renderVerticalLine(options)}
                 </div>
             }
             // 渲染数组类型节点

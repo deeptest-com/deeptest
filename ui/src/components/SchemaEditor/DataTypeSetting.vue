@@ -1,3 +1,105 @@
+<template>
+  <a-popover :title="null"
+             trigger="click"
+             v-model:visible="visible"
+             placement="left"
+             :overlayClassName="'data-type-setting-container'">
+    <template #content>
+      <div class="content" v-for="(tabs,tabsIndex) in tabsList" :key="tabsIndex">
+        <div class="header">
+          <div class="item"
+               v-for="(tab,tabIndex) in tabs"
+               @click="() => {
+                  selectTab(tabs,tabIndex)
+               }"
+               :class="tab.active ? 'active' : ''"
+               :key="tab.value">
+            {{ tabsIndex === 0 ? tab.label : tab.subLabel }}
+          </div>
+        </div>
+        <div class="main">
+          <div class="item"
+               v-for="(tab) in tabs"
+               v-show="tab.active"
+               :key="tab.value">
+            <a-radio-group
+                :size="'small'"
+                class="select-type-btn"
+                v-if="tab.active"
+                v-model:value="tab.value"
+                @change="(event) => changeType(tabsIndex, event)"
+                button-style="solid">
+              <a-radio-button
+                  v-for="item in tab.props"
+                  :key="item.value"
+                  :value="item.value">{{ item.label }}
+              </a-radio-button>
+            </a-radio-group>
+            <a-form :layout="'vertical'" v-if="tab.type === 'type' && tab.active">
+              <div v-for="(item,itemIndex) in tab.props" :key="itemIndex">
+                <div v-if="item.value === tab.value">
+                  <div class="card-title">{{ item.props.label }}</div>
+                  <a-row
+                      class="card-content"
+                      type="flex"
+                      justify="space-between"
+                      align="top">
+                    <a-col class="col" v-for="opt in item.props.options" :span="11" :key="opt.name">
+                      <a-form-item
+                          class="col-form-item"
+                          :labelAlign="'right'"
+                          :label="opt.label">
+                        <a-select
+                            v-if="opt.component === 'selectTag'"
+                            v-model:value="opt.value"
+                            mode="tags"
+                            :placeholder="opt.placeholder"
+                        />
+                        <a-select
+                            v-if="opt.component === 'select'"
+                            v-model:value="opt.value"
+                            :options="opt.options"
+                            :placeholder="opt.placeholder"
+                        />
+                        <a-input
+                            v-if="opt.component === 'input'"
+                            v-model:value="opt.value"
+                            :placeholder="opt.placeholder"
+                        />
+                        <a-input-number
+                            v-if="opt.component === 'inputNumber'"
+                            id="inputNumber"
+                            :placeholder="opt.placeholder"
+                            v-model:value="opt.value"
+                        />
+                        <a-switch
+                            v-if="opt.component === 'switch'"
+                            v-model:checked="opt.value"/>
+                      </a-form-item>
+                    </a-col>
+                  </a-row>
+                </div>
+              </div>
+            </a-form>
+            <a-form :layout="'vertical'" style="margin-bottom: 16px;" v-if="tab.type === '$ref' && tab.active">
+              <a-form-item
+                  class="col-form-item"
+                  :labelAlign="'right'"
+                  :label="'请选择组件'">
+                <a-select
+                    label-in-value
+                    :options="refsOptions"
+                    placeholder="Select Components"
+                    style="width: 100%"/>
+              </a-form-item>
+            </a-form>
+          </div>
+        </div>
+      </div>
+    </template>
+    <a href="javascript:void(0)">{{ typesLabel }}</a>
+  </a-popover>
+</template>
 <script lang="ts" setup>
 import {ref, defineProps, defineEmits, watch, reactive, toRaw, computed, onMounted} from 'vue';
 import {schemaSettingInfo, typeOpts} from "./utils";
@@ -54,7 +156,7 @@ function initTabsList(types: any, treeInfo: any) {
       defaultTabs[0].active = typeOpts.includes(type);
       defaultTabs[0].value = type;
       const activeTabProps = defaultTabs[0].props.find((prop: any) => prop.value === type);
-      activeTabProps.props.options.forEach((opt: any) => {
+      activeTabProps?.props?.options?.forEach((opt: any) => {
         opt.value = treeInfo[opt.name] || opt.value;
       })
     } else {
@@ -111,107 +213,6 @@ function selectTab(tabs: any, tabIndex: number) {
 
 </script>
 
-<template>
-  <a-popover :title="null"
-             trigger="click"
-             v-model:visible="visible"
-             placement="left"
-             :overlayClassName="'data-type-setting-container'">
-    <template #content>
-      <div class="content" v-for="(tabs,tabsIndex) in tabsList" :key="tabsIndex">
-        <div class="header">
-          <div class="item"
-               v-for="(tab,tabIndex) in tabs"
-               @click="() => {
-                  selectTab(tabs,tabIndex)
-               }"
-               :class="tab.active ? 'active' : ''"
-               :key="tab.value">
-            {{ tabsIndex === 0 ? tab.label : tab.subLabel }}
-          </div>
-        </div>
-        <div class="main">
-          <div class="item"
-               v-for="(tab) in tabs"
-               v-show="tab.active"
-               :key="tab.value">
-            <a-radio-group
-                :size="'small'"
-                v-model:value="tab.value"
-                @change="(event) => changeType(tabsIndex, event)"
-                button-style="solid">
-              <a-radio-button
-                  v-for="item in tab.props"
-                  :key="item.value"
-                  :value="item.value">{{ item.label }}
-              </a-radio-button>
-            </a-radio-group>
-            <a-form :layout="'vertical'" v-if="tab.type === 'type' && tab.active">
-              <div v-for="(item,itemIndex) in tab.props" :key="itemIndex">
-                <div v-if="item.value === tab.value">
-                  <div class="card-title">{{ item.props.label }}</div>
-                  <a-row
-                      class="card-content"
-                      type="flex"
-                      justify="space-between"
-                      align="top">
-                    <a-col class="col" v-for="opt in item.props.options" :span="11" :key="opt.name">
-                      <a-form-item
-                          class="col-form-item"
-                          :labelAlign="'right'"
-                          :label="opt.label">
-                        <a-select
-                            v-if="opt.component === 'selectTag'"
-                            v-model:value="opt.value"
-                            mode="tags"
-                            :placeholder="opt.placeholder"
-                        />
-                        <a-select
-                            v-if="opt.component === 'select'"
-                            v-model:value="opt.value"
-                            :options="opt.options"
-                            :placeholder="opt.placeholder"
-                        />
-                        <a-input
-                            v-if="opt.component === 'input'"
-                            v-model:value="opt.value"
-                            :placeholder="opt.placeholder"
-                        />
-                        <a-input-number
-                            v-if="opt.component === 'inputNumber'"
-                            id="inputNumber"
-                            :placeholder="opt.placeholder"
-                            v-model:value="opt.value"
-                        />
-                        <a-switch
-                            v-if="opt.component === 'switch'"
-                            v-model:checked="opt.value"/>
-                      </a-form-item>
-                    </a-col>
-                  </a-row>
-                </div>
-              </div>
-            </a-form>
-            <a-form :layout="'vertical'" v-if="tab.type === '$ref' && tab.active">
-              <a-form-item
-                  class="col-form-item"
-                  :labelAlign="'right'"
-                  :label="'请选择组件'">
-                <a-select
-                    label-in-value
-                    :options="refsOptions"
-                    placeholder="Select Components"
-                    style="width: 100%"/>
-              </a-form-item>
-            </a-form>
-          </div>
-        </div>
-      </div>
-    </template>
-    <a href="javascript:void(0)">{{ typesLabel }}</a>
-  </a-popover>
-</template>
-
 <style lang="less" scoped>
 
 .container {
@@ -259,7 +260,6 @@ function selectTab(tabs: any, tabIndex: number) {
     height: 30px;
     line-height: 30px;
     font-weight: bold;
-
     &.active {
       color: #1890ff;
     }
@@ -268,7 +268,10 @@ function selectTab(tabs: any, tabIndex: number) {
 
 .main {
   .item {
-    margin-top: 16px;
+    //margin-top: 16px;
+    .select-type-btn{
+      margin-top: 16px;
+    }
   }
 }
 
@@ -281,7 +284,6 @@ function selectTab(tabs: any, tabIndex: number) {
     max-height: 480px;
     overflow-y: scroll;
   }
-
 }
 </style>
 

@@ -1,13 +1,13 @@
 import { computed, createVNode, reactive, ref } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
-import { message, Modal } from "ant-design-vue";
+import { Modal } from "ant-design-vue";
 import { ExclamationCircleOutlined } from "@ant-design/icons-vue";
 import { StateType as ProjectSettingStateType } from "@/views/projectSetting/store";
 import { StateType as ProjectStateType } from "@/store/project";
-import { EnvReturnData, VarDataItem } from "../data";
+import { EnvReturnData } from "../data";
 
-export function useGlobalEnv(formRef: any): EnvReturnData {
+export function useGlobalEnv(formRef?: any): EnvReturnData {
     const store = useStore<{ ProjectSetting: ProjectSettingStateType, ProjectGlobal: ProjectStateType }>();
     const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
     const envList = computed<any>(() => store.state.ProjectSetting.envList);
@@ -47,12 +47,14 @@ export function useGlobalEnv(formRef: any): EnvReturnData {
         });
     }
 
-    async function setShowEnvDetail(result) {
+    async function setShowEnvDetail(result: string | number, needRedirect: boolean) {
         await store.dispatch('ProjectSetting/getEnvsList', { projectId: currProject.value.id })
-        const newEnv = envList.value.find((item: any) => {
-            return item.id === result;
-        })
-        showEnvDetail(newEnv, false)
+        if (needRedirect) {
+            const newEnv = envList.value.find((item: any) => {
+                return item.id === result;
+            })
+            showEnvDetail(newEnv, false)
+        }
     }
 
     /**
@@ -71,7 +73,7 @@ export function useGlobalEnv(formRef: any): EnvReturnData {
                 "vars": envVars,
             })
             if (result) {
-                setShowEnvDetail(result);
+                setShowEnvDetail(result, true);
             }
         } catch (err) {
             console.log('addEnvData validate validateFiled--', err);
@@ -81,13 +83,14 @@ export function useGlobalEnv(formRef: any): EnvReturnData {
     /**
      * 删除环境变量
      */
-    async function deleteEnvData() {
+    async function deleteEnvData(env: any) {
         const successCallBack = async () => {
             const result = await store.dispatch('ProjectSetting/deleteEnvData', {
-                activeEnvId: activeEnvDetail.value?.id,
+                activeEnvId: env.id,
                 projectId: currProject.value.id
             })
-            if (result) {
+            // 如果删除的环境id和当前选中环境id一样，则删除才会跳转新建环境页面
+            if (result && env.id === activeEnvDetail.value.id) {
                 showEnvDetail(null, true)
             }
         }
@@ -103,13 +106,14 @@ export function useGlobalEnv(formRef: any): EnvReturnData {
     /**
      * 复制环境变量
      */
-    async function copyEnvData() {
+    async function copyEnvData(env: any) {
         const result = await store.dispatch('ProjectSetting/copyEnvData', {
-            activeEnvId: activeEnvDetail.value?.id,
+            activeEnvId: env.id,
             projectId: currProject.value.id
         })
+        // 如果复制的原环境id和当前选中环境id一样，则跳转到复制以后的target环境页面上
         if (result) {
-            setShowEnvDetail(result);
+            setShowEnvDetail(result, true);
         }
     }
 

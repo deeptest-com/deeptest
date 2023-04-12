@@ -147,7 +147,7 @@ const collapse = ref(true);
 const showSecurity = ref(!!selectedMethodDetail.value?.security);
 
 function goEditSecurity() {
-  window.open(`/#/projectSetting/index?firtab=3&sectab=3&serveId=${endpointDetail.value.serveId}`, '_blank')
+  window.open(`/#/project-setting/service-setting?sectab=service-security&serveId=${endpointDetail.value.serveId}`, '_blank')
 }
 
 function delSecurity() {

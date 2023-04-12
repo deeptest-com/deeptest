@@ -1,64 +1,70 @@
 <template>
-    <div class="title">全局参数</div>
+    <a-form :model="globalParamsData" ref="formRef">
 
-    <a-tabs :pagination="false" v-model:activeKey="globalParamsActiveKey">
-        <a-tab-pane v-for="(tabItem) in tabPaneList" :key="tabItem.type" :tab="tabItem.name">
+        <div class="title">全局参数</div>
+        <a-tabs :pagination="false" v-model:activeKey="globalParamsActiveKey">
+            <a-tab-pane v-for="(tabItem) in tabPaneList" :key="tabItem.type" :tab="tabItem.name">
 
-            <a-button class="envDetail-btn" @click="addGlobalParams">
-                <template #icon>
-                    <PlusOutlined />
-                </template>
-                添加
-            </a-button>
+                <a-button class="envDetail-btn" @click="addGlobalParams">
+                    <template #icon>
+                        <PlusOutlined />
+                    </template>
+                    添加
+                </a-button>
+                <div class="global-params">
+                    <a-table size="small" bordered :pagination="false" :columns="globalParamscolumns"
+                        :data-source="globalParamsData?.[tabItem.name] || []" :rowKey="(_record, index) => index">
+                        <template #customName="{ text, index }">
+                            <a-form-item :name="[tabItem.name, index, 'name']"
+                                :rules="[{ required: true, message: '参数名不可为空' }]">
+                                <a-input :value="text" @change="(e) => {
+                                    handleGlobalParamsChange(tabItem.name, 'name', index, e);
+                                }" placeholder="请输入参数名" />
+                            </a-form-item>
+                        </template>
+                        <template #customType="{ text, index }">
+                            <a-select class="custom-select" :value="text" style="width: 120px" @change="(e) => {
+                                handleGlobalParamsChange(tabItem.name, 'type', index, e)
+                            }">
+                                <a-select-option value="string">string</a-select-option>
+                                <a-select-option value="number">number</a-select-option>
+                                <a-select-option value="integer">integer</a-select-option>
+                            </a-select>
+                        </template>
+                        <template #customRequired="{ text, index }">
+                            <a-switch :checked="text" @change="(checked) => {
+                                handleGlobalParamsChange(tabItem.name, 'required', index, checked)
+                            }" />
+                        </template>
+                        <template #customDefaultValue="{ text, index }">
+                            <a-input :value="text" @change="(e) => {
+                                handleGlobalParamsChange(tabItem.name, 'defaultValue', index, e);
+                            }" placeholder="默认值" />
+                        </template>
+                        <template #customDescription="{ text, index }">
+                            <a-input :value="text" @change="(e) => {
+                                handleGlobalParamsChange(tabItem.name, 'description', index, e);
+                            }" placeholder="说明" />
+                        </template>
+                        <template #customAction="{ index }">
+                            <a-button danger type="text"
+                                @click="handleGlobalParamsChange(tabItem.name, '', index, '', 'delete');" :size="'small'">删除
+                            </a-button>
+                        </template>
+                    </a-table>
+                </div>
+            </a-tab-pane>
+        </a-tabs>
 
-            <a-table size="small" bordered :pagination="false" :columns="globalParamscolumns"
-                :data-source="globalParamsData?.[tabItem.name] || []">
-                <template #customName="{ text, index }">
-                    <a-input :value="text" @change="(e) => {
-                        handleGlobalParamsChange(tabItem.name, 'name', index, e);
-                    }" placeholder="请输入参数名" />
-                </template>
-                <template #customType="{ text, index }">
-                    <a-select class="custom-select" :value="text" style="width: 120px" @change="(e) => {
-                        handleGlobalParamsChange(tabItem.name, 'type', index, e)
-                    }">
-                        <a-select-option value="string">string</a-select-option>
-                        <a-select-option value="number">number</a-select-option>
-                        <a-select-option value="integer">integer</a-select-option>
-                    </a-select>
-                </template>
-                <template #customRequired="{ text, index }">
-                    <a-switch :checked="text" @change="(checked) => {
-                        handleGlobalParamsChange(tabItem.name, 'required', index, checked)
-                    }" />
-                </template>
-                <template #customDefaultValue="{ text, index }">
-                    <a-input :value="text" @change="(e) => {
-                        handleGlobalParamsChange(tabItem.name, 'defaultValue', index, e);
-                    }" placeholder="默认值" />
-                </template>
-                <template #customDescription="{ text, index }">
-                    <a-input :value="text" @change="(e) => {
-                        handleGlobalParamsChange(tabItem.name, 'description', index, e);
-                    }" placeholder="说明" />
-                </template>
-                <template #customAction="{ index }">
-                    <a-button danger type="text" @click="handleGlobalParamsChange(tabItem.name, '', index, '', 'delete');"
-                        :size="'small'">删除
-                    </a-button>
-                </template>
-            </a-table>
-        </a-tab-pane>
-    </a-tabs>
-
-    <div class="envDetail-footer">
-        <a-button class="save-btn" @click="handleSaveGlobalParams" type="primary">保存</a-button>
-    </div>
+        <div class="envDetail-footer">
+            <a-button class="save-btn" html-type="submit" @click="handleSaveGlobalParams" type="primary">保存</a-button>
+        </div>
+    </a-form>
 </template>
 <script setup lang="ts">
-import { ref, computed, createVNode, watch } from 'vue';
+import { ref, computed, createVNode, watch, reactive } from 'vue';
 import { useStore } from 'vuex';
-import { Modal } from 'ant-design-vue';
+import { message, Modal } from 'ant-design-vue';
 import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import { globalParamscolumns, tabPaneList } from '../../config';
 import { StateType as ProjectStateType } from "@/store/project";
@@ -68,6 +74,10 @@ const store = useStore<{ ProjectGlobal: ProjectStateType, ProjectSetting: Projec
 const globalParamsData = computed<any>(() => store.state.ProjectSetting.globalParamsData);
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const globalParamsActiveKey = ref('header');
+const formState = reactive({
+    globalParamsData
+});
+const formRef = ref<any>();
 
 function getParamsData() {
     store.dispatch('ProjectSetting/getEnvironmentsParamList', { projectId: currProject.value.id });
@@ -92,14 +102,29 @@ function handleGlobalParamsChange(type: string, field: string, index: number, e:
     }
 }
 
-function handleSaveGlobalParams() {
-    store.dispatch('ProjectSetting/saveEnvironmentsParam', { projectId: currProject.value.id });
+async function handleSaveGlobalParams() {
+    try {
+        await formRef.value.validateFields();
+        store.dispatch('ProjectSetting/saveEnvironmentsParam', { projectId: currProject.value.id });
+    } catch (err: any) {
+        console.log('saveGlobalParams validateFailed--', err);
+        const { errorFields } = err;
+        let errorText = '';
+        errorFields.forEach((e: any) => {
+            const { name } = e;
+            errorText += `${name[0]},`;
+        })
+        errorText = errorText.substring(0, errorText.length - 1);
+        message.error(`${errorText}参数名不可为空`);
+    }
 }
 
 watch(() => {
     return currProject.value
-}, () => {
-    getParamsData();
+}, (val) => {
+    if (val.id) {
+        getParamsData();
+    }
 }, {
     immediate: true
 })
@@ -129,5 +154,13 @@ watch(() => {
     .save-btn {
         margin-right: 16px;
     }
+}
+
+:deep(.global-params .ant-row.ant-form-item) {
+    margin-bottom: 0 !important;
+}
+
+:deep(.global-params .ant-row.ant-form-item-has-error .ant-form-item-control-input) {
+    border: 1px solid #f5222d;
 }
 </style>

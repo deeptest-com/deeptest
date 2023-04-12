@@ -6,43 +6,53 @@
         </template>
         添加
     </a-button>
+    <a-form :model="formState" ref="formRef">
+        <div class="global-vars">
+            <a-table bordered size="small" :pagination="false" :columns="globalVarsColumns" :data-source="globalVarsData"
+                :rowKey="(_record, index) => index">
+                <template #customName="{ text, index }">
+                    <a-form-item :name="['globalVarsData', index, 'name']" :rules="rules['name']">
+                        <a-input @change="(e) => {
+                            handleGlobalVarsChange('name', index, e);
+                        }" :value="text" placeholder="请输入变量名" />
+                    </a-form-item>
+                </template>
+                <template #customLocalValue="{ text, index }">
+                    <a-form-item :name="['globalVarsData', index, 'localValue']" :rules="rules['localValue']">
+                        <a-input :value="text" @change="(e) => {
+                            handleGlobalVarsChange('localValue', index, e);
+                        }" placeholder="请输入本地值" />
+                    </a-form-item>
+                </template>
+                <template #customRemoteValue="{ text, index }">
+                    <a-form-item :name="['globalVarsData', index, 'remoteValue']" :rules="rules['remoteValue']">
+                        <a-input :value="text" @change="(e) => {
+                            handleGlobalVarsChange('remoteValue', index, e);
+                        }" placeholder="请输入远程值" />
+                    </a-form-item>
+                </template>
+                <template #customDescription="{ text, index }">
+                    <a-input :value="text" @change="(e) => {
+                        handleGlobalVarsChange('description', index, e);
+                    }" placeholder="请输入描述信息" />
+                </template>
+                <template #customAction="{ index }">
+                    <a-button danger type="text" @click="handleGlobalVarsChange('description', index, '', 'delete');"
+                        :size="'small'">删除
+                    </a-button>
+                </template>
+            </a-table>
 
-    <a-table bordered size="small" :pagination="false" :columns="globalVarsColumns" :data-source="globalVarsData">
-        <template #customName="{ text, index }">
-            <a-input @change="(e) => {
-                handleGlobalVarsChange('name', index, e);
-            }" :value="text" placeholder="请输入参数名" />
-        </template>
-        <template #customLocalValue="{ text, index }">
-            <a-input :value="text" @change="(e) => {
-                handleGlobalVarsChange('localValue', index, e);
-            }" placeholder="请输入本地值" />
-        </template>
-        <template #customRemoteValue="{ text, index }">
-            <a-input :value="text" @change="(e) => {
-                handleGlobalVarsChange('remoteValue', index, e);
-            }" placeholder="请输入远程值" />
-        </template>
-        <template #customDescription="{ text, index }">
-            <a-input :value="text" @change="(e) => {
-                handleGlobalVarsChange('description', index, e);
-            }" placeholder="请输入描述信息" />
-        </template>
-        <template #customAction="{ index }">
-            <a-button danger type="text" @click="handleGlobalVarsChange('description', index, '', 'delete');"
-                :size="'small'">删除
-            </a-button>
-        </template>
-    </a-table>
-
-    <div class="envDetail-footer">
-        <a-button class="save-btn" @click="handleSaveGlobalVars" type="primary">保存</a-button>
-    </div>
+            <div class="envDetail-footer">
+                <a-button class="save-btn" html-type="submit" @click="handleSaveGlobalVars" type="primary">保存</a-button>
+            </div>
+        </div>
+    </a-form>
 </template>
 <script setup lang="ts">
-import { computed, createVNode, onMounted } from "vue";
+import { computed, createVNode, reactive, ref, watch } from "vue";
 import { useStore } from "vuex";
-import { Modal } from "ant-design-vue";
+import { message, Modal } from "ant-design-vue";
 import { ExclamationCircleOutlined } from "@ant-design/icons-vue";
 import { globalVarsColumns } from '../../config';
 import { StateType as ProjectStateType } from "@/store/project";
@@ -53,16 +63,42 @@ const store = useStore<{ ProjectGlobal: ProjectStateType, ProjectSetting: Projec
 const globalVarsData = computed<any>(() => store.state.ProjectSetting.globalVarsData);
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 
-onMounted(() => {
-    store.dispatch('ProjectSetting/getGlobalVarsList', { projectId: currProject.value.id });
+const formState = reactive({
+    globalVarsData
 })
+
+const rules = {
+    name: [{
+        required: true,
+        message: '变量名不可为空'
+    }],
+    localValue: [{
+        required: true,
+        message: '本地值不可为空'
+    }],
+    remoteValue: [{
+        required: true,
+        message: '远程值不可为空'
+    }]
+};
+const formRef = ref<any>();
+
+function getGloablVarsList() {
+    store.dispatch('ProjectSetting/getGlobalVarsList', { projectId: currProject.value.id });
+}
 
 function addGlobalVar() {
     store.dispatch('ProjectSetting/addGlobalVars');
 }
 
-function handleSaveGlobalVars() {
-    store.dispatch('ProjectSetting/saveGlobalVars');
+async function handleSaveGlobalVars() {
+    try {
+        await formRef.value.validateFields();
+        store.dispatch('ProjectSetting/saveGlobalVars');
+    } catch (err) {
+        console.log('saveGlobalVars validateFailed --', err);
+        message.error('全局变量名/远程值/本地值不可为空');
+    }
 }
 
 function handleGlobalVarsChange(field: string, index: number, e: any, action?: string) {
@@ -79,6 +115,16 @@ function handleGlobalVarsChange(field: string, index: number, e: any, action?: s
         confirmCallBack();
     }
 }
+
+watch(() => {
+    return currProject.value;
+}, (val: any) => {
+    if (val.id) {
+        getGloablVarsList();
+    }
+}, {
+    immediate: true
+})
 </script>
 <style lang="less" scoped>
 .title {
@@ -105,5 +151,13 @@ function handleGlobalVarsChange(field: string, index: number, e: any, action?: s
     .save-btn {
         margin-right: 16px;
     }
+}
+
+:deep(.global-vars .ant-row.ant-form-item) {
+    margin-bottom: 0 !important;
+}
+
+:deep(.global-vars .ant-row.ant-form-item-has-error .ant-form-item-control-input) {
+    border: 1px solid #f5222d;
 }
 </style>

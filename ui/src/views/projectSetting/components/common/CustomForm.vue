@@ -11,7 +11,10 @@
                 </span>
                 <a-input v-if="item.type === 'input'" :style="item.attrs || 'width: 150px'"
                     v-model:value="formState[item.modelName!]" :placeholder="item.placeholder" />
-                <a-select v-if="item.type === 'select'" v-model:value="formState[item.modelName!]" :mode="item.mode"
+                <a-select v-if="item.type === 'select' && item.mode" v-model:value="formState[item.modelName!]" :mode="item.mode"
+                    :style="item.attrs || 'width: 200px'" :placeholder="item.placeholder" :options="item.options" allowClear>
+                </a-select>
+                <a-select v-if="item.type === 'select' && !item.mode" v-model:value="formState[item.modelName!]"
                     :style="item.attrs || 'width: 200px'" :placeholder="item.placeholder" :options="item.options" allowClear>
                 </a-select>
                 <a-button v-if="item.type === 'button'" class="editable-add-btn" type="primary" html-type="submit"
@@ -27,6 +30,7 @@
 </template>
 <script setup lang="ts">
 import { reactive, defineProps, toRaw, ref, defineEmits } from 'vue';
+import { QuestionCircleOutlined } from '@ant-design/icons-vue';
 import { Form } from 'ant-design-vue';
 
 const useForm = Form.useForm;

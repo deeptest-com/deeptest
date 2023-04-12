@@ -60,16 +60,12 @@ const props = defineProps<{
 const emits = defineEmits(['onClose', 'update:formState', 'update:tabKey']);
 console.log('props-------- tabKey', props.tabKey);
 const activeKey = ref('service-version');
-const isEditServiceDesc = ref(false);
-const isEditServiceName = ref(false);
 
 function onClose() {
     emits('onClose');
 }
 
 async function changeServiceInfo(updateFieldInfo: any) {
-    isEditServiceDesc.value = false;
-    isEditServiceName.value = false;
     const serviceInfo = { ...formState.value, ...updateFieldInfo };
     if (!serviceInfo.name) {
         message.error('服务名称不能为空');

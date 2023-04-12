@@ -6,14 +6,11 @@
         @handle-ok="handleAdd" @handle-search="handleSearch" />
     </div>
     <!-- content -->
-    <a-table :data-source="dataSource" :columns="serviceColumns" rowKey="id">
+    <a-table :data-source="dataSource" :columns="serviceColumns" :rowKey="(_record, index) => index">
 
       <template #name="{ text, record }">
         <div class="serve-name">
-          <div class="serve-name-text">
-            {{ text || ' ' }}
-          </div>
-          <edit-outlined class="editable-cell-icon" @click="edit(record)" />
+          <EditAndShowField placeholder="请输入服务名称" :value="text || ''" @update="(e: string) => handleUpdateName(e, record)" @edit="edit(record)"/>
         </div>
       </template>
       <template #description="{ text }">
@@ -71,13 +68,13 @@ import {
   ref,
   watch,
   createVNode,
-  defineProps,
 } from 'vue';
 import { useStore } from "vuex";
 import { useRouter } from 'vue-router';
 import { Modal } from 'ant-design-vue';
-import { EditOutlined, ExclamationCircleOutlined, MoreOutlined } from '@ant-design/icons-vue';
+import { ExclamationCircleOutlined, MoreOutlined } from '@ant-design/icons-vue';
 import CustomForm from '../common/CustomForm.vue';
+import EditAndShowField from '@/components/EditAndShow/index.vue';
 import Drawer from './Drawer.vue';
 import { StateType as ProjectStateType } from "@/store/project";
 import { StateType as ProjectSettingStateType } from '../../store';
@@ -93,7 +90,7 @@ const drawerVisible = ref(false);
 const editKey = ref(0);
 const currentTabKey = ref('');
 
-const formConfig = [
+let formConfig = [
   {
     type: 'tooltip',
     title: '一个产品服务端通常对应一个或多个服务(微服务)，服务可以有多个版本并行，新的服务默认起始版本为v0.1.0。',
@@ -109,9 +106,8 @@ const formConfig = [
     type: 'select',
     modelName: 'username',
     placeholder: '负责人(默认创建人)',
-    options: userListOptions.value,
+    options: [],
     valueType: 'string',
-    mode: 'combobox'
   },
   {
     type: 'input',
@@ -154,6 +150,15 @@ function onClose() {
 
 function handleSearch(value: any) {
   getList(value);
+}
+
+function handleUpdateName(value: string, record: any) {
+  const serviceInfo = { name: value, description: record.description, id: record.id };
+  store.dispatch('ProjectSetting/saveStoreServe', {
+      "projectId": currProject.value.id,
+      formState: { ...serviceInfo },
+      action: 'update'
+  });
 }
 
 async function edit(record: any) {
@@ -224,6 +229,22 @@ watch(() => {
   await getList()
   await isHasProps()
 
+}, {
+  immediate: true
+})
+
+watch(() => {
+  return userListOptions.value;
+}, (val: any) => {
+  if (val && val.length > 0) {
+    const config = JSON.parse(JSON.stringify(formConfig));
+    config.forEach((e: any) => {
+      if (e.type === 'select') {
+        e.options = [...val];
+      }
+    })
+    formConfig = config;
+  }
 }, {
   immediate: true
 })

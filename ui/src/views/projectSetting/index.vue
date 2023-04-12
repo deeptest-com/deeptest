@@ -36,7 +36,6 @@ function setActiveKey() {
 }
 
 function handleTabClick(e: string) {
-  console.log(e);
   if (e === 'enviroment') {
     router.push(`/project-setting/${e}/var`);
   } else {

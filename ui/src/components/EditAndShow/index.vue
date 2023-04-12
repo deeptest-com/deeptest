@@ -9,7 +9,7 @@
     </a-space>
   </div>
   <div class="editor" v-else>
-    <span>{{ fieldValue || '什么都没写呢~' }}</span> &nbsp;
+    <span class="title" @click.stop="handleClick">{{ fieldValue || '暂无' }}</span> &nbsp;
     <EditOutlined @click.stop="isEditing = true"/>
   </div>
 </template>
@@ -36,7 +36,7 @@ const props = defineProps({
     type: String,
   }
 })
-const emit = defineEmits(['update']);
+const emit = defineEmits(['update', 'edit']);
 
 function updateField() {
   if (!fieldValue.value) {
@@ -51,10 +51,13 @@ function cancelEdit() {
   isEditing.value = false;
 }
 
+function handleClick() {
+  emit('edit');
+}
+
 watch(() => {
   return props.value
 }, (newVal) => {
-  console.log(newVal);
   fieldValue.value = newVal
 }, {
   immediate: true
@@ -76,6 +79,10 @@ watch(() => {
     .disabled {
       color: #00000040;
     }
+  }
+
+  .title {
+    cursor: pointer;
   }
 }
 

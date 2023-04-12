@@ -12,8 +12,9 @@ import (
 )
 
 type ServeRepo struct {
-	*BaseRepo    `inject:""`
-	CategoryRepo *CategoryRepo `inject:""`
+	*BaseRepo       `inject:""`
+	CategoryRepo    *CategoryRepo    `inject:""`
+	EnvironmentRepo *EnvironmentRepo `inject:""`
 }
 
 func NewServeRepo() *ServeRepo {
@@ -181,6 +182,15 @@ func (r *ServeRepo) DisableVersionById(id uint) error {
 
 func (r *ServeRepo) ListServer(serveId uint) (res []model.ServeServer, err error) {
 	err = r.DB.Where("serve_id = ? AND NOT deleted AND not disabled", serveId).Find(&res).Error
+
+	for key, server := range res {
+		var environment model.Environment
+		environment, err = r.EnvironmentRepo.Get(server.EnvironmentId)
+		if err != nil {
+			return
+		}
+		res[key].EnvironmentName = environment.Name
+	}
 	return
 }
 

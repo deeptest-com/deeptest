@@ -295,13 +295,11 @@ async function handleGenerateExample(examples: any) {
   const result = await store.dispatch('ProjectSetting/generateExample', {
     data: contentStr.value
   })
-  if (result) {
-    const example = {
-      name: `Example ${examples.length + 1}`,
-      content: JSON.stringify(result),
-    };
-    activeSchema.value.examples.push(example);
-  }
+  const example = {
+    name: `Example ${examples.length + 1}`,
+    content: JSON.stringify(result),
+  };
+  activeSchema.value.examples.push(example);
 }
 
 function handleContentChange(json: any) {

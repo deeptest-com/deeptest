@@ -1,6 +1,9 @@
 <template>
   <div class="user-main-list">
     <a-card :bordered="false">
+      <template #title>
+        <a-button type="primary" @click="() => edit(0)">新建用户</a-button>
+      </template>
       <template #extra>
         <a-input-search @change="onSearch" @search="onSearch" v-model:value="queryParams.username"
                         placeholder="输入用户名搜索" style="width:270px;margin-left: 16px;"/>
@@ -23,6 +26,9 @@
             }"
         >
           <template #action="{ record }">
+            <a-button type="link" @click="() => edit(record.id)">
+              <span>编辑</span>
+            </a-button>
             <a-button type="link" @click="() => remove(record.id)">
               <span>删除</span>
             </a-button>
@@ -31,6 +37,18 @@
       </div>
     </a-card>
   </div>
+
+  <a-modal
+      v-model:visible="visible"
+      @ok="handleOk"
+      width="700px"
+      :footer="null">
+
+    <EditPage
+        :currentUserId="currentUserId"
+        :getList="getList"
+        :closeModal="closeModal" />
+  </a-modal>
 </template>
 <script setup lang="ts">
 import {PaginationConfig, QueryParams, User} from '../data.d';
@@ -42,6 +60,7 @@ import {Modal, notification} from "ant-design-vue";
 import {NotificationKeyCommon} from "@/utils/const";
 import debounce from "lodash.debounce";
 import {useRouter} from "vue-router";
+import EditPage from "../edit/edit.vue";
 
 const router = useRouter();
 const store = useStore<{ UserInternal: StateType }>();
@@ -99,6 +118,21 @@ const getList = async (current: number): Promise<void> => {
     page: current,
   });
   loading.value = false;
+}
+
+const visible = ref(false)
+const currentUserId = ref(0)
+const edit = (id: number) => {
+  currentUserId.value = id
+  visible.value = true
+}
+
+const handleOk = (e: MouseEvent) => {
+  visible.value = false;
+};
+
+const closeModal = () => {
+  visible.value = false;
 }
 
 const onSearch = debounce(() => {

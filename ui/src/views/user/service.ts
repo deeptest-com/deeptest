@@ -1,4 +1,4 @@
-import {QueryParams} from "@/views/user/data";
+import {User, QueryParams} from "@/views/user/data";
 import request from "@/utils/request";
 
 const apiPath = 'users';
@@ -8,6 +8,14 @@ export async function query(params?: QueryParams): Promise<any> {
         url: `/${apiPath}`,
         method: 'get',
         params,
+    });
+}
+
+export async function save(params: Partial<User>): Promise<any> {
+    return request({
+        url: params.id? `/${apiPath}/${params.id}`:`/${apiPath}`,
+        method: 'POST',
+        data: params,
     });
 }
 

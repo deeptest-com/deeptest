@@ -26,7 +26,7 @@ export function useGlobalEnv(formRef?: any): EnvReturnData {
         if (item) {
             router.push(`/project-setting/enviroment/envdetail/${item.id}`)
         } else {
-            router.replace('/project-setting/enviroment/envdetail/-1')
+            router.replace('/project-setting/enviroment/envdetail')
         }
 
         if (isAdd) {

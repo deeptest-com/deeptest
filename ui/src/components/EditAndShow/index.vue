@@ -8,7 +8,7 @@
           :class="{disabled: !fieldValue}"/>&nbsp;
     </a-space>
   </div>
-  <div class="editor" v-else>
+  <div :class="['editor', customClass]" v-else>
     <span class="title" @click.stop="handleClick">{{ fieldValue || '暂无' }}</span> &nbsp;
     <EditOutlined @click.stop="isEditing = true"/>
   </div>
@@ -33,6 +33,10 @@ const props = defineProps({
   },
   placeholder: {
     required: true,
+    type: String,
+  },
+  customClass: {
+    required: false,
     type: String,
   }
 })
@@ -69,6 +73,10 @@ watch(() => {
 .editor {
   display: flex;
   align-items: center;
+
+  &.custom-endpoint {
+    color: #447DFD;
+  }
   .input {
     margin-right: 8px;
   }

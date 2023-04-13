@@ -33,7 +33,7 @@
             :data-source="list">
           <template #colTitle="{text,record}">
             <div class="customTitleColRender">
-              <EditAndShowField :value="text" placeholder="请输入接口名称" @update="(e: string) => handleUpdateEndpoint(e, record)" @edit="editEndpoint(record)" />
+              <EditAndShowField :custom-class="'custom-endpoint'" :value="text" placeholder="请输入接口名称" @update="(e: string) => handleUpdateEndpoint(e, record)" @edit="editEndpoint(record)" />
             </div>
           </template>
 

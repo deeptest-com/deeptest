@@ -12,9 +12,6 @@
               placeholder="请选择类型"
               style="width: 200px"
               :options="securityTypeOptions"
-              @focus="selectUserFocus"
-              @blur="handleBlur"
-              @change="handleChange"
           >
           </a-select>
         </a-form-item>
@@ -28,7 +25,7 @@
         </a-button>
       </a-form>
     </div>
-    <a-table bordered :data-source="dataSource" :columns="securityColumns">
+    <a-table bordered :data-source="dataSource" :columns="securityColumns" :rowKey="(_record, index) => index">
       <template #name="{ text, record }">
         <div class="editable-cell">
           <div class="editable-cell-text-wrapper">
@@ -140,7 +137,7 @@ import {SelectTypes} from 'ant-design-vue/es/select';
 
 const props = defineProps({
   serveId: {
-    type: String,
+    type: Number,
     required: true
   },
 })

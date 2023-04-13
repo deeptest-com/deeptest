@@ -3,7 +3,7 @@
     <div class="header">
       <CustomForm :form-config="formConfig" :rules="rules" @handle-ok="handleAdd" />
     </div>
-    <a-table bordered :data-source="dataSource" :columns="versionColumns">
+    <a-table bordered :data-source="dataSource" :columns="versionColumns" :rowKey="(_record, index) => index">
       <template #name="{ text }">
         <div class="editable-cell">
           <div class="editable-cell-text-wrapper">
@@ -40,7 +40,7 @@ import { versionColumns } from '../../config';
 
 const props = defineProps({
   serveId: {
-    type: String,
+    type: Number,
     required: true
   },
 })

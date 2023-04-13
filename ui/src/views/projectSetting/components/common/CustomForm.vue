@@ -65,7 +65,6 @@ const getFormState = () => {
             formObj[formItem.modelName] = (formItem.type === 'select' && formItem.valueType === 'string') ? null : (formItem.type === 'select' && formItem.valueType === 'array') ? [] : '';
         }
     })
-    console.log(formObj);
     return formObj;
 }
 

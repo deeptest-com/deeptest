@@ -110,7 +110,6 @@ import {StateType as ProjectSettingStateType} from '../../store';
 
 const props = defineProps({
   serveId: {
-    type: Number,
     required: true
   },
 })

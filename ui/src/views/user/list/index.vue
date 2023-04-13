@@ -78,7 +78,7 @@ const columns = [
   {
     title: '序号',
     dataIndex: 'index',
-    width: 80,
+    align:'center',
     customRender: ({
                      text,
                      index
@@ -87,19 +87,22 @@ const columns = [
   {
     title: '用户名',
     dataIndex: 'username',
+    align:'center',
   },
   {
     title: '姓名',
     dataIndex: 'name',
+    align:'center',
   },
   {
     title: '邮箱',
     dataIndex: 'email',
+    align:'center',
   },
   {
     title: '操作',
     key: 'action',
-    width: 260,
+    align:'center',
     slots: {customRender: 'action'},
   },
 ];

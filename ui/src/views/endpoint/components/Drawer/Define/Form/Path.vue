@@ -17,9 +17,7 @@
                 placeholder="请选择环境"
                 class="select-env">
               <template #notFoundContent>
-                <a-button type="link" @click="addEnv" class="add-env-btn">
-                  <PlusOutlined/>&nbsp;去新建
-                </a-button>
+                <a-button type="link" @click="addEnv" class="add-env-btn">新建</a-button>
               </template>
             </a-select>
             <span v-if="currentEnvURL" class="current-env-url">{{ currentEnvURL || '---' }}</span>
@@ -257,8 +255,9 @@ function updatePath(e) {
 }
 
 .select-env {
-  min-width: 80px;
-  text-align: left
+  min-width: 100px;
+  text-align: left;
+  border-right: 1px solid #d9d9d9;
 }
 
 .current-env-url {
@@ -266,5 +265,11 @@ function updatePath(e) {
   padding-left: 16px;
   display: inline-block
 }
-
+.add-env-btn{
+  width: 80px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 </style>

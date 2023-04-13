@@ -14,7 +14,7 @@
           @change="handleChangeMediaType"
           placeholder="请选择请求格式"
           style="width: 300px"
-          :options="mediaTypesOpts"
+          :options="mediaTypesOpts.filter(item => !item.disabled)"
       ></a-select>
     </a-col>
   </a-row>

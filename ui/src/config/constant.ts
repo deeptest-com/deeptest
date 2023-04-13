@@ -962,14 +962,17 @@ export const mediaTypesOpts = [
     {
         label: "application/EDI-X12",
         value: "application/EDI-X12",
+        "disabled": true,
     },
     {
         label: "application/EDIFACT",
         value: "application/EDIFACT",
+        "disabled": true,
     },
     {
         label: "application/atom+xml",
         value: "application/atom+xml",
+        "disabled": true,
     },
     {
         label: "application/font-woff",
@@ -1030,6 +1033,7 @@ export const mediaTypesOpts = [
     {
         label: "application/xml-ditd",
         value: "application/xml-ditd",
+        "disabled": true,
     },
     {
         label: "application/xop+xml",

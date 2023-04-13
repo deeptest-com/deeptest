@@ -13,7 +13,7 @@
           :value="selectedCodeDetail.mediaType"
           @change="handleResBodyMediaTypeChange"
           style="width: 300px"
-          :options="mediaTypesOpts"
+          :options="mediaTypesOpts.filter(item => !item.disabled)"
       ></a-select>
     </a-col>
   </a-row>

@@ -170,13 +170,17 @@ func (s *ServeService) DeleteSecurityId(id uint) (err error) {
 
 func (s *ServeService) Schema2Example(data string) (obj interface{}) {
 	schema2conv := openapi.NewSchema2conv()
-	schema := openapi3.Schema{}
-	_commUtils.JsonDecode(data, &schema)
+	//schema1 := openapi3.Schema{}
+	//_commUtils.JsonDecode(data, &schema)
 	//_commUtils.JsonDecode("{\"type\":\"array\",\"items\":{\"type\":\"number\"}}", &schema)
 	//_commUtils.JsonDecode("{\"properties\":{\"id\":{\"type\":\"number\"},\"name\":{\"type\":\"string\"}},\"type\":\"object\"}", &schema)
 	//_commUtils.JsonDecode("{\"type\":\"array\",\"items\":{\"properties\":{\"id\":{\"type\":\"number\"},\"name\":{\"type\":\"string\"}},\"type\":\"object\"}}", &schema)
+	schema := openapi.Schema{}
+	_commUtils.JsonDecode(data, &schema)
+	//_commUtils.JsonDecode("{\"type\":\"array\",\"items\":{\"type\":\"number\"}}", &schema1)
+	//copier.CopyWithOption(&schema, a, copier.Option{DeepCopy: true})
 	obj = schema2conv.Schema2Example(schema)
-	//fmt.Println(_commUtils.JsonEncode(obj), "++++++++++++")
+	//fmt.Println(schema.Items, "+++++", schema1.Items, _commUtils.JsonEncode(obj), "++++++++++++")
 	return
 }
 

@@ -36,8 +36,9 @@ const description = ref('');
 watch(() => {
   return props.value
 }, (newVal) => {
-  console.log('832', newVal);
-  description.value = newVal.description;
+  if(newVal){
+    description.value = newVal.description;
+  }
 }, {
   immediate: true
 })

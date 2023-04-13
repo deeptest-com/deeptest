@@ -33,10 +33,7 @@
             :data-source="list">
           <template #colTitle="{text,record}">
             <div class="customTitleColRender">
-              <span>{{ text }}</span>
-              <span class="edit" @click="editEndpoint(record)">
-                <EditOutlined/>
-              </span>
+              <EditAndShowField :custom-class="'custom-endpoint'" :value="text" placeholder="请输入接口名称" @update="(e: string) => handleUpdateEndpoint(e, record)" @edit="editEndpoint(record)" />
             </div>
           </template>
 
@@ -111,6 +108,7 @@ import {
   MoreOutlined
 } from '@ant-design/icons-vue';
 import {endpointStatusOpts} from '@/config/constant';
+import EditAndShowField from '@/components/EditAndShow/index.vue';
 import CreateEndpointModal from './components/CreateEndpointModal.vue';
 import TableFilter from './components/TableFilter.vue';
 import Drawer from './components/Drawer/index.vue'
@@ -126,18 +124,15 @@ const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const currServe = computed<any>(() => store.state.ServeGlobal.currServe);
 const list = computed<Endpoint[]>(() => store.state.Endpoint.listResult.list);
 let pagination = computed<PaginationConfig>(() => store.state.Endpoint.listResult.pagination);
-
 const createApiModalVisible = ref(false);
 type Key = ColumnProps['key'];
-
-
 /**
  * 表格数据
  * */
 const columns = [
   {
-    title: '序号',
-    dataIndex: 'index',
+    title: '编号',
+    dataIndex: 'serialNumber',
   },
   {
     title: '接口名称',
@@ -189,6 +184,12 @@ async function handleChangeStatus(value: any, record: any,) {
     id:record.id,
     status: value
   });
+}
+
+async function handleUpdateEndpoint(value: string, record: any) {
+  await store.dispatch('Endpoint/updateEndpointDetail',
+      {...record, title: value}
+  );
 }
 
 async function editEndpoint(record) {

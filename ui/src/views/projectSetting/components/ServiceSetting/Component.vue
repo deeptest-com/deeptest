@@ -2,15 +2,14 @@
   <div class="content">
     <div class="header">
       <CustomForm
-        :form-config="formConfig"
-        :rules="rules"
-        :search-placeholder="'输入组件名称搜索'"
-        :show-search="true"
-        @handle-ok="handleAdd"
-        @handle-search="onSearch"
-      />
+          :form-config="formConfig"
+          :rules="rules"
+          :search-placeholder="'输入组件名称搜索'"
+          :show-search="true"
+          @handle-ok="handleAdd"
+          @handle-search="onSearch"/>
     </div>
-    <a-table bordered :data-source="dataSource" :columns="schemaColumns">
+    <a-table bordered :data-source="dataSource" :columns="schemaColumns" :rowKey="(_record, index) => index">
       <template #name="{ text, record }">
         <div class="editable-cell">
           <div class="editable-cell-text-wrapper">
@@ -37,10 +36,12 @@
         <div class="modal-header">
           <div class="header-desc">
             <div class="name" v-if="showMode === 'form'">
-              <EditAndShowField :placeholder="'请输入内容'" :value="activeSchema?.name" @update="(e: string) => changeModelInfo('name', e)" />
+              <EditAndShowField :placeholder="'请输入内容'" :value="activeSchema?.name"
+                                @update="(e: string) => changeModelInfo('name', e)"/>
             </div>
             <div class="desc" v-if="showMode === 'form'">
-              <EditAndShowField :placeholder="'请输入内容'" :value="activeSchema?.description" @update="(e: string) => changeModelInfo('desc', e)" />
+              <EditAndShowField :placeholder="'请输入内容'" :value="activeSchema?.description"
+                                @update="(e: string) => changeModelInfo('desc', e)"/>
             </div>
           </div>
           <div class="btns">
@@ -63,10 +64,9 @@
           <SchemaEditor
               :schemeVisibleKey="schemeVisibleKey"
               @generateFromJSON="generateFromJSON"
-              @exampleChange="handleExampleChange"
               @generateExample="handleGenerateExample"
-              @schemaTypeChange="handleSchemaTypeChange"
-              @contentChange="handleContentChange"
+              @change="handleContentChange"
+              :tab-content-style="{width:'100%'}"
               :value="activeSchema"/>
         </div>
         <!-- ::::代码模式 -->
@@ -96,21 +96,21 @@ import {
   watch,
   createVNode
 } from 'vue';
-import { useStore } from 'vuex';
-import { Modal } from 'ant-design-vue';
-import { ExclamationCircleOutlined,CodeOutlined,BarsOutlined } from '@ant-design/icons-vue';
+import {useStore} from 'vuex';
+import {Modal} from 'ant-design-vue';
+import {ExclamationCircleOutlined, CodeOutlined, BarsOutlined} from '@ant-design/icons-vue';
 import {schema2yaml} from '../../service';
 import SchemaEditor from '@/components/SchemaEditor/index.vue';
 import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
 import CustomForm from '../common/CustomForm.vue';
 import EditAndShowField from '@/components/EditAndShow/index.vue';
 import {MonacoOptions} from '@/utils/const';
-import { schemaColumns } from '../../config';
+import {schemaColumns} from '../../config';
 import {StateType as ProjectSettingStateType} from '../../store';
 
 const props = defineProps({
   serveId: {
-    type: String,
+    type: Number,
     required: true
   },
 })
@@ -189,7 +189,7 @@ async function switchMode(val: any) {
 const schemeVisibleKey = ref(0);
 const edit = (record: any) => {
   schemeVisible.value = true;
-  record.content =  record.content &&  typeof record.content === 'string' ? JSON.parse(record.content) : {type: 'object'};
+  record.content = record.content && typeof record.content === 'string' ? JSON.parse(record.content) : {type: 'object'};
   record.examples = record.examples && typeof record.examples === 'string' ? JSON.parse(record.examples) : [];
   activeSchema.value = record;
   contentStr.value = JSON.stringify(record?.content || '');
@@ -200,7 +200,7 @@ const edit = (record: any) => {
 
 // 保存组件
 async function handleAdd(formState: any) {
-  if(formState.name) {
+  if (formState.name) {
     formState.name = formState.name.trim();
   }
   // 判断组件名称必须是英文，复合 URL 规则
@@ -213,7 +213,6 @@ async function handleAdd(formState: any) {
     });
     return;
   }
-
   const result = await store.dispatch('ProjectSetting/saveSchema', {
     schemaInfo: {
       "name": formState.name,
@@ -287,41 +286,29 @@ function handleCodeChange() {
   console.log('代码改变');
 }
 
+
 async function generateFromJSON(JSONStr: string) {
-  const result = await store.dispatch('ProjectSetting/generateSchema', {
-    data: JSONStr
-  })
-  if (result) {
-    activeSchema.value.content = result;
-    contentStr.value = JSON.stringify(result);
-    schemaType.value = result.type;
-  }
-}
-
-function handleContentChange(str: string) {
-  contentStr.value = str;
-}
-
-function handleSchemaTypeChange(str: string) {
-  schemaType.value = str;
-}
-
-function handleExampleChange(str: string) {
-  exampleStr.value = str;
+  activeSchema.value.content = await store.dispatch('ProjectSetting/generateSchema', {data: JSONStr});
 }
 
 async function handleGenerateExample(examples: any) {
   const result = await store.dispatch('ProjectSetting/generateExample', {
     data: contentStr.value
   })
-  if (result) {
-    const example = {
-      name: `Example ${examples.length + 1}`,
-      content: JSON.stringify(result),
-    };
-    activeSchema.value.examples.push(example);
-  }
+  const example = {
+    name: `Example ${examples.length + 1}`,
+    content: JSON.stringify(result),
+  };
+  activeSchema.value.examples.push(example);
 }
+
+function handleContentChange(json: any) {
+  const {content, examples} = json;
+  contentStr.value = JSON.stringify(content);
+  exampleStr.value = JSON.stringify(examples);
+  schemaType.value = content.type;
+}
+
 
 watch(() => {
   return props.serveId
@@ -366,6 +353,7 @@ watch(() => {
 .editModal-content {
   min-height: 200px;
 }
+
 .header-desc {
   flex: 1;
   margin-right: 36px;

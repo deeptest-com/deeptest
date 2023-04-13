@@ -53,7 +53,7 @@
 import { computed, createVNode, reactive, ref, watch } from "vue";
 import { useStore } from "vuex";
 import { message, Modal } from "ant-design-vue";
-import { ExclamationCircleOutlined } from "@ant-design/icons-vue";
+import { ExclamationCircleOutlined, PlusOutlined } from "@ant-design/icons-vue";
 import { globalVarsColumns } from '../../config';
 import { StateType as ProjectStateType } from "@/store/project";
 import { StateType as ProjectSettingStateType } from "@/views/ProjectSetting/store";

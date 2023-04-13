@@ -24,8 +24,6 @@
 
 import {
   defineProps,
-  reactive,
-  UnwrapRef,
   watch,
   computed,
   createVNode
@@ -40,7 +38,6 @@ import { versionColumns } from '../../config';
 
 const props = defineProps({
   serveId: {
-    type: Number,
     required: true
   },
 })

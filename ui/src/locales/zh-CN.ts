@@ -52,6 +52,10 @@ export default {
     'invite': '邀请用户',
     'message': '消息',
 
+    'user': '用户',
+    'user.management': '用户管理',
+    'user.list': '用户列表',
+
     'mock.oauth2.callback': 'OAuth2回调模拟',
 
     'json': 'JSON',

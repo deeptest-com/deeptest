@@ -42,6 +42,9 @@ func (r *UserRepo) Paginate(req domain.UserReqPaginate) (data _domain.PageData, 
 	if len(req.Name) > 0 {
 		db = db.Where("name LIKE ?", fmt.Sprintf("%s%%", req.Name))
 	}
+	if len(req.UserName) > 0 {
+		db = db.Where("username = ?", req.UserName)
+	}
 
 	err = db.Count(&count).Error
 	if err != nil {

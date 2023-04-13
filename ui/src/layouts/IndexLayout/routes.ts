@@ -182,6 +182,21 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
       },
     ],
   },
+  {
+    title: 'index-layout.menu',
+    path: '/user',
+    redirect: '/user/index',
+    component: BlankLayout,
+    children: [
+      {
+        icon: 'user',
+        title: 'user.management',
+        path: 'index',
+        component: () => import('@/views/user/list/index.vue'),
+        hidden: false,
+      },
+    ],
+  },
 
 ] as Array<RoutesDataItem>;
 

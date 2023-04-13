@@ -47,10 +47,10 @@ function handleTabClick(e: string) {
 watch(() => {
   return router.currentRoute.value.query;
 }, async () => {
-  if (router.currentRoute.value.path === '/project-setting/enviroment') {
+  if (router.currentRoute.value.path === '/project-setting/index') {
     router.push('/project-setting/enviroment/var')
     store.dispatch('ProjectSetting/setEnvDetail', null);
-    activeKey.value = setActiveKey();
+    activeKey.value = 'enviroment';
   }
 }, {
   immediate: true

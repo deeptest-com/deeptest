@@ -1,19 +1,23 @@
 <!-- 本页面是服务编辑页面的抽屉 -->
 <template>
-    <a-drawer :closable="true" :width="1000" :key="editKey" :visible="drawerVisible" @close="onClose">
+    <a-drawer :closable="true" :width="1000" :key="editKey" :bodyStyle="{padding:'16px'}" :visible="drawerVisible" @close="onClose">
         <template #title>
             <div class="drawer-header">
                 <div>服务编辑</div>
             </div>
         </template>
         <div class="drawer-content">
-            <a-form :model="formState" :label-col="{ span: 2 }" :wrapper-col="{ span: 15 }">
-                <a-form-item label="服务名称">
-                    <EditAndShowField :placeholder="'请输入服务名称'" :value="formState.name" @update="(e: string) => changeServiceInfo({ name: e })"/>
-                </a-form-item>
-                <a-form-item label="描述">
-                    <EditAndShowField :placeholder="'请输入服务简介描述'" :value="formState.description" @update="(e: string) => changeServiceInfo({ description: e })"/>
-                </a-form-item>
+            <a-form :model="formState" :label-col="{ span: 2 }" :wrapper-col="{ span: 15 }"> 
+                <ConBoxTitle :backgroundStyle="'background: #FBFBFB;'" :title="'基本信息'" />
+                <div class="drawer-basicinfo">
+                    <a-form-item label="服务名称">
+                        <EditAndShowField :placeholder="'请输入服务名称'" :value="formState.name" @update="(e: string) => changeServiceInfo({ name: e })"/>
+                    </a-form-item>
+                    <a-form-item label="描述">
+                        <EditAndShowField :placeholder="'请输入服务简介描述'" :value="formState.description" @update="(e: string) => changeServiceInfo({ description: e })"/>
+                    </a-form-item>
+                </div>
+                <ConBoxTitle :backgroundStyle="'background: #FBFBFB;'" :title="'服务管理'" />
                 <a-tabs :activeKey="activeKey" @change="handleTabChange">
                     <a-tab-pane key="service-version" tab="服务版本">
                         <ServiceVersion :serveId="formState.id" />
@@ -43,6 +47,7 @@ import ServiceVersion from './Version.vue';
 import ServiceComponent from './Component.vue';
 import ServiceSecurity from './Security.vue';
 import EditAndShowField from '@/components/EditAndShow/index.vue';
+import ConBoxTitle from '@/components/ConBoxTitle/index.vue';
 import { StateType as ProjectStateType } from "@/store/project";
 import { StateType as ProjectSettingStateType } from '../../store';
 import { ServeDetail } from '../../data';
@@ -89,3 +94,8 @@ watch(() => {
     immediate: true
 })
 </script>
+<style lang="less" scoped>
+.drawer-basicinfo {
+    padding: 9px 0 33px 0;
+}
+</style>

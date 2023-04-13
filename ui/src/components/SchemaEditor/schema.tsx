@@ -145,6 +145,7 @@ export default defineComponent({
         };
         const addDesc = (tree: any, desc: string) => {
             tree.description = desc;
+            data.value = addExtraViewInfo(data.value);
         };
         const del = (keyIndex: any, parent: any) => {
             const keys = Object.keys(parent.properties);

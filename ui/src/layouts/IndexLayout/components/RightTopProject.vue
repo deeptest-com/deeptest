@@ -71,13 +71,13 @@ const selectServe = (value): void => {
 }
 
 onMounted(() => {
-  showServeSelect.value = !route.path.includes('projectSetting');
+  showServeSelect.value = !route.path.includes('project-setting');
 }) 
 
 watch(
   () => route.path,
   (val: any) => {
-    showServeSelect.value = !val.includes('projectSetting');
+    showServeSelect.value = !val.includes('project-setting');
   }
 )
 </script>

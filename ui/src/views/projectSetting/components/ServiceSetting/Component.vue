@@ -9,7 +9,7 @@
           @handle-ok="handleAdd"
           @handle-search="onSearch"/>
     </div>
-    <a-table bordered :data-source="dataSource" :columns="schemaColumns">
+    <a-table bordered :data-source="dataSource" :columns="schemaColumns" :rowKey="(_record, index) => index">
       <template #name="{ text, record }">
         <div class="editable-cell">
           <div class="editable-cell-text-wrapper">
@@ -110,7 +110,7 @@ import {StateType as ProjectSettingStateType} from '../../store';
 
 const props = defineProps({
   serveId: {
-    type: String,
+    type: Number,
     required: true
   },
 })

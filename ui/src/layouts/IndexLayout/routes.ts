@@ -73,23 +73,23 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
   {
     title: '项目设置',
     path: '/project-setting',
-    redirect: '/project-setting/enviroment',
+    redirect: '/project-setting/index',
     component: () => import('@/views/projectSetting/index.vue'),
     children: [
-      // {
-      //   icon:'set',
-      //   title: 'projectSetting',
-      //   path: 'index',
-      //   component: () => import('@/views/projectSetting/index.vue'),
-      //   hidden: false,
-      // },
+      {
+        icon:'set',
+        title: 'projectSetting',
+        path: 'index',
+        component: BlankLayout,
+        hidden: false,
+      },
       {
         icon:'set',
         title: 'projectSetting',
         path: 'enviroment',
         name: 'enviroment',
         component: () => import('@/views/projectSetting/components/EnvSetting/index.vue'),
-        hidden: false,
+        hidden: true,
         children: [
           {
             icon: 'set',
@@ -97,7 +97,7 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
             path: 'var',
             name: 'enviroment.var',
             component: () => import('@/views/projectSetting/components/EnvSetting/GlobalVar.vue'),
-            hidden: false
+            hidden: true
           },
           {
             icon: 'set',
@@ -105,15 +105,15 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
             path: 'params',
             name: 'enviroment.params',
             component: () => import('@/views/projectSetting/components/EnvSetting/GlobalParams.vue'),
-            hidden: false
+            hidden: true
           },
           {
             icon: 'set',
             title: 'envsetting.envdetail',
-            path: 'envdetail/:id',
+            path: 'envdetail/:id(\\d+)?',
             name: 'enviroment.envdetail',
             component: () => import('@/views/projectSetting/components/EnvSetting/EnvDetail.vue'),
-            hidden: false
+            hidden: true
           }
         ]
       },
@@ -229,6 +229,21 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
         path: 'message',
         component: () => import('@/views/user/info/message.vue'),
         hidden: true,
+      },
+    ],
+  },
+  {
+    title: 'index-layout.menu',
+    path: '/user',
+    redirect: '/user/index',
+    component: BlankLayout,
+    children: [
+      {
+        icon: 'user',
+        title: 'user.management',
+        path: 'index',
+        component: () => import('@/views/user/list/index.vue'),
+        hidden: false,
       },
     ],
   },

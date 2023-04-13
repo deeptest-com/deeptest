@@ -63,17 +63,21 @@ import {
   computed,
   ref,
   watch,
-  createVNode
 } from 'vue';
-import { MenuOutlined, PlusOutlined, CopyOutlined, DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons-vue';
+import { MenuOutlined, PlusOutlined, CopyOutlined, DeleteOutlined } from '@ant-design/icons-vue';
 import draggable from 'vuedraggable'
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { StateType as ProjectStateType } from "@/store/project";
 import { StateType as ProjectSettingStateType } from "@/views/ProjectSetting/store";
 import { EnvDataItem } from '../../data';
-import { Modal } from 'ant-design-vue';
 import { useGlobalEnv } from '../../hooks/useGlobalEnv';
+
+enum RouteNameMap {
+  Var = 'enviroment.var',
+  Params = 'enviroment.params',
+  Detail = 'enviroment.envdetail'
+}
 
 const { activeEnvDetail, deleteEnvData, copyEnvData } = useGlobalEnv();
 // store 相关
@@ -86,9 +90,9 @@ const params = router.currentRoute.value.params;
 const routeName = router.currentRoute.value.name;
 
 // 页面state相关
-const isShowGlobalVars = ref(routeName === 'enviroment.var');
-const isShowGlobalParams: any = ref(routeName === 'enviroment.params');
-const isShowAddEnv = ref(params.id && params.id === '-1');
+const isShowGlobalVars = ref(routeName === RouteNameMap.Var);
+const isShowGlobalParams: any = ref(routeName === RouteNameMap.Params);
+const isShowAddEnv = ref(routeName === RouteNameMap.Detail && !params.id);
 
 
 function handleDragEnd(_e: any) {
@@ -120,29 +124,7 @@ async function toEnvDetail(env: any) {
   isShowGlobalParams.value = false;
   isShowAddEnv.value = !env;
   await store.dispatch('ProjectSetting/setEnvDetail', env);
-  router.push(`/project-setting/enviroment/envdetail${env ? `/${env.id}` : '/-1'}`);
-}
-
-function handleCopy(evt: any, env: any) {
-  evt.stopPropagation();
-  store.dispatch('ProjectSetting/copyEnvData', {
-      activeEnvId: env?.id,
-      projectId: currProject.value.id
-  })
-}
-
-function handleDelete(evt: any, env: any) {
-  evt.stopPropagation();
-  Modal.confirm({
-      title: '确认要删除该环境吗',
-      icon: createVNode(ExclamationCircleOutlined),
-      onOk() {
-        store.dispatch('ProjectSetting/deleteEnvData', {
-            activeEnvId: env?.id,
-            projectId: currProject.value.id
-        })
-      },
-  });
+  router.push(`/project-setting/enviroment/envdetail${env ? `/${env.id}` : ''}`);
 }
 
 /**
@@ -189,10 +171,10 @@ watch(() => {
   return router.currentRoute.value
 }, (val) => {
   const { params: { id }, name } = val;
-  isShowAddEnv.value = id && id === '-1';
-  isShowGlobalVars.value = name === 'enviroment.var';
-  isShowGlobalParams.value = name === 'enviroment.params';
-  if (name === 'enviroment.var' || name === 'enviroment.params') {
+  isShowAddEnv.value = name === RouteNameMap.Detail && !id;
+  isShowGlobalVars.value = name === RouteNameMap.Var;
+  isShowGlobalParams.value = name === RouteNameMap.Params;
+  if (name === RouteNameMap.Var || name === RouteNameMap.Params) {
     store.dispatch('ProjectSetting/setEnvDetail', null);
   }
 }, {

@@ -3,6 +3,22 @@ import BlankLayout from '@/layouts/BlankLayout.vue';
 
 const IndexLayoutRoutes: Array<RoutesDataItem> = [
   {
+    title: '首页',
+    path: '/home',
+    redirect: '/home/index',
+    component: BlankLayout,
+    children: [
+      {
+        icon: 'home',
+        title: 'home',
+        path: 'index',
+        component: () => import('@/views/home/index.vue'),
+        hidden: false,
+      },
+  
+    ],
+  },
+  {
     title: 'index-layout.menu',
     path: '/project',
     redirect: '/project/index',

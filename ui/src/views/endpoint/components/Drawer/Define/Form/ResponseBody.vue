@@ -9,21 +9,21 @@
     </a-col>
     <a-col :span="18">
       <a-select
-          placeholder="请选择格式"
-          :value="selectedCodeDetail.mediaType"
+          placeholder="请选择响应格式"
+          :value="selectedCodeDetail.mediaType || null"
           @change="handleResBodyMediaTypeChange"
           style="width: 300px"
           :options="mediaTypesOpts.filter(item => !item.disabled)"
       ></a-select>
     </a-col>
   </a-row>
-  <!-- 增加响应体 - 描述  -->
-  <a-row class="form-item-response-item" v-if="collapse">
-    <a-col :span="4" class="form-label"></a-col>
-    <a-col :span="18">
-      <a-input placeholder="请输入描述" @change="handleResDescriptionChange" :value="selectedCodeDetail.description"/>
-    </a-col>
-  </a-row>
+<!--  &lt;!&ndash; 增加响应体 - 描述  &ndash;&gt;-->
+<!--  <a-row class="form-item-response-item" v-if="collapse">-->
+<!--    <a-col :span="4" class="form-label"></a-col>-->
+<!--    <a-col :span="18">-->
+<!--      <a-input placeholder="请输入描述" @change="handleResDescriptionChange" :value="selectedCodeDetail.description"/>-->
+<!--    </a-col>-->
+<!--  </a-row>-->
   <!-- 增加响应体 - scheme定义 -->
   <a-row class="form-item-response-item" v-if="collapse">
     <a-col :span="4" class="form-label"></a-col>
@@ -74,10 +74,10 @@ function handleResBodyMediaTypeChange(e) {
   store.commit('Endpoint/setSelectedCodeDetail', selectedCodeDetail?.value);
 }
 
-function handleResDescriptionChange(e) {
-  selectedCodeDetail.value.description = e.target.value;
-  store.commit('Endpoint/setSelectedCodeDetail', selectedCodeDetail.value);
-}
+// function handleResDescriptionChange(e) {
+//   selectedCodeDetail.value.description = e.target.value;
+//   store.commit('Endpoint/setSelectedCodeDetail', selectedCodeDetail.value);
+// }
 
 async function generateFromJSON(JSONStr: string) {
   activeResBodySchema.value.content = await store.dispatch('Endpoint/example2schema', {data: JSONStr});

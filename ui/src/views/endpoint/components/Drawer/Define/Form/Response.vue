@@ -24,7 +24,7 @@
               Description
             </a-col>
             <a-col :span="18">
-              <a-input @change="handleResDescriptionChange" :placeholder="'请输入'"
+              <a-input @change="handleResDescriptionChange" :placeholder="'请输入描述信息'"
                        :value="selectedCodeDetail.description"/>
             </a-col>
           </a-row>

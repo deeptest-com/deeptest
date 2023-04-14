@@ -26,8 +26,7 @@
         <draggable tag="div" :list="envList" class="list-group" handle=".handle" item-key="name" @end="handleDragEnd">
           <template #item="{ element, index }">
             <a-button :class="{ 'env-item': true, 'env-item-active': activeEnvDetail?.id === element.id }"
-              :type="activeEnvDetail?.id === element.id ? 'primary' : 'text'" @click="toEnvDetail(element)"
-              class="env-item" :key="index">
+              :type="activeEnvDetail?.id === element.id ? 'primary' : 'text'" @click="toEnvDetail(element)" :key="index">
               <MenuOutlined class="handle" />
               <span class="text"> {{ element.displayName }} </span>
               <span class="action">
@@ -228,6 +227,12 @@ watch(() => {
     display: flex;
     align-items: center;
 
+    &:hover {
+      .action {
+        display: block;
+      }
+    }
+
     i {
       width: 18px;
       height: 18px;
@@ -255,6 +260,7 @@ watch(() => {
     }
 
     .action {
+      display: none;
       .copy {
         margin-right: 6px;
       }

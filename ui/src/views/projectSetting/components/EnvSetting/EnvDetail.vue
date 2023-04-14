@@ -1,10 +1,12 @@
 <template>
     <!-- ::::环境详情 -->
     <a-form :model="activeEnvDetail" ref="formRef">
-        <div class="title">{{ activeEnvDetail.displayName }}</div>
+        <div class="title">
+            <ConBoxTitle :title="activeEnvDetail.displayName"/>
+        </div>
         <div class="envDetail-content">
             <a-form-item :labelCol="{ span: 2 }" :wrapperCol="{ span: 10 }" label="环境名称" name="name"
-                :rules="[{ required: true, message: '环境名称不能为空' }]">
+                :rules="rules.name">
                 <a-input class="env-name" :value="activeEnvDetail.name || ''" @change="handleEnvNameChange"
                     placeholder="请输入环境名称" />
             </a-form-item>
@@ -20,7 +22,7 @@
                     :columns="serveServersColumns" :data-source="activeEnvDetail.serveServers" :rowKey="(_record, index) => index">
                     <template #customUrl="{ text, index }">
                         <a-form-item :name="['serveServers', index, 'url']"
-                            :rules="[{ required: true, validator: urlValidator }]">
+                            :rules="rules.serveUrl">
                             <a-input :value="text" @change="(e) => {
                                 handleEnvChange('serveServers', 'url', index, e);
                             }" placeholder="http 或 https 起始的合法 URL" />
@@ -45,7 +47,7 @@
                     :columns="globalVarsColumns" :data-source="activeEnvDetail.vars" :rowKey="(_record, index) => index">
                     <template #customName="{ text, index }">
                         <a-form-item :name="['vars', index, 'name']"
-                            :rules="[{ required: true, message: '参数名不可为空' }]">
+                            :rules="rules.var">
                             <a-input @change="(e) => {
                                 handleEnvChange('vars', 'name', index, e);
                             }" :value="text" placeholder="请输入参数名" />
@@ -53,7 +55,7 @@
                     </template>
                     <template #customLocalValue="{ text, index }">
                         <a-form-item :name="['vars', index, 'localValue']"
-                            :rules="[{ required: true, message: '本地值不可为空' }]">
+                            :rules="rules.localValue">
                             <a-input :value="text" @change="(e) => {
                                 handleEnvChange('vars', 'localValue', index, e);
                             }" placeholder="请输入本地值" />
@@ -61,7 +63,7 @@
                     </template>
                     <template #customRemoteValue="{ text, index }">
                         <a-form-item :name="['vars', index, 'remoteValue']"
-                            :rules="[{ required: true, message: '远程值不可为空' }]">
+                            :rules="rules.remoteValue">
                             <a-input :value="text" @change="(e) => {
                                 handleEnvChange('vars', 'remoteValue', index, e);
                             }" placeholder="请输入远程值" />
@@ -95,6 +97,8 @@
 import { ref, computed } from 'vue';
 import { useStore } from "vuex";
 import { message } from 'ant-design-vue';
+import { PlusOutlined } from '@ant-design/icons-vue';
+import ConBoxTitle from '@/components/ConBoxTitle/index.vue';
 import { globalVarsColumns, serveServersColumns } from '../../config';
 import { useGlobalEnv } from '../../hooks/useGlobalEnv';
 import { StateType as ProjectSettingStateType } from "@/views/ProjectSetting/store";
@@ -113,6 +117,14 @@ const {
     handleEnvChange,
     handleEnvNameChange
 } = useGlobalEnv(formRef);
+
+const rules = {
+    name: [{ required: true, message: '环境名称不能为空' }],
+    serveUrl: [{ required: true, validator: urlValidator }],
+    var: [{ required: true, message: '参数名不可为空' }],
+    localValue: [{ required: true, message: '本地值不可为空' }],
+    remoteValue: [{ required: true, message: '远程值不可为空' }]
+}
 
 // 添加服务弹窗操作 
 async function addService() {
@@ -195,13 +207,12 @@ function handleAddServiceOk() {
 
 .envDetail-footer {
     height: 60px;
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    width: 300px;
+    width: 100%;
     display: flex;
     align-items: center;
     justify-content: flex-end;
+    margin-top: 60px;
+    box-shadow: 0px -1px 0px rgba(0, 0, 0, 0.06);
 
     .save-btn {
         margin-right: 16px;

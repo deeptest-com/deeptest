@@ -63,7 +63,6 @@ const props = defineProps<{
 }>();
 
 const emits = defineEmits(['onClose', 'update:formState', 'update:tabKey']);
-console.log('props-------- tabKey', props.tabKey);
 const activeKey = ref('service-version');
 
 function onClose() {
@@ -97,5 +96,9 @@ watch(() => {
 <style lang="less" scoped>
 .drawer-basicinfo {
     padding: 9px 0 33px 0;
+}
+
+:deep(.drawer-content .ant-tabs-bar) {
+    margin: 0;
 }
 </style>

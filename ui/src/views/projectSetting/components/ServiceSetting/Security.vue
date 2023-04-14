@@ -137,7 +137,6 @@ import {SelectTypes} from 'ant-design-vue/es/select';
 
 const props = defineProps({
   serveId: {
-    type: Number,
     required: true
   },
 })

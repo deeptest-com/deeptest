@@ -445,6 +445,7 @@ func (r *UserRepo) AddProjectForUser(user *model.SysUser) (project model.Project
 		return
 	}
 
+	// create project
 	project = model.Project{ProjectBase: domain.ProjectBase{Name: "默认项目"}}
 	err = r.DB.Create(&project).Error
 	if err != nil {
@@ -452,29 +453,7 @@ func (r *UserRepo) AddProjectForUser(user *model.SysUser) (project model.Project
 		return
 	}
 
-	err = r.ProjectRepo.AddProjectMember(project.ID, user.ID, "admin")
-	if err != nil {
-		logUtils.Errorf("添加项目角色错误", zap.String("错误:", err.Error()))
-		return
-	}
-
-	err = r.EnvironmentRepo.AddDefaultForProject(project.ID)
-	if err != nil {
-		logUtils.Errorf("添加项目默认环境错误", zap.String("错误:", err.Error()))
-		return
-	}
-
-	serve, err := r.ProjectRepo.AddProjectDefaultServe(project.ID, user.ID)
-	if err != nil {
-		logUtils.Errorf("添加默认服务错误", zap.String("错误:", err.Error()))
-		return
-	}
-
-	err = r.ProjectRepo.AddProjectRootInterface(project.ID, serve.ID)
-	if err != nil {
-		logUtils.Errorf("添加接口错误", zap.String("错误:", err.Error()))
-		return
-	}
+	r.ProjectRepo.CreateProjectRes(project.ID, user.ID)
 
 	return
 }

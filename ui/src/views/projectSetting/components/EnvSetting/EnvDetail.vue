@@ -1,10 +1,12 @@
 <template>
     <!-- ::::环境详情 -->
-    <a-form :model="activeEnvDetail">
-        <div class="title">{{ activeEnvDetail.displayName }}</div>
+    <a-form :model="activeEnvDetail" ref="formRef">
+        <div class="title">
+            <ConBoxTitle :title="activeEnvDetail.displayName"/>
+        </div>
         <div class="envDetail-content">
             <a-form-item :labelCol="{ span: 2 }" :wrapperCol="{ span: 10 }" label="环境名称" name="name"
-                :rules="[{ required: true, message: '环境名称不能为空' }]">
+                :rules="rules.name">
                 <a-input class="env-name" :value="activeEnvDetail.name || ''" @change="handleEnvNameChange"
                     placeholder="请输入环境名称" />
             </a-form-item>
@@ -17,17 +19,19 @@
                     关联服务
                 </a-button>
                 <a-table v-if="activeEnvDetail.serveServers.length > 0" size="small" bordered :pagination="false"
-                    :columns="serveServersColumns" :data-source="activeEnvDetail.serveServers">
-                    <template #customName="{ text, index }">
-                        <a-input :value="text" @change="(e) => {
-                            handleEnvChange('serveServers', 'serveName', index, e);
-                        }" placeholder="请输入参数名" />
-                    </template>
-
+                    :columns="serveServersColumns" :data-source="activeEnvDetail.serveServers" :rowKey="(_record, index) => index">
                     <template #customUrl="{ text, index }">
-                        <a-input :value="text" @change="(e) => {
-                            handleEnvChange('serveServers', 'url', index, e);
-                        }" placeholder="http 或 https 起始的合法 URL" />
+                        <a-form-item :name="['serveServers', index, 'url']"
+                            :rules="rules.serveUrl">
+                            <a-input :value="text" @change="(e) => {
+                                handleEnvChange('serveServers', 'url', index, e);
+                            }" placeholder="http 或 https 起始的合法 URL" />
+                        </a-form-item>
+                    </template>
+                    <template #customAction="{ index }">
+                        <a-button danger type="text" @click="handleEnvChange('serveServers', '', index, '', 'delete');"
+                            :size="'small'">解除关联
+                        </a-button>
                     </template>
                 </a-table>
             </div>
@@ -40,21 +44,30 @@
                     添加
                 </a-button>
                 <a-table v-if="activeEnvDetail.vars.length > 0" bordered size="small" :pagination="false"
-                    :columns="globalVarsColumns" :data-source="activeEnvDetail.vars">
+                    :columns="globalVarsColumns" :data-source="activeEnvDetail.vars" :rowKey="(_record, index) => index">
                     <template #customName="{ text, index }">
-                        <a-input @change="(e) => {
-                            handleEnvChange('vars', 'name', index, e);
-                        }" :value="text" placeholder="请输入参数名" />
+                        <a-form-item :name="['vars', index, 'name']"
+                            :rules="rules.var">
+                            <a-input @change="(e) => {
+                                handleEnvChange('vars', 'name', index, e);
+                            }" :value="text" placeholder="请输入参数名" />
+                        </a-form-item>
                     </template>
                     <template #customLocalValue="{ text, index }">
-                        <a-input :value="text" @change="(e) => {
-                            handleEnvChange('vars', 'localValue', index, e);
-                        }" placeholder="请输入本地值" />
+                        <a-form-item :name="['vars', index, 'localValue']"
+                            :rules="rules.localValue">
+                            <a-input :value="text" @change="(e) => {
+                                handleEnvChange('vars', 'localValue', index, e);
+                            }" placeholder="请输入本地值" />
+                        </a-form-item>
                     </template>
                     <template #customRemoteValue="{ text, index }">
-                        <a-input :value="text" @change="(e) => {
-                            handleEnvChange('vars', 'remoteValue', index, e);
-                        }" placeholder="请输入远程值" />
+                        <a-form-item :name="['vars', index, 'remoteValue']"
+                            :rules="rules.remoteValue">
+                            <a-input :value="text" @change="(e) => {
+                                handleEnvChange('vars', 'remoteValue', index, e);
+                            }" placeholder="请输入远程值" />
+                        </a-form-item>
                     </template>
                     <template #customDescription="{ text, index }">
                         <a-input :value="text" @change="(e) => {
@@ -70,44 +83,88 @@
             </div>
         </div>
         <div class="envDetail-footer">
-            <a-button v-if="activeEnvDetail.id" class="save-btn" @click="deleteEnvData" type="danger">删除</a-button>
-            <a-button v-if="activeEnvDetail.id" class="save-btn" @click="copyEnvData" type="primary">复制</a-button>
             <a-button class="save-btn" @click="addEnvData" html-type="submit" type="primary">保存</a-button>
         </div>
     </a-form>
+    <a-modal v-model:visible="addServiceModalVisible" title="关联服务" @ok="handleAddServiceOk">
+        <a-form-item class="select-service" :labelCol="{ span: 6 }" :wrapperCol="{ span: 16 }" label="请选择服务">
+            <a-select v-model:value="selectedService" :options="serviceOptions" placeholder="请选择服务" style="width: 200px" />
+        </a-form-item>
+
+    </a-modal>
 </template>
 <script setup lang="ts">
-import { ref, defineEmits, defineProps } from 'vue';
+import { ref, computed } from 'vue';
+import { useStore } from "vuex";
+import { message } from 'ant-design-vue';
+import { PlusOutlined } from '@ant-design/icons-vue';
+import ConBoxTitle from '@/components/ConBoxTitle/index.vue';
 import { globalVarsColumns, serveServersColumns } from '../../config';
+import { useGlobalEnv } from '../../hooks/useGlobalEnv';
+import { StateType as ProjectSettingStateType } from "@/views/ProjectSetting/store";
 
-const props = defineProps<{
-    activeEnvDetail: any
-}>();
-const emits = defineEmits(['deleteEnvData', 'copyEnvData', 'addEnvData', 'handleEnvChange', 'handleEnvNameChange', 'addVar', 'addService']);
+const store = useStore<{ ProjectSetting: ProjectSettingStateType }>();
+const serviceOptions = computed<any>(() => store.state.ProjectSetting.serviceOptions);
+const addServiceModalVisible = ref(false);
+const selectedService = ref('');
+const formRef = ref<any>();
 
-function deleteEnvData() {
-    emits('deleteEnvData');
-}
-function copyEnvData() {
-    emits('copyEnvData');
-}
-function addEnvData() {
-    emits('addEnvData');
+
+const {
+    activeEnvDetail,
+    addVar,
+    addEnvData,
+    handleEnvChange,
+    handleEnvNameChange
+} = useGlobalEnv(formRef);
+
+const rules = {
+    name: [{ required: true, message: '环境名称不能为空' }],
+    serveUrl: [{ required: true, validator: urlValidator }],
+    var: [{ required: true, message: '参数名不可为空' }],
+    localValue: [{ required: true, message: '本地值不可为空' }],
+    remoteValue: [{ required: true, message: '远程值不可为空' }]
 }
 
-function handleEnvChange(type: string, filed: string, index: number, e: any, action?: string) {
-    emits('handleEnvChange', type, filed, index, e, action);
-}
-function handleEnvNameChange(e: any) {
-    emits('handleEnvNameChange', e);
+// 添加服务弹窗操作 
+async function addService() {
+    addServiceModalVisible.value = true;
 }
 
-function addVar() {
-    emits('addVar');
+function urlValidator(...arg: any[]) {
+    const value = arg[1];
+    const urlReg = /(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?/; // eslint-disable-line
+    if (value === '') {
+        return Promise.reject('url不能为空');
+    } else {
+        if (!urlReg.test(value)) {
+            return Promise.reject('url格式错误，请参考 http(s)://www.test.com ');
+        }
+        return Promise.resolve();
+    }
 }
-function addService() {
-    emits('addService');
+
+function handleAddServiceOk() {
+    const selectServe: any = serviceOptions.value.find((item: any) => {
+        return selectedService.value === item.id;
+    })
+    const envDetail = JSON.parse(JSON.stringify(activeEnvDetail.value));
+    const isExsitServe = envDetail.serveServers.find((item: any) => {
+        return item.serveId === selectServe.id;
+    });
+    if (!isExsitServe) {
+        store.dispatch('ProjectSetting/addEnvServe', {
+            "url": "",
+            "serveName": selectServe.name,
+            "serveId": selectServe.id,
+        })
+        addServiceModalVisible.value = false;
+    } else {
+        message.error('不可添加重复的服务,请重新选择~');
+    }
+
 }
+
 </script>
 
 <style scoped lang="less">
@@ -150,18 +207,18 @@ function addService() {
 
 .envDetail-footer {
     height: 60px;
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    width: 300px;
+    width: 100%;
     display: flex;
     align-items: center;
     justify-content: flex-end;
+    margin-top: 60px;
+    box-shadow: 0px -1px 0px rgba(0, 0, 0, 0.06);
 
     .save-btn {
         margin-right: 16px;
     }
 }
+
 :deep(.ant-input:not(.env-name):hover),
 :deep(.ant-input:active),
 :deep(.ant-input:focus) {
@@ -180,4 +237,15 @@ function addService() {
 :deep(.custom-select .ant-select-selector:active),
 :deep(.custom-select .ant-select-selector:focus) {
     border: 1px solid #4096ff !important
-}</style>
+}
+
+:deep(.serveServers .ant-row.ant-form-item),
+:deep(.vars .ant-row.ant-form-item) {
+    margin-bottom: 0 !important;
+}
+
+:deep(.vars .ant-row.ant-form-item-has-error .ant-form-item-control-input),
+:deep(.serveServers .ant-row.ant-form-item-has-error .ant-form-item-control-input) {
+    border: 1px solid #f5222d;
+}
+</style>

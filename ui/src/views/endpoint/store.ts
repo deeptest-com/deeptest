@@ -226,7 +226,7 @@ const StoreModel: ModuleType = {
             // 同步到接口详情
             const interfaces: any = [];
             state.endpointDetail.interfaces.forEach((item) => {
-                if (item.method === payload) {
+                if (item.method === payload.method) {
                     interfaces.push(payload);
                 } else {
                     interfaces.push(item);
@@ -523,7 +523,7 @@ const StoreModel: ModuleType = {
             if (res.code === 0) {
                 res.data.forEach((item: any) => {
                     item.label = item.description;
-                    item.value = item.url;
+                    item.value = item.id;
                 })
                 commit('setServerList', res.data || null);
             } else {

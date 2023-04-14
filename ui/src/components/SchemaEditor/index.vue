@@ -1,130 +1,3 @@
-<script lang="ts" setup>
-import {
-  ArrowUpOutlined,
-  ArrowDownOutlined,
-  CopyOutlined,
-  CloseOutlined,
-  EditOutlined,
-  DeleteOutlined,
-  InfoCircleOutlined,
-  PlusOutlined,
-} from '@ant-design/icons-vue';
-import {computed, defineProps, defineEmits, ref, watch} from "vue";
-import SchemaEditor from './schema';
-import {message} from "ant-design-vue";
-import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
-import {MonacoOptions} from '@/utils/const';
-
-const props = defineProps<{
-  value: object,
-  tabContentStyle?: object,
-  schemeVisibleKey?: string | number,
-}>();
-
-const emit = defineEmits<{
-  (e: 'generateFromJSON', jsonStr?: string): void,
-  (e: 'generateExample', jsonStr?: string): void,
-  (e: 'change', json?: object): void,
-}>();
-
-const content: any = ref({type: 'object', properties: {}});
-const examples: any = ref([]);
-
-const activeExample: any = ref(null);
-const activeExampleIndex: any = ref(0);
-
-function addExample() {
-  emit('generateExample', examples.value);
-}
-
-function clickExampleItem(index: number) {
-  activeExampleIndex.value = index;
-  activeExample.value = examples.value[index];
-}
-
-const activeTab = ref('schema');
-
-function switchTab(tab) {
-  activeTab.value = tab;
-}
-
-const activeGenSchemaMode: any = ref(false);
-
-function genSchema() {
-  activeGenSchemaMode.value = true;
-}
-
-function deleteExample() {
-  examples.value.splice(activeExampleIndex.value, 1);
-  activeExampleIndex.value = activeExampleIndex.value - 1 === -1 ? 0 : activeExampleIndex.value - 1;
-  activeExample.value = examples.value[activeExampleIndex.value] || null;
-}
-
-function handleExampleContentChange(val) {
-  activeExample.value.content = val;
-}
-
-function handleContentChange(val) {
-  emit('change', {
-    examples:examples.value,
-    content:val
-  });
-}
-
-const exampleJsonStr = ref('');
-const hasSyntaxError = ref(true);
-
-function handleJSONDemoChange(val,event,syntaxError) {
-  exampleJsonStr.value = val;
-  hasSyntaxError.value = !syntaxError;
-}
-
-function cancalGen() {
-  activeGenSchemaMode.value = false;
-}
-
-function generate() {
-  activeGenSchemaMode.value = false;
-  activeTab.value = 'schema';
-  emit('generateFromJSON', exampleJsonStr.value);
-}
-
-
-watch(() => {
-  return props.value
-}, (newVal: any) => {
-  content.value = newVal?.content?.type ? newVal?.content  : {
-    type: 'object'
-  };
-  examples.value = newVal?.examples || [];
-}, {
-  immediate: true,
-  deep: true
-});
-
-
-watch(() => {
-  return examples.value
-}, (newVal: any) => {
-  emit('change', {
-    examples:newVal,
-    content:content.value
-  });
-}, {
-  immediate: false,
-  deep: true
-});
-
-watch(() => {
-  return examples.value.length
-}, (newVal) => {
-  activeExample.value = newVal > 0 ? examples.value[newVal - 1] : null;
-}, {
-  immediate: true
-})
-
-</script>
-
 <template>
   <div class="tab-content" :style="tabContentStyle">
     <div class="tab-header" v-if="!activeGenSchemaMode">
@@ -190,7 +63,8 @@ watch(() => {
             <div class="activeExampleInfo-header">
               <a-input
                   class="input exampleName-input"
-                  v-model:value="activeExample.name"
+                  @change="handleExampleNameChange"
+                  :value="activeExample.name"
                   placeholder="Basic usage"/>
               <div class="btns">
                 <a-button type="text" @click="deleteExample">
@@ -250,6 +124,134 @@ watch(() => {
     </div>
   </div>
 </template>
+<script lang="ts" setup>
+import {
+  CloseOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  InfoCircleOutlined,
+  PlusOutlined,
+} from '@ant-design/icons-vue';
+import {computed, defineProps, defineEmits, ref, watch} from "vue";
+import SchemaEditor from './schema';
+import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
+import {MonacoOptions} from '@/utils/const';
+
+const props = defineProps<{
+  value: object,
+  tabContentStyle?: object,
+  schemeVisibleKey?: string | number,
+}>();
+
+const emit = defineEmits<{
+  (e: 'generateFromJSON', jsonStr?: string): void,
+  (e: 'generateExample', jsonStr?: string): void,
+  (e: 'change', json?: object): void,
+}>();
+
+const content: any = ref({type: 'object', properties: {}});
+const examples: any = ref([]);
+
+const activeExample: any = ref(null);
+const activeExampleIndex: any = ref(0);
+
+function addExample() {
+  emit('generateExample', examples.value);
+}
+
+function clickExampleItem(index: number) {
+  activeExampleIndex.value = index;
+  activeExample.value = examples.value[index];
+}
+
+const activeTab = ref('schema');
+
+function switchTab(tab) {
+  activeTab.value = tab;
+}
+
+const activeGenSchemaMode: any = ref(false);
+
+function genSchema() {
+  activeGenSchemaMode.value = true;
+}
+
+function deleteExample() {
+  examples.value.splice(activeExampleIndex.value, 1);
+  activeExampleIndex.value = activeExampleIndex.value - 1 === -1 ? 0 : activeExampleIndex.value - 1;
+  activeExample.value = examples.value[activeExampleIndex.value] || null;
+}
+
+function handleExampleNameChange(e) {
+  activeExample.value.name = e.target.value;
+  examples.value[activeExampleIndex.value].name = e.target.value;
+}
+
+function handleExampleContentChange(val) {
+  activeExample.value.content = val;
+}
+
+function handleContentChange(val) {
+  emit('change', {
+    examples: examples.value,
+    content: val
+  });
+}
+
+const exampleJsonStr = ref('');
+const hasSyntaxError = ref(true);
+
+function handleJSONDemoChange(val, event, syntaxError) {
+  exampleJsonStr.value = val;
+  hasSyntaxError.value = !syntaxError;
+}
+
+function cancalGen() {
+  activeGenSchemaMode.value = false;
+}
+
+function generate() {
+  activeGenSchemaMode.value = false;
+  activeTab.value = 'schema';
+  emit('generateFromJSON', exampleJsonStr.value);
+}
+
+
+watch(() => {
+  return props.value
+}, (newVal: any) => {
+  content.value = newVal?.content?.type ? newVal?.content : {
+    type: 'object'
+  };
+  examples.value = newVal?.examples || [];
+}, {
+  immediate: true,
+  deep: true
+});
+
+
+watch(() => {
+  return examples.value
+}, (newVal: any) => {
+  emit('change', {
+    examples: newVal,
+    content: content.value
+  });
+}, {
+  immediate: false,
+  deep: true
+});
+
+watch(() => {
+  return examples.value.length
+}, (newVal) => {
+  activeExample.value = newVal > 0 ? examples.value[newVal - 1] : null;
+}, {
+  immediate: true
+})
+
+</script>
+
 
 <style lang="less" scoped>
 @import "var.less";

@@ -12,8 +12,9 @@ import (
 )
 
 type ServeRepo struct {
-	*BaseRepo    `inject:""`
-	CategoryRepo *CategoryRepo `inject:""`
+	*BaseRepo       `inject:""`
+	CategoryRepo    *CategoryRepo    `inject:""`
+	EnvironmentRepo *EnvironmentRepo `inject:""`
 }
 
 func NewServeRepo() *ServeRepo {
@@ -181,6 +182,15 @@ func (r *ServeRepo) DisableVersionById(id uint) error {
 
 func (r *ServeRepo) ListServer(serveId uint) (res []model.ServeServer, err error) {
 	err = r.DB.Where("serve_id = ? AND NOT deleted AND not disabled", serveId).Find(&res).Error
+
+	for key, server := range res {
+		var environment model.Environment
+		environment, err = r.EnvironmentRepo.Get(server.EnvironmentId)
+		if err != nil {
+			return
+		}
+		res[key].EnvironmentName = environment.Name
+	}
 	return
 }
 
@@ -228,6 +238,7 @@ func (r *ServeRepo) SaveServer(environmentId uint, environmentName string, serve
 	if err != nil {
 		return err
 	}
+
 	for key, _ := range servers {
 		servers[key].ID = 0
 		servers[key].EnvironmentId = environmentId
@@ -240,9 +251,9 @@ func (r *ServeRepo) SaveServer(environmentId uint, environmentName string, serve
 	return
 }
 
-func (r *ServeRepo) ServeExist(id uint, name string) (res bool) {
+func (r *ServeRepo) ServeExist(id, projectId uint, name string) (res bool) {
 	var count int64
-	err := r.DB.Model(&model.Serve{}).Where("id = 0 and name = ?", id, name).Count(&count).Error
+	err := r.DB.Model(&model.Serve{}).Where("id != ? and name = ? and project_id = ?", id, name, projectId).Count(&count).Error
 	if err != nil {
 		return false
 	}

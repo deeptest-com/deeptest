@@ -11,7 +11,7 @@
       <a-radio-group v-model:value="selectedCode" button-style="solid">
         <a-radio-button
             :class="{'has-defined': hasDefinedCode(code.value)}"
-            :key="code.value" v-for="code in repCodeOpts"
+            :key="code.value" v-for="code in responseCodes.filter(item => item.enabled)"
             :value="code.value">
           {{ code.label }}
         </a-radio-button>
@@ -24,7 +24,7 @@
               Description
             </a-col>
             <a-col :span="18">
-              <a-input @change="handleResDescriptionChange" :placeholder="'请输入'"
+              <a-input @change="handleResDescriptionChange" :placeholder="'请输入描述信息'"
                        :value="selectedCodeDetail.description"/>
             </a-col>
           </a-row>
@@ -90,7 +90,7 @@ import {
 } from 'vue';
 import {useStore} from "vuex";
 import {
-  repCodeOpts,
+  responseCodes,
   defaultHeaderParams,
   defaultCodeResponse,
 } from '@/config/constant';
@@ -120,6 +120,9 @@ function hasDefinedCode(code: string) {
 watch(() => {
   return selectedCode.value
 }, (newVal, oldVal) => {
+  if(newVal !== oldVal) {
+    collapse.value = true;
+  }
   const detail = selectedMethodDetail?.value?.responseBodies?.find((item) => {
     return item.code === newVal;
   })

@@ -12,7 +12,7 @@ type ServeReqPaginate struct {
 }
 
 type ServeReq struct {
-	ProjectId   int64  `json:"projectId" validate:"required"`
+	ProjectId   uint   `json:"projectId" validate:"required"`
 	Name        string `json:"name" validate:"required"`
 	Status      int64  `json:"status"`
 	ID          int64  `json:"id"`

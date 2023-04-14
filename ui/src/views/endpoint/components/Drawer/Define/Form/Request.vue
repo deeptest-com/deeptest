@@ -23,7 +23,7 @@
               Operation ID
             </a-col>
             <a-col :span="12">
-              <a-input v-model:value="selectedMethodDetail.operationId"/>
+              <a-input placeholder="Operation ID" v-model:value="selectedMethodDetail.operationId"/>
             </a-col>
           </a-row>
           <!-- Description -->
@@ -32,12 +32,12 @@
               Description
             </a-col>
             <a-col :span="12">
-              <a-input v-model:value="selectedMethodDetail.description"/>
+              <a-input placeholder="描述信息" v-model:value="selectedMethodDetail.description"/>
             </a-col>
           </a-row>
           <RequestParams/>
           <!-- 增加请求体 -->
-          <RequestBody/>
+          <RequestBody v-if="showRequestBody"/>
           <!-- 响应定义  -->
           <Response/>
         </div>
@@ -64,7 +64,6 @@ import {
 import {useStore} from "vuex";
 import {
   requestMethodOpts,
-  mediaTypesOpts,
   defaultEndpointDetail,
 } from '@/config/constant';
 import {PlusOutlined, RightOutlined, DownOutlined} from '@ant-design/icons-vue';
@@ -72,7 +71,6 @@ import Response from './Response.vue';
 import RequestParams from './RequestParams.vue';
 import RequestBody from './RequestBody.vue';
 import {Endpoint} from "@/views/endpoint/data";
-import SchemaEditor from '@/components/SchemaEditor/index.vue';
 import {cloneByJSON} from "@/utils/object";
 
 const store = useStore<{ Endpoint, Debug, ProjectGlobal, User }>();
@@ -85,14 +83,18 @@ const emit = defineEmits([]);
 const selectedMethod = ref(currInterface.value?.method ? currInterface.value?.method : 'GET');
 // 是否折叠,默认展开
 const collapse = ref(true);
+
 // 是否定义了请求方法
 function hasDefinedMethod(method: string) {
   return endpointDetail?.value?.interfaces?.some((item) => {
     return item.method === method;
   })
 }
+
 // 当前选中的请求方法详情
 const selectedMethodDetail: any = ref(null);
+// 是否展示请求体设置，比如 get 请求是不需要请求体的
+const showRequestBody = ref(false);
 watch(() => {
   return selectedMethod.value
 }, (newVal, oldVal) => {
@@ -104,6 +106,8 @@ watch(() => {
     store.dispatch('Debug/setInterface', {});
     store.commit('Endpoint/setSelectedMethodDetail', {});
   }
+  // 根据选中的请求方法决定是否展示请求体设置，暂定以下三种方法是不需要请求体的
+  showRequestBody.value = ['POST', 'PUT', 'PATCH'].includes(newVal);
 }, {immediate: true});
 
 function addEndpoint() {
@@ -127,65 +131,12 @@ function addEndpoint() {
   })
 }
 
-const activeReqBodySchema: any = ref({
-  content: null,
-  examples: [],
-});
-
-watch(() => {
-  return selectedMethodDetail?.value?.requestBody?.schemaItem?.content
-}, (newVal, oldValue) => {
-  activeReqBodySchema.value.content = JSON.parse(newVal || 'null')
-}, {immediate: true});
-
-watch(() => {
-  return selectedMethodDetail?.value?.requestBody?.examples
-}, (newVal, oldValue) => {
-  activeReqBodySchema.value.examples = JSON.parse(newVal || '[]')
-}, {immediate: true});
-
-
-async function generateFromJSON(type: string, JSONStr: string) {
-  const res = await store.dispatch('Endpoint/example2schema', {data: JSONStr});
-  activeReqBodySchema.value.content = res;
-}
-
-async function handleGenerateExample(examples: any) {
-  const res = await store.dispatch('Endpoint/schema2example', {data: JSON.stringify(activeReqBodySchema.value.content)});
-  const example = {
-    name: `Example ${examples.length + 1}`,
-    content: JSON.stringify(res),
-  };
-  activeReqBodySchema.value.examples.push(example);
-}
-
-function handleChange(json: any) {
-  const {content, examples} = json;
-  // activeReqBodySchema.value.content = content;
-  // activeReqBodySchema.value.type = content.type;
-  if (selectedMethodDetail?.value?.requestBody) {
-    selectedMethodDetail.value.requestBody.schemaItem.content = JSON.stringify(content);
-    selectedMethodDetail.value.requestBody.examples = JSON.stringify(examples);
-    selectedMethodDetail.value.requestBody.schemaItem.type = content.type;
-  }
-  // store.commit('Endpoint/setInterfaceDetail', {
-  //   ...interfaceDetail.value,
-  // });
-}
-
 </script>
 <style lang="less" scoped>
-.content {
-  padding-top: 16px;
-}
 
 .form-item {
   margin-bottom: 16px;
   align-items: baseline;
-}
-
-.path-param-list {
-  margin-top: 16px;
 }
 
 .form-label {
@@ -199,26 +150,10 @@ function handleChange(json: any) {
     margin-top: 16px;
     align-items: center;
   }
-
-  .form-item-response {
-    margin-top: 16px;
-
-    .form-item-response-item {
-      margin-top: 16px;
-      align-items: center;
-    }
-  }
-}
-
-.params-defined-item-header {
-  font-weight: bold;
-  margin-bottom: 8px;
-  margin-top: 8px;
 }
 
 .has-defined {
   color: #1890ff;
-  //font-weight: bold;
 }
 
 .label-name {

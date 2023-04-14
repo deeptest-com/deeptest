@@ -50,7 +50,7 @@
               <a-select @change="securityChange"
                         allowClear
                         placeholder="请选择 Security"
-                        :value="selectedMethodDetail.security"
+                        :value="selectedMethodDetail.security || null"
                         :options="securityOpts" style="width: 300px;"/>
               <a-tooltip placement="topLeft" arrow-point-at-center title="去添加或编辑 Security">
                 <a-button @click="goEditSecurity">
@@ -144,19 +144,10 @@ const emit = defineEmits([]);
 // 是否折叠,默认展开
 const collapse = ref(true);
 // 是否展示安全定义
-const showSecurity = ref(false);
-
-watch(() => {
-  return selectedMethodDetail.value
-}, (newVal, oldVal) => {
-  if (newVal) {
-    showSecurity.value = !!newVal.security;
-  }
-}, {immediate: true});
-
+const showSecurity = ref(!!selectedMethodDetail.value?.security);
 
 function goEditSecurity() {
-  window.open(`/#/projectSetting/index?firtab=3&sectab=3&serveId=${endpointDetail.value.serveId}`, '_blank')
+  window.open(`/#/project-setting/service-setting?sectab=service-security&serveId=${endpointDetail.value.serveId}`, '_blank')
 }
 
 function delSecurity() {
@@ -166,16 +157,21 @@ function delSecurity() {
 
 function securityChange(val) {
   selectedMethodDetail.value.security = val || null;
+  store.commit('Endpoint/setSelectedMethodDetail', {
+    ...selectedMethodDetail.value
+  })
 }
 
 function setSecurity() {
+  collapse.value = true;
   showSecurity.value = true;
 }
 
 function addCookie() {
+  collapse.value = true;
   selectedMethodDetail.value.cookies.push(cloneByJSON({
     ...defaultCookieParams,
-    name: 'cookie' + (selectedMethodDetail.value.cookies.length+1)
+    name: 'cookie' + (selectedMethodDetail.value.cookies.length + 1)
   }));
   store.commit('Endpoint/setSelectedMethodDetail', {
     ...selectedMethodDetail.value
@@ -183,9 +179,10 @@ function addCookie() {
 }
 
 function addQueryParams() {
+  collapse.value = true;
   selectedMethodDetail.value.params.push(cloneByJSON({
     ...defaultQueryParams,
-    name: 'param' + (selectedMethodDetail.value.params.length+1)
+    name: 'param' + (selectedMethodDetail.value.params.length + 1)
   }));
   store.commit('Endpoint/setSelectedMethodDetail', {
     ...selectedMethodDetail.value
@@ -193,9 +190,10 @@ function addQueryParams() {
 }
 
 function addHeader() {
+  collapse.value = true;
   selectedMethodDetail.value.headers.push(cloneByJSON({
     ...defaultHeaderParams,
-    name: 'header' + (selectedMethodDetail.value.headers.length+1)
+    name: 'header' + (selectedMethodDetail.value.headers.length + 1)
   }));
   store.commit('Endpoint/setSelectedMethodDetail', {
     ...selectedMethodDetail.value
@@ -223,7 +221,8 @@ function handleParamsChange(type, data) {
   position: relative;
   left: -18px;
 }
-.form-label-first{
+
+.form-label-first {
   font-weight: bold;
   position: relative;
   left: -18px;

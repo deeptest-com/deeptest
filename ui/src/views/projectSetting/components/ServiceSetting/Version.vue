@@ -3,7 +3,7 @@
     <div class="header">
       <CustomForm :form-config="formConfig" :rules="rules" @handle-ok="handleAdd" />
     </div>
-    <a-table bordered :data-source="dataSource" :columns="versionColumns">
+    <a-table bordered :data-source="dataSource" :columns="versionColumns" :rowKey="(_record, index) => index">
       <template #name="{ text }">
         <div class="editable-cell">
           <div class="editable-cell-text-wrapper">
@@ -24,8 +24,6 @@
 
 import {
   defineProps,
-  reactive,
-  UnwrapRef,
   watch,
   computed,
   createVNode
@@ -40,7 +38,6 @@ import { versionColumns } from '../../config';
 
 const props = defineProps({
   serveId: {
-    type: String,
     required: true
   },
 })
@@ -89,7 +86,6 @@ const formConfig = [
     modelName: 'createUser',
     valueType: 'string',
     options: userListOptions.value,
-    mode: 'combobox',
     placeholder: '请选择负责人',
     attrs: "width: 200px"
   },

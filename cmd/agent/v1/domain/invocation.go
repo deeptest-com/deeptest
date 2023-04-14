@@ -7,7 +7,6 @@ import (
 type InvocationReq struct {
 	ServerUrl string `json:"serverUrl"`
 	Token     string `json:"token"`
-	Id        int    `json:"id"`
 
 	Data v1.DebugRequest `json:"data"`
 }

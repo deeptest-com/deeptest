@@ -49,14 +49,19 @@ func (c *ServeCtrl) Index(ctx iris.Context) {
 // Save 保存服务
 func (c *ServeCtrl) Save(ctx iris.Context) {
 	var req v1.ServeReq
-	if err := ctx.ReadJSON(&req); err == nil {
-		//req.CreateUser = "admin"
-		req.CreateUser = multi.GetUsername(ctx)
-		res, _ := c.ServeService.Save(req)
-		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res})
-	} else {
+	if err := ctx.ReadJSON(&req); err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
 	}
+
+	req.CreateUser = multi.GetUsername(ctx)
+	res, err := c.ServeService.Save(req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+	
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res})
 	return
 }
 

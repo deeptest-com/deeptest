@@ -174,7 +174,9 @@ func (s *EnvironmentService) ListAll(projectId uint) (res []model.Environment, e
 func (s *EnvironmentService) SaveGlobal(projectId uint, req []v1.EnvironmentVariable) (err error) {
 	var vars []model.EnvironmentVar
 	copier.CopyWithOption(&vars, req, copier.Option{DeepCopy: true})
+
 	err = s.EnvironmentRepo.SaveVars(projectId, 0, vars)
+
 	return
 }
 

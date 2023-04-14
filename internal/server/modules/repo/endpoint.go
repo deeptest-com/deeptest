@@ -9,6 +9,7 @@ import (
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"gorm.io/gorm"
+	"strconv"
 )
 
 type EndpointRepo struct {
@@ -16,6 +17,7 @@ type EndpointRepo struct {
 	EndpointInterfaceRepo  *EndpointInterfaceRepo  `inject:""`
 	ServeRepo              *ServeRepo              `inject:""`
 	ProcessorInterfaceRepo *ProcessorInterfaceRepo `inject:""`
+	ProjectRepo            *ProjectRepo            `inject:""`
 }
 
 func NewEndpointRepo() *EndpointRepo {
@@ -114,7 +116,7 @@ func (r *EndpointRepo) SaveAll(endpoint *model.Endpoint) (err error) {
 			return err
 		}
 		//保存接口
-		err = r.saveInterfaces(endpoint.ID, endpoint.Path, endpoint.Version, endpoint.Interfaces)
+		err = r.saveInterfaces(endpoint.ID, endpoint.ProjectId, endpoint.Path, endpoint.Version, endpoint.Interfaces)
 		if err != nil {
 			return err
 		}
@@ -127,13 +129,31 @@ func (r *EndpointRepo) SaveAll(endpoint *model.Endpoint) (err error) {
 //保存终端信息
 func (r *EndpointRepo) saveEndpoint(endpoint *model.Endpoint) (err error) {
 	err = r.Save(endpoint.ID, endpoint)
+	if err != nil {
+		return
+	}
+
+	err = r.UpdateSerialNumber(endpoint.ID, uint(endpoint.ProjectId))
 	return
+}
+
+func (r *EndpointRepo) UpdateSerialNumber(id, projectId uint) (err error) {
+	var project model.Project
+	project, err = r.ProjectRepo.Get(projectId)
+	if err != nil {
+		return
+	}
+
+	err = r.DB.Model(&model.Endpoint{}).Where("id=?", id).Update("serial_number", project.ShortName+"I-"+strconv.Itoa(int(id))).Error
+	return
+
 }
 
 func (r *EndpointRepo) saveEndpointVersion(endpoint *model.Endpoint) (err error) {
 	if endpoint.Version == "" {
 		endpoint.Version = "v0.1.0"
 	}
+
 	endpointVersion := model.EndpointVersion{EndpointId: endpoint.ID, Version: endpoint.Version}
 	r.FindVersion(&endpointVersion)
 	if endpointVersion.ID == 0 {
@@ -142,6 +162,7 @@ func (r *EndpointRepo) saveEndpointVersion(endpoint *model.Endpoint) (err error)
 			endpoint.Version = endpointVersion.Version
 		}
 	}
+
 	return
 }
 
@@ -170,7 +191,7 @@ func (r *EndpointRepo) removeEndpointParams(endpointId uint) (err error) {
 }
 
 //保存接口信息
-func (r *EndpointRepo) saveInterfaces(endpointId uint, path, version string, interfaces []model.EndpointInterface) (err error) {
+func (r *EndpointRepo) saveInterfaces(endpointId, projectId uint, path, version string, interfaces []model.EndpointInterface) (err error) {
 	err = r.removeInterfaces(endpointId)
 	if err != nil {
 		return
@@ -179,6 +200,7 @@ func (r *EndpointRepo) saveInterfaces(endpointId uint, path, version string, int
 		item.EndpointId = endpointId
 		item.Version = version
 		item.Url = path
+		item.ProjectId = projectId
 		err = r.EndpointInterfaceRepo.SaveInterfaces(&item)
 		if err != nil {
 			return err

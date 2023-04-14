@@ -290,19 +290,23 @@ func (r *EnvironmentRepo) SaveVars(projectId, environmentId uint, environmentVar
 	if len(environmentVars) == 0 {
 		return
 	}
+
 	err = r.DB.Delete(&model.EnvironmentVar{}, "environment_id=? and project_id=?", environmentId, projectId).Error
 	if err != nil {
 		return err
 	}
+
 	for key, _ := range environmentVars {
 		environmentVars[key].ID = 0
 		environmentVars[key].EnvironmentId = environmentId
 		environmentVars[key].ProjectId = projectId
 	}
 	err = r.DB.Create(environmentVars).Error
+
 	if err != nil {
 		return err
 	}
+
 	return
 }
 

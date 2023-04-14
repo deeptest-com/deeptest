@@ -44,6 +44,7 @@ export interface StateType {
     securityList: any;
     selectServiceDetail: any;
     serveVersionsList: any;
+    activeEnvDetail: any;
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
@@ -58,6 +59,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setSecurityList: Mutation<StateType>,
         setServiceDetail: Mutation<StateType>,
         setVersionList: Mutation<StateType>,
+        setEnvDetail: Mutation<StateType>
     };
     actions: {
         // 环境-全局变量-全局参数相关
@@ -67,6 +69,9 @@ export interface ModuleType extends StoreModuleType<StateType> {
         addEnvData: Action<StateType, StateType>,
         deleteEnvData: Action<StateType, StateType>,
         copyEnvData: Action<StateType, StateType>,
+        setEnvDetail: Action<StateType, StateType>,
+        addEnvServe: Action<StateType, StateType>,
+        addEnvVar: Action<StateType, StateType>,
         getEnvironmentsParamList: Action<StateType, StateType>,
         getGlobalVarsList: Action<StateType, StateType>,
         saveEnvironmentsParam: Action<StateType, StateType>,
@@ -120,7 +125,13 @@ const initState: StateType = {
         description: '',
         serveId: ''
     },
-    serveVersionsList: []
+    serveVersionsList: [],
+    activeEnvDetail: {
+        displayName: "新建环境",
+        name: "",
+        serveServers: [],
+        vars: [],
+    }
 };
 
 const StoreModel: ModuleType = {
@@ -156,7 +167,11 @@ const StoreModel: ModuleType = {
         },
         setVersionList(state, payload) {
             state.serveVersionsList = payload;
+        },
+        setEnvDetail(state, payload) {
+            state.activeEnvDetail = payload;
         }
+
     },
     actions: {
         async getEnvsList({ commit }, { projectId }: EnvReqParams) {
@@ -266,33 +281,15 @@ const StoreModel: ModuleType = {
             }
         },
         async saveEnvironmentsParam({ state }, { projectId }: VarsReqParams) {
-            // 校验
-            try {
-                Object.keys(state.globalParamsData).forEach(key => {
-                    const hasEmptyParams = state.globalParamsData[key].some(e => e.name === '');
-                    if (hasEmptyParams) {
-                        throw Error('全局参数不能为空');
-                    }
-                });
-                const res = await saveEnvironmentsParam({ ...state.globalParamsData, projectId });
-                if (res.code === 0) {
-                    message.success('保存全局参数成功');
-                    return true;
-                } else {
-                    return false;
-                }
-            } catch (e: any) {
-                message.error(e.message);
+            const res = await saveEnvironmentsParam({ ...state.globalParamsData, projectId });
+            if (res.code === 0) {
+                message.success('保存全局参数成功');
+                return true;
+            } else {
                 return false;
             }
         },
         async saveGlobalVars({ state }) {
-            // 校验
-            const hasEmptyVarsData = state.globalVarsData.some((e: any) => e.name === '' || e.remoteValue === '' || e.localValue === '');
-            if (hasEmptyVarsData) {
-                message.error('全局变量/远程值/本地值不能为空');
-                return false;
-            }
             const res = await saveGlobalVars(state.globalVarsData);
             if (res.code === 0) {
                 message.success('保存全局变量成功');
@@ -520,6 +517,25 @@ const StoreModel: ModuleType = {
                 return true;
             }
             return false;
+        },
+        async setEnvDetail({ commit }, envData: any) {
+            const initEnvData = {
+                displayName: "新建环境",
+                name: "",
+                serveServers: [],
+                vars: []
+            };
+            commit('setEnvDetail', envData || initEnvData);
+        },
+        addEnvServe({ commit, state }, serveData: any) {
+            const newEnvDetail = JSON.parse(JSON.stringify(state.activeEnvDetail));
+            newEnvDetail.serveServers.push(serveData);
+            commit('setEnvDetail', newEnvDetail);
+        },
+        addEnvVar({ commit, state }, varData: any) {
+            const newEnvDetail = JSON.parse(JSON.stringify(state.activeEnvDetail));
+            newEnvDetail.vars.push(varData);
+            commit('setEnvDetail', newEnvDetail);
         }
     }
 };

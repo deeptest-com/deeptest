@@ -8,9 +8,9 @@
           :class="{disabled: !fieldValue}"/>&nbsp;
     </a-space>
   </div>
-  <div class="editor" v-else>
-    <span>{{ fieldValue || '什么都没写呢~' }}</span> &nbsp;
-    <EditOutlined @click.stop="isEditing = true"/>
+  <div :class="['editor', customClass]" v-else>
+    <span class="title" @click.stop="handleClick">{{ fieldValue || '暂无' }}</span> &nbsp;&nbsp;
+    <span class="edit-icon"><EditOutlined @click.stop="isEditing = true"/></span>
   </div>
 </template>
 <script lang="ts" setup>
@@ -34,9 +34,13 @@ const props = defineProps({
   placeholder: {
     required: true,
     type: String,
+  },
+  customClass: {
+    required: false,
+    type: String,
   }
 })
-const emit = defineEmits(['update']);
+const emit = defineEmits(['update', 'edit']);
 
 function updateField() {
   if (!fieldValue.value) {
@@ -51,10 +55,13 @@ function cancelEdit() {
   isEditing.value = false;
 }
 
+function handleClick() {
+  emit('edit');
+}
+
 watch(() => {
   return props.value
 }, (newVal) => {
-  console.log(newVal);
   fieldValue.value = newVal
 }, {
   immediate: true
@@ -66,6 +73,21 @@ watch(() => {
 .editor {
   display: flex;
   align-items: center;
+
+  &.custom-endpoint {
+    color: #447DFD;
+  }
+
+  &.show-on-hover {
+    .edit-icon {
+      display: none;
+    }
+    &:hover {
+      .edit-icon {
+        display: inline-block;
+      }
+    }
+  }
   .input {
     margin-right: 8px;
   }
@@ -76,6 +98,13 @@ watch(() => {
     .disabled {
       color: #00000040;
     }
+  }
+
+  .title {
+    cursor: pointer;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }
 

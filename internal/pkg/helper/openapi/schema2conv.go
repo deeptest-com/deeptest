@@ -1,9 +1,45 @@
 package openapi
 
 import (
+	"fmt"
+	"github.com/getkin/kin-openapi/jsoninfo"
 	"github.com/getkin/kin-openapi/openapi3"
 	"reflect"
 )
+
+type SchemaRef struct {
+	Ref   string
+	Value *Schema
+}
+
+type Schemas map[string]*SchemaRef
+
+type Schema struct {
+	openapi3.ExtensionProps
+	Type       string     `json:"type,omitempty" yaml:"type,omitempty"`
+	Items      *SchemaRef `json:"items,omitempty" yaml:"items,omitempty"`
+	Properties Schemas    `json:"properties,omitempty" yaml:"properties,omitempty"`
+}
+
+// MarshalJSON returns the JSON encoding of Schema.
+func (schema *Schema) MarshalJSON() ([]byte, error) {
+	return jsoninfo.MarshalStrictStruct(schema)
+}
+
+// UnmarshalJSON sets Schema to a copy of data.
+func (schema *Schema) UnmarshalJSON(data []byte) error {
+	return jsoninfo.UnmarshalStrictStruct(data, schema)
+}
+
+// MarshalJSON returns the JSON encoding of SchemaRef.
+func (value *SchemaRef) MarshalJSON() ([]byte, error) {
+	return jsoninfo.MarshalRef(value.Ref, value.Value)
+}
+
+// UnmarshalJSON sets SchemaRef to a copy of data.
+func (value *SchemaRef) UnmarshalJSON(data []byte) error {
+	return jsoninfo.UnmarshalRef(data, &value.Ref, &value.Value)
+}
 
 type schema2conv struct {
 }
@@ -45,11 +81,13 @@ func (s *schema2conv) Example2Schema(object interface{}, schema *openapi3.Schema
 	return
 }
 
-func (s *schema2conv) Schema2Example(schema openapi3.Schema) (object interface{}) {
+func (s *schema2conv) Schema2Example(schema Schema) (object interface{}) {
 	switch schema.Type {
 	case openapi3.TypeObject:
 		object = map[string]interface{}{}
+
 		for key, property := range schema.Properties {
+			fmt.Println(property, "+++++++")
 			object.(map[string]interface{})[key] = s.Schema2Example(*property.Value)
 		}
 

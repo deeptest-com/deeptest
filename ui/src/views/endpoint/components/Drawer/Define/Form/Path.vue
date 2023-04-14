@@ -12,16 +12,15 @@
           <template #addonBefore>
             <a-select
                 :options="serveServers"
-                v-model:value="currentEnvURL"
+                :value="currentServerId"
+                @change="changeServer"
                 placeholder="请选择环境"
-                style="width: 120px;text-align: left">
+                class="select-env">
               <template #notFoundContent>
-                <a-button type="link" @click="addEnv" class="add-env-btn">
-                  <PlusOutlined/>&nbsp;去新建
-                </a-button>
+                <a-button type="link" @click="addEnv" class="add-env-btn">新建</a-button>
               </template>
             </a-select>
-            <span v-if="currentEnvURL" style="width: 150px;display: inline-block" class="currentEnvURL">{{currentEnvURL || '---'}}</span>
+            <span v-if="currentEnvURL" class="current-env-url">{{ currentEnvURL || '---' }}</span>
           </template>
         </a-input>
         <a-button @click="addPathParams" class="path-param-header-btn">
@@ -69,8 +68,12 @@ const endpointDetail: any = computed<Endpoint>(() => store.state.Endpoint.endpoi
 const currentUser: any = computed<Endpoint>(() => store.state.User.currentUser);
 const serveServers: any = computed<Endpoint>(() => store.state.Endpoint.serveServers);
 
-const currentEnvURL = ref(serveServers?.value[0]?.value);
-
+const currentServerId = ref(endpointDetail?.value?.serverId || serveServers?.value[0]?.value || '');
+const currentEnvURL = computed(() => {
+  return serveServers.value?.find((item) => {
+    return currentServerId.value === item.id;
+  })?.url
+});
 
 // 是否折叠,默认展开
 const collapse = ref(true);
@@ -79,7 +82,15 @@ const collapse = ref(true);
  * 跳转去新建环境
  * */
 function addEnv() {
-  window.open(`/#/projectSetting/index?firtab=3&sectab=2&serveId=${endpointDetail.value.serveId}`, '_blank')
+  window.open(`/#/project-setting/enviroment/envdetail`, '_blank')
+}
+
+function changeServer(val) {
+  currentServerId.value = val;
+  endpointDetail.value.serverId = val;
+  store.commit('Endpoint/setEndpointDetail', {
+    ...endpointDetail.value,
+  })
 }
 
 /**
@@ -87,7 +98,10 @@ function addEnv() {
  * */
 function addPathParams() {
   collapse.value = true;
-  endpointDetail.value.pathParams.push(cloneByJSON(defaultPathParams));
+  endpointDetail.value.pathParams.push(cloneByJSON({
+    ...defaultPathParams,
+    name: 'path' + (endpointDetail.value.pathParams.length + 1)
+  }));
   store.commit('Endpoint/setEndpointDetail', {
     ...endpointDetail.value,
     pathParams: endpointDetail.value.pathParams
@@ -207,7 +221,10 @@ function updatePath(e) {
 
 .form-item {
   margin-bottom: 16px;
-  //align-items: baseline;
+
+  .form-label {
+    line-height: 26px;
+  }
 }
 
 .label-name {
@@ -218,26 +235,41 @@ function updatePath(e) {
   margin-top: 16px;
   //padding-top: 16px;
 }
-.path-param-header{
+
+.path-param-header {
   display: inline-block;
   overflow: hidden;
   width: 100%;
 }
-.path-param-header-input{
+
+.path-param-header-input {
   width: 85%;
 }
-.path-param-header-btn{
+
+.path-param-header-btn {
   width: 15%;
 }
 
 .form-label {
   font-weight: bold;
 }
+
+.select-env {
+  min-width: 100px;
+  text-align: left;
+  border-right: 1px solid #d9d9d9;
+}
+
+.current-env-url {
+  min-width: 120px;
+  padding-left: 16px;
+  display: inline-block
+}
 .add-env-btn{
-
+  width: 80px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
-.currentEnvURL{
-
-}
-
 </style>

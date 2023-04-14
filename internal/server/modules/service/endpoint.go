@@ -61,6 +61,7 @@ func (s *EndpointService) Develop(id uint) (err error) {
 func (s *EndpointService) Copy(id uint, version string) (res uint, err error) {
 	endpoint, _ := s.EndpointRepo.GetAll(id, version)
 	s.removeIds(&endpoint)
+	endpoint.Title += "_copy"
 	err = s.EndpointRepo.SaveAll(&endpoint)
 	return endpoint.ID, err
 }

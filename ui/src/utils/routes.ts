@@ -99,7 +99,8 @@ export const getRouteItem = (pathname: string, routesData: RoutesDataItem[]): Ro
       break;
     } else if (element.path.indexOf(':') > 0)  {
       const reg = new RegExp("((.+)(:[^/]+)(.*))","gmi");
-      const path = element.path.replace(reg,"$2.+$4")
+      let path = element.path.replace(reg,"$2.+$4")
+      path = path.replace('/.+', '(/.+)?');
       const pass = new RegExp(path).test(pathname)
 
       if (pass) {

@@ -4,8 +4,8 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
-	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/jinzhu/copier"
+	"strings"
 )
 
 type interfaces2debug struct {
@@ -27,7 +27,7 @@ func (i *interfaces2debug) Convert() (debugInterface *model.DebugInterface) {
 	debugInterface.BodyFormUrlencoded = i.BodyFormUrlencoded()
 	debugInterface.Body = i.Body()
 	debugInterface.BodyType = i.BodyType()
-	debugInterface.ApiKey, debugInterface.OAuth20, debugInterface.BearerToken, debugInterface.BasicAuth = i.security()
+	debugInterface.AuthorizationType, debugInterface.ApiKey, debugInterface.OAuth20, debugInterface.BearerToken, debugInterface.BasicAuth = i.security()
 
 	return
 }
@@ -41,10 +41,10 @@ func (i *interfaces2debug) BodyFormUrlencoded() (bodyFormUrlencoded []model.Debu
 }
 
 func (i *interfaces2debug) Body() (body string) {
-	var examples openapi3.Examples
+	var examples []map[string]string
 	_commUtils.JsonDecode(i.Inter.RequestBody.Examples, &examples)
 	for _, example := range examples {
-		return _commUtils.JsonEncode(example.Value)
+		return strings.ReplaceAll(example["content"], "\r\n", "")
 	}
 	return
 }
@@ -60,7 +60,7 @@ func (i *interfaces2debug) params() {
 
 }
 
-func (i *interfaces2debug) security() (apiKey model.DebugInterfaceApiKey, oAuth20 model.DebugInterfaceOAuth20, bearerToken model.DebugInterfaceBearerToken, basicAuth model.DebugInterfaceBasicAuth) {
+func (i *interfaces2debug) security() (authorizationType string, apiKey model.DebugInterfaceApiKey, oAuth20 model.DebugInterfaceOAuth20, bearerToken model.DebugInterfaceBearerToken, basicAuth model.DebugInterfaceBasicAuth) {
 	security := i.Inter.Security
 	var securityInfo model.ComponentSchemaSecurity
 	for _, item := range i.Serve.Securities {
@@ -72,6 +72,7 @@ func (i *interfaces2debug) security() (apiKey model.DebugInterfaceApiKey, oAuth2
 		}
 	}
 
+	authorizationType = securityInfo.Type
 	switch securityInfo.Type {
 	case "apiKey":
 		apiKey = i.apiKey(securityInfo)

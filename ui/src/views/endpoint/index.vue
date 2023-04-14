@@ -7,6 +7,15 @@
       <div class="right">
         <!--  头部搜索区域  -->
         <div class="top-action">
+          <a-form-item label="选择服务">
+            <a-select
+              v-model:value="currServe.id"
+              :bordered="true"
+              style="width: 280px;margin-left: 16px;"
+              @change="selectServe">
+              <a-select-option v-for="item in serves" :key="item.id" :value="item.id">{{ item.name }}</a-select-option>
+            </a-select>
+          </a-form-item>
           <a-button class="action-new" type="primary" :loading="loading"
                     @click="createApiModalVisible = true;">新建接口
           </a-button>
@@ -33,15 +42,12 @@
             :data-source="list">
           <template #colTitle="{text,record}">
             <div class="customTitleColRender">
-              <span>{{ text }}</span>
-              <span class="edit" @click="editEndpoint(record)">
-                <EditOutlined/>
-              </span>
+              <EditAndShowField :custom-class="'custom-endpoint show-on-hover'" :value="text" placeholder="请输入接口名称" @update="(e: string) => handleUpdateEndpoint(e, record)" @edit="editEndpoint(record)" />
             </div>
           </template>
 
           <template #colStatus="{record}">
-            <div class="customTitleColRender">
+            <div class="customStatusColRender">
               <a-select
                   :value="record?.status"
                   style="width: 100px"
@@ -57,7 +63,7 @@
           </template>
 
           <template #colPath="{text}">
-            <div class="customTitleColRender">
+            <div class="customPathColRender">
               <a-tag>{{ text }}</a-tag>
             </div>
           </template>
@@ -106,11 +112,9 @@ import {
 import debounce from "lodash.debounce";
 import EndpointTree from './list/tree.vue';
 import {ColumnProps} from 'ant-design-vue/es/table/interface';
-import {
-  EditOutlined,
-  MoreOutlined
-} from '@ant-design/icons-vue';
+import {MoreOutlined} from '@ant-design/icons-vue';
 import {endpointStatusOpts} from '@/config/constant';
+import EditAndShowField from '@/components/EditAndShow/index.vue';
 import CreateEndpointModal from './components/CreateEndpointModal.vue';
 import TableFilter from './components/TableFilter.vue';
 import Drawer from './components/Drawer/index.vue'
@@ -124,25 +128,24 @@ const store = useStore<{ Endpoint, ProjectGlobal, Debug: Debug, ServeGlobal: Ser
 
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const currServe = computed<any>(() => store.state.ServeGlobal.currServe);
+const serves = computed<any>(() => store.state.ServeGlobal.serves);
 const list = computed<Endpoint[]>(() => store.state.Endpoint.listResult.list);
 let pagination = computed<PaginationConfig>(() => store.state.Endpoint.listResult.pagination);
-
 const createApiModalVisible = ref(false);
 type Key = ColumnProps['key'];
-
-
 /**
  * 表格数据
  * */
 const columns = [
   {
-    title: '序号',
-    dataIndex: 'index',
+    title: '编号',
+    dataIndex: 'serialNumber',
   },
   {
     title: '接口名称',
     dataIndex: 'title',
     slots: {customRender: 'colTitle'},
+    width: 150,
   },
   {
     title: '状态',
@@ -189,6 +192,12 @@ async function handleChangeStatus(value: any, record: any,) {
     id:record.id,
     status: value
   });
+}
+
+async function handleUpdateEndpoint(value: string, record: any) {
+  await store.dispatch('Endpoint/updateEndpointDetail',
+      {...record, title: value}
+  );
 }
 
 async function editEndpoint(record) {
@@ -239,6 +248,11 @@ const loadList = debounce(async (currProjectId, page, size, opts?: any) => {
 
 async function handleTableFilter(filterState) {
   await loadList(currProject.value.id, pagination.value.current, pagination.value.pageSize, filterState);
+}
+
+const selectServe = (value): void => {
+  console.log('selectServe', value)
+  store.dispatch('ServeGlobal/changeServe', value);
 }
 
 // 实时监听项目切换，如果项目切换了则重新请求数据
@@ -329,6 +343,7 @@ async function refreshList() {
   height: 60px;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   margin-left: 16px;
   margin-top: 8px;
 
@@ -337,17 +352,16 @@ async function refreshList() {
   }
 }
 
-.action-btns {
-  display: flex;
+.customTitleColRender {
+  width: 150px;
 }
 
-.customTitleColRender {
-  display: flex;
+:deep(.top-action .ant-row.ant-form-item) {
+  margin: 0;
+}
 
-  .edit {
-    margin-left: 8px;
-    cursor: pointer;
-  }
+.action-btns {
+  display: flex;
 }
 
 .form-item-con {

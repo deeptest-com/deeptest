@@ -20,19 +20,19 @@ func (m *EndpointModule) Party() module.WebModule {
 	handler := func(public iris.Party) {
 		public.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
 
-		public.Post("/index", m.EndpointCtrl.Index)
-		public.Post("/save", m.EndpointCtrl.Save)
-		public.Get("/detail", m.EndpointCtrl.Detail)
-		public.Delete("/delete", m.EndpointCtrl.Delete)
-		public.Put("/expire", m.EndpointCtrl.Expire)
-		public.Put("/publish", m.EndpointCtrl.Publish)
-		public.Put("/develop", m.EndpointCtrl.Develop)
-		public.Get("/copy", m.EndpointCtrl.Copy)
-		public.Post("/yaml", m.EndpointCtrl.Yaml)
-		public.Put("/updateStatus", m.EndpointCtrl.UpdateStatus)
-		public.Delete("/batchDelete", m.EndpointCtrl.BatchDelete)
-		public.Post("/version/add", m.EndpointCtrl.AddVersion)
-		public.Get("/version/list", m.EndpointCtrl.ListVersions)
+		public.Post("/index", m.EndpointCtrl.Index).Name = "设计器列表"
+		public.Post("/save", m.EndpointCtrl.Save).Name = "保存设计器"
+		public.Get("/detail", m.EndpointCtrl.Detail).Name = "设计器详情"
+		public.Delete("/delete", m.EndpointCtrl.Delete).Name = "删除设计器"
+		public.Put("/expire", m.EndpointCtrl.Expire).Name = "禁用设计器"
+		public.Put("/publish", m.EndpointCtrl.Publish).Name = "发布设计器"
+		public.Put("/develop", m.EndpointCtrl.Develop).Name = "开发设计器"
+		public.Get("/copy", m.EndpointCtrl.Copy).Name = "复制设计器"
+		public.Post("/yaml", m.EndpointCtrl.Yaml).Name = "设计器信息转yaml"
+		public.Put("/updateStatus", m.EndpointCtrl.UpdateStatus).Name = "更新设计器状态"
+		public.Delete("/batchDelete", m.EndpointCtrl.BatchDelete).Name = "批量删除"
+		public.Post("/version/add", m.EndpointCtrl.AddVersion).Name = "添加版本"
+		public.Get("/version/list", m.EndpointCtrl.ListVersions).Name = "版本列表"
 	}
 	return module.NewModule("/endpoint", handler)
 }

@@ -35,6 +35,7 @@ type EndpointReq struct {
 	ID          int64           `json:"id"`
 	ProjectId   int64           `json:"projectId"`
 	ServeId     int64           `json:"serveId"`
+	ServerId    int64           `json:"serverId"`
 	Status      int64           `json:"status"`
 	Title       string          `json:"title" validate:"required"`
 	Path        string          `json:"path"`

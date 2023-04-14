@@ -34,15 +34,20 @@ import {Interface} from "@/views/interface1/data";
 import {UsedBy} from "@/utils/enum";
 import {StateType as ScenarioStateType} from "@/views/scenario/store";
 
-    const usedBy = inject('usedBy') as UsedBy
-    const {t} = useI18n();
+const usedBy = inject('usedBy') as UsedBy
+const {t} = useI18n();
 
 import {Param} from "@/views/component/debug/data";
 import {StateType as Debug} from "@/views/component/debug/store";
 const store = useStore<{  Debug: Debug }>();
 
 const debugData = computed<any>(() => store.state.Debug.debugData);
+const currInterface = computed<any>(() => store.state.Debug.currInterface);
+
 const invocationsData = computed<any[]>(() => store.state.Debug.invocationsData);
+
+store.dispatch('Debug/getLastInvocationResp', currInterface.value.id)
+store.dispatch('Debug/listInvocation', currInterface.value.id)
 
 const getRequestAsInterface = (id) => {store.dispatch('Debug/getInvocationAsInterface', id)}
 

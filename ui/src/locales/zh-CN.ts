@@ -29,6 +29,11 @@ export default {
     'endpoint': '接口管理',
     'interface1': '接口旧',
     'projectSetting': '项目设置', // 新版 接口模块
+    'projectSetting.datapool': '数据池',
+    'projectSetting.service': '服务管理',
+    'envsetting.var': '全局变量',
+    'envsetting.params': '全局参数',
+    'envsetting.envdetail': '环境详情',
     'scenario': '场景',
     'scenario.edit': '场景编辑',
     'scenario.design': '场景设计',
@@ -46,6 +51,10 @@ export default {
     'profile': '个人信息',
     'invite': '邀请用户',
     'message': '消息',
+
+    'user': '用户',
+    'user.management': '用户管理',
+    'user.list': '用户列表',
 
     'mock.oauth2.callback': 'OAuth2回调模拟',
 

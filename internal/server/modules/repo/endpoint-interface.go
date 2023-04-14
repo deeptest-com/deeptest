@@ -7,8 +7,9 @@ import (
 )
 
 type EndpointInterfaceRepo struct {
-	*BaseRepo `inject:""`
-	DB        *gorm.DB `inject:""`
+	*BaseRepo   `inject:""`
+	DB          *gorm.DB     `inject:""`
+	ProjectRepo *ProjectRepo `inject:""`
 }
 
 func (r *EndpointInterfaceRepo) ListByProject(projectId int) (pos []*model.EndpointInterface, err error) {

@@ -35,6 +35,7 @@ func (m *EnvironmentModule) Party() module.WebModule {
 			party.Put("/", m.EnvironmentCtrl.UpdateVar).Name = "更新环境变量"
 			party.Delete("/{id:uint}", m.EnvironmentCtrl.DeleteVar).Name = "删除环境变量"
 			party.Post("/clear", m.EnvironmentCtrl.ClearVar).Name = "清空环境变量"
+
 			party.Post("/global", m.EnvironmentCtrl.SaveGlobal).Name = "保存全局变量"
 			party.Get("/global", m.EnvironmentCtrl.ListGlobal).Name = "保存全局变量"
 		})

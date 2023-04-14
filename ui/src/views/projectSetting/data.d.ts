@@ -171,8 +171,8 @@ export interface EnvReturnData {
     showEnvDetail: (item: any, isAdd?: boolean) => void;
     addVar: () => void;
     addEnvData: () => void;
-    deleteEnvData: () => void;
-    copyEnvData: () => void;
+    deleteEnvData: (...arg: any) => void;
+    copyEnvData: (...arg: any) => void;
     handleEnvChange: (type: string, field: string, index: number, e: any, action?: string) => void;
     handleEnvNameChange: (e: any) => void;
 }

@@ -14,7 +14,8 @@ type UserReq struct {
 
 type UserReqPaginate struct {
 	_domain.PaginateReq
-	Name string `json:"name"`
+	Name     string `json:"name"`
+	UserName string `json:"userName"`
 }
 
 type MemberResp struct {

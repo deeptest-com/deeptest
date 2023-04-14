@@ -13,13 +13,13 @@ type InterfaceService struct {
 }
 
 func (s *InterfaceService) Run(req domain.InvocationReq) (ret v1.DebugResponse, err error) {
-	//单接口调试和多接口调试统一使用一套执行器表结构
-	interfaceProcessorExecReq := s.RemoteService.GetProcessorInterfaceToExec(req)
+
+	interfaceProcessorExecReq := s.RemoteService.GetInterfaceToExec(req)
 	agentExec.Environment = interfaceProcessorExecReq.Environment
 	agentExec.Variables = interfaceProcessorExecReq.Variables
 	agentExec.DatapoolData = interfaceProcessorExecReq.Datapools
 	ret, err = s.Request(interfaceProcessorExecReq)
-	err = s.RemoteService.SubmitProcessorInterfaceResult(req, ret, req.ServerUrl, req.Token)
+	err = s.RemoteService.SubmitInterfaceResult(req, ret, req.ServerUrl, req.Token)
 
 	/*
 		if req.UsedBy == consts.UsedByInterface {

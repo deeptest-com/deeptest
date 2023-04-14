@@ -9,8 +9,8 @@
     </a-space>
   </div>
   <div :class="['editor', customClass]" v-else>
-    <span class="title" @click.stop="handleClick">{{ fieldValue || '暂无' }}</span> &nbsp;
-    <EditOutlined @click.stop="isEditing = true"/>
+    <span class="title" @click.stop="handleClick">{{ fieldValue || '暂无' }}</span> &nbsp;&nbsp;
+    <span class="edit-icon"><EditOutlined @click.stop="isEditing = true"/></span>
   </div>
 </template>
 <script lang="ts" setup>
@@ -77,6 +77,17 @@ watch(() => {
   &.custom-endpoint {
     color: #447DFD;
   }
+
+  &.show-on-hover {
+    .edit-icon {
+      display: none;
+    }
+    &:hover {
+      .edit-icon {
+        display: inline-block;
+      }
+    }
+  }
   .input {
     margin-right: 8px;
   }
@@ -91,6 +102,9 @@ watch(() => {
 
   .title {
     cursor: pointer;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }
 

@@ -1,6 +1,5 @@
 <template>
   <div class="indexlayout-top-project">
-
     <a-select
         v-model:value="currProject.id"
         :bordered="true"
@@ -8,17 +7,6 @@
         @change="selectProject">
       <a-select-option v-for="item in projects" :key="item.id" :value="item.id">{{ item.name }}</a-select-option>
     </a-select>
-
-    <a-select
-        v-if="showServeSelect"
-        v-model:value="currServe.id"
-        :bordered="true"
-        style="width: 280px;margin-left: 16px;"
-        @change="selectServe">
-<!--      <a-select-option :key="0" :value="0">请选择</a-select-option>-->
-      <a-select-option v-for="item in serves" :key="item.id" :value="item.id">{{ item.name }}</a-select-option>
-    </a-select>
-
   </div>
 </template>
 
@@ -38,15 +26,8 @@ const store = useStore<{ User: UserStateType,
 const route = useRoute();  
 
 const message = computed<number>(() => store.state.User.message);
-
 const projects = computed<any>(() => store.state.ProjectGlobal.projects);
-const serves = computed<any>(() => store.state.ServeGlobal.serves);
-
-
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
-const currServe = computed<any>(() => store.state.ServeGlobal.currServe);
-
-const showServeSelect = ref<boolean>(true);
 
 store.dispatch("User/fetchMessage");
 store.dispatch("ProjectGlobal/fetchProject");
@@ -65,19 +46,4 @@ const selectProject = (value): void => {
   }
 }
 
-const selectServe = (value): void => {
-  console.log('selectServe', value)
-  store.dispatch('ServeGlobal/changeServe', value);
-}
-
-onMounted(() => {
-  showServeSelect.value = !route.path.includes('project-setting');
-}) 
-
-watch(
-  () => route.path,
-  (val: any) => {
-    showServeSelect.value = !val.includes('project-setting');
-  }
-)
 </script>

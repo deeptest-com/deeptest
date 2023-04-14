@@ -10,7 +10,7 @@
 
       <template #name="{ text, record }">
         <div class="serve-name">
-          <EditAndShowField placeholder="请输入服务名称" :value="text || ''" @update="(e: string) => handleUpdateName(e, record)" @edit="edit(record)"/>
+          <EditAndShowField :custom-class="'show-on-hover'" placeholder="请输入服务名称" :value="text || ''" @update="(e: string) => handleUpdateName(e, record)" @edit="edit(record)"/>
         </div>
       </template>
       <template #description="{ text }">
@@ -291,15 +291,7 @@ async function isHasProps() {
 }
 
 .serve-name {
-  display: flex;
-  align-items: center;
-
-  .serve-name-text {
-    max-width: 120px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
+  width: 120px;
 }
 
 .serve-description {

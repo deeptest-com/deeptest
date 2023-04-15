@@ -98,7 +98,7 @@ onUnmounted(() => {
 
 const resize = () => {
   resizeHeight('debug-form', 'top-panel', 'design-splitter-v', 'bottom-panel',
-      200, 100)
+      200, 360)
 }
 </script>
 
@@ -120,6 +120,7 @@ const resize = () => {
     flex-direction: column;
     position: relative;
     height: 100%;
+    max-height: 800px;
 
     #top-panel {
       height: 50%;
@@ -129,8 +130,7 @@ const resize = () => {
     }
 
     #bottom-panel {
-      height: 50%;
-      min-height: 100px;
+      height: 360px;
       width: 100%;
       padding: 4px;
       overflow: auto;

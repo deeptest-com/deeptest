@@ -18,7 +18,7 @@ type RemoteService struct {
 }
 
 // for interface invocation in both endpoint and scenario
-func (s *RemoteService) GetInterfaceToExec(req domain.InvocationReq) (ret v1.DebugRequest) {
+func (s *RemoteService) GetInterfaceToExec(req domain.InvokeCall) (ret v1.DebugRequest) {
 	url := fmt.Sprintf("debugs/loadData")
 	body, err := json.Marshal(req.Data)
 	if err != nil {
@@ -65,12 +65,12 @@ func (s *RemoteService) GetInterfaceToExec(req domain.InvocationReq) (ret v1.Deb
 
 	return
 }
-func (s *RemoteService) SubmitInterfaceResult(reqOjb domain.InvocationReq, repsObj v1.DebugResponse, serverUrl, token string) (err error) {
+func (s *RemoteService) SubmitInterfaceResult(reqObj v1.DebugRequest, respObj v1.DebugResponse, serverUrl, token string) (err error) {
 	url := fmt.Sprintf("debugs/submitResult")
 
 	data := v1.SubmitDebugResultRequest{
-		Request:  reqOjb.Data,
-		Response: repsObj,
+		Request:  reqObj,
+		Response: respObj,
 	}
 
 	bodyBytes, _ := json.Marshal(data)
@@ -108,7 +108,7 @@ func (s *RemoteService) SubmitInterfaceResult(reqOjb domain.InvocationReq, repsO
 }
 
 // for processor interface invocation
-//func (s *RemoteService) GetProcessorInterfaceToExec(req domain.InvocationReq) (ret v1.DebugRequest) {
+//func (s *RemoteService) GetProcessorInterfaceToExec(req domain.InvokeCall) (ret v1.DebugRequest) {
 //	url := fmt.Sprintf("processors/invocations/loadInterfaceExecData")
 //	body, err := json.Marshal(req.Data)
 //	if err != nil {
@@ -155,7 +155,7 @@ func (s *RemoteService) SubmitInterfaceResult(reqOjb domain.InvocationReq, repsO
 //
 //	return
 //}
-//func (s *RemoteService) SubmitProcessorInterfaceResult(reqOjb domain.InvocationReq, repsObj v1.DebugResponse, serverUrl, token string) (err error) {
+//func (s *RemoteService) SubmitProcessorInterfaceResult(reqOjb domain.InvokeCall, repsObj v1.DebugResponse, serverUrl, token string) (err error) {
 //	url := _httpUtils.AddSepIfNeeded(serverUrl) + fmt.Sprintf("processors/invocations/submitInterfaceInvokeResult")
 //
 //	data := v1.SubmitDebugResultRequest{

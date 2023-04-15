@@ -17,7 +17,7 @@ type DebugCtrl struct {
 
 // LoadData
 func (c *DebugCtrl) LoadData(ctx iris.Context) {
-	req := domain.DebugRequest{}
+	req := domain.DebugCall{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})

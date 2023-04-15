@@ -25,7 +25,6 @@ const useForm = Form.useForm;
 const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
 
-import {Param} from "@/views/component/debug/data";
 import {StateType as Debug} from "@/views/component/debug/store";
 const store = useStore<{  Debug: Debug }>();
 
@@ -38,12 +37,11 @@ const invokeInterface = async () => {
     serverUrl: process.env.VUE_APP_API_SERVER, // used by agent to submit result to server
     token: await getToken(),
     id: debugData.value.id,
-    // usedBy: usedBy,
+
     data: prepareDataForRequest(Object.assign({usedBy}, debugData.value)),
   }
 
-  usedBy === UsedBy.interface ? store.dispatch('Interface1/invokeInterface', data) :
-    store.dispatch('Scenario/invokeInterface', data)
+  store.dispatch('Debug/invokeInterface', data)
 };
 
 const saveInterface = (data) => {

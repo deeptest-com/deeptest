@@ -5,10 +5,16 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 )
 
+type DebugCall struct {
+	InterfaceId uint `gorm:"-" json:"interfaceId"`
+	EndpointId  uint `json:"endpointId"`
+}
+
 type DebugRequest struct {
 	InterfaceId uint `gorm:"-" json:"interfaceId"`
 	EndpointId  uint `json:"endpointId"`
 
+	BaseUrl         string                   `gorm:"-" json:"baseUrl"`
 	ShareVariables  []domain.ShareVars       `gorm:"-" json:"shareVars"`
 	EnvVars         []domain.EnvVars         `gorm:"-" json:"envVars"`
 	GlobalEnvVars   []domain.GlobalEnvVars   `gorm:"-" json:"globalEnvVars"`

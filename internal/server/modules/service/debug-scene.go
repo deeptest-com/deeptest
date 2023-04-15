@@ -4,7 +4,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
-	"path"
+	_httpUtils "github.com/aaronchen2k/deeptest/pkg/lib/http"
 )
 
 type DebugSceneService struct {
@@ -17,7 +17,7 @@ type DebugSceneService struct {
 }
 
 func (s *DebugSceneService) LoadScene(endpointId, InterfaceId uint, usedBy consts.UsedBy) (
-	url string, shareVariables []domain.ShareVars, envVars []domain.EnvVars,
+	baseUrl string, shareVariables []domain.ShareVars, envVars []domain.EnvVars,
 	globalEnvVars []domain.GlobalEnvVars, globalParamVars []domain.GlobalParamVars) {
 
 	endpoint, _ := s.EndpointRepo.Get(endpointId)
@@ -25,7 +25,7 @@ func (s *DebugSceneService) LoadScene(endpointId, InterfaceId uint, usedBy const
 	serverId := endpoint.ServerId
 
 	serveServer, _ := s.ServeServerRepo.Get(serverId)
-	url = path.Join(serveServer.Url, url)
+	baseUrl = _httpUtils.AddSepIfNeeded(serveServer.Url)
 	envId := serveServer.EnvironmentId
 
 	shareVariables, _ = s.VariableService.GetVariablesByInterface(InterfaceId, usedBy)

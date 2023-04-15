@@ -24,16 +24,16 @@ type DebugService struct {
 	EndpointService   *EndpointService   `inject:""`
 }
 
-func (s *DebugService) LoadData(req v1.DebugRequest) (ret v1.DebugRequest, err error) {
-	isInterfaceHasDebugRecord, err := s.DebugRepo.IsInterfaceHasDebug(req.InterfaceId)
+func (s *DebugService) LoadData(call v1.DebugCall) (req v1.DebugRequest, err error) {
+	isInterfaceHasDebugRecord, err := s.DebugRepo.IsInterfaceHasDebug(call.InterfaceId)
 
 	if isInterfaceHasDebugRecord {
-		ret, err = s.GetLastReq(req.InterfaceId)
+		req, err = s.GetLastReq(call.InterfaceId)
 	} else {
-		ret, err = s.EndpointService.GenerateReq(req.InterfaceId, req.EndpointId)
+		req, err = s.EndpointService.GenerateReq(call.InterfaceId, call.EndpointId)
 	}
 
-	ret.Url, ret.ShareVariables, ret.EnvVars, ret.GlobalEnvVars, ret.GlobalParamVars =
+	req.BaseUrl, req.ShareVariables, req.EnvVars, req.GlobalEnvVars, req.GlobalParamVars =
 		s.DebugSceneService.LoadScene(req.EndpointId, req.InterfaceId, req.UsedBy)
 
 	return

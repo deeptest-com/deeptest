@@ -200,16 +200,16 @@ const StoreModel: ModuleType = {
 
         async invokeInterface({commit, dispatch, state}, data: any) {
             const response = await invokeInterface(data)
-            // console.log('=invoke in interface=', response.data)
+            console.log('=invoke in interface=', response.data)
 
             if (response.code === 0) {
                 commit('setResponse', response.data);
 
-                dispatch('listInvocation', state.debugData.id);
-                dispatch('listValidExtractorVariableForInterface');
-
-                dispatch('listExtractor');
-                dispatch('listCheckpoint');
+                // dispatch('listInvocation', state.debugData.id);
+                // dispatch('listValidExtractorVariableForInterface');
+                //
+                // dispatch('listExtractor');
+                // dispatch('listCheckpoint');
 
                 return true;
             } else {

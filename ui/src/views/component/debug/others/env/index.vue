@@ -1,81 +1,22 @@
 <template>
   <div class="env-main">
-    <div class="head no-padding">
-      <div class="title dp-bg-white">
-        <div class="label ">选择环境</div>
-
-        <div class="content ">
-          <a-dropdown-button trigger="click" placement="bottomLeft" class="dp-dropdown">
-            <div class="name">
-              <a class="more dp-color-text">
-                <span v-if="environmentData.id">{{environmentData.name}}</span>
-              </a>
-            </div>
-
-            <template #icon><DownOutlined /></template>
-
-            <template #overlay>
-              <a-menu @click="select" class="select-env-menu">
-                <a-menu-item v-for="item in environmentsData" :key="item.id"
-                             :class="[{'dp-bg-selected-light':item.id === environmentData.id}]">
-                  <span class="menu-item-var">
-                    <span class="title">{{item.name}}</span>
-
-                    <span @click.stop="edit(item)" class="act"><EditOutlined /></span>
-                    <span @click.stop="remove(item)" class="act"><DeleteOutlined /></span>
-                    <span @click.stop="copy(item)" class="act"><CopyOutlined /></span>
-                  </span>
-                </a-menu-item>
-              </a-menu>
-            </template>
-          </a-dropdown-button>
-        </div>
-      </div>
-    </div>
-
     <div class="env-var">
-      <div class="head">
-        <div class="title">
-        <span @click="create" class="dp-link">
-          <a-tooltip overlayClassName="dp-tip-small">
-            <template #title>新建环境</template>
-            <PlusOutlined class="dp-icon-btn dp-trans-80"/>
-          </a-tooltip>
-        </span>
-        </div>
-        <div class="acts">
-          <a-tooltip overlayClassName="dp-tip-small">
-            <template #title>帮助</template>
-            <QuestionCircleOutlined class="dp-icon-btn dp-trans-80"/>
-          </a-tooltip>
-
-          <a-tooltip overlayClassName="dp-tip-small">
-            <template #title>导入/导出</template>
-            <ImportOutlined class="dp-icon-btn dp-trans-60" />
-          </a-tooltip>
-        </div>
-      </div>
       <div class="body">
         <div v-if="environmentData.id" class="envs">
           <div class="env header">
             <div class="left">
               环境变量
             </div>
-            <div class="right" style="width: 48px;">
-            <span @click="clearVar" class="dp-link">
-              <a-tooltip overlayClassName="dp-tip-small">
-                <template #title>清除变量</template>
-                <ClearOutlined class="dp-icon-btn dp-trans-80"/>
-              </a-tooltip>
-            </span>
-              <span @click="createVar" class="dp-link">
-              <a-tooltip overlayClassName="dp-tip-small">
-                <template #title>添加变量</template>
-                <PlusOutlined class="dp-icon-btn dp-trans-80"/>
-              </a-tooltip>
-            </span>
+            <div class="right">
+              <span class="dp-link">
+                <a-tooltip overlayClassName="dp-tip-small">
+                  <template #title>帮助</template>
+                  <QuestionCircleOutlined class="dp-icon-btn dp-trans-80"/>
+                </a-tooltip>
+              </span>
             </div>
           </div>
+
           <div v-for="(item, idx) in environmentData.vars" :key="idx" class="env">
             <div class="left">
               <div class="name">
@@ -169,22 +110,6 @@
       </div>
     </div>
 
-    <EnvEdit
-        v-if="envEditVisible"
-        :modelId="modelId"
-        :interfaceId="debugData.id"
-        :onFinish="envEditFinish"
-        :onCancel="envEditCancel"
-    />
-
-    <EnvVarEdit
-        v-if="envVarEditVisible"
-        :model="envVal"
-        :environmentId="environmentData.id"
-        :onFinish="envVarEditFinish"
-        :onCancel="envVarEditCancel"
-    />
-
   </div>
 </template>
 
@@ -194,20 +119,14 @@ import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import { QuestionCircleOutlined,ImportOutlined, MoreOutlined, ClearOutlined, PlusOutlined,
   DownOutlined, EditOutlined, DeleteOutlined, CopyOutlined } from '@ant-design/icons-vue';
-import {StateType as InterfaceStateType} from "@/views/interface1/store";
 import {StateType as EnvironmentStateType} from "@/store/environment";
 import Empty from "@/components/others/empty.vue";
-import {Interface} from "@/views/interface1/data";
-import EnvEdit from "./edit.vue";
-import EnvVarEdit from "./edit-var.vue"
 import {StateType as ProjectStateType} from "@/store/project";
 import {UsedBy} from "@/utils/enum";
-import {StateType as ScenarioStateType} from "@/views/scenario/store";
 const usedBy = inject('usedBy') as UsedBy
 
 const {t} = useI18n();
 
-import {Param} from "@/views/component/debug/data";
 import {StateType as Debug} from "@/views/component/debug/store";
 const store = useStore<{  Debug: Debug, ProjectGlobal: ProjectStateType, Environment: EnvironmentStateType }>();
 
@@ -410,7 +329,7 @@ const removeShareVar = (item) => {
             }
           }
           .right {
-            text-align: center;
+            text-align: right;
             width: 24px;
             .more {
               display: inline-block;

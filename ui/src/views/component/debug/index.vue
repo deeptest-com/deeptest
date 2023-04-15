@@ -23,17 +23,6 @@
           <RequestHistory v-if="tabKey==='history'"></RequestHistory>
         </a-tab-pane>
 
-        <a-tab-pane key="datapool">
-          <template #tab>
-            <a-tooltip placement="left" overlayClassName="dp-tip-small">
-              <template #title>数据池</template>
-              <TableOutlined />
-            </a-tooltip>
-          </template>
-
-          <Datapool v-if="tabKey==='datapool'"></Datapool>
-        </a-tab-pane>
-
       </a-tabs>
     </div>
   </div>
@@ -68,7 +57,7 @@ onMounted(() => {
 
 const resize = () => {
   resizeWidth('debug-index',
-      'debug-content', 'debug-splitter', 'debug-right', 500, 300)
+      'debug-content', 'debug-splitter', 'debug-right', 500, 260)
 }
 
 </script>
@@ -86,7 +75,7 @@ const resize = () => {
   }
 
   #debug-right {
-    width: 320px;
+    width: 260px;
     height: 100%;
   }
 

@@ -205,7 +205,7 @@ const StoreModel: ModuleType = {
             if (response.code === 0) {
                 commit('setResponse', response.data);
 
-                dispatch('listInvocation', state.debugData.id);
+                dispatch('listInvocation', state.currInterface.id);
                 dispatch('listValidExtractorVariableForInterface');
 
                 dispatch('listExtractor');

@@ -42,8 +42,8 @@ func (s *DebugService) LoadData(call v1.DebugCall) (req v1.DebugRequest, err err
 func (s *DebugService) SubmitResult(req v1.SubmitDebugResultRequest) (err error) {
 	processorInterface, _ := s.ProcessorInterfaceRepo.GetDetail(req.Response.Id)
 
-	s.ExtractorService.ExtractInterface(processorInterface.ID, req.Response, consts.UsedByScenario)
-	s.CheckpointService.CheckInterface(processorInterface.ID, req.Response, consts.UsedByScenario)
+	s.ExtractorService.ExtractInterface(processorInterface.ID, req.Response, consts.ScenarioDebug)
+	s.CheckpointService.CheckInterface(processorInterface.ID, req.Response, consts.ScenarioDebug)
 
 	_, err = s.CreateForScenarioInterface(req.Request, req.Response, processorInterface.ProjectId)
 

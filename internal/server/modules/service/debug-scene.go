@@ -28,7 +28,7 @@ func (s *DebugSceneService) LoadScene(endpointId, InterfaceId uint, usedBy const
 	baseUrl = _httpUtils.AddSepIfNeeded(serveServer.Url)
 	envId := serveServer.EnvironmentId
 
-	shareVariables, _ = s.VariableService.GetVariablesByInterface(InterfaceId, usedBy)
+	shareVariables, _ = s.VariableService.GetShareVarsByInterface(InterfaceId, usedBy)
 	envVars, _ = s.EnvironmentService.GetVarsByEnv(envId)
 
 	globalEnvVars, _ = s.EnvironmentService.GetGlobalVars(projectId)

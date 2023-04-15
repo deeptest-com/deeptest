@@ -38,8 +38,8 @@ func (s *InvocationInterfaceService) LoadInterfaceExecData(req v1.DebugRequest) 
 func (s *InvocationInterfaceService) SubmitInterfaceInvokeResult(req v1.SubmitDebugResultRequest) (err error) {
 	interf, _ := s.InterfaceRepo.GetDetail(req.Response.Id)
 
-	s.ExtractorService.ExtractInterface(interf.ID, req.Response, consts.UsedByInterface)
-	s.CheckpointService.CheckInterface(interf.ID, req.Response, consts.UsedByInterface)
+	s.ExtractorService.ExtractInterface(interf.ID, req.Response, consts.InterfaceDebug)
+	s.CheckpointService.CheckInterface(interf.ID, req.Response, consts.InterfaceDebug)
 
 	_, err = s.CreateForInterface(req.Request, req.Response, interf.ProjectId)
 
@@ -153,8 +153,8 @@ func (s *InvocationInterfaceService) ReplaceEnvironmentAndExtractorVariables(req
 
 	//interf, _ := s.InterfaceRepo.Get(req.InterfaceId)
 	//
-	//req.Environment, _ = s.VariableService.GetEnvironmentVariablesByInterface(req.InterfaceId, consts.UsedByInterface)
-	//req.Variables, _ = s.VariableService.GetVariablesByInterface(req.InterfaceId, consts.UsedByInterface)
+	//req.Environment, _ = s.VariableService.GetEnvVarsByInterface(req.InterfaceId, consts.InterfaceDebug)
+	//req.Variables, _ = s.VariableService.GetShareVarsByInterface(req.InterfaceId, consts.InterfaceDebug)
 	//req.Datapools, _ = s.DatapoolService.ListForExec(interf.ProjectId)
 
 	ret = req

@@ -255,8 +255,9 @@ func (e ProductStatus) String() string {
 type UsedBy string
 
 const (
-	UsedByInterface UsedBy = "interface"
-	UsedByScenario  UsedBy = "scenario"
+	InterfaceDebug UsedBy = "interface_debug"
+	ScenarioDebug  UsedBy = "scenario_debug"
+	ScenarioExec   UsedBy = "scenario_exec"
 )
 
 type ExtractorSrc string

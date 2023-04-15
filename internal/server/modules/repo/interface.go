@@ -379,7 +379,7 @@ func (r *InterfaceRepo) Delete(id uint) (err error) {
 		Update("deleted", true).
 		Error
 
-	//field := model.UsedByInterface{}
+	//field := model.InterfaceDebug{}
 	//field.ID = id
 	//err = r.DB.Delete(field).SendErrorMsg
 

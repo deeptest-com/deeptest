@@ -20,7 +20,7 @@ func (s *InterfaceService) Run(call domain.InvokeCall) (resp v1.DebugResponse, e
 	err = s.RemoteService.SubmitInterfaceResult(req, resp, call.ServerUrl, call.Token)
 
 	/*
-		if req.UsedBy == consts.UsedByInterface {
+		if req.UsedBy == consts.InterfaceDebug {
 			interfaceExecReq := s.RemoteService.GetInterfaceToExec(req)
 
 			agentExec.EnvVars = interfaceExecReq.EnvVars
@@ -30,7 +30,7 @@ func (s *InterfaceService) Run(call domain.InvokeCall) (resp v1.DebugResponse, e
 			resp, err = s.Request(interfaceExecReq)
 			err = s.RemoteService.SubmitInterfaceResult(req, resp, req.ServerUrl, req.Token)
 
-		} else if req.UsedBy == consts.UsedByScenario {
+		} else if req.UsedBy == consts.ScenarioDebug {
 			interfaceProcessorExecReq := s.RemoteService.GetProcessorInterfaceToExec(req)
 
 			agentExec.EnvVars = interfaceProcessorExecReq.EnvVars

@@ -194,7 +194,7 @@ func (s *EndpointService) GenerateReq(interfaceId, endpointId uint) (req v1.Debu
 	copier.CopyWithOption(&req, &debugInterface, copier.Option{DeepCopy: true})
 
 	req.InterfaceId = interfaceId
-	req.UsedBy = consts.UsedByInterface
+	req.UsedBy = consts.InterfaceDebug
 
 	return
 }

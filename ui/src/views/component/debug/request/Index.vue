@@ -33,48 +33,36 @@ const debugData = computed<any>(() => store.state.Debug.debugData);
 const invokeInterface = async () => {
   console.log('invokeInterface', debugData.value)
 
-  const data = {
+  // const reqData = prepareDataForRequest(Object.assign({usedBy}, debugData.value))
+  // await saveInterface(reqData)
+
+  const callData = {
     serverUrl: process.env.VUE_APP_API_SERVER, // used by agent to submit result to server
     token: await getToken(),
     id: debugData.value.id,
 
-    data: prepareDataForRequest(Object.assign({usedBy}, debugData.value)),
+    data: {
+      endpointId: debugData.value.endpointId,
+      interfaceId: debugData.value.interfaceId,
+      usedBy,
+    }
   }
-
-  store.dispatch('Debug/invokeInterface', data)
+  await store.dispatch('Debug/invokeInterface', callData)
 };
 
-const saveInterface = (data) => {
+const saveInterface = async (data) => {
   console.log('saveInterface', data)
-
-  if (usedBy === UsedBy.interface) {
-    store.dispatch('Interface1/saveInterface', data).then((res) => {
-      if (res === true) {
-        notification.success({
-          key: NotificationKeyCommon,
-          message: `保存成功`,
-        });
-      } else {
-        notification.success({
-          key: NotificationKeyCommon,
-          message: `保存失败`,
-        });
-      }
-    })
+  const res = await store.dispatch('Debug/save', data)
+  if (res === true) {
+    notification.success({
+      key: NotificationKeyCommon,
+      message: `保存成功`,
+    });
   } else {
-    store.dispatch('Scenario/saveInterface', data).then((res) => {
-      if (res === true) {
-        notification.success({
-          key: NotificationKeyCommon,
-          message: `保存成功`,
-        });
-      } else {
-        notification.success({
-          key: NotificationKeyCommon,
-          message: `保存失败`,
-        });
-      }
-    })
+    notification.success({
+      key: NotificationKeyCommon,
+      message: `保存失败`,
+    });
   }
 };
 

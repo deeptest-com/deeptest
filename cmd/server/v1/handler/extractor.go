@@ -94,7 +94,7 @@ func (c *ExtractorCtrl) CreateOrUpdateResult(ctx iris.Context) {
 		return
 	}
 
-	err = c.ExtractorService.CreateOrUpdateResult(&extractor, consts.UsedByInterface)
+	err = c.ExtractorService.CreateOrUpdateResult(&extractor, consts.InterfaceDebug)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: err.Error()})
 		return
@@ -147,7 +147,7 @@ func (c *ExtractorCtrl) ListValidExtractorVariableForInterface(ctx iris.Context)
 		return
 	}
 
-	data, err := c.ExtractorService.ListValidExtractorVariableForInterface(interfaceId, consts.UsedBy(usedBy))
+	data, err := c.ExtractorService.ListValidExtractorVarForInterface(interfaceId, consts.UsedBy(usedBy))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
 		return

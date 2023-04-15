@@ -205,11 +205,11 @@ const StoreModel: ModuleType = {
             if (response.code === 0) {
                 commit('setResponse', response.data);
 
-                // dispatch('listInvocation', state.debugData.id);
-                // dispatch('listValidExtractorVariableForInterface');
-                //
-                // dispatch('listExtractor');
-                // dispatch('listCheckpoint');
+                dispatch('listInvocation', state.debugData.id);
+                dispatch('listValidExtractorVariableForInterface');
+
+                dispatch('listExtractor');
+                dispatch('listCheckpoint');
 
                 return true;
             } else {

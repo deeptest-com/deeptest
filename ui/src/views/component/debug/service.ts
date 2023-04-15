@@ -67,7 +67,7 @@ export async function listInvocation(interfaceId: number): Promise<any> {
     const params = {interfaceId: interfaceId}
 
     return request({
-        url: `/${apiInvocation}`,
+        url: `/${apiPath}`,
         method: 'GET',
         params,
     });

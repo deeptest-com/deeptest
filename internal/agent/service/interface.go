@@ -13,11 +13,11 @@ type InterfaceService struct {
 }
 
 func (s *InterfaceService) Run(req domain.InvocationReq) (ret v1.DebugResponse, err error) {
-
 	interfaceProcessorExecReq := s.RemoteService.GetInterfaceToExec(req)
-	agentExec.Environment = interfaceProcessorExecReq.Environment
-	agentExec.Variables = interfaceProcessorExecReq.Variables
-	agentExec.DatapoolData = interfaceProcessorExecReq.Datapools
+	//agentExec.Environment = interfaceProcessorExecReq.Environment
+	//agentExec.Variables = interfaceProcessorExecReq.Variables
+	//agentExec.DatapoolData = interfaceProcessorExecReq.Datapools
+
 	ret, err = s.Request(interfaceProcessorExecReq)
 	err = s.RemoteService.SubmitInterfaceResult(req, ret, req.ServerUrl, req.Token)
 
@@ -25,8 +25,8 @@ func (s *InterfaceService) Run(req domain.InvocationReq) (ret v1.DebugResponse, 
 		if req.UsedBy == consts.UsedByInterface {
 			interfaceExecReq := s.RemoteService.GetInterfaceToExec(req)
 
-			agentExec.Environment = interfaceExecReq.Environment
-			agentExec.Variables = interfaceExecReq.Variables
+			agentExec.EnvVars = interfaceExecReq.EnvVars
+			agentExec.ShareVars = interfaceExecReq.ShareVars
 			agentExec.DatapoolData = interfaceExecReq.Datapools
 
 			ret, err = s.Request(interfaceExecReq)
@@ -35,8 +35,8 @@ func (s *InterfaceService) Run(req domain.InvocationReq) (ret v1.DebugResponse, 
 		} else if req.UsedBy == consts.UsedByScenario {
 			interfaceProcessorExecReq := s.RemoteService.GetProcessorInterfaceToExec(req)
 
-			agentExec.Environment = interfaceProcessorExecReq.Environment
-			agentExec.Variables = interfaceProcessorExecReq.Variables
+			agentExec.EnvVars = interfaceProcessorExecReq.EnvVars
+			agentExec.ShareVars = interfaceProcessorExecReq.ShareVars
 			agentExec.DatapoolData = interfaceProcessorExecReq.Datapools
 
 			ret, err = s.Request(interfaceProcessorExecReq)

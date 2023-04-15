@@ -4,6 +4,7 @@ import (
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	repo "github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 )
@@ -34,21 +35,21 @@ func (s *VariableService) GetEnvironmentVariablesByInterface(interfaceId uint, u
 	return
 }
 
-func (s *VariableService) GetVariablesByInterface(interfaceId uint, usedBy consts.UsedBy) (ret map[string]interface{}, err error) {
-	var projectId uint
+func (s *VariableService) GetVariablesByInterface(interfaceId uint, usedBy consts.UsedBy) (ret []domain.ShareVars, err error) {
+	//var projectId uint
+	//
+	//if usedBy == consts.UsedByInterface {
+	//	interf, _ := s.InterfaceRepo.Get(interfaceId)
+	//	projectId = interf.ProjectId
+	//} else {
+	//	interf, _ := s.ProcessorInterfaceRepo.Get(interfaceId)
+	//	projectId = interf.ProjectId
+	//}
+	//
+	//interfaceExtractorVariables, _ :=
+	//	s.ExtractorRepo.ListValidExtractorVariableForInterface(interfaceId, projectId, usedBy)
 
-	if usedBy == consts.UsedByInterface {
-		interf, _ := s.InterfaceRepo.Get(interfaceId)
-		projectId = interf.ProjectId
-	} else {
-		interf, _ := s.ProcessorInterfaceRepo.Get(interfaceId)
-		projectId = interf.ProjectId
-	}
-
-	interfaceExtractorVariables, _ :=
-		s.ExtractorRepo.ListValidExtractorVariableForInterface(interfaceId, projectId, usedBy)
-
-	ret = DealwithVariables(nil, interfaceExtractorVariables)
+	//ret = DealwithVariables(nil, interfaceExtractorVariables)
 
 	return
 }

@@ -3,6 +3,7 @@ package service
 import (
 	"errors"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	repo2 "github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"github.com/jinzhu/copier"
@@ -181,7 +182,7 @@ func (s *EnvironmentService) SaveGlobal(projectId uint, req []v1.EnvironmentVari
 }
 
 func (s *EnvironmentService) ListGlobal(projectId uint) (res []model.EnvironmentVar, err error) {
-	res, err = s.EnvironmentRepo.ListGlobal(projectId)
+	res, err = s.EnvironmentRepo.ListGlobalVar(projectId)
 	return
 }
 
@@ -220,4 +221,49 @@ func (s *EnvironmentService) ListParams(projectId uint) (res map[string]interfac
 
 func (s *EnvironmentService) SaveOrder(req v1.EnvironmentIdsReq) (err error) {
 	return s.EnvironmentRepo.SaveOrder(req)
+}
+
+func (s *EnvironmentService) GetVarsByEnv(envId uint) (ret []domain.EnvVars, err error) {
+	pos, _ := s.EnvironmentRepo.GetVars(envId)
+
+	for _, v := range pos {
+		ret = append(ret, domain.EnvVars{
+			"id":          v.ID,
+			"name":        v.Name,
+			"localValue":  v.LocalValue,
+			"remoteValue": v.RemoteValue,
+		})
+	}
+
+	return
+}
+func (s *EnvironmentService) GetGlobalVars(projectId uint) (ret []domain.GlobalEnvVars, err error) {
+	pos, _ := s.EnvironmentRepo.ListGlobalVar(projectId)
+
+	for _, v := range pos {
+		ret = append(ret, domain.GlobalEnvVars{
+			"id":          v.ID,
+			"name":        v.Name,
+			"localValue":  v.LocalValue,
+			"remoteValue": v.RemoteValue,
+		})
+	}
+
+	return
+}
+func (s *EnvironmentService) GetGlobalParams(projectId uint) (ret []domain.GlobalParamVars, err error) {
+	pos, _ := s.EnvironmentRepo.ListParamModel(projectId)
+
+	for _, v := range pos {
+		ret = append(ret, domain.GlobalParamVars{
+			"id":           v.ID,
+			"name":         v.Name,
+			"type":         v.Type,
+			"Required":     v.Required,
+			"defaultValue": v.DefaultValue,
+			"in":           v.In,
+		})
+	}
+
+	return
 }

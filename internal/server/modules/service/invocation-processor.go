@@ -74,11 +74,11 @@ func (s *InvocationProcessorService) CreateForScenarioInterface(req v1.DebugRequ
 func (s *InvocationProcessorService) ReplaceEnvironmentAndExtractorVariables(req v1.DebugRequest) (
 	ret v1.DebugRequest, err error) {
 
-	interf, _ := s.ProcessorInterfaceRepo.Get(req.InterfaceId)
-
-	req.Environment, _ = s.VariableService.GetEnvironmentVariablesByInterface(req.InterfaceId, req.UsedBy)
-	req.Variables, _ = s.VariableService.GetVariablesByInterface(req.InterfaceId, req.UsedBy)
-	req.Datapools, _ = s.DatapoolService.ListForExec(interf.ProjectId)
+	//interf, _ := s.ProcessorInterfaceRepo.Get(req.InterfaceId)
+	//
+	//req.Environment, _ = s.VariableService.GetEnvironmentVariablesByInterface(req.InterfaceId, req.UsedBy)
+	//req.Variables, _ = s.VariableService.GetVariablesByInterface(req.InterfaceId, req.UsedBy)
+	//req.Datapools, _ = s.DatapoolService.ListForExec(interf.ProjectId)
 
 	ret = req
 

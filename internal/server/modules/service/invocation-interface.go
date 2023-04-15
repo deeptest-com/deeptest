@@ -151,11 +151,11 @@ func (s *InvocationInterfaceService) CopyValueFromRequest(invocation *model.Invo
 func (s *InvocationInterfaceService) ReplaceEnvironmentAndExtractorVariables(req v1.DebugRequest) (
 	ret v1.DebugRequest, err error) {
 
-	interf, _ := s.InterfaceRepo.Get(req.InterfaceId)
-
-	req.Environment, _ = s.VariableService.GetEnvironmentVariablesByInterface(req.InterfaceId, consts.UsedByInterface)
-	req.Variables, _ = s.VariableService.GetVariablesByInterface(req.InterfaceId, consts.UsedByInterface)
-	req.Datapools, _ = s.DatapoolService.ListForExec(interf.ProjectId)
+	//interf, _ := s.InterfaceRepo.Get(req.InterfaceId)
+	//
+	//req.Environment, _ = s.VariableService.GetEnvironmentVariablesByInterface(req.InterfaceId, consts.UsedByInterface)
+	//req.Variables, _ = s.VariableService.GetVariablesByInterface(req.InterfaceId, consts.UsedByInterface)
+	//req.Datapools, _ = s.DatapoolService.ListForExec(interf.ProjectId)
 
 	ret = req
 

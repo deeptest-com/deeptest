@@ -133,7 +133,6 @@ async function save() {
   emit('close');
 }
 
-
 </script>
 <style lang="less" scoped>
 .drawer {

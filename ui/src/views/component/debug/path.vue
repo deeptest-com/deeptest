@@ -73,46 +73,6 @@ function changeServer(val) {
 }
 
 /**
- * 添加路径参数
- * */
-function addPathParams() {
-  collapse.value = true;
-  endpointDetail.value.pathParams.push(cloneByJSON({
-    ...defaultPathParams,
-    name: 'path' + (endpointDetail.value.pathParams.length + 1)
-  }));
-  store.commit('Endpoint/setEndpointDetail', {
-    ...endpointDetail.value,
-    pathParams: endpointDetail.value.pathParams
-  })
-  handleParamsLinkPath();
-}
-
-/**
- * 删除路径参数
- * */
-function deletePathParams(index) {
-  endpointDetail.value.pathParams.splice(index, 1);
-  store.commit('Endpoint/setEndpointDetail', {
-    ...endpointDetail.value,
-    pathParams: endpointDetail.value.pathParams
-  })
-  handleParamsLinkPath();
-}
-
-/**
- * 更新路径参数
- * */
-function handleChange(data) {
-  endpointDetail.value.pathParams[data.index] = data;
-  store.commit('Endpoint/setEndpointDetail', {
-    ...endpointDetail.value,
-    pathParams: endpointDetail.value.pathParams
-  })
-  handleParamsLinkPath();
-}
-
-/**
  * path 变动，联动 pathParams
  * */
 function handlePathLinkParams() {
@@ -190,7 +150,6 @@ function updatePath(e) {
   });
   handlePathLinkParams();
 }
-
 
 </script>
 <style lang="less" scoped>

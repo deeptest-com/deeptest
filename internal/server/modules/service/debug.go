@@ -7,20 +7,27 @@ import (
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"github.com/jinzhu/copier"
+	"path"
 	"time"
 )
 
 type DebugService struct {
-	DebugRepo                 *repo.DebugRepo              `inject:""`
-	DebugInterfaceRepo        *repo.InterfaceRepo          `inject:""`
-	ProcessorInterfaceRepo    *repo.ProcessorInterfaceRepo `inject:""`
-	InterfaceService          *InterfaceService            `inject:""`
-	ProcessorInterfaceService *ProcessorInterfaceService   `inject:""`
-	ExtractorService          *ExtractorService            `inject:""`
-	CheckpointService         *CheckpointService           `inject:""`
-	VariableService           *VariableService             `inject:""`
-	DatapoolService           *DatapoolService             `inject:""`
-	EndpointService           *EndpointService             `inject:""`
+	DebugRepo              *repo.DebugRepo              `inject:""`
+	DebugInterfaceRepo     *repo.InterfaceRepo          `inject:""`
+	ProcessorInterfaceRepo *repo.ProcessorInterfaceRepo `inject:""`
+	EndpointRepo           *repo.EndpointRepo           `inject:""`
+	ServeServerRepo        *repo.ServeServerRepo        `inject:""`
+	EnvironmentRepo        *repo.EnvironmentRepo        `inject:""`
+
+	EnvironmentService *EnvironmentService `inject:""`
+
+	InterfaceService          *InterfaceService          `inject:""`
+	ProcessorInterfaceService *ProcessorInterfaceService `inject:""`
+	ExtractorService          *ExtractorService          `inject:""`
+	CheckpointService         *CheckpointService         `inject:""`
+	VariableService           *VariableService           `inject:""`
+	DatapoolService           *DatapoolService           `inject:""`
+	EndpointService           *EndpointService           `inject:""`
 }
 
 func (s *DebugService) LoadData(req v1.DebugRequest) (ret v1.DebugRequest, err error) {
@@ -32,14 +39,27 @@ func (s *DebugService) LoadData(req v1.DebugRequest) (ret v1.DebugRequest, err e
 		req, err = s.EndpointService.GenerateReq(req.InterfaceId, req.EndpointId)
 	}
 
-	/*
-		err = s.ProcessorInterfaceService.UpdateByInvocation(req)
-		if err != nil {
-			return
-		}
-	*/
+	endpointId := req.EndpointId
+	InterfaceId := req.InterfaceId
 
-	ret, err = s.ReplaceEnvironmentAndExtractorVariables(req)
+	endpoint, _ := s.EndpointRepo.Get(endpointId)
+	projectId := endpoint.ProjectId
+	serverId := endpoint.ServerId
+
+	server, _ := s.ServeServerRepo.Get(serverId)
+	ret.Url = path.Join(server.Url, ret.Url)
+	envId := server.EnvironmentId
+
+	req.EnvVars, _ = s.EnvironmentService.GetVarsByEnv(envId)
+	req.ShareVariables, _ = s.VariableService.GetVariablesByInterface(InterfaceId, req.UsedBy)
+
+	req.GlobalEnvVars, _ = s.EnvironmentService.GetGlobalVars(projectId)
+	req.GlobalParamVars, _ = s.EnvironmentService.GetGlobalParams(projectId)
+
+	// interf, _ := s.ProcessorInterfaceRepo.Get(req.InterfaceId)
+	//req.Datapools, _ = s.DatapoolService.ListForExec(interf.ProjectId)
+
+	ret = req
 
 	return
 }
@@ -77,20 +97,6 @@ func (s *DebugService) CreateForScenarioInterface(req v1.DebugRequest,
 	invocation.RespContent = string(bytesReps)
 
 	err = s.DebugRepo.Save(&invocation)
-
-	return
-}
-
-func (s *DebugService) ReplaceEnvironmentAndExtractorVariables(req v1.DebugRequest) (
-	ret v1.DebugRequest, err error) {
-
-	interf, _ := s.ProcessorInterfaceRepo.Get(req.InterfaceId)
-
-	req.Environment, _ = s.VariableService.GetEnvironmentVariablesByInterface(req.InterfaceId, req.UsedBy)
-	req.Variables, _ = s.VariableService.GetVariablesByInterface(req.InterfaceId, req.UsedBy)
-	req.Datapools, _ = s.DatapoolService.ListForExec(interf.ProjectId)
-
-	ret = req
 
 	return
 }

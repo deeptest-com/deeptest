@@ -33,7 +33,8 @@ func (s *DebugService) LoadData(req v1.DebugRequest) (ret v1.DebugRequest, err e
 		ret, err = s.EndpointService.GenerateReq(req.InterfaceId, req.EndpointId)
 	}
 
-	s.DebugSceneService.LoadScene(&ret)
+	ret.Url, ret.ShareVariables, ret.EnvVars, ret.GlobalEnvVars, ret.GlobalParamVars =
+		s.DebugSceneService.LoadScene(req.EndpointId, req.InterfaceId, req.UsedBy)
 
 	return
 }

@@ -1,7 +1,8 @@
 package service
 
 import (
-	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"path"
 )
@@ -15,24 +16,23 @@ type DebugSceneService struct {
 	VariableService    *VariableService    `inject:""`
 }
 
-func (s *DebugSceneService) LoadScene(req *v1.DebugRequest) (err error) {
-
-	endpointId := req.EndpointId
-	InterfaceId := req.InterfaceId
+func (s *DebugSceneService) LoadScene(endpointId, InterfaceId uint, usedBy consts.UsedBy) (
+	url string, shareVariables []domain.ShareVars, envVars []domain.EnvVars,
+	globalEnvVars []domain.GlobalEnvVars, globalParamVars []domain.GlobalParamVars) {
 
 	endpoint, _ := s.EndpointRepo.Get(endpointId)
 	projectId := endpoint.ProjectId
 	serverId := endpoint.ServerId
 
-	server, _ := s.ServeServerRepo.Get(serverId)
-	req.Url = path.Join(server.Url, req.Url)
-	envId := server.EnvironmentId
+	serveServer, _ := s.ServeServerRepo.Get(serverId)
+	url = path.Join(serveServer.Url, url)
+	envId := serveServer.EnvironmentId
 
-	req.EnvVars, _ = s.EnvironmentService.GetVarsByEnv(envId)
-	req.ShareVariables, _ = s.VariableService.GetVariablesByInterface(InterfaceId, req.UsedBy)
+	shareVariables, _ = s.VariableService.GetVariablesByInterface(InterfaceId, usedBy)
+	envVars, _ = s.EnvironmentService.GetVarsByEnv(envId)
 
-	req.GlobalEnvVars, _ = s.EnvironmentService.GetGlobalVars(projectId)
-	req.GlobalParamVars, _ = s.EnvironmentService.GetGlobalParams(projectId)
+	globalEnvVars, _ = s.EnvironmentService.GetGlobalVars(projectId)
+	globalParamVars, _ = s.EnvironmentService.GetGlobalParams(projectId)
 
 	// interf, _ := s.ProcessorInterfaceRepo.Get(req.InterfaceId)
 	//req.Datapools, _ = s.DatapoolService.ListForExec(interf.ProjectId)

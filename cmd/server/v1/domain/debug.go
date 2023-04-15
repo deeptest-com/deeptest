@@ -9,8 +9,8 @@ type DebugRequest struct {
 	InterfaceId uint `gorm:"-" json:"interfaceId"`
 	EndpointId  uint `json:"endpointId"`
 
-	EnvVars         []domain.EnvVars         `gorm:"-" json:"envVars"`
 	ShareVariables  []domain.ShareVars       `gorm:"-" json:"shareVars"`
+	EnvVars         []domain.EnvVars         `gorm:"-" json:"envVars"`
 	GlobalEnvVars   []domain.GlobalEnvVars   `gorm:"-" json:"globalEnvVars"`
 	GlobalParamVars []domain.GlobalParamVars `gorm:"-" json:"globalParamVars"`
 

@@ -7,7 +7,6 @@ import (
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"github.com/jinzhu/copier"
-	"path"
 	"time"
 )
 
@@ -15,51 +14,26 @@ type DebugService struct {
 	DebugRepo              *repo.DebugRepo              `inject:""`
 	DebugInterfaceRepo     *repo.InterfaceRepo          `inject:""`
 	ProcessorInterfaceRepo *repo.ProcessorInterfaceRepo `inject:""`
-	EndpointRepo           *repo.EndpointRepo           `inject:""`
-	ServeServerRepo        *repo.ServeServerRepo        `inject:""`
-	EnvironmentRepo        *repo.EnvironmentRepo        `inject:""`
 
-	EnvironmentService *EnvironmentService `inject:""`
+	DebugSceneService *DebugSceneService `inject:""`
 
-	InterfaceService          *InterfaceService          `inject:""`
-	ProcessorInterfaceService *ProcessorInterfaceService `inject:""`
-	ExtractorService          *ExtractorService          `inject:""`
-	CheckpointService         *CheckpointService         `inject:""`
-	VariableService           *VariableService           `inject:""`
-	DatapoolService           *DatapoolService           `inject:""`
-	EndpointService           *EndpointService           `inject:""`
+	ExtractorService  *ExtractorService  `inject:""`
+	CheckpointService *CheckpointService `inject:""`
+	VariableService   *VariableService   `inject:""`
+	DatapoolService   *DatapoolService   `inject:""`
+	EndpointService   *EndpointService   `inject:""`
 }
 
 func (s *DebugService) LoadData(req v1.DebugRequest) (ret v1.DebugRequest, err error) {
 	isInterfaceHasDebugRecord, err := s.DebugRepo.IsInterfaceHasDebug(req.InterfaceId)
 
 	if isInterfaceHasDebugRecord {
-		req, err = s.GetLastReq(req.InterfaceId)
+		ret, err = s.GetLastReq(req.InterfaceId)
 	} else {
-		req, err = s.EndpointService.GenerateReq(req.InterfaceId, req.EndpointId)
+		ret, err = s.EndpointService.GenerateReq(req.InterfaceId, req.EndpointId)
 	}
 
-	endpointId := req.EndpointId
-	InterfaceId := req.InterfaceId
-
-	endpoint, _ := s.EndpointRepo.Get(endpointId)
-	projectId := endpoint.ProjectId
-	serverId := endpoint.ServerId
-
-	server, _ := s.ServeServerRepo.Get(serverId)
-	ret.Url = path.Join(server.Url, ret.Url)
-	envId := server.EnvironmentId
-
-	req.EnvVars, _ = s.EnvironmentService.GetVarsByEnv(envId)
-	req.ShareVariables, _ = s.VariableService.GetVariablesByInterface(InterfaceId, req.UsedBy)
-
-	req.GlobalEnvVars, _ = s.EnvironmentService.GetGlobalVars(projectId)
-	req.GlobalParamVars, _ = s.EnvironmentService.GetGlobalParams(projectId)
-
-	// interf, _ := s.ProcessorInterfaceRepo.Get(req.InterfaceId)
-	//req.Datapools, _ = s.DatapoolService.ListForExec(interf.ProjectId)
-
-	ret = req
+	s.DebugSceneService.LoadScene(&ret)
 
 	return
 }

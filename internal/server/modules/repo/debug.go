@@ -47,6 +47,7 @@ func (r *DebugRepo) GetLast(interfaceId uint) (debug model.Debug, err error) {
 		Where("NOT deleted").
 		Order("created_at DESC").
 		First(&debug).Error
+
 	return
 }
 

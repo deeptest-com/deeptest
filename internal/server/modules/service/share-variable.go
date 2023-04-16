@@ -2,6 +2,7 @@ package service
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	repo "github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 )
@@ -33,12 +34,22 @@ func (s *ShareVarService) Save(name, value string, interfaceId, serveId, scenari
 	return
 }
 
-func (s *ShareVarService) ListByInterfaceDebug(serveId uint) (pos []model.ShareVariable, err error) {
-	pos, err = s.ShareVariableRepo.ListByInterfaceDebug(serveId)
-	return
-}
+func (s *ShareVarService) ListForDebug(serveId, scenarioId uint, usedBy consts.UsedBy) (ret []domain.ShareVars, err error) {
+	var pos []model.ShareVariable
 
-func (s *ShareVarService) ListByScenarioDebug(scenarioId uint) (pos []model.ShareVariable, err error) {
-	pos, err = s.ShareVariableRepo.ListByScenarioDebug(scenarioId)
+	if usedBy == consts.InterfaceDebug {
+		pos, err = s.ShareVariableRepo.ListByInterfaceDebug(serveId)
+	} else if usedBy == consts.ScenarioDebug {
+		pos, err = s.ShareVariableRepo.ListByScenarioDebug(scenarioId)
+	}
+
+	for _, po := range pos {
+		ret = append(ret, domain.ShareVars{
+			"id":    po.ID,
+			"name":  po.Name,
+			"value": po.Value,
+		})
+	}
+
 	return
 }

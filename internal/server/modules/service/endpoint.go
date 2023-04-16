@@ -28,7 +28,6 @@ func (s *EndpointService) Paginate(req v1.EndpointReqPaginate) (ret _domain.Page
 }
 
 func (s *EndpointService) Save(endpoint model.Endpoint) (res uint, err error) {
-	//fmt.Println(_commUtils.JsonEncode(endpoint), "++++++", _commUtils.JsonEncode(req))
 	err = s.EndpointRepo.SaveAll(&endpoint)
 	return endpoint.ID, err
 }

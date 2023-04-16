@@ -8,27 +8,40 @@ import (
 )
 
 type DebugSceneService struct {
-	EndpointRepo    *repo.EndpointRepo    `inject:""`
-	ServeServerRepo *repo.ServeServerRepo `inject:""`
-	EnvironmentRepo *repo.EnvironmentRepo `inject:""`
+	EndpointInterfaceRepo *repo.EndpointInterfaceRepo `inject:""`
+	EndpointRepo          *repo.EndpointRepo          `inject:""`
+	ServeServerRepo       *repo.ServeServerRepo       `inject:""`
+	ScenarioProcessorRepo *repo.ScenarioProcessorRepo `inject:""`
+	EnvironmentRepo       *repo.EnvironmentRepo       `inject:""`
+
+	ShareVarService *ShareVarService `inject:""`
 
 	EnvironmentService *EnvironmentService `inject:""`
-	VariableService    *VariableService    `inject:""`
 }
 
-func (s *DebugSceneService) LoadScene(endpointId, InterfaceId uint, usedBy consts.UsedBy) (
+func (s *DebugSceneService) LoadScene(interfaceId, endpointId, processorId uint, usedBy consts.UsedBy) (
 	baseUrl string, shareVariables []domain.ShareVars, envVars []domain.EnvVars,
 	globalEnvVars []domain.GlobalEnvVars, globalParamVars []domain.GlobalParamVars) {
 
-	endpoint, _ := s.EndpointRepo.Get(endpointId)
-	projectId := endpoint.ProjectId
-	serverId := endpoint.ServerId
+	var serveId, serverId, scenarioId, projectId uint
+
+	interf, _ := s.EndpointInterfaceRepo.Get(interfaceId)
+	endpoint, _ := s.EndpointRepo.Get(interf.EndpointId)
+	serveId = endpoint.ServeId
+	serverId = endpoint.ServerId
+	projectId = endpoint.ProjectId
 
 	serveServer, _ := s.ServeServerRepo.Get(serverId)
 	baseUrl = _httpUtils.AddSepIfNeeded(serveServer.Url)
 	envId := serveServer.EnvironmentId
 
-	shareVariables, _ = s.VariableService.GetShareVarsByInterface(InterfaceId, usedBy)
+	// by scenario
+	if usedBy == consts.ScenarioDebug {
+		processor, _ := s.ScenarioProcessorRepo.Get(processorId)
+		scenarioId = processor.ScenarioId
+	}
+
+	shareVariables, _ = s.ShareVarService.ListForDebug(serveId, scenarioId, usedBy)
 	envVars, _ = s.EnvironmentService.GetVarsByEnv(envId)
 
 	globalEnvVars, _ = s.EnvironmentService.GetGlobalVars(projectId)

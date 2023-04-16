@@ -103,8 +103,8 @@ func (s *DebugService) ListByInterface(interfId int) (invocations []model.Debug,
 	return
 }
 
-func (s *DebugService) GetLastResp(interfId uint) (resp v1.DebugResponse, err error) {
-	invocation, _ := s.DebugRepo.GetLast(interfId)
+func (s *DebugService) GetLastResp(interfaceId uint) (resp v1.DebugResponse, err error) {
+	invocation, _ := s.DebugRepo.GetLast(interfaceId)
 	if invocation.ID > 0 {
 		json.Unmarshal([]byte(invocation.RespContent), &resp)
 	} else {

@@ -86,13 +86,13 @@ func (c *DebugCtrl) Get(ctx iris.Context) {
 
 // GetLastResp
 func (c *DebugCtrl) GetLastResp(ctx iris.Context) {
-	id, err := ctx.URLParamInt("id")
+	interfaceId, err := ctx.URLParamInt("interfaceId")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
 		return
 	}
 
-	resp, err := c.DebugService.GetLastResp(uint(id))
+	resp, err := c.DebugService.GetLastResp(uint(interfaceId))
 
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: _domain.SystemErr.Msg})

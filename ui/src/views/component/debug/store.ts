@@ -198,6 +198,7 @@ const StoreModel: ModuleType = {
             commit('setInterface', payload);
         },
 
+        // invocation
         async invokeInterface({commit, dispatch, state}, data: any) {
             const response = await invokeInterface(data)
             console.log('=invoke in interface=', response.data)
@@ -217,17 +218,6 @@ const StoreModel: ModuleType = {
             }
         },
 
-        async getLastInvocationResp({commit, dispatch, state}, id: number) {
-            const response = await getLastInvocationResp(id);
-            // console.log('=getLastInvocationResp=', response.data)
-
-            const {data} = response;
-
-            commit('setResponse', data);
-            return true;
-        },
-
-        // invocation
         async listInvocation({commit}, interfaceId: number) {
             try {
                 const resp = await listInvocation(interfaceId);
@@ -237,6 +227,15 @@ const StoreModel: ModuleType = {
             } catch (error) {
                 return false;
             }
+        },
+        async getLastInvocationResp({commit, dispatch, state}, interfaceId: number) {
+            const response = await getLastInvocationResp(interfaceId);
+            // console.log('=getLastInvocationResp=', response.data)
+
+            const {data} = response;
+
+            commit('setResponse', data);
+            return true;
         },
         async getInvocationAsInterface({commit}, id: number) {
             try {

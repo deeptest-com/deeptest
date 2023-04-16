@@ -33,8 +33,8 @@ export async function get(id: number): Promise<any> {
     return request({url: `/${apiPath}/${id}`});
 }
 
-export async function getLastInvocationResp(id: number): Promise<any> {
-    const params = {id : id}
+export async function getLastInvocationResp(interfaceId: number): Promise<any> {
+    const params = {interfaceId}
     return request({
         url: `/${apiPath}/getLastResp`,
         params
@@ -64,7 +64,7 @@ export async function invokeInterface(data): Promise<any> {
 }
 
 export async function listInvocation(interfaceId: number): Promise<any> {
-    const params = {interfaceId: interfaceId}
+    const params = {interfaceId}
 
     return request({
         url: `/${apiPath}`,

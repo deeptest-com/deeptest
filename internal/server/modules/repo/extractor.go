@@ -179,7 +179,7 @@ func (r *ExtractorRepo) ListValidExtractorVariableForInterface(interfaceId, proj
 		r.GetParentIds(processorInterface.ProcessorId, &parentIds)
 
 		q.Where("scenario_id=?", processorInterface.ScenarioId).
-			Where("scope = ? OR processor_id IN(?)", consts.Global, parentIds)
+			Where("scope = ? OR processor_id IN(?)", consts.Public, parentIds)
 	}
 
 	err = q.Order("created_at ASC").

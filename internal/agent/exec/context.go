@@ -41,8 +41,7 @@ func ListCachedVariable(processorId uint) (variables []domain.ExecVariable) {
 
 	for _, id := range *effectiveScopeIds {
 		for _, vari := range ScopedVariables[id] {
-			if vari.Scope == consts.Global || vari.Scope == consts.Local ||
-				(vari.Scope == consts.Private && id == processorId) {
+			if vari.Scope == consts.Public || (vari.Scope == consts.Private && id == processorId) {
 
 				variables = append(variables, vari)
 			}

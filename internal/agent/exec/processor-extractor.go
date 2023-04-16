@@ -73,7 +73,7 @@ func (entity ProcessorExtractor) Run(processor *Processor, session *Session) (er
 		return
 	}
 
-	SetVariable(processor.ParentId, entity.Variable, entity.Result, consts.Local) // set in parent scope
+	SetVariable(processor.ParentId, entity.Variable, entity.Result, consts.Public) // set in parent scope
 
 	processor.Result.Summary = fmt.Sprintf("将结果\"%v\"赋予变量\"%s\"。", entity.Result, entity.Variable)
 	processor.AddResultToParent()

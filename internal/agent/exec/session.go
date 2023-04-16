@@ -28,7 +28,7 @@ func NewSession(req *ScenarioExecObj, failfast bool, wsMsg *websocket.Message) (
 	root := req.RootProcessor
 	variables := req.Variables
 
-	ImportVariables(root.ID, variables, consts.Global)
+	ImportVariables(root.ID, variables, consts.Public)
 
 	session := Session{
 		ScenarioId:    root.ScenarioId,

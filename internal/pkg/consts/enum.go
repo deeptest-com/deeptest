@@ -291,9 +291,8 @@ const (
 type ExtractorScope string
 
 const (
-	Private ExtractorScope = "private"
-	Local   ExtractorScope = "local"
-	Global  ExtractorScope = "global"
+	Private ExtractorScope = "private" // in current interface
+	Public  ExtractorScope = "public"  // shared by other interfaces in serve OR scenario
 )
 
 type ComparisonOperator string

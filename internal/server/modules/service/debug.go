@@ -58,7 +58,7 @@ func (s *DebugService) SubmitResult(req v1.SubmitDebugResultRequest) (err error)
 		projectId = scenario.ProjectId
 	}
 
-	s.ExtractorService.ExtractInterface(req.Request.InterfaceId, req.Response, usedBy)
+	s.ExtractorService.ExtractInterface(req.Request.InterfaceId, serveId, req.Response, usedBy)
 	s.CheckpointService.CheckInterface(req.Request.InterfaceId, req.Response, usedBy)
 
 	_, err = s.Create(req.Request, req.Response, serveId, processorId, scenarioId, projectId)

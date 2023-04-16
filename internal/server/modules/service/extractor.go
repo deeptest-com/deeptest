@@ -4,7 +4,6 @@ import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/query"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
@@ -15,6 +14,8 @@ import (
 type ExtractorService struct {
 	ExtractorRepo *repo.ExtractorRepo `inject:""`
 	InterfaceRepo *repo.InterfaceRepo `inject:""`
+
+	ShareVarService *ShareVarService `inject:""`
 }
 
 func (s *ExtractorService) List(interfaceId uint, usedBy consts.UsedBy) (extractors []model.InterfaceExtractor, err error) {
@@ -53,27 +54,26 @@ func (s *ExtractorService) Delete(reqId uint) (err error) {
 	return
 }
 
-func (s *ExtractorService) ExtractInterface(interfaceId uint, resp v1.DebugResponse,
-	usedBy consts.UsedBy) (logExtractors []domain.ExecInterfaceExtractor, err error) {
-
+func (s *ExtractorService) ExtractInterface(interfaceId, serveId uint, resp v1.DebugResponse, usedBy consts.UsedBy) (err error) {
 	extractors, _ := s.ExtractorRepo.List(interfaceId, usedBy)
 
 	for _, extractor := range extractors {
-		s.Extract(extractor, resp, usedBy)
+		s.Extract(&extractor, resp, usedBy)
+		s.ShareVarService.Save(extractor.Key, extractor.Result, interfaceId, serveId, extractor.ScenarioId, extractor.Scope)
 	}
 
 	return
 }
 
-func (s *ExtractorService) Extract(extractor model.InterfaceExtractor, resp v1.DebugResponse,
-	usedBy consts.UsedBy) (logExtractor model.ExecLogExtractor, err error) {
+func (s *ExtractorService) Extract(extractor *model.InterfaceExtractor, resp v1.DebugResponse,
+	usedBy consts.UsedBy) (err error) {
 
-	err = s.ExtractValue(&extractor, resp)
+	err = s.ExtractValue(extractor, resp)
 	if err != nil {
 		return
 	}
 
-	s.ExtractorRepo.UpdateResult(extractor, usedBy)
+	s.ExtractorRepo.UpdateResult(*extractor, usedBy)
 
 	return
 }

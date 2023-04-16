@@ -11,7 +11,7 @@ const apiInvocation = 'invocations';
 const apiAuth = 'auth';
 const apiEnvironment = 'environments'
 const apiEnvironmentVar = `${apiEnvironment}/vars`
-const apiShareVar = `${apiEnvironment}/shareVars`
+const apiShareVar = `shareVars`
 const apiSnippets = 'snippets'
 
 const apiExtractor = 'extractors'
@@ -220,12 +220,11 @@ export async function listExtractorVariable(interfaceId: number): Promise<any> {
         params,
     });
 }
-export async function listValidExtractorVariableForInterface(interfaceId: number, usedBy: UsedBy): Promise<any> {
-    const params = {interfaceId, usedBy}
+export async function listShareVar(data: any, usedBy: UsedBy): Promise<any> {
     return request({
-        url: `/${apiExtractor}/listValidExtractorVariableForInterface`,
-        method: 'GET',
-        params,
+        url: `/${apiShareVar}/list`,
+        method: 'POST',
+        data,
     });
 }
 

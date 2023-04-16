@@ -21,7 +21,7 @@ type DebugRequest struct {
 	ProcessorId uint `gorm:"-" json:"processorId"`
 
 	BaseUrl         string                   `gorm:"-" json:"baseUrl"`
-	ShareVariables  []domain.ShareVars       `gorm:"-" json:"shareVars"`
+	ShareVars       []domain.ShareVars       `gorm:"-" json:"shareVars"`
 	EnvVars         []domain.EnvVars         `gorm:"-" json:"envVars"`
 	GlobalEnvVars   []domain.GlobalEnvVars   `gorm:"-" json:"globalEnvVars"`
 	GlobalParamVars []domain.GlobalParamVars `gorm:"-" json:"globalParamVars"`

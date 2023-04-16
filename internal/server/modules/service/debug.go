@@ -36,7 +36,7 @@ func (s *DebugService) LoadData(call v1.DebugCall) (req v1.DebugRequest, err err
 		req, err = s.EndpointService.GenerateReq(call.InterfaceId, call.EndpointId)
 	}
 
-	req.BaseUrl, req.ShareVariables, req.EnvVars, req.GlobalEnvVars, req.GlobalParamVars =
+	req.BaseUrl, req.ShareVars, req.EnvVars, req.GlobalEnvVars, req.GlobalParamVars =
 		s.DebugSceneService.LoadScene(req.InterfaceId, req.EndpointId, req.ProcessorId, req.UsedBy)
 
 	return

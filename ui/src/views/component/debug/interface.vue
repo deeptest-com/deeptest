@@ -76,9 +76,10 @@ const changeMethod = () => {
 
   store.dispatch('Debug/setInterface', interf);
   store.dispatch('Debug/loadDebugData', {
-    endpointId: currEndpointId.value, interfaceId: interf.id,
+    interfaceId: interf.id,
+    endpointId: currEndpointId.value,
+    usedBy: usedBy,
   });
-
 
   store.dispatch('Debug/getLastInvocationResp', interf.id)
   store.dispatch('Debug/listInvocation', interf.id)

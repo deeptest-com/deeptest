@@ -21,15 +21,17 @@ import {
     invokeInterface,
     listExtractor,
     listCheckpoint,
-    listValidExtractorVariableForInterface, getSnippet, loadData,
+    listShareVar, getSnippet, loadData,
 } from './service';
 import {Checkpoint, Extractor, Interface, Response} from "./data";
 import {UsedBy} from "@/utils/enum";
 import {ResponseData} from "@/utils/request";
 
 export interface StateType {
-    currEndpointId: number;
     currInterface: any;
+    currEndpointId: number;
+    currProcessorId: number;
+    usedBy: string;
     debugData: any;
 
     responseData: Response;
@@ -38,7 +40,7 @@ export interface StateType {
 
     extractorsData: any[];
     extractorData: any;
-    validExtractorVariablesData: any[];
+    shareVarsData: any[];
 
     checkpointsData: any[];
     checkpointData: any;
@@ -48,14 +50,16 @@ export interface ModuleType extends StoreModuleType<StateType> {
     state: StateType;
     mutations: {
         setEndpointId: Mutation<StateType>;
+        setProcessorId: Mutation<StateType>;
         setInterface: Mutation<StateType>;
+        setUsedBy: Mutation<StateType>;
         setDebugData: Mutation<StateType>;
         setResponse: Mutation<StateType>;
         setInvocations: Mutation<StateType>;
 
         setExtractors: Mutation<StateType>;
         setExtractor: Mutation<StateType>;
-        setValidExtractorVariables: Mutation<StateType>;
+        setShareVars: Mutation<StateType>;
 
         setCheckpoints: Mutation<StateType>;
         setCheckpoint: Mutation<StateType>;
@@ -86,7 +90,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         removeExtractor: Action<StateType, StateType>;
         removeShareVar: Action<StateType, StateType>;
         clearShareVar: Action<StateType, StateType>;
-        listValidExtractorVariableForInterface: Action<StateType, StateType>;
+        listShareVar: Action<StateType, StateType>;
 
         listCheckpoint: Action<StateType, StateType>;
         getCheckpoint: Action<StateType, StateType>;
@@ -103,7 +107,9 @@ export interface ModuleType extends StoreModuleType<StateType> {
 
 const initState: StateType = {
     currEndpointId: 0,
+    currProcessorId: 0,
     currInterface: {},
+    usedBy: '',
     debugData: {},
     responseData: {} as Response,
 
@@ -111,7 +117,7 @@ const initState: StateType = {
 
     extractorsData: [],
     extractorData: {} as Extractor,
-    validExtractorVariablesData: [],
+    shareVarsData: [],
 
     checkpointsData: [],
     checkpointData: {} as Checkpoint,
@@ -127,8 +133,14 @@ const StoreModel: ModuleType = {
         setEndpointId(state, id) {
             state.currEndpointId = id;
         },
+        setProcessorId(state, id) {
+            state.currProcessorId = id;
+        },
         setInterface(state, payload) {
             state.currInterface = payload;
+        },
+        setUsedBy(state, payload) {
+            state.usedBy = payload;
         },
         setDebugData(state, payload) {
             state.debugData = payload;
@@ -149,8 +161,8 @@ const StoreModel: ModuleType = {
             state.extractorData = payload;
         },
 
-        setValidExtractorVariables(state, payload) {
-            state.validExtractorVariablesData = payload;
+        setShareVars(state, payload) {
+            state.debugData.shareVars = payload;
         },
 
         setCheckpoints(state, payload) {
@@ -181,6 +193,10 @@ const StoreModel: ModuleType = {
     actions: {
         async loadDebugData({commit, dispatch}, data) {
             try {
+                commit('setEndpointId', data.endpointId);
+                commit('setProcessorId', data.processorId);
+                commit('setUsedBy', data.usedBy);
+
                 const resp: ResponseData = await loadData(data);
                 if (resp.code != 0) return false;
 
@@ -201,13 +217,12 @@ const StoreModel: ModuleType = {
         // invocation
         async invokeInterface({commit, dispatch, state}, data: any) {
             const response = await invokeInterface(data)
-            console.log('=invoke in interface=', response.data)
 
             if (response.code === 0) {
                 commit('setResponse', response.data);
 
                 dispatch('listInvocation', state.currInterface.id);
-                dispatch('listValidExtractorVariableForInterface');
+                dispatch('listShareVar');
 
                 dispatch('listExtractor');
                 dispatch('listCheckpoint');
@@ -230,7 +245,6 @@ const StoreModel: ModuleType = {
         },
         async getLastInvocationResp({commit, dispatch, state}, interfaceId: number) {
             const response = await getLastInvocationResp(interfaceId);
-            // console.log('=getLastInvocationResp=', response.data)
 
             const {data} = response;
 
@@ -294,7 +308,7 @@ const StoreModel: ModuleType = {
             try {
                 await createExtractorOrUpdateResult(payload);
                 dispatch('listExtractor');
-                dispatch('listValidExtractorVariableForInterface');
+                dispatch('listShareVar');
                 return true;
             } catch (error) {
                 return false;
@@ -316,7 +330,7 @@ const StoreModel: ModuleType = {
             try {
                 const resp = await clearShareVar(state.debugData.id);
                 const {data} = resp;
-                dispatch('listValidExtractorVariableForInterface');
+                dispatch('listShareVar');
 
                 return true;
             } catch (error) {
@@ -327,7 +341,7 @@ const StoreModel: ModuleType = {
             try {
                 const resp = await removeShareVar(payload.id);
                 const {data} = resp;
-                dispatch('listValidExtractorVariableForInterface');
+                dispatch('listShareVar');
 
                 return true;
             } catch (error) {
@@ -335,12 +349,17 @@ const StoreModel: ModuleType = {
             }
         },
 
-        async listValidExtractorVariableForInterface({commit, dispatch, state}) {
+        async listShareVar({commit, dispatch, state}) {
             try {
-                console.log('listValidExtractorVariableForInterface')
-                const resp = await listValidExtractorVariableForInterface(state.debugData.id, UsedBy.InterfaceDebug);
+                const reqData = {
+                    interfaceId: state.currInterface.id,
+                    endpointId: state.currEndpointId,
+                    processorId: state.currProcessorId,
+                    usedBy: state.usedBy,
+                }
+                const resp = await listShareVar(reqData, UsedBy.InterfaceDebug);
                 const {data} = resp;
-                commit('setValidExtractorVariables', data);
+                commit('setShareVars', data);
                 return true;
             } catch (error) {
                 return false;

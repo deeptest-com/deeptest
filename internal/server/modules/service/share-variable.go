@@ -9,6 +9,11 @@ import (
 
 type ShareVarService struct {
 	ShareVariableRepo *repo.ShareVariableRepo `inject:""`
+
+	EndpointInterfaceRepo *repo.EndpointInterfaceRepo `inject:""`
+	EndpointRepo          *repo.EndpointRepo          `inject:""`
+	ServeServerRepo       *repo.ServeServerRepo       `inject:""`
+	ScenarioProcessorRepo *repo.ScenarioProcessorRepo `inject:""`
 }
 
 func (s *ShareVarService) Save(name, value string, interfaceId, serveId, scenarioId uint,
@@ -30,6 +35,26 @@ func (s *ShareVarService) Save(name, value string, interfaceId, serveId, scenari
 	}
 
 	err = s.ShareVariableRepo.Save(&po)
+
+	return
+}
+
+func (s *ShareVarService) List(interfaceId, endpointId, processorId uint, usedBy consts.UsedBy) (
+	shareVariables []domain.ShareVars) {
+
+	var serveId, scenarioId uint
+
+	interf, _ := s.EndpointInterfaceRepo.Get(interfaceId)
+	endpoint, _ := s.EndpointRepo.Get(interf.EndpointId)
+	serveId = endpoint.ServeId
+
+	// by scenario
+	if usedBy == consts.ScenarioDebug {
+		processor, _ := s.ScenarioProcessorRepo.Get(processorId)
+		scenarioId = processor.ScenarioId
+	}
+
+	shareVariables, _ = s.ListForDebug(serveId, scenarioId, usedBy)
 
 	return
 }

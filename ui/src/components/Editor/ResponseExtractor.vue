@@ -46,8 +46,8 @@
         <a-form-item label="变量作用域">
           <a-radio-group v-model:value="modelRef.scope">
             <!--              <a-radio value="private">私有</a-radio>-->
-            <a-radio value="local">局部</a-radio>
-            <a-radio value="global">全局</a-radio>
+            <a-radio :value="VarScope.ScopePrivate">局部</a-radio>
+            <a-radio :value="VarScope.ScopePublic">全局</a-radio>
           </a-radio-group>
           <div class="dp-input-tip">
             局部变量在整个接口设计器及其诞生的场景目录下有效。
@@ -71,14 +71,13 @@
 </template>
 
 <script setup lang="ts">
-import {defineProps, defineEmits, onMounted, reactive, ref, Ref, computed} from "vue";
-import {message, Form} from 'ant-design-vue';
+import {defineProps, onMounted, reactive, ref, Ref, computed} from "vue";
+import {Form} from 'ant-design-vue';
 import {useI18n} from "vue-i18n";
-import {getEnvironment, saveEnvironment} from "@/views/interface/service";
 import {useStore} from "vuex";
-import {StateType as InterfaceStateType} from "@/views/interface/store";
+import {VarScope} from "@/utils/enum";
+import {StateType as DebugStateType} from "@/views/component/debug/store";
 import {StateType as EnvironmentStateType} from "@/store/environment";
-import {Interface} from "@/views/interface/data";
 const useForm = Form.useForm;
 
 const props = defineProps({
@@ -115,10 +114,9 @@ const props = defineProps({
 
 const { t } = useI18n();
 
-const store = useStore<{ Interface: InterfaceStateType, Environment: EnvironmentStateType }>();
-const interfaceData = computed<Interface>(() => store.state.Interface.interfaceData);
-
-const validExtractorVariablesData = computed(() => store.state.Interface.validExtractorVariablesData);
+const store = useStore<{ Debug: DebugStateType, Environment: EnvironmentStateType }>();
+const debugData = computed<any>(() => store.state.Debug.debugData);
+const validExtractorVariablesData = computed(() => store.state.Debug.validExtractorVariablesData);
 
 const modelRef = ref<any>({
   expression: props.expr,
@@ -163,6 +161,7 @@ const onVarSelected = (value) => {
 
 const onSubmit = async () => {
   console.log('onSubmit', modelRef.value)
+
   validate().then(() => {
     props.onFinish(modelRef.value);
   })

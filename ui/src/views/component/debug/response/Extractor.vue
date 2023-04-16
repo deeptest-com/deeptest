@@ -178,8 +178,7 @@ watch(debugData, () => {
 }, {deep: true})
 
 const listExtractor = () => {
-  usedBy === UsedBy.InterfaceDebug ? store.dispatch('Interface1/listExtractor') :
-      store.dispatch('Scenario/listExtractor')
+  store.dispatch('Debug/listExtractor')
 }
 listExtractor()
 
@@ -252,7 +251,7 @@ const save = () => {
   validate().then(() => {
     model.value.interfaceId = debugData.value.id
     model.value.projectId = debugData.value.projectId
-    store.dispatch('Interface1/saveExtractor', model.value).then((result) => {
+    store.dispatch('Debug/saveExtractor', model.value).then((result) => {
       if (result) {
         editVisible.value = false
       }
@@ -267,13 +266,13 @@ const cancel = () => {
 
 const remove = (item) => {
   console.log('remove')
-  store.dispatch('Interface1/removeExtractor', {id: item.id})
+  store.dispatch('Debug/removeExtractor', {id: item.id})
 }
 
 const disable = (item) => {
   console.log('disabled')
   item.disabled = !item.disabled
-  store.dispatch('Interface1/saveExtractor', item)
+  store.dispatch('Debug/saveExtractor', item)
 }
 
 const selectSrc = () => {

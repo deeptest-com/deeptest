@@ -49,7 +49,7 @@ func (c *ExtractorCtrl) Get(ctx iris.Context) {
 
 // Create 添加
 func (c *ExtractorCtrl) Create(ctx iris.Context) {
-	extractor := model.InterfaceExtractor{}
+	extractor := model.DebugInterfaceExtractor{}
 	err := ctx.ReadJSON(&extractor)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
@@ -69,7 +69,7 @@ func (c *ExtractorCtrl) Create(ctx iris.Context) {
 
 // Update 更新
 func (c *ExtractorCtrl) Update(ctx iris.Context) {
-	var extractor model.InterfaceExtractor
+	var extractor model.DebugInterfaceExtractor
 	err := ctx.ReadJSON(&extractor)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
@@ -87,7 +87,7 @@ func (c *ExtractorCtrl) Update(ctx iris.Context) {
 
 // CreateOrUpdateResult 新建或更新结果
 func (c *ExtractorCtrl) CreateOrUpdateResult(ctx iris.Context) {
-	var extractor model.InterfaceExtractor
+	var extractor model.DebugInterfaceExtractor
 	err := ctx.ReadJSON(&extractor)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})

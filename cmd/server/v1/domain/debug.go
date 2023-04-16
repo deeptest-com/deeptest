@@ -51,7 +51,6 @@ type DebugResponse struct {
 }
 
 type SubmitDebugResultRequest struct {
-	UsedBy   consts.UsedBy `json:"usedBy"`
 	Request  DebugRequest  `json:"request"`
 	Response DebugResponse `json:"response"`
 }

@@ -43,7 +43,7 @@ func (s *DebugService) LoadData(call v1.DebugCall) (req v1.DebugRequest, err err
 }
 
 func (s *DebugService) SubmitResult(req v1.SubmitDebugResultRequest) (err error) {
-	usedBy := req.UsedBy
+	usedBy := req.Request.UsedBy
 	var serveId, processorId, scenarioId, projectId uint
 
 	if usedBy == consts.InterfaceDebug {
@@ -58,7 +58,7 @@ func (s *DebugService) SubmitResult(req v1.SubmitDebugResultRequest) (err error)
 		projectId = scenario.ProjectId
 	}
 
-	s.ExtractorService.ExtractInterface(req.Request.InterfaceId, serveId, req.Response, usedBy)
+	s.ExtractorService.ExtractInterface(req.Request.InterfaceId, serveId, processorId, req.Response, usedBy)
 	s.CheckpointService.CheckInterface(req.Request.InterfaceId, req.Response, usedBy)
 
 	_, err = s.Create(req.Request, req.Response, serveId, processorId, scenarioId, projectId)

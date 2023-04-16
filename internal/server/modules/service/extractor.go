@@ -16,31 +16,31 @@ type ExtractorService struct {
 	ShareVarService *ShareVarService `inject:""`
 }
 
-func (s *ExtractorService) List(interfaceId uint, usedBy consts.UsedBy) (extractors []model.InterfaceExtractor, err error) {
+func (s *ExtractorService) List(interfaceId uint, usedBy consts.UsedBy) (extractors []model.DebugInterfaceExtractor, err error) {
 	extractors, err = s.ExtractorRepo.List(interfaceId, usedBy)
 
 	return
 }
 
-func (s *ExtractorService) Get(id uint) (extractor model.InterfaceExtractor, err error) {
+func (s *ExtractorService) Get(id uint) (extractor model.DebugInterfaceExtractor, err error) {
 	extractor, err = s.ExtractorRepo.Get(id)
 
 	return
 }
 
-func (s *ExtractorService) Create(extractor *model.InterfaceExtractor) (bizErr _domain.BizErr) {
+func (s *ExtractorService) Create(extractor *model.DebugInterfaceExtractor) (bizErr _domain.BizErr) {
 	_, bizErr = s.ExtractorRepo.Save(extractor)
 
 	return
 }
 
-func (s *ExtractorService) Update(extractor *model.InterfaceExtractor) (err error) {
+func (s *ExtractorService) Update(extractor *model.DebugInterfaceExtractor) (err error) {
 	s.ExtractorRepo.Update(extractor)
 
 	return
 }
 
-func (s *ExtractorService) CreateOrUpdateResult(extractor *model.InterfaceExtractor, usedBy consts.UsedBy) (err error) {
+func (s *ExtractorService) CreateOrUpdateResult(extractor *model.DebugInterfaceExtractor, usedBy consts.UsedBy) (err error) {
 	s.ExtractorRepo.CreateOrUpdateResult(extractor, usedBy)
 
 	return
@@ -52,18 +52,18 @@ func (s *ExtractorService) Delete(reqId uint) (err error) {
 	return
 }
 
-func (s *ExtractorService) ExtractInterface(interfaceId, serveId uint, resp v1.DebugResponse, usedBy consts.UsedBy) (err error) {
+func (s *ExtractorService) ExtractInterface(interfaceId, serveId, scenarioId uint, resp v1.DebugResponse, usedBy consts.UsedBy) (err error) {
 	extractors, _ := s.ExtractorRepo.List(interfaceId, usedBy)
 
 	for _, extractor := range extractors {
 		s.Extract(&extractor, resp, usedBy)
-		s.ShareVarService.Save(extractor.Key, extractor.Result, interfaceId, serveId, extractor.ScenarioId, extractor.Scope)
+		s.ShareVarService.Save(extractor.Key, extractor.Result, interfaceId, serveId, scenarioId, extractor.Scope)
 	}
 
 	return
 }
 
-func (s *ExtractorService) Extract(extractor *model.InterfaceExtractor, resp v1.DebugResponse,
+func (s *ExtractorService) Extract(extractor *model.DebugInterfaceExtractor, resp v1.DebugResponse,
 	usedBy consts.UsedBy) (err error) {
 
 	extractor.Result, err = extractorHelper.Extract(extractor.ExtractorBase, resp)

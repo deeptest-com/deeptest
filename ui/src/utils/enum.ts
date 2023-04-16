@@ -3,6 +3,11 @@ export enum UsedBy {
     ScenarioDebug = "scenario_debug",
 }
 
+export enum VarScope {
+    ScopePrivate = "private",
+    ScopePublic = "public",
+}
+
 export enum ProcessorCategory {
     ProcessorRoot = "processor_root",
     ProcessorThread = "processor_thread",

@@ -38,7 +38,7 @@ func (s *InvocationInterfaceService) LoadInterfaceExecData(req v1.DebugRequest) 
 func (s *InvocationInterfaceService) SubmitInterfaceInvokeResult(req v1.SubmitDebugResultRequest) (err error) {
 	interf, _ := s.InterfaceRepo.GetDetail(req.Response.Id)
 
-	s.ExtractorService.ExtractInterface(interf.ID, uint(0), req.Response, consts.InterfaceDebug)
+	s.ExtractorService.ExtractInterface(interf.ID, uint(0), uint(0), req.Response, consts.InterfaceDebug)
 	s.CheckpointService.CheckInterface(interf.ID, req.Response, consts.InterfaceDebug)
 
 	_, err = s.CreateForInterface(req.Request, req.Response, interf.ProjectId)

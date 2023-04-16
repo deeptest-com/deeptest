@@ -104,13 +104,12 @@ func (s *ScenarioProcessorService) CopyExtractors(interfaceId, processorInterfac
 	pos, _ := s.ExtractorService.List(interfaceId, consts.InterfaceDebug)
 
 	for _, po := range pos {
-		extractor := model.InterfaceExtractor{}
+		extractor := model.DebugInterfaceExtractor{}
 
 		copier.CopyWithOption(&extractor, po, copier.Option{DeepCopy: true})
 		extractor.ID = 0
 		extractor.UsedBy = consts.ScenarioDebug
 		extractor.InterfaceId = processorInterfaceId
-		extractor.ProcessorId = processor.ID
 		extractor.ScenarioId = processor.ScenarioId
 
 		s.ExtractorRepo.Save(&extractor)

@@ -16,5 +16,5 @@ type ShareVariable struct {
 }
 
 func (ShareVariable) TableName() string {
-	return "biz_exec_log_processor"
+	return "biz_share_variable"
 }

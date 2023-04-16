@@ -10,7 +10,9 @@ type ShareVarService struct {
 	ShareVariableRepo *repo.ShareVariableRepo `inject:""`
 }
 
-func (s *ShareVarService) Save(name, value string, interfaceId, serveId, scenarioId uint, scope consts.ExtractorScope) (err error) {
+func (s *ShareVarService) Save(name, value string, interfaceId, serveId, scenarioId uint,
+	scope consts.ExtractorScope, usedBy consts.UsedBy) (err error) {
+
 	po := model.ShareVariable{
 		Name:        name,
 		Value:       value,
@@ -18,6 +20,12 @@ func (s *ShareVarService) Save(name, value string, interfaceId, serveId, scenari
 		ServeId:     serveId,
 		ScenarioId:  scenarioId,
 		Scope:       scope,
+	}
+
+	if usedBy == consts.InterfaceDebug {
+		po.ID, err = s.ShareVariableRepo.GetExistByInterfaceDebug(name, serveId)
+	} else if usedBy == consts.InterfaceDebug {
+		po.ID, err = s.ShareVariableRepo.GetExistByScenarioDebug(name, scenarioId)
 	}
 
 	err = s.ShareVariableRepo.Save(&po)

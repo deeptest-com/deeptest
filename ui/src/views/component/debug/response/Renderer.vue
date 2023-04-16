@@ -62,13 +62,7 @@ const responseData = computed<any>(() => store.state.Debug.responseData);
 const extractorsData = computed<any>(() => store.state.Debug.extractorsData);
 const checkpointsData = computed<any>(() => store.state.Debug.checkpointsData);
 
-const title = ref(t('text'))
-
-watch(responseData, () => {
-  console.log('watch responseData')
-  title.value = t(responseData.value.contentLang ? responseData.value.contentLang : 'empty')
-}, {deep: true})
-
+const title = computed(() => t(responseData.value.contentLang ? responseData.value.contentLang : 'empty'))
 const activeKey = ref('1');
 
 const extractorFail = computed(() => {

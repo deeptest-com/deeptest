@@ -40,7 +40,6 @@ export interface StateType {
 
     extractorsData: any[];
     extractorData: any;
-    shareVarsData: any[];
 
     checkpointsData: any[];
     checkpointData: any;
@@ -117,7 +116,6 @@ const initState: StateType = {
 
     extractorsData: [],
     extractorData: {} as Extractor,
-    shareVarsData: [],
 
     checkpointsData: [],
     checkpointData: {} as Checkpoint,

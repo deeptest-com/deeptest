@@ -84,23 +84,6 @@ func (c *DebugCtrl) Get(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: iris.Map{"req": req, "resp": resp}})
 }
 
-// Delete 删除
-func (c *DebugCtrl) Delete(ctx iris.Context) {
-	id, err := ctx.Params().GetInt("id")
-	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
-		return
-	}
-
-	err = c.DebugService.Delete(uint(id))
-	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
-		return
-	}
-
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
-}
-
 // GetLastResp
 func (c *DebugCtrl) GetLastResp(ctx iris.Context) {
 	id, err := ctx.URLParamInt("id")
@@ -116,4 +99,21 @@ func (c *DebugCtrl) GetLastResp(ctx iris.Context) {
 		return
 	}
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: resp})
+}
+
+// Delete 删除
+func (c *DebugCtrl) Delete(ctx iris.Context) {
+	id, err := ctx.Params().GetInt("id")
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		return
+	}
+
+	err = c.DebugService.Delete(uint(id))
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 }

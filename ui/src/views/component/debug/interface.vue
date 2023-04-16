@@ -72,10 +72,16 @@ const selectedMethod = ref(currInterface.value?.method ? currInterface.value?.me
 const changeMethod = () => {
   console.log('changeMethod', selectedMethod.value, interfaceMethodToObjMap)
 
-  store.dispatch('Debug/setInterface', interfaceMethodToObjMap.value[selectedMethod.value]);
+  const interf = interfaceMethodToObjMap.value[selectedMethod.value]
+
+  store.dispatch('Debug/setInterface', interf);
   store.dispatch('Debug/loadDebugData', {
-    endpointId: currEndpointId.value, interfaceId: interfaceMethodToObjMap.value[selectedMethod.value].id,
+    endpointId: currEndpointId.value, interfaceId: interf.id,
   });
+
+
+  store.dispatch('Debug/getLastInvocationResp', interf.id)
+  store.dispatch('Debug/listInvocation', interf.id)
 }
 changeMethod()
 

@@ -36,7 +36,7 @@ export async function get(id: number): Promise<any> {
 export async function getLastInvocationResp(id: number): Promise<any> {
     const params = {id : id}
     return request({
-        url: `/${apiInvocation}/getLastResp`,
+        url: `/${apiPath}/getLastResp`,
         params
     });
 }

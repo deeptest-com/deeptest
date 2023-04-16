@@ -71,9 +71,9 @@ func (s *DebugService) SubmitResult(req v1.SubmitDebugResultRequest) (err error)
 }
 
 func (s *DebugService) Create(req v1.DebugRequest, resp v1.DebugResponse,
-	serveId, processorId, scenarioId, projectId uint) (invocation model.Debug, err error) {
+	serveId, processorId, scenarioId, projectId uint) (po model.Debug, err error) {
 
-	invocation = model.Debug{
+	po = model.Debug{
 		ServeId: serveId,
 
 		ProcessorId: processorId,
@@ -87,12 +87,12 @@ func (s *DebugService) Create(req v1.DebugRequest, resp v1.DebugResponse,
 	}
 
 	bytesReq, _ := json.Marshal(req)
-	invocation.ReqContent = string(bytesReq)
+	po.ReqContent = string(bytesReq)
 
 	bytesReps, _ := json.Marshal(resp)
-	invocation.RespContent = string(bytesReps)
+	po.RespContent = string(bytesReps)
 
-	err = s.DebugRepo.Save(&invocation)
+	err = s.DebugRepo.Save(&po)
 
 	return
 }

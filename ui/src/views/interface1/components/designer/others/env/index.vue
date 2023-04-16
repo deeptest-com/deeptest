@@ -209,13 +209,13 @@ const {t} = useI18n();
 const store = useStore<{ Interface1: InterfaceStateType, Scenario: ScenarioStateType,  ProjectGlobal: ProjectStateType, Environment: EnvironmentStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const interfaceData = computed<Interface>(
-    () => usedBy === UsedBy.interface ? store.state.Interface1.interfaceData : store.state.Scenario.interfaceData);
+    () => usedBy === UsedBy.InterfaceDebug ? store.state.Interface1.interfaceData : store.state.Scenario.interfaceData);
 
 const environmentsData = computed<any[]>(() => store.state.Environment.environmentsData);
 const environmentData = computed<any>(() => store.state.Environment.environmentData);
 
 const validExtractorVariablesData = computed(
-    () => usedBy === UsedBy.interface ? store.state.Interface1.validExtractorVariablesData :
+    () => usedBy === UsedBy.InterfaceDebug ? store.state.Interface1.validExtractorVariablesData :
         store.state.Scenario.validExtractorVariablesData);
 
 store.dispatch('Environment/listEnvironment')

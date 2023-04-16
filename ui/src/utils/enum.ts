@@ -1,3 +1,8 @@
+export enum UsedBy {
+    InterfaceDebug = "interface_debug",
+    ScenarioDebug = "scenario_debug",
+}
+
 export enum ProcessorCategory {
     ProcessorRoot = "processor_root",
     ProcessorThread = "processor_thread",
@@ -150,9 +155,4 @@ export enum OAuth2GrantTypes {
 export enum OAuth2ClientAuthenticationWay {
     'sendAsBasicAuthHeader' = 'Send as Basic Auth header',
     'sendClientCredentialsInBody' = 'Send client credentials in body',
-}
-
-export enum UsedBy {
-    'interface' = 'interface',
-    'scenario' = 'scenario',
 }

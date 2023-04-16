@@ -73,7 +73,7 @@ import Datapool from '@/views/interface1/components/designer/others/datapool/ind
 import Processor from './components/Processor.vue';
 
 const router = useRouter();
-provide('usedBy', UsedBy.scenario)
+provide('usedBy', UsedBy.ScenarioDebug)
 const useForm = Form.useForm;
 
 const {t} = useI18n();

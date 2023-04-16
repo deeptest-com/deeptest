@@ -257,7 +257,7 @@ type UsedBy string
 const (
 	InterfaceDebug UsedBy = "interface_debug"
 	ScenarioDebug  UsedBy = "scenario_debug"
-	ScenarioExec   UsedBy = "scenario_exec"
+	//ScenarioExec   UsedBy = "scenario_exec" // not used
 )
 
 type ExtractorSrc string

@@ -54,7 +54,7 @@ import DesignInterface from './interface.vue';
 import RequestEnv from './others/env/index.vue';
 import RequestHistory from './others/history/index.vue';
 
-provide('usedBy', UsedBy.interface)
+provide('usedBy', UsedBy.InterfaceDebug)
 const useForm = Form.useForm;
 
 const {t} = useI18n();

@@ -263,7 +263,7 @@ const StoreModel: ModuleType = {
         // extractor
         async listExtractor({commit, dispatch, state}) {
             try {
-                const resp = await listExtractor(state.debugData.id, UsedBy.interface);
+                const resp = await listExtractor(state.debugData.id, UsedBy.InterfaceDebug);
                 const {data} = resp;
                 commit('setExtractors', data);
                 return true;
@@ -285,7 +285,7 @@ const StoreModel: ModuleType = {
         async saveExtractor({commit, dispatch, state}, payload: any) {
             try {
                 await saveExtractor(payload);
-                dispatch('listExtractor', UsedBy.interface);
+                dispatch('listExtractor', UsedBy.InterfaceDebug);
                 return true;
             } catch (error) {
                 return false;
@@ -339,7 +339,7 @@ const StoreModel: ModuleType = {
         async listValidExtractorVariableForInterface({commit, dispatch, state}) {
             try {
                 console.log('listValidExtractorVariableForInterface')
-                const resp = await listValidExtractorVariableForInterface(state.debugData.id, UsedBy.interface);
+                const resp = await listValidExtractorVariableForInterface(state.debugData.id, UsedBy.InterfaceDebug);
                 const {data} = resp;
                 commit('setValidExtractorVariables', data);
                 return true;
@@ -351,7 +351,7 @@ const StoreModel: ModuleType = {
         // checkpoint
         async listCheckpoint({commit, state}) {
             try {
-                const resp = await listCheckpoint(state.debugData.id, UsedBy.interface);
+                const resp = await listCheckpoint(state.debugData.id, UsedBy.InterfaceDebug);
                 const {data} = resp;
                 commit('setCheckpoints', data);
                 return true;
@@ -373,7 +373,7 @@ const StoreModel: ModuleType = {
         async saveCheckpoint({commit, dispatch, state}, payload: any) {
             try {
                 await saveCheckpoint(payload);
-                dispatch('listCheckpoint', UsedBy.interface);
+                dispatch('listCheckpoint', UsedBy.InterfaceDebug);
                 return true
             } catch (error) {
                 return false;
@@ -383,7 +383,7 @@ const StoreModel: ModuleType = {
             try {
                 await removeCheckpoint(id);
 
-                dispatch('listCheckpoint', UsedBy.interface);
+                dispatch('listCheckpoint', UsedBy.InterfaceDebug);
                 return true;
             } catch (error) {
                 return false;

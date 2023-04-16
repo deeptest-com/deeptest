@@ -42,8 +42,9 @@ const invokeInterface = async () => {
     id: debugData.value.id,
 
     data: {
-      endpointId: debugData.value.endpointId,
       interfaceId: debugData.value.interfaceId,
+      endpointId: debugData.value.endpointId,
+      scenarioId: debugData.value.scenarioId,
       usedBy,
     }
   }

@@ -56,11 +56,11 @@ const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
 const store = useStore<{ Interface1: StateType, Scenario: ScenarioStateType }>();
 const responseData = computed<any>(
-    () => usedBy === UsedBy.interface ? store.state.Interface1.responseData: store.state.Scenario.responseData);
+    () => usedBy === UsedBy.InterfaceDebug ? store.state.Interface1.responseData: store.state.Scenario.responseData);
 const extractorsData = computed(
-    () => usedBy === UsedBy.interface ? store.state.Interface1.extractorsData: store.state.Scenario.extractorsData);
+    () => usedBy === UsedBy.InterfaceDebug ? store.state.Interface1.extractorsData: store.state.Scenario.extractorsData);
 const checkpointsData = computed(
-    () => usedBy === UsedBy.interface ? store.state.Interface1.checkpointsData : store.state.Scenario.checkpointsData);
+    () => usedBy === UsedBy.InterfaceDebug ? store.state.Interface1.checkpointsData : store.state.Scenario.checkpointsData);
 
 const title = ref(t('text'))
 
@@ -86,13 +86,13 @@ const checkpointFail = computed(() => {
 })
 
 const listExtractor = () => {
-  usedBy === UsedBy.interface ? store.dispatch('Interface1/listExtractor') :
+  usedBy === UsedBy.InterfaceDebug ? store.dispatch('Interface1/listExtractor') :
       store.dispatch('Scenario/listExtractor')
 }
 listExtractor()
 
 const listCheckPoint = () => {
-  usedBy === UsedBy.interface ? store.dispatch('Interface1/listCheckpoint') :
+  usedBy === UsedBy.InterfaceDebug ? store.dispatch('Interface1/listCheckpoint') :
       store.dispatch('Scenario/listCheckpoint')
 }
 listCheckPoint()

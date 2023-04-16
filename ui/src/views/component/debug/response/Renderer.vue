@@ -86,13 +86,13 @@ const checkpointFail = computed(() => {
 })
 
 const listExtractor = () => {
-  usedBy === UsedBy.interface ? store.dispatch('Interface1/listExtractor') :
+  usedBy === UsedBy.InterfaceDebug ? store.dispatch('Interface1/listExtractor') :
       store.dispatch('Scenario/listExtractor')
 }
 listExtractor()
 
 const listCheckPoint = () => {
-  usedBy === UsedBy.interface ? store.dispatch('Interface1/listCheckpoint') :
+  usedBy === UsedBy.InterfaceDebug ? store.dispatch('Interface1/listCheckpoint') :
       store.dispatch('Scenario/listCheckpoint')
 }
 listCheckPoint()

@@ -6,13 +6,19 @@ import (
 )
 
 type DebugCall struct {
-	InterfaceId uint `gorm:"-" json:"interfaceId"`
+	InterfaceId uint `json:"interfaceId"`
+
 	EndpointId  uint `json:"endpointId"`
+	ProcessorId uint `json:"processorId"`
+
+	UsedBy consts.UsedBy `json:"usedBy"`
 }
 
 type DebugRequest struct {
 	InterfaceId uint `gorm:"-" json:"interfaceId"`
+
 	EndpointId  uint `json:"endpointId"`
+	ProcessorId uint `gorm:"-" json:"processorId"`
 
 	BaseUrl         string                   `gorm:"-" json:"baseUrl"`
 	ShareVariables  []domain.ShareVars       `gorm:"-" json:"shareVars"`
@@ -45,7 +51,7 @@ type DebugResponse struct {
 }
 
 type SubmitDebugResultRequest struct {
-	UsedBy   string        `json:"usedBy"`
+	UsedBy   consts.UsedBy `json:"usedBy"`
 	Request  DebugRequest  `json:"request"`
 	Response DebugResponse `json:"response"`
 }

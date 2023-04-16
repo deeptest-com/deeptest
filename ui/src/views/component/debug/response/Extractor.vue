@@ -10,7 +10,7 @@
         <a-col flex="1">结果</a-col>
 
         <a-col flex="100px" class="dp-right">
-          <PlusOutlined v-if="usedBy==='interface'" @click.stop="add" class="dp-icon-btn dp-trans-80" />
+          <PlusOutlined v-if="usedBy===UsedBy.InterfaceDebug" @click.stop="add" class="dp-icon-btn dp-trans-80" />
         </a-col>
       </a-row>
     </div>
@@ -46,8 +46,8 @@
             <CloseCircleOutlined class="dp-icon-btn dp-trans-80 dp-light" />
           </a-tooltip>
 
-          <EditOutlined v-if="usedBy==='interface'" @click.stop="edit(item)" class="dp-icon-btn dp-trans-80" />
-          <DeleteOutlined v-if="usedBy==='interface'" @click.stop="remove(item)" class="dp-icon-btn dp-trans-80" />
+          <EditOutlined v-if="usedBy===UsedBy.InterfaceDebug" @click.stop="edit(item)" class="dp-icon-btn dp-trans-80" />
+          <DeleteOutlined v-if="usedBy===UsedBy.InterfaceDebug" @click.stop="remove(item)" class="dp-icon-btn dp-trans-80" />
         </a-col>
       </a-row>
     </div>
@@ -142,7 +142,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, defineComponent, inject, reactive, ref, watch} from "vue";
+import {computed, inject, reactive, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import {Form} from 'ant-design-vue';
@@ -153,11 +153,9 @@ import {
   EditOutlined,
   PlusOutlined
 } from '@ant-design/icons-vue';
-import {StateType} from "@/views/interface1/store";
 import {Extractor, Interface, Response} from "@/views/interface1/data";
 import {getEnumSelectItems} from "@/views/interface1/service";
 import {ExtractorSrc, ExtractorType, UsedBy} from "@/utils/enum";
-import {StateType as ScenarioStateType} from "@/views/scenario/store";
 
 const usedBy = inject('usedBy') as UsedBy
 const useForm = Form.useForm;
@@ -180,7 +178,7 @@ watch(debugData, () => {
 }, {deep: true})
 
 const listExtractor = () => {
-  usedBy === UsedBy.interface ? store.dispatch('Interface1/listExtractor') :
+  usedBy === UsedBy.InterfaceDebug ? store.dispatch('Interface1/listExtractor') :
       store.dispatch('Scenario/listExtractor')
 }
 listExtractor()
@@ -228,7 +226,7 @@ const add = () => {
     type: ExtractorType.boundary,
     expression: '',
     variable: '',
-    usedBy: UsedBy.interface,
+    usedBy: UsedBy.InterfaceDebug,
     scope: 'local'} as Extractor
 
   selectSrc()

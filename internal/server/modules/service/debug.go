@@ -14,6 +14,9 @@ type DebugService struct {
 	DebugRepo              *repo.DebugRepo              `inject:""`
 	DebugInterfaceRepo     *repo.InterfaceRepo          `inject:""`
 	ProcessorInterfaceRepo *repo.ProcessorInterfaceRepo `inject:""`
+	EndpointRepo           *repo.EndpointRepo           `inject:""`
+	ScenarioProcessorRepo  *repo.ScenarioProcessorRepo  `inject:""`
+	ScenarioRepo           *repo.ScenarioRepo           `inject:""`
 
 	DebugSceneService *DebugSceneService `inject:""`
 
@@ -40,12 +43,25 @@ func (s *DebugService) LoadData(call v1.DebugCall) (req v1.DebugRequest, err err
 }
 
 func (s *DebugService) SubmitResult(req v1.SubmitDebugResultRequest) (err error) {
-	processorInterface, _ := s.ProcessorInterfaceRepo.GetDetail(req.Response.Id)
+	usedBy := req.UsedBy
+	var serveId, processorId, scenarioId, projectId uint
 
-	s.ExtractorService.ExtractInterface(processorInterface.ID, req.Response, consts.ScenarioDebug)
-	s.CheckpointService.CheckInterface(processorInterface.ID, req.Response, consts.ScenarioDebug)
+	if usedBy == consts.InterfaceDebug {
+		endpoint, _ := s.EndpointRepo.Get(req.Request.EndpointId)
+		serveId = endpoint.ServeId
+		projectId = endpoint.ProjectId
+	} else if usedBy == consts.ScenarioDebug {
+		processor, _ := s.ScenarioProcessorRepo.Get(req.Request.ProcessorId)
+		scenario, _ := s.ScenarioRepo.Get(processor.ScenarioId)
+		processorId = processor.ID
+		scenarioId = scenario.ID
+		projectId = scenario.ProjectId
+	}
 
-	_, err = s.CreateForScenarioInterface(req.Request, req.Response, processorInterface.ProjectId)
+	s.ExtractorService.ExtractInterface(req.Request.InterfaceId, req.Response, usedBy)
+	s.CheckpointService.CheckInterface(req.Request.InterfaceId, req.Response, usedBy)
+
+	_, err = s.Create(req.Request, req.Response, serveId, processorId, scenarioId, projectId)
 
 	if err != nil {
 		return
@@ -54,14 +70,19 @@ func (s *DebugService) SubmitResult(req v1.SubmitDebugResultRequest) (err error)
 	return
 }
 
-func (s *DebugService) CreateForScenarioInterface(req v1.DebugRequest,
-	resp v1.DebugResponse, projectId uint) (invocation model.Debug, err error) {
+func (s *DebugService) Create(req v1.DebugRequest, resp v1.DebugResponse,
+	serveId, processorId, scenarioId, projectId uint) (invocation model.Debug, err error) {
 
 	invocation = model.Debug{
+		ServeId: serveId,
+
+		ProcessorId: processorId,
+		ScenarioId:  scenarioId,
+
 		InvocationBase: model.InvocationBase{
 			Name:        time.Now().Format("01-02 15:04:05"),
 			InterfaceId: req.InterfaceId,
-			ProjectId:   uint(projectId),
+			ProjectId:   projectId,
 		},
 	}
 

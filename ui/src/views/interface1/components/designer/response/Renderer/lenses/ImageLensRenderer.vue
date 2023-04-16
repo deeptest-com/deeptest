@@ -65,7 +65,7 @@ export default defineComponent({
     const usedBy = inject('usedBy') as UsedBy
     const store = useStore<{ Interface1: StateType, Scenario: ScenarioStateType }>();
     const responseData = computed<Response>(() =>
-        usedBy === UsedBy.interface ? store.state.Interface1.responseData : store.state.Scenario.responseData);
+        usedBy === UsedBy.InterfaceDebug ? store.state.Interface1.responseData : store.state.Scenario.responseData);
 
     const editorOptions = ref(Object.assign({usedWith: 'response'}, MonacoOptions) )
 

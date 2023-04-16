@@ -22,7 +22,7 @@ import {UsedBy} from "@/utils/enum";
 import ScenarioTree from './list/tree.vue';
 import ScenarioList from './list/list.vue';
 
-provide('usedBy', UsedBy.interface)
+provide('usedBy', UsedBy.InterfaceDebug)
 const useForm = Form.useForm;
 
 const {t} = useI18n();

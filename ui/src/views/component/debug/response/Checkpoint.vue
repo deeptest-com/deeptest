@@ -11,7 +11,7 @@
         <a-col flex="100px">状态</a-col>
 
         <a-col flex="100px" class="dp-right">
-          <PlusOutlined v-if="usedBy==='interface'" @click.stop="add" class="dp-icon-btn dp-trans-80" />
+          <PlusOutlined v-if="usedBy===UsedBy.InterfaceDebug" @click.stop="add" class="dp-icon-btn dp-trans-80" />
         </a-col>
       </a-row>
     </div>
@@ -41,8 +41,8 @@
             <CloseCircleOutlined class="dp-icon-btn dp-trans-80 dp-light" />
           </a-tooltip>
 
-          <EditOutlined v-if="usedBy==='interface'" @click.stop="edit(item)" class="dp-icon-btn dp-trans-80" />
-          <DeleteOutlined v-if="usedBy==='interface'" @click.stop="remove(item)" class="dp-icon-btn dp-trans-80" />
+          <EditOutlined v-if="usedBy===UsedBy.InterfaceDebug" @click.stop="edit(item)" class="dp-icon-btn dp-trans-80" />
+          <DeleteOutlined v-if="usedBy===UsedBy.InterfaceDebug" @click.stop="remove(item)" class="dp-icon-btn dp-trans-80" />
         </a-col>
       </a-row>
     </div>
@@ -124,13 +124,12 @@
 </template>
 
 <script setup lang="ts">
-import {computed, ComputedRef, defineComponent, inject, PropType, reactive, Ref, ref, watch} from "vue";
+import {computed, inject, PropType, reactive, Ref, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import {message, Form} from 'ant-design-vue';
 import { PlusOutlined, EditOutlined, DeleteOutlined, CloseCircleOutlined, CheckCircleOutlined} from '@ant-design/icons-vue';
-import {StateType} from "@/views/interface1/store";
-import {Checkpoint, Extractor, Interface, Response} from "@/views/interface1/data";
+import {Checkpoint} from "@/views/interface1/data";
 import {
   getEnumSelectItems,
   listExtractorVariable
@@ -139,13 +138,11 @@ import {ComparisonOperator, CheckpointType, UsedBy} from "@/utils/enum";
 import {isInArray} from "@/utils/array";
 import {getResultCls} from "@/utils/dom"
 import {getCompareOptsForRespCode, getCompareOptsForString} from "@/utils/compare";
-import {StateType as ScenarioStateType} from "@/views/scenario/store";
 
 const useForm = Form.useForm;
 const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
 
-import {Param} from "@/views/component/debug/data";
 import {StateType as Debug} from "@/views/component/debug/store";
 const store = useStore<{  Debug: Debug }>();
 
@@ -163,7 +160,7 @@ watch(debugData, () => {
 }, {deep: true})
 
 const listCheckPoint = () => {
-  usedBy === UsedBy.interface ? store.dispatch('Interface1/listCheckpoint') :
+  usedBy === UsedBy.InterfaceDebug ? store.dispatch('Interface1/listCheckpoint') :
       store.dispatch('Scenario/listCheckpoint')
 }
 listCheckPoint()
@@ -171,7 +168,7 @@ listCheckPoint()
 const model = ref({
   type: CheckpointType.responseStatus,
   expression: '',
-  usedBy: UsedBy.interface,
+  usedBy: UsedBy.InterfaceDebug,
   extractorVariable: '',
   operator: ComparisonOperator.equal,
   value: ''} as Checkpoint)
@@ -209,7 +206,7 @@ const add = () => {
   model.value = {
     type: CheckpointType.responseStatus,
     expression: '',
-    usedBy: UsedBy.interface,
+    usedBy: UsedBy.InterfaceDebug,
     extractorVariable: '',
     operator: ComparisonOperator.equal,
     value: ''} as Checkpoint

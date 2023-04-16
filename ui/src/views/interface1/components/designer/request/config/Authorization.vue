@@ -68,7 +68,7 @@ import {StateType as ScenarioStateType} from "@/views/scenario/store";
     const {t} = useI18n();
     const store = useStore<{ Interface1: StateType, Scenario: ScenarioStateType }>();
     const interfaceData = computed<Interface>(
-        () => usedBy === UsedBy.interface ? store.state.Interface1.interfaceData : store.state.Scenario.interfaceData);
+        () => usedBy === UsedBy.InterfaceDebug ? store.state.Interface1.interfaceData : store.state.Scenario.interfaceData);
 
     const authorizationTypes = getEnumSelectItems(AuthorizationTypes)
 

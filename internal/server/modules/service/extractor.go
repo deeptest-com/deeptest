@@ -2,13 +2,11 @@ package service
 
 import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
-	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/query"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
+	extractorHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/extractor"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
-	"strings"
 )
 
 type ExtractorService struct {
@@ -68,46 +66,12 @@ func (s *ExtractorService) ExtractInterface(interfaceId, serveId uint, resp v1.D
 func (s *ExtractorService) Extract(extractor *model.InterfaceExtractor, resp v1.DebugResponse,
 	usedBy consts.UsedBy) (err error) {
 
-	err = s.ExtractValue(extractor, resp)
+	extractor.Result, err = extractorHelper.Extract(extractor.ExtractorBase, resp)
 	if err != nil {
 		return
 	}
 
 	s.ExtractorRepo.UpdateResult(*extractor, usedBy)
-
-	return
-}
-
-func (s *ExtractorService) ExtractValue(extractor *model.InterfaceExtractor, resp v1.DebugResponse) (err error) {
-	if extractor.Disabled {
-		extractor.Result = ""
-		return
-	}
-
-	if extractor.Src == consts.Header {
-		for _, h := range resp.Headers {
-			if h.Name == extractor.Key {
-				extractor.Result = h.Value
-				break
-			}
-		}
-	} else {
-		if httpHelper.IsJsonContent(resp.ContentType.String()) && extractor.Type == consts.JsonQuery {
-			extractor.Result = queryUtils.JsonQuery(resp.Content, extractor.Expression)
-
-		} else if httpHelper.IsHtmlContent(resp.ContentType.String()) && extractor.Type == consts.HtmlQuery {
-			extractor.Result = queryUtils.HtmlQuery(resp.Content, extractor.Expression)
-
-		} else if httpHelper.IsXmlContent(resp.ContentType.String()) && extractor.Type == consts.XmlQuery {
-			extractor.Result = queryUtils.XmlQuery(resp.Content, extractor.Expression)
-
-		} else if extractor.Type == consts.Boundary {
-			extractor.Result = queryUtils.BoundaryQuery(resp.Content, extractor.BoundaryStart, extractor.BoundaryEnd,
-				extractor.BoundaryIndex, extractor.BoundaryIncluded)
-		}
-	}
-
-	extractor.Result = strings.TrimSpace(extractor.Result)
 
 	return
 }

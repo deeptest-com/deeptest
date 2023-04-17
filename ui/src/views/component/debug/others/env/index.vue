@@ -3,51 +3,6 @@
     <div class="env-var">
       <div class="body">
         <div class="envs">
-          <div class="env header">
-            <div class="left">
-              环境变量
-            </div>
-            <div class="right">
-              <span class="dp-link">
-                <a-tooltip overlayClassName="dp-tip-small">
-                  <template #title>帮助</template>
-                  <QuestionCircleOutlined class="dp-icon-btn dp-trans-80"/>
-                </a-tooltip>
-              </span>
-            </div>
-          </div>
-
-          <div v-for="(item, idx) in debugData.envVars" :key="idx" class="env">
-            <div class="left">
-              <div class="name">
-                <a-tooltip class="name" overlayClassName="dp-tip-small">
-                  <template #title>{{item.name}}</template>
-                  {{item.name}}
-                </a-tooltip>
-              </div>
-
-              <div class="val">
-                <a-tooltip class="val" overlayClassName="dp-tip-small">
-                  <template #title>{{item.localValue}}</template>
-                  {{item.localValue}}
-                </a-tooltip>
-              </div>
-
-              <div class="right"></div>
-
-            </div>
-          </div>
-
-          <div v-if="debugData.envVars?.length == 0">
-            <Empty></Empty>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="env-var">
-      <div class="body">
-        <div class="envs">
           <div class="env">
             <div class="left">
               共享变量
@@ -89,8 +44,51 @@
               <DeleteOutlined @click="removeShareVar(item)"  class="dp-icon-btn dp-trans-80" />
             </div>
           </div>
+          <div v-if="!debugData.shareVars || debugData.shareVars.length===0" class="env">空</div>
         </div>
 
+      </div>
+    </div>
+
+    <div class="env-var">
+      <div class="body">
+        <div class="envs">
+          <div class="env header">
+            <div class="left">
+              环境变量
+            </div>
+            <div class="right">
+              <span class="dp-link">
+                <a-tooltip overlayClassName="dp-tip-small">
+                  <template #title>帮助</template>
+                  <QuestionCircleOutlined class="dp-icon-btn dp-trans-80"/>
+                </a-tooltip>
+              </span>
+            </div>
+          </div>
+
+          <div v-for="(item, idx) in debugData.envVars" :key="idx" class="env">
+            <div class="left">
+              <div class="name">
+                <a-tooltip class="name" overlayClassName="dp-tip-small">
+                  <template #title>{{item.name}}</template>
+                  {{item.name}}
+                </a-tooltip>
+              </div>
+
+              <div class="val">
+                <a-tooltip class="val" overlayClassName="dp-tip-small">
+                  <template #title>{{item.localValue}}</template>
+                  {{item.localValue}}
+                </a-tooltip>
+              </div>
+
+              <div class="right"></div>
+
+            </div>
+          </div>
+          <div v-if="!debugData.envVars || debugData.envVars.length===0" class="env">空</div>
+        </div>
       </div>
     </div>
 
@@ -130,6 +128,7 @@
 
             <div class="right"></div>
           </div>
+          <div v-if="!debugData.globalEnvVars || debugData.globalEnvVars.length===0" class="env">空</div>
         </div>
 
       </div>
@@ -171,6 +170,7 @@
 
             <div class="right"></div>
           </div>
+          <div v-if="!debugData.globalParamVars || debugData.globalParamVars.length===0" class="env">空</div>
         </div>
 
       </div>

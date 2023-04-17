@@ -1,6 +1,9 @@
 package model
 
-import "github.com/aaronchen2k/deeptest/internal/pkg/consts"
+import (
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
+)
 
 type DebugInterface struct {
 	BaseModel
@@ -118,26 +121,15 @@ type DebugInterfaceExtractor struct {
 
 	UsedBy consts.UsedBy `json:"usedBy"`
 
-	Src  consts.ExtractorSrc  `json:"src"`
-	Type consts.ExtractorType `json:"type"`
-	Key  string               `json:"key"`
+	domain.ExtractorBase
 
-	Expression string `json:"expression"`
-	//NodeProp       string `json:"prop"`
-
-	BoundaryStart    string `json:"boundaryStart"`
-	BoundaryEnd      string `json:"boundaryEnd"`
-	BoundaryIndex    int    `json:"boundaryIndex"`
-	BoundaryIncluded bool   `json:"boundaryIncluded"`
-
-	Variable string                `json:"variable"`
-	Scope    consts.ExtractorScope `json:"scope" gorm:"default:private"`
+	Scope consts.ExtractorScope `json:"scope" gorm:"default:private"`
 	//DisableShare bool                  `json:"disableShare"`
 
-	Result      string `json:"result" gorm:"type:text"`
-	InterfaceId uint   `json:"interfaceId"`
-	ProcessorId uint   `json:"processorId"`
-	ScenarioId  uint   `json:"scenarioId"`
+	InterfaceId uint `json:"interfaceId"`
+
+	ProcessorId uint `json:"processorId"`
+	ScenarioId  uint `json:"scenarioId"`
 
 	ProjectId uint `json:"projectId"`
 }

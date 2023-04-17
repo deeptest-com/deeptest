@@ -4,8 +4,10 @@ type Debug struct {
 	BaseModel
 	InvocationBase
 
-	ProcessorId          uint `json:"processorId"`
-	ProcessorInterfaceId uint `json:"processorInterfaceId"`
+	ServeId uint `json:"serveId"`
+
+	ProcessorId uint `json:"processorId"`
+	ScenarioId  uint `json:"scenarioId"`
 }
 
 func (Debug) TableName() string {

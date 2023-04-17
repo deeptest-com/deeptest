@@ -351,7 +351,7 @@ func (r *EnvironmentRepo) GetEnvironment(env *model.Environment) (err error) {
 	return
 }
 
-func (r *EnvironmentRepo) ListGlobal(projectId uint) (vars []model.EnvironmentVar, err error) {
+func (r *EnvironmentRepo) ListGlobalVar(projectId uint) (vars []model.EnvironmentVar, err error) {
 	err = r.DB.Find(&vars, "project_id=? and environment_id=0", projectId).Error
 	return
 }
@@ -370,6 +370,15 @@ func (r *EnvironmentRepo) SaveParams(projectId uint, params []model.EnvironmentP
 	})
 }
 
+func (r *EnvironmentRepo) ListParamModel(projectId uint) (ret []model.EnvironmentParam, err error) {
+	err = r.DB.Find(&ret, "project_id=?", projectId).Error
+	if err != nil {
+		return
+	}
+
+	return
+}
+
 func (r *EnvironmentRepo) ListParams(projectId uint) (res map[string]interface{}, err error) {
 	res = map[string]interface{}{}
 	var params []model.EnvironmentParam
@@ -377,6 +386,7 @@ func (r *EnvironmentRepo) ListParams(projectId uint) (res map[string]interface{}
 	if err != nil {
 		return
 	}
+
 	for _, param := range params {
 		res["projectId"] = param.ProjectId
 		if res[param.In] == nil {

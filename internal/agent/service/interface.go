@@ -5,6 +5,7 @@ import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	_httpUtils "github.com/aaronchen2k/deeptest/pkg/lib/http"
 	"strings"
 )
 
@@ -12,35 +13,32 @@ type InterfaceService struct {
 	RemoteService *RemoteService `inject:""`
 }
 
-func (s *InterfaceService) Run(req domain.InvocationReq) (ret v1.DebugResponse, err error) {
+func (s *InterfaceService) Run(call domain.InvokeCall) (resp v1.DebugResponse, err error) {
+	req := s.RemoteService.GetInterfaceToExec(call)
 
-	interfaceProcessorExecReq := s.RemoteService.GetInterfaceToExec(req)
-	agentExec.Environment = interfaceProcessorExecReq.Environment
-	agentExec.Variables = interfaceProcessorExecReq.Variables
-	agentExec.DatapoolData = interfaceProcessorExecReq.Datapools
-	ret, err = s.Request(interfaceProcessorExecReq)
-	err = s.RemoteService.SubmitInterfaceResult(req, ret, req.ServerUrl, req.Token)
+	resp, err = s.Request(req)
+	err = s.RemoteService.SubmitInterfaceResult(req, resp, call.ServerUrl, call.Token)
 
 	/*
-		if req.UsedBy == consts.UsedByInterface {
+		if req.UsedBy == consts.InterfaceDebug {
 			interfaceExecReq := s.RemoteService.GetInterfaceToExec(req)
 
-			agentExec.Environment = interfaceExecReq.Environment
-			agentExec.Variables = interfaceExecReq.Variables
+			agentExec.EnvVars = interfaceExecReq.EnvVars
+			agentExec.ShareVars = interfaceExecReq.ShareVars
 			agentExec.DatapoolData = interfaceExecReq.Datapools
 
-			ret, err = s.Request(interfaceExecReq)
-			err = s.RemoteService.SubmitInterfaceResult(req, ret, req.ServerUrl, req.Token)
+			resp, err = s.Request(interfaceExecReq)
+			err = s.RemoteService.SubmitInterfaceResult(req, resp, req.ServerUrl, req.Token)
 
-		} else if req.UsedBy == consts.UsedByScenario {
+		} else if req.UsedBy == consts.ScenarioDebug {
 			interfaceProcessorExecReq := s.RemoteService.GetProcessorInterfaceToExec(req)
 
-			agentExec.Environment = interfaceProcessorExecReq.Environment
-			agentExec.Variables = interfaceProcessorExecReq.Variables
+			agentExec.EnvVars = interfaceProcessorExecReq.EnvVars
+			agentExec.ShareVars = interfaceProcessorExecReq.ShareVars
 			agentExec.DatapoolData = interfaceProcessorExecReq.Datapools
 
-			ret, err = s.Request(interfaceProcessorExecReq)
-			err = s.RemoteService.SubmitProcessorInterfaceResult(req, ret, req.ServerUrl, req.Token)
+			resp, err = s.Request(interfaceProcessorExecReq)
+			err = s.RemoteService.SubmitProcessorInterfaceResult(req, resp, req.ServerUrl, req.Token)
 
 		}
 	*/
@@ -55,6 +53,7 @@ func (s *InterfaceService) Request(req v1.DebugRequest) (ret v1.DebugResponse, e
 	agentExec.ReplaceAll(&req.BaseRequest, agentExec.Environment, agentExec.Variables, agentExec.DatapoolData)
 
 	// send request
+	req.BaseRequest.Url = _httpUtils.AddSepIfNeeded(req.BaseUrl) + req.BaseRequest.Url
 	ret, err = agentExec.Invoke(&req.BaseRequest)
 
 	ret.Id = req.InterfaceId

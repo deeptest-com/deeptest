@@ -65,7 +65,7 @@ import RequestEnv from './components/designer/others/env/index.vue';
 import RequestHistory from './components/designer/others/history/index.vue';
 import Datapool from './components/designer/others/datapool/index.vue';
 
-provide('usedBy', UsedBy.interface)
+provide('usedBy', UsedBy.InterfaceDebug)
 const useForm = Form.useForm;
 
 const {t} = useI18n();

@@ -43,7 +43,7 @@ const {t} = useI18n();
 const store = useStore<{ Scenario: ScenarioStateType; Interface1: InterfaceStateType }>();
 
 const interfaceData = computed<Interface>(
-    () => usedBy === UsedBy.interface ? store.state.Interface1.interfaceData : store.state.Scenario.interfaceData);
+    () => usedBy === UsedBy.InterfaceDebug ? store.state.Interface1.interfaceData : store.state.Scenario.interfaceData);
 
 onMounted(() => {
   console.log('onMounted interface')
@@ -61,7 +61,7 @@ watch(interfaceData, () => {
   console.log('watch interfaceData', interfaceData.value)
 
   if (interfaceData.value?.id !== id) {
-    usedBy === UsedBy.interface ? store.dispatch('Interface1/listValidExtractorVariableForInterface'):
+    usedBy === UsedBy.InterfaceDebug ? store.dispatch('Interface1/listValidExtractorVariableForInterface'):
         store.dispatch('Scenario/listValidExtractorVariableForInterface')
 
     id = interfaceData.value.id

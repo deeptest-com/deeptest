@@ -66,7 +66,7 @@ func (entity ProcessorLoop) Run(processor *Processor, session *Session) (err err
 
 func (entity *ProcessorLoop) runLoopItems(session *Session, processor *Processor, iterator agentDomain.ExecIterator) (err error) {
 	for _, item := range iterator.Items {
-		SetVariable(entity.ProcessorID, iterator.VariableName, item, consts.Local)
+		SetVariable(entity.ProcessorID, iterator.VariableName, item, consts.Public)
 
 		for _, child := range processor.Children {
 			child.Run(session)

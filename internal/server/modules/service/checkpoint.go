@@ -150,7 +150,7 @@ func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp v1.
 
 	// Judgement
 	if checkpoint.Type == consts.Judgement {
-		variableMap, _ := s.VariableService.GetVariablesByInterface(checkpoint.InterfaceId, usedBy)
+		variableMap, _ := s.VariableService.GetShareVarsByInterface(checkpoint.InterfaceId, usedBy)
 
 		result, _ := agentExec.EvaluateGovaluateExpressionWithVariables(checkpoint.Expression, variableMap)
 

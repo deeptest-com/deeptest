@@ -11,7 +11,7 @@ const apiInvocation = 'invocations';
 const apiAuth = 'auth';
 const apiEnvironment = 'environments'
 const apiEnvironmentVar = `${apiEnvironment}/vars`
-const apiShareVar = `${apiEnvironment}/shareVars`
+const apiShareVar = `shareVars`
 const apiSnippets = 'snippets'
 
 const apiExtractor = 'extractors'
@@ -33,10 +33,10 @@ export async function get(id: number): Promise<any> {
     return request({url: `/${apiPath}/${id}`});
 }
 
-export async function getLastInvocationResp(id: number): Promise<any> {
-    const params = {id : id}
+export async function getLastInvocationResp(interfaceId: number): Promise<any> {
+    const params = {interfaceId}
     return request({
-        url: `/${apiInvocation}/getLastResp`,
+        url: `/${apiPath}/getLastResp`,
         params
     });
 }
@@ -64,10 +64,10 @@ export async function invokeInterface(data): Promise<any> {
 }
 
 export async function listInvocation(interfaceId: number): Promise<any> {
-    const params = {interfaceId: interfaceId}
+    const params = {interfaceId}
 
     return request({
-        url: `/${apiInvocation}`,
+        url: `/${apiPath}`,
         method: 'GET',
         params,
     });
@@ -220,12 +220,11 @@ export async function listExtractorVariable(interfaceId: number): Promise<any> {
         params,
     });
 }
-export async function listValidExtractorVariableForInterface(interfaceId: number, usedBy: UsedBy): Promise<any> {
-    const params = {interfaceId, usedBy}
+export async function listShareVar(data: any, usedBy: UsedBy): Promise<any> {
     return request({
-        url: `/${apiExtractor}/listValidExtractorVariableForInterface`,
-        method: 'GET',
-        params,
+        url: `/${apiShareVar}/list`,
+        method: 'POST',
+        data,
     });
 }
 

@@ -1,6 +1,9 @@
 package _httpUtils
 
-import "net/url"
+import (
+	"net/url"
+	"strings"
+)
 
 func AddDefaultUrlSchema(urlStr string) (ret string, err error) {
 	ret = urlStr
@@ -15,4 +18,11 @@ func AddDefaultUrlSchema(urlStr string) (ret string, err error) {
 	}
 
 	return
+}
+
+func AddSepIfNeeded(utl string) string {
+	if strings.LastIndex(utl, "/") < len(utl)-1 {
+		utl += "/"
+	}
+	return utl
 }

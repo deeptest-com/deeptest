@@ -5,13 +5,28 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 )
 
+type DebugCall struct {
+	InterfaceId uint `json:"interfaceId"`
+
+	EndpointId  uint `json:"endpointId"`
+	ProcessorId uint `json:"processorId"`
+
+	UsedBy consts.UsedBy `json:"usedBy"`
+}
+
 type DebugRequest struct {
 	InterfaceId uint `gorm:"-" json:"interfaceId"`
-	EndpointId  uint `json:"endpointId"`
 
-	Environment domain.Environment `gorm:"-" json:"environment"`
-	Variables   domain.Variables   `gorm:"-" json:"variables"`
-	Datapools   domain.Datapools   `gorm:"-" json:"datapools"`
+	EndpointId  uint `json:"endpointId"`
+	ProcessorId uint `gorm:"-" json:"processorId"`
+
+	BaseUrl         string                   `gorm:"-" json:"baseUrl"`
+	ShareVars       []domain.ShareVars       `gorm:"-" json:"shareVars"`
+	EnvVars         []domain.EnvVars         `gorm:"-" json:"envVars"`
+	GlobalEnvVars   []domain.GlobalEnvVars   `gorm:"-" json:"globalEnvVars"`
+	GlobalParamVars []domain.GlobalParamVars `gorm:"-" json:"globalParamVars"`
+
+	//Datapools   domain.Datapools   `gorm:"-" json:"datapools"`
 
 	UsedBy consts.UsedBy `json:"usedBy"`
 
@@ -36,7 +51,6 @@ type DebugResponse struct {
 }
 
 type SubmitDebugResultRequest struct {
-	UsedBy   string        `json:"usedBy"`
 	Request  DebugRequest  `json:"request"`
 	Response DebugResponse `json:"response"`
 }

@@ -168,11 +168,11 @@ const srcOptions = getEnumSelectItems(ExtractorSrc)
 const typeOptions = getEnumSelectItems(ExtractorType)
 
 const interfaceData = computed<Interface>(
-    () => usedBy === UsedBy.interface ? store.state.Interface1.interfaceData : store.state.Scenario.interfaceData);
+    () => usedBy === UsedBy.InterfaceDebug ? store.state.Interface1.interfaceData : store.state.Scenario.interfaceData);
 const responseData = computed<any>(() => store.state.Interface1.responseData);
 
 const extractorsData = computed(
-    () => usedBy === UsedBy.interface ? store.state.Interface1.extractorsData: store.state.Scenario.extractorsData);
+    () => usedBy === UsedBy.InterfaceDebug ? store.state.Interface1.extractorsData: store.state.Scenario.extractorsData);
 
 watch(interfaceData, () => {
   console.log('watch interfaceData', interfaceData.value.id, usedBy)
@@ -180,7 +180,7 @@ watch(interfaceData, () => {
 }, {deep: true})
 
 const listExtractor = () => {
-  usedBy === UsedBy.interface ? store.dispatch('Interface1/listExtractor') :
+  usedBy === UsedBy.InterfaceDebug ? store.dispatch('Interface1/listExtractor') :
       store.dispatch('Scenario/listExtractor')
 }
 listExtractor()
@@ -228,7 +228,7 @@ const add = () => {
     type: ExtractorType.boundary,
     expression: '',
     variable: '',
-    usedBy: UsedBy.interface,
+    usedBy: UsedBy.InterfaceDebug,
     scope: 'local'} as Extractor
 
   selectSrc()

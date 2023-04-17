@@ -17,7 +17,7 @@ type DebugCtrl struct {
 
 // LoadData
 func (c *DebugCtrl) LoadData(ctx iris.Context) {
-	req := domain.DebugRequest{}
+	req := domain.DebugCall{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
@@ -84,6 +84,23 @@ func (c *DebugCtrl) Get(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: iris.Map{"req": req, "resp": resp}})
 }
 
+// GetLastResp
+func (c *DebugCtrl) GetLastResp(ctx iris.Context) {
+	interfaceId, err := ctx.URLParamInt("interfaceId")
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		return
+	}
+
+	resp, err := c.DebugService.GetLastResp(uint(interfaceId))
+
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: _domain.SystemErr.Msg})
+		return
+	}
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: resp})
+}
+
 // Delete 删除
 func (c *DebugCtrl) Delete(ctx iris.Context) {
 	id, err := ctx.Params().GetInt("id")
@@ -99,21 +116,4 @@ func (c *DebugCtrl) Delete(ctx iris.Context) {
 	}
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
-}
-
-// GetLastResp
-func (c *DebugCtrl) GetLastResp(ctx iris.Context) {
-	id, err := ctx.URLParamInt("id")
-	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
-		return
-	}
-
-	resp, err := c.DebugService.GetLastResp(uint(id))
-
-	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: _domain.SystemErr.Msg})
-		return
-	}
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: resp})
 }

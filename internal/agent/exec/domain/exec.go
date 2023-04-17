@@ -69,7 +69,7 @@ type ExecIterator struct {
 
 	// loop range
 	Items    []interface{}      `json:"items"`
-	Data     []domain.Variables `json:"data"`
+	Data     []domain.ShareVars `json:"data"`
 	DataType consts.DataType    `json:"dataType"`
 
 	// loop condition

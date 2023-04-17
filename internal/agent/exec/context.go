@@ -11,8 +11,8 @@ import (
 )
 
 var (
-	Environment = domain.Environment{}
-	Variables   = domain.Variables{} // only for invocation
+	Environment = domain.EnvVars{}
+	Variables   = domain.ShareVars{} // only for invocation
 
 	ScopeHierarchy  = map[uint]*[]uint{}               // only for scenario
 	ScopedVariables = map[uint][]domain.ExecVariable{} // only for scenario
@@ -41,8 +41,7 @@ func ListCachedVariable(processorId uint) (variables []domain.ExecVariable) {
 
 	for _, id := range *effectiveScopeIds {
 		for _, vari := range ScopedVariables[id] {
-			if vari.Scope == consts.Global || vari.Scope == consts.Local ||
-				(vari.Scope == consts.Private && id == processorId) {
+			if vari.Scope == consts.Public || (vari.Scope == consts.Private && id == processorId) {
 
 				variables = append(variables, vari)
 			}
@@ -51,13 +50,13 @@ func ListCachedVariable(processorId uint) (variables []domain.ExecVariable) {
 
 	return
 }
-func GetCachedVariableMapInContext(processorId uint) (ret domain.Variables) {
-	ret = domain.Variables{}
+func GetCachedVariableMapInContext(processorId uint) (ret domain.ShareVars) {
+	ret = domain.ShareVars{}
 
 	variables := ListCachedVariable(processorId)
 
 	for _, item := range variables {
-		valMap, isMap := item.Value.(domain.Variables)
+		valMap, isMap := item.Value.(domain.ShareVars)
 
 		if isMap {
 			for propKey, v := range valMap {
@@ -103,7 +102,7 @@ func EvaluateVariableExpressionValue(variable domain.ExecVariable, variablePath 
 
 		if len(arr) > 1 {
 			variableProp := arr[1]
-			ret.Value = variable.Value.(domain.Variables)[variableProp]
+			ret.Value = variable.Value.(domain.ShareVars)[variableProp]
 		}
 
 		ok = true
@@ -113,7 +112,7 @@ func EvaluateVariableExpressionValue(variable domain.ExecVariable, variablePath 
 	return
 }
 
-func ImportVariables(processorId uint, variables domain.Variables, scope consts.ExtractorScope) (err error) {
+func ImportVariables(processorId uint, variables domain.ShareVars, scope consts.ExtractorScope) (err error) {
 	for key, val := range variables {
 		newVariable := domain.ExecVariable{
 			Name:  key,

@@ -40,7 +40,7 @@
 
     <ResponseExtractor
         v-if="responseExtractorVisible"
-        :interfaceId="debugData.id"
+        :interfaceId="debugData.interfaceId"
         :exprType="exprType"
         :expr="expr"
         :result="result"
@@ -118,7 +118,7 @@ const responseExtractorFinish = (data) => {
   data.src = ExtractorSrc.body
   data.result = result.value
 
-  data.interfaceId = debugData.value.id
+  data.interfaceId = debugData.value.interfaceId
   data.projectId = debugData.value.projectId
   data.usedBy = usedBy
   store.dispatch('Interface1/createExtractorOrUpdateResult', data).then((result) => {

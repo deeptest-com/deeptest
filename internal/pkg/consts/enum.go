@@ -255,8 +255,9 @@ func (e ProductStatus) String() string {
 type UsedBy string
 
 const (
-	UsedByInterface UsedBy = "interface"
-	UsedByScenario  UsedBy = "scenario"
+	InterfaceDebug UsedBy = "interface_debug"
+	ScenarioDebug  UsedBy = "scenario_debug"
+	//ScenarioExec   UsedBy = "scenario_exec" // not used
 )
 
 type ExtractorSrc string
@@ -290,9 +291,8 @@ const (
 type ExtractorScope string
 
 const (
-	Private ExtractorScope = "private"
-	Local   ExtractorScope = "local"
-	Global  ExtractorScope = "global"
+	Private ExtractorScope = "private" // in current interface
+	Public  ExtractorScope = "public"  // shared by other interfaces in serve OR scenario
 )
 
 type ComparisonOperator string

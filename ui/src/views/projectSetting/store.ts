@@ -90,14 +90,14 @@ export interface ModuleType extends StoreModuleType<StateType> {
         // 服务组件相关
         getSchemaList: Action<StateType, StateType>,
         copySchema: Action<StateType, StateType>,
-        deleteSchema: Action<StateType, StateType>, 
+        deleteSchema: Action<StateType, StateType>,
         saveSchema: Action<StateType, StateType>,
         generateSchema: Action<StateType, StateType>,
         generateExample: Action<StateType, StateType>,
         // security相关
         getSecurityList: Action<StateType, StateType>,
         deleteSecurity: Action<StateType, StateType>,
-        
+
         setServiceDetail: Action<StateType, StateType>,
         // 服务版本相关
         getVersionList: Action<StateType, StateType>,
@@ -310,6 +310,8 @@ const StoreModel: ModuleType = {
         },
         addGlobalParams({ commit, state }, { globalParamsActiveKey }) {
             const globalParamsData = state.globalParamsData;
+            if (!globalParamsData[globalParamsActiveKey.value])
+                globalParamsData[globalParamsActiveKey.value] = []
             globalParamsData[globalParamsActiveKey.value].push({
                 "name": "",
                 "type": "string",
@@ -409,7 +411,7 @@ const StoreModel: ModuleType = {
                 console.log('%c getSchemaList request failed===== failedData', 'color: green', res);
             }
         },
-        
+
         async deleteSchema({ dispatch }, data: BasicSchemaParams) {
             const { id, serveId, name } = data;
             const res = await deleteSchema(id);

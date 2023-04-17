@@ -21,7 +21,6 @@ import {checkUpdate, updateApp} from "./utils/hot-update";
 
 const cp = require('child_process');
 const fs = require('fs');
-const pth = require('path');
 
 const bent = require('bent');
 const getBuffer = bent('buffer')
@@ -74,6 +73,10 @@ export class DeepTestApp {
                 enableRemoteModule: true,
             }
         })
+        if (IS_LINUX && !DEBUG) {
+            const pth = path.join(__dirname, 'icon', 'favicon.png')
+            mainWin.setIcon(pth);
+        }
 
         require('@electron/remote/main').initialize()
         require('@electron/remote/main').enable(mainWin.webContents)
@@ -262,7 +265,7 @@ export class DeepTestApp {
 
         const index = arg.url.lastIndexOf('/')
         const fileName = arg.url.substring(index)
-        const file = pth.join(convertedDir, fileName);
+        const file = path.join(convertedDir, fileName);
 
         fs.writeFileSync(file, buffer)
 
@@ -289,7 +292,7 @@ export class DeepTestApp {
             if (!postmanToOpenApi) postmanToOpenApi = require('postman-to-openapi')
 
             const oldFile = file
-            file = pth.join(convertedDir, 'postman-' + nanoid() + '.json')
+            file = path.join(convertedDir, 'postman-' + nanoid() + '.json')
             await postmanToOpenApi(oldFile, file, {defaultTag: 'General'})
         }
 
@@ -323,24 +326,24 @@ export class DeepTestApp {
         }
     }
 
-    openInExplore(path) {
-        shell.showItemInFolder(path);
+    openInExplore(pth) {
+        shell.showItemInFolder(pth);
     }
-    openInTerminal(path) {
+    openInTerminal(pth) {
         logInfo('openInTerminal')
 
-        const stats = fs.statSync(path);
+        const stats = fs.statSync(pth);
         if (stats.isFile()) {
-            path = pth.resolve(path, '..')
+            pth = pth.resolve(pth, '..')
         }
 
         if (IS_WINDOWS_OS) {
-            cp.exec('start cmd.exe /K cd /D ' + path);
+            cp.exec('start cmd.exe /K cd /D ' + pth);
         } else if (IS_LINUX) {
             // support other terminal types
-            cp.spawn ('gnome-terminal', [], { cwd: path });
+            cp.spawn ('gnome-terminal', [], { cwd: pth });
         } else if (IS_MAC_OSX) {
-            cp.exec('open -a Terminal ' + path);
+            cp.exec('open -a Terminal ' + pth);
         }
     }
 

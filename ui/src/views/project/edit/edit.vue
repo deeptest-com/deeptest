@@ -69,9 +69,9 @@ export default defineComponent({
         name: [
           { required: true, message: '请输入名称', trigger: 'blur' },
         ],
-        logo: [
-          { required: true, message: '请输入logo', trigger: 'blur' },
-        ],
+        // logo: [
+        //   { required: true, message: '请输入logo', trigger: 'blur' },
+        // ],
         shortName: [
           { required: true, message: '大写英文字母开头,仅限字母和数字,<=10位,不可修改', trigger: 'blur' },
         ],

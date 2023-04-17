@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-func ReadDataFromText(url, separator string) (ret []domain.Variables, err error) {
+func ReadDataFromText(url, separator string) (ret []domain.ShareVars, err error) {
 	content := _fileUtils.ReadFile(url)
 	arr := strings.Split(strings.ReplaceAll(content, "\r\n", "\n"), "\n")
 	if len(arr) < 2 {
@@ -38,7 +38,7 @@ func ReadDataFromText(url, separator string) (ret []domain.Variables, err error)
 
 	return
 }
-func ReadDataFromExcel(url string) (ret []domain.Variables, err error) {
+func ReadDataFromExcel(url string) (ret []domain.ShareVars, err error) {
 	excel, err := excelize.OpenFile(url)
 	if err != nil {
 		return

@@ -15,6 +15,7 @@ import {
     removeExtraViewInfo,
     treeLevelWidth
 } from './utils';
+import {message} from "ant-design-vue";
 
 export default defineComponent({
     name: 'SchemeEditor',
@@ -49,16 +50,30 @@ export default defineComponent({
         }
         const updateKeyName = (oldKey: any, keyIndex: any, parent: any, event: any) => {
             const newKey = event.target.innerText;
-            moveCursorToEnd(event.target);
             const keys = Object.keys(parent.properties);
-            keys[keyIndex] = newKey;
+            // 判断组件名称必须是英文，复合 URL 规则
+            // 匹配由 数字、26个英文字母、下划线、 - 组成的字符串
+            // const reg = /^[a-zA-Z$][\w\W]*$/;
+            // if(!reg.test(newKey)){
+            //     message.warning(`属性须以字母开头`);
+            // }
+            // 新旧 key 相等
+            if (oldKey === newKey) {
+                return;
+            //  已经存在了 key
+            } else if (keys.includes(newKey)) {
+                message.warning(`已存在名为${newKey}的属性`);
+                keys[keyIndex] = oldKey;
+            }else if(newKey){
+                keys[keyIndex] = newKey;
+            }else if(!newKey){
+                message.warning(`属性名不能为空`);
+                keys[keyIndex] = oldKey;
+            }
+
             const newObj: any = {};
             keys.forEach((item) => {
-                if (item === newKey) {
-                    newObj[item] = parent.properties[oldKey];
-                } else {
-                    newObj[item] = parent.properties[item];
-                }
+                newObj[item] = parent.properties[item] || parent.properties[oldKey];
             })
             parent.properties = {...newObj};
             data.value = addExtraViewInfo(data.value);
@@ -217,7 +232,7 @@ export default defineComponent({
             return <>
                 <span class={'baseInfoKey'}
                       contenteditable={true}
-                      onInput={updateKeyName.bind(this, keyName, keyIndex, parent)}>
+                      onBlur={updateKeyName.bind(this, keyName, keyIndex, parent)}>
                     {keyName}
                 </span>
                 <span class={'baseInfoSpace'}>:</span>

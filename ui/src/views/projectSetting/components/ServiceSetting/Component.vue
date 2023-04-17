@@ -67,6 +67,8 @@
               @generateExample="handleGenerateExample"
               @change="handleContentChange"
               :tab-content-style="{width:'100%'}"
+              :contentStr="contentStr"
+              :exampleStr="exampleStr"
               :value="activeSchema"/>
         </div>
         <!-- ::::代码模式 -->
@@ -107,6 +109,7 @@ import EditAndShowField from '@/components/EditAndShow/index.vue';
 import {MonacoOptions} from '@/utils/const';
 import {schemaColumns} from '../../config';
 import {StateType as ProjectSettingStateType} from '../../store';
+import cloneDeep from "lodash/cloneDeep";
 
 const props = defineProps({
   serveId: {
@@ -186,7 +189,8 @@ async function switchMode(val: any) {
 }
 
 const schemeVisibleKey = ref(0);
-const edit = (record: any) => {
+const edit = (value: any) => {
+  const record:any = cloneDeep(value);
   schemeVisible.value = true;
   record.content = record.content && typeof record.content === 'string' ? JSON.parse(record.content) : {type: 'object'};
   record.examples = record.examples && typeof record.examples === 'string' ? JSON.parse(record.examples) : [];

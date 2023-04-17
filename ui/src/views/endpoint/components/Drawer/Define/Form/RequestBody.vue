@@ -35,8 +35,9 @@
           @generateFromJSON="generateFromJSON"
           @generateExample="handleGenerateExample"
           @change="handleChange"
-          :tab-content-style="{width:'100%'}"
-          :value="activeReqBodySchema"/>
+          :contentStr="JSON.stringify(activeReqBodySchema?.content)"
+          :exampleStr="JSON.stringify(activeReqBodySchema?.examples)"
+          :tab-content-style="{width:'100%'}"/>
     </a-col>
   </a-row>
 </template>

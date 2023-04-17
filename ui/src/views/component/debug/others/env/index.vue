@@ -101,7 +101,14 @@
             <div class="left">
               全局变量
             </div>
-            <div class="right"></div>
+            <div class="right">
+              <span class="dp-link">
+                <a-tooltip overlayClassName="dp-tip-small">
+                  <template #title>帮助</template>
+                  <QuestionCircleOutlined class="dp-icon-btn dp-trans-80"/>
+                </a-tooltip>
+              </span>
+            </div>
           </div>
 
           <div v-for="(item, idx) in debugData.globalEnvVars" :key="idx" class="env">
@@ -121,9 +128,7 @@
               </div>
             </div>
 
-            <div class="right">
-              <DeleteOutlined @click="removeShareVar(item)"  class="dp-icon-btn dp-trans-80" />
-            </div>
+            <div class="right"></div>
           </div>
         </div>
 
@@ -137,7 +142,14 @@
             <div class="left">
               全局参数
             </div>
-            <div class="right"></div>
+            <div class="right">
+              <span class="dp-link">
+                <a-tooltip overlayClassName="dp-tip-small">
+                  <template #title>帮助</template>
+                  <QuestionCircleOutlined class="dp-icon-btn dp-trans-80"/>
+                </a-tooltip>
+              </span>
+            </div>
           </div>
 
           <div v-for="(item, idx) in debugData.globalParamVars" :key="idx" class="env">
@@ -157,9 +169,7 @@
               </div>
             </div>
 
-            <div class="right">
-              <DeleteOutlined @click="removeShareVar(item)"  class="dp-icon-btn dp-trans-80" />
-            </div>
+            <div class="right"></div>
           </div>
         </div>
 
@@ -191,11 +201,11 @@ const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 
 const clearShareVar  = () => {
   console.log('clearShareVar')
-  store.dispatch('Interface1/clearShareVar', {usedBy: usedBy})
+  store.dispatch('Debug/clearShareVar', {usedBy: usedBy})
 }
 const removeShareVar = (item) => {
   console.log('removeShareVar', item)
-  store.dispatch('Interface1/removeShareVar', {id: item.id})
+  store.dispatch('Debug/removeShareVar', {id: item.id})
 }
 
 </script>

@@ -78,3 +78,22 @@ func (s *ShareVarService) ListForDebug(serveId, scenarioId uint, usedBy consts.U
 
 	return
 }
+
+func (s *ShareVarService) Delete(id int) (err error) {
+	err = s.ShareVariableRepo.Delete(id)
+
+	return
+}
+
+func (s *ShareVarService) Clear(endpointOrProcessorId int, usedBy consts.UsedBy) (err error) {
+	if usedBy == consts.InterfaceDebug {
+		endpoint, _ := s.EndpointRepo.Get(uint(endpointOrProcessorId))
+		err = s.ShareVariableRepo.DeleteAllByServeId(endpoint.ServeId)
+
+	} else if usedBy == consts.ScenarioDebug {
+		processor, _ := s.ScenarioProcessorRepo.Get(uint(endpointOrProcessorId))
+		err = s.ShareVariableRepo.DeleteAllByScenarioId(processor.ScenarioId)
+	}
+
+	return
+}

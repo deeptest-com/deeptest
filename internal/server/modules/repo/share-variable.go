@@ -78,3 +78,29 @@ func (r *ShareVariableRepo) ListByScenarioDebug(scenarioId uint) (pos []model.Sh
 
 	return
 }
+
+func (r *ShareVariableRepo) Delete(id int) (err error) {
+	err = r.DB.Model(&model.ShareVariable{}).
+		Where("id=?", id).
+		Update("deleted", true).
+		Error
+
+	return
+}
+
+func (r *ShareVariableRepo) DeleteAllByServeId(serveId uint) (err error) {
+	err = r.DB.Model(&model.ShareVariable{}).
+		Where("serve_id=?", serveId).
+		Update("deleted", true).
+		Error
+
+	return
+}
+func (r *ShareVariableRepo) DeleteAllByScenarioId(scenarioId uint) (err error) {
+	err = r.DB.Model(&model.InterfaceExtractor{}).
+		Where("scenario_id=?", scenarioId).
+		Update("disable_share", true).
+		Error
+
+	return
+}

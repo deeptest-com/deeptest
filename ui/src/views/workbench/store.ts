@@ -8,7 +8,6 @@ import {
 
 export interface StateType {
     queryResult: QueryResult;
-    mode:string,
  
 }
 
@@ -16,12 +15,11 @@ export interface ModuleType extends StoreModuleType<StateType> {
     state: StateType;
     mutations: {
         setList: Mutation<StateType>;
-        setMode: Mutation<StateType>;
       
     };
     actions: {
-        queryProject: Action<StateType, StateType>;
-        changemode:Action<StateType, StateType>;
+        queryRanking: Action<StateType, StateType>;
+       
       
     };
 }
@@ -36,13 +34,12 @@ const initState: StateType = {
             showQuickJumper: true,
         },
     },
-    mode:'list',
   
 };
 
 const StoreModel: ModuleType = {
     namespaced: true,
-    name: 'Home',
+    name: 'workbench',
     state: {
         ...initState
     },
@@ -50,17 +47,12 @@ const StoreModel: ModuleType = {
         setList(state, payload) {
             state.queryResult = payload;
         },
-        
-        setMode(state, payload) {
-            console.log('~~~~~~~~~setMode',state,payload)
-            state.mode = payload;
-        },
      
         
         
     },
     actions: {
-        async queryProject({ commit }, params: QueryParams ) {
+        async queryRanking({ commit }, params: QueryParams ) {
             console.log('~~~~~~params',params)
             try {
                 const response: ResponseData = await query(params);
@@ -70,23 +62,20 @@ const StoreModel: ModuleType = {
 
                 commit('setList',{
                     ...initState.queryResult,
-                    list: data.project_list || [],
+                    list: data.user_ranking_list || [],
                     pagination: {
                         ...initState.queryResult.pagination,
                         current: params.page,
                         pageSize: params.pageSize,
-                        total: data.project_total || 0,
+                        // total: data.project_total || 0,
                     },
                 });
+                // commit('setQueryParams', params);
                 return true;
             } catch (error) {
                 return false;
             }
         },
-         changemode({ commit }, params: any ) {
-
-                  commit('setMode', params.mode);
-        }
     
      
  

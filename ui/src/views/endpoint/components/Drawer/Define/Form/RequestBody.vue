@@ -35,6 +35,7 @@
           @generateFromJSON="generateFromJSON"
           @generateExample="handleGenerateExample"
           @change="handleChange"
+          :refsOptions="refsOptions"
           :contentStr="JSON.stringify(activeReqBodySchema?.content)"
           :exampleStr="JSON.stringify(activeReqBodySchema?.examples)"
           :tab-content-style="{width:'100%'}"/>
@@ -42,17 +43,18 @@
   </a-row>
 </template>
 <script lang="ts" setup>
-import {computed, defineEmits, defineProps, ref, watch,} from 'vue';
+import {computed, defineEmits, defineProps, onMounted, ref, watch,} from 'vue';
 import {useStore} from "vuex";
 import {mediaTypesOpts,} from '@/config/constant';
 import {Endpoint} from "@/views/endpoint/data";
 import {DownOutlined, RightOutlined} from '@ant-design/icons-vue';
 import SchemaEditor from '@/components/SchemaEditor/index.vue';
 
-const store = useStore<{ Endpoint, Debug, ProjectGlobal, User }>();
+const store = useStore<{ Endpoint, Debug, ProjectGlobal, User,ServeGlobal }>();
 const endpointDetail: any = computed<Endpoint>(() => store.state.Endpoint.endpointDetail);
 const selectedMethodDetail = computed<any>(() => store.state.Endpoint.selectedMethodDetail);
 const currentUser: any = computed<Endpoint>(() => store.state.User.currentUser);
+const currServe = computed<any>(() => store.state.ServeGlobal.currServe);
 const props = defineProps({});
 const emit = defineEmits([]);
 // 是否折叠,默认展开
@@ -61,7 +63,6 @@ const activeReqBodySchema: any = ref({
   content: null,
   examples: [],
 });
-
 watch(() => {
   return selectedMethodDetail?.value?.requestBody?.schemaItem?.content
 }, (newVal, oldValue) => {
@@ -114,6 +115,13 @@ function handleChange(json: any) {
     ...selectedMethodDetail.value
   })
 }
+
+const refsOptions = ref([]);
+onMounted(async () => {
+  refsOptions.value = await store.dispatch('Endpoint/getAllRefs', {
+    "serveId": currServe.value.id,
+  });
+})
 
 </script>
 <style lang="less" scoped>

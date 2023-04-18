@@ -25,11 +25,7 @@
       <div class="tab-body-schema" v-if="activeTab=== 'schema'">
         <SchemaEditor
             :value="content"
-            :refsOptions="[
-              {
-                label: '组件 1',
-                value: 'COM1'
-              }]"
+            :refsOptions="refsOptions || []"
             @change="handleContentChange"
             :contentStyle="tabContentStyle"/>
       </div>
@@ -141,6 +137,7 @@ const props = defineProps<{
   contentStr?: string,
   exampleStr?: string,
   schemeVisibleKey?: string | number,
+  refsOptions?: Array<any>,
 }>();
 
 const emit = defineEmits<{

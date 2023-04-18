@@ -10,15 +10,16 @@ import (
 	"time"
 )
 
-type DebugService struct {
+type DebugInvokeService struct {
 	DebugRepo              *repo.DebugRepo              `inject:""`
-	DebugInterfaceRepo     *repo.InterfaceRepo          `inject:""`
+	DebugInterfaceRepo     *repo.DebugInterfaceRepo     `inject:""`
 	ProcessorInterfaceRepo *repo.ProcessorInterfaceRepo `inject:""`
 	EndpointRepo           *repo.EndpointRepo           `inject:""`
 	ScenarioProcessorRepo  *repo.ScenarioProcessorRepo  `inject:""`
 	ScenarioRepo           *repo.ScenarioRepo           `inject:""`
 
-	DebugSceneService *DebugSceneService `inject:""`
+	DebugSceneService     *DebugSceneService     `inject:""`
+	DebugInterfaceService *DebugInterfaceService `inject:""`
 
 	ExtractorService  *ExtractorService  `inject:""`
 	CheckpointService *CheckpointService `inject:""`
@@ -27,22 +28,7 @@ type DebugService struct {
 	EndpointService   *EndpointService   `inject:""`
 }
 
-func (s *DebugService) LoadData(call v1.DebugCall) (req v1.DebugRequest, err error) {
-	isInterfaceHasDebugRecord, err := s.DebugRepo.IsInterfaceHasDebug(call.InterfaceId)
-
-	if isInterfaceHasDebugRecord {
-		req, err = s.GetLastReq(call.InterfaceId)
-	} else {
-		req, err = s.EndpointService.GenerateReq(call.InterfaceId, call.EndpointId)
-	}
-
-	req.BaseUrl, req.ShareVars, req.EnvVars, req.GlobalEnvVars, req.GlobalParamVars =
-		s.DebugSceneService.LoadScene(req.InterfaceId, req.EndpointId, req.ProcessorId, req.UsedBy)
-
-	return
-}
-
-func (s *DebugService) SubmitResult(req v1.SubmitDebugResultRequest) (err error) {
+func (s *DebugInvokeService) SubmitResult(req v1.SubmitDebugResultRequest) (err error) {
 	usedBy := req.Request.UsedBy
 	var serveId, processorId, scenarioId, projectId uint
 
@@ -70,10 +56,10 @@ func (s *DebugService) SubmitResult(req v1.SubmitDebugResultRequest) (err error)
 	return
 }
 
-func (s *DebugService) Create(req v1.DebugRequest, resp v1.DebugResponse,
-	serveId, processorId, scenarioId, projectId uint) (po model.Debug, err error) {
+func (s *DebugInvokeService) Create(req v1.DebugRequest, resp v1.DebugResponse,
+	serveId, processorId, scenarioId, projectId uint) (po model.DebugInvoke, err error) {
 
-	po = model.Debug{
+	po = model.DebugInvoke{
 		ServeId: serveId,
 
 		ProcessorId: processorId,
@@ -97,13 +83,13 @@ func (s *DebugService) Create(req v1.DebugRequest, resp v1.DebugResponse,
 	return
 }
 
-func (s *DebugService) ListByInterface(interfId int) (invocations []model.Debug, err error) {
+func (s *DebugInvokeService) ListByInterface(interfId int) (invocations []model.DebugInvoke, err error) {
 	invocations, err = s.DebugRepo.List(interfId)
 
 	return
 }
 
-func (s *DebugService) GetLastResp(interfaceId uint) (resp v1.DebugResponse, err error) {
+func (s *DebugInvokeService) GetLastResp(interfaceId uint) (resp v1.DebugResponse, err error) {
 	po, _ := s.DebugRepo.GetLast(interfaceId)
 
 	if po.ID > 0 {
@@ -118,19 +104,19 @@ func (s *DebugService) GetLastResp(interfaceId uint) (resp v1.DebugResponse, err
 	return
 }
 
-func (s *DebugService) GetLastReq(interfId uint) (req v1.DebugRequest, err error) {
-	invocation, _ := s.DebugRepo.GetLast(interfId)
+//func (s *DebugInvokeService) GetLastReq(interfId uint) (req v1.DebugRequest, err error) {
+//	invocation, _ := s.DebugRepo.GetLast(interfId)
+//
+//	if invocation.ID > 0 {
+//		json.Unmarshal([]byte(invocation.ReqContent), &req)
+//	} else {
+//		req = v1.DebugRequest{}
+//	}
+//
+//	return
+//}
 
-	if invocation.ID > 0 {
-		json.Unmarshal([]byte(invocation.ReqContent), &req)
-	} else {
-		req = v1.DebugRequest{}
-	}
-
-	return
-}
-
-func (s *DebugService) GetAsInterface(id int) (interf model.ProcessorInterface, interfResp v1.DebugResponse, err error) {
+func (s *DebugInvokeService) GetAsInterface(id int) (interf model.ProcessorInterface, interfResp v1.DebugResponse, err error) {
 	invocation, err := s.DebugRepo.Get(uint(id))
 
 	interfReq := v1.DebugRequest{}
@@ -145,7 +131,7 @@ func (s *DebugService) GetAsInterface(id int) (interf model.ProcessorInterface, 
 	return
 }
 
-func (s *DebugService) Delete(id uint) (err error) {
+func (s *DebugInvokeService) Delete(id uint) (err error) {
 	err = s.DebugRepo.Delete(id)
 
 	return

@@ -7,12 +7,12 @@ import (
 	"github.com/kataras/iris/v12"
 )
 
-type InvocationCtrl struct {
-	InvocationService *service.InterfaceService `inject:""`
+type ExecCtrl struct {
+	ExecService *service.ExecService `inject:""`
 }
 
 // InvokeInterface
-func (c *InvocationCtrl) InvokeInterface(ctx iris.Context) {
+func (c *ExecCtrl) InvokeInterface(ctx iris.Context) {
 	req := domain.InvokeCall{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -20,7 +20,7 @@ func (c *InvocationCtrl) InvokeInterface(ctx iris.Context) {
 		return
 	}
 
-	resp, err := c.InvocationService.Run(req)
+	resp, err := c.ExecService.Run(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
 		return

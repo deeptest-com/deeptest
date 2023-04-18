@@ -19,7 +19,7 @@ type RemoteService struct {
 
 // for interface invocation in both endpoint and scenario
 func (s *RemoteService) GetInterfaceToExec(req domain.InvokeCall) (ret v1.DebugRequest) {
-	url := fmt.Sprintf("debugs/loadData")
+	url := fmt.Sprintf("debugs/interface/load")
 	body, err := json.Marshal(req.Data)
 	if err != nil {
 		logUtils.Infof("marshal request data failed, error, %s", err.Error())
@@ -66,7 +66,7 @@ func (s *RemoteService) GetInterfaceToExec(req domain.InvokeCall) (ret v1.DebugR
 	return
 }
 func (s *RemoteService) SubmitInterfaceResult(reqObj v1.DebugRequest, respObj v1.DebugResponse, serverUrl, token string) (err error) {
-	url := fmt.Sprintf("debugs/submitResult")
+	url := fmt.Sprintf("debugs/invoke/submitResult")
 
 	data := v1.SubmitDebugResultRequest{
 		Request:  reqObj,

@@ -31,6 +31,8 @@
       <SchemaEditor
           @generateFromJSON="generateFromJSON"
           @change="handleChange"
+          :contentStr="JSON.stringify(activeResBodySchema?.content)"
+          :exampleStr="JSON.stringify(activeResBodySchema?.examples)"
           @generateExample="handleGenerateExample"
           :tab-content-style="{width:'600px'}"
           :value="activeResBodySchema"/>

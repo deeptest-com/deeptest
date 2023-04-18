@@ -30,15 +30,17 @@ func (c *EndpointCtrl) Index(ctx iris.Context) {
 
 func (c *EndpointCtrl) Save(ctx iris.Context) {
 	var req v1.EndpointReq
-	if err := ctx.ReadJSON(&req); err == nil {
-		req.CreateUser = multi.GetUsername(ctx)
-		//req.CreateUser = "admin"
-		endpoint := c.requestParser(req)
-		res, _ := c.EndpointService.Save(endpoint)
-		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res})
-	} else {
+	err := ctx.ReadJSON(&req)
+
+	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 	}
+
+	req.CreateUser = multi.GetUsername(ctx)
+	endpoint := c.requestParser(req)
+	res, _ := c.EndpointService.Save(endpoint)
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res})
+
 	return
 }
 

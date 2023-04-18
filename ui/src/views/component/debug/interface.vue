@@ -72,10 +72,17 @@ const selectedMethod = ref(currInterface.value?.method ? currInterface.value?.me
 const changeMethod = () => {
   console.log('changeMethod', selectedMethod.value, interfaceMethodToObjMap)
 
-  store.dispatch('Debug/setInterface', interfaceMethodToObjMap.value[selectedMethod.value]);
+  const interf = interfaceMethodToObjMap.value[selectedMethod.value]
+
+  store.dispatch('Debug/setInterface', interf);
   store.dispatch('Debug/loadDebugData', {
-    endpointId: currEndpointId.value, interfaceId: interfaceMethodToObjMap.value[selectedMethod.value].id,
+    interfaceId: interf.id,
+    endpointId: currEndpointId.value,
+    usedBy: usedBy,
   });
+
+  store.dispatch('Debug/getLastInvocationResp', interf.id)
+  store.dispatch('Debug/listInvocation', interf.id)
 }
 changeMethod()
 
@@ -98,7 +105,7 @@ onUnmounted(() => {
 
 const resize = () => {
   resizeHeight('debug-form', 'top-panel', 'design-splitter-v', 'bottom-panel',
-      200, 100)
+      200, 360)
 }
 </script>
 
@@ -120,6 +127,7 @@ const resize = () => {
     flex-direction: column;
     position: relative;
     height: 100%;
+    max-height: 800px;
 
     #top-panel {
       height: 50%;
@@ -129,8 +137,7 @@ const resize = () => {
     }
 
     #bottom-panel {
-      height: 50%;
-      min-height: 100px;
+      height: 360px;
       width: 100%;
       padding: 4px;
       overflow: auto;

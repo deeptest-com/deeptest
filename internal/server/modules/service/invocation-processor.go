@@ -37,8 +37,8 @@ func (s *InvocationProcessorService) LoadInterfaceExecData(req v1.DebugRequest) 
 func (s *InvocationProcessorService) SubmitInterfaceInvokeResult(req v1.SubmitDebugResultRequest) (err error) {
 	processorInterface, _ := s.ProcessorInterfaceRepo.GetDetail(req.Response.Id)
 
-	s.ExtractorService.ExtractInterface(processorInterface.ID, req.Response, consts.UsedByScenario)
-	s.CheckpointService.CheckInterface(processorInterface.ID, req.Response, consts.UsedByScenario)
+	s.ExtractorService.ExtractInterface(processorInterface.ID, uint(0), uint(0), req.Response, consts.ScenarioDebug)
+	s.CheckpointService.CheckInterface(processorInterface.ID, req.Response, consts.ScenarioDebug)
 
 	_, err = s.CreateForScenarioInterface(req.Request, req.Response, processorInterface.ProjectId)
 
@@ -74,11 +74,11 @@ func (s *InvocationProcessorService) CreateForScenarioInterface(req v1.DebugRequ
 func (s *InvocationProcessorService) ReplaceEnvironmentAndExtractorVariables(req v1.DebugRequest) (
 	ret v1.DebugRequest, err error) {
 
-	interf, _ := s.ProcessorInterfaceRepo.Get(req.InterfaceId)
-
-	req.Environment, _ = s.VariableService.GetEnvironmentVariablesByInterface(req.InterfaceId, req.UsedBy)
-	req.Variables, _ = s.VariableService.GetVariablesByInterface(req.InterfaceId, req.UsedBy)
-	req.Datapools, _ = s.DatapoolService.ListForExec(interf.ProjectId)
+	//interf, _ := s.ProcessorInterfaceRepo.Get(req.InterfaceId)
+	//
+	//req.Environment, _ = s.VariableService.GetEnvVarsByInterface(req.InterfaceId, req.UsedBy)
+	//req.Variables, _ = s.VariableService.GetShareVarsByInterface(req.InterfaceId, req.UsedBy)
+	//req.Datapools, _ = s.DatapoolService.ListForExec(interf.ProjectId)
 
 	ret = req
 

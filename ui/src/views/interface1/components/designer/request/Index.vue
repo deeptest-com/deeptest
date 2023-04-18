@@ -31,7 +31,7 @@ const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
 const store = useStore<{ Interface1: StateType; Scenario: ScenarioStateType }>();
 const interfaceData = computed<Interface>(
-    () => usedBy === UsedBy.interface ? store.state.Interface1.interfaceData : store.state.Scenario.interfaceData);
+    () => usedBy === UsedBy.InterfaceDebug ? store.state.Interface1.interfaceData : store.state.Scenario.interfaceData);
 
 const invokeInterface = async () => {
   console.log('invokeInterface', interfaceData.value)
@@ -44,14 +44,14 @@ const invokeInterface = async () => {
     data: prepareDataForRequest(Object.assign({usedBy}, interfaceData.value)),
   }
 
-  usedBy === UsedBy.interface ? store.dispatch('Interface1/invokeInterface', data) :
+  usedBy === UsedBy.InterfaceDebug ? store.dispatch('Interface1/invokeInterface', data) :
     store.dispatch('Scenario/invokeInterface', data)
 };
 
 const saveInterface = (data) => {
   console.log('saveInterface', data)
 
-  if (usedBy === UsedBy.interface) {
+  if (usedBy === UsedBy.InterfaceDebug) {
     store.dispatch('Interface1/saveInterface', data).then((res) => {
       if (res === true) {
         notification.success({

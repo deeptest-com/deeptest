@@ -49,19 +49,19 @@ export default defineComponent({
 
     const store = useStore<{ Interface1: StateType, Scenario: ScenarioStateType }>();
     const interfaceData = computed<Interface>(
-        () => usedBy === UsedBy.interface ? store.state.Interface1.interfaceData : store.state.Scenario.interfaceData);
+        () => usedBy === UsedBy.InterfaceDebug ? store.state.Interface1.interfaceData : store.state.Scenario.interfaceData);
     const invocationsData = computed<any[]>(() =>
-        usedBy === UsedBy.interface ? store.state.Interface1.invocationsData : store.state.Scenario.invocationsData);
+        usedBy === UsedBy.InterfaceDebug ? store.state.Interface1.invocationsData : store.state.Scenario.invocationsData);
 
     const getRequestAsInterface = (id) => {
       console.log('getRequestAsInterface', id)
-      usedBy === UsedBy.interface ? store.dispatch('Interface1/getInvocationAsInterface', id) :
+      usedBy === UsedBy.InterfaceDebug ? store.dispatch('Interface1/getInvocationAsInterface', id) :
           store.dispatch('Scenario/getInvocationAsInterface', id)
     }
 
     const removeHistory = (id) => {
       console.log('removeHistory', id)
-      usedBy === UsedBy.interface ? store.dispatch('Interface1/removeInvocation', {id: id, interfaceId: interfaceData.value.id}) :
+      usedBy === UsedBy.InterfaceDebug ? store.dispatch('Interface1/removeInvocation', {id: id, interfaceId: interfaceData.value.id}) :
           store.dispatch('Scenario/removeInvocation', {id: id, interfaceId: interfaceData.value.id})
     }
 

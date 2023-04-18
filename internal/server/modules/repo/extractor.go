@@ -19,7 +19,7 @@ type ExtractorRepo struct {
 	ProcessorInterfaceRepo *ProcessorInterfaceRepo `inject:""`
 }
 
-func (r *ExtractorRepo) List(interfaceId uint, usedBy consts.UsedBy) (pos []model.InterfaceExtractor, err error) {
+func (r *ExtractorRepo) List(interfaceId uint, usedBy consts.UsedBy) (pos []model.DebugInterfaceExtractor, err error) {
 	err = r.DB.
 		Where("interface_id=?", interfaceId).
 		Where("used_by = ? AND NOT deleted", usedBy).
@@ -41,7 +41,7 @@ func (r *ExtractorRepo) ListTo(interfaceId uint, usedBy consts.UsedBy) (ret []ag
 	return
 }
 
-func (r *ExtractorRepo) Get(id uint) (extractor model.InterfaceExtractor, err error) {
+func (r *ExtractorRepo) Get(id uint) (extractor model.DebugInterfaceExtractor, err error) {
 	err = r.DB.
 		Where("id=?", id).
 		Where("NOT deleted").
@@ -49,10 +49,10 @@ func (r *ExtractorRepo) Get(id uint) (extractor model.InterfaceExtractor, err er
 	return
 }
 
-func (r *ExtractorRepo) GetByInterfaceVariable(variable string, id, interfaceId uint) (extractor model.InterfaceExtractor, err error) {
+func (r *ExtractorRepo) GetByInterfaceVariable(variable string, id, interfaceId uint) (extractor model.DebugInterfaceExtractor, err error) {
 	db := r.DB.Model(&extractor).
 		Where("variable = ? AND interface_id =? AND used_by = ? AND not deleted",
-			variable, interfaceId, consts.UsedByInterface)
+			variable, interfaceId, consts.InterfaceDebug)
 
 	if id > 0 {
 		db.Where("id != ?", id)
@@ -63,9 +63,9 @@ func (r *ExtractorRepo) GetByInterfaceVariable(variable string, id, interfaceId 
 	return
 }
 
-func (r *ExtractorRepo) Save(extractor *model.InterfaceExtractor) (id uint, bizErr _domain.BizErr) {
+func (r *ExtractorRepo) Save(extractor *model.DebugInterfaceExtractor) (id uint, bizErr _domain.BizErr) {
 	po, _ := r.GetByInterfaceVariable(extractor.Variable, extractor.ID, extractor.InterfaceId)
-	if po.ID > 0 && extractor.UsedBy == consts.UsedByInterface {
+	if po.ID > 0 && extractor.UsedBy == consts.InterfaceDebug {
 		bizErr.Code = _domain.ErrNameExist.Code
 		return
 	}
@@ -81,7 +81,7 @@ func (r *ExtractorRepo) Save(extractor *model.InterfaceExtractor) (id uint, bizE
 	return
 }
 
-func (r *ExtractorRepo) Update(extractor *model.InterfaceExtractor) (err error) {
+func (r *ExtractorRepo) Update(extractor *model.DebugInterfaceExtractor) (err error) {
 	err = r.DB.Updates(extractor).Error
 	if err != nil {
 		return
@@ -90,7 +90,7 @@ func (r *ExtractorRepo) Update(extractor *model.InterfaceExtractor) (err error) 
 	return
 }
 
-func (r *ExtractorRepo) CreateOrUpdateResult(extractor *model.InterfaceExtractor, usedBy consts.UsedBy) (err error) {
+func (r *ExtractorRepo) CreateOrUpdateResult(extractor *model.DebugInterfaceExtractor, usedBy consts.UsedBy) (err error) {
 	po, _ := r.GetByInterfaceVariable(extractor.Variable, extractor.ID, extractor.InterfaceId)
 	if po.ID > 0 {
 		extractor.ID = po.ID
@@ -107,7 +107,7 @@ func (r *ExtractorRepo) CreateOrUpdateResult(extractor *model.InterfaceExtractor
 }
 
 func (r *ExtractorRepo) Delete(id uint) (err error) {
-	err = r.DB.Model(&model.InterfaceExtractor{}).
+	err = r.DB.Model(&model.DebugInterfaceExtractor{}).
 		Where("id=?", id).
 		Update("deleted", true).
 		Error
@@ -115,18 +115,21 @@ func (r *ExtractorRepo) Delete(id uint) (err error) {
 	return
 }
 
-func (r *ExtractorRepo) UpdateResult(extractor model.InterfaceExtractor, usedBy consts.UsedBy) (err error) {
+func (r *ExtractorRepo) UpdateResult(extractor model.DebugInterfaceExtractor, usedBy consts.UsedBy) (err error) {
 	extractor.Result = strings.TrimSpace(extractor.Result)
-	if extractor.Result == "" {
-		return
+
+	values := map[string]interface{}{}
+	if extractor.Result != "" {
+		values["result"] = extractor.Result
+	}
+	if extractor.Scope != "" {
+		values["scope"] = extractor.Scope
 	}
 
-	values := map[string]interface{}{
-		"result": extractor.Result,
-	}
 	err = r.DB.Model(&extractor).
 		Where("id = ? AND used_by=?", extractor.ID, usedBy).
 		Updates(values).Error
+
 	if err != nil {
 		logUtils.Errorf("update scenario error", zap.String("error:", err.Error()))
 		return err
@@ -134,7 +137,7 @@ func (r *ExtractorRepo) UpdateResult(extractor model.InterfaceExtractor, usedBy 
 
 	return
 }
-func (r *ExtractorRepo) UpdateResultToExecLog(extractor model.InterfaceExtractor, log *model.ExecLogProcessor) (
+func (r *ExtractorRepo) UpdateResultToExecLog(extractor model.DebugInterfaceExtractor, log *model.ExecLogProcessor) (
 	logExtractor model.ExecLogExtractor, err error) {
 
 	copier.CopyWithOption(&logExtractor, extractor, copier.Option{DeepCopy: true})
@@ -150,7 +153,7 @@ func (r *ExtractorRepo) UpdateResultToExecLog(extractor model.InterfaceExtractor
 }
 
 func (r *ExtractorRepo) ListExtractorVariableByInterface(interfaceId uint) (variables []v1.Variable, err error) {
-	err = r.DB.Model(&model.InterfaceExtractor{}).
+	err = r.DB.Model(&model.DebugInterfaceExtractor{}).
 		Select("id, variable AS name, result AS value").
 		Where("interface_id=?", interfaceId).
 		Where("NOT deleted AND NOT disabled").
@@ -163,13 +166,13 @@ func (r *ExtractorRepo) ListExtractorVariableByInterface(interfaceId uint) (vari
 func (r *ExtractorRepo) ListValidExtractorVariableForInterface(interfaceId, projectId uint, usedBy consts.UsedBy) (
 	variables []v1.Variable, err error) {
 
-	q := r.DB.Model(&model.InterfaceExtractor{}).
+	q := r.DB.Model(&model.DebugInterfaceExtractor{}).
 		Select("id, variable AS name, result AS value, "+
 			"interface_id AS interfaceId, scope AS scope").
 		Where("used_by = ?", usedBy).
 		Where("NOT deleted AND NOT disabled")
 
-	if usedBy == consts.UsedByInterface {
+	if usedBy == consts.InterfaceDebug {
 		q.Where("project_id=?", projectId)
 
 	} else {
@@ -179,7 +182,7 @@ func (r *ExtractorRepo) ListValidExtractorVariableForInterface(interfaceId, proj
 		r.GetParentIds(processorInterface.ProcessorId, &parentIds)
 
 		q.Where("scenario_id=?", processorInterface.ScenarioId).
-			Where("scope = ? OR processor_id IN(?)", consts.Global, parentIds)
+			Where("scope = ? OR processor_id IN(?)", consts.Public, parentIds)
 	}
 
 	err = q.Order("created_at ASC").

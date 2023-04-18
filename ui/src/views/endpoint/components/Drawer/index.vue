@@ -40,7 +40,7 @@
 
     </a-card>
 
-    <div class="drawer-btns">
+    <div v-if="key === 'request'" class="drawer-btns">
       <a-space>
         <a-button type="primary" @click="save">保存</a-button>
         <a-button @click="cancel">取消</a-button>
@@ -132,7 +132,6 @@ async function save() {
   );
   emit('close');
 }
-
 
 </script>
 <style lang="less" scoped>

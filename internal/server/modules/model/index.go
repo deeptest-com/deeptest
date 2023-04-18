@@ -20,6 +20,7 @@ var (
 		&Datapool{},
 		&Environment{},
 		&EnvironmentVar{},
+		&ShareVariable{},
 
 		&Interface{},
 		&InterfaceParam{},

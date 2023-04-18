@@ -72,9 +72,9 @@ const {t} = useI18n();
 
 const store = useStore<{ Interface1: StateType, Scenario: ScenarioStateType }>();
 const interfaceData = computed<Interface>(
-    () => usedBy === UsedBy.interface ? store.state.Interface1.interfaceData : store.state.Scenario.interfaceData);
+    () => usedBy === UsedBy.InterfaceDebug ? store.state.Interface1.interfaceData : store.state.Scenario.interfaceData);
 const responseData = computed<Response>(() =>
-    usedBy === UsedBy.interface ? store.state.Interface1.responseData : store.state.Scenario.responseData);
+    usedBy === UsedBy.InterfaceDebug ? store.state.Interface1.responseData : store.state.Scenario.responseData);
 
 const editorOptions = ref(Object.assign({usedWith: 'response'}, MonacoOptions) )
 const content = ref(formatXml(responseData.value.content))

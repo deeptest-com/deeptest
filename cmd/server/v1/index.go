@@ -36,6 +36,7 @@ type IndexModule struct {
 	AuthModule        *router.AuthModule        `inject:""`
 	EnvironmentModule *router.EnvironmentModule `inject:""`
 	ExtractorModule   *router.ExtractorModule   `inject:""`
+	ShareVarModule    *router.ShareVarModule    `inject:""`
 	CheckpointModule  *router.CheckpointModule  `inject:""`
 	ParserModule      *router.ParserModule      `inject:""`
 
@@ -93,6 +94,7 @@ func (m *IndexModule) Party() module.WebModule {
 		m.AuthModule.Party(),
 		m.EnvironmentModule.Party(),
 		m.ExtractorModule.Party(),
+		m.ShareVarModule.Party(),
 		m.CheckpointModule.Party(),
 		m.ParserModule.Party(),
 

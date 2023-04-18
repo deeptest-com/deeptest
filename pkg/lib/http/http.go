@@ -140,10 +140,3 @@ func GenUrlWithParams(pth string, params map[string]interface{}, baseUrl string)
 
 	return
 }
-
-func AddSepIfNeeded(utl string) string {
-	if strings.LastIndex(utl, "/") < len(utl)-1 {
-		utl += "/"
-	}
-	return utl
-}

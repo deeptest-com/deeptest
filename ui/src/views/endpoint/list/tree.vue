@@ -95,6 +95,13 @@ const nodeDataCategory = computed<any>(()=> store.state.Endpoint.nodeDataCategor
 
 const emit = defineEmits(['select']);
 
+watch(() => {
+  return currProject.value;
+}, async (newVal) => {
+  loadTree();
+}, {
+  immediate: true
+})
 
 watch(treeDataCategory, () => {
   console.log('watch treeDataCategory', treeDataCategory)

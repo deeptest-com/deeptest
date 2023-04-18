@@ -5,6 +5,7 @@ type ProcessorInterface struct {
 	InterfaceBase
 
 	ProcessorId uint `json:"processorId"`
+	InterfaceId uint `json:"interfaceId"`
 	ScenarioId  uint `json:"scenarioId"`
 
 	Children []*ProcessorInterface `gorm:"-" json:"children"`

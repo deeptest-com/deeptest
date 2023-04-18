@@ -28,7 +28,6 @@ func (s *EndpointService) Paginate(req v1.EndpointReqPaginate) (ret _domain.Page
 }
 
 func (s *EndpointService) Save(endpoint model.Endpoint) (res uint, err error) {
-	//fmt.Println(_commUtils.JsonEncode(endpoint), "++++++", _commUtils.JsonEncode(req))
 	err = s.EndpointRepo.SaveAll(&endpoint)
 	return endpoint.ID, err
 }
@@ -194,7 +193,7 @@ func (s *EndpointService) GenerateReq(interfaceId, endpointId uint) (req v1.Debu
 	copier.CopyWithOption(&req, &debugInterface, copier.Option{DeepCopy: true})
 
 	req.InterfaceId = interfaceId
-	req.UsedBy = consts.UsedByInterface
+	req.UsedBy = consts.InterfaceDebug
 
 	return
 }

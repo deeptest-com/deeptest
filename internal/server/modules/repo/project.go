@@ -112,8 +112,8 @@ func (r *ProjectRepo) Create(req v1.ProjectReq, userId uint) (id uint, bizErr *_
 		return
 	}
 
+	// create project
 	project := model.Project{ProjectBase: req.ProjectBase}
-
 	err = r.DB.Model(&model.Project{}).Create(&project).Error
 	if err != nil {
 		logUtils.Errorf("add project error", zap.String("error:", err.Error()))
@@ -122,41 +122,56 @@ func (r *ProjectRepo) Create(req v1.ProjectReq, userId uint) (id uint, bizErr *_
 		return
 	}
 
-	err = r.EnvironmentRepo.AddDefaultForProject(project.ID)
-	if err != nil {
-		logUtils.Errorf("添加项目默认环境错误", zap.String("错误:", err.Error()))
-		return
-	}
+	r.CreateProjectRes(project.ID, userId)
 
-	err = r.AddProjectMember(project.ID, userId, "admin")
+	id = project.ID
+
+	return
+}
+
+func (r *ProjectRepo) CreateProjectRes(projectId, userId uint) (err error) {
+
+	// create project member
+	err = r.AddProjectMember(projectId, userId, "admin")
 	if err != nil {
 		logUtils.Errorf("添加项目角色错误", zap.String("错误:", err.Error()))
 		return
 	}
 
-	serve, err := r.AddProjectDefaultServe(project.ID, userId)
+	// create project environment
+	err = r.EnvironmentRepo.AddDefaultForProject(projectId)
+	if err != nil {
+		logUtils.Errorf("添加项目默认环境错误", zap.String("错误:", err.Error()))
+		return
+	}
+
+	// create project serve
+	serve, err := r.AddProjectDefaultServe(projectId, userId)
 	if err != nil {
 		logUtils.Errorf("添加默认服务错误", zap.String("错误:", err.Error()))
 		return
 	}
-	err = r.AddProjectRootInterface(serve.ID, project.ID)
+
+	// create project interface category
+	err = r.AddProjectRootInterface(serve.ID, projectId)
 	if err != nil {
 		logUtils.Errorf("添加接口错误", zap.String("错误:", err.Error()))
 		return
 	}
 
-	err = r.AddProjectRootScenarioCategory(project.ID)
-	if err != nil {
-		logUtils.Errorf("添加场景分类错误", zap.String("错误:", err.Error()))
-		return
-	}
-	err = r.AddProjectRootPlanCategory(project.ID)
+	// create project scenario category
+	err = r.AddProjectRootScenarioCategory(projectId)
 	if err != nil {
 		logUtils.Errorf("添加场景分类错误", zap.String("错误:", err.Error()))
 		return
 	}
 
-	id = project.ID
+	// create project plan category
+	err = r.AddProjectRootPlanCategory(projectId)
+	if err != nil {
+		logUtils.Errorf("添加场景分类错误", zap.String("错误:", err.Error()))
+		return
+	}
 
 	return
 }

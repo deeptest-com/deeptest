@@ -13,7 +13,7 @@ type InvocationCtrl struct {
 
 // InvokeInterface
 func (c *InvocationCtrl) InvokeInterface(ctx iris.Context) {
-	req := domain.InvocationReq{}
+	req := domain.InvokeCall{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})

@@ -642,7 +642,7 @@ const StoreModel: ModuleType = {
 
         async listExtractor({commit, dispatch, state}) {
             try {
-                const resp = await listExtractor(state.interfaceData.id, UsedBy.scenario);
+                const resp = await listExtractor(state.interfaceData.id, UsedBy.ScenarioDebug);
                 const {data} = resp;
                 commit('setExtractors', data);
                 return true;
@@ -652,7 +652,7 @@ const StoreModel: ModuleType = {
         },
         async listCheckpoint({commit, state}) {
             try {
-                const resp = await listCheckpoint(state.interfaceData.id, UsedBy.scenario);
+                const resp = await listCheckpoint(state.interfaceData.id, UsedBy.ScenarioDebug);
                 const {data} = resp;
                 commit('setCheckpoints', data);
                 return true;
@@ -663,7 +663,7 @@ const StoreModel: ModuleType = {
         async listValidExtractorVariableForInterface({commit, dispatch, state}) {
             try {
                 console.log('listValidExtractorVariableForInterface')
-                const resp = await listValidExtractorVariableForInterface(state.interfaceData.id, UsedBy.scenario);
+                const resp = await listValidExtractorVariableForInterface(state.interfaceData.id, UsedBy.ScenarioDebug);
                 const {data} = resp;
                 commit('setValidExtractorVariables', data);
                 return true;

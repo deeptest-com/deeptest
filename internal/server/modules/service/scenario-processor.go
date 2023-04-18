@@ -101,16 +101,15 @@ func (s *ScenarioProcessorService) CloneInterface(interfaceId uint, processor mo
 }
 
 func (s *ScenarioProcessorService) CopyExtractors(interfaceId, processorInterfaceId uint, processor model.Processor) {
-	pos, _ := s.ExtractorService.List(interfaceId, consts.UsedByInterface)
+	pos, _ := s.ExtractorService.List(interfaceId, consts.InterfaceDebug)
 
 	for _, po := range pos {
-		extractor := model.InterfaceExtractor{}
+		extractor := model.DebugInterfaceExtractor{}
 
 		copier.CopyWithOption(&extractor, po, copier.Option{DeepCopy: true})
 		extractor.ID = 0
-		extractor.UsedBy = consts.UsedByScenario
+		extractor.UsedBy = consts.ScenarioDebug
 		extractor.InterfaceId = processorInterfaceId
-		extractor.ProcessorId = processor.ID
 		extractor.ScenarioId = processor.ScenarioId
 
 		s.ExtractorRepo.Save(&extractor)
@@ -120,14 +119,14 @@ func (s *ScenarioProcessorService) CopyExtractors(interfaceId, processorInterfac
 }
 
 func (s *ScenarioProcessorService) CopyCheckpoints(interfaceId, processorInterfaceId uint, processor model.Processor) {
-	pos, _ := s.CheckpointService.List(interfaceId, consts.UsedByInterface)
+	pos, _ := s.CheckpointService.List(interfaceId, consts.InterfaceDebug)
 
 	for _, po := range pos {
 		checkpoint := model.InterfaceCheckpoint{}
 
 		copier.CopyWithOption(&checkpoint, po, copier.Option{DeepCopy: true})
 		checkpoint.ID = 0
-		checkpoint.UsedBy = consts.UsedByScenario
+		checkpoint.UsedBy = consts.ScenarioDebug
 		checkpoint.InterfaceId = processorInterfaceId
 		checkpoint.ScenarioId = processor.ScenarioId
 

@@ -36,7 +36,7 @@ export default defineComponent({
     const {t} = useI18n();
     const store = useStore<{ Interface1: StateType; Scenario: ScenarioStateType }>();
     const responseData = computed<any>(
-        () => UsedBy.interface ? store.state.Interface1.responseData : store.state.Scenario.responseData);
+        () => UsedBy.InterfaceDebug ? store.state.Interface1.responseData : store.state.Scenario.responseData);
 
     const doSomething = (e) => {
       console.log('doSomething', e)

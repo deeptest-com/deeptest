@@ -152,9 +152,9 @@ const operatorsForString = getCompareOptsForString()
 const operatorsForCode = getCompareOptsForRespCode()
 
 const interfaceData = computed<Interface>(
-    () => usedBy === UsedBy.interface ? store.state.Interface1.interfaceData : store.state.Scenario.interfaceData);
+    () => usedBy === UsedBy.InterfaceDebug ? store.state.Interface1.interfaceData : store.state.Scenario.interfaceData);
 const checkpointsData = computed(
-    () => usedBy === UsedBy.interface ? store.state.Interface1.checkpointsData: store.state.Scenario.checkpointsData);
+    () => usedBy === UsedBy.InterfaceDebug ? store.state.Interface1.checkpointsData: store.state.Scenario.checkpointsData);
 
 watch(interfaceData, () => {
   console.log('watch interfaceData')
@@ -162,7 +162,7 @@ watch(interfaceData, () => {
 }, {deep: true})
 
 const listCheckPoint = () => {
-  usedBy === UsedBy.interface ? store.dispatch('Interface1/listCheckpoint') :
+  usedBy === UsedBy.InterfaceDebug ? store.dispatch('Interface1/listCheckpoint') :
       store.dispatch('Scenario/listCheckpoint')
 }
 listCheckPoint()
@@ -170,7 +170,7 @@ listCheckPoint()
 const model = ref({
   type: CheckpointType.responseStatus,
   expression: '',
-  usedBy: UsedBy.interface,
+  usedBy: UsedBy.InterfaceDebug,
   extractorVariable: '',
   operator: ComparisonOperator.equal,
   value: ''} as Checkpoint)
@@ -208,7 +208,7 @@ const add = () => {
   model.value = {
     type: CheckpointType.responseStatus,
     expression: '',
-    usedBy: UsedBy.interface,
+    usedBy: UsedBy.InterfaceDebug,
     extractorVariable: '',
     operator: ComparisonOperator.equal,
     value: ''} as Checkpoint

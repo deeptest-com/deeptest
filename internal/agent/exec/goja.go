@@ -44,7 +44,7 @@ func InitJsRuntime() {
 		Environment[name] = val
 	})
 	MyVm.JsRuntime.Set("clearEnvironmentVariable", func(name string) {
-		Environment = domain.Environment{}
+		Environment = domain.EnvVars{}
 	})
 
 	MyVm.JsRuntime.Set("getVariable", func(name string) interface{} {
@@ -54,7 +54,7 @@ func InitJsRuntime() {
 		Variables[name] = val
 	})
 	MyVm.JsRuntime.Set("clearVariable", func(name string) {
-		Variables = domain.Variables{}
+		Variables = domain.ShareVars{}
 	})
 
 	// load global script

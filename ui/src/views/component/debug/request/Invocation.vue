@@ -1,21 +1,6 @@
 <template>
   <div class="invocation-main">
-    <div class="methods">
-      <a-dropdown trigger="click">
-        <template #overlay>
-          <a-menu @click="selectMethod">
-            <a-menu-item v-for="(item) in methods" :key="item">{{ item }}</a-menu-item>
-          </a-menu>
-        </template>
-        <a-button class="dp-bg-light">
-          <span class="curr-method">{{ debugData.method }}</span>
-          <DownOutlined />
-        </a-button>
-      </a-dropdown>
-    </div>
-    <div class="url">
-      <a-input v-model:value="debugData.url" v-contextmenu="onContextMenuShow" class="dp-bg-light" />
-    </div>
+    <div class="space"></div>
     <div class="send">
       <a-dropdown-button type="primary" trigger="click" @click="sendRequest">
         <span>发送</span>
@@ -31,6 +16,7 @@
         <template #icon><DownOutlined /></template>
       </a-dropdown-button>
     </div>
+
     <div class="save">
       <a-dropdown-button trigger="click" @click="save" class="dp-bg-light">
         <SaveOutlined />
@@ -225,13 +211,7 @@ const onMenuClick = (key) => {
 .invocation-main {
   display: flex;
   padding: 0;
-  .methods {
-    width: 116px;
-    .curr-method {
-      width: 65px;
-    }
-  }
-  .url {
+  .space {
     flex: 1;
   }
   .send {

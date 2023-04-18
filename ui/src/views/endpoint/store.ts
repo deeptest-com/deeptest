@@ -118,6 +118,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         example2schema: Action<StateType, StateType>;
         schema2example: Action<StateType, StateType>;
         getRefsOptions: Action<StateType, StateType>;
+        getAllRefs: Action<StateType, StateType>;
     }
 }
 
@@ -595,6 +596,24 @@ const StoreModel: ModuleType = {
                 });
             } else {
                 return null
+            }
+        },
+        // 获取可选组件信息
+        async getAllRefs({commit}, payload: any) {
+            const res = await getSchemaList({
+                ...payload,
+                "page": 1,
+                "pageSize": 100
+            });
+            if (res.code === 0) {
+                res.data.result.forEach((item: any) => {
+                    item.label = item.ref;
+                    item.value = item.ref;
+
+                })
+                return res.data.result;
+            } else {
+               return null;
             }
         },
     }

@@ -763,15 +763,4 @@ export const generateSchemaByArray = (arr: any[]): any => {
     }, res);
     return res;
 };
-/**
- * 移动光标在最后一个位置
- *
- * */
-export const moveCursorToEnd = (dom: Object): void => {
-    let range;
-    if (window.getSelection) {//ie11 10 9 ff safari
-        range = window.getSelection();//创建range
-        range.selectAllChildren(dom);//range 选择obj下所有子内容
-        range.collapseToEnd();//光标移至最后
-    }
-};
+

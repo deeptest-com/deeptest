@@ -24,7 +24,6 @@
         </a-space>
       </template>
     </a-table>
-
     <!-- ::::编辑scheme组件 -->
     <a-modal v-model:visible="schemeVisible"
              @cancel="handleSchemeCancel"
@@ -67,7 +66,9 @@
               @generateExample="handleGenerateExample"
               @change="handleContentChange"
               :tab-content-style="{width:'100%'}"
-              :value="activeSchema"/>
+              :refs-options="refsOptions"
+              :contentStr="contentStr"
+              :exampleStr="exampleStr"/>
         </div>
         <!-- ::::代码模式 -->
         <div class="content-code" v-if="showMode === 'code'">
@@ -84,17 +85,15 @@
         </div>
       </div>
     </a-modal>
-
   </div>
 </template>
 <script setup lang="ts">
-
 import {
   computed,
   defineProps,
   ref,
   watch,
-  createVNode
+  createVNode, onMounted
 } from 'vue';
 import {useStore} from 'vuex';
 import {Modal} from 'ant-design-vue';
@@ -107,6 +106,7 @@ import EditAndShowField from '@/components/EditAndShow/index.vue';
 import {MonacoOptions} from '@/utils/const';
 import {schemaColumns} from '../../config';
 import {StateType as ProjectSettingStateType} from '../../store';
+import cloneDeep from "lodash/cloneDeep";
 
 const props = defineProps({
   serveId: {
@@ -152,8 +152,8 @@ const schemaType = ref('object');
 const exampleStr = ref('');
 const keyword = ref('');
 
-
 const store = useStore<{ ProjectSetting: ProjectSettingStateType }>();
+
 const dataSource = computed<any>(() => store.state.ProjectSetting.schemaList);
 
 async function onSearch(e: any) {
@@ -186,7 +186,8 @@ async function switchMode(val: any) {
 }
 
 const schemeVisibleKey = ref(0);
-const edit = (record: any) => {
+const edit = (value: any) => {
+  const record:any = cloneDeep(value);
   schemeVisible.value = true;
   record.content = record.content && typeof record.content === 'string' ? JSON.parse(record.content) : {type: 'object'};
   record.examples = record.examples && typeof record.examples === 'string' ? JSON.parse(record.examples) : [];
@@ -316,6 +317,7 @@ watch(() => {
 }, {
   immediate: true
 })
+
 watch(() => {
   return schemeVisible.value
 }, () => {
@@ -324,6 +326,12 @@ watch(() => {
   immediate: true
 })
 
+const refsOptions = ref([]);
+onMounted(async () => {
+  refsOptions.value = await store.dispatch('Endpoint/getAllRefs', {
+    "serveId": props.serveId,
+  });
+})
 
 </script>
 

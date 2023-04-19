@@ -19,6 +19,22 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
     ],
   },
   {
+    title: '工作台',
+    path: '/workbench',
+    redirect: '/workbench/index',
+    component: BlankLayout,
+    children: [
+      {
+        icon: 'home',
+        title: '工作台',
+        path: 'index/:id',
+        component: () => import('@/views/workbench/index.vue'),
+        hidden: false,
+      },
+  
+    ],
+  },
+  {
     title: 'index-layout.menu',
     path: '/project',
     redirect: '/project/index',

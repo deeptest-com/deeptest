@@ -147,7 +147,7 @@ import * as echarts from "echarts";
 </script>
 <style lang="less" scoped>
 .statistics {
-  padding:  16px;
+  // padding:  16px;
   .card-content {
     display: flex;
     justify-content: space-between;

@@ -326,8 +326,15 @@ const StoreModel: ModuleType = {
         // extractor variable
         async clearShareVar({commit, dispatch, state}, payload: any) {
             try {
-                const resp = await clearShareVar(state.debugData.id);
-                const {data} = resp;
+                let id = 0
+                if (state.usedBy === UsedBy.InterfaceDebug)
+                    id = state.currEndpointId
+                else if (state.usedBy === UsedBy.InterfaceDebug)
+                    id = state.currProcessorId
+                else
+                    return false
+
+                await clearShareVar(id, state.usedBy);
                 dispatch('listShareVar');
 
                 return true;

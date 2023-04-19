@@ -14,7 +14,9 @@ import (
 )
 
 type ServeService struct {
-	ServeRepo *repo.ServeRepo `inject:""`
+	ServeRepo             *repo.ServeRepo             `inject:""`
+	EndpointRepo          *repo.EndpointRepo          `inject:""`
+	EndpointInterfaceRepo *repo.EndpointInterfaceRepo `inject:""`
 }
 
 func NewServeService() *ServeService {
@@ -57,7 +59,24 @@ func (s *ServeService) GetById(id uint) (res model.Serve) {
 }
 
 func (s *ServeService) DeleteById(id uint) (err error) {
+	err = s.canDelete(id)
+	if err != nil {
+		return err
+	}
 	err = s.ServeRepo.DeleteById(id)
+	return
+}
+
+func (s *ServeService) canDelete(id uint) (err error) {
+	var count int64
+	count, err = s.EndpointRepo.GetCountByServeId(id)
+	if err != nil {
+		return
+	}
+	if count != 0 {
+		err = fmt.Errorf("interfaces are created under the service,not allowed to delete")
+	}
+
 	return
 }
 
@@ -159,6 +178,24 @@ func (s *ServeService) Example2Schema(data string) (schema openapi3.Schema) {
 }
 
 func (s *ServeService) DeleteSchemaById(id uint) (err error) {
+	//TODO
+	var schema model.ComponentSchema
+	schema, err = s.ServeRepo.GetSchema(id)
+	if err != nil {
+		return err
+	}
+
+	var count int64
+	count, err = s.EndpointInterfaceRepo.GetCountByRef(schema.Ref)
+	if err != nil {
+		return
+	}
+
+	if count > 0 {
+		err = fmt.Errorf("the schema has been referenced and cannot be deleted")
+		return
+	}
+
 	err = s.ServeRepo.DeleteSchemaById(id)
 	return
 }

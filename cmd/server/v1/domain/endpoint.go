@@ -33,8 +33,8 @@ type OpenApiParam struct {
 
 type EndpointReq struct {
 	ID          int64           `json:"id"`
-	ProjectId   int64           `json:"projectId"`
-	ServeId     int64           `json:"serveId"`
+	ProjectId   int64           `json:"projectId" validate:"required"`
+	ServeId     int64           `json:"serveId" validate:"required"`
 	ServerId    int64           `json:"serverId"`
 	Status      int64           `json:"status"`
 	Title       string          `json:"title" validate:"required"`

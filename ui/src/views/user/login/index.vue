@@ -2,7 +2,7 @@
     <div class="login-form-main">
         <div class="menu-tab">
             <div :class="['menu-tab-item', activeKey === 'account' && 'menu-tab-active']">账号密码登录</div>
-            <!-- <div class="menu-tab-item">企业微信登录</div> -->
+            <div class="menu-tab-item">企业微信登录</div>
         </div>
         <a-form :wrapper-col="{ span: 24 }">
             <a-form-item label="" v-bind="validateInfos.username">
@@ -23,10 +23,10 @@
                 <router-link to="/user/forgotPassword">
                     忘记密码
                 </router-link>
-                &nbsp;&nbsp;&nbsp;
+                <!-- &nbsp;&nbsp;&nbsp;
                 <router-link to="/user/register">
                     现在注册
-                </router-link>
+                </router-link> -->
             </div>
             <a-form-item>
                 <div class="login-input-button">

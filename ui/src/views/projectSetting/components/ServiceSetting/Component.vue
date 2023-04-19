@@ -65,6 +65,7 @@
               @generateFromJSON="generateFromJSON"
               @generateExample="handleGenerateExample"
               @change="handleContentChange"
+              :serveId="serveId"
               :tab-content-style="{width:'100%'}"
               :refs-options="refsOptions"
               :contentStr="contentStr"

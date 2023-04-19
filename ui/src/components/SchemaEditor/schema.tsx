@@ -12,23 +12,51 @@ import {
     isArray,
     isNormalType,
     isObject,
+    isRef,
     removeExtraViewInfo,
     treeLevelWidth
 } from './utils';
 import {message} from "ant-design-vue";
+import {useStore} from "vuex";
+import {StateType as ServeStateType} from "@/store/serve";
 
 export default defineComponent({
     name: 'SchemeEditor',
     props: {
         value: Object,
         contentStyle: Object,
+        serveId: Number || String,
         refsOptions: Array
     },
     emits: ['change'],
     setup(props, {emit}) {
+        const store = useStore<{ Endpoint, ServeGlobal: ServeStateType }>();
         const data: any = ref(null);
-        const expandIt = (tree: any, e: any) => {
-            if (tree?.extraViewInfo) {
+        const expandIt = async (tree: any, options: any, e: any) => {
+            const {parent, ancestor,isRoot} = options;
+            // 异步获取组件详情信息
+            if (tree.ref) {
+                // 如果不是展开状态，需要获取组件详情
+                if(!tree.extraViewInfo.isExpand){
+                    const result = await store.dispatch('Endpoint/getRefDetail', {
+                        ref: tree.ref,
+                        serveId: props.serveId
+                    })
+                    // //根节点
+                    // if(isRoot){
+                    //     data.value.content = JSON.parse(result.content || '{}');
+                    // }else{
+                    //     tree.content = JSON.parse(result.content || '{}');
+                    // }
+                    tree.content = JSON.parse(result.content || '{}');
+                    data.value = addExtraViewInfo(data.value);
+                    tree.extraViewInfo.isExpand = true;
+                }else {
+                    delete tree.content;
+                    tree.extraViewInfo.isExpand = false;
+                }
+                console.log('expandit', data.value);
+            }else {
                 tree.extraViewInfo.isExpand = !tree.extraViewInfo.isExpand;
             }
         }
@@ -60,17 +88,16 @@ export default defineComponent({
             // 新旧 key 相等
             if (oldKey === newKey) {
                 return;
-            //  已经存在了 key
+                //  已经存在了 key
             } else if (keys.includes(newKey)) {
                 message.warning(`已存在名为${newKey}的属性`);
                 keys[keyIndex] = oldKey;
-            }else if(newKey){
+            } else if (newKey) {
                 keys[keyIndex] = newKey;
-            }else if(!newKey){
+            } else if (!newKey) {
                 message.warning(`属性名不能为空`);
                 keys[keyIndex] = oldKey;
             }
-
             const newObj: any = {};
             keys.forEach((item) => {
                 newObj[item] = parent.properties[item] || parent.properties[oldKey];
@@ -92,8 +119,12 @@ export default defineComponent({
                 }
                 // 非根节点
             } else {
+                // 引用类型
+                if (newProps?.ref) {
+                    debugger;
+                }
                 //  数组类型, 且个数大于 1 ，需要生成新的schema
-                if (newProps?.length > 1 && isArray(firstType)) {
+                else if (newProps?.length > 1 && isArray(firstType)) {
                     const items = parent?.type === 'array' ? ancestor : parent;
                     if (items?.properties?.[keyName]) {
                         items.properties[keyName] = generateSchemaByArray(newProps);
@@ -107,6 +138,7 @@ export default defineComponent({
                 }
             }
             data.value = addExtraViewInfo(data.value);
+            console.log('data.value', data.value);
         }
         const moveUp = (keyIndex: any, parent: any) => {
             const keys = Object.keys(parent.properties);
@@ -191,24 +223,26 @@ export default defineComponent({
             deep: true
         });
         const renderAction = (options: any) => {
-            const {isRoot, isFirst, isLast, keyIndex, parent, ancestor} = options;
+            const {isRoot, isFirst, isLast, keyIndex, parent, ancestor, isRefChildNode} = options;
             const items = parent?.type === 'array' ? ancestor : parent;
             return <div class={'action'}>
                 <Actions
                     isRoot={isRoot}
                     isFirst={isFirst || false}
                     isLast={isLast || false}
+                    isRefChildNode={isRefChildNode || false}
                     onMoveDown={moveDown.bind(this, keyIndex, items)}
                     onMoveUp={moveUp.bind(this, keyIndex, items)}
                     onCopy={copy.bind(this, keyIndex, items)}/>
             </div>
         }
         const renderExtraAction = (options: any) => {
-            const {isRoot, keyIndex, parent, tree, ancestor} = options;
+            const {isRoot, keyIndex, parent, tree, ancestor, isRefChildNode} = options;
             const items = parent?.type === 'array' ? ancestor : parent;
             return <div class={'extraAction'}>
                 <ExtraActions
                     isRoot={isRoot}
+                    isRefChildNode={isRefChildNode || false}
                     value={tree}
                     onAddDesc={addDesc.bind(this, tree)}
                     onDel={del.bind(this, keyIndex, items)}
@@ -216,22 +250,25 @@ export default defineComponent({
             </div>
         }
         const renderDataTypeSetting = (options: any) => {
-            const {tree} = options;
+            const {tree, isRefChildNode} = options;
             const propsLen = Object.keys(tree?.properties || {}).length;
             return <>
                 <DataTypeSetting refsOptions={props.refsOptions}
                                  value={tree}
+                                 isRefChildNode={isRefChildNode || false}
                                  onChange={dataTypeChange.bind(this, options)}/>
-                {isObject(tree?.type) ? <span
+                {isObject(tree?.type) && !isRef(tree) ? <span
                     class={'baseInfoSpace'}>{tree.types?.length > 0 ? `[${propsLen}]` : `{${propsLen}}`}</span> : null}
             </>
         }
         const renderKeyName = (options: any) => {
-            const {keyName, keyIndex, parent, isRoot} = options;
+            const {keyName, keyIndex, parent, isRoot,isRefChildNode,isRef,isRefRootNode} = options;
             if (isRoot) return null;
+            if (!keyName) return null;
+            if(isRefRootNode) return null;
             return <>
                 <span class={'baseInfoKey'}
-                      contenteditable={true}
+                      contenteditable={!isRefChildNode}
                       onBlur={updateKeyName.bind(this, keyName, keyIndex, parent)}>
                     {keyName}
                 </span>
@@ -239,12 +276,12 @@ export default defineComponent({
             </>
         }
         const renderExpandIcon = (options: any) => {
-            const {isExpand, tree, isRoot} = options;
-            if (isRoot) return null;
+            const {isExpand, tree, isRoot, isRef} = options;
+            // if (isRoot) return null;
             if (isExpand) {
-                return <DownOutlined onClick={expandIt.bind(this, tree)} class={'expandIcon'}/>
+                return <DownOutlined onClick={expandIt.bind(this, tree, options)} class={'expandIcon'}/>
             } else {
-                return <RightOutlined onClick={expandIt.bind(this, tree)} class={'expandIcon'}/>
+                return <RightOutlined onClick={expandIt.bind(this, tree, options)} class={'expandIcon'}/>
             }
         }
         const renderHorizontalLine = (depth: number) => {
@@ -266,7 +303,7 @@ export default defineComponent({
             </div>)
         }
         const renderDirectoryText = (options: any) => {
-            const {depth, tree} = options;
+            const {depth, tree, isRefChildNode} = options;
             return <div class={'directoryText'}
                         style={{'paddingLeft': `${depth * treeLevelWidth}px`}}>
                 {renderHorizontalLine(depth)}
@@ -274,7 +311,8 @@ export default defineComponent({
                     {renderExpandIcon(options)}
                     {renderKeyName(options)}
                     {renderDataTypeSetting(options)}
-                    {isObject(tree.type) ? <PlusOutlined onClick={addProps.bind(this, tree)} class={'addIcon'}/> : null}
+                    {isObject(tree.type) && !isRef(tree) && !isRefChildNode ?
+                        <PlusOutlined onClick={addProps.bind(this, tree)} class={'addIcon'}/> : null}
                 </div>
                 {renderAction(options)}
                 {renderExtraAction(options)}
@@ -283,15 +321,15 @@ export default defineComponent({
         const renderVerticalLine = (options: any) => {
             return <div class={'verticalLine'} style={{left: `${options.depth * treeLevelWidth + 8}px`}}></div>
         }
-        const renderTree = (tree: any) => {
+        const renderTree = (tree: any, isRefType = false) => {
             if (!tree) return null;
             const isRoot = tree?.extraViewInfo?.depth === 1;
             const options = {...tree?.extraViewInfo, isRoot, tree: tree};
-            if (isNormalType(tree.type)) {
+            if (isNormalType(tree.type) && !isRef(tree)) {
                 return renderNormalType(options)
             }
             // 渲染对象类型节点
-            if (isObject(tree.type)) {
+            if (isObject(tree.type) && !isRef(tree)) {
                 const isRoot = tree?.extraViewInfo?.depth === 1;
                 const isExpand = tree?.extraViewInfo?.isExpand;
                 const options = {...tree?.extraViewInfo, isRoot, tree}
@@ -306,7 +344,7 @@ export default defineComponent({
                 </div>
             }
             // 渲染数组类型节点
-            if (isArray(tree.type)) {
+            if (isArray(tree.type) && !isRef(tree)) {
                 // 找到最后一个非数组类型的节点
                 const {node} = findLastNotArrayNode(tree);
                 const isRoot = tree?.extraViewInfo?.depth === 1;
@@ -314,6 +352,21 @@ export default defineComponent({
                     {
                         renderTree(node)
                     }
+                </div>
+            }
+            // 如果是引用类型
+            if (isRef(tree)) {
+                const isRoot = tree?.extraViewInfo?.depth === 1;
+                const isExpand = tree?.extraViewInfo?.isExpand;
+                const isRef = tree?.extraViewInfo?.isRef;
+                const options = {...tree?.extraViewInfo, isRoot, tree}
+                console.log('isRef', isRef, tree, isExpand);
+                return <div key={tree.type} class={{'directoryNode': true, "rootNode": isRoot, 'refNode': isRef}}>
+                    {renderDirectoryText(options)}
+                    {
+                        isExpand && tree?.content && renderTree(tree.content, true)
+                    }
+                    {isExpand && renderVerticalLine(options)}
                 </div>
             }
         }

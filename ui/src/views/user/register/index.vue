@@ -1,34 +1,43 @@
 <template>
-    <div class="main">
-        <h1 class="title">
-            {{t('page.user.register.form.title')}}
-        </h1>
+    <div class="login-form-main">
+        <div class="menu-tab">
+            <div class="menu-tab-item menu-tab-active">注册账号</div>
+        </div>
         <a-form :wrapper-col="{span:24}">
             <a-form-item label="" v-bind="validateInfos.username">
-                <a-input v-model:value="modelRef.username" :placeholder="t('page.user.register.form-item-username')" @keyup.enter="handleSubmit" />
+                <div class="login-input-item">
+                    <a-input v-model:value="modelRef.username" :placeholder="t('page.user.register.form-item-username')" @keyup.enter="handleSubmit" />
+                </div>
             </a-form-item>
 
-          <a-form-item label="" v-bind="validateInfos.email">
-            <a-input v-model:value="modelRef.email" :placeholder="t('page.user.register.form-item-email')" @keyup.enter="handleSubmit" />
-          </a-form-item>
+            <a-form-item label="" v-bind="validateInfos.email">
+                <div class="login-input-item">
+                    <a-input v-model:value="modelRef.email" :placeholder="t('page.user.register.form-item-email')" @keyup.enter="handleSubmit" />
+                </div>
+            </a-form-item>
 
             <a-form-item label="" v-bind="validateInfos.password">
-                <a-input-password v-model:value="modelRef.password" :placeholder="t('page.user.register.form-item-password')" @keyup.enter="handleSubmit" />
+                <div class="login-input-item">
+                  <a-input-password v-model:value="modelRef.password" :placeholder="t('page.user.register.form-item-password')" @keyup.enter="handleSubmit" />
+                </div>  
             </a-form-item>
 
             <a-form-item label="" v-bind="validateInfos.confirm">
-                <a-input-password v-model:value="modelRef.confirm" :placeholder="t('page.user.register.form-item-confirmpassword')" @keyup.enter="handleSubmit" />
-            </a-form-item>
-
-            <a-form-item>
-                <a-button type="primary" class="submit" @click="handleSubmit" :loading="submitLoading">
-                    {{t('page.user.register.form.btn-submit')}}
-                </a-button>
-                <div class="text-align-right">
-                    <router-link to="/user/login">
-                        {{t('page.user.register.form.btn-jump')}}
-                    </router-link>
+                <div class="login-input-item">
+                    <a-input-password v-model:value="modelRef.confirm" :placeholder="t('page.user.register.form-item-confirmpassword')" @keyup.enter="handleSubmit" />
                 </div>
+            </a-form-item>
+            <div class="text-align-right">
+                <router-link to="/user/login">
+                    {{t('page.user.register.form.btn-jump')}}
+                </router-link>
+            </div>
+            <a-form-item>
+                <div class="login-input-button">
+                    <a-button type="primary" class="submit" @click="handleSubmit" :loading="submitLoading">
+                        {{t('page.user.register.form.btn-submit')}}
+                    </a-button>
+                </div>  
             </a-form-item>
 
             <a-alert v-if="errorMsg !== '' && typeof errorMsg !== 'undefined' &&  !submitLoading" :message="errorMsg" type="error" :show-icon="true" />
@@ -160,25 +169,5 @@ export default defineComponent({
 })
 </script>
 <style lang="less" scoped>
-.main {
-  flex: none;
-  width: 380px;
-  padding: 36px;
-  margin: 0 auto;
-  border-radius: 4px;
-  background-color: rgba(255, 255, 255, 0.2);
-  .title {
-    font-size: 28px;
-    margin-top: 0;
-    margin-bottom: 30px;
-    text-align: center;
-    color: #ffffff;
-    /* background-image:-webkit-linear-gradient(right,#FFFFFF,#009688, #FFFFFF);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color:transparent; */
-  }
-  .submit {
-    width: 100%;
-  }
-}
+@import url('../assets/login.less');
 </style>

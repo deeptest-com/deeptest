@@ -91,7 +91,14 @@ export function useGlobalEnv(formRef?: any): EnvReturnData {
             })
             // 如果删除的环境id和当前选中环境id一样，则删除才会跳转新建环境页面
             if (result && env.id === activeEnvDetail.value.id) {
-                showEnvDetail(null, true)
+                // showEnvDetail(null, true)
+                const oldEnvList = [...envList.value];
+                const index = oldEnvList.findIndex(e => {
+                    return e.id === env.id;
+                });
+                const newIndex = oldEnvList.length - 1 > index ? index + 1 : 0;
+                const newEnv = oldEnvList[newIndex];
+                showEnvDetail(newEnv, false); 
             }
         }
         Modal.confirm({

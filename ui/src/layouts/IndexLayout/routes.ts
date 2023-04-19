@@ -26,10 +26,10 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
     children: [
       {
         icon: 'home',
-        title: 'workbench',
+        title: '工作台',
         path: 'index/:id',
         component: () => import('@/views/workbench/index.vue'),
-        hidden: true,
+        hidden: false,
       },
   
     ],

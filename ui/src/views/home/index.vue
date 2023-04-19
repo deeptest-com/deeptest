@@ -49,7 +49,7 @@ import { PaginationConfig, QueryParams } from "./data.d";
 const store = useStore<{ Home: StateType }>();
 const mode = computed<any[]>(() => store.state.Home.mode);
 const activeKey = ref(1);
-const showMode = ref("card");
+const showMode = ref("list");
 const currentUser = computed<any>(() => store.state.User.currentUser);
 let queryParams = reactive<QueryParams>({
   keywords: "",

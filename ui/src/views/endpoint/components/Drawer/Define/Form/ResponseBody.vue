@@ -17,13 +17,6 @@
       ></a-select>
     </a-col>
   </a-row>
-<!--  &lt;!&ndash; 增加响应体 - 描述  &ndash;&gt;-->
-<!--  <a-row class="form-item-response-item" v-if="collapse">-->
-<!--    <a-col :span="4" class="form-label"></a-col>-->
-<!--    <a-col :span="18">-->
-<!--      <a-input placeholder="请输入描述" @change="handleResDescriptionChange" :value="selectedCodeDetail.description"/>-->
-<!--    </a-col>-->
-<!--  </a-row>-->
   <!-- 增加响应体 - scheme定义 -->
   <a-row class="form-item-response-item" v-if="collapse">
     <a-col :span="4" class="form-label"></a-col>
@@ -31,6 +24,7 @@
       <SchemaEditor
           @generateFromJSON="generateFromJSON"
           @change="handleChange"
+          :refsOptions="refsOptions"
           :contentStr="JSON.stringify(activeResBodySchema?.content)"
           :exampleStr="JSON.stringify(activeResBodySchema?.examples)"
           @generateExample="handleGenerateExample"
@@ -40,16 +34,18 @@
   </a-row>
 </template>
 <script lang="ts" setup>
-import {computed, defineEmits, defineProps, ref, watch,} from 'vue';
+import {computed, defineEmits, defineProps, onMounted, ref, watch,} from 'vue';
 import {useStore} from "vuex";
 import {mediaTypesOpts,} from '@/config/constant';
 import {DownOutlined, RightOutlined} from '@ant-design/icons-vue';
 import {Endpoint} from "@/views/endpoint/data";
 import SchemaEditor from '@/components/SchemaEditor/index.vue';
 
-const store = useStore<{ Endpoint, Debug, ProjectGlobal, User }>();
+const store = useStore<{ Endpoint, Debug, ProjectGlobal, User,ServeGlobal }>();
 const selectedCodeDetail = computed<any>(() => store.state.Endpoint.selectedCodeDetail);
 const currentUser: any = computed<Endpoint>(() => store.state.User.currentUser);
+const currServe = computed<any>(() => store.state.ServeGlobal.currServe);
+
 // 是否折叠,默认展开
 const collapse = ref(true);
 const props = defineProps({});
@@ -105,6 +101,13 @@ function handleChange(json: any) {
   }
   store.commit('Endpoint/setSelectedCodeDetail', selectedCodeDetail?.value);
 }
+
+const refsOptions = ref([]);
+onMounted(async () => {
+  refsOptions.value = await store.dispatch('Endpoint/getAllRefs', {
+    "serveId": currServe.value.id,
+  });
+})
 
 </script>
 <style lang="less" scoped>

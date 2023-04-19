@@ -24,7 +24,6 @@
         </a-space>
       </template>
     </a-table>
-
     <!-- ::::编辑scheme组件 -->
     <a-modal v-model:visible="schemeVisible"
              @cancel="handleSchemeCancel"
@@ -67,9 +66,9 @@
               @generateExample="handleGenerateExample"
               @change="handleContentChange"
               :tab-content-style="{width:'100%'}"
+              :refs-options="refsOptions"
               :contentStr="contentStr"
-              :exampleStr="exampleStr"
-              :value="activeSchema"/>
+              :exampleStr="exampleStr"/>
         </div>
         <!-- ::::代码模式 -->
         <div class="content-code" v-if="showMode === 'code'">
@@ -86,17 +85,15 @@
         </div>
       </div>
     </a-modal>
-
   </div>
 </template>
 <script setup lang="ts">
-
 import {
   computed,
   defineProps,
   ref,
   watch,
-  createVNode
+  createVNode, onMounted
 } from 'vue';
 import {useStore} from 'vuex';
 import {Modal} from 'ant-design-vue';
@@ -155,8 +152,8 @@ const schemaType = ref('object');
 const exampleStr = ref('');
 const keyword = ref('');
 
-
 const store = useStore<{ ProjectSetting: ProjectSettingStateType }>();
+
 const dataSource = computed<any>(() => store.state.ProjectSetting.schemaList);
 
 async function onSearch(e: any) {
@@ -320,6 +317,7 @@ watch(() => {
 }, {
   immediate: true
 })
+
 watch(() => {
   return schemeVisible.value
 }, () => {
@@ -328,6 +326,12 @@ watch(() => {
   immediate: true
 })
 
+const refsOptions = ref([]);
+onMounted(async () => {
+  refsOptions.value = await store.dispatch('Endpoint/getAllRefs', {
+    "serveId": props.serveId,
+  });
+})
 
 </script>
 

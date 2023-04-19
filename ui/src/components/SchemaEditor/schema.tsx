@@ -11,7 +11,7 @@ import {
     generateSchemaByArray,
     isArray,
     isNormalType,
-    isObject, moveCursorToEnd,
+    isObject,
     removeExtraViewInfo,
     treeLevelWidth
 } from './utils';

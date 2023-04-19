@@ -1,36 +1,43 @@
 <template>
-    <div class="main">
-        <h1 class="title">
-            {{t('page.user.login.form.title')}}
-        </h1>
-        <a-form :wrapper-col="{span:24}">
+    <div class="login-form-main">
+        <div class="menu-tab">
+            <div :class="['menu-tab-item', activeKey === 'account' && 'menu-tab-active']">账号密码登录</div>
+            <!-- <div class="menu-tab-item">企业微信登录</div> -->
+        </div>
+        <a-form :wrapper-col="{ span: 24 }">
             <a-form-item label="" v-bind="validateInfos.username">
-                <a-input v-model:value="modelRef.username" :placeholder="t('page.user.login.form-item-username')" @keyup.enter="handleSubmit">
-                    <template #prefix><user-outlined /></template>
-                </a-input>
+                <div class="login-input-item">
+                    <a-input v-model:value="modelRef.username" :placeholder="t('page.user.login.form-item-username')"
+                        @keyup.enter="handleSubmit">
+                    </a-input>
+                </div>
             </a-form-item>
             <a-form-item label="" v-bind="validateInfos.password">
-                <a-input-password v-model:value="modelRef.password" :placeholder="t('page.user.login.form-item-password')" @keyup.enter="handleSubmit">
-                    <template #prefix><unlock-outlined /></template>
-                </a-input-password>
+                <div class="login-input-item">
+                    <a-input-password v-model:value="modelRef.password"
+                        :placeholder="t('page.user.login.form-item-password')" @keyup.enter="handleSubmit">
+                    </a-input-password>
+                </div>
             </a-form-item>
-            <a-form-item>
-                <a-button type="primary" class="submit" @click="handleSubmit" :loading="submitLoading">
-                    {{t('page.user.login.form.btn-submit')}}
-                </a-button>
-                <div class="text-align-right">
-                  <router-link to="/user/forgotPassword">
-                   忘记密码
-                  </router-link>
-                  &nbsp;&nbsp;&nbsp;
-                  <router-link to="/user/register">
+            <div class="text-align-right">
+                <router-link to="/user/forgotPassword">
+                    忘记密码
+                </router-link>
+                &nbsp;&nbsp;&nbsp;
+                <router-link to="/user/register">
                     现在注册
-                  </router-link>
+                </router-link>
+            </div>
+            <a-form-item>
+                <div class="login-input-button">
+                    <a-button type="primary" class="submit" @click="handleSubmit" :loading="submitLoading">
+                        {{ t('page.user.login.form.btn-submit') }}
+                    </a-button>
                 </div>
             </a-form-item>
 
-            <a-alert v-if="loginStatus === 'error' && !submitLoading" :message="t('page.user.login.form.login-error')" type="error" :show-icon="true" />
-
+            <a-alert v-if="loginStatus === 'error' && !submitLoading" :message="t('page.user.login.form.login-error')"
+                type="error" :show-icon="true" />
         </a-form>
     </div>
 </template>
@@ -41,14 +48,13 @@ import { useStore } from 'vuex';
 import { useI18n } from "vue-i18n";
 
 import { Props, validateInfos } from 'ant-design-vue/lib/form/useForm';
-import {message, Form, notification} from 'ant-design-vue';
+import { message, Form, notification } from 'ant-design-vue';
 const useForm = Form.useForm;
 
-import { UserOutlined, UnlockOutlined } from '@ant-design/icons-vue';
 import useI18nAntdFormVaildateInfos from '@/composables/useI18nAntdFormVaildateInfos';
 import { LoginParamsType } from './data.d';
 import { StateType as UserLoginStateType } from './store';
-import {NotificationKeyCommon} from "@/utils/const";
+import { NotificationKeyCommon } from "@/utils/const";
 
 interface UserLoginSetupData {
     t: (key: string | number) => string;
@@ -62,14 +68,10 @@ interface UserLoginSetupData {
 
 export default defineComponent({
     name: 'UserLogin',
-    components: {
-        UserOutlined,
-        UnlockOutlined,
-    },
     setup() {
         const router = useRouter();
         const { currentRoute } = router;
-        const store = useStore<{UserLogin: UserLoginStateType}>();
+        const store = useStore<{ UserLogin: UserLoginStateType }>();
         const { t } = useI18n();
 
         // 表单值
@@ -96,38 +98,40 @@ export default defineComponent({
         const { resetFields, validate, validateInfos } = useForm(modelRef, rulesRef);
         // 登录loading
         const submitLoading = ref<boolean>(false);
+        // tab
+        const activeKey = ref<string>('account');
         // 登录
         const handleSubmit = async (e: MouseEvent) => {
             e.preventDefault();
             submitLoading.value = true;
             try {
                 const fieldsValue = await validate<LoginParamsType>();
-                const res: boolean = await store.dispatch('UserLogin/login',fieldsValue);
+                const res: boolean = await store.dispatch('UserLogin/login', fieldsValue);
                 if (res === true) {
-                  notification.success({
-                    key: NotificationKeyCommon,
-                    message: t('page.user.login.form.login-success')
-                  });
+                    notification.success({
+                        key: NotificationKeyCommon,
+                        message: t('page.user.login.form.login-success')
+                    });
 
-                  const { redirect, ...query } = currentRoute.value.query;
-                  router.replace({
-                      path: redirect as string || '/',
-                      query: {
-                          ...query
-                      }
-                  });
+                    const { redirect, ...query } = currentRoute.value.query;
+                    router.replace({
+                        path: redirect as string || '/',
+                        query: {
+                            ...query
+                        }
+                    });
                 }
             } catch (error) {
-              notification.warn({
-                key: NotificationKeyCommon,
-                message: t('page.user.login.form.login-fail'),
-              });
+                notification.warn({
+                    key: NotificationKeyCommon,
+                    message: t('page.user.login.form.login-fail'),
+                });
             }
             submitLoading.value = false;
         };
 
         // 登录状态
-        const loginStatus = computed<"ok" | "error" | undefined>(()=> store.state.UserLogin.loginStatus);
+        const loginStatus = computed<"ok" | "error" | undefined>(() => store.state.UserLogin.loginStatus);
 
         // 重置 validateInfos
         const validateInfosNew = useI18nAntdFormVaildateInfos(validateInfos);
@@ -139,32 +143,12 @@ export default defineComponent({
             modelRef,
             submitLoading,
             handleSubmit,
-            loginStatus
+            loginStatus,
+            activeKey
         }
     }
 })
 </script>
 <style lang="less" scoped>
-.main {
-  flex: none;
-  width: 380px;
-  padding: 36px;
-  margin: 0 auto;
-  border-radius: 4px;
-  background-color: rgba(255, 255, 255, 0.2);
-  .title {
-    font-size: 28px;
-    margin-top: 0;
-    margin-bottom: 30px;
-    text-align: center;
-    color: #ffffff;
-    /* background-image:-webkit-linear-gradient(right,#FFFFFF,#009688, #FFFFFF);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color:transparent; */
-  }
-  .submit {
-    width: 100%;
-  }
-}
-
+@import '../assets/login.less';
 </style>

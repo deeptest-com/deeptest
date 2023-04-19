@@ -24,13 +24,8 @@
       <!-- ::::Schema Tab -->
       <div class="tab-body-schema" v-if="activeTab=== 'schema'">
         <SchemaEditor
-            :key="props.schemeVisibleKey"
             :value="content"
-            :refsOptions="[
-              {
-                label: '组件 1',
-                value: 'COM1'
-              }]"
+            :refsOptions="refsOptions || []"
             @change="handleContentChange"
             :contentStyle="tabContentStyle"/>
       </div>
@@ -138,9 +133,11 @@ import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
 import {MonacoOptions} from '@/utils/const';
 
 const props = defineProps<{
-  value: object,
   tabContentStyle?: object,
+  contentStr?: string,
+  exampleStr?: string,
   schemeVisibleKey?: string | number,
+  refsOptions?: Array<any>,
 }>();
 
 const emit = defineEmits<{
@@ -218,21 +215,55 @@ function generate() {
 
 
 watch(() => {
-  return props.value
+  return props?.contentStr
 }, (newVal: any) => {
-  content.value = newVal?.content?.type ? newVal?.content : {
-    type: 'object'
-  };
-  examples.value = newVal?.examples || [];
+  try {
+    const obj = JSON.parse(newVal);
+    content.value = obj?.type ? obj : {
+      type: 'object'
+    };
+  }catch (e){
+    console.log('e',e);
+  }
 }, {
   immediate: true,
   deep: true
 });
 
+watch(() => {
+  return props?.exampleStr
+}, (newVal: any) => {
+  if(!newVal){
+    return;
+  }
+  try {
+    const obj = JSON.parse(newVal);
+    examples.value = obj || [];
+  }catch (e){
+    console.log('e',e);
+  }
+}, {
+  immediate: true,
+  deep: true
+});
+
+watch(() => {
+  return props.contentStr
+}, (newVal: any) => {
+  if(!newVal){
+    return;
+  }
+  try {
+    content.value = JSON.parse(newVal)
+  }catch (e){
+    console.log('e',e);
+  }
+});
 
 watch(() => {
   return examples.value
 }, (newVal: any) => {
+  console.log('examples',examples.value)
   emit('change', {
     examples: newVal,
     content: content.value

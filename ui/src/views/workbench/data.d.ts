@@ -6,10 +6,9 @@ export interface QueryResult {
 }
 
 export interface QueryParams {
-  keywords:  string,
-  currProjectId:number,
-  userId:number,
-  enabled?: string,
+
+  projectId:number,
+  cycle:number,//0代表按7天，1代表按30天
   page: number,
   pageSize: number,
 }

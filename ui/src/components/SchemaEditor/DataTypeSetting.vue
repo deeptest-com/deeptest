@@ -19,7 +19,7 @@
         </div>
         <div class="main">
           <div class="item"
-               v-for="(tab) in tabs"
+               v-for="(tab,tabIndex) in tabs"
                v-show="tab.active"
                :key="tab.value">
             <a-radio-group
@@ -87,8 +87,12 @@
                   :labelAlign="'right'"
                   :label="'请选择组件'">
                 <a-select
-                    label-in-value
                     :options="refsOptions"
+                    @change="(e) => {
+                      changeRef(tabsIndex,tabIndex,e);
+                    }"
+                    allowClear
+                    :value="tab.value || null"
                     placeholder="Select Components"
                     style="width: 100%"/>
               </a-form-item>
@@ -118,7 +122,7 @@ const props = defineProps({
 const emit = defineEmits(['change']);
 const tabsList: any = ref([]);
 const visible: any = ref(false);
-// 返回
+// 返回，如何展示类型
 const typesLabel: any = computed(() => {
   const {type, types} = props.value || {};
   if (!type) {
@@ -145,6 +149,21 @@ function changeType(tabsIndex: any, e: any) {
       tabsList.value.splice(tabsIndex + 1);
     }
   }
+}
+
+// ref 组件
+function changeRef(tabsIndex, tabIndex, e) {
+  tabsList.value[tabsIndex][tabIndex].value = e;
+  // 选中的是ref，则需要隐藏其他的选择
+  if (e) {
+    tabsList.value.splice(tabsIndex+1);
+  }
+}
+
+function selectTab(tabs: any, tabIndex: number) {
+  tabs.forEach((tab: any, index: number) => {
+    tab.active = tabIndex === index;
+  })
 }
 
 function initTabsList(types: any, treeInfo: any) {
@@ -177,14 +196,21 @@ function getValueFromTabsList(tabsList: any) {
   const result: any = [];
   tabsList.forEach((tabs: any) => {
     const activeTab = tabs.find((tab: any) => tab.active);
-    let res: any = {
-      type: activeTab.value
-    };
-    // ::::TODO 需要处理选中了ref的情况
-    const activeTabProps = activeTab?.props?.find((prop: any) => prop.value === activeTab.value);
-    activeTabProps.props.options.forEach((opt: any) => {
-      res[opt.name] = opt.value;
-    })
+    let res: any = {};
+    if (activeTab.type === '$ref') {
+      res = {
+        value: activeTab.value,
+        type: '$ref'
+      }
+    } else {
+      res = {
+        type: activeTab.value
+      };
+      const activeTabProps = activeTab?.props?.find((prop: any) => prop.value === activeTab.value);
+      activeTabProps.props.options.forEach((opt: any) => {
+        res[opt.name] = opt.value;
+      })
+    }
     result.push(res);
   })
   return result;
@@ -193,23 +219,24 @@ function getValueFromTabsList(tabsList: any) {
 watch(() => {
   return visible.value
 }, (newVal: any) => {
+  const {type, types} = props.value || {};
+  const allTypes = [...(types || []), type];
   // 打开时，初始化数据
   if (newVal && props.value.type) {
-    const {type, types} = props.value || {};
-    const allTypes = [...(types || []), type];
     tabsList.value = [...initTabsList(allTypes, props.value)];
   }
   // 关闭了，触发change事件
   else {
-    emit('change', getValueFromTabsList(tabsList.value));
+    // 仅选择类型改变了才触发change事件
+    const value = getValueFromTabsList(tabsList.value);
+    const newTypes = value.map((item: any) => item.type);
+    if (JSON.stringify(allTypes) !== JSON.stringify(newTypes)) {
+      emit('change', value);
+    }
   }
 })
 
-function selectTab(tabs: any, tabIndex: number) {
-  tabs.forEach((tab: any, index: number) => {
-    tab.active = tabIndex === index;
-  })
-}
+
 
 </script>
 
@@ -249,17 +276,16 @@ function selectTab(tabs: any, tabIndex: number) {
 }
 
 .header {
-  //padding: 8px 16px;
-  //background-color: #f5f5f5;
   border-bottom: 1px solid #f5f5f5;
   display: flex;
-  //justify-content: space-between;
+
   .item {
     margin-right: 16px;
     cursor: pointer;
     height: 30px;
     line-height: 30px;
     font-weight: bold;
+
     &.active {
       color: #1890ff;
     }
@@ -269,7 +295,7 @@ function selectTab(tabs: any, tabIndex: number) {
 .main {
   .item {
     //margin-top: 16px;
-    .select-type-btn{
+    .select-type-btn {
       margin-top: 16px;
     }
   }

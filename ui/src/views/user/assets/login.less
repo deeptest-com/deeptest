@@ -1,0 +1,98 @@
+.login-form-main {
+    flex: none;
+    width: 361px;
+    background: #FFFFFF;
+    /* 默认投影 */
+    box-shadow: 0px 1px 11px rgba(0, 0, 0, 0.15);
+    border-radius: 4px;
+    padding: 48px 40px 24px;
+
+    .menu-tab {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 40px;
+        margin-bottom: 21px;
+
+        .menu-tab-item {
+            width: 50%;
+            text-align: center;
+            line-height: 40px;
+            font-style: normal;
+            font-weight: 400;
+            font-size: 16px;
+            color: #86878B;
+            position: relative;
+
+            &.menu-tab-active {
+                color: #0A0A0A;
+
+                &:after {
+                    content: '';
+                    position: absolute;
+                    bottom: 0;
+                    // left: 50%;
+                    width: 30px;
+                    height: 3px;
+                    left: calc(50% - 30px/2 - 0.25px);
+                    /* 品牌色/默认 */
+                    background: #325ABB;
+                }
+            }
+        }
+
+    }
+
+    .login-input-item {
+        height: 62px;
+        background-color: #fff;
+        box-shadow: 0px 1px 0px rgba(0, 0, 0, 0.06);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .text-align-right {
+        text-align: right;
+        transform: translateY(-16px);
+
+        a {
+            color: #213F94;
+            font-size: 14px;
+            line-height: 24px;
+        }
+    }
+
+    .submit {
+        width: 100%;
+    }
+}
+
+:deep(.login-input-item .ant-input),
+:deep(.login-input-item .ant-input-password.ant-input-affix-wrapper) {
+    border: none;
+    outline: none;
+    background: none;
+    padding: 0;
+    height: 100%;
+}
+
+:deep(.login-input-item .ant-input-affix-wrapper:hover),
+:deep(.login-input-item .ant-input-affix-wrapper-focused) {
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: unset !important;
+}
+
+:deep(.login-input-button .ant-btn-primary) {
+    height: 44px;
+    background: linear-gradient(180deg, #345399 0%, #294789 100%);
+    border-radius: 4px;
+    font-size: 16px;
+    line-height: 20px;
+    letter-spacing: -0.559811px;
+    color: #FFFFFF;
+    text-align: center; 
+    border: none;
+    box-shadow: unset;
+}

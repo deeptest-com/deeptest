@@ -17,7 +17,7 @@
           style="width: 270px; margin-left: 16px"
         /> -->
           <a-radio-group v-model:value="showMode" button-style="solid">
-            <a-radio-button value="card">卡片</a-radio-button>
+            <!-- <a-radio-button value="card">卡片</a-radio-button> -->
             <a-radio-button value="list">列表</a-radio-button>
           </a-radio-group>
         </template>

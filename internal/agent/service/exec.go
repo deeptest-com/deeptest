@@ -45,7 +45,7 @@ func (s *ExecService) Run(call domain.InvokeCall) (resp v1.DebugResponse, err er
 	return
 }
 
-func (s *ExecService) Request(req v1.DebugRequest) (ret v1.DebugResponse, err error) {
+func (s *ExecService) Request(req v1.DebugData) (ret v1.DebugResponse, err error) {
 	// exec pre-request script
 	agentExec.ExecJs(req.PreRequestScript)
 
@@ -56,7 +56,7 @@ func (s *ExecService) Request(req v1.DebugRequest) (ret v1.DebugResponse, err er
 	req.BaseRequest.Url = _httpUtils.AddSepIfNeeded(req.BaseUrl) + req.BaseRequest.Url
 	ret, err = agentExec.Invoke(&req.BaseRequest)
 
-	ret.Id = req.InterfaceId
+	ret.Id = req.EndpointInterfaceId
 
 	return
 }

@@ -15,8 +15,10 @@ type InvocationBase struct {
 	ResultStatus     consts.ResultStatus `json:"resultStatus" gorm:"default:pass"`
 	CheckpointStatus consts.ResultStatus `json:"checkpointStatus"`
 
-	InterfaceId uint `json:"interfaceId,omitempty"`
-	ProjectId   uint `json:"projectId,omitempty"`
+	EndpointInterfaceId uint `json:"endpointInterfaceId,omitempty"`
+	DebugInterfaceId    uint `json:"debugInterfaceId,omitempty"`
+
+	ProjectId uint `json:"projectId,omitempty"`
 }
 
 type Invocation struct {

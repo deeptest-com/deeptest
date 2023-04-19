@@ -23,16 +23,14 @@ import {
     listCheckpoint,
     listShareVar, getSnippet,
 } from './service';
-import {Checkpoint, Extractor, Interface, Response} from "./data";
+import {Checkpoint, DebugInfo, Extractor, Interface, Response} from "./data";
 import {UsedBy} from "@/utils/enum";
 import {ResponseData} from "@/utils/request";
-import {} from "@/views/interface1/service";
 
 export interface StateType {
-    currInterface: any;
-    currEndpointId: number;
-    currProcessorId: number;
-    usedBy: string;
+    defineEndpoint: any,
+    defineInterface: any,
+    debugInfo: DebugInfo
     debugData: any;
 
     responseData: Response;
@@ -46,10 +44,9 @@ export interface StateType {
     checkpointData: any;
 }
 const initState: StateType = {
-    currEndpointId: 0,
-    currProcessorId: 0,
-    currInterface: {},
-    usedBy: '',
+    defineEndpoint: {},
+    defineInterface: {},
+    debugInfo: {} as DebugInfo,
     debugData: {},
     responseData: {} as Response,
 
@@ -65,10 +62,10 @@ const initState: StateType = {
 export interface ModuleType extends StoreModuleType<StateType> {
     state: StateType;
     mutations: {
-        setEndpointId: Mutation<StateType>;
-        setProcessorId: Mutation<StateType>;
-        setInterface: Mutation<StateType>;
-        setUsedBy: Mutation<StateType>;
+        setDefineEndpoint: Mutation<StateType>;
+        setDefineInterface: Mutation<StateType>;
+        setDebugInfo: Mutation<StateType>;
+
         setDebugData: Mutation<StateType>;
         setResponse: Mutation<StateType>;
         setInvocations: Mutation<StateType>;
@@ -87,10 +84,10 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setPreRequestScript: Mutation<StateType>;
     };
     actions: {
-        setEndpointId: Action<StateType, StateType>;
-        setInterface: Action<StateType, StateType>;
+        setDefineEndpoint: Action<StateType, StateType>;
+        setDefineInterface: Action<StateType, StateType>;
 
-        loadDebugData: Action<StateType, StateType>;
+        loadData: Action<StateType, StateType>;
         call: Action<StateType, StateType>;
         save: Action<StateType, StateType>;
 
@@ -129,18 +126,16 @@ const StoreModel: ModuleType = {
         ...initState
     },
     mutations: {
-        setEndpointId(state, id) {
-            state.currEndpointId = id;
+        setDefineEndpoint (state, payload) {
+            state.defineEndpoint = payload;
         },
-        setProcessorId(state, id) {
-            state.currProcessorId = id;
+        setDefineInterface(state, payload) {
+            state.defineInterface = payload;
         },
-        setInterface(state, payload) {
-            state.currInterface = payload;
+        setDebugInfo(state, payload) {
+            state.debugInfo = payload;
         },
-        setUsedBy(state, payload) {
-            state.usedBy = payload;
-        },
+
         setDebugData(state, payload) {
             state.debugData = payload;
         },
@@ -190,24 +185,27 @@ const StoreModel: ModuleType = {
         },
     },
     actions: {
-        async setEndpointId({commit, dispatch}, id) {
-            commit('setEndpointId', id);
+        async setDefineEndpoint({commit, dispatch}, id) {
+            commit('setDefineEndpoint', id);
         },
-        async setInterface({commit, dispatch}, payload) {
-            commit('setInterface', payload);
+        async setDefineInterface({commit, dispatch}, id) {
+            commit('setDefineInterface', id);
         },
 
         // debug
-        async loadDebugData({commit, dispatch}, data) {
+        async loadData({commit, dispatch}, data) {
             try {
-                commit('setEndpointId', data.endpointId);
-                commit('setProcessorId', data.processorId);
-                commit('setUsedBy', data.usedBy);
-
                 const resp: ResponseData = await loadData(data);
                 if (resp.code != 0) return false;
 
                 commit('setDebugData', resp.data);
+
+                commit('setDebugInfo', {
+                    endpointInterfaceId: resp.data.endpointInterfaceId,
+                    debugInterfaceId: resp.data.debugInterfaceId,
+                    usedBy:          resp.data.usedBy,
+                    processorId  : resp.data.processorId,
+                } as DebugInfo);
 
                 return true;
             } catch (error) {
@@ -220,7 +218,10 @@ const StoreModel: ModuleType = {
             if (response.code === 0) {
                 commit('setResponse', response.data);
 
-                dispatch('listInvocation', state.currInterface.id);
+                dispatch('listInvocation', {
+                    endpointInterfaceId: state.debugInfo.endpointInterfaceId,
+                    debugInterfaceId: state.debugInfo.debugInterfaceId,
+                });
                 dispatch('listShareVar');
 
                 dispatch('listExtractor');
@@ -240,9 +241,9 @@ const StoreModel: ModuleType = {
             }
         },
 
-        async listInvocation({commit}, interfaceId: number) {
+        async listInvocation({commit}, info: any) {
             try {
-                const resp = await listInvocation(interfaceId);
+                const resp = await listInvocation(info);
                 const {data} = resp;
                 commit('setInvocations', data);
                 return true;
@@ -250,8 +251,8 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
-        async getLastInvocationResp({commit, dispatch, state}, interfaceId: number) {
-            const response = await getLastInvocationResp(interfaceId);
+        async getLastInvocationResp({commit, dispatch, state}, payload: any) {
+            const response = await getLastInvocationResp(payload);
 
             const {data} = response;
 
@@ -263,7 +264,7 @@ const StoreModel: ModuleType = {
                 const resp = await getInvocationAsInterface(id);
                 const {data} = resp;
 
-                commit('setInterface', data.req);
+                commit('setDebugData', data.req);
                 commit('setResponse', data.resp);
                 return true;
             } catch (error) {
@@ -335,13 +336,7 @@ const StoreModel: ModuleType = {
         // shared variable
         async listShareVar({commit, dispatch, state}) {
             try {
-                const reqData = {
-                    interfaceId: state.currInterface.id,
-                    endpointId: state.currEndpointId,
-                    processorId: state.currProcessorId,
-                    usedBy: state.usedBy,
-                }
-                const resp = await listShareVar(reqData, UsedBy.InterfaceDebug);
+                const resp = await listShareVar(state.debugInfo, UsedBy.InterfaceDebug);
                 const {data} = resp;
                 commit('setShareVars', data);
                 return true;
@@ -352,14 +347,15 @@ const StoreModel: ModuleType = {
         async clearShareVar({commit, dispatch, state}, payload: any) {
             try {
                 let id = 0
-                if (state.usedBy === UsedBy.InterfaceDebug)
-                    id = state.currEndpointId
-                else if (state.usedBy === UsedBy.InterfaceDebug)
-                    id = state.currProcessorId
+                if (state.debugInfo.usedBy === UsedBy.InterfaceDebug)
+                    id = state.debugInfo.endpointInterfaceId ?
+                        state.debugInfo.endpointInterfaceId : state.debugInfo.debugInterfaceId
+                else if (state.debugInfo.usedBy === UsedBy.ScenarioDebug)
+                    id = state.debugInfo.processorId
                 else
                     return false
 
-                await clearShareVar(id, state.usedBy);
+                await clearShareVar(id, state.debugInfo.usedBy);
                 dispatch('listShareVar');
 
                 return true;

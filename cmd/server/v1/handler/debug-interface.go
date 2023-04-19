@@ -19,7 +19,7 @@ func (c *DebugInterfaceCtrl) Load(ctx iris.Context) {
 	req := domain.DebugCall{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
@@ -34,16 +34,16 @@ func (c *DebugInterfaceCtrl) Load(ctx iris.Context) {
 
 // Save
 func (c *DebugInterfaceCtrl) Save(ctx iris.Context) {
-	req := domain.DebugRequest{}
+	req := domain.DebugData{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
 	err = c.DebugInterfaceService.Save(req)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 

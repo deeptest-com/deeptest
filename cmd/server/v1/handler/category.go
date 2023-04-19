@@ -19,12 +19,12 @@ type CategoryCtrl struct {
 func (c *CategoryCtrl) LoadTree(ctx iris.Context) {
 	projectId, err := ctx.URLParamInt("currProjectId")
 	if projectId == 0 {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: "projectId"})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 	typ := ctx.URLParam("type")
 	if typ == "" {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: "typ"})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
@@ -32,7 +32,7 @@ func (c *CategoryCtrl) LoadTree(ctx iris.Context) {
 
 	data, err := c.CategoryService.GetTree(serverConsts.CategoryDiscriminator(typ), projectId, serveId)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
@@ -43,14 +43,14 @@ func (c *CategoryCtrl) LoadTree(ctx iris.Context) {
 func (c *CategoryCtrl) Get(ctx iris.Context) {
 	processorId, err := ctx.Params().GetInt("id")
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Data: nil, Msg: _domain.ParamErr.Msg})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
 	po, err := c.CategoryService.Get(processorId)
 
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: _domain.SystemErr.Msg})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return
 	}
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: po})
@@ -60,14 +60,14 @@ func (c *CategoryCtrl) Get(ctx iris.Context) {
 func (c *CategoryCtrl) Create(ctx iris.Context) {
 	projectId, err := ctx.URLParamInt("currProjectId")
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
 	req := v1.CategoryCreateReq{}
 	err = ctx.ReadJSON(&req)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
@@ -77,7 +77,6 @@ func (c *CategoryCtrl) Create(ctx iris.Context) {
 	if bizErr != nil {
 		ctx.JSON(_domain.Response{
 			Code: _domain.SystemErr.Code,
-			Data: nil,
 		})
 		return
 	}
@@ -90,7 +89,7 @@ func (c *CategoryCtrl) Update(ctx iris.Context) {
 	req := v1.CategoryReq{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
@@ -109,24 +108,24 @@ func (c *CategoryCtrl) UpdateName(ctx iris.Context) {
 	err := ctx.ReadJSON(&req)
 	if err != nil {
 		logUtils.Errorf("参数验证失败", err.Error())
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Data: nil, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
 	err = c.CategoryService.UpdateName(req)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: nil, Msg: _domain.NoErr.Msg})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 }
 
 // Delete 删除
 func (c *CategoryCtrl) Delete(ctx iris.Context) {
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 

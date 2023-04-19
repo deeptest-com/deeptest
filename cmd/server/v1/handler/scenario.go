@@ -21,7 +21,7 @@ type ScenarioCtrl struct {
 func (c *ScenarioCtrl) ListByServe(ctx iris.Context) {
 	serveId, err := ctx.URLParamInt("serveId")
 	if serveId == 0 {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: "serveId"})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
@@ -39,7 +39,7 @@ func (c *ScenarioCtrl) ListByServe(ctx iris.Context) {
 func (c *ScenarioCtrl) List(ctx iris.Context) {
 	projectId, err := ctx.URLParamInt("currProjectId")
 	if projectId == 0 {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: "projectId"})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
@@ -49,7 +49,7 @@ func (c *ScenarioCtrl) List(ctx iris.Context) {
 		errs := validate.ValidRequest(err)
 		if len(errs) > 0 {
 			logUtils.Errorf("参数验证失败", zap.String("错误", strings.Join(errs, ";")))
-			ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: strings.Join(errs, ";")})
+			ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: strings.Join(errs, ";")})
 			return
 		}
 	}
@@ -57,7 +57,7 @@ func (c *ScenarioCtrl) List(ctx iris.Context) {
 
 	data, err := c.ScenarioService.Paginate(req, projectId)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
@@ -68,12 +68,12 @@ func (c *ScenarioCtrl) Get(ctx iris.Context) {
 	var req _domain.ReqId
 	if err := ctx.ReadParams(&req); err != nil {
 		logUtils.Errorf("参数解析失败", zap.String("错误:", err.Error()))
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Data: nil, Msg: _domain.ParamErr.Msg})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 	scenario, err := c.ScenarioService.GetById(req.Id)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: _domain.SystemErr.Msg})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return
 	}
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: scenario, Msg: _domain.NoErr.Msg})
@@ -82,14 +82,14 @@ func (c *ScenarioCtrl) Get(ctx iris.Context) {
 func (c *ScenarioCtrl) Create(ctx iris.Context) {
 	projectId, err := ctx.URLParamInt("currProjectId")
 	if projectId == 0 {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: "projectId"})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
 	req := model.Scenario{}
 	err = ctx.ReadJSON(&req)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
@@ -107,31 +107,31 @@ func (c *ScenarioCtrl) Update(ctx iris.Context) {
 	var req model.Scenario
 	err := ctx.ReadJSON(&req)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
 	err = c.ScenarioService.Update(req)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: nil, Msg: _domain.NoErr.Msg})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 }
 
 func (c *ScenarioCtrl) Delete(ctx iris.Context) {
 	var req _domain.ReqId
 	err := ctx.ReadParams(&req)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
 	err = c.ScenarioService.DeleteById(req.Id)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: nil, Msg: _domain.NoErr.Msg})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 }

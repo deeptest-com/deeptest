@@ -14,11 +14,14 @@ type DebugCall struct {
 	UsedBy consts.UsedBy `json:"usedBy"`
 }
 
-type DebugRequest struct {
-	InterfaceId uint `gorm:"-" json:"interfaceId"`
+type DebugData struct {
+	// endpoint interface id provided before saved as a debug interface
+	EndpointInterfaceId uint `gorm:"-" json:"endpointInterfaceId"` // model.EndpointInterface
 
-	EndpointId  uint `json:"endpointId"`
-	ProcessorId uint `gorm:"-" json:"processorId"`
+	// debug interface id provided after saved
+	DebugInterfaceId uint          `json:"debugInterfaceId"`     // model.DebugInterface
+	UsedBy           consts.UsedBy `json:"usedBy"`               // used in interface debug OR scenario debug
+	ProcessorId      uint          `gorm:"-" json:"processorId"` // scenario processor id when used by scenario debug
 
 	BaseUrl         string                   `gorm:"-" json:"baseUrl"`
 	ShareVars       []domain.ShareVars       `gorm:"-" json:"shareVars"`
@@ -27,8 +30,6 @@ type DebugRequest struct {
 	GlobalParamVars []domain.GlobalParamVars `gorm:"-" json:"globalParamVars"`
 
 	//Datapools   domain.Datapools   `gorm:"-" json:"datapools"`
-
-	UsedBy consts.UsedBy `json:"usedBy"`
 
 	BaseRequest
 }
@@ -51,7 +52,7 @@ type DebugResponse struct {
 }
 
 type SubmitDebugResultRequest struct {
-	Request  DebugRequest  `json:"request"`
+	Request  DebugData     `json:"request"`
 	Response DebugResponse `json:"response"`
 }
 

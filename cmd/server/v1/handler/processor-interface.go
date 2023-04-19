@@ -15,13 +15,13 @@ type ProcessorInterfaceCtrl struct {
 func (c *ProcessorInterfaceCtrl) GetInterface(ctx iris.Context) {
 	interfaceId, err := ctx.URLParamInt("interfaceId")
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Data: nil, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
 	interf, err := c.ProcessorInterfaceService.GetById(uint(interfaceId))
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: _domain.SystemErr.Msg})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return
 	}
 
@@ -31,13 +31,13 @@ func (c *ProcessorInterfaceCtrl) GetInterface(ctx iris.Context) {
 func (c *ProcessorInterfaceCtrl) ListInvocation(ctx iris.Context) {
 	interfaceId, err := ctx.URLParamInt("interfaceId")
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Data: nil, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
 	data, err := c.ProcessorInterfaceService.ListInvocation(uint(interfaceId))
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
@@ -48,21 +48,21 @@ func (c *ProcessorInterfaceCtrl) ListInvocation(ctx iris.Context) {
 func (c *ProcessorInterfaceCtrl) SaveInterface(ctx iris.Context) {
 	projectId, err := ctx.URLParamInt("currProjectId")
 	if projectId == 0 {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: "projectId"})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
-	req := domain.DebugRequest{}
+	req := domain.DebugData{}
 	err = ctx.ReadJSON(&req)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
 	//req.ProjectId = uint(projectId)
 	err = c.ProcessorInterfaceService.UpdateByConfig(req)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
@@ -73,13 +73,13 @@ func (c *ProcessorInterfaceCtrl) Index(ctx iris.Context) {
 	currProjectId, err := ctx.URLParamInt("currProjectId")
 	scenarioId := ctx.URLParamIntDefault("scenarioId", 0)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Data: nil, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
 	res, err := c.ProcessorInterfaceService.GetList(uint(currProjectId), uint(scenarioId))
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: _domain.SystemErr.Msg})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return
 	}
 

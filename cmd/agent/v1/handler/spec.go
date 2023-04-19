@@ -17,13 +17,13 @@ func (c *SpecCtrl) Parse(ctx iris.Context) {
 	req := domain.ParseSpecReq{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
 	err = c.SpecService.Parse(req)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 

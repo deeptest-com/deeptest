@@ -12,13 +12,14 @@ import (
 type DebugInterfaceService struct {
 	EndpointInterfaceRepo *repo.EndpointInterfaceRepo `inject:""`
 	DebugInterfaceRepo    *repo.DebugInterfaceRepo    `inject:""`
-	ServeRepo             *repo.ServeRepo             `inject:""`
 	EndpointRepo          *repo.EndpointRepo          `inject:""`
+	ServeRepo             *repo.ServeRepo             `inject:""`
+	ScenarioProcessorRepo *repo.ScenarioProcessorRepo `inject:""`
 
 	DebugSceneService *DebugSceneService `inject:""`
 }
 
-func (s *DebugInterfaceService) Load(call v1.DebugCall) (req v1.DebugRequest, err error) {
+func (s *DebugInterfaceService) Load(call v1.DebugCall) (req v1.DebugData, err error) {
 	hasDebugInterfaceRecord, err := s.DebugInterfaceRepo.HasDebugInterfaceRecord(call.InterfaceId)
 
 	if hasDebugInterfaceRecord {
@@ -28,11 +29,11 @@ func (s *DebugInterfaceService) Load(call v1.DebugCall) (req v1.DebugRequest, er
 	}
 
 	req.BaseUrl, req.ShareVars, req.EnvVars, req.GlobalEnvVars, req.GlobalParamVars =
-		s.DebugSceneService.LoadScene(req.InterfaceId, req.EndpointId, req.ProcessorId, req.UsedBy)
+		s.DebugSceneService.LoadScene(req.EndpointInterfaceId, req.DebugInterfaceId, req.ProcessorId, req.UsedBy)
 
 	return
 }
-func (s *DebugInterfaceService) Save(req v1.DebugRequest) (err error) {
+func (s *DebugInterfaceService) Save(req v1.DebugData) (err error) {
 	debug := model.DebugInterface{}
 	s.CopyValueFromRequest(&debug, req)
 
@@ -41,7 +42,7 @@ func (s *DebugInterfaceService) Save(req v1.DebugRequest) (err error) {
 	return
 }
 
-func (s *DebugInterfaceService) GetDebugRequestFromPo(endpointInterfaceId uint) (req v1.DebugRequest, err error) {
+func (s *DebugInterfaceService) GetDebugRequestFromPo(endpointInterfaceId uint) (req v1.DebugData, err error) {
 	debugInterface, err := s.DebugInterfaceRepo.GetByEndpointInterfaceId(endpointInterfaceId)
 	if err != nil {
 		return
@@ -52,7 +53,7 @@ func (s *DebugInterfaceService) GetDebugRequestFromPo(endpointInterfaceId uint) 
 	return
 }
 
-func (s *DebugInterfaceService) ConvertFromEndpointInterface(interfaceId, endpointId uint) (req v1.DebugRequest, err error) {
+func (s *DebugInterfaceService) ConvertFromEndpointInterface(interfaceId, endpointId uint) (req v1.DebugData, err error) {
 	var interf model.EndpointInterface
 
 	if interfaceId != 0 {
@@ -87,13 +88,46 @@ func (s *DebugInterfaceService) ConvertFromEndpointInterface(interfaceId, endpoi
 
 	copier.CopyWithOption(&req, &debugInterface, copier.Option{DeepCopy: true})
 
-	req.InterfaceId = interfaceId
+	req.EndpointInterfaceId = interfaceId
 	req.UsedBy = consts.InterfaceDebug
 
 	return
 }
 
-func (s *DebugInterfaceService) CopyValueFromRequest(interf *model.DebugInterface, req v1.DebugRequest) (err error) {
+func (s *DebugInterfaceService) GetEndpointAndServeIdForEndpointInterface(endpointInterfaceId uint) (
+	endpointId, serveId uint) {
+
+	endpointInterface, _ := s.EndpointInterfaceRepo.Get(endpointInterfaceId)
+
+	endpointId = endpointInterface.EndpointId
+	endpoint, _ := s.EndpointRepo.Get(endpointId)
+
+	serveId = endpoint.ServeId
+
+	return
+}
+func (s *DebugInterfaceService) GetEndpointAndServeIdForDebugInterface(debugInterfaceId uint) (
+	endpointId, serveId uint) {
+
+	debugInterface, _ := s.DebugInterfaceRepo.Get(debugInterfaceId)
+
+	endpointId = debugInterface.EndpointId
+	endpoint, _ := s.EndpointRepo.Get(endpointId)
+
+	serveId = endpoint.ServeId
+
+	return
+}
+func (s *DebugInterfaceService) GetScenarioIdForDebugInterface(processorId uint) (
+	scenarioId uint) {
+
+	processor, _ := s.ScenarioProcessorRepo.Get(processorId)
+	scenarioId = processor.ScenarioId
+
+	return
+}
+
+func (s *DebugInterfaceService) CopyValueFromRequest(interf *model.DebugInterface, req v1.DebugData) (err error) {
 	copier.CopyWithOption(interf, req, copier.Option{DeepCopy: true})
 
 	return

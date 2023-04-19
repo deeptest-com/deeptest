@@ -55,6 +55,7 @@ import InterfaceResponse from './response/Index.vue';
 import RequestVariable from '@/components/Editor/RequestVariable.vue';
 
 import {UsedBy} from "@/utils/enum";
+import {DebugInfo} from "@/views/component/debug/data";
 const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
 const store = useStore<{  Debug: Debug, ProjectGlobal: ProjectGlobal, Endpoint: Endpoint }>();
@@ -63,26 +64,34 @@ const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const endpointDetail = computed<any>(() => store.state.Endpoint.endpointDetail);
 const interfaceMethodToObjMap = computed<any>(() => store.state.Endpoint.interfaceMethodToObjMap);
 
-const currEndpointId = computed<number>(() => store.state.Debug.currEndpointId);
-const currInterface = computed<any>(() => store.state.Debug.currInterface);
+const defineEndpoint = computed<number>(() => store.state.Debug.defineEndpoint);
+const defineInterface = computed<any>(() => store.state.Debug.defineInterface);
+const debugInfo = computed<DebugInfo>(() => store.state.Debug.debugInfo);
 const debugData = computed<any>(() => store.state.Debug.debugData);
 
-const selectedMethod = ref(currInterface.value?.method ? currInterface.value?.method : 'GET');
+const selectedMethod = ref(defineInterface.value?.method ? defineInterface.value?.method : 'GET');
 
-const changeMethod = () => {
+const changeMethod = async () => {
   console.log('changeMethod', selectedMethod.value, interfaceMethodToObjMap)
 
-  const interf = interfaceMethodToObjMap.value[selectedMethod.value]
+  const defineInterface = interfaceMethodToObjMap.value[selectedMethod.value]
 
-  store.dispatch('Debug/setInterface', interf);
-  store.dispatch('Debug/loadDebugData', {
-    interfaceId: interf.id,
-    endpointId: currEndpointId.value,
+  await store.dispatch('Debug/setDefineInterface', defineInterface);
+
+  await store.dispatch('Debug/loadData', {
+    interfaceId: defineInterface.id,
+    endpointId: defineInterface.id,
     usedBy: usedBy,
   });
 
-  store.dispatch('Debug/getLastInvocationResp', interf.id)
-  store.dispatch('Debug/listInvocation', interf.id)
+  store.dispatch('Debug/getLastInvocationResp', {
+    endpointInterfaceId: debugInfo.value.endpointInterfaceId,
+    debugInterfaceId: debugInfo.value.debugInterfaceId,
+  })
+  store.dispatch('Debug/listInvocation', {
+    endpointInterfaceId: debugInfo.value.endpointInterfaceId,
+    debugInterfaceId: debugInfo.value.debugInterfaceId,
+  })
 }
 changeMethod()
 

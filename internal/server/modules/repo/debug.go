@@ -14,11 +14,16 @@ func (r *DebugRepo) Save(invocation *model.DebugInvoke) (err error) {
 	return
 }
 
-func (r *DebugRepo) List(interfaceId int) (pos []model.DebugInvoke, err error) {
-	err = r.DB.
-		Select("id", "name").
-		Where("interface_id=?", interfaceId).
-		Where("NOT deleted").
+func (r *DebugRepo) List(endpointInterfaceId, debugInterfaceId int) (pos []model.DebugInvoke, err error) {
+	db := r.DB.Select("id", "name")
+
+	if endpointInterfaceId > 0 {
+		db.Where("endpoint_interface_id=?", endpointInterfaceId)
+	} else if debugInterfaceId > 0 {
+		db.Where("debug_interface_id=?", debugInterfaceId)
+	}
+
+	err = db.Where("NOT deleted").
 		Order("created_at DESC").
 		Find(&pos).Error
 	return
@@ -41,10 +46,16 @@ func (r *DebugRepo) Delete(id uint) (err error) {
 	return
 }
 
-func (r *DebugRepo) GetLast(interfaceId uint) (debug model.DebugInvoke, err error) {
-	err = r.DB.
-		Where("interface_id=?", interfaceId).
-		Where("NOT deleted").
+func (r *DebugRepo) GetLast(endpointInterfaceId, debugInterfaceId int) (debug model.DebugInvoke, err error) {
+	db := r.DB
+
+	if endpointInterfaceId > 0 {
+		db.Where("endpoint_interface_id=?", endpointInterfaceId)
+	} else if debugInterfaceId > 0 {
+		db.Where("debug_interface_id=?", debugInterfaceId)
+	}
+
+	err = db.Where("NOT deleted").
 		Order("created_at DESC").
 		First(&debug).Error
 

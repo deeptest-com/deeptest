@@ -26,14 +26,14 @@ func (c *SummaryCtrl) Card(ctx iris.Context) {
 
 	if err != nil {
 		logUtils.Errorf("参数解析失败", zap.String("错误:", err.Error()))
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Data: nil, Msg: _domain.ParamErr.Msg})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
 	data, err := c.SummaryService.Card(projectId)
 
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	} else {
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data, Msg: _domain.NoErr.Msg})
@@ -48,13 +48,13 @@ func (c *SummaryCtrl) Bugs(ctx iris.Context) {
 
 	if err != nil {
 		logUtils.Errorf("参数解析失败", zap.String("错误:", err.Error()))
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Data: nil, Msg: _domain.ParamErr.Msg})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
 	data, err := c.SummaryService.Bugs(projectId)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	} else {
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data, Msg: _domain.NoErr.Msg})
@@ -69,14 +69,14 @@ func (c *SummaryCtrl) Details(ctx iris.Context) {
 
 	if err != nil {
 		logUtils.Errorf("参数解析失败", zap.String("错误:", err.Error()))
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Data: nil, Msg: _domain.ParamErr.Msg})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
 	data, err := c.SummaryService.Details(userId)
 
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	} else {
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data, Msg: _domain.NoErr.Msg})
@@ -91,14 +91,14 @@ func (c *SummaryCtrl) ProjectUserRanking(ctx iris.Context) {
 
 	if err != nil {
 		logUtils.Errorf("参数解析失败", zap.String("错误:", err.Error()))
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Data: nil, Msg: _domain.ParamErr.Msg})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
 	data, err := c.SummaryService.ProjectUserRanking(projectId, cycle)
 
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	} else {
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data, Msg: _domain.NoErr.Msg})

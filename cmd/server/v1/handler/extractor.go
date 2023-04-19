@@ -18,13 +18,13 @@ func (c *ExtractorCtrl) List(ctx iris.Context) {
 	interfaceId, err := ctx.URLParamInt("interfaceId")
 	usedBy := ctx.URLParam("usedBy")
 	if interfaceId == 0 || usedBy == "" {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: "interfaceId OR usedBy"})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
 	data, err := c.ExtractorService.List(uint(interfaceId), consts.UsedBy(usedBy))
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
@@ -35,13 +35,13 @@ func (c *ExtractorCtrl) List(ctx iris.Context) {
 func (c *ExtractorCtrl) Get(ctx iris.Context) {
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Data: nil, Msg: _domain.ParamErr.Msg})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
 	extractor, err := c.ExtractorService.Get(uint(id))
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: _domain.SystemErr.Msg})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return
 	}
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: extractor})
@@ -52,7 +52,7 @@ func (c *ExtractorCtrl) Create(ctx iris.Context) {
 	extractor := model.DebugInterfaceExtractor{}
 	err := ctx.ReadJSON(&extractor)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
@@ -72,7 +72,7 @@ func (c *ExtractorCtrl) Update(ctx iris.Context) {
 	var extractor model.DebugInterfaceExtractor
 	err := ctx.ReadJSON(&extractor)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
@@ -82,7 +82,7 @@ func (c *ExtractorCtrl) Update(ctx iris.Context) {
 		return
 	}
 
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: nil, Msg: _domain.NoErr.Msg})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 }
 
 // CreateOrUpdateResult 新建或更新结果
@@ -90,7 +90,7 @@ func (c *ExtractorCtrl) CreateOrUpdateResult(ctx iris.Context) {
 	var extractor model.DebugInterfaceExtractor
 	err := ctx.ReadJSON(&extractor)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
@@ -100,14 +100,14 @@ func (c *ExtractorCtrl) CreateOrUpdateResult(ctx iris.Context) {
 		return
 	}
 
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: nil, Msg: _domain.NoErr.Msg})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 }
 
 // Delete 删除
 func (c *ExtractorCtrl) Delete(ctx iris.Context) {
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
@@ -124,13 +124,13 @@ func (c *ExtractorCtrl) Delete(ctx iris.Context) {
 func (c *ExtractorCtrl) ListExtractorVariableForCheckpoint(ctx iris.Context) {
 	interfaceId, err := ctx.URLParamInt("interfaceId")
 	if interfaceId == 0 {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: "interfaceId"})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
 	data, err := c.ExtractorService.ListExtractorVariableByInterface(interfaceId)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
@@ -143,13 +143,13 @@ func (c *ExtractorCtrl) ListValidExtractorVariableForInterface(ctx iris.Context)
 	usedBy := ctx.URLParam("usedBy")
 
 	if interfaceId == 0 || usedBy == "" {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: "interfaceId OR usedBy"})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
 	data, err := c.ExtractorService.ListValidExtractorVarForInterface(interfaceId, consts.UsedBy(usedBy))
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 

@@ -1,6 +1,6 @@
 import request from '@/utils/request';
 import {requestToAgent} from '@/utils/request';
-import {Interface, OAuth20} from "./data";
+import {DebugInfo, Interface, OAuth20} from "./data";
 import {isInArray} from "@/utils/array";
 import {UsedBy} from "@/utils/enum";
 import {getToken} from "@/utils/localToken";
@@ -48,8 +48,7 @@ export async function call(data): Promise<any> {
 }
 
 // debug invoke
-export async function listInvocation(interfaceId: number): Promise<any> {
-    const params = {interfaceId}
+export async function listInvocation(params: DebugInfo): Promise<any> {
     return request({
         url: `/${apiPathInvoke}`,
         method: 'GET',
@@ -59,8 +58,7 @@ export async function listInvocation(interfaceId: number): Promise<any> {
 export async function getInvocationAsInterface(id: number): Promise<any> {
     return request({url: `/${apiPathInvoke}/${id}`});
 }
-export async function getLastInvocationResp(interfaceId: number): Promise<any> {
-    const params = {interfaceId}
+export async function getLastInvocationResp(params: any): Promise<any> {
     return request({
         url: `/${apiPathInvoke}/getLastResp`,
         params

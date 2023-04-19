@@ -19,7 +19,7 @@ func (c *PlanExecCtrl) LoadExecData(ctx iris.Context) {
 
 	data, err := c.PlanExecService.LoadExecData(id)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
@@ -32,7 +32,7 @@ func (c *PlanExecCtrl) LoadExecResult(ctx iris.Context) {
 
 	data, err := c.PlanExecService.LoadExecResult(scenarioId)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
@@ -46,7 +46,7 @@ func (c *PlanExecCtrl) SubmitResult(ctx iris.Context) {
 	result := agentDomain.PlanExecResult{}
 	err = ctx.ReadJSON(&result)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 

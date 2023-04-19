@@ -18,7 +18,7 @@ func (c *ServeCtrl) ListByProject(ctx iris.Context) {
 
 	projectId, err := ctx.URLParamInt("currProjectId")
 	if projectId == 0 {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: "projectId"})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
@@ -60,7 +60,7 @@ func (c *ServeCtrl) Save(ctx iris.Context) {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
-	
+
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res})
 	return
 }

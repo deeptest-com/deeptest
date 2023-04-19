@@ -1,21 +1,24 @@
 <template>
-  <div class="forgotPassword-main">
-    <h1 class="title">
-      忘记密码
-    </h1>
-    <a-form :wrapper-col="{span:24}">
+  <div class="login-form-main">
+    <div class="menu-tab">
+      <div class="menu-tab-item menu-tab-active">忘记密码</div>
+    </div>
+    <a-form :wrapper-col="{ span: 24 }">
       <a-form-item label="" v-bind="validateInfos.usernameOrPassword">
-        <a-input v-model:value="modelRef.usernameOrPassword" placeholder="输入用户名或邮箱" />
+        <div class="login-input-item">
+          <a-input v-model:value="modelRef.usernameOrPassword" placeholder="输入用户名或邮箱" />
+        </div>
       </a-form-item>
-
+      <div class="text-align-right">
+        <router-link to="/user/login">
+          返回登录
+        </router-link>
+      </div>
       <a-form-item>
-        <a-button type="primary" class="submit" @click="handleSubmit" :loading="submitLoading">
-          提交
-        </a-button>
-        <div class="text-align-right">
-          <router-link to="/user/login">
-            返回登录
-          </router-link>
+        <div class="login-input-button">
+          <a-button type="primary" class="submit" @click="handleSubmit" :loading="submitLoading">
+            提交
+          </a-button>
         </div>
       </a-form-item>
     </a-form>
@@ -26,15 +29,15 @@ import { reactive, ref } from "vue";
 import { useRouter } from 'vue-router';
 import { useI18n } from "vue-i18n";
 
-import {message, Form, notification} from 'ant-design-vue';
-import {NotificationKeyCommon} from "@/utils/const";
-import {forgotPassword} from "@/views/user/password/service";
+import { message, Form, notification } from 'ant-design-vue';
+import { NotificationKeyCommon } from "@/utils/const";
+import { forgotPassword } from "@/views/user/password/service";
 const useForm = Form.useForm;
 
 const router = useRouter();
 const { t } = useI18n();
 
-const modelRef = ref({usernameOrPassword: ''});
+const modelRef = ref({ usernameOrPassword: '' });
 
 const rulesRef = reactive({
   usernameOrPassword: [
@@ -73,22 +76,5 @@ const handleSubmit = async (e: MouseEvent) => {
 
 </script>
 <style lang="less" scoped>
-.forgotPassword-main {
-  flex: none;
-  width: 380px;
-  padding: 36px;
-  margin: 0 auto;
-  border-radius: 4px;
-  background-color: rgba(255, 255, 255, 0.2);
-  .title {
-    font-size: 28px;
-    margin-top: 0;
-    margin-bottom: 30px;
-    text-align: center;
-    color: #ffffff;
-  }
-  .submit {
-    width: 100%;
-  }
-}
+@import url('../assets/login.less');
 </style>

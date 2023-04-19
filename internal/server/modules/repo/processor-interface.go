@@ -412,3 +412,8 @@ func (r *ProcessorInterfaceRepo) GetList(projectId, scenarioId uint) (processors
 
 	return
 }
+
+func (r *ProcessorInterfaceRepo) GetCountByEndpointId(endpointId uint) (count int64, err error) {
+	err = r.DB.Model(&model.ProcessorInterface{}).Where("NOT deleted and endpoint_id=?", endpointId).Count(&count).Error
+	return
+}

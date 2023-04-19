@@ -60,7 +60,7 @@ func (c *ServeCtrl) Save(ctx iris.Context) {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
-	
+
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res})
 	return
 }

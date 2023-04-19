@@ -284,3 +284,8 @@ func (r *EndpointRepo) GetFirstMethod(id uint) (res model.EndpointInterface, err
 	}
 	return
 }
+
+func (r *EndpointRepo) GetCountByServeId(serveId uint) (count int64, err error) {
+	err = r.DB.Where("serve=? and NOT deleted", serveId).Count(&count).Error
+	return
+}

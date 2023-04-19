@@ -107,7 +107,7 @@ export default defineComponent({
     display: flex;
     width: 100%;
     height: @headerHeight;
-    background-color: @menu-dark-bg;
+    background-color: @menu-white-bg;
     color: #c0c4cc;
     .indexlayout-flexible {
       width: 18px;

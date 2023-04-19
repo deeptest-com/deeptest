@@ -18,6 +18,7 @@ import IndexLayout from '@/layouts/IndexLayout/index.vue';
 import UserLayoutRoutes from '@/layouts/UserLayout/routes';
 import UserLayout from '@/layouts/UserLayout/index.vue';
 import BlankLayout from "@/layouts/BlankLayout.vue";
+import HomeLayout from "@/layouts/HomeLayout.vue";
 
 const routes: RoutesDataItem[] = [
   {
@@ -33,15 +34,50 @@ const routes: RoutesDataItem[] = [
       },
     ],
   },
-
+  {
+    title: '首页',
+    path: '/',
+    redirect: '/home',
+    component: HomeLayout,
+    children: [
+      {
+        icon: 'home',
+        title: 'home',
+        path: 'home',
+        component: () => import('@/views/home/index.vue'),
+        hidden: false,
+      }
+    ],
+  },
+  {
+    title: 'index-layout.menu',
+    path: '/user-manage',
+    component: HomeLayout,
+    children: [
+      {
+        icon: 'profile',
+        title: 'profile',
+        path: 'profile',
+        component: () => import('@/views/user/info/profile.vue'),
+        hidden: true,
+      },
+      {
+        icon: 'message',
+        title: 'message',
+        path: 'message',
+        component: () => import('@/views/user/info/message.vue'),
+        hidden: true,
+      },
+    ],
+  },
   {
     title: 'empty',
-    path: '/',
+    path: '/project',
     component: SecurityLayout,
     children: [
       {
         title: 'empty',
-        path: '/',
+        path: '/project',
         redirect: settings.homeRouteItem.path,
         component: IndexLayout,
         children: IndexLayoutRoutes
@@ -56,7 +92,6 @@ const routes: RoutesDataItem[] = [
   {
     title: 'empty',
     path: '/user',
-    redirect: '/user/login',
     component: UserLayout,
     children: UserLayoutRoutes
   },

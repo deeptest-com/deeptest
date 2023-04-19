@@ -176,7 +176,7 @@ onMounted(()=>{
   store.dispatch("User/fetchCurrent");
 })
 
-const labelCol = {span: 4}
+const labelCol = {span: 1}
 const wrapperCol = {span: 14}
 
 </script>

@@ -69,9 +69,10 @@ const projects = computed<any>(() => store.state.ProjectGlobal.projects);
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const currentUser = computed<any>(() => store.state.User.currentUser);
 const list = computed<any[]>(() => store.state.Home.queryResult.list);
-
+const loading = ref<boolean>(false);
 const showMode=ref('list')
 const activeKey = ref(1);
+
 let pagination = computed<PaginationConfig>(() => store.state.Home.queryResult.pagination);
 let queryParams = reactive<QueryParams>({
   keywords: '', enabled: '1',userId:activeKey.value==0?0:currentUser.value?.id,
@@ -141,7 +142,7 @@ onMounted(() => {
   // getList(1);
 })
 
-// const loading = ref<boolean>(true);
+
 const getList = async (current: number): Promise<void> => {
   // loading.value = true;
 console.log('queryParams.keywords',queryParams.keywords)
@@ -157,10 +158,7 @@ console.log('queryParams.keywords',queryParams.keywords)
 
   // store.dispatch("ProjectGlobal/fetchProject");
 }
-function handleTabClick(e: number) {
-  queryParams.userId=e;
-   getList(1);
-}
+
 function goProject(id:number){
    router.push(`/workbench/index/${id}`)
 

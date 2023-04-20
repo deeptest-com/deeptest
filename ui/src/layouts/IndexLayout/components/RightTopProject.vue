@@ -23,7 +23,7 @@ import {StateType as EnvironmentStateType} from "@/store/environment";
 const store = useStore<{ User: UserStateType,
   ProjectGlobal: ProjectStateType, ServeGlobal: ServeStateType, Environment: EnvironmentStateType }>();
 
-const route = useRoute();  
+const route = useRoute();
 
 const message = computed<number>(() => store.state.User.message);
 const projects = computed<any>(() => store.state.ProjectGlobal.projects);
@@ -35,6 +35,7 @@ store.dispatch("ServeGlobal/fetchServe");
 
 const selectProject = async (value): Promise<void> => {
   console.log('selectProject', value)
+  window.localStorage.setItem('currentProjectId', value);
   await store.dispatch('ProjectGlobal/changeProject', value);
   await store.dispatch('Environment/getEnvironment', {id: 0, projectId: value});
 

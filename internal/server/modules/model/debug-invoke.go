@@ -1,6 +1,6 @@
 package model
 
-type Debug struct {
+type DebugInvoke struct {
 	BaseModel
 	InvocationBase
 
@@ -10,6 +10,6 @@ type Debug struct {
 	ScenarioId  uint `json:"scenarioId"`
 }
 
-func (Debug) TableName() string {
-	return "biz_debug"
+func (DebugInvoke) TableName() string {
+	return "biz_debug_invoke"
 }

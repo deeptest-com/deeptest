@@ -34,7 +34,7 @@
             {{ text }}
           </template>
 
-          
+
           <template #role="{record}">
             <div class="customTitleColRender">
               <a-select
@@ -53,7 +53,7 @@
 
           <template #action="{ record }">
             <a-button type="link" @click="() => remove(record.id)"
-                      :disabled="currentUser.projectRoles[projectId] !== 'admin'">移除</a-button>       
+                      :disabled="currentUser.projectRoles[projectId] !== 'admin'">移除</a-button>
           </template>
 
         </a-table>
@@ -100,8 +100,7 @@ const data = reactive<Member>({
 
 });
 
-const projectId = +router.currentRoute.value.params.id
-
+const projectId = Number(window.localStorage.getItem('currentProjectId'));
 const columns = [
   {
     title: '序号',
@@ -141,6 +140,7 @@ const invite = ()=> {
   data.email = "";
   data.userId = 0;
   visible.value = true;
+  getSelectUserList()
 }
 
 onMounted(() => {
@@ -229,16 +229,20 @@ const roles = computed<SelectTypes["options"]>(()=>store.state.Project.roles);
 
 //角色列表
 const getRoles = ()=>{
-  store.dispatch('Project/getUserList');
   store.dispatch('Project/getRoles')
-  return 
+  return
+}
+
+const getSelectUserList = ()=>{
+  store.dispatch('Project/getNotExistedUserList', projectId);
+  return
 }
 
 const title = ref("邀请用户")
 const cancal = ()=>{
   visible.value = false
   getMembers(1)
-  
+
 }
 
 const handleChangeRole = async (val:any,record:any)=>{

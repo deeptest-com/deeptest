@@ -48,12 +48,19 @@ const invokeInterface = async () => {
       usedBy,
     }
   }
-  await store.dispatch('Debug/invokeInterface', callData)
+  await store.dispatch('Debug/call', callData)
 };
 
 const saveInterface = async (data) => {
   console.log('saveInterface', data)
-  const res = await store.dispatch('Debug/save', data)
+
+  const obj = Object.assign({}, data)
+  delete obj.shareVars
+  delete obj.envVars
+  delete obj.globalEnvVars
+  delete obj.globalParamVars
+
+  const res = await store.dispatch('Debug/save', obj)
   if (res === true) {
     notification.success({
       key: NotificationKeyCommon,

@@ -18,13 +18,13 @@ func (c *ShareVarCtrl) List(ctx iris.Context) {
 	req := domain.DebugCall{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
 	data := c.ShareVarService.List(req.InterfaceId, req.EndpointId, req.ProcessorId, req.UsedBy)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
@@ -35,7 +35,7 @@ func (c *ShareVarCtrl) List(ctx iris.Context) {
 func (c *ShareVarCtrl) Delete(ctx iris.Context) {
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
@@ -53,7 +53,7 @@ func (c *ShareVarCtrl) Clear(ctx iris.Context) {
 	endpointOrProcessorId, err := ctx.URLParamInt("endpointOrProcessorId")
 	usedBy := ctx.URLParam("usedBy")
 	if err != nil || usedBy == "" {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 

@@ -221,7 +221,7 @@ async function handleUpdateEndpoint(value: string, record: any) {
 }
 
 async function editEndpoint(record) {
-  await store.dispatch('Debug/setEndpointId', record.id);
+  await store.dispatch('Debug/setDefineEndpoint', record);
   await store.dispatch('Endpoint/getEndpointDetail', {id: record.id});
   drawerVisible.value = true;
 }

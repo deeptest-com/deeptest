@@ -68,7 +68,6 @@ export default defineComponent({
   },
   setup(props) {
     const { menuData, topNavEnable }  = toRefs(props);
-
     const newMenuData = computed<RoutesDataItem[]>(() => {
       if(!topNavEnable.value) {
         return menuData.value as RoutesDataItem[];
@@ -77,9 +76,16 @@ export default defineComponent({
       for (let index = 0, len = menuData.value.length; index < len; index += 1) {
         const element = menuData.value[index];
         if (element.children) {
-          MenuItems.push(
-              ...element.children as RoutesDataItem[],
-          );
+          const childrenRoute = element.children.length > 1 ? element.children.slice(1) : [];
+          const routeDataItem: RoutesDataItem = { ...element.children[0], children: [] };
+          if (childrenRoute.length > 0) {
+            childrenRoute.forEach((routeItem: RoutesDataItem) => {
+              if (!routeItem.hidden) {
+                routeDataItem.children?.push(routeItem);
+              }
+            })
+          }
+          MenuItems.push({ ...routeDataItem });
         }
       }
       return MenuItems;

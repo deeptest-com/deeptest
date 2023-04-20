@@ -453,3 +453,10 @@ func (r *ProjectRepo) GetCurrProjectMemberRoleByUser(userId uint) (ret model.Pro
 	}
 	return r.FindRolesByProjectAndUser(curProject.ID, userId)
 }
+
+func (r *ProjectRepo) GetMembersByProject(projectId uint) (ret []model.ProjectMember, err error) {
+	err = r.DB.Model(&model.ProjectMember{}).
+		Where("project_id = ?", projectId).
+		Find(&ret).Error
+	return
+}

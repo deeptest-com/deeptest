@@ -554,16 +554,51 @@ func (r *DebugInterfaceRepo) GetEndpointId(endpointId uint, version string) (fie
 
 func (r *DebugInterfaceRepo) GetById(interfId uint) (interf model.DebugInterface, err error) {
 	if interfId > 0 {
-		interf, err = r.Get(interfId)
-		interf.Params, _ = r.ListParams(interfId)
-		interf.Headers, _ = r.ListHeaders(interfId)
-		interf.BodyFormData, _ = r.ListBodyFormData(interfId)
-		interf.BodyFormUrlencoded, _ = r.ListBodyFormUrlencoded(interfId)
-		interf.BasicAuth, _ = r.GetBasicAuth(interfId)
-		interf.BearerToken, _ = r.GetBearerToken(interfId)
-		interf.OAuth20, _ = r.GetOAuth20(interfId)
-		interf.ApiKey, _ = r.GetApiKey(interfId)
+		return
 	}
+
+	interf, err = r.Get(interfId)
+	r.SetProps(&interf)
+
+	return
+}
+
+func (r *DebugInterfaceRepo) GetByEndpointInterfaceId(endpointInterfaceId uint) (po model.DebugInterface, err error) {
+	err = r.DB.
+		Where("endpoint_interface_id=?", endpointInterfaceId).
+		Where("NOT deleted").
+		First(&po).Error
+
+	r.SetProps(&po)
+
+	return
+}
+
+func (r *DebugInterfaceRepo) HasDebugInterfaceRecord(endpointInterfaceId uint) (ret bool, err error) {
+	var count int64
+
+	err = r.DB.Model(&model.DebugInterface{}).
+		Where("endpoint_interface_id=?", endpointInterfaceId).
+		Count(&count).Error
+
+	if err != nil {
+		return
+	}
+
+	ret = count > 0
+
+	return
+}
+
+func (r *DebugInterfaceRepo) SetProps(po *model.DebugInterface) (err error) {
+	po.Params, _ = r.ListParams(po.ID)
+	po.Headers, _ = r.ListHeaders(po.ID)
+	po.BodyFormData, _ = r.ListBodyFormData(po.ID)
+	po.BodyFormUrlencoded, _ = r.ListBodyFormUrlencoded(po.ID)
+	po.BasicAuth, _ = r.GetBasicAuth(po.ID)
+	po.BearerToken, _ = r.GetBearerToken(po.ID)
+	po.OAuth20, _ = r.GetOAuth20(po.ID)
+	po.ApiKey, _ = r.GetApiKey(po.ID)
 
 	return
 }

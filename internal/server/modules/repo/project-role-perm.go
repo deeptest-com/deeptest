@@ -89,13 +89,15 @@ func (r *ProjectRolePermRepo) GetByRoleAndPerm(roleId, permId uint) (ret model.P
 	return
 }
 
-// GetProjectPermsForRole TODO:每个角色需要的权限需要改动
+// GetProjectPermsForRole TODO: 每个角色需要的权限还未确定，需要改动
 func (r *ProjectRolePermRepo) GetProjectPermsForRole() (res map[uint][]uint, err error) {
-	var permIds []uint
+	var permIds, testPermIds []uint
 	err = r.DB.Model(&model.ProjectPerm{}).Select("id").Find(&permIds).Error
+	err = r.DB.Model(&model.ProjectPerm{}).Select("id").Where("name like ?", "/api/v1/projects%").Find(&testPermIds).Error
 	res = map[uint][]uint{
 		1: permIds,
 		2: permIds,
+		3: testPermIds,
 	}
 
 	return

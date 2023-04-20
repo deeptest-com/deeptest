@@ -23,7 +23,7 @@ type InvocationProcessorService struct {
 	DatapoolService           *DatapoolService           `inject:""`
 }
 
-func (s *InvocationProcessorService) LoadInterfaceExecData(req v1.DebugRequest) (ret v1.DebugRequest, err error) {
+func (s *InvocationProcessorService) LoadInterfaceExecData(req v1.DebugData) (ret v1.DebugData, err error) {
 	err = s.ProcessorInterfaceService.UpdateByInvocation(req)
 	if err != nil {
 		return
@@ -49,14 +49,14 @@ func (s *InvocationProcessorService) SubmitInterfaceInvokeResult(req v1.SubmitDe
 	return
 }
 
-func (s *InvocationProcessorService) CreateForScenarioInterface(req v1.DebugRequest,
+func (s *InvocationProcessorService) CreateForScenarioInterface(req v1.DebugData,
 	resp v1.DebugResponse, projectId uint) (invocation model.ProcessorInvocation, err error) {
 
 	invocation = model.ProcessorInvocation{
 		InvocationBase: model.InvocationBase{
-			Name:        time.Now().Format("01-02 15:04:05"),
-			InterfaceId: req.InterfaceId,
-			ProjectId:   uint(projectId),
+			Name: time.Now().Format("01-02 15:04:05"),
+			//InterfaceId: req.EndpointInterfaceId,
+			ProjectId: uint(projectId),
 		},
 	}
 
@@ -71,13 +71,13 @@ func (s *InvocationProcessorService) CreateForScenarioInterface(req v1.DebugRequ
 	return
 }
 
-func (s *InvocationProcessorService) ReplaceEnvironmentAndExtractorVariables(req v1.DebugRequest) (
-	ret v1.DebugRequest, err error) {
+func (s *InvocationProcessorService) ReplaceEnvironmentAndExtractorVariables(req v1.DebugData) (
+	ret v1.DebugData, err error) {
 
-	//interf, _ := s.ProcessorInterfaceRepo.Get(req.InterfaceId)
+	//interf, _ := s.ProcessorInterfaceRepo.Get(req.EndpointInterfaceId)
 	//
-	//req.Environment, _ = s.VariableService.GetEnvVarsByInterface(req.InterfaceId, req.UsedBy)
-	//req.Variables, _ = s.VariableService.GetShareVarsByInterface(req.InterfaceId, req.UsedBy)
+	//req.Environment, _ = s.VariableService.GetEnvVarsByInterface(req.EndpointInterfaceId, req.UsedBy)
+	//req.Variables, _ = s.VariableService.GetShareVarsByInterface(req.EndpointInterfaceId, req.UsedBy)
 	//req.Datapools, _ = s.DatapoolService.ListForExec(interf.ProjectId)
 
 	ret = req
@@ -108,14 +108,14 @@ func (s *InvocationProcessorService) GetLastResp(interfId int) (resp v1.DebugRes
 func (s *InvocationProcessorService) GetAsInterface(id int) (interf model.ProcessorInterface, interfResp v1.DebugResponse, err error) {
 	invocation, err := s.ProcessorInvocationRepo.Get(uint(id))
 
-	interfReq := v1.DebugRequest{}
+	interfReq := v1.DebugData{}
 
 	json.Unmarshal([]byte(invocation.ReqContent), &interfReq)
 	json.Unmarshal([]byte(invocation.RespContent), &interfResp)
 
 	copier.CopyWithOption(&interf, interfReq, copier.Option{DeepCopy: true})
 
-	interf.ID = invocation.InterfaceId
+	//interf.ID = invocation.InterfaceId
 
 	return
 }

@@ -15,7 +15,7 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
         component: () => import('@/views/workbench/index.vue'),
         hidden: false,
       },
-  
+
     ],
   },
   // {
@@ -222,6 +222,21 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
         title: 'user.management',
         path: 'index',
         component: () => import('@/views/user/list/index.vue'),
+        hidden: false,
+      },
+    ],
+  },
+  {
+    title: 'index-layout.menu',
+    path: '/members',
+    redirect: '/project/members',
+    component: BlankLayout,
+    children: [
+      {
+        icon: 'members',
+        title: 'project.members',
+        path: 'index',
+        component: () => import('@/views/project/edit/members.vue'),
         hidden: false,
       },
     ],

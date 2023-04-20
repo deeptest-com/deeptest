@@ -100,10 +100,10 @@ watch(() => {
 }, (newVal, oldVal) => {
   selectedMethodDetail.value = interfaceMethodToObjMap.value[newVal];
   if (selectedMethodDetail.value) {
-    store.dispatch('Debug/setInterface', selectedMethodDetail.value);
+    store.dispatch('Debug/setDefineInterface', selectedMethodDetail.value);
     store.commit('Endpoint/setSelectedMethodDetail', selectedMethodDetail.value);
   } else {
-    store.dispatch('Debug/setInterface', {});
+    store.dispatch('Debug/setDefineInterface', {});
     store.commit('Endpoint/setSelectedMethodDetail', {});
   }
   // 根据选中的请求方法决定是否展示请求体设置，暂定以下三种方法是不需要请求体的
@@ -119,7 +119,7 @@ function addEndpoint() {
     "method": selectedMethod.value,
   }
   selectedMethodDetail.value = item;
-  store.dispatch('Debug/setInterface', selectedMethodDetail.value);
+  store.dispatch('Debug/setDefineInterface', selectedMethodDetail.value);
   store.commit('Endpoint/setInterfaceMethodToObjMap', {
     method: item.method,
     value: item,

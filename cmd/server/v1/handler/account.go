@@ -25,13 +25,13 @@ func (c *AccountCtrl) Login(ctx iris.Context) {
 
 		if len(errs) > 0 {
 			_logUtils.Errorf("参数验证失败", zap.String("ValidRequest()", strings.Join(errs, ";")))
-			ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: strings.Join(errs, ";")})
+			ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: strings.Join(errs, ";")})
 			return
 		}
 	}
 	resp, err := c.AccountService.Login(req)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: resp, Msg: _domain.NoErr.Msg})
@@ -75,7 +75,7 @@ func (c *AccountCtrl) ResetPassword(ctx iris.Context) {
 	if err != nil {
 		errs := validate.ValidRequest(err)
 		if len(errs) > 0 {
-			ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: strings.Join(errs, ";")})
+			ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 			return
 		}
 	}

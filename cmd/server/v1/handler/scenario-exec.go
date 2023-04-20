@@ -19,7 +19,7 @@ func (c *ScenarioExecCtrl) LoadExecData(ctx iris.Context) {
 
 	data, err := c.ScenarioExecService.LoadExecData(uint(id))
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
@@ -32,7 +32,7 @@ func (c *ScenarioExecCtrl) LoadExecResult(ctx iris.Context) {
 
 	data, err := c.ScenarioExecService.LoadExecResult(scenarioId)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
@@ -46,7 +46,7 @@ func (c *ScenarioExecCtrl) SubmitResult(ctx iris.Context) {
 	result := agentDomain.ScenarioExecResult{}
 	err = ctx.ReadJSON(&result)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 

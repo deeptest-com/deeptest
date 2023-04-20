@@ -413,13 +413,13 @@ const StoreModel: ModuleType = {
                 return false
             }
         },
-        async loadList({commit, dispatch, state}, {currProjectId, page, pageSize, opts}: any) {
+        async loadList({commit, dispatch, state}, {projectId, page, pageSize, opts}: any) {
             page = page || state.listResult.pagination.current;
             pageSize = pageSize || state.listResult.pagination.pageSize;
             const otherParams = {...state.filterState, ...opts};
 
             const res = await getEndpointList({
-                "projectId": currProjectId,
+                "projectId": projectId,
                 "page": page,
                 "pageSize": pageSize,
                 ...otherParams,

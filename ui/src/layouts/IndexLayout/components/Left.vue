@@ -98,6 +98,7 @@ export default defineComponent({
   background-color: @menu-dark-bg;
   color: #c0c4cc;
   transition-duration: 0.1s;
+  padding: 10px;
 
   .indexlayout-left-logo {
     width: 100%;
@@ -177,6 +178,29 @@ export default defineComponent({
   :deep(.ant-menu-item) {
     margin-top: 0;
     margin-bottom: 8px;
+  }
+
+  :deep(.ant-menu-item.ant-menu-item-selected) {
+    background-color: #2E3762 !important;
+    border-radius: 4px;
+  }
+
+  :deep(.ant-menu-item.ant-menu-item-selected .svg-icon),
+  :deep(.ant-menu-item.ant-menu-item-selected .left-menu-title) {
+    color: #fff;
+  }
+
+  :deep(.ant-menu-item .svg-icon) {
+    color: rgba(255, 255, 255, 0.4);
+  }
+
+  :deep(.ant-menu-dark .ant-menu-inline.ant-menu-sub) {
+    background-color: @menu-dark-bg;
+  }
+
+
+  :deep(.ant-menu-submenu.ant-menu-submenu-open.ant-menu-submenu-selected .ant-menu-submenu-title .left-menu-title) {
+      color: rgba(255, 255, 255, 0.4);
   }
 }
 </style>

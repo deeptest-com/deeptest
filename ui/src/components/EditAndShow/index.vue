@@ -74,6 +74,10 @@ watch(() => {
   display: flex;
   align-items: center;
 
+  &.custom-serve {
+    color: #447DFD;
+  }
+
   &.custom-endpoint {
     color: #447DFD;
   }

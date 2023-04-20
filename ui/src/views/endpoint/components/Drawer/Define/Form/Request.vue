@@ -154,7 +154,7 @@ function addEndpoint() {
     top: -12px;
     width: 2px;
     background: #E5E5E5;
-    height: calc(100% + 120px);
+    height: calc(100% + 24px);
   }
   .form-item-request-item {
     margin-top: 16px;

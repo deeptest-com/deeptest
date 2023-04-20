@@ -171,6 +171,18 @@ async function changeModelInfo(type, e) {
   if (type === 'name') {
     activeSchema.value.name = e;
   }
+  const result =await store.dispatch('ProjectSetting/saveSchema', {
+    schemaInfo: {
+      "name": activeSchema.value.name,
+      "id": activeSchema.value.id,
+      "serveId": props.serveId,
+      "description": activeSchema.value.description
+    },
+    action: 'update'
+  })
+  if (result) {
+    await getList();
+  }
 }
 
 const showMode = ref('form');
@@ -304,7 +316,8 @@ async function generateFromJSON(JSONStr: string) {
 async function handleGenerateExample(examples: any) {
   const content = JSON.stringify(removeExtraViewInfo(JSON.parse(contentStr.value), true));
   const result = await store.dispatch('ProjectSetting/generateExample', {
-    data: content
+    data: content,
+    serveId: props.serveId,
   })
   const example = {
     name: `Example ${examples.length + 1}`,
@@ -317,6 +330,8 @@ async function handleGenerateExample(examples: any) {
 function handleContentChange(json: any) {
   const {content, examples} = json;
   contentStr.value = JSON.stringify(content);
+  activeSchema.value.examples = examples;
+  activeSchema.value.content = content;
   exampleStr.value = JSON.stringify(examples);
   schemaType.value = content.type;
 }

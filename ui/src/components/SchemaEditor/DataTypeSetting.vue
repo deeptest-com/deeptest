@@ -97,6 +97,7 @@
                   :label="'请选择组件'">
                 <a-select
                     :options="refsOptions"
+                    :disabled="isRefChildNode"
                     @change="(e) => {
                       changeRef(tabsIndex,tabIndex,e);
                     }"
@@ -120,7 +121,7 @@ import {ref, defineProps, defineEmits, watch, reactive, toRaw, computed, onMount
 import {
   LinkOutlined
 } from '@ant-design/icons-vue';
-import {schemaSettingInfo, typeOpts} from "./utils";
+import {schemaSettingInfo, typeOpts} from "./config";
 import cloneDeep from "lodash/cloneDeep";
 
 const props = defineProps({
@@ -142,14 +143,15 @@ const tabsList: any = ref([]);
 const visible: any = ref(false);
 // 返回，如何展示类型
 const typesLabel: any = computed(() => {
-  const {type, types} = props.value || {};
+  let {type, types} = props.value || {};
+  type = props?.value?.name || type || '';
   if (!type) {
     return '';
   }
-  // 引用类型
-  if (props?.value?.ref) {
-    return props?.value?.name
-  }
+  // // 引用类型
+  // if (props?.value?.ref) {
+  //   return props?.value?.name
+  // }
   const labels = Array.isArray(types) ? [...types, type] : [type];
   const result = labels.reduceRight((acc, cur, index) => {
     if (index === labels.length - 1) {
@@ -186,20 +188,24 @@ function selectTab(tabs: any, tabIndex: number) {
   tabs.forEach((tab: any, index: number) => {
     tab.active = tabIndex === index;
   })
+  // 切换成普通选择模式时，如果是选中的是数组，则需要添加一个tab
+  if(tabIndex === 0 && tabs[tabIndex].value === 'array' && tabsList.value.length === 1){
+    tabsList.value.push(cloneDeep(schemaSettingInfo));
+  }
 }
 
 function initTabsList(types: any, treeInfo: any) {
   let tabsList: any = [];
   types.forEach((type: string) => {
     const defaultTabs: any = cloneDeep(schemaSettingInfo);
-    if (typeOpts.includes(type) && !treeInfo?.ref) {
+    if (typeOpts.includes(type)) {
       defaultTabs[0].active = typeOpts.includes(type);
       defaultTabs[0].value = type;
       const activeTabProps = defaultTabs[0].props.find((prop: any) => prop.value === type);
       activeTabProps?.props?.options?.forEach((opt: any) => {
         opt.value = treeInfo[opt.name] || opt.value;
       })
-    } else if (treeInfo?.ref) {
+    } else {
       defaultTabs[0].active = false;
       defaultTabs[0].value = treeInfo?.type || 'string';
       defaultTabs[1].active = true;
@@ -231,6 +237,7 @@ function getValueFromTabsList(tabsList: any) {
           type: selectedRef.type,
           ref: activeTab.value,
           name: selectedRef.name,
+          content:null
         }
       }
     } else {
@@ -250,7 +257,9 @@ function getValueFromTabsList(tabsList: any) {
 watch(() => {
   return visible.value
 }, (newVal: any) => {
-  const {type, types} = props.value || {};
+  let {type, types} = props.value || {};
+  // ref 优先级高于 type，如果是 ref，则优先取 ref值判断类型
+  type =  props.value?.ref || type;
   const allTypes = [...(types || []), type];
   // 打开时，初始化数据
   if (newVal && props.value.type) {

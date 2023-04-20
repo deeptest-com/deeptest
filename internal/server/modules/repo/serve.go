@@ -281,6 +281,16 @@ func (r *ServeRepo) SecurityExist(id, serveId uint, name string) (res bool) {
 
 }
 
+func (r *ServeRepo) SchemaExist(id, serveId uint, name string) (res bool) {
+	var count int64
+	err := r.DB.Model(&model.ComponentSchema{}).Where("id != ? and name = ? and serve_id=?", id, name, serveId).Count(&count).Error
+	if err != nil {
+		return false
+	}
+	return count > 0
+
+}
+
 func (r *ServeRepo) SaveVersion(id uint, version *model.ServeVersion) (err error) {
 	if id == 0 {
 		err = r.CopyEndpointsVersionRef(version)

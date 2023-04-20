@@ -1,8 +1,7 @@
 package openapi
 
 import (
-	"fmt"
-	"github.com/getkin/kin-openapi/jsoninfo"
+	"encoding/json"
 	"github.com/getkin/kin-openapi/openapi3"
 	"reflect"
 )
@@ -19,33 +18,40 @@ type Schema struct {
 	Type       string     `json:"type,omitempty" yaml:"type,omitempty"`
 	Items      *SchemaRef `json:"items,omitempty" yaml:"items,omitempty"`
 	Properties Schemas    `json:"properties,omitempty" yaml:"properties,omitempty"`
+	Ref        string     `json:"ref,omitempty" yaml:"ref,omitempty"`
 }
 
-// MarshalJSON returns the JSON encoding of Schema.
-func (schema *Schema) MarshalJSON() ([]byte, error) {
-	return jsoninfo.MarshalStrictStruct(schema)
+func (schemaRef *SchemaRef) MarshalJSON() (res []byte, err error) {
+	schema := Schema{}
+	schema = *schemaRef.Value
+	res, err = json.Marshal(schema)
+	if err != nil {
+		return
+	}
+	return
 }
 
-// UnmarshalJSON sets Schema to a copy of data.
-func (schema *Schema) UnmarshalJSON(data []byte) error {
-	return jsoninfo.UnmarshalStrictStruct(data, schema)
+func (schemaRef *SchemaRef) UnmarshalJSON(data []byte) error {
+	var schema Schema
+	err := json.Unmarshal(data, &schema)
+	if err != nil {
+		return err
+	}
+	schemaRef.Value = &schema
+	return nil
 }
 
-// MarshalJSON returns the JSON encoding of SchemaRef.
-func (value *SchemaRef) MarshalJSON() ([]byte, error) {
-	return jsoninfo.MarshalRef(value.Ref, value.Value)
-}
-
-// UnmarshalJSON sets SchemaRef to a copy of data.
-func (value *SchemaRef) UnmarshalJSON(data []byte) error {
-	return jsoninfo.UnmarshalRef(data, &value.Ref, &value.Value)
-}
+type Components map[string]Schema
 
 type schema2conv struct {
+	Components Components
+	sets       map[string]int64
 }
 
 func NewSchema2conv() *schema2conv {
-	return new(schema2conv)
+	obj := new(schema2conv)
+	obj.sets = map[string]int64{}
+	return obj
 }
 
 func (s *schema2conv) Example2Schema(object interface{}, schema *openapi3.Schema) (err error) {
@@ -77,22 +83,28 @@ func (s *schema2conv) Example2Schema(object interface{}, schema *openapi3.Schema
 	case reflect.Float64:
 		schema.Type = openapi3.TypeNumber
 	}
-	//fmt.Println(V.Kind(), "++++++++", schema)
 	return
 }
 
 func (s *schema2conv) Schema2Example(schema Schema) (object interface{}) {
+	if ref, ok := s.Components[schema.Ref]; ok {
+		schema = ref
+		s.sets[schema.Ref]++
+	}
 	switch schema.Type {
 	case openapi3.TypeObject:
 		object = map[string]interface{}{}
-
+		if s.sets[schema.Ref] > 1 {
+			return
+		}
 		for key, property := range schema.Properties {
-			fmt.Println(property, "+++++++")
 			object.(map[string]interface{})[key] = s.Schema2Example(*property.Value)
 		}
-
 	case openapi3.TypeArray:
 		object = make([]interface{}, 1)
+		if s.sets[schema.Ref] > 1 {
+			return
+		}
 		object.([]interface{})[0] = s.Schema2Example(*schema.Items.Value)
 	case openapi3.TypeString:
 		object = "string"

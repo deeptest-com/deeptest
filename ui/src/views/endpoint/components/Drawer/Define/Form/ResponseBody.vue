@@ -24,9 +24,10 @@
       <SchemaEditor
           @generateFromJSON="generateFromJSON"
           @change="handleChange"
+          :serveId= "currServe.id"
           :refsOptions="refsOptions"
-          :contentStr="JSON.stringify(activeResBodySchema?.content)"
-          :exampleStr="JSON.stringify(activeResBodySchema?.examples)"
+          :contentStr="contentStr"
+          :exampleStr="exampleStr"
           @generateExample="handleGenerateExample"
           :tab-content-style="{width:'600px'}"
           :value="activeResBodySchema"/>
@@ -40,6 +41,7 @@ import {mediaTypesOpts,} from '@/config/constant';
 import {DownOutlined, RightOutlined} from '@ant-design/icons-vue';
 import {Endpoint} from "@/views/endpoint/data";
 import SchemaEditor from '@/components/SchemaEditor/index.vue';
+import {removeExtraViewInfo} from "@/components/SchemaEditor/utils";
 
 const store = useStore<{ Endpoint, Debug, ProjectGlobal, User,ServeGlobal }>();
 const selectedCodeDetail = computed<any>(() => store.state.Endpoint.selectedCodeDetail);
@@ -54,17 +56,21 @@ const activeResBodySchema: any = ref({
   content: null,
   examples: [],
 });
+const contentStr = ref('');
+const exampleStr = ref('');
 
 watch(() => {
   return selectedCodeDetail?.value?.schemaItem?.content
 }, (newVal, oldValue) => {
-  activeResBodySchema.value.content = JSON.parse(newVal || 'null')
+  activeResBodySchema.value.content = JSON.parse(newVal || 'null');
+  contentStr.value = JSON.stringify(activeResBodySchema.value.content);
 }, {immediate: true});
 
 watch(() => {
   return selectedCodeDetail?.value?.examples
 }, (newVal, oldValue) => {
   activeResBodySchema.value.examples = JSON.parse(newVal || '[]')
+  exampleStr.value = JSON.stringify(activeResBodySchema.value.examples);
 }, {immediate: true});
 
 function handleResBodyMediaTypeChange(e) {
@@ -72,31 +78,31 @@ function handleResBodyMediaTypeChange(e) {
   store.commit('Endpoint/setSelectedCodeDetail', selectedCodeDetail?.value);
 }
 
-// function handleResDescriptionChange(e) {
-//   selectedCodeDetail.value.description = e.target.value;
-//   store.commit('Endpoint/setSelectedCodeDetail', selectedCodeDetail.value);
-// }
-
 async function generateFromJSON(JSONStr: string) {
   activeResBodySchema.value.content = await store.dispatch('Endpoint/example2schema', {data: JSONStr});
+  contentStr.value = JSON.stringify(activeResBodySchema.value.content);
 }
 
 async function handleGenerateExample(examples: any) {
+  const content = JSON.stringify(removeExtraViewInfo(JSON.parse(contentStr.value), true));
   const res = await store.dispatch('Endpoint/schema2example',
-      {data: JSON.stringify(activeResBodySchema.value.content)}
+      {data: content}
   );
   const example = {
     name: `Example ${examples.length + 1}`,
     content: JSON.stringify(res),
   };
   activeResBodySchema.value.examples.push(example);
+  exampleStr.value = JSON.stringify(activeResBodySchema.value.examples);
 }
 
 function handleChange(json: any) {
   const {content, examples} = json;
   if (selectedCodeDetail?.value) {
-    selectedCodeDetail.value.schemaItem.content = JSON.stringify(content);
+    selectedCodeDetail.value.schemaItem.content = JSON.stringify(removeExtraViewInfo(content, true));
     selectedCodeDetail.value.examples = JSON.stringify(examples);
+    exampleStr.value = JSON.stringify(examples);
+    contentStr.value = JSON.stringify(content);
     selectedCodeDetail.value.schemaItem.type = content.type;
   }
   store.commit('Endpoint/setSelectedCodeDetail', selectedCodeDetail?.value);

@@ -25,7 +25,7 @@
       <div class="tab-body-schema" v-if="activeTab=== 'schema'">
         <SchemaEditor
             :value="content"
-            :serveId="serveId"
+            :serveId="Number(serveId)"
             :refsOptions="refsOptions || []"
             @change="handleContentChange"
             :contentStyle="tabContentStyle"/>
@@ -136,7 +136,7 @@ import {MonacoOptions} from '@/utils/const';
 const props = defineProps<{
   tabContentStyle?: object,
   contentStr?: string,
-  serveId?: string,
+  serveId?: number,
   exampleStr?: string,
   schemeVisibleKey?: string | number,
   refsOptions?: Array<any>,
@@ -246,7 +246,6 @@ watch(() => {
   }
 }, {
   immediate: true,
-  deep: true
 });
 
 watch(() => {
@@ -265,14 +264,12 @@ watch(() => {
 watch(() => {
   return examples.value
 }, (newVal: any) => {
-  console.log('examples',examples.value)
   emit('change', {
     examples: newVal,
     content: content.value
   });
 }, {
   immediate: false,
-  deep: true
 });
 
 watch(() => {

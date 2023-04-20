@@ -21,7 +21,7 @@ func (c *ParserCtrl) ParseHtml(ctx iris.Context) {
 	req := v1.ParserRequest{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
@@ -39,7 +39,7 @@ func (c *ParserCtrl) ParseXml(ctx iris.Context) {
 	req := v1.ParserRequest{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
@@ -57,7 +57,7 @@ func (c *ParserCtrl) ParseJson(ctx iris.Context) {
 	req := v1.ParserRequest{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
@@ -75,7 +75,7 @@ func (c *ParserCtrl) ParseText(ctx iris.Context) {
 	req := v1.ParserRequest{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
@@ -93,7 +93,7 @@ func (c *ParserCtrl) TestExpr(ctx iris.Context) {
 	req := v1.TestExprRequest{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 

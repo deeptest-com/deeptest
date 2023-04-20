@@ -47,7 +47,7 @@ func (s *DebugSceneService) LoadScene(interfaceId, endpointId, processorId uint,
 	globalEnvVars, _ = s.EnvironmentService.GetGlobalVars(projectId)
 	globalParamVars, _ = s.EnvironmentService.GetGlobalParams(projectId)
 
-	// interf, _ := s.ProcessorInterfaceRepo.Get(req.InterfaceId)
+	// interf, _ := s.ProcessorInterfaceRepo.Get(req.EndpointInterfaceId)
 	//req.Datapools, _ = s.DatapoolService.ListForExec(interf.ProjectId)
 
 	return

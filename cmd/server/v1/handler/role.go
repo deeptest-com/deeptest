@@ -23,14 +23,14 @@ func (c *RoleCtrl) GetAllRoles(ctx iris.Context) {
 		errs := validate.ValidRequest(err)
 		if len(errs) > 0 {
 			logUtils.Errorf("参数验证失败", zap.String("错误", strings.Join(errs, ";")))
-			ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: strings.Join(errs, ";")})
+			ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: strings.Join(errs, ";")})
 			return
 		}
 	}
 
 	data, err := c.RoleService.Paginate(req)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
@@ -42,12 +42,12 @@ func (c *RoleCtrl) GetRole(ctx iris.Context) {
 	var req _domain.ReqId
 	if err := ctx.ReadParams(&req); err != nil {
 		logUtils.Errorf("参数解析失败", zap.String("错误:", err.Error()))
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Data: nil, Msg: _domain.ParamErr.Msg})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 	role, err := c.RoleService.FindById(req.Id)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: _domain.SystemErr.Msg})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return
 	}
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: role, Msg: _domain.NoErr.Msg})
@@ -60,13 +60,13 @@ func (c *RoleCtrl) CreateRole(ctx iris.Context) {
 		errs := validate.ValidRequest(err)
 		if len(errs) > 0 {
 			logUtils.Errorf("参数验证失败", zap.String("错误", strings.Join(errs, ";")))
-			ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: strings.Join(errs, ";")})
+			ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: strings.Join(errs, ";")})
 			return
 		}
 	}
 	id, err := c.RoleService.Create(req)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
@@ -82,17 +82,17 @@ func (c *RoleCtrl) UpdateRole(ctx iris.Context) {
 		errs := validate.ValidRequest(err)
 		if len(errs) > 0 {
 			logUtils.Errorf("参数验证失败", zap.String("错误", strings.Join(errs, ";")))
-			ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: strings.Join(errs, ";")})
+			ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: strings.Join(errs, ";")})
 			return
 		}
 	}
 
 	err := c.RoleService.Update(uint(id), req)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: nil, Msg: _domain.NoErr.Msg})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 }
 
 // DeleteRole 删除
@@ -100,14 +100,14 @@ func (c *RoleCtrl) DeleteRole(ctx iris.Context) {
 	var req _domain.ReqId
 	if err := ctx.ReadParams(&req); err != nil {
 		logUtils.Errorf("参数解析失败", zap.String("错误:", err.Error()))
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Data: nil, Msg: _domain.ParamErr.Msg})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 	err := c.RoleService.DeleteById(req.Id)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: nil, Msg: _domain.NoErr.Msg})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 }

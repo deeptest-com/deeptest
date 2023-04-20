@@ -25,18 +25,18 @@ func (c *DataCtrl) Init(ctx iris.Context) {
 		errs := validate.ValidRequest(err)
 		if len(errs) > 0 {
 			logUtils.Errorf("参数验证失败", zap.String("错误", strings.Join(errs, ";")))
-			ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: strings.Join(errs, ";")})
+			ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: strings.Join(errs, ";")})
 			return
 		}
 	}
 
 	err := c.DataService.InitDB(req)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: _domain.SystemErr.Msg})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return
 	}
 
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: nil, Msg: _domain.NoErr.Msg})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 }
 
 // Check 检测是否需要初始化项目

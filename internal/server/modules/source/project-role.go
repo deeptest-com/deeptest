@@ -26,6 +26,10 @@ func (s *ProjectRoleSource) GetSources() (sources []model.ProjectRole, err error
 			Name:        consts.User,
 			DisplayName: "用户",
 		},
+		{
+			Name:        consts.Test,
+			DisplayName: "测试",
+		},
 	}
 	return
 }

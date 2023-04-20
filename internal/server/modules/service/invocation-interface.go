@@ -24,7 +24,7 @@ type InvocationInterfaceService struct {
 	DatapoolService          *DatapoolService           `inject:""`
 }
 
-func (s *InvocationInterfaceService) LoadInterfaceExecData(req v1.DebugRequest) (ret v1.DebugRequest, err error) {
+func (s *InvocationInterfaceService) LoadInterfaceExecData(req v1.DebugData) (ret v1.DebugData, err error) {
 	err = s.InterfaceService.UpdateByInvocation(req)
 	if err != nil {
 		return
@@ -77,27 +77,27 @@ func (s *InvocationInterfaceService) Get(id int) (invocation model.Invocation, e
 }
 
 func (s *InvocationInterfaceService) GetAsInterface(id int) (interf model.Interface, interfResp v1.DebugResponse, err error) {
-	invocation, err := s.InvocationRepo.Get(uint(id))
-
-	interfReq := v1.DebugRequest{}
-
-	json.Unmarshal([]byte(invocation.ReqContent), &interfReq)
-	json.Unmarshal([]byte(invocation.RespContent), &interfResp)
-
-	copier.CopyWithOption(&interf, interfReq, copier.Option{DeepCopy: true})
-
-	interf.ID = invocation.InterfaceId
+	//invocation, err := s.InvocationRepo.Get(uint(id))
+	//
+	//interfReq := v1.DebugData{}
+	//
+	//json.Unmarshal([]byte(invocation.ReqContent), &interfReq)
+	//json.Unmarshal([]byte(invocation.RespContent), &interfResp)
+	//
+	//copier.CopyWithOption(&interf, interfReq, copier.Option{DeepCopy: true})
+	//
+	//interf.ID = invocation.InterfaceId
 
 	return
 }
 
-func (s *InvocationInterfaceService) CreateForInterface(req v1.DebugRequest,
+func (s *InvocationInterfaceService) CreateForInterface(req v1.DebugData,
 	resp v1.DebugResponse, projectId uint) (invocation model.Invocation, err error) {
 	invocation = model.Invocation{
 		InvocationBase: model.InvocationBase{
-			Name:        time.Now().Format("01-02 15:04:05"),
-			InterfaceId: req.InterfaceId,
-			ProjectId:   projectId,
+			Name: time.Now().Format("01-02 15:04:05"),
+			//InterfaceId: req.EndpointInterfaceId,
+			ProjectId: projectId,
 		},
 	}
 
@@ -112,14 +112,14 @@ func (s *InvocationInterfaceService) CreateForInterface(req v1.DebugRequest,
 	return
 }
 
-func (s *InvocationInterfaceService) CreateForScenarioInterface(req v1.DebugRequest,
+func (s *InvocationInterfaceService) CreateForScenarioInterface(req v1.DebugData,
 	resp v1.DebugResponse, projectId uint) (invocation model.ProcessorInvocation, err error) {
 
 	invocation = model.ProcessorInvocation{
 		InvocationBase: model.InvocationBase{
-			Name:        time.Now().Format("01-02 15:04:05"),
-			InterfaceId: req.InterfaceId,
-			ProjectId:   uint(projectId),
+			Name: time.Now().Format("01-02 15:04:05"),
+			//InterfaceId: req.EndpointInterfaceId,
+			ProjectId: uint(projectId),
 		},
 	}
 
@@ -140,21 +140,21 @@ func (s *InvocationInterfaceService) Delete(id uint) (err error) {
 	return
 }
 
-func (s *InvocationInterfaceService) CopyValueFromRequest(invocation *model.Invocation, req v1.DebugRequest) (err error) {
-	invocation.ID = req.InterfaceId
+func (s *InvocationInterfaceService) CopyValueFromRequest(invocation *model.Invocation, req v1.DebugData) (err error) {
+	invocation.ID = req.EndpointInterfaceId
 
 	copier.CopyWithOption(invocation, req, copier.Option{DeepCopy: true})
 
 	return
 }
 
-func (s *InvocationInterfaceService) ReplaceEnvironmentAndExtractorVariables(req v1.DebugRequest) (
-	ret v1.DebugRequest, err error) {
+func (s *InvocationInterfaceService) ReplaceEnvironmentAndExtractorVariables(req v1.DebugData) (
+	ret v1.DebugData, err error) {
 
-	//interf, _ := s.InterfaceRepo.Get(req.InterfaceId)
+	//interf, _ := s.InterfaceRepo.Get(req.EndpointInterfaceId)
 	//
-	//req.Environment, _ = s.VariableService.GetEnvVarsByInterface(req.InterfaceId, consts.InterfaceDebug)
-	//req.Variables, _ = s.VariableService.GetShareVarsByInterface(req.InterfaceId, consts.InterfaceDebug)
+	//req.Environment, _ = s.VariableService.GetEnvVarsByInterface(req.EndpointInterfaceId, consts.InterfaceDebug)
+	//req.Variables, _ = s.VariableService.GetShareVarsByInterface(req.EndpointInterfaceId, consts.InterfaceDebug)
 	//req.Datapools, _ = s.DatapoolService.ListForExec(interf.ProjectId)
 
 	ret = req

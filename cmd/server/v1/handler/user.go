@@ -303,3 +303,16 @@ func (c *UserCtrl) ChangeAvatar(ctx iris.Context) {
 	}
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 }
+
+func (c *UserCtrl) GetUsersNotExistedInProject(ctx iris.Context) {
+	projectId, _ := ctx.URLParamInt("projectId")
+
+	users, err := c.UserService.GetUsersNotExistedInProject(uint(projectId))
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	data := iris.Map{"result": users}
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data, Msg: _domain.NoErr.Msg})
+}

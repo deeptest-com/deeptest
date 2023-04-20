@@ -17,10 +17,10 @@ type InvocationProcessorCtrl struct {
 
 // LoadInterfaceExecData
 func (c *InvocationProcessorCtrl) LoadInterfaceExecData(ctx iris.Context) {
-	req := domain.DebugRequest{}
+	req := domain.DebugData{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
@@ -38,13 +38,13 @@ func (c *InvocationProcessorCtrl) SubmitInterfaceInvokeResult(ctx iris.Context) 
 	req := domain.SubmitDebugResultRequest{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
 	err = c.InvocationProcessorService.SubmitInterfaceInvokeResult(req)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
@@ -55,13 +55,13 @@ func (c *InvocationProcessorCtrl) SubmitInterfaceInvokeResult(ctx iris.Context) 
 func (c *InvocationProcessorCtrl) List(ctx iris.Context) {
 	interfaceId, err := ctx.URLParamInt("interfaceId")
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Data: nil, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
 	data, err := c.InvocationProcessorService.ListByInterface(interfaceId)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
@@ -72,13 +72,13 @@ func (c *InvocationProcessorCtrl) List(ctx iris.Context) {
 func (c *InvocationProcessorCtrl) GetAsInterface(ctx iris.Context) {
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Data: nil, Msg: _domain.ParamErr.Msg})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
 	req, resp, err := c.InvocationProcessorService.GetAsInterface(id)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: _domain.SystemErr.Msg})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return
 	}
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: iris.Map{"req": req, "resp": resp}})
@@ -88,7 +88,7 @@ func (c *InvocationProcessorCtrl) GetAsInterface(ctx iris.Context) {
 func (c *InvocationProcessorCtrl) Delete(ctx iris.Context) {
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
@@ -105,14 +105,14 @@ func (c *InvocationProcessorCtrl) Delete(ctx iris.Context) {
 func (c *InvocationProcessorCtrl) GetLastResp(ctx iris.Context) {
 	id, err := ctx.URLParamInt("id")
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
 	resp, err := c.InvocationProcessorService.GetLastResp(id)
 
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: _domain.SystemErr.Msg})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return
 	}
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: resp})

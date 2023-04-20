@@ -42,10 +42,15 @@ type ServeSchemaReq struct {
 	Tag         string `json:"tag"`
 	Content     string `json:"content"`
 	Examples    string `json:"examples"`
-	Type        string `json:"type" validate:"required"`
+	Type        string `json:"type"`
 	Tags        string `json:"tags"`
 	Description string `json:"description"`
 	Ref         string `json:"ref"`
+}
+
+type ServeSchemaRefReq struct {
+	ServeId int64  `json:"serveId" validate:"required"`
+	Ref     string `json:"ref" validate:"required"`
 }
 
 type EnvironmentReq struct {
@@ -58,8 +63,8 @@ type EnvironmentReq struct {
 
 type ServeServer struct {
 	ID      uint   `json:"id"`
-	ServeId uint   `json:"serveId" validate:"required"`
-	Url     string `json:"url" validate:"required"`
+	ServeId uint   `json:"serveId"`
+	Url     string `json:"url"`
 }
 
 type EnvironmentVariable struct {
@@ -77,7 +82,8 @@ type ServeSchemaPaginate struct {
 }
 
 type JsonContent struct {
-	Data string `json:"data"`
+	ServeId uint   `json:"serveId"`
+	Data    string `json:"data"`
 }
 
 type SchemaContent struct {
@@ -133,4 +139,8 @@ type ServeSecurityReq struct {
 	Username    string                `json:"username"`
 	Password    string                `json:"password"`
 	Default     bool                  `json:"default"`
+}
+
+type ChangeServeReq struct {
+	Id uint
 }

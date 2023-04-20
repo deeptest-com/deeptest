@@ -34,10 +34,9 @@ const StoreModel: ModuleType = {
   },
   mutations: {
     saveServes(state, payload) {
-      console.log('payload', payload)
-
-      setCache(settings.currServeId, payload.currServe.id);
-
+      console.log('~~~~~~~ getServeData From Server ~~~~~', payload)
+      // 这里暂时取消indexDB对当前选中服务的存储.避免切换项目时查询列表受到该参数影响
+      // setCache(settings.currServeId, currServe.id || 0);
       state.serves = payload.serves;
       state.currServe = payload.currServe;
     },
@@ -47,7 +46,12 @@ const StoreModel: ModuleType = {
       try {
         const response: ResponseData = await listServe();
         const { data } = response;
-        commit('saveServes', data || 0);
+        let currServe = {};
+        if (data && data.serves && data.serves.length > 0) {
+          currServe = data.serves[0];
+        }
+        const payload = { currServe, serves: (data && data.serves) || [] };
+        commit('saveServes', payload);
 
         return true;
       } catch (error) {

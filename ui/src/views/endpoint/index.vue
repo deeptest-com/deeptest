@@ -18,7 +18,7 @@
             </a-select>
           </a-form-item>
           <a-button class="action-new" type="primary" :loading="loading"
-                    @click="createApiModalVisible = true;">新建接口
+                    @click="handleCreateEndPoinit">新建接口
           </a-button>
         </div>
         <div class="top-search">
@@ -110,6 +110,7 @@ import {
   computed, reactive, toRefs, ref, onMounted,
   watch
 } from 'vue';
+import { useRouter } from 'vue-router';
 import debounce from "lodash.debounce";
 import EndpointTree from './list/tree.vue';
 import {ColumnProps} from 'ant-design-vue/es/table/interface';
@@ -124,6 +125,7 @@ import {Endpoint, PaginationConfig} from "@/views/endpoint/data";
 
 import {StateType as ServeStateType} from "@/store/serve";
 import {StateType as Debug} from "@/views/component/debug/store";
+import { message, Modal } from 'ant-design-vue';
 
 const store = useStore<{ Endpoint, ProjectGlobal, Debug: Debug, ServeGlobal: ServeStateType }>();
 
@@ -133,6 +135,7 @@ const serves = computed<any>(() => store.state.ServeGlobal.serves);
 const list = computed<Endpoint[]>(() => store.state.Endpoint.listResult.list);
 let pagination = computed<PaginationConfig>(() => store.state.Endpoint.listResult.pagination);
 const createApiModalVisible = ref(false);
+const router = useRouter();
 type Key = ColumnProps['key'];
 /**
  * 表格数据
@@ -187,6 +190,20 @@ const selectedCategoryId = ref<string>('');
 const onSelectChange = (keys: Key[], rows: any) => {
   selectedRowKeys.value = [...keys];
 };
+
+function handleCreateEndPoinit() {
+  if (serves.value.length === 0) {
+    Modal.confirm({
+      title: '请先创建服务',
+      content: '创建接口前需先创建服务才能使用,确认将跳转服务页面',
+      onOk: () => {
+        router.push('/project-setting/service-setting');
+      }
+    })
+    return;
+  }
+  createApiModalVisible.value = true;
+}
 
 async function handleChangeStatus(value: any, record: any,) {
   await store.dispatch('Endpoint/updateStatus', {

@@ -19,7 +19,7 @@ func (c *SnippetCtrl) Get(ctx iris.Context) {
 
 	snippet, err := c.SnippetService.Get(scriptHelper.ScriptType(name))
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: _domain.SystemErr.Msg})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return
 	}
 

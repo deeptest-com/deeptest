@@ -111,7 +111,7 @@ var (
 		&EnvironmentParam{},
 		&Message{},
 		&MessageRead{},
-		&Debug{},
+		&DebugInvoke{},
 		&ProjectPerm{},
 		&ProjectRolePerm{},
 		&ProjectRoleMenu{},

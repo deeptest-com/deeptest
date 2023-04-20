@@ -9,11 +9,11 @@ import (
 	"strings"
 )
 
-type InterfaceService struct {
+type ExecService struct {
 	RemoteService *RemoteService `inject:""`
 }
 
-func (s *InterfaceService) Run(call domain.InvokeCall) (resp v1.DebugResponse, err error) {
+func (s *ExecService) Run(call domain.InvokeCall) (resp v1.DebugResponse, err error) {
 	req := s.RemoteService.GetInterfaceToExec(call)
 
 	resp, err = s.Request(req)
@@ -45,7 +45,7 @@ func (s *InterfaceService) Run(call domain.InvokeCall) (resp v1.DebugResponse, e
 	return
 }
 
-func (s *InterfaceService) Request(req v1.DebugRequest) (ret v1.DebugResponse, err error) {
+func (s *ExecService) Request(req v1.DebugData) (ret v1.DebugResponse, err error) {
 	// exec pre-request script
 	agentExec.ExecJs(req.PreRequestScript)
 
@@ -56,12 +56,12 @@ func (s *InterfaceService) Request(req v1.DebugRequest) (ret v1.DebugResponse, e
 	req.BaseRequest.Url = _httpUtils.AddSepIfNeeded(req.BaseUrl) + req.BaseRequest.Url
 	ret, err = agentExec.Invoke(&req.BaseRequest)
 
-	ret.Id = req.InterfaceId
+	ret.Id = req.EndpointInterfaceId
 
 	return
 }
 
-func (s *InterfaceService) GetContentProps(ret *v1.DebugResponse) {
+func (s *ExecService) GetContentProps(ret *v1.DebugResponse) {
 	ret.ContentLang = consts.LangTEXT
 
 	if ret.ContentLang == "" {

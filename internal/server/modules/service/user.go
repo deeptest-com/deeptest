@@ -98,3 +98,9 @@ func (s *UserService) Invite(req v1.InviteUserReq) (user model.SysUser, bizErr *
 
 	return
 }
+
+func (s *UserService) GetUsersNotExistedInProject(projectId uint) (ret []v1.UserResp, err error) {
+	ret, err = s.UserRepo.GetUsersNotExistedInProject(projectId)
+
+	return
+}

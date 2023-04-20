@@ -1,16 +1,18 @@
 import request from '@/utils/request';
 import {requestToAgent} from '@/utils/request';
-import {Interface, OAuth20} from "./data";
+import {DebugInfo, Interface, OAuth20} from "./data";
 import {isInArray} from "@/utils/array";
 import {UsedBy} from "@/utils/enum";
 import {getToken} from "@/utils/localToken";
 
 const apiPath = 'debugs';
+const apiPathInterface = `${apiPath}/interface`;
+const apiPathInvoke = `${apiPath}/invoke`;
+
+const apiAgentExec = 'exec';
+
 const apiSpec = 'spec';
-const apiInvocation = 'invocations';
 const apiAuth = 'auth';
-const apiEnvironment = 'environments'
-const apiEnvironmentVar = `${apiEnvironment}/vars`
 const apiShareVar = `shareVars`
 const apiSnippets = 'snippets'
 
@@ -19,25 +21,53 @@ const apiCheckpoint = 'checkpoints'
 
 const apiParser = 'parser'
 
-// debug
+// debug interface
 export async function loadData(data): Promise<any> {
     return request({
-        url: `/${apiPath}/loadData`,
+        url: `/${apiPathInterface}/load`,
+        method: 'post',
+        data,
+    });
+}
+export async function save(interf: Interface): Promise<any> {
+    return request({
+        url: `/${apiPathInterface}/save`,
+        method: 'post',
+        data: interf,
+    });
+}
+
+// agent debug invoke
+export async function call(data): Promise<any> {
+    // call agent api
+    return requestToAgent({
+        url: `/${apiAgentExec}/call`,
         method: 'POST',
         data,
     });
 }
 
-// interface
-export async function get(id: number): Promise<any> {
-    return request({url: `/${apiPath}/${id}`});
-}
-
-export async function getLastInvocationResp(interfaceId: number): Promise<any> {
-    const params = {interfaceId}
+// debug invoke
+export async function listInvocation(params: DebugInfo): Promise<any> {
     return request({
-        url: `/${apiPath}/getLastResp`,
+        url: `/${apiPathInvoke}`,
+        method: 'GET',
+        params,
+    });
+}
+export async function getInvocationAsInterface(id: number): Promise<any> {
+    return request({url: `/${apiPathInvoke}/${id}`});
+}
+export async function getLastInvocationResp(params: any): Promise<any> {
+    return request({
+        url: `/${apiPathInvoke}/getLastResp`,
         params
+    });
+}
+export async function removeInvocation(id: number): Promise<any> {
+    return request({
+        url: `/${apiPathInvoke}/${id}`,
+        method: 'DELETE',
     });
 }
 
@@ -51,34 +81,6 @@ export async function parseSpecInLocalAgent(data, targetId): Promise<any> {
         method: 'POST',
         params: {targetId: targetId},
         data: data,
-    });
-}
-
-// invocation
-export async function invokeInterface(data): Promise<any> {
-    return requestToAgent({
-        url: `/${apiInvocation}/invokeInterface`,
-        method: 'POST',
-        data,
-    });
-}
-
-export async function listInvocation(interfaceId: number): Promise<any> {
-    const params = {interfaceId}
-
-    return request({
-        url: `/${apiPath}`,
-        method: 'GET',
-        params,
-    });
-}
-export async function getInvocationAsInterface(id: number): Promise<any> {
-    return request({url: `/${apiInvocation}/${id}`});
-}
-export async function removeInvocation(id: number): Promise<any> {
-    return request({
-        url: `/${apiInvocation}/${id}`,
-        method: 'DELETE',
     });
 }
 

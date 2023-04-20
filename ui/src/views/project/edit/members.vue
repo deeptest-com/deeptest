@@ -140,6 +140,7 @@ const invite = ()=> {
   data.email = "";
   data.userId = 0;
   visible.value = true;
+  getSelectUserList()
 }
 
 onMounted(() => {
@@ -228,8 +229,12 @@ const roles = computed<SelectTypes["options"]>(()=>store.state.Project.roles);
 
 //角色列表
 const getRoles = ()=>{
-  store.dispatch('Project/getNotExistedUserList', projectId);
   store.dispatch('Project/getRoles')
+  return
+}
+
+const getSelectUserList = ()=>{
+  store.dispatch('Project/getNotExistedUserList', projectId);
   return
 }
 

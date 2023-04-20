@@ -69,7 +69,9 @@ export default defineComponent({
 
     const get = async (id: number): Promise<void> => {
       await store.dispatch('UserInternal/getUser', id);
-      modelRef.value.password = '******'
+      if (props.currentUserId != 0) {
+        modelRef.value.password = '******'
+      }
     }
     watchEffect(() => {
       get(props.currentUserId)

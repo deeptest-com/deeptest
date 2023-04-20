@@ -117,7 +117,6 @@ const submit = async (e: MouseEvent) => {
           key: NotificationKeyCommon,
           message: `保存成功`,
         });
-        store.dispatch('Project/getNotExistedUserList', projectId);
       } else {
         notification.success({
           key: NotificationKeyCommon,

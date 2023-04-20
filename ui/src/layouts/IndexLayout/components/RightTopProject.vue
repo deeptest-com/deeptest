@@ -33,13 +33,13 @@ store.dispatch("User/fetchMessage");
 store.dispatch("ProjectGlobal/fetchProject");
 store.dispatch("ServeGlobal/fetchServe");
 
-const selectProject = (value): void => {
+const selectProject = async (value): Promise<void> => {
   console.log('selectProject', value)
-  store.dispatch('ProjectGlobal/changeProject', value);
-  store.dispatch('Environment/getEnvironment', {id: 0, projectId: value});
+  await store.dispatch('ProjectGlobal/changeProject', value);
+  await store.dispatch('Environment/getEnvironment', {id: 0, projectId: value});
 
   // 项目切换后，需要重新更新可选服务列表
-  store.dispatch("ServeGlobal/fetchServe");
+  await  store.dispatch("ServeGlobal/fetchServe");
 
   if(router.currentRoute.value.path.indexOf('/scenario/') > -1) {
     router.replace('/scenario/index')

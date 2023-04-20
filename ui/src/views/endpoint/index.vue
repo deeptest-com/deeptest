@@ -10,6 +10,7 @@
           <a-form-item label="选择服务">
             <a-select
               v-model:value="currServe.id"
+              :placeholder="'请选择服务'"
               :bordered="true"
               style="width: 280px;margin-left: 16px;"
               @change="selectServe">
@@ -32,10 +33,10 @@
             :pagination="{
                 ...pagination,
                 onChange: (page) => {
-                  loadList(currProject.id,page,pagination.pageSize);
+                  loadList(page,pagination.pageSize);
                 },
                 onShowSizeChange: (page, size) => {
-                  loadList(currProject.id,page,size);
+                  loadList(page,size);
                 },
             }"
             :columns="columns"
@@ -231,15 +232,15 @@ async function handleCreateApi(data) {
 
 async function selectNode(id) {
   selectedCategoryId.value = id;
-  await loadList(currProject.value.id, pagination.value.current, pagination.value.pageSize, {
+  await loadList(pagination.value.current, pagination.value.pageSize, {
     categoryId: id,
     serveId: currServe.value.id,
   });
 }
 
-const loadList = debounce(async (currProjectId, page, size, opts?: any) => {
+const loadList = debounce(async (page, size, opts?: any) => {
   await store.dispatch('Endpoint/loadList', {
-    currProjectId,
+    "projectId": currProject.value.id,
     "page": page,
     "pageSize": size,
     opts,
@@ -247,43 +248,32 @@ const loadList = debounce(async (currProjectId, page, size, opts?: any) => {
 }, 300)
 
 async function handleTableFilter(filterState) {
-  await loadList(currProject.value.id, pagination.value.current, pagination.value.pageSize, filterState);
+  await loadList(pagination.value.current, pagination.value.pageSize, filterState);
 }
 
 const selectServe = (value): void => {
-  console.log('selectServe', value)
   store.dispatch('ServeGlobal/changeServe', value);
 }
 
-// 实时监听项目切换，如果项目切换了则重新请求数据
-watch(() => {
-  return currProject.value;
-}, async (newVal) => {
-  if (newVal.id) {
-    await loadList(newVal.id, pagination.value.current, pagination.value.pageSize);
-  }
-}, {
-  immediate: true
-})
-
-// 实时监听服务 ID，如果项目切换了则重新请求数据
-watch(() => {
-  return currServe.value.id;
-}, async (newVal) => {
-  if (newVal) {
-    await loadList(newVal.id, pagination.value.current, pagination.value.pageSize, {
-      serveId: newVal,
+// 实时监听项目/服务 ID，如果项目切换了则重新请求数据
+watch(() => [currProject.value.id, currServe.value.id], async (newVal) => {
+  const [newProjectId, newServeId] = newVal;
+  if (newProjectId !== undefined) {
+    await loadList(pagination.value.current, pagination.value.pageSize, {
+      serveId: newServeId || 0,
     });
-    await store.dispatch('Endpoint/getServerList', {id: currServe.value.id});
-    // 获取授权列表
-    await store.dispatch('Endpoint/getSecurityList', {id: currServe.value.id});
+    if (newServeId) {
+      await store.dispatch('Endpoint/getServerList', {id: newVal});
+      // 获取授权列表
+      await store.dispatch('Endpoint/getSecurityList', {id: newVal});
+    }
   }
 }, {
   immediate: true
 })
 
 async function refreshList() {
-  await loadList(currProject.value.id, pagination.value.current, pagination.value.pageSize);
+  await loadList(pagination.value.current, pagination.value.pageSize);
 }
 
 

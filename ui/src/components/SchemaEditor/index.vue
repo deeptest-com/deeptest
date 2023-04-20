@@ -25,6 +25,7 @@
       <div class="tab-body-schema" v-if="activeTab=== 'schema'">
         <SchemaEditor
             :value="content"
+            :serveId="serveId"
             :refsOptions="refsOptions || []"
             @change="handleContentChange"
             :contentStyle="tabContentStyle"/>
@@ -135,6 +136,7 @@ import {MonacoOptions} from '@/utils/const';
 const props = defineProps<{
   tabContentStyle?: object,
   contentStr?: string,
+  serveId?: string,
   exampleStr?: string,
   schemeVisibleKey?: string | number,
   refsOptions?: Array<any>,

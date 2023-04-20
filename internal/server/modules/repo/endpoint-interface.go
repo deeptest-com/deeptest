@@ -429,3 +429,20 @@ func (r *EndpointInterfaceRepo) ListResponseBodyHeaders(requestBodyId uint) (res
 	err = r.DB.Find(&responseBodyHeaders, "response_body_id = ?", requestBodyId).Error
 	return
 }
+
+func (r *EndpointInterfaceRepo) GetCountByRef(ref string) (count int64, err error) {
+
+	models := []interface{}{&model.EndpointPathParam{}, &model.EndpointInterfaceParam{}, &model.EndpointInterfaceHeader{}, &model.EndpointInterfaceCookie{}}
+
+	for _, model := range models {
+		err = r.DB.Model(&model).Where("ref=?", ref).Count(&count).Error
+		if err != nil {
+			return
+		}
+		if count > 0 {
+			return
+		}
+	}
+
+	return
+}

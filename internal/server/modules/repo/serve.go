@@ -394,3 +394,13 @@ func (r *ServeRepo) GetSchemaByRef(serveId uint, ref string) (res model.Componen
 	err = r.DB.Where("serve_id = ? AND NOT deleted AND not disabled and ref = ?", serveId, ref).Find(&res).Error
 	return
 }
+
+func (r *ServeRepo) GetServerCountByEnvironmentId(environmentId uint) (count int64, err error) {
+	err = r.DB.Model(&model.ServeServer{}).Where("environment_id = ? AND NOT deleted AND not disabled ", environmentId).Count(&count).Error
+	return
+}
+
+func (r *ServeRepo) GetCountByProject(projectId uint) (count int64, err error) {
+	err = r.DB.Model(&model.Serve{}).Where("project_id = ? AND NOT deleted AND not disabled ", projectId).Count(&count).Error
+	return
+}

@@ -110,14 +110,21 @@ export async function removeOAuth2Token(id): Promise<any> {
 }
 
 // share var
+export async function listShareVar(data: any, usedBy: UsedBy): Promise<any> {
+    return request({
+        url: `/${apiShareVar}/list`,
+        method: 'POST',
+        data,
+    });
+}
 export async function removeShareVar(id: number): Promise<any> {
     return request({
         url: `/${apiShareVar}/${id}`,
         method: 'DELETE',
     });
 }
-export async function clearShareVar(interfaceId: number): Promise<any> {
-    const params = {interfaceId}
+export async function clearShareVar(endpointOrProcessorId: number, usedBy?: string): Promise<any> {
+    const params = {endpointOrProcessorId, usedBy}
     return request({
         url: `/${apiShareVar}/clear`,
         method: 'POST',
@@ -218,13 +225,6 @@ export async function listExtractorVariable(interfaceId: number): Promise<any> {
         url: `/${apiExtractor}/listExtractorVariableForCheckpoint`,
         method: 'GET',
         params,
-    });
-}
-export async function listShareVar(data: any, usedBy: UsedBy): Promise<any> {
-    return request({
-        url: `/${apiShareVar}/list`,
-        method: 'POST',
-        data,
     });
 }
 

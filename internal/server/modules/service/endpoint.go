@@ -13,9 +13,10 @@ import (
 )
 
 type EndpointService struct {
-	EndpointRepo          *repo.EndpointRepo          `inject:""`
-	ServeRepo             *repo.ServeRepo             `inject:""`
-	EndpointInterfaceRepo *repo.EndpointInterfaceRepo `inject:""`
+	EndpointRepo           *repo.EndpointRepo           `inject:""`
+	ServeRepo              *repo.ServeRepo              `inject:""`
+	EndpointInterfaceRepo  *repo.EndpointInterfaceRepo  `inject:""`
+	ProcessorInterfaceRepo *repo.ProcessorInterfaceRepo `inject:""`
 }
 
 func NewEndpointService() *EndpointService {
@@ -38,6 +39,16 @@ func (s *EndpointService) GetById(id uint, version string) (res model.Endpoint) 
 }
 
 func (s *EndpointService) DeleteById(id uint) (err error) {
+	var count int64
+	count, err = s.ProcessorInterfaceRepo.GetCountByEndpointId(id)
+	if err != nil {
+		return err
+	}
+	if count > 0 {
+		err = fmt.Errorf("this interface has already been used by scenarios,not allowed to delete")
+		return err
+	}
+
 	err = s.EndpointRepo.DeleteById(id)
 	return
 }

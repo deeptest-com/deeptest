@@ -37,12 +37,12 @@ type ServeVersionPaginate struct {
 
 type ServeSchemaReq struct {
 	ID          uint   `json:"id"`
-	ServeId     int64  `json:"serveId"`
-	Name        string `json:"name"`
+	ServeId     int64  `json:"serveId" validate:"required"`
+	Name        string `json:"name" validate:"required"`
 	Tag         string `json:"tag"`
 	Content     string `json:"content"`
 	Examples    string `json:"examples"`
-	Type        string `json:"type"`
+	Type        string `json:"type" validate:"required"`
 	Tags        string `json:"tags"`
 	Description string `json:"description"`
 	Ref         string `json:"ref"`
@@ -50,22 +50,22 @@ type ServeSchemaReq struct {
 
 type EnvironmentReq struct {
 	ID           uint
-	ProjectId    uint                  `json:"projectId"`
-	Name         string                `json:"name"`
+	ProjectId    uint                  `json:"projectId" validate:"required"`
+	Name         string                `json:"name" validate:"required"`
 	ServeServers []ServeServer         `json:"serveServers"`
 	Vars         []EnvironmentVariable `json:"vars"`
 }
 
 type ServeServer struct {
 	ID      uint   `json:"id"`
-	ServeId uint   `json:"serveId"`
-	Url     string `json:"url"`
+	ServeId uint   `json:"serveId" validate:"required"`
+	Url     string `json:"url" validate:"required"`
 }
 
 type EnvironmentVariable struct {
-	Name        string `json:"name"`
-	LocalValue  string `json:"localValue"`
-	RemoteValue string `json:"remoteValue"`
+	Name        string `json:"name" validate:"required"`
+	LocalValue  string `json:"localValue" validate:"required"`
+	RemoteValue string `json:"remoteValue" validate:"required"`
 	Description string `json:"description"`
 }
 
@@ -96,7 +96,7 @@ type ServeVersionBindEndpointReq struct {
 }
 
 type EnvironmentParam struct {
-	Name         string `json:"name"`
+	Name         string `json:"name" validate:"required"`
 	Type         string `json:"type"`
 	Required     bool   `json:"required"`
 	DefaultValue string `json:"defaultValue"`
@@ -121,10 +121,10 @@ type ServeSecurityPaginate struct {
 
 type ServeSecurityReq struct {
 	ID          uint                  `json:"id"`
-	Name        string                `json:"name"`
-	Type        serverConsts.AuthType `json:"type"`
-	ProjectId   int64                 `json:"projectId"`
-	ServeId     int64                 `json:"serveId"`
+	Name        string                `json:"name" validate:"required"`
+	Type        serverConsts.AuthType `json:"type" validate:"required"`
+	ProjectId   int64                 `json:"projectId" validate:"required"`
+	ServeId     int64                 `json:"serveId" validate:"required"`
 	Description string                `json:"description"`
 	In          string                `json:"in"`
 	Key         string                `json:"key"`

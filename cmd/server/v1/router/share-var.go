@@ -17,6 +17,8 @@ func (m *ShareVarModule) Party() module.WebModule {
 		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
 
 		index.Post("/list", m.ShareVarCtrl.List).Name = "列出变量列表"
+		index.Delete("/{id:uint}", m.ShareVarCtrl.Delete).Name = "删除共享变量"
+		index.Post("/clear", m.ShareVarCtrl.Clear).Name = "清空共享变量"
 	}
 
 	return module.NewModule("/shareVars", handler)

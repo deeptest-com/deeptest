@@ -1,6 +1,8 @@
 /**
  * 可参考：https://json-schema.apifox.cn/#%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B
  * */
+import {getExpandedKeys} from "@/utils/cache";
+
 export const JSONSchemaDataTypes = [
     {
         label: "string",
@@ -596,15 +598,28 @@ export const treeLevelWidth = 24;
 /**
  * 是否是对象类型
  * */
-export function isObject(type: string): boolean {
-    return type === 'object';
+export function isObject(value: any): boolean {
+    if (typeof value === 'object') {
+        return value?.type === 'object'
+    }
+    return typeof value === 'string' && value === 'object';
+}
+
+/**
+ * 是否是引用类型
+ * */
+export function isRef(obj: any): boolean {
+    return !!obj?.ref
 }
 
 /**
  * 是否是数组类型
  * */
-export function isArray(type: string): boolean {
-    return type === 'array';
+export function isArray(value: any): boolean {
+    if (typeof value === 'object') {
+        return value?.type === 'array'
+    }
+    return typeof value === 'string' && value === 'array';
 }
 
 /**
@@ -612,6 +627,10 @@ export function isArray(type: string): boolean {
  * */
 export function isNormalType(type: string): boolean {
     return !['array', 'object'].includes(type);
+}
+
+function getExpandedValue(val: any, defaultVal: boolean) {
+    return (typeof val?.extraViewInfo === 'object' && 'isExpand' in val?.extraViewInfo) ? val.extraViewInfo.isExpand : defaultVal
 }
 
 /**
@@ -622,7 +641,7 @@ export function addExtraViewInfo(val: Object | any | undefined | null): any {
         return null
     }
     val.extraViewInfo = {
-        "isExpand": true,
+        "isExpand": getExpandedValue(val, true),
         "depth": 1,
         "type": val.type,
         "parent": null,
@@ -630,27 +649,32 @@ export function addExtraViewInfo(val: Object | any | undefined | null): any {
         "keyIndex": 0,
         "isFirst": true,
         "isLast": true,
+        "isRef": isRef(val),
     };
 
-    function traverse(obj: any, depth: number, parent: any, options: any = {}) {
+    function traverse(obj: any, depth: number, parent: any, options: any = {}, isRefChildNode = false) {
         // base Case 普通类型，递归结束，
-        if (isNormalType(obj.type)) {
+        if (isNormalType(obj.type) && !isRef(obj)) {
             obj.extraViewInfo = {
-                "isExpand": true,
+                ...obj.extraViewInfo || {},
+                "isExpand": getExpandedValue(val, true),
                 "depth": depth,
                 "type": obj.type,
                 "parent": parent,
+                isRefChildNode,
                 ...options
             }
             return;
         }
         // 处理对象类型
-        if (isObject(obj.type)) {
+        if (isObject(obj.type) && !isRef(obj)) {
             obj.extraViewInfo = {
-                "isExpand": true,
+                ...obj.extraViewInfo || {},
+                "isExpand": getExpandedValue(val,true),
                 "depth": depth,
                 "type": obj.type,
                 "parent": parent,
+                isRefChildNode,
                 ...options
             }
             Object.entries(obj.properties || {}).forEach(([keyName, value]: any, keyIndex: number) => {
@@ -658,25 +682,46 @@ export function addExtraViewInfo(val: Object | any | undefined | null): any {
                         keyName,
                         keyIndex,
                         isFirst: keyIndex === 0,
+                        "isRef": isRef(value),
                         ancestor: obj,
                         isLast: keyIndex === Object.keys(obj.properties).length - 1
-                    }
+                    },
+                    isRefChildNode
                 );
             })
         }
         // 处理数组类型
-        if (isArray(obj.type) && obj.items) {
+        if (isArray(obj.type) && !isRef(obj) && obj.items) {
             // 找到最后一个非数组类型的节点
             const {node, types} = findLastNotArrayNode(obj);
             if (node) {
                 node.types = types;
-                traverse(node, depth, obj, options);
+                traverse(node, depth, obj, options, isRefChildNode);
+            }
+        }
+        // 处理引用类型
+        if (isRef(obj)) {
+            obj.extraViewInfo = {
+                ...obj.extraViewInfo || {},
+                "isExpand": getExpandedValue(val, true),
+                "depth": depth,
+                "type": obj.type,
+                "parent": parent,
+                isRef: true,
+                isRefChildNode:false,
+                ...options
+            }
+            if (obj?.content && obj.content?.type) {
+                traverse(obj.content, depth + 1, obj, {
+                    ...options,
+                    isRefRootNode:true,
+                }, true);
             }
         }
     }
-
-    if (!isNormalType(val.type)) {
-        traverse(val, 1, null);
+    // array  object  ref 类型都需要递归
+    if (!isNormalType(val.type) || isRef(val)) {
+        traverse(val, 1, null, false);
     }
     return val;
 }
@@ -690,24 +735,23 @@ export function removeExtraViewInfo(val: Object | any): object | null {
         return null
     }
     delete val?.extraViewInfo;
-
     function traverse(obj: any) {
         // base Case 普通类型，递归结束，
-        if (isNormalType(obj.type)) {
+        if (isNormalType(obj.type) && !isRef(obj)) {
             delete obj?.extraViewInfo;
             // 普通类型，需要删除 items 属性
             delete obj?.items;
             return;
         }
         // 处理对象类型
-        if (isObject(obj.type)) {
+        if (isObject(obj.type) && !isRef(obj)) {
             delete obj?.extraViewInfo;
             Object.entries(obj.properties || {}).forEach(([keyName, value]: any, keyIndex: number) => {
                 traverse(value);
             })
         }
         // 处理数组类型
-        if (isArray(obj.type)) {
+        if (isArray(obj.type) && !isRef(obj)) {
             (function fn(obj: any) {
                 if (!isArray(obj.type)) {
                     traverse(obj);
@@ -717,8 +761,13 @@ export function removeExtraViewInfo(val: Object | any): object | null {
                 fn(obj.items);
             })(obj);
         }
+        if(isRef(obj)) {
+            delete obj?.extraViewInfo;
+            if (obj?.content && obj.content?.type) {
+                traverse(obj.content);
+            }
+        }
     }
-
     traverse(val);
     return val;
 }
@@ -731,7 +780,7 @@ export function findLastNotArrayNode(tree: Object): any {
     let node: any = null;
 
     function fn(tree: any, types: any[]) {
-        if (!isArray(tree.type)) {
+        if (!isArray(tree?.type)) {
             node = tree;
             return;
         }

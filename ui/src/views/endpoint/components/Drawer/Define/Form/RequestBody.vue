@@ -35,10 +35,10 @@
           @generateFromJSON="generateFromJSON"
           @generateExample="handleGenerateExample"
           @change="handleChange"
-          :serveId= "currServe.id"
+          :serveId="currServe.id"
           :refsOptions="refsOptions"
-          :contentStr="JSON.stringify(activeReqBodySchema?.content)"
-          :exampleStr="JSON.stringify(activeReqBodySchema?.examples)"
+          :contentStr="contentStr"
+          :exampleStr="exampleStr"
           :tab-content-style="{width:'100%'}"/>
     </a-col>
   </a-row>
@@ -50,8 +50,9 @@ import {mediaTypesOpts,} from '@/config/constant';
 import {Endpoint} from "@/views/endpoint/data";
 import {DownOutlined, RightOutlined} from '@ant-design/icons-vue';
 import SchemaEditor from '@/components/SchemaEditor/index.vue';
+import {removeExtraViewInfo} from "@/components/SchemaEditor/utils";
 
-const store = useStore<{ Endpoint, Debug, ProjectGlobal, User,ServeGlobal }>();
+const store = useStore<{ Endpoint, Debug, ProjectGlobal, User, ServeGlobal }>();
 const endpointDetail: any = computed<Endpoint>(() => store.state.Endpoint.endpointDetail);
 const selectedMethodDetail = computed<any>(() => store.state.Endpoint.selectedMethodDetail);
 const currentUser: any = computed<Endpoint>(() => store.state.User.currentUser);
@@ -64,20 +65,27 @@ const activeReqBodySchema: any = ref({
   content: null,
   examples: [],
 });
+
+const contentStr = ref('');
+const exampleStr = ref('');
+
 watch(() => {
   return selectedMethodDetail?.value?.requestBody?.schemaItem?.content
 }, (newVal, oldValue) => {
-  activeReqBodySchema.value.content = JSON.parse(newVal || 'null')
+  contentStr.value = newVal || 'null';
+  activeReqBodySchema.value.content = JSON.parse(contentStr.value);
 }, {immediate: true});
 
 watch(() => {
   return selectedMethodDetail?.value?.requestBody?.examples
 }, (newVal, oldValue) => {
-  activeReqBodySchema.value.examples = JSON.parse(newVal || '[]')
+  exampleStr.value = newVal || '[]';
+  activeReqBodySchema.value.examples = JSON.parse(exampleStr.value);
 }, {immediate: true});
 
 async function generateFromJSON(JSONStr: string) {
   activeReqBodySchema.value.content = await store.dispatch('Endpoint/example2schema', {data: JSONStr});
+  contentStr.value = JSON.stringify(activeReqBodySchema.value.content);
 }
 
 async function handleGenerateExample(examples: any) {
@@ -89,6 +97,7 @@ async function handleGenerateExample(examples: any) {
     content: JSON.stringify(res),
   };
   activeReqBodySchema.value.examples.push(example);
+  exampleStr.value = JSON.stringify(activeReqBodySchema.value.examples);
 }
 
 function handleChangeMediaType(mediaType: string) {
@@ -108,8 +117,10 @@ function handleChangeDesc(e: any) {
 function handleChange(json: any) {
   const {content, examples} = json;
   if (selectedMethodDetail?.value?.requestBody) {
-    selectedMethodDetail.value.requestBody.schemaItem.content = JSON.stringify(content);
+    selectedMethodDetail.value.requestBody.schemaItem.content =  JSON.stringify(removeExtraViewInfo(content, true));
     selectedMethodDetail.value.requestBody.examples = JSON.stringify(examples);
+    exampleStr.value = JSON.stringify(examples);
+    contentStr.value = JSON.stringify(content);
     selectedMethodDetail.value.requestBody.schemaItem.type = content.type;
   }
   store.commit('Endpoint/setSelectedMethodDetail', {
@@ -117,6 +128,7 @@ function handleChange(json: any) {
   })
 }
 
+// todo 公共逻辑抽象成 hooks
 const refsOptions = ref([]);
 onMounted(async () => {
   refsOptions.value = await store.dispatch('Endpoint/getAllRefs', {

@@ -96,18 +96,10 @@ async function handleGenerateExample(examples: any) {
   exampleStr.value = JSON.stringify(activeResBodySchema.value.examples);
 }
 
-// function handleContentAndExamples(content: any, examples: any) {
-//   activeResBodySchema.value.content = content;
-//   activeResBodySchema.value.examples = examples;
-//   contentStr.value = JSON.stringify(content);
-//   exampleStr.value = JSON.stringify(examples);
-// }
-
-
 function handleChange(json: any) {
   const {content, examples} = json;
   if (selectedCodeDetail?.value) {
-    selectedCodeDetail.value.schemaItem.content = JSON.stringify(content);
+    selectedCodeDetail.value.schemaItem.content = JSON.stringify(removeExtraViewInfo(content, true));
     selectedCodeDetail.value.examples = JSON.stringify(examples);
     exampleStr.value = JSON.stringify(examples);
     contentStr.value = JSON.stringify(content);

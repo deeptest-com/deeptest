@@ -7,6 +7,14 @@
       <div class="right">
         <!--  头部搜索区域  -->
         <div class="top-action">
+          <a-button class="action-new" type="primary" :loading="loading"
+                    @click="handleCreateEndPoinit">新建接口
+          </a-button>
+        </div>
+        <div class="top-search">
+          <div class="top-search-filter">
+            <TableFilter @filter="handleTableFilter"/>
+          </div>
           <a-form-item label="选择服务">
             <a-select
               v-model:value="currServe.id"
@@ -17,12 +25,6 @@
               <a-select-option v-for="item in serves" :key="item.id" :value="item.id">{{ item.name }}</a-select-option>
             </a-select>
           </a-form-item>
-          <a-button class="action-new" type="primary" :loading="loading"
-                    @click="handleCreateEndPoinit">新建接口
-          </a-button>
-        </div>
-        <div class="top-search">
-          <TableFilter @filter="handleTableFilter"/>
         </div>
         <a-table
             style="margin: 0 16px;"
@@ -345,6 +347,7 @@ async function refreshList() {
   align-items: center;
   margin-left: 16px;
   margin-bottom: 8px;
+  justify-content: space-between;
 }
 
 .top-action {
@@ -364,7 +367,7 @@ async function refreshList() {
   width: 150px;
 }
 
-:deep(.top-action .ant-row.ant-form-item) {
+:deep(.top-search .ant-row.ant-form-item) {
   margin: 0;
 }
 

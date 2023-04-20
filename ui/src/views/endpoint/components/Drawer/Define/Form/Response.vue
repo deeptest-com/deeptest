@@ -30,8 +30,10 @@
           </a-row>
           <!-- 增加响应头 -->
           <a-row class="form-item-response-item">
-            <a-col :span="4" class="form-label">
-              增加响应头
+            <a-col :span="4" class="form-label form-label-header">
+              <RightOutlined v-if="!resHeaderCollapse" @click="resHeaderCollapse = !resHeaderCollapse"/>
+              <DownOutlined v-if="resHeaderCollapse" @click="resHeaderCollapse = !resHeaderCollapse"/>
+              <span class="label-name">增加响应头</span>
             </a-col>
             <a-col :span="18">
               <div class="params-defined-btns">
@@ -45,7 +47,7 @@
             </a-col>
           </a-row>
           <!-- 响应头展示-->
-          <a-row class="form-item-response-item" style="margin-top: 0px;">
+          <a-row class="form-item-response-item form-item-response-item-header" style="margin-top: 0px;" v-if="resHeaderCollapse">
             <a-col :span="4"></a-col>
             <a-col :span="20">
               <div class="params-defined">
@@ -106,6 +108,7 @@ const selectedCodeDetail = computed<any>(() => store.state.Endpoint.selectedCode
 const currentUser: any = computed<Endpoint>(() => store.state.User.currentUser);
 // 是否折叠,默认展开
 const collapse = ref(true);
+const resHeaderCollapse = ref(true);
 const props = defineProps({});
 const emit = defineEmits([]);
 const selectedCode = ref('200');
@@ -131,6 +134,7 @@ watch(() => {
 
 
 function addResponseHeader() {
+  resHeaderCollapse.value = true;
   selectedCodeDetail.value.headers.push(cloneByJSON({
     ...defaultHeaderParams,
     name: "header" + (selectedCodeDetail.value.headers.length + 1)
@@ -169,7 +173,7 @@ function handleResHeaderChange(data) {
   font-weight: bold;
 }
 
-.form-label-first {
+.form-label-first,.form-label-header {
   font-weight: bold;
   position: relative;
   left: -18px;
@@ -187,8 +191,29 @@ function handleResHeaderChange(data) {
 
 .form-item-response-body {
   margin-top: 8px;
+  position: relative;
+  &:before{
+    content:"";
+    position: absolute;
+    left: -121px;
+    top: -12px;
+    width: 2px;
+    background: #E5E5E5;
+    height: 120%;
+  }
 }
-
+.form-item-response-item-header{
+  position: relative;
+  &:before{
+    content:"";
+    position: absolute;
+    left: -12px;
+    top: 0;
+    width: 2px;
+    background: #E5E5E5;
+    height: 100%;
+  }
+}
 .has-defined {
   color: #1890ff;
   //font-weight: bold;

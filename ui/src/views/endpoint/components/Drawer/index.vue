@@ -26,7 +26,8 @@
         style="width: 100%"
         title="接口设计"
         :tab-list="tabList"
-        :bodyStyle="{padding:'16px'}"
+        :bordered="false"
+        :bodyStyle="{padding:'24px 24px 0 24px'}"
         :active-tab-key="key"
         @tabChange="key => onTabChange(key, 'key')">
 

@@ -37,7 +37,7 @@
     </a-col>
   </a-row>
   <!-- 请求参数展示：headers、cookies、query params等 -->
-  <a-row class="form-item-request-item" v-if="collapse">
+  <a-row class="form-item-request-item-con" v-if="collapse">
     <a-col :span="3"></a-col>
     <a-col :span="21">
       <div class="params-defined">
@@ -232,6 +232,18 @@ function handleParamsChange(type, data) {
   font-weight: bold;
   //margin-bottom: 8px;
   margin-top: 16px;
+}
+.form-item-request-item-con{
+  position: relative;
+  &:before{
+    content:"";
+    position: absolute;
+    left: -12px;
+    top: 0px;
+    width: 2px;
+    background: #E5E5E5;
+    height: 100%;
+  }
 }
 
 .label-name {

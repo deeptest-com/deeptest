@@ -135,8 +135,9 @@ function addEndpoint() {
 <style lang="less" scoped>
 
 .form-item {
-  margin-bottom: 16px;
+  //margin-bottom: 16px;
   align-items: baseline;
+
 }
 
 .form-label {
@@ -145,7 +146,16 @@ function addEndpoint() {
 
 .form-item-request {
   margin-top: 16px;
-
+  position: relative;
+  &:before{
+    content:"";
+    position: absolute;
+    left: -72px;
+    top: -12px;
+    width: 2px;
+    background: #E5E5E5;
+    height: calc(100% + 120px);
+  }
   .form-item-request-item {
     margin-top: 16px;
     align-items: center;

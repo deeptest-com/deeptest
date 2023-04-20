@@ -18,7 +18,7 @@
     </a-col>
   </a-row>
   <!-- 增加响应体 - scheme定义 -->
-  <a-row class="form-item-response-item" v-if="collapse">
+  <a-row class="form-item-response-item form-item-response-item-con" v-if="collapse">
     <a-col :span="4" class="form-label"></a-col>
     <a-col :span="20">
       <SchemaEditor
@@ -130,6 +130,19 @@ onMounted(async () => {
 .form-item-response-item {
   margin-top: 16px;
   align-items: center;
+}
+.form-item-response-item-con{
+  position: relative;
+  margin-bottom: 24px;
+  &:before{
+    content:"";
+    position: absolute;
+    left: -12px;
+    top: -12px;
+    width: 2px;
+    background: #E5E5E5;
+    height: 150%;
+  }
 }
 
 .label-name {

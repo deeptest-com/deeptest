@@ -35,6 +35,7 @@
           @generateFromJSON="generateFromJSON"
           @generateExample="handleGenerateExample"
           @change="handleChange"
+          :serveId= "currServe.id"
           :refsOptions="refsOptions"
           :contentStr="JSON.stringify(activeReqBodySchema?.content)"
           :exampleStr="JSON.stringify(activeReqBodySchema?.examples)"

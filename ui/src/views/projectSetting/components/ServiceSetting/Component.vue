@@ -302,8 +302,9 @@ async function generateFromJSON(JSONStr: string) {
 }
 
 async function handleGenerateExample(examples: any) {
+  const content = JSON.stringify(removeExtraViewInfo(JSON.parse(contentStr.value), true));
   const result = await store.dispatch('ProjectSetting/generateExample', {
-    data: contentStr.value
+    data: content
   })
   const example = {
     name: `Example ${examples.length + 1}`,

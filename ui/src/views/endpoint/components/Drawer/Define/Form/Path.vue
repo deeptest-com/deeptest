@@ -242,7 +242,7 @@ function updatePath(e) {
     top: -24px;
     width: 2px;
     background: #E5E5E5;
-    height: calc(100% + 24px)
+    height: calc(100% + 36px)
   }
 }
 

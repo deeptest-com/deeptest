@@ -2,25 +2,31 @@
 <template>
   <!-- 增加响应体体 -->
   <a-row class="form-item-response-item">
-    <a-col :span="4" class="form-label form-label-first">
+    <a-col :span="3" class="form-label form-label-first">
       <RightOutlined v-if="!collapse" @click="collapse = !collapse"/>
       <DownOutlined v-if="collapse" @click="collapse = !collapse"/>
       <span class="label-name">增加响应体</span>
     </a-col>
-    <a-col :span="18">
+    <a-col :span="21"/>
+  </a-row>
+
+  <a-row class="form-item-response-item" v-if="collapse">
+    <a-col :span="1" />
+    <a-col :span="21">
       <a-select
           placeholder="请选择响应格式"
           :value="selectedCodeDetail.mediaType || null"
           @change="handleResBodyMediaTypeChange"
-          style="width: 300px"
+          style="width: 400px"
           :options="mediaTypesOpts.filter(item => !item.disabled)"
       ></a-select>
     </a-col>
   </a-row>
+
   <!-- 增加响应体 - scheme定义 -->
   <a-row class="form-item-response-item form-item-response-item-con" v-if="collapse">
-    <a-col :span="4" class="form-label"></a-col>
-    <a-col :span="20">
+    <a-col :span="1" class="form-label"></a-col>
+    <a-col :span="23">
       <SchemaEditor
           @generateFromJSON="generateFromJSON"
           @change="handleChange"
@@ -29,7 +35,7 @@
           :contentStr="contentStr"
           :exampleStr="exampleStr"
           @generateExample="handleGenerateExample"
-          :tab-content-style="{width:'600px'}"
+          :tab-content-style="{width:'720px'}"
           :value="activeResBodySchema"/>
     </a-col>
   </a-row>
@@ -125,6 +131,7 @@ onMounted(async () => {
   font-weight: bold;
   position: relative;
   left: -18px;
+  margin-bottom: 16px;
 }
 
 .form-item-response-item {
@@ -138,10 +145,11 @@ onMounted(async () => {
     content:"";
     position: absolute;
     left: -12px;
-    top: -12px;
+    top: -72px;
     width: 2px;
     background: #E5E5E5;
-    height: 150%;
+    min-height: 80vh;
+    height: calc(100% + 50px);
   }
 }
 

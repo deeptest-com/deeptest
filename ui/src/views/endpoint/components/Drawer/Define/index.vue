@@ -71,11 +71,12 @@ function handleYamlCodeChange(code) {
 <style lang="less" scoped>
 .content {
   //padding: 16px;
+  //height: 100%;
+  min-height: calc(100vh - 200px);
   position: relative;
-  //min-height: 100vh;
   .mode-btns {
     position: absolute;
-    right: 16px;
+    right: 0px;
     z-index: 999;
   }
 }

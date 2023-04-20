@@ -20,22 +20,22 @@
         <div v-if="selectedCodeDetail">
           <!-- Description -->
           <a-row class="form-item-response-item">
-            <a-col :span="4" class="form-label">
-              Description
+            <a-col :span="3" class="form-label">
+              描述
             </a-col>
-            <a-col :span="18">
+            <a-col :span="21">
               <a-input @change="handleResDescriptionChange" :placeholder="'请输入描述信息'"
                        :value="selectedCodeDetail.description"/>
             </a-col>
           </a-row>
           <!-- 增加响应头 -->
           <a-row class="form-item-response-item">
-            <a-col :span="4" class="form-label form-label-header">
+            <a-col :span="3" class="form-label form-label-header">
               <RightOutlined v-if="!resHeaderCollapse" @click="resHeaderCollapse = !resHeaderCollapse"/>
               <DownOutlined v-if="resHeaderCollapse" @click="resHeaderCollapse = !resHeaderCollapse"/>
               <span class="label-name">增加响应头</span>
             </a-col>
-            <a-col :span="18">
+            <a-col :span="21">
               <div class="params-defined-btns">
                 <a-button @click="addResponseHeader">
                   <template #icon>
@@ -48,8 +48,8 @@
           </a-row>
           <!-- 响应头展示-->
           <a-row class="form-item-response-item form-item-response-item-header" style="margin-top: 0px;" v-if="resHeaderCollapse">
-            <a-col :span="4"></a-col>
-            <a-col :span="20">
+            <a-col :span="3"></a-col>
+            <a-col :span="21">
               <div class="params-defined">
                 <div class="params-defined-content">
                   <div class="params-defined-item" v-if="selectedCodeDetail?.headers?.length">
@@ -199,7 +199,8 @@ function handleResHeaderChange(data) {
     top: -12px;
     width: 2px;
     background: #E5E5E5;
-    height: 120%;
+    min-height: 80vh;
+    height: calc(100% + 36px);
   }
 }
 .form-item-response-item-header{

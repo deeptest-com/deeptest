@@ -29,7 +29,7 @@
           <!-- Description -->
           <a-row class="form-item-request-item">
             <a-col :span="3" class="form-label">
-              Description
+              描述
             </a-col>
             <a-col :span="12">
               <a-input placeholder="描述信息" v-model:value="selectedMethodDetail.description"/>
@@ -154,6 +154,7 @@ function addEndpoint() {
     top: -12px;
     width: 2px;
     background: #E5E5E5;
+    min-height: 80vh;
     height: calc(100% + 24px);
   }
   .form-item-request-item {

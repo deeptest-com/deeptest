@@ -13,14 +13,13 @@
         <a-button type="link" @click="() => back()">返回</a-button>
       </template>
     -->
-   
+
       <a-form :label-col="labelCol" :wrapper-col="wrapperCol" ref="formRef">
-      
+
 
         <a-form-item label="用户名" v-bind="validateInfos.userId">
-                <a-select v-model:value="modelRef.userId" show-search @change="selectUser"
-                 @blur="validate('userId', { trigger: 'blur' }).catch(() => {})">
-                 <a-select-option  v-for="(option,key) in options" :key=key :value="option.id">{{option.label}}</a-select-option>
+                <a-select v-model:value="modelRef.userId" show-search @change="selectUser" :options="options" optionFilterProp="label"
+                          @blur="validate('userId', { trigger: 'blur' }).catch(() => {})">
                 </a-select>
               </a-form-item>
 
@@ -60,7 +59,7 @@ import { SelectTypes } from "ant-design-vue/lib/select";
 import {StateType as UserStateType} from "@/store/user";
 import {StateType} from "../store";
 import { defineProps,defineEmits,} from 'vue';
-const props = defineProps({ 
+const props = defineProps({
   visible:Boolean
 })
 
@@ -74,14 +73,15 @@ const {t} = useI18n();
 
 
 const modelRef = reactive({
-  userId:1,
+  userId:"",
   email:"",
   roleName:"user",
   username:""
 });
 
 
-const projectId = +router.currentRoute.value.params.id
+const projectId = Number(window.localStorage.getItem('currentProjectId'));
+
 
 const rulesRef = reactive({
   userId: [
@@ -90,7 +90,7 @@ const rulesRef = reactive({
       message: '请选择用户',
     }
   ],
-  
+
   email: [
     {
       required: true,
@@ -117,6 +117,7 @@ const submit = async (e: MouseEvent) => {
           key: NotificationKeyCommon,
           message: `保存成功`,
         });
+        store.dispatch('Project/getNotExistedUserList', projectId);
       } else {
         notification.success({
           key: NotificationKeyCommon,
@@ -136,7 +137,7 @@ const back = () => {
 const labelCol = {span: 4}
 const wrapperCol = {span: 14}
 const store = useStore<{ Project: StateType, User: UserStateType }>();
-const options = computed<SelectTypes["options"]>(()=>store.state.Project.userList);
+const options = computed<SelectTypes["options"]>(()=>store.state.Project.notExistedUserList);
 const roles = computed<SelectTypes["options"]>(()=>store.state.Project.roles);
 const formRef = ref();
 
@@ -147,7 +148,7 @@ const close = ()=>{
 
 
 const selectUser  = (value:any) => {
-      store.state.Project.userList?.forEach((item)=>{
+      store.state.Project.notExistedUserList?.forEach((item)=>{
         if (item.id == value){
           modelRef.email = item.email
         }

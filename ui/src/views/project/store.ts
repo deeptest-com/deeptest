@@ -4,7 +4,7 @@ import { ResponseData } from '@/utils/request';
 import {SelectTypes} from 'ant-design-vue/es/select';
 import { Project, QueryResult, QueryParams, PaginationConfig } from './data.d';
 import {
-    query, save, remove, detail, getUserList,getRoles
+    query, save, remove, detail, getUserList, getRoles, getNotExistedUserList
 } from './service';
 
 export interface StateType {
@@ -12,6 +12,7 @@ export interface StateType {
     detailResult: Project;
     queryParams: any;
     userList:SelectTypes["options"];
+    notExistedUserList:SelectTypes["options"];
     roles:SelectTypes["options"];
 }
 
@@ -22,6 +23,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setItem: Mutation<StateType>;
         setQueryParams: Mutation<StateType>;
         setUserList:Mutation<StateType>;
+        setNotExistedUserList:Mutation<StateType>;
         setRoles:Mutation<StateType>;
     };
     actions: {
@@ -30,6 +32,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         saveProject: Action<StateType, StateType>;
         removeProject: Action<StateType, StateType>;
         getUserList: Action<StateType, StateType>;
+        getNotExistedUserList: Action<StateType, StateType>;
         getRoles:Action<StateType, StateType>;
     };
 }
@@ -47,6 +50,7 @@ const initState: StateType = {
     detailResult: {} as Project,
     queryParams: {},
     userList:[] as SelectTypes["options"] ,
+    notExistedUserList:[] as SelectTypes["options"] ,
     roles:[] as SelectTypes["options"],
 };
 
@@ -69,11 +73,14 @@ const StoreModel: ModuleType = {
         setUserList(state, payload) {
             state.userList = payload;
         },
+        setNotExistedUserList(state, payload) {
+            state.notExistedUserList = payload;
+        },
         setRoles(state, payload) {
             state.roles = payload;
         },
-        
-        
+
+
     },
     actions: {
         async queryProject({ commit }, params: QueryParams ) {
@@ -145,6 +152,17 @@ const StoreModel: ModuleType = {
                 })
                 commit('setUserList',data.result);
               }
+        },
+        async getNotExistedUserList({ commit }, payload: number) {
+            const response: ResponseData = await getNotExistedUserList(payload);
+            const { data } = response;
+            if (response.code === 0) {
+                data.result.forEach((item) => {
+                    item.label = item.name;
+                    item.value = item.id
+                })
+                commit('setNotExistedUserList',data.result);
+            }
         },
         async getRoles({ commit }) {
             const response: ResponseData = await getRoles();

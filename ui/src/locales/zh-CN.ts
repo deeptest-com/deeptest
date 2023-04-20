@@ -29,6 +29,7 @@ export default {
     'endpoint': '接口管理',
     'interface1': '接口旧',
     'projectSetting': '项目设置', // 新版 接口模块
+    'projectSetting.enviroment': '环境管理',
     'projectSetting.datapool': '数据池',
     'projectSetting.service': '服务管理',
     'envsetting.var': '全局变量',

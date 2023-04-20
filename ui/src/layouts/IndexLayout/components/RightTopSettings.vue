@@ -1,11 +1,11 @@
 <template>
-  <div class="indexlayout-top-settings">
+  <div :class="['indexlayout-top-settings', theme]">
 
     <div class="msgs">
       <a @click="gotoMessage">
         <a-badge count="100" :overflowCount="99" show-zero
                  :numberStyle="{fontSize: '12px', minWidth: '12px', height: '10px', lineHeight: '10px', padding: '0 4px','box-shadow':'none'}">
-          <BellOutlined  class="dp-light user-icon" :style="{ fontSize: '16px',color:'#fff',left:'-2px',position:'relative' }"/>
+          <MailOutlined  class="dp-light user-icon" :style="{ fontSize: '16px',left:'-2px',position:'relative' }"/>
         </a-badge>
       </a>
     </div>
@@ -36,7 +36,7 @@
 <script lang="ts">
 import {computed, defineComponent, ref} from "vue";
 import {useStore} from "vuex";
-import {DownOutlined, BellOutlined, SettingOutlined, UserOutlined,LogoutOutlined} from '@ant-design/icons-vue';
+import {DownOutlined, BellOutlined, SettingOutlined, UserOutlined,LogoutOutlined, MailOutlined} from '@ant-design/icons-vue';
 
 import {useI18n} from "vue-i18n";
 import {CurrentUser, StateType as UserStateType} from "@/store/user";
@@ -46,7 +46,14 @@ export default defineComponent({
   name: 'RightTopSettings',
   components: {
     DownOutlined,
-    BellOutlined, SettingOutlined, UserOutlined,LogoutOutlined
+    SettingOutlined, UserOutlined,LogoutOutlined,
+    MailOutlined
+  },
+  props: {
+    theme: {
+      required: false,
+      type: String
+    }
   },
   setup() {
     const {t} = useI18n();
@@ -56,7 +63,6 @@ export default defineComponent({
     // 获取当前登录用户信息
     const currentUser = computed<CurrentUser>(() => store.state.User.currentUser);
 
-
     const selectLangVisible = ref(false)
     const closeSelectLang = async (event: any) => {
       selectLangVisible.value = false
@@ -64,7 +70,7 @@ export default defineComponent({
 
     const gotoMessage = () => {
       console.log('gotoMessage')
-      router.replace({path: '/user/message'})
+      router.replace({path: '/user-manage/message'})
     }
 
     // 点击菜单
@@ -76,7 +82,7 @@ export default defineComponent({
       const {key} = event;
 
       if (key === 'profile') {
-        router.replace({path: '/user/profile'})
+        router.replace({path: '/user-manage/profile'})
       } else if (key === 'logout') {
         store.dispatch('User/logout').then((res) => {
           if (res === true) {
@@ -105,18 +111,55 @@ export default defineComponent({
 </script>
 
 <style lang="less" scoped>
+
+.indexlayout-top-settings {
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  &.white-theme {
+    .msgs {
+      .user-icon {
+        color: #fff;
+      }
+    }
+
+    .user-info {
+      .user-icon {
+        color: #fff;
+      }
+
+      .user-name {
+        color: #fff;
+      }
+    }
+  }
+
+  .msgs {
+    width: 40px;
+
+    .user-icon {
+      color:'#8A8A8A'
+    }
+  }
+
+  .indexlayout-top-usermenu {
+    color: #c0c4cc;
+  }
+}
 .user-info {
   .user-name {
     margin-left: 4px;
     margin-right: 4px;
     display: inline-block;
-    color: #FFFFFF;
+    color: #8A8A8A;
   }
   .user-info{
-    color: #FFFFFF;
+    color: #8A8A8A;
   }
   .user-icon{
-    color: #FFFFFF;
+    color: #8A8A8A;
     //font-size: 18px;
     //margin-left: 4px;
   }

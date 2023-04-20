@@ -127,13 +127,15 @@ export default defineComponent({
         font-size: 18px;
         color: #FFFFFF;
         margin-bottom: 0px;
-        background-image: url("../../../assets/images/logo-deeptest.png");
-        background-size: 150px 64px;
+        background-image: url("../../../assets/images/logo-deep.png");
+        background-size: 105px 35px;
+        background-repeat: no-repeat;
+        background-position: center;
       }
 
       .logo-title-collapsed {
-        background-image: url("../../../assets/images/logo-dt.png");
-        background-size: 26px 64px;
+        background-image: url("../../../assets/images/logo-deepmini.png");
+        background-size: 22px 22px;
         background-repeat: no-repeat;
         background-position: center;
       }

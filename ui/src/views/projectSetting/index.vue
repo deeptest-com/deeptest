@@ -1,13 +1,5 @@
 <template>
   <div class="container">
-    <a-tabs v-model:activeKey="activeKey" @change="handleTabClick">
-      <a-tab-pane key="enviroment" tab="环境管理">
-      </a-tab-pane>
-      <a-tab-pane key="data-pool" tab="数据池">
-      </a-tab-pane>
-      <a-tab-pane key="service-setting" tab="服务管理">
-      </a-tab-pane>
-    </a-tabs>
     <router-view></router-view>
   </div>
 </template>
@@ -35,19 +27,11 @@ function setActiveKey() {
   return res[2];
 }
 
-function handleTabClick(e: string) {
-  if (e === 'enviroment') {
-    router.push(`/project-setting/${e}/var`);
-  } else {
-    router.push(`/project-setting/${e}`);
-  }
-}
-
 // 监听路由中是否携带参数，用于security模块
 watch(() => {
   return router.currentRoute.value.query;
 }, async () => {
-  if (router.currentRoute.value.path === '/project-setting/index') {
+  if (router.currentRoute.value.path === '/project-setting/enviroment') {
     router.push('/project-setting/enviroment/var')
     store.dispatch('ProjectSetting/setEnvDetail', null);
     activeKey.value = 'enviroment';
@@ -63,6 +47,7 @@ watch(() => {
   background: #ffffff;
   min-height: calc(100vh - 92px);
   min-width: 1200px;
+  overflow: hidden;
 }
 
 :deep(.ant-tabs-bar) {

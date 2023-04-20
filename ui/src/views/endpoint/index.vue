@@ -292,6 +292,7 @@ async function refreshList() {
 .container {
   margin: 16px;
   background: #ffffff;
+  min-width: 1440px;
   min-height: calc(100vh - 80px);
 }
 

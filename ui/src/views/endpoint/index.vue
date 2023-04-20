@@ -282,9 +282,9 @@ watch(() => [currProject.value.id, currServe.value.id], async (newVal) => {
       serveId: newServeId || 0,
     });
     if (newServeId) {
-      await store.dispatch('Endpoint/getServerList', {id: newVal});
+      await store.dispatch('Endpoint/getServerList', {id: newServeId});
       // 获取授权列表
-      await store.dispatch('Endpoint/getSecurityList', {id: newVal});
+      await store.dispatch('Endpoint/getSecurityList', {id: newServeId});
     }
   }
 }, {
@@ -345,8 +345,7 @@ async function refreshList() {
   height: 60px;
   display: flex;
   align-items: center;
-  margin-left: 16px;
-  margin-bottom: 8px;
+  margin: 0 16px 8px;
   justify-content: space-between;
 }
 

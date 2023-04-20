@@ -14,8 +14,10 @@ import {
     isObject,
     isRef,
     removeExtraViewInfo,
-    treeLevelWidth
 } from './utils';
+import {
+    treeLevelWidth
+} from './config';
 import {message} from "ant-design-vue";
 import {useStore} from "vuex";
 import {StateType as ServeStateType} from "@/store/serve";
@@ -25,7 +27,7 @@ export default defineComponent({
     props: {
         value: Object,
         contentStyle: Object,
-        serveId: Number || String,
+        serveId: Number,
         refsOptions: Array
     },
     emits: ['change'],
@@ -33,30 +35,21 @@ export default defineComponent({
         const store = useStore<{ Endpoint, ServeGlobal: ServeStateType }>();
         const data: any = ref(null);
         const expandIt = async (tree: any, options: any, e: any) => {
-            const {parent, ancestor,isRoot} = options;
+            const {parent, ancestor, isRoot} = options;
             // 异步获取组件详情信息
             if (tree.ref) {
-                // 如果不是展开状态，需要获取组件详情
-                if(!tree.extraViewInfo.isExpand){
+                // 如果没有引用组件内容，需要获取组件详情
+                if (!tree.content) {
                     const result = await store.dispatch('Endpoint/getRefDetail', {
                         ref: tree.ref,
                         serveId: props.serveId
                     })
-                    // //根节点
-                    // if(isRoot){
-                    //     data.value.content = JSON.parse(result.content || '{}');
-                    // }else{
-                    //     tree.content = JSON.parse(result.content || '{}');
-                    // }
                     tree.content = JSON.parse(result.content || '{}');
                     data.value = addExtraViewInfo(data.value);
-                    tree.extraViewInfo.isExpand = true;
-                }else {
+                } else {
                     delete tree.content;
-                    tree.extraViewInfo.isExpand = false;
                 }
-                console.log('expandit', data.value);
-            }else {
+            } else {
                 tree.extraViewInfo.isExpand = !tree.extraViewInfo.isExpand;
             }
         }
@@ -109,7 +102,7 @@ export default defineComponent({
             const {parent, keyName, depth, ancestor} = options;
             const firstType = newProps?.[0]?.type;
             // 如果是根节点
-            if (parent === null && depth === 1) {
+            if (depth === 1) {
                 if (isArray(firstType)) {
                     data.value = generateSchemaByArray(newProps);
                 } else {
@@ -119,15 +112,12 @@ export default defineComponent({
                 }
                 // 非根节点
             } else {
-                // 引用类型
-                if (newProps?.ref) {
-                    debugger;
-                }
-                //  数组类型, 且个数大于 1 ，需要生成新的schema
-                else if (newProps?.length > 1 && isArray(firstType)) {
+                //  数组类型, 且个数大于等于 1 ，需要生成新的schema
+               if (newProps?.length >= 1 && isArray(firstType)) {
                     const items = parent?.type === 'array' ? ancestor : parent;
                     if (items?.properties?.[keyName]) {
                         items.properties[keyName] = generateSchemaByArray(newProps);
+                        console.log('123', items.properties[keyName]);
                     }
                     // 非数组类型
                 } else if (newProps?.length === 1 && !isArray(firstType)) {
@@ -138,7 +128,7 @@ export default defineComponent({
                 }
             }
             data.value = addExtraViewInfo(data.value);
-            console.log('data.value', data.value);
+            console.log('change datatype  data.value', data.value);
         }
         const moveUp = (keyIndex: any, parent: any) => {
             const keys = Object.keys(parent.properties);
@@ -262,10 +252,10 @@ export default defineComponent({
             </>
         }
         const renderKeyName = (options: any) => {
-            const {keyName, keyIndex, parent, isRoot,isRefChildNode,isRef,isRefRootNode} = options;
+            const {keyName, keyIndex, parent, isRoot, isRefChildNode, isRef, isRefRootNode} = options;
             if (isRoot) return null;
             if (!keyName) return null;
-            if(isRefRootNode) return null;
+            if (isRefRootNode) return null;
             return <>
                 <span class={'baseInfoKey'}
                       contenteditable={!isRefChildNode}
@@ -321,7 +311,7 @@ export default defineComponent({
         const renderVerticalLine = (options: any) => {
             return <div class={'verticalLine'} style={{left: `${options.depth * treeLevelWidth + 8}px`}}></div>
         }
-        const renderTree = (tree: any, isRefType = false) => {
+        const renderTree = (tree: any) => {
             if (!tree) return null;
             const isRoot = tree?.extraViewInfo?.depth === 1;
             const options = {...tree?.extraViewInfo, isRoot, tree: tree};
@@ -360,11 +350,10 @@ export default defineComponent({
                 const isExpand = tree?.extraViewInfo?.isExpand;
                 const isRef = tree?.extraViewInfo?.isRef;
                 const options = {...tree?.extraViewInfo, isRoot, tree}
-                console.log('isRef', isRef, tree, isExpand);
-                return <div key={tree.type} class={{'directoryNode': true, "rootNode": isRoot, 'refNode': isRef}}>
+                return <div key={tree.type} class={{'directoryNode': true, "rootNode": isRoot, 'refNode': isRef || !!tree?.ref}}>
                     {renderDirectoryText(options)}
                     {
-                        isExpand && tree?.content && renderTree(tree.content, true)
+                        isExpand && tree?.content && renderTree(tree.content)
                     }
                     {isExpand && renderVerticalLine(options)}
                 </div>

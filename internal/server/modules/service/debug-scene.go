@@ -19,13 +19,13 @@ type DebugSceneService struct {
 	EnvironmentService *EnvironmentService `inject:""`
 }
 
-func (s *DebugSceneService) LoadScene(endpointInterfaceId, scenarioProcessorId uint, usedBy consts.UsedBy) (
+func (s *DebugSceneService) LoadScene(interfaceId, endpointId, processorId uint, usedBy consts.UsedBy) (
 	baseUrl string, shareVariables []domain.ShareVars, envVars []domain.EnvVars,
 	globalEnvVars []domain.GlobalEnvVars, globalParamVars []domain.GlobalParamVars) {
 
 	var serveId, serverId, scenarioId, projectId uint
 
-	interf, _ := s.EndpointInterfaceRepo.Get(endpointInterfaceId)
+	interf, _ := s.EndpointInterfaceRepo.Get(interfaceId)
 	endpoint, _ := s.EndpointRepo.Get(interf.EndpointId)
 	serveId = endpoint.ServeId
 	serverId = endpoint.ServerId
@@ -37,11 +37,11 @@ func (s *DebugSceneService) LoadScene(endpointInterfaceId, scenarioProcessorId u
 
 	// by scenario
 	if usedBy == consts.ScenarioDebug {
-		processor, _ := s.ScenarioProcessorRepo.Get(scenarioProcessorId)
+		processor, _ := s.ScenarioProcessorRepo.Get(processorId)
 		scenarioId = processor.ScenarioId
 	}
 
-	shareVariables, _ = s.ShareVarService.listForDebug(serveId, scenarioId, usedBy)
+	shareVariables, _ = s.ShareVarService.ListForDebug(serveId, scenarioId, usedBy)
 	envVars, _ = s.EnvironmentService.GetVarsByEnv(envId)
 
 	globalEnvVars, _ = s.EnvironmentService.GetGlobalVars(projectId)

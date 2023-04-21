@@ -135,9 +135,7 @@ export async function clearShareVar(endpointOrProcessorId: number, usedBy?: stri
 }
 
 // helper
-export function prepareDataForRequest(data: any, url: string) {
-    data.url = url
-
+export function prepareDataForRequest(data: any) {
     if (data.headers) {
         data.headers = data.headers.filter((item) => {
             return !!item.name

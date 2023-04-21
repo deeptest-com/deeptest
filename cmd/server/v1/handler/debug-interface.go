@@ -16,7 +16,7 @@ type DebugInterfaceCtrl struct {
 
 // Load
 func (c *DebugInterfaceCtrl) Load(ctx iris.Context) {
-	req := domain.DebugReq{}
+	req := domain.DebugCall{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
@@ -47,16 +47,5 @@ func (c *DebugInterfaceCtrl) Save(ctx iris.Context) {
 		return
 	}
 
-	loadReq := domain.DebugReq{
-		EndpointInterfaceId: req.EndpointInterfaceId,
-		ScenarioProcessorId: req.ScenarioProcessorId,
-	}
-
-	data, err := c.DebugInterfaceService.Load(loadReq)
-	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
-		return
-	}
-
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code})
 }

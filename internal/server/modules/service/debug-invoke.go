@@ -32,15 +32,19 @@ func (s *DebugInvokeService) SubmitResult(req v1.SubmitDebugResultRequest) (err 
 	var endpointId, serveId, processorId, scenarioId, projectId uint
 
 	if usedBy == consts.InterfaceDebug {
-		endpointId, serveId = s.DebugInterfaceService.GetEndpointAndServeIdForEndpointInterface(req.Request.EndpointInterfaceId)
+		if req.Request.EndpointInterfaceId > 0 {
+			endpointId, serveId = s.DebugInterfaceService.GetEndpointAndServeIdForEndpointInterface(req.Request.EndpointInterfaceId)
+		} else if req.Request.DebugInterfaceId > 0 {
+			endpointId, serveId = s.DebugInterfaceService.GetEndpointAndServeIdForDebugInterface(req.Request.DebugInterfaceId)
+		}
 
 		endpoint, _ := s.EndpointRepo.Get(endpointId)
 		serveId = endpoint.ServeId
 		projectId = endpoint.ProjectId
 
 	} else if usedBy == consts.ScenarioDebug {
-		processorId = req.Request.ScenarioProcessorId
-		scenarioId = s.DebugInterfaceService.GetScenarioIdForDebugInterface(req.Request.ScenarioProcessorId)
+		processorId = req.Request.ProcessorId
+		scenarioId = s.DebugInterfaceService.GetScenarioIdForDebugInterface(req.Request.ProcessorId)
 
 		scenario, _ := s.ScenarioRepo.Get(scenarioId)
 		scenarioId = scenario.ID
@@ -63,8 +67,6 @@ func (s *DebugInvokeService) SubmitResult(req v1.SubmitDebugResultRequest) (err 
 func (s *DebugInvokeService) Create(req v1.DebugData, resp v1.DebugResponse,
 	serveId, processorId, scenarioId, projectId uint) (po model.DebugInvoke, err error) {
 
-	debugInterfaceId, _ := s.DebugInterfaceRepo.HasDebugInterfaceRecord(req.EndpointInterfaceId)
-
 	po = model.DebugInvoke{
 		ServeId: serveId,
 
@@ -74,7 +76,7 @@ func (s *DebugInvokeService) Create(req v1.DebugData, resp v1.DebugResponse,
 		InvocationBase: model.InvocationBase{
 			Name:                time.Now().Format("01-02 15:04:05"),
 			EndpointInterfaceId: req.EndpointInterfaceId,
-			DebugInterfaceId:    debugInterfaceId,
+			DebugInterfaceId:    req.DebugInterfaceId,
 			ProjectId:           projectId,
 		},
 	}
@@ -90,17 +92,13 @@ func (s *DebugInvokeService) Create(req v1.DebugData, resp v1.DebugResponse,
 	return
 }
 
-func (s *DebugInvokeService) ListByInterface(endpointInterfaceId uint) (invocations []model.DebugInvoke, err error) {
-	debugInterfaceId, _ := s.DebugInterfaceRepo.HasDebugInterfaceRecord(endpointInterfaceId)
-
+func (s *DebugInvokeService) ListByInterface(endpointInterfaceId, debugInterfaceId int) (invocations []model.DebugInvoke, err error) {
 	invocations, err = s.DebugRepo.List(endpointInterfaceId, debugInterfaceId)
 
 	return
 }
 
-func (s *DebugInvokeService) GetLastResp(endpointInterfaceId uint) (resp v1.DebugResponse, err error) {
-	debugInterfaceId, _ := s.DebugInterfaceRepo.HasDebugInterfaceRecord(endpointInterfaceId)
-
+func (s *DebugInvokeService) GetLastResp(endpointInterfaceId, debugInterfaceId int) (resp v1.DebugResponse, err error) {
 	po, _ := s.DebugRepo.GetLast(endpointInterfaceId, debugInterfaceId)
 
 	if po.ID > 0 {

@@ -39,22 +39,42 @@ func (s *ShareVarService) Save(name, value string, interfaceId, serveId, scenari
 	return
 }
 
-func (s *ShareVarService) List(endpointInterfaceId, scenarioProcessorId uint, usedBy consts.UsedBy) (
+func (s *ShareVarService) List(interfaceId, endpointId, processorId uint, usedBy consts.UsedBy) (
 	shareVariables []domain.ShareVars) {
 
 	var serveId, scenarioId uint
 
-	interf, _ := s.EndpointInterfaceRepo.Get(endpointInterfaceId)
+	interf, _ := s.EndpointInterfaceRepo.Get(interfaceId)
 	endpoint, _ := s.EndpointRepo.Get(interf.EndpointId)
 	serveId = endpoint.ServeId
 
 	// by scenario
 	if usedBy == consts.ScenarioDebug {
-		processor, _ := s.ScenarioProcessorRepo.Get(scenarioProcessorId)
+		processor, _ := s.ScenarioProcessorRepo.Get(processorId)
 		scenarioId = processor.ScenarioId
 	}
 
-	shareVariables, _ = s.listForDebug(serveId, scenarioId, usedBy)
+	shareVariables, _ = s.ListForDebug(serveId, scenarioId, usedBy)
+
+	return
+}
+
+func (s *ShareVarService) ListForDebug(serveId, scenarioId uint, usedBy consts.UsedBy) (ret []domain.ShareVars, err error) {
+	var pos []model.ShareVariable
+
+	if usedBy == consts.InterfaceDebug {
+		pos, err = s.ShareVariableRepo.ListByInterfaceDebug(serveId)
+	} else if usedBy == consts.ScenarioDebug {
+		pos, err = s.ShareVariableRepo.ListByScenarioDebug(scenarioId)
+	}
+
+	for _, po := range pos {
+		ret = append(ret, domain.ShareVars{
+			"id":    po.ID,
+			"name":  po.Name,
+			"value": po.Value,
+		})
+	}
 
 	return
 }
@@ -73,27 +93,6 @@ func (s *ShareVarService) Clear(endpointOrProcessorId int, usedBy consts.UsedBy)
 	} else if usedBy == consts.ScenarioDebug {
 		processor, _ := s.ScenarioProcessorRepo.Get(uint(endpointOrProcessorId))
 		err = s.ShareVariableRepo.DeleteAllByScenarioId(processor.ScenarioId)
-
-	}
-
-	return
-}
-
-func (s *ShareVarService) listForDebug(serveId, scenarioId uint, usedBy consts.UsedBy) (ret []domain.ShareVars, err error) {
-	var pos []model.ShareVariable
-
-	if usedBy == consts.InterfaceDebug {
-		pos, err = s.ShareVariableRepo.ListByInterfaceDebug(serveId)
-	} else if usedBy == consts.ScenarioDebug {
-		pos, err = s.ShareVariableRepo.ListByScenarioDebug(scenarioId)
-	}
-
-	for _, po := range pos {
-		ret = append(ret, domain.ShareVars{
-			"id":    po.ID,
-			"name":  po.Name,
-			"value": po.Value,
-		})
 	}
 
 	return

@@ -5,17 +5,23 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 )
 
-type DebugReq struct {
-	EndpointInterfaceId uint `json:"endpointInterfaceId"` // load by endpoint designer
-	ScenarioProcessorId uint `json:"scenarioProcessorId"` // load by scenario designer
+type DebugCall struct {
+	InterfaceId uint `json:"interfaceId"`
+
+	EndpointId  uint `json:"endpointId"`
+	ProcessorId uint `json:"processorId"`
 
 	UsedBy consts.UsedBy `json:"usedBy"`
 }
 
 type DebugData struct {
-	EndpointInterfaceId uint          `gorm:"-" json:"endpointInterfaceId"`
-	ScenarioProcessorId uint          `gorm:"-" json:"scenarioProcessorId"`
-	UsedBy              consts.UsedBy `json:"usedBy"`
+	// endpoint interface id provided before saved as a debug interface
+	EndpointInterfaceId uint `gorm:"-" json:"endpointInterfaceId"` // model.EndpointInterface
+
+	// debug interface id provided after saved
+	DebugInterfaceId uint          `json:"debugInterfaceId"`     // model.DebugInterface
+	UsedBy           consts.UsedBy `json:"usedBy"`               // used in interface debug OR scenario debug
+	ProcessorId      uint          `gorm:"-" json:"processorId"` // scenario processor id when used by scenario debug
 
 	BaseUrl         string                   `gorm:"-" json:"baseUrl"`
 	ShareVars       []domain.ShareVars       `gorm:"-" json:"shareVars"`

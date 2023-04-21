@@ -125,7 +125,7 @@ func (s *SummaryDetailsService) CreateByDate(req model.SummaryDetails) (err erro
 	year, month, day := now.Date()
 	startTime := strconv.Itoa(year) + "-" + strconv.Itoa(int(month)) + "-" + strconv.Itoa(day) + " 00:00:00"
 	endTime := strconv.Itoa(year) + "-" + strconv.Itoa(int(month)) + "-" + strconv.Itoa(day) + " 23:59:59"
-	ret, err := s.LastByDate(startTime, endTime)
+	ret, err := s.HasDataOfDate(startTime, endTime)
 	if ret {
 		err = s.Create(req)
 	} else {
@@ -224,14 +224,14 @@ func (s *SummaryDetailsService) CountExecTotalProjectId(projectId int64) (count 
 	return r.CountExecTotalProjectId(projectId)
 }
 
-func (s *SummaryDetailsService) FindPassRate(projectId int64) (passRate float64, err error) {
+func (s *SummaryDetailsService) FindPassRateByProjectId(projectId int64) (passRate float64, err error) {
 	r := repo.NewSummaryDetailsRepo()
-	return r.FindPassRate(projectId)
+	return r.FindPassRateByProjectId(projectId)
 }
 
-func (s *SummaryDetailsService) LastByDate(startTime string, endTiem string) (ret bool, err error) {
+func (s *SummaryDetailsService) HasDataOfDate(startTime string, endTiem string) (ret bool, err error) {
 	r := repo.NewSummaryDetailsRepo()
-	return r.LastByDate(startTime, endTiem)
+	return r.HasDataOfDate(startTime, endTiem)
 }
 
 func (s *SummaryDetailsService) CheckCardUpdated(oldTime *time.Time) (result bool, err error) {
@@ -246,7 +246,7 @@ func (s *SummaryDetailsService) CheckDetailsUpdated(oldTime *time.Time) (result 
 	year, month, day := now.Date()
 	startTime := strconv.Itoa(year) + "-" + strconv.Itoa(int(month)) + "-" + strconv.Itoa(day) + " 00:00:00"
 	endTime := strconv.Itoa(year) + "-" + strconv.Itoa(int(month)) + "-" + strconv.Itoa(day) + " 23:59:59"
-	ret, err := s.LastByDate(startTime, endTime)
+	ret, err := s.HasDataOfDate(startTime, endTime)
 	if ret {
 		details, _ := s.Find()
 		for _, detail := range details {

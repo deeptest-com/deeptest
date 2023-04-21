@@ -6,7 +6,6 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi"
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
-	_httpUtils "github.com/aaronchen2k/deeptest/pkg/lib/http"
 	"github.com/jinzhu/copier"
 )
 
@@ -16,28 +15,21 @@ type DebugInterfaceService struct {
 	EndpointRepo          *repo.EndpointRepo          `inject:""`
 	ServeRepo             *repo.ServeRepo             `inject:""`
 	ScenarioProcessorRepo *repo.ScenarioProcessorRepo `inject:""`
-	ServeServerRepo       *repo.ServeServerRepo       `inject:""`
 
 	DebugSceneService *DebugSceneService `inject:""`
 }
 
-func (s *DebugInterfaceService) Load(defineReq v1.DebugReq) (req v1.DebugData, err error) {
-	var debugInterfaceId uint
+func (s *DebugInterfaceService) Load(call v1.DebugCall) (req v1.DebugData, err error) {
+	hasDebugInterfaceRecord, err := s.DebugInterfaceRepo.HasDebugInterfaceRecord(call.InterfaceId)
 
-	if defineReq.EndpointInterfaceId > 0 {
-		debugInterfaceId, _ = s.DebugInterfaceRepo.HasDebugInterfaceRecord(defineReq.EndpointInterfaceId)
-
-		if debugInterfaceId > 0 {
-			req, err = s.GetDebugDataFromDebugInterface(debugInterfaceId)
-		} else {
-			req, err = s.ConvertDebugDataFromEndpointInterface(defineReq.EndpointInterfaceId, 0)
-		}
-
-		req.BaseUrl, req.ShareVars, req.EnvVars, req.GlobalEnvVars, req.GlobalParamVars =
-			s.DebugSceneService.LoadScene(req.EndpointInterfaceId, req.ScenarioProcessorId, req.UsedBy)
-	} else if defineReq.ScenarioProcessorId > 0 {
-
+	if hasDebugInterfaceRecord {
+		req, err = s.GetDebugRequestFromPo(call.InterfaceId)
+	} else {
+		req, err = s.ConvertFromEndpointInterface(call.InterfaceId, call.EndpointId)
 	}
+
+	req.BaseUrl, req.ShareVars, req.EnvVars, req.GlobalEnvVars, req.GlobalParamVars =
+		s.DebugSceneService.LoadScene(req.EndpointInterfaceId, req.DebugInterfaceId, req.ProcessorId, req.UsedBy)
 
 	return
 }
@@ -45,36 +37,29 @@ func (s *DebugInterfaceService) Save(req v1.DebugData) (err error) {
 	debug := model.DebugInterface{}
 	s.CopyValueFromRequest(&debug, req)
 
-	debugInterfaceId, _ := s.DebugInterfaceRepo.HasDebugInterfaceRecord(debug.EndpointInterfaceId)
-	if debugInterfaceId > 0 {
-		debug.ID = debugInterfaceId
-	}
-
-	err = s.DebugInterfaceRepo.Save(debug)
+	err = s.DebugInterfaceRepo.Update(debug)
 
 	return
 }
 
-func (s *DebugInterfaceService) GetDebugDataFromDebugInterface(debugInterfaceId uint) (req v1.DebugData, err error) {
-	debugInterface, _ := s.DebugInterfaceRepo.GetDetail(debugInterfaceId)
+func (s *DebugInterfaceService) GetDebugRequestFromPo(endpointInterfaceId uint) (req v1.DebugData, err error) {
+	debugInterface, err := s.DebugInterfaceRepo.GetByEndpointInterfaceId(endpointInterfaceId)
 	if err != nil {
 		return
 	}
 
-	endpointInterface, _ := s.EndpointInterfaceRepo.Get(debugInterface.EndpointInterfaceId)
-
-	s.SetProps(&endpointInterface, &debugInterface, &req)
+	copier.CopyWithOption(&req, &debugInterface, copier.Option{DeepCopy: true})
 
 	return
 }
 
-func (s *DebugInterfaceService) ConvertDebugDataFromEndpointInterface(endpointInterfaceId, endpointId uint) (req v1.DebugData, err error) {
-	var endpointInterface model.EndpointInterface
+func (s *DebugInterfaceService) ConvertFromEndpointInterface(interfaceId, endpointId uint) (req v1.DebugData, err error) {
+	var interf model.EndpointInterface
 
-	if endpointInterfaceId != 0 {
-		endpointInterface, err = s.EndpointInterfaceRepo.GetDetail(endpointInterfaceId)
+	if interfaceId != 0 {
+		interf, err = s.EndpointInterfaceRepo.GetDetail(interfaceId)
 	} else if endpointId != 0 {
-		endpointInterface, err = s.EndpointRepo.GetFirstMethod(endpointId)
+		interf, err = s.EndpointRepo.GetFirstMethod(endpointId)
 	} else {
 		return
 	}
@@ -83,18 +68,11 @@ func (s *DebugInterfaceService) ConvertDebugDataFromEndpointInterface(endpointIn
 		return
 	}
 
-	s.SetProps(&endpointInterface, nil, &req)
+	var endpoint model.Endpoint
+	var serve model.Serve
 
-	req.UsedBy = consts.InterfaceDebug
-
-	return
-}
-
-func (s *DebugInterfaceService) SetProps(
-	endpointInterface *model.EndpointInterface, debugInterface *model.DebugInterface, req *v1.DebugData) {
-
-	endpoint, err := s.EndpointRepo.Get(endpointInterface.EndpointId)
-	serve, err := s.ServeRepo.Get(endpoint.ServeId)
+	endpoint, err = s.EndpointRepo.Get(interf.EndpointId)
+	serve, err = s.ServeRepo.Get(endpoint.ServeId)
 	if err != nil {
 		return
 	}
@@ -105,19 +83,13 @@ func (s *DebugInterfaceService) SetProps(
 	}
 
 	serve.Securities = Securities
-	req.EndpointInterfaceId = endpointInterface.ID
-
-	if debugInterface == nil {
-		interfaces2debug := openapi.NewInterfaces2debug(*endpointInterface, serve)
-		debugInterface = interfaces2debug.Convert()
-	}
+	interfaces2debug := openapi.NewInterfaces2debug(interf, serve)
+	debugInterface := interfaces2debug.Convert()
 
 	copier.CopyWithOption(&req, &debugInterface, copier.Option{DeepCopy: true})
 
-	if debugInterface == nil {
-		serveServer, _ := s.ServeServerRepo.GetByEndpoint(endpointInterface.EndpointId)
-		req.Url = _httpUtils.AddSepIfNeeded(serveServer.Url) + req.Url
-	}
+	req.EndpointInterfaceId = interfaceId
+	req.UsedBy = consts.InterfaceDebug
 
 	return
 }

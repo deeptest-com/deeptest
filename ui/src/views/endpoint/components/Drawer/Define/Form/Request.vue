@@ -73,19 +73,14 @@ import RequestBody from './RequestBody.vue';
 import {Endpoint} from "@/views/endpoint/data";
 import {cloneByJSON} from "@/utils/object";
 
-const props = defineProps({});
-const emit = defineEmits([]);
-
 const store = useStore<{ Endpoint, Debug, ProjectGlobal, User }>();
 const endpointDetail: any = computed<Endpoint>(() => store.state.Endpoint.endpointDetail);
-const interfaceDetail = computed<any>(() => store.state.Endpoint.selectedMethodDetail);
 const interfaceMethodToObjMap = computed<any>(() => store.state.Endpoint.interfaceMethodToObjMap);
+const currInterface = computed<any>(() => store.state.Debug?.currInterface);
 const currentUser: any = computed<Endpoint>(() => store.state.User.currentUser);
-
-const selectedMethod = ref(interfaceDetail.value?.method ? interfaceDetail.value?.method : 'GET');
-
-console.log('===========', selectedMethod.value, interfaceDetail)
-
+const props = defineProps({});
+const emit = defineEmits([]);
+const selectedMethod = ref(currInterface.value?.method ? currInterface.value?.method : 'GET');
 // 是否折叠,默认展开
 const collapse = ref(true);
 
@@ -98,7 +93,6 @@ function hasDefinedMethod(method: string) {
 
 // 当前选中的请求方法详情
 const selectedMethodDetail: any = ref(null);
-
 // 是否展示请求体设置，比如 get 请求是不需要请求体的
 const showRequestBody = ref(false);
 watch(() => {
@@ -106,8 +100,10 @@ watch(() => {
 }, (newVal, oldVal) => {
   selectedMethodDetail.value = interfaceMethodToObjMap.value[newVal];
   if (selectedMethodDetail.value) {
+    store.dispatch('Debug/setDefineInterface', selectedMethodDetail.value);
     store.commit('Endpoint/setSelectedMethodDetail', selectedMethodDetail.value);
   } else {
+    store.dispatch('Debug/setDefineInterface', {});
     store.commit('Endpoint/setSelectedMethodDetail', {});
   }
   // 根据选中的请求方法决定是否展示请求体设置，暂定以下三种方法是不需要请求体的
@@ -123,13 +119,12 @@ function addEndpoint() {
     "method": selectedMethod.value,
   }
   selectedMethodDetail.value = item;
-  store.commit('Endpoint/setSelectedMethodDetail', selectedMethodDetail.value);
-
+  store.dispatch('Debug/setDefineInterface', selectedMethodDetail.value);
   store.commit('Endpoint/setInterfaceMethodToObjMap', {
     method: item.method,
     value: item,
   });
-
+  store.commit('Endpoint/setSelectedMethodDetail', selectedMethodDetail.value);
   store.commit('Endpoint/setEndpointDetail', {
     ...endpointDetail.value,
     interfaces: [...endpointDetail.value.interfaces, item],

@@ -12,7 +12,7 @@
           <template #addonBefore>
             <a-select
                 :options="serveServers"
-                :value="currentServerId"
+                :value="currentServerId || null"
                 @change="changeServer"
                 placeholder="请选择环境"
                 class="select-env">

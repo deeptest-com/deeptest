@@ -98,7 +98,7 @@ export default defineComponent({
   background-color: @menu-dark-bg;
   color: #c0c4cc;
   transition-duration: 0.1s;
-  padding: 10px;
+  // padding: 10px;
 
   .indexlayout-left-logo {
     width: 100%;
@@ -201,6 +201,10 @@ export default defineComponent({
 
   :deep(.ant-menu-submenu.ant-menu-submenu-open.ant-menu-submenu-selected .ant-menu-submenu-title .left-menu-title) {
       color: rgba(255, 255, 255, 0.4);
+  }
+
+  :deep(.indexlayout-left-menu .ant-menu) {
+    padding: 10px;
   }
 }
 </style>

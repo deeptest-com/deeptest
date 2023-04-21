@@ -112,6 +112,7 @@ async function save() {
       {...endpointDetail.value}
   );
   emit('close');
+  emit('refreshList');
 }
 
 </script>

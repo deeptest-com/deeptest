@@ -12,7 +12,7 @@
           <template #addonBefore>
             <a-select
                 :options="serveServers"
-                :value="currentServerId"
+                :value="currentServerId || null"
                 @change="changeServer"
                 placeholder="请选择环境"
                 class="select-env">
@@ -236,6 +236,7 @@ function updatePath(e) {
   //padding-top: 16px;
   position: relative;
   &:before{
+    display: none;
     content:"";
     position: absolute;
     left: -74px;

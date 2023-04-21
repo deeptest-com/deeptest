@@ -219,16 +219,17 @@ func (s *ServeService) Schema2Example(serveId uint, data string) (obj interface{
 	//_commUtils.JsonDecode("{\"properties\":{\"id\":{\"type\":\"number\"},\"name\":{\"type\":\"string\"}},\"type\":\"object\"}", &schema)
 	//_commUtils.JsonDecode("{\"type\":\"array\",\"items\":{\"properties\":{\"id\":{\"type\":\"number\"},\"name\":{\"type\":\"string\"}},\"type\":\"object\"}}", &schema)
 	schema := openapi.Schema{}
+	//data = "{\"type\":\"object\",\"properties\":{\"name1\":{\"type\":\"object\",\"ref\":\"#/components/schemas/user1\",\"name\":\"user1\"},\"name2\":{\"type\":\"string\"},\"name3\":{\"type\":\"string\"}}}"
 	_commUtils.JsonDecode(data, &schema)
 	//_commUtils.JsonDecode("{\"type\":\"array\",\"items\":{\"type\":\"number\"}}", &schema1)
 	//copier.CopyWithOption(&schema, a, copier.Option{DeepCopy: true})
+	//fmt.Println(schema, "+++++++++++++")
 	obj = schema2conv.Schema2Example(schema)
 	//fmt.Println(schema.Items, "+++++", schema1.Items, _commUtils.JsonEncode(obj), "++++++++++++")
 	return
 }
 
 func (s *ServeService) Components(serveId uint) (components openapi.Components) {
-	serveId = 75
 	components = openapi.Components{}
 	result, err := s.ServeRepo.GetSchemasByServeId(serveId)
 	if err != nil {

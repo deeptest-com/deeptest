@@ -100,7 +100,7 @@ watch(() => {
 }, async (newVal) => {
   loadTree();
 }, {
-  // immediate: true
+  immediate: true
 })
 
 watch(treeDataCategory, () => {

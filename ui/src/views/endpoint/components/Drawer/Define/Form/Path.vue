@@ -236,6 +236,7 @@ function updatePath(e) {
   //padding-top: 16px;
   position: relative;
   &:before{
+    display: none;
     content:"";
     position: absolute;
     left: -74px;

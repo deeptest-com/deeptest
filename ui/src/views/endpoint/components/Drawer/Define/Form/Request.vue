@@ -148,6 +148,7 @@ function addEndpoint() {
   margin-top: 16px;
   position: relative;
   &:before{
+    display: none;
     content:"";
     position: absolute;
     left: -72px;

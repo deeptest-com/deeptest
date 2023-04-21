@@ -20,7 +20,7 @@ func NewScenarioModule() *ScenarioModule {
 // Party 场景
 func (m *ScenarioModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
-		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
+		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin(), middleware.ProjectPerm())
 
 		index.Get("/listByServe", m.ScenarioCtrl.ListByServe)
 

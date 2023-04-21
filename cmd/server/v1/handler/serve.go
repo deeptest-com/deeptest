@@ -157,12 +157,15 @@ func (c *ServeCtrl) ExpireVersion(ctx iris.Context) {
 
 func (c *ServeCtrl) SaveSchema(ctx iris.Context) {
 	var req v1.ServeSchemaReq
-	if err := ctx.ReadJSON(&req); err == nil {
-		res, _ := c.ServeService.SaveSchema(req)
-		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
-	} else {
+	if err := ctx.ReadJSON(&req); err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 	}
+	res, err := c.ServeService.SaveSchema(req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
 }
 
 func (c *ServeCtrl) SaveSecurity(ctx iris.Context) {
@@ -187,12 +190,12 @@ func (c *ServeCtrl) ListSchema(ctx iris.Context) {
 }
 
 func (c *ServeCtrl) GetSchemaByRef(ctx iris.Context) {
-	var req v1.ServeSchemaReq
+	var req v1.ServeSchemaRefReq
 	if err := ctx.ReadJSON(&req); err == nil {
 		res, _ := c.ServeService.GetSchema(uint(req.ServeId), req.Ref)
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
 	} else {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 	}
 }
 
@@ -213,7 +216,7 @@ func (c *ServeCtrl) ListServer(ctx iris.Context) {
 		res, _ := c.ServeService.ListServer(req.ServeId)
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
 	} else {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 	}
 }
 
@@ -240,7 +243,7 @@ func (c *ServeCtrl) ExampleToSchema(ctx iris.Context) {
 func (c *ServeCtrl) SchemaToExample(ctx iris.Context) {
 	var req v1.JsonContent
 	if err := ctx.ReadJSON(&req); err == nil {
-		res := c.ServeService.Schema2Example(req.Data)
+		res := c.ServeService.Schema2Example(req.ServeId, req.Data)
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
 	} else {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
@@ -280,7 +283,7 @@ func (c *ServeCtrl) BindEndpoint(ctx iris.Context) {
 func (c *ServeCtrl) ChangeServe(ctx iris.Context) {
 	userId := multi.GetUserId(ctx)
 
-	req := v1.ProjectReq{}
+	req := v1.ChangeServeReq{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})

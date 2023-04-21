@@ -14,7 +14,9 @@ import (
 )
 
 type ServeService struct {
-	ServeRepo *repo.ServeRepo `inject:""`
+	ServeRepo             *repo.ServeRepo             `inject:""`
+	EndpointRepo          *repo.EndpointRepo          `inject:""`
+	EndpointInterfaceRepo *repo.EndpointInterfaceRepo `inject:""`
 }
 
 func NewServeService() *ServeService {
@@ -57,7 +59,24 @@ func (s *ServeService) GetById(id uint) (res model.Serve) {
 }
 
 func (s *ServeService) DeleteById(id uint) (err error) {
+	err = s.canDelete(id)
+	if err != nil {
+		return err
+	}
 	err = s.ServeRepo.DeleteById(id)
+	return
+}
+
+func (s *ServeService) canDelete(id uint) (err error) {
+	var count int64
+	count, err = s.EndpointRepo.GetCountByServeId(id)
+	if err != nil {
+		return
+	}
+	if count != 0 {
+		err = fmt.Errorf("interfaces are created under the service,not allowed to delete")
+	}
+
 	return
 }
 
@@ -114,6 +133,10 @@ func (s *ServeService) Copy(id uint) (err error) {
 
 func (s *ServeService) SaveSchema(req v1.ServeSchemaReq) (res uint, err error) {
 	var serveSchema model.ComponentSchema
+	if s.ServeRepo.SchemaExist(uint(req.ID), uint(req.ServeId), req.Name) {
+		err = fmt.Errorf("schema name already exist")
+		return
+	}
 	copier.CopyWithOption(&serveSchema, req, copier.Option{DeepCopy: true})
 	serveSchema.Ref = "#/components/schemas/" + serveSchema.Name
 	err = s.ServeRepo.Save(serveSchema.ID, &serveSchema)
@@ -159,6 +182,24 @@ func (s *ServeService) Example2Schema(data string) (schema openapi3.Schema) {
 }
 
 func (s *ServeService) DeleteSchemaById(id uint) (err error) {
+	//TODO
+	var schema model.ComponentSchema
+	schema, err = s.ServeRepo.GetSchema(id)
+	if err != nil {
+		return err
+	}
+
+	var count int64
+	count, err = s.EndpointInterfaceRepo.GetCountByRef(schema.Ref)
+	if err != nil {
+		return
+	}
+
+	if count > 0 {
+		err = fmt.Errorf("the schema has been referenced and cannot be deleted")
+		return
+	}
+
 	err = s.ServeRepo.DeleteSchemaById(id)
 	return
 }
@@ -168,8 +209,10 @@ func (s *ServeService) DeleteSecurityId(id uint) (err error) {
 	return
 }
 
-func (s *ServeService) Schema2Example(data string) (obj interface{}) {
+func (s *ServeService) Schema2Example(serveId uint, data string) (obj interface{}) {
+	s.Components(serveId)
 	schema2conv := openapi.NewSchema2conv()
+	schema2conv.Components = s.Components(serveId)
 	//schema1 := openapi3.Schema{}
 	//_commUtils.JsonDecode(data, &schema)
 	//_commUtils.JsonDecode("{\"type\":\"array\",\"items\":{\"type\":\"number\"}}", &schema)
@@ -182,6 +225,24 @@ func (s *ServeService) Schema2Example(data string) (obj interface{}) {
 	obj = schema2conv.Schema2Example(schema)
 	//fmt.Println(schema.Items, "+++++", schema1.Items, _commUtils.JsonEncode(obj), "++++++++++++")
 	return
+}
+
+func (s *ServeService) Components(serveId uint) (components openapi.Components) {
+	serveId = 75
+	components = openapi.Components{}
+	result, err := s.ServeRepo.GetSchemasByServeId(serveId)
+	if err != nil {
+		return
+	}
+
+	for _, item := range result {
+		var schema openapi.Schema
+		_commUtils.JsonDecode(item.Content, &schema)
+		components[item.Ref] = schema
+	}
+
+	return
+
 }
 
 func (s *ServeService) Schema2Yaml(data string) (res string) {

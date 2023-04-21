@@ -281,6 +281,16 @@ func (r *ServeRepo) SecurityExist(id, serveId uint, name string) (res bool) {
 
 }
 
+func (r *ServeRepo) SchemaExist(id, serveId uint, name string) (res bool) {
+	var count int64
+	err := r.DB.Model(&model.ComponentSchema{}).Where("id != ? and name = ? and serve_id=?", id, name, serveId).Count(&count).Error
+	if err != nil {
+		return false
+	}
+	return count > 0
+
+}
+
 func (r *ServeRepo) SaveVersion(id uint, version *model.ServeVersion) (err error) {
 	if id == 0 {
 		err = r.CopyEndpointsVersionRef(version)
@@ -392,5 +402,15 @@ func (r *ServeRepo) SaveServe(serve *model.Serve) (err error) {
 
 func (r *ServeRepo) GetSchemaByRef(serveId uint, ref string) (res model.ComponentSchema, err error) {
 	err = r.DB.Where("serve_id = ? AND NOT deleted AND not disabled and ref = ?", serveId, ref).Find(&res).Error
+	return
+}
+
+func (r *ServeRepo) GetServerCountByEnvironmentId(environmentId uint) (count int64, err error) {
+	err = r.DB.Model(&model.ServeServer{}).Where("environment_id = ? AND NOT deleted AND not disabled ", environmentId).Count(&count).Error
+	return
+}
+
+func (r *ServeRepo) GetCountByProject(projectId uint) (count int64, err error) {
+	err = r.DB.Model(&model.Serve{}).Where("project_id = ? AND NOT deleted AND not disabled ", projectId).Count(&count).Error
 	return
 }

@@ -36,7 +36,7 @@
             <a-tag v-else color="cyan">启用</a-tag>
           </template>
           <template #action="{ record }">
-            <a-button type="link" @click="() => members(record.id)">成员</a-button>
+<!--            <a-button type="link" @click="() => members(record.id)">成员</a-button>-->
             <a-button type="link" @click="() => edit(record.id)"
                       :disabled="currentUser.projectRoles[record.id] !== 'admin'">编辑
             </a-button>

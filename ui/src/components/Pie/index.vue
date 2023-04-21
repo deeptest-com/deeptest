@@ -86,11 +86,12 @@ export default defineComponent({
         series: [
           {
             type: "pie",
+            name:'缺陷分布',
             // radius: "55%",
             radius: ["40%", "70%"],
             avoidLabelOverlap: false,
             itemStyle: {
-              borderRadius: 10,
+              borderRadius: 20,
               borderColor: "#fff",
               borderWidth: 2,
             },
@@ -108,6 +109,11 @@ export default defineComponent({
               show: true,
               formatter: "{b} \n ({d}%)",
               // color: "#B1B9D3",
+            },
+              animationType: 'scale',
+            animationEasing: 'exponentialInOut',
+            animationDelay: function () {
+              return Math.random() * 100;
             },
           },
         ],

@@ -10,7 +10,8 @@ import {computed, defineProps, defineEmits} from "vue";
 const props = defineProps<{
   isFirst: boolean ,
   isLast: boolean ,
-  isRoot: boolean
+  isRoot: boolean,
+  isRefChildNode: boolean,
 }>();
 
 const emit = defineEmits<{
@@ -23,19 +24,13 @@ const disableMoveUp = computed(() => {
   if(props.isRoot){
     return true;
   }
-  if(props.isFirst){
-    return true;
-  }
-  return false;
+  return props.isFirst;
 });
 const disableMoveDown = computed(() => {
   if(props.isRoot){
     return true;
   }
-  if(props.isLast){
-    return true;
-  }
-  return false;
+  return props.isLast;
 });
 const disableCopy = computed(() => {
   return props.isRoot;

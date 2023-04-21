@@ -69,7 +69,9 @@ export default defineComponent({
 
     const get = async (id: number): Promise<void> => {
       await store.dispatch('UserInternal/getUser', id);
-      store.state.UserInternal.detailResult.password = ''
+      if (props.currentUserId != 0) {
+        modelRef.value.password = '******'
+      }
     }
     watchEffect(() => {
       get(props.currentUserId)
@@ -77,6 +79,9 @@ export default defineComponent({
 
     const submitForm = async() => {
       validate().then(() =>{
+        if (modelRef.value.password == '******') {
+          modelRef.value.password = ''
+        }
         store.dispatch('UserInternal/saveUser', modelRef.value).then((res) => {
           if (res === true) {
             message.success("保存成功")

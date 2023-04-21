@@ -20,20 +20,22 @@
         <div v-if="selectedCodeDetail">
           <!-- Description -->
           <a-row class="form-item-response-item">
-            <a-col :span="4" class="form-label">
-              Description
+            <a-col :span="3" class="form-label">
+              描述
             </a-col>
-            <a-col :span="18">
+            <a-col :span="21">
               <a-input @change="handleResDescriptionChange" :placeholder="'请输入描述信息'"
                        :value="selectedCodeDetail.description"/>
             </a-col>
           </a-row>
           <!-- 增加响应头 -->
           <a-row class="form-item-response-item">
-            <a-col :span="4" class="form-label">
-              增加响应头
+            <a-col :span="3" class="form-label form-label-header">
+              <RightOutlined v-if="!resHeaderCollapse" @click="resHeaderCollapse = !resHeaderCollapse"/>
+              <DownOutlined v-if="resHeaderCollapse" @click="resHeaderCollapse = !resHeaderCollapse"/>
+              <span class="label-name">增加响应头</span>
             </a-col>
-            <a-col :span="18">
+            <a-col :span="21">
               <div class="params-defined-btns">
                 <a-button @click="addResponseHeader">
                   <template #icon>
@@ -45,9 +47,9 @@
             </a-col>
           </a-row>
           <!-- 响应头展示-->
-          <a-row class="form-item-response-item" style="margin-top: 0px;">
-            <a-col :span="4"></a-col>
-            <a-col :span="20">
+          <a-row class="form-item-response-item form-item-response-item-header" style="margin-top: 0px;" v-if="resHeaderCollapse">
+            <a-col :span="3"></a-col>
+            <a-col :span="21">
               <div class="params-defined">
                 <div class="params-defined-content">
                   <div class="params-defined-item" v-if="selectedCodeDetail?.headers?.length">
@@ -106,6 +108,7 @@ const selectedCodeDetail = computed<any>(() => store.state.Endpoint.selectedCode
 const currentUser: any = computed<Endpoint>(() => store.state.User.currentUser);
 // 是否折叠,默认展开
 const collapse = ref(true);
+const resHeaderCollapse = ref(true);
 const props = defineProps({});
 const emit = defineEmits([]);
 const selectedCode = ref('200');
@@ -131,6 +134,7 @@ watch(() => {
 
 
 function addResponseHeader() {
+  resHeaderCollapse.value = true;
   selectedCodeDetail.value.headers.push(cloneByJSON({
     ...defaultHeaderParams,
     name: "header" + (selectedCodeDetail.value.headers.length + 1)
@@ -169,7 +173,7 @@ function handleResHeaderChange(data) {
   font-weight: bold;
 }
 
-.form-label-first {
+.form-label-first,.form-label-header {
   font-weight: bold;
   position: relative;
   left: -18px;
@@ -187,8 +191,30 @@ function handleResHeaderChange(data) {
 
 .form-item-response-body {
   margin-top: 8px;
+  position: relative;
+  &:before{
+    content:"";
+    position: absolute;
+    left: -121px;
+    top: -12px;
+    width: 2px;
+    background: #E5E5E5;
+    min-height: 80vh;
+    height: calc(100% + 36px);
+  }
 }
-
+.form-item-response-item-header{
+  position: relative;
+  &:before{
+    content:"";
+    position: absolute;
+    left: -12px;
+    top: 0;
+    width: 2px;
+    background: #E5E5E5;
+    height: 100%;
+  }
+}
 .has-defined {
   color: #1890ff;
   //font-weight: bold;

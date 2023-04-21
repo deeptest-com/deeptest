@@ -37,8 +37,8 @@ type ServeVersionPaginate struct {
 
 type ServeSchemaReq struct {
 	ID          uint   `json:"id"`
-	ServeId     int64  `json:"serveId"`
-	Name        string `json:"name"`
+	ServeId     int64  `json:"serveId" validate:"required"`
+	Name        string `json:"name" validate:"required"`
 	Tag         string `json:"tag"`
 	Content     string `json:"content"`
 	Examples    string `json:"examples"`
@@ -48,10 +48,15 @@ type ServeSchemaReq struct {
 	Ref         string `json:"ref"`
 }
 
+type ServeSchemaRefReq struct {
+	ServeId int64  `json:"serveId" validate:"required"`
+	Ref     string `json:"ref" validate:"required"`
+}
+
 type EnvironmentReq struct {
 	ID           uint
-	ProjectId    uint                  `json:"projectId"`
-	Name         string                `json:"name"`
+	ProjectId    uint                  `json:"projectId" validate:"required"`
+	Name         string                `json:"name" validate:"required"`
 	ServeServers []ServeServer         `json:"serveServers"`
 	Vars         []EnvironmentVariable `json:"vars"`
 }
@@ -63,9 +68,9 @@ type ServeServer struct {
 }
 
 type EnvironmentVariable struct {
-	Name        string `json:"name"`
-	LocalValue  string `json:"localValue"`
-	RemoteValue string `json:"remoteValue"`
+	Name        string `json:"name" validate:"required"`
+	LocalValue  string `json:"localValue" validate:"required"`
+	RemoteValue string `json:"remoteValue" validate:"required"`
 	Description string `json:"description"`
 }
 
@@ -77,7 +82,8 @@ type ServeSchemaPaginate struct {
 }
 
 type JsonContent struct {
-	Data string `json:"data"`
+	ServeId uint   `json:"serveId"`
+	Data    string `json:"data"`
 }
 
 type SchemaContent struct {
@@ -96,7 +102,7 @@ type ServeVersionBindEndpointReq struct {
 }
 
 type EnvironmentParam struct {
-	Name         string `json:"name"`
+	Name         string `json:"name" validate:"required"`
 	Type         string `json:"type"`
 	Required     bool   `json:"required"`
 	DefaultValue string `json:"defaultValue"`
@@ -121,10 +127,10 @@ type ServeSecurityPaginate struct {
 
 type ServeSecurityReq struct {
 	ID          uint                  `json:"id"`
-	Name        string                `json:"name"`
-	Type        serverConsts.AuthType `json:"type"`
-	ProjectId   int64                 `json:"projectId"`
-	ServeId     int64                 `json:"serveId"`
+	Name        string                `json:"name" validate:"required"`
+	Type        serverConsts.AuthType `json:"type" validate:"required"`
+	ProjectId   int64                 `json:"projectId" validate:"required"`
+	ServeId     int64                 `json:"serveId" validate:"required"`
 	Description string                `json:"description"`
 	In          string                `json:"in"`
 	Key         string                `json:"key"`
@@ -133,4 +139,8 @@ type ServeSecurityReq struct {
 	Username    string                `json:"username"`
 	Password    string                `json:"password"`
 	Default     bool                  `json:"default"`
+}
+
+type ChangeServeReq struct {
+	Id uint
 }

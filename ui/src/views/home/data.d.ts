@@ -1,20 +1,14 @@
-export interface Project {
-  id: number;
-  name: string;
-  desc: string;
-  logo:string
-  shortName:string
-  adminId:number
-  includeExample:bool
-}
+
 
 export interface QueryResult {
-  list: Project[];
+  list: Home[];
   pagination: PaginationConfig;
 }
 
 export interface QueryParams {
   keywords:  string,
+  currProjectId:number,
+  userId:number,
   enabled?: string,
   page: number,
   pageSize: number,
@@ -28,9 +22,3 @@ export interface PaginationConfig {
   showQuickJumper: boolean;
 }
 
-export interface Member {
-  username:string;
-  email:string;
-  roleName:string;
-  userId:number;
-}

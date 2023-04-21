@@ -1,36 +1,28 @@
 import { Mutation, Action } from 'vuex';
 import { StoreModuleType } from "@/utils/store";
 import { ResponseData } from '@/utils/request';
-import {SelectTypes} from 'ant-design-vue/es/select';
-import { Project, QueryResult, QueryParams, PaginationConfig } from './data.d';
+import {  QueryResult,QueryParams } from './data.d';
 import {
-    query, save, remove, detail, getUserList,getRoles
+    query
 } from './service';
 
 export interface StateType {
     queryResult: QueryResult;
-    detailResult: Project;
-    queryParams: any;
-    userList:SelectTypes["options"];
-    roles:SelectTypes["options"];
+    mode:string,
+ 
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
     state: StateType;
     mutations: {
         setList: Mutation<StateType>;
-        setItem: Mutation<StateType>;
-        setQueryParams: Mutation<StateType>;
-        setUserList:Mutation<StateType>;
-        setRoles:Mutation<StateType>;
+        setMode: Mutation<StateType>;
+      
     };
     actions: {
         queryProject: Action<StateType, StateType>;
-        getProject: Action<StateType, StateType>;
-        saveProject: Action<StateType, StateType>;
-        removeProject: Action<StateType, StateType>;
-        getUserList: Action<StateType, StateType>;
-        getRoles:Action<StateType, StateType>;
+        changemode:Action<StateType, StateType>;
+      
     };
 }
 const initState: StateType = {
@@ -44,15 +36,13 @@ const initState: StateType = {
             showQuickJumper: true,
         },
     },
-    detailResult: {} as Project,
-    queryParams: {},
-    userList:[] as SelectTypes["options"] ,
-    roles:[] as SelectTypes["options"],
+    mode:'list',
+  
 };
 
 const StoreModel: ModuleType = {
     namespaced: true,
-    name: 'Project',
+    name: 'Home',
     state: {
         ...initState
     },
@@ -60,23 +50,18 @@ const StoreModel: ModuleType = {
         setList(state, payload) {
             state.queryResult = payload;
         },
-        setItem(state, payload) {
-            state.detailResult = payload;
+        
+        setMode(state, payload) {
+            console.log('~~~~~~~~~setMode',state,payload)
+            state.mode = payload;
         },
-        setQueryParams(state, payload) {
-            state.queryParams = payload;
-        },
-        setUserList(state, payload) {
-            state.userList = payload;
-        },
-        setRoles(state, payload) {
-            state.roles = payload;
-        },
+     
         
         
     },
     actions: {
         async queryProject({ commit }, params: QueryParams ) {
+            console.log('~~~~~~params',params)
             try {
                 const response: ResponseData = await query(params);
                 if (response.code != 0) return;
@@ -85,78 +70,26 @@ const StoreModel: ModuleType = {
 
                 commit('setList',{
                     ...initState.queryResult,
-                    list: data.result || [],
+                    list: data.project_list || [],
                     pagination: {
                         ...initState.queryResult.pagination,
                         current: params.page,
                         pageSize: params.pageSize,
-                        total: data.total || 0,
+                        total: data.project_total || 0,
                     },
                 });
-                commit('setQueryParams', params);
                 return true;
             } catch (error) {
                 return false;
             }
         },
-        async getProject({ commit }, id: number ) {
-            if (id === 0) {
-                commit('setItem',{
-                    ...initState.detailResult,
-                })
-                return
-            }
-            try {
-                const response: ResponseData = await detail(id);
-                const { data } = response;
-                commit('setItem',{
-                    ...initState.detailResult,
-                    ...data,
-                });
-                return true;
-            } catch (error) {
-                return false;
-            }
-        },
-        async saveProject({ commit }, payload: Pick<Project, "name" | "desc"> ) {
-            try {
-                await save(payload);
-                return true;
-            } catch (error) {
-                return false;
-            }
-        },
-        async removeProject({ commit, dispatch, state }, payload: number ) {
-            try {
-                await remove(payload);
-                await dispatch('queryProject', state.queryParams)
-                return true;
-            } catch (error) {
-                return false;
-            }
-        },
-        async getUserList({ commit }) {
-            const response: ResponseData = await getUserList('');
-            const { data } = response;
-            if (response.code === 0) {
-                data.result.forEach((item) => {
-                  item.label = item.name;
-                  item.value = item.username
-                })
-                commit('setUserList',data.result);
-              }
-        },
-        async getRoles({ commit }) {
-            const response: ResponseData = await getRoles();
-            const { data } = response;
-            if (response.code === 0) {
-                data.result.forEach((item) => {
-                  item.label = item.displayName;
-                  item.value = item.name
-                })
-                commit('setRoles',data.result);
-              }
-        },
+         changemode({ commit }, params: any ) {
+
+                  commit('setMode', params.mode);
+        }
+    
+     
+ 
     }
 };
 

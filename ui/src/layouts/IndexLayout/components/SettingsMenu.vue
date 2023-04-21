@@ -77,7 +77,7 @@ export default defineComponent({
         selectLangVisible.value = true
 
       } else if (key === 'profile') {
-        router.replace({path: '/user/profile'})
+        router.replace({path: '/user-manage/profile'})
 
       } else if (key === 'logout') {
         const res: boolean = await store.dispatch('User/logout');

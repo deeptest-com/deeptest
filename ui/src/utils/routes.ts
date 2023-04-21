@@ -147,11 +147,8 @@ export const formatRoutePathTheParents = (pathname: string, separator = '/'): st
   if (!pathname || pathname === '') {
     return arr;
   }
-
   const pathArr = pathname.split(separator);
-  for (let index = 1, len = pathArr.length - 1; index < len; index += 1) {
-    arr.push(pathArr.slice(0, index + 1).join(separator));
-  }
+  arr.push('sub_' + pathArr.slice(0, 2).join(separator) + '/index');
 
   return arr;
 };
@@ -220,7 +217,11 @@ export const getSelectLeftMenuPath = (route: RoutesDataItem): string[] => {
 
   const ret = [] as string[]
   // ret.push(route.path)
-  ret.push('/' + route.path.split('/')[1] + '/index') // module root path
+  if (route.path.includes('project-setting')) {
+    ret.push('/' + route.path.split('/')[1] + '/' + route.path.split('/')[2]);
+  } else {
+    ret.push('/' + route.path.split('/')[1] + '/index') // module root path
+  }
 
   return ret
 };

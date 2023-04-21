@@ -9,29 +9,33 @@
         <template #header> </template>
         <template #renderItem="{ item }">
           <ListItem>
-            <Card>
-              <template #title>
+            <Card class="card" @click="goProject(item.id)">
+              <!-- <template #title> -->
+              <div class="card-title">
                 <Avatar style="background-color: #1890ff">
                   <template #icon><UserOutlined /></template>
                 </Avatar>
-                {{item.project_chinese_name}}
-              </template>
-              <!-- <template #avatar>
-                <a-avatar style="background-color: #1890ff">
-                  <template #icon><UserOutlined /></template>
-                </a-avatar>
+                <span class="card-title-text">{{
+                  item.project_chinese_name
+                }}</span>
+              </div>
 
-              </template> -->
-              <template #description>{{ item.project_chinese_name }}</template>
-              <template #cover>
-                <!-- <div :class="height">
-                  <Image :src="item.imgs[0]" />
-                </div> -->
-              </template>
-              <template #actions>
-                <!--              <SettingOutlined key="setting" />-->
-                <!-- <EditOutlined key="edit" /> -->
-                <!-- <Dropdown
+              <!-- </template> -->
+              <div class="card-desc">
+                {{ item.project_des.length>35?item.project_des.substring(0, 35) + "..." : item.project_des?item.project_des:'&nbsp;' }}
+              </div>
+
+              <div class="card-static">
+                <div>测试场景数： {{item.scenario_total}}个 接口数： {{}}个</div>
+                <div>测试覆盖率：{{item.coverage}}% 执行次数： {{item.exec_total}}次</div>
+                <div>测试通过率： {{item.pass_rate}}% 发现缺陷数： {{item.bug_total}}个</div>
+              </div>
+
+              <!-- <template #actions> -->
+
+              <!--              <SettingOutlined key="setting" />-->
+              <!-- <EditOutlined key="edit" /> -->
+              <!-- <Dropdown
                   :trigger="['hover']"
                   :dropMenuList="[
                     {
@@ -47,19 +51,7 @@
                 >
                   <EllipsisOutlined key="ellipsis" />
                 </Dropdown> -->
-              </template>
-
-              <CardMeta>
-                <template #title>
-                  <!-- <TypographyText :content="item.name" :ellipsis="{ tooltip: item.address }" /> -->
-                </template>
-                <template #avatar>
-                  <!-- <Avatar :src="item.avatar" /> -->
-                </template>
-                <template #description>
-                  <!-- {{ item.project_chinese_name }} -->
-                </template>
-              </CardMeta>
+              <!-- </template> -->
             </Card>
           </ListItem>
         </template>
@@ -84,19 +76,20 @@ import {
   Slider,
   Avatar,
 } from "ant-design-vue";
+import {useRouter} from "vue-router";
 // import { Dropdown } from '/@/components/Dropdown';
 // import { propTypes } from '/@/utils/propTypes';
 // import { Button } from '/@/components/Button';
 import { useStore } from "vuex";
 import { StateType } from "../../store";
-import { useSlider, grid } from "./data";
+import { grid } from "./data";
+const router = useRouter();
 const store = useStore<{ Home: StateType }>();
 const ListItem = List.Item;
 const CardMeta = Card.Meta;
 const list = computed<any[]>(() => store.state.Home.queryResult.list);
 const TypographyText = Typography.Text;
 // 获取slider属性
-const sliderProp = computed(() => useSlider(4));
 // 组件接收参数
 const props = defineProps({
   // 请求API的参数
@@ -178,6 +171,10 @@ function pageSizeChange(_current, size) {
 async function handleDelete(id) {
   emit("delete", id);
 }
+function goProject(id:number){
+   router.push(`/workbench/index/${id}`)
+
+}
 </script>
 
 
@@ -186,6 +183,25 @@ async function handleDelete(id) {
   :deep(.ant-list-header) {
     border: none;
     padding: 0;
+  }
+  .card {
+    cursor: pointer;
+    max-height: 220px;
+    &-title {
+      font-size: 18px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      &-text {
+        padding-left: 8px;
+      }
+    }
+    &-desc {
+      margin-top: 8px;
+    }
+    &-static {
+      margin-top: 8px;
+    }
   }
 }
 </style>

@@ -32,10 +32,10 @@
       </template>
       <a-tabs v-model:activeKey="key" :animated="false">
         <a-tab-pane key="request" tab="定义">
-          <EndpointDefine  v-if="key === 'request'"/>
+          <EndpointDefine v-if="key === 'request'"/> <!-- use v-if to force page reload-->
         </a-tab-pane>
         <a-tab-pane key="run" tab="调试">
-          <EndpointDebug  v-if="key === 'run'"/>
+          <EndpointDebug v-if="key === 'run'"/> <!-- use v-if to force page reload -->
         </a-tab-pane>
       </a-tabs>
     </a-card>

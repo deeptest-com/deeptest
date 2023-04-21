@@ -26,7 +26,7 @@ func (r *SummaryProjectUserRankingRepo) UpdateColumnsByDate(summaryProjectUserRa
 	return
 }
 
-func (r *SummaryProjectUserRankingRepo) LastByDate(startTime string, endTime string) (ret bool, err error) {
+func (r *SummaryProjectUserRankingRepo) HasDataOfDate(startTime string, endTime string) (ret bool, err error) {
 	var count int64
 	err = r.DB.Model(&model.SummaryProjectUserRanking{}).Raw("select count(id) from deeptest.biz_summary_project_user_ranking where created_at > ? and created_at < ? AND NOT deleted;", startTime, endTime).Last(&count).Error
 	if count == 0 {
@@ -45,7 +45,7 @@ func (r *SummaryProjectUserRankingRepo) FindByProjectId(projectId int64) (summar
 	return
 }
 
-func (r *SummaryProjectUserRankingRepo) FindGroupByProjectId(projectId int64) (summaryProjectUserRanking []model.SummaryProjectUserRanking, err error) {
+func (r *SummaryProjectUserRankingRepo) FindGroupByProjectId() (summaryProjectUserRanking []model.SummaryProjectUserRanking, err error) {
 	err = r.DB.Model(&model.SummaryProjectUserRanking{}).Raw("select scenario_total,testcases_total,updated_at,user_name,sort,user_id,project_id from deeptest.biz_summary_project_user_ranking where id in (SELECT max(id) FROM deeptest.biz_summary_project_user_ranking where NOT deleted group by user_id ORDER BY sort asc);").Find(&summaryProjectUserRanking).Error
 	return
 }

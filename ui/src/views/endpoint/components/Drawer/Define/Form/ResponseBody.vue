@@ -92,7 +92,7 @@ async function generateFromJSON(JSONStr: string) {
 async function handleGenerateExample(examples: any) {
   const content = JSON.stringify(removeExtraViewInfo(JSON.parse(contentStr.value), true));
   const res = await store.dispatch('Endpoint/schema2example',
-      {data: content}
+      {data: content,   serveId: currServe.value.id,}
   );
   const example = {
     name: `Example ${examples.length + 1}`,

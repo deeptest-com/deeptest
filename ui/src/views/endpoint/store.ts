@@ -453,7 +453,7 @@ const StoreModel: ModuleType = {
                 ...params
             });
             if (res.code === 0) {
-                await dispatch('loadList', {currProjectId: params.projectId});
+                await dispatch('loadList', {projectId: params.projectId});
             } else {
                 return false
             }
@@ -461,7 +461,7 @@ const StoreModel: ModuleType = {
         async disabled({commit, dispatch, state}, payload: any) {
             const res = await expireEndpoint(payload.id);
             if (res.code === 0) {
-                await dispatch('loadList', {currProjectId: payload.projectId});
+                await dispatch('loadList', {projectId: payload.projectId});
             } else {
                 return false
             }
@@ -469,7 +469,7 @@ const StoreModel: ModuleType = {
         async del({commit, dispatch, state}, payload: any) {
             const res = await deleteEndpoint(payload.id);
             if (res.code === 0) {
-                await dispatch('loadList', {currProjectId: payload.projectId});
+                await dispatch('loadList', {projectId: payload.projectId});
             } else {
                 return false
             }
@@ -477,7 +477,7 @@ const StoreModel: ModuleType = {
         async copy({commit, dispatch, state}, payload: any) {
             const res = await copyEndpoint(payload.id);
             if (res.code === 0) {
-                await dispatch('loadList', {currProjectId: payload.projectId});
+                await dispatch('loadList', {projectId: payload.projectId});
             } else {
                 return false
             }
@@ -511,7 +511,7 @@ const StoreModel: ModuleType = {
                 ...payload
             });
             if (res.code === 0) {
-                await dispatch('loadList', {currProjectId: payload.projectId});
+                await dispatch('loadList', {projectId: payload.projectId});
             } else {
                 return false
             }

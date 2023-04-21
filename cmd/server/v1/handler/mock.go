@@ -58,7 +58,7 @@ func (c *MockCtrl) Request(ctx iris.Context) {
 
 	data, err := c.MockService.Exec(req)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 

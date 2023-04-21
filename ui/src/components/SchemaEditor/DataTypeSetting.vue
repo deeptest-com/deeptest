@@ -10,6 +10,9 @@
           <div class="item"
                v-for="(tab,tabIndex) in tabs"
                @click="() => {
+                 if(isRefChildNode){
+                    return;
+                 }
                   selectTab(tabs,tabIndex)
                }"
                :class="tab.active ? 'active' : ''"
@@ -26,6 +29,7 @@
                 :size="'small'"
                 class="select-type-btn"
                 v-if="tab.active"
+                :disabled="isRefChildNode"
                 v-model:value="tab.value"
                 @change="(event) => changeType(tabsIndex, event)"
                 button-style="solid">
@@ -50,6 +54,7 @@
                           :labelAlign="'right'"
                           :label="opt.label">
                         <a-select
+                            :disabled="isRefChildNode"
                             v-if="opt.component === 'selectTag'"
                             v-model:value="opt.value"
                             mode="tags"
@@ -58,22 +63,26 @@
                         <a-select
                             v-if="opt.component === 'select'"
                             v-model:value="opt.value"
+                            :disabled="isRefChildNode"
                             :options="opt.options"
                             :placeholder="opt.placeholder"
                         />
                         <a-input
                             v-if="opt.component === 'input'"
                             v-model:value="opt.value"
+                            :disabled="isRefChildNode"
                             :placeholder="opt.placeholder"
                         />
                         <a-input-number
                             v-if="opt.component === 'inputNumber'"
                             id="inputNumber"
+                            :disabled="isRefChildNode"
                             :placeholder="opt.placeholder"
                             v-model:value="opt.value"
                         />
                         <a-switch
                             v-if="opt.component === 'switch'"
+                            :disabled="isRefChildNode"
                             v-model:checked="opt.value"/>
                       </a-form-item>
                     </a-col>
@@ -88,6 +97,7 @@
                   :label="'请选择组件'">
                 <a-select
                     :options="refsOptions"
+                    :disabled="isRefChildNode"
                     @change="(e) => {
                       changeRef(tabsIndex,tabIndex,e);
                     }"
@@ -101,12 +111,17 @@
         </div>
       </div>
     </template>
-    <a href="javascript:void(0)">{{ typesLabel }}</a>
+    <a href="javascript:void(0)">{{ typesLabel }}
+      <LinkOutlined v-if="props?.value?.ref"/>
+    </a>
   </a-popover>
 </template>
 <script lang="ts" setup>
 import {ref, defineProps, defineEmits, watch, reactive, toRaw, computed, onMounted} from 'vue';
-import {schemaSettingInfo, typeOpts} from "./utils";
+import {
+  LinkOutlined
+} from '@ant-design/icons-vue';
+import {schemaSettingInfo, typeOpts} from "./config";
 import cloneDeep from "lodash/cloneDeep";
 
 const props = defineProps({
@@ -118,16 +133,25 @@ const props = defineProps({
     required: true,
     type: Array
   },
+  isRefChildNode: {
+    required: true,
+    type: Boolean
+  }
 })
 const emit = defineEmits(['change']);
 const tabsList: any = ref([]);
 const visible: any = ref(false);
 // 返回，如何展示类型
 const typesLabel: any = computed(() => {
-  const {type, types} = props.value || {};
+  let {type, types} = props.value || {};
+  type = props?.value?.name || type || '';
   if (!type) {
     return '';
   }
+  // // 引用类型
+  // if (props?.value?.ref) {
+  //   return props?.value?.name
+  // }
   const labels = Array.isArray(types) ? [...types, type] : [type];
   const result = labels.reduceRight((acc, cur, index) => {
     if (index === labels.length - 1) {
@@ -156,7 +180,7 @@ function changeRef(tabsIndex, tabIndex, e) {
   tabsList.value[tabsIndex][tabIndex].value = e;
   // 选中的是ref，则需要隐藏其他的选择
   if (e) {
-    tabsList.value.splice(tabsIndex+1);
+    tabsList.value.splice(tabsIndex + 1);
   }
 }
 
@@ -164,13 +188,16 @@ function selectTab(tabs: any, tabIndex: number) {
   tabs.forEach((tab: any, index: number) => {
     tab.active = tabIndex === index;
   })
+  // 切换成普通选择模式时，如果是选中的是数组，则需要添加一个tab
+  if(tabIndex === 0 && tabs[tabIndex].value === 'array' && tabsList.value.length === 1){
+    tabsList.value.push(cloneDeep(schemaSettingInfo));
+  }
 }
 
 function initTabsList(types: any, treeInfo: any) {
   let tabsList: any = [];
   types.forEach((type: string) => {
     const defaultTabs: any = cloneDeep(schemaSettingInfo);
-    // 默认选中了类型
     if (typeOpts.includes(type)) {
       defaultTabs[0].active = typeOpts.includes(type);
       defaultTabs[0].value = type;
@@ -179,8 +206,10 @@ function initTabsList(types: any, treeInfo: any) {
         opt.value = treeInfo[opt.name] || opt.value;
       })
     } else {
+      defaultTabs[0].active = false;
+      defaultTabs[0].value = treeInfo?.type || 'string';
       defaultTabs[1].active = true;
-      defaultTabs[1].value = type;
+      defaultTabs[1].value = treeInfo?.ref;
     }
     tabsList.push(defaultTabs)
   });
@@ -195,19 +224,28 @@ function initTabsList(types: any, treeInfo: any) {
 function getValueFromTabsList(tabsList: any) {
   const result: any = [];
   tabsList.forEach((tabs: any) => {
-    const activeTab = tabs.find((tab: any) => tab.active);
+    let activeTab = tabs.find((tab: any) => tab.active);
+    // 如果 activeTab.type === '$ref'，则说明是引用类型, 还需要判断是否有值，没有值还是展示基本类型
+    if (activeTab.type === '$ref' && !activeTab.value) {
+      activeTab = tabs[0];
+    }
     let res: any = {};
     if (activeTab.type === '$ref') {
-      res = {
-        value: activeTab.value,
-        type: '$ref'
+      const selectedRef: any = props.refsOptions.find((ref: any) => ref.value === activeTab.value);
+      if (selectedRef) {
+        res = {
+          type: selectedRef.type,
+          ref: activeTab.value,
+          name: selectedRef.name,
+          content:null
+        }
       }
     } else {
       res = {
         type: activeTab.value
       };
       const activeTabProps = activeTab?.props?.find((prop: any) => prop.value === activeTab.value);
-      activeTabProps.props.options.forEach((opt: any) => {
+      activeTabProps?.props?.options?.forEach((opt: any) => {
         res[opt.name] = opt.value;
       })
     }
@@ -219,7 +257,9 @@ function getValueFromTabsList(tabsList: any) {
 watch(() => {
   return visible.value
 }, (newVal: any) => {
-  const {type, types} = props.value || {};
+  let {type, types} = props.value || {};
+  // ref 优先级高于 type，如果是 ref，则优先取 ref值判断类型
+  type =  props.value?.ref || type;
   const allTypes = [...(types || []), type];
   // 打开时，初始化数据
   if (newVal && props.value.type) {
@@ -228,14 +268,15 @@ watch(() => {
   // 关闭了，触发change事件
   else {
     // 仅选择类型改变了才触发change事件
+    // 需要兼容 选择ref 的场景
     const value = getValueFromTabsList(tabsList.value);
-    const newTypes = value.map((item: any) => item.type);
+    // 如果是 ref, 则直接返回, ref的优先级高于 type
+    const newTypes = value.map((item: any) => item.ref || item.type);
     if (JSON.stringify(allTypes) !== JSON.stringify(newTypes)) {
       emit('change', value);
     }
   }
 })
-
 
 
 </script>

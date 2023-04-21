@@ -37,7 +37,7 @@ export async function detail(id: number): Promise<any> {
     return request({url: `/${apiPath}/${id}`});
 }
 
-export async function removeMember(userId: number, projectId: number): Promise<any> {
+export async function removeMember(userId: number, projectId: any): Promise<any> {
     return request({
         url: `/${apiPath}/removeMember`,
         method: 'post',
@@ -50,6 +50,15 @@ export async function getUserList(name: any): Promise<any> {
     return request({
         url: `/users`,
         method: 'get',
+    });
+}
+
+export async function getNotExistedUserList(projectId: number): Promise<any> {
+    const params = {"projectId":projectId}
+    return request({
+        url: `/users/usersNotExistedInProject`,
+        method: 'get',
+        params
     });
 }
 

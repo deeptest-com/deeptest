@@ -152,7 +152,7 @@ func (c *ProjectCtrl) ChangeProject(ctx iris.Context) {
 func (c *ProjectCtrl) Members(ctx iris.Context) {
 	projectId, err := ctx.URLParamInt("id")
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 

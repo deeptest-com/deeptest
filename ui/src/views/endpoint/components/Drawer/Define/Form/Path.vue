@@ -234,6 +234,16 @@ function updatePath(e) {
 .path-param-list {
   margin-top: 16px;
   //padding-top: 16px;
+  position: relative;
+  &:before{
+    content:"";
+    position: absolute;
+    left: -74px;
+    top: -24px;
+    width: 2px;
+    background: #E5E5E5;
+    height: calc(100% + 36px)
+  }
 }
 
 .path-param-header {

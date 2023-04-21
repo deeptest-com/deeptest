@@ -9,22 +9,27 @@ type DebugRepo struct {
 	DB *gorm.DB `inject:""`
 }
 
-func (r *DebugRepo) Save(invocation *model.Debug) (err error) {
+func (r *DebugRepo) Save(invocation *model.DebugInvoke) (err error) {
 	err = r.DB.Save(invocation).Error
 	return
 }
 
-func (r *DebugRepo) List(interfaceId int) (pos []model.Debug, err error) {
-	err = r.DB.
-		Select("id", "name").
-		Where("interface_id=?", interfaceId).
-		Where("NOT deleted").
+func (r *DebugRepo) List(endpointInterfaceId, debugInterfaceId int) (pos []model.DebugInvoke, err error) {
+	db := r.DB.Select("id", "name")
+
+	if endpointInterfaceId > 0 {
+		db.Where("endpoint_interface_id=?", endpointInterfaceId)
+	} else if debugInterfaceId > 0 {
+		db.Where("debug_interface_id=?", debugInterfaceId)
+	}
+
+	err = db.Where("NOT deleted").
 		Order("created_at DESC").
 		Find(&pos).Error
 	return
 }
 
-func (r *DebugRepo) Get(id uint) (invocation model.Debug, err error) {
+func (r *DebugRepo) Get(id uint) (invocation model.DebugInvoke, err error) {
 	err = r.DB.
 		Where("id=?", id).
 		Where("NOT deleted").
@@ -33,7 +38,7 @@ func (r *DebugRepo) Get(id uint) (invocation model.Debug, err error) {
 }
 
 func (r *DebugRepo) Delete(id uint) (err error) {
-	err = r.DB.Model(&model.Debug{}).
+	err = r.DB.Model(&model.DebugInvoke{}).
 		Where("id=?", id).
 		Update("deleted", true).
 		Error
@@ -41,24 +46,18 @@ func (r *DebugRepo) Delete(id uint) (err error) {
 	return
 }
 
-func (r *DebugRepo) GetLast(interfaceId uint) (debug model.Debug, err error) {
-	err = r.DB.
-		Where("interface_id=?", interfaceId).
-		Where("NOT deleted").
-		Order("created_at DESC").
-		First(&debug).Error
+func (r *DebugRepo) GetLast(endpointInterfaceId, debugInterfaceId int) (debug model.DebugInvoke, err error) {
+	db := r.DB
 
-	return
-}
-
-func (r *DebugRepo) IsInterfaceHasDebug(interfaceId uint) (res bool, err error) {
-	var count int64
-	err = r.DB.Model(&model.Debug{}).Where("interface_id=?", interfaceId).Count(&count).Error
-	if err != nil {
-		return
+	if endpointInterfaceId > 0 {
+		db.Where("endpoint_interface_id=?", endpointInterfaceId)
+	} else if debugInterfaceId > 0 {
+		db.Where("debug_interface_id=?", debugInterfaceId)
 	}
 
-	res = count > 0
+	err = db.Where("NOT deleted").
+		Order("created_at DESC").
+		First(&debug).Error
 
 	return
 }

@@ -21,13 +21,13 @@ func (c *ScenarioNodeCtrl) LoadTree(ctx iris.Context) {
 
 	scenario, err := c.ScenarioService.GetById(uint(scenarioId))
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
 	data, err := c.ScenarioNodeService.GetTree(scenario)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
@@ -38,14 +38,14 @@ func (c *ScenarioNodeCtrl) LoadTree(ctx iris.Context) {
 func (c *ScenarioNodeCtrl) AddInterfaces(ctx iris.Context) {
 	projectId, err := ctx.URLParamInt("currProjectId")
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
 	req := v1.ScenarioAddInterfacesReq{}
 	err = ctx.ReadJSON(&req)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
@@ -55,7 +55,6 @@ func (c *ScenarioNodeCtrl) AddInterfaces(ctx iris.Context) {
 	if bizErr != nil {
 		ctx.JSON(_domain.Response{
 			Code: _domain.SystemErr.Code,
-			Data: nil,
 		})
 		return
 	}
@@ -67,14 +66,14 @@ func (c *ScenarioNodeCtrl) AddInterfaces(ctx iris.Context) {
 func (c *ScenarioNodeCtrl) AddProcessor(ctx iris.Context) {
 	projectId, err := ctx.URLParamInt("currProjectId")
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
 	req := v1.ScenarioAddScenarioReq{}
 	err = ctx.ReadJSON(&req)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
@@ -84,7 +83,6 @@ func (c *ScenarioNodeCtrl) AddProcessor(ctx iris.Context) {
 	if bizErr != nil {
 		ctx.JSON(_domain.Response{
 			Code: _domain.SystemErr.Code,
-			Data: nil,
 		})
 		return
 	}
@@ -98,24 +96,24 @@ func (c *ScenarioNodeCtrl) UpdateName(ctx iris.Context) {
 	err := ctx.ReadJSON(&req)
 	if err != nil {
 		logUtils.Errorf("参数验证失败", err.Error())
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Data: nil, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
 	err = c.ScenarioNodeService.UpdateName(req)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: nil, Msg: _domain.NoErr.Msg})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 }
 
 // Delete 删除
 func (c *ScenarioNodeCtrl) Delete(ctx iris.Context) {
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 

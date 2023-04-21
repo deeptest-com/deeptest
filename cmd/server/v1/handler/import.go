@@ -22,7 +22,7 @@ type ImportCtrl struct {
 func (c *ImportCtrl) ImportSpec(ctx iris.Context) {
 	targetId, err := ctx.URLParamInt("targetId")
 	if targetId == 0 {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: "targetId"})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
@@ -30,13 +30,13 @@ func (c *ImportCtrl) ImportSpec(ctx iris.Context) {
 	err = ctx.ReadJSON(&req)
 	if err != nil {
 		logUtils.Errorf("参数验证失败", err.Error())
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Data: nil, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
 	c.ImportService.Import(req, targetId)
 
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: nil, Msg: _domain.NoErr.Msg})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 
 	return
 }
@@ -45,7 +45,7 @@ func (c *ImportCtrl) ImportYapi(ctx iris.Context) {
 	projectId, err := ctx.URLParamInt("currProjectId")
 	fmt.Println("projectId", projectId)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
@@ -53,7 +53,7 @@ func (c *ImportCtrl) ImportYapi(ctx iris.Context) {
 	err = ctx.ReadJSON(&req)
 	if err != nil {
 		logUtils.Errorf("参数验证失败", err.Error())
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Data: nil, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 	fmt.Println("InterfaceYapiReq", req)
@@ -61,7 +61,7 @@ func (c *ImportCtrl) ImportYapi(ctx iris.Context) {
 	req.ProjectId = projectId
 	c.YapiService.ImportYapiProject(req)
 
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: nil, Msg: _domain.NoErr.Msg})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 
 	return
 }

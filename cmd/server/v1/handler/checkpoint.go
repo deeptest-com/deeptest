@@ -18,13 +18,13 @@ func (c *CheckpointCtrl) List(ctx iris.Context) {
 	interfaceId, err := ctx.URLParamInt("interfaceId")
 	usedBy := ctx.URLParam("usedBy")
 	if interfaceId == 0 || usedBy == "" {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: "interfaceId OR usedBy"})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
 	data, err := c.CheckpointService.List(uint(interfaceId), consts.UsedBy(usedBy))
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
@@ -35,13 +35,13 @@ func (c *CheckpointCtrl) List(ctx iris.Context) {
 func (c *CheckpointCtrl) Get(ctx iris.Context) {
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Data: nil, Msg: _domain.ParamErr.Msg})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
 	checkpoint, err := c.CheckpointService.Get(uint(id))
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: _domain.SystemErr.Msg})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return
 	}
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: checkpoint})
@@ -52,7 +52,7 @@ func (c *CheckpointCtrl) Create(ctx iris.Context) {
 	checkpoint := model.InterfaceCheckpoint{}
 	err := ctx.ReadJSON(&checkpoint)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
@@ -60,7 +60,6 @@ func (c *CheckpointCtrl) Create(ctx iris.Context) {
 	if err != nil {
 		ctx.JSON(_domain.Response{
 			Code: _domain.SystemErr.Code,
-			Data: nil,
 		})
 		return
 	}
@@ -73,23 +72,23 @@ func (c *CheckpointCtrl) Update(ctx iris.Context) {
 	var checkpoint model.InterfaceCheckpoint
 	err := ctx.ReadJSON(&checkpoint)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
 	err = c.CheckpointService.Update(&checkpoint)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: nil, Msg: _domain.NoErr.Msg})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 }
 
 // Delete 删除
 func (c *CheckpointCtrl) Delete(ctx iris.Context) {
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 

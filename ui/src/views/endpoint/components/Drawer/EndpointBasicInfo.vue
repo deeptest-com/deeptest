@@ -2,8 +2,13 @@
     <a-card
         class="card-baseInfo"
         :bordered="false"
-        title="基本信息">
-      <a-descriptions :title="null">
+        :headStyle="{}"
+        :bodyStyle="{padding:'12px 24px 12px 24px'}"
+        :title="null">
+      <div style="margin-bottom: 8px;">
+        <ConBoxTitle :backgroundStyle="'background: #FBFBFB;'" :title="'基本信息'" />
+      </div>
+      <a-descriptions :size="'small'" :title="null">
         <a-descriptions-item label="创建人">{{ endpointDetail?.createUser }}</a-descriptions-item>
         <a-descriptions-item label="状态">
           <a-select
@@ -34,6 +39,7 @@ import {endpointStatusOpts} from '@/config/constant';
 import {useStore} from "vuex";
 import {Endpoint} from "@/views/endpoint/data";
 import EditAndShowField from '@/components/EditAndShow/index.vue';
+import ConBoxTitle from '@/components/ConBoxTitle/index.vue';
 const props = defineProps({
 })
 

@@ -3,26 +3,33 @@ package router
 import (
 	"github.com/aaronchen2k/deeptest/cmd/server/v1/handler"
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/module"
+	"github.com/aaronchen2k/deeptest/internal/server/middleware"
 	"github.com/kataras/iris/v12"
 )
 
 type DebugModule struct {
-	DebugCtrl *handler.DebugCtrl `inject:""`
+	DebugInterfaceCtrl *handler.DebugInterfaceCtrl `inject:""`
+	DebugInvokeCtrl    *handler.DebugInvokeCtrl    `inject:""`
 }
 
 // Party 脚本
 func (m *DebugModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
-		//index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
+		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
 
-		index.Post("/loadData", m.DebugCtrl.LoadData).Name = "获取接口执行数据"
-		index.Post("/submitResult", m.DebugCtrl.SubmitResult).Name = "提交接口执行结果"
+		index.PartyFunc("/interface", func(party iris.Party) {
+			party.Post("/load", m.DebugInterfaceCtrl.Load).Name = "获取调试接口请求"
+			party.Post("/save", m.DebugInterfaceCtrl.Save).Name = "保存调试接口"
+		})
 
-		index.Get("/", m.DebugCtrl.List).Name = "调试列表"
-		index.Get("/{id:uint}", m.DebugCtrl.Get).Name = "调试详情"
-		index.Delete("/{id:uint}", m.DebugCtrl.Delete).Name = "删除调试记录"
+		index.PartyFunc("/invoke", func(party iris.Party) {
+			party.Get("/", m.DebugInvokeCtrl.List).Name = "调试记录列表"
+			party.Get("/{id:uint}", m.DebugInvokeCtrl.Get).Name = "调试记录详情"
+			party.Get("/getLastResp", m.DebugInvokeCtrl.GetLastResp).Name = "获取最后调试记录响应"
+			party.Delete("/{id:uint}", m.DebugInvokeCtrl.Delete).Name = "删除调试记录"
 
-		index.Get("/getLastResp", m.DebugCtrl.GetLastResp).Name = "最后一次调试响应"
+			party.Post("/submitResult", m.DebugInvokeCtrl.SubmitResult).Name = "Agent提交接口执行结果"
+		})
 	}
 	return module.NewModule("/debugs", handler)
 }

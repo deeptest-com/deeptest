@@ -29,7 +29,7 @@
           <!-- Description -->
           <a-row class="form-item-request-item">
             <a-col :span="3" class="form-label">
-              Description
+              描述
             </a-col>
             <a-col :span="12">
               <a-input placeholder="描述信息" v-model:value="selectedMethodDetail.description"/>
@@ -100,10 +100,10 @@ watch(() => {
 }, (newVal, oldVal) => {
   selectedMethodDetail.value = interfaceMethodToObjMap.value[newVal];
   if (selectedMethodDetail.value) {
-    store.dispatch('Debug/setInterface', selectedMethodDetail.value);
+    store.dispatch('Debug/setDefineInterface', selectedMethodDetail.value);
     store.commit('Endpoint/setSelectedMethodDetail', selectedMethodDetail.value);
   } else {
-    store.dispatch('Debug/setInterface', {});
+    store.dispatch('Debug/setDefineInterface', {});
     store.commit('Endpoint/setSelectedMethodDetail', {});
   }
   // 根据选中的请求方法决定是否展示请求体设置，暂定以下三种方法是不需要请求体的
@@ -119,7 +119,7 @@ function addEndpoint() {
     "method": selectedMethod.value,
   }
   selectedMethodDetail.value = item;
-  store.dispatch('Debug/setInterface', selectedMethodDetail.value);
+  store.dispatch('Debug/setDefineInterface', selectedMethodDetail.value);
   store.commit('Endpoint/setInterfaceMethodToObjMap', {
     method: item.method,
     value: item,
@@ -135,8 +135,9 @@ function addEndpoint() {
 <style lang="less" scoped>
 
 .form-item {
-  margin-bottom: 16px;
+  //margin-bottom: 16px;
   align-items: baseline;
+
 }
 
 .form-label {
@@ -145,7 +146,17 @@ function addEndpoint() {
 
 .form-item-request {
   margin-top: 16px;
-
+  position: relative;
+  &:before{
+    content:"";
+    position: absolute;
+    left: -72px;
+    top: -12px;
+    width: 2px;
+    background: #E5E5E5;
+    min-height: 80vh;
+    height: calc(100% + 24px);
+  }
   .form-item-request-item {
     margin-top: 16px;
     align-items: center;

@@ -18,7 +18,7 @@ func NewProjectModule() *ProjectModule {
 // Party 项目
 func (m *ProjectModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
-		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
+		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin(), middleware.ProjectPerm())
 
 		index.Get("/", m.ProjectCtrl.List).Name = "项目列表"
 		index.Get("/{id:uint}", m.ProjectCtrl.Get).Name = "项目详情"

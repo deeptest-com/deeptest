@@ -451,8 +451,8 @@ const StoreModel: ModuleType = {
             }
             return null;
         },
-        async generateExample({ dispatch }, { data }: BasicSchemaParams) {
-            const res = await schema2example({ data });
+        async generateExample({ dispatch }, { data,serveId }: BasicSchemaParams) {
+            const res = await schema2example({ data,serveId });
             if (res.code === 0) {
                 return res.data;
             }

@@ -12,8 +12,8 @@ import (
 )
 
 type IndexModule struct {
-	SpecModule       *router.SpecModule       `inject:""`
-	InvocationModule *router.InvocationModule `inject:""`
+	SpecModule       *router.SpecModule `inject:""`
+	InvocationModule *router.ExecModule `inject:""`
 }
 
 func NewIndexModule() *IndexModule {

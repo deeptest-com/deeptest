@@ -10,6 +10,7 @@ const props = defineProps<{
   isFirst?: boolean | undefined,
   isLast?: boolean | undefined,
   isRoot?: boolean | undefined,
+  isRefChildNode?: boolean | undefined,
   value?: any
 }>();
 
@@ -22,21 +23,32 @@ const emit = defineEmits<{
 const visible = ref(false);
 
 const disableSetRequire = computed(() => {
-  return props.isRoot || true;
+  if (props.isRoot) {
+    return true;
+  }
+  if (props.isRefChildNode) {
+    return true;
+  }
+  return false;
 });
 const disableAddDesc = computed(() => {
-  // $ref为true时，不显示
-  return false
+  return false;
 });
 const disableDel = computed(() => {
-  return props.isRoot;
+  if (props.isRoot) {
+    return true;
+  }
+  if (props.isRefChildNode) {
+    return true;
+  }
+  return false;
 });
 
 const description = ref('');
 watch(() => {
   return props.value
 }, (newVal) => {
-  if(newVal){
+  if (newVal) {
     description.value = newVal.description;
   }
 }, {
@@ -70,10 +82,11 @@ watch(() => {
     <template #content>
       <div class="content">
         <a-input v-model:value="description"
+                 :disabled="isRefChildNode"
                  placeholder="请输入描述信息"/>
       </div>
     </template>
-    <a-tooltip placement="topLeft" :title="disableAddDesc ? null :  '添加描述'" arrow-point-at-center>
+    <a-tooltip placement="topLeft" :title="disableAddDesc ? null :  '描述'" arrow-point-at-center>
       <a-button :size="'small'" :disabled="disableAddDesc" type="text" @click="visible = true">
         <template #icon>
           <ReadOutlined/>
@@ -81,8 +94,6 @@ watch(() => {
       </a-button>
     </a-tooltip>
   </a-popover>
-
-
   <a-tooltip placement="topLeft" :title="disableDel ? null :  '删除'" arrow-point-at-center>
     <a-button :size="'small'" :disabled="disableDel" type="text" @click="emit('del')">
       <template #icon>

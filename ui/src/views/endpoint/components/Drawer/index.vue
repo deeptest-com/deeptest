@@ -6,9 +6,8 @@
       :visible="visible"
       class="drawer"
       wrapClassName="drawer-1"
-      :bodyStyle="{padding:0,marginBottom:'60px'}"
+      :bodyStyle="{padding:0,marginBottom:'56px'}"
       @close="onCloseDrawer">
-
     <!-- 头部信息  -->
     <template #title>
       <a-row type="flex" style="align-items: center;width: 100%">
@@ -17,29 +16,29 @@
         </a-col>
       </a-row>
     </template>
-
     <!-- 基本信息 -->
     <EndpointBasicInfo @changeStatus="changeStatus" @change-description="changeDescription"/>
-
     <!-- 接口设计区域 -->
     <a-card
         style="width: 100%"
-        title="接口设计"
-        :tab-list="tabList"
-        :bodyStyle="{padding:'16px'}"
-        :active-tab-key="key"
-        @tabChange="key => onTabChange(key, 'key')">
-
-      <div v-if="key === 'request'">
-        <EndpointDefine/>
-      </div>
-
-      <div v-else-if="key === 'run'">
-        <EndpointDebug></EndpointDebug>
-      </div>
-
+        :bordered="false"
+        :size="'small'"
+        :headStyle="{padding:'0 24px',borderBottom:'none'}"
+        :bodyStyle="{padding:'0 24px 0 24px'}">
+      <template #title>
+        <div style="margin-top: -12px;">
+          <ConBoxTitle :backgroundStyle="'background: #FBFBFB;'" :title="'接口设计'" />
+        </div>
+      </template>
+      <a-tabs v-model:activeKey="key">
+        <a-tab-pane key="request" tab="定义">
+          <EndpointDefine/>
+        </a-tab-pane>
+        <a-tab-pane key="run" tab="调试">
+          <EndpointDebug/>
+        </a-tab-pane>
+      </a-tabs>
     </a-card>
-
     <div v-if="key === 'request'" class="drawer-btns">
       <a-space>
         <a-button type="primary" @click="save">保存</a-button>
@@ -58,7 +57,7 @@ import {
 } from 'vue';
 import EndpointBasicInfo from './EndpointBasicInfo.vue';
 import EditAndShowField from '@/components/EditAndShow/index.vue';
-
+import ConBoxTitle from '@/components/ConBoxTitle/index.vue';
 import EndpointDefine from './Define/index.vue';
 import EndpointDebug from './Debug/index.vue';
 
@@ -101,26 +100,8 @@ async function changeDescription(description) {
   await store.dispatch('Endpoint/getEndpointDetail', {id: endpointDetail.value.id});
 }
 
-const tabList = [
-  {
-    key: 'request',
-    tab: '定义',
-    slots: {tab: 'customRenderRequest'},
-  },
-  {
-    key: 'run',
-    tab: '调试',
-    slots: {tab: 'customRenderRun'},
-
-  },
-];
 
 const key = ref('request');
-const onTabChange = (value: string, type: string) => {
-  if (type === 'key') {
-    key.value = value;
-  }
-};
 
 async function cancel() {
   emit('close');
@@ -165,15 +146,14 @@ async function save() {
     }
   }
 }
-
 .drawer-btns {
   background: #ffffff;
   border-top: 1px solid rgba(0, 0, 0, 0.06);
   position: absolute;
   bottom: 0;
-  right: 0;
+  //right: 0;
   width: 100%;
-  height: 60px;
+  height: 56px;
   display: flex;
   justify-content: flex-end;
   align-items: center;

@@ -7,21 +7,24 @@
       <div class="right">
         <!--  头部搜索区域  -->
         <div class="top-action">
+          <a-button class="action-new" type="primary" :loading="loading"
+                    @click="handleCreateEndPoinit">新建接口
+          </a-button>
+        </div>
+        <div class="top-search">
+          <div class="top-search-filter">
+            <TableFilter @filter="handleTableFilter"/>
+          </div>
           <a-form-item label="选择服务">
             <a-select
               v-model:value="currServe.id"
+              :placeholder="'请选择服务'"
               :bordered="true"
               style="width: 280px;margin-left: 16px;"
               @change="selectServe">
               <a-select-option v-for="item in serves" :key="item.id" :value="item.id">{{ item.name }}</a-select-option>
             </a-select>
           </a-form-item>
-          <a-button class="action-new" type="primary" :loading="loading"
-                    @click="createApiModalVisible = true;">新建接口
-          </a-button>
-        </div>
-        <div class="top-search">
-          <TableFilter @filter="handleTableFilter"/>
         </div>
         <a-table
             style="margin: 0 16px;"
@@ -32,10 +35,10 @@
             :pagination="{
                 ...pagination,
                 onChange: (page) => {
-                  loadList(currProject.id,page,pagination.pageSize);
+                  loadList(page,pagination.pageSize);
                 },
                 onShowSizeChange: (page, size) => {
-                  loadList(currProject.id,page,size);
+                  loadList(page,size);
                 },
             }"
             :columns="columns"
@@ -109,6 +112,7 @@ import {
   computed, reactive, toRefs, ref, onMounted,
   watch
 } from 'vue';
+import { useRouter } from 'vue-router';
 import debounce from "lodash.debounce";
 import EndpointTree from './list/tree.vue';
 import {ColumnProps} from 'ant-design-vue/es/table/interface';
@@ -123,6 +127,7 @@ import {Endpoint, PaginationConfig} from "@/views/endpoint/data";
 
 import {StateType as ServeStateType} from "@/store/serve";
 import {StateType as Debug} from "@/views/component/debug/store";
+import { message, Modal } from 'ant-design-vue';
 
 const store = useStore<{ Endpoint, ProjectGlobal, Debug: Debug, ServeGlobal: ServeStateType }>();
 
@@ -132,6 +137,7 @@ const serves = computed<any>(() => store.state.ServeGlobal.serves);
 const list = computed<Endpoint[]>(() => store.state.Endpoint.listResult.list);
 let pagination = computed<PaginationConfig>(() => store.state.Endpoint.listResult.pagination);
 const createApiModalVisible = ref(false);
+const router = useRouter();
 type Key = ColumnProps['key'];
 /**
  * 表格数据
@@ -187,6 +193,20 @@ const onSelectChange = (keys: Key[], rows: any) => {
   selectedRowKeys.value = [...keys];
 };
 
+function handleCreateEndPoinit() {
+  if (serves.value.length === 0) {
+    Modal.confirm({
+      title: '请先创建服务',
+      content: '创建接口前需先创建服务才能使用,确认将跳转服务页面',
+      onOk: () => {
+        router.push('/project-setting/service-setting');
+      }
+    })
+    return;
+  }
+  createApiModalVisible.value = true;
+}
+
 async function handleChangeStatus(value: any, record: any,) {
   await store.dispatch('Endpoint/updateStatus', {
     id:record.id,
@@ -201,7 +221,7 @@ async function handleUpdateEndpoint(value: string, record: any) {
 }
 
 async function editEndpoint(record) {
-  await store.dispatch('Debug/setEndpointId', record.id);
+  await store.dispatch('Debug/setDefineEndpoint', record);
   await store.dispatch('Endpoint/getEndpointDetail', {id: record.id});
   drawerVisible.value = true;
 }
@@ -231,15 +251,15 @@ async function handleCreateApi(data) {
 
 async function selectNode(id) {
   selectedCategoryId.value = id;
-  await loadList(currProject.value.id, pagination.value.current, pagination.value.pageSize, {
+  await loadList(pagination.value.current, pagination.value.pageSize, {
     categoryId: id,
     serveId: currServe.value.id,
   });
 }
 
-const loadList = debounce(async (currProjectId, page, size, opts?: any) => {
+const loadList = debounce(async (page, size, opts?: any) => {
   await store.dispatch('Endpoint/loadList', {
-    currProjectId,
+    "projectId": currProject.value.id,
     "page": page,
     "pageSize": size,
     opts,
@@ -247,43 +267,32 @@ const loadList = debounce(async (currProjectId, page, size, opts?: any) => {
 }, 300)
 
 async function handleTableFilter(filterState) {
-  await loadList(currProject.value.id, pagination.value.current, pagination.value.pageSize, filterState);
+  await loadList(pagination.value.current, pagination.value.pageSize, filterState);
 }
 
 const selectServe = (value): void => {
-  console.log('selectServe', value)
   store.dispatch('ServeGlobal/changeServe', value);
 }
 
-// 实时监听项目切换，如果项目切换了则重新请求数据
-watch(() => {
-  return currProject.value;
-}, async (newVal) => {
-  if (newVal.id) {
-    await loadList(newVal.id, pagination.value.current, pagination.value.pageSize);
-  }
-}, {
-  immediate: true
-})
-
-// 实时监听服务 ID，如果项目切换了则重新请求数据
-watch(() => {
-  return currServe.value.id;
-}, async (newVal) => {
-  if (newVal) {
-    await loadList(newVal.id, pagination.value.current, pagination.value.pageSize, {
-      serveId: newVal,
+// 实时监听项目/服务 ID，如果项目切换了则重新请求数据
+watch(() => [currProject.value.id, currServe.value.id], async (newVal) => {
+  const [newProjectId, newServeId] = newVal;
+  if (newProjectId !== undefined) {
+    await loadList(pagination.value.current, pagination.value.pageSize, {
+      serveId: newServeId || 0,
     });
-    await store.dispatch('Endpoint/getServerList', {id: currServe.value.id});
-    // 获取授权列表
-    await store.dispatch('Endpoint/getSecurityList', {id: currServe.value.id});
+    if (newServeId) {
+      await store.dispatch('Endpoint/getServerList', {id: newServeId});
+      // 获取授权列表
+      await store.dispatch('Endpoint/getSecurityList', {id: newServeId});
+    }
   }
 }, {
   immediate: true
 })
 
 async function refreshList() {
-  await loadList(currProject.value.id, pagination.value.current, pagination.value.pageSize);
+  await loadList(pagination.value.current, pagination.value.pageSize);
 }
 
 
@@ -292,6 +301,7 @@ async function refreshList() {
 .container {
   margin: 16px;
   background: #ffffff;
+  min-width: 1440px;
   min-height: calc(100vh - 80px);
 }
 
@@ -335,8 +345,8 @@ async function refreshList() {
   height: 60px;
   display: flex;
   align-items: center;
-  margin-left: 16px;
-  margin-bottom: 8px;
+  margin: 0 16px 8px;
+  justify-content: space-between;
 }
 
 .top-action {
@@ -356,7 +366,7 @@ async function refreshList() {
   width: 150px;
 }
 
-:deep(.top-action .ant-row.ant-form-item) {
+:deep(.top-search .ant-row.ant-form-item) {
   margin: 0;
 }
 

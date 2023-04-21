@@ -46,7 +46,7 @@
 
 
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref } from "vue";
+import { computed, onMounted, reactive, ref, watch } from "vue";
 import debounce from "lodash.debounce";
 import { PaginationConfig, QueryParams } from "../../data.d";
 import {SelectTypes} from 'ant-design-vue/es/select';
@@ -112,17 +112,11 @@ const columns = [
  
 ];
 
-onMounted(() => {
-  console.log('onMounted',currentUser.value.id)
-  getList(1);
-})
-
 const loading = ref<boolean>(true);
 const getList = async (current: number): Promise<void> => {
   loading.value = true;
   await store.dispatch('workbench/queryRanking', {
-  
-    projectId: queryParams.projectId,
+    projectId: currProject.value.id,
     cycle: queryParams.cycle,
     pageSize: pagination.value.pageSize,
     page: current,
@@ -187,6 +181,17 @@ const remove = (id: number) => {
     }
   });
 }
+
+watch(() => {
+  return currProject.value.id;
+}, (val: any) => {
+  console.log('~------currProject---', currProject.value.id);
+  if (val) {
+    getList(1);
+  }
+}, {
+  immediate: true,
+})
 </script>
 
 <style lang="less" scoped>

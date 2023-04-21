@@ -40,7 +40,7 @@ import {
     getEnvList,
     getSecurityList,
     serverList,
-    getSchemaList
+    getSchemaList, getSchemaDetail
 } from "@/views/projectSetting/service";
 
 export interface StateType {
@@ -119,6 +119,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         schema2example: Action<StateType, StateType>;
         getRefsOptions: Action<StateType, StateType>;
         getAllRefs: Action<StateType, StateType>;
+        getRefDetail: Action<StateType, StateType>;
     }
 }
 
@@ -412,13 +413,13 @@ const StoreModel: ModuleType = {
                 return false
             }
         },
-        async loadList({commit, dispatch, state}, {currProjectId, page, pageSize, opts}: any) {
+        async loadList({commit, dispatch, state}, {projectId, page, pageSize, opts}: any) {
             page = page || state.listResult.pagination.current;
             pageSize = pageSize || state.listResult.pagination.pageSize;
             const otherParams = {...state.filterState, ...opts};
 
             const res = await getEndpointList({
-                "projectId": currProjectId,
+                "projectId": projectId,
                 "page": page,
                 "pageSize": pageSize,
                 ...otherParams,
@@ -614,6 +615,17 @@ const StoreModel: ModuleType = {
                 return res.data.result;
             } else {
                return null;
+            }
+        },
+        // 获取可选组件信息
+        async getRefDetail({commit}, payload: any) {
+            const res = await getSchemaDetail({
+                ...payload,
+            });
+            if (res.code === 0) {
+                return res.data;
+            } else {
+                return null;
             }
         },
     }

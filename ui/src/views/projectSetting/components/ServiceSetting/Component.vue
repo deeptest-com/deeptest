@@ -65,6 +65,7 @@
               @generateFromJSON="generateFromJSON"
               @generateExample="handleGenerateExample"
               @change="handleContentChange"
+              :serveId="serveId"
               :tab-content-style="{width:'100%'}"
               :refs-options="refsOptions"
               :contentStr="contentStr"
@@ -100,6 +101,7 @@ import {Modal} from 'ant-design-vue';
 import {ExclamationCircleOutlined, CodeOutlined, BarsOutlined} from '@ant-design/icons-vue';
 import {schema2yaml} from '../../service';
 import SchemaEditor from '@/components/SchemaEditor/index.vue';
+import {removeExtraViewInfo} from '@/components/SchemaEditor/utils';
 import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
 import CustomForm from '../common/CustomForm.vue';
 import EditAndShowField from '@/components/EditAndShow/index.vue';
@@ -151,6 +153,7 @@ const contentStr = ref('');
 const schemaType = ref('object');
 const exampleStr = ref('');
 const keyword = ref('');
+const refsOptions = ref([]);
 
 const store = useStore<{ ProjectSetting: ProjectSettingStateType }>();
 
@@ -167,6 +170,18 @@ async function changeModelInfo(type, e) {
   }
   if (type === 'name') {
     activeSchema.value.name = e;
+  }
+  const result =await store.dispatch('ProjectSetting/saveSchema', {
+    schemaInfo: {
+      "name": activeSchema.value.name,
+      "id": activeSchema.value.id,
+      "serveId": props.serveId,
+      "description": activeSchema.value.description
+    },
+    action: 'update'
+  })
+  if (result) {
+    await getList();
   }
 }
 
@@ -186,7 +201,7 @@ async function switchMode(val: any) {
 }
 
 const schemeVisibleKey = ref(0);
-const edit = (value: any) => {
+const edit = async (value: any) => {
   const record:any = cloneDeep(value);
   schemeVisible.value = true;
   record.content = record.content && typeof record.content === 'string' ? JSON.parse(record.content) : {type: 'object'};
@@ -196,6 +211,11 @@ const edit = (value: any) => {
   exampleStr.value = JSON.stringify(record?.examples || '');
   schemaType.value = record?.type || '';
   schemeVisibleKey.value++;
+
+  // 异步最新的refs
+  refsOptions.value = await store.dispatch('Endpoint/getAllRefs', {
+    "serveId": props.serveId,
+  });
 };
 
 // 保存组件
@@ -227,13 +247,14 @@ async function handleAdd(formState: any) {
 }
 
 async function handleEdit() {
+  const content = JSON.stringify(removeExtraViewInfo(JSON.parse(contentStr.value), true));
   const result = await store.dispatch('ProjectSetting/saveSchema', {
     schemaInfo: {
       "name": activeSchema.value.name,
       "id": activeSchema.value.id,
       "serveId": props.serveId,
       "tags": activeSchema.value.tabs,
-      "content": contentStr.value,
+      "content":content ,
       "examples": exampleStr.value,
       "type": schemaType.value,
       "description": activeSchema.value.description
@@ -289,22 +310,28 @@ function handleCodeChange() {
 
 async function generateFromJSON(JSONStr: string) {
   activeSchema.value.content = await store.dispatch('ProjectSetting/generateSchema', {data: JSONStr});
+  contentStr.value = JSON.stringify(activeSchema.value.content);
 }
 
 async function handleGenerateExample(examples: any) {
+  const content = JSON.stringify(removeExtraViewInfo(JSON.parse(contentStr.value), true));
   const result = await store.dispatch('ProjectSetting/generateExample', {
-    data: contentStr.value
+    data: content,
+    serveId: props.serveId,
   })
   const example = {
     name: `Example ${examples.length + 1}`,
     content: JSON.stringify(result),
   };
   activeSchema.value.examples.push(example);
+  exampleStr.value = JSON.stringify(activeSchema.value.examples);
 }
 
 function handleContentChange(json: any) {
   const {content, examples} = json;
   contentStr.value = JSON.stringify(content);
+  activeSchema.value.examples = examples;
+  activeSchema.value.content = content;
   exampleStr.value = JSON.stringify(examples);
   schemaType.value = content.type;
 }
@@ -326,12 +353,7 @@ watch(() => {
   immediate: true
 })
 
-const refsOptions = ref([]);
-onMounted(async () => {
-  refsOptions.value = await store.dispatch('Endpoint/getAllRefs', {
-    "serveId": props.serveId,
-  });
-})
+
 
 </script>
 

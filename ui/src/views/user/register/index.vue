@@ -169,5 +169,5 @@ export default defineComponent({
 })
 </script>
 <style lang="less" scoped>
-@import url('../assets/login.less');
+@import '../assets/login.less';
 </style>

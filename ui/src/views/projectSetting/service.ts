@@ -1,5 +1,18 @@
 import request from '@/utils/request';
-import { BasicSchemaInfo, BasicSchemaParams, EnvDataItem, EnvReqParams, GlobalParamsReqData, SaveVersionParams, SchemaListReqParams, ServeListParams, ServeReqParams, VarsReqParams, VersionListReqParams } from './data';
+import {
+    BasicSchemaInfo,
+    BasicSchemaParams,
+    EnvDataItem,
+    EnvReqParams,
+    GlobalParamsReqData,
+    SaveVersionParams,
+    SchemaDetailReqParams,
+    SchemaListReqParams,
+    ServeListParams,
+    ServeReqParams,
+    VarsReqParams,
+    VersionListReqParams
+} from './data';
 
 /**
  * 保存服务
@@ -152,6 +165,16 @@ export async function getSchemaList(data: SchemaListReqParams): Promise<any> {
     });
 }
 
+/**
+ *  组件详情
+ * */
+export async function getSchemaDetail(data: SchemaDetailReqParams): Promise<any> {
+    return request({
+        url: `/serves/schema/detail`,
+        method: 'post',
+        data: data
+    });
+}
 /**
  * 删除服务
  * */

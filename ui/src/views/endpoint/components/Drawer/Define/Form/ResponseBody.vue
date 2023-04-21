@@ -2,33 +2,40 @@
 <template>
   <!-- 增加响应体体 -->
   <a-row class="form-item-response-item">
-    <a-col :span="4" class="form-label form-label-first">
+    <a-col :span="3" class="form-label form-label-first">
       <RightOutlined v-if="!collapse" @click="collapse = !collapse"/>
       <DownOutlined v-if="collapse" @click="collapse = !collapse"/>
       <span class="label-name">增加响应体</span>
     </a-col>
-    <a-col :span="18">
+    <a-col :span="21"/>
+  </a-row>
+
+  <a-row class="form-item-response-item" v-if="collapse">
+    <a-col :span="1" />
+    <a-col :span="21">
       <a-select
           placeholder="请选择响应格式"
           :value="selectedCodeDetail.mediaType || null"
           @change="handleResBodyMediaTypeChange"
-          style="width: 300px"
+          style="width: 400px"
           :options="mediaTypesOpts.filter(item => !item.disabled)"
       ></a-select>
     </a-col>
   </a-row>
+
   <!-- 增加响应体 - scheme定义 -->
-  <a-row class="form-item-response-item" v-if="collapse">
-    <a-col :span="4" class="form-label"></a-col>
-    <a-col :span="20">
+  <a-row class="form-item-response-item form-item-response-item-con" v-if="collapse">
+    <a-col :span="1" class="form-label"></a-col>
+    <a-col :span="23">
       <SchemaEditor
           @generateFromJSON="generateFromJSON"
           @change="handleChange"
+          :serveId= "currServe.id"
           :refsOptions="refsOptions"
-          :contentStr="JSON.stringify(activeResBodySchema?.content)"
-          :exampleStr="JSON.stringify(activeResBodySchema?.examples)"
+          :contentStr="contentStr"
+          :exampleStr="exampleStr"
           @generateExample="handleGenerateExample"
-          :tab-content-style="{width:'600px'}"
+          :tab-content-style="{width:'720px'}"
           :value="activeResBodySchema"/>
     </a-col>
   </a-row>
@@ -40,6 +47,7 @@ import {mediaTypesOpts,} from '@/config/constant';
 import {DownOutlined, RightOutlined} from '@ant-design/icons-vue';
 import {Endpoint} from "@/views/endpoint/data";
 import SchemaEditor from '@/components/SchemaEditor/index.vue';
+import {removeExtraViewInfo} from "@/components/SchemaEditor/utils";
 
 const store = useStore<{ Endpoint, Debug, ProjectGlobal, User,ServeGlobal }>();
 const selectedCodeDetail = computed<any>(() => store.state.Endpoint.selectedCodeDetail);
@@ -54,17 +62,21 @@ const activeResBodySchema: any = ref({
   content: null,
   examples: [],
 });
+const contentStr = ref('');
+const exampleStr = ref('');
 
 watch(() => {
   return selectedCodeDetail?.value?.schemaItem?.content
 }, (newVal, oldValue) => {
-  activeResBodySchema.value.content = JSON.parse(newVal || 'null')
+  activeResBodySchema.value.content = JSON.parse(newVal || 'null');
+  contentStr.value = JSON.stringify(activeResBodySchema.value.content);
 }, {immediate: true});
 
 watch(() => {
   return selectedCodeDetail?.value?.examples
 }, (newVal, oldValue) => {
   activeResBodySchema.value.examples = JSON.parse(newVal || '[]')
+  exampleStr.value = JSON.stringify(activeResBodySchema.value.examples);
 }, {immediate: true});
 
 function handleResBodyMediaTypeChange(e) {
@@ -72,31 +84,31 @@ function handleResBodyMediaTypeChange(e) {
   store.commit('Endpoint/setSelectedCodeDetail', selectedCodeDetail?.value);
 }
 
-// function handleResDescriptionChange(e) {
-//   selectedCodeDetail.value.description = e.target.value;
-//   store.commit('Endpoint/setSelectedCodeDetail', selectedCodeDetail.value);
-// }
-
 async function generateFromJSON(JSONStr: string) {
   activeResBodySchema.value.content = await store.dispatch('Endpoint/example2schema', {data: JSONStr});
+  contentStr.value = JSON.stringify(activeResBodySchema.value.content);
 }
 
 async function handleGenerateExample(examples: any) {
+  const content = JSON.stringify(removeExtraViewInfo(JSON.parse(contentStr.value), true));
   const res = await store.dispatch('Endpoint/schema2example',
-      {data: JSON.stringify(activeResBodySchema.value.content)}
+      {data: content}
   );
   const example = {
     name: `Example ${examples.length + 1}`,
     content: JSON.stringify(res),
   };
   activeResBodySchema.value.examples.push(example);
+  exampleStr.value = JSON.stringify(activeResBodySchema.value.examples);
 }
 
 function handleChange(json: any) {
   const {content, examples} = json;
   if (selectedCodeDetail?.value) {
-    selectedCodeDetail.value.schemaItem.content = JSON.stringify(content);
+    selectedCodeDetail.value.schemaItem.content = JSON.stringify(removeExtraViewInfo(content, true));
     selectedCodeDetail.value.examples = JSON.stringify(examples);
+    exampleStr.value = JSON.stringify(examples);
+    contentStr.value = JSON.stringify(content);
     selectedCodeDetail.value.schemaItem.type = content.type;
   }
   store.commit('Endpoint/setSelectedCodeDetail', selectedCodeDetail?.value);
@@ -119,11 +131,26 @@ onMounted(async () => {
   font-weight: bold;
   position: relative;
   left: -18px;
+  margin-bottom: 16px;
 }
 
 .form-item-response-item {
   margin-top: 16px;
   align-items: center;
+}
+.form-item-response-item-con{
+  position: relative;
+  margin-bottom: 24px;
+  &:before{
+    content:"";
+    position: absolute;
+    left: -12px;
+    top: -72px;
+    width: 2px;
+    background: #E5E5E5;
+    min-height: 80vh;
+    height: calc(100% + 50px);
+  }
 }
 
 .label-name {

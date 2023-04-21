@@ -589,3 +589,17 @@ func (r *UserRepo) ClearVcode(id uint) (err error) {
 
 	return
 }
+
+func (r *UserRepo) GetUsersNotExistedInProject(projectId uint) (ret []domain.UserResp, err error) {
+	membersExisted, err := r.ProjectRepo.GetMembersByProject(projectId)
+
+	userIdsExisted := make([]uint, 0)
+	for _, v := range membersExisted {
+		userIdsExisted = append(userIdsExisted, v.UserId)
+	}
+
+	err = r.DB.Model(&model.SysUser{}).
+		Where("id NOT IN (?)", userIdsExisted).
+		Find(&ret).Error
+	return
+}

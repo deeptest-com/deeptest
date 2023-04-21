@@ -3,22 +3,6 @@ import BlankLayout from '@/layouts/BlankLayout.vue';
 
 const IndexLayoutRoutes: Array<RoutesDataItem> = [
   {
-    title: '首页',
-    path: '/home',
-    redirect: '/home/index',
-    component: BlankLayout,
-    children: [
-      {
-        icon: 'home',
-        title: 'home',
-        path: 'index',
-        component: () => import('@/views/home/index.vue'),
-        hidden: false,
-      },
-  
-    ],
-  },
-  {
     title: '工作台',
     path: '/workbench',
     redirect: '/workbench/index',
@@ -27,49 +11,49 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
       {
         icon: 'home',
         title: '工作台',
-        path: 'index/:id',
+        path: 'index',
         component: () => import('@/views/workbench/index.vue'),
         hidden: false,
       },
-  
+
     ],
   },
-  {
-    title: 'index-layout.menu',
-    path: '/project',
-    redirect: '/project/index',
-    component: BlankLayout,
-    children: [
-      {
-        icon: 'project',
-        title: 'project.management',
-        path: 'index',
-        component: () => import('@/views/project/list/index.vue'),
-        hidden: false,
-      },
-      {
-        icon: 'project',
-        title: 'project.edit',
-        path: 'edit/:id',
-        component: () => import('@/views/project/edit/edit.vue'),
-        hidden: true,
-      },
-      {
-        icon: 'members',
-        title: 'project.members',
-        path: 'members/:id',
-        component: () => import('@/views/project/edit/members.vue'),
-        hidden: true,
-      },
-      {
-        icon: 'project',
-        title: 'project.invite',
-        path: 'invite/:id',
-        component: () => import('@/views/project/edit/invite.vue'),
-        hidden: true,
-      },
-    ],
-  },
+  // {
+  //   title: 'index-layout.menu',
+  //   path: '/project',
+  //   redirect: '/project/index',
+  //   component: BlankLayout,
+  //   children: [
+  //     {
+  //       icon: 'project',
+  //       title: 'project.management',
+  //       path: 'index',
+  //       component: () => import('@/views/project/list/index.vue'),
+  //       hidden: false,
+  //     },
+  //     {
+  //       icon: 'project',
+  //       title: 'project.edit',
+  //       path: 'edit/:id',
+  //       component: () => import('@/views/project/edit/edit.vue'),
+  //       hidden: true,
+  //     },
+  //     {
+  //       icon: 'members',
+  //       title: 'project.members',
+  //       path: 'members/:id',
+  //       component: () => import('@/views/project/edit/members.vue'),
+  //       hidden: true,
+  //     },
+  //     {
+  //       icon: 'project',
+  //       title: 'project.invite',
+  //       path: 'invite/:id',
+  //       component: () => import('@/views/project/edit/invite.vue'),
+  //       hidden: true,
+  //     },
+  //   ],
+  // },
   {
     title: 'index-layout.menu',
     path: '/endpoint',
@@ -81,21 +65,6 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
         title: 'endpoint',
         path: 'index',
         component: () => import('@/views/endpoint/index.vue'),
-        hidden: false,
-      },
-    ],
-  },
-  {
-    title: 'index-layout.menu',
-    path: '/interface1',
-    redirect: '/interface1/index',
-    component: BlankLayout,
-    children: [
-      {
-        icon: 'interface',
-        title: 'interface1',
-        path: 'index',
-        component: () => import('@/views/interface1/index.vue'),
         hidden: false,
       },
     ],
@@ -117,11 +86,11 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
       },
       {
         icon:'set',
-        title: 'projectSetting',
+        title: 'projectSetting.enviroment',
         path: 'enviroment',
         name: 'enviroment',
         component: () => import('@/views/projectSetting/components/EnvSetting/index.vue'),
-        hidden: true,
+        hidden: false,
         children: [
           {
             icon: 'set',
@@ -155,7 +124,7 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
         path: 'data-pool',
         name: 'data-pool',
         component: () => import('@/views/projectSetting/components/DataPool/index.vue'),
-        hidden: true,
+        hidden: false,
       },
       {
         icon:'set',
@@ -163,7 +132,7 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
         path: 'service-setting',
         name: 'service-setting',
         component: () => import('@/views/projectSetting/components/ServiceSetting/index.vue'),
-        hidden: true,
+        hidden: false,
       },
     ],
   },
@@ -242,28 +211,6 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
       },
     ],
   },
-
-  {
-    title: 'index-layout.menu',
-    path: '/user',
-    component: BlankLayout,
-    children: [
-      {
-        icon: 'profile',
-        title: 'profile',
-        path: 'profile',
-        component: () => import('@/views/user/info/profile.vue'),
-        hidden: true,
-      },
-      {
-        icon: 'message',
-        title: 'message',
-        path: 'message',
-        component: () => import('@/views/user/info/message.vue'),
-        hidden: true,
-      },
-    ],
-  },
   {
     title: 'index-layout.menu',
     path: '/user',
@@ -275,6 +222,21 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
         title: 'user.management',
         path: 'index',
         component: () => import('@/views/user/list/index.vue'),
+        hidden: false,
+      },
+    ],
+  },
+  {
+    title: 'index-layout.menu',
+    path: '/members',
+    redirect: '/project/members',
+    component: BlankLayout,
+    children: [
+      {
+        icon: 'members',
+        title: 'project.members',
+        path: 'index',
+        component: () => import('@/views/project/edit/members.vue'),
         hidden: false,
       },
     ],

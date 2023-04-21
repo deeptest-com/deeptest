@@ -19,7 +19,7 @@
             }"
         >
           <template #name="{ text, record }">
-        <div class="project-name" @click="goProject(record.id)">
+        <div class="project-name" @click="goProject(record.project_id)">
           {{text}}
         </div>
       </template>
@@ -158,9 +158,17 @@ console.log('queryParams.keywords',queryParams.keywords)
 
   // store.dispatch("ProjectGlobal/fetchProject");
 }
+function handleTabClick(e: number) {
+  queryParams.userId=e;
+   getList(1);
+}
+function goProject(projectId:number){
+  store.dispatch('ProjectGlobal/changeProject', projectId);
+  store.dispatch('Environment/getEnvironment', {id: 0, projectId: projectId});
 
-function goProject(id:number){
-   router.push(`/workbench/index/${id}`)
+  // 项目切换后，需要重新更新可选服务列表
+  store.dispatch("ServeGlobal/fetchServe");
+  router.push(`/workbench/index`)
 
 }
 function changeMode(e){

@@ -96,6 +96,12 @@ export interface SchemaListReqParams {
     name?: string;
 }
 
+
+export interface SchemaDetailReqParams {
+    serveId: number | string;
+    ref: string;
+}
+
 export interface BasicSchemaParams {
     name?: string; // 搜索关键字
     serveId?: number | string;
@@ -128,7 +134,7 @@ export interface SecurityListReqParams {
     page?: number;
     pageSize?: number;
     id?: string;
-   
+
 }
 
 export interface StoreServeParams {
@@ -202,5 +208,5 @@ export interface VersionListReqParams {
     createUser: string;
     version?: string;
     page?: number;
-    pageSize?: number;            
+    pageSize?: number;
 }

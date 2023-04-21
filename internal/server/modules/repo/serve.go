@@ -253,7 +253,7 @@ func (r *ServeRepo) SaveServer(environmentId uint, environmentName string, serve
 
 func (r *ServeRepo) ServeExist(id, projectId uint, name string) (res bool) {
 	var count int64
-	err := r.DB.Model(&model.Serve{}).Where("id != ? and name = ? and project_id = ?", id, name, projectId).Count(&count).Error
+	err := r.DB.Model(&model.Serve{}).Where("id != ? and name = ? and project_id = ? AND NOT deleted", id, name, projectId).Count(&count).Error
 	if err != nil {
 		return false
 	}
@@ -263,7 +263,7 @@ func (r *ServeRepo) ServeExist(id, projectId uint, name string) (res bool) {
 
 func (r *ServeRepo) VersionExist(id, serveId uint, value string) (res bool) {
 	var count int64
-	err := r.DB.Model(&model.ServeVersion{}).Where("id != ? and value = ? and serve_id=?", id, value, serveId).Count(&count).Error
+	err := r.DB.Model(&model.ServeVersion{}).Where("id != ? and value = ? and serve_id=? AND NOT deleted", id, value, serveId).Count(&count).Error
 	if err != nil {
 		return false
 	}
@@ -273,7 +273,7 @@ func (r *ServeRepo) VersionExist(id, serveId uint, value string) (res bool) {
 
 func (r *ServeRepo) SecurityExist(id, serveId uint, name string) (res bool) {
 	var count int64
-	err := r.DB.Model(&model.ComponentSchemaSecurity{}).Where("id != ? and name = ? and serve_id=?", id, name, serveId).Count(&count).Error
+	err := r.DB.Model(&model.ComponentSchemaSecurity{}).Where("id != ? and name = ? and serve_id=? AND NOT deleted", id, name, serveId).Count(&count).Error
 	if err != nil {
 		return false
 	}
@@ -283,7 +283,7 @@ func (r *ServeRepo) SecurityExist(id, serveId uint, name string) (res bool) {
 
 func (r *ServeRepo) SchemaExist(id, serveId uint, name string) (res bool) {
 	var count int64
-	err := r.DB.Model(&model.ComponentSchema{}).Where("id != ? and name = ? and serve_id=?", id, name, serveId).Count(&count).Error
+	err := r.DB.Model(&model.ComponentSchema{}).Where("id != ? and name = ? and serve_id=? AND NOT deleted", id, name, serveId).Count(&count).Error
 	if err != nil {
 		return false
 	}

@@ -7,13 +7,13 @@ import (
 )
 
 type ExecModule struct {
-	InvocationCtrl *handler.ExecCtrl `inject:""`
+	ExecCtrl *handler.ExecCtrl `inject:""`
 }
 
 // Party 脚本
 func (m *ExecModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
-		index.Post("/call", m.InvocationCtrl.InvokeInterface).Name = "调用接口测试"
+		index.Post("/call", m.ExecCtrl.InvokeInterface).Name = "调用接口测试"
 	}
 	return module.NewModule("/exec", handler)
 }

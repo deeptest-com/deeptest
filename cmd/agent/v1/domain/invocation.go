@@ -8,7 +8,7 @@ type InvokeCall struct {
 	ServerUrl string `json:"serverUrl"`
 	Token     string `json:"token"`
 
-	Data v1.DebugCall `json:"data"`
+	Data v1.DebugData `json:"data"`
 }
 
 type InvokeRequest struct {

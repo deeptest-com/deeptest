@@ -106,14 +106,9 @@ func (r *DebugInterfaceRepo) GetDetail(interfId uint) (interf model.DebugInterfa
 	return
 }
 
-func (r *DebugInterfaceRepo) Save(interf *model.DebugInterface) (err error) {
-	err = r.DB.Save(interf).Error
-	return
-}
-
-func (r *DebugInterfaceRepo) Update(interf model.DebugInterface) (err error) {
+func (r *DebugInterfaceRepo) Save(interf model.DebugInterface) (err error) {
 	r.DB.Transaction(func(tx *gorm.DB) error {
-		err = r.DB.Updates(interf).Error
+		err = r.DB.Save(&interf).Error
 		if err != nil {
 			return err
 		}
@@ -574,18 +569,18 @@ func (r *DebugInterfaceRepo) GetByEndpointInterfaceId(endpointInterfaceId uint) 
 	return
 }
 
-func (r *DebugInterfaceRepo) HasDebugInterfaceRecord(endpointInterfaceId uint) (ret bool, err error) {
-	var count int64
+func (r *DebugInterfaceRepo) HasDebugInterfaceRecord(endpointInterfaceId uint) (id uint, err error) {
+	var po model.DebugInterface
 
-	err = r.DB.Model(&model.DebugInterface{}).
+	err = r.DB.Model(&po).
 		Where("endpoint_interface_id=?", endpointInterfaceId).
-		Count(&count).Error
+		First(&po).Error
 
 	if err != nil {
 		return
 	}
 
-	ret = count > 0
+	id = po.ID
 
 	return
 }

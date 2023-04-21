@@ -28,7 +28,7 @@
     </a-col>
   </a-row>
   <!-- 增加请求体 - scheme定义 -->
-  <a-row class="form-item-request-item" v-if="collapse">
+  <a-row class="form-item-request-item form-item-request-item-con" v-if="collapse">
     <a-col :span="3" class="form-label"></a-col>
     <a-col :span="21">
       <SchemaEditor
@@ -159,4 +159,5 @@ onMounted(async () => {
 .form-item-request-item {
   margin-top: 16px;
 }
+
 </style>

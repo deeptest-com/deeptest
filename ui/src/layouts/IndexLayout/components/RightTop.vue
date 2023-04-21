@@ -102,6 +102,7 @@ export default defineComponent({
   height: (@headerHeight + @headerBreadcrumbHeight + @headerTabNavHeight);
   box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
   z-index: 9;
+  min-width: 1217px;
 
   .indexlayout-right-top-top {
     display: flex;

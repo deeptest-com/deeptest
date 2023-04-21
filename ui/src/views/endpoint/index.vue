@@ -21,7 +21,6 @@
               :placeholder="'请选择服务'"
               allowClear
               :bordered="true"
-              style="width: 280px;margin-left: 16px;"
               @change="selectServe">
               <a-select-option v-for="item in serves" :key="item.id" :value="item.id">{{ item.name }}</a-select-option>
             </a-select>
@@ -302,7 +301,6 @@ async function refreshList() {
 .container {
   margin: 16px;
   background: #ffffff;
-  min-width: 1440px;
   min-height: calc(100vh - 80px);
 }
 

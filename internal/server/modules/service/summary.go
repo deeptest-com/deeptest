@@ -74,6 +74,7 @@ func (s *SummaryService) Details(userId int64) (res v1.ResSummaryDetail, err err
 
 	if err != nil || len(detailsCache) == 0 {
 		res, err = s.SummaryDetailsService.Details(userId)
+		fmt.Printf("res:%+v \n", res)
 		value, _ := json.Marshal(res)
 		s.cache().Set(context.Background(), "summaryDetails-"+strconv.FormatInt(userId, 36), value, time.Duration(rand.Intn(30)+30)*time.Minute)
 

@@ -63,6 +63,7 @@ import EndpointDebug from './Debug/index.vue';
 
 import {useStore} from "vuex";
 import {Endpoint} from "@/views/endpoint/data";
+import {message} from "ant-design-vue";
 
 const store = useStore<{ Endpoint, ProjectGlobal, ServeGlobal }>();
 const endpointDetail = computed<Endpoint>(() => store.state.Endpoint.endpointDetail);
@@ -111,7 +112,8 @@ async function save() {
   await store.dispatch('Endpoint/updateEndpointDetail',
       {...endpointDetail.value}
   );
-  emit('close');
+  // emit('close');
+  message.success('保存成功');
   emit('refreshList');
 }
 

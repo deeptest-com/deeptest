@@ -8,9 +8,14 @@
     </a-col>
     <a-col :span="22">
       <!-- 请求方法定义 -->
-      <a-radio-group v-model:value="selectedMethod" button-style="solid">
+      <a-radio-group v-model:value="selectedMethod" button-style="outline">
         <a-radio-button
-            :class="{'has-defined': hasDefinedMethod(method.value)}"
+            :class="{'has-defined': hasDefinedMethod(method.value),'request-method-btn':true}"
+            :style="{ color: hasDefinedMethod(method.value) ? method.color : '',
+                      'box-shadow': `none` ,
+                      background: method.value !== selectedMethod ? '#f5f5f5' : '#fff',
+                     'border-color': '#d9d9d9'}"
+            :size="'small'"
             :key="method.value" v-for="method in requestMethodOpts" :value="method.value">
           {{ method.label }}
         </a-radio-button>
@@ -167,7 +172,11 @@ function addEndpoint() {
 .has-defined {
   color: #1890ff;
 }
-
+.ant-radio-button-wrapper-checked.request-method-btn{
+  &:before{
+    display: none;
+  }
+}
 .label-name {
   margin-left: 4px;
 }

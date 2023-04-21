@@ -1,6 +1,9 @@
 <template>
   <div class="invocation-main">
-    <div class="space"></div>
+    <div class="url">
+      <a-input v-model:value="debugData.url" />
+    </div>
+
     <div class="send">
       <a-dropdown-button type="primary" trigger="click" @click="sendRequest">
         <span>发送</span>
@@ -59,7 +62,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, ref, PropType, onMounted, onUnmounted, defineProps, inject} from "vue";
+import {computed, ref, PropType, onMounted, onUnmounted, defineProps, inject, watch} from "vue";
 import { notification, message } from 'ant-design-vue';
 import { DownOutlined, UndoOutlined, SaveOutlined, LinkOutlined, CheckOutlined, EditOutlined } from '@ant-design/icons-vue';
 import {useI18n} from "vue-i18n";
@@ -92,6 +95,13 @@ const props = defineProps({
 const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
 
+const url = ref(debugData.value.url)
+
+watch(debugData, () => {
+  console.log('watch debugData')
+  url.value = debugData.value.url
+}, {deep: true})
+
 const selectMethod = (val) => {
   console.log('selectMethod', val.key)
   debugData.value.method = val.key
@@ -99,6 +109,9 @@ const selectMethod = (val) => {
 
 const sendRequest = (e) => {
   console.log('sendRequest', debugData.value)
+
+  debugData.value.url = url.value
+
   if (validateInfo()) {
     props.onSend()
   }
@@ -106,8 +119,7 @@ const sendRequest = (e) => {
 
 const save = (e) => {
   let data = JSON.parse(JSON.stringify(debugData.value))
-  console.log('save', data)
-  data = prepareDataForRequest(data)
+  data = prepareDataForRequest(data, url.value)
   console.log('save', data)
 
   if (validateInfo()) {
@@ -211,7 +223,7 @@ const onMenuClick = (key) => {
 .invocation-main {
   display: flex;
   padding: 0;
-  .space {
+  .url {
     flex: 1;
   }
   .send {

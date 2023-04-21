@@ -2,7 +2,7 @@
   <div class="history-main">
     <div class="head">
       <div class="title">
-       执行历史
+        执行历史
       </div>
     </div>
 
@@ -60,9 +60,9 @@ const mouseOver = (event) => {
   // console.log('mouseOver', event)
   event.currentTarget.querySelector(".link").style.display = 'block'
 }
- const mouseLeave = (event) => {
-   // console.log('mouseLeave', event);
-   event.currentTarget.querySelector(".link").style.display = 'none'
+const mouseLeave = (event) => {
+  // console.log('mouseLeave', event);
+  event.currentTarget.querySelector(".link").style.display = 'none'
 }
 
 </script>

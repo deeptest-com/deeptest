@@ -82,7 +82,7 @@ type ApiKey struct {
 	TransferMode string `json:"transferMode"`
 }
 type SchemaItem struct {
-	Name    string      `json:"name"`
-	Type    string      `json:"type"`
-	Content interface{} `json:"content"`
+	Name    string `json:"name"`
+	Type    string `json:"type"`
+	Content string `json:"content"`
 }

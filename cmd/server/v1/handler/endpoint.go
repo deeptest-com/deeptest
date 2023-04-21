@@ -79,7 +79,7 @@ func (c *EndpointCtrl) BatchDelete(ctx iris.Context) {
 func (c *EndpointCtrl) requestParser(req v1.EndpointReq) (endpoint model.Endpoint) {
 	for key, item := range req.Interfaces {
 		//fmt.Println(_commUtils.JsonEncode(item.ResponseBodies))
-		req.Interfaces[key].Body = item.RequestBody.SchemaItem.Content.(string)
+		req.Interfaces[key].Body = item.RequestBody.SchemaItem.Content
 		req.Interfaces[key].BodyType = item.RequestBody.MediaType
 		req.Interfaces[key].Name = req.Title
 	}

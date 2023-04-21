@@ -301,7 +301,7 @@ func (r *EndpointInterfaceRepo) UpdateResponseBodies(interfaceId uint, responseB
 		if err != nil {
 			return
 		}
-		err = r.removeRequestBodyItem(responseBody.ID)
+		err = r.removeResponseBodyItem(responseBody.ID)
 		if err != nil {
 			return
 		}

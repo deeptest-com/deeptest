@@ -24,7 +24,7 @@ func (m *DebugModule) Party() module.WebModule {
 
 		index.PartyFunc("/invoke", func(party iris.Party) {
 			party.Get("/", m.DebugInvokeCtrl.List).Name = "调试记录列表"
-			party.Get("/{id:uint}", m.DebugInvokeCtrl.Get).Name = "调试记录详情"
+			party.Get("/{id:uint}", m.DebugInvokeCtrl.GetAsInterface).Name = "调试记录详情"
 			party.Get("/getLastResp", m.DebugInvokeCtrl.GetLastResp).Name = "获取最后调试记录响应"
 			party.Delete("/{id:uint}", m.DebugInvokeCtrl.Delete).Name = "删除调试记录"
 

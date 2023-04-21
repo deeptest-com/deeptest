@@ -1,7 +1,5 @@
 <template>
   <div class="debug-main">
-    <Path/>
-
     <div class="debug-methods">
       <a-radio-group @change="changeMethod" v-model:value="selectedMethod" button-style="solid">
         <template v-for="method in requestMethodOpts" :key="method.value">
@@ -62,25 +60,28 @@ const store = useStore<{  Debug: Debug, ProjectGlobal: ProjectGlobal, Endpoint: 
 
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const endpointDetail = computed<any>(() => store.state.Endpoint.endpointDetail);
+const interfaceDetail = computed<any>(() => store.state.Endpoint.selectedMethodDetail);
 const interfaceMethodToObjMap = computed<any>(() => store.state.Endpoint.interfaceMethodToObjMap);
 
-const defineEndpoint = computed<number>(() => store.state.Debug.defineEndpoint);
-const defineInterface = computed<any>(() => store.state.Debug.defineInterface);
 const debugInfo = computed<DebugInfo>(() => store.state.Debug.debugInfo);
 const debugData = computed<any>(() => store.state.Debug.debugData);
 
-const selectedMethod = ref(defineInterface.value?.method ? defineInterface.value?.method : 'GET');
+const selectedMethod = ref(interfaceDetail.value?.method ? interfaceDetail.value?.method : 'GET');
 
 const changeMethod = async () => {
   console.log('changeMethod', selectedMethod.value, interfaceMethodToObjMap)
 
-  const defineInterface = interfaceMethodToObjMap.value[selectedMethod.value]
+  const endpointInterface = interfaceMethodToObjMap.value[selectedMethod.value]
 
-  await store.dispatch('Debug/setDefineInterface', defineInterface);
+  if (endpointInterface) {
+    await store.commit('Endpoint/setSelectedMethodDetail', endpointInterface);
+  } else {
+    await store.commit('Endpoint/setSelectedMethodDetail', {});
+  }
 
   await store.dispatch('Debug/loadData', {
-    interfaceId: defineInterface.id,
-    endpointId: defineInterface.id,
+    endpointInterfaceId: endpointInterface.id,
+    // scenarioProcessorId: 0, // TODO: set in in scenario designer
     usedBy: usedBy,
   });
 

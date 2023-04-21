@@ -112,11 +112,8 @@ export interface Checkpoint {
 }
 
 export interface DebugInfo {
-    // endpoint interface id provided before saved as a debug interface
-    endpointInterfaceId: number, // model.EndpointInterface
+    endpointInterfaceId: number,
+    scenarioProcessorId  : number,
 
-    // debug interface id provided after saved
-    debugInterfaceId: number,          // model.DebugInterface
-    usedBy:          consts.UsedBy            // used in interface debug OR scenario debug
-    processorId  : number,      // scenario processor id when used by scenario debug
+    usedBy:          consts.UsedBy
 }

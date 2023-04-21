@@ -125,10 +125,9 @@ import {useStore} from "vuex";
 import {Endpoint, PaginationConfig} from "@/views/endpoint/data";
 
 import {StateType as ServeStateType} from "@/store/serve";
-import {StateType as Debug} from "@/views/component/debug/store";
 import { message, Modal } from 'ant-design-vue';
 
-const store = useStore<{ Endpoint, ProjectGlobal, Debug: Debug, ServeGlobal: ServeStateType }>();
+const store = useStore<{ Endpoint, ProjectGlobal, ServeGlobal: ServeStateType }>();
 
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const currServe = computed<any>(() => store.state.ServeGlobal.currServe);
@@ -222,7 +221,7 @@ async function handleUpdateEndpoint(value: string, record: any) {
 }
 
 async function editEndpoint(record) {
-  await store.dispatch('Debug/setDefineEndpoint', record);
+  // await store.dispatch('Debug/setDefineEndpoint', record);
   await store.dispatch('Endpoint/getEndpointDetail', {id: record.id});
   drawerVisible.value = true;
 }

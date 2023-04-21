@@ -17,19 +17,23 @@
           style="width: 270px; margin-left: 16px"
         /> -->
           <a-radio-group v-model:value="showMode" button-style="solid">
-            <!-- <a-radio-button value="card">卡片</a-radio-button> -->
+            <a-radio-button value="card">卡片</a-radio-button>
             <a-radio-button value="list">列表</a-radio-button>
           </a-radio-group>
         </template>
 
         <div>
           <HomeList v-if="showMode == 'list'" params />
-          <CardList
+          <!-- <CardList
             v-else
             :params="{ params: 1 }"
             :api="'demoListApi/111'"
             @get-method="getMethod"
             @delete="handleDel"
+          /> -->
+            <CardList
+            v-else
+           
           />
         </div>
       </a-card>
@@ -49,7 +53,7 @@ import { PaginationConfig, QueryParams } from "./data.d";
 const store = useStore<{ Home: StateType }>();
 const mode = computed<any[]>(() => store.state.Home.mode);
 const activeKey = ref(1);
-const showMode = ref("list");
+const showMode = ref("card");
 const currentUser = computed<any>(() => store.state.User.currentUser);
 let queryParams = reactive<QueryParams>({
   keywords: "",
@@ -69,10 +73,15 @@ const getList = async (current: number): Promise<void> => {
     keywords: queryParams.keywords,
     enabled: queryParams.enabled,
     userId: queryParams.userId,
+    currProjectId:0,
     // pageSize: pagination.value.pageSize,
     // page: current,
   });
 };
+function handleTabClick(e: number) {
+  queryParams.userId=e;
+   getList(1);
+}
 </script>
 
 <style lang="less" scoped>

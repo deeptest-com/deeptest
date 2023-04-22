@@ -242,7 +242,7 @@ const StoreModel: ModuleType = {
                 const resp = await getInvocationAsInterface(id);
                 const {data} = resp;
 
-                commit('setDebugData', data.req);
+                commit('setDebugData', data.debugData);
                 commit('setResponse', data.resp);
                 return true;
             } catch (error) {

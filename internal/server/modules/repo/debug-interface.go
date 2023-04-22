@@ -80,11 +80,11 @@ func (r *DebugInterfaceRepo) ListByProject(projectId int) (pos []*model.DebugInt
 	return
 }
 
-func (r *DebugInterfaceRepo) Get(interfaceId uint) (field model.DebugInterface, err error) {
+func (r *DebugInterfaceRepo) Get(id uint) (po model.DebugInterface, err error) {
 	err = r.DB.
-		Where("id=?", interfaceId).
+		Where("id=?", id).
 		Where("NOT deleted").
-		First(&field).Error
+		First(&po).Error
 	return
 }
 

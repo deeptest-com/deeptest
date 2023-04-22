@@ -53,7 +53,9 @@ store.dispatch('Debug/getLastInvocationResp', {
   endpointInterfaceId: debugInfo.value.endpointInterfaceId,
 })
 
-const getRequestAsInterface = (id) => {store.dispatch('Debug/getInvocationAsInterface', id)}
+const getRequestAsInterface = (id) => {
+  store.dispatch('Debug/getInvocationAsInterface', id)
+}
 
 const removeHistory = (id) => {
   console.log('removeHistory', id)

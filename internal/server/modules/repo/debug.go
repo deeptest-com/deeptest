@@ -9,11 +9,6 @@ type DebugRepo struct {
 	DB *gorm.DB `inject:""`
 }
 
-func (r *DebugRepo) Save(invocation *model.DebugInvoke) (err error) {
-	err = r.DB.Save(invocation).Error
-	return
-}
-
 func (r *DebugRepo) List(endpointInterfaceId, debugInterfaceId uint) (pos []model.DebugInvoke, err error) {
 	db := r.DB.Select("id", "name")
 

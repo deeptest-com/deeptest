@@ -76,12 +76,12 @@ func (c *DebugInvokeCtrl) GetAsInterface(ctx iris.Context) {
 		return
 	}
 
-	req, resp, err := c.DebugInvokeService.GetAsInterface(id)
+	debugData, resp, err := c.DebugInvokeService.GetAsInterface(id)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return
 	}
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: iris.Map{"req": req, "resp": resp}})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: iris.Map{"debugData": debugData, "resp": resp}})
 }
 
 // Delete 删除

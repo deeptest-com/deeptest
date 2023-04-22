@@ -57,7 +57,7 @@ const getRequestAsInterface = (id) => {store.dispatch('Debug/getInvocationAsInte
 
 const removeHistory = (id) => {
   console.log('removeHistory', id)
-  store.dispatch('Debug/removeInvocation', {id: id, interfaceId: debugData.value.id})
+  store.dispatch('Debug/removeInvocation', id)
 }
 
 const mouseOver = (event) => {

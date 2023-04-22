@@ -249,10 +249,12 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
-        async removeInvocation({commit, dispatch, state}, data: any) {
+        async removeInvocation({commit, dispatch, state}, id: number) {
             try {
-                await removeInvocation(data.id);
-                dispatch('listInvocation', data.interfaceId);
+                await removeInvocation(id);
+                dispatch('listInvocation', {
+                    endpointInterfaceId: state.debugInfo.endpointInterfaceId,
+                });
                 return true;
             } catch (error) {
                 return false;

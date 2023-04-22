@@ -41,15 +41,14 @@ func (c *DebugInterfaceCtrl) Save(ctx iris.Context) {
 		return
 	}
 
-	err = c.DebugInterfaceService.Save(req)
+	po, err := c.DebugInterfaceService.Save(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
 	loadReq := domain.DebugReq{
-		EndpointInterfaceId: req.EndpointInterfaceId,
-		ScenarioProcessorId: req.ScenarioProcessorId,
+		EndpointInterfaceId: po.EndpointInterfaceId,
 	}
 
 	data, err := c.DebugInterfaceService.Load(loadReq)

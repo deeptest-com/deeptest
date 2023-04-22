@@ -130,7 +130,7 @@ const resize = () => {
 
   #debug-form {
     flex: 1;
-    padding: 5px;
+    padding: 5px 0;
 
     flex-direction: column;
     position: relative;

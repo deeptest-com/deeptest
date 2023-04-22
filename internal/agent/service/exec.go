@@ -5,6 +5,7 @@ import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	_httpUtils "github.com/aaronchen2k/deeptest/pkg/lib/http"
 	"strings"
 )
 
@@ -52,7 +53,13 @@ func (s *ExecService) Request(req v1.DebugData) (ret v1.DebugResponse, err error
 	agentExec.ReplaceAll(&req.BaseRequest, agentExec.Environment, agentExec.Variables, agentExec.DatapoolData)
 
 	// send request
+
+	reqUrl := req.Url
+	req.BaseRequest.Url = _httpUtils.AddSepIfNeeded(req.BaseUrl) + reqUrl
+
 	ret, err = agentExec.Invoke(&req.BaseRequest)
+
+	req.BaseRequest.Url = reqUrl // rollback for saved to db
 
 	ret.Id = req.EndpointInterfaceId
 

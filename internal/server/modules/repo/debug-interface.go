@@ -106,9 +106,9 @@ func (r *DebugInterfaceRepo) GetDetail(interfId uint) (interf model.DebugInterfa
 	return
 }
 
-func (r *DebugInterfaceRepo) Save(interf model.DebugInterface) (err error) {
+func (r *DebugInterfaceRepo) Save(interf *model.DebugInterface) (err error) {
 	r.DB.Transaction(func(tx *gorm.DB) error {
-		err = r.DB.Save(&interf).Error
+		err = r.DB.Save(interf).Error
 		if err != nil {
 			return err
 		}

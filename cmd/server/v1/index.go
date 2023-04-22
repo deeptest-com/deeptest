@@ -46,8 +46,7 @@ type IndexModule struct {
 	ScenarioProcessorModule *router.ScenarioProcessorModule `inject:""`
 	ScenarioExecModule      *router.ScenarioExecModule      `inject:""`
 
-	ScenarioInterfaceModule  *router.ProcessorInterfaceModule `inject:""`
-	ScenarioInvocationModule *router.DebugModule              `inject:""`
+	ScenarioInterfaceModule *router.ProcessorInterfaceModule `inject:""`
 	//ReportModule             *router.ReportModule              `inject:""`
 	EndpointModule       *router.EndpointModule       `inject:""`
 	ServeModule          *router.ServeModule          `inject:""`
@@ -104,7 +103,6 @@ func (m *IndexModule) Party() module.WebModule {
 		m.ScenarioProcessorModule.Party(),
 		m.ScenarioExecModule.Party(),
 		m.ScenarioInterfaceModule.Party(),
-		m.ScenarioInvocationModule.Party(),
 
 		//m.ReportModule.Party(),
 		m.EndpointModule.Party(),

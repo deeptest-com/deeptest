@@ -46,6 +46,9 @@ func (s *DebugInterfaceService) Load(defineReq v1.DebugReq) (req v1.DebugData, e
 func (s *DebugInterfaceService) Save(req v1.DebugData) (debug model.DebugInterface, err error) {
 	s.CopyValueFromRequest(&debug, req)
 
+	endpointInterface, _ := s.EndpointInterfaceRepo.Get(req.EndpointInterfaceId)
+	debug.EndpointId = endpointInterface.EndpointId
+
 	debugInterfaceId, _ := s.DebugInterfaceRepo.HasDebugInterfaceRecord(debug.EndpointInterfaceId)
 	if debugInterfaceId > 0 {
 		debug.ID = debugInterfaceId

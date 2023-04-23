@@ -20,7 +20,6 @@
               v-model:value="currServe.id"
               :placeholder="'请选择服务'"
               :bordered="true"
-              style="width: 280px;margin-left: 16px;"
               @change="selectServe">
               <a-select-option v-for="item in serves" :key="item.id" :value="item.id">{{ item.name }}</a-select-option>
             </a-select>

@@ -15,14 +15,14 @@ type ShareVarCtrl struct {
 
 // List
 func (c *ShareVarCtrl) List(ctx iris.Context) {
-	req := domain.DebugCall{}
+	req := domain.DebugReq{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
-	data := c.ShareVarService.List(req.InterfaceId, req.EndpointId, req.ProcessorId, req.UsedBy)
+	data := c.ShareVarService.List(req.EndpointInterfaceId, req.ScenarioProcessorId, req.UsedBy)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

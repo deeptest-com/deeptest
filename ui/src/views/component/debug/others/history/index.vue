@@ -2,7 +2,7 @@
   <div class="history-main">
     <div class="head">
       <div class="title">
-       执行历史
+        执行历史
       </div>
     </div>
 
@@ -37,32 +37,38 @@ import {StateType as ScenarioStateType} from "@/views/scenario/store";
 const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
 
-import {Param} from "@/views/component/debug/data";
+import {DebugInfo, Param} from "@/views/component/debug/data";
 import {StateType as Debug} from "@/views/component/debug/store";
 const store = useStore<{  Debug: Debug }>();
 
+const debugInfo = computed<DebugInfo>(() => store.state.Debug.debugInfo);
 const debugData = computed<any>(() => store.state.Debug.debugData);
-const currInterface = computed<any>(() => store.state.Debug.currInterface);
 
 const invocationsData = computed<any[]>(() => store.state.Debug.invocationsData);
 
-store.dispatch('Debug/getLastInvocationResp', currInterface.value.id)
-store.dispatch('Debug/listInvocation', currInterface.value.id)
+store.dispatch('Debug/listInvocation', {
+  endpointInterfaceId: debugInfo.value.endpointInterfaceId,
+})
+store.dispatch('Debug/getLastInvocationResp', {
+  endpointInterfaceId: debugInfo.value.endpointInterfaceId,
+})
 
-const getRequestAsInterface = (id) => {store.dispatch('Debug/getInvocationAsInterface', id)}
+const getRequestAsInterface = (id) => {
+  store.dispatch('Debug/getInvocationAsInterface', id)
+}
 
 const removeHistory = (id) => {
   console.log('removeHistory', id)
-  store.dispatch('Debug/removeInvocation', {id: id, interfaceId: debugData.value.id})
+  store.dispatch('Debug/removeInvocation', id)
 }
 
 const mouseOver = (event) => {
   // console.log('mouseOver', event)
   event.currentTarget.querySelector(".link").style.display = 'block'
 }
- const mouseLeave = (event) => {
-   // console.log('mouseLeave', event);
-   event.currentTarget.querySelector(".link").style.display = 'none'
+const mouseLeave = (event) => {
+  // console.log('mouseLeave', event);
+  event.currentTarget.querySelector(".link").style.display = 'none'
 }
 
 </script>

@@ -11,10 +11,20 @@
   }
   .refNode{
     & > .leafNode,& >.directoryNode,& > .verticalLine{
-      opacity: 0.7;
+      opacity: 0.5;
       .action{
         display: none;
       }
+      &:hover {
+        .action{
+          display: none;
+        }
+      }
+    }
+  }
+  .refNode .refNode{
+    & > .leafNode,& >.directoryNode,& > .verticalLine{
+      opacity: 1;
       &:hover {
         .action{
           display: none;

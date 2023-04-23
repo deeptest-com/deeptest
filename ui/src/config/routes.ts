@@ -68,6 +68,13 @@ const routes: RoutesDataItem[] = [
         component: () => import('@/views/user/info/message.vue'),
         hidden: true,
       },
+      {
+        icon: 'user',
+        title: 'user.management',
+        path: 'index',
+        component: () => import('@/views/user/list/index.vue'),
+        hidden: true
+      }
     ],
   },
   {

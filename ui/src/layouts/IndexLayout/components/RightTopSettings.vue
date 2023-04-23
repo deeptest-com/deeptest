@@ -22,6 +22,9 @@
             <a-menu-item key="profile">
               <SettingOutlined class="settings"/>个人信息
             </a-menu-item>
+            <a-menu-item key="management">
+              <SettingOutlined class="settings"/>用户管理
+            </a-menu-item>
             <a-menu-item key="logout">
               <LogoutOutlined/> 登出
             </a-menu-item>
@@ -95,6 +98,8 @@ export default defineComponent({
             })
           }
         })
+      } else if (key === 'management') {
+        router.replace({ path: '/user-manage/index' })
       }
     }
 

@@ -1,120 +1,137 @@
 <template>
   <div class="report-main">
-    <a-card :bordered="false">
-      <template #title>
-        <div>测试报告</div>
-      </template>
-      <template #extra>
-        <a-select @change="onSearch" v-model:value="queryParams.scenarioId" :dropdownMatchSelectWidth="false" class="scenario-select" >
-          <a-select-option value="0">请选择场景</a-select-option>
-          <a-select-option v-for="item in scenarios" :key="item.id" :value="item.id">{{ item.name }}</a-select-option>
-        </a-select>
+    <TableFilter :executor-options="[]" />
 
-        <a-input-search @change="onSearch" @search="onSearch" v-model:value="queryParams.keywords"
-                        placeholder="输入关键字搜索" style="width:270px;margin-left: 16px;"/>
-      </template>
+    <div>
+      <a-table row-key="id" :columns="columns" :data-source="list" :loading="loading" :pagination="{
+        ...pagination,
+        onChange: (page) => {
+          getList(page);
+        },
+        onShowSizeChange: (page, size) => {
+          pagination.pageSize = size
+          getList(page);
+        },
+      }" :row-selection="{
+  selectedRowKeys: selectedRowKeys,
+  onChange: onSelectChange
+}" class="dp-table">
+        <template #executor="{ record }">
+          <span>{{ record.executor }}</span>
+        </template>
+        <template #execPlan="{ record }">
+          <span class="report-planname">{{ record.name }}</span>
+        </template>
+        <template #executiveTime="{ record }">
+          <span>{{ momentUtc(record.executiveTime) }}</span>
+        </template>
+        <template #executionTime="{ record }">
+          <span>{{ record.executionTime }}</span>
+        </template>
 
-      <div>
-        <a-table
-            row-key="id"
-            :columns="columns"
-            :data-source="list"
-            :loading="loading"
-            :pagination="{
-                ...pagination,
-                onChange: (page) => {
-                    getList(page);
-                },
-                onShowSizeChange: (page, size) => {
-                    pagination.pageSize = size
-                    getList(page);
-                },
-            }"
-            class="dp-table"
-        >
-          <template #name="{ text  }">
-            {{ text }}
-          </template>
+        <template #action="{ record }">
+          <a-dropdown>
+            <MoreOutlined />
+            <template #overlay>
+              <a-menu>
+                <a-menu-item key="1">
+                  <a class="operation-a" href="javascript:void (0)" @click="handleExport(record.id)">导出</a>
+                </a-menu-item>
+                <a-menu-item key="2">
+                  <a class="operation-a" href="javascript:void (0)" @click="handleDelete(record.id)">删除</a>
+                </a-menu-item>
+              </a-menu>
+            </template>
+          </a-dropdown>
+        </template>
 
-          <template #execTime="{ record }">
-            <span>{{ momentUtc(record.createdAt) }}</span>
-          </template>
+      </a-table>
+    </div>
 
-          <template #action="{ record }">
-            <a-button type="link" @click="() => view(record.id)">查看</a-button>
-            <a-button type="link" @click="() => remove(record.id)">删除</a-button>
-          </template>
-
-        </a-table>
-      </div>
-    </a-card>
+    <a-drawer :visible="reportDetailVisible">
+      <ReportDetail />
+    </a-drawer>
   </div>
 </template>
 
 <script setup lang="ts">
-import {computed, onMounted, reactive, ref, watch} from "vue";
-import {useStore} from "vuex";
+import { computed, onMounted, reactive, ref, watch } from "vue";
+import { useStore } from "vuex";
 
 import debounce from "lodash.debounce";
+import { ColumnProps } from 'ant-design-vue/es/table/interface';
 import { momentUtc } from "@/utils/datetime";
-import {useRouter} from "vue-router";
-import {message, Modal, notification} from "ant-design-vue";
-import {StateType as ProjectStateType} from "@/store/project";
-import {StateType as ScenarioStateType} from "@/views/scenario/store";
-import {StateType} from "@/views/report/store";
-import {PaginationConfig, QueryParams, Report} from "@/views/report/data";
-import {query} from "@/views/scenario/service";
-import {NotificationKeyCommon} from "@/utils/const";
+import { Modal, notification } from "ant-design-vue";
+import TableFilter from "../components/tableFilter.vue";
+import ReportDetail from "../detail/index.vue";
+import { StateType as ProjectStateType } from "@/store/project";
+import { StateType as ScenarioStateType } from "@/views/scenario/store";
+import { StateType } from "@/views/report/store";
+import { PaginationConfig, QueryParams, Report } from "@/views/report/data";
+import { query } from "@/views/scenario/service";
+import { NotificationKeyCommon } from "@/utils/const";
 
-const router = useRouter();
 const store = useStore<{ Report: StateType, Scenario: ScenarioStateType, ProjectGlobal: ProjectStateType }>();
-
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
-
 const list = computed<Report[]>(() => store.state.Report.listResult.list);
 let pagination = computed<PaginationConfig>(() => store.state.Report.listResult.pagination);
+
+const selectedRowKeys = ref<Key[]>([]);
 let queryParams = reactive<QueryParams>({
   keywords: '', scenarioId: '0',
   page: pagination.value.current, pageSize: pagination.value.pageSize
 });
+const reportDetailVisible = ref(false);
+
+type Key = ColumnProps['key'];
 
 watch(currProject, () => {
-  console.log('watch currProject', currProject.value.id)
   getList(1);
-}, {deep: false})
+}, { deep: false })
 
 const columns = [
   {
-    title: '序号',
-    dataIndex: 'index',
-    width: 80,
-    customRender: ({
-                     text,
-                     index
-                   }: { text: any; index: number }) => (pagination.value.current - 1) * pagination.value.pageSize + index + 1,
+    title: '编号',
+    dataIndex: 'number',
+    width: 80
   },
   {
-    title: '名称',
-    dataIndex: 'name',
-    width: 300,
-    slots: {customRender: 'name'},
+    title: '测试通过率',
+    dataIndex: 'execRate',
+    width: 120,
+  },
+  {
+    title: '执行人',
+    dataIndex: 'executor',
+    width: 80,
+  },
+  {
+    title: '所属测试计划',
+    dataIndex: 'execPlan',
+    width: 200,
+    slots: { customRender: 'execPlan' },
+  },
+  {
+    title: '执行耗时',
+    dataIndex: 'executiveTime',
+    width: 200,
+    slots: { customRender: 'executiveTime' },
   },
   {
     title: '执行时间',
-    dataIndex: 'execTime',
+    dataIndex: 'executionTime',
     width: 200,
-    slots: {customRender: 'execTime'},
+    slots: { customRender: 'executionTime' },
   },
   {
     title: '操作',
     key: 'action',
-    width: 200,
-    slots: {customRender: 'action'},
+    width: 80,
+    slots: { customRender: 'action' },
   },
 ];
 
 onMounted(() => {
-  console.log('onMounted')
   getList(1);
 })
 
@@ -137,13 +154,16 @@ const getList = async (current: number): Promise<void> => {
   loading.value = false;
 }
 
-
-const view = (id: number) => {
-  console.log('view')
-  router.push(`/report/${id}`)
+const onSelectChange = (keys: Key[], rows: any) => {
+  selectedRowKeys.value = [...keys];
 }
 
-const remove = (id: number) => {
+
+const handleExport = (id: number) => {
+  console.log('export')
+}
+
+const handleDelete = (id: number) => {
   console.log('remove')
 
   Modal.confirm({
@@ -174,16 +194,10 @@ const onSearch = debounce(() => {
   getList(1)
 }, 500);
 
-onMounted(() => {
-  console.log('onMounted')
-})
-
 </script>
 
 <style lang="less" scoped>
 .report-main {
-  .scenario-select {
-
-  }
+  .scenario-select {}
 }
 </style>

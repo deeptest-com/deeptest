@@ -46,7 +46,6 @@ watch(() => {
   margin: 16px;
   background: #ffffff;
   min-height: calc(100vh - 92px);
-  min-width: 1200px;
   overflow: hidden;
 }
 

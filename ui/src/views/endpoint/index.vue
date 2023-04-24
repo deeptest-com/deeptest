@@ -8,7 +8,7 @@
         <!--  头部搜索区域  -->
         <div class="top-action">
           <a-button class="action-new" type="primary" :loading="loading"
-                    @click="handleCreateEndPoinit">新建接口
+                    @click="handleCreateEndPoint">新建接口
           </a-button>
         </div>
         <div class="top-search">
@@ -193,7 +193,7 @@ const onSelectChange = (keys: Key[], rows: any) => {
   selectedRowKeys.value = [...keys];
 };
 
-function handleCreateEndPoinit() {
+function handleCreateEndPoint() {
   if (serves.value.length === 0) {
     Modal.confirm({
       title: '请先创建服务',

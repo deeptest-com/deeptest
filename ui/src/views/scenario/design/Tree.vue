@@ -85,8 +85,6 @@ import debounce from "lodash.debounce";
 import {DropEvent, TreeDragEvent} from "ant-design-vue/es/tree/Tree";
 import {CloseOutlined, FileOutlined, FolderOutlined, FolderOpenOutlined, CheckOutlined} from "@ant-design/icons-vue";
 
-import {ProcessorCategory} from "@/utils/enum";
-import {StateType} from "@/views/interface1/store";
 import {expandAllKeys, expandOneKey} from "@/services/tree";
 import {StateType as InterfaceStateType} from "@/views/interface1/store";
 
@@ -95,7 +93,7 @@ import {getContextMenuStyle} from "@/utils/dom";
 import {StateType as ScenarioStateType} from "../store";
 import {isRoot, updateNodeName, isInterface} from "../service";
 import TreeContextMenu from "./components/TreeContextMenu.vue";
-import InterfaceSelection from "./components/InterfaceSelection.vue";
+import InterfaceSelection from "./components/interface-selection/main.vue";
 
 const props = defineProps<{ scenarioId: number }>()
 

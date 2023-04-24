@@ -43,6 +43,7 @@ func (m *ServeModule) Party() module.WebModule {
 		public.Post("/schema/example2schema", m.ServeCtrl.ExampleToSchema).Name = "example转schema"
 		public.Post("/schema/schema2example", m.ServeCtrl.SchemaToExample).Name = "Schema生成Example"
 		public.Post("/schema/schema2yaml", m.ServeCtrl.SchemaToYaml).Name = "schema转yaml"
+
 		public.Get("/listByProject", m.ServeCtrl.ListByProject).Name = "获取项目下的服务"
 		public.Post("/changeServe", m.ServeCtrl.ChangeServe).Name = "切换用户当前服务"
 	}

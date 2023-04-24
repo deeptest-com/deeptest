@@ -307,3 +307,12 @@ func (r *EndpointRepo) GetCountByServeId(serveId uint) (count int64, err error) 
 	err = r.DB.Where("serve=? and NOT deleted", serveId).Count(&count).Error
 	return
 }
+
+func (r *EndpointRepo) ListEndpointByCategory(categoryId uint) (ids []uint, err error) {
+	err = r.DB.Model(&model.Endpoint{}).
+		Select("id").
+		Where("category_id = ? AND NOT deleted", categoryId).
+		Find(&ids).Error
+
+	return
+}

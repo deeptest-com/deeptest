@@ -48,14 +48,15 @@ type IndexModule struct {
 
 	ScenarioInterfaceModule *router.ProcessorInterfaceModule `inject:""`
 	//ReportModule             *router.ReportModule              `inject:""`
-	EndpointModule       *router.EndpointModule       `inject:""`
-	ServeModule          *router.ServeModule          `inject:""`
-	PlanModule           *router.PlanModule           `inject:""`
-	PlanExecModule       *router.PlanExecModule       `inject:""`
-	ScenarioReportModule *router.ScenarioReportModule `inject:""`
-	PlanReportModule     *router.PlanReportModule     `inject:""`
-	SummaryModule        *router.SummaryModule        `inject:""`
-	MessageModule        *router.MessageModule        `inject:""`
+	EndpointModule          *router.EndpointModule          `inject:""`
+	EndpointInterfaceModule *router.EndpointInterfaceModule `inject:""`
+	ServeModule             *router.ServeModule             `inject:""`
+	PlanModule              *router.PlanModule              `inject:""`
+	PlanExecModule          *router.PlanExecModule          `inject:""`
+	ScenarioReportModule    *router.ScenarioReportModule    `inject:""`
+	PlanReportModule        *router.PlanReportModule        `inject:""`
+	SummaryModule           *router.SummaryModule           `inject:""`
+	MessageModule           *router.MessageModule           `inject:""`
 }
 
 func NewIndexModule() *IndexModule {
@@ -106,6 +107,7 @@ func (m *IndexModule) Party() module.WebModule {
 
 		//m.ReportModule.Party(),
 		m.EndpointModule.Party(),
+		m.EndpointInterfaceModule.Party(),
 		m.ServeModule.Party(),
 
 		m.PlanModule.Party(),

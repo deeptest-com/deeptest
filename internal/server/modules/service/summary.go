@@ -5,7 +5,7 @@ import (
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
-	//"github.com/aaronchen2k/deeptest/internal/server/core/cache"
+	//"github.com/aaronchen2k/deeptest/internal/server/core/CacheOption"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/go-redis/redis/v8"
 	"github.com/goccy/go-json"
@@ -20,26 +20,13 @@ type SummaryService struct {
 	SummaryDetailsService            *SummaryDetailsService            `inject:""`
 	SummaryBugsService               *SummaryBugsService               `inject:""`
 	SummaryProjectUserRankingService *SummaryProjectUserRankingService `inject:""`
-	//cache                            redis.UniversalClient
 }
-
-//func NewSummaryService() *SummaryService {
-//universalOptions := &redis.UniversalOptions{
-//	Addrs:       strings.Split(config.CONFIG.Redis.Addr, ","),
-//	Password:    config.CONFIG.Redis.Password,
-//	PoolSize:    config.CONFIG.Redis.PoolSize,
-//	IdleTimeout: 300 * time.Second,
-//}
-//CACHE := redis.NewUniversalClient(universalOptions)
-//
-//return &SummaryService{cache: CACHE}
-//}
 
 func NewSummaryService() *SummaryService {
 	return &SummaryService{}
 }
 
-func (s *SummaryService) cache() redis.UniversalClient {
+func (s *SummaryService) CacheOption() redis.UniversalClient {
 	universalOptions := &redis.UniversalOptions{
 		Addrs:       strings.Split(config.CONFIG.Redis.Addr, ","),
 		Password:    config.CONFIG.Redis.Password,
@@ -49,73 +36,92 @@ func (s *SummaryService) cache() redis.UniversalClient {
 	CACHE := redis.NewUniversalClient(universalOptions)
 
 	return CACHE
+}
 
+func (s *SummaryService) ToString(arg interface{}) (str string) {
+	switch arg.(type) {
+	case int64:
+		str = strconv.FormatInt(arg.(int64), 10)
+	case string:
+		str = arg.(string)
+	}
+	return
+}
+
+func (s *SummaryService) GetCache(key string, arg interface{}) (result []byte, err error) {
+	str := s.ToString(arg)
+	result, err = s.CacheOption().Get(context.Background(), key+str).Bytes()
+	return
+}
+
+func (s *SummaryService) SetCache(key string, arg interface{}, object interface{}) {
+	value, _ := json.Marshal(object)
+	str := s.ToString(arg)
+	s.CacheOption().Set(context.Background(), key+str, value, time.Duration(rand.Intn(30)+30)*time.Minute)
+}
+
+func (s *SummaryService) DelCache(key string, arg interface{}) {
+	str := s.ToString(arg)
+	s.CacheOption().Del(context.Background(), key+str)
 }
 
 func (s *SummaryService) Bugs(projectId int64) (res v1.ResSummaryBugs, err error) {
-	bugsCache, err := s.cache().Get(context.Background(), ""+strconv.FormatInt(projectId, 36)).Bytes()
-	//bugsCache, err := s.cache().Get(context.Background(), "summaryBugs-"+strconv.FormatInt(projectId, 36)).Bytes()
+	bugsCache, err := s.GetCache("summaryBugs", projectId)
 
 	if err != nil || len(bugsCache) == 0 {
 		res, err = s.SummaryBugsService.Bugs(projectId)
-		value, _ := json.Marshal(res)
-		s.cache().Set(context.Background(), "summaryBugs-"+strconv.FormatInt(projectId, 36), value, time.Duration(rand.Int63n(50)+50))
-
-	} else {
-		json.Unmarshal(bugsCache, &res)
+		s.SetCache("summaryBugs", projectId, res)
+	} else if err == nil && len(bugsCache) != 0 {
+		err = json.Unmarshal(bugsCache, &res)
+		if err != nil {
+			s.DelCache("summaryBugs", projectId)
+		}
 	}
 
 	return
 }
 
 func (s *SummaryService) Details(userId int64) (res v1.ResSummaryDetail, err error) {
-	//detailsCache, err := s.cache().Get(context.Background(), "summaryDetails-"+strconv.FormatInt(userId, 36)).Bytes()
-	detailsCache, err := s.cache().Get(context.Background(), ""+strconv.FormatInt(userId, 36)).Bytes()
+	detailsCache, err := s.GetCache("summaryDetails", userId)
 
 	if err != nil || len(detailsCache) == 0 {
 		res, err = s.SummaryDetailsService.Details(userId)
-		fmt.Printf("res:%+v \n", res)
-		value, _ := json.Marshal(res)
-		s.cache().Set(context.Background(), "summaryDetails-"+strconv.FormatInt(userId, 36), value, time.Duration(rand.Intn(30)+30)*time.Minute)
-
-	} else {
-		json.Unmarshal(detailsCache, &res)
+		s.SetCache("summaryDetails", userId, res)
+	} else if err == nil && len(detailsCache) != 0 {
+		err = json.Unmarshal(detailsCache, &res)
+		if err != nil {
+			s.DelCache("summaryDetails", userId)
+		}
 	}
-
 	return
 }
 
 func (s *SummaryService) ProjectUserRanking(projectId int64, cycle int64) (res v1.ResRankingList, err error) {
-	//rankingCache, err := s.cache().Get(context.Background(), "summaryRanking-"+strconv.FormatInt(projectId, 36)).Bytes()
-	rankingCache, err := s.cache().Get(context.Background(), ""+strconv.FormatInt(projectId, 36)).Bytes()
-
+	rankingCache, err := s.GetCache("summary"+strconv.FormatInt(cycle, 10)+"Ranking"+strconv.FormatInt(projectId, 10), projectId)
 	if err != nil || len(rankingCache) == 0 {
 		res, err = s.SummaryProjectUserRankingService.ProjectUserRanking(projectId, cycle)
-		value, _ := json.Marshal(res)
-		s.cache().Set(context.Background(), "summaryRanking-"+strconv.FormatInt(projectId, 36), value, time.Duration(rand.Intn(30)+30)*time.Minute)
-
-	} else {
-		json.Unmarshal(rankingCache, &res)
+		s.SetCache("summary"+strconv.FormatInt(cycle, 10)+"Ranking"+strconv.FormatInt(projectId, 10), projectId, res)
+	} else if err == nil && len(rankingCache) != 0 {
+		err = json.Unmarshal(rankingCache, &res)
+		if err != nil {
+			s.DelCache("summary"+strconv.FormatInt(cycle, 10)+"Ranking"+strconv.FormatInt(projectId, 10), projectId)
+		}
 	}
 
 	return
 }
 
 func (s *SummaryService) Card(projectId int64) (res v1.ResSummaryCard, err error) {
-	//cardCache, err := s.cache().Get(context.Background(), "summaryCard-"+strconv.FormatInt(projectId, 36)).Bytes()
-	cardCache, err := s.cache().Get(context.Background(), ""+strconv.FormatInt(projectId, 36)).Bytes()
-
+	cardCache, err := s.GetCache("summaryCard", projectId)
 	if err != nil || len(cardCache) == 0 {
 		res, err = s.SummaryDetailsService.Card(projectId)
-		value, _ := json.Marshal(res)
-		s.cache().Set(context.Background(), "summaryCard-"+strconv.FormatInt(projectId, 36), value, time.Duration(rand.Intn(30)+30)*time.Minute)
-	} else {
-		json.Unmarshal(cardCache, &res)
-		s.cache().Del(context.Background(), "summaryCard-"+strconv.FormatInt(projectId, 36))
-		s.cache().Set(context.Background(), "summaryCard-"+strconv.FormatInt(projectId, 36), res, time.Duration(rand.Intn(30)+30)*time.Minute)
-
+		s.SetCache("summaryCard", projectId, res)
+	} else if err == nil && len(cardCache) != 0 {
+		err = json.Unmarshal(cardCache, &res)
+		if err != nil {
+			s.DelCache("summaryCard", projectId)
+		}
 	}
-
 	return
 }
 
@@ -130,8 +136,6 @@ func (s *SummaryService) Collection(scope string) (err error) {
 	case "details":
 		err = s.CollectionDetails()
 		return
-	case "card":
-		return
 	case "ranking":
 		err = s.CollectionRanking()
 		return
@@ -140,20 +144,21 @@ func (s *SummaryService) Collection(scope string) (err error) {
 		return
 	}
 
-	//set cache
-	//sql data
-	//create struct
-
 	return
 }
 
 func (s *SummaryService) CollectionRanking() (err error) {
-
-	//res, err := s.SummaryDetailsService.Card(0)
-	//s.cache().Set(context.Background(),"summaryDetails-"+strconv.FormatInt(user.UserId, 36), resDetail, time.Duration(rand.Intn(30) + 30) * time.Minute)
+	projectIds, err := s.SummaryProjectUserRankingService.FindProjectIds()
+	for i := 0; i < 2; i++ {
+		for projectId := range projectIds {
+			res, err := s.SummaryProjectUserRankingService.ProjectUserRanking(int64(projectId), int64(i))
+			if err == nil {
+				s.SetCache("summary"+strconv.Itoa(i)+"Ranking"+strconv.Itoa(projectId), "", res)
+			}
+		}
+	}
 	checkTime := time.Now().Local()
-	checked := v1.SummaryDataCheck{CacheKey: "ranking", CacheValue: &checkTime}
-	s.cache().Set(context.Background(), "summaryDataUpdatedAt", checked, time.Duration(rand.Intn(30)+30)*time.Minute)
+	s.SetCache("summaryDataUpdatedAt", "ranking", &checkTime)
 	return
 }
 
@@ -166,18 +171,19 @@ func (s *SummaryService) CollectionBugs() (err error) {
 	bugs := model.SummaryBugs{}
 
 	//调用存储
+	//s.SummaryBugsService.Create(bugs)
+	ids, err := s.SummaryBugsService.FindProjectIds()
 
-	s.SummaryBugsService.Create(bugs)
-	value, _ := json.Marshal(bugs)
-	s.cache().Set(context.Background(), "summaryBugs-"+strconv.FormatInt(bugs.ProjectId, 36), value, time.Duration(rand.Intn(30)+30)*time.Minute)
+	for id := range ids {
+		value, _ := s.SummaryBugsService.Bugs(int64(id))
+		s.SetCache("summaryBugs", bugs.ProjectId, value)
+	}
 	checkTime := time.Now().Local()
-	checked := v1.SummaryDataCheck{CacheKey: "bugs", CacheValue: &checkTime}
-	s.cache().Set(context.Background(), "summaryDataUpdatedAt", checked, time.Duration(rand.Intn(30)+30)*time.Minute)
+	s.SetCache("summaryDataUpdatedAt", "bugs", &checkTime)
 	return
 }
 
 func (s *SummaryService) CollectionDetails() (err error) {
-	//SummaryDetailsService := NewSummaryDetailsService()
 
 	var details []model.SummaryDetails
 
@@ -228,50 +234,48 @@ func (s *SummaryService) CollectionDetails() (err error) {
 			resDetail.Disabled = detail.Disabled
 			resDetail.BugTotal, _ = s.SummaryDetailsService.CountBugsByProjectId(detail.ProjectId)
 			resDetail.UserList = userList
-
 			value, _ := json.Marshal(resDetail)
-
-			s.cache().Del(context.Background(), "summaryDetails-"+strconv.FormatInt(user.UserId, 36))
-			s.cache().Set(context.Background(), "summaryDetails-"+strconv.FormatInt(user.UserId, 36), value, time.Duration(rand.Intn(30)+30)*time.Minute)
-
+			s.SetCache("summaryDetails", user.UserId, value)
 		}
 	}
 	checkTime := time.Now().Local()
-	checked := v1.SummaryDataCheck{CacheKey: "details", CacheValue: &checkTime}
-	s.cache().Set(context.Background(), "summaryDataUpdatedAt", checked, time.Duration(rand.Intn(30)+30)*time.Minute)
+	s.SetCache("summaryDataUpdatedAt", "details", &checkTime)
 	return
 }
 
 // SummaryDataCheck corn task
 func (s *SummaryService) SummaryDataCheck() (err error) {
+	modelList := []string{"details", "ranking", "bugs"}
 
-	var checks []v1.SummaryDataCheck
-	values, err := s.cache().Get(context.Background(), "summaryDataUpdatedAt").Bytes()
-
-	if err != nil || len(values) == 0 {
-		s.Collection("all")
-	} else {
-		json.Unmarshal(values, &checks)
-		for _, value := range checks {
-			switch value.CacheKey {
-			//由于所有数据都基于details表抓取,所以details表需要特殊处理
+	for _, m := range modelList {
+		values, err := s.GetCache("summaryDataUpdatedAt", m)
+		if err != nil || len(values) == 0 {
+			s.Collection("all")
+		} else {
+			var t *time.Time
+			switch m {
 			case "details":
-				ret, err := s.SummaryDetailsService.CheckDetailsUpdated(value.CacheValue)
+				err = json.Unmarshal(values, &t)
+				ret, err := s.SummaryDetailsService.CheckDetailsUpdated(t)
 				if err == nil && ret != false {
 					s.Collection("details")
 				}
 			case "ranking":
-				ret, err := s.SummaryProjectUserRankingService.CheckUpdated(value.CacheValue)
+				err = json.Unmarshal(values, &t)
+				ret, err := s.SummaryProjectUserRankingService.CheckUpdated(t)
 				if err == nil && ret != false {
 					s.Collection("ranking")
 				}
 			case "bugs":
-				ret, err := s.SummaryBugsService.CheckUpdated(value.CacheValue)
+				err = json.Unmarshal(values, &t)
+				ret, err := s.SummaryBugsService.CheckUpdated(t)
 				if err == nil && ret != false {
 					s.Collection("bugs")
 				}
 			}
+
 		}
+
 	}
 	return
 }

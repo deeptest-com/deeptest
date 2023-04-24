@@ -54,8 +54,10 @@ type ResSummaryCard struct {
 
 type ResSummaryDetail struct {
 	_domain.PaginateReq
-	ProjectTotal int64               `gorm:"default:0" json:"project_total"`
-	ProjectList  []ResSummaryDetails `json:"project_list"`
+	CurrentUserProjectTotal int64               `gorm:"default:0" json:"current_user_project_total"`
+	AllProjectTotal         int64               `gorm:"default:0" json:"all_project_total"`
+	CurrentUserProjectList  []ResSummaryDetails `json:"current_user_project_list"`
+	AllProjectList          []ResSummaryDetails `json:"all_project_list"`
 }
 
 type ResSummaryDetails struct {
@@ -93,9 +95,4 @@ type ResUserRanking struct {
 	TestcasesTotal int64      `gorm:"default:0" json:"testcases_total"`
 	Hb             int64      `gorm:"default:0" json:"hb"`
 	UpdateTime     *time.Time `json:"update_time"`
-}
-
-type SummaryDataCheck struct {
-	CacheKey   string     `json:"key"`
-	CacheValue *time.Time `json:"value"`
 }

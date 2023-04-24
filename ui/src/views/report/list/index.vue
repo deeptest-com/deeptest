@@ -48,9 +48,7 @@
       </a-table>
     </div>
 
-    <a-drawer :visible="reportDetailVisible">
-      <ReportDetail />
-    </a-drawer>
+    <LogDetail :drawer-visible="reportDetailVisible" @on-close="reportDetailVisible = false" />
   </div>
 </template>
 
@@ -62,8 +60,9 @@ import debounce from "lodash.debounce";
 import { ColumnProps } from 'ant-design-vue/es/table/interface';
 import { momentUtc } from "@/utils/datetime";
 import { Modal, notification } from "ant-design-vue";
-import TableFilter from "../components/tableFilter.vue";
+import TableFilter from "../components/TableFilter.vue";
 import ReportDetail from "../detail/index.vue";
+import LogDetail from "../components/Log.vue";
 import { StateType as ProjectStateType } from "@/store/project";
 import { StateType as ScenarioStateType } from "@/views/scenario/store";
 import { StateType } from "@/views/report/store";
@@ -81,7 +80,7 @@ let queryParams = reactive<QueryParams>({
   keywords: '', scenarioId: '0',
   page: pagination.value.current, pageSize: pagination.value.pageSize
 });
-const reportDetailVisible = ref(false);
+const reportDetailVisible = ref(true);
 
 type Key = ColumnProps['key'];
 

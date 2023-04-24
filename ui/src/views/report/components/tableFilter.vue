@@ -25,7 +25,7 @@
                 </a-form-item>
             </div>
             <div class="report-name">
-                <a-input v-model:value="executeName" placeholder="请输入你需要搜索的用例名称">
+                <a-input v-model:value="executeName" placeholder="请输入用例名称">
                     <template #suffix>
                         <search-outlined />
                     </template>
@@ -53,13 +53,11 @@ function onRangeOk(date: string) {
 .report-table-filter {
     width: 100%;
     display: flex;
-    align-items: center;
+    flex-direction: column;
     margin-bottom: 24px;
 
     .bulk-operation {
-        margin-right: 20px;
-
-
+        margin-bottom: 24px;
     }
 
     .report-form {

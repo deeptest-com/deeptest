@@ -8,18 +8,20 @@
       <span class="label-name">选择响应代码</span>
     </a-col>
     <a-col :span="21">
-      <a-radio-group v-model:value="selectedCode" button-style="outline">
-        <a-radio-button
-            :class="{'has-defined': hasDefinedCode(code.value),'res-code-btn':true}"
-            :style="{ color: hasDefinedCode(code.value) ? code.color : '',
+      <div class="select-code-con">
+        <a-radio-group class="select-code-group" v-model:value="selectedCode" button-style="outline">
+          <a-radio-button
+              :class="{'has-defined': hasDefinedCode(code.value),'res-code-btn':true}"
+              :style="{ color: hasDefinedCode(code.value) ? code.color : '',
                       'box-shadow': `none` ,
                       background: code.value !== selectedCode ? '#f5f5f5' : '#fff',
                      'border-color': '#d9d9d9'}"
-            :key="code.value" v-for="code in responseCodes.filter(item => item.enabled)"
-            :value="code.value">
-          {{ code.label }}
-        </a-radio-button>
-      </a-radio-group>
+              :key="code.value" v-for="code in responseCodes.filter(item => item.enabled)"
+              :value="code.value">
+            {{ code.label }}
+          </a-radio-button>
+        </a-radio-group>
+      </div>
       <div class="form-item-response-body" v-if="collapse">
         <div v-if="selectedCodeDetail">
           <!-- Description -->
@@ -231,5 +233,15 @@ function handleResHeaderChange(data) {
 }
 .label-name {
   margin-left: 4px;
+}
+.select-code-con{
+  height: 37px;
+  overflow-y: hidden;
+  overflow-x:scroll;
+  width: 750px;
+  .select-code-group{
+    width: auto;
+    display: flex;
+  }
 }
 </style>

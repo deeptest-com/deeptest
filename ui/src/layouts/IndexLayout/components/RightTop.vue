@@ -1,17 +1,6 @@
 <template>
   <div id="indexlayout-right-top" :class="{'topNavEnable': !topNavEnable, 'tabNavEnable': !tabNavEnable }">
     <div class="indexlayout-right-top-top">
-      <div class="indexlayout-flexible"
-           @click="() => {
-                if(toggleCollapsed) {
-                  toggleCollapsed();
-                }
-              }"
-      >
-        <MenuUnfoldOutlined style="fontSize: 18px; " v-if="collapsed"/>
-        <MenuFoldOutlined style="fontSize: 18px; "  v-else/>
-      </div>
-
       <div class="indexlayout-top-menu">
         <RightTopProject/>
       </div>
@@ -19,7 +8,6 @@
         <RightTopSettings/>
       </div>
     </div>
-
     <RightTopWebsocket/>
     <RightTopUpdate />
   </div>
@@ -28,7 +16,6 @@
 import {defineComponent, PropType, toRefs} from "vue";
 import {useI18n} from "vue-i18n";
 import {BreadcrumbType, RoutesDataItem} from '@/utils/routes';
-import {MenuFoldOutlined, MenuUnfoldOutlined,UserOutlined} from '@ant-design/icons-vue';
 import RightTopProject from './RightTopProject.vue';
 import RightTopSettings from './RightTopSettings.vue';
 import RightTopWebsocket from './RightTopWebsocket.vue';
@@ -38,7 +25,6 @@ import useTopMenuWidth from "../composables/useTopMenuWidth";
 export default defineComponent({
   name: 'RightTop',
   components: {
-    MenuFoldOutlined, MenuUnfoldOutlined,
     RightTopProject,
     RightTopSettings,
     RightTopWebsocket, RightTopUpdate,
@@ -59,9 +45,6 @@ export default defineComponent({
     belongTopMenu: {
       type: String,
       default: ''
-    },
-    toggleCollapsed: {
-      type: Function as PropType<() => void>
     },
     breadCrumbs: {
       type: Array as PropType<BreadcrumbType[]>,

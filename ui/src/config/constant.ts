@@ -83,6 +83,7 @@ export const responseCodes = [
         "description": "100: Continue",
         "value": "100",
         "label": "100",
+        "enabled": true,
         color: "gray",
     },
     {
@@ -164,12 +165,14 @@ export const responseCodes = [
         "value": "301",
         "label": "301",
         color: "#ffd516",
+        "enabled": true,
     },
     {
         "description": "302: Found",
         "value": "302",
         "label": "302",
         color: "#ffd516",
+        "enabled": true,
     },
     {
         "description": "303: See Other",
@@ -237,6 +240,7 @@ export const responseCodes = [
         "value": "404",
         "label": "404",
         color: "orange",
+        "enabled": false,
     },
     {
         "description": "405: Method Not Allowed",
@@ -261,6 +265,7 @@ export const responseCodes = [
         "value": "408",
         "label": "408",
         color: "orange",
+        "enabled": false,
     },
     {
         "description": "409:Conflict",
@@ -393,6 +398,7 @@ export const responseCodes = [
         "value": "450",
         "label": "450",
         color: "orange",
+        "enabled": false,
     },
     {
         "description": "451: Unavailable For Legal Reasons",
@@ -405,6 +411,7 @@ export const responseCodes = [
         "value": "499",
         "label": "499",
         color: "orange",
+        "enabled": true,
     },
     {
         "description": "500: Internal Server Error",
@@ -412,18 +419,21 @@ export const responseCodes = [
         "label": "500",
         "enabled": true,
         color: "#F63838",
+
     },
     {
         "description": "501: Not Implemented",
         "value": "501",
         "label": "501",
         color: "#F63838",
+        "enabled": true,
     },
     {
         "description": "502: Bad Gateway",
         "value": "502",
         "label": "502",
         color: "#F63838",
+        "enabled": true,
     },
     {
         "description": "503: Service Unavailable",
@@ -437,6 +447,7 @@ export const responseCodes = [
         "value": "504",
         "label": "504",
         color: "#F63838",
+        "enabled": true,
     },
     {
         "description": "505: HTTP Version Not Supported",
@@ -467,6 +478,7 @@ export const responseCodes = [
         "value": "509",
         "label": "509",
         color: "#F63838",
+        "enabled": false,
     },
     {
         "description": "510: Not Extended",
@@ -491,6 +503,7 @@ export const responseCodes = [
         "value": "599",
         "label": "599",
         color: "#F63838",
+        "enabled": false,
     }
 ];
 /**
@@ -1153,7 +1166,6 @@ export const defaultHeaderParams = {
     description: '',
     required: false,
 }
-
 
 export const defaultCookieParams = {
     name: '',

@@ -26,27 +26,21 @@ const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
 
 import {StateType as Debug} from "@/views/component/debug/store";
+import {DebugInfo} from "@/views/component/debug/data";
 const store = useStore<{  Debug: Debug }>();
 
+const debugInfo = computed<DebugInfo>(() => store.state.Debug.debugInfo);
 const debugData = computed<any>(() => store.state.Debug.debugData);
 
 const invokeInterface = async () => {
   console.log('invokeInterface', debugData.value)
-
-  // const reqData = prepareDataForRequest(Object.assign({usedBy}, debugData.value))
-  // await saveInterface(reqData)
 
   const callData = {
     serverUrl: process.env.VUE_APP_API_SERVER, // used by agent to submit result to server
     token: await getToken(),
     id: debugData.value.id,
 
-    data: {
-      interfaceId: debugData.value.interfaceId,
-      endpointId: debugData.value.endpointId,
-      scenarioId: debugData.value.scenarioId,
-      usedBy,
-    }
+    data: debugInfo.value
   }
   await store.dispatch('Debug/call', callData)
 };

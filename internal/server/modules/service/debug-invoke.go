@@ -10,8 +10,10 @@ import (
 )
 
 type DebugInvokeService struct {
-	DebugRepo              *repo.DebugRepo              `inject:""`
-	DebugInterfaceRepo     *repo.DebugInterfaceRepo     `inject:""`
+	DebugRepo          *repo.DebugRepo          `inject:""`
+	DebugInterfaceRepo *repo.DebugInterfaceRepo `inject:""`
+	DebugInvokeRepo    *repo.DebugInvokeRepo    `inject:""`
+
 	ProcessorInterfaceRepo *repo.ProcessorInterfaceRepo `inject:""`
 	EndpointRepo           *repo.EndpointRepo           `inject:""`
 	ScenarioProcessorRepo  *repo.ScenarioProcessorRepo  `inject:""`
@@ -32,19 +34,15 @@ func (s *DebugInvokeService) SubmitResult(req v1.SubmitDebugResultRequest) (err 
 	var endpointId, serveId, processorId, scenarioId, projectId uint
 
 	if usedBy == consts.InterfaceDebug {
-		if req.Request.EndpointInterfaceId > 0 {
-			endpointId, serveId = s.DebugInterfaceService.GetEndpointAndServeIdForEndpointInterface(req.Request.EndpointInterfaceId)
-		} else if req.Request.DebugInterfaceId > 0 {
-			endpointId, serveId = s.DebugInterfaceService.GetEndpointAndServeIdForDebugInterface(req.Request.DebugInterfaceId)
-		}
+		endpointId, serveId = s.DebugInterfaceService.GetEndpointAndServeIdForEndpointInterface(req.Request.EndpointInterfaceId)
 
 		endpoint, _ := s.EndpointRepo.Get(endpointId)
 		serveId = endpoint.ServeId
 		projectId = endpoint.ProjectId
 
 	} else if usedBy == consts.ScenarioDebug {
-		processorId = req.Request.ProcessorId
-		scenarioId = s.DebugInterfaceService.GetScenarioIdForDebugInterface(req.Request.ProcessorId)
+		processorId = req.Request.ScenarioProcessorId
+		scenarioId = s.DebugInterfaceService.GetScenarioIdForDebugInterface(req.Request.ScenarioProcessorId)
 
 		scenario, _ := s.ScenarioRepo.Get(scenarioId)
 		scenarioId = scenario.ID
@@ -64,8 +62,10 @@ func (s *DebugInvokeService) SubmitResult(req v1.SubmitDebugResultRequest) (err 
 	return
 }
 
-func (s *DebugInvokeService) Create(req v1.DebugData, resp v1.DebugResponse,
+func (s *DebugInvokeService) Create(debugData v1.DebugData, resp v1.DebugResponse,
 	serveId, processorId, scenarioId, projectId uint) (po model.DebugInvoke, err error) {
+
+	debugInterfaceId, _ := s.DebugInterfaceRepo.HasDebugInterfaceRecord(debugData.EndpointInterfaceId)
 
 	po = model.DebugInvoke{
 		ServeId: serveId,
@@ -75,30 +75,34 @@ func (s *DebugInvokeService) Create(req v1.DebugData, resp v1.DebugResponse,
 
 		InvocationBase: model.InvocationBase{
 			Name:                time.Now().Format("01-02 15:04:05"),
-			EndpointInterfaceId: req.EndpointInterfaceId,
-			DebugInterfaceId:    req.DebugInterfaceId,
+			EndpointInterfaceId: debugData.EndpointInterfaceId,
+			DebugInterfaceId:    debugInterfaceId,
 			ProjectId:           projectId,
 		},
 	}
 
-	bytesReq, _ := json.Marshal(req)
-	po.ReqContent = string(bytesReq)
+	bytesDebugData, _ := json.Marshal(debugData)
+	po.ReqContent = string(bytesDebugData)
 
-	bytesReps, _ := json.Marshal(resp)
-	po.RespContent = string(bytesReps)
+	bytesResp, _ := json.Marshal(resp)
+	po.RespContent = string(bytesResp)
 
-	err = s.DebugRepo.Save(&po)
+	err = s.DebugInvokeRepo.Save(&po)
 
 	return
 }
 
-func (s *DebugInvokeService) ListByInterface(endpointInterfaceId, debugInterfaceId int) (invocations []model.DebugInvoke, err error) {
+func (s *DebugInvokeService) ListByInterface(endpointInterfaceId uint) (invocations []model.DebugInvoke, err error) {
+	debugInterfaceId, _ := s.DebugInterfaceRepo.HasDebugInterfaceRecord(endpointInterfaceId)
+
 	invocations, err = s.DebugRepo.List(endpointInterfaceId, debugInterfaceId)
 
 	return
 }
 
-func (s *DebugInvokeService) GetLastResp(endpointInterfaceId, debugInterfaceId int) (resp v1.DebugResponse, err error) {
+func (s *DebugInvokeService) GetLastResp(endpointInterfaceId uint) (resp v1.DebugResponse, err error) {
+	debugInterfaceId, _ := s.DebugInterfaceRepo.HasDebugInterfaceRecord(endpointInterfaceId)
+
 	po, _ := s.DebugRepo.GetLast(endpointInterfaceId, debugInterfaceId)
 
 	if po.ID > 0 {
@@ -113,29 +117,11 @@ func (s *DebugInvokeService) GetLastResp(endpointInterfaceId, debugInterfaceId i
 	return
 }
 
-//func (s *DebugInvokeService) GetLastReq(interfId uint) (req v1.DebugData, err error) {
-//	invocation, _ := s.DebugRepo.GetLast(interfId)
-//
-//	if invocation.ID > 0 {
-//		json.Unmarshal([]byte(invocation.ReqContent), &req)
-//	} else {
-//		req = v1.DebugData{}
-//	}
-//
-//	return
-//}
+func (s *DebugInvokeService) GetAsInterface(id int) (debugData v1.DebugData, interfResp v1.DebugResponse, err error) {
+	invocation, err := s.DebugInvokeRepo.Get(uint(id))
 
-func (s *DebugInvokeService) GetAsInterface(id int) (interf model.ProcessorInterface, interfResp v1.DebugResponse, err error) {
-	//invocation, err := s.DebugRepo.Get(uint(id))
-	//
-	//interfReq := v1.DebugData{}
-	//
-	//json.Unmarshal([]byte(invocation.ReqContent), &interfReq)
-	//json.Unmarshal([]byte(invocation.RespContent), &interfResp)
-	//
-	//copier.CopyWithOption(&interf, interfReq, copier.Option{DeepCopy: true})
-	//
-	//interf.ID = invocation.InterfaceId
+	json.Unmarshal([]byte(invocation.ReqContent), &debugData)
+	json.Unmarshal([]byte(invocation.RespContent), &interfResp)
 
 	return
 }

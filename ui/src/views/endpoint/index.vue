@@ -3,6 +3,8 @@
     <div class="content">
       <div class="left tree" v-if="!collapsed">
         <EndpointTree @select="selectNode"/>
+
+        <Tree/>
       </div>
       <CollapsedIcon
           :style="{left:'294px',top:'4px'}"
@@ -125,6 +127,7 @@ import CollapsedIcon from "@/components/CollapsedIcon/index.vue"
 import {StateType as ServeStateType} from "@/store/serve";
 import {StateType as Debug} from "@/views/component/debug/store";
 import {message, Modal} from 'ant-design-vue';
+import Tree from './tree.vue'
 
 const store = useStore<{ Endpoint, ProjectGlobal, Debug: Debug, ServeGlobal: ServeStateType }>();
 const collapsed = ref(false);

@@ -7,7 +7,6 @@
         :selectedKeys="selectedKeys"
         :openKeys="leftOpenKeys"
         :menuData="permissionMenuData"
-        :toggleCollapsed="toggleCollapsed"
         :version="version"
         :onOpenChange="onOpenChange"
     >
@@ -23,6 +22,7 @@
           :topNavEnable="topNavEnable"
           :belongTopMenu="belongTopMenu"
           :breadCrumbs="breadCrumbs"
+          :toggleCollapsed="toggleCollapsed"
           :menuData="permissionMenuData"
           :routeItem="routeItem"
       >

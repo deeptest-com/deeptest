@@ -2,8 +2,8 @@
   <div class="expand-icon" @click="toggleCollapsed"
        :class="{'collapsed':collapsed}"
        :style="collapsed ? collapsedStyle  :  style">
-    <CaretRightOutlined class="icon" v-if="collapsed"/>
-    <CaretLeftOutlined class="icon" v-if="!collapsed"/>
+    <MenuUnfoldOutlined class="icon" v-if="collapsed"/>
+    <MenuFoldOutlined class="icon" v-if="!collapsed"/>
   </div>
 </template>
 <script lang="ts">
@@ -11,8 +11,10 @@
 import {defineComponent, onMounted, PropType, ref} from "vue";
 
 import {
-  CaretRightOutlined,
-  CaretLeftOutlined
+  // CaretRightOutlined,
+  // CaretLeftOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined
 } from '@ant-design/icons-vue';
 
 export default defineComponent({
@@ -20,15 +22,9 @@ export default defineComponent({
   props: {
     style: {
       type: Object,
-      default: () => {
-        return {};
-      }
     },
     collapsedStyle: {
       type: Object,
-      default: () => {
-        return {};
-      }
     },
     collapsed: {
       type: Boolean,
@@ -39,8 +35,10 @@ export default defineComponent({
     },
   },
   components: {
-    CaretRightOutlined,
-    CaretLeftOutlined,
+    // CaretRightOutlined,
+    // CaretLeftOutlined,
+    MenuFoldOutlined,
+    MenuUnfoldOutlined
   },
 
 })
@@ -49,26 +47,24 @@ export default defineComponent({
 
 <style lang="less" scoped>
 .expand-icon {
-  position: fixed;
-  width: 12px;
-  height: 56px;
-  top: 115px;
+  position: absolute;
+  height: 20px;
+  width: 20px;
   opacity: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  left: 223px;
+  left: 8px;
+  top: 22px;
   z-index: 9;
   cursor: pointer;
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 0px 8px 8px 0px;
-  transition: left 0.2s;
+  background-color: #FFF;
   &.collapsed {
-    left: 54px;
+    left: 8px;
   }
   .icon {
-    font-size: 12px;
-    color: #8A8A8A;;
+    color: #8A8A8A;
+    font-size: 18px;
   }
 }
 </style>

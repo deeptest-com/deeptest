@@ -2,6 +2,7 @@
   <div id="indexlayout-right-top" :class="{'topNavEnable': !topNavEnable, 'tabNavEnable': !tabNavEnable }">
     <div class="indexlayout-right-top-top">
       <div class="indexlayout-top-menu">
+        <CollapsedIcon @click="toggleCollapsed"  :collapsed="collapsed"/>
         <RightTopProject/>
       </div>
       <div class="indexlayout-top-menu-right">
@@ -21,13 +22,16 @@ import RightTopSettings from './RightTopSettings.vue';
 import RightTopWebsocket from './RightTopWebsocket.vue';
 import RightTopUpdate from './RightTopUpdate.vue';
 import useTopMenuWidth from "../composables/useTopMenuWidth";
+import CollapsedIcon from "@/components/CollapsedIcon/index.vue"
 
 export default defineComponent({
   name: 'RightTop',
   components: {
     RightTopProject,
     RightTopSettings,
-    RightTopWebsocket, RightTopUpdate,
+    CollapsedIcon,
+    RightTopWebsocket,
+    RightTopUpdate,
   },
   props: {
     collapsed: {
@@ -41,6 +45,9 @@ export default defineComponent({
     topNavEnable: {
       type: Boolean,
       default: true
+    },
+    toggleCollapsed: {
+      type: Function as PropType<() => void>
     },
     belongTopMenu: {
       type: String,
@@ -141,6 +148,7 @@ export default defineComponent({
       overflow: hidden;
       overflow-x: auto;
       width: 280px;
+      padding-left: 36px;
 
       .indexlayout-top-menu-li {
         display: inline-block;

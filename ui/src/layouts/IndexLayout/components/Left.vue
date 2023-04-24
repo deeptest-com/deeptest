@@ -15,17 +15,10 @@
           :onOpenChange="onOpenChange"
           :menuData="menuData">
       </sider-menu>
-      <CollapsedIcon @click="toggleCollapsed" :collapsed="collapsed"/>
     </div>
-
     <div v-if="version" class="version">
       V{{ version }}
     </div>
-
-    <!--    <div class="indexlayout-left-menu-bottom">
-          <SettingsMenu></SettingsMenu>
-        </div>-->
-
   </div>
 </template>
 
@@ -34,13 +27,6 @@
 import {defineComponent, onMounted, PropType, ref} from "vue";
 import {RoutesDataItem} from '@/utils/routes';
 import SiderMenu from './SiderMenu.vue';
-import CollapsedIcon from "@/components/CollapsedIcon/index.vue"
-import SettingsMenu from './SettingsMenu.vue'
-import {useI18n} from "vue-i18n";
-import {
-  CaretRightOutlined,
-  CaretLeftOutlined
-} from '@ant-design/icons-vue';
 
 export default defineComponent({
   name: 'Left',
@@ -53,9 +39,7 @@ export default defineComponent({
       type: Boolean,
       default: true
     },
-    toggleCollapsed: {
-      type: Function as PropType<() => void>
-    },
+
     belongTopMenu: {
       type: String,
       default: ''
@@ -87,7 +71,6 @@ export default defineComponent({
   },
   components: {
     SiderMenu,
-    CollapsedIcon
   },
 
 })
@@ -162,29 +145,6 @@ export default defineComponent({
     .left-scrollbar {
       width: 100%;
       height: 100%;
-    }
-    .expand-icon{
-      position: fixed;
-      width: 12px;
-      height: 56px;
-      top:115px;
-      opacity: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      left: 223px;
-      z-index: 9;
-      cursor: pointer;
-      background: rgba(255, 255, 255, 0.9);
-      border-radius: 0px 8px 8px 0px;
-      //transition: opacity 5s;
-      &.collapsed{
-        left: 54px;
-      }
-      .icon{
-        font-size: 12px;
-        color: #8A8A8A;;
-      }
     }
   }
 

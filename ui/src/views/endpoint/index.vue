@@ -1,9 +1,13 @@
 <template>
   <div class="container">
     <div class="content">
-      <div class="left tree">
+      <div class="left tree" v-if="!collapsed">
         <EndpointTree @select="selectNode"/>
       </div>
+      <CollapsedIcon
+          :style="{left:'294px',top:'4px'}"
+          :collapsedStyle="{left:'-9px', top:'4px'}"
+          @click="collapsed = !collapsed" :collapsed="collapsed"/>
       <div class="right">
         <!--  头部搜索区域  -->
         <div class="top-action">
@@ -86,13 +90,11 @@
         </a-table>
       </div>
     </div>
-
     <CreateEndpointModal
         :visible="createApiModalVisible"
         :selectedCategoryId="selectedCategoryId"
         @cancal="createApiModalVisible = false;"
         @ok="handleCreateApi"/>
-
     <!-- 编辑接口时，展开抽屉   -->
     <Drawer
         :destroyOnClose="true"
@@ -111,7 +113,7 @@ import debounce from "lodash.debounce";
 import EndpointTree from './list/tree.vue';
 import {ColumnProps} from 'ant-design-vue/es/table/interface';
 import {MoreOutlined} from '@ant-design/icons-vue';
-import {endpointStatusOpts,endpointStatus} from '@/config/constant';
+import {endpointStatusOpts, endpointStatus} from '@/config/constant';
 import EditAndShowField from '@/components/EditAndShow/index.vue';
 import CreateEndpointModal from './components/CreateEndpointModal.vue';
 import TableFilter from './components/TableFilter.vue';
@@ -119,13 +121,13 @@ import Drawer from './components/Drawer/index.vue'
 import EditAndShowSelect from '@/components/EditAndShowSelect/index.vue';
 import {useStore} from "vuex";
 import {Endpoint, PaginationConfig} from "@/views/endpoint/data";
-
+import CollapsedIcon from "@/components/CollapsedIcon/index.vue"
 import {StateType as ServeStateType} from "@/store/serve";
 import {StateType as Debug} from "@/views/component/debug/store";
 import {message, Modal} from 'ant-design-vue';
 
 const store = useStore<{ Endpoint, ProjectGlobal, Debug: Debug, ServeGlobal: ServeStateType }>();
-
+const collapsed = ref(false);
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const currServe = computed<any>(() => store.state.ServeGlobal.currServe);
 const serves = computed<any>(() => store.state.ServeGlobal.serves);
@@ -319,6 +321,7 @@ async function refreshList() {
 .content {
   display: flex;
   width: 100%;
+  position: relative;
 
   .left {
     width: 300px;

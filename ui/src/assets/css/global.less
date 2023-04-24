@@ -7,9 +7,78 @@
 @import './custom';
 
 #nprogress .bar {
-    background: @primary-color !important;
+  background: @primary-color !important;
 }
-.text-align-right{
-    text-align: right;
+
+.text-align-right {
+  text-align: right;
+}
+
+// 底部项目切换样式覆盖
+.header-top-left-project-switch-con {
+  width: 300px;
+  height: 300px;
+
+  .ant-dropdown-content.menu {
+    position: relative;
+    max-height: 300px;
+    height: 300px;
+    overflow: hidden;
+    .menu-item {
+      &:hover {
+        background: transparent;
+      }
+
+      &.filter, &.footer {
+        position: absolute;
+        left: 0;
+        height: 36px;
+        width: 100%;
+        z-index: 9;
+        background: #ffffff;
+      }
+
+      &.filter {
+        top: 0;
+      }
+
+      &.footer {
+        bottom: 0;
+        border-top: 1px solid #D0D7DE;
+
+        .ant-dropdown-menu-title-content {
+          display: flex;
+          justify-content: space-between;
+        }
+      }
+
+      &.menu-scroll {
+        max-height: 300px;
+        position: absolute;
+        width: 100%;
+        top: 0;
+        left: 0;
+        z-index: 1;
+        overflow-y: scroll;
+        overflow-x: hidden;
+        .ant-dropdown-menu-title-content {
+          display: block;
+          padding: 36px 0;
+          .menu-scroll-item {
+            width: 100%;
+            height: 36px;
+            line-height: 36px;
+            &.my,&.recently{
+              cursor: default;
+            }
+          }
+        }
+
+      }
+    }
+
+
+  }
+
 }
 

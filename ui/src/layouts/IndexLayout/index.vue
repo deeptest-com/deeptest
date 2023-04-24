@@ -21,8 +21,8 @@
           :tabNavEnable="tabNavEnable"
           :topNavEnable="topNavEnable"
           :belongTopMenu="belongTopMenu"
-          :toggleCollapsed="toggleCollapsed"
           :breadCrumbs="breadCrumbs"
+          :toggleCollapsed="toggleCollapsed"
           :menuData="permissionMenuData"
           :routeItem="routeItem"
       >

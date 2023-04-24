@@ -1,25 +1,14 @@
 <template>
   <div id="indexlayout-right-top" :class="{'topNavEnable': !topNavEnable, 'tabNavEnable': !tabNavEnable }">
     <div class="indexlayout-right-top-top">
-      <div class="indexlayout-flexible"
-           @click="() => {
-                if(toggleCollapsed) {
-                  toggleCollapsed();
-                }
-              }"
-      >
-        <MenuUnfoldOutlined style="fontSize: 18px; " v-if="collapsed"/>
-        <MenuFoldOutlined style="fontSize: 18px; "  v-else/>
-      </div>
-
       <div class="indexlayout-top-menu">
+        <CollapsedIcon @click="toggleCollapsed"  :collapsed="collapsed"/>
         <RightTopProject/>
       </div>
       <div class="indexlayout-top-menu-right">
         <RightTopSettings/>
       </div>
     </div>
-
     <RightTopWebsocket/>
     <RightTopUpdate />
   </div>
@@ -28,20 +17,21 @@
 import {defineComponent, PropType, toRefs} from "vue";
 import {useI18n} from "vue-i18n";
 import {BreadcrumbType, RoutesDataItem} from '@/utils/routes';
-import {MenuFoldOutlined, MenuUnfoldOutlined,UserOutlined} from '@ant-design/icons-vue';
 import RightTopProject from './RightTopProject.vue';
 import RightTopSettings from './RightTopSettings.vue';
 import RightTopWebsocket from './RightTopWebsocket.vue';
 import RightTopUpdate from './RightTopUpdate.vue';
 import useTopMenuWidth from "../composables/useTopMenuWidth";
+import CollapsedIcon from "@/components/CollapsedIcon/index.vue"
 
 export default defineComponent({
   name: 'RightTop',
   components: {
-    MenuFoldOutlined, MenuUnfoldOutlined,
     RightTopProject,
     RightTopSettings,
-    RightTopWebsocket, RightTopUpdate,
+    CollapsedIcon,
+    RightTopWebsocket,
+    RightTopUpdate,
   },
   props: {
     collapsed: {
@@ -56,12 +46,12 @@ export default defineComponent({
       type: Boolean,
       default: true
     },
+    toggleCollapsed: {
+      type: Function as PropType<() => void>
+    },
     belongTopMenu: {
       type: String,
       default: ''
-    },
-    toggleCollapsed: {
-      type: Function as PropType<() => void>
     },
     breadCrumbs: {
       type: Array as PropType<BreadcrumbType[]>,
@@ -158,6 +148,7 @@ export default defineComponent({
       overflow: hidden;
       overflow-x: auto;
       width: 280px;
+      padding-left: 36px;
 
       .indexlayout-top-menu-li {
         display: inline-block;

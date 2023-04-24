@@ -105,18 +105,27 @@ func (r *EndpointRepo) SaveAll(endpoint *model.Endpoint) (err error) {
 		if err != nil {
 			return err
 		}
+
 		//更新终端
 		err = r.saveEndpoint(endpoint)
 		if err != nil {
 			return err
 		}
+
 		//保存路径参数
 		err = r.saveEndpointParams(endpoint.ID, endpoint.PathParams)
 		if err != nil {
 			return err
 		}
+
 		//保存接口
 		err = r.saveInterfaces(endpoint.ID, endpoint.ProjectId, endpoint.Path, endpoint.Version, endpoint.Interfaces)
+		if err != nil {
+			return err
+		}
+
+		//更新调试接口
+		err = r.updateDebugInterfaceUrl(endpoint.ID, endpoint.Path)
 		if err != nil {
 			return err
 		}
@@ -214,6 +223,15 @@ func (r *EndpointRepo) saveInterfaces(endpointId, projectId uint, path, version 
 		*/
 
 	}
+	return
+}
+
+//保存调试接口Url
+func (r *EndpointRepo) updateDebugInterfaceUrl(endpointId uint, url string) (err error) {
+	err = r.DB.Model(&model.DebugInterface{}).
+		Where("endpoint_id = ?", endpointId).
+		Update("url", url).Error
+
 	return
 }
 

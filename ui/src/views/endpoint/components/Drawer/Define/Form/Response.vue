@@ -8,9 +8,13 @@
       <span class="label-name">选择响应代码</span>
     </a-col>
     <a-col :span="21">
-      <a-radio-group v-model:value="selectedCode" button-style="solid">
+      <a-radio-group v-model:value="selectedCode" button-style="outline">
         <a-radio-button
-            :class="{'has-defined': hasDefinedCode(code.value)}"
+            :class="{'has-defined': hasDefinedCode(code.value),'res-code-btn':true}"
+            :style="{ color: hasDefinedCode(code.value) ? code.color : '',
+                      'box-shadow': `none` ,
+                      background: code.value !== selectedCode ? '#f5f5f5' : '#fff',
+                     'border-color': '#d9d9d9'}"
             :key="code.value" v-for="code in responseCodes.filter(item => item.enabled)"
             :value="code.value">
           {{ code.label }}
@@ -220,6 +224,11 @@ function handleResHeaderChange(data) {
   //font-weight: bold;
 }
 
+.ant-radio-button-wrapper-checked.res-code-btn{
+  &:before{
+    display: none;
+  }
+}
 .label-name {
   margin-left: 4px;
 }

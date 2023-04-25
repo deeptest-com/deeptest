@@ -19,7 +19,7 @@ type EndpointReqPaginate struct {
 type EndpointInterfaceReqPaginate struct {
 	_domain.PaginateReq
 
-	Title      string `json:"title"`
+	Keywords   string `json:"Keywords"`
 	CategoryId uint   `json:"categoryId"`
 }
 

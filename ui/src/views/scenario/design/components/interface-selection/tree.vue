@@ -6,7 +6,9 @@
             v-model:value="serveId"
             :placeholder="'请选择服务'"
             :bordered="true"
-            @change="selectServe">
+            @change="selectServe"
+            size="small"
+            class="dp-no-border">
           <a-select-option v-for="item in serves" :key="item.id" :value="item.id">{{ item.name }}</a-select-option>
         </a-select>
       </div>

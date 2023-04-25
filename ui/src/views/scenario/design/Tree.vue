@@ -69,8 +69,7 @@
     <InterfaceSelection
         v-if="interfaceSelectionVisible"
         :onFinish="interfaceSelectionFinish"
-        :onCancel="interfaceSelectionCancel"
-    />
+        :onCancel="interfaceSelectionCancel" />
 
   </div>
 </template>
@@ -322,22 +321,22 @@ const addNode = (mode, processorCategory, processorType,
 }
 
 const interfaceSelectionVisible = ref(false)
-const interfaceSelectionFinish = (selectedNodes) => {
+
+const interfaceSelectionFinish = (interfaceIds) => {
   const targetNode = treeDataMap.value[targetModelId]
-  console.log('interfaceSelectionFinish', selectedNodes, targetNode)
+  console.log('interfaceSelectionFinish', interfaceIds, targetNode)
 
-  store.dispatch('Scenario/addInterfaces',
-      {
-        selectedNodes: selectedNodes,
-        targetId: targetNode.id,
-      }).then((newNode) => {
-        console.log('addInterfaces successfully', newNode)
+  store.dispatch('Scenario/addInterfaces', {
+    interfaceIds: interfaceIds,
+      targetId: targetNode.id,
+    }).then((newNode) => {
+      console.log('addInterfaces successfully', newNode)
 
-        interfaceSelectionVisible.value = false
-        selectNode([newNode.id], null)
-        expandOneKey(treeDataMap.value, newNode.parentId, expandedKeys.value) // expend new node
-        setExpandedKeys('scenario', treeData.value[0].scenarioId, expandedKeys.value)
-      })
+      interfaceSelectionVisible.value = false
+      selectNode([newNode.id], null)
+      expandOneKey(treeDataMap.value, newNode.parentId, expandedKeys.value) // expend new node
+      setExpandedKeys('scenario', treeData.value[0].scenarioId, expandedKeys.value)
+    })
 }
 
 const interfaceSelectionCancel = () => {

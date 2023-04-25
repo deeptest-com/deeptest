@@ -1,15 +1,12 @@
 package handler
 
 import (
-	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
-	"github.com/aaronchen2k/deeptest/internal/server/core/web/validate"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/kataras/iris/v12"
 	"github.com/snowlyg/multi"
 	"go.uber.org/zap"
-	"strings"
 )
 
 type SummaryCtrl struct {
@@ -64,16 +61,17 @@ func (c *SummaryCtrl) Bugs(ctx iris.Context) {
 func (c *SummaryCtrl) Details(ctx iris.Context) {
 
 	userId := multi.GetUserId(ctx)
-
-	req := v1.ProjectReq{}
-	if err := ctx.ReadQuery(&req); err != nil {
-		errs := validate.ValidRequest(err)
-		if len(errs) > 0 {
-			logUtils.Errorf("参数验证失败", zap.String("错误", strings.Join(errs, ";")))
-			ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: strings.Join(errs, ";")})
-			return
+	/*
+		req := v1.ProjectReq{}
+		if err := ctx.ReadQuery(&req); err != nil {
+			errs := validate.ValidRequest(err)
+			if len(errs) > 0 {
+				logUtils.Errorf("参数验证失败", zap.String("错误", strings.Join(errs, ";")))
+				ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: strings.Join(errs, ";")})
+				return
+			}
 		}
-	}
+	*/
 
 	data, err := c.SummaryService.Details(int64(userId))
 

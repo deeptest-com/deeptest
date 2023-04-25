@@ -5,12 +5,14 @@ import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
+	"github.com/aaronchen2k/deeptest/internal/server/modules/source"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 )
 
 type ProjectService struct {
-	ProjectRepo *repo.ProjectRepo `inject:""`
-	ServeRepo   *repo.ServeRepo   `inject:""`
+	ProjectRepo  *repo.ProjectRepo    `inject:""`
+	ServeRepo    *repo.ServeRepo      `inject:""`
+	SampleSource *source.SampleSource `inject:""`
 }
 
 func NewProjectService() *ProjectService {
@@ -31,8 +33,9 @@ func (s *ProjectService) Get(id uint) (model.Project, error) {
 	return s.ProjectRepo.Get(id)
 }
 
-func (s *ProjectService) Create(req v1.ProjectReq, userId uint) (uint, *_domain.BizErr) {
-	return s.ProjectRepo.Create(req, userId)
+func (s *ProjectService) Create(req v1.ProjectReq, userId uint) (id uint, err *_domain.BizErr) {
+	id, err = s.ProjectRepo.Create(req, userId)
+	return
 }
 
 func (s *ProjectService) Update(id uint, req v1.ProjectReq) error {
@@ -40,7 +43,6 @@ func (s *ProjectService) Update(id uint, req v1.ProjectReq) error {
 }
 
 func (s *ProjectService) DeleteById(id uint) error {
-	//TODO
 	count, err := s.ServeRepo.GetCountByProject(id)
 	if err != nil {
 		return err
@@ -87,3 +89,15 @@ func (s *ProjectService) GetCurrProjectByUser(userId uint) (currProject model.Pr
 
 	return
 }
+
+/*
+func (s *ProjectService) createSample(projectId uint) (err error) {
+	serve, endpoint, _ := s.SampleSource.GetSources()
+
+	serve.ProjectId = projectId
+	endpoint.ProjectId = projectId
+	//err = s.ProjectRepo.CreateSample(serve, endpoint)
+
+	return err
+}
+*/

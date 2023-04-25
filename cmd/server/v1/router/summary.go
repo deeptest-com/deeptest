@@ -24,7 +24,7 @@ func (m *SummaryModule) Party() module.WebModule {
 		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
 		index.Get("/card/{projectId:uint}", m.SummaryCtrl.Card).Name = "汇总卡片位信息"
 		index.Get("/bugs/{projectId:uint}", m.SummaryCtrl.Bugs).Name = "汇总bug信息"
-		index.Get("/details", m.SummaryCtrl.Details).Name = "汇总项目详情"
+		index.Get("/details/{projectId:uint}", m.SummaryCtrl.Details).Name = "汇总项目详情"
 		index.Get("/projectUserRanking/{cycle:uint}/{projectId:uint}", m.SummaryCtrl.ProjectUserRanking).Name = "汇总项目用户排行数据"
 	}
 	m.Cron.AddTask("summary", consts.SummaryDataCheckInterval, func() {

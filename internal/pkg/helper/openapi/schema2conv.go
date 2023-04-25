@@ -2,7 +2,6 @@ package openapi
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/getkin/kin-openapi/openapi3"
 	"reflect"
 )
@@ -92,7 +91,7 @@ func (s *schema2conv) Schema2Example(schema Schema) (object interface{}) {
 		schema = ref
 		s.sets[schema.Ref]++
 	}
-	fmt.Println(schema, "+++++=")
+
 	switch schema.Type {
 	case openapi3.TypeObject:
 		object = map[string]interface{}{}

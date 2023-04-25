@@ -1,9 +1,15 @@
 <template>
   <div class="container">
     <div class="content">
-      <div class="left tree">
+      <div class="left tree" v-if="!collapsed">
         <EndpointTree @select="selectNode"/>
+
+        <Tree/>
       </div>
+      <CollapsedIcon
+          :style="{left:'294px',top:'4px'}"
+          :collapsedStyle="{left:'-9px', top:'4px'}"
+          @click="collapsed = !collapsed" :collapsed="collapsed"/>
       <div class="right">
         <!--  头部搜索区域  -->
         <div class="top-action">
@@ -17,11 +23,10 @@
           </div>
           <a-form-item label="选择服务">
             <a-select
-              v-model:value="currServe.id"
-              :placeholder="'请选择服务'"
-              :bordered="true"
-              style="width: 280px;margin-left: 16px;"
-              @change="selectServe">
+                v-model:value="currServe.id"
+                :placeholder="'请选择服务'"
+                :bordered="true"
+                @change="selectServe">
               <a-select-option v-for="item in serves" :key="item.id" :value="item.id">{{ item.name }}</a-select-option>
             </a-select>
           </a-form-item>
@@ -45,23 +50,18 @@
             :data-source="list">
           <template #colTitle="{text,record}">
             <div class="customTitleColRender">
-              <EditAndShowField :custom-class="'custom-endpoint show-on-hover'" :value="text" placeholder="请输入接口名称" @update="(e: string) => handleUpdateEndpoint(e, record)" @edit="editEndpoint(record)" />
+              <EditAndShowField :custom-class="'custom-endpoint show-on-hover'" :value="text" placeholder="请输入接口名称"
+                                @update="(e: string) => handleUpdateEndpoint(e, record)" @edit="editEndpoint(record)"/>
             </div>
           </template>
 
           <template #colStatus="{record}">
             <div class="customStatusColRender">
-              <a-select
+              <EditAndShowSelect
+                  :label="endpointStatus.get(record?.status || 0 )"
                   :value="record?.status"
-                  style="width: 100px"
-                  :size="'small'"
-                  placeholder="请修改接口状态"
                   :options="endpointStatusOpts"
-                  @change="(val) => {
-                  handleChangeStatus(val,record);
-                  }"
-              >
-              </a-select>
+                  @update="(val) => { handleChangeStatus(val,record);}"/>
             </div>
           </template>
 
@@ -92,13 +92,11 @@
         </a-table>
       </div>
     </div>
-
     <CreateEndpointModal
         :visible="createApiModalVisible"
         :selectedCategoryId="selectedCategoryId"
         @cancal="createApiModalVisible = false;"
         @ok="handleCreateApi"/>
-
     <!-- 编辑接口时，展开抽屉   -->
     <Drawer
         :destroyOnClose="true"
@@ -112,25 +110,27 @@ import {
   computed, reactive, toRefs, ref, onMounted,
   watch
 } from 'vue';
-import { useRouter } from 'vue-router';
+import {useRouter} from 'vue-router';
 import debounce from "lodash.debounce";
 import EndpointTree from './list/tree.vue';
 import {ColumnProps} from 'ant-design-vue/es/table/interface';
 import {MoreOutlined} from '@ant-design/icons-vue';
-import {endpointStatusOpts} from '@/config/constant';
+import {endpointStatusOpts, endpointStatus} from '@/config/constant';
 import EditAndShowField from '@/components/EditAndShow/index.vue';
 import CreateEndpointModal from './components/CreateEndpointModal.vue';
 import TableFilter from './components/TableFilter.vue';
 import Drawer from './components/Drawer/index.vue'
+import EditAndShowSelect from '@/components/EditAndShowSelect/index.vue';
 import {useStore} from "vuex";
 import {Endpoint, PaginationConfig} from "@/views/endpoint/data";
-
+import CollapsedIcon from "@/components/CollapsedIcon/index.vue"
 import {StateType as ServeStateType} from "@/store/serve";
 import {StateType as Debug} from "@/views/component/debug/store";
-import { message, Modal } from 'ant-design-vue';
+import {message, Modal} from 'ant-design-vue';
+import Tree from './tree.vue'
 
 const store = useStore<{ Endpoint, ProjectGlobal, Debug: Debug, ServeGlobal: ServeStateType }>();
-
+const collapsed = ref(false);
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const currServe = computed<any>(() => store.state.ServeGlobal.currServe);
 const serves = computed<any>(() => store.state.ServeGlobal.serves);
@@ -209,7 +209,7 @@ function handleCreateEndPoint() {
 
 async function handleChangeStatus(value: any, record: any,) {
   await store.dispatch('Endpoint/updateStatus', {
-    id:record.id,
+    id: record.id,
     status: value
   });
 }
@@ -323,6 +323,7 @@ async function refreshList() {
 .content {
   display: flex;
   width: 100%;
+  position: relative;
 
   .left {
     width: 300px;

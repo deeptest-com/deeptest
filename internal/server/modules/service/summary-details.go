@@ -79,22 +79,25 @@ func (s *SummaryDetailsService) Card(projectId int64) (res v1.ResSummaryCard, er
 }
 
 func (s *SummaryDetailsService) Details(userId int64) (res v1.ResSummaryDetail, err error) {
-	var resDetail v1.ResSummaryDetails
-	var resDetails []v1.ResSummaryDetails
 	var allDetails []model.SummaryDetails
+	var currentUserDetails []model.SummaryDetails
 
-	if userId == 0 {
-		res.ProjectTotal, err = s.Count()
-		allDetails, err = s.Find()
+	//收集结果
+	res.AllProjectTotal, err = s.Count()
+	res.AllProjectTotal, err = s.Count()
+	res.CurrentUserProjectTotal, err = s.CountByUserId(userId)
+	projectIds, err := s.FindProjectIdsByUserId(userId)
+	allDetails, err = s.Find()
+	currentUserDetails, err = s.FindByProjectIds(projectIds)
+	//组装返回的json结构体
+	res.AllProjectList, err = s.CopyDetails(allDetails)
+	res.CurrentUserProjectList, err = s.CopyDetails(currentUserDetails)
+	return
+}
 
-	} else {
-		var projectIds []int64
-		res.ProjectTotal, err = s.CountByUserId(userId)
-		projectIds, err = s.FindProjectIdsByUserId(userId)
-		allDetails, err = s.FindByProjectIds(projectIds)
-	}
-
-	for _, detail := range allDetails {
+func (s *SummaryDetailsService) CopyDetails(details []model.SummaryDetails) (resDetails []v1.ResSummaryDetails, err error) {
+	for _, detail := range details {
+		var resDetail v1.ResSummaryDetails
 		copier.CopyWithOption(&resDetail, detail, copier.Option{DeepCopy: true})
 		resDetail.Id = detail.ID
 		resDetail.CreatedAt = time.Unix(detail.CreatedAt.Unix(), 0).Format("2006-01-02 15:04:05")
@@ -104,8 +107,6 @@ func (s *SummaryDetailsService) Details(userId int64) (res v1.ResSummaryDetail, 
 		resDetail.UserList = userList
 		resDetails = append(resDetails, resDetail)
 	}
-	res.ProjectList = resDetails
-
 	return
 }
 
@@ -275,7 +276,5 @@ func (s *SummaryDetailsService) CopyDetailsWithoutBaseModel(detail model.Summary
 }
 
 func (s *SummaryDetailsService) CollectionProjectInfo() (details []model.SummaryDetails, err error) {
-	//r := *repo.NewSummaryDetailsRepo()
-	//return r.CollectionProjectInfo()
 	return s.SummaryDetailsRepo.CollectionProjectInfo()
 }

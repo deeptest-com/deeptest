@@ -68,6 +68,11 @@ func (s *SummaryBugsService) FindByProjectIdGroupByBugSeverity(projectId int64) 
 	return
 }
 
+func (s *SummaryBugsService) FindProjectIds() (projectIds []int64, err error) {
+	r := repo.NewSummaryBugsRepo()
+	return r.FindProjectIds()
+}
+
 // FindGroupByBugSeverity
 func (s *SummaryBugsService) FindGroupByBugSeverity() (summaryBugsSeverity []model.SummaryBugsSeverity, err error) {
 	r := repo.NewSummaryBugsRepo()

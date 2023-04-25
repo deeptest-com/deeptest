@@ -1,15 +1,5 @@
 <template>
   <div :class="['indexlayout-top-settings', theme]">
-
-    <div class="msgs">
-      <a @click="gotoMessage">
-        <a-badge count="100" :overflowCount="99" show-zero
-                 :numberStyle="{fontSize: '12px', minWidth: '12px', height: '10px', lineHeight: '10px', padding: '0 4px','box-shadow':'none'}">
-          <MailOutlined  class="dp-light user-icon" :style="{ fontSize: '16px',left:'-2px',position:'relative' }"/>
-        </a-badge>
-      </a>
-    </div>
-
     <div class="user-info">
       <a-dropdown>
         <a class="indexlayout-top-usermenu ant-dropdown-link">
@@ -22,9 +12,6 @@
             <a-menu-item key="profile">
               <SettingOutlined class="settings"/>个人信息
             </a-menu-item>
-            <a-menu-item key="management">
-              <SettingOutlined class="settings"/>用户管理
-            </a-menu-item>
             <a-menu-item key="logout">
               <LogoutOutlined/> 登出
             </a-menu-item>
@@ -32,16 +19,30 @@
         </template>
       </a-dropdown>
     </div>
-
-
+    <div class="msgs">
+      <a @click="gotoMessage">
+        <a-badge count="100" :overflowCount="99" show-zero
+                 :numberStyle="{fontSize: '12px', minWidth: '12px', height: '10px', lineHeight: '10px', padding: '0 4px','box-shadow':'none'}">
+          <MailOutlined  class="dp-light user-icon" :style="{ fontSize: '16px',left:'-2px',position:'relative' }"/>
+        </a-badge>
+      </a>
+    </div>
+    <div class="user-management" @click="onManagementClick">
+      <template v-if="theme === 'white-theme'">
+        <icon-svg type="setting-dark" :size="20" :fill="'#2A325A'"></icon-svg>
+      </template>
+      <template v-else>
+        <icon-svg type="setting" :size="20" :fill="'#fff'"></icon-svg>
+      </template>
+    </div>  
   </div>
 </template>
 <script lang="ts">
 import {computed, defineComponent, ref} from "vue";
 import {useStore} from "vuex";
-import {DownOutlined, BellOutlined, SettingOutlined, UserOutlined,LogoutOutlined, MailOutlined} from '@ant-design/icons-vue';
-
+import {DownOutlined, SettingOutlined, UserOutlined,LogoutOutlined, MailOutlined} from '@ant-design/icons-vue';
 import {useI18n} from "vue-i18n";
+import IconSvg from "@/components/IconSvg";
 import {CurrentUser, StateType as UserStateType} from "@/store/user";
 import {useRouter} from "vue-router";
 
@@ -50,7 +51,8 @@ export default defineComponent({
   components: {
     DownOutlined,
     SettingOutlined, UserOutlined,LogoutOutlined,
-    MailOutlined
+    MailOutlined,
+    IconSvg
   },
   props: {
     theme: {
@@ -103,6 +105,10 @@ export default defineComponent({
       }
     }
 
+    const onManagementClick = () => {
+      router.replace({ path: '/user-manage/index' })
+    }
+
     return {
       t,
       currentUser,
@@ -110,6 +116,7 @@ export default defineComponent({
       onMenuClick,
       selectLangVisible,
       closeSelectLang,
+      onManagementClick
     }
   }
 })
@@ -122,6 +129,7 @@ export default defineComponent({
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  padding-right: 16px;
 
   &.white-theme {
     .msgs {
@@ -153,6 +161,11 @@ export default defineComponent({
     color: #c0c4cc;
   }
 }
+
+.user-management {
+  display: flex;
+  align-items: center;
+}
 .user-info {
   .user-name {
     margin-left: 4px;
@@ -168,13 +181,13 @@ export default defineComponent({
     //font-size: 18px;
     //margin-left: 4px;
   }
-  margin-right: 24px;
+  margin-right: 8px;
 
 }
 
 .msgs {
   text-align: center;
-  margin-right: 16px;
+  margin-right: 8px;
   display: flex;
   align-items: center;
   justify-content: center;

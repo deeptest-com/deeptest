@@ -1,6 +1,7 @@
 <template>
   <div class="invocation-main">
-    <div class="space"></div>
+    <div class="url">{{url}}</div>
+
     <div class="send">
       <a-dropdown-button type="primary" trigger="click" @click="sendRequest">
         <span>发送</span>
@@ -59,7 +60,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, ref, PropType, onMounted, onUnmounted, defineProps, inject} from "vue";
+import {computed, ref, PropType, onMounted, onUnmounted, defineProps, inject, watch} from "vue";
 import { notification, message } from 'ant-design-vue';
 import { DownOutlined, UndoOutlined, SaveOutlined, LinkOutlined, CheckOutlined, EditOutlined } from '@ant-design/icons-vue';
 import {useI18n} from "vue-i18n";
@@ -73,8 +74,9 @@ import ContextMenu from "@/components/Editor/ContextMenu.vue"
 
 import {Param} from "@/views/component/debug/data";
 import {StateType as Debug} from "@/views/component/debug/store";
-const store = useStore<{  Debug: Debug }>();
+import {addSepIfNeeded} from "@/utils/url";
 
+const store = useStore<{  Debug: Debug }>();
 const debugData = computed<any>(() => store.state.Debug.debugData);
 
 const methods = Methods;
@@ -92,6 +94,8 @@ const props = defineProps({
 const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
 
+const url = computed(() => addSepIfNeeded(debugData.value.baseUrl) + debugData.value.url)
+
 const selectMethod = (val) => {
   console.log('selectMethod', val.key)
   debugData.value.method = val.key
@@ -99,6 +103,7 @@ const selectMethod = (val) => {
 
 const sendRequest = (e) => {
   console.log('sendRequest', debugData.value)
+
   if (validateInfo()) {
     props.onSend()
   }
@@ -106,9 +111,7 @@ const sendRequest = (e) => {
 
 const save = (e) => {
   let data = JSON.parse(JSON.stringify(debugData.value))
-  console.log('save', data)
   data = prepareDataForRequest(data)
-  console.log('save', data)
 
   if (validateInfo()) {
     props.onSave(data)
@@ -211,7 +214,7 @@ const onMenuClick = (key) => {
 .invocation-main {
   display: flex;
   padding: 0;
-  .space {
+  .url {
     flex: 1;
   }
   .send {

@@ -53,8 +53,13 @@ func (s *ExecService) Request(req v1.DebugData) (ret v1.DebugResponse, err error
 	agentExec.ReplaceAll(&req.BaseRequest, agentExec.Environment, agentExec.Variables, agentExec.DatapoolData)
 
 	// send request
-	req.BaseRequest.Url = _httpUtils.AddSepIfNeeded(req.BaseUrl) + req.BaseRequest.Url
+
+	reqUrl := req.Url
+	req.BaseRequest.Url = _httpUtils.AddSepIfNeeded(req.BaseUrl) + reqUrl
+
 	ret, err = agentExec.Invoke(&req.BaseRequest)
+
+	req.BaseRequest.Url = reqUrl // rollback for saved to db
 
 	ret.Id = req.EndpointInterfaceId
 

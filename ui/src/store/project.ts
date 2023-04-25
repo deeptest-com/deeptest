@@ -7,7 +7,8 @@ import {setCache} from "@/utils/localCache";
 
 export interface StateType {
   projects: any[]
-  currProject: any
+  currProject: any,
+  recentProjects: any[],
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
@@ -23,6 +24,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
 
 const initState: StateType = {
   projects: [],
+  recentProjects:[],
   currProject: {},
 }
 
@@ -34,12 +36,10 @@ const StoreModel: ModuleType = {
   },
   mutations: {
     saveProjects(state, payload) {
-      console.log('payload', payload)
-
       setCache(settings.currProjectId, payload.currProject.id);
-
       state.projects = payload.projects;
       state.currProject = payload.currProject;
+      state.recentProjects = payload.recentProjects;
     },
   },
   actions: {
@@ -47,6 +47,7 @@ const StoreModel: ModuleType = {
       try {
         const response: ResponseData = await getByUser(currProjectId);
         const { data } = response;
+        data.recentProjects = response?.data?.projects || [];
         commit('saveProjects', data || 0);
 
         return true;
@@ -61,6 +62,8 @@ const StoreModel: ModuleType = {
 
         const response: ResponseData = await getByUser(projectId);
         const { data } = response;
+        data.recentProjects = response?.data?.projects || [];
+        console.log('data', data);
         commit('saveProjects', data || 0);
 
         return true;

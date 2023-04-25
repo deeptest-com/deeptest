@@ -1,5 +1,3 @@
-
-
 /**
  * 请求方法选择项
  * */
@@ -7,34 +5,43 @@ export const requestMethodOpts = [
     {
         label: "GET",
         value: "GET",
+        color: "#04C495",
     },
     {
         label: "POST",
         value: "POST",
+        color: "#447DFD",
     },
     {
         label: "PUT",
         value: "PUT",
+        color: "hsla(20, 90%, 56%, 1)",
     },
     {
         label: "PATCH",
         value: "PATCH",
+        color: "#FF7D00",
+
     },
     {
         label: "DELETE",
         value: "DELETE",
+        color: "#F63838",
     },
     {
         label: "HEAD",
         value: "HEAD",
+        color: "#9520DD",
     },
     {
         label: "OPTIONS",
         value: "OPTIONS",
+        color: "#F9C53F",
     },
     {
         label: "TRACE",
         value: "TRACE",
+        color: "#3958A9",
     },
 ]
 
@@ -76,113 +83,139 @@ export const responseCodes = [
         "description": "100: Continue",
         "value": "100",
         "label": "100",
+        "enabled": true,
+        color: "gray",
     },
     {
         "description": "101: Switching Protocols",
         "value": "101",
-        "label": "101"
+        "label": "101",
+        color: "gray",
     },
     {
         "description": "200: OK",
         "value": "200",
         "enabled": true,
-        "label": "200"
+        "label": "200",
+        color: "green",
     },
     {
         "description": "201: Created",
         "value": "201",
-        "label": "201"
+        "label": "201",
+        color: "green",
     },
     {
         "description": "202: Accepted",
         "value": "202",
-        "label": "202"
+        "label": "202",
+        color: "green",
     },
     {
         "description": "203: Non-Authoritative Information",
         "value": "203",
-        "label": "203"
+        "label": "203",
+        color: "green",
     },
     {
         "description": "204: No Content",
         "value": "204",
-        "label": "204"
+        "label": "204",
+        color: "green",
     },
     {
         "description": "205: Reset Content",
         "value": "205",
-        "label": "205"
+        "label": "205",
+        color: "green",
     },
     {
         "description": "206: Partial Content",
         "value": "206",
-        "label": "206"
+        "label": "206",
+        color: "green",
     },
     {
         "description": "207: Multi-Status (WebDAV)",
         "value": "207",
-        "label": "207"
+        "label": "207",
+        color: "green",
     },
     {
         "description": "208: Already Reported (WebDAV)",
         "value": "208",
-        "label": "208"
+        "label": "208",
+        color: "green",
     },
     {
         "description": "226: IM Used",
         "value": "226",
-        "label": "226"
+        "label": "226",
+        color: "green",
     },
     {
         "description": "300: Multiple Choices",
         "value": "300",
-        "label": "300"
+        "label": "300",
+        color: "#ffd516",
+        "enabled": true,
     },
     {
         "description": "301: Moved Permanently",
         "value": "301",
-        "label": "301"
+        "label": "301",
+        color: "#ffd516",
+        "enabled": true,
     },
     {
         "description": "302: Found",
         "value": "302",
-        "label": "302"
+        "label": "302",
+        color: "#ffd516",
+        "enabled": true,
     },
     {
         "description": "303: See Other",
         "value": "303",
-        "label": "303"
+        "label": "303",
+        color: "#ffd516",
     },
     {
         "description": "304: Not Modified",
         "value": "304",
-        "label": "304"
+        "label": "304",
+        color: "#ffd516",
     },
     {
         "description": "305: Use Proxy",
         "value": "305",
-        "label": "305"
+        "label": "305",
+        color: "#ffd516",
     },
     {
         "description": "306: (Unused)",
         "value": "306",
-        "label": "306"
+        "label": "306",
+        color: "#ffd516",
     },
     {
         "description": "307: Temporary Redirect",
         "value": "307",
-        "label": "307"
+        "label": "307",
+        color: "#ffd516",
     },
     {
         "description": "308: Permanent Redirect (experiemental)",
         "value": "308",
-        "label": "308"
+        "label": "308",
+        color: "#ffd516",
     },
     {
         "description": "400: Bad Request",
         "value": "400",
         "enabled": true,
-        "label": "400"
+        "label": "400",
+        color: "orange",
     },
     {
         "description": "401: Unauthorized",
@@ -192,230 +225,285 @@ export const responseCodes = [
     {
         "description": "402: Payment Required",
         "value": "402",
-        "label": "402"
+        "label": "402",
+        color: "orange",
     },
     {
         "description": "403: Forbidden",
         "value": "403",
         "enabled": true,
-        "label": "403"
+        "label": "403",
+        color: "orange",
     },
     {
         "description": "404: Not Found",
         "value": "404",
-        "label": "404"
+        "label": "404",
+        color: "orange",
+        "enabled": false,
     },
     {
         "description": "405: Method Not Allowed",
         "value": "405",
-        "label": "405"
+        "label": "405",
+        color: "orange",
     },
     {
         "description": "406: Not Acceptable",
         "value": "406",
-        "label": "406"
+        "label": "406",
+        color: "orange",
     },
     {
         "description": "407: Proxy Authentication Required",
         "value": "407",
-        "label": "407"
+        "label": "407",
+        color: "orange",
     },
     {
         "description": "408: Request Timeout",
         "value": "408",
-        "label": "408"
+        "label": "408",
+        color: "orange",
+        "enabled": false,
     },
     {
         "description": "409:Conflict",
         "value": "409",
-        "label": "409"
+        "label": "409",
+        color: "orange",
     },
     {
         "description": "410: Gone",
         "value": "410",
-        "label": "410"
+        "label": "410",
+        color: "orange",
     },
     {
         "description": "411: Length Required",
         "value": "411",
-        "label": "411"
+        "label": "411",
+        color: "orange",
     },
     {
         "description": "412: Precondition Failed",
         "value": "412",
-        "label": "412"
+        "label": "412",
+        color: "orange",
     },
     {
         "description": "413: Request Entity Too Large",
         "value": "413",
-        "label": "413"
+        "label": "413",
+        color: "orange",
     },
     {
         "description": "414:Request-URI Too Long",
         "value": "414",
-        "label": "414"
+        "label": "414",
+        color: "orange",
     },
     {
         "description": "415: Unsupported Media Type",
         "value": "415",
-        "label": "415"
+        "label": "415",
+        color: "orange",
     },
     {
         "description": "416: Requested Range Not Satisfiable",
         "value": "416",
-        "label": "416"
+        "label": "416",
+        color: "orange",
     },
     {
         "description": "417: Expectation Failed",
         "value": "417",
-        "label": "417"
+        "label": "417",
+        color: "orange",
     },
     {
         "description": "418: I'm a teapot (RFC 2324)",
         "value": "418",
-        "label": "418"
+        "label": "418",
+        color: "orange",
     },
     {
         "description": "420: Enhance Your Calm (Twitter)",
         "value": "420",
-        "label": "420"
+        "label": "420",
+        color: "orange",
     },
     {
         "description": "422: Unprocessable Entity (WebDAV)",
         "value": "422",
-        "label": "422"
+        "label": "422",
+        color: "orange",
     },
     {
         "description": "423: Locked (WebDAV)",
         "value": "423",
-        "label": "423"
+        "label": "423",
+        color: "orange",
     },
     {
         "description": "424: Failed Dependency (WebDAV)",
         "value": "424",
-        "label": "424"
+        "label": "424",
+        color: "orange",
     },
     {
         "description": "425: Too Early",
         "value": "425",
-        "label": "425"
+        "label": "425",
+        color: "orange",
     },
     {
         "description": "426: Upgrade Required",
         "value": "426",
-        "label": "426"
+        "label": "426",
+        color: "orange",
     },
     {
         "description": "428: Precondition Required",
         "value": "428",
-        "label": "428"
+        "label": "428",
+        color: "orange",
     },
     {
         "description": "429: Too Many Requests",
         "value": "429",
-        "label": "429"
+        "label": "429",
+        color: "orange",
     },
     {
         "description": "431: Request Header Fields Too Large",
         "value": "431",
-        "label": "431"
+        "label": "431",
+        color: "orange",
     },
     {
         "description": "444: No Response (Nginx)",
         "value": "444",
-        "label": "444"
+        "label": "444",
+        color: "orange",
     },
     {
         "description": "449: Retry With (Microsoft)",
         "value": "449",
-        "label": "449"
+        "label": "449",
+        color: "orange",
     },
     {
         "description": "450: Blocked by Windows Parental Controls (Microsoft)",
         "value": "450",
-        "label": "450"
+        "label": "450",
+        color: "orange",
+        "enabled": false,
     },
     {
         "description": "451: Unavailable For Legal Reasons",
         "value": "451",
-        "label": "451"
+        "label": "451",
+        color: "orange",
     },
     {
         "description": "499: Client Closed Request (Nginx)",
         "value": "499",
-        "label": "499"
+        "label": "499",
+        color: "orange",
+        "enabled": true,
     },
     {
         "description": "500: Internal Server Error",
         "value": "500",
         "label": "500",
         "enabled": true,
+        color: "#F63838",
+
     },
     {
         "description": "501: Not Implemented",
         "value": "501",
         "label": "501",
+        color: "#F63838",
+        "enabled": true,
     },
     {
         "description": "502: Bad Gateway",
         "value": "502",
-        "label": "502"
+        "label": "502",
+        color: "#F63838",
+        "enabled": true,
     },
     {
         "description": "503: Service Unavailable",
         "value": "503",
         "label": "503",
         "enabled": true,
+        color: "#F63838",
     },
     {
         "description": "504: Gateway Timeout",
         "value": "504",
         "label": "504",
+        color: "#F63838",
+        "enabled": true,
     },
     {
         "description": "505: HTTP Version Not Supported",
         "value": "505",
-        "label": "505"
+        "label": "505",
+        color: "#F63838",
     },
     {
         "description": "506: Variant Also Negotiates (Experimental)",
         "value": "506",
-        "label": "506"
+        "label": "506",
+        color: "#F63838",
     },
     {
         "description": "507: Insufficient Storage (WebDAV)",
         "value": "507",
-        "label": "507"
+        "label": "507",
+        color: "#F63838",
     },
     {
         "description": "508: Loop Detected (WebDAV)",
         "value": "508",
-        "label": "508"
+        "label": "508",
+        color: "#F63838",
     },
     {
         "description": "509: Bandwidth Limit Exceeded (Apache)",
         "value": "509",
-        "label": "509"
+        "label": "509",
+        color: "#F63838",
+        "enabled": false,
     },
     {
         "description": "510: Not Extended",
         "value": "510",
-        "label": "510"
+        "label": "510",
+        color: "#F63838",
     },
     {
         "description": "511: Network Authentication Required",
         "value": "511",
-        "label": "511"
+        "label": "511",
+        color: "#F63838",
     },
     {
         "description": "598: Network read timeout error",
         "value": "598",
-        "label": "598"
+        "label": "598",
+        color: "#F63838",
     },
     {
         "description": "599: Network connect timeout error",
         "value": "599",
-        "label": "599"
+        "label": "599",
+        color: "#F63838",
+        "enabled": false,
     }
 ];
 /**
@@ -1078,7 +1166,6 @@ export const defaultHeaderParams = {
     description: '',
     required: false,
 }
-
 
 export const defaultCookieParams = {
     name: '',

@@ -1,5 +1,17 @@
 <template>
   <div class="container">
+    <div class="select-server">
+      <a-form-item label="选择服务">
+        <a-select
+            v-model:value="currServe.id"
+            :placeholder="'请选择服务'"
+            :bordered="true"
+            style="width: 334px"
+            @change="selectServe">
+          <a-select-option v-for="item in serves" :key="item.id" :value="item.id">{{ item.name }}</a-select-option>
+        </a-select>
+      </a-form-item>
+    </div>
     <div class="content">
       <div class="left tree" v-if="!collapsed">
         <EndpointTree @select="selectNode"/>
@@ -11,28 +23,15 @@
           :collapsedStyle="{left:'-9px', top:'4px'}"
           @click="collapsed = !collapsed" :collapsed="collapsed"/>
       <div class="right">
-        <!--  头部搜索区域  -->
         <div class="top-action">
           <a-button class="action-new" type="primary" :loading="loading"
                     @click="handleCreateEndPoinit">新建接口
           </a-button>
-        </div>
-        <div class="top-search">
           <div class="top-search-filter">
             <TableFilter @filter="handleTableFilter"/>
           </div>
-          <a-form-item label="选择服务">
-            <a-select
-                v-model:value="currServe.id"
-                :placeholder="'请选择服务'"
-                :bordered="true"
-                @change="selectServe">
-              <a-select-option v-for="item in serves" :key="item.id" :value="item.id">{{ item.name }}</a-select-option>
-            </a-select>
-          </a-form-item>
         </div>
         <a-table
-            style="margin: 0 16px;"
             :row-selection="{
               selectedRowKeys: selectedRowKeys,
               onChange: onSelectChange
@@ -303,6 +302,16 @@ async function refreshList() {
   min-height: calc(100vh - 80px);
 }
 
+.select-server {
+  padding: 15px 20px;
+  width: 100%;
+  border-bottom: 1px solid #E0E0E0;
+
+  :deep(.ant-row.ant-form-item) {
+    margin: 0;
+  }
+}
+
 .tag-filter-form {
   display: flex;
   justify-content: center;
@@ -340,21 +349,14 @@ async function refreshList() {
   margin-right: 8px;
 }
 
-.top-search {
-  height: 60px;
-  display: flex;
-  align-items: center;
-  margin: 0 16px 8px;
-  justify-content: space-between;
-}
-
 .top-action {
+  width: 100%;
   height: 60px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-left: 16px;
-  margin-top: 8px;
+  padding: 16px;
+  box-sizing: border-box;
 
   .ant-btn {
     margin-right: 16px;
@@ -365,7 +367,7 @@ async function refreshList() {
   width: 150px;
 }
 
-:deep(.top-search .ant-row.ant-form-item) {
+:deep(.top-action .ant-row.ant-form-item) {
   margin: 0;
 }
 

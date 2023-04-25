@@ -9,42 +9,32 @@
             <a-tab-pane :key="0" tab="所有项目"> </a-tab-pane> </a-tabs
         ></template>
         <template #extra>
-          <!-- <a-input-search
-          @change="onSearch"
-          @search="onSearch"
-          v-model:value="queryParams.keywords"
-          placeholder="输入关键字搜索"
-          style="width: 270px; margin-left: 16px"
-        /> -->
+          <a-button type="primary" style="margin-right: 20px" @click="createProjectModalVisible = true">新建项目</a-button>
           <a-radio-group v-model:value="showMode" button-style="solid">
             <a-radio-button value="card">卡片</a-radio-button>
             <a-radio-button value="list">列表</a-radio-button>
           </a-radio-group>
         </template>
-
         <div>
           <HomeList v-if="showMode == 'list'" params />
-          <!-- <CardList
-            v-else
-            :params="{ params: 1 }"
-            :api="'demoListApi/111'"
-            @get-method="getMethod"
-            @delete="handleDel"
-          /> -->
-            <CardList
-            v-else
-           
-          />
+          <CardList v-else />
         </div>
       </a-card>
     </div>
+    <!-- 创建项目弹窗 -->
+    <CreateProjectModal 
+      :visible="createProjectModalVisible" 
+      :formState="modelRef" 
+      @update:visible="createProjectModalVisible = false"
+      @handleSuccess="handleCreateSuccess"
+    />
   </div>
 </template>
-
 
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from "vue";
 import StatisticHeader from "@/components/StatisticHeader/index.vue";
+import CreateProjectModal from "@/components/CreateProjectModal/index.vue";
 import HomeList from "./component/HomeList/index.vue";
 import CardList from "./component/CardList/index.vue";
 import { useStore } from "vuex";
@@ -54,6 +44,8 @@ const store = useStore<{ Home: StateType }>();
 const mode = computed<any[]>(() => store.state.Home.mode);
 const activeKey = ref(1);
 const showMode = ref("card");
+const createProjectModalVisible = ref(false);
+const modelRef = reactive({ name: '', shortName: '' });
 const currentUser = computed<any>(() => store.state.User.currentUser);
 let queryParams = reactive<QueryParams>({
   keywords: "",
@@ -68,7 +60,6 @@ onMounted(() => {
 });
 
 const getList = async (current: number): Promise<void> => {
-  // console.log('queryParams.keywords',queryParams.keywords)
   await store.dispatch("Home/queryProject", {
     keywords: queryParams.keywords,
     enabled: queryParams.enabled,
@@ -78,6 +69,13 @@ const getList = async (current: number): Promise<void> => {
     // page: current,
   });
 };
+
+// 创建项目成功的回调
+const handleCreateSuccess = () => {
+  createProjectModalVisible.value = false;
+  // todo: 重新获取列表
+};
+
 function handleTabClick(e: number) {
   queryParams.userId=e;
    getList(1);

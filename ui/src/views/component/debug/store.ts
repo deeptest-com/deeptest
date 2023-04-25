@@ -28,7 +28,7 @@ import {UsedBy} from "@/utils/enum";
 import {ResponseData} from "@/utils/request";
 
 export interface StateType {
-    debugInfo: DebugInfo
+    debugInfo: any;
     debugData: any;
 
     responseData: Response;
@@ -42,7 +42,7 @@ export interface StateType {
     checkpointData: any;
 }
 const initState: StateType = {
-    debugInfo: {} as DebugInfo,
+    debugInfo: {} as any,
     debugData: {},
     responseData: {} as Response,
 
@@ -176,7 +176,7 @@ const StoreModel: ModuleType = {
                     endpointInterfaceId: data.endpointInterfaceId,
                     scenarioProcessorId  : data.processorId,
                     usedBy:          data.usedBy,
-                } as DebugInfo);
+                });
 
                 const resp: ResponseData = await loadData(data);
                 if (resp.code != 0) return false;

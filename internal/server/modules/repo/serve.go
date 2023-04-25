@@ -414,3 +414,7 @@ func (r *ServeRepo) GetCountByProject(projectId uint) (count int64, err error) {
 	err = r.DB.Model(&model.Serve{}).Where("project_id = ? AND NOT deleted AND not disabled ", projectId).Count(&count).Error
 	return
 }
+
+func (r *ServeRepo) CreateServeSample(projectId uint) (serveId uint, err error) {
+	return
+}

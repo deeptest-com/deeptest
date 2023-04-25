@@ -92,6 +92,6 @@ export interface filterFormState {
 
 interface NewEndpointFormState {
     title: string;
-    categoryId: string | null;
+    categoryId: string | null | number;
     description: string | undefined;
 }

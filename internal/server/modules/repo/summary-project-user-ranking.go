@@ -55,9 +55,10 @@ func (r *SummaryProjectUserRankingRepo) FindGroupByProjectId() (summaryProjectUs
 	return
 }
 
-func (r *SummaryProjectUserRankingRepo) CheckUpdated(oldTime *time.Time) (result bool, err error) {
-	var newTime *time.Time
+func (r *SummaryProjectUserRankingRepo) CheckUpdated(lastUpdateTime *time.Time) (result bool, err error) {
+	result = false
+	newTime := time.Now()
 	err = r.DB.Model(&model.SummaryBugs{}).Raw("select updated_at from  deeptest.biz_summary_project_user_ranking order by updated_at desc limit 1").Find(&newTime).Error
-	result = newTime.After(*oldTime)
+	result = newTime.After(*lastUpdateTime)
 	return
 }

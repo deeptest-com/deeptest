@@ -17,7 +17,7 @@
       </a-row>
     </template>
     <!-- 基本信息 -->
-    <EndpointBasicInfo @changeStatus="changeStatus" @change-description="changeDescription"/>
+    <EndpointBasicInfo @changeStatus="changeStatus" @change-description="changeDescription" @changeCategory="changeCategory"/>
     <!-- 接口设计区域 -->
     <a-card
         style="width: 100%"
@@ -100,6 +100,14 @@ async function changeDescription(description) {
   );
   await store.dispatch('Endpoint/getEndpointDetail', {id: endpointDetail.value.id});
 }
+
+async function changeCategory(value) {
+  await store.dispatch('Endpoint/updateEndpointDetail',
+      {...endpointDetail.value, categoryId: value}
+  );
+  await store.dispatch('Endpoint/getEndpointDetail', {id: endpointDetail.value.id});
+}
+
 
 
 const key = ref('request');

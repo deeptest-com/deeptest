@@ -1,115 +1,118 @@
 package repo
 
 import (
+	"encoding/json"
+	"errors"
 	"fmt"
+	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
-	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
+	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"go.uber.org/zap"
 	"gorm.io/gorm"
-	"strings"
+	"io/ioutil"
 )
 
 type ProjectRoleMenuRepo struct {
-	DB *gorm.DB `inject:""`
+	DB              *gorm.DB         `inject:""`
+	ProjectRoleRepo *ProjectRoleRepo `inject:""`
+	ProjectMenuRepo *ProjectMenuRepo `inject:""`
 }
 
 func NewProjectRoleMenuRepo() *ProjectRoleMenuRepo {
 	return &ProjectRoleMenuRepo{}
 }
 
-func (r *ProjectRoleMenuRepo) GetRoleMenuList(roleId uint) (roleMenus []model.ProjectRoleMenu, err error) {
-	err = r.DB.Model(&model.ProjectRoleMenu{}).
-		Where("project_role_id = ?", roleId).
-		Scan(&roleMenus).Error
+func (r *ProjectRoleMenuRepo) FindByRoleAndMenu(roleId, menuId uint) (projectRoleMenu model.ProjectRoleMenu, err error) {
+	db := r.DB.Model(&model.ProjectRoleMenu{}).Where("role_id = ?", roleId).Where("menu_id = ?", menuId)
+
+	err = db.First(&projectRoleMenu).Error
+	return
+}
+
+func (r *ProjectRoleMenuRepo) Create(projectRoleMenu model.ProjectRoleMenu) (err error) {
+	_, err = r.FindByRoleAndMenu(projectRoleMenu.RoleId, projectRoleMenu.MenuId)
+	if !errors.Is(err, gorm.ErrRecordNotFound) {
+		logUtils.Errorf("角色菜单已经存在")
+		return
+	}
+
+	err = r.DB.Create(&projectRoleMenu).Error
+	if err != nil {
+		logUtils.Errorf("创建角色菜单失败%s", err.Error())
+		return
+	}
 
 	return
 }
 
-func (r *ProjectRoleMenuRepo) GetMenuDescByName(name string) string {
-	desc := ""
-	menuMap := map[string]string{
-		"projects":     "项目",
-		"datapools":    "数据池",
-		"interfaces":   "接口",
-		"environments": "环境",
-		"extractors":   "提取器",
-		"scenarios":    "场景",
-		"plans":        "计划",
+func (r *ProjectRoleMenuRepo) DeleteById(id uint) error {
+	err := r.DB.Unscoped().Delete(&model.ProjectRoleMenu{}, id).Error
+	if err != nil {
+		logUtils.Errorf("delete project role menu by id get  err ", zap.String("错误:", err.Error()))
+		return err
 	}
-	if value, ok := menuMap[name]; ok {
-		desc = value
-	}
-	return desc
+	return nil
 }
 
-func (r *ProjectRoleMenuRepo) GetMenusForRole() (res []model.ProjectRoleMenu, err error) {
-	var projectRolePerms []model.ProjectRolePerm
-	err = r.DB.Model(&model.ProjectRolePerm{}).Find(&projectRolePerms).Error
+func (r *ProjectRoleMenuRepo) GetRoleMenuConfig() (roleMenuConfigs []v1.ProjectRoleMenuConfig, err error) {
+	data, err := ioutil.ReadFile("config/sample/role-menu.json")
 	if err != nil {
+		logUtils.Errorf("load role menu config err ", zap.String("错误:", err.Error()))
+		return
+	}
+	roleMenuConfigs = make([]v1.ProjectRoleMenuConfig, 0)
+	err = json.Unmarshal(data, &roleMenuConfigs)
+	if err != nil {
+		logUtils.Errorf("unmarshall role menu config err ", zap.String("错误:", err.Error()))
+		return
+	}
+	return
+}
+
+func (r *ProjectRoleMenuRepo) GetConfigData() (menus []model.ProjectRoleMenu, err error) {
+	roleMenuConfigs, err := r.GetRoleMenuConfig()
+	if err != nil {
+		logUtils.Errorf("load role menu config err ", zap.String("错误:", err.Error()))
 		return
 	}
 
-	permsMap := make(map[uint]uint)
-	for _, v := range projectRolePerms {
-		permsMap[v.ProjectPermId] = v.ProjectPermId
-	}
-
-	var permsArr []uint
-	for _, v := range permsMap {
-		permsArr = append(permsArr, v)
-	}
-
-	var projectPerms []model.ProjectPerm
-	err = r.DB.Model(&model.ProjectPerm{}).Where("id IN (?)", permsArr).Find(&projectPerms).Error
+	roleNameIdMap, err := r.ProjectRoleRepo.GetAllRoleNameIdMap()
 	if err != nil {
+		logUtils.Errorf("get all role name id map err ", zap.String("错误:", err.Error()))
 		return
 	}
 
-	permMenuMap := make(map[uint]model.ProjectRoleMenu)
-	for _, v := range projectPerms {
-		if !strings.Contains(v.Name, "/api/v1/") {
-			continue
-		}
-		pathArr := strings.Split(v.Name, "/")
-		menuName := pathArr[3]
-		menuDesc := r.GetMenuDescByName(menuName)
-		projectRoleMenuTmp := model.ProjectRoleMenu{
-			ProjectMenuName:        menuName,
-			ProjectMenuDescription: menuDesc,
-		}
-		permMenuMap[v.ID] = projectRoleMenuTmp
+	menuCodeIdMap, err := r.ProjectMenuRepo.GetAllMenuCodeIdMap()
+	if err != nil {
+		logUtils.Errorf("get all menu code id map err ", zap.String("错误:", err.Error()))
+		return
 	}
 
-	roleMenusMap := make(map[uint][]string)
-	for _, v := range projectRolePerms {
-		if roleMenu, ok := permMenuMap[v.ProjectPermId]; ok {
-			roleMenusMap[v.ProjectRoleId] = append(roleMenusMap[v.ProjectRoleId], roleMenu.ProjectMenuName)
+	for _, config := range roleMenuConfigs {
+		var roleId uint
+		if _, ok := roleNameIdMap[config.RoleName]; ok {
+			roleId = roleNameIdMap[config.RoleName]
 		}
-	}
-
-	for k, v := range roleMenusMap {
-		roleMenusMap[k] = _commUtils.ArrayRemoveDuplication(v)
-	}
-
-	for k, v := range roleMenusMap {
-		for _, v1 := range v {
-			menuDesc := r.GetMenuDescByName(v1)
-			projectRoleMenuTmp := model.ProjectRoleMenu{
-				ProjectRoleId:          k,
-				ProjectMenuName:        v1,
-				ProjectMenuDescription: menuDesc,
+		for _, menuCode := range config.Menus {
+			projectRoleMenu := model.ProjectRoleMenu{RoleId: roleId}
+			if menuId, ok := menuCodeIdMap[menuCode]; ok {
+				projectRoleMenu.MenuId = menuId
+				menus = append(menus, projectRoleMenu)
+			} else {
+				continue
 			}
-			res = append(res, projectRoleMenuTmp)
 		}
 	}
 
 	return
 }
 
-func (r *ProjectRoleMenuRepo) BatchAddData(menus []model.ProjectRoleMenu) (successCount int, failItems []string) {
-	for _, menu := range menus {
-		err := r.DB.Model(&model.ProjectRoleMenu{}).Create(&menu).Error
+func (r *ProjectRoleMenuRepo) BatchCreate(roleMenus []model.ProjectRoleMenu) (successCount int, failItems []string) {
+	var err error
+	for _, roleMenu := range roleMenus {
+		err = r.Create(roleMenu)
 		if err != nil {
-			failItems = append(failItems, fmt.Sprintf("为角色%d添加菜单%s失败，错误%s", menu.ProjectRoleId, menu.ProjectMenuName, err.Error()))
+			failItems = append(failItems, fmt.Sprintf("为角色%d添加菜单%d失败，错误%s", roleMenu.RoleId, roleMenu.MenuId, err.Error()))
 		} else {
 			successCount++
 		}

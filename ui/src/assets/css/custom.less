@@ -150,6 +150,10 @@
   }
 }
 
+.ant-select.dp-no-border .ant-select-selector {
+  border: 0 !important;
+}
+
 .dp-splits-v {
   display: flex;
   height: 100%;
@@ -306,7 +310,7 @@
   .toolbar {
     display: flex;
     height: 32px;
-    border-bottom: 1px solid #D0D7DE;
+    border: 1px solid #D0D7DE;
 
     .tips {
       flex: 1;
@@ -338,3 +342,7 @@
 }
 // input自动填充色
 input:-webkit-autofill { -webkit-box-shadow: 0 0 0px 1000px #ffffff inset !important; }
+
+.create-project-modal.ant-modal .ant-modal-body {
+  padding: 0;
+}

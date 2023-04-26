@@ -49,6 +49,7 @@ export default defineComponent({
 
             loading.value = false;
             isReady.value = true;
+            await store.dispatch('Global/getPermissionList');
         }
 
         onMounted(() => {

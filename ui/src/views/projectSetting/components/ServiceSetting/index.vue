@@ -6,59 +6,66 @@
         @handle-ok="handleAdd" @handle-search="handleSearch" />
     </div>
     <!-- content -->
-    <a-table :data-source="dataSource" :columns="serviceColumns" :rowKey="(_record, index) => index">
+    <EmptyCom>
+      <template #content>
+        <a-table :data-source="dataSource" :columns="serviceColumns" :rowKey="(_record, index) => index">
 
-      <template #name="{ text, record }">
-        <div class="serve-name">
-          <EditAndShowField :custom-class="'custom-serve show-on-hover'" placeholder="请输入服务名称" :value="text || ''" @update="(e: string) => handleUpdateName(e, record)" @edit="edit(record)"/>
-        </div>
-      </template>
-      <template #description="{ text }">
-        <div class="serve-description">
-          {{ text || '' }}
-        </div>
-      </template>
-      <template #customServers="{ record }">
-        <span v-if="record?.servers.length > 0">
-          <span v-for="server in record.servers" :key="server.id">
-            {{ server.name || server.description }}
-          </span>
-        </span>
-        <span v-else>暂无关联服务</span>
-      </template>
-      <template #customStatus="{ text, record }">
-        <a-tag :color="record.statusTag">{{ text }}</a-tag>
-      </template>
-      <template #operation="{ record }">
-        <a-dropdown>
-          <MoreOutlined />
-          <template #overlay>
-            <a-menu>
-              <a-menu-item key="1">
-                <a class="operation-a" href="javascript:void (0)" @click="onOpenComponent(record)">服务组件</a>
-              </a-menu-item>
-              <a-menu-item key="2">
-                <a class="operation-a" href="javascript:void (0)" @click="onOpenVersion(record)">服务版本</a>
-              </a-menu-item>
-              <a-menu-item key="3">
-                <a class="operation-a" href="javascript:void (0)" @click="onOpenSecurity(record)">security</a>
-              </a-menu-item>
-              <a-menu-item key="4">
-                <a class="operation-a" href="javascript:void (0)" @click="onDisabled(record)">禁用</a>
-              </a-menu-item>
-              <a-menu-item key="5">
-                <a class="operation-a" href="javascript:void (0)" @click="onCopy(record)">复制</a>
-              </a-menu-item>
-              <a-menu-item key="6">
-                <a class="operation-a" href="javascript:void (0)" @click="onDelete(record)">删除</a>
-              </a-menu-item>
-            </a-menu>
+          <template #name="{ text, record }">
+            <div class="serve-name">
+              <EditAndShowField :custom-class="'custom-serve show-on-hover'" placeholder="请输入服务名称" :value="text || ''"
+                @update="(e: string) => handleUpdateName(e, record)" @edit="edit(record)" />
+            </div>
           </template>
-        </a-dropdown>
+          <template #description="{ text }">
+            <div class="serve-description">
+              {{ text || '' }}
+            </div>
+          </template>
+          <template #customServers="{ record }">
+            <span v-if="record?.servers.length > 0">
+              <span v-for="server in record.servers" :key="server.id">
+                {{ server.name || server.description }}
+              </span>
+            </span>
+            <span v-else>暂无关联服务</span>
+          </template>
+          <template #customStatus="{ text, record }">
+            <a-tag :color="record.statusTag">{{ text }}</a-tag>
+          </template>
+          <template #operation="{ record }">
+            <a-dropdown>
+              <MoreOutlined />
+              <template #overlay>
+                <a-menu>
+                  <a-menu-item key="1">
+                    <a class="operation-a" href="javascript:void (0)" @click="onOpenComponent(record)">服务组件</a>
+                  </a-menu-item>
+                  <a-menu-item key="2">
+                    <a class="operation-a" href="javascript:void (0)" @click="onOpenVersion(record)">服务版本</a>
+                  </a-menu-item>
+                  <a-menu-item key="3">
+                    <a class="operation-a" href="javascript:void (0)" @click="onOpenSecurity(record)">security</a>
+                  </a-menu-item>
+                  <a-menu-item key="4">
+                    <a class="operation-a" href="javascript:void (0)" @click="onDisabled(record)">禁用</a>
+                  </a-menu-item>
+                  <a-menu-item key="5">
+                    <a class="operation-a" href="javascript:void (0)" @click="onCopy(record)">复制</a>
+                  </a-menu-item>
+                  <a-menu-item key="6">
+                    <a class="operation-a" href="javascript:void (0)" @click="onDelete(record)">删除</a>
+                  </a-menu-item>
+                </a-menu>
+              </template>
+            </a-dropdown>
+          </template>
+        </a-table>
       </template>
-    </a-table>
+    </EmptyCom>
+
     <!-- 抽屉 -->
-    <Drawer :edit-key="editKey" :drawer-visible="drawerVisible" :tab-key="currentTabKey" @update:tab-key="handleUpdateTabKey" @onClose="onClose" />
+    <Drawer :edit-key="editKey" :drawer-visible="drawerVisible" :tab-key="currentTabKey"
+      @update:tab-key="handleUpdateTabKey" @onClose="onClose" />
   </div>
 </template>
 <script setup lang="ts">
@@ -75,6 +82,7 @@ import { Modal } from 'ant-design-vue';
 import { ExclamationCircleOutlined, MoreOutlined } from '@ant-design/icons-vue';
 import CustomForm from '../common/CustomForm.vue';
 import EditAndShowField from '@/components/EditAndShow/index.vue';
+import EmptyCom from '@/components/Empty/index.vue';
 import Drawer from './Drawer.vue';
 import { StateType as ProjectStateType } from "@/store/project";
 import { StateType as ProjectSettingStateType } from '../../store';
@@ -155,9 +163,9 @@ function handleSearch(value: any) {
 function handleUpdateName(value: string, record: any) {
   const serviceInfo = { name: value, description: record.description, id: record.id };
   store.dispatch('ProjectSetting/saveStoreServe', {
-      "projectId": currProject.value.id,
-      formState: { ...serviceInfo },
-      action: 'update'
+    "projectId": currProject.value.id,
+    formState: { ...serviceInfo },
+    action: 'update'
   });
 }
 

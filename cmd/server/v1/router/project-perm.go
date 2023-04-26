@@ -23,7 +23,6 @@ func (m *ProjectPermModule) Party() module.WebModule {
 		index.Get("/userRole", m.ProjectRolePermCtrl.GetProjectUserRole).Name = "获取项目中用户的角色"
 		index.Get("/rolePermList", m.ProjectRolePermCtrl.RolePermList).Name = "项目角色的权限列表"
 		index.Get("/userPermList", m.ProjectRolePermCtrl.UserPermList).Name = "项目中用户的权限列表"
-		index.Get("/userMenuList", m.ProjectRolePermCtrl.UserMenuList).Name = "项目中用户的左侧菜单栏列表"
 	}
 	return module.NewModule("/projects/perms", handler)
 }

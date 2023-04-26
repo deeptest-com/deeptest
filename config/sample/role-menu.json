@@ -1,0 +1,6 @@
+[
+  {
+    "role_name":"admin",
+    "menus":["workbench", "endpoint", "project-setting", "scenario", "plan", "report", "project-setting-environment", "project-setting-data-pool", "project-setting-service-setting", "project-setting-members","endpoint-add-interface","endpoint-copy-interface","endpoint-delete-interface","endpoint-outdated-interface","project-setting-environment-add-global-variable","project-setting-environment-save-global-variable","project-setting-environment-delete-global-variable","project-setting-environment-add-global-param","project-setting-environment-save-global-param","project-setting-environment-delete-global-param","project-setting-environment-link-service","project-setting-environment-unlink-service","project-setting-environment-add-environment-variable","project-setting-environment-delete-environment-variable","project-setting-environment-save-environment"]
+  }
+]

@@ -43,7 +43,7 @@ const props = defineProps({
   },
   options: {
     required: true,
-    type: String,
+    type: Object,
   },
   customClass: {
     required: false,

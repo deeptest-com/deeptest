@@ -1,5 +1,20 @@
 <template>
   <div class="interface-list-main">
+
+    <div class="table-toolbar">
+      <div class="actions">接口列表</div>
+
+      <div class="filters">
+        <a-input-search
+            style="display: flex;justify-content: end;"
+            placeholder="请输入关键词"
+            enter-button
+            v-model:value="filters.keywords"
+            @change="onKeywordsChanged"
+            @search="selectCategory"/>
+      </div>
+    </div>
+
     <a-table
         :row-selection="{
           selectedRowKeys: selectedRowKeys,
@@ -9,6 +24,9 @@
             ...pagination,
             onChange: (page) => {
               loadList(page, pagination.pageSize);
+            },
+            onShowSizeChange: (page, size) => {
+              loadList(page,size);
             },
         }"
         :columns="columns"
@@ -57,18 +75,22 @@ import {listEndpointInterface} from "@/views/endpoint/service";
 const store = useStore<{ Endpoint, ProjectGlobal, Debug: Debug, ServeGlobal: ServeStateType }>();
 
 const interfaces = ref<any[]>([])
-type Key = ColumnProps['key'];
+const filters = ref<any>({})
 
 const props = defineProps({
   categoryId: {
     type: Number,
     required: true,
   },
+  selectInterface: {
+    type: Function,
+    required: true,
+  },
 })
 
-const pagination = ref<PaginationConfig>( {
+const pagination = ref<any>( {
   total: 0,
-  current: 1,
+  page: 1,
   pageSize: 10,
   showSizeChanger: true,
   showQuickJumper: true,
@@ -87,21 +109,46 @@ const selectCategory = async () => {
     return
   }
 
-  const result = await listEndpointInterface(props.categoryId, pagination)
+  loadList(pagination.value.page, pagination.value.pageSize)
+}
+
+const onKeywordsChanged = debounce(async () => {
+  console.log('onKeywordsChanged')
+  selectCategory()
+}, 600)
+
+const loadList = debounce(async (page, pageSize) => {
+  pagination.value.page = page
+  pagination.value.pageSize = pageSize
+
+  const data = {
+    categoryId: props.categoryId,
+    keywords: filters.value.keywords,
+  }
+
+  const result = await listEndpointInterface(data, pagination.value)
   console.log('listInterface', result)
   interfaces.value = result?.list
   pagination.value.total = result?.total
-}
+}, 300)
+
+type Key = ColumnProps['key'];
+const selectedRowKeys = ref<Key[]>([]);
+
+const onSelectChange = (keys: Key[], rows: any) => {
+  selectedRowKeys.value = [...keys];
+  props.selectInterface(selectedRowKeys.value)
+};
 
 const columns = [
   {
     title: '序号',
     dataIndex: 'index',
     width: 80,
-    customRender: ({text, index}: { text: any; index: number }) => (pagination.value.current - 1) * pagination.value.pageSize + index + 1,
+    customRender: ({text, index}: { text: any; index: number }) => (pagination.value.page - 1) * pagination.value.pageSize + index + 1,
   },
   {
-    title: '名称',
+    title: '端点名称',
     dataIndex: 'name',
     slots: {customRender: 'colName'},
   },
@@ -116,53 +163,22 @@ const columns = [
     slots: {customRender: 'colUrl'},
   }
 ];
-const selectedRowKeys = ref<Key[]>([]);
-const loading = false;
-// 抽屉是否打开
-const drawerVisible = ref<boolean>(false);
-const selectedCategoryId = ref<string>('');
-const onSelectChange = (keys: Key[], rows: any) => {
-  selectedRowKeys.value = [...keys];
-};
-
-async function handleChangeStatus(value: any, record: any,) {
-  await store.dispatch('Endpoint/updateStatus', {
-    id:record.id,
-    status: value
-  });
-}
-
-async function copy(record: any) {
-  await store.dispatch('Endpoint/copy', record);
-}
-
-async function disabled(record: any) {
-  await store.dispatch('Endpoint/disabled', record);
-}
-
-async function del(record: any) {
-  await store.dispatch('Endpoint/del', record);
-}
-
-const loadList = debounce(async (page, size, opts?: any) => {
-  console.log('1')
-  // await store.dispatch('Endpoint/loadList', {
-  //   "projectId": currProject.value.id,
-  //   "page": page,
-  //   "pageSize": size,
-  //   opts,
-  // });
-}, 300)
-
-async function refreshList() {
-  await loadList(pagination.value.current, pagination.value.pageSize);
-}
-
 </script>
 
 <style scoped lang="less">
 .interface-list-main {
   margin: 0;
+
+  .table-toolbar {
+    display: flex;
+    .actions {
+      width: 200px;
+      line-height: 36px;
+    }
+    .filters {
+      flex: 1;
+    }
+  }
 }
 
 </style>

@@ -14,6 +14,9 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
         path: 'index',
         component: () => import('@/views/workbench/index.vue'),
         hidden: false,
+        meta: {
+          code: 'WORKBENCH'
+        }
       },
 
     ],
@@ -66,6 +69,9 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
         path: 'index',
         component: () => import('@/views/endpoint/index.vue'),
         hidden: false,
+        meta: {
+          code: 'ENDPOINT'
+        }
       },
     ],
   },
@@ -83,6 +89,9 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
         path: 'index',
         component: BlankLayout,
         hidden: false,
+        meta: {
+          code: 'PROJECT-SETTING'
+        }
       },
       {
         icon:'set',
@@ -91,6 +100,9 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
         name: 'enviroment',
         component: () => import('@/views/projectSetting/components/EnvSetting/index.vue'),
         hidden: false,
+        meta: {
+          code: 'PROJECT-SETTING-ENVIRONMENT'
+        },
         children: [
           {
             icon: 'set',
@@ -125,6 +137,9 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
         name: 'data-pool',
         component: () => import('@/views/projectSetting/components/DataPool/index.vue'),
         hidden: false,
+        meta: {
+          code: 'PROJECT-SETTING-DATA-POOL'
+        }
       },
       {
         icon:'set',
@@ -133,6 +148,9 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
         name: 'service-setting',
         component: () => import('@/views/projectSetting/components/ServiceSetting/index.vue'),
         hidden: false,
+        meta: {
+          code: 'PROJECT-SETTING-SERVICE-SETTING'
+        }
       },
       {
         icon: 'members',
@@ -140,6 +158,9 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
         path: 'members',
         component: () => import('@/views/project/edit/members.vue'),
         hidden: false,
+        meta: {
+          code: 'PROJECT-SETTING-MEMBERS'
+        }
       },
     ],
   },
@@ -155,6 +176,9 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
         path: 'index',
         component: () => import('@/views/scenario/index.vue'),
         hidden: false,
+        meta: {
+          code: 'SCENARIO'
+        }
       },
       {
         icon: 'scenario',
@@ -185,6 +209,9 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
         path: 'index',
         component: () => import('@/views/plan/index.vue'),
         hidden: false,
+        meta: {
+          code: 'PLAN'
+        }
       },
       {
         icon: 'plan',
@@ -208,6 +235,9 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
         path: 'index',
         component: () => import('@/views/report/list/index.vue'),
         hidden: false,
+        meta: {
+          code: 'REPORT'
+        }
       },
       {
         icon: 'report',

@@ -23,9 +23,13 @@
           @click="collapsed = !collapsed" :collapsed="collapsed"/>
       <div class="right">
         <div class="top-action">
-          <a-button class="action-new" type="primary" :loading="loading"
-                    @click="handleCreateEndPoinit">新建接口
-          </a-button>
+          <PermissionButton 
+            class="action-new" 
+            text="新建接口" 
+            code="ENDPOINT-ADD" 
+            type="primary" 
+            :loading="loading"
+            @handle-access="handleCreateEndPoinit" />
           <div class="top-search-filter">
             <TableFilter @filter="handleTableFilter"/>
           </div>
@@ -76,14 +80,14 @@
                   <MoreOutlined/>
                   <template #overlay>
                     <a-menu>
-                      <a-menu-item key="1">
-                        <a-button style="width: 80px" type="link" size="small" @click="copy(record)">复制</a-button>
-                      </a-menu-item>
-                      <a-menu-item key="2">
-                        <a-button style="width: 80px" type="link" size="small" @click="del(record)">删除</a-button>
-                      </a-menu-item>
-                      <a-menu-item key="3">
-                        <a-button style="width: 80px" type="link" size="small" @click="disabled(record)">过时</a-button>
+                      <a-menu-item v-for="menuItem in MenuList" :key="menuItem.key">
+                        <PermissionButton 
+                          style="width: 80px" 
+                          :text="menuItem.text" 
+                          size="small" 
+                          type="link"
+                          :code="menuItem.code"
+                          @handle-access="menuItem.action(record)" />
                       </a-menu-item>
                     </a-menu>
                   </template>
@@ -124,6 +128,7 @@ import TableFilter from './components/TableFilter.vue';
 import Drawer from './components/Drawer/index.vue'
 import EditAndShowSelect from '@/components/EditAndShowSelect/index.vue';
 import EmptyCom from '@/components/Empty/index.vue';
+import PermissionButton from "@/components/PermissionButton/index.vue";
 import {useStore} from "vuex";
 import {Endpoint, PaginationConfig} from "@/views/endpoint/data";
 import CollapsedIcon from "@/components/CollapsedIcon/index.vue"
@@ -187,6 +192,26 @@ const columns = [
     slots: {customRender: 'action'},
   },
 ];
+const MenuList = [
+  {
+    key: '1',
+    code: 'ENDPOINT-COPY',
+    text: '复制',
+    action: (record: any) => copy(record)
+  },
+  {
+    key: '2',
+    code: 'ENDPOINT-DELETEE',
+    text: '删除',
+    action: (record: any) => del(record)
+  },
+  {
+    key: '3',
+    code: 'ENDPOINT-OUTDATED',
+    text: '过时',
+    action: (record: any) => disabled(record)
+  },
+]
 const selectedRowKeys = ref<Key[]>([]);
 const loading = false;
 // 抽屉是否打开

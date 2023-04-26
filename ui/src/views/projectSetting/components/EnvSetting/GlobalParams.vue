@@ -4,13 +4,15 @@
         <div class="title">全局参数</div>
         <a-tabs :pagination="false" v-model:activeKey="globalParamsActiveKey">
             <a-tab-pane v-for="(tabItem) in tabPaneList" :key="tabItem.type" :tab="tabItem.name">
-
-                <a-button class="envDetail-btn" @click="addGlobalParams">
-                    <template #icon>
+                <PermissionButton
+                    class="envDetail-btn"
+                    code="ADD-GLOBAL-PARAM"
+                    text="添加"
+                    @handle-access="addGlobalParams">
+                    <template #before>
                         <PlusOutlined />
                     </template>
-                    添加
-                </a-button>
+                </PermissionButton>
                 <div class="global-params">
                     <EmptyCom>
                         <template #content>
@@ -49,10 +51,13 @@
                                     }" placeholder="说明" />
                                 </template>
                                 <template #customAction="{ index }">
-                                    <a-button danger type="text"
-                                        @click="handleGlobalParamsChange(tabItem.name, '', index, '', 'delete');"
-                                        :size="'small'">删除
-                                    </a-button>
+                                    <PermissionButton
+                                        code="DELETE-GLOBAL-PARAM"
+                                        type="text"
+                                        size="small"
+                                        :danger="true" 
+                                        text="删除"
+                                        @handle-access="handleGlobalParamsChange(tabItem.name, '', index, '', 'delete')"></PermissionButton>
                                 </template>
                             </a-table>
                         </template>
@@ -62,7 +67,14 @@
         </a-tabs>
 
         <div class="envDetail-footer">
-            <a-button class="save-btn" html-type="submit" @click="handleSaveGlobalParams" type="primary">保存</a-button>
+            <PermissionButton
+                class="save-btn"
+                html-type="submit"
+                type="primary"
+                code="SAVE-GLOBAL-PARAM"
+                text="保存"
+                @handle-access="handleSaveGlobalParams">
+            </PermissionButton>
         </div>
     </a-form>
 </template>
@@ -72,6 +84,7 @@ import { useStore } from 'vuex';
 import { message, Modal } from 'ant-design-vue';
 import { ExclamationCircleOutlined, PlusOutlined } from '@ant-design/icons-vue';
 import EmptyCom from '@/components/Empty/index.vue';
+import PermissionButton from "@/components/PermissionButton/index.vue";
 import { globalParamscolumns, tabPaneList } from '../../config';
 import { StateType as ProjectStateType } from "@/store/project";
 import { StateType as ProjectSettingStateType } from "@/views/projectSetting/store";

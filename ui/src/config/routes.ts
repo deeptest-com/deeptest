@@ -35,47 +35,54 @@ const routes: RoutesDataItem[] = [
     ],
   },
   {
-    title: '首页',
+    title: 'empty',
     path: '/',
-    redirect: '/home',
-    component: HomeLayout,
+    component: SecurityLayout,
     children: [
       {
-        icon: 'home',
-        title: 'home',
-        path: 'home',
-        component: () => import('@/views/home/index.vue'),
-        hidden: false,
-      }
-    ],
-  },
-  {
-    title: 'index-layout.menu',
-    path: '/user-manage',
-    component: HomeLayout,
-    children: [
-      {
-        icon: 'profile',
-        title: 'profile',
-        path: 'profile',
-        component: () => import('@/views/user/info/profile.vue'),
-        hidden: true,
+        title: '首页',
+        path: '/',
+        redirect: '/home',
+        component: HomeLayout,
+        children: [
+          {
+            icon: 'home',
+            title: 'home',
+            path: 'home',
+            component: () => import('@/views/home/index.vue'),
+            hidden: false,
+          }
+        ],
       },
       {
-        icon: 'message',
-        title: 'message',
-        path: 'message',
-        component: () => import('@/views/user/info/message.vue'),
-        hidden: true,
+        title: 'index-layout.menu',
+        path: '/user-manage',
+        component: HomeLayout,
+        children: [
+          {
+            icon: 'profile',
+            title: 'profile',
+            path: 'profile',
+            component: () => import('@/views/user/info/profile.vue'),
+            hidden: true,
+          },
+          {
+            icon: 'message',
+            title: 'message',
+            path: 'message',
+            component: () => import('@/views/user/info/message.vue'),
+            hidden: true,
+          },
+          {
+            icon: 'user',
+            title: 'user.management',
+            path: 'index',
+            component: () => import('@/views/user/list/index.vue'),
+            hidden: true
+          }
+        ],
       },
-      {
-        icon: 'user',
-        title: 'user.management',
-        path: 'index',
-        component: () => import('@/views/user/list/index.vue'),
-        hidden: true
-      }
-    ],
+    ]
   },
   {
     title: 'empty',

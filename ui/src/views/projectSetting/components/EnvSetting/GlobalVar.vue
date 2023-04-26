@@ -1,11 +1,14 @@
 <template>
     <div class="title">全局变量</div>
-    <a-button class="envDetail-btn" @click="addGlobalVar">
-        <template #icon>
+    <PermissionButton 
+        code="ADD-GLOBAL-VARIABLE"
+        class="envDetail-btn" 
+        text="添加" 
+        @handle-access="addGlobalVar">
+        <template #before>
             <PlusOutlined />
         </template>
-        添加
-    </a-button>
+    </PermissionButton>
     <a-form :model="formState" ref="formRef">
         <div class="global-vars">
             <EmptyCom>
@@ -39,15 +42,26 @@
                             }" placeholder="请输入描述信息" />
                         </template>
                         <template #customAction="{ index }">
-                            <a-button danger type="text"
-                                @click="handleGlobalVarsChange('description', index, '', 'delete');" :size="'small'">删除
-                            </a-button>
+                            <PermissionButton
+                                code="DELETE-GLOBAL-VARIABLE"
+                                type="text"
+                                size="small"
+                                :danger="true" 
+                                html-type="submit" 
+                                text="删除"
+                                @handle-access="handleGlobalVarsChange('description', index, '', 'delete')" />
                         </template>
                     </a-table>
                 </template>
             </EmptyCom>
             <div class="envDetail-footer">
-                <a-button class="save-btn" html-type="submit" @click="handleSaveGlobalVars" type="primary">保存</a-button>
+                <PermissionButton
+                    code="SAVE-GLOBAL-VARIABLE"
+                    type="primary" 
+                    html-type="submit" 
+                    class="save-btn" 
+                    text="保存"
+                    @handle-access="handleSaveGlobalVars"></PermissionButton>
             </div>
         </div>
     </a-form>
@@ -58,6 +72,7 @@ import { useStore } from "vuex";
 import { message, Modal } from "ant-design-vue";
 import { ExclamationCircleOutlined, PlusOutlined } from "@ant-design/icons-vue";
 import EmptyCom from "@/components/Empty/index.vue";
+import PermissionButton from "@/components/PermissionButton/index.vue";
 import { globalVarsColumns } from '../../config';
 import { StateType as ProjectStateType } from "@/store/project";
 import { StateType as ProjectSettingStateType } from "@/views/ProjectSetting/store";

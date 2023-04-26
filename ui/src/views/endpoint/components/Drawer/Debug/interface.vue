@@ -31,8 +31,8 @@
         <hr>
         <div>{{currInterface}}</div>
         <hr>
-        <div>{{debugData}}</div> -->
-
+        <div>{{debugData}}</div>
+     -->
   </div>
 </template>
 
@@ -45,11 +45,10 @@ import {useStore} from "vuex";
 import {requestMethodOpts} from '@/config/constant';
 import {StateType as ProjectGlobal} from "@/store/project";
 import {StateType as Debug} from "@/views/component/debug/store";
-import {StateType as Endpoint} from "../../endpoint/store";
+import {StateType as Endpoint} from "@/views/endpoint/store";
 
-import Path  from './path.vue';
-import InterfaceRequest from './request/Index.vue';
-import InterfaceResponse from './response/Index.vue';
+import InterfaceRequest from '@/views/component/debug/request/Index.vue';
+import InterfaceResponse from '@/views/component/debug/response/Index.vue';
 import RequestVariable from '@/components/Editor/RequestVariable.vue';
 
 import {UsedBy} from "@/utils/enum";

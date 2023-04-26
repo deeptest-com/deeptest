@@ -15,6 +15,7 @@
           {{ method.label }}
         </a-radio-button>
       </a-radio-group>
+
       <div class="form-item-request" v-if="collapse">
         <div v-if="selectedMethodDetail">
           <!-- Operation ID -->

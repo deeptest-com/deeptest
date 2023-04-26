@@ -1,15 +1,54 @@
 package repo
 
 import (
+	"fmt"
+	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
+	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
+	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/kataras/iris/v12"
 	"gorm.io/gorm"
 )
 
 type EndpointInterfaceRepo struct {
-	*BaseRepo   `inject:""`
-	DB          *gorm.DB     `inject:""`
-	ProjectRepo *ProjectRepo `inject:""`
+	*BaseRepo    `inject:""`
+	DB           *gorm.DB      `inject:""`
+	EndpointRepo *EndpointRepo `inject:""`
+}
+
+func (r *EndpointInterfaceRepo) Paginate(req v1.EndpointInterfaceReqPaginate) (ret _domain.PageData, err error) {
+	endpointIds, err := r.EndpointRepo.ListEndpointByCategory(req.CategoryId)
+	if err != nil {
+		return
+	}
+
+	var count int64
+	db := r.DB.Model(&model.EndpointInterface{}).
+		Where("endpoint_id IN ? AND NOT deleted AND NOT disabled", endpointIds)
+
+	if req.Title != "" {
+		db = db.Where("title LIKE ?", fmt.Sprintf("%%%s%%", req.Title))
+	}
+
+	db = db.Order("created_at desc")
+	err = db.Count(&count).Error
+	if err != nil {
+		logUtils.Errorf("count error %s", err.Error())
+		return
+	}
+
+	results := make([]*model.EndpointInterface, 0)
+
+	err = db.Scopes(dao.PaginateScope(req.Page, req.PageSize, req.Order, req.Field)).Find(&results).Error
+	if err != nil {
+		logUtils.Errorf("query report error %s", err.Error())
+		return
+	}
+
+	ret.Populate(results, count, req.Page, req.PageSize)
+
+	return
 }
 
 func (r *EndpointInterfaceRepo) ListByProject(projectId int) (pos []*model.EndpointInterface, err error) {

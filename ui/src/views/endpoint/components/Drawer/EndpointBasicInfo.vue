@@ -20,6 +20,13 @@
         <EditAndShowField :placeholder="'请输入描述'" :value="endpointDetail?.description || '暂无'"
                           @update="updateDescription"/>
       </a-descriptions-item>
+      <a-descriptions-item label="分类">
+        <EditAndShowTreeSelect
+            :label="categoryLabel"
+            :value="endpointDetail?.categoryId"
+            :treeData="treeData"
+            @update="handleChangeCategory"/>
+      </a-descriptions-item>
       <a-descriptions-item label="创建时间">{{ endpointDetail?.createdAt }}</a-descriptions-item>
       <a-descriptions-item label="最近更新">{{ endpointDetail?.updatedAt }}</a-descriptions-item>
     </a-descriptions>
@@ -36,17 +43,52 @@ import {useStore} from "vuex";
 import {Endpoint} from "@/views/endpoint/data";
 import EditAndShowField from '@/components/EditAndShow/index.vue';
 import EditAndShowSelect from '@/components/EditAndShowSelect/index.vue';
+import EditAndShowTreeSelect from '@/components/EditAndShowTreeSelect/index.vue';
 import ConBoxTitle from '@/components/ConBoxTitle/index.vue';
 
 const props = defineProps({})
 
 const store = useStore<{ Endpoint }>();
-const endpointDetail = computed<Endpoint>(() => store.state.Endpoint.endpointDetail);
+const endpointDetail: any = computed<Endpoint>(() => store.state.Endpoint.endpointDetail);
+const treeDataCategory = computed<any>(() => store.state.Endpoint.treeDataCategory);
+const treeData: any = computed(() => {
+  return treeDataCategory.value?.[0]?.children || [];
+});
+const categoryLabel = computed(() => {
+  if(!endpointDetail.value?.categoryId){
+    return '未分类'
+  }
+  const data = treeDataCategory.value?.[0]?.children || [];
+  let label = "";
+  let hasFind = false;
+  // 递归查找目录树的文案
+  function fn(arr: any) {
+    if (!Array.isArray(arr)) {
+      return;
+    }
+    for (let i = 0; i < arr.length; i++) {
+      const item = arr[i];
+      if (item.id === endpointDetail.value?.categoryId) {
+        label = item.name;
+        hasFind = true;
+      }
+      if (Array.isArray(item.children) && !hasFind) {
+        fn(item.children)
+      }
+    }
+  }
+  fn(data);
+  return label;
+});
 
-const emit = defineEmits(['changeStatus', 'changeDescription']);
+const emit = defineEmits(['changeStatus', 'changeDescription','changeCategory']);
 
 function handleChangeStatus(val) {
   emit('changeStatus', val);
+}
+
+function handleChangeCategory(val) {
+  emit('changeCategory', val);
 }
 
 function updateDescription(val: string) {

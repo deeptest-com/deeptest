@@ -1,12 +1,16 @@
 <template>
   <div class="editor" v-if="isEditing">
-    <a-select
-        v-model:value="fieldValue"
-        style="width: 100px;margin-right: 8px;"
-        :size="'small'"
-        placeholder="请修改接口状态"
-        :options="options">
-    </a-select>
+      <a-tree-select
+          v-model:value="fieldValue"
+          show-search
+          :multiple="false"
+          :treeData="treeData"
+          style="width: 200px"
+          :treeDefaultExpandAll="true"
+          :replaceFields="{ title: 'name',value:'id'}"
+          :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+          placeholder="请选择所属分类"
+          allow-clear/>
     <a-space :size="8">
       <CloseOutlined @click.stop="cancelEdit"/>
       <CheckOutlined
@@ -41,7 +45,7 @@ const props = defineProps({
     required: true,
     type: String || Number,
   },
-  options: {
+  treeData: {
     required: true,
     type: Object,
   },
@@ -53,10 +57,7 @@ const props = defineProps({
 const emit = defineEmits(['update', 'edit']);
 
 function updateField() {
-  if (!fieldValue.value) {
-    return;
-  }
-  emit('update', fieldValue.value);
+  emit('update', fieldValue.value || null);
   isEditing.value = false;
 }
 

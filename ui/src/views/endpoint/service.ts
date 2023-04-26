@@ -1,7 +1,8 @@
-import request from '@/utils/request';
+import request, {ResponseData} from '@/utils/request';
 import {QueryParams} from "@/views/project/data";
 
 const apiPath = 'endpoints';
+const apiPathInterface = 'endpoints/interfaces';
 
 export async function query(params?: QueryParams): Promise<any> {
     return request({
@@ -42,6 +43,27 @@ export async function getEndpointList(data: any): Promise<any> {
         method: 'post',
         data: data
     });
+}
+
+// 用户场景选择接口
+export async function listEndpointInterface(categoryId: number, pagination: any) {
+    const resp: ResponseData = (await request({
+        url: `/${apiPathInterface}/listForSelection`,
+        method: 'post',
+        data: {
+            ...pagination,
+            categoryId: categoryId,
+        }
+    }))  as any;
+
+    if (resp.code != 0) return;
+
+    const ret = {
+        list: resp.data.result || [],
+        total: resp.data.total || 0,
+    }
+
+    return ret
 }
 
 /**

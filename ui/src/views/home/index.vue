@@ -48,9 +48,9 @@ const createProjectModalVisible = ref(false);
 const modelRef = reactive({ name: '', shortName: '' });
 const currentUser = computed<any>(() => store.state.User.currentUser);
 let queryParams = reactive<QueryParams>({
-  keywords: "",
-  enabled: "1",
-  userId: activeKey.value == 0 ? 0 : currentUser.value?.id,
+  // keywords: "",
+  // enabled: "1",
+  // userId: activeKey.value == 0 ? 0 : currentUser.value?.id,
   // page: pagination.value.current,
   // pageSize: pagination.value.pageSize,
 });
@@ -61,10 +61,10 @@ onMounted(() => {
 
 const getList = async (current: number): Promise<void> => {
   await store.dispatch("Home/queryProject", {
-    keywords: queryParams.keywords,
-    enabled: queryParams.enabled,
-    userId: queryParams.userId,
-    currProjectId:0,
+    // keywords: queryParams.keywords,
+    // enabled: queryParams.enabled,
+    // userId: queryParams.userId,
+    // currProjectId:0,
     // pageSize: pagination.value.pageSize,
     // page: current,
   });

@@ -15,8 +15,8 @@ type ServeCtrl struct {
 // 项目服务列表
 func (c *ServeCtrl) ListByProject(ctx iris.Context) {
 	userId := multi.GetUserId(ctx)
-
 	projectId, err := ctx.URLParamInt("currProjectId")
+
 	if projectId == 0 {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return

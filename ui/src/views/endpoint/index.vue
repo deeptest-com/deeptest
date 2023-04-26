@@ -14,12 +14,11 @@
     </div>
     <div class="content">
       <div class="left tree" v-if="!collapsed">
-<!--        <EndpointTree @select="selectNode"/>-->
         <Tree @select="selectNode" :serveId="currServe.id"/>
       </div>
       <CollapsedIcon
-          :style="{left:'294px',top:'4px'}"
-          :collapsedStyle="{left:'-9px', top:'4px'}"
+          :style="{left:'294px',top:'300px'}"
+          :collapsedStyle="{left:'-9px', top:'300px'}"
           @click="collapsed = !collapsed" :collapsed="collapsed"/>
       <div class="right">
         <div class="top-action">
@@ -29,7 +28,7 @@
             code="ENDPOINT-ADD" 
             type="primary" 
             :loading="loading"
-            @handle-access="handleCreateEndPoinit" />
+            @handle-access="handleCreateEndPoint" />
           <div class="top-search-filter">
             <TableFilter @filter="handleTableFilter"/>
           </div>
@@ -221,7 +220,7 @@ const onSelectChange = (keys: Key[], rows: any) => {
   selectedRowKeys.value = [...keys];
 };
 
-function handleCreateEndPoinit() {
+function handleCreateEndPoint() {
   if (serves.value.length === 0) {
     Modal.confirm({
       title: '请先创建服务',

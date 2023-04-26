@@ -16,6 +16,13 @@ type EndpointReqPaginate struct {
 	ServeVersion string `json:"serveVersion"`
 }
 
+type EndpointInterfaceReqPaginate struct {
+	_domain.PaginateReq
+
+	Title      string `json:"title"`
+	CategoryId uint   `json:"categoryId"`
+}
+
 type OpenApiParam struct {
 	domain.Param
 	Format      string `json:"format"`

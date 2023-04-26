@@ -71,8 +71,9 @@ const props = defineProps({
   },
 })
 
-const serveId = ref(0)
 const serves = ref([] as any[]);
+const serveId = ref(0)
+
 const scenarios = ref([] as any[]);
 const checkedScenarios = ref([] as number[]);
 const isCheckAll = ref(false)

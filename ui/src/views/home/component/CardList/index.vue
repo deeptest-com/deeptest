@@ -3,39 +3,57 @@
     <div class="p-2 bg-white">
       <List
         :grid="{ gutter: 5, xs: 1, sm: 2, md: 4, lg: 4, xl: 3, xxl: grid }"
-        :data-source="list"
+        :data-source="tableList.concat(addCard)"
         :pagination="paginationProp"
       >
         <template #header> </template>
         <template #renderItem="{ item }">
           <ListItem>
-            <Card class="card" @click="goProject(item.id)">
-              <!-- <template #title> -->
-              <div class="card-title">
-                <Avatar style="background-color: #1890ff">
-                  <template #icon><UserOutlined /></template>
-                </Avatar>
-                <span class="card-title-text">{{
-                  item.project_chinese_name
-                }}</span>
-              </div>
+            <div v-if="item.type && item.type == 'add'">
+              <Card class="card add-card" @click="addProject(0)">创建项目+</Card>
+            </div>
+            <div v-else>
+              <Card class="card" @click="goProject(item.id)">
+                <!-- <template #title> -->
+                <div class="card-title">
+                  <Avatar style="background-color: #1890ff">
+                    <template #icon><UserOutlined /></template>
+                  </Avatar>
+                  <span class="card-title-text">{{
+                    item.project_chinese_name
+                  }}</span>
+                </div>
 
-              <!-- </template> -->
-              <div class="card-desc">
-                {{ item.project_des.length>35?item.project_des.substring(0, 35) + "..." : item.project_des?item.project_des:'&nbsp;' }}
-              </div>
+                <!-- </template> -->
+                <div class="card-desc">
+                  {{
+                    item.project_des.length > 35
+                      ? item.project_des.substring(0, 35) + "..."
+                      : item.project_des
+                      ? item.project_des
+                      : "&nbsp;"
+                  }}
+                </div>
 
-              <div class="card-static">
-                <div>测试场景数： {{item.scenario_total}}个 接口数： {{}}个</div>
-                <div>测试覆盖率：{{item.coverage}}% 执行次数： {{item.exec_total}}次</div>
-                <div>测试通过率： {{item.pass_rate}}% 发现缺陷数： {{item.bug_total}}个</div>
-              </div>
+                <div class="card-static">
+                  <div>
+                    测试场景数： {{ item.scenario_total }}个 接口数： {{}}个
+                  </div>
+                  <div>
+                    测试覆盖率：{{ item.coverage }}% 执行次数：
+                    {{ item.exec_total }}次
+                  </div>
+                  <div>
+                    测试通过率： {{ item.pass_rate }}% 发现缺陷数：
+                    {{ item.bug_total }}个
+                  </div>
+                </div>
 
-              <!-- <template #actions> -->
+                <!-- <template #actions> -->
 
-              <!--              <SettingOutlined key="setting" />-->
-              <!-- <EditOutlined key="edit" /> -->
-              <!-- <Dropdown
+                <!--              <SettingOutlined key="setting" />-->
+                <!-- <EditOutlined key="edit" /> -->
+                <!-- <Dropdown
                   :trigger="['hover']"
                   :dropMenuList="[
                     {
@@ -51,8 +69,9 @@
                 >
                   <EllipsisOutlined key="ellipsis" />
                 </Dropdown> -->
-              <!-- </template> -->
-            </Card>
+                <!-- </template> -->
+              </Card>
+            </div>
           </ListItem>
         </template>
       </List>
@@ -60,7 +79,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { computed, onMounted, ref, defineProps, defineEmits } from "vue";
+import { computed, onMounted, ref, defineProps, defineEmits, watch } from "vue";
 import {
   UserOutlined,
   EllipsisOutlined,
@@ -76,7 +95,7 @@ import {
   Slider,
   Avatar,
 } from "ant-design-vue";
-import {useRouter} from "vue-router";
+import { useRouter } from "vue-router";
 // import { Dropdown } from '/@/components/Dropdown';
 // import { propTypes } from '/@/utils/propTypes';
 // import { Button } from '/@/components/Button';
@@ -87,20 +106,17 @@ const router = useRouter();
 const store = useStore<{ Home: StateType }>();
 const ListItem = List.Item;
 const CardMeta = Card.Meta;
-const list = computed<any[]>(() => store.state.Home.queryResult.list);
+const list = computed<any>(() => store.state.Home.queryResult.list);
 const TypographyText = Typography.Text;
-// 获取slider属性
+const tableList = ref([]);
+const addCard = ref([{ type: "add" }]);
+
 // 组件接收参数
 const props = defineProps({
   // 请求API的参数
   // params: propTypes.object.def({}),
-  params: {
-    type: Object,
-  },
-  //api
-  // api: propTypes.func,
-  api: {
-    type: String,
+  activeKey: {
+    type: Number,
   },
 });
 //暴露内部方法
@@ -125,11 +141,35 @@ onMounted(() => {
   // fetch();
   // emit('getMethod', fetch);
 });
+watch(
+  () => {
+    return props.activeKey;
+  },
+  (newVal) => {
+    if (newVal == 1) {
+      setTimeout(() => {
+        tableList.value = list.value.current_user_project_list;
+      }, 500);
+    } else {
+      setTimeout(() => {
+        // tableList.value =[]
+        tableList.value = list.value.all_project_list;
+      }, 500);
+    }
+  },
+  {
+    immediate: true,
+  }
+);
 function handleTabClick(e: number) {
   // queryParams.userId=e;
   //  getList(1);
 }
+function addProject(id:number){
+ 
 
+
+}
 async function fetch(p = {}) {
   const { api, params } = props;
   if (api && typeof api === "function") {
@@ -171,9 +211,8 @@ function pageSizeChange(_current, size) {
 async function handleDelete(id) {
   emit("delete", id);
 }
-function goProject(id:number){
-   router.push(`/workbench/index/${id}`)
-
+function goProject(id: number) {
+  router.push(`/workbench/index/${id}`);
 }
 </script>
 
@@ -186,6 +225,7 @@ function goProject(id:number){
   }
   .card {
     cursor: pointer;
+    height: 220px;
     max-height: 220px;
     &-title {
       font-size: 18px;
@@ -203,5 +243,11 @@ function goProject(id:number){
       margin-top: 8px;
     }
   }
+}
+.add-card{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 20px;
 }
 </style>

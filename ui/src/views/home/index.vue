@@ -23,21 +23,24 @@
         </template>
 
         <div>
-          <HomeList v-if="showMode == 'list'" params />
-          <!-- <CardList
-            v-else
-            :params="{ params: 1 }"
-            :api="'demoListApi/111'"
-            @get-method="getMethod"
-            @delete="handleDel"
-          /> -->
-            <CardList
-            v-else
-           
-          />
+          <HomeList v-if="showMode == 'list'" :activeKey="activeKey" />
+
+          <CardList v-else :activeKey="activeKey" />
         </div>
       </a-card>
     </div>
+      <a-modal
+      v-model:visible="visible"
+      @ok="handleOk"
+      width="700px"
+      :footer="null">
+
+    <EditPage
+        :currentProjectId="currentProjectId"
+        :getList="getList"
+        :closeModal="closeModal" />
+
+  </a-modal>
   </div>
 </template>
 
@@ -50,11 +53,13 @@ import CardList from "./component/CardList/index.vue";
 import { useStore } from "vuex";
 import { StateType } from "./store";
 import { PaginationConfig, QueryParams } from "./data.d";
+import EditPage from "@/views/project/edit/edit.vue";
 const store = useStore<{ Home: StateType }>();
 const mode = computed<any[]>(() => store.state.Home.mode);
 const activeKey = ref(1);
 const showMode = ref("card");
 const currentUser = computed<any>(() => store.state.User.currentUser);
+const visible = ref(false)
 let queryParams = reactive<QueryParams>({
   // keywords: "",
   // enabled: "1",
@@ -79,8 +84,15 @@ const getList = async (current: number): Promise<void> => {
   });
 };
 function handleTabClick(e: number) {
-  queryParams.userId=e;
-   getList(1);
+  // queryParams.userId=e;
+  //  getList(1);
+  console.log("activeKey", activeKey);
+}
+function addProject(id:number){
+ 
+ 
+  visible.value = true
+
 }
 </script>
 

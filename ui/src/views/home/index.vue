@@ -24,7 +24,6 @@
     <!-- 创建项目弹窗 -->
     <CreateProjectModal 
       :visible="createProjectModalVisible" 
-      :formState="modelRef" 
       @update:visible="createProjectModalVisible = false"
       @handleSuccess="handleCreateSuccess"
     />
@@ -45,7 +44,6 @@ const mode = computed<any[]>(() => store.state.Home.mode);
 const activeKey = ref(1);
 const showMode = ref("card");
 const createProjectModalVisible = ref(false);
-const modelRef = reactive({ name: '', shortName: '' });
 const currentUser = computed<any>(() => store.state.User.currentUser);
 let queryParams = reactive<QueryParams>({
   // keywords: "",

@@ -2,12 +2,11 @@
   <div class="container">
     <div class="content">
       <div class="left tree" v-if="!collapsed">
-<!--        <EndpointTree @select="selectNode"/>-->
         <Tree @select="selectNode" :serveId="currServe.id"/>
       </div>
       <CollapsedIcon
-          :style="{left:'294px',top:'4px'}"
-          :collapsedStyle="{left:'-9px', top:'4px'}"
+          :style="{left:'294px',top:'300px'}"
+          :collapsedStyle="{left:'-9px', top:'300px'}"
           @click="collapsed = !collapsed" :collapsed="collapsed"/>
       <div class="right">
         <!--  头部搜索区域  -->

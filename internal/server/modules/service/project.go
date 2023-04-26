@@ -56,7 +56,7 @@ func (s *ProjectService) DeleteById(id uint) error {
 func (s *ProjectService) GetByUser(userId uint) (projects []model.Project, currProject model.Project, recentProjects []model.Project, err error) {
 	projects, err = s.ProjectRepo.ListProjectByUser(userId)
 	currProject, err = s.ProjectRepo.GetCurrProjectByUser(userId)
-	//recentProjects, err = s.ProjectRepo.ListProjectsRecentlyVisited(userId)
+	recentProjects, err = s.ProjectRepo.ListProjectsRecentlyVisited(userId)
 
 	return
 }

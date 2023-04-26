@@ -104,6 +104,11 @@ func (r *ProjectRolePermRepo) GetProjectPermsForRole() (res map[uint][]uint, err
 }
 
 func (r *ProjectRolePermRepo) AddPermForProjectRole(id uint, perms []uint) (successCount int, failItems []string) {
+	err := r.DB.Delete(&model.ProjectRolePerm{}, "project_role_id = ?", id).Error
+	if err != nil {
+		failItems = append(failItems, fmt.Sprintf("为角色%d添加权限%+v失败，错误%s", id, perms, err.Error()))
+		return
+	}
 	for _, perm := range perms {
 		permModel := &model.ProjectRolePerm{ProjectRolePermBase: domain.ProjectRolePermBase{ProjectRoleId: id, ProjectPermId: perm}}
 		err := r.DB.Model(&model.ProjectRolePerm{}).Create(&permModel).Error

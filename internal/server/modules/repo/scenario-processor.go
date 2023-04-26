@@ -426,7 +426,7 @@ func (r *ScenarioProcessorRepo) genProcessorComm(processor model.Processor) (ret
 		},
 	}
 	if processor.EndpointInterfaceId > 0 {
-		ret.InterfaceId = processor.EndpointInterfaceId
+		ret.EndpointInterfaceId = processor.EndpointInterfaceId
 	}
 
 	return

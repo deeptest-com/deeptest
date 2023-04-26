@@ -1,18 +1,5 @@
 <template>
   <div class="debug-main">
-    <div class="debug-methods">
-      <a-radio-group @change="changeMethod" v-model:value="selectedMethod" button-style="solid">
-        <template v-for="method in requestMethodOpts" :key="method.value">
-          <a-radio-button
-              v-if="hasDefinedMethod(method.value)"
-              :value="method.value"
-              class="has-defined">
-            {{ method.label }}
-          </a-radio-button>
-        </template>
-      </a-radio-group>
-    </div>
-
     <div id="debug-form">
       <div id="top-panel">
         <InterfaceRequest v-if="debugData.method"></InterfaceRequest>
@@ -26,13 +13,6 @@
 
       <RequestVariable/>
     </div>
-
-    <!-- <div>{{currEndpointId}}</div>
-        <hr>
-        <div>{{currInterface}}</div>
-        <hr>
-        <div>{{debugData}}</div>
-     -->
   </div>
 </template>
 
@@ -42,10 +22,8 @@ import {useI18n} from "vue-i18n";
 import {resizeHandler, resizeHeight} from "@/utils/dom";
 import {useStore} from "vuex";
 
-import {requestMethodOpts} from '@/config/constant';
-import {StateType as ProjectGlobal} from "@/store/project";
 import {StateType as Debug} from "@/views/component/debug/store";
-import {StateType as Endpoint} from "@/views/endpoint/store";
+import {StateType as Scenario} from "@/views/scenario/store";
 
 import InterfaceRequest from '@/views/component/debug/request/Index.vue';
 import InterfaceResponse from '@/views/component/debug/response/Index.vue';
@@ -53,51 +31,39 @@ import RequestVariable from '@/components/Editor/RequestVariable.vue';
 
 import {UsedBy} from "@/utils/enum";
 import {DebugInfo} from "@/views/component/debug/data";
+import debounce from "lodash.debounce";
 const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
-const store = useStore<{  Debug: Debug, ProjectGlobal: ProjectGlobal, Endpoint: Endpoint }>();
+const store = useStore<{  Debug: Debug, Scenario: Scenario }>();
 
-const endpointDetail = computed<any>(() => store.state.Endpoint.endpointDetail);
-const selectedMethodDetail = computed<any>(() => store.state.Endpoint.selectedMethodDetail);
-const interfaceMethodToObjMap = computed<any>(() => store.state.Endpoint.interfaceMethodToObjMap);
-
+const endpointInterfaceId = computed<number>(() => store.state.Scenario.endpointInterfaceId);
 const debugInfo = computed<DebugInfo>(() => store.state.Debug.debugInfo);
 const debugData = computed<any>(() => store.state.Debug.debugData);
 
-const selectedMethod = ref(selectedMethodDetail.value?.method ? selectedMethodDetail.value?.method : 'GET');
-
-const changeMethod = async () => {
-  console.log('changeMethod', selectedMethod.value, interfaceMethodToObjMap)
-
-  const endpointInterface = interfaceMethodToObjMap.value[selectedMethod.value]
-
-  // sync with define page
-  if (endpointInterface) {
-    await store.commit('Endpoint/setSelectedMethodDetail', endpointInterface);
-  } else {
-    await store.commit('Endpoint/setSelectedMethodDetail', {});
+const loadData = debounce(async () => {
+  console.log('loadData', endpointInterfaceId.value)
+  if (endpointInterfaceId.value === 0) {
+    return
   }
 
-  await store.dispatch('Debug/loadData', {
-    endpointInterfaceId: endpointInterface.id,
-    scenarioProcessorId: 0,
-    usedBy: usedBy,
-  });
+  // await store.dispatch('Debug/loadData', {
+  //   endpointInterfaceId: 0,
+  //   scenarioProcessorId: 0,
+  //   usedBy: usedBy,
+  // });
+  //
+  // store.dispatch('Debug/getLastInvocationResp', {
+  //   endpointInterfaceId: debugInfo.value.endpointInterfaceId,
+  // })
+  // store.dispatch('Debug/listInvocation', {
+  //   endpointInterfaceId: debugInfo.value.endpointInterfaceId,
+  // })
+}, 300)
+loadData()
 
-  store.dispatch('Debug/getLastInvocationResp', {
-    endpointInterfaceId: debugInfo.value.endpointInterfaceId,
-  })
-  store.dispatch('Debug/listInvocation', {
-    endpointInterfaceId: debugInfo.value.endpointInterfaceId,
-  })
-}
-changeMethod()
-
-function hasDefinedMethod(method: string) {
-  return endpointDetail?.value?.interfaces?.some((item) => {
-    return item.method === method;
-  })
-}
+watch(endpointInterfaceId, () => {
+  console.log('watch endpointInterfaceId', endpointInterfaceId)
+}, {deep: true})
 
 onMounted(() => {
   console.log('onMounted interface')

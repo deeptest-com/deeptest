@@ -44,6 +44,7 @@ import {UsedBy} from "@/utils/enum";
 
 export interface StateType {
     scenarioId: number;
+    endpointInterfaceId: number;
 
     listResult: QueryResult;
     detailResult: Scenario;
@@ -71,6 +72,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
     state: StateType;
     mutations: {
         setScenarioId: Mutation<StateType>;
+        setEndpointInterfaceId: Mutation<StateType>;
 
         setList: Mutation<StateType>;
         setDetail: Mutation<StateType>;
@@ -99,6 +101,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setValidExtractorVariables: Mutation<StateType>;
     };
     actions: {
+        setEndpointInterfaceId: Action<StateType, StateType>;
         listScenario: Action<StateType, StateType>;
         getScenario: Action<StateType, StateType>;
         removeScenario: Action<StateType, StateType>;
@@ -151,6 +154,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
 
 const initState: StateType = {
     scenarioId: 0,
+    endpointInterfaceId:0,
 
     listResult: {
         list: [],
@@ -192,6 +196,9 @@ const StoreModel: ModuleType = {
     mutations: {
         setScenarioId(state, id) {
             state.scenarioId = id;
+        },
+        setEndpointInterfaceId(state, id) {
+            state.endpointInterfaceId = id;
         },
 
         setList(state, payload) {
@@ -264,6 +271,10 @@ const StoreModel: ModuleType = {
         },
     },
     actions: {
+        async setEndpointInterfaceId({commit, dispatch, state}, id) {
+            commit('setEndpointInterfaceId', id);
+            return true;
+        },
         async listScenario({commit, dispatch}, params: QueryParams) {
             try {
                 const response: ResponseData = await query(params);

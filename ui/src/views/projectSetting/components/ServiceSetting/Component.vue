@@ -1,58 +1,59 @@
 <template>
   <div class="content">
     <div class="header">
-      <CustomForm
-          :form-config="formConfig"
-          :rules="rules"
-          :search-placeholder="'输入组件名称搜索'"
-          :show-search="true"
-          @handle-ok="handleAdd"
-          @handle-search="onSearch"/>
+      <CustomForm 
+        :form-config="formConfig" 
+        :rules="rules" 
+        :search-placeholder="'输入组件名称搜索'" 
+        :show-search="true"
+        @handle-ok="handleAdd" 
+        @handle-search="onSearch" />
     </div>
-    <a-table bordered :data-source="dataSource" :columns="schemaColumns" :rowKey="(_record, index) => index">
-      <template #name="{ text, record }">
-        <div class="editable-cell">
-          <div class="editable-cell-text-wrapper">
-            <a href="javascript:void (0)" @click="edit(record)">{{ text }}</a>
-          </div>
-        </div>
+    <EmptyCom>
+      <template #content>
+        <a-table bordered :data-source="dataSource" :columns="schemaColumns" :rowKey="(_record, index) => index">
+          <template #name="{ text, record }">
+            <div class="editable-cell">
+              <div class="editable-cell-text-wrapper">
+                <a href="javascript:void (0)" @click="edit(record)">{{ text }}</a>
+              </div>
+            </div>
+          </template>
+          <template #operation="{ record }">
+            <a-space>
+              <a href="javascript:void (0)" @click="onCopy(record)">复制</a>
+              <a href="javascript:void (0)" @click="onDelete(record)">删除</a>
+            </a-space>
+          </template>
+        </a-table>
       </template>
-      <template #operation="{ record }">
-        <a-space>
-          <a href="javascript:void (0)" @click="onCopy(record)">复制</a>
-          <a href="javascript:void (0)" @click="onDelete(record)">删除</a>
-        </a-space>
-      </template>
-    </a-table>
+    </EmptyCom>
+
     <!-- ::::编辑scheme组件 -->
-    <a-modal v-model:visible="schemeVisible"
-             @cancel="handleSchemeCancel"
-             width="882px"
-             :closable="false"
-             :key="schemeVisibleKey"
-             @ok="handleEdit">
+    <a-modal v-model:visible="schemeVisible" @cancel="handleSchemeCancel" width="882px" :closable="false"
+      :key="schemeVisibleKey" @ok="handleEdit">
       <div class="editModal-content">
         <div class="modal-header">
           <div class="header-desc">
             <div class="name" v-if="showMode === 'form'">
               <EditAndShowField :placeholder="'请输入内容'" :value="activeSchema?.name"
-                                @update="(e: string) => changeModelInfo('name', e)"/>
+                @update="(e: string) => changeModelInfo('name', e)" />
             </div>
             <div class="desc" v-if="showMode === 'form'">
               <EditAndShowField :placeholder="'请输入内容'" :value="activeSchema?.description"
-                                @update="(e: string) => changeModelInfo('desc', e)"/>
+                @update="(e: string) => changeModelInfo('desc', e)" />
             </div>
           </div>
           <div class="btns">
             <a-button :type="showMode === 'form' ? 'primary' : 'default'" @click="switchMode('form')">
               <template #icon>
-                <BarsOutlined/>
+                <BarsOutlined />
               </template>
               图形
             </a-button>
             <a-button :type="showMode === 'code' ? 'primary' : 'default'" @click="switchMode('code')">
               <template #icon>
-                <CodeOutlined/>
+                <CodeOutlined />
               </template>
               YAML
             </a-button>
@@ -60,28 +61,28 @@
         </div>
         <!-- ::::表单模式 -->
         <div class="content-form" v-if="showMode === 'form'">
-          <SchemaEditor
-              :schemeVisibleKey="schemeVisibleKey"
-              @generateFromJSON="generateFromJSON"
-              @generateExample="handleGenerateExample"
-              @change="handleContentChange"
-              :serveId="serveId"
-              :tab-content-style="{width:'100%'}"
-              :refs-options="refsOptions"
-              :contentStr="contentStr"
-              :exampleStr="exampleStr"/>
+          <SchemaEditor 
+            :schemeVisibleKey="schemeVisibleKey"
+            @generateFromJSON="generateFromJSON"
+            @generateExample="handleGenerateExample" 
+            @change="handleContentChange" 
+            :serveId="serveId"
+            :tab-content-style="{ width: '100%' }" 
+            :refs-options="refsOptions" 
+            :contentStr="contentStr"
+            :exampleStr="exampleStr" />
         </div>
         <!-- ::::代码模式 -->
         <div class="content-code" v-if="showMode === 'code'">
           <div style="border: 1px solid #f0f0f0; padding: 8px 0;">
-            <MonacoEditor
-                class="editor"
-                :value="yamlCode"
-                :language="'yaml'"
-                :height="400"
-                theme="vs"
-                :options="{...MonacoOptions}"
-                @change="handleCodeChange"/>
+            <MonacoEditor 
+              class="editor" 
+              :value="yamlCode" 
+              :language="'yaml'" 
+              :height="400" 
+              theme="vs"
+              :options="{ ...MonacoOptions }" 
+              @change="handleCodeChange" />
           </div>
         </div>
       </div>
@@ -96,18 +97,19 @@ import {
   watch,
   createVNode, onMounted
 } from 'vue';
-import {useStore} from 'vuex';
-import {Modal} from 'ant-design-vue';
-import {ExclamationCircleOutlined, CodeOutlined, BarsOutlined} from '@ant-design/icons-vue';
-import {schema2yaml} from '../../service';
+import { useStore } from 'vuex';
+import { Modal } from 'ant-design-vue';
+import { ExclamationCircleOutlined, CodeOutlined, BarsOutlined } from '@ant-design/icons-vue';
+import { schema2yaml } from '../../service';
 import SchemaEditor from '@/components/SchemaEditor/index.vue';
-import {removeExtraViewInfo} from '@/components/SchemaEditor/utils';
+import { removeExtraViewInfo } from '@/components/SchemaEditor/utils';
 import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
 import CustomForm from '../common/CustomForm.vue';
 import EditAndShowField from '@/components/EditAndShow/index.vue';
-import {MonacoOptions} from '@/utils/const';
-import {schemaColumns} from '../../config';
-import {StateType as ProjectSettingStateType} from '../../store';
+import EmptyCom from '@/components/Empty/index.vue';
+import { MonacoOptions } from '@/utils/const';
+import { schemaColumns } from '../../config';
+import { StateType as ProjectSettingStateType } from '../../store';
 import cloneDeep from "lodash/cloneDeep";
 
 const props = defineProps({
@@ -171,7 +173,7 @@ async function changeModelInfo(type, e) {
   if (type === 'name') {
     activeSchema.value.name = e;
   }
-  const result =await store.dispatch('ProjectSetting/saveSchema', {
+  const result = await store.dispatch('ProjectSetting/saveSchema', {
     schemaInfo: {
       "name": activeSchema.value.name,
       "id": activeSchema.value.id,
@@ -202,9 +204,9 @@ async function switchMode(val: any) {
 
 const schemeVisibleKey = ref(0);
 const edit = async (value: any) => {
-  const record:any = cloneDeep(value);
+  const record: any = cloneDeep(value);
   schemeVisible.value = true;
-  record.content = record.content && typeof record.content === 'string' ? JSON.parse(record.content) : {type: 'object'};
+  record.content = record.content && typeof record.content === 'string' ? JSON.parse(record.content) : { type: 'object' };
   record.examples = record.examples && typeof record.examples === 'string' ? JSON.parse(record.examples) : [];
   activeSchema.value = record;
   contentStr.value = JSON.stringify(record?.content || '');
@@ -254,7 +256,7 @@ async function handleEdit() {
       "id": activeSchema.value.id,
       "serveId": props.serveId,
       "tags": activeSchema.value.tabs,
-      "content":content ,
+      "content": content,
       "examples": exampleStr.value,
       "type": schemaType.value,
       "description": activeSchema.value.description
@@ -309,7 +311,7 @@ function handleCodeChange() {
 
 
 async function generateFromJSON(JSONStr: string) {
-  activeSchema.value.content = await store.dispatch('ProjectSetting/generateSchema', {data: JSONStr});
+  activeSchema.value.content = await store.dispatch('ProjectSetting/generateSchema', { data: JSONStr });
   contentStr.value = JSON.stringify(activeSchema.value.content);
 }
 
@@ -328,7 +330,7 @@ async function handleGenerateExample(examples: any) {
 }
 
 function handleContentChange(json: any) {
-  const {content, examples} = json;
+  const { content, examples } = json;
   contentStr.value = JSON.stringify(content);
   activeSchema.value.examples = examples;
   activeSchema.value.content = content;

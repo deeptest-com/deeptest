@@ -12,12 +12,15 @@
             </a-form-item>
             <div class="serveServers">
                 <div class="serveServers-header">服务 (前置URL)</div>
-                <a-button class="envDetail-btn" @click="addService">
-                    <template #icon>
+                <PermissionButton 
+                    code="LINK-SERVICE"
+                    class="envDetail-btn" 
+                    text="关联服务" 
+                    @handle-access="addService">
+                    <template #before>
                         <PlusOutlined />
                     </template>
-                    关联服务
-                </a-button>
+                </PermissionButton>
                 <a-table v-if="activeEnvDetail.serveServers.length > 0" size="small" bordered :pagination="false"
                     :columns="serveServersColumns" :data-source="activeEnvDetail.serveServers" :rowKey="(_record, index) => index">
                     <template #customUrl="{ text, index }">
@@ -29,20 +32,27 @@
                         </a-form-item>
                     </template>
                     <template #customAction="{ index }">
-                        <a-button danger type="text" @click="handleEnvChange('serveServers', '', index, '', 'delete');"
-                            :size="'small'">解除关联
-                        </a-button>
+                        <PermissionButton
+                            code="UNLINK-SERVICE"
+                            type="text"
+                            size="small"
+                            :danger="true" 
+                            text="解除关联"
+                            @handle-access="handleEnvChange('serveServers', '', index, '', 'delete')" />
                     </template>
                 </a-table>
             </div>
             <div class="vars">
                 <div class="vars-header">环境变量</div>
-                <a-button class="envDetail-btn" @click="addVar">
-                    <template #icon>
+                <PermissionButton
+                    class="envDetail-btn"
+                    code="ADD-ENVIRONMENT-VARIABLE"
+                    text="添加"
+                    @handle-access="addVar">
+                    <template #before>
                         <PlusOutlined />
                     </template>
-                    添加
-                </a-button>
+                </PermissionButton>
                 <a-table v-if="activeEnvDetail.vars.length > 0" bordered size="small" :pagination="false"
                     :columns="globalVarsColumns" :data-source="activeEnvDetail.vars" :rowKey="(_record, index) => index">
                     <template #customName="{ text, index }">
@@ -75,15 +85,25 @@
                         }" placeholder="请输入描述信息" />
                     </template>
                     <template #customAction="{ index }">
-                        <a-button danger type="text" @click="handleEnvChange('vars', '', index, '', 'delete');"
-                            :size="'small'">删除
-                        </a-button>
+                        <PermissionButton
+                            code="DELETE-ENVIRONMENT-VARIABLE"
+                            type="text"
+                            size="small"
+                            :danger="true" 
+                            text="删除"
+                            @handle-access="handleEnvChange('vars', '', index, '', 'delete')" />
                     </template>
                 </a-table>
             </div>
         </div>
         <div class="envDetail-footer">
-            <a-button class="save-btn" @click="addEnvData" html-type="submit" type="primary">保存</a-button>
+            <PermissionButton
+                class="save-btn"
+                code="SAVE-ENVIRONMENT"
+                type="primary"
+                text="保存"
+                html-type="submit"
+                @handle-access="addEnvData" />
         </div>
     </a-form>
     <a-modal v-model:visible="addServiceModalVisible" title="关联服务" @ok="handleAddServiceOk">
@@ -99,6 +119,7 @@ import { useStore } from "vuex";
 import { message } from 'ant-design-vue';
 import { PlusOutlined } from '@ant-design/icons-vue';
 import ConBoxTitle from '@/components/ConBoxTitle/index.vue';
+import PermissionButton from "@/components/PermissionButton/index.vue";
 import { globalVarsColumns, serveServersColumns } from '../../config';
 import { useGlobalEnv } from '../../hooks/useGlobalEnv';
 import { StateType as ProjectSettingStateType } from "@/views/ProjectSetting/store";
@@ -106,7 +127,7 @@ import { StateType as ProjectSettingStateType } from "@/views/ProjectSetting/sto
 const store = useStore<{ ProjectSetting: ProjectSettingStateType }>();
 const serviceOptions = computed<any>(() => store.state.ProjectSetting.serviceOptions);
 const addServiceModalVisible = ref(false);
-const selectedService = ref('');
+const selectedService = ref(null);
 const formRef = ref<any>();
 
 

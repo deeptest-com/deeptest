@@ -23,8 +23,11 @@
 
 <script lang="ts">
 import { computed, ComputedRef, defineComponent, PropType, toRefs } from "vue";
-import { RoutesDataItem } from '@/utils/routes';
+import { useStore } from "vuex";
 import SiderMenuItem from './SiderMenuItem.vue';
+import { RoutesDataItem } from '@/utils/routes';
+import { StateType as GlobalStateType } from "@/store/global";
+import { RouteMenuType } from "@/types/permission";
 
 export default defineComponent({
   name: 'SiderMenu',
@@ -67,6 +70,9 @@ export default defineComponent({
     SiderMenuItem
   },
   setup(props) {
+    const store = useStore<{ Global: GlobalStateType }>();
+    // 后端获取的权限路由可访问列表
+    const permissionRouteMenuMap = computed(() => store.state.Global.permissionMenuMap);
     const { menuData, topNavEnable }  = toRefs(props);
     const newMenuData = computed<RoutesDataItem[]>(() => {
       if(!topNavEnable.value) {
@@ -80,12 +86,15 @@ export default defineComponent({
           const routeDataItem: RoutesDataItem = { ...element.children[0], children: [] };
           if (childrenRoute.length > 0) {
             childrenRoute.forEach((routeItem: RoutesDataItem) => {
-              if (!routeItem.hidden) {
+              if (!routeItem.hidden && permissionRouteMenuMap.value[RouteMenuType[`${routeItem.meta?.code}`]]) {
                 routeDataItem.children?.push(routeItem);
               }
             })
           }
-          MenuItems.push({ ...routeDataItem });
+          // 根据可访问权限路由表来做匹配可展示的路由menu
+          if (permissionRouteMenuMap.value && permissionRouteMenuMap.value[RouteMenuType[`${routeDataItem.meta?.code}`]]) {
+            MenuItems.push({ ...routeDataItem });
+          }
         }
       }
       return MenuItems;

@@ -92,15 +92,3 @@ func (c *ProjectRolePermCtrl) UserPermList(ctx iris.Context) {
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data, Msg: _domain.NoErr.Msg})
 }
-
-func (c *ProjectRolePermCtrl) UserMenuList(ctx iris.Context) {
-	userId := multi.GetUserId(ctx)
-	data, err := c.ProjectRolePermService.GetUserMenuList(userId)
-	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
-		return
-	}
-
-	ret := iris.Map{"result": data}
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: ret, Msg: _domain.NoErr.Msg})
-}

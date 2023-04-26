@@ -113,13 +113,13 @@ func (c *ProjectCtrl) Delete(ctx iris.Context) {
 func (c *ProjectCtrl) GetByUser(ctx iris.Context) {
 	userId := multi.GetUserId(ctx)
 
-	projects, currProject, err := c.ProjectService.GetByUser(userId)
+	projects, currProject, recentProjects, err := c.ProjectService.GetByUser(userId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
-	ret := iris.Map{"projects": projects, "currProject": currProject}
+	ret := iris.Map{"projects": projects, "currProject": currProject, "recentProjects": recentProjects}
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: ret, Msg: _domain.NoErr.Msg})
 }
 
@@ -139,13 +139,13 @@ func (c *ProjectCtrl) ChangeProject(ctx iris.Context) {
 		return
 	}
 
-	projects, currProject, err := c.ProjectService.GetByUser(userId)
+	projects, currProject, recentProjects, err := c.ProjectService.GetByUser(userId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
-	ret := iris.Map{"projects": projects, "currProject": currProject}
+	ret := iris.Map{"projects": projects, "currProject": currProject, "recentProjects": recentProjects}
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: ret, Msg: _domain.NoErr.Msg})
 }
 

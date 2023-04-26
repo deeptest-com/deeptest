@@ -24,6 +24,7 @@ func (r *ProjectPermRepo) GetRecordByNameAndAction(name, action string) (project
 }
 
 func (r *ProjectPermRepo) CreateIfNotExist(perms []model.ProjectPerm) (successCount int, failItems []string) {
+	_ = r.DB.Delete(&model.ProjectPerm{}, "id > 0").Error
 	for _, perm := range perms {
 		err := r.DB.Model(&model.ProjectPerm{}).Create(&perm).Error
 		if err != nil {

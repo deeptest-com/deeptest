@@ -43,6 +43,7 @@ func (s *ProjectRoleSource) Init() (err error) {
 	for _, source := range sources {
 		err = s.ProjectRoleRepo.Create(source)
 		if err != nil { // 遇到错误时回滚事务
+			color.Info.Printf("\n[Mysql] --> %s 表初始数据失败!,err:%s", model.ProjectRole{}.TableName(), err.Error())
 			return
 		}
 	}

@@ -121,7 +121,7 @@ func (s *SummaryBugsService) CountByProjectId(projectId int64) (count int64, err
 	return r.CountByProjectId(projectId)
 }
 
-func (s *SummaryBugsService) CheckUpdated(oldTime *time.Time) (result bool, err error) {
+func (s *SummaryBugsService) CheckUpdated(lastUpdateTime *time.Time) (result bool, err error) {
 	r := *repo.NewSummaryBugsRepo()
-	return r.CheckUpdated(oldTime)
+	return r.CheckUpdated(lastUpdateTime)
 }

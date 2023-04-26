@@ -47,17 +47,19 @@ func (r *EndpointRepo) Paginate(req v1.EndpointReqPaginate) (ret _domain.PageDat
 			db = db.Where("id in ?", ids)
 		}
 	}
-	var categoryIds []uint
+
 	if req.CategoryId > 0 {
-		categoryIds, err = r.BaseRepo.GetAllChildIds(req.CategoryId, model.Category{}.TableName(),
+		var categoryIds []uint
+		categoryIds, err = r.BaseRepo.GetAllChildIds(uint(req.CategoryId), model.Category{}.TableName(),
 			serverConsts.EndpointCategory, int(req.ProjectId))
 		if err != nil {
 			return
 		}
-	}
-
-	if len(categoryIds) > 0 {
-		db.Where("category_id IN(?)", categoryIds)
+		if len(categoryIds) > 0 {
+			db.Where("category_id IN(?)", categoryIds)
+		}
+	} else if req.CategoryId == -1 {
+		db.Where("category_id IN(-1)")
 	}
 
 	db = db.Order("created_at desc")
@@ -308,11 +310,16 @@ func (r *EndpointRepo) GetCountByServeId(serveId uint) (count int64, err error) 
 	return
 }
 
+
 func (r *EndpointRepo) ListEndpointByCategory(categoryId uint) (ids []uint, err error) {
 	err = r.DB.Model(&model.Endpoint{}).
 		Select("id").
 		Where("category_id = ? AND NOT deleted", categoryId).
 		Find(&ids).Error
+		return 
+}
+
+func (r *EndpointRepo) CreateEndpointSample(serveId uint) (endpointId uint, err error) {
 
 	return
 }

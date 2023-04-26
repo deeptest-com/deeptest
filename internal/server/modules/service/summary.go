@@ -9,7 +9,6 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/go-redis/redis/v8"
 	"github.com/goccy/go-json"
-	"github.com/jinzhu/copier"
 	"math/rand"
 	"strconv"
 	"strings"
@@ -82,17 +81,21 @@ func (s *SummaryService) Bugs(projectId int64) (res v1.ResSummaryBugs, err error
 }
 
 func (s *SummaryService) Details(userId int64) (res v1.ResSummaryDetail, err error) {
-	detailsCache, err := s.GetCache("summaryDetails", userId)
+	err = s.CollectionDetails()
+	res, err = s.SummaryDetailsService.Details(userId)
 
-	if err != nil || len(detailsCache) == 0 {
-		res, err = s.SummaryDetailsService.Details(userId)
-		s.SetCache("summaryDetails", userId, res)
-	} else if err == nil && len(detailsCache) != 0 {
-		err = json.Unmarshal(detailsCache, &res)
-		if err != nil {
-			s.DelCache("summaryDetails", userId)
-		}
-	}
+	//注销：使用缓存的代码
+	//detailsCache, err := s.GetCache("summaryDetails", userId)
+	//
+	//if err != nil || len(detailsCache) == 0 {
+	//	res, err = s.SummaryDetailsService.Details(userId)
+	//	s.SetCache("summaryDetails", userId, res)
+	//} else if err == nil && len(detailsCache) != 0 {
+	//	err = json.Unmarshal(detailsCache, &res)
+	//	if err != nil {
+	//		s.DelCache("summaryDetails", userId)
+	//	}
+	//}
 	return
 }
 
@@ -112,16 +115,18 @@ func (s *SummaryService) ProjectUserRanking(projectId int64, cycle int64) (res v
 }
 
 func (s *SummaryService) Card(projectId int64) (res v1.ResSummaryCard, err error) {
-	cardCache, err := s.GetCache("summaryCard", projectId)
-	if err != nil || len(cardCache) == 0 {
-		res, err = s.SummaryDetailsService.Card(projectId)
-		s.SetCache("summaryCard", projectId, res)
-	} else if err == nil && len(cardCache) != 0 {
-		err = json.Unmarshal(cardCache, &res)
-		if err != nil {
-			s.DelCache("summaryCard", projectId)
-		}
-	}
+	res, err = s.SummaryDetailsService.Card(projectId)
+	//注释：使用缓存部分
+	//cardCache, err := s.GetCache("summaryCard", projectId)
+	//if err != nil || len(cardCache) == 0 {
+	//	res, err = s.SummaryDetailsService.Card(projectId)
+	//	s.SetCache("summaryCard", projectId, res)
+	//} else if err == nil && len(cardCache) != 0 {
+	//	err = json.Unmarshal(cardCache, &res)
+	//	if err != nil {
+	//		s.DelCache("summaryCard", projectId)
+	//	}
+	//}
 	return
 }
 
@@ -143,43 +148,42 @@ func (s *SummaryService) Collection(scope string) (err error) {
 		err = s.CollectionBugs()
 		return
 	}
-
 	return
 }
 
 func (s *SummaryService) CollectionRanking() (err error) {
-	projectIds, err := s.SummaryProjectUserRankingService.FindProjectIds()
-	for i := 0; i < 2; i++ {
-		for projectId := range projectIds {
-			res, err := s.SummaryProjectUserRankingService.ProjectUserRanking(int64(projectId), int64(i))
-			if err == nil {
-				s.SetCache("summary"+strconv.Itoa(i)+"Ranking"+strconv.Itoa(projectId), "", res)
-			}
-		}
-	}
+	//projectIds, err := s.SummaryProjectUserRankingService.FindProjectIds()
+	//
+	////从各地方获取ranking数据然后存储
+	//sort bigint
+	//project_id text
+	//user_id bigint
+	//user_name text
+	//scenario_total text
+	//testcases_total text
+	//
+	//s.SummaryProjectUserRankingService.CreateByDate();
+
 	checkTime := time.Now().Local()
-	s.SetCache("summaryDataUpdatedAt", "ranking", &checkTime)
+	s.SetCache("summaryDataUpdatedAt", "Ranking", &checkTime)
 	return
 }
 
 func (s *SummaryService) CollectionBugs() (err error) {
 	//配置地址
-
 	//请求对应系统,获取bug信息
-
 	//bug转化,配置字段映射关系
-	bugs := model.SummaryBugs{}
-
 	//调用存储
 	//s.SummaryBugsService.Create(bugs)
+
 	ids, err := s.SummaryBugsService.FindProjectIds()
 
 	for id := range ids {
 		value, _ := s.SummaryBugsService.Bugs(int64(id))
-		s.SetCache("summaryBugs", bugs.ProjectId, value)
+		s.SetCache("summaryBugs", id, value)
 	}
 	checkTime := time.Now().Local()
-	s.SetCache("summaryDataUpdatedAt", "bugs", &checkTime)
+	s.SetCache("summaryDataUpdatedAt", "Bugs", &checkTime)
 	return
 }
 
@@ -190,7 +194,7 @@ func (s *SummaryService) CollectionDetails() (err error) {
 	//从project表获取所有项目id、name、描述、简称、创建时间
 	details, err = s.SummaryDetailsService.CollectionProjectInfo()
 
-	for index, detail := range details {
+	for _, detail := range details {
 
 		//根据projectid获取所有用户列表,将id最小的名字赋值进来,现成的方法返回getusersByprojectid
 
@@ -221,59 +225,43 @@ func (s *SummaryService) CollectionDetails() (err error) {
 		detail.Coverage, _ = strconv.ParseFloat(fmt.Sprintf("%.1f", coverage), 64)
 
 		s.SummaryDetailsService.CreateByDate(detail)
-
-		details[index] = detail
-
-		userList, _ := s.SummaryDetailsService.FindUserIdAndNameByProjectId(detail.ProjectId)
-		for _, user := range userList {
-			var resDetail v1.ResSummaryDetails
-			copier.CopyWithOption(&resDetail, detail, copier.Option{DeepCopy: true})
-			resDetail.Id = detail.ID
-			t, _ := time.ParseInLocation("2006-01-02 15:04:05", detail.ProjectCreateTime, time.Local)
-			resDetail.CreatedAt = t.Format("2006-01-02 15:04:05")
-			resDetail.Disabled = detail.Disabled
-			resDetail.BugTotal, _ = s.SummaryDetailsService.CountBugsByProjectId(detail.ProjectId)
-			resDetail.UserList = userList
-			value, _ := json.Marshal(resDetail)
-			s.SetCache("summaryDetails", user.UserId, value)
-		}
 	}
 	checkTime := time.Now().Local()
-	s.SetCache("summaryDataUpdatedAt", "details", &checkTime)
+	s.SetCache("summaryDataUpdatedAt", "Details", &checkTime)
 	return
 }
 
 // SummaryDataCheck corn task
 func (s *SummaryService) SummaryDataCheck() (err error) {
-	modelList := []string{"details", "ranking", "bugs"}
+
+	//s.Collection("all")
+
+	modelList := []string{"Details", "Ranking", "Bugs"}
 
 	for _, m := range modelList {
 		values, err := s.GetCache("summaryDataUpdatedAt", m)
 		if err != nil || len(values) == 0 {
 			s.Collection("all")
 		} else {
-			var t *time.Time
+			var lastUpdateTime *time.Time
+			err = json.Unmarshal(values, &lastUpdateTime)
 			switch m {
-			case "details":
-				err = json.Unmarshal(values, &t)
-				ret, err := s.SummaryDetailsService.CheckDetailsUpdated(t)
+			case "Details":
+				ret, err := s.SummaryDetailsService.CheckDetailsUpdated(lastUpdateTime)
 				if err == nil && ret != false {
 					s.Collection("details")
 				}
-			case "ranking":
-				err = json.Unmarshal(values, &t)
-				ret, err := s.SummaryProjectUserRankingService.CheckUpdated(t)
+			case "Ranking":
+				ret, err := s.SummaryProjectUserRankingService.CheckUpdated(lastUpdateTime)
 				if err == nil && ret != false {
 					s.Collection("ranking")
 				}
-			case "bugs":
-				err = json.Unmarshal(values, &t)
-				ret, err := s.SummaryBugsService.CheckUpdated(t)
+			case "Bugs":
+				ret, err := s.SummaryBugsService.CheckUpdated(lastUpdateTime)
 				if err == nil && ret != false {
 					s.Collection("bugs")
 				}
 			}
-
 		}
 
 	}

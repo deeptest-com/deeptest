@@ -6,25 +6,22 @@
       @cancel="cancal"
       :title="mode === 'new' ? '新建分类' : '修改分类'">
     <a-form
-        ref="formRef"
+        ref="tagFormRef"
         :rules="rules"
+        :model="formState"
         :label-col="{ span: 6 }"
         :wrapper-col="{ span: 14 }">
       <a-form-item label="接口分类名称" name="name">
         <a-input placeholder="请输入接口分类名称" v-model:value="formState.name"/>
       </a-form-item>
-      <a-form-item label="备注信息" name="description">
-        <a-input placeholder="请输入备注信息" v-model:value="formState.description"/>
+      <a-form-item label="备注信息" name="desc">
+        <a-input placeholder="请输入备注信息" v-model:value="formState.desc"/>
       </a-form-item>
     </a-form>
   </a-modal>
-
-
 </template>
 <script lang="ts" setup>
-import {ValidateErrorEntity} from 'ant-design-vue/es/form/interface';
-import {defineComponent, reactive, ref, toRaw, UnwrapRef, defineProps, defineEmits, watch} from 'vue';
-import {requestMethodOpts} from '@/config/constant';
+import { ref, defineProps, defineEmits, watch} from 'vue';
 
 const props = defineProps({
   visible: {
@@ -43,55 +40,56 @@ const props = defineProps({
 
 const emit = defineEmits(['ok', 'cancal']);
 
+const tagFormRef = ref();
+const formState = ref({
+  name: '',
+  desc: '',
+});
 
-const formState: any = ref(null);
 
 watch(() => {
   return props.visible
 }, (newVal) => {
   if(newVal){
-    formState.value = props.nodeInfo;
+    formState.value.name = props?.nodeInfo?.name || '';
+    formState.value.desc = props?.nodeInfo?.desc || '';
     if (props.mode === 'new') {
       formState.value.name = '';
-      formState.value.description = '';
+      formState.value.desc = '';
     }
   }
 })
 
 function ok() {
-  emit('ok', formState.value);
+  tagFormRef.value
+      .validate()
+      .then(() => {
+        emit('ok', {
+          ...formState.value
+        });
+        tagFormRef.value.resetFields();
+      })
+      .catch((error) => {
+        console.log('error', error);
+      });
 }
 
 function cancal() {
-  emit('cancal', formState.value);
+  tagFormRef.value.resetFields();
+  emit('cancal');
 }
 
-// const formRef = ref();
+
 
 
 const rules = {
   name: [
-    {required: true, message: '请输入接口名称', trigger: 'blur'},
-    {min: 3, max: 50, message: '最长多少个字符', trigger: 'blur'},
+    {required: true, message: '请输入分类名称', trigger: 'blur'},
+    {min: 1, max: 50, message: '最少 1 个字符，最长 50 个字符', trigger: 'blur'},
   ],
-  path: [{required: true, message: 'Please select Activity zone', trigger: 'change'}],
-  tag: [{required: true, message: 'Please select activity resource', trigger: 'change'}],
+  desc: [{required: false}],
 };
 
-// const onSubmit = () => {
-//   formRef.value
-//       .validate()
-//       .then(() => {
-//         console.log('values', formState, toRaw(formState));
-//       })
-//       .catch((error: ValidateErrorEntity<FormState>) => {
-//         console.log('error', error);
-//       });
-// };
-
-// const resetForm = () => {
-//   formRef.value.resetFields();
-// };
 
 </script>
 

@@ -9,7 +9,9 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
+	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
+	_fileUtils "github.com/aaronchen2k/deeptest/pkg/lib/file"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
@@ -22,6 +24,7 @@ type ProjectRepo struct {
 	EnvironmentRepo *EnvironmentRepo `inject:""`
 	UserRepo        *UserRepo        `inject:""`
 	ServeRepo       *ServeRepo       `inject:""`
+	EndpointRepo    *EndpointRepo    `inject:""`
 }
 
 func NewProjectRepo() *ProjectRepo {
@@ -78,7 +81,7 @@ func (r *ProjectRepo) Get(id uint) (project model.Project, err error) {
 	return
 }
 
-func (r *ProjectRepo) GetByName(projectName string, id uint) (project v1.ProjectResp, err error) {
+func (r *ProjectRepo) GetByName(projectName string, id uint) (project model.Project, err error) {
 	db := r.DB.Model(&model.Project{}).
 		Where("name = ?", projectName)
 
@@ -86,7 +89,7 @@ func (r *ProjectRepo) GetByName(projectName string, id uint) (project v1.Project
 		db.Where("id != ?", id)
 	}
 
-	db.First(&project)
+	err = db.First(&project).Error
 
 	return
 }
@@ -106,6 +109,7 @@ func (r *ProjectRepo) Save(po *model.Project) (err error) {
 }
 
 func (r *ProjectRepo) Create(req v1.ProjectReq, userId uint) (id uint, bizErr *_domain.BizErr) {
+	bizErr = new(_domain.BizErr)
 	po, err := r.GetByName(req.Name, 0)
 	if po.Name != "" {
 		bizErr.Code = _domain.ErrNameExist.Code
@@ -122,7 +126,7 @@ func (r *ProjectRepo) Create(req v1.ProjectReq, userId uint) (id uint, bizErr *_
 		return
 	}
 
-	r.CreateProjectRes(project.ID, userId)
+	err = r.CreateProjectRes(project.ID, userId)
 
 	id = project.ID
 
@@ -152,10 +156,10 @@ func (r *ProjectRepo) CreateProjectRes(projectId, userId uint) (err error) {
 		return
 	}
 
-	// create project interface category
-	err = r.AddProjectRootInterface(serve.ID, projectId)
+	// create project endpoint category
+	err = r.AddProjectRootEndpointCategory(serve.ID, projectId)
 	if err != nil {
-		logUtils.Errorf("添加接口错误", zap.String("错误:", err.Error()))
+		logUtils.Errorf("添加终端分类错误", zap.String("错误:", err.Error()))
 		return
 	}
 
@@ -172,6 +176,9 @@ func (r *ProjectRepo) CreateProjectRes(projectId, userId uint) (err error) {
 		logUtils.Errorf("添加场景分类错误", zap.String("错误:", err.Error()))
 		return
 	}
+
+	//create sample
+	r.CreateSample(projectId, serve.ID, userId)
 
 	return
 }
@@ -287,7 +294,7 @@ func (r *ProjectRepo) AddProjectMember(projectId, userId uint, role consts.RoleT
 	return
 }
 
-func (r *ProjectRepo) AddProjectRootInterface(serveId, projectId uint) (err error) {
+func (r *ProjectRepo) AddProjectRootEndpointCategory(serveId, projectId uint) (err error) {
 	root := model.Category{
 		Name:      "分类",
 		Type:      serverConsts.EndpointCategory,
@@ -409,14 +416,14 @@ func (r *ProjectRepo) GetProjectsAndRolesByUser(userId uint) (projectIds, roleId
 }
 
 func (r *ProjectRepo) AddProjectDefaultServe(projectId, userId uint) (serve model.Serve, err error) {
-	po := model.Serve{
+	serve = model.Serve{
 		Name:      "默认服务",
 		ProjectId: projectId,
 	}
 
-	err = r.DB.Create(&po).Error
+	err = r.DB.Create(&serve).Error
 
-	r.ServeRepo.SetCurrServeByUser(po.ID, userId)
+	r.ServeRepo.SetCurrServeByUser(serve.ID, userId)
 
 	return
 }
@@ -459,4 +466,34 @@ func (r *ProjectRepo) GetMembersByProject(projectId uint) (ret []model.ProjectMe
 		Where("project_id = ?", projectId).
 		Find(&ret).Error
 	return
+}
+
+func (r *ProjectRepo) CreateSample(projectId, serveId, userId uint) (err error) {
+
+	//获取接口配置
+	var endpoint model.Endpoint
+	endpointJson := _fileUtils.ReadFile("./config/sample/endpoint.json")
+	_commUtils.JsonDecode(endpointJson, &endpoint)
+
+	//fmt.Println(_fileUtils.GetWorkDir(), endpoint)
+
+	user, _ := r.UserRepo.FindById(userId)
+	//return err
+
+	return r.DB.Transaction(func(tx *gorm.DB) error {
+		//创建接口
+		endpoint.ServeId = serveId
+		endpoint.ProjectId = projectId
+		endpoint.CreateUser = user.Username
+		err = r.EndpointRepo.saveEndpoint(&endpoint)
+		if err != nil {
+			return err
+		}
+
+		//TODO 创建场景
+		//TODO 创建计划
+
+		return nil
+	})
+
 }

@@ -6,11 +6,10 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
-	"github.com/snowlyg/multi"
-	"strings"
-
 	"github.com/kataras/iris/v12"
+	"github.com/snowlyg/multi"
 	"go.uber.org/zap"
+	"strings"
 )
 
 type ProjectCtrl struct {
@@ -67,7 +66,7 @@ func (c *ProjectCtrl) Create(ctx iris.Context) {
 	}
 
 	id, bizErr := c.ProjectService.Create(req, userId)
-	if err != nil {
+	if bizErr.Code != 0 {
 		ctx.JSON(_domain.Response{Code: bizErr.Code, Data: nil})
 		return
 	}

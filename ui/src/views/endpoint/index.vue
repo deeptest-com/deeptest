@@ -22,11 +22,11 @@
           @click="collapsed = !collapsed" :collapsed="collapsed"/>
       <div class="right">
         <div class="top-action">
-          <PermissionButton 
-            class="action-new" 
-            text="新建接口" 
-            code="ENDPOINT-ADD" 
-            type="primary" 
+          <PermissionButton
+            class="action-new"
+            text="新建接口"
+            code="ENDPOINT-ADD"
+            type="primary"
             :loading="loading"
             @handle-access="handleCreateEndPoint" />
           <div class="top-search-filter">
@@ -80,10 +80,10 @@
                   <template #overlay>
                     <a-menu>
                       <a-menu-item v-for="menuItem in MenuList" :key="menuItem.key">
-                        <PermissionButton 
-                          style="width: 80px" 
-                          :text="menuItem.text" 
-                          size="small" 
+                        <PermissionButton
+                          style="width: 80px"
+                          :text="menuItem.text"
+                          size="small"
                           type="link"
                           :code="menuItem.code"
                           @handle-access="menuItem.action(record)" />
@@ -94,7 +94,7 @@
               </template>
             </a-table>
           </template>
-        </EmptyCom>      
+        </EmptyCom>
       </div>
     </div>
     <CreateEndpointModal
@@ -351,7 +351,7 @@ async function refreshList() {
   }
 
   .add-btn {
-    margin-left: 12px;
+    margin-left: 8px;
     margin-right: 16px;
     cursor: pointer;
   }

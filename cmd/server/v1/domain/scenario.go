@@ -16,10 +16,8 @@ type ScenarioReqPaginate struct {
 }
 
 type ScenarioAddInterfacesReq struct {
-	SelectedNodes []InterfaceSimple `json:"selectedNodes"`
-
-	TargetId  uint `json:"targetId"`
-	ProjectId int  `json:"projectId"`
+	InterfaceIds []int `json:"interfaceIds"`
+	TargetId     uint  `json:"targetId"`
 }
 
 type ScenarioAddScenarioReq struct {

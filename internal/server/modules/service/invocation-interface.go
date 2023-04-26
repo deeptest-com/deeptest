@@ -86,7 +86,7 @@ func (s *InvocationInterfaceService) GetAsInterface(id int) (interf model.Interf
 	//
 	//copier.CopyWithOption(&interf, interfReq, copier.Option{DeepCopy: true})
 	//
-	//interf.ID = invocation.InterfaceId
+	//interf.ID = invocation.EndpointInterfaceId
 
 	return
 }
@@ -96,7 +96,7 @@ func (s *InvocationInterfaceService) CreateForInterface(req v1.DebugData,
 	invocation = model.Invocation{
 		InvocationBase: model.InvocationBase{
 			Name: time.Now().Format("01-02 15:04:05"),
-			//InterfaceId: req.EndpointInterfaceId,
+			//EndpointInterfaceId: req.EndpointInterfaceId,
 			ProjectId: projectId,
 		},
 	}
@@ -118,7 +118,7 @@ func (s *InvocationInterfaceService) CreateForScenarioInterface(req v1.DebugData
 	invocation = model.ProcessorInvocation{
 		InvocationBase: model.InvocationBase{
 			Name: time.Now().Format("01-02 15:04:05"),
-			//InterfaceId: req.EndpointInterfaceId,
+			//EndpointInterfaceId: req.EndpointInterfaceId,
 			ProjectId: uint(projectId),
 		},
 	}

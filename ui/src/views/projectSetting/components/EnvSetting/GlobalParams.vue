@@ -4,60 +4,77 @@
         <div class="title">全局参数</div>
         <a-tabs :pagination="false" v-model:activeKey="globalParamsActiveKey">
             <a-tab-pane v-for="(tabItem) in tabPaneList" :key="tabItem.type" :tab="tabItem.name">
-
-                <a-button class="envDetail-btn" @click="addGlobalParams">
-                    <template #icon>
+                <PermissionButton
+                    class="envDetail-btn"
+                    code="ADD-GLOBAL-PARAM"
+                    text="添加"
+                    @handle-access="addGlobalParams">
+                    <template #before>
                         <PlusOutlined />
                     </template>
-                    添加
-                </a-button>
+                </PermissionButton>
                 <div class="global-params">
-                    <a-table size="small" bordered :pagination="false" :columns="globalParamscolumns"
-                        :data-source="globalParamsData?.[tabItem.name] || []" :rowKey="(_record, index) => index">
-                        <template #customName="{ text, index }">
-                            <a-form-item :name="[tabItem.name, index, 'name']"
-                                :rules="[{ required: true, message: '参数名不可为空' }]">
-                                <a-input :value="text" @change="(e) => {
-                                    handleGlobalParamsChange(tabItem.name, 'name', index, e);
-                                }" placeholder="请输入参数名" />
-                            </a-form-item>
+                    <EmptyCom>
+                        <template #content>
+                            <a-table size="small" bordered :pagination="false" :columns="globalParamscolumns"
+                                :data-source="globalParamsData?.[tabItem.name] || []" :rowKey="(_record, index) => index">
+                                <template #customName="{ text, index }">
+                                    <a-form-item :name="[tabItem.name, index, 'name']"
+                                        :rules="[{ required: true, message: '参数名不可为空' }]">
+                                        <a-input :value="text" @change="(e) => {
+                                            handleGlobalParamsChange(tabItem.name, 'name', index, e);
+                                        }" placeholder="请输入参数名" />
+                                    </a-form-item>
+                                </template>
+                                <template #customType="{ text, index }">
+                                    <a-select class="custom-select" :value="text" style="width: 120px" @change="(e) => {
+                                        handleGlobalParamsChange(tabItem.name, 'type', index, e)
+                                    }">
+                                        <a-select-option value="string">string</a-select-option>
+                                        <a-select-option value="number">number</a-select-option>
+                                        <a-select-option value="integer">integer</a-select-option>
+                                    </a-select>
+                                </template>
+                                <template #customRequired="{ text, index }">
+                                    <a-switch :checked="text" @change="(checked) => {
+                                        handleGlobalParamsChange(tabItem.name, 'required', index, checked)
+                                    }" />
+                                </template>
+                                <template #customDefaultValue="{ text, index }">
+                                    <a-input :value="text" @change="(e) => {
+                                        handleGlobalParamsChange(tabItem.name, 'defaultValue', index, e);
+                                    }" placeholder="默认值" />
+                                </template>
+                                <template #customDescription="{ text, index }">
+                                    <a-input :value="text" @change="(e) => {
+                                        handleGlobalParamsChange(tabItem.name, 'description', index, e);
+                                    }" placeholder="说明" />
+                                </template>
+                                <template #customAction="{ index }">
+                                    <PermissionButton
+                                        code="DELETE-GLOBAL-PARAM"
+                                        type="text"
+                                        size="small"
+                                        :danger="true" 
+                                        text="删除"
+                                        @handle-access="handleGlobalParamsChange(tabItem.name, '', index, '', 'delete')"></PermissionButton>
+                                </template>
+                            </a-table>
                         </template>
-                        <template #customType="{ text, index }">
-                            <a-select class="custom-select" :value="text" style="width: 120px" @change="(e) => {
-                                handleGlobalParamsChange(tabItem.name, 'type', index, e)
-                            }">
-                                <a-select-option value="string">string</a-select-option>
-                                <a-select-option value="number">number</a-select-option>
-                                <a-select-option value="integer">integer</a-select-option>
-                            </a-select>
-                        </template>
-                        <template #customRequired="{ text, index }">
-                            <a-switch :checked="text" @change="(checked) => {
-                                handleGlobalParamsChange(tabItem.name, 'required', index, checked)
-                            }" />
-                        </template>
-                        <template #customDefaultValue="{ text, index }">
-                            <a-input :value="text" @change="(e) => {
-                                handleGlobalParamsChange(tabItem.name, 'defaultValue', index, e);
-                            }" placeholder="默认值" />
-                        </template>
-                        <template #customDescription="{ text, index }">
-                            <a-input :value="text" @change="(e) => {
-                                handleGlobalParamsChange(tabItem.name, 'description', index, e);
-                            }" placeholder="说明" />
-                        </template>
-                        <template #customAction="{ index }">
-                            <a-button danger type="text"
-                                @click="handleGlobalParamsChange(tabItem.name, '', index, '', 'delete');" :size="'small'">删除
-                            </a-button>
-                        </template>
-                    </a-table>
+                    </EmptyCom>
                 </div>
             </a-tab-pane>
         </a-tabs>
 
         <div class="envDetail-footer">
-            <a-button class="save-btn" html-type="submit" @click="handleSaveGlobalParams" type="primary">保存</a-button>
+            <PermissionButton
+                class="save-btn"
+                html-type="submit"
+                type="primary"
+                code="SAVE-GLOBAL-PARAM"
+                text="保存"
+                @handle-access="handleSaveGlobalParams">
+            </PermissionButton>
         </div>
     </a-form>
 </template>
@@ -66,6 +83,8 @@ import { ref, computed, createVNode, watch, reactive } from 'vue';
 import { useStore } from 'vuex';
 import { message, Modal } from 'ant-design-vue';
 import { ExclamationCircleOutlined, PlusOutlined } from '@ant-design/icons-vue';
+import EmptyCom from '@/components/Empty/index.vue';
+import PermissionButton from "@/components/PermissionButton/index.vue";
 import { globalParamscolumns, tabPaneList } from '../../config';
 import { StateType as ProjectStateType } from "@/store/project";
 import { StateType as ProjectSettingStateType } from "@/views/projectSetting/store";

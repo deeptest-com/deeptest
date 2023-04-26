@@ -20,7 +20,7 @@
             :value="formState.categoryId"
             show-search
             :multiple="false"
-            :treeData="treeDataCategory"
+            :treeData="treeData"
             style="width: 100%"
             :treeDefaultExpandAll="true"
             :replaceFields="{ title: 'name',value:'id'}"
@@ -58,6 +58,11 @@ import {NewEndpointFormState} from "@/views/Endpoint/data";
 
 const store = useStore<{ Endpoint }>();
 const treeDataCategory = computed<any>(() => store.state.Endpoint.treeDataCategory);
+
+const treeData: any = computed(() => {
+  const data = treeDataCategory.value;
+  return  data?.[0]?.children || [];
+});
 
 const props = defineProps({
   visible: {

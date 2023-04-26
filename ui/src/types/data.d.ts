@@ -1,5 +1,5 @@
 export interface WsMsg {
-  msg:       string
+  msg: string
   category: string,
   data: any
   time: string
@@ -11,7 +11,7 @@ export interface WsMsg {
 }
 
 export interface QueryParams {
-  keywords:  string,
+  keywords: string,
   enabled: string,
   page: number,
   pageSize: number,

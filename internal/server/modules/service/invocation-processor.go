@@ -55,7 +55,7 @@ func (s *InvocationProcessorService) CreateForScenarioInterface(req v1.DebugData
 	invocation = model.ProcessorInvocation{
 		InvocationBase: model.InvocationBase{
 			Name: time.Now().Format("01-02 15:04:05"),
-			//InterfaceId: req.EndpointInterfaceId,
+			//EndpointInterfaceId: req.EndpointInterfaceId,
 			ProjectId: uint(projectId),
 		},
 	}
@@ -115,7 +115,7 @@ func (s *InvocationProcessorService) GetAsInterface(id int) (interf model.Proces
 
 	copier.CopyWithOption(&interf, interfReq, copier.Option{DeepCopy: true})
 
-	//interf.ID = invocation.InterfaceId
+	//interf.ID = invocation.EndpointInterfaceId
 
 	return
 }

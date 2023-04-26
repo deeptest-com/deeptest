@@ -21,3 +21,10 @@ export async function changeProject(projectId: number): Promise<any> {
         data,
     });
 }
+
+export async function getPermissionMenuList(): Promise<any> {
+    return request({
+        url: `/${apiPath}/menus/userMenuList`,
+        method: 'GET',
+    })
+}

@@ -18,6 +18,7 @@ type ScenarioNodeService struct {
 	ScenarioRepo             *repo.ScenarioRepo          `inject:""`
 
 	ProcessorInterfaceRepo *repo.ProcessorInterfaceRepo `inject:""`
+	EndpointInterfaceRepo  *repo.EndpointInterfaceRepo  `inject:""`
 }
 
 func (s *ScenarioNodeService) GetTree(scenario model.Scenario) (root *agentExec.Processor, err error) {
@@ -34,8 +35,8 @@ func (s *ScenarioNodeService) AddInterfaces(req v1.ScenarioAddInterfacesReq) (re
 		targetProcessor, _ = s.ScenarioProcessorRepo.Get(targetProcessor.ParentId)
 	}
 
-	for _, interfaceNode := range req.SelectedNodes {
-		ret, _ = s.createDirOrInterface(interfaceNode, targetProcessor)
+	for _, interfaceId := range req.InterfaceIds {
+		ret, _ = s.addInterface(interfaceId, targetProcessor)
 	}
 
 	return
@@ -87,57 +88,92 @@ func (s *ScenarioNodeService) AddProcessor(req v1.ScenarioAddScenarioReq) (ret m
 	return
 }
 
-func (s *ScenarioNodeService) createDirOrInterface(interfaceNode v1.InterfaceSimple, parentProcessor model.Processor) (
+func (s *ScenarioNodeService) addInterface(endpointInterfaceId int, parentProcessor model.Processor) (
 	ret model.Processor, err error) {
 
-	if interfaceNode.ParentId == 0 {
-		for _, child := range interfaceNode.Children {
-			s.createDirOrInterface(child, parentProcessor)
-		}
-
-	} else if !interfaceNode.IsLeaf {
-		processor := model.Processor{
-			Name:           interfaceNode.Name,
-			ScenarioId:     parentProcessor.ScenarioId,
-			EntityCategory: consts.ProcessorGroup,
-			EntityType:     consts.ProcessorGroupDefault,
-			ParentId:       parentProcessor.ID,
-			ProjectId:      parentProcessor.ProjectId,
-		}
-		processor.Ordr = s.ScenarioNodeRepo.GetMaxOrder(processor.ParentId)
-		s.ScenarioNodeRepo.Save(&processor)
-
-		for _, child := range interfaceNode.Children {
-			s.createDirOrInterface(child, processor)
-		}
-
-	} else {
-		processor := model.Processor{
-			Name:           interfaceNode.Name,
-			ScenarioId:     parentProcessor.ScenarioId,
-			EntityCategory: consts.ProcessorInterface,
-			EntityType:     consts.ProcessorInterfaceDefault,
-			//EntityId:       interfaceProcessor.ID,
-			InterfaceId: uint(interfaceNode.Id),
-			ParentId:    parentProcessor.ID,
-			ProjectId:   parentProcessor.ProjectId,
-		}
-		processor.Ordr = s.ScenarioNodeRepo.GetMaxOrder(processor.ParentId)
-		s.ScenarioNodeRepo.Save(&processor)
-
-		interfaceProcessor := model.ProcessorInterface{}
-		interfaceProcessor, err = s.ScenarioProcessorService.CloneInterface(uint(interfaceNode.Id), processor)
-		if err != nil {
-			return
-		}
-
-		s.ScenarioProcessorRepo.UpdateEntityId(processor.ID, interfaceProcessor.ID)
-
-		ret = processor
+	endpointInterface, err := s.EndpointInterfaceRepo.Get(uint(endpointInterfaceId))
+	if err != nil {
+		return
 	}
+
+	processor := model.Processor{
+		Name: endpointInterface.Name,
+
+		EntityCategory: consts.ProcessorInterface,
+		EntityType:     consts.ProcessorInterfaceDefault,
+
+		EndpointInterfaceId: endpointInterface.ID,
+		EntityId:            0, // set to 0 for interface processor node
+		ParentId:            parentProcessor.ID,
+		ScenarioId:          parentProcessor.ScenarioId,
+		ProjectId:           parentProcessor.ProjectId,
+	}
+	processor.Ordr = s.ScenarioNodeRepo.GetMaxOrder(processor.ParentId)
+	s.ScenarioNodeRepo.Save(&processor)
+
+	//interfaceProcessor := model.ProcessorInterface{}
+	// interfaceProcessor, err = s.ScenarioProcessorService.CloneInterface(uint(endpointInterfaceId), processor)
+	//if err != nil {
+	//	return
+	//}
+	//s.ScenarioProcessorRepo.UpdateEntityId(processor.ID, interfaceProcessor.ID)
+
+	ret = processor
 
 	return
 }
+
+//func (s *ScenarioNodeService) createDirOrInterface(interfaceId int, parentProcessor model.Processor) (
+//	ret model.Processor, err error) {
+//
+//	if interfaceNode.ParentId == 0 {
+//		for _, child := range interfaceNode.Children {
+//			s.createDirOrInterface(child, parentProcessor)
+//		}
+//
+//	} else if !interfaceNode.IsLeaf {
+//		processor := model.Processor{
+//			Name:           interfaceNode.Name,
+//			ScenarioId:     parentProcessor.ScenarioId,
+//			EntityCategory: consts.ProcessorGroup,
+//			EntityType:     consts.ProcessorGroupDefault,
+//			ParentId:       parentProcessor.ID,
+//			ProjectId:      parentProcessor.ProjectId,
+//		}
+//		processor.Ordr = s.ScenarioNodeRepo.GetMaxOrder(processor.ParentId)
+//		s.ScenarioNodeRepo.Save(&processor)
+//
+//		for _, child := range interfaceNode.Children {
+//			s.createDirOrInterface(child, processor)
+//		}
+//
+//	} else {
+//		processor := model.Processor{
+//			Name:           interfaceNode.Name,
+//			ScenarioId:     parentProcessor.ScenarioId,
+//			EntityCategory: consts.ProcessorInterface,
+//			EntityType:     consts.ProcessorInterfaceDefault,
+//			//EntityId:       interfaceProcessor.ID,
+//			EndpointInterfaceId: uint(interfaceNode.Id),
+//			ParentId:    parentProcessor.ID,
+//			ProjectId:   parentProcessor.ProjectId,
+//		}
+//		processor.Ordr = s.ScenarioNodeRepo.GetMaxOrder(processor.ParentId)
+//		s.ScenarioNodeRepo.Save(&processor)
+//
+//		interfaceProcessor := model.ProcessorInterface{}
+//		interfaceProcessor, err = s.ScenarioProcessorService.CloneInterface(uint(interfaceNode.Id), processor)
+//		if err != nil {
+//			return
+//		}
+//
+//		s.ScenarioProcessorRepo.UpdateEntityId(processor.ID, interfaceProcessor.ID)
+//
+//		ret = processor
+//	}
+//
+//	return
+//}
 
 func (s *ScenarioNodeService) UpdateName(req v1.ScenarioNodeReq) (err error) {
 	err = s.ScenarioNodeRepo.UpdateName(req.Id, req.Name)

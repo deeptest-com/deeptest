@@ -27,8 +27,8 @@ func (r *EndpointInterfaceRepo) Paginate(req v1.EndpointInterfaceReqPaginate) (r
 	db := r.DB.Model(&model.EndpointInterface{}).
 		Where("endpoint_id IN ? AND NOT deleted AND NOT disabled", endpointIds)
 
-	if req.Title != "" {
-		db = db.Where("title LIKE ?", fmt.Sprintf("%%%s%%", req.Title))
+	if req.Keywords != "" {
+		db = db.Where("name LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords))
 	}
 
 	db = db.Order("created_at desc")

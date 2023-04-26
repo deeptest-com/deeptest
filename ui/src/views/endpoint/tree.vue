@@ -68,7 +68,7 @@
 </template>
 <script setup lang="ts">
 import {
-  computed, reactive, toRefs, ref, onMounted,
+  computed, ref, onMounted,
   watch, defineEmits, defineProps
 } from 'vue';
 import {
@@ -77,21 +77,17 @@ import {
   MoreOutlined
 } from '@ant-design/icons-vue';
 import {message, Modal} from 'ant-design-vue';
-
 import CreateTagModal from './components/CreateTagModal.vue'
 import {DropEvent} from 'ant-design-vue/es/tree/Tree';
 import {useStore} from "vuex";
 import {StateType as EndpointStateType} from "@/views/endpoint/store";
 import {StateType as ProjectStateType} from "@/store/project";
-import debounce from "lodash.debounce";
 import {setSelectedKey} from "@/utils/cache";
 
 const store = useStore<{ Endpoint: EndpointStateType, ProjectGlobal: ProjectStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const treeDataCategory = computed<any>(() => store.state.Endpoint.treeDataCategory);
 const treeDataMapCategory = computed<any>(() => store.state.Endpoint.treeDataMapCategory);
-const nodeDataCategory = computed<any>(() => store.state.Endpoint.nodeDataCategory);
-
 const createTagModalvisible = ref(false);
 const props = defineProps({
   serveId: {
@@ -104,11 +100,15 @@ const expandedKeys = ref<string[]>([]);
 const autoExpandParent = ref<boolean>(false);
 const treeData: any = computed(() => {
   const data = treeDataCategory.value;
+  if(!data?.[0]?.id){
+    return null;
+  }
+  data[0].children = data[0].children || [];
   function fn(arr: any) {
     if (!Array.isArray(arr)) {
       return;
     }
-    arr.forEach((item, index) => {
+    arr.forEach((item) => {
       item.key = item.id;
       item.title = item.name;
       if (Array.isArray(item.children)) {
@@ -119,13 +119,13 @@ const treeData: any = computed(() => {
   fn(data);
   const children = data?.[0]?.children;
   //  末尾如果没有未分类，需要主动 push 未分类,未分类的 id 为 -1
-  if (children?.length && children[children.length - 1]?.id != -1) {
+  if (children?.length === 0 || (children?.length && children[children.length - 1]?.id != -1)) {
     children.push({
       id: -1,
       key: -1,
       title: '未分类',
       name: '未分类',
-      parentId: data[0].id,
+      parentId: data[0]?.id,
       children: []
     })
   }
@@ -133,12 +133,19 @@ const treeData: any = computed(() => {
 });
 
 async function loadCategories() {
-  debounce(async () => {
-    await store.dispatch('Endpoint/loadCategory');
-    expandAll();
-  }, 60);
+  await store.dispatch('Endpoint/loadCategory');
+  expandAll();
 }
 
+watch(() => {
+  return currProject.value;
+}, async (newVal) => {
+  if (newVal?.id) {
+    await loadCategories();
+  }
+}, {
+  immediate: true
+})
 
 watch(
     () => {
@@ -148,16 +155,20 @@ watch(
       // 打平树形结构
       function flattenTree(tree) {
         const nodes: Array<any> = [];
+
         function traverse(node) {
           nodes.push(node);
           if (node.children) {
             node.children.forEach(traverse);
           }
         }
+
         traverse(tree);
         return nodes;
       }
+
       const flattenTreeList = flattenTree(treeData.value[0]);
+
       function findParentIds(nodeId, tree) {
         let current: any = tree.find(node => node.id === nodeId);
         let parentIds: Array<string> = [];
@@ -167,6 +178,7 @@ watch(
         }
         return parentIds;
       }
+
       let parentKeys: any = [];
       for (let i = 0; i < flattenTreeList.length; i++) {
         let node = flattenTreeList[i];
@@ -201,7 +213,6 @@ function expandAll() {
       }
     });
   }
-
   fn(data);
   expandedKeys.value = keys;
 }
@@ -210,8 +221,6 @@ let selectedKeys = ref<number[]>([]);
 const emit = defineEmits(['select']);
 
 function selectTreeItem(keys, e) {
-  console.log(832, selectedKeys);
-  // ::::TODO 发送请求
   selectedKeys.value = keys;
   setSelectedKey('category-endpoint', currProject.value.id, selectedKeys.value[0]);
   // 如果没有选中的节点，就默认选中根节点
@@ -281,13 +290,13 @@ async function handleTagModalOk(obj) {
     }
   }
   // 新建
-  else if(tagModalMode.value === 'new'){
+  else if (tagModalMode.value === 'new') {
     const res = await store.dispatch('Endpoint/createCategoryNode', {
       "name": obj.name,
       "desc": obj.desc,
       "mode": "child",
       "targetId": obj.id,
-      type:"endpoint",
+      type: "endpoint",
       "projectId": currProject.value.id,
       "serveId": props.serveId || null, // 仅在接口管理模块下有
     });
@@ -311,11 +320,11 @@ async function onDrop(info: DropEvent) {
   const pos = info.node.pos.split('-');
   const dropPosition = info.dropPosition - Number(pos[pos.length - 1]);
   // 未分类不让移动
-  if(dragKey === -1){
+  if (dragKey === -1) {
     message.warning('未分类不能移动');
     return;
   }
-  if(dropKey === -1){
+  if (dropKey === -1) {
     message.warning('其他分类不能移动到未分类下');
     return;
   }
@@ -327,7 +336,7 @@ async function onDrop(info: DropEvent) {
   });
   if (res) {
     // 移动到目标节点的子节点，则需要展开目标节点
-    if(dropPosition === 0){
+    if (dropPosition === 0) {
       expandedKeys.value = [...new Set([...expandedKeys.value, dropKey])];
     }
     message.success('移动成功');
@@ -353,15 +362,15 @@ onMounted(async () => {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 60px;
-
+  height: 50px;
+  margin-top: 8px;
   .search-input {
-    margin-left: 8px;
+    margin-left: 16px;
     margin-right: 8px;
   }
 
   .add-btn {
-    margin-left: 12px;
+    margin-left: 2px;
     margin-right: 16px;
     cursor: pointer;
   }
@@ -417,13 +426,15 @@ onMounted(async () => {
 
 .tree-title {
   position: relative;
-  .tree-title-text{
+
+  .tree-title-text {
     display: inline-block;
     width: calc(100% - 24px);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
+
   //&:hover{
   //  .more-icon {
   //    background-color: #f5f5f5;
@@ -435,7 +446,8 @@ onMounted(async () => {
     width: 20px;
   }
 }
-.nodata-tip{
+
+.nodata-tip {
   margin-top: 8px;
   text-align: center;
 }

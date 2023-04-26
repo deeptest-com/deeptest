@@ -34,8 +34,3 @@ func (s *ProjectRolePermService) PaginateRolePerms(req v1.ProjectRolePermPaginat
 func (s *ProjectRolePermService) PaginateUserPerms(req v1.ProjectUserPermsPaginate, userId uint) (ret _domain.PageData, err error) {
 	return s.ProjectRolePermRepo.UserPermList(req, userId)
 }
-
-func (s *ProjectRolePermService) GetUserMenuList(userId uint) (ret []model.ProjectRoleMenu, err error) {
-	projectMemberRole, err := s.ProjectRepo.GetCurrProjectMemberRoleByUser(userId)
-	return s.ProjectRoleMenuRepo.GetRoleMenuList(projectMemberRole.ProjectRoleId)
-}

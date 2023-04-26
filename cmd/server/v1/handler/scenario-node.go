@@ -36,20 +36,12 @@ func (c *ScenarioNodeCtrl) LoadTree(ctx iris.Context) {
 
 // AddInterfaces 添加
 func (c *ScenarioNodeCtrl) AddInterfaces(ctx iris.Context) {
-	projectId, err := ctx.URLParamInt("currProjectId")
-	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
-		return
-	}
-
 	req := v1.ScenarioAddInterfacesReq{}
-	err = ctx.ReadJSON(&req)
+	err := ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
-
-	req.ProjectId = projectId
 
 	nodePo, bizErr := c.ScenarioNodeService.AddInterfaces(req)
 	if bizErr != nil {

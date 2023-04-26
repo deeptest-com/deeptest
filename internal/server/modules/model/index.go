@@ -115,5 +115,7 @@ var (
 		&ProjectPerm{},
 		&ProjectRolePerm{},
 		&ProjectRoleMenu{},
+		&ProjectMenu{},
+		&ProjectRecentlyVisited{},
 	}
 )

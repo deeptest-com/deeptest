@@ -5,7 +5,7 @@ const apiPath = 'summary';
 
 export async function query(params: QueryParams): Promise<any> {
     return request({
-        url: `/${apiPath}/details/${params.userId}`,
+        url: `/${apiPath}/details`,
         method: 'get',
         params,
         

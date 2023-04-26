@@ -1,0 +1,83 @@
+<template>
+
+  <a-modal
+    title="请选择接口"
+    :destroy-on-close="true"
+    :mask-closable="false"
+    :visible="true"
+    :onCancel="onCancel"
+    :footer="null"
+    wrapClassName="modal-tree-selection"
+    width="1000px"
+  >
+
+    <div class="interface-selection-main">
+      <div class="left tree">
+        <Tree :selectCategory="selectCategory"/>
+      </div>
+
+      <div class="right">
+        <List :categoryId="categoryId"></List>
+      </div>
+    </div>
+
+  </a-modal>
+
+</template>
+
+<script setup lang="ts">
+import {defineProps, ref, watch} from "vue";
+import {listServe} from "@/services/serve";
+
+import Tree from "./tree.vue"
+import List from "./list.vue"
+
+const props = defineProps({
+  onFinish: {
+    type: Function,
+    required: true,
+  },
+  onCancel: {
+    type: Function,
+    required: true,
+  },
+})
+
+const categoryId = ref(0)
+
+const selectCategory = async (id) => {
+  console.log('selectCategory', id)
+  categoryId.value = id
+}
+
+const onSubmit = (checkedInterfaces) => {
+  console.log('onSubmit')
+  props.onFinish(checkedInterfaces)
+}
+
+const onCancel = () => {
+  console.log('onCancel')
+  props.onCancel()
+}
+
+</script>
+
+<style lang="less">
+.modal-tree-selection {
+  .ant-modal-body {
+    padding-top: 5px;
+  }
+}
+</style>
+
+<style lang="less" scoped>
+.interface-selection-main {
+  display: flex;
+  .left {
+    width: 260px;
+  }
+  .right {
+    flex: 1;
+  }
+}
+</style>

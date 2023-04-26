@@ -14,7 +14,8 @@ import (
 )
 
 type ProjectCtrl struct {
-	ProjectService *service.ProjectService `inject:""`
+	ProjectService                *service.ProjectService                `inject:""`
+	ProjectRecentlyVisitedService *service.ProjectRecentlyVisitedService `inject:""`
 	BaseCtrl
 }
 
@@ -138,6 +139,8 @@ func (c *ProjectCtrl) ChangeProject(ctx iris.Context) {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
+
+	_, _ = c.ProjectRecentlyVisitedService.Create(userId, req.Id)
 
 	projects, currProject, recentProjects, err := c.ProjectService.GetByUser(userId)
 	if err != nil {

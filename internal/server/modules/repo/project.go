@@ -269,8 +269,9 @@ func (r *ProjectRepo) GetCurrProjectByUser(userId uint) (currProject model.Proje
 }
 
 func (r *ProjectRepo) ListProjectsRecentlyVisited(userId uint) (projects []model.Project, err error) {
+	//TODO 时间临时变更
 	now := time.Now()
-	date := time.Date(now.Year(), now.Month(), now.Day()-7, 0, 0, 0, 0, time.Local)
+	date := time.Date(now.Year(), now.Month(), now.Day(), now.Hour(), now.Minute()-2, 0, 0, time.Local)
 	var projectIds []uint
 	r.DB.Model(&model.ProjectRecentlyVisited{}).
 		Select("distinct project_id").

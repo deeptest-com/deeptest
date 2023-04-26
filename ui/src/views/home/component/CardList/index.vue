@@ -11,7 +11,7 @@
           <ListItem>
             <Card class="card" @click="goProject(item.id)">
               <!-- <template #title> -->
-              <div class="card-title">
+              <div class="card-title dp-link" @click="goProject">
                 <Avatar style="background-color: #1890ff">
                   <template #icon><UserOutlined /></template>
                 </Avatar>
@@ -172,8 +172,7 @@ async function handleDelete(id) {
   emit("delete", id);
 }
 function goProject(id:number){
-   router.push(`/workbench/index/${id}`)
-
+  router.push(`/workbench/${id}`)
 }
 </script>
 

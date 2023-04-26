@@ -33,7 +33,7 @@
           /> -->
             <CardList
             v-else
-           
+
           />
         </div>
       </a-card>
@@ -50,6 +50,11 @@ import CardList from "./component/CardList/index.vue";
 import { useStore } from "vuex";
 import { StateType } from "./store";
 import { PaginationConfig, QueryParams } from "./data.d";
+
+import {useRouter} from "vue-router";
+import {setCache} from "@/utils/localCache";
+import settings from "@/config/settings";
+
 const store = useStore<{ Home: StateType }>();
 const mode = computed<any[]>(() => store.state.Home.mode);
 const activeKey = ref(1);

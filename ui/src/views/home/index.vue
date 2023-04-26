@@ -16,8 +16,14 @@
           </a-radio-group>
         </template>
         <div>
-          <HomeList v-if="showMode == 'list'" params />
-          <CardList v-else />
+
+          <HomeList v-if="showMode == 'list'" :activeKey="activeKey" />
+
+          <CardList v-else :activeKey="activeKey" />
+        </div>
+      </a-card>
+    </div>
+  
         </div>
       </a-card>
     </div>
@@ -27,6 +33,7 @@
       @update:visible="createProjectModalVisible = false"
       @handleSuccess="handleCreateSuccess"
     />
+
   </div>
 </template>
 
@@ -39,6 +46,7 @@ import CardList from "./component/CardList/index.vue";
 import { useStore } from "vuex";
 import { StateType } from "./store";
 import { PaginationConfig, QueryParams } from "./data.d";
+import EditPage from "@/views/project/edit/edit.vue";
 const store = useStore<{ Home: StateType }>();
 const mode = computed<any[]>(() => store.state.Home.mode);
 const activeKey = ref(1);
@@ -75,9 +83,11 @@ const handleCreateSuccess = () => {
 };
 
 function handleTabClick(e: number) {
-  queryParams.userId=e;
-   getList(1);
+  // queryParams.userId=e;
+  //  getList(1);
+  console.log("activeKey", activeKey);
 }
+
 </script>
 
 <style lang="less" scoped>

@@ -30,64 +30,68 @@
             <TableFilter @filter="handleTableFilter"/>
           </div>
         </div>
-        <a-table
-            :row-selection="{
-              selectedRowKeys: selectedRowKeys,
-              onChange: onSelectChange
-            }"
-            :pagination="{
-                ...pagination,
-                onChange: (page) => {
-                  loadList(page,pagination.pageSize);
-                },
-                onShowSizeChange: (page, size) => {
-                  loadList(page,size);
-                },
-            }"
-            :columns="columns"
-            :data-source="list">
-          <template #colTitle="{text,record}">
-            <div class="customTitleColRender">
-              <EditAndShowField :custom-class="'custom-endpoint show-on-hover'" :value="text" placeholder="请输入接口名称"
-                                @update="(e: string) => handleUpdateEndpoint(e, record)" @edit="editEndpoint(record)"/>
-            </div>
-          </template>
-
-          <template #colStatus="{record}">
-            <div class="customStatusColRender">
-              <EditAndShowSelect
-                  :label="endpointStatus.get(record?.status || 0 )"
-                  :value="record?.status"
-                  :options="endpointStatusOpts"
-                  @update="(val) => { handleChangeStatus(val,record);}"/>
-            </div>
-          </template>
-
-          <template #colPath="{text}">
-            <div class="customPathColRender">
-              <a-tag>{{ text }}</a-tag>
-            </div>
-          </template>
-
-          <template #action="{record}">
-            <a-dropdown>
-              <MoreOutlined/>
-              <template #overlay>
-                <a-menu>
-                  <a-menu-item key="1">
-                    <a-button style="width: 80px" type="link" size="small" @click="copy(record)">复制</a-button>
-                  </a-menu-item>
-                  <a-menu-item key="2">
-                    <a-button style="width: 80px" type="link" size="small" @click="del(record)">删除</a-button>
-                  </a-menu-item>
-                  <a-menu-item key="3">
-                    <a-button style="width: 80px" type="link" size="small" @click="disabled(record)">过时</a-button>
-                  </a-menu-item>
-                </a-menu>
+        <EmptyCom>
+          <template #content>
+            <a-table
+              :row-selection="{
+                selectedRowKeys: selectedRowKeys,
+                onChange: onSelectChange
+              }"
+              :pagination="{
+                  ...pagination,
+                  onChange: (page) => {
+                    loadList(page,pagination.pageSize);
+                  },
+                  onShowSizeChange: (page, size) => {
+                    loadList(page,size);
+                  },
+              }"
+              :columns="columns"
+              :data-source="list">
+              <template #colTitle="{text,record}">
+                <div class="customTitleColRender">
+                  <EditAndShowField :custom-class="'custom-endpoint show-on-hover'" :value="text" placeholder="请输入接口名称"
+                                    @update="(e: string) => handleUpdateEndpoint(e, record)" @edit="editEndpoint(record)"/>
+                </div>
               </template>
-            </a-dropdown>
+
+              <template #colStatus="{record}">
+                <div class="customStatusColRender">
+                  <EditAndShowSelect
+                      :label="endpointStatus.get(record?.status || 0 )"
+                      :value="record?.status"
+                      :options="endpointStatusOpts"
+                      @update="(val) => { handleChangeStatus(val,record);}"/>
+                </div>
+              </template>
+
+              <template #colPath="{text}">
+                <div class="customPathColRender">
+                  <a-tag>{{ text }}</a-tag>
+                </div>
+              </template>
+
+              <template #action="{record}">
+                <a-dropdown>
+                  <MoreOutlined/>
+                  <template #overlay>
+                    <a-menu>
+                      <a-menu-item key="1">
+                        <a-button style="width: 80px" type="link" size="small" @click="copy(record)">复制</a-button>
+                      </a-menu-item>
+                      <a-menu-item key="2">
+                        <a-button style="width: 80px" type="link" size="small" @click="del(record)">删除</a-button>
+                      </a-menu-item>
+                      <a-menu-item key="3">
+                        <a-button style="width: 80px" type="link" size="small" @click="disabled(record)">过时</a-button>
+                      </a-menu-item>
+                    </a-menu>
+                  </template>
+                </a-dropdown>
+              </template>
+            </a-table>
           </template>
-        </a-table>
+        </EmptyCom>      
       </div>
     </div>
     <CreateEndpointModal
@@ -119,6 +123,7 @@ import CreateEndpointModal from './components/CreateEndpointModal.vue';
 import TableFilter from './components/TableFilter.vue';
 import Drawer from './components/Drawer/index.vue'
 import EditAndShowSelect from '@/components/EditAndShowSelect/index.vue';
+import EmptyCom from '@/components/Empty/index.vue';
 import {useStore} from "vuex";
 import {Endpoint, PaginationConfig} from "@/views/endpoint/data";
 import CollapsedIcon from "@/components/CollapsedIcon/index.vue"

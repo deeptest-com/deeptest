@@ -8,41 +8,44 @@
     </a-button>
     <a-form :model="formState" ref="formRef">
         <div class="global-vars">
-            <a-table bordered size="small" :pagination="false" :columns="globalVarsColumns" :data-source="globalVarsData"
-                :rowKey="(_record, index) => index">
-                <template #customName="{ text, index }">
-                    <a-form-item :name="['globalVarsData', index, 'name']" :rules="rules['name']">
-                        <a-input @change="(e) => {
-                            handleGlobalVarsChange('name', index, e);
-                        }" :value="text" placeholder="请输入变量名" />
-                    </a-form-item>
+            <EmptyCom>
+                <template #content>
+                    <a-table bordered size="small" :pagination="false" :columns="globalVarsColumns"
+                        :data-source="globalVarsData" :rowKey="(_record, index) => index">
+                        <template #customName="{ text, index }">
+                            <a-form-item :name="['globalVarsData', index, 'name']" :rules="rules['name']">
+                                <a-input @change="(e) => {
+                                    handleGlobalVarsChange('name', index, e);
+                                }" :value="text" placeholder="请输入变量名" />
+                            </a-form-item>
+                        </template>
+                        <template #customLocalValue="{ text, index }">
+                            <a-form-item :name="['globalVarsData', index, 'localValue']" :rules="rules['localValue']">
+                                <a-input :value="text" @change="(e) => {
+                                    handleGlobalVarsChange('localValue', index, e);
+                                }" placeholder="请输入本地值" />
+                            </a-form-item>
+                        </template>
+                        <template #customRemoteValue="{ text, index }">
+                            <a-form-item :name="['globalVarsData', index, 'remoteValue']" :rules="rules['remoteValue']">
+                                <a-input :value="text" @change="(e) => {
+                                    handleGlobalVarsChange('remoteValue', index, e);
+                                }" placeholder="请输入远程值" />
+                            </a-form-item>
+                        </template>
+                        <template #customDescription="{ text, index }">
+                            <a-input :value="text" @change="(e) => {
+                                handleGlobalVarsChange('description', index, e);
+                            }" placeholder="请输入描述信息" />
+                        </template>
+                        <template #customAction="{ index }">
+                            <a-button danger type="text"
+                                @click="handleGlobalVarsChange('description', index, '', 'delete');" :size="'small'">删除
+                            </a-button>
+                        </template>
+                    </a-table>
                 </template>
-                <template #customLocalValue="{ text, index }">
-                    <a-form-item :name="['globalVarsData', index, 'localValue']" :rules="rules['localValue']">
-                        <a-input :value="text" @change="(e) => {
-                            handleGlobalVarsChange('localValue', index, e);
-                        }" placeholder="请输入本地值" />
-                    </a-form-item>
-                </template>
-                <template #customRemoteValue="{ text, index }">
-                    <a-form-item :name="['globalVarsData', index, 'remoteValue']" :rules="rules['remoteValue']">
-                        <a-input :value="text" @change="(e) => {
-                            handleGlobalVarsChange('remoteValue', index, e);
-                        }" placeholder="请输入远程值" />
-                    </a-form-item>
-                </template>
-                <template #customDescription="{ text, index }">
-                    <a-input :value="text" @change="(e) => {
-                        handleGlobalVarsChange('description', index, e);
-                    }" placeholder="请输入描述信息" />
-                </template>
-                <template #customAction="{ index }">
-                    <a-button danger type="text" @click="handleGlobalVarsChange('description', index, '', 'delete');"
-                        :size="'small'">删除
-                    </a-button>
-                </template>
-            </a-table>
-
+            </EmptyCom>
             <div class="envDetail-footer">
                 <a-button class="save-btn" html-type="submit" @click="handleSaveGlobalVars" type="primary">保存</a-button>
             </div>
@@ -54,6 +57,7 @@ import { computed, createVNode, reactive, ref, watch } from "vue";
 import { useStore } from "vuex";
 import { message, Modal } from "ant-design-vue";
 import { ExclamationCircleOutlined, PlusOutlined } from "@ant-design/icons-vue";
+import EmptyCom from "@/components/Empty/index.vue";
 import { globalVarsColumns } from '../../config';
 import { StateType as ProjectStateType } from "@/store/project";
 import { StateType as ProjectSettingStateType } from "@/views/ProjectSetting/store";

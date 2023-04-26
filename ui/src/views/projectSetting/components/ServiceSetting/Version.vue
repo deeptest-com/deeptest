@@ -3,21 +3,25 @@
     <div class="header">
       <CustomForm :form-config="formConfig" :rules="rules" @handle-ok="handleAdd" />
     </div>
-    <a-table bordered :data-source="dataSource" :columns="versionColumns" :rowKey="(_record, index) => index">
-      <template #name="{ text }">
-        <div class="editable-cell">
-          <div class="editable-cell-text-wrapper">
-            {{ text || ' ' }}
-          </div>
-        </div>
+    <EmptyCom>
+      <template #content>
+        <a-table bordered :data-source="dataSource" :columns="versionColumns" :rowKey="(_record, index) => index">
+          <template #name="{ text }">
+            <div class="editable-cell">
+              <div class="editable-cell-text-wrapper">
+                {{ text || ' ' }}
+              </div>
+            </div>
+          </template>
+          <template #operation="{ record }">
+            <a-space>
+              <a href="javascript:void (0)" @click="onDisabled(record)">过期</a>
+              <a href="javascript:void (0)" @click="onDelete(record)">删除</a>
+            </a-space>
+          </template>
+        </a-table>
       </template>
-      <template #operation="{ record }">
-        <a-space>
-          <a href="javascript:void (0)" @click="onDisabled(record)">过期</a>
-          <a href="javascript:void (0)" @click="onDelete(record)">删除</a>
-        </a-space>
-      </template>
-    </a-table>
+    </EmptyCom>
   </div>
 </template>
 <script setup lang="ts">
@@ -32,6 +36,7 @@ import { useStore } from 'vuex';
 import { message, Modal } from "ant-design-vue";
 import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import CustomForm from '../common/CustomForm.vue';
+import EmptyCom from '@/components/Empty/index.vue';
 import { StateType as ProjectSettingStateType } from '../../store';
 import { versionColumns } from '../../config';
 

@@ -18,8 +18,8 @@ export interface StateType {
   // 头部tab导航列表
   headTabNavList: TabNavItem[];
 
-  permissionMenuMap: any[];
-  permissionButtonMap: any[];
+  permissionMenuMap: any;
+  permissionButtonMap: any;
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
@@ -50,8 +50,8 @@ const initState: StateType = {
       menu: settings.homeRouteItem
     }
   ],
-  permissionMenuMap: [],
-  permissionButtonMap: []
+  permissionMenuMap: null,
+  permissionButtonMap: null
 };
 
 const StoreModel: ModuleType = {
@@ -88,16 +88,18 @@ const StoreModel: ModuleType = {
       if (result.code === 0) {
         const menuData = {};
         const buttonData = {};
-        result.data.result.forEach(e => {
-          if (e.type === 'menu') {
-            menuData[e.code] = e;
-          } else if (e.type === 'button') {
-            buttonData[e.code] = e;
-          }
-        })
-        console.log('~permissionMenu --', menuData);
-        console.log('~permissionButton --', buttonData);
-        commit('setPermissionMenuAndBtn', { permissionButtonMap: buttonData, permissionMenuMap: menuData });
+        if (result.data.result) {
+          result.data.result.forEach(e => {
+            if (e.type === 'menu') {
+              menuData[e.code] = e;
+            } else if (e.type === 'button') {
+              buttonData[e.code] = e;
+            }
+          })
+          console.log('~permissionMenu --', menuData);
+          console.log('~permissionButton --', buttonData);
+        }
+        commit('setPermissionMenuAndBtn', { permissionButtonMap: buttonData, permissionMenuMap: menuData }); 
       }
     }
   }

@@ -7,7 +7,7 @@
                     <div>编辑项目</div>
                 </template>
                 <div>
-                    <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
+                    <a-form :model="formStateRef" :label-col="labelCol" :wrapper-col="wrapperCol">
                         <a-form-item label="项目名称" v-bind="validateInfos.name">
                             <a-input v-model:value="formStateRef.name"
                                 @blur="validate('name', { trigger: 'blur' }).catch(() => { })" />
@@ -26,10 +26,14 @@
                         </a-form-item>
                         <a-form-item label="管理员" v-bind="validateInfos.adminId">
                             <a-select v-model:value="formStateRef.adminId" show-search
+                                placeholder="请选择管理员"
                                 @blur="validate('adminId', { trigger: 'blur' }).catch(() => { })">
                                 <a-select-option v-for="(option, key) in userListOptions" :key=key :value="option.id">{{
                                     option.label }}</a-select-option>
                             </a-select>
+                        </a-form-item>
+                        <a-form-item label="项目示例">
+                            <a-switch v-model:checked="formStateRef.includeExample" />
                         </a-form-item>
                         <a-form-item label="项目简介" v-bind="validateInfos.desc">
                             <a-textarea v-model:value="formStateRef.desc"
@@ -57,7 +61,7 @@ import PngHashMap from "./index";
 const useForm = Form.useForm;
 const props = defineProps<{
     visible: Boolean,
-    formState
+    formState?: any
 }>();
 const emits = defineEmits(['update:visible', 'handleOk', 'handleSuccess'])
 const store = useStore<{ User: UserStateType, Project: ProjectStateType }>();
@@ -65,12 +69,11 @@ const userListOptions = computed<SelectTypes["options"]>(() => store.state.Proje
 const labelCol = { span: 6 };
 const wrapperCol = { span: 14 };
 const projectInfo = {
-    id: 0,
     name: '',
     desc: '',
-    logo: '',
+    logo: 'default_logo1',
     shortName: '',
-    adminId: 0,
+    adminId: null,
     includeExample: true
 };
 const formStateRef = reactive(props.formState || projectInfo);
@@ -89,7 +92,7 @@ const selectLogoKey = ref('default_logo1');
 const { validate, validateInfos } = useForm(formStateRef, rulesRef);
 const submitForm = async () => {
     validate().then(() => {
-        store.dispatch('Project/saveProject', { ...props.formState, logo: selectLogoKey.value }).then((res) => {
+        store.dispatch('Project/saveProject', { ...formStateRef }).then((res) => {
             if (res === true) {
                 message.success("保存成功");
                 emits('handleSuccess');
@@ -113,7 +116,7 @@ const handleOk = () => {
 
 const handleSelectLogo = (item: any) => {
     selectLogoKey.value = item.imgName;
-    formStateRef.value.logo = item.imgName;
+    formStateRef.logo = item.imgName;
 };
 
 watch(() => props.visible, (val) => {

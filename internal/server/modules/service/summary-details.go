@@ -235,27 +235,27 @@ func (s *SummaryDetailsService) HasDataOfDate(startTime string, endTiem string) 
 	return r.HasDataOfDate(startTime, endTiem)
 }
 
-func (s *SummaryDetailsService) CheckCardUpdated(oldTime *time.Time) (result bool, err error) {
+func (s *SummaryDetailsService) CheckCardUpdated(lastUpdateTime *time.Time) (result bool, err error) {
 	r := repo.NewSummaryDetailsRepo()
-	return r.CheckCardUpdated(oldTime)
+	return r.CheckCardUpdated(lastUpdateTime)
 }
 
 //检查是否有今日数据,没有则copy最后一条,然后进行数据是否更新检查
-func (s *SummaryDetailsService) CheckDetailsUpdated(oldTime *time.Time) (result bool, err error) {
+func (s *SummaryDetailsService) CheckDetailsUpdated(lastUpdateTime *time.Time) (result bool, err error) {
 	r := repo.NewSummaryDetailsRepo()
 	now := time.Now()
 	year, month, day := now.Date()
 	startTime := strconv.Itoa(year) + "-" + strconv.Itoa(int(month)) + "-" + strconv.Itoa(day) + " 00:00:00"
 	endTime := strconv.Itoa(year) + "-" + strconv.Itoa(int(month)) + "-" + strconv.Itoa(day) + " 23:59:59"
 	ret, err := s.HasDataOfDate(startTime, endTime)
-	if ret {
+	if !ret {
 		details, _ := s.Find()
 		for _, detail := range details {
 			newDetail := s.CopyDetailsWithoutBaseModel(detail)
 			s.Create(newDetail)
 		}
 	}
-	return r.CheckDetailsUpdated(oldTime)
+	return r.CheckDetailsUpdated(lastUpdateTime)
 }
 
 func (s *SummaryDetailsService) CopyDetailsWithoutBaseModel(detail model.SummaryDetails) (ret model.SummaryDetails) {

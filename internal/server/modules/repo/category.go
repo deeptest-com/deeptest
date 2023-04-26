@@ -157,12 +157,18 @@ func (r *CategoryRepo) UpdateName(id int, name string) (err error) {
 }
 
 func (r *CategoryRepo) Update(req v1.CategoryReq) (err error) {
-	po := model.Category{
-		Name: req.Name,
-		Desc: req.Desc,
+	po := new(model.Category)
+	po.ID = uint(req.Id)
+
+	err = r.DB.First(&po).Error
+	if err != nil {
+		return err
 	}
 
-	err = r.DB.Save(po).Error
+	po.Name = req.Name
+	po.Desc = req.Desc
+
+	err = r.DB.Save(&po).Error
 
 	return
 }

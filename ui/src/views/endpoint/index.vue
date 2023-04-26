@@ -14,9 +14,8 @@
     </div>
     <div class="content">
       <div class="left tree" v-if="!collapsed">
-        <EndpointTree @select="selectNode"/>
-
-        <Tree/>
+<!--        <EndpointTree @select="selectNode"/>-->
+        <Tree @select="selectNode" :serveId="currServe.id"/>
       </div>
       <CollapsedIcon
           :style="{left:'294px',top:'4px'}"

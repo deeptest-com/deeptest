@@ -285,6 +285,7 @@ func (c *EnvironmentCtrl) DeleteEnvironment(ctx iris.Context) {
 	if id != 0 {
 		if err := c.EnvironmentService.DeleteEnvironment(uint(id)); err != nil {
 			ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+			return
 		}
 	}
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})

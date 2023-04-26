@@ -32,7 +32,7 @@ func (r *SummaryDetailsRepo) HasDataOfDate(startTime string, endTime string) (re
 	var count int64
 	err = r.DB.Model(&model.SummaryDetails{}).Raw("select count(id) from (deeptest.biz_summary_details) where created_at > ? and created_at < ? AND NOT deleted;", startTime, endTime).Last(&count).Error
 	if count == 0 {
-		ret = true
+		ret = false
 	}
 	return
 }
@@ -147,47 +147,33 @@ func (r *SummaryDetailsRepo) CoverageByProjectId(projectId int64, interfaceIds [
 	return
 }
 
-func (r *SummaryDetailsRepo) CheckCardUpdated(oldTime *time.Time) (result bool, err error) {
+func (r *SummaryDetailsRepo) CheckCardUpdated(lastUpdateTime *time.Time) (result bool, err error) {
 	var newCardUpdatedTime *time.Time
 	err = r.DB.Model(&model.SummaryDetails{}).Select("updated_at").Order("updated_at desc").Limit(1).Find(&newCardUpdatedTime).Error
-	result = newCardUpdatedTime.After(*oldTime)
+	result = newCardUpdatedTime.After(*lastUpdateTime)
 	return
 }
 
-func (r *SummaryDetailsRepo) CheckDetailsUpdated(oldTime *time.Time) (result bool, err error) {
-	var newBugTime, newProjectMemberTime, newProjectTime, newSysUserTime, newScenarioReportTime, newInterfaceTime *time.Time
-	err = r.DB.Model(&model.ProjectMember{}).Select("updated_at").Order("updated_at desc").Limit(1).Find(&newProjectMemberTime).Error
-	err = r.DB.Model(&model.SummaryBugs{}).Select("updated_at").Order("updated_at desc").Limit(1).Find(&newBugTime).Error
-	err = r.DB.Model(&model.Project{}).Select("updated_at").Order("updated_at desc").Limit(1).Find(&newProjectTime).Error
-	err = r.DB.Model(&model.SysUser{}).Select("updated_at").Order("updated_at desc").Limit(1).Find(&newSysUserTime).Error
-	err = r.DB.Model(&model.ScenarioReport{}).Select("updated_at").Order("updated_at desc").Limit(1).Find(&newScenarioReportTime).Error
-	err = r.DB.Model(&model.Interface{}).Select("updated_at").Order("updated_at desc").Limit(1).Find(&newInterfaceTime).Error
+func (r *SummaryDetailsRepo) CheckDetailsUpdated(lastUpdateTime *time.Time) (result bool, err error) {
+	result = false
+	newTime := time.Now()
+	tables := []string{
+		"deeptest.biz_project",
+		"deeptest.biz_summary_bugs",
+		"deeptest.biz_project_member",
+		"deeptest.sys_user",
+		"deeptest.biz_scenario_report",
+		"deeptest.biz_interface"}
 
-	if newBugTime.After(*oldTime) {
-		result = true
-		return
-	}
-	if newProjectMemberTime.After(*oldTime) {
-		result = true
-		return
-	}
-	if newProjectTime.After(*oldTime) {
-		result = true
-		return
-	}
-	if newSysUserTime.After(*oldTime) {
-		result = true
-		return
-	}
-	if newScenarioReportTime.After(*oldTime) {
-		result = true
-		return
-	}
-	if newInterfaceTime.After(*oldTime) {
-		result = true
-		return
-	}
+	for _, table := range tables {
+		sql := "select updated_at from " + table + " order by updated_at limit 1;"
+		err = r.DB.Raw(sql).Find(&newTime).Error
 
+		if newTime.After(*lastUpdateTime) != false {
+			result = true
+			return
+		}
+	}
 	return
 }
 

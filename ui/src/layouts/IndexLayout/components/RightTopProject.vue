@@ -1,6 +1,6 @@
 <template>
   <div class="indexlayout-top-project">
-    <a-dropdown :overlayClassName="'header-top-left-project-switch-con'"
+    <a-dropdown :overlayClassName="'deeptest-project-switch-container'"
                 :visible="dropdownVisible"
                 @click="dropdownVisible = !dropdownVisible"
                 :overlayStyle="{width:'300px'}">
@@ -24,8 +24,8 @@
                   selectProject(item.id)
                  }"
                  v-for="(item,index) in myProject" :key="item.id">
-              <UserOutlined/>
-              {{ item.name }}
+              <span class="icon"><UserOutlined/></span>
+              <span class="text">{{ item.name }}</span>
             </div>
             <div key="recently" class="menu-scroll-item recently">
               最近访问的项目
@@ -36,8 +36,8 @@
                   selectProject(item.id)
                  }"
                  :key="item.id">
-              <UserOutlined/>
-              {{ item.name }}
+              <span class="icon"><UserOutlined/></span>
+              <span class="text">{{ item.name }}</span>
             </div>
           </a-menu-item>
           <a-menu-item key="footer" class="menu-item footer">
@@ -125,7 +125,7 @@ const handleClickOut = (event) => {
     if (!dropdownVisible.value) {
       return;
     }
-    const target1: any = document.querySelector('.header-top-left-project-switch-con');
+    const target1: any = document.querySelector('.deeptest-project-switch-container');
     const target2: any = document.querySelector('.header.ant-dropdown-trigger.ant-dropdown-open');
     if (!target1.contains(event.target) && !target2.contains(event.target)) {
       dropdownVisible.value = false;

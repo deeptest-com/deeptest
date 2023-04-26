@@ -103,7 +103,7 @@ func (s *SummaryProjectUserRankingService) FindByDateAndProjectId(startTime stri
 	return r.FindByDateAndProjectId(startTime, endTime, projectId)
 }
 
-func (s *SummaryProjectUserRankingService) CheckUpdated(oldTime *time.Time) (result bool, err error) {
+func (s *SummaryProjectUserRankingService) CheckUpdated(lastUpdateTime *time.Time) (result bool, err error) {
 	r := *repo.NewSummaryProjectUserRankingRepo()
-	return r.CheckUpdated(oldTime)
+	return r.CheckUpdated(lastUpdateTime)
 }

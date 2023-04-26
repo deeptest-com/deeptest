@@ -14,16 +14,17 @@
   text-align: right;
 }
 
-// 底部项目切换样式覆盖
-.header-top-left-project-switch-con {
-  width: 300px;
-  height: 300px;
+// 项目样式切换样式覆盖
+.deeptest-project-switch-container {
+  width: 260px;
+  height: 260px;
 
   .ant-dropdown-content.menu {
     position: relative;
-    max-height: 300px;
+    max-height: 260px;
     height: 300px;
     overflow: hidden;
+
     .menu-item {
       &:hover {
         background: transparent;
@@ -32,7 +33,7 @@
       &.filter, &.footer {
         position: absolute;
         left: 0;
-        height: 36px;
+        height: 32px;
         width: 100%;
         z-index: 9;
         background: #ffffff;
@@ -44,11 +45,15 @@
 
       &.footer {
         bottom: 0;
-        border-top: 1px solid #D0D7DE;
-
+        //border-top: 1px solid #D0D7DE;
         .ant-dropdown-menu-title-content {
           display: flex;
           justify-content: space-between;
+          span{
+            font-weight: 400;
+            font-size: 14px;
+            color: #447DFD;
+          }
         }
       }
 
@@ -61,24 +66,39 @@
         z-index: 1;
         overflow-y: scroll;
         overflow-x: hidden;
+
         .ant-dropdown-menu-title-content {
           display: block;
           padding: 36px 0;
+
           .menu-scroll-item {
             width: 100%;
-            height: 36px;
-            line-height: 36px;
-            &.my,&.recently{
+            height: 32px;
+            line-height: 32px;
+            font-weight: 400;
+            font-size: 14px;
+
+            .icon {
+              margin-right: 6px;
+              margin-left: 4px;
+              display: inline-block;
+            }
+            .text{
+                display: inline-block;
+            }
+
+            &.my, &.recently {
+              margin-top: 4px;
               cursor: default;
+              font-weight: 500;
+              font-size: 14px;
+              line-height: 32px;
+              color: rgba(0, 0, 0, 0.85);
             }
           }
         }
 
       }
     }
-
-
   }
-
 }
-

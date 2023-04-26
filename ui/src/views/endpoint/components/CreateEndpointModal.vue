@@ -1,6 +1,6 @@
 <template>
   <a-modal
-      width="600px"
+      width="640px"
       :visible="visible"
       @ok="ok"
       @cancel="cancal"
@@ -9,8 +9,8 @@
         ref="formRef"
         :model="formState"
         :rules="rules"
-        :label-col="{ span: 6 }"
-        :wrapper-col="{ span: 14 }">
+        :label-col="{ span: 5 }"
+        :wrapper-col="{ span: 17 }">
       <a-form-item label="接口名称" name="title">
         <a-input placeholder="请输入接口名称" v-model:value="formState.title"/>
       </a-form-item>
@@ -19,6 +19,7 @@
             @change="selectedCategory"
             :value="formState.categoryId"
             show-search
+            :multiple="false"
             :treeData="treeDataCategory"
             style="width: 100%"
             :treeDefaultExpandAll="true"
@@ -63,7 +64,7 @@ const props = defineProps({
     required: true,
     type: Boolean,
   },
-  selectedCategoryId:{
+  selectedCategoryId: {
     required: true,
     type: Number,
   }
@@ -106,8 +107,8 @@ watch(() => {
   if (newVal) {
     formState.categoryId = props.selectedCategoryId;
   }
-},{
-  immediate:true
+}, {
+  immediate: true
 })
 
 const rules = {
@@ -115,7 +116,7 @@ const rules = {
     {required: true, message: '请输入接口名称', trigger: 'blur'},
     {min: 1, max: 50, message: '最少 1 个字符，最长 100 个字符', trigger: 'blur'},
   ],
-  categoryId: [{required: true,message: '请选择接口分类'}],
+  categoryId: [{required: false}],
   description: [{required: false}],
 };
 

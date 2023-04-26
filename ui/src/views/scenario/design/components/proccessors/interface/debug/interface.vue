@@ -40,30 +40,24 @@ const scenarioProcessorIdForDebug = computed<number>(() => store.state.Scenario.
 const debugInfo = computed<DebugInfo>(() => store.state.Debug.debugInfo);
 const debugData = computed<any>(() => store.state.Debug.debugData);
 
+watch(scenarioProcessorIdForDebug, () => {
+  console.log('watch scenarioProcessorIdForDebug', scenarioProcessorIdForDebug)
+}, {deep: true})
+
 const loadData = debounce(async () => {
   console.log('loadData', scenarioProcessorIdForDebug.value)
   if (scenarioProcessorIdForDebug.value === 0) {
     return
   }
 
-  // await store.dispatch('Debug/loadData', {
-  //   endpointInterfaceId: 0,
-  //   scenarioProcessorId: 0,
-  //   usedBy: usedBy,
-  // });
-  //
-  // store.dispatch('Debug/getLastInvocationResp', {
-  //   endpointInterfaceId: debugInfo.value.endpointInterfaceId,
-  // })
-  // store.dispatch('Debug/listInvocation', {
-  //   endpointInterfaceId: debugInfo.value.endpointInterfaceId,
-  // })
+  store.dispatch('Debug/loadDataAndInvocations', {
+    endpointInterfaceId: 0,
+    scenarioProcessorId: 0,
+    usedBy: usedBy,
+  });
+
 }, 300)
 loadData()
-
-watch(scenarioProcessorIdForDebug, () => {
-  console.log('watch scenarioProcessorIdForDebug', scenarioProcessorIdForDebug)
-}, {deep: true})
 
 onMounted(() => {
   console.log('onMounted interface')

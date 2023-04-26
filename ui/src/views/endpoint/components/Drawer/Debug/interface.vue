@@ -71,25 +71,18 @@ const changeMethod = async () => {
 
   const endpointInterface = interfaceMethodToObjMap.value[selectedMethod.value]
 
-  // sync with define page
+  // sync with / to define page
   if (endpointInterface) {
     await store.commit('Endpoint/setSelectedMethodDetail', endpointInterface);
   } else {
     await store.commit('Endpoint/setSelectedMethodDetail', {});
   }
 
-  await store.dispatch('Debug/loadData', {
+  store.dispatch('Debug/loadDataAndInvocations', {
     endpointInterfaceId: endpointInterface.id,
     scenarioProcessorId: 0,
     usedBy: usedBy,
   });
-
-  store.dispatch('Debug/getLastInvocationResp', {
-    endpointInterfaceId: debugInfo.value.endpointInterfaceId,
-  })
-  store.dispatch('Debug/listInvocation', {
-    endpointInterfaceId: debugInfo.value.endpointInterfaceId,
-  })
 }
 changeMethod()
 

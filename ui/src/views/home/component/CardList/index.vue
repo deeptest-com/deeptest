@@ -10,7 +10,7 @@
         <template #renderItem="{ item }">
           <ListItem>
             <div v-if="item.type && item.type == 'add'">
-              <Card class="card add-card" @click="addProject(0)">创建项目+</Card>
+              <Card class="card add-card">创建项目+</Card>
             </div>
             <div v-else>
               <Card class="card" @click="goProject(item.id)">
@@ -165,11 +165,7 @@ function handleTabClick(e: number) {
   // queryParams.userId=e;
   //  getList(1);
 }
-function addProject(id:number){
- 
 
-
-}
 async function fetch(p = {}) {
   const { api, params } = props;
   if (api && typeof api === "function") {

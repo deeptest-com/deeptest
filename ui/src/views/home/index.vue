@@ -9,31 +9,31 @@
             <a-tab-pane :key="0" tab="所有项目"> </a-tab-pane> </a-tabs
         ></template>
         <template #extra>
-          <a-button type="primary" style="margin-right: 20px" @click="createProjectModalVisible = true">新建项目</a-button>
+          <a-button
+            type="primary"
+            style="margin-right: 20px"
+            @click="createProjectModalVisible = true"
+            >新建项目</a-button
+          >
           <a-radio-group v-model:value="showMode" button-style="solid">
             <a-radio-button value="card">卡片</a-radio-button>
             <a-radio-button value="list">列表</a-radio-button>
           </a-radio-group>
         </template>
         <div>
-
           <HomeList v-if="showMode == 'list'" :activeKey="activeKey" />
 
           <CardList v-else :activeKey="activeKey" />
         </div>
       </a-card>
     </div>
-  
-        </div>
-      </a-card>
-    </div>
+
     <!-- 创建项目弹窗 -->
-    <CreateProjectModal 
-      :visible="createProjectModalVisible" 
+    <CreateProjectModal
+      :visible="createProjectModalVisible"
       @update:visible="createProjectModalVisible = false"
       @handleSuccess="handleCreateSuccess"
     />
-
   </div>
 </template>
 
@@ -87,7 +87,6 @@ function handleTabClick(e: number) {
   //  getList(1);
   console.log("activeKey", activeKey);
 }
-
 </script>
 
 <style lang="less" scoped>

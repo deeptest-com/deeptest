@@ -86,7 +86,7 @@ export default defineComponent({
           const routeDataItem: RoutesDataItem = { ...element.children[0], children: [] };
           if (childrenRoute.length > 0) {
             childrenRoute.forEach((routeItem: RoutesDataItem) => {
-              if (!routeItem.hidden && permissionRouteMenuMap.value[RouteMenuType[`${routeItem.meta?.code}`]]) {
+              if (!routeItem.hidden && permissionRouteMenuMap.value && permissionRouteMenuMap.value[RouteMenuType[`${routeItem.meta?.code}`]]) {
                 routeDataItem.children?.push(routeItem);
               }
             })

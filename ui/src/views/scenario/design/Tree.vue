@@ -153,12 +153,7 @@ const selectNode = (keys, e) => {
 
   store.dispatch('Scenario/getNode', selectedData).then((ok) => {
     if (ok && selectedNode.value.processorType === 'processor_interface_default') {
-      store.dispatch('Scenario/setEndpointInterfaceId', selectedNode.value.endpointInterfaceId)
-
-      // const interfaceId = selectedNode.value.entityId
-      // store.dispatch('Scenario/getInterface', interfaceId)
-      // store.dispatch('Scenario/getLastInvocationResp', interfaceId)
-      // store.dispatch('Scenario/listInvocation', interfaceId)
+      store.dispatch('Scenario/setScenarioProcessorIdForDebug', selectedNode.value.processorID)
     }
   })
 }

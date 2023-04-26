@@ -36,13 +36,13 @@ const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
 const store = useStore<{  Debug: Debug, Scenario: Scenario }>();
 
-const endpointInterfaceId = computed<number>(() => store.state.Scenario.endpointInterfaceId);
+const scenarioProcessorIdForDebug = computed<number>(() => store.state.Scenario.scenarioProcessorIdForDebug);
 const debugInfo = computed<DebugInfo>(() => store.state.Debug.debugInfo);
 const debugData = computed<any>(() => store.state.Debug.debugData);
 
 const loadData = debounce(async () => {
-  console.log('loadData', endpointInterfaceId.value)
-  if (endpointInterfaceId.value === 0) {
+  console.log('loadData', scenarioProcessorIdForDebug.value)
+  if (scenarioProcessorIdForDebug.value === 0) {
     return
   }
 
@@ -61,8 +61,8 @@ const loadData = debounce(async () => {
 }, 300)
 loadData()
 
-watch(endpointInterfaceId, () => {
-  console.log('watch endpointInterfaceId', endpointInterfaceId)
+watch(scenarioProcessorIdForDebug, () => {
+  console.log('watch scenarioProcessorIdForDebug', scenarioProcessorIdForDebug)
 }, {deep: true})
 
 onMounted(() => {

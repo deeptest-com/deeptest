@@ -46,13 +46,13 @@ export async function getEndpointList(data: any): Promise<any> {
 }
 
 // 用户场景选择接口
-export async function listEndpointInterface(categoryId: number, pagination: any) {
+export async function listEndpointInterface(data: any, pagination: any) {
     const resp: ResponseData = (await request({
         url: `/${apiPathInterface}/listForSelection`,
         method: 'post',
         data: {
             ...pagination,
-            categoryId: categoryId,
+            ...data,
         }
     }))  as any;
 

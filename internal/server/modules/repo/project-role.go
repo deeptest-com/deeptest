@@ -5,6 +5,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
@@ -80,5 +81,18 @@ func (r *ProjectRoleRepo) FindByIds(ids []uint) (projectRoles []model.ProjectRol
 	db := r.DB.Model(&model.ProjectRole{}).Where("id IN (?)", ids)
 
 	err = db.Find(&projectRoles).Error
+	return
+}
+
+func (r *ProjectRoleRepo) GetAllRoleNameIdMap() (data map[consts.RoleType]uint, err error) {
+	roleList, err := r.AllRoleList()
+	if err != nil {
+		logUtils.Errorf("get all role list err ", zap.String("错误:", err.Error()))
+		return
+	}
+	data = make(map[consts.RoleType]uint)
+	for _, v := range roleList {
+		data[v.Name] = v.ID
+	}
 	return
 }

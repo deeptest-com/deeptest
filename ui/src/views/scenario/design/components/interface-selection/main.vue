@@ -6,10 +6,8 @@
     :mask-closable="false"
     :visible="true"
     :onCancel="onCancel"
-    :footer="null"
     wrapClassName="modal-tree-selection"
-    width="1000px"
-  >
+    width="1000px">
 
     <div class="interface-selection-main">
       <div class="left tree">
@@ -17,9 +15,14 @@
       </div>
 
       <div class="right">
-        <List :categoryId="categoryId"></List>
+        <List :categoryId="categoryId" :selectInterface="onSelectInterface"></List>
       </div>
     </div>
+
+    <template #footer>
+      <a-button @click="onCancel">取消</a-button>
+      <a-button @click="onSubmit" type="primary">确定</a-button>
+    </template>
 
   </a-modal>
 
@@ -44,15 +47,21 @@ const props = defineProps({
 })
 
 const categoryId = ref(0)
+const interfaceIds = ref([])
 
 const selectCategory = async (id) => {
   console.log('selectCategory', id)
   categoryId.value = id
 }
 
-const onSubmit = (checkedInterfaces) => {
+const onSelectInterface = async (ids) => {
+  console.log('onSelectInterface', ids)
+  interfaceIds.value = ids
+}
+
+const onSubmit = () => {
   console.log('onSubmit')
-  props.onFinish(checkedInterfaces)
+  props.onFinish(interfaceIds.value)
 }
 
 const onCancel = () => {
@@ -62,7 +71,7 @@ const onCancel = () => {
 
 </script>
 
-<style lang="less">
+<style scoped lang="less">
 .modal-tree-selection {
   .ant-modal-body {
     padding-top: 5px;
@@ -78,6 +87,7 @@ const onCancel = () => {
   }
   .right {
     flex: 1;
+    margin-left: 16px;
   }
 }
 </style>

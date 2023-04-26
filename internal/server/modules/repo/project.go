@@ -15,6 +15,7 @@ import (
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
+	"time"
 )
 
 type ProjectRepo struct {
@@ -270,6 +271,23 @@ func (r *ProjectRepo) GetCurrProjectByUser(userId uint) (currProject model.Proje
 	err = r.DB.Model(&model.Project{}).
 		Where("id = ?", user.Profile.CurrProjectId).
 		First(&currProject).Error
+
+	return
+}
+
+func (r *ProjectRepo) ListProjectsRecentlyVisited(userId uint) (projects []model.Project, err error) {
+	now := time.Now()
+	date := time.Date(now.Year(), now.Month(), now.Day()-7, 0, 0, 0, 0, time.Local)
+	var projectIds []uint
+	r.DB.Model(&model.ProjectRecentlyVisited{}).
+		Select("distinct project_id").
+		Where("user_id = ?", userId).
+		Where("created_at >= ?", date).
+		Scan(&projectIds)
+
+	err = r.DB.Model(&model.Project{}).
+		Where("NOT deleted AND id IN (?)", projectIds).
+		Find(&projects).Error
 
 	return
 }

@@ -30,6 +30,7 @@ type DataService struct {
 	ProjectRoleSource     *source.ProjectRoleSource     `inject:""`
 	ProjectPermSource     *source.ProjectPermSource     `inject:""`
 	ProjectRolePermSource *source.ProjectRolePermSource `inject:""`
+	ProjectMenuSource     *source.ProjectMenuSource     `inject:""`
 	ProjectRoleMenuSource *source.ProjectRoleMenuSource `inject:""`
 }
 
@@ -108,6 +109,7 @@ func (s *DataService) InitDB(req v1.DataReq) error {
 			s.UserSource,
 			s.ProjectPermSource,
 			s.ProjectRolePermSource,
+			s.ProjectMenuSource,
 			s.ProjectRoleMenuSource,
 		)
 		if err != nil {

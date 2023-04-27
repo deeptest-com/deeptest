@@ -107,6 +107,10 @@ func (r *ProjectRoleMenuRepo) GetConfigData() (menus []model.ProjectRoleMenu, er
 	return
 }
 
+func (r *ProjectRoleMenuRepo) DeleteAllData() {
+	r.DB.Delete(&model.ProjectRoleMenu{}, "id > 0")
+}
+
 func (r *ProjectRoleMenuRepo) BatchCreate(roleMenus []model.ProjectRoleMenu) (successCount int, failItems []string) {
 	var err error
 	for _, roleMenu := range roleMenus {

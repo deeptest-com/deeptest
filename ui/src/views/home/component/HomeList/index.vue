@@ -193,8 +193,9 @@ function handleTabClick(e: number) {
   getList(1);
 }
 function goProject(projectId: number) {
+  
   store.dispatch("ProjectGlobal/changeProject", projectId);
-  store.dispatch("Environment/getEnvironment", { id: 0, projectId: projectId });
+  // store.dispatch("Environment/getEnvironment", { id: 0, projectId: projectId });
 
   // 项目切换后，需要重新更新可选服务列表
   store.dispatch("ServeGlobal/fetchServe");

@@ -23,7 +23,7 @@
         <div>
           <HomeList v-if="showMode == 'list'" :activeKey="activeKey" />
 
-          <CardList v-else :activeKey="activeKey" />
+          <CardList v-else @edit="handleOpenEdit" :activeKey="activeKey" />
         </div>
       </a-card>
     </div>
@@ -31,6 +31,7 @@
     <!-- 创建项目弹窗 -->
     <CreateProjectModal
       :visible="createProjectModalVisible"
+      :formState="formState"
       @update:visible="createProjectModalVisible = false"
       @handleSuccess="handleCreateSuccess"
     />
@@ -47,17 +48,25 @@ import { useStore } from "vuex";
 import { StateType } from "./store";
 import { PaginationConfig, QueryParams } from "./data.d";
 import EditPage from "@/views/project/edit/edit.vue";
-
-import {useRouter} from "vue-router";
-import {setCache} from "@/utils/localCache";
+import { useRouter } from "vue-router";
+import { setCache } from "@/utils/localCache";
 import settings from "@/config/settings";
 
 const store = useStore<{ Home: StateType }>();
 const activeKey = ref(1);
 const showMode = ref("card");
 const createProjectModalVisible = ref(false);
+const formState = ref({
+  id:"",
+  logo:"",
+  name: "",
+  shortName: "",
+  adminId: "",
+  includeExample: false,
+  desc: "",
+});
 // let queryParams = reactive<QueryParams>({
-  // keywords: "",
+// keywords: "",
 
 // });
 
@@ -68,7 +77,6 @@ onMounted(() => {
 const getList = async (current: number): Promise<void> => {
   await store.dispatch("Home/queryProject", {
     // keywords: queryParams.keywords,
-    
   });
 };
 
@@ -79,8 +87,18 @@ const handleCreateSuccess = () => {
 };
 
 function handleTabClick(e: number) {
-
   console.log("activeKey", activeKey);
+}
+function handleOpenEdit(item) {
+  console.log("！！！！！！编辑item", item);
+  formState.value.id = item.project_id;
+  formState.value.name = item.project_chinese_name;
+  formState.value.logo ="";
+  formState.value.shortName = item.project_name;
+  formState.value.adminId = "";
+  formState.value.includeExample = false;
+  formState.value.desc = item.project_des;
+  createProjectModalVisible.value = true;
 }
 </script>
 

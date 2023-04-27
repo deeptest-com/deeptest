@@ -272,15 +272,11 @@ func (r *ProjectRepo) ListProjectsRecentlyVisited(userId uint) (projects []model
 	//TODO 时间临时变更
 	now := time.Now()
 	date := time.Date(now.Year(), now.Month(), now.Day(), now.Hour(), now.Minute()-2, 0, 0, time.Local)
-	var projectIds []uint
-	r.DB.Model(&model.ProjectRecentlyVisited{}).
-		Select("distinct project_id").
-		Where("user_id = ?", userId).
-		Where("created_at >= ?", date).
-		Scan(&projectIds)
 
-	err = r.DB.Model(&model.Project{}).
-		Where("NOT deleted AND id IN (?)", projectIds).
+	err = r.DB.Model(&model.Project{}).Joins("LEFT JOIN biz_project_recently_visited v ON biz_project.id=v.project_id").
+		Where("v.user_id = ?", userId).
+		Where("v.created_at >= ?", date).
+		Order("v.created_at desc").
 		Find(&projects).Error
 
 	return

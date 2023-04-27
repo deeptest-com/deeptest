@@ -18,7 +18,8 @@ func NewProjectRecentlyVisitedRepo() *ProjectRecentlyVisitedRepo {
 
 func (r *ProjectRecentlyVisitedRepo) FindUserProjectToday(userId, projectId uint) (projectRecentlyVisited model.ProjectRecentlyVisited, err error) {
 	now := time.Now()
-	today := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.Local)
+	//TODO 演示完后改回当天零点
+	today := time.Date(now.Year(), now.Month(), now.Day(), now.Hour(), now.Minute(), 0, 0, time.Local)
 	db := r.DB.Model(&model.ProjectRecentlyVisited{}).Where("user_id = ?", userId).Where("project_id = ?", projectId).Where("created_at >= ?", today)
 
 	err = db.First(&projectRecentlyVisited).Error

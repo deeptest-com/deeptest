@@ -1,6 +1,6 @@
 <template>
   <div class="processor_interface_default-main">
-<!--    <DebugComp />-->
+    <DebugComp />
   </div>
 </template>
 
@@ -8,12 +8,12 @@
 import {useRouter} from "vue-router";
 import {useI18n} from "vue-i18n";
 
-import DebugComp from '@/views/component/debug/index.vue';
+import DebugComp from './debug/index.vue';
 
 import {provide} from "vue";
 import {UsedBy} from "@/utils/enum";
 
-provide('usedBy', UsedBy.InterfaceDebug)
+provide('usedBy', UsedBy.ScenarioDebug)
 
 const router = useRouter();
 const {t} = useI18n();

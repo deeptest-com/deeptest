@@ -47,19 +47,24 @@ import { useStore } from "vuex";
 import { StateType } from "./store";
 import { PaginationConfig, QueryParams } from "./data.d";
 import EditPage from "@/views/project/edit/edit.vue";
+
+import {useRouter} from "vue-router";
+import {setCache} from "@/utils/localCache";
+import settings from "@/config/settings";
+
 const store = useStore<{ Home: StateType }>();
-const mode = computed<any[]>(() => store.state.Home.mode);
+// const mode = computed<any[]>(() => store.state.Home.mode);
 const activeKey = ref(1);
 const showMode = ref("card");
 const createProjectModalVisible = ref(false);
-const currentUser = computed<any>(() => store.state.User.currentUser);
-let queryParams = reactive<QueryParams>({
+// const currentUser = computed<any>(() => store.state.User.currentUser);
+// let queryParams = reactive<QueryParams>({
   // keywords: "",
   // enabled: "1",
   // userId: activeKey.value == 0 ? 0 : currentUser.value?.id,
   // page: pagination.value.current,
   // pageSize: pagination.value.pageSize,
-});
+// });
 
 // onMounted(() => {
 //   getList(1);

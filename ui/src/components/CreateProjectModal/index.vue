@@ -19,7 +19,7 @@
                         <a-form-item label="logo" v-bind="validateInfos.logo">
                             <div class="logo-picker">
                                 <div :class="{ 'logo-picker-item': true, 'logo-picker-item-active': selectLogoKey === item.imgName }"
-                                    v-for="(item, index) in PngHashMap" :key="index" @click="handleSelectLogo(item)">
+                                    v-for="(item, index) in projectLogoList" :key="index" @click="handleSelectLogo(item)">
                                     <img :src="item.icon" alt="">
                                 </div>
                             </div>
@@ -56,7 +56,7 @@ import { StateType as UserStateType } from "@/store/user";
 import { StateType as ProjectStateType } from "@/views/project/store";
 import { SelectTypes } from 'ant-design-vue/es/select';
 import { useStore } from "vuex";
-import PngHashMap from "./index";
+import { projectLogoList } from "./index";
 
 const useForm = Form.useForm;
 const props = defineProps<{

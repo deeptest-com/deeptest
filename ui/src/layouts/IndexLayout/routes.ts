@@ -3,14 +3,14 @@ import BlankLayout from '@/layouts/BlankLayout.vue';
 
 const IndexLayoutRoutes: Array<RoutesDataItem> = [
   {
-    title: '工作台',
+    title: 'workbench',
     path: '/workbench',
     redirect: '/workbench/index',
     component: BlankLayout,
     children: [
       {
         icon: 'home',
-        title: '工作台',
+        title: 'workbench',
         path: 'index',
         component: () => import('@/views/workbench/index.vue'),
         hidden: false,

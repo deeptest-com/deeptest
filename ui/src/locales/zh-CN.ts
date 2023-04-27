@@ -15,7 +15,7 @@ export default {
     'logout': '退出',
 
     'home': '首页',
-    'workplace': '工作台',
+    'workbench': '工作台',
     'docs': '使用文档',
     'menu': '菜单',
 

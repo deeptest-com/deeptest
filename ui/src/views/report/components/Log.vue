@@ -24,7 +24,7 @@
                     <div class="statistical-info-item">
                         <span class="label">总耗时</span>
                         <span class="value">
-                            <span style="color: #04C495">4.9</span>秒
+                            <span style="color: #04C495">4.9 &nbsp;</span>秒
                         </span>
                     </div>
                     <div class="statistical-info-item">
@@ -33,7 +33,7 @@
                     </div>
                     <div class="statistical-info-item">
                         <span class="label">平均接口请求耗时</span>
-                        <span class="value"><span style="color: #04C495">4.9</span>秒</span>
+                        <span class="value"><span style="color: #04C495">4.9 &nbsp;</span>秒</span>
                     </div>
                     <div class="statistical-info-item">
                         <span class="label notest">未测</span>
@@ -71,7 +71,7 @@
                     </div>
                     <div :class="['report-item-detail-list', expandKey.includes(logItem.id + '') ? 'active' : '']">
                         <a-table :showHeader="false" :columns="columns" :data-source="logItem.reponseList"
-                            :pagination="false">
+                            :pagination="false" :rowKey="(_record, index) => index">
                             <template #expandIcon="props">
                                 <template v-if="props.expanded">
                                     <DownOutlined @click="$event => props.onExpand(props.record, $event)" />
@@ -291,36 +291,12 @@ onMounted(() => {
 })
 
 function init() {
-    console.log(main.value);
     if (!main.value) {
         return;
     }
-    let subTitle = '244';
-    let title = '已完成';
     const myChart = echarts.init(main.value);
     const option: any = {
-        title: {
-            text: `{subTitle|副标题}\n{title|主标题}`,
-            top: 'center',
-            left: '46%',
-            textAlign: 'center',
-            textStyle: {
-                rich: {
-                    subTitle: {
-                        fontSize: 12,
-                        lineHeight: 18,
-                        marginBottom: 10,
-                        color: 'rgba(0, 0, 0, 0.85)'
-                    },
-                    title: {
-                        fontSize: 24,
-                        lineHeight: 29,
-                        color: 'rgba(0, 0, 0, 0.85)'
-                    }
-                }
-
-            }
-        },
+        color: ['#04C495', '#F63838', 'rgba(0, 0, 0, 0.28)'],
         series: [
             {
                 name: 'Access From',
@@ -334,8 +310,22 @@ function init() {
                 emphasis: {
                     label: {
                         show: true,
-                        fontSize: 40,
-                        fontWeight: 'bold'
+                        formatter: (params: any) => {
+                            return [`{subTitle|${params.data.name}}`, `{title|${params.data.value}}`].join('\n')
+                        },
+                        rich: {
+                            subTitle: {
+                                fontSize: 12,
+                                lineHeight: 18,
+                                marginBottom: 10,
+                                color: 'rgba(0, 0, 0, 0.85)'
+                            },
+                            title: {
+                                fontSize: 24,
+                                lineHeight: 29,
+                                color: 'rgba(0, 0, 0, 0.85)'
+                            }
+                        }
                     },
                 },
                 labelLine: {

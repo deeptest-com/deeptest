@@ -23,6 +23,7 @@ func (s *ProjectRoleMenuSource) Init() (err error) {
 	if err != nil {
 		return
 	}
+	s.ProjectRoleMenuRepo.DeleteAllData()
 
 	successCount, failItems := s.ProjectRoleMenuRepo.BatchCreate(sources)
 	color.Info.Printf("\n[Mysql] --> %s 表成功初始化%d行数据,失败数据：%+v!\n", model.ProjectRoleMenu{}.TableName(), successCount, failItems)

@@ -76,6 +76,9 @@ type ResSummaryDetails struct {
 	CreatedAt          string             `gorm:"default:0" json:"createdAt"`
 	BugTotal           int64              `gorm:"default:0" json:"bug_total"`
 	UserList           []ResUserIdAndName `json:"user_list"`
+	AdminId            int64              `json:"admin_id"`
+	Logo               string             `json:"logo"`
+	IncludeExample     bool               `json:"include_example"`
 }
 
 type ResUserIdAndName struct {

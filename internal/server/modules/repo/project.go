@@ -190,7 +190,7 @@ func (r *ProjectRepo) CreateProjectRes(projectId, userId uint, IncludeExample bo
 	return
 }
 
-func (r *ProjectRepo) Update(id uint, req v1.ProjectReq) error {
+func (r *ProjectRepo) Update(req v1.ProjectReq) error {
 	project := model.Project{ProjectBase: req.ProjectBase}
 	err := r.DB.Model(&model.Project{}).Where("id = ?", req.Id).Updates(&project).Error
 	if err != nil {

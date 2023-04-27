@@ -76,7 +76,6 @@ func (c *ProjectCtrl) Create(ctx iris.Context) {
 }
 
 func (c *ProjectCtrl) Update(ctx iris.Context) {
-	id, _ := ctx.Params().GetInt("id")
 
 	var req v1.ProjectReq
 	err := ctx.ReadJSON(&req)
@@ -85,7 +84,7 @@ func (c *ProjectCtrl) Update(ctx iris.Context) {
 		return
 	}
 
-	err = c.ProjectService.Update(uint(id), req)
+	err = c.ProjectService.Update(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

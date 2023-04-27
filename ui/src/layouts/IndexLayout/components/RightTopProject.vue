@@ -5,7 +5,7 @@
                 @click="dropdownVisible = !dropdownVisible"
                 :overlayStyle="{width:'300px'}">
       <a-button class="header">
-        <span class="before-icon icon"><img  :src="projectLogoMap[currProject?.logo || 'default']" alt=""></span>
+        <span class="before-icon icon"><img  :src="getProjectLogo(currProject?.logo)" alt=""></span>
         {{ currProject.name }}
         <DownOutlined class="after-icon"/>
       </a-button>
@@ -24,7 +24,7 @@
                   selectProject(item.id)
                  }"
                  :key="item.id">
-              <span class="icon"><img :src="projectLogoMap[item?.logo || 'default']" alt=""></span>
+              <span class="icon"><img :src="getProjectLogo(item?.logo)" alt=""></span>
               <span class="text">{{ item.name }}</span>
             </div>
             <div class="menu-scroll-item my" key="my">
@@ -36,7 +36,7 @@
                   selectProject(item.id)
                  }"
                  v-for="(item,index) in myProject" :key="item.id">
-              <span class="icon"><img :src="projectLogoMap[item?.logo || 'default']" alt=""></span>
+              <span class="icon"><img :src="getProjectLogo(item?.logo)" alt=""></span>
               <span class="text">{{ item.name }}</span>
             </div>
           </a-menu-item>
@@ -79,7 +79,7 @@ import {
   PlusOutlined,
 } from '@ant-design/icons-vue';
 import CreateProjectModal from "@/components/CreateProjectModal/index.vue";
-import {projectLogoMap} from "@/components/CreateProjectModal/index.ts";
+import { getProjectLogo } from "@/components/CreateProjectModal";
 // import Logos from "@/components/Logos/index.tsx";
 
 const store = useStore<{

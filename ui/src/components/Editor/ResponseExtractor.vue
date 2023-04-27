@@ -81,10 +81,6 @@ import {StateType as EnvironmentStateType} from "@/store/environment";
 const useForm = Form.useForm;
 
 const props = defineProps({
-  interfaceId:{
-    type: Number,
-    required: true
-  },
   exprType: {
     String,
     required: true
@@ -122,7 +118,7 @@ const modelRef = ref<any>({
   expression: props.expr,
   expressionType: props.exprType,
   variable: '',
-  scope: 'local',
+  scope: VarScope.ScopePrivate,
   code: '',
 })
 

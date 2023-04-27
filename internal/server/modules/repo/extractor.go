@@ -19,17 +19,17 @@ type ExtractorRepo struct {
 	ProcessorInterfaceRepo *ProcessorInterfaceRepo `inject:""`
 }
 
-func (r *ExtractorRepo) List(interfaceId uint, usedBy consts.UsedBy) (pos []model.DebugInterfaceExtractor, err error) {
+func (r *ExtractorRepo) List(interfaceId uint) (pos []model.DebugInterfaceExtractor, err error) {
 	err = r.DB.
 		Where("interface_id=?", interfaceId).
-		Where("used_by = ? AND NOT deleted", usedBy).
+		Where("NOT deleted").
 		Order("created_at ASC").
 		Find(&pos).Error
 	return
 }
 
-func (r *ExtractorRepo) ListTo(interfaceId uint, usedBy consts.UsedBy) (ret []agentDomain.Extractor, err error) {
-	pos, _ := r.List(interfaceId, usedBy)
+func (r *ExtractorRepo) ListTo(interfaceId uint) (ret []agentDomain.Extractor, err error) {
+	pos, _ := r.List(interfaceId)
 
 	for _, po := range pos {
 		extractor := agentDomain.Extractor{}
@@ -65,7 +65,7 @@ func (r *ExtractorRepo) GetByInterfaceVariable(variable string, id, interfaceId 
 
 func (r *ExtractorRepo) Save(extractor *model.DebugInterfaceExtractor) (id uint, bizErr _domain.BizErr) {
 	po, _ := r.GetByInterfaceVariable(extractor.Variable, extractor.ID, extractor.InterfaceId)
-	if po.ID > 0 && extractor.UsedBy == consts.InterfaceDebug {
+	if po.ID > 0 {
 		bizErr.Code = _domain.ErrNameExist.Code
 		return
 	}

@@ -3,19 +3,26 @@
     <TableFilter :executor-options="[]" />
 
     <div>
-      <a-table row-key="id" :columns="columns" :data-source="list" :loading="loading" :pagination="{
-        ...pagination,
-        onChange: (page) => {
-          getList(page);
-        },
-        onShowSizeChange: (page, size) => {
-          pagination.pageSize = size
-          getList(page);
-        },
-      }" :row-selection="{
-  selectedRowKeys: selectedRowKeys,
-  onChange: onSelectChange
-}" class="dp-table">
+      <a-table 
+        :rowKey="(_record, index) => index" 
+        :columns="columns" 
+        :data-source="list" 
+        :loading="loading" 
+        :pagination="{
+          ...pagination,
+          onChange: (page) => {
+            getList(page);
+          },
+          onShowSizeChange: (page, size) => {
+            pagination.pageSize = size
+            getList(page);
+          },
+        }" 
+        :row-selection="{
+          selectedRowKeys: selectedRowKeys,
+          onChange: onSelectChange
+        }" 
+        class="dp-table">
         <template #executor="{ record }">
           <span>{{ record.executor }}</span>
         </template>
@@ -55,13 +62,11 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref, watch } from "vue";
 import { useStore } from "vuex";
-
 import debounce from "lodash.debounce";
 import { ColumnProps } from 'ant-design-vue/es/table/interface';
-import { momentUtc } from "@/utils/datetime";
 import { Modal, notification } from "ant-design-vue";
+import { MoreOutlined } from "@ant-design/icons-vue";
 import TableFilter from "../components/TableFilter.vue";
-import ReportDetail from "../detail/index.vue";
 import LogDetail from "../components/Log.vue";
 import { StateType as ProjectStateType } from "@/store/project";
 import { StateType as ScenarioStateType } from "@/views/scenario/store";
@@ -69,6 +74,7 @@ import { StateType } from "@/views/report/store";
 import { PaginationConfig, QueryParams, Report } from "@/views/report/data";
 import { query } from "@/views/scenario/service";
 import { NotificationKeyCommon } from "@/utils/const";
+import { momentUtc } from "@/utils/datetime";
 
 const store = useStore<{ Report: StateType, Scenario: ScenarioStateType, ProjectGlobal: ProjectStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
@@ -85,7 +91,7 @@ const reportDetailVisible = ref(true);
 type Key = ColumnProps['key'];
 
 watch(currProject, () => {
-  getList(1);
+  // getList(1);
 }, { deep: false })
 
 const columns = [
@@ -131,7 +137,7 @@ const columns = [
 ];
 
 onMounted(() => {
-  getList(1);
+  // getList(1);
 })
 
 const scenarios = ref([] as any[])
@@ -139,7 +145,7 @@ query().then(json => {
   scenarios.value = json.data.result
 })
 
-const loading = ref<boolean>(true);
+const loading = ref<boolean>(false);
 const getList = async (current: number): Promise<void> => {
   loading.value = true;
 

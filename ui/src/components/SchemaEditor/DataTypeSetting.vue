@@ -262,7 +262,7 @@ watch(() => {
   type =  props.value?.ref || type;
   const allTypes = [...(types || []), type];
   // 打开时，初始化数据
-  if (newVal && props.value.type) {
+  if (newVal && (props.value.type || props.value.ref)) {
     tabsList.value = [...initTabsList(allTypes, props.value)];
   }
   // 关闭了，触发change事件

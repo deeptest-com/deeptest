@@ -10,13 +10,10 @@
         <template #header> </template>
         <template #renderItem="{ item }">
           <ListItem>
-            <div v-if="item.type && item.type == 'add'">
-              <Card class="card add-card">创建项目+</Card>
-            </div>
-            <div v-else>
-              <Card class="card" @click="goProject(item.project_id)">
-                <!-- <template #title> -->
-                <div class="card-title">
+            <Card class="card" @click="goProject(item.project_id)">
+              <!-- <template #title> -->
+              <div class="card-title">
+                <div class="title">
                   <Avatar style="background-color: #1890ff">
                     <template #icon><UserOutlined /></template>
                   </Avatar>
@@ -25,54 +22,56 @@
                   }}</span>
                 </div>
 
-                <!-- </template> -->
-                <div class="card-desc">
-                  {{
-                    item.project_des.length > 35
-                      ? item.project_des.substring(0, 35) + "..."
-                      : item.project_des
-                      ? item.project_des
-                      : "&nbsp;"
-                  }}
+                <div class="action">
+                  <a-dropdown>
+                    <a class="ant-dropdown-link" @click.prevent>
+                     <EllipsisOutlined key="ellipsis" />
+                      <DownOutlined />
+                    </a>
+                    <template #overlay>
+                      <a-menu>
+                        <a-menu-item  @click="handleEdit(item)">
+                           <a href="javascript:;">编辑</a>
+                        </a-menu-item>
+                        <a-menu-item>
+                          <a href="javascript:;">启用/禁用</a>
+                        </a-menu-item>
+                        <a-menu-item>
+                          <a href="javascript:;">删除</a>
+                        </a-menu-item>
+                      </a-menu>
+                    </template>
+                  </a-dropdown>
                 </div>
+              </div>
 
-                <div class="card-static">
-                  <div>
-                    测试场景数： {{ item.scenario_total }}个 接口数： {{}}个
-                  </div>
-                  <div>
-                    测试覆盖率：{{ item.coverage }}% 执行次数：
-                    {{ item.exec_total }}次
-                  </div>
-                  <div>
-                    测试通过率： {{ item.pass_rate }}% 发现缺陷数：
-                    {{ item.bug_total }}个
-                  </div>
+              <!-- </template> -->
+              <div class="card-desc">
+                {{
+                  item.project_des.length > 35
+                    ? item.project_des.substring(0, 35) + "..."
+                    : item.project_des
+                    ? item.project_des
+                    : "&nbsp;"
+                }}
+              </div>
+
+              <div class="card-static">
+                <div>
+                  测试场景数： {{ item.scenario_total }}个 接口数： {{}}个
                 </div>
+                <div>
+                  测试覆盖率：{{ item.coverage }}% 执行次数：
+                  {{ item.exec_total }}次
+                </div>
+                <div>
+                  测试通过率： {{ item.pass_rate }}% 发现缺陷数：
+                  {{ item.bug_total }}个
+                </div>
+              </div>
 
-                <!-- <template #actions> -->
-
-                <!--              <SettingOutlined key="setting" />-->
-                <!-- <EditOutlined key="edit" /> -->
-                <!-- <Dropdown
-                  :trigger="['hover']"
-                  :dropMenuList="[
-                    {
-                      text: '删除',
-                      event: '1',
-                      popConfirm: {
-                        title: '是否确认删除',
-                        confirm: handleDelete.bind(null, item.id),
-                      },
-                    },
-                  ]"
-                  popconfirm
-                >
-                  <EllipsisOutlined key="ellipsis" />
-                </Dropdown> -->
-                <!-- </template> -->
-              </Card>
-            </div>
+              <template #actions> </template>
+            </Card>
           </ListItem>
         </template>
       </List>
@@ -90,6 +89,7 @@ import {
   nextTick,
 } from "vue";
 import {
+  EditOutlined,
   UserOutlined,
   EllipsisOutlined,
   RedoOutlined,
@@ -105,9 +105,6 @@ import {
   Avatar,
 } from "ant-design-vue";
 import { useRouter } from "vue-router";
-// import { Dropdown } from '/@/components/Dropdown';
-// import { propTypes } from '/@/utils/propTypes';
-// import { Button } from '/@/components/Button';
 import { useStore } from "vuex";
 import { StateType } from "../../store";
 import { grid } from "./data";
@@ -128,7 +125,7 @@ const props = defineProps({
   },
 });
 //暴露内部方法
-const emit = defineEmits(["getMethod", "delete"]);
+const emit = defineEmits(["edit", "delete"]);
 //数据
 const data = ref([]);
 // 切换每行个数
@@ -161,12 +158,11 @@ watch(
 
     if (tableList.value && tableList.value.length > 0) {
       loading.value = false;
-    }else{
+    } else {
       setTimeout(() => {
         loading.value = false;
       }, 5000);
     }
-    
   },
   {
     immediate: true,
@@ -188,7 +184,6 @@ watch(
     immediate: true,
   }
 );
-
 
 async function fetch(p = {}) {
   const { api, params } = props;
@@ -228,12 +223,15 @@ function pageSizeChange(_current, size) {
   fetch();
 }
 
+async function handleEdit(id) {
+  emit("edit", id);
+}
 async function handleDelete(id) {
   emit("delete", id);
 }
 function goProject(projectId: number) {
   store.dispatch("ProjectGlobal/changeProject", projectId);
-  store.dispatch("Environment/getEnvironment", { id: 0, projectId: projectId });
+  // store.dispatch("Environment/getEnvironment", { id: 0, projectId: projectId });
 
   // 项目切换后，需要重新更新可选服务列表
   store.dispatch("ServeGlobal/fetchServe");
@@ -257,6 +255,7 @@ function goProject(projectId: number) {
       font-weight: 500;
       display: flex;
       align-items: center;
+      justify-content: space-between;
       &-text {
         padding-left: 8px;
       }

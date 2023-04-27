@@ -11,6 +11,8 @@ import {useRouter} from "vue-router";
 import {ref} from "vue";
 import {setCache} from "@/utils/localCache";
 import settings from "@/config/settings";
+import StatisticHeader from "@/components/StatisticHeader/index.vue";
+import List from "./component/List/index.vue";
 
 const router = useRouter();
 const projectId = ref(+router.currentRoute.value.params.id)

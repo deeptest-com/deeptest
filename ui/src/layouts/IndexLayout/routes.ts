@@ -3,14 +3,14 @@ import BlankLayout from '@/layouts/BlankLayout.vue';
 
 const IndexLayoutRoutes: Array<RoutesDataItem> = [
   {
-    title: '工作台',
+    title: 'workplace',
     path: '/workbench',
     redirect: '/workbench/index',
     component: BlankLayout,
     children: [
       {
         icon: 'home',
-        title: '工作台',
+        title: 'workplace',
         path: 'index',
         component: () => import('@/views/workbench/index.vue'),
         hidden: false,
@@ -20,7 +20,7 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
       },
       {
         icon: 'home',
-        title: '工作台',
+        title: 'workplace',
         path: ':id',
         component: () => import('@/views/workbench/index.vue'),
         hidden: true,

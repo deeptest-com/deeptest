@@ -1,7 +1,7 @@
 <template>
     <div class="report-table-filter">
         <div class="bulk-operation">
-            <a-tooltip placement="right">
+            <a-tooltip placement="bottomLeft" color="#fff">
                 <template #title>
                     <div class="actions">
                         <span class="action-item">导出</span>
@@ -21,7 +21,7 @@
             <div class="report-excutime">
                 <a-form-item name="executime" label="执行时间">
                     <a-range-picker :show-time="{ format: 'HH:mm' }" format="YYYY-MM-DD HH:mm"
-                        :placeholder="['Start Time', 'End Time']" @ok="onRangeOk" />
+                        :placeholder="['开始时间', '结束时间']" @ok="onRangeOk" />
                 </a-form-item>
             </div>
             <div class="report-name">
@@ -72,11 +72,26 @@ function onRangeOk(date: string) {
     }
 }
 
-.action-item {
-    display: block;
-    width: 88px;
-    height: 32px;
-    text-align: center;
-    line-height: 32px;
+.report-bulk-operation {
+    .actions {
+
+        .action-item {
+            display: block;
+            width: 162px;
+            height: 32px;
+            background: #FFFFFF;
+            font-weight: 400;
+            font-size: 14px;
+            line-height: 32px;
+            text-align: center;
+            color: rgba(0, 0, 0, 0.85);
+            cursor: pointer;
+
+            &:hover {
+                background: #F5F5F5;
+            }
+        }
+
+    }
 }
 </style>

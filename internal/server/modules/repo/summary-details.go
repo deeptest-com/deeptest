@@ -38,7 +38,7 @@ func (r *SummaryDetailsRepo) HasDataOfDate(startTime string, endTime string) (re
 }
 
 func (r *SummaryDetailsRepo) Count() (count int64, err error) {
-	err = r.DB.Model(&model.SummaryDetails{}).Select("count(distinct project_id) ").Where("NOT deleted").Find(&count).Error
+	err = r.DB.Model(&model.Project{}).Select("count(id) ").Where("NOT deleted").Find(&count).Error
 	return
 }
 
@@ -84,7 +84,8 @@ func (r *SummaryDetailsRepo) FindByProjectId(projectId int64) (summaryDetail mod
 }
 
 func (r *SummaryDetailsRepo) Find() (summaryDetails []model.SummaryDetails, err error) {
-	err = r.DB.Model(&model.SummaryDetails{}).Raw("select * from (deeptest.biz_summary_details) where id in (SELECT max(id) FROM deeptest.biz_summary_details group by project_id) AND NOT deleted;").Find(&summaryDetails).Error
+	//err = r.DB.Model(&model.SummaryDetails{}).Raw("select * from (deeptest.biz_summary_details) where id in (SELECT max(id) FROM deeptest.biz_summary_details group by project_id) AND NOT deleted;").Find(&summaryDetails).Error
+	err = r.DB.Model(&model.SummaryDetails{}).Raw("select p.name project_name,p.name project_chinese_name,p.id project_id,su.name admin_user,p.created_at from deeptest.biz_project  p , deeptest.sys_user  su where p.admin_id = su.id and  not p.deleted and not p.disabled").Find(&summaryDetails).Error
 	return
 }
 

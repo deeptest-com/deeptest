@@ -453,7 +453,7 @@ func (r *UserRepo) AddProjectForUser(user *model.SysUser) (project model.Project
 		return
 	}
 
-	r.ProjectRepo.CreateProjectRes(project.ID, user.ID)
+	r.ProjectRepo.CreateProjectRes(project.ID, user.ID, false)
 
 	return
 }

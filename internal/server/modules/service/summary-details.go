@@ -84,7 +84,6 @@ func (s *SummaryDetailsService) Details(userId int64) (res v1.ResSummaryDetail, 
 
 	//收集结果
 	res.AllProjectTotal, err = s.Count()
-	res.AllProjectTotal, err = s.Count()
 	res.CurrentUserProjectTotal, err = s.CountByUserId(userId)
 	projectIds, err := s.FindProjectIdsByUserId(userId)
 	allDetails, err = s.Find()

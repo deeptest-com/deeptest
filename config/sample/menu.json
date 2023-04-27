@@ -14,13 +14,6 @@
     "parent":""
   },
   {
-    "code":"project-setting",
-    "title":"项目设置",
-    "path":"/project-setting",
-    "type":"menu",
-    "parent":""
-  },
-  {
     "code":"scenario",
     "title":"测试开发",
     "path":"/scenario",
@@ -38,6 +31,13 @@
     "code":"report",
     "title":"测试报告",
     "path":"/report",
+    "type":"menu",
+    "parent":""
+  },
+  {
+    "code":"project-setting",
+    "title":"项目设置",
+    "path":"/project-setting",
     "type":"menu",
     "parent":""
   },

@@ -91,6 +91,7 @@ const rulesRef = reactive({
 const selectLogoKey = ref('default_logo1');
 const { validate, validateInfos } = useForm(formStateRef, rulesRef);
 const submitForm = async () => {
+    console.log('~~~~~~~~~formStateRef',formStateRef)
     validate().then(() => {
         store.dispatch('Project/saveProject', { ...formStateRef }).then((res) => {
             if (res === true) {

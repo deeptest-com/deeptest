@@ -3,14 +3,14 @@ import BlankLayout from '@/layouts/BlankLayout.vue';
 
 const IndexLayoutRoutes: Array<RoutesDataItem> = [
   {
-    title: 'workplace',
+    title: 'workbench',
     path: '/workbench',
     redirect: '/workbench/index',
     component: BlankLayout,
     children: [
       {
         icon: 'home',
-        title: 'workplace',
+        title: 'workbench',
         path: 'index',
         component: () => import('@/views/workbench/index.vue'),
         hidden: false,
@@ -77,95 +77,6 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
         hidden: false,
         meta: {
           code: 'ENDPOINT'
-        }
-      },
-    ],
-  },
-
-  // 项目管理
-  {
-    title: '项目设置',
-    path: '/project-setting',
-    redirect: '/project-setting/index',
-    component: () => import('@/views/projectSetting/index.vue'),
-    children: [
-      {
-        icon:'set',
-        title: 'projectSetting',
-        path: 'index',
-        component: BlankLayout,
-        hidden: false,
-        meta: {
-          code: 'PROJECT-SETTING'
-        }
-      },
-      {
-        icon:'set',
-        title: 'projectSetting.enviroment',
-        path: 'enviroment',
-        name: 'enviroment',
-        component: () => import('@/views/projectSetting/components/EnvSetting/index.vue'),
-        hidden: false,
-        meta: {
-          code: 'PROJECT-SETTING-ENVIRONMENT'
-        },
-        children: [
-          {
-            icon: 'set',
-            title: 'envsetting.var',
-            path: 'var',
-            name: 'enviroment.var',
-            component: () => import('@/views/projectSetting/components/EnvSetting/GlobalVar.vue'),
-            hidden: true
-          },
-          {
-            icon: 'set',
-            title: 'envsetting.params',
-            path: 'params',
-            name: 'enviroment.params',
-            component: () => import('@/views/projectSetting/components/EnvSetting/GlobalParams.vue'),
-            hidden: true
-          },
-          {
-            icon: 'set',
-            title: 'envsetting.envdetail',
-            path: 'envdetail/:id(\\d+)?',
-            name: 'enviroment.envdetail',
-            component: () => import('@/views/projectSetting/components/EnvSetting/EnvDetail.vue'),
-            hidden: true
-          }
-        ]
-      },
-      {
-        icon:'set',
-        title: 'projectSetting.datapool',
-        path: 'data-pool',
-        name: 'data-pool',
-        component: () => import('@/views/projectSetting/components/DataPool/index.vue'),
-        hidden: false,
-        meta: {
-          code: 'PROJECT-SETTING-DATA-POOL'
-        }
-      },
-      {
-        icon:'set',
-        title: 'projectSetting.service',
-        path: 'service-setting',
-        name: 'service-setting',
-        component: () => import('@/views/projectSetting/components/ServiceSetting/index.vue'),
-        hidden: false,
-        meta: {
-          code: 'PROJECT-SETTING-SERVICE-SETTING'
-        }
-      },
-      {
-        icon: 'members',
-        title: 'project.members',
-        path: 'members',
-        component: () => import('@/views/project/edit/members.vue'),
-        hidden: false,
-        meta: {
-          code: 'PROJECT-SETTING-MEMBERS'
         }
       },
     ],
@@ -254,6 +165,96 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
       },
     ],
   },
+
+   // 项目管理
+  {
+    title: '项目设置',
+    path: '/project-setting',
+    redirect: '/project-setting/index',
+    component: () => import('@/views/projectSetting/index.vue'),
+    children: [
+      {
+        icon:'set',
+        title: 'projectSetting',
+        path: 'index',
+        component: BlankLayout,
+        hidden: false,
+        meta: {
+          code: 'PROJECT-SETTING'
+        }
+      },
+      {
+        icon:'set',
+        title: 'projectSetting.enviroment',
+        path: 'enviroment',
+        name: 'enviroment',
+        component: () => import('@/views/projectSetting/components/EnvSetting/index.vue'),
+        hidden: false,
+        meta: {
+          code: 'PROJECT-SETTING-ENVIRONMENT'
+        },
+        children: [
+          {
+            icon: 'set',
+            title: 'envsetting.var',
+            path: 'var',
+            name: 'enviroment.var',
+            component: () => import('@/views/projectSetting/components/EnvSetting/GlobalVar.vue'),
+            hidden: true
+          },
+          {
+            icon: 'set',
+            title: 'envsetting.params',
+            path: 'params',
+            name: 'enviroment.params',
+            component: () => import('@/views/projectSetting/components/EnvSetting/GlobalParams.vue'),
+            hidden: true
+          },
+          {
+            icon: 'set',
+            title: 'envsetting.envdetail',
+            path: 'envdetail/:id(\\d+)?',
+            name: 'enviroment.envdetail',
+            component: () => import('@/views/projectSetting/components/EnvSetting/EnvDetail.vue'),
+            hidden: true
+          }
+        ]
+      },
+      {
+        icon:'set',
+        title: 'projectSetting.datapool',
+        path: 'data-pool',
+        name: 'data-pool',
+        component: () => import('@/views/projectSetting/components/DataPool/index.vue'),
+        hidden: false,
+        meta: {
+          code: 'PROJECT-SETTING-DATA-POOL'
+        }
+      },
+      {
+        icon:'set',
+        title: 'projectSetting.service',
+        path: 'service-setting',
+        name: 'service-setting',
+        component: () => import('@/views/projectSetting/components/ServiceSetting/index.vue'),
+        hidden: false,
+        meta: {
+          code: 'PROJECT-SETTING-SERVICE-SETTING'
+        }
+      },
+      {
+        icon: 'members',
+        title: 'project.members',
+        path: 'members',
+        component: () => import('@/views/project/edit/members.vue'),
+        hidden: false,
+        meta: {
+          code: 'PROJECT-SETTING-MEMBERS'
+        }
+      },
+    ],
+  },
+
 ] as Array<RoutesDataItem>;
 
 export default IndexLayoutRoutes;

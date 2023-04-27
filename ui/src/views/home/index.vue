@@ -61,9 +61,9 @@ let queryParams = reactive<QueryParams>({
   // pageSize: pagination.value.pageSize,
 });
 
-onMounted(() => {
-  getList(1);
-});
+// onMounted(() => {
+//   getList(1);
+// });
 
 const getList = async (current: number): Promise<void> => {
   await store.dispatch("Home/queryProject", {
@@ -75,7 +75,7 @@ const getList = async (current: number): Promise<void> => {
     // page: current,
   });
 };
-
+ getList(1);
 // 创建项目成功的回调
 const handleCreateSuccess = () => {
   createProjectModalVisible.value = false;

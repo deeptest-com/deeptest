@@ -3,7 +3,7 @@
     <div class="p-2 bg-white">
       <List
         :grid="{ gutter: 5, xs: 1, sm: 2, md: 4, lg: 4, xl: 3, xxl: grid }"
-        :data-source="tableList.concat(addCard)"
+        :data-source="tableList"
         :pagination="paginationProp"
       >
         <template #header> </template>
@@ -79,7 +79,15 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { computed, onMounted, ref, defineProps, defineEmits, watch } from "vue";
+import {
+  computed,
+  onMounted,
+  ref,
+  defineProps,
+  defineEmits,
+  watch,
+  nextTick,
+} from "vue";
 import {
   UserOutlined,
   EllipsisOutlined,
@@ -109,7 +117,6 @@ const CardMeta = Card.Meta;
 const list = computed<any>(() => store.state.Home.queryResult.list);
 const TypographyText = Typography.Text;
 const tableList = ref([]);
-const addCard = ref([{ type: "add" }]);
 
 // 组件接收参数
 const props = defineProps({
@@ -143,18 +150,26 @@ onMounted(() => {
 });
 watch(
   () => {
+    return list.value;
+  },
+  (newVal) => {
+    console.log("watch list.value", list.value);
+
+    tableList.value = list.value.current_user_project_list;
+  },
+  {
+    immediate: true,
+  }
+);
+watch(
+  () => {
     return props.activeKey;
   },
   (newVal) => {
     if (newVal == 1) {
-      setTimeout(() => {
-        tableList.value = list.value.current_user_project_list;
-      }, 500);
+      tableList.value = list.value.current_user_project_list;
     } else {
-      setTimeout(() => {
-        // tableList.value =[]
-        tableList.value = list.value.all_project_list;
-      }, 500);
+      tableList.value = list.value?.all_project_list;
     }
   },
   {
@@ -240,7 +255,7 @@ function goProject(id: number) {
     }
   }
 }
-.add-card{
+.add-card {
   display: flex;
   justify-content: center;
   align-items: center;

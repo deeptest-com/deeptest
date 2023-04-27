@@ -5,7 +5,7 @@
                 @click="dropdownVisible = !dropdownVisible"
                 :overlayStyle="{width:'300px'}">
       <a-button class="header">
-        <span class="before-icon icon"><img src="https://rd5-public.zhaopin.cn/imgs/company/9bb1f340b92b30327f436f2ca2a0aad2.png" alt=""></span>
+        <span class="before-icon icon"><img  :src="projectLogoMap[currProject?.logo || 'default']" alt=""></span>
         {{ currProject.name }}
         <DownOutlined class="after-icon"/>
       </a-button>
@@ -24,7 +24,7 @@
                   selectProject(item.id)
                  }"
                  :key="item.id">
-              <span class="icon"><img src="https://rd5-public.zhaopin.cn/imgs/company/9bb1f340b92b30327f436f2ca2a0aad2.png" alt=""></span>
+              <span class="icon"><img :src="projectLogoMap[item?.logo || 'default']" alt=""></span>
               <span class="text">{{ item.name }}</span>
             </div>
             <div class="menu-scroll-item my" key="my">
@@ -36,7 +36,7 @@
                   selectProject(item.id)
                  }"
                  v-for="(item,index) in myProject" :key="item.id">
-              <span class="icon"><img src="https://rd5-public.zhaopin.cn/imgs/company/9bb1f340b92b30327f436f2ca2a0aad2.png" alt=""></span>
+              <span class="icon"><img :src="projectLogoMap[item?.logo || 'default']" alt=""></span>
               <span class="text">{{ item.name }}</span>
             </div>
           </a-menu-item>
@@ -79,7 +79,7 @@ import {
   PlusOutlined,
 } from '@ant-design/icons-vue';
 import CreateProjectModal from "@/components/CreateProjectModal/index.vue";
-import logos from "@/components/CreateProjectModal/index.ts";
+import {projectLogoMap} from "@/components/CreateProjectModal/index.ts";
 // import Logos from "@/components/Logos/index.tsx";
 
 const store = useStore<{
@@ -166,11 +166,11 @@ onUnmounted(() => {
   width: @dropdown-width;
   position: relative;
   text-align: left;
-  padding-left: 24px;
+  padding-left: 30px;
 
   .before-icon {
     position: absolute;
-    left: 8px;
+    left: 4px;
     top: 4px;
   }
 
@@ -181,12 +181,12 @@ onUnmounted(() => {
   }
 }
 .icon{
-  width: 12px;
-  height: 12px;
+  width: 24px;
+  height: 24px;
   display: inline-block;
   img{
-    width: 100%;
-    height: 100%;
+    width: 24px;
+    height: 24px;
   }
 }
 

@@ -20,26 +20,28 @@ type DebugInterfaceService struct {
 	DebugSceneService *DebugSceneService `inject:""`
 }
 
-func (s *DebugInterfaceService) Load(defineReq v1.DebugReq) (req v1.DebugData, err error) {
-	var debugInterfaceId uint
-
-	if defineReq.EndpointInterfaceId > 0 {
-		debugInterfaceId, _ = s.DebugInterfaceRepo.HasDebugInterfaceRecord(defineReq.EndpointInterfaceId)
-
-		if debugInterfaceId > 0 {
-			req, err = s.GetDebugDataFromDebugInterface(debugInterfaceId)
-		} else {
-			req, err = s.ConvertDebugDataFromEndpointInterface(defineReq.EndpointInterfaceId)
-		}
-		req.UsedBy = consts.InterfaceDebug
-
-		req.BaseUrl, req.ShareVars, req.EnvVars, req.GlobalEnvVars, req.GlobalParamVars =
-			s.DebugSceneService.LoadScene(req.EndpointInterfaceId, req.ScenarioProcessorId, req.UsedBy)
-
-	} else if defineReq.ScenarioProcessorId > 0 {
-		// TODO:
-		req.UsedBy = consts.ScenarioDebug
+func (s *DebugInterfaceService) Load(loadReq v1.DebugReq) (req v1.DebugData, err error) {
+	if loadReq.ScenarioProcessorId > 0 {
+		processor, _ := s.ScenarioProcessorRepo.Get(loadReq.ScenarioProcessorId)
+		loadReq.EndpointInterfaceId = processor.EndpointInterfaceId
 	}
+
+	if loadReq.EndpointInterfaceId == 0 {
+		return
+	}
+
+	debugInterfaceId, _ := s.DebugInterfaceRepo.HasDebugInterfaceRecord(loadReq.EndpointInterfaceId)
+
+	if debugInterfaceId > 0 {
+		req, err = s.GetDebugDataFromDebugInterface(debugInterfaceId)
+	} else {
+		req, err = s.ConvertDebugDataFromEndpointInterface(loadReq.EndpointInterfaceId)
+	}
+
+	req.BaseUrl, req.ShareVars, req.EnvVars, req.GlobalEnvVars, req.GlobalParamVars =
+		s.DebugSceneService.LoadScene(req.EndpointInterfaceId, req.ScenarioProcessorId, req.UsedBy)
+
+	req.UsedBy = loadReq.UsedBy
 
 	return
 }

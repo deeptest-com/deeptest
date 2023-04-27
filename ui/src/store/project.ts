@@ -62,8 +62,6 @@ const StoreModel: ModuleType = {
 
         const response: ResponseData = await getByUser(projectId);
         const { data } = response;
-        data.recentProjects = response?.data?.projects || [];
-        console.log('data', data);
         commit('saveProjects', data || 0);
 
         return true;

@@ -31,8 +31,8 @@
         <hr>
         <div>{{currInterface}}</div>
         <hr>
-        <div>{{debugData}}</div> -->
-
+        <div>{{debugData}}</div>
+     -->
   </div>
 </template>
 
@@ -45,11 +45,10 @@ import {useStore} from "vuex";
 import {requestMethodOpts} from '@/config/constant';
 import {StateType as ProjectGlobal} from "@/store/project";
 import {StateType as Debug} from "@/views/component/debug/store";
-import {StateType as Endpoint} from "../../endpoint/store";
+import {StateType as Endpoint} from "@/views/endpoint/store";
 
-import Path  from './path.vue';
-import InterfaceRequest from './request/Index.vue';
-import InterfaceResponse from './response/Index.vue';
+import InterfaceRequest from '@/views/component/debug/request/Index.vue';
+import InterfaceResponse from '@/views/component/debug/response/Index.vue';
 import RequestVariable from '@/components/Editor/RequestVariable.vue';
 
 import {UsedBy} from "@/utils/enum";
@@ -58,7 +57,6 @@ const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
 const store = useStore<{  Debug: Debug, ProjectGlobal: ProjectGlobal, Endpoint: Endpoint }>();
 
-const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const endpointDetail = computed<any>(() => store.state.Endpoint.endpointDetail);
 const selectedMethodDetail = computed<any>(() => store.state.Endpoint.selectedMethodDetail);
 const interfaceMethodToObjMap = computed<any>(() => store.state.Endpoint.interfaceMethodToObjMap);
@@ -73,24 +71,18 @@ const changeMethod = async () => {
 
   const endpointInterface = interfaceMethodToObjMap.value[selectedMethod.value]
 
+  // sync with / to define page
   if (endpointInterface) {
     await store.commit('Endpoint/setSelectedMethodDetail', endpointInterface);
   } else {
     await store.commit('Endpoint/setSelectedMethodDetail', {});
   }
 
-  await store.dispatch('Debug/loadData', {
+  store.dispatch('Debug/loadDataAndInvocations', {
     endpointInterfaceId: endpointInterface.id,
-    // scenarioProcessorId: 0, // TODO: set in in scenario designer
+    scenarioProcessorId: 0,
     usedBy: usedBy,
   });
-
-  store.dispatch('Debug/getLastInvocationResp', {
-    endpointInterfaceId: debugInfo.value.endpointInterfaceId,
-  })
-  store.dispatch('Debug/listInvocation', {
-    endpointInterfaceId: debugInfo.value.endpointInterfaceId,
-  })
 }
 changeMethod()
 
@@ -102,9 +94,8 @@ function hasDefinedMethod(method: string) {
 
 onMounted(() => {
   console.log('onMounted interface')
-  resize()
-
   window.addEventListener('resize', resizeHandler)
+  resize()
 })
 onUnmounted(() => {
   console.log('onUnmounted interface')

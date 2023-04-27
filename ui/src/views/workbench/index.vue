@@ -7,12 +7,15 @@
 
 
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref } from "vue";
-import StatisticHeader from "@/components/StatisticHeader/index.vue";
-import List from "./component/List/index.vue";
+import {useRouter} from "vue-router";
+import {ref} from "vue";
+import {setCache} from "@/utils/localCache";
+import settings from "@/config/settings";
 
-
-
+const router = useRouter();
+const projectId = ref(+router.currentRoute.value.params.id)
+setCache(settings.currProjectId, projectId.value);
+console.log(`TODO: change default project to ${projectId.value} on server side`)
 
 </script>
 

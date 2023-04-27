@@ -44,6 +44,8 @@ import {UsedBy} from "@/utils/enum";
 
 export interface StateType {
     scenarioId: number;
+    scenarioProcessorIdForDebug: number;
+    endpointInterfaceIdForDebug: number;
 
     listResult: QueryResult;
     detailResult: Scenario;
@@ -71,6 +73,8 @@ export interface ModuleType extends StoreModuleType<StateType> {
     state: StateType;
     mutations: {
         setScenarioId: Mutation<StateType>;
+        setScenarioProcessorIdForDebug: Mutation<StateType>;
+        setEndpointInterfaceIdForDebug: Mutation<StateType>;
 
         setList: Mutation<StateType>;
         setDetail: Mutation<StateType>;
@@ -99,6 +103,8 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setValidExtractorVariables: Mutation<StateType>;
     };
     actions: {
+        setScenarioProcessorIdForDebug: Action<StateType, StateType>;
+        setEndpointInterfaceIdForDebug: Action<StateType, StateType>;
         listScenario: Action<StateType, StateType>;
         getScenario: Action<StateType, StateType>;
         removeScenario: Action<StateType, StateType>;
@@ -151,6 +157,8 @@ export interface ModuleType extends StoreModuleType<StateType> {
 
 const initState: StateType = {
     scenarioId: 0,
+    scenarioProcessorIdForDebug:0,
+    endpointInterfaceIdForDebug:0,
 
     listResult: {
         list: [],
@@ -192,6 +200,12 @@ const StoreModel: ModuleType = {
     mutations: {
         setScenarioId(state, id) {
             state.scenarioId = id;
+        },
+        setScenarioProcessorIdForDebug(state, id) {
+            state.scenarioProcessorIdForDebug = id;
+        },
+        setEndpointInterfaceIdForDebug(state, id) {
+            state.endpointInterfaceIdForDebug = id;
         },
 
         setList(state, payload) {
@@ -264,6 +278,14 @@ const StoreModel: ModuleType = {
         },
     },
     actions: {
+        async setScenarioProcessorIdForDebug({commit, dispatch, state}, id) {
+            commit('setScenarioProcessorIdForDebug', id);
+            return true;
+        },
+        async setEndpointInterfaceIdForDebug({commit, dispatch, state}, id) {
+            commit('setEndpointInterfaceIdForDebug', id);
+            return true;
+        },
         async listScenario({commit, dispatch}, params: QueryParams) {
             try {
                 const response: ResponseData = await query(params);

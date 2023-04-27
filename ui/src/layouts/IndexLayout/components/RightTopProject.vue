@@ -52,6 +52,14 @@
         </a-menu>
       </template>
     </a-dropdown>
+
+    <!-- 创建项目弹窗 -->
+    <CreateProjectModal
+        :visible="createProjectModalVisible"
+        @update:visible="createProjectModalVisible = false"
+        @handleSuccess="handleCreateSuccess"
+    />
+
   </div>
 </template>
 
@@ -70,6 +78,7 @@ import {
   DownOutlined,
   PlusOutlined,
 } from '@ant-design/icons-vue';
+import CreateProjectModal from "@/components/CreateProjectModal/index.vue";
 
 const store = useStore<{
   User: UserStateType,
@@ -77,7 +86,7 @@ const store = useStore<{
 }>();
 
 const route = useRoute();
-
+const createProjectModalVisible = ref(false);
 const message = computed<number>(() => store.state.User.message);
 const projects = computed<any>(() => store.state.ProjectGlobal.projects);
 const recentProjects = computed<any>(() => store.state.ProjectGlobal.recentProjects);
@@ -103,9 +112,13 @@ function viewAllProject() {
 }
 
 function newProject() {
-  //todo 新建项目弹框
-  console.log('newProject');
+  createProjectModalVisible.value = true;
+  dropdownVisible.value = false;
 }
+const handleCreateSuccess = async () => {
+  createProjectModalVisible.value = false;
+  await store.dispatch("ProjectGlobal/fetchProject");
+};
 
 const selectProject = async (value): Promise<void> => {
   console.log('selectProject', value);

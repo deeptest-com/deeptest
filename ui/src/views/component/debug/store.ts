@@ -77,6 +77,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setPreRequestScript: Mutation<StateType>;
     };
     actions: {
+        loadDataAndInvocations: Action<StateType, StateType>;
         loadData: Action<StateType, StateType>;
         call: Action<StateType, StateType>;
         save: Action<StateType, StateType>;
@@ -170,11 +171,28 @@ const StoreModel: ModuleType = {
     },
     actions: {
         // debug
+        async loadDataAndInvocations({commit, dispatch, state}, data) {
+            try {
+                await dispatch('loadData', data)
+
+                dispatch('getLastInvocationResp', {
+                    endpointInterfaceId: state.debugInfo.endpointInterfaceId,
+                })
+                dispatch('listInvocation', {
+                    endpointInterfaceId: state.debugInfo.endpointInterfaceId,
+                })
+
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+
         async loadData({commit, dispatch}, data) {
             try {
                 await commit('setDebugInfo', {
                     endpointInterfaceId: data.endpointInterfaceId,
-                    scenarioProcessorId  : data.processorId,
+                    scenarioProcessorId  : data.scenarioProcessorId,
                     usedBy:          data.usedBy,
                 } as DebugInfo);
 

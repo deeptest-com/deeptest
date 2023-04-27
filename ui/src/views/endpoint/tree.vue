@@ -363,13 +363,14 @@ onMounted(async () => {
   justify-content: center;
   align-items: center;
   height: 50px;
+  margin-top: 8px;
   .search-input {
-    margin-left: 8px;
+    margin-left: 16px;
     margin-right: 8px;
   }
 
   .add-btn {
-    margin-left: 12px;
+    margin-left: 2px;
     margin-right: 16px;
     cursor: pointer;
   }

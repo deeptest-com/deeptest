@@ -18,7 +18,13 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
           code: 'WORKBENCH'
         }
       },
-
+      {
+        icon: 'home',
+        title: '工作台',
+        path: ':id',
+        component: () => import('@/views/workbench/index.vue'),
+        hidden: true,
+      },
     ],
   },
   // {

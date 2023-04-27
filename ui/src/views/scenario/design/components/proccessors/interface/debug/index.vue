@@ -1,7 +1,7 @@
 <template>
   <div id="debug-index" class="dp-splits-v">
     <div id="debug-content">
-      <DesignInterface />
+      <DebugInterface />
     </div>
 
     <div id="debug-splitter" class="splitter"></div>
@@ -37,7 +37,6 @@
       </a-tabs>
     </div>
   </div>
-
 </template>
 
 <script setup lang="ts">
@@ -49,12 +48,11 @@ import { EnvironmentOutlined, HistoryOutlined } from '@ant-design/icons-vue';
 import {resizeWidth} from "@/utils/dom";
 import {UsedBy} from "@/utils/enum";
 
-import DesignInterface from './interface.vue';
+import DebugInterface from './interface.vue';
+import RequestEnv from '@/views/component/debug/others/env/index.vue';
+import RequestHistory from '@/views/component/debug/others/history/index.vue';
 
-import RequestEnv from './others/env/index.vue';
-import RequestHistory from './others/history/index.vue';
-
-provide('usedBy', UsedBy.InterfaceDebug)
+provide('usedBy', UsedBy.ScenarioDebug)
 const useForm = Form.useForm;
 
 const {t} = useI18n();

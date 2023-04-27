@@ -127,14 +127,14 @@ func (r *ProjectRepo) Create(req v1.ProjectReq, userId uint) (id uint, bizErr *_
 		return
 	}
 
-	err = r.CreateProjectRes(project.ID, userId)
+	err = r.CreateProjectRes(project.ID, userId, req.IncludeExample)
 
 	id = project.ID
 
 	return
 }
 
-func (r *ProjectRepo) CreateProjectRes(projectId, userId uint) (err error) {
+func (r *ProjectRepo) CreateProjectRes(projectId, userId uint, IncludeExample bool) (err error) {
 
 	// create project member
 	err = r.AddProjectMember(projectId, userId, "admin")
@@ -179,7 +179,13 @@ func (r *ProjectRepo) CreateProjectRes(projectId, userId uint) (err error) {
 	}
 
 	//create sample
-	r.CreateSample(projectId, serve.ID, userId)
+	if IncludeExample {
+		err = r.CreateSample(projectId, serve.ID, userId)
+		if err != nil {
+			logUtils.Errorf("创建示例失败", zap.String("错误:", err.Error()))
+			return
+		}
+	}
 
 	return
 }

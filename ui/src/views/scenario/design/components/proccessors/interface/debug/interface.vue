@@ -37,11 +37,17 @@ const {t} = useI18n();
 const store = useStore<{  Debug: Debug, Scenario: Scenario }>();
 
 const scenarioProcessorIdForDebug = computed<number>(() => store.state.Scenario.scenarioProcessorIdForDebug);
+const endpointInterfaceIdForDebug = computed<number>(() => store.state.Scenario.endpointInterfaceIdForDebug);
 const debugInfo = computed<DebugInfo>(() => store.state.Debug.debugInfo);
 const debugData = computed<any>(() => store.state.Debug.debugData);
 
 watch(scenarioProcessorIdForDebug, () => {
   console.log('watch scenarioProcessorIdForDebug', scenarioProcessorIdForDebug)
+  loadData()
+}, {deep: true})
+watch(endpointInterfaceIdForDebug, () => {
+  console.log('watch endpointInterfaceIdForDebug', endpointInterfaceIdForDebug)
+  loadData()
 }, {deep: true})
 
 const loadData = debounce(async () => {
@@ -52,7 +58,7 @@ const loadData = debounce(async () => {
 
   store.dispatch('Debug/loadDataAndInvocations', {
     endpointInterfaceId: 0,
-    scenarioProcessorId: 0,
+    scenarioProcessorId: scenarioProcessorIdForDebug.value,
     usedBy: usedBy,
   });
 

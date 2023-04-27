@@ -173,9 +173,7 @@ const StoreModel: ModuleType = {
         // debug
         async loadDataAndInvocations({commit, dispatch, state}, data) {
             try {
-                const resp: ResponseData = await loadData(data);
-                if (resp.code != 0) return false;
-                commit('setDebugData', resp.data);
+                await dispatch('loadData', data)
 
                 dispatch('getLastInvocationResp', {
                     endpointInterfaceId: state.debugInfo.endpointInterfaceId,
@@ -194,7 +192,7 @@ const StoreModel: ModuleType = {
             try {
                 await commit('setDebugInfo', {
                     endpointInterfaceId: data.endpointInterfaceId,
-                    scenarioProcessorId  : data.processorId,
+                    scenarioProcessorId  : data.scenarioProcessorId,
                     usedBy:          data.usedBy,
                 } as DebugInfo);
 

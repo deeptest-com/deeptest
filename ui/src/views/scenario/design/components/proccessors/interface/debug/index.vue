@@ -52,7 +52,7 @@ import DebugInterface from './interface.vue';
 import RequestEnv from '@/views/component/debug/others/env/index.vue';
 import RequestHistory from '@/views/component/debug/others/history/index.vue';
 
-provide('usedBy', UsedBy.InterfaceDebug)
+provide('usedBy', UsedBy.ScenarioDebug)
 const useForm = Form.useForm;
 
 const {t} = useI18n();

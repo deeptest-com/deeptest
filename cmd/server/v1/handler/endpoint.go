@@ -83,6 +83,9 @@ func (c *EndpointCtrl) requestParser(req v1.EndpointReq) (endpoint model.Endpoin
 		req.Interfaces[key].BodyType = item.RequestBody.MediaType
 		req.Interfaces[key].Name = req.Title
 	}
+	if req.CategoryId == 0 {
+		req.CategoryId = -1
+	}
 	copier.CopyWithOption(&endpoint, &req, copier.Option{IgnoreEmpty: true, DeepCopy: true})
 	//fmt.Println(len(req.Interfaces), "-----------------------------", _commUtils.JsonEncode(req.Interfaces))
 	//fmt.Println(len(endpoint.Interfaces), "-----------------------------", _commUtils.JsonEncode(endpoint.Interfaces))

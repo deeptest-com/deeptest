@@ -37,9 +37,9 @@ const StoreModel: ModuleType = {
   mutations: {
     saveProjects(state, payload) {
       setCache(settings.currProjectId, payload.currProject.id);
-      state.projects = payload.projects;
+      state.projects = payload.projects || [];
       state.currProject = payload.currProject;
-      state.recentProjects = payload.recentProjects;
+      state.recentProjects = payload.recentProjects || [];
     },
   },
   actions: {

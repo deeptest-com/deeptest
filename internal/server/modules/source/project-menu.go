@@ -16,6 +16,7 @@ func (s *ProjectMenuSource) Init() (err error) {
 	defer s.ProjectMenuRepo.BatchInitData("buttonLevel")
 	defer s.ProjectMenuRepo.BatchInitData("secondLevel")
 	defer s.ProjectMenuRepo.BatchInitData("firstLevel")
+	defer s.ProjectMenuRepo.DeleteAllData()
 
 	return
 }

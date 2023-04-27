@@ -81,8 +81,92 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
       },
     ],
   },
+  {
+    title: 'index-layout.menu',
+    path: '/scenario',
+    redirect: '/scenario/index',
+    component: BlankLayout,
+    children: [
+      {
+        icon: 'scenario',
+        title: 'scenario',
+        path: 'index',
+        component: () => import('@/views/scenario/index.vue'),
+        hidden: false,
+        meta: {
+          code: 'SCENARIO'
+        }
+      },
+      {
+        icon: 'scenario',
+        title: 'scenario.exec',
+        path: 'exec/:id',
+        component: () => import('@/views/scenario/exec/index.vue'),
+        hidden: true,
+      },
+      {
+        icon: 'scenario',
+        title: 'scenario.design',
+        path: 'design/:id',
+        component: () => import('@/views/scenario/design/index.vue'),
+        hidden: true,
+      },
+    ],
+  },
 
-  // 项目管理
+  {
+    title: 'index-layout.menu',
+    path: '/plan',
+    redirect: '/plan/index',
+    component: BlankLayout,
+    children: [
+      {
+        icon: 'plan',
+        title: 'plan',
+        path: 'index',
+        component: () => import('@/views/plan/index.vue'),
+        hidden: false,
+        meta: {
+          code: 'PLAN'
+        }
+      },
+      {
+        icon: 'plan',
+        title: 'plan.exec',
+        path: 'exec/:id',
+        component: () => import('@/views/plan/exec/index.vue'),
+        hidden: true,
+      },
+    ],
+  },
+
+  {
+    title: 'index-layout.menu',
+    path: '/report',
+    redirect: '/report/index',
+    component: () => import('@/views/report/index.vue'),
+    children: [
+      {
+        icon: 'report',
+        title: 'report',
+        path: 'index',
+        component: () => import('@/views/report/list/index.vue'),
+        hidden: false,
+        meta: {
+          code: 'REPORT'
+        }
+      },
+      {
+        icon: 'report',
+        title: 'report.detail',
+        path: ':id',
+        component: () => import('@/views/report/detail/index.vue'),
+        hidden: true,
+      },
+    ],
+  },
+
+   // 项目管理
   {
     title: '项目设置',
     path: '/project-setting',
@@ -170,90 +254,7 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
       },
     ],
   },
-  {
-    title: 'index-layout.menu',
-    path: '/scenario',
-    redirect: '/scenario/index',
-    component: BlankLayout,
-    children: [
-      {
-        icon: 'scenario',
-        title: 'scenario',
-        path: 'index',
-        component: () => import('@/views/scenario/index.vue'),
-        hidden: false,
-        meta: {
-          code: 'SCENARIO'
-        }
-      },
-      {
-        icon: 'scenario',
-        title: 'scenario.exec',
-        path: 'exec/:id',
-        component: () => import('@/views/scenario/exec/index.vue'),
-        hidden: true,
-      },
-      {
-        icon: 'scenario',
-        title: 'scenario.design',
-        path: 'design/:id',
-        component: () => import('@/views/scenario/design/index.vue'),
-        hidden: true,
-      },
-    ],
-  },
 
-  {
-    title: 'index-layout.menu',
-    path: '/plan',
-    redirect: '/plan/index',
-    component: BlankLayout,
-    children: [
-      {
-        icon: 'plan',
-        title: 'plan',
-        path: 'index',
-        component: () => import('@/views/plan/index.vue'),
-        hidden: false,
-        meta: {
-          code: 'PLAN'
-        }
-      },
-      {
-        icon: 'plan',
-        title: 'plan.exec',
-        path: 'exec/:id',
-        component: () => import('@/views/plan/exec/index.vue'),
-        hidden: true,
-      },
-    ],
-  },
-
-  {
-    title: 'index-layout.menu',
-    path: '/report',
-    redirect: '/report/index',
-    component: () => import('@/views/report/index.vue'),
-    children: [
-      {
-        icon: 'report',
-        title: 'report',
-        path: 'index',
-        component: () => import('@/views/report/list/index.vue'),
-        hidden: false,
-        meta: {
-          code: 'REPORT'
-        }
-      },
-      {
-        icon: 'report',
-        title: 'report.detail',
-        path: ':id',
-        component: () => import('@/views/report/detail/index.vue'),
-        hidden: true,
-      },
-    ],
-  },
 ] as Array<RoutesDataItem>;
 
 export default IndexLayoutRoutes;

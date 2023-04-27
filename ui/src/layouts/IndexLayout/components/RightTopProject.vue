@@ -5,7 +5,7 @@
                 @click="dropdownVisible = !dropdownVisible"
                 :overlayStyle="{width:'300px'}">
       <a-button class="header">
-        <PictureOutlined class="before-icon"/>
+        <span class="before-icon icon"><img src="https://rd5-public.zhaopin.cn/imgs/company/9bb1f340b92b30327f436f2ca2a0aad2.png" alt=""></span>
         {{ currProject.name }}
         <DownOutlined class="after-icon"/>
       </a-button>
@@ -15,18 +15,6 @@
             <a-input-search allowClear v-model:value="keyword" placeholder="搜索项目名称"/>
           </a-menu-item>
           <a-menu-item class="menu-scroll menu-item" key="menu-items">
-            <div class="menu-scroll-item my" key="my">
-              我参与的项目
-            </div>
-            <div class="menu-scroll-item"
-                 :class="{'first':index===0}"
-                 @click="() => {
-                  selectProject(item.id)
-                 }"
-                 v-for="(item,index) in myProject" :key="item.id">
-              <span class="icon"><UserOutlined/></span>
-              <span class="text">{{ item.name }}</span>
-            </div>
             <div key="recently" class="menu-scroll-item recently">
               最近访问的项目
             </div>
@@ -36,7 +24,19 @@
                   selectProject(item.id)
                  }"
                  :key="item.id">
-              <span class="icon"><UserOutlined/></span>
+              <span class="icon"><img src="https://rd5-public.zhaopin.cn/imgs/company/9bb1f340b92b30327f436f2ca2a0aad2.png" alt=""></span>
+              <span class="text">{{ item.name }}</span>
+            </div>
+            <div class="menu-scroll-item my" key="my">
+              我参与的项目
+            </div>
+            <div class="menu-scroll-item"
+                 :class="{'first':index===0}"
+                 @click="() => {
+                  selectProject(item.id)
+                 }"
+                 v-for="(item,index) in myProject" :key="item.id">
+              <span class="icon"><img src="https://rd5-public.zhaopin.cn/imgs/company/9bb1f340b92b30327f436f2ca2a0aad2.png" alt=""></span>
               <span class="text">{{ item.name }}</span>
             </div>
           </a-menu-item>
@@ -79,6 +79,8 @@ import {
   PlusOutlined,
 } from '@ant-design/icons-vue';
 import CreateProjectModal from "@/components/CreateProjectModal/index.vue";
+import logos from "@/components/CreateProjectModal/index.ts";
+// import Logos from "@/components/Logos/index.tsx";
 
 const store = useStore<{
   User: UserStateType,
@@ -169,7 +171,7 @@ onUnmounted(() => {
   .before-icon {
     position: absolute;
     left: 8px;
-    top: 8px;
+    top: 4px;
   }
 
   .after-icon {
@@ -178,5 +180,17 @@ onUnmounted(() => {
     right: 8px;
   }
 }
+.icon{
+  width: 12px;
+  height: 12px;
+  display: inline-block;
+  img{
+    width: 100%;
+    height: 100%;
+  }
+}
+
+
+
 
 </style>

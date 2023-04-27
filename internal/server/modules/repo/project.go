@@ -15,7 +15,6 @@ import (
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
-	"time"
 )
 
 type ProjectRepo struct {
@@ -282,14 +281,14 @@ func (r *ProjectRepo) GetCurrProjectByUser(userId uint) (currProject model.Proje
 }
 
 func (r *ProjectRepo) ListProjectsRecentlyVisited(userId uint) (projects []model.Project, err error) {
-	//TODO 时间临时变更
-	now := time.Now()
-	date := time.Date(now.Year(), now.Month(), now.Day(), now.Hour(), now.Minute()-2, 0, 0, time.Local)
+	//now := time.Now()
+	//date := time.Date(now.Year(), now.Month(), now.Day(), now.Hour(), now.Minute()-2, 0, 0, time.Local)
 
 	err = r.DB.Model(&model.Project{}).Joins("LEFT JOIN biz_project_recently_visited v ON biz_project.id=v.project_id").
 		Where("v.user_id = ?", userId).
-		Where("v.created_at >= ?", date).
+		//Where("v.created_at >= ?", date).
 		Order("v.created_at desc").
+		Limit(3).
 		Find(&projects).Error
 
 	return

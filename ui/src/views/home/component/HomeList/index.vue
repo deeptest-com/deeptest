@@ -95,10 +95,7 @@ let pagination = computed<PaginationConfig>(
 );
 let queryParams = reactive<QueryParams>({
   keywords: "",
-  enabled: "1",
-  userId: activeKey.value == 0 ? 0 : currentUser.value?.id,
-  page: pagination.value.current,
-  pageSize: pagination.value.pageSize,
+
 });
 
 const columns = [
@@ -183,19 +180,13 @@ watch(
 );
 
 const getList = async (current: number): Promise<void> => {
-  // loading.value = true;
+ 
   console.log("queryParams.keywords", queryParams.keywords);
   await store.dispatch("Home/queryProject", {
     keywords: queryParams.keywords,
-    enabled: queryParams.enabled,
-    userId: queryParams.userId,
-    pageSize: pagination.value.pageSize,
-    page: current,
-  });
-  // loading.value = false;
-  // await store.dispatch('Home/getUserList');
 
-  // store.dispatch("ProjectGlobal/fetchProject");
+  });
+
 };
 function handleTabClick(e: number) {
   queryParams.userId = e;

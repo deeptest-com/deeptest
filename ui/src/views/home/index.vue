@@ -53,17 +53,12 @@ import {setCache} from "@/utils/localCache";
 import settings from "@/config/settings";
 
 const store = useStore<{ Home: StateType }>();
-// const mode = computed<any[]>(() => store.state.Home.mode);
 const activeKey = ref(1);
 const showMode = ref("card");
 const createProjectModalVisible = ref(false);
-// const currentUser = computed<any>(() => store.state.User.currentUser);
 // let queryParams = reactive<QueryParams>({
   // keywords: "",
-  // enabled: "1",
-  // userId: activeKey.value == 0 ? 0 : currentUser.value?.id,
-  // page: pagination.value.current,
-  // pageSize: pagination.value.pageSize,
+
 // });
 
 onMounted(() => {
@@ -73,11 +68,7 @@ onMounted(() => {
 const getList = async (current: number): Promise<void> => {
   await store.dispatch("Home/queryProject", {
     // keywords: queryParams.keywords,
-    // enabled: queryParams.enabled,
-    // userId: queryParams.userId,
-    // currProjectId:0,
-    // pageSize: pagination.value.pageSize,
-    // page: current,
+    
   });
 };
 
@@ -88,8 +79,7 @@ const handleCreateSuccess = () => {
 };
 
 function handleTabClick(e: number) {
-  // queryParams.userId=e;
-  //  getList(1);
+
   console.log("activeKey", activeKey);
 }
 </script>

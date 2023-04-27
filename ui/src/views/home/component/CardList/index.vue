@@ -3,8 +3,9 @@
     <div class="p-2 bg-white">
       <List
         :grid="{ gutter: 5, xs: 1, sm: 2, md: 4, lg: 4, xl: 3, xxl: grid }"
-        :data-source="tableList.concat(addCard)"
+        :data-source="tableList"
         :pagination="paginationProp"
+        :loading="loading"
       >
         <template #header> </template>
         <template #renderItem="{ item }">
@@ -13,7 +14,7 @@
               <Card class="card add-card">创建项目+</Card>
             </div>
             <div v-else>
-              <Card class="card" @click="goProject(item.id)">
+              <Card class="card" @click="goProject(item.project_id)">
                 <!-- <template #title> -->
                 <div class="card-title">
                   <Avatar style="background-color: #1890ff">
@@ -79,7 +80,15 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { computed, onMounted, ref, defineProps, defineEmits, watch } from "vue";
+import {
+  computed,
+  onMounted,
+  ref,
+  defineProps,
+  defineEmits,
+  watch,
+  nextTick,
+} from "vue";
 import {
   UserOutlined,
   EllipsisOutlined,
@@ -109,8 +118,7 @@ const CardMeta = Card.Meta;
 const list = computed<any>(() => store.state.Home.queryResult.list);
 const TypographyText = Typography.Text;
 const tableList = ref([]);
-const addCard = ref([{ type: "add" }]);
-
+const loading = ref(true);
 // 组件接收参数
 const props = defineProps({
   // 请求API的参数
@@ -141,30 +149,46 @@ onMounted(() => {
   // fetch();
   // emit('getMethod', fetch);
 });
+// 监听项目数据变化
+watch(
+  () => {
+    return list.value;
+  },
+  (newVal) => {
+    console.log("watch list.value", list.value);
+
+    tableList.value = list.value.current_user_project_list;
+
+    if (tableList.value && tableList.value.length > 0) {
+      loading.value = false;
+    }else{
+      setTimeout(() => {
+        loading.value = false;
+      }, 5000);
+    }
+    
+  },
+  {
+    immediate: true,
+  }
+);
+// 监听我的项目、所有项目切换
 watch(
   () => {
     return props.activeKey;
   },
   (newVal) => {
     if (newVal == 1) {
-      setTimeout(() => {
-        tableList.value = list.value.current_user_project_list;
-      }, 500);
+      tableList.value = list.value.current_user_project_list;
     } else {
-      setTimeout(() => {
-        // tableList.value =[]
-        tableList.value = list.value.all_project_list;
-      }, 500);
+      tableList.value = list.value?.all_project_list;
     }
   },
   {
     immediate: true,
   }
 );
-function handleTabClick(e: number) {
-  // queryParams.userId=e;
-  //  getList(1);
-}
+
 
 async function fetch(p = {}) {
   const { api, params } = props;
@@ -207,8 +231,13 @@ function pageSizeChange(_current, size) {
 async function handleDelete(id) {
   emit("delete", id);
 }
-function goProject(id: number) {
-  router.push(`/workbench/index/${id}`);
+function goProject(projectId: number) {
+  store.dispatch("ProjectGlobal/changeProject", projectId);
+  store.dispatch("Environment/getEnvironment", { id: 0, projectId: projectId });
+
+  // 项目切换后，需要重新更新可选服务列表
+  store.dispatch("ServeGlobal/fetchServe");
+  router.push(`/workbench/index`);
 }
 </script>
 
@@ -240,7 +269,7 @@ function goProject(id: number) {
     }
   }
 }
-.add-card{
+.add-card {
   display: flex;
   justify-content: center;
   align-items: center;

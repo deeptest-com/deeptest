@@ -17,7 +17,7 @@ type ExtractorService struct {
 }
 
 func (s *ExtractorService) List(interfaceId uint, usedBy consts.UsedBy) (extractors []model.DebugInterfaceExtractor, err error) {
-	extractors, err = s.ExtractorRepo.List(interfaceId, usedBy)
+	extractors, err = s.ExtractorRepo.List(interfaceId)
 
 	return
 }
@@ -53,7 +53,7 @@ func (s *ExtractorService) Delete(reqId uint) (err error) {
 }
 
 func (s *ExtractorService) ExtractInterface(interfaceId, serveId, scenarioId uint, resp v1.DebugResponse, usedBy consts.UsedBy) (err error) {
-	extractors, _ := s.ExtractorRepo.List(interfaceId, usedBy)
+	extractors, _ := s.ExtractorRepo.List(interfaceId)
 
 	for _, extractor := range extractors {
 		s.Extract(&extractor, resp, usedBy)

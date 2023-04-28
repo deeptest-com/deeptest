@@ -40,7 +40,6 @@
 
     <ResponseExtractor
         v-if="responseExtractorVisible"
-        :interfaceId="debugData.interfaceId"
         :exprType="exprType"
         :expr="expr"
         :result="result"

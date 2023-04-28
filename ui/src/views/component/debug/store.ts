@@ -281,7 +281,6 @@ const StoreModel: ModuleType = {
 
         // extractor
         async listExtractor({commit, dispatch, state}) {
-            console.log('========', state.debugInfo)
             try {
                 const resp = await listExtractor(state.debugInfo.endpointInterfaceId);
                 const {data} = resp;

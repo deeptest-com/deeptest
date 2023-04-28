@@ -15,7 +15,7 @@ func NewProjectRoleMenuSource() *ProjectRoleMenuSource {
 }
 
 func (s *ProjectRoleMenuSource) GetSources() (res []model.ProjectRoleMenu, err error) {
-	return s.ProjectRoleMenuRepo.GetMenusForRole()
+	return s.ProjectRoleMenuRepo.GetConfigData()
 }
 
 func (s *ProjectRoleMenuSource) Init() (err error) {
@@ -23,8 +23,9 @@ func (s *ProjectRoleMenuSource) Init() (err error) {
 	if err != nil {
 		return
 	}
+	s.ProjectRoleMenuRepo.DeleteAllData()
 
-	successCount, failItems := s.ProjectRoleMenuRepo.BatchAddData(sources)
+	successCount, failItems := s.ProjectRoleMenuRepo.BatchCreate(sources)
 	color.Info.Printf("\n[Mysql] --> %s 表成功初始化%d行数据,失败数据：%+v!\n", model.ProjectRoleMenu{}.TableName(), successCount, failItems)
 
 	return

@@ -16,15 +16,9 @@
           :menuData="menuData">
       </sider-menu>
     </div>
-
     <div v-if="version" class="version">
       V{{ version }}
     </div>
-
-    <!--    <div class="indexlayout-left-menu-bottom">
-          <SettingsMenu></SettingsMenu>
-        </div>-->
-
   </div>
 </template>
 
@@ -33,11 +27,6 @@
 import {defineComponent, onMounted, PropType, ref} from "vue";
 import {RoutesDataItem} from '@/utils/routes';
 import SiderMenu from './SiderMenu.vue';
-import SettingsMenu from './SettingsMenu.vue'
-import {useI18n} from "vue-i18n";
-import {
-  ConsoleSqlOutlined,
-} from '@ant-design/icons-vue';
 
 export default defineComponent({
   name: 'Left',
@@ -50,6 +39,7 @@ export default defineComponent({
       type: Boolean,
       default: true
     },
+
     belongTopMenu: {
       type: String,
       default: ''
@@ -149,6 +139,7 @@ export default defineComponent({
 
   .indexlayout-left-menu {
     flex: 1;
+    position: relative;
     overflow: hidden auto;
     // height: calc(100vh);
     .left-scrollbar {

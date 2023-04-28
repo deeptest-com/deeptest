@@ -17,7 +17,7 @@
       </a-row>
     </template>
     <!-- 基本信息 -->
-    <EndpointBasicInfo @changeStatus="changeStatus" @change-description="changeDescription"/>
+    <EndpointBasicInfo @changeStatus="changeStatus" @change-description="changeDescription" @changeCategory="changeCategory"/>
     <!-- 接口设计区域 -->
     <a-card
         style="width: 100%"
@@ -63,6 +63,7 @@ import EndpointDebug from './Debug/index.vue';
 
 import {useStore} from "vuex";
 import {Endpoint} from "@/views/endpoint/data";
+import {message} from "ant-design-vue";
 
 const store = useStore<{ Endpoint, ProjectGlobal, ServeGlobal }>();
 const endpointDetail = computed<Endpoint>(() => store.state.Endpoint.endpointDetail);
@@ -100,6 +101,14 @@ async function changeDescription(description) {
   await store.dispatch('Endpoint/getEndpointDetail', {id: endpointDetail.value.id});
 }
 
+async function changeCategory(value) {
+  await store.dispatch('Endpoint/updateEndpointDetail',
+      {...endpointDetail.value, categoryId: value}
+  );
+  await store.dispatch('Endpoint/getEndpointDetail', {id: endpointDetail.value.id});
+}
+
+
 
 const key = ref('request');
 
@@ -111,7 +120,8 @@ async function save() {
   await store.dispatch('Endpoint/updateEndpointDetail',
       {...endpointDetail.value}
   );
-  emit('close');
+  // emit('close');
+  message.success('保存成功');
   emit('refreshList');
 }
 

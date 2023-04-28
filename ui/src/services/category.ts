@@ -21,7 +21,7 @@ export async function createCategory(data): Promise<any> {
 }
 export async function updateCategory(id: number, params: any): Promise<any> {
     return request({
-        url: `/${apiPath}/${id}`,
+        url: `/${apiPath}`,
         method: 'PUT',
         data: params,
     });

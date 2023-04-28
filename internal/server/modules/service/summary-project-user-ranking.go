@@ -34,8 +34,8 @@ func (s *SummaryProjectUserRankingService) ProjectUserRanking(projectId int64, c
 
 	for _, newRanking := range summaryProjectUserRankings {
 		var resUserRanking v1.ResUserRanking
-		for _, oldRanking := range oldSummaryProjectUserRankings {
-			if oldRanking.CreatedAt != nil {
+		if err == nil && oldSummaryProjectUserRankings != nil && len(oldSummaryProjectUserRankings) != 0 {
+			for _, oldRanking := range oldSummaryProjectUserRankings {
 				if oldRanking.UserId == newRanking.UserId {
 					resUserRanking.UserName = newRanking.UserName
 					resUserRanking.UserId = newRanking.UserId
@@ -45,15 +45,15 @@ func (s *SummaryProjectUserRankingService) ProjectUserRanking(projectId int64, c
 					resUserRanking.Sort = newRanking.Sort
 					resUserRanking.Hb = oldRanking.Sort - newRanking.Sort
 				}
-			} else {
-				resUserRanking.UserName = newRanking.UserName
-				resUserRanking.UserId = newRanking.UserId
-				resUserRanking.ScenarioTotal = newRanking.ScenarioTotal
-				resUserRanking.TestcasesTotal = newRanking.TestcasesTotal
-				resUserRanking.UpdateTime = newRanking.UpdatedAt
-				resUserRanking.Sort = newRanking.Sort
-				resUserRanking.Hb = 0
 			}
+		} else {
+			resUserRanking.UserName = newRanking.UserName
+			resUserRanking.UserId = newRanking.UserId
+			resUserRanking.ScenarioTotal = newRanking.ScenarioTotal
+			resUserRanking.TestcasesTotal = newRanking.TestcasesTotal
+			resUserRanking.UpdateTime = newRanking.UpdatedAt
+			resUserRanking.Sort = newRanking.Sort
+			resUserRanking.Hb = 0
 		}
 		resRankingList.UserRankingList = append(resRankingList.UserRankingList, resUserRanking)
 	}
@@ -83,6 +83,11 @@ func (s *SummaryProjectUserRankingService) UpdateColumnsByDate(req model.Summary
 	return r.UpdateColumnsByDate(req, startTime, endTime)
 }
 
+func (s *SummaryProjectUserRankingService) FindProjectIds() (projectIds []int64, err error) {
+	r := repo.NewSummaryProjectUserRankingRepo()
+	return r.FindProjectIds()
+}
+
 func (s *SummaryProjectUserRankingService) HasDataOfDate(startTime string, endTiem string) (ret bool, err error) {
 	r := repo.NewSummaryProjectUserRankingRepo()
 	return r.HasDataOfDate(startTime, endTiem)
@@ -98,7 +103,7 @@ func (s *SummaryProjectUserRankingService) FindByDateAndProjectId(startTime stri
 	return r.FindByDateAndProjectId(startTime, endTime, projectId)
 }
 
-func (s *SummaryProjectUserRankingService) CheckUpdated(oldTime *time.Time) (result bool, err error) {
+func (s *SummaryProjectUserRankingService) CheckUpdated(lastUpdateTime *time.Time) (result bool, err error) {
 	r := *repo.NewSummaryProjectUserRankingRepo()
-	return r.CheckUpdated(oldTime)
+	return r.CheckUpdated(lastUpdateTime)
 }

@@ -1,5 +1,5 @@
 <template>
-    <svg class="svg-icon" aria-hidden="true">
+    <svg class="svg-icon" aria-hidden="true" :style="`width: ${size}px;height: ${size}px;fill:${fill}`">
         <use :xlink:href="`#${type}`" />
     </svg>
 </template>
@@ -27,6 +27,14 @@ export default defineComponent({
         type: {
             type: String,
             required: true
+        },
+        size: {
+            type: Number,
+            required: false
+        },
+        fill: {
+            type: String,
+            required: false
         }
     }
 });

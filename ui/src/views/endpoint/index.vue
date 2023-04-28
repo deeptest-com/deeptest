@@ -1,104 +1,107 @@
 <template>
   <div class="container">
+    <div class="select-server">
+      <a-form-item label="选择服务">
+        <a-select
+            v-model:value="currServe.id"
+            :placeholder="'请选择服务'"
+            :bordered="true"
+            style="width: 334px"
+            @change="selectServe">
+          <a-select-option v-for="item in serves" :key="item.id" :value="item.id">{{ item.name }}</a-select-option>
+        </a-select>
+      </a-form-item>
+    </div>
     <div class="content">
-      <div class="left tree">
-        <EndpointTree @select="selectNode"/>
+      <div class="left tree" v-if="!collapsed">
+        <Tree @select="selectNode" :serveId="currServe.id"/>
       </div>
+      <CollapsedIcon
+          :style="{left:'294px',top:'300px'}"
+          :collapsedStyle="{left:'-9px', top:'300px'}"
+          @click="collapsed = !collapsed" :collapsed="collapsed"/>
       <div class="right">
-        <!--  头部搜索区域  -->
         <div class="top-action">
-          <a-button class="action-new" type="primary" :loading="loading"
-                    @click="handleCreateEndPoint">新建接口
-          </a-button>
-        </div>
-        <div class="top-search">
+          <PermissionButton
+            class="action-new"
+            text="新建接口"
+            code="ENDPOINT-ADD"
+            type="primary"
+            :loading="loading"
+            @handle-access="handleCreateEndPoint" />
           <div class="top-search-filter">
             <TableFilter @filter="handleTableFilter"/>
           </div>
-          <a-form-item label="选择服务">
-            <a-select
-              v-model:value="currServe.id"
-              :placeholder="'请选择服务'"
-              :bordered="true"
-              style="width: 280px;margin-left: 16px;"
-              @change="selectServe">
-              <a-select-option v-for="item in serves" :key="item.id" :value="item.id">{{ item.name }}</a-select-option>
-            </a-select>
-          </a-form-item>
         </div>
-        <a-table
-            style="margin: 0 16px;"
-            :row-selection="{
-              selectedRowKeys: selectedRowKeys,
-              onChange: onSelectChange
-            }"
-            :pagination="{
-                ...pagination,
-                onChange: (page) => {
-                  loadList(page,pagination.pageSize);
-                },
-                onShowSizeChange: (page, size) => {
-                  loadList(page,size);
-                },
-            }"
-            :columns="columns"
-            :data-source="list">
-          <template #colTitle="{text,record}">
-            <div class="customTitleColRender">
-              <EditAndShowField :custom-class="'custom-endpoint show-on-hover'" :value="text" placeholder="请输入接口名称" @update="(e: string) => handleUpdateEndpoint(e, record)" @edit="editEndpoint(record)" />
-            </div>
-          </template>
-
-          <template #colStatus="{record}">
-            <div class="customStatusColRender">
-              <a-select
-                  :value="record?.status"
-                  style="width: 100px"
-                  :size="'small'"
-                  placeholder="请修改接口状态"
-                  :options="endpointStatusOpts"
-                  @change="(val) => {
-                  handleChangeStatus(val,record);
-                  }"
-              >
-              </a-select>
-            </div>
-          </template>
-
-          <template #colPath="{text}">
-            <div class="customPathColRender">
-              <a-tag>{{ text }}</a-tag>
-            </div>
-          </template>
-
-          <template #action="{record}">
-            <a-dropdown>
-              <MoreOutlined/>
-              <template #overlay>
-                <a-menu>
-                  <a-menu-item key="1">
-                    <a-button style="width: 80px" type="link" size="small" @click="copy(record)">复制</a-button>
-                  </a-menu-item>
-                  <a-menu-item key="2">
-                    <a-button style="width: 80px" type="link" size="small" @click="del(record)">删除</a-button>
-                  </a-menu-item>
-                  <a-menu-item key="3">
-                    <a-button style="width: 80px" type="link" size="small" @click="disabled(record)">过时</a-button>
-                  </a-menu-item>
-                </a-menu>
+        <EmptyCom>
+          <template #content>
+            <a-table
+              :row-selection="{
+                selectedRowKeys: selectedRowKeys,
+                onChange: onSelectChange
+              }"
+              :pagination="{
+                  ...pagination,
+                  onChange: (page) => {
+                    loadList(page,pagination.pageSize);
+                  },
+                  onShowSizeChange: (page, size) => {
+                    loadList(page,size);
+                  },
+              }"
+              :columns="columns"
+              :data-source="list">
+              <template #colTitle="{text,record}">
+                <div class="customTitleColRender">
+                  <EditAndShowField :custom-class="'custom-endpoint show-on-hover'" :value="text" placeholder="请输入接口名称"
+                                    @update="(e: string) => handleUpdateEndpoint(e, record)" @edit="editEndpoint(record)"/>
+                </div>
               </template>
-            </a-dropdown>
+
+              <template #colStatus="{record}">
+                <div class="customStatusColRender">
+                  <EditAndShowSelect
+                      :label="endpointStatus.get(record?.status || 0 )"
+                      :value="record?.status"
+                      :options="endpointStatusOpts"
+                      @update="(val) => { handleChangeStatus(val,record);}"/>
+                </div>
+              </template>
+
+              <template #colPath="{text}">
+                <div class="customPathColRender">
+                  <a-tag>{{ text }}</a-tag>
+                </div>
+              </template>
+
+              <template #action="{record}">
+                <a-dropdown>
+                  <MoreOutlined/>
+                  <template #overlay>
+                    <a-menu>
+                      <a-menu-item v-for="menuItem in MenuList" :key="menuItem.key">
+                        <PermissionButton
+                          style="width: 80px"
+                          :text="menuItem.text"
+                          size="small"
+                          type="link"
+                          :code="menuItem.code"
+                          @handle-access="menuItem.action(record)" />
+                      </a-menu-item>
+                    </a-menu>
+                  </template>
+                </a-dropdown>
+              </template>
+            </a-table>
           </template>
-        </a-table>
+        </EmptyCom>
       </div>
     </div>
-
     <CreateEndpointModal
         :visible="createApiModalVisible"
         :selectedCategoryId="selectedCategoryId"
         @cancal="createApiModalVisible = false;"
         @ok="handleCreateApi"/>
-
     <!-- 编辑接口时，展开抽屉   -->
     <Drawer
         :destroyOnClose="true"
@@ -112,25 +115,29 @@ import {
   computed, reactive, toRefs, ref, onMounted,
   watch
 } from 'vue';
-import { useRouter } from 'vue-router';
+import {useRouter} from 'vue-router';
 import debounce from "lodash.debounce";
 import EndpointTree from './list/tree.vue';
 import {ColumnProps} from 'ant-design-vue/es/table/interface';
 import {MoreOutlined} from '@ant-design/icons-vue';
-import {endpointStatusOpts} from '@/config/constant';
+import {endpointStatusOpts, endpointStatus} from '@/config/constant';
 import EditAndShowField from '@/components/EditAndShow/index.vue';
 import CreateEndpointModal from './components/CreateEndpointModal.vue';
 import TableFilter from './components/TableFilter.vue';
 import Drawer from './components/Drawer/index.vue'
+import EditAndShowSelect from '@/components/EditAndShowSelect/index.vue';
+import EmptyCom from '@/components/Empty/index.vue';
+import PermissionButton from "@/components/PermissionButton/index.vue";
 import {useStore} from "vuex";
 import {Endpoint, PaginationConfig} from "@/views/endpoint/data";
-
+import CollapsedIcon from "@/components/CollapsedIcon/index.vue"
 import {StateType as ServeStateType} from "@/store/serve";
 import {StateType as Debug} from "@/views/component/debug/store";
-import { message, Modal } from 'ant-design-vue';
+import {message, Modal} from 'ant-design-vue';
+import Tree from './tree.vue'
 
 const store = useStore<{ Endpoint, ProjectGlobal, Debug: Debug, ServeGlobal: ServeStateType }>();
-
+const collapsed = ref(false);
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const currServe = computed<any>(() => store.state.ServeGlobal.currServe);
 const serves = computed<any>(() => store.state.ServeGlobal.serves);
@@ -184,6 +191,26 @@ const columns = [
     slots: {customRender: 'action'},
   },
 ];
+const MenuList = [
+  {
+    key: '1',
+    code: 'ENDPOINT-COPY',
+    text: '复制',
+    action: (record: any) => copy(record)
+  },
+  {
+    key: '2',
+    code: 'ENDPOINT-DELETEE',
+    text: '删除',
+    action: (record: any) => del(record)
+  },
+  {
+    key: '3',
+    code: 'ENDPOINT-OUTDATED',
+    text: '过时',
+    action: (record: any) => disabled(record)
+  },
+]
 const selectedRowKeys = ref<Key[]>([]);
 const loading = false;
 // 抽屉是否打开
@@ -209,7 +236,7 @@ function handleCreateEndPoint() {
 
 async function handleChangeStatus(value: any, record: any,) {
   await store.dispatch('Endpoint/updateStatus', {
-    id:record.id,
+    id: record.id,
     status: value
   });
 }
@@ -303,6 +330,16 @@ async function refreshList() {
   min-height: calc(100vh - 80px);
 }
 
+.select-server {
+  padding: 15px 20px;
+  width: 100%;
+  border-bottom: 1px solid #E0E0E0;
+
+  :deep(.ant-row.ant-form-item) {
+    margin: 0;
+  }
+}
+
 .tag-filter-form {
   display: flex;
   justify-content: center;
@@ -314,7 +351,7 @@ async function refreshList() {
   }
 
   .add-btn {
-    margin-left: 12px;
+    margin-left: 8px;
     margin-right: 16px;
     cursor: pointer;
   }
@@ -323,6 +360,7 @@ async function refreshList() {
 .content {
   display: flex;
   width: 100%;
+  position: relative;
 
   .left {
     width: 300px;
@@ -339,21 +377,14 @@ async function refreshList() {
   margin-right: 8px;
 }
 
-.top-search {
-  height: 60px;
-  display: flex;
-  align-items: center;
-  margin: 0 16px 8px;
-  justify-content: space-between;
-}
-
 .top-action {
+  width: 100%;
   height: 60px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-left: 16px;
-  margin-top: 8px;
+  padding: 16px;
+  box-sizing: border-box;
 
   .ant-btn {
     margin-right: 16px;
@@ -364,7 +395,7 @@ async function refreshList() {
   width: 150px;
 }
 
-:deep(.top-search .ant-row.ant-form-item) {
+:deep(.top-action .ant-row.ant-form-item) {
   margin: 0;
 }
 

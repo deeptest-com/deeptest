@@ -2,9 +2,8 @@ package model
 
 type ProjectRoleMenu struct {
 	BaseModel
-	ProjectRoleId          uint   `gorm:"index:index_project_role_menu,unique;not null" json:"project_role_id"`
-	ProjectMenuName        string `gorm:"index:index_project_role_menu,unique;not null;type:varchar(100)" json:"project_menu_name"`
-	ProjectMenuDescription string `gorm:"type:varchar(100)" json:"project_menu_description"`
+	RoleId uint `gorm:"index:index_role_menu_id,unique;not null" json:"role_id"`
+	MenuId uint `gorm:"index:index_role_menu_id,unique;not null" json:"menu_id"`
 }
 
 func (ProjectRoleMenu) TableName() string {

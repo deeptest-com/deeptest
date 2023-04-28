@@ -323,16 +323,11 @@ const StoreModel: ModuleType = {
         async loadCategory({commit}) {
             const response = await loadCategory('endpoint');
             if (response.code != 0) return;
-
             const {data} = response;
-
             commit('setTreeDataCategory', data || {});
-
             const mp = {}
             getNodeMap(data, mp)
-
             commit('setTreeDataMapCategory', mp);
-
             return true;
         },
         async getCategoryNode({commit}, payload: any) {
@@ -353,10 +348,9 @@ const StoreModel: ModuleType = {
         },
         async createCategoryNode({commit, dispatch, state}, payload: any) {
             try {
-                const resp = await createCategory(payload);
-
+                const res = await createCategory(payload);
                 await dispatch('loadCategory');
-                return resp.data;
+                return res;
             } catch (error) {
                 return false;
             }
@@ -395,20 +389,20 @@ const StoreModel: ModuleType = {
             commit('setTreeDataMapItemPropCategory', payload);
         },
         async saveCategory({commit, dispatch, state}, payload: any) {
-            const jsn = await updateCategory(payload.id, payload)
-            if (jsn.code === 0) {
-                commit('setCategory', jsn.data);
+            const res = await updateCategory(payload.id,payload);
+            if (res.code === 0) {
+                // commit('setCategory', res.data);
                 await dispatch('loadCategory');
-                return true;
+                return res;
             } else {
                 return false
             }
         },
         async updateCategoryName({commit, dispatch, state}, payload: any) {
-            const jsn = await updateCategoryName(payload.id, payload.name)
-            if (jsn.code === 0) {
+            const res = await updateCategoryName(payload.id, payload.name)
+            if (res.code === 0) {
                 await dispatch('loadCategory');
-                return true;
+                return res;
             } else {
                 return false
             }

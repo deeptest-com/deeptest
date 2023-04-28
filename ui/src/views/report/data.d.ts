@@ -2,6 +2,7 @@ export interface Report {
   id: number;
   name: string;
   desc: string;
+  logs?: any;
 }
 
 export interface QueryResult {

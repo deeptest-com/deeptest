@@ -6,15 +6,15 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
-	"github.com/snowlyg/multi"
-	"strings"
-
 	"github.com/kataras/iris/v12"
+	"github.com/snowlyg/multi"
 	"go.uber.org/zap"
+	"strings"
 )
 
 type ProjectCtrl struct {
-	ProjectService *service.ProjectService `inject:""`
+	ProjectService                *service.ProjectService                `inject:""`
+	ProjectRecentlyVisitedService *service.ProjectRecentlyVisitedService `inject:""`
 	BaseCtrl
 }
 
@@ -67,7 +67,7 @@ func (c *ProjectCtrl) Create(ctx iris.Context) {
 	}
 
 	id, bizErr := c.ProjectService.Create(req, userId)
-	if err != nil {
+	if bizErr.Code != 0 {
 		ctx.JSON(_domain.Response{Code: bizErr.Code, Data: nil})
 		return
 	}
@@ -76,7 +76,6 @@ func (c *ProjectCtrl) Create(ctx iris.Context) {
 }
 
 func (c *ProjectCtrl) Update(ctx iris.Context) {
-	id, _ := ctx.Params().GetInt("id")
 
 	var req v1.ProjectReq
 	err := ctx.ReadJSON(&req)
@@ -85,7 +84,7 @@ func (c *ProjectCtrl) Update(ctx iris.Context) {
 		return
 	}
 
-	err = c.ProjectService.Update(uint(id), req)
+	err = c.ProjectService.Update(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -113,13 +112,13 @@ func (c *ProjectCtrl) Delete(ctx iris.Context) {
 func (c *ProjectCtrl) GetByUser(ctx iris.Context) {
 	userId := multi.GetUserId(ctx)
 
-	projects, currProject, err := c.ProjectService.GetByUser(userId)
+	projects, currProject, recentProjects, err := c.ProjectService.GetByUser(userId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
-	ret := iris.Map{"projects": projects, "currProject": currProject}
+	ret := iris.Map{"projects": projects, "currProject": currProject, "recentProjects": recentProjects}
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: ret, Msg: _domain.NoErr.Msg})
 }
 
@@ -139,13 +138,15 @@ func (c *ProjectCtrl) ChangeProject(ctx iris.Context) {
 		return
 	}
 
-	projects, currProject, err := c.ProjectService.GetByUser(userId)
+	_, _ = c.ProjectRecentlyVisitedService.Create(userId, req.Id)
+
+	projects, currProject, recentProjects, err := c.ProjectService.GetByUser(userId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
-	ret := iris.Map{"projects": projects, "currProject": currProject}
+	ret := iris.Map{"projects": projects, "currProject": currProject, "recentProjects": recentProjects}
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: ret, Msg: _domain.NoErr.Msg})
 }
 

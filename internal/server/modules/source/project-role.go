@@ -27,8 +27,20 @@ func (s *ProjectRoleSource) GetSources() (sources []model.ProjectRole, err error
 			DisplayName: "用户",
 		},
 		{
-			Name:        consts.Test,
-			DisplayName: "测试",
+			Name:        consts.Tester,
+			DisplayName: "测试人员",
+		},
+		{
+			Name:        consts.Developer,
+			DisplayName: "开发人员",
+		},
+		{
+			Name:        consts.ProductManager,
+			DisplayName: "产品经理",
+		},
+		{
+			Name:        consts.ProjectLeader,
+			DisplayName: "项目负责人",
 		},
 	}
 	return
@@ -43,6 +55,7 @@ func (s *ProjectRoleSource) Init() (err error) {
 	for _, source := range sources {
 		err = s.ProjectRoleRepo.Create(source)
 		if err != nil { // 遇到错误时回滚事务
+			color.Info.Printf("\n[Mysql] --> %s 表初始数据失败!,err:%s", model.ProjectRole{}.TableName(), err.Error())
 			return
 		}
 	}

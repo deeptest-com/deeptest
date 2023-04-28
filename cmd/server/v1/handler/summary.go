@@ -5,6 +5,7 @@ import (
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/kataras/iris/v12"
+	"github.com/snowlyg/multi"
 	"go.uber.org/zap"
 )
 
@@ -15,13 +16,10 @@ type SummaryCtrl struct {
 
 func (c *SummaryCtrl) Summary() {
 	c.SummaryService.SummaryDataCheck()
-	//service.NewSummaryService().SummaryDataCheck()
 	return
 }
 
 func (c *SummaryCtrl) Card(ctx iris.Context) {
-
-	var projectId int64
 	projectId, err := ctx.Params().GetInt64("projectId")
 
 	if err != nil {
@@ -42,8 +40,6 @@ func (c *SummaryCtrl) Card(ctx iris.Context) {
 }
 
 func (c *SummaryCtrl) Bugs(ctx iris.Context) {
-
-	var projectId int64
 	projectId, err := ctx.Params().GetInt64("projectId")
 
 	if err != nil {
@@ -64,16 +60,20 @@ func (c *SummaryCtrl) Bugs(ctx iris.Context) {
 
 func (c *SummaryCtrl) Details(ctx iris.Context) {
 
-	var userId int64
-	userId, err := ctx.Params().GetInt64("userId")
+	userId := multi.GetUserId(ctx)
+	/*
+		req := v1.ProjectReq{}
+		if err := ctx.ReadQuery(&req); err != nil {
+			errs := validate.ValidRequest(err)
+			if len(errs) > 0 {
+				logUtils.Errorf("参数验证失败", zap.String("错误", strings.Join(errs, ";")))
+				ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: strings.Join(errs, ";")})
+				return
+			}
+		}
+	*/
 
-	if err != nil {
-		logUtils.Errorf("参数解析失败", zap.String("错误:", err.Error()))
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
-		return
-	}
-
-	data, err := c.SummaryService.Details(userId)
+	data, err := c.SummaryService.Details(int64(userId))
 
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})

@@ -35,6 +35,11 @@ func (r *SummaryProjectUserRankingRepo) HasDataOfDate(startTime string, endTime 
 	return
 }
 
+func (r *SummaryProjectUserRankingRepo) FindProjectIds() (projectIds []int64, err error) {
+	err = r.DB.Model(&model.Project{}).Raw("select id from deeptest.biz_project;").Find(&projectIds).Error
+	return
+}
+
 func (r *SummaryProjectUserRankingRepo) FindByDateAndProjectId(startTime string, endTime string, projectId int64) (summaryProjectUserRanking []model.SummaryProjectUserRanking, err error) {
 	err = r.DB.Model(&model.SummaryProjectUserRanking{}).Raw("select scenario_total,testcases_total,updated_at,user_name,sort,user_id,project_id from deeptest.biz_summary_project_user_ranking where id in (SELECT max(id) FROM deeptest.biz_summary_project_user_ranking where created_at > ? and created_at < ? AND NOT deleted And project_id = ? group by user_id ORDER BY sort asc);", startTime, endTime, projectId).Find(&summaryProjectUserRanking).Error
 	return
@@ -50,9 +55,10 @@ func (r *SummaryProjectUserRankingRepo) FindGroupByProjectId() (summaryProjectUs
 	return
 }
 
-func (r *SummaryProjectUserRankingRepo) CheckUpdated(oldTime *time.Time) (result bool, err error) {
-	var newTime *time.Time
-	err = r.DB.Model(&model.SummaryProjectUserRanking{}).Select("updated_at").Order("updated_at desc").Limit(1).Find(&newTime).Error
-	result = newTime.After(*oldTime)
+func (r *SummaryProjectUserRankingRepo) CheckUpdated(lastUpdateTime *time.Time) (result bool, err error) {
+	result = false
+	newTime := time.Now()
+	err = r.DB.Model(&model.SummaryBugs{}).Raw("select updated_at from  deeptest.biz_summary_project_user_ranking order by updated_at desc limit 1").Find(&newTime).Error
+	result = newTime.After(*lastUpdateTime)
 	return
 }

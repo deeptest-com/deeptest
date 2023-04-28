@@ -3,21 +3,24 @@ import BlankLayout from '@/layouts/BlankLayout.vue';
 
 const IndexLayoutRoutes: Array<RoutesDataItem> = [
   {
-    title: '工作台',
+    title: 'workbench',
     path: '/workbench',
     redirect: '/workbench/index',
     component: BlankLayout,
     children: [
       {
         icon: 'home',
-        title: '工作台',
+        title: 'workbench',
         path: 'index',
         component: () => import('@/views/workbench/index.vue'),
         hidden: false,
+        meta: {
+          code: 'WORKBENCH'
+        }
       },
       {
         icon: 'home',
-        title: '工作台',
+        title: 'workplace',
         path: ':id',
         component: () => import('@/views/workbench/index.vue'),
         hidden: true,
@@ -72,11 +75,98 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
         path: 'index',
         component: () => import('@/views/endpoint/index.vue'),
         hidden: false,
+        meta: {
+          code: 'ENDPOINT'
+        }
+      },
+    ],
+  },
+  {
+    title: 'index-layout.menu',
+    path: '/scenario',
+    redirect: '/scenario/index',
+    component: BlankLayout,
+    children: [
+      {
+        icon: 'scenario',
+        title: 'scenario',
+        path: 'index',
+        component: () => import('@/views/scenario/index.vue'),
+        hidden: false,
+        meta: {
+          code: 'SCENARIO'
+        }
+      },
+      {
+        icon: 'scenario',
+        title: 'scenario.exec',
+        path: 'exec/:id',
+        component: () => import('@/views/scenario/exec/index.vue'),
+        hidden: true,
+      },
+      {
+        icon: 'scenario',
+        title: 'scenario.design',
+        path: 'design/:id',
+        component: () => import('@/views/scenario/design/index.vue'),
+        hidden: true,
       },
     ],
   },
 
-  // 项目管理
+  {
+    title: 'index-layout.menu',
+    path: '/plan',
+    redirect: '/plan/index',
+    component: BlankLayout,
+    children: [
+      {
+        icon: 'plan',
+        title: 'plan',
+        path: 'index',
+        component: () => import('@/views/plan/index.vue'),
+        hidden: false,
+        meta: {
+          code: 'PLAN'
+        }
+      },
+      {
+        icon: 'plan',
+        title: 'plan.exec',
+        path: 'exec/:id',
+        component: () => import('@/views/plan/exec/index.vue'),
+        hidden: true,
+      },
+    ],
+  },
+
+  {
+    title: 'index-layout.menu',
+    path: '/report',
+    redirect: '/report/index',
+    component: () => import('@/views/report/index.vue'),
+    children: [
+      {
+        icon: 'report',
+        title: 'report',
+        path: 'index',
+        component: () => import('@/views/report/list/index.vue'),
+        hidden: false,
+        meta: {
+          code: 'REPORT'
+        }
+      },
+      {
+        icon: 'report',
+        title: 'report.detail',
+        path: ':id',
+        component: () => import('@/views/report/detail/index.vue'),
+        hidden: true,
+      },
+    ],
+  },
+
+   // 项目管理
   {
     title: '项目设置',
     path: '/project-setting',
@@ -89,6 +179,9 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
         path: 'index',
         component: BlankLayout,
         hidden: false,
+        meta: {
+          code: 'PROJECT-SETTING'
+        }
       },
       {
         icon:'set',
@@ -97,6 +190,9 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
         name: 'enviroment',
         component: () => import('@/views/projectSetting/components/EnvSetting/index.vue'),
         hidden: false,
+        meta: {
+          code: 'PROJECT-SETTING-ENVIRONMENT'
+        },
         children: [
           {
             icon: 'set',
@@ -131,6 +227,9 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
         name: 'data-pool',
         component: () => import('@/views/projectSetting/components/DataPool/index.vue'),
         hidden: false,
+        meta: {
+          code: 'PROJECT-SETTING-DATA-POOL'
+        }
       },
       {
         icon:'set',
@@ -139,111 +238,19 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
         name: 'service-setting',
         component: () => import('@/views/projectSetting/components/ServiceSetting/index.vue'),
         hidden: false,
+        meta: {
+          code: 'PROJECT-SETTING-SERVICE-SETTING'
+        }
       },
-    ],
-  },
-  {
-    title: 'index-layout.menu',
-    path: '/scenario',
-    redirect: '/scenario/index',
-    component: BlankLayout,
-    children: [
-      {
-        icon: 'scenario',
-        title: 'scenario',
-        path: 'index',
-        component: () => import('@/views/scenario/index.vue'),
-        hidden: false,
-      },
-      {
-        icon: 'scenario',
-        title: 'scenario.exec',
-        path: 'exec/:id',
-        component: () => import('@/views/scenario/exec/index.vue'),
-        hidden: true,
-      },
-      {
-        icon: 'scenario',
-        title: 'scenario.design',
-        path: 'design/:id',
-        component: () => import('@/views/scenario/design/index.vue'),
-        hidden: true,
-      },
-    ],
-  },
-
-  {
-    title: 'index-layout.menu',
-    path: '/plan',
-    redirect: '/plan/index',
-    component: BlankLayout,
-    children: [
-      {
-        icon: 'plan',
-        title: 'plan',
-        path: 'index',
-        component: () => import('@/views/plan/index.vue'),
-        hidden: false,
-      },
-      {
-        icon: 'plan',
-        title: 'plan.exec',
-        path: 'exec/:id',
-        component: () => import('@/views/plan/exec/index.vue'),
-        hidden: true,
-      },
-    ],
-  },
-
-  {
-    title: 'index-layout.menu',
-    path: '/report',
-    redirect: '/report/index',
-    component: BlankLayout,
-    children: [
-      {
-        icon: 'report',
-        title: 'report',
-        path: 'index',
-        component: () => import('@/views/report/list/index.vue'),
-        hidden: false,
-      },
-      {
-        icon: 'report',
-        title: 'report.detail',
-        path: ':id',
-        component: () => import('@/views/report/detail/index.vue'),
-        hidden: true,
-      },
-    ],
-  },
-  {
-    title: 'index-layout.menu',
-    path: '/user',
-    redirect: '/user/index',
-    component: BlankLayout,
-    children: [
-      {
-        icon: 'user',
-        title: 'user.management',
-        path: 'index',
-        component: () => import('@/views/user/list/index.vue'),
-        hidden: false,
-      },
-    ],
-  },
-  {
-    title: 'index-layout.menu',
-    path: '/members',
-    redirect: '/project/members',
-    component: BlankLayout,
-    children: [
       {
         icon: 'members',
         title: 'project.members',
-        path: 'index',
+        path: 'members',
         component: () => import('@/views/project/edit/members.vue'),
         hidden: false,
+        meta: {
+          code: 'PROJECT-SETTING-MEMBERS'
+        }
       },
     ],
   },

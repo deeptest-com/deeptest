@@ -57,9 +57,15 @@ func (r *SummaryBugsRepo) FindGroupByBugSeverity() (result []model.SummaryBugsSe
 	return
 }
 
-func (r *SummaryBugsRepo) CheckUpdated(oldTime *time.Time) (result bool, err error) {
-	var newTime *time.Time
-	err = r.DB.Model(&model.SummaryBugs{}).Select("updated_at").Order("updated_at desc").Limit(1).Find(&newTime).Error
-	result = newTime.After(*oldTime)
+func (r *SummaryBugsRepo) FindProjectIds() (projectIds []int64, err error) {
+	err = r.DB.Model(&model.Project{}).Raw("select id from deeptest.biz_project;").Find(&projectIds).Error
+	return
+}
+
+func (r *SummaryBugsRepo) CheckUpdated(lastUpdateTime *time.Time) (result bool, err error) {
+	result = false
+	newTime := time.Now()
+	err = r.DB.Model(&model.SummaryBugs{}).Raw("select updated_at from  deeptest.biz_summary_bugs order by updated_at desc limit 1").Find(&newTime).Error
+	result = newTime.After(*lastUpdateTime)
 	return
 }

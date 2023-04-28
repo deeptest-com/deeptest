@@ -506,9 +506,12 @@ func (e DataType) String() string {
 type RoleType string
 
 const (
-	Admin RoleType = "admin"
-	User  RoleType = "user"
-	Test  RoleType = "test"
+	Admin          RoleType = "admin"
+	User           RoleType = "user"
+	Tester         RoleType = "tester"
+	Developer      RoleType = "developer"
+	ProductManager RoleType = "product_manager"
+	ProjectLeader  RoleType = "project_leader"
 )
 
 func (e RoleType) String() string {

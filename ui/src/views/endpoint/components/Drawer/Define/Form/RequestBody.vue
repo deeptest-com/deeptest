@@ -1,8 +1,8 @@
 <!-- ::::请求体设置 -->
 <template>
   <!-- 增加请求体 -->
-  <a-row class="form-item-request-item">
-    <a-col :span="3" class="form-label">
+  <a-row class="form-request-body">
+    <a-col :span="3" class="form-label-first">
       <RightOutlined v-if="!collapse" @click="collapse = !collapse"/>
       <DownOutlined v-if="collapse" @click="collapse = !collapse"/>
       <span class="label-name">增加请求体</span>
@@ -15,33 +15,36 @@
           placeholder="请选择请求格式"
           style="width: 300px"
           :options="mediaTypesOpts.filter(item => !item.disabled)"
-      ></a-select>
+      />
     </a-col>
   </a-row>
-  <!-- 增加请求体 - 描述  -->
-  <a-row class="form-item-request-item" v-if="collapse">
-    <a-col :span="3" class="form-label"></a-col>
-    <a-col :span="20">
-      <a-input @change="handleChangeDesc"
-               placeholder="描述信息"
-               :value="selectedMethodDetail.requestBody.description"/>
+  <a-row class="form-request-body-content">
+    <a-col :span="3"/>
+    <a-col :span="18">
+      <a-row class="form-item-request-item" v-if="collapse">
+        <a-col :span="24">
+          <a-input @change="handleChangeDesc"
+                   placeholder="描述信息"
+                   :value="selectedMethodDetail.requestBody.description"/>
+        </a-col>
+      </a-row>
+      <!-- 增加请求体 - scheme定义 -->
+      <a-row class="form-item-request-item form-item-request-item-con" v-if="collapse">
+        <a-col :span="24">
+          <SchemaEditor
+              @generateFromJSON="generateFromJSON"
+              @generateExample="handleGenerateExample"
+              @change="handleChange"
+              :serveId="currServe.id"
+              :refsOptions="refsOptions"
+              :contentStr="contentStr"
+              :exampleStr="exampleStr"
+              :tab-content-style="{width:'100%'}"/>
+        </a-col>
+      </a-row>
     </a-col>
   </a-row>
-  <!-- 增加请求体 - scheme定义 -->
-  <a-row class="form-item-request-item form-item-request-item-con" v-if="collapse">
-    <a-col :span="3" class="form-label"></a-col>
-    <a-col :span="21">
-      <SchemaEditor
-          @generateFromJSON="generateFromJSON"
-          @generateExample="handleGenerateExample"
-          @change="handleChange"
-          :serveId="currServe.id"
-          :refsOptions="refsOptions"
-          :contentStr="contentStr"
-          :exampleStr="exampleStr"
-          :tab-content-style="{width:'100%'}"/>
-    </a-col>
-  </a-row>
+
 </template>
 <script lang="ts" setup>
 import {computed, defineEmits, defineProps, onMounted, ref, watch,} from 'vue';
@@ -143,23 +146,38 @@ onMounted(async () => {
 .form-label {
   font-weight: bold;
   position: relative;
-  left: -18px;
 }
-
 .form-label-first {
   font-weight: bold;
   position: relative;
   left: -18px;
 }
-
 .label-name {
   display: inline-block;
   margin-left: 4px;
   margin-top: 4px;
 }
-
 .form-item-request-item {
+  display: flex;
+  align-items: baseline;
   margin-top: 16px;
+}
+.form-request-body{
+  margin-top: 16px;
+  display: flex;
+  align-items: baseline;
+}
+.form-request-body-content{
+  position: relative;
+  &:before{
+    content:"";
+    position: absolute;
+    left: -12px;
+    top: 0px;
+    width: 2px;
+    background: #E5E5E5;
+    height: 100%;
+  }
 }
 
 </style>

@@ -40,7 +40,7 @@ function getExpandedValue(val: any, defaultVal: boolean) {
  * 根据传入的 schema 结构信息，添加需要额外的渲染属性
  * */
 export function addExtraViewInfo(val: Object | any | undefined | null): any {
-    console.log('转换之前',val);
+    console.log('转换之前', val);
     if (!val) {
         return null
     }
@@ -129,7 +129,7 @@ export function addExtraViewInfo(val: Object | any | undefined | null): any {
     if (!isNormalType(val.type) || isRef(val)) {
         traverse(val, 1, null, false);
     }
-    console.log('转换之后',val);
+    console.log('转换之后', val);
     return val;
 }
 
@@ -200,6 +200,7 @@ export function removeExtraViewInfo(val: Object | any, isRemoveRefContent = fals
 export function findLastNotArrayNode(tree: Object): any {
     const types: any = [];
     let node: any = null;
+
     function fn(tree: any, types: any[]) {
         if (!isArray(tree?.type) || isRef(tree)) {
             node = tree;
@@ -208,6 +209,7 @@ export function findLastNotArrayNode(tree: Object): any {
         types.push('array');
         fn(tree.items, types);
     }
+
     fn(tree, types);
     return {
         node,

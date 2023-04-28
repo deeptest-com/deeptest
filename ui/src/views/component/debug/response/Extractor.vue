@@ -226,7 +226,6 @@ const add = () => {
     type: ExtractorType.boundary,
     expression: '',
     variable: '',
-    usedBy: UsedBy.InterfaceDebug,
     scope: 'local'} as Extractor
 
   selectSrc()
@@ -250,7 +249,8 @@ const edit = (item) => {
 const save = () => {
   console.log('save')
   validate().then(() => {
-    model.value.interfaceId = debugData.value.id
+    model.value.interfaceId = debugData.value.endpointInterfaceId
+
     model.value.projectId = debugData.value.projectId
     store.dispatch('Debug/saveExtractor', model.value).then((result) => {
       if (result) {

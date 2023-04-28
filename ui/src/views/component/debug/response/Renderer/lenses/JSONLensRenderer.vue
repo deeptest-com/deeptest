@@ -40,6 +40,7 @@
 
     <ResponseExtractor
         v-if="responseExtractorVisible"
+        :interfaceId="debugData.endpointInterfaceId"
         :exprType="exprType"
         :expr="expr"
         :result="result"
@@ -58,7 +59,7 @@ import { DownloadOutlined, CopyOutlined, ClearOutlined } from '@ant-design/icons
 import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
 import {MonacoOptions} from "@/utils/const";
 
-import {parseHtml, parseJson, testExpr} from "@/views/interface1/service";
+import {parseHtml, parseJson, testExpr} from "@/views/component/debug/service";
 import {ExtractorSrc, ExtractorType, UsedBy} from "@/utils/enum";
 import ResponseExtractor from "@/components/Editor/ResponseExtractor.vue";
 const usedBy = inject('usedBy') as UsedBy
@@ -117,10 +118,10 @@ const responseExtractorFinish = (data) => {
   data.src = ExtractorSrc.body
   data.result = result.value
 
-  data.interfaceId = debugData.value.interfaceId
+  data.interfaceId = debugData.value.endpointInterfaceId
   data.projectId = debugData.value.projectId
   data.usedBy = usedBy
-  store.dispatch('Interface1/createExtractorOrUpdateResult', data).then((result) => {
+  store.dispatch('Debug/createExtractorOrUpdateResult', data).then((result) => {
     if (result) {
       responseExtractorVisible.value = false
     }

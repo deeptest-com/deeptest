@@ -281,8 +281,9 @@ const StoreModel: ModuleType = {
 
         // extractor
         async listExtractor({commit, dispatch, state}) {
+            console.log('========', state.debugInfo)
             try {
-                const resp = await listExtractor(state.debugData.id, UsedBy.InterfaceDebug);
+                const resp = await listExtractor(state.debugInfo.endpointInterfaceId);
                 const {data} = resp;
                 commit('setExtractors', data);
                 return true;
@@ -304,7 +305,7 @@ const StoreModel: ModuleType = {
         async saveExtractor({commit, dispatch, state}, payload: any) {
             try {
                 await saveExtractor(payload);
-                dispatch('listExtractor', UsedBy.InterfaceDebug);
+                dispatch('listExtractor');
                 return true;
             } catch (error) {
                 return false;

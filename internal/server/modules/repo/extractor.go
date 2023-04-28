@@ -25,6 +25,7 @@ func (r *ExtractorRepo) List(interfaceId uint) (pos []model.DebugInterfaceExtrac
 		Where("NOT deleted").
 		Order("created_at ASC").
 		Find(&pos).Error
+
 	return
 }
 
@@ -127,7 +128,7 @@ func (r *ExtractorRepo) UpdateResult(extractor model.DebugInterfaceExtractor, us
 	}
 
 	err = r.DB.Model(&extractor).
-		Where("id = ? AND used_by=?", extractor.ID, usedBy).
+		Where("id = ?", extractor.ID).
 		Updates(values).Error
 
 	if err != nil {
@@ -167,9 +168,8 @@ func (r *ExtractorRepo) ListValidExtractorVariableForInterface(interfaceId, proj
 	variables []v1.Variable, err error) {
 
 	q := r.DB.Model(&model.DebugInterfaceExtractor{}).
-		Select("id, variable AS name, result AS value, "+
+		Select("id, variable AS name, result AS value, " +
 			"interface_id AS interfaceId, scope AS scope").
-		Where("used_by = ?", usedBy).
 		Where("NOT deleted AND NOT disabled")
 
 	if usedBy == consts.InterfaceDebug {

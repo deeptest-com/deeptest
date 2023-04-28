@@ -38,17 +38,13 @@
 </template>
 
 <script setup lang="ts">
-import {computed, ComputedRef, defineComponent, inject, PropType, Ref, ref} from "vue";
+import {computed, inject, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import { DownloadOutlined, CopyOutlined, ClearOutlined } from '@ant-design/icons-vue';
-import {StateType} from "@/views/interface1/store";
-import {isInArray} from "@/utils/array";
 import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
 import {MonacoOptions} from "@/utils/const";
-import {Interface, Response} from "@/views/interface1/data";
 import {UsedBy} from "@/utils/enum";
-import {StateType as ScenarioStateType} from "@/views/scenario/store";
 
 const {t} = useI18n();
 const usedBy = inject('usedBy') as UsedBy

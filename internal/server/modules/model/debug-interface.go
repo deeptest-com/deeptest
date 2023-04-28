@@ -123,7 +123,6 @@ type DebugInterfaceExtractor struct {
 	domain.ExtractorBase
 
 	Scope consts.ExtractorScope `json:"scope" gorm:"default:private"`
-	//DisableShare bool                  `json:"disableShare"`
 
 	InterfaceId uint `json:"interfaceId"`
 

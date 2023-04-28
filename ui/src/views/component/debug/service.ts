@@ -185,8 +185,8 @@ export const getEnumSelectItems = (enumDef) => {
 }
 
 // extractor
-export async function listExtractor(interfaceId: number, usedBy: UsedBy): Promise<any> {
-    const params = {interfaceId, usedBy}
+export async function listExtractor(endpointInterfaceId: number): Promise<any> {
+    const params = {endpointInterfaceId}
 
     return request({
         url: `/${apiExtractor}`,

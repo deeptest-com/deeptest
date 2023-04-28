@@ -10,34 +10,35 @@
         <template #header> </template>
         <template #renderItem="{ item }">
           <ListItem>
-            <Card class="card" @click="goProject(item.project_id)">
+            <Card class="card" @click="goProject(item?.project_id)">
               <!-- <template #title> -->
               <div class="card-title">
                 <div class="title">
-                  <Avatar style="background-color: #1890ff">
-                    <template #icon><UserOutlined /></template>
-                  </Avatar>
+                  <!-- <Avatar style="background-color: #1890ff">
+                    <template #icon> -->
+                      <img :src="getProjectLogo(item?.logo)" alt="" />
+                    <!-- </template>
+                  </Avatar> -->
                   <span class="card-title-text">{{
-                    item.project_chinese_name
+                    item?.project_chinese_name
                   }}</span>
                 </div>
 
                 <div class="action">
                   <a-dropdown>
-                    <a class="ant-dropdown-link" @click.prevent>
-                     <EllipsisOutlined key="ellipsis" />
-                      <DownOutlined />
-                    </a>
+                    <span class="ant-dropdown-link" @click.prevent>
+                      <EllipsisOutlined key="ellipsis" />
+                    </span>
                     <template #overlay>
                       <a-menu>
-                        <a-menu-item  @click="handleEdit(item)">
-                           <a href="javascript:;">编辑</a>
+                        <a-menu-item @click="handleEdit(item)">
+                          <a href="javascript:;">编辑</a>
                         </a-menu-item>
-                        <a-menu-item>
+                        <!-- <a-menu-item>
                           <a href="javascript:;">启用/禁用</a>
-                        </a-menu-item>
+                        </a-menu-item> -->
                         <a-menu-item>
-                          <a href="javascript:;">删除</a>
+                          <a href="javascript:;" @click="handleDelete(item.project_id)">删除</a>
                         </a-menu-item>
                       </a-menu>
                     </template>
@@ -103,19 +104,13 @@ import {
   Tooltip,
   Slider,
   Avatar,
+
 } from "ant-design-vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 import { StateType } from "../../store";
 import { grid } from "./data";
-const router = useRouter();
-const store = useStore<{ Home: StateType }>();
-const ListItem = List.Item;
-const CardMeta = Card.Meta;
-const list = computed<any>(() => store.state.Home.queryResult.list);
-const TypographyText = Typography.Text;
-const tableList = ref([]);
-const loading = ref(true);
+import { getProjectLogo } from "@/components/CreateProjectModal";
 // 组件接收参数
 const props = defineProps({
   // 请求API的参数
@@ -124,83 +119,17 @@ const props = defineProps({
     type: Number,
   },
 });
-//暴露内部方法
-const emit = defineEmits(["edit", "delete"]);
-//数据
-const data = ref([]);
-// 切换每行个数
-// cover图片自适应高度
-//修改pageSize并重新请求数据
-
-const height = computed(() => {
-  return `h-${120 - grid.value * 6}`;
-});
-
-function sliderChange(n) {
-  pageSize.value = n * 4;
-  fetch();
-}
-
-// 自动请求并暴露内部方法
-onMounted(() => {
-  // fetch();
-  // emit('getMethod', fetch);
-});
-// 监听项目数据变化
-watch(
-  () => {
-    return list.value;
-  },
-  (newVal) => {
-    console.log("watch list.value", list.value);
-
-    tableList.value = list.value.current_user_project_list;
-
-    if (tableList.value && tableList.value.length > 0) {
-      loading.value = false;
-    } else {
-      setTimeout(() => {
-        loading.value = false;
-      }, 5000);
-    }
-  },
-  {
-    immediate: true,
-  }
-);
-// 监听我的项目、所有项目切换
-watch(
-  () => {
-    return props.activeKey;
-  },
-  (newVal) => {
-    if (newVal == 1) {
-      tableList.value = list.value.current_user_project_list;
-    } else {
-      tableList.value = list.value?.all_project_list;
-    }
-  },
-  {
-    immediate: true,
-  }
-);
-
-async function fetch(p = {}) {
-  const { api, params } = props;
-  if (api && typeof api === "function") {
-    const res = await api({
-      ...params,
-      page: page.value,
-      pageSize: pageSize.value,
-      ...p,
-    });
-    data.value = res.items;
-    total.value = res.total;
-  }
-}
+const router = useRouter();
+const store = useStore<{ Home: StateType }>();
+const ListItem = List.Item;
+const CardMeta = Card.Meta;
+const list = computed<any>(() => store.state.Home.queryResult.list);
+const TypographyText = Typography.Text;
+const tableList = ref([]);
+const loading = ref(true);
 //分页相关
 const page = ref(1);
-const pageSize = ref(36);
+const pageSize = ref(6);
 const total = ref(0);
 const paginationProp = ref({
   showSizeChanger: false,
@@ -212,22 +141,74 @@ const paginationProp = ref({
   onChange: pageChange,
   onShowSizeChange: pageSizeChange,
 });
+//暴露内部方法
+const emit = defineEmits(["edit", "delete"]);
+//数据
+const data = ref([]);
+const height = computed(() => {
+  return `h-${120 - grid.value * 6}`;
+});
+
+function sliderChange(n) {
+  pageSize.value = n * 4;
+}
+
+// 监听项目数据变化
+watch(
+  () => {
+    return list.value;
+  },
+  async (newVal) => {
+    console.log("watch list.value", list.value);
+    fetch(list.value.current_user_project_list);
+  },
+  {
+    immediate: true,
+  }
+);
+// 监听我的项目、所有项目切换
+watch(
+  () => {
+    return props.activeKey;
+  },
+  async (newVal) => {
+    if (newVal == 1) {
+      fetch(list.value.current_user_project_list);
+    } else {
+      fetch(list.value.all_project_list);
+    }
+  },
+  {
+    immediate: true,
+  }
+);
+
+async function fetch(data) {
+  tableList.value = data;
+  if (tableList.value && tableList.value.length > 0) {
+    total.value = tableList.value.length;
+    loading.value = false;
+  } else {
+    setTimeout(() => {
+      loading.value = false;
+    }, 5000);
+  }
+}
 
 function pageChange(p, pz) {
   page.value = p;
   pageSize.value = pz;
-  fetch();
 }
 function pageSizeChange(_current, size) {
   pageSize.value = size;
-  fetch();
 }
 
-async function handleEdit(id) {
-  emit("edit", id);
+async function handleEdit(item) {
+  emit("edit", item);
 }
 async function handleDelete(id) {
-  emit("delete", id);
+  emit("delete",id)
+  
 }
 function goProject(projectId: number) {
   store.dispatch("ProjectGlobal/changeProject", projectId);

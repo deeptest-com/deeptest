@@ -21,7 +21,7 @@ export async function queryMembers(params): Promise<any> {
 export async function save(params: Partial<Project>): Promise<any> {
     return request({
         url: `/${apiPath}`,
-        method: params.id||params.id==0? 'PUT': 'POST',
+        method: params.id? 'PUT': 'POST',
         data: params,
     });
 }

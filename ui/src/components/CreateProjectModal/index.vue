@@ -4,7 +4,7 @@
         <div class="project-edit-main">
             <a-card :bordered="false">
                 <template #title>
-                    <div>编辑项目</div>
+                    <div>{{formState.id?'编辑项目':'新建项目'}}</div>
                 </template>
                 <div>
                     <a-form :model="formStateRef" :label-col="labelCol" :wrapper-col="wrapperCol">
@@ -57,7 +57,7 @@ import { StateType as ProjectStateType } from "@/views/project/store";
 import { SelectTypes } from 'ant-design-vue/es/select';
 import { useStore } from "vuex";
 import { projectLogoList } from "./index";
-
+import { getProjectLogo } from "@/components/CreateProjectModal";
 const useForm = Form.useForm;
 const props = defineProps<{
     visible: Boolean,
@@ -71,7 +71,7 @@ const wrapperCol = { span: 14 };
 const projectInfo = {
     name: '',
     desc: '',
-    logo: 'default_logo1',
+    logo:getProjectLogo('default_logo1'),
     shortName: '',
     adminId: null,
     includeExample: true
@@ -89,7 +89,7 @@ const rulesRef = reactive({
     ],
 });
 const selectLogoKey = ref('default_logo1');
-const { validate, validateInfos } = useForm(formStateRef, rulesRef);
+const { validate, validateInfos,resetFields } = useForm(formStateRef, rulesRef);
 const submitForm = async () => {
     console.log('~~~~~~~~~formStateRef',formStateRef)
     validate().then(() => {
@@ -123,6 +123,9 @@ const handleSelectLogo = (item: any) => {
 watch(() => props.visible, (val) => {
     if (val) {
         store.dispatch('Project/getUserList')
+        if(!props.formState.id){
+            resetFields()
+        }
     }
 }, {
     immediate: true

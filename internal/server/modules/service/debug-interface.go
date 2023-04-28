@@ -41,6 +41,7 @@ func (s *DebugInterfaceService) Load(loadReq v1.DebugReq) (req v1.DebugData, err
 	req.BaseUrl, req.ShareVars, req.EnvVars, req.GlobalEnvVars, req.GlobalParamVars =
 		s.DebugSceneService.LoadScene(req.EndpointInterfaceId, req.ScenarioProcessorId, req.UsedBy)
 
+	req.ScenarioProcessorId = loadReq.ScenarioProcessorId
 	req.UsedBy = loadReq.UsedBy
 
 	return

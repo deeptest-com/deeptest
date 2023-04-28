@@ -120,8 +120,6 @@ func (DebugInterfaceApiKey) TableName() string {
 type DebugInterfaceExtractor struct {
 	BaseModel
 
-	UsedBy consts.UsedBy `json:"usedBy"`
-
 	domain.ExtractorBase
 
 	Scope consts.ExtractorScope `json:"scope" gorm:"default:private"`

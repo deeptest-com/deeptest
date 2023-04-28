@@ -153,6 +153,7 @@ import {
   EditOutlined,
   PlusOutlined
 } from '@ant-design/icons-vue';
+import {VarScope} from "@/utils/enum";
 import {Extractor, Interface, Response} from "@/views/interface1/data";
 import {getEnumSelectItems} from "@/views/interface1/service";
 import {ExtractorSrc, ExtractorType, UsedBy} from "@/utils/enum";
@@ -182,7 +183,7 @@ const listExtractor = () => {
 }
 listExtractor()
 
-const model = ref({} as Extractor)
+const model = ref({scope: VarScope.ScopePrivate} as Extractor)
 const results = ref({})
 const editVisible = ref(false)
 

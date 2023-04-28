@@ -80,7 +80,7 @@ func (r *ScenarioProcessorRepo) GetEntityTo(processorTo *agentExec.Processor) (r
 		interfaceEntity.ProcessorCategory = consts.ProcessorInterface
 		interfaceEntity.ProcessorType = consts.ProcessorInterfaceDefault
 
-		interfaceEntity.Extractors, _ = r.ExtractorRepo.ListTo(interfaceEntity.ID, consts.ScenarioDebug)
+		interfaceEntity.Extractors, _ = r.ExtractorRepo.ListTo(interfaceEntity.ID)
 		interfaceEntity.Checkpoints, _ = r.CheckpointRepo.ListTo(interfaceEntity.ID, consts.ScenarioDebug)
 
 		ret = &interfaceEntity

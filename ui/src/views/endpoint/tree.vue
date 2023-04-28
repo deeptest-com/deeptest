@@ -284,9 +284,9 @@ async function handleTagModalOk(obj) {
     });
     if (res?.code === 0) {
       createTagModalvisible.value = false;
-      message.success('新建分类成功');
+      message.success('修改分类成功');
     } else {
-      message.error('新建分类失败');
+      message.error('修改分类失败，请重试~');
     }
   }
   // 新建
@@ -304,7 +304,7 @@ async function handleTagModalOk(obj) {
       createTagModalvisible.value = false;
       message.success('新建分类成功');
     } else {
-      message.error('新建分类失败');
+      message.error('修改分类失败，请重试~');
     }
   }
 }

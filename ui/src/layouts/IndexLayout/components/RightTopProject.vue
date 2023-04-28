@@ -5,7 +5,7 @@
                 @click="dropdownVisible = !dropdownVisible"
                 :overlayStyle="{width:'300px'}">
       <a-button class="header">
-        <span class="before-icon icon"><img  :src="getProjectLogo(currProject?.logo)" alt=""></span>
+        <span class="before-icon icon"><img :src="getProjectLogo(currProject?.logo)" alt=""></span>
         {{ currProject.name }}
         <DownOutlined class="after-icon"/>
       </a-button>
@@ -23,7 +23,7 @@
                  @click="() => {
                   selectProject(item.id)
                  }"
-                 :key="item.id">
+                 :key="'recently' + item.id + Math.random()">
               <span class="icon"><img :src="getProjectLogo(item?.logo)" alt=""></span>
               <span class="text">{{ item.name }}</span>
             </div>
@@ -35,7 +35,8 @@
                  @click="() => {
                   selectProject(item.id)
                  }"
-                 v-for="(item,index) in myProject" :key="item.id">
+                 v-for="(item,index) in myProject"
+                 :key="'my' + item.id + Math.random()">
               <span class="icon"><img :src="getProjectLogo(item?.logo)" alt=""></span>
               <span class="text">{{ item.name }}</span>
             </div>
@@ -79,7 +80,7 @@ import {
   PlusOutlined,
 } from '@ant-design/icons-vue';
 import CreateProjectModal from "@/components/CreateProjectModal/index.vue";
-import { getProjectLogo } from "@/components/CreateProjectModal";
+import {getProjectLogo} from "@/components/CreateProjectModal";
 // import Logos from "@/components/Logos/index.tsx";
 
 const store = useStore<{
@@ -103,9 +104,11 @@ const keyword = ref('');
 const dropdownVisible = ref(false);
 
 const myProject = computed(() => {
+  console.log(832, projects.value.filter((item: any) => item.name.includes(keyword.value)))
   return projects.value.filter((item: any) => item.name.includes(keyword.value));
 });
 const myRecentProject = computed(() => {
+  console.log(832, recentProjects.value.filter((item: any) => item.name.includes(keyword.value)))
   return recentProjects.value.filter((item: any) => item.name.includes(keyword.value));
 });
 
@@ -117,6 +120,7 @@ function newProject() {
   createProjectModalVisible.value = true;
   dropdownVisible.value = false;
 }
+
 const handleCreateSuccess = async () => {
   createProjectModalVisible.value = false;
   await store.dispatch("ProjectGlobal/fetchProject");
@@ -180,17 +184,17 @@ onUnmounted(() => {
     right: 8px;
   }
 }
-.icon{
+
+.icon {
   width: 24px;
   height: 24px;
   display: inline-block;
-  img{
+
+  img {
     width: 24px;
     height: 24px;
   }
 }
-
-
 
 
 </style>

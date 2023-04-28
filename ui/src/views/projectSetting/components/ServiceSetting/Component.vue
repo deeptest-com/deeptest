@@ -1,12 +1,12 @@
 <template>
   <div class="content">
     <div class="header">
-      <CustomForm 
-        :form-config="formConfig" 
-        :rules="rules" 
-        :search-placeholder="'输入组件名称搜索'" 
+      <CustomForm
+        :form-config="formConfig"
+        :rules="rules"
+        :search-placeholder="'输入组件名称搜索'"
         :show-search="true"
-        @handle-ok="handleAdd" 
+        @handle-ok="handleAdd"
         @handle-search="onSearch" />
     </div>
     <EmptyCom>
@@ -61,27 +61,27 @@
         </div>
         <!-- ::::表单模式 -->
         <div class="content-form" v-if="showMode === 'form'">
-          <SchemaEditor 
+          <SchemaEditor
             :schemeVisibleKey="schemeVisibleKey"
             @generateFromJSON="generateFromJSON"
-            @generateExample="handleGenerateExample" 
-            @change="handleContentChange" 
+            @generateExample="handleGenerateExample"
+            @change="handleContentChange"
             :serveId="serveId"
-            :tab-content-style="{ width: '100%' }" 
-            :refs-options="refsOptions" 
+            :tab-content-style="{ width: '100%' }"
+            :refs-options="refsOptions"
             :contentStr="contentStr"
             :exampleStr="exampleStr" />
         </div>
         <!-- ::::代码模式 -->
         <div class="content-code" v-if="showMode === 'code'">
           <div style="border: 1px solid #f0f0f0; padding: 8px 0;">
-            <MonacoEditor 
-              class="editor" 
-              :value="yamlCode" 
-              :language="'yaml'" 
-              :height="400" 
+            <MonacoEditor
+              class="editor"
+              :value="yamlCode"
+              :language="'yaml'"
+              :height="400"
               theme="vs"
-              :options="{ ...MonacoOptions }" 
+              :options="{ ...MonacoOptions }"
               @change="handleCodeChange" />
           </div>
         </div>

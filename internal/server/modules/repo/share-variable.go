@@ -25,11 +25,19 @@ func (r *ShareVariableRepo) Save(po *model.ShareVariable) (err error) {
 func (r *ShareVariableRepo) findExist(po model.ShareVariable) (id uint, err error) {
 	existPo := model.ShareVariable{}
 
-	err = r.DB.Model(&po).
-		Where("name=?, interfaceId=?, serveId=?, scenarioId=?, scope=?",
-			po.Name, po.InterfaceId, po.ServeId, po.ScenarioId, po.Scope).
-		Where("NOT deleted AND NOT disabled").
-		First(&existPo).Error
+	db := r.DB.Model(&po).
+		Where("name=?", po.Name).
+		Where("NOT deleted AND NOT disabled")
+
+	if po.ServeId > 0 {
+		db.Where("serve_id=?", po.ServeId)
+	}
+
+	if po.ScenarioId > 0 {
+		db.Where("scenario_id=?", po.ScenarioId)
+	}
+
+	err = db.First(&existPo).Error
 
 	id = po.ID
 

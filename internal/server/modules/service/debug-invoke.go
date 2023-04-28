@@ -50,7 +50,7 @@ func (s *DebugInvokeService) SubmitResult(req v1.SubmitDebugResultRequest) (err 
 
 	}
 
-	s.ExtractorService.ExtractInterface(req.Request.EndpointInterfaceId, serveId, processorId, req.Response, usedBy)
+	s.ExtractorService.ExtractInterface(req.Request.EndpointInterfaceId, serveId, scenarioId, req.Response, usedBy)
 	s.CheckpointService.CheckInterface(req.Request.EndpointInterfaceId, req.Response, usedBy)
 
 	_, err = s.Create(req.Request, req.Response, serveId, processorId, scenarioId, projectId)

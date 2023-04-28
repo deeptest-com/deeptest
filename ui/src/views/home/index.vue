@@ -12,7 +12,7 @@
           <a-button
             type="primary"
             style="margin-right: 20px"
-            @click="createProjectModalVisible = true"
+            @click="handleOpenAdd"
             >新建项目</a-button
           >
           <a-radio-group v-model:value="showMode" button-style="solid">
@@ -23,7 +23,12 @@
         <div>
           <HomeList v-if="showMode == 'list'" :activeKey="activeKey" />
 
-          <CardList v-else @edit="handleOpenEdit" :activeKey="activeKey" />
+          <CardList
+            v-else
+            @edit="handleOpenEdit"
+            @delete="handleDelete"
+            :activeKey="activeKey"
+          />
         </div>
       </a-card>
     </div>
@@ -40,6 +45,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from "vue";
+import { Modal, notification } from "ant-design-vue";
 import StatisticHeader from "@/components/StatisticHeader/index.vue";
 import CreateProjectModal from "@/components/CreateProjectModal/index.vue";
 import HomeList from "./component/HomeList/index.vue";
@@ -56,9 +62,9 @@ const store = useStore<{ Home: StateType }>();
 const activeKey = ref(1);
 const showMode = ref("card");
 const createProjectModalVisible = ref(false);
-const formState = ref({
-  id:"",
-  logo:"",
+let formState = ref({
+  id: 0,
+  logo: "",
   name: "",
   shortName: "",
   adminId: "",
@@ -84,21 +90,50 @@ const getList = async (current: number): Promise<void> => {
 const handleCreateSuccess = () => {
   createProjectModalVisible.value = false;
   // todo: 重新获取列表
+  getList(1);
 };
 
 function handleTabClick(e: number) {
   console.log("activeKey", activeKey);
 }
+function handleOpenAdd() {
+  createProjectModalVisible.value = true;
+  formState.value.id = 0;
+}
 function handleOpenEdit(item) {
-  console.log("！！！！！！编辑item", item);
   formState.value.id = item.project_id;
   formState.value.name = item.project_chinese_name;
-  formState.value.logo ="";
+  formState.value.logo = item.logo;
   formState.value.shortName = item.project_name;
-  formState.value.adminId = "";
-  formState.value.includeExample = false;
+  formState.value.adminId = item.admin_id;
+  formState.value.includeExample = item.include_example;
   formState.value.desc = item.project_des;
   createProjectModalVisible.value = true;
+}
+async function handleDelete(id) {
+  Modal.confirm({
+    title: "删除项目",
+    content: "确定删除指定的项目？",
+    okText: "确认",
+    cancelText: "取消",
+    onOk: async () => {
+      store.dispatch("Project/removeProject", id).then((res) => {
+        console.log("res", res);
+        if (res === true) {
+          notification.success({
+            // key: NotificationKeyCommon,
+            message: `删除成功`,
+          });
+          getList(1);
+        } else {
+          notification.error({
+            // key: NotificationKeyCommon,
+            message: `删除失败`,
+          });
+        }
+      });
+    },
+  });
 }
 </script>
 

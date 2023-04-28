@@ -28,15 +28,19 @@ func (s *ProjectRoleSource) GetSources() (sources []model.ProjectRole, err error
 		},
 		{
 			Name:        consts.Tester,
-			DisplayName: "测试",
+			DisplayName: "测试人员",
 		},
 		{
 			Name:        consts.Developer,
-			DisplayName: "开发",
+			DisplayName: "开发人员",
 		},
 		{
 			Name:        consts.ProductManager,
-			DisplayName: "项目经理",
+			DisplayName: "产品经理",
+		},
+		{
+			Name:        consts.ProjectLeader,
+			DisplayName: "项目负责人",
 		},
 	}
 	return

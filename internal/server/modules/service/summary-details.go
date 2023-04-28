@@ -99,6 +99,9 @@ func (s *SummaryDetailsService) CopyDetails(details []model.SummaryDetails) (res
 		var resDetail v1.ResSummaryDetails
 		copier.CopyWithOption(&resDetail, detail, copier.Option{DeepCopy: true})
 		resDetail.Id = detail.ID
+		resDetail.AdminId = detail.AdminId
+		resDetail.IncludeExample = detail.IncludeExample
+		resDetail.Logo = detail.Logo
 		resDetail.CreatedAt = time.Unix(detail.CreatedAt.Unix(), 0).Format("2006-01-02 15:04:05")
 		resDetail.Disabled = detail.Disabled
 		resDetail.BugTotal, _ = s.CountBugsByProjectId(detail.ProjectId)

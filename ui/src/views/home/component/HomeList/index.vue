@@ -1,20 +1,11 @@
 <template>
   <div class="home-list">
-    <a-table
+     <a-table
       row-key="id"
       :columns="columns"
       :data-source="tableList"
       :loading="loading"
-      :pagination="{
-        ...pagination,
-        onChange: (page) => {
-          getList(page);
-        },
-        onShowSizeChange: (page, size) => {
-          pagination.pageSize = size;
-          getList(page);
-        },
-      }"
+    
     >
       <template #name="{ text, record }">
         <div class="project-name" @click="goProject(record.project_id)">
@@ -90,9 +81,7 @@ const props = defineProps({
     type: Number,
   },
 });
-let pagination = computed<PaginationConfig>(
-  () => store.state.Home.queryResult.pagination
-);
+
 let queryParams = reactive<QueryParams>({
   keywords: "",
 
@@ -155,10 +144,6 @@ const columns = [
   // },
 ];
 
-onMounted(() => {
-  console.log("onMounted", currentUser.value.id);
-  // getList(1);
-});
 
 watch(
   () => {

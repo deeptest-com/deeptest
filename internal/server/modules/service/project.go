@@ -38,8 +38,8 @@ func (s *ProjectService) Create(req v1.ProjectReq, userId uint) (id uint, err *_
 	return
 }
 
-func (s *ProjectService) Update(id uint, req v1.ProjectReq) error {
-	return s.ProjectRepo.Update(id, req)
+func (s *ProjectService) Update(req v1.ProjectReq) error {
+	return s.ProjectRepo.Update(req)
 }
 
 func (s *ProjectService) DeleteById(id uint) error {

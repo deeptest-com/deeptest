@@ -4,7 +4,7 @@
         <div class="project-edit-main">
             <a-card :bordered="false">
                 <template #title>
-                    <div>{{formState.id?'编辑项目':'新建项目'}}</div>
+                    <div>{{formState?.id?'编辑项目':'新建项目'}}</div>
                 </template>
                 <div>
                     <a-form :model="formStateRef" :label-col="labelCol" :wrapper-col="wrapperCol">
@@ -48,7 +48,7 @@
         </div>
     </a-modal>
 </template>
-  
+
 <script lang="ts" setup>
 import { ref, reactive, watch, defineProps, defineEmits, computed } from "vue";
 import { Form, message } from 'ant-design-vue';
@@ -123,7 +123,7 @@ const handleSelectLogo = (item: any) => {
 watch(() => props.visible, (val) => {
     if (val) {
         store.dispatch('Project/getUserList')
-        if(!props.formState.id){
+        if(!props?.formState){
             resetFields()
         }
     }
@@ -193,4 +193,3 @@ watch(() => props.visible, (val) => {
     }
 }
 </style>
-  

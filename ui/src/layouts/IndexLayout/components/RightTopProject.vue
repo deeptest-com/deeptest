@@ -74,14 +74,11 @@ import {StateType as ProjectStateType} from "@/store/project";
 import {StateType as ServeStateType} from "@/store/serve";
 import {StateType as EnvironmentStateType} from "@/store/environment";
 import {
-  UserOutlined,
-  PictureOutlined,
   DownOutlined,
   PlusOutlined,
 } from '@ant-design/icons-vue';
 import CreateProjectModal from "@/components/CreateProjectModal/index.vue";
 import {getProjectLogo} from "@/components/CreateProjectModal";
-// import Logos from "@/components/Logos/index.tsx";
 
 const store = useStore<{
   User: UserStateType,
@@ -104,11 +101,9 @@ const keyword = ref('');
 const dropdownVisible = ref(false);
 
 const myProject = computed(() => {
-  console.log(832, projects.value.filter((item: any) => item.name.includes(keyword.value)))
   return projects.value.filter((item: any) => item.name.includes(keyword.value));
 });
 const myRecentProject = computed(() => {
-  console.log(832, recentProjects.value.filter((item: any) => item.name.includes(keyword.value)))
   return recentProjects.value.filter((item: any) => item.name.includes(keyword.value));
 });
 

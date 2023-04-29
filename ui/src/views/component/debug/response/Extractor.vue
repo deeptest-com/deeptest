@@ -9,8 +9,8 @@
         <a-col flex="150px" style="padding-left: 10px;">变量</a-col>
         <a-col flex="1">结果</a-col>
 
-        <a-col flex="100px" class="dp-right">
-          <PlusOutlined v-if="usedBy===UsedBy.InterfaceDebug" @click.stop="add" class="dp-icon-btn dp-trans-80" />
+        <a-col v-if="usedBy===UsedBy.InterfaceDebug" flex="100px" class="dp-right">
+          <PlusOutlined @click.stop="add" class="dp-icon-btn dp-trans-80" />
         </a-col>
       </a-row>
     </div>
@@ -35,7 +35,7 @@
           {{item.result==='extractor_err'? t(item.result) : item.result}}
         </a-col>
 
-        <a-col flex="100px" class="dp-right">
+        <a-col v-if="usedBy===UsedBy.InterfaceDebug" flex="100px" class="dp-right">
           <a-tooltip v-if="!item.disabled" @click="disable(item)" overlayClassName="dp-tip-small">
             <template #title>禁用</template>
             <CheckCircleOutlined class="dp-icon-btn dp-trans-80" />

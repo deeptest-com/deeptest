@@ -18,7 +18,7 @@
       </a-dropdown-button>
     </div>
 
-    <div class="save">
+    <div v-if="usedBy===UsedBy.InterfaceDebug" class="save">
       <a-dropdown-button trigger="click" @click="save" class="dp-bg-light">
         <SaveOutlined />
         保存

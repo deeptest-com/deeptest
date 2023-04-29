@@ -117,7 +117,7 @@ const mouseLeave = (event) => {
           }
         }
         .right {
-          width: 20px;
+          width: 16px;
           cursor: pointer;
           .link {
             display: none;

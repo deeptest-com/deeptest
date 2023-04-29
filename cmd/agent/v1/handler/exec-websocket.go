@@ -24,7 +24,7 @@ var (
 	ch chan int
 )
 
-type WebSocketCtrl struct {
+type ExecWebSocketCtrl struct {
 	Namespace         string
 	*websocket.NSConn `stateless:"true"`
 
@@ -33,12 +33,12 @@ type WebSocketCtrl struct {
 	MessageService  *service.MessageService  `inject:""`
 }
 
-func NewWebsocketCtrl() *WebSocketCtrl {
-	inst := &WebSocketCtrl{Namespace: consts.WsDefaultNameSpace}
+func NewWebsocketCtrl() *ExecWebSocketCtrl {
+	inst := &ExecWebSocketCtrl{Namespace: consts.WsDefaultNameSpace}
 	return inst
 }
 
-func (c *WebSocketCtrl) OnNamespaceConnected(wsMsg websocket.Message) error {
+func (c *ExecWebSocketCtrl) OnNamespaceConnected(wsMsg websocket.Message) error {
 	websocketHelper.SetConn(c.Conn)
 
 	_logUtils.Infof(_i118Utils.Sprintf("ws_namespace_connected", c.Conn.ID(), wsMsg.Room))
@@ -55,7 +55,7 @@ func (c *WebSocketCtrl) OnNamespaceConnected(wsMsg websocket.Message) error {
 // OnNamespaceDisconnect
 // This will call the "OnVisit" event on all clients, except the current one,
 // it can't because it's left but for any case use this type of design.
-func (c *WebSocketCtrl) OnNamespaceDisconnect(wsMsg websocket.Message) error {
+func (c *ExecWebSocketCtrl) OnNamespaceDisconnect(wsMsg websocket.Message) error {
 	_logUtils.Infof(_i118Utils.Sprintf("ws_namespace_disconnected", c.Conn.ID()))
 
 	resp := _domain.WsResp{Msg: "from agent: disconnected to websocket"}
@@ -68,7 +68,7 @@ func (c *WebSocketCtrl) OnNamespaceDisconnect(wsMsg websocket.Message) error {
 }
 
 // OnChat This will call the "OnVisit" event on all clients, including the current one, with the 'newCount' variable.
-func (c *WebSocketCtrl) OnChat(wsMsg websocket.Message) (err error) {
+func (c *ExecWebSocketCtrl) OnChat(wsMsg websocket.Message) (err error) {
 	ctx := websocket.GetContext(c.Conn)
 	_logUtils.Infof("WebSocket OnChat: remote address=%s, room=%s, msg=%s", ctx.RemoteAddr(), wsMsg.Room, string(wsMsg.Body))
 
@@ -81,6 +81,7 @@ func (c *WebSocketCtrl) OnChat(wsMsg websocket.Message) (err error) {
 
 	act := req.Act
 
+	// stop exec
 	if act == consts.ExecStop {
 		if ch != nil {
 			if !execUtils.GetRunning() {
@@ -96,11 +97,13 @@ func (c *WebSocketCtrl) OnChat(wsMsg websocket.Message) (err error) {
 		return
 	}
 
-	if execUtils.GetRunning() && (act == consts.ExecStart) { // already running
+	// already running
+	if execUtils.GetRunning() && (act == consts.ExecStart) {
 		execUtils.SendAlreadyRunningMsg(req.ScenarioExecReq.ScenarioId, wsMsg)
 		return
 	}
 
+	// exec scenario
 	if act == consts.ExecScenario {
 		ch = make(chan int, 1)
 		go func() {

@@ -7,7 +7,7 @@ import (
 )
 
 type ExecModule struct {
-	InvocationCtrl *handler.ExecCtrl `inject:""`
+	InvocationCtrl *handler.ExecInterfaceCtrl `inject:""`
 }
 
 // Party 脚本

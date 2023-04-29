@@ -7,12 +7,12 @@ import (
 	"github.com/kataras/iris/v12"
 )
 
-type ExecCtrl struct {
+type ExecInterfaceCtrl struct {
 	ExecService *service.ExecService `inject:""`
 }
 
 // InvokeInterface
-func (c *ExecCtrl) InvokeInterface(ctx iris.Context) {
+func (c *ExecInterfaceCtrl) InvokeInterface(ctx iris.Context) {
 	req := domain.InvokeCall{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {

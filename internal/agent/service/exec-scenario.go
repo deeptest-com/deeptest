@@ -35,7 +35,12 @@ func (s *ExecScenarioService) ExecScenario(req *agentExec.ScenarioExecReq, wsMsg
 
 func (s *ExecScenarioService) Exec(execObj *agentExec.ScenarioExecObj, wsMsg *websocket.Message) (
 	session *agentExec.Session, err error) {
-	agentExec.Variables = execObj.Variables
+
+	// variables etc.
+	agentExec.EnvToVariablesMap = execObj.EnvToVariablesMap
+	agentExec.InterfaceToEnvMap = execObj.InterfaceToEnvMap
+	agentExec.GlobalEnvVars = execObj.GlobalEnvVars
+	agentExec.GlobalParamVars = execObj.GlobalParamVars
 	agentExec.DatapoolData = execObj.Datapools
 
 	s.RestoreEntityFromRawAndSetParent(execObj.RootProcessor)

@@ -19,8 +19,14 @@ type ScenarioExecObj struct {
 	Name          string     `json:"name"`
 	RootProcessor *Processor `json:"rootProcessor"`
 
-	Variables domain.ShareVars `json:"variables"`
+	EnvToVariablesMap map[uint]map[string]domain.EnvVar `json:"envVariables"` // envId -> varId -> varObj
+	InterfaceToEnvMap map[uint]uint                     `json:"interfaceToEnvMap"`
+
+	GlobalEnvVars   []domain.GlobalEnvVars   `json:"globalEnvVars"`
+	GlobalParamVars []domain.GlobalParamVars `json:"globalParamVars"`
+
 	Datapools domain.Datapools
+
 	ServerUrl string `json:"serverUrl"`
 	Token     string `json:"token"`
 }

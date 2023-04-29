@@ -7,6 +7,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
+	"log"
 	"sync"
 )
 
@@ -20,6 +21,11 @@ type ScenarioExecService struct {
 	ScenarioReportRepo *repo.ScenarioReportRepo `inject:""`
 	TestLogRepo        *repo.LogRepo            `inject:""`
 
+	EndpointInterfaceRepo *repo.EndpointInterfaceRepo `inject:""`
+	EndpointRepo          *repo.EndpointRepo          `inject:""`
+	ServeServerRepo       *repo.ServeServerRepo       `inject:""`
+
+	ShareVarService    *ShareVarService    `inject:""`
 	EnvironmentService *EnvironmentService `inject:""`
 	DatapoolService    *DatapoolService    `inject:""`
 }
@@ -41,12 +47,44 @@ func (s *ScenarioExecService) LoadExecData(scenarioId uint) (ret agentExec.Scena
 		return
 	}
 
-	rootProcessor, _ := s.ScenarioNodeRepo.GetTree(scenario, true)
-	ret.Variables, _ = s.EnvironmentService.ListVariableForExec(scenario)
+	// get processor tree
+	ret.Name = scenario.Name
+	ret.RootProcessor, _ = s.ScenarioNodeRepo.GetTree(scenario, true)
+
+	// get variables
+
+	ret.EnvToVariablesMap, ret.InterfaceToEnvMap, _ = s.LoadEnvVarMap(scenarioId)
+	ret.GlobalEnvVars, _ = s.EnvironmentService.GetGlobalVars(scenario.ProjectId)
+	ret.GlobalParamVars, _ = s.EnvironmentService.GetGlobalParams(scenario.ProjectId)
+
 	ret.Datapools, _ = s.DatapoolService.ListForExec(scenario.ProjectId)
 
-	ret.RootProcessor = rootProcessor
-	ret.Name = scenario.Name
+	return
+}
+
+func (s *ScenarioExecService) LoadEnvVarMap(scenarioId uint) (
+	envToVariablesMap map[uint]map[string]domain.EnvVar, interfaceToEnvMap map[uint]uint, err error) {
+
+	envToVariablesMap = map[uint]map[string]domain.EnvVar{} // envId -> varId -> varObj
+	interfaceToEnvMap = map[uint]uint{}
+
+	processors, err := s.ScenarioNodeRepo.ListByScenario(scenarioId)
+
+	for _, processor := range processors {
+		if processor.EntityType != consts.ProcessorInterfaceDefault {
+			continue
+		}
+
+		interf, _ := s.EndpointInterfaceRepo.Get(processor.EndpointInterfaceId)
+		endpoint, _ := s.EndpointRepo.Get(interf.EndpointId)
+		serveServer, _ := s.ServeServerRepo.Get(endpoint.ServerId)
+		envId := serveServer.EnvironmentId
+
+		interfaceToEnvMap[processor.EndpointInterfaceId] = envId
+
+		log.Print(envId)
+		// data for envToVariablesMap
+	}
 
 	return
 }

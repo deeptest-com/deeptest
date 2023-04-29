@@ -95,7 +95,7 @@ func GetContentProps(resp *v1.DebugResponse) {
 	return
 }
 
-func ReplaceAll(req *v1.BaseRequest, environment domain.EnvVars, variables domain.ShareVars, datapools domain.Datapools) {
+func ReplaceAll(req *v1.BaseRequest, environment domain.EnvVar, variables domain.ShareVars, datapools domain.Datapools) {
 	replaceUrl(req, environment, variables, datapools)
 	replaceParams(req, environment, variables, datapools)
 	replaceHeaders(req, environment, variables, datapools)
@@ -103,23 +103,23 @@ func ReplaceAll(req *v1.BaseRequest, environment domain.EnvVars, variables domai
 	replaceAuthor(req, environment, variables, datapools)
 }
 
-func replaceUrl(req *v1.BaseRequest, environment domain.EnvVars, variables domain.ShareVars, datapools domain.Datapools) {
+func replaceUrl(req *v1.BaseRequest, environment domain.EnvVar, variables domain.ShareVars, datapools domain.Datapools) {
 	req.Url = ReplaceVariableValue(req.Url, environment, variables, datapools)
 }
-func replaceParams(req *v1.BaseRequest, environment domain.EnvVars, variables domain.ShareVars, datapools domain.Datapools) {
+func replaceParams(req *v1.BaseRequest, environment domain.EnvVar, variables domain.ShareVars, datapools domain.Datapools) {
 	for idx, param := range req.Params {
 		req.Params[idx].Value = ReplaceVariableValue(param.Value, environment, variables, datapools)
 	}
 }
-func replaceHeaders(req *v1.BaseRequest, environment domain.EnvVars, variables domain.ShareVars, datapools domain.Datapools) {
+func replaceHeaders(req *v1.BaseRequest, environment domain.EnvVar, variables domain.ShareVars, datapools domain.Datapools) {
 	for idx, header := range req.Headers {
 		req.Headers[idx].Value = ReplaceVariableValue(header.Value, environment, variables, datapools)
 	}
 }
-func replaceBody(req *v1.BaseRequest, environment domain.EnvVars, variables domain.ShareVars, datapools domain.Datapools) {
+func replaceBody(req *v1.BaseRequest, environment domain.EnvVar, variables domain.ShareVars, datapools domain.Datapools) {
 	req.Body = ReplaceVariableValue(req.Body, environment, variables, datapools)
 }
-func replaceAuthor(req *v1.BaseRequest, environment domain.EnvVars, variables domain.ShareVars, datapools domain.Datapools) {
+func replaceAuthor(req *v1.BaseRequest, environment domain.EnvVar, variables domain.ShareVars, datapools domain.Datapools) {
 	if req.AuthorizationType == consts.BasicAuth {
 		req.BasicAuth.Username = ReplaceVariableValue(req.BasicAuth.Username, environment, variables, datapools)
 		req.BasicAuth.Password = ReplaceVariableValue(req.BasicAuth.Password, environment, variables, datapools)
@@ -142,7 +142,7 @@ func replaceAuthor(req *v1.BaseRequest, environment domain.EnvVars, variables do
 	}
 }
 
-func ReplaceVariableValue(value string, environment domain.EnvVars, variables domain.ShareVars, datapools domain.Datapools) (ret string) {
+func ReplaceVariableValue(value string, environment domain.EnvVar, variables domain.ShareVars, datapools domain.Datapools) (ret string) {
 
 	variablePlaceholders := GetVariablesInVariablePlaceholder(value)
 	ret = value
@@ -159,7 +159,7 @@ func ReplaceVariableValue(value string, environment domain.EnvVars, variables do
 	return
 }
 
-func getPlaceholderValue(placeholder string, environment domain.EnvVars, variables domain.ShareVars, datapools domain.Datapools) (ret string) {
+func getPlaceholderValue(placeholder string, environment domain.EnvVar, variables domain.ShareVars, datapools domain.Datapools) (ret string) {
 
 	typ := getPlaceholderType(placeholder)
 
@@ -178,7 +178,7 @@ func getPlaceholderValue(placeholder string, environment domain.EnvVars, variabl
 	return
 }
 
-func getEnvironmentVariableValue(placeholder string, environment domain.EnvVars) (ret string) {
+func getEnvironmentVariableValue(placeholder string, environment domain.EnvVar) (ret string) {
 	ret = fmt.Sprintf("%v", environment[placeholder])
 	return
 }

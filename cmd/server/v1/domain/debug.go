@@ -19,7 +19,7 @@ type DebugData struct {
 
 	BaseUrl         string                   `gorm:"-" json:"baseUrl"`
 	ShareVars       []domain.ShareVars       `gorm:"-" json:"shareVars"`
-	EnvVars         []domain.EnvVars         `gorm:"-" json:"envVars"`
+	EnvVars         []domain.EnvVar          `gorm:"-" json:"envVars"`
 	GlobalEnvVars   []domain.GlobalEnvVars   `gorm:"-" json:"globalEnvVars"`
 	GlobalParamVars []domain.GlobalParamVars `gorm:"-" json:"globalParamVars"`
 

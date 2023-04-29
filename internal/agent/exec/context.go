@@ -11,8 +11,13 @@ import (
 )
 
 var (
-	Environment = domain.EnvVars{}
+	Environment = domain.EnvVar{}
 	Variables   = domain.ShareVars{} // only for invocation
+
+	EnvToVariablesMap map[uint]map[string]domain.EnvVar
+	InterfaceToEnvMap map[uint]uint
+	GlobalEnvVars     []domain.GlobalEnvVars
+	GlobalParamVars   []domain.GlobalParamVars
 
 	ScopeHierarchy  = map[uint]*[]uint{}               // only for scenario
 	ScopedVariables = map[uint][]domain.ExecVariable{} // only for scenario

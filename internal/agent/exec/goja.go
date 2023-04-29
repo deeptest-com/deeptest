@@ -44,7 +44,7 @@ func InitJsRuntime() {
 		Environment[name] = val
 	})
 	MyVm.JsRuntime.Set("clearEnvironmentVariable", func(name string) {
-		Environment = domain.EnvVars{}
+		Environment = domain.EnvVar{}
 	})
 
 	MyVm.JsRuntime.Set("getVariable", func(name string) interface{} {

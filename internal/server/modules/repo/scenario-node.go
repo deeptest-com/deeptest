@@ -1,12 +1,10 @@
 package repo
 
 import (
-	"encoding/json"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
-	"github.com/jinzhu/copier"
 	"github.com/kataras/iris/v12"
 	"gorm.io/gorm"
 )
@@ -15,23 +13,6 @@ type ScenarioNodeRepo struct {
 	DB                    *gorm.DB               `inject:""`
 	ScenarioProcessorRepo *ScenarioProcessorRepo `inject:""`
 	ScenarioRepo          *ScenarioRepo          `inject:""`
-}
-
-func (r *ScenarioNodeRepo) GetTree(scenario model.Scenario, withEntity bool) (root *agentExec.Processor, err error) {
-	pos, err := r.ListByScenario(scenario.ID)
-	if err != nil {
-		return
-	}
-
-	tos := r.toTos(pos, withEntity)
-
-	root = tos[0]
-	root.Name = scenario.Name
-	root.Slots = iris.Map{"icon": "icon"}
-
-	r.makeTree(tos[1:], root)
-
-	return
 }
 
 func (r *ScenarioNodeRepo) ListByScenario(scenarioId uint) (pos []*model.Processor, err error) {
@@ -48,31 +29,7 @@ func (r *ScenarioNodeRepo) Get(id uint) (processor model.Processor, err error) {
 	return
 }
 
-func (r *ScenarioNodeRepo) toTos(pos []*model.Processor, withDetail bool) (tos []*agentExec.Processor) {
-	for _, po := range pos {
-		to := agentExec.Processor{
-			IsLeaf: r.IsLeaf(*po),
-		}
-		copier.CopyWithOption(&to, po, copier.Option{DeepCopy: true})
-
-		if withDetail {
-			entity, _ := r.ScenarioProcessorRepo.GetEntityTo(&to)
-
-			// avoid json serialization error
-			to.EntityRaw, _ = json.Marshal(entity)
-			to.Entity = &agentExec.ProcessorGroup{}
-
-		} else {
-			to.Entity = &agentExec.ProcessorGroup{} // just to avoid json marshal error for IProcessorEntity
-		}
-
-		tos = append(tos, &to)
-	}
-
-	return
-}
-
-func (r *ScenarioNodeRepo) makeTree(findIn []*agentExec.Processor, parent *agentExec.Processor) { //参数为父节点，添加父节点的子节点指针切片
+func (r *ScenarioNodeRepo) MakeTree(findIn []*agentExec.Processor, parent *agentExec.Processor) { //参数为父节点，添加父节点的子节点指针切片
 	children, _ := r.hasChild(findIn, parent) // 判断节点是否有子节点并返回
 
 	if children != nil {
@@ -81,7 +38,7 @@ func (r *ScenarioNodeRepo) makeTree(findIn []*agentExec.Processor, parent *agent
 		for _, child := range children { // 查询子节点的子节点，并添加到子节点
 			_, has := r.hasChild(findIn, child)
 			if has {
-				r.makeTree(findIn, child) // 递归添加节点
+				r.MakeTree(findIn, child) // 递归添加节点
 			}
 		}
 	}
@@ -94,6 +51,7 @@ func (r *ScenarioNodeRepo) hasChild(processors []*agentExec.Processor, parent *a
 		if item.ParentId == parent.ID {
 			item.Slots = iris.Map{"icon": "icon"}
 			//item.Parent = parent // loop json
+			item.Entity = agentExec.ProcessorGroup{}
 
 			ret = append(ret, item)
 		}

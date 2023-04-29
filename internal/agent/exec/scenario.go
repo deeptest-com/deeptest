@@ -16,8 +16,17 @@ type ScenarioExecReq struct {
 }
 
 type ScenarioExecObj struct {
-	Name          string     `json:"name"`
+	ScenarioExecObjBase
 	RootProcessor *Processor `json:"rootProcessor"`
+}
+
+type ScenarioExecObjMsg struct {
+	ScenarioExecObjBase
+	RootProcessor *ProcessorMsg `json:"rootProcessor"`
+}
+
+type ScenarioExecObjBase struct {
+	Name string `json:"name"`
 
 	EnvToVariablesMap map[uint]map[string]domain.EnvVar `json:"envVariables"` // envId -> varId -> varObj
 	InterfaceToEnvMap map[uint]uint                     `json:"interfaceToEnvMap"`

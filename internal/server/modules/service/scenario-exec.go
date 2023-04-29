@@ -25,9 +25,10 @@ type ScenarioExecService struct {
 	EndpointRepo          *repo.EndpointRepo          `inject:""`
 	ServeServerRepo       *repo.ServeServerRepo       `inject:""`
 
-	ShareVarService    *ShareVarService    `inject:""`
-	EnvironmentService *EnvironmentService `inject:""`
-	DatapoolService    *DatapoolService    `inject:""`
+	ShareVarService     *ShareVarService     `inject:""`
+	EnvironmentService  *EnvironmentService  `inject:""`
+	DatapoolService     *DatapoolService     `inject:""`
+	ScenarioNodeService *ScenarioNodeService `inject:""`
 }
 
 func (s *ScenarioExecService) LoadExecResult(scenarioId int) (result domain.Report, err error) {
@@ -49,10 +50,10 @@ func (s *ScenarioExecService) LoadExecData(scenarioId uint) (ret agentExec.Scena
 
 	// get processor tree
 	ret.Name = scenario.Name
-	ret.RootProcessor, _ = s.ScenarioNodeRepo.GetTree(scenario, true)
+	ret.RootProcessor, _ = s.ScenarioNodeService.GetTree(scenario, true)
+	ret.RootProcessor.Session = agentExec.Session{}
 
 	// get variables
-
 	ret.EnvToVariablesMap, ret.InterfaceToEnvMap, _ = s.LoadEnvVarMap(scenarioId)
 	ret.GlobalEnvVars, _ = s.EnvironmentService.GetGlobalVars(scenario.ProjectId)
 	ret.GlobalParamVars, _ = s.EnvironmentService.GetGlobalParams(scenario.ProjectId)

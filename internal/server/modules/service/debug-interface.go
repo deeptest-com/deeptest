@@ -30,13 +30,7 @@ func (s *DebugInterfaceService) Load(loadReq v1.DebugReq) (req v1.DebugData, err
 		return
 	}
 
-	debugInterfaceId, _ := s.DebugInterfaceRepo.HasDebugInterfaceRecord(loadReq.EndpointInterfaceId)
-
-	if debugInterfaceId > 0 {
-		req, err = s.GetDebugDataFromDebugInterface(debugInterfaceId)
-	} else {
-		req, err = s.ConvertDebugDataFromEndpointInterface(loadReq.EndpointInterfaceId)
-	}
+	req, _ = s.GetDebugInterface(loadReq.EndpointInterfaceId)
 
 	req.UsedBy = loadReq.UsedBy
 	if loadReq.ScenarioProcessorId > 0 {
@@ -51,6 +45,19 @@ func (s *DebugInterfaceService) Load(loadReq v1.DebugReq) (req v1.DebugData, err
 
 	return
 }
+
+func (s *DebugInterfaceService) GetDebugInterface(endpointInterfaceId uint) (ret v1.DebugData, err error) {
+	debugInterfaceId, _ := s.DebugInterfaceRepo.HasDebugInterfaceRecord(endpointInterfaceId)
+
+	if debugInterfaceId > 0 {
+		ret, err = s.GetDebugDataFromDebugInterface(debugInterfaceId)
+	} else {
+		ret, err = s.ConvertDebugDataFromEndpointInterface(endpointInterfaceId)
+	}
+
+	return
+}
+
 func (s *DebugInterfaceService) Save(req v1.DebugData) (debug model.DebugInterface, err error) {
 	s.CopyValueFromRequest(&debug, req)
 

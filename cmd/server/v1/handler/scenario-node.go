@@ -5,7 +5,6 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
-
 	"github.com/kataras/iris/v12"
 )
 
@@ -25,13 +24,13 @@ func (c *ScenarioNodeCtrl) LoadTree(ctx iris.Context) {
 		return
 	}
 
-	data, err := c.ScenarioNodeService.GetTree(scenario)
+	data, err := c.ScenarioNodeService.GetTree(scenario, false)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data, Msg: _domain.NoErr.Msg})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data})
 }
 
 // AddInterfaces 添加

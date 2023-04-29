@@ -8,11 +8,11 @@ import (
 	"github.com/kataras/iris/v12/websocket"
 )
 
-type ScenarioService struct {
+type ExecScenarioService struct {
 	RemoteService *RemoteService `inject:""`
 }
 
-func (s *ScenarioService) ExecScenario(req *agentExec.ScenarioExecReq, wsMsg *websocket.Message) (err error) {
+func (s *ExecScenarioService) ExecScenario(req *agentExec.ScenarioExecReq, wsMsg *websocket.Message) (err error) {
 	consts.ServerUrl = req.ServerUrl
 	consts.ServerToken = req.Token
 
@@ -33,7 +33,7 @@ func (s *ScenarioService) ExecScenario(req *agentExec.ScenarioExecReq, wsMsg *we
 	return
 }
 
-func (s *ScenarioService) Exec(execObj *agentExec.ScenarioExecObj, wsMsg *websocket.Message) (
+func (s *ExecScenarioService) Exec(execObj *agentExec.ScenarioExecObj, wsMsg *websocket.Message) (
 	session *agentExec.Session, err error) {
 	agentExec.Variables = execObj.Variables
 	agentExec.DatapoolData = execObj.Datapools
@@ -53,12 +53,12 @@ func (s *ScenarioService) Exec(execObj *agentExec.ScenarioExecObj, wsMsg *websoc
 	return
 }
 
-func (s *ScenarioService) CancelAndSendMsg(scenarioId int, wsMsg websocket.Message) (err error) {
+func (s *ExecScenarioService) CancelAndSendMsg(scenarioId int, wsMsg websocket.Message) (err error) {
 	execUtils.SendCancelMsg(wsMsg)
 	return
 }
 
-func (s *ScenarioService) RestoreEntityFromRawAndSetParent(root *agentExec.Processor) (err error) {
+func (s *ExecScenarioService) RestoreEntityFromRawAndSetParent(root *agentExec.Processor) (err error) {
 	processors := make([]*agentExec.Processor, 0)
 
 	agentExec.GetProcessorList(root, &processors)
@@ -77,7 +77,7 @@ func (s *ScenarioService) RestoreEntityFromRawAndSetParent(root *agentExec.Proce
 	return
 }
 
-func (s *ScenarioService) sendSubmitResult(rootId uint, wsMsg *websocket.Message) (err error) {
+func (s *ExecScenarioService) sendSubmitResult(rootId uint, wsMsg *websocket.Message) (err error) {
 	result := agentDomain.ScenarioExecResult{
 		ID:       -3,
 		ParentId: int(rootId),

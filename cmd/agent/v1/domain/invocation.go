@@ -4,7 +4,7 @@ import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 )
 
-type InvokeCall struct {
+type InterfaceCall struct {
 	ServerUrl string `json:"serverUrl"`
 	Token     string `json:"token"`
 

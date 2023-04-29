@@ -24,21 +24,21 @@ var (
 	ch chan int
 )
 
-type ExecWebSocketCtrl struct {
+type ExecByWebSocketCtrl struct {
 	Namespace         string
 	*websocket.NSConn `stateless:"true"`
 
-	ScenarioService *service.ScenarioService `inject:""`
-	PlanService     *service.PlanService     `inject:""`
-	MessageService  *service.MessageService  `inject:""`
+	ScenarioService *service.ExecScenarioService `inject:""`
+	PlanService     *service.ExecPlanService     `inject:""`
+	MessageService  *service.MessageService      `inject:""`
 }
 
-func NewWebsocketCtrl() *ExecWebSocketCtrl {
-	inst := &ExecWebSocketCtrl{Namespace: consts.WsDefaultNameSpace}
+func NewWebsocketCtrl() *ExecByWebSocketCtrl {
+	inst := &ExecByWebSocketCtrl{Namespace: consts.WsDefaultNameSpace}
 	return inst
 }
 
-func (c *ExecWebSocketCtrl) OnNamespaceConnected(wsMsg websocket.Message) error {
+func (c *ExecByWebSocketCtrl) OnNamespaceConnected(wsMsg websocket.Message) error {
 	websocketHelper.SetConn(c.Conn)
 
 	_logUtils.Infof(_i118Utils.Sprintf("ws_namespace_connected", c.Conn.ID(), wsMsg.Room))
@@ -55,7 +55,7 @@ func (c *ExecWebSocketCtrl) OnNamespaceConnected(wsMsg websocket.Message) error 
 // OnNamespaceDisconnect
 // This will call the "OnVisit" event on all clients, except the current one,
 // it can't because it's left but for any case use this type of design.
-func (c *ExecWebSocketCtrl) OnNamespaceDisconnect(wsMsg websocket.Message) error {
+func (c *ExecByWebSocketCtrl) OnNamespaceDisconnect(wsMsg websocket.Message) error {
 	_logUtils.Infof(_i118Utils.Sprintf("ws_namespace_disconnected", c.Conn.ID()))
 
 	resp := _domain.WsResp{Msg: "from agent: disconnected to websocket"}
@@ -68,7 +68,7 @@ func (c *ExecWebSocketCtrl) OnNamespaceDisconnect(wsMsg websocket.Message) error
 }
 
 // OnChat This will call the "OnVisit" event on all clients, including the current one, with the 'newCount' variable.
-func (c *ExecWebSocketCtrl) OnChat(wsMsg websocket.Message) (err error) {
+func (c *ExecByWebSocketCtrl) OnChat(wsMsg websocket.Message) (err error) {
 	ctx := websocket.GetContext(c.Conn)
 	_logUtils.Infof("WebSocket OnChat: remote address=%s, room=%s, msg=%s", ctx.RemoteAddr(), wsMsg.Room, string(wsMsg.Body))
 
@@ -103,7 +103,7 @@ func (c *ExecWebSocketCtrl) OnChat(wsMsg websocket.Message) (err error) {
 		return
 	}
 
-	// exec scenario
+	// exec task
 	if act == consts.ExecScenario {
 		ch = make(chan int, 1)
 		go func() {

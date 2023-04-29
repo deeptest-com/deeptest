@@ -139,7 +139,7 @@ func (s *AgentServer) Start() {
 	<-s.idleConnClosed
 }
 
-func injectWebsocketModule(websocketCtrl *handler.ExecWebSocketCtrl) {
+func injectWebsocketModule(websocketCtrl *handler.ExecByWebSocketCtrl) {
 	var g inject.Graph
 	g.Logger = logrus.StandardLogger()
 

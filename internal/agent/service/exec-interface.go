@@ -9,43 +9,20 @@ import (
 	"strings"
 )
 
-type ExecService struct {
+type ExecInterfaceService struct {
 	RemoteService *RemoteService `inject:""`
 }
 
-func (s *ExecService) Run(call domain.InvokeCall) (resp v1.DebugResponse, err error) {
+func (s *ExecInterfaceService) Run(call domain.InterfaceCall) (resp v1.DebugResponse, err error) {
 	req := s.RemoteService.GetInterfaceToExec(call)
 
 	resp, err = s.Request(req)
 	err = s.RemoteService.SubmitInterfaceResult(req, resp, call.ServerUrl, call.Token)
 
-	/*
-		if req.UsedBy == consts.InterfaceDebug {
-			interfaceExecReq := s.RemoteService.GetInterfaceToExec(req)
-
-			agentExec.EnvVars = interfaceExecReq.EnvVars
-			agentExec.ShareVars = interfaceExecReq.ShareVars
-			agentExec.DatapoolData = interfaceExecReq.Datapools
-
-			resp, err = s.Request(interfaceExecReq)
-			err = s.RemoteService.SubmitInterfaceResult(req, resp, req.ServerUrl, req.Token)
-
-		} else if req.UsedBy == consts.ScenarioDebug {
-			interfaceProcessorExecReq := s.RemoteService.GetProcessorInterfaceToExec(req)
-
-			agentExec.EnvVars = interfaceProcessorExecReq.EnvVars
-			agentExec.ShareVars = interfaceProcessorExecReq.ShareVars
-			agentExec.DatapoolData = interfaceProcessorExecReq.Datapools
-
-			resp, err = s.Request(interfaceProcessorExecReq)
-			err = s.RemoteService.SubmitProcessorInterfaceResult(req, resp, req.ServerUrl, req.Token)
-
-		}
-	*/
 	return
 }
 
-func (s *ExecService) Request(req v1.DebugData) (ret v1.DebugResponse, err error) {
+func (s *ExecInterfaceService) Request(req v1.DebugData) (ret v1.DebugResponse, err error) {
 	// exec pre-request script
 	agentExec.ExecJs(req.PreRequestScript)
 
@@ -66,7 +43,7 @@ func (s *ExecService) Request(req v1.DebugData) (ret v1.DebugResponse, err error
 	return
 }
 
-func (s *ExecService) GetContentProps(ret *v1.DebugResponse) {
+func (s *ExecInterfaceService) GetContentProps(ret *v1.DebugResponse) {
 	ret.ContentLang = consts.LangTEXT
 
 	if ret.ContentLang == "" {

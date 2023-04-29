@@ -8,12 +8,12 @@ import (
 	"github.com/kataras/iris/v12/websocket"
 )
 
-type PlanService struct {
-	RemoteService   *RemoteService   `inject:""`
-	ScenarioService *ScenarioService `inject:""`
+type ExecPlanService struct {
+	RemoteService       *RemoteService       `inject:""`
+	ExecScenarioService *ExecScenarioService `inject:""`
 }
 
-func (s *PlanService) ExecPlan(req *agentExec.PlanExecReq, wsMsg *websocket.Message) (err error) {
+func (s *ExecPlanService) ExecPlan(req *agentExec.PlanExecReq, wsMsg *websocket.Message) (err error) {
 	consts.ServerUrl = req.ServerUrl
 	consts.ServerToken = req.Token
 
@@ -27,7 +27,7 @@ func (s *PlanService) ExecPlan(req *agentExec.PlanExecReq, wsMsg *websocket.Mess
 		ID: req.PlanId,
 	}
 	for _, scenario := range planExecObj.Scenarios {
-		session, _ := s.ScenarioService.Exec(&scenario, wsMsg)
+		session, _ := s.ExecScenarioService.Exec(&scenario, wsMsg)
 		results.Scenarios = append(results.Scenarios, session.RootProcessor.Result)
 	}
 
@@ -42,12 +42,12 @@ func (s *PlanService) ExecPlan(req *agentExec.PlanExecReq, wsMsg *websocket.Mess
 	return
 }
 
-func (s *PlanService) CancelAndSendMsg(planId int, wsMsg websocket.Message) (err error) {
+func (s *ExecPlanService) CancelAndSendMsg(planId int, wsMsg websocket.Message) (err error) {
 	execUtils.SendCancelMsg(wsMsg)
 	return
 }
 
-func (s *PlanService) sendSubmitResult(planId uint, wsMsg *websocket.Message) (err error) {
+func (s *ExecPlanService) sendSubmitResult(planId uint, wsMsg *websocket.Message) (err error) {
 	result := agentDomain.PlanExecResult{
 		ID:   planId,
 		Name: "提交执行结果成功",

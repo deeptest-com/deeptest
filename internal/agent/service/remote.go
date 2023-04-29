@@ -18,7 +18,7 @@ type RemoteService struct {
 }
 
 // for interface invocation in both endpoint and scenario
-func (s *RemoteService) GetInterfaceToExec(req domain.InvokeCall) (ret v1.DebugData) {
+func (s *RemoteService) GetInterfaceToExec(req domain.InterfaceCall) (ret v1.DebugData) {
 	url := fmt.Sprintf("debugs/interface/load")
 	body, err := json.Marshal(req.Data)
 	if err != nil {
@@ -108,7 +108,7 @@ func (s *RemoteService) SubmitInterfaceResult(reqObj v1.DebugData, respObj v1.De
 }
 
 // for processor interface invocation
-//func (s *RemoteService) GetProcessorInterfaceToExec(req domain.InvokeCall) (ret v1.DebugData) {
+//func (s *RemoteService) GetProcessorInterfaceToExec(req domain.InterfaceCall) (ret v1.DebugData) {
 //	url := fmt.Sprintf("processors/invocations/loadInterfaceExecData")
 //	body, err := json.Marshal(req.Data)
 //	if err != nil {
@@ -155,7 +155,7 @@ func (s *RemoteService) SubmitInterfaceResult(reqObj v1.DebugData, respObj v1.De
 //
 //	return
 //}
-//func (s *RemoteService) SubmitProcessorInterfaceResult(reqOjb domain.InvokeCall, repsObj v1.DebugResponse, serverUrl, token string) (err error) {
+//func (s *RemoteService) SubmitProcessorInterfaceResult(reqOjb domain.InterfaceCall, repsObj v1.DebugResponse, serverUrl, token string) (err error) {
 //	url := _httpUtils.AddSepIfNeeded(serverUrl) + fmt.Sprintf("processors/invocations/submitInterfaceInvokeResult")
 //
 //	data := v1.SubmitDebugResultRequest{

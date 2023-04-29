@@ -37,7 +37,7 @@ func (s *InvocationProcessorService) LoadInterfaceExecData(req v1.DebugData) (re
 func (s *InvocationProcessorService) SubmitInterfaceInvokeResult(req v1.SubmitDebugResultRequest) (err error) {
 	processorInterface, _ := s.ProcessorInterfaceRepo.GetDetail(req.Response.Id)
 
-	s.ExtractorService.ExtractInterface(processorInterface.ID, uint(0), uint(0), req.Response, consts.ScenarioDebug)
+	s.ExtractorService.ExtractInterface(processorInterface.ID, uint(0), uint(0), uint(0), req.Response, consts.ScenarioDebug)
 	s.CheckpointService.CheckInterface(processorInterface.ID, req.Response, consts.ScenarioDebug)
 
 	_, err = s.CreateForScenarioInterface(req.Request, req.Response, processorInterface.ProjectId)

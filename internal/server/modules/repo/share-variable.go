@@ -6,8 +6,10 @@ import (
 )
 
 type ShareVariableRepo struct {
-	DB       *gorm.DB  `inject:""`
-	RoleRepo *RoleRepo `inject:""`
+	DB        *gorm.DB `inject:""`
+	*BaseRepo `inject:""`
+
+	ScenarioProcessorRepo *ScenarioProcessorRepo `inject:""`
 }
 
 func NewShareVariableRepo() *ShareVariableRepo {
@@ -78,8 +80,14 @@ func (r *ShareVariableRepo) ListByInterfaceDebug(serveId uint) (pos []model.Shar
 	return
 }
 
-func (r *ShareVariableRepo) ListByScenarioDebug(scenarioId uint) (pos []model.ShareVariable, err error) {
+func (r *ShareVariableRepo) ListByScenarioDebug(processorId uint) (pos []model.ShareVariable, err error) {
+	processor, _ := r.ScenarioProcessorRepo.Get(processorId)
+	scenarioId := processor.ScenarioId
+
+	parentIds, err := r.GetAllParentIds(processorId, model.Processor{}.TableName())
+
 	err = r.DB.Model(&model.ShareVariable{}).
+		Where("processor_id IN ?", parentIds).
 		Where("scenario_id=?", scenarioId).
 		Where("NOT deleted AND NOT disabled").
 		Find(&pos).Error

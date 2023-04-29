@@ -16,7 +16,7 @@ type ShareVarService struct {
 	ScenarioProcessorRepo *repo.ScenarioProcessorRepo `inject:""`
 }
 
-func (s *ShareVarService) Save(name, value string, interfaceId, serveId, scenarioId uint,
+func (s *ShareVarService) Save(name, value string, interfaceId, serveId, processorId, scenarioId uint,
 	scope consts.ExtractorScope, usedBy consts.UsedBy) (err error) {
 
 	po := model.ShareVariable{
@@ -24,6 +24,7 @@ func (s *ShareVarService) Save(name, value string, interfaceId, serveId, scenari
 		Value:       value,
 		InterfaceId: interfaceId,
 		ServeId:     serveId,
+		ProcessorId: processorId,
 		ScenarioId:  scenarioId,
 		Scope:       scope,
 	}
@@ -42,19 +43,11 @@ func (s *ShareVarService) Save(name, value string, interfaceId, serveId, scenari
 func (s *ShareVarService) List(endpointInterfaceId, scenarioProcessorId uint, usedBy consts.UsedBy) (
 	shareVariables []domain.ShareVars) {
 
-	var serveId, scenarioId uint
-
 	interf, _ := s.EndpointInterfaceRepo.Get(endpointInterfaceId)
 	endpoint, _ := s.EndpointRepo.Get(interf.EndpointId)
-	serveId = endpoint.ServeId
+	serveId := endpoint.ServeId
 
-	// by scenario
-	if usedBy == consts.ScenarioDebug {
-		processor, _ := s.ScenarioProcessorRepo.Get(scenarioProcessorId)
-		scenarioId = processor.ScenarioId
-	}
-
-	shareVariables, _ = s.listForDebug(serveId, scenarioId, usedBy)
+	shareVariables, _ = s.listForDebug(serveId, scenarioProcessorId, usedBy)
 
 	return
 }
@@ -79,13 +72,13 @@ func (s *ShareVarService) Clear(endpointOrProcessorId int, usedBy consts.UsedBy)
 	return
 }
 
-func (s *ShareVarService) listForDebug(serveId, scenarioId uint, usedBy consts.UsedBy) (ret []domain.ShareVars, err error) {
+func (s *ShareVarService) listForDebug(serveId, scenarioProcessorId uint, usedBy consts.UsedBy) (ret []domain.ShareVars, err error) {
 	var pos []model.ShareVariable
 
 	if usedBy == consts.InterfaceDebug {
 		pos, err = s.ShareVariableRepo.ListByInterfaceDebug(serveId)
 	} else if usedBy == consts.ScenarioDebug {
-		pos, err = s.ShareVariableRepo.ListByScenarioDebug(scenarioId)
+		pos, err = s.ShareVariableRepo.ListByScenarioDebug(scenarioProcessorId)
 	}
 
 	for _, po := range pos {

@@ -10,7 +10,7 @@ func GenRequestUrl(req *v1.BaseRequest, interfaceId uint) {
 	envId := InterfaceToEnvMap[interfaceId]
 	mp := EnvToVariablesMap[envId]
 
-	baseUrl := mp[consts.KEY_BASE_URL]["value"].(string)
+	baseUrl := mp[consts.KEY_BASE_URL][consts.KEY_BASE_URL].(string)
 
 	req.Url = _httpUtils.AddSepIfNeeded(baseUrl) + req.Url
 }

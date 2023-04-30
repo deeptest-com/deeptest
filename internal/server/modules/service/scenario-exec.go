@@ -88,7 +88,7 @@ func (s *ScenarioExecService) LoadEnvVarMap(scenarioId uint) (
 		}
 
 		envToVariablesMap[envId][consts.KEY_BASE_URL] = domain.VarKeyValuePair{
-			"baseUrl": serveServer.Url,
+			consts.KEY_BASE_URL: serveServer.Url,
 		}
 
 		vars, _ := s.EnvironmentRepo.GetVars(envId)

@@ -249,11 +249,11 @@ func (s *EnvironmentService) GetVarsByEnv(envId uint) (ret []domain.EnvVar, err 
 
 	return
 }
-func (s *EnvironmentService) GetGlobalVars(projectId uint) (ret []domain.GlobalEnvVars, err error) {
+func (s *EnvironmentService) GetGlobalVars(projectId uint) (ret []domain.GlobalEnvVar, err error) {
 	pos, _ := s.EnvironmentRepo.ListGlobalVar(projectId)
 
 	for _, v := range pos {
-		ret = append(ret, domain.GlobalEnvVars{
+		ret = append(ret, domain.GlobalEnvVar{
 			"id":          v.ID,
 			"name":        v.Name,
 			"localValue":  v.LocalValue,
@@ -263,11 +263,11 @@ func (s *EnvironmentService) GetGlobalVars(projectId uint) (ret []domain.GlobalE
 
 	return
 }
-func (s *EnvironmentService) GetGlobalParams(projectId uint) (ret []domain.GlobalParamVars, err error) {
+func (s *EnvironmentService) GetGlobalParams(projectId uint) (ret []domain.GlobalParamVar, err error) {
 	pos, _ := s.EnvironmentRepo.ListParamModel(projectId)
 
 	for _, v := range pos {
-		ret = append(ret, domain.GlobalParamVars{
+		ret = append(ret, domain.GlobalParamVar{
 			"id":           v.ID,
 			"name":         v.Name,
 			"type":         v.Type,

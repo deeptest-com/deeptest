@@ -21,7 +21,7 @@ type DebugSceneService struct {
 
 func (s *DebugSceneService) LoadScene(endpointInterfaceId, scenarioProcessorId uint, usedBy consts.UsedBy) (
 	baseUrl string, shareVariables []domain.ShareVars, envVars []domain.EnvVar,
-	globalEnvVars []domain.GlobalEnvVars, globalParamVars []domain.GlobalParamVars) {
+	globalEnvVars []domain.GlobalEnvVar, globalParamVars []domain.GlobalParamVar) {
 
 	var serveId, serverId, projectId uint
 

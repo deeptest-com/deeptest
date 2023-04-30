@@ -100,14 +100,14 @@ func (s *DatapoolService) ReadExcel(pth string) (ret [][]interface{}, err error)
 func (s *DatapoolService) ListForExec(projectId uint) (ret domain.Datapools, error interface{}) {
 	ret = domain.Datapools{}
 
-	pos, err := s.DatapoolRepo.List(projectId)
+	datapools, err := s.DatapoolRepo.List(projectId)
 	if err != nil {
 		return
 	}
 
-	for _, po := range pos {
+	for _, datapool := range datapools {
 		var arr [][]string
-		json.Unmarshal([]byte(po.Data), &arr)
+		json.Unmarshal([]byte(datapool.Data), &arr)
 
 		var headers []string
 		for _, col := range arr[0] {
@@ -129,7 +129,7 @@ func (s *DatapoolService) ListForExec(projectId uint) (ret domain.Datapools, err
 			items = append(items, item)
 		}
 
-		ret[po.Name] = items
+		ret[datapool.Name] = items
 	}
 
 	return

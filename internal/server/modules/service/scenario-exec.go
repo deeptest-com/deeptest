@@ -64,10 +64,10 @@ func (s *ScenarioExecService) LoadExecData(scenarioId uint) (ret agentExec.Scena
 }
 
 func (s *ScenarioExecService) LoadEnvVarMap(scenarioId uint) (
-	envToVariablesMap map[uint]map[string]domain.EnvVar, interfaceToEnvMap map[uint]uint, err error) {
+	envToVariablesMap domain.EnvToVariablesMap, interfaceToEnvMap domain.InterfaceToEnvMap, err error) {
 
-	envToVariablesMap = map[uint]map[string]domain.EnvVar{} // envId -> varName -> varObj
-	interfaceToEnvMap = map[uint]uint{}
+	envToVariablesMap = domain.EnvToVariablesMap{}
+	interfaceToEnvMap = domain.InterfaceToEnvMap{}
 
 	processors, err := s.ScenarioNodeRepo.ListByScenario(scenarioId)
 

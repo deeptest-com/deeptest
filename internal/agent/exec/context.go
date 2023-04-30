@@ -16,8 +16,8 @@ var (
 
 	EnvToVariablesMap map[uint]map[string]domain.EnvVar
 	InterfaceToEnvMap map[uint]uint
-	GlobalEnvVars     []domain.GlobalEnvVars
-	GlobalParamVars   []domain.GlobalParamVars
+	GlobalEnvVars     []domain.GlobalEnvVar
+	GlobalParamVars   []domain.GlobalParamVar
 
 	ScopeHierarchy  = map[uint]*[]uint{}               // only for scenario
 	ScopedVariables = map[uint][]domain.ExecVariable{} // only for scenario

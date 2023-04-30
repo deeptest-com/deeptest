@@ -28,10 +28,10 @@ type ProcessorBase struct {
 	ProjectId  uint `json:"projectId"`
 	UseID      uint `json:"useId"`
 
-	EntityCategory consts.ProcessorCategory `json:"entityCategory"`
-	EntityType     consts.ProcessorType     `json:"entityType"`
-	EntityId       uint                     `json:"entityId"`
-	InterfaceId    uint                     `json:"interfaceId"`
+	EntityCategory      consts.ProcessorCategory `json:"entityCategory"`
+	EntityType          consts.ProcessorType     `json:"entityType"`
+	EntityId            uint                     `json:"entityId"`
+	EndpointInterfaceId uint                     `json:"endpointInterfaceId"`
 
 	Ordr      int             `json:"ordr"`
 	Children  []*Processor    `json:"children"`

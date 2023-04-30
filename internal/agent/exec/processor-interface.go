@@ -48,7 +48,7 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 	ReplaceRequestWithVars(&entity.BaseRequest)
 
 	// send request
-	GenRequestUrl(&entity.BaseRequest, processor.InterfaceId)
+	GenRequestUrl(&entity.BaseRequest, processor.EndpointInterfaceId)
 	entity.Response, err = Invoke(&entity.BaseRequest)
 
 	reqContent, _ := json.Marshal(entity.BaseRequest)

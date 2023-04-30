@@ -4,17 +4,11 @@ import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
-	_httpUtils "github.com/aaronchen2k/deeptest/pkg/lib/http"
 	"strings"
 )
 
 func Invoke(req *v1.BaseRequest) (resp v1.DebugResponse, err error) {
 	GetRequestProps(req)
-
-	req.Url, err = _httpUtils.AddDefaultUrlSchema(req.Url)
-	if err != nil {
-		return
-	}
 
 	if req.Method == consts.GET {
 		resp, err = httpHelper.Get(*req)

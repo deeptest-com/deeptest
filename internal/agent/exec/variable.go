@@ -150,13 +150,13 @@ func getPlaceholderValue(placeholder string) (ret string) {
 }
 
 func getVariableValue(placeholder string) (ret string) {
-	// global vars of project
+	// 1. global vars of project
 	// TODO:
 
-	// environment vars on serve
+	// 2. environment vars on serve
 	// TODO: InterfaceToEnvMap + EnvToVariablesMap
 
-	// shared vars in scenario processors
+	// 3. shared vars in scenario processors
 	cache := CachedVariablesByProcessor[CurrProcessorId]
 	if cache == nil {
 		cache = GetCachedVariableMapInContext(CurrProcessorId)

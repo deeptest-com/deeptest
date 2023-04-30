@@ -17,11 +17,11 @@ type DebugData struct {
 	ScenarioProcessorId uint          `gorm:"-" json:"scenarioProcessorId"`
 	UsedBy              consts.UsedBy `json:"usedBy"`
 
-	BaseUrl         string                  `gorm:"-" json:"baseUrl"`
-	ShareVars       []domain.ShareVars      `gorm:"-" json:"shareVars"`
-	EnvVars         []domain.EnvVar         `gorm:"-" json:"envVars"`
-	GlobalEnvVars   []domain.GlobalEnvVar   `gorm:"-" json:"globalEnvVars"`
-	GlobalParamVars []domain.GlobalParamVar `gorm:"-" json:"globalParamVars"`
+	BaseUrl         string                   `gorm:"-" json:"baseUrl"`
+	ShareVars       []domain.VarKeyValuePair `gorm:"-" json:"shareVars"`
+	EnvVars         []domain.VarKeyValuePair `gorm:"-" json:"envVars"`
+	GlobalEnvVars   []domain.GlobalEnvVar    `gorm:"-" json:"globalEnvVars"`
+	GlobalParamVars []domain.GlobalParamVar  `gorm:"-" json:"globalParamVars"`
 
 	//Datapools   domain.Datapools   `gorm:"-" json:"datapools"`
 

@@ -1,7 +1,6 @@
 package agentExec
 
 import (
-	"errors"
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
@@ -11,20 +10,24 @@ import (
 )
 
 var (
-	Environment = domain.EnvVar{}
-	Variables   = domain.ShareVars{} // only for invocation
-
-	EnvToVariablesMap map[uint]map[string]domain.EnvVar
-	InterfaceToEnvMap map[uint]uint
-	GlobalEnvVars     []domain.GlobalEnvVar
-	GlobalParamVars   []domain.GlobalParamVar
+	CurrProcessorId            = uint(0)
+	CachedVariablesByProcessor map[uint]domain.VarKeyValuePair
 
 	ScopeHierarchy  = map[uint]*[]uint{}               // only for scenario
 	ScopedVariables = map[uint][]domain.ExecVariable{} // only for scenario
 	ScopedCookies   = map[uint][]domain.ExecCookie{}   // only for scenario
 
+	// global variables and params
+	GlobalEnvVars   []domain.GlobalEnvVar
+	GlobalParamVars []domain.GlobalParamVar
+
+	// datapool
 	DatapoolData   = domain.Datapools{}
 	DatapoolCursor = map[string]int{} // only for scenario
+
+	// env variables
+	InterfaceToEnvMap map[uint]uint
+	EnvToVariablesMap map[uint]map[string]domain.VarKeyValuePair
 )
 
 func InitExecContext(execObj *ScenarioExecObj) (variables []domain.ExecVariable) {
@@ -37,7 +40,26 @@ func InitExecContext(execObj *ScenarioExecObj) (variables []domain.ExecVariable)
 	return
 }
 
-func ListCachedVariable(processorId uint) (variables []domain.ExecVariable) {
+func GetCachedVariableMapInContext(processorId uint) (ret domain.VarKeyValuePair) {
+	ret = domain.VarKeyValuePair{}
+
+	variables := listCachedVariable(processorId)
+
+	for _, item := range variables {
+		valMap, isMap := item.Value.(domain.VarKeyValuePair)
+
+		if isMap {
+			for propKey, v := range valMap {
+				ret[fmt.Sprintf("%s.%s", item.Name, propKey)] = v
+			}
+		} else {
+			ret[item.Name] = item.Value
+		}
+	}
+
+	return
+}
+func listCachedVariable(processorId uint) (variables []domain.ExecVariable) {
 	effectiveScopeIds := ScopeHierarchy[processorId]
 
 	if effectiveScopeIds == nil {
@@ -55,47 +77,6 @@ func ListCachedVariable(processorId uint) (variables []domain.ExecVariable) {
 
 	return
 }
-func GetCachedVariableMapInContext(processorId uint) (ret domain.ShareVars) {
-	ret = domain.ShareVars{}
-
-	variables := ListCachedVariable(processorId)
-
-	for _, item := range variables {
-		valMap, isMap := item.Value.(domain.ShareVars)
-
-		if isMap {
-			for propKey, v := range valMap {
-				ret[fmt.Sprintf("%s.%s", item.Name, propKey)] = v
-			}
-		} else {
-			ret[item.Name] = item.Value
-		}
-	}
-
-	return
-}
-
-func GetVariable(processorId uint, variablePath string) (variable domain.ExecVariable, err error) {
-	allValidIds := ScopeHierarchy[processorId]
-	if allValidIds != nil {
-		for _, id := range *allValidIds {
-			for _, item := range ScopedVariables[id] {
-				var ok bool
-				if variable, ok = EvaluateVariableExpressionValue(item, variablePath); ok {
-					goto LABEL
-				}
-			}
-		}
-	}
-
-	if variable.Name == "" { // not found
-		err = errors.New(fmt.Sprintf("找不到变量\"%s\"", variablePath))
-	}
-
-LABEL:
-
-	return
-}
 
 func EvaluateVariableExpressionValue(variable domain.ExecVariable, variablePath string) (
 	ret domain.ExecVariable, ok bool) {
@@ -107,99 +88,11 @@ func EvaluateVariableExpressionValue(variable domain.ExecVariable, variablePath 
 
 		if len(arr) > 1 {
 			variableProp := arr[1]
-			ret.Value = variable.Value.(domain.ShareVars)[variableProp]
+			ret.Value = variable.Value.(domain.VarKeyValuePair)[variableProp]
 		}
 
 		ok = true
 
-	}
-
-	return
-}
-
-func ImportVariables(processorId uint, variables domain.ShareVars, scope consts.ExtractorScope) (err error) {
-	for key, val := range variables {
-		newVariable := domain.ExecVariable{
-			Name:  key,
-			Value: val,
-			Scope: scope,
-		}
-
-		found := false
-		for i := 0; i < len(ScopedVariables[processorId]); i++ {
-			if ScopedVariables[processorId][i].Name == key {
-				ScopedVariables[processorId][i] = newVariable
-
-				found = true
-				break
-			}
-		}
-
-		if !found {
-			ScopedVariables[processorId] = append(ScopedVariables[processorId], newVariable)
-		}
-	}
-
-	return
-}
-
-func SetVariable(processorId uint, variableName string, variableValue interface{}, scope consts.ExtractorScope) (
-	err error) {
-
-	found := false
-
-	newVariable := domain.ExecVariable{
-		Name:  variableName,
-		Value: variableValue,
-		Scope: scope,
-	}
-
-	allValidIds := ScopeHierarchy[processorId]
-	if allValidIds != nil {
-		for _, id := range *allValidIds {
-			for i := 0; i < len(ScopedVariables[id]); i++ {
-				if ScopedVariables[id][i].Name == variableName {
-					ScopedVariables[id][i] = newVariable
-
-					found = true
-					break
-				}
-			}
-		}
-	}
-
-	if !found {
-		ScopedVariables[processorId] = append(ScopedVariables[processorId], newVariable)
-	}
-
-	return
-}
-
-func ClearVariable(processorId uint, variableName string) (err error) {
-	deleteIndex := -1
-
-	targetScopeId := uint(0)
-
-	allValidIds := ScopeHierarchy[processorId]
-	if allValidIds != nil {
-		for _, id := range *ScopeHierarchy[processorId] {
-			for index, item := range ScopedVariables[id] {
-				if item.Name == variableName {
-					deleteIndex = index
-					targetScopeId = id
-					break
-				}
-			}
-		}
-	}
-
-	if deleteIndex > -1 {
-		if len(ScopedVariables[targetScopeId]) == deleteIndex+1 {
-			ScopedVariables[targetScopeId] = make([]domain.ExecVariable, 0)
-		} else {
-			ScopedVariables[targetScopeId] = append(
-				ScopedVariables[targetScopeId][:deleteIndex], ScopedVariables[targetScopeId][(deleteIndex+1):]...)
-		}
 	}
 
 	return

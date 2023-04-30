@@ -2,7 +2,6 @@ package agentExec
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	scriptHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/script"
 	fileUtils "github.com/aaronchen2k/deeptest/pkg/lib/file"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
@@ -37,24 +36,14 @@ func InitJsRuntime() {
 		return
 	})
 
-	MyVm.JsRuntime.Set("getEnvironmentVariable", func(name string) interface{} {
-		return Environment[name]
-	})
-	MyVm.JsRuntime.Set("setEnvironmentVariable", func(name, val string) {
-		Environment[name] = val
-	})
-	MyVm.JsRuntime.Set("clearEnvironmentVariable", func(name string) {
-		Environment = domain.EnvVar{}
-	})
-
 	MyVm.JsRuntime.Set("getVariable", func(name string) interface{} {
-		return Variables[name]
+		return getVariableValue(name)
 	})
 	MyVm.JsRuntime.Set("setVariable", func(name, val string) {
-		Variables[name] = val
+		SetVariable(CurrProcessorId, name, val, consts.Public)
 	})
 	MyVm.JsRuntime.Set("clearVariable", func(name string) {
-		Variables = domain.ShareVars{}
+		ClearVariable(CurrProcessorId, name)
 	})
 
 	// load global script

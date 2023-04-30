@@ -235,11 +235,11 @@ func (s *EnvironmentService) SaveOrder(req v1.EnvironmentIdsReq) (err error) {
 	return s.EnvironmentRepo.SaveOrder(req)
 }
 
-func (s *EnvironmentService) GetVarsByEnv(envId uint) (ret []domain.EnvVar, err error) {
+func (s *EnvironmentService) GetVarsByEnv(envId uint) (ret []domain.VarKeyValuePair, err error) {
 	pos, _ := s.EnvironmentRepo.GetVars(envId)
 
 	for _, v := range pos {
-		ret = append(ret, domain.EnvVar{
+		ret = append(ret, domain.VarKeyValuePair{
 			"id":          v.ID,
 			"name":        v.Name,
 			"localValue":  v.LocalValue,

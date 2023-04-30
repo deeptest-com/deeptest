@@ -46,7 +46,7 @@ func EvaluateGovaluateExpressionByScope(expression string, scopeId uint) (ret in
 
 	return
 }
-func EvaluateGovaluateExpressionWithVariables(expression string, variables []domain.ShareVars) (ret interface{}, err error) {
+func EvaluateGovaluateExpressionWithVariables(expression string, variables []domain.VarKeyValuePair) (ret interface{}, err error) {
 	expr := commUtils.RemoveLeftVariableSymbol(expression)
 
 	govaluateExpression, err := govaluate.NewEvaluableExpressionWithFunctions(expr, GovaluateFunctions)
@@ -64,7 +64,7 @@ func EvaluateGovaluateExpressionWithVariables(expression string, variables []dom
 	return
 }
 
-func generateGovaluateParamsByScope(expression string, scopeId uint) (ret domain.ShareVars, err error) {
+func generateGovaluateParamsByScope(expression string, scopeId uint) (ret domain.VarKeyValuePair, err error) {
 	ret = make(map[string]interface{}, 8)
 
 	variables := GetVariablesInVariablePlaceholder(expression)
@@ -80,7 +80,7 @@ func generateGovaluateParamsByScope(expression string, scopeId uint) (ret domain
 	return
 }
 
-func generateGovaluateParamsWithVariables(expression string, variableMap []domain.ShareVars) (ret map[string]interface{}, err error) {
+func generateGovaluateParamsWithVariables(expression string, variableMap []domain.VarKeyValuePair) (ret map[string]interface{}, err error) {
 	ret = make(map[string]interface{}, 0)
 
 	//variables := GetVariablesInVariablePlaceholder(expression)

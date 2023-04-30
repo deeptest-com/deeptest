@@ -35,7 +35,7 @@ func (s *VariableService) GetEnvVarsByInterface(interfaceId uint, usedBy consts.
 	return
 }
 
-func (s *VariableService) GetShareVarsByInterface(interfaceId uint, usedBy consts.UsedBy) (ret []domain.ShareVars, err error) {
+func (s *VariableService) GetShareVarsByInterface(interfaceId uint, usedBy consts.UsedBy) (ret []domain.VarKeyValuePair, err error) {
 	//var projectId uint
 	//
 	//if usedBy == consts.InterfaceDebug {

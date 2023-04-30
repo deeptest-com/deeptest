@@ -84,16 +84,16 @@ func (s *ScenarioExecService) LoadEnvVarMap(scenarioId uint) (
 		interfaceToEnvMap[processor.EndpointInterfaceId] = envId
 
 		if envToVariablesMap[envId] == nil {
-			envToVariablesMap[envId] = map[string]domain.EnvVar{}
+			envToVariablesMap[envId] = map[string]domain.VarKeyValuePair{}
 		}
 
-		envToVariablesMap[envId][consts.KEY_BASE_URL] = domain.EnvVar{
+		envToVariablesMap[envId][consts.KEY_BASE_URL] = domain.VarKeyValuePair{
 			"baseUrl": serveServer.Url,
 		}
 
 		vars, _ := s.EnvironmentRepo.GetVars(envId)
 		for _, v := range vars {
-			envToVariablesMap[envId][v.Name] = domain.EnvVar{
+			envToVariablesMap[envId][v.Name] = domain.VarKeyValuePair{
 				"id":          v.ID,
 				"name":        v.Name,
 				"localValue":  v.LocalValue,

@@ -27,7 +27,7 @@ func (s *ExecInterfaceService) Request(req v1.DebugData) (ret v1.DebugResponse, 
 	agentExec.ExecJs(req.PreRequestScript)
 
 	// replace variables
-	agentExec.ReplaceAll(&req.BaseRequest, agentExec.Environment, agentExec.Variables, agentExec.DatapoolData)
+	agentExec.ReplaceRequestWithVars(&req.BaseRequest)
 
 	// send request
 

@@ -25,6 +25,7 @@ type DebugData struct {
 
 	//Datapools   domain.Datapools   `gorm:"-" json:"datapools"`
 
+	Name string `gorm:"-" json:"name"`
 	BaseRequest
 }
 

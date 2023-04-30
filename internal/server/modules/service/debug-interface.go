@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi"
@@ -120,6 +121,8 @@ func (s *DebugInterfaceService) SetProps(
 	if debugInterface == nil {
 		interfaces2debug := openapi.NewInterfaces2debug(*endpointInterface, serve)
 		debugInterface = interfaces2debug.Convert()
+
+		debugInterface.Name = fmt.Sprintf("%s - %s", endpoint.Title, debugInterface.Method)
 	}
 
 	copier.CopyWithOption(&req, &debugInterface, copier.Option{DeepCopy: true})

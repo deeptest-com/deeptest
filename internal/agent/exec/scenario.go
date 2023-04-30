@@ -33,8 +33,8 @@ type ScenarioExecObjBase struct {
 	EnvToVariablesMap domain.EnvToVariablesMap `json:"envVariables"` // envId -> varId -> varObj
 	InterfaceToEnvMap domain.InterfaceToEnvMap `json:"interfaceToEnvMap"`
 
-	GlobalEnvVars   []domain.GlobalEnvVar   `json:"globalEnvVars"`
-	GlobalParamVars []domain.GlobalParamVar `json:"globalParamVars"`
+	GlobalEnvVars   []domain.GlobalVar   `json:"globalEnvVars"`
+	GlobalParamVars []domain.GlobalParam `json:"globalParamVars"`
 
 	Datapools domain.Datapools
 

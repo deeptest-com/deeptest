@@ -18,8 +18,8 @@ var (
 	ScopedCookies   = map[uint][]domain.ExecCookie{}   // only for scenario
 
 	// global variables and params
-	GlobalEnvVars   []domain.GlobalEnvVar
-	GlobalParamVars []domain.GlobalParamVar
+	GlobalVars   []domain.GlobalVar
+	GlobalParams []domain.GlobalParam
 
 	// datapool
 	DatapoolData   = domain.Datapools{}

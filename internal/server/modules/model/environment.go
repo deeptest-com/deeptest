@@ -1,5 +1,7 @@
 package model
 
+import "github.com/aaronchen2k/deeptest/internal/pkg/domain"
+
 type Environment struct {
 	BaseModel
 	ProjectId    uint             `json:"projectId"`
@@ -11,23 +13,18 @@ type Environment struct {
 
 type EnvironmentVar struct {
 	BaseModel
-	Name          string `json:"name"`
-	RightValue    string `json:"rightValue"`
-	LocalValue    string `json:"localValue"`
-	RemoteValue   string `json:"remoteValue"`
-	EnvironmentId uint   `json:"environmentId"`
-	ProjectId     uint   `json:"projectId"`
+	domain.GlobalVar
+
+	EnvironmentId uint `json:"environmentId"`
+	ProjectId     uint `json:"projectId"`
 }
 
 type EnvironmentParam struct {
 	BaseModel
-	Name         string `json:"name"`
-	Type         string `json:"type"`
-	Required     bool   `json:"required"`
-	DefaultValue string `json:"defaultValue"`
-	Description  string `json:"description"`
-	In           string `json:"in"`
-	ProjectId    uint   `json:"projectId"`
+	domain.GlobalParam
+
+	Description string `json:"description"`
+	ProjectId   uint   `json:"projectId"`
 }
 
 func (Environment) TableName() string {

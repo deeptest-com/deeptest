@@ -44,8 +44,8 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 	// exec pre-request script
 	ExecJs(entity.PreRequestScript)
 
-	// replace variables
-	ReplaceRequestWithVars(&entity.BaseRequest)
+	// dealwith variables
+	DealwithVariables(&entity.BaseRequest, consts.ScenarioDebug)
 
 	// send request
 	GenRequestUrl(&entity.BaseRequest, processor.EndpointInterfaceId)

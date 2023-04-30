@@ -3,7 +3,7 @@ package agentExec
 import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
+	"github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
 	"strings"
 )
 
@@ -83,23 +83,46 @@ func GetContentProps(resp *v1.DebugResponse) {
 	return
 }
 
-func ReplaceRequestWithVars(req *v1.BaseRequest) {
-	replaceUrl(req)
-	replaceParams(req)
-	replaceHeaders(req)
+func DealwithVariables(req *v1.BaseRequest, usedBy consts.UsedBy) {
+	replaceUrl(req, usedBy)
+	replaceParams(req, usedBy)
+	replaceHeaders(req, usedBy)
 	replaceBody(req)
 	replaceAuthor(req)
 }
 
-func replaceUrl(req *v1.BaseRequest) {
+func replaceUrl(req *v1.BaseRequest, usedBy consts.UsedBy) {
+	// project's global params already be added
 	req.Url = ReplaceVariableValue(req.Url)
 }
-func replaceParams(req *v1.BaseRequest) {
+func replaceParams(req *v1.BaseRequest, usedBy consts.UsedBy) {
+	if usedBy == consts.ScenarioDebug {
+		for _, v := range GlobalParams {
+			if v.In == consts.ParamInQuery {
+				req.Params = append(req.Params, v1.Param{
+					Name:  v.Name,
+					Value: v.DefaultValue,
+				})
+			}
+		}
+	}
+
 	for idx, param := range req.Params {
 		req.Params[idx].Value = ReplaceVariableValue(param.Value)
 	}
 }
-func replaceHeaders(req *v1.BaseRequest) {
+func replaceHeaders(req *v1.BaseRequest, usedBy consts.UsedBy) {
+	if usedBy == consts.ScenarioDebug {
+		for _, v := range GlobalParams {
+			if v.In == consts.ParamInHeader {
+				req.Params = append(req.Params, v1.Param{
+					Name:  v.Name,
+					Value: v.DefaultValue,
+				})
+			}
+		}
+	}
+
 	for idx, header := range req.Headers {
 		req.Headers[idx].Value = ReplaceVariableValue(header.Value)
 	}

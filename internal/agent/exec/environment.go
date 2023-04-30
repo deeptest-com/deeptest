@@ -8,9 +8,9 @@ import (
 
 func GenRequestUrl(req *v1.BaseRequest, interfaceId uint) {
 	envId := InterfaceToEnvMap[interfaceId]
-	mp := EnvToVariablesMap[envId]
+	vars := EnvToVariablesMap[envId]
 
-	baseUrl := mp[consts.KEY_BASE_URL][consts.KEY_BASE_URL].(string)
+	baseUrl := getValueFromList(consts.KEY_BASE_URL, vars)
 
 	req.Url = _httpUtils.AddSepIfNeeded(baseUrl) + req.Url
 }

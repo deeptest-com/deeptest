@@ -54,9 +54,9 @@ func (s *ScenarioExecService) LoadExecData(scenarioId uint) (ret agentExec.Scena
 	ret.RootProcessor.Session = agentExec.Session{}
 
 	// get variables
-	ret.EnvToVariablesMap, ret.InterfaceToEnvMap, _ = s.LoadEnvVarMap(scenarioId)
-	ret.GlobalEnvVars, _ = s.EnvironmentService.GetGlobalVars(scenario.ProjectId)
-	ret.GlobalParamVars, _ = s.EnvironmentService.GetGlobalParams(scenario.ProjectId)
+	ret.EnvToVariables, ret.InterfaceToEnvMap, _ = s.LoadEnvVarMap(scenarioId)
+	ret.GlobalVars, _ = s.EnvironmentService.GetGlobalVars(scenario.ProjectId)
+	ret.GlobalParams, _ = s.EnvironmentService.GetGlobalParams(scenario.ProjectId)
 
 	ret.Datapools, _ = s.DatapoolService.ListForExec(scenario.ProjectId)
 
@@ -64,9 +64,9 @@ func (s *ScenarioExecService) LoadExecData(scenarioId uint) (ret agentExec.Scena
 }
 
 func (s *ScenarioExecService) LoadEnvVarMap(scenarioId uint) (
-	envToVariablesMap domain.EnvToVariablesMap, interfaceToEnvMap domain.InterfaceToEnvMap, err error) {
+	envToVariablesMap domain.EnvToVariables, interfaceToEnvMap domain.InterfaceToEnvMap, err error) {
 
-	envToVariablesMap = domain.EnvToVariablesMap{}
+	envToVariablesMap = domain.EnvToVariables{}
 	interfaceToEnvMap = domain.InterfaceToEnvMap{}
 
 	processors, err := s.ScenarioNodeRepo.ListByScenario(scenarioId)
@@ -83,22 +83,19 @@ func (s *ScenarioExecService) LoadEnvVarMap(scenarioId uint) (
 
 		interfaceToEnvMap[processor.EndpointInterfaceId] = envId
 
-		if envToVariablesMap[envId] == nil {
-			envToVariablesMap[envId] = map[string]domain.VarKeyValuePair{}
-		}
-
-		envToVariablesMap[envId][consts.KEY_BASE_URL] = domain.VarKeyValuePair{
-			consts.KEY_BASE_URL: serveServer.Url,
-		}
+		envToVariablesMap[envId] = append(envToVariablesMap[envId], domain.GlobalVar{
+			Name:        consts.KEY_BASE_URL,
+			LocalValue:  serveServer.Url,
+			RemoteValue: serveServer.Url,
+		})
 
 		vars, _ := s.EnvironmentRepo.GetVars(envId)
 		for _, v := range vars {
-			envToVariablesMap[envId][v.Name] = domain.VarKeyValuePair{
-				"id":          v.ID,
-				"name":        v.Name,
-				"localValue":  v.LocalValue,
-				"remoteValue": v.RemoteValue,
-			}
+			envToVariablesMap[envId] = append(envToVariablesMap[envId], domain.GlobalVar{
+				Name:        v.Name,
+				LocalValue:  v.LocalValue,
+				RemoteValue: v.RemoteValue,
+			})
 		}
 	}
 

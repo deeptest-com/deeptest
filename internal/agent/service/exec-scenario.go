@@ -37,10 +37,10 @@ func (s *ExecScenarioService) Exec(execObj *agentExec.ScenarioExecObj, wsMsg *we
 	session *agentExec.Session, err error) {
 
 	// variables etc.
-	agentExec.EnvToVariablesMap = execObj.EnvToVariablesMap
+	agentExec.EnvToVariablesMap = execObj.EnvToVariables
 	agentExec.InterfaceToEnvMap = execObj.InterfaceToEnvMap
-	agentExec.GlobalVars = execObj.GlobalEnvVars
-	agentExec.GlobalParams = execObj.GlobalParamVars
+	agentExec.GlobalVars = execObj.GlobalVars
+	agentExec.GlobalParams = execObj.GlobalParams
 	agentExec.DatapoolData = execObj.Datapools
 
 	s.RestoreEntityFromRawAndSetParent(execObj.RootProcessor)

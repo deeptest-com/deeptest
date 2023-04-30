@@ -30,6 +30,7 @@ type ProcessorInterface struct {
 
 func (entity ProcessorInterface) Run(processor *Processor, session *Session) (err error) {
 	logUtils.Infof("interface entity")
+	CurrInterfaceId = processor.EndpointInterfaceId
 
 	startTime := time.Now()
 	processor.Result = &agentDomain.ScenarioExecResult{

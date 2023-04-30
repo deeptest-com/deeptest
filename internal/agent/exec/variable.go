@@ -123,9 +123,7 @@ func ReplaceVariableValue(value string) (ret string) {
 	ret = value
 
 	for _, placeholder := range variablePlaceholders {
-		variablePlaceholder := fmt.Sprintf("${%s}", placeholder)
-
-		oldVal := variablePlaceholder
+		oldVal := fmt.Sprintf("${%s}", placeholder)
 		newVal := getPlaceholderValue(placeholder)
 
 		ret = strings.ReplaceAll(ret, oldVal, newVal)
@@ -134,35 +132,75 @@ func ReplaceVariableValue(value string) (ret string) {
 	return
 }
 
-func getPlaceholderValue(placeholder string) (ret string) {
-	typ := getPlaceholderType(placeholder)
+func getPlaceholderValue(name string) (ret string) {
+	typ := getPlaceholderType(name)
 
 	if typ == consts.PlaceholderTypeVariable {
-		ret = getVariableValue(placeholder)
+		ret = getVariableValue(name)
 
 	} else if typ == consts.PlaceholderTypeDatapool {
-		ret = getDatapoolValue(placeholder)
+		ret = getDatapoolValue(name)
 
-	} else if typ == consts.PlaceholderTypeFunction {
 	}
+	//else if typ == consts.PlaceholderTypeFunction {
+	//}
 
 	return
 }
 
-func getVariableValue(placeholder string) (ret string) {
-	// 1. global vars of project
-	// TODO:
+func getVariableValue(name string) (ret string) {
+	// priority 1. shared vars in scenario processors
+	ret = getValueFromShareVar(name)
+	if ret != "" {
+		return
+	}
 
-	// 2. environment vars on serve
-	// TODO: InterfaceToEnvMap + EnvToVariablesMap
+	// priority 2. environment vars on serve
+	ret = getValueFromEnvVar(name)
+	if ret != "" {
+		return
+	}
 
-	// 3. shared vars in scenario processors
-	cache := CachedVariablesByProcessor[CurrProcessorId]
+	// priority 3. global vars of project
+	ret = getValueFromGlobalVar(name)
+	if ret != "" {
+		return
+	}
+
+	return
+}
+func getValueFromShareVar(name string) (ret string) {
+	cache := CachedShareVarByProcessor[CurrProcessorId]
 	if cache == nil {
 		cache = GetCachedVariableMapInContext(CurrProcessorId)
 	}
 
-	ret = fmt.Sprintf("%v", cache[placeholder])
+	ret = fmt.Sprintf("%v", cache[name])
+
+	return
+}
+func getValueFromEnvVar(name string) (ret string) {
+	envId := InterfaceToEnvMap[CurrInterfaceId]
+
+	vars := EnvToVariablesMap[envId]
+
+	ret = getValueFromList(name, vars)
+
+	return
+}
+func getValueFromGlobalVar(name string) (ret string) {
+	ret = getValueFromList(name, GlobalVars)
+
+	return
+}
+
+func getValueFromList(name string, list []domain.GlobalVar) (ret string) {
+	for _, v := range list {
+		if v.Name == name {
+			ret = v.LocalValue
+			break
+		}
+	}
 
 	return
 }

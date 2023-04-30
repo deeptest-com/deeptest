@@ -10,8 +10,10 @@ import (
 )
 
 var (
-	CurrProcessorId            = uint(0)
-	CachedVariablesByProcessor map[uint]domain.VarKeyValuePair
+	CurrProcessorId = uint(0)
+	CurrInterfaceId = uint(0)
+
+	CachedShareVarByProcessor map[uint]domain.VarKeyValuePair
 
 	ScopeHierarchy  = map[uint]*[]uint{}               // only for scenario
 	ScopedVariables = map[uint][]domain.ExecVariable{} // only for scenario
@@ -27,11 +29,18 @@ var (
 
 	// env variables
 	InterfaceToEnvMap map[uint]uint
-	EnvToVariablesMap map[uint]map[string]domain.VarKeyValuePair
+	EnvToVariablesMap map[uint][]domain.GlobalVar
 )
 
 func InitExecContext(execObj *ScenarioExecObj) (variables []domain.ExecVariable) {
 	GetScopeHierarchy(execObj.RootProcessor, &ScopeHierarchy)
+
+	GlobalVars = execObj.GlobalVars
+	GlobalParams = execObj.GlobalParams
+
+	InterfaceToEnvMap = execObj.InterfaceToEnvMap
+	EnvToVariablesMap = execObj.EnvToVariables
+
 	DatapoolData = execObj.Datapools
 
 	ScopedVariables = map[uint][]domain.ExecVariable{}

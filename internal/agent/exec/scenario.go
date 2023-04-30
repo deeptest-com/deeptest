@@ -28,6 +28,8 @@ type ScenarioExecObjMsg struct {
 type ScenarioExecObjBase struct {
 	Name string `json:"name"`
 
+	BaseUrl string `json:"baseUrl"`
+
 	EnvToVariablesMap map[uint]map[string]domain.EnvVar `json:"envVariables"` // envId -> varId -> varObj
 	InterfaceToEnvMap map[uint]uint                     `json:"interfaceToEnvMap"`
 

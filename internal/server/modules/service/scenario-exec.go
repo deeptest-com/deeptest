@@ -7,7 +7,6 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
-	"log"
 	"sync"
 )
 
@@ -20,6 +19,7 @@ type ScenarioExecService struct {
 	ScenarioNodeRepo   *repo.ScenarioNodeRepo   `inject:""`
 	ScenarioReportRepo *repo.ScenarioReportRepo `inject:""`
 	TestLogRepo        *repo.LogRepo            `inject:""`
+	EnvironmentRepo    *repo.EnvironmentRepo    `inject:""`
 
 	EndpointInterfaceRepo *repo.EndpointInterfaceRepo `inject:""`
 	EndpointRepo          *repo.EndpointRepo          `inject:""`
@@ -66,7 +66,7 @@ func (s *ScenarioExecService) LoadExecData(scenarioId uint) (ret agentExec.Scena
 func (s *ScenarioExecService) LoadEnvVarMap(scenarioId uint) (
 	envToVariablesMap map[uint]map[string]domain.EnvVar, interfaceToEnvMap map[uint]uint, err error) {
 
-	envToVariablesMap = map[uint]map[string]domain.EnvVar{} // envId -> varId -> varObj
+	envToVariablesMap = map[uint]map[string]domain.EnvVar{} // envId -> varName -> varObj
 	interfaceToEnvMap = map[uint]uint{}
 
 	processors, err := s.ScenarioNodeRepo.ListByScenario(scenarioId)
@@ -83,8 +83,23 @@ func (s *ScenarioExecService) LoadEnvVarMap(scenarioId uint) (
 
 		interfaceToEnvMap[processor.EndpointInterfaceId] = envId
 
-		log.Print(envId)
-		// data for envToVariablesMap
+		if envToVariablesMap[envId] == nil {
+			envToVariablesMap[envId] = map[string]domain.EnvVar{}
+		}
+
+		envToVariablesMap[envId][consts.KEY_BASE_URL] = domain.EnvVar{
+			"baseUrl": serveServer.Url,
+		}
+
+		vars, _ := s.EnvironmentRepo.GetVars(envId)
+		for _, v := range vars {
+			envToVariablesMap[envId][v.Name] = domain.EnvVar{
+				"id":          v.ID,
+				"name":        v.Name,
+				"localValue":  v.LocalValue,
+				"remoteValue": v.RemoteValue,
+			}
+		}
 	}
 
 	return

@@ -7,11 +7,8 @@ import (
 )
 
 type SceneService struct {
-	ScenarioRepo       *repo.ScenarioRepo       `inject:""`
-	ScenarioNodeRepo   *repo.ScenarioNodeRepo   `inject:""`
-	ScenarioReportRepo *repo.ScenarioReportRepo `inject:""`
-	TestLogRepo        *repo.LogRepo            `inject:""`
-	EnvironmentRepo    *repo.EnvironmentRepo    `inject:""`
+	ScenarioNodeRepo *repo.ScenarioNodeRepo `inject:""`
+	EnvironmentRepo  *repo.EnvironmentRepo  `inject:""`
 
 	EndpointInterfaceRepo *repo.EndpointInterfaceRepo `inject:""`
 	EndpointRepo          *repo.EndpointRepo          `inject:""`

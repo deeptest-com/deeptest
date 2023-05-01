@@ -19,10 +19,10 @@ type DebugInterfaceService struct {
 	ScenarioProcessorRepo *repo.ScenarioProcessorRepo `inject:""`
 	ServeServerRepo       *repo.ServeServerRepo       `inject:""`
 
-	DebugSceneService   *DebugSceneService   `inject:""`
-	ScenarioExecService *ScenarioExecService `inject:""`
-	EnvironmentService  *EnvironmentService  `inject:""`
-	DatapoolService     *DatapoolService     `inject:""`
+	DebugSceneService  *DebugSceneService  `inject:""`
+	SceneService       *SceneService       `inject:""`
+	EnvironmentService *EnvironmentService `inject:""`
+	DatapoolService    *DatapoolService    `inject:""`
 }
 
 func (s *DebugInterfaceService) Load(loadReq domain.DebugReq) (ret agentExec.InterfaceExecObj, err error) {
@@ -53,7 +53,7 @@ func (s *DebugInterfaceService) Load(loadReq domain.DebugReq) (ret agentExec.Int
 
 	// get variables
 	var projectId uint
-	ret.EnvToVariables, ret.InterfaceToEnvMap, projectId, _ = s.ScenarioExecService.GetEnvVarByEndpointInterface(debugData.EndpointInterfaceId)
+	ret.EnvToVariables, ret.InterfaceToEnvMap, projectId, _ = s.SceneService.LoadEnvVarMapByEndpointInterface(debugData.EndpointInterfaceId)
 	ret.GlobalVars, _ = s.EnvironmentService.GetGlobalVars(projectId)
 	ret.GlobalParams, _ = s.EnvironmentService.GetGlobalParams(projectId)
 

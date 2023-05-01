@@ -170,16 +170,21 @@ func getVariableValue(name string) (ret string) {
 	return
 }
 func getValueFromShareVar(name string) (ret string) {
-	cache := CachedShareVarByProcessor[CurrProcessorId]
-	if cache == nil {
-		cache = GetCachedVariableMapInContext(CurrProcessorId)
-	}
+	if CurrProcessorId == 0 {
+		ret = getValueFromList(name, ExecScene.ShareVars)
 
-	if cache[name] == nil {
-		return ""
-	}
+	} else {
+		cache := CachedShareVarByProcessor[CurrProcessorId]
+		if cache == nil {
+			cache = GetCachedVariableMapInContext(CurrProcessorId)
+		}
 
-	ret = fmt.Sprintf("%v", cache[name])
+		if cache[name] == nil {
+			return ""
+		}
+
+		ret = fmt.Sprintf("%v", cache[name])
+	}
 
 	return
 }

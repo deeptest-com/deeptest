@@ -41,7 +41,7 @@ func (s *ShareVarService) Save(name, value string, interfaceId, serveId, process
 }
 
 func (s *ShareVarService) List(endpointInterfaceId, scenarioProcessorId uint, usedBy consts.UsedBy) (
-	shareVariables []domain.VarKeyValuePair) {
+	shareVariables []domain.GlobalVar) {
 
 	interf, _ := s.EndpointInterfaceRepo.Get(endpointInterfaceId)
 	endpoint, _ := s.EndpointRepo.Get(interf.EndpointId)
@@ -72,7 +72,7 @@ func (s *ShareVarService) Clear(endpointOrProcessorId int, usedBy consts.UsedBy)
 	return
 }
 
-func (s *ShareVarService) listForDebug(serveId, scenarioProcessorId uint, usedBy consts.UsedBy) (ret []domain.VarKeyValuePair, err error) {
+func (s *ShareVarService) listForDebug(serveId, scenarioProcessorId uint, usedBy consts.UsedBy) (ret []domain.GlobalVar, err error) {
 	var pos []model.ShareVariable
 
 	if usedBy == consts.InterfaceDebug {
@@ -82,10 +82,9 @@ func (s *ShareVarService) listForDebug(serveId, scenarioProcessorId uint, usedBy
 	}
 
 	for _, po := range pos {
-		ret = append(ret, domain.VarKeyValuePair{
-			"id":    po.ID,
-			"name":  po.Name,
-			"value": po.Value,
+		ret = append(ret, domain.GlobalVar{
+			Name:       po.Name,
+			LocalValue: po.Value,
 		})
 	}
 

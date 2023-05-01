@@ -17,10 +17,12 @@ func (s *ExecInterfaceService) Run(call agentDomain.InterfaceCall) (ret domain.D
 	req := s.RemoteService.GetInterfaceToExec(call)
 
 	agentExec.CurrInterfaceId = req.DebugData.EndpointInterfaceId
+	agentExec.CurrProcessorId = 0 // not in a scenario
 
 	agentExec.ExecScene = req.ExecScene
 
 	ret, err = s.Request(req.DebugData)
+
 	err = s.RemoteService.SubmitInterfaceResult(req.DebugData, ret, call.ServerUrl, call.Token)
 
 	return

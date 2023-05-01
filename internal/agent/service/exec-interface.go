@@ -1,10 +1,10 @@
 package service
 
 import (
-	"github.com/aaronchen2k/deeptest/cmd/agent/v1/domain"
-	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	agentDomain "github.com/aaronchen2k/deeptest/cmd/agent/v1/domain"
 	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	_httpUtils "github.com/aaronchen2k/deeptest/pkg/lib/http"
 	"strings"
 )
@@ -13,7 +13,7 @@ type ExecInterfaceService struct {
 	RemoteService *RemoteService `inject:""`
 }
 
-func (s *ExecInterfaceService) Run(call domain.InterfaceCall) (resp v1.DebugResponse, err error) {
+func (s *ExecInterfaceService) Run(call agentDomain.InterfaceCall) (resp domain.DebugResponse, err error) {
 	req := s.RemoteService.GetInterfaceToExec(call)
 
 	resp, err = s.Request(req)
@@ -22,7 +22,7 @@ func (s *ExecInterfaceService) Run(call domain.InterfaceCall) (resp v1.DebugResp
 	return
 }
 
-func (s *ExecInterfaceService) Request(req v1.DebugData) (ret v1.DebugResponse, err error) {
+func (s *ExecInterfaceService) Request(req domain.DebugData) (ret domain.DebugResponse, err error) {
 	// exec pre-request script
 	agentExec.ExecJs(req.PreRequestScript)
 
@@ -43,7 +43,7 @@ func (s *ExecInterfaceService) Request(req v1.DebugData) (ret v1.DebugResponse, 
 	return
 }
 
-func (s *ExecInterfaceService) GetContentProps(ret *v1.DebugResponse) {
+func (s *ExecInterfaceService) GetContentProps(ret *domain.DebugResponse) {
 	ret.ContentLang = consts.LangTEXT
 
 	if ret.ContentLang == "" {

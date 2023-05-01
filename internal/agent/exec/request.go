@@ -1,13 +1,13 @@
 package agentExec
 
 import (
-	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
 	"strings"
 )
 
-func Invoke(req *v1.BaseRequest) (resp v1.DebugResponse, err error) {
+func Invoke(req *domain.BaseRequest) (resp domain.DebugResponse, err error) {
 	GetRequestProps(req)
 
 	if req.Method == consts.GET {
@@ -35,7 +35,7 @@ func Invoke(req *v1.BaseRequest) (resp v1.DebugResponse, err error) {
 	return
 }
 
-func GetRequestProps(req *v1.BaseRequest) {
+func GetRequestProps(req *domain.BaseRequest) {
 	req.BodyLang = consts.LangTEXT
 
 	arr := strings.Split(string(req.BodyType), "/")
@@ -51,7 +51,7 @@ func GetRequestProps(req *v1.BaseRequest) {
 	req.BodyLang = consts.HttpRespLangType(typeName)
 }
 
-func GetContentProps(resp *v1.DebugResponse) {
+func GetContentProps(resp *domain.DebugResponse) {
 	resp.ContentLang = consts.LangTEXT
 
 	if resp.ContentLang == "" {
@@ -83,7 +83,7 @@ func GetContentProps(resp *v1.DebugResponse) {
 	return
 }
 
-func DealwithVariables(req *v1.BaseRequest, usedBy consts.UsedBy) {
+func DealwithVariables(req *domain.BaseRequest, usedBy consts.UsedBy) {
 	replaceUrl(req, usedBy)
 	replaceParams(req, usedBy)
 	replaceHeaders(req, usedBy)
@@ -91,15 +91,15 @@ func DealwithVariables(req *v1.BaseRequest, usedBy consts.UsedBy) {
 	replaceAuthor(req)
 }
 
-func replaceUrl(req *v1.BaseRequest, usedBy consts.UsedBy) {
+func replaceUrl(req *domain.BaseRequest, usedBy consts.UsedBy) {
 	// project's global params already be added
 	req.Url = ReplaceVariableValue(req.Url)
 }
-func replaceParams(req *v1.BaseRequest, usedBy consts.UsedBy) {
+func replaceParams(req *domain.BaseRequest, usedBy consts.UsedBy) {
 	if usedBy == consts.ScenarioDebug {
 		for _, v := range GlobalParams {
 			if v.In == consts.ParamInQuery {
-				req.Params = append(req.Params, v1.Param{
+				req.Params = append(req.Params, domain.Param{
 					Name:  v.Name,
 					Value: v.DefaultValue,
 				})
@@ -111,11 +111,11 @@ func replaceParams(req *v1.BaseRequest, usedBy consts.UsedBy) {
 		req.Params[idx].Value = ReplaceVariableValue(param.Value)
 	}
 }
-func replaceHeaders(req *v1.BaseRequest, usedBy consts.UsedBy) {
+func replaceHeaders(req *domain.BaseRequest, usedBy consts.UsedBy) {
 	if usedBy == consts.ScenarioDebug {
 		for _, v := range GlobalParams {
 			if v.In == consts.ParamInHeader {
-				req.Params = append(req.Params, v1.Param{
+				req.Params = append(req.Params, domain.Param{
 					Name:  v.Name,
 					Value: v.DefaultValue,
 				})
@@ -127,10 +127,10 @@ func replaceHeaders(req *v1.BaseRequest, usedBy consts.UsedBy) {
 		req.Headers[idx].Value = ReplaceVariableValue(header.Value)
 	}
 }
-func replaceBody(req *v1.BaseRequest) {
+func replaceBody(req *domain.BaseRequest) {
 	req.Body = ReplaceVariableValue(req.Body)
 }
-func replaceAuthor(req *v1.BaseRequest) {
+func replaceAuthor(req *domain.BaseRequest) {
 	if req.AuthorizationType == consts.BasicAuth {
 		req.BasicAuth.Username = ReplaceVariableValue(req.BasicAuth.Username)
 		req.BasicAuth.Password = ReplaceVariableValue(req.BasicAuth.Password)

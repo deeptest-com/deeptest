@@ -1,21 +1,21 @@
 package domain
 
 import (
-	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 )
 
 type InterfaceCall struct {
 	ServerUrl string `json:"serverUrl"`
 	Token     string `json:"token"`
 
-	Data v1.DebugData `json:"data"`
+	Data domain.DebugData `json:"data"`
 }
 
 type InvokeRequest struct {
 	ServerUrl string `json:"serverUrl"`
 	Token     string `json:"token"`
 
-	Data v1.DebugData `json:"data"`
+	Data domain.DebugData `json:"data"`
 }
 
 type InvokeObject struct {

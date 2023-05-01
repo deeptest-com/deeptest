@@ -1,9 +1,9 @@
 package repo
 
 import (
-	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
@@ -153,7 +153,7 @@ func (r *ExtractorRepo) UpdateResultToExecLog(extractor model.DebugInterfaceExtr
 	return
 }
 
-func (r *ExtractorRepo) ListExtractorVariableByInterface(interfaceId uint) (variables []v1.Variable, err error) {
+func (r *ExtractorRepo) ListExtractorVariableByInterface(interfaceId uint) (variables []domain.Variable, err error) {
 	err = r.DB.Model(&model.DebugInterfaceExtractor{}).
 		Select("id, variable AS name, result AS value").
 		Where("interface_id=?", interfaceId).
@@ -165,7 +165,7 @@ func (r *ExtractorRepo) ListExtractorVariableByInterface(interfaceId uint) (vari
 }
 
 func (r *ExtractorRepo) ListValidExtractorVariableForInterface(interfaceId, projectId uint, usedBy consts.UsedBy) (
-	variables []v1.Variable, err error) {
+	variables []domain.Variable, err error) {
 
 	q := r.DB.Model(&model.DebugInterfaceExtractor{}).
 		Select("id, variable AS name, result AS value, " +

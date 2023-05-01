@@ -2,8 +2,8 @@ package service
 
 import (
 	"fmt"
-	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi"
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
@@ -21,7 +21,7 @@ type DebugInterfaceService struct {
 	DebugSceneService *DebugSceneService `inject:""`
 }
 
-func (s *DebugInterfaceService) Load(loadReq v1.DebugReq) (req v1.DebugData, err error) {
+func (s *DebugInterfaceService) Load(loadReq domain.DebugReq) (req domain.DebugData, err error) {
 	if loadReq.ScenarioProcessorId > 0 {
 		processor, _ := s.ScenarioProcessorRepo.Get(loadReq.ScenarioProcessorId)
 		loadReq.EndpointInterfaceId = processor.EndpointInterfaceId
@@ -47,7 +47,7 @@ func (s *DebugInterfaceService) Load(loadReq v1.DebugReq) (req v1.DebugData, err
 	return
 }
 
-func (s *DebugInterfaceService) GetDebugInterface(endpointInterfaceId uint) (ret v1.DebugData, err error) {
+func (s *DebugInterfaceService) GetDebugInterface(endpointInterfaceId uint) (ret domain.DebugData, err error) {
 	debugInterfaceId, _ := s.DebugInterfaceRepo.HasDebugInterfaceRecord(endpointInterfaceId)
 
 	if debugInterfaceId > 0 {
@@ -59,7 +59,7 @@ func (s *DebugInterfaceService) GetDebugInterface(endpointInterfaceId uint) (ret
 	return
 }
 
-func (s *DebugInterfaceService) Save(req v1.DebugData) (debug model.DebugInterface, err error) {
+func (s *DebugInterfaceService) Save(req domain.DebugData) (debug model.DebugInterface, err error) {
 	s.CopyValueFromRequest(&debug, req)
 
 	endpointInterface, _ := s.EndpointInterfaceRepo.Get(req.EndpointInterfaceId)
@@ -75,7 +75,7 @@ func (s *DebugInterfaceService) Save(req v1.DebugData) (debug model.DebugInterfa
 	return
 }
 
-func (s *DebugInterfaceService) GetDebugDataFromDebugInterface(debugInterfaceId uint) (req v1.DebugData, err error) {
+func (s *DebugInterfaceService) GetDebugDataFromDebugInterface(debugInterfaceId uint) (req domain.DebugData, err error) {
 	debugInterface, _ := s.DebugInterfaceRepo.GetDetail(debugInterfaceId)
 	if err != nil {
 		return
@@ -88,7 +88,7 @@ func (s *DebugInterfaceService) GetDebugDataFromDebugInterface(debugInterfaceId 
 	return
 }
 
-func (s *DebugInterfaceService) ConvertDebugDataFromEndpointInterface(endpointInterfaceId uint) (req v1.DebugData, err error) {
+func (s *DebugInterfaceService) ConvertDebugDataFromEndpointInterface(endpointInterfaceId uint) (req domain.DebugData, err error) {
 	endpointInterface, err := s.EndpointInterfaceRepo.GetDetail(endpointInterfaceId)
 	if err != nil {
 		return
@@ -102,7 +102,7 @@ func (s *DebugInterfaceService) ConvertDebugDataFromEndpointInterface(endpointIn
 }
 
 func (s *DebugInterfaceService) SetProps(
-	endpointInterface *model.EndpointInterface, debugInterface *model.DebugInterface, req *v1.DebugData) {
+	endpointInterface *model.EndpointInterface, debugInterface *model.DebugInterface, req *domain.DebugData) {
 
 	endpoint, err := s.EndpointRepo.Get(endpointInterface.EndpointId)
 	serve, err := s.ServeRepo.Get(endpoint.ServeId)
@@ -164,7 +164,7 @@ func (s *DebugInterfaceService) GetScenarioIdForDebugInterface(processorId uint)
 	return
 }
 
-func (s *DebugInterfaceService) CopyValueFromRequest(interf *model.DebugInterface, req v1.DebugData) (err error) {
+func (s *DebugInterfaceService) CopyValueFromRequest(interf *model.DebugInterface, req domain.DebugData) (err error) {
 	copier.CopyWithOption(interf, req, copier.Option{DeepCopy: true})
 
 	return

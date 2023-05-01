@@ -1,12 +1,12 @@
 package agentExec
 
 import (
-	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	_httpUtils "github.com/aaronchen2k/deeptest/pkg/lib/http"
 )
 
-func GenRequestUrl(req *v1.BaseRequest, interfaceId uint) {
+func GenRequestUrl(req *domain.BaseRequest, interfaceId uint) {
 	envId := InterfaceToEnvMap[interfaceId]
 	vars := EnvToVariablesMap[envId]
 

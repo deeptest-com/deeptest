@@ -2,8 +2,8 @@ package service
 
 import (
 	"encoding/json"
-	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"github.com/jinzhu/copier"
@@ -24,7 +24,7 @@ type InvocationInterfaceService struct {
 	DatapoolService          *DatapoolService           `inject:""`
 }
 
-func (s *InvocationInterfaceService) LoadInterfaceExecData(req v1.DebugData) (ret v1.DebugData, err error) {
+func (s *InvocationInterfaceService) LoadInterfaceExecData(req domain.DebugData) (ret domain.DebugData, err error) {
 	err = s.InterfaceService.UpdateByInvocation(req)
 	if err != nil {
 		return
@@ -35,7 +35,7 @@ func (s *InvocationInterfaceService) LoadInterfaceExecData(req v1.DebugData) (re
 	return
 }
 
-func (s *InvocationInterfaceService) SubmitInterfaceInvokeResult(req v1.SubmitDebugResultRequest) (err error) {
+func (s *InvocationInterfaceService) SubmitInterfaceInvokeResult(req domain.SubmitDebugResultRequest) (err error) {
 	interf, _ := s.InterfaceRepo.GetDetail(req.Response.Id)
 
 	s.ExtractorService.ExtractInterface(interf.ID, uint(0), uint(0), uint(0), req.Response, consts.InterfaceDebug)
@@ -56,12 +56,12 @@ func (s *InvocationInterfaceService) ListByInterface(interfId int) (invocations 
 	return
 }
 
-func (s *InvocationInterfaceService) GetLastResp(interfId int) (resp v1.DebugResponse, err error) {
+func (s *InvocationInterfaceService) GetLastResp(interfId int) (resp domain.DebugResponse, err error) {
 	invocation, _ := s.InvocationRepo.GetLast(interfId)
 	if invocation.ID > 0 {
 		json.Unmarshal([]byte(invocation.RespContent), &resp)
 	} else {
-		resp = v1.DebugResponse{
+		resp = domain.DebugResponse{
 			ContentLang: consts.LangHTML,
 			Content:     "",
 		}
@@ -76,10 +76,10 @@ func (s *InvocationInterfaceService) Get(id int) (invocation model.Invocation, e
 	return
 }
 
-func (s *InvocationInterfaceService) GetAsInterface(id int) (interf model.Interface, interfResp v1.DebugResponse, err error) {
+func (s *InvocationInterfaceService) GetAsInterface(id int) (interf model.Interface, interfResp domain.DebugResponse, err error) {
 	//invocation, err := s.InvocationRepo.Get(uint(id))
 	//
-	//interfReq := v1.DebugData{}
+	//interfReq := domain.DebugData{}
 	//
 	//json.Unmarshal([]byte(invocation.ReqContent), &interfReq)
 	//json.Unmarshal([]byte(invocation.RespContent), &interfResp)
@@ -91,8 +91,8 @@ func (s *InvocationInterfaceService) GetAsInterface(id int) (interf model.Interf
 	return
 }
 
-func (s *InvocationInterfaceService) CreateForInterface(req v1.DebugData,
-	resp v1.DebugResponse, projectId uint) (invocation model.Invocation, err error) {
+func (s *InvocationInterfaceService) CreateForInterface(req domain.DebugData,
+	resp domain.DebugResponse, projectId uint) (invocation model.Invocation, err error) {
 	invocation = model.Invocation{
 		InvocationBase: model.InvocationBase{
 			Name: time.Now().Format("01-02 15:04:05"),
@@ -112,8 +112,8 @@ func (s *InvocationInterfaceService) CreateForInterface(req v1.DebugData,
 	return
 }
 
-func (s *InvocationInterfaceService) CreateForScenarioInterface(req v1.DebugData,
-	resp v1.DebugResponse, projectId uint) (invocation model.ProcessorInvocation, err error) {
+func (s *InvocationInterfaceService) CreateForScenarioInterface(req domain.DebugData,
+	resp domain.DebugResponse, projectId uint) (invocation model.ProcessorInvocation, err error) {
 
 	invocation = model.ProcessorInvocation{
 		InvocationBase: model.InvocationBase{
@@ -140,7 +140,7 @@ func (s *InvocationInterfaceService) Delete(id uint) (err error) {
 	return
 }
 
-func (s *InvocationInterfaceService) CopyValueFromRequest(invocation *model.Invocation, req v1.DebugData) (err error) {
+func (s *InvocationInterfaceService) CopyValueFromRequest(invocation *model.Invocation, req domain.DebugData) (err error) {
 	invocation.ID = req.EndpointInterfaceId
 
 	copier.CopyWithOption(invocation, req, copier.Option{DeepCopy: true})
@@ -148,8 +148,8 @@ func (s *InvocationInterfaceService) CopyValueFromRequest(invocation *model.Invo
 	return
 }
 
-func (s *InvocationInterfaceService) ReplaceEnvironmentAndExtractorVariables(req v1.DebugData) (
-	ret v1.DebugData, err error) {
+func (s *InvocationInterfaceService) ReplaceEnvironmentAndExtractorVariables(req domain.DebugData) (
+	ret domain.DebugData, err error) {
 
 	//interf, _ := s.InterfaceRepo.Get(req.EndpointInterfaceId)
 	//

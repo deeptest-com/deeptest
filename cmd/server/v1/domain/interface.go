@@ -65,13 +65,6 @@ type InterfaceResp struct {
 	//ApiKey      domain.ApiKey      `gorm:"-" json:"apiKey"`
 }
 
-type Variable struct {
-	Id                    uint   `json:"id"`
-	Name                  string `json:"name"`
-	Value                 string `json:"value"`
-	AvailableForCurrScope bool   `json:"availableForCurrScope"`
-}
-
 type InterfaceYapiReq struct {
 	Target    int    `json:"target"`
 	YapiHost  string `json:"yapiHost"`

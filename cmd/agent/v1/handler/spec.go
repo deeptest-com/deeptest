@@ -8,8 +8,7 @@ import (
 )
 
 type SpecCtrl struct {
-	SpecService        *service.SpecService        `inject:""`
-	EnvironmentService *service.EnvironmentService `inject:""`
+	SpecService *service.SpecService `inject:""`
 }
 
 // Parse 解析定义文件

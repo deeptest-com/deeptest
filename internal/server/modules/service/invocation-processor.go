@@ -2,8 +2,8 @@ package service
 
 import (
 	"encoding/json"
-	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"github.com/jinzhu/copier"
@@ -23,7 +23,7 @@ type InvocationProcessorService struct {
 	DatapoolService           *DatapoolService           `inject:""`
 }
 
-func (s *InvocationProcessorService) LoadInterfaceExecData(req v1.DebugData) (ret v1.DebugData, err error) {
+func (s *InvocationProcessorService) LoadInterfaceExecData(req domain.DebugData) (ret domain.DebugData, err error) {
 	err = s.ProcessorInterfaceService.UpdateByInvocation(req)
 	if err != nil {
 		return
@@ -34,7 +34,7 @@ func (s *InvocationProcessorService) LoadInterfaceExecData(req v1.DebugData) (re
 	return
 }
 
-func (s *InvocationProcessorService) SubmitInterfaceInvokeResult(req v1.SubmitDebugResultRequest) (err error) {
+func (s *InvocationProcessorService) SubmitInterfaceInvokeResult(req domain.SubmitDebugResultRequest) (err error) {
 	processorInterface, _ := s.ProcessorInterfaceRepo.GetDetail(req.Response.Id)
 
 	s.ExtractorService.ExtractInterface(processorInterface.ID, uint(0), uint(0), uint(0), req.Response, consts.ScenarioDebug)
@@ -49,8 +49,8 @@ func (s *InvocationProcessorService) SubmitInterfaceInvokeResult(req v1.SubmitDe
 	return
 }
 
-func (s *InvocationProcessorService) CreateForScenarioInterface(req v1.DebugData,
-	resp v1.DebugResponse, projectId uint) (invocation model.ProcessorInvocation, err error) {
+func (s *InvocationProcessorService) CreateForScenarioInterface(req domain.DebugData,
+	resp domain.DebugResponse, projectId uint) (invocation model.ProcessorInvocation, err error) {
 
 	invocation = model.ProcessorInvocation{
 		InvocationBase: model.InvocationBase{
@@ -71,8 +71,8 @@ func (s *InvocationProcessorService) CreateForScenarioInterface(req v1.DebugData
 	return
 }
 
-func (s *InvocationProcessorService) ReplaceEnvironmentAndExtractorVariables(req v1.DebugData) (
-	ret v1.DebugData, err error) {
+func (s *InvocationProcessorService) ReplaceEnvironmentAndExtractorVariables(req domain.DebugData) (
+	ret domain.DebugData, err error) {
 
 	//interf, _ := s.ProcessorInterfaceRepo.Get(req.EndpointInterfaceId)
 	//
@@ -91,12 +91,12 @@ func (s *InvocationProcessorService) ListByInterface(interfId int) (invocations 
 	return
 }
 
-func (s *InvocationProcessorService) GetLastResp(interfId int) (resp v1.DebugResponse, err error) {
+func (s *InvocationProcessorService) GetLastResp(interfId int) (resp domain.DebugResponse, err error) {
 	invocation, _ := s.ProcessorInvocationRepo.GetLast(interfId)
 	if invocation.ID > 0 {
 		json.Unmarshal([]byte(invocation.RespContent), &resp)
 	} else {
-		resp = v1.DebugResponse{
+		resp = domain.DebugResponse{
 			ContentLang: consts.LangHTML,
 			Content:     "",
 		}
@@ -105,10 +105,10 @@ func (s *InvocationProcessorService) GetLastResp(interfId int) (resp v1.DebugRes
 	return
 }
 
-func (s *InvocationProcessorService) GetAsInterface(id int) (interf model.ProcessorInterface, interfResp v1.DebugResponse, err error) {
+func (s *InvocationProcessorService) GetAsInterface(id int) (interf model.ProcessorInterface, interfResp domain.DebugResponse, err error) {
 	invocation, err := s.ProcessorInvocationRepo.Get(uint(id))
 
-	interfReq := v1.DebugData{}
+	interfReq := domain.DebugData{}
 
 	json.Unmarshal([]byte(invocation.ReqContent), &interfReq)
 	json.Unmarshal([]byte(invocation.RespContent), &interfResp)

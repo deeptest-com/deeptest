@@ -3,7 +3,6 @@ package service
 import (
 	"encoding/json"
 	"fmt"
-	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	agentUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
@@ -53,7 +52,7 @@ func (s *CheckpointService) Delete(reqId uint) (err error) {
 	return
 }
 
-func (s *CheckpointService) CheckInterface(interfaceId uint, resp v1.DebugResponse, usedBy consts.UsedBy) (
+func (s *CheckpointService) CheckInterface(interfaceId uint, resp domain.DebugResponse, usedBy consts.UsedBy) (
 	logCheckpoints []domain.ExecInterfaceCheckpoint, status consts.ResultStatus, err error) {
 
 	checkpoints, _ := s.CheckpointRepo.List(interfaceId, usedBy)
@@ -70,7 +69,7 @@ func (s *CheckpointService) CheckInterface(interfaceId uint, resp v1.DebugRespon
 	return
 }
 
-func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp v1.DebugResponse,
+func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp domain.DebugResponse,
 	usedBy consts.UsedBy) (logCheckpoint model.ExecLogCheckpoint, err error) {
 	if checkpoint.Disabled {
 		checkpoint.ResultStatus = ""

@@ -3,11 +3,11 @@ package service
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/aaronchen2k/deeptest/cmd/agent/v1/domain"
-	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	v1 "github.com/aaronchen2k/deeptest/cmd/agent/v1/domain"
 	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	agentDomain "github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	"github.com/aaronchen2k/deeptest/pkg/lib/http"
@@ -18,7 +18,7 @@ type RemoteService struct {
 }
 
 // for interface invocation in both endpoint and scenario
-func (s *RemoteService) GetInterfaceToExec(req domain.InterfaceCall) (ret v1.DebugData) {
+func (s *RemoteService) GetInterfaceToExec(req v1.InterfaceCall) (ret domain.DebugData) {
 	url := fmt.Sprintf("debugs/interface/load")
 	body, err := json.Marshal(req.Data)
 	if err != nil {
@@ -26,12 +26,12 @@ func (s *RemoteService) GetInterfaceToExec(req domain.InterfaceCall) (ret v1.Deb
 		return
 	}
 
-	httpReq := v1.BaseRequest{
+	httpReq := domain.BaseRequest{
 		Url:               _httpUtils.AddSepIfNeeded(req.ServerUrl) + url,
 		BodyType:          consts.ContentTypeJSON,
 		Body:              string(body),
 		AuthorizationType: consts.BearerToken,
-		BearerToken: v1.BearerToken{
+		BearerToken: domain.BearerToken{
 			Token: req.Token,
 		},
 	}
@@ -65,22 +65,22 @@ func (s *RemoteService) GetInterfaceToExec(req domain.InterfaceCall) (ret v1.Deb
 
 	return
 }
-func (s *RemoteService) SubmitInterfaceResult(reqObj v1.DebugData, respObj v1.DebugResponse, serverUrl, token string) (err error) {
+func (s *RemoteService) SubmitInterfaceResult(reqObj domain.DebugData, respObj domain.DebugResponse, serverUrl, token string) (err error) {
 	url := fmt.Sprintf("debugs/invoke/submitResult")
 
-	data := v1.SubmitDebugResultRequest{
+	data := domain.SubmitDebugResultRequest{
 		Request:  reqObj,
 		Response: respObj,
 	}
 
 	bodyBytes, _ := json.Marshal(data)
 
-	req := v1.BaseRequest{
+	req := domain.BaseRequest{
 		Url:               _httpUtils.AddSepIfNeeded(serverUrl) + url,
 		BodyType:          consts.ContentTypeJSON,
 		Body:              string(bodyBytes),
 		AuthorizationType: consts.BearerToken,
-		BearerToken: v1.BearerToken{
+		BearerToken: domain.BearerToken{
 			Token: token,
 		},
 	}
@@ -108,7 +108,7 @@ func (s *RemoteService) SubmitInterfaceResult(reqObj v1.DebugData, respObj v1.De
 }
 
 // for processor interface invocation
-//func (s *RemoteService) GetProcessorInterfaceToExec(req domain.InterfaceCall) (ret v1.DebugData) {
+//func (s *RemoteService) GetProcessorInterfaceToExec(req domain.InterfaceCall) (ret domain.DebugData) {
 //	url := fmt.Sprintf("processors/invocations/loadInterfaceExecData")
 //	body, err := json.Marshal(req.Data)
 //	if err != nil {
@@ -116,12 +116,12 @@ func (s *RemoteService) SubmitInterfaceResult(reqObj v1.DebugData, respObj v1.De
 //		return
 //	}
 //
-//	httpReq := v1.BaseRequest{
+//	httpReq := domain.BaseRequest{
 //		Url:               _httpUtils.AddSepIfNeeded(req.ServerUrl) + url,
 //		BodyType:          consts.ContentTypeJSON,
 //		Body:              string(body),
 //		AuthorizationType: consts.BearerToken,
-//		BearerToken: v1.BearerToken{
+//		BearerToken: domain.BearerToken{
 //			Token: req.Token,
 //		},
 //	}
@@ -155,22 +155,22 @@ func (s *RemoteService) SubmitInterfaceResult(reqObj v1.DebugData, respObj v1.De
 //
 //	return
 //}
-//func (s *RemoteService) SubmitProcessorInterfaceResult(reqOjb domain.InterfaceCall, repsObj v1.DebugResponse, serverUrl, token string) (err error) {
+//func (s *RemoteService) SubmitProcessorInterfaceResult(reqOjb domain.InterfaceCall, repsObj domain.DebugResponse, serverUrl, token string) (err error) {
 //	url := _httpUtils.AddSepIfNeeded(serverUrl) + fmt.Sprintf("processors/invocations/submitInterfaceInvokeResult")
 //
-//	data := v1.SubmitDebugResultRequest{
+//	data := domain.SubmitDebugResultRequest{
 //		Request:  reqOjb.Data,
 //		Response: repsObj,
 //	}
 //
 //	bodyBytes, _ := json.Marshal(data)
 //
-//	req := v1.BaseRequest{
+//	req := domain.BaseRequest{
 //		Url:               url,
 //		BodyType:          consts.ContentTypeJSON,
 //		Body:              string(bodyBytes),
 //		AuthorizationType: consts.BearerToken,
-//		BearerToken: v1.BearerToken{
+//		BearerToken: domain.BearerToken{
 //			Token: token,
 //		},
 //	}
@@ -201,13 +201,13 @@ func (s *RemoteService) SubmitInterfaceResult(reqObj v1.DebugData, respObj v1.De
 func (s *RemoteService) GetScenarioToExec(req *agentExec.ScenarioExecReq) (ret *agentExec.ScenarioExecObj) {
 	url := "scenarios/exec/loadExecScenario"
 
-	httpReq := v1.BaseRequest{
+	httpReq := domain.BaseRequest{
 		Url:               _httpUtils.AddSepIfNeeded(req.ServerUrl) + url,
 		AuthorizationType: consts.BearerToken,
-		BearerToken: v1.BearerToken{
+		BearerToken: domain.BearerToken{
 			Token: req.Token,
 		},
-		Params: []v1.Param{
+		Params: []domain.Param{
 			{
 				Name:  "id",
 				Value: fmt.Sprintf("%d", req.ScenarioId),
@@ -252,12 +252,12 @@ func (s *RemoteService) SubmitScenarioResult(result agentDomain.ScenarioExecResu
 	report agentDomain.ReportSimple, err error) {
 
 	bodyBytes, _ := json.Marshal(result)
-	req := v1.BaseRequest{
+	req := domain.BaseRequest{
 		Url:               _httpUtils.AddSepIfNeeded(serverUrl) + fmt.Sprintf("scenarios/exec/submitResult/%d", scenarioId),
 		Body:              string(bodyBytes),
 		BodyType:          consts.ContentTypeJSON,
 		AuthorizationType: consts.BearerToken,
-		BearerToken: v1.BearerToken{
+		BearerToken: domain.BearerToken{
 			Token: token,
 		},
 	}
@@ -292,13 +292,13 @@ func (s *RemoteService) SubmitScenarioResult(result agentDomain.ScenarioExecResu
 func (s *RemoteService) GetPlanToExec(req *agentExec.PlanExecReq) (ret *agentExec.PlanExecObj) {
 	url := "plans/exec/loadExecPlan"
 
-	httpReq := v1.BaseRequest{
+	httpReq := domain.BaseRequest{
 		Url:               _httpUtils.AddSepIfNeeded(req.ServerUrl) + url,
 		AuthorizationType: consts.BearerToken,
-		BearerToken: v1.BearerToken{
+		BearerToken: domain.BearerToken{
 			Token: req.Token,
 		},
-		Params: []v1.Param{
+		Params: []domain.Param{
 			{
 				Name:  "id",
 				Value: fmt.Sprintf("%d", req.PlanId),
@@ -342,12 +342,12 @@ func (s *RemoteService) GetPlanToExec(req *agentExec.PlanExecReq) (ret *agentExe
 func (s *RemoteService) SubmitPlanResult(result agentDomain.PlanExecResult, planId uint, serverUrl, token string) (
 	report agentDomain.ReportSimple, err error) {
 	bodyBytes, _ := json.Marshal(result)
-	req := v1.BaseRequest{
+	req := domain.BaseRequest{
 		Url:               _httpUtils.AddSepIfNeeded(serverUrl) + fmt.Sprintf("plans/exec/submitResult/%d", planId),
 		Body:              string(bodyBytes),
 		BodyType:          consts.ContentTypeJSON,
 		AuthorizationType: consts.BearerToken,
-		BearerToken: v1.BearerToken{
+		BearerToken: domain.BearerToken{
 			Token: token,
 		},
 	}
@@ -381,10 +381,10 @@ func (s *RemoteService) SubmitPlanResult(result agentDomain.PlanExecResult, plan
 func (s *RemoteService) GetMessageToExec(req *agentExec.MessageExecReq) (ret *agentExec.MessageExecObj) {
 	url := "message/unreadCount"
 
-	httpReq := v1.BaseRequest{
+	httpReq := domain.BaseRequest{
 		Url:               _httpUtils.AddSepIfNeeded(req.ServerUrl) + url,
 		AuthorizationType: consts.BearerToken,
-		BearerToken: v1.BearerToken{
+		BearerToken: domain.BearerToken{
 			Token: req.Token,
 		},
 	}

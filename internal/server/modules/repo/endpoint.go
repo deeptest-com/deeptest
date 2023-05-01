@@ -212,18 +212,11 @@ func (r *EndpointRepo) saveInterfaces(endpointId, projectId uint, path, version 
 		item.Version = version
 		item.Url = path
 		item.ProjectId = projectId
+
 		err = r.EndpointInterfaceRepo.SaveInterfaces(&item)
 		if err != nil {
 			return err
 		}
-
-		/*
-			err = r.ProcessorInterfaceRepo.SaveProcessor(item)
-			if err != nil {
-				return err
-			}
-		*/
-
 	}
 	return
 }
@@ -310,13 +303,12 @@ func (r *EndpointRepo) GetCountByServeId(serveId uint) (count int64, err error) 
 	return
 }
 
-
 func (r *EndpointRepo) ListEndpointByCategory(categoryId uint) (ids []uint, err error) {
 	err = r.DB.Model(&model.Endpoint{}).
 		Select("id").
 		Where("category_id = ? AND NOT deleted", categoryId).
 		Find(&ids).Error
-		return 
+	return
 }
 
 func (r *EndpointRepo) CreateEndpointSample(serveId uint) (endpointId uint, err error) {

@@ -8,6 +8,7 @@
     <div style="margin-bottom: 8px;">
       <ConBoxTitle :backgroundStyle="'background: #FBFBFB;'" :title="'基本信息'"/>
     </div>
+
     <a-descriptions :size="'small'" :title="null">
       <a-descriptions-item label="创建人">{{ endpointDetail?.createUser }}</a-descriptions-item>
       <a-descriptions-item label="状态">

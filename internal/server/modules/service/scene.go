@@ -20,13 +20,11 @@ type SceneService struct {
 	ScenarioNodeService *ScenarioNodeService `inject:""`
 }
 
-func (s *SceneService) LoadEnvVarMapByScenario(scenarioId uint) (
-	envToVariablesMap domain.EnvToVariables, interfaceToEnvMap domain.InterfaceToEnvMap, err error) {
+func (s *SceneService) LoadEnvVarMapByScenario(scene *domain.ExecScene, scenarioId uint) {
+	scene.EnvToVariables = domain.EnvToVariables{}
+	scene.InterfaceToEnvMap = domain.InterfaceToEnvMap{}
 
-	envToVariablesMap = domain.EnvToVariables{}
-	interfaceToEnvMap = domain.InterfaceToEnvMap{}
-
-	processors, err := s.ScenarioNodeRepo.ListByScenario(scenarioId)
+	processors, _ := s.ScenarioNodeRepo.ListByScenario(scenarioId)
 
 	for _, processor := range processors {
 		if processor.EntityType != consts.ProcessorInterfaceDefault {
@@ -38,9 +36,9 @@ func (s *SceneService) LoadEnvVarMapByScenario(scenarioId uint) (
 		serveServer, _ := s.ServeServerRepo.Get(endpoint.ServerId)
 		envId := serveServer.EnvironmentId
 
-		interfaceToEnvMap[processor.EndpointInterfaceId] = envId
+		scene.InterfaceToEnvMap[processor.EndpointInterfaceId] = envId
 
-		envToVariablesMap[envId] = append(envToVariablesMap[envId], domain.GlobalVar{
+		scene.EnvToVariables[envId] = append(scene.EnvToVariables[envId], domain.GlobalVar{
 			Name:        consts.KEY_BASE_URL,
 			LocalValue:  serveServer.Url,
 			RemoteValue: serveServer.Url,
@@ -48,7 +46,7 @@ func (s *SceneService) LoadEnvVarMapByScenario(scenarioId uint) (
 
 		vars, _ := s.EnvironmentRepo.GetVars(envId)
 		for _, v := range vars {
-			envToVariablesMap[envId] = append(envToVariablesMap[envId], domain.GlobalVar{
+			scene.EnvToVariables[envId] = append(scene.EnvToVariables[envId], domain.GlobalVar{
 				Name:        v.Name,
 				LocalValue:  v.LocalValue,
 				RemoteValue: v.RemoteValue,
@@ -59,11 +57,9 @@ func (s *SceneService) LoadEnvVarMapByScenario(scenarioId uint) (
 	return
 }
 
-func (s *SceneService) LoadEnvVarMapByEndpointInterface(endpointInterfaceId uint) (
-	envToVariablesMap domain.EnvToVariables, interfaceToEnvMap domain.InterfaceToEnvMap, projectId uint, err error) {
-
-	envToVariablesMap = domain.EnvToVariables{}
-	interfaceToEnvMap = domain.InterfaceToEnvMap{}
+func (s *SceneService) LoadEnvVarMapByEndpointInterface(scene *domain.ExecScene, endpointInterfaceId uint) (projectId uint, err error) {
+	scene.EnvToVariables = domain.EnvToVariables{}
+	scene.InterfaceToEnvMap = domain.InterfaceToEnvMap{}
 
 	interf, _ := s.EndpointInterfaceRepo.Get(endpointInterfaceId)
 	endpoint, _ := s.EndpointRepo.Get(interf.EndpointId)
@@ -71,11 +67,11 @@ func (s *SceneService) LoadEnvVarMapByEndpointInterface(endpointInterfaceId uint
 	envId := serveServer.EnvironmentId
 	projectId = endpoint.ProjectId
 
-	interfaceToEnvMap[endpointInterfaceId] = envId
+	scene.InterfaceToEnvMap[endpointInterfaceId] = envId
 
 	vars, _ := s.EnvironmentRepo.GetVars(envId)
 	for _, v := range vars {
-		envToVariablesMap[envId] = append(envToVariablesMap[envId], domain.GlobalVar{
+		scene.EnvToVariables[envId] = append(scene.EnvToVariables[envId], domain.GlobalVar{
 			Name:        v.Name,
 			LocalValue:  v.LocalValue,
 			RemoteValue: v.RemoteValue,
@@ -83,4 +79,10 @@ func (s *SceneService) LoadEnvVarMapByEndpointInterface(endpointInterfaceId uint
 	}
 
 	return
+}
+
+func (s *SceneService) LoadProjectSettings(scene *domain.ExecScene, projectId uint) {
+	scene.GlobalVars, _ = s.EnvironmentService.GetGlobalVars(projectId)
+	scene.GlobalParams, _ = s.EnvironmentService.GetGlobalParams(projectId)
+	scene.Datapools, _ = s.DatapoolService.ListForExec(projectId)
 }

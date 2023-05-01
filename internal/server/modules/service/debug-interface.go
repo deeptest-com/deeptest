@@ -78,11 +78,8 @@ func (s *DebugInterfaceService) LoadForExec(loadReq domain.DebugReq) (ret agentE
 	ret.DebugData = debugData
 
 	// get variables
-	var projectId uint
-	ret.ExecScene.EnvToVariables, ret.ExecScene.InterfaceToEnvMap, projectId, _ = s.SceneService.LoadEnvVarMapByEndpointInterface(debugData.EndpointInterfaceId)
-	ret.ExecScene.GlobalVars, _ = s.EnvironmentService.GetGlobalVars(projectId)
-	ret.ExecScene.GlobalParams, _ = s.EnvironmentService.GetGlobalParams(projectId)
-	ret.ExecScene.Datapools, _ = s.DatapoolService.ListForExec(projectId)
+	projectId, _ := s.SceneService.LoadEnvVarMapByEndpointInterface(&ret.ExecScene, debugData.EndpointInterfaceId)
+	s.SceneService.LoadProjectSettings(&ret.ExecScene, projectId)
 
 	return
 }

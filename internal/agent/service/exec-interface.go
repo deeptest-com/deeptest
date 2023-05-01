@@ -13,11 +13,21 @@ type ExecInterfaceService struct {
 	RemoteService *RemoteService `inject:""`
 }
 
-func (s *ExecInterfaceService) Run(call agentDomain.InterfaceCall) (resp domain.DebugResponse, err error) {
+func (s *ExecInterfaceService) Run(call agentDomain.InterfaceCall) (ret domain.DebugResponse, err error) {
 	req := s.RemoteService.GetInterfaceToExec(call)
 
-	resp, err = s.Request(req)
-	err = s.RemoteService.SubmitInterfaceResult(req, resp, call.ServerUrl, call.Token)
+	agentExec.CurrInterfaceId = req.DebugData.EndpointInterfaceId
+
+	agentExec.GlobalVars = req.GlobalVars
+	agentExec.GlobalParams = req.GlobalParams
+
+	agentExec.InterfaceToEnvMap = req.InterfaceToEnvMap
+	agentExec.EnvToVariablesMap = req.EnvToVariables
+
+	agentExec.DatapoolData = req.Datapools
+
+	ret, err = s.Request(req.DebugData)
+	err = s.RemoteService.SubmitInterfaceResult(req.DebugData, ret, call.ServerUrl, call.Token)
 
 	return
 }

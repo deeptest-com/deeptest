@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi"
@@ -18,10 +19,13 @@ type DebugInterfaceService struct {
 	ScenarioProcessorRepo *repo.ScenarioProcessorRepo `inject:""`
 	ServeServerRepo       *repo.ServeServerRepo       `inject:""`
 
-	DebugSceneService *DebugSceneService `inject:""`
+	DebugSceneService   *DebugSceneService   `inject:""`
+	ScenarioExecService *ScenarioExecService `inject:""`
+	EnvironmentService  *EnvironmentService  `inject:""`
+	DatapoolService     *DatapoolService     `inject:""`
 }
 
-func (s *DebugInterfaceService) Load(loadReq domain.DebugReq) (req domain.DebugData, err error) {
+func (s *DebugInterfaceService) Load(loadReq domain.DebugReq) (ret agentExec.InterfaceExecObj, err error) {
 	if loadReq.ScenarioProcessorId > 0 {
 		processor, _ := s.ScenarioProcessorRepo.Get(loadReq.ScenarioProcessorId)
 		loadReq.EndpointInterfaceId = processor.EndpointInterfaceId
@@ -31,18 +35,29 @@ func (s *DebugInterfaceService) Load(loadReq domain.DebugReq) (req domain.DebugD
 		return
 	}
 
-	req, _ = s.GetDebugInterface(loadReq.EndpointInterfaceId)
+	// gen debug data
+	debugData, _ := s.GetDebugInterface(loadReq.EndpointInterfaceId)
 
-	req.UsedBy = loadReq.UsedBy
+	debugData.UsedBy = loadReq.UsedBy
 	if loadReq.ScenarioProcessorId > 0 {
-		req.ScenarioProcessorId = loadReq.ScenarioProcessorId
+		debugData.ScenarioProcessorId = loadReq.ScenarioProcessorId
 	}
 
-	req.BaseUrl, req.ShareVars, req.EnvVars, req.GlobalEnvVars, req.GlobalParamVars =
-		s.DebugSceneService.LoadScene(req.EndpointInterfaceId, req.ScenarioProcessorId, req.UsedBy)
+	debugData.BaseUrl, debugData.ShareVars, debugData.EnvVars, debugData.GlobalEnvVars, debugData.GlobalParamVars =
+		s.DebugSceneService.LoadScene(debugData.EndpointInterfaceId, debugData.ScenarioProcessorId, debugData.UsedBy)
 
-	req.ScenarioProcessorId = loadReq.ScenarioProcessorId
-	req.UsedBy = loadReq.UsedBy
+	debugData.ScenarioProcessorId = loadReq.ScenarioProcessorId
+	debugData.UsedBy = loadReq.UsedBy
+
+	ret.DebugData = debugData
+
+	// get variables
+	var projectId uint
+	ret.EnvToVariables, ret.InterfaceToEnvMap, projectId, _ = s.ScenarioExecService.GetEnvVarByEndpointInterface(debugData.EndpointInterfaceId)
+	ret.GlobalVars, _ = s.EnvironmentService.GetGlobalVars(projectId)
+	ret.GlobalParams, _ = s.EnvironmentService.GetGlobalParams(projectId)
+
+	ret.Datapools, _ = s.DatapoolService.ListForExec(projectId)
 
 	return
 }

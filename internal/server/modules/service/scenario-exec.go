@@ -102,6 +102,32 @@ func (s *ScenarioExecService) LoadEnvVarMap(scenarioId uint) (
 	return
 }
 
+func (s *ScenarioExecService) GetEnvVarByEndpointInterface(endpointInterfaceId uint) (
+	envToVariablesMap domain.EnvToVariables, interfaceToEnvMap domain.InterfaceToEnvMap, projectId uint, err error) {
+
+	envToVariablesMap = domain.EnvToVariables{}
+	interfaceToEnvMap = domain.InterfaceToEnvMap{}
+
+	interf, _ := s.EndpointInterfaceRepo.Get(endpointInterfaceId)
+	endpoint, _ := s.EndpointRepo.Get(interf.EndpointId)
+	serveServer, _ := s.ServeServerRepo.Get(endpoint.ServerId)
+	envId := serveServer.EnvironmentId
+	projectId = endpoint.ProjectId
+
+	interfaceToEnvMap[endpointInterfaceId] = envId
+
+	vars, _ := s.EnvironmentRepo.GetVars(envId)
+	for _, v := range vars {
+		envToVariablesMap[envId] = append(envToVariablesMap[envId], domain.GlobalVar{
+			Name:        v.Name,
+			LocalValue:  v.LocalValue,
+			RemoteValue: v.RemoteValue,
+		})
+	}
+
+	return
+}
+
 func (s *ScenarioExecService) SaveReport(scenarioId int, rootResult execDomain.ScenarioExecResult) (report model.ScenarioReport, err error) {
 	scenario, _ := s.ScenarioRepo.Get(uint(scenarioId))
 	rootResult.Name = scenario.Name

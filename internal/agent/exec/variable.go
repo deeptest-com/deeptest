@@ -175,6 +175,10 @@ func getValueFromShareVar(name string) (ret string) {
 		cache = GetCachedVariableMapInContext(CurrProcessorId)
 	}
 
+	if cache[name] == nil {
+		return ""
+	}
+
 	ret = fmt.Sprintf("%v", cache[name])
 
 	return

@@ -83,7 +83,7 @@ func (s *DebugInterfaceService) GetDebugDataFromDebugInterface(debugInterfaceId 
 
 	endpointInterface, _ := s.EndpointInterfaceRepo.Get(debugInterface.EndpointInterfaceId)
 
-	s.SetProps(&endpointInterface, &debugInterface, &req)
+	s.SetProps(endpointInterface, &debugInterface, &req)
 
 	return
 }
@@ -94,7 +94,7 @@ func (s *DebugInterfaceService) ConvertDebugDataFromEndpointInterface(endpointIn
 		return
 	}
 
-	s.SetProps(&endpointInterface, nil, &req)
+	s.SetProps(endpointInterface, nil, &req)
 
 	req.UsedBy = consts.InterfaceDebug
 
@@ -102,7 +102,7 @@ func (s *DebugInterfaceService) ConvertDebugDataFromEndpointInterface(endpointIn
 }
 
 func (s *DebugInterfaceService) SetProps(
-	endpointInterface *model.EndpointInterface, debugInterface *model.DebugInterface, req *domain.DebugData) {
+	endpointInterface model.EndpointInterface, debugInterface *model.DebugInterface, req *domain.DebugData) {
 
 	endpoint, err := s.EndpointRepo.Get(endpointInterface.EndpointId)
 	serve, err := s.ServeRepo.Get(endpoint.ServeId)
@@ -119,14 +119,14 @@ func (s *DebugInterfaceService) SetProps(
 	req.EndpointInterfaceId = endpointInterface.ID
 
 	if debugInterface == nil {
-		interfaces2debug := openapi.NewInterfaces2debug(*endpointInterface, serve)
+		interfaces2debug := openapi.NewInterfaces2debug(endpointInterface, serve)
 		debugInterface = interfaces2debug.Convert()
 
 		debugInterface.Name = fmt.Sprintf("%s - %s", endpoint.Title, debugInterface.Method)
 	}
 
 	copier.CopyWithOption(&req, &debugInterface, copier.Option{DeepCopy: true})
-	req.EndpointInterfaceId = endpointInterface.EndpointId // reset
+	req.EndpointInterfaceId = endpointInterface.ID // reset
 
 	return
 }

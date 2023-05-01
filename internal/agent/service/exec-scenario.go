@@ -70,9 +70,8 @@ func (s *ExecScenarioService) RestoreEntityFromRawAndSetParent(root *agentExec.P
 
 	processorMap := map[uint]*agentExec.Processor{}
 	for _, processor := range processors {
-		processorMap[processor.ID] = processor
-
 		processor.RestoreEntity()
+		processorMap[processor.ID] = processor
 	}
 
 	for _, obj := range processorMap {

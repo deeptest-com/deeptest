@@ -16,8 +16,10 @@
         </a-col>
       </a-row>
     </template>
+
     <!-- 基本信息 -->
     <EndpointBasicInfo @changeStatus="changeStatus" @change-description="changeDescription" @changeCategory="changeCategory"/>
+
     <!-- 接口设计区域 -->
     <a-card
         style="width: 100%"
@@ -30,15 +32,18 @@
           <ConBoxTitle :backgroundStyle="'background: #FBFBFB;'" :title="'接口设计'" />
         </div>
       </template>
+
       <a-tabs v-model:activeKey="key" :animated="false">
         <a-tab-pane key="request" tab="定义">
           <EndpointDefine v-if="key === 'request'"/> <!-- use v-if to force page reload-->
         </a-tab-pane>
+
         <a-tab-pane key="run" tab="调试">
           <EndpointDebug v-if="key === 'run'"/> <!-- use v-if to force page reload -->
         </a-tab-pane>
       </a-tabs>
     </a-card>
+
     <div v-if="key === 'request'" class="drawer-btns">
       <a-space>
         <a-button type="primary" @click="save">保存</a-button>
@@ -107,8 +112,6 @@ async function changeCategory(value) {
   );
   await store.dispatch('Endpoint/getEndpointDetail', {id: endpointDetail.value.id});
 }
-
-
 
 const key = ref('request');
 

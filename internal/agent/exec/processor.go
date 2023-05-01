@@ -65,13 +65,13 @@ func (p *Processor) RestoreEntity() (err error) {
 	bytes, err := p.EntityRaw.MarshalJSON()
 
 	switch p.EntityCategory {
-	case consts.ProcessorRoot:
-		ret := ProcessorRoot{}
+	case consts.ProcessorInterface:
+		ret := ProcessorInterface{}
 		json.Unmarshal(bytes, &ret)
 		p.Entity = ret
 
-	case consts.ProcessorInterface:
-		ret := ProcessorInterface{}
+	case consts.ProcessorRoot:
+		ret := ProcessorRoot{}
 		json.Unmarshal(bytes, &ret)
 		p.Entity = ret
 

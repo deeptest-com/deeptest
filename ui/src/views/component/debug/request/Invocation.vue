@@ -1,6 +1,6 @@
 <template>
   <div class="invocation-main">
-    <div class="url">{{url}}</div>
+    <div class="url">{{url}} - {{debugData.method}}</div>
 
     <div class="send">
       <a-dropdown-button type="primary" trigger="click" @click="sendRequest">
@@ -112,6 +112,7 @@ const sendRequest = (e) => {
 const save = (e) => {
   let data = JSON.parse(JSON.stringify(debugData.value))
   data = prepareDataForRequest(data)
+  // console.log('-------', data.endpointInterfaceId)
 
   if (validateInfo()) {
     props.onSave(data)

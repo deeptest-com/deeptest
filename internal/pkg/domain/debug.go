@@ -20,7 +20,7 @@ type DebugData struct {
 	UsedBy              consts.UsedBy `json:"usedBy"`
 
 	BaseUrl   string      `gorm:"-" json:"baseUrl"`
-	ShareVars []GlobalVar `gorm:"-" json:"shareVars"`
+	ShareVars []GlobalVar `gorm:"-" json:"shareVars"` // used to show in right environment tab
 
 	Name string `gorm:"-" json:"name"`
 	BaseRequest

@@ -26,9 +26,9 @@ func InitJsRuntime() {
 
 	// below script will get/set the variables in exec context
 	MyVm.JsRuntime.Set("getDatapoolVariable", func(dpName, field, seq string) (ret interface{}) {
-		rowIndex := getDatapoolRow(dpName, seq, DatapoolData)
+		rowIndex := getDatapoolRow(dpName, seq, ExecScene.Datapools)
 
-		ret = DatapoolData[dpName][rowIndex][field]
+		ret = ExecScene.Datapools[dpName][rowIndex][field]
 		if ret == nil {
 			ret = "NOT_FOUND"
 		}

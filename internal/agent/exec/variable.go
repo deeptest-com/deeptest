@@ -184,16 +184,16 @@ func getValueFromShareVar(name string) (ret string) {
 	return
 }
 func getValueFromEnvVar(name string) (ret string) {
-	envId := InterfaceToEnvMap[CurrInterfaceId]
+	envId := ExecScene.InterfaceToEnvMap[CurrInterfaceId]
 
-	vars := EnvToVariablesMap[envId]
+	vars := ExecScene.EnvToVariables[envId]
 
 	ret = getValueFromList(name, vars)
 
 	return
 }
 func getValueFromGlobalVar(name string) (ret string) {
-	ret = getValueFromList(name, GlobalVars)
+	ret = getValueFromList(name, ExecScene.GlobalVars)
 
 	return
 }

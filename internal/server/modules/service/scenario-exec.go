@@ -54,11 +54,11 @@ func (s *ScenarioExecService) LoadExecData(scenarioId uint) (ret agentExec.Scena
 	ret.RootProcessor.Session = agentExec.Session{}
 
 	// get variables
-	ret.EnvToVariables, ret.InterfaceToEnvMap, _ = s.SceneService.LoadEnvVarMapByScenario(scenarioId)
-	ret.GlobalVars, _ = s.EnvironmentService.GetGlobalVars(scenario.ProjectId)
-	ret.GlobalParams, _ = s.EnvironmentService.GetGlobalParams(scenario.ProjectId)
+	ret.ExecScene.EnvToVariables, ret.ExecScene.InterfaceToEnvMap, _ = s.SceneService.LoadEnvVarMapByScenario(scenarioId)
+	ret.ExecScene.GlobalVars, _ = s.EnvironmentService.GetGlobalVars(scenario.ProjectId)
+	ret.ExecScene.GlobalParams, _ = s.EnvironmentService.GetGlobalParams(scenario.ProjectId)
 
-	ret.Datapools, _ = s.DatapoolService.ListForExec(scenario.ProjectId)
+	ret.ExecScene.Datapools, _ = s.DatapoolService.ListForExec(scenario.ProjectId)
 
 	return
 }

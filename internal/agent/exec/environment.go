@@ -7,8 +7,8 @@ import (
 )
 
 func GenRequestUrl(req *domain.BaseRequest, interfaceId uint) {
-	envId := InterfaceToEnvMap[interfaceId]
-	vars := EnvToVariablesMap[envId]
+	envId := ExecScene.InterfaceToEnvMap[interfaceId]
+	vars := ExecScene.EnvToVariables[envId]
 
 	baseUrl := getValueFromList(consts.KEY_BASE_URL, vars)
 

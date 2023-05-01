@@ -25,15 +25,15 @@ func getDatapoolValue(placeholder string) (ret string) {
 	dpCol := strings.TrimSpace(arrs[0][2])
 	dpSeq := strings.TrimSpace(arrs[0][3])
 
-	dp := DatapoolData[dpName]
+	dp := ExecScene.Datapools[dpName]
 	if dp == nil {
 		ret = fmt.Sprintf("${%s}", placeholder)
 		return
 	}
 
-	rowIndex := getDatapoolRow(dpName, dpSeq, DatapoolData)
+	rowIndex := getDatapoolRow(dpName, dpSeq, ExecScene.Datapools)
 
-	val := DatapoolData[dpName][rowIndex][dpCol]
+	val := ExecScene.Datapools[dpName][rowIndex][dpCol]
 	if val == nil {
 		val = "NOT_FOUND"
 	}

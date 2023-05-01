@@ -30,13 +30,7 @@ type ScenarioExecObjBase struct {
 
 	BaseUrl string `json:"baseUrl"`
 
-	InterfaceToEnvMap domain.InterfaceToEnvMap `json:"interfaceToEnvMap"`
-	EnvToVariables    domain.EnvToVariables    `json:"envToVariables"` // envId -> vars
-
-	GlobalVars   []domain.GlobalVar   `json:"globalVars"`
-	GlobalParams []domain.GlobalParam `json:"globalParams"`
-
-	Datapools domain.Datapools
+	ExecScene domain.ExecScene `json:"execScene"`
 
 	ServerUrl string `json:"serverUrl"`
 	Token     string `json:"token"`

@@ -19,7 +19,7 @@ type RemoteService struct {
 
 // for interface invocation in both endpoint and scenario
 func (s *RemoteService) GetInterfaceToExec(req v1.InterfaceCall) (ret agentExec.InterfaceExecObj) {
-	url := fmt.Sprintf("debugs/interface/load")
+	url := fmt.Sprintf("debugs/interface/loadForExec")
 	body, err := json.Marshal(req.Data)
 	if err != nil {
 		logUtils.Infof("marshal request data failed, error, %s", err.Error())

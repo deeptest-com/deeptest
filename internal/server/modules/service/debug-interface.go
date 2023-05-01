@@ -25,7 +25,33 @@ type DebugInterfaceService struct {
 	DatapoolService    *DatapoolService    `inject:""`
 }
 
-func (s *DebugInterfaceService) Load(loadReq domain.DebugReq) (ret agentExec.InterfaceExecObj, err error) {
+func (s *DebugInterfaceService) Load(loadReq domain.DebugReq) (debugData domain.DebugData, err error) {
+	if loadReq.ScenarioProcessorId > 0 {
+		processor, _ := s.ScenarioProcessorRepo.Get(loadReq.ScenarioProcessorId)
+		loadReq.EndpointInterfaceId = processor.EndpointInterfaceId
+	}
+
+	if loadReq.EndpointInterfaceId == 0 {
+		return
+	}
+
+	debugData, _ = s.GetDebugInterface(loadReq.EndpointInterfaceId)
+
+	debugData.UsedBy = loadReq.UsedBy
+	if loadReq.ScenarioProcessorId > 0 {
+		debugData.ScenarioProcessorId = loadReq.ScenarioProcessorId
+	}
+
+	debugData.BaseUrl, debugData.ShareVars =
+		s.DebugSceneService.LoadScene(debugData.EndpointInterfaceId, debugData.ScenarioProcessorId, debugData.UsedBy)
+
+	debugData.ScenarioProcessorId = loadReq.ScenarioProcessorId
+	debugData.UsedBy = loadReq.UsedBy
+
+	return
+}
+
+func (s *DebugInterfaceService) LoadForExec(loadReq domain.DebugReq) (ret agentExec.InterfaceExecObj, err error) {
 	if loadReq.ScenarioProcessorId > 0 {
 		processor, _ := s.ScenarioProcessorRepo.Get(loadReq.ScenarioProcessorId)
 		loadReq.EndpointInterfaceId = processor.EndpointInterfaceId
@@ -43,7 +69,7 @@ func (s *DebugInterfaceService) Load(loadReq domain.DebugReq) (ret agentExec.Int
 		debugData.ScenarioProcessorId = loadReq.ScenarioProcessorId
 	}
 
-	debugData.BaseUrl, debugData.ShareVars, debugData.EnvVars, debugData.GlobalEnvVars, debugData.GlobalParamVars =
+	debugData.BaseUrl, debugData.ShareVars =
 		s.DebugSceneService.LoadScene(debugData.EndpointInterfaceId, debugData.ScenarioProcessorId, debugData.UsedBy)
 
 	debugData.ScenarioProcessorId = loadReq.ScenarioProcessorId
@@ -53,11 +79,11 @@ func (s *DebugInterfaceService) Load(loadReq domain.DebugReq) (ret agentExec.Int
 
 	// get variables
 	var projectId uint
-	ret.EnvToVariables, ret.InterfaceToEnvMap, projectId, _ = s.SceneService.LoadEnvVarMapByEndpointInterface(debugData.EndpointInterfaceId)
-	ret.GlobalVars, _ = s.EnvironmentService.GetGlobalVars(projectId)
-	ret.GlobalParams, _ = s.EnvironmentService.GetGlobalParams(projectId)
+	ret.ExecScene.EnvToVariables, ret.ExecScene.InterfaceToEnvMap, projectId, _ = s.SceneService.LoadEnvVarMapByEndpointInterface(debugData.EndpointInterfaceId)
+	ret.ExecScene.GlobalVars, _ = s.EnvironmentService.GetGlobalVars(projectId)
+	ret.ExecScene.GlobalParams, _ = s.EnvironmentService.GetGlobalParams(projectId)
 
-	ret.Datapools, _ = s.DatapoolService.ListForExec(projectId)
+	ret.ExecScene.Datapools, _ = s.DatapoolService.ListForExec(projectId)
 
 	return
 }

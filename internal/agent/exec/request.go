@@ -97,7 +97,7 @@ func replaceUrl(req *domain.BaseRequest, usedBy consts.UsedBy) {
 }
 func replaceParams(req *domain.BaseRequest, usedBy consts.UsedBy) {
 	if usedBy == consts.ScenarioDebug {
-		for _, v := range GlobalParams {
+		for _, v := range ExecScene.GlobalParams {
 			if v.In == consts.ParamInQuery {
 				req.Params = append(req.Params, domain.Param{
 					Name:  v.Name,
@@ -113,7 +113,7 @@ func replaceParams(req *domain.BaseRequest, usedBy consts.UsedBy) {
 }
 func replaceHeaders(req *domain.BaseRequest, usedBy consts.UsedBy) {
 	if usedBy == consts.ScenarioDebug {
-		for _, v := range GlobalParams {
+		for _, v := range ExecScene.GlobalParams {
 			if v.In == consts.ParamInHeader {
 				req.Params = append(req.Params, domain.Param{
 					Name:  v.Name,

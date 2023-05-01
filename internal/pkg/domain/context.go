@@ -16,9 +16,8 @@ type GlobalParam struct {
 	DefaultValue string           `json:"defaultValue"`
 }
 
-type InterfaceToEnvMap map[uint]uint     // interfaceId -> envId
-type EnvToVariables map[uint][]GlobalVar // envId -> vars
+type InterfaceToEnvMap map[uint]uint               // interfaceId -> envId
+type EnvToVariables map[uint][]GlobalVar           // envId -> vars
+type Datapools map[string][]map[string]interface{} // datapoolName -> obj array
 
 type VarKeyValuePair map[string]interface{}
-
-type Datapools map[string][]map[string]interface{} // datapoolName -> obj array

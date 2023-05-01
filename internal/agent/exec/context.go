@@ -19,29 +19,14 @@ var (
 	ScopedVariables = map[uint][]domain.ExecVariable{} // only for scenario
 	ScopedCookies   = map[uint][]domain.ExecCookie{}   // only for scenario
 
-	// global variables and params
-	GlobalVars   []domain.GlobalVar
-	GlobalParams []domain.GlobalParam
-
-	// datapool
-	DatapoolData   = domain.Datapools{}
-	DatapoolCursor = map[string]int{} // only for scenario
-
-	// env variables
-	InterfaceToEnvMap map[uint]uint
-	EnvToVariablesMap map[uint][]domain.GlobalVar
+	ExecScene      = domain.ExecScene{}
+	DatapoolCursor = map[string]int{}
 )
 
 func InitExecContext(execObj *ScenarioExecObj) (variables []domain.ExecVariable) {
 	GetScopeHierarchy(execObj.RootProcessor, &ScopeHierarchy)
 
-	GlobalVars = execObj.GlobalVars
-	GlobalParams = execObj.GlobalParams
-
-	InterfaceToEnvMap = execObj.InterfaceToEnvMap
-	EnvToVariablesMap = execObj.EnvToVariables
-
-	DatapoolData = execObj.Datapools
+	ExecScene = execObj.ExecScene
 
 	ScopedVariables = map[uint][]domain.ExecVariable{}
 	ScopedCookies = map[uint][]domain.ExecCookie{}

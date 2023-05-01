@@ -18,13 +18,7 @@ func (s *ExecInterfaceService) Run(call agentDomain.InterfaceCall) (ret domain.D
 
 	agentExec.CurrInterfaceId = req.DebugData.EndpointInterfaceId
 
-	agentExec.GlobalVars = req.GlobalVars
-	agentExec.GlobalParams = req.GlobalParams
-
-	agentExec.InterfaceToEnvMap = req.InterfaceToEnvMap
-	agentExec.EnvToVariablesMap = req.EnvToVariables
-
-	agentExec.DatapoolData = req.Datapools
+	agentExec.ExecScene = req.ExecScene
 
 	ret, err = s.Request(req.DebugData)
 	err = s.RemoteService.SubmitInterfaceResult(req.DebugData, ret, call.ServerUrl, call.Token)

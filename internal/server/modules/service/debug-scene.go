@@ -20,29 +20,19 @@ type DebugSceneService struct {
 }
 
 func (s *DebugSceneService) LoadScene(endpointInterfaceId, scenarioProcessorId uint, usedBy consts.UsedBy) (
-	baseUrl string, shareVariables []domain.VarKeyValuePair, envVars []domain.VarKeyValuePair,
-	globalEnvVars []domain.GlobalVar, globalParamVars []domain.GlobalParam) {
+	baseUrl string, shareVariables []domain.VarKeyValuePair) {
 
-	var serveId, serverId, projectId uint
+	var serveId, serverId uint
 
 	interf, _ := s.EndpointInterfaceRepo.Get(endpointInterfaceId)
 	endpoint, _ := s.EndpointRepo.Get(interf.EndpointId)
 	serveId = endpoint.ServeId
 	serverId = endpoint.ServerId
-	projectId = endpoint.ProjectId
 
 	serveServer, _ := s.ServeServerRepo.Get(serverId)
 	baseUrl = _httpUtils.AddSepIfNeeded(serveServer.Url)
-	envId := serveServer.EnvironmentId
 
 	shareVariables, _ = s.ShareVarService.listForDebug(serveId, scenarioProcessorId, usedBy)
-	envVars, _ = s.EnvironmentService.GetVarsByEnv(envId)
-
-	globalEnvVars, _ = s.EnvironmentService.GetGlobalVars(projectId)
-	globalParamVars, _ = s.EnvironmentService.GetGlobalParams(projectId)
-
-	// interf, _ := s.ProcessorInterfaceRepo.Get(req.EndpointInterfaceId)
-	//req.Datapools, _ = s.DatapoolService.ListForExec(interf.ProjectId)
 
 	return
 }

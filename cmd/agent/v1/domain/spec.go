@@ -1,4 +1,4 @@
-package domain
+package agentDomain
 
 type ParseSpecReq struct {
 	Src  string `json:"src"`

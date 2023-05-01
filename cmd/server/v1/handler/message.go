@@ -1,7 +1,7 @@
 package handler
 
 import (
-	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/core/web/validate"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
@@ -21,7 +21,7 @@ type MessageCtrl struct {
 func (c *MessageCtrl) List(ctx iris.Context) {
 	userId := multi.GetUserId(ctx)
 
-	var req v1.MessageReqPaginate
+	var req serverDomain.MessageReqPaginate
 	if err := ctx.ReadQuery(&req); err != nil {
 		errs := validate.ValidRequest(err)
 		if len(errs) > 0 {
@@ -58,7 +58,7 @@ func (c *MessageCtrl) UnreadCount(ctx iris.Context) {
 func (c *MessageCtrl) OperateRead(ctx iris.Context) {
 	userId := multi.GetUserId(ctx)
 
-	req := v1.MessageReadReq{}
+	req := serverDomain.MessageReadReq{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})

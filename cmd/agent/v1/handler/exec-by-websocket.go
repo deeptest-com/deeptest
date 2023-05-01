@@ -3,7 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/aaronchen2k/deeptest/cmd/agent/v1/domain"
+	agentDomain "github.com/aaronchen2k/deeptest/cmd/agent/v1/domain"
 	execDomain "github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	"github.com/aaronchen2k/deeptest/internal/agent/service"
@@ -72,7 +72,7 @@ func (c *ExecByWebSocketCtrl) OnChat(wsMsg websocket.Message) (err error) {
 	ctx := websocket.GetContext(c.Conn)
 	_logUtils.Infof("WebSocket OnChat: remote address=%s, room=%s, msg=%s", ctx.RemoteAddr(), wsMsg.Room, string(wsMsg.Body))
 
-	req := domain.WsReq{}
+	req := agentDomain.WsReq{}
 	err = json.Unmarshal(wsMsg.Body, &req)
 	if err != nil {
 		sendErr(err, &wsMsg)

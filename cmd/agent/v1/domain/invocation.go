@@ -1,4 +1,4 @@
-package domain
+package agentDomain
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"

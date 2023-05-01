@@ -1,1 +1,1 @@
-package domain
+package serverDomain

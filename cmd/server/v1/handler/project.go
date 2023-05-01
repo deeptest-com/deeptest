@@ -1,7 +1,7 @@
 package handler
 
 import (
-	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/core/web/validate"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
@@ -21,7 +21,7 @@ type ProjectCtrl struct {
 func (c *ProjectCtrl) List(ctx iris.Context) {
 	userId := multi.GetUserId(ctx)
 
-	var req v1.ProjectReqPaginate
+	var req serverDomain.ProjectReqPaginate
 	if err := ctx.ReadQuery(&req); err != nil {
 		errs := validate.ValidRequest(err)
 		if len(errs) > 0 {
@@ -59,7 +59,7 @@ func (c *ProjectCtrl) Get(ctx iris.Context) {
 func (c *ProjectCtrl) Create(ctx iris.Context) {
 	userId := multi.GetUserId(ctx)
 
-	req := v1.ProjectReq{}
+	req := serverDomain.ProjectReq{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
@@ -77,7 +77,7 @@ func (c *ProjectCtrl) Create(ctx iris.Context) {
 
 func (c *ProjectCtrl) Update(ctx iris.Context) {
 
-	var req v1.ProjectReq
+	var req serverDomain.ProjectReq
 	err := ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
@@ -125,7 +125,7 @@ func (c *ProjectCtrl) GetByUser(ctx iris.Context) {
 func (c *ProjectCtrl) ChangeProject(ctx iris.Context) {
 	userId := multi.GetUserId(ctx)
 
-	req := v1.ProjectReq{}
+	req := serverDomain.ProjectReq{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
@@ -157,7 +157,7 @@ func (c *ProjectCtrl) Members(ctx iris.Context) {
 		return
 	}
 
-	var req v1.ProjectReqPaginate
+	var req serverDomain.ProjectReqPaginate
 	if err := ctx.ReadQuery(&req); err != nil {
 		errs := validate.ValidRequest(err)
 		if len(errs) > 0 {
@@ -177,7 +177,7 @@ func (c *ProjectCtrl) Members(ctx iris.Context) {
 }
 
 func (c *ProjectCtrl) RemoveMember(ctx iris.Context) {
-	req := v1.ProjectMemberRemoveReq{}
+	req := serverDomain.ProjectMemberRemoveReq{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
@@ -194,7 +194,7 @@ func (c *ProjectCtrl) RemoveMember(ctx iris.Context) {
 }
 
 func (c *ProjectCtrl) ChangeUserRole(ctx iris.Context) {
-	req := v1.UpdateProjectMemberReq{}
+	req := serverDomain.UpdateProjectMemberReq{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})

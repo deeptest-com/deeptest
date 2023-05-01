@@ -1,4 +1,4 @@
-package domain
+package serverDomain
 
 import "github.com/aaronchen2k/deeptest/pkg/consts"
 

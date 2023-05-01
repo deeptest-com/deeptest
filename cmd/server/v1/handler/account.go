@@ -1,7 +1,7 @@
 package handler
 
 import (
-	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/core/web/validate"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
@@ -19,7 +19,7 @@ type AccountCtrl struct {
 }
 
 func (c *AccountCtrl) Login(ctx iris.Context) {
-	var req v1.LoginReq
+	var req serverDomain.LoginReq
 	if err := ctx.ReadJSON(&req); err != nil {
 		errs := validate.ValidRequest(err)
 
@@ -38,7 +38,7 @@ func (c *AccountCtrl) Login(ctx iris.Context) {
 }
 
 func (c *AccountCtrl) Register(ctx iris.Context) {
-	var req v1.RegisterReq
+	var req serverDomain.RegisterReq
 	if err := ctx.ReadJSON(&req); err != nil {
 		errs := validate.ValidRequest(err)
 
@@ -70,7 +70,7 @@ func (c *AccountCtrl) ForgotPassword(ctx iris.Context) {
 }
 
 func (c *AccountCtrl) ResetPassword(ctx iris.Context) {
-	var req v1.ResetPasswordReq
+	var req serverDomain.ResetPasswordReq
 	err := ctx.ReadJSON(&req)
 	if err != nil {
 		errs := validate.ValidRequest(err)

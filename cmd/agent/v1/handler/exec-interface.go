@@ -13,7 +13,7 @@ type ExecInterfaceCtrl struct {
 
 // Call
 func (c *ExecInterfaceCtrl) Call(ctx iris.Context) {
-	req := domain.InterfaceCall{}
+	req := agentDomain.InterfaceCall{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})

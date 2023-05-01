@@ -1,7 +1,7 @@
 package handler
 
 import (
-	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	commService "github.com/aaronchen2k/deeptest/internal/pkg/service"
 	"github.com/aaronchen2k/deeptest/internal/server/core/web/validate"
@@ -101,7 +101,7 @@ func (c *InterfaceCtrl) Create(ctx iris.Context) {
 		return
 	}
 
-	req := v1.InterfaceReq{}
+	req := serverDomain.InterfaceReq{}
 	err = ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
@@ -124,7 +124,7 @@ func (c *InterfaceCtrl) Create(ctx iris.Context) {
 func (c *InterfaceCtrl) Update(ctx iris.Context) {
 	id, err := ctx.URLParamInt("id")
 
-	var req v1.InterfaceReq
+	var req serverDomain.InterfaceReq
 	if err := ctx.ReadJSON(&req); err != nil {
 		errs := validate.ValidRequest(err)
 		if len(errs) > 0 {
@@ -144,7 +144,7 @@ func (c *InterfaceCtrl) Update(ctx iris.Context) {
 
 // UpdateName 更新
 func (c *InterfaceCtrl) UpdateName(ctx iris.Context) {
-	var req v1.InterfaceReq
+	var req serverDomain.InterfaceReq
 	err := ctx.ReadJSON(&req)
 	if err != nil {
 		logUtils.Errorf("参数验证失败", err.Error())
@@ -183,7 +183,7 @@ func (c *InterfaceCtrl) Delete(ctx iris.Context) {
 func (c *InterfaceCtrl) Move(ctx iris.Context) {
 	projectId, _ := ctx.URLParamInt("currProjectId")
 
-	var req v1.InterfaceMoveReq
+	var req serverDomain.InterfaceMoveReq
 	err := ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})

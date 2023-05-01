@@ -1,7 +1,7 @@
 package handler
 
 import (
-	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
@@ -256,7 +256,7 @@ func (c *EnvironmentCtrl) ClearShareVar(ctx iris.Context) {
 }
 
 func (c *EnvironmentCtrl) Save(ctx iris.Context) {
-	var req v1.EnvironmentReq
+	var req serverDomain.EnvironmentReq
 	if err := ctx.ReadJSON(&req); err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -301,7 +301,7 @@ func (c *EnvironmentCtrl) ListAll(ctx iris.Context) {
 }
 
 func (c *EnvironmentCtrl) SaveGlobal(ctx iris.Context) {
-	var req []v1.EnvironmentVariable
+	var req []serverDomain.EnvironmentVariable
 	projectId := ctx.URLParamIntDefault("currProjectId", 0)
 
 	err := ctx.ReadJSON(&req)
@@ -330,7 +330,7 @@ func (c *EnvironmentCtrl) ListGlobal(ctx iris.Context) {
 }
 
 func (c *EnvironmentCtrl) SaveParams(ctx iris.Context) {
-	var req v1.EnvironmentParamsReq
+	var req serverDomain.EnvironmentParamsReq
 	if err := ctx.ReadJSON(&req); err == nil {
 		if err = c.EnvironmentService.SaveParams(req); err == nil {
 			ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
@@ -353,7 +353,7 @@ func (c *EnvironmentCtrl) ListParams(ctx iris.Context) {
 }
 
 func (c *EnvironmentCtrl) Order(ctx iris.Context) {
-	var req v1.EnvironmentIdsReq
+	var req serverDomain.EnvironmentIdsReq
 	if err := ctx.ReadJSON(&req); err == nil {
 		if err = c.EnvironmentService.SaveOrder(req); err == nil {
 			ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})

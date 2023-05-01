@@ -1,7 +1,7 @@
 package handler
 
 import (
-	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/core/web/validate"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
@@ -50,7 +50,7 @@ func (c *ProjectRolePermCtrl) AllRoleList(ctx iris.Context) {
 }
 
 func (c *ProjectRolePermCtrl) RolePermList(ctx iris.Context) {
-	var req v1.ProjectRolePermPaginateReq
+	var req serverDomain.ProjectRolePermPaginateReq
 	if err := ctx.ReadQuery(&req); err != nil {
 		errs := validate.ValidRequest(err)
 		if len(errs) > 0 {
@@ -73,7 +73,7 @@ func (c *ProjectRolePermCtrl) RolePermList(ctx iris.Context) {
 func (c *ProjectRolePermCtrl) UserPermList(ctx iris.Context) {
 	userId := multi.GetUserId(ctx)
 
-	var req v1.ProjectUserPermsPaginate
+	var req serverDomain.ProjectUserPermsPaginate
 	if err := ctx.ReadQuery(&req); err != nil {
 		errs := validate.ValidRequest(err)
 		if len(errs) > 0 {

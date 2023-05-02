@@ -63,10 +63,9 @@ export async function removeScenarioFromPlan(planId, scenarioId): Promise<any> {
 
 
 
-export async function listScenario(serveId): Promise<any> {
+export async function listScenario(): Promise<any> {
     return request({
-        url: `/${apiPathScenario}/listByServe`,
+        url: `/${apiPathScenario}/listByProject`,
         method: 'get',
-        params: {serveId},
     });
 }

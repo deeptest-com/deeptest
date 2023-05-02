@@ -58,8 +58,7 @@
 
     <SelectScenario
         v-if="modalVisible"
-        :scenariosInServe="scenarios"
-        :submit="addScenarioToServe"
+        :submit="addScenario"
         :cancel="() => modalVisible = false"
     />
   </div>
@@ -128,7 +127,7 @@ const selectScenario = () => {
   console.log('selectScenario')
   modalVisible.value = true
 }
-const addScenarioToServe = (scenarios) => {
+const addScenario = (scenarios) => {
   console.log('addScenarios', props.modelId, scenarios)
   addScenarios(props.modelId, scenarios).then((json) => {
     if (json.code === 0) {

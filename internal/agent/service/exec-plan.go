@@ -19,6 +19,10 @@ func (s *ExecPlanService) ExecPlan(req *agentExec.PlanExecReq, wsMsg *websocket.
 
 	planExecObj := s.RemoteService.GetPlanToExec(req)
 
+	if len(planExecObj.Scenarios) == 0 {
+		return
+	}
+
 	// start msg
 	execUtils.SendStartMsg(wsMsg)
 

@@ -22,7 +22,7 @@ func (m *ScenarioModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
 		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin(), middleware.ProjectPerm())
 
-		index.Get("/listByServe", m.ScenarioCtrl.ListByServe)
+		index.Get("/listByProject", m.ScenarioCtrl.ListByProject)
 
 		index.Get("/", m.ScenarioCtrl.List).Name = "场景列表"
 		index.Get("/{id:uint}", m.ScenarioCtrl.Get).Name = "场景详情"

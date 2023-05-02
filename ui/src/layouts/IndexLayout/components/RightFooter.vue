@@ -1,7 +1,7 @@
 <template>
     <div class="indexlayout-right-footer">
 <!--      <div class="footer-links">
-        <a href="https://github.com/lqsong/admin-antd-vue" target="_blank">Github</a>
+        <a href="" target="_blank">Github</a>
       </div>
       <div class="footer-copyright">Copyright © 2022 deeptest.com, All Rights Reserved</div>
 -->

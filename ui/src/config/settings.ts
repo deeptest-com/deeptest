@@ -76,7 +76,7 @@ export interface SettingsType {
 }
 
 const settings: SettingsType = {
-    siteTitle: 'ADMIN-ANTD-VUE',
+    siteTitle: 'deeptest.com',
     topNavEnable: true,
     headFixed: true,
     tabNavEnable: false,

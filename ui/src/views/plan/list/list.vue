@@ -80,7 +80,7 @@
   >
     <template #title>
       <div class="drawer-header">
-        <div>计划编辑</div>
+        <div>编辑计划</div>
       </div>
     </template>
     <div class="drawer-content">

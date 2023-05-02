@@ -20,12 +20,9 @@
 </template>
 
 <script setup lang="ts">
-import {computed, ComputedRef, defineComponent, inject, PropType, Ref, ref, watch} from "vue";
+import {inject} from "vue";
 import {useI18n} from "vue-i18n";
-import {useStore} from "vuex";
 import { CloseOutlined } from '@ant-design/icons-vue';
-import {StateType} from "@/views/interface1/store";
-import {Interface, Response} from "@/views/interface1/data";
 import {UsedBy} from "@/utils/enum";
 
 const usedBy = inject('usedBy') as UsedBy

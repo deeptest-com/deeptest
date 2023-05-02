@@ -8,9 +8,6 @@ import {
     save,
     remove,
 
-    listInvocation, getInvocationAsInterface, removeInvocation,
-    loadExecResult, getInterface, getLastInvocationResp,
-
     loadScenario,
     getNode,
     createNode,
@@ -18,7 +15,7 @@ import {
     removeNode,
     moveNode,
     addInterfaces, addProcessor,
-    saveProcessorName, saveProcessor, saveInterface,
+    saveProcessorName, saveProcessor, saveInterface, loadExecResult,
 } from './service';
 
 import {
@@ -30,16 +27,7 @@ import {
     moveCategory,
     updateCategoryName} from "@/services/category";
 
-// below use same apis with interface controller
-import {
-    invokeInterface,
-    listExtractor,
-    listCheckpoint,
-    listValidExtractorVariableForInterface,
-} from "@/views/interface1/service";
-
 import {getNodeMap} from "@/services/tree";
-import {Interface, Response} from "@/views/interface1/data";
 import {UsedBy} from "@/utils/enum";
 
 export interface StateType {
@@ -61,9 +49,9 @@ export interface StateType {
 
     execResult: any;
 
-    interfaceData: Interface;
+    interfaceData: any;
     invocationsData: [],
-    responseData: Response;
+    responseData: any;
     extractorsData: any[];
     checkpointsData: any[];
     validExtractorVariablesData: any[];
@@ -129,19 +117,6 @@ export interface ModuleType extends StoreModuleType<StateType> {
         loadExecResult: Action<StateType, StateType>;
         updateExecResult: Action<StateType, StateType>;
 
-        getInterface: Action<StateType, StateType>;
-        saveInterface: Action<StateType, StateType>;
-        invokeInterface: Action<StateType, StateType>;
-        getLastInvocationResp: Action<StateType, StateType>;
-
-        listInvocation: Action<StateType, StateType>;
-        getInvocationAsInterface: Action<StateType, StateType>;
-        removeInvocation: Action<StateType, StateType>;
-
-        listExtractor: Action<StateType, StateType>;
-        listCheckpoint: Action<StateType, StateType>;
-        listValidExtractorVariableForInterface: Action<StateType, StateType>;
-
         loadCategory: Action<StateType, StateType>;
         getCategoryNode: Action<StateType, StateType>;
         createCategoryNode: Action<StateType, StateType>;
@@ -183,9 +158,9 @@ const initState: StateType = {
 
     execResult: {},
 
-    interfaceData: {} as Interface,
+    interfaceData: {},
     invocationsData: [],
-    responseData: {} as Response,
+    responseData: {},
     extractorsData: [],
     checkpointsData: [],
     validExtractorVariablesData: [],
@@ -573,125 +548,6 @@ const StoreModel: ModuleType = {
             commit('setScenarioId', payload.scenarioId);
 
             return true;
-        },
-
-        async getInterface({commit}, interfaceId: number) {
-            try {
-                const response = await getInterface(interfaceId);
-
-                const {data} = response;
-                data.headers.push({name: '', value: ''})
-                data.params.push({name: '', value: ''})
-                data.bodyFormData.push({name: '', value: '', type: 'text'})
-                data.bodyFormUrlencoded.push({name: '', value: ''})
-
-                commit('setInterface', data);
-                return true;
-            } catch (error) {
-                return false;
-            }
-        },
-
-        async getLastInvocationResp({commit, dispatch, state}, id: number) {
-            const response = await getLastInvocationResp(id);
-            // console.log('=getLastInvocationResp=', response.data)
-
-            const {data} = response;
-
-            commit('setResponse', data);
-            return true;
-        },
-
-        async saveInterface({commit}, payload: any) {
-            const json = await saveInterface(payload)
-            if (json.code === 0) {
-                return true;
-            } else {
-                return false
-            }
-        },
-        async invokeInterface({commit, dispatch, state}, data: any) {
-            const response = await invokeInterface(data)
-            // console.log('=invoke in processor=', response.data)
-
-            if (response.code === 0) {
-                commit('setResponse', response.data);
-
-                dispatch('listInvocation', state.interfaceData.id);
-                dispatch('listValidExtractorVariableForInterface');
-
-                dispatch('listExtractor');
-                dispatch('listCheckpoint');
-
-                return true;
-            } else {
-                return false
-            }
-        },
-
-        // invocation
-        async listInvocation({commit}, interfaceId: number) {
-            try {
-                const resp = await listInvocation(interfaceId);
-                const {data} = resp;
-                commit('setInvocations', data);
-                return true;
-            } catch (error) {
-                return false;
-            }
-        },
-        async getInvocationAsInterface({commit}, id: number) {
-            try {
-                const resp = await getInvocationAsInterface(id);
-                const {data} = resp;
-
-                commit('setInterface', data.req);
-                commit('setResponse', data.resp);
-                return true;
-            } catch (error) {
-                return false;
-            }
-        },
-        async removeInvocation({commit, dispatch, state}, data: any) {
-            try {
-                await removeInvocation(data.id);
-                dispatch('listInvocation', data.interfaceId);
-                return true;
-            } catch (error) {
-                return false;
-            }
-        },
-
-        async listExtractor({commit, dispatch, state}) {
-            try {
-                const resp = await listExtractor(state.interfaceData.id, UsedBy.ScenarioDebug);
-                const {data} = resp;
-                commit('setExtractors', data);
-                return true;
-            } catch (error) {
-                return false;
-            }
-        },
-        async listCheckpoint({commit, state}) {
-            try {
-                const resp = await listCheckpoint(state.interfaceData.id, UsedBy.ScenarioDebug);
-                const {data} = resp;
-                commit('setCheckpoints', data);
-                return true;
-            } catch (error) {
-                return false;
-            }
-        },
-        async listValidExtractorVariableForInterface({commit, dispatch, state}) {
-            try {
-                console.log('listValidExtractorVariableForInterface')
-                const resp = await listValidExtractorVariableForInterface(state.interfaceData.id, UsedBy.ScenarioDebug);
-                const {data} = resp;
-                commit('setValidExtractorVariables', data);
-                return true;
-            } catch (error) {
-                return false;
-            }
         },
     }
 };

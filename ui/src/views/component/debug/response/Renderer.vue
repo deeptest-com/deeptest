@@ -46,10 +46,10 @@ import ResponseHeaders from "./Renderer/Headers.vue";
 import ResponseExtract from "./Extractor.vue";
 import ResponseCheck from "./Checkpoint.vue";
 
-import ResponseLensXml from "@/views/interface1/components/designer/response/Renderer/lenses/XMLLensRenderer.vue";
-import ResponseLensHtml from "@/views/interface1/components/designer/response/Renderer/lenses/HTMLLensRenderer.vue";
-import ResponseLensImage from "@/views/interface1/components/designer/response/Renderer/lenses/ImageLensRenderer.vue";
-import ResponseLensRaw from "@/views/interface1/components/designer/response/Renderer/lenses/RawLensRenderer.vue";
+import ResponseLensXml from "@/views/component/debug/response/Renderer/lenses/XMLLensRenderer.vue";
+import ResponseLensHtml from "@/views/component/debug/response/Renderer/lenses/HTMLLensRenderer.vue";
+import ResponseLensImage from "@/views/component/debug/response/Renderer/lenses/ImageLensRenderer.vue";
+import ResponseLensRaw from "@/views/component/debug/response/Renderer/lenses/RawLensRenderer.vue";
 import {UsedBy} from "@/utils/enum";
 const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
@@ -79,18 +79,6 @@ const checkpointFail = computed(() => {
   }
   return false
 })
-
-// const listExtractor = () => {
-//   usedBy === UsedBy.InterfaceDebug ? store.dispatch('Interface1/listExtractor') :
-//       store.dispatch('Scenario/listExtractor')
-// }
-// listExtractor()
-//
-// const listCheckPoint = () => {
-//   usedBy === UsedBy.InterfaceDebug ? store.dispatch('Interface1/listCheckpoint') :
-//       store.dispatch('Scenario/listCheckpoint')
-// }
-// listCheckPoint()
 
 </script>
 

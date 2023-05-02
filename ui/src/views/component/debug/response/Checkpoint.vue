@@ -129,11 +129,11 @@ import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import {message, Form} from 'ant-design-vue';
 import { PlusOutlined, EditOutlined, DeleteOutlined, CloseCircleOutlined, CheckCircleOutlined} from '@ant-design/icons-vue';
-import {Checkpoint} from "@/views/interface1/data";
+
 import {
   getEnumSelectItems,
   listExtractorVariable
-} from "@/views/interface1/service";
+} from "@/views/component/debug/service";
 import {ComparisonOperator, CheckpointType, UsedBy} from "@/utils/enum";
 import {isInArray} from "@/utils/array";
 import {getResultCls} from "@/utils/dom"
@@ -144,6 +144,7 @@ const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
 
 import {StateType as Debug} from "@/views/component/debug/store";
+import {Checkpoint} from "@/views/component/debug/data";
 const store = useStore<{  Debug: Debug }>();
 
 const debugData = computed<any>(() => store.state.Debug.debugData);
@@ -160,8 +161,7 @@ watch(debugData, () => {
 }, {deep: true})
 
 const listCheckPoint = () => {
-  usedBy === UsedBy.InterfaceDebug ? store.dispatch('Interface1/listCheckpoint') :
-      store.dispatch('Scenario/listCheckpoint')
+  store.dispatch('Debug/listCheckpoint')
 }
 listCheckPoint()
 

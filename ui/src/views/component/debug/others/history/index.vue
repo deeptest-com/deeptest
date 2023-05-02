@@ -25,14 +25,11 @@
 </template>
 
 <script setup lang="ts">
-import {computed, defineComponent, inject} from "vue";
+import {computed, inject} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import { DeleteOutlined } from '@ant-design/icons-vue';
-import {StateType} from "@/views/interface1/store";
-import {Interface} from "@/views/interface1/data";
 import {UsedBy} from "@/utils/enum";
-import {StateType as ScenarioStateType} from "@/views/scenario/store";
 
 const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();

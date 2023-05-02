@@ -1,15 +1,14 @@
 import request from '@/utils/request';
 import {QueryParams} from "@/views/project/data";
-import {getEnumSelectItems} from "@/views/interface1/service";
+
 import {
     ProcessorCookie, ProcessorData,
     ProcessorExtractor,
     ProcessorLogic,
     ProcessorLoop, ProcessorGroup, ProcessorTimer, ProcessorPrint,
     ProcessorCategory,
-    ProcessorVariable, ProcessorAssertion, RequestBodyType
+    ProcessorVariable, ProcessorAssertion, RequestBodyType, UsedBy
 } from "@/utils/enum";
-import {Interface} from "@/views/interface1/data";
 
 const apiPath = 'scenarios';
 const apiPathNodes = `${apiPath}/nodes`;
@@ -124,7 +123,7 @@ export async function addProcessor(data): Promise<any> {
         data: data,
     });
 }
-export async function saveInterface(interf: Interface): Promise<any> {
+export async function saveInterface(interf: any): Promise<any> {
     return request({
         url: `/${apiPathInterface}/saveInterface`,
         method: 'post',
@@ -236,4 +235,14 @@ export const isProcessor = (type) => {
 }
 export const isInterface = (type) => {
     return type ===  'processor_interface'
+}
+
+export const getEnumSelectItems = (enumDef) => {
+    const arr : any[] = []
+
+    for (const item in enumDef) {
+        arr.push({label: enumDef[item], value: item})
+    }
+
+    return arr
 }

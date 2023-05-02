@@ -166,7 +166,7 @@ import {computed, defineComponent, inject, onBeforeUnmount, onMounted, ref} from
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import { DownOutlined, ArrowRightOutlined, DeleteOutlined } from '@ant-design/icons-vue';
-import {genOAuth2AccessToken, getEnumSelectItems, listOAuth2Token, removeOAuth2Token} from "@/views/interface1/service";
+import {genOAuth2AccessToken, getEnumSelectItems, listOAuth2Token, removeOAuth2Token} from "@/views/component/debug/service";
 import {OAuth2ClientAuthenticationWay, OAuth2GrantTypes, UsedBy} from "@/utils/enum";
 import bus from "@/utils/eventBus";
 import settings from "@/config/settings";

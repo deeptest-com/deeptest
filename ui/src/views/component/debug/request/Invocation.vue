@@ -175,15 +175,6 @@ const showContextMenu = ref(false)
 let contextTarget = {} as any
 const contextMenuStyle = ref({} as any)
 
-const onContextMenuShow = (e) => {
-  console.log('getContextMenuStyle', e.target)
-
-  contextMenuStyle.value = getContextMenuStyle(e)
-  contextTarget = e.target
-
-  showContextMenu.value = true
-}
-
 const onMenuClick = (key) => {
   console.log('onMenuClick', key)
 

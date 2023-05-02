@@ -91,7 +91,7 @@ const props = defineProps({
     type: Number,
     required: true
   },
-  onFieldSaved: {
+  onSaved: {
     type: Function as PropType<() => void>,
     required: true
   }
@@ -163,7 +163,7 @@ const saveModel = async () => {
     console.log('res', res)
     fieldName.value = ''
     if (res === true) {
-      props.onFieldSaved()
+      props.onSaved()
     }
   })
 };

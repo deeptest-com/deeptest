@@ -377,7 +377,7 @@ const StoreModel: ModuleType = {
         // checkpoint
         async listCheckpoint({commit, state}) {
             try {
-                const resp = await listCheckpoint(state.debugData.id, UsedBy.InterfaceDebug);
+                const resp = await listCheckpoint(state.debugData.endpointInterfaceId);
                 const {data} = resp;
                 commit('setCheckpoints', data);
                 return true;

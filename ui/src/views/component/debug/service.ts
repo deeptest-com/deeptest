@@ -231,8 +231,8 @@ export async function listExtractorVariable(interfaceId: number): Promise<any> {
 }
 
 // checkpoint
-export async function listCheckpoint(interfaceId: number, usedBy: UsedBy): Promise<any> {
-    const params = {interfaceId, usedBy}
+export async function listCheckpoint(interfaceId: number): Promise<any> {
+    const params = {interfaceId}
 
     return request({
         url: `/${apiCheckpoint}`,

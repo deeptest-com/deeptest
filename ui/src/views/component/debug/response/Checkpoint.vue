@@ -7,10 +7,10 @@
         <a-col flex="160px">变量 / 键值 / 表达式</a-col>
         <a-col flex="60px">运算符</a-col>
         <a-col flex="100px">数值</a-col>
-        <a-col flex="1">实际结果</a-col>
-        <a-col flex="100px">状态</a-col>
+        <a-col flex="100px">实际结果</a-col>
+        <a-col flex="60px">状态</a-col>
 
-        <a-col flex="100px" class="dp-right">
+        <a-col flex="50px" class="dp-right">
           <PlusOutlined v-if="usedBy===UsedBy.InterfaceDebug" @click.stop="add" class="dp-icon-btn dp-trans-80" />
         </a-col>
       </a-row>
@@ -23,14 +23,15 @@
         <a-col flex="160px">{{ item.type === CheckpointType.extractor ? item.extractorVariable : item.expression }} </a-col>
         <a-col flex="60px">{{ t(item.operator) }}</a-col>
         <a-col flex="100px">{{ item.value }}</a-col>
-        <a-col flex="1" style="width: 0; word-break: break-word;">
+        <a-col flex="100px" style="width: 0; word-break: break-word;">
           {{ item.actualResult }}
         </a-col>
-        <a-col flex="100px" :class="getResultCls(item.resultStatus)">
+
+        <a-col flex="50px" :class="getResultCls(item.resultStatus)">
           {{ item.resultStatus ? t(item.resultStatus) : '' }}
         </a-col>
 
-        <a-col flex="100px" class="dp-right">
+        <a-col flex="50px" class="dp-right">
           <a-tooltip v-if="!item.disabled" @click="disable(item)" overlayClassName="dp-tip-small">
             <template #title>禁用</template>
             <CheckCircleOutlined class="dp-icon-btn dp-trans-80" />
@@ -224,8 +225,9 @@ const edit = (item) => {
 const save = () => {
   console.log('save')
   validate().then(() => {
-    model.value.interfaceId = debugData.value.id
-    store.dispatch('Interface1/saveCheckpoint', model.value).then((result) => {
+    model.value.interfaceId = debugData.value.endpointInterfaceId
+
+    store.dispatch('Debug/saveCheckpoint', model.value).then((result) => {
       if (result) {
         editVisible.value = false
       }
@@ -246,7 +248,7 @@ const remove = (item) => {
 const disable = (item) => {
   console.log('disabled')
   item.disabled = !item.disabled
-  store.dispatch('Interface1/saveCheckpoint', item)
+  store.dispatch('Debug/saveCheckpoint', item)
 }
 
 const selectType = () => {

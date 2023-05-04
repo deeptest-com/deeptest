@@ -5,7 +5,7 @@
                 @click="dropdownVisible = !dropdownVisible"
                 :overlayStyle="{width:'300px'}">
       <a-button class="header">
-        <span class="before-icon icon"><img  :src="getProjectLogo(currProject?.logo)" alt=""></span>
+        <span class="before-icon icon"><img :src="getProjectLogo(currProject?.logo)" alt=""></span>
         {{ currProject.name }}
         <DownOutlined class="after-icon"/>
       </a-button>
@@ -23,7 +23,7 @@
                  @click="() => {
                   selectProject(item.id)
                  }"
-                 :key="item.id">
+                 :key="'recently' + item.id + Math.random()">
               <span class="icon"><img :src="getProjectLogo(item?.logo)" alt=""></span>
               <span class="text">{{ item.name }}</span>
             </div>
@@ -35,7 +35,8 @@
                  @click="() => {
                   selectProject(item.id)
                  }"
-                 v-for="(item,index) in myProject" :key="item.id">
+                 v-for="(item,index) in myProject"
+                 :key="'my' + item.id + Math.random()">
               <span class="icon"><img :src="getProjectLogo(item?.logo)" alt=""></span>
               <span class="text">{{ item.name }}</span>
             </div>
@@ -73,14 +74,11 @@ import {StateType as ProjectStateType} from "@/store/project";
 import {StateType as ServeStateType} from "@/store/serve";
 import {StateType as EnvironmentStateType} from "@/store/environment";
 import {
-  UserOutlined,
-  PictureOutlined,
   DownOutlined,
   PlusOutlined,
 } from '@ant-design/icons-vue';
 import CreateProjectModal from "@/components/CreateProjectModal/index.vue";
-import { getProjectLogo } from "@/components/CreateProjectModal";
-// import Logos from "@/components/Logos/index.tsx";
+import {getProjectLogo} from "@/components/CreateProjectModal";
 
 const store = useStore<{
   User: UserStateType,
@@ -117,6 +115,7 @@ function newProject() {
   createProjectModalVisible.value = true;
   dropdownVisible.value = false;
 }
+
 const handleCreateSuccess = async () => {
   createProjectModalVisible.value = false;
   await store.dispatch("ProjectGlobal/fetchProject");
@@ -180,17 +179,17 @@ onUnmounted(() => {
     right: 8px;
   }
 }
-.icon{
+
+.icon {
   width: 24px;
   height: 24px;
   display: inline-block;
-  img{
+
+  img {
     width: 24px;
     height: 24px;
   }
 }
-
-
 
 
 </style>

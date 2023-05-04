@@ -129,7 +129,7 @@ const tableList = ref([]);
 const loading = ref(true);
 //分页相关
 const page = ref(1);
-const pageSize = ref(6);
+const pageSize = ref(8);
 const total = ref(0);
 const paginationProp = ref({
   showSizeChanger: false,

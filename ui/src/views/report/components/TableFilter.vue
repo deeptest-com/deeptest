@@ -72,26 +72,24 @@ function onRangeOk(date: string) {
     }
 }
 
-.report-bulk-operation {
-    .actions {
+.actions {
 
-        .action-item {
-            display: block;
-            width: 162px;
-            height: 32px;
-            background: #FFFFFF;
-            font-weight: 400;
-            font-size: 14px;
-            line-height: 32px;
-            text-align: center;
-            color: rgba(0, 0, 0, 0.85);
-            cursor: pointer;
+    .action-item {
+        display: block;
+        width: 162px;
+        height: 32px;
+        background: #FFFFFF;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 32px;
+        text-align: center;
+        color: rgba(0, 0, 0, 0.85);
+        cursor: pointer;
 
-            &:hover {
-                background: #F5F5F5;
-            }
+        &:hover {
+            background: #F5F5F5;
         }
-
     }
+
 }
 </style>

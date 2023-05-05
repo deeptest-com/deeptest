@@ -103,7 +103,6 @@
         :selectedCategoryId="selectedCategoryId"
         @cancal="createApiModalVisible = false;"
         @ok="handleCreateApi"/>
-    ``
     <!-- 编辑接口时，展开抽屉   -->
     <Drawer
         :destroyOnClose="true"
@@ -137,7 +136,7 @@ import CollapsedIcon from "@/components/CollapsedIcon/index.vue"
 import {StateType as ServeStateType} from "@/store/serve";
 import {StateType as Debug} from "@/views/component/debug/store";
 import {message, Modal} from 'ant-design-vue';
-import Tree from './tree.vue'
+import Tree from './components/Tree.vue'
 
 const store = useStore<{ Endpoint, ProjectGlobal, Debug: Debug, ServeGlobal: ServeStateType }>();
 const collapsed = ref(false);

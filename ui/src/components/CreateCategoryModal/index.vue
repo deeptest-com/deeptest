@@ -11,8 +11,8 @@
         :model="formState"
         :label-col="{ span: 6 }"
         :wrapper-col="{ span: 14 }">
-      <a-form-item label="接口分类名称" name="name">
-        <a-input placeholder="请输入接口分类名称" v-model:value="formState.name"/>
+      <a-form-item label="分类名称" name="name">
+        <a-input placeholder="请输入分类名称" v-model:value="formState.name"/>
       </a-form-item>
       <a-form-item label="备注信息" name="desc">
         <a-input placeholder="请输入备注信息" v-model:value="formState.desc"/>
@@ -78,9 +78,6 @@ function cancal() {
   tagFormRef.value.resetFields();
   emit('cancal');
 }
-
-
-
 
 const rules = {
   name: [

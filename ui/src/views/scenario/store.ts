@@ -475,15 +475,17 @@ const StoreModel: ModuleType = {
                 const resp = await createCategory(payload);
 
                 await dispatch('loadCategory');
-                return resp.data;
+                return resp?.data;
             } catch (error) {
                 return false;
             }
         },
-        async updateCategoryNode({commit}, payload: any) {
+
+        async updateCategoryNode({commit,dispatch}, payload: any) {
             try {
                 const {id, ...params} = payload;
-                await updateCategory(id, {...params});
+                await updateCategory(id, {...payload});
+                await dispatch('loadCategory');
                 return true;
             } catch (error) {
                 return false;

@@ -58,7 +58,7 @@
       </div>
     </div>
     <!--  创建接口 Tag  -->
-    <CreateTagModal
+    <CreateCategoryModal
         :visible="createTagModalvisible"
         :nodeInfo="currentNode"
         :mode="tagModalMode"
@@ -77,7 +77,7 @@ import {
   MoreOutlined
 } from '@ant-design/icons-vue';
 import {message, Modal} from 'ant-design-vue';
-import CreateTagModal from './components/CreateTagModal.vue'
+import CreateCategoryModal from '@/components/CreateCategoryModal/index.vue';
 import {DropEvent} from 'ant-design-vue/es/tree/Tree';
 import {useStore} from "vuex";
 import {StateType as EndpointStateType} from "@/views/endpoint/store";

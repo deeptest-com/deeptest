@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"go.uber.org/zap"
@@ -64,16 +63,11 @@ func (r *ProjectMenuRepo) DeleteById(id uint) error {
 	return nil
 }
 
-func (r *ProjectMenuRepo) GetRoleMenuList(roleId uint, roleName consts.RoleType) (roleMenus []model.ProjectMenu, err error) {
-	if roleName == consts.Admin {
-		err = r.DB.Model(&model.ProjectMenu{}).
-			Scan(&roleMenus).Error
-	} else {
-		err = r.DB.Model(&model.ProjectMenu{}).
-			Joins("left join biz_project_role_menu m on biz_project_menu.id = m.menu_id").
-			Where("m.role_id = ?", roleId).
-			Scan(&roleMenus).Error
-	}
+func (r *ProjectMenuRepo) GetRoleMenuList(roleId uint) (roleMenus []model.ProjectMenu, err error) {
+	err = r.DB.Model(&model.ProjectMenu{}).
+		Joins("left join biz_project_role_menu m on biz_project_menu.id = m.menu_id").
+		Where("m.role_id = ?", roleId).
+		Scan(&roleMenus).Error
 
 	return
 }

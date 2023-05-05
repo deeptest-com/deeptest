@@ -7,10 +7,10 @@ type Plan struct {
 	Name    string  `json:"name" yaml:"name"`
 	Desc    string  `json:"desc" yaml:"desc"`
 
-	CategoryId uint `json:"categoryId"`
-	ProjectId  uint `json:"projectId"`
-
-	Scenarios []Scenario `gorm:"-" json:"scenarios"`
+	CategoryId   uint       `json:"categoryId"`
+	ProjectId    uint       `json:"projectId"`
+	SerialNumber string     `json:"serialNumber"`
+	Scenarios    []Scenario `gorm:"-" json:"scenarios"`
 }
 
 func (Plan) TableName() string {

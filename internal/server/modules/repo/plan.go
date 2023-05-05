@@ -11,11 +11,13 @@ import (
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
+	"strconv"
 )
 
 type PlanRepo struct {
-	DB       *gorm.DB  `inject:""`
-	BaseRepo *BaseRepo `inject:""`
+	DB          *gorm.DB     `inject:""`
+	BaseRepo    *BaseRepo    `inject:""`
+	ProjectRepo *ProjectRepo `inject:""`
 }
 
 func NewPlanRepo() *PlanRepo {
@@ -103,6 +105,14 @@ func (r *PlanRepo) Create(scenario model.Plan) (ret model.Plan, bizErr *_domain.
 	err := r.DB.Model(&model.Plan{}).Create(&scenario).Error
 	if err != nil {
 		logUtils.Errorf("add scenario error", zap.String("error:", err.Error()))
+		bizErr = &_domain.BizErr{Code: _domain.SystemErr.Code}
+
+		return
+	}
+
+	err = r.UpdateSerialNumber(scenario.ID, scenario.ProjectId)
+	if err != nil {
+		logUtils.Errorf("add plan serial number error", zap.String("error:", err.Error()))
 		bizErr = &_domain.BizErr{Code: _domain.SystemErr.Code}
 
 		return
@@ -221,5 +231,16 @@ func (r *PlanRepo) ListScenarioRelation(id uint) (pos []model.RelaPlanScenario, 
 func (r *PlanRepo) RemoveScenario(planId int, scenarioId int) (err error) {
 	r.DB.Where("plan_id = ? && scenario_id = ?", planId, scenarioId).Delete(&model.RelaPlanScenario{})
 
+	return
+}
+
+func (r *PlanRepo) UpdateSerialNumber(id, projectId uint) (err error) {
+	var project model.Project
+	project, err = r.ProjectRepo.Get(projectId)
+	if err != nil {
+		return
+	}
+
+	err = r.DB.Model(&model.Plan{}).Where("id=?", id).Update("serial_number", project.ShortName+"-P-"+strconv.Itoa(int(id))).Error
 	return
 }

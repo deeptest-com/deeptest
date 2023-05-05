@@ -8,8 +8,8 @@
     
     >
       <template #name="{ text, record }">
-        <div class="project-name" @click="goProject(record.project_id)">
-          {{ text }}
+        <div class="project-name" :title="text" @click="goProject(record.project_id)">
+          {{ text.length>16? text.substring(0,16)+'...':text}}
         </div>
       </template>
 
@@ -23,11 +23,11 @@
                   >编辑</a-button
                 >
               </a-menu-item>
-              <a-menu-item key="2">
+              <!-- <a-menu-item key="2">
                 <a-button style="width: 80px" type="link" size="small"
                   >禁用/启用</a-button
                 >
-              </a-menu-item>
+              </a-menu-item> -->
               <a-menu-item key="3">
                 <a-button
                   style="width: 80px"
@@ -97,19 +97,26 @@ const columns = [
   //                    index
   //                  }: { text: any; index: number }) => (pagination.value.current - 1) * pagination.value.pageSize + index + 1,
   // },
-  {
-    title: "英文缩写",
-    dataIndex: "project_name",
-  },
-  {
+   {
     title: "项目名称",
     dataIndex: "project_chinese_name",
     slots: { customRender: "name" },
+      width: 200,
+       ellipsis: true,
   },
+  {
+    title: "英文缩写",
+    dataIndex: "project_name",
+     ellipsis: true,
+     width: 150,
+  },
+ 
 
   {
     title: "管理员",
     dataIndex: "admin_user",
+      ellipsis: true,
+     width: 150,
   },
 
   {
@@ -135,13 +142,15 @@ const columns = [
   {
     title: "创建时间",
     dataIndex: "createdAt",
+      ellipsis: true,
+     width: 200,
   },
-  // {
-  //   title: '操作',
-  //   key: 'action',
-  //   // width: 260,
-  //   slots: {customRender: 'action'},
-  // },
+  {
+    title: '操作',
+    key: 'action',
+    width: 60,
+    slots: {customRender: 'action'},
+  },
 ];
 
 

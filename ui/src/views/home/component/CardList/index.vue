@@ -2,7 +2,7 @@
   <div class="card-list p-2">
     <div class="p-2 bg-white">
       <List
-        :grid="{ gutter: 5, xs: 1, sm: 2, md: 4, lg: 4, xl: 3, xxl: grid }"
+        :grid="{ gutter: 5, xs: 1, sm: 2, md: 4, lg: 4, xl: grid, xxl: grid }"
         :data-source="tableList"
         :pagination="paginationProp"
         :loading="loading"
@@ -11,17 +11,19 @@
         <template #renderItem="{ item }">
           <ListItem>
             <Card class="card" @click="goProject(item?.project_id)">
-              <!-- <template #title> -->
               <div class="card-title">
                 <div class="title">
-                  <!-- <Avatar style="background-color: #1890ff">
-                    <template #icon> -->
-                      <img :src="getProjectLogo(item?.logo)" alt="" />
-                    <!-- </template>
-                  </Avatar> -->
-                  <span class="card-title-text">{{
-                    item?.project_chinese_name
-                  }}</span>
+                  <img :src="getProjectLogo(item?.logo)" alt="" />
+
+                  <span
+                    class="card-title-text"
+                    :title="item?.project_chinese_name"
+                    >{{
+                      item?.project_chinese_name.length > 20
+                        ? item?.project_chinese_name.substring(0, 20) + "..."
+                        : item?.project_chinese_name
+                    }}</span
+                  >
                 </div>
 
                 <div class="action">
@@ -38,36 +40,39 @@
                           <a href="javascript:;">启用/禁用</a>
                         </a-menu-item> -->
                         <a-menu-item>
-                          <a href="javascript:;" @click="handleDelete(item.project_id)">删除</a>
+                          <a
+                            href="javascript:;"
+                            @click="handleDelete(item.project_id)"
+                            >删除</a
+                          >
                         </a-menu-item>
                       </a-menu>
                     </template>
                   </a-dropdown>
                 </div>
               </div>
-
-              <!-- </template> -->
-              <div class="card-desc">
+              <div class="card-desc" :title="item?.project_des">
                 {{
-                  item.project_des.length > 35
-                    ? item.project_des.substring(0, 35) + "..."
-                    : item.project_des
-                    ? item.project_des
+                  item?.project_des.length > 66
+                    ? item?.project_des.substring(0, 66) + "..."
+                    : item?.project_des
+                    ? item?.project_des
                     : "&nbsp;"
                 }}
               </div>
 
               <div class="card-static">
                 <div>
-                  测试场景数： {{ item.scenario_total }}个 接口数： {{}}个
+                  <span>测试场景数：{{ item.scenario_total }}个</span>
+                  <span>接口数：{{}}个</span>
                 </div>
                 <div>
-                  测试覆盖率：{{ item.coverage }}% 执行次数：
-                  {{ item.exec_total }}次
+                  <span> 测试覆盖率：{{ item.coverage }}%</span>
+                  <span> 执行次数：{{ item.exec_total }}次</span>
                 </div>
                 <div>
-                  测试通过率： {{ item.pass_rate }}% 发现缺陷数：
-                  {{ item.bug_total }}个
+                  <span> 测试通过率：{{ item.pass_rate }}%</span>
+                  <span>发现缺陷数：{{ item.bug_total }}个</span>
                 </div>
               </div>
 
@@ -96,16 +101,7 @@ import {
   RedoOutlined,
   TableOutlined,
 } from "@ant-design/icons-vue";
-import {
-  List,
-  Card,
-  Image,
-  Typography,
-  Tooltip,
-  Slider,
-  Avatar,
-
-} from "ant-design-vue";
+import { List, Card, Image, Typography, Tooltip, Slider } from "ant-design-vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 import { StateType } from "../../store";
@@ -124,6 +120,7 @@ const store = useStore<{ Home: StateType }>();
 const ListItem = List.Item;
 const CardMeta = Card.Meta;
 const list = computed<any>(() => store.state.Home.queryResult.list);
+const projectLoading = computed<any>(() => store.state.Home.loading);
 const TypographyText = Typography.Text;
 const tableList = ref([]);
 const loading = ref(true);
@@ -182,16 +179,22 @@ watch(
     immediate: true,
   }
 );
-
+// 监听项目loading变化
+watch(
+  () => {
+    return projectLoading.value;
+  },
+  async (newVal) => {
+    loading.value = projectLoading.value.loading;
+  },
+  {
+    immediate: true,
+  }
+);
 async function fetch(data) {
   tableList.value = data;
   if (tableList.value && tableList.value.length > 0) {
     total.value = tableList.value.length;
-    loading.value = false;
-  } else {
-    setTimeout(() => {
-      loading.value = false;
-    }, 5000);
   }
 }
 
@@ -207,13 +210,12 @@ async function handleEdit(item) {
   emit("edit", item);
 }
 async function handleDelete(id) {
-  emit("delete",id)
-  
+  emit("delete", id);
 }
 async function goProject(projectId: number) {
   await store.dispatch("ProjectGlobal/changeProject", projectId);
   // 更新左侧菜单以及按钮权限
-  await store.dispatch('Global/getPermissionList');
+  await store.dispatch("Global/getPermissionList");
   // 项目切换后，需要重新更新可选服务列表
   await store.dispatch("ServeGlobal/fetchServe");
   router.push(`/workbench/index`);
@@ -246,6 +248,13 @@ async function goProject(projectId: number) {
     }
     &-static {
       margin-top: 8px;
+      div {
+        display: flex;
+        // justify-content: space-between;
+        span {
+          flex: 1;
+        }
+      }
     }
   }
 }

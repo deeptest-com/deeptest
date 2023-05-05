@@ -9,6 +9,7 @@ import {
 export interface StateType {
     queryResult: QueryResult;
     mode:string,
+    loading:boolean
  
 }
 
@@ -17,6 +18,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
     mutations: {
         setList: Mutation<StateType>;
         setMode: Mutation<StateType>;
+        setLoading: Mutation<StateType>;
       
     };
     actions: {
@@ -37,6 +39,7 @@ const initState: StateType = {
         },
     },
     mode:'list',
+    loading:false
   
 };
 
@@ -55,6 +58,9 @@ const StoreModel: ModuleType = {
             console.log('~~~~~~~~~setMode',state,payload)
             state.mode = payload;
         },
+        setLoading(state, payload) {
+            state.loading = payload;
+        },
      
         
         
@@ -62,6 +68,10 @@ const StoreModel: ModuleType = {
     actions: {
         async queryProject({ commit }, params: QueryParams ) {
             console.log('~~~~~~params',params)
+           
+            commit('setLoading',{
+                loading:true
+            })
             try {
                 const response: ResponseData = await query(params);
                 if (response.code != 0) return;
@@ -79,8 +89,14 @@ const StoreModel: ModuleType = {
                     //     total: data.project_total || 0,
                     // },
                 });
+                commit('setLoading',{
+                    loading:false
+                })
                 return true;
             } catch (error) {
+                commit('setLoading',{
+                    loading:false
+                })
                 return false;
             }
         },

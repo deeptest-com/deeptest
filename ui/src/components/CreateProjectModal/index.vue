@@ -123,7 +123,7 @@ const handleSelectLogo = (item: any) => {
 watch(() => props.visible, (val) => {
     if (val) {
         store.dispatch('Project/getUserList')
-        if(!props?.formState){
+        if(!props?.formState.id){
             resetFields()
         }
     }

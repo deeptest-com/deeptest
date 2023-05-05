@@ -45,36 +45,11 @@ export const requestMethodOpts = [
     },
 ]
 
-/**
- * 响应码枚举
- * */
-export const repCodeOpts = [
-    {
-        label: "200",
-        value: "200",
-    },
-    {
-        label: "404",
-        value: "404",
-    },
-    {
-        label: "500",
-        value: "500",
-    },
-    {
-        label: "501",
-        value: "501",
-    },
-    {
-        label: "502",
-        value: "502",
-    },
-    {
-        label: "503",
-        value: "503",
-    },
-]
 
+/**
+ * 默认的响应码
+ * */
+export const defaultResponseCodes = ["200", "300", "400", "500"]
 /**
  * 所有 http 响应状态码及描述
  * */
@@ -83,7 +58,6 @@ export const responseCodes = [
         "description": "100: Continue",
         "value": "100",
         "label": "100",
-        "enabled": true,
         color: "gray",
     },
     {

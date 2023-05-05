@@ -158,7 +158,9 @@ function hasDefinedCode(code: string) {
 }
 
 const selectedCodes: any = computed(() => {
-  const codes = selectedMethodDetail?.value?.responseCodes || [];
+  const codes = (selectedMethodDetail?.value?.responseCodes.split(',') || []).filter((item) => {
+    return !!item;
+  });
   // 如果没有定义响应码,则默认返回默认的 codes 枚举
   if (!codes.length) {
     return cloneDeep(defaultResponseCodes);
@@ -184,11 +186,8 @@ function handleCodeOptionsChange(code: string) {
   if (selectedCodes.value.includes(code)) {
     return;
   }
-  if (selectedMethodDetail?.value?.responseCodes) {
-    selectedMethodDetail?.value?.responseCodes.push(code);
-  } else {
-    selectedMethodDetail.value.responseCodes = [...selectedCodes.value, code];
-  }
+  selectedCodes.value.push(code);
+  selectedMethodDetail.value.responseCodes = selectedCodes.value.toString();
   store.commit('Endpoint/setSelectedMethodDetail', selectedMethodDetail.value);
 }
 
@@ -205,7 +204,7 @@ function confirmDeleteCode() {
   })
   selectedCodes.value.splice(index, 1);
   selectedCode.value = selectedCodes.value?.[index - 1] || '200';
-  selectedMethodDetail.value.responseCodes = [...selectedCodes.value];
+  selectedMethodDetail.value.responseCodes = [...selectedCodes.value].toString();
   store.commit('Endpoint/setSelectedMethodDetail', selectedMethodDetail.value);
 }
 

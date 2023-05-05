@@ -2,7 +2,7 @@ import { Mutation, Action } from 'vuex';
 import { StoreModuleType } from "@/utils/store";
 import { ResponseData } from '@/utils/request';
 import { Report, QueryResult, QueryParams, PaginationConfig } from './data';
-import { query, get, remove} from './service';
+import { query, get, remove, members} from './service';
 
 export interface StateType {
     ReportId: number;
@@ -10,13 +10,14 @@ export interface StateType {
     listResult: QueryResult;
     detailResult: Report;
     queryParams: any;
+    members: any;
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
     state: StateType;
     mutations: {
         setReportId: Mutation<StateType>;
-
+        setMembers: Mutation<StateType>;
         setList: Mutation<StateType>;
         setDetail: Mutation<StateType>;
         setQueryParams: Mutation<StateType>;
@@ -25,6 +26,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         list: Action<StateType, StateType>;
         get: Action<StateType, StateType>;
         remove: Action<StateType, StateType>;
+        getMembers: Action<StateType, StateType>;
     };
 }
 const initState: StateType = {
@@ -42,6 +44,7 @@ const initState: StateType = {
     },
     detailResult: {} as Report,
     queryParams: {},
+    members: []
 };
 
 const StoreModel: ModuleType = {
@@ -64,23 +67,38 @@ const StoreModel: ModuleType = {
         setQueryParams(state, payload) {
             state.queryParams = payload;
         },
+        setMembers(state, payload) {
+            state.members = payload;
+        }
     },
     actions: {
         async list({ commit, dispatch }, params: QueryParams ) {
             try {
                 const response: ResponseData = await query(params);
                 if (response.code != 0) return;
-
+                console.log(response);
                 const data = response.data;
-
+                const { result, page, pageSize, total } = response.data;
+                const newResult = result.map((reportItem: any) => {
+                    if (reportItem.totalInterfaceNum) {
+                        const rate: any = Number(reportItem.passInterfaceNum / reportItem.totalInterfaceNum);
+                        reportItem.interfacePassRate = rate.toFixed(2) * 100 + '%';
+                    } else {
+                        reportItem.interfacePassRate = '0%';
+                    }
+                    console.log(reportItem.interfacePassRate);
+                    reportItem.serialNumber = reportItem.serialNumber || '-';
+                    reportItem.createUserName = reportItem.createUserName || '-';
+                    return reportItem;
+                })
                 commit('setList',{
                     ...initState.listResult,
-                    list: data.result || [],
+                    list: newResult || [],
                     pagination: {
                         ...initState.listResult.pagination,
                         current: params.page,
                         pageSize: params.pageSize,
-                        total: data.total || 0,
+                        total: total || 0,
                     },
                 });
                 commit('setQueryParams', params);
@@ -122,6 +140,23 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
+
+        async getMembers({ commit }, payload: number) {
+            try {
+                const response: ResponseData = await members(payload);
+                const { data, code } = response;
+                if (code !== 0) return;
+                const memberList = data.result.map((member: any) => {
+                    member.label = member.name;
+                    member.value = member.id;
+                    return member;
+                })
+                commit('setMembers', memberList);
+                return true;
+            } catch (error) {
+                return false;
+            }
+        }
 
     }
 };

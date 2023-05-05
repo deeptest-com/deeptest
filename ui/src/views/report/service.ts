@@ -1,7 +1,7 @@
 import request from '@/utils/request';
 import {QueryParams} from "@/views/report/data";
 
-const apiPath = 'reports';
+const apiPath = 'scenarios/reports';
 
 export async function query(params?: QueryParams): Promise<any> {
     return request({
@@ -19,4 +19,11 @@ export async function remove(id: number): Promise<any> {
         url: `/${apiPath}/${id}`,
         method: 'delete',
     });
+}
+
+export async function members(id: number): Promise<any> {
+    return request({
+        url: `/projects/members?id=${id}`,
+        method: 'get',
+    })
 }

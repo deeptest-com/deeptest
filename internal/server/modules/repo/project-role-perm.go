@@ -2,7 +2,7 @@ package repo
 
 import (
 	"fmt"
-	"github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
@@ -22,7 +22,7 @@ func NewProjectRolePermRepo() *ProjectRolePermRepo {
 	return &ProjectRolePermRepo{}
 }
 
-func (r *ProjectRolePermRepo) PaginateRolePerms(req serverDomain.ProjectRolePermPaginateReq) (data _domain.PageData, err error) {
+func (r *ProjectRolePermRepo) PaginateRolePerms(req v1.ProjectRolePermPaginateReq) (data _domain.PageData, err error) {
 	var count int64
 	projectPerms := make([]*model.ProjectPerm, 0)
 
@@ -46,7 +46,7 @@ func (r *ProjectRolePermRepo) PaginateRolePerms(req serverDomain.ProjectRolePerm
 	return
 }
 
-func (r *ProjectRolePermRepo) UserPermList(req serverDomain.ProjectUserPermsPaginate, userId uint) (data _domain.PageData, err error) {
+func (r *ProjectRolePermRepo) UserPermList(req v1.ProjectUserPermsPaginate, userId uint) (data _domain.PageData, err error) {
 	currProject, err := r.ProjectRepo.GetCurrProjectByUser(userId)
 	if err != nil {
 		logUtils.Errorf("query project profile error", zap.String("error:", err.Error()))
@@ -122,7 +122,7 @@ func (r *ProjectRolePermRepo) AddPermForProjectRole(roleName consts.RoleType, pe
 	}
 
 	for _, perm := range perms {
-		permModel := &model.ProjectRolePerm{ProjectRolePermBase: domain.ProjectRolePermBase{ProjectRoleId: projectRoleId, ProjectPermId: perm}}
+		permModel := &model.ProjectRolePerm{ProjectRolePermBase: v1.ProjectRolePermBase{ProjectRoleId: projectRoleId, ProjectPermId: perm}}
 		err := r.DB.Model(&model.ProjectRolePerm{}).Create(&permModel).Error
 		if err != nil {
 			failItems = append(failItems, fmt.Sprintf("为角色%+v添加权限%d失败，错误%s", roleName, perm, err.Error()))

@@ -3,6 +3,7 @@ package repo
 import (
 	"fmt"
 	"github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
@@ -12,8 +13,9 @@ import (
 )
 
 type ProjectRolePermRepo struct {
-	DB          *gorm.DB     `inject:""`
-	ProjectRepo *ProjectRepo `inject:""`
+	DB              *gorm.DB         `inject:""`
+	ProjectRepo     *ProjectRepo     `inject:""`
+	ProjectRoleRepo *ProjectRoleRepo `inject:""`
 }
 
 func NewProjectRolePermRepo() *ProjectRolePermRepo {
@@ -90,30 +92,40 @@ func (r *ProjectRolePermRepo) GetByRoleAndPerm(roleId, permId uint) (ret model.P
 }
 
 // GetProjectPermsForRole TODO: 每个角色需要的权限还未确定，需要改动
-func (r *ProjectRolePermRepo) GetProjectPermsForRole() (res map[uint][]uint, err error) {
+func (r *ProjectRolePermRepo) GetProjectPermsForRole() (res map[consts.RoleType][]uint, err error) {
 	var permIds, testPermIds []uint
 	err = r.DB.Model(&model.ProjectPerm{}).Select("id").Find(&permIds).Error
 	err = r.DB.Model(&model.ProjectPerm{}).Select("id").Where("name like ?", "/api/v1/projects%").Find(&testPermIds).Error
-	res = map[uint][]uint{
-		1: permIds,
-		2: permIds,
-		3: testPermIds,
+	res = map[consts.RoleType][]uint{
+		consts.Admin:          permIds,
+		consts.User:           permIds,
+		consts.Tester:         testPermIds,
+		consts.Developer:      permIds,
+		consts.ProductManager: permIds,
 	}
 
 	return
 }
 
-func (r *ProjectRolePermRepo) AddPermForProjectRole(id uint, perms []uint) (successCount int, failItems []string) {
-	err := r.DB.Delete(&model.ProjectRolePerm{}, "project_role_id = ?", id).Error
+func (r *ProjectRolePermRepo) AddPermForProjectRole(roleName consts.RoleType, perms []uint) (successCount int, failItems []string) {
+	projectRole, err := r.ProjectRoleRepo.FindByName(roleName)
 	if err != nil {
-		failItems = append(failItems, fmt.Sprintf("为角色%d添加权限%+v失败，错误%s", id, perms, err.Error()))
+		failItems = append(failItems, fmt.Sprintf("为角色%+v添加权限%+v失败，错误%s", roleName, perms, err.Error()))
 		return
 	}
+
+	projectRoleId := projectRole.ID
+	err = r.DB.Delete(&model.ProjectRolePerm{}, "project_role_id = ?", projectRoleId).Error
+	if err != nil {
+		failItems = append(failItems, fmt.Sprintf("为角色%+v添加权限%+v失败，错误%s", roleName, perms, err.Error()))
+		return
+	}
+
 	for _, perm := range perms {
-		permModel := &model.ProjectRolePerm{ProjectRolePermBase: serverDomain.ProjectRolePermBase{ProjectRoleId: id, ProjectPermId: perm}}
+		permModel := &model.ProjectRolePerm{ProjectRolePermBase: domain.ProjectRolePermBase{ProjectRoleId: projectRoleId, ProjectPermId: perm}}
 		err := r.DB.Model(&model.ProjectRolePerm{}).Create(&permModel).Error
 		if err != nil {
-			failItems = append(failItems, fmt.Sprintf("为角色%d添加权限%d失败，错误%s", id, perm, err.Error()))
+			failItems = append(failItems, fmt.Sprintf("为角色%+v添加权限%d失败，错误%s", roleName, perm, err.Error()))
 		} else {
 			successCount++
 		}

@@ -11,11 +11,13 @@ import (
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
+	"strconv"
 )
 
 type ScenarioRepo struct {
-	DB       *gorm.DB  `inject:""`
-	BaseRepo *BaseRepo `inject:""`
+	DB          *gorm.DB     `inject:""`
+	BaseRepo    *BaseRepo    `inject:""`
+	ProjectRepo *ProjectRepo `inject:""`
 }
 
 func NewScenarioRepo() *ScenarioRepo {
@@ -116,6 +118,13 @@ func (r *ScenarioRepo) Create(scenario model.Scenario) (ret model.Scenario, bizE
 		return
 	}
 
+	err = r.UpdateSerialNumber(scenario.ID, scenario.ProjectId)
+	if err != nil {
+		logUtils.Errorf("update scenario serial number error", zap.String("error:", err.Error()))
+		bizErr = &_domain.BizErr{Code: _domain.SystemErr.Code}
+
+		return
+	}
 	ret = scenario
 
 	return
@@ -174,5 +183,16 @@ func (r *ScenarioRepo) GetChildrenIds(id uint) (ids []int, err error) {
 		return
 	}
 
+	return
+}
+
+func (r *ScenarioRepo) UpdateSerialNumber(id, projectId uint) (err error) {
+	var project model.Project
+	project, err = r.ProjectRepo.Get(projectId)
+	if err != nil {
+		return
+	}
+
+	err = r.DB.Model(&model.Scenario{}).Where("id=?", id).Update("serial_number", project.ShortName+"-S-"+strconv.Itoa(int(id))).Error
 	return
 }

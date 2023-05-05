@@ -200,13 +200,8 @@ const onSearch = debounce(() => {
 
 const columns = [
   {
-    title: '序号',
-    dataIndex: 'index',
-    width: 80,
-    customRender: ({
-                     text,
-                     index
-                   }: { text: any; index: number }) => (pagination.value.current - 1) * pagination.value.pageSize + index + 1,
+    title: '编号',
+    dataIndex: 'serialNumber',
   },
   {
     title: '名称',

@@ -256,15 +256,19 @@ const columns = [
     title: '名称',
     dataIndex: 'name',
     slots: {customRender: 'name'},
+    width: 120,
+    ellipsis: true,
   },
   {
     title: '描述',
     dataIndex: 'desc',
+    ellipsis: true,
   },
   {
     title: '状态',
     dataIndex: 'status',
     slots: {customRender: 'status'},
+    width: 120
   },
   {
     title: '操作',

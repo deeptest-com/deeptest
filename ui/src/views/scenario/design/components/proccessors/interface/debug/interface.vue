@@ -57,7 +57,7 @@ const loadData = debounce(async () => {
   }
 
   store.dispatch('Debug/loadDataAndInvocations', {
-    endpointInterfaceId: 0,
+    endpointInterfaceId: endpointInterfaceIdForDebug.value,
     scenarioProcessorId: scenarioProcessorIdForDebug.value,
     usedBy: usedBy,
   });

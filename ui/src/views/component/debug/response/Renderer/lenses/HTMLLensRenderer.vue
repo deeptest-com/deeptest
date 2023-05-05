@@ -42,7 +42,7 @@
 
     <ResponseExtractor
         v-if="responseExtractorVisible"
-        :interfaceId="debugData.interfaceId"
+        :interfaceId="debugData.endpointInterfaceId"
         :exprType="exprType"
         :expr="expr"
         :result="result"
@@ -62,7 +62,7 @@ import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
 import {MonacoOptions} from "@/utils/const";
 import ResponseExtractor from "@/components/Editor/ResponseExtractor.vue";
 import {getXpath, initIFrame, updateElem} from "@/services/parser-html";
-import {parseHtml, testExpr} from "@/views/interface1/service";
+import {parseHtml, testExpr} from "@/views/component/debug/service";
 import {ExtractorSrc, ExtractorType, UsedBy} from "@/utils/enum";
 
 const {t} = useI18n();
@@ -137,10 +137,10 @@ const responseExtractorFinish = (data) => {
   data.src = ExtractorSrc.body
   data.result = result.value
 
-  data.interfaceId = debugData.value.id
+  data.interfaceId = debugData.value.endpointInterfaceId
   data.projectId = debugData.value.projectId
   data.usedBy = usedBy
-  store.dispatch('Interface1/createExtractorOrUpdateResult', data).then((result) => {
+  store.dispatch('Debug/createExtractorOrUpdateResult', data).then((result) => {
     if (result) {
       responseExtractorVisible.value = false
     }

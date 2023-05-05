@@ -20,7 +20,7 @@ func NewProjectRolePermRepo() *ProjectRolePermRepo {
 	return &ProjectRolePermRepo{}
 }
 
-func (r *ProjectRolePermRepo) PaginateRolePerms(req domain.ProjectRolePermPaginateReq) (data _domain.PageData, err error) {
+func (r *ProjectRolePermRepo) PaginateRolePerms(req serverDomain.ProjectRolePermPaginateReq) (data _domain.PageData, err error) {
 	var count int64
 	projectPerms := make([]*model.ProjectPerm, 0)
 
@@ -44,7 +44,7 @@ func (r *ProjectRolePermRepo) PaginateRolePerms(req domain.ProjectRolePermPagina
 	return
 }
 
-func (r *ProjectRolePermRepo) UserPermList(req domain.ProjectUserPermsPaginate, userId uint) (data _domain.PageData, err error) {
+func (r *ProjectRolePermRepo) UserPermList(req serverDomain.ProjectUserPermsPaginate, userId uint) (data _domain.PageData, err error) {
 	currProject, err := r.ProjectRepo.GetCurrProjectByUser(userId)
 	if err != nil {
 		logUtils.Errorf("query project profile error", zap.String("error:", err.Error()))
@@ -110,7 +110,7 @@ func (r *ProjectRolePermRepo) AddPermForProjectRole(id uint, perms []uint) (succ
 		return
 	}
 	for _, perm := range perms {
-		permModel := &model.ProjectRolePerm{ProjectRolePermBase: domain.ProjectRolePermBase{ProjectRoleId: id, ProjectPermId: perm}}
+		permModel := &model.ProjectRolePerm{ProjectRolePermBase: serverDomain.ProjectRolePermBase{ProjectRoleId: id, ProjectPermId: perm}}
 		err := r.DB.Model(&model.ProjectRolePerm{}).Create(&permModel).Error
 		if err != nil {
 			failItems = append(failItems, fmt.Sprintf("为角色%d添加权限%d失败，错误%s", id, perm, err.Error()))

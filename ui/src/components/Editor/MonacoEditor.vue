@@ -9,7 +9,7 @@ import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
 import debounce from "lodash.debounce";
 import {addExtractAction, addReplaceAction} from "@/components/Editor/service";
-import {getSnippet} from "@/views/interface1/service";
+import {getSnippet} from "@/views/component/debug/service";
 
 export default defineComponent({
   name: "MonacoEditor",

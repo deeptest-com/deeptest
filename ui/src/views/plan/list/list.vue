@@ -57,7 +57,7 @@
       :width="1000"
       :key="currModel.id"
       :visible="createDrawerVisible"
-  >
+      @close="onFinish">
     <template #title>
       <div class="drawer-header">
         <div>新建计划</div>
@@ -66,7 +66,7 @@
     <div class="drawer-content">
       <PlanCreate
           :categoryId="nodeDataCategory.id"
-          :onSaved="onSaved">
+          :onSaved="onFinish">
       </PlanCreate>
     </div>
   </a-drawer>
@@ -76,18 +76,17 @@
       :width="1000"
       :key="currModel.id"
       :visible="editDrawerVisible"
-      @close="onEditFinish"
-  >
+      @close="onFinish">
     <template #title>
       <div class="drawer-header">
-        <div>计划编辑</div>
+        <div>编辑计划</div>
       </div>
     </template>
     <div class="drawer-content">
       <PlanEdit
           :modelId="currModel.id"
           :categoryId="nodeDataCategory.id"
-          :onFieldSaved="onFieldSaved">
+          :onSaved="onFinish">
       </PlanEdit>
     </div>
   </a-drawer>
@@ -186,11 +185,6 @@ const create = () => {
   console.log('create')
   createDrawerVisible.value = true;
 }
-const onSaved = () => {
-  console.log('onSaved')
-  getList(pagination.value.current, nodeDataCategory.value.id)
-  createDrawerVisible.value = false
-}
 
 const editDrawerVisible = ref(false);
 const editFormState: UnwrapRef<FormState> = reactive({
@@ -209,13 +203,11 @@ const edit = (record) => {
   editFormState.serveId = record.id;
 }
 
-const onFieldSaved = () => {
-  console.log('onFieldSaved')
-  getList(pagination.value.current, nodeDataCategory.value.id)
-}
-const onEditFinish = () => {
+const onFinish = () => {
   console.log('onEditFinish')
-  getList(pagination.value.current, nodeDataCategory.value.id)
+
+  getList(1, nodeDataCategory.value.id);
+  createDrawerVisible.value = false
   editDrawerVisible.value = false
 }
 

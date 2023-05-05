@@ -85,7 +85,6 @@ import {DropEvent, TreeDragEvent} from "ant-design-vue/es/tree/Tree";
 import {CloseOutlined, FileOutlined, FolderOutlined, FolderOpenOutlined, CheckOutlined} from "@ant-design/icons-vue";
 
 import {expandAllKeys, expandOneKey} from "@/services/tree";
-import {StateType as InterfaceStateType} from "@/views/interface1/store";
 
 import {getExpandedKeys, setExpandedKeys} from "@/utils/cache";
 import {getContextMenuStyle} from "@/utils/dom";
@@ -100,7 +99,7 @@ const useForm = Form.useForm;
 
 const {t} = useI18n();
 
-const store = useStore<{ Scenario: ScenarioStateType; Interface: InterfaceStateType }>();
+const store = useStore<{ Scenario: ScenarioStateType; }>();
 const treeData = computed<any>(() => store.state.Scenario.treeData);
 const treeDataMap = computed<any>(() => store.state.Scenario.treeDataMap);
 const selectedNode = computed<any>(()=> store.state.Scenario.nodeData);

@@ -1,6 +1,6 @@
 <template>
   <div class="invocation-main">
-    <div class="url">{{url}}</div>
+    <div class="url">{{url}} - {{debugData.method}}</div>
 
     <div class="send">
       <a-dropdown-button type="primary" trigger="click" @click="sendRequest">
@@ -18,7 +18,7 @@
       </a-dropdown-button>
     </div>
 
-    <div class="save">
+    <div v-if="usedBy===UsedBy.InterfaceDebug" class="save">
       <a-dropdown-button trigger="click" @click="save" class="dp-bg-light">
         <SaveOutlined />
         保存
@@ -112,6 +112,7 @@ const sendRequest = (e) => {
 const save = (e) => {
   let data = JSON.parse(JSON.stringify(debugData.value))
   data = prepareDataForRequest(data)
+  // console.log('-------', data.endpointInterfaceId)
 
   if (validateInfo()) {
     props.onSave(data)
@@ -173,15 +174,6 @@ onUnmounted(() => {
 const showContextMenu = ref(false)
 let contextTarget = {} as any
 const contextMenuStyle = ref({} as any)
-
-const onContextMenuShow = (e) => {
-  console.log('getContextMenuStyle', e.target)
-
-  contextMenuStyle.value = getContextMenuStyle(e)
-  contextTarget = e.target
-
-  showContextMenu.value = true
-}
 
 const onMenuClick = (key) => {
   console.log('onMenuClick', key)

@@ -19,9 +19,16 @@ type ScenarioExecService struct {
 	ScenarioNodeRepo   *repo.ScenarioNodeRepo   `inject:""`
 	ScenarioReportRepo *repo.ScenarioReportRepo `inject:""`
 	TestLogRepo        *repo.LogRepo            `inject:""`
+	EnvironmentRepo    *repo.EnvironmentRepo    `inject:""`
 
-	EnvironmentService *EnvironmentService `inject:""`
-	DatapoolService    *DatapoolService    `inject:""`
+	EndpointInterfaceRepo *repo.EndpointInterfaceRepo `inject:""`
+	EndpointRepo          *repo.EndpointRepo          `inject:""`
+	ServeServerRepo       *repo.ServeServerRepo       `inject:""`
+
+	SceneService        *SceneService        `inject:""`
+	EnvironmentService  *EnvironmentService  `inject:""`
+	DatapoolService     *DatapoolService     `inject:""`
+	ScenarioNodeService *ScenarioNodeService `inject:""`
 }
 
 func (s *ScenarioExecService) LoadExecResult(scenarioId int) (result domain.Report, err error) {
@@ -41,12 +48,14 @@ func (s *ScenarioExecService) LoadExecData(scenarioId uint) (ret agentExec.Scena
 		return
 	}
 
-	rootProcessor, _ := s.ScenarioNodeRepo.GetTree(scenario, true)
-	ret.Variables, _ = s.EnvironmentService.ListVariableForExec(scenario)
-	ret.Datapools, _ = s.DatapoolService.ListForExec(scenario.ProjectId)
-
-	ret.RootProcessor = rootProcessor
+	// get processor tree
 	ret.Name = scenario.Name
+	ret.RootProcessor, _ = s.ScenarioNodeService.GetTree(scenario, true)
+	ret.RootProcessor.Session = agentExec.Session{}
+
+	// get variables
+	s.SceneService.LoadEnvVarMapByScenario(&ret.ExecScene, scenarioId)
+	s.SceneService.LoadProjectSettings(&ret.ExecScene, scenario.ProjectId)
 
 	return
 }

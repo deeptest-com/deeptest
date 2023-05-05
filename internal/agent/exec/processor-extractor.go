@@ -3,7 +3,6 @@ package agentExec
 import (
 	"encoding/json"
 	"fmt"
-	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
@@ -45,7 +44,7 @@ func (entity ProcessorExtractor) Run(processor *Processor, session *Session) (er
 		return
 	}
 
-	resp := v1.DebugResponse{}
+	resp := domain.DebugResponse{}
 	json.Unmarshal([]byte(brother.Result.RespContent), &resp)
 
 	entity.Src = consts.Body

@@ -1,6 +1,7 @@
 package openapi
 
 import (
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/getkin/kin-openapi/openapi3"
 	"strings"
@@ -9,7 +10,9 @@ import (
 func ConvertServersToEnvironments(servers openapi3.Servers) (vars []model.EnvironmentVar, err error) {
 	for _, server := range servers {
 		vari := model.EnvironmentVar{
-			Name: "server",
+			GlobalVar: domain.GlobalVar{
+				Name: "server",
+			},
 		}
 
 		vari.RightValue = genUrl(server.URL, server.Variables)

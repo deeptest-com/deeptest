@@ -9,6 +9,15 @@ import (
 )
 
 type Processor struct {
+	ProcessorBase
+	Entity IProcessorEntity `json:"entity"`
+}
+
+type ProcessorMsg struct {
+	ProcessorBase
+}
+
+type ProcessorBase struct {
 	ID uint `json:"id"`
 
 	Name     string `json:"name"`
@@ -19,17 +28,16 @@ type Processor struct {
 	ProjectId  uint `json:"projectId"`
 	UseID      uint `json:"useId"`
 
-	EntityCategory consts.ProcessorCategory `json:"entityCategory"`
-	EntityType     consts.ProcessorType     `json:"entityType"`
-	EntityId       uint                     `json:"entityId"`
-	InterfaceId    uint                     `json:"interfaceId"`
+	EntityCategory      consts.ProcessorCategory `json:"entityCategory"`
+	EntityType          consts.ProcessorType     `json:"entityType"`
+	EntityId            uint                     `json:"entityId"`
+	EndpointInterfaceId uint                     `json:"endpointInterfaceId"`
 
-	Ordr      int              `json:"ordr"`
-	Children  []*Processor     `json:"children"`
-	Slots     iris.Map         `json:"slots"`
-	IsLeaf    bool             `json:"isLeaf"`
-	Entity    IProcessorEntity `json:"entity"`
-	EntityRaw json.RawMessage  `json:"entityRaw"`
+	Ordr      int             `json:"ordr"`
+	Children  []*Processor    `json:"children"`
+	Slots     iris.Map        `json:"slots"`
+	IsLeaf    bool            `json:"isLeaf"`
+	EntityRaw json.RawMessage `json:"entityRaw"`
 
 	Parent *Processor                      `json:"-"`
 	Result *agentDomain.ScenarioExecResult `json:"result"`
@@ -38,7 +46,8 @@ type Processor struct {
 }
 
 func (p *Processor) Run(s *Session) (err error) {
-	_logUtils.Infof("%s - %s", p.Name, p.EntityType)
+	_logUtils.Infof("%d - %s %s", p.ID, p.Name, p.EntityType)
+	CurrProcessorId = p.ID
 
 	if p.Entity != nil {
 		p.Entity.Run(p, s)
@@ -56,65 +65,65 @@ func (p *Processor) RestoreEntity() (err error) {
 	bytes, err := p.EntityRaw.MarshalJSON()
 
 	switch p.EntityCategory {
-	case consts.ProcessorRoot:
-		ret := ProcessorRoot{}
-		json.Unmarshal(bytes, &ret)
-		p.Entity = &ret
-
 	case consts.ProcessorInterface:
 		ret := ProcessorInterface{}
 		json.Unmarshal(bytes, &ret)
-		p.Entity = &ret
+		p.Entity = ret
+
+	case consts.ProcessorRoot:
+		ret := ProcessorRoot{}
+		json.Unmarshal(bytes, &ret)
+		p.Entity = ret
 
 	case consts.ProcessorGroup:
 		ret := ProcessorGroup{}
 		json.Unmarshal(bytes, &ret)
-		p.Entity = &ret
+		p.Entity = ret
 
 	case consts.ProcessorLogic:
 		ret := ProcessorLogic{}
 		json.Unmarshal(bytes, &ret)
-		p.Entity = &ret
+		p.Entity = ret
 
 	case consts.ProcessorLoop:
 		ret := ProcessorLoop{}
 		json.Unmarshal(bytes, &ret)
-		p.Entity = &ret
+		p.Entity = ret
 
 	case consts.ProcessorVariable:
 		ret := ProcessorVariable{}
 		json.Unmarshal(bytes, &ret)
-		p.Entity = &ret
+		p.Entity = ret
 
 	case consts.ProcessorTimer:
 		ret := ProcessorTimer{}
 		json.Unmarshal(bytes, &ret)
-		p.Entity = &ret
+		p.Entity = ret
 
 	case consts.ProcessorPrint:
 		ret := ProcessorPrint{}
 		json.Unmarshal(bytes, &ret)
-		p.Entity = &ret
+		p.Entity = ret
 
 	case consts.ProcessorCookie:
 		ret := ProcessorCookie{}
 		json.Unmarshal(bytes, &ret)
-		p.Entity = &ret
+		p.Entity = ret
 
 	case consts.ProcessorAssertion:
 		ret := ProcessorAssertion{}
 		json.Unmarshal(bytes, &ret)
-		p.Entity = &ret
+		p.Entity = ret
 
 	case consts.ProcessorExtractor:
 		ret := ProcessorExtractor{}
 		json.Unmarshal(bytes, &ret)
-		p.Entity = &ret
+		p.Entity = ret
 
 	case consts.ProcessorData:
 		ret := ProcessorData{}
 		json.Unmarshal(bytes, &ret)
-		p.Entity = &ret
+		p.Entity = ret
 
 	default:
 	}
@@ -124,10 +133,12 @@ func (p *Processor) RestoreEntity() (err error) {
 
 func (p *Processor) AppendNewChildProcessor(category consts.ProcessorCategory, typ consts.ProcessorType) (child Processor) {
 	child = Processor{
-		EntityCategory: category,
-		EntityType:     typ,
-		Parent:         p,
-		ParentId:       p.ID,
+		ProcessorBase: ProcessorBase{
+			EntityCategory: category,
+			EntityType:     typ,
+			Parent:         p,
+			ParentId:       p.ID,
+		},
 	}
 
 	child.Result = &agentDomain.ScenarioExecResult{

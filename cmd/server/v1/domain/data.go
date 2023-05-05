@@ -1,4 +1,4 @@
-package domain
+package serverDomain
 
 type DataReq struct {
 	ClearData bool    `json:"clearData"`

@@ -9,8 +9,10 @@ type ShareVariable struct {
 	Value string `json:"value"`
 
 	InterfaceId uint `json:"interfaceId"`
-	ServeId     uint `json:"serveId"`    // for interface debug
-	ScenarioId  uint `json:"scenarioId"` // for scenario
+	ServeId     uint `json:"serveId"` // for interface debug
+
+	ProcessorId uint `json:"processorId"` // for scenario
+	ScenarioId  uint `json:"scenarioId"`  // for scenario
 
 	Scope consts.ExtractorScope `json:"scope" gorm:"default:private"` // debug
 }

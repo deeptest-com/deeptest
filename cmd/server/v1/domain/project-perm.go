@@ -1,4 +1,4 @@
-package domain
+package serverDomain
 
 type ProjectPermBase struct {
 	Name        string `gorm:"index:perm_index,unique;not null ;type:varchar(200)" json:"name" validate:"required,gte=4,lte=50"`

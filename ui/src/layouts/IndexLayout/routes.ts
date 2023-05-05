@@ -27,42 +27,6 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
       },
     ],
   },
-  // {
-  //   title: 'index-layout.menu',
-  //   path: '/project',
-  //   redirect: '/project/index',
-  //   component: BlankLayout,
-  //   children: [
-  //     {
-  //       icon: 'project',
-  //       title: 'project.management',
-  //       path: 'index',
-  //       component: () => import('@/views/project/list/index.vue'),
-  //       hidden: false,
-  //     },
-  //     {
-  //       icon: 'project',
-  //       title: 'project.edit',
-  //       path: 'edit/:id',
-  //       component: () => import('@/views/project/edit/edit.vue'),
-  //       hidden: true,
-  //     },
-  //     {
-  //       icon: 'members',
-  //       title: 'project.members',
-  //       path: 'members/:id',
-  //       component: () => import('@/views/project/edit/members.vue'),
-  //       hidden: true,
-  //     },
-  //     {
-  //       icon: 'project',
-  //       title: 'project.invite',
-  //       path: 'invite/:id',
-  //       component: () => import('@/views/project/edit/invite.vue'),
-  //       hidden: true,
-  //     },
-  //   ],
-  // },
   {
     title: 'index-layout.menu',
     path: '/endpoint',

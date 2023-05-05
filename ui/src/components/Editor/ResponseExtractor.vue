@@ -81,6 +81,10 @@ import {StateType as EnvironmentStateType} from "@/store/environment";
 const useForm = Form.useForm;
 
 const props = defineProps({
+  interfaceId:{
+    type: Number,
+    required: true
+  },
   exprType: {
     String,
     required: true

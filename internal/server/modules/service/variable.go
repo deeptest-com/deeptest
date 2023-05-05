@@ -2,7 +2,6 @@ package service
 
 import (
 	"fmt"
-	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
@@ -35,7 +34,7 @@ func (s *VariableService) GetEnvVarsByInterface(interfaceId uint, usedBy consts.
 	return
 }
 
-func (s *VariableService) GetShareVarsByInterface(interfaceId uint, usedBy consts.UsedBy) (ret []domain.ShareVars, err error) {
+func (s *VariableService) GetShareVarsByInterface(interfaceId uint, usedBy consts.UsedBy) (ret []domain.VarKeyValuePair, err error) {
 	//var projectId uint
 	//
 	//if usedBy == consts.InterfaceDebug {
@@ -54,7 +53,7 @@ func (s *VariableService) GetShareVarsByInterface(interfaceId uint, usedBy const
 	return
 }
 
-func CombineVariables(environmentVariables []model.EnvironmentVar, interfaceExtractorVariables []v1.Variable) (
+func CombineVariables(environmentVariables []model.EnvironmentVar, interfaceExtractorVariables []domain.Variable) (
 	ret map[string]interface{}) {
 
 	ret = map[string]interface{}{}

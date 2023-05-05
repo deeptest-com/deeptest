@@ -3,7 +3,6 @@ package service
 import (
 	"encoding/json"
 	"fmt"
-	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	agentUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
@@ -23,25 +22,25 @@ type CheckpointService struct {
 	VariableService *VariableService      `inject:""`
 }
 
-func (s *CheckpointService) List(interfaceId uint, usedBy consts.UsedBy) (checkpoints []model.InterfaceCheckpoint, err error) {
-	checkpoints, err = s.CheckpointRepo.List(interfaceId, usedBy)
+func (s *CheckpointService) List(interfaceId uint) (checkpoints []model.DebugInterfaceCheckpoint, err error) {
+	checkpoints, err = s.CheckpointRepo.List(interfaceId)
 
 	return
 }
 
-func (s *CheckpointService) Get(id uint) (checkpoint model.InterfaceCheckpoint, err error) {
+func (s *CheckpointService) Get(id uint) (checkpoint model.DebugInterfaceCheckpoint, err error) {
 	checkpoint, err = s.CheckpointRepo.Get(id)
 
 	return
 }
 
-func (s *CheckpointService) Create(checkpoint *model.InterfaceCheckpoint) (err error) {
+func (s *CheckpointService) Create(checkpoint *model.DebugInterfaceCheckpoint) (err error) {
 	err = s.CheckpointRepo.Save(checkpoint)
 
 	return
 }
 
-func (s *CheckpointService) Update(checkpoint *model.InterfaceCheckpoint) (err error) {
+func (s *CheckpointService) Update(checkpoint *model.DebugInterfaceCheckpoint) (err error) {
 	err = s.CheckpointRepo.Save(checkpoint)
 
 	return
@@ -53,10 +52,10 @@ func (s *CheckpointService) Delete(reqId uint) (err error) {
 	return
 }
 
-func (s *CheckpointService) CheckInterface(interfaceId uint, resp v1.DebugResponse, usedBy consts.UsedBy) (
+func (s *CheckpointService) CheckInterface(interfaceId uint, resp domain.DebugResponse, usedBy consts.UsedBy) (
 	logCheckpoints []domain.ExecInterfaceCheckpoint, status consts.ResultStatus, err error) {
 
-	checkpoints, _ := s.CheckpointRepo.List(interfaceId, usedBy)
+	checkpoints, _ := s.CheckpointRepo.List(interfaceId)
 
 	status = consts.Pass
 	for _, checkpoint := range checkpoints {
@@ -70,7 +69,7 @@ func (s *CheckpointService) CheckInterface(interfaceId uint, resp v1.DebugRespon
 	return
 }
 
-func (s *CheckpointService) Check(checkpoint model.InterfaceCheckpoint, resp v1.DebugResponse,
+func (s *CheckpointService) Check(checkpoint model.DebugInterfaceCheckpoint, resp domain.DebugResponse,
 	usedBy consts.UsedBy) (logCheckpoint model.ExecLogCheckpoint, err error) {
 	if checkpoint.Disabled {
 		checkpoint.ResultStatus = ""

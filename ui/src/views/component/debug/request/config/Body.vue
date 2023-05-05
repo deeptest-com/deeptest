@@ -70,12 +70,11 @@
 import {computed, inject, onMounted, onUnmounted, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
-import { QuestionCircleOutlined, DeleteOutlined, ClearOutlined, ImportOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons-vue';
-import {StateType} from "@/views/interface1/store";
+import { QuestionCircleOutlined, DeleteOutlined, ClearOutlined, ImportOutlined } from '@ant-design/icons-vue';
 import {MonacoOptions} from "@/utils/const";
 import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
-import {getCodeLangByType} from "@/views/interface1/service";
+import {getCodeLangByType} from "@/views/component/debug/service";
 import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
 import BodyFormUrlencoded from "./Body-FormUrlencoded.vue";
 import BodyFormData from "./Body-FormData.vue";

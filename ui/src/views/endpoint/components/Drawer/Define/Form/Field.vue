@@ -271,7 +271,7 @@ async function setRef(data: any) {
 watch(() => {
   return props.fieldData
 }, (newVal) => {
-  if (newVal && newVal.type) {
+  if (newVal) { // && newVal.type) {
     fieldState.value = newVal;
   }
 }, {

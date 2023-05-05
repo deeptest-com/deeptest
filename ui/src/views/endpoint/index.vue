@@ -87,17 +87,20 @@
         </div>
       </div>
     </div>
+
     <CreateEndpointModal
         :visible="createApiModalVisible"
         :selectedCategoryId="selectedCategoryId"
         @cancal="createApiModalVisible = false;"
         @ok="handleCreateApi"/>
+    ``
     <!-- 编辑接口时，展开抽屉   -->
     <Drawer
         :destroyOnClose="true"
         :visible="drawerVisible"
         @refreshList="refreshList"
         @close="drawerVisible = false;"/>
+
   </div>
 </template>
 <script setup lang="ts">

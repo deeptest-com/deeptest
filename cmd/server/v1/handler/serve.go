@@ -1,7 +1,7 @@
 package handler
 
 import (
-	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	"github.com/kataras/iris/v12"
@@ -36,7 +36,7 @@ func (c *ServeCtrl) ListByProject(ctx iris.Context) {
 
 // Index 服务列表
 func (c *ServeCtrl) Index(ctx iris.Context) {
-	var req v1.ServeReqPaginate
+	var req serverDomain.ServeReqPaginate
 	if err := ctx.ReadJSON(&req); err == nil {
 		res, _ := c.ServeService.Paginate(req)
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res})
@@ -48,7 +48,7 @@ func (c *ServeCtrl) Index(ctx iris.Context) {
 
 // Save 保存服务
 func (c *ServeCtrl) Save(ctx iris.Context) {
-	var req v1.ServeReq
+	var req serverDomain.ServeReq
 	if err := ctx.ReadJSON(&req); err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -111,7 +111,7 @@ func (c *ServeCtrl) Expire(ctx iris.Context) {
 
 // SaveVersion 保存版本
 func (c *ServeCtrl) SaveVersion(ctx iris.Context) {
-	var req v1.ServeVersionReq
+	var req serverDomain.ServeVersionReq
 	if err := ctx.ReadJSON(&req); err == nil {
 		if res, err := c.ServeService.SaveVersion(req); err != nil {
 			ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
@@ -126,7 +126,7 @@ func (c *ServeCtrl) SaveVersion(ctx iris.Context) {
 
 // ListVersion 获取版本列表
 func (c *ServeCtrl) ListVersion(ctx iris.Context) {
-	var req v1.ServeVersionPaginate
+	var req serverDomain.ServeVersionPaginate
 	if err := ctx.ReadJSON(&req); err == nil {
 		res, _ := c.ServeService.PaginateVersion(req)
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
@@ -156,7 +156,7 @@ func (c *ServeCtrl) ExpireVersion(ctx iris.Context) {
 }
 
 func (c *ServeCtrl) SaveSchema(ctx iris.Context) {
-	var req v1.ServeSchemaReq
+	var req serverDomain.ServeSchemaReq
 	if err := ctx.ReadJSON(&req); err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 	}
@@ -169,7 +169,7 @@ func (c *ServeCtrl) SaveSchema(ctx iris.Context) {
 }
 
 func (c *ServeCtrl) SaveSecurity(ctx iris.Context) {
-	var req v1.ServeSecurityReq
+	var req serverDomain.ServeSecurityReq
 	if err := ctx.ReadJSON(&req); err == nil {
 		res, _ := c.ServeService.SaveSecurity(req)
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
@@ -180,7 +180,7 @@ func (c *ServeCtrl) SaveSecurity(ctx iris.Context) {
 
 // ListSchema 获取版本列表
 func (c *ServeCtrl) ListSchema(ctx iris.Context) {
-	var req v1.ServeSchemaPaginate
+	var req serverDomain.ServeSchemaPaginate
 	if err := ctx.ReadJSON(&req); err == nil {
 		res, _ := c.ServeService.PaginateSchema(req)
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
@@ -190,7 +190,7 @@ func (c *ServeCtrl) ListSchema(ctx iris.Context) {
 }
 
 func (c *ServeCtrl) GetSchemaByRef(ctx iris.Context) {
-	var req v1.ServeSchemaRefReq
+	var req serverDomain.ServeSchemaRefReq
 	if err := ctx.ReadJSON(&req); err == nil {
 		res, _ := c.ServeService.GetSchema(uint(req.ServeId), req.Ref)
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
@@ -210,7 +210,7 @@ func (c *ServeCtrl) DeleteSchema(ctx iris.Context) {
 }
 
 func (c *ServeCtrl) ListServer(ctx iris.Context) {
-	var req v1.ServeServer
+	var req serverDomain.ServeServer
 
 	if err := ctx.ReadJSON(&req); err == nil {
 		res, _ := c.ServeService.ListServer(req.ServeId)
@@ -221,7 +221,7 @@ func (c *ServeCtrl) ListServer(ctx iris.Context) {
 }
 
 func (c *ServeCtrl) SaveServer(ctx iris.Context) {
-	var req v1.ServeServer
+	var req serverDomain.ServeServer
 	if err := ctx.ReadJSON(&req); err == nil {
 		res, _ := c.ServeService.SaveServer(req)
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
@@ -231,7 +231,7 @@ func (c *ServeCtrl) SaveServer(ctx iris.Context) {
 }
 
 func (c *ServeCtrl) ExampleToSchema(ctx iris.Context) {
-	var req v1.JsonContent
+	var req serverDomain.JsonContent
 	if err := ctx.ReadJSON(&req); err == nil {
 		res := c.ServeService.Example2Schema(req.Data)
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
@@ -241,7 +241,7 @@ func (c *ServeCtrl) ExampleToSchema(ctx iris.Context) {
 }
 
 func (c *ServeCtrl) SchemaToExample(ctx iris.Context) {
-	var req v1.JsonContent
+	var req serverDomain.JsonContent
 	if err := ctx.ReadJSON(&req); err == nil {
 		res := c.ServeService.Schema2Example(req.ServeId, req.Data)
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
@@ -251,7 +251,7 @@ func (c *ServeCtrl) SchemaToExample(ctx iris.Context) {
 }
 
 func (c *ServeCtrl) SchemaToYaml(ctx iris.Context) {
-	var req v1.JsonContent
+	var req serverDomain.JsonContent
 	if err := ctx.ReadJSON(&req); err == nil {
 		res := c.ServeService.Schema2Yaml(req.Data)
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
@@ -271,7 +271,7 @@ func (c *ServeCtrl) CopySchema(ctx iris.Context) {
 }
 
 func (c *ServeCtrl) BindEndpoint(ctx iris.Context) {
-	var req v1.ServeVersionBindEndpointReq
+	var req serverDomain.ServeVersionBindEndpointReq
 	if err := ctx.ReadJSON(&req); err == nil {
 		c.ServeService.BindEndpoint(req)
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
@@ -283,7 +283,7 @@ func (c *ServeCtrl) BindEndpoint(ctx iris.Context) {
 func (c *ServeCtrl) ChangeServe(ctx iris.Context) {
 	userId := multi.GetUserId(ctx)
 
-	req := v1.ChangeServeReq{}
+	req := serverDomain.ChangeServeReq{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
@@ -300,7 +300,7 @@ func (c *ServeCtrl) ChangeServe(ctx iris.Context) {
 }
 
 func (c *ServeCtrl) ListSecurity(ctx iris.Context) {
-	var req v1.ServeSecurityPaginate
+	var req serverDomain.ServeSecurityPaginate
 	if err := ctx.ReadJSON(&req); err == nil {
 		res, _ := c.ServeService.PaginateSecurity(req)
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})

@@ -6,6 +6,7 @@
       <DownOutlined v-if="collapse" @click="collapse = !collapse"/>
       <span class="label-name">请求方式</span>
     </a-col>
+
     <a-col :span="22">
       <!-- 请求方法定义 -->
       <a-radio-group v-model:value="selectedMethod" button-style="outline">

@@ -5,9 +5,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/aaronchen2k/deeptest/cmd/agent/v1/domain"
-	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	v1 "github.com/aaronchen2k/deeptest/cmd/agent/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	_httpUtils "github.com/aaronchen2k/deeptest/pkg/lib/http"
@@ -19,7 +19,7 @@ import (
 type SpecService struct {
 }
 
-func (s *SpecService) Parse(req domain.ParseSpecReq) (err error) {
+func (s *SpecService) Parse(req v1.ParseSpecReq) (err error) {
 	ctx := context.Background()
 	loader := &openapi3.Loader{Context: ctx, IsExternalRefsAllowed: true}
 
@@ -50,7 +50,7 @@ func (s *SpecService) Parse(req domain.ParseSpecReq) (err error) {
 	return
 }
 
-func (s *SpecService) postSpecToServer(doc3 *openapi3.T, req domain.ParseSpecReq) (err error) {
+func (s *SpecService) postSpecToServer(doc3 *openapi3.T, req v1.ParseSpecReq) (err error) {
 	url := fmt.Sprintf("import/importSpec")
 
 	body, err := json.Marshal(doc3)
@@ -59,15 +59,15 @@ func (s *SpecService) postSpecToServer(doc3 *openapi3.T, req domain.ParseSpecReq
 		return
 	}
 
-	httpReq := v1.BaseRequest{
+	httpReq := domain.BaseRequest{
 		Url: _httpUtils.AddSepIfNeeded(req.ServerUrl) + url,
-		Params: []v1.Param{
+		Params: []domain.Param{
 			{Name: "targetId", Value: fmt.Sprintf("%d", req.TargetId)},
 		},
 		BodyType:          consts.ContentTypeJSON,
 		Body:              string(body),
 		AuthorizationType: consts.BearerToken,
-		BearerToken: v1.BearerToken{
+		BearerToken: domain.BearerToken{
 			Token: req.Token,
 		},
 	}

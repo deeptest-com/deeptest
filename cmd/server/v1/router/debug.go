@@ -19,6 +19,8 @@ func (m *DebugModule) Party() module.WebModule {
 
 		index.PartyFunc("/interface", func(party iris.Party) {
 			party.Post("/load", m.DebugInterfaceCtrl.Load).Name = "获取调试接口请求"
+			party.Post("/loadForExec", m.DebugInterfaceCtrl.LoadForExec).Name = "获取调试接口用于执行"
+
 			party.Post("/save", m.DebugInterfaceCtrl.Save).Name = "保存调试接口"
 		})
 

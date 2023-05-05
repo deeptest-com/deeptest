@@ -554,3 +554,28 @@ const (
 func (e PlaceholderType) String() string {
 	return string(e)
 }
+
+type ParamType string
+
+const (
+	ParamTypeString  ParamType = "string"
+	ParamTypeNumber  ParamType = "number"
+	ParamTypeInteger ParamType = "integer"
+)
+
+func (e ParamType) String() string {
+	return string(e)
+}
+
+type ParamIn string
+
+const (
+	ParamInPath   ParamIn = "path"
+	ParamInQuery  ParamIn = "query"
+	ParamInHeader ParamIn = "header"
+	ParamInCookie ParamIn = "cookie"
+)
+
+func (e ParamIn) String() string {
+	return string(e)
+}

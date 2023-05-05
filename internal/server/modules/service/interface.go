@@ -3,6 +3,7 @@ package service
 import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	repo "github.com/aaronchen2k/deeptest/internal/server/modules/repo"
@@ -117,7 +118,7 @@ func (s *InterfaceService) Update(id int, req v1.InterfaceReq) (err error) {
 	return
 }
 
-func (s *InterfaceService) UpdateByConfig(req v1.DebugData) (err error) {
+func (s *InterfaceService) UpdateByConfig(req domain.DebugData) (err error) {
 	interf := model.Interface{}
 	s.CopyValueFromRequest(&interf, req)
 
@@ -125,7 +126,7 @@ func (s *InterfaceService) UpdateByConfig(req v1.DebugData) (err error) {
 
 	return
 }
-func (s *InterfaceService) UpdateByInvocation(req v1.DebugData) (err error) {
+func (s *InterfaceService) UpdateByInvocation(req domain.DebugData) (err error) {
 	interf := model.Interface{}
 	s.CopyValueFromRequest(&interf, req)
 
@@ -134,7 +135,7 @@ func (s *InterfaceService) UpdateByInvocation(req v1.DebugData) (err error) {
 	return
 }
 
-func (s *InterfaceService) CopyValueFromRequest(interf *model.Interface, req v1.DebugData) (err error) {
+func (s *InterfaceService) CopyValueFromRequest(interf *model.Interface, req domain.DebugData) (err error) {
 	interf.ID = req.EndpointInterfaceId
 
 	copier.CopyWithOption(interf, req, copier.Option{DeepCopy: true})

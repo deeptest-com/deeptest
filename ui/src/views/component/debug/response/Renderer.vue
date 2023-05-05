@@ -10,11 +10,11 @@
       </a-tab-pane>
 
       <a-tab-pane key="3" tab="响应头">
-        <ResponseHeaders></ResponseHeaders>
+        <ResponseHeaders v-if="activeKey === '3'"></ResponseHeaders>
       </a-tab-pane>
 
       <a-tab-pane key="4">
-        <ResponseExtractor></ResponseExtractor>
+        <ResponseExtract v-if="activeKey === '4'"></ResponseExtract>
 
         <template #tab>
           <a-badge v-if="extractorFail" dot><span class="link">提取器</span></a-badge>
@@ -24,7 +24,7 @@
       </a-tab-pane>
 
       <a-tab-pane key="5">
-        <ResponseCheckpoint></ResponseCheckpoint>
+        <ResponseCheck v-if="activeKey === '5'"></ResponseCheck>
 
         <template #tab>
           <a-badge v-if="checkpointFail" dot><span class="link">检查点</span></a-badge>
@@ -43,12 +43,13 @@ import {useStore} from "vuex";
 
 import ResponseLensJson from "./Renderer/lenses/JSONLensRenderer.vue";
 import ResponseHeaders from "./Renderer/Headers.vue";
-import ResponseExtractor from "./Extractor.vue";
-import ResponseCheckpoint from "./Checkpoint.vue";
-import ResponseLensXml from "@/views/interface1/components/designer/response/Renderer/lenses/XMLLensRenderer.vue";
-import ResponseLensHtml from "@/views/interface1/components/designer/response/Renderer/lenses/HTMLLensRenderer.vue";
-import ResponseLensImage from "@/views/interface1/components/designer/response/Renderer/lenses/ImageLensRenderer.vue";
-import ResponseLensRaw from "@/views/interface1/components/designer/response/Renderer/lenses/RawLensRenderer.vue";
+import ResponseExtract from "./Extractor.vue";
+import ResponseCheck from "./Checkpoint.vue";
+
+import ResponseLensXml from "@/views/component/debug/response/Renderer/lenses/XMLLensRenderer.vue";
+import ResponseLensHtml from "@/views/component/debug/response/Renderer/lenses/HTMLLensRenderer.vue";
+import ResponseLensImage from "@/views/component/debug/response/Renderer/lenses/ImageLensRenderer.vue";
+import ResponseLensRaw from "@/views/component/debug/response/Renderer/lenses/RawLensRenderer.vue";
 import {UsedBy} from "@/utils/enum";
 const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
@@ -78,18 +79,6 @@ const checkpointFail = computed(() => {
   }
   return false
 })
-
-const listExtractor = () => {
-  usedBy === UsedBy.InterfaceDebug ? store.dispatch('Interface1/listExtractor') :
-      store.dispatch('Scenario/listExtractor')
-}
-listExtractor()
-
-const listCheckPoint = () => {
-  usedBy === UsedBy.InterfaceDebug ? store.dispatch('Interface1/listCheckpoint') :
-      store.dispatch('Scenario/listCheckpoint')
-}
-listCheckPoint()
 
 </script>
 

@@ -8,11 +8,11 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	queryHelper "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/query"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
 	stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"time"
 
-	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"strings"
 )
@@ -21,8 +21,8 @@ type ProcessorInterface struct {
 	ID uint `json:"id"`
 	ProcessorEntityBase
 
-	v1.BaseRequest
-	Response v1.DebugResponse `json:"response"`
+	domain.BaseRequest
+	Response domain.DebugResponse `json:"response"`
 
 	Extractors  []agentDomain.Extractor
 	Checkpoints []agentDomain.Checkpoint
@@ -30,6 +30,7 @@ type ProcessorInterface struct {
 
 func (entity ProcessorInterface) Run(processor *Processor, session *Session) (err error) {
 	logUtils.Infof("interface entity")
+	CurrInterfaceId = processor.EndpointInterfaceId
 
 	startTime := time.Now()
 	processor.Result = &agentDomain.ScenarioExecResult{
@@ -44,11 +45,11 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 	// exec pre-request script
 	ExecJs(entity.PreRequestScript)
 
-	// replace variables
-	variables := GetCachedVariableMapInContext(entity.ProcessorID)
-	ReplaceAll(&entity.BaseRequest, Environment, variables, DatapoolData)
+	// dealwith variables
+	DealwithVariables(&entity.BaseRequest, consts.ScenarioDebug)
 
 	// send request
+	GenRequestUrl(&entity.BaseRequest, processor.EndpointInterfaceId)
 	entity.Response, err = Invoke(&entity.BaseRequest)
 
 	reqContent, _ := json.Marshal(entity.BaseRequest)
@@ -109,7 +110,7 @@ func (entity *ProcessorInterface) CheckInterface(processor *Processor, session *
 	return
 }
 
-func (entity *ProcessorInterface) Extract(extractor *agentDomain.Extractor, resp v1.DebugResponse) (err error) {
+func (entity *ProcessorInterface) Extract(extractor *agentDomain.Extractor, resp domain.DebugResponse) (err error) {
 	extractor.Result = ""
 
 	if extractor.Disabled {
@@ -144,7 +145,7 @@ func (entity *ProcessorInterface) Extract(extractor *agentDomain.Extractor, resp
 	return
 }
 
-func (entity *ProcessorInterface) Check(checkpoint *agentDomain.Checkpoint, resp v1.DebugResponse) (err error) {
+func (entity *ProcessorInterface) Check(checkpoint *agentDomain.Checkpoint, resp domain.DebugResponse) (err error) {
 	if checkpoint.Disabled {
 		checkpoint.ResultStatus = ""
 		return

@@ -21,7 +21,7 @@ type UserCtrl struct {
 }
 
 func (c *UserCtrl) ListAll(ctx iris.Context) {
-	var req domain.UserReqPaginate
+	var req serverDomain.UserReqPaginate
 
 	if err := ctx.ReadQuery(&req); err != nil {
 		errs := validate.ValidRequest(err)
@@ -59,7 +59,7 @@ func (c *UserCtrl) GetUser(ctx iris.Context) {
 
 // Invite 邀请用户
 func (c *UserCtrl) Invite(ctx iris.Context) {
-	req := domain.InviteUserReq{}
+	req := serverDomain.InviteUserReq{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
@@ -78,7 +78,7 @@ func (c *UserCtrl) Invite(ctx iris.Context) {
 // UpdateEmail 修改邮箱
 func (c *UserCtrl) UpdateEmail(ctx iris.Context) {
 	userId := multi.GetUserId(ctx)
-	req := domain.UpdateUserReq{}
+	req := serverDomain.UpdateUserReq{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
@@ -111,7 +111,7 @@ func (c *UserCtrl) UpdateEmail(ctx iris.Context) {
 // UpdateName 修改名称
 func (c *UserCtrl) UpdateName(ctx iris.Context) {
 	userId := multi.GetUserId(ctx)
-	req := domain.UpdateUserReq{}
+	req := serverDomain.UpdateUserReq{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
@@ -145,7 +145,7 @@ func (c *UserCtrl) UpdateName(ctx iris.Context) {
 func (c *UserCtrl) UpdatePassword(ctx iris.Context) {
 	userId := multi.GetUserId(ctx)
 
-	req := domain.UpdateUserReq{}
+	req := serverDomain.UpdateUserReq{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
@@ -194,7 +194,7 @@ func (c *UserCtrl) Message(ctx iris.Context) {
 
 // CreateUser 添加
 func (c *UserCtrl) CreateUser(ctx iris.Context) {
-	req := domain.UserReq{}
+	req := serverDomain.UserReq{}
 	if err := ctx.ReadJSON(&req); err != nil {
 		errs := validate.ValidRequest(err)
 		if len(errs) > 0 {
@@ -221,7 +221,7 @@ func (c *UserCtrl) UpdateUser(ctx iris.Context) {
 		return
 	}
 
-	var req domain.UserReq
+	var req serverDomain.UserReq
 	if err := ctx.ReadJSON(&req); err != nil {
 		errs := validate.ValidRequest(err)
 		if len(errs) > 0 {

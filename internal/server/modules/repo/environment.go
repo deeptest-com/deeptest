@@ -381,6 +381,7 @@ func (r *EnvironmentRepo) ListParamModel(projectId uint) (ret []model.Environmen
 
 func (r *EnvironmentRepo) ListParams(projectId uint) (res map[string]interface{}, err error) {
 	res = map[string]interface{}{}
+
 	var params []model.EnvironmentParam
 	err = r.DB.Find(&params, "project_id=?", projectId).Error
 	if err != nil {
@@ -388,11 +389,13 @@ func (r *EnvironmentRepo) ListParams(projectId uint) (res map[string]interface{}
 	}
 
 	for _, param := range params {
+		in := string(param.In)
+
 		res["projectId"] = param.ProjectId
-		if res[param.In] == nil {
-			res[param.In] = []model.EnvironmentParam{param}
+		if res[in] == nil {
+			res[in] = []model.EnvironmentParam{param}
 		} else {
-			res[param.In] = append(res[param.In].([]model.EnvironmentParam), param)
+			res[in] = append(res[in].([]model.EnvironmentParam), param)
 		}
 
 	}

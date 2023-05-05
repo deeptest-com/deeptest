@@ -4,6 +4,7 @@
       <div class="indexlayout-top-menu">
         <CollapsedIcon @click="toggleCollapsed"  :collapsed="collapsed"/>
         <RightTopProject/>
+        <RightTopServer v-if="showServerSelector" />
       </div>
       <div class="indexlayout-top-menu-right">
         <RightTopSettings/>
@@ -14,10 +15,12 @@
   </div>
 </template>
 <script lang="ts">
-import {defineComponent, PropType, toRefs} from "vue";
+import {defineComponent, PropType, toRefs, watch, ref} from "vue";
 import {useI18n} from "vue-i18n";
+import {useRouter} from "vue-router";
 import {BreadcrumbType, RoutesDataItem} from '@/utils/routes';
 import RightTopProject from './RightTopProject.vue';
+import RightTopServer from "./RightTopServer.vue";
 import RightTopSettings from './RightTopSettings.vue';
 import RightTopWebsocket from './RightTopWebsocket.vue';
 import RightTopUpdate from './RightTopUpdate.vue';
@@ -32,6 +35,7 @@ export default defineComponent({
     CollapsedIcon,
     RightTopWebsocket,
     RightTopUpdate,
+    RightTopServer
   },
   props: {
     collapsed: {
@@ -73,13 +77,23 @@ export default defineComponent({
   setup(props) {
     const {t} = useI18n();
     const {topNavEnable} = toRefs(props);
+    const showServerSelector = ref(false);
+    const router = useRouter();
 
     const {topMenuCon, topMenuWidth} = useTopMenuWidth(topNavEnable);
 
+    watch(() => {
+      return router.currentRoute.value.path;
+    }, (val: string) => {
+      showServerSelector.value = val.includes('endpoint');
+    }, {
+      immediate: true
+    })
     return {
       t,
       topMenuCon,
-      topMenuWidth
+      topMenuWidth,
+      showServerSelector
     }
   }
 })
@@ -144,7 +158,7 @@ export default defineComponent({
       height: @headerHeight;
       line-height: @headerHeight;
       flex: 1;
-      /* display: flex; */
+      display: flex;
       overflow: hidden;
       overflow-x: auto;
       width: 280px;

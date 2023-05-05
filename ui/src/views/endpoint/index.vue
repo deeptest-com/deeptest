@@ -1,17 +1,5 @@
 <template>
   <div class="container">
-    <div class="select-server">
-      <a-form-item label="选择服务">
-        <a-select
-            v-model:value="currServe.id"
-            :placeholder="'请选择服务'"
-            :bordered="true"
-            style="width: 334px"
-            @change="selectServe">
-          <a-select-option v-for="item in serves" :key="item.id" :value="item.id">{{ item.name }}</a-select-option>
-        </a-select>
-      </a-form-item>
-    </div>
     <div class="content">
       <div class="left tree" v-if="!collapsed">
         <Tree @select="selectNode" :serveId="currServe.id"/>
@@ -20,7 +8,7 @@
           :style="{left:'294px',top:'300px'}"
           :collapsedStyle="{left:'-9px', top:'300px'}"
           @click="collapsed = !collapsed" :collapsed="collapsed"/>
-      <div class="right">
+      <div :class="{'right': true, 'right-not-collapsed': !collapsed}">
         <div class="top-action">
           <PermissionButton
             class="action-new"
@@ -49,6 +37,7 @@
                     loadList(page,size);
                   },
               }"
+              :scroll="{ x: '1280px' || true }"
               :columns="columns"
               :data-source="list">
               <template #colTitle="{text,record}">
@@ -161,7 +150,8 @@ const columns = [
     title: '接口名称',
     dataIndex: 'title',
     slots: {customRender: 'colTitle'},
-    width: 150,
+    width: 120,
+    ellipsis: true
   },
   {
     title: '状态',
@@ -190,7 +180,7 @@ const columns = [
     title: '操作',
     key: 'operation',
     fixed: 'right',
-    width: 100,
+    width: 80,
     slots: {customRender: 'action'},
   },
 ];
@@ -299,10 +289,6 @@ async function handleTableFilter(filterState) {
   await loadList(pagination.value.current, pagination.value.pageSize, filterState);
 }
 
-const selectServe = (value): void => {
-  store.dispatch('ServeGlobal/changeServe', value);
-}
-
 // 实时监听项目/服务 ID，如果项目切换了则重新请求数据
 watch(() => [currProject.value.id, currServe.value.id], async (newVal) => {
   const [newProjectId, newServeId] = newVal;
@@ -331,16 +317,6 @@ async function refreshList() {
   margin: 16px;
   background: #ffffff;
   min-height: calc(100vh - 80px);
-}
-
-.select-server {
-  padding: 15px 20px;
-  width: 100%;
-  border-bottom: 1px solid #E0E0E0;
-
-  :deep(.ant-row.ant-form-item) {
-    margin: 0;
-  }
 }
 
 .tag-filter-form {
@@ -372,7 +348,11 @@ async function refreshList() {
   }
 
   .right {
-    flex: 1
+    flex: 1;
+
+    &.right-not-collapsed {
+      width: calc(100% - 300px);
+    }
   }
 }
 
@@ -392,10 +372,6 @@ async function refreshList() {
   .ant-btn {
     margin-right: 16px;
   }
-}
-
-.customTitleColRender {
-  width: 150px;
 }
 
 :deep(.top-action .ant-row.ant-form-item) {
@@ -436,4 +412,13 @@ async function refreshList() {
   font-size: 12px;
 }
 
+@media screen and (max-width: 1440px) {
+  .right {
+    width: 1180px;
+
+    &.right-not-collapsed {
+      width: calc(100% - 300px);
+    }
+  }
+}
 </style>

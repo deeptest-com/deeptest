@@ -1,9 +1,11 @@
 package handler
 
 import (
+	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
+	"github.com/jinzhu/copier"
 	"github.com/kataras/iris/v12"
 )
 
@@ -23,7 +25,10 @@ func (c *ScenarioExecCtrl) LoadExecData(ctx iris.Context) {
 		return
 	}
 
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data, Msg: _domain.NoErr.Msg})
+	ret := agentExec.ScenarioExecObjMsg{}
+	copier.CopyWithOption(&ret, data, copier.Option{DeepCopy: true})
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: ret})
 }
 
 // LoadExecResult

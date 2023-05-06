@@ -1,7 +1,7 @@
 package service
 
 import (
-	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	repo "github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"github.com/jinzhu/copier"
@@ -23,7 +23,7 @@ func (s *ProcessorInterfaceService) ListInvocation(id uint) (invocations []model
 	return s.ProcessorInterfaceRepo.ListInvocation(id)
 }
 
-func (s *ProcessorInterfaceService) UpdateByInvocation(req v1.DebugData) (err error) {
+func (s *ProcessorInterfaceService) UpdateByInvocation(req domain.DebugData) (err error) {
 	interf := model.ProcessorInterface{}
 	s.CopyValueFromRequest(&interf, req)
 
@@ -32,7 +32,7 @@ func (s *ProcessorInterfaceService) UpdateByInvocation(req v1.DebugData) (err er
 	return
 }
 
-func (s *ProcessorInterfaceService) CopyValueFromRequest(interf *model.ProcessorInterface, req v1.DebugData) (err error) {
+func (s *ProcessorInterfaceService) CopyValueFromRequest(interf *model.ProcessorInterface, req domain.DebugData) (err error) {
 	interf.ID = req.EndpointInterfaceId
 
 	copier.CopyWithOption(interf, req, copier.Option{DeepCopy: true})
@@ -40,7 +40,7 @@ func (s *ProcessorInterfaceService) CopyValueFromRequest(interf *model.Processor
 	return
 }
 
-func (s *ProcessorInterfaceService) UpdateByConfig(req v1.DebugData) (err error) {
+func (s *ProcessorInterfaceService) UpdateByConfig(req domain.DebugData) (err error) {
 	interf := model.ProcessorInterface{}
 	s.CopyValueFromRequest(&interf, req)
 

@@ -6,8 +6,10 @@ import (
 )
 
 type ShareVariableRepo struct {
-	DB       *gorm.DB  `inject:""`
-	RoleRepo *RoleRepo `inject:""`
+	DB        *gorm.DB `inject:""`
+	*BaseRepo `inject:""`
+
+	ScenarioProcessorRepo *ScenarioProcessorRepo `inject:""`
 }
 
 func NewShareVariableRepo() *ShareVariableRepo {
@@ -25,11 +27,19 @@ func (r *ShareVariableRepo) Save(po *model.ShareVariable) (err error) {
 func (r *ShareVariableRepo) findExist(po model.ShareVariable) (id uint, err error) {
 	existPo := model.ShareVariable{}
 
-	err = r.DB.Model(&po).
-		Where("name=?, interfaceId=?, serveId=?, scenarioId=?, scope=?",
-			po.Name, po.InterfaceId, po.ServeId, po.ScenarioId, po.Scope).
-		Where("NOT deleted AND NOT disabled").
-		First(&existPo).Error
+	db := r.DB.Model(&po).
+		Where("name=?", po.Name).
+		Where("NOT deleted AND NOT disabled")
+
+	if po.ServeId > 0 {
+		db.Where("serve_id=?", po.ServeId)
+	}
+
+	if po.ScenarioId > 0 {
+		db.Where("scenario_id=?", po.ScenarioId)
+	}
+
+	err = db.First(&existPo).Error
 
 	id = po.ID
 
@@ -70,8 +80,14 @@ func (r *ShareVariableRepo) ListByInterfaceDebug(serveId uint) (pos []model.Shar
 	return
 }
 
-func (r *ShareVariableRepo) ListByScenarioDebug(scenarioId uint) (pos []model.ShareVariable, err error) {
+func (r *ShareVariableRepo) ListByScenarioDebug(processorId uint) (pos []model.ShareVariable, err error) {
+	processor, _ := r.ScenarioProcessorRepo.Get(processorId)
+	scenarioId := processor.ScenarioId
+
+	parentIds, err := r.GetAllParentIds(processorId, model.Processor{}.TableName())
+
 	err = r.DB.Model(&model.ShareVariable{}).
+		Where("processor_id IN ?", parentIds).
 		Where("scenario_id=?", scenarioId).
 		Where("NOT deleted AND NOT disabled").
 		Find(&pos).Error

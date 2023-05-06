@@ -10,8 +10,6 @@ import {computed, ComputedRef, defineComponent, onMounted, PropType, Ref} from "
 import {useI18n} from "vue-i18n";
 import {Form, message} from 'ant-design-vue';
 import {resizeHeight} from "@/utils/dom";
-import {useStore} from "vuex";
-import {StateType} from "@/views/interface1/store";
 import ResponseMeta from './Meta.vue';
 import ResponseRenderer from './Renderer.vue';
 

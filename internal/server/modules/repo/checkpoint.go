@@ -12,17 +12,17 @@ type CheckpointRepo struct {
 	DB *gorm.DB `inject:""`
 }
 
-func (r *CheckpointRepo) List(interfaceId uint, usedBy consts.UsedBy) (pos []model.InterfaceCheckpoint, err error) {
+func (r *CheckpointRepo) List(interfaceId uint) (pos []model.DebugInterfaceCheckpoint, err error) {
 	err = r.DB.
 		Where("interface_id=?", interfaceId).
-		Where("used_by = ? AND NOT deleted", usedBy).
+		Where("NOT deleted").
 		Order("created_at ASC").
 		Find(&pos).Error
 	return
 }
 
-func (r *CheckpointRepo) ListTo(interfaceId uint, usedBy consts.UsedBy) (ret []agentDomain.Checkpoint, err error) {
-	pos, err := r.List(interfaceId, usedBy)
+func (r *CheckpointRepo) ListTo(interfaceId uint) (ret []agentDomain.Checkpoint, err error) {
+	pos, err := r.List(interfaceId)
 
 	for _, po := range pos {
 		checkpoint := agentDomain.Checkpoint{}
@@ -34,7 +34,7 @@ func (r *CheckpointRepo) ListTo(interfaceId uint, usedBy consts.UsedBy) (ret []a
 	return
 }
 
-func (r *CheckpointRepo) Get(id uint) (checkpoint model.InterfaceCheckpoint, err error) {
+func (r *CheckpointRepo) Get(id uint) (checkpoint model.DebugInterfaceCheckpoint, err error) {
 	err = r.DB.
 		Where("id=?", id).
 		Where("NOT deleted").
@@ -42,8 +42,8 @@ func (r *CheckpointRepo) Get(id uint) (checkpoint model.InterfaceCheckpoint, err
 	return
 }
 
-func (r *CheckpointRepo) GetByName(name string, interfaceId uint) (checkpoint model.InterfaceCheckpoint, err error) {
-	var checkpoints []model.InterfaceCheckpoint
+func (r *CheckpointRepo) GetByName(name string, interfaceId uint) (checkpoint model.DebugInterfaceCheckpoint, err error) {
+	var checkpoints []model.DebugInterfaceCheckpoint
 
 	db := r.DB.Model(&checkpoint).
 		Where("name = ? AND interface_id =? AND not deleted", name, interfaceId)
@@ -61,13 +61,13 @@ func (r *CheckpointRepo) GetByName(name string, interfaceId uint) (checkpoint mo
 	return
 }
 
-func (r *CheckpointRepo) Save(checkpoint *model.InterfaceCheckpoint) (err error) {
+func (r *CheckpointRepo) Save(checkpoint *model.DebugInterfaceCheckpoint) (err error) {
 	err = r.DB.Save(checkpoint).Error
 	return
 }
 
 func (r *CheckpointRepo) Delete(id uint) (err error) {
-	err = r.DB.Model(&model.InterfaceCheckpoint{}).
+	err = r.DB.Model(&model.DebugInterfaceCheckpoint{}).
 		Where("id=?", id).
 		Update("deleted", true).
 		Error
@@ -75,7 +75,7 @@ func (r *CheckpointRepo) Delete(id uint) (err error) {
 	return
 }
 
-func (r *CheckpointRepo) UpdateResult(checkpoint model.InterfaceCheckpoint, usedBy consts.UsedBy) (err error) {
+func (r *CheckpointRepo) UpdateResult(checkpoint model.DebugInterfaceCheckpoint, usedBy consts.UsedBy) (err error) {
 	values := map[string]interface{}{
 		"actual_result": checkpoint.ActualResult,
 		"result_status": checkpoint.ResultStatus,
@@ -89,7 +89,7 @@ func (r *CheckpointRepo) UpdateResult(checkpoint model.InterfaceCheckpoint, used
 	return
 }
 
-func (r *CheckpointRepo) UpdateResultToExecLog(checkpoint model.InterfaceCheckpoint, log *model.ExecLogProcessor) (
+func (r *CheckpointRepo) UpdateResultToExecLog(checkpoint model.DebugInterfaceCheckpoint, log *model.ExecLogProcessor) (
 	logCheckpoint model.ExecLogCheckpoint, err error) {
 
 	copier.CopyWithOption(&logCheckpoint, checkpoint, copier.Option{DeepCopy: true})

@@ -35,7 +35,7 @@ func NewUserRepo() *UserRepo {
 	return &UserRepo{}
 }
 
-func (r *UserRepo) Paginate(req domain.UserReqPaginate) (data _domain.PageData, err error) {
+func (r *UserRepo) Paginate(req serverDomain.UserReqPaginate) (data _domain.PageData, err error) {
 	var count int64
 
 	db := r.DB.Model(&model.SysUser{})
@@ -52,7 +52,7 @@ func (r *UserRepo) Paginate(req domain.UserReqPaginate) (data _domain.PageData, 
 		return
 	}
 
-	users := make([]*domain.UserResp, 0)
+	users := make([]*serverDomain.UserResp, 0)
 	err = db.Scopes(dao.PaginateScope(req.Page, req.PageSize, req.Order, req.Field)).
 		Find(&users).Error
 	if err != nil {
@@ -70,7 +70,7 @@ func (r *UserRepo) Paginate(req domain.UserReqPaginate) (data _domain.PageData, 
 }
 
 // GetSysRoles
-func (r *UserRepo) GetSysRoles(users ...*domain.UserResp) {
+func (r *UserRepo) GetSysRoles(users ...*serverDomain.UserResp) {
 	var roleIds []string
 	userRoleIds := make(map[uint][]string, 10)
 
@@ -101,7 +101,7 @@ func (r *UserRepo) GetSysRoles(users ...*domain.UserResp) {
 }
 
 // getRoles
-func (r *UserRepo) GetProjectRoles(users ...*domain.UserResp) {
+func (r *UserRepo) GetProjectRoles(users ...*serverDomain.UserResp) {
 	if len(users) == 0 {
 		return
 	}
@@ -119,8 +119,8 @@ func (r *UserRepo) GetProjectRoles(users ...*domain.UserResp) {
 	}
 }
 
-func (r *UserRepo) FindByUserName(username string, ids ...uint) (domain.UserResp, error) {
-	user := domain.UserResp{}
+func (r *UserRepo) FindByUserName(username string, ids ...uint) (serverDomain.UserResp, error) {
+	user := serverDomain.UserResp{}
 	db := r.DB.Model(&model.SysUser{}).Where("username = ?", username)
 
 	if len(ids) == 1 {
@@ -136,8 +136,8 @@ func (r *UserRepo) FindByUserName(username string, ids ...uint) (domain.UserResp
 	return user, nil
 }
 
-func (r *UserRepo) FindByEmail(email string, ids ...uint) (domain.UserResp, error) {
-	user := domain.UserResp{}
+func (r *UserRepo) FindByEmail(email string, ids ...uint) (serverDomain.UserResp, error) {
+	user := serverDomain.UserResp{}
 	db := r.DB.Model(&model.SysUser{}).Where("email = ?", email)
 
 	if len(ids) == 1 {
@@ -153,8 +153,8 @@ func (r *UserRepo) FindByEmail(email string, ids ...uint) (domain.UserResp, erro
 	return user, nil
 }
 
-func (r *UserRepo) FindPasswordByUserName(username string, ids ...uint) (domain.LoginResp, error) {
-	user := domain.LoginResp{}
+func (r *UserRepo) FindPasswordByUserName(username string, ids ...uint) (serverDomain.LoginResp, error) {
+	user := serverDomain.LoginResp{}
 	db := r.DB.Model(&model.SysUser{}).Select("id,password").Where("username = ?", username)
 	if len(ids) == 1 {
 		db.Where("id != ?", ids[0])
@@ -168,8 +168,8 @@ func (r *UserRepo) FindPasswordByUserName(username string, ids ...uint) (domain.
 	return user, nil
 }
 
-func (r *UserRepo) FindPasswordByEmail(email string) (domain.LoginResp, error) {
-	user := domain.LoginResp{}
+func (r *UserRepo) FindPasswordByEmail(email string) (serverDomain.LoginResp, error) {
+	user := serverDomain.LoginResp{}
 	db := r.DB.Model(&model.SysUser{}).Select("id,password").Where("email = ?", email)
 
 	err := db.First(&user).Error
@@ -222,7 +222,7 @@ func (r *UserRepo) Register(user *model.SysUser) (err error) {
 	return
 }
 
-func (r *UserRepo) Create(req domain.UserReq) (uint, error) {
+func (r *UserRepo) Create(req serverDomain.UserReq) (uint, error) {
 	if _, err := r.FindByUserName(req.Username); !errors.Is(err, gorm.ErrRecordNotFound) {
 		return 0, fmt.Errorf("用户名 %s 已经被使用", req.Username)
 	}
@@ -260,7 +260,7 @@ func (r *UserRepo) Create(req domain.UserReq) (uint, error) {
 	return user.ID, nil
 }
 
-func (r *UserRepo) Update(id uint, req domain.UserReq) error {
+func (r *UserRepo) Update(id uint, req serverDomain.UserReq) error {
 	if b, err := r.IsAdminUser(id); err != nil {
 		return err
 	} else if b {
@@ -293,7 +293,7 @@ func (r *UserRepo) Update(id uint, req domain.UserReq) error {
 	return nil
 }
 
-func (r *UserRepo) InviteToProject(req domain.InviteUserReq) (user model.SysUser, err error) {
+func (r *UserRepo) InviteToProject(req serverDomain.InviteUserReq) (user model.SysUser, err error) {
 	user, err = r.GetByUserId(req.UserId)
 	if err != nil {
 		err = errors.New("用户不存在，请先创建用户")
@@ -334,7 +334,7 @@ func (r *UserRepo) IsAdminUser(id uint) (bool, error) {
 	return arr.InArrayS(user.SysRoles, serverConsts.AdminRoleName), nil
 }
 
-func (r *UserRepo) FindById(id uint) (user domain.UserResp, err error) {
+func (r *UserRepo) FindById(id uint) (user serverDomain.UserResp, err error) {
 	err = r.DB.Model(&model.SysUser{}).Where("id = ?", id).First(&user).Error
 	if err != nil {
 		return user, err
@@ -342,7 +342,7 @@ func (r *UserRepo) FindById(id uint) (user domain.UserResp, err error) {
 
 	return
 }
-func (r *UserRepo) FindDetailById(id uint) (user domain.UserResp, err error) {
+func (r *UserRepo) FindDetailById(id uint) (user serverDomain.UserResp, err error) {
 	user, err = r.FindById(id)
 	if err != nil {
 		return user, err
@@ -446,7 +446,7 @@ func (r *UserRepo) AddProjectForUser(user *model.SysUser) (project model.Project
 	}
 
 	// create project
-	project = model.Project{ProjectBase: domain.ProjectBase{Name: "默认项目"}}
+	project = model.Project{ProjectBase: serverDomain.ProjectBase{Name: "默认项目"}}
 	err = r.DB.Create(&project).Error
 	if err != nil {
 		logUtils.Errorf("添加项目错误", zap.String("错误:", err.Error()))
@@ -516,7 +516,7 @@ func (r *UserRepo) UpdateName(username string, id uint) (err error) {
 	return
 }
 
-func (r *UserRepo) ChangePassword(req domain.UpdateUserReq, id uint) (err error) {
+func (r *UserRepo) ChangePassword(req serverDomain.UpdateUserReq, id uint) (err error) {
 	user, err := r.FindById(id)
 	if err != nil {
 		if err != nil {
@@ -590,7 +590,7 @@ func (r *UserRepo) ClearVcode(id uint) (err error) {
 	return
 }
 
-func (r *UserRepo) GetUsersNotExistedInProject(projectId uint) (ret []domain.UserResp, err error) {
+func (r *UserRepo) GetUsersNotExistedInProject(projectId uint) (ret []serverDomain.UserResp, err error) {
 	membersExisted, err := r.ProjectRepo.GetMembersByProject(projectId)
 
 	userIdsExisted := make([]uint, 0)

@@ -15,16 +15,6 @@
         </div>
 
         <div class="right">
-          <a-select
-              v-model:value="serveId"
-              @change="selectServe"
-              :dropdownMatchSelectWidth="false"
-              :bordered="false">
-            <a-select-option :key="0" :value="0">请选择</a-select-option>
-            <a-select-option v-for="(item) in serves" :key="item.id" :value="item.id">
-              {{ item.name }}
-            </a-select-option>
-          </a-select>
         </div>
       </div>
 
@@ -57,10 +47,6 @@ import {listScenario} from "@/views/plan/service";
 import {listServe} from "@/services/serve";
 
 const props = defineProps({
-  scenariosInServe: {
-    type: Array,
-    required: true
-  },
   submit: {
     type: Function,
     required: true,
@@ -71,41 +57,17 @@ const props = defineProps({
   },
 })
 
-const serves = ref([] as any[]);
-const serveId = ref(0)
-
 const scenarios = ref([] as any[]);
 const checkedScenarios = ref([] as number[]);
 const isCheckAll = ref(false)
 
-const loadServe = async () => {
-  listServe().then((json) => {
-    console.log('listServe', json)
-    serves.value = json.data
-
-    if (serves.value.length > 0) {
-      serveId.value = serves.value[0].id
-      selectServe()
-    }
-  })
-}
-loadServe()
-
-const selectServe = async () => {
-  if (serveId.value == 0) {
-    scenarios.value = []
-    return
-  }
-
-  listScenario(serveId.value).then((json) => {
+const listAllScenario = () => {
+  listScenario().then((json) => {
     console.log('listScenario', json)
     scenarios.value = json.data
-
-    props.scenariosInServe.forEach((item, index) => {
-      checkedScenarios.value.push(+item.id)
-    })
   })
 }
+listAllScenario()
 
 const selectAll = () => {
   console.log('selectAll')

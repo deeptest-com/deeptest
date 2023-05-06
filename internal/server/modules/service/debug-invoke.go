@@ -2,8 +2,8 @@ package service
 
 import (
 	"encoding/json"
-	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"time"
@@ -29,7 +29,7 @@ type DebugInvokeService struct {
 	EndpointService   *EndpointService   `inject:""`
 }
 
-func (s *DebugInvokeService) SubmitResult(req v1.SubmitDebugResultRequest) (err error) {
+func (s *DebugInvokeService) SubmitResult(req domain.SubmitDebugResultRequest) (err error) {
 	usedBy := req.Request.UsedBy
 	var endpointId, serveId, processorId, scenarioId, projectId uint
 
@@ -50,7 +50,7 @@ func (s *DebugInvokeService) SubmitResult(req v1.SubmitDebugResultRequest) (err 
 
 	}
 
-	s.ExtractorService.ExtractInterface(req.Request.EndpointInterfaceId, serveId, processorId, req.Response, usedBy)
+	s.ExtractorService.ExtractInterface(req.Request.EndpointInterfaceId, serveId, processorId, scenarioId, req.Response, usedBy)
 	s.CheckpointService.CheckInterface(req.Request.EndpointInterfaceId, req.Response, usedBy)
 
 	_, err = s.Create(req.Request, req.Response, serveId, processorId, scenarioId, projectId)
@@ -62,7 +62,7 @@ func (s *DebugInvokeService) SubmitResult(req v1.SubmitDebugResultRequest) (err 
 	return
 }
 
-func (s *DebugInvokeService) Create(debugData v1.DebugData, resp v1.DebugResponse,
+func (s *DebugInvokeService) Create(debugData domain.DebugData, resp domain.DebugResponse,
 	serveId, processorId, scenarioId, projectId uint) (po model.DebugInvoke, err error) {
 
 	debugInterfaceId, _ := s.DebugInterfaceRepo.HasDebugInterfaceRecord(debugData.EndpointInterfaceId)
@@ -100,7 +100,7 @@ func (s *DebugInvokeService) ListByInterface(endpointInterfaceId uint) (invocati
 	return
 }
 
-func (s *DebugInvokeService) GetLastResp(endpointInterfaceId uint) (resp v1.DebugResponse, err error) {
+func (s *DebugInvokeService) GetLastResp(endpointInterfaceId uint) (resp domain.DebugResponse, err error) {
 	debugInterfaceId, _ := s.DebugInterfaceRepo.HasDebugInterfaceRecord(endpointInterfaceId)
 
 	po, _ := s.DebugRepo.GetLast(endpointInterfaceId, debugInterfaceId)
@@ -108,7 +108,7 @@ func (s *DebugInvokeService) GetLastResp(endpointInterfaceId uint) (resp v1.Debu
 	if po.ID > 0 {
 		json.Unmarshal([]byte(po.RespContent), &resp)
 	} else {
-		resp = v1.DebugResponse{
+		resp = domain.DebugResponse{
 			ContentLang: consts.LangHTML,
 			Content:     "",
 		}
@@ -117,7 +117,7 @@ func (s *DebugInvokeService) GetLastResp(endpointInterfaceId uint) (resp v1.Debu
 	return
 }
 
-func (s *DebugInvokeService) GetAsInterface(id int) (debugData v1.DebugData, interfResp v1.DebugResponse, err error) {
+func (s *DebugInvokeService) GetAsInterface(id int) (debugData domain.DebugData, interfResp domain.DebugResponse, err error) {
 	invocation, err := s.DebugInvokeRepo.Get(uint(id))
 
 	json.Unmarshal([]byte(invocation.ReqContent), &debugData)

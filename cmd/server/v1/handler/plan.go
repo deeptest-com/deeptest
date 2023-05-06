@@ -1,7 +1,7 @@
 package handler
 
 import (
-	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/core/web/validate"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
@@ -25,7 +25,7 @@ func (c *PlanCtrl) List(ctx iris.Context) {
 		return
 	}
 
-	var req v1.PlanReqPaginate
+	var req serverDomain.PlanReqPaginate
 	err = ctx.ReadQuery(&req)
 	if err != nil {
 		errs := validate.ValidRequest(err)

@@ -1,7 +1,7 @@
 package handler
 
 import (
-	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/core/web/validate"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
@@ -18,7 +18,7 @@ type RoleCtrl struct {
 
 // GetAllRoles 分页列表
 func (c *RoleCtrl) GetAllRoles(ctx iris.Context) {
-	var req v1.RoleReqPaginate
+	var req serverDomain.RoleReqPaginate
 	if err := ctx.ReadQuery(&req); err != nil {
 		errs := validate.ValidRequest(err)
 		if len(errs) > 0 {
@@ -55,7 +55,7 @@ func (c *RoleCtrl) GetRole(ctx iris.Context) {
 
 // CreateRole 添加
 func (c *RoleCtrl) CreateRole(ctx iris.Context) {
-	req := v1.RoleReq{}
+	req := serverDomain.RoleReq{}
 	if err := ctx.ReadJSON(&req); err != nil {
 		errs := validate.ValidRequest(err)
 		if len(errs) > 0 {
@@ -77,7 +77,7 @@ func (c *RoleCtrl) CreateRole(ctx iris.Context) {
 func (c *RoleCtrl) UpdateRole(ctx iris.Context) {
 	id, _ := ctx.Params().GetInt("id")
 
-	var req v1.RoleReq
+	var req serverDomain.RoleReq
 	if err := ctx.ReadJSON(&req); err != nil {
 		errs := validate.ValidRequest(err)
 		if len(errs) > 0 {

@@ -42,9 +42,8 @@ const (
 	EmailAccount     = "chenqi@deeptest.com"
 	EmailPassword    = ""
 
-	DeepestKey = "com_deeptest_prop_for_selection"
-
-	DirStatic = "static"
+	DeepestKey   = "com_deeptest_prop_for_selection"
+	KEY_BASE_URL = "baseUrl___"
 )
 
 var (

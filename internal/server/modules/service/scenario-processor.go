@@ -2,8 +2,10 @@ package service
 
 import (
 	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
+	"github.com/jinzhu/copier"
 )
 
 type ScenarioProcessorService struct {
@@ -13,9 +15,11 @@ type ScenarioProcessorService struct {
 	EndpointInterfaceRepo *repo.EndpointInterfaceRepo  `inject:""`
 	ExtractorRepo         *repo.ExtractorRepo          `inject:""`
 	CheckpointRepo        *repo.CheckpointRepo         `inject:""`
+	DebugInterfaceRepo    *repo.DebugInterfaceRepo     `inject:""`
 
-	ExtractorService  *ExtractorService  `inject:""`
-	CheckpointService *CheckpointService `inject:""`
+	ExtractorService      *ExtractorService      `inject:""`
+	CheckpointService     *CheckpointService     `inject:""`
+	DebugInterfaceService *DebugInterfaceService `inject:""`
 }
 
 func (s *ScenarioProcessorService) GetEntity(id int) (ret interface{}, err error) {
@@ -75,6 +79,88 @@ func (s *ScenarioProcessorService) SaveExtractor(req *model.ProcessorExtractor) 
 
 func (s *ScenarioProcessorService) SaveData(req *model.ProcessorData) (err error) {
 	err = s.ScenarioProcessorRepo.SaveData(req)
+	return
+}
+
+func (s *ScenarioProcessorService) GetEntityTo(processorTo *agentExec.Processor) (ret agentExec.IProcessorEntity, err error) {
+	processor, _ := s.ScenarioProcessorRepo.Get(processorTo.ID)
+
+	switch processor.EntityCategory {
+	case consts.ProcessorInterface:
+		debugData, _ := s.DebugInterfaceService.GetDebugInterface(processor.EndpointInterfaceId)
+
+		interfaceEntity := agentExec.ProcessorInterface{}
+		copier.CopyWithOption(&interfaceEntity, debugData, copier.Option{DeepCopy: true})
+
+		interfaceEntity.ProcessorID = processor.ID
+		interfaceEntity.ParentID = processor.ParentId
+		interfaceEntity.ProcessorCategory = consts.ProcessorInterface
+		interfaceEntity.ProcessorType = consts.ProcessorInterfaceDefault
+
+		interfaceEntity.Extractors, _ = s.ExtractorRepo.ListTo(interfaceEntity.ID)
+		interfaceEntity.Checkpoints, _ = s.CheckpointRepo.ListTo(interfaceEntity.ID)
+
+		ret = &interfaceEntity
+
+	case consts.ProcessorRoot:
+		commEntityPo, _ := s.ScenarioProcessorRepo.GetRoot(processor)
+
+		ret = agentExec.ProcessorRoot{}
+		copier.CopyWithOption(&ret, commEntityPo, copier.Option{DeepCopy: true})
+
+	case consts.ProcessorGroup:
+		entityPo, _ := s.ScenarioProcessorRepo.GetGroup(processor)
+		ret = agentExec.ProcessorGroup{}
+		copier.CopyWithOption(&ret, entityPo, copier.Option{DeepCopy: true})
+
+	case consts.ProcessorLogic:
+		entityPo, _ := s.ScenarioProcessorRepo.GetLogic(processor)
+		ret = agentExec.ProcessorLogic{}
+		copier.CopyWithOption(&ret, entityPo, copier.Option{DeepCopy: true})
+
+	case consts.ProcessorLoop:
+		entityPo, _ := s.ScenarioProcessorRepo.GetLoop(processor)
+		ret = agentExec.ProcessorLoop{}
+		copier.CopyWithOption(&ret, entityPo, copier.Option{DeepCopy: true})
+
+	case consts.ProcessorVariable:
+		entityPo, _ := s.ScenarioProcessorRepo.GetVariable(processor)
+		ret = agentExec.ProcessorVariable{}
+		copier.CopyWithOption(&ret, entityPo, copier.Option{DeepCopy: true})
+
+	case consts.ProcessorTimer:
+		entityPo, _ := s.ScenarioProcessorRepo.GetTimer(processor)
+		ret = agentExec.ProcessorTimer{}
+		copier.CopyWithOption(&ret, entityPo, copier.Option{DeepCopy: true})
+
+	case consts.ProcessorPrint:
+		entityPo, _ := s.ScenarioProcessorRepo.GetPrint(processor)
+		ret = agentExec.ProcessorPrint{}
+		copier.CopyWithOption(&ret, entityPo, copier.Option{DeepCopy: true})
+
+	case consts.ProcessorCookie:
+		entityPo, _ := s.ScenarioProcessorRepo.GetCookie(processor)
+		ret = agentExec.ProcessorCookie{}
+		copier.CopyWithOption(&ret, entityPo, copier.Option{DeepCopy: true})
+
+	case consts.ProcessorAssertion:
+		entityPo, _ := s.ScenarioProcessorRepo.GetAssertion(processor)
+		ret = agentExec.ProcessorAssertion{}
+		copier.CopyWithOption(&ret, entityPo, copier.Option{DeepCopy: true})
+
+	case consts.ProcessorExtractor:
+		entityPo, _ := s.ScenarioProcessorRepo.GetExtractor(processor)
+		ret = agentExec.ProcessorExtractor{}
+		copier.CopyWithOption(&ret, entityPo, copier.Option{DeepCopy: true})
+
+	case consts.ProcessorData:
+		entityPo, _ := s.ScenarioProcessorRepo.GetData(processor)
+		ret = agentExec.ProcessorData{}
+		copier.CopyWithOption(&ret, entityPo, copier.Option{DeepCopy: true})
+
+	default:
+	}
+
 	return
 }
 

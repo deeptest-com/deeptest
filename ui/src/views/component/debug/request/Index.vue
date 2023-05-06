@@ -19,7 +19,6 @@ import RequestConfig from './Config.vue';
 import {NotificationKeyCommon} from "@/utils/const";
 import {UsedBy} from "@/utils/enum";
 import {getToken} from "@/utils/localToken";
-import {prepareDataForRequest} from "@/views/interface1/service";
 
 const useForm = Form.useForm;
 const usedBy = inject('usedBy') as UsedBy

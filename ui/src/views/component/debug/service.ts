@@ -185,8 +185,8 @@ export const getEnumSelectItems = (enumDef) => {
 }
 
 // extractor
-export async function listExtractor(interfaceId: number, usedBy: UsedBy): Promise<any> {
-    const params = {interfaceId, usedBy}
+export async function listExtractor(endpointInterfaceId: number): Promise<any> {
+    const params = {endpointInterfaceId}
 
     return request({
         url: `/${apiExtractor}`,
@@ -231,8 +231,8 @@ export async function listExtractorVariable(interfaceId: number): Promise<any> {
 }
 
 // checkpoint
-export async function listCheckpoint(interfaceId: number, usedBy: UsedBy): Promise<any> {
-    const params = {interfaceId, usedBy}
+export async function listCheckpoint(interfaceId: number): Promise<any> {
+    const params = {interfaceId}
 
     return request({
         url: `/${apiCheckpoint}`,
@@ -304,15 +304,4 @@ export async function getSnippet(name): Promise<any> {
         method: 'GET',
         params
     });
-}
-
-export function getContextMenuStyle(e) {
-    console.log('getContextMenuStyle', e.clientY)
-
-    const style = {
-        left: e.clientX + 'px',
-        top: (e.clientY - 12 > 6 ? e.clientY - 12 : 6)  + 'px',
-    }
-
-    return style
 }

@@ -282,7 +282,7 @@ const StoreModel: ModuleType = {
         // extractor
         async listExtractor({commit, dispatch, state}) {
             try {
-                const resp = await listExtractor(state.debugData.id, UsedBy.InterfaceDebug);
+                const resp = await listExtractor(state.debugInfo.endpointInterfaceId);
                 const {data} = resp;
                 commit('setExtractors', data);
                 return true;
@@ -304,7 +304,7 @@ const StoreModel: ModuleType = {
         async saveExtractor({commit, dispatch, state}, payload: any) {
             try {
                 await saveExtractor(payload);
-                dispatch('listExtractor', UsedBy.InterfaceDebug);
+                dispatch('listExtractor');
                 return true;
             } catch (error) {
                 return false;
@@ -377,7 +377,7 @@ const StoreModel: ModuleType = {
         // checkpoint
         async listCheckpoint({commit, state}) {
             try {
-                const resp = await listCheckpoint(state.debugData.id, UsedBy.InterfaceDebug);
+                const resp = await listCheckpoint(state.debugData.endpointInterfaceId);
                 const {data} = resp;
                 commit('setCheckpoints', data);
                 return true;

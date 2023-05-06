@@ -11,20 +11,22 @@ import (
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
+	"strconv"
 )
 
 type ScenarioRepo struct {
-	DB       *gorm.DB  `inject:""`
-	BaseRepo *BaseRepo `inject:""`
+	DB          *gorm.DB     `inject:""`
+	BaseRepo    *BaseRepo    `inject:""`
+	ProjectRepo *ProjectRepo `inject:""`
 }
 
 func NewScenarioRepo() *ScenarioRepo {
 	return &ScenarioRepo{}
 }
 
-func (r *ScenarioRepo) ListByServe(serveId int) (pos []model.Scenario, err error) {
+func (r *ScenarioRepo) ListByProject(projectId int) (pos []model.Scenario, err error) {
 	err = r.DB.
-		Where("serve_id=?", serveId).
+		Where("project_id=?", projectId).
 		Where("NOT deleted").
 		Find(&pos).Error
 	return
@@ -35,7 +37,7 @@ func (r *ScenarioRepo) Paginate(req v1.ScenarioReqPaginate, projectId int) (data
 	var categoryIds []uint
 
 	if req.CategoryId > 0 {
-		categoryIds, err = r.BaseRepo.GetAllChildIds(req.CategoryId, model.Category{}.TableName(),
+		categoryIds, err = r.BaseRepo.GetAllChildIds(uint(req.CategoryId), model.Category{}.TableName(),
 			serverConsts.ScenarioCategory, projectId)
 		if err != nil {
 			return
@@ -48,6 +50,8 @@ func (r *ScenarioRepo) Paginate(req v1.ScenarioReqPaginate, projectId int) (data
 
 	if len(categoryIds) > 0 {
 		db.Where("category_id IN(?)", categoryIds)
+	} else if req.CategoryId == -1 {
+		db.Where("category_id IN(?)", -1)
 	}
 
 	if req.Keywords != "" {
@@ -116,6 +120,13 @@ func (r *ScenarioRepo) Create(scenario model.Scenario) (ret model.Scenario, bizE
 		return
 	}
 
+	err = r.UpdateSerialNumber(scenario.ID, scenario.ProjectId)
+	if err != nil {
+		logUtils.Errorf("update scenario serial number error", zap.String("error:", err.Error()))
+		bizErr = &_domain.BizErr{Code: _domain.SystemErr.Code}
+
+		return
+	}
 	ret = scenario
 
 	return
@@ -174,5 +185,16 @@ func (r *ScenarioRepo) GetChildrenIds(id uint) (ids []int, err error) {
 		return
 	}
 
+	return
+}
+
+func (r *ScenarioRepo) UpdateSerialNumber(id, projectId uint) (err error) {
+	var project model.Project
+	project, err = r.ProjectRepo.Get(projectId)
+	if err != nil {
+		return
+	}
+
+	err = r.DB.Model(&model.Scenario{}).Where("id=?", id).Update("serial_number", project.ShortName+"-S-"+strconv.Itoa(int(id))).Error
 	return
 }

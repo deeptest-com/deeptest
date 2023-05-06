@@ -34,8 +34,8 @@
 
               <div class="val">
                 <a-tooltip class="val" overlayClassName="dp-tip-small">
-                  <template #title>{{item.value}}</template>
-                  {{item.rightValue==='extractor_err'? t(item.rightValue+'_short') : item.value}}
+                  <template #title>{{item.localValue}}</template>
+                  {{item.localValue==='extractor_err'? t(item.localValue+'_short') : item.localValue}}
                 </a-tooltip>
               </div>
             </div>

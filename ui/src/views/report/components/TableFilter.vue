@@ -15,7 +15,7 @@
             <div class="report-executor-selector">
                 <a-form-item name="executor" label="执行人">
                     <a-select placeholder="请选择执行人" v-model:value="selectValue" :options="executorOptions"
-                        style="width: 140px" />
+                        style="width: 140px" @change="handleSelectChange" />
                 </a-form-item>
             </div>
             <div class="report-excutime">
@@ -25,18 +25,18 @@
                 </a-form-item>
             </div>
             <div class="report-name">
-                <a-input v-model:value="executeName" placeholder="请输入用例名称">
-                    <template #suffix>
-                        <search-outlined />
-                    </template>
-                </a-input>
+                <a-input-search
+                    v-model:value="executeName"
+                    placeholder="请输入用例名称"
+                    enter-button
+                    @search="onSearch"
+                />
             </div>
         </a-form>
     </div>
 </template>
 <script setup lang="ts">
-import { ref, defineProps, reactive } from 'vue';
-import { SearchOutlined } from '@ant-design/icons-vue';
+import { ref, defineProps, reactive, defineEmits } from 'vue';
 
 const selectValue = ref(null);
 const executeName = ref('');
@@ -45,9 +45,20 @@ defineProps<{
     executorOptions: any[]
 }>()
 
+const emits = defineEmits(['getList']);
+
 function onRangeOk(date: string) {
     console.log('current select executime ---', date);
 }
+
+function handleSelectChange(value: any) {
+    console.log('handleSelect---', value);
+    emits('getList', { createUserId: value })
+}
+
+const onSearch = (val: string) => {
+  emits('getList', { keywords: val })
+};
 </script>
 <style scoped lang="less">
 .report-table-filter {
@@ -72,26 +83,24 @@ function onRangeOk(date: string) {
     }
 }
 
-.report-bulk-operation {
-    .actions {
+.actions {
 
-        .action-item {
-            display: block;
-            width: 162px;
-            height: 32px;
-            background: #FFFFFF;
-            font-weight: 400;
-            font-size: 14px;
-            line-height: 32px;
-            text-align: center;
-            color: rgba(0, 0, 0, 0.85);
-            cursor: pointer;
+    .action-item {
+        display: block;
+        width: 162px;
+        height: 32px;
+        background: #FFFFFF;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 32px;
+        text-align: center;
+        color: rgba(0, 0, 0, 0.85);
+        cursor: pointer;
 
-            &:hover {
-                background: #F5F5F5;
-            }
+        &:hover {
+            background: #F5F5F5;
         }
-
     }
+
 }
 </style>

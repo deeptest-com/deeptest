@@ -7,10 +7,10 @@
         <a-col flex="160px">变量 / 键值 / 表达式</a-col>
         <a-col flex="60px">运算符</a-col>
         <a-col flex="100px">数值</a-col>
-        <a-col flex="1">实际结果</a-col>
-        <a-col flex="100px">状态</a-col>
+        <a-col flex="100px">实际结果</a-col>
+        <a-col flex="60px">状态</a-col>
 
-        <a-col flex="100px" class="dp-right">
+        <a-col flex="50px" class="dp-right">
           <PlusOutlined v-if="usedBy===UsedBy.InterfaceDebug" @click.stop="add" class="dp-icon-btn dp-trans-80" />
         </a-col>
       </a-row>
@@ -23,14 +23,15 @@
         <a-col flex="160px">{{ item.type === CheckpointType.extractor ? item.extractorVariable : item.expression }} </a-col>
         <a-col flex="60px">{{ t(item.operator) }}</a-col>
         <a-col flex="100px">{{ item.value }}</a-col>
-        <a-col flex="1" style="width: 0; word-break: break-word;">
+        <a-col flex="100px" style="width: 0; word-break: break-word;">
           {{ item.actualResult }}
         </a-col>
-        <a-col flex="100px" :class="getResultCls(item.resultStatus)">
+
+        <a-col flex="50px" :class="getResultCls(item.resultStatus)">
           {{ item.resultStatus ? t(item.resultStatus) : '' }}
         </a-col>
 
-        <a-col flex="100px" class="dp-right">
+        <a-col flex="50px" class="dp-right">
           <a-tooltip v-if="!item.disabled" @click="disable(item)" overlayClassName="dp-tip-small">
             <template #title>禁用</template>
             <CheckCircleOutlined class="dp-icon-btn dp-trans-80" />
@@ -129,11 +130,11 @@ import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import {message, Form} from 'ant-design-vue';
 import { PlusOutlined, EditOutlined, DeleteOutlined, CloseCircleOutlined, CheckCircleOutlined} from '@ant-design/icons-vue';
-import {Checkpoint} from "@/views/interface1/data";
+
 import {
   getEnumSelectItems,
   listExtractorVariable
-} from "@/views/interface1/service";
+} from "@/views/component/debug/service";
 import {ComparisonOperator, CheckpointType, UsedBy} from "@/utils/enum";
 import {isInArray} from "@/utils/array";
 import {getResultCls} from "@/utils/dom"
@@ -144,6 +145,7 @@ const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
 
 import {StateType as Debug} from "@/views/component/debug/store";
+import {Checkpoint} from "@/views/component/debug/data";
 const store = useStore<{  Debug: Debug }>();
 
 const debugData = computed<any>(() => store.state.Debug.debugData);
@@ -160,8 +162,7 @@ watch(debugData, () => {
 }, {deep: true})
 
 const listCheckPoint = () => {
-  usedBy === UsedBy.InterfaceDebug ? store.dispatch('Interface1/listCheckpoint') :
-      store.dispatch('Scenario/listCheckpoint')
+  store.dispatch('Debug/listCheckpoint')
 }
 listCheckPoint()
 
@@ -224,8 +225,9 @@ const edit = (item) => {
 const save = () => {
   console.log('save')
   validate().then(() => {
-    model.value.interfaceId = debugData.value.id
-    store.dispatch('Interface1/saveCheckpoint', model.value).then((result) => {
+    model.value.interfaceId = debugData.value.endpointInterfaceId
+
+    store.dispatch('Debug/saveCheckpoint', model.value).then((result) => {
       if (result) {
         editVisible.value = false
       }
@@ -246,7 +248,7 @@ const remove = (item) => {
 const disable = (item) => {
   console.log('disabled')
   item.disabled = !item.disabled
-  store.dispatch('Interface1/saveCheckpoint', item)
+  store.dispatch('Debug/saveCheckpoint', item)
 }
 
 const selectType = () => {

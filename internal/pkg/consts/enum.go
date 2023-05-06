@@ -511,7 +511,6 @@ const (
 	Tester         RoleType = "tester"
 	Developer      RoleType = "developer"
 	ProductManager RoleType = "product_manager"
-	ProjectLeader  RoleType = "project_leader"
 )
 
 func (e RoleType) String() string {
@@ -554,3 +553,36 @@ const (
 func (e PlaceholderType) String() string {
 	return string(e)
 }
+
+type ParamType string
+
+const (
+	ParamTypeString  ParamType = "string"
+	ParamTypeNumber  ParamType = "number"
+	ParamTypeInteger ParamType = "integer"
+)
+
+func (e ParamType) String() string {
+	return string(e)
+}
+
+type ParamIn string
+
+const (
+	ParamInPath   ParamIn = "path"
+	ParamInQuery  ParamIn = "query"
+	ParamInHeader ParamIn = "header"
+	ParamInCookie ParamIn = "cookie"
+)
+
+func (e ParamIn) String() string {
+	return string(e)
+}
+
+type AuditStatus uint
+
+const (
+	Init    AuditStatus = 0
+	Agreed  AuditStatus = 1
+	Refused AuditStatus = 2
+)

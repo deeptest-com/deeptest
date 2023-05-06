@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	_logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"mime"
 	"mime/multipart"
@@ -22,7 +22,7 @@ type TFormDataWriter struct {
 
 var quoteEscaper = strings.NewReplacer("\\", "\\\\", `"`, "\\\"")
 
-func MultipartEncoder(bodyFormData []v1.BodyFormDataItem) (tFormWriter *TFormDataWriter, err error) {
+func MultipartEncoder(bodyFormData []domain.BodyFormDataItem) (tFormWriter *TFormDataWriter, err error) {
 	payload := &bytes.Buffer{}
 	writer := multipart.NewWriter(payload)
 	tFormWriter = &TFormDataWriter{

@@ -488,6 +488,25 @@ func (r *ProjectRepo) GetMembersByProject(projectId uint) (ret []model.ProjectMe
 	return
 }
 
+func (r *ProjectRepo) GetAuditList(auditUserId uint) (ret []model.ProjectMemberAudit, err error) {
+	err = r.DB.Model(&model.ProjectMemberAudit{}).
+		Where("audit_user_id = ?", auditUserId).
+		Find(&ret).Order("status asc").Error
+	return
+}
+
+func (r *ProjectRepo) UpdateStatus(id, auditUserId, status uint) (err error) {
+	err = r.DB.Model(&model.ProjectMemberAudit{}).
+		Update("status", status).
+		Where("id and audit_user_id", id, auditUserId).Error
+	return
+}
+
+func (r *ProjectRepo) SaveAudit(audit model.ProjectMemberAudit) (err error) {
+	err = r.DB.Save(&audit).Error
+	return
+}
+
 func (r *ProjectRepo) CreateSample(projectId, serveId, userId uint) (err error) {
 
 	//获取接口配置

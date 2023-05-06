@@ -2,7 +2,6 @@ package agentExec
 
 import (
 	"crypto/tls"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/kataras/iris/v12/websocket"
 	"golang.org/x/net/http2"
 	"net/http"
@@ -26,9 +25,9 @@ type Session struct {
 
 func NewSession(req *ScenarioExecObj, failfast bool, wsMsg *websocket.Message) (ret *Session) {
 	root := req.RootProcessor
-	variables := req.Variables
 
-	ImportVariables(root.ID, variables, consts.Public)
+	// TODO: now, interfaces use variables in its own serve's env
+	//ImportVariables(root.ID, req.Variables, consts.Public)
 
 	session := Session{
 		ScenarioId:    root.ScenarioId,

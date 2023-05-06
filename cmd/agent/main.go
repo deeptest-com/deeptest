@@ -4,7 +4,6 @@ import (
 	"flag"
 	"github.com/aaronchen2k/deeptest/cmd/agent/serve"
 	v1 "github.com/aaronchen2k/deeptest/cmd/agent/v1"
-	"github.com/aaronchen2k/deeptest/internal/agent/service"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/cron"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/websocket"
@@ -44,8 +43,6 @@ func main() {
 	}
 
 	injectModule(agent)
-
-	service.NewInitService().InitModels()
 
 	agent.Start()
 

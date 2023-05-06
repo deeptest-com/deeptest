@@ -1,7 +1,7 @@
 package handler
 
 import (
-	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/core/web/validate"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
@@ -18,7 +18,7 @@ type PermCtrl struct {
 
 // GetAllPerms 分页列表
 func (c *PermCtrl) GetAllPerms(ctx iris.Context) {
-	var req v1.PermReqPaginate
+	var req serverDomain.PermReqPaginate
 	if err := ctx.ReadQuery(&req); err != nil {
 		errs := validate.ValidRequest(err)
 		if len(errs) > 0 {
@@ -55,7 +55,7 @@ func (c *PermCtrl) GetPerm(ctx iris.Context) {
 
 // CreatePerm 添加
 func (c *PermCtrl) CreatePerm(ctx iris.Context) {
-	req := v1.PermReq{}
+	req := serverDomain.PermReq{}
 	if err := ctx.ReadJSON(&req); err != nil {
 		errs := validate.ValidRequest(err)
 		if len(errs) > 0 {
@@ -82,7 +82,7 @@ func (c *PermCtrl) UpdatePerm(ctx iris.Context) {
 		return
 	}
 
-	var req v1.PermReq
+	var req serverDomain.PermReq
 	if err := ctx.ReadJSON(&req); err != nil {
 		errs := validate.ValidRequest(err)
 		if len(errs) > 0 {

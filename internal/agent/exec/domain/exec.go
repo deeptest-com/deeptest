@@ -68,9 +68,9 @@ type ExecIterator struct {
 	VariableName      string `json:"variableName,omitempty"`
 
 	// loop range
-	Items    []interface{}      `json:"items"`
-	Data     []domain.ShareVars `json:"data"`
-	DataType consts.DataType    `json:"dataType"`
+	Items    []interface{}            `json:"items"`
+	Data     []domain.VarKeyValuePair `json:"data"`
+	DataType consts.DataType          `json:"dataType"`
 
 	// loop condition
 	UntilExpression string `json:"untilExpression"`

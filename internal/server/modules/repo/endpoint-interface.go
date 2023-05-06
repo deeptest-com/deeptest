@@ -405,6 +405,7 @@ func (r *EndpointInterfaceRepo) GetByEndpointId(endpointId uint, version string)
 		interfaces[key].Cookies, _ = r.ListCookies(interf.ID)
 		interfaces[key].RequestBody, _ = r.ListRequestBody(interf.ID)
 		interfaces[key].ResponseBodies, _ = r.ListResponseBodies(interf.ID)
+		//interfaces[key].ResponseCodes = strings.Split(interf.ResponseCodes.(string), ",")
 	}
 
 	return

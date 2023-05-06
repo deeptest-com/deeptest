@@ -6,10 +6,12 @@
     <Request/>
   </div>
 </template>
+
 <script lang="ts" setup>
 import Path  from './Path.vue';
 import Request  from './Request.vue';
 </script>
+
 <style lang="less" scoped>
 .content {
   //padding-top: 16px;

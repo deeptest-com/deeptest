@@ -1,4 +1,4 @@
-package domain
+package serverDomain
 
 import (
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"

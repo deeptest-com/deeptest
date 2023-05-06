@@ -9,8 +9,8 @@
         <a-col flex="150px" style="padding-left: 10px;">变量</a-col>
         <a-col flex="1">结果</a-col>
 
-        <a-col flex="100px" class="dp-right">
-          <PlusOutlined v-if="usedBy===UsedBy.InterfaceDebug" @click.stop="add" class="dp-icon-btn dp-trans-80" />
+        <a-col v-if="usedBy===UsedBy.InterfaceDebug" flex="100px" class="dp-right">
+          <PlusOutlined @click.stop="add" class="dp-icon-btn dp-trans-80" />
         </a-col>
       </a-row>
     </div>
@@ -35,7 +35,7 @@
           {{item.result==='extractor_err'? t(item.result) : item.result}}
         </a-col>
 
-        <a-col flex="100px" class="dp-right">
+        <a-col v-if="usedBy===UsedBy.InterfaceDebug" flex="100px" class="dp-right">
           <a-tooltip v-if="!item.disabled" @click="disable(item)" overlayClassName="dp-tip-small">
             <template #title>禁用</template>
             <CheckCircleOutlined class="dp-icon-btn dp-trans-80" />
@@ -154,8 +154,7 @@ import {
   PlusOutlined
 } from '@ant-design/icons-vue';
 import {VarScope} from "@/utils/enum";
-import {Extractor, Interface, Response} from "@/views/interface1/data";
-import {getEnumSelectItems} from "@/views/interface1/service";
+import {getEnumSelectItems} from "@/views/component/debug/service";
 import {ExtractorSrc, ExtractorType, UsedBy} from "@/utils/enum";
 
 const usedBy = inject('usedBy') as UsedBy
@@ -165,7 +164,7 @@ const {t} = useI18n();
 const srcOptions = getEnumSelectItems(ExtractorSrc)
 const typeOptions = getEnumSelectItems(ExtractorType)
 
-import {Param} from "@/views/component/debug/data";
+import {Extractor, Param} from "@/views/component/debug/data";
 import {StateType as Debug} from "@/views/component/debug/store";
 const store = useStore<{  Debug: Debug }>();
 
@@ -226,7 +225,6 @@ const add = () => {
     type: ExtractorType.boundary,
     expression: '',
     variable: '',
-    usedBy: UsedBy.InterfaceDebug,
     scope: 'local'} as Extractor
 
   selectSrc()
@@ -250,7 +248,8 @@ const edit = (item) => {
 const save = () => {
   console.log('save')
   validate().then(() => {
-    model.value.interfaceId = debugData.value.id
+    model.value.interfaceId = debugData.value.endpointInterfaceId
+
     model.value.projectId = debugData.value.projectId
     store.dispatch('Debug/saveExtractor', model.value).then((result) => {
       if (result) {

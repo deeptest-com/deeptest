@@ -59,13 +59,13 @@ import RequestAuthorBearerToken from "./author/BearerToken.vue"
 import RequestAuthorOAuth2 from "./author/OAuth2.vue"
 import RequestAuthorApiKey from "./author/ApiKey.vue"
 import {AuthorizationTypes, UsedBy} from "@/utils/enum";
-import {getEnumSelectItems} from "@/views/interface1/service";
 
 const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
 
 import {Param} from "@/views/component/debug/data";
 import {StateType as Debug} from "@/views/component/debug/store";
+import {getEnumSelectItems} from "@/views/component/debug/service";
 const store = useStore<{  Debug: Debug }>();
 
 const debugData = computed<any>(() => store.state.Debug.debugData);

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	m "github.com/aaronchen2k/deeptest/internal/server/modules/model"
@@ -59,13 +60,13 @@ func (s *YapiService) ImportYapiProject(req v1.InterfaceYapiReq) (err error) {
 }
 
 func getYapiCatMenu(yapiHost, token string) (yapiCatMenu YapiCatMenu) {
-	var param []v1.Param
-	tokenParam := v1.Param{
+	var param []domain.Param
+	tokenParam := domain.Param{
 		Name:  "token",
 		Value: token}
 	param = append(param, tokenParam)
 
-	req := v1.BaseRequest{
+	req := domain.BaseRequest{
 		Url:    yapiHost + "/api/interface/getCatMenu",
 		Params: param,
 	}
@@ -84,21 +85,21 @@ func getYapiCatMenu(yapiHost, token string) (yapiCatMenu YapiCatMenu) {
 }
 
 func (s *YapiService) GetYapiMenuInterfaceList(yapiHost, token, catid string) (yapiInterfaceList YapiInterfaceList) {
-	var param []v1.Param
-	tokenParam := v1.Param{
+	var param []domain.Param
+	tokenParam := domain.Param{
 		Name:  "token",
 		Value: token}
 	param = append(param, tokenParam)
-	catidParam := v1.Param{
+	catidParam := domain.Param{
 		Name:  "catid",
 		Value: catid}
 	param = append(param, catidParam)
-	limitParam := v1.Param{
+	limitParam := domain.Param{
 		Name:  "limit",
 		Value: "1000"}
 	param = append(param, limitParam)
 
-	req := v1.BaseRequest{
+	req := domain.BaseRequest{
 		Url:    yapiHost + "/api/interface/list_cat",
 		Params: param,
 	}
@@ -117,17 +118,17 @@ func (s *YapiService) GetYapiMenuInterfaceList(yapiHost, token, catid string) (y
 	return
 }
 
-func (s *YapiService) GetYapiInterface(yapiHost, token, interfaceId string) (ret v1.DebugResponse) {
-	var param []v1.Param
-	tokenParam := v1.Param{
+func (s *YapiService) GetYapiInterface(yapiHost, token, interfaceId string) (ret domain.DebugResponse) {
+	var param []domain.Param
+	tokenParam := domain.Param{
 		Name:  "token",
 		Value: token}
 	param = append(param, tokenParam)
-	interfaceIdParam := v1.Param{
+	interfaceIdParam := domain.Param{
 		Name:  "id",
 		Value: interfaceId}
 	param = append(param, interfaceIdParam)
-	req := v1.BaseRequest{
+	req := domain.BaseRequest{
 		Url:    yapiHost + "/api/interface/get",
 		Params: param,
 	}
@@ -139,7 +140,7 @@ func (s *YapiService) GetYapiInterface(yapiHost, token, interfaceId string) (ret
 	return resp
 }
 
-func (s *YapiService) YapiInterfaceInfoToInterf(ret v1.DebugResponse) (interf m.Interface) {
+func (s *YapiService) YapiInterfaceInfoToInterf(ret domain.DebugResponse) (interf m.Interface) {
 	//content := ret.Content
 	yapiRes := YapiRes{}
 	content := ret.Content

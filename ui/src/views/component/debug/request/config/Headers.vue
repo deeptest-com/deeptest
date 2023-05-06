@@ -73,7 +73,6 @@ import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import { QuestionCircleOutlined, DeleteOutlined, PlusOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons-vue';
 
-import {getContextMenuStyle} from "@/views/interface1/service";
 import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
 import ContextMenu from "@/components/Editor/ContextMenu.vue"
@@ -83,6 +82,7 @@ const {t} = useI18n();
 
 import {Header} from "@/views/component/debug/data";
 import {StateType as Debug} from "@/views/component/debug/store";
+import {getContextMenuStyle2} from "@/utils/dom";
 const store = useStore<{  Debug: Debug }>();
 
 const debugData = computed<any>(() => store.state.Debug.debugData);
@@ -127,7 +127,7 @@ const onContextMenuShow = (idx, e) => {
   console.log('onContextMenuShow', idx, e)
   if (!e) return
 
-  contextMenuStyle.value = getContextMenuStyle(e)
+  contextMenuStyle.value = getContextMenuStyle2(e)
   contextTarget = e.target
   headerIndex.value = idx
 

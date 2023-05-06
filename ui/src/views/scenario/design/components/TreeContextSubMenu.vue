@@ -22,14 +22,9 @@
 </template>
 
 <script setup lang="ts">
-import {defineComponent, defineProps, PropType, Ref} from "vue";
+import {defineProps} from "vue";
 import {useI18n} from "vue-i18n";
 import {Form, message} from 'ant-design-vue';
-import {FolderAddOutlined, FileAddOutlined, EditOutlined, CloseOutlined, PlusOutlined} from "@ant-design/icons-vue";
-import {getEnumSelectItems} from "@/views/interface1/service";
-import {OAuth2ClientAuthenticationWay} from "@/utils/enum";
-import {ProcessorCategory} from "@/utils/enum";
-import {getProcessorTypeMap, getProcessorCategories} from "@/views/scenario/service";
 
 const useForm = Form.useForm;
 

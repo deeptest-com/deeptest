@@ -173,3 +173,14 @@ export function getContextMenuStyle (x, y, height) {
         top: `${top}px`,
     }
 }
+
+export function getContextMenuStyle2(e) {
+    console.log('getContextMenuStyle2', e.clientY)
+
+    const style = {
+        left: e.clientX + 'px',
+        top: (e.clientY - 12 > 6 ? e.clientY - 12 : 6)  + 'px',
+    }
+
+    return style
+}

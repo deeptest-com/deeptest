@@ -1,4 +1,4 @@
-package domain
+package serverDomain
 
 type SchemaReq struct {
 	Id      int64  `json:"id"`

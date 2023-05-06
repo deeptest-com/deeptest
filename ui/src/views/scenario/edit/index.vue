@@ -38,11 +38,9 @@ import {defineComponent, computed, ref, reactive, ComputedRef, defineProps, Prop
 import {useRouter} from "vue-router";
 import {useStore} from "vuex";
 import { useI18n } from "vue-i18n";
-import {message, Form, notification} from 'ant-design-vue';
+import {Form} from 'ant-design-vue';
 const useForm = Form.useForm;
 import {StateType} from "../store";
-import {Scenario} from "@/views/scenario/data";
-import {updateNodeName} from "@/views/interface1/service";
 import {get} from "@/views/scenario/service";
 
 const router = useRouter();

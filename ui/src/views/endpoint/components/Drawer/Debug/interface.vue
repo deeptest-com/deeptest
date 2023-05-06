@@ -26,13 +26,6 @@
 
       <RequestVariable/>
     </div>
-
-    <!-- <div>{{currEndpointId}}</div>
-        <hr>
-        <div>{{currInterface}}</div>
-        <hr>
-        <div>{{debugData}}</div>
-     -->
   </div>
 </template>
 

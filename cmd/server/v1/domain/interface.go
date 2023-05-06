@@ -1,4 +1,4 @@
-package domain
+package serverDomain
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
@@ -55,6 +55,7 @@ type InterfaceResp struct {
 	ResponseBodies []domain.ResponseBody `gorm:"default:{}" json:"ResponseBodies"`
 	Body           string                `gorm:"default:{}" json:"body"`
 	BodyType       string                `gorm:"default:''" json:"bodyType"`
+	ResponseCodes  string                `json:"ResponseCodes"`
 	//AuthorizationType string                 `gorm:"default:''" json:"authorizationType"`
 	//PreRequestScript  string                 `gorm:"default:''" json:"preRequestScript"`
 	//ValidationScript  string                 `gorm:"default:''" json:"validationScript"`
@@ -63,13 +64,6 @@ type InterfaceResp struct {
 	//BearerToken domain.BearerToken `gorm:"-" json:"bearerToken"`
 	//OAuth20     domain.OAuth20     `gorm:"-" json:"oAuth20"`
 	//ApiKey      domain.ApiKey      `gorm:"-" json:"apiKey"`
-}
-
-type Variable struct {
-	Id                    uint   `json:"id"`
-	Name                  string `json:"name"`
-	Value                 string `json:"value"`
-	AvailableForCurrScope bool   `json:"availableForCurrScope"`
 }
 
 type InterfaceYapiReq struct {

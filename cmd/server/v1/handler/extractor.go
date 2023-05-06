@@ -15,20 +15,25 @@ type ExtractorCtrl struct {
 
 // List
 func (c *ExtractorCtrl) List(ctx iris.Context) {
-	interfaceId, err := ctx.URLParamInt("interfaceId")
-	usedBy := ctx.URLParam("usedBy")
-	if interfaceId == 0 || usedBy == "" {
+	endpointInterfaceId, err := ctx.URLParamInt("endpointInterfaceId")
+	if endpointInterfaceId == 0 {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
-	data, err := c.ExtractorService.List(uint(interfaceId), consts.UsedBy(usedBy))
+	data, err := c.ExtractorService.List(uint(endpointInterfaceId))
+
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data})
+	ret := []interface{}{}
+	for _, item := range data {
+		ret = append(ret, item)
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: ret})
 }
 
 // Get 详情

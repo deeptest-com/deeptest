@@ -1,7 +1,7 @@
 package handler
 
 import (
-	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	"github.com/kataras/iris/v12"
@@ -18,7 +18,7 @@ type ParserCtrl struct {
 
 // ParseHtml
 func (c *ParserCtrl) ParseHtml(ctx iris.Context) {
-	req := v1.ParserRequest{}
+	req := serverDomain.ParserRequest{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
@@ -36,7 +36,7 @@ func (c *ParserCtrl) ParseHtml(ctx iris.Context) {
 
 // ParseXml
 func (c *ParserCtrl) ParseXml(ctx iris.Context) {
-	req := v1.ParserRequest{}
+	req := serverDomain.ParserRequest{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
@@ -54,7 +54,7 @@ func (c *ParserCtrl) ParseXml(ctx iris.Context) {
 
 // ParseJson
 func (c *ParserCtrl) ParseJson(ctx iris.Context) {
-	req := v1.ParserRequest{}
+	req := serverDomain.ParserRequest{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
@@ -72,7 +72,7 @@ func (c *ParserCtrl) ParseJson(ctx iris.Context) {
 
 // ParseText
 func (c *ParserCtrl) ParseText(ctx iris.Context) {
-	req := v1.ParserRequest{}
+	req := serverDomain.ParserRequest{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
@@ -90,7 +90,7 @@ func (c *ParserCtrl) ParseText(ctx iris.Context) {
 
 // TestExpr
 func (c *ParserCtrl) TestExpr(ctx iris.Context) {
-	req := v1.TestExprRequest{}
+	req := serverDomain.TestExprRequest{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})

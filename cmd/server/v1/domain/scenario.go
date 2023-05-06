@@ -1,4 +1,4 @@
-package domain
+package serverDomain
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
@@ -10,7 +10,7 @@ import (
 type ScenarioReqPaginate struct {
 	_domain.PaginateReq
 
-	CategoryId uint   `json:"categoryId"`
+	CategoryId int64  `json:"categoryId"`
 	Keywords   string `json:"keywords"`
 	Enabled    string `json:"enabled"`
 }

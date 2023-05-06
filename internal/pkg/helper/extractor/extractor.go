@@ -1,7 +1,6 @@
 package extractorHelper
 
 import (
-	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	queryUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/query"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
@@ -9,7 +8,7 @@ import (
 	"strings"
 )
 
-func Extract(extractor domain.ExtractorBase, resp v1.DebugResponse) (result string, err error) {
+func Extract(extractor domain.ExtractorBase, resp domain.DebugResponse) (result string, err error) {
 	if extractor.Disabled {
 		result = ""
 		return

@@ -1,9 +1,23 @@
 package domain
 
-type GlobalEnvVars map[string]interface{}
-type GlobalParamVars map[string]interface{}
+import "github.com/aaronchen2k/deeptest/internal/pkg/consts"
 
-type EnvVars map[string]interface{}
-type ShareVars map[string]interface{}
+type GlobalVar struct {
+	Name        string `json:"name"`
+	RightValue  string `json:"rightValue"`
+	LocalValue  string `json:"localValue"`
+	RemoteValue string `json:"remoteValue"`
+}
+type GlobalParam struct {
+	Name         string           `json:"name"`
+	Type         consts.ParamType `json:"type"`
+	In           consts.ParamIn   `json:"in"`
+	Required     bool             `json:"Required"`
+	DefaultValue string           `json:"defaultValue"`
+}
 
-type Datapools map[string][]map[string]interface{}
+type InterfaceToEnvMap map[uint]uint               // interfaceId -> envId
+type EnvToVariables map[uint][]GlobalVar           // envId -> vars
+type Datapools map[string][]map[string]interface{} // datapoolName -> obj array
+
+type VarKeyValuePair map[string]interface{}

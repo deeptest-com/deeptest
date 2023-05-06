@@ -23,6 +23,7 @@ func (i *interfaces2debug) Convert() (debugInterface *model.DebugInterface) {
 	copier.CopyWithOption(debugInterface, &i.Inter, copier.Option{DeepCopy: true})
 
 	debugInterface.ID = 0
+
 	debugInterface.BodyFormData = i.BodyFormData()
 	debugInterface.BodyFormUrlencoded = i.BodyFormUrlencoded()
 	debugInterface.Body = i.Body()

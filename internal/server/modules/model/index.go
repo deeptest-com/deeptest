@@ -117,5 +117,6 @@ var (
 		&ProjectRoleMenu{},
 		&ProjectMenu{},
 		&ProjectRecentlyVisited{},
+		&ProjectMemberAudit{},
 	}
 )

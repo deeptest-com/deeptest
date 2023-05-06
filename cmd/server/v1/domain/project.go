@@ -1,4 +1,4 @@
-package domain
+package serverDomain
 
 import (
 	"github.com/aaronchen2k/deeptest/pkg/domain"
@@ -46,4 +46,14 @@ type UpdateProjectMemberReq struct {
 	ProjectId     uint `json:"projectId"`
 	ProjectRoleId uint `json:"projectRoleId"`
 	UserId        uint `json:"userId"`
+}
+
+type ApplyProjectReq struct {
+	ProjectId   uint `json:"projectId"`
+	ApplyUserId uint `json:"applyUserId"`
+}
+
+type AuditProjectReq struct {
+	ProjectId uint `json:"projectId"`
+	Status    uint `json:"status"`
 }

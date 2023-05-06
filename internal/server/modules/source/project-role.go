@@ -20,7 +20,7 @@ func (s *ProjectRoleSource) GetSources() (sources []model.ProjectRole, err error
 	sources = []model.ProjectRole{
 		{
 			Name:        consts.Admin,
-			DisplayName: "管理员",
+			DisplayName: "项目负责人",
 		},
 		{
 			Name:        consts.User,
@@ -37,10 +37,6 @@ func (s *ProjectRoleSource) GetSources() (sources []model.ProjectRole, err error
 		{
 			Name:        consts.ProductManager,
 			DisplayName: "产品经理",
-		},
-		{
-			Name:        consts.ProjectLeader,
-			DisplayName: "项目负责人",
 		},
 	}
 	return

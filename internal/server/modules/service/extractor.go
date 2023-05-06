@@ -1,9 +1,9 @@
 package service
 
 import (
-	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	extractorHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/extractor"
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/helper/extractor"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
@@ -16,8 +16,8 @@ type ExtractorService struct {
 	ShareVarService *ShareVarService `inject:""`
 }
 
-func (s *ExtractorService) List(interfaceId uint, usedBy consts.UsedBy) (extractors []model.DebugInterfaceExtractor, err error) {
-	extractors, err = s.ExtractorRepo.List(interfaceId)
+func (s *ExtractorService) List(endpointInterfaceId uint) (extractors []model.DebugInterfaceExtractor, err error) {
+	extractors, err = s.ExtractorRepo.List(endpointInterfaceId)
 
 	return
 }
@@ -52,18 +52,18 @@ func (s *ExtractorService) Delete(reqId uint) (err error) {
 	return
 }
 
-func (s *ExtractorService) ExtractInterface(interfaceId, serveId, scenarioId uint, resp v1.DebugResponse, usedBy consts.UsedBy) (err error) {
+func (s *ExtractorService) ExtractInterface(interfaceId, serveId, processorId, scenarioId uint, resp domain.DebugResponse, usedBy consts.UsedBy) (err error) {
 	extractors, _ := s.ExtractorRepo.List(interfaceId)
 
 	for _, extractor := range extractors {
 		s.Extract(&extractor, resp, usedBy)
-		s.ShareVarService.Save(extractor.Variable, extractor.Result, interfaceId, serveId, scenarioId, extractor.Scope, usedBy)
+		s.ShareVarService.Save(extractor.Variable, extractor.Result, interfaceId, serveId, processorId, scenarioId, extractor.Scope, usedBy)
 	}
 
 	return
 }
 
-func (s *ExtractorService) Extract(extractor *model.DebugInterfaceExtractor, resp v1.DebugResponse,
+func (s *ExtractorService) Extract(extractor *model.DebugInterfaceExtractor, resp domain.DebugResponse,
 	usedBy consts.UsedBy) (err error) {
 
 	extractor.Result, err = extractorHelper.Extract(extractor.ExtractorBase, resp)
@@ -76,13 +76,13 @@ func (s *ExtractorService) Extract(extractor *model.DebugInterfaceExtractor, res
 	return
 }
 
-func (s *ExtractorService) ListExtractorVariableByInterface(interfaceId int) (variables []v1.Variable, err error) {
+func (s *ExtractorService) ListExtractorVariableByInterface(interfaceId int) (variables []domain.Variable, err error) {
 	variables, err = s.ExtractorRepo.ListExtractorVariableByInterface(uint(interfaceId))
 
 	return
 }
 
-func (s *ExtractorService) ListValidExtractorVarForInterface(interfaceId int, usedBy consts.UsedBy) (variables []v1.Variable, err error) {
+func (s *ExtractorService) ListValidExtractorVarForInterface(interfaceId int, usedBy consts.UsedBy) (variables []domain.Variable, err error) {
 	interf, _ := s.InterfaceRepo.Get(uint(interfaceId))
 
 	variables, err = s.ExtractorRepo.ListValidExtractorVariableForInterface(uint(interfaceId), interf.ProjectId, usedBy)

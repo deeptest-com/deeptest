@@ -1,16 +1,15 @@
 package handler
 
 import (
-	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/core/web/validate"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
-	"strings"
-
 	"github.com/kataras/iris/v12"
 	"go.uber.org/zap"
+	"strings"
 )
 
 type ScenarioCtrl struct {
@@ -18,14 +17,14 @@ type ScenarioCtrl struct {
 	BaseCtrl
 }
 
-func (c *ScenarioCtrl) ListByServe(ctx iris.Context) {
-	serveId, err := ctx.URLParamInt("serveId")
-	if serveId == 0 {
+func (c *ScenarioCtrl) ListByProject(ctx iris.Context) {
+	projectId, err := ctx.URLParamInt("currProjectId")
+	if projectId == 0 {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
-	res, err := c.ScenarioService.ListByServe(serveId)
+	res, err := c.ScenarioService.ListByProject(projectId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -43,7 +42,7 @@ func (c *ScenarioCtrl) List(ctx iris.Context) {
 		return
 	}
 
-	var req v1.ScenarioReqPaginate
+	var req serverDomain.ScenarioReqPaginate
 	err = ctx.ReadQuery(&req)
 	if err != nil {
 		errs := validate.ValidRequest(err)

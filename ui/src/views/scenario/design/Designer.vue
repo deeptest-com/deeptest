@@ -18,7 +18,6 @@ import {useI18n} from "vue-i18n";
 import {Form} from 'ant-design-vue';
 import {useStore} from "vuex";
 
-import {StateType} from "@/views/interface1/store";
 import {useRouter} from "vue-router";
 import {UsedBy} from "@/utils/enum";
 
@@ -29,7 +28,6 @@ provide('usedBy', UsedBy.ScenarioDebug)
 const useForm = Form.useForm;
 
 const {t} = useI18n();
-const store = useStore<{ Interface: StateType }>();
 
 const id = ref(+router.currentRoute.value.params.id)
 

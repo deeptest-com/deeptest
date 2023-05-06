@@ -1,7 +1,7 @@
 package handler
 
 import (
-	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
@@ -64,7 +64,7 @@ func (c *CategoryCtrl) Create(ctx iris.Context) {
 		return
 	}
 
-	req := v1.CategoryCreateReq{}
+	req := serverDomain.CategoryCreateReq{}
 	err = ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
@@ -86,7 +86,7 @@ func (c *CategoryCtrl) Create(ctx iris.Context) {
 
 // Update 更新
 func (c *CategoryCtrl) Update(ctx iris.Context) {
-	req := v1.CategoryReq{}
+	req := serverDomain.CategoryReq{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
@@ -104,7 +104,7 @@ func (c *CategoryCtrl) Update(ctx iris.Context) {
 
 // UpdateName 更新
 func (c *CategoryCtrl) UpdateName(ctx iris.Context) {
-	var req v1.CategoryReq
+	var req serverDomain.CategoryReq
 	err := ctx.ReadJSON(&req)
 	if err != nil {
 		logUtils.Errorf("参数验证失败", err.Error())
@@ -142,7 +142,7 @@ func (c *CategoryCtrl) Delete(ctx iris.Context) {
 func (c *CategoryCtrl) Move(ctx iris.Context) {
 	projectId, _ := ctx.URLParamInt("currProjectId")
 
-	var req v1.CategoryMoveReq
+	var req serverDomain.CategoryMoveReq
 	err := ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})

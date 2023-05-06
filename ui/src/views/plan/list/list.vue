@@ -41,8 +41,19 @@
           </template>
 
           <template #action="{ record }">
-            <a-button type="link" @click="() => exec(record.id)">执行</a-button>
-            <a-button type="link" @click="() => remove(record.id)">删除</a-button>
+            <a-dropdown>
+              <MoreOutlined />
+              <template #overlay>
+                <a-menu>
+                  <a-menu-item key="1">
+                    <a class="operation-a" href="javascript:void (0)" @click="exec(record.id)">执行</a>
+                  </a-menu-item>
+                  <a-menu-item key="2">
+                    <a class="operation-a" href="javascript:void (0)" @click="remove(record.id)">删除</a>
+                  </a-menu-item>
+                </a-menu>
+              </template>
+            </a-dropdown>
           </template>
 
         </a-table>
@@ -52,42 +63,36 @@
     </a-card>
   </div>
 
-  <a-drawer
-      :closable="true"
-      :width="1000"
-      :key="currModel.id"
-      :visible="createDrawerVisible"
-  >
-    <template #title>
-      <div class="drawer-header">
-        <div>新建计划</div>
-      </div>
-    </template>
-    <div class="drawer-content">
-      <PlanCreate
-          :categoryId="nodeDataCategory.id"
-          :onSaved="onSaved">
-      </PlanCreate>
-    </div>
-  </a-drawer>
+  <a-modal 
+    title="新建计划"
+    :visible="createDrawerVisible"
+    class="scenario-edit"
+    :footer="null"
+    :closable="true"
+    @cancel="createDrawerVisible = false"
+    width="600px">
+    <PlanCreate
+      :categoryId="nodeDataCategory.id"
+      :onSaved="onFinish">
+    </PlanCreate>
+  </a-modal>
 
   <a-drawer
       :closable="true"
       :width="1000"
       :key="currModel.id"
       :visible="editDrawerVisible"
-      @close="onEditFinish"
-  >
+      @close="onFinish">
     <template #title>
       <div class="drawer-header">
-        <div>计划编辑</div>
+        <div>编辑计划</div>
       </div>
     </template>
     <div class="drawer-content">
       <PlanEdit
           :modelId="currModel.id"
           :categoryId="nodeDataCategory.id"
-          :onFieldSaved="onFieldSaved">
+          :onSaved="onFinish">
       </PlanEdit>
     </div>
   </a-drawer>
@@ -97,6 +102,7 @@
 <script setup lang="ts">
 import {computed, onMounted, reactive, ref, UnwrapRef, watch} from "vue";
 import { Empty } from 'ant-design-vue';
+import { MoreOutlined } from "@ant-design/icons-vue";
 import {SelectTypes} from 'ant-design-vue/es/select';
 import {PaginationConfig, QueryParams, Plan} from '../data.d';
 import {useStore} from "vuex";
@@ -186,11 +192,6 @@ const create = () => {
   console.log('create')
   createDrawerVisible.value = true;
 }
-const onSaved = () => {
-  console.log('onSaved')
-  getList(pagination.value.current, nodeDataCategory.value.id)
-  createDrawerVisible.value = false
-}
 
 const editDrawerVisible = ref(false);
 const editFormState: UnwrapRef<FormState> = reactive({
@@ -209,13 +210,11 @@ const edit = (record) => {
   editFormState.serveId = record.id;
 }
 
-const onFieldSaved = () => {
-  console.log('onFieldSaved')
-  getList(pagination.value.current, nodeDataCategory.value.id)
-}
-const onEditFinish = () => {
+const onFinish = () => {
   console.log('onEditFinish')
-  getList(pagination.value.current, nodeDataCategory.value.id)
+
+  getList(1, nodeDataCategory.value.id);
+  createDrawerVisible.value = false
   editDrawerVisible.value = false
 }
 
@@ -252,13 +251,8 @@ const onSearch = debounce(() => {
 
 const columns = [
   {
-    title: '序号',
-    dataIndex: 'index',
-    width: 80,
-    customRender: ({
-                     text,
-                     index
-                   }: { text: any; index: number }) => (pagination.value.current - 1) * pagination.value.pageSize + index + 1,
+    title: '编号',
+    dataIndex: 'serialNumber',
   },
   {
     title: '名称',
@@ -268,6 +262,7 @@ const columns = [
   {
     title: '描述',
     dataIndex: 'desc',
+    ellipsis: true,
   },
   {
     title: '状态',
@@ -277,7 +272,7 @@ const columns = [
   {
     title: '操作',
     key: 'action',
-    width: 200,
+    width: 80,
     slots: {customRender: 'action'},
   },
 ];
@@ -289,7 +284,9 @@ onMounted(() => {
 </script>
 
 <style lang="less" scoped>
-.plan-list-main {
-
+.operation-a {
+  text-align: center;
+  display: inline-block;
+  width: 80px;
 }
 </style>

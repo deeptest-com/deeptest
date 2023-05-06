@@ -1,6 +1,6 @@
 <template>
   <div class="report-main">
-    <TableFilter :executor-options="[]" />
+    <TableFilter :executor-options="members || []" @get-list="getList" />
 
     <div>
       <a-table 
@@ -11,11 +11,11 @@
         :pagination="{
           ...pagination,
           onChange: (page) => {
-            getList(page);
+            getList({ page });
           },
           onShowSizeChange: (page, size) => {
             pagination.pageSize = size
-            getList(page);
+            getList({ page });
           },
         }" 
         :row-selection="{
@@ -23,17 +23,23 @@
           onChange: onSelectChange
         }" 
         class="dp-table">
-        <template #executor="{ record }">
-          <span>{{ record.executor }}</span>
+        <template #serialNumber="{ record }">
+          <span style="cursor: pointer">{{ record.serialNumber }}</span>
+        </template>
+        <template #interfacePassRate="{ record }">
+          <span>{{ record.interfacePassRate }}</span>
+        </template>
+        <template #createUserName="{ record }">
+          <span>{{ record.createUserName }}</span>
         </template>
         <template #execPlan="{ record }">
           <span class="report-planname">{{ record.name }}</span>
         </template>
-        <template #executiveTime="{ record }">
-          <span>{{ momentUtc(record.executiveTime) }}</span>
+        <template #duration="{ record }">
+          <span>{{ record.duration * 1000 }}ms</span>
         </template>
         <template #executionTime="{ record }">
-          <span>{{ record.executionTime }}</span>
+          <span>{{ momentUtc(record.startTime) }}</span>
         </template>
 
         <template #action="{ record }">
@@ -69,45 +75,46 @@ import { MoreOutlined } from "@ant-design/icons-vue";
 import TableFilter from "../components/TableFilter.vue";
 import LogDetail from "../components/Log.vue";
 import { StateType as ProjectStateType } from "@/store/project";
-import { StateType as ScenarioStateType } from "@/views/scenario/store";
 import { StateType } from "@/views/report/store";
-import { PaginationConfig, QueryParams, Report } from "@/views/report/data";
-import { query } from "@/views/scenario/service";
+import { PaginationConfig, Report } from "@/views/report/data";
 import { NotificationKeyCommon } from "@/utils/const";
 import { momentUtc } from "@/utils/datetime";
 
-const store = useStore<{ Report: StateType, Scenario: ScenarioStateType, ProjectGlobal: ProjectStateType }>();
+const store = useStore<{ Report: StateType, ProjectGlobal: ProjectStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const list = computed<Report[]>(() => store.state.Report.listResult.list);
+const members = computed<Report[]>(() => store.state.Report.members);
 let pagination = computed<PaginationConfig>(() => store.state.Report.listResult.pagination);
 
 const selectedRowKeys = ref<Key[]>([]);
-let queryParams = reactive<QueryParams>({
-  keywords: '', scenarioId: '0',
-  page: pagination.value.current, pageSize: pagination.value.pageSize
-});
-const reportDetailVisible = ref(true);
+const reportDetailVisible = ref(false);
+const queryParams = {
+  currProjectId: 0,
+  executeStartTime: '',
+  executeEndTime: '',
+  keywords: '',
+  page: 1,
+  pageSize: pagination.value.pageSize || 20,
+};
 
 type Key = ColumnProps['key'];
 
-watch(currProject, () => {
-  // getList(1);
-}, { deep: false })
 
 const columns = [
   {
     title: '编号',
-    dataIndex: 'number',
+    dataIndex: 'serialNumber',
+    slots: { customRender: 'serialNumber' },
     width: 80
   },
   {
     title: '测试通过率',
-    dataIndex: 'execRate',
+    dataIndex: 'interfacePassRate',
     width: 120,
   },
   {
     title: '执行人',
-    dataIndex: 'executor',
+    dataIndex: 'createUserName',
     width: 80,
   },
   {
@@ -118,9 +125,9 @@ const columns = [
   },
   {
     title: '执行耗时',
-    dataIndex: 'executiveTime',
+    dataIndex: 'duration',
     width: 200,
-    slots: { customRender: 'executiveTime' },
+    slots: { customRender: 'duration' },
   },
   {
     title: '执行时间',
@@ -136,27 +143,23 @@ const columns = [
   },
 ];
 
-onMounted(() => {
-  // getList(1);
-})
-
-const scenarios = ref([] as any[])
-query().then(json => {
-  scenarios.value = json.data.result
-})
-
 const loading = ref<boolean>(false);
-const getList = async (current: number): Promise<void> => {
+const getListInfo = () => {
+  getMember();
+  getList({ page: 1 });
+}
+const getList = async (params: any): Promise<void> => {
   loading.value = true;
 
   await store.dispatch('Report/list', {
-    keywords: queryParams.keywords,
-    scenarioId: queryParams.scenarioId,
-    pageSize: pagination.value.pageSize,
-    page: current,
-    order: 'desc',
+    ...queryParams,
+    ...params
   });
   loading.value = false;
+}
+
+const getMember = async (): Promise<void> => {
+  await store.dispatch('Report/getMembers', currProject.value.id)
 }
 
 const onSelectChange = (keys: Key[], rows: any) => {
@@ -196,8 +199,15 @@ const handleDelete = (id: number) => {
 }
 
 const onSearch = debounce(() => {
-  getList(1)
+  // getList(1)
 }, 500);
+
+watch(currProject, (val) => {
+  console.log(val);
+  if (val.id) {
+    getListInfo();
+  }
+}, { immediate: true })
 
 </script>
 

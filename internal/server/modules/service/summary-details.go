@@ -83,14 +83,14 @@ func (s *SummaryDetailsService) Details(userId int64) (res v1.ResSummaryDetail, 
 	var currentUserDetails []model.SummaryDetails
 
 	//收集结果
-	res.AllProjectTotal, err = s.Count()
-	res.CurrentUserProjectTotal, err = s.CountByUserId(userId)
+	res.ProjectTotal, err = s.Count()
+	res.UserProjectTotal, err = s.CountByUserId(userId)
 	projectIds, err := s.FindProjectIdsByUserId(userId)
 	allDetails, err = s.Find()
 	currentUserDetails, err = s.FindByProjectIds(projectIds)
 	//组装返回的json结构体
-	res.AllProjectList, err = s.CopyDetails(allDetails)
-	res.CurrentUserProjectList, err = s.CopyDetails(currentUserDetails)
+	res.ProjectList, err = s.CopyDetails(allDetails)
+	res.UserProjectList, err = s.CopyDetails(currentUserDetails)
 	return
 }
 
@@ -265,14 +265,10 @@ func (s *SummaryDetailsService) CopyDetailsWithoutBaseModel(detail model.Summary
 	newDetail.ScenarioTotal = detail.ScenarioTotal
 	newDetail.ProjectId = detail.ProjectId
 	newDetail.Coverage = detail.Coverage
-	newDetail.ProjectChineseName = detail.ProjectChineseName
-	newDetail.ProjectName = detail.ProjectName
-	newDetail.ProjectCreateTime = detail.ProjectCreateTime
-	newDetail.AdminUser = detail.AdminUser
+	newDetail.AdminName = detail.AdminName
 	newDetail.ExecTotal = detail.ExecTotal
 	newDetail.PassRate = detail.PassRate
 	newDetail.InterfaceTotal = detail.InterfaceTotal
-	newDetail.ProjectDes = detail.ProjectDes
 	ret = newDetail
 	return
 }

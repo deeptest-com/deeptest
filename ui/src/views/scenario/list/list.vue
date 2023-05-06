@@ -39,11 +39,25 @@
           </template>
 
           <template #action="{ record }">
-            <a-button type="link" @click="() => exec(record.id)">执行</a-button>
-
-            <a-button type="link" @click="() => design(record.id)">设计</a-button>
-            <a-button type="link" @click="() => edit(record.id)">编辑</a-button>
-            <a-button type="link" @click="() => remove(record.id)">删除</a-button>
+            <a-dropdown>
+              <MoreOutlined />
+              <template #overlay>
+                <a-menu>
+                  <a-menu-item key="1">
+                    <a class="operation-a" href="javascript:void (0)" @click="exec(record.id)">执行</a>
+                  </a-menu-item>
+                  <a-menu-item key="2">
+                    <a class="operation-a" href="javascript:void (0)" @click="design(record.id)">设计</a>
+                  </a-menu-item>
+                  <a-menu-item key="3">
+                    <a class="operation-a" href="javascript:void (0)" @click="edit(record.id)">编辑</a>
+                  </a-menu-item>
+                  <a-menu-item key="4">
+                    <a class="operation-a" href="javascript:void (0)" @click="remove(record.id)">删除</a>
+                  </a-menu-item>
+                </a-menu>
+              </template>
+            </a-dropdown>
           </template>
 
         </a-table>
@@ -72,6 +86,7 @@
 <script setup lang="ts">
 import {computed, onMounted, reactive, ref, watch} from "vue";
 import { Empty } from 'ant-design-vue';
+import { MoreOutlined } from "@ant-design/icons-vue";
 import {SelectTypes} from 'ant-design-vue/es/select';
 import {PaginationConfig, QueryParams, Scenario} from '../data.d';
 import {useStore} from "vuex";
@@ -207,7 +222,6 @@ const columns = [
     title: '名称',
     dataIndex: 'name',
     slots: {customRender: 'name'},
-    width: 120,
     ellipsis: true,
   },
   {
@@ -219,12 +233,11 @@ const columns = [
     title: '状态',
     dataIndex: 'status',
     slots: {customRender: 'status'},
-    width: 120
   },
   {
     title: '操作',
     key: 'action',
-    width: 200,
+    width: 80,
     slots: {customRender: 'action'},
   },
 ];
@@ -236,7 +249,10 @@ onMounted(() => {
 </script>
 
 <style lang="less" scoped>
-.scenario-list-main {
 
+.operation-a {
+  text-align: center;
+  display: inline-block;
+  width: 80px;
 }
 </style>

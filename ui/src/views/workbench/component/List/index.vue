@@ -190,11 +190,11 @@ const remove = (id: number) => {
 
 watch(
   () => {
-    return currProject.value.id;
+    return currProject.value;
   },
   (val: any) => {
-    console.log("~------currProject---", currProject.value.id);
-    if (val) {
+    console.log("~------currProject---", val);
+    if (val.id) {
       getList(1);
     }
   },

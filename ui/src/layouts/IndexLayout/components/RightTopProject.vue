@@ -94,8 +94,6 @@ const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 
 store.dispatch("User/fetchMessage");
 store.dispatch("ProjectGlobal/fetchProject");
-store.dispatch("ServeGlobal/fetchServe");
-
 
 const keyword = ref('');
 const dropdownVisible = ref(false);
@@ -157,6 +155,17 @@ onMounted(() => {
 onUnmounted(() => {
   document.removeEventListener('click', handleClickOut);
 });
+
+/**
+ * fixed: 保证选中项目不为空之后，再fetchServe列表，避免由于currProjectId=NaN导致服务列表返回异常问题
+ */
+watch(() => {
+  return currProject.value;
+}, (val: any) => {
+  if (val.id) {
+    store.dispatch("ServeGlobal/fetchServe");
+  }
+})
 
 </script>
 

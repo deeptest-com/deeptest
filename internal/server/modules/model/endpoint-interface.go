@@ -3,12 +3,12 @@ package model
 type EndpointInterface struct {
 	BaseModel
 	InterfaceBase
-
 	Params         []EndpointInterfaceParam        `gorm:"-" json:"params"`
 	Headers        []EndpointInterfaceHeader       `gorm:"-" json:"headers"`
 	Cookies        []EndpointInterfaceCookie       `gorm:"-" json:"cookies"`
 	RequestBody    EndpointInterfaceRequestBody    `gorm:"-" json:"requestBody"`
 	ResponseBodies []EndpointInterfaceResponseBody `gorm:"-" json:"responseBodies"`
+	ResponseCodes  string                          `json:"responseCodes"`
 }
 type SchemaParam struct {
 	Name        string  `json:"name"`

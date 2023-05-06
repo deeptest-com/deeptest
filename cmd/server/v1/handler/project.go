@@ -209,3 +209,48 @@ func (c *ProjectCtrl) ChangeUserRole(ctx iris.Context) {
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 }
+
+func (c *ProjectCtrl) Apply(ctx iris.Context) {
+	req := serverDomain.ApplyProjectReq{}
+	err := ctx.ReadJSON(&req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	err = c.ProjectService.Apply(req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+}
+
+func (c *ProjectCtrl) Audit(ctx iris.Context) {
+	req := serverDomain.AuditProjectReq{}
+	err := ctx.ReadJSON(&req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	userId := multi.GetUserId(ctx)
+	err = c.ProjectService.Audit(req.ProjectId, userId, req.Status)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+}
+
+func (c *ProjectCtrl) AuditList(ctx iris.Context) {
+	userId := multi.GetUserId(ctx)
+	res, err := c.ProjectService.AuditList(userId)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: res, Msg: err.Error()})
+		return
+	}
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+}

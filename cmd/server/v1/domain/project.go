@@ -47,3 +47,13 @@ type UpdateProjectMemberReq struct {
 	ProjectRoleId uint `json:"projectRoleId"`
 	UserId        uint `json:"userId"`
 }
+
+type ApplyProjectReq struct {
+	ProjectId   uint `json:"projectId"`
+	ApplyUserId uint `json:"applyUserId"`
+}
+
+type AuditProjectReq struct {
+	ProjectId uint `json:"projectId"`
+	Status    uint `json:"status"`
+}

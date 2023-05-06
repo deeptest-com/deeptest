@@ -14,7 +14,7 @@ type CategoryService struct {
 
 func (s *CategoryService) GetTree(typ serverConsts.CategoryDiscriminator, projectId, serveId int) (root *v1.Category, err error) {
 	root, err = s.CategoryRepo.GetTree(typ, uint(projectId), uint(serveId))
-
+	//root.Children = append(root.Children, &v1.Category{Id: -1, Name: "未分类", ParentId: root.Id})
 	return
 }
 

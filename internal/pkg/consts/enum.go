@@ -578,3 +578,11 @@ const (
 func (e ParamIn) String() string {
 	return string(e)
 }
+
+type AuditStatus uint
+
+const (
+	Init    AuditStatus = 0
+	Agreed  AuditStatus = 1
+	Refused AuditStatus = 2
+)

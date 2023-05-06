@@ -91,6 +91,22 @@ func (s *ProjectService) GetCurrProjectByUser(userId uint) (currProject model.Pr
 	return
 }
 
+func (s *ProjectService) Apply(req v1.ApplyProjectReq) (err error) {
+	var project model.Project
+	project, err = s.ProjectRepo.Get(req.ProjectId)
+	err = s.ProjectRepo.SaveAudit(model.ProjectMemberAudit{ProjectId: req.ProjectId, ApplyUserId: req.ApplyUserId, AuditUserId: project.AdminId})
+	return
+}
+
+func (s *ProjectService) Audit(id, auditUserId, status uint) (err error) {
+	err = s.ProjectRepo.UpdateStatus(id, auditUserId, status)
+	return
+}
+
+func (s *ProjectService) AuditList(auditUserId uint) (res []model.ProjectMemberAudit, err error) {
+	return s.ProjectRepo.GetAuditList(auditUserId)
+}
+
 /*
 func (s *ProjectService) createSample(projectId uint) (err error) {
 	serve, endpoint, _ := s.SampleSource.GetSources()

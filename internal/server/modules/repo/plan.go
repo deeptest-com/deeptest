@@ -29,7 +29,7 @@ func (r *PlanRepo) Paginate(req v1.PlanReqPaginate, projectId int) (data _domain
 	var categoryIds []uint
 
 	if req.CategoryId > 0 {
-		categoryIds, err = r.BaseRepo.GetAllChildIds(req.CategoryId, model.Category{}.TableName(),
+		categoryIds, err = r.BaseRepo.GetAllChildIds(uint(req.CategoryId), model.Category{}.TableName(),
 			serverConsts.PlanCategory, projectId)
 		if err != nil {
 			return
@@ -42,6 +42,8 @@ func (r *PlanRepo) Paginate(req v1.PlanReqPaginate, projectId int) (data _domain
 
 	if len(categoryIds) > 0 {
 		db.Where("category_id IN(?)", categoryIds)
+	} else if req.CategoryId == -1 {
+		db.Where("category_id IN(?)", -1)
 	}
 
 	if req.Keywords != "" {

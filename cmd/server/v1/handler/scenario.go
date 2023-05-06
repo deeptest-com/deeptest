@@ -7,10 +7,9 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
-	"strings"
-
 	"github.com/kataras/iris/v12"
 	"go.uber.org/zap"
+	"strings"
 )
 
 type ScenarioCtrl struct {

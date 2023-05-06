@@ -57,10 +57,10 @@ func (r *CategoryRepo) Get(id uint) (po model.Category, err error) {
 func (r *CategoryRepo) toTos(pos []*model.Category) (tos []*v1.Category) {
 	for _, po := range pos {
 		to := v1.Category{
-			Id:       po.ID,
+			Id:       int64(po.ID),
 			Name:     po.Name,
 			Desc:     po.Desc,
-			ParentId: po.ParentId,
+			ParentId: int64(po.ParentId),
 		}
 
 		tos = append(tos, &to)

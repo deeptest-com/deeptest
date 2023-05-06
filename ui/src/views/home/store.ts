@@ -77,17 +77,11 @@ const StoreModel: ModuleType = {
                 if (response.code != 0) return;
 
                 const data = response.data;
-                // data.current_user_project_list.push({type:'add'})
-                // data.all_project_list.push({type:'add'})
+              
                 commit('setList',{
                     ...initState.queryResult,
                     list: data || [],
-                    // pagination: {
-                    //     ...initState.queryResult.pagination,
-                    //     current: params.page,
-                    //     pageSize: params.pageSize,
-                    //     total: data.project_total || 0,
-                    // },
+                 
                 });
                 commit('setLoading',{
                     loading:false

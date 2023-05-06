@@ -19,7 +19,7 @@
           <template #overlay>
             <a-menu>
               <a-menu-item key="1">
-                <a-button style="width: 80px" type="link" size="small"
+                <a-button style="width: 80px" @click="handleEdit(record)" type="link" size="small"
                   >编辑</a-button
                 >
               </a-menu-item>
@@ -33,7 +33,7 @@
                   style="width: 80px"
                   type="link"
                   size="small"
-                  @click="del(record)"
+                  @click="handleDelete(record.project_id)"
                   >删除</a-button
                 >
               </a-menu-item>
@@ -47,7 +47,7 @@
 
 
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref, defineProps, watch } from "vue";
+import { computed, onMounted, reactive, ref, defineProps,defineEmits, watch } from "vue";
 import debounce from "lodash.debounce";
 import { PaginationConfig, QueryParams } from "../../data.d";
 import { SelectTypes } from "ant-design-vue/es/select";
@@ -69,6 +69,7 @@ const projects = computed<any>(() => store.state.ProjectGlobal.projects);
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const currentUser = computed<any>(() => store.state.User.currentUser);
 const list = computed<any>(() => store.state.Home.queryResult.list);
+const projectLoading = computed<any>(() => store.state.Home.loading);
 const loading = ref<boolean>(false);
 const showMode = ref("list");
 const activeKey = ref(1);
@@ -82,11 +83,13 @@ const props = defineProps({
   },
 });
 
+const total = ref(0);
 let queryParams = reactive<QueryParams>({
   keywords: "",
 
 });
-
+//暴露内部方法
+const emit = defineEmits(["edit", "delete"]);
 const columns = [
   // {
   //   title: '序号',
@@ -152,27 +155,53 @@ const columns = [
     slots: {customRender: 'action'},
   },
 ];
-
-
+// 监听项目数据变化
+watch(
+  () => {
+    return list.value;
+  },
+  async (newVal) => {
+    console.log("watch list.value", list.value);
+    fetch(list.value.current_user_project_list);
+  },
+  {
+    immediate: true,
+  }
+);
+// 监听我的项目、所有项目切换
 watch(
   () => {
     return props.activeKey;
   },
-  (newVal) => {
-   
+  async (newVal) => {
     if (newVal == 1) {
-     
-      tableList.value = list.value.current_user_project_list;
+      fetch(list.value.current_user_project_list);
     } else {
-      tableList.value = list.value.all_project_list;
-         
+      fetch(list.value.all_project_list);
     }
   },
   {
     immediate: true,
   }
 );
-
+// 监听项目loading变化
+watch(
+  () => {
+    return projectLoading.value;
+  },
+  async (newVal) => {
+    loading.value = projectLoading.value.loading;
+  },
+  {
+    immediate: true,
+  }
+);
+async function fetch(data) {
+  tableList.value = data;
+  if (tableList.value && tableList.value.length > 0) {
+    total.value = tableList.value.length;
+  }
+}
 const getList = async (current: number): Promise<void> => {
  
   console.log("queryParams.keywords", queryParams.keywords);
@@ -210,13 +239,7 @@ const members = (id: number) => {
 
 const visible = ref(false);
 const currentProjectId = ref(0);
-const edit = (id: number) => {
-  console.log("edit");
-  //router.push(`/project/edit/${id}`)
-  currentProjectId.value = id;
-  console.log("currentProjectId", currentProjectId.value);
-  visible.value = true;
-};
+
 const handleOk = (e: MouseEvent) => {
   console.log(e);
   visible.value = false;
@@ -225,33 +248,13 @@ const handleOk = (e: MouseEvent) => {
 const closeModal = () => {
   visible.value = false;
 };
+async function handleEdit(item) {
+  emit("edit", item);
+}
+async function handleDelete(id) {
+  emit("delete", id);
+}
 
-const remove = (id: number) => {
-  console.log("remove");
-
-  Modal.confirm({
-    title: "删除项目",
-    content: "确定删除指定的项目？",
-    okText: "确认",
-    cancelText: "取消",
-    onOk: async () => {
-      store.dispatch("Home/removeProject", id).then((res) => {
-        console.log("res", res);
-        if (res === true) {
-          notification.success({
-            key: NotificationKeyCommon,
-            message: `删除成功`,
-          });
-        } else {
-          notification.error({
-            key: NotificationKeyCommon,
-            message: `删除失败`,
-          });
-        }
-      });
-    },
-  });
-};
 </script>
 
 <style lang="less" scoped>

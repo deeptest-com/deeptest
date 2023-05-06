@@ -21,7 +21,12 @@
           </a-radio-group>
         </template>
         <div>
-          <HomeList v-if="showMode == 'list'" :activeKey="activeKey" />
+          <HomeList
+            v-if="showMode == 'list'"
+            :activeKey="activeKey"
+            @edit="handleOpenEdit"
+            @delete="handleDelete"
+          />
 
           <CardList
             v-else

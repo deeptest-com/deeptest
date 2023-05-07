@@ -66,6 +66,12 @@ func (entity ProcessorLoop) Run(processor *Processor, session *Session) (err err
 
 func (entity *ProcessorLoop) runLoopItems(session *Session, processor *Processor, iterator agentDomain.ExecIterator) (err error) {
 	for _, item := range iterator.Items {
+		result := agentDomain.ScenarioExecResult{
+			ParentId: int(processor.ID),
+			Summary:  fmt.Sprintf("变量%s为%v", iterator.VariableName, item),
+		}
+		execUtils.SendExecMsg(result, session.WsMsg)
+
 		SetVariable(entity.ProcessorID, iterator.VariableName, item, consts.Public)
 
 		for _, child := range processor.Children {

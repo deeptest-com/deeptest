@@ -8,6 +8,12 @@ export enum VarScope {
     ScopePublic = "public",
 }
 
+export enum WsMsgCategory {
+    InProgress = "in_progress",
+    End = "end",
+    Result = "result",
+}
+
 export enum ProcessorCategory {
     ProcessorRoot = "processor_root",
     ProcessorThread = "processor_thread",

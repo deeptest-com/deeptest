@@ -91,6 +91,7 @@ import Log from "./Log.vue"
 import { momentShort } from "@/utils/datetime";
 import {useI18n} from "vue-i18n";
 import {getToken} from "@/utils/localToken";
+import {WsMsgCategory} from "@/utils/enum";
 const { t } = useI18n();
 
 const router = useRouter();
@@ -143,12 +144,15 @@ const OnWebSocketMsg = (data: any) => {
   if (!data.msg) return
 
   const wsMsg = JSON.parse(data.msg) as WsMsg
-  if (wsMsg.category == 'result') { // update result
+
+  if (wsMsg.category == WsMsgCategory.Result) { // update result
     result.value = wsMsg.data
     return
-  } else if (wsMsg.category != '') { // root
+  }
+
+  if (wsMsg.category) { // update status
     execResult.value.progressStatus = wsMsg.category
-    if (wsMsg.category === 'in_progress') result.value = {}
+    if (wsMsg.category === WsMsgCategory.InProgress) result.value = {}
     return
   }
 

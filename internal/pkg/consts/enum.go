@@ -27,7 +27,7 @@ type WsMsgCategory string
 const (
 	ProgressInProgress WsMsgCategory = "in_progress"
 	ProgressEnd        WsMsgCategory = "end"
-	Result             WsMsgCategory = "result"
+	ProgressResult     WsMsgCategory = "result"
 )
 
 func (e WsMsgCategory) String() string {
@@ -392,9 +392,9 @@ const (
 	ProcessorLogicElse ProcessorType = "processor_logic_else"
 
 	ProcessorLoopTime  ProcessorType = "processor_loop_time"
-	ProcessorLoopUntil ProcessorType = "processor_loop_until"
 	ProcessorLoopIn    ProcessorType = "processor_loop_in"
 	ProcessorLoopRange ProcessorType = "processor_loop_range"
+	ProcessorLoopUntil ProcessorType = "processor_loop_until"
 	ProcessorLoopBreak ProcessorType = "processor_loop_break"
 
 	ProcessorVariableSet ProcessorType = "processor_variable_set"

@@ -32,6 +32,7 @@
         <Log v-if="logTreeData.logs" :logs="logTreeData.logs"></Log>
       </div>
 
+      <br />
       <div v-if="result.startTime" class="result">
         <a-row>
           <a-col :span="4">开始时间</a-col>

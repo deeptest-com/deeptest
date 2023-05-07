@@ -68,7 +68,7 @@ func (entity *ProcessorLoop) runLoopItems(session *Session, processor *Processor
 	for _, item := range iterator.Items {
 		result := agentDomain.ScenarioExecResult{
 			ParentId: int(processor.ID),
-			Summary:  fmt.Sprintf("变量%s为%v", iterator.VariableName, item),
+			Summary:  fmt.Sprintf("次数变量%s为%v", iterator.VariableName, item),
 		}
 		execUtils.SendExecMsg(result, session.WsMsg)
 
@@ -97,7 +97,7 @@ func (entity *ProcessorLoop) runLoopUntil(session *Session, processor *Processor
 		if err != nil || !ok || pass {
 			childBreakProcessor := processor.AppendNewChildProcessor(consts.ProcessorLoop, consts.ProcessorLoopBreak)
 			childBreakProcessor.Result.WillBreak = true
-			childBreakProcessor.Result.Summary = "条件满足，跳出循环。"
+			childBreakProcessor.Result.Summary = fmt.Sprintf("条件%s满足，跳出循环。", expression)
 
 			childBreakProcessor.AddResultToParent()
 			execUtils.SendExecMsg(*childBreakProcessor.Result, session.WsMsg)

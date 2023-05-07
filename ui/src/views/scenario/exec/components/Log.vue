@@ -205,10 +205,10 @@ const joinArr = (arr : string[]) => {
 <style lang="less" scoped>
 .scenario-exec-log-main {
   height: 100%;
-  padding: 5px 10px 0px 10px;
+  padding: 6px 10px 0px 16px;
 
   .log {
-    padding-top: 8px;
+    padding: 8px 0;
   }
 
   .editor-wrapper {

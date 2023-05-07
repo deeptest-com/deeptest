@@ -4,6 +4,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/pkg/lib/file"
+	_httpUtils "github.com/aaronchen2k/deeptest/pkg/lib/http"
 	"github.com/xuri/excelize/v2"
 	"path"
 	"path/filepath"
@@ -79,12 +80,16 @@ func ReadDataFromExcel(url string) (ret []domain.VarKeyValuePair, err error) {
 }
 
 func DownloadUploadedFile(uri string) (ret string, err error) {
-	url := path.Join(consts.ServerUrl, uri)
+	serverBaseUrl := strings.TrimSuffix(consts.ServerUrl, consts.ServerApiPath)
+
+	url := _httpUtils.AddSepIfNeeded(serverBaseUrl) + uri
 
 	_, name := path.Split(uri)
 	dist := filepath.Join(consts.TmpDir, "download", name)
 
 	_fileUtils.Download(url, dist)
+
+	ret = dist
 
 	return
 }

@@ -14,11 +14,26 @@
           </a-form-item>
 
           <a-form-item label="上传文件" v-bind="validateInfos.url">
-            <div class="flow-file-input">
+            <div v-if="isElectron" class="flow-file-input">
               <a-input v-model:value="modelRef.url" readonly="readonly" />
               <a-button @click="uploadFile()">
                 <UploadOutlined />
               </a-button>
+            </div>
+
+            <div v-else class="flow-file-input2">
+              <div class="input-container">
+                <a-input v-model:value="modelRef.url" readonly="readonly" />
+              </div>
+              <div class="upload-container">
+                <a-upload :action="uploadUrl"
+                          :beforeUpload="upload"
+                          :showUploadList="false">
+                  <a-button>
+                    <UploadOutlined />
+                  </a-button>
+                </a-upload>
+              </div>
             </div>
           </a-form-item>
 
@@ -67,6 +82,7 @@ import {NotificationKeyCommon} from "@/utils/const";
 import {getServerUrl} from "@/utils/request";
 import {getToken} from "@/utils/localToken";
 import settings from "@/config/settings";
+import {uploadRequest} from "@/utils/upload";
 
 const useForm = Form.useForm;
 
@@ -91,6 +107,8 @@ const rulesRef = reactive({
 const store = useStore<{ Scenario: ScenarioStateType; }>();
 const modelRef = computed<any>(() => store.state.Scenario.nodeData);
 const {resetFields, validate, validateInfos} = useForm(modelRef, rulesRef);
+
+const uploadUrl = ref(getServerUrl() + '/upload')
 
 const submitForm = async () => {
   validate()
@@ -145,6 +163,14 @@ const uploadFile = async () => {
       message: `请使用客户端上传文件`,
     });
   }
+}
+
+const upload = async (file, fileList) => {
+  console.log('upload', file, fileList)
+
+  uploadRequest(file)
+
+  return false
 }
 
 onMounted(() => {

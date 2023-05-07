@@ -33,6 +33,7 @@ func ReadDataFromText(url, separator string) (ret []domain.VarKeyValuePair, err 
 		for index, col := range cols {
 			mp[colNameMap[index]] = col
 		}
+
 		ret = append(ret, mp)
 	}
 

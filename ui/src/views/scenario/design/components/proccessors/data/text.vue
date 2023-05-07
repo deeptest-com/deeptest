@@ -14,20 +14,19 @@
           </a-form-item>
 
           <a-form-item label="上传文件" v-bind="validateInfos.url">
-            <div v-if="isElectron" class="flow-file-input">
+            <div v-if="isElectron" class="upload-file-by-electron">
               <a-input v-model:value="modelRef.url" readonly="readonly" />
               <a-button @click="uploadFile()">
                 <UploadOutlined />
               </a-button>
             </div>
 
-            <div v-else class="flow-file-input2">
+            <div v-else class="upload-file">
               <div class="input-container">
                 <a-input v-model:value="modelRef.url" readonly="readonly" />
               </div>
               <div class="upload-container">
-                <a-upload :action="uploadUrl"
-                          :beforeUpload="upload"
+                <a-upload :beforeUpload="upload"
                           :showUploadList="false">
                   <a-button>
                     <UploadOutlined />
@@ -156,12 +155,6 @@ const uploadFile = async () => {
     }
 
     ipcRenderer.send(settings.electronMsg, data)
-
-  } else {
-    notification.warn({
-      key: NotificationKeyCommon,
-      message: `请使用客户端上传文件`,
-    });
   }
 }
 

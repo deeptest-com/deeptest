@@ -199,7 +199,7 @@ func (r *ScenarioNodeRepo) IsLeaf(po model.Processor) (ret bool) {
 	isDir := po.EntityCategory == consts.ProcessorRoot ||
 		//po.EntityCategory == consts.ProcessorThread ||
 		po.EntityCategory == consts.ProcessorGroup ||
-		po.EntityCategory == consts.ProcessorLoop ||
+		(po.EntityCategory == consts.ProcessorLoop && po.EntityType != consts.ProcessorLoopBreak) ||
 		po.EntityCategory == consts.ProcessorLogic ||
 		po.EntityCategory == consts.ProcessorData
 

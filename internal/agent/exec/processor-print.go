@@ -13,7 +13,7 @@ type ProcessorPrint struct {
 	ID uint `json:"id" yaml:"id"`
 	ProcessorEntityBase
 
-	Expression string `json:"expression" yaml:"expression"`
+	RightValue string `json:"rightValue" yaml:"rightValue"`
 }
 
 func (entity ProcessorPrint) Run(processor *Processor, session *Session) (err error) {
@@ -29,10 +29,10 @@ func (entity ProcessorPrint) Run(processor *Processor, session *Session) (err er
 		ParentId:          int(entity.ParentID),
 	}
 
-	value := ReplaceVariableValue(entity.Expression)
+	value := ReplaceVariableValue(entity.RightValue)
 
 	processor.Result.Summary = strings.ReplaceAll(fmt.Sprintf("%s为\"%v\"。",
-		entity.Expression, value), "<nil>", "空")
+		entity.RightValue, value), "<nil>", "空")
 
 	processor.AddResultToParent()
 	execUtils.SendExecMsg(*processor.Result, session.WsMsg)

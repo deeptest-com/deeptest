@@ -42,7 +42,9 @@ func (entity ProcessorLoop) Run(processor *Processor, session *Session) (err err
 		processor.Result.WillBreak, processor.Result.Summary = entity.getBeak()
 
 		processor.AddResultToParent()
-		execUtils.SendExecMsg(*processor.Result, session.WsMsg)
+		if processor.Result.WillBreak {
+			execUtils.SendExecMsg(*processor.Result, session.WsMsg)
+		}
 
 		return
 	}
@@ -65,12 +67,12 @@ func (entity ProcessorLoop) Run(processor *Processor, session *Session) (err err
 }
 
 func (entity *ProcessorLoop) runLoopItems(session *Session, processor *Processor, iterator agentDomain.ExecIterator) (err error) {
-	for _, item := range iterator.Items {
-		result := agentDomain.ScenarioExecResult{
+	for i, item := range iterator.Items {
+		msg := agentDomain.ScenarioExecResult{
 			ParentId: int(processor.ID),
-			Summary:  fmt.Sprintf("次数变量%s为%v", iterator.VariableName, item),
+			Summary:  fmt.Sprintf("%d. %s为%v", i+1, iterator.VariableName, item),
 		}
-		execUtils.SendExecMsg(result, session.WsMsg)
+		execUtils.SendExecMsg(msg, session.WsMsg)
 
 		SetVariable(entity.ProcessorID, iterator.VariableName, item, consts.Public)
 
@@ -91,7 +93,15 @@ LABEL:
 func (entity *ProcessorLoop) runLoopUntil(session *Session, processor *Processor, iterator agentDomain.ExecIterator) (err error) {
 	expression := iterator.UntilExpression
 
+	index := 0
 	for {
+		index += 1
+		msg := agentDomain.ScenarioExecResult{
+			ParentId: int(processor.ID),
+			Summary:  fmt.Sprintf("%d. ", index),
+		}
+		execUtils.SendExecMsg(msg, session.WsMsg)
+
 		result, err := EvaluateGovaluateExpressionByScope(expression, entity.ProcessorID)
 		pass, ok := result.(bool)
 		if err != nil || !ok || pass {

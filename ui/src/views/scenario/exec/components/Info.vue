@@ -145,21 +145,22 @@ const OnWebSocketMsg = (data: any) => {
 
   const wsMsg = JSON.parse(data.msg) as WsMsg
 
-  if (wsMsg.category == WsMsgCategory.Result) { // update result
-    result.value = wsMsg.data
-    return
-  }
+  // dealwith category
+  if (wsMsg.category) {
+    if (wsMsg.category == WsMsgCategory.Result) { // update result
+      result.value = wsMsg.data
+    } else { // update status
+      execResult.value.progressStatus = wsMsg.category
+      if (wsMsg.category === WsMsgCategory.InProgress) result.value = {}
+    }
 
-  if (wsMsg.category) { // update status
-    execResult.value.progressStatus = wsMsg.category
-    if (wsMsg.category === WsMsgCategory.InProgress) result.value = {}
     return
   }
 
   const log = wsMsg.data
   logMap.value[log.id] = log
 
-  if (log.parentId === 0) {
+  if (log.parentId === 0) { // root
     logTreeData.value = log
     logTreeData.value.name = execResult.value.name
   } else {

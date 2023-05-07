@@ -11,6 +11,10 @@
           <a-form-item label="变量名称" v-bind="validateInfos.variableName">
             <a-input v-model:value="modelRef.variableName"
                      @blur="validate('variableName', { trigger: 'blur' }).catch(() => {})"/>
+
+            <div v-if="modelRef.variableName" class="dp-input-tip">
+              可使用 {{'${' + modelRef.variableName + '.列名' + '}'}} 访问数据变量
+            </div>
           </a-form-item>
 
           <a-form-item label="上传文件" v-bind="validateInfos.url">

@@ -111,8 +111,6 @@ const store = useStore<{ Scenario: ScenarioStateType; }>();
 const modelRef = computed<any>(() => store.state.Scenario.nodeData);
 const {resetFields, validate, validateInfos} = useForm(modelRef, rulesRef);
 
-const uploadUrl = ref(getServerUrl() + '/upload')
-
 const submitForm = async () => {
   validate()
       .then(() => {
@@ -162,11 +160,12 @@ const uploadFile = async () => {
   }
 }
 
-const upload = async (file, fileList) => {
+const upload =  (file, fileList) => {
   console.log('upload', file, fileList)
 
-  const path = await uploadRequest(file)
-  modelRef.value.url = path
+  uploadRequest(file).then((path) => {
+    modelRef.value.url = path
+  })
 
   return false
 }

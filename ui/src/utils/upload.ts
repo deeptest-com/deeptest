@@ -31,7 +31,7 @@ export async function uploadRequest(file) {
     const url = baseUrl + 'upload'
 
     const resp = await axios.post(url, data, config)
-    console.log(resp)
+    console.log(resp.data.data)
 
-    return resp
+    return resp.data.data.path
 }

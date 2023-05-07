@@ -208,7 +208,7 @@ const joinArr = (arr : string[]) => {
   padding: 6px 10px 0px 16px;
 
   .log {
-    padding: 8px 0;
+    padding: 6px 0;
   }
 
   .editor-wrapper {

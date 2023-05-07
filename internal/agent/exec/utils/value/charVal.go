@@ -8,7 +8,7 @@ func GenerateByteItems(start byte, end byte, step int, rand bool, repeat int, re
 	ret = generateByteItemsByStep(start, end, step, repeat, repeatTag)
 
 	if rand {
-		ret = randItems(ret)
+		ret = RandItems(ret)
 	}
 
 	return

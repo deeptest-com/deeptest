@@ -8,7 +8,7 @@ func GenerateIntItems(start int64, end int64, step interface{}, rand bool, repea
 	ret = generateIntItemsByStep(start, end, step.(int), repeat, repeatTag)
 
 	if rand {
-		ret = randItems(ret)
+		ret = RandItems(ret)
 	}
 
 	return

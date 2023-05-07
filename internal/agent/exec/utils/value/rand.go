@@ -1,6 +1,6 @@
 package valueUtils
 
-func randItems(items []interface{}) (ret []interface{}) {
+func RandItems(items []interface{}) (ret []interface{}) {
 	length := len(items)
 
 	for i := 0; i < len(items); i++ {

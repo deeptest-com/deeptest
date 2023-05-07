@@ -191,7 +191,7 @@ func (entity *ProcessorLoop) GenerateLoopRange() (ret agentDomain.ExecIterator, 
 	return
 }
 func (entity *ProcessorLoop) GenerateLoopList() (ret agentDomain.ExecIterator, err error) {
-	ret.Items, ret.DataType, err = agentUtils.GenerateListItems(entity.List)
+	ret.Items, ret.DataType, err = agentUtils.GenerateListItems(entity.List, entity.IsRand)
 
 	return
 }

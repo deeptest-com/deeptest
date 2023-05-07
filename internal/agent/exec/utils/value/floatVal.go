@@ -12,7 +12,7 @@ func GenerateFloatItems(start float64, end float64, step interface{}, rand bool,
 	ret = generateFloatItemsByStep(start, end, step.(float64), precision, repeat, repeatTag)
 
 	if rand {
-		ret = randItems(ret)
+		ret = RandItems(ret)
 	}
 
 	return

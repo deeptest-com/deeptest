@@ -10,18 +10,18 @@
         <template #header> </template>
         <template #renderItem="{ item }">
           <ListItem>
-            <Card class="card" @click="goProject(item?.project_id)">
+            <Card class="card" @click="goProject(item?.projectId)">
               <div class="card-title">
                 <div class="title">
                   <img :src="getProjectLogo(item?.logo)" alt="" />
 
                   <span
                     class="card-title-text"
-                    :title="item?.project_chinese_name"
+                    :title="item?.projectName"
                     >{{
-                      item?.project_chinese_name.length > 20
-                        ? item?.project_chinese_name.substring(0, 20) + "..."
-                        : item?.project_chinese_name
+                      item?.projectName.length > 13
+                        ? item?.projectName.substring(0, 13) + "..."
+                        : item?.projectName
                     }}</span
                   >
                 </div>
@@ -42,7 +42,7 @@
                         <a-menu-item>
                           <a
                             href="javascript:;"
-                            @click="handleDelete(item.project_id)"
+                            @click="handleDelete(item.projectId)"
                             >删除</a
                           >
                         </a-menu-item>
@@ -51,28 +51,28 @@
                   </a-dropdown>
                 </div>
               </div>
-              <div class="card-desc" :title="item?.project_des">
+              <div class="card-desc" :title="item?.projectDescr">
                 {{
-                  item?.project_des.length > 66
-                    ? item?.project_des.substring(0, 66) + "..."
-                    : item?.project_des
-                    ? item?.project_des
+                  item?.projectDescr.length > 66
+                    ? item?.projectDescr.substring(0, 66) + "..."
+                    : item?.projectDescr
+                    ? item?.projectDescr
                     : "&nbsp;"
                 }}
               </div>
 
               <div class="card-static">
                 <div>
-                  <span>测试场景数：{{ item.scenario_total }}个</span>
-                  <span>接口数：{{}}个</span>
+                  <span>测试场景数：{{ item.scenarioTotal }}个</span>
+                  <span>接口数：{{item.interfaceTotal}}个</span>
                 </div>
                 <div>
                   <span> 测试覆盖率：{{ item.coverage }}%</span>
-                  <span> 执行次数：{{ item.exec_total }}次</span>
+                  <span> 执行次数：{{ item.execTotal }}次</span>
                 </div>
                 <div>
-                  <span> 测试通过率：{{ item.pass_rate }}%</span>
-                  <span>发现缺陷数：{{ item.bug_total }}个</span>
+                  <span> 测试通过率：{{ item.passRate }}%</span>
+                  <span>发现缺陷数：{{ item.bugTotal }}个</span>
                 </div>
               </div>
 
@@ -157,7 +157,7 @@ watch(
   },
   async (newVal) => {
     console.log("watch list.value", list.value);
-    fetch(list.value.current_user_project_list);
+    fetch(list.value.userProjectList);
   },
   {
     immediate: true,
@@ -170,9 +170,9 @@ watch(
   },
   async (newVal) => {
     if (newVal == 1) {
-      fetch(list.value.current_user_project_list);
+      fetch(list.value.userProjectList||[]);
     } else {
-      fetch(list.value.all_project_list);
+      fetch(list.value.projectList||[]);
     }
   },
   {

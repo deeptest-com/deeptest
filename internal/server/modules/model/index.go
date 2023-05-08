@@ -68,6 +68,7 @@ var (
 		&ProcessorAssertion{},
 		&ProcessorData{},
 		&ProcessorCookie{},
+		&ProcessorExtractor{},
 
 		&ProcessorInterface{},
 		&ProcessorInterfaceParam{},

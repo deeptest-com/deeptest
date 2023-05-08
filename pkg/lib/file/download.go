@@ -17,6 +17,8 @@ func Download(url string, dst string) (err error) {
 	if err == nil {
 		fmt.Printf("file downloaded %s", url)
 
+		RmDir(dst)
+
 		err = WriteDownloadFile(dst, data)
 		if err == nil {
 			fmt.Printf("file %s saved to %s", url, dst)

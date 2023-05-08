@@ -8,11 +8,6 @@
             <a-input v-model:value="modelRef.comments"/>
           </a-form-item>
 
-<!--          <a-form-item label="变量名称" v-bind="validateInfos.variableName">
-            <a-input v-model:value="modelRef.variableName"
-                     @blur="validate('variableName', { trigger: 'blur' }).catch(() => {})"/>
-          </a-form-item>-->
-
           <a-form-item label="判断表达式" v-bind="validateInfos.untilExpression">
             <a-input v-model:value="modelRef.untilExpression"
                      @blur="validate('untilExpression', { trigger: 'blur' }).catch(() => {})"/>
@@ -47,9 +42,6 @@ const {t} = useI18n();
 const formRef = ref();
 
 const rulesRef = reactive({
-  variableName: [
-    {required: true, message: '请输入变量名称', trigger: 'blur'},
-  ],
   untilExpression: [
     {required: true, message: '请输入表达式', trigger: 'blur'},
   ],

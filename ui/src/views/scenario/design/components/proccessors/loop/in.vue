@@ -19,6 +19,10 @@
             <div class="dp-input-tip">列表以逗号分隔</div>
           </a-form-item>
 
+          <a-form-item label="是否随机">
+            <a-switch v-model:checked="modelRef.isRand" />
+          </a-form-item>
+
           <a-form-item :wrapper-col="{ span: 16, offset: 2 }">
             <a-button type="primary" @click.prevent="submitForm">保存</a-button>
             <a-button style="margin-left: 10px" @click="resetFields">重置</a-button>

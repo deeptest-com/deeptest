@@ -32,6 +32,7 @@
         <Log v-if="logTreeData.logs" :logs="logTreeData.logs"></Log>
       </div>
 
+      <br />
       <div v-if="result.startTime" class="result">
         <a-row>
           <a-col :span="4">开始时间</a-col>
@@ -91,6 +92,7 @@ import Log from "./Log.vue"
 import { momentShort } from "@/utils/datetime";
 import {useI18n} from "vue-i18n";
 import {getToken} from "@/utils/localToken";
+import {WsMsgCategory} from "@/utils/enum";
 const { t } = useI18n();
 
 const router = useRouter();
@@ -143,19 +145,23 @@ const OnWebSocketMsg = (data: any) => {
   if (!data.msg) return
 
   const wsMsg = JSON.parse(data.msg) as WsMsg
-  if (wsMsg.category == 'result') { // update result
-    result.value = wsMsg.data
-    return
-  } else if (wsMsg.category != '') { // root
-    execResult.value.progressStatus = wsMsg.category
-    if (wsMsg.category === 'in_progress') result.value = {}
+
+  // dealwith category
+  if (wsMsg.category) {
+    if (wsMsg.category == WsMsgCategory.Result) { // update result
+      result.value = wsMsg.data
+    } else { // update status
+      execResult.value.progressStatus = wsMsg.category
+      if (wsMsg.category === WsMsgCategory.InProgress) result.value = {}
+    }
+
     return
   }
 
   const log = wsMsg.data
   logMap.value[log.id] = log
 
-  if (log.parentId === 0) {
+  if (log.parentId === 0) { // root
     logTreeData.value = log
     logTreeData.value.name = execResult.value.name
   } else {

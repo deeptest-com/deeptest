@@ -7,12 +7,15 @@ import (
 	"strings"
 )
 
-func GenerateFloatItems(start float64, end float64, step interface{}, rand bool, precision, repeat int, repeatTag string) []interface{} {
-	if !rand {
-		return generateFloatItemsByStep(start, end, step.(float64), precision, repeat, repeatTag)
-	} else {
-		return generateFloatItemsRand(start, end, step.(float64), precision, repeat, repeatTag)
+func GenerateFloatItems(start float64, end float64, step interface{}, rand bool, precision, repeat int, repeatTag string) (
+	ret []interface{}) {
+	ret = generateFloatItemsByStep(start, end, step.(float64), precision, repeat, repeatTag)
+
+	if rand {
+		ret = RandItems(ret)
 	}
+
+	return
 }
 
 func generateFloatItemsByStep(start float64, end float64, step float64, precision, repeat int, repeatTag string) []interface{} {
@@ -51,63 +54,6 @@ func generateFloatItemsByStep(start float64, end float64, step float64, precisio
 				if (val > end && step > 0) || (val < end && step < 0) {
 					break
 				}
-
-				arr = append(arr, val)
-
-				if total > consts.MaxNum {
-					break
-				}
-				i++
-			}
-
-			total++
-			if total > consts.MaxNum {
-				break
-			}
-		}
-	}
-
-	return arr
-}
-
-func generateFloatItemsRand(start float64, end float64, step float64, precision, repeat int, repeatTag string) []interface{} {
-	arr := make([]interface{}, 0)
-
-	countInRound := (end - start) / step
-	total := 0
-
-	if repeatTag == "" {
-		for i := float64(0); i < countInRound; {
-			rand := RandNum64(int64(countInRound))
-			if step < 0 {
-				rand = rand * -1
-			}
-
-			val := start + float64(rand)*step
-
-			for round := 0; round < repeat; round++ {
-				arr = append(arr, val)
-
-				total++
-				if total > consts.MaxNum {
-					break
-				}
-			}
-
-			if total > consts.MaxNum {
-				break
-			}
-			i++
-		}
-	} else if repeatTag == "!" {
-		for round := 0; round < repeat; round++ {
-			for i := float64(0); i < countInRound; {
-				rand := RandNum64(int64(countInRound))
-				if step < 0 {
-					rand = rand * -1
-				}
-
-				val := start + float64(rand)*step
 
 				arr = append(arr, val)
 

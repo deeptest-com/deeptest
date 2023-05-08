@@ -23,7 +23,7 @@ func GenerateRangeItems(start, end, step interface{}, precision int, isRand bool
 	return
 }
 
-func GenerateListItems(listStr string) (ret []interface{}, typ consts.DataType, err error) {
+func GenerateListItems(listStr string, isRand bool) (ret []interface{}, typ consts.DataType, err error) {
 	arr := strings.Split(listStr, ",")
 
 	isInt := true
@@ -57,6 +57,10 @@ func GenerateListItems(listStr string) (ret []interface{}, typ consts.DataType, 
 		for _, item := range arr {
 			ret = append(ret, item)
 		}
+	}
+
+	if isRand {
+		ret = valueUtils.RandItems(ret)
 	}
 
 	return

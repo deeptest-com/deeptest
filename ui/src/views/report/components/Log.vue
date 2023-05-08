@@ -17,119 +17,130 @@
             <div class="report-statistical-table">
                 <div class="statistical-main" ref="main"></div>
                 <div class="statistical-info">
-                    <div class="statistical-info-item">
-                        <span class="label success">通过</span>
-                        <span class="value">60% &nbsp; &nbsp; 8</span>
-                    </div>
-                    <div class="statistical-info-item">
-                        <span class="label">总耗时</span>
-                        <span class="value">
+                    <TextItem class="statistical-info-item" label-class-name="success" label="通过" :value="'60% &nbsp; &nbsp; 8'"></TextItem>
+                    <TextItem class="statistical-info-item" label="总耗时" label-style="width: 147px">
+                        <template #value>
                             <span style="color: #04C495">4.9 &nbsp;</span>秒
-                        </span>
-                    </div>
-                    <div class="statistical-info-item">
-                        <span class="label failed">失败</span>
-                        <span class="value">60% &nbsp; &nbsp; 8</span>
-                    </div>
-                    <div class="statistical-info-item">
-                        <span class="label">平均接口请求耗时</span>
-                        <span class="value"><span style="color: #04C495">4.9 &nbsp;</span>秒</span>
-                    </div>
-                    <div class="statistical-info-item">
-                        <span class="label notest">未测</span>
-                        <span class="value">60% &nbsp; &nbsp; 8</span>
-                    </div>
-                    <div class="statistical-info-item">
-                        <span class="label">测试场景(成功/失败)</span>
-                        <span class="value">(0/2)</span>
-                    </div>
+                        </template>
+                    </TextItem>
+                    <TextItem class="statistical-info-item" label-class-name="failed" label="失败" :value="'60% &nbsp; &nbsp; 8'"></TextItem>
+                    <TextItem class="statistical-info-item" label="平均接口请求耗时" label-style="width: 147px">
+                        <template #value>
+                            <span class="value"><span style="color: #04C495">4.9 &nbsp;</span>秒</span>
+                        </template>
+                    </TextItem>
+                    <TextItem class="statistical-info-item" label-class-name="notest" label="未测" :value="'60% &nbsp; &nbsp; 8'"></TextItem>
+                    <TextItem class="statistical-info-item" label="测试场景(成功/失败)" value="(0/2)" label-style="width: 147px"></TextItem>
                 </div>
             </div>
             <div class="report-list">
-                <div class="report-item" v-for="logItem in reportData.logList" :key="logItem.id">
-                    <div class="report-item-basic">
-                        <div class="report-item-info report-item-name">{{ logItem.scenarioName }}</div>
-                        <div class="report-item-info report-item-priority">{{ logItem.scenarioPriority }}</div>
-                        <div class="report-item-info report-item-status">{{ logItem.scenarioStatus === 0 ? '已完成' : '未完成' }}
+                <a-table 
+                    class="scenario-table"
+                    rowClassName="scenario-row-item"
+                    :dataSource="reportData.logList" 
+                    :columns="scenarioReportColumns" 
+                    :show-header="false"
+                    :expandIconColumnIndex="4" 
+                    :pagination="false" 
+                    :rowKey="(_record, index) => index"
+                    :expandIconAsCell="false">
+                    <template #expandIcon="props">
+                        <template v-if="props.expanded">
+                            <span @click="$event => props.onExpand(props.record, $event)">收起 &nbsp; <UpOutlined /></span>
+                        </template>
+                        <template v-else>
+                            <span @click="$event => props.onExpand(props.record, $event)">展开 &nbsp; <DownOutlined /></span>
+                        </template>
+                    </template>
+                    <template #scenarioName="{ record }">
+                        <div class="report-item-name">{{ record.scenarioName }}</div>
+                    </template>
+                    <template #scenarioPriority="{ record }">
+                        <div class="report-item-priority">{{ record.scenarioPriority }}</div>
+                    </template>
+                    <template #scenarioStatus="{ record }">
+                        <div class="report-item-status">{{ record.scenarioStatus === 0 ? '已完成' : '未完成' }}
                         </div>
-                        <div class="report-item-info report-item-rate">
+                    </template>
+                    <template #scenarioProgress="{ record }">
+                        <div class="report-item-rate">
                             <div class="report-progress"
-                                :style="`background: linear-gradient(90deg, #04C495 ${logItem.scenarioProgress}%, #FF6963 0);`">
+                                :style="`background: linear-gradient(90deg, #04C495 ${record.scenarioProgress}%, #FF6963 0);`">
                             </div>
-                            通过率 {{ logItem.scenarioProgress }}%
+                            通过率 {{ record.scenarioProgress }}%
                         </div>
-                        <div class="report-item-info report-item-operation" @click="handleExpand(logItem.id)">
-                            {{ expandKey.includes(logItem.id + '') ? '收起' : '展开' }}
-                            <template v-if="expandKey.includes(logItem.id + '')">
-                                <up-outlined />
-                            </template>
-                            <template v-else>
-                                <DownOutlined />
-                            </template>
-
-                        </div>
-                    </div>
-                    <div :class="['report-item-detail-list', expandKey.includes(logItem.id + '') ? 'active' : '']">
-                        <a-table :showHeader="false" :columns="columns" :data-source="logItem.reponseList"
-                            :pagination="false" :rowKey="(_record, index) => index">
-                            <template #expandIcon="props">
-                                <template v-if="props.expanded">
-                                    <DownOutlined @click="$event => props.onExpand(props.record, $event)" />
+                    </template>
+                    <template #expandedRowRender="{ record }">
+                        <div class="reponsedata-list">
+                            <a-table 
+                                class="reponsedata-table"
+                                rowClassName="reponsedata-row-item"
+                                :showHeader="false" 
+                                :columns="responseDataColumns" 
+                                :data-source="record.reponseList"
+                                :pagination="false" 
+                                :rowKey="(_record, index) => index" 
+                                :expandIconAsCell="false">
+                                <template #expandIcon="props">
+                                    <template v-if="props.expanded">
+                                        <DownOutlined @click="$event => props.onExpand(props.record, $event)" />
+                                    </template>
+                                    <template v-else>
+                                        <RightOutlined @click="$event => props.onExpand(props.record, $event)" />
+                                    </template>
                                 </template>
-                                <template v-else>
-                                    <RightOutlined @click="$event => props.onExpand(props.record, $event)" />
+                                <template #requestStatus="{ record: expandRecord }">
+                                    <div :class="['report-status', ClassMap[expandRecord.requestStatus]]">{{
+                                        StatusMap[expandRecord.requestStatus] }}</div>
                                 </template>
-                            </template>
-                            <template #requestStatus="{ record }">
-                                <div :class="['report-status', ClassMap[record.requestStatus]]">{{
-                                    StatusMap[record.requestStatus] }}</div>
-                            </template>
-                            <template #requestMethod="{ record }">
-                                <div :class="['report-method', ClassMap[record.requestStatus]]">
-                                    {{ record.requestMethod }}
-                                </div>
-                            </template>
-                            <template #requestCode="{ record }">
-                                <div :class="['report-code', ClassMap[record.requestStatus]]">
-                                    状态码: <span>{{ record.requestCode }}</span>
-                                </div>
-                            </template>
-                            <template #requestTime="{ record }">
-                                <div :class="['report-time', ClassMap[record.requestStatus]]">
-                                    耗时: <span>{{ record.requestTime }}</span>
-                                </div>
-                            </template>
-                            <template #requestType>
-                                <div class="report-type">
-                                    转单
-                                </div>
-                            </template>
-                            <template #expandedRowRender="{ record }">
-                                <div class="expand-wrapper">
-                                    <div class="expand-content">
-                                        <div class="expand-detail-info" v-for="info in record.requestInfo"
-                                            :key="info.errorId">
-                                            <div class="info-field"><exclamation-circle-outlined
-                                                    style="color: #F63838;margin-right: 8px" />{{ info.errorField }}</div>
-                                            <div class="info-tip">
-                                                <span v-for="(tip, index) in info.errorTip" :key="index">{{ index + 1 }}. {{
-                                                    tip
-                                                }}</span>
+                                <template  #requestMethod="{ record: expandRecord }">
+                                    <div :class="['report-method', ClassMap[expandRecord.requestStatus]]">
+                                        {{ expandRecord.requestMethod }}
+                                    </div>
+                                </template>
+                                <template #requestCode="{ record: expandRecord }">
+                                    <div :class="['report-code', ClassMap[expandRecord.requestStatus]]">
+                                        状态码: <span>{{ expandRecord.requestCode }}</span>
+                                    </div>
+                                </template>
+                                <template #requestTime="{ record: expandRecord }">
+                                    <div :class="['report-time', ClassMap[expandRecord.requestStatus]]">
+                                        耗时: <span>{{ expandRecord.requestTime }}</span>
+                                    </div>
+                                </template>
+                                <template #operation>
+                                    <div class="report-type">
+                                        转单
+                                    </div>
+                                </template>
+                                <template #expandedRowRender="{ record }">
+                                    <div class="expand-wrapper">
+                                        <div class="expand-content">
+                                            <div class="expand-detail-info" v-for="info in record.requestInfo"
+                                                :key="info.errorId">
+                                                <div class="info-field"><exclamation-circle-outlined
+                                                        style="color: #F63838;margin-right: 8px" />{{ info.errorField }}
+                                                </div>
+                                                <div class="info-tip">
+                                                    <span v-for="(tip, index) in info.errorTip" :key="index">
+                                                    {{ index + 1 }}. {{ tip }}</span>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            </template>
-                        </a-table>
-                    </div>
-                </div>
+                                </template>
+                            </a-table>
+                        </div>
+                    </template>
+                </a-table>
             </div>
         </div>
     </a-drawer>
 </template>
 <script setup lang="ts">
 import { defineProps, defineEmits, ref, onMounted, watch } from 'vue';
-import { DownOutlined, RightOutlined, UpOutlined, ExclamationCircleOutlined } from '@ant-design/icons-vue';
+import { DownOutlined, RightOutlined, ExclamationCircleOutlined, UpOutlined } from '@ant-design/icons-vue';
+import { responseDataColumns, scenarioReportColumns } from '../config';
 import TextItem from './TextItem.vue';
 import * as echarts from 'echarts';
 
@@ -150,7 +161,6 @@ defineProps<{
 }>()
 
 const emits = defineEmits(['onClose']);
-const expandKey = ref<string[]>([]);
 const main = ref();
 
 const reportData = {
@@ -276,16 +286,6 @@ const reportData = {
     ]
 };
 
-const columns = [
-    { title: '请求状态', dataIndex: 'requestStatus', key: 'requestStatus', slots: { customRender: 'requestStatus' } },
-    { title: '请求方法', dataIndex: 'requestMethod', key: 'requestMethod', slots: { customRender: 'requestMethod' } },
-    { title: '请求url', dataIndex: 'requestUrl', key: 'requestUrl' },
-    { title: '请求信息', dataIndex: 'requestData', key: 'requestData' },
-    { title: '请求状态码', dataIndex: 'requestCode', key: 'requestCode', slots: { customRender: 'requestCode' } },
-    { title: '请求耗时', dataIndex: 'requestTime', key: 'requestTime', slots: { customRender: 'requestTime' } },
-    { title: '请求类型', dataIndex: 'requestMethod', key: 'requestMethod', slots: { customRender: 'requestType' } },
-];
-
 onMounted(() => {
     init();
 })
@@ -345,16 +345,6 @@ function init() {
 
 function onClose() {
     emits('onClose');
-}
-
-function handleExpand(id: any) {
-    let lastExpandKeys = JSON.parse(JSON.stringify([...expandKey.value]));
-    if (lastExpandKeys.includes(id + '')) {
-        lastExpandKeys = lastExpandKeys.filter((item: string) => item !== id + '');
-    } else {
-        lastExpandKeys.push(id + '');
-    }
-    expandKey.value = lastExpandKeys;
 }
 
 watch(() => main.value, (val) => {
@@ -417,148 +407,56 @@ watch(() => main.value, (val) => {
             .statistical-info-item {
                 width: 50%;
                 margin-bottom: 8px;
+                display: flex;
+                align-items: center;
             }
         }
     }
 }
 
-.statistical-info-item {
-    display: flex;
-    align-items: center;
-    &:nth-child(n) {
-        .label {
-            width: 48px;
-            height: 22px;
-            line-height: 22px;
-            margin-right: 22px;
-            display: flex;
-            align-items: center;
+.report-list {
 
-            &:before {
-                content: '';
-                display: block;
-                width: 6px;
-                height: 6px;
-                margin-right: 7px;
-                border-radius: 50%;
-            }
-
-            &.success:before {
-                background-color: #04C495;
-            }
-
-            &.failed:before {
-                background-color: #F63838;
-            }
-
-            &.notest:before {
-                background-color: rgba(0, 0, 0, 0.28);;
-            }
-        }
+    .report-item-priority {
+        font-weight: bold;
     }
 
-    &:nth-child(2n) {
+    .report-item-status {
         display: flex;
         align-items: center;
-        justify-content: space-between;
 
-        .label {
-            width: 147px;
+        &:before {
+            content: '';
+            display: block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: #04C495;
+            margin-right: 10px;
         }
     }
-}
 
-.report-item {
-    margin-bottom: 10px;
+    .report-item-name {
+        width: 333px;
+        font-weight: bold;
+    }
 
-    .report-item-basic {
-        width: 100%;
+    .report-item-rate {
+        width: 292px;
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        box-sizing: border-box;
-        padding: 14px 16px;
-        height: 50px;
-        background: #FFFFFF;
-        border: 1px solid #E5E5E5;
-
-        .report-item-info {
-            padding-right: 50px;
-            line-height: 22px;
-
-            &:last-child {
-                padding: 0;
-            }
-        }
-
-        .report-item-priority {
-            font-weight: bold;
-        }
-
-        .report-item-status {
-            display: flex;
-            align-items: center;
-
-            &:before {
-                content: '';
-                display: block;
-                width: 6px;
-                height: 6px;
-                border-radius: 50%;
-                background-color: #04C495;
-                margin-right: 10px;
-            }
-        }
-
-        .report-item-name {
-            width: 333px;
-            font-weight: bold;
-        }
-
-        .report-item-rate {
-            width: 292px;
-            display: flex;
-            align-items: center;
-            font-family: 'PingFang SC';
-            font-style: normal;
-            font-weight: 400;
-            font-size: 14px;
-            color: rgba(0, 0, 0, 0.85);
-            padding: 0;
-
-            .report-progress {
-                width: 180px;
-                height: 6px;
-                border-radius: 41px;
-                margin-right: 16px;
-            }
-        }
-    }
-}
-
-.report-item-detail-list {
-    display: none;
-    transition: all 0.5s ease-in-out;
-
-    &.active {
-        display: block;
-    }
-
-    :deep(.ant-table-tbody > tr:hover:not(.ant-table-expanded-row):not(.ant-table-row-selected) > td) {
-        background-color: transparent;
-    }
-
-    :deep(.ant-table-tbody > tr) {
-        padding: 0px 16px;
-        height: 40px;
-        box-sizing: border-box;
-        background: #FBFBFB;
-        /* 下划线 */
-        box-shadow: 0px 1px 0px rgba(0, 0, 0, 0.06);
-    }
-
-    :deep(.ant-table-tbody .ant-table-expanded-row.ant-table-expanded-row-level-1 > td) {
+        font-family: 'PingFang SC';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 14px;
+        color: rgba(0, 0, 0, 0.85);
         padding: 0;
+
+        .report-progress {
+            width: 180px;
+            height: 6px;
+            border-radius: 41px;
+            margin-right: 16px;
+        }
     }
 
     .report-status {
@@ -617,6 +515,7 @@ watch(() => main.value, (val) => {
         font-size: 14px;
         line-height: 22px;
         color: #447DFD;
+        cursor: pointer;
     }
 
     .expand-wrapper {
@@ -657,5 +556,55 @@ watch(() => main.value, (val) => {
         }
     }
 
+    :deep(.scenario-table .ant-table-content table) {
+        border-spacing: 0 10px;
+
+        tr {
+            &.scenario-row-item {
+                td {
+                    border: 1px solid #E5E5E5;
+
+                    &:not(:last-child) {
+                        border-right: unset;
+                    }
+
+                    &:not(:first-child) {
+                        border-left: unset;
+                    }
+                }
+            }
+        }
+
+        .ant-table-expanded-row td {
+            padding: 0;
+        }
+    }
+
+    :deep(.responsedata-table) {
+        &:before, &:after {
+            display: none;
+        }
+    }
+
+    :deep(.reponsedata-table .ant-table-content table) {
+        background-color: #fbfbfb;
+        border-spacing: 0 !important;
+
+        td {
+            padding: 16px !important;
+        }
+
+        .ant-table-expanded-row td {
+            padding: 0 !important;
+        }
+    }
+
+    :deep(.ant-table-wrapper::before) { 
+        display: none;
+    }
+
+    :deep(.ant-table-wrapper::after) {
+        display: none;
+    }
 }
 </style>

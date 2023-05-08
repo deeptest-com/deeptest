@@ -1,16 +1,19 @@
 <template>
   <div id="request-main">
-    <RequestInvocation
+    <!-- 最新版本ui中 发送/保存按钮 调整为全局的保存，这里为了避免 scenario/design中引用出错，用这个条件判断先放着。后续再看是否移除掉 -->
+    <template v-if="showReuqestInvocation">
+      <RequestInvocation
+        :showDebugDataUrl="showDebugDataUrl"
         :onSend="invokeInterface"
         :onSave="saveInterface">
-    </RequestInvocation>
-
+      </RequestInvocation>
+    </template>
     <RequestConfig></RequestConfig>
   </div>
 </template>
 
 <script setup lang="ts">
-import {computed, inject, onMounted} from "vue";
+import {computed, inject, onMounted, defineProps} from "vue";
 import {useI18n} from "vue-i18n";
 import {Form, notification} from 'ant-design-vue';
 import {useStore} from "vuex";
@@ -19,6 +22,19 @@ import RequestConfig from './Config.vue';
 import {NotificationKeyCommon} from "@/utils/const";
 import {UsedBy} from "@/utils/enum";
 import {getToken} from "@/utils/localToken";
+
+defineProps({ 
+  showReuqestInvocation: {
+    type: Boolean,
+    required: false,
+    default: true
+  },
+  showDebugDataUrl: {
+    type: Boolean,
+    required: false,
+    default: true
+  }
+});
 
 const useForm = Form.useForm;
 const usedBy = inject('usedBy') as UsedBy

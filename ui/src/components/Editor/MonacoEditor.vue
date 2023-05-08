@@ -3,13 +3,15 @@
 </template>
 
 <script>
-import {defineComponent, computed, toRefs, nextTick, ref, onMounted} from 'vue'
+import {defineComponent, computed, toRefs, nextTick, inject} from 'vue'
 import * as monaco from 'monaco-editor'
 import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
 import debounce from "lodash.debounce";
 import {addExtractAction, addReplaceAction} from "@/components/Editor/service";
 import {getSnippet} from "@/views/component/debug/service";
+
+import {UsedBy} from "@/utils/enum";
 
 export default defineComponent({
   name: "MonacoEditor",
@@ -93,7 +95,7 @@ export default defineComponent({
 
       if (options.initTsModules) {
         const json = await getSnippet('global')
-        console.log('------')
+
         if (json.code === 0) {
           // const externalDtsFileName = 'ex.d.ts';
           // monaco.languages.typescript.typescriptDefaults.addExtraLib(libSource, `inmemory://model/${externalDtsFileName}`);
@@ -110,10 +112,14 @@ export default defineComponent({
 
       this.diffEditor && this._setModel(this.value, this.original);
 
-      if (this.options.usedWith === 'response') {
-        addExtractAction(this.editor, this.onExtractor)
-      } else if (this.options.usedWith === 'request') {
-        addReplaceAction(this.editor, this.onReplace)
+
+      const usedBy = inject('usedBy')
+      if (usedBy === UsedBy.InterfaceDebug) {
+        if (this.options.usedWith === 'response') {
+          addExtractAction(this.editor, this.onExtractor)
+        } else if (this.options.usedWith === 'request') {
+          addReplaceAction(this.editor, this.onReplace)
+        }
       }
 
       // @event `change`

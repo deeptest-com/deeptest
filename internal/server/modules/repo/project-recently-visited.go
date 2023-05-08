@@ -27,9 +27,9 @@ func (r *ProjectRecentlyVisitedRepo) FindUserProjectToday(userId, projectId uint
 }
 
 func (r *ProjectRecentlyVisitedRepo) Create(req v1.ProjectRecentlyVisitedReq) (id uint, err error) {
-	userProjectToday, err := r.FindUserProjectToday(req.UserId, req.ProjectId)
-	if userProjectToday.ID != 0 {
-		logUtils.Infof(fmt.Sprintf("用户%+v今日已经访问过项目%+v", req.UserId, req.ProjectId))
+	userLastVisitedProject, err := r.FindUserLastRecord(req.UserId)
+	if userLastVisitedProject.ProjectId == req.ProjectId {
+		logUtils.Infof(fmt.Sprintf("用户%+v最后一次访问的项目已经是%+v", req.UserId, req.ProjectId))
 		return
 	}
 

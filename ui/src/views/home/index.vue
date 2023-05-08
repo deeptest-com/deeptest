@@ -9,6 +9,12 @@
             <a-tab-pane :key="0" tab="所有项目"> </a-tab-pane> </a-tabs
         ></template>
         <template #extra>
+          <a-input-search
+            v-model:value="keywords"
+            style="width: 200px; margin-right: 20px"
+            placeholder="请输入项目名称搜索"
+            @search="onSearch"
+          />
           <a-button
             type="primary"
             style="margin-right: 20px"
@@ -24,15 +30,17 @@
           <HomeList
             v-if="showMode == 'list'"
             :activeKey="activeKey"
+            :searchValue="searchValue"
             @edit="handleOpenEdit"
             @delete="handleDelete"
           />
 
           <CardList
             v-else
+            :activeKey="activeKey"
+            :searchValue="searchValue"
             @edit="handleOpenEdit"
             @delete="handleDelete"
-            :activeKey="activeKey"
           />
         </div>
       </a-card>
@@ -65,6 +73,8 @@ import settings from "@/config/settings";
 
 const store = useStore<{ Home: StateType }>();
 const activeKey = ref(1);
+const keywords = ref<string>('');
+const searchValue = ref("");
 const showMode = ref("card");
 const createProjectModalVisible = ref(false);
 let formState = ref({
@@ -76,19 +86,15 @@ let formState = ref({
   includeExample: false,
   desc: "",
 });
-// let queryParams = reactive<QueryParams>({
-// keywords: "",
-
-// });
 
 onMounted(() => {
   getList(1);
 });
-
+const onSearch = () => {
+  searchValue.value = keywords.value;
+};
 const getList = async (current: number): Promise<void> => {
-  await store.dispatch("Home/queryProject", {
-    // keywords: queryParams.keywords,
-  });
+  await store.dispatch("Home/queryProject", {});
 };
 
 // 创建项目成功的回调

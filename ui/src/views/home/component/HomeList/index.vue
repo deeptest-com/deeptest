@@ -3,7 +3,7 @@
      <a-table
       row-key="id"
       :columns="columns"
-      :data-source="tableList"
+      :data-source="searchValue!=''? filterList:tableList"
       :loading="loading"
     
     >
@@ -73,7 +73,8 @@ const projectLoading = computed<any>(() => store.state.Home.loading);
 const loading = ref<boolean>(false);
 const showMode = ref("list");
 const activeKey = ref(1);
-const tableList = ref([]);
+const tableList = ref<any>([]);
+const filterList=ref<any>([]);
 // 组件接收参数
 const props = defineProps({
   // 请求API的参数
@@ -81,13 +82,12 @@ const props = defineProps({
   activeKey: {
     type: Number,
   },
+  searchValue: {
+    type: String,
+  },
 });
 
 const total = ref(0);
-let queryParams = reactive<QueryParams>({
-  keywords: "",
-
-});
 //暴露内部方法
 const emit = defineEmits(["edit", "delete"]);
 const columns = [
@@ -104,7 +104,7 @@ const columns = [
     title: "项目名称",
     dataIndex: "projectName",
     slots: { customRender: "name" },
-      width: 200,
+      width: 260,
        ellipsis: true,
   },
   {
@@ -125,22 +125,37 @@ const columns = [
   {
     title: "测试场景数",
     dataIndex: "scenarioTotal",
+    customRender: ({
+     text
+    }: { text: any;  }) => text+'个',
   },
   {
     title: "测试覆盖率",
     dataIndex: "coverage",
+     customRender: ({
+     text
+    }: { text: any;  }) => text+'%',
   },
   {
     title: "执行次数",
     dataIndex: "execTotal",
+     customRender: ({
+     text
+    }: { text: any;  }) => text+'次',
   },
   {
     title: "测试通过率",
     dataIndex: "passRate",
+     customRender: ({
+     text
+    }: { text: any;  }) => text+'%',
   },
   {
     title: "发现缺陷",
     dataIndex: "bugTotal",
+     customRender: ({
+     text
+    }: { text: any;  }) => text+'个',
   },
   {
     title: "创建时间",
@@ -155,6 +170,32 @@ const columns = [
     slots: {customRender: 'action'},
   },
 ];
+// 监听关键词搜索
+watch(
+  () => {
+    return props.searchValue;
+  },
+  async (newVal) => {
+    console.log("watch props.searchValue", props.searchValue);
+    if (!props.searchValue) {
+       total.value = tableList.value.length;
+        return;
+      }
+      const searchText = props.searchValue.toLowerCase();
+       filterList.value= tableList.value.filter(item => {
+        // console.log(item)
+        // 根据你的数据结构，修改下面的属性名
+        return (
+          item.createdAt.toLowerCase().includes(searchText) 
+        );
+      });
+       total.value = filterList.value.length;
+      
+  },
+  {
+    immediate: true,
+  }
+);
 // 监听项目数据变化
 watch(
   () => {
@@ -203,11 +244,7 @@ async function fetch(data) {
   }
 }
 const getList = async (current: number): Promise<void> => {
- 
-  console.log("queryParams.keywords", queryParams.keywords);
   await store.dispatch("Home/queryProject", {
-    keywords: queryParams.keywords,
-
   });
 
 };

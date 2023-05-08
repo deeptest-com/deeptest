@@ -1,6 +1,7 @@
 <template>
   <div class="invocation-main">
-    <div class="url">{{url}} - {{debugData.method}}</div>
+    <!-- 最新ui交互将调整这里的url显示。这里先用条件判断，保证接口管理/调试栏显示的是新ui，而scenario/design中仍保留 -->
+    <div v-if="showDebugDataUrl" class="url">{{url}} - {{debugData.method}}</div>
 
     <div class="send">
       <a-dropdown-button type="primary" trigger="click" @click="sendRequest">
@@ -89,6 +90,11 @@ const props = defineProps({
   onSave: {
     type: Function as PropType<(data) => void>,
     required: true
+  },
+  showDebugDataUrl: {
+    type: Boolean,
+    required: false,
+    default: true
   }
 })
 const usedBy = inject('usedBy') as UsedBy

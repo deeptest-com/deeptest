@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
@@ -26,9 +27,9 @@ func (r *ProjectRecentlyVisitedRepo) FindUserProjectToday(userId, projectId uint
 }
 
 func (r *ProjectRecentlyVisitedRepo) Create(req v1.ProjectRecentlyVisitedReq) (id uint, err error) {
-	userProject, err := r.FindUserProjectToday(req.UserId, req.ProjectId)
-	if userProject.ID != 0 {
-		logUtils.Infof("项目访问记录今日已记录")
+	userLastVisitedProject, err := r.FindUserLastRecord(req.UserId)
+	if userLastVisitedProject.ProjectId == req.ProjectId {
+		logUtils.Infof(fmt.Sprintf("用户%+v最后一次访问的项目已经是%+v", req.UserId, req.ProjectId))
 		return
 	}
 
@@ -39,5 +40,21 @@ func (r *ProjectRecentlyVisitedRepo) Create(req v1.ProjectRecentlyVisitedReq) (i
 		return
 	}
 	id = projectRecentlyVisited.ID
+	return
+}
+
+func (r *ProjectRecentlyVisitedRepo) FindUserLastRecord(userId uint) (projectRecentlyVisited model.ProjectRecentlyVisited, err error) {
+	err = r.DB.Model(&model.ProjectRecentlyVisited{}).Where("user_id = ?", userId).Last(&projectRecentlyVisited).Error
+	return
+}
+
+func (r *ProjectRecentlyVisitedRepo) FindUserLastDistinctProjects(userId uint, limit int) (res []model.ProjectRecentlyVisited, err error) {
+	err = r.DB.Model(&model.ProjectRecentlyVisited{}).
+		Select("group_concat(distinct project_id) as project_id, created_at").
+		Where("user_id = ?", userId).
+		Group("created_at").
+		Order("created_at desc").
+		Limit(limit).
+		Find(&res).Error
 	return
 }

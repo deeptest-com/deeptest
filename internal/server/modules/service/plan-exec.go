@@ -48,7 +48,7 @@ func (s *PlanExecService) LoadExecData(planId int) (ret agentExec.PlanExecObj, e
 	return
 }
 
-func (s *PlanExecService) SaveReport(planId int, result agentDomain.PlanExecResult) (
+func (s *PlanExecService) SaveReport(planId int, userId uint, result agentDomain.PlanExecResult) (
 	report model.PlanReport, err error) {
 
 	report.ProjectId = uint(planId)
@@ -56,7 +56,7 @@ func (s *PlanExecService) SaveReport(planId int, result agentDomain.PlanExecResu
 	report.ResultStatus = consts.Pass
 
 	for _, scenarioResult := range result.Scenarios {
-		scenarioReport, _ := s.ScenarioExecService.SaveReport(scenarioResult.ID, *scenarioResult)
+		scenarioReport, _ := s.ScenarioExecService.SaveReport(scenarioResult.ID, userId, *scenarioResult)
 		s.CombineReport(scenarioReport, &report)
 	}
 

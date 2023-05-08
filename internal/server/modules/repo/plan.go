@@ -243,6 +243,6 @@ func (r *PlanRepo) UpdateSerialNumber(id, projectId uint) (err error) {
 		return
 	}
 
-	err = r.DB.Model(&model.Plan{}).Where("id=?", id).Update("serial_number", project.ShortName+"-P-"+strconv.Itoa(int(id))).Error
+	err = r.DB.Model(&model.Plan{}).Where("id=?", id).Update("serial_number", project.ShortName+"-TP-"+strconv.Itoa(int(id))).Error
 	return
 }

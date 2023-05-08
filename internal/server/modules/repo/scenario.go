@@ -195,6 +195,6 @@ func (r *ScenarioRepo) UpdateSerialNumber(id, projectId uint) (err error) {
 		return
 	}
 
-	err = r.DB.Model(&model.Scenario{}).Where("id=?", id).Update("serial_number", project.ShortName+"-S-"+strconv.Itoa(int(id))).Error
+	err = r.DB.Model(&model.Scenario{}).Where("id=?", id).Update("serial_number", project.ShortName+"-TS-"+strconv.Itoa(int(id))).Error
 	return
 }

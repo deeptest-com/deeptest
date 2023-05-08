@@ -37,9 +37,17 @@ type ScenarioReport struct {
 	ScenarioId uint `json:"scenarioId"`
 	ProjectId  uint `json:"projectId"`
 
-	Logs []*ExecLogProcessor `gorm:"-" json:"logs"`
+	CreateUserId   uint                `json:"createUserId"`
+	CreateUserName string              `gorm:"-" json:"createUserName"`
+	SerialNumber   string              `json:"serialNumber"`
+	Logs           []*ExecLogProcessor `gorm:"-" json:"logs"`
 }
 
 func (ScenarioReport) TableName() string {
 	return "biz_scenario_report"
+}
+
+type ScenarioReportResponse struct {
+	ScenarioReport
+	CreateUserName string `json:"createUserName"`
 }

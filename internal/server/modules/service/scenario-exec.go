@@ -60,7 +60,7 @@ func (s *ScenarioExecService) LoadExecData(scenarioId uint) (ret agentExec.Scena
 	return
 }
 
-func (s *ScenarioExecService) SaveReport(scenarioId int, rootResult execDomain.ScenarioExecResult) (report model.ScenarioReport, err error) {
+func (s *ScenarioExecService) SaveReport(scenarioId int, userId uint, rootResult execDomain.ScenarioExecResult) (report model.ScenarioReport, err error) {
 	scenario, _ := s.ScenarioRepo.Get(uint(scenarioId))
 	rootResult.Name = scenario.Name
 
@@ -73,8 +73,9 @@ func (s *ScenarioExecService) SaveReport(scenarioId int, rootResult execDomain.S
 		ProgressStatus: rootResult.ProgressStatus,
 		ResultStatus:   rootResult.ResultStatus,
 
-		ScenarioId: scenario.ID,
-		ProjectId:  scenario.ProjectId,
+		ScenarioId:   scenario.ID,
+		ProjectId:    scenario.ProjectId,
+		CreateUserId: userId,
 	}
 
 	s.countRequest(rootResult, &report)

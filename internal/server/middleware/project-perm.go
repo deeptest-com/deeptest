@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"errors"
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
@@ -11,6 +12,7 @@ import (
 	"github.com/snowlyg/multi"
 	"go.uber.org/zap"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -108,11 +110,38 @@ func CheckProjectPerm(r *http.Request, userId uint) (bool, error) {
 	return true, nil
 }
 
-func GetProjectPerm(path, method string) (data ProjectPermModel, err error) {
+func GetProjectPerm(path, method string) (res ProjectPermModel, err error) {
+	pathArr := strings.Split(path, "/")
+	if len(pathArr) < 4 {
+		err = errors.New("path is invalid")
+		return
+	}
+	pathArrTmp := pathArr[:4]
+	modulePath := strings.Join(pathArrTmp, "/")
+
+	var projectPerms []ProjectPermModel
 	err = dao.GetDB().Model(&ProjectPermModel{}).
-		Where("name = ?", path).
+		Where("name like ?", fmt.Sprintf("%s%%", modulePath)).
 		Where("act = ?", method).
-		First(&data).Error
+		Find(&projectPerms).Error
+	if err != nil {
+		return
+	}
+
+OuterLoop:
+	for _, v := range projectPerms {
+		tablePathArr := strings.Split(v.Name, "/")
+		if len(tablePathArr) != len(pathArr) {
+			continue
+		}
+		for k1, s1 := range tablePathArr {
+			if !strings.ContainsAny(s1, ":") && pathArr[k1] != s1 {
+				continue OuterLoop
+			}
+		}
+		res = v
+	}
+
 	return
 }
 

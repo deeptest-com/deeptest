@@ -603,3 +603,10 @@ func (r *UserRepo) GetUsersNotExistedInProject(projectId uint) (ret []serverDoma
 		Find(&ret).Error
 	return
 }
+
+func (r *UserRepo) FindByIds(ids []uint) (res []model.SysUser, err error) {
+	db := r.DB.Model(&model.SysUser{}).Where("id IN (?)", ids)
+
+	err = db.Find(&res).Error
+	return
+}

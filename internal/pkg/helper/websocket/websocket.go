@@ -46,7 +46,7 @@ func SendExecStatus(category consts.WsMsgCategory, wsMsg *websocket.Message) {
 }
 
 func SendExecResult(data interface{}, wsMsg *websocket.Message) {
-	resp := _domain.WsResp{Category: consts.Result, Data: data}
+	resp := _domain.WsResp{Category: consts.ProgressResult, Data: data}
 	if data != nil {
 		resp.Data = data
 	}
@@ -54,7 +54,7 @@ func SendExecResult(data interface{}, wsMsg *websocket.Message) {
 	mqData := _domain.MqMsg{Namespace: wsMsg.Namespace, Room: wsMsg.Room, Event: wsMsg.Event, Content: string(bytes)}
 
 	if wsMsg != nil {
-		logUtils.Infof(_i118Utils.Sprintf("ws_send_exec_msg", wsMsg.Room, consts.Result))
+		logUtils.Infof(_i118Utils.Sprintf("ws_send_exec_msg", wsMsg.Room, consts.ProgressResult))
 		PubMsg(mqData)
 	} else {
 		logUtils.Infof(string(bytes))

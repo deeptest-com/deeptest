@@ -42,7 +42,9 @@ func (entity ProcessorLoop) Run(processor *Processor, session *Session) (err err
 		processor.Result.WillBreak, processor.Result.Summary = entity.getBeak()
 
 		processor.AddResultToParent()
-		execUtils.SendExecMsg(*processor.Result, session.WsMsg)
+		if processor.Result.WillBreak {
+			execUtils.SendExecMsg(*processor.Result, session.WsMsg)
+		}
 
 		return
 	}
@@ -65,7 +67,13 @@ func (entity ProcessorLoop) Run(processor *Processor, session *Session) (err err
 }
 
 func (entity *ProcessorLoop) runLoopItems(session *Session, processor *Processor, iterator agentDomain.ExecIterator) (err error) {
-	for _, item := range iterator.Items {
+	for i, item := range iterator.Items {
+		msg := agentDomain.ScenarioExecResult{
+			ParentId: int(processor.ID),
+			Summary:  fmt.Sprintf("%d. %s为%v", i+1, iterator.VariableName, item),
+		}
+		execUtils.SendExecMsg(msg, session.WsMsg)
+
 		SetVariable(entity.ProcessorID, iterator.VariableName, item, consts.Public)
 
 		for _, child := range processor.Children {
@@ -85,13 +93,21 @@ LABEL:
 func (entity *ProcessorLoop) runLoopUntil(session *Session, processor *Processor, iterator agentDomain.ExecIterator) (err error) {
 	expression := iterator.UntilExpression
 
+	index := 0
 	for {
+		index += 1
+		msg := agentDomain.ScenarioExecResult{
+			ParentId: int(processor.ID),
+			Summary:  fmt.Sprintf("%d. ", index),
+		}
+		execUtils.SendExecMsg(msg, session.WsMsg)
+
 		result, err := EvaluateGovaluateExpressionByScope(expression, entity.ProcessorID)
 		pass, ok := result.(bool)
 		if err != nil || !ok || pass {
 			childBreakProcessor := processor.AppendNewChildProcessor(consts.ProcessorLoop, consts.ProcessorLoopBreak)
 			childBreakProcessor.Result.WillBreak = true
-			childBreakProcessor.Result.Summary = "条件满足，跳出循环。"
+			childBreakProcessor.Result.Summary = fmt.Sprintf("条件%s满足，跳出循环。", expression)
 
 			childBreakProcessor.AddResultToParent()
 			execUtils.SendExecMsg(*childBreakProcessor.Result, session.WsMsg)
@@ -175,7 +191,7 @@ func (entity *ProcessorLoop) GenerateLoopRange() (ret agentDomain.ExecIterator, 
 	return
 }
 func (entity *ProcessorLoop) GenerateLoopList() (ret agentDomain.ExecIterator, err error) {
-	ret.Items, ret.DataType, err = agentUtils.GenerateListItems(entity.List)
+	ret.Items, ret.DataType, err = agentUtils.GenerateListItems(entity.List, entity.IsRand)
 
 	return
 }

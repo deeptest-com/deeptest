@@ -18,13 +18,14 @@ import (
 )
 
 type ProjectRepo struct {
-	DB              *gorm.DB         `inject:""`
-	RoleRepo        *RoleRepo        `inject:""`
-	ProjectRoleRepo *ProjectRoleRepo `inject:""`
-	EnvironmentRepo *EnvironmentRepo `inject:""`
-	UserRepo        *UserRepo        `inject:""`
-	ServeRepo       *ServeRepo       `inject:""`
-	EndpointRepo    *EndpointRepo    `inject:""`
+	DB                         *gorm.DB                    `inject:""`
+	RoleRepo                   *RoleRepo                   `inject:""`
+	ProjectRoleRepo            *ProjectRoleRepo            `inject:""`
+	EnvironmentRepo            *EnvironmentRepo            `inject:""`
+	UserRepo                   *UserRepo                   `inject:""`
+	ServeRepo                  *ServeRepo                  `inject:""`
+	EndpointRepo               *EndpointRepo               `inject:""`
+	ProjectRecentlyVisitedRepo *ProjectRecentlyVisitedRepo `inject:""`
 }
 
 func NewProjectRepo() *ProjectRepo {
@@ -354,7 +355,7 @@ func (r *ProjectRepo) AddProjectRootPlanCategory(projectId uint) (err error) {
 func (r *ProjectRepo) Members(req v1.ProjectReqPaginate, projectId int) (data _domain.PageData, err error) {
 	req.Order = "sys_user.created_at"
 	db := r.DB.Model(&model.SysUser{}).
-		Select("sys_user.id, sys_user.username, sys_user.email, m.project_role_id, r.name").
+		Select("sys_user.id, sys_user.username, sys_user.email,sys_user.name, m.project_role_id, r.name as role_name").
 		Joins("left join biz_project_member m on sys_user.id=m.user_id").
 		Joins("left join biz_project_role r on m.project_role_id=r.id").
 		Where("m.project_id = ?", projectId)
@@ -485,6 +486,25 @@ func (r *ProjectRepo) GetMembersByProject(projectId uint) (ret []model.ProjectMe
 	err = r.DB.Model(&model.ProjectMember{}).
 		Where("project_id = ?", projectId).
 		Find(&ret).Error
+	return
+}
+
+func (r *ProjectRepo) GetAuditList(auditUserId uint) (ret []model.ProjectMemberAudit, err error) {
+	err = r.DB.Model(&model.ProjectMemberAudit{}).
+		Where("audit_user_id = ?", auditUserId).
+		Find(&ret).Order("status asc").Error
+	return
+}
+
+func (r *ProjectRepo) UpdateStatus(id, auditUserId, status uint) (err error) {
+	err = r.DB.Model(&model.ProjectMemberAudit{}).
+		Update("status", status).
+		Where("id and audit_user_id", id, auditUserId).Error
+	return
+}
+
+func (r *ProjectRepo) SaveAudit(audit model.ProjectMemberAudit) (err error) {
+	err = r.DB.Save(&audit).Error
 	return
 }
 

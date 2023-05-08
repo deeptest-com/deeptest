@@ -51,3 +51,10 @@ func RemoveLeftVariableSymbol(str string) (ret string) {
 
 	return
 }
+
+func ToSliceString(data []interface{}) (res []string) {
+	for _, item := range data {
+		res = append(res, item.(string))
+	}
+	return
+}

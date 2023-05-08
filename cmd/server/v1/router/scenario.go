@@ -29,10 +29,7 @@ func (m *ScenarioModule) Party() module.WebModule {
 		index.Post("/", m.ScenarioCtrl.Create).Name = "新建场景"
 		index.Put("/", m.ScenarioCtrl.Update).Name = "更新场景"
 		index.Delete("/{id:uint}", m.ScenarioCtrl.Delete).Name = "删除场景"
-
 		index.Get("/load", m.ScenarioNodeCtrl.LoadTree).Name = "场景树状数据"
-
-		index.Get("/getInterface", m.ScenarioInterfaceCtrl.GetInterface).Name = "场景树状数据"
 		index.Get("/getInterface", m.ScenarioInterfaceCtrl.GetInterface).Name = "场景树状数据"
 	}
 

@@ -7,13 +7,15 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
+	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"gorm.io/gorm"
 )
 
 type PlanReportRepo struct {
-	DB      *gorm.DB `inject:""`
-	LogRepo *LogRepo `inject:""`
+	DB       *gorm.DB  `inject:""`
+	LogRepo  *LogRepo  `inject:""`
+	UserRepo *UserRepo `inject:""`
 }
 
 func (r *PlanReportRepo) Paginate(req v1.ReportReqPaginate, projectId int) (data _domain.PageData, err error) {
@@ -45,9 +47,31 @@ func (r *PlanReportRepo) Paginate(req v1.ReportReqPaginate, projectId int) (data
 		return
 	}
 
+	r.CombineUserName(results)
 	data.Populate(results, count, req.Page, req.PageSize)
 
 	return
+}
+
+func (r *PlanReportRepo) CombineUserName(data []*model.ScenarioReport) {
+	userIds := make([]uint, 0)
+	for _, v := range data {
+		userIds = append(userIds, v.CreateUserId)
+	}
+	userIds = _commUtils.ArrayRemoveUintDuplication(userIds)
+
+	users, _ := r.UserRepo.FindByIds(userIds)
+
+	userIdNameMap := make(map[uint]string)
+	for _, v := range users {
+		userIdNameMap[v.ID] = v.Name
+	}
+
+	for _, v := range data {
+		if name, ok := userIdNameMap[v.CreateUserId]; ok {
+			v.CreateUserName = name
+		}
+	}
 }
 
 func (r *PlanReportRepo) Get(id uint) (report model.ScenarioReport, err error) {

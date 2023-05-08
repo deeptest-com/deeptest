@@ -2,17 +2,15 @@ package model
 
 type SummaryBugs struct {
 	BaseModel
-	ProjectId     int64  `json:"project_id"`
-	BugId         string `gorm:"type:text" json:"bug_id"`
-	Source        string `gorm:"type:text" json:"source"`
-	BugSeverity   string `gorm:"type:text" json:"bug_severity"`
-	BugCreateDate string `gorm:"type:text" json:"bug_create_date"`
-	BugClassify   string `gorm:"type:text" json:"bug_classify"`
-	ProductId     string `gorm:"type:text" json:"product_id"`
-	ProductName   string `gorm:"type:text" json:"product_name"`
-	BugState      string `gorm:"type:text" json:"bug_state"`
-
-	Logs []*ExecLogProcessor `gorm:"-" json:"logs"`
+	ProjectId    int64  `json:"projectId"`
+	BugId        int64  `gorm:"type:varchar(128)" json:"bugId"`
+	Source       string `gorm:"type:varchar(128)" json:"source"`
+	BugSeverity  string `gorm:"type:varchar(50)" json:"bugSeverity"`
+	BugCreatedAt string `gorm:"type:varchar(90)" json:"bugCreatedAt"`
+	BugClassify  string `gorm:"type:varchar(90)" json:"bugClassify"`
+	ProductId    int64  `json:"productId"`
+	ProductName  string `gorm:"type:varchar(128)" json:"productName"`
+	BugState     string `gorm:"type:varchar(50)" json:"bugState"`
 }
 
 type SummaryBugsSeverity struct {

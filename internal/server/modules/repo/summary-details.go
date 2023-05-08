@@ -68,13 +68,13 @@ func (r *SummaryDetailsRepo) FindUserIdsGroupByProjectId() (userIdsGroupByProjec
 }
 
 func (r *SummaryDetailsRepo) FindUserIdAndNameByProjectId(projectId int64) (userIdAndName []v1.ResUserIdAndName, err error) {
-	err = r.DB.Model(&model.ProjectMember{}).Raw("select sys_user.id as user_id,sys_user.name as user_name from sys_user inner join biz_project_member on sys_user.id = biz_project_member.user_id where project_id = ?", projectId).Find(&userIdAndName).Error
+	err = r.DB.Model(&model.ProjectMember{}).Raw("select sys_user.id as userId,sys_user.name as userName from sys_user inner join biz_project_member on sys_user.id = biz_project_member.user_id where project_id = ?", projectId).Find(&userIdAndName).Error
 	return
 }
 
 func (r *SummaryDetailsRepo) FindCreateUserNameByProjectId(projectId int64) (userName string, err error) {
 	//err = r.DB.Model(&model.ProjectMember{}).Raw("select sys_user.id as user_id,sys_user.name as user_name from sys_user inner join biz_project_member on sys_user.id = biz_project_member.user_id where project_id = ?", projectId).First(&userName).Error
-	err = r.DB.Model(&model.ProjectMember{}).Raw("select sys_user.name as user_name from sys_user inner join biz_project_member on sys_user.id = biz_project_member.user_id where project_id = ?", projectId).First(&userName).Error
+	err = r.DB.Model(&model.ProjectMember{}).Raw("select sys_user.name as userName from sys_user inner join biz_project_member on sys_user.id = biz_project_member.user_id where project_id = ?", projectId).First(&userName).Error
 	return
 }
 
@@ -95,12 +95,12 @@ func (r *SummaryDetailsRepo) FindByProjectIds(projectIds []int64) (summaryDetail
 }
 
 func (r *SummaryDetailsRepo) SummaryCard() (summaryCardTotal model.SummaryCardTotal, err error) {
-	err = r.DB.Model(&model.SummaryDetails{}).Raw("select SUM(scenario_total) as scenario_total,sum(interface_total) as interface_total,sum(exec_total) as exec_total,cast(AVG(pass_rate) as decimal(64,1)) as pass_rate,cast(AVG(coverage) as decimal(64,1)) as coverage from (deeptest.biz_summary_details) where id in (SELECT max(id) FROM deeptest.biz_summary_details where NOT deleted  group by project_id);").Find(&summaryCardTotal).Error
+	err = r.DB.Model(&model.SummaryDetails{}).Raw("select SUM(scenario_total) as scenarioTotal,sum(interface_total) as interfaceTotal,sum(exec_total) as execTotal,cast(AVG(pass_rate) as decimal(64,1)) as passRate,cast(AVG(coverage) as decimal(64,1)) as coverage from (deeptest.biz_summary_details) where id in (SELECT max(id) FROM deeptest.biz_summary_details where NOT deleted  group by project_id);").Find(&summaryCardTotal).Error
 	return
 }
 
 func (r *SummaryDetailsRepo) SummaryCardByDate(startTime string, endTime string) (summaryCardTotal model.SummaryCardTotal, err error) {
-	err = r.DB.Model(&model.SummaryDetails{}).Raw("select SUM(scenario_total) as scenario_total,sum(interface_total) as interface_total,sum(exec_total) as exec_total,cast(AVG(pass_rate) as decimal(64,1)) as pass_rate,cast(AVG(coverage) as decimal(64,1)) as coverage from (deeptest.biz_summary_details) where id in (SELECT max(id) FROM deeptest.biz_summary_details where created_at > ? and created_at < ? AND NOT deleted  group by project_id);", startTime, endTime).Find(&summaryCardTotal).Error
+	err = r.DB.Model(&model.SummaryDetails{}).Raw("select SUM(scenario_total) as scenarioTotal,sum(interface_total) as interfaceTotal,sum(exec_total) as execTotal,cast(AVG(pass_rate) as decimal(64,1)) as passRate,cast(AVG(coverage) as decimal(64,1)) as coverage from (deeptest.biz_summary_details) where id in (SELECT max(id) FROM deeptest.biz_summary_details where created_at > ? and created_at < ? AND NOT deleted  group by project_id);", startTime, endTime).Find(&summaryCardTotal).Error
 	return
 }
 
@@ -179,6 +179,6 @@ func (r *SummaryDetailsRepo) CheckDetailsUpdated(lastUpdateTime *time.Time) (res
 }
 
 func (r *SummaryDetailsRepo) CollectionProjectInfo() (details []model.SummaryDetails, err error) {
-	err = r.DB.Model(&model.Project{}).Raw("select id as project_id,created_at as project_create_time,name as project_chinese_name,name as project_name,descr as project_des from deeptest.biz_project where NOT deleted;").Find(&details).Error
+	err = r.DB.Model(&model.Project{}).Raw("select id as projectId,created_at as projectCreatedAt,name as projectName,short_name as projectShortName,descr as projectDescr from deeptest.biz_project where NOT deleted;").Find(&details).Error
 	return
 }

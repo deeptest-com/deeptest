@@ -47,7 +47,9 @@ const (
 )
 
 var (
-	DirUpload   = "upload"
-	ServerUrl   = ""
-	ServerToken = ""
+	DirUpload = "upload"
+	ServerUrl = ""
+
+	ServerApiPath = "api/v1"
+	ServerToken   = ""
 )

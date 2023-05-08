@@ -68,6 +68,7 @@ var (
 		&ProcessorAssertion{},
 		&ProcessorData{},
 		&ProcessorCookie{},
+		&ProcessorExtractor{},
 
 		&ProcessorInterface{},
 		&ProcessorInterfaceParam{},
@@ -117,5 +118,6 @@ var (
 		&ProjectRoleMenu{},
 		&ProjectMenu{},
 		&ProjectRecentlyVisited{},
+		&ProjectMemberAudit{},
 	}
 )

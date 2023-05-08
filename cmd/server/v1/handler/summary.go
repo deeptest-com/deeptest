@@ -15,7 +15,7 @@ type SummaryCtrl struct {
 }
 
 func (c *SummaryCtrl) Summary() {
-	c.SummaryService.SummaryDataCheck()
+	c.SummaryService.Collection()
 	return
 }
 

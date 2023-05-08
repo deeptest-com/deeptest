@@ -37,7 +37,7 @@ func (r *ScenarioRepo) Paginate(req v1.ScenarioReqPaginate, projectId int) (data
 	var categoryIds []uint
 
 	if req.CategoryId > 0 {
-		categoryIds, err = r.BaseRepo.GetAllChildIds(req.CategoryId, model.Category{}.TableName(),
+		categoryIds, err = r.BaseRepo.GetAllChildIds(uint(req.CategoryId), model.Category{}.TableName(),
 			serverConsts.ScenarioCategory, projectId)
 		if err != nil {
 			return
@@ -50,6 +50,8 @@ func (r *ScenarioRepo) Paginate(req v1.ScenarioReqPaginate, projectId int) (data
 
 	if len(categoryIds) > 0 {
 		db.Where("category_id IN(?)", categoryIds)
+	} else if req.CategoryId == -1 {
+		db.Where("category_id IN(?)", -1)
 	}
 
 	if req.Keywords != "" {
@@ -193,6 +195,6 @@ func (r *ScenarioRepo) UpdateSerialNumber(id, projectId uint) (err error) {
 		return
 	}
 
-	err = r.DB.Model(&model.Scenario{}).Where("id=?", id).Update("serial_number", project.ShortName+"-S-"+strconv.Itoa(int(id))).Error
+	err = r.DB.Model(&model.Scenario{}).Where("id=?", id).Update("serial_number", project.ShortName+"-TS-"+strconv.Itoa(int(id))).Error
 	return
 }

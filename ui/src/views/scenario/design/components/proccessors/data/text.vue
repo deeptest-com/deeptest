@@ -11,14 +11,32 @@
           <a-form-item label="变量名称" v-bind="validateInfos.variableName">
             <a-input v-model:value="modelRef.variableName"
                      @blur="validate('variableName', { trigger: 'blur' }).catch(() => {})"/>
+
+            <div v-if="modelRef.variableName" class="dp-input-tip">
+              可使用 {{'${' + modelRef.variableName + '.列名' + '}'}} 访问数据变量
+            </div>
           </a-form-item>
 
           <a-form-item label="上传文件" v-bind="validateInfos.url">
-            <div class="flow-file-input">
+            <div v-if="isElectron" class="upload-file-by-electron">
               <a-input v-model:value="modelRef.url" readonly="readonly" />
               <a-button @click="uploadFile()">
                 <UploadOutlined />
               </a-button>
+            </div>
+
+            <div v-else class="upload-file">
+              <div class="input-container">
+                <a-input v-model:value="modelRef.url" readonly="readonly" />
+              </div>
+              <div class="upload-container">
+                <a-upload :beforeUpload="upload"
+                          :showUploadList="false">
+                  <a-button>
+                    <UploadOutlined />
+                  </a-button>
+                </a-upload>
+              </div>
             </div>
           </a-form-item>
 
@@ -67,6 +85,7 @@ import {NotificationKeyCommon} from "@/utils/const";
 import {getServerUrl} from "@/utils/request";
 import {getToken} from "@/utils/localToken";
 import settings from "@/config/settings";
+import {uploadRequest} from "@/utils/upload";
 
 const useForm = Form.useForm;
 
@@ -138,13 +157,17 @@ const uploadFile = async () => {
     }
 
     ipcRenderer.send(settings.electronMsg, data)
-
-  } else {
-    notification.warn({
-      key: NotificationKeyCommon,
-      message: `请使用客户端上传文件`,
-    });
   }
+}
+
+const upload =  (file, fileList) => {
+  console.log('upload', file, fileList)
+
+  uploadRequest(file).then((path) => {
+    modelRef.value.url = path
+  })
+
+  return false
 }
 
 onMounted(() => {

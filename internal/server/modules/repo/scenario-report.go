@@ -9,11 +9,13 @@ import (
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"gorm.io/gorm"
+	"strconv"
 )
 
 type ScenarioReportRepo struct {
-	DB      *gorm.DB `inject:""`
-	LogRepo *LogRepo `inject:""`
+	DB          *gorm.DB     `inject:""`
+	LogRepo     *LogRepo     `inject:""`
+	ProjectRepo *ProjectRepo `inject:""`
 }
 
 func (r *ScenarioReportRepo) Paginate(req v1.ReportReqPaginate, projectId int) (data _domain.PageData, err error) {
@@ -67,6 +69,13 @@ func (r *ScenarioReportRepo) Create(result *model.ScenarioReport) (bizErr *_doma
 	err := r.DB.Model(&model.ScenarioReport{}).Create(result).Error
 	if err != nil {
 		logUtils.Errorf("create report error %s", err.Error())
+		bizErr.Code = _domain.SystemErr.Code
+
+		return
+	}
+
+	if err = r.UpdateSerialNumber(result.ID, result.ProjectId); err != nil {
+		logUtils.Errorf("update scenario report serial number error %s", err.Error())
 		bizErr.Code = _domain.SystemErr.Code
 
 		return
@@ -220,5 +229,16 @@ func (r *ScenarioReportRepo) listLogCheckpoints(logId uint) (checkpoints []model
 		Where("log_id =? AND not deleted", logId).
 		Find(&checkpoints).Error
 
+	return
+}
+
+func (r *ScenarioReportRepo) UpdateSerialNumber(id, projectId uint) (err error) {
+	var project model.Project
+	project, err = r.ProjectRepo.Get(projectId)
+	if err != nil {
+		return
+	}
+
+	err = r.DB.Model(&model.Scenario{}).Where("id=?", id).Update("serial_number", project.ShortName+"-TR-"+strconv.Itoa(int(id))).Error
 	return
 }

@@ -1,6 +1,8 @@
+import {WsMsgCategory} from "@/utils/enum";
+
 export interface WsMsg {
   msg: string
-  category: string,
+  category: WsMsgCategory,
   data: any
   time: string
 

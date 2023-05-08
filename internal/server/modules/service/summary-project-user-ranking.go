@@ -40,8 +40,8 @@ func (s *SummaryProjectUserRankingService) ProjectUserRanking(projectId int64, c
 					resUserRanking.UserName = newRanking.UserName
 					resUserRanking.UserId = newRanking.UserId
 					resUserRanking.ScenarioTotal = newRanking.ScenarioTotal
-					resUserRanking.TestcasesTotal = newRanking.TestcasesTotal
-					resUserRanking.UpdateTime = newRanking.UpdatedAt
+					resUserRanking.TestCaseTotal = newRanking.TestCaseTotal
+					resUserRanking.UpdatedAt = newRanking.UpdatedAt
 					resUserRanking.Sort = newRanking.Sort
 					resUserRanking.Hb = oldRanking.Sort - newRanking.Sort
 				}
@@ -50,8 +50,8 @@ func (s *SummaryProjectUserRankingService) ProjectUserRanking(projectId int64, c
 			resUserRanking.UserName = newRanking.UserName
 			resUserRanking.UserId = newRanking.UserId
 			resUserRanking.ScenarioTotal = newRanking.ScenarioTotal
-			resUserRanking.TestcasesTotal = newRanking.TestcasesTotal
-			resUserRanking.UpdateTime = newRanking.UpdatedAt
+			resUserRanking.TestCaseTotal = newRanking.TestCaseTotal
+			resUserRanking.UpdatedAt = newRanking.UpdatedAt
 			resUserRanking.Sort = newRanking.Sort
 			resUserRanking.Hb = 0
 		}

@@ -3,7 +3,7 @@
     <div class="p-2 bg-white">
       <List
         :grid="{ gutter: 5, xs: 1, sm: 2, md: 4, lg: 4, xl: grid, xxl: grid }"
-        :data-source="tableList"
+        :data-source="searchValue!=''? filterList:tableList"
         :pagination="paginationProp"
         :loading="loading"
       >
@@ -114,6 +114,9 @@ const props = defineProps({
   activeKey: {
     type: Number,
   },
+  searchValue: {
+    type: String,
+  },
 });
 const router = useRouter();
 const store = useStore<{ Home: StateType }>();
@@ -122,7 +125,8 @@ const CardMeta = Card.Meta;
 const list = computed<any>(() => store.state.Home.queryResult.list);
 const projectLoading = computed<any>(() => store.state.Home.loading);
 const TypographyText = Typography.Text;
-const tableList = ref([]);
+const tableList = ref<any>([]);
+const filterList=ref<any>([]);
 const loading = ref(true);
 //分页相关
 const page = ref(1);
@@ -149,7 +153,33 @@ const height = computed(() => {
 function sliderChange(n) {
   pageSize.value = n * 4;
 }
-
+ 
+// 监听关键词搜索
+watch(
+  () => {
+    return props.searchValue;
+  },
+  async (newVal) => {
+    console.log("watch props.searchValue", props.searchValue);
+    if (!props.searchValue) {
+       total.value = tableList.value.length;
+        return;
+      }
+      const searchText = props.searchValue.toLowerCase();
+       filterList.value= tableList.value.filter(item => {
+        // console.log(item)
+        // 根据你的数据结构，修改下面的属性名
+        return (
+          item.createdAt.toLowerCase().includes(searchText) 
+        );
+      });
+       total.value = filterList.value.length;
+      
+  },
+  {
+    immediate: true,
+  }
+);
 // 监听项目数据变化
 watch(
   () => {
@@ -193,9 +223,11 @@ watch(
 );
 async function fetch(data) {
   tableList.value = data;
+
   if (tableList.value && tableList.value.length > 0) {
     total.value = tableList.value.length;
   }
+  
 }
 
 function pageChange(p, pz) {

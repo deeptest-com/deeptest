@@ -19,10 +19,6 @@ type SummaryDetails struct {
 	ExecTotal      int64   `json:"execTotal"`
 	PassRate       float64 `json:"passRate"`
 	Coverage       float64 `json:"coverage"`
-	AdminName      string  `gorm:"type:varchar(90)" json:"adminName"`
-	AdminId        int64   `json:"adminId"`
-	Logo           string  `json:"logo"`
-	IncludeExample bool    `json:"includeExample"`
 }
 
 // Scan 解码json字符串

@@ -128,10 +128,6 @@ func (s *SummaryService) CollectionDetails() (err error) {
 
 	for _, detail := range details {
 
-		//根据projectid获取所有用户列表,将id最小的名字赋值进来,现成的方法返回getusersByprojectid
-
-		detail.AdminName, _ = s.SummaryDetailsService.FindCreateUserNameByProjectId(detail.ProjectId)
-
 		//从biz_scenario表根据projectid,查找场景总数
 		detail.ScenarioTotal, _ = s.SummaryDetailsService.CountScenarioTotalProjectId(detail.ProjectId)
 
@@ -158,5 +154,18 @@ func (s *SummaryService) CollectionDetails() (err error) {
 
 		s.SummaryDetailsService.CreateByDate(detail)
 	}
+	return
+}
+
+func DecimalHB(newValue float64, oldValue float64) float64 {
+	value := newValue / oldValue
+	value = value - 1
+	return value * 100
+}
+
+func GetDate(date time.Time) (startTime string, endTime string) {
+	year, month, day := date.Date()
+	startTime = strconv.Itoa(year) + "-" + strconv.Itoa(int(month)) + "-" + strconv.Itoa(day) + " 00:00:00"
+	endTime = strconv.Itoa(year) + "-" + strconv.Itoa(int(month)) + "-" + strconv.Itoa(day) + " 23:59:59"
 	return
 }

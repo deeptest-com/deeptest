@@ -28,7 +28,7 @@ func (r *SummaryProjectUserRankingRepo) UpdateColumnsByDate(summaryProjectUserRa
 
 func (r *SummaryProjectUserRankingRepo) HasDataOfDate(startTime string, endTime string) (ret bool, err error) {
 	var count int64
-	err = r.DB.Model(&model.SummaryProjectUserRanking{}).Raw("select count(id) from deeptest.biz_summary_project_user_ranking where created_at > ? and created_at < ? AND NOT deleted;", startTime, endTime).Last(&count).Error
+	err = r.DB.Model(&model.SummaryProjectUserRanking{}).Raw("select count(id) from deeptest.biz_summary_project_user_ranking where created_at >= ? and created_at < ? AND NOT deleted;", startTime, endTime).Last(&count).Error
 	if count == 0 {
 		ret = true
 	}
@@ -41,7 +41,7 @@ func (r *SummaryProjectUserRankingRepo) FindProjectIds() (projectIds []int64, er
 }
 
 func (r *SummaryProjectUserRankingRepo) FindByDateAndProjectId(startTime string, endTime string, projectId int64) (summaryProjectUserRanking []model.SummaryProjectUserRanking, err error) {
-	err = r.DB.Model(&model.SummaryProjectUserRanking{}).Raw("select scenario_total,test_case_total,updated_at,user_name,sort,user_id,project_id from deeptest.biz_summary_project_user_ranking where id in (SELECT max(id) FROM deeptest.biz_summary_project_user_ranking where created_at > ? and created_at < ? AND NOT deleted And project_id = ? group by user_id ORDER BY sort asc);", startTime, endTime, projectId).Find(&summaryProjectUserRanking).Error
+	err = r.DB.Model(&model.SummaryProjectUserRanking{}).Raw("select scenario_total,test_case_total,updated_at,user_name,sort,user_id,project_id from deeptest.biz_summary_project_user_ranking where id in (SELECT max(id) FROM deeptest.biz_summary_project_user_ranking where created_at >= ? and created_at < ? AND NOT deleted And project_id = ? group by user_id ORDER BY sort asc);", startTime, endTime, projectId).Find(&summaryProjectUserRanking).Error
 	return
 }
 

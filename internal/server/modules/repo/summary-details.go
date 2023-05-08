@@ -30,7 +30,7 @@ func (r *SummaryDetailsRepo) UpdateColumnsByDate(summaryDetails model.SummaryDet
 
 func (r *SummaryDetailsRepo) HasDataOfDate(startTime string, endTime string) (ret bool, err error) {
 	var count int64
-	err = r.DB.Model(&model.SummaryDetails{}).Raw("select count(id) from (deeptest.biz_summary_details) where created_at > ? and created_at < ? AND NOT deleted;", startTime, endTime).Last(&count).Error
+	err = r.DB.Model(&model.SummaryDetails{}).Raw("select count(id) from (deeptest.biz_summary_details) where created_at >= ? and created_at < ? AND NOT deleted;", startTime, endTime).Last(&count).Error
 	if count == 0 {
 		ret = false
 	}
@@ -44,6 +44,16 @@ func (r *SummaryDetailsRepo) Count() (count int64, err error) {
 
 func (r *SummaryDetailsRepo) CountByUserId(userId int64) (count int64, err error) {
 	err = r.DB.Model(&model.ProjectMember{}).Select("count(distinct project_id)").Where("user_id = ? AND NOT deleted", userId).Find(&count).Error
+	return
+}
+
+func (r *SummaryDetailsRepo) FindProjectDetails() (projectDetails []model.Project, err error) {
+	err = r.DB.Model(&model.Project{}).Select("*").Where("NOT deleted").Find(&projectDetails).Error
+	return
+}
+
+func (r *SummaryDetailsRepo) FindAdminNameByAdminId(adminId int64) (adminName string, err error) {
+	err = r.DB.Model(&model.SysUser{}).Select("name").Where("id = ?", adminId).Find(&adminName).Error
 	return
 }
 
@@ -84,8 +94,7 @@ func (r *SummaryDetailsRepo) FindByProjectId(projectId int64) (summaryDetail mod
 }
 
 func (r *SummaryDetailsRepo) Find() (summaryDetails []model.SummaryDetails, err error) {
-	//err = r.DB.Model(&model.SummaryDetails{}).Raw("select * from (deeptest.biz_summary_details) where id in (SELECT max(id) FROM deeptest.biz_summary_details group by project_id) AND NOT deleted;").Find(&summaryDetails).Error
-	err = r.DB.Model(&model.SummaryDetails{}).Raw("select p.name project_name,p.name project_chinese_name,p.id project_id,p.logo logo,su.name admin_user,su.id admin_id,p.created_at from deeptest.biz_project  p , deeptest.sys_user  su where p.admin_id = su.id and  not p.deleted and not p.disabled").Find(&summaryDetails).Error
+	err = r.DB.Model(&model.SummaryDetails{}).Raw("select * from (deeptest.biz_summary_details) where not deleted and not disabled").Find(&summaryDetails).Error
 	return
 }
 
@@ -100,7 +109,7 @@ func (r *SummaryDetailsRepo) SummaryCard() (summaryCardTotal model.SummaryCardTo
 }
 
 func (r *SummaryDetailsRepo) SummaryCardByDate(startTime string, endTime string) (summaryCardTotal model.SummaryCardTotal, err error) {
-	err = r.DB.Model(&model.SummaryDetails{}).Raw("select SUM(scenario_total) as scenarioTotal,sum(interface_total) as interfaceTotal,sum(exec_total) as execTotal,cast(AVG(pass_rate) as decimal(64,1)) as passRate,cast(AVG(coverage) as decimal(64,1)) as coverage from (deeptest.biz_summary_details) where id in (SELECT max(id) FROM deeptest.biz_summary_details where created_at > ? and created_at < ? AND NOT deleted  group by project_id);", startTime, endTime).Find(&summaryCardTotal).Error
+	err = r.DB.Model(&model.SummaryDetails{}).Raw("select SUM(scenario_total) as scenarioTotal,sum(interface_total) as interfaceTotal,sum(exec_total) as execTotal,cast(AVG(pass_rate) as decimal(64,1)) as passRate,cast(AVG(coverage) as decimal(64,1)) as coverage from (deeptest.biz_summary_details) where id in (SELECT max(id) FROM deeptest.biz_summary_details where created_at >= ? and created_at < ? AND NOT deleted  group by project_id);", startTime, endTime).Find(&summaryCardTotal).Error
 	return
 }
 

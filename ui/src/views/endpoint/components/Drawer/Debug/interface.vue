@@ -1,21 +1,8 @@
 <template>
   <div class="debug-main">
-    <div class="debug-methods">
-      <a-radio-group @change="changeMethod" v-model:value="selectedMethod" button-style="solid">
-        <template v-for="method in requestMethodOpts" :key="method.value">
-          <a-radio-button
-              v-if="hasDefinedMethod(method.value)"
-              :value="method.value"
-              class="has-defined">
-            {{ method.label }}
-          </a-radio-button>
-        </template>
-      </a-radio-group>
-    </div>
-
     <div id="debug-form">
       <div id="top-panel">
-        <InterfaceRequest v-if="debugData.method"></InterfaceRequest>
+        <InterfaceRequest v-if="debugData.method" :show-reuqest-invocation="false" :show-debug-data-url="false"></InterfaceRequest>
       </div>
 
       <div id="design-splitter-v" :hidden="!debugData.method"></div>
@@ -30,12 +17,10 @@
 </template>
 
 <script setup lang="ts">
-import {computed, inject, onMounted, onUnmounted, ref, watch} from "vue";
-import {useI18n} from "vue-i18n";
+import {computed, onMounted, onUnmounted } from "vue";
 import {resizeHandler, resizeHeight} from "@/utils/dom";
 import {useStore} from "vuex";
 
-import {requestMethodOpts} from '@/config/constant';
 import {StateType as ProjectGlobal} from "@/store/project";
 import {StateType as Debug} from "@/views/component/debug/store";
 import {StateType as Endpoint} from "@/views/endpoint/store";
@@ -44,46 +29,8 @@ import InterfaceRequest from '@/views/component/debug/request/Index.vue';
 import InterfaceResponse from '@/views/component/debug/response/Index.vue';
 import RequestVariable from '@/components/Editor/RequestVariable.vue';
 
-import {UsedBy} from "@/utils/enum";
-import {DebugInfo} from "@/views/component/debug/data";
-const usedBy = inject('usedBy') as UsedBy
-const {t} = useI18n();
 const store = useStore<{  Debug: Debug, ProjectGlobal: ProjectGlobal, Endpoint: Endpoint }>();
-
-const endpointDetail = computed<any>(() => store.state.Endpoint.endpointDetail);
-const selectedMethodDetail = computed<any>(() => store.state.Endpoint.selectedMethodDetail);
-const interfaceMethodToObjMap = computed<any>(() => store.state.Endpoint.interfaceMethodToObjMap);
-
-const debugInfo = computed<DebugInfo>(() => store.state.Debug.debugInfo);
 const debugData = computed<any>(() => store.state.Debug.debugData);
-
-const selectedMethod = ref(selectedMethodDetail.value?.method ? selectedMethodDetail.value?.method : 'GET');
-
-const changeMethod = async () => {
-  console.log('changeMethod', selectedMethod.value, interfaceMethodToObjMap)
-
-  const endpointInterface = interfaceMethodToObjMap.value[selectedMethod.value]
-
-  // sync with / to define page
-  if (endpointInterface) {
-    await store.commit('Endpoint/setSelectedMethodDetail', endpointInterface);
-  } else {
-    await store.commit('Endpoint/setSelectedMethodDetail', {});
-  }
-
-  store.dispatch('Debug/loadDataAndInvocations', {
-    endpointInterfaceId: endpointInterface.id,
-    scenarioProcessorId: 0,
-    usedBy: usedBy,
-  });
-}
-changeMethod()
-
-function hasDefinedMethod(method: string) {
-  return endpointDetail?.value?.interfaces?.some((item) => {
-    return item.method === method;
-  })
-}
 
 onMounted(() => {
   console.log('onMounted interface')
@@ -103,14 +50,6 @@ const resize = () => {
 
 <style lang="less" scoped>
 .debug-main {
-  .debug-methods {
-    .has-defined {
-      color: #1890ff;
-      &.ant-radio-button-wrapper-checked {
-        color: #FFF;
-      }
-    }
-  }
 
   #debug-form {
     flex: 1;

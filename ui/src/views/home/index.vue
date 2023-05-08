@@ -94,7 +94,6 @@ const getList = async (current: number): Promise<void> => {
 // 创建项目成功的回调
 const handleCreateSuccess = () => {
   createProjectModalVisible.value = false;
-  // todo: 重新获取列表
   getList(1);
 };
 
@@ -106,13 +105,13 @@ function handleOpenAdd() {
   formState.value.id = 0;
 }
 function handleOpenEdit(item) {
-  formState.value.id = item.project_id;
-  formState.value.name = item.project_chinese_name;
+  formState.value.id = item.projectId;
+  formState.value.name = item.projectName;
   formState.value.logo = item.logo;
-  formState.value.shortName = item.project_name;
-  formState.value.adminId = item.admin_id;
-  formState.value.includeExample = item.include_example;
-  formState.value.desc = item.project_des;
+  formState.value.shortName = item.projectShortName;
+  formState.value.adminId = item.adminId;
+  formState.value.includeExample = item.includeExample;
+  formState.value.desc = item.projectDescr;
   createProjectModalVisible.value = true;
 }
 async function handleDelete(id) {

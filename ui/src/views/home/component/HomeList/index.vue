@@ -8,7 +8,7 @@
     
     >
       <template #name="{ text, record }">
-        <div class="project-name" :title="text" @click="goProject(record.project_id)">
+        <div class="project-name" :title="text" @click="goProject(record.projectId)">
           {{ text.length>16? text.substring(0,16)+'...':text}}
         </div>
       </template>
@@ -33,7 +33,7 @@
                   style="width: 80px"
                   type="link"
                   size="small"
-                  @click="handleDelete(record.project_id)"
+                  @click="handleDelete(record.projectId)"
                   >删除</a-button
                 >
               </a-menu-item>
@@ -102,14 +102,14 @@ const columns = [
   // },
    {
     title: "项目名称",
-    dataIndex: "project_chinese_name",
+    dataIndex: "projectName",
     slots: { customRender: "name" },
       width: 200,
        ellipsis: true,
   },
   {
     title: "英文缩写",
-    dataIndex: "project_name",
+    dataIndex: "projectShortName",
      ellipsis: true,
      width: 150,
   },
@@ -117,14 +117,14 @@ const columns = [
 
   {
     title: "管理员",
-    dataIndex: "admin_user",
+    dataIndex: "adminName",
       ellipsis: true,
      width: 150,
   },
 
   {
     title: "测试场景数",
-    dataIndex: "scenario_total",
+    dataIndex: "scenarioTotal",
   },
   {
     title: "测试覆盖率",
@@ -132,15 +132,15 @@ const columns = [
   },
   {
     title: "执行次数",
-    dataIndex: "exec_total",
+    dataIndex: "execTotal",
   },
   {
     title: "测试通过率",
-    dataIndex: "pass_rate",
+    dataIndex: "passRate",
   },
   {
     title: "发现缺陷",
-    dataIndex: "bug_total",
+    dataIndex: "bugTotal",
   },
   {
     title: "创建时间",
@@ -162,7 +162,7 @@ watch(
   },
   async (newVal) => {
     console.log("watch list.value", list.value);
-    fetch(list.value.current_user_project_list);
+    fetch(list.value.userProjectList);
   },
   {
     immediate: true,
@@ -175,9 +175,9 @@ watch(
   },
   async (newVal) => {
     if (newVal == 1) {
-      fetch(list.value.current_user_project_list);
+      fetch(list.value.userProjectList);
     } else {
-      fetch(list.value.all_project_list);
+      fetch(list.value.projectList);
     }
   },
   {
@@ -212,7 +212,7 @@ const getList = async (current: number): Promise<void> => {
 
 };
 function handleTabClick(e: number) {
-  queryParams.userId = e;
+ 
   getList(1);
 }
 async function goProject(projectId: number) {

@@ -1,7 +1,7 @@
 import { Mutation, Action } from 'vuex';
 import { StoreModuleType } from "@/utils/store";
 import { ResponseData } from '@/utils/request';
-import { Report, QueryResult, QueryParams, PaginationConfig } from './data';
+import { Report, QueryResult, QueryParams } from './data';
 import { query, get, remove, members} from './service';
 
 export interface StateType {
@@ -72,11 +72,10 @@ const StoreModel: ModuleType = {
         }
     },
     actions: {
-        async list({ commit, dispatch }, params: QueryParams ) {
+        async list({ commit }, params: QueryParams ) {
             try {
                 const response: ResponseData = await query(params);
                 if (response.code != 0) return;
-                console.log(response);
                 const data = response.data;
                 const { result, page, pageSize, total } = response.data;
                 const newResult = result.map((reportItem: any) => {
@@ -86,7 +85,6 @@ const StoreModel: ModuleType = {
                     } else {
                         reportItem.interfacePassRate = '0%';
                     }
-                    console.log(reportItem.interfacePassRate);
                     reportItem.serialNumber = reportItem.serialNumber || '-';
                     reportItem.createUserName = reportItem.createUserName || '-';
                     return reportItem;
@@ -130,7 +128,7 @@ const StoreModel: ModuleType = {
         },
 
 
-        async remove({ commit, dispatch, state }, payload: number ) {
+        async remove({ dispatch, state }, payload: number ) {
             try {
                 await remove(payload);
 

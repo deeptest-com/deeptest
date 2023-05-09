@@ -104,7 +104,7 @@ const columns = [
 
   {
     title: "用例数",
-    dataIndex: "testcases_total",
+    dataIndex: "testCaseTotal",
   },
   {
     title: "场景数",
@@ -112,7 +112,7 @@ const columns = [
   },
   {
     title: "最近更新日期",
-    dataIndex: "update_time",
+    dataIndex: "updatedAt",
   },
 ];
 

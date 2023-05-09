@@ -186,7 +186,7 @@ watch(
         // console.log(item)
         // 根据你的数据结构，修改下面的属性名
         return (
-          item.createdAt.toLowerCase().includes(searchText) 
+          item.projectName.toLowerCase().includes(searchText) 
         );
       });
        total.value = filterList.value.length;

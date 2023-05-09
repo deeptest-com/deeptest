@@ -18,8 +18,6 @@ type ReqSummaryBugs struct {
 	BugSeverity   string `gorm:"type:text" json:"bugSeverity"`
 	BugCreateDate string `gorm:"type:text" json:"bugCreatedAt"`
 	BugClassify   string `gorm:"type:text" json:"bugClassify"`
-	ProductId     string `gorm:"type:text" json:"productId"`
-	ProductName   string `gorm:"type:text" json:"productName"`
 	BugState      string `gorm:"type:text" json:"bugState"`
 }
 

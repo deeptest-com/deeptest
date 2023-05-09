@@ -48,7 +48,7 @@ func (r *SummaryDetailsRepo) CountByUserId(userId int64) (count int64, err error
 }
 
 func (r *SummaryDetailsRepo) FindProjectDetails() (projectDetails []model.Project, err error) {
-	err = r.DB.Model(&model.Project{}).Select("*").Where("NOT deleted").Find(&projectDetails).Error
+	err = r.DB.Model(&model.Project{}).Select("*").Where("NOT deleted").Find(&projectDetails).Order("id").Error
 	return
 }
 
@@ -58,7 +58,7 @@ func (r *SummaryDetailsRepo) FindAdminNameByAdminId(adminId int64) (adminName st
 }
 
 func (r *SummaryDetailsRepo) FindProjectIdsByUserId(userId int64) (projectIds []int64, err error) {
-	err = r.DB.Model(&model.ProjectMember{}).Select("distinct project_id").Where("user_id = ? AND NOT deleted", userId).Find(&projectIds).Error
+	err = r.DB.Model(&model.ProjectMember{}).Select("distinct project_id").Where("user_id = ? AND NOT deleted", userId).Find(&projectIds).Order("user_id").Error
 	return
 }
 
@@ -78,28 +78,29 @@ func (r *SummaryDetailsRepo) FindUserIdsGroupByProjectId() (userIdsGroupByProjec
 }
 
 func (r *SummaryDetailsRepo) FindUserIdAndNameByProjectId(projectId int64) (userIdAndName []v1.ResUserIdAndName, err error) {
-	err = r.DB.Model(&model.ProjectMember{}).Raw("select sys_user.id as userId,sys_user.name as userName from sys_user inner join biz_project_member on sys_user.id = biz_project_member.user_id where project_id = ?", projectId).Find(&userIdAndName).Error
+	err = r.DB.Model(&model.ProjectMember{}).Raw("select sys_user.id as user_id,sys_user.name as user_name from sys_user inner join biz_project_member on sys_user.id = biz_project_member.user_id where project_id = ?", projectId).Find(&userIdAndName).Error
+
 	return
 }
 
 func (r *SummaryDetailsRepo) FindCreateUserNameByProjectId(projectId int64) (userName string, err error) {
 	//err = r.DB.Model(&model.ProjectMember{}).Raw("select sys_user.id as user_id,sys_user.name as user_name from sys_user inner join biz_project_member on sys_user.id = biz_project_member.user_id where project_id = ?", projectId).First(&userName).Error
-	err = r.DB.Model(&model.ProjectMember{}).Raw("select sys_user.name as userName from sys_user inner join biz_project_member on sys_user.id = biz_project_member.user_id where project_id = ?", projectId).First(&userName).Error
+	err = r.DB.Model(&model.ProjectMember{}).Raw("select sys_user.name as user_name from sys_user inner join biz_project_member on sys_user.id = biz_project_member.user_id where project_id = ?", projectId).First(&userName).Error
 	return
 }
 
 func (r *SummaryDetailsRepo) FindByProjectId(projectId int64) (summaryDetail model.SummaryDetails, err error) {
-	err = r.DB.Model(&model.SummaryDetails{}).Where("project_id = ? AND NOT deleted", projectId).Last(&summaryDetail).Error
+	err = r.DB.Model(&model.SummaryDetails{}).Raw("select * from (deeptest.biz_summary_details) where id in (SELECT max(id) FROM deeptest.biz_summary_details where project_id = ? group by project_id) AND NOT deleted ;", projectId).Find(&summaryDetail).Error
 	return
 }
 
 func (r *SummaryDetailsRepo) Find() (summaryDetails []model.SummaryDetails, err error) {
-	err = r.DB.Model(&model.SummaryDetails{}).Raw("select * from (deeptest.biz_summary_details) where not deleted and not disabled").Find(&summaryDetails).Error
+	err = r.DB.Model(&model.SummaryDetails{}).Raw("select * from deeptest.biz_summary_details where id in (SELECT max(id) FROM deeptest.biz_summary_details where NOT deleted group by project_id) order by project_id;").Find(&summaryDetails).Error
 	return
 }
 
 func (r *SummaryDetailsRepo) FindByProjectIds(projectIds []int64) (summaryDetails []model.SummaryDetails, err error) {
-	err = r.DB.Model(&model.SummaryDetails{}).Raw("select * from (deeptest.biz_summary_details) where id in (SELECT max(id) FROM deeptest.biz_summary_details where project_id in ? group by project_id) AND NOT deleted ;", projectIds).Find(&summaryDetails).Error
+	err = r.DB.Model(&model.SummaryDetails{}).Raw("select * from (deeptest.biz_summary_details) where id in (SELECT max(id) FROM deeptest.biz_summary_details where project_id in ? group by project_id) AND NOT deleted  order by project_id;", projectIds).Find(&summaryDetails).Error
 	return
 }
 

@@ -8,8 +8,6 @@ type SummaryBugs struct {
 	BugSeverity  string `gorm:"type:varchar(50)" json:"bugSeverity"`
 	BugCreatedAt string `gorm:"type:varchar(90)" json:"bugCreatedAt"`
 	BugClassify  string `gorm:"type:varchar(90)" json:"bugClassify"`
-	ProductId    int64  `json:"productId"`
-	ProductName  string `gorm:"type:varchar(128)" json:"productName"`
 	BugState     string `gorm:"type:varchar(50)" json:"bugState"`
 }
 

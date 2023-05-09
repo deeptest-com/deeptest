@@ -60,20 +60,20 @@
 
       </a-table>
     </div>
-
     <LogDetail :drawer-visible="reportDetailVisible" @on-close="reportDetailVisible = false" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import { useStore } from "vuex";
-import debounce from "lodash.debounce";
 import { ColumnProps } from 'ant-design-vue/es/table/interface';
 import { Modal, notification } from "ant-design-vue";
 import { MoreOutlined } from "@ant-design/icons-vue";
+// 表格筛选组件
 import TableFilter from "../components/TableFilter.vue";
-import LogDetail from "../components/Log.vue";
+// 报告详情的抽屉组件
+import LogDetail from "../components/Detail.vue";
 import { StateType as ProjectStateType } from "@/store/project";
 import { StateType } from "@/views/report/store";
 import { PaginationConfig, Report } from "@/views/report/data";
@@ -81,13 +81,18 @@ import { NotificationKeyCommon } from "@/utils/const";
 import { momentUtc } from "@/utils/datetime";
 
 const store = useStore<{ Report: StateType, ProjectGlobal: ProjectStateType }>();
+// 全局选中的项目
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
+// 报告列表信息
 const list = computed<Report[]>(() => store.state.Report.listResult.list);
+// 报告筛选执行人列表信息
 const members = computed<Report[]>(() => store.state.Report.members);
+// 分页数据
 let pagination = computed<PaginationConfig>(() => store.state.Report.listResult.pagination);
-
+// 表格选中项
 const selectedRowKeys = ref<Key[]>([]);
-const reportDetailVisible = ref(false);
+const reportDetailVisible = ref(true);
+// 初始查询参数
 const queryParams = {
   currProjectId: 0,
   executeStartTime: '',
@@ -173,34 +178,7 @@ const handleExport = (id: number) => {
 
 const handleDelete = (id: number) => {
   console.log('remove')
-
-  Modal.confirm({
-    title: '删除报告',
-    content: '确定删除指定的报告？',
-    okText: '确认',
-    cancelText: '取消',
-    onOk: async () => {
-      store.dispatch('Report/remove', id).then((res) => {
-        console.log('res', res)
-        if (res === true) {
-          notification.success({
-            key: NotificationKeyCommon,
-            message: `删除成功`,
-          });
-        } else {
-          notification.error({
-            key: NotificationKeyCommon,
-            message: `删除失败`,
-          });
-        }
-      })
-    }
-  });
 }
-
-const onSearch = debounce(() => {
-  // getList(1)
-}, 500);
 
 watch(currProject, (val) => {
   console.log(val);

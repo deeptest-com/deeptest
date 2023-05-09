@@ -36,7 +36,7 @@
             <div class="report-list">
                 <a-table 
                     class="scenario-table"
-                    rowClassName="scenario-row-item"
+                    :rowClassName="() => 'scenario-row-item'"
                     :dataSource="reportData.logList" 
                     :columns="scenarioReportColumns" 
                     :show-header="false"
@@ -46,10 +46,10 @@
                     :expandIconAsCell="false">
                     <template #expandIcon="props">
                         <template v-if="props.expanded">
-                            <span @click="$event => props.onExpand(props.record, $event)">收起 &nbsp; <UpOutlined /></span>
+                            <span style="cursor: pointer;" @click="$event => props.onExpand(props.record, $event)">收起 &nbsp; <UpOutlined /></span>
                         </template>
                         <template v-else>
-                            <span @click="$event => props.onExpand(props.record, $event)">展开 &nbsp; <DownOutlined /></span>
+                            <span style="cursor: pointer;" @click="$event => props.onExpand(props.record, $event)">展开 &nbsp; <DownOutlined /></span>
                         </template>
                     </template>
                     <template #scenarioName="{ record }">
@@ -74,7 +74,7 @@
                         <div class="reponsedata-list">
                             <a-table 
                                 class="reponsedata-table"
-                                rowClassName="reponsedata-row-item"
+                                :rowClassName="() => 'reponsedata-row-item'"
                                 :showHeader="false" 
                                 :columns="responseDataColumns" 
                                 :data-source="record.reponseList"

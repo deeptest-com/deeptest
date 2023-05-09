@@ -114,7 +114,7 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
         icon: 'report',
         title: 'report',
         path: 'index',
-        component: () => import('@/views/report/list/index.vue'),
+        component: () => import('@/views/report/index.vue'),
         hidden: false,
         meta: {
           code: 'REPORT'

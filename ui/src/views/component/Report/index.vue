@@ -3,7 +3,7 @@
         @close="onClose">
         <template #title>
             <div class="drawer-header">
-                <div>测试报告详情</div>
+                <div>测试报告详情11</div>
             </div>
         </template>
         <div class="drawer-content">
@@ -140,7 +140,7 @@
 <script setup lang="ts">
 import { defineProps, defineEmits, ref, onMounted, watch } from 'vue';
 import { DownOutlined, RightOutlined, ExclamationCircleOutlined, UpOutlined } from '@ant-design/icons-vue';
-import { responseDataColumns, scenarioReportColumns } from '../config';
+import { responseDataColumns, scenarioReportColumns } from './config';
 import TextItem from './TextItem.vue';
 import * as echarts from 'echarts';
 

@@ -36,16 +36,24 @@
     </div>
 </template>
 <script setup lang="ts">
-import { ref, defineProps, reactive, defineEmits } from 'vue';
+import { ref, reactive, defineEmits, computed, watch } from 'vue';
+import { useStore } from 'vuex';
+import { StateType } from "../store";
+import { StateType as ProjectStateType } from "@/store/project";
+
+const store = useStore<{ Report: StateType, ProjectGlobal: ProjectStateType }>();
+const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
+const executorOptions = computed<any[]>(() => store.state.Report.members);
 
 const selectValue = ref(null);
 const executeName = ref('');
 const formState = reactive({});
-defineProps<{
-    executorOptions: any[]
-}>()
 
 const emits = defineEmits(['getList']);
+
+const getMember = async (): Promise<void> => {
+  await store.dispatch('Report/getMembers', currProject.value.id)
+}
 
 function onRangeOk(date: string) {
     console.log('current select executime ---', date);
@@ -59,6 +67,16 @@ function handleSelectChange(value: any) {
 const onSearch = (val: string) => {
   emits('getList', { keywords: val })
 };
+
+watch(() => {
+    return currProject.value;
+}, (val: any) => {
+    if (val.id) {
+        getMember();
+    }
+}, {
+    immediate: true
+})
 </script>
 <style scoped lang="less">
 .report-table-filter {

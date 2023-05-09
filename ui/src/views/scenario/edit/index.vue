@@ -1,35 +1,46 @@
 <template>
   <div class="scenario-edit-main">
-    <a-card :bordered="false">
-      <template #title>
-        <div>{{modelId > 0 ? '编辑场景' : '新建场景'}}</div>
-      </template>
+    <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
+      <a-form-item label="名称" v-bind="validateInfos.name">
+        <a-input v-model:value="modelRef.name"
+                 @blur="validate('name', { trigger: 'blur' }).catch(() => {})" />
+      </a-form-item>
 
-      <template #extra></template>
+      <a-form-item label="优先级" v-bind="validateInfos.desc">
+        <a-select v-model:value="validateInfos.region" placeholder="请选择">
+          <a-select-option value="shanghai">Zone one</a-select-option>
+          <a-select-option value="beijing">Zone two</a-select-option>
+        </a-select>
+      </a-form-item>
 
-      <div>
-        <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
-          <a-form-item label="名称" v-bind="validateInfos.name">
-            <a-input v-model:value="modelRef.name"
-                     @blur="validate('name', { trigger: 'blur' }).catch(() => {})" />
-          </a-form-item>
+      <a-form-item label="所属分类" v-bind="validateInfos.desc">
+        <a-select v-model:value="validateInfos.region" placeholder="请选择">
+          <a-select-option value="shanghai">Zone one</a-select-option>
+          <a-select-option value="beijing">Zone two</a-select-option>
+        </a-select>
+      </a-form-item>
 
-          <a-form-item label="描述" v-bind="validateInfos.desc">
-            <a-input v-model:value="modelRef.desc"
-                     @blur="validate('desc', { trigger: 'blur' }).catch(() => {})" />
-          </a-form-item>
+      <a-form-item label="测试类型" v-bind="validateInfos.desc">
+        <a-select v-model:value="validateInfos.region" placeholder="请选择">
+          <a-select-option value="shanghai">Zone one</a-select-option>
+          <a-select-option value="beijing">Zone two</a-select-option>
+        </a-select>
+      </a-form-item>
 
-          <a-form-item v-if="modelId > 0" label="是否禁用">
-            <a-switch v-model:checked="modelRef.disabled" />
-          </a-form-item>
+      <a-form-item label="描述" v-bind="validateInfos.desc">
+        <a-textarea v-model:value="modelRef.desc"
+                    @blur="validate('desc', { trigger: 'blur' }).catch(() => {})" />
+      </a-form-item>
 
-          <a-form-item :wrapper-col="{ span: 14, offset: 4 }">
-            <a-button type="primary" @click.prevent="submitForm">保存</a-button>
-            <a-button style="margin-left: 10px" @click="resetFields">重置</a-button>
-          </a-form-item>
-        </a-form>
-      </div>
-    </a-card>
+      <a-form-item v-if="modelId > 0" label="是否禁用">
+        <a-switch v-model:checked="modelRef.disabled" />
+      </a-form-item>
+
+      <a-form-item :wrapper-col="{ span: 14, offset: 4 }">
+        <a-button type="primary" @click.prevent="submitForm">保存</a-button>
+        <a-button style="margin-left: 10px" @click="resetFields">重置</a-button>
+      </a-form-item>
+    </a-form>
   </div>
 </template>
 

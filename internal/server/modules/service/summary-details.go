@@ -164,7 +164,7 @@ func (s *SummaryDetailsService) Create(req model.SummaryDetails) (err error) {
 func (s *SummaryDetailsService) CreateByDate(req model.SummaryDetails) (err error) {
 	now := time.Now()
 	startTime, endTime := GetDate(now)
-	ret, err := s.HasDataOfDate(startTime, endTime)
+	ret, err := s.HasDataOfDate(startTime, endTime, req.ProjectId)
 	if ret {
 		err = s.Create(req)
 	} else {
@@ -229,6 +229,11 @@ func (s *SummaryDetailsService) FindByProjectIds(projectIds []int64) (details []
 	return r.FindByProjectIds(projectIds)
 }
 
+func (s *SummaryDetailsService) FindProjectIds() (ids []int64, err error) {
+	r := repo.NewSummaryDetailsRepo()
+	return r.FindProjectIds()
+}
+
 func (s *SummaryDetailsService) SummaryCard() (summaryCardTotal model.SummaryCardTotal, err error) {
 	r := repo.NewSummaryDetailsRepo()
 	return r.SummaryCard()
@@ -279,32 +284,28 @@ func (s *SummaryDetailsService) FindPassRateByProjectId(projectId int64) (passRa
 	return r.FindPassRateByProjectId(projectId)
 }
 
-func (s *SummaryDetailsService) HasDataOfDate(startTime string, endTiem string) (ret bool, err error) {
+func (s *SummaryDetailsService) HasDataOfDate(startTime string, endTime string, projectId int64) (ret bool, err error) {
 	r := repo.NewSummaryDetailsRepo()
-	return r.HasDataOfDate(startTime, endTiem)
+	return r.HasDataOfDate(startTime, endTime, projectId)
 }
 
-func (s *SummaryDetailsService) CheckCardUpdated(lastUpdateTime *time.Time) (result bool, err error) {
-	r := repo.NewSummaryDetailsRepo()
-	return r.CheckCardUpdated(lastUpdateTime)
-}
+//func (s *SummaryDetailsService) CheckCardUpdated(lastUpdateTime *time.Time) (result bool, err error) {
+//	r := repo.NewSummaryDetailsRepo()
+//	return r.CheckCardUpdated(lastUpdateTime)
+//}
 
 //检查是否有今日数据,没有则copy最后一条,然后进行数据是否更新检查
-func (s *SummaryDetailsService) CheckDetailsUpdated(lastUpdateTime *time.Time) (result bool, err error) {
-	r := repo.NewSummaryDetailsRepo()
-	now := time.Now()
-	startTime, endTime := GetDate(now)
-	ret, err := s.HasDataOfDate(startTime, endTime)
-	if !ret {
-		details, _ := s.Find()
-		for _, detail := range details {
-			newDetail := s.CopyDetailsWithoutBaseModel(detail)
-			s.Create(newDetail)
-		}
-	}
-	return r.CheckDetailsUpdated(lastUpdateTime)
-}
-
-func (s *SummaryDetailsService) CollectionProjectInfo() (details []model.SummaryDetails, err error) {
-	return s.SummaryDetailsRepo.CollectionProjectInfo()
-}
+//func (s *SummaryDetailsService) CheckDetailsUpdated(lastUpdateTime *time.Time) (result bool, err error) {
+//	r := repo.NewSummaryDetailsRepo()
+//	now := time.Now()
+//	startTime, endTime := GetDate(now)
+//	ret, err := s.HasDataOfDate(startTime, endTime)
+//	if !ret {
+//		details, _ := s.Find()
+//		for _, detail := range details {
+//			newDetail := s.CopyDetailsWithoutBaseModel(detail)
+//			s.Create(newDetail)
+//		}
+//	}
+//	return r.CheckDetailsUpdated(lastUpdateTime)
+//}

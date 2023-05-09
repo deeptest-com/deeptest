@@ -1,17 +1,11 @@
 package service
 
 import (
-	"context"
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
-	"github.com/aaronchen2k/deeptest/internal/pkg/config"
-	//"github.com/aaronchen2k/deeptest/internal/server/core/CacheOption"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
-	"github.com/go-redis/redis/v8"
-	"github.com/goccy/go-json"
-	"math/rand"
+
 	"strconv"
-	"strings"
 	"time"
 )
 
@@ -23,45 +17,6 @@ type SummaryService struct {
 
 func NewSummaryService() *SummaryService {
 	return &SummaryService{}
-}
-
-func (s *SummaryService) CacheOption() redis.UniversalClient {
-	universalOptions := &redis.UniversalOptions{
-		Addrs:       strings.Split(config.CONFIG.Redis.Addr, ","),
-		Password:    config.CONFIG.Redis.Password,
-		PoolSize:    config.CONFIG.Redis.PoolSize,
-		IdleTimeout: 300 * time.Second,
-	}
-	CACHE := redis.NewUniversalClient(universalOptions)
-
-	return CACHE
-}
-
-func (s *SummaryService) ToString(arg interface{}) (str string) {
-	switch arg.(type) {
-	case int64:
-		str = strconv.FormatInt(arg.(int64), 10)
-	case string:
-		str = arg.(string)
-	}
-	return
-}
-
-func (s *SummaryService) GetCache(key string, arg interface{}) (result []byte, err error) {
-	str := s.ToString(arg)
-	result, err = s.CacheOption().Get(context.Background(), key+str).Bytes()
-	return
-}
-
-func (s *SummaryService) SetCache(key string, arg interface{}, object interface{}) {
-	value, _ := json.Marshal(object)
-	str := s.ToString(arg)
-	s.CacheOption().Set(context.Background(), key+str, value, time.Duration(rand.Intn(30)+30)*time.Minute)
-}
-
-func (s *SummaryService) DelCache(key string, arg interface{}) {
-	str := s.ToString(arg)
-	s.CacheOption().Del(context.Background(), key+str)
 }
 
 func (s *SummaryService) Bugs(projectId int64) (res v1.ResSummaryBugs, err error) {
@@ -120,30 +75,29 @@ func (s *SummaryService) CollectionBugs() (err error) {
 }
 
 func (s *SummaryService) CollectionDetails() (err error) {
-
-	var details []model.SummaryDetails
+	var detail model.SummaryDetails
 
 	//从project表获取所有项目id、name、描述、简称、创建时间
-	details, err = s.SummaryDetailsService.CollectionProjectInfo()
+	ids, err := s.SummaryDetailsService.FindProjectIds()
 
-	for _, detail := range details {
+	for _, id := range ids {
 
 		//从biz_scenario表根据projectid,查找场景总数
-		detail.ScenarioTotal, _ = s.SummaryDetailsService.CountScenarioTotalProjectId(detail.ProjectId)
+		detail.ScenarioTotal, _ = s.SummaryDetailsService.CountScenarioTotalProjectId(id)
 
 		//从biz_interface表根据projectid,查找接口总数
-		detail.InterfaceTotal, _ = s.SummaryDetailsService.CountInterfaceTotalProjectId(detail.ProjectId)
+		detail.InterfaceTotal, _ = s.SummaryDetailsService.CountInterfaceTotalProjectId(id)
 
 		//根据projectid,从biz_scenario_report表,获得所有报告总数,然后计算
-		detail.ExecTotal, _ = s.SummaryDetailsService.CountExecTotalProjectId(detail.ProjectId)
+		detail.ExecTotal, _ = s.SummaryDetailsService.CountExecTotalProjectId(id)
 
 		//从biz_scenario_report拿到assertion的相关数据,计算后存储
-		passRate, _ := s.SummaryDetailsService.FindPassRateByProjectId(detail.ProjectId)
+		passRate, _ := s.SummaryDetailsService.FindPassRateByProjectId(id)
 		detail.PassRate, _ = strconv.ParseFloat(fmt.Sprintf("%.1f", passRate), 64)
 
 		//从biz_interface需要获取当前项目的所有接口,然后从biz_processor_interface检查哪些在场景中出现过
-		interfaceIds, _ := s.SummaryDetailsService.FindInterfaceIdsByProjectId(detail.ProjectId)
-		count, _ := s.SummaryDetailsService.CoverageByProjectId(detail.ProjectId, interfaceIds)
+		interfaceIds, _ := s.SummaryDetailsService.FindInterfaceIdsByProjectId(id)
+		count, _ := s.SummaryDetailsService.CoverageByProjectId(id, interfaceIds)
 		var coverage float64
 		if detail.InterfaceTotal != 0 {
 			coverage = float64(count / detail.InterfaceTotal)

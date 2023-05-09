@@ -61,17 +61,11 @@ func (c *SummaryCtrl) Bugs(ctx iris.Context) {
 func (c *SummaryCtrl) Details(ctx iris.Context) {
 
 	userId := multi.GetUserId(ctx)
-	/*
-		req := v1.ProjectReq{}
-		if err := ctx.ReadQuery(&req); err != nil {
-			errs := validate.ValidRequest(err)
-			if len(errs) > 0 {
-				logUtils.Errorf("参数验证失败", zap.String("错误", strings.Join(errs, ";")))
-				ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: strings.Join(errs, ";")})
-				return
-			}
-		}
-	*/
+
+	if userId == 0 {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: "userId为0，或获取userId失败"})
+		return
+	}
 
 	data, err := c.SummaryService.Details(int64(userId))
 

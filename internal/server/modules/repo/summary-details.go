@@ -28,9 +28,9 @@ func (r *SummaryDetailsRepo) UpdateColumnsByDate(summaryDetails model.SummaryDet
 	return
 }
 
-func (r *SummaryDetailsRepo) HasDataOfDate(startTime string, endTime string) (ret bool, err error) {
+func (r *SummaryDetailsRepo) HasDataOfDate(startTime string, endTime string, projectId int64) (ret bool, err error) {
 	var count int64
-	err = r.DB.Model(&model.SummaryDetails{}).Raw("select count(id) from (deeptest.biz_summary_details) where created_at >= ? and created_at < ? AND NOT deleted;", startTime, endTime).Last(&count).Error
+	err = r.DB.Model(&model.SummaryDetails{}).Raw("select count(id) from (deeptest.biz_summary_details) where created_at >= ? and created_at < ? AND project_id = ? AND NOT deleted;", startTime, endTime, projectId).Last(&count).Error
 	if count == 0 {
 		ret = false
 	}
@@ -59,6 +59,11 @@ func (r *SummaryDetailsRepo) FindAdminNameByAdminId(adminId int64) (adminName st
 
 func (r *SummaryDetailsRepo) FindProjectIdsByUserId(userId int64) (projectIds []int64, err error) {
 	err = r.DB.Model(&model.ProjectMember{}).Select("distinct project_id").Where("user_id = ? AND NOT deleted", userId).Find(&projectIds).Order("user_id").Error
+	return
+}
+
+func (r *SummaryDetailsRepo) FindProjectIds() (ids []int64, err error) {
+	err = r.DB.Model(&model.Project{}).Select("id").Where("NOT deleted").Find(&ids).Error
 	return
 }
 
@@ -185,10 +190,5 @@ func (r *SummaryDetailsRepo) CheckDetailsUpdated(lastUpdateTime *time.Time) (res
 			return
 		}
 	}
-	return
-}
-
-func (r *SummaryDetailsRepo) CollectionProjectInfo() (details []model.SummaryDetails, err error) {
-	err = r.DB.Model(&model.Project{}).Raw("select id as projectId,created_at as projectCreatedAt,name as projectName,short_name as projectShortName,descr as projectDescr from deeptest.biz_project where NOT deleted;").Find(&details).Error
 	return
 }

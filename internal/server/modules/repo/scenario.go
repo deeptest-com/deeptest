@@ -60,6 +60,12 @@ func (r *ScenarioRepo) Paginate(req v1.ScenarioReqPaginate, projectId int) (data
 	if req.Enabled != "" {
 		db = db.Where("disabled = ?", commonUtils.IsDisable(req.Enabled))
 	}
+	if req.Status != "" {
+		db = db.Where("status = ?", req.Status)
+	}
+	if req.Priority != "" {
+		db = db.Where("priority = ?", req.Priority)
+	}
 
 	err = db.Count(&count).Error
 	if err != nil {
@@ -196,5 +202,78 @@ func (r *ScenarioRepo) UpdateSerialNumber(id, projectId uint) (err error) {
 	}
 
 	err = r.DB.Model(&model.Scenario{}).Where("id=?", id).Update("serial_number", project.ShortName+"-TS-"+strconv.Itoa(int(id))).Error
+	return
+}
+
+func (r *ScenarioRepo) ListScenarioRelation(id uint) (pos []model.RelaPlanScenario, err error) {
+	err = r.DB.
+		Where("scenario_id=?", id).
+		Where("NOT deleted").
+		Find(&pos).Error
+	return
+}
+
+func (r *ScenarioRepo) AddPlans(scenarioId uint, planIds []int) (err error) {
+	relations, _ := r.ListScenarioRelation(scenarioId)
+	existMap := map[uint]bool{}
+	for _, item := range relations {
+		existMap[item.ScenarioId] = true
+	}
+
+	var pos []model.RelaPlanScenario
+
+	for _, id := range planIds {
+		if existMap[uint(id)] {
+			continue
+		}
+
+		po := model.RelaPlanScenario{
+			PlanId:     uint(id),
+			ScenarioId: scenarioId,
+		}
+		pos = append(pos, po)
+	}
+
+	err = r.DB.Create(&pos).Error
+
+	return
+}
+
+func (r *ScenarioRepo) PlanList(req v1.PlanReqPaginate, scenarioId int) (data _domain.PageData, err error) {
+	relations, _ := r.ListScenarioRelation(uint(scenarioId))
+	var planIds []uint
+	for _, item := range relations {
+		planIds = append(planIds, item.PlanId)
+	}
+
+	if len(planIds) == 0 {
+		return
+	}
+
+	var count int64
+	db := r.DB.Where("not deleted and id in(?)", planIds)
+
+	if req.Status != "" {
+		db = db.Where("status = ?", req.Status)
+	}
+
+	err = db.Count(&count).Error
+	if err != nil {
+		logUtils.Errorf("count plan error", zap.String("error:", err.Error()))
+		return
+	}
+
+	plans := make([]*model.Plan, 0)
+
+	err = db.
+		Scopes(dao.PaginateScope(req.Page, req.PageSize, req.Order, req.Field)).
+		Find(&plans).Error
+	if err != nil {
+		logUtils.Errorf("query plan error", zap.String("error:", err.Error()))
+		return
+	}
+
+	data.Populate(plans, count, req.Page, req.PageSize)
+
 	return
 }

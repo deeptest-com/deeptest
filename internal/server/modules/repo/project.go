@@ -514,7 +514,7 @@ func (r *ProjectRepo) GetAudit(id uint) (ret model.ProjectMemberAudit, err error
 	return
 }
 
-func (r *ProjectRepo) UpdateAuditStatus(id, auditUserId, status uint) (err error) {
+func (r *ProjectRepo) UpdateAuditStatus(id, auditUserId uint, status consts.AuditStatus) (err error) {
 	err = r.DB.Model(&model.ProjectMemberAudit{}).
 		Where("id=? and audit_user_id=?", id, auditUserId).
 		Update("status", status).Error

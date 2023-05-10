@@ -57,8 +57,8 @@ type ApplyProjectReq struct {
 }
 
 type AuditProjectReq struct {
-	Id     uint `json:"id" validate:"required"`
-	Status uint `json:"status" validate:"required"`
+	Id     uint               `json:"id" validate:"required"`
+	Status consts.AuditStatus `json:"status" validate:"required"`
 }
 
 type AuditProjectPaginate struct {

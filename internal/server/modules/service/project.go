@@ -3,6 +3,7 @@ package service
 import (
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/source"
@@ -98,7 +99,7 @@ func (s *ProjectService) Apply(req v1.ApplyProjectReq) (err error) {
 	return
 }
 
-func (s *ProjectService) Audit(id, auditUserId, status uint) (err error) {
+func (s *ProjectService) Audit(id, auditUserId uint, status consts.AuditStatus) (err error) {
 
 	var record model.ProjectMemberAudit
 	record, err = s.ProjectRepo.GetAudit(id)
@@ -109,6 +110,10 @@ func (s *ProjectService) Audit(id, auditUserId, status uint) (err error) {
 	err = s.ProjectRepo.UpdateAuditStatus(id, auditUserId, status)
 	if err != nil {
 		return err
+	}
+
+	if status == consts.Refused {
+		return
 	}
 
 	var res bool

@@ -62,6 +62,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setDebugData: Mutation<StateType>;
         setResponse: Mutation<StateType>;
         setInvocations: Mutation<StateType>;
+        setServerId: Mutation<StateType>;
 
         setExtractors: Mutation<StateType>;
         setExtractor: Mutation<StateType>;
@@ -119,6 +120,9 @@ const StoreModel: ModuleType = {
     mutations: {
         setDebugInfo(state, payload) {
             state.debugInfo = payload;
+        },
+        setServerId(state, id) {
+            state.debugData.serverId = id;
         },
 
         setDebugData(state, payload) {

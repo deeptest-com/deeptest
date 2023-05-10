@@ -43,7 +43,7 @@ func (s *DebugInterfaceService) Load(loadReq domain.DebugReq) (debugData domain.
 	}
 
 	debugData.BaseUrl, debugData.ShareVars =
-		s.DebugSceneService.LoadScene(debugData.EndpointInterfaceId, debugData.ScenarioProcessorId, debugData.UsedBy)
+		s.DebugSceneService.LoadScene(debugData.EndpointInterfaceId, debugData.ServerId, debugData.ScenarioProcessorId, debugData.UsedBy)
 
 	debugData.ScenarioProcessorId = loadReq.ScenarioProcessorId
 	debugData.UsedBy = loadReq.UsedBy
@@ -70,7 +70,7 @@ func (s *DebugInterfaceService) LoadForExec(loadReq domain.DebugReq) (ret agentE
 	}
 
 	debugData.BaseUrl, ret.ExecScene.ShareVars =
-		s.DebugSceneService.LoadScene(debugData.EndpointInterfaceId, debugData.ScenarioProcessorId, debugData.UsedBy)
+		s.DebugSceneService.LoadScene(debugData.EndpointInterfaceId, debugData.ServerId, debugData.ScenarioProcessorId, debugData.UsedBy)
 
 	debugData.ScenarioProcessorId = loadReq.ScenarioProcessorId
 	debugData.UsedBy = loadReq.UsedBy
@@ -78,7 +78,7 @@ func (s *DebugInterfaceService) LoadForExec(loadReq domain.DebugReq) (ret agentE
 	ret.DebugData = debugData
 
 	// get variables
-	projectId, _ := s.SceneService.LoadEnvVarMapByEndpointInterface(&ret.ExecScene, debugData.EndpointInterfaceId)
+	projectId, _ := s.SceneService.LoadEnvVarMapByEndpointInterface(&ret.ExecScene, debugData.EndpointInterfaceId, debugData.ServerId)
 	s.SceneService.LoadProjectSettings(&ret.ExecScene, projectId)
 
 	return
@@ -147,12 +147,12 @@ func (s *DebugInterfaceService) SetProps(
 		return
 	}
 
-	Securities, err := s.ServeRepo.ListSecurity(serve.ID)
+	securities, err := s.ServeRepo.ListSecurity(serve.ID)
 	if err != nil {
 		return
 	}
 
-	serve.Securities = Securities
+	serve.Securities = securities
 	req.EndpointInterfaceId = endpointInterface.ID
 
 	if debugInterface == nil {

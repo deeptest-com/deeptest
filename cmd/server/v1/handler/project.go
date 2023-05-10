@@ -217,7 +217,7 @@ func (c *ProjectCtrl) Apply(ctx iris.Context) {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
-
+	req.ApplyUserId = multi.GetUserId(ctx)
 	err = c.ProjectService.Apply(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})

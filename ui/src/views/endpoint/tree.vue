@@ -60,7 +60,7 @@
     <!--  创建接口 Tag  -->
     <CreateTagModal
         :visible="createTagModalvisible"
-        :nodeInfo="currentNode"
+        :nodeInfo="currentNode || {}"
         :mode="tagModalMode"
         @cancal="handleCancalTagModalCancal"
         @ok="handleTagModalOk"/>

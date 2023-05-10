@@ -38,13 +38,11 @@ const url = computed(() => {
 });
 
 function changeServer(id) {
-  store.commit('Debug/setServerId', id)
-  console.log(debugData.value.serverId)
+  store.dispatch('Debug/changeServer', id)
 }
 
 const changeUrl = (e) => {
   store.commit('Debug/setUrl', e.target.value.trim())
-  console.log(debugData.value.url)
 }
 
 </script>

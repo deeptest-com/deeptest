@@ -7,16 +7,17 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
-	repo2 "github.com/aaronchen2k/deeptest/internal/server/modules/repo"
+	repo "github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"github.com/jinzhu/copier"
 )
 
 type EnvironmentService struct {
-	EnvironmentRepo *repo2.EnvironmentRepo `inject:""`
-	ScenarioRepo    *repo2.ScenarioRepo    `inject:""`
-	InterfaceRepo   *repo2.InterfaceRepo   `inject:""`
-	ProjectRepo     *repo2.ProjectRepo     `inject:""`
-	ServeRepo       *repo2.ServeRepo       `inject:""`
+	EnvironmentRepo *repo.EnvironmentRepo `inject:""`
+	ScenarioRepo    *repo.ScenarioRepo    `inject:""`
+	InterfaceRepo   *repo.InterfaceRepo   `inject:""`
+	ProjectRepo     *repo.ProjectRepo     `inject:""`
+	ServeRepo       *repo.ServeRepo       `inject:""`
+	ServeServerRepo *repo.ServeServerRepo `inject:""`
 }
 
 func (s *EnvironmentService) List() (envs []model.Environment, err error) {
@@ -238,6 +239,20 @@ func (s *EnvironmentService) SaveOrder(req v1.EnvironmentIdsReq) (err error) {
 	return s.EnvironmentRepo.SaveOrder(req)
 }
 
+func (s *EnvironmentService) GetVarsByServer(serverId uint) (ret []domain.GlobalVar, err error) {
+	server, _ := s.ServeServerRepo.Get(serverId)
+
+	pos, _ := s.EnvironmentRepo.GetVars(server.EnvironmentId)
+
+	for _, po := range pos {
+		ret = append(ret, domain.GlobalVar{
+			Name:       po.Name,
+			LocalValue: po.LocalValue,
+		})
+	}
+
+	return
+}
 func (s *EnvironmentService) GetVarsByEnv(envId uint) (ret []domain.GlobalVar, err error) {
 	pos, _ := s.EnvironmentRepo.GetVars(envId)
 

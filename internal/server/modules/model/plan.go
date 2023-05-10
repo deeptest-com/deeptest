@@ -9,18 +9,18 @@ type Plan struct {
 	Name    string  `json:"name" yaml:"name"`
 	Desc    string  `json:"desc" yaml:"desc"`
 
-	CategoryId   uint              `json:"categoryId"`
-	ProjectId    uint              `json:"projectId"`
-	SerialNumber string            `json:"serialNumber"`
-	DirectorId   uint              `json:"directorId"` //负责人ID
-	UpdaterId    uint              `json:"updaterId"`
-	Status       consts.TestStatus `json:"status"`
-	TestStage    consts.TestStage  `json:"testStage"`
-	Scenarios    []Scenario        `gorm:"-" json:"scenarios"`
-	Reports      []PlanReport      `gorm:"-" json:"reports"`
-	TestPassRate string            `gorm:"-" json:"testPassRate"`
-	DirectorName string            `gorm:"-" json:"directorName"` //负责人姓名
-	UpdaterName  string            `gorm:"-" json:"updaterName"`  //最近更新人姓名
+	CategoryId     uint              `json:"categoryId"`
+	ProjectId      uint              `json:"projectId"`
+	SerialNumber   string            `json:"serialNumber"`
+	AdminId        uint              `json:"adminId"` //负责人ID
+	UpdateUserId   uint              `json:"updateUserId"`
+	Status         consts.TestStatus `json:"status"`
+	TestStage      consts.TestStage  `json:"testStage"`
+	Scenarios      []Scenario        `gorm:"-" json:"scenarios"`
+	Reports        []PlanReport      `gorm:"-" json:"reports"`
+	TestPassRate   string            `gorm:"-" json:"testPassRate"`
+	AdminName      string            `gorm:"-" json:"adminName"`      //负责人姓名
+	UpdateUserName string            `gorm:"-" json:"updateUserName"` //最近更新人姓名
 }
 
 func (Plan) TableName() string {

@@ -217,7 +217,7 @@ func (c *ProjectCtrl) Apply(ctx iris.Context) {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
-
+	req.ApplyUserId = multi.GetUserId(ctx)
 	err = c.ProjectService.Apply(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
@@ -236,7 +236,7 @@ func (c *ProjectCtrl) Audit(ctx iris.Context) {
 	}
 
 	userId := multi.GetUserId(ctx)
-	err = c.ProjectService.Audit(req.ProjectId, userId, req.Status)
+	err = c.ProjectService.Audit(req.Id, userId, req.Status)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -246,11 +246,18 @@ func (c *ProjectCtrl) Audit(ctx iris.Context) {
 }
 
 func (c *ProjectCtrl) AuditList(ctx iris.Context) {
-	userId := multi.GetUserId(ctx)
-	res, err := c.ProjectService.AuditList(userId)
+
+	req := serverDomain.AuditProjectPaginate{}
+	err := ctx.ReadJSON(&req)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: res, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+	req.AuditUserId = multi.GetUserId(ctx)
+	res, err := c.ProjectService.AuditList(req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
 }

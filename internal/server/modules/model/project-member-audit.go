@@ -4,11 +4,12 @@ import "github.com/aaronchen2k/deeptest/internal/pkg/consts"
 
 type ProjectMemberAudit struct {
 	BaseModel
-	ProjectId     uint               `json:"projectId"`
-	ProjectRoleId uint               `json:"projectRoleId"`
-	AuditUserId   uint               `json:"auditUserId"`
-	ApplyUserId   uint               `json:"applyUserId"`
-	Status        consts.AuditStatus `gorm:"default:0",json:"status"`
+	ProjectId       uint               `json:"projectId"`
+	ProjectRoleName consts.RoleType    `json:"projectRoleName"`
+	AuditUserId     uint               `json:"auditUserId"`
+	ApplyUserId     uint               `json:"applyUserId"`
+	Status          consts.AuditStatus `gorm:"default:0" json:"status"`
+	Description     string             `json:"description" gorm:"type:text"`
 }
 
 func (ProjectMemberAudit) TableName() string {

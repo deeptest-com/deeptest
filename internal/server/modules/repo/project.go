@@ -480,22 +480,59 @@ func (r *ProjectRepo) GetMembersByProject(projectId uint) (ret []model.ProjectMe
 	return
 }
 
-func (r *ProjectRepo) GetAuditList(auditUserId uint) (ret []model.ProjectMemberAudit, err error) {
-	err = r.DB.Model(&model.ProjectMemberAudit{}).
-		Where("audit_user_id = ?", auditUserId).
-		Find(&ret).Order("status asc").Error
+func (r *ProjectRepo) GetAuditList(req v1.AuditProjectPaginate) (data _domain.PageData, err error) {
+	req.Field = "status asc,created_at"
+
+	var count int64
+
+	db := r.DB.Model(&model.ProjectMemberAudit{}).Where("audit_user_id = ?", req.AuditUserId)
+
+	err = db.Count(&count).Error
+	if err != nil {
+		logUtils.Errorf("count ProjectMemberAudit error", zap.String("error:", err.Error()))
+		return
+	}
+
+	list := make([]*model.ProjectMemberAudit, 0)
+
+	err = db.
+		Scopes(dao.PaginateScope(req.Page, req.PageSize, req.Order, req.Field)).
+		Find(&list).Error
+	if err != nil {
+		logUtils.Errorf("query ProjectMemberAudit error", zap.String("error:", err.Error()))
+		return
+	}
+
+	data.Populate(list, count, req.Page, req.PageSize)
 	return
 }
 
-func (r *ProjectRepo) UpdateStatus(id, auditUserId, status uint) (err error) {
+func (r *ProjectRepo) GetAudit(id uint) (ret model.ProjectMemberAudit, err error) {
 	err = r.DB.Model(&model.ProjectMemberAudit{}).
-		Update("status", status).
-		Where("id and audit_user_id", id, auditUserId).Error
+		Where("id = ?", id).
+		First(&ret).Error
+	return
+}
+
+func (r *ProjectRepo) UpdateAuditStatus(id, auditUserId uint, status consts.AuditStatus) (err error) {
+	err = r.DB.Model(&model.ProjectMemberAudit{}).
+		Where("id=? and audit_user_id=?", id, auditUserId).
+		Update("status", status).Error
 	return
 }
 
 func (r *ProjectRepo) SaveAudit(audit model.ProjectMemberAudit) (err error) {
 	err = r.DB.Save(&audit).Error
+	return
+}
+
+func (r *ProjectRepo) IfProjectMember(userId, projectId uint) (res bool, err error) {
+	var count int64
+	err = r.DB.Model(&model.ProjectMember{}).Where("user_id=? and project_id=?", userId, projectId).Count(&count).Error
+	if err != nil {
+		return
+	}
+	res = count > 0
 	return
 }
 

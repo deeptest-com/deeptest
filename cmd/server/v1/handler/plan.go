@@ -2,11 +2,13 @@ package handler
 
 import (
 	"github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/web/validate"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"github.com/snowlyg/multi"
 	"strings"
 
 	"github.com/kataras/iris/v12"
@@ -80,6 +82,7 @@ func (c *PlanCtrl) Create(ctx iris.Context) {
 	}
 
 	req.ProjectId = uint(projectId)
+	req.Status = consts.Draft
 	po, bizErr := c.PlanService.Create(req)
 	if bizErr != nil {
 		ctx.JSON(_domain.Response{Code: bizErr.Code, Data: nil})
@@ -96,6 +99,9 @@ func (c *PlanCtrl) Update(ctx iris.Context) {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
+
+	userId := multi.GetUserId(ctx)
+	req.UpdateUserId = userId
 
 	err = c.PlanService.Update(req)
 	if err != nil {
@@ -125,14 +131,14 @@ func (c *PlanCtrl) Delete(ctx iris.Context) {
 func (c *PlanCtrl) AddScenarios(ctx iris.Context) {
 	planId, _ := ctx.Params().GetInt("id")
 
-	scenarioIds := make([]int, 0)
-	err := ctx.ReadJSON(&scenarioIds)
+	req := serverDomain.PlanAddScenariosReq{}
+	err := ctx.ReadJSON(&req)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: "ids"})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
 		return
 	}
 
-	err = c.PlanService.AddScenarios(planId, scenarioIds)
+	err = c.PlanService.AddScenarios(planId, req.ScenarioIds)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -153,4 +159,14 @@ func (c *PlanCtrl) RemoveScenario(ctx iris.Context) {
 	}
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code})
+}
+
+func (c *PlanCtrl) StatusDropDownOptions(ctx iris.Context) {
+	data := c.PlanService.StatusDropDownOptions()
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data, Msg: _domain.NoErr.Msg})
+}
+
+func (c *PlanCtrl) TestStageDropDownOptions(ctx iris.Context) {
+	data := c.PlanService.TestStageDropDownOptions()
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data, Msg: _domain.NoErr.Msg})
 }

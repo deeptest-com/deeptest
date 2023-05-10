@@ -88,9 +88,9 @@ func (r *PlanReportRepo) Get(id uint) (report model.ScenarioReport, err error) {
 }
 
 func (r *PlanReportRepo) Create(result *model.PlanReport) (bizErr *_domain.BizErr) {
-	err := r.DB.Model(&model.ScenarioReport{}).Create(result).Error
+	err := r.DB.Model(&model.PlanReport{}).Create(result).Error
 	if err != nil {
-		logUtils.Errorf("create report error %s", err.Error())
+		logUtils.Errorf("create plan report error %s", err.Error())
 		bizErr.Code = _domain.SystemErr.Code
 
 		return
@@ -244,5 +244,23 @@ func (r *PlanReportRepo) listLogCheckpoints(logId uint) (checkpoints []model.Exe
 		Where("log_id =? AND not deleted", logId).
 		Find(&checkpoints).Error
 
+	return
+}
+
+func (r *PlanReportRepo) GetLastByPlanId(planId uint) (report model.PlanReport, err error) {
+	err = r.DB.Model(&model.PlanReport{}).Where("plan_id = ?", planId).Last(&report).Error
+	if err != nil {
+		logUtils.Errorf("find plan report by plan_id error %s", err.Error())
+		return
+	}
+	return
+}
+
+func (r *PlanReportRepo) GetPlanExecNumber(planId uint) (num int64, err error) {
+	err = r.DB.Model(&model.PlanReport{}).Where("plan_id = ?", planId).Count(&num).Error
+	if err != nil {
+		logUtils.Errorf("find plan report by plan_id error %s", err.Error())
+		return
+	}
 	return
 }

@@ -3,6 +3,7 @@ package service
 import (
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/source"
@@ -94,17 +95,46 @@ func (s *ProjectService) GetCurrProjectByUser(userId uint) (currProject model.Pr
 func (s *ProjectService) Apply(req v1.ApplyProjectReq) (err error) {
 	var project model.Project
 	project, err = s.ProjectRepo.Get(req.ProjectId)
-	err = s.ProjectRepo.SaveAudit(model.ProjectMemberAudit{ProjectId: req.ProjectId, ApplyUserId: req.ApplyUserId, AuditUserId: project.AdminId})
+	err = s.ProjectRepo.SaveAudit(model.ProjectMemberAudit{ProjectId: req.ProjectId, ApplyUserId: req.ApplyUserId, AuditUserId: project.AdminId, ProjectRoleName: req.ProjectRoleName})
 	return
 }
 
-func (s *ProjectService) Audit(id, auditUserId, status uint) (err error) {
-	err = s.ProjectRepo.UpdateStatus(id, auditUserId, status)
+func (s *ProjectService) Audit(id, auditUserId uint, status consts.AuditStatus) (err error) {
+
+	var record model.ProjectMemberAudit
+	record, err = s.ProjectRepo.GetAudit(id)
+	if err != nil {
+		return err
+	}
+
+	err = s.ProjectRepo.UpdateAuditStatus(id, auditUserId, status)
+	if err != nil {
+		return err
+	}
+
+	if status == consts.Refused {
+		return
+	}
+
+	var res bool
+	res, err = s.ProjectRepo.IfProjectMember(record.ApplyUserId, record.ProjectId)
+	if err != nil {
+		return
+	}
+
+	if res {
+		return
+	}
+
+	err = s.ProjectRepo.AddProjectMember(record.ProjectId, record.AuditUserId, record.ProjectRoleName)
+	if err != nil {
+		return
+	}
 	return
 }
 
-func (s *ProjectService) AuditList(auditUserId uint) (res []model.ProjectMemberAudit, err error) {
-	return s.ProjectRepo.GetAuditList(auditUserId)
+func (s *ProjectService) AuditList(req v1.AuditProjectPaginate) (data _domain.PageData, err error) {
+	return s.ProjectRepo.GetAuditList(req)
 }
 
 /*

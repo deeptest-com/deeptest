@@ -10,9 +10,10 @@ import (
 )
 
 type PlanExecService struct {
-	PlanRepo       *repo.PlanRepo       `inject:""`
-	PlanReportRepo *repo.PlanReportRepo `inject:""`
-	TestLogRepo    *repo.LogRepo        `inject:""`
+	PlanRepo           *repo.PlanRepo           `inject:""`
+	PlanReportRepo     *repo.PlanReportRepo     `inject:""`
+	ScenarioReportRepo *repo.ScenarioReportRepo `inject:""`
+	TestLogRepo        *repo.LogRepo            `inject:""`
 
 	ScenarioExecService *ScenarioExecService `inject:""`
 
@@ -50,17 +51,25 @@ func (s *PlanExecService) LoadExecData(planId int) (ret agentExec.PlanExecObj, e
 
 func (s *PlanExecService) SaveReport(planId int, userId uint, result agentDomain.PlanExecResult) (
 	report model.PlanReport, err error) {
+	plan, _ := s.PlanRepo.Get(uint(planId))
 
-	report.ProjectId = uint(planId)
+	report.PlanId = uint(planId)
+	report.Name = plan.Name
+	report.CreateUserId = userId
 	report.ProgressStatus = consts.End
 	report.ResultStatus = consts.Pass
 
+	scenarioIds := make([]uint, 0)
 	for _, scenarioResult := range result.Scenarios {
 		scenarioReport, _ := s.ScenarioExecService.SaveReport(scenarioResult.ID, userId, *scenarioResult)
 		s.CombineReport(scenarioReport, &report)
+		scenarioIds = append(scenarioIds, scenarioReport.ID)
 	}
 
 	report.Duration = report.EndTime.Unix() - report.StartTime.Unix()
+	_ = s.PlanReportRepo.Create(&report)
+	
+	_ = s.ScenarioReportRepo.BatchUpdatePlanReportId(scenarioIds, report.ID)
 
 	return
 }
@@ -89,6 +98,8 @@ func (s *PlanExecService) CombineReport(scenarioReport model.ScenarioReport, pla
 	planReport.TotalAssertionNum += scenarioReport.TotalAssertionNum
 	planReport.PassAssertionNum += scenarioReport.PassAssertionNum
 	planReport.FailAssertionNum += scenarioReport.FailAssertionNum
+
+	planReport.ProjectId = scenarioReport.ProjectId
 
 	for keyId := range scenarioReport.InterfaceStatusMap {
 		if planReport.InterfaceStatusMap[keyId] == nil {

@@ -69,3 +69,11 @@ export async function listScenario(): Promise<any> {
         method: 'get',
     });
 }
+
+export async function queryMembers(params): Promise<any> {
+    return request({
+        url: `/projects/members`,
+        method: 'get',
+        params,
+    });
+}

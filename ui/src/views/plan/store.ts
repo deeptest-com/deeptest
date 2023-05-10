@@ -7,9 +7,8 @@ import {
     get,
     save,
     remove,
-
     loadExecResult,
-
+    getDetail,
 } from './service';
 
 import {
@@ -22,12 +21,13 @@ import {
     updateCategoryName} from "@/services/category";
 
 import {getNodeMap} from "@/services/tree";
+import { queryMembers } from '../project/service';
 
 export interface StateType {
     planId: number;
 
     listResult: QueryResult;
-    detailResult: Plan;
+    detailResult: any;
     queryParams: any;
 
     execResult: any;
@@ -35,6 +35,9 @@ export interface StateType {
     treeDataCategory: any[];
     treeDataMapCategory: any,
     nodeDataCategory: any;
+
+    members: any[];
+    scenarioList: any[];
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
@@ -53,10 +56,14 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setTreeDataMapItemCategory: Mutation<StateType>;
         setTreeDataMapItemPropCategory: Mutation<StateType>;
         setNodeCategory: Mutation<StateType>;
+
+        setMembers: Mutation<StateType>;
+        setScenarioList: Mutation<StateType>;
     };
     actions: {
         listPlan: Action<StateType, StateType>;
         getPlan: Action<StateType, StateType>;
+        getPlanDetail: Action<StateType, StateType>;
         savePlan: Action<StateType, StateType>;
         removePlan: Action<StateType, StateType>;
 
@@ -73,6 +80,8 @@ export interface ModuleType extends StoreModuleType<StateType> {
 
         loadExecResult: Action<StateType, StateType>;
         updateExecResult: Action<StateType, StateType>;
+
+        loadMembers: Action<StateType, StateType>;
     }
 }
 
@@ -96,6 +105,9 @@ const initState: StateType = {
     treeDataCategory: [],
     treeDataMapCategory: {},
     nodeDataCategory: {},
+
+    members: [],
+    scenarioList: []
 };
 
 const StoreModel: ModuleType = {
@@ -137,10 +149,15 @@ const StoreModel: ModuleType = {
         setNodeCategory(state, data) {
             state.nodeDataCategory = data;
         },
-
         setQueryParams(state, payload) {
             state.queryParams = payload;
         },
+        setMembers(state, payload) {
+            state.members = payload;
+        },
+        setScenarioList(state, payload) {
+            state.scenarioList = payload;
+        }
     },
     actions: {
         async listPlan({commit, dispatch}, params: QueryParams) {
@@ -187,7 +204,7 @@ const StoreModel: ModuleType = {
             }
         },
 
-        async savePlan({commit}, payload: any) {
+        async savePlan({ dispatch }, payload: any) {
             const jsn = await save(payload)
             if (jsn.code === 0) {
                 return true;
@@ -315,6 +332,23 @@ const StoreModel: ModuleType = {
                 return false
             }
         },
+        async loadMembers({ commit }, payload: any) {
+            const jsn = await queryMembers(payload);
+            if (jsn.code === 0) {
+                const result = jsn.data.result.map(e => {
+                    e.value = e.id;
+                    e.label = e.name;
+                    return e;
+                })
+                commit('setMembers', result);
+            }
+        },
+        async getPlanDetail({ commit }, payload: any) {
+            const jsn = await getDetail(payload);
+            if (jsn.code === 0) {
+                commit('setMembers', jsn.data.scenarios);
+            }
+        }
     }
 };
 

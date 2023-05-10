@@ -73,7 +73,6 @@ defineProps({
     list: {
         required: true,
         default: [],
-        type: Array<any>
     }
 })
 const emits = defineEmits(['queryDetail', 'getList']);

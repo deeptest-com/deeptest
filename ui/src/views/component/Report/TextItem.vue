@@ -13,7 +13,7 @@
 import { defineProps } from 'vue';
 
 defineProps<{
-    value?: String
+    value?: any
     label?: String
     labelStyle?: any
     labelClassName?: String

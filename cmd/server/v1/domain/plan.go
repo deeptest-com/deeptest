@@ -11,7 +11,7 @@ type PlanReqPaginate struct {
 
 	CategoryId int64             `json:"categoryId"`
 	Status     consts.TestStatus `json:"status"`
-	DirectorId uint              `json:"directorId"`
+	AdminId    uint              `json:"directorId"`
 	Keywords   string            `json:"keywords"`
 	Enabled    string            `json:"enabled"`
 }

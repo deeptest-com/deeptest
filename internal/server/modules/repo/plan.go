@@ -60,8 +60,8 @@ func (r *PlanRepo) Paginate(req v1.PlanReqPaginate, projectId int) (data _domain
 	if req.Status != "" {
 		db = db.Where("biz_plan.status = ?", req.Status)
 	}
-	if req.DirectorId != 0 {
-		db = db.Where("biz_plan.director_id = ?", req.DirectorId)
+	if req.AdminId != 0 {
+		db = db.Where("biz_plan.admin_id = ?", req.AdminId)
 	}
 	err = db.Count(&count).Error
 	if err != nil {

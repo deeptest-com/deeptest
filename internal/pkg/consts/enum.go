@@ -586,3 +586,29 @@ const (
 	Agreed  AuditStatus = 1
 	Refused AuditStatus = 2
 )
+
+type TestStatus string
+
+const (
+	Draft     TestStatus = "draft"      //草稿
+	Disabled  TestStatus = "disabled"   //已禁用
+	ToExecute TestStatus = "to_execute" //待执行
+	Executed  TestStatus = "executed"   //已执行
+)
+
+func (e TestStatus) String() string {
+	return string(e)
+}
+
+type TestStage string
+
+const (
+	UintTest        TestStage = "unit_test"        //单元测试
+	IntegrationTest TestStage = "integration_test" //集成测试
+	SystemTest      TestStage = "system_test"      //系统测试
+	AcceptanceTest  TestStage = "acceptance_test"  //验收测试
+)
+
+func (e TestStage) String() string {
+	return string(e)
+}

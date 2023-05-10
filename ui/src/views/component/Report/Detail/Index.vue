@@ -3,142 +3,38 @@
         @close="onClose">
         <template #title>
             <div class="drawer-header">
-                <div>测试报告详情</div>
+                <div>{{ title || '测试报告详情' }}</div>
             </div>
         </template>
         <div class="drawer-content">
             <ReportBasicInfo :basic-info="{ logEnv: reportData.logEnv, logName: reportData.logName, logTime: reportData.logTime, logExecutor: reportData.logExecutor }" />
             <StatisticTable />
-            <ScenarioCollapse :record="reportData.logList[0]" />
-            <div class="report-list">
-                <a-table 
-                    class="scenario-table"
-                    :rowClassName="() => 'scenario-row-item'"
-                    :dataSource="reportData.logList" 
-                    :columns="scenarioReportColumns" 
-                    :show-header="false"
-                    :expandIconColumnIndex="4" 
-                    :pagination="false" 
-                    :rowKey="(_record, index) => index"
-                    :expandIconAsCell="false">
-                    <template #expandIcon="props">
-                        <template v-if="props.expanded">
-                            <span style="cursor: pointer;" @click="$event => props.onExpand(props.record, $event)">收起 &nbsp; <UpOutlined /></span>
-                        </template>
-                        <template v-else>
-                            <span style="cursor: pointer;" @click="$event => props.onExpand(props.record, $event)">展开 &nbsp; <DownOutlined /></span>
-                        </template>
+            <template v-for="logItem in reportData.logList" :key="logItem.id">
+                <ScenarioCollapsePanel :show-scenario-info="showScenarioInfo" :expand-active="expandActive" :record="logItem">
+                    <template #endpointData>
+                        <EndpointCollapsePanel :recordList="logItem.reponseList" />
                     </template>
-                    <template #scenarioName="{ record }">
-                        <div class="report-item-name">{{ record.scenarioName }}</div>
-                    </template>
-                    <template #scenarioPriority="{ record }">
-                        <div class="report-item-priority">{{ record.scenarioPriority }}</div>
-                    </template>
-                    <template #scenarioStatus="{ record }">
-                        <div class="report-item-status">{{ record.scenarioStatus === 0 ? '已完成' : '未完成' }}
-                        </div>
-                    </template>
-                    <template #scenarioProgress="{ record }">
-                        <div class="report-item-rate">
-                            <div class="report-progress"
-                                :style="`background: linear-gradient(90deg, #04C495 ${record.scenarioProgress}%, #FF6963 0);`">
-                            </div>
-                            通过率 {{ record.scenarioProgress }}%
-                        </div>
-                    </template>
-                    <template #expandedRowRender="{ record }">
-                        <div class="reponsedata-list">
-                            <a-table 
-                                class="reponsedata-table"
-                                :rowClassName="() => 'reponsedata-row-item'"
-                                :showHeader="false" 
-                                :columns="responseDataColumns" 
-                                :data-source="record.reponseList"
-                                :pagination="false" 
-                                :rowKey="(_record, index) => index" 
-                                :expandIconAsCell="false">
-                                <template #expandIcon="props">
-                                    <template v-if="props.expanded">
-                                        <DownOutlined @click="$event => props.onExpand(props.record, $event)" />
-                                    </template>
-                                    <template v-else>
-                                        <RightOutlined @click="$event => props.onExpand(props.record, $event)" />
-                                    </template>
-                                </template>
-                                <template #requestStatus="{ record: expandRecord }">
-                                    <div :class="['report-status', ClassMap[expandRecord.requestStatus]]">{{
-                                        StatusMap[expandRecord.requestStatus] }}</div>
-                                </template>
-                                <template  #requestMethod="{ record: expandRecord }">
-                                    <div :class="['report-method', ClassMap[expandRecord.requestStatus]]">
-                                        {{ expandRecord.requestMethod }}
-                                    </div>
-                                </template>
-                                <template #requestCode="{ record: expandRecord }">
-                                    <div :class="['report-code', ClassMap[expandRecord.requestStatus]]">
-                                        状态码: <span>{{ expandRecord.requestCode }}</span>
-                                    </div>
-                                </template>
-                                <template #requestTime="{ record: expandRecord }">
-                                    <div :class="['report-time', ClassMap[expandRecord.requestStatus]]">
-                                        耗时: <span>{{ expandRecord.requestTime }}</span>
-                                    </div>
-                                </template>
-                                <template #operation>
-                                    <div class="report-type">
-                                        转单
-                                    </div>
-                                </template>
-                                <template #expandedRowRender="{ record }">
-                                    <div class="expand-wrapper">
-                                        <div class="expand-content">
-                                            <div class="expand-detail-info" v-for="info in record.requestInfo"
-                                                :key="info.errorId">
-                                                <div class="info-field"><exclamation-circle-outlined
-                                                        style="color: #F63838;margin-right: 8px" />{{ info.errorField }}
-                                                </div>
-                                                <div class="info-tip">
-                                                    <span v-for="(tip, index) in info.errorTip" :key="index">
-                                                    {{ index + 1 }}. {{ tip }}</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </template>
-                            </a-table>
-                        </div>
-                    </template>
-                </a-table>
-            </div>
+                </ScenarioCollapsePanel>
+            </template>
         </div>
     </a-drawer>
 </template>
 <script setup lang="ts">
-import { defineProps, defineEmits } from 'vue';
-import { DownOutlined, RightOutlined, ExclamationCircleOutlined, UpOutlined } from '@ant-design/icons-vue';
+import { defineProps, defineEmits, ref } from 'vue';
 import ReportBasicInfo from './Components/BasicInfo.vue';
 import StatisticTable from './Components/StatisticTable.vue';
-import ScenarioCollapse from './Components/ScenarioCollapse.vue';
-import { responseDataColumns, scenarioReportColumns } from '../config';
+import ScenarioCollapsePanel from './Components/ScenarioCollapsePanel.vue';
+import EndpointCollapsePanel from './Components/EndpointCollapsePanel.vue';
 
-enum StatusMap {
-    'success' = '通过',
-    'expires' = '过期',
-    'error' = '失败'
-}
-
-enum ClassMap {
-    'success' = 'report-success',
-    'expires' = 'report-expires',
-    'error' = 'report-error'
-}
-
-defineProps<{
+const props = defineProps<{
     drawerVisible: boolean
+    title: string
+    scenarioExpandActive: boolean 
+    showScenarioInfo: boolean
 }>()
 
 const emits = defineEmits(['onClose']);
+const expandActive = ref(props.scenarioExpandActive || false);
 
 const reportData = {
     logName: '测试计划名称11',
@@ -155,7 +51,7 @@ const reportData = {
             reponseList: [
                 {
                     requestId: 44444,
-                    requestStatus: 'success',
+                    requestStatus: 'loading',
                     requestMethod: 'GET',
                     requestCode: '200',
                     requestUrl: '/pet/%khkhfhw h',
@@ -272,200 +168,6 @@ function onClose() {
 .report-drawer {
     :deep(.ant-drawer-header) {
         box-shadow: 0px 1px 0px rgba(0, 0, 0, 0.06);
-    }
-}
-
-.report-list {
-
-    .report-item-priority {
-        font-weight: bold;
-    }
-
-    .report-item-status {
-        display: flex;
-        align-items: center;
-
-        &:before {
-            content: '';
-            display: block;
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background-color: #04C495;
-            margin-right: 10px;
-        }
-    }
-
-    .report-item-name {
-        width: 333px;
-        font-weight: bold;
-    }
-
-    .report-item-rate {
-        width: 292px;
-        display: flex;
-        align-items: center;
-        font-family: 'PingFang SC';
-        font-style: normal;
-        font-weight: 400;
-        font-size: 14px;
-        color: rgba(0, 0, 0, 0.85);
-        padding: 0;
-
-        .report-progress {
-            width: 180px;
-            height: 6px;
-            border-radius: 41px;
-            margin-right: 16px;
-        }
-    }
-
-    .report-status {
-        width: 36px;
-        height: 20px;
-        font-size: 12px;
-        border-radius: 2px;
-        text-align: center;
-        line-height: 20px;
-
-        &.report-success {
-            background: #E6FFF4;
-            color: #04C495;
-
-        }
-
-        &.report-error {
-            background: #FFF2F0;
-            ;
-            color: #F63838;
-        }
-
-        &.report-expires {
-            background: #FFF2F0;
-            ;
-            color: #F63838;
-        }
-    }
-
-    .report-method {
-        font-weight: bold;
-        font-size: 14px;
-
-        &.report-success {
-            color: #04C495;
-        }
-
-        &.report-error,
-        &.report-expires {
-            color: #F63838;
-        }
-    }
-
-    .report-time,
-    .report-code {
-        font-size: 14px;
-        line-height: 22px;
-        color: rgba(0, 0, 0, 0.85);
-
-        span {
-            color: #04C495;
-        }
-    }
-
-    .report-type {
-        font-size: 14px;
-        line-height: 22px;
-        color: #447DFD;
-        cursor: pointer;
-    }
-
-    .expand-wrapper {
-        padding: 9px 16px;
-        column-span: 8;
-
-        .expand-content {
-            background-color: #fff;
-            padding: 16px;
-
-            .expand-detail-info {
-                margin-bottom: 10px;
-
-                &:last-child {
-                    margin: 0;
-                }
-            }
-
-            .info-field {
-                font-weight: 400;
-                font-size: 14px;
-                line-height: 22px;
-                color: rgba(0, 0, 0, 0.85);
-                margin-bottom: 8px;
-            }
-
-            .info-tip {
-                font-style: normal;
-                font-weight: 400;
-                font-size: 14px;
-                line-height: 22px;
-                color: rgba(0, 0, 0, 0.65);
-
-                span {
-                    display: block;
-                }
-            }
-        }
-    }
-
-    :deep(.scenario-table .ant-table-content table) {
-        border-spacing: 0 10px;
-
-        tr {
-            &.scenario-row-item {
-                td {
-                    border: 1px solid #E5E5E5;
-
-                    &:not(:last-child) {
-                        border-right: unset;
-                    }
-
-                    &:not(:first-child) {
-                        border-left: unset;
-                    }
-                }
-            }
-        }
-
-        .ant-table-expanded-row td {
-            padding: 0;
-        }
-    }
-
-    :deep(.responsedata-table) {
-        &:before, &:after {
-            display: none;
-        }
-    }
-
-    :deep(.reponsedata-table .ant-table-content table) {
-        background-color: #fbfbfb;
-        border-spacing: 0 !important;
-
-        td {
-            padding: 16px !important;
-        }
-
-        .ant-table-expanded-row td {
-            padding: 0 !important;
-        }
-    }
-
-    :deep(.ant-table-wrapper::before) { 
-        display: none;
-    }
-
-    :deep(.ant-table-wrapper::after) {
-        display: none;
     }
 }
 </style>

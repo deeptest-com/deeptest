@@ -7,7 +7,7 @@
             <List :loading="loading" :list="list" @get-list="getList" @query-detail="queryDetail"/>
         </div>
 
-        <DetailDrawer :drawer-visible="drawerVisible" @on-close="drawerVisible = false" />
+        <DetailDrawer :title="'测试报告详情'" :show-scenario-info="true" :scenario-expand-active="false" :drawer-visible="drawerVisible" @on-close="drawerVisible = false" />
     </div>
 </template>
 <script setup lang="ts">
@@ -26,7 +26,7 @@ const store = useStore<{ Report: StateType, ProjectGlobal: ProjectStateType }>()
 // 全局选中的项目
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 // 报告列表信息
-const list = computed<Report[]>(() => store.state.Report.listResult.list);
+const list = computed<any[]>(() => store.state.Report.listResult.list);
 // 分页数据
 let pagination = computed<PaginationConfig>(() => store.state.Report.listResult.pagination);
 // 初始查询参数

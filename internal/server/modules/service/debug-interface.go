@@ -42,7 +42,7 @@ func (s *DebugInterfaceService) Load(loadReq domain.DebugReq) (debugData domain.
 		debugData.ScenarioProcessorId = loadReq.ScenarioProcessorId
 	}
 
-	debugData.BaseUrl, debugData.ShareVars =
+	debugData.BaseUrl, debugData.ShareVars, debugData.EnvVars =
 		s.DebugSceneService.LoadScene(debugData.EndpointInterfaceId, debugData.ServerId, debugData.ScenarioProcessorId, debugData.UsedBy)
 
 	debugData.ScenarioProcessorId = loadReq.ScenarioProcessorId
@@ -69,7 +69,7 @@ func (s *DebugInterfaceService) LoadForExec(loadReq domain.DebugReq) (ret agentE
 		debugData.ScenarioProcessorId = loadReq.ScenarioProcessorId
 	}
 
-	debugData.BaseUrl, ret.ExecScene.ShareVars =
+	debugData.BaseUrl, ret.ExecScene.ShareVars, debugData.EnvVars =
 		s.DebugSceneService.LoadScene(debugData.EndpointInterfaceId, debugData.ServerId, debugData.ScenarioProcessorId, debugData.UsedBy)
 
 	debugData.ScenarioProcessorId = loadReq.ScenarioProcessorId

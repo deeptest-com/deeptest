@@ -238,15 +238,13 @@ func (s *EnvironmentService) SaveOrder(req v1.EnvironmentIdsReq) (err error) {
 	return s.EnvironmentRepo.SaveOrder(req)
 }
 
-func (s *EnvironmentService) GetVarsByEnv(envId uint) (ret []domain.VarKeyValuePair, err error) {
+func (s *EnvironmentService) GetVarsByEnv(envId uint) (ret []domain.GlobalVar, err error) {
 	pos, _ := s.EnvironmentRepo.GetVars(envId)
 
-	for _, v := range pos {
-		ret = append(ret, domain.VarKeyValuePair{
-			"id":          v.ID,
-			"name":        v.Name,
-			"localValue":  v.LocalValue,
-			"remoteValue": v.RemoteValue,
+	for _, po := range pos {
+		ret = append(ret, domain.GlobalVar{
+			Name:       po.Name,
+			LocalValue: po.LocalValue,
 		})
 	}
 

@@ -82,6 +82,7 @@ var (
 
 		&ProcessorInvocation{},
 		&ScenarioReport{},
+		&PlanReport{},
 		&ExecLogProcessor{},
 		&ExecLogExtractor{},
 		&ExecLogCheckpoint{},

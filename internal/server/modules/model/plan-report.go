@@ -18,6 +18,10 @@ type PlanReport struct {
 	EndTime   *time.Time `json:"endTime"`
 	Duration  int64      `json:"duration"` // sec
 
+	TotalScenarioNum int `json:"totalScenarioNum"`
+	PassScenarioNum  int `json:"passScenarioNum"`
+	FailScenarioNum  int `json:"failScenarioNum" yaml:"failScenarioNum"`
+
 	TotalInterfaceNum int `json:"totalInterfaceNum"`
 	PassInterfaceNum  int `json:"passInterfaceNum"`
 	FailInterfaceNum  int `json:"failInterfaceNum" yaml:"failInterfaceNum"`
@@ -36,6 +40,11 @@ type PlanReport struct {
 
 	PlanId    uint `json:"planId"`
 	ProjectId uint `json:"projectId"`
+	ReportId  uint `json:"reportId"`
+
+	CreateUserId   uint   `json:"createUserId"`
+	CreateUserName string `gorm:"-" json:"createUserName"`
+	SerialNumber   string `json:"serialNumber"`
 
 	Logs []*ExecLogProcessor `gorm:"-" json:"logs"`
 }

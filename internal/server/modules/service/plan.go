@@ -2,6 +2,7 @@ package service
 
 import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	repo "github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
@@ -57,4 +58,12 @@ func (s *PlanService) AddScenarios(planId int, scenarioIds []int) (err error) {
 func (s *PlanService) RemoveScenario(planId int, scenarioId int) (err error) {
 	err = s.PlanRepo.RemoveScenario(planId, scenarioId)
 	return
+}
+
+func (s *PlanService) StatusDropDownOptions() map[consts.TestStatus]string {
+	return s.PlanRepo.StatusDropDownOptions()
+}
+
+func (s *PlanService) TestStageDropDownOptions() map[consts.TestStage]string {
+	return s.PlanRepo.TestStageDropDownOptions()
 }

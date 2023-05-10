@@ -110,7 +110,7 @@ func (r *ScenarioReportRepo) UpdateStatus(progressStatus consts.ProgressStatus, 
 		"result_status":   resultStatus,
 	}
 	err = r.DB.Model(&model.ScenarioReport{}).
-		Where("report_id = ? AND progress_status = ?", scenarioId, consts.InProgress).
+		Where("scenario_id = ? AND progress_status = ?", scenarioId, consts.InProgress).
 		Updates(values).Error
 
 	return
@@ -239,6 +239,32 @@ func (r *ScenarioReportRepo) UpdateSerialNumber(id, projectId uint) (err error) 
 		return
 	}
 
-	err = r.DB.Model(&model.Scenario{}).Where("id=?", id).Update("serial_number", project.ShortName+"-TR-"+strconv.Itoa(int(id))).Error
+	err = r.DB.Model(&model.ScenarioReport{}).Where("id=?", id).Update("serial_number", project.ShortName+"-TR-"+strconv.Itoa(int(id))).Error
+	return
+}
+
+func (r *ScenarioReportRepo) UpdatePlanReportId(id, planReportId uint) (err error) {
+	values := map[string]interface{}{
+		"plan_report_id": planReportId,
+	}
+	err = r.DB.Model(&model.ScenarioReport{}).Where("id = ?", id).Updates(values).Error
+	if err != nil {
+		logUtils.Errorf("update scenario report error %s", err.Error())
+		return
+	}
+
+	return
+}
+
+func (r *ScenarioReportRepo) BatchUpdatePlanReportId(ids []uint, planReportId uint) (err error) {
+	values := map[string]interface{}{
+		"plan_report_id": planReportId,
+	}
+	err = r.DB.Model(&model.ScenarioReport{}).Where("id IN (?)", ids).Updates(values).Error
+	if err != nil {
+		logUtils.Errorf("batch update scenario reports error %s", err.Error())
+		return
+	}
+
 	return
 }

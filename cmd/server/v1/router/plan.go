@@ -28,6 +28,9 @@ func (m *PlanModule) Party() module.WebModule {
 
 		index.Post("/{id:uint}/addScenarios", m.PlanCtrl.AddScenarios).Name = "添加场景"
 		index.Post("/{id:uint}/removeScenario", m.PlanCtrl.RemoveScenario).Name = "移除场景"
+
+		index.Get("/statusDropDownOptions", m.PlanCtrl.StatusDropDownOptions).Name = "计划状态下拉选项"
+		index.Get("/testStageDropDownOptions", m.PlanCtrl.TestStageDropDownOptions).Name = "计划测试阶段下拉选项"
 	}
 
 	return module.NewModule("/plans", handler)

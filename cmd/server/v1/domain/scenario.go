@@ -13,6 +13,8 @@ type ScenarioReqPaginate struct {
 	CategoryId int64  `json:"categoryId"`
 	Keywords   string `json:"keywords"`
 	Enabled    string `json:"enabled"`
+	Status     string `json:"status"`
+	Priority   string `json:"priority"`
 }
 
 type ScenarioAddInterfacesReq struct {

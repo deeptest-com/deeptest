@@ -10,6 +10,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
+	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	_stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"golang.org/x/crypto/bcrypt"
@@ -609,4 +610,20 @@ func (r *UserRepo) FindByIds(ids []uint) (res []model.SysUser, err error) {
 
 	err = db.Find(&res).Error
 	return
+}
+
+func (r *UserRepo) GetUserIdNameMap(ids []uint) map[uint]string {
+	userIdNameMap := make(map[uint]string)
+	ids = _commUtils.ArrayRemoveUintDuplication(ids)
+
+	users, err := r.FindByIds(ids)
+	if err != nil {
+		return userIdNameMap
+	}
+
+	for _, v := range users {
+		userIdNameMap[v.ID] = v.Name
+	}
+
+	return userIdNameMap
 }

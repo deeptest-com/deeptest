@@ -612,3 +612,17 @@ const (
 func (e TestStage) String() string {
 	return string(e)
 }
+
+type TestType string
+
+//冒烟测试、逻辑验证、异常测试、性能测试、接口合规测试
+
+const (
+	ApiTest         TestType = "api_test"         //接口测试
+	PerformanceTest TestType = "performance_test" //性能测试
+	SmokeTest       TestType = "smoke_test"       //冒烟测试
+)
+
+func (e TestType) String() string {
+	return string(e)
+}

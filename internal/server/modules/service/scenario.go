@@ -50,3 +50,13 @@ func (s *ScenarioService) Update(req model.Scenario) error {
 func (s *ScenarioService) DeleteById(id uint) error {
 	return s.ScenarioRepo.DeleteById(id)
 }
+
+func (s *ScenarioService) AddPlans(scenarioId int, planIds []int) (err error) {
+	err = s.ScenarioRepo.AddPlans(uint(scenarioId), planIds)
+	return
+}
+
+func (s *ScenarioService) PlanPaginate(req v1.PlanReqPaginate, scenarioId int) (ret _domain.PageData, err error) {
+	ret, err = s.ScenarioRepo.PlanList(req, scenarioId)
+	return
+}

@@ -45,6 +45,7 @@ type PlanReport struct {
 	CreateUserId   uint   `json:"createUserId"`
 	CreateUserName string `gorm:"-" json:"createUserName"`
 	SerialNumber   string `json:"serialNumber"`
+	ExecEnv        string `json:"execEnv"` //执行环境
 
 	Logs []*ExecLogProcessor `gorm:"-" json:"logs"`
 }

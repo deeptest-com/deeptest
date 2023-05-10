@@ -5,6 +5,7 @@
       <CloseOutlined @click.stop="cancelEdit"/>
       <CheckOutlined
           @click.stop="updateField"
+          class="editor-icon"
           :class="{disabled: !fieldValue}"/>&nbsp;
     </a-space>
   </div>
@@ -89,6 +90,7 @@ watch(() => {
     &:hover {
       .edit-icon {
         display: inline-block;
+        color: #8A8A8A;
       }
     }
   }
@@ -111,5 +113,6 @@ watch(() => {
     white-space: nowrap;
   }
 }
+
 
 </style>

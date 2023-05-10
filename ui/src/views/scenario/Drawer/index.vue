@@ -12,44 +12,29 @@
     <template #title>
       <a-row type="flex" style="align-items: center;width: 100%">
         <a-col :span="8">
-          <EditAndShowField placeholder="修改标题" :value="detailResult.title" @update="updateTitle"/>
+          <EditAndShowField placeholder="修改标题" :value="detailResult.name" @update="updateTitle"/>
         </a-col>
       </a-row>
     </template>
 
     <!-- 基本信息 -->
-    <EndpointBasicInfo @changeStatus="changeStatus" @change-description="changeDescription" @changeCategory="changeCategory"/>
+    <BasicInfo @changeStatus="changeStatus" @change-description="changeDescription" @changeCategory="changeCategory"/>
 
-    <!-- 接口设计区域 -->
-    <a-card
-        style="width: 100%"
-        :bordered="false"
-        :size="'small'"
-        :headStyle="{padding:'0 24px',borderBottom:'none'}"
-        :bodyStyle="{padding:'0 24px 0 24px'}">
-      <template #title>
-        <div style="margin-top: -12px;">
-          <ConBoxTitle :backgroundStyle="'background: #FBFBFB;'" :title="'接口设计'" />
-        </div>
-      </template>
+    <!-- Tab 切换区域 -->
+    <a-tabs v-model:activeKey="activeKey">
+      <a-tab-pane class="test-developer" key="1" tab="测试开发">
+        <DesignContent :id="detailResult?.id"/>
+      </a-tab-pane>
+      <a-tab-pane key="2" tab="执行历史" force-render>Content of Tab Pane 2</a-tab-pane>
+      <a-tab-pane key="3" tab="关联计划" force-render>Content of Tab Pane 2</a-tab-pane>
+    </a-tabs>
 
-      <a-tabs v-model:activeKey="key" :animated="false">
-        <a-tab-pane key="request" tab="定义">
-          <EndpointDefine v-if="key === 'request'"/> <!-- use v-if to force page reload-->
-        </a-tab-pane>
-
-        <a-tab-pane key="run" tab="调试">
-          <EndpointDebug v-if="key === 'run'"/> <!-- use v-if to force page reload -->
-        </a-tab-pane>
-      </a-tabs>
-    </a-card>
-
-    <div v-if="key === 'request'" class="drawer-btns">
-      <a-space>
-        <a-button type="primary" @click="save">保存</a-button>
-        <a-button @click="cancel">取消</a-button>
-      </a-space>
-    </div>
+<!--    <div v-if="key === 'request'" class="drawer-btns">-->
+<!--      <a-space>-->
+<!--        <a-button type="primary" @click="save">保存</a-button>-->
+<!--        <a-button @click="cancel">取消</a-button>-->
+<!--      </a-space>-->
+<!--    </div>-->
   </a-drawer>
 </template>
 
@@ -60,16 +45,13 @@ import {
   defineEmits,
   computed,
 } from 'vue';
-import EndpointBasicInfo from './EndpointBasicInfo.vue';
+import BasicInfo from './BasicInfo.vue';
 import EditAndShowField from '@/components/EditAndShow/index.vue';
-import ConBoxTitle from '@/components/ConBoxTitle/index.vue';
-import EndpointDefine from './Define/index.vue';
-import EndpointDebug from './Debug/index.vue';
 
 import {useStore} from "vuex";
 import {Scenario} from "@/views/Scenario/data";
 import {message} from "ant-design-vue";
-
+import DesignContent from "../design/index1.vue"
 const store = useStore<{ Scenario, ProjectGlobal, ServeGlobal }>();
 const detailResult = computed<Scenario>(() => store.state.Scenario.detailResult);
 
@@ -84,6 +66,8 @@ const emit = defineEmits(['ok', 'close', 'refreshList']);
 function onCloseDrawer() {
   emit('close');
 }
+
+const activeKey = ref('1');
 
 async function changeStatus(status) {
   await store.dispatch('Scenario/updateStatus',
@@ -123,7 +107,6 @@ async function save() {
   await store.dispatch('Scenario/updateEndpointDetail',
       {...detailResult.value}
   );
-  // emit('close');
   message.success('保存成功');
   emit('refreshList');
 }
@@ -174,5 +157,8 @@ async function save() {
   margin-right: 16px;
   z-index: 99;
 }
-
+.test-developer{
+  height: 100%;
+  width: 1000px;
+}
 </style>

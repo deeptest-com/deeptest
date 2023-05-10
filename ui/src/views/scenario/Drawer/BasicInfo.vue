@@ -10,26 +10,32 @@
     </div>
 
     <a-descriptions :size="'small'" :title="null">
-      <a-descriptions-item label="创建人">{{ endpointDetail?.createUser }}</a-descriptions-item>
+      <a-descriptions-item label="创建人">{{ detailResult?.createUser }}</a-descriptions-item>
       <a-descriptions-item label="状态">
-        <EditAndShowSelect :label="endpointStatus.get(endpointDetail?.status || 0 )"
-                           :value="endpointDetail?.status"
+        <EditAndShowSelect :label="endpointStatus.get(detailResult?.status || 0 )"
+                           :value="detailResult?.status"
+                           :options="endpointStatusOpts"
+                           @update="handleChangeStatus"/>
+      </a-descriptions-item>
+      <a-descriptions-item label="优先级">
+        <EditAndShowSelect :label="endpointStatus.get(detailResult?.status || 0 )"
+                           :value="detailResult?.status"
                            :options="endpointStatusOpts"
                            @update="handleChangeStatus"/>
       </a-descriptions-item>
       <a-descriptions-item label="描述">
-        <EditAndShowField :placeholder="'请输入描述'" :value="endpointDetail?.description || '暂无'"
+        <EditAndShowField :placeholder="'请输入描述'" :value="detailResult?.desc || '暂无'"
                           @update="updateDescription"/>
       </a-descriptions-item>
       <a-descriptions-item label="分类">
         <EditAndShowTreeSelect
             :label="categoryLabel"
-            :value="endpointDetail?.categoryId"
+            :value="detailResult?.categoryId"
             :treeData="treeData"
             @update="handleChangeCategory"/>
       </a-descriptions-item>
-      <a-descriptions-item label="创建时间">{{ endpointDetail?.createdAt }}</a-descriptions-item>
-      <a-descriptions-item label="最近更新">{{ endpointDetail?.updatedAt }}</a-descriptions-item>
+      <a-descriptions-item label="创建时间">{{ momentUtc(detailResult?.createdAt) }}</a-descriptions-item>
+      <a-descriptions-item label="最近更新">{{ momentUtc(detailResult?.updatedAt) }}</a-descriptions-item>
     </a-descriptions>
   </a-card>
 </template>
@@ -46,17 +52,17 @@ import EditAndShowField from '@/components/EditAndShow/index.vue';
 import EditAndShowSelect from '@/components/EditAndShowSelect/index.vue';
 import EditAndShowTreeSelect from '@/components/EditAndShowTreeSelect/index.vue';
 import ConBoxTitle from '@/components/ConBoxTitle/index.vue';
-
+import {momentUtc} from '@/utils/datetime';
 const props = defineProps({})
 
 const store = useStore<{ Scenario }>();
-const endpointDetail: any = computed<Scenario>(() => store.state.Scenario.endpointDetail);
+const detailResult: any = computed<Scenario>(() => store.state.Scenario.detailResult);
 const treeDataCategory = computed<any>(() => store.state.Scenario.treeDataCategory);
 const treeData: any = computed(() => {
   return treeDataCategory.value?.[0]?.children || [];
 });
 const categoryLabel = computed(() => {
-  if(!endpointDetail.value?.categoryId){
+  if(!detailResult.value?.categoryId){
     return '未分类'
   }
   const data = treeDataCategory.value?.[0]?.children || [];
@@ -69,7 +75,7 @@ const categoryLabel = computed(() => {
     }
     for (let i = 0; i < arr.length; i++) {
       const item = arr[i];
-      if (item.id === endpointDetail.value?.categoryId) {
+      if (item.id === detailResult.value?.categoryId) {
         label = item.name;
         hasFind = true;
       }

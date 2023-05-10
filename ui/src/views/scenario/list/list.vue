@@ -26,6 +26,7 @@
       <div>
         <a-table
             v-if="list.length > 0"
+            :row-selection="rowSelection"
             row-key="id"
             :columns="columns"
             :data-source="list"
@@ -42,14 +43,21 @@
             }"
             class="dp-table"
         >
-          <template #name="{ text  }">
-            <a href="javascript:void (0)">{{ text }}</a>
+          <template #name="{ record ,text }">
+            <EditAndShowField :custom-class="'custom-endpoint show-on-hover'"
+                              :value="text"
+                              placeholder="场景名称"
+                              @update="(e: string) => handleUpdateName(e, record)"
+                              @edit="editScenario(record)"/>
+
+          </template>
+
+          <template #desc="{ record  }">
+            <span>{{record?.desc || '暂无描述'}}</span>
           </template>
 
           <template #updatedAt="{ record }">
-            <span>{{
-                momentUtc(record.updatedAt)
-              }}</span>
+            <span>{{momentUtc(record.updatedAt) }}</span>
           </template>
 
           <template #status="{ record }">
@@ -96,7 +104,6 @@
       </div>
     </a-card>
   </div>
-
   <div v-if="isEditVisible">
     <a-modal :title="currModelId > 0 ? '编辑测试场景' : '新建测试场景'"
              :visible="true"
@@ -111,7 +118,6 @@
       </ScenarioEdit>
     </a-modal>
   </div>
-
   <a-modal v-model:visible="linkPlanVisible"
            :onCancel="onEditFinish"
            class="scenario-edit"
@@ -122,7 +128,10 @@
     </template>
     <LinkPlan/>
   </a-modal>
-
+  <DrawerDetail :destroyOnClose="true"
+                :visible="drawerVisible"
+                @refreshList="refreshList"
+                @close="drawerVisible = false;"/>
 </template>
 
 <script setup lang="ts">
@@ -138,9 +147,20 @@ import debounce from "lodash.debounce";
 import {useRouter} from "vue-router";
 import {message, Modal, notification} from "ant-design-vue";
 import {StateType as ProjectStateType} from "@/store/project";
-
+import EditAndShowField from '@/components/EditAndShow/index.vue';
 import ScenarioEdit from "../edit/index.vue";
 import LinkPlan from "../edit/linkPlan.vue";
+import DrawerDetail from "../Drawer/index.vue";
+import { ColumnProps } from 'ant-design-vue/es/table/interface';
+
+type Key = ColumnProps['key'];
+
+interface DataType {
+  key: Key;
+  name: string;
+  age: number;
+  address: string;
+}
 
 const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
 
@@ -257,6 +277,36 @@ const remove = (id: number) => {
   });
 }
 
+
+async function handleUpdateName(value: string, record: any) {
+  console.log('handleUpdateName', value, record)
+  // await store.dispatch('Scenario/updateEndpointDetail',
+  //     {...record, title: value}
+  // );
+}
+
+async function editScenario(record: any) {
+  drawerVisible.value = true;
+  // console.log('handleUpdateName', value, record)
+  await store.dispatch('Scenario/getScenario', record.id);
+}
+// 抽屉是否打开
+const drawerVisible = ref<boolean>(false);
+// 关闭抽屉时，重新拉取列表数据
+async function refreshList() {
+  console.log('refreshList');
+}
+const rowSelection = {
+  onChange: (selectedRowKeys: Key[], selectedRows: DataType[]) => {
+    console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
+  },
+  getCheckboxProps: (record: DataType) => ({
+    // disabled: record.name === 'Disabled User', // Column configuration not to be checked
+    // name: record.name,
+  }),
+};
+
+
 const onSearch = debounce(() => {
   getList(1, nodeDataCategory.value.id)
 }, 500);
@@ -276,6 +326,7 @@ const columns = [
     title: '描述',
     dataIndex: 'desc',
     ellipsis: true,
+    slots: {customRender: 'desc'},
   },
   {
     title: '状态',
@@ -285,6 +336,12 @@ const columns = [
   {
     title: '优先级',
     dataIndex: 'desc',
+    ellipsis: true,
+  },
+  {
+    title: '创建人',
+    dataIndex: 'createUserName',
+    width: 100,
     ellipsis: true,
   },
   {

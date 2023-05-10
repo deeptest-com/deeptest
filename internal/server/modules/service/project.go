@@ -109,8 +109,8 @@ func (s *ProjectService) Audit(id, auditUserId, status uint) (err error) {
 	return
 }
 
-func (s *ProjectService) AuditList(auditUserId uint) (res []model.ProjectMemberAudit, err error) {
-	return s.ProjectRepo.GetAuditList(auditUserId)
+func (s *ProjectService) AuditList(req v1.AuditProjectPaginate) (data _domain.PageData, err error) {
+	return s.ProjectRepo.GetAuditList(req)
 }
 
 /*

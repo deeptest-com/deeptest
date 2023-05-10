@@ -88,8 +88,8 @@ func (r *PlanRepo) Paginate(req v1.PlanReqPaginate, projectId int) (data _domain
 func (r *PlanRepo) CombineUserName(data []*model.Plan) {
 	userIds := make([]uint, 0)
 	for _, v := range data {
-		userIds = append(userIds, v.DirectorId)
-		userIds = append(userIds, v.UpdaterId)
+		userIds = append(userIds, v.AdminId)
+		userIds = append(userIds, v.UpdateUserId)
 	}
 	userIds = commonUtils.ArrayRemoveUintDuplication(userIds)
 
@@ -101,11 +101,11 @@ func (r *PlanRepo) CombineUserName(data []*model.Plan) {
 	}
 
 	for _, v := range data {
-		if directorName, ok := userIdNameMap[v.DirectorId]; ok {
-			v.DirectorName = directorName
+		if adminName, ok := userIdNameMap[v.AdminId]; ok {
+			v.AdminName = adminName
 		}
-		if updaterName, ok := userIdNameMap[v.UpdaterId]; ok {
-			v.UpdaterName = updaterName
+		if updateUserName, ok := userIdNameMap[v.UpdateUserId]; ok {
+			v.UpdateUserName = updateUserName
 		}
 	}
 }
@@ -182,14 +182,14 @@ func (r *PlanRepo) Create(scenario model.Plan) (ret model.Plan, bizErr *_domain.
 
 func (r *PlanRepo) Update(req model.Plan) error {
 	values := map[string]interface{}{
-		"name":        req.Name,
-		"desc":        req.Desc,
-		"status":      req.Status,
-		"director_id": req.DirectorId,
-		"category_id": req.CategoryId,
-		"test_stage":  req.TestStage,
-		"updater_id":  req.UpdaterId,
-		"disabled":    req.Disabled,
+		"name":           req.Name,
+		"desc":           req.Desc,
+		"status":         req.Status,
+		"admin_id":       req.AdminId,
+		"category_id":    req.CategoryId,
+		"test_stage":     req.TestStage,
+		"update_user_id": req.UpdateUserId,
+		"disabled":       req.Disabled,
 	}
 	err := r.DB.Model(&req).Where("id = ?", req.ID).Updates(values).Error
 	if err != nil {

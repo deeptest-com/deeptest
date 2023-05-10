@@ -101,7 +101,7 @@ func (c *PlanCtrl) Update(ctx iris.Context) {
 	}
 
 	userId := multi.GetUserId(ctx)
-	req.UpdaterId = userId
+	req.UpdateUserId = userId
 
 	err = c.PlanService.Update(req)
 	if err != nil {
@@ -131,14 +131,14 @@ func (c *PlanCtrl) Delete(ctx iris.Context) {
 func (c *PlanCtrl) AddScenarios(ctx iris.Context) {
 	planId, _ := ctx.Params().GetInt("id")
 
-	scenarioIds := make([]int, 0)
-	err := ctx.ReadJSON(&scenarioIds)
+	req := serverDomain.PlanAddScenariosReq{}
+	err := ctx.ReadJSON(&req)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: "ids"})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
 		return
 	}
 
-	err = c.PlanService.AddScenarios(planId, scenarioIds)
+	err = c.PlanService.AddScenarios(planId, req.ScenarioIds)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

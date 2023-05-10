@@ -248,7 +248,16 @@ func (r *PlanReportRepo) listLogCheckpoints(logId uint) (checkpoints []model.Exe
 }
 
 func (r *PlanReportRepo) GetLastByPlanId(planId uint) (report model.PlanReport, err error) {
-	err = r.DB.Where("plan_id = ?", planId).Last(&report).Error
+	err = r.DB.Model(&model.PlanReport{}).Where("plan_id = ?", planId).Last(&report).Error
+	if err != nil {
+		logUtils.Errorf("find plan report by plan_id error %s", err.Error())
+		return
+	}
+	return
+}
+
+func (r *PlanReportRepo) GetPlanExecNumber(planId uint) (num int64, err error) {
+	err = r.DB.Model(&model.PlanReport{}).Where("plan_id = ?", planId).Count(&num).Error
 	if err != nil {
 		logUtils.Errorf("find plan report by plan_id error %s", err.Error())
 		return

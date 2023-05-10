@@ -2,13 +2,25 @@
   <div class="scenario-list-main">
     <a-card :bordered="false">
       <template #title>
-        <a-button type="primary" @click="() => edit(0)">新建</a-button>
+        <a-space :size="8">
+          <a-button type="primary" @click="() => edit(0)">新建测试场景</a-button>
+          <a-button  :disabled="true" @click="() => edit(0)">批量操作</a-button>
+        </a-space>
       </template>
       <template #extra>
-        <a-select @change="onSearch" v-model:value="queryParams.enabled" :options="statusArr" class="status-select">
-        </a-select>
-        <a-input-search @change="onSearch" @search="onSearch" v-model:value="queryParams.keywords"
-                        placeholder="输入关键字搜索" style="width:270px;margin-left: 16px;"/>
+
+        <a-form :layout="'inline'" >
+          <a-form-item :label="'状态'">
+            <a-select style="width:120px"  @change="onSearch" v-model:value="queryParams.enabled" :options="statusArr" class="status-select"/>
+          </a-form-item>
+          <a-form-item :label="'优先级'">
+            <a-select style="width:120px"  @change="onSearch" v-model:value="queryParams.enabled" :options="statusArr" class="status-select"/>
+          </a-form-item>
+          <a-form-item :label="null">
+            <a-input-search @change="onSearch" @search="onSearch" v-model:value="queryParams.keywords"
+                            placeholder="请输入你需要搜索的测试场景名称" style="width:270px;margin-left: 8px;"/>
+          </a-form-item>
+        </a-form>
       </template>
 
       <div>
@@ -31,8 +43,15 @@
             class="dp-table"
         >
           <template #name="{ text  }">
-            {{ text }}
+            <a href="javascript:void (0)">{{ text }}</a>
           </template>
+
+          <template #updatedAt="{ record }">
+            <span>{{
+                momentUtc(record.updatedAt)
+              }}</span>
+          </template>
+
           <template #status="{ record }">
             <a-tag v-if="record.disabled" color="green">禁用</a-tag>
             <a-tag v-else color="cyan">启用</a-tag>
@@ -43,18 +62,29 @@
               <MoreOutlined />
               <template #overlay>
                 <a-menu>
+                  <a-menu-item key="0">
+                    <a class="operation-a" href="javascript:void (0)" @click="linkPlan(record.id)">关联测试计划</a>
+                  </a-menu-item>
                   <a-menu-item key="1">
-                    <a class="operation-a" href="javascript:void (0)" @click="exec(record.id)">执行</a>
+                    <a class="operation-a" href="javascript:void (0)" @click="exec(record.id)">执行测试场景</a>
                   </a-menu-item>
                   <a-menu-item key="2">
-                    <a class="operation-a" href="javascript:void (0)" @click="design(record.id)">设计</a>
+                    <a class="operation-a" href="javascript:void (0)" @click="design(record.id)">复制</a>
                   </a-menu-item>
                   <a-menu-item key="3">
-                    <a class="operation-a" href="javascript:void (0)" @click="edit(record.id)">编辑</a>
+                    <a class="operation-a" href="javascript:void (0)" @click="design(record.id)">禁用</a>
                   </a-menu-item>
                   <a-menu-item key="4">
                     <a class="operation-a" href="javascript:void (0)" @click="remove(record.id)">删除</a>
                   </a-menu-item>
+
+                  <a-menu-item key="5">
+                    <a class="operation-a" href="javascript:void (0)" @click="design(record.id)">设计</a>
+                  </a-menu-item>
+                  <a-menu-item key="6">
+                    <a class="operation-a" href="javascript:void (0)" @click="edit(record.id)">编辑</a>
+                  </a-menu-item>
+
                 </a-menu>
               </template>
             </a-dropdown>
@@ -68,7 +98,7 @@
   </div>
 
   <div v-if="isEditVisible">
-    <a-modal title=""
+    <a-modal :title="currModelId > 0 ? '编辑测试场景' : '新建测试场景'"
              :visible="true"
              :onCancel="onEditFinish"
              class="scenario-edit"
@@ -81,6 +111,18 @@
       </ScenarioEdit>
     </a-modal>
   </div>
+
+  <a-modal v-model:visible="linkPlanVisible"
+           :onCancel="onEditFinish"
+           class="scenario-edit"
+           :footer="null"
+           width="600px">
+    <template #title>
+      <span>关联到测试计划 <span class="subTitle"> (已选择{{10}}个测试计划)</span></span>
+    </template>
+    <LinkPlan/>
+  </a-modal>
+
 </template>
 
 <script setup lang="ts">
@@ -90,7 +132,7 @@ import { MoreOutlined } from "@ant-design/icons-vue";
 import {SelectTypes} from 'ant-design-vue/es/select';
 import {PaginationConfig, QueryParams, Scenario} from '../data.d';
 import {useStore} from "vuex";
-
+import {momentUtc} from "@/utils/datetime";
 import {StateType} from "../store";
 import debounce from "lodash.debounce";
 import {useRouter} from "vue-router";
@@ -98,6 +140,7 @@ import {message, Modal, notification} from "ant-design-vue";
 import {StateType as ProjectStateType} from "@/store/project";
 
 import ScenarioEdit from "../edit/index.vue";
+import LinkPlan from "../edit/linkPlan.vue";
 
 const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
 
@@ -162,6 +205,11 @@ const exec = (id: number) => {
   router.push(`/scenario/exec/${id}`)
 }
 
+const linkPlanVisible = ref(false)
+const linkPlan = () => {
+  linkPlanVisible.value = true;
+}
+
 const design = (id: number) => {
   console.log('edit')
   router.push(`/scenario/design/${id}`)
@@ -219,7 +267,7 @@ const columns = [
     dataIndex: 'serialNumber',
   },
   {
-    title: '名称',
+    title: '测试场景名称',
     dataIndex: 'name',
     slots: {customRender: 'name'},
     ellipsis: true,
@@ -233,6 +281,17 @@ const columns = [
     title: '状态',
     dataIndex: 'status',
     slots: {customRender: 'status'},
+  },
+  {
+    title: '优先级',
+    dataIndex: 'desc',
+    ellipsis: true,
+  },
+  {
+    title: '最新更新',
+    dataIndex: 'updatedAt',
+    slots: {customRender: 'updatedAt'},
+    ellipsis: true,
   },
   {
     title: '操作',
@@ -254,5 +313,10 @@ onMounted(() => {
   text-align: center;
   display: inline-block;
   width: 80px;
+}
+.subTitle{
+  font-size: 12px;
+  color: #999;
+  font-weight: normal;
 }
 </style>

@@ -92,33 +92,39 @@ func (s *SummaryDetailsService) Details(userId int64) (res v1.ResSummaryDetail, 
 }
 
 func (s *SummaryDetailsService) HandleSummaryDetails(projectIds []int64, allDetails []model.SummaryDetails, projectDetails []model.Project) (resAllDetails []v1.ResSummaryDetails, resUserDetails []v1.ResSummaryDetails) {
-
+	var id, userId uint
 	//遍历项目信息，匹配details表结果，进行字段复制，组装返回resAllDetails体
 	for _, projectDetail := range projectDetails {
 
+		var resDetail v1.ResSummaryDetails
+		hit := false
 		for _, detail := range allDetails {
-			var resDetail v1.ResSummaryDetails
-
 			if int64(projectDetail.ID) == detail.ProjectId {
 				//如果detail中有当前projectid对应的信息，则把detail数据赋值给结果resDetail
 				resDetail = s.CopyProjectInfo(projectDetail, detail)
 				resDetail.BugTotal, _ = s.CountBugsByProjectId(detail.ProjectId)
+				hit = true
 				break
-			} else {
-				//如果detail中没有当前projectid对应的信息，则把复制个空的detail数据给结果resDetail
-				var nilDetail model.SummaryDetails
-				resDetail = s.CopyProjectInfo(projectDetail, nilDetail)
 			}
+		}
 
-			userList, _ := s.FindUserIdAndNameByProjectId(detail.ProjectId)
-			resDetail.UserList = userList
-			resAllDetails = append(resAllDetails, resDetail)
-			//当前项目如果是用户参与的项目，则添加到resUserDetails中
-			for _, id := range projectIds {
-				if detail.ProjectId == id {
-					resUserDetails = append(resUserDetails, resDetail)
-					break
-				}
+		if !hit {
+			//如果detail中没有当前projectid对应的信息，则把复制个空的detail数据给结果resDetail
+			var nilDetail model.SummaryDetails
+			resDetail = s.CopyProjectInfo(projectDetail, nilDetail)
+		}
+		id = id + 1
+		resDetail.Id = id
+		userList, _ := s.FindUserIdAndNameByProjectId(int64(projectDetail.ID))
+		resDetail.UserList = userList
+		resAllDetails = append(resAllDetails, resDetail)
+		//当前项目如果是用户参与的项目，则添加到resUserDetails中
+		for _, id := range projectIds {
+			if int64(projectDetail.ID) == id {
+				userId = userId + 1
+				resDetail.Id = userId
+				resUserDetails = append(resUserDetails, resDetail)
+				break
 			}
 		}
 	}
@@ -129,7 +135,6 @@ func (s *SummaryDetailsService) CopyProjectInfo(projectDetail model.Project, det
 
 	copier.CopyWithOption(&resDetail, projectDetail, copier.Option{DeepCopy: true})
 	copier.CopyWithOption(&resDetail, detail, copier.Option{DeepCopy: true})
-	resDetail.Id = detail.ID
 	resDetail.ProjectDescr = projectDetail.Desc
 	resDetail.ProjectName = projectDetail.Name
 	resDetail.ProjectShortName = projectDetail.ShortName
@@ -159,7 +164,7 @@ func (s *SummaryDetailsService) Create(req model.SummaryDetails) (err error) {
 func (s *SummaryDetailsService) CreateByDate(req model.SummaryDetails) (err error) {
 	now := time.Now()
 	startTime, endTime := GetDate(now)
-	ret, err := s.HasDataOfDate(startTime, endTime)
+	ret, err := s.HasDataOfDate(startTime, endTime, req.ProjectId)
 	if ret {
 		err = s.Create(req)
 	} else {
@@ -224,6 +229,11 @@ func (s *SummaryDetailsService) FindByProjectIds(projectIds []int64) (details []
 	return r.FindByProjectIds(projectIds)
 }
 
+func (s *SummaryDetailsService) FindProjectIds() (ids []int64, err error) {
+	r := repo.NewSummaryDetailsRepo()
+	return r.FindProjectIds()
+}
+
 func (s *SummaryDetailsService) SummaryCard() (summaryCardTotal model.SummaryCardTotal, err error) {
 	r := repo.NewSummaryDetailsRepo()
 	return r.SummaryCard()
@@ -274,32 +284,28 @@ func (s *SummaryDetailsService) FindPassRateByProjectId(projectId int64) (passRa
 	return r.FindPassRateByProjectId(projectId)
 }
 
-func (s *SummaryDetailsService) HasDataOfDate(startTime string, endTiem string) (ret bool, err error) {
+func (s *SummaryDetailsService) HasDataOfDate(startTime string, endTime string, projectId int64) (ret bool, err error) {
 	r := repo.NewSummaryDetailsRepo()
-	return r.HasDataOfDate(startTime, endTiem)
+	return r.HasDataOfDate(startTime, endTime, projectId)
 }
 
-func (s *SummaryDetailsService) CheckCardUpdated(lastUpdateTime *time.Time) (result bool, err error) {
-	r := repo.NewSummaryDetailsRepo()
-	return r.CheckCardUpdated(lastUpdateTime)
-}
+//func (s *SummaryDetailsService) CheckCardUpdated(lastUpdateTime *time.Time) (result bool, err error) {
+//	r := repo.NewSummaryDetailsRepo()
+//	return r.CheckCardUpdated(lastUpdateTime)
+//}
 
 //检查是否有今日数据,没有则copy最后一条,然后进行数据是否更新检查
-func (s *SummaryDetailsService) CheckDetailsUpdated(lastUpdateTime *time.Time) (result bool, err error) {
-	r := repo.NewSummaryDetailsRepo()
-	now := time.Now()
-	startTime, endTime := GetDate(now)
-	ret, err := s.HasDataOfDate(startTime, endTime)
-	if !ret {
-		details, _ := s.Find()
-		for _, detail := range details {
-			newDetail := s.CopyDetailsWithoutBaseModel(detail)
-			s.Create(newDetail)
-		}
-	}
-	return r.CheckDetailsUpdated(lastUpdateTime)
-}
-
-func (s *SummaryDetailsService) CollectionProjectInfo() (details []model.SummaryDetails, err error) {
-	return s.SummaryDetailsRepo.CollectionProjectInfo()
-}
+//func (s *SummaryDetailsService) CheckDetailsUpdated(lastUpdateTime *time.Time) (result bool, err error) {
+//	r := repo.NewSummaryDetailsRepo()
+//	now := time.Now()
+//	startTime, endTime := GetDate(now)
+//	ret, err := s.HasDataOfDate(startTime, endTime)
+//	if !ret {
+//		details, _ := s.Find()
+//		for _, detail := range details {
+//			newDetail := s.CopyDetailsWithoutBaseModel(detail)
+//			s.Create(newDetail)
+//		}
+//	}
+//	return r.CheckDetailsUpdated(lastUpdateTime)
+//}

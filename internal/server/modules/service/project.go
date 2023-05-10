@@ -99,9 +99,28 @@ func (s *ProjectService) Apply(req v1.ApplyProjectReq) (err error) {
 }
 
 func (s *ProjectService) Audit(id, auditUserId, status uint) (err error) {
-	err = s.ProjectRepo.UpdateAuditStatus(id, auditUserId, status)
+
 	var record model.ProjectMemberAudit
 	record, err = s.ProjectRepo.GetAudit(id)
+	if err != nil {
+		return err
+	}
+
+	err = s.ProjectRepo.UpdateAuditStatus(id, auditUserId, status)
+	if err != nil {
+		return err
+	}
+
+	var res bool
+	res, err = s.ProjectRepo.IfProjectMember(record.ApplyUserId, record.ProjectId)
+	if err != nil {
+		return
+	}
+
+	if res {
+		return
+	}
+
 	err = s.ProjectRepo.AddProjectMember(record.ProjectId, record.AuditUserId, record.ProjectRoleName)
 	if err != nil {
 		return

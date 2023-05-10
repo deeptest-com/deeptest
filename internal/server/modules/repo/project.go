@@ -516,13 +516,23 @@ func (r *ProjectRepo) GetAudit(id uint) (ret model.ProjectMemberAudit, err error
 
 func (r *ProjectRepo) UpdateAuditStatus(id, auditUserId, status uint) (err error) {
 	err = r.DB.Model(&model.ProjectMemberAudit{}).
-		Update("status", status).
-		Where("id and audit_user_id", id, auditUserId).Error
+		Where("id=? and audit_user_id=?", id, auditUserId).
+		Update("status", status).Error
 	return
 }
 
 func (r *ProjectRepo) SaveAudit(audit model.ProjectMemberAudit) (err error) {
 	err = r.DB.Save(&audit).Error
+	return
+}
+
+func (r *ProjectRepo) IfProjectMember(userId, projectId uint) (res bool, err error) {
+	var count int64
+	err = r.DB.Model(&model.ProjectMember{}).Where("user_id=? and project_id=?", userId, projectId).Count(&count).Error
+	if err != nil {
+		return
+	}
+	res = count > 0
 	return
 }
 

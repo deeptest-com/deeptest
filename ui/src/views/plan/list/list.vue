@@ -6,6 +6,7 @@
       </template>
       <template #extra>
         <a-select 
+          allowClear
           @change="onSearch" 
           v-model:value="queryParams.status" 
           :options="planStatusOptions" 
@@ -13,7 +14,12 @@
           style="width: 120px"
           placeholder="请选择状态">
         </a-select>
-        <a-input-search @change="onSearch" @search="onSearch" v-model:value="queryParams.keywords" placeholder="输入关键字搜索"
+        <a-input-search 
+          allowClear
+          @change="onSearch" 
+          @search="onSearch" 
+          v-model:value="queryParams.keywords" 
+          placeholder="输入关键字搜索"
           style="width:270px;margin-left: 16px;" />
       </template>
 
@@ -185,7 +191,7 @@ const getList = debounce(async (current: number): Promise<void> => {
     page: current,
   });
   loading.value = false
-}, 600);
+}, 300);
 
 const handleExec = () => {
   const record: any = list.value.find(e => {
@@ -310,9 +316,9 @@ const remove = (id: number) => {
   });
 }
 
-const onSearch = debounce(() => {
+const onSearch = () => {
   getList(1);
-}, 500);
+};
 
 watch(nodeDataCategory, async () => {
   console.log('watch nodeDataCategory', nodeDataCategory.value.id)

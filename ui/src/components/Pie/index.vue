@@ -1,49 +1,77 @@
 <template>
-  <div ref="main" style="width: 100%; height: 100%"></div>
+  <div  ref="main" style="width: 100%; height: 100%">
+   
+  </div>
+  
+
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted } from "vue";
+import { defineComponent, ref, onMounted, watch } from "vue";
 
 import * as echarts from "echarts";
 export default defineComponent({
   name: "Pie",
   props: {
-    value: {
-      type: String,
-      default: "",
-    },
+    params: { type: Object },
   },
   setup(props) {
     const main = ref(); // 使用ref创建虚拟DOM引用，使用时用main.value
+    let pieData = ref<any>({});
     onMounted(() => {
-      init();
+      // init();
     });
+    // 监听项目数据变化
+    watch(
+      () => {
+        return props.params;
+      },
+      async (newVal: any) => {
+        console.log("watch pie newVal", newVal);
+        pieData.value = newVal.pieData;
+        // if (pieData.value?.total!=0) {
+          init();
+        // }
+      },
+      {
+        immediate: false,
+      }
+    );
     function init() {
       // 基于准备好的dom，初始化echarts实例
       const myChart = echarts.init(main.value);
-      const schoolData = [
+      let schoolData = [
         {
           name: "轻微",
-          value: 4253,
+          value: pieData.value?.minor || 0,
+          color: "#447DFD",
         },
         {
           name: "致命",
-          value: 5691,
+          value: pieData.value?.deadly || 0,
+          color: "#5344FD",
         },
         {
           name: "阻塞",
-          value: 4536,
+          value: pieData.value?.blocker || 0,
+          color: "#26D1A1",
         },
         {
           name: "严重",
-          value: 4369,
+          value: pieData.value?.critical || 0,
+          color: "#FF6963",
         },
         {
           name: "一般",
-          value: 5124,
+          value: pieData.value?.major || 0,
+          color: "#FBC434",
         },
       ];
+      schoolData = schoolData.filter((item) => {
+        if (item.value != 0) {
+          return item;
+        }
+      });
       // 指定图表的配置项和数据
       const option: any = {
         title: {
@@ -56,7 +84,7 @@ export default defineComponent({
             color: "rgba(0, 0, 0, 0.65)",
           },
 
-          subtext: "226", // 副标题
+          subtext: pieData.value?.total || '0', // 副标题
           subtextStyle: {
             // 副标题样式
             color: "rgba(0, 0, 0, 0.85)",
@@ -70,7 +98,7 @@ export default defineComponent({
         },
         legend: {
           orient: "horizontal",
-           itemGap: 0,
+          itemGap: 0,
           itemHeight: 6,
           data: schoolData.map((a) => a.name),
           y: "bottom",
@@ -81,19 +109,18 @@ export default defineComponent({
             fontSize: "20px",
             fontWeight: 700,
           },
-         
         },
         series: [
           {
             type: "pie",
-            name:'缺陷分布',
+            name: "缺陷分布",
             // radius: "55%",
             radius: ["40%", "70%"],
             avoidLabelOverlap: false,
             itemStyle: {
               borderRadius: 20,
               borderColor: "#fff",
-              borderWidth: 2,
+              borderWidth: schoolData.length > 1 ? 2 : 0,
             },
             emphasis: {
               label: {
@@ -110,21 +137,17 @@ export default defineComponent({
               formatter: "{b} \n ({d}%)",
               // color: "#B1B9D3",
             },
-              animationType: 'scale',
-            animationEasing: 'exponentialInOut',
+            animationType: "scale",
+            animationEasing: "exponentialInOut",
             animationDelay: function () {
               return Math.random() * 100;
             },
           },
         ],
-        color: [
-          "#447DFD",
-          "#5344FD",
-          "#68D079",
-          "#E76D46",
-          "#FBC434",
-          "#75bedc",
-        ],
+        color: schoolData.map((item) => {
+          return item.color;
+        }),
+  
       };
       // 赋值
       //   option.series = [

@@ -31,6 +31,7 @@ func (s *DebugSceneService) LoadScene(endpointInterfaceId, debugServerId, scenar
 	}
 
 	serveServer, _ := s.ServeServerRepo.Get(debugServerId)
+
 	baseUrl = _httpUtils.AddSepIfNeeded(serveServer.Url)
 	envId := serveServer.EnvironmentId
 

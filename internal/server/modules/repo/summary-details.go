@@ -2,7 +2,6 @@ package repo
 
 import (
 	"database/sql"
-	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"gorm.io/gorm"
@@ -47,8 +46,8 @@ func (r *SummaryDetailsRepo) CountByUserId(userId int64) (count int64, err error
 	return
 }
 
-func (r *SummaryDetailsRepo) FindProjectDetails() (projectDetails []model.Project, err error) {
-	err = r.DB.Model(&model.Project{}).Select("*").Where("NOT deleted").Find(&projectDetails).Order("id").Error
+func (r *SummaryDetailsRepo) FindAllProjectInfo() (projectsInfo []model.SummaryProjectInfo, err error) {
+	err = r.DB.Model(&model.Project{}).Select("biz_project.id,biz_project.created_at,biz_project.deleted,biz_project.disabled,biz_project.updated_at,biz_project.name,biz_project.descr,biz_project.logo,biz_project.short_name,biz_project.admin_id,biz_project.include_example ,sys_user.name as admin_name ").Joins("left join sys_user on biz_project.admin_id = sys_user.id").Where("biz_project.deleted !=1 ").Order("id").Find(&projectsInfo).Error
 	return
 }
 
@@ -82,9 +81,8 @@ func (r *SummaryDetailsRepo) FindUserIdsGroupByProjectId() (userIdsGroupByProjec
 	return
 }
 
-func (r *SummaryDetailsRepo) FindUserIdAndNameByProjectId(projectId int64) (userIdAndName []v1.ResUserIdAndName, err error) {
-	err = r.DB.Model(&model.ProjectMember{}).Raw("select sys_user.id as user_id,sys_user.name as user_name from sys_user inner join biz_project_member on sys_user.id = biz_project_member.user_id where project_id = ?", projectId).Find(&userIdAndName).Error
-
+func (r *SummaryDetailsRepo) FindAllUserIdAndNameOfProject() (users []model.UserIdAndName, err error) {
+	err = r.DB.Model(&model.ProjectMember{}).Raw("select biz_project_member.project_id,sys_user.id as user_id,sys_user.name as user_name from biz_project_member left join sys_user on sys_user.id = biz_project_member.user_id;").Find(&users).Error
 	return
 }
 
@@ -130,8 +128,8 @@ func (r *SummaryDetailsRepo) FindPassRateByProjectId(projectId int64) (float64, 
 	return passRate.Float64, err
 }
 
-func (r *SummaryDetailsRepo) CountBugsByProjectId(projectId int64) (count int64, err error) {
-	err = r.DB.Model(&model.SummaryBugs{}).Select("count(id)").Where("project_id = ? AND NOT deleted ", projectId).Find(&count).Error
+func (r *SummaryDetailsRepo) CountBugsGroupByProjectId() (bugsCount []model.ProjectsBugCount, err error) {
+	err = r.DB.Model(&model.SummaryBugs{}).Select("project_id,count(id) as count").Where("NOT deleted ").Group("project_id").Find(&bugsCount).Error
 	return
 }
 
@@ -147,14 +145,14 @@ func (r *SummaryDetailsRepo) CountExecTotalProjectId(projectId int64) (int64, er
 	return count.Int64, err
 }
 
-func (r *SummaryDetailsRepo) CountInterfaceTotalProjectId(projectId int64) (int64, error) {
+func (r *SummaryDetailsRepo) CountEndpointTotalProjectId(projectId int64) (int64, error) {
 	var count sql.NullInt64
-	err := r.DB.Model(&model.Interface{}).Select("count(id)").Where("project_id = ? AND NOT deleted ", projectId).Find(&count).Error
+	err := r.DB.Model(&model.Endpoint{}).Select("count(id)").Where("project_id = ? AND NOT deleted ", projectId).Find(&count).Error
 	return count.Int64, err
 }
 
-func (r *SummaryDetailsRepo) FindInterfaceIdsByProjectId(projectId int64) (ids []int64, err error) {
-	err = r.DB.Model(&model.Interface{}).Select("id").Where("project_id = ? AND NOT deleted ", projectId).Find(&ids).Error
+func (r *SummaryDetailsRepo) FindEndpointIdsByProjectId(projectId int64) (ids []int64, err error) {
+	err = r.DB.Model(&model.Endpoint{}).Select("id").Where("project_id = ? AND NOT deleted ", projectId).Find(&ids).Error
 	return
 }
 

@@ -26,7 +26,6 @@ func (s *SummaryService) Bugs(projectId int64) (res v1.ResSummaryBugs, err error
 
 func (s *SummaryService) Details(userId int64) (res v1.ResSummaryDetail, err error) {
 	//改为项目数据实时，但统计数据非实时
-	err = s.CollectionDetails()
 	res, err = s.SummaryDetailsService.Details(userId)
 	return
 }
@@ -83,20 +82,20 @@ func (s *SummaryService) CollectionDetails() (err error) {
 	for _, id := range ids {
 
 		//从biz_scenario表根据projectid,查找场景总数
-		detail.ScenarioTotal, _ = s.SummaryDetailsService.CountScenarioTotalProjectId(id)
+		detail.ScenarioTotal, err = s.SummaryDetailsService.CountScenarioTotalProjectId(id)
 
 		//从biz_interface表根据projectid,查找接口总数
-		detail.InterfaceTotal, _ = s.SummaryDetailsService.CountInterfaceTotalProjectId(id)
+		detail.InterfaceTotal, err = s.SummaryDetailsService.CountEndpointTotalProjectId(id)
 
 		//根据projectid,从biz_scenario_report表,获得所有报告总数,然后计算
-		detail.ExecTotal, _ = s.SummaryDetailsService.CountExecTotalProjectId(id)
+		detail.ExecTotal, err = s.SummaryDetailsService.CountExecTotalProjectId(id)
 
 		//从biz_scenario_report拿到assertion的相关数据,计算后存储
 		passRate, _ := s.SummaryDetailsService.FindPassRateByProjectId(id)
 		detail.PassRate, _ = strconv.ParseFloat(fmt.Sprintf("%.1f", passRate), 64)
 
 		//从biz_interface需要获取当前项目的所有接口,然后从biz_processor_interface检查哪些在场景中出现过
-		interfaceIds, _ := s.SummaryDetailsService.FindInterfaceIdsByProjectId(id)
+		interfaceIds, _ := s.SummaryDetailsService.FindEndpointIdsByProjectId(id)
 		count, _ := s.SummaryDetailsService.CoverageByProjectId(id, interfaceIds)
 		var coverage float64
 		if detail.InterfaceTotal != 0 {

@@ -80,29 +80,40 @@ func (s *SummaryDetailsService) Details(userId int64) (res v1.ResSummaryDetail, 
 	//从project表收集项目总数
 	res.ProjectTotal, err = s.Count()
 	res.UserProjectTotal, err = s.CountByUserId(userId)
+	//查找所有项目id
+	projectIds, err := s.FindProjectIds()
 	//查找用户参与的项目id
-	projectIds, err := s.FindProjectIdsByUserId(userId)
+	userProjectIds, err := s.FindProjectIdsByUserId(userId)
 	//查询details所有的项目信息
 	allDetails, err := s.Find()
 	//查询所有项目信息
-	projectDetails, err := s.FindProjectDetails()
+	allProjectsInfo, err := s.FindAllProjectInfo()
 	//组装返回的json结构体
-	res.ProjectList, res.UserProjectList = s.HandleSummaryDetails(projectIds, allDetails, projectDetails)
+	res.ProjectList, res.UserProjectList = s.HandleSummaryDetails(projectIds, userProjectIds, allDetails, allProjectsInfo)
 	return
 }
 
-func (s *SummaryDetailsService) HandleSummaryDetails(projectIds []int64, allDetails []model.SummaryDetails, projectDetails []model.Project) (resAllDetails []v1.ResSummaryDetails, resUserDetails []v1.ResSummaryDetails) {
+func (s *SummaryDetailsService) HandleSummaryDetails(projectIds []int64, userProjectIds []int64, allDetails []model.SummaryDetails, allProjectsInfo []model.SummaryProjectInfo) (resAllDetails []v1.ResSummaryDetails, resUserDetails []v1.ResSummaryDetails) {
 	var id, userId uint
+	var projectsUserListOfMap map[int64][]v1.ResUserIdAndName
+	projectsBugCount, _ := s.CountBugsGroupByProjectId()
+	projectsUsers, _ := s.FindAllUserIdAndNameOfProject()
+	//如果获取的
+	if projectsUsers != nil {
+		projectsUserListOfMap = s.LetUsersGroupByProjectId(projectIds, projectsUsers)
+	} else {
+		projectsUserListOfMap = nil
+	}
+
 	//遍历项目信息，匹配details表结果，进行字段复制，组装返回resAllDetails体
-	for _, projectDetail := range projectDetails {
+	for _, projectInfo := range allProjectsInfo {
 
 		var resDetail v1.ResSummaryDetails
 		hit := false
 		for _, detail := range allDetails {
-			if int64(projectDetail.ID) == detail.ProjectId {
+			if int64(projectInfo.ID) == detail.ProjectId {
 				//如果detail中有当前projectid对应的信息，则把detail数据赋值给结果resDetail
-				resDetail = s.CopyProjectInfo(projectDetail, detail)
-				resDetail.BugTotal, _ = s.CountBugsByProjectId(detail.ProjectId)
+				resDetail = s.CopyProjectInfo(projectInfo, detail)
 				hit = true
 				break
 			}
@@ -111,16 +122,27 @@ func (s *SummaryDetailsService) HandleSummaryDetails(projectIds []int64, allDeta
 		if !hit {
 			//如果detail中没有当前projectid对应的信息，则把复制个空的detail数据给结果resDetail
 			var nilDetail model.SummaryDetails
-			resDetail = s.CopyProjectInfo(projectDetail, nilDetail)
+			resDetail = s.CopyProjectInfo(projectInfo, nilDetail)
 		}
 		id = id + 1
 		resDetail.Id = id
-		userList, _ := s.FindUserIdAndNameByProjectId(int64(projectDetail.ID))
-		resDetail.UserList = userList
+
+		if projectsBugCount != nil {
+			for _, bugCount := range projectsBugCount {
+				if bugCount.ProjectId == int64(projectInfo.ID) {
+					resDetail.BugTotal = bugCount.Count
+				}
+			}
+		}
+
+		if projectsUserListOfMap != nil {
+			resDetail.UserList = projectsUserListOfMap[int64(projectInfo.ID)]
+		}
+
 		resAllDetails = append(resAllDetails, resDetail)
 		//当前项目如果是用户参与的项目，则添加到resUserDetails中
-		for _, id := range projectIds {
-			if int64(projectDetail.ID) == id {
+		for _, id := range userProjectIds {
+			if int64(projectInfo.ID) == id {
 				userId = userId + 1
 				resDetail.Id = userId
 				resUserDetails = append(resUserDetails, resDetail)
@@ -131,16 +153,15 @@ func (s *SummaryDetailsService) HandleSummaryDetails(projectIds []int64, allDeta
 	return
 }
 
-func (s *SummaryDetailsService) CopyProjectInfo(projectDetail model.Project, detail model.SummaryDetails) (resDetail v1.ResSummaryDetails) {
+func (s *SummaryDetailsService) CopyProjectInfo(projectInfo model.SummaryProjectInfo, detail model.SummaryDetails) (resDetail v1.ResSummaryDetails) {
 
-	copier.CopyWithOption(&resDetail, projectDetail, copier.Option{DeepCopy: true})
+	copier.CopyWithOption(&resDetail, projectInfo, copier.Option{DeepCopy: true})
 	copier.CopyWithOption(&resDetail, detail, copier.Option{DeepCopy: true})
-	resDetail.ProjectDescr = projectDetail.Desc
-	resDetail.ProjectName = projectDetail.Name
-	resDetail.ProjectShortName = projectDetail.ShortName
-	resDetail.ProjectId = int64(projectDetail.ID)
-	resDetail.CreatedAt = projectDetail.CreatedAt.Format("2022-01-11 11:22:12")
-	resDetail.AdminName, _ = s.FindAdminNameByAdminId(int64(projectDetail.AdminId))
+	resDetail.ProjectDescr = projectInfo.Descr
+	resDetail.ProjectName = projectInfo.Name
+	resDetail.ProjectShortName = projectInfo.ShortName
+	resDetail.ProjectId = int64(projectInfo.ID)
+	resDetail.CreatedAt = projectInfo.CreatedAt.Format("2006-01-02 15:04:05")
 	return
 }
 
@@ -154,6 +175,24 @@ func (s *SummaryDetailsService) CopyDetailsWithoutBaseModel(detail model.Summary
 	newDetail.InterfaceTotal = detail.InterfaceTotal
 	ret = newDetail
 	return
+}
+
+func (s *SummaryDetailsService) LetUsersGroupByProjectId(projectIds []int64, projectsUsers []model.UserIdAndName) (ret map[int64][]v1.ResUserIdAndName) {
+	//将拿到的userList，根据projectid，装入map中，key是projectid，value是userList    []v1.ResUserIdAndName
+	var m1 map[int64][]v1.ResUserIdAndName
+	m1 = make(map[int64][]v1.ResUserIdAndName)
+	for _, projectId := range projectIds {
+		var tmpUsers []v1.ResUserIdAndName
+		for _, projectUsers := range projectsUsers {
+			if projectUsers.ProjectId == projectId {
+				var tmpUser v1.ResUserIdAndName
+				copier.CopyWithOption(&tmpUser, projectUsers, copier.Option{DeepCopy: true})
+				tmpUsers = append(tmpUsers, tmpUser)
+			}
+		}
+		m1[projectId] = tmpUsers
+	}
+	return m1
 }
 
 func (s *SummaryDetailsService) Create(req model.SummaryDetails) (err error) {
@@ -188,13 +227,13 @@ func (s *SummaryDetailsService) CountByUserId(userId int64) (count int64, err er
 	return r.CountByUserId(userId)
 }
 
-func (s *SummaryDetailsService) FindProjectDetails() (projectDetails []model.Project, err error) {
+func (s *SummaryDetailsService) FindAllProjectInfo() (projectDetails []model.SummaryProjectInfo, err error) {
 	r := repo.NewSummaryDetailsRepo()
-	return r.FindProjectDetails()
+	return r.FindAllProjectInfo()
 
 }
 
-func (s *SummaryDetailsService) FindAdminNameByAdminId(adminId int64) (adminName string, err error) {
+func (s *SummaryDetailsService) FindAllAdminNameByAdminId(adminId int64) (adminName string, err error) {
 	r := repo.NewSummaryDetailsRepo()
 	return r.FindAdminNameByAdminId(adminId)
 }
@@ -204,9 +243,9 @@ func (s *SummaryDetailsService) FindProjectIdsByUserId(userId int64) (count []in
 	return r.FindProjectIdsByUserId(userId)
 }
 
-func (s *SummaryDetailsService) FindInterfaceIdsByProjectId(projectId int64) (ids []int64, err error) {
+func (s *SummaryDetailsService) FindEndpointIdsByProjectId(projectId int64) (ids []int64, err error) {
 	r := repo.NewSummaryDetailsRepo()
-	return r.FindInterfaceIdsByProjectId(projectId)
+	return r.FindEndpointIdsByProjectId(projectId)
 }
 
 func (s *SummaryDetailsService) CoverageByProjectId(projectId int64, interfaceIds []int64) (count int64, err error) {
@@ -249,9 +288,9 @@ func (s *SummaryDetailsService) FindByProjectIdAndDate(startTime string, endTime
 	return r.FindByProjectIdAndDate(startTime, endTime, projectId)
 }
 
-func (s *SummaryDetailsService) FindUserIdAndNameByProjectId(projectId int64) (userIdAndName []v1.ResUserIdAndName, err error) {
+func (s *SummaryDetailsService) FindAllUserIdAndNameOfProject() (users []model.UserIdAndName, err error) {
 	r := repo.NewSummaryDetailsRepo()
-	return r.FindUserIdAndNameByProjectId(projectId)
+	return r.FindAllUserIdAndNameOfProject()
 }
 
 func (s *SummaryDetailsService) FindCreateUserNameByProjectId(projectId int64) (userName string, err error) {
@@ -259,9 +298,9 @@ func (s *SummaryDetailsService) FindCreateUserNameByProjectId(projectId int64) (
 	return r.FindCreateUserNameByProjectId(projectId)
 }
 
-func (s *SummaryDetailsService) CountBugsByProjectId(projectId int64) (count int64, err error) {
+func (s *SummaryDetailsService) CountBugsGroupByProjectId() (bugsCount []model.ProjectsBugCount, err error) {
 	r := repo.NewSummaryDetailsRepo()
-	return r.CountBugsByProjectId(projectId)
+	return r.CountBugsGroupByProjectId()
 }
 
 func (s *SummaryDetailsService) CountScenarioTotalProjectId(projectId int64) (count int64, err error) {
@@ -269,9 +308,9 @@ func (s *SummaryDetailsService) CountScenarioTotalProjectId(projectId int64) (co
 	return r.CountScenarioTotalProjectId(projectId)
 }
 
-func (s *SummaryDetailsService) CountInterfaceTotalProjectId(projectId int64) (count int64, err error) {
+func (s *SummaryDetailsService) CountEndpointTotalProjectId(projectId int64) (count int64, err error) {
 	r := repo.NewSummaryDetailsRepo()
-	return r.CountInterfaceTotalProjectId(projectId)
+	return r.CountEndpointTotalProjectId(projectId)
 }
 
 func (s *SummaryDetailsService) CountExecTotalProjectId(projectId int64) (count int64, err error) {

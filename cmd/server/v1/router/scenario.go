@@ -23,7 +23,6 @@ func (m *ScenarioModule) Party() module.WebModule {
 		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin(), middleware.ProjectPerm())
 
 		index.Get("/listByProject", m.ScenarioCtrl.ListByProject)
-
 		index.Get("/", m.ScenarioCtrl.List).Name = "场景列表"
 		index.Get("/{id:uint}", m.ScenarioCtrl.Get).Name = "场景详情"
 		index.Post("/", m.ScenarioCtrl.Create).Name = "新建场景"
@@ -31,6 +30,8 @@ func (m *ScenarioModule) Party() module.WebModule {
 		index.Delete("/{id:uint}", m.ScenarioCtrl.Delete).Name = "删除场景"
 		index.Get("/load", m.ScenarioNodeCtrl.LoadTree).Name = "场景树状数据"
 		index.Get("/getInterface", m.ScenarioInterfaceCtrl.GetInterface).Name = "场景树状数据"
+		index.Post("/{id:uint}/addPlans", m.ScenarioCtrl.AddPlans).Name = "关联计划"
+		index.Post("/{id:uint}/Plans", m.ScenarioCtrl.Plans).Name = "关联计划列表"
 	}
 
 	return module.NewModule("/scenarios", handler)

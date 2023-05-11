@@ -3,6 +3,7 @@ package repo
 import (
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
@@ -15,9 +16,11 @@ import (
 )
 
 type PlanRepo struct {
-	DB          *gorm.DB     `inject:""`
-	BaseRepo    *BaseRepo    `inject:""`
-	ProjectRepo *ProjectRepo `inject:""`
+	DB             *gorm.DB        `inject:""`
+	BaseRepo       *BaseRepo       `inject:""`
+	ProjectRepo    *ProjectRepo    `inject:""`
+	UserRepo       *UserRepo       `inject:""`
+	PlanReportRepo *PlanReportRepo `inject:""`
 }
 
 func NewPlanRepo() *PlanRepo {
@@ -37,41 +40,93 @@ func (r *PlanRepo) Paginate(req v1.PlanReqPaginate, projectId int) (data _domain
 	}
 
 	db := r.DB.Model(&model.Plan{}).
-		Where("project_id = ? AND NOT deleted",
+		Joins("LEFT JOIN biz_plan_report r ON biz_plan.id=r.plan_id").
+		Where("biz_plan.project_id = ? AND NOT biz_plan.deleted",
 			projectId)
 
 	if len(categoryIds) > 0 {
-		db.Where("category_id IN(?)", categoryIds)
+		db.Where("biz_plan.category_id IN(?)", categoryIds)
 	} else if req.CategoryId == -1 {
-		db.Where("category_id IN(?)", -1)
+		db.Where("biz_plan.category_id IN(?)", -1)
 	}
 
 	if req.Keywords != "" {
-		db = db.Where("name LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords))
+		db = db.Where("biz_plan.name LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords))
 	}
 	if req.Enabled != "" {
-		db = db.Where("disabled = ?", commonUtils.IsDisable(req.Enabled))
+		db = db.Where("biz_plan.disabled = ?", commonUtils.IsDisable(req.Enabled))
 	}
 
+	if req.Status != "" {
+		db = db.Where("biz_plan.status = ?", req.Status)
+	}
+	if req.AdminId != 0 {
+		db = db.Where("biz_plan.admin_id = ?", req.AdminId)
+	}
 	err = db.Count(&count).Error
 	if err != nil {
 		logUtils.Errorf("count scenario error", zap.String("error:", err.Error()))
 		return
 	}
 
-	scenarios := make([]*model.Plan, 0)
+	plans := make([]*model.Plan, 0)
 
 	err = db.
 		Scopes(dao.PaginateScope(req.Page, req.PageSize, req.Order, req.Field)).
-		Find(&scenarios).Error
+		Find(&plans).Error
 	if err != nil {
 		logUtils.Errorf("query scenario error", zap.String("error:", err.Error()))
 		return
 	}
-
-	data.Populate(scenarios, count, req.Page, req.PageSize)
+	r.CombinePassRate(plans)
+	r.CombineUserName(plans)
+	data.Populate(plans, count, req.Page, req.PageSize)
 
 	return
+}
+
+func (r *PlanRepo) CombineUserName(data []*model.Plan) {
+	userIds := make([]uint, 0)
+	for _, v := range data {
+		userIds = append(userIds, v.AdminId)
+		userIds = append(userIds, v.UpdateUserId)
+	}
+	userIds = commonUtils.ArrayRemoveUintDuplication(userIds)
+
+	users, _ := r.UserRepo.FindByIds(userIds)
+
+	userIdNameMap := make(map[uint]string)
+	for _, v := range users {
+		userIdNameMap[v.ID] = v.Name
+	}
+
+	for _, v := range data {
+		if adminName, ok := userIdNameMap[v.AdminId]; ok {
+			v.AdminName = adminName
+		}
+		if updateUserName, ok := userIdNameMap[v.UpdateUserId]; ok {
+			v.UpdateUserName = updateUserName
+		}
+	}
+}
+
+func (r *PlanRepo) CombinePassRate(data []*model.Plan) {
+	for _, v := range data {
+		planReport, err := r.PlanReportRepo.GetLastByPlanId(v.ID)
+		if err != nil && err != gorm.ErrRecordNotFound {
+			logUtils.Errorf("get plan report err", zap.String("error:", err.Error()))
+			continue
+		}
+		if planReport.ID == 0 {
+			v.TestPassRate = "n/a"
+			continue
+		}
+		if planReport.PassScenarioNum == 0 || planReport.TotalScenarioNum == 0 {
+			v.TestPassRate = "0%"
+		} else {
+			v.TestPassRate = strconv.Itoa(planReport.PassScenarioNum*100/planReport.TotalScenarioNum) + "%"
+		}
+	}
 }
 
 func (r *PlanRepo) Get(id uint) (scenario model.Plan, err error) {
@@ -127,9 +182,14 @@ func (r *PlanRepo) Create(scenario model.Plan) (ret model.Plan, bizErr *_domain.
 
 func (r *PlanRepo) Update(req model.Plan) error {
 	values := map[string]interface{}{
-		"name":     req.Name,
-		"desc":     req.Desc,
-		"disabled": req.Disabled,
+		"name":           req.Name,
+		"desc":           req.Desc,
+		"status":         req.Status,
+		"admin_id":       req.AdminId,
+		"category_id":    req.CategoryId,
+		"test_stage":     req.TestStage,
+		"update_user_id": req.UpdateUserId,
+		"disabled":       req.Disabled,
 	}
 	err := r.DB.Model(&req).Where("id = ?", req.ID).Updates(values).Error
 	if err != nil {
@@ -245,4 +305,22 @@ func (r *PlanRepo) UpdateSerialNumber(id, projectId uint) (err error) {
 
 	err = r.DB.Model(&model.Plan{}).Where("id=?", id).Update("serial_number", project.ShortName+"-TP-"+strconv.Itoa(int(id))).Error
 	return
+}
+
+func (r *PlanRepo) StatusDropDownOptions() map[consts.TestStatus]string {
+	return map[consts.TestStatus]string{
+		consts.Draft:     "草稿",
+		consts.Disabled:  "已禁用",
+		consts.ToExecute: "待执行",
+		consts.Executed:  "已执行",
+	}
+}
+
+func (r *PlanRepo) TestStageDropDownOptions() map[consts.TestStage]string {
+	return map[consts.TestStage]string{
+		consts.UintTest:        "单元测试",
+		consts.IntegrationTest: "集成测试",
+		consts.SystemTest:      "系统测试",
+		consts.AcceptanceTest:  "验收测试",
+	}
 }

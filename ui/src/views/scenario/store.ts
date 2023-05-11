@@ -305,6 +305,7 @@ const StoreModel: ModuleType = {
             }
         },
 
+
         async saveScenario({commit}, payload: any) {
             const jsn = await save(payload)
             if (jsn.code === 0) {

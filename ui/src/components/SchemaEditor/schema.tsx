@@ -69,6 +69,14 @@ export default defineComponent({
             tree.properties = {...newObj};
             data.value = addExtraViewInfo(data.value);
         }
+        const pasteKeyName = (e)=>{
+            // 阻止默认的粘贴事件
+            e.preventDefault();
+            // 从剪贴板中获取纯文本
+            const text = (e.originalEvent || e).clipboardData.getData('text/plain');
+            // 插入纯文本
+            document.execCommand("insertHTML", false, text);
+        }
         const updateKeyName = (oldKey: any, keyIndex: any, parent: any, event: any) => {
             const newKey = event.target.innerText;
             const keys = Object.keys(parent.properties);
@@ -259,6 +267,7 @@ export default defineComponent({
             return <>
                 <span class={'baseInfoKey'}
                       contenteditable={!isRefChildNode}
+                      onPaste={pasteKeyName}
                       onBlur={updateKeyName.bind(this, keyName, keyIndex, parent)}>
                     {keyName}
                 </span>

@@ -8,6 +8,7 @@ import (
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/kataras/iris/v12"
+	"github.com/snowlyg/multi"
 	"go.uber.org/zap"
 	"strings"
 )
@@ -93,6 +94,8 @@ func (c *ScenarioCtrl) Create(ctx iris.Context) {
 	}
 
 	req.ProjectId = uint(projectId)
+	req.CreateUserName = multi.GetUsername(ctx)
+	req.CreateUserId = multi.GetUserId(ctx)
 	po, bizErr := c.ScenarioService.Create(req)
 	if bizErr != nil {
 		ctx.JSON(_domain.Response{Code: bizErr.Code, Data: nil})
@@ -109,7 +112,8 @@ func (c *ScenarioCtrl) Update(ctx iris.Context) {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
-
+	req.CreateUserName = multi.GetUsername(ctx)
+	req.CreateUserId = multi.GetUserId(ctx)
 	err = c.ScenarioService.Update(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
@@ -133,4 +137,49 @@ func (c *ScenarioCtrl) Delete(ctx iris.Context) {
 	}
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+}
+
+func (c *ScenarioCtrl) AddPlans(ctx iris.Context) {
+	scenarioId, _ := ctx.Params().GetInt("id")
+
+	planIds := make([]int, 0)
+	err := ctx.ReadJSON(&planIds)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: "ids"})
+		return
+	}
+
+	err = c.ScenarioService.AddPlans(scenarioId, planIds)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code})
+}
+
+func (c *ScenarioCtrl) Plans(ctx iris.Context) {
+
+	scenarioId, _ := ctx.Params().GetInt("id")
+
+	var req serverDomain.PlanReqPaginate
+	err := ctx.ReadQuery(&req)
+	if err != nil {
+		errs := validate.ValidRequest(err)
+		if len(errs) > 0 {
+			logUtils.Errorf("参数验证失败", zap.String("错误", strings.Join(errs, ";")))
+			ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: strings.Join(errs, ";")})
+			return
+		}
+	}
+	req.ConvertParams()
+
+	data, err := c.ScenarioService.PlanPaginate(req, scenarioId)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data, Msg: _domain.NoErr.Msg})
+
 }

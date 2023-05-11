@@ -99,3 +99,20 @@ func (c *SummaryCtrl) ProjectUserRanking(ctx iris.Context) {
 		return
 	}
 }
+
+func (c *SummaryCtrl) Collection(ctx iris.Context) {
+
+	name := ctx.Params().GetString("store")
+	switch name {
+	case "details":
+		c.SummaryService.CollectionDetails()
+	case "ranking":
+		c.SummaryService.CollectionRanking()
+	case "bugs":
+		c.SummaryService.CollectionBugs()
+
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: "", Msg: _domain.NoErr.Msg})
+	return
+}

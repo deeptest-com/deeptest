@@ -59,9 +59,26 @@ type UserIdsGroupByProjectId struct {
 	UserId     string `gorm:"-" json:"userId"`
 }
 
+type ProjectsBugCount struct {
+	ProjectId int64 `json:"projectId"`
+	Count     int64 `json:"count"`
+}
+
 type UserIdAndName struct {
-	UserId   int64  `json:"userId"`
-	UserName string `json:"userName"`
+	ProjectId int64  `json:"projectId"`
+	UserId    int64  `json:"userId"`
+	UserName  string `json:"userName"`
+}
+
+type SummaryProjectInfo struct {
+	BaseModel
+	Name           string `json:"name"`
+	Descr          string `json:"descr"`
+	Logo           string `json:"logo"`
+	ShortName      string `json:"shortName"`
+	IncludeExample bool   `json:"includeExample"`
+	AdminId        uint   `json:"adminId"`
+	AdminName      string `json:"adminName"`
 }
 
 func (SummaryDetails) TableName() string {

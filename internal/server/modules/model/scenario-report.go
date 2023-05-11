@@ -34,8 +34,9 @@ type ScenarioReport struct {
 
 	Payload string `json:"payload"`
 
-	ScenarioId uint `json:"scenarioId"`
-	ProjectId  uint `json:"projectId"`
+	ScenarioId   uint `json:"scenarioId"`
+	ProjectId    uint `json:"projectId"`
+	PlanReportId uint `json:"planReportId"`
 
 	CreateUserId   uint                `json:"createUserId"`
 	CreateUserName string              `gorm:"-" json:"createUserName"`
@@ -45,9 +46,4 @@ type ScenarioReport struct {
 
 func (ScenarioReport) TableName() string {
 	return "biz_scenario_report"
-}
-
-type ScenarioReportResponse struct {
-	ScenarioReport
-	CreateUserName string `json:"createUserName"`
 }

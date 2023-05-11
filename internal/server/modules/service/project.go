@@ -3,6 +3,7 @@ package service
 import (
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/source"
@@ -98,10 +99,33 @@ func (s *ProjectService) Apply(req v1.ApplyProjectReq) (err error) {
 	return
 }
 
-func (s *ProjectService) Audit(id, auditUserId, status uint) (err error) {
-	err = s.ProjectRepo.UpdateAuditStatus(id, auditUserId, status)
+func (s *ProjectService) Audit(id, auditUserId uint, status consts.AuditStatus) (err error) {
+
 	var record model.ProjectMemberAudit
 	record, err = s.ProjectRepo.GetAudit(id)
+	if err != nil {
+		return err
+	}
+
+	err = s.ProjectRepo.UpdateAuditStatus(id, auditUserId, status)
+	if err != nil {
+		return err
+	}
+
+	if status == consts.Refused {
+		return
+	}
+
+	var res bool
+	res, err = s.ProjectRepo.IfProjectMember(record.ApplyUserId, record.ProjectId)
+	if err != nil {
+		return
+	}
+
+	if res {
+		return
+	}
+
 	err = s.ProjectRepo.AddProjectMember(record.ProjectId, record.AuditUserId, record.ProjectRoleName)
 	if err != nil {
 		return

@@ -47,7 +47,7 @@ func (s *ShareVarService) List(endpointInterfaceId, scenarioProcessorId uint, us
 	endpoint, _ := s.EndpointRepo.Get(interf.EndpointId)
 	serveId := endpoint.ServeId
 
-	shareVariables, _ = s.listForDebug(serveId, scenarioProcessorId, usedBy)
+	shareVariables, _ = s.ListForDebug(serveId, scenarioProcessorId)
 
 	return
 }
@@ -72,13 +72,13 @@ func (s *ShareVarService) Clear(endpointOrProcessorId int, usedBy consts.UsedBy)
 	return
 }
 
-func (s *ShareVarService) listForDebug(serveId, scenarioProcessorId uint, usedBy consts.UsedBy) (ret []domain.GlobalVar, err error) {
+func (s *ShareVarService) ListForDebug(serveId, scenarioProcessorId uint) (ret []domain.GlobalVar, err error) {
 	var pos []model.ShareVariable
 
-	if usedBy == consts.InterfaceDebug {
-		pos, err = s.ShareVariableRepo.ListByInterfaceDebug(serveId)
-	} else if usedBy == consts.ScenarioDebug {
+	if scenarioProcessorId > 0 {
 		pos, err = s.ShareVariableRepo.ListByScenarioDebug(scenarioProcessorId)
+	} else {
+		pos, err = s.ShareVariableRepo.ListByInterfaceDebug(serveId)
 	}
 
 	for _, po := range pos {

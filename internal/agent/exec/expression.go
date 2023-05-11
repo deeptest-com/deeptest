@@ -6,6 +6,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/utils"
 	"github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"regexp"
+	"strings"
 )
 
 var (
@@ -46,7 +47,9 @@ func EvaluateGovaluateExpressionByScope(expression string, scopeId uint) (ret in
 
 	return
 }
-func EvaluateGovaluateExpressionWithVariables(expression string, variables []domain.VarKeyValuePair) (ret interface{}, err error) {
+func EvaluateGovaluateExpressionWithVariables(expression string, varMap map[string]interface{}, datapools domain.Datapools) (
+	ret interface{}, err error) {
+
 	expr := commUtils.RemoveLeftVariableSymbol(expression)
 
 	govaluateExpression, err := govaluate.NewEvaluableExpressionWithFunctions(expr, GovaluateFunctions)
@@ -54,12 +57,12 @@ func EvaluateGovaluateExpressionWithVariables(expression string, variables []dom
 		return
 	}
 
-	parameters, err := generateGovaluateParamsWithVariables(expression, variables)
+	paramValMap, err := generateGovaluateParamsWithVariables(expression, varMap, datapools)
 	if err != nil {
 		return
 	}
 
-	ret, err = govaluateExpression.Evaluate(parameters)
+	ret, err = govaluateExpression.Evaluate(paramValMap)
 
 	return
 }
@@ -80,16 +83,24 @@ func generateGovaluateParamsByScope(expression string, scopeId uint) (ret domain
 	return
 }
 
-func generateGovaluateParamsWithVariables(expression string, variableMap []domain.VarKeyValuePair) (ret map[string]interface{}, err error) {
-	ret = make(map[string]interface{}, 0)
+func generateGovaluateParamsWithVariables(expression string, variableMap map[string]interface{}, datapools domain.Datapools) (
+	govaluateParams map[string]interface{}, err error) {
 
-	//variables := GetVariablesInVariablePlaceholder(expression)
-	//
-	//for _, variableName := range variables {
-	//	if val, ok := variableMap[variableName]; ok {
-	//		ret[variableName] = val
-	//	}
-	//}
+	govaluateParams = make(map[string]interface{}, 0)
+
+	varsInExpression := GetVariablesInVariablePlaceholder(expression)
+
+	for _, varName := range varsInExpression {
+		varNameWithoutPlus := strings.TrimLeft(varName, "+")
+
+		val, ok := variableMap[varNameWithoutPlus]
+		if ok {
+			if varNameWithoutPlus != varName {
+				val = _stringUtils.StrToInt(_stringUtils.InterfToStr(val))
+			}
+			govaluateParams[varNameWithoutPlus] = val
+		}
+	}
 
 	return
 }

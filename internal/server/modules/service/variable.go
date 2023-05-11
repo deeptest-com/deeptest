@@ -2,70 +2,61 @@ package service
 
 import (
 	"fmt"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	repo "github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 )
 
 type VariableService struct {
 	InterfaceRepo          *repo.InterfaceRepo          `inject:""`
+	DebugInterfaceRepo     *repo.DebugInterfaceRepo     `inject:""`
 	ProcessorInterfaceRepo *repo.ProcessorInterfaceRepo `inject:""`
+
+	EndpointInterfaceRepo *repo.EndpointInterfaceRepo `inject:""`
+	EndpointRepo          *repo.EndpointRepo          `inject:""`
 
 	ExtractorRepo   *repo.ExtractorRepo   `inject:""`
 	EnvironmentRepo *repo.EnvironmentRepo `inject:""`
+
+	EnvironmentService *EnvironmentService `inject:""`
+	ShareVarService    *ShareVarService    `inject:""`
+	DatapoolService    *DatapoolService    `inject:""`
 }
 
-func (s *VariableService) GetEnvVarsByInterface(interfaceId uint, usedBy consts.UsedBy) (ret map[string]interface{}, err error) {
-	var projectId uint
+func (s *VariableService) GetCombinedVarsForCheckpoint(endpointInterfaceId, scenarioProcessorId uint) (
+	ret map[string]interface{}, datapools domain.Datapools, err error) {
 
-	if usedBy == consts.InterfaceDebug {
-		interf, _ := s.InterfaceRepo.Get(interfaceId)
-		projectId = interf.ProjectId
-	} else {
-		interf, _ := s.ProcessorInterfaceRepo.Get(interfaceId)
-		projectId = interf.ProjectId
-	}
+	debugEnv, _ := s.EnvironmentService.GetDebugEnvByEndpointInterface(endpointInterfaceId)
 
-	environmentVariables, _ := s.EnvironmentRepo.ListVariableByProject(projectId)
+	interf, _ := s.EndpointInterfaceRepo.Get(endpointInterfaceId)
+	endpoint, _ := s.EndpointRepo.Get(interf.EndpointId)
 
-	ret = CombineVariables(environmentVariables, nil)
+	shareVariables, _ := s.ShareVarService.ListForDebug(endpoint.ServeId, scenarioProcessorId)
+	envVars, _ := s.EnvironmentService.GetVarsByEnv(debugEnv.ID)
+	globalVars, _ := s.EnvironmentService.GetGlobalVars(debugEnv.ProjectId)
+	datapools, _ = s.DatapoolService.ListForExec(debugEnv.ProjectId)
+
+	ret = CombineVariables(shareVariables, envVars, globalVars)
 
 	return
 }
 
-func (s *VariableService) GetShareVarsByInterface(interfaceId uint, usedBy consts.UsedBy) (ret []domain.VarKeyValuePair, err error) {
-	//var projectId uint
-	//
-	//if usedBy == consts.InterfaceDebug {
-	//	interf, _ := s.InterfaceRepo.Get(interfaceId)
-	//	projectId = interf.ProjectId
-	//} else {
-	//	interf, _ := s.ProcessorInterfaceRepo.Get(interfaceId)
-	//	projectId = interf.ProjectId
-	//}
-	//
-	//interfaceExtractorVariables, _ :=
-	//	s.ExtractorRepo.ListValidExtractorVarForInterface(interfaceId, projectId, usedBy)
-
-	//ret = CombineVariables(nil, interfaceExtractorVariables)
-
-	return
-}
-
-func CombineVariables(environmentVariables []model.EnvironmentVar, interfaceExtractorVariables []domain.Variable) (
+func CombineVariables(shareVariables, envVars, globalVars []domain.GlobalVar) (
 	ret map[string]interface{}) {
-
 	ret = map[string]interface{}{}
 
 	variableMap := map[string]interface{}{}
-	for _, item := range environmentVariables {
-		variableMap[item.Name] = item.RightValue
+
+	for _, item := range globalVars {
+		variableMap[item.Name] = item.LocalValue
 	}
-	for _, item := range interfaceExtractorVariables { // overwrite previous ones
-		variableMap[item.Name] = item.Value
+	for _, item := range envVars { // overwrite previous ones
+		variableMap[item.Name] = item.LocalValue
+	}
+	for _, item := range shareVariables { // overwrite previous ones
+		variableMap[item.Name] = item.LocalValue
 	}
 
+	// value is a  object
 	for key, val := range variableMap {
 		valMp, isMap := val.(map[string]interface{})
 

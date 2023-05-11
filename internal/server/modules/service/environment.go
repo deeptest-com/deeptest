@@ -18,6 +18,10 @@ type EnvironmentService struct {
 	ProjectRepo     *repo.ProjectRepo     `inject:""`
 	ServeRepo       *repo.ServeRepo       `inject:""`
 	ServeServerRepo *repo.ServeServerRepo `inject:""`
+
+	EndpointRepo          *repo.EndpointRepo          `inject:""`
+	EndpointInterfaceRepo *repo.EndpointInterfaceRepo `inject:""`
+	DebugInterfaceRepo    *repo.DebugInterfaceRepo    `inject:""`
 }
 
 func (s *EnvironmentService) List() (envs []model.Environment, err error) {
@@ -290,6 +294,27 @@ func (s *EnvironmentService) GetGlobalParams(projectId uint) (ret []domain.Globa
 			In:           v.In,
 		})
 	}
+
+	return
+}
+
+func (s *EnvironmentService) GetDebugEnvByEndpointInterface(endpointInterfaceId uint) (ret model.Environment, err error) {
+	debugInterfaceId, _ := s.DebugInterfaceRepo.HasDebugInterfaceRecord(endpointInterfaceId)
+
+	var serveId uint
+
+	if debugInterfaceId > 0 {
+		debug, _ := s.DebugInterfaceRepo.Get(debugInterfaceId)
+		serveId = debug.ServerId
+	} else {
+		interf, _ := s.EndpointInterfaceRepo.Get(endpointInterfaceId)
+		endpoint, _ := s.EndpointRepo.Get(interf.EndpointId)
+		serveId = endpoint.ServeId
+	}
+
+	serveServer, _ := s.ServeServerRepo.Get(serveId)
+
+	ret, _ = s.EnvironmentRepo.Get(serveServer.EnvironmentId)
 
 	return
 }

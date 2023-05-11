@@ -36,16 +36,16 @@ func (s *InvocationInterfaceService) LoadInterfaceExecData(req domain.DebugData)
 }
 
 func (s *InvocationInterfaceService) SubmitInterfaceInvokeResult(req domain.SubmitDebugResultRequest) (err error) {
-	interf, _ := s.InterfaceRepo.GetDetail(req.Response.Id)
-
-	s.ExtractorService.ExtractInterface(interf.ID, uint(0), uint(0), uint(0), req.Response, consts.InterfaceDebug)
-	s.CheckpointService.CheckInterface(interf.ID, req.Response, consts.InterfaceDebug)
-
-	_, err = s.CreateForInterface(req.Request, req.Response, interf.ProjectId)
-
-	if err != nil {
-		return
-	}
+	//interf, _ := s.InterfaceRepo.GetDetail(req.Response.Id)
+	//
+	//s.ExtractorService.ExtractInterface(interf.ID, uint(0), uint(0), uint(0), req.Response, consts.InterfaceDebug)
+	//s.CheckpointService.CheckInterface(interf.ID, req.Response, consts.InterfaceDebug)
+	//
+	//_, err = s.CreateForInterface(req.Request, req.Response, interf.ProjectId)
+	//
+	//if err != nil {
+	//	return
+	//}
 
 	return
 }
@@ -154,7 +154,7 @@ func (s *InvocationInterfaceService) ReplaceEnvironmentAndExtractorVariables(req
 	//interf, _ := s.InterfaceRepo.Get(req.EndpointInterfaceId)
 	//
 	//req.Environment, _ = s.VariableService.GetEnvVarsByInterface(req.EndpointInterfaceId, consts.InterfaceDebug)
-	//req.Variables, _ = s.VariableService.GetShareVarsByInterface(req.EndpointInterfaceId, consts.InterfaceDebug)
+	//req.Variables, _ = s.VariableService.GetCombinedVarsForCheckpoint(req.EndpointInterfaceId, consts.InterfaceDebug)
 	//req.Datapools, _ = s.DatapoolService.ListForExec(interf.ProjectId)
 
 	ret = req

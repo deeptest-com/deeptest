@@ -46,7 +46,7 @@ func GetWorkDir() (dir string) {
 func RemoveLeftVariableSymbol(str string) (ret string) {
 	// remove variable symbol {} not be replaced
 
-	regx := regexp.MustCompile("(?siU)\\${(.*)}")
+	regx := regexp.MustCompile("(?siU)\\${\\+??(.*)}")
 	ret = regx.ReplaceAllString(str, "$1")
 
 	return

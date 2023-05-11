@@ -143,3 +143,16 @@ func unicode2utf8(source string) string {
 	res = append(res, context)
 	return strings.Join(res, "")
 }
+
+func StrToInt(s string) (ret int) {
+	ret, _ = strconv.Atoi(s)
+	return
+}
+func IntToStr(i int) (ret string) {
+	ret = strconv.Itoa(i)
+	return
+}
+func InterfToStr(i interface{}) (ret string) {
+	ret = fmt.Sprintf("%v", i)
+	return
+}

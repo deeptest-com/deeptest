@@ -96,7 +96,7 @@ export interface Extractor {
 
     variable: string;
     scope: string;
-    interfaceId?: number;
+    endpointInterfaceId?: number;
     projectId?: number;
 }
 
@@ -108,7 +108,7 @@ export interface Checkpoint {
 
     operator: ComparisonOperator;
     value: any;
-    interfaceId?: number;
+    endpointInterfaceId?: number;
 }
 
 export interface DebugInfo {

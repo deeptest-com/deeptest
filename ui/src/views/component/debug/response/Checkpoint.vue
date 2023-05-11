@@ -4,13 +4,13 @@
       <a-row type="flex" class="item">
         <a-col flex="50px">编号</a-col>
         <a-col flex="60px">类型</a-col>
-        <a-col flex="160px">变量 / 键值 / 表达式</a-col>
+        <a-col flex="150px">变量 / 键值 / 表达式</a-col>
         <a-col flex="60px">运算符</a-col>
         <a-col flex="100px">数值</a-col>
-        <a-col flex="100px">实际结果</a-col>
+        <a-col flex="80px">实际结果</a-col>
         <a-col flex="60px">状态</a-col>
 
-        <a-col flex="50px" class="dp-right">
+        <a-col flex="80px" class="dp-right">
           <PlusOutlined v-if="usedBy===UsedBy.InterfaceDebug" @click.stop="add" class="dp-icon-btn dp-trans-80" />
         </a-col>
       </a-row>
@@ -20,18 +20,18 @@
       <a-row v-for="(item, idx) in checkpointsData" :key="idx" type="flex" class="item">
         <a-col flex="50px">{{idx + 1}}</a-col>
         <a-col flex="60px">{{ t(item.type) }}</a-col>
-        <a-col flex="160px">{{ item.type === CheckpointType.extractor ? item.extractorVariable : item.expression }} </a-col>
+        <a-col flex="150px">{{ item.type === CheckpointType.extractor ? item.extractorVariable : item.expression }} </a-col>
         <a-col flex="60px">{{ t(item.operator) }}</a-col>
         <a-col flex="100px">{{ item.value }}</a-col>
-        <a-col flex="100px" style="width: 0; word-break: break-word;">
+        <a-col flex="80px" style="width: 0; word-break: break-word;">
           {{ item.actualResult }}
         </a-col>
 
-        <a-col flex="50px" :class="getResultCls(item.resultStatus)">
+        <a-col flex="60px" :class="getResultCls(item.resultStatus)">
           {{ item.resultStatus ? t(item.resultStatus) : '' }}
         </a-col>
 
-        <a-col flex="50px" class="dp-right">
+        <a-col flex="80px" class="dp-right">
           <a-tooltip v-if="!item.disabled" @click="disable(item)" overlayClassName="dp-tip-small">
             <template #title>禁用</template>
             <CheckCircleOutlined class="dp-icon-btn dp-trans-80" />
@@ -225,7 +225,7 @@ const edit = (item) => {
 const save = () => {
   console.log('save')
   validate().then(() => {
-    model.value.interfaceId = debugData.value.endpointInterfaceId
+    model.value.endpointInterfaceId = debugData.value.endpointInterfaceId
 
     store.dispatch('Debug/saveCheckpoint', model.value).then((result) => {
       if (result) {
@@ -242,7 +242,7 @@ const cancel = () => {
 
 const remove = (item) => {
   console.log('remove')
-  store.dispatch('Interface1/removeCheckpoint', item.id)
+  store.dispatch('Debug/removeCheckpoint', item.id)
 }
 
 const disable = (item) => {
@@ -273,8 +273,9 @@ const loadExtractorVariable = () => {
   if (model.value.type === CheckpointType.judgement) {
     rules.operator = []
     rules.value = []
+
     model.value.operator = ComparisonOperator.empty
-    model.value.value = ComparisonOperator.empty
+    model.value.value = ''
   } else {
     rules.operator = [operatorRequired]
     rules.value = [valueRequired]

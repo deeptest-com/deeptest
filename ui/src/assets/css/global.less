@@ -79,7 +79,8 @@
             line-height: 32px;
             font-weight: 400;
             font-size: 14px;
-
+            display: flex;
+            align-items: center;
             .icon {
               margin-right: 6px;
               margin-left: 4px;
@@ -88,6 +89,10 @@
 
             .text {
               display: inline-block;
+              width: 260px;
+              overflow: hidden;
+              white-space: nowrap;
+              text-overflow: ellipsis; /* 在文本溢出时显示省略号 */
             }
 
             &.my, &.recently {

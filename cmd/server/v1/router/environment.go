@@ -7,7 +7,8 @@ import (
 )
 
 type EnvironmentModule struct {
-	EnvironmentCtrl *handler.EnvironmentCtrl `inject:""`
+	EnvironmentCtrl    *handler.EnvironmentCtrl    `inject:""`
+	EnvironmentVarCtrl *handler.EnvironmentVarCtrl `inject:""`
 }
 
 // Party 脚本
@@ -37,7 +38,13 @@ func (m *EnvironmentModule) Party() module.WebModule {
 			party.Post("/clear", m.EnvironmentCtrl.ClearVar).Name = "清空环境变量"
 
 			party.Post("/global", m.EnvironmentCtrl.SaveGlobal).Name = "保存全局变量"
-			party.Get("/global", m.EnvironmentCtrl.ListGlobal).Name = "保存全局变量"
+			party.Get("/global", m.EnvironmentCtrl.ListGlobal).Name = "列出全局变量"
+
+			party.Get("/env", m.EnvironmentCtrl.ListGlobal).Name = "列出环境变量"
+		})
+
+		index.PartyFunc("/envVars", func(party iris.Party) {
+			party.Get("/", m.EnvironmentVarCtrl.List).Name = "列出环境变量"
 		})
 
 		index.PartyFunc("/shareVars", func(party iris.Party) {

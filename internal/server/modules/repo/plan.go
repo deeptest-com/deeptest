@@ -40,28 +40,27 @@ func (r *PlanRepo) Paginate(req v1.PlanReqPaginate, projectId int) (data _domain
 	}
 
 	db := r.DB.Model(&model.Plan{}).
-		Joins("LEFT JOIN biz_plan_report r ON biz_plan.id=r.plan_id").
-		Where("biz_plan.project_id = ? AND NOT biz_plan.deleted",
+		Where("project_id = ? AND NOT deleted",
 			projectId)
 
 	if len(categoryIds) > 0 {
-		db.Where("biz_plan.category_id IN(?)", categoryIds)
+		db.Where("category_id IN(?)", categoryIds)
 	} else if req.CategoryId == -1 {
-		db.Where("biz_plan.category_id IN(?)", -1)
+		db.Where("category_id IN(?)", -1)
 	}
 
 	if req.Keywords != "" {
-		db = db.Where("biz_plan.name LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords))
+		db = db.Where("name LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords))
 	}
 	if req.Enabled != "" {
 		db = db.Where("biz_plan.disabled = ?", commonUtils.IsDisable(req.Enabled))
 	}
 
 	if req.Status != "" {
-		db = db.Where("biz_plan.status = ?", req.Status)
+		db = db.Where("status = ?", req.Status)
 	}
 	if req.AdminId != 0 {
-		db = db.Where("biz_plan.admin_id = ?", req.AdminId)
+		db = db.Where("admin_id = ?", req.AdminId)
 	}
 	err = db.Count(&count).Error
 	if err != nil {
@@ -241,8 +240,8 @@ func (r *PlanRepo) GetChildrenIds(id uint) (ids []int, err error) {
 	return
 }
 
-func (r *PlanRepo) AddScenarios(planId int, scenarioIds []int) (err error) {
-	relations, _ := r.ListScenarioRelation(uint(planId))
+func (r *PlanRepo) AddScenarios(planId uint, scenarioIds []uint) (err error) {
+	relations, _ := r.ListScenarioRelation(planId)
 	existMap := map[uint]bool{}
 	for _, item := range relations {
 		existMap[item.ScenarioId] = true
@@ -251,13 +250,13 @@ func (r *PlanRepo) AddScenarios(planId int, scenarioIds []int) (err error) {
 	var pos []model.RelaPlanScenario
 
 	for _, id := range scenarioIds {
-		if existMap[uint(id)] {
+		if existMap[id] {
 			continue
 		}
 
 		po := model.RelaPlanScenario{
-			PlanId:     uint(planId),
-			ScenarioId: uint(id),
+			PlanId:     planId,
+			ScenarioId: id,
 		}
 		pos = append(pos, po)
 	}
@@ -268,13 +267,13 @@ func (r *PlanRepo) AddScenarios(planId int, scenarioIds []int) (err error) {
 }
 
 func (r *PlanRepo) ListScenario(id uint) (pos []model.Scenario, err error) {
-	relations, _ := r.ListScenarioRelation(uint(id))
+	relations, _ := r.ListScenarioRelation(id)
 	var scenarioIds []uint
 	for _, item := range relations {
 		scenarioIds = append(scenarioIds, item.ScenarioId)
 	}
 
-	err = r.DB.
+	err = r.DB.Model(model.Scenario{}).
 		Where("id IN (?)", scenarioIds).
 		Where("NOT deleted").
 		Find(&pos).Error
@@ -283,7 +282,7 @@ func (r *PlanRepo) ListScenario(id uint) (pos []model.Scenario, err error) {
 }
 
 func (r *PlanRepo) ListScenarioRelation(id uint) (pos []model.RelaPlanScenario, err error) {
-	err = r.DB.
+	err = r.DB.Model(model.RelaPlanScenario{}).
 		Where("plan_id=?", id).
 		Where("NOT deleted").
 		Find(&pos).Error
@@ -292,6 +291,12 @@ func (r *PlanRepo) ListScenarioRelation(id uint) (pos []model.RelaPlanScenario, 
 
 func (r *PlanRepo) RemoveScenario(planId int, scenarioId int) (err error) {
 	r.DB.Where("plan_id = ? && scenario_id = ?", planId, scenarioId).Delete(&model.RelaPlanScenario{})
+
+	return
+}
+
+func (r *PlanRepo) RemoveScenarios(planId int, scenarioIds []uint) (err error) {
+	r.DB.Where("plan_id = ? && scenario_id In (?)", planId, scenarioIds).Delete(&model.RelaPlanScenario{})
 
 	return
 }
@@ -323,4 +328,45 @@ func (r *PlanRepo) TestStageDropDownOptions() map[consts.TestStage]string {
 		consts.SystemTest:      "系统测试",
 		consts.AcceptanceTest:  "验收测试",
 	}
+}
+
+func (r *PlanRepo) PlanScenariosPaginate(req v1.PlanScenariosReqPaginate, planId uint) (data _domain.PageData, err error) {
+	var count int64
+
+	db := r.DB.Model(&model.Scenario{}).
+		Joins("LEFT JOIN biz_plan_scenario_r r ON biz_scenario.id=r.scenario_id").
+		Where("r.plan_id = ? AND NOT biz_scenario.deleted", planId)
+
+	if req.Keywords != "" {
+		db = db.Where("biz_scenario.name LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords))
+	}
+	if req.Enabled != "" {
+		db = db.Where("biz_scenario.disabled = ?", commonUtils.IsDisable(req.Enabled))
+	}
+	if req.Priority != "" {
+		db = db.Where("biz_scenario.priority = ?", req.Priority)
+	}
+	if req.CreateUserId != 0 {
+		db = db.Where("biz_scenario.create_user_id = ?", req.CreateUserId)
+	}
+
+	err = db.Count(&count).Error
+	if err != nil {
+		logUtils.Errorf("count scenario error", zap.String("error:", err.Error()))
+		return
+	}
+
+	scenarios := make([]*model.Scenario, 0)
+
+	err = db.
+		Scopes(dao.PaginateScope(req.Page, req.PageSize, req.Order, req.Field)).
+		Find(&scenarios).Error
+	if err != nil {
+		logUtils.Errorf("query scenario error", zap.String("error:", err.Error()))
+		return
+	}
+
+	data.Populate(scenarios, count, req.Page, req.PageSize)
+
+	return
 }

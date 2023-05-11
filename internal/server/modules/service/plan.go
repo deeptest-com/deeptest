@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
@@ -105,7 +106,7 @@ func (s *PlanService) DeleteById(id uint) error {
 	return s.PlanRepo.DeleteById(id)
 }
 
-func (s *PlanService) AddScenarios(planId int, scenarioIds []int) (err error) {
+func (s *PlanService) AddScenarios(planId uint, scenarioIds []uint) (err error) {
 	err = s.PlanRepo.AddScenarios(planId, scenarioIds)
 	return
 }
@@ -115,10 +116,55 @@ func (s *PlanService) RemoveScenario(planId int, scenarioId int) (err error) {
 	return
 }
 
+func (s *PlanService) RemoveScenarios(planId int, scenarioIds []uint) (err error) {
+	err = s.PlanRepo.RemoveScenarios(planId, scenarioIds)
+	return
+}
+
 func (s *PlanService) StatusDropDownOptions() map[consts.TestStatus]string {
 	return s.PlanRepo.StatusDropDownOptions()
 }
 
 func (s *PlanService) TestStageDropDownOptions() map[consts.TestStage]string {
 	return s.PlanRepo.TestStageDropDownOptions()
+}
+
+func (s *PlanService) Clone(id, userId uint) (ret model.Plan, err error) {
+	plan, err := s.PlanRepo.Get(id)
+	if err != nil {
+		return
+	}
+
+	planScenarioRelations, err := s.PlanRepo.ListScenarioRelation(id)
+	if err != nil {
+		return
+	}
+	scenarioIds := make([]uint, 0)
+	for _, v := range planScenarioRelations {
+		scenarioIds = append(scenarioIds, v.ScenarioId)
+	}
+
+	plan.ID = 0
+	plan.Name = plan.Name + "-COPY"
+	plan.UpdateUserId = userId
+	plan, bizErr := s.PlanRepo.Create(plan)
+	if bizErr != nil {
+		err = errors.New(bizErr.Msg)
+		return
+	}
+
+	if len(scenarioIds) > 0 {
+		err = s.AddScenarios(plan.ID, scenarioIds)
+		if err != nil {
+			return ret, err
+		}
+	}
+
+	ret = plan
+
+	return
+}
+
+func (s *PlanService) PlanScenariosPaginate(req v1.PlanScenariosReqPaginate, planId uint) (ret _domain.PageData, err error) {
+	return s.PlanRepo.PlanScenariosPaginate(req, planId)
 }

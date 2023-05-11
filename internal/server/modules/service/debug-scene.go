@@ -19,20 +19,24 @@ type DebugSceneService struct {
 	EnvironmentService *EnvironmentService `inject:""`
 }
 
-func (s *DebugSceneService) LoadScene(endpointInterfaceId, scenarioProcessorId uint, usedBy consts.UsedBy) (
-	baseUrl string, shareVariables []domain.GlobalVar) {
-
-	var serveId, serverId uint
+func (s *DebugSceneService) LoadScene(endpointInterfaceId, debugServerId, scenarioProcessorId uint, usedBy consts.UsedBy) (
+	baseUrl string, shareVariables []domain.GlobalVar, envVars []domain.GlobalVar) {
 
 	interf, _ := s.EndpointInterfaceRepo.Get(endpointInterfaceId)
 	endpoint, _ := s.EndpointRepo.Get(interf.EndpointId)
-	serveId = endpoint.ServeId
-	serverId = endpoint.ServerId
+	serveId := endpoint.ServeId
 
-	serveServer, _ := s.ServeServerRepo.Get(serverId)
+	if debugServerId == 0 {
+		debugServerId = endpoint.ServerId
+	}
+
+	serveServer, _ := s.ServeServerRepo.Get(debugServerId)
+
 	baseUrl = _httpUtils.AddSepIfNeeded(serveServer.Url)
+	envId := serveServer.EnvironmentId
 
 	shareVariables, _ = s.ShareVarService.listForDebug(serveId, scenarioProcessorId, usedBy)
+	envVars, _ = s.EnvironmentService.GetVarsByEnv(envId)
 
 	return
 }

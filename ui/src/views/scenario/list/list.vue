@@ -1,37 +1,34 @@
 <template>
   <div class="scenario-list-main">
-    <a-card :bordered="false">
-      <template #title>
-        <a-space :size="8">
+    <div class="filter-header">
+      <div class="left">
+        <a-space :size="16">
           <a-button type="primary" @click="() => edit(0)">新建测试场景</a-button>
-          <a-button  :disabled="true" @click="() => edit(0)">批量操作</a-button>
-        </a-space>
-      </template>
-      <template #extra>
+          <!--          <a-button  :disabled="true" @click="() => edit(0)">批量操作</a-button>-->
 
-        <a-form :layout="'inline'" >
+        </a-space>
+      </div>
+      <div class="right">
+        <a-form :layout="'inline'" class="filter-items">
           <a-form-item :label="'状态'">
             <a-select style="width:120px"  @change="onSearch" v-model:value="queryParams.enabled" :options="statusArr" class="status-select"/>
           </a-form-item>
           <a-form-item :label="'优先级'">
             <a-select style="width:120px"  @change="onSearch" v-model:value="queryParams.enabled" :options="statusArr" class="status-select"/>
           </a-form-item>
-          <a-form-item :label="null">
-            <a-input-search @change="onSearch" @search="onSearch" v-model:value="queryParams.keywords"
-                            placeholder="请输入你需要搜索的测试场景名称" style="width:270px;margin-left: 8px;"/>
-          </a-form-item>
+          <a-input-search @change="onSearch" @search="onSearch" v-model:value="queryParams.keywords"
+                          placeholder="请输入你需要搜索的测试场景名称" style="width:270px;margin-left: 8px;"/>
         </a-form>
-      </template>
-
-      <div>
-        <a-table
-            v-if="list.length > 0"
-            :row-selection="rowSelection"
-            row-key="id"
-            :columns="columns"
-            :data-source="list"
-            :loading="loading"
-            :pagination="{
+      </div>
+    </div>
+    <a-table
+        v-if="list.length > 0"
+        :row-selection="rowSelection"
+        row-key="id"
+        :columns="columns"
+        :data-source="list"
+        :loading="loading"
+        :pagination="{
                 ...pagination,
                 onChange: (page) => {
                     getList(page, nodeDataCategory.id);
@@ -41,68 +38,66 @@
                     getList(page, nodeDataCategory.id);
                 },
             }"
-            class="dp-table"
-        >
-          <template #name="{ record ,text }">
-            <EditAndShowField :custom-class="'custom-endpoint show-on-hover'"
-                              :value="text"
-                              placeholder="场景名称"
-                              @update="(e: string) => handleUpdateName(e, record)"
-                              @edit="editScenario(record)"/>
+        class="dp-table"
+    >
+      <template #name="{ record ,text }">
+        <EditAndShowField :custom-class="'custom-endpoint show-on-hover'"
+                          :value="text"
+                          placeholder="场景名称"
+                          @update="(e: string) => handleUpdateName(e, record)"
+                          @edit="editScenario(record)"/>
 
+      </template>
+
+      <template #desc="{ record  }">
+        <span>{{record?.desc || '暂无描述'}}</span>
+      </template>
+
+      <template #updatedAt="{ record }">
+        <span>{{momentUtc(record.updatedAt) }}</span>
+      </template>
+
+      <template #status="{ record }">
+        <a-tag v-if="record.disabled" color="green">禁用</a-tag>
+        <a-tag v-else color="cyan">启用</a-tag>
+      </template>
+
+      <template #action="{ record }">
+        <a-dropdown>
+          <MoreOutlined />
+          <template #overlay>
+            <a-menu>
+              <a-menu-item key="0">
+                <a class="operation-a" href="javascript:void (0)" @click="linkPlan(record.id)">关联测试计划</a>
+              </a-menu-item>
+              <a-menu-item key="1">
+                <a class="operation-a" href="javascript:void (0)" @click="exec(record.id)">执行测试场景</a>
+              </a-menu-item>
+              <a-menu-item key="2">
+                <a class="operation-a" href="javascript:void (0)" @click="design(record.id)">复制</a>
+              </a-menu-item>
+              <a-menu-item key="3">
+                <a class="operation-a" href="javascript:void (0)" @click="design(record.id)">禁用</a>
+              </a-menu-item>
+              <a-menu-item key="4">
+                <a class="operation-a" href="javascript:void (0)" @click="remove(record.id)">删除</a>
+              </a-menu-item>
+
+              <a-menu-item key="5">
+                <a class="operation-a" href="javascript:void (0)" @click="design(record.id)">设计</a>
+              </a-menu-item>
+              <a-menu-item key="6">
+                <a class="operation-a" href="javascript:void (0)" @click="edit(record.id)">编辑</a>
+              </a-menu-item>
+
+            </a-menu>
           </template>
+        </a-dropdown>
+      </template>
 
-          <template #desc="{ record  }">
-            <span>{{record?.desc || '暂无描述'}}</span>
-          </template>
+    </a-table>
+    <a-empty v-if="list.length === 0" :image="simpleImage" />
 
-          <template #updatedAt="{ record }">
-            <span>{{momentUtc(record.updatedAt) }}</span>
-          </template>
-
-          <template #status="{ record }">
-            <a-tag v-if="record.disabled" color="green">禁用</a-tag>
-            <a-tag v-else color="cyan">启用</a-tag>
-          </template>
-
-          <template #action="{ record }">
-            <a-dropdown>
-              <MoreOutlined />
-              <template #overlay>
-                <a-menu>
-                  <a-menu-item key="0">
-                    <a class="operation-a" href="javascript:void (0)" @click="linkPlan(record.id)">关联测试计划</a>
-                  </a-menu-item>
-                  <a-menu-item key="1">
-                    <a class="operation-a" href="javascript:void (0)" @click="exec(record.id)">执行测试场景</a>
-                  </a-menu-item>
-                  <a-menu-item key="2">
-                    <a class="operation-a" href="javascript:void (0)" @click="design(record.id)">复制</a>
-                  </a-menu-item>
-                  <a-menu-item key="3">
-                    <a class="operation-a" href="javascript:void (0)" @click="design(record.id)">禁用</a>
-                  </a-menu-item>
-                  <a-menu-item key="4">
-                    <a class="operation-a" href="javascript:void (0)" @click="remove(record.id)">删除</a>
-                  </a-menu-item>
-
-                  <a-menu-item key="5">
-                    <a class="operation-a" href="javascript:void (0)" @click="design(record.id)">设计</a>
-                  </a-menu-item>
-                  <a-menu-item key="6">
-                    <a class="operation-a" href="javascript:void (0)" @click="edit(record.id)">编辑</a>
-                  </a-menu-item>
-
-                </a-menu>
-              </template>
-            </a-dropdown>
-          </template>
-
-        </a-table>
-
-        <a-empty v-if="list.length === 0" :image="simpleImage" />
-      </div>
-    </a-card>
   </div>
   <div v-if="isEditVisible">
     <a-modal :title="currModelId > 0 ? '编辑测试场景' : '新建测试场景'"
@@ -150,7 +145,7 @@ import {StateType as ProjectStateType} from "@/store/project";
 import EditAndShowField from '@/components/EditAndShow/index.vue';
 import ScenarioEdit from "../edit/index.vue";
 import LinkPlan from "../edit/linkPlan.vue";
-import DrawerDetail from "../Drawer/index.vue";
+import DrawerDetail from "../components/Drawer/index.vue";
 import { ColumnProps } from 'ant-design-vue/es/table/interface';
 
 type Key = ColumnProps['key'];
@@ -203,6 +198,9 @@ watch(currProject, () => {
   getList(1, nodeDataCategory.value.id);
 }, {deep: false})
 
+onMounted(async () => {
+  getList(1, nodeDataCategory.value.id);
+})
 const loading = ref<boolean>(true);
 
 const getList = debounce(async (current: number, categoryId: number): Promise<void> => {
@@ -365,7 +363,24 @@ onMounted(() => {
 </script>
 
 <style lang="less" scoped>
-
+.filter-header{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  height: 60px;
+  .left{
+    display: flex;
+    align-items: center;
+  }
+  .right{
+    display: flex;
+    align-items: center;
+  }
+}
+.filter-items{
+  font-weight: normal;
+}
 .operation-a {
   text-align: center;
   display: inline-block;

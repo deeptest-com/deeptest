@@ -51,9 +51,14 @@ func (s *PlanExecService) LoadExecData(planId int) (ret agentExec.PlanExecObj, e
 
 func (s *PlanExecService) SaveReport(planId int, userId uint, result agentDomain.PlanExecResult) (
 	report model.PlanReport, err error) {
-	plan, _ := s.PlanRepo.Get(uint(planId))
+	plan, err := s.PlanRepo.Get(uint(planId))
+	if err != nil {
+		return
+	}
+	projectId := plan.ProjectId
 
 	report.PlanId = uint(planId)
+	report.ProjectId = projectId
 	report.Name = plan.Name
 	report.CreateUserId = userId
 	report.ProgressStatus = consts.End
@@ -68,7 +73,7 @@ func (s *PlanExecService) SaveReport(planId int, userId uint, result agentDomain
 
 	report.Duration = report.EndTime.Unix() - report.StartTime.Unix()
 	_ = s.PlanReportRepo.Create(&report)
-	
+
 	_ = s.ScenarioReportRepo.BatchUpdatePlanReportId(scenarioIds, report.ID)
 
 	return
@@ -98,8 +103,6 @@ func (s *PlanExecService) CombineReport(scenarioReport model.ScenarioReport, pla
 	planReport.TotalAssertionNum += scenarioReport.TotalAssertionNum
 	planReport.PassAssertionNum += scenarioReport.PassAssertionNum
 	planReport.FailAssertionNum += scenarioReport.FailAssertionNum
-
-	planReport.ProjectId = scenarioReport.ProjectId
 
 	for keyId := range scenarioReport.InterfaceStatusMap {
 		if planReport.InterfaceStatusMap[keyId] == nil {

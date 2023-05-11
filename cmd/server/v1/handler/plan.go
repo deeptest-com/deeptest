@@ -138,7 +138,7 @@ func (c *PlanCtrl) AddScenarios(ctx iris.Context) {
 		return
 	}
 
-	err = c.PlanService.AddScenarios(planId, req.ScenarioIds)
+	err = c.PlanService.AddScenarios(uint(planId), req.ScenarioIds)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -161,6 +161,25 @@ func (c *PlanCtrl) RemoveScenario(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code})
 }
 
+func (c *PlanCtrl) RemoveScenarios(ctx iris.Context) {
+	planId, _ := ctx.Params().GetInt("id")
+
+	req := serverDomain.PlanAddScenariosReq{}
+	err := ctx.ReadJSON(&req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		return
+	}
+
+	err = c.PlanService.RemoveScenarios(planId, req.ScenarioIds)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code})
+}
+
 func (c *PlanCtrl) StatusDropDownOptions(ctx iris.Context) {
 	data := c.PlanService.StatusDropDownOptions()
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data, Msg: _domain.NoErr.Msg})
@@ -168,5 +187,52 @@ func (c *PlanCtrl) StatusDropDownOptions(ctx iris.Context) {
 
 func (c *PlanCtrl) TestStageDropDownOptions(ctx iris.Context) {
 	data := c.PlanService.TestStageDropDownOptions()
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data, Msg: _domain.NoErr.Msg})
+}
+
+func (c *PlanCtrl) Clone(ctx iris.Context) {
+	userId := multi.GetUserId(ctx)
+
+	var req _domain.ReqId
+	if err := ctx.ReadParams(&req); err != nil {
+		logUtils.Errorf("参数解析失败", zap.String("错误:", err.Error()))
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+		return
+	}
+
+	plan, err := c.PlanService.Clone(req.Id, userId)
+
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
+		return
+	}
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: plan, Msg: _domain.NoErr.Msg})
+}
+
+func (c *PlanCtrl) PlanScenariosList(ctx iris.Context) {
+	planId, err := ctx.URLParamInt("planId")
+	if planId == 0 {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+		return
+	}
+
+	var req serverDomain.PlanScenariosReqPaginate
+	err = ctx.ReadQuery(&req)
+	if err != nil {
+		errs := validate.ValidRequest(err)
+		if len(errs) > 0 {
+			logUtils.Errorf("参数验证失败", zap.String("错误", strings.Join(errs, ";")))
+			ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: strings.Join(errs, ";")})
+			return
+		}
+	}
+	req.ConvertParams()
+
+	data, err := c.PlanService.PlanScenariosPaginate(req, uint(planId))
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data, Msg: _domain.NoErr.Msg})
 }

@@ -19,8 +19,11 @@ type DebugData struct {
 	ScenarioProcessorId uint          `gorm:"-" json:"scenarioProcessorId"`
 	UsedBy              consts.UsedBy `json:"usedBy"`
 
+	ServerId uint `json:"serverId"`
+
 	BaseUrl   string      `gorm:"-" json:"baseUrl"`
 	ShareVars []GlobalVar `gorm:"-" json:"shareVars"` // used to show in right environment tab
+	EnvVars   []GlobalVar `gorm:"-" json:"envVars"`   // used to show in right environment tab
 
 	Name string `gorm:"-" json:"name"`
 	BaseRequest

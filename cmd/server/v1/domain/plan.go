@@ -24,19 +24,28 @@ type PlanReqPaginate struct {
 //}
 
 type PlanAddScenariosReq struct {
-	ScenarioIds []int `json:"scenarioIds"`
+	ScenarioIds []uint `json:"scenarioIds"`
 }
 
 type PlanAndReportDetail struct {
-	Id             uint              `json:"id"`           //计划ID
-	AdminName      string            `json:"directorName"` //负责人姓名
+	Id             uint              `json:"id"`        //计划ID
+	AdminName      string            `json:"adminName"` //负责人姓名
 	CreatedAt      *time.Time        `json:"createdAt,omitempty"`
 	UpdatedAt      *time.Time        `json:"updatedAt,omitempty"`
-	UpdateUserName string            `json:"updaterName"`        //最近更新人姓名
+	UpdateUserName string            `json:"updateUserName"`     //最近更新人姓名
 	Status         consts.TestStatus `json:"status"`             //状态
 	TestPassRate   string            `json:"testPassRate"`       //执行通过率
 	ExecTimes      int64             `json:"execTimes"`          //执行次数
 	ExecutorName   string            `json:"executorName"`       //执行人姓名
 	ExecTime       *time.Time        `json:"execTime,omitempty"` //执行时间
 	ExecEnv        string            `json:"execEnv"`            //执行环境
+}
+
+type PlanScenariosReqPaginate struct {
+	_domain.PaginateReq
+
+	CreateUserId uint   `json:"createUserId"`
+	Priority     string `json:"priority"`
+	Keywords     string `json:"keywords"`
+	Enabled      string `json:"enabled"`
 }

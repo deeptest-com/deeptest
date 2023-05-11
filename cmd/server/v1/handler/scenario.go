@@ -2,6 +2,7 @@ package handler
 
 import (
 	"github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/web/validate"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
@@ -96,6 +97,7 @@ func (c *ScenarioCtrl) Create(ctx iris.Context) {
 	req.ProjectId = uint(projectId)
 	req.CreateUserName = multi.GetUsername(ctx)
 	req.CreateUserId = multi.GetUserId(ctx)
+	req.Status = consts.Draft
 	po, bizErr := c.ScenarioService.Create(req)
 	if bizErr != nil {
 		ctx.JSON(_domain.Response{Code: bizErr.Code, Data: nil})
@@ -182,4 +184,18 @@ func (c *ScenarioCtrl) Plans(ctx iris.Context) {
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data, Msg: _domain.NoErr.Msg})
 
+}
+
+func (c *ScenarioCtrl) UpdateStatus(ctx iris.Context) {
+	id, _ := ctx.Params().GetInt("id")
+	status := ctx.URLParamDefault("status", "")
+	if status == "" {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+	}
+	err := c.ScenarioService.UpdateStatus(uint(id), consts.TestStatus(status))
+	if err == nil {
+		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+	} else {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
+	}
 }

@@ -1,5 +1,5 @@
 import request from '@/utils/request';
-import {QueryParams} from "@/views/report/data";
+import {QueryParams} from "./data";
 
 const apiPath = 'scenarios/reports';
 

@@ -6,7 +6,7 @@
                 :overlayStyle="{width:'300px'}">
       <a-button class="header">
         <span class="before-icon icon"><img :src="getProjectLogo(currProject?.logo)" alt=""></span>
-        {{ currProject.name }}
+        <span class="header-text" :title="currProject.name">{{ currProject.name }}</span>
         <DownOutlined class="after-icon"/>
       </a-button>
       <template #overlay>
@@ -25,7 +25,7 @@
                  }"
                  :key="'recently' + item.id + Math.random()">
               <span class="icon"><img :src="getProjectLogo(item?.logo)" alt=""></span>
-              <span class="text">{{ item.name }}</span>
+              <span class="text" :title="item.name">{{ item.name }}</span>
             </div>
             <div class="menu-scroll-item my" key="my">
               我参与的项目
@@ -177,11 +177,19 @@ watch(() => {
   position: relative;
   text-align: left;
   padding-left: 30px;
+  padding-right: 24px;
 
   .before-icon {
     position: absolute;
     left: 4px;
     top: 4px;
+  }
+  .header-text{
+    width: 98%;
+    display: inline-block;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis; /* 在文本溢出时显示省略号 */
   }
 
   .after-icon {

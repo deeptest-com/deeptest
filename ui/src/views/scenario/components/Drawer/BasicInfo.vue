@@ -10,18 +10,22 @@
     </div>
 
     <a-descriptions :size="'small'" :title="null">
-      <a-descriptions-item label="创建人">{{ detailResult?.createUser }}</a-descriptions-item>
+      <a-descriptions-item label="创建人">{{ detailResult?.createUserName }}</a-descriptions-item>
       <a-descriptions-item label="状态">
-        <EditAndShowSelect :label="endpointStatus.get(detailResult?.status || 0 )"
+        <EditAndShowSelect :label="scenarioStatus.get(detailResult?.status || 0 )"
                            :value="detailResult?.status"
                            :options="endpointStatusOpts"
-                           @update="handleChangeStatus"/>
+                           @update="(val) => {
+                            handleChange('status',val)
+                           }"/>
       </a-descriptions-item>
       <a-descriptions-item label="优先级">
-        <EditAndShowSelect :label="endpointStatus.get(detailResult?.status || 0 )"
+        <EditAndShowSelect :label="scenarioPriority.get(detailResult?.priority || '0' )"
                            :value="detailResult?.status"
                            :options="endpointStatusOpts"
-                           @update="handleChangeStatus"/>
+                           @update="(val) => {
+                            handleChange('priority',val)
+                           }"/>
       </a-descriptions-item>
       <a-descriptions-item label="描述">
         <EditAndShowField :placeholder="'请输入描述'" :value="detailResult?.desc || '暂无'"
@@ -45,7 +49,7 @@ import {
   defineProps,
   defineEmits, computed,
 } from 'vue';
-import {endpointStatusOpts, endpointStatus} from '@/config/constant';
+import {endpointStatusOpts, scenarioStatus,scenarioPriority} from '@/config/constant';
 import {useStore} from "vuex";
 import {Scenario} from "@/views/Scenario/data";
 import EditAndShowField from '@/components/EditAndShow/index.vue';
@@ -88,10 +92,10 @@ const categoryLabel = computed(() => {
   return label;
 });
 
-const emit = defineEmits(['changeStatus', 'changeDescription','changeCategory']);
+const emit = defineEmits(['change', 'changeDescription','changeCategory']);
 
-function handleChangeStatus(val) {
-  emit('changeStatus', val);
+function handleChange(type,val) {
+  emit('change', type,val);
 }
 
 function handleChangeCategory(val) {

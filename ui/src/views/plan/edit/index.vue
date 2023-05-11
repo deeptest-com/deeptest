@@ -8,13 +8,22 @@
         <div class="drawer-content">
             <ConBoxTitle title="基本信息" backgroundStyle="background: #FBFBFB" />
             <div class="plan-basic-info">
-                <TextItem label="负责人" :value="planDetail.adminName" />
-                <TextItem label="创建时间" :value="momentUtc(planDetail.updatedAt)" />
-                <TextItem label="最近更新" :value="momentUtc(planDetail.updatedAt)" />
-                <TextItem label="最新执行通过率" labelStyle="width: 108px" :value="planDetail.testPassRate" />
-                <TextItem label="执行次数" :value="planDetail.execTimes" />
-                <TextItem label="执行环境" :value="planDetail.execEnv" />
-
+                <a-descriptions :title="null" size="small">
+                    <a-descriptions-item label="负责人">{{ planDetail.adminName }}</a-descriptions-item>
+                    <a-descriptions-item label="创建时间">{{ momentUtc(planDetail.createdAt) }}</a-descriptions-item>
+                    <a-descriptions-item label="最近更新">{{ momentUtc(planDetail.updatedAt) }}</a-descriptions-item>
+                    <a-descriptions-item label="最新执行通过率">{{ planDetail.testPassRate }}</a-descriptions-item>
+                    <a-descriptions-item label="执行次数">{{ planDetail.execTimes }}</a-descriptions-item>
+                    <a-descriptions-item label="最近执行">{{ momentUtc(planDetail.updatedAt) }}</a-descriptions-item>
+                    <a-descriptions-item label="执行环境">{{ planDetail.execEnv }}</a-descriptions-item>
+                    <a-descriptions-item label="状态">
+                        <EditAndShowSelect 
+                            :label="planStatusTextMap.get((planDetail?.status || 'draft'))"
+                            :value="planDetail.status"
+                            :options="planStatusOptions"
+                            @update="handleChangeStatus"/>
+                    </a-descriptions-item>
+                </a-descriptions>
                 <a-button class="plan-exec" type="primary" @click="handleExec">执行计划</a-button>
             </div>
             <ConBoxTitle title="关联信息" backgroundStyle="background: #FBFBFB" />
@@ -46,12 +55,13 @@ import { defineProps, defineEmits, ref, watch, reactive, computed } from 'vue';
 import { useStore } from 'vuex';
 
 import ConBoxTitle from '@/components/ConBoxTitle/index.vue';
-import TextItem from '@/views/component/Report/TextItem.vue';
+import EditAndShowSelect from '@/components/EditAndShowSelect/index.vue';
 import ScenarioList from '../components/ScenarioList.vue';
 import ReportList from '../components/ReportList.vue';
 
 import { momentUtc } from '@/utils/datetime';
 import { StateType as PlanStateType } from '../store';
+import { planStatusColorMap, planStatusOptions, planStatusTextMap } from '@/config/constant';
 
 const props = defineProps<{
     editDrawerVisible: Boolean
@@ -64,7 +74,7 @@ const planScenarioList = computed<any[]>(() => store.state.Plan.scenarioListResu
 const scenarioPagination = computed<any>(() => store.state.Plan.scenarioListResult.pagination);
 const currPlanId = computed<number>(() => store.state.Plan.planId);
 console.log(planScenarioList);
-const emits = defineEmits(['onCancel', 'onExec']);
+const emits = defineEmits(['onCancel', 'onExec', 'onUpdate']);
 const activeKey = ref(props.tabActiveKey || 'test-scenario');
 const loading = ref(false);
 
@@ -111,6 +121,11 @@ function onCancel() {
 function handleExec() {
     emits('onCancel');
     emits('onExec');
+}
+
+function handleChangeStatus(value) {
+    console.log('changeStatus --', value);
+    emits('onUpdate', value);
 }
 
 // 移除-关联-筛选时重新获取已关联的场景列表

@@ -14,6 +14,8 @@
                 <TextItem label="最新执行通过率" labelStyle="width: 108px" :value="planDetail.testPassRate" />
                 <TextItem label="执行次数" :value="planDetail.execTimes" />
                 <TextItem label="执行环境" :value="planDetail.execEnv" />
+
+                <a-button class="plan-exec" type="primary" @click="handleExec">执行计划</a-button>
             </div>
             <ConBoxTitle title="关联信息" backgroundStyle="background: #FBFBFB" />
             <div class="contract-wrapper">
@@ -62,7 +64,7 @@ const planScenarioList = computed<any[]>(() => store.state.Plan.scenarioListResu
 const scenarioPagination = computed<any>(() => store.state.Plan.scenarioListResult.pagination);
 const currPlanId = computed<number>(() => store.state.Plan.planId);
 console.log(planScenarioList);
-const emits = defineEmits(['onCancel']);
+const emits = defineEmits(['onCancel', 'onExec']);
 const activeKey = ref(props.tabActiveKey || 'test-scenario');
 const loading = ref(false);
 
@@ -106,6 +108,11 @@ function onCancel() {
     emits('onCancel');
 }
 
+function handleExec() {
+    emits('onCancel');
+    emits('onExec');
+}
+
 // 移除-关联-筛选时重新获取已关联的场景列表
 async function getScenarioList(params: any) {
     loading.value = true;
@@ -138,6 +145,12 @@ watch(() => {
     .text-wrapper {
         width: 33%;
         height: 30px;
+    }
+
+    .plan-exec {
+        position: absolute;
+        top: -30px;
+        right: -10px;
     }
 }
 

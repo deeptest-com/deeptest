@@ -14,7 +14,7 @@
         <a-form :model="formState" class="report-form">
             <div class="report-executor-selector">
                 <a-form-item name="executor" label="执行人">
-                    <a-select placeholder="请选择执行人" v-model:value="selectValue" :options="executorOptions"
+                    <a-select allowClear placeholder="请选择执行人" v-model:value="selectValue" :options="executorOptions"
                         style="width: 140px" @change="handleSelectChange" />
                 </a-form-item>
             </div>
@@ -59,7 +59,7 @@ const executeName = ref('');
 const formState = reactive({});
 let executeTime = reactive<any>({ executeStartTime: '', executeEndTime: '' });
 
-const emits = defineEmits(['getList']);
+const emits = defineEmits(['handleFilter']);
 
 const getMember = async (): Promise<void> => {
   await store.dispatch('Report/getMembers', currProject.value.id)
@@ -68,28 +68,26 @@ const getMember = async (): Promise<void> => {
 function onRangeOk(date: any) {
     console.log('current select executime ---', date);
     executeTime = { executeStartTime: momentTimeStamp(date[0]), executeEndTime: momentTimeStamp(date[1]) };
-    refreshList(executeTime);
+    refreshList({});
 }
 
 function onRangeChange(date: any) {
     if (date.length === 0) {
         executeTime = { executeStartTime: '', executeEndTime: '' };
-        refreshList(executeTime);
+        refreshList({});
     }
 }
 
 function handleSelectChange(value: any) {
     console.log('handleSelect---', value);
-    emits('getList', { createUserId: value })
     refreshList({});
 }
 
 function refreshList(params) {
-    emits('getList', { keywords: executeName.value, createUserId: selectValue.value, ...executeTime, ...params })
+    emits('handleFilter', { keywords: executeName.value, createUserId: selectValue.value, ...executeTime, ...params })
 }
 
 const onSearch = (val: string) => {
-  emits('getList', { keywords: val })
   refreshList({});
 };
 

@@ -51,7 +51,7 @@
               <template #overlay>
                 <a-menu>
                   <a-menu-item key="1">
-                    <a class="operation-a" href="javascript:void (0)" @click="exec(record.id)">执行</a>
+                    <a class="operation-a" href="javascript:void (0)" @click="exec(record)">执行</a>
                   </a-menu-item>
                   <a-menu-item key="1">
                     <a class="operation-a" href="javascript:void (0)" @click="report(record.id)">测试报告</a>
@@ -82,8 +82,20 @@
     @get-list="getList(1)"
   />
   <!-- 编辑计划抽屉 -->
-  <PlanEdit :tab-active-key="editTabActiveKey" :edit-drawer-visible="editDrawerVisible" @on-cancel="editDrawerVisible = false" />
+  <PlanEdit 
+    :tab-active-key="editTabActiveKey" 
+    :edit-drawer-visible="editDrawerVisible" 
+    @onExec="handleExec"
+    @on-cancel="editDrawerVisible = false" />
 
+  <!-- 执行计划抽屉 -->
+  <ReportDetail 
+    :drawer-visible="execReportVisible" 
+    :title="execReportTitle" 
+    :scenario-expand-active="true" 
+    :show-scenario-info="true"
+    @on-close="execReportVisible = false"
+  />
 </template>
 
 <script setup lang="ts">
@@ -91,7 +103,7 @@ import { computed, reactive, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 import { message } from 'ant-design-vue';
-import { MoreOutlined, EditOutlined } from "@ant-design/icons-vue";
+import { MoreOutlined } from "@ant-design/icons-vue";
 import { SelectTypes } from 'ant-design-vue/es/select';
 import { Modal, notification } from "ant-design-vue";
 import debounce from "lodash.debounce";
@@ -99,6 +111,7 @@ import debounce from "lodash.debounce";
 import PlanCreate from "../components/PlanCreate.vue";
 import PlanEdit from "../edit/index.vue";
 import EditAndShowField from "@/components/EditAndShow/index.vue";
+import ReportDetail from "@/views/component/Report/Detail/Index.vue";
 
 import { StateType as ProjectStateType } from "@/store/project";
 import { PaginationConfig, QueryParams, Plan } from '../data.d';
@@ -183,6 +196,7 @@ const router = useRouter();
 const store = useStore<{ Plan: StateType, ProjectGlobal: ProjectStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const nodeDataCategory = computed<any>(() => store.state.Plan.nodeDataCategory);
+const currPlanId = computed(() => store.state.Plan.planId);
 
 const list = computed<Plan[]>(() => store.state.Plan.listResult.list);
 let pagination = computed<PaginationConfig>(() => store.state.Plan.listResult.pagination);
@@ -197,6 +211,8 @@ const loading = ref<boolean>(false);
 const createDrawerVisible = ref(false);
 const editDrawerVisible = ref(false);
 const editTabActiveKey = ref('test-scenario');
+const execReportVisible = ref(false);
+const execReportTitle = ref('');
 
 const getList = debounce(async (current: number): Promise<void> => {
   loading.value = true;
@@ -207,20 +223,31 @@ const getList = debounce(async (current: number): Promise<void> => {
     page: current,
   });
   loading.value = false
-}, 600)
+}, 600);
 
-const exec = (id: number) => {
+const handleExec = () => {
+  const record: any = list.value.find(e => {
+    return e.id === currPlanId.value;
+  })
+  execReportTitle.value = record && record.name;
+  execReportVisible.value = true;
+};
+
+const exec = async (record) => {
   console.log('exec')
-  router.push(`/plan/exec/${id}`)
+  await store.dispatch('Plan/setCurrentPlanId', record.id);
+  execReportTitle.value = record.name;
+  execReportVisible.value = true;
+  // router.push(`/plan/exec/${id}`)
 };
 
 const report = async (id: number) => {
   console.log('获取报告列表');
   editTabActiveKey.value = 'test-report';
+  editDrawerVisible.value = true;
   try {
     await store.dispatch('Plan/setCurrentPlanId', id);
     await store.dispatch('Plan/getPlan', id);
-    editDrawerVisible.value = true;
   } catch(err) {
     message.error('获取计划信息出错');
   }
@@ -255,11 +282,11 @@ const create = () => {
 };
 
 const edit = async (record) => {
+  editDrawerVisible.value = true;
+  editTabActiveKey.value = 'test-scenario';
   try {
     await store.dispatch('Plan/setCurrentPlanId', record.id);
     await store.dispatch('Plan/getPlan', record.id);
-    editTabActiveKey.value = 'test-scenario';
-    editDrawerVisible.value = true;
   } catch(err) {
     message.error('获取计划信息出错');
   }

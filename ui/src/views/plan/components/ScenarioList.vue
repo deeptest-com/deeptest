@@ -33,6 +33,7 @@
                 getList({ page });
             },
         }"
+        row-key="id"
         :loading="loading"
         :columns="columns" 
         :data-source="list">

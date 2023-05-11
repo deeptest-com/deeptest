@@ -1,9 +1,17 @@
 <template>
-    <TableFilter :show-operation="false" @get-list="refreshList" />
-    <a-table :columns="columns" :data-source="data" />
+    <TableFilter :show-operation="false" @handle-filter="handleFilter" />
+    <a-table 
+        row-key="id"
+        :columns="columns" 
+        :data-source="data"
+        :pagination="{
+            ...pagination,
+            onChange: handlePageChanged
+        }"
+    />
 </template>
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { reactive } from 'vue';
 import TableFilter from "@/views/component/Report/List/TableFilter.vue";
 
 const columns = [
@@ -43,9 +51,25 @@ const columns = [
 ];
 
 const data = [];
+let formState = reactive({});
+let pagination = reactive({
+    current: 1,
+    pageSize: 10,
+    total: 0
+})
+
+function handleFilter(params) {
+    formState = params;
+    refreshList({});
+}
+
+function handlePageChanged(page) {
+    pagination.current = page;
+    refreshList({ page, pageSize: pagination.pageSize });
+}
 
 function refreshList(params: any) {
-    console.log('get test-plan reportList ---- [tableFilter] paramsData', params);
+    console.log('get test-plan reportList ---- [tableFilter] paramsData', { ...formState, ...params });
 }
 </script>
   

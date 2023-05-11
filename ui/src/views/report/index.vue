@@ -1,7 +1,7 @@
 <template>
     <div class="report-container">
         <div class="report-table-filter">
-            <TableFilter @get-list="getList" />
+            <TableFilter :formState="formState" @handle-filter="handleFilter" />
         </div>
         <div class="report-list">
             <List :loading="loading" :list="list" @get-list="getList" @query-detail="queryDetail"/>
@@ -11,7 +11,7 @@
     </div>
 </template>
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
+import { computed, ref, watch, reactive } from "vue";
 import { useStore } from "vuex";
 
 import TableFilter from '@/views/component/Report/List/TableFilter.vue';
@@ -20,7 +20,7 @@ import DetailDrawer from '@/views/component/Report/Detail/Index.vue';
 
 import { StateType as ProjectStateType } from "@/store/project";
 import { StateType } from "@/views/component/Report/store";
-import { PaginationConfig, Report } from "@/views/component/Report/data";
+import { PaginationConfig } from "@/views/component/Report/data";
 
 const store = useStore<{ Report: StateType, ProjectGlobal: ProjectStateType }>();
 // 全局选中的项目
@@ -30,23 +30,30 @@ const list = computed<any>(() => store.state.Report.listResult.list);
 // 分页数据
 let pagination = computed<PaginationConfig>(() => store.state.Report.listResult.pagination);
 // 初始查询参数
-const queryParams = {
-  currProjectId: 0,
+const queryParams = reactive({
+  createUserId: null,
   executeStartTime: '',
   executeEndTime: '',
   keywords: '',
   page: 1,
   pageSize: pagination.value.pageSize || 20,
-};
+});
 
 const loading = ref<boolean>(false);
 const drawerVisible = ref<boolean>(false);
+let formState = reactive({});
 
-const getList = async (params: any): Promise<void> => {
+const handleFilter = (params: any) => {
+  formState = params;
+  getList({});
+}
+
+const getList = async (params?: any): Promise<void> => {
   loading.value = true;
 
   await store.dispatch('Report/list', {
     ...queryParams,
+    ...formState,
     ...params
   });
   loading.value = false;

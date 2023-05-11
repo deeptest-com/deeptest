@@ -124,8 +124,7 @@ func ReplaceVariableValue(value string) (ret string) {
 
 	for _, placeholder := range variablePlaceholders {
 		oldVal := fmt.Sprintf("${%s}", placeholder)
-
-		newVal := getPlaceholderValue(placeholder)
+		newVal := getPlaceholderVariableValue(placeholder)
 
 		ret = strings.ReplaceAll(ret, oldVal, newVal)
 	}
@@ -133,7 +132,7 @@ func ReplaceVariableValue(value string) (ret string) {
 	return
 }
 
-func getPlaceholderValue(name string) (ret string) {
+func getPlaceholderVariableValue(name string) (ret string) {
 	typ := getPlaceholderType(name)
 
 	if typ == consts.PlaceholderTypeVariable {

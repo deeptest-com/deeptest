@@ -15,7 +15,6 @@ import (
 
 type CheckpointService struct {
 	CheckpointRepo  *repo.CheckpointRepo  `inject:""`
-	InterfaceRepo   *repo.InterfaceRepo   `inject:""`
 	EnvironmentRepo *repo.EnvironmentRepo `inject:""`
 	ProjectRepo     *repo.ProjectRepo     `inject:""`
 	ExtractorRepo   *repo.ExtractorRepo   `inject:""`

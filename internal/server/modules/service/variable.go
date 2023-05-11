@@ -7,7 +7,6 @@ import (
 )
 
 type VariableService struct {
-	InterfaceRepo          *repo.InterfaceRepo          `inject:""`
 	DebugInterfaceRepo     *repo.DebugInterfaceRepo     `inject:""`
 	ProcessorInterfaceRepo *repo.ProcessorInterfaceRepo `inject:""`
 

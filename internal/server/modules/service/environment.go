@@ -14,7 +14,6 @@ import (
 type EnvironmentService struct {
 	EnvironmentRepo *repo.EnvironmentRepo `inject:""`
 	ScenarioRepo    *repo.ScenarioRepo    `inject:""`
-	InterfaceRepo   *repo.InterfaceRepo   `inject:""`
 	ProjectRepo     *repo.ProjectRepo     `inject:""`
 	ServeRepo       *repo.ServeRepo       `inject:""`
 	ServeServerRepo *repo.ServeServerRepo `inject:""`
@@ -140,9 +139,9 @@ func (s *EnvironmentService) DisableShareVar(id uint) (err error) {
 }
 
 func (s *EnvironmentService) DisableAllShareVar(interfaceId uint) (err error) {
-	interf, _ := s.InterfaceRepo.Get(interfaceId)
-
-	err = s.EnvironmentRepo.DisableAllShareVar(interf.ProjectId)
+	//interf, _ := s.InterfaceRepo.Get(interfaceId)
+	//
+	//err = s.EnvironmentRepo.DisableAllShareVar(interf.ProjectId)
 
 	return
 }

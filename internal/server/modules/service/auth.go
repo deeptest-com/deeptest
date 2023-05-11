@@ -12,12 +12,11 @@ import (
 )
 
 type AuthService struct {
-	AuthRepo      *repo2.AuthRepo      `inject:""`
-	InterfaceRepo *repo2.InterfaceRepo `inject:""`
+	AuthRepo *repo2.AuthRepo `inject:""`
 }
 
 func (s AuthService) OAuth2Authorization(req model2.InterfaceOAuth20) (result iris.Map, err error) {
-	s.InterfaceRepo.UpdateOAuth20(req.InterfaceId, req)
+	//s.InterfaceRepo.UpdateOAuth20(req.InterfaceId, req)
 
 	responseType := ""
 	if req.GrantType == consts.AuthorizationCode {
@@ -76,7 +75,7 @@ func (s AuthService) AddToken(name, token, tokenType string, interfaceId, projec
 		return
 	}
 
-	err = s.InterfaceRepo.SetOAuth2AccessToken(token, interfaceId)
+	//err = s.InterfaceRepo.SetOAuth2AccessToken(token, interfaceId)
 
 	return
 }

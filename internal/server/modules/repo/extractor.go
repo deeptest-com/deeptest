@@ -15,7 +15,6 @@ import (
 
 type ExtractorRepo struct {
 	DB                     *gorm.DB                `inject:""`
-	InterfaceRepo          *InterfaceRepo          `inject:""`
 	ProcessorInterfaceRepo *ProcessorInterfaceRepo `inject:""`
 }
 

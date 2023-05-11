@@ -11,7 +11,6 @@ import (
 
 type ExtractorService struct {
 	ExtractorRepo *repo.ExtractorRepo `inject:""`
-	InterfaceRepo *repo.InterfaceRepo `inject:""`
 
 	ShareVarService *ShareVarService `inject:""`
 }
@@ -78,14 +77,6 @@ func (s *ExtractorService) Extract(extractor *model.DebugInterfaceExtractor, res
 
 func (s *ExtractorService) ListExtractorVariableByInterface(interfaceId int) (variables []domain.Variable, err error) {
 	variables, err = s.ExtractorRepo.ListExtractorVariableByInterface(uint(interfaceId))
-
-	return
-}
-
-func (s *ExtractorService) ListValidExtractorVarForInterface(interfaceId int, usedBy consts.UsedBy) (variables []domain.Variable, err error) {
-	interf, _ := s.InterfaceRepo.Get(uint(interfaceId))
-
-	variables, err = s.ExtractorRepo.ListValidExtractorVariableForInterface(uint(interfaceId), interf.ProjectId, usedBy)
 
 	return
 }

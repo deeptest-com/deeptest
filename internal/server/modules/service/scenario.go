@@ -2,6 +2,7 @@ package service
 
 import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	repo2 "github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
@@ -58,5 +59,10 @@ func (s *ScenarioService) AddPlans(scenarioId int, planIds []int) (err error) {
 
 func (s *ScenarioService) PlanPaginate(req v1.PlanReqPaginate, scenarioId int) (ret _domain.PageData, err error) {
 	ret, err = s.ScenarioRepo.PlanList(req, scenarioId)
+	return
+}
+
+func (s *ScenarioService) UpdateStatus(id uint, status consts.TestStatus) (err error) {
+	err = s.ScenarioRepo.UpdateStatus(id, status)
 	return
 }

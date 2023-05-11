@@ -8,6 +8,7 @@ import (
 type ScenarioExecResult struct {
 	ID int `json:"id" yaml:"id"`
 
+	//ScenarioId     uint                  `json:"scenarioId"`
 	Name           string                `json:"name"`
 	Desc           string                `json:"desc,omitempty"`
 	ProgressStatus consts.ProgressStatus `json:"progressStatus,omitempty"`

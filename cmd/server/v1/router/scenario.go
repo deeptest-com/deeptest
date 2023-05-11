@@ -32,6 +32,7 @@ func (m *ScenarioModule) Party() module.WebModule {
 		index.Get("/getInterface", m.ScenarioInterfaceCtrl.GetInterface).Name = "场景树状数据"
 		index.Post("/{id:uint}/addPlans", m.ScenarioCtrl.AddPlans).Name = "关联计划"
 		index.Post("/{id:uint}/Plans", m.ScenarioCtrl.Plans).Name = "关联计划列表"
+		index.Post("/{id:uint}/updateStatus", m.ScenarioCtrl.UpdateStatus).Name = "更新计划状态"
 	}
 
 	return module.NewModule("/scenarios", handler)

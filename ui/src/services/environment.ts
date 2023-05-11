@@ -2,6 +2,7 @@ import request from '@/utils/request';
 
 const apiEnvironment = 'environments'
 const apiEnvironmentVar = `${apiEnvironment}/vars`
+const apiEnvVars = `${apiEnvironment}/envVars`;
 
 export async function listEnvironment(): Promise<any> {
     const params = {}
@@ -72,5 +73,15 @@ export async function clearEnvironmentVar(environmentId: number): Promise<any> {
         url: `/${apiEnvironmentVar}/clear`,
         method: 'POST',
         params,
+    });
+}
+
+export async function listEnvVarByServer(serverId): Promise<any> {
+    const params = {serverId}
+
+    return request({
+        url: `/${apiEnvVars}`,
+        method: 'GET',
+        params
     });
 }

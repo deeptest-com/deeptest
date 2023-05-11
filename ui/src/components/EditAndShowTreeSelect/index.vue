@@ -39,7 +39,7 @@ const fieldValue = ref('');
 const props = defineProps({
   value: {
     required: true,
-    type: String || Number,
+    type:  Number,
   },
   label: {
     required: true,

@@ -3,6 +3,7 @@ package repo
 import (
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
@@ -140,9 +141,13 @@ func (r *ScenarioRepo) Create(scenario model.Scenario) (ret model.Scenario, bizE
 
 func (r *ScenarioRepo) Update(req model.Scenario) error {
 	values := map[string]interface{}{
-		"name":     req.Name,
-		"desc":     req.Desc,
-		"disabled": req.Disabled,
+		"name":             req.Name,
+		"desc":             req.Desc,
+		"disabled":         req.Disabled,
+		"create_user_id":   req.CreateUserId,
+		"create_user_name": req.CreateUserName,
+		"priority":         req.Priority,
+		"type":             req.Type,
 	}
 	err := r.DB.Model(&req).Where("id = ?", req.ID).Updates(values).Error
 	if err != nil {
@@ -276,4 +281,8 @@ func (r *ScenarioRepo) PlanList(req v1.PlanReqPaginate, scenarioId int) (data _d
 	data.Populate(plans, count, req.Page, req.PageSize)
 
 	return
+}
+
+func (r *ScenarioRepo) UpdateStatus(id uint, status consts.TestStatus) error {
+	return r.DB.Model(&model.Scenario{}).Where("id = ?", id).Update("status", status).Error
 }

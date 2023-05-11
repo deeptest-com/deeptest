@@ -149,6 +149,7 @@ func (s *CheckpointService) Check(checkpoint model.DebugInterfaceCheckpoint, res
 
 	// Judgement
 	if checkpoint.Type == consts.Judgement {
+
 		variableMap, _ := s.VariableService.GetShareVarsByInterface(checkpoint.InterfaceId, usedBy)
 
 		result, _ := agentExec.EvaluateGovaluateExpressionWithVariables(checkpoint.Expression, variableMap)

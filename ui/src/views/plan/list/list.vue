@@ -6,14 +6,20 @@
       </template>
       <template #extra>
         <a-select 
+          allowClear
           @change="onSearch" 
           v-model:value="queryParams.status" 
-          :options="statusArr" 
+          :options="planStatusOptions" 
           class="status-select" 
           style="width: 120px"
           placeholder="请选择状态">
         </a-select>
-        <a-input-search @change="onSearch" @search="onSearch" v-model:value="queryParams.keywords" placeholder="输入关键字搜索"
+        <a-input-search 
+          allowClear
+          @change="onSearch" 
+          @search="onSearch" 
+          v-model:value="queryParams.keywords" 
+          placeholder="输入关键字搜索"
           style="width:270px;margin-left: 16px;" />
       </template>
 
@@ -39,7 +45,7 @@
               @update="(e: string) => updatePlan(e, record)" />
           </template>
           <template #status="{ record }">
-            <a-tag v-if="record.status" :color="statusTagMap[record.status].color">{{ statusTagMap[record.status].text }}</a-tag>
+            <a-tag v-if="record.status" :color="planStatusColorMap.get(record.status)">{{ planStatusTextMap.get(record.status) }}</a-tag>
           </template>
           <template #updatedAt="{ record }">
             <span>{{ momentUtc(record.updatedAt) }}</span>
@@ -86,6 +92,7 @@
     :tab-active-key="editTabActiveKey" 
     :edit-drawer-visible="editDrawerVisible" 
     @onExec="handleExec"
+    @onUpdate="handleUpdate"
     @on-cancel="editDrawerVisible = false" />
 
   <!-- 执行计划抽屉 -->
@@ -100,11 +107,9 @@
 
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from "vue";
-import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 import { message } from 'ant-design-vue';
 import { MoreOutlined } from "@ant-design/icons-vue";
-import { SelectTypes } from 'ant-design-vue/es/select';
 import { Modal, notification } from "ant-design-vue";
 import debounce from "lodash.debounce";
 
@@ -117,44 +122,7 @@ import { StateType as ProjectStateType } from "@/store/project";
 import { PaginationConfig, QueryParams, Plan } from '../data.d';
 import { StateType } from "../store";
 import { momentUtc } from "@/utils/datetime";
-
-const statusTagMap = {
-  "disabled": {
-    color: 'error',
-    text: '已禁用'
-  },
-  "draft": {
-    color: 'warning',
-    text: '草稿'
-  },
-  "executed": {
-    color: 'success',
-    text: '已执行'
-  },
-  "to_execute": {
-    color: 'processing',
-    text: '待执行'
-  }
-};
-
-const statusArr = ref<SelectTypes['options']>([
-  {
-    label: '已禁用',
-    value: 'disabled'
-  },
-  {
-    label: '草稿',
-    value: 'draft'
-  },
-  {
-    label: '已执行',
-    value: 'executed'
-  },
-  {
-    label: '待执行',
-    value: 'to_execute'
-  }
-]);
+import { planStatusColorMap, planStatusTextMap, planStatusOptions } from "@/config/constant";
 
 const columns = [
   {
@@ -192,7 +160,6 @@ const columns = [
   },
 ];
 
-const router = useRouter();
 const store = useStore<{ Plan: StateType, ProjectGlobal: ProjectStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const nodeDataCategory = computed<any>(() => store.state.Plan.nodeDataCategory);
@@ -223,7 +190,7 @@ const getList = debounce(async (current: number): Promise<void> => {
     page: current,
   });
   loading.value = false
-}, 600);
+}, 300);
 
 const handleExec = () => {
   const record: any = list.value.find(e => {
@@ -238,7 +205,6 @@ const exec = async (record) => {
   await store.dispatch('Plan/setCurrentPlanId', record.id);
   execReportTitle.value = record.name;
   execReportVisible.value = true;
-  // router.push(`/plan/exec/${id}`)
 };
 
 const report = async (id: number) => {
@@ -264,7 +230,12 @@ const updatePlan = async (value: string, record: any) => {
   try {
     const result = await store.dispatch('Plan/savePlan', {
       id: record.id,
-      name: value
+      name: value,
+      adminId: record.adminId,
+      categoryId: record.categoryId,
+      testStage: record.testStage,
+      desc: record.desc,
+      status: record.status
     });
     if (result) {
       getList(1);
@@ -275,6 +246,31 @@ const updatePlan = async (value: string, record: any) => {
     console.log(err);
   }
 };
+
+const handleUpdate = async (status: string) => {
+  try {
+    const record: any = list.value.find(e => {
+      return e.id === currPlanId.value;
+    });
+    const result = await store.dispatch('Plan/savePlan', {
+      id: record.id,
+      name: record.name,
+      adminId: record.adminId,
+      categoryId: record.categoryId,
+      testStage: record.testStage,
+      desc: record.desc,
+      status
+    });
+    if (result) {
+      getList(1);
+      store.dispatch('Plan/getPlan', currPlanId.value);
+    } else {
+      message.error('更新计划失败');
+    }
+  } catch(err) {
+    console.log(err);
+  }
+}
 
 const create = () => {
   console.log('create')
@@ -319,9 +315,9 @@ const remove = (id: number) => {
   });
 }
 
-const onSearch = debounce(() => {
+const onSearch = () => {
   getList(1);
-}, 500);
+};
 
 watch(nodeDataCategory, async () => {
   console.log('watch nodeDataCategory', nodeDataCategory.value.id)

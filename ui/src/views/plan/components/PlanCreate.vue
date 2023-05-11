@@ -77,7 +77,7 @@ const testStageArr = [
         value: 'unit_test'
     }, 
     {
-        lable: '集成测试',
+        label: '集成测试',
         value: 'integration_test'
     },
     {

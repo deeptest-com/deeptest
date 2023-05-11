@@ -31,8 +31,12 @@
           }" class="dp-table">
 
           <template #name="{ text, record }">
-            {{ text }}
-            <edit-outlined class="dp-primary" @click="edit(record)" />
+            <EditAndShowField 
+              :custom-class="'custom-endpoint show-on-hover'" 
+              :value="text" 
+              placeholder="请输入计划名称" 
+              @edit="edit(record)"
+              @update="(e: string) => updatePlan(e, record)" />
           </template>
           <template #status="{ record }">
             <a-tag v-if="record.status" :color="statusTagMap[record.status].color">{{ statusTagMap[record.status].text }}</a-tag>
@@ -48,6 +52,15 @@
                 <a-menu>
                   <a-menu-item key="1">
                     <a class="operation-a" href="javascript:void (0)" @click="exec(record.id)">执行</a>
+                  </a-menu-item>
+                  <a-menu-item key="1">
+                    <a class="operation-a" href="javascript:void (0)" @click="report(record.id)">测试报告</a>
+                  </a-menu-item>
+                  <!-- <a-menu-item key="1">
+                    <a class="operation-a" href="javascript:void (0)" @click="exec(record.id)">执行</a>
+                  </a-menu-item> -->
+                  <a-menu-item key="1">
+                    <a class="operation-a" href="javascript:void (0)" @click="clone(record.id)">克隆</a>
                   </a-menu-item>
                   <a-menu-item key="2">
                     <a class="operation-a" href="javascript:void (0)" @click="remove(record.id)">删除</a>
@@ -69,22 +82,23 @@
     @get-list="getList(1)"
   />
   <!-- 编辑计划抽屉 -->
-  <PlanEdit :edit-drawer-visible="editDrawerVisible" @on-cancel="editDrawerVisible = false" :curr-plan-id="currModel.id" />
+  <PlanEdit :tab-active-key="editTabActiveKey" :edit-drawer-visible="editDrawerVisible" @on-cancel="editDrawerVisible = false" />
 
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, ref, UnwrapRef, watch } from "vue";
-import { Empty, message } from 'ant-design-vue';
+import { computed, reactive, ref, watch } from "vue";
+import { useRouter } from "vue-router";
+import { useStore } from "vuex";
+import { message } from 'ant-design-vue';
 import { MoreOutlined, EditOutlined } from "@ant-design/icons-vue";
 import { SelectTypes } from 'ant-design-vue/es/select';
-import { useStore } from "vuex";
-import debounce from "lodash.debounce";
-import { useRouter } from "vue-router";
 import { Modal, notification } from "ant-design-vue";
+import debounce from "lodash.debounce";
 
 import PlanCreate from "../components/PlanCreate.vue";
-import PlanEdit from "../components/PlanEdit.vue";
+import PlanEdit from "../edit/index.vue";
+import EditAndShowField from "@/components/EditAndShow/index.vue";
 
 import { StateType as ProjectStateType } from "@/store/project";
 import { PaginationConfig, QueryParams, Plan } from '../data.d';
@@ -108,7 +122,7 @@ const statusTagMap = {
     color: 'processing',
     text: '待执行'
   }
-}
+};
 
 const statusArr = ref<SelectTypes['options']>([
   {
@@ -128,20 +142,6 @@ const statusArr = ref<SelectTypes['options']>([
     value: 'to_execute'
   }
 ]);
-
-const router = useRouter();
-const store = useStore<{ Plan: StateType, ProjectGlobal: ProjectStateType }>();
-const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
-const nodeDataCategory = computed<any>(() => store.state.Plan.nodeDataCategory);
-
-const list = computed<Plan[]>(() => store.state.Plan.listResult.list);
-let pagination = computed<PaginationConfig>(() => store.state.Plan.listResult.pagination);
-let queryParams = reactive<QueryParams>({
-  keywords: '', 
-  status: null,
-  page: pagination.value.current, 
-  pageSize: pagination.value.pageSize
-});
 
 const columns = [
   {
@@ -179,10 +179,24 @@ const columns = [
   },
 ];
 
-const currModel = ref<any>({ id: 0 });
+const router = useRouter();
+const store = useStore<{ Plan: StateType, ProjectGlobal: ProjectStateType }>();
+const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
+const nodeDataCategory = computed<any>(() => store.state.Plan.nodeDataCategory);
+
+const list = computed<Plan[]>(() => store.state.Plan.listResult.list);
+let pagination = computed<PaginationConfig>(() => store.state.Plan.listResult.pagination);
+
+let queryParams = reactive<QueryParams>({
+  keywords: '', 
+  status: null,
+  page: pagination.value.current, 
+  pageSize: pagination.value.pageSize
+});
 const loading = ref<boolean>(false);
 const createDrawerVisible = ref(false);
 const editDrawerVisible = ref(false);
+const editTabActiveKey = ref('test-scenario');
 
 const getList = debounce(async (current: number): Promise<void> => {
   loading.value = true;
@@ -200,25 +214,55 @@ const exec = (id: number) => {
   router.push(`/plan/exec/${id}`)
 };
 
+const report = async (id: number) => {
+  console.log('获取报告列表');
+  editTabActiveKey.value = 'test-report';
+  try {
+    await store.dispatch('Plan/setCurrentPlanId', id);
+    await store.dispatch('Plan/getPlan', id);
+    editDrawerVisible.value = true;
+  } catch(err) {
+    message.error('获取计划信息出错');
+  }
+};
+
+const clone = async (id: number) => {
+  const result = await store.dispatch('Plan/clonePlan', id);
+  if (result) {
+    getList(1);
+  }
+};
+
+const updatePlan = async (value: string, record: any) => {
+  try {
+    const result = await store.dispatch('Plan/savePlan', {
+      id: record.id,
+      name: value
+    });
+    if (result) {
+      getList(1);
+    } else {
+      message.error('更新计划失败');
+    }
+  } catch(err) {
+    console.log(err);
+  }
+};
+
 const create = () => {
   console.log('create')
   createDrawerVisible.value = true;
 };
 
 const edit = async (record) => {
-  currModel.value = record;
   try {
+    await store.dispatch('Plan/setCurrentPlanId', record.id);
     await store.dispatch('Plan/getPlan', record.id);
+    editTabActiveKey.value = 'test-scenario';
     editDrawerVisible.value = true;
   } catch(err) {
     message.error('获取计划信息出错');
   }
-}
-
-const onFinish = () => {
-  getList(1);
-  createDrawerVisible.value = false
-  editDrawerVisible.value = false
 }
 
 const remove = (id: number) => {

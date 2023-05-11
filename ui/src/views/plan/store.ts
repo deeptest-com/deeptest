@@ -9,6 +9,10 @@ import {
     remove,
     loadExecResult,
     getDetail,
+    getPlanScenarioList,
+    addScenarios,
+    removeScenarios,
+    clonePlan,
 } from './service';
 
 import {
@@ -37,7 +41,14 @@ export interface StateType {
     nodeDataCategory: any;
 
     members: any[];
-    scenarioList: any[];
+    scenarioListResult: {
+        scenarioList: any[],
+        pagination: {
+            total: number,
+            current: number,
+            pageSize: number,
+        }
+    };
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
@@ -63,9 +74,10 @@ export interface ModuleType extends StoreModuleType<StateType> {
     actions: {
         listPlan: Action<StateType, StateType>;
         getPlan: Action<StateType, StateType>;
-        getPlanDetail: Action<StateType, StateType>;
         savePlan: Action<StateType, StateType>;
         removePlan: Action<StateType, StateType>;
+        clonePlan: Action<StateType, StateType>;
+        setCurrentPlanId: Action<StateType, StateType>;
 
         loadCategory: Action<StateType, StateType>;
         getCategoryNode: Action<StateType, StateType>;
@@ -82,6 +94,10 @@ export interface ModuleType extends StoreModuleType<StateType> {
         updateExecResult: Action<StateType, StateType>;
 
         loadMembers: Action<StateType, StateType>;
+
+        getScenarioList: Action<StateType, StateType>;
+        addScenario: Action<StateType, StateType>;
+        removeScenario: Action<StateType, StateType>;
     }
 }
 
@@ -107,7 +123,14 @@ const initState: StateType = {
     nodeDataCategory: {},
 
     members: [],
-    scenarioList: []
+    scenarioListResult: {
+        scenarioList: [],
+        pagination: {
+            total: 0,
+            current: 1,
+            pageSize: 10,
+        }
+    }
 };
 
 const StoreModel: ModuleType = {
@@ -156,7 +179,7 @@ const StoreModel: ModuleType = {
             state.members = payload;
         },
         setScenarioList(state, payload) {
-            state.scenarioList = payload;
+            state.scenarioListResult = payload;
         }
     },
     actions: {
@@ -221,7 +244,17 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
-
+        async clonePlan({ dispatch }, payload: number) {
+            try {
+                const jsn = await clonePlan(payload);
+                if (jsn.code === 0) {
+                    return true;
+                }
+                return false;
+            } catch(error) {
+                return false;
+            }
+        },
         async loadExecResult({commit, dispatch, state}, scenarioId) {
             const response = await loadExecResult(scenarioId);
             if (response.code != 0) return;
@@ -332,22 +365,51 @@ const StoreModel: ModuleType = {
                 return false
             }
         },
+        // 获取项目的参与人列表
         async loadMembers({ commit }, payload: any) {
             const jsn = await queryMembers(payload);
             if (jsn.code === 0) {
                 const result = jsn.data.result.map(e => {
                     e.value = e.id;
-                    e.label = e.name;
+                    e.label = e.username;
                     return e;
                 })
                 commit('setMembers', result);
             }
         },
-        async getPlanDetail({ commit }, payload: any) {
-            const jsn = await getDetail(payload);
+        // 获取与计划关联的场景列表
+        async getScenarioList({ commit }, payload: any) {
+            const jsn = await getPlanScenarioList(payload);
             if (jsn.code === 0) {
-                commit('setMembers', jsn.data.scenarios);
+                commit('setScenarioList', {
+                    scenarioList: jsn.data.result || [],
+                    pagination: {
+                        current: jsn.data.page,
+                        pageSize: jsn.data.pageSize,
+                        total: jsn.data.total
+                    }
+                } );
             }
+        },
+        // 关联场景
+        async addScenario({ dispatch }, payload: any) {
+            const jsn = await addScenarios(payload.planId, payload.params);
+            if (jsn.code === 0) {
+                return true;
+            }
+            return false;
+        },
+        // 移除已关联的场景
+        async removeScenario({ commit }, payload: any) {
+            const jsn = await removeScenarios(payload.planId, payload.params);
+            if (jsn.code === 0) {
+                return true;
+            }
+            return false;
+        },
+        setCurrentPlanId({ commit }, payload: number) {
+            commit('setPlanId', payload);
+            return true;
         }
     }
 };

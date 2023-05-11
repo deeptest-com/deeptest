@@ -5,37 +5,60 @@
                 <template #icon><plus-outlined /></template>
                 关联测试场景
             </a-button>
-            <a-button type="default">批量移除</a-button>
+            <a-button type="default" @click="handleRemove">批量移除</a-button>
         </div>
         <div class="right">
             <a-form-item label="优先级">
-                <a-select ref="select" v-model:value="formState.priority" style="width: 120px" :options="options"
-                    :field-names="{ label: 'name', value: 'id', options: 'children' }" @focus="focus"
-                    @change="handleChange"></a-select>
+                <a-select allowClear ref="select" v-model:value="formState.priority" style="width: 140px" :options="priorityOptions"
+                    @change="handleChange" placeholder="请选择优先级"></a-select>
             </a-form-item>
             <a-form-item label="创建人">
-                <a-select ref="select" v-model:value="formState.creater" style="width: 120px" :options="options"
-                    :field-names="{ label: 'name', value: 'id', options: 'children' }" @focus="focus"
-                    @change="handleChange"></a-select>
+                <a-select allowClear ref="select" v-model:value="formState.createUserId" style="width: 140px" :options="members"
+                    @change="handleChange" placeholder="请选择创建人"></a-select>
             </a-form-item>
             <a-form-item>
-                <a-input-search v-model:value="formState.keywords" placeholder="请输入需要搜索的用例名称" style="width: 220px" />
+                <a-input-search allowClear v-model:value="formState.keywords" placeholder="请输入需要搜索的用例名称" @search="handleChange" style="width: 220px" />
             </a-form-item>
         </div>
     </div>
-    <a-table :row-selection="rowSelection" :columns="columns" :data-source="data" >
-        <template #operation>
-            <span>操作</span>
+    <a-table 
+        :row-selection="{ 
+            selectedRowKeys: selectedRowKeys,
+            onChange: onSelectChange 
+        }" 
+        :pagination="{
+            ...pagination,
+            showSizeChanger: false,
+            onChange: (page) => {
+                getList({ page });
+            },
+        }"
+        :loading="loading"
+        :columns="columns" 
+        :data-source="list">
+        <template #status="{ record }">
+            {{ record.status }}
+        </template>
+        <template #operation="{ record }">
+            <a-button type="primary" @click="handleRemove(record)"> 
+                移除
+            </a-button>
         </template>
     </a-table>
-    <Associate :associate-modal-visible="associateModalVisible" @on-cancel="associateModalVisible = false" @on-ok="associateModalVisible = false"/>
+    <Associate 
+        :associate-modal-visible="associateModalVisible" 
+        @on-cancel="associateModalVisible = false" 
+        @on-ok="handleFinish"
+    />
 </template>
 <script lang="ts" setup>
-import { computed, ref, unref, reactive, defineProps, watch } from 'vue';
+import { ref, reactive, defineProps, defineEmits, PropType, computed } from 'vue';
+import { useStore } from 'vuex';
 import { PlusOutlined } from '@ant-design/icons-vue';
 import Associate from './Associate.vue';
-import { Table } from 'ant-design-vue';
-import { any } from 'vue-types';
+
+import { StateType as PlanStateType } from '../store';  
+import { Modal } from 'ant-design-vue';
 
 const props = defineProps({
     showScenarioOperation: {
@@ -44,151 +67,100 @@ const props = defineProps({
         required: false
     },
     list: {
-        type: any,
-        default: [],
+        type: Array as PropType<any[]>,
+        required: false
+    },
+    columns: {
+        type: Array as PropType<any[]>
+    },
+    loading: {
+        type: Boolean
+    },
+    pagination: {
+        type: Object
+    },
+    planId: {
+        type: Number,
         required: false
     }
 })
 
-interface DataType {
-    key: string | number;
-    name: string;
-    age: number;
-    address: string;
-}
-
+const emits = defineEmits(['selectRowKeys', 'refreshList']);
+const store = useStore<{ Plan: PlanStateType }>();
+const planId = computed(() => store.state.Plan.planId);
+const members = computed(() => store.state.Plan.members);
 const associateModalVisible = ref(false);
+const selectedRowKeys = ref<any[]>([]); // Check here to configure the default column
+let selectedRowIds = reactive<number[]>([]);
 
-const columns: any[] = reactive([
-    {
-        title: 'Name',
-        dataIndex: 'name',
-    },
-    {
-        title: 'Age',
-        dataIndex: 'age',
-    },
-    {
-        title: 'Address',
-        dataIndex: 'address',
-    },
-]);
-
-const data: DataType[] = [];
-for (let i = 0; i < 46; i++) {
-    data.push({
-        key: i,
-        name: `Edward King ${i}`,
-        age: 32,
-        address: `London, Park Lane no. ${i}`,
-    });
-}
-
-const selectedRowKeys = ref<DataType['key'][]>([]); // Check here to configure the default column
-
-const onSelectChange = (changableRowKeys: string[]) => {
-    console.log('selectedRowKeys changed: ', changableRowKeys);
+const onSelectChange = (changableRowKeys: string[], rows: any) => {
     selectedRowKeys.value = changableRowKeys;
+    selectedRowIds = rows.map(e => {
+        return e.id;
+    });
+    emits('selectRowKeys', selectedRowIds);
 };
 
-const rowSelection = computed(() => {
-    return {
-        selectedRowKeys: unref(selectedRowKeys),
-        onChange: onSelectChange,
-        hideDefaultSelections: true,
-        selections: [
-            Table.SELECTION_ALL,
-            Table.SELECTION_INVERT,
-            Table.SELECTION_NONE,
-            {
-                key: 'odd',
-                text: 'Select Odd Row',
-                onSelect: changableRowKeys => {
-                    let newSelectedRowKeys = [];
-                    newSelectedRowKeys = changableRowKeys.filter((_key, index) => {
-                        if (index % 2 !== 0) {
-                            return false;
-                        }
-                        return true;
-                    });
-                    selectedRowKeys.value = newSelectedRowKeys;
-                },
-            },
-            {
-                key: 'even',
-                text: 'Select Even Row',
-                onSelect: changableRowKeys => {
-                    let newSelectedRowKeys = [];
-                    newSelectedRowKeys = changableRowKeys.filter((_key, index) => {
-                        if (index % 2 !== 0) {
-                            return true;
-                        }
-                        return false;
-                    });
-                    selectedRowKeys.value = newSelectedRowKeys;
-                },
-            },
-        ],
-    };
-});
-
-const options = ref<any>([
+const priorityOptions = ref<any>([
     {
-        id: 'jack',
-        name: 'Jack',
-        children: [
-            {
-                id: 'small jack',
-                name: 'samll Jack',
-            },
-        ],
+        label: 'P0',
+        value: 'P0'
     },
     {
-        id: 'lucy',
-        name: 'Lucy',
+        label: 'P1',
+        value: 'P1'
     },
     {
-        id: 'disabled',
-        name: 'Disabled',
-        disabled: true,
+        label: 'P2',
+        value: 'P2'
     },
     {
-        id: 'yiminghe',
-        name: 'Yiminghe',
-    },
+        label: 'P3',
+        value: 'P3'
+    }
 ]);
 
-const formState = reactive({ priority: null, creater: null, keywords: '' });
+const formState = reactive({ priority: null, createUserId: null, keywords: '' });
 
-const focus = () => {
-    console.log('focus');
-};
+const getList = (params) => {
+    console.log('changePage');
+    emits('refreshList', { ...params, formState });
+}
 
 const handleChange = (value: string) => {
     console.log(`selected ${value}`);
+    emits('refreshList', formState);
 };
 
-watch(() => {
-    return props.showScenarioOperation;
-}, val => {
-    if (val) {
-        columns.push({
-            title: 'operation',
-            dataIndex: 'operation',
-            key: 'operation',
-            slots: {
-                customRender: 'operation'
+const handleRemove = async (record?: any) => {
+    Modal.confirm({
+        title: '确认要解除该测试场景的关联吗?',
+        onOk: async () => {
+            let scenarioIds: any[] = [];
+            if (record && record.id) {
+                scenarioIds.push(record.id);
+            } else {
+                scenarioIds = selectedRowIds;
             }
-        })
-    }
-}, { immediate: true })
+            const params = { scenarioIds };
+            console.log('解除关联场景: --', params);
+            await store.dispatch('Plan/removeScenario', { planId: planId.value, params });
+            emits('refreshList', formState);
+        }
+    })
+}
+
+const handleFinish = async () => {
+    associateModalVisible.value = false;
+    emits('refreshList', formState);
+}
 </script>
 <style scoped lang="less">
 .table-filter {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 20px 0;
+    padding-bottom: 20px;
 
     .left, .right {
         display: flex;

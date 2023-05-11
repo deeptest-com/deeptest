@@ -91,7 +91,7 @@ const columns = [
         title: '编号',
         dataIndex: 'serialNumber',
         slots: { customRender: 'serialNumber' },
-        width: 80
+        width: 120
     },
     {
         title: '测试通过率',
@@ -112,7 +112,7 @@ const columns = [
     {
         title: '执行耗时',
         dataIndex: 'duration',
-        width: 200,
+        width: 80,
         slots: { customRender: 'duration' },
     },
     {

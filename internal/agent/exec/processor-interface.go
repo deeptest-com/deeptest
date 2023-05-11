@@ -217,13 +217,14 @@ func (entity *ProcessorInterface) Check(checkpoint *agentDomain.Checkpoint, resp
 	if checkpoint.Type == consts.Judgement {
 		result, _ := EvaluateGovaluateExpressionByScope(checkpoint.Expression, entity.ProcessorID)
 
+		checkpoint.ActualResult = fmt.Sprintf("%v", result)
+
 		ret, ok := result.(bool)
 		if ok && ret {
 			checkpoint.ResultStatus = consts.Pass
 		} else {
 			checkpoint.ResultStatus = consts.Fail
 		}
-		checkpoint.ActualResult = fmt.Sprintf("%v", ret)
 
 		return
 	}
@@ -231,7 +232,7 @@ func (entity *ProcessorInterface) Check(checkpoint *agentDomain.Checkpoint, resp
 	// Extractor
 	if checkpoint.Type == consts.Extractor {
 		// get extractor variable value saved by previous extract opt
-		variable, _ := GetVariable(entity.ProcessorID, checkpoint.ExtractorVariable)
+		variable, _ := GetVariableInScope(entity.ProcessorID, checkpoint.ExtractorVariable)
 		checkpoint.ActualResult = variable.Value.(string)
 
 		checkpoint.ResultStatus = agentUtils.Compare(checkpoint.Operator, checkpoint.ActualResult, checkpoint.Value)

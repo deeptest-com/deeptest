@@ -29,24 +29,7 @@ var (
 	}
 )
 
-func EvaluateGovaluateExpressionByScope(expression string, scopeId uint) (ret interface{}, err error) {
-	expr := commUtils.RemoveLeftVariableSymbol(expression)
-
-	valueExpression, err := govaluate.NewEvaluableExpressionWithFunctions(expr, GovaluateFunctions)
-	if err != nil {
-		ret = expression
-		return
-	}
-
-	parameters, err := generateGovaluateParamsByScope(expression, scopeId)
-	if err != nil {
-		return
-	}
-
-	ret, err = valueExpression.Evaluate(parameters)
-
-	return
-}
+// called by server checkpoint service
 func EvaluateGovaluateExpressionWithVariables(expression string, varMap map[string]interface{}, datapools domain.Datapools) (
 	ret interface{}, err error) {
 
@@ -57,12 +40,34 @@ func EvaluateGovaluateExpressionWithVariables(expression string, varMap map[stri
 		return
 	}
 
+	// 1
 	paramValMap, err := generateGovaluateParamsWithVariables(expression, varMap, datapools)
 	if err != nil {
 		return
 	}
 
 	ret, err = govaluateExpression.Evaluate(paramValMap)
+
+	return
+}
+
+// called by agent processor interface
+func EvaluateGovaluateExpressionByScope(expression string, scopeId uint) (ret interface{}, err error) {
+	expr := commUtils.RemoveLeftVariableSymbol(expression)
+
+	valueExpression, err := govaluate.NewEvaluableExpressionWithFunctions(expr, GovaluateFunctions)
+	if err != nil {
+		ret = expression
+		return
+	}
+
+	// 1
+	parameters, err := generateGovaluateParamsByScope(expression, scopeId)
+	if err != nil {
+		return
+	}
+
+	ret, err = valueExpression.Evaluate(parameters)
 
 	return
 }
@@ -74,7 +79,7 @@ func generateGovaluateParamsByScope(expression string, scopeId uint) (ret domain
 
 	for _, variableName := range variables {
 		var vari domain.ExecVariable
-		vari, err = GetVariable(scopeId, variableName)
+		vari, err = GetVariableInScope(scopeId, variableName)
 		if err == nil {
 			ret[variableName] = vari.Value
 		}

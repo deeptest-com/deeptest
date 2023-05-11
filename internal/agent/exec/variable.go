@@ -34,8 +34,9 @@ import (
 //	return
 //}
 
-func GetVariable(processorId uint, variablePath string) (variable domain.ExecVariable, err error) {
+func GetVariableInScope(processorId uint, variablePath string) (variable domain.ExecVariable, err error) {
 	allValidIds := ScopeHierarchy[processorId]
+
 	if allValidIds != nil {
 		for _, id := range *allValidIds {
 			for _, item := range ScopedVariables[id] {

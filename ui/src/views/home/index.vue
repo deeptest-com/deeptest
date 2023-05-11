@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <StatisticHeader />
+    <StatisticHeader :params="cardData" :type="0"/>
     <div style="margin-top: 16px">
       <a-card :bordered="false">
         <template #title>
@@ -70,8 +70,8 @@ import EditPage from "@/views/project/edit/edit.vue";
 import { useRouter } from "vue-router";
 import { setCache } from "@/utils/localCache";
 import settings from "@/config/settings";
-
 const store = useStore<{ Home: StateType }>();
+const cardData = computed<any>(() => store.state.Home.cardData);
 const activeKey = ref(1);
 const keywords = ref<string>('');
 const searchValue = ref("");
@@ -88,15 +88,19 @@ let formState = ref({
 });
 
 onMounted(() => {
+  getHearderData()
   getList(1);
 });
 const onSearch = () => {
   searchValue.value = keywords.value;
 };
+const getHearderData = async (): Promise<void> => {
+  await store.dispatch("Home/queryCard", {projectId:0});
+  await store.dispatch("Home/queryPie", {projectId:0});
+};
 const getList = async (current: number): Promise<void> => {
   await store.dispatch("Home/queryProject", {});
 };
-
 // 创建项目成功的回调
 const handleCreateSuccess = () => {
   createProjectModalVisible.value = false;

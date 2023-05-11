@@ -49,6 +49,7 @@ func (s *ExecScenarioService) Exec(execObj *agentExec.ScenarioExecObj, wsMsg *we
 
 	// execution
 	session = agentExec.NewSession(execObj, false, wsMsg)
+	//session.RootProcessor.ScenarioId = execObj.ScenarioId
 	session.Run()
 
 	return

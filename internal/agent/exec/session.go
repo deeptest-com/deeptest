@@ -25,7 +25,7 @@ type Session struct {
 
 func NewSession(req *ScenarioExecObj, failfast bool, wsMsg *websocket.Message) (ret *Session) {
 	root := req.RootProcessor
-
+	//root.Result.ScenarioId = req.RootProcessor.ScenarioId
 	// TODO: now, interfaces use variables in its own serve's env
 	//ImportVariables(root.ID, req.Variables, consts.Public)
 

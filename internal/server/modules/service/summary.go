@@ -1,10 +1,7 @@
 package service
 
 import (
-	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
-
 	"strconv"
 	"time"
 )
@@ -74,37 +71,10 @@ func (s *SummaryService) CollectionBugs() (err error) {
 }
 
 func (s *SummaryService) CollectionDetails() (err error) {
-	var detail model.SummaryDetails
-
-	//从project表获取所有项目id、name、描述、简称、创建时间
+	//从project表获取所有项目id
 	ids, err := s.SummaryDetailsService.FindProjectIds()
-
 	for _, id := range ids {
-
-		//从biz_scenario表根据projectid,查找场景总数
-		detail.ScenarioTotal, err = s.SummaryDetailsService.CountScenarioTotalProjectId(id)
-
-		//从biz_interface表根据projectid,查找接口总数
-		detail.InterfaceTotal, err = s.SummaryDetailsService.CountEndpointTotalProjectId(id)
-
-		//根据projectid,从biz_scenario_report表,获得所有报告总数,然后计算
-		detail.ExecTotal, err = s.SummaryDetailsService.CountExecTotalProjectId(id)
-
-		//从biz_scenario_report拿到assertion的相关数据,计算后存储
-		passRate, _ := s.SummaryDetailsService.FindPassRateByProjectId(id)
-		detail.PassRate, _ = strconv.ParseFloat(fmt.Sprintf("%.1f", passRate), 64)
-
-		//从biz_interface需要获取当前项目的所有接口,然后从biz_processor_interface检查哪些在场景中出现过
-		interfaceIds, _ := s.SummaryDetailsService.FindEndpointIdsByProjectId(id)
-		count, _ := s.SummaryDetailsService.CoverageByProjectId(id, interfaceIds)
-		var coverage float64
-		if detail.InterfaceTotal != 0 {
-			coverage = float64(count / detail.InterfaceTotal)
-		} else {
-			coverage = 0
-		}
-		detail.Coverage, _ = strconv.ParseFloat(fmt.Sprintf("%.1f", coverage), 64)
-
+		detail := s.SummaryDetailsService.CollectDetailByProjectId(id)
 		s.SummaryDetailsService.CreateByDate(detail)
 	}
 	return

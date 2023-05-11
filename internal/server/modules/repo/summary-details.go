@@ -128,6 +128,11 @@ func (r *SummaryDetailsRepo) FindPassRateByProjectId(projectId int64) (float64, 
 	return passRate.Float64, err
 }
 
+func (r *SummaryDetailsRepo) FindAllPassRateByProjectId() (passRate []model.ProjectIdAndFloat, err error) {
+	err = r.DB.Model(&model.ScenarioReport{}).Raw("select biz_scenario_report.project_id,(SUM(biz_scenario_report.pass_assertion_num)/SUM(biz_scenario_report.total_assertion_num))*100 as coverage from (deeptest.biz_scenario_report) group by project_id;").Find(&passRate).Error
+	return
+}
+
 func (r *SummaryDetailsRepo) CountBugsGroupByProjectId() (bugsCount []model.ProjectsBugCount, err error) {
 	err = r.DB.Model(&model.SummaryBugs{}).Select("project_id,count(id) as count").Where("NOT deleted ").Group("project_id").Find(&bugsCount).Error
 	return
@@ -139,10 +144,20 @@ func (r *SummaryDetailsRepo) CountScenarioTotalProjectId(projectId int64) (int64
 	return count.Int64, err
 }
 
+func (r *SummaryDetailsRepo) CountAllScenarioTotalProjectId() (counts []model.ProjectIdAndId, err error) {
+	err = r.DB.Model(&model.Scenario{}).Select("count(id),project_id").Where("NOT deleted ").Group("project_id").Find(&counts).Error
+	return
+}
+
 func (r *SummaryDetailsRepo) CountExecTotalProjectId(projectId int64) (int64, error) {
 	var count sql.NullInt64
 	err := r.DB.Model(&model.ScenarioReport{}).Select("count(id)").Where("project_id = ? AND NOT deleted ", projectId).Find(&count).Error
 	return count.Int64, err
+}
+
+func (r *SummaryDetailsRepo) CountAllExecTotalProjectId() (counts []model.ProjectIdAndId, err error) {
+	err = r.DB.Model(&model.ScenarioReport{}).Select("count(id),project_id").Where("NOT deleted ").Group("project_id").Find(&counts).Error
+	return
 }
 
 func (r *SummaryDetailsRepo) CountEndpointTotalProjectId(projectId int64) (int64, error) {
@@ -151,8 +166,18 @@ func (r *SummaryDetailsRepo) CountEndpointTotalProjectId(projectId int64) (int64
 	return count.Int64, err
 }
 
+func (r *SummaryDetailsRepo) CountAllEndpointTotalProjectId() (counts []model.ProjectIdAndId, err error) {
+	err = r.DB.Model(&model.Endpoint{}).Select("count(id),project_id").Where("NOT deleted ").Group("project_id").Find(&counts).Error
+	return
+}
+
 func (r *SummaryDetailsRepo) FindEndpointIdsByProjectId(projectId int64) (ids []int64, err error) {
 	err = r.DB.Model(&model.Endpoint{}).Select("id").Where("project_id = ? AND NOT deleted ", projectId).Find(&ids).Error
+	return
+}
+
+func (r *SummaryDetailsRepo) FindAllEndpointIdsGroupByProjectId() (ids []model.ProjectIdAndId, err error) {
+	err = r.DB.Model(&model.Endpoint{}).Select("id,project_id").Where("NOT deleted ").Find(&ids).Error
 	return
 }
 

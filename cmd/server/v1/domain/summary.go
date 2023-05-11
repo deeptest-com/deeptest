@@ -43,6 +43,7 @@ type ResSummaryCard struct {
 	InterfaceTotal int64   `gorm:"default:0" json:"interfaceTotal"`
 	ScenarioTotal  int64   `gorm:"default:0" json:"scenarioTotal"`
 	ExecTotal      int64   `gorm:"default:0" json:"execTotal"`
+	UserTotal      int64   `gorm:"default:0" json:"userTotal"`
 	PassRate       float64 `gorm:"default:0" json:"passRate"`
 	Coverage       float64 `gorm:"default:0" json:"coverage"`
 	InterfaceHb    float64 `gorm:"default:0" json:"interfaceHb"`

@@ -64,6 +64,16 @@ type ProjectsBugCount struct {
 	Count     int64 `json:"count"`
 }
 
+type ProjectIdAndId struct {
+	ProjectId int64 `json:"projectId"`
+	Id        int64 `json:"id"`
+}
+
+type ProjectIdAndFloat struct {
+	ProjectId int64   `json:"projectId"`
+	Coverage  float64 `json:"coverage"`
+}
+
 type UserIdAndName struct {
 	ProjectId int64  `json:"projectId"`
 	UserId    int64  `json:"userId"`

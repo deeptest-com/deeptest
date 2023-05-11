@@ -38,7 +38,7 @@
         :columns="columns" 
         :data-source="list">
         <template #status="{ record }">
-            {{ record.status }}
+            <a-tag v-if="record.status" :color="planStatusColorMap.get(record.status)">{{ planStatusTextMap.get(record.status) }}</a-tag>
         </template>
         <template #operation="{ record }">
             <a-button type="primary" @click="handleRemove(record)"> 
@@ -60,6 +60,7 @@ import Associate from './Associate.vue';
 
 import { StateType as PlanStateType } from '../store';  
 import { Modal } from 'ant-design-vue';
+import { planStatusColorMap, planStatusTextMap } from '@/config/constant';
 
 const props = defineProps({
     showScenarioOperation: {

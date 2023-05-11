@@ -1197,3 +1197,26 @@ export const defaultEndpointDetail = {
     "headers": [],
     "cookies": []
 }
+
+export const planStatusTextMap = new Map([['disabled', '已禁用'],['draft', '草稿'], ['executed', '已执行'], ['to_execute', '待执行']]);
+
+export const planStatusColorMap = new Map([['disabled', 'error'],['draft', 'warning'], ['executed', 'success'], ['to_execute', 'processing']]);
+
+export const planStatusOptions = [
+    {
+      label: '已禁用',
+      value: 'disabled'
+    },
+    {
+      label: '草稿',
+      value: 'draft'
+    },
+    {
+      label: '已执行',
+      value: 'executed'
+    },
+    {
+      label: '待执行',
+      value: 'to_execute'
+    }
+];

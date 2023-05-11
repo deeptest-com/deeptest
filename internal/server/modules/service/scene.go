@@ -57,13 +57,18 @@ func (s *SceneService) LoadEnvVarMapByScenario(scene *domain.ExecScene, scenario
 	return
 }
 
-func (s *SceneService) LoadEnvVarMapByEndpointInterface(scene *domain.ExecScene, endpointInterfaceId uint) (projectId uint, err error) {
+func (s *SceneService) LoadEnvVarMapByEndpointInterface(scene *domain.ExecScene, endpointInterfaceId, debugServerId uint) (projectId uint, err error) {
 	scene.EnvToVariables = domain.EnvToVariables{}
 	scene.InterfaceToEnvMap = domain.InterfaceToEnvMap{}
 
 	interf, _ := s.EndpointInterfaceRepo.Get(endpointInterfaceId)
 	endpoint, _ := s.EndpointRepo.Get(interf.EndpointId)
-	serveServer, _ := s.ServeServerRepo.Get(endpoint.ServerId)
+
+	if debugServerId == 0 {
+		debugServerId = endpoint.ServerId
+	}
+	serveServer, _ := s.ServeServerRepo.Get(debugServerId)
+
 	envId := serveServer.EnvironmentId
 	projectId = endpoint.ProjectId
 

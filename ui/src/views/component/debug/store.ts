@@ -26,6 +26,7 @@ import {
 import {Checkpoint, DebugInfo, Extractor, Interface, Response} from "./data";
 import {UsedBy} from "@/utils/enum";
 import {ResponseData} from "@/utils/request";
+import {listEnvVarByServer} from "@/services/environment";
 
 export interface StateType {
     debugInfo: DebugInfo
@@ -62,10 +63,12 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setDebugData: Mutation<StateType>;
         setResponse: Mutation<StateType>;
         setInvocations: Mutation<StateType>;
+        setServerId: Mutation<StateType>;
 
         setExtractors: Mutation<StateType>;
         setExtractor: Mutation<StateType>;
         setShareVars: Mutation<StateType>;
+        setEnvVars: Mutation<StateType>;
 
         setCheckpoints: Mutation<StateType>;
         setCheckpoint: Mutation<StateType>;
@@ -107,6 +110,8 @@ export interface ModuleType extends StoreModuleType<StateType> {
         updateParam: Action<StateType, StateType>;
         updateHeader: Action<StateType, StateType>;
         addSnippet: Action<StateType, StateType>;
+
+        changeServer: Action<StateType, StateType>;
     };
 }
 
@@ -119,6 +124,9 @@ const StoreModel: ModuleType = {
     mutations: {
         setDebugInfo(state, payload) {
             state.debugInfo = payload;
+        },
+        setServerId(state, id) {
+            state.debugData.serverId = id;
         },
 
         setDebugData(state, payload) {
@@ -142,6 +150,9 @@ const StoreModel: ModuleType = {
 
         setShareVars(state, payload) {
             state.debugData.shareVars = payload;
+        },
+        setEnvVars(state, payload) {
+            state.debugData.envVars = payload;
         },
 
         setCheckpoints(state, payload) {
@@ -438,6 +449,16 @@ const StoreModel: ModuleType = {
                 let script = state.debugData.preRequestScript + '\n' +  json.data.script
                 script = script.trim()
                 commit('setPreRequestScript', script);
+            }
+
+            return true;
+        },
+
+        async changeServer({commit, dispatch, state}, serverId: number) {
+            const json = await listEnvVarByServer(serverId)
+            if (json.code === 0) {
+                commit('setServerId', serverId);
+                commit('setEnvVars', json.data);
             }
 
             return true;

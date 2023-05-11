@@ -10,6 +10,7 @@ type DebugInterface struct {
 	InterfaceBase
 
 	EndpointInterfaceId uint `json:"endpointInterfaceId"`
+	ServerId            uint `json:"serverId"`
 
 	//ReqBodySpec InterfaceReqBodySpec `gorm:"-" json:"basicAuth"`
 

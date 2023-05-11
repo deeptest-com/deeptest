@@ -127,10 +127,10 @@ func (r *EndpointRepo) SaveAll(endpoint *model.Endpoint) (err error) {
 		}
 
 		//更新调试接口
-		err = r.updateDebugInterfaceUrl(endpoint.ID, endpoint.Path)
-		if err != nil {
-			return err
-		}
+		//err = r.updateDebugInterfaceUrl(endpoint.ID, endpoint.Path)
+		//if err != nil {
+		//	return err
+		//}
 
 		return nil
 	})

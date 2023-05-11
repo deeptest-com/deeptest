@@ -1,7 +1,6 @@
 export interface Plan {
   id: number;
-  name: string;
-  desc: string;
+  [props: any]: any;
 }
 
 export interface QueryResult {
@@ -11,7 +10,7 @@ export interface QueryResult {
 
 export interface QueryParams {
   keywords:  string,
-  enabled: string,
+  status: any,
   page: number,
   pageSize: number,
 }

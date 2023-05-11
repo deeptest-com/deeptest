@@ -145,7 +145,7 @@ const StoreModel: ModuleType = {
                 const { data, code } = response;
                 if (code !== 0) return;
                 const memberList = data.result.map((member: any) => {
-                    member.label = member.name;
+                    member.label = member.username;
                     member.value = member.id;
                     return member;
                 })

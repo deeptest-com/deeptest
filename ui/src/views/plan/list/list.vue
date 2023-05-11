@@ -5,39 +5,44 @@
         <a-button type="primary" @click="() => create()">新建</a-button>
       </template>
       <template #extra>
-        <a-select @change="onSearch" v-model:value="queryParams.enabled" :options="statusArr" class="status-select">
+        <a-select 
+          @change="onSearch" 
+          v-model:value="queryParams.status" 
+          :options="statusArr" 
+          class="status-select" 
+          style="width: 120px"
+          placeholder="请选择状态">
         </a-select>
-        <a-input-search @change="onSearch" @search="onSearch" v-model:value="queryParams.keywords"
-                        placeholder="输入关键字搜索" style="width:270px;margin-left: 16px;"/>
+        <a-input-search @change="onSearch" @search="onSearch" v-model:value="queryParams.keywords" placeholder="输入关键字搜索"
+          style="width:270px;margin-left: 16px;" />
       </template>
 
       <div>
-        <a-table
-            v-if="list.length > 0"
-            row-key="id"
-            :columns="columns"
-            :data-source="list"
-            :loading="loading"
-            :pagination="{
-                ...pagination,
-                onChange: (page) => {
-                    getList(page, nodeDataCategory.id);
-                },
-                onShowSizeChange: (page, size) => {
-                    pagination.pageSize = size
-                    getList(page, nodeDataCategory.id);
-                },
-            }"
-            class="dp-table">
+        <a-table row-key="id" :columns="columns" :data-source="list" :loading="loading"
+          :pagination="{
+            ...pagination,
+            onChange: (page) => {
+              getList(page);
+            },
+            onShowSizeChange: (page, size) => {
+              pagination.pageSize = size
+              getList(page);
+            },
+          }" class="dp-table">
 
-          <template #name="{ text, record  }">
-            {{ text }}
-            <edit-outlined class="dp-primary" @click="edit(record)"/>
+          <template #name="{ text, record }">
+            <EditAndShowField 
+              :custom-class="'custom-endpoint show-on-hover'" 
+              :value="text" 
+              placeholder="请输入计划名称" 
+              @edit="edit(record)"
+              @update="(e: string) => updatePlan(e, record)" />
           </template>
-
           <template #status="{ record }">
-            <a-tag v-if="record.disabled" color="green">禁用</a-tag>
-            <a-tag v-else color="cyan">启用</a-tag>
+            <a-tag v-if="record.status" :color="statusTagMap[record.status].color">{{ statusTagMap[record.status].text }}</a-tag>
+          </template>
+          <template #updatedAt="{ record }">
+            <span>{{ momentUtc(record.updatedAt) }}</span>
           </template>
 
           <template #action="{ record }">
@@ -46,7 +51,16 @@
               <template #overlay>
                 <a-menu>
                   <a-menu-item key="1">
+                    <a class="operation-a" href="javascript:void (0)" @click="exec(record)">执行</a>
+                  </a-menu-item>
+                  <a-menu-item key="1">
+                    <a class="operation-a" href="javascript:void (0)" @click="report(record.id)">测试报告</a>
+                  </a-menu-item>
+                  <!-- <a-menu-item key="1">
                     <a class="operation-a" href="javascript:void (0)" @click="exec(record.id)">执行</a>
+                  </a-menu-item> -->
+                  <a-menu-item key="1">
+                    <a class="operation-a" href="javascript:void (0)" @click="clone(record.id)">克隆</a>
                   </a-menu-item>
                   <a-menu-item key="2">
                     <a class="operation-a" href="javascript:void (0)" @click="remove(record.id)">删除</a>
@@ -57,165 +71,225 @@
           </template>
 
         </a-table>
-
-        <a-empty v-if="list.length === 0" :image="simpleImage" />
       </div>
     </a-card>
   </div>
 
-  <a-modal 
-    title="新建计划"
-    :visible="createDrawerVisible"
-    class="scenario-edit"
-    :footer="null"
-    :closable="true"
-    @cancel="createDrawerVisible = false"
-    width="600px">
-    <PlanCreate
-      :categoryId="nodeDataCategory.id"
-      :onSaved="onFinish">
-    </PlanCreate>
-  </a-modal>
+  <!-- 新建计划弹窗 -->
+  <PlanCreate 
+    :create-drawer-visible="createDrawerVisible"
+    @on-cancel="createDrawerVisible = false" 
+    @get-list="getList(1)"
+  />
+  <!-- 编辑计划抽屉 -->
+  <PlanEdit 
+    :tab-active-key="editTabActiveKey" 
+    :edit-drawer-visible="editDrawerVisible" 
+    @onExec="handleExec"
+    @on-cancel="editDrawerVisible = false" />
 
-  <a-drawer
-      :closable="true"
-      :width="1000"
-      :key="currModel.id"
-      :visible="editDrawerVisible"
-      @close="onFinish">
-    <template #title>
-      <div class="drawer-header">
-        <div>编辑计划</div>
-      </div>
-    </template>
-    <div class="drawer-content">
-      <PlanEdit
-          :modelId="currModel.id"
-          :categoryId="nodeDataCategory.id"
-          :onSaved="onFinish">
-      </PlanEdit>
-    </div>
-  </a-drawer>
-
+  <!-- 执行计划抽屉 -->
+  <ReportDetail 
+    :drawer-visible="execReportVisible" 
+    :title="execReportTitle" 
+    :scenario-expand-active="true" 
+    :show-scenario-info="true"
+    @on-close="execReportVisible = false"
+  />
 </template>
 
 <script setup lang="ts">
-import {computed, onMounted, reactive, ref, UnwrapRef, watch} from "vue";
-import { Empty } from 'ant-design-vue';
+import { computed, reactive, ref, watch } from "vue";
+import { useRouter } from "vue-router";
+import { useStore } from "vuex";
+import { message } from 'ant-design-vue';
 import { MoreOutlined } from "@ant-design/icons-vue";
-import {SelectTypes} from 'ant-design-vue/es/select';
-import {PaginationConfig, QueryParams, Plan} from '../data.d';
-import {useStore} from "vuex";
-
+import { SelectTypes } from 'ant-design-vue/es/select';
+import { Modal, notification } from "ant-design-vue";
 import debounce from "lodash.debounce";
-import {StateType} from "../store";
-import {useRouter} from "vue-router";
-import {message, Modal, notification} from "ant-design-vue";
-import {CheckOutlined, EditOutlined} from '@ant-design/icons-vue';
-import {StateType as ProjectStateType} from "@/store/project";
 
-import PlanCreate from "../edit/create.vue";
-import PlanEdit from "../edit/edit.vue";
+import PlanCreate from "../components/PlanCreate.vue";
+import PlanEdit from "../edit/index.vue";
+import EditAndShowField from "@/components/EditAndShow/index.vue";
+import ReportDetail from "@/views/component/Report/Detail/Index.vue";
 
-const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
+import { StateType as ProjectStateType } from "@/store/project";
+import { PaginationConfig, QueryParams, Plan } from '../data.d';
+import { StateType } from "../store";
+import { momentUtc } from "@/utils/datetime";
+
+const statusTagMap = {
+  "disabled": {
+    color: 'error',
+    text: '已禁用'
+  },
+  "draft": {
+    color: 'warning',
+    text: '草稿'
+  },
+  "executed": {
+    color: 'success',
+    text: '已执行'
+  },
+  "to_execute": {
+    color: 'processing',
+    text: '待执行'
+  }
+};
 
 const statusArr = ref<SelectTypes['options']>([
   {
-    label: '所有状态',
-    value: '',
+    label: '已禁用',
+    value: 'disabled'
   },
   {
-    label: '启用',
-    value: '1',
+    label: '草稿',
+    value: 'draft'
   },
   {
-    label: '禁用',
-    value: '0',
+    label: '已执行',
+    value: 'executed'
   },
+  {
+    label: '待执行',
+    value: 'to_execute'
+  }
 ]);
+
+const columns = [
+  {
+    title: '编号',
+    dataIndex: 'serialNumber',
+  },
+  {
+    title: '摘要',
+    dataIndex: 'name',
+    slots: { customRender: 'name' }
+  },
+  {
+    title: '状态',
+    dataIndex: 'status',
+    slots: { customRender: 'status' }
+  },
+  {
+    title: '测试通过率',
+    dataIndex: 'testPassRate',
+  },
+  {
+    title: '负责人',
+    dataIndex: 'adminName',
+  },
+  {
+    title: '最近更新',
+    dataIndex: 'updatedAt',
+    slots: { customRender: 'updatedAt' }
+  },
+  {
+    title: '操作',
+    key: 'action',
+    width: 80,
+    slots: { customRender: 'action' },
+  },
+];
 
 const router = useRouter();
 const store = useStore<{ Plan: StateType, ProjectGlobal: ProjectStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
-const nodeDataCategory = computed<any>(()=> store.state.Plan.nodeDataCategory);
+const nodeDataCategory = computed<any>(() => store.state.Plan.nodeDataCategory);
+const currPlanId = computed(() => store.state.Plan.planId);
 
 const list = computed<Plan[]>(() => store.state.Plan.listResult.list);
 let pagination = computed<PaginationConfig>(() => store.state.Plan.listResult.pagination);
+
 let queryParams = reactive<QueryParams>({
-  keywords: '', enabled: '1',
-  page: pagination.value.current, pageSize: pagination.value.pageSize
+  keywords: '', 
+  status: null,
+  page: pagination.value.current, 
+  pageSize: pagination.value.pageSize
 });
+const loading = ref<boolean>(false);
+const createDrawerVisible = ref(false);
+const editDrawerVisible = ref(false);
+const editTabActiveKey = ref('test-scenario');
+const execReportVisible = ref(false);
+const execReportTitle = ref('');
 
-const currModel = ref({})
-
-watch(nodeDataCategory, () => {
-  console.log('watch nodeDataCategory', nodeDataCategory.value.id)
-  getList(1, nodeDataCategory.value.id);
-}, {deep: false})
-
-watch(currProject, () => {
-  console.log('watch currProject', currProject.value.id)
-  getList(1, nodeDataCategory.value.id);
-}, {deep: false})
-
-const loading = ref<boolean>(true);
-
-const getList = debounce(async (current: number, categoryId: number): Promise<void> => {
-  console.log('getList')
-
+const getList = debounce(async (current: number): Promise<void> => {
   loading.value = true;
-
   await store.dispatch('Plan/listPlan', {
-    categoryId,
-    keywords: queryParams.keywords,
-    enabled: queryParams.enabled,
+    ...queryParams,
+    categoryId: nodeDataCategory.value.id,
     pageSize: pagination.value.pageSize,
     page: current,
   });
   loading.value = false
-}, 600)
+}, 600);
 
-const exec = (id: number) => {
+const handleExec = () => {
+  const record: any = list.value.find(e => {
+    return e.id === currPlanId.value;
+  })
+  execReportTitle.value = record && record.name;
+  execReportVisible.value = true;
+};
+
+const exec = async (record) => {
   console.log('exec')
-  router.push(`/plan/exec/${id}`)
-}
+  await store.dispatch('Plan/setCurrentPlanId', record.id);
+  execReportTitle.value = record.name;
+  execReportVisible.value = true;
+  // router.push(`/plan/exec/${id}`)
+};
 
-interface FormState {
-  name: string;
-  description: string;
-  serveId?:string,
+const report = async (id: number) => {
+  console.log('获取报告列表');
+  editTabActiveKey.value = 'test-report';
+  editDrawerVisible.value = true;
+  try {
+    await store.dispatch('Plan/setCurrentPlanId', id);
+    await store.dispatch('Plan/getPlan', id);
+  } catch(err) {
+    message.error('获取计划信息出错');
+  }
+};
 
-}
+const clone = async (id: number) => {
+  const result = await store.dispatch('Plan/clonePlan', id);
+  if (result) {
+    getList(1);
+  }
+};
 
-const createDrawerVisible = ref(false);
+const updatePlan = async (value: string, record: any) => {
+  try {
+    const result = await store.dispatch('Plan/savePlan', {
+      id: record.id,
+      name: value
+    });
+    if (result) {
+      getList(1);
+    } else {
+      message.error('更新计划失败');
+    }
+  } catch(err) {
+    console.log(err);
+  }
+};
+
 const create = () => {
   console.log('create')
   createDrawerVisible.value = true;
-}
+};
 
-const editDrawerVisible = ref(false);
-const editFormState: UnwrapRef<FormState> = reactive({
-  name: '',
-  description: '',
-  serveId:'',
-});
-
-const edit = (record) => {
-  console.log('edit')
-  currModel.value = record
-
+const edit = async (record) => {
   editDrawerVisible.value = true;
-  editFormState.name = record.name;
-  editFormState.description = record.description;
-  editFormState.serveId = record.id;
-}
-
-const onFinish = () => {
-  console.log('onEditFinish')
-
-  getList(1, nodeDataCategory.value.id);
-  createDrawerVisible.value = false
-  editDrawerVisible.value = false
+  editTabActiveKey.value = 'test-scenario';
+  try {
+    await store.dispatch('Plan/setCurrentPlanId', record.id);
+    await store.dispatch('Plan/getPlan', record.id);
+  } catch(err) {
+    message.error('获取计划信息出错');
+  }
 }
 
 const remove = (id: number) => {
@@ -230,7 +304,7 @@ const remove = (id: number) => {
       store.dispatch('Plan/removePlan', id).then((res) => {
         console.log('res', res)
         if (res === true) {
-          getList(1, nodeDataCategory.value.id)
+          getList(1);
 
           notification.success({
             message: `删除成功`,
@@ -246,40 +320,24 @@ const remove = (id: number) => {
 }
 
 const onSearch = debounce(() => {
-  getList(1, nodeDataCategory.value.id)
+  getList(1);
 }, 500);
 
-const columns = [
-  {
-    title: '编号',
-    dataIndex: 'serialNumber',
-  },
-  {
-    title: '名称',
-    dataIndex: 'name',
-    slots: {customRender: 'name'},
-  },
-  {
-    title: '描述',
-    dataIndex: 'desc',
-    ellipsis: true,
-  },
-  {
-    title: '状态',
-    dataIndex: 'status',
-    slots: {customRender: 'status'},
-  },
-  {
-    title: '操作',
-    key: 'action',
-    width: 80,
-    slots: {customRender: 'action'},
-  },
-];
+watch(nodeDataCategory, async () => {
+  console.log('watch nodeDataCategory', nodeDataCategory.value.id)
+  if (nodeDataCategory.value.id) {
+    await getList(1);
+  }
+}, { immediate: true });
 
-onMounted(() => {
-  console.log('onMounted')
-})
+watch(() => {
+  return currProject.value;
+}, async (val) => {
+  if (val.id) {
+    await getList(1);
+  }
+}, { immediate: true });
+
 
 </script>
 

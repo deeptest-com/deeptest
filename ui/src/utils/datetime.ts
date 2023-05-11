@@ -14,6 +14,10 @@ export function momentUnixFormat(tm, format) {
     return moment.unix(tm).format(format)
 }
 
+export function momentTimeStamp(tm) {
+    return moment(tm).valueOf();
+}
+
 export function percentDef(numb, total) {
     if (total == 0) return '0%'
     return Number(numb / total * 100).toFixed(2) + '%'

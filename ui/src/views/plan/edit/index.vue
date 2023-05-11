@@ -61,7 +61,7 @@ import ReportList from '../components/ReportList.vue';
 
 import { momentUtc } from '@/utils/datetime';
 import { StateType as PlanStateType } from '../store';
-import { planStatusColorMap, planStatusOptions, planStatusTextMap } from '@/config/constant';
+import { planStatusOptions, planStatusTextMap } from '@/config/constant';
 
 const props = defineProps<{
     editDrawerVisible: Boolean

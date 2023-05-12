@@ -3,7 +3,7 @@
     <a-table 
         row-key="id"
         :columns="columns" 
-        :data-source="data"
+        :data-source="list"
         :pagination="{
             ...pagination,
             onChange: handlePageChanged
@@ -11,8 +11,17 @@
     />
 </template>
 <script lang="ts" setup>
-import { reactive } from 'vue';
+import { reactive, computed, defineProps, watch } from 'vue';
+import { useStore } from 'vuex';
+
 import TableFilter from "@/views/component/Report/List/TableFilter.vue";
+
+import { StateType as ReportStateType } from '@/views/component/Report/store';
+import { StateType as PlanStateType } from '../store';  
+
+const props = defineProps<{
+    showReportList: Boolean
+}>();
 
 const columns = [
     {
@@ -50,13 +59,11 @@ const columns = [
     },
 ];
 
-const data = [];
+const store = useStore<{ Plan: PlanStateType, Report: ReportStateType }>();
+const list = computed<any[]>(() => store.state.Report.listResult.list);
+const currPlan = computed<any>(() => store.state.Plan.currPlan);
 let formState = reactive({});
-let pagination = reactive({
-    current: 1,
-    pageSize: 10,
-    total: 0
-})
+let pagination = computed(() => store.state.Report.listResult.pagination);
 
 function handleFilter(params) {
     formState = params;
@@ -64,13 +71,29 @@ function handleFilter(params) {
 }
 
 function handlePageChanged(page) {
-    pagination.current = page;
-    refreshList({ page, pageSize: pagination.pageSize });
+    pagination.value.current = page;
+    refreshList({ page, pageSize: pagination.value.pageSize });
 }
 
 function refreshList(params: any) {
+    store.dispatch('Report/list', {
+        page: pagination.value.current,
+        pageSize: pagination.value.pageSize,
+        planId: currPlan.value.id,
+        ...formState,
+        ...params
+    })
     console.log('get test-plan reportList ---- [tableFilter] paramsData', { ...formState, ...params });
 }
+
+watch(() => {
+    return props.showReportList;
+}, val => {
+    console.log(val);
+    if (val) {
+        refreshList({});
+    }
+})
 </script>
   
   

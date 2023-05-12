@@ -38,7 +38,7 @@
                     {{ item.errorField }}
                 </span>
             </div>
-            <div class="endpoint-expand-btn">
+            <div class="endpoint-expand-btn" @click="handleQueryDetail">
                 更多详情 &nbsp;&nbsp;
                 <RightOutlined />
             </div>
@@ -46,7 +46,7 @@
     </a-collapse-panel>
 </template>
 <script setup lang="ts">
-import { defineProps, h } from 'vue';
+import { defineProps, h, defineEmits } from 'vue';
 import { RightOutlined, LoadingOutlined, } from '@ant-design/icons-vue';
 import { responseCodes } from '@/config/constant';
 
@@ -73,6 +73,8 @@ defineProps({
     }
 });
 
+const emits = defineEmits(['queryDetail']);
+
 const responseCodeColorMap = {};
 
 responseCodes.forEach(e => {
@@ -86,6 +88,10 @@ const indicator = h(LoadingOutlined, {
     },
     spin: true,
 });
+
+function handleQueryDetail() {
+    emits('queryDetail');
+}
 </script>
 <style scoped lang="less">
 .endpoint-collapse-item {

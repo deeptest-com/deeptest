@@ -28,6 +28,7 @@
           :pagination="{
             ...pagination,
             onChange: (page) => {
+              pagination.current = page;
               getList(page);
             },
             onShowSizeChange: (page, size) => {
@@ -37,12 +38,14 @@
           }" class="dp-table">
 
           <template #name="{ text, record }">
-            <EditAndShowField 
-              :custom-class="'custom-endpoint show-on-hover'" 
-              :value="text" 
-              placeholder="请输入计划名称" 
-              @edit="edit(record)"
-              @update="(e: string) => updatePlan(e, record)" />
+            <div class="plan-name">
+              <EditAndShowField 
+                :custom-class="'custom-endpoint show-on-hover'" 
+                :value="text" 
+                placeholder="请输入计划名称" 
+                @edit="edit(record)"
+                @update="(e: string) => updatePlan(e, record)" />
+            </div>
           </template>
           <template #status="{ record }">
             <a-tag v-if="record.status" :color="planStatusColorMap.get(record.status)">{{ planStatusTextMap.get(record.status) }}</a-tag>
@@ -132,12 +135,13 @@ const columns = [
   {
     title: '摘要',
     dataIndex: 'name',
-    slots: { customRender: 'name' }
+    slots: { customRender: 'name' },
+    ellips: true
   },
   {
     title: '状态',
     dataIndex: 'status',
-    slots: { customRender: 'status' }
+    slots: { customRender: 'status' },
   },
   {
     title: '测试通过率',
@@ -150,7 +154,7 @@ const columns = [
   {
     title: '最近更新',
     dataIndex: 'updatedAt',
-    slots: { customRender: 'updatedAt' }
+    slots: { customRender: 'updatedAt' },
   },
   {
     title: '操作',
@@ -163,16 +167,14 @@ const columns = [
 const store = useStore<{ Plan: StateType, ProjectGlobal: ProjectStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const nodeDataCategory = computed<any>(() => store.state.Plan.nodeDataCategory);
-const currPlanId = computed(() => store.state.Plan.planId);
+const currPlan = computed<any>(() => store.state.Plan.currPlan);
 
 const list = computed<Plan[]>(() => store.state.Plan.listResult.list);
 let pagination = computed<PaginationConfig>(() => store.state.Plan.listResult.pagination);
 
-let queryParams = reactive<QueryParams>({
+const queryParams = reactive<any>({
   keywords: '', 
-  status: null,
-  page: pagination.value.current, 
-  pageSize: pagination.value.pageSize
+  status: null
 });
 const loading = ref<boolean>(false);
 const createDrawerVisible = ref(false);
@@ -193,77 +195,52 @@ const getList = debounce(async (current: number): Promise<void> => {
 }, 300);
 
 const handleExec = () => {
-  const record: any = list.value.find(e => {
-    return e.id === currPlanId.value;
-  })
-  execReportTitle.value = record && record.name;
+  execReportTitle.value = currPlan.value && currPlan.value.name;
   execReportVisible.value = true;
 };
 
-const exec = async (record) => {
-  console.log('exec')
-  await store.dispatch('Plan/setCurrentPlanId', record.id);
+const exec = async (record: any) => {
+  await getCurrentPalnInfo(record);
   execReportTitle.value = record.name;
   execReportVisible.value = true;
 };
 
-const report = async (id: number) => {
+const report = async (record: any) => {
   console.log('获取报告列表');
   editTabActiveKey.value = 'test-report';
   editDrawerVisible.value = true;
-  try {
-    await store.dispatch('Plan/setCurrentPlanId', id);
-    await store.dispatch('Plan/getPlan', id);
-  } catch(err) {
-    message.error('获取计划信息出错');
-  }
+  getCurrentPalnInfo(record);
 };
 
 const clone = async (id: number) => {
-  const result = await store.dispatch('Plan/clonePlan', id);
-  if (result) {
-    getList(1);
-  }
+  await store.dispatch('Plan/clonePlan', id);
 };
 
 const updatePlan = async (value: string, record: any) => {
   try {
-    const result = await store.dispatch('Plan/savePlan', {
-      id: record.id,
+    const { id, adminId, categoryId, testStage, desc, status } = record;
+    await store.dispatch('Plan/savePlan', {
+      id,
+      adminId,
+      categoryId,
+      testStage,
+      desc,
+      status,
       name: value,
-      adminId: record.adminId,
-      categoryId: record.categoryId,
-      testStage: record.testStage,
-      desc: record.desc,
-      status: record.status
     });
-    if (result) {
-      getList(1);
-    } else {
-      message.error('更新计划失败');
-    }
   } catch(err) {
     console.log(err);
   }
 };
 
-const handleUpdate = async (status: string) => {
+const handleUpdate = async (params: any) => {
   try {
-    const record: any = list.value.find(e => {
-      return e.id === currPlanId.value;
-    });
     const result = await store.dispatch('Plan/savePlan', {
-      id: record.id,
-      name: record.name,
-      adminId: record.adminId,
-      categoryId: record.categoryId,
-      testStage: record.testStage,
-      desc: record.desc,
-      status
+      ...currPlan.value,
+      ...params
     });
     if (result) {
-      getList(1);
-      store.dispatch('Plan/getPlan', currPlanId.value);
+      store.dispatch('Plan/getPlan', currPlan.value.id);
     } else {
       message.error('更新计划失败');
     }
@@ -277,16 +254,21 @@ const create = () => {
   createDrawerVisible.value = true;
 };
 
-const edit = async (record) => {
+const edit = async (record: any) => {
   editDrawerVisible.value = true;
   editTabActiveKey.value = 'test-scenario';
+  getCurrentPalnInfo(record);
+};
+
+const getCurrentPalnInfo = async (record: any) => {
+  const { id, adminId, categoryId, testStage, desc, status, name } = record;
   try {
-    await store.dispatch('Plan/setCurrentPlanId', record.id);
+    await store.dispatch('Plan/setCurrentPlan', { id, adminId, categoryId, testStage, desc, status, name });
     await store.dispatch('Plan/getPlan', record.id);
   } catch(err) {
     message.error('获取计划信息出错');
   }
-}
+};
 
 const remove = (id: number) => {
   console.log('remove')
@@ -297,20 +279,7 @@ const remove = (id: number) => {
     okText: '确认',
     cancelText: '取消',
     onOk: async () => {
-      store.dispatch('Plan/removePlan', id).then((res) => {
-        console.log('res', res)
-        if (res === true) {
-          getList(1);
-
-          notification.success({
-            message: `删除成功`,
-          });
-        } else {
-          notification.error({
-            message: `删除失败`,
-          });
-        }
-      })
+      store.dispatch('Plan/removePlan', id);
     }
   });
 }
@@ -319,12 +288,11 @@ const onSearch = () => {
   getList(1);
 };
 
-watch(nodeDataCategory, async () => {
-  console.log('watch nodeDataCategory', nodeDataCategory.value.id)
-  if (nodeDataCategory.value.id) {
-    await getList(1);
-  }
-}, { immediate: true });
+watch(() => {
+  return nodeDataCategory.value.id;
+}, async (val) => {
+  await getList(1);
+}, { immediate: true, deep: true });
 
 watch(() => {
   return currProject.value;
@@ -342,5 +310,11 @@ watch(() => {
   text-align: center;
   display: inline-block;
   width: 80px;
+}
+
+@media screen and (max-width: 1540px) {
+  .plan-name {
+    max-width: 180px;
+  }
 }
 </style>

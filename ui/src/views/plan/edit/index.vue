@@ -1,8 +1,8 @@
 <template>
-    <a-drawer :closable="true" :width="1000" :key="currPlan.id" :visible="editDrawerVisible" @close="onCancel">
+    <a-drawer :closable="true" :width="1000" :key="currPlan && currPlan.id" :visible="editDrawerVisible" @close="onCancel">
         <template #title>
             <div class="drawer-header" style="width: 360px">
-                <EditAndShowField :value="currPlan.name" placeholder="输入计划名称" @update="handleUpdateName" />
+                <EditAndShowField :value="(currPlan && currPlan.name) || '暂无'" placeholder="输入计划名称" @update="handleUpdateName" />
             </div>
         </template>
         <div class="drawer-content">

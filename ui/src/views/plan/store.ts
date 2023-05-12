@@ -106,7 +106,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
 
 const initState: StateType = {
     planId: 0,
-    currPlan: {},
+    currPlan: null,
 
     listResult: {
         list: [],

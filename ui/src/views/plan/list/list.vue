@@ -28,6 +28,7 @@
           :pagination="{
             ...pagination,
             onChange: (page) => {
+              pagination.current = page;
               getList(page);
             },
             onShowSizeChange: (page, size) => {
@@ -37,12 +38,14 @@
           }" class="dp-table">
 
           <template #name="{ text, record }">
-            <EditAndShowField 
-              :custom-class="'custom-endpoint show-on-hover'" 
-              :value="text" 
-              placeholder="请输入计划名称" 
-              @edit="edit(record)"
-              @update="(e: string) => updatePlan(e, record)" />
+            <div class="plan-name">
+              <EditAndShowField 
+                :custom-class="'custom-endpoint show-on-hover'" 
+                :value="text" 
+                placeholder="请输入计划名称" 
+                @edit="edit(record)"
+                @update="(e: string) => updatePlan(e, record)" />
+            </div>
           </template>
           <template #status="{ record }">
             <a-tag v-if="record.status" :color="planStatusColorMap.get(record.status)">{{ planStatusTextMap.get(record.status) }}</a-tag>
@@ -132,12 +135,13 @@ const columns = [
   {
     title: '摘要',
     dataIndex: 'name',
-    slots: { customRender: 'name' }
+    slots: { customRender: 'name' },
+    ellips: true
   },
   {
     title: '状态',
     dataIndex: 'status',
-    slots: { customRender: 'status' }
+    slots: { customRender: 'status' },
   },
   {
     title: '测试通过率',
@@ -150,7 +154,7 @@ const columns = [
   {
     title: '最近更新',
     dataIndex: 'updatedAt',
-    slots: { customRender: 'updatedAt' }
+    slots: { customRender: 'updatedAt' },
   },
   {
     title: '操作',
@@ -168,11 +172,9 @@ const currPlan = computed<any>(() => store.state.Plan.currPlan);
 const list = computed<Plan[]>(() => store.state.Plan.listResult.list);
 let pagination = computed<PaginationConfig>(() => store.state.Plan.listResult.pagination);
 
-let queryParams = reactive<QueryParams>({
+const queryParams = reactive<any>({
   keywords: '', 
-  status: null,
-  page: pagination.value.current, 
-  pageSize: pagination.value.pageSize
+  status: null
 });
 const loading = ref<boolean>(false);
 const createDrawerVisible = ref(false);
@@ -198,9 +200,9 @@ const handleExec = () => {
 };
 
 const exec = async (record: any) => {
+  await getCurrentPalnInfo(record);
   execReportTitle.value = record.name;
   execReportVisible.value = true;
-  getCurrentPalnInfo(record);
 };
 
 const report = async (record: any) => {
@@ -211,16 +213,13 @@ const report = async (record: any) => {
 };
 
 const clone = async (id: number) => {
-  const result = await store.dispatch('Plan/clonePlan', id);
-  if (result) {
-    getList(1);
-  }
+  await store.dispatch('Plan/clonePlan', id);
 };
 
 const updatePlan = async (value: string, record: any) => {
   try {
     const { id, adminId, categoryId, testStage, desc, status } = record;
-    const result = await store.dispatch('Plan/savePlan', {
+    await store.dispatch('Plan/savePlan', {
       id,
       adminId,
       categoryId,
@@ -229,11 +228,6 @@ const updatePlan = async (value: string, record: any) => {
       status,
       name: value,
     });
-    if (result) {
-      getList(1);
-    } else {
-      message.error('更新计划失败');
-    }
   } catch(err) {
     console.log(err);
   }
@@ -246,7 +240,6 @@ const handleUpdate = async (params: any) => {
       ...params
     });
     if (result) {
-      getList(1);
       store.dispatch('Plan/getPlan', currPlan.value.id);
     } else {
       message.error('更新计划失败');
@@ -286,20 +279,7 @@ const remove = (id: number) => {
     okText: '确认',
     cancelText: '取消',
     onOk: async () => {
-      store.dispatch('Plan/removePlan', id).then((res) => {
-        console.log('res', res)
-        if (res === true) {
-          getList(1);
-
-          notification.success({
-            message: `删除成功`,
-          });
-        } else {
-          notification.error({
-            message: `删除失败`,
-          });
-        }
-      })
+      store.dispatch('Plan/removePlan', id);
     }
   });
 }
@@ -308,12 +288,11 @@ const onSearch = () => {
   getList(1);
 };
 
-watch(nodeDataCategory, async () => {
-  console.log('watch nodeDataCategory', nodeDataCategory.value.id)
-  if (nodeDataCategory.value.id) {
-    await getList(1);
-  }
-}, { immediate: true });
+watch(() => {
+  return nodeDataCategory.value.id;
+}, async (val) => {
+  await getList(1);
+}, { immediate: true, deep: true });
 
 watch(() => {
   return currProject.value;
@@ -331,5 +310,11 @@ watch(() => {
   text-align: center;
   display: inline-block;
   width: 80px;
+}
+
+@media screen and (max-width: 1540px) {
+  .plan-name {
+    max-width: 180px;
+  }
 }
 </style>

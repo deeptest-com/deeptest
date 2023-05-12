@@ -79,7 +79,6 @@ export interface ModuleType extends StoreModuleType<StateType> {
         savePlan: Action<StateType, StateType>;
         removePlan: Action<StateType, StateType>;
         clonePlan: Action<StateType, StateType>;
-        setCurrentPlanId: Action<StateType, StateType>;
         setCurrentPlan: Action<StateType, StateType>;
 
         loadCategory: Action<StateType, StateType>;
@@ -189,25 +188,35 @@ const StoreModel: ModuleType = {
         }
     },
     actions: {
-        async listPlan({commit, dispatch}, params: QueryParams) {
+        async listPlan({commit, state, dispatch}, { page, pageSize, ...opts }: any) {
             try {
-                const response: ResponseData = await query(params);
+                page = page || state.listResult.pagination.current; 
+                pageSize = pageSize || state.listResult.pagination.pageSize;
+                const response: ResponseData = await query({
+                    page,
+                    pageSize,
+                    ...opts
+                });
                 if (response.code != 0) return;
 
                 const data = response.data;
+
+                if (data.page - 1 > 0 && data.page > 1 && data.result.length === 0) {
+                    dispatch('listPlan', { page: page - 1, pageSize, opts });
+                    return;
+                }
 
                 commit('setList', {
                     ...initState.listResult,
                     list: data.result || [],
                     pagination: {
                         ...initState.listResult.pagination,
-                        current: params.page,
-                        pageSize: params.pageSize,
+                        current: page,
+                        pageSize: pageSize,
                         total: data.total || 0,
                     },
                 });
-                commit('setQueryParams', params);
-
+                commit('setQueryParams', { page, pageSize, ...opts });
                 return true;
             } catch (error) {
                 return false;
@@ -233,9 +242,10 @@ const StoreModel: ModuleType = {
             }
         },
 
-        async savePlan({ dispatch }, payload: any) {
+        async savePlan({ state, dispatch }, payload: any) {
             const jsn = await save(payload)
             if (jsn.code === 0) {
+                dispatch('listPlan', state.queryParams);
                 return true;
             } else {
                 return false
@@ -243,17 +253,21 @@ const StoreModel: ModuleType = {
         },
         async removePlan({commit, dispatch, state}, payload: number) {
             try {
-                await remove(payload);
-                await dispatch('listPlan', state.queryParams)
-                return true;
+                const jsn = await remove(payload);
+                if (jsn.code === 0) {
+                    dispatch('listPlan', state.queryParams);
+                    return true;
+                }
+                return false;
             } catch (error) {
                 return false;
             }
         },
-        async clonePlan({ dispatch }, payload: number) {
+        async clonePlan({ dispatch, state }, payload: number) {
             try {
                 const jsn = await clonePlan(payload);
                 if (jsn.code === 0) {
+                    dispatch('listPlan', state.queryParams);
                     return true;
                 }
                 return false;
@@ -305,7 +319,7 @@ const StoreModel: ModuleType = {
 
                 const response = await getCategory(payload.id);
                 const {data} = response;
-
+                console.log(data);
                 commit('setNodeCategory', data);
                 return true;
             } catch (error) {
@@ -415,10 +429,6 @@ const StoreModel: ModuleType = {
                 return true;
             }
             return false;
-        },
-        setCurrentPlanId({ commit }, payload: number) {
-            commit('setPlanId', payload);
-            return true;
         }
     }
 };

@@ -110,15 +110,17 @@ function onClose() {
     emits('onClose');
 }
 console.log(props.drawerVisible);
-// watch(props, val => {
-//     if (val.drawerVisible) {
-//         bus.on(settings.eventWebSocketMsg, OnWebSocketMsg);
-//         execStart();
-//     } else {
-//         execCancel();
-//         bus.off(settings.eventWebSocketMsg, OnWebSocketMsg);
-//     }
-// }, { immediate: true, deep: true });
+watch(() => {
+    return props;
+}, val => {
+    if (val.drawerVisible) {
+        bus.on(settings.eventWebSocketMsg, OnWebSocketMsg);
+        execStart();
+    } else {
+        execCancel();
+        bus.off(settings.eventWebSocketMsg, OnWebSocketMsg);
+    }
+}, { immediate: true, deep: true });
 
 </script>
 <style scoped lang="less">

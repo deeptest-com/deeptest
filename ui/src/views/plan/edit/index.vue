@@ -14,7 +14,7 @@
                     <a-descriptions-item label="最近更新">{{ momentUtc(planDetail.updatedAt) }}</a-descriptions-item>
                     <a-descriptions-item label="最新执行通过率">{{ planDetail.testPassRate }}</a-descriptions-item>
                     <a-descriptions-item label="执行次数">{{ planDetail.execTimes }}</a-descriptions-item>
-                    <a-descriptions-item label="最近执行">{{ momentUtc(planDetail.updatedAt) }}</a-descriptions-item>
+                    <a-descriptions-item label="最近执行">{{ planDetail.execTime ? momentUtc(planDetail.execTime) : '' }}</a-descriptions-item>
                     <a-descriptions-item label="执行环境">{{ planDetail.execEnv }}</a-descriptions-item>
                     <a-descriptions-item label="状态">
                         <EditAndShowSelect 
@@ -70,7 +70,7 @@ const props = defineProps<{
 }>();
 
 const store = useStore<{ Plan: PlanStateType }>();
-const planDetail = computed(() => store.state.Plan.detailResult);
+const planDetail = computed<any>(() => store.state.Plan.detailResult);
 const planScenarioList = computed<any[]>(() => store.state.Plan.scenarioListResult.scenarioList);
 const scenarioPagination = computed<any>(() => store.state.Plan.scenarioListResult.pagination);
 const currPlan = computed<any>(() => store.state.Plan.currPlan);

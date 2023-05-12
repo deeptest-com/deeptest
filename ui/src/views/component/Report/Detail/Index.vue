@@ -7,7 +7,7 @@
             </div>
         </template>
         <div class="drawer-content">
-            <ReportBasicInfo :basic-info="{ logEnv: reportData.logEnv, logName: reportData.logName, logTime: reportData.logTime, logExecutor: reportData.logExecutor }" />
+            <ReportBasicInfo :basic-info="reportData" />
             <StatisticTable />
             <template v-for="logItem in reportData.logList" :key="logItem.id">
                 <ScenarioCollapsePanel :show-scenario-info="showScenarioInfo" :expand-active="expandActive" :record="logItem">

@@ -9,6 +9,7 @@ import (
 
 type Processor struct {
 	BaseModel
+	CreateBy uint `json:"createBy"`
 
 	Name     string `json:"name" yaml:"name"`
 	Comments string `json:"comments" yaml:"comments"`

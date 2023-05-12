@@ -113,8 +113,7 @@ func (r *PlanReportRepo) DeleteById(id uint) (err error) {
 		return
 	}
 
-	err = r.DB.Model(&model.ExecLogProcessor{}).Where("report_id = ?", id).
-		Updates(map[string]interface{}{"deleted": true}).Error
+	err = r.ScenarioReportRepo.BatchDelete(id)
 	if err != nil {
 		logUtils.Errorf("delete report's logs by id error %s", err.Error())
 		return

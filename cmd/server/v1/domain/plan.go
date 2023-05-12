@@ -9,6 +9,7 @@ import (
 type PlanReqPaginate struct {
 	_domain.PaginateReq
 
+	ProjectId  uint              `json:"projectId"`
 	CategoryId int64             `json:"categoryId"`
 	Status     consts.TestStatus `json:"status"`
 	AdminId    uint              `json:"directorId"`

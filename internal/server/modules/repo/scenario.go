@@ -251,12 +251,13 @@ func (r *ScenarioRepo) PlanList(req v1.PlanReqPaginate, scenarioId int) (data _d
 		planIds = append(planIds, item.PlanId)
 	}
 
-	if len(planIds) == 0 {
-		return
+	db := r.DB.Model(&model.Plan{}).Where("not deleted and project_id=?", req.ProjectId)
+
+	if len(planIds) > 0 {
+		db = db.Where(" id not in (?)", planIds)
 	}
 
 	var count int64
-	db := r.DB.Where("not deleted and id in(?)", planIds)
 
 	if req.Status != "" {
 		db = db.Where("status = ?", req.Status)

@@ -13,7 +13,7 @@ import (
 )
 
 type ScenarioReportCtrl struct {
-	ReportService *service.ScenarioReportService `inject:""`
+	ScenarioReportService *service.ScenarioReportService `inject:""`
 	BaseCtrl
 }
 
@@ -35,7 +35,7 @@ func (c *ScenarioReportCtrl) List(ctx iris.Context) {
 	}
 	req.ConvertParams()
 
-	data, err := c.ReportService.Paginate(req, projectId)
+	data, err := c.ScenarioReportService.Paginate(req, projectId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -51,7 +51,7 @@ func (c *ScenarioReportCtrl) Get(ctx iris.Context) {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
-	report, err := c.ReportService.GetById(req.Id)
+	report, err := c.ScenarioReportService.GetById(req.Id)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return
@@ -67,7 +67,7 @@ func (c *ScenarioReportCtrl) Delete(ctx iris.Context) {
 		return
 	}
 
-	err = c.ReportService.DeleteById(req.Id)
+	err = c.ScenarioReportService.DeleteById(req.Id)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

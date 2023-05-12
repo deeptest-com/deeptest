@@ -286,3 +286,13 @@ func (r *ScenarioRepo) PlanList(req v1.PlanReqPaginate, scenarioId int) (data _d
 func (r *ScenarioRepo) UpdateStatus(id uint, status consts.TestStatus) error {
 	return r.DB.Model(&model.Scenario{}).Where("id = ?", id).Update("status", status).Error
 }
+
+func (r *ScenarioRepo) GetByIds(ids []uint) (scenarios []model.Scenario, err error) {
+	err = r.DB.Model(&model.Scenario{}).Where("id IN (?)", ids).Find(&scenarios).Error
+	if err != nil {
+		logUtils.Errorf("find scenario by id error", zap.String("error:", err.Error()))
+		return scenarios, err
+	}
+
+	return
+}

@@ -7,15 +7,17 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
+	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"gorm.io/gorm"
 	"strconv"
 )
 
 type ScenarioReportRepo struct {
-	DB          *gorm.DB     `inject:""`
-	LogRepo     *LogRepo     `inject:""`
-	ProjectRepo *ProjectRepo `inject:""`
+	DB           *gorm.DB      `inject:""`
+	LogRepo      *LogRepo      `inject:""`
+	ProjectRepo  *ProjectRepo  `inject:""`
+	ScenarioRepo *ScenarioRepo `inject:""`
 }
 
 func (r *ScenarioReportRepo) Paginate(req v1.ReportReqPaginate, projectId int) (data _domain.PageData, err error) {
@@ -266,5 +268,55 @@ func (r *ScenarioReportRepo) BatchUpdatePlanReportId(ids []uint, planReportId ui
 		return
 	}
 
+	return
+}
+
+func (r *ScenarioReportRepo) GetReportsByPlanReportId(planReportId uint) (reports []model.ScenarioReportDetail, err error) {
+	var scenarioReports []model.ScenarioReport
+	err = r.DB.Model(&model.ScenarioReport{}).Where("plan_report_id = ?", planReportId).Find(&scenarioReports).Error
+	if err != nil {
+		logUtils.Errorf("find report by id error %s", err.Error())
+		return
+	}
+
+	for _, report := range scenarioReports {
+		root, err := r.getLogTree(report)
+		if err != nil {
+			continue
+		}
+		report.Logs = root.Logs
+		scenarioReportDetail := model.ScenarioReportDetail{
+			ScenarioReport: report,
+		}
+		reports = append(reports, scenarioReportDetail)
+	}
+	reports, err = r.CombinePriority(reports)
+
+	return
+}
+
+func (r *ScenarioReportRepo) CombinePriority(data []model.ScenarioReportDetail) (res []model.ScenarioReportDetail, err error) {
+	scenarioIds := make([]uint, 0)
+	for _, v := range data {
+		scenarioIds = append(scenarioIds, v.ScenarioId)
+	}
+	scenarioIds = _commUtils.ArrayRemoveUintDuplication(scenarioIds)
+
+	scenarios, err := r.ScenarioRepo.GetByIds(scenarioIds)
+	if err != nil {
+		return
+	}
+
+	scenarioIdPriorityMap := make(map[uint]string)
+	for _, v := range scenarios {
+		scenarioIdPriorityMap[v.ID] = v.Priority
+	}
+
+	for k, v := range data {
+		if priority, ok := scenarioIdPriorityMap[v.ScenarioId]; ok {
+			data[k].Priority = priority
+		}
+	}
+	res = data
 	return
 }

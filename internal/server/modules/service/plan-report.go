@@ -12,12 +12,12 @@ type PlanReportService struct {
 	LogRepo    *repo2.LogRepo        `inject:""`
 }
 
-func (s *PlanReportService) Paginate(req v1.ReportReqPaginate, projectId int) (ret _domain.PageData, err error) {
+func (s *PlanReportService) Paginate(req v1.PlanReportReqPaginate, projectId int) (ret _domain.PageData, err error) {
 	ret, err = s.ReportRepo.Paginate(req, projectId)
 	return
 }
 
-func (s *PlanReportService) GetById(id uint) (report model.ScenarioReport, err error) {
+func (s *PlanReportService) GetById(id uint) (report model.PlanReportDetail, err error) {
 	report, err = s.ReportRepo.Get(id)
 	return
 }

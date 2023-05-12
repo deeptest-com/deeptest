@@ -40,16 +40,21 @@ type PlanReport struct {
 
 	PlanId    uint `json:"planId"`
 	ProjectId uint `json:"projectId"`
-	ReportId  uint `json:"reportId"`
+	//ReportId  uint `json:"reportId"`
 
 	CreateUserId   uint   `json:"createUserId"`
 	CreateUserName string `gorm:"-" json:"createUserName"`
 	SerialNumber   string `json:"serialNumber"`
-	ExecEnv        string `json:"execEnv"` //执行环境
+	ExecEnvId      uint   `json:"execEnvId"` //执行环境Id
 
-	Logs []*ExecLogProcessor `gorm:"-" json:"logs"`
+	//Logs []*ExecLogProcessor `gorm:"-" json:"logs"`
 }
 
 func (PlanReport) TableName() string {
 	return "biz_plan_report"
+}
+
+type PlanReportDetail struct {
+	PlanReport
+	ScenarioReports []ScenarioReportDetail `json:"scenarioReports"`
 }

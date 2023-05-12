@@ -82,7 +82,8 @@ func (s *PlanService) GetById(id uint, detail bool) (ret v1.PlanAndReportDetail,
 			ret.ExecutorName = executorName
 		}
 		ret.ExecTime = lastPlanReport.CreatedAt
-		ret.ExecEnv = lastPlanReport.ExecEnv
+		//TODO
+		//ret.ExecEnv = lastPlanReport.ExecEnv
 	}
 
 	//if detail {

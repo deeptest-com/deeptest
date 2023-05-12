@@ -13,22 +13,26 @@ import (
 )
 
 type PlanReportRepo struct {
-	DB       *gorm.DB  `inject:""`
-	LogRepo  *LogRepo  `inject:""`
-	UserRepo *UserRepo `inject:""`
+	DB                 *gorm.DB            `inject:""`
+	LogRepo            *LogRepo            `inject:""`
+	UserRepo           *UserRepo           `inject:""`
+	ScenarioReportRepo *ScenarioReportRepo `inject:""`
 }
 
-func (r *PlanReportRepo) Paginate(req v1.ReportReqPaginate, projectId int) (data _domain.PageData, err error) {
+func (r *PlanReportRepo) Paginate(req v1.PlanReportReqPaginate, projectId int) (data _domain.PageData, err error) {
 	var count int64
 
-	db := r.DB.Model(&model.ScenarioReport{}).
+	db := r.DB.Model(&model.PlanReport{}).
 		Where("project_id = ? AND NOT deleted", projectId)
 
 	if req.Keywords != "" {
 		db = db.Where("name LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords))
 	}
-	if req.ScenarioId != 0 {
-		db = db.Where("scenario_id = ?", req.ScenarioId)
+	if req.PlanId != 0 {
+		db = db.Where("plan_id = ?", req.PlanId)
+	}
+	if req.CreateUserId != 0 {
+		db = db.Where("create_user_id = ?", req.CreateUserId)
 	}
 
 	err = db.Count(&count).Error
@@ -37,7 +41,7 @@ func (r *PlanReportRepo) Paginate(req v1.ReportReqPaginate, projectId int) (data
 		return
 	}
 
-	results := make([]*model.ScenarioReport, 0)
+	results := make([]*model.PlanReport, 0)
 
 	err = db.
 		Scopes(dao.PaginateScope(req.Page, req.PageSize, req.Order, req.Field)).
@@ -53,7 +57,7 @@ func (r *PlanReportRepo) Paginate(req v1.ReportReqPaginate, projectId int) (data
 	return
 }
 
-func (r *PlanReportRepo) CombineUserName(data []*model.ScenarioReport) {
+func (r *PlanReportRepo) CombineUserName(data []*model.PlanReport) {
 	userIds := make([]uint, 0)
 	for _, v := range data {
 		userIds = append(userIds, v.CreateUserId)
@@ -74,15 +78,17 @@ func (r *PlanReportRepo) CombineUserName(data []*model.ScenarioReport) {
 	}
 }
 
-func (r *PlanReportRepo) Get(id uint) (report model.ScenarioReport, err error) {
-	err = r.DB.Where("id = ?", id).First(&report).Error
+func (r *PlanReportRepo) Get(id uint) (report model.PlanReportDetail, err error) {
+	err = r.DB.Model(model.PlanReport{}).Where("id = ?", id).First(&report).Error
 	if err != nil {
 		logUtils.Errorf("find report by id error %s", err.Error())
 		return
 	}
 
-	root, err := r.getLogTree(report)
-	report.Logs = root.Logs
+	scenarioReports, err := r.ScenarioReportRepo.GetReportsByPlanReportId(report.ID)
+	report.ScenarioReports = scenarioReports
+	//root, err := r.getLogTree(report)
+	//report.Logs = root.Logs
 
 	return
 }

@@ -47,3 +47,8 @@ type ScenarioReport struct {
 func (ScenarioReport) TableName() string {
 	return "biz_scenario_report"
 }
+
+type ScenarioReportDetail struct {
+	ScenarioReport
+	Priority string `json:"priority"`
+}

@@ -13,7 +13,7 @@ import (
 )
 
 type ScenarioReportCtrl struct {
-	ReportService *service.PlanReportService `inject:""`
+	ReportService *service.ScenarioReportService `inject:""`
 	BaseCtrl
 }
 

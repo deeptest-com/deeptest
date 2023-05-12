@@ -40,89 +40,74 @@
                     getList(page, nodeDataCategory.id);
                 },
             }"
-        class="dp-table"
-    >
+        class="dp-table">
       <template #name="{ record ,text }">
         <EditAndShowField :custom-class="'custom-endpoint show-on-hover'"
                           :value="text"
                           placeholder="场景名称"
                           @update="(e: string) => handleUpdateName(e, record)"
-                          @edit="editScenario(record)"/>
-
+                          @edit="editScenario(record,'1')"/>
       </template>
-
       <template #desc="{ record  }">
-        <span>{{record?.desc || '暂无描述'}}</span>
+        <span>{{record?.desc || '暂无'}}</span>
       </template>
-
       <template #updatedAt="{ record }">
         <span>{{momentUtc(record.updatedAt) }}</span>
       </template>
-
-<!--      <template #status="{ record }">-->
-<!--        <a-tag v-if="record.disabled" color="green">禁用</a-tag>-->
-<!--        <a-tag v-else color="cyan">启用</a-tag>-->
-<!--      </template>-->
-
       <template #status="{ record }">
-        <a-tag  :color="scenarioStatusColorMap.get(record.status)">{{scenarioStatus.get(record.status)}}</a-tag>
-      </template>
+        <div class="customStatusColRender">
+          <EditAndShowSelect
+              :label="scenarioStatus.get(record?.status || 0 )"
+              :value="record?.status"
+              :options="scenarioStatusOptions"
+              @update="(val) => { handleChangeStatus(val,record);}"/>
+        </div>
 
+      </template>
+      <template #priority="{ record }">
+        <div class="customStatusColRender">
+          <EditAndShowSelect
+              :label="record?.priority"
+              :value="record?.priority"
+              :options="priorityOptions"
+              @update="(val) => { handleChangePriority(val,record);}"/>
+        </div>
+      </template>
       <template #action="{ record }">
         <a-dropdown>
           <MoreOutlined />
           <template #overlay>
             <a-menu>
               <a-menu-item key="0">
-                <a class="operation-a" href="javascript:void (0)" @click="linkPlan(record.id)">关联测试计划</a>
+                <a class="operation-a" href="javascript:void (0)" @click="editScenario(record,'3')">关联计划</a>
               </a-menu-item>
               <a-menu-item key="1">
-                <a class="operation-a" href="javascript:void (0)" @click="exec(record.id)">执行测试场景</a>
+                <a class="operation-a" href="javascript:void (0)" @click="execScenario(record)">执行场景</a>
               </a-menu-item>
-<!--              <a-menu-item key="2">-->
-<!--                <a class="operation-a" href="javascript:void (0)" @click="design(record.id)">复制</a>-->
-<!--              </a-menu-item>-->
-<!--              <a-menu-item key="3">-->
-<!--                <a class="operation-a" href="javascript:void (0)" @click="design(record.id)">禁用</a>-->
-<!--              </a-menu-item>-->
+              <a-menu-item key="2">
+                <a class="operation-a" href="javascript:void (0)" @click="editScenario(record,'2')">执行历史</a>
+              </a-menu-item>
               <a-menu-item key="4">
                 <a class="operation-a" href="javascript:void (0)" @click="remove(record.id)">删除</a>
               </a-menu-item>
-<!--              <a-menu-item key="5">-->
-<!--                <a class="operation-a" href="javascript:void (0)" @click="design(record.id)">设计</a>-->
-<!--              </a-menu-item>-->
-<!--              <a-menu-item key="6">-->
-<!--                <a class="operation-a" href="javascript:void (0)" @click="edit(record.id)">编辑</a>-->
-<!--              </a-menu-item>-->
-
             </a-menu>
           </template>
         </a-dropdown>
       </template>
-
     </a-table>
     <a-empty v-if="list.length === 0" :image="simpleImage" />
 
   </div>
-
   <ScenarioCreate :visible="isEditVisible"
       @cancel="isEditVisible = false"
       :onFinish="onEditFinish">
   </ScenarioCreate>
-
-  <a-modal v-model:visible="linkPlanVisible"
-           :onCancel="onEditFinish"
-           class="scenario-edit"
-           :footer="null"
-           width="600px">
-    <template #title>
-      <span>关联到测试计划 <span class="subTitle"> (已选择{{10}}个测试计划)</span></span>
-    </template>
-    <LinkPlan/>
-  </a-modal>
   <DrawerDetail :destroyOnClose="true"
                 :visible="drawerVisible"
+                :drawerTabKey="drawerTabKey"
+                :execVisible="execVisible"
                 @refreshList="refreshList"
+                @closeExecDrawer="execVisible = false"
                 @close="drawerVisible = false;"/>
 </template>
 
@@ -146,18 +131,15 @@ import DrawerDetail from "../components/Drawer/index.vue";
 import { ColumnProps } from 'ant-design-vue/es/table/interface';
 import {scenarioStatusColorMap,scenarioStatus,scenarioStatusOptions,priorityOptions,testTypeOptions} from "@/config/constant"
 import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
-
+import EditAndShowSelect from '@/components/EditAndShowSelect/index.vue';
 type Key = ColumnProps['key'];
-
 interface DataType {
   key: Key;
   name: string;
   age: number;
   address: string;
 }
-
 const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
-
 const statusArr = ref<SelectTypes['options']>([
   {
     label: '所有状态',
@@ -172,12 +154,10 @@ const statusArr = ref<SelectTypes['options']>([
     value: '0',
   },
 ]);
-
 const router = useRouter();
 const store = useStore<{ Scenario: StateType, ProjectGlobal: ProjectStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const nodeDataCategory = computed<any>(()=> store.state.Scenario.nodeDataCategory);
-
 const list = computed<Scenario[]>(() => store.state.Scenario.listResult.list);
 let pagination = computed<PaginationConfig>(() => store.state.Scenario.listResult.pagination);
 let queryParams = reactive<QueryParams>({
@@ -200,6 +180,7 @@ watch(currProject, () => {
 onMounted(async () => {
   getList(1, nodeDataCategory.value.id);
 })
+
 const loading = ref<boolean>(true);
 
 const getList = debounce(async (current: number, categoryId: number): Promise<void> => {
@@ -225,8 +206,9 @@ const exec = (id: number) => {
 }
 
 const linkPlanVisible = ref(false)
-const linkPlan = () => {
-  linkPlanVisible.value = true;
+
+function handleLinkPlan(rows) {
+  console.log('关联逻辑',rows);
 }
 
 const design = (id: number) => {
@@ -276,7 +258,6 @@ const remove = (id: number) => {
   });
 }
 
-
 async function handleUpdateName(value: string, record: any) {
   console.log('handleUpdateName', value, record)
   // await store.dispatch('Scenario/updateEndpointDetail',
@@ -284,17 +265,48 @@ async function handleUpdateName(value: string, record: any) {
   // );
 }
 
-async function editScenario(record: any) {
+
+
+// 抽屉是否打开
+const drawerVisible = ref<boolean>(false);
+// 执行抽屉打开
+const execVisible = ref<boolean>(false);
+// 抽屉里的tab key
+const drawerTabKey:any = ref<string>('1');
+
+async function editScenario(record: any,tab:string) {
   drawerVisible.value = true;
+  drawerTabKey.value = tab;
   // console.log('handleUpdateName', value, record)
   await store.dispatch('Scenario/getScenario', record.id);
 }
-// 抽屉是否打开
-const drawerVisible = ref<boolean>(false);
+async function execScenario(record: any) {
+  drawerVisible.value = false;
+  execVisible.value = true;
+  // console.log('handleUpdateName', value, record)
+  await store.dispatch('Scenario/getScenario', record.id);
+}
+
+async function handleChangeStatus(value: any, record: any,) {
+  console.log('handleChangeStatus', value, record);
+  // await store.dispatch('Endpoint/updateStatus', {
+  //   id: record.id,
+  //   status: value
+  // });
+}
+async function handleChangePriority(value: any, record: any,) {
+  console.log('handleChangePriority', value, record);
+  // await store.dispatch('Endpoint/updateStatus', {
+  //   id: record.id,
+  //   status: value
+  // });
+}
+
 // 关闭抽屉时，重新拉取列表数据
 async function refreshList() {
   console.log('refreshList');
 }
+
 const rowSelection = {
   onChange: (selectedRowKeys: Key[], selectedRows: DataType[]) => {
     console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
@@ -304,7 +316,6 @@ const rowSelection = {
     // name: record.name,
   }),
 };
-
 
 const onSearch = debounce(() => {
   getList(1, nodeDataCategory.value.id)
@@ -334,8 +345,9 @@ const columns = [
   },
   {
     title: '优先级',
-    dataIndex: 'desc',
+    dataIndex: 'priority',
     ellipsis: true,
+    slots: {customRender: 'priority'},
   },
   {
     title: '创建人',
@@ -387,9 +399,5 @@ onMounted(() => {
   display: inline-block;
   width: 80px;
 }
-.subTitle{
-  font-size: 12px;
-  color: #999;
-  font-weight: normal;
-}
+
 </style>

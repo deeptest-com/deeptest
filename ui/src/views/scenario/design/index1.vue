@@ -3,9 +3,7 @@
     <div id="scenario-design-left" class="left">
       <ScenarioTree :scenarioId="id" />
     </div>
-
     <div id="scenario-design-splitter" class="splitter"></div>
-
     <div id="scenario-design-right" class="right">
       <Designer/>
     </div>

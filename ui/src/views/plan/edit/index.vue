@@ -1,9 +1,9 @@
 <template>
-    <a-drawer :closable="true" :width="1000" :key="currPlanId" :visible="editDrawerVisible" @close="onCancel">
+    <a-drawer :closable="true" :width="1000" :key="currPlan && currPlan.id" :visible="editDrawerVisible" @close="onCancel">
         <template #title>
-        <div class="drawer-header">
-            <div>编辑计划</div>
-        </div>
+            <div class="drawer-header" style="width: 360px">
+                <EditAndShowField :value="(currPlan && currPlan.name) || '暂无'" placeholder="输入计划名称" @update="handleUpdateName" />
+            </div>
         </template>
         <div class="drawer-content">
             <ConBoxTitle title="基本信息" backgroundStyle="background: #FBFBFB" />
@@ -14,7 +14,7 @@
                     <a-descriptions-item label="最近更新">{{ momentUtc(planDetail.updatedAt) }}</a-descriptions-item>
                     <a-descriptions-item label="最新执行通过率">{{ planDetail.testPassRate }}</a-descriptions-item>
                     <a-descriptions-item label="执行次数">{{ planDetail.execTimes }}</a-descriptions-item>
-                    <a-descriptions-item label="最近执行">{{ momentUtc(planDetail.updatedAt) }}</a-descriptions-item>
+                    <a-descriptions-item label="最近执行">{{ planDetail.execTime ? momentUtc(planDetail.execTime) : '' }}</a-descriptions-item>
                     <a-descriptions-item label="执行环境">{{ planDetail.execEnv }}</a-descriptions-item>
                     <a-descriptions-item label="状态">
                         <EditAndShowSelect 
@@ -42,7 +42,7 @@
                     </a-tab-pane>
                     <a-tab-pane key="test-report" tab="测试报告" force-render>
                         <div style="padding-top: 20px">
-                            <ReportList />
+                            <ReportList :show-report-list="activeKey === 'test-report'" />
                         </div>
                     </a-tab-pane>
                 </a-tabs>
@@ -56,6 +56,7 @@ import { useStore } from 'vuex';
 
 import ConBoxTitle from '@/components/ConBoxTitle/index.vue';
 import EditAndShowSelect from '@/components/EditAndShowSelect/index.vue';
+import EditAndShowField from '@/components/EditAndShow/index.vue';
 import ScenarioList from '../components/ScenarioList.vue';
 import ReportList from '../components/ReportList.vue';
 
@@ -69,11 +70,10 @@ const props = defineProps<{
 }>();
 
 const store = useStore<{ Plan: PlanStateType }>();
-const planDetail = computed(() => store.state.Plan.detailResult);
+const planDetail = computed<any>(() => store.state.Plan.detailResult);
 const planScenarioList = computed<any[]>(() => store.state.Plan.scenarioListResult.scenarioList);
 const scenarioPagination = computed<any>(() => store.state.Plan.scenarioListResult.pagination);
-const currPlanId = computed<number>(() => store.state.Plan.planId);
-console.log(planScenarioList);
+const currPlan = computed<any>(() => store.state.Plan.currPlan);
 const emits = defineEmits(['onCancel', 'onExec', 'onUpdate']);
 const activeKey = ref(props.tabActiveKey || 'test-scenario');
 const loading = ref(false);
@@ -90,6 +90,7 @@ const columns: any[] = reactive([
     {
         title: '状态',
         dataIndex: 'status',
+        slots: { customRender: 'status' }
     },
     {
         title: '优先级',
@@ -125,21 +126,25 @@ function handleExec() {
 
 function handleChangeStatus(value) {
     console.log('changeStatus --', value);
-    emits('onUpdate', value);
+    emits('onUpdate', { status: value });
+}
+
+function handleUpdateName(value) {
+    emits('onUpdate', { name: value });
 }
 
 // 移除-关联-筛选时重新获取已关联的场景列表
 async function getScenarioList(params: any) {
     loading.value = true;
-    await store.dispatch('Plan/getScenarioList', { ...params, planId: currPlanId.value });
+    await store.dispatch('Plan/getScenarioList', { ...params, planId: currPlan.value.id });
     loading.value = false;
 }
 
 watch(() => {
-    return currPlanId.value;
-}, (val) => {
-    if (val) {
-        getScenarioList({ planId: val });
+    return currPlan.value;
+}, (val: any) => {
+    if (val && val.id) {
+        getScenarioList({ planId: val.id });
     }
 }, { immediate: true });
 

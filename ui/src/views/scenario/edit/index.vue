@@ -35,9 +35,6 @@
           <a-textarea v-model:value="modelRef.desc"
                       @blur="validate('desc', { trigger: 'blur' }).catch(() => {})"/>
         </a-form-item>
-        <!--        <a-form-item v-if="modelId > 0" label="是否禁用">-->
-        <!--          <a-switch v-model:checked="modelRef.disabled"/>-->
-        <!--        </a-form-item>-->
       </a-form>
     </a-modal>
 
@@ -65,8 +62,6 @@ const useForm = Form.useForm;
 import {StateType} from "../store";
 import {priorityOptions, testTypeOptions} from "@/config/constant"
 import {getSelectedKey} from "@/utils/cache";
-import {StateType as ServeStateType} from "@/store/serve";
-
 
 const router = useRouter();
 const {t} = useI18n();

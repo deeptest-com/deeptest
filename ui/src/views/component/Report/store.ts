@@ -72,7 +72,7 @@ const StoreModel: ModuleType = {
         }
     },
     actions: {
-        async list({ commit }, params: QueryParams ) {
+        async list({ commit }, params: any ) {
             try {
                 const response: ResponseData = await query(params);
                 if (response.code != 0) return;

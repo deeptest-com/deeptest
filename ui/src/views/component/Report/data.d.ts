@@ -12,7 +12,7 @@ export interface QueryResult {
 
 export interface QueryParams {
   keywords:  string,
-  scenarioId: string,
+  planId?: string,
   page: number,
   pageSize: number,
 }

@@ -2,30 +2,27 @@ package service
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi"
-	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	repo "github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"github.com/getkin/kin-openapi/openapi3"
 )
 
 type ImportService struct {
-	InterfaceRepo    *repo.InterfaceRepo   `inject:""`
-	EnvironmentRepo  *repo.EnvironmentRepo `inject:""`
-	InterfaceService *InterfaceService     `inject:""`
+	EnvironmentRepo *repo.EnvironmentRepo `inject:""`
 }
 
 func (s *ImportService) Import(doc3 openapi3.T, targetId int) (err error) {
-	interf, _ := s.InterfaceRepo.Get(uint(targetId))
-
-	err = s.GenerateInterface(doc3, uint(targetId), interf.ProjectId)
-	if err != nil {
-		return
-	}
-
-	err = s.GenerateEnvironment(doc3, interf.ProjectId)
-	if err != nil {
-		return
-	}
+	//interf, _ := s.InterfaceRepo.Get(uint(targetId))
+	//
+	//err = s.GenerateInterface(doc3, uint(targetId), interf.ProjectId)
+	//if err != nil {
+	//	return
+	//}
+	//
+	//err = s.GenerateEnvironment(doc3, interf.ProjectId)
+	//if err != nil {
+	//	return
+	//}
 
 	return
 }
@@ -71,46 +68,46 @@ func (s *ImportService) GenerateEnvironment(doc openapi3.T, projectId uint) (err
 }
 
 func (s *ImportService) Create(interf *model.Interface) (err error) {
-	interf.ParentId, interf.Ordr = s.InterfaceRepo.UpdateOrder(serverConsts.Inner, interf.ParentId)
-	err = s.InterfaceRepo.Save(interf)
-	if err != nil {
-		return err
-	}
-
-	err = s.InterfaceRepo.UpdateParams(interf.ID, interf.Params)
-	if err != nil {
-		return err
-	}
-
-	err = s.InterfaceRepo.UpdateHeaders(interf.ID, interf.Headers)
-	if err != nil {
-		return err
-	}
-
-	err = s.InterfaceRepo.UpdateBasicAuth(interf.ID, interf.BasicAuth)
-	if err != nil {
-		return err
-	}
-
-	err = s.InterfaceRepo.UpdateBearerToken(interf.ID, interf.BearerToken)
-	if err != nil {
-		return err
-	}
-
-	err = s.InterfaceRepo.UpdateOAuth20(interf.ID, interf.OAuth20)
-	if err != nil {
-		return err
-	}
-
-	err = s.InterfaceRepo.UpdateApiKey(interf.ID, interf.ApiKey)
-	if err != nil {
-		return err
-	}
-
-	err = s.InterfaceRepo.UpdateBodyFormData(interf.ID, interf.BodyFormData)
-	if err != nil {
-		return err
-	}
+	//interf.ParentId, interf.Ordr = s.InterfaceRepo.UpdateOrder(serverConsts.Inner, interf.ParentId)
+	//err = s.InterfaceRepo.Save(interf)
+	//if err != nil {
+	//	return err
+	//}
+	//
+	//err = s.InterfaceRepo.UpdateParams(interf.ID, interf.Params)
+	//if err != nil {
+	//	return err
+	//}
+	//
+	//err = s.InterfaceRepo.UpdateHeaders(interf.ID, interf.Headers)
+	//if err != nil {
+	//	return err
+	//}
+	//
+	//err = s.InterfaceRepo.UpdateBasicAuth(interf.ID, interf.BasicAuth)
+	//if err != nil {
+	//	return err
+	//}
+	//
+	//err = s.InterfaceRepo.UpdateBearerToken(interf.ID, interf.BearerToken)
+	//if err != nil {
+	//	return err
+	//}
+	//
+	//err = s.InterfaceRepo.UpdateOAuth20(interf.ID, interf.OAuth20)
+	//if err != nil {
+	//	return err
+	//}
+	//
+	//err = s.InterfaceRepo.UpdateApiKey(interf.ID, interf.ApiKey)
+	//if err != nil {
+	//	return err
+	//}
+	//
+	//err = s.InterfaceRepo.UpdateBodyFormData(interf.ID, interf.BodyFormData)
+	//if err != nil {
+	//	return err
+	//}
 
 	return
 }

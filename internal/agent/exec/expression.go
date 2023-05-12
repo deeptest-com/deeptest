@@ -6,6 +6,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/utils"
 	"github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"regexp"
+	"strings"
 )
 
 var (
@@ -28,6 +29,29 @@ var (
 	}
 )
 
+// called by server checkpoint service
+func EvaluateGovaluateExpressionWithVariables(expression string, varMap map[string]interface{}, datapools domain.Datapools) (
+	ret interface{}, err error) {
+
+	expr := commUtils.RemoveLeftVariableSymbol(expression)
+
+	govaluateExpression, err := govaluate.NewEvaluableExpressionWithFunctions(expr, GovaluateFunctions)
+	if err != nil {
+		return
+	}
+
+	// 1
+	paramValMap, err := generateGovaluateParamsWithVariables(expression, varMap, datapools)
+	if err != nil {
+		return
+	}
+
+	ret, err = govaluateExpression.Evaluate(paramValMap)
+
+	return
+}
+
+// called by agent processor interface
 func EvaluateGovaluateExpressionByScope(expression string, scopeId uint) (ret interface{}, err error) {
 	expr := commUtils.RemoveLeftVariableSymbol(expression)
 
@@ -37,6 +61,7 @@ func EvaluateGovaluateExpressionByScope(expression string, scopeId uint) (ret in
 		return
 	}
 
+	// 1
 	parameters, err := generateGovaluateParamsByScope(expression, scopeId)
 	if err != nil {
 		return
@@ -46,32 +71,15 @@ func EvaluateGovaluateExpressionByScope(expression string, scopeId uint) (ret in
 
 	return
 }
-func EvaluateGovaluateExpressionWithVariables(expression string, variables []domain.VarKeyValuePair) (ret interface{}, err error) {
-	expr := commUtils.RemoveLeftVariableSymbol(expression)
-
-	govaluateExpression, err := govaluate.NewEvaluableExpressionWithFunctions(expr, GovaluateFunctions)
-	if err != nil {
-		return
-	}
-
-	parameters, err := generateGovaluateParamsWithVariables(expression, variables)
-	if err != nil {
-		return
-	}
-
-	ret, err = govaluateExpression.Evaluate(parameters)
-
-	return
-}
 
 func generateGovaluateParamsByScope(expression string, scopeId uint) (ret domain.VarKeyValuePair, err error) {
 	ret = make(map[string]interface{}, 8)
 
-	variables := GetVariablesInVariablePlaceholder(expression)
+	variables := GetVariablesInExpressionPlaceholder(expression)
 
 	for _, variableName := range variables {
 		var vari domain.ExecVariable
-		vari, err = GetVariable(scopeId, variableName)
+		vari, err = GetVariableInScope(scopeId, variableName)
 		if err == nil {
 			ret[variableName] = vari.Value
 		}
@@ -80,21 +88,29 @@ func generateGovaluateParamsByScope(expression string, scopeId uint) (ret domain
 	return
 }
 
-func generateGovaluateParamsWithVariables(expression string, variableMap []domain.VarKeyValuePair) (ret map[string]interface{}, err error) {
-	ret = make(map[string]interface{}, 0)
+func generateGovaluateParamsWithVariables(expression string, variableMap map[string]interface{}, datapools domain.Datapools) (
+	govaluateParams map[string]interface{}, err error) {
 
-	//variables := GetVariablesInVariablePlaceholder(expression)
-	//
-	//for _, variableName := range variables {
-	//	if val, ok := variableMap[variableName]; ok {
-	//		ret[variableName] = val
-	//	}
-	//}
+	govaluateParams = make(map[string]interface{}, 0)
+
+	varsInExpression := GetVariablesInExpressionPlaceholder(expression)
+
+	for _, varName := range varsInExpression {
+		varNameWithoutPlus := strings.TrimLeft(varName, "+")
+
+		val, ok := variableMap[varNameWithoutPlus]
+		if ok {
+			if varNameWithoutPlus != varName {
+				val = _stringUtils.StrToInt(_stringUtils.InterfToStr(val))
+			}
+			govaluateParams[varNameWithoutPlus] = val
+		}
+	}
 
 	return
 }
 
-func GetVariablesInVariablePlaceholder(expression string) (ret []string) {
+func GetVariablesInExpressionPlaceholder(expression string) (ret []string) {
 	re := regexp.MustCompile("(?siU)\\${(.*)}")
 	matchResultArr := re.FindAllStringSubmatch(expression, -1)
 

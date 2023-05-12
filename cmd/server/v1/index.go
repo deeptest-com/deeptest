@@ -20,9 +20,7 @@ type IndexModule struct {
 	RoleModule    *router.RoleModule    `inject:""`
 	PermModule    *router.PermModule    `inject:""`
 
-	DebugModule               *router.DebugModule               `inject:""`
-	InvocationModule          *router.InvocationModule          `inject:""`
-	ProcessorInvocationModule *router.ProcessorInvocationModule `inject:""`
+	DebugModule *router.DebugModule `inject:""`
 
 	MockModule *router.MockModule `inject:""`
 
@@ -32,7 +30,6 @@ type IndexModule struct {
 	DatapoolModule    *router.DatapoolModule    `inject:""`
 	SnippetModule     *router.SnippetModule     `inject:""`
 
-	InterfaceModule   *router.InterfaceModule   `inject:""`
 	ImportModule      *router.ImportModule      `inject:""`
 	AuthModule        *router.AuthModule        `inject:""`
 	EnvironmentModule *router.EnvironmentModule `inject:""`
@@ -91,7 +88,6 @@ func (m *IndexModule) Party() module.WebModule {
 		m.DatapoolModule.Party(),
 		m.SnippetModule.Party(),
 
-		m.InterfaceModule.Party(),
 		m.ImportModule.Party(),
 		m.AuthModule.Party(),
 		m.EnvironmentModule.Party(),
@@ -120,8 +116,6 @@ func (m *IndexModule) Party() module.WebModule {
 		m.SummaryModule.Party(),
 
 		m.DebugModule.Party(),
-		m.InvocationModule.Party(),
-		m.ProcessorInvocationModule.Party(),
 		m.MessageModule.Party(),
 	}
 	return module.NewModule(consts.ApiPath, handler, modules...)

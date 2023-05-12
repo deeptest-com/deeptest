@@ -14,7 +14,7 @@ type CheckpointRepo struct {
 
 func (r *CheckpointRepo) List(interfaceId uint) (pos []model.DebugInterfaceCheckpoint, err error) {
 	err = r.DB.
-		Where("interface_id=?", interfaceId).
+		Where("endpoint_interface_id=?", interfaceId).
 		Where("NOT deleted").
 		Order("created_at ASC").
 		Find(&pos).Error
@@ -46,7 +46,7 @@ func (r *CheckpointRepo) GetByName(name string, interfaceId uint) (checkpoint mo
 	var checkpoints []model.DebugInterfaceCheckpoint
 
 	db := r.DB.Model(&checkpoint).
-		Where("name = ? AND interface_id =? AND not deleted", name, interfaceId)
+		Where("name = ? AND endpoint_interface_id =? AND not deleted", name, interfaceId)
 
 	err = db.Find(&checkpoints).Error
 

@@ -141,22 +141,3 @@ func (c *ExtractorCtrl) ListExtractorVariableForCheckpoint(ctx iris.Context) {
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data})
 }
-
-// ListValidExtractorVariableForInterface
-func (c *ExtractorCtrl) ListValidExtractorVariableForInterface(ctx iris.Context) {
-	interfaceId, err := ctx.URLParamInt("interfaceId")
-	usedBy := ctx.URLParam("usedBy")
-
-	if interfaceId == 0 || usedBy == "" {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
-		return
-	}
-
-	data, err := c.ExtractorService.ListValidExtractorVarForInterface(interfaceId, consts.UsedBy(usedBy))
-	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
-		return
-	}
-
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data})
-}

@@ -125,7 +125,7 @@ type DebugInterfaceExtractor struct {
 
 	Scope consts.ExtractorScope `json:"scope" gorm:"default:private"`
 
-	InterfaceId uint `json:"interfaceId"`
+	EndpointInterfaceId uint `json:"endpointInterfaceId"`
 
 	ProcessorId uint `json:"processorId"`
 	ScenarioId  uint `json:"scenarioId"`
@@ -152,8 +152,8 @@ type DebugInterfaceCheckpoint struct {
 	ActualResult string              `json:"actualResult"`
 	ResultStatus consts.ResultStatus `json:"resultStatus"`
 
-	InterfaceId uint `json:"interfaceId"`
-	ScenarioId  uint `json:"scenarioId"`
+	EndpointInterfaceId uint `json:"endpointInterfaceId"`
+	ScenarioId          uint `json:"scenarioId"`
 }
 
 func (DebugInterfaceCheckpoint) TableName() string {

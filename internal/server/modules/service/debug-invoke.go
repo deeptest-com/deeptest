@@ -47,11 +47,10 @@ func (s *DebugInvokeService) SubmitResult(req domain.SubmitDebugResultRequest) (
 		scenario, _ := s.ScenarioRepo.Get(scenarioId)
 		scenarioId = scenario.ID
 		projectId = scenario.ProjectId
-
 	}
 
 	s.ExtractorService.ExtractInterface(req.Request.EndpointInterfaceId, serveId, processorId, scenarioId, req.Response, usedBy)
-	s.CheckpointService.CheckInterface(req.Request.EndpointInterfaceId, req.Response, usedBy)
+	s.CheckpointService.CheckInterface(req.Request.EndpointInterfaceId, req.Request.ScenarioProcessorId, req.Response, usedBy)
 
 	_, err = s.Create(req.Request, req.Response, serveId, processorId, scenarioId, projectId)
 

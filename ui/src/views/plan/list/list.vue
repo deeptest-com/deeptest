@@ -163,7 +163,7 @@ const columns = [
 const store = useStore<{ Plan: StateType, ProjectGlobal: ProjectStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const nodeDataCategory = computed<any>(() => store.state.Plan.nodeDataCategory);
-const currPlanId = computed(() => store.state.Plan.planId);
+const currPlan = computed<any>(() => store.state.Plan.currPlan);
 
 const list = computed<Plan[]>(() => store.state.Plan.listResult.list);
 let pagination = computed<PaginationConfig>(() => store.state.Plan.listResult.pagination);
@@ -193,30 +193,21 @@ const getList = debounce(async (current: number): Promise<void> => {
 }, 300);
 
 const handleExec = () => {
-  const record: any = list.value.find(e => {
-    return e.id === currPlanId.value;
-  })
-  execReportTitle.value = record && record.name;
+  execReportTitle.value = currPlan.value && currPlan.value.name;
   execReportVisible.value = true;
 };
 
-const exec = async (record) => {
-  console.log('exec')
-  await store.dispatch('Plan/setCurrentPlanId', record.id);
+const exec = async (record: any) => {
   execReportTitle.value = record.name;
   execReportVisible.value = true;
+  getCurrentPalnInfo(record);
 };
 
-const report = async (id: number) => {
+const report = async (record: any) => {
   console.log('获取报告列表');
   editTabActiveKey.value = 'test-report';
   editDrawerVisible.value = true;
-  try {
-    await store.dispatch('Plan/setCurrentPlanId', id);
-    await store.dispatch('Plan/getPlan', id);
-  } catch(err) {
-    message.error('获取计划信息出错');
-  }
+  getCurrentPalnInfo(record);
 };
 
 const clone = async (id: number) => {
@@ -228,14 +219,15 @@ const clone = async (id: number) => {
 
 const updatePlan = async (value: string, record: any) => {
   try {
+    const { id, adminId, categoryId, testStage, desc, status } = record;
     const result = await store.dispatch('Plan/savePlan', {
-      id: record.id,
+      id,
+      adminId,
+      categoryId,
+      testStage,
+      desc,
+      status,
       name: value,
-      adminId: record.adminId,
-      categoryId: record.categoryId,
-      testStage: record.testStage,
-      desc: record.desc,
-      status: record.status
     });
     if (result) {
       getList(1);
@@ -247,23 +239,15 @@ const updatePlan = async (value: string, record: any) => {
   }
 };
 
-const handleUpdate = async (status: string) => {
+const handleUpdate = async (params: any) => {
   try {
-    const record: any = list.value.find(e => {
-      return e.id === currPlanId.value;
-    });
     const result = await store.dispatch('Plan/savePlan', {
-      id: record.id,
-      name: record.name,
-      adminId: record.adminId,
-      categoryId: record.categoryId,
-      testStage: record.testStage,
-      desc: record.desc,
-      status
+      ...currPlan.value,
+      ...params
     });
     if (result) {
       getList(1);
-      store.dispatch('Plan/getPlan', currPlanId.value);
+      store.dispatch('Plan/getPlan', currPlan.value.id);
     } else {
       message.error('更新计划失败');
     }
@@ -277,16 +261,21 @@ const create = () => {
   createDrawerVisible.value = true;
 };
 
-const edit = async (record) => {
+const edit = async (record: any) => {
   editDrawerVisible.value = true;
   editTabActiveKey.value = 'test-scenario';
+  getCurrentPalnInfo(record);
+};
+
+const getCurrentPalnInfo = async (record: any) => {
+  const { id, adminId, categoryId, testStage, desc, status, name } = record;
   try {
-    await store.dispatch('Plan/setCurrentPlanId', record.id);
+    await store.dispatch('Plan/setCurrentPlan', { id, adminId, categoryId, testStage, desc, status, name });
     await store.dispatch('Plan/getPlan', record.id);
   } catch(err) {
     message.error('获取计划信息出错');
   }
-}
+};
 
 const remove = (id: number) => {
   console.log('remove')

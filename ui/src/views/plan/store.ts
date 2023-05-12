@@ -29,6 +29,7 @@ import { queryMembers } from '../project/service';
 
 export interface StateType {
     planId: number;
+    currPlan: any;
 
     listResult: QueryResult;
     detailResult: any;
@@ -55,6 +56,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
     state: StateType;
     mutations: {
         setPlanId: Mutation<StateType>;
+        setCurrPlan: Mutation<StateType>;
 
         setList: Mutation<StateType>;
         setDetail: Mutation<StateType>;
@@ -78,6 +80,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         removePlan: Action<StateType, StateType>;
         clonePlan: Action<StateType, StateType>;
         setCurrentPlanId: Action<StateType, StateType>;
+        setCurrentPlan: Action<StateType, StateType>;
 
         loadCategory: Action<StateType, StateType>;
         getCategoryNode: Action<StateType, StateType>;
@@ -103,6 +106,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
 
 const initState: StateType = {
     planId: 0,
+    currPlan: {},
 
     listResult: {
         list: [],
@@ -143,7 +147,9 @@ const StoreModel: ModuleType = {
         setPlanId(state, id) {
             state.planId = id;
         },
-
+        setCurrPlan(state, payload) {
+            state.currPlan = payload;
+        },
         setList(state, payload) {
             state.listResult = payload;
         },
@@ -254,6 +260,9 @@ const StoreModel: ModuleType = {
             } catch(error) {
                 return false;
             }
+        },
+        setCurrentPlan({ commit }, payload: any) {
+            commit('setCurrPlan', payload);
         },
         async loadExecResult({commit, dispatch, state}, scenarioId) {
             const response = await loadExecResult(scenarioId);

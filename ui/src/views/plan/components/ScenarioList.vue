@@ -5,7 +5,7 @@
                 <template #icon><plus-outlined /></template>
                 关联测试场景
             </a-button>
-            <a-button type="default" @click="handleRemove">批量移除</a-button>
+            <a-button type="default" @click="handleRemove()">批量移除</a-button>
         </div>
         <div class="right">
             <a-form-item label="优先级">
@@ -59,7 +59,7 @@ import { PlusOutlined } from '@ant-design/icons-vue';
 import Associate from './Associate.vue';
 
 import { StateType as PlanStateType } from '../store';  
-import { Modal } from 'ant-design-vue';
+import { message, Modal } from 'ant-design-vue';
 import { planStatusColorMap, planStatusTextMap } from '@/config/constant';
 
 const props = defineProps({
@@ -89,7 +89,7 @@ const props = defineProps({
 
 const emits = defineEmits(['selectRowKeys', 'refreshList']);
 const store = useStore<{ Plan: PlanStateType }>();
-const planId = computed(() => store.state.Plan.planId);
+const currPlan = computed<any>(() => store.state.Plan.currPlan);
 const members = computed(() => store.state.Plan.members);
 const associateModalVisible = ref(false);
 const selectedRowKeys = ref<any[]>([]); // Check here to configure the default column
@@ -135,6 +135,12 @@ const handleChange = (value: string) => {
 };
 
 const handleRemove = async (record?: any) => {
+    console.log(selectedRowIds.length);
+    console.log(record);
+    if (!record && selectedRowIds.length === 0) {
+        message.warning('请先选择要删除的关联场景');
+        return;
+    }
     Modal.confirm({
         title: '确认要解除该测试场景的关联吗?',
         onOk: async () => {
@@ -146,7 +152,7 @@ const handleRemove = async (record?: any) => {
             }
             const params = { scenarioIds };
             console.log('解除关联场景: --', params);
-            await store.dispatch('Plan/removeScenario', { planId: planId.value, params });
+            await store.dispatch('Plan/removeScenario', { planId: currPlan.value.id, params });
             emits('refreshList', formState);
         }
     })

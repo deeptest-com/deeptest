@@ -18,7 +18,7 @@
     </a-modal>
 </template>
 <script setup lang="ts">
-import { defineProps, defineEmits, ref, reactive, computed, watch, toRefs } from 'vue';
+import { defineProps, defineEmits, ref, reactive, computed, watch } from 'vue';
 import { useStore } from 'vuex';
 import ScenarioList from './ScenarioList.vue';
 
@@ -32,7 +32,7 @@ const props = defineProps<{
 const store = useStore<{ Scenario: ScenarioStateType, Plan: PlanStateType }>();
 const emits = defineEmits(['onCancel', 'onOk']);
 const scenarioList = computed<any[]>(() => store.state.Scenario.listResult.list);
-const currPlanId = computed(() => store.state.Plan.planId);
+const currPlan = computed<any>(() => store.state.Plan.currPlan);
 let pagination = computed<PaginationConfig>(() => store.state.Scenario.listResult.pagination);
 let queryParams = reactive<QueryParams>({
   keywords: '', enabled: '1',
@@ -49,6 +49,7 @@ const columns: any[] = reactive([
     {
         title: '状态',
         dataIndex: 'status',
+        slots: { customRender: 'status' }
     },
     {
         title: '优先级',
@@ -70,7 +71,7 @@ function handleCancel() {
 
 async function onOk() {
     console.log('selectScenarioIds: --', selectedScenarioIds);
-    await store.dispatch('Plan/addScenario', { planId: currPlanId.value, params: { scenarioIds: selectedScenarioIds } });
+    await store.dispatch('Plan/addScenario', { planId: currPlan.value.id, params: { scenarioIds: selectedScenarioIds } });
     emits('onOk');
 }
 

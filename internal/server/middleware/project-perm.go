@@ -91,19 +91,23 @@ func CheckProjectPerm(r *http.Request, userId uint) (bool, error) {
 	path := r.URL.Path
 
 	projectPerm, err := GetProjectPerm(path, method)
-	if err != nil || projectPerm.ID == 0 {
+	if err != nil {
 		logUtils.Errorf(fmt.Sprintf("项目权限不存在：%d-%s-%s", userId, path, method), zap.Any("project-perm-err", err.Error()))
+		return false, err
+	}
+	if projectPerm.ID == 0 {
+		logUtils.Errorf(fmt.Sprintf("项目权限不存在：%d-%s-%s", userId, path, method))
 		return false, err
 	}
 
 	projectMemberRole, err := GetUserCurrentRole(userId)
-	if err != nil || projectMemberRole.ID == 0 {
+	if err != nil {
 		logUtils.Errorf(fmt.Sprintf("用户角色不存在：%d-%s-%s", userId, path, method), zap.Any("user-role-in-project-err", err.Error()))
 		return false, err
 	}
 
-	projectRolePerm, err := GetProjectRolePerm(projectMemberRole.ProjectRoleId, projectPerm.ID)
-	if err != nil || projectRolePerm.ID == 0 {
+	_, err = GetProjectRolePerm(projectMemberRole.ProjectRoleId, projectPerm.ID)
+	if err != nil {
 		logUtils.Errorf(fmt.Sprintf("用户没有该权限：%d-%s-%s", userId, path, method), zap.Any("project-role-perm-err", err.Error()))
 		return false, err
 	}

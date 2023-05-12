@@ -334,7 +334,9 @@ func (r *PlanRepo) PlanScenariosPaginate(req v1.PlanScenariosReqPaginate, planId
 	var count int64
 
 	db := r.DB.Model(&model.Scenario{}).
+		Select("biz_scenario.*, c.name category_name").
 		Joins("LEFT JOIN biz_plan_scenario_r r ON biz_scenario.id=r.scenario_id").
+		Joins("LEFT JOIN biz_category c ON biz_scenario.category_id=c.id").
 		Where("r.plan_id = ? AND NOT biz_scenario.deleted", planId)
 
 	if req.Keywords != "" {
@@ -356,7 +358,7 @@ func (r *PlanRepo) PlanScenariosPaginate(req v1.PlanScenariosReqPaginate, planId
 		return
 	}
 
-	scenarios := make([]*model.Scenario, 0)
+	scenarios := make([]*model.ScenarioDetail, 0)
 
 	err = db.
 		Scopes(dao.PaginateScope(req.Page, req.PageSize, req.Order, req.Field)).

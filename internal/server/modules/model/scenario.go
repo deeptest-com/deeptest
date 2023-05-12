@@ -24,3 +24,8 @@ type Scenario struct {
 func (Scenario) TableName() string {
 	return "biz_scenario"
 }
+
+type ScenarioDetail struct {
+	Scenario
+	CategoryName string `json:"categoryName"`
+}

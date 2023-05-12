@@ -345,7 +345,7 @@ func (r *ScenarioReportRepo) BatchDelete(planReportId uint) (err error) {
 	if len(scenarioReportIds) == 0 {
 		return
 	}
-	err = r.DB.Model(&model.ScenarioReport{}).Where("id IN (?))", scenarioReportIds).
+	err = r.DB.Model(&model.ScenarioReport{}).Where("id IN (?)", scenarioReportIds).
 		Updates(map[string]interface{}{"deleted": true}).Error
 	if err != nil {
 		logUtils.Errorf("delete report by id error %s", err.Error())

@@ -1,9 +1,10 @@
 <template>
     <TableFilter :show-operation="false" @handle-filter="handleFilter" />
-    <a-table 
+    <a-table
         row-key="id"
-        :columns="columns" 
-        :data-source="data"
+        :loading="loading"
+        :columns="columns"
+        :data-source="scenariosReports"
         :pagination="{
             ...pagination,
             onChange: handlePageChanged
@@ -11,9 +12,14 @@
     />
 </template>
 <script lang="ts" setup>
-import { reactive } from 'vue';
+import {computed, reactive,ref,onMounted} from 'vue';
 import TableFilter from "@/views/component/Report/List/TableFilter.vue";
-
+import {useStore} from "vuex";
+import {Scenario} from "@/views/scenario/data";
+const store = useStore<{ Scenario, ProjectGlobal, ServeGlobal }>();
+const detailResult: any = computed<Scenario>(() => store.state.Scenario.detailResult);
+const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
+const scenariosReports = computed(() => store.state.Scenario.scenariosReports);
 const columns = [
     {
         title: '编号',
@@ -49,28 +55,35 @@ const columns = [
         slots: { customRender: 'executionTime' },
     },
 ];
-
-const data = [];
 let formState = reactive({});
 let pagination = reactive({
     current: 1,
     pageSize: 10,
     total: 0
 })
-
 function handleFilter(params) {
     formState = params;
-    refreshList({});
+    refreshList({...formState});
 }
-
 function handlePageChanged(page) {
     pagination.current = page;
     refreshList({ page, pageSize: pagination.pageSize });
 }
-
-function refreshList(params: any) {
-    console.log('get test-plan reportList ---- [tableFilter] paramsData', { ...formState, ...params });
+const loading = ref(false);
+async function refreshList(params: any) {
+  loading.value = true;
+  await store.dispatch('Scenario/getExecResultList', {
+    data: {
+      scenarioId: detailResult.value.id,
+      ...formState,
+      ...params
+    }
+  });
+  loading.value = false;
 }
+
+onMounted(() => {
+  refreshList({ page: 1, pageSize: 10 });
+});
 </script>
-  
-  
+

@@ -7,7 +7,6 @@ import {
     get,
     save,
     remove,
-
     loadScenario,
     getNode,
     createNode,
@@ -16,6 +15,10 @@ import {
     moveNode,
     addInterfaces, addProcessor,
     saveProcessorName, saveProcessor, saveInterface, loadExecResult,
+    getScenariosReports,
+    addPlans,
+    getPlans,
+    removePlans
 } from './service';
 
 import {
@@ -55,6 +58,9 @@ export interface StateType {
     extractorsData: any[];
     checkpointsData: any[];
     validExtractorVariablesData: any[];
+    scenariosReports: any[];
+    linkedPlans: any[];
+    notLinkedplans: any[];
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
@@ -89,6 +95,9 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setExtractors: Mutation<StateType>;
         setCheckpoints: Mutation<StateType>;
         setValidExtractorVariables: Mutation<StateType>;
+        setScenariosReports: Mutation<StateType>;
+        setLinkedPlans: Mutation<StateType>;
+        setNotLinkedplans: Mutation<StateType>;
     };
     actions: {
         setScenarioProcessorIdForDebug: Action<StateType, StateType>;
@@ -116,6 +125,10 @@ export interface ModuleType extends StoreModuleType<StateType> {
 
         loadExecResult: Action<StateType, StateType>;
         updateExecResult: Action<StateType, StateType>;
+        getExecResultList: Action<StateType, StateType>;
+        addPlans: Action<StateType, StateType>;
+        removePlans: Action<StateType, StateType>;
+        getPlans: Action<StateType, StateType>;
 
         loadCategory: Action<StateType, StateType>;
         getCategoryNode: Action<StateType, StateType>;
@@ -164,6 +177,9 @@ const initState: StateType = {
     extractorsData: [],
     checkpointsData: [],
     validExtractorVariablesData: [],
+    scenariosReports:[],
+    linkedPlans:[],
+    notLinkedplans:[],
 };
 
 const StoreModel: ModuleType = {
@@ -250,6 +266,15 @@ const StoreModel: ModuleType = {
         },
         setValidExtractorVariables(state, payload) {
             state.validExtractorVariablesData = payload;
+        },
+        setScenariosReports(state, payload) {
+            state.scenariosReports = payload;
+        },
+        setLinkedPlans(state, payload) {
+            state.linkedPlans = payload;
+        },
+        setNotLinkedplans(state, payload) {
+            state.notLinkedplans = payload;
         },
     },
     actions: {
@@ -552,6 +577,40 @@ const StoreModel: ModuleType = {
 
             return true;
         },
+        async getExecResultList({commit, dispatch, state}, payload) {
+            const res = await getScenariosReports(payload);
+            if(res.code === 0) {
+                commit('setScenariosReports', res?.data?.result || []);
+            }
+            return true;
+        },
+        async addPlans({commit, dispatch, state}, payload) {
+            const res = await addPlans(payload);
+            if(res.code === 0) {
+                return res;
+            }
+            return false;
+        },
+        async removePlans({commit, dispatch, state}, payload) {
+            const res = await removePlans(payload);
+            if(res.code === 0) {
+                return res;
+            }
+            return false;
+        },
+        async getPlans({commit, dispatch, state}, payload) {
+            const res = await getPlans(payload);
+            if(res.code === 0) {
+                if(payload.data.ref) {
+                    commit('setLinkedPlans', res?.data?.result || []);
+                }else {
+                    commit('setNotLinkedplans', res?.data?.result || []);
+                }
+            }
+            return true;
+        },
+
+
     }
 };
 

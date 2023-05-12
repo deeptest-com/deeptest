@@ -71,12 +71,7 @@ func (s *SummaryService) CollectionBugs() (err error) {
 }
 
 func (s *SummaryService) CollectionDetails() (err error) {
-	//从project表获取所有项目id
-	ids, err := s.SummaryDetailsService.FindProjectIds()
-	for _, id := range ids {
-		detail := s.SummaryDetailsService.CollectDetailByProjectId(id)
-		s.SummaryDetailsService.CreateByDate(detail)
-	}
+	err = s.SummaryDetailsService.SaveDetails()
 	return
 }
 

@@ -26,6 +26,7 @@ func (s *SummaryDetailsService) Card(projectId int64) (res v1.ResSummaryCard, er
 
 	date := time.Now().AddDate(0, 0, -30)
 	startTime, endTime := GetDate(date)
+
 	if projectId == 0 {
 		summaryCardTotal, err = s.SummaryCard()
 		res.ProjectTotal, err = s.Count()
@@ -35,6 +36,7 @@ func (s *SummaryDetailsService) Card(projectId int64) (res v1.ResSummaryCard, er
 		interfaceTotal = summaryCardTotal.InterfaceTotal
 		execTotal = summaryCardTotal.ExecTotal
 		passRate = summaryCardTotal.PassRate
+		res.UserTotal, err = s.CountUserTotal()
 		scenarioTotal = summaryCardTotal.ScenarioTotal
 		oldCoverage = oldSummaryCardTotal.Coverage
 		oldScenarioTotal = oldSummaryCardTotal.ScenarioTotal
@@ -45,6 +47,7 @@ func (s *SummaryDetailsService) Card(projectId int64) (res v1.ResSummaryCard, er
 		res.ProjectTotal = 1
 		oldSummaryDetails, err = s.FindByProjectIdAndDate(startTime, endTime, projectId)
 
+		res.UserTotal, err = s.CountProjectUserTotal(projectId)
 		coverage = summaryDetails.Coverage
 		interfaceTotal = summaryDetails.InterfaceTotal
 		execTotal = summaryDetails.ExecTotal
@@ -62,15 +65,15 @@ func (s *SummaryDetailsService) Card(projectId int64) (res v1.ResSummaryCard, er
 	res.ScenarioTotal = scenarioTotal
 
 	if oldCoverage != 0 {
-		res.CoverageHb, _ = strconv.ParseFloat(fmt.Sprintf("%.1f", DecimalHB(coverage, oldCoverage)), 64)
+		res.CoverageHb, err = strconv.ParseFloat(fmt.Sprintf("%.1f", DecimalHB(coverage, oldCoverage)), 64)
 	}
 
 	if oldInterfaceTotal != 0 {
-		res.InterfaceHb, _ = strconv.ParseFloat(fmt.Sprintf("%.1f", DecimalHB(float64(interfaceTotal), float64(oldInterfaceTotal))), 64)
+		res.InterfaceHb, err = strconv.ParseFloat(fmt.Sprintf("%.1f", DecimalHB(float64(interfaceTotal), float64(oldInterfaceTotal))), 64)
 	}
 
 	if oldScenarioTotal != 0 {
-		res.ScenarioHb, _ = strconv.ParseFloat(fmt.Sprintf("%.1f", DecimalHB(float64(scenarioTotal), float64(oldScenarioTotal))), 64)
+		res.ScenarioHb, err = strconv.ParseFloat(fmt.Sprintf("%.1f", DecimalHB(float64(scenarioTotal), float64(oldScenarioTotal))), 64)
 	}
 
 	return
@@ -80,28 +83,26 @@ func (s *SummaryDetailsService) Details(userId int64) (res v1.ResSummaryDetail, 
 	//从project表收集项目总数
 	res.ProjectTotal, err = s.Count()
 	res.UserProjectTotal, err = s.CountByUserId(userId)
-	//查找所有项目id
-	projectIds, err := s.FindProjectIds()
 	//查找所有项目对应的summaryDetail数据，并转为map
-	allDetails := s.GetAllDetailOfMap(projectIds)
+	allDetails, err := s.GetAllDetailGroupByProjectId()
 	//查找用户参与的项目id,并转为map
 	userProjectIds, err := s.FindProjectIdsByUserId(userId)
 
 	//查询所有项目信息
 	allProjectsInfo, err := s.FindAllProjectInfo()
 	//组装返回的json结构体
-	res.ProjectList, res.UserProjectList = s.HandleSummaryDetails(projectIds, userProjectIds, allDetails, allProjectsInfo)
+	res.ProjectList, res.UserProjectList, err = s.HandleSummaryDetails(userProjectIds, allDetails, allProjectsInfo)
 	return
 }
 
-func (s *SummaryDetailsService) HandleSummaryDetails(projectIds []int64, userProjectIds []int64, allDetails map[int64]model.SummaryDetails, allProjectsInfo []model.SummaryProjectInfo) (resAllDetails []v1.ResSummaryDetails, resUserDetails []v1.ResSummaryDetails) {
+func (s *SummaryDetailsService) HandleSummaryDetails(userProjectIds []int64, allDetails map[int64]model.SummaryDetails, allProjectsInfo []model.SummaryProjectInfo) (resAllDetails []v1.ResSummaryDetails, resUserDetails []v1.ResSummaryDetails, err error) {
 	var id, userId uint
 	var projectsUserListOfMap map[int64][]v1.ResUserIdAndName
-	projectsBugCount, _ := s.CountBugsGroupByProjectId()
-	projectsUsers, _ := s.FindAllUserIdAndNameOfProject()
+	projectsBugCount, err := s.CountBugsGroupByProjectId()
+	projectsUsers, err := s.FindAllUserIdAndNameOfProject()
 	//如果获取的
 	if projectsUsers != nil {
-		projectsUserListOfMap = s.LetUsersGroupByProjectId(projectIds, projectsUsers)
+		projectsUserListOfMap = s.LetUsersGroupByProjectId(allProjectsInfo, projectsUsers)
 	} else {
 		projectsUserListOfMap = nil
 	}
@@ -155,7 +156,6 @@ func (s *SummaryDetailsService) HandleSummaryDetails(projectIds []int64, userPro
 }
 
 func (s *SummaryDetailsService) CopyProjectInfo(projectInfo model.SummaryProjectInfo, detail model.SummaryDetails) (resDetail v1.ResSummaryDetails) {
-
 	copier.CopyWithOption(&resDetail, projectInfo, copier.Option{DeepCopy: true})
 	copier.CopyWithOption(&resDetail, detail, copier.Option{DeepCopy: true})
 	resDetail.ProjectDescr = projectInfo.Descr
@@ -167,84 +167,78 @@ func (s *SummaryDetailsService) CopyProjectInfo(projectInfo model.SummaryProject
 }
 
 func (s *SummaryDetailsService) CopyDetailsWithoutBaseModel(detail model.SummaryDetails) (ret model.SummaryDetails) {
-	var newDetail model.SummaryDetails
-	newDetail.ScenarioTotal = detail.ScenarioTotal
-	newDetail.ProjectId = detail.ProjectId
-	newDetail.Coverage = detail.Coverage
-	newDetail.ExecTotal = detail.ExecTotal
-	newDetail.PassRate = detail.PassRate
-	newDetail.InterfaceTotal = detail.InterfaceTotal
-	ret = newDetail
+	ret.ScenarioTotal = detail.ScenarioTotal
+	ret.ProjectId = detail.ProjectId
+	ret.Coverage = detail.Coverage
+	ret.ExecTotal = detail.ExecTotal
+	ret.PassRate = detail.PassRate
+	ret.InterfaceTotal = detail.InterfaceTotal
 	return
 }
 
-func (s *SummaryDetailsService) GetAllDetailOfMap(projectIds []int64) (ret map[int64]model.SummaryDetails) {
+func (s *SummaryDetailsService) GetAllDetailGroupByProjectId() (ret map[int64]model.SummaryDetails, err error) {
+
+	//查找所有项目id
+	projectIds, err := s.FindProjectIds()
 
 	//从biz_scenario表根据projectid,查找场景总数
-	ScenariosTotal, _ := s.CountAllScenarioTotalProjectId()
+	ScenariosTotal, err := s.CountAllScenarioTotalProjectId()
 
 	//根据projectid,从biz_scenario_report表,获得所有报告总数,然后计算
-	execsTotal, _ := s.CountAllExecTotalProjectId()
+	execsTotal, err := s.CountAllExecTotalProjectId()
 
 	//从biz_interface表根据projectid,查找接口总数
-	interfacesTotal, _ := s.CountAllEndpointTotalProjectId()
+	interfacesTotal, err := s.CountAllEndpointTotalProjectId()
 
 	//从biz_scenario_report拿到assertion的相关数据,计算后存储
-	passRates, _ := s.FindAllPassRateByProjectId()
+	passRates, err := s.FindAllPassRateByProjectId()
 
-	//从biz_endpoint需要获取当前项目的所有接口,然后从biz_processor_interface检查哪些在场景中出现过
-	interfaceIds, _ := s.FindAllEndpointIdsGroupByProjectId(projectIds)
-	coverages, _ := s.CoverageAllByProjectId(interfaceIds)
+	//从processor里边，根据project_id，取出来对应的，所有endpointid总数，其中endpointid不重复
+	endpointCountOfProcessor, err := s.FindAllProcessEndpointCountGroupByProjectId()
 
 	ret = make(map[int64]model.SummaryDetails, len(projectIds))
 
 	for _, projectId := range projectIds {
-		details := s.CollectDetail(projectId, ScenariosTotal[projectId], interfacesTotal[projectId], execsTotal[projectId], passRates[projectId], coverages[projectId])
+		details, _ := s.HandleDetail(projectId, ScenariosTotal[projectId], interfacesTotal[projectId], execsTotal[projectId], passRates[projectId], endpointCountOfProcessor[projectId])
 		//返回的数组，需要处理成map形式
 		ret[projectId] = details
 	}
-
 	return
 }
 
-func (s *SummaryDetailsService) LetUsersGroupByProjectId(projectIds []int64, projectsUsers []model.UserIdAndName) (ret map[int64][]v1.ResUserIdAndName) {
+func (s *SummaryDetailsService) HandleDetail(projectId int64, ScenariosTotal int64, interfacesTotal int64, execsTotal int64, passRates float64, endpointCountOfProcessor int64) (ret model.SummaryDetails, err error) {
+	ret.ProjectId = projectId
+	ret.ScenarioTotal = ScenariosTotal
+	ret.InterfaceTotal = interfacesTotal
+	ret.ExecTotal = execsTotal
+	ret.PassRate, err = strconv.ParseFloat(fmt.Sprintf("%.1f", passRates), 64)
+
+	var coverage float64
+	if ret.InterfaceTotal != 0 {
+		coverage = float64(endpointCountOfProcessor) / float64(ret.InterfaceTotal) * 100
+	} else {
+		coverage = 0
+	}
+	ret.Coverage, err = strconv.ParseFloat(fmt.Sprintf("%.1f", coverage), 64)
+	return
+}
+
+func (s *SummaryDetailsService) LetUsersGroupByProjectId(projectsInfo []model.SummaryProjectInfo, projectsUsers []model.UserIdAndName) (ret map[int64][]v1.ResUserIdAndName) {
 	//将拿到的userList，根据projectid，装入map中，key是projectid，value是userList    []v1.ResUserIdAndName
 	var m1 map[int64][]v1.ResUserIdAndName
-	m1 = make(map[int64][]v1.ResUserIdAndName, len(projectIds))
-	for _, projectId := range projectIds {
+	m1 = make(map[int64][]v1.ResUserIdAndName, len(projectsInfo))
+	for _, projectInfo := range projectsInfo {
 		var tmpUsers []v1.ResUserIdAndName
 		for _, projectUsers := range projectsUsers {
-			if projectUsers.ProjectId == projectId {
+			if projectUsers.ProjectId == int64(projectInfo.ID) {
 				var tmpUser v1.ResUserIdAndName
 				copier.CopyWithOption(&tmpUser, projectUsers, copier.Option{DeepCopy: true})
 				tmpUsers = append(tmpUsers, tmpUser)
 			}
 		}
-		m1[projectId] = tmpUsers
+		m1[int64(projectInfo.ID)] = tmpUsers
 	}
 	return m1
-}
-
-func (s *SummaryDetailsService) Create(req model.SummaryDetails) (err error) {
-	r := repo.NewSummaryDetailsRepo()
-	return r.Create(req)
-}
-
-func (s *SummaryDetailsService) CreateByDate(req model.SummaryDetails) (err error) {
-	now := time.Now()
-	startTime, endTime := GetDate(now)
-	ret, err := s.HasDataOfDate(startTime, endTime, req.ProjectId)
-	if ret {
-		err = s.Create(req)
-	} else {
-		err = s.UpdateColumnsByDate(req, startTime, endTime)
-	}
-	return
-}
-
-func (s *SummaryDetailsService) UpdateColumnsByDate(req model.SummaryDetails, startTime string, endTime string) (err error) {
-	r := repo.NewSummaryDetailsRepo()
-	return r.UpdateColumnsByDate(req, startTime, endTime)
 }
 
 func (s *SummaryDetailsService) Count() (count int64, err error) {
@@ -255,6 +249,16 @@ func (s *SummaryDetailsService) Count() (count int64, err error) {
 func (s *SummaryDetailsService) CountByUserId(userId int64) (count int64, err error) {
 	r := repo.NewSummaryDetailsRepo()
 	return r.CountByUserId(userId)
+}
+
+func (s *SummaryDetailsService) CountUserTotal() (count int64, err error) {
+	r := repo.NewSummaryDetailsRepo()
+	return r.CountUserTotal()
+}
+
+func (s *SummaryDetailsService) CountProjectUserTotal(projectId int64) (count int64, err error) {
+	r := repo.NewSummaryDetailsRepo()
+	return r.CountProjectUserTotal(projectId)
 }
 
 func (s *SummaryDetailsService) FindAllProjectInfo() (projectDetails []model.SummaryProjectInfo, err error) {
@@ -282,14 +286,15 @@ func (s *SummaryDetailsService) FindAllEndpointIdsGroupByProjectId(projectIds []
 	r := repo.NewSummaryDetailsRepo()
 	results, err := r.FindAllEndpointIdsGroupByProjectId()
 	ids = make(map[int64][]int64, len(projectIds))
+
 	for _, projectId := range projectIds {
-		var tmpUsers []int64
+		var tmpEndpointIds []int64
 		for _, result := range results {
 			if result.ProjectId == projectId {
-				tmpUsers = append(tmpUsers, result.Id)
+				tmpEndpointIds = append(tmpEndpointIds, result.Id)
 			}
 		}
-		ids[projectId] = tmpUsers
+		ids[projectId] = tmpEndpointIds
 	}
 	return
 }
@@ -299,13 +304,14 @@ func (s *SummaryDetailsService) CoverageByProjectId(projectId int64, interfaceId
 	return r.CoverageByProjectId(projectId, interfaceIds)
 }
 
-func (s *SummaryDetailsService) CoverageAllByProjectId(interfaceIds map[int64][]int64) (count map[int64]int64, err error) {
-	count = make(map[int64]int64, len(interfaceIds))
+func (s *SummaryDetailsService) FindAllProcessEndpointCountGroupByProjectId() (counts map[int64]int64, err error) {
 	r := repo.NewSummaryDetailsRepo()
+	result, err := r.FindAllProcessEndpointCountGroupByProjectId()
 
-	for projectId, ids := range interfaceIds {
-		result, _ := r.CoverageByProjectId(projectId, ids)
-		count[projectId] = result
+	counts = make(map[int64]int64, len(result))
+	for _, value := range result {
+		//这里写的是id实际是count，都是int64，不做多余的明明
+		counts[value.ProjectId] = value.Id
 	}
 	return
 }
@@ -367,14 +373,13 @@ func (s *SummaryDetailsService) CountScenarioTotalProjectId(projectId int64) (co
 
 func (s *SummaryDetailsService) CountAllScenarioTotalProjectId() (scenarioTotal map[int64]int64, err error) {
 	r := repo.NewSummaryDetailsRepo()
-	scenariosTotal, _ := r.CountAllScenarioTotalProjectId()
+	scenariosTotal, err := r.CountAllScenarioTotalProjectId()
 
 	scenarioTotal = make(map[int64]int64, len(scenariosTotal))
-	for key, value := range scenariosTotal {
+	for _, value := range scenariosTotal {
 		//这里写的是id实际是count，都是int64，不做多余的明明
-		scenarioTotal[int64(key)] = value.Id
+		scenarioTotal[value.ProjectId] = value.Id
 	}
-
 	return
 }
 
@@ -385,11 +390,11 @@ func (s *SummaryDetailsService) CountEndpointTotalProjectId(projectId int64) (co
 
 func (s *SummaryDetailsService) CountAllEndpointTotalProjectId() (counts map[int64]int64, err error) {
 	r := repo.NewSummaryDetailsRepo()
-	endpointsTotal, _ := r.CountAllEndpointTotalProjectId()
+	endpointsTotal, err := r.CountAllEndpointTotalProjectId()
 	counts = make(map[int64]int64, len(endpointsTotal))
-	for key, value := range endpointsTotal {
+	for _, value := range endpointsTotal {
 		//这里写的是id实际是count，都是int64，不做多余的明明
-		counts[int64(key)] = value.Id
+		counts[value.ProjectId] = value.Id
 	}
 	return
 }
@@ -401,11 +406,11 @@ func (s *SummaryDetailsService) CountExecTotalProjectId(projectId int64) (count 
 
 func (s *SummaryDetailsService) CountAllExecTotalProjectId() (counts map[int64]int64, err error) {
 	r := repo.NewSummaryDetailsRepo()
-	execsTotal, _ := r.CountAllExecTotalProjectId()
+	execsTotal, err := r.CountAllExecTotalProjectId()
 	counts = make(map[int64]int64, len(execsTotal))
-	for key, value := range execsTotal {
+	for _, value := range execsTotal {
 		//这里写的是id实际是count，都是int64，不做多余的明明
-		counts[int64(key)] = value.Id
+		counts[value.ProjectId] = value.Id
 	}
 	return
 }
@@ -417,83 +422,51 @@ func (s *SummaryDetailsService) FindPassRateByProjectId(projectId int64) (passRa
 
 func (s *SummaryDetailsService) FindAllPassRateByProjectId() (passRate map[int64]float64, err error) {
 	r := repo.NewSummaryDetailsRepo()
-	passRates, _ := r.FindAllPassRateByProjectId()
+	passRates, err := r.FindAllPassRateByProjectId()
 
 	passRate = make(map[int64]float64, len(passRates))
 
-	for projectId, rate := range passRates {
-		passRate[int64(projectId)] = rate.Coverage
+	for _, rate := range passRates {
+		passRate[rate.ProjectId] = rate.Coverage
 	}
 	return
 }
 
-func (s *SummaryDetailsService) HasDataOfDate(startTime string, endTime string, projectId int64) (ret bool, err error) {
+func (s *SummaryDetailsService) Create(req model.SummaryDetails) (err error) {
 	r := repo.NewSummaryDetailsRepo()
-	return r.HasDataOfDate(startTime, endTime, projectId)
+	return r.Create(req)
 }
 
-//func (s *SummaryDetailsService) CheckCardUpdated(lastUpdateTime *time.Time) (result bool, err error) {
-//	r := repo.NewSummaryDetailsRepo()
-//	return r.CheckCardUpdated(lastUpdateTime)
-//}
+func (s *SummaryDetailsService) UpdateColumnsByDate(id int64, req model.SummaryDetails) (err error) {
+	r := repo.NewSummaryDetailsRepo()
+	return r.UpdateColumnsByDate(id, req)
+}
 
-//检查是否有今日数据,没有则copy最后一条,然后进行数据是否更新检查
-//func (s *SummaryDetailsService) CheckDetailsUpdated(lastUpdateTime *time.Time) (result bool, err error) {
-//	r := repo.NewSummaryDetailsRepo()
-//	now := time.Now()
-//	startTime, endTime := GetDate(now)
-//	ret, err := s.HasDataOfDate(startTime, endTime)
-//	if !ret {
-//		details, _ := s.Find()
-//		for _, detail := range details {
-//			newDetail := s.CopyDetailsWithoutBaseModel(detail)
-//			s.Create(newDetail)
-//		}
-//	}
-//	return r.CheckDetailsUpdated(lastUpdateTime)
-//}
+func (s *SummaryDetailsService) HasDataOfDate(startTime string, endTime string, projectId int64) (id int64, err error) {
+	r := repo.NewSummaryDetailsRepo()
+	return r.Existed(startTime, endTime, projectId)
+}
 
-func (s *SummaryDetailsService) CollectDetail(projectId int64, ScenariosTotal int64, interfacesTotal int64, execsTotal int64, passRates float64, coverages int64) (ret model.SummaryDetails) {
-	ret.ProjectId = projectId
-	ret.ScenarioTotal = ScenariosTotal
-	ret.InterfaceTotal = interfacesTotal
-	ret.ExecTotal = execsTotal
-	ret.PassRate, _ = strconv.ParseFloat(fmt.Sprintf("%.1f", passRates), 64)
-	coveragesCount := coverages
-
-	var coverage float64
-	if ret.InterfaceTotal != 0 {
-		coverage = float64(coveragesCount / ret.InterfaceTotal)
+func (s *SummaryDetailsService) CreateByDate(req model.SummaryDetails) (err error) {
+	now := time.Now()
+	startTime, endTime := GetDate(now)
+	id, err := s.HasDataOfDate(startTime, endTime, req.ProjectId)
+	if id == 0 {
+		err = s.Create(req)
 	} else {
-		coverage = 0
+		err = s.UpdateColumnsByDate(id, req)
 	}
-	ret.Coverage, _ = strconv.ParseFloat(fmt.Sprintf("%.1f", coverage), 64)
 	return
 }
 
-func (s *SummaryDetailsService) CollectDetailByProjectId(projectId int64) (ret model.SummaryDetails) {
-	//从biz_scenario表根据projectid,查找场景总数
-	ret.ScenarioTotal, _ = s.CountScenarioTotalProjectId(projectId)
+// SaveDetails 查询今日是否已存在当前projectId对应的数据，没有则create，有则update
+func (s *SummaryDetailsService) SaveDetails() (err error) {
+	details, err := s.GetAllDetailGroupByProjectId()
 
-	//从biz_interface表根据projectid,查找接口总数
-	ret.InterfaceTotal, _ = s.CountEndpointTotalProjectId(projectId)
-
-	//根据projectid,从biz_scenario_report表,获得所有报告总数,然后计算
-	ret.ExecTotal, _ = s.CountExecTotalProjectId(projectId)
-
-	//从biz_scenario_report拿到assertion的相关数据,计算后存储
-	passRate, _ := s.FindPassRateByProjectId(projectId)
-	ret.PassRate, _ = strconv.ParseFloat(fmt.Sprintf("%.1f", passRate), 64)
-
-	//从biz_interface需要获取当前项目的所有接口,然后从biz_processor_interface检查哪些在场景中出现过
-	interfaceIds, _ := s.FindEndpointIdsByProjectId(projectId)
-	count, _ := s.CoverageByProjectId(projectId, interfaceIds)
-	var coverage float64
-	if ret.InterfaceTotal != 0 {
-		coverage = float64(count / ret.InterfaceTotal)
-	} else {
-		coverage = 0
+	for _, detail := range details {
+		newDetail := s.CopyDetailsWithoutBaseModel(detail)
+		err = s.CreateByDate(newDetail)
 	}
-	ret.Coverage, _ = strconv.ParseFloat(fmt.Sprintf("%.1f", coverage), 64)
+
 	return
 }

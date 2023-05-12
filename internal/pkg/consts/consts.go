@@ -23,7 +23,7 @@ const (
 	WsChatEvent        = "OnChat"
 
 	WebCheckInterval         = 60 * 60
-	SummaryDataCheckInterval = 60 * 60
+	SummaryDataCheckInterval = 60 * 1
 	MaxNum                   = 10000
 
 	ConfigFileName = "server.yaml"

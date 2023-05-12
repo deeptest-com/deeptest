@@ -162,10 +162,16 @@ func (c *ScenarioCtrl) AddPlans(ctx iris.Context) {
 
 func (c *ScenarioCtrl) Plans(ctx iris.Context) {
 
+	projectId, err := ctx.URLParamInt("currProjectId")
+	if projectId == 0 {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+		return
+	}
+
 	scenarioId, _ := ctx.Params().GetInt("id")
 
 	var req serverDomain.PlanReqPaginate
-	err := ctx.ReadQuery(&req)
+	err = ctx.ReadQuery(&req)
 	if err != nil {
 		errs := validate.ValidRequest(err)
 		if len(errs) > 0 {
@@ -175,7 +181,7 @@ func (c *ScenarioCtrl) Plans(ctx iris.Context) {
 		}
 	}
 	req.ConvertParams()
-
+	req.ProjectId = uint(projectId)
 	data, err := c.ScenarioService.PlanPaginate(req, scenarioId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})

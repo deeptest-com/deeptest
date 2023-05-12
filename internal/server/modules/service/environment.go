@@ -14,10 +14,13 @@ import (
 type EnvironmentService struct {
 	EnvironmentRepo *repo.EnvironmentRepo `inject:""`
 	ScenarioRepo    *repo.ScenarioRepo    `inject:""`
-	InterfaceRepo   *repo.InterfaceRepo   `inject:""`
 	ProjectRepo     *repo.ProjectRepo     `inject:""`
 	ServeRepo       *repo.ServeRepo       `inject:""`
 	ServeServerRepo *repo.ServeServerRepo `inject:""`
+
+	EndpointRepo          *repo.EndpointRepo          `inject:""`
+	EndpointInterfaceRepo *repo.EndpointInterfaceRepo `inject:""`
+	DebugInterfaceRepo    *repo.DebugInterfaceRepo    `inject:""`
 }
 
 func (s *EnvironmentService) List() (envs []model.Environment, err error) {
@@ -136,9 +139,9 @@ func (s *EnvironmentService) DisableShareVar(id uint) (err error) {
 }
 
 func (s *EnvironmentService) DisableAllShareVar(interfaceId uint) (err error) {
-	interf, _ := s.InterfaceRepo.Get(interfaceId)
-
-	err = s.EnvironmentRepo.DisableAllShareVar(interf.ProjectId)
+	//interf, _ := s.InterfaceRepo.Get(interfaceId)
+	//
+	//err = s.EnvironmentRepo.DisableAllShareVar(interf.ProjectId)
 
 	return
 }
@@ -290,6 +293,27 @@ func (s *EnvironmentService) GetGlobalParams(projectId uint) (ret []domain.Globa
 			In:           v.In,
 		})
 	}
+
+	return
+}
+
+func (s *EnvironmentService) GetDebugEnvByEndpointInterface(endpointInterfaceId uint) (ret model.Environment, err error) {
+	debugInterfaceId, _ := s.DebugInterfaceRepo.HasDebugInterfaceRecord(endpointInterfaceId)
+
+	var serveId uint
+
+	if debugInterfaceId > 0 {
+		debug, _ := s.DebugInterfaceRepo.Get(debugInterfaceId)
+		serveId = debug.ServerId
+	} else {
+		interf, _ := s.EndpointInterfaceRepo.Get(endpointInterfaceId)
+		endpoint, _ := s.EndpointRepo.Get(interf.EndpointId)
+		serveId = endpoint.ServeId
+	}
+
+	serveServer, _ := s.ServeServerRepo.Get(serveId)
+
+	ret, _ = s.EnvironmentRepo.Get(serveServer.EnvironmentId)
 
 	return
 }

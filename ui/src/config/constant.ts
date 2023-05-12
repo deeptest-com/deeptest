@@ -991,7 +991,11 @@ export const paramsSchemaDataTypes: any = {
 
 export const endpointStatus = new Map([[0, '未知'], [1, '设计中'], [2, '开发中'], [3, '已发布'], [4, '已过时']])
 
-export const scenarioStatus = new Map([['draft', '草稿']])
+// export const scenarioStatus = new Map([['draft', '草稿']]);
+export const scenarioStatus = new Map([['disabled', '已禁用'],['draft', '草稿'], ['executed', '已执行'], ['to_execute', '待执行']]);
+export const scenarioStatusColorMap = new Map([['disabled', 'error'],['draft', 'warning'], ['executed', 'success'], ['to_execute', 'processing']]);
+
+
 export const scenarioPriority = new Map([['0', 'P0']])
 
 export const serveStatus = new Map([[0, '未知'], [1, '新建'], [2, '设计中'], [3, '已发布'], [4, ' 已禁用']])
@@ -1220,3 +1224,58 @@ export const planStatusOptions = [
       value: 'to_execute'
     }
 ];
+
+export const scenarioStatusOptions = [
+    {
+        label: '已禁用',
+        value: 'disabled'
+    },
+    {
+        label: '草稿',
+        value: 'draft'
+    },
+    {
+        label: '已执行',
+        value: 'executed'
+    },
+    {
+        label: '待执行',
+        value: 'to_execute'
+    }
+];
+
+export const priorityOptions = [
+    {
+        label: 'P0',
+        value: 'P0'
+    },
+    {
+        label: 'P1',
+        value: 'P1'
+    },
+    {
+        label: 'P2',
+        value: 'P2'
+    },
+    {
+        label: 'P3',
+        value: 'P3'
+    }
+];
+
+export const testTypeOptions = [
+    {
+        label: '接口测试',
+        value: 'api_test'
+    },
+    {
+        label: '性能测试',
+        value: 'performance_test'
+    },
+    {
+        label: '冒烟测试',
+        value: 'smoke_test'
+    },
+];
+
+

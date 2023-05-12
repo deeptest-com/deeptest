@@ -233,6 +233,7 @@ const emit = defineEmits(['select']);
 
 function selectTreeItem(keys, e) {
   selectedKeys.value = keys;
+  // 前端缓存选中的节点
   setSelectedKey('category-scenario', currProject.value.id, selectedKeys.value[0])
   // 如果没有选中的节点，就默认选中根节点
   emit('select', selectedKeys.value?.[0] ? selectedKeys.value[0] : null);

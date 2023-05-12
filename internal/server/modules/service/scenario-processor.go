@@ -11,7 +11,6 @@ import (
 type ScenarioProcessorService struct {
 	ScenarioProcessorRepo *repo.ScenarioProcessorRepo  `inject:""`
 	ScenarioInterfaceRepo *repo.ProcessorInterfaceRepo `inject:""`
-	InterfaceRepo         *repo.InterfaceRepo          `inject:""`
 	EndpointInterfaceRepo *repo.EndpointInterfaceRepo  `inject:""`
 	ExtractorRepo         *repo.ExtractorRepo          `inject:""`
 	CheckpointRepo        *repo.CheckpointRepo         `inject:""`

@@ -24,7 +24,7 @@ var (
 )
 
 func InitExecContext(execObj *ScenarioExecObj) (variables []domain.ExecVariable) {
-	GetScopeHierarchy(execObj.RootProcessor, &ScopeHierarchy)
+	ComputerScopeHierarchy(execObj.RootProcessor, &ScopeHierarchy)
 
 	ExecScene = execObj.ExecScene
 
@@ -167,7 +167,7 @@ func ClearCookie(processorId uint, cookieName string) (err error) {
 	return
 }
 
-func GetScopeHierarchy(processor *Processor, scopeHierarchyMap *map[uint]*[]uint) {
+func ComputerScopeHierarchy(processor *Processor, scopeHierarchyMap *map[uint]*[]uint) {
 	processors := make([]*Processor, 0)
 	GetProcessorList(processor, &processors)
 

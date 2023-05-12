@@ -248,7 +248,7 @@ const edit = (item) => {
 const save = () => {
   console.log('save')
   validate().then(() => {
-    model.value.interfaceId = debugData.value.endpointInterfaceId
+    model.value.endpointInterfaceId = debugData.value.endpointInterfaceId
 
     model.value.projectId = debugData.value.projectId
     store.dispatch('Debug/saveExtractor', model.value).then((result) => {

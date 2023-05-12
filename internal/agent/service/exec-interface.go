@@ -40,7 +40,6 @@ func (s *ExecInterfaceService) Request(req domain.DebugData) (ret domain.DebugRe
 	agentExec.DealwithVariables(&req.BaseRequest, consts.InterfaceDebug)
 
 	// send request
-
 	reqUrl := req.Url
 	req.BaseRequest.Url = _httpUtils.AddSepIfNeeded(req.BaseUrl) + reqUrl
 

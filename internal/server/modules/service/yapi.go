@@ -7,54 +7,50 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
-	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	m "github.com/aaronchen2k/deeptest/internal/server/modules/model"
-	repo "github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/mitchellh/mapstructure"
-	"strconv"
 )
 
 type YapiService struct {
-	InterfaceRepo *repo.InterfaceRepo `inject:""`
-	ImportService *ImportService      `inject:""`
+	ImportService *ImportService `inject:""`
 }
 
 func (s *YapiService) ImportYapiProject(req v1.InterfaceYapiReq) (err error) {
-	yapiHost := req.YapiHost
-	token := req.Token
-	projectId := req.ProjectId
-	target := req.Target
-	yapiCatMenu := getYapiCatMenu(yapiHost, token)
-	yapiCatMenuDatas := yapiCatMenu.Data
-	for i := 0; i < len(yapiCatMenuDatas); i++ {
-		yapiCatMenuData := yapiCatMenuDatas[i]
-		interf := m.Interface{}
-		interf.ProjectId = uint(projectId)
-		interf.Name = yapiCatMenuData.Name
-		dropPos := serverConsts.Inner
-		interf.ParentId, interf.Ordr = s.InterfaceRepo.UpdateOrder(dropPos, uint(target))
-		err = s.InterfaceRepo.Save(&interf)
-		menuId := interf.ID
-		catid := strconv.Itoa(yapiCatMenuData.ID)
-
-		yapiInterfaceList := s.GetYapiMenuInterfaceList(yapiHost, token, catid)
-		catMenuInterfaces := yapiInterfaceList.Data.List
-		for j := 0; j < len(catMenuInterfaces); j++ {
-			catMenuInterface := catMenuInterfaces[j]
-			interfaceId := strconv.Itoa(catMenuInterface.ID)
-			ret := s.GetYapiInterface(yapiHost, token, interfaceId)
-			yapiInterf := s.YapiInterfaceInfoToInterf(ret)
-			yapiInterf.ProjectId = uint(projectId)
-			yapiInterf.ParentId, yapiInterf.Ordr = s.InterfaceRepo.UpdateOrder(dropPos, menuId)
-			err = s.ImportService.Create(&yapiInterf)
-			if err != nil {
-				logUtils.Infof("update yapiInterf to db error, %s", err.Error())
-				return
-			}
-		}
-
-	}
+	//yapiHost := req.YapiHost
+	//token := req.Token
+	//projectId := req.ProjectId
+	//target := req.Target
+	//yapiCatMenu := getYapiCatMenu(yapiHost, token)
+	//yapiCatMenuDatas := yapiCatMenu.Data
+	//for i := 0; i < len(yapiCatMenuDatas); i++ {
+	//	yapiCatMenuData := yapiCatMenuDatas[i]
+	//	interf := m.Interface{}
+	//	interf.ProjectId = uint(projectId)
+	//	interf.Name = yapiCatMenuData.Name
+	//	dropPos := serverConsts.Inner
+	//	interf.ParentId, interf.Ordr = s.InterfaceRepo.UpdateOrder(dropPos, uint(target))
+	//	err = s.InterfaceRepo.Save(&interf)
+	//	menuId := interf.ID
+	//	catid := strconv.Itoa(yapiCatMenuData.ID)
+	//
+	//	yapiInterfaceList := s.GetYapiMenuInterfaceList(yapiHost, token, catid)
+	//	catMenuInterfaces := yapiInterfaceList.Data.List
+	//	for j := 0; j < len(catMenuInterfaces); j++ {
+	//		catMenuInterface := catMenuInterfaces[j]
+	//		interfaceId := strconv.Itoa(catMenuInterface.ID)
+	//		ret := s.GetYapiInterface(yapiHost, token, interfaceId)
+	//		yapiInterf := s.YapiInterfaceInfoToInterf(ret)
+	//		yapiInterf.ProjectId = uint(projectId)
+	//		yapiInterf.ParentId, yapiInterf.Ordr = s.InterfaceRepo.UpdateOrder(dropPos, menuId)
+	//		err = s.ImportService.Create(&yapiInterf)
+	//		if err != nil {
+	//			logUtils.Infof("update yapiInterf to db error, %s", err.Error())
+	//			return
+	//		}
+	//	}
+	//
+	//}
 	return
 
 }

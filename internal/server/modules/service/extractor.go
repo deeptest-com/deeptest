@@ -11,7 +11,6 @@ import (
 
 type ExtractorService struct {
 	ExtractorRepo *repo.ExtractorRepo `inject:""`
-	InterfaceRepo *repo.InterfaceRepo `inject:""`
 
 	ShareVarService *ShareVarService `inject:""`
 }
@@ -52,12 +51,12 @@ func (s *ExtractorService) Delete(reqId uint) (err error) {
 	return
 }
 
-func (s *ExtractorService) ExtractInterface(interfaceId, serveId, processorId, scenarioId uint, resp domain.DebugResponse, usedBy consts.UsedBy) (err error) {
-	extractors, _ := s.ExtractorRepo.List(interfaceId)
+func (s *ExtractorService) ExtractInterface(endpointInterfaceId, serveId, processorId, scenarioId uint, resp domain.DebugResponse, usedBy consts.UsedBy) (err error) {
+	extractors, _ := s.ExtractorRepo.List(endpointInterfaceId)
 
 	for _, extractor := range extractors {
 		s.Extract(&extractor, resp, usedBy)
-		s.ShareVarService.Save(extractor.Variable, extractor.Result, interfaceId, serveId, processorId, scenarioId, extractor.Scope, usedBy)
+		s.ShareVarService.Save(extractor.Variable, extractor.Result, endpointInterfaceId, serveId, processorId, scenarioId, extractor.Scope, usedBy)
 	}
 
 	return
@@ -78,14 +77,6 @@ func (s *ExtractorService) Extract(extractor *model.DebugInterfaceExtractor, res
 
 func (s *ExtractorService) ListExtractorVariableByInterface(interfaceId int) (variables []domain.Variable, err error) {
 	variables, err = s.ExtractorRepo.ListExtractorVariableByInterface(uint(interfaceId))
-
-	return
-}
-
-func (s *ExtractorService) ListValidExtractorVarForInterface(interfaceId int, usedBy consts.UsedBy) (variables []domain.Variable, err error) {
-	interf, _ := s.InterfaceRepo.Get(uint(interfaceId))
-
-	variables, err = s.ExtractorRepo.ListValidExtractorVariableForInterface(uint(interfaceId), interf.ProjectId, usedBy)
 
 	return
 }

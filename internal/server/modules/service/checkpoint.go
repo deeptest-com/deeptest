@@ -15,7 +15,6 @@ import (
 
 type CheckpointService struct {
 	CheckpointRepo  *repo.CheckpointRepo  `inject:""`
-	InterfaceRepo   *repo.InterfaceRepo   `inject:""`
 	EnvironmentRepo *repo.EnvironmentRepo `inject:""`
 	ProjectRepo     *repo.ProjectRepo     `inject:""`
 	ExtractorRepo   *repo.ExtractorRepo   `inject:""`
@@ -52,14 +51,14 @@ func (s *CheckpointService) Delete(reqId uint) (err error) {
 	return
 }
 
-func (s *CheckpointService) CheckInterface(interfaceId uint, resp domain.DebugResponse, usedBy consts.UsedBy) (
+func (s *CheckpointService) CheckInterface(endpointInterfaceId, scenarioProcessorId uint, resp domain.DebugResponse, usedBy consts.UsedBy) (
 	logCheckpoints []domain.ExecInterfaceCheckpoint, status consts.ResultStatus, err error) {
 
-	checkpoints, _ := s.CheckpointRepo.List(interfaceId)
+	checkpoints, _ := s.CheckpointRepo.List(endpointInterfaceId)
 
 	status = consts.Pass
 	for _, checkpoint := range checkpoints {
-		logCheckpoint, err := s.Check(checkpoint, resp, usedBy)
+		logCheckpoint, err := s.Check(checkpoint, scenarioProcessorId, resp, usedBy)
 
 		if err != nil || logCheckpoint.ResultStatus == consts.Fail {
 			status = consts.Fail
@@ -69,8 +68,9 @@ func (s *CheckpointService) CheckInterface(interfaceId uint, resp domain.DebugRe
 	return
 }
 
-func (s *CheckpointService) Check(checkpoint model.DebugInterfaceCheckpoint, resp domain.DebugResponse,
+func (s *CheckpointService) Check(checkpoint model.DebugInterfaceCheckpoint, scenarioProcessorId uint, resp domain.DebugResponse,
 	usedBy consts.UsedBy) (logCheckpoint model.ExecLogCheckpoint, err error) {
+
 	if checkpoint.Disabled {
 		checkpoint.ResultStatus = ""
 
@@ -128,7 +128,7 @@ func (s *CheckpointService) Check(checkpoint model.DebugInterfaceCheckpoint, res
 	var jsonData interface{}
 	json.Unmarshal([]byte(resp.Content), &jsonData)
 
-	checkpoint.ActualResult = "<RESPONSE_BODY>"
+	checkpoint.ActualResult = ""
 
 	// Response Body
 	if checkpoint.Type == consts.ResponseBody {
@@ -149,10 +149,11 @@ func (s *CheckpointService) Check(checkpoint model.DebugInterfaceCheckpoint, res
 
 	// Judgement
 	if checkpoint.Type == consts.Judgement {
+		variableMap, datapools, _ := s.VariableService.GetCombinedVarsForCheckpoint(checkpoint.EndpointInterfaceId, scenarioProcessorId)
 
-		variableMap, _ := s.VariableService.GetShareVarsByInterface(checkpoint.InterfaceId, usedBy)
+		result, _ := agentExec.EvaluateGovaluateExpressionWithVariables(checkpoint.Expression, variableMap, datapools)
 
-		result, _ := agentExec.EvaluateGovaluateExpressionWithVariables(checkpoint.Expression, variableMap)
+		checkpoint.ActualResult = fmt.Sprintf("%v", result)
 
 		ret, ok := result.(bool)
 		if ok && ret {
@@ -160,7 +161,6 @@ func (s *CheckpointService) Check(checkpoint model.DebugInterfaceCheckpoint, res
 		} else {
 			checkpoint.ResultStatus = consts.Fail
 		}
-		checkpoint.ActualResult = fmt.Sprintf("%v", ret)
 
 		s.CheckpointRepo.UpdateResult(checkpoint, usedBy)
 
@@ -170,7 +170,7 @@ func (s *CheckpointService) Check(checkpoint model.DebugInterfaceCheckpoint, res
 	// Extractor
 	if checkpoint.Type == consts.Extractor {
 		// get extractor variable value saved by previous extract opt
-		extractorPo, _ := s.ExtractorRepo.GetByInterfaceVariable(checkpoint.ExtractorVariable, 0, checkpoint.InterfaceId)
+		extractorPo, _ := s.ExtractorRepo.GetByInterfaceVariable(checkpoint.ExtractorVariable, 0, checkpoint.EndpointInterfaceId)
 		checkpoint.ActualResult = extractorPo.Result
 
 		checkpoint.ResultStatus = agentUtils.Compare(checkpoint.Operator, checkpoint.ActualResult, checkpoint.Value)

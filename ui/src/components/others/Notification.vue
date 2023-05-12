@@ -23,13 +23,7 @@ export default defineComponent({
       const msg = result.httpCode === 200 ? t('biz_'+result.resultCode) : t('http_'+result.httpCode)
       const desc = result.resultMsg ? result.resultMsg : ''
 
-      if (result.resultCode === 401) {
-        notification.warn({
-          key: NotificationKeyCommon,
-          message: msg,
-          description: desc ? desc : '',
-        });
-      }  else {
+      if (result.resultCode !== 401) {
         notification.error({
           key: NotificationKeyCommon,
           message: msg,

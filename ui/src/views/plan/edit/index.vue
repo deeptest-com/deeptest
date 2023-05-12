@@ -42,7 +42,7 @@
                     </a-tab-pane>
                     <a-tab-pane key="test-report" tab="测试报告" force-render>
                         <div style="padding-top: 20px">
-                            <ReportList />
+                            <ReportList :show-report-list="activeKey === 'test-report'" />
                         </div>
                     </a-tab-pane>
                 </a-tabs>

@@ -4,20 +4,22 @@
       <div class="left">
         <a-space :size="16">
           <a-button type="primary" @click="() => edit(0)">新建测试场景</a-button>
-          <!--          <a-button  :disabled="true" @click="() => edit(0)">批量操作</a-button>-->
-
+          <!--  <a-button  :disabled="true" @click="() => edit(0)">批量操作</a-button>-->
         </a-space>
       </div>
       <div class="right">
         <a-form :layout="'inline'" class="filter-items">
+          <a-form-item :label="'测试类型'">
+            <a-select style="width:120px" allowClear  placeholder="请选择" @change="onSearch" v-model:value="queryParams.type" :options="testTypeOptions" class="status-select"/>
+          </a-form-item>
           <a-form-item :label="'状态'">
-            <a-select style="width:120px"  @change="onSearch" v-model:value="queryParams.enabled" :options="statusArr" class="status-select"/>
+            <a-select style="width:120px" allowClear  placeholder="请选择" @change="onSearch" v-model:value="queryParams.status" :options="scenarioStatusOptions" class="status-select"/>
           </a-form-item>
           <a-form-item :label="'优先级'">
-            <a-select style="width:120px"  @change="onSearch" v-model:value="queryParams.enabled" :options="statusArr" class="status-select"/>
+            <a-select style="width:120px"  placeholder="请选择" allowClear  @change="onSearch" v-model:value="queryParams.priority" :options="priorityOptions" class="status-select"/>
           </a-form-item>
-          <a-input-search @change="onSearch" @search="onSearch" v-model:value="queryParams.keywords"
-                          placeholder="请输入你需要搜索的测试场景名称" style="width:270px;margin-left: 8px;"/>
+          <a-input-search @change="onSearch" allowClear @search="onSearch" v-model:value="queryParams.keywords"
+                          placeholder="输入你需要搜索测试场景名称" style="width:270px;margin-left: 8px;"/>
         </a-form>
       </div>
     </div>
@@ -57,9 +59,13 @@
         <span>{{momentUtc(record.updatedAt) }}</span>
       </template>
 
+<!--      <template #status="{ record }">-->
+<!--        <a-tag v-if="record.disabled" color="green">禁用</a-tag>-->
+<!--        <a-tag v-else color="cyan">启用</a-tag>-->
+<!--      </template>-->
+
       <template #status="{ record }">
-        <a-tag v-if="record.disabled" color="green">禁用</a-tag>
-        <a-tag v-else color="cyan">启用</a-tag>
+        <a-tag  :color="scenarioStatusColorMap.get(record.status)">{{scenarioStatus.get(record.status)}}</a-tag>
       </template>
 
       <template #action="{ record }">
@@ -73,22 +79,21 @@
               <a-menu-item key="1">
                 <a class="operation-a" href="javascript:void (0)" @click="exec(record.id)">执行测试场景</a>
               </a-menu-item>
-              <a-menu-item key="2">
-                <a class="operation-a" href="javascript:void (0)" @click="design(record.id)">复制</a>
-              </a-menu-item>
-              <a-menu-item key="3">
-                <a class="operation-a" href="javascript:void (0)" @click="design(record.id)">禁用</a>
-              </a-menu-item>
+<!--              <a-menu-item key="2">-->
+<!--                <a class="operation-a" href="javascript:void (0)" @click="design(record.id)">复制</a>-->
+<!--              </a-menu-item>-->
+<!--              <a-menu-item key="3">-->
+<!--                <a class="operation-a" href="javascript:void (0)" @click="design(record.id)">禁用</a>-->
+<!--              </a-menu-item>-->
               <a-menu-item key="4">
                 <a class="operation-a" href="javascript:void (0)" @click="remove(record.id)">删除</a>
               </a-menu-item>
-
-              <a-menu-item key="5">
-                <a class="operation-a" href="javascript:void (0)" @click="design(record.id)">设计</a>
-              </a-menu-item>
-              <a-menu-item key="6">
-                <a class="operation-a" href="javascript:void (0)" @click="edit(record.id)">编辑</a>
-              </a-menu-item>
+<!--              <a-menu-item key="5">-->
+<!--                <a class="operation-a" href="javascript:void (0)" @click="design(record.id)">设计</a>-->
+<!--              </a-menu-item>-->
+<!--              <a-menu-item key="6">-->
+<!--                <a class="operation-a" href="javascript:void (0)" @click="edit(record.id)">编辑</a>-->
+<!--              </a-menu-item>-->
 
             </a-menu>
           </template>
@@ -99,20 +104,12 @@
     <a-empty v-if="list.length === 0" :image="simpleImage" />
 
   </div>
-  <div v-if="isEditVisible">
-    <a-modal :title="currModelId > 0 ? '编辑测试场景' : '新建测试场景'"
-             :visible="true"
-             :onCancel="onEditFinish"
-             class="scenario-edit"
-             :footer="null"
-             width="600px">
-      <ScenarioEdit
-          :modelId="currModelId"
-          :categoryId="nodeDataCategory.id"
-          :onFinish="onEditFinish">
-      </ScenarioEdit>
-    </a-modal>
-  </div>
+
+  <ScenarioCreate :visible="isEditVisible"
+      @cancel="isEditVisible = false"
+      :onFinish="onEditFinish">
+  </ScenarioCreate>
+
   <a-modal v-model:visible="linkPlanVisible"
            :onCancel="onEditFinish"
            class="scenario-edit"
@@ -130,7 +127,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, onMounted, reactive, ref, watch} from "vue";
+import {computed, onMounted, reactive, ref, watch,createVNode} from "vue";
 import { Empty } from 'ant-design-vue';
 import { MoreOutlined } from "@ant-design/icons-vue";
 import {SelectTypes} from 'ant-design-vue/es/select';
@@ -143,10 +140,12 @@ import {useRouter} from "vue-router";
 import {message, Modal, notification} from "ant-design-vue";
 import {StateType as ProjectStateType} from "@/store/project";
 import EditAndShowField from '@/components/EditAndShow/index.vue';
-import ScenarioEdit from "../edit/index.vue";
+import ScenarioCreate from "../edit/index.vue";
 import LinkPlan from "../edit/linkPlan.vue";
 import DrawerDetail from "../components/Drawer/index.vue";
 import { ColumnProps } from 'ant-design-vue/es/table/interface';
+import {scenarioStatusColorMap,scenarioStatus,scenarioStatusOptions,priorityOptions,testTypeOptions} from "@/config/constant"
+import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
 
 type Key = ColumnProps['key'];
 
@@ -182,7 +181,7 @@ const nodeDataCategory = computed<any>(()=> store.state.Scenario.nodeDataCategor
 const list = computed<Scenario[]>(() => store.state.Scenario.listResult.list);
 let pagination = computed<PaginationConfig>(() => store.state.Scenario.listResult.pagination);
 let queryParams = reactive<QueryParams>({
-  keywords: '', enabled: '1',
+  keywords:'',
   page: pagination.value.current, pageSize: pagination.value.pageSize
 });
 
@@ -211,7 +210,9 @@ const getList = debounce(async (current: number, categoryId: number): Promise<vo
   await store.dispatch('Scenario/listScenario', {
     categoryId,
     keywords: queryParams.keywords,
-    enabled: queryParams.enabled,
+    status: queryParams.status,
+    type: queryParams.type,
+    priority: queryParams.priority,
     pageSize: pagination.value.pageSize,
     page: current,
   });
@@ -236,7 +237,6 @@ const design = (id: number) => {
 const isEditVisible = ref(false)
 
 const edit = (id: number) => {
-  console.log('edit')
   currModelId.value = id
   isEditVisible.value = true
 }
@@ -256,6 +256,7 @@ const remove = (id: number) => {
     content: '确定删除指定的场景？',
     okText: '确认',
     cancelText: '取消',
+    icon: createVNode(ExclamationCircleOutlined),
     onOk: async () => {
       store.dispatch('Scenario/removeScenario', id).then((res) => {
         console.log('res', res)

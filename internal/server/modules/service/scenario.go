@@ -57,7 +57,15 @@ func (s *ScenarioService) AddPlans(scenarioId int, planIds []int) (err error) {
 	return
 }
 
-func (s *ScenarioService) PlanPaginate(req v1.PlanReqPaginate, scenarioId int) (ret _domain.PageData, err error) {
+func (s *ScenarioService) RemovePlans(scenarioId int, planIds []int) (err error) {
+	if len(planIds) == 0 {
+		return
+	}
+	err = s.ScenarioRepo.RemovePlans(uint(scenarioId), planIds)
+	return
+}
+
+func (s *ScenarioService) PlanPaginate(req v1.ScenarioPlanReqPaginate, scenarioId int) (ret _domain.PageData, err error) {
 	ret, err = s.ScenarioRepo.PlanList(req, scenarioId)
 	return
 }

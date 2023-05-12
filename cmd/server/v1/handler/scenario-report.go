@@ -18,14 +18,16 @@ type ScenarioReportCtrl struct {
 }
 
 func (c *ScenarioReportCtrl) List(ctx iris.Context) {
-	projectId, err := ctx.URLParamInt("currProjectId")
-	if projectId == 0 {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
-		return
-	}
+	/*
+		projectId, err := ctx.URLParamInt("currProjectId")
+		if projectId == 0 {
+			ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+			return
+		}
+	*/
 
 	var req serverDomain.ReportReqPaginate
-	if err := ctx.ReadQuery(&req); err != nil {
+	if err := ctx.ReadJSON(&req); err != nil {
 		errs := validate.ValidRequest(err)
 		if len(errs) > 0 {
 			logUtils.Errorf("参数验证失败", zap.String("错误", strings.Join(errs, ";")))
@@ -33,9 +35,8 @@ func (c *ScenarioReportCtrl) List(ctx iris.Context) {
 			return
 		}
 	}
-	req.ConvertParams()
 
-	data, err := c.ScenarioReportService.Paginate(req, projectId)
+	data, err := c.ScenarioReportService.Paginate(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

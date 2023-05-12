@@ -10,7 +10,7 @@ type Scenario struct {
 	Desc    string  `json:"desc" yaml:"desc"`
 
 	Processor      Processor         `json:"processor" yaml:"processor" gorm:"-"`
-	CategoryId     uint              `json:"categoryId"`
+	CategoryId     int64             `json:"categoryId"`
 	ServeId        uint              `json:"serveId"`
 	ProjectId      uint              `json:"projectId"`
 	SerialNumber   string            `json:"serialNumber"`

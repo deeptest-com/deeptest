@@ -20,17 +20,14 @@ type ScenarioReportRepo struct {
 	ScenarioRepo *ScenarioRepo `inject:""`
 }
 
-func (r *ScenarioReportRepo) Paginate(req v1.ReportReqPaginate, projectId int) (data _domain.PageData, err error) {
+func (r *ScenarioReportRepo) Paginate(req v1.ReportReqPaginate) (data _domain.PageData, err error) {
 	var count int64
 
 	db := r.DB.Model(&model.ScenarioReport{}).
-		Where("project_id = ? AND NOT deleted", projectId)
+		Where(" NOT deleted and scenario_id=?", req.ScenarioId)
 
 	if req.Keywords != "" {
 		db = db.Where("name LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords))
-	}
-	if req.ScenarioId != 0 {
-		db = db.Where("scenario_id = ?", req.ScenarioId)
 	}
 
 	err = db.Count(&count).Error

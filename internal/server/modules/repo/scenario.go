@@ -67,6 +67,9 @@ func (r *ScenarioRepo) Paginate(req v1.ScenarioReqPaginate, projectId int) (data
 	if req.Priority != "" {
 		db = db.Where("priority = ?", req.Priority)
 	}
+	if req.Type != "" {
+		db = db.Where("type = ?", req.Type)
+	}
 
 	err = db.Count(&count).Error
 	if err != nil {
@@ -75,7 +78,7 @@ func (r *ScenarioRepo) Paginate(req v1.ScenarioReqPaginate, projectId int) (data
 	}
 
 	scenarios := make([]*model.Scenario, 0)
-
+	req.Order = "desc"
 	err = db.
 		Scopes(dao.PaginateScope(req.Page, req.PageSize, req.Order, req.Field)).
 		Find(&scenarios).Error
@@ -244,7 +247,7 @@ func (r *ScenarioRepo) AddPlans(scenarioId uint, planIds []int) (err error) {
 	return
 }
 
-func (r *ScenarioRepo) PlanList(req v1.PlanReqPaginate, scenarioId int) (data _domain.PageData, err error) {
+func (r *ScenarioRepo) PlanList(req v1.ScenarioPlanReqPaginate, scenarioId int) (data _domain.PageData, err error) {
 	relations, _ := r.ListScenarioRelation(uint(scenarioId))
 	var planIds []uint
 	for _, item := range relations {
@@ -254,13 +257,21 @@ func (r *ScenarioRepo) PlanList(req v1.PlanReqPaginate, scenarioId int) (data _d
 	db := r.DB.Model(&model.Plan{}).Where("not deleted and project_id=?", req.ProjectId)
 
 	if len(planIds) > 0 {
-		db = db.Where(" id not in (?)", planIds)
+		if req.Ref {
+			db = db.Where(" id in (?)", planIds)
+		} else {
+			db = db.Where(" id not in (?)", planIds)
+		}
 	}
 
 	var count int64
 
 	if req.Status != "" {
 		db = db.Where("status = ?", req.Status)
+	}
+
+	if req.UpdateUserId != 0 {
+		db = db.Where("update_user_id = ?", req.UpdateUserId)
 	}
 
 	err = db.Count(&count).Error
@@ -295,5 +306,10 @@ func (r *ScenarioRepo) GetByIds(ids []uint) (scenarios []model.Scenario, err err
 		return scenarios, err
 	}
 
+	return
+}
+
+func (r *ScenarioRepo) RemovePlans(scenarioId uint, planIds []int) (err error) {
+	err = r.DB.Model(&model.RelaPlanScenario{}).Where("scenario_id=? and plan_id in (?)", scenarioId, planIds).Update("deleted", true).Error
 	return
 }

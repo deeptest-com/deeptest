@@ -16,8 +16,8 @@ func NewReportService() *ScenarioReportService {
 	return &ScenarioReportService{}
 }
 
-func (s *ScenarioReportService) Paginate(req v1.ReportReqPaginate, projectId int) (ret _domain.PageData, err error) {
-	ret, err = s.ScenarioReportRepo.Paginate(req, projectId)
+func (s *ScenarioReportService) Paginate(req v1.ReportReqPaginate) (ret _domain.PageData, err error) {
+	ret, err = s.ScenarioReportRepo.Paginate(req)
 	return
 }
 

@@ -170,8 +170,8 @@ func (c *ScenarioCtrl) Plans(ctx iris.Context) {
 
 	scenarioId, _ := ctx.Params().GetInt("id")
 
-	var req serverDomain.PlanReqPaginate
-	err = ctx.ReadQuery(&req)
+	var req serverDomain.ScenarioPlanReqPaginate
+	err = ctx.ReadJSON(&req)
 	if err != nil {
 		errs := validate.ValidRequest(err)
 		if len(errs) > 0 {
@@ -180,7 +180,7 @@ func (c *ScenarioCtrl) Plans(ctx iris.Context) {
 			return
 		}
 	}
-	req.ConvertParams()
+
 	req.ProjectId = uint(projectId)
 	data, err := c.ScenarioService.PlanPaginate(req, scenarioId)
 	if err != nil {
@@ -204,4 +204,23 @@ func (c *ScenarioCtrl) UpdateStatus(ctx iris.Context) {
 	} else {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 	}
+}
+
+func (c *ScenarioCtrl) RemovePlans(ctx iris.Context) {
+	scenarioId, _ := ctx.Params().GetInt("id")
+
+	planIds := make([]int, 0)
+	err := ctx.ReadJSON(&planIds)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: "ids"})
+		return
+	}
+
+	err = c.ScenarioService.RemovePlans(scenarioId, planIds)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code})
 }

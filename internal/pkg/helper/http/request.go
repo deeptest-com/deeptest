@@ -88,7 +88,24 @@ func gets(req domain.BaseRequest, method consts.HttpMethod, readRespData bool) (
 		}
 	}
 
-	client := &http.Client{}
+	cookiejar, _ := cookiejar.New(nil)
+	var cookies []*http.Cookie
+	for _, c := range req.Cookies {
+		cookies = append(cookies, &http.Cookie{
+			Name:  c.Name,
+			Value: fmt.Sprintf("%v", c.Value),
+		})
+	}
+	urlStr, _ := url.Parse(req.Url)
+	cookiejar.SetCookies(urlStr, cookies)
+
+	client := &http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		},
+		Jar:     cookiejar, // insert response cookies into request
+		Timeout: consts.HttpRequestTimeout,
+	}
 
 	if _consts.Verbose {
 		_logUtils.Info(reqUrl)
@@ -188,7 +205,7 @@ func posts(req domain.BaseRequest, method consts.HttpMethod, readRespData bool) 
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 		},
 		Jar:     jar, // insert response cookies into request
-		Timeout: 120 * time.Second,
+		Timeout: consts.HttpRequestTimeout,
 	}
 
 	var dataBytes []byte

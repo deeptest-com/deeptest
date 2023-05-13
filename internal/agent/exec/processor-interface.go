@@ -48,6 +48,9 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 	// dealwith variables
 	DealwithVariables(&entity.BaseRequest, consts.ScenarioDebug)
 
+	// add cookies
+	DealwithCookies(&entity.BaseRequest, entity.ProcessorID)
+
 	// send request
 	GenRequestUrl(&entity.BaseRequest, processor.EndpointInterfaceId)
 	entity.Response, err = Invoke(&entity.BaseRequest)

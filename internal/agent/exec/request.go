@@ -91,6 +91,10 @@ func DealwithVariables(req *domain.BaseRequest, usedBy consts.UsedBy) {
 	replaceAuthor(req)
 }
 
+func DealwithCookies(req *domain.BaseRequest, processorId uint) {
+	req.Cookies = ListScopeCookie(processorId)
+}
+
 func replaceUrl(req *domain.BaseRequest, usedBy consts.UsedBy) {
 	// project's global params already be added
 	req.Url = ReplaceVariableValue(req.Url)

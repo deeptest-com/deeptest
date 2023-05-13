@@ -152,7 +152,8 @@ func gets(req domain.BaseRequest, method consts.HttpMethod, readRespData bool) (
 	ret.StatusContent = resp.Status
 	ret.ContentType = consts.HttpContentType(resp.Header.Get(consts.ContentType))
 	ret.ContentLength = _stringUtils.ParseInt(resp.Header.Get(consts.ContentLength))
-	ret.Headers, ret.Cookies = getHeaders(resp.Header)
+	ret.Headers = getHeaders(resp.Header)
+	ret.Cookies = getCookies(resp.Cookies())
 
 	if !readRespData {
 		return
@@ -291,7 +292,8 @@ func posts(req domain.BaseRequest, method consts.HttpMethod, readRespData bool) 
 
 	ret.ContentType = consts.HttpContentType(resp.Header.Get(consts.ContentType))
 	ret.ContentLength = _stringUtils.ParseInt(resp.Header.Get(consts.ContentLength))
-	ret.Headers, ret.Cookies = getHeaders(resp.Header)
+	ret.Headers = getHeaders(resp.Header)
+	ret.Cookies = getCookies(resp.Cookies())
 
 	if !readRespData {
 		return
@@ -342,20 +344,22 @@ func addAuthorInfo(req domain.BaseRequest, request *http.Request) {
 	}
 }
 
-func getHeaders(header http.Header) (headers []domain.Header, cookies []domain.ExecCookie) {
+func getHeaders(header http.Header) (headers []domain.Header) {
 	for key, val := range header {
-		if key == "set-cookie" {
-			cookie := domain.ExecCookie{
-				Name:  key,
-				Value: val[0],
-			}
-			cookies = append(cookies, cookie)
-
-			continue
-		}
-
 		header := domain.Header{Name: key, Value: val[0]}
 		headers = append(headers, header)
+	}
+
+	return
+}
+func getCookies(cookies []*http.Cookie) (ret []domain.ExecCookie) {
+	for _, item := range cookies {
+		cookie := domain.ExecCookie{
+			Name:   item.Name,
+			Value:  item.Value,
+			Domain: item.Domain,
+		}
+		ret = append(ret, cookie)
 	}
 
 	return

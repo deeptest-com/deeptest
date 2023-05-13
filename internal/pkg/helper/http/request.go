@@ -357,6 +357,8 @@ func getHeaders(header http.Header) (headers []domain.Header) {
 	return
 }
 func getCookies(cookies []*http.Cookie, jarCookies []*http.Cookie) (ret []domain.ExecCookie) {
+	mp := map[string]bool{}
+
 	for _, item := range cookies {
 		cookie := domain.ExecCookie{
 			Name:   item.Name,
@@ -364,9 +366,17 @@ func getCookies(cookies []*http.Cookie, jarCookies []*http.Cookie) (ret []domain
 			Domain: item.Domain,
 		}
 		ret = append(ret, cookie)
+
+		key := fmt.Sprintf("%s-%s-%s", item.Name, item.Value, item.Domain)
+		mp[key] = true
 	}
 
 	for _, item := range jarCookies {
+		key := fmt.Sprintf("%s-%s-%s", item.Name, item.Value, item.Domain)
+		if _, ok := mp[key]; ok {
+			continue
+		}
+
 		cookie := domain.ExecCookie{
 			Name:   item.Name,
 			Value:  item.Value,

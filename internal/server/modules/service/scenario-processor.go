@@ -15,6 +15,7 @@ type ScenarioProcessorService struct {
 	ExtractorRepo         *repo.ExtractorRepo          `inject:""`
 	CheckpointRepo        *repo.CheckpointRepo         `inject:""`
 	DebugInterfaceRepo    *repo.DebugInterfaceRepo     `inject:""`
+	ServeServerRepo       *repo.ServeServerRepo        `inject:""`
 
 	ExtractorService      *ExtractorService      `inject:""`
 	CheckpointService     *CheckpointService     `inject:""`
@@ -90,6 +91,9 @@ func (s *ScenarioProcessorService) GetEntityTo(processorTo *agentExec.Processor)
 
 		interfaceEntity := agentExec.ProcessorInterface{}
 		copier.CopyWithOption(&interfaceEntity, debugData, copier.Option{DeepCopy: true})
+
+		server, _ := s.ServeServerRepo.Get(debugData.ServerId)
+		interfaceEntity.BaseUrl = server.Url
 
 		interfaceEntity.ProcessorID = processor.ID
 		interfaceEntity.ParentID = processor.ParentId

@@ -88,6 +88,10 @@ func (c *EndpointCtrl) requestParser(req serverDomain.EndpointReq) (endpoint mod
 		req.Interfaces[key].Name = req.Title
 	}
 
+	if req.CategoryId == 0 {
+		req.CategoryId = -1
+	}
+
 	copier.CopyWithOption(&endpoint, &req, copier.Option{IgnoreEmpty: true, DeepCopy: true})
 	return
 }

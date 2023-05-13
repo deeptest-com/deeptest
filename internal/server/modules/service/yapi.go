@@ -2,7 +2,6 @@ package service
 
 import (
 	"encoding/json"
-	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
@@ -136,24 +135,24 @@ func (s *YapiService) GetYapiInterface(yapiHost, token, interfaceId string) (ret
 	return resp
 }
 
-func (s *YapiService) YapiInterfaceInfoToInterf(ret domain.DebugResponse) (interf m.Interface) {
+func (s *YapiService) YapiInterfaceInfoToInterf(ret domain.DebugResponse) (interf m.EndpointInterface) {
+	////content := ret.Content
+	//yapiRes := YapiRes{}
 	//content := ret.Content
-	yapiRes := YapiRes{}
-	content := ret.Content
-	err := json.Unmarshal([]byte(content), &yapiRes)
-	if err != nil {
-		logUtils.Infof("get yapi interface info map error, %s", err.Error())
-		//fmt.Println(err.Error())
-	}
-	fmt.Println(yapiRes)
-	interf.Name = yapiRes.Data.Title
-	interf.Url = yapiRes.Data.Path
-	interf.Method = getMethod(yapiRes.Data.Method)
-	interf.BodyType = getReqBodyType(yapiRes.Data.ReqBodyType)
-	interf.Body = getReqBodyOther(yapiRes.Data.ReqBodyOther)
-	interf.Params = getReqParams(yapiRes.Data.ReqQuery)
-	interf.Headers = getReqHeaders(yapiRes.Data.ReqHeaders)
-	interf.BodyFormData = getReqBodyForm(yapiRes.Data.ReqBodyForm)
+	//err := json.Unmarshal([]byte(content), &yapiRes)
+	//if err != nil {
+	//	logUtils.Infof("get yapi interface info map error, %s", err.Error())
+	//	//fmt.Println(err.Error())
+	//}
+	//fmt.Println(yapiRes)
+	//interf.Name = yapiRes.Data.Title
+	//interf.Url = yapiRes.Data.Path
+	//interf.Method = getMethod(yapiRes.Data.Method)
+	//interf.BodyType = getReqBodyType(yapiRes.Data.ReqBodyType)
+	//interf.Body = getReqBodyOther(yapiRes.Data.ReqBodyOther)
+	//interf.Params = getReqParams(yapiRes.Data.ReqQuery)
+	//interf.Headers = getReqHeaders(yapiRes.Data.ReqHeaders)
+	//interf.BodyFormData = getReqBodyForm(yapiRes.Data.ReqBodyForm)
 	return
 }
 

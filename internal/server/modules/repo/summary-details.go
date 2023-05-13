@@ -134,12 +134,12 @@ func (r *SummaryDetailsRepo) CountExecTotalProjectId(projectId int64) (int64, er
 
 func (r *SummaryDetailsRepo) CountInterfaceTotalProjectId(projectId int64) (int64, error) {
 	var count sql.NullInt64
-	err := r.DB.Model(&model.Interface{}).Select("count(id)").Where("project_id = ? AND NOT deleted ", projectId).Find(&count).Error
+	err := r.DB.Model(&model.EndpointInterface{}).Select("count(id)").Where("project_id = ? AND NOT deleted ", projectId).Find(&count).Error
 	return count.Int64, err
 }
 
 func (r *SummaryDetailsRepo) FindInterfaceIdsByProjectId(projectId int64) (ids []int64, err error) {
-	err = r.DB.Model(&model.Interface{}).Select("id").Where("project_id = ? AND NOT deleted ", projectId).Find(&ids).Error
+	err = r.DB.Model(&model.EndpointInterface{}).Select("id").Where("project_id = ? AND NOT deleted ", projectId).Find(&ids).Error
 	return
 }
 

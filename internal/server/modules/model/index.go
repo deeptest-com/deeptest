@@ -22,7 +22,6 @@ var (
 		&EnvironmentVar{},
 		&ShareVariable{},
 
-		&Interface{},
 		&InterfaceParam{},
 		&InterfaceBodyFormDataItem{},
 		&InterfaceBodyFormUrlEncodedItem{},

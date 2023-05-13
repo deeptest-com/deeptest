@@ -233,7 +233,7 @@ func (r *EndpointRepo) updateDebugInterfaceUrl(endpointId uint, url string) (err
 func (r *EndpointRepo) removeInterfaces(endpointId uint) (err error) {
 	err = r.DB.
 		Where("endpoint_id = ?", endpointId).
-		Delete(&model.Interface{}, "").Error
+		Delete(&model.EndpointInterface{}, "").Error
 
 	return
 }

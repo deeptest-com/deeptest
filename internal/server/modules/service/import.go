@@ -67,7 +67,7 @@ func (s *ImportService) GenerateEnvironment(doc openapi3.T, projectId uint) (err
 	return
 }
 
-func (s *ImportService) Create(interf *model.Interface) (err error) {
+func (s *ImportService) Create(interf *model.EndpointInterface) (err error) {
 	//interf.ParentId, interf.Ordr = s.InterfaceRepo.UpdateOrder(serverConsts.Inner, interf.ParentId)
 	//err = s.InterfaceRepo.Save(interf)
 	//if err != nil {

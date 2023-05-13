@@ -8,7 +8,9 @@ type DebugResponse struct {
 	StatusCode    consts.HttpRespCode `json:"statusCode"`
 	StatusContent string              `json:"statusContent"`
 
-	Headers     []Header               `gorm:"-" json:"headers"`
+	Headers []Header     `gorm:"-" json:"headers"`
+	Cookies []ExecCookie `gorm:"-" json:"cookies"`
+
 	Content     string                 `gorm:"default:''" json:"content"`
 	ContentType consts.HttpContentType `json:"contentType"`
 

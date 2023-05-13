@@ -5,14 +5,14 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 )
 
-type Interface struct {
+type InterfaceOld struct {
 	BaseModel
 
 	InterfaceBase
 
 	//ReqBodySpec InterfaceReqBodySpec `gorm:"-" json:"basicAuth"`
 
-	Children []*Interface `gorm:"-" json:"children"`
+	Children []*InterfaceOld `gorm:"-" json:"children"`
 
 	Params         []InterfaceParam        `gorm:"-" json:"params"`
 	Headers        []InterfaceHeader       `gorm:"-" json:"headers"`
@@ -32,8 +32,8 @@ type Interface struct {
 	InterfaceCheckpoints []InterfaceCheckpoint `gorm:"-" json:"interfaceCheckpoints"`
 }
 
-func (Interface) TableName() string {
-	return "biz_interface"
+func (InterfaceOld) TableName() string {
+	return "biz_interface_old"
 }
 
 type InterfaceParam struct {

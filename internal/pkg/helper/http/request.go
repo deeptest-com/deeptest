@@ -449,8 +449,9 @@ func genCookies(req domain.BaseRequest) (ret http.CookieJar) {
 	var cookies []*http.Cookie
 	for _, c := range req.Cookies {
 		cookies = append(cookies, &http.Cookie{
-			Name:  c.Name,
-			Value: _stringUtils.InterfToStr(c.Value),
+			Name:   c.Name,
+			Value:  _stringUtils.InterfToStr(c.Value),
+			Domain: c.Domain,
 		})
 	}
 	urlStr, _ := url.Parse(req.Url)

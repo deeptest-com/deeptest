@@ -37,7 +37,7 @@ func (c *MockCtrl) Get(ctx iris.Context) {
 	value := ctx.GetHeader("k1")
 	logUtils.Infof("API KEY - %s: %s", "k1", value)
 
-	co := ctx.GetCookie("k1")
+	co := ctx.GetCookie("token")
 	log.Print(co)
 
 	ctx.SetCookieKV("cookie1", "value_from_server")

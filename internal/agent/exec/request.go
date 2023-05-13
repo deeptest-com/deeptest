@@ -67,7 +67,7 @@ func GetContentProps(resp *domain.DebugResponse) {
 
 	typeName := arr1[1]
 	if typeName == "text" || typeName == "plain" {
-		typeName = "plaintext"
+		typeName = "text"
 	}
 	resp.ContentLang = consts.HttpRespLangType(typeName)
 

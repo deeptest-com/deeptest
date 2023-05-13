@@ -51,3 +51,15 @@ func RemoveLeftVariableSymbol(str string) (ret string) {
 
 	return
 }
+
+func GetVariablesInExpressionPlaceholder(expression string) (ret []string) {
+	re := regexp.MustCompile("(?siU)\\${\\+??(.*)}")
+	matchResultArr := re.FindAllStringSubmatch(expression, -1)
+
+	for _, childArr := range matchResultArr {
+		variableName := childArr[1]
+		ret = append(ret, variableName)
+	}
+
+	return
+}

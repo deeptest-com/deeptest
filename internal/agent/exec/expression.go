@@ -75,7 +75,7 @@ func EvaluateGovaluateExpressionByScope(expression string, scopeId uint) (ret in
 func generateGovaluateParamsByScope(expression string, scopeId uint) (ret domain.VarKeyValuePair, err error) {
 	ret = make(map[string]interface{}, 8)
 
-	variables := GetVariablesInExpressionPlaceholder(expression)
+	variables := commUtils.GetVariablesInExpressionPlaceholder(expression)
 
 	for _, variableName := range variables {
 		var vari domain.ExecVariable
@@ -93,7 +93,7 @@ func generateGovaluateParamsWithVariables(expression string, variableMap map[str
 
 	govaluateParams = make(map[string]interface{}, 0)
 
-	varsInExpression := GetVariablesInExpressionPlaceholder(expression)
+	varsInExpression := commUtils.GetVariablesInExpressionPlaceholder(expression)
 
 	for _, varName := range varsInExpression {
 		varNameWithoutPlus := strings.TrimLeft(varName, "+")
@@ -105,18 +105,6 @@ func generateGovaluateParamsWithVariables(expression string, variableMap map[str
 			}
 			govaluateParams[varNameWithoutPlus] = val
 		}
-	}
-
-	return
-}
-
-func GetVariablesInExpressionPlaceholder(expression string) (ret []string) {
-	re := regexp.MustCompile("(?siU)\\${(.*)}")
-	matchResultArr := re.FindAllStringSubmatch(expression, -1)
-
-	for _, childArr := range matchResultArr {
-		variableName := childArr[1]
-		ret = append(ret, variableName)
 	}
 
 	return

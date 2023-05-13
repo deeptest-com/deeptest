@@ -88,23 +88,14 @@ func gets(req domain.BaseRequest, method consts.HttpMethod, readRespData bool) (
 		}
 	}
 
-	cookiejar, _ := cookiejar.New(nil)
-	var cookies []*http.Cookie
-	for _, c := range req.Cookies {
-		cookies = append(cookies, &http.Cookie{
-			Name:  c.Name,
-			Value: fmt.Sprintf("%v", c.Value),
-		})
-	}
-	urlStr, _ := url.Parse(req.Url)
-	cookiejar.SetCookies(urlStr, cookies)
+	jar := genCookies(req)
 
 	client := &http.Client{
+		Jar:     jar,
+		Timeout: consts.HttpRequestTimeout,
 		Transport: &http.Transport{
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 		},
-		Jar:     cookiejar, // insert response cookies into request
-		Timeout: consts.HttpRequestTimeout,
 	}
 
 	if _consts.Verbose {
@@ -199,12 +190,13 @@ func posts(req domain.BaseRequest, method consts.HttpMethod, readRespData bool) 
 		_logUtils.Info(reqUrl)
 	}
 
-	jar, _ := cookiejar.New(nil)
+	jar := genCookies(req)
+
 	client := &http.Client{
 		Transport: &http.Transport{
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 		},
-		Jar:     jar, // insert response cookies into request
+		Jar:     jar,
 		Timeout: consts.HttpRequestTimeout,
 	}
 
@@ -411,6 +403,22 @@ func IsJsonContent(str string) bool {
 
 func Base64(str string) (ret string) {
 	ret = base64.StdEncoding.EncodeToString([]byte(str))
+
+	return
+}
+
+func genCookies(req domain.BaseRequest) (ret http.CookieJar) {
+	ret, _ = cookiejar.New(nil)
+
+	var cookies []*http.Cookie
+	for _, c := range req.Cookies {
+		cookies = append(cookies, &http.Cookie{
+			Name:  c.Name,
+			Value: _stringUtils.InterfToStr(c.Value),
+		})
+	}
+	urlStr, _ := url.Parse(req.Url)
+	ret.SetCookies(urlStr, cookies)
 
 	return
 }

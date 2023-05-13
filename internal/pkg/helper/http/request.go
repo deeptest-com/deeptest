@@ -73,8 +73,20 @@ func gets(req domain.BaseRequest, method consts.HttpMethod, readRespData bool) (
 	ret domain.DebugResponse, err error) {
 
 	reqUrl := commUtils.RemoveLeftVariableSymbol(req.Url)
-	reqParams := req.Params
-	reqHeaders := req.Headers
+
+	var reqParams []domain.Param
+	for _, p := range req.Params {
+		if p.Name != "" {
+			reqParams = append(reqParams, p)
+		}
+	}
+
+	var reqHeaders []domain.Header
+	for _, h := range req.Headers {
+		if h.Name != "" {
+			reqHeaders = append(reqHeaders, h)
+		}
+	}
 
 	client := &http.Client{}
 

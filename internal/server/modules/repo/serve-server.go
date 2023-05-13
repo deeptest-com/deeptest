@@ -26,3 +26,9 @@ func (r *ServeServerRepo) GetByEndpoint(endpointId uint) (res model.ServeServer,
 	err = r.DB.Where("NOT deleted").First(&res, endpoint.ServerId).Error
 	return
 }
+
+func (r *ServeServerRepo) GetDefaultByServe(serveId uint) (ret model.ServeServer, err error) {
+	err = r.DB.Where("serve_id = ? AND NOT deleted", serveId).First(&ret).Error
+
+	return
+}

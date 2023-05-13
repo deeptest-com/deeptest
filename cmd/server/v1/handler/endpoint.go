@@ -38,6 +38,11 @@ func (c *EndpointCtrl) Save(ctx iris.Context) {
 
 	req.CreateUser = multi.GetUsername(ctx)
 	endpoint := c.requestParser(req)
+
+	// TODO: remove
+	if endpoint.CategoryId < 0 {
+		endpoint.CategoryId = 0
+	}
 	res, _ := c.EndpointService.Save(endpoint)
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res})
 
@@ -78,17 +83,12 @@ func (c *EndpointCtrl) BatchDelete(ctx iris.Context) {
 //构造参数构造auth，BasicAuth,BearerToken,OAuth20,ApiKey
 func (c *EndpointCtrl) requestParser(req serverDomain.EndpointReq) (endpoint model.Endpoint) {
 	for key, item := range req.Interfaces {
-		//fmt.Println(_commUtils.JsonEncode(item.ResponseBodies))
 		req.Interfaces[key].Body = item.RequestBody.SchemaItem.Content
 		req.Interfaces[key].BodyType = item.RequestBody.MediaType
 		req.Interfaces[key].Name = req.Title
 	}
-	if req.CategoryId == 0 {
-		req.CategoryId = -1
-	}
+
 	copier.CopyWithOption(&endpoint, &req, copier.Option{IgnoreEmpty: true, DeepCopy: true})
-	//fmt.Println(len(req.Interfaces), "-----------------------------", _commUtils.JsonEncode(req.Interfaces))
-	//fmt.Println(len(endpoint.Interfaces), "-----------------------------", _commUtils.JsonEncode(endpoint.Interfaces))
 	return
 }
 

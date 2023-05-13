@@ -163,7 +163,7 @@ const onSubmit = async () => {
   console.log('onSubmit', modelRef.value)
 
   validate().then(() => {
-    props.onFinish(modelRef.value);
+    props.onFinish(modelRef.value); // saved in Renderer.lenses
   })
 }
 

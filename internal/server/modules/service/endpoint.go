@@ -15,6 +15,8 @@ type EndpointService struct {
 	ServeRepo              *repo.ServeRepo              `inject:""`
 	EndpointInterfaceRepo  *repo.EndpointInterfaceRepo  `inject:""`
 	ProcessorInterfaceRepo *repo.ProcessorInterfaceRepo `inject:""`
+
+	ServeServerRepo *repo.ServeServerRepo `inject:""`
 }
 
 func NewEndpointService() *EndpointService {
@@ -27,6 +29,9 @@ func (s *EndpointService) Paginate(req v1.EndpointReqPaginate) (ret _domain.Page
 }
 
 func (s *EndpointService) Save(endpoint model.Endpoint) (res uint, err error) {
+	server, _ := s.ServeServerRepo.GetDefaultByServe(endpoint.ServeId)
+	endpoint.ServerId = server.ID
+
 	err = s.EndpointRepo.SaveAll(&endpoint)
 	return endpoint.ID, err
 }

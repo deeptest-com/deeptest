@@ -8,6 +8,7 @@ import (
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/kataras/iris/v12"
+	"log"
 )
 
 type MockCtrl struct {
@@ -35,6 +36,11 @@ func (c *MockCtrl) Get(ctx iris.Context) {
 
 	value := ctx.GetHeader("k1")
 	logUtils.Infof("API KEY - %s: %s", "k1", value)
+
+	co := ctx.GetCookie("k")
+	log.Print(co)
+
+	ctx.SetCookieKV("k1", "v1")
 
 	if respType == "html" {
 		ctx.HTML(mockHelper.GetHtmlData())

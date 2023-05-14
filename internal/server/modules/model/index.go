@@ -22,17 +22,6 @@ var (
 		&EnvironmentVar{},
 		&ShareVariable{},
 
-		&InterfaceParam{},
-		&InterfaceBodyFormDataItem{},
-		&InterfaceBodyFormUrlEncodedItem{},
-		&InterfaceHeader{},
-		&InterfaceBasicAuth{},
-		&InterfaceBearerToken{},
-		&InterfaceOAuth20{},
-		&InterfaceApiKey{},
-		&InterfaceExtractor{},
-		&InterfaceCheckpoint{},
-
 		&DebugInterface{},
 		&DebugInterfaceParam{},
 		&DebugInterfaceBodyFormDataItem{},

@@ -113,7 +113,7 @@ func (r *ShareVariableRepo) DeleteAllByServeId(serveId uint) (err error) {
 	return
 }
 func (r *ShareVariableRepo) DeleteAllByScenarioId(scenarioId uint) (err error) {
-	err = r.DB.Model(&model.InterfaceExtractor{}).
+	err = r.DB.Model(&model.DebugInterfaceExtractor{}).
 		Where("scenario_id=?", scenarioId).
 		Update("disable_share", true).
 		Error

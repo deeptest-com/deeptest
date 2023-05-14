@@ -21,8 +21,8 @@ type ProcessorInterface struct {
 	OAuth20     ProcessorInterfaceOAuth20     `gorm:"-" json:"oauth20"`
 	ApiKey      ProcessorInterfaceApiKey      `gorm:"-" json:"apiKey"`
 
-	InterfaceExtractors  []InterfaceExtractor  `gorm:"-" json:"interfaceExtractors"`
-	InterfaceCheckpoints []InterfaceCheckpoint `gorm:"-" json:"interfaceCheckpoints"`
+	InterfaceExtractors  []DebugInterfaceExtractor  `gorm:"-" json:"interfaceExtractors"`
+	InterfaceCheckpoints []DebugInterfaceCheckpoint `gorm:"-" json:"interfaceCheckpoints"`
 }
 
 func (ProcessorInterface) TableName() string {

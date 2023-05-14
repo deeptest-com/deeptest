@@ -234,18 +234,18 @@ func getJsonbody(reqBodyOther ReqBodyOther) (reqBodyMap map[string]interface{}) 
 	return
 }
 
-func getReqParams(reqQuerys []ReqQuery) (param []m.InterfaceParam) {
+func getReqParams(reqQuerys []ReqQuery) (param []m.DebugInterfaceParam) {
 	for i := 0; i < len(reqQuerys); i++ {
-		interfaceParam := m.InterfaceParam{}
+		interfaceParam := m.DebugInterfaceParam{}
 		interfaceParam.Name = reqQuerys[i].Name
 		param = append(param, interfaceParam)
 	}
 	return
 }
 
-func getReqHeaders(reqHeaders []ReqHeaders) (header []m.InterfaceHeader) {
+func getReqHeaders(reqHeaders []ReqHeaders) (header []m.DebugInterfaceHeader) {
 	for i := 0; i < len(reqHeaders); i++ {
-		interfaceHeader := m.InterfaceHeader{}
+		interfaceHeader := m.DebugInterfaceHeader{}
 		interfaceHeader.Name = reqHeaders[i].Name
 		interfaceHeader.Value = reqHeaders[i].Value
 		header = append(header, interfaceHeader)
@@ -253,9 +253,9 @@ func getReqHeaders(reqHeaders []ReqHeaders) (header []m.InterfaceHeader) {
 	return
 }
 
-func getReqBodyForm(reqBodyForm []ReqBodyForm) (bodyFormData []m.InterfaceBodyFormDataItem) {
+func getReqBodyForm(reqBodyForm []ReqBodyForm) (bodyFormData []m.DebugInterfaceBodyFormDataItem) {
 	for i := 0; i < len(reqBodyForm); i++ {
-		bodyForm := m.InterfaceBodyFormDataItem{}
+		bodyForm := m.DebugInterfaceBodyFormDataItem{}
 		bodyForm.Name = reqBodyForm[i].Name
 		if reqBodyForm[i].Type == "text" {
 			bodyForm.Type = consts.FormDataTypeText

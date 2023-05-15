@@ -31,7 +31,7 @@ func (s *PlanExecService) LoadExecResult(planId int) (result domain.Report, err 
 	return
 }
 
-func (s *PlanExecService) LoadExecData(planId int) (ret agentExec.PlanExecObj, err error) {
+func (s *PlanExecService) LoadExecData(planId, environmentId int) (ret agentExec.PlanExecObj, err error) {
 	plan, err := s.PlanRepo.Get(uint(planId))
 	if err != nil {
 		return
@@ -39,7 +39,7 @@ func (s *PlanExecService) LoadExecData(planId int) (ret agentExec.PlanExecObj, e
 
 	scenarios, err := s.PlanRepo.ListScenario(plan.ID)
 	for _, scenario := range scenarios {
-		scenarioExecObj, _ := s.ScenarioExecService.LoadExecData(scenario.ID)
+		scenarioExecObj, _ := s.ScenarioExecService.LoadExecData(scenario.ID, uint(environmentId))
 		ret.Scenarios = append(ret.Scenarios, scenarioExecObj)
 	}
 

@@ -12,6 +12,7 @@ import (
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	"github.com/aaronchen2k/deeptest/pkg/lib/http"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	_stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 )
 
 type RemoteService struct {
@@ -107,96 +108,6 @@ func (s *RemoteService) SubmitInterfaceResult(reqObj domain.DebugData, respObj d
 	return
 }
 
-// for processor interface invocation
-//func (s *RemoteService) GetProcessorInterfaceToExec(req domain.InterfaceCall) (ret domain.DebugData) {
-//	url := fmt.Sprintf("processors/invocations/loadInterfaceExecData")
-//	body, err := json.Marshal(req.Data)
-//	if err != nil {
-//		logUtils.Infof("marshal request data failed, error, %s", err.Error())
-//		return
-//	}
-//
-//	httpReq := domain.BaseRequest{
-//		Url:               _httpUtils.AddSepIfNeeded(req.ServerUrl) + url,
-//		BodyType:          consts.ContentTypeJSON,
-//		Body:              string(body),
-//		AuthorizationType: consts.BearerToken,
-//		BearerToken: domain.BearerToken{
-//			Token: req.Token,
-//		},
-//	}
-//
-//	resp, err := httpHelper.Post(httpReq)
-//	if err != nil {
-//		logUtils.Infof("get interface obj failed, error, %s", err.Error())
-//		return
-//	}
-//
-//	if resp.StatusCode != consts.OK {
-//		logUtils.Infof("get interface obj failed, response %v", resp)
-//		return
-//	}
-//
-//	respContent := _domain.Response{}
-//	json.Unmarshal([]byte(resp.Content), &respContent)
-//
-//	if respContent.Code != 0 {
-//		logUtils.Infof("get interface obj failed, response %v", resp.Content)
-//		return
-//	}
-//
-//	bytes, err := json.Marshal(respContent.Data)
-//	if respContent.Code != 0 {
-//		logUtils.Infof("get interface obj failed, response %v", resp.Content)
-//		return
-//	}
-//
-//	json.Unmarshal(bytes, &ret)
-//
-//	return
-//}
-//func (s *RemoteService) SubmitProcessorInterfaceResult(reqOjb domain.InterfaceCall, repsObj domain.DebugResponse, serverUrl, token string) (err error) {
-//	url := _httpUtils.AddSepIfNeeded(serverUrl) + fmt.Sprintf("processors/invocations/submitInterfaceInvokeResult")
-//
-//	data := domain.SubmitDebugResultRequest{
-//		Request:  reqOjb.Data,
-//		Response: repsObj,
-//	}
-//
-//	bodyBytes, _ := json.Marshal(data)
-//
-//	req := domain.BaseRequest{
-//		Url:               url,
-//		BodyType:          consts.ContentTypeJSON,
-//		Body:              string(bodyBytes),
-//		AuthorizationType: consts.BearerToken,
-//		BearerToken: domain.BearerToken{
-//			Token: token,
-//		},
-//	}
-//
-//	resp, err := httpHelper.Post(req)
-//	if err != nil {
-//		logUtils.Infof("submit result failed, error, %s", err.Error())
-//		return
-//	}
-//
-//	if resp.StatusCode != consts.OK {
-//		logUtils.Infof("submit result failed, response %v", resp)
-//		return
-//	}
-//
-//	ret := _domain.Response{}
-//	json.Unmarshal([]byte(resp.Content), &ret)
-//
-//	if ret.Code != 0 {
-//		logUtils.Infof("submit result failed, response %v", resp.Content)
-//		return
-//	}
-//
-//	return
-//}
-
 // for scenario exec
 func (s *RemoteService) GetScenarioToExec(req *agentExec.ScenarioExecReq) (ret *agentExec.ScenarioExecObj) {
 	url := "scenarios/exec/loadExecScenario"
@@ -211,6 +122,10 @@ func (s *RemoteService) GetScenarioToExec(req *agentExec.ScenarioExecReq) (ret *
 			{
 				Name:  "id",
 				Value: fmt.Sprintf("%d", req.ScenarioId),
+			},
+			{
+				Name:  "environmentId",
+				Value: _stringUtils.IntToStr(req.EnvironmentId),
 			},
 		},
 	}
@@ -302,6 +217,10 @@ func (s *RemoteService) GetPlanToExec(req *agentExec.PlanExecReq) (ret *agentExe
 			{
 				Name:  "id",
 				Value: fmt.Sprintf("%d", req.PlanId),
+			},
+			{
+				Name:  "environmentId",
+				Value: _stringUtils.IntToStr(req.EnvironmentId),
 			},
 		},
 	}

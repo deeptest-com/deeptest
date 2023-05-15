@@ -17,7 +17,7 @@
                     <a-descriptions-item label="最近执行">{{ planDetail.execTime ? momentUtc(planDetail.execTime) : '' }}</a-descriptions-item>
                     <a-descriptions-item label="执行环境">{{ planDetail.execEnv }}</a-descriptions-item>
                     <a-descriptions-item label="状态">
-                        <EditAndShowSelect 
+                        <EditAndShowSelect
                             :label="planStatusTextMap.get((planDetail?.status || 'draft'))"
                             :value="planDetail.status"
                             :options="planStatusOptions"
@@ -31,9 +31,9 @@
                 <a-tabs v-model:activeKey="activeKey">
                     <a-tab-pane key="test-scenario" tab="测试场景">
                         <div style="padding-top: 20px">
-                            <ScenarioList 
-                                :list="planScenarioList" 
-                                :show-scenario-operation="true" 
+                            <ScenarioList
+                                :list="planScenarioList"
+                                :show-scenario-operation="true"
                                 :columns="columns"
                                 :loading="loading"
                                 :pagination="scenarioPagination"
@@ -46,13 +46,13 @@
                         </div>
                     </a-tab-pane>
                 </a-tabs>
-            </div> 
+            </div>
         </div>
     </a-drawer>
     <!-- 执行环境选择弹窗 -->
-    <EnvSelector 
-        :env-select-drawer-visible="envDrawerVisible" 
-        @on-cancel="envDrawerVisible = false" 
+    <EnvSelector
+        :env-select-drawer-visible="envDrawerVisible"
+        @on-cancel="envDrawerVisible = false"
         @on-ok="handleExec" />
 </template>
 <script setup lang="ts">
@@ -62,9 +62,9 @@ import { useStore } from 'vuex';
 import ConBoxTitle from '@/components/ConBoxTitle/index.vue';
 import EditAndShowSelect from '@/components/EditAndShowSelect/index.vue';
 import EditAndShowField from '@/components/EditAndShow/index.vue';
-import { ScenarioList, ReportList, EnvSelector } from '../components';
-
-import { momentUtc } from '@/utils/datetime';
+import { ScenarioList, ReportList } from '../components';
+import EnvSelector from "@/views/component/EnvSelector/index.vue";
+import{ momentUtc } from '@/utils/datetime';
 import { StateType as PlanStateType } from '../store';
 import { planStatusOptions, planStatusTextMap } from '@/config/constant';
 

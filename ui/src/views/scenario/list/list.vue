@@ -10,13 +10,16 @@
       <div class="right">
         <a-form :layout="'inline'" class="filter-items">
           <a-form-item :label="'测试类型'">
-            <a-select style="width:120px" allowClear  placeholder="请选择" @change="onSearch" v-model:value="queryParams.type" :options="testTypeOptions" class="status-select"/>
+            <a-select style="width:120px" allowClear placeholder="请选择" @change="onSearch"
+                      v-model:value="queryParams.type" :options="testTypeOptions" class="status-select"/>
           </a-form-item>
           <a-form-item :label="'状态'">
-            <a-select style="width:120px" allowClear  placeholder="请选择" @change="onSearch" v-model:value="queryParams.status" :options="scenarioStatusOptions" class="status-select"/>
+            <a-select style="width:120px" allowClear placeholder="请选择" @change="onSearch"
+                      v-model:value="queryParams.status" :options="scenarioStatusOptions" class="status-select"/>
           </a-form-item>
           <a-form-item :label="'优先级'">
-            <a-select style="width:120px"  placeholder="请选择" allowClear  @change="onSearch" v-model:value="queryParams.priority" :options="priorityOptions" class="status-select"/>
+            <a-select style="width:120px" placeholder="请选择" allowClear @change="onSearch"
+                      v-model:value="queryParams.priority" :options="priorityOptions" class="status-select"/>
           </a-form-item>
           <a-input-search @change="onSearch" allowClear @search="onSearch" v-model:value="queryParams.keywords"
                           placeholder="输入你需要搜索测试场景名称" style="width:270px;margin-left: 8px;"/>
@@ -53,7 +56,7 @@
                           @update="(val) => {handleUpdateDesc(text,record)}"/>
       </template>
       <template #updatedAt="{ record }">
-        <span>{{momentUtc(record.updatedAt) }}</span>
+        <span>{{ momentUtc(record.updatedAt) }}</span>
       </template>
       <template #status="{ record }">
         <div class="customStatusColRender">
@@ -76,7 +79,7 @@
       </template>
       <template #action="{ record }">
         <a-dropdown>
-          <MoreOutlined />
+          <MoreOutlined/>
           <template #overlay>
             <a-menu>
               <a-menu-item key="0">
@@ -96,16 +99,19 @@
         </a-dropdown>
       </template>
     </a-table>
-    <a-empty v-if="list.length === 0" :image="simpleImage" />
+    <a-empty v-if="list.length === 0" :image="simpleImage"/>
   </div>
   <ScenarioCreate :visible="isEditVisible"
-      @cancel="isEditVisible = false"
-      :onFinish="onEditFinish">
+                  @cancel="isEditVisible = false"
+                  :onFinish="onEditFinish">
   </ScenarioCreate>
-  <SelectEnv :visible="selectEnvVisible"
-             :scenarioInfo="selectedExecScenario"
-             @ok="selectExecEnv"
-             @cancel="cancelSelectExecEnv"/>
+
+  <EnvSelector
+      :env-select-drawer-visible="selectEnvVisible"
+      @on-cancel="cancelSelectExecEnv"
+      @on-ok="selectExecEnv"/>
+
+
   <DrawerDetail :destroyOnClose="true"
                 :visible="drawerVisible"
                 :drawerTabKey="drawerTabKey"
@@ -116,9 +122,9 @@
 </template>
 
 <script setup lang="ts">
-import {computed, onMounted, reactive, ref, watch,createVNode} from "vue";
-import { Empty } from 'ant-design-vue';
-import { MoreOutlined } from "@ant-design/icons-vue";
+import {computed, onMounted, reactive, ref, watch, createVNode} from "vue";
+import {Empty} from 'ant-design-vue';
+import {MoreOutlined} from "@ant-design/icons-vue";
 import {SelectTypes} from 'ant-design-vue/es/select';
 import {PaginationConfig, QueryParams, Scenario} from '../data.d';
 import {useStore} from "vuex";
@@ -132,27 +138,36 @@ import EditAndShowField from '@/components/EditAndShow/index.vue';
 import ScenarioCreate from "../edit/index.vue";
 import LinkPlan from "../edit/linkPlan.vue";
 import DrawerDetail from "../components/Drawer/index.vue";
-import SelectEnv from "../components/SelectEnv.vue";
-import { ColumnProps } from 'ant-design-vue/es/table/interface';
-import {scenarioStatusColorMap,scenarioStatus,scenarioStatusOptions,priorityOptions,testTypeOptions} from "@/config/constant"
-import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
+import EnvSelector from "@/views/component/EnvSelector/index.vue";
+import {ColumnProps} from 'ant-design-vue/es/table/interface';
+import {
+  scenarioStatusColorMap,
+  scenarioStatus,
+  scenarioStatusOptions,
+  priorityOptions,
+  testTypeOptions
+} from "@/config/constant"
+import {ExclamationCircleOutlined} from '@ant-design/icons-vue';
 import EditAndShowSelect from '@/components/EditAndShowSelect/index.vue';
+
 type Key = ColumnProps['key'];
+
 interface DataType {
   key: Key;
   name: string;
   age: number;
   address: string;
 }
+
 const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
 const router = useRouter();
 const store = useStore<{ Scenario: StateType, ProjectGlobal: ProjectStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
-const nodeDataCategory = computed<any>(()=> store.state.Scenario.nodeDataCategory);
+const nodeDataCategory = computed<any>(() => store.state.Scenario.nodeDataCategory);
 const list = computed<Scenario[]>(() => store.state.Scenario.listResult.list);
 let pagination = computed<PaginationConfig>(() => store.state.Scenario.listResult.pagination);
 let queryParams = reactive<QueryParams>({
-  keywords:'',
+  keywords: '',
   page: pagination.value.current, pageSize: pagination.value.pageSize
 });
 
@@ -245,26 +260,29 @@ const drawerVisible = ref<boolean>(false);
 // 执行抽屉打开
 const execVisible = ref<boolean>(false);
 const selectEnvVisible = ref<boolean>(false);
-const selectedExecScenario = ref(null);
+const selectedExecScenario:any = ref(null);
 // 抽屉里的tab key
-const drawerTabKey:any = ref<string>('1');
+const drawerTabKey: any = ref<string>('1');
 
 
-async function editScenario(record: any,tab:string) {
+async function editScenario(record: any, tab: string) {
   drawerVisible.value = true;
   drawerTabKey.value = tab;
   await store.dispatch('Scenario/getScenario', record.id);
 }
-async function cancelSelectExecEnv(record:any) {
+
+async function cancelSelectExecEnv(record: any) {
   selectEnvVisible.value = false;
   selectedExecScenario.value = null;
 }
-async function selectExecEnv(record:any) {
-    selectEnvVisible.value = false;
-    drawerVisible.value = false;
-    execVisible.value = true;
-    await store.dispatch('Scenario/getScenario', record.id);
+
+async function selectExecEnv() {
+  selectEnvVisible.value = false;
+  drawerVisible.value = false;
+  execVisible.value = true;
+  await store.dispatch('Scenario/getScenario', selectedExecScenario?.value?.id);
 }
+
 async function execScenario(record: any) {
   selectEnvVisible.value = true;
   selectedExecScenario.value = record;
@@ -276,18 +294,21 @@ async function handleChangeStatus(value: any, record: any,) {
   );
   await refreshList();
 }
+
 async function handleChangePriority(value: any, record: any,) {
   await store.dispatch('Scenario/updatePriority',
       {id: record.id, priority: value}
   );
   await refreshList();
 }
+
 async function handleUpdateName(value: string, record: any) {
   await store.dispatch('Scenario/saveScenario',
       {id: record.id, name: value}
   );
   await refreshList();
 }
+
 async function handleUpdateDesc(value: string, record: any) {
   await store.dispatch('Scenario/saveScenario',
       {id: record.id, desc: value}
@@ -366,24 +387,28 @@ onMounted(() => {
 </script>
 
 <style lang="less" scoped>
-.filter-header{
+.filter-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 16px;
   height: 60px;
-  .left{
+
+  .left {
     display: flex;
     align-items: center;
   }
-  .right{
+
+  .right {
     display: flex;
     align-items: center;
   }
 }
-.filter-items{
+
+.filter-items {
   font-weight: normal;
 }
+
 .operation-a {
   text-align: center;
   display: inline-block;

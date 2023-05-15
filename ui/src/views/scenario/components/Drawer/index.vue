@@ -53,6 +53,11 @@
         @close="onCloseExecDrawer">
       <ExecInfo/>
     </a-drawer>
+
+    <EnvSelector
+        :env-select-drawer-visible="selectEnvVisible"
+        @on-cancel="cancelSelectExecEnv"
+        @on-ok="selectExecEnv"/>
   </div>
 </template>
 
@@ -73,8 +78,7 @@ import DesignContent from "../../design/index1.vue"
 import PlanList from "./PlanList.vue";
 import ExecList from "./ExecList.vue";
 import ExecInfo  from "../../exec/components/Info.vue";
-import Associate from "./Associate.vue"
-import debounce from "lodash.debounce";
+import EnvSelector from "@/views/component/EnvSelector/index.vue";
 
 const store = useStore<{ Scenario, ProjectGlobal, ServeGlobal }>();
 const detailResult = computed<Scenario>(() => store.state.Scenario.detailResult);
@@ -92,11 +96,22 @@ const props = defineProps({
     required: true,
     type: Boolean,
   }
-})
+});
+
 const emit = defineEmits(['ok', 'close', 'refreshList', 'closeExecDrawer']);
 const activeKey = ref('1');
 const execDrawerVisible = ref(false);
+const selectEnvVisible = ref(false);
 
+
+async function cancelSelectExecEnv(record: any) {
+  selectEnvVisible.value = false;
+}
+
+async function selectExecEnv() {
+  selectEnvVisible.value = false;
+  execDrawerVisible.value = true;
+}
 
 function getScenarioList() {
   console.log('get')
@@ -112,8 +127,7 @@ function onCloseExecDrawer() {
 }
 
 function exec() {
-  console.log('exec')
-  execDrawerVisible.value = true;
+  selectEnvVisible.value = true;
 }
 
 watch(() => {

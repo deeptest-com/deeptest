@@ -72,11 +72,10 @@ const StoreModel: ModuleType = {
         }
     },
     actions: {
-        async list({ commit }, params: QueryParams ) {
+        async list({ commit }, params: any ) {
             try {
                 const response: ResponseData = await query(params);
                 if (response.code != 0) return;
-                const data = response.data;
                 const { result, page, pageSize, total } = response.data;
                 const newResult = result.map((reportItem: any) => {
                     if (reportItem.totalInterfaceNum) {
@@ -131,7 +130,6 @@ const StoreModel: ModuleType = {
         async remove({ dispatch, state }, payload: number ) {
             try {
                 await remove(payload);
-
                 await dispatch('list', state.queryParams)
                 return true;
             } catch (error) {

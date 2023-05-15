@@ -317,3 +317,44 @@ func (r *ScenarioReportRepo) CombinePriority(data []model.ScenarioReportDetail) 
 	res = data
 	return
 }
+
+func (r *ScenarioReportRepo) GetBaseReportsByPlanReportId(planReportId uint) (reports []model.ScenarioReport, err error) {
+	err = r.DB.Model(&model.ScenarioReport{}).Where("plan_report_id = ?", planReportId).Find(&reports).Error
+	if err != nil {
+		logUtils.Errorf("find report by id error %s", err.Error())
+		return
+	}
+
+	return
+}
+
+func (r *ScenarioReportRepo) BatchDelete(planReportId uint) (err error) {
+	scenarioReportIds := make([]uint, 0)
+
+	scenarioReports, err := r.GetBaseReportsByPlanReportId(planReportId)
+	if err != nil {
+		return
+	}
+	for _, v := range scenarioReports {
+		scenarioReportIds = append(scenarioReportIds, v.ID)
+	}
+
+	if len(scenarioReportIds) == 0 {
+		return
+	}
+	err = r.DB.Model(&model.ScenarioReport{}).Where("id IN (?)", scenarioReportIds).
+		Updates(map[string]interface{}{"deleted": true}).Error
+	if err != nil {
+		logUtils.Errorf("delete report by id error %s", err.Error())
+		return
+	}
+
+	err = r.DB.Model(&model.ExecLogProcessor{}).Where("report_id IN (?)", scenarioReportIds).
+		Updates(map[string]interface{}{"deleted": true}).Error
+	if err != nil {
+		logUtils.Errorf("delete report's logs by id error %s", err.Error())
+		return
+	}
+
+	return
+}

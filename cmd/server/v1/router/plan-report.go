@@ -21,7 +21,7 @@ func (m *PlanReportModule) Party() module.WebModule {
 		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
 		index.Get("/", m.ReportCtrl.List).Name = "结果列表"
 		index.Get("/{id:uint}", m.ReportCtrl.Get).Name = "结果详情"
-		index.Delete("/{id:uint}", m.ReportCtrl.Delete).Name = "删除场景"
+		index.Delete("/{id:uint}", m.ReportCtrl.Delete).Name = "删除计划报告"
 	}
 
 	return module.NewModule("/plans/reports", handler)

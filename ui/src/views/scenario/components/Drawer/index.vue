@@ -1,55 +1,61 @@
 <template>
-  <a-drawer
-      :placement="'right'"
-      :width="1000"
-      :closable="true"
-      :visible="visible"
-      class="drawer"
-      wrapClassName="drawer-1"
-      :bodyStyle="{padding:'16px',marginBottom:'56px'}"
-      @close="onCloseDrawer">
-    <!-- 头部信息  -->
-    <template #title>
-      <a-row type="flex" style="align-items: center;width: 100%">
-        <a-col :span="8">
-          <EditAndShowField placeholder="修改标题" :value="detailResult.name" @update="updateTitle"/>
-        </a-col>
-      </a-row>
-    </template>
+  <div>
+    <a-drawer
+        :placement="'right'"
+        :width="1000"
+        :closable="true"
+        :visible="visible"
+        class="drawer"
+        wrapClassName="drawer-1"
+        :bodyStyle="{padding:'16px',marginBottom:'56px'}"
+        @close="onCloseDrawer">
+      <!-- 头部信息  -->
+      <template #title>
+        <a-row type="flex" style="align-items: center;width: 100%">
+          <a-col :span="8">
+            <EditAndShowField placeholder="修改标题" :value="detailResult.name" @update="updateTitle"/>
+          </a-col>
+        </a-row>
+      </template>
+      <!-- 基本信息 -->
+      <BasicInfo @change="changeBasicInfo"/>
+      <!-- Tab 切换区域 -->
+      <a-tabs v-model:activeKey="activeKey" force-render>
+        <a-tab-pane class="test-developer" key="1" tab="测试开发">
+          <div v-if="activeKey==='1'">
+            <div class="exec-btn">
+              <a-button @click="exec" :size="'small'" type="primary"><span>&nbsp;执行&nbsp;</span></a-button>
+            </div>
+            <DesignContent :id="detailResult?.id"/>
+          </div>
+        </a-tab-pane>
+        <a-tab-pane key="2" tab="执行历史" force-render>
+          <div style="padding: 16px" v-if="activeKey==='2'">
+            <ExecList/>
+          </div>
+        </a-tab-pane>
+        <!-- :::: 关联测试计划Tab-->
+        <a-tab-pane key="3" tab="关联测试计划" force-render>
+          <div style="padding: 16px" v-if="activeKey==='3'">
+            <PlanList :linked="true"/>
+          </div>
+        </a-tab-pane>
+      </a-tabs>
 
-    <!-- 基本信息 -->
-    <BasicInfo @change="change" @change-description="changeDescription" @changeCategory="changeCategory"/>
+    </a-drawer>
+    <a-drawer
+        :placement="'right'"
+        :width="1000"
+        :closable="true"
+        :visible="execDrawerVisible"
+        class="drawer"
+        wrapClassName="drawer-exec"
+        :bodyStyle="{padding:'16px',marginBottom:'56px'}"
+        @close="onCloseExecDrawer">
+      执行
+    </a-drawer>
+  </div>
 
-    <!-- Tab 切换区域 -->
-    <a-tabs v-model:activeKey="activeKey">
-      <a-tab-pane class="test-developer" key="1" tab="测试开发">
-        <DesignContent :id="detailResult?.id"/>
-      </a-tab-pane>
-      <a-tab-pane key="2" tab="执行历史" force-render>
-        <div style="padding: 16px">
-          <ExecList
-              :list="[]"
-              :show-scenario-operation="true"
-              :columns="columns"
-              :loading="true"
-              :pagination="null"
-              @refresh-list="getScenarioList" />
-        </div>
-      </a-tab-pane>
-      <a-tab-pane key="3" tab="关联测试计划" force-render>
-        <div style="padding: 16px">
-          <PlanList
-              :list="[]"
-              :show-scenario-operation="true"
-              :columns="columns"
-              :loading="true"
-              :pagination="null"
-              @refresh-list="getScenarioList" />
-        </div>
-      </a-tab-pane>
-    </a-tabs>
-
-  </a-drawer>
 </template>
 
 <script lang="ts" setup>
@@ -57,7 +63,7 @@ import {
   ref,
   defineProps,
   defineEmits,
-  computed, reactive,
+  computed, reactive, watch,
 } from 'vue';
 import BasicInfo from './BasicInfo.vue';
 import EditAndShowField from '@/components/EditAndShow/index.vue';
@@ -66,9 +72,10 @@ import {useStore} from "vuex";
 import {Scenario} from "@/views/Scenario/data";
 import {message} from "ant-design-vue";
 import DesignContent from "../../design/index1.vue"
-import  PlanList from "./PlanList.vue";
-import  ExecList from "./ExecList.vue";
-import Associate from  "./Associate.vue"
+import PlanList from "./PlanList.vue";
+import ExecList from "./ExecList.vue";
+import Associate from "./Associate.vue"
+
 const store = useStore<{ Scenario, ProjectGlobal, ServeGlobal }>();
 const detailResult = computed<Scenario>(() => store.state.Scenario.detailResult);
 
@@ -77,69 +84,81 @@ const props = defineProps({
     required: true,
     type: Boolean,
   },
+  drawerTabKey: {
+    required: true,
+    type: String
+  },
+  execVisible: {
+    required: true,
+    type: Boolean,
+  }
 })
-const emit = defineEmits(['ok', 'close', 'refreshList']);
+const emit = defineEmits(['ok', 'close', 'refreshList', 'closeExecDrawer']);
+const activeKey = ref('1');
+const execDrawerVisible = ref(false);
 
-const columns = [
-  {
-    title: '编号',
-    dataIndex: 'serialNumber',
-  },
-  {
-    title: '摘要',
-    dataIndex: 'name',
-    slots: { customRender: 'name' }
-  },
-  {
-    title: '状态',
-    dataIndex: 'status',
-    slots: { customRender: 'status' }
-  },
-  {
-    title: '测试通过率',
-    dataIndex: 'testPassRate',
-  },
-  {
-    title: '负责人',
-    dataIndex: 'adminName',
-  },
-  {
-    title: '最近更新',
-    dataIndex: 'updatedAt',
-    slots: { customRender: 'updatedAt' }
-  },
-];
 
 function getScenarioList() {
   console.log('get')
 }
+
 function onCloseDrawer() {
   emit('close');
 }
 
-const activeKey = ref('1');
-
-async function change(type,val) {
-  console.log('832 change',type,val)
-  // await store.dispatch('Scenario/updateStatus',
-  //     {id:detailResult.value.id, status: status}
-  // );
-  // await store.dispatch('Scenario/getEndpointDetail', {id: detailResult.value.id});
+function onCloseExecDrawer() {
+  execDrawerVisible.value = false;
+  emit('closeExecDrawer');
 }
 
+function exec() {
+  console.log('exec')
+  execDrawerVisible.value = true;
+}
+
+watch(() => {
+  return props.drawerTabKey;
+}, (val) => {
+  activeKey.value = val;
+});
+
+watch(() => {
+  return props.execVisible;
+}, (val) => {
+  execDrawerVisible.value = val;
+});
+
+
 async function updateTitle(title) {
-  console.log('832 updateTitle',title);
+  console.log('832 updateTitle', title);
   // await store.dispatch('Scenario/updateEndpointDetail',
   //     {...detailResult.value, title: title}
   // );
   // await store.dispatch('Scenario/getEndpointDetail', {id: detailResult.value.id});
 }
 
-async function changeDescription(description) {
-  console.log('832 changeDescription',description);
-  // await store.dispatch('Scenario/updateEndpointDetail',
-  //     {...detailResult.value, description}
-  // );
+async function changeBasicInfo(type,value) {
+  console.log('832 changeBasicInfo', type, value);
+  // if(type==='status') {
+  //   await store.dispatch('Scenario/updateEndpointDetail',
+  //       {...detailResult.value, description: value}
+  //   );
+  // }
+  // if(type==='priority') {
+  //   await store.dispatch('Scenario/updateEndpointDetail',
+  //       {...detailResult.value, description: value}
+  //   );
+  // }
+  // if(type==='desc') {
+  //   await store.dispatch('Scenario/updateEndpointDetail',
+  //       {...detailResult.value, description: value}
+  //   );
+  // }
+  // if(type==='categoryId') {
+  //   await store.dispatch('Scenario/updateEndpointDetail',
+  //       {...detailResult.value, description: value}
+  //   );
+  // }
   // await store.dispatch('Scenario/getEndpointDetail', {id: detailResult.value.id});
 }
 
@@ -149,8 +168,6 @@ async function changeCategory(value) {
   );
   await store.dispatch('Scenario/getEndpointDetail', {id: detailResult.value.id});
 }
-
-const key = ref('request');
 
 async function cancel() {
   emit('close');
@@ -196,6 +213,7 @@ async function save() {
     }
   }
 }
+
 .drawer-btns {
   background: #ffffff;
   border-top: 1px solid rgba(0, 0, 0, 0.06);
@@ -210,8 +228,16 @@ async function save() {
   margin-right: 16px;
   z-index: 99;
 }
-.test-developer{
+
+.test-developer {
   height: 100%;
   width: 1000px;
+  position: relative;
+
+  .exec-btn {
+    position: absolute;
+    right: 4px;
+    top: -48px;
+  }
 }
 </style>

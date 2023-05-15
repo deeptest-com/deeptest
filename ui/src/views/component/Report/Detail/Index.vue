@@ -7,10 +7,12 @@
             </div>
         </template>
         <div class="drawer-content">
-            <ReportBasicInfo :basic-info="{ logEnv: reportData.logEnv, logName: reportData.logName, logTime: reportData.logTime, logExecutor: reportData.logExecutor }" />
+            <ReportBasicInfo :basic-info="reportData" />
             <StatisticTable />
+            <Progress :percent="60" @exec-cancel="execCancel" />
             <template v-for="logItem in reportData.logList" :key="logItem.id">
-                <ScenarioCollapsePanel :show-scenario-info="showScenarioInfo" :expand-active="expandActive" :record="logItem">
+                <ScenarioCollapsePanel :show-scenario-info="showScenarioInfo" :expand-active="expandActive"
+                    :record="logItem">
                     <template #endpointData>
                         <EndpointCollapsePanel :recordList="logItem.reponseList" />
                     </template>
@@ -20,148 +22,105 @@
     </a-drawer>
 </template>
 <script setup lang="ts">
-import { defineProps, defineEmits, ref } from 'vue';
-import ReportBasicInfo from './Components/BasicInfo.vue';
-import StatisticTable from './Components/StatisticTable.vue';
-import ScenarioCollapsePanel from './Components/ScenarioCollapsePanel.vue';
-import EndpointCollapsePanel from './Components/EndpointCollapsePanel.vue';
+import { defineProps, defineEmits, ref, computed, watch } from 'vue';
+import { useStore } from 'vuex';
+
+import { ReportBasicInfo, StatisticTable, ScenarioCollapsePanel, EndpointCollapsePanel, Progress } from './Components';
+
+import { StateType as PlanStateType } from '@/views/plan/store';
+import { StateType as GlobalStateType } from "@/store/global";
+import { ExecStatus } from "@/store/exec";
+import settings from "@/config/settings";
+import { WebSocket } from "@/services/websocket";
+import { WsMsg } from "@/types/data";
+import bus from "@/utils/eventBus";
+import { getToken } from "@/utils/localToken";
+import { reportData } from './testData';
 
 const props = defineProps<{
     drawerVisible: boolean
     title: string
-    scenarioExpandActive: boolean 
+    scenarioExpandActive: boolean
     showScenarioInfo: boolean
-}>()
-
+}>();
 const emits = defineEmits(['onClose']);
+const store = useStore<{ Plan: PlanStateType, Global: GlobalStateType, Exec: ExecStatus }>();
+const currPlan = computed<any>(() => store.state.Plan.currPlan);
+const execResult = computed<any>(() => store.state.Plan.execResult);
 const expandActive = ref(props.scenarioExpandActive || false);
+const logTreeData = ref<any>([]);
+const result = ref({} as any);
+const logMap = ref({} as any);
 
-const reportData = {
-    logName: '测试计划名称11',
-    logExecutor: '测试执行人',
-    logEnv: '测试环境',
-    logTime: '2023/04/24 10:20:20',
-    logList: [
-        {
-            id: 1,
-            scenarioName: '测试场景1',
-            scenarioPriority: 'P1',
-            scenarioStatus: 0,
-            scenarioProgress: '66.66',
-            reponseList: [
-                {
-                    requestId: 44444,
-                    requestStatus: 'loading',
-                    requestMethod: 'GET',
-                    requestCode: '200',
-                    requestUrl: '/pet/%khkhfhw h',
-                    requestData: '查询的具体信息',
-                    requestTime: '100ms',
-                    requestInfo: [
-                        {
-                            errorId: 122,
-                            errorField: '接口数据有问题',
-                            errorTip: ['问题1的描述', '问题2的描述']
-                        }
-                    ]
-                },
-                {
-                    requestId: 55555,
-                    requestStatus: 'success',
-                    requestMethod: 'GET',
-                    requestCode: '200',
-                    requestUrl: '/pet/%khkhfhw h',
-                    requestData: '查询的具体信息',
-                    requestTime: '100ms',
-                    requestInfo: [
-                        {
-                            errorId: 112,
-                            errorField: '接口数据有问题',
-                            errorTip: ['问题1的描述', '问题2的描述']
-                        }
-                    ]
-                },
-                {
-                    requestId: 66666,
-                    requestStatus: 'error',
-                    requestMethod: 'POST',
-                    requestCode: '400',
-                    requestUrl: '/pet/%khkhfhw h',
-                    requestData: '查询的具体信息',
-                    requestTime: '100ms',
-                    requestInfo: [
-                        {
-                            errorId: 172,
-                            errorField: '接口数据有问题',
-                            errorTip: ['问题1的描述', '问题2的描述']
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            id: 2,
-            scenarioName: '测试场景2',
-            scenarioPriority: 'P3',
-            scenarioStatus: 0,
-            scenarioProgress: '58',
-            reponseList: [
-                {
-                    requestId: 11111,
-                    requestStatus: 'success',
-                    requestMethod: 'GET',
-                    requestCode: '200',
-                    requestUrl: '/pet/%khkhfhw h',
-                    requestData: '查询的具体信息',
-                    requestTime: '100ms',
-                    requestInfo: [
-                        {
-                            errorId: 142,
-                            errorField: '接口数据有问题',
-                            errorTip: ['问题1的描述', '问题2的描述']
-                        }
-                    ]
-                },
-                {
-                    requestId: 2222,
-                    requestStatus: 'error',
-                    requestMethod: 'GET',
-                    requestCode: '200',
-                    requestUrl: '/pet/%khkhfhw h',
-                    requestData: '查询的具体信息',
-                    requestTime: '100ms',
-                    requestInfo: [
-                        {
-                            errorId: 145,
-                            errorField: '接口数据有问题',
-                            errorTip: ['问题1的描述', '问题2的描述']
-                        }
-                    ]
-                },
-                {
-                    requestId: 33333,
-                    requestStatus: 'expires',
-                    requestMethod: 'POST',
-                    requestCode: '400',
-                    requestUrl: '/pet/%khkhfhw h',
-                    requestData: '查询的具体信息',
-                    requestTime: '100ms',
-                    requestInfo: [
-                        {
-                            errorId: 146,
-                            errorField: '接口数据有问题',
-                            errorTip: ['问题1的描述', '问题2的描述']
-                        }
-                    ]
-                }
-            ]
+const execStart = async () => {
+    console.log('execStart');
+
+    logTreeData.value = [];
+
+    const data = {
+        serverUrl: process.env.VUE_APP_API_SERVER, // used by agent to submit result to server
+        token: await getToken(),
+        planId: currPlan.value && currPlan.value.id,
+    }
+
+    WebSocket.sentMsg(settings.webSocketRoom, JSON.stringify({ act: 'execPlan', planExecReq: data }));
+};
+
+const execCancel = () => {
+    console.log('execCancel');
+    const msg = { act: 'stop', execReq: { scenarioId: currPlan.value && currPlan.value.id } };
+    WebSocket.sentMsg(settings.webSocketRoom, JSON.stringify(msg))
+};
+
+const OnWebSocketMsg = (data: any) => {
+    console.log('--- WebsocketMsgEvent in exec info', data)
+
+    if (!data.msg) return
+
+    const wsMsg = JSON.parse(data.msg) as WsMsg
+    if (wsMsg.category == 'result') { // update result
+        result.value = wsMsg.data
+        console.log('=====', result.value)
+        return
+    } else if (wsMsg.category !== '') { // update status
+        execResult.value.progressStatus = wsMsg.category
+        if (wsMsg.category === 'in_progress') {
+            result.value = {};
         }
-    ]
+        return
+    }
+
+    const log: any = wsMsg.data;
+    logMap.value[log.id] = log;
+
+    if (log.parentId === 0) { // root
+        logTreeData.value.push(log);
+    } else {
+        if (!logMap.value[log.parentId]) logMap.value[log.parentId] = {};
+        if (!logMap.value[log.parentId].logs) logMap.value[log.parentId].logs = [];
+        logMap.value[log.parentId].logs.push(log);
+    }
+
+    console.log('logMap Data--------', logMap.value);
+    console.log('logTree Data--------', logTreeData.value);
+    console.log('execResult Data -----', execResult);
 };
 
 function onClose() {
     emits('onClose');
 }
+console.log(props.drawerVisible);
+watch(() => {
+    return props;
+}, val => {
+    if (val.drawerVisible) {
+        bus.on(settings.eventWebSocketMsg, OnWebSocketMsg);
+        execStart();
+    } else {
+        execCancel();
+        bus.off(settings.eventWebSocketMsg, OnWebSocketMsg);
+    }
+}, { immediate: true, deep: true });
 
 </script>
 <style scoped lang="less">

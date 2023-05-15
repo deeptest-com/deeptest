@@ -135,11 +135,11 @@ const onSelectChange = (keys: Key[], rows: any) => {
 
 
 const handleExport = (id: number) => {
-    console.log('export')
+    console.log('export');
 }
 
-const handleDelete = (id: number) => {
-    console.log('remove')
+const handleDelete = async (id: number) => {
+    store.dispatch('Report/remove', id);
 }
 
 const handleQueryDetail = (record: any) => {

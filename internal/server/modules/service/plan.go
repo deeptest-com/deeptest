@@ -9,6 +9,7 @@ import (
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	"gorm.io/gorm"
 	"strconv"
+	"time"
 )
 
 type PlanService struct {
@@ -148,6 +149,8 @@ func (s *PlanService) Clone(id, userId uint) (ret model.Plan, err error) {
 	plan.ID = 0
 	plan.Name = plan.Name + "-COPY"
 	plan.UpdateUserId = userId
+	now := time.Now()
+	plan.CreatedAt = &now
 	plan, bizErr := s.PlanRepo.Create(plan)
 	if bizErr != nil {
 		err = errors.New(bizErr.Msg)

@@ -206,6 +206,20 @@ func (c *ScenarioCtrl) UpdateStatus(ctx iris.Context) {
 	}
 }
 
+func (c *ScenarioCtrl) UpdatePriority(ctx iris.Context) {
+	id, _ := ctx.Params().GetInt("id")
+	priority := ctx.URLParamDefault("priority", "")
+	if priority == "" {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+	}
+	err := c.ScenarioService.UpdatePriority(uint(id), priority)
+	if err == nil {
+		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+	} else {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
+	}
+}
+
 func (c *ScenarioCtrl) RemovePlans(ctx iris.Context) {
 	scenarioId, _ := ctx.Params().GetInt("id")
 

@@ -74,3 +74,8 @@ func (s *ScenarioService) UpdateStatus(id uint, status consts.TestStatus) (err e
 	err = s.ScenarioRepo.UpdateStatus(id, status)
 	return
 }
+
+func (s *ScenarioService) UpdatePriority(id uint, priority string) (err error) {
+	err = s.ScenarioRepo.UpdatePriority(id, priority)
+	return
+}

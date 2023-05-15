@@ -10,9 +10,10 @@ var (
 )
 
 type ScenarioExecReq struct {
-	ServerUrl  string `json:"serverUrl"`
-	Token      string `json:"token"`
-	ScenarioId int    `json:"scenarioId"`
+	ServerUrl     string `json:"serverUrl"`
+	Token         string `json:"token"`
+	ScenarioId    int    `json:"scenarioId"`
+	EnvironmentId string `json:"environmentId"`
 }
 
 type ScenarioExecObj struct {
@@ -26,8 +27,8 @@ type ScenarioExecObjMsg struct {
 }
 
 type ScenarioExecObjBase struct {
-	//ScenarioId uint   `json:"scenarioId"`
-	Name string `json:"name"`
+	ScenarioId uint   `json:"scenarioId"`
+	Name       string `json:"name"`
 
 	BaseUrl string `json:"baseUrl"`
 

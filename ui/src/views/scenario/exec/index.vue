@@ -3,7 +3,6 @@
     <div id="scenario-exec-left" class="left">
       <ScenarioExecInfo />
     </div>
-
     <div id="scenario-exec-splitter" class="splitter"></div>
 
 <!--    <div id="scenario-exec-right" class="right">

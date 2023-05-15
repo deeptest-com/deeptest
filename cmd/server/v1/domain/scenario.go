@@ -110,4 +110,5 @@ type ScenarioPlanReqPaginate struct {
 	Status       consts.TestStatus `json:"status"`
 	UpdateUserId uint              `json:"updateUserId"`
 	Ref          bool              `json:"ref"`
+	Keywords     string            `json:"keywords"`
 }

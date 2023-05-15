@@ -386,13 +386,24 @@ func (r *ServeRepo) SetCurrServeByUser(serveId, userId uint) (err error) {
 func (r *ServeRepo) SaveServe(serve *model.Serve) (err error) {
 	return r.DB.Transaction(func(tx *gorm.DB) error {
 		if serve.ID == 0 { //生成目录树跟节点
-			category := model.Category{Name: "所属分类", ProjectId: serve.ProjectId, Type: serverConsts.EndpointCategory}
-			err = r.CategoryRepo.Save(&category)
+			/*
+				err = r.AddDefaultCategory(serve.ProjectId)
+				if err != nil {
+					return err
+				}
+			*/
+
+			//创建默认环境
+			err = r.Save(serve.ID, &serve)
 			if err != nil {
 				return err
 			}
+			err = r.AddDefaultServer(serve.ProjectId, serve.ID)
+
+		} else {
+			err = r.Save(serve.ID, &serve)
 		}
-		err = r.Save(serve.ID, &serve)
+
 		if err != nil {
 			return err
 		}
@@ -416,5 +427,29 @@ func (r *ServeRepo) GetCountByProject(projectId uint) (count int64, err error) {
 }
 
 func (r *ServeRepo) CreateServeSample(projectId uint) (serveId uint, err error) {
+	return
+}
+
+func (r *ServeRepo) AddDefaultCategory(projectId uint) (err error) {
+	category := model.Category{Name: "所属分类", ProjectId: projectId, Type: serverConsts.EndpointCategory}
+	err = r.CategoryRepo.Save(&category)
+	return
+}
+
+func (r *ServeRepo) AddDefaultServer(projectId, serveId uint) (err error) {
+	var defaultEnv model.Environment
+	defaultEnv, err = r.EnvironmentRepo.GetByProject(projectId)
+	if err != nil {
+		return
+	}
+
+	var defaultServer []model.ServeServer
+	defaultServer = append(defaultServer, model.ServeServer{ServeId: serveId, EnvironmentId: defaultEnv.ID, Url: serverConsts.DefaultSever})
+
+	err = r.SaveServer(defaultEnv.ID, defaultEnv.Name, defaultServer)
+	if err != nil {
+		return
+	}
+
 	return
 }

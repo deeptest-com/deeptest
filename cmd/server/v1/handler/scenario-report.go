@@ -76,3 +76,20 @@ func (c *ScenarioReportCtrl) Delete(ctx iris.Context) {
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 }
+
+func (c *ScenarioReportCtrl) Create(ctx iris.Context) {
+	var req _domain.ReqId
+	err := ctx.ReadParams(&req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	err = c.ScenarioReportService.CreatePlanReport(req.Id)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+}

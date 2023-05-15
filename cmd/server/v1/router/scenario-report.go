@@ -17,7 +17,8 @@ func (m *ScenarioReportModule) Party() module.WebModule {
 		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
 		index.Post("/", m.ScenarioReportCtrl.List).Name = "结果列表"
 		index.Get("/{id:uint}", m.ScenarioReportCtrl.Get).Name = "结果详情"
-		index.Delete("/{id:uint}", m.ScenarioReportCtrl.Delete).Name = "删除场景"
+		index.Delete("/{id:uint}", m.ScenarioReportCtrl.Delete).Name = "删除报告"
+		index.Post("/{id:uint}", m.ScenarioReportCtrl.Create).Name = "创建报告"
 	}
 
 	return module.NewModule("/scenarios/reports", handler)

@@ -20,3 +20,5 @@ const (
 	Published  = 3
 	Abandoned  = 4
 )
+
+const DefaultSever = "http://localhost"

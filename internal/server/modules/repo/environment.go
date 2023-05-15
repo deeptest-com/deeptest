@@ -15,10 +15,10 @@ type EnvironmentRepo struct {
 	ServeRepo   *ServeRepo   `inject:""`
 }
 
-func (r *EnvironmentRepo) List() (pos []model.Environment, err error) {
+func (r *EnvironmentRepo) List(projectId int) (pos []model.Environment, err error) {
 	err = r.DB.
 		Select("id", "name").
-		Where("NOT deleted").
+		Where("NOT deleted and project_id=?", projectId).
 		Order("created_at ASC").
 		Find(&pos).Error
 	return
@@ -52,17 +52,11 @@ func (r *EnvironmentRepo) GetByName(name string) (env model.Environment, err err
 }
 
 func (r *EnvironmentRepo) GetByProject(projectId uint) (env model.Environment, err error) {
-	project := model.Project{}
+
 	err = r.DB.
-		Where("id=?", projectId).
+		Where("project_id=?", projectId).
 		Where("NOT deleted").
-		First(&project).Error
-
-	if err != nil {
-		return
-	}
-
-	env, err = r.Get(project.EnvironmentId)
+		First(&env).Error
 
 	return
 }
@@ -128,10 +122,11 @@ func (r *EnvironmentRepo) Delete(id uint) (err error) {
 
 func (r *EnvironmentRepo) AddDefaultForProject(projectId uint) (err error) {
 	env := model.Environment{
-		Name: "默认环境",
+		ProjectId: projectId,
+		Name:      "默认环境",
 	}
 	err = r.Save(&env)
-	err = r.ProjectRepo.UpdateDefaultEnvironment(projectId, env.ID)
+	//err = r.ProjectRepo.UpdateDefaultEnvironment(projectId, env.ID)
 
 	return
 }

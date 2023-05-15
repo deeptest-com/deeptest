@@ -10,6 +10,7 @@ import (
 	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"gorm.io/gorm"
+	"strconv"
 )
 
 type PlanReportRepo struct {
@@ -17,6 +18,7 @@ type PlanReportRepo struct {
 	LogRepo            *LogRepo            `inject:""`
 	UserRepo           *UserRepo           `inject:""`
 	ScenarioReportRepo *ScenarioReportRepo `inject:""`
+	ProjectRepo        *ProjectRepo        `inject:""`
 }
 
 func (r *PlanReportRepo) Paginate(req v1.PlanReportReqPaginate, projectId int) (data _domain.PageData, err error) {
@@ -79,7 +81,10 @@ func (r *PlanReportRepo) CombineUserName(data []*model.PlanReport) {
 }
 
 func (r *PlanReportRepo) Get(id uint) (report model.PlanReportDetail, err error) {
-	err = r.DB.Model(model.PlanReport{}).Where("id = ?", id).First(&report).Error
+	err = r.DB.Model(model.PlanReport{}).
+		Select("biz_plan_report.*, e.name exec_env").
+		Joins("LEFT JOIN biz_environment e ON biz_plan_report.exec_env_id=e.id").
+		Where("biz_plan_report.id = ?", id).First(&report).Error
 	if err != nil {
 		logUtils.Errorf("find report by id error %s", err.Error())
 		return
@@ -97,6 +102,12 @@ func (r *PlanReportRepo) Create(result *model.PlanReport) (bizErr *_domain.BizEr
 	err := r.DB.Model(&model.PlanReport{}).Create(result).Error
 	if err != nil {
 		logUtils.Errorf("create plan report error %s", err.Error())
+		bizErr.Code = _domain.SystemErr.Code
+
+		return
+	}
+	if err = r.UpdateSerialNumber(result.ID, result.ProjectId); err != nil {
+		logUtils.Errorf("update plan report serial number error %s", err.Error())
 		bizErr.Code = _domain.SystemErr.Code
 
 		return
@@ -267,5 +278,16 @@ func (r *PlanReportRepo) GetPlanExecNumber(planId uint) (num int64, err error) {
 		logUtils.Errorf("find plan report by plan_id error %s", err.Error())
 		return
 	}
+	return
+}
+
+func (r *PlanReportRepo) UpdateSerialNumber(id, projectId uint) (err error) {
+	var project model.Project
+	project, err = r.ProjectRepo.Get(projectId)
+	if err != nil {
+		return
+	}
+
+	err = r.DB.Model(&model.PlanReport{}).Where("id=?", id).Update("serial_number", project.ShortName+"-TR-"+strconv.Itoa(int(id))).Error
 	return
 }

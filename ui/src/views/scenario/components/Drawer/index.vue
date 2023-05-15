@@ -51,10 +51,9 @@
         wrapClassName="drawer-exec"
         :bodyStyle="{padding:'16px',marginBottom:'56px'}"
         @close="onCloseExecDrawer">
-      执行
+      <ExecInfo/>
     </a-drawer>
   </div>
-
 </template>
 
 <script lang="ts" setup>
@@ -73,6 +72,7 @@ import {message} from "ant-design-vue";
 import DesignContent from "../../design/index1.vue"
 import PlanList from "./PlanList.vue";
 import ExecList from "./ExecList.vue";
+import ExecInfo  from "../../exec/components/Info.vue";
 import Associate from "./Associate.vue"
 import debounce from "lodash.debounce";
 

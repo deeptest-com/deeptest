@@ -41,7 +41,6 @@
           </div>
         </a-tab-pane>
       </a-tabs>
-
     </a-drawer>
     <a-drawer
         :placement="'right'"

@@ -44,7 +44,13 @@
       :columns="linked ? columns : columnsForSelect"
       :data-source="linked ? linkedPlans : notLinkedplans">
     <template #status="{ record }">
-      {{ record.status }}
+      {{ scenarioStatus.get(record.status) || '未知' }}
+    </template>
+    <template #updatedAt="{ record }">
+      <span>{{ momentUtc(record.updatedAt) }}</span>
+    </template>
+    <template #testPassRate="{ record }">
+      <span>{{ record.testPassRate }}</span>
     </template>
     <template #operation="{ record }">
       <a-button type="primary" @click="handleRemove(record)">
@@ -59,12 +65,14 @@
   />
 </template>
 <script lang="ts" setup>
-import {ref, reactive, defineProps, defineEmits, PropType, computed, onMounted} from 'vue';
+import {ref, reactive, defineProps, defineEmits, PropType, computed, onMounted, watch} from 'vue';
 import {useStore} from 'vuex';
 import {PlusOutlined} from '@ant-design/icons-vue';
 import SelectPlan from './SelectPlan.vue';
 import {Modal} from 'ant-design-vue';
-import {priorityOptions,scenarioStatusOptions} from "@/config/constant";
+import {momentUtc} from "@/utils/datetime";
+
+import {priorityOptions, scenarioStatusOptions, scenarioStatus} from "@/config/constant";
 
 const props = defineProps({
   linked: {
@@ -95,7 +103,7 @@ const columns = [
     dataIndex: 'serialNumber',
   },
   {
-    title: '摘要',
+    title: '名称',
     dataIndex: 'name',
     slots: {customRender: 'name'}
   },
@@ -107,6 +115,7 @@ const columns = [
   {
     title: '测试通过率',
     dataIndex: 'testPassRate',
+    slots: {customRender: 'testPassRate'}
   },
   {
     title: '负责人',
@@ -129,7 +138,7 @@ const columnsForSelect = [
     dataIndex: 'serialNumber',
   },
   {
-    title: '摘要',
+    title: '名称',
     dataIndex: 'name',
     slots: {customRender: 'name'}
   },
@@ -141,6 +150,7 @@ const columnsForSelect = [
   {
     title: '测试通过率',
     dataIndex: 'testPassRate',
+    slots: {customRender: 'testPassRate'}
   },
   {
     title: '负责人',
@@ -167,6 +177,14 @@ async function getPlans() {
   loading.value = false;
 }
 
+watch(() => {
+  return detailResult.value.id
+}, async (newVal) => {
+  await getPlans();
+}, {
+  immediate: true
+})
+
 onMounted(async () => {
   await getPlans();
 })
@@ -176,7 +194,7 @@ const handleChange = () => {
 };
 
 
-async function handleAdd(keys:any[]) {
+async function handleAdd(keys: any[]) {
   await store.dispatch('Scenario/addPlans', {
     currProjectId: currProject.value.id,
     id: detailResult.value.id,
@@ -184,6 +202,7 @@ async function handleAdd(keys:any[]) {
   });
   await getPlans();
 }
+
 async function handleRemove(record?: any) {
   Modal.confirm({
     title: '确认要解除与该测试计划的关联吗?',

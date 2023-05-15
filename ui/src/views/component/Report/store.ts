@@ -2,7 +2,8 @@ import { Mutation, Action } from 'vuex';
 import { StoreModuleType } from "@/utils/store";
 import { ResponseData } from '@/utils/request';
 import { Report, QueryResult, QueryParams } from './data';
-import { query, get, remove, members} from './service';
+import { query, get, remove, members } from './service';
+import { momentUtc } from '@/utils/datetime';
 
 export interface StateType {
     ReportId: number;
@@ -27,6 +28,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         get: Action<StateType, StateType>;
         remove: Action<StateType, StateType>;
         getMembers: Action<StateType, StateType>;
+        initExecResult: Action<StateType, StateType>;
     };
 }
 const initState: StateType = {
@@ -62,6 +64,7 @@ const StoreModel: ModuleType = {
             state.listResult = payload;
         },
         setDetail(state, payload) {
+            console.log(payload);
             state.detailResult = payload;
         },
         setQueryParams(state, payload) {
@@ -72,7 +75,7 @@ const StoreModel: ModuleType = {
         }
     },
     actions: {
-        async list({ commit }, params: any ) {
+        async list({ commit }, params: any) {
             try {
                 const response: ResponseData = await query(params);
                 if (response.code != 0) return;
@@ -88,7 +91,7 @@ const StoreModel: ModuleType = {
                     reportItem.createUserName = reportItem.createUserName || '-';
                     return reportItem;
                 })
-                commit('setList',{
+                commit('setList', {
                     ...initState.listResult,
                     list: newResult || [],
                     pagination: {
@@ -106,9 +109,9 @@ const StoreModel: ModuleType = {
             }
         },
 
-        async get({ commit }, id: number ) {
+        async get({ commit }, id: number) {
             if (id === 0) {
-                commit('setDetail',{
+                commit('setDetail', {
                     ...initState.detailResult,
                 })
                 return
@@ -116,18 +119,55 @@ const StoreModel: ModuleType = {
             try {
                 const response: ResponseData = await get(id);
                 const { data } = response;
-                commit('setDetail',{
+                let scenarioReports = data.scenarioReports;
+                scenarioReports = scenarioReports.map((scenario: any) => {
+                    scenario.requestLogs = [];
+                    if (scenario.logs) {
+                        scenario.logs.forEach((log: any) => {
+                            if (log.logs) {
+                                scenario.requestLogs.push(log.logs[0]);
+                            } 
+                        });
+                    } else {
+                        scenario.logs = [];
+                    }
+                    return scenario;
+                })
+                commit('setDetail', {
                     ...initState.detailResult,
                     ...data,
+                    basicInfo: {
+                        name: data.name || '',
+                        startTime: (data.startTime && momentUtc(data.startTime)) || '',
+                        execEnv: data.execEnv || '',
+                        createUserName: data.createUserName || ''
+                    },
+                    statisticData: {
+                        "duration": data.duration, //执行耗时（单位：s)
+                        "totalScenarioNum": data.totalScenarioNum, //场景总数
+                        "passScenarioNum": data.passScenarioNum, //通过场景数
+                        "failScenarioNum": data.failScenarioNum, //失败场景数
+                        "totalInterfaceNum": data.totalInterfaceNum, //接口总数
+                        "passInterfaceNum": data.passInterfaceNum,
+                        "failInterfaceNum": data.failInterfaceNum,
+                        "totalRequestNum": data.totalRequestNum,
+                        "passRequestNum": data.passRequestNum,
+                        "failRequestNum": data.failRequestNum,
+                        "totalAssertionNum": data.totalAssertionNum, //检查点总数
+                        "passAssertionNum": data.passAssertionNum, //通过检查点数
+                        "failAssertionNum": data.failAssertionNum, //失败检查点数
+                    },
+                    scenarioReports
                 });
                 return true;
             } catch (error) {
+                console.log(error);
                 return false;
             }
         },
 
 
-        async remove({ dispatch, state }, payload: number ) {
+        async remove({ dispatch, state }, payload: number) {
             try {
                 await remove(payload);
                 await dispatch('list', state.queryParams)
@@ -143,7 +183,7 @@ const StoreModel: ModuleType = {
                 const { data, code } = response;
                 if (code !== 0) return;
                 const memberList = data.result.map((member: any) => {
-                    member.label = member.username;
+                    member.label = member.name;
                     member.value = member.id;
                     return member;
                 })
@@ -152,6 +192,10 @@ const StoreModel: ModuleType = {
             } catch (error) {
                 return false;
             }
+        },
+
+        async initExecResult({ commit }) {
+            commit('setDetail', {});
         }
 
     }

@@ -1,8 +1,8 @@
 <template>
     <div class="endpoint-collapse-panel">
         <a-collapse v-model:activeKey="activeKey" @change="changeActivekey">
-            <template v-for="item in recordList" :key="item.requestId">
-                <EndpointCollapse :collapseKey="item.requestId" :endpointData="item" @query-detail="logResponseDetailVisible = true"></EndpointCollapse>
+            <template v-for="item in recordList" :key="item.id">
+                <EndpointCollapse :collapseKey="item.id" :endpointData="item" @query-detail="logResponseDetailVisible = true"></EndpointCollapse>
             </template>
         </a-collapse>
     </div>

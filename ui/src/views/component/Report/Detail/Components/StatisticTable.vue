@@ -23,9 +23,13 @@
     </div>
 </template>
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch, defineProps } from 'vue';
 import * as echarts from 'echarts';
 import TextItem from './TextItem.vue';
+
+defineProps<{
+    scene: string
+}>();
 
 const main = ref();
 onMounted(() => {

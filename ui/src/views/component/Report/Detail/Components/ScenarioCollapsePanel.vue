@@ -40,7 +40,7 @@ const props = defineProps(['record', 'showScenarioInfo', 'expandActive']);
 const expanded = ref(props.expandActive);
 
 const statusMap = new Map([['pass', '通过'], ['fail', '失败']]);
-const progressValue = computed(() => percentDef(props.record.passRequestNum || 0, props.record.totalRequestNum || 0));
+const progressValue = computed(() => percentDef(props.record.passInterfaceNum || 0, props.record.totalInterfaceNum || 0));
 </script>
 
 <style scoped lang="less">

@@ -8,7 +8,7 @@ import (
 type ScenarioExecResult struct {
 	ID int `json:"id" yaml:"id"`
 
-	//ScenarioId     uint                  `json:"scenarioId"`
+	ScenarioId     uint                  `json:"scenarioId"`
 	Name           string                `json:"name"`
 	Desc           string                `json:"desc,omitempty"`
 	ProgressStatus consts.ProgressStatus `json:"progressStatus,omitempty"`
@@ -51,8 +51,9 @@ type ScenarioExecResult struct {
 type PlanExecResult struct {
 	ID uint `json:"id" yaml:"id"`
 
-	Name string `json:"name"`
-	Desc string `json:"desc,omitempty"`
+	Name  string `json:"name"`
+	Desc  string `json:"desc,omitempty"`
+	EnvId uint   `json:"envId"`
 
 	Scenarios []*ScenarioExecResult `json:"scenarios"`
 }

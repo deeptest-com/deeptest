@@ -49,6 +49,7 @@ func (s *ScenarioExecService) LoadExecData(scenarioId uint) (ret agentExec.Scena
 	}
 
 	// get processor tree
+	ret.ScenarioId = scenarioId
 	ret.Name = scenario.Name
 	ret.RootProcessor, _ = s.ScenarioNodeService.GetTree(scenario, true)
 	ret.RootProcessor.Session = agentExec.Session{}

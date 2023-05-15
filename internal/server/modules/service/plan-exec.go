@@ -60,13 +60,14 @@ func (s *PlanExecService) SaveReport(planId int, userId uint, result agentDomain
 	report.PlanId = uint(planId)
 	report.ProjectId = projectId
 	report.Name = plan.Name
+	report.ExecEnvId = result.EnvId
 	report.CreateUserId = userId
 	report.ProgressStatus = consts.End
 	report.ResultStatus = consts.Pass
 
 	scenarioIds := make([]uint, 0)
 	for _, scenarioResult := range result.Scenarios {
-		scenarioReport, _ := s.ScenarioExecService.SaveReport(scenarioResult.ID, userId, *scenarioResult)
+		scenarioReport, _ := s.ScenarioExecService.SaveReport(int(scenarioResult.ScenarioId), userId, *scenarioResult)
 		s.CombineReport(scenarioReport, &report)
 		scenarioIds = append(scenarioIds, scenarioReport.ID)
 	}
@@ -103,6 +104,17 @@ func (s *PlanExecService) CombineReport(scenarioReport model.ScenarioReport, pla
 	planReport.TotalAssertionNum += scenarioReport.TotalAssertionNum
 	planReport.PassAssertionNum += scenarioReport.PassAssertionNum
 	planReport.FailAssertionNum += scenarioReport.FailAssertionNum
+
+	planReport.TotalInterfaceNum += scenarioReport.TotalInterfaceNum
+	planReport.PassInterfaceNum += scenarioReport.PassInterfaceNum
+	planReport.FailInterfaceNum += scenarioReport.FailInterfaceNum
+
+	planReport.TotalScenarioNum += 1
+	if scenarioReport.ResultStatus == consts.Pass {
+		planReport.PassScenarioNum += 1
+	} else if scenarioReport.ResultStatus == consts.Fail {
+		planReport.FailScenarioNum += 1
+	}
 
 	for keyId := range scenarioReport.InterfaceStatusMap {
 		if planReport.InterfaceStatusMap[keyId] == nil {

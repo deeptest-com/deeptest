@@ -97,12 +97,15 @@
       </template>
     </a-table>
     <a-empty v-if="list.length === 0" :image="simpleImage" />
-
   </div>
   <ScenarioCreate :visible="isEditVisible"
       @cancel="isEditVisible = false"
       :onFinish="onEditFinish">
   </ScenarioCreate>
+  <SelectEnv :visible="selectEnvVisible"
+             :scenarioInfo="selectedExecScenario"
+             @ok="selectExecEnv"
+             @cancel="cancelSelectExecEnv"/>
   <DrawerDetail :destroyOnClose="true"
                 :visible="drawerVisible"
                 :drawerTabKey="drawerTabKey"
@@ -129,6 +132,7 @@ import EditAndShowField from '@/components/EditAndShow/index.vue';
 import ScenarioCreate from "../edit/index.vue";
 import LinkPlan from "../edit/linkPlan.vue";
 import DrawerDetail from "../components/Drawer/index.vue";
+import SelectEnv from "../components/SelectEnv.vue";
 import { ColumnProps } from 'ant-design-vue/es/table/interface';
 import {scenarioStatusColorMap,scenarioStatus,scenarioStatusOptions,priorityOptions,testTypeOptions} from "@/config/constant"
 import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
@@ -141,20 +145,6 @@ interface DataType {
   address: string;
 }
 const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
-const statusArr = ref<SelectTypes['options']>([
-  {
-    label: '所有状态',
-    value: '',
-  },
-  {
-    label: '启用',
-    value: '1',
-  },
-  {
-    label: '禁用',
-    value: '0',
-  },
-]);
 const router = useRouter();
 const store = useStore<{ Scenario: StateType, ProjectGlobal: ProjectStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
@@ -204,11 +194,6 @@ const exec = (id: number) => {
   router.push(`/scenario/exec/${id}`)
 }
 
-const linkPlanVisible = ref(false)
-
-function handleLinkPlan(rows) {
-  console.log('关联逻辑',rows);
-}
 
 const design = (id: number) => {
   console.log('edit')
@@ -231,7 +216,6 @@ const onEditFinish = () => {
 
 const remove = (id: number) => {
   console.log('remove')
-
   Modal.confirm({
     title: '删除场景',
     content: '确定删除指定的场景？',
@@ -260,18 +244,30 @@ const remove = (id: number) => {
 const drawerVisible = ref<boolean>(false);
 // 执行抽屉打开
 const execVisible = ref<boolean>(false);
+const selectEnvVisible = ref<boolean>(false);
+const selectedExecScenario = ref(null);
 // 抽屉里的tab key
 const drawerTabKey:any = ref<string>('1');
+
 
 async function editScenario(record: any,tab:string) {
   drawerVisible.value = true;
   drawerTabKey.value = tab;
   await store.dispatch('Scenario/getScenario', record.id);
 }
+async function cancelSelectExecEnv(record:any) {
+  selectEnvVisible.value = false;
+  selectedExecScenario.value = null;
+}
+async function selectExecEnv(record:any) {
+    selectEnvVisible.value = false;
+    drawerVisible.value = false;
+    execVisible.value = true;
+    await store.dispatch('Scenario/getScenario', record.id);
+}
 async function execScenario(record: any) {
-  drawerVisible.value = false;
-  execVisible.value = true;
-  await store.dispatch('Scenario/getScenario', record.id);
+  selectEnvVisible.value = true;
+  selectedExecScenario.value = record;
 }
 
 async function handleChangeStatus(value: any, record: any,) {

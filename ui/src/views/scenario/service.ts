@@ -241,7 +241,6 @@ export async function updateStatus(payload: any): Promise<any> {
     });
 }
 
-
 // interface
 export function getRequestBodyTypes() {
     return getEnumSelectItems(RequestBodyType)

@@ -18,7 +18,7 @@ import {
     getScenariosReports,
     addPlans,
     getPlans,
-    removePlans, updatePriority, updateStatus
+    removePlans, updatePriority, updateStatus,
 } from './service';
 
 import {
@@ -32,6 +32,8 @@ import {
 
 import {getNodeMap} from "@/services/tree";
 import {UsedBy} from "@/utils/enum";
+import {getEnvList} from "@/views/projectSetting/service";
+import {listEnvironment} from "@/services/environment";
 
 export interface StateType {
     scenarioId: number;
@@ -614,6 +616,10 @@ const StoreModel: ModuleType = {
         async updatePriority({commit, dispatch, state}, payload) {
             const res = await updatePriority(payload);
             if(res.code === 0) {
+                commit('setDetail', {
+                    ...state.detailResult,
+                    priority: payload.priority
+                });
                 return res;
             }
             return false;
@@ -621,13 +627,14 @@ const StoreModel: ModuleType = {
         async updateStatus({commit, dispatch, state}, payload) {
             const res = await updateStatus(payload);
             if(res.code === 0) {
+                commit('setDetail', {
+                    ...state.detailResult,
+                    status: payload.status
+                });
                 return res;
             }
             return false;
         },
-
-
-
     }
 };
 

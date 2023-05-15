@@ -996,7 +996,7 @@ export const scenarioStatus = new Map([['disabled', '已禁用'],['draft', '草�
 export const scenarioStatusColorMap = new Map([['disabled', 'error'],['draft', 'warning'], ['executed', 'success'], ['to_execute', 'processing']]);
 
 
-export const scenarioPriority = new Map([['0', 'P0']])
+export const scenarioPriority = new Map([['P0', 'P0'],["P1", "P1"], ["P2", "P2"], ["P3", "P3"], ["P4", "P4"]]);
 
 export const serveStatus = new Map([[0, '未知'], [1, '新建'], [2, '设计中'], [3, '已发布'], [4, ' 已禁用']])
 

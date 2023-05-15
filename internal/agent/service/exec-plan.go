@@ -42,7 +42,7 @@ func (s *ExecPlanService) ExecPlan(req *agentExec.PlanExecReq, wsMsg *websocket.
 	// submit result
 	report, _ := s.RemoteService.SubmitPlanResult(results, req.PlanId, req.ServerUrl, req.Token)
 	execUtils.SendResultMsg(report, wsMsg)
-	s.sendSubmitResult(req.PlanId, wsMsg)
+	//s.sendSubmitResult(req.PlanId, wsMsg)
 
 	// end msg
 	execUtils.SendEndMsg(wsMsg)

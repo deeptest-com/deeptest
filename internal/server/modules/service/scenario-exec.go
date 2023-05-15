@@ -25,10 +25,11 @@ type ScenarioExecService struct {
 	EndpointRepo          *repo.EndpointRepo          `inject:""`
 	ServeServerRepo       *repo.ServeServerRepo       `inject:""`
 
-	SceneService        *SceneService        `inject:""`
-	EnvironmentService  *EnvironmentService  `inject:""`
-	DatapoolService     *DatapoolService     `inject:""`
-	ScenarioNodeService *ScenarioNodeService `inject:""`
+	SceneService          *SceneService          `inject:""`
+	EnvironmentService    *EnvironmentService    `inject:""`
+	DatapoolService       *DatapoolService       `inject:""`
+	ScenarioNodeService   *ScenarioNodeService   `inject:""`
+	ScenarioReportService *ScenarioReportService `inject:""`
 }
 
 func (s *ScenarioExecService) LoadExecResult(scenarioId int) (result domain.Report, err error) {
@@ -84,6 +85,8 @@ func (s *ScenarioExecService) SaveReport(scenarioId int, userId uint, rootResult
 
 	s.ScenarioReportRepo.Create(&report)
 	s.TestLogRepo.CreateLogs(rootResult, &report)
+	logs, _ := s.ScenarioReportService.GetById(report.ID)
+	report.Logs = logs.Logs
 
 	return
 }

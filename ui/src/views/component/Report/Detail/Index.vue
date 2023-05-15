@@ -50,10 +50,10 @@ const props = defineProps<{
 
 const emits = defineEmits(['onClose']);
 
-const store = useStore<{ 
+const store = useStore<{
     Plan: PlanStateType,
-    Global: GlobalStateType, 
-    Exec: ExecStatus, 
+    Global: GlobalStateType,
+    Exec: ExecStatus,
     Report: ReportStateType,
     ProjectSetting: ProjectSettingStateType
  }>();
@@ -154,7 +154,7 @@ watch(() => {
             bus.off(settings.eventWebSocketMsg, OnWebSocketMsg);
             bus.off(settings.eventWebSocketConnStatus, onWebSocketConnStatusMsg);
         }
-    } 
+    }
 }, { immediate: true, deep: true });
 
 </script>

@@ -249,7 +249,7 @@ func (s *RemoteService) GetScenarioToExec(req *agentExec.ScenarioExecReq) (ret *
 }
 
 func (s *RemoteService) SubmitScenarioResult(result agentDomain.ScenarioExecResult, scenarioId uint, serverUrl, token string) (
-	report agentDomain.ReportSimple, err error) {
+	report agentDomain.Report, err error) {
 
 	bodyBytes, _ := json.Marshal(result)
 	req := domain.BaseRequest{
@@ -282,7 +282,7 @@ func (s *RemoteService) SubmitScenarioResult(result agentDomain.ScenarioExecResu
 	}
 
 	reportContent, _ := json.Marshal(ret.Data)
-	report = agentDomain.ReportSimple{}
+	report = agentDomain.Report{}
 	json.Unmarshal(reportContent, &report)
 
 	return
@@ -340,7 +340,7 @@ func (s *RemoteService) GetPlanToExec(req *agentExec.PlanExecReq) (ret *agentExe
 }
 
 func (s *RemoteService) SubmitPlanResult(result agentDomain.PlanExecResult, planId uint, serverUrl, token string) (
-	report agentDomain.ReportSimple, err error) {
+	report agentDomain.Report, err error) {
 	bodyBytes, _ := json.Marshal(result)
 	req := domain.BaseRequest{
 		Url:               _httpUtils.AddSepIfNeeded(serverUrl) + fmt.Sprintf("plans/exec/submitResult/%d", planId),
@@ -372,7 +372,7 @@ func (s *RemoteService) SubmitPlanResult(result agentDomain.PlanExecResult, plan
 	}
 
 	reportContent, _ := json.Marshal(ret.Data)
-	report = agentDomain.ReportSimple{}
+	report = agentDomain.Report{}
 	json.Unmarshal(reportContent, &report)
 
 	return

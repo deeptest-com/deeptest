@@ -23,8 +23,8 @@ type EnvironmentService struct {
 	DebugInterfaceRepo    *repo.DebugInterfaceRepo    `inject:""`
 }
 
-func (s *EnvironmentService) List() (envs []model.Environment, err error) {
-	envs, err = s.EnvironmentRepo.List()
+func (s *EnvironmentService) List(projectId int) (envs []model.Environment, err error) {
+	envs, err = s.EnvironmentRepo.List(projectId)
 
 	return
 }

@@ -437,6 +437,8 @@ func (r *ProjectRepo) AddProjectDefaultServe(projectId, userId uint) (serve mode
 
 	r.ServeRepo.SetCurrServeByUser(serve.ID, userId)
 
+	r.ServeRepo.AddDefaultServer(serve.ProjectId, serve.ID)
+
 	return
 }
 

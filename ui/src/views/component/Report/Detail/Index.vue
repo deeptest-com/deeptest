@@ -3,18 +3,18 @@
         @close="onClose">
         <template #title>
             <div class="drawer-header">
-                <div>{{ title || '测试报告详情' }}</div>
+                <div>{{ detailResult.name || '测试报告详情' }}</div>
             </div>
         </template>
         <div class="drawer-content">
-            <ReportBasicInfo :basic-info="reportData" />
-            <StatisticTable />
-            <Progress :percent="60" @exec-cancel="execCancel" />
-            <template v-for="logItem in reportData.logList" :key="logItem.id">
+            <ReportBasicInfo :basic-info="detailResult.basicInfo || {}" />
+            <StatisticTable :scene="scene" :data="detailResult.statisticData" />
+            <Progress v-if="scene !== ReportDetailType.QueryDetail" :percent="60" @exec-cancel="execCancel" />
+            <template v-for="scenarioReportItem in detailResult.scenarioReports" :key="scenarioReportItem.id">
                 <ScenarioCollapsePanel :show-scenario-info="showScenarioInfo" :expand-active="expandActive"
-                    :record="logItem">
+                    :record="scenarioReportItem">
                     <template #endpointData>
-                        <EndpointCollapsePanel :recordList="logItem.reponseList" />
+                        <EndpointCollapsePanel v-if="scenarioReportItem.requestLogs.length > 0" :recordList="scenarioReportItem.requestLogs" />
                     </template>
                 </ScenarioCollapsePanel>
             </template>
@@ -29,24 +29,37 @@ import { ReportBasicInfo, StatisticTable, ScenarioCollapsePanel, EndpointCollaps
 
 import { StateType as PlanStateType } from '@/views/plan/store';
 import { StateType as GlobalStateType } from "@/store/global";
+import { StateType as ReportStateType } from "../store";
+import { StateType as ProjectSettingStateType } from '@/views/projectSetting/store';
 import { ExecStatus } from "@/store/exec";
 import settings from "@/config/settings";
 import { WebSocket } from "@/services/websocket";
 import { WsMsg } from "@/types/data";
 import bus from "@/utils/eventBus";
 import { getToken } from "@/utils/localToken";
-import { reportData } from './testData';
+import { ReportDetailType } from '@/utils/enum';
 
 const props = defineProps<{
     drawerVisible: boolean
     title: string
     scenarioExpandActive: boolean
     showScenarioInfo: boolean
+    scene: string // 查看详情的场景 【执行测试计划 exec_plan， 执行测试场景 exec_scenario， 查看报告详情 query_detail】
+    reportId?: number
 }>();
 const emits = defineEmits(['onClose']);
-const store = useStore<{ Plan: PlanStateType, Global: GlobalStateType, Exec: ExecStatus }>();
+const store = useStore<{ 
+    Plan: PlanStateType,
+    Global: GlobalStateType, 
+    Exec: ExecStatus, 
+    Report: ReportStateType,
+    ProjectSetting: ProjectSettingStateType
+ }>();
 const currPlan = computed<any>(() => store.state.Plan.currPlan);
 const execResult = computed<any>(() => store.state.Plan.execResult);
+const detailResult = computed<any>(() => store.state.Report.detailResult);
+const currEnvId = computed(() => store.state.ProjectSetting.selectEnvId);
+
 const expandActive = ref(props.scenarioExpandActive || false);
 const logTreeData = ref<any>([]);
 const result = ref({} as any);
@@ -61,6 +74,7 @@ const execStart = async () => {
         serverUrl: process.env.VUE_APP_API_SERVER, // used by agent to submit result to server
         token: await getToken(),
         planId: currPlan.value && currPlan.value.id,
+        envId: currEnvId.value
     }
 
     WebSocket.sentMsg(settings.webSocketRoom, JSON.stringify({ act: 'execPlan', planExecReq: data }));
@@ -78,6 +92,7 @@ const OnWebSocketMsg = (data: any) => {
     if (!data.msg) return
 
     const wsMsg = JSON.parse(data.msg) as WsMsg
+    console.log('get webscoket msg ===', wsMsg);
     if (wsMsg.category == 'result') { // update result
         result.value = wsMsg.data
         console.log('=====', result.value)
@@ -109,17 +124,21 @@ const OnWebSocketMsg = (data: any) => {
 function onClose() {
     emits('onClose');
 }
-console.log(props.drawerVisible);
 watch(() => {
     return props;
 }, val => {
-    if (val.drawerVisible) {
-        bus.on(settings.eventWebSocketMsg, OnWebSocketMsg);
-        execStart();
-    } else {
-        execCancel();
-        bus.off(settings.eventWebSocketMsg, OnWebSocketMsg);
-    }
+    if (val.scene === ReportDetailType.QueryDetail && val.drawerVisible) {
+        store.dispatch('Report/get', val.reportId || 1);
+    } else if (val.scene !== ReportDetailType.QueryDetail) {
+        if (val.drawerVisible) {
+            store.dispatch('Report/initExecResult');
+            bus.on(settings.eventWebSocketMsg, OnWebSocketMsg);
+            execStart();
+        } else {
+            execCancel();
+            bus.off(settings.eventWebSocketMsg, OnWebSocketMsg);
+        }
+    } 
 }, { immediate: true, deep: true });
 
 </script>

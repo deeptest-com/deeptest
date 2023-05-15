@@ -2,6 +2,7 @@ package agentExec
 
 type PlanExecReq struct {
 	PlanId uint `json:"planId"`
+	EnvId  uint `json:"envId"`
 
 	ServerUrl string `json:"serverUrl"`
 	Token     string `json:"token"`

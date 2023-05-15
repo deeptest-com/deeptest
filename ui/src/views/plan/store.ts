@@ -8,7 +8,6 @@ import {
     save,
     remove,
     loadExecResult,
-    getDetail,
     getPlanScenarioList,
     addScenarios,
     removeScenarios,
@@ -50,6 +49,8 @@ export interface StateType {
             pageSize: number,
         }
     };
+
+    selectEnvId: number;
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
@@ -72,6 +73,8 @@ export interface ModuleType extends StoreModuleType<StateType> {
 
         setMembers: Mutation<StateType>;
         setScenarioList: Mutation<StateType>;
+
+        setEnvId: Mutation<StateType>;
     };
     actions: {
         listPlan: Action<StateType, StateType>;
@@ -100,6 +103,8 @@ export interface ModuleType extends StoreModuleType<StateType> {
         getScenarioList: Action<StateType, StateType>;
         addScenario: Action<StateType, StateType>;
         removeScenario: Action<StateType, StateType>;
+
+        saveEnv: Action<StateType, StateType>;
     }
 }
 
@@ -133,7 +138,9 @@ const initState: StateType = {
             current: 1,
             pageSize: 10,
         }
-    }
+    },
+
+    selectEnvId: 0
 };
 
 const StoreModel: ModuleType = {
@@ -185,6 +192,10 @@ const StoreModel: ModuleType = {
         },
         setScenarioList(state, payload) {
             state.scenarioListResult = payload;
+        },
+        setEnvId(state, payload) {
+            console.log('初始化执行环境', payload);
+            state.selectEnvId = payload;
         }
     },
     actions: {
@@ -394,7 +405,7 @@ const StoreModel: ModuleType = {
             if (jsn.code === 0) {
                 const result = jsn.data.result.map(e => {
                     e.value = e.id;
-                    e.label = e.username;
+                    e.label = e.name;
                     return e;
                 })
                 commit('setMembers', result);
@@ -429,6 +440,11 @@ const StoreModel: ModuleType = {
                 return true;
             }
             return false;
+        },
+
+        async saveEnv({ commit }, payload: number) {
+            commit('setEnvId', payload);
+            return true;
         }
     }
 };

@@ -18,6 +18,9 @@ func (s *ExecScenarioService) ExecScenario(req *agentExec.ScenarioExecReq, wsMsg
 
 	scenarioExecObj := s.RemoteService.GetScenarioToExec(req)
 
+	// start msg
+	execUtils.SendStartMsg(wsMsg)
+
 	session, err := s.Exec(scenarioExecObj, wsMsg)
 
 	// submit result
@@ -45,7 +48,7 @@ func (s *ExecScenarioService) Exec(execObj *agentExec.ScenarioExecObj, wsMsg *we
 	agentExec.InitJsRuntime()
 
 	// start msg
-	execUtils.SendStartMsg(wsMsg)
+	//execUtils.SendStartMsg(wsMsg)
 
 	// execution
 	session = agentExec.NewSession(execObj, false, wsMsg)

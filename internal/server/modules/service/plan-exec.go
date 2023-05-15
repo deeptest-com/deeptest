@@ -67,7 +67,7 @@ func (s *PlanExecService) SaveReport(planId int, userId uint, result agentDomain
 
 	scenarioIds := make([]uint, 0)
 	for _, scenarioResult := range result.Scenarios {
-		scenarioReport, _ := s.ScenarioExecService.SaveReport(int(scenarioResult.ScenarioId), userId, *scenarioResult)
+		scenarioReport, _ := s.ScenarioExecService.GenerateReport(int(scenarioResult.ScenarioId), userId, *scenarioResult)
 		s.CombineReport(scenarioReport, &report)
 		scenarioIds = append(scenarioIds, scenarioReport.ID)
 	}

@@ -88,6 +88,33 @@ func (s *ScenarioExecService) SaveReport(scenarioId int, userId uint, rootResult
 	return
 }
 
+func (s *ScenarioExecService) GenerateReport(scenarioId int, userId uint, rootResult execDomain.ScenarioExecResult) (report model.ScenarioReport, err error) {
+	scenario, _ := s.ScenarioRepo.Get(uint(scenarioId))
+	rootResult.Name = scenario.Name
+
+	report = model.ScenarioReport{
+		Name:      scenario.Name,
+		StartTime: rootResult.StartTime,
+		EndTime:   rootResult.EndTime,
+		Duration:  rootResult.EndTime.Unix() - rootResult.StartTime.Unix(),
+
+		ProgressStatus: rootResult.ProgressStatus,
+		ResultStatus:   rootResult.ResultStatus,
+
+		ScenarioId:   scenario.ID,
+		ProjectId:    scenario.ProjectId,
+		CreateUserId: userId,
+	}
+
+	s.countRequest(rootResult, &report)
+	s.summarizeInterface(&report)
+
+	//s.ScenarioReportRepo.Create(&report)
+	//s.TestLogRepo.CreateLogs(rootResult, &report)
+
+	return
+}
+
 func (s *ScenarioExecService) countRequest(result execDomain.ScenarioExecResult, report *model.ScenarioReport) {
 	if result.ProcessorType == consts.ProcessorInterfaceDefault {
 		s.countInterface(result.InterfaceId, result.ResultStatus, report)

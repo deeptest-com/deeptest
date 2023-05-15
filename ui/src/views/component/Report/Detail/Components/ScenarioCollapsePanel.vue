@@ -1,26 +1,28 @@
 <template>
     <div class="scenario-collapse">
         <div class="scenario-basicinfo" v-if="showScenarioInfo">
-            <div class="scenario-name">{{ record.scenarioName }}</div>
-            <div class="scenario-priority">{{ record.scenarioPriority }}</div>
-            <div class="scenario-status">{{ record.scenarioStatus === 0 ? '已完成' : '未完成' }}
+            <div class="scenario-name">{{ record.name }}</div>
+            <div class="scenario-priority">{{ record.priority || 'P1' }}</div>
+            <div :class="['scenario-status', record.resultStatus]">{{ statusMap.get(record.resultStatus) }}
             </div>
             <div class="scenario-rate">
                 <div class="report-progress"
-                    :style="`background: linear-gradient(90deg, #04C495 ${record.scenarioProgress}%, #FF6963 0);`">
+                    :style="`background: linear-gradient(90deg, #04C495 ${progressValue}, #FF6963 0);`">
                 </div>
-                通过率 {{ record.scenarioProgress }}%
+                通过率 {{ progressValue }}
             </div>
             <div class="scenario-action">
-                <template v-if="expanded">
-                    <span style="cursor: pointer;" @click="$event => expanded = false">收起 &nbsp;
-                        <UpOutlined />
-                    </span>
-                </template>
-                <template v-else>
-                    <span style="cursor: pointer;" @click="$event => expanded = true">展开 &nbsp;
-                        <DownOutlined />
-                    </span>
+                <template v-if="record.requestLogs.length > 0">
+                    <template v-if="expanded">
+                        <span style="cursor: pointer;" @click="$event => expanded = false">收起 &nbsp;
+                            <UpOutlined />
+                        </span>
+                    </template>
+                    <template v-else>
+                        <span style="cursor: pointer;" @click="$event => expanded = true">展开 &nbsp;
+                            <DownOutlined />
+                        </span>
+                    </template>
                 </template>
             </div>
         </div>
@@ -30,11 +32,15 @@
     </div>
 </template>
 <script lang="ts" setup>
-import { defineProps, ref } from 'vue';
+import { defineProps, ref, computed } from 'vue';
 import { UpOutlined, DownOutlined } from '@ant-design/icons-vue';
+import { percentDef } from '@/utils/datetime';
 
 const props = defineProps(['record', 'showScenarioInfo', 'expandActive']);
 const expanded = ref(props.expandActive);
+
+const statusMap = new Map([['pass', '通过'], ['fail', '失败']]);
+const progressValue = computed(() => percentDef(props.record.passRequestNum || 0, props.record.totalRequestNum || 0));
 </script>
 
 <style scoped lang="less">
@@ -71,6 +77,18 @@ const expanded = ref(props.expandActive);
         background-color: #04C495;
         margin-right: 10px;
     }
+
+    &.pass {
+        &:before {
+            background-color: #04C495;
+        }
+    }
+
+    &.fail {
+        &:before {
+            background-color: #FF6963;
+        }
+    }
 }
 
 .scenario-name {
@@ -95,6 +113,11 @@ const expanded = ref(props.expandActive);
         border-radius: 41px;
         margin-right: 16px;
     }
-}</style>
+}
+
+.scenario-action {
+    width: 54px;
+}
+</style>
   
   

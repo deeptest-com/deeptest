@@ -104,6 +104,7 @@
     :title="execReportTitle" 
     :scenario-expand-active="true" 
     :show-scenario-info="true"
+    :scene="ReportDetailType.ExecPlan"
     @on-close="execReportVisible = false"
   />
 </template>
@@ -113,7 +114,7 @@ import { computed, reactive, ref, watch } from "vue";
 import { useStore } from "vuex";
 import { message } from 'ant-design-vue';
 import { MoreOutlined } from "@ant-design/icons-vue";
-import { Modal, notification } from "ant-design-vue";
+import { Modal } from "ant-design-vue";
 import debounce from "lodash.debounce";
 
 import PlanCreate from "../components/PlanCreate.vue";
@@ -122,10 +123,11 @@ import EditAndShowField from "@/components/EditAndShow/index.vue";
 import ReportDetail from "@/views/component/Report/Detail/Index.vue";
 
 import { StateType as ProjectStateType } from "@/store/project";
-import { PaginationConfig, QueryParams, Plan } from '../data.d';
+import { PaginationConfig, Plan } from '../data.d';
 import { StateType } from "../store";
 import { momentUtc } from "@/utils/datetime";
 import { planStatusColorMap, planStatusTextMap, planStatusOptions } from "@/config/constant";
+import { ReportDetailType } from "@/utils/enum";
 
 const columns = [
   {
@@ -195,6 +197,7 @@ const getList = debounce(async (current: number): Promise<void> => {
 }, 300);
 
 const handleExec = () => {
+  editDrawerVisible.value = false;
   execReportTitle.value = currPlan.value && currPlan.value.name;
   execReportVisible.value = true;
 };
@@ -314,7 +317,7 @@ watch(() => {
 
 @media screen and (max-width: 1540px) {
   .plan-name {
-    max-width: 180px;
+    width: 180px;
   }
 }
 </style>

@@ -24,7 +24,7 @@
                             @update="handleChangeStatus"/>
                     </a-descriptions-item>
                 </a-descriptions>
-                <a-button class="plan-exec" type="primary" @click="handleExec">执行计划</a-button>
+                <a-button class="plan-exec" type="primary" @click="envDrawerVisible = true">执行计划</a-button>
             </div>
             <ConBoxTitle title="关联信息" backgroundStyle="background: #FBFBFB" />
             <div class="contract-wrapper">
@@ -49,6 +49,11 @@
             </div> 
         </div>
     </a-drawer>
+    <!-- 执行环境选择弹窗 -->
+    <EnvSelector 
+        :env-select-drawer-visible="envDrawerVisible" 
+        @on-cancel="envDrawerVisible = false" 
+        @on-ok="handleExec" />
 </template>
 <script setup lang="ts">
 import { defineProps, defineEmits, ref, watch, reactive, computed } from 'vue';
@@ -57,8 +62,7 @@ import { useStore } from 'vuex';
 import ConBoxTitle from '@/components/ConBoxTitle/index.vue';
 import EditAndShowSelect from '@/components/EditAndShowSelect/index.vue';
 import EditAndShowField from '@/components/EditAndShow/index.vue';
-import ScenarioList from '../components/ScenarioList.vue';
-import ReportList from '../components/ReportList.vue';
+import { ScenarioList, ReportList, EnvSelector } from '../components';
 
 import { momentUtc } from '@/utils/datetime';
 import { StateType as PlanStateType } from '../store';
@@ -77,6 +81,7 @@ const currPlan = computed<any>(() => store.state.Plan.currPlan);
 const emits = defineEmits(['onCancel', 'onExec', 'onUpdate']);
 const activeKey = ref(props.tabActiveKey || 'test-scenario');
 const loading = ref(false);
+const envDrawerVisible = ref(false); //选择执行环境弹窗
 
 const columns: any[] = reactive([
     {
@@ -120,7 +125,7 @@ function onCancel() {
 }
 
 function handleExec() {
-    emits('onCancel');
+    envDrawerVisible.value = false;
     emits('onExec');
 }
 

@@ -2,30 +2,30 @@
     <a-collapse-panel :key="collapseKey" class="endpoint-collapse-item">
         <template #header>
             <div class="endpoint-header">
-                <div :class="['endpoint-status', ClassMap[endpointData.requestStatus]]">
-                    <span v-if="endpointData.requestStatus !== 'loading'">{{ StatusMap[endpointData.requestStatus] }}</span>
+                <div :class="['endpoint-status', ClassMap[endpointData.resultStatus]]">
+                    <span v-if="endpointData.resultStatus !== 'loading'">{{ StatusMap[endpointData.resultStatus] }}</span>
                     <span v-else>
                         <a-spin :indicator="indicator" />
                     </span>
                 </div>
-                <div :class="['endpoint-method', ClassMap[endpointData.requestStatus]]">
-                    {{ endpointData.requestMethod }}
+                <div :class="['endpoint-method', ClassMap[endpointData.resultStatus]]">
+                    {{ reqContent.method }}
                 </div>
                 <div class="endpoint-url">
-                    {{ endpointData.requestUrl }}
+                    {{ reqContent.url }}
                 </div>
                 <div class="endpoint-data">
-                    {{ endpointData.requestData }}
+                    {{ reqContent.bodyLang }}
                 </div>
                 <div class="endpoint-response">
-                    <div class="endpoint-code" v-if="endpointData.requestStatus !== 'loading'">
-                        状态码: <span :style="{ color: `${responseCodeColorMap[endpointData.requestCode]}` }">{{
-                            endpointData.requestCode }}</span>
+                    <div class="endpoint-code" v-if="endpointData.resultStatus !== 'loading'">
+                        状态码: <span :style="{ color: `${responseCodeColorMap[resContent.statusCode]}` }">{{
+                            resContent.statusCode }}</span>
                     </div>
-                    <div :class="['endpoint-time', ClassMap[endpointData.requestStatus]]" v-if="endpointData.requestStatus !== 'loading'">
-                        耗时: <span>{{ endpointData.requestTime }}</span>
+                    <div :class="['endpoint-time', ClassMap[endpointData.resultStatus]]" v-if="endpointData.resultStatus !== 'loading'">
+                        耗时: <span>{{ resContent.time }}</span>
                     </div>
-                    <div class="endpoint-type" v-if="endpointData.requestStatus !== 'loading'">
+                    <div class="endpoint-type" v-if="endpointData.resultStatus !== 'loading'">
                         转单
                     </div>
                 </div>
@@ -34,9 +34,7 @@
         </template>
         <div class="endpoint-expand">
             <div class="endpoint-expand-content">
-                <span v-for="(item, index) in endpointData.requestInfo" :key="`${item.errorId}_${index}`">
-                    {{ item.errorField }}
-                </span>
+                <span>{{ resContent.statusContent }}</span>
             </div>
             <div class="endpoint-expand-btn" @click="handleQueryDetail">
                 更多详情 &nbsp;&nbsp;
@@ -46,24 +44,24 @@
     </a-collapse-panel>
 </template>
 <script setup lang="ts">
-import { defineProps, h, defineEmits } from 'vue';
+import { defineProps, h, defineEmits, computed, toRefs } from 'vue';
 import { RightOutlined, LoadingOutlined, } from '@ant-design/icons-vue';
 import { responseCodes } from '@/config/constant';
 
 enum StatusMap {
-    'success' = '通过',
+    'pass' = '通过',
     'expires' = '过期',
-    'error' = '失败'
+    'fail' = '失败'
 }
 
 enum ClassMap {
-    'success' = 'endpoint-success',
+    'pass' = 'endpoint-success',
     'expires' = 'endpoint-expires',
-    'error' = 'endpoint-error',
+    'fail' = 'endpoint-error',
     'loading' = 'endpoint-loading'
 }
 
-defineProps({
+const props = defineProps({
     collapseKey: {
         required: true
     },
@@ -74,6 +72,11 @@ defineProps({
 });
 
 const emits = defineEmits(['queryDetail']);
+console.log(props.endpointData);
+console.log(props.endpointData.reqContent);
+const reqContent = computed(() => JSON.parse(props.endpointData.reqContent));
+const resContent = computed(() => JSON.parse(props.endpointData.respContent));
+console.log(reqContent);
 
 const responseCodeColorMap = {};
 

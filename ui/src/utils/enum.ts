@@ -167,3 +167,9 @@ export enum OAuth2ClientAuthenticationWay {
     'sendAsBasicAuthHeader' = 'Send as Basic Auth header',
     'sendClientCredentialsInBody' = 'Send client credentials in body',
 }
+
+export enum ReportDetailType {
+    ExecPlan = 'exec_plan',
+    ExecScenario = 'exec_scenario',
+    QueryDetail = 'query_detail'
+}

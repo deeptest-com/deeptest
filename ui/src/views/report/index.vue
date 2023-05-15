@@ -7,7 +7,14 @@
             <List :loading="loading" :list="list" @get-list="getList" @query-detail="queryDetail"/>
         </div>
 
-        <DetailDrawer :title="'测试报告详情'" :show-scenario-info="true" :scenario-expand-active="false" :drawer-visible="drawerVisible" @on-close="drawerVisible = false" />
+        <DetailDrawer 
+          :title="'测试报告详情'" 
+          :show-scenario-info="true" 
+          :scenario-expand-active="false" 
+          :drawer-visible="drawerVisible" 
+          :report-id="currPlanId"
+          :scene="ReportDetailType.QueryDetail"
+          @on-close="drawerVisible = false" />
     </div>
 </template>
 <script setup lang="ts">
@@ -21,6 +28,7 @@ import DetailDrawer from '@/views/component/Report/Detail/Index.vue';
 import { StateType as ProjectStateType } from "@/store/project";
 import { StateType } from "@/views/component/Report/store";
 import { PaginationConfig } from "@/views/component/Report/data";
+import { ReportDetailType } from "@/utils/enum";
 
 const store = useStore<{ Report: StateType, ProjectGlobal: ProjectStateType }>();
 // 全局选中的项目
@@ -42,6 +50,7 @@ const queryParams = reactive({
 const loading = ref<boolean>(false);
 const drawerVisible = ref<boolean>(false);
 let formState = reactive({});
+const currPlanId = ref(0);
 
 const handleFilter = (params: any) => {
   formState = params;
@@ -61,6 +70,7 @@ const getList = async (params?: any): Promise<void> => {
 
 const queryDetail = (record: any) => {
     console.log('查看报告详情：===', record);
+    currPlanId.value = record.id;
     drawerVisible.value = true;
 };
 

@@ -124,7 +124,9 @@ const initState: StateType = {
     },
     detailResult: {} as Plan,
     queryParams: {},
-    execResult: {},
+    execResult: {
+        progressStatus: 'in_progress'
+    },
 
     treeDataCategory: [],
     treeDataMapCategory: {},

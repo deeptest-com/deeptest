@@ -50,7 +50,7 @@ const columns = [
     },
     {
         title: '执行时间',
-        dataIndex: 'executionTime',
+        dataIndex: 'createdAt',
         width: 200,
         slots: { customRender: 'executionTime' },
     },

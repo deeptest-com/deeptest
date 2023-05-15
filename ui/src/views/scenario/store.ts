@@ -18,7 +18,7 @@ import {
     getScenariosReports,
     addPlans,
     getPlans,
-    removePlans
+    removePlans, updatePriority, updateStatus
 } from './service';
 
 import {
@@ -129,6 +129,8 @@ export interface ModuleType extends StoreModuleType<StateType> {
         addPlans: Action<StateType, StateType>;
         removePlans: Action<StateType, StateType>;
         getPlans: Action<StateType, StateType>;
+        updatePriority: Action<StateType, StateType>;
+        updateStatus: Action<StateType, StateType>;
 
         loadCategory: Action<StateType, StateType>;
         getCategoryNode: Action<StateType, StateType>;
@@ -578,7 +580,7 @@ const StoreModel: ModuleType = {
             return true;
         },
         async getExecResultList({commit, dispatch, state}, payload) {
-            const res = await getScenariosReports(payload);
+            const res = await getScenariosReports(payload.data || {});
             if(res.code === 0) {
                 commit('setScenariosReports', res?.data?.result || []);
             }
@@ -607,8 +609,23 @@ const StoreModel: ModuleType = {
                     commit('setNotLinkedplans', res?.data?.result || []);
                 }
             }
-            return true;
+            return false;
         },
+        async updatePriority({commit, dispatch, state}, payload) {
+            const res = await updatePriority(payload);
+            if(res.code === 0) {
+                return res;
+            }
+            return false;
+        },
+        async updateStatus({commit, dispatch, state}, payload) {
+            const res = await updateStatus(payload);
+            if(res.code === 0) {
+                return res;
+            }
+            return false;
+        },
+
 
 
     }

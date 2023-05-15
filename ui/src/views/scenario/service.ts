@@ -219,6 +219,29 @@ export async function getPlans(payload: any): Promise<any> {
     });
 }
 
+/**
+ * 更新优先级
+ * */
+export async function updatePriority(payload: any): Promise<any> {
+    return request({
+        url: `/scenarios/${payload.id}/updatePriority?priority=${payload.priority}`,
+        method: 'PUT',
+        // data: payload.data
+    });
+}
+
+/**
+ * 更新场景状态
+ * */
+export async function updateStatus(payload: any): Promise<any> {
+    return request({
+        url: `/scenarios/${payload.id}/updateStatus?status=${payload.status}`,
+        method: 'PUT',
+        // data: payload.data
+    });
+}
+
+
 // interface
 export function getRequestBodyTypes() {
     return getEnumSelectItems(RequestBodyType)

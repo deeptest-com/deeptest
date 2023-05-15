@@ -69,16 +69,17 @@ import BasicInfo from './BasicInfo.vue';
 import EditAndShowField from '@/components/EditAndShow/index.vue';
 
 import {useStore} from "vuex";
-import {Scenario} from "@/views/Scenario/data";
+import {PaginationConfig, Scenario} from "@/views/Scenario/data";
 import {message} from "ant-design-vue";
 import DesignContent from "../../design/index1.vue"
 import PlanList from "./PlanList.vue";
 import ExecList from "./ExecList.vue";
 import Associate from "./Associate.vue"
+import debounce from "lodash.debounce";
 
 const store = useStore<{ Scenario, ProjectGlobal, ServeGlobal }>();
 const detailResult = computed<Scenario>(() => store.state.Scenario.detailResult);
-
+const pagination = computed<PaginationConfig>(() => store.state.Scenario.listResult.pagination);
 const props = defineProps({
   visible: {
     required: true,
@@ -129,57 +130,45 @@ watch(() => {
 });
 
 
+// 更新标题
 async function updateTitle(title) {
-  console.log('832 updateTitle', title);
-  // await store.dispatch('Scenario/updateEndpointDetail',
-  //     {...detailResult.value, title: title}
-  // );
-  // await store.dispatch('Scenario/getEndpointDetail', {id: detailResult.value.id});
-}
-
-async function changeBasicInfo(type,value) {
-  console.log('832 changeBasicInfo', type, value);
-  // if(type==='status') {
-  //   await store.dispatch('Scenario/updateEndpointDetail',
-  //       {...detailResult.value, description: value}
-  //   );
-  // }
-  // if(type==='priority') {
-  //   await store.dispatch('Scenario/updateEndpointDetail',
-  //       {...detailResult.value, description: value}
-  //   );
-  // }
-  // if(type==='desc') {
-  //   await store.dispatch('Scenario/updateEndpointDetail',
-  //       {...detailResult.value, description: value}
-  //   );
-  // }
-  // if(type==='categoryId') {
-  //   await store.dispatch('Scenario/updateEndpointDetail',
-  //       {...detailResult.value, description: value}
-  //   );
-  // }
-  // await store.dispatch('Scenario/getEndpointDetail', {id: detailResult.value.id});
-}
-
-async function changeCategory(value) {
-  await store.dispatch('Scenario/updateEndpointDetail',
-      {...detailResult.value, categoryId: value}
+  await store.dispatch('Scenario/saveScenario',
+      {id: detailResult.value.id, name: title}
   );
-  await store.dispatch('Scenario/getEndpointDetail', {id: detailResult.value.id});
+  emit('refreshList');
+}
+
+async function changeBasicInfo(type, value) {
+  if(type==='status') {
+    await store.dispatch('Scenario/updateStatus',
+        {id: detailResult.value.id, status: value}
+    );
+    emit('refreshList');
+  }
+  if(type==='priority') {
+    await store.dispatch('Scenario/updatePriority',
+        {id: detailResult.value.id, priority: value}
+    );
+    emit('refreshList');
+  }
+  if(type==='desc') {
+    await store.dispatch('Scenario/saveScenario',
+        {id: detailResult.value.id, desc: value}
+    );
+    emit('refreshList');
+  }
+  if(type==='categoryId') {
+    await store.dispatch('Scenario/saveScenario',
+        {id: detailResult.value.id, categoryId: value}
+    );
+    emit('refreshList');
+  }
 }
 
 async function cancel() {
   emit('close');
 }
 
-async function save() {
-  await store.dispatch('Scenario/updateEndpointDetail',
-      {...detailResult.value}
-  );
-  message.success('保存成功');
-  emit('refreshList');
-}
 
 </script>
 <style lang="less" scoped>

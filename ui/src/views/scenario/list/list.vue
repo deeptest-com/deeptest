@@ -45,11 +45,12 @@
         <EditAndShowField :custom-class="'custom-endpoint show-on-hover'"
                           :value="text"
                           placeholder="场景名称"
-                          @update="(e: string) => handleUpdateName(e, record)"
+                          @update="(val) => handleUpdateName(val, record)"
                           @edit="editScenario(record,'1')"/>
       </template>
-      <template #desc="{ record  }">
-        <span>{{record?.desc || '暂无'}}</span>
+      <template #desc="{ record ,text }">
+        <EditAndShowField :placeholder="'请输入描述'" :value="text || '暂无'"
+                          @update="(val) => {handleUpdateDesc(text,record)}"/>
       </template>
       <template #updatedAt="{ record }">
         <span>{{momentUtc(record.updatedAt) }}</span>
@@ -57,7 +58,7 @@
       <template #status="{ record }">
         <div class="customStatusColRender">
           <EditAndShowSelect
-              :label="scenarioStatus.get(record?.status || 0 )"
+              :label="scenarioStatus.get(record?.status)"
               :value="record?.status"
               :options="scenarioStatusOptions"
               @update="(val) => { handleChangeStatus(val,record);}"/>
@@ -70,7 +71,7 @@
               :label="record?.priority"
               :value="record?.priority"
               :options="priorityOptions"
-              @update="(val) => { handleChangePriority(val,record);}"/>
+              @update="(val) => { handleChangePriority(val,record)}"/>
         </div>
       </template>
       <template #action="{ record }">
@@ -185,9 +186,7 @@ const loading = ref<boolean>(true);
 
 const getList = debounce(async (current: number, categoryId: number): Promise<void> => {
   console.log('getList')
-
   loading.value = true;
-
   await store.dispatch('Scenario/listScenario', {
     categoryId,
     keywords: queryParams.keywords,
@@ -244,7 +243,6 @@ const remove = (id: number) => {
         console.log('res', res)
         if (res === true) {
           getList(1, nodeDataCategory.value.id)
-
           notification.success({
             message: `删除成功`,
           });
@@ -258,15 +256,6 @@ const remove = (id: number) => {
   });
 }
 
-async function handleUpdateName(value: string, record: any) {
-  console.log('handleUpdateName', value, record)
-  // await store.dispatch('Scenario/updateEndpointDetail',
-  //     {...record, title: value}
-  // );
-}
-
-
-
 // 抽屉是否打开
 const drawerVisible = ref<boolean>(false);
 // 执行抽屉打开
@@ -277,44 +266,49 @@ const drawerTabKey:any = ref<string>('1');
 async function editScenario(record: any,tab:string) {
   drawerVisible.value = true;
   drawerTabKey.value = tab;
-  // console.log('handleUpdateName', value, record)
   await store.dispatch('Scenario/getScenario', record.id);
 }
 async function execScenario(record: any) {
   drawerVisible.value = false;
   execVisible.value = true;
-  // console.log('handleUpdateName', value, record)
   await store.dispatch('Scenario/getScenario', record.id);
 }
 
 async function handleChangeStatus(value: any, record: any,) {
-  console.log('handleChangeStatus', value, record);
-  // await store.dispatch('Endpoint/updateStatus', {
-  //   id: record.id,
-  //   status: value
-  // });
+  await store.dispatch('Scenario/updateStatus',
+      {id: record.id, status: value}
+  );
+  await refreshList();
 }
 async function handleChangePriority(value: any, record: any,) {
-  console.log('handleChangePriority', value, record);
-  // await store.dispatch('Endpoint/updateStatus', {
-  //   id: record.id,
-  //   status: value
-  // });
+  await store.dispatch('Scenario/updatePriority',
+      {id: record.id, priority: value}
+  );
+  await refreshList();
+}
+async function handleUpdateName(value: string, record: any) {
+  await store.dispatch('Scenario/saveScenario',
+      {id: record.id, name: value}
+  );
+  await refreshList();
+}
+async function handleUpdateDesc(value: string, record: any) {
+  await store.dispatch('Scenario/saveScenario',
+      {id: record.id, desc: value}
+  );
+  await refreshList();
 }
 
-// 关闭抽屉时，重新拉取列表数据
+// 关闭弹框时，重新拉取列表数据,
+// 关闭抽屉时，重新拉取列表数据,快捷更新字段也会重新拉取列表数据
 async function refreshList() {
-  console.log('refreshList');
+  getList(pagination.value.current, nodeDataCategory.value.id);
 }
 
 const rowSelection = {
   onChange: (selectedRowKeys: Key[], selectedRows: DataType[]) => {
     console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
   },
-  getCheckboxProps: (record: DataType) => ({
-    // disabled: record.name === 'Disabled User', // Column configuration not to be checked
-    // name: record.name,
-  }),
 };
 
 const onSearch = debounce(() => {

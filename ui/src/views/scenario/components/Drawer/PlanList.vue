@@ -12,10 +12,10 @@
     <div class="right">
       <a-form-item label="状态">
         <a-select allowClear ref="select"
-                  v-model:value="formState.priority"
+                  v-model:value="formState.status"
                   style="width: 140px"
-                  :options="priorityOptions"
-                  @change="handleChange" placeholder="请选择优先级"></a-select>
+                  :options="scenarioStatusOptions"
+                  @change="handleChange" placeholder="请选择状态"></a-select>
       </a-form-item>
       <a-form-item label="负责人">
         <a-select allowClear ref="select" v-model:value="formState.createUserId" style="width: 140px" :options="members"
@@ -64,7 +64,7 @@ import {useStore} from 'vuex';
 import {PlusOutlined} from '@ant-design/icons-vue';
 import SelectPlan from './SelectPlan.vue';
 import {Modal} from 'ant-design-vue';
-import {priorityOptions} from "@/config/constant";
+import {priorityOptions,scenarioStatusOptions} from "@/config/constant";
 
 const props = defineProps({
   linked: {
@@ -88,7 +88,7 @@ const onSelectChange = (keys: string[], rows: any) => {
   selectedRowKeys.value = keys;
   emits('select', keys);
 };
-const formState = reactive({priority: null, createUserId: null, keywords: ''});
+const formState = reactive({status: null, createUserId: null, keywords: ''});
 const columns = [
   {
     title: '编号',

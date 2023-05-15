@@ -238,6 +238,7 @@ function selectTreeItem(keys, e) {
   // 如果没有选中的节点，就默认选中根节点
   emit('select', selectedKeys.value?.[0] ? selectedKeys.value[0] : null);
   const selectedData = treeDataMapCategory.value[selectedKeys.value[0]]
+  // 选中节点后，需要将选中节点的数据存入 store
   store.dispatch('Scenario/getCategoryNode', selectedData);
 }
 

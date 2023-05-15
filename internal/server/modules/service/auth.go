@@ -3,7 +3,7 @@ package service
 import (
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	model2 "github.com/aaronchen2k/deeptest/internal/server/modules/model"
+	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	repo2 "github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	_httpUtils "github.com/aaronchen2k/deeptest/pkg/lib/http"
 	"github.com/kataras/iris/v12"
@@ -15,7 +15,7 @@ type AuthService struct {
 	AuthRepo *repo2.AuthRepo `inject:""`
 }
 
-func (s AuthService) OAuth2Authorization(req model2.InterfaceOAuth20) (result iris.Map, err error) {
+func (s AuthService) OAuth2Authorization(req model.DebugInterfaceOAuth20) (result iris.Map, err error) {
 	//s.InterfaceRepo.UpdateOAuth20(req.InterfaceId, req)
 
 	responseType := ""
@@ -80,7 +80,7 @@ func (s AuthService) AddToken(name, token, tokenType string, interfaceId, projec
 	return
 }
 
-func (s AuthService) ListOAuth2Token(projectId int) (pos []model2.Auth2Token, err error) {
+func (s AuthService) ListOAuth2Token(projectId int) (pos []model.Auth2Token, err error) {
 	pos, err = s.AuthRepo.ListOAuth2Token(projectId)
 
 	return

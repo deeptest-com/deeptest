@@ -15,7 +15,7 @@ func GetExecDir() (dir string) { // where ztf exe file in
 
 	if commonUtils.IsRelease() { // release
 		dir = filepath.Dir(exeDir)
-	} else { // debug mode
+	} else {                                                       // debug mode
 		if strings.Index(strings.ToLower(exeDir), "goland") > -1 { // run with ide
 			dir = os.Getenv("ZTF_CODE_DIR")
 		} else {
@@ -57,4 +57,17 @@ func ToSliceString(data []interface{}) (res []string) {
 		res = append(res, item.(string))
 	}
 	return
+}
+
+func GetVariablesInExpressionPlaceholder(expression string) (ret []string) {
+	re := regexp.MustCompile("(?siU)\\${\\+??(.*)}")
+	matchResultArr := re.FindAllStringSubmatch(expression, -1)
+
+	for _, childArr := range matchResultArr {
+		variableName := childArr[1]
+		ret = append(ret, variableName)
+	}
+
+	return
+
 }

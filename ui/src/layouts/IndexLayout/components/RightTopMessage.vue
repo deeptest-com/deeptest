@@ -1,6 +1,5 @@
 <template>
     <router-link to="/" class="indexlayout-top-message">
-
       <a-badge
         class="indexlayout-top-message-badge"
         :count="message"

@@ -113,33 +113,36 @@ func (s *DebugInterfaceService) Save(req domain.DebugData) (debug model.DebugInt
 }
 
 func (s *DebugInterfaceService) GetDebugDataFromDebugInterface(debugInterfaceId uint) (req domain.DebugData, err error) {
-	debugInterface, _ := s.DebugInterfaceRepo.GetDetail(debugInterfaceId)
+	debugInterfacePo, _ := s.DebugInterfaceRepo.GetDetail(debugInterfaceId)
 	if err != nil {
 		return
 	}
 
-	endpointInterface, _ := s.EndpointInterfaceRepo.Get(debugInterface.EndpointInterfaceId)
+	endpointInterface, _ := s.EndpointInterfaceRepo.Get(debugInterfacePo.EndpointInterfaceId)
 
-	s.SetProps(endpointInterface, &debugInterface, &req)
+	s.SetProps(endpointInterface, &debugInterfacePo, &req)
 
 	return
 }
 
-func (s *DebugInterfaceService) ConvertDebugDataFromEndpointInterface(endpointInterfaceId uint) (req domain.DebugData, err error) {
+func (s *DebugInterfaceService) ConvertDebugDataFromEndpointInterface(endpointInterfaceId uint) (debugData domain.DebugData, err error) {
 	endpointInterface, err := s.EndpointInterfaceRepo.GetDetail(endpointInterfaceId)
 	if err != nil {
 		return
 	}
 
-	s.SetProps(endpointInterface, nil, &req)
+	s.SetProps(endpointInterface, nil, &debugData)
 
-	req.UsedBy = consts.InterfaceDebug
+	endpoint, _ := s.EndpointRepo.Get(endpointInterface.EndpointId)
+	debugData.ServerId = endpoint.ServerId
+
+	debugData.UsedBy = consts.InterfaceDebug
 
 	return
 }
 
 func (s *DebugInterfaceService) SetProps(
-	endpointInterface model.EndpointInterface, debugInterface *model.DebugInterface, req *domain.DebugData) {
+	endpointInterface model.EndpointInterface, debugInterfacePo *model.DebugInterface, debugData *domain.DebugData) {
 
 	endpoint, err := s.EndpointRepo.Get(endpointInterface.EndpointId)
 	serve, err := s.ServeRepo.Get(endpoint.ServeId)
@@ -153,17 +156,25 @@ func (s *DebugInterfaceService) SetProps(
 	}
 
 	serve.Securities = securities
-	req.EndpointInterfaceId = endpointInterface.ID
+	debugData.EndpointInterfaceId = endpointInterface.ID
 
-	if debugInterface == nil {
+	if debugInterfacePo == nil {
 		interfaces2debug := openapi.NewInterfaces2debug(endpointInterface, serve)
-		debugInterface = interfaces2debug.Convert()
+		debugInterfacePo = interfaces2debug.Convert()
 
-		debugInterface.Name = fmt.Sprintf("%s - %s", endpoint.Title, debugInterface.Method)
+		debugInterfacePo.Name = fmt.Sprintf("%s - %s", endpoint.Title, debugInterfacePo.Method)
 	}
 
-	copier.CopyWithOption(&req, &debugInterface, copier.Option{DeepCopy: true})
-	req.EndpointInterfaceId = endpointInterface.ID // reset
+	copier.CopyWithOption(&debugData, debugInterfacePo, copier.Option{DeepCopy: true})
+	debugData.EndpointInterfaceId = endpointInterface.ID // reset
+
+	debugData.Headers = append(debugData.Headers, domain.Header{Name: "", Value: ""})
+	debugData.Params = append(debugData.Params, domain.Param{Name: "", Value: ""})
+	debugData.BodyFormData = append(debugData.BodyFormData, domain.BodyFormDataItem{
+		Name: "", Value: "", Type: consts.FormDataTypeText})
+	debugData.BodyFormUrlencoded = append(debugData.BodyFormUrlencoded, domain.BodyFormUrlEncodedItem{
+		Name: "", Value: "",
+	})
 
 	return
 }

@@ -24,6 +24,7 @@ type ProcessorInterface struct {
 	domain.BaseRequest
 	Response domain.DebugResponse `json:"response"`
 
+	BaseUrl     string `json:"baseUrl"`
 	Extractors  []agentDomain.Extractor
 	Checkpoints []agentDomain.Checkpoint
 }
@@ -48,8 +49,11 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 	// dealwith variables
 	DealwithVariables(&entity.BaseRequest, consts.ScenarioDebug)
 
+	// add cookies
+	DealwithCookies(&entity.BaseRequest, entity.ProcessorID)
+
 	// send request
-	GenRequestUrl(&entity.BaseRequest, processor.EndpointInterfaceId)
+	GenRequestUrl(&entity.BaseRequest, processor.EndpointInterfaceId, entity.BaseUrl)
 	entity.Response, err = Invoke(&entity.BaseRequest)
 
 	reqContent, _ := json.Marshal(entity.BaseRequest)
@@ -67,6 +71,10 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 
 	entity.ExtractInterface(processor, session)
 	entity.CheckInterface(processor, session)
+
+	for _, c := range entity.Response.Cookies {
+		SetCookie(processor.ParentId, c.Name, c.Value, c.Domain, c.ExpireTime)
+	}
 
 	processor.AddResultToParent()
 	execUtils.SendExecMsg(*processor.Result, session.WsMsg)

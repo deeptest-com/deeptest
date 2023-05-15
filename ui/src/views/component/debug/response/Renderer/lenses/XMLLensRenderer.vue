@@ -119,7 +119,7 @@ const responseExtractorFinish = (data) => {
   data.src = ExtractorSrc.body
   data.result = result.value
 
-  data.interfaceId = debugData.value.endpointInterfaceId
+  data.endpointInterfaceId = debugData.value.endpointInterfaceId
   data.projectId = debugData.value.projectId
   data.usedBy = usedBy
   store.dispatch('Debug/createExtractorOrUpdateResult', data).then((result) => {

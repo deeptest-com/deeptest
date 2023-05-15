@@ -169,7 +169,7 @@ func (r *EnvironmentRepo) ClearAllVar(environmentId uint) (err error) {
 }
 
 func (r *EnvironmentRepo) DisableShareVar(id uint) (err error) {
-	err = r.DB.Model(&model.InterfaceExtractor{}).
+	err = r.DB.Model(&model.DebugInterfaceExtractor{}).
 		Where("id=?", id).
 		Update("disable_share", true).
 		Error
@@ -178,7 +178,7 @@ func (r *EnvironmentRepo) DisableShareVar(id uint) (err error) {
 }
 
 func (r *EnvironmentRepo) DisableAllShareVar(projectId uint) (err error) {
-	err = r.DB.Model(&model.InterfaceExtractor{}).
+	err = r.DB.Model(&model.DebugInterfaceExtractor{}).
 		Where("project_id=?", projectId).
 		Update("disable_share", true).
 		Error

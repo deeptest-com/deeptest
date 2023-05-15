@@ -73,10 +73,30 @@ func gets(req domain.BaseRequest, method consts.HttpMethod, readRespData bool) (
 	ret domain.DebugResponse, err error) {
 
 	reqUrl := commUtils.RemoveLeftVariableSymbol(req.Url)
-	reqParams := req.Params
-	reqHeaders := req.Headers
 
-	client := &http.Client{}
+	var reqParams []domain.Param
+	for _, p := range req.Params {
+		if p.Name != "" {
+			reqParams = append(reqParams, p)
+		}
+	}
+
+	var reqHeaders []domain.Header
+	for _, h := range req.Headers {
+		if h.Name != "" {
+			reqHeaders = append(reqHeaders, h)
+		}
+	}
+
+	jar := genCookies(req)
+
+	client := &http.Client{
+		Jar:     jar,
+		Timeout: consts.HttpRequestTimeout,
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		},
+	}
 
 	if _consts.Verbose {
 		_logUtils.Info(reqUrl)
@@ -134,6 +154,9 @@ func gets(req domain.BaseRequest, method consts.HttpMethod, readRespData bool) (
 	ret.ContentLength = _stringUtils.ParseInt(resp.Header.Get(consts.ContentLength))
 	ret.Headers = getHeaders(resp.Header)
 
+	u, _ := url.Parse(req.Url)
+	ret.Cookies = getCookies(resp.Cookies(), jar.Cookies(u))
+
 	if !readRespData {
 		return
 	}
@@ -170,13 +193,14 @@ func posts(req domain.BaseRequest, method consts.HttpMethod, readRespData bool) 
 		_logUtils.Info(reqUrl)
 	}
 
-	jar, _ := cookiejar.New(nil)
+	jar := genCookies(req)
+
 	client := &http.Client{
 		Transport: &http.Transport{
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 		},
-		Jar:     jar, // insert response cookies into request
-		Timeout: 120 * time.Second,
+		Jar:     jar,
+		Timeout: consts.HttpRequestTimeout,
 	}
 
 	var dataBytes []byte
@@ -272,6 +296,9 @@ func posts(req domain.BaseRequest, method consts.HttpMethod, readRespData bool) 
 	ret.ContentLength = _stringUtils.ParseInt(resp.Header.Get(consts.ContentLength))
 	ret.Headers = getHeaders(resp.Header)
 
+	u, _ := url.Parse(req.Url)
+	ret.Cookies = getCookies(resp.Cookies(), jar.Cookies(u))
+
 	if !readRespData {
 		return
 	}
@@ -324,8 +351,38 @@ func addAuthorInfo(req domain.BaseRequest, request *http.Request) {
 func getHeaders(header http.Header) (headers []domain.Header) {
 	for key, val := range header {
 		header := domain.Header{Name: key, Value: val[0]}
-
 		headers = append(headers, header)
+	}
+
+	return
+}
+func getCookies(cookies []*http.Cookie, jarCookies []*http.Cookie) (ret []domain.ExecCookie) {
+	mp := map[string]bool{}
+
+	for _, item := range cookies {
+		cookie := domain.ExecCookie{
+			Name:   item.Name,
+			Value:  item.Value,
+			Domain: item.Domain,
+		}
+		ret = append(ret, cookie)
+
+		key := fmt.Sprintf("%s-%s-%s", item.Name, item.Value, item.Domain)
+		mp[key] = true
+	}
+
+	for _, item := range jarCookies {
+		key := fmt.Sprintf("%s-%s-%s", item.Name, item.Value, item.Domain)
+		if _, ok := mp[key]; ok {
+			continue
+		}
+
+		cookie := domain.ExecCookie{
+			Name:   item.Name,
+			Value:  item.Value,
+			Domain: item.Domain,
+		}
+		ret = append(ret, cookie)
 	}
 
 	return
@@ -382,6 +439,23 @@ func IsJsonContent(str string) bool {
 
 func Base64(str string) (ret string) {
 	ret = base64.StdEncoding.EncodeToString([]byte(str))
+
+	return
+}
+
+func genCookies(req domain.BaseRequest) (ret http.CookieJar) {
+	ret, _ = cookiejar.New(nil)
+
+	var cookies []*http.Cookie
+	for _, c := range req.Cookies {
+		cookies = append(cookies, &http.Cookie{
+			Name:   c.Name,
+			Value:  _stringUtils.InterfToStr(c.Value),
+			Domain: c.Domain,
+		})
+	}
+	urlStr, _ := url.Parse(req.Url)
+	ret.SetCookies(urlStr, cookies)
 
 	return
 }

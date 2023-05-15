@@ -67,7 +67,7 @@ func GetContentProps(resp *domain.DebugResponse) {
 
 	typeName := arr1[1]
 	if typeName == "text" || typeName == "plain" {
-		typeName = "plaintext"
+		typeName = "text"
 	}
 	resp.ContentLang = consts.HttpRespLangType(typeName)
 
@@ -89,6 +89,10 @@ func DealwithVariables(req *domain.BaseRequest, usedBy consts.UsedBy) {
 	replaceHeaders(req, usedBy)
 	replaceBody(req)
 	replaceAuthor(req)
+}
+
+func DealwithCookies(req *domain.BaseRequest, processorId uint) {
+	req.Cookies = ListScopeCookie(processorId)
 }
 
 func replaceUrl(req *domain.BaseRequest, usedBy consts.UsedBy) {

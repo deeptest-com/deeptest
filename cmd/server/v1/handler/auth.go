@@ -22,7 +22,7 @@ func (c *AuthCtrl) OAuth2Authorization(ctx iris.Context) {
 		return
 	}
 
-	req := model.InterfaceOAuth20{}
+	req := model.DebugInterfaceOAuth20{}
 	err = ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})

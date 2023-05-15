@@ -6,11 +6,13 @@ import (
 	_httpUtils "github.com/aaronchen2k/deeptest/pkg/lib/http"
 )
 
-func GenRequestUrl(req *domain.BaseRequest, interfaceId uint) {
+func GenRequestUrl(req *domain.BaseRequest, interfaceId uint, baseUrl string) {
 	envId := ExecScene.InterfaceToEnvMap[interfaceId]
 	vars := ExecScene.EnvToVariables[envId]
 
-	baseUrl := getValueFromList(consts.KEY_BASE_URL, vars)
+	if baseUrl == "" {
+		baseUrl = getValueFromList(consts.KEY_BASE_URL, vars)
+	}
 
 	req.Url = _httpUtils.AddSepIfNeeded(baseUrl) + req.Url
 }

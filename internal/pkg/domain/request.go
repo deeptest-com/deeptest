@@ -8,7 +8,9 @@ type DebugResponse struct {
 	StatusCode    consts.HttpRespCode `json:"statusCode"`
 	StatusContent string              `json:"statusContent"`
 
-	Headers     []Header               `gorm:"-" json:"headers"`
+	Headers []Header     `gorm:"-" json:"headers"`
+	Cookies []ExecCookie `gorm:"-" json:"cookies"`
+
 	Content     string                 `gorm:"default:''" json:"content"`
 	ContentType consts.HttpContentType `json:"contentType"`
 
@@ -24,6 +26,7 @@ type BaseRequest struct {
 	Url     string            `json:"url"`
 	Params  []Param           ` json:"params"`
 	Headers []Header          ` json:"headers"`
+	Cookies []ExecCookie      ` json:"cookies"` // from cookie processor in scenario
 
 	Body               string                   `gorm:"default:{}" json:"body"`
 	BodyFormData       []BodyFormDataItem       `gorm:"-" json:"bodyFormData"`
@@ -35,10 +38,10 @@ type BaseRequest struct {
 	PreRequestScript  string            `gorm:"default:''" json:"preRequestScript"`
 	ValidationScript  string            `gorm:"default:''" json:"validationScript"`
 
-	BasicAuth   BasicAuth   ` json:"basicAuth"`
-	BearerToken BearerToken ` json:"bearerToken"`
-	OAuth20     OAuth20     ` json:"oauth20"`
-	ApiKey      ApiKey      ` json:"apiKey"`
+	BasicAuth   BasicAuth   `gorm:"-" json:"basicAuth"`
+	BearerToken BearerToken `gorm:"-" json:"bearerToken"`
+	OAuth20     OAuth20     `gorm:"-" json:"oauth20"`
+	ApiKey      ApiKey      `gorm:"-" json:"apiKey"`
 }
 
 type Header struct {

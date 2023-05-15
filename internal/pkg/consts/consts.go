@@ -1,5 +1,7 @@
 package consts
 
+import "time"
+
 const (
 	App = "deeptest"
 
@@ -42,8 +44,9 @@ const (
 	EmailAccount     = "chenqi@deeptest.com"
 	EmailPassword    = ""
 
-	DeepestKey   = "com_deeptest_prop_for_selection"
-	KEY_BASE_URL = "baseUrl___"
+	HttpRequestTimeout = 60 * time.Second
+	DeepestKey         = "com_deeptest_prop_for_selection"
+	KEY_BASE_URL       = "_base_url_"
 )
 
 var (

@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-func ConvertPathsToInterfaces(doc openapi3.T) (interfaces []model.Interface, err error) {
+func ConvertPathsToInterfaces(doc openapi3.T) (interfaces []model.EndpointInterface, err error) {
 	// TODO: convert to new openapi3 style models and save
 
 	for pth, item := range doc.Paths {
@@ -24,7 +24,7 @@ func ConvertPathsToInterfaces(doc openapi3.T) (interfaces []model.Interface, err
 	return
 }
 
-func convertOperations(url string, pth *openapi3.PathItem) (interfaces []model.Interface, err error) {
+func convertOperations(url string, pth *openapi3.PathItem) (interfaces []model.EndpointInterface, err error) {
 	if pth.Connect != nil {
 		interf, err := convertOperation(url, pth.Connect)
 		interf.Method = consts.CONNECT
@@ -100,7 +100,7 @@ func convertOperations(url string, pth *openapi3.PathItem) (interfaces []model.I
 	return
 }
 
-func convertOperation(url string, operation *openapi3.Operation) (interf model.Interface, err error) {
+func convertOperation(url string, operation *openapi3.Operation) (interf model.EndpointInterface, err error) {
 	// common
 	interf.Url = url
 	interf.Name = operation.Summary
@@ -173,7 +173,7 @@ func genBodyFromSchema(schema *openapi3.Schema) (ret string, err error) {
 	return
 }
 
-func genHeader(param *openapi3.ParameterRef) (ret model.InterfaceHeader, err error) {
+func genHeader(param *openapi3.ParameterRef) (ret model.EndpointInterfaceHeader, err error) {
 	ret.Name = param.Value.Name
 	ret.Desc = param.Value.Description
 	ret.Type, _ = genDataType(param.Value.ExtensionProps.Extensions)
@@ -182,7 +182,7 @@ func genHeader(param *openapi3.ParameterRef) (ret model.InterfaceHeader, err err
 	return
 }
 
-func genQueryParam(param *openapi3.ParameterRef) (ret model.InterfaceParam, err error) {
+func genQueryParam(param *openapi3.ParameterRef) (ret model.EndpointInterfaceParam, err error) {
 	ret.Name = param.Value.Name
 	ret.Desc = param.Value.Description
 	ret.Type, _ = genDataType(param.Value.ExtensionProps.Extensions)

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
+	commUtils "github.com/aaronchen2k/deeptest/internal/pkg/utils"
 	"strings"
 )
 
@@ -94,7 +95,7 @@ func ClearVariable(processorId uint, variableName string) (err error) {
 }
 
 func ReplaceVariableValue(value string) (ret string) {
-	variablePlaceholders := GetVariablesInExpressionPlaceholder(value)
+	variablePlaceholders := commUtils.GetVariablesInExpressionPlaceholder(value)
 	ret = value
 
 	for _, placeholder := range variablePlaceholders {

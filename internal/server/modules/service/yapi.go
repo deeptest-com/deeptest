@@ -2,7 +2,6 @@ package service
 
 import (
 	"encoding/json"
-	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
@@ -136,24 +135,24 @@ func (s *YapiService) GetYapiInterface(yapiHost, token, interfaceId string) (ret
 	return resp
 }
 
-func (s *YapiService) YapiInterfaceInfoToInterf(ret domain.DebugResponse) (interf m.Interface) {
+func (s *YapiService) YapiInterfaceInfoToInterf(ret domain.DebugResponse) (interf m.EndpointInterface) {
+	////content := ret.Content
+	//yapiRes := YapiRes{}
 	//content := ret.Content
-	yapiRes := YapiRes{}
-	content := ret.Content
-	err := json.Unmarshal([]byte(content), &yapiRes)
-	if err != nil {
-		logUtils.Infof("get yapi interface info map error, %s", err.Error())
-		//fmt.Println(err.Error())
-	}
-	fmt.Println(yapiRes)
-	interf.Name = yapiRes.Data.Title
-	interf.Url = yapiRes.Data.Path
-	interf.Method = getMethod(yapiRes.Data.Method)
-	interf.BodyType = getReqBodyType(yapiRes.Data.ReqBodyType)
-	interf.Body = getReqBodyOther(yapiRes.Data.ReqBodyOther)
-	interf.Params = getReqParams(yapiRes.Data.ReqQuery)
-	interf.Headers = getReqHeaders(yapiRes.Data.ReqHeaders)
-	interf.BodyFormData = getReqBodyForm(yapiRes.Data.ReqBodyForm)
+	//err := json.Unmarshal([]byte(content), &yapiRes)
+	//if err != nil {
+	//	logUtils.Infof("get yapi interface info map error, %s", err.Error())
+	//	//fmt.Println(err.Error())
+	//}
+	//fmt.Println(yapiRes)
+	//interf.Name = yapiRes.Data.Title
+	//interf.Url = yapiRes.Data.Path
+	//interf.Method = getMethod(yapiRes.Data.Method)
+	//interf.BodyType = getReqBodyType(yapiRes.Data.ReqBodyType)
+	//interf.Body = getReqBodyOther(yapiRes.Data.ReqBodyOther)
+	//interf.Params = getReqParams(yapiRes.Data.ReqQuery)
+	//interf.Headers = getReqHeaders(yapiRes.Data.ReqHeaders)
+	//interf.BodyFormData = getReqBodyForm(yapiRes.Data.ReqBodyForm)
 	return
 }
 
@@ -235,18 +234,18 @@ func getJsonbody(reqBodyOther ReqBodyOther) (reqBodyMap map[string]interface{}) 
 	return
 }
 
-func getReqParams(reqQuerys []ReqQuery) (param []m.InterfaceParam) {
+func getReqParams(reqQuerys []ReqQuery) (param []m.DebugInterfaceParam) {
 	for i := 0; i < len(reqQuerys); i++ {
-		interfaceParam := m.InterfaceParam{}
+		interfaceParam := m.DebugInterfaceParam{}
 		interfaceParam.Name = reqQuerys[i].Name
 		param = append(param, interfaceParam)
 	}
 	return
 }
 
-func getReqHeaders(reqHeaders []ReqHeaders) (header []m.InterfaceHeader) {
+func getReqHeaders(reqHeaders []ReqHeaders) (header []m.DebugInterfaceHeader) {
 	for i := 0; i < len(reqHeaders); i++ {
-		interfaceHeader := m.InterfaceHeader{}
+		interfaceHeader := m.DebugInterfaceHeader{}
 		interfaceHeader.Name = reqHeaders[i].Name
 		interfaceHeader.Value = reqHeaders[i].Value
 		header = append(header, interfaceHeader)
@@ -254,9 +253,9 @@ func getReqHeaders(reqHeaders []ReqHeaders) (header []m.InterfaceHeader) {
 	return
 }
 
-func getReqBodyForm(reqBodyForm []ReqBodyForm) (bodyFormData []m.InterfaceBodyFormDataItem) {
+func getReqBodyForm(reqBodyForm []ReqBodyForm) (bodyFormData []m.DebugInterfaceBodyFormDataItem) {
 	for i := 0; i < len(reqBodyForm); i++ {
-		bodyForm := m.InterfaceBodyFormDataItem{}
+		bodyForm := m.DebugInterfaceBodyFormDataItem{}
 		bodyForm.Name = reqBodyForm[i].Name
 		if reqBodyForm[i].Type == "text" {
 			bodyForm.Type = consts.FormDataTypeText

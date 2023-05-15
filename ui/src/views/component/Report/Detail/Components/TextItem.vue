@@ -2,10 +2,10 @@
     <div class="text-wrapper">
         <span :class="['text-label', labelClassName]" :style="labelStyle" v-if="label">{{ label }}</span>
         <span class="text-value">
-            <template v-if="value">{{ value }}</template>
             <template v-if="$slots.value">
                 <slot name="value"></slot>    
             </template>
+            <template v-else>{{ value || '' }}</template>
         </span>    
     </div>
 </template>

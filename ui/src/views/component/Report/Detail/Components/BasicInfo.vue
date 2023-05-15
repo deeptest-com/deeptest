@@ -1,9 +1,9 @@
 <template>
     <div class="report-basicinfo">
-        <TextItem label="测试计划" :value="basicInfo.logName" />
-        <TextItem label="执行时间" :value="basicInfo.logTime" />
-        <TextItem label="执行环境" :value="basicInfo.logEnv" />
-        <TextItem label="执行人" :value="basicInfo.logExecutor" />
+        <TextItem label="测试计划" :value="basicInfo.name" />
+        <TextItem label="执行时间" :value="basicInfo.startTime" />
+        <TextItem label="执行环境" :value="basicInfo.execEnv" />
+        <TextItem label="执行人" :value="basicInfo.createUserName" />
         <a-button type="primary" class="report-export">导出报告</a-button>
     </div>
 </template>

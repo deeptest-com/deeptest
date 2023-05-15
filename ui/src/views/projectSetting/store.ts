@@ -45,6 +45,7 @@ export interface StateType {
     selectServiceDetail: any;
     serveVersionsList: any;
     activeEnvDetail: any;
+    selectEnvId: number | null;
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
@@ -59,7 +60,8 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setSecurityList: Mutation<StateType>,
         setServiceDetail: Mutation<StateType>,
         setVersionList: Mutation<StateType>,
-        setEnvDetail: Mutation<StateType>
+        setEnvDetail: Mutation<StateType>,
+        setSelectEnvId: Mutation<StateType>
     };
     actions: {
         // 环境-全局变量-全局参数相关
@@ -67,6 +69,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         sortEnvList: Action<StateType, StateType>,
         getServersList: Action<StateType, StateType>,
         addEnvData: Action<StateType, StateType>,
+        saveEnvId: Action<StateType, StateType>,
         deleteEnvData: Action<StateType, StateType>,
         copyEnvData: Action<StateType, StateType>,
         setEnvDetail: Action<StateType, StateType>,
@@ -131,7 +134,8 @@ const initState: StateType = {
         name: "",
         serveServers: [],
         vars: [],
-    }
+    },
+    selectEnvId: null
 };
 
 const StoreModel: ModuleType = {
@@ -170,8 +174,10 @@ const StoreModel: ModuleType = {
         },
         setEnvDetail(state, payload) {
             state.activeEnvDetail = payload;
+        },
+        setSelectEnvId(state, payload) {
+            state.selectEnvId = payload;
         }
-
     },
     actions: {
         async getEnvsList({ commit }, { projectId }: EnvReqParams) {
@@ -180,13 +186,20 @@ const StoreModel: ModuleType = {
             });
             res.data.forEach((item) => {
                 item.displayName = item.name;
+                item.label = item.name;
+                item.value = item.id;
             })
             if (res.code === 0) {
                 commit('setEnvsList', res.data);
+                commit('setSelectEnvId', res.data[0].id);
                 return true;
             } else {
                 return false;
             }
+        },
+        async saveEnvId({ commit }, payload: number) {
+            commit('setSelectEnvId', payload);
+            return true;
         },
         async sortEnvList({ dispatch }, { data, projectId }: { data: number[], projectId: string | number }) {
             const res = await sortEnv(data);

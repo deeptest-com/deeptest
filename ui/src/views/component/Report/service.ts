@@ -12,7 +12,7 @@ export async function query(params?: QueryParams): Promise<any> {
     });
 }
 export async function get(id: number): Promise<any> {
-    return request({url: `/${apiPath}/${id}`});
+    return request({url: `/${planApiPath}/${id}`});
 }
 
 export async function remove(id: number): Promise<any> {

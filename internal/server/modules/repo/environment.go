@@ -15,10 +15,10 @@ type EnvironmentRepo struct {
 	ServeRepo   *ServeRepo   `inject:""`
 }
 
-func (r *EnvironmentRepo) List() (pos []model.Environment, err error) {
+func (r *EnvironmentRepo) List(projectId int) (pos []model.Environment, err error) {
 	err = r.DB.
 		Select("id", "name").
-		Where("NOT deleted").
+		Where("NOT deleted and project_id=?", projectId).
 		Order("created_at ASC").
 		Find(&pos).Error
 	return

@@ -15,7 +15,8 @@ type EnvironmentCtrl struct {
 
 // List
 func (c *EnvironmentCtrl) List(ctx iris.Context) {
-	data, err := c.EnvironmentService.List()
+	projectId, err := ctx.URLParamInt("currProjectId")
+	data, err := c.EnvironmentService.List(projectId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

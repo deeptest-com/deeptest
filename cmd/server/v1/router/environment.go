@@ -3,6 +3,7 @@ package router
 import (
 	"github.com/aaronchen2k/deeptest/cmd/server/v1/handler"
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/module"
+	"github.com/aaronchen2k/deeptest/internal/server/middleware"
 	"github.com/kataras/iris/v12"
 )
 
@@ -14,7 +15,7 @@ type EnvironmentModule struct {
 // Party 脚本
 func (m *EnvironmentModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
-		//index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
+		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
 		index.Post("/save", m.EnvironmentCtrl.Save).Name = "保存环境"
 		index.Get("/list", m.EnvironmentCtrl.ListAll).Name = "环境列表"
 		index.Post("/order", m.EnvironmentCtrl.Order).Name = "修改顺序"

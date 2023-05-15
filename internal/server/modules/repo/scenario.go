@@ -275,6 +275,10 @@ func (r *ScenarioRepo) PlanList(req v1.ScenarioPlanReqPaginate, scenarioId int) 
 		db = db.Where("update_user_id = ?", req.UpdateUserId)
 	}
 
+	if req.Keywords != "" {
+		db = db.Where("name LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords))
+	}
+
 	err = db.Count(&count).Error
 	if err != nil {
 		logUtils.Errorf("count plan error", zap.String("error:", err.Error()))

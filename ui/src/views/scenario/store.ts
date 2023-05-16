@@ -19,7 +19,7 @@ import {
     getScenariosReportsDetail,
     addPlans,
     getPlans,
-    removePlans, updatePriority, updateStatus,
+    removePlans, updatePriority, updateStatus, genReport,
 } from './service';
 
 import {
@@ -138,7 +138,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         updatePriority: Action<StateType, StateType>;
         updateStatus: Action<StateType, StateType>;
         getScenariosReportsDetail: Action<StateType, StateType>;
-
+        genReport: Action<StateType, StateType>;
         loadCategory: Action<StateType, StateType>;
         getCategoryNode: Action<StateType, StateType>;
         createCategoryNode: Action<StateType, StateType>;
@@ -648,6 +648,13 @@ const StoreModel: ModuleType = {
                 commit('setReportsDetail', {
                     ...res.data
                 });
+                return res;
+            }
+            return false;
+        },
+        async genReport({commit, dispatch, state}, payload) {
+            const res = await genReport(payload);
+            if (res.code === 0) {
                 return res;
             }
             return false;

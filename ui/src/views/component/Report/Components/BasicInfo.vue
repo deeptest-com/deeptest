@@ -1,40 +1,45 @@
 <template>
-    <div class="report-basicinfo">
-        <TextItem label="测试计划" :value="basicInfo.name" />
-        <TextItem label="执行时间" :value="basicInfo.startTime" />
-        <TextItem label="执行环境" :value="basicInfo.execEnv" />
-        <TextItem label="执行人" :value="basicInfo.createUserName" />
-        <a-button type="primary" class="report-export">{{ scene === ReportDetailType.QueryDetail ? '导出报告' : '生成报告' }}</a-button>
-    </div>
+  <div class="report-basicinfo">
+    <TextItem :key="item.label" v-for="item in items" :label="item.label" :value="item.value"/>
+    <a-button type="primary"
+              @click="handleBtnClick"
+              class="report-export">{{ scene === ReportDetailType.QueryDetail ? '导出报告' : '生成报告' }}
+    </a-button>
+  </div>
 </template>
 <script setup lang="ts">
-import { defineProps } from 'vue';
+import {defineProps, defineEmits} from 'vue';
 import TextItem from './TextItem.vue';
-
-import { ReportDetailType } from '@/utils/enum';
+import {ReportDetailType} from '@/utils/enum';
 
 defineProps<{
-    basicInfo: any
-    scene: string
+  basicInfo: any,
+  items: any,
+  scene: string
 }>();
+const emit = defineEmits(['handleBtnClick']);
+
+function handleBtnClick() {
+  emit('handleBtnClick');
+}
 </script>
 <style scoped lang="less">
 .report-basicinfo {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    position: relative;
-    margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  position: relative;
+  margin-bottom: 24px;
 
-    .text-wrapper {
-        width: 40%;
-        margin-bottom: 4px;
-    }
+  .text-wrapper {
+    width: 40%;
+    margin-bottom: 4px;
+  }
 
-    .report-export {
-        position: absolute;
-        right: 0;
-        top: 0;
-    }
+  .report-export {
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
 }
 </style>

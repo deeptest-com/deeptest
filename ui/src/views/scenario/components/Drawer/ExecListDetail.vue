@@ -1,7 +1,7 @@
 <template>
   <div class="drawer-content">
-    <ReportBasicInfo :basic-info="baseInfo || {}"/>
-    <StatisticTable :scene="scene" :data="statisticData"/>
+    <ReportBasicInfo :items="baseInfoList || []" @handleBtnClick="genReport"/>
+    <StatisticTable :scene="'query_detail'" :data="statisticData"/>
     <EndpointCollapsePanel v-if="recordList.length > 0"
                            :recordList="recordList"/>
   </div>
@@ -18,6 +18,7 @@ import {
 
 import {PaginationConfig, Scenario} from "@/views/scenario/data";
 import {momentUtc} from "@/utils/datetime"
+import {message} from "ant-design-vue";
 
 const store = useStore<{ Scenario, ProjectGlobal, ServeGlobal, }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
@@ -25,14 +26,14 @@ const scenariosReports = computed(() => store.state.Scenario.scenariosReports);
 const reportsDetail: any = computed<PaginationConfig>(() => store.state.Scenario.reportsDetail);
 
 
-const baseInfo = computed(() => {
+const baseInfoList = computed(() => {
   if (!reportsDetail.value) return {};
-  return {
-    name: reportsDetail.value.name,
-    startTime: reportsDetail.value.startTime ? momentUtc(reportsDetail.value.startTime) : '暂无',
-    execEnv: reportsDetail.value.execEnv || '暂无',
-    createUserName: reportsDetail.value.createUserName || '暂无',
-  }
+  return [
+    {value: reportsDetail.value.name, label: '场景名称'},
+    {value: reportsDetail.value.startTime ? momentUtc(reportsDetail.value.startTime) : '暂无', label: '执行时间'},
+    {value: reportsDetail.value.execEnv || '暂无', label: '执行环境'},
+    {value: reportsDetail.value.createUserName || '暂无', label: '执行人'},
+  ]
 })
 
 const statisticData = computed(() => {
@@ -59,6 +60,17 @@ const recordList = computed(() => {
   return reportsDetail.value?.logs?.[0].logs || [];
 })
 
+
+async function genReport() {
+  const res = await store.dispatch('Scenario/genReport', {
+    id: reportsDetail.value.id,
+  });
+  if(res){
+    message.success('生成报告成功');
+  }else {
+    message.error('生成报告失败');
+  }
+}
 
 </script>
 <style scoped lang="less">

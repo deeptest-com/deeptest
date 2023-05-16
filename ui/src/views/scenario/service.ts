@@ -198,6 +198,16 @@ export async function getScenariosReportsDetail(data: any): Promise<any> {
 }
 
 /**
+ * 生成报告
+ * */
+export async function genReport(data: any): Promise<any> {
+    return request({
+        url: `/scenarios/reports/${data.id}`,
+        method: 'PUT',
+    });
+}
+
+/**
  * 添加 关联测试计划
  * */
 export async function addPlans(payload: any): Promise<any> {

@@ -121,13 +121,13 @@ const StoreModel: ModuleType = {
                 const response: ResponseData = await get(id);
                 const { data } = response;
                 let scenarioReports = data.scenarioReports;
-                scenarioReports = scenarioReports.map((scenario: any) => {
+                scenarioReports = scenarioReports?.map((scenario: any) => {
                     scenario.requestLogs = [];
                     if (scenario.logs) {
                         scenario.logs.forEach((log: any) => {
                             if (log.logs) {
                                 scenario.requestLogs.push(log.logs[0]);
-                            } 
+                            }
                         });
                     } else {
                         scenario.logs = [];
@@ -137,12 +137,30 @@ const StoreModel: ModuleType = {
                 commit('setDetail', {
                     ...initState.detailResult,
                     ...data,
-                    basicInfo: {
-                        name: data.name || '',
-                        startTime: (data.startTime && momentUtc(data.startTime)) || '',
-                        execEnv: data.execEnv || '',
-                        createUserName: data.createUserName || ''
-                    },
+                    basicInfoList: [
+                        {
+                            label: '测试计划',
+                            value: data.name || '-'
+                        },
+                        {
+                            label: '开始时间',
+                            value: (data.startTime && momentUtc(data.startTime)) || ''
+                        },
+                        {
+                            label: '执行环境',
+                            value:data.execEnv || '--'
+                        },
+                        {
+                            label: '创建人',
+                            value: data.createUserName || '--'
+                        },
+                    ],
+                    // basicInfo: {
+                    //     name: data.name || '',
+                    //     startTime: (data.startTime && momentUtc(data.startTime)) || '',
+                    //     execEnv: data.execEnv || '',
+                    //     createUserName: data.createUserName || ''
+                    // },
                     statisticData: {
                         "duration": data.duration, //执行耗时（单位：s)
                         "totalScenarioNum": data.totalScenarioNum, //场景总数

@@ -65,3 +65,12 @@ type ReportSimple struct {
 
 	InterfaceStatusMap map[uint]map[consts.ResultStatus]int `gorm:"-"`
 }
+
+type PlanNormalData struct {
+	PlanId            uint   `json:"planId"`
+	PlanName          string `json:"planName"`
+	ExecEnv           string `json:"execEnv"`
+	TotalScenarioNum  int    `json:"totalScenarioNum"`
+	TotalInterfaceNum int    `json:"totalInterfaceNum"`
+	TotalAssertionNum int    `json:"totalAssertionNum"`
+}

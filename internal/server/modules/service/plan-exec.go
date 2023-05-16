@@ -14,6 +14,7 @@ type PlanExecService struct {
 	PlanReportRepo     *repo.PlanReportRepo     `inject:""`
 	ScenarioReportRepo *repo.ScenarioReportRepo `inject:""`
 	TestLogRepo        *repo.LogRepo            `inject:""`
+	EnvironmentRepo    *repo.EnvironmentRepo    `inject:""`
 
 	ScenarioExecService *ScenarioExecService `inject:""`
 
@@ -206,4 +207,28 @@ func (s *PlanExecService) summarizeInterface(report *model.PlanReport) {
 
 		report.TotalInterfaceNum++
 	}
+}
+
+func (s *PlanExecService) GetPlanReportNormalData(planId, environmentId uint) (ret agentDomain.PlanNormalData, err error) {
+	plan, err := s.PlanRepo.Get(planId)
+	if err != nil {
+		return
+	}
+
+	environment, err := s.EnvironmentRepo.Get(environmentId)
+	if err != nil {
+		return
+	}
+
+	scenarioNum, err := s.PlanRepo.GetScenarioNumByPlan(planId)
+	if err != nil {
+		return
+	}
+
+	ret.PlanId = planId
+	ret.PlanName = plan.Name
+	ret.ExecEnv = environment.Name
+	ret.TotalScenarioNum = int(scenarioNum)
+	return
+
 }

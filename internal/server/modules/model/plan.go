@@ -9,7 +9,7 @@ type Plan struct {
 	Name    string  `json:"name" yaml:"name"`
 	Desc    string  `json:"desc" yaml:"desc"`
 
-	CategoryId     uint              `json:"categoryId"`
+	CategoryId     int               `json:"categoryId"`
 	ProjectId      uint              `json:"projectId"`
 	SerialNumber   string            `json:"serialNumber"`
 	AdminId        uint              `json:"adminId"` //负责人ID

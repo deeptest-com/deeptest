@@ -372,3 +372,10 @@ func (r *PlanRepo) PlanScenariosPaginate(req v1.PlanScenariosReqPaginate, planId
 
 	return
 }
+
+func (r *PlanRepo) GetScenarioNumByPlan(planId uint) (num int64, err error) {
+	err = r.DB.Model(model.RelaPlanScenario{}).
+		Where("plan_id = ? AND NOT deleted", planId).
+		Count(&num).Error
+	return
+}

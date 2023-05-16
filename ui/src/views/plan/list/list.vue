@@ -99,7 +99,7 @@
     @on-cancel="editDrawerVisible = false" />
 
   <!-- 执行计划抽屉 -->
-  <ReportDetail 
+  <ExecResult 
     :drawer-visible="execReportVisible" 
     :title="execReportTitle" 
     :scenario-expand-active="true" 
@@ -120,7 +120,7 @@ import debounce from "lodash.debounce";
 import PlanCreate from "../components/PlanCreate.vue";
 import PlanEdit from "../edit/index.vue";
 import EditAndShowField from "@/components/EditAndShow/index.vue";
-import ReportDetail from "@/views/component/Report/Detail/Index.vue";
+import ExecResult from "../exec/index.vue";
 
 import { StateType as ProjectStateType } from "@/store/project";
 import { PaginationConfig, Plan } from '../data.d';

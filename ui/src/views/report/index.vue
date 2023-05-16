@@ -21,13 +21,13 @@
 import { computed, ref, watch, reactive } from "vue";
 import { useStore } from "vuex";
 
-import TableFilter from '@/views/component/Report/List/TableFilter.vue';
-import List from '@/views/component/Report/List/index.vue';
-import DetailDrawer from '@/views/component/Report/Detail/Index.vue';
+import { TableFilter } from '@/views/component/Report/Components';
+import List from './List/index.vue';
+import DetailDrawer from './Detail/Index.vue';
 
 import { StateType as ProjectStateType } from "@/store/project";
-import { StateType } from "@/views/component/Report/store";
-import { PaginationConfig } from "@/views/component/Report/data";
+import { StateType } from "./store";
+import { PaginationConfig } from "./data";
 import { ReportDetailType } from "@/utils/enum";
 
 const store = useStore<{ Report: StateType, ProjectGlobal: ProjectStateType }>();

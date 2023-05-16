@@ -1,70 +1,63 @@
 <template>
-  <div id="scenario-exec-main" class="scenario-exec-main dp-splits-v">
-    <div id="scenario-exec-left" class="left">
-      <PlanExecInfo />
-    </div>
-
-    <div id="scenario-exec-splitter" class="splitter"></div>
-
-<!--    <div id="scenario-exec-right" class="right">
-      <PlanExecDetail />
-    </div>-->
-  </div>
+    <a-drawer class="report-drawer" :closable="true" :width="1000" :bodyStyle="{ padding: '24px' }" :visible="drawerVisible"
+        @close="onClose">
+        <template #title>
+            <div class="drawer-header">
+                <div>{{ execResult.name || '测试报告详情' }}</div>
+            </div>
+        </template>
+        <div class="drawer-content">
+            <ReportBasicInfo :basic-info="execResult.basicInfo || {}" :scene="scene" />
+            <StatisticTable :scene="scene" :data="execResult.statisticData" />
+            <Progress :exec-status="execResult.progressStatus" v-if="scene !== ReportDetailType.QueryDetail" :percent="60" @exec-cancel="execCancel" />
+            <template v-for="scenarioReportItem in execResult.scenarioReports" :key="scenarioReportItem.id">
+                <ScenarioCollapsePanel :show-scenario-info="showScenarioInfo" :expand-active="expandActive"
+                    :record="scenarioReportItem">
+                    <template #endpointData>
+                        <EndpointCollapsePanel v-if="scenarioReportItem.requestLogs.length > 0" :recordList="scenarioReportItem.requestLogs" />
+                    </template>
+                </ScenarioCollapsePanel>
+            </template>
+        </div>
+    </a-drawer>
 </template>
-
 <script setup lang="ts">
-import {computed, onMounted, reactive, ref, watch} from "vue";
-import {Plan} from '../data.d';
-import {useStore} from "vuex";
+import { defineProps, defineEmits, ref, computed } from 'vue';
+import { useStore } from 'vuex';
 
-import {StateType as PlanStateType, StateType} from "../store";
-import debounce from "lodash.debounce";
-import {useRouter} from "vue-router";
-import {message, Modal} from "ant-design-vue";
-import {resizeWidth} from "@/utils/dom";
-import {StateType as GlobalStateType} from "@/store/global";
+import { ReportBasicInfo, StatisticTable, ScenarioCollapsePanel, EndpointCollapsePanel, Progress } from '@/views/component/Report/Components';
 
-import PlanExecInfo from "./components/Info.vue"
-import PlanExecDetail from "./components/Detail.vue"
+import { StateType as PlanStateType } from "../store";
+import { ReportDetailType } from '@/utils/enum';
 
-const router = useRouter();
-const store = useStore<{ Plan: PlanStateType; Global: GlobalStateType; }>();
-const collapsed = computed<boolean>(()=> store.state.Global.collapsed);
-// const execData = computed<any>(()=> store.state.Plan.execResult);
-//
-// const id = ref(+router.currentRoute.value.params.id)
-// store.dispatch('Plan/loadExecResult', id.value);
+const props = defineProps<{
+    drawerVisible: boolean
+    title: string
+    scenarioExpandActive: boolean
+    showScenarioInfo: boolean
+    scene: string // 查看详情的场景 【执行测试计划 exec_plan， 执行测试场景 exec_scenario， 查看报告详情 query_detail】
+    reportId?: number
+}>();
 
-watch(collapsed, () => {
-  console.log('watch collapsed', collapsed.value)
-  resize()
-}, {deep: true})
+const emits = defineEmits(['onClose', 'execCancel']);
 
-onMounted(() => {
-  console.log('onMounted')
-  resize()
-})
+const store = useStore<{ Plan: PlanStateType }>();
+const execResult = computed<any>(() => store.state.Plan.execResult);
+const expandActive = ref(props.scenarioExpandActive || false);
 
-onMounted(() => {
-  console.log('onMounted')
-})
+function onClose() {
+    emits('onClose');
+}
 
-const resize = () => {
-  resizeWidth('scenario-exec-main',
-      'scenario-exec-left', 'scenario-exec-splitter', 'scenario-exec-right',
-       800, 260)
+function execCancel() {
+    emits('execCancel');
 }
 
 </script>
-
-<style lang="less" scoped>
-.scenario-exec-main {
-  .left {
-    flex: 1;
-    width: auto;
-  }
-  .right {
-    width: 260px;
-  }
+<style scoped lang="less">
+.report-drawer {
+    :deep(.ant-drawer-header) {
+        box-shadow: 0px 1px 0px rgba(0, 0, 0, 0.06);
+    }
 }
 </style>

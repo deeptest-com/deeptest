@@ -22,7 +22,7 @@ func (s *ExecScenarioService) ExecScenario(req *agentExec.ScenarioExecReq, wsMsg
 	execUtils.SendStartMsg(wsMsg)
 
 	session, err := s.Exec(scenarioExecObj, wsMsg)
-
+	session.RootProcessor.Result.EnvironmentId = req.EnvironmentId
 	// submit result
 	report, _ := s.RemoteService.SubmitScenarioResult(*session.RootProcessor.Result, scenarioExecObj.RootProcessor.ScenarioId,
 		scenarioExecObj.ServerUrl, scenarioExecObj.Token)

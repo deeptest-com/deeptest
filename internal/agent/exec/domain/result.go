@@ -46,6 +46,8 @@ type ScenarioExecResult struct {
 	Summary string `json:"summary,omitempty"`
 
 	Children []*ScenarioExecResult `json:"logs,omitempty"`
+
+	EnvironmentId int `json:"environmentId,omitempty"`
 }
 
 type PlanExecResult struct {

@@ -78,6 +78,7 @@ func (s *ScenarioExecService) SaveReport(scenarioId int, userId uint, rootResult
 		ScenarioId:   scenario.ID,
 		ProjectId:    scenario.ProjectId,
 		CreateUserId: userId,
+		ExecEnvId:    rootResult.EnvironmentId,
 	}
 
 	s.countRequest(rootResult, &report)

@@ -39,6 +39,7 @@ func (s *ExecPlanService) ExecPlan(req *agentExec.PlanExecReq, wsMsg *websocket.
 	}
 	for _, scenario := range planExecObj.Scenarios {
 		session, _ := s.ExecScenarioService.Exec(&scenario, wsMsg)
+		session.RootProcessor.Result.EnvironmentId = req.EnvironmentId
 		results.Scenarios = append(results.Scenarios, session.RootProcessor.Result)
 		scenarioReport, _ := s.RemoteService.SubmitScenarioResult(*session.RootProcessor.Result, session.RootProcessor.Result.ScenarioId,
 			consts.ServerUrl, consts.ServerToken)

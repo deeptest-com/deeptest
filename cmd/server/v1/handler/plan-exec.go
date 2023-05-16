@@ -57,3 +57,25 @@ func (c *PlanExecCtrl) SubmitResult(ctx iris.Context) {
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: report})
 }
+
+func (c *PlanExecCtrl) GetPlanReportNormalData(ctx iris.Context) {
+	planId, err := ctx.URLParamInt("id")
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+		return
+	}
+
+	environmentId, err := ctx.URLParamInt("environmentId")
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+		return
+	}
+
+	data, err := c.PlanExecService.GetPlanReportNormalData(uint(planId), uint(environmentId))
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.ParamErr.Msg})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data})
+}

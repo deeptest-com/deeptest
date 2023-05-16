@@ -20,6 +20,7 @@ func (m *PlanExecModule) Party() module.WebModule {
 		index.Get("/loadExecResult", m.PlanExecCtrl.LoadExecResult).Name = "加载执行结果"
 
 		index.Post("/submitResult/{id:uint}", m.PlanExecCtrl.SubmitResult).Name = "提交测试结果"
+		index.Get("/getPlanReportNormalData", m.PlanExecCtrl.GetPlanReportNormalData).Name = "获取计划执行中的静态内容"
 	}
 
 	return module.NewModule("/plans/exec/", handler)

@@ -51,9 +51,9 @@ type ScenarioExecResult struct {
 type PlanExecResult struct {
 	ID uint `json:"id" yaml:"id"`
 
-	Name  string `json:"name"`
-	Desc  string `json:"desc,omitempty"`
-	EnvId uint   `json:"envId"`
+	Name          string `json:"name"`
+	Desc          string `json:"desc,omitempty"`
+	EnvironmentId int    `json:"environmentId"`
 
 	Scenarios []*ScenarioExecResult `json:"scenarios"`
 }

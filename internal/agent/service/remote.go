@@ -337,3 +337,54 @@ func (s *RemoteService) GetMessageToExec(req *agentExec.MessageExecReq) (ret *ag
 
 	return
 }
+
+func (s *RemoteService) GetPlanNormalData(req *agentExec.PlanExecReq) (ret agentDomain.PlanNormalData, err error) {
+	url := "plans/exec/getPlanReportNormalData"
+
+	httpReq := domain.BaseRequest{
+		Url:               _httpUtils.AddSepIfNeeded(req.ServerUrl) + url,
+		AuthorizationType: consts.BearerToken,
+		BearerToken: domain.BearerToken{
+			Token: req.Token,
+		},
+		Params: []domain.Param{
+			{
+				Name:  "id",
+				Value: fmt.Sprintf("%d", req.PlanId),
+			},
+			{
+				Name:  "environmentId",
+				Value: _stringUtils.IntToStr(req.EnvironmentId),
+			},
+		},
+	}
+
+	resp, err := httpHelper.Get(httpReq)
+	if err != nil {
+		logUtils.Infof("get exec obj failed, error, %s", err.Error())
+		return
+	}
+
+	if resp.StatusCode != consts.OK {
+		logUtils.Infof("get exec obj failed, response %v", resp)
+		return
+	}
+
+	respContent := _domain.Response{}
+	json.Unmarshal([]byte(resp.Content), &respContent)
+
+	if respContent.Code != 0 {
+		logUtils.Infof("get exec obj failed, response %v", resp.Content)
+		return
+	}
+
+	bytes, err := json.Marshal(respContent.Data)
+	if respContent.Code != 0 {
+		logUtils.Infof("get exec obj failed, response %v", resp.Content)
+		return
+	}
+
+	json.Unmarshal(bytes, &ret)
+
+	return
+}

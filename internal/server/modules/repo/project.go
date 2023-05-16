@@ -395,15 +395,10 @@ func (r *ProjectRepo) FindRolesByUser(userId uint) (ret []model.ProjectMember, e
 	var members []model.ProjectMember
 
 	r.DB.Model(&model.ProjectMember{}).
-		Where("user_id = ?", userId).
+		Joins("LEFT JOIN biz_project_role r ON biz_project_member.project_role_id=r.id").
+		Select("biz_project_member.*, r.name project_role_name").
+		Where("biz_project_member.user_id = ?", userId).
 		Find(&members)
-
-	for _, member := range members {
-		projectRole, _ := r.ProjectRoleRepo.FindById(member.ProjectRoleId)
-
-		member.ProjectRoleName = projectRole.Name
-		ret = append(ret, member)
-	}
 
 	return
 }

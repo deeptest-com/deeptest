@@ -9,6 +9,7 @@ import (
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"github.com/jinzhu/copier"
 	"gorm.io/gorm"
 	"strconv"
 )
@@ -73,13 +74,19 @@ func (r *ScenarioReportRepo) CombineUserName(data []*model.ScenarioReport) {
 	}
 }
 
-func (r *ScenarioReportRepo) Get(id uint) (report model.ScenarioReport, err error) {
-	err = r.DB.Where("id = ?", id).First(&report).Error
+func (r *ScenarioReportRepo) Get(id uint) (reportDetail model.ScenarioReportDetail, err error) {
+	err = r.DB.Model(&model.ScenarioReport{}).
+		Select("biz_scenario_report.*, e.name exec_env").
+		Joins("LEFT JOIN biz_environment e ON biz_scenario_report.exec_env_id=e.id").
+		Where("biz_scenario_report.id = ?", id).First(&reportDetail).Error
+
+	//err = r.DB.Where("id = ?", id).First(&report).Error
 	if err != nil {
 		logUtils.Errorf("find report by id error %s", err.Error())
 		return
 	}
-
+	var report model.ScenarioReport
+	copier.CopyWithOption(&report, &reportDetail, copier.Option{IgnoreEmpty: true, DeepCopy: true})
 	root, err := r.getLogTree(report)
 	report.Logs = root.Logs
 

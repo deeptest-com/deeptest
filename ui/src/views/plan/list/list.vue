@@ -128,6 +128,9 @@ import { StateType } from "../store";
 import { momentUtc } from "@/utils/datetime";
 import { planStatusColorMap, planStatusTextMap, planStatusOptions } from "@/config/constant";
 import { ReportDetailType } from "@/utils/enum";
+import settings from "@/config/settings";
+import bus from "@/utils/eventBus";
+import { useExec } from "../hooks/exec";
 
 const columns = [
   {
@@ -184,6 +187,7 @@ const editDrawerVisible = ref(false);
 const editTabActiveKey = ref('test-scenario');
 const execReportVisible = ref(false);
 const execReportTitle = ref('');
+const { execCancel, execStart, onWebSocketConnStatusMsg, OnWebSocketMsg } = useExec();
 
 const getList = debounce(async (current: number): Promise<void> => {
   loading.value = true;
@@ -197,7 +201,7 @@ const getList = debounce(async (current: number): Promise<void> => {
 }, 300);
 
 const handleExec = () => {
-  editDrawerVisible.value = false;
+  // editDrawerVisible.value = false;
   execReportTitle.value = currPlan.value && currPlan.value.name;
   execReportVisible.value = true;
 };
@@ -304,6 +308,20 @@ watch(() => {
     await getList(1);
   }
 }, { immediate: true });
+
+watch(() => {
+  return execReportVisible.value;
+}, (val) => {
+  if (val) {
+    execStart();
+    bus.on(settings.eventWebSocketMsg, OnWebSocketMsg);
+    bus.on(settings.eventWebSocketConnStatus, onWebSocketConnStatusMsg);
+  } else {
+    execCancel();
+    bus.off(settings.eventWebSocketMsg, OnWebSocketMsg);
+    bus.off(settings.eventWebSocketConnStatus, onWebSocketConnStatusMsg);
+  }
+});
 
 
 </script>

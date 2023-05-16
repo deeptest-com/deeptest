@@ -68,8 +68,10 @@ const getList = async (params?: any): Promise<void> => {
   loading.value = false;
 };
 
-const queryDetail = (record: any) => {
+const queryDetail = async (record: any) => {
     console.log('查看报告详情：===', record);
+    await store.dispatch('Report/initExecResult', {});
+    store.dispatch('Report/get', record.id);
     currPlanId.value = record.id;
     drawerVisible.value = true;
 };

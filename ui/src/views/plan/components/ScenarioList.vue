@@ -40,6 +40,9 @@
         <template #status="{ record }">
             <a-tag v-if="record.status" :color="planStatusColorMap.get(record.status)">{{ planStatusTextMap.get(record.status) }}</a-tag>
         </template>
+        <template #updateAt="{ record }">
+            <span>{{ momentUtc(record.updateAt) }}</span>
+        </template>
         <template #operation="{ record }">
             <a-button type="primary" @click="handleRemove(record)"> 
                 移除
@@ -61,6 +64,7 @@ import Associate from './Associate.vue';
 import { StateType as PlanStateType } from '../store';  
 import { message, Modal } from 'ant-design-vue';
 import { planStatusColorMap, planStatusTextMap } from '@/config/constant';
+import { momentUtc } from '@/utils/datetime';
 
 const props = defineProps({
     showScenarioOperation: {

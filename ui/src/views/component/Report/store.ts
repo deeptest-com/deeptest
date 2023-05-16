@@ -29,6 +29,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         remove: Action<StateType, StateType>;
         getMembers: Action<StateType, StateType>;
         initExecResult: Action<StateType, StateType>;
+        setExecResult: Action<StateType, StateType>;
     };
 }
 const initState: StateType = {
@@ -194,8 +195,13 @@ const StoreModel: ModuleType = {
             }
         },
 
-        async initExecResult({ commit }) {
+        async initExecResult({ commit }, payload) {
             commit('setDetail', {});
+        },
+
+        async setExecResult({ commit }, payload) {
+            console.log('setDetail', payload);
+            commit('setDetail', payload);
         }
 
     }

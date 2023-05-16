@@ -14,9 +14,9 @@
 import { reactive, computed, defineProps, watch } from 'vue';
 import { useStore } from 'vuex';
 
-import TableFilter from "@/views/component/Report/List/TableFilter.vue";
+import { TableFilter } from "@/views/component/Report/Components";
 
-import { StateType as ReportStateType } from '@/views/component/Report/store';
+import { StateType as ReportStateType } from '@/views/report/store';
 import { StateType as PlanStateType } from '../store';  
 
 const props = defineProps<{

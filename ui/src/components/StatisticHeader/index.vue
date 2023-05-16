@@ -15,13 +15,13 @@
                 <a-statistic
                   v-if="type === 0"
                   title="入住项目(个)"
-                  :value="card?.projectTotal"
+                  :value="card?.projectTotal||0"
                 />
 
                 <a-statistic
                   v-else
                   title="项目成员(位)"
-                  :value="card?.userTotal"
+                  :value="card?.userTotal||0"
                 />
               </div>
             </a-card>
@@ -29,7 +29,7 @@
               <div class="card-content">
                 <a-statistic
                   title="总接口数（个）"
-                  :value="card?.interfaceHb"
+                  :value="card?.interfaceHb||0"
                   :precision="2"
                   suffix="%"
                   class="demo-class"
@@ -37,7 +37,7 @@
                 >
                   <template #prefix>
                     <div class="card-content-num">
-                      {{ card?.interfaceTotal }}
+                      {{ card?.interfaceTotal||0 }}
                     </div>
                       <arrow-up-outlined   v-if="card?.interfaceHb >= 0"/>
                       <arrow-down-outlined v-else />
@@ -45,7 +45,7 @@
                 </a-statistic>
                  <a-statistic
                   title="总测试场景数（个）"
-                  :value="card?.scenarioHb"
+                  :value="card?.scenarioHb||0"
                   :precision="2"
                   suffix="%"
                   class="demo-class"
@@ -53,7 +53,7 @@
                 >
                   <template #prefix>
                     <div class="card-content-num">
-                      {{ card?.scenarioTotal }}
+                      {{ card?.scenarioTotal ||0}}
                     </div>
                       <arrow-up-outlined   v-if="card?.scenarioHb >= 0"/>
                       <arrow-down-outlined v-else />
@@ -66,7 +66,7 @@
               <div class="card-content">
                   <a-statistic
                   title="接口测试总体覆盖率（%）"
-                  :value="card?.coverageHb"
+                  :value="card?.coverageHb||0"
                   :precision="2"
                   suffix="%"
                   class="demo-class"
@@ -74,7 +74,7 @@
                 >
                   <template #prefix>
                     <div class="card-content-num">
-                      {{ card?.coverage+"%" }}
+                      {{ card?.coverage?card.coverage+"%":0+'%' }}
                     </div>
                       <arrow-up-outlined   v-if="card?.coverageHb >= 0"/>
                       <arrow-down-outlined v-else />
@@ -87,12 +87,12 @@
               <div class="card-content">
                 <a-statistic
                   title="执行总次数"
-                  :value="card?.execTotal"
+                  :value="card?.execTotal||0"
                  
                 />
                    <a-statistic
                   title="测试通过率（%）"
-                  :value="card?.passRate+'%'"
+                  :value="card?.passRate?card.passRate+'%':0+'%'"
                  
                 />
                

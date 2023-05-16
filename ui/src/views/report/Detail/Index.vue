@@ -22,10 +22,10 @@
     </a-drawer>
 </template>
 <script setup lang="ts">
-import { defineProps, defineEmits, ref, computed, watch } from 'vue';
+import { defineProps, defineEmits, ref, computed } from 'vue';
 import { useStore } from 'vuex';
 
-import { ReportBasicInfo, StatisticTable, ScenarioCollapsePanel, EndpointCollapsePanel, Progress } from './Components';
+import { ReportBasicInfo, StatisticTable, ScenarioCollapsePanel, EndpointCollapsePanel, Progress } from '@/views/component/Report/Components';
 
 import { StateType as ReportStateType } from "../store";
 import { StateType as PlanStateType } from '@/views/plan/store';
@@ -40,7 +40,7 @@ const props = defineProps<{
     reportId?: number
 }>();
 
-const emits = defineEmits(['onClose']);
+const emits = defineEmits(['onClose', 'execCancel']);
 
 const store = useStore<{ Report: ReportStateType, Plan: PlanStateType }>();
 const execResult = computed<any>(() => store.state.Plan.execResult);
@@ -49,6 +49,10 @@ const expandActive = ref(props.scenarioExpandActive || false);
 
 function onClose() {
     emits('onClose');
+}
+
+function execCancel() {
+    emits('execCancel');
 }
 
 </script>

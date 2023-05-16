@@ -55,7 +55,7 @@ export interface StateType {
     nodeDataCategory: any;
 
     execResult: any;
-    reportsDetailDetail: any;
+    reportsDetail: any;
 
     interfaceData: any;
     invocationsData: [],
@@ -77,7 +77,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
 
         setList: Mutation<StateType>;
         setDetail: Mutation<StateType>;
-        setReportsDetailDetail: Mutation<StateType>;
+        setReportsDetail: Mutation<StateType>;
         setQueryParams: Mutation<StateType>;
 
         setTreeData: Mutation<StateType>;
@@ -179,7 +179,7 @@ const initState: StateType = {
     nodeDataCategory: {},
 
     execResult: {},
-    reportsDetailDetail: {},
+    reportsDetail: {},
     interfaceData: {},
     invocationsData: [],
     responseData: {},
@@ -214,8 +214,8 @@ const StoreModel: ModuleType = {
         setDetail(state, payload) {
             state.detailResult = payload;
         },
-        setReportsDetailDetail(state, payload) {
-            state.reportsDetailDetail = payload;
+        setReportsDetail(state, payload) {
+            state.reportsDetail = payload;
         },
         setTreeData(state, data) {
             state.treeData = [data];
@@ -645,7 +645,7 @@ const StoreModel: ModuleType = {
         async getScenariosReportsDetail({commit, dispatch, state}, payload) {
             const res = await getScenariosReportsDetail(payload);
             if (res.code === 0) {
-                commit('setReportsDetailDetail', {
+                commit('setReportsDetail', {
                     ...res.data
                 });
                 return res;

@@ -69,8 +69,15 @@
         wrapClassName="drawer-exec-history-detail"
         :bodyStyle="{padding:'16px',marginBottom:'56px'}"
         @close="execListDetailVisible = false">
-       {{JSON.stringify(reportsDetailDetail)}}
+      <template #title>
+        <div class="drawer-header">
+          <div>{{ '测试报告详情' }}</div>
+        </div>
+      </template>
+      <ExecListDetail/>
     </a-drawer>
+
+
 
   </div>
 
@@ -94,11 +101,11 @@ import PlanList from "./PlanList.vue";
 import ExecList from "./ExecList.vue";
 import ExecInfo  from "../../exec/components/Info.vue";
 import EnvSelector from "@/views/component/EnvSelector/index.vue";
-import ReportDetail from "@/views/component/Report/Detail/Index.vue";
+import ExecListDetail from "./ExecListDetail.vue";
 const store = useStore<{ Scenario, ProjectGlobal, ServeGlobal,Report }>();
 const detailResult = computed<Scenario>(() => store.state.Scenario.detailResult);
 const pagination = computed<PaginationConfig>(() => store.state.Scenario.listResult.pagination);
-const reportsDetailDetail = computed<PaginationConfig>(() => store.state.Scenario.reportsDetailDetail);
+
 const props = defineProps({
   visible: {
     required: true,
@@ -121,9 +128,6 @@ const selectEnvVisible = ref(false);
 
 // 执行历史详情
 const execListDetailVisible = ref(false);
-
-
-
 async function cancelSelectExecEnv(record: any) {
   selectEnvVisible.value = false;
 }
@@ -265,6 +269,13 @@ async function cancel() {
     position: absolute;
     right: 4px;
     top: -48px;
+  }
+}
+
+
+.drawer-exec-history-detail {
+  :deep(.ant-drawer-header) {
+    box-shadow: 0px 1px 0px rgba(0, 0, 0, 0.06);
   }
 }
 </style>

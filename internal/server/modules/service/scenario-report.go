@@ -23,7 +23,8 @@ func (s *ScenarioReportService) Paginate(req v1.ReportReqPaginate) (ret _domain.
 	return
 }
 
-func (s *ScenarioReportService) GetById(id uint) (report model.ScenarioReportDetail, err error) {
+func (s *ScenarioReportService) GetById(id uint) (report model.ScenarioReport, err error) {
+	//func (s *ScenarioReportService) GetById(id uint) (report model.ScenarioReportDetail, err error) {
 	report, err = s.ScenarioReportRepo.Get(id)
 	return
 }
@@ -33,7 +34,7 @@ func (s *ScenarioReportService) DeleteById(id uint) error {
 }
 
 func (s *ScenarioReportService) CreatePlanReport(id uint) (err error) {
-	var report model.ScenarioReportDetail
+	var report model.ScenarioReport
 	var planReport model.PlanReport
 	report, err = s.ScenarioReportRepo.Get(id)
 	copier.CopyWithOption(&planReport, report, copier.Option{DeepCopy: true})

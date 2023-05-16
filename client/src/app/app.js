@@ -25,6 +25,7 @@ const fs = require('fs');
 const bent = require('bent');
 const getBuffer = bent('buffer')
 
+app.commandLine.appendSwitch('disable-web-security');
 let postmanToOpenApi = null
 
 mkdir('converted')
@@ -71,6 +72,7 @@ export class DeepTestApp {
                 nodeIntegration: true,
                 contextIsolation: false,
                 enableRemoteModule: true,
+                webSecurity: false,
             }
         })
         if (IS_LINUX && !DEBUG) {

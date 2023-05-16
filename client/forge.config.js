@@ -35,7 +35,7 @@ module.exports = {
         }
     ],
     plugins: [
-/*        {
+        {
             'name': '@electron-forge/plugin-webpack',
             'config': {
                 mainConfig: './webpack.main.config.js',
@@ -50,8 +50,15 @@ module.exports = {
                     ]
                 }
             }
-        }*/
-        [
+        },
+        {
+            'name': '@timfish/forge-externals-plugin',
+            'config': {
+                "externals": ["@electron/remote"],
+                "includeDeps": true
+            }
+        }
+        /*[
             "@electron-forge/plugin-webpack",
             {
                 mainConfig: './webpack.main.config.js',
@@ -74,5 +81,6 @@ module.exports = {
                 "includeDeps": true
             }
         ]
+        */
     ]
 }

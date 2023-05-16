@@ -1,8 +1,10 @@
 <template>
   <div id="scenario-design-main">
-<!--    <div class="toolbar">-->
-<!--      <a-button @click="exec" type="primary">执行</a-button>-->
-<!--    </div>-->
+    <div class="toolbar">
+      <a-button @click="exec" type="link" class="dp-btn-group">执行</a-button>
+      <a-button href="#/scenario/index" type="link" class="dp-btn-group">返回</a-button>
+    </div>
+
     <div class="scenario-design-content">
       <Processor></Processor>
     </div>
@@ -42,16 +44,12 @@ onMounted(() => {
 <style lang="less" scoped>
 #scenario-design-main {
   height: 100%;
-  //position: relative;
 
   .toolbar {
     height: 32px;
     padding-left: 12px;
     padding-right: 12px;
     text-align: right;
-    position: absolute;
-    top:0px;
-    right: 0;
   }
 
   .scenario-design-content {

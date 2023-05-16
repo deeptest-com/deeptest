@@ -74,7 +74,7 @@ import EditAndShowField from '@/components/EditAndShow/index.vue';
 import {useStore} from "vuex";
 import {PaginationConfig, Scenario} from "@/views/Scenario/data";
 import {message} from "ant-design-vue";
-import DesignContent from "../../design/index1.vue"
+import DesignContent from "../../design/index.vue"
 import PlanList from "./PlanList.vue";
 import ExecList from "./ExecList.vue";
 import ExecInfo  from "../../exec/components/Info.vue";

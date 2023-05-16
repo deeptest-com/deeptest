@@ -3,15 +3,17 @@
     <div id="scenario-design-left" class="left">
       <ScenarioTree :scenarioId="id" />
     </div>
+
     <div id="scenario-design-splitter" class="splitter"></div>
+
     <div id="scenario-design-right" class="right">
-      <Designer/>
+        <Designer></Designer>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import {computed, defineProps, onMounted, onUnmounted, ref, watch} from "vue";
+import {computed, onMounted, onUnmounted, ref, watch} from "vue";
 import {useRouter} from "vue-router";
 
 import {resizeWidth} from "@/utils/dom";
@@ -21,18 +23,13 @@ import {StateType as GlobalStateType} from "@/store/global";
 import {StateType as ScenarioStateType} from "../store";
 
 import ScenarioTree from "./Tree.vue"
-import Designer from "./Designer1.vue"
+import Designer from "./Designer.vue"
 
 const router = useRouter();
 const store = useStore<{ Scenario: ScenarioStateType; Global: GlobalStateType; }>();
 
-// const id = ref(+router.currentRoute.value.params.id)
-const props = defineProps({
-  id: {
-    required: true,
-    type: Number,
-  },
-})
+const id = ref(+router.currentRoute.value.params.id)
+
 const collapsed = computed<boolean>(()=> store.state.Global.collapsed);
 
 onMounted(() => {

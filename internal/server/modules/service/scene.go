@@ -3,12 +3,14 @@ package service
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
+	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 )
 
 type SceneService struct {
-	ScenarioNodeRepo *repo.ScenarioNodeRepo `inject:""`
-	EnvironmentRepo  *repo.EnvironmentRepo  `inject:""`
+	ScenarioNodeRepo   *repo.ScenarioNodeRepo   `inject:""`
+	EnvironmentRepo    *repo.EnvironmentRepo    `inject:""`
+	DebugInterfaceRepo *repo.DebugInterfaceRepo `inject:""`
 
 	EndpointInterfaceRepo *repo.EndpointInterfaceRepo `inject:""`
 	EndpointRepo          *repo.EndpointRepo          `inject:""`
@@ -20,7 +22,7 @@ type SceneService struct {
 	ScenarioNodeService *ScenarioNodeService `inject:""`
 }
 
-func (s *SceneService) LoadEnvVarMapByScenario(scene *domain.ExecScene, scenarioId uint) {
+func (s *SceneService) LoadEnvVarMapByScenario(scene *domain.ExecScene, scenarioId, environmentId uint) {
 	scene.EnvToVariables = domain.EnvToVariables{}
 	scene.InterfaceToEnvMap = domain.InterfaceToEnvMap{}
 
@@ -31,17 +33,15 @@ func (s *SceneService) LoadEnvVarMapByScenario(scene *domain.ExecScene, scenario
 			continue
 		}
 
-		interf, _ := s.EndpointInterfaceRepo.Get(processor.EndpointInterfaceId)
-		endpoint, _ := s.EndpointRepo.Get(interf.EndpointId)
-		serveServer, _ := s.ServeServerRepo.Get(endpoint.ServerId)
-		envId := serveServer.EnvironmentId
+		var server = s.GetExecServer(processor.EndpointInterfaceId, environmentId)
+		envId := server.EnvironmentId
 
 		scene.InterfaceToEnvMap[processor.EndpointInterfaceId] = envId
 
 		scene.EnvToVariables[envId] = append(scene.EnvToVariables[envId], domain.GlobalVar{
 			Name:        consts.KEY_BASE_URL,
-			LocalValue:  serveServer.Url,
-			RemoteValue: serveServer.Url,
+			LocalValue:  server.Url,
+			RemoteValue: server.Url,
 		})
 
 		vars, _ := s.EnvironmentRepo.GetVars(envId)
@@ -54,6 +54,32 @@ func (s *SceneService) LoadEnvVarMapByScenario(scene *domain.ExecScene, scenario
 		}
 	}
 
+	return
+}
+
+func (s *SceneService) GetExecServer(endpointInterfaceId, environmentId uint) (server model.ServeServer) {
+	interf, _ := s.EndpointInterfaceRepo.Get(endpointInterfaceId)
+
+	if environmentId > 0 { // select a env to exec
+		endpoint, _ := s.EndpointRepo.Get(interf.EndpointId)
+		server, _ = s.ServeServerRepo.FindByServeAndExecEnv(endpoint.ServeId, environmentId)
+
+	} else {
+		debugInterfaceId, _ := s.DebugInterfaceRepo.HasDebugInterfaceRecord(endpointInterfaceId)
+
+		var serverId uint
+		if debugInterfaceId > 0 { // from debug interface
+			debugInterface, _ := s.DebugInterfaceRepo.Get(debugInterfaceId)
+			serverId = debugInterface.ServerId
+
+		} else { // from endpoint interface
+			endpoint, _ := s.EndpointRepo.Get(interf.EndpointId)
+			serverId = endpoint.ServerId
+
+		}
+
+		server, _ = s.ServeServerRepo.Get(serverId)
+	}
 	return
 }
 

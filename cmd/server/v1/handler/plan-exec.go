@@ -17,8 +17,9 @@ type PlanExecCtrl struct {
 // LoadExecData
 func (c *PlanExecCtrl) LoadExecData(ctx iris.Context) {
 	id, err := ctx.URLParamInt("id")
+	environmentId, err := ctx.URLParamInt("environmentId")
 
-	data, err := c.PlanExecService.LoadExecData(id)
+	data, err := c.PlanExecService.LoadExecData(id, environmentId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

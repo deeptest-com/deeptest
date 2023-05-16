@@ -32,3 +32,11 @@ func (r *ServeServerRepo) GetDefaultByServe(serveId uint) (ret model.ServeServer
 
 	return
 }
+
+func (r *ServeServerRepo) FindByServeAndExecEnv(serveId, environmentId uint) (ret model.ServeServer, err error) {
+	err = r.DB.
+		Where("serve_id = ? AND environment_id =? AND NOT deleted", serveId, environmentId).
+		First(&ret).Error
+
+	return
+}

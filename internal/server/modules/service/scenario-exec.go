@@ -43,7 +43,7 @@ func (s *ScenarioExecService) LoadExecResult(scenarioId int) (result domain.Repo
 	return
 }
 
-func (s *ScenarioExecService) LoadExecData(scenarioId uint) (ret agentExec.ScenarioExecObj, err error) {
+func (s *ScenarioExecService) LoadExecData(scenarioId, environmentId uint) (ret agentExec.ScenarioExecObj, err error) {
 	scenario, err := s.ScenarioRepo.Get(scenarioId)
 	if err != nil {
 		return
@@ -56,7 +56,7 @@ func (s *ScenarioExecService) LoadExecData(scenarioId uint) (ret agentExec.Scena
 	ret.RootProcessor.Session = agentExec.Session{}
 
 	// get variables
-	s.SceneService.LoadEnvVarMapByScenario(&ret.ExecScene, scenarioId)
+	s.SceneService.LoadEnvVarMapByScenario(&ret.ExecScene, scenarioId, environmentId)
 	s.SceneService.LoadProjectSettings(&ret.ExecScene, scenario.ProjectId)
 
 	return

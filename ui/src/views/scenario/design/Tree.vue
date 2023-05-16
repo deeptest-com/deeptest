@@ -118,17 +118,18 @@ watch(treeData, () => {
 
 watch(() => {
   return detailResult.value.id
-},(newVal) => {
+},async (newVal) => {
   if(newVal){
-    loadTree();
+    // loadTree();
+    await store.dispatch('Scenario/loadScenario', newVal);
   }
 },{
   immediate:true
 })
 
-const loadTree = debounce(async () => {
-  await store.dispatch('Scenario/loadScenario', detailResult.value.id);
-}, 60)
+// const loadTree = debounce(async () => {
+//   await store.dispatch('Scenario/loadScenario', detailResult.value.id);
+// }, 60)
 
 
 const replaceFields = {key: 'id', title: 'name'};

@@ -8,12 +8,23 @@
       :pagination="{
             ...pagination,
             onChange: handlePageChanged
-        }"
-  >
+        }">
     <template #createdAt="{ record }">
       <span>{{ momentUtc(record.createdAt) }}</span>
     </template>
-
+    <template #duration="{ record }">
+      <span>{{ `${record.duration}秒` }}</span>
+    </template>
+    <template #execPassRate="{ record }">
+      <!-- todo 统一数字转化 utils     -->
+      <span v-if="record.totalRequestNum">{{
+          `${((record.passRequestNum / (record.totalRequestNum)) * 100).toFixed(2)}%`
+        }}</span>
+      <span v-if="!record.totalRequestNum">{{ `---` }}</span>
+    </template>
+    <template #action="{ record }">
+      <a  href="javascript:void (0)" @click="showDetail(record)">查看详情</a>
+    </template>
   </a-table>
 </template>
 <script lang="ts" setup>
@@ -36,8 +47,9 @@ const columns = [
   },
   {
     title: '测试通过率',
-    dataIndex: 'interfacePassRate',
+    dataIndex: 'execPassRate',
     width: 120,
+    slots: {customRender: 'execPassRate'},
   },
   {
     title: '执行耗时',
@@ -56,6 +68,12 @@ const columns = [
     width: 200,
     slots: {customRender: 'createdAt'},
   },
+  {
+    title: '操作',
+    dataIndex: 'action',
+    width: 200,
+    slots: {customRender: 'action'},
+  },
 ];
 let formState = reactive({});
 let pagination = reactive({
@@ -63,6 +81,10 @@ let pagination = reactive({
   pageSize: 10,
   total: 0
 })
+
+function showDetail(record) {
+  console.log(record, 'record')
+}
 
 function handleFilter(params) {
   formState = params;

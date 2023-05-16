@@ -8,13 +8,14 @@ import (
 type ScenarioExecResult struct {
 	ID int `json:"id" yaml:"id"`
 
-	ScenarioId     uint                  `json:"scenarioId"`
-	Name           string                `json:"name"`
-	Desc           string                `json:"desc,omitempty"`
-	ProgressStatus consts.ProgressStatus `json:"progressStatus,omitempty"`
-	ResultStatus   consts.ResultStatus   `json:"resultStatus"`
-	StartTime      *time.Time            `json:"startTime,omitempty"`
-	EndTime        *time.Time            `json:"endTime,omitempty"`
+	ScenarioId       uint                  `json:"scenarioId"`
+	ScenarioReportId uint                  `json:"scenarioReportId"`
+	Name             string                `json:"name"`
+	Desc             string                `json:"desc,omitempty"`
+	ProgressStatus   consts.ProgressStatus `json:"progressStatus,omitempty"`
+	ResultStatus     consts.ResultStatus   `json:"resultStatus"`
+	StartTime        *time.Time            `json:"startTime,omitempty"`
+	EndTime          *time.Time            `json:"endTime,omitempty"`
 
 	ParentId int `json:"parentId"`
 	//ReportId uint `json:"reportId"`

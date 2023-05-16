@@ -68,17 +68,17 @@ func (s *PlanExecService) SaveReport(planId int, userId uint, result agentDomain
 	report.ProgressStatus = consts.End
 	report.ResultStatus = consts.Pass
 
-	scenarioIds := make([]uint, 0)
+	scenarioReportIds := make([]uint, 0)
 	for _, scenarioResult := range result.Scenarios {
 		scenarioReport, _ := s.ScenarioExecService.GenerateReport(int(scenarioResult.ScenarioId), userId, *scenarioResult)
 		s.CombineReport(scenarioReport, &report)
-		scenarioIds = append(scenarioIds, scenarioReport.ID)
+		scenarioReportIds = append(scenarioReportIds, scenarioResult.ScenarioReportId)
 	}
 
 	report.Duration = report.EndTime.Unix() - report.StartTime.Unix()
 	_ = s.PlanReportRepo.Create(&report)
 
-	_ = s.ScenarioReportRepo.BatchUpdatePlanReportId(scenarioIds, report.ID)
+	_ = s.ScenarioReportRepo.BatchUpdatePlanReportId(scenarioReportIds, report.ID)
 
 	return
 }

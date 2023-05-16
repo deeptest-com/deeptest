@@ -17,12 +17,6 @@ func (s *ExecPlanService) ExecPlan(req *agentExec.PlanExecReq, wsMsg *websocket.
 	consts.ServerUrl = req.ServerUrl
 	consts.ServerToken = req.Token
 
-	normalData, err := s.RemoteService.GetPlanNormalData(req)
-	if err != nil {
-		return
-	}
-	_ = execUtils.SendResult(normalData, wsMsg)
-
 	planExecObj := s.RemoteService.GetPlanToExec(req)
 
 	if len(planExecObj.Scenarios) == 0 {
@@ -32,6 +26,12 @@ func (s *ExecPlanService) ExecPlan(req *agentExec.PlanExecReq, wsMsg *websocket.
 	// start msg
 	execUtils.SendStartMsg(wsMsg)
 
+	normalData, err := s.RemoteService.GetPlanNormalData(req)
+	if err != nil {
+		return
+	}
+	_ = execUtils.SendResult(normalData, wsMsg)
+
 	// execution
 	var results = agentDomain.PlanExecResult{
 		EnvironmentId: req.EnvironmentId,
@@ -39,10 +39,12 @@ func (s *ExecPlanService) ExecPlan(req *agentExec.PlanExecReq, wsMsg *websocket.
 	}
 	for _, scenario := range planExecObj.Scenarios {
 		session, _ := s.ExecScenarioService.Exec(&scenario, wsMsg)
-		session.RootProcessor.Result.EnvironmentId = req.EnvironmentId
-		results.Scenarios = append(results.Scenarios, session.RootProcessor.Result)
 		scenarioReport, _ := s.RemoteService.SubmitScenarioResult(*session.RootProcessor.Result, session.RootProcessor.Result.ScenarioId,
 			consts.ServerUrl, consts.ServerToken)
+		session.RootProcessor.Result.EnvironmentId = req.EnvironmentId
+
+		session.RootProcessor.Result.ScenarioReportId = uint(scenarioReport.ID)
+		results.Scenarios = append(results.Scenarios, session.RootProcessor.Result)
 		execUtils.SendResultMsg(scenarioReport, session.WsMsg)
 	}
 

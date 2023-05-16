@@ -4,6 +4,7 @@ import { useStore } from 'vuex';
 import { StateType as PlanStateType } from '@/views/plan/store';
 import { StateType as GlobalStateType } from "@/store/global";
 import { StateType as ReportStateType } from "../store";
+import { StateType as UserStateType } from '@/store/user';
 import { ExecStatus } from "@/store/exec";
 import { StateType as ProjectSettingStateType } from '@/views/projectSetting/store';
 
@@ -20,22 +21,31 @@ export function useExec() {
         Global: GlobalStateType,
         Exec: ExecStatus,
         Report: ReportStateType,
-        ProjectSetting: ProjectSettingStateType
-     }>();
+        ProjectSetting: ProjectSettingStateType,
+        User: UserStateType
+    }>();
     const currPlan = computed<any>(() => store.state.Plan.currPlan);
     const execResult = computed<any>(() => store.state.Plan.execResult);
-    const detailResult = computed<any>(() => store.state.Report.detailResult);
     const currEnvId = computed(() => store.state.ProjectSetting.selectEnvId);
+    const currUser = computed(() => store.state.User.currentUser);
     const logTreeData = ref<any>([]);
     const logDetailData = ref<any>({});
-    const result = ref({} as any);
-    const logMap = ref({} as any);
+    const processNum = ref(0);
+
+    const transformWithUndefined = (num: number | undefined) => {
+        return num || 0;
+    }
+
+    const calcNum = (currNum, lastNum) => {
+        return currNum + transformWithUndefined(lastNum);
+    }
 
     const execStart = async () => {
         console.log('execStart');
 
         logTreeData.value = [];
-        logDetailData.value = { basicInfo: {}, scenarioReports: [] };
+        logDetailData.value = { basicInfo: {}, scenarioReports: [], statisticData: {} };
+        processNum.value = 0;
 
         const data = {
             serverUrl: process.env.VUE_APP_API_SERVER, // used by agent to submit result to server
@@ -56,79 +66,58 @@ export function useExec() {
     const OnWebSocketMsg = (data: any) => {
         if (!data.msg) return
         const wsMsg = JSON.parse(data.msg) as WsMsg;
-        const log = JSON.parse(JSON.stringify(wsMsg.data));
         console.log('--- WebsocketMsgEvent in exec info', wsMsg);
+        const log = wsMsg.data ? JSON.parse(JSON.stringify(wsMsg.data)) : {};
+        console.log('--- WebsocketMsgEvent in exec log', log);
+        // category [result, in_progress, end, ''] 为空时是执行记录
         if (wsMsg.category == 'result') { // update result
-            console.log('=====', result.value)
             // scenarioId === 0  测试计划的数据
-            if (wsMsg.data.scenarioId === 0) {
+            if (wsMsg.data.scenarioId === undefined) {
                 logDetailData.value.basicInfo = {
-                    name: log.name || '',
-                    startTime: (log.startTime && momentUtc(log.startTime)) || '',
+                    name: log.planName || '',
+                    startTime: momentUtc(new Date()),
                     execEnv: log.execEnv || '',
-                    createUserName: log.createUserName || ''
+                    createUserName: currUser.value.username || ''
                 };
                 logDetailData.value.statisticData = {
-                    "duration": log.duration, //执行耗时（单位：s)
-                    "totalScenarioNum": log.totalScenarioNum, //场景总数
-                    "passScenarioNum": log.passScenarioNum, //通过场景数
-                    "failScenarioNum": log.failScenarioNum, //失败场景数
-                    "totalInterfaceNum": log.totalInterfaceNum, //接口总数
-                    "passInterfaceNum": log.passInterfaceNum,
-                    "failInterfaceNum": log.failInterfaceNum,
-                    "totalRequestNum": log.totalRequestNum,
-                    "passRequestNum": log.passRequestNum,
-                    "failRequestNum": log.failRequestNum,
-                    "totalAssertionNum": log.totalAssertionNum, //检查点总数
-                    "passAssertionNum": log.passAssertionNum, //通过检查点数
-                    "failAssertionNum": log.failAssertionNum, //失败检查点数
+                    totalScenarioNum: log.totalScenarioNum,
+                    totalInterfaceNum: log.totalInterfaceNum,
+                    totalAssertionNum: log.totalAssertionNum
                 };
-            } else { // scenarioId !== 0 场景的执行结果汇总
-                logDetailData.value.scenarioReports
-                let scenarioReports = logDetailData.value.scenarioReports || [];
-                scenarioReports = scenarioReports.map(e => {
-                    if (e.name === data.name) {
-                        return { ...data, ...e };
-                    }
-                });
+                store.dispatch('Plan/setExecResult', logDetailData.value);
+            } else if (log.scenarioId !== 0) {
+                const isExsitData = logDetailData.value.scenarioReports.find(e => e.id === log.id);
+                if (isExsitData) {
+                    return;
+                }
+                const statisticData = JSON.parse(JSON.stringify(logDetailData.value.statisticData));
+                logDetailData.value.statisticData = {
+                    ...statisticData,
+                    "duration": log.duration + transformWithUndefined(statisticData.duration), //执行耗时（单位：s)
+                    "passScenarioNum": calcNum(log.resultStatus === 'fail' ? 0 : 1, statisticData.passScenarioNum), //通过场景数
+                    "failScenarioNum": calcNum(log.resultStatus === 'fail' ? 1 : 0, statisticData.failScenarioNum), //失败场景数
+                    "passInterfaceNum": calcNum(log.passInterfaceNum, statisticData.passInterfaceNum),
+                    "failInterfaceNum": calcNum(log.failInterfaceNum, statisticData.failInterfaceNum),
+                    "totalRequestNum": calcNum(log.totalRequestNum, statisticData.totalRequestNum),
+                    "passRequestNum": calcNum(log.passRequestNum, statisticData.passRequestNum),
+                    "failRequestNum": calcNum(log.failRequestNum, statisticData.failRequestNum),
+                    "passAssertionNum": calcNum(log.passAssertionNum, statisticData.passAssertionNum), //通过检查点数
+                    "failAssertionNum": calcNum(log.failAssertionNum, statisticData.failAssertionNum), //失败检查点数
+                };
+                const requestLogs = log.logs && log.logs[0].logs;
+                logDetailData.value.scenarioReports.push({
+                    ...log,
+                    requestLogs
+                })
+                processNum.value++;
+                logDetailData.value.progressValue = Math.ceil(processNum.value / transformWithUndefined(statisticData.totalScenarioNum)) * 100;
+                store.dispatch('Plan/setExecResult', logDetailData.value);
             }
-
-            return
+            return;
         } else if (wsMsg.category === WsMsgCategory.InProgress || wsMsg.category === WsMsgCategory.End) { // update status
             execResult.value.progressStatus = wsMsg.category
-            if (wsMsg.category === 'in_progress') {
-                result.value = {};
-            }
-            return
+            return;
         }
-
-        if (log.id) {
-            logMap.value[log.id] = log;
-        }
-
-        if (log.parentId === 0) { // 场景数据
-            console.log('~~~~ log ~~~', log);
-            log.requestLogs = [];
-            const findScenarioReport = logDetailData.value.scenarioReports.find(e => e.id === log.id);
-            console.log(findScenarioReport);
-            if (!findScenarioReport) {
-                logDetailData.value.scenarioReports.push(log);
-            }
-        } else {
-            logDetailData.value.scenarioReports = logDetailData.value.scenarioReports.map(e => {
-                if (log.parentId === e.id) {
-                    const findRequestLog = e.requestLogs.find(request => request.id === log.id);
-                    if (!findRequestLog) {
-                        e.requestLogs.push(log);
-                    }
-                    return e;
-                }
-                return e;
-            })
-        }
-
-        console.log('~~~~~~ get logDetailData ~~~~~', logDetailData.value);
-        store.dispatch('Report/setExecResult', logDetailData.value);
     };
 
     // websocket 连接状态 查询

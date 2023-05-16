@@ -1,6 +1,6 @@
 <template>
     <div class="progress-container">
-        <a-progress :strokeColor="execStatusColorMap.get(execStatus)" :percent="percent || 30" :showInfo="false" />
+        <a-progress status="active" :strokeColor="execStatusColorMap.get(execStatus)" :percent="percent || 10" :showInfo="false" />
         <a-button class="exec-cancel" type="default" @click="handleExecCancel">{{ execStatusTextMap.get(execStatus) }}</a-button>
     </div>
 </template>

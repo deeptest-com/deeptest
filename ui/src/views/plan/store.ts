@@ -14,6 +14,8 @@ import {
     clonePlan,
 } from './service';
 
+import { get as getExecDetail } from '../report/service';
+
 import {
     loadCategory,
     getCategory,
@@ -35,6 +37,7 @@ export interface StateType {
     queryParams: any;
 
     execResult: any;
+    execDetail: any;
 
     treeDataCategory: any[];
     treeDataMapCategory: any,
@@ -74,7 +77,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setMembers: Mutation<StateType>;
         setScenarioList: Mutation<StateType>;
 
-        setEnvId: Mutation<StateType>;
+        setExecDetail: Mutation<StateType>;
     };
     actions: {
         listPlan: Action<StateType, StateType>;
@@ -104,7 +107,9 @@ export interface ModuleType extends StoreModuleType<StateType> {
         addScenario: Action<StateType, StateType>;
         removeScenario: Action<StateType, StateType>;
 
-        saveEnv: Action<StateType, StateType>;
+        getExecDetail: Action<StateType, StateType>;
+        setExecResult: Action<StateType, StateType>;
+        initExecResult: Action<StateType, StateType>;
     }
 }
 
@@ -127,6 +132,7 @@ const initState: StateType = {
     execResult: {
         progressStatus: 'in_progress'
     },
+    execDetail: {},
 
     treeDataCategory: [],
     treeDataMapCategory: {},
@@ -195,9 +201,8 @@ const StoreModel: ModuleType = {
         setScenarioList(state, payload) {
             state.scenarioListResult = payload;
         },
-        setEnvId(state, payload) {
-            console.log('初始化执行环境', payload);
-            state.selectEnvId = payload;
+        setExecDetail(state, payload) {
+            state.execDetail = payload;
         }
     },
     actions: {
@@ -444,9 +449,21 @@ const StoreModel: ModuleType = {
             return false;
         },
 
-        async saveEnv({ commit }, payload: number) {
-            commit('setEnvId', payload);
-            return true;
+        async getExecDetail({ commit }, payload: number) {
+            const result = await getExecDetail(payload);
+            if (result.code === 0) {
+                console.log(result);
+                commit('setExecDetail', {});
+            }
+        },
+
+        async setExecResult({ commit }, payload: any) {
+            console.log('~~~~~ execResult ~~~~~', payload);
+            commit('setExecResult', payload);
+        },
+
+        async initExecResult({ commit }, payload: any) {
+            commit('setExecResult', { statisticData: {}, basicInfo: {}, scenarioReports: [], progressValue: 10, progressStatus: 'in_progress' });
         }
     }
 };

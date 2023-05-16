@@ -34,7 +34,7 @@
         </template>
         <div class="endpoint-expand">
             <div class="endpoint-expand-content">
-                <span>{{ resContent.statusContent }}</span>
+                <span>{{ endpointData.summary || '' }}</span>
             </div>
             <div class="endpoint-expand-btn" @click="handleQueryDetail">
                 更多详情 &nbsp;&nbsp;
@@ -72,11 +72,8 @@ const props = defineProps({
 });
 
 const emits = defineEmits(['queryDetail']);
-console.log(props.endpointData);
-console.log(props.endpointData.reqContent);
-const reqContent = computed(() => JSON.parse(props.endpointData.reqContent));
-const resContent = computed(() => JSON.parse(props.endpointData.respContent));
-console.log(reqContent);
+const reqContent = computed(() => props.endpointData.reqContent ? JSON.parse(props.endpointData.reqContent) : {});
+const resContent = computed(() => props.endpointData.respContent ? JSON.parse(props.endpointData.respContent) : {});
 
 const responseCodeColorMap = {};
 

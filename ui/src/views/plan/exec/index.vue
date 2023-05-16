@@ -9,12 +9,14 @@
         <div class="drawer-content">
             <ReportBasicInfo :basic-info="execResult.basicInfo || {}" :scene="scene" />
             <StatisticTable :scene="scene" :data="execResult.statisticData" />
-            <Progress :exec-status="execResult.progressStatus" v-if="scene !== ReportDetailType.QueryDetail" :percent="60" @exec-cancel="execCancel" />
+            <Progress :exec-status="execResult.progressStatus" v-if="scene !== ReportDetailType.QueryDetail" :percent="execResult.progressValue || 10"
+                @exec-cancel="execCancel" />
             <template v-for="scenarioReportItem in execResult.scenarioReports" :key="scenarioReportItem.id">
                 <ScenarioCollapsePanel :show-scenario-info="showScenarioInfo" :expand-active="expandActive"
                     :record="scenarioReportItem">
                     <template #endpointData>
-                        <EndpointCollapsePanel v-if="scenarioReportItem.requestLogs.length > 0" :recordList="scenarioReportItem.requestLogs" />
+                        <EndpointCollapsePanel v-if="scenarioReportItem.requestLogs.length > 0"
+                            :recordList="scenarioReportItem.requestLogs" />
                     </template>
                 </ScenarioCollapsePanel>
             </template>
@@ -22,13 +24,17 @@
     </a-drawer>
 </template>
 <script setup lang="ts">
-import { defineProps, defineEmits, ref, computed } from 'vue';
+import { defineProps, defineEmits, ref, computed, watch } from 'vue';
 import { useStore } from 'vuex';
 
 import { ReportBasicInfo, StatisticTable, ScenarioCollapsePanel, EndpointCollapsePanel, Progress } from '@/views/component/Report/Components';
 
 import { StateType as PlanStateType } from "../store";
 import { ReportDetailType } from '@/utils/enum';
+import settings from "@/config/settings";
+import bus from "@/utils/eventBus";
+
+import { useExec } from '../hooks/exec';
 
 const props = defineProps<{
     drawerVisible: boolean
@@ -39,19 +45,44 @@ const props = defineProps<{
     reportId?: number
 }>();
 
-const emits = defineEmits(['onClose', 'execCancel']);
+const emits = defineEmits(['onClose']);
 
 const store = useStore<{ Plan: PlanStateType }>();
 const execResult = computed<any>(() => store.state.Plan.execResult);
+console.log(execResult.value);
 const expandActive = ref(props.scenarioExpandActive || false);
+const { execCancel, execStart, OnWebSocketMsg, onWebSocketConnStatusMsg } = useExec();
 
 function onClose() {
     emits('onClose');
 }
 
-function execCancel() {
-    emits('execCancel');
-}
+watch(() => {
+    return props;
+}, (val) => {
+    console.log(val);
+    if (val.drawerVisible) {
+        execStart();
+        bus.on(settings.eventWebSocketMsg, OnWebSocketMsg);
+        bus.on(settings.eventWebSocketConnStatus, onWebSocketConnStatusMsg);
+    } else {
+        execCancel();
+        bus.off(settings.eventWebSocketMsg, OnWebSocketMsg);
+        bus.off(settings.eventWebSocketConnStatus, onWebSocketConnStatusMsg);
+    }
+}, {
+    immediate: true,
+    deep: true
+});
+
+watch(() => {
+    return execResult.value;
+}, (val) => {
+    console.log(' ~~~~~ execResult ~~~~~~ ', val);
+}, {
+    immediate: true,
+    deep: true
+});
 
 </script>
 <style scoped lang="less">

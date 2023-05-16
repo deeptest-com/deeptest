@@ -7,6 +7,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
+	"gorm.io/gorm"
 )
 
 type PlanExecService struct {
@@ -15,6 +16,7 @@ type PlanExecService struct {
 	ScenarioReportRepo *repo.ScenarioReportRepo `inject:""`
 	TestLogRepo        *repo.LogRepo            `inject:""`
 	EnvironmentRepo    *repo.EnvironmentRepo    `inject:""`
+	ScenarioNodeRepo   *repo.ScenarioNodeRepo   `inject:""`
 
 	ScenarioExecService *ScenarioExecService `inject:""`
 
@@ -61,7 +63,7 @@ func (s *PlanExecService) SaveReport(planId int, userId uint, result agentDomain
 	report.PlanId = uint(planId)
 	report.ProjectId = projectId
 	report.Name = plan.Name
-	report.ExecEnvId = result.EnvId
+	report.ExecEnvId = uint(result.EnvironmentId)
 	report.CreateUserId = userId
 	report.ProgressStatus = consts.End
 	report.ResultStatus = consts.Pass
@@ -220,15 +222,33 @@ func (s *PlanExecService) GetPlanReportNormalData(planId, environmentId uint) (r
 		return
 	}
 
-	scenarioNum, err := s.PlanRepo.GetScenarioNumByPlan(planId)
-	if err != nil {
+	planScenarioRelation, err := s.PlanRepo.ListScenarioRelation(planId)
+	if err != nil && err != gorm.ErrRecordNotFound {
 		return
+	}
+
+	if len(planScenarioRelation) > 0 {
+		scenarioIds := make([]uint, 0)
+		for _, v := range planScenarioRelation {
+			scenarioIds = append(scenarioIds, v.ScenarioId)
+		}
+
+		interfaceNum, err := s.ScenarioNodeRepo.GetNumberByScenariosAndEntityCategory(scenarioIds, "processor_interface")
+		if err != nil {
+			return ret, err
+		}
+		assertionNum, err := s.ScenarioNodeRepo.GetNumberByScenariosAndEntityCategory(scenarioIds, "processor_assertion")
+		if err != nil {
+			return ret, err
+		}
+		ret.TotalInterfaceNum = int(interfaceNum)
+		ret.TotalAssertionNum = int(assertionNum)
 	}
 
 	ret.PlanId = planId
 	ret.PlanName = plan.Name
 	ret.ExecEnv = environment.Name
-	ret.TotalScenarioNum = int(scenarioNum)
+	ret.TotalScenarioNum = len(planScenarioRelation)
 	return
 
 }

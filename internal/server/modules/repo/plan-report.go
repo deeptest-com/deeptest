@@ -11,6 +11,7 @@ import (
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"gorm.io/gorm"
 	"strconv"
+	"time"
 )
 
 type PlanReportRepo struct {
@@ -22,6 +23,8 @@ type PlanReportRepo struct {
 }
 
 func (r *PlanReportRepo) Paginate(req v1.PlanReportReqPaginate, projectId int) (data _domain.PageData, err error) {
+	req.Order = "desc"
+	timeLayout := "2006-01-02 15:04:05"
 	var count int64
 
 	db := r.DB.Model(&model.PlanReport{}).
@@ -35,6 +38,12 @@ func (r *PlanReportRepo) Paginate(req v1.PlanReportReqPaginate, projectId int) (
 	}
 	if req.CreateUserId != 0 {
 		db = db.Where("create_user_id = ?", req.CreateUserId)
+	}
+	if req.ExecuteStartTime != 0 {
+		db = db.Where("start_time > ?", time.Unix(req.ExecuteStartTime/1000, 0).Format(timeLayout))
+	}
+	if req.ExecuteEndTime != 0 {
+		db = db.Where("end_time < ?", time.Unix(req.ExecuteEndTime/1000, 0).Format(timeLayout))
 	}
 
 	err = db.Count(&count).Error

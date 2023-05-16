@@ -18,6 +18,7 @@ type ScenarioReportRepo struct {
 	LogRepo      *LogRepo      `inject:""`
 	ProjectRepo  *ProjectRepo  `inject:""`
 	ScenarioRepo *ScenarioRepo `inject:""`
+	UserRepo     *UserRepo     `inject:""`
 }
 
 func (r *ScenarioReportRepo) Paginate(req v1.ReportReqPaginate) (data _domain.PageData, err error) {
@@ -45,10 +46,31 @@ func (r *ScenarioReportRepo) Paginate(req v1.ReportReqPaginate) (data _domain.Pa
 		logUtils.Errorf("query report error %s", err.Error())
 		return
 	}
-
+	r.CombineUserName(results)
 	data.Populate(results, count, req.Page, req.PageSize)
 
 	return
+}
+
+func (r *ScenarioReportRepo) CombineUserName(data []*model.ScenarioReport) {
+	userIds := make([]uint, 0)
+	for _, v := range data {
+		userIds = append(userIds, v.CreateUserId)
+	}
+	userIds = _commUtils.ArrayRemoveUintDuplication(userIds)
+
+	users, _ := r.UserRepo.FindByIds(userIds)
+
+	userIdNameMap := make(map[uint]string)
+	for _, v := range users {
+		userIdNameMap[v.ID] = v.Name
+	}
+
+	for _, v := range data {
+		if name, ok := userIdNameMap[v.CreateUserId]; ok {
+			v.CreateUserName = name
+		}
+	}
 }
 
 func (r *ScenarioReportRepo) Get(id uint) (report model.ScenarioReport, err error) {

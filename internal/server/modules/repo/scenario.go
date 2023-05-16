@@ -257,6 +257,10 @@ func (r *ScenarioRepo) PlanList(req v1.ScenarioPlanReqPaginate, scenarioId int) 
 
 	db := r.DB.Model(&model.Plan{}).Where("not deleted and project_id=?", req.ProjectId)
 
+	if req.Ref && len(planIds) == 0 {
+		return
+	}
+
 	if len(planIds) > 0 {
 		if req.Ref {
 			db = db.Where(" id in (?)", planIds)

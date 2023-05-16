@@ -91,6 +91,7 @@ const columns: any[] = reactive([
     {
         title: '用例名称',
         dataIndex: 'name',
+        ellipsis: true
     },
     {
         title: '状态',
@@ -104,6 +105,7 @@ const columns: any[] = reactive([
     {
         title: '所属分类',
         dataIndex: 'categoryName',
+        ellipsis: true
     },
     {
         title: '创建人',
@@ -112,11 +114,13 @@ const columns: any[] = reactive([
     {
         title: '最近更新',
         dataIndex: 'updatedAt',
+        width: 160,
+        slots: { customRender: 'updateAt' }
     },
     {
         title: '操作',
         dataIndex: 'operation',
-        slots: { customRender: 'operation' }
+        slots: { customRender: 'operation' },
     },
 ]);
 

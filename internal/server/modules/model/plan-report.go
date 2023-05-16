@@ -56,6 +56,6 @@ func (PlanReport) TableName() string {
 
 type PlanReportDetail struct {
 	PlanReport
-	ExecEnv         string                 `json:"execEnv"` //执行环境
-	ScenarioReports []ScenarioReportDetail `json:"scenarioReports"`
+	ExecEnv         string                 `gorm:"-" json:"execEnv"` //执行环境
+	ScenarioReports []ScenarioReportDetail `gorm:"-" json:"scenarioReports"`
 }

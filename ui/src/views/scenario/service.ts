@@ -186,6 +186,17 @@ export async function getScenariosReports(data: any): Promise<any> {
     });
 }
 
+
+/**
+ * 执行场景执行的详情
+ * */
+export async function getScenariosReportsDetail(data: any): Promise<any> {
+    return request({
+        url: `/scenarios/reports/${data.id}`,
+        method: 'GET',
+    });
+}
+
 /**
  * 添加 关联测试计划
  * */

@@ -31,7 +31,7 @@
         </a-tab-pane>
         <a-tab-pane key="2" tab="执行历史" force-render>
           <div style="padding: 16px" v-if="activeKey==='2'">
-            <ExecList/>
+            <ExecList @showDetail="showDetail"/>
           </div>
         </a-tab-pane>
         <!-- :::: 关联测试计划Tab-->
@@ -42,6 +42,7 @@
         </a-tab-pane>
       </a-tabs>
     </a-drawer>
+    <!-- 动态场景执行抽屉 -->
     <a-drawer
         :placement="'right'"
         :width="1000"
@@ -53,12 +54,26 @@
         @close="onCloseExecDrawer">
       <ExecInfo/>
     </a-drawer>
-
     <EnvSelector
         :env-select-drawer-visible="selectEnvVisible"
         @on-cancel="cancelSelectExecEnv"
         @on-ok="selectExecEnv"/>
+    <!-- ::::静态数据：查看执行历史的详情 -->
+    <a-drawer
+        :placement="'right'"
+        :width="1000"
+        :title="'执行详情'"
+        :closable="true"
+        :visible="execListDetailVisible"
+        class="drawer"
+        wrapClassName="drawer-exec-history-detail"
+        :bodyStyle="{padding:'16px',marginBottom:'56px'}"
+        @close="execListDetailVisible = false">
+       {{JSON.stringify(reportsDetailDetail)}}
+    </a-drawer>
+
   </div>
+
 </template>
 
 <script lang="ts" setup>
@@ -79,10 +94,11 @@ import PlanList from "./PlanList.vue";
 import ExecList from "./ExecList.vue";
 import ExecInfo  from "../../exec/components/Info.vue";
 import EnvSelector from "@/views/component/EnvSelector/index.vue";
-
-const store = useStore<{ Scenario, ProjectGlobal, ServeGlobal }>();
+import ReportDetail from "@/views/component/Report/Detail/Index.vue";
+const store = useStore<{ Scenario, ProjectGlobal, ServeGlobal,Report }>();
 const detailResult = computed<Scenario>(() => store.state.Scenario.detailResult);
 const pagination = computed<PaginationConfig>(() => store.state.Scenario.listResult.pagination);
+const reportsDetailDetail = computed<PaginationConfig>(() => store.state.Scenario.reportsDetailDetail);
 const props = defineProps({
   visible: {
     required: true,
@@ -103,9 +119,18 @@ const activeKey = ref('1');
 const execDrawerVisible = ref(false);
 const selectEnvVisible = ref(false);
 
+// 执行历史详情
+const execListDetailVisible = ref(false);
+
+
 
 async function cancelSelectExecEnv(record: any) {
   selectEnvVisible.value = false;
+}
+
+async function showDetail(record:any) {
+  execListDetailVisible.value = true;
+  await store.dispatch('Scenario/getScenariosReportsDetail', {id: record.id});
 }
 
 async function selectExecEnv() {

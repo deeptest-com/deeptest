@@ -26,18 +26,31 @@
       <a  href="javascript:void (0)" @click="showDetail(record)">查看详情</a>
     </template>
   </a-table>
+  <!-- 查看执行历史的详情 -->
+  <ReportDetail
+      :drawer-visible="execReportVisible"
+      :title="execReportTitle"
+      :scenario-expand-active="true"
+      :show-scenario-info="true"
+      :scene="'query_detail'"
+      @on-close="execReportVisible = false"
+  />
 </template>
 <script lang="ts" setup>
-import {computed, reactive, ref, onMounted, watch} from 'vue';
+import {computed, reactive, ref, onMounted, watch, defineEmits} from 'vue';
 import TableFilter from "@/views/component/Report/List/TableFilter.vue";
 import {useStore} from "vuex";
 import {momentUtc} from "@/utils/datetime";
 import {Scenario} from "@/views/scenario/data";
-
-const store = useStore<{ Scenario, ProjectGlobal, ServeGlobal }>();
+import ReportDetail from "@/views/component/Report/Detail/Index.vue";
+const store = useStore<{ Scenario, ProjectGlobal, ServeGlobal, }>();
 const detailResult: any = computed<Scenario>(() => store.state.Scenario.detailResult);
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const scenariosReports = computed(() => store.state.Scenario.scenariosReports);
+const execReportVisible = ref<boolean>(false);
+const execReportTitle = ref<string>('场景执行详情');
+const emit = defineEmits([ 'showDetail']);
+
 const columns = [
   {
     title: '编号',
@@ -83,7 +96,7 @@ let pagination = reactive({
 })
 
 function showDetail(record) {
-  console.log(record, 'record')
+  emit('showDetail', record);
 }
 
 function handleFilter(params) {

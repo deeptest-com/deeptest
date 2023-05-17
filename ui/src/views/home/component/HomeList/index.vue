@@ -3,13 +3,13 @@
      <a-table
       row-key="id"
       :columns="columns"
-      :data-source="tableList"
+      :data-source="searchValue!=''? filterList:tableList"
       :loading="loading"
     
     >
       <template #name="{ text, record }">
-        <div class="project-name" @click="goProject(record.project_id)">
-          {{ text }}
+        <div class="project-name" :title="text" @click="goProject(record.projectId)">
+          {{ text.length>16? text.substring(0,16)+'...':text}}
         </div>
       </template>
 
@@ -19,21 +19,21 @@
           <template #overlay>
             <a-menu>
               <a-menu-item key="1">
-                <a-button style="width: 80px" type="link" size="small"
+                <a-button style="width: 80px" @click="handleEdit(record)" type="link" size="small"
                   >编辑</a-button
                 >
               </a-menu-item>
-              <a-menu-item key="2">
+              <!-- <a-menu-item key="2">
                 <a-button style="width: 80px" type="link" size="small"
                   >禁用/启用</a-button
                 >
-              </a-menu-item>
+              </a-menu-item> -->
               <a-menu-item key="3">
                 <a-button
                   style="width: 80px"
                   type="link"
                   size="small"
-                  @click="del(record)"
+                  @click="handleDelete(record.projectId)"
                   >删除</a-button
                 >
               </a-menu-item>
@@ -47,7 +47,7 @@
 
 
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref, defineProps, watch } from "vue";
+import { computed, onMounted, reactive, ref, defineProps,defineEmits, watch } from "vue";
 import debounce from "lodash.debounce";
 import { PaginationConfig, QueryParams } from "../../data.d";
 import { SelectTypes } from "ant-design-vue/es/select";
@@ -69,10 +69,12 @@ const projects = computed<any>(() => store.state.ProjectGlobal.projects);
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const currentUser = computed<any>(() => store.state.User.currentUser);
 const list = computed<any>(() => store.state.Home.queryResult.list);
+const projectLoading = computed<any>(() => store.state.Home.loading);
 const loading = ref<boolean>(false);
 const showMode = ref("list");
 const activeKey = ref(1);
-const tableList = ref([]);
+const tableList = ref<any>([]);
+const filterList=ref<any>([]);
 // 组件接收参数
 const props = defineProps({
   // 请求API的参数
@@ -80,13 +82,14 @@ const props = defineProps({
   activeKey: {
     type: Number,
   },
+  searchValue: {
+    type: String,
+  },
 });
 
-let queryParams = reactive<QueryParams>({
-  keywords: "",
-
-});
-
+const total = ref(0);
+//暴露内部方法
+const emit = defineEmits(["edit", "delete"]);
 const columns = [
   // {
   //   title: '序号',
@@ -97,93 +100,164 @@ const columns = [
   //                    index
   //                  }: { text: any; index: number }) => (pagination.value.current - 1) * pagination.value.pageSize + index + 1,
   // },
+   {
+    title: "项目名称",
+    dataIndex: "projectName",
+    slots: { customRender: "name" },
+      width: 260,
+       ellipsis: true,
+  },
   {
     title: "英文缩写",
-    dataIndex: "project_name",
+    dataIndex: "projectShortName",
+     ellipsis: true,
+     width: 150,
   },
-  {
-    title: "项目名称",
-    dataIndex: "project_chinese_name",
-    slots: { customRender: "name" },
-  },
+ 
 
   {
     title: "管理员",
-    dataIndex: "admin_user",
+    dataIndex: "adminName",
+      ellipsis: true,
+     width: 150,
   },
 
   {
     title: "测试场景数",
-    dataIndex: "scenario_total",
+    dataIndex: "scenarioTotal",
+    customRender: ({
+     text
+    }: { text: any;  }) => text+'个',
   },
   {
     title: "测试覆盖率",
     dataIndex: "coverage",
+     customRender: ({
+     text
+    }: { text: any;  }) => text+'%',
   },
   {
     title: "执行次数",
-    dataIndex: "exec_total",
+    dataIndex: "execTotal",
+     customRender: ({
+     text
+    }: { text: any;  }) => text+'次',
   },
   {
     title: "测试通过率",
-    dataIndex: "pass_rate",
+    dataIndex: "passRate",
+     customRender: ({
+     text
+    }: { text: any;  }) => text+'%',
   },
   {
     title: "发现缺陷",
-    dataIndex: "bug_total",
+    dataIndex: "bugTotal",
+     customRender: ({
+     text
+    }: { text: any;  }) => text+'个',
   },
   {
     title: "创建时间",
     dataIndex: "createdAt",
+      ellipsis: true,
+     width: 200,
   },
-  // {
-  //   title: '操作',
-  //   key: 'action',
-  //   // width: 260,
-  //   slots: {customRender: 'action'},
-  // },
+  {
+    title: '操作',
+    key: 'action',
+    width: 60,
+    slots: {customRender: 'action'},
+  },
 ];
-
-
+// 监听关键词搜索
+watch(
+  () => {
+    return props.searchValue;
+  },
+  async (newVal) => {
+    console.log("watch props.searchValue", props.searchValue);
+    if (!props.searchValue) {
+       total.value = tableList.value.length;
+        return;
+      }
+      const searchText = props.searchValue.toLowerCase();
+       filterList.value= tableList.value.filter(item => {
+        // console.log(item)
+        // 根据你的数据结构，修改下面的属性名
+        return (
+          item.projectName.toLowerCase().includes(searchText) 
+        );
+      });
+       total.value = filterList.value.length;
+      
+  },
+  {
+    immediate: true,
+  }
+);
+// 监听项目数据变化
+watch(
+  () => {
+    return list.value;
+  },
+  async (newVal) => {
+    console.log("watch list.value", list.value);
+    fetch(list.value.userProjectList);
+  },
+  {
+    immediate: true,
+  }
+);
+// 监听我的项目、所有项目切换
 watch(
   () => {
     return props.activeKey;
   },
-  (newVal) => {
-   
+  async (newVal) => {
     if (newVal == 1) {
-     
-      tableList.value = list.value.current_user_project_list;
+      fetch(list.value.userProjectList);
     } else {
-      tableList.value = list.value.all_project_list;
-         
+      fetch(list.value.projectList);
     }
   },
   {
     immediate: true,
   }
 );
-
+// 监听项目loading变化
+watch(
+  () => {
+    return projectLoading.value;
+  },
+  async (newVal) => {
+    loading.value = projectLoading.value.loading;
+  },
+  {
+    immediate: true,
+  }
+);
+async function fetch(data) {
+  tableList.value = data;
+  if (tableList.value && tableList.value.length > 0) {
+    total.value = tableList.value.length;
+  }
+}
 const getList = async (current: number): Promise<void> => {
- 
-  console.log("queryParams.keywords", queryParams.keywords);
   await store.dispatch("Home/queryProject", {
-    keywords: queryParams.keywords,
-
   });
 
 };
 function handleTabClick(e: number) {
-  queryParams.userId = e;
+ 
   getList(1);
 }
-function goProject(projectId: number) {
-  
-  store.dispatch("ProjectGlobal/changeProject", projectId);
-  // store.dispatch("Environment/getEnvironment", { id: 0, projectId: projectId });
-
+async function goProject(projectId: number) {
+  await store.dispatch("ProjectGlobal/changeProject", projectId);
+  // 更新左侧菜单以及按钮权限
+  await store.dispatch('Global/getPermissionList');
   // 项目切换后，需要重新更新可选服务列表
-  store.dispatch("ServeGlobal/fetchServe");
+  await store.dispatch("ServeGlobal/fetchServe");
   router.push(`/workbench/index`);
 }
 function changeMode(e) {
@@ -202,13 +276,7 @@ const members = (id: number) => {
 
 const visible = ref(false);
 const currentProjectId = ref(0);
-const edit = (id: number) => {
-  console.log("edit");
-  //router.push(`/project/edit/${id}`)
-  currentProjectId.value = id;
-  console.log("currentProjectId", currentProjectId.value);
-  visible.value = true;
-};
+
 const handleOk = (e: MouseEvent) => {
   console.log(e);
   visible.value = false;
@@ -217,33 +285,13 @@ const handleOk = (e: MouseEvent) => {
 const closeModal = () => {
   visible.value = false;
 };
+async function handleEdit(item) {
+  emit("edit", item);
+}
+async function handleDelete(id) {
+  emit("delete", id);
+}
 
-const remove = (id: number) => {
-  console.log("remove");
-
-  Modal.confirm({
-    title: "删除项目",
-    content: "确定删除指定的项目？",
-    okText: "确认",
-    cancelText: "取消",
-    onOk: async () => {
-      store.dispatch("Home/removeProject", id).then((res) => {
-        console.log("res", res);
-        if (res === true) {
-          notification.success({
-            key: NotificationKeyCommon,
-            message: `删除成功`,
-          });
-        } else {
-          notification.error({
-            key: NotificationKeyCommon,
-            message: `删除失败`,
-          });
-        }
-      });
-    },
-  });
-};
 </script>
 
 <style lang="less" scoped>

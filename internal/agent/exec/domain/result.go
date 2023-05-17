@@ -8,12 +8,14 @@ import (
 type ScenarioExecResult struct {
 	ID int `json:"id" yaml:"id"`
 
-	Name           string                `json:"name"`
-	Desc           string                `json:"desc,omitempty"`
-	ProgressStatus consts.ProgressStatus `json:"progressStatus,omitempty"`
-	ResultStatus   consts.ResultStatus   `json:"resultStatus"`
-	StartTime      *time.Time            `json:"startTime,omitempty"`
-	EndTime        *time.Time            `json:"endTime,omitempty"`
+	ScenarioId       uint                  `json:"scenarioId"`
+	ScenarioReportId uint                  `json:"scenarioReportId"`
+	Name             string                `json:"name"`
+	Desc             string                `json:"desc,omitempty"`
+	ProgressStatus   consts.ProgressStatus `json:"progressStatus,omitempty"`
+	ResultStatus     consts.ResultStatus   `json:"resultStatus"`
+	StartTime        *time.Time            `json:"startTime,omitempty"`
+	EndTime          *time.Time            `json:"endTime,omitempty"`
 
 	ParentId int `json:"parentId"`
 	//ReportId uint `json:"reportId"`
@@ -45,13 +47,16 @@ type ScenarioExecResult struct {
 	Summary string `json:"summary,omitempty"`
 
 	Children []*ScenarioExecResult `json:"logs,omitempty"`
+
+	EnvironmentId int `json:"environmentId,omitempty"`
 }
 
 type PlanExecResult struct {
 	ID uint `json:"id" yaml:"id"`
 
-	Name string `json:"name"`
-	Desc string `json:"desc,omitempty"`
+	Name          string `json:"name"`
+	Desc          string `json:"desc,omitempty"`
+	EnvironmentId int    `json:"environmentId"`
 
 	Scenarios []*ScenarioExecResult `json:"scenarios"`
 }

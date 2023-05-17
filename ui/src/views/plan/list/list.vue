@@ -5,211 +5,277 @@
         <a-button type="primary" @click="() => create()">新建</a-button>
       </template>
       <template #extra>
-        <a-select @change="onSearch" v-model:value="queryParams.enabled" :options="statusArr" class="status-select">
+        <a-select
+          allowClear
+          @change="onSearch"
+          v-model:value="queryParams.status"
+          :options="planStatusOptions"
+          class="status-select"
+          style="width: 120px"
+          placeholder="请选择状态">
         </a-select>
-        <a-input-search @change="onSearch" @search="onSearch" v-model:value="queryParams.keywords"
-                        placeholder="输入关键字搜索" style="width:270px;margin-left: 16px;"/>
+        <a-input-search
+          allowClear
+          @change="onSearch"
+          @search="onSearch"
+          v-model:value="queryParams.keywords"
+          placeholder="输入关键字搜索"
+          style="width:270px;margin-left: 16px;" />
       </template>
 
       <div>
-        <a-table
-            v-if="list.length > 0"
-            row-key="id"
-            :columns="columns"
-            :data-source="list"
-            :loading="loading"
-            :pagination="{
-                ...pagination,
-                onChange: (page) => {
-                    getList(page, nodeDataCategory.id);
-                },
-                onShowSizeChange: (page, size) => {
-                    pagination.pageSize = size
-                    getList(page, nodeDataCategory.id);
-                },
-            }"
-            class="dp-table">
+        <a-table row-key="id" :columns="columns" :data-source="list" :loading="loading"
+          :pagination="{
+            ...pagination,
+            onChange: (page) => {
+              pagination.current = page;
+              getList(page);
+            },
+            onShowSizeChange: (page, size) => {
+              pagination.pageSize = size
+              getList(page);
+            },
+          }" class="dp-table">
 
-          <template #name="{ text, record  }">
-            {{ text }}
-            <edit-outlined class="dp-primary" @click="edit(record)"/>
+          <template #name="{ text, record }">
+            <div class="plan-name">
+              <EditAndShowField
+                :custom-class="'custom-endpoint show-on-hover'"
+                :value="text"
+                placeholder="请输入计划名称"
+                @edit="edit(record)"
+                @update="(e: string) => updatePlan(e, record)" />
+            </div>
           </template>
-
           <template #status="{ record }">
-            <a-tag v-if="record.disabled" color="green">禁用</a-tag>
-            <a-tag v-else color="cyan">启用</a-tag>
+            <a-tag v-if="record.status" :color="planStatusColorMap.get(record.status)">{{ planStatusTextMap.get(record.status) }}</a-tag>
+          </template>
+          <template #updatedAt="{ record }">
+            <span>{{ momentUtc(record.updatedAt) }}</span>
           </template>
 
           <template #action="{ record }">
-            <a-button type="link" @click="() => exec(record.id)">执行</a-button>
-            <a-button type="link" @click="() => remove(record.id)">删除</a-button>
+            <a-dropdown>
+              <MoreOutlined />
+              <template #overlay>
+                <a-menu>
+                  <a-menu-item key="1">
+                    <a class="operation-a" href="javascript:void (0)" @click="exec(record)">执行</a>
+                  </a-menu-item>
+                  <a-menu-item key="1">
+                    <a class="operation-a" href="javascript:void (0)" @click="report(record)">测试报告</a>
+                  </a-menu-item>
+                  <!-- <a-menu-item key="1">
+                    <a class="operation-a" href="javascript:void (0)" @click="exec(record.id)">执行</a>
+                  </a-menu-item> -->
+                  <a-menu-item key="1">
+                    <a class="operation-a" href="javascript:void (0)" @click="clone(record.id)">克隆</a>
+                  </a-menu-item>
+                  <a-menu-item key="2">
+                    <a class="operation-a" href="javascript:void (0)" @click="remove(record.id)">删除</a>
+                  </a-menu-item>
+                </a-menu>
+              </template>
+            </a-dropdown>
           </template>
 
         </a-table>
-
-        <a-empty v-if="list.length === 0" :image="simpleImage" />
       </div>
     </a-card>
   </div>
 
-  <a-drawer
-      :closable="true"
-      :width="1000"
-      :key="currModel.id"
-      :visible="createDrawerVisible"
-      @close="onFinish">
-    <template #title>
-      <div class="drawer-header">
-        <div>新建计划</div>
-      </div>
-    </template>
-    <div class="drawer-content">
-      <PlanCreate
-          :categoryId="nodeDataCategory.id"
-          :onSaved="onFinish">
-      </PlanCreate>
-    </div>
-  </a-drawer>
+  <!-- 新建计划弹窗 -->
+  <PlanCreate
+    :create-drawer-visible="createDrawerVisible"
+    @on-cancel="createDrawerVisible = false"
+    @get-list="getList(1)"
+  />
+  <!-- 编辑计划抽屉 -->
+  <PlanEdit
+    :tab-active-key="editTabActiveKey"
+    :edit-drawer-visible="editDrawerVisible"
+    @onExec="onExec"
+    @onUpdate="handleUpdate"
+    @on-cancel="editDrawerVisible = false" />
 
-  <a-drawer
-      :closable="true"
-      :width="1000"
-      :key="currModel.id"
-      :visible="editDrawerVisible"
-      @close="onFinish">
-    <template #title>
-      <div class="drawer-header">
-        <div>编辑计划</div>
-      </div>
-    </template>
-    <div class="drawer-content">
-      <PlanEdit
-          :modelId="currModel.id"
-          :categoryId="nodeDataCategory.id"
-          :onSaved="onFinish">
-      </PlanEdit>
-    </div>
-  </a-drawer>
-
+  <!-- 执行计划抽屉 -->
+  <ExecResult
+    :drawer-visible="execReportVisible"
+    :title="execReportTitle"
+    :scenario-expand-active="true"
+    :show-scenario-info="true"
+    :scene="ReportDetailType.ExecPlan"
+    @on-close="execReportVisible = false"
+  />
+  <EnvSelector @on-cancel="envSelectVisible = false" :env-select-drawer-visible="envSelectVisible" @on-ok="onExec" />
 </template>
 
 <script setup lang="ts">
-import {computed, onMounted, reactive, ref, UnwrapRef, watch} from "vue";
-import { Empty } from 'ant-design-vue';
-import {SelectTypes} from 'ant-design-vue/es/select';
-import {PaginationConfig, QueryParams, Plan} from '../data.d';
-import {useStore} from "vuex";
-
+import { computed, reactive, ref, watch } from "vue";
+import { useStore } from "vuex";
+import { message } from 'ant-design-vue';
+import { MoreOutlined } from "@ant-design/icons-vue";
+import { Modal } from "ant-design-vue";
 import debounce from "lodash.debounce";
-import {StateType} from "../store";
-import {useRouter} from "vue-router";
-import {message, Modal, notification} from "ant-design-vue";
-import {CheckOutlined, EditOutlined} from '@ant-design/icons-vue';
-import {StateType as ProjectStateType} from "@/store/project";
 
-import PlanCreate from "../edit/create.vue";
-import PlanEdit from "../edit/edit.vue";
+import EnvSelector from "@/views/component/EnvSelector/index.vue";
+import { PlanCreate } from "../components";
+import PlanEdit from "../edit/index.vue";
+import EditAndShowField from "@/components/EditAndShow/index.vue";
+import ExecResult from "../exec/index.vue";
 
-const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
-
-const statusArr = ref<SelectTypes['options']>([
+import { StateType as ProjectStateType } from "@/store/project";
+import { PaginationConfig, Plan } from '../data.d';
+import { StateType } from "../store";
+import { momentUtc } from "@/utils/datetime";
+import { planStatusColorMap, planStatusTextMap, planStatusOptions } from "@/config/constant";
+const columns = [
   {
-    label: '所有状态',
-    value: '',
+    title: '编号',
+    dataIndex: 'serialNumber',
   },
   {
-    label: '启用',
-    value: '1',
+    title: '测试计划',
+    dataIndex: 'name',
+    slots: { customRender: 'name' },
+    ellips: true
   },
   {
-    label: '禁用',
-    value: '0',
+    title: '状态',
+    dataIndex: 'status',
+    slots: { customRender: 'status' },
   },
-]);
+  {
+    title: '测试通过率',
+    dataIndex: 'testPassRate',
+  },
+  {
+    title: '负责人',
+    dataIndex: 'adminName',
+  },
+  {
+    title: '最近更新',
+    dataIndex: 'updatedAt',
+    slots: { customRender: 'updatedAt' },
+  },
+  {
+    title: '操作',
+    key: 'action',
+    width: 80,
+    slots: { customRender: 'action' },
+  },
+];
 
-const router = useRouter();
+import { ReportDetailType } from "@/utils/enum";
+
 const store = useStore<{ Plan: StateType, ProjectGlobal: ProjectStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
-const nodeDataCategory = computed<any>(()=> store.state.Plan.nodeDataCategory);
+const nodeDataCategory = computed<any>(() => store.state.Plan.nodeDataCategory);
+const currPlan = computed<any>(() => store.state.Plan.currPlan);
 
 const list = computed<Plan[]>(() => store.state.Plan.listResult.list);
 let pagination = computed<PaginationConfig>(() => store.state.Plan.listResult.pagination);
-let queryParams = reactive<QueryParams>({
-  keywords: '', enabled: '1',
-  page: pagination.value.current, pageSize: pagination.value.pageSize
+
+const queryParams = reactive<any>({
+  keywords: '',
+  status: null
 });
+const loading = ref<boolean>(false);
+const createDrawerVisible = ref(false);
+const editDrawerVisible = ref(false); // 编辑弹窗控制visible
+const editTabActiveKey = ref('test-scenario'); // 打开编辑弹窗时,需要选中的tab
+const execReportVisible = ref(false);
+const execReportTitle = ref(''); // 执行报告标题
+const envSelectVisible = ref(false); // 选择执行环境
 
-const currModel = ref({})
-
-watch(nodeDataCategory, () => {
-  console.log('watch nodeDataCategory', nodeDataCategory.value.id)
-  getList(1, nodeDataCategory.value.id);
-}, {deep: false})
-
-watch(currProject, () => {
-  console.log('watch currProject', currProject.value.id)
-  getList(1, nodeDataCategory.value.id);
-}, {deep: false})
-
-const loading = ref<boolean>(true);
-
-const getList = debounce(async (current: number, categoryId: number): Promise<void> => {
-  console.log('getList')
-
+const getList = debounce(async (current: number): Promise<void> => {
   loading.value = true;
-
   await store.dispatch('Plan/listPlan', {
-    categoryId,
-    keywords: queryParams.keywords,
-    enabled: queryParams.enabled,
+    ...queryParams,
+    categoryId: nodeDataCategory.value.id,
     pageSize: pagination.value.pageSize,
     page: current,
   });
   loading.value = false
-}, 600)
+}, 300);
 
-const exec = (id: number) => {
-  console.log('exec')
-  router.push(`/plan/exec/${id}`)
+const onExec = async () => {
+  editDrawerVisible.value = false;
+  envSelectVisible.value = false;
+  await store.dispatch('Plan/initExecResult');
+  execReportVisible.value = true;
 }
 
-interface FormState {
-  name: string;
-  description: string;
-  serveId?:string,
+const exec = async (record: any) => {
+  await store.dispatch('Plan/initExecResult');
+  await getCurrentPalnInfo(record);
+  envSelectVisible.value = true;
+};
 
+const report = async (record: any) => {
+  await getCurrentPalnInfo(record);
+  editTabActiveKey.value = 'test-report';
+  editDrawerVisible.value = true;
+
+};
+
+const clone = async (id: number) => {
+  await store.dispatch('Plan/clonePlan', id);
+};
+
+const updatePlan = async (value: string, record: any) => {
+  try {
+    const { id, adminId, categoryId, testStage, desc, status } = record;
+    await store.dispatch('Plan/savePlan', {
+      id,
+      adminId,
+      categoryId,
+      testStage,
+      desc,
+      status,
+      name: value,
+    });
+  } catch(err) {
+    console.log(err);
+  }
+};
+
+const handleUpdate = async (params: any) => {
+  try {
+    const result = await store.dispatch('Plan/savePlan', {
+      ...currPlan.value,
+      ...params
+    });
+    if (result) {
+      store.dispatch('Plan/getPlan', currPlan.value.id);
+    } else {
+      message.error('更新计划失败');
+    }
+  } catch(err) {
+    console.log(err);
+  }
 }
 
-const createDrawerVisible = ref(false);
 const create = () => {
   console.log('create')
   createDrawerVisible.value = true;
-}
+};
 
-const editDrawerVisible = ref(false);
-const editFormState: UnwrapRef<FormState> = reactive({
-  name: '',
-  description: '',
-  serveId:'',
-});
-
-const edit = (record) => {
-  console.log('edit')
-  currModel.value = record
-
+const edit = async (record: any) => {
   editDrawerVisible.value = true;
-  editFormState.name = record.name;
-  editFormState.description = record.description;
-  editFormState.serveId = record.id;
-}
+  editTabActiveKey.value = 'test-scenario';
+  getCurrentPalnInfo(record);
+};
 
-const onFinish = () => {
-  console.log('onEditFinish')
-
-  getList(1, nodeDataCategory.value.id);
-  createDrawerVisible.value = false
-  editDrawerVisible.value = false
-}
+const getCurrentPalnInfo = async (record: any) => {
+  const { id, adminId, categoryId, testStage, desc, status, name } = record;
+  try {
+    await store.dispatch('Plan/setCurrentPlan', { id, adminId, categoryId, testStage, desc, status, name });
+    await store.dispatch('Plan/getPlan', record.id);
+  } catch(err) {
+    message.error('获取计划信息出错');
+  }
+};
 
 const remove = (id: number) => {
   console.log('remove')
@@ -220,68 +286,40 @@ const remove = (id: number) => {
     okText: '确认',
     cancelText: '取消',
     onOk: async () => {
-      store.dispatch('Plan/removePlan', id).then((res) => {
-        console.log('res', res)
-        if (res === true) {
-          getList(1, nodeDataCategory.value.id)
-
-          notification.success({
-            message: `删除成功`,
-          });
-        } else {
-          notification.error({
-            message: `删除失败`,
-          });
-        }
-      })
+      store.dispatch('Plan/removePlan', id);
     }
   });
 }
 
-const onSearch = debounce(() => {
-  getList(1, nodeDataCategory.value.id)
-}, 500);
+const onSearch = () => {
+  getList(1);
+};
 
-const columns = [
-  {
-    title: '序号',
-    dataIndex: 'index',
-    width: 80,
-    customRender: ({
-                     text,
-                     index
-                   }: { text: any; index: number }) => (pagination.value.current - 1) * pagination.value.pageSize + index + 1,
-  },
-  {
-    title: '名称',
-    dataIndex: 'name',
-    slots: {customRender: 'name'},
-  },
-  {
-    title: '描述',
-    dataIndex: 'desc',
-  },
-  {
-    title: '状态',
-    dataIndex: 'status',
-    slots: {customRender: 'status'},
-  },
-  {
-    title: '操作',
-    key: 'action',
-    width: 200,
-    slots: {customRender: 'action'},
-  },
-];
+watch(() => {
+  return nodeDataCategory.value.id;
+}, async (val) => {
+  await getList(1);
+}, { immediate: true, deep: true });
 
-onMounted(() => {
-  console.log('onMounted')
-})
-
+watch(() => {
+  return currProject.value;
+}, async (val) => {
+  if (val.id) {
+    await getList(1);
+  }
+}, { immediate: true });
 </script>
 
 <style lang="less" scoped>
-.plan-list-main {
+.operation-a {
+  text-align: center;
+  display: inline-block;
+  width: 80px;
+}
 
+@media screen and (max-width: 1540px) {
+  .plan-name {
+    width: 180px;
+  }
 }
 </style>

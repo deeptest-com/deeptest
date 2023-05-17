@@ -70,6 +70,7 @@ var (
 
 		&ProcessorInvocation{},
 		&ScenarioReport{},
+		&PlanReport{},
 		&ExecLogProcessor{},
 		&ExecLogExtractor{},
 		&ExecLogCheckpoint{},
@@ -106,5 +107,6 @@ var (
 		&ProjectRoleMenu{},
 		&ProjectMenu{},
 		&ProjectRecentlyVisited{},
+		&ProjectMemberAudit{},
 	}
 )

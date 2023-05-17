@@ -26,13 +26,26 @@ func (s *ExecPlanService) ExecPlan(req *agentExec.PlanExecReq, wsMsg *websocket.
 	// start msg
 	execUtils.SendStartMsg(wsMsg)
 
+	normalData, err := s.RemoteService.GetPlanNormalData(req)
+	if err != nil {
+		return
+	}
+	_ = execUtils.SendResult(normalData, wsMsg)
+
 	// execution
 	var results = agentDomain.PlanExecResult{
-		ID: req.PlanId,
+		EnvironmentId: req.EnvironmentId,
+		ID:            req.PlanId,
 	}
 	for _, scenario := range planExecObj.Scenarios {
 		session, _ := s.ExecScenarioService.Exec(&scenario, wsMsg)
+		scenarioReport, _ := s.RemoteService.SubmitScenarioResult(*session.RootProcessor.Result, session.RootProcessor.Result.ScenarioId,
+			consts.ServerUrl, consts.ServerToken)
+		session.RootProcessor.Result.EnvironmentId = req.EnvironmentId
+
+		session.RootProcessor.Result.ScenarioReportId = uint(scenarioReport.ID)
 		results.Scenarios = append(results.Scenarios, session.RootProcessor.Result)
+		execUtils.SendResultMsg(scenarioReport, session.WsMsg)
 	}
 
 	// submit result

@@ -155,7 +155,7 @@ func (r *EndpointRepo) UpdateSerialNumber(id, projectId uint) (err error) {
 		return
 	}
 
-	err = r.DB.Model(&model.Endpoint{}).Where("id=?", id).Update("serial_number", project.ShortName+"I-"+strconv.Itoa(int(id))).Error
+	err = r.DB.Model(&model.Endpoint{}).Where("id=?", id).Update("serial_number", project.ShortName+"-I-"+strconv.Itoa(int(id))).Error
 	return
 
 }

@@ -77,3 +77,19 @@ export async function changeRole(params:object): Promise<any> {
         data:params
     });
 }
+export async function getAuditList(params: any): Promise<any> {
+    return request({
+        url: `/${apiPath}/auditList`,
+        method: 'post',
+        data:params
+    });
+}
+export async function doAudit(params: any): Promise<any> {
+    return request({
+        url: `/${apiPath}/audit`,
+        method: 'post',
+        data:params
+    });
+}
+
+

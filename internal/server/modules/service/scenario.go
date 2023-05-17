@@ -2,6 +2,7 @@ package service
 
 import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	repo2 "github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
@@ -49,4 +50,32 @@ func (s *ScenarioService) Update(req model.Scenario) error {
 
 func (s *ScenarioService) DeleteById(id uint) error {
 	return s.ScenarioRepo.DeleteById(id)
+}
+
+func (s *ScenarioService) AddPlans(scenarioId int, planIds []int) (err error) {
+	err = s.ScenarioRepo.AddPlans(uint(scenarioId), planIds)
+	return
+}
+
+func (s *ScenarioService) RemovePlans(scenarioId int, planIds []int) (err error) {
+	if len(planIds) == 0 {
+		return
+	}
+	err = s.ScenarioRepo.RemovePlans(uint(scenarioId), planIds)
+	return
+}
+
+func (s *ScenarioService) PlanPaginate(req v1.ScenarioPlanReqPaginate, scenarioId int) (ret _domain.PageData, err error) {
+	ret, err = s.ScenarioRepo.PlanList(req, scenarioId)
+	return
+}
+
+func (s *ScenarioService) UpdateStatus(id uint, status consts.TestStatus) (err error) {
+	err = s.ScenarioRepo.UpdateStatus(id, status)
+	return
+}
+
+func (s *ScenarioService) UpdatePriority(id uint, priority string) (err error) {
+	err = s.ScenarioRepo.UpdatePriority(id, priority)
+	return
 }

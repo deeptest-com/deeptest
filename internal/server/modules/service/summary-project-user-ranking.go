@@ -4,7 +4,6 @@ import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
-	"strconv"
 	"time"
 )
 
@@ -25,10 +24,7 @@ func (s *SummaryProjectUserRankingService) ProjectUserRanking(projectId int64, c
 	}
 
 	date := time.Now().AddDate(0, 0, int(cycle))
-	year, month, day := date.Date()
-	startTime := strconv.Itoa(year) + "-" + strconv.Itoa(int(month)) + "-" + strconv.Itoa(day) + " 00:00:00"
-	endTime := strconv.Itoa(year) + "-" + strconv.Itoa(int(month)) + "-" + strconv.Itoa(day) + " 23:59:59"
-
+	startTime, endTime := GetDate(date)
 	summaryProjectUserRankings, err := s.FindByProjectId(projectId)
 	oldSummaryProjectUserRankings, err := s.FindByDateAndProjectId(startTime, endTime, projectId)
 
@@ -40,8 +36,8 @@ func (s *SummaryProjectUserRankingService) ProjectUserRanking(projectId int64, c
 					resUserRanking.UserName = newRanking.UserName
 					resUserRanking.UserId = newRanking.UserId
 					resUserRanking.ScenarioTotal = newRanking.ScenarioTotal
-					resUserRanking.TestcasesTotal = newRanking.TestcasesTotal
-					resUserRanking.UpdateTime = newRanking.UpdatedAt
+					resUserRanking.TestCaseTotal = newRanking.TestCaseTotal
+					resUserRanking.UpdatedAt = newRanking.UpdatedAt
 					resUserRanking.Sort = newRanking.Sort
 					resUserRanking.Hb = oldRanking.Sort - newRanking.Sort
 				}
@@ -50,8 +46,8 @@ func (s *SummaryProjectUserRankingService) ProjectUserRanking(projectId int64, c
 			resUserRanking.UserName = newRanking.UserName
 			resUserRanking.UserId = newRanking.UserId
 			resUserRanking.ScenarioTotal = newRanking.ScenarioTotal
-			resUserRanking.TestcasesTotal = newRanking.TestcasesTotal
-			resUserRanking.UpdateTime = newRanking.UpdatedAt
+			resUserRanking.TestCaseTotal = newRanking.TestCaseTotal
+			resUserRanking.UpdatedAt = newRanking.UpdatedAt
 			resUserRanking.Sort = newRanking.Sort
 			resUserRanking.Hb = 0
 		}
@@ -66,9 +62,7 @@ func (s *SummaryProjectUserRankingService) Create(req model.SummaryProjectUserRa
 
 func (s *SummaryProjectUserRankingService) CreateByDate(req model.SummaryProjectUserRanking) (err error) {
 	now := time.Now()
-	year, month, day := now.Date()
-	startTime := strconv.Itoa(year) + "-" + strconv.Itoa(int(month)) + "-" + strconv.Itoa(day) + " 00:00:00"
-	endTime := strconv.Itoa(year) + "-" + strconv.Itoa(int(month)) + "-" + strconv.Itoa(day) + " 23:59:59"
+	startTime, endTime := GetDate(now)
 	ret, err := s.HasDataOfDate(startTime, endTime)
 	if ret {
 		err = s.Create(req)

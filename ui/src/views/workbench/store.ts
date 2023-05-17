@@ -62,7 +62,7 @@ const StoreModel: ModuleType = {
 
                 commit('setList',{
                     ...initState.queryResult,
-                    list: data.user_ranking_list || [],
+                    list: data.userRankingList || [],
                     pagination: {
                         ...initState.queryResult.pagination,
                         current: params.page,

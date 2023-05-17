@@ -265,11 +265,17 @@ func posts(req domain.BaseRequest, method consts.HttpMethod, readRespData bool) 
 	}
 
 	for _, param := range reqParams {
+		if param.Name == "" {
+			continue
+		}
 		queryParams.Add(param.Name, param.Value)
 	}
 	request.URL.RawQuery = queryParams.Encode()
 
 	for _, header := range reqHeaders {
+		if header.Name == "" {
+			continue
+		}
 		request.Header.Set(header.Name, header.Value)
 	}
 

@@ -83,7 +83,7 @@ func (c *EndpointCtrl) BatchDelete(ctx iris.Context) {
 //构造参数构造auth，BasicAuth,BearerToken,OAuth20,ApiKey
 func (c *EndpointCtrl) requestParser(req serverDomain.EndpointReq) (endpoint model.Endpoint) {
 	for key, item := range req.Interfaces {
-		req.Interfaces[key].Body = item.RequestBody.SchemaItem.Content
+		req.Interfaces[key].Body = item.RequestBody.Examples
 		req.Interfaces[key].BodyType = item.RequestBody.MediaType
 		req.Interfaces[key].Name = req.Title
 	}

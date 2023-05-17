@@ -1,6 +1,7 @@
 package serverDomain
 
 import (
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 )
 
@@ -46,4 +47,21 @@ type UpdateProjectMemberReq struct {
 	ProjectId     uint `json:"projectId"`
 	ProjectRoleId uint `json:"projectRoleId"`
 	UserId        uint `json:"userId"`
+}
+
+type ApplyProjectReq struct {
+	ProjectId       uint            `json:"projectId" validate:"required"`
+	ProjectRoleName consts.RoleType `json:"projectRoleName" validate:"required"`
+	ApplyUserId     uint            `json:"applyUserId"`
+	Description     string          `json:"description"`
+}
+
+type AuditProjectReq struct {
+	Id     uint               `json:"id" validate:"required"`
+	Status consts.AuditStatus `json:"status" validate:"required"`
+}
+
+type AuditProjectPaginate struct {
+	_domain.PaginateReq
+	AuditUserId uint `json:"auditUserId"`
 }

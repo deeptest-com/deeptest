@@ -12,15 +12,13 @@ type SummaryReqPaginate struct {
 }
 
 type ReqSummaryBugs struct {
-	ProjectId     int64  `json:"project_id" validate:"required"`
-	BugId         string `gorm:"type:text" json:"bug_id"`
+	ProjectId     int64  `json:"projectId"`
+	BugId         string `gorm:"type:text" json:"bugId"`
 	Source        string `gorm:"type:text" json:"source"`
-	BugSeverity   string `gorm:"type:text" json:"bug_severity"`
-	BugCreateDate string `gorm:"type:text" json:"bug_create_date"`
-	BugClassify   string `gorm:"type:text" json:"bug_classify"`
-	ProductId     string `gorm:"type:text" json:"product_id"`
-	ProductName   string `gorm:"type:text" json:"product_name"`
-	BugState      string `gorm:"type:text" json:"bug_state"`
+	BugSeverity   string `gorm:"type:text" json:"bugSeverity"`
+	BugCreateDate string `gorm:"type:text" json:"bugCreatedAt"`
+	BugClassify   string `gorm:"type:text" json:"bugClassify"`
+	BugState      string `gorm:"type:text" json:"bugState"`
 }
 
 type ReqProjectId struct {
@@ -41,61 +39,61 @@ type ResSummaryBugs struct {
 }
 
 type ResSummaryCard struct {
-	ProjectTotal   int64   `gorm:"default:0" json:"project_total"`
-	InterfaceTotal int64   `gorm:"default:0" json:"interface_total"`
-	ScenarioTotal  int64   `gorm:"default:0" json:"scenario_total"`
-	ExecTotal      int64   `gorm:"default:0" json:"exec_total"`
-	PassRate       float64 `gorm:"default:0" json:"pass_rate"`
+	ProjectTotal   int64   `gorm:"default:0" json:"projectTotal"`
+	InterfaceTotal int64   `gorm:"default:0" json:"interfaceTotal"`
+	ScenarioTotal  int64   `gorm:"default:0" json:"scenarioTotal"`
+	ExecTotal      int64   `gorm:"default:0" json:"execTotal"`
+	UserTotal      int64   `gorm:"default:0" json:"userTotal"`
+	PassRate       float64 `gorm:"default:0" json:"passRate"`
 	Coverage       float64 `gorm:"default:0" json:"coverage"`
-	InterfaceHb    float64 `gorm:"default:0" json:"interface_hb"`
-	ScenarioHb     float64 `gorm:"default:0" json:"scenario_hb"`
-	CoverageHb     float64 `gorm:"default:0" json:"coverage_hb"`
+	InterfaceHb    float64 `gorm:"default:0" json:"interfaceHb"`
+	ScenarioHb     float64 `gorm:"default:0" json:"scenarioHb"`
+	CoverageHb     float64 `gorm:"default:0" json:"coverageHb"`
 }
 
 type ResSummaryDetail struct {
-	_domain.PaginateReq
-	CurrentUserProjectTotal int64               `gorm:"default:0" json:"current_user_project_total"`
-	AllProjectTotal         int64               `gorm:"default:0" json:"all_project_total"`
-	CurrentUserProjectList  []ResSummaryDetails `json:"current_user_project_list"`
-	AllProjectList          []ResSummaryDetails `json:"all_project_list"`
+	UserProjectTotal int64               `gorm:"default:0" json:"userProjectTotal"`
+	ProjectTotal     int64               `gorm:"default:0" json:"projectTotal"`
+	UserProjectList  []ResSummaryDetails `json:"userProjectList"`
+	ProjectList      []ResSummaryDetails `json:"projectList"`
 }
 
 type ResSummaryDetails struct {
-	Id                 uint               `gorm:"default:0" json:"id"`
-	ProjectId          int64              `gorm:"default:0" json:"project_id"`
-	ProjectName        string             `gorm:"default:" json:"project_name"`
-	ProjectDes         string             `gorm:"default:0" json:"project_des"`
-	ProjectChineseName string             `gorm:"default:0" json:"project_chinese_name"`
-	ScenarioTotal      int64              `gorm:"default:0" json:"scenario_total"`
-	InterfaceTotal     int64              `gorm:"default:0" json:"interface_total"`
-	ExecTotal          int64              `gorm:"default:0" json:"exec_total"`
-	PassRate           float64            `gorm:"default:0" json:"pass_rate"`
-	Coverage           float64            `gorm:"default:0" json:"coverage"`
-	Disabled           bool               `gorm:"default:false" json:"disabled"`
-	AdminUser          string             `gorm:"default:0" json:"admin_user"`
-	CreatedAt          string             `gorm:"default:0" json:"createdAt"`
-	BugTotal           int64              `gorm:"default:0" json:"bug_total"`
-	UserList           []ResUserIdAndName `json:"user_list"`
-	AdminId            int64              `json:"admin_id"`
-	Logo               string             `json:"logo"`
-	IncludeExample     bool               `json:"include_example"`
+	Id               uint               `gorm:"default:0" json:"id"`
+	ProjectId        int64              `gorm:"default:0" json:"projectId"`
+	ProjectName      string             `gorm:"default:" json:"projectName"`
+	ProjectDescr     string             `gorm:"default:" json:"projectDescr"`
+	ProjectShortName string             `gorm:"default:" json:"projectShortName"`
+	ScenarioTotal    int64              `gorm:"default:0" json:"scenarioTotal"`
+	InterfaceTotal   int64              `gorm:"default:0" json:"interfaceTotal"`
+	ExecTotal        int64              `gorm:"default:0" json:"execTotal"`
+	PassRate         float64            `gorm:"default:0" json:"passRate"`
+	Coverage         float64            `gorm:"default:0" json:"coverage"`
+	Disabled         bool               `gorm:"default:false" json:"disabled"`
+	AdminId          int64              `gorm:"default:0" json:"adminId"`
+	AdminName        string             `gorm:"default:" json:"adminName"`
+	CreatedAt        string             `gorm:"default:" json:"createdAt"`
+	BugTotal         int64              `gorm:"default:0" json:"bugTotal"`
+	UserList         []ResUserIdAndName `json:"userList"`
+	Logo             string             `json:"logo"`
+	IncludeExample   bool               `json:"includeExample"`
 }
 
 type ResUserIdAndName struct {
-	UserId   int64  `json:"user_id"`
-	UserName string `json:"user_name"`
+	UserId   int64  `json:"userId"`
+	UserName string `json:"userName"`
 }
 
 type ResRankingList struct {
-	UserRankingList []ResUserRanking `json:"user_ranking_list"`
+	UserRankingList []ResUserRanking `json:"userRankingList"`
 }
 
 type ResUserRanking struct {
-	Sort           int64      `gorm:"default:0" json:"sort"`
-	UserId         int64      `gorm:"default:0" json:"user_id"`
-	UserName       string     `json:"user_name"`
-	ScenarioTotal  int64      `gorm:"default:0" json:"scenario_total"`
-	TestcasesTotal int64      `gorm:"default:0" json:"testcases_total"`
-	Hb             int64      `gorm:"default:0" json:"hb"`
-	UpdateTime     *time.Time `json:"update_time"`
+	Sort          int64      `gorm:"default:0" json:"sort"`
+	UserId        int64      `gorm:"default:0" json:"userId"`
+	UserName      string     `json:"userName"`
+	ScenarioTotal int64      `gorm:"default:0" json:"scenarioTotal"`
+	TestCaseTotal int64      `gorm:"default:0" json:"testCaseTotal"`
+	Hb            int64      `gorm:"default:0" json:"hb"`
+	UpdatedAt     *time.Time `json:"updatedAt"`
 }

@@ -175,6 +175,93 @@ export async function removeInvocation(id: number): Promise<any> {
     });
 }
 
+/**
+ * 执行场景历史
+ * */
+export async function getScenariosReports(data: any): Promise<any> {
+    return request({
+        url: `/scenarios/reports/`,
+        method: 'POST',
+        data: data,
+    });
+}
+
+
+/**
+ * 执行场景执行的详情
+ * */
+export async function getScenariosReportsDetail(data: any): Promise<any> {
+    return request({
+        url: `/scenarios/reports/${data.id}`,
+        method: 'GET',
+    });
+}
+
+/**
+ * 生成报告
+ * */
+export async function genReport(data: any): Promise<any> {
+    return request({
+        url: `/scenarios/reports/${data.id}`,
+        method: 'PUT',
+    });
+}
+
+/**
+ * 添加 关联测试计划
+ * */
+export async function addPlans(payload: any): Promise<any> {
+    return request({
+        url: `/scenarios/${payload.id}/addPlans`,
+        method: 'POST',
+        data: payload.data,
+    });
+}
+
+/**
+ * 移除 关联测试计划
+ * */
+export async function removePlans(payload: any): Promise<any> {
+    return request({
+        url: `/scenarios/${payload.id}/removePlans`,
+        method: 'POST',
+        data: payload.data,
+    });
+}
+
+/**
+ * 计划列表
+ * */
+export async function getPlans(payload: any): Promise<any> {
+    return request({
+        url: `/scenarios/${payload.id}/plans?currProjectId=${payload.currProjectId}`,
+        method: 'POST',
+        data: payload.data
+    });
+}
+
+/**
+ * 更新优先级
+ * */
+export async function updatePriority(payload: any): Promise<any> {
+    return request({
+        url: `/scenarios/${payload.id}/updatePriority?priority=${payload.priority}`,
+        method: 'PUT',
+        // data: payload.data
+    });
+}
+
+/**
+ * 更新场景状态
+ * */
+export async function updateStatus(payload: any): Promise<any> {
+    return request({
+        url: `/scenarios/${payload.id}/updateStatus?status=${payload.status}`,
+        method: 'PUT',
+        // data: payload.data
+    });
+}
+
 // interface
 export function getRequestBodyTypes() {
     return getEnumSelectItems(RequestBodyType)

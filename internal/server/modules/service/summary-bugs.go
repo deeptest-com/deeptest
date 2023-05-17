@@ -87,9 +87,7 @@ func (s *SummaryBugsService) Create(req model.SummaryBugs) (err error) {
 
 func (s *SummaryBugsService) CreateByDate(req model.SummaryBugs) (err error) {
 	now := time.Now()
-	year, month, day := now.Date()
-	startTime := strconv.Itoa(year) + "-" + strconv.Itoa(int(month)) + "-" + strconv.Itoa(day) + " 00:00:00"
-	endTime := strconv.Itoa(year) + "-" + strconv.Itoa(int(month)) + "-" + strconv.Itoa(day) + " 23:59:59"
+	startTime, endTime := GetDate(now)
 	ret, err := s.HasDataOfDate(startTime, endTime)
 	if ret {
 		err = s.Create(req)

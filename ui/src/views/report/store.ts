@@ -1,8 +1,10 @@
 import { Mutation, Action } from 'vuex';
 import { StoreModuleType } from "@/utils/store";
 import { ResponseData } from '@/utils/request';
-import { Report, QueryResult, QueryParams, PaginationConfig } from './data';
-import { query, get, remove} from './service';
+import { Report, QueryResult, QueryParams } from './data';
+import { query, get, remove, members } from './service';
+import { momentUtc } from '@/utils/datetime';
+import { formatData } from '@/utils/formatData';
 
 export interface StateType {
     ReportId: number;
@@ -10,13 +12,14 @@ export interface StateType {
     listResult: QueryResult;
     detailResult: Report;
     queryParams: any;
+    members: any;
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
     state: StateType;
     mutations: {
         setReportId: Mutation<StateType>;
-
+        setMembers: Mutation<StateType>;
         setList: Mutation<StateType>;
         setDetail: Mutation<StateType>;
         setQueryParams: Mutation<StateType>;
@@ -25,6 +28,8 @@ export interface ModuleType extends StoreModuleType<StateType> {
         list: Action<StateType, StateType>;
         get: Action<StateType, StateType>;
         remove: Action<StateType, StateType>;
+        getMembers: Action<StateType, StateType>;
+        initReportDetail: Action<StateType, StateType>;
     };
 }
 const initState: StateType = {
@@ -42,6 +47,7 @@ const initState: StateType = {
     },
     detailResult: {} as Report,
     queryParams: {},
+    members: []
 };
 
 const StoreModel: ModuleType = {
@@ -59,28 +65,41 @@ const StoreModel: ModuleType = {
             state.listResult = payload;
         },
         setDetail(state, payload) {
+            console.log(payload);
             state.detailResult = payload;
         },
         setQueryParams(state, payload) {
             state.queryParams = payload;
         },
+        setMembers(state, payload) {
+            state.members = payload;
+        }
     },
     actions: {
-        async list({ commit, dispatch }, params: QueryParams ) {
+        async list({ commit }, params: any) {
             try {
                 const response: ResponseData = await query(params);
                 if (response.code != 0) return;
-
-                const data = response.data;
-
-                commit('setList',{
+                const { result, page, pageSize, total } = response.data;
+                const newResult = result.map((reportItem: any) => {
+                    if (reportItem.totalInterfaceNum) {
+                        const rate: any = Number(reportItem.passInterfaceNum / reportItem.totalInterfaceNum);
+                        reportItem.interfacePassRate = rate.toFixed(2) * 100 + '%';
+                    } else {
+                        reportItem.interfacePassRate = '0%';
+                    }
+                    reportItem.serialNumber = reportItem.serialNumber || '-';
+                    reportItem.createUserName = reportItem.createUserName || '-';
+                    return reportItem;
+                })
+                commit('setList', {
                     ...initState.listResult,
-                    list: data.result || [],
+                    list: newResult || [],
                     pagination: {
                         ...initState.listResult.pagination,
                         current: params.page,
                         pageSize: params.pageSize,
-                        total: data.total || 0,
+                        total: total || 0,
                     },
                 });
                 commit('setQueryParams', params);
@@ -91,9 +110,9 @@ const StoreModel: ModuleType = {
             }
         },
 
-        async get({ commit }, id: number ) {
+        async get({ commit }, id: number) {
             if (id === 0) {
-                commit('setDetail',{
+                commit('setDetail', {
                     ...initState.detailResult,
                 })
                 return
@@ -101,21 +120,60 @@ const StoreModel: ModuleType = {
             try {
                 const response: ResponseData = await get(id);
                 const { data } = response;
-                commit('setDetail',{
+                let scenarioReports = data.scenarioReports;
+                scenarioReports = scenarioReports?.map((scenario: any) => {
+                    scenario.requestLogs = (scenario.logs && scenario.logs[0].logs) ? formatData(scenario.logs[0].logs) : [];
+                    return scenario;
+                })
+                commit('setDetail', {
                     ...initState.detailResult,
                     ...data,
+                    basicInfoList: [
+                        {
+                            label: '测试计划',
+                            value: data.name || '-'
+                        },
+                        {
+                            label: '开始时间',
+                            value: (data.startTime && momentUtc(data.startTime)) || ''
+                        },
+                        {
+                            label: '执行环境',
+                            value:data.execEnv || '--'
+                        },
+                        {
+                            label: '创建人',
+                            value: data.createUserName || '--'
+                        },
+                    ],
+                    statisticData: {
+                        "duration": data.duration, //执行耗时（单位：s)
+                        "totalScenarioNum": data.totalScenarioNum, //场景总数
+                        "passScenarioNum": data.passScenarioNum, //通过场景数
+                        "failScenarioNum": data.failScenarioNum, //失败场景数
+                        "totalInterfaceNum": data.totalInterfaceNum, //接口总数
+                        "passInterfaceNum": data.passInterfaceNum,
+                        "failInterfaceNum": data.failInterfaceNum,
+                        "totalRequestNum": data.totalRequestNum,
+                        "passRequestNum": data.passRequestNum,
+                        "failRequestNum": data.failRequestNum,
+                        "totalAssertionNum": data.totalAssertionNum, //检查点总数
+                        "passAssertionNum": data.passAssertionNum, //通过检查点数
+                        "failAssertionNum": data.failAssertionNum, //失败检查点数
+                    },
+                    scenarioReports
                 });
                 return true;
             } catch (error) {
+                console.log(error);
                 return false;
             }
         },
 
 
-        async remove({ commit, dispatch, state }, payload: number ) {
+        async remove({ dispatch, state }, payload: number) {
             try {
                 await remove(payload);
-
                 await dispatch('list', state.queryParams)
                 return true;
             } catch (error) {
@@ -123,6 +181,26 @@ const StoreModel: ModuleType = {
             }
         },
 
+        async getMembers({ commit }, payload: number) {
+            try {
+                const response: ResponseData = await members(payload);
+                const { data, code } = response;
+                if (code !== 0) return;
+                const memberList = data.result.map((member: any) => {
+                    member.label = member.name;
+                    member.value = member.id;
+                    return member;
+                })
+                commit('setMembers', memberList);
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+
+        async initReportDetail({ commit }) {
+            commit('setDetail', { basicInfoList: [], statisticData: {}, scenarioReports: [] });
+        }
     }
 };
 

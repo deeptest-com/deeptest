@@ -3,14 +3,12 @@ package model
 type SummaryProjectUserRanking struct {
 	BaseModel
 
-	Sort           int64  `json:"sort"`
-	ProjectId      int64  `gorm:"type:text" json:"project_id"`
-	UserId         int64  `json:"user_id"`
-	UserName       string `gorm:"type:text" json:"user_name"`
-	ScenarioTotal  int64  `gorm:"type:text" json:"scenario_total"`
-	TestcasesTotal int64  `gorm:"type:text" json:"testcases_total"`
-
-	Logs []*ExecLogProcessor `gorm:"-" json:"logs"`
+	Sort          int64  `json:"sort"`
+	ProjectId     int64  `json:"projectId"`
+	UserId        int64  `json:"userId"`
+	UserName      string `gorm:"type:varchar(90)" json:"userName"`
+	ScenarioTotal int64  `json:"scenarioTotal"`
+	TestCaseTotal int64  `json:"testCaseTotal"`
 }
 
 func (SummaryProjectUserRanking) TableName() string {

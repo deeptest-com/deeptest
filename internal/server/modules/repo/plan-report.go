@@ -9,24 +9,43 @@ import (
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"gorm.io/gorm"
+	"strconv"
+	"time"
 )
 
 type PlanReportRepo struct {
-	DB      *gorm.DB `inject:""`
-	LogRepo *LogRepo `inject:""`
+	DB                 *gorm.DB            `inject:""`
+	LogRepo            *LogRepo            `inject:""`
+	UserRepo           *UserRepo           `inject:""`
+	ScenarioReportRepo *ScenarioReportRepo `inject:""`
+	ProjectRepo        *ProjectRepo        `inject:""`
 }
 
-func (r *PlanReportRepo) Paginate(req v1.ReportReqPaginate, projectId int) (data _domain.PageData, err error) {
+func (r *PlanReportRepo) Paginate(req v1.PlanReportReqPaginate, projectId int) (data _domain.PageData, err error) {
+	req.Order = "desc"
+	req.Field = "biz_plan_report.created_at"
+	timeLayout := "2006-01-02 15:04:05"
 	var count int64
 
-	db := r.DB.Model(&model.ScenarioReport{}).
-		Where("project_id = ? AND NOT deleted", projectId)
+	db := r.DB.Model(&model.PlanReport{}).
+		Joins("LEFT JOIN sys_user u ON biz_plan_report.create_user_id=u.id").
+		Select("biz_plan_report.*, u.name create_user_name").
+		Where("biz_plan_report.project_id = ? AND NOT biz_plan_report.deleted", projectId)
 
 	if req.Keywords != "" {
-		db = db.Where("name LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords))
+		db = db.Where("biz_plan_report.name LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords))
 	}
-	if req.ScenarioId != 0 {
-		db = db.Where("scenario_id = ?", req.ScenarioId)
+	if req.PlanId != 0 {
+		db = db.Where("biz_plan_report.plan_id = ?", req.PlanId)
+	}
+	if req.CreateUserId != 0 {
+		db = db.Where("biz_plan_report.create_user_id = ?", req.CreateUserId)
+	}
+	if req.ExecuteStartTime != 0 {
+		db = db.Where("biz_plan_report.start_time > ?", time.Unix(req.ExecuteStartTime/1000, 0).Format(timeLayout))
+	}
+	if req.ExecuteEndTime != 0 {
+		db = db.Where("biz_plan_report.end_time < ?", time.Unix(req.ExecuteEndTime/1000, 0).Format(timeLayout))
 	}
 
 	err = db.Count(&count).Error
@@ -35,7 +54,7 @@ func (r *PlanReportRepo) Paginate(req v1.ReportReqPaginate, projectId int) (data
 		return
 	}
 
-	results := make([]*model.ScenarioReport, 0)
+	results := make([]*model.PlanReportDetail, 0)
 
 	err = db.
 		Scopes(dao.PaginateScope(req.Page, req.PageSize, req.Order, req.Field)).
@@ -50,25 +69,34 @@ func (r *PlanReportRepo) Paginate(req v1.ReportReqPaginate, projectId int) (data
 	return
 }
 
-func (r *PlanReportRepo) Get(id uint) (report model.ScenarioReport, err error) {
-	err = r.DB.Where("id = ?", id).First(&report).Error
+func (r *PlanReportRepo) Get(id uint) (report model.PlanReportDetail, err error) {
+	err = r.DB.Model(model.PlanReport{}).
+		Select("biz_plan_report.*, e.name exec_env, u.name create_user_name").
+		Joins("LEFT JOIN biz_environment e ON biz_plan_report.exec_env_id=e.id").
+		Joins("LEFT JOIN sys_user u ON biz_plan_report.create_user_id=u.id").
+		Where("biz_plan_report.id = ?", id).First(&report).Error
 	if err != nil {
 		logUtils.Errorf("find report by id error %s", err.Error())
 		return
 	}
 
-	root, err := r.getLogTree(report)
-	report.Logs = root.Logs
+	scenarioReports, err := r.ScenarioReportRepo.GetReportsByPlanReportId(report.ID)
+	report.ScenarioReports = scenarioReports
+	//root, err := r.getLogTree(report)
+	//report.Logs = root.Logs
 
 	return
 }
 
-func (r *PlanReportRepo) Create(result *model.PlanReport) (bizErr *_domain.BizErr) {
-	err := r.DB.Model(&model.ScenarioReport{}).Create(result).Error
-	if err != nil {
-		logUtils.Errorf("create report error %s", err.Error())
-		bizErr.Code = _domain.SystemErr.Code
+func (r *PlanReportRepo) Create(result *model.PlanReport) (err error) {
 
+	err = r.DB.Model(&model.PlanReport{}).Create(result).Error
+	if err != nil {
+		logUtils.Errorf("create plan report error %s", err.Error())
+		return
+	}
+	if err = r.UpdateSerialNumber(result.ID, result.ProjectId); err != nil {
+		logUtils.Errorf("update plan report serial number error %s", err.Error())
 		return
 	}
 
@@ -83,8 +111,7 @@ func (r *PlanReportRepo) DeleteById(id uint) (err error) {
 		return
 	}
 
-	err = r.DB.Model(&model.ExecLogProcessor{}).Where("report_id = ?", id).
-		Updates(map[string]interface{}{"deleted": true}).Error
+	err = r.ScenarioReportRepo.BatchDelete(id)
 	if err != nil {
 		logUtils.Errorf("delete report's logs by id error %s", err.Error())
 		return
@@ -220,5 +247,34 @@ func (r *PlanReportRepo) listLogCheckpoints(logId uint) (checkpoints []model.Exe
 		Where("log_id =? AND not deleted", logId).
 		Find(&checkpoints).Error
 
+	return
+}
+
+func (r *PlanReportRepo) GetLastByPlanId(planId uint) (report model.PlanReport, err error) {
+	err = r.DB.Model(&model.PlanReport{}).Where("plan_id = ?", planId).Last(&report).Error
+	if err != nil {
+		logUtils.Errorf("find plan report by plan_id error %s", err.Error())
+		return
+	}
+	return
+}
+
+func (r *PlanReportRepo) GetPlanExecNumber(planId uint) (num int64, err error) {
+	err = r.DB.Model(&model.PlanReport{}).Where("plan_id = ?", planId).Count(&num).Error
+	if err != nil {
+		logUtils.Errorf("find plan report by plan_id error %s", err.Error())
+		return
+	}
+	return
+}
+
+func (r *PlanReportRepo) UpdateSerialNumber(id, projectId uint) (err error) {
+	var project model.Project
+	project, err = r.ProjectRepo.Get(projectId)
+	if err != nil {
+		return
+	}
+
+	err = r.DB.Model(&model.PlanReport{}).Where("id=?", id).Update("serial_number", project.ShortName+"-TR-"+strconv.Itoa(int(id))).Error
 	return
 }

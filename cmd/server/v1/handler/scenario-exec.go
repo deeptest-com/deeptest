@@ -7,6 +7,7 @@ import (
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	"github.com/jinzhu/copier"
 	"github.com/kataras/iris/v12"
+	"github.com/snowlyg/multi"
 )
 
 type ScenarioExecCtrl struct {
@@ -55,8 +56,9 @@ func (c *ScenarioExecCtrl) SubmitResult(ctx iris.Context) {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
+	userId := multi.GetUserId(ctx)
 
-	report, err := c.ScenarioExecService.SaveReport(scenarioId, result)
+	report, err := c.ScenarioExecService.SaveReport(scenarioId, userId, result)
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: report})
 }

@@ -7,10 +7,10 @@ import (
 
 // category
 type Category struct {
-	Id       uint        `json:"id"`
+	Id       int64       `json:"id"`
 	Name     string      `json:"name"`
 	Desc     string      `json:"desc"`
-	ParentId uint        `json:"parentId"`
+	ParentId int64       `json:"parentId"`
 	Children []*Category `json:"children"`
 	Slots    iris.Map    `json:"slots"`
 }

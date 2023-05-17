@@ -18,13 +18,14 @@ import (
 )
 
 type ProjectRepo struct {
-	DB              *gorm.DB         `inject:""`
-	RoleRepo        *RoleRepo        `inject:""`
-	ProjectRoleRepo *ProjectRoleRepo `inject:""`
-	EnvironmentRepo *EnvironmentRepo `inject:""`
-	UserRepo        *UserRepo        `inject:""`
-	ServeRepo       *ServeRepo       `inject:""`
-	EndpointRepo    *EndpointRepo    `inject:""`
+	DB                         *gorm.DB                    `inject:""`
+	RoleRepo                   *RoleRepo                   `inject:""`
+	ProjectRoleRepo            *ProjectRoleRepo            `inject:""`
+	EnvironmentRepo            *EnvironmentRepo            `inject:""`
+	UserRepo                   *UserRepo                   `inject:""`
+	ServeRepo                  *ServeRepo                  `inject:""`
+	EndpointRepo               *EndpointRepo               `inject:""`
+	ProjectRecentlyVisitedRepo *ProjectRecentlyVisitedRepo `inject:""`
 }
 
 func NewProjectRepo() *ProjectRepo {
@@ -281,16 +282,7 @@ func (r *ProjectRepo) GetCurrProjectByUser(userId uint) (currProject model.Proje
 }
 
 func (r *ProjectRepo) ListProjectsRecentlyVisited(userId uint) (projects []model.Project, err error) {
-	//now := time.Now()
-	//date := time.Date(now.Year(), now.Month(), now.Day(), now.Hour(), now.Minute()-2, 0, 0, time.Local)
-
-	err = r.DB.Model(&model.Project{}).Joins("LEFT JOIN biz_project_recently_visited v ON biz_project.id=v.project_id").
-		Where("v.user_id = ?", userId).
-		//Where("v.created_at >= ?", date).
-		Order("v.created_at desc").
-		Limit(3).
-		Find(&projects).Error
-
+	err = r.DB.Raw(fmt.Sprintf("SELECT p.*,max( v.created_at ) visited_time FROM biz_project_recently_visited v,biz_project p WHERE v.project_id = p.id AND v.user_id = %d GROUP BY v.project_id ORDER BY visited_time DESC LIMIT 3", userId)).Find(&projects).Error
 	return
 }
 
@@ -354,7 +346,7 @@ func (r *ProjectRepo) AddProjectRootPlanCategory(projectId uint) (err error) {
 func (r *ProjectRepo) Members(req v1.ProjectReqPaginate, projectId int) (data _domain.PageData, err error) {
 	req.Order = "sys_user.created_at"
 	db := r.DB.Model(&model.SysUser{}).
-		Select("sys_user.id, sys_user.username, sys_user.email, m.project_role_id, r.name").
+		Select("sys_user.id, sys_user.username, sys_user.email,sys_user.name, m.project_role_id, r.name as role_name").
 		Joins("left join biz_project_member m on sys_user.id=m.user_id").
 		Joins("left join biz_project_role r on m.project_role_id=r.id").
 		Where("m.project_id = ?", projectId)
@@ -403,15 +395,10 @@ func (r *ProjectRepo) FindRolesByUser(userId uint) (ret []model.ProjectMember, e
 	var members []model.ProjectMember
 
 	r.DB.Model(&model.ProjectMember{}).
-		Where("user_id = ?", userId).
+		Joins("LEFT JOIN biz_project_role r ON biz_project_member.project_role_id=r.id").
+		Select("biz_project_member.*, r.name project_role_name").
+		Where("biz_project_member.user_id = ?", userId).
 		Find(&members)
-
-	for _, member := range members {
-		projectRole, _ := r.ProjectRoleRepo.FindById(member.ProjectRoleId)
-
-		member.ProjectRoleName = projectRole.Name
-		ret = append(ret, member)
-	}
 
 	return
 }
@@ -444,6 +431,8 @@ func (r *ProjectRepo) AddProjectDefaultServe(projectId, userId uint) (serve mode
 	err = r.DB.Create(&serve).Error
 
 	r.ServeRepo.SetCurrServeByUser(serve.ID, userId)
+
+	r.ServeRepo.AddDefaultServer(serve.ProjectId, serve.ID)
 
 	return
 }
@@ -485,6 +474,84 @@ func (r *ProjectRepo) GetMembersByProject(projectId uint) (ret []model.ProjectMe
 	err = r.DB.Model(&model.ProjectMember{}).
 		Where("project_id = ?", projectId).
 		Find(&ret).Error
+	return
+}
+
+func (r *ProjectRepo) GetAuditList(req v1.AuditProjectPaginate) (data _domain.PageData, err error) {
+	req.Field = "status asc,created_at"
+
+	var count int64
+
+	db := r.DB.Model(&model.ProjectMemberAudit{}).Where("audit_user_id = ?", req.AuditUserId)
+
+	err = db.Count(&count).Error
+	if err != nil {
+		logUtils.Errorf("count ProjectMemberAudit error", zap.String("error:", err.Error()))
+		return
+	}
+
+	list := make([]*model.ProjectMemberAudit, 0)
+
+	err = db.
+		Scopes(dao.PaginateScope(req.Page, req.PageSize, req.Order, req.Field)).
+		Find(&list).Error
+	if err != nil {
+		logUtils.Errorf("query ProjectMemberAudit error", zap.String("error:", err.Error()))
+		return
+	}
+
+	r.refUserName(list)
+
+	data.Populate(list, count, req.Page, req.PageSize)
+
+	return
+}
+
+func (r *ProjectRepo) refUserName(list []*model.ProjectMemberAudit) {
+	names := make(map[uint]string)
+	for key, item := range list {
+		if _, ok := names[item.ApplyUserId]; !ok {
+			user, _ := r.UserRepo.FindById(item.ApplyUserId)
+			names[item.ApplyUserId] = user.Name
+
+		}
+		if _, ok := names[item.AuditUserId]; !ok {
+			user, _ := r.UserRepo.FindById(item.AuditUserId)
+			names[item.AuditUserId] = user.Name
+		}
+
+		list[key].AuditUserName = names[item.AuditUserId]
+		list[key].ApplyUserName = names[item.ApplyUserId]
+
+	}
+}
+
+func (r *ProjectRepo) GetAudit(id uint) (ret model.ProjectMemberAudit, err error) {
+	err = r.DB.Model(&model.ProjectMemberAudit{}).
+		Where("id = ?", id).
+		First(&ret).Error
+	return
+}
+
+func (r *ProjectRepo) UpdateAuditStatus(id, auditUserId uint, status consts.AuditStatus) (err error) {
+	err = r.DB.Model(&model.ProjectMemberAudit{}).
+		Where("id=? and audit_user_id=?", id, auditUserId).
+		Update("status", status).Error
+	return
+}
+
+func (r *ProjectRepo) SaveAudit(audit model.ProjectMemberAudit) (err error) {
+	err = r.DB.Save(&audit).Error
+	return
+}
+
+func (r *ProjectRepo) IfProjectMember(userId, projectId uint) (res bool, err error) {
+	var count int64
+	err = r.DB.Model(&model.ProjectMember{}).Where("user_id=? and project_id=?", userId, projectId).Count(&count).Error
+	if err != nil {
+		return
+	}
+	res = count > 0
 	return
 }
 

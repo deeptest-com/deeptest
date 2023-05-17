@@ -18,8 +18,11 @@ func (s *ExecScenarioService) ExecScenario(req *agentExec.ScenarioExecReq, wsMsg
 
 	scenarioExecObj := s.RemoteService.GetScenarioToExec(req)
 
-	session, err := s.Exec(scenarioExecObj, wsMsg)
+	// start msg
+	execUtils.SendStartMsg(wsMsg)
 
+	session, err := s.Exec(scenarioExecObj, wsMsg)
+	session.RootProcessor.Result.EnvironmentId = req.EnvironmentId
 	// submit result
 	report, _ := s.RemoteService.SubmitScenarioResult(*session.RootProcessor.Result, scenarioExecObj.RootProcessor.ScenarioId,
 		scenarioExecObj.ServerUrl, scenarioExecObj.Token)
@@ -45,12 +48,12 @@ func (s *ExecScenarioService) Exec(execObj *agentExec.ScenarioExecObj, wsMsg *we
 	agentExec.InitJsRuntime()
 
 	// start msg
-	execUtils.SendStartMsg(wsMsg)
+	//execUtils.SendStartMsg(wsMsg)
 
 	// execution
 	session = agentExec.NewSession(execObj, false, wsMsg)
 	session.Run()
-
+	session.RootProcessor.Result.ScenarioId = execObj.ScenarioId
 	return
 }
 

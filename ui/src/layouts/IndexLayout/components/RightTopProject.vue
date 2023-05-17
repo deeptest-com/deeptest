@@ -6,7 +6,7 @@
                 :overlayStyle="{width:'300px'}">
       <a-button class="header">
         <span class="before-icon icon"><img :src="getProjectLogo(currProject?.logo)" alt=""></span>
-        {{ currProject.name }}
+        <span class="header-text" :title="currProject.name">{{ currProject.name }}</span>
         <DownOutlined class="after-icon"/>
       </a-button>
       <template #overlay>
@@ -25,7 +25,7 @@
                  }"
                  :key="'recently' + item.id + Math.random()">
               <span class="icon"><img :src="getProjectLogo(item?.logo)" alt=""></span>
-              <span class="text">{{ item.name }}</span>
+              <span class="text" :title="item.name">{{ item.name }}</span>
             </div>
             <div class="menu-scroll-item my" key="my">
               我参与的项目
@@ -94,8 +94,6 @@ const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 
 store.dispatch("User/fetchMessage");
 store.dispatch("ProjectGlobal/fetchProject");
-store.dispatch("ServeGlobal/fetchServe");
-
 
 const keyword = ref('');
 const dropdownVisible = ref(false);
@@ -129,6 +127,8 @@ const selectProject = async (value): Promise<void> => {
   await store.dispatch('Environment/getEnvironment', {id: 0, projectId: value});
   // 项目切换后，需要重新更新可选服务列表
   await store.dispatch("ServeGlobal/fetchServe");
+  // 更新左侧菜单以及按钮权限
+  await store.dispatch('Global/getPermissionList');
   if (router.currentRoute.value.path.indexOf('/scenario/') > -1) {
     router.replace('/scenario/index')
   }
@@ -156,6 +156,17 @@ onUnmounted(() => {
   document.removeEventListener('click', handleClickOut);
 });
 
+/**
+ * fixed: 保证选中项目不为空之后，再fetchServe列表，避免由于currProjectId=NaN导致服务列表返回异常问题
+ */
+watch(() => {
+  return currProject.value;
+}, (val: any) => {
+  if (val.id) {
+    store.dispatch("ServeGlobal/fetchServe");
+  }
+})
+
 </script>
 
 <style lang="less" scoped>
@@ -166,11 +177,19 @@ onUnmounted(() => {
   position: relative;
   text-align: left;
   padding-left: 30px;
+  padding-right: 24px;
 
   .before-icon {
     position: absolute;
     left: 4px;
     top: 4px;
+  }
+  .header-text{
+    width: 98%;
+    display: inline-block;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis; /* 在文本溢出时显示省略号 */
   }
 
   .after-icon {

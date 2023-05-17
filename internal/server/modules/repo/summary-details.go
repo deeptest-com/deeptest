@@ -2,7 +2,6 @@ package repo
 
 import (
 	"database/sql"
-	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"gorm.io/gorm"
@@ -23,17 +22,13 @@ func (r *SummaryDetailsRepo) Create(summaryDetails model.SummaryDetails) (err er
 	return
 }
 
-func (r *SummaryDetailsRepo) UpdateColumnsByDate(summaryDetails model.SummaryDetails, startTime string, endTime string) (err error) {
-	err = r.DB.Model(&model.SummaryDetails{}).Where("project_id = ? and created_at > ? and created_at < ?", summaryDetails.ProjectId, startTime, endTime).UpdateColumns(&summaryDetails).Error
+func (r *SummaryDetailsRepo) UpdateColumnsByDate(id int64, summaryDetails model.SummaryDetails) (err error) {
+	err = r.DB.Model(&model.SummaryDetails{}).Where("id = ? ", id).UpdateColumns(&summaryDetails).Error
 	return
 }
 
-func (r *SummaryDetailsRepo) HasDataOfDate(startTime string, endTime string) (ret bool, err error) {
-	var count int64
-	err = r.DB.Model(&model.SummaryDetails{}).Raw("select count(id) from (deeptest.biz_summary_details) where created_at > ? and created_at < ? AND NOT deleted;", startTime, endTime).Last(&count).Error
-	if count == 0 {
-		ret = false
-	}
+func (r *SummaryDetailsRepo) Existed(startTime string, endTime string, projectId int64) (id int64, err error) {
+	err = r.DB.Model(&model.SummaryDetails{}).Raw("select id from (deeptest.biz_summary_details) where created_at >= ? and created_at < ? AND project_id = ? AND NOT deleted;", startTime, endTime, projectId).Last(&id).Error
 	return
 }
 
@@ -47,8 +42,33 @@ func (r *SummaryDetailsRepo) CountByUserId(userId int64) (count int64, err error
 	return
 }
 
+func (r *SummaryDetailsRepo) CountUserTotal() (count int64, err error) {
+	err = r.DB.Model(&model.ProjectMember{}).Select("count(distinct id) ").Where("NOT deleted").Find(&count).Error
+	return
+}
+
+func (r *SummaryDetailsRepo) CountProjectUserTotal(projectId int64) (count int64, err error) {
+	err = r.DB.Model(&model.ProjectMember{}).Select("count(distinct id) ").Where("project_id = ? And NOT deleted", projectId).Find(&count).Error
+	return
+}
+
+func (r *SummaryDetailsRepo) FindAllProjectInfo() (projectsInfo []model.SummaryProjectInfo, err error) {
+	err = r.DB.Model(&model.Project{}).Select("biz_project.id,biz_project.created_at,biz_project.deleted,biz_project.disabled,biz_project.updated_at,biz_project.name,biz_project.descr,biz_project.logo,biz_project.short_name,biz_project.admin_id,biz_project.include_example ,sys_user.name as admin_name ").Joins("left join sys_user on biz_project.admin_id = sys_user.id").Where("biz_project.deleted !=1 ").Order("id").Find(&projectsInfo).Error
+	return
+}
+
+func (r *SummaryDetailsRepo) FindAdminNameByAdminId(adminId int64) (adminName string, err error) {
+	err = r.DB.Model(&model.SysUser{}).Select("name").Where("id = ?", adminId).Find(&adminName).Error
+	return
+}
+
 func (r *SummaryDetailsRepo) FindProjectIdsByUserId(userId int64) (projectIds []int64, err error) {
-	err = r.DB.Model(&model.ProjectMember{}).Select("distinct project_id").Where("user_id = ? AND NOT deleted", userId).Find(&projectIds).Error
+	err = r.DB.Model(&model.ProjectMember{}).Select("distinct project_id").Where("user_id = ? AND NOT deleted", userId).Find(&projectIds).Order("user_id").Error
+	return
+}
+
+func (r *SummaryDetailsRepo) FindProjectIds() (ids []int64, err error) {
+	err = r.DB.Model(&model.Project{}).Select("id").Where("NOT deleted").Find(&ids).Error
 	return
 }
 
@@ -67,8 +87,8 @@ func (r *SummaryDetailsRepo) FindUserIdsGroupByProjectId() (userIdsGroupByProjec
 	return
 }
 
-func (r *SummaryDetailsRepo) FindUserIdAndNameByProjectId(projectId int64) (userIdAndName []v1.ResUserIdAndName, err error) {
-	err = r.DB.Model(&model.ProjectMember{}).Raw("select sys_user.id as user_id,sys_user.name as user_name from sys_user inner join biz_project_member on sys_user.id = biz_project_member.user_id where project_id = ?", projectId).Find(&userIdAndName).Error
+func (r *SummaryDetailsRepo) FindAllUserIdAndNameOfProject() (users []model.UserIdAndName, err error) {
+	err = r.DB.Model(&model.ProjectMember{}).Raw("select biz_project_member.project_id,sys_user.id as user_id,sys_user.name as user_name from biz_project_member left join sys_user on sys_user.id = biz_project_member.user_id;").Find(&users).Error
 	return
 }
 
@@ -79,28 +99,27 @@ func (r *SummaryDetailsRepo) FindCreateUserNameByProjectId(projectId int64) (use
 }
 
 func (r *SummaryDetailsRepo) FindByProjectId(projectId int64) (summaryDetail model.SummaryDetails, err error) {
-	err = r.DB.Model(&model.SummaryDetails{}).Where("project_id = ? AND NOT deleted", projectId).Last(&summaryDetail).Error
+	err = r.DB.Model(&model.SummaryDetails{}).Raw("select * from (deeptest.biz_summary_details) where id in (SELECT max(id) FROM deeptest.biz_summary_details where project_id = ? group by project_id) AND NOT deleted ;", projectId).Find(&summaryDetail).Error
 	return
 }
 
 func (r *SummaryDetailsRepo) Find() (summaryDetails []model.SummaryDetails, err error) {
-	//err = r.DB.Model(&model.SummaryDetails{}).Raw("select * from (deeptest.biz_summary_details) where id in (SELECT max(id) FROM deeptest.biz_summary_details group by project_id) AND NOT deleted;").Find(&summaryDetails).Error
-	err = r.DB.Model(&model.SummaryDetails{}).Raw("select p.name project_name,p.name project_chinese_name,p.id project_id,p.logo logo,su.name admin_user,su.id admin_id,p.created_at from deeptest.biz_project  p , deeptest.sys_user  su where p.admin_id = su.id and  not p.deleted and not p.disabled").Find(&summaryDetails).Error
+	err = r.DB.Model(&model.SummaryDetails{}).Raw("select * from deeptest.biz_summary_details where id in (SELECT max(id) FROM deeptest.biz_summary_details where NOT deleted group by project_id) order by project_id;").Find(&summaryDetails).Error
 	return
 }
 
 func (r *SummaryDetailsRepo) FindByProjectIds(projectIds []int64) (summaryDetails []model.SummaryDetails, err error) {
-	err = r.DB.Model(&model.SummaryDetails{}).Raw("select * from (deeptest.biz_summary_details) where id in (SELECT max(id) FROM deeptest.biz_summary_details where project_id in ? group by project_id) AND NOT deleted ;", projectIds).Find(&summaryDetails).Error
+	err = r.DB.Model(&model.SummaryDetails{}).Raw("select * from (deeptest.biz_summary_details) where id in (SELECT max(id) FROM deeptest.biz_summary_details where project_id in ? group by project_id) AND NOT deleted  order by project_id;", projectIds).Find(&summaryDetails).Error
 	return
 }
 
 func (r *SummaryDetailsRepo) SummaryCard() (summaryCardTotal model.SummaryCardTotal, err error) {
-	err = r.DB.Model(&model.SummaryDetails{}).Raw("select SUM(scenario_total) as scenario_total,sum(interface_total) as interface_total,sum(exec_total) as exec_total,cast(AVG(pass_rate) as decimal(64,1)) as pass_rate,cast(AVG(coverage) as decimal(64,1)) as coverage from (deeptest.biz_summary_details) where id in (SELECT max(id) FROM deeptest.biz_summary_details where NOT deleted  group by project_id);").Find(&summaryCardTotal).Error
+	err = r.DB.Model(&model.SummaryDetails{}).Raw("select SUM(scenario_total) as scenarioTotal,sum(interface_total) as interfaceTotal,sum(exec_total) as execTotal,cast(AVG(pass_rate) as decimal(64,1)) as passRate,cast(AVG(coverage) as decimal(64,1)) as coverage from (deeptest.biz_summary_details) where id in (SELECT max(id) FROM deeptest.biz_summary_details where NOT deleted  group by project_id);").Find(&summaryCardTotal).Error
 	return
 }
 
 func (r *SummaryDetailsRepo) SummaryCardByDate(startTime string, endTime string) (summaryCardTotal model.SummaryCardTotal, err error) {
-	err = r.DB.Model(&model.SummaryDetails{}).Raw("select SUM(scenario_total) as scenario_total,sum(interface_total) as interface_total,sum(exec_total) as exec_total,cast(AVG(pass_rate) as decimal(64,1)) as pass_rate,cast(AVG(coverage) as decimal(64,1)) as coverage from (deeptest.biz_summary_details) where id in (SELECT max(id) FROM deeptest.biz_summary_details where created_at > ? and created_at < ? AND NOT deleted  group by project_id);", startTime, endTime).Find(&summaryCardTotal).Error
+	err = r.DB.Model(&model.SummaryDetails{}).Raw("select SUM(scenario_total) as scenarioTotal,sum(interface_total) as interfaceTotal,sum(exec_total) as execTotal,cast(AVG(pass_rate) as decimal(64,1)) as passRate,cast(AVG(coverage) as decimal(64,1)) as coverage from (deeptest.biz_summary_details) where id in (SELECT max(id) FROM deeptest.biz_summary_details where created_at >= ? and created_at < ? AND NOT deleted  group by project_id);", startTime, endTime).Find(&summaryCardTotal).Error
 	return
 }
 
@@ -115,8 +134,13 @@ func (r *SummaryDetailsRepo) FindPassRateByProjectId(projectId int64) (float64, 
 	return passRate.Float64, err
 }
 
-func (r *SummaryDetailsRepo) CountBugsByProjectId(projectId int64) (count int64, err error) {
-	err = r.DB.Model(&model.SummaryBugs{}).Select("count(id)").Where("project_id = ? AND NOT deleted ", projectId).Find(&count).Error
+func (r *SummaryDetailsRepo) FindAllPassRateByProjectId() (passRate []model.ProjectIdAndFloat, err error) {
+	err = r.DB.Model(&model.ScenarioReport{}).Raw("select biz_scenario_report.project_id,(SUM(biz_scenario_report.pass_assertion_num)/SUM(biz_scenario_report.total_assertion_num))*100 as coverage from (deeptest.biz_scenario_report) group by project_id;").Find(&passRate).Error
+	return
+}
+
+func (r *SummaryDetailsRepo) CountBugsGroupByProjectId() (bugsCount []model.ProjectsBugCount, err error) {
+	err = r.DB.Model(&model.SummaryBugs{}).Select("project_id,count(id) as count").Where("NOT deleted ").Group("project_id").Find(&bugsCount).Error
 	return
 }
 
@@ -126,25 +150,55 @@ func (r *SummaryDetailsRepo) CountScenarioTotalProjectId(projectId int64) (int64
 	return count.Int64, err
 }
 
+func (r *SummaryDetailsRepo) CountAllScenarioTotalProjectId() (counts []model.ProjectIdAndId, err error) {
+	err = r.DB.Model(&model.Scenario{}).Select("count(id) as id,project_id").Where("NOT deleted ").Group("project_id").Find(&counts).Error
+	return
+}
+
 func (r *SummaryDetailsRepo) CountExecTotalProjectId(projectId int64) (int64, error) {
 	var count sql.NullInt64
 	err := r.DB.Model(&model.ScenarioReport{}).Select("count(id)").Where("project_id = ? AND NOT deleted ", projectId).Find(&count).Error
 	return count.Int64, err
 }
 
-func (r *SummaryDetailsRepo) CountInterfaceTotalProjectId(projectId int64) (int64, error) {
+func (r *SummaryDetailsRepo) CountAllExecTotalProjectId() (counts []model.ProjectIdAndId, err error) {
+	err = r.DB.Model(&model.ScenarioReport{}).Select("count(id) as id,project_id").Where("NOT deleted ").Group("project_id").Find(&counts).Error
+	return
+}
+
+func (r *SummaryDetailsRepo) CountEndpointTotalProjectId(projectId int64) (int64, error) {
 	var count sql.NullInt64
-	err := r.DB.Model(&model.EndpointInterface{}).Select("count(id)").Where("project_id = ? AND NOT deleted ", projectId).Find(&count).Error
+	err := r.DB.Model(&model.Endpoint{}).Select("count(id)").Where("project_id = ? AND NOT deleted ", projectId).Find(&count).Error
 	return count.Int64, err
 }
 
-func (r *SummaryDetailsRepo) FindInterfaceIdsByProjectId(projectId int64) (ids []int64, err error) {
-	err = r.DB.Model(&model.EndpointInterface{}).Select("id").Where("project_id = ? AND NOT deleted ", projectId).Find(&ids).Error
+func (r *SummaryDetailsRepo) CountAllEndpointTotalProjectId() (counts []model.ProjectIdAndId, err error) {
+	err = r.DB.Model(&model.Endpoint{}).Select("count(id) as id,project_id").Where("NOT deleted ").Group("project_id").Find(&counts).Error
+	return
+}
+
+func (r *SummaryDetailsRepo) FindEndpointIdsByProjectId(projectId int64) (ids []int64, err error) {
+	err = r.DB.Model(&model.Endpoint{}).Select("id").Where("project_id = ? AND NOT deleted ", projectId).Find(&ids).Error
+	return
+}
+
+func (r *SummaryDetailsRepo) FindAllEndpointIdsGroupByProjectId() (ids []model.ProjectIdAndId, err error) {
+	err = r.DB.Model(&model.Endpoint{}).Select("id,project_id").Where("NOT deleted ").Find(&ids).Error
 	return
 }
 
 func (r *SummaryDetailsRepo) CoverageByProjectId(projectId int64, interfaceIds []int64) (count int64, err error) {
-	err = r.DB.Model(&model.ProcessorInterface{}).Raw("select count(id) from deeptest.biz_processor_interface where id in ? AND project_id = ? AND NOT deleted ", interfaceIds, projectId).Find(&count).Error
+	err = r.DB.Model(&model.Processor{}).Raw("select count(id) from deeptest.biz_processor where id in ? AND project_id = ? AND NOT deleted ", interfaceIds, projectId).Find(&count).Error
+	return
+}
+
+func (r *SummaryDetailsRepo) FindAllProcessEndpointCountGroupByProjectId() (counts []model.ProjectIdAndId, err error) {
+	err = r.DB.Model(&model.Processor{}).Raw("select project_id,count(DISTINCT endpoint_interface_id) as id  from deeptest.biz_processor where NOT deleted group by project_id;").Find(&counts).Error
+	return
+}
+
+func (r *SummaryDetailsRepo) CoverageAllProject(interfaceIds []int64) (counts []model.ProjectIdAndId, err error) {
+	err = r.DB.Model(&model.Processor{}).Raw("select project_id,count(id) as id from deeptest.biz_processor_interface where id in ? AND NOT deleted group by project_id", interfaceIds).Find(&counts).Error
 	return
 }
 
@@ -175,10 +229,5 @@ func (r *SummaryDetailsRepo) CheckDetailsUpdated(lastUpdateTime *time.Time) (res
 			return
 		}
 	}
-	return
-}
-
-func (r *SummaryDetailsRepo) CollectionProjectInfo() (details []model.SummaryDetails, err error) {
-	err = r.DB.Model(&model.Project{}).Raw("select id as project_id,created_at as project_create_time,name as project_chinese_name,name as project_name,descr as project_des from deeptest.biz_project where NOT deleted;").Find(&details).Error
 	return
 }

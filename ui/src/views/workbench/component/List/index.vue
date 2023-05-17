@@ -70,49 +70,34 @@ const timeframe = ref<string>("month");
 let pagination = computed<PaginationConfig>(
   () => store.state.workbench.queryResult.pagination
 );
-let queryParams = reactive<QueryParams>({
-  projectId: projectId,
-  cycle: 1,
-  page: pagination.value.current,
-  pageSize: pagination.value.pageSize,
-});
 
 const columns = [
-  // {
-  //   title: '序号',
-  //   dataIndex: 'index',
-  //   width: 80,
-  //   customRender: ({
-  //                    text,
-  //                    index
-  //                  }: { text: any; index: number }) => (pagination.value.current - 1) * pagination.value.pageSize + index + 1,
-  // },
   {
     title: "排名",
-    dataIndex: "hb",
+    dataIndex: "sort",
   },
   {
     title: "用户名",
-    dataIndex: "user_name",
+    dataIndex: "userName",
     slots: { customRender: "name" },
   },
 
   {
     title: "较上周",
-    dataIndex: "admin_user",
+    dataIndex: "hb",
   },
 
   {
     title: "用例数",
-    dataIndex: "testcases_total",
+    dataIndex: "testCaseTotal",
   },
   {
     title: "场景数",
-    dataIndex: "scenario_total",
+    dataIndex: "scenarioTotal",
   },
   {
     title: "最近更新日期",
-    dataIndex: "update_time",
+    dataIndex: "updatedAt",
   },
 ];
 
@@ -120,11 +105,12 @@ const loading = ref<boolean>(true);
 const getList = async (current: number): Promise<void> => {
   loading.value = true;
   await store.dispatch("workbench/queryRanking", {
-    projectId:timeframe.value=='all'?0: currProject.value.id,
-    cycle: queryParams.cycle,
+    projectId: currProject.value.id,
+    cycle: timeframe.value=='all'?1: 0,
     pageSize: pagination.value.pageSize,
     page: current,
   });
+ 
   loading.value = false;
 };
 
@@ -190,11 +176,11 @@ const remove = (id: number) => {
 
 watch(
   () => {
-    return currProject.value.id;
+    return currProject.value;
   },
   (val: any) => {
-    console.log("~------currProject---", currProject.value.id);
-    if (val) {
+    console.log("~------currProject---", val);
+    if (val.id) {
       getList(1);
     }
   },

@@ -1,13 +1,12 @@
-import { Mutation, Action } from 'vuex';
-import { StoreModuleType } from "@/utils/store";
-import { ResponseData } from '@/utils/request';
-import { Scenario, QueryResult, QueryParams, PaginationConfig } from './data.d';
+import {Mutation, Action} from 'vuex';
+import {StoreModuleType} from "@/utils/store";
+import {ResponseData} from '@/utils/request';
+import {Scenario, QueryResult, QueryParams, PaginationConfig} from './data.d';
 import {
     query,
     get,
     save,
     remove,
-
     loadScenario,
     getNode,
     createNode,
@@ -16,6 +15,11 @@ import {
     moveNode,
     addInterfaces, addProcessor,
     saveProcessorName, saveProcessor, saveInterface, loadExecResult,
+    getScenariosReports,
+    getScenariosReportsDetail,
+    addPlans,
+    getPlans,
+    removePlans, updatePriority, updateStatus, genReport,
 } from './service';
 
 import {
@@ -25,10 +29,10 @@ import {
     updateCategory,
     removeCategory,
     moveCategory,
-    updateCategoryName} from "@/services/category";
+    updateCategoryName
+} from "@/services/category";
 
 import {getNodeMap} from "@/services/tree";
-import {UsedBy} from "@/utils/enum";
 
 export interface StateType {
     scenarioId: number;
@@ -48,6 +52,7 @@ export interface StateType {
     nodeDataCategory: any;
 
     execResult: any;
+    reportsDetail: any;
 
     interfaceData: any;
     invocationsData: [],
@@ -55,6 +60,9 @@ export interface StateType {
     extractorsData: any[];
     checkpointsData: any[];
     validExtractorVariablesData: any[];
+    scenariosReports: any[];
+    linkedPlans: any[];
+    notLinkedplans: any[];
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
@@ -66,6 +74,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
 
         setList: Mutation<StateType>;
         setDetail: Mutation<StateType>;
+        setReportsDetail: Mutation<StateType>;
         setQueryParams: Mutation<StateType>;
 
         setTreeData: Mutation<StateType>;
@@ -89,6 +98,9 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setExtractors: Mutation<StateType>;
         setCheckpoints: Mutation<StateType>;
         setValidExtractorVariables: Mutation<StateType>;
+        setScenariosReports: Mutation<StateType>;
+        setLinkedPlans: Mutation<StateType>;
+        setNotLinkedplans: Mutation<StateType>;
     };
     actions: {
         setScenarioProcessorIdForDebug: Action<StateType, StateType>;
@@ -116,7 +128,14 @@ export interface ModuleType extends StoreModuleType<StateType> {
 
         loadExecResult: Action<StateType, StateType>;
         updateExecResult: Action<StateType, StateType>;
-
+        getExecResultList: Action<StateType, StateType>;
+        addPlans: Action<StateType, StateType>;
+        removePlans: Action<StateType, StateType>;
+        getPlans: Action<StateType, StateType>;
+        updatePriority: Action<StateType, StateType>;
+        updateStatus: Action<StateType, StateType>;
+        getScenariosReportsDetail: Action<StateType, StateType>;
+        genReport: Action<StateType, StateType>;
         loadCategory: Action<StateType, StateType>;
         getCategoryNode: Action<StateType, StateType>;
         createCategoryNode: Action<StateType, StateType>;
@@ -132,8 +151,8 @@ export interface ModuleType extends StoreModuleType<StateType> {
 
 const initState: StateType = {
     scenarioId: 0,
-    scenarioProcessorIdForDebug:0,
-    endpointInterfaceIdForDebug:0,
+    scenarioProcessorIdForDebug: 0,
+    endpointInterfaceIdForDebug: 0,
 
     listResult: {
         list: [],
@@ -157,13 +176,16 @@ const initState: StateType = {
     nodeDataCategory: {},
 
     execResult: {},
-
+    reportsDetail: {},
     interfaceData: {},
     invocationsData: [],
     responseData: {},
     extractorsData: [],
     checkpointsData: [],
     validExtractorVariablesData: [],
+    scenariosReports: [],
+    linkedPlans: [],
+    notLinkedplans: [],
 };
 
 const StoreModel: ModuleType = {
@@ -189,7 +211,9 @@ const StoreModel: ModuleType = {
         setDetail(state, payload) {
             state.detailResult = payload;
         },
-
+        setReportsDetail(state, payload) {
+            state.reportsDetail = payload;
+        },
         setTreeData(state, data) {
             state.treeData = [data];
         },
@@ -251,6 +275,15 @@ const StoreModel: ModuleType = {
         setValidExtractorVariables(state, payload) {
             state.validExtractorVariablesData = payload;
         },
+        setScenariosReports(state, payload) {
+            state.scenariosReports = payload;
+        },
+        setLinkedPlans(state, payload) {
+            state.linkedPlans = payload;
+        },
+        setNotLinkedplans(state, payload) {
+            state.notLinkedplans = payload;
+        },
     },
     actions: {
         async setScenarioProcessorIdForDebug({commit, dispatch, state}, id) {
@@ -304,6 +337,7 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
+
 
         async saveScenario({commit}, payload: any) {
             const jsn = await save(payload)
@@ -475,15 +509,17 @@ const StoreModel: ModuleType = {
                 const resp = await createCategory(payload);
 
                 await dispatch('loadCategory');
-                return resp.data;
+                return resp?.data;
             } catch (error) {
                 return false;
             }
         },
-        async updateCategoryNode({commit}, payload: any) {
+
+        async updateCategoryNode({commit, dispatch}, payload: any) {
             try {
                 const {id, ...params} = payload;
-                await updateCategory(id, {...params});
+                await updateCategory(id, {...payload});
+                await dispatch('loadCategory');
                 return true;
             } catch (error) {
                 return false;
@@ -548,6 +584,77 @@ const StoreModel: ModuleType = {
             commit('setScenarioId', payload.scenarioId);
 
             return true;
+        },
+        async getExecResultList({commit, dispatch, state}, payload) {
+            const res = await getScenariosReports(payload.data || {});
+            if (res.code === 0) {
+                commit('setScenariosReports', res?.data?.result || []);
+            }
+            return true;
+        },
+        async addPlans({commit, dispatch, state}, payload) {
+            const res = await addPlans(payload);
+            if (res.code === 0) {
+                return res;
+            }
+            return false;
+        },
+        async removePlans({commit, dispatch, state}, payload) {
+            const res = await removePlans(payload);
+            if (res.code === 0) {
+                return res;
+            }
+            return false;
+        },
+        async getPlans({commit, dispatch, state}, payload) {
+            const res = await getPlans(payload);
+            if (res.code === 0) {
+                if (payload.data.ref) {
+                    commit('setLinkedPlans', res?.data?.result || []);
+                } else {
+                    commit('setNotLinkedplans', res?.data?.result || []);
+                }
+            }
+            return false;
+        },
+        async updatePriority({commit, dispatch, state}, payload) {
+            const res = await updatePriority(payload);
+            if (res.code === 0) {
+                commit('setDetail', {
+                    ...state.detailResult,
+                    priority: payload.priority
+                });
+                return res;
+            }
+            return false;
+        },
+        async updateStatus({commit, dispatch, state}, payload) {
+            const res = await updateStatus(payload);
+            if (res.code === 0) {
+                commit('setDetail', {
+                    ...state.detailResult,
+                    status: payload.status
+                });
+                return res;
+            }
+            return false;
+        },
+        async getScenariosReportsDetail({commit, dispatch, state}, payload) {
+            const res = await getScenariosReportsDetail(payload);
+            if (res.code === 0) {
+                commit('setReportsDetail', {
+                    ...res.data
+                });
+                return res;
+            }
+            return false;
+        },
+        async genReport({commit, dispatch, state}, payload) {
+            const res = await genReport(payload);
+            if (res.code === 0) {
+                return res;
+            }
+            return false;
         },
     }
 };

@@ -22,7 +22,7 @@
 </template>
 
 <script lang="ts">
-import { computed, ComputedRef, defineComponent, PropType, toRefs } from "vue";
+import { computed, ComputedRef, defineComponent, PropType, toRefs, ref, watch } from "vue";
 import { useStore } from "vuex";
 import SiderMenuItem from './SiderMenuItem.vue';
 import { RoutesDataItem } from '@/utils/routes';
@@ -74,7 +74,9 @@ export default defineComponent({
     // 后端获取的权限路由可访问列表
     const permissionRouteMenuMap = computed(() => store.state.Global.permissionMenuMap);
     const { menuData, topNavEnable }  = toRefs(props);
-    const newMenuData = computed<RoutesDataItem[]>(() => {
+    const newMenuData = ref<RoutesDataItem[]>([]);
+
+    const getNewMenuData = () => {
       if(!topNavEnable.value) {
         return menuData.value as RoutesDataItem[];
       }
@@ -97,13 +99,21 @@ export default defineComponent({
           }
         }
       }
-      return MenuItems;
-    })
+      newMenuData.value = MenuItems;
+      console.log('getNewMenuData---,', newMenuData);
+    }
 
     const openChange = (key: string): void => {
       props.onOpenChange && props.onOpenChange(key);
     }
 
+    watch(() => {
+      return permissionRouteMenuMap.value;
+    }, () => {
+      getNewMenuData();
+    }, {
+      immediate: true
+    })
 
     return {
       newMenuData,

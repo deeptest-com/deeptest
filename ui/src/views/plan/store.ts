@@ -7,10 +7,14 @@ import {
     get,
     save,
     remove,
-
     loadExecResult,
-
+    getPlanScenarioList,
+    addScenarios,
+    removeScenarios,
+    clonePlan,
 } from './service';
+
+import { get as getExecDetail } from '../report/service';
 
 import {
     loadCategory,
@@ -22,25 +26,41 @@ import {
     updateCategoryName} from "@/services/category";
 
 import {getNodeMap} from "@/services/tree";
+import { queryMembers } from '../project/service';
 
 export interface StateType {
     planId: number;
+    currPlan: any;
 
     listResult: QueryResult;
-    detailResult: Plan;
+    detailResult: any;
     queryParams: any;
 
     execResult: any;
+    execDetail: any;
 
     treeDataCategory: any[];
     treeDataMapCategory: any,
     nodeDataCategory: any;
+
+    members: any[];
+    scenarioListResult: {
+        scenarioList: any[],
+        pagination: {
+            total: number,
+            current: number,
+            pageSize: number,
+        }
+    };
+
+    selectEnvId: number;
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
     state: StateType;
     mutations: {
         setPlanId: Mutation<StateType>;
+        setCurrPlan: Mutation<StateType>;
 
         setList: Mutation<StateType>;
         setDetail: Mutation<StateType>;
@@ -53,12 +73,19 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setTreeDataMapItemCategory: Mutation<StateType>;
         setTreeDataMapItemPropCategory: Mutation<StateType>;
         setNodeCategory: Mutation<StateType>;
+
+        setMembers: Mutation<StateType>;
+        setScenarioList: Mutation<StateType>;
+
+        setExecDetail: Mutation<StateType>;
     };
     actions: {
         listPlan: Action<StateType, StateType>;
         getPlan: Action<StateType, StateType>;
         savePlan: Action<StateType, StateType>;
         removePlan: Action<StateType, StateType>;
+        clonePlan: Action<StateType, StateType>;
+        setCurrentPlan: Action<StateType, StateType>;
 
         loadCategory: Action<StateType, StateType>;
         getCategoryNode: Action<StateType, StateType>;
@@ -73,11 +100,22 @@ export interface ModuleType extends StoreModuleType<StateType> {
 
         loadExecResult: Action<StateType, StateType>;
         updateExecResult: Action<StateType, StateType>;
+
+        loadMembers: Action<StateType, StateType>;
+
+        getScenarioList: Action<StateType, StateType>;
+        addScenario: Action<StateType, StateType>;
+        removeScenario: Action<StateType, StateType>;
+
+        getExecDetail: Action<StateType, StateType>;
+        setExecResult: Action<StateType, StateType>;
+        initExecResult: Action<StateType, StateType>;
     }
 }
 
 const initState: StateType = {
     planId: 0,
+    currPlan: null,
 
     listResult: {
         list: [],
@@ -91,11 +129,26 @@ const initState: StateType = {
     },
     detailResult: {} as Plan,
     queryParams: {},
-    execResult: {},
+    execResult: {
+        progressStatus: 'in_progress'
+    },
+    execDetail: {},
 
     treeDataCategory: [],
     treeDataMapCategory: {},
     nodeDataCategory: {},
+
+    members: [],
+    scenarioListResult: {
+        scenarioList: [],
+        pagination: {
+            total: 0,
+            current: 1,
+            pageSize: 10,
+        }
+    },
+
+    selectEnvId: 0
 };
 
 const StoreModel: ModuleType = {
@@ -108,7 +161,9 @@ const StoreModel: ModuleType = {
         setPlanId(state, id) {
             state.planId = id;
         },
-
+        setCurrPlan(state, payload) {
+            state.currPlan = payload;
+        },
         setList(state, payload) {
             state.listResult = payload;
         },
@@ -137,31 +192,49 @@ const StoreModel: ModuleType = {
         setNodeCategory(state, data) {
             state.nodeDataCategory = data;
         },
-
         setQueryParams(state, payload) {
             state.queryParams = payload;
         },
+        setMembers(state, payload) {
+            state.members = payload;
+        },
+        setScenarioList(state, payload) {
+            state.scenarioListResult = payload;
+        },
+        setExecDetail(state, payload) {
+            state.execDetail = payload;
+        }
     },
     actions: {
-        async listPlan({commit, dispatch}, params: QueryParams) {
+        async listPlan({commit, state, dispatch}, { page, pageSize, ...opts }: any) {
             try {
-                const response: ResponseData = await query(params);
+                page = page || state.listResult.pagination.current; 
+                pageSize = pageSize || state.listResult.pagination.pageSize;
+                const response: ResponseData = await query({
+                    page,
+                    pageSize,
+                    ...opts
+                });
                 if (response.code != 0) return;
 
                 const data = response.data;
+
+                if (data.page - 1 > 0 && data.page > 1 && data.result.length === 0) {
+                    dispatch('listPlan', { page: page - 1, pageSize, opts });
+                    return;
+                }
 
                 commit('setList', {
                     ...initState.listResult,
                     list: data.result || [],
                     pagination: {
                         ...initState.listResult.pagination,
-                        current: params.page,
-                        pageSize: params.pageSize,
+                        current: page,
+                        pageSize: pageSize,
                         total: data.total || 0,
                     },
                 });
-                commit('setQueryParams', params);
-
+                commit('setQueryParams', { page, pageSize, ...opts });
                 return true;
             } catch (error) {
                 return false;
@@ -187,9 +260,10 @@ const StoreModel: ModuleType = {
             }
         },
 
-        async savePlan({commit}, payload: any) {
+        async savePlan({ state, dispatch }, payload: any) {
             const jsn = await save(payload)
             if (jsn.code === 0) {
+                dispatch('listPlan', state.queryParams);
                 return true;
             } else {
                 return false
@@ -197,14 +271,31 @@ const StoreModel: ModuleType = {
         },
         async removePlan({commit, dispatch, state}, payload: number) {
             try {
-                await remove(payload);
-                await dispatch('listPlan', state.queryParams)
-                return true;
+                const jsn = await remove(payload);
+                if (jsn.code === 0) {
+                    dispatch('listPlan', state.queryParams);
+                    return true;
+                }
+                return false;
             } catch (error) {
                 return false;
             }
         },
-
+        async clonePlan({ dispatch, state }, payload: number) {
+            try {
+                const jsn = await clonePlan(payload);
+                if (jsn.code === 0) {
+                    dispatch('listPlan', state.queryParams);
+                    return true;
+                }
+                return false;
+            } catch(error) {
+                return false;
+            }
+        },
+        setCurrentPlan({ commit }, payload: any) {
+            commit('setCurrPlan', payload);
+        },
         async loadExecResult({commit, dispatch, state}, scenarioId) {
             const response = await loadExecResult(scenarioId);
             if (response.code != 0) return;
@@ -246,7 +337,7 @@ const StoreModel: ModuleType = {
 
                 const response = await getCategory(payload.id);
                 const {data} = response;
-
+                console.log(data);
                 commit('setNodeCategory', data);
                 return true;
             } catch (error) {
@@ -315,6 +406,65 @@ const StoreModel: ModuleType = {
                 return false
             }
         },
+        // 获取项目的参与人列表
+        async loadMembers({ commit }, payload: any) {
+            const jsn = await queryMembers(payload);
+            if (jsn.code === 0) {
+                const result = jsn.data.result.map(e => {
+                    e.value = e.id;
+                    e.label = e.name;
+                    return e;
+                })
+                commit('setMembers', result);
+            }
+        },
+        // 获取与计划关联的场景列表
+        async getScenarioList({ commit }, payload: any) {
+            const jsn = await getPlanScenarioList(payload);
+            if (jsn.code === 0) {
+                commit('setScenarioList', {
+                    scenarioList: jsn.data.result || [],
+                    pagination: {
+                        current: jsn.data.page,
+                        pageSize: jsn.data.pageSize,
+                        total: jsn.data.total
+                    }
+                } );
+            }
+        },
+        // 关联场景
+        async addScenario({ dispatch }, payload: any) {
+            const jsn = await addScenarios(payload.planId, payload.params);
+            if (jsn.code === 0) {
+                return true;
+            }
+            return false;
+        },
+        // 移除已关联的场景
+        async removeScenario({ commit }, payload: any) {
+            const jsn = await removeScenarios(payload.planId, payload.params);
+            if (jsn.code === 0) {
+                return true;
+            }
+            return false;
+        },
+
+        async getExecDetail({ commit }, payload: number) {
+            const result = await getExecDetail(payload);
+            if (result.code === 0) {
+                console.log(result);
+                commit('setExecDetail', {});
+            }
+        },
+
+        async setExecResult({ commit }, payload: any) {
+            console.log('~~~~~ execResult ~~~~~', payload);
+            commit('setExecResult', payload);
+        },
+
+        async initExecResult({ commit }) {
+            commit('setExecResult', { basicInfoList: [], statisticData: {},  scenarioReports: [], progressValue: 10, progressStatus: 'in_progress' });
+        }
     }
 };
 

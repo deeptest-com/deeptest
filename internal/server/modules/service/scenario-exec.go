@@ -25,10 +25,11 @@ type ScenarioExecService struct {
 	EndpointRepo          *repo.EndpointRepo          `inject:""`
 	ServeServerRepo       *repo.ServeServerRepo       `inject:""`
 
-	SceneService        *SceneService        `inject:""`
-	EnvironmentService  *EnvironmentService  `inject:""`
-	DatapoolService     *DatapoolService     `inject:""`
-	ScenarioNodeService *ScenarioNodeService `inject:""`
+	SceneService          *SceneService          `inject:""`
+	EnvironmentService    *EnvironmentService    `inject:""`
+	DatapoolService       *DatapoolService       `inject:""`
+	ScenarioNodeService   *ScenarioNodeService   `inject:""`
+	ScenarioReportService *ScenarioReportService `inject:""`
 }
 
 func (s *ScenarioExecService) LoadExecResult(scenarioId int) (result domain.Report, err error) {
@@ -49,6 +50,7 @@ func (s *ScenarioExecService) LoadExecData(scenarioId, environmentId uint) (ret 
 	}
 
 	// get processor tree
+	ret.ScenarioId = scenarioId
 	ret.Name = scenario.Name
 	ret.RootProcessor, _ = s.ScenarioNodeService.GetTree(scenario, true)
 	ret.RootProcessor.Session = agentExec.Session{}
@@ -60,7 +62,37 @@ func (s *ScenarioExecService) LoadExecData(scenarioId, environmentId uint) (ret 
 	return
 }
 
-func (s *ScenarioExecService) SaveReport(scenarioId int, rootResult execDomain.ScenarioExecResult) (report model.ScenarioReport, err error) {
+func (s *ScenarioExecService) SaveReport(scenarioId int, userId uint, rootResult execDomain.ScenarioExecResult) (report model.ScenarioReport, err error) {
+	scenario, _ := s.ScenarioRepo.Get(uint(scenarioId))
+	rootResult.Name = scenario.Name
+
+	report = model.ScenarioReport{
+		Name:      scenario.Name,
+		StartTime: rootResult.StartTime,
+		EndTime:   rootResult.EndTime,
+		Duration:  rootResult.EndTime.UnixMilli() - rootResult.StartTime.UnixMilli(),
+
+		ProgressStatus: rootResult.ProgressStatus,
+		ResultStatus:   rootResult.ResultStatus,
+
+		ScenarioId:   scenario.ID,
+		ProjectId:    scenario.ProjectId,
+		CreateUserId: userId,
+		ExecEnvId:    rootResult.EnvironmentId,
+	}
+
+	s.countRequest(rootResult, &report)
+	s.summarizeInterface(&report)
+
+	s.ScenarioReportRepo.Create(&report)
+	s.TestLogRepo.CreateLogs(rootResult, &report)
+	logs, _ := s.ScenarioReportService.GetById(report.ID)
+	report.Logs = logs.Logs
+
+	return
+}
+
+func (s *ScenarioExecService) GenerateReport(scenarioId int, userId uint, rootResult execDomain.ScenarioExecResult) (report model.ScenarioReport, err error) {
 	scenario, _ := s.ScenarioRepo.Get(uint(scenarioId))
 	rootResult.Name = scenario.Name
 
@@ -73,15 +105,16 @@ func (s *ScenarioExecService) SaveReport(scenarioId int, rootResult execDomain.S
 		ProgressStatus: rootResult.ProgressStatus,
 		ResultStatus:   rootResult.ResultStatus,
 
-		ScenarioId: scenario.ID,
-		ProjectId:  scenario.ProjectId,
+		ScenarioId:   scenario.ID,
+		ProjectId:    scenario.ProjectId,
+		CreateUserId: userId,
 	}
 
 	s.countRequest(rootResult, &report)
 	s.summarizeInterface(&report)
 
-	s.ScenarioReportRepo.Create(&report)
-	s.TestLogRepo.CreateLogs(rootResult, &report)
+	//s.ScenarioReportRepo.Create(&report)
+	//s.TestLogRepo.CreateLogs(rootResult, &report)
 
 	return
 }

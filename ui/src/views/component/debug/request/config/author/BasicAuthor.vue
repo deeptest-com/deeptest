@@ -18,12 +18,6 @@
         </a-col>
       </a-row>
     </div>
-    <div class="tips">
-      <div class="dp-light">授权头将会在你发送请求时自动生成。</div>
-      <div class="dp-link-primary">了解更多
-        <ArrowRightOutlined/>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -31,7 +25,6 @@
 import {computed, inject} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
-import {ArrowRightOutlined} from '@ant-design/icons-vue';
 
 import {UsedBy} from "@/utils/enum";
 

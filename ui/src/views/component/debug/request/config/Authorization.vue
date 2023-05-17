@@ -19,7 +19,14 @@
         </a-col>
         <a-col flex="80px" class="dp-right">
           <a-tooltip overlayClassName="dp-tip-small">
-            <template #title>帮助</template>
+            <template #title>
+              <div class="tips">
+                <div class="dp-light">授权头将会在你发送请求时自动生成。</div>
+                <div class="dp-link-primary">了解更多
+                  <ArrowRightOutlined/>
+                </div>
+              </div>
+            </template>
             <QuestionCircleOutlined class="dp-icon-btn dp-trans-80"/>
           </a-tooltip>
 
@@ -51,7 +58,7 @@
 import {computed, inject} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
-import { QuestionCircleOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons-vue';
+import { QuestionCircleOutlined, DeleteOutlined, PlusOutlined, ArrowRightOutlined } from '@ant-design/icons-vue';
 
 import EmptyPage from "@/components/others/empty.vue";
 import RequestAuthorBasic from "./author/BasicAuthor.vue"
@@ -97,15 +104,17 @@ const onParamChange = (idx) => {
       height: calc(100% - 28px);
       overflow-y: auto;
       .param {
-        padding: 2px 3px;
         border-bottom: 1px solid #d9d9d9;
+        height: 32px;
 
         .ant-col {
           border-right: 1px solid #d9d9d9;
+          display: flex;
+          align-items: center;
+          justify-content: flex-start;
 
-          .label {
-            display: inline-block;
-            padding: 4px;
+          &:last-child {
+            border-right: 0;
           }
 
           input {

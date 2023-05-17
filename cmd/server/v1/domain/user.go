@@ -21,8 +21,9 @@ type UserReqPaginate struct {
 type MemberResp struct {
 	Id            uint            `json:"id"`
 	Username      string          `json:"username"`
+	Name          string          `json:"name"`
 	Email         string          `json:"email"`
-	Name          consts.RoleType `json:"roleName"`
+	RoleName      consts.RoleType `json:"roleName"`
 	ProjectRoleId uint            `json:"roleId"`
 }
 

@@ -164,7 +164,7 @@ func (s *RemoteService) GetScenarioToExec(req *agentExec.ScenarioExecReq) (ret *
 }
 
 func (s *RemoteService) SubmitScenarioResult(result agentDomain.ScenarioExecResult, scenarioId uint, serverUrl, token string) (
-	report agentDomain.ReportSimple, err error) {
+	report agentDomain.Report, err error) {
 
 	bodyBytes, _ := json.Marshal(result)
 	req := domain.BaseRequest{
@@ -197,7 +197,7 @@ func (s *RemoteService) SubmitScenarioResult(result agentDomain.ScenarioExecResu
 	}
 
 	reportContent, _ := json.Marshal(ret.Data)
-	report = agentDomain.ReportSimple{}
+	report = agentDomain.Report{}
 	json.Unmarshal(reportContent, &report)
 
 	return
@@ -259,7 +259,7 @@ func (s *RemoteService) GetPlanToExec(req *agentExec.PlanExecReq) (ret *agentExe
 }
 
 func (s *RemoteService) SubmitPlanResult(result agentDomain.PlanExecResult, planId uint, serverUrl, token string) (
-	report agentDomain.ReportSimple, err error) {
+	report agentDomain.Report, err error) {
 	bodyBytes, _ := json.Marshal(result)
 	req := domain.BaseRequest{
 		Url:               _httpUtils.AddSepIfNeeded(serverUrl) + fmt.Sprintf("plans/exec/submitResult/%d", planId),
@@ -291,7 +291,7 @@ func (s *RemoteService) SubmitPlanResult(result agentDomain.PlanExecResult, plan
 	}
 
 	reportContent, _ := json.Marshal(ret.Data)
-	report = agentDomain.ReportSimple{}
+	report = agentDomain.Report{}
 	json.Unmarshal(reportContent, &report)
 
 	return
@@ -305,6 +305,57 @@ func (s *RemoteService) GetMessageToExec(req *agentExec.MessageExecReq) (ret *ag
 		AuthorizationType: consts.BearerToken,
 		BearerToken: domain.BearerToken{
 			Token: req.Token,
+		},
+	}
+
+	resp, err := httpHelper.Get(httpReq)
+	if err != nil {
+		logUtils.Infof("get exec obj failed, error, %s", err.Error())
+		return
+	}
+
+	if resp.StatusCode != consts.OK {
+		logUtils.Infof("get exec obj failed, response %v", resp)
+		return
+	}
+
+	respContent := _domain.Response{}
+	json.Unmarshal([]byte(resp.Content), &respContent)
+
+	if respContent.Code != 0 {
+		logUtils.Infof("get exec obj failed, response %v", resp.Content)
+		return
+	}
+
+	bytes, err := json.Marshal(respContent.Data)
+	if respContent.Code != 0 {
+		logUtils.Infof("get exec obj failed, response %v", resp.Content)
+		return
+	}
+
+	json.Unmarshal(bytes, &ret)
+
+	return
+}
+
+func (s *RemoteService) GetPlanNormalData(req *agentExec.PlanExecReq) (ret agentDomain.PlanNormalData, err error) {
+	url := "plans/exec/getPlanReportNormalData"
+
+	httpReq := domain.BaseRequest{
+		Url:               _httpUtils.AddSepIfNeeded(req.ServerUrl) + url,
+		AuthorizationType: consts.BearerToken,
+		BearerToken: domain.BearerToken{
+			Token: req.Token,
+		},
+		Params: []domain.Param{
+			{
+				Name:  "id",
+				Value: fmt.Sprintf("%d", req.PlanId),
+			},
+			{
+				Name:  "environmentId",
+				Value: _stringUtils.IntToStr(req.EnvironmentId),
+			},
 		},
 	}
 

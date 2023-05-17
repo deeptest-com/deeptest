@@ -5,7 +5,9 @@ import (
 	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
+	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	_httpUtils "github.com/aaronchen2k/deeptest/pkg/lib/http"
+	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"strings"
 )
 
@@ -21,7 +23,9 @@ func (s *ExecInterfaceService) Run(call agentDomain.InterfaceCall) (ret domain.D
 
 	agentExec.ExecScene = req.ExecScene
 
+	logUtils.Info("DebugData:" + _commUtils.JsonEncode(req.DebugData))
 	ret, err = s.Request(req.DebugData)
+	logUtils.Info("DebugResponse:" + _commUtils.JsonEncode(ret))
 
 	err = s.RemoteService.SubmitInterfaceResult(req.DebugData, ret, call.ServerUrl, call.Token)
 

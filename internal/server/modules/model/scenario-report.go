@@ -34,12 +34,24 @@ type ScenarioReport struct {
 
 	Payload string `json:"payload"`
 
-	ScenarioId uint `json:"scenarioId"`
-	ProjectId  uint `json:"projectId"`
+	ScenarioId   uint `json:"scenarioId"`
+	ProjectId    uint `json:"projectId"`
+	PlanReportId uint `json:"planReportId"`
 
-	Logs []*ExecLogProcessor `gorm:"-" json:"logs"`
+	CreateUserId   uint                `json:"createUserId"`
+	CreateUserName string              `gorm:"-" json:"createUserName"`
+	SerialNumber   string              `json:"serialNumber"`
+	Logs           []*ExecLogProcessor `gorm:"-" json:"logs"`
+
+	ExecEnv   string `gorm:"-" json:"execEnv"`
+	ExecEnvId int    `json:"execEnvId"`
 }
 
 func (ScenarioReport) TableName() string {
 	return "biz_scenario_report"
+}
+
+type ScenarioReportDetail struct {
+	ScenarioReport
+	Priority string `json:"priority"`
 }

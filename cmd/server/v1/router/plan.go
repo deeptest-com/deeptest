@@ -25,9 +25,15 @@ func (m *PlanModule) Party() module.WebModule {
 		index.Post("/", m.PlanCtrl.Create).Name = "新建计划"
 		index.Put("/", m.PlanCtrl.Update).Name = "更新计划"
 		index.Delete("/{id:uint}", m.PlanCtrl.Delete).Name = "删除计划"
+		index.Post("/{id:uint}/clone", m.PlanCtrl.Clone).Name = "克隆计划"
+		index.Get("/planScenariosList", m.PlanCtrl.PlanScenariosList).Name = "计划中的场景列表"
 
 		index.Post("/{id:uint}/addScenarios", m.PlanCtrl.AddScenarios).Name = "添加场景"
 		index.Post("/{id:uint}/removeScenario", m.PlanCtrl.RemoveScenario).Name = "移除场景"
+		index.Post("/{id:uint}/removeScenarios", m.PlanCtrl.RemoveScenarios).Name = "批量移除场景"
+
+		index.Get("/statusDropDownOptions", m.PlanCtrl.StatusDropDownOptions).Name = "计划状态下拉选项"
+		index.Get("/testStageDropDownOptions", m.PlanCtrl.TestStageDropDownOptions).Name = "计划测试阶段下拉选项"
 	}
 
 	return module.NewModule("/plans", handler)

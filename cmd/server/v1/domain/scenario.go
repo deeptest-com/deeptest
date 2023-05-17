@@ -10,9 +10,12 @@ import (
 type ScenarioReqPaginate struct {
 	_domain.PaginateReq
 
-	CategoryId uint   `json:"categoryId"`
+	CategoryId int64  `json:"categoryId"`
 	Keywords   string `json:"keywords"`
 	Enabled    string `json:"enabled"`
+	Status     string `json:"status"`
+	Priority   string `json:"priority"`
+	Type       string `json:"type"`
 }
 
 type ScenarioAddInterfacesReq struct {
@@ -98,4 +101,14 @@ type ScenarioSimple struct {
 
 	Ordr     int              `json:"ordr"`
 	Children []ScenarioSimple `json:"children"`
+}
+
+type ScenarioPlanReqPaginate struct {
+	_domain.PaginateReq
+	ProjectId    uint              `json:"projectId"`
+	CategoryId   int64             `json:"categoryId"`
+	Status       consts.TestStatus `json:"status"`
+	UpdateUserId uint              `json:"updateUserId"`
+	Ref          bool              `json:"ref"`
+	Keywords     string            `json:"keywords"`
 }

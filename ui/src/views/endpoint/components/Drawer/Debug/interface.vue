@@ -5,7 +5,7 @@
         <InterfaceRequest v-if="debugData.method" :show-reuqest-invocation="false" :show-debug-data-url="false"></InterfaceRequest>
       </div>
 
-      <div id="design-splitter-v" :hidden="!debugData.method"></div>
+      <!-- <div id="design-splitter-v" :hidden="!debugData.method"></div> -->
 
       <div id="bottom-panel">
         <InterfaceResponse v-if="debugData.method"></InterfaceResponse>
@@ -70,8 +70,6 @@ const resize = () => {
     #bottom-panel {
       height: 360px;
       width: 100%;
-      padding: 4px;
-      overflow: auto;
     }
 
     #design-splitter-v {

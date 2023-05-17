@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <StatisticHeader />
+    <StatisticHeader :params="cardData" :type="0" />
     <div style="margin-top: 16px">
       <a-card :bordered="false">
         <template #title>
@@ -9,6 +9,12 @@
             <a-tab-pane :key="0" tab="所有项目"> </a-tab-pane> </a-tabs
         ></template>
         <template #extra>
+          <a-input-search
+            v-model:value="keywords"
+            style="width: 200px; margin-right: 20px"
+            placeholder="请输入项目名称搜索"
+            @search="onSearch"
+          />
           <a-button
             type="primary"
             style="margin-right: 20px"
@@ -21,13 +27,21 @@
           </a-radio-group>
         </template>
         <div>
-          <HomeList v-if="showMode == 'list'" :activeKey="activeKey" />
+          <HomeList
+            v-if="showMode == 'list'"
+            :activeKey="activeKey"
+            :searchValue="searchValue"
+            @edit="handleOpenEdit"
+            @delete="handleDelete"
+          />
 
           <CardList
             v-else
+            :activeKey="activeKey"
+            :searchValue="searchValue"
+            @join="handleJoin"
             @edit="handleOpenEdit"
             @delete="handleDelete"
-            :activeKey="activeKey"
           />
         </div>
       </a-card>
@@ -40,6 +54,13 @@
       @update:visible="createProjectModalVisible = false"
       @handleSuccess="handleCreateSuccess"
     />
+    <!-- 申请项目权限弹窗 -->
+    <ApplyProPermissionsModal
+      :visible="applyProPermissionsModalVisible"
+      :item="applyItem"
+      @update:visible="applyProPermissionsModalVisible = false"
+      @handleSuccess="handleSuccess"
+    />
   </div>
 </template>
 
@@ -48,6 +69,7 @@ import { computed, onMounted, reactive, ref } from "vue";
 import { Modal, notification } from "ant-design-vue";
 import StatisticHeader from "@/components/StatisticHeader/index.vue";
 import CreateProjectModal from "@/components/CreateProjectModal/index.vue";
+import ApplyProPermissionsModal from "@/components/ApplyProPermissions/index.vue";
 import HomeList from "./component/HomeList/index.vue";
 import CardList from "./component/CardList/index.vue";
 import { useStore } from "vuex";
@@ -59,9 +81,14 @@ import { setCache } from "@/utils/localCache";
 import settings from "@/config/settings";
 
 const store = useStore<{ Home: StateType }>();
+const cardData = computed<any>(() => store.state.Home.cardData);
 const activeKey = ref(1);
+const keywords = ref<string>("");
+const searchValue = ref("");
 const showMode = ref("card");
 const createProjectModalVisible = ref(false);
+const applyProPermissionsModalVisible = ref(false);
+const applyItem = ref({});
 let formState = ref({
   id: 0,
   logo: "",
@@ -71,43 +98,61 @@ let formState = ref({
   includeExample: false,
   desc: "",
 });
-// let queryParams = reactive<QueryParams>({
-// keywords: "",
-
-// });
 
 onMounted(() => {
+  getHearderData();
   getList(1);
 });
-
-const getList = async (current: number): Promise<void> => {
-  await store.dispatch("Home/queryProject", {
-    // keywords: queryParams.keywords,
-  });
+const onSearch = () => {
+  searchValue.value = keywords.value;
 };
-
+const getHearderData = async (): Promise<void> => {
+  await store.dispatch("Home/queryCard", { projectId: 0 });
+  await store.dispatch("Home/queryPie", { projectId: 0 });
+};
+const getList = async (current: number): Promise<void> => {
+  await store.dispatch("Home/queryProject", {});
+};
 // 创建项目成功的回调
 const handleCreateSuccess = () => {
   createProjectModalVisible.value = false;
-  // todo: 重新获取列表
+  getList(1);
+};
+// 加入项目成功回调
+const handleSuccess = async () => {
+  applyProPermissionsModalVisible.value = false;
   getList(1);
 };
 
 function handleTabClick(e: number) {
   console.log("activeKey", activeKey);
 }
+
+function handleJoin(item) {
+  console.log("handleJoin", item);
+  Modal.confirm({
+    title: "提示",
+    content: "您还没有该项目的访问权限，是否申请更多角色权限？",
+    okText: "申请权限",
+    cancelText: "取消",
+    onOk: async () => {
+      applyProPermissionsModalVisible.value = true;
+      applyItem.value = item;
+    },
+  });
+}
 function handleOpenAdd() {
   createProjectModalVisible.value = true;
   formState.value.id = 0;
 }
 function handleOpenEdit(item) {
-  formState.value.id = item.project_id;
-  formState.value.name = item.project_chinese_name;
+  formState.value.id = item.projectId;
+  formState.value.name = item.projectName;
   formState.value.logo = item.logo;
-  formState.value.shortName = item.project_name;
-  formState.value.adminId = item.admin_id;
-  formState.value.includeExample = item.include_example;
-  formState.value.desc = item.project_des;
+  formState.value.shortName = item.projectShortName;
+  formState.value.adminId = item.adminId;
+  formState.value.includeExample = item.includeExample;
+  formState.value.desc = item.projectDescr;
   createProjectModalVisible.value = true;
 }
 async function handleDelete(id) {

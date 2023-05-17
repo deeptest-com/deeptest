@@ -13,19 +13,21 @@ import (
 )
 
 type ScenarioReportCtrl struct {
-	ReportService *service.PlanReportService `inject:""`
+	ScenarioReportService *service.ScenarioReportService `inject:""`
 	BaseCtrl
 }
 
 func (c *ScenarioReportCtrl) List(ctx iris.Context) {
-	projectId, err := ctx.URLParamInt("currProjectId")
-	if projectId == 0 {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
-		return
-	}
+	/*
+		projectId, err := ctx.URLParamInt("currProjectId")
+		if projectId == 0 {
+			ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+			return
+		}
+	*/
 
 	var req serverDomain.ReportReqPaginate
-	if err := ctx.ReadQuery(&req); err != nil {
+	if err := ctx.ReadJSON(&req); err != nil {
 		errs := validate.ValidRequest(err)
 		if len(errs) > 0 {
 			logUtils.Errorf("参数验证失败", zap.String("错误", strings.Join(errs, ";")))
@@ -33,9 +35,8 @@ func (c *ScenarioReportCtrl) List(ctx iris.Context) {
 			return
 		}
 	}
-	req.ConvertParams()
 
-	data, err := c.ReportService.Paginate(req, projectId)
+	data, err := c.ScenarioReportService.Paginate(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -51,7 +52,7 @@ func (c *ScenarioReportCtrl) Get(ctx iris.Context) {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
-	report, err := c.ReportService.GetById(req.Id)
+	report, err := c.ScenarioReportService.GetById(req.Id)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return
@@ -67,7 +68,24 @@ func (c *ScenarioReportCtrl) Delete(ctx iris.Context) {
 		return
 	}
 
-	err = c.ReportService.DeleteById(req.Id)
+	err = c.ScenarioReportService.DeleteById(req.Id)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+}
+
+func (c *ScenarioReportCtrl) Create(ctx iris.Context) {
+	var req _domain.ReqId
+	err := ctx.ReadParams(&req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	err = c.ScenarioReportService.CreatePlanReport(req.Id)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

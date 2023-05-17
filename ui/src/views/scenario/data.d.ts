@@ -11,7 +11,9 @@ export interface QueryResult {
 
 export interface QueryParams {
   keywords:  string,
-  enabled: string,
+  status?: string,
+  type?: string,
+  priority?: string,
   page: number,
   pageSize: number,
 }

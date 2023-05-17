@@ -24,7 +24,7 @@ func (c *PlanReportCtrl) List(ctx iris.Context) {
 		return
 	}
 
-	var req serverDomain.ReportReqPaginate
+	var req serverDomain.PlanReportReqPaginate
 	if err := ctx.ReadQuery(&req); err != nil {
 		errs := validate.ValidRequest(err)
 		if len(errs) > 0 {

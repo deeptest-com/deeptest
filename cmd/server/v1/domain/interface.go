@@ -55,6 +55,7 @@ type InterfaceResp struct {
 	ResponseBodies []domain.ResponseBody `gorm:"default:{}" json:"ResponseBodies"`
 	Body           string                `gorm:"default:{}" json:"body"`
 	BodyType       string                `gorm:"default:''" json:"bodyType"`
+	ResponseCodes  string                `json:"ResponseCodes"`
 	//AuthorizationType string                 `gorm:"default:''" json:"authorizationType"`
 	//PreRequestScript  string                 `gorm:"default:''" json:"preRequestScript"`
 	//ValidationScript  string                 `gorm:"default:''" json:"validationScript"`

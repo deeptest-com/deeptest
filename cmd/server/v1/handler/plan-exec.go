@@ -5,6 +5,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	"github.com/kataras/iris/v12"
+	"github.com/snowlyg/multi"
 )
 
 type PlanExecCtrl struct {
@@ -51,7 +52,30 @@ func (c *PlanExecCtrl) SubmitResult(ctx iris.Context) {
 		return
 	}
 
-	report, err := c.PlanExecService.SaveReport(planId, result)
+	userId := multi.GetUserId(ctx)
+	report, err := c.PlanExecService.SaveReport(planId, userId, result)
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: report})
+}
+
+func (c *PlanExecCtrl) GetPlanReportNormalData(ctx iris.Context) {
+	planId, err := ctx.URLParamInt("id")
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+		return
+	}
+
+	environmentId, err := ctx.URLParamInt("environmentId")
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+		return
+	}
+
+	data, err := c.PlanExecService.GetPlanReportNormalData(uint(planId), uint(environmentId))
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.ParamErr.Msg})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data})
 }

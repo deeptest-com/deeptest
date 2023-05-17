@@ -13,21 +13,12 @@ type SummaryUserList struct {
 type SummaryDetails struct {
 	BaseModel
 
-	ProjectId          int64               `json:"project_id"`
-	ProjectName        string              `gorm:"type:text" json:"project_name"`
-	ProjectDes         string              `gorm:"type:text" json:"project_des"`
-	ProjectChineseName string              `gorm:"type:text" json:"project_chinese_name"`
-	ProjectCreateTime  string              `gorm:"type:text" json:"project_create_time"`
-	ScenarioTotal      int64               `json:"scenario_total"`
-	InterfaceTotal     int64               `json:"interface_total"`
-	ExecTotal          int64               `json:"exec_total"`
-	PassRate           float64             `json:"pass_rate"`
-	Coverage           float64             `json:"coverage"`
-	AdminUser          string              `gorm:"type:text" json:"admin_user"`
-	AdminId            int64               `json:"adminId"`
-	Logo               string              `json:"logo"`
-	IncludeExample     bool                `json:"include_example"`
-	Logs               []*ExecLogProcessor `gorm:"-" json:"logs"`
+	ProjectId      int64   `json:"projectId"`
+	ScenarioTotal  int64   `json:"scenarioTotal"`
+	InterfaceTotal int64   `json:"interfaceTotal"`
+	ExecTotal      int64   `json:"execTotal"`
+	PassRate       float64 `json:"passRate"`
+	Coverage       float64 `json:"coverage"`
 }
 
 // Scan 解码json字符串
@@ -43,34 +34,61 @@ func (summaryUserList *SummaryUserList) Value() (value driver.Value, err error) 
 
 type SummaryCard struct {
 	SummaryCardTotal
-	ProjectTotal int64   `json:"project_total"`
-	InterfaceHB  float64 `json:"interface_hb"`
-	ScenarioHB   float64 `json:"scenario_hb"`
-	CoverageHB   float64 `json:"coverage_hb"`
+	ProjectTotal int64   `json:"projectTotal"`
+	InterfaceHB  float64 `json:"interfaceHb"`
+	ScenarioHB   float64 `json:"scenarioHb"`
+	CoverageHB   float64 `json:"coverageHb"`
 }
 
 type SummaryCardTotal struct {
-	ScenarioTotal  int64               `gorm:"column:scenario_total" json:"scenario_total"`
-	InterfaceTotal int64               `gorm:"column:interface_total" json:"interface_total"`
-	ExecTotal      int64               `gorm:"column:exec_total" json:"exec_total"`
-	PassRate       float64             `gorm:"column:pass_rate" json:"pass_rate"`
+	ScenarioTotal  int64               `gorm:"column:scenario_total" json:"scenarioTotal"`
+	InterfaceTotal int64               `gorm:"column:interface_total" json:"interfaceTotal"`
+	ExecTotal      int64               `gorm:"column:exec_total" json:"execTotal"`
+	PassRate       float64             `gorm:"column:pass_rate" json:"passRate"`
 	Coverage       float64             `gorm:"column:coverage" json:"coverage"`
 	Logs           []*ExecLogProcessor `gorm:"-" json:"logs"`
 }
 
 type ProjectIdsGroupByUserId struct {
-	UserId     int64  `gorm:"-" json:"user_id"`
-	ProjectIds string `gorm:"-" json:"project_ids"`
+	UserId     int64  `gorm:"-" json:"userId"`
+	ProjectIds string `gorm:"-" json:"projectIds"`
 }
 
 type UserIdsGroupByProjectId struct {
-	ProjectIds int64  `gorm:"-" json:"project_ids"`
-	UserId     string `gorm:"-" json:"user_id"`
+	ProjectIds int64  `gorm:"-" json:"projectIds"`
+	UserId     string `gorm:"-" json:"userId"`
+}
+
+type ProjectsBugCount struct {
+	ProjectId int64 `json:"projectId"`
+	Count     int64 `json:"count"`
+}
+
+type ProjectIdAndId struct {
+	ProjectId int64 `json:"projectId"`
+	Id        int64 `json:"id"`
+}
+
+type ProjectIdAndFloat struct {
+	ProjectId int64   `json:"projectId"`
+	Coverage  float64 `json:"coverage"`
 }
 
 type UserIdAndName struct {
-	UserId   int64  `json:"user_id"`
-	UserName string `json:"user_name"`
+	ProjectId int64  `json:"projectId"`
+	UserId    int64  `json:"userId"`
+	UserName  string `json:"userName"`
+}
+
+type SummaryProjectInfo struct {
+	BaseModel
+	Name           string `json:"name"`
+	Descr          string `json:"descr"`
+	Logo           string `json:"logo"`
+	ShortName      string `json:"shortName"`
+	IncludeExample bool   `json:"includeExample"`
+	AdminId        uint   `json:"adminId"`
+	AdminName      string `json:"adminName"`
 }
 
 func (SummaryDetails) TableName() string {

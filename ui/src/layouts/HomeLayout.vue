@@ -35,6 +35,7 @@ export default defineComponent({
 <style scoped lang="less">
 .home-wrap {
     background: #F5F5F5;
+    min-width: 1440px;
 
     .home-header {
         width: 100%;

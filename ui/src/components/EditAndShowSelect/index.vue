@@ -31,15 +31,13 @@ import {
   CloseOutlined
 } from '@ant-design/icons-vue';
 const isEditing = ref(false);
-const fieldValue = ref('');
+const fieldValue:any = ref('');
 const props = defineProps({
   value: {
     required: true,
-    type: Number,
   },
   label: {
     required: true,
-    type: String,
   },
   options: {
     required: true,

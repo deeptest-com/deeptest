@@ -7,12 +7,16 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
+	"gorm.io/gorm"
 )
 
 type PlanExecService struct {
-	PlanRepo       *repo.PlanRepo       `inject:""`
-	PlanReportRepo *repo.PlanReportRepo `inject:""`
-	TestLogRepo    *repo.LogRepo        `inject:""`
+	PlanRepo           *repo.PlanRepo           `inject:""`
+	PlanReportRepo     *repo.PlanReportRepo     `inject:""`
+	ScenarioReportRepo *repo.ScenarioReportRepo `inject:""`
+	TestLogRepo        *repo.LogRepo            `inject:""`
+	EnvironmentRepo    *repo.EnvironmentRepo    `inject:""`
+	ScenarioNodeRepo   *repo.ScenarioNodeRepo   `inject:""`
 
 	ScenarioExecService *ScenarioExecService `inject:""`
 
@@ -48,19 +52,33 @@ func (s *PlanExecService) LoadExecData(planId, environmentId int) (ret agentExec
 	return
 }
 
-func (s *PlanExecService) SaveReport(planId int, result agentDomain.PlanExecResult) (
+func (s *PlanExecService) SaveReport(planId int, userId uint, result agentDomain.PlanExecResult) (
 	report model.PlanReport, err error) {
+	plan, err := s.PlanRepo.Get(uint(planId))
+	if err != nil {
+		return
+	}
+	projectId := plan.ProjectId
 
-	report.ProjectId = uint(planId)
+	report.PlanId = uint(planId)
+	report.ProjectId = projectId
+	report.Name = plan.Name
+	report.ExecEnvId = uint(result.EnvironmentId)
+	report.CreateUserId = userId
 	report.ProgressStatus = consts.End
 	report.ResultStatus = consts.Pass
 
+	scenarioReportIds := make([]uint, 0)
 	for _, scenarioResult := range result.Scenarios {
-		scenarioReport, _ := s.ScenarioExecService.SaveReport(scenarioResult.ID, *scenarioResult)
+		scenarioReport, _ := s.ScenarioExecService.GenerateReport(int(scenarioResult.ScenarioId), userId, *scenarioResult)
 		s.CombineReport(scenarioReport, &report)
+		scenarioReportIds = append(scenarioReportIds, scenarioResult.ScenarioReportId)
 	}
 
-	report.Duration = report.EndTime.Unix() - report.StartTime.Unix()
+	report.Duration = report.EndTime.UnixMilli() - report.StartTime.UnixMilli()
+	_ = s.PlanReportRepo.Create(&report)
+
+	_ = s.ScenarioReportRepo.BatchUpdatePlanReportId(scenarioReportIds, report.ID)
 
 	return
 }
@@ -68,10 +86,10 @@ func (s *PlanExecService) CombineReport(scenarioReport model.ScenarioReport, pla
 
 	planReport.InterfaceStatusMap = map[uint]map[consts.ResultStatus]int{}
 
-	if planReport.StartTime == nil || planReport.StartTime.Unix() > scenarioReport.StartTime.Unix() {
+	if planReport.StartTime == nil || planReport.StartTime.UnixMilli() > scenarioReport.StartTime.UnixMilli() {
 		planReport.StartTime = scenarioReport.StartTime
 	}
-	if planReport.EndTime == nil || planReport.EndTime.Unix() < scenarioReport.EndTime.Unix() {
+	if planReport.EndTime == nil || planReport.EndTime.UnixMilli() < scenarioReport.EndTime.UnixMilli() {
 		planReport.EndTime = scenarioReport.EndTime
 	}
 
@@ -89,6 +107,17 @@ func (s *PlanExecService) CombineReport(scenarioReport model.ScenarioReport, pla
 	planReport.TotalAssertionNum += scenarioReport.TotalAssertionNum
 	planReport.PassAssertionNum += scenarioReport.PassAssertionNum
 	planReport.FailAssertionNum += scenarioReport.FailAssertionNum
+
+	planReport.TotalInterfaceNum += scenarioReport.TotalInterfaceNum
+	planReport.PassInterfaceNum += scenarioReport.PassInterfaceNum
+	planReport.FailInterfaceNum += scenarioReport.FailInterfaceNum
+
+	planReport.TotalScenarioNum += 1
+	if scenarioReport.ResultStatus == consts.Fail {
+		planReport.FailScenarioNum += 1
+	} else {
+		planReport.PassScenarioNum += 1
+	}
 
 	for keyId := range scenarioReport.InterfaceStatusMap {
 		if planReport.InterfaceStatusMap[keyId] == nil {
@@ -180,4 +209,46 @@ func (s *PlanExecService) summarizeInterface(report *model.PlanReport) {
 
 		report.TotalInterfaceNum++
 	}
+}
+
+func (s *PlanExecService) GetPlanReportNormalData(planId, environmentId uint) (ret agentDomain.PlanNormalData, err error) {
+	plan, err := s.PlanRepo.Get(planId)
+	if err != nil {
+		return
+	}
+
+	environment, err := s.EnvironmentRepo.Get(environmentId)
+	if err != nil {
+		return
+	}
+
+	planScenarioRelation, err := s.PlanRepo.ListScenarioRelation(planId)
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return
+	}
+
+	if len(planScenarioRelation) > 0 {
+		scenarioIds := make([]uint, 0)
+		for _, v := range planScenarioRelation {
+			scenarioIds = append(scenarioIds, v.ScenarioId)
+		}
+
+		interfaceNum, err := s.ScenarioNodeRepo.GetNumberByScenariosAndEntityCategory(scenarioIds, "processor_interface")
+		if err != nil {
+			return ret, err
+		}
+		assertionNum, err := s.ScenarioNodeRepo.GetNumberByScenariosAndEntityCategory(scenarioIds, "processor_assertion")
+		if err != nil {
+			return ret, err
+		}
+		ret.TotalInterfaceNum = int(interfaceNum)
+		ret.TotalAssertionNum = int(assertionNum)
+	}
+
+	ret.PlanId = planId
+	ret.PlanName = plan.Name
+	ret.ExecEnv = environment.Name
+	ret.TotalScenarioNum = len(planScenarioRelation)
+	return
+
 }

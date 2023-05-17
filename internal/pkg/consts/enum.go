@@ -511,7 +511,6 @@ const (
 	Tester         RoleType = "tester"
 	Developer      RoleType = "developer"
 	ProductManager RoleType = "product_manager"
-	ProjectLeader  RoleType = "project_leader"
 )
 
 func (e RoleType) String() string {
@@ -577,5 +576,53 @@ const (
 )
 
 func (e ParamIn) String() string {
+	return string(e)
+}
+
+type AuditStatus uint
+
+const (
+	Init    AuditStatus = 0
+	Agreed  AuditStatus = 1
+	Refused AuditStatus = 2
+)
+
+type TestStatus string
+
+const (
+	Draft     TestStatus = "draft"      //草稿
+	Disabled  TestStatus = "disabled"   //已禁用
+	ToExecute TestStatus = "to_execute" //待执行
+	Executed  TestStatus = "executed"   //已执行
+)
+
+func (e TestStatus) String() string {
+	return string(e)
+}
+
+type TestStage string
+
+const (
+	UintTest        TestStage = "unit_test"        //单元测试
+	IntegrationTest TestStage = "integration_test" //集成测试
+	SystemTest      TestStage = "system_test"      //系统测试
+	AcceptanceTest  TestStage = "acceptance_test"  //验收测试
+)
+
+func (e TestStage) String() string {
+	return string(e)
+}
+
+type TestType string
+
+//冒烟测试、逻辑验证、异常测试、性能测试、接口合规测试
+
+const (
+	ApiTest         TestType = "api_test"         //接口测试
+	PerformanceTest TestType = "performance_test" //性能测试
+	SmokeTest       TestType = "smoke_test"       //冒烟测试
+)
+
+func (e TestType) String() string {
 	return string(e)
 }

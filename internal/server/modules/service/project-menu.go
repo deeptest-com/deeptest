@@ -21,10 +21,5 @@ func (s *ProjectMenuService) GetUserMenuList(userId uint) (ret []model.ProjectMe
 		return
 	}
 
-	projectRole, err := s.ProjectRoleRepo.FindById(projectMemberRole.ProjectRoleId)
-	if err != nil {
-		return
-	}
-
-	return s.ProjectMenuRepo.GetRoleMenuList(projectMemberRole.ProjectRoleId, projectRole.Name)
+	return s.ProjectMenuRepo.GetRoleMenuList(projectMemberRole.ProjectRoleId)
 }

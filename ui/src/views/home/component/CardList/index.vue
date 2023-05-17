@@ -2,26 +2,28 @@
   <div class="card-list p-2">
     <div class="p-2 bg-white">
       <List
-        :grid="{ gutter: 5, xs: 1, sm: 2, md: 4, lg: 4, xl: 3, xxl: grid }"
-        :data-source="tableList"
+        :grid="{ gutter: 5, xs: 1, sm: 2, md: 4, lg: 4, xl: grid, xxl: grid }"
+        :data-source="searchValue!=''? filterList:tableList"
         :pagination="paginationProp"
         :loading="loading"
       >
         <template #header> </template>
         <template #renderItem="{ item }">
           <ListItem>
-            <Card class="card" @click="goProject(item?.project_id)">
-              <!-- <template #title> -->
+            <Card class="card" @click="goProject(item?.projectId)">
               <div class="card-title">
                 <div class="title">
-                  <!-- <Avatar style="background-color: #1890ff">
-                    <template #icon> -->
-                      <img :src="getProjectLogo(item?.logo)" alt="" />
-                    <!-- </template>
-                  </Avatar> -->
-                  <span class="card-title-text">{{
-                    item?.project_chinese_name
-                  }}</span>
+                  <img :src="getProjectLogo(item?.logo)" alt="" />
+
+                  <span
+                    class="card-title-text"
+                    :title="item?.projectName"
+                    >{{
+                      item?.projectName.length > 13
+                        ? item?.projectName.substring(0, 13) + "..."
+                        : item?.projectName
+                    }}</span
+                  >
                 </div>
 
                 <div class="action">
@@ -31,6 +33,9 @@
                     </span>
                     <template #overlay>
                       <a-menu>
+                         <a-menu-item @click="handleJoin(item)">
+                          <a href="javascript:;">加入项目</a>
+                        </a-menu-item>
                         <a-menu-item @click="handleEdit(item)">
                           <a href="javascript:;">编辑</a>
                         </a-menu-item>
@@ -38,36 +43,39 @@
                           <a href="javascript:;">启用/禁用</a>
                         </a-menu-item> -->
                         <a-menu-item>
-                          <a href="javascript:;" @click="handleDelete(item.project_id)">删除</a>
+                          <a
+                            href="javascript:;"
+                            @click="handleDelete(item.projectId)"
+                            >删除</a
+                          >
                         </a-menu-item>
                       </a-menu>
                     </template>
                   </a-dropdown>
                 </div>
               </div>
-
-              <!-- </template> -->
-              <div class="card-desc">
+              <div class="card-desc" :title="item?.projectDescr">
                 {{
-                  item.project_des.length > 35
-                    ? item.project_des.substring(0, 35) + "..."
-                    : item.project_des
-                    ? item.project_des
+                  item?.projectDescr.length > 66
+                    ? item?.projectDescr.substring(0, 66) + "..."
+                    : item?.projectDescr
+                    ? item?.projectDescr
                     : "&nbsp;"
                 }}
               </div>
 
               <div class="card-static">
                 <div>
-                  测试场景数： {{ item.scenario_total }}个 接口数： {{}}个
+                  <span>测试场景数：{{ item.scenarioTotal }}个</span>
+                  <span>接口数：{{item.interfaceTotal}}个</span>
                 </div>
                 <div>
-                  测试覆盖率：{{ item.coverage }}% 执行次数：
-                  {{ item.exec_total }}次
+                  <span> 测试覆盖率：{{ item.coverage }}%</span>
+                  <span> 执行次数：{{ item.execTotal }}次</span>
                 </div>
                 <div>
-                  测试通过率： {{ item.pass_rate }}% 发现缺陷数：
-                  {{ item.bug_total }}个
+                  <span> 测试通过率：{{ item.passRate }}%</span>
+                  <span>发现缺陷数：{{ item.bugTotal }}个</span>
                 </div>
               </div>
 
@@ -96,16 +104,7 @@ import {
   RedoOutlined,
   TableOutlined,
 } from "@ant-design/icons-vue";
-import {
-  List,
-  Card,
-  Image,
-  Typography,
-  Tooltip,
-  Slider,
-  Avatar,
-
-} from "ant-design-vue";
+import { List, Card, Image, Typography, Tooltip, Slider } from "ant-design-vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 import { StateType } from "../../store";
@@ -118,14 +117,19 @@ const props = defineProps({
   activeKey: {
     type: Number,
   },
+  searchValue: {
+    type: String,
+  },
 });
 const router = useRouter();
 const store = useStore<{ Home: StateType }>();
 const ListItem = List.Item;
 const CardMeta = Card.Meta;
 const list = computed<any>(() => store.state.Home.queryResult.list);
+const projectLoading = computed<any>(() => store.state.Home.loading);
 const TypographyText = Typography.Text;
-const tableList = ref([]);
+const tableList = ref<any>([]);
+const filterList=ref<any>([]);
 const loading = ref(true);
 //分页相关
 const page = ref(1);
@@ -142,7 +146,7 @@ const paginationProp = ref({
   onShowSizeChange: pageSizeChange,
 });
 //暴露内部方法
-const emit = defineEmits(["edit", "delete"]);
+const emit = defineEmits(["join","edit", "delete"]);
 //数据
 const data = ref([]);
 const height = computed(() => {
@@ -152,7 +156,33 @@ const height = computed(() => {
 function sliderChange(n) {
   pageSize.value = n * 4;
 }
-
+ 
+// 监听关键词搜索
+watch(
+  () => {
+    return props.searchValue;
+  },
+  async (newVal) => {
+    console.log("watch props.searchValue", props.searchValue);
+    if (!props.searchValue) {
+       total.value = tableList.value.length;
+        return;
+      }
+      const searchText = props.searchValue.toLowerCase();
+       filterList.value= tableList.value.filter(item => {
+        // console.log(item)
+        // 根据你的数据结构，修改下面的属性名
+        return (
+          item.projectName.toLowerCase().includes(searchText) 
+        );
+      });
+       total.value = filterList.value.length;
+      
+  },
+  {
+    immediate: true,
+  }
+);
 // 监听项目数据变化
 watch(
   () => {
@@ -160,7 +190,7 @@ watch(
   },
   async (newVal) => {
     console.log("watch list.value", list.value);
-    fetch(list.value.current_user_project_list);
+    fetch(list.value.userProjectList);
   },
   {
     immediate: true,
@@ -173,26 +203,34 @@ watch(
   },
   async (newVal) => {
     if (newVal == 1) {
-      fetch(list.value.current_user_project_list);
+      fetch(list.value.userProjectList||[]);
     } else {
-      fetch(list.value.all_project_list);
+      fetch(list.value.projectList||[]);
     }
   },
   {
     immediate: true,
   }
 );
-
+// 监听项目loading变化
+watch(
+  () => {
+    return projectLoading.value;
+  },
+  async (newVal) => {
+    loading.value = projectLoading.value.loading;
+  },
+  {
+    immediate: true,
+  }
+);
 async function fetch(data) {
   tableList.value = data;
+
   if (tableList.value && tableList.value.length > 0) {
     total.value = tableList.value.length;
-    loading.value = false;
-  } else {
-    setTimeout(() => {
-      loading.value = false;
-    }, 5000);
   }
+  
 }
 
 function pageChange(p, pz) {
@@ -203,19 +241,21 @@ function pageSizeChange(_current, size) {
   pageSize.value = size;
 }
 
+async function handleJoin(item) {
+  emit("join", item);
+}
 async function handleEdit(item) {
   emit("edit", item);
 }
 async function handleDelete(id) {
-  emit("delete",id)
-  
+  emit("delete", id);
 }
-function goProject(projectId: number) {
-  store.dispatch("ProjectGlobal/changeProject", projectId);
-  // store.dispatch("Environment/getEnvironment", { id: 0, projectId: projectId });
-
+async function goProject(projectId: number) {
+  await store.dispatch("ProjectGlobal/changeProject", projectId);
+  // 更新左侧菜单以及按钮权限
+  await store.dispatch("Global/getPermissionList");
   // 项目切换后，需要重新更新可选服务列表
-  store.dispatch("ServeGlobal/fetchServe");
+  await store.dispatch("ServeGlobal/fetchServe");
   router.push(`/workbench/index`);
 }
 </script>
@@ -246,6 +286,13 @@ function goProject(projectId: number) {
     }
     &-static {
       margin-top: 8px;
+      div {
+        display: flex;
+        // justify-content: space-between;
+        span {
+          flex: 1;
+        }
+      }
     }
   }
 }

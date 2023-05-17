@@ -1,70 +1,92 @@
 <template>
-  <div id="scenario-exec-main" class="scenario-exec-main dp-splits-v">
-    <div id="scenario-exec-left" class="left">
-      <PlanExecInfo />
-    </div>
-
-    <div id="scenario-exec-splitter" class="splitter"></div>
-
-<!--    <div id="scenario-exec-right" class="right">
-      <PlanExecDetail />
-    </div>-->
-  </div>
+    <a-drawer class="report-drawer" :closable="true" :width="1000" :bodyStyle="{ padding: '24px' }" :visible="drawerVisible"
+        @close="onClose">
+        <template #title>
+            <div class="drawer-header">
+                <div>{{ execResult.name || '测试报告详情' }}</div>
+            </div>
+        </template>
+        <div class="drawer-content">
+            <ReportBasicInfo :items="execResult.basicInfoList || {}" :show-operation="false" :scene="scene" />
+            <StatisticTable :scene="scene" :data="execResult.statisticData" />
+            <Progress :exec-status="execResult.progressStatus" v-if="scene !== ReportDetailType.QueryDetail" :percent="execResult.progressValue || 10"
+                @exec-cancel="execCancel" />
+            <template v-for="scenarioReportItem in execResult.scenarioReports" :key="scenarioReportItem.id">
+                <ScenarioCollapsePanel :show-scenario-info="showScenarioInfo" :expand-active="expandActive"
+                    :record="scenarioReportItem">
+                    <template #endpointData>
+                        <EndpointCollapsePanel v-if="scenarioReportItem.requestLogs.length > 0"
+                            :recordList="scenarioReportItem.requestLogs" />
+                    </template>
+                </ScenarioCollapsePanel>
+            </template>
+        </div>
+    </a-drawer>
 </template>
-
 <script setup lang="ts">
-import {computed, onMounted, reactive, ref, watch} from "vue";
-import {Plan} from '../data.d';
-import {useStore} from "vuex";
+import { defineProps, defineEmits, ref, computed, watch } from 'vue';
+import { useStore } from 'vuex';
 
-import {StateType as PlanStateType, StateType} from "../store";
-import debounce from "lodash.debounce";
-import {useRouter} from "vue-router";
-import {message, Modal} from "ant-design-vue";
-import {resizeWidth} from "@/utils/dom";
-import {StateType as GlobalStateType} from "@/store/global";
+import { ReportBasicInfo, StatisticTable, ScenarioCollapsePanel, EndpointCollapsePanel, Progress } from '@/views/component/Report/Components';
 
-import PlanExecInfo from "./components/Info.vue"
-import PlanExecDetail from "./components/Detail.vue"
+import { StateType as PlanStateType } from "../store";
+import { ReportDetailType } from '@/utils/enum';
+import settings from "@/config/settings";
+import bus from "@/utils/eventBus";
 
-const router = useRouter();
-const store = useStore<{ Plan: PlanStateType; Global: GlobalStateType; }>();
-const collapsed = computed<boolean>(()=> store.state.Global.collapsed);
-// const execData = computed<any>(()=> store.state.Plan.execResult);
-//
-// const id = ref(+router.currentRoute.value.params.id)
-// store.dispatch('Plan/loadExecResult', id.value);
+import { useExec } from '../hooks/exec';
 
-watch(collapsed, () => {
-  console.log('watch collapsed', collapsed.value)
-  resize()
-}, {deep: true})
+const props = defineProps<{
+    drawerVisible: boolean
+    title: string
+    scenarioExpandActive: boolean
+    showScenarioInfo: boolean
+    scene: string // 查看详情的场景 【执行测试计划 exec_plan， 执行测试场景 exec_scenario， 查看报告详情 query_detail】
+    reportId?: number
+}>();
 
-onMounted(() => {
-  console.log('onMounted')
-  resize()
-})
+const emits = defineEmits(['onClose']);
 
-onMounted(() => {
-  console.log('onMounted')
-})
+const store = useStore<{ Plan: PlanStateType }>();
+const execResult = computed<any>(() => store.state.Plan.execResult);
+const expandActive = ref(props.scenarioExpandActive || false);
+const { execCancel, execStart, OnWebSocketMsg, onWebSocketConnStatusMsg } = useExec();
 
-const resize = () => {
-  resizeWidth('scenario-exec-main',
-      'scenario-exec-left', 'scenario-exec-splitter', 'scenario-exec-right',
-       800, 260)
+function onClose() {
+    emits('onClose');
 }
 
-</script>
+watch(() => {
+    return props;
+}, (val) => {
+    if (val.drawerVisible) {
+        execStart();
+        bus.on(settings.eventWebSocketMsg, OnWebSocketMsg);
+        bus.on(settings.eventWebSocketConnStatus, onWebSocketConnStatusMsg);
+    } else {
+        execCancel();
+        bus.off(settings.eventWebSocketMsg, OnWebSocketMsg);
+        bus.off(settings.eventWebSocketConnStatus, onWebSocketConnStatusMsg);
+    }
+}, {
+    immediate: true,
+    deep: true
+});
 
-<style lang="less" scoped>
-.scenario-exec-main {
-  .left {
-    flex: 1;
-    width: auto;
-  }
-  .right {
-    width: 260px;
-  }
+watch(() => {
+    return execResult.value;
+}, (val) => {
+    console.log(' ~~~~~ execResult ~~~~~~ ', val);
+}, {
+    immediate: true,
+    deep: true
+});
+
+</script>
+<style scoped lang="less">
+.report-drawer {
+    :deep(.ant-drawer-header) {
+        box-shadow: 0px 1px 0px rgba(0, 0, 0, 0.06);
+    }
 }
 </style>

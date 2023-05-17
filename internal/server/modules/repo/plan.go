@@ -3,6 +3,7 @@ package repo
 import (
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
@@ -11,11 +12,15 @@ import (
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
+	"strconv"
 )
 
 type PlanRepo struct {
-	DB       *gorm.DB  `inject:""`
-	BaseRepo *BaseRepo `inject:""`
+	DB             *gorm.DB        `inject:""`
+	BaseRepo       *BaseRepo       `inject:""`
+	ProjectRepo    *ProjectRepo    `inject:""`
+	UserRepo       *UserRepo       `inject:""`
+	PlanReportRepo *PlanReportRepo `inject:""`
 }
 
 func NewPlanRepo() *PlanRepo {
@@ -27,7 +32,7 @@ func (r *PlanRepo) Paginate(req v1.PlanReqPaginate, projectId int) (data _domain
 	var categoryIds []uint
 
 	if req.CategoryId > 0 {
-		categoryIds, err = r.BaseRepo.GetAllChildIds(req.CategoryId, model.Category{}.TableName(),
+		categoryIds, err = r.BaseRepo.GetAllChildIds(uint(req.CategoryId), model.Category{}.TableName(),
 			serverConsts.PlanCategory, projectId)
 		if err != nil {
 			return
@@ -40,34 +45,87 @@ func (r *PlanRepo) Paginate(req v1.PlanReqPaginate, projectId int) (data _domain
 
 	if len(categoryIds) > 0 {
 		db.Where("category_id IN(?)", categoryIds)
+	} else if req.CategoryId == -1 {
+		db.Where("category_id IN(?)", -1)
 	}
 
 	if req.Keywords != "" {
 		db = db.Where("name LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords))
 	}
 	if req.Enabled != "" {
-		db = db.Where("disabled = ?", commonUtils.IsDisable(req.Enabled))
+		db = db.Where("biz_plan.disabled = ?", commonUtils.IsDisable(req.Enabled))
 	}
 
+	if req.Status != "" {
+		db = db.Where("status = ?", req.Status)
+	}
+	if req.AdminId != 0 {
+		db = db.Where("admin_id = ?", req.AdminId)
+	}
 	err = db.Count(&count).Error
 	if err != nil {
 		logUtils.Errorf("count scenario error", zap.String("error:", err.Error()))
 		return
 	}
 
-	scenarios := make([]*model.Plan, 0)
+	plans := make([]*model.Plan, 0)
 
 	err = db.
 		Scopes(dao.PaginateScope(req.Page, req.PageSize, req.Order, req.Field)).
-		Find(&scenarios).Error
+		Find(&plans).Error
 	if err != nil {
 		logUtils.Errorf("query scenario error", zap.String("error:", err.Error()))
 		return
 	}
-
-	data.Populate(scenarios, count, req.Page, req.PageSize)
+	r.CombinePassRate(plans)
+	r.CombineUserName(plans)
+	data.Populate(plans, count, req.Page, req.PageSize)
 
 	return
+}
+
+func (r *PlanRepo) CombineUserName(data []*model.Plan) {
+	userIds := make([]uint, 0)
+	for _, v := range data {
+		userIds = append(userIds, v.AdminId)
+		userIds = append(userIds, v.UpdateUserId)
+	}
+	userIds = commonUtils.ArrayRemoveUintDuplication(userIds)
+
+	users, _ := r.UserRepo.FindByIds(userIds)
+
+	userIdNameMap := make(map[uint]string)
+	for _, v := range users {
+		userIdNameMap[v.ID] = v.Name
+	}
+
+	for _, v := range data {
+		if adminName, ok := userIdNameMap[v.AdminId]; ok {
+			v.AdminName = adminName
+		}
+		if updateUserName, ok := userIdNameMap[v.UpdateUserId]; ok {
+			v.UpdateUserName = updateUserName
+		}
+	}
+}
+
+func (r *PlanRepo) CombinePassRate(data []*model.Plan) {
+	for _, v := range data {
+		planReport, err := r.PlanReportRepo.GetLastByPlanId(v.ID)
+		if err != nil && err != gorm.ErrRecordNotFound {
+			logUtils.Errorf("get plan report err", zap.String("error:", err.Error()))
+			continue
+		}
+		if planReport.ID == 0 {
+			v.TestPassRate = "n/a"
+			continue
+		}
+		if planReport.PassScenarioNum == 0 || planReport.TotalScenarioNum == 0 {
+			v.TestPassRate = "0%"
+		} else {
+			v.TestPassRate = strconv.Itoa(planReport.PassScenarioNum*100/planReport.TotalScenarioNum) + "%"
+		}
+	}
 }
 
 func (r *PlanRepo) Get(id uint) (scenario model.Plan, err error) {
@@ -108,6 +166,14 @@ func (r *PlanRepo) Create(scenario model.Plan) (ret model.Plan, bizErr *_domain.
 		return
 	}
 
+	err = r.UpdateSerialNumber(scenario.ID, scenario.ProjectId)
+	if err != nil {
+		logUtils.Errorf("add plan serial number error", zap.String("error:", err.Error()))
+		bizErr = &_domain.BizErr{Code: _domain.SystemErr.Code}
+
+		return
+	}
+
 	ret = scenario
 
 	return
@@ -115,9 +181,14 @@ func (r *PlanRepo) Create(scenario model.Plan) (ret model.Plan, bizErr *_domain.
 
 func (r *PlanRepo) Update(req model.Plan) error {
 	values := map[string]interface{}{
-		"name":     req.Name,
-		"desc":     req.Desc,
-		"disabled": req.Disabled,
+		"name":           req.Name,
+		"desc":           req.Desc,
+		"status":         req.Status,
+		"admin_id":       req.AdminId,
+		"category_id":    req.CategoryId,
+		"test_stage":     req.TestStage,
+		"update_user_id": req.UpdateUserId,
+		"disabled":       req.Disabled,
 	}
 	err := r.DB.Model(&req).Where("id = ?", req.ID).Updates(values).Error
 	if err != nil {
@@ -169,8 +240,8 @@ func (r *PlanRepo) GetChildrenIds(id uint) (ids []int, err error) {
 	return
 }
 
-func (r *PlanRepo) AddScenarios(planId int, scenarioIds []int) (err error) {
-	relations, _ := r.ListScenarioRelation(uint(planId))
+func (r *PlanRepo) AddScenarios(planId uint, scenarioIds []uint) (err error) {
+	relations, _ := r.ListScenarioRelation(planId)
 	existMap := map[uint]bool{}
 	for _, item := range relations {
 		existMap[item.ScenarioId] = true
@@ -179,30 +250,32 @@ func (r *PlanRepo) AddScenarios(planId int, scenarioIds []int) (err error) {
 	var pos []model.RelaPlanScenario
 
 	for _, id := range scenarioIds {
-		if existMap[uint(id)] {
+		if existMap[id] {
 			continue
 		}
 
 		po := model.RelaPlanScenario{
-			PlanId:     uint(planId),
-			ScenarioId: uint(id),
+			PlanId:     planId,
+			ScenarioId: id,
 		}
 		pos = append(pos, po)
 	}
-
+	if len(pos) == 0 {
+		return
+	}
 	err = r.DB.Create(&pos).Error
 
 	return
 }
 
 func (r *PlanRepo) ListScenario(id uint) (pos []model.Scenario, err error) {
-	relations, _ := r.ListScenarioRelation(uint(id))
+	relations, _ := r.ListScenarioRelation(id)
 	var scenarioIds []uint
 	for _, item := range relations {
 		scenarioIds = append(scenarioIds, item.ScenarioId)
 	}
 
-	err = r.DB.
+	err = r.DB.Model(model.Scenario{}).
 		Where("id IN (?)", scenarioIds).
 		Where("NOT deleted").
 		Find(&pos).Error
@@ -211,7 +284,7 @@ func (r *PlanRepo) ListScenario(id uint) (pos []model.Scenario, err error) {
 }
 
 func (r *PlanRepo) ListScenarioRelation(id uint) (pos []model.RelaPlanScenario, err error) {
-	err = r.DB.
+	err = r.DB.Model(model.RelaPlanScenario{}).
 		Where("plan_id=?", id).
 		Where("NOT deleted").
 		Find(&pos).Error
@@ -221,5 +294,90 @@ func (r *PlanRepo) ListScenarioRelation(id uint) (pos []model.RelaPlanScenario, 
 func (r *PlanRepo) RemoveScenario(planId int, scenarioId int) (err error) {
 	r.DB.Where("plan_id = ? && scenario_id = ?", planId, scenarioId).Delete(&model.RelaPlanScenario{})
 
+	return
+}
+
+func (r *PlanRepo) RemoveScenarios(planId int, scenarioIds []uint) (err error) {
+	r.DB.Where("plan_id = ? && scenario_id In (?)", planId, scenarioIds).Delete(&model.RelaPlanScenario{})
+
+	return
+}
+
+func (r *PlanRepo) UpdateSerialNumber(id, projectId uint) (err error) {
+	var project model.Project
+	project, err = r.ProjectRepo.Get(projectId)
+	if err != nil {
+		return
+	}
+
+	err = r.DB.Model(&model.Plan{}).Where("id=?", id).Update("serial_number", project.ShortName+"-TP-"+strconv.Itoa(int(id))).Error
+	return
+}
+
+func (r *PlanRepo) StatusDropDownOptions() map[consts.TestStatus]string {
+	return map[consts.TestStatus]string{
+		consts.Draft:     "草稿",
+		consts.Disabled:  "已禁用",
+		consts.ToExecute: "待执行",
+		consts.Executed:  "已执行",
+	}
+}
+
+func (r *PlanRepo) TestStageDropDownOptions() map[consts.TestStage]string {
+	return map[consts.TestStage]string{
+		consts.UintTest:        "单元测试",
+		consts.IntegrationTest: "集成测试",
+		consts.SystemTest:      "系统测试",
+		consts.AcceptanceTest:  "验收测试",
+	}
+}
+
+func (r *PlanRepo) PlanScenariosPaginate(req v1.PlanScenariosReqPaginate, planId uint) (data _domain.PageData, err error) {
+	var count int64
+
+	db := r.DB.Model(&model.Scenario{}).
+		Select("biz_scenario.*, c.name category_name").
+		Joins("LEFT JOIN biz_plan_scenario_r r ON biz_scenario.id=r.scenario_id").
+		Joins("LEFT JOIN biz_category c ON biz_scenario.category_id=c.id").
+		Where("r.plan_id = ? AND NOT biz_scenario.deleted", planId)
+
+	if req.Keywords != "" {
+		db = db.Where("biz_scenario.name LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords))
+	}
+	if req.Enabled != "" {
+		db = db.Where("biz_scenario.disabled = ?", commonUtils.IsDisable(req.Enabled))
+	}
+	if req.Priority != "" {
+		db = db.Where("biz_scenario.priority = ?", req.Priority)
+	}
+	if req.CreateUserId != 0 {
+		db = db.Where("biz_scenario.create_user_id = ?", req.CreateUserId)
+	}
+
+	err = db.Count(&count).Error
+	if err != nil {
+		logUtils.Errorf("count scenario error", zap.String("error:", err.Error()))
+		return
+	}
+
+	scenarios := make([]*model.ScenarioDetail, 0)
+
+	err = db.
+		Scopes(dao.PaginateScope(req.Page, req.PageSize, req.Order, req.Field)).
+		Find(&scenarios).Error
+	if err != nil {
+		logUtils.Errorf("query scenario error", zap.String("error:", err.Error()))
+		return
+	}
+
+	data.Populate(scenarios, count, req.Page, req.PageSize)
+
+	return
+}
+
+func (r *PlanRepo) GetScenarioNumByPlan(planId uint) (num int64, err error) {
+	err = r.DB.Model(model.RelaPlanScenario{}).
+		Where("plan_id = ? AND NOT deleted", planId).
+		Count(&num).Error
 	return
 }

@@ -11,7 +11,7 @@
         }"
     >
         <template #duration="{ record }">
-            {{ record.duration }}s
+            <span v-html="formatWithSeconds(record.duration)"></span>
         </template> 
         <template #startTime="{ record }">
             {{ momentUtc(record.startTime) }} ~  {{ momentUtc(record.endTime) }}
@@ -37,7 +37,7 @@ import ExecDetail from '@/views/report/Detail/Index.vue';
 
 import { StateType as ReportStateType } from '@/views/report/store';
 import { StateType as PlanStateType } from '../store';  
-import { momentUtc } from '@/utils/datetime';
+import { momentUtc, formatWithSeconds } from '@/utils/datetime';
 import { ReportDetailType } from '@/utils/enum';
 
 const props = defineProps<{

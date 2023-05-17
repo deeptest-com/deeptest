@@ -31,7 +31,7 @@
             <span class="report-planname" @click="handleQueryDetail(record)">{{ record.name }}</span>
         </template>
         <template #duration="{ record }">
-            <span>{{ record.duration }}s</span>
+            <span v-html="formatWithSeconds(record.duration)"></span>
         </template>
         <template #executionTime="{ record }">
             <span>{{ momentUtc(record.startTime) }}</span>
@@ -62,7 +62,7 @@ import { MoreOutlined } from "@ant-design/icons-vue";
 import { StateType as ProjectStateType } from "@/store/project";
 import { StateType } from "../store";
 import { PaginationConfig } from "../data";
-import { momentUtc } from "@/utils/datetime";
+import { momentUtc, formatWithSeconds } from "@/utils/datetime";
 
 defineProps({
     loading: {

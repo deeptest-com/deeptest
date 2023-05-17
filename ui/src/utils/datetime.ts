@@ -25,8 +25,8 @@ export function percentDef(numb, total) {
     return Number(numb / total * 100).toFixed(2) + '%';
 }
 
-export function transformWithSeconds(num) {
+export function formatWithSeconds(num) {
     if (num === 0) return `0 <span style="color: rgba(0, 0, 0, 0.85)">ms</span>`;
     if (num > 1000) return `${num / 1000} <span  style="color: rgba(0, 0, 0, 0.85)">s</span>`;
-    return `${num} <span style="color: rgba(0, 0, 0, 0.85)">ms</span>`
+    return `${num || 0} <span style="color: rgba(0, 0, 0, 0.85)">ms</span>`
 }

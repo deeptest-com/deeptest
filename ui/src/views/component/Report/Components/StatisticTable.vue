@@ -14,7 +14,7 @@
             </TextItem>
             <TextItem class="statistical-info-item" label="总耗时" label-style="width: 140px">
                 <template #value>
-                    <span style="color: #04C495" v-html="transformWithSeconds(statiscalResult.duration)"></span>
+                    <span style="color: #04C495" v-html="formatWithSeconds(statiscalResult.duration)"></span>
                 </template>
             </TextItem>
             <TextItem class="statistical-info-item" label-class-name="failed" label="失败"
@@ -22,8 +22,9 @@
             </TextItem>
             <TextItem class="statistical-info-item" label="平均接口请求耗时" label-style="width: 140px">
                 <template #value>
-                    <span class="value"><span style="color: #04C495" v-html="transformWithSeconds(statiscalResult.averageDuration)">
-                    </span></span>  
+                    <span class="value"><span style="color: #04C495"
+                            v-html="formatWithSeconds(statiscalResult.averageDuration)">
+                        </span></span>
                 </template>
             </TextItem>
             <TextItem class="statistical-info-item" label-class-name="notest" label="未测"
@@ -41,7 +42,7 @@ import * as echarts from 'echarts';
 import TextItem from './TextItem.vue';
 
 import { ReportDetailType } from '@/utils/enum';
-import { percentDef, transformWithSeconds } from '@/utils/datetime';
+import { percentDef, formatWithSeconds } from '@/utils/datetime';
 
 const props = defineProps<{
     scene: string
@@ -53,7 +54,13 @@ const myChart = ref<any>(null);
 const statiscalResult = ref<any>({});
 const loading = ref(false);
 const labelMap = props.scene !== ReportDetailType.ExecScenario ? '测试场景(成功/失败)' : '断言数(成功/失败)';
-const initOptions = ref({
+const initOptions = ref<any>({
+    tooltip: {
+        trigger: 'item',
+        formatter: (params) => {
+            return `${params.data.name}: ${params.data.value}`
+        }
+    },
     color: ['#04C495', '#F63838', 'rgba(0, 0, 0, 0.28)'],
     series: [
         {
@@ -62,29 +69,24 @@ const initOptions = ref({
             radius: ['40%', '70%'],
             avoidLabelOverlap: false,
             label: {
-                show: false,
-                position: 'center'
-            },
-            emphasis: {
-                label: {
-                    show: true,
-                    formatter: (params: any) => {
-                        return [`{subTitle|${params.data.name}}`, `{title|${params.data.value}}`].join('\n')
+                position: 'center',
+                show: true,
+                color: '#1E7CE8',
+                lineHeight: 16,
+                fontSize: 12,
+                rich: {
+                    subTitle: {
+                        fontSize: 12,
+                        lineHeight: 18,
+                        marginBottom: 10,
+                        color: 'rgba(0, 0, 0, 0.85)'
                     },
-                    rich: {
-                        subTitle: {
-                            fontSize: 12,
-                            lineHeight: 18,
-                            marginBottom: 10,
-                            color: 'rgba(0, 0, 0, 0.85)'
-                        },
-                        title: {
-                            fontSize: 24,
-                            lineHeight: 29,
-                            color: 'rgba(0, 0, 0, 0.85)'
-                        }
+                    title: {
+                        fontSize: 24,
+                        lineHeight: 29,
+                        color: 'rgba(0, 0, 0, 0.85)'
                     }
-                },
+                }
             },
             labelLine: {
                 show: false
@@ -146,6 +148,12 @@ function initData(data: any) {
         name: '未测'
     }];
     initOptions.value.series[0].data = chartData;
+    initOptions.value.series[0].label = {
+        ...initOptions.value.series[0].label,
+        formatter: () => {
+            return [`{subTitle|通过}`, `{title|${statiscalData.passNum}}`].join('\n')
+        },
+    }
     statiscalResult.value = { ...statiscalData };
     console.log(myChart.value);
     console.log('~~~~~ statiscalResult ~~~~~', statiscalResult.value);

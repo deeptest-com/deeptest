@@ -260,7 +260,9 @@ func (r *PlanRepo) AddScenarios(planId uint, scenarioIds []uint) (err error) {
 		}
 		pos = append(pos, po)
 	}
-
+	if len(pos) == 0 {
+		return
+	}
 	err = r.DB.Create(&pos).Error
 
 	return

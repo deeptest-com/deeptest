@@ -1,18 +1,10 @@
 <template>
   <div class="scenario-exec-info-main">
-    <ReportBasicInfo :items="baseInfoList || []" :scene="ReportDetailType.ExecScenario" />
-    <StatisticTable :scene="ReportDetailType.ExecScenario" :data="execResult.statisticData" />
-    <Progress :exec-status="execResult.progressStatus" :percent="execResult.progressValue || 10" @exec-cancel="execCancel" />
-<!--    <template v-for="scenarioReportItem in execResult.scenarioReports" :key="scenarioReportItem.id">-->
-<!--      <ScenarioCollapsePanel :show-scenario-info="showScenarioInfo"-->
-<!--                             :expand-active="expandActive"-->
-<!--                             :record="scenarioReportItem">-->
-<!--        <template #endpointData>-->
-<!--          <EndpointCollapsePanel v-if="scenarioReportItem.requestLogs.length > 0"-->
-<!--                                 :recordList="scenarioReportItem.requestLogs" />-->
-<!--        </template>-->
-<!--      </ScenarioCollapsePanel>-->
-<!--    </template>-->
+    <ReportBasicInfo :items="baseInfoList || []" :scene="ReportDetailType.ExecScenario"/>
+    <StatisticTable :scene="ReportDetailType.ExecScenario" :data="statisticData"/>
+    <Progress :exec-status="progressStatus" :percent="progressValue" @exec-cancel="execCancel"/>
+    <EndpointCollapsePanel v-if="recordList.length > 0"
+                           :recordList="recordList"/>
   </div>
 </template>
 
@@ -25,8 +17,14 @@ import {useStore} from "vuex";
 import settings from "@/config/settings";
 import {WebSocket} from "@/services/websocket";
 import {WsMsg} from "@/types/data";
-import { ReportBasicInfo, StatisticTable, ScenarioCollapsePanel, EndpointCollapsePanel, Progress } from '@/views/component/Report/Components';
-import { ReportDetailType } from "@/utils/enum";
+import {
+  ReportBasicInfo,
+  StatisticTable,
+  ScenarioCollapsePanel,
+  EndpointCollapsePanel,
+  Progress
+} from '@/views/component/Report/Components';
+import {ReportDetailType} from "@/utils/enum";
 import {StateType as GlobalStateType} from "@/store/global";
 import {ExecStatus} from "@/store/exec";
 import {StateType as ScenarioStateType} from "../../store";
@@ -37,15 +35,15 @@ import {useI18n} from "vue-i18n";
 import {getToken} from "@/utils/localToken";
 import {WsMsgCategory} from "@/utils/enum";
 import {Scenario} from "@/views/scenario/data";
-const { t } = useI18n();
+
+const {t} = useI18n();
 
 const router = useRouter();
-const store = useStore<{ Scenario: ScenarioStateType, Global: GlobalStateType, Exec: ExecStatus,ProjectSetting,Environment }>();
-const collapsed = computed<boolean>(()=> store.state.Global.collapsed);
+const store = useStore<{ Scenario: ScenarioStateType, Global: GlobalStateType, Exec: ExecStatus, ProjectSetting, Environment }>();
+const collapsed = computed<boolean>(() => store.state.Global.collapsed);
 const detailResult = computed<Scenario>(() => store.state.Scenario.detailResult);
 const currEnvId = computed(() => store.state.ProjectSetting.selectEnvId);
 const envList = computed(() => store.state.ProjectSetting.envList);
-// const environmentData = computed(() => store.state.Environment.environmentData);
 const scenarioId = computed(() => {
   return detailResult.value.id
 });
@@ -54,23 +52,26 @@ const baseInfoList = computed(() => {
   console.log(envList.value)
   const curEnv = envList.value.find((item: any) => item.id === currEnvId.value)
   return [
-    {value: detailResult.value.name, label: '场景名称'},
-    {value: curEnv.name || '暂无', label: '执行环境'},
+    {value: detailResult?.value?.name || '暂无', label: '场景名称'},
+    {value: curEnv?.name || '暂无', label: '执行环境'},
   ]
 })
-const execResult = computed<any>(() => store.state.Scenario.execResult);
-
-// // 执行场景ID变化时，执行场景
-// watch(() => {
-//   scenarioId.value
-// }, async (newVal:any, oldVal) => {
-//   if(newVal){
-//     await execStart();
-//   }
-// },{
-//   immediate: true
-// })
-
+const statisticData = ref({
+  "duration": 0, //执行耗时（单位：s)
+  "passScenarioNum": 0, //通过场景数
+  "failScenarioNum": 0, //失败场景数
+  "passInterfaceNum": 0,
+  "failInterfaceNum": 0,
+  "totalRequestNum": 0,
+  "passRequestNum": 0,
+  "failRequestNum": 0,
+  "passAssertionNum": 0, //通过检查点数
+  "failAssertionNum": 0, //失败检查点数
+});
+// const execResult = computed<any>(() => store.state.Scenario.execResult);
+const progressValue = ref(10);
+const recordList = ref([]);
+const progressStatus = ref('in_progress');
 const execStart = async () => {
   console.log('execStart')
   const data = {
@@ -96,35 +97,32 @@ onUnmounted(() => {
   bus.off(settings.eventWebSocketMsg, OnWebSocketMsg);
 })
 
-const result = ref({} as any)
-const logMap = ref({} as any)
-const logTreeData = ref({} as any)
 const OnWebSocketMsg = (data: any) => {
-
+  console.log('OnWebSocketMsg 832', data);
   if (!data.msg) return
   const wsMsg = JSON.parse(data.msg) as WsMsg;
-  console.log('121212', wsMsg)
-
-  // dealwith category
   if (wsMsg.category) {
     if (wsMsg.category == WsMsgCategory.Result) { // update result
-      result.value = wsMsg.data
-    } else { // update status
-      execResult.value.progressStatus = wsMsg.category
-      if (wsMsg.category === WsMsgCategory.InProgress) result.value = {}
+      const res = wsMsg.data;
+      progressStatus.value = wsMsg.category;
+      progressValue.value = 100;
+      statisticData.value = {
+        "duration": res.duration, //执行耗时（单位：s)
+        "passScenarioNum": res.passScenarioNum || 0, //通过场景数
+        "failScenarioNum": res.failScenarioNum || 0, //失败场景数
+        "passInterfaceNum": res.passInterfaceNum || 0,
+        "failInterfaceNum": res.failInterfaceNum || 0,
+        "totalRequestNum": res.totalRequestNum || 0,
+        "passRequestNum": res.passRequestNum || 0,
+        "failRequestNum": res.failRequestNum || 0,
+        "passAssertionNum": res.passAssertionNum || 0, //通过检查点数
+        "failAssertionNum": res.failAssertionNum || 0, //失败检查点数
+      }
+      console.log('statisticData', statisticData.value);
+      recordList.value = res?.logs?.[0]?.logs || [];
     }
-    return
   }
-  const log = wsMsg.data
-  logMap.value[log.id] = log
-  if (log.parentId === 0) { // root
-    logTreeData.value = log
-    logTreeData.value.name = execResult.value.name
-  } else {
-    if (!logMap.value[log.parentId]) logMap.value[log.parentId] = {}
-    if (!logMap.value[log.parentId].logs) logMap.value[log.parentId].logs = []
-    logMap.value[log.parentId].logs.push(log)
-  }
+
 }
 
 </script>
@@ -146,12 +144,15 @@ const OnWebSocketMsg = (data: any) => {
       .title {
         flex: 1;
       }
+
       .progress {
         width: 100px;
       }
+
       .status {
         width: 100px;
       }
+
       .opt {
         width: 260px;
         text-align: right;
@@ -164,6 +165,7 @@ const OnWebSocketMsg = (data: any) => {
 
     .result {
       padding: 5px 23px 6px 23px;
+
       .ant-row {
         margin: 6px 0;
       }

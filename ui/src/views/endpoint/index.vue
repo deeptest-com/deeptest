@@ -23,7 +23,7 @@
         </div>
         <EmptyCom>
           <template #content>
-            <a-table
+            <a-table :loading="fetching"
               :row-selection="{
                 selectedRowKeys: selectedRowKeys,
                 onChange: onSelectChange
@@ -211,6 +211,8 @@ const selectedCategoryId = ref<string|number>('');
 const onSelectChange = (keys: Key[], rows: any) => {
   selectedRowKeys.value = [...keys];
 };
+const fetching=ref(false);
+
 
 function handleCreateEndPoint() {
   if (serves.value.length === 0) {
@@ -276,12 +278,14 @@ async function selectNode(id) {
 }
 
 const loadList = debounce(async (page, size, opts?: any) => {
+  fetching.value = true;
   await store.dispatch('Endpoint/loadList', {
     "projectId": currProject.value.id,
     "page": page,
     "pageSize": size,
     opts,
   });
+  fetching.value = false;
 }, 300)
 
 async function handleTableFilter(filterState) {

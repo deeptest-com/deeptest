@@ -9,7 +9,6 @@
         <div class="drawer-content">
             <ReportBasicInfo  :items="detailResult.basicInfoList" :scene="scene" :show-operation="true" />
             <StatisticTable :scene="scene" :data="detailResult.statisticData" />
-            <Progress :exec-status="execResult.progressStatus" v-if="scene !== ReportDetailType.QueryDetail" :percent="60" @exec-cancel="execCancel" />
             <template v-for="scenarioReportItem in detailResult.scenarioReports" :key="scenarioReportItem.id">
                 <ScenarioCollapsePanel :show-scenario-info="showScenarioInfo" :expand-active="expandActive"
                     :record="scenarioReportItem">
@@ -25,11 +24,10 @@
 import { defineProps, defineEmits, ref, computed } from 'vue';
 import { useStore } from 'vuex';
 
-import { ReportBasicInfo, StatisticTable, ScenarioCollapsePanel, EndpointCollapsePanel, Progress } from '@/views/component/Report/Components';
+import { ReportBasicInfo, StatisticTable, ScenarioCollapsePanel, EndpointCollapsePanel } from '@/views/component/Report/Components';
 
 import { StateType as ReportStateType } from "../store";
 import { StateType as PlanStateType } from '@/views/plan/store';
-import { ReportDetailType } from '@/utils/enum';
 
 const props = defineProps<{
     drawerVisible: boolean
@@ -43,7 +41,6 @@ const props = defineProps<{
 const emits = defineEmits(['onClose', 'execCancel']);
 
 const store = useStore<{ Report: ReportStateType, Plan: PlanStateType }>();
-const execResult = computed<any>(() => store.state.Plan.execResult);
 const detailResult = computed<any>(() => store.state.Report.detailResult);
 const expandActive = ref(props.scenarioExpandActive || false);
 

@@ -12,15 +12,15 @@
             <TextItem class="statistical-info-item" label-class-name="success" label="通过"
                 :value="`${statiscalResult.passRate || '0.00%'} &nbsp; &nbsp;${statiscalResult.passNum || 0}`">
             </TextItem>
-            <TextItem class="statistical-info-item" label="总耗时" label-style="width: 147px">
+            <TextItem class="statistical-info-item" label="总耗时" label-style="width: 140px">
                 <template #value>
-                    <span style="color: #04C495">{{ statiscalResult.duration || 0 }} &nbsp;</span>秒
+                    <span style="color: #04C495">{{ statiscalResult.duration || 0 }} &nbsp;</span>毫秒
                 </template>
             </TextItem>
             <TextItem class="statistical-info-item" label-class-name="failed" label="失败"
                 :value="`${statiscalResult.failRate || '0.00%'} &nbsp; &nbsp;${statiscalResult.failNum || 0}`">
             </TextItem>
-            <TextItem class="statistical-info-item" label="平均接口请求耗时" label-style="width: 147px">
+            <TextItem class="statistical-info-item" label="平均接口请求耗时" label-style="width: 140px">
                 <template #value>
                     <span class="value"><span style="color: #04C495">{{ statiscalResult.averageDuration || 0 }}
                             &nbsp;</span>毫秒</span>
@@ -133,8 +133,8 @@ function initData(data: any) {
     statiscalData.passRate = percentDef(statiscalData.passNum, statiscalData.totalNum);
     statiscalData.failRate = percentDef(statiscalData.failNum, statiscalData.totalNum);
     statiscalData.notestRate = percentDef(statiscalData.notestNum, statiscalData.totalNum);
-    statiscalData.duration = transformWithSeconds(data.duration);
-    statiscalData.averageDuration = transformWithSeconds((data.duration / statiscalData.totalNum));
+    statiscalData.duration = data.duration;
+    statiscalData.averageDuration = data.duration / statiscalData.totalNum;
     const chartData = [{
         value: statiscalData.passNum,
         name: '通过'

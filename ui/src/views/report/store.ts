@@ -121,7 +121,7 @@ const StoreModel: ModuleType = {
                 const { data } = response;
                 let scenarioReports = data.scenarioReports;
                 scenarioReports = scenarioReports?.map((scenario: any) => {
-                    scenario.requestLogs = scenario.logs ? scenario.logs[0].logs : [];
+                    scenario.requestLogs = (scenario.logs && scenario.logs[0].logs) ? scenario.logs[0].logs : [];
                     return scenario;
                 })
                 commit('setDetail', {

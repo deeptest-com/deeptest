@@ -1,3 +1,3 @@
 <template>
-    展示console详情
+    <div></div>
 </template>

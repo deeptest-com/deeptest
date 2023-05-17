@@ -10,6 +10,8 @@ type ProjectMemberAudit struct {
 	ApplyUserId     uint               `json:"applyUserId"`
 	Status          consts.AuditStatus `gorm:"default:0" json:"status"`
 	Description     string             `json:"description" gorm:"type:text"`
+	AuditUserName   string             `gorm:"-" json:"auditUserName"`
+	ApplyUserName   string             `gorm:"-" json:"applyUserName"`
 }
 
 func (ProjectMemberAudit) TableName() string {

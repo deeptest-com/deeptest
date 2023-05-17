@@ -10,8 +10,11 @@
             onChange: handlePageChanged
         }"
     >
+        <template #duration="{ record }">
+            {{ record.duration }}s
+        </template> 
         <template #startTime="{ record }">
-            {{ momentUtc(record.startTime) }}
+            {{ momentUtc(record.startTime) }} ~  {{ momentUtc(record.endTime) }}
         </template>
         <template #operation="{ record }">
             <a-button type="primary" @click="queryDetail(record.id)">查看报告</a-button>
@@ -66,7 +69,7 @@ const columns = [
     },
     {
         title: '执行时间',
-        width: 160,
+        width: 340,
         dataIndex: 'startTime',
         slots: { customRender: 'startTime' },
     },

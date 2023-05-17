@@ -137,7 +137,7 @@ const columns = [
     dataIndex: 'serialNumber',
   },
   {
-    title: '摘要',
+    title: '测试计划',
     dataIndex: 'name',
     slots: { customRender: 'name' },
     ellips: true

@@ -207,7 +207,7 @@ const columns = [
 const auditColumns = [
   {
     title: "申请人",
-    dataIndex: "applyUserId",
+    dataIndex: "applyUserName",
     // slots: { customRender: "username" },
   },
   {

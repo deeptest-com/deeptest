@@ -1,11 +1,11 @@
 <template>
   <div class="scenario-exec-info-main">
-    <ReportBasicInfo :items="baseInfoList || []" :scene="scene" />
-<!--    <StatisticTable :scene="scene" :data="execResult.statisticData" />-->
-<!--    <Progress :exec-status="execResult.progressStatus" v-if="scene !== ReportDetailType.QueryDetail" :percent="execResult.progressValue || 10"-->
-<!--              @exec-cancel="execCancel" />-->
+    <ReportBasicInfo :items="baseInfoList || []" :scene="ReportDetailType.ExecScenario" />
+    <StatisticTable :scene="ReportDetailType.ExecScenario" :data="execResult.statisticData" />
+    <Progress :exec-status="execResult.progressStatus" :percent="execResult.progressValue || 10" @exec-cancel="execCancel" />
 <!--    <template v-for="scenarioReportItem in execResult.scenarioReports" :key="scenarioReportItem.id">-->
-<!--      <ScenarioCollapsePanel :show-scenario-info="showScenarioInfo" :expand-active="expandActive"-->
+<!--      <ScenarioCollapsePanel :show-scenario-info="showScenarioInfo"-->
+<!--                             :expand-active="expandActive"-->
 <!--                             :record="scenarioReportItem">-->
 <!--        <template #endpointData>-->
 <!--          <EndpointCollapsePanel v-if="scenarioReportItem.requestLogs.length > 0"-->
@@ -17,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, onMounted, onUnmounted, ref} from "vue";
+import {computed, onMounted, onUnmounted, ref, watch} from "vue";
 import {useRouter} from "vue-router";
 
 import {useStore} from "vuex";
@@ -26,7 +26,7 @@ import settings from "@/config/settings";
 import {WebSocket} from "@/services/websocket";
 import {WsMsg} from "@/types/data";
 import { ReportBasicInfo, StatisticTable, ScenarioCollapsePanel, EndpointCollapsePanel, Progress } from '@/views/component/Report/Components';
-
+import { ReportDetailType } from "@/utils/enum";
 import {StateType as GlobalStateType} from "@/store/global";
 import {ExecStatus} from "@/store/exec";
 import {StateType as ScenarioStateType} from "../../store";
@@ -59,47 +59,51 @@ const baseInfoList = computed(() => {
   ]
 })
 const execResult = computed<any>(() => store.state.Scenario.execResult);
+
+// // 执行场景ID变化时，执行场景
+// watch(() => {
+//   scenarioId.value
+// }, async (newVal:any, oldVal) => {
+//   if(newVal){
+//     await execStart();
+//   }
+// },{
+//   immediate: true
+// })
+
 const execStart = async () => {
   console.log('execStart')
   const data = {
     serverUrl: process.env.VUE_APP_API_SERVER, // used by agent to submit result to server
     token: await getToken(),
     scenarioId: scenarioId.value,
+    environmentId: currEnvId.value,
   }
   WebSocket.sentMsg(settings.webSocketRoom, JSON.stringify({act: 'execScenario', scenarioExecReq: data}))
 }
 
 const execCancel = () => {
-  console.log('execCancel')
   const msg = {act: 'stop', execReq: {scenarioId: scenarioId.value}}
   WebSocket.sentMsg(settings.webSocketRoom, JSON.stringify(msg))
 }
 
-const design = () => {
-  console.log('design')
-  router.push(`/scenario/design/${scenarioId.value}`)
-}
-
-onMounted(() => {
-  console.log('onMounted exec info')
+onMounted(async () => {
+  await execStart();
   bus.on(settings.eventWebSocketMsg, OnWebSocketMsg);
 })
 
 onUnmounted(() => {
-  console.log('onUnmounted exec info')
   bus.off(settings.eventWebSocketMsg, OnWebSocketMsg);
 })
 
-// const execResult = computed<any>(()=> store.state.Scenario.execResult);
 const result = ref({} as any)
 const logMap = ref({} as any)
 const logTreeData = ref({} as any)
 const OnWebSocketMsg = (data: any) => {
-  console.log('--- WebsocketMsgEvent in exec info', data)
 
   if (!data.msg) return
-
-  const wsMsg = JSON.parse(data.msg) as WsMsg
+  const wsMsg = JSON.parse(data.msg) as WsMsg;
+  console.log('121212', wsMsg)
 
   // dealwith category
   if (wsMsg.category) {
@@ -109,20 +113,16 @@ const OnWebSocketMsg = (data: any) => {
       execResult.value.progressStatus = wsMsg.category
       if (wsMsg.category === WsMsgCategory.InProgress) result.value = {}
     }
-
     return
   }
-
   const log = wsMsg.data
   logMap.value[log.id] = log
-
   if (log.parentId === 0) { // root
     logTreeData.value = log
     logTreeData.value.name = execResult.value.name
   } else {
     if (!logMap.value[log.parentId]) logMap.value[log.parentId] = {}
     if (!logMap.value[log.parentId].logs) logMap.value[log.parentId].logs = []
-
     logMap.value[log.parentId].logs.push(log)
   }
 }

@@ -53,7 +53,7 @@
         wrapClassName="drawer-exec"
         :bodyStyle="{padding:'16px',marginBottom:'56px'}"
         @close="onCloseExecDrawer">
-      <ExecInfo/>
+      <ExecInfo v-if="execDrawerVisible"/>
     </a-drawer>
     <EnvSelector
         :env-select-drawer-visible="selectEnvVisible"

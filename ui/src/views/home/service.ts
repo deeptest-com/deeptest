@@ -27,3 +27,12 @@ export async function queryPieData(params): Promise<any> {
         
     });
 }
+export async function applyJoin(params): Promise<any> {
+    return request({
+        url: `/projects/apply`,
+        method: 'post',
+        data: params,
+        
+    });
+}
+

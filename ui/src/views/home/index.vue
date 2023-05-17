@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <StatisticHeader :params="cardData" :type="0"/>
+    <StatisticHeader :params="cardData" :type="0" />
     <div style="margin-top: 16px">
       <a-card :bordered="false">
         <template #title>
@@ -39,6 +39,7 @@
             v-else
             :activeKey="activeKey"
             :searchValue="searchValue"
+            @join="handleJoin"
             @edit="handleOpenEdit"
             @delete="handleDelete"
           />
@@ -53,6 +54,13 @@
       @update:visible="createProjectModalVisible = false"
       @handleSuccess="handleCreateSuccess"
     />
+    <!-- 申请项目权限弹窗 -->
+    <ApplyProPermissionsModal
+      :visible="applyProPermissionsModalVisible"
+      :item="applyItem"
+      @update:visible="applyProPermissionsModalVisible = false"
+      @handleSuccess="handleSuccess"
+    />
   </div>
 </template>
 
@@ -61,6 +69,7 @@ import { computed, onMounted, reactive, ref } from "vue";
 import { Modal, notification } from "ant-design-vue";
 import StatisticHeader from "@/components/StatisticHeader/index.vue";
 import CreateProjectModal from "@/components/CreateProjectModal/index.vue";
+import ApplyProPermissionsModal from "@/components/ApplyProPermissions/index.vue";
 import HomeList from "./component/HomeList/index.vue";
 import CardList from "./component/CardList/index.vue";
 import { useStore } from "vuex";
@@ -70,13 +79,16 @@ import EditPage from "@/views/project/edit/edit.vue";
 import { useRouter } from "vue-router";
 import { setCache } from "@/utils/localCache";
 import settings from "@/config/settings";
+
 const store = useStore<{ Home: StateType }>();
 const cardData = computed<any>(() => store.state.Home.cardData);
 const activeKey = ref(1);
-const keywords = ref<string>('');
+const keywords = ref<string>("");
 const searchValue = ref("");
 const showMode = ref("card");
 const createProjectModalVisible = ref(false);
+const applyProPermissionsModalVisible = ref(false);
+const applyItem = ref({});
 let formState = ref({
   id: 0,
   logo: "",
@@ -88,15 +100,15 @@ let formState = ref({
 });
 
 onMounted(() => {
-  getHearderData()
+  getHearderData();
   getList(1);
 });
 const onSearch = () => {
   searchValue.value = keywords.value;
 };
 const getHearderData = async (): Promise<void> => {
-  await store.dispatch("Home/queryCard", {projectId:0});
-  await store.dispatch("Home/queryPie", {projectId:0});
+  await store.dispatch("Home/queryCard", { projectId: 0 });
+  await store.dispatch("Home/queryPie", { projectId: 0 });
 };
 const getList = async (current: number): Promise<void> => {
   await store.dispatch("Home/queryProject", {});
@@ -106,9 +118,28 @@ const handleCreateSuccess = () => {
   createProjectModalVisible.value = false;
   getList(1);
 };
+// 加入项目成功回调
+const handleSuccess = async () => {
+  applyProPermissionsModalVisible.value = false;
+  getList(1);
+};
 
 function handleTabClick(e: number) {
   console.log("activeKey", activeKey);
+}
+
+function handleJoin(item) {
+  console.log("handleJoin", item);
+  Modal.confirm({
+    title: "提示",
+    content: "您还没有该项目的访问权限，是否申请更多角色权限？",
+    okText: "申请权限",
+    cancelText: "取消",
+    onOk: async () => {
+      applyProPermissionsModalVisible.value = true;
+      applyItem.value = item;
+    },
+  });
 }
 function handleOpenAdd() {
   createProjectModalVisible.value = true;

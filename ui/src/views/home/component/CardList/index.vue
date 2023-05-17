@@ -33,6 +33,9 @@
                     </span>
                     <template #overlay>
                       <a-menu>
+                         <a-menu-item @click="handleJoin(item)">
+                          <a href="javascript:;">加入项目</a>
+                        </a-menu-item>
                         <a-menu-item @click="handleEdit(item)">
                           <a href="javascript:;">编辑</a>
                         </a-menu-item>
@@ -143,7 +146,7 @@ const paginationProp = ref({
   onShowSizeChange: pageSizeChange,
 });
 //暴露内部方法
-const emit = defineEmits(["edit", "delete"]);
+const emit = defineEmits(["join","edit", "delete"]);
 //数据
 const data = ref([]);
 const height = computed(() => {
@@ -238,6 +241,9 @@ function pageSizeChange(_current, size) {
   pageSize.value = size;
 }
 
+async function handleJoin(item) {
+  emit("join", item);
+}
 async function handleEdit(item) {
   emit("edit", item);
 }

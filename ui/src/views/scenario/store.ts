@@ -33,9 +33,6 @@ import {
 } from "@/services/category";
 
 import {getNodeMap} from "@/services/tree";
-import {UsedBy} from "@/utils/enum";
-import {getEnvList} from "@/views/projectSetting/service";
-import {listEnvironment} from "@/services/environment";
 
 export interface StateType {
     scenarioId: number;

@@ -107,18 +107,15 @@ func (r *PlanReportRepo) Get(id uint) (report model.PlanReportDetail, err error)
 	return
 }
 
-func (r *PlanReportRepo) Create(result *model.PlanReport) (bizErr *_domain.BizErr) {
-	err := r.DB.Model(&model.PlanReport{}).Create(result).Error
+func (r *PlanReportRepo) Create(result *model.PlanReport) (err error) {
+
+	err = r.DB.Model(&model.PlanReport{}).Create(result).Error
 	if err != nil {
 		logUtils.Errorf("create plan report error %s", err.Error())
-		bizErr.Code = _domain.SystemErr.Code
-
 		return
 	}
 	if err = r.UpdateSerialNumber(result.ID, result.ProjectId); err != nil {
 		logUtils.Errorf("update plan report serial number error %s", err.Error())
-		bizErr.Code = _domain.SystemErr.Code
-
 		return
 	}
 

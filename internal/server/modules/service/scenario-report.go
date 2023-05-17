@@ -24,7 +24,6 @@ func (s *ScenarioReportService) Paginate(req v1.ReportReqPaginate) (ret _domain.
 }
 
 func (s *ScenarioReportService) GetById(id uint) (report model.ScenarioReport, err error) {
-	//func (s *ScenarioReportService) GetById(id uint) (report model.ScenarioReportDetail, err error) {
 	report, err = s.ScenarioReportRepo.Get(id)
 	return
 }

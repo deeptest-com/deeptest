@@ -43,7 +43,8 @@ type ScenarioReport struct {
 	SerialNumber   string              `json:"serialNumber"`
 	Logs           []*ExecLogProcessor `gorm:"-" json:"logs"`
 
-	ExecEnvId int `json:"execEnvId"`
+	ExecEnv   string `gorm:"-" json:"execEnv"`
+	ExecEnvId int    `json:"execEnvId"`
 }
 
 func (ScenarioReport) TableName() string {

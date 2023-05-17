@@ -14,11 +14,12 @@ import (
 )
 
 type ScenarioReportRepo struct {
-	DB           *gorm.DB      `inject:""`
-	LogRepo      *LogRepo      `inject:""`
-	ProjectRepo  *ProjectRepo  `inject:""`
-	ScenarioRepo *ScenarioRepo `inject:""`
-	UserRepo     *UserRepo     `inject:""`
+	DB              *gorm.DB         `inject:""`
+	LogRepo         *LogRepo         `inject:""`
+	ProjectRepo     *ProjectRepo     `inject:""`
+	ScenarioRepo    *ScenarioRepo    `inject:""`
+	UserRepo        *UserRepo        `inject:""`
+	EnvironmentRepo *EnvironmentRepo `inject:""`
 }
 
 func (r *ScenarioReportRepo) Paginate(req v1.ReportReqPaginate) (data _domain.PageData, err error) {
@@ -74,24 +75,21 @@ func (r *ScenarioReportRepo) CombineUserName(data []*model.ScenarioReport) {
 }
 
 func (r *ScenarioReportRepo) Get(id uint) (report model.ScenarioReport, err error) {
-	//func (r *ScenarioReportRepo) Get(id uint) (reportDetail model.ScenarioReportDetail, err error) {
-	/*
-		err = r.DB.Model(&model.ScenarioReport{}).
-			Select("biz_scenario_report.*, e.name exec_env").
-			Joins("LEFT JOIN biz_environment e ON biz_scenario_report.exec_env_id=e.id").
-			Where("biz_scenario_report.id = ?", id).First(&reportDetail).Error
 
-	*/
 	err = r.DB.Where("id = ?", id).First(&report).Error
 	if err != nil {
 		logUtils.Errorf("find report by id error %s", err.Error())
 		return
 	}
-	//	var report model.ScenarioReport
-	//	copier.CopyWithOption(&report, &reportDetail, copier.Option{DeepCopy: true})
 
+	var env model.Environment
+	env, err = r.EnvironmentRepo.Get(uint(report.ExecEnvId))
+	if err != nil {
+		logUtils.Errorf("find environment by id error %s", err.Error())
+	}
+
+	report.ExecEnv = env.Name
 	root, err := r.getLogTree(report)
-	//	fmt.Println(root.Logs, "++++++++++++++")
 	report.Logs = root.Logs
 
 	return

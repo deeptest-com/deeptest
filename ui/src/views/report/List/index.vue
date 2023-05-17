@@ -154,5 +154,6 @@ const handleGetList = (params: any) => {
 <style scoped lang="less">
 .report-planname {
     cursor: pointer;
+    color: #447DFD;
 }
 </style>

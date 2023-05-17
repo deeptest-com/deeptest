@@ -63,7 +63,7 @@
                     <a class="operation-a" href="javascript:void (0)" @click="exec(record)">执行</a>
                   </a-menu-item>
                   <a-menu-item key="1">
-                    <a class="operation-a" href="javascript:void (0)" @click="report(record.id)">测试报告</a>
+                    <a class="operation-a" href="javascript:void (0)" @click="report(record)">测试报告</a>
                   </a-menu-item>
                   <!-- <a-menu-item key="1">
                     <a class="operation-a" href="javascript:void (0)" @click="exec(record.id)">执行</a>
@@ -107,6 +107,7 @@
     :scene="ReportDetailType.ExecPlan"
     @on-close="execReportVisible = false"
   />
+  <EnvSelector @on-cancel="envSelectVisible = false" :env-select-drawer-visible="envSelectVisible" @on-ok="onExec" />
 </template>
 
 <script setup lang="ts">
@@ -117,7 +118,8 @@ import { MoreOutlined } from "@ant-design/icons-vue";
 import { Modal } from "ant-design-vue";
 import debounce from "lodash.debounce";
 
-import PlanCreate from "../components/PlanCreate.vue";
+import EnvSelector from "@/views/component/EnvSelector/index.vue";
+import { PlanCreate } from "../components";
 import PlanEdit from "../edit/index.vue";
 import EditAndShowField from "@/components/EditAndShow/index.vue";
 import ExecResult from "../exec/index.vue";
@@ -180,10 +182,11 @@ const queryParams = reactive<any>({
 });
 const loading = ref<boolean>(false);
 const createDrawerVisible = ref(false);
-const editDrawerVisible = ref(false);
-const editTabActiveKey = ref('test-scenario');
-const execReportVisible = ref(false);
-const execReportTitle = ref('');
+const editDrawerVisible = ref(false); // 编辑弹窗控制visible
+const editTabActiveKey = ref('test-scenario'); // 打开编辑弹窗时,需要选中的tab
+const execReportVisible = ref(false); 
+const execReportTitle = ref(''); // 执行报告标题 
+const envSelectVisible = ref(false); // 选择执行环境
 
 const getList = debounce(async (current: number): Promise<void> => {
   loading.value = true;
@@ -197,6 +200,7 @@ const getList = debounce(async (current: number): Promise<void> => {
 }, 300);
 
 const onExec = async () => {
+  editDrawerVisible.value = false;
   await store.dispatch('Plan/initExecResult');
   execReportVisible.value = true;
 }
@@ -204,15 +208,14 @@ const onExec = async () => {
 const exec = async (record: any) => {
   await store.dispatch('Plan/initExecResult');
   await getCurrentPalnInfo(record);
-  execReportTitle.value = record.name;
-  execReportVisible.value = true;
+  envSelectVisible.value = true;
 };
 
 const report = async (record: any) => {
-  console.log('获取报告列表');
+  await getCurrentPalnInfo(record);
   editTabActiveKey.value = 'test-report';
   editDrawerVisible.value = true;
-  getCurrentPalnInfo(record);
+  
 };
 
 const clone = async (id: number) => {

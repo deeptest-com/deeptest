@@ -462,8 +462,8 @@ const StoreModel: ModuleType = {
             commit('setExecResult', payload);
         },
 
-        async initExecResult({ commit }, payload: any) {
-            commit('setExecResult', { statisticData: {}, basicInfo: {}, scenarioReports: [], progressValue: 10, progressStatus: 'in_progress' });
+        async initExecResult({ commit }) {
+            commit('setExecResult', { basicInfoList: [], statisticData: {},  scenarioReports: [], progressValue: 10, progressStatus: 'in_progress' });
         }
     }
 };

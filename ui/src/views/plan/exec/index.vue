@@ -7,7 +7,7 @@
             </div>
         </template>
         <div class="drawer-content">
-            <ReportBasicInfo :basic-info="execResult.basicInfo || {}" :scene="scene" />
+            <ReportBasicInfo :items="execResult.basicInfoList || {}" :show-operation="false" :scene="scene" />
             <StatisticTable :scene="scene" :data="execResult.statisticData" />
             <Progress :exec-status="execResult.progressStatus" v-if="scene !== ReportDetailType.QueryDetail" :percent="execResult.progressValue || 10"
                 @exec-cancel="execCancel" />
@@ -49,7 +49,6 @@ const emits = defineEmits(['onClose']);
 
 const store = useStore<{ Plan: PlanStateType }>();
 const execResult = computed<any>(() => store.state.Plan.execResult);
-console.log(execResult.value);
 const expandActive = ref(props.scenarioExpandActive || false);
 const { execCancel, execStart, OnWebSocketMsg, onWebSocketConnStatusMsg } = useExec();
 
@@ -60,7 +59,6 @@ function onClose() {
 watch(() => {
     return props;
 }, (val) => {
-    console.log(val);
     if (val.drawerVisible) {
         execStart();
         bus.on(settings.eventWebSocketMsg, OnWebSocketMsg);

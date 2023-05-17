@@ -19,6 +19,13 @@ export function momentTimeStamp(tm) {
 }
 
 export function percentDef(numb, total) {
-    if (total == 0) return '0%'
-    return Number(numb / total * 100).toFixed(2) + '%'
+    numb = numb || 0;
+    total = total || 0;
+    if (total == 0) return '0%';
+    return Number(numb / total * 100).toFixed(2) + '%';
+}
+
+export function transformWithSeconds(num) {
+    if (num === 0) return 0;
+    if (num < 1) return num * 1000;
 }

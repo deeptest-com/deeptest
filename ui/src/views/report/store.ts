@@ -28,8 +28,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         get: Action<StateType, StateType>;
         remove: Action<StateType, StateType>;
         getMembers: Action<StateType, StateType>;
-        initExecResult: Action<StateType, StateType>;
-        setExecResult: Action<StateType, StateType>;
+        initReportDetail: Action<StateType, StateType>;
     };
 }
 const initState: StateType = {
@@ -122,16 +121,7 @@ const StoreModel: ModuleType = {
                 const { data } = response;
                 let scenarioReports = data.scenarioReports;
                 scenarioReports = scenarioReports?.map((scenario: any) => {
-                    scenario.requestLogs = [];
-                    if (scenario.logs) {
-                        scenario.logs.forEach((log: any) => {
-                            if (log.logs) {
-                                scenario.requestLogs.push(log.logs[0]);
-                            }
-                        });
-                    } else {
-                        scenario.logs = [];
-                    }
+                    scenario.requestLogs = scenario.logs ? scenario.logs[0].logs : [];
                     return scenario;
                 })
                 commit('setDetail', {
@@ -155,12 +145,6 @@ const StoreModel: ModuleType = {
                             value: data.createUserName || '--'
                         },
                     ],
-                    // basicInfo: {
-                    //     name: data.name || '',
-                    //     startTime: (data.startTime && momentUtc(data.startTime)) || '',
-                    //     execEnv: data.execEnv || '',
-                    //     createUserName: data.createUserName || ''
-                    // },
                     statisticData: {
                         "duration": data.duration, //执行耗时（单位：s)
                         "totalScenarioNum": data.totalScenarioNum, //场景总数
@@ -213,15 +197,9 @@ const StoreModel: ModuleType = {
             }
         },
 
-        async initExecResult({ commit }, payload) {
-            commit('setDetail', {});
-        },
-
-        async setExecResult({ commit }, payload) {
-            console.log('setDetail', payload);
-            commit('setDetail', payload);
+        async initReportDetail({ commit }) {
+            commit('setDetail', { basicInfoList: [], statisticData: {}, scenarioReports: [] });
         }
-
     }
 };
 

@@ -1,10 +1,14 @@
 <template>
     <div class="progress-container">
         <a-progress status="active" :strokeColor="execStatusColorMap.get(execStatus)" :percent="percent || 10" :showInfo="false" />
-        <a-button class="exec-cancel" type="default" @click="handleExecCancel">{{ execStatusTextMap.get(execStatus) }}</a-button>
+        <div>
+            <a-button v-if="execStatus === WsMsgCategory.InProgress" class="exec-cancel" type="default" @click="handleExecCancel">{{ execStatusTextMap.get(execStatus) }}</a-button>
+            <span class="exec-status" v-else>{{ execStatusTextMap.get(execStatus) }}</span>
+        </div>
     </div>
 </template>
 <script setup lang="ts">
+import { WsMsgCategory } from '@/utils/enum';
 import { defineProps, defineEmits } from 'vue';
 
 defineProps<{
@@ -33,6 +37,15 @@ const handleExecCancel = () => {
 
     .exec-cancel {
         margin-left: 40px;
+    }
+
+    .exec-status {
+        width: 84px;
+        height: 32px;
+        line-height: 32px;
+        text-align: center;
+        margin-left: 40px;
+        display: block;
     }
 }
 </style>

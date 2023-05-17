@@ -15,15 +15,15 @@
                     {{ reqContent.url }}
                 </div>
                 <div class="endpoint-data">
-                    {{ reqContent.bodyLang }}
+                    {{ reqContent.body || '' }}
                 </div>
                 <div class="endpoint-response">
                     <div class="endpoint-code" v-if="endpointData.resultStatus !== 'loading'">
-                        状态码: <span :style="{ color: `${responseCodeColorMap[resContent.statusCode]}` }">{{
+                        状态码: &nbsp; <span :style="{ color: `${responseCodeColorMap[resContent.statusCode]}` }">{{
                             resContent.statusCode }}</span>
                     </div>
                     <div :class="['endpoint-time', ClassMap[endpointData.resultStatus]]" v-if="endpointData.resultStatus !== 'loading'">
-                        耗时: <span>{{ resContent.time }}</span>
+                        耗时:  &nbsp; <span>{{ resContent.time }}</span>
                     </div>
                     <div class="endpoint-type" v-if="endpointData.resultStatus !== 'loading'">
                         转单
@@ -34,7 +34,13 @@
         </template>
         <div class="endpoint-expand">
             <div class="endpoint-expand-content">
-                <span>{{ endpointData.summary || '' }}</span>
+                <span v-if="endpointData.resultStatus === 'fail'">
+                    <exclamation-circle-outlined style="color: #f5222d" /> &nbsp;
+                    {{ resContent.statusContent || '' }}</span>
+                <span v-if="endpointData.resultStatus === 'pass'">
+                    <check-circle-outlined style="color: #04C495" /> &nbsp; 
+                    返回数据结构校验通过
+                </span>
             </div>
             <div class="endpoint-expand-btn" @click="handleQueryDetail">
                 更多详情 &nbsp;&nbsp;
@@ -45,7 +51,7 @@
 </template>
 <script setup lang="ts">
 import { defineProps, h, defineEmits, computed, toRefs } from 'vue';
-import { RightOutlined, LoadingOutlined, } from '@ant-design/icons-vue';
+import { RightOutlined, LoadingOutlined, ExclamationCircleOutlined, CheckCircleOutlined } from '@ant-design/icons-vue';
 import { responseCodes } from '@/config/constant';
 
 enum StatusMap {
@@ -74,7 +80,8 @@ const props = defineProps({
 const emits = defineEmits(['queryDetail']);
 const reqContent = computed(() => props.endpointData.reqContent ? JSON.parse(props.endpointData.reqContent) : {});
 const resContent = computed(() => props.endpointData.respContent ? JSON.parse(props.endpointData.respContent) : {});
-
+console.log(reqContent);
+console.log(resContent);
 const responseCodeColorMap = {};
 
 responseCodes.forEach(e => {
@@ -90,7 +97,7 @@ const indicator = h(LoadingOutlined, {
 });
 
 function handleQueryDetail() {
-    emits('queryDetail');
+    emits('queryDetail', { resContent: resContent.value, reqContent: reqContent.value });
 }
 </script>
 <style scoped lang="less">

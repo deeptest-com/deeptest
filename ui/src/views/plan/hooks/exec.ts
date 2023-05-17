@@ -70,8 +70,8 @@ export function useExec() {
         const log = wsMsg.data ? JSON.parse(JSON.stringify(wsMsg.data)) : {};
         // category [result, in_progress, end, ''] 为空时是执行记录
         if (wsMsg.category == 'result') { // update result
-            // scenarioId === 0  测试计划的数据
-            if (wsMsg.data.scenarioId === undefined) {
+            const statisticData = JSON.parse(JSON.stringify(logDetailData.value.statisticData));
+            if (wsMsg.data.scenarioId === undefined) { // scenarioId === undefined  测试计划的基本信息
                 logDetailData.value.basicInfoList = [
                     {
                         label: '测试计划',
@@ -91,17 +91,17 @@ export function useExec() {
                     },
                 ],
                 logDetailData.value.statisticData = {
+                    ...statisticData,
                     totalScenarioNum: log.totalScenarioNum,
                     totalInterfaceNum: log.totalInterfaceNum,
                     totalAssertionNum: log.totalAssertionNum
                 };
                 store.dispatch('Plan/setExecResult', logDetailData.value);
-            } else if (log.scenarioId !== 0) {
+            } else if (log.scenarioId !== 0) { // scenarioId !== 0 则是单条场景的执行结果
                 const isExsitData = logDetailData.value.scenarioReports.find(e => e.id === log.id);
                 if (isExsitData) {
                     return;
                 }
-                const statisticData = JSON.parse(JSON.stringify(logDetailData.value.statisticData));
                 logDetailData.value.statisticData = {
                     ...statisticData,
                     "duration": log.duration + transformWithUndefined(statisticData.duration), //执行耗时（单位：s)
@@ -123,6 +123,21 @@ export function useExec() {
                 processNum.value++;
                 logDetailData.value.progressValue = Math.ceil(processNum.value / transformWithUndefined(statisticData.totalScenarioNum)) * 100;
                 store.dispatch('Plan/setExecResult', logDetailData.value);
+            } else { // scenarioId = 0 为整个计划的执行结果.
+                logDetailData.value.statisticData = {
+                    ...statisticData,
+                    "duration": log.duration, //执行耗时（单位：ms)
+                    "passScenarioNum": log.passScenarioNum, //通过场景数
+                    "failScenarioNum": log.failScenarioNum, //失败场景数
+                    "passInterfaceNum": log.passInterfaceNum,
+                    "failInterfaceNum": log.failInterfaceNum,
+                    "totalRequestNum": log.totalRequestNum,
+                    "passRequestNum": log.passRequestNum,
+                    "failRequestNum": log.failRequestNum,
+                    "passAssertionNum": log.passAssertionNum, //通过检查点数
+                    "failAssertionNum": log.failAssertionNum, //失败检查点数
+                    "totalAssertionNum": log.totalAssertionNum
+                };
             }
             return;
         } else if (wsMsg.category === WsMsgCategory.InProgress || wsMsg.category === WsMsgCategory.End) { // update status
@@ -133,7 +148,6 @@ export function useExec() {
 
     // websocket 连接状态 查询
     const onWebSocketConnStatusMsg = (data: any) => {
-        console.log('join websocket room', data);
         if (!data.msg) {
             return;
         }

@@ -201,6 +201,7 @@ const getList = debounce(async (current: number): Promise<void> => {
 
 const onExec = async () => {
   editDrawerVisible.value = false;
+  envSelectVisible.value = false;
   await store.dispatch('Plan/initExecResult');
   execReportVisible.value = true;
 }

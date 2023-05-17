@@ -75,7 +75,7 @@ func (s *PlanExecService) SaveReport(planId int, userId uint, result agentDomain
 		scenarioReportIds = append(scenarioReportIds, scenarioResult.ScenarioReportId)
 	}
 
-	report.Duration = report.EndTime.Unix() - report.StartTime.Unix()
+	report.Duration = report.EndTime.UnixMilli() - report.StartTime.UnixMilli()
 	_ = s.PlanReportRepo.Create(&report)
 
 	_ = s.ScenarioReportRepo.BatchUpdatePlanReportId(scenarioReportIds, report.ID)

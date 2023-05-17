@@ -56,18 +56,7 @@ const baseInfoList = computed(() => {
     {value: curEnv?.name || '暂无', label: '执行环境'},
   ]
 })
-const statisticData = ref({
-  "duration": 0, //执行耗时（单位：s)
-  "passScenarioNum": 0, //通过场景数
-  "failScenarioNum": 0, //失败场景数
-  "passInterfaceNum": 0,
-  "failInterfaceNum": 0,
-  "totalRequestNum": 0,
-  "passRequestNum": 0,
-  "failRequestNum": 0,
-  "passAssertionNum": 0, //通过检查点数
-  "failAssertionNum": 0, //失败检查点数
-});
+const statisticData = ref({});
 // const execResult = computed<any>(() => store.state.Scenario.execResult);
 const progressValue = ref(10);
 const recordList = ref([]);

@@ -8,6 +8,7 @@
         :onSave="saveInterface">
       </RequestInvocation>
     </template>
+
     <RequestConfig></RequestConfig>
   </div>
 </template>
@@ -23,7 +24,7 @@ import {NotificationKeyCommon} from "@/utils/const";
 import {UsedBy} from "@/utils/enum";
 import {getToken} from "@/utils/localToken";
 
-defineProps({ 
+defineProps({
   showReuqestInvocation: {
     type: Boolean,
     required: false,

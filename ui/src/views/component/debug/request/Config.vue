@@ -79,12 +79,14 @@ const none = (e) => {
 <style lang="less">
 .config-main {
   height: calc(100% - 32px);
+  min-height: 200px;
 
   .ant-tabs-line {
     height: 100%;
 
     .ant-tabs-top-content {
       height: calc(100% - 61px);
+      min-height: 200px;
     }
   }
 }

@@ -23,7 +23,7 @@
                             resContent.statusCode }}</span>
                     </div>
                     <div :class="['endpoint-time', ClassMap[endpointData.resultStatus]]" v-if="endpointData.resultStatus !== 'loading'">
-                        耗时:  &nbsp; <span>{{ resContent.time }}</span>
+                        耗时:  &nbsp;<span v-html="transformWithSeconds(resContent.time)"></span>
                     </div>
                     <div class="endpoint-type" v-if="endpointData.resultStatus !== 'loading'">
                         转单
@@ -53,6 +53,7 @@
 import { defineProps, h, defineEmits, computed, toRefs } from 'vue';
 import { RightOutlined, LoadingOutlined, ExclamationCircleOutlined, CheckCircleOutlined } from '@ant-design/icons-vue';
 import { responseCodes } from '@/config/constant';
+import { transformWithSeconds } from '@/utils/datetime';
 
 enum StatusMap {
     'pass' = '通过',
@@ -205,6 +206,10 @@ function handleQueryDetail() {
         }
     }
 
+    .endpoint-time {
+        width: 100px;
+    }
+
     .endpoint-type {
         font-size: 14px;
         line-height: 22px;
@@ -213,7 +218,7 @@ function handleQueryDetail() {
     }
 
     .endpoint-response {
-        width: 256px;
+        width: 272px;
         display: flex;
         align-items: center;
     }

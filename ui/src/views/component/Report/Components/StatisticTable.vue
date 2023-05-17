@@ -14,7 +14,7 @@
             </TextItem>
             <TextItem class="statistical-info-item" label="总耗时" label-style="width: 140px">
                 <template #value>
-                    <span style="color: #04C495">{{ statiscalResult.duration || 0 }} &nbsp;</span>毫秒
+                    <span style="color: #04C495" v-html="transformWithSeconds(statiscalResult.duration)"></span>
                 </template>
             </TextItem>
             <TextItem class="statistical-info-item" label-class-name="failed" label="失败"
@@ -22,8 +22,8 @@
             </TextItem>
             <TextItem class="statistical-info-item" label="平均接口请求耗时" label-style="width: 140px">
                 <template #value>
-                    <span class="value"><span style="color: #04C495">{{ statiscalResult.averageDuration || 0 }}
-                            &nbsp;</span>毫秒</span>
+                    <span class="value"><span style="color: #04C495" v-html="transformWithSeconds(statiscalResult.averageDuration)">
+                    </span></span>  
                 </template>
             </TextItem>
             <TextItem class="statistical-info-item" label-class-name="notest" label="未测"

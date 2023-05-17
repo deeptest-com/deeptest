@@ -54,5 +54,4 @@ func (ScenarioReport) TableName() string {
 type ScenarioReportDetail struct {
 	ScenarioReport
 	Priority string `json:"priority"`
-	ExecEnv  string `json:"execEnv"`
 }

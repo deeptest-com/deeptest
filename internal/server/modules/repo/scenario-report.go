@@ -313,10 +313,10 @@ func (r *ScenarioReportRepo) GetReportsByPlanReportId(planReportId uint) (report
 			continue
 		}
 		report.Logs = root.Logs
-		scenarioReportDetail := model.ScenarioReportDetail{
+		scenarioReport := model.ScenarioReportDetail{
 			ScenarioReport: report,
 		}
-		reports = append(reports, scenarioReportDetail)
+		reports = append(reports, scenarioReport)
 	}
 	reports, err = r.CombinePriority(reports)
 

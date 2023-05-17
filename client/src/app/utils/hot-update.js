@@ -52,7 +52,7 @@ import fs from 'node:fs';
 import got from 'got';
 import {cpSync} from "fs";
 import os from "os";
-import {killZdServer} from "../core/zd";
+import {killAgent} from "../core/agent";
 const pipeline = promisify(stream.pipeline);
 
 mkdir(path.join('tmp', 'download'))
@@ -99,7 +99,7 @@ const copyFiles = async (downloadPath) => {
     const {uiPath, serverPath} = getResPath()
     logInfo(`uiPath=${uiPath}, serverPath=${serverPath}`)
 
-    killZdServer();
+    killAgent();
     fs.rmSync(uiPath, {recursive: true})
     fs.rmSync(serverPath)
 

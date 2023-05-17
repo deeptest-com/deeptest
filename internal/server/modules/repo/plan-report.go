@@ -7,7 +7,6 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
-	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"gorm.io/gorm"
 	"strconv"
@@ -24,26 +23,29 @@ type PlanReportRepo struct {
 
 func (r *PlanReportRepo) Paginate(req v1.PlanReportReqPaginate, projectId int) (data _domain.PageData, err error) {
 	req.Order = "desc"
+	req.Field = "biz_plan_report.created_at"
 	timeLayout := "2006-01-02 15:04:05"
 	var count int64
 
 	db := r.DB.Model(&model.PlanReport{}).
-		Where("project_id = ? AND NOT deleted", projectId)
+		Joins("LEFT JOIN sys_user u ON biz_plan_report.create_user_id=u.id").
+		Select("biz_plan_report.*, u.name create_user_name").
+		Where("biz_plan_report.project_id = ? AND NOT biz_plan_report.deleted", projectId)
 
 	if req.Keywords != "" {
-		db = db.Where("name LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords))
+		db = db.Where("biz_plan_report.name LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords))
 	}
 	if req.PlanId != 0 {
-		db = db.Where("plan_id = ?", req.PlanId)
+		db = db.Where("biz_plan_report.plan_id = ?", req.PlanId)
 	}
 	if req.CreateUserId != 0 {
-		db = db.Where("create_user_id = ?", req.CreateUserId)
+		db = db.Where("biz_plan_report.create_user_id = ?", req.CreateUserId)
 	}
 	if req.ExecuteStartTime != 0 {
-		db = db.Where("start_time > ?", time.Unix(req.ExecuteStartTime/1000, 0).Format(timeLayout))
+		db = db.Where("biz_plan_report.start_time > ?", time.Unix(req.ExecuteStartTime/1000, 0).Format(timeLayout))
 	}
 	if req.ExecuteEndTime != 0 {
-		db = db.Where("end_time < ?", time.Unix(req.ExecuteEndTime/1000, 0).Format(timeLayout))
+		db = db.Where("biz_plan_report.end_time < ?", time.Unix(req.ExecuteEndTime/1000, 0).Format(timeLayout))
 	}
 
 	err = db.Count(&count).Error
@@ -52,7 +54,7 @@ func (r *PlanReportRepo) Paginate(req v1.PlanReportReqPaginate, projectId int) (
 		return
 	}
 
-	results := make([]*model.PlanReport, 0)
+	results := make([]*model.PlanReportDetail, 0)
 
 	err = db.
 		Scopes(dao.PaginateScope(req.Page, req.PageSize, req.Order, req.Field)).
@@ -62,37 +64,16 @@ func (r *PlanReportRepo) Paginate(req v1.PlanReportReqPaginate, projectId int) (
 		return
 	}
 
-	r.CombineUserName(results)
 	data.Populate(results, count, req.Page, req.PageSize)
 
 	return
 }
 
-func (r *PlanReportRepo) CombineUserName(data []*model.PlanReport) {
-	userIds := make([]uint, 0)
-	for _, v := range data {
-		userIds = append(userIds, v.CreateUserId)
-	}
-	userIds = _commUtils.ArrayRemoveUintDuplication(userIds)
-
-	users, _ := r.UserRepo.FindByIds(userIds)
-
-	userIdNameMap := make(map[uint]string)
-	for _, v := range users {
-		userIdNameMap[v.ID] = v.Name
-	}
-
-	for _, v := range data {
-		if name, ok := userIdNameMap[v.CreateUserId]; ok {
-			v.CreateUserName = name
-		}
-	}
-}
-
 func (r *PlanReportRepo) Get(id uint) (report model.PlanReportDetail, err error) {
 	err = r.DB.Model(model.PlanReport{}).
-		Select("biz_plan_report.*, e.name exec_env").
+		Select("biz_plan_report.*, e.name exec_env, u.name create_user_name").
 		Joins("LEFT JOIN biz_environment e ON biz_plan_report.exec_env_id=e.id").
+		Joins("LEFT JOIN sys_user u ON biz_plan_report.create_user_id=u.id").
 		Where("biz_plan_report.id = ?", id).First(&report).Error
 	if err != nil {
 		logUtils.Errorf("find report by id error %s", err.Error())

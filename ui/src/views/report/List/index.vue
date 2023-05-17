@@ -31,7 +31,7 @@
             <span class="report-planname" @click="handleQueryDetail(record)">{{ record.name }}</span>
         </template>
         <template #duration="{ record }">
-            <span>{{ record.duration * 1000 }}ms</span>
+            <span>{{ record.duration }}s</span>
         </template>
         <template #executionTime="{ record }">
             <span>{{ momentUtc(record.startTime) }}</span>
@@ -154,5 +154,6 @@ const handleGetList = (params: any) => {
 <style scoped lang="less">
 .report-planname {
     cursor: pointer;
+    color: #447DFD;
 }
 </style>

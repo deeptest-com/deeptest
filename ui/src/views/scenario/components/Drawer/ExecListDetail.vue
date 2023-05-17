@@ -1,6 +1,6 @@
 <template>
   <div class="drawer-content">
-    <ReportBasicInfo :items="baseInfoList || []" @handleBtnClick="genReport"/>
+    <ReportBasicInfo :show-operation="true" :scene="ReportDetailType.ExecScenario" :items="baseInfoList || []" @handleBtnClick="genReport"/>
     <StatisticTable :scene="'query_detail'" :data="statisticData"/>
     <EndpointCollapsePanel v-if="recordList.length > 0"
                            :recordList="recordList"/>
@@ -19,6 +19,7 @@ import {
 import {PaginationConfig, Scenario} from "@/views/scenario/data";
 import {momentUtc} from "@/utils/datetime"
 import {message} from "ant-design-vue";
+import { ReportDetailType } from '@/utils/enum';
 
 const store = useStore<{ Scenario, ProjectGlobal, ServeGlobal, }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);

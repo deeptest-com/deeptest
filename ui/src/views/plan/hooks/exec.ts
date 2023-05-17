@@ -14,6 +14,7 @@ import { WsMsg } from "@/types/data";
 import { getToken } from "@/utils/localToken";
 import { WsMsgCategory } from '@/utils/enum';
 import { momentUtc } from '@/utils/datetime';
+import { formatData } from '@/utils/formatData';
 
 export function useExec() {
     const store = useStore<{
@@ -115,7 +116,7 @@ export function useExec() {
                     "passAssertionNum": calcNum(log.passAssertionNum, statisticData.passAssertionNum), //通过检查点数
                     "failAssertionNum": calcNum(log.failAssertionNum, statisticData.failAssertionNum), //失败检查点数
                 };
-                const requestLogs = (log.logs && log.logs[0].logs) ? log.logs[0].logs : [];
+                const requestLogs = (log.logs && log.logs[0].logs) ? formatData(log.logs[0].logs) : [];
                 logDetailData.value.scenarioReports.push({
                     ...log,
                     requestLogs

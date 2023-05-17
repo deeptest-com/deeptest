@@ -97,7 +97,7 @@ const progressValue = computed(() => percentDef(props.record.passInterfaceNum ||
 }
 
 .scenario-rate {
-    width: 292px;
+    // width: 292px;
     display: flex;
     align-items: center;
     font-family: 'PingFang SC';

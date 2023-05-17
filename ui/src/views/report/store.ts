@@ -4,6 +4,7 @@ import { ResponseData } from '@/utils/request';
 import { Report, QueryResult, QueryParams } from './data';
 import { query, get, remove, members } from './service';
 import { momentUtc } from '@/utils/datetime';
+import { formatData } from '@/utils/formatData';
 
 export interface StateType {
     ReportId: number;
@@ -121,7 +122,7 @@ const StoreModel: ModuleType = {
                 const { data } = response;
                 let scenarioReports = data.scenarioReports;
                 scenarioReports = scenarioReports?.map((scenario: any) => {
-                    scenario.requestLogs = (scenario.logs && scenario.logs[0].logs) ? scenario.logs[0].logs : [];
+                    scenario.requestLogs = (scenario.logs && scenario.logs[0].logs) ? formatData(scenario.logs[0].logs) : [];
                     return scenario;
                 })
                 commit('setDetail', {

@@ -48,6 +48,7 @@
         :width="1000"
         :closable="true"
         :visible="execDrawerVisible"
+        :title="'执行场景'"
         class="drawer"
         wrapClassName="drawer-exec"
         :bodyStyle="{padding:'16px',marginBottom:'56px'}"

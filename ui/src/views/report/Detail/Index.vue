@@ -7,7 +7,7 @@
             </div>
         </template>
         <div class="drawer-content">
-            <ReportBasicInfo  :items="detailResult.basicInfoList" :scene="scene" />
+            <ReportBasicInfo  :items="detailResult.basicInfoList" :scene="scene" :show-operation="true" />
             <StatisticTable :scene="scene" :data="detailResult.statisticData" />
             <Progress :exec-status="execResult.progressStatus" v-if="scene !== ReportDetailType.QueryDetail" :percent="60" @exec-cancel="execCancel" />
             <template v-for="scenarioReportItem in detailResult.scenarioReports" :key="scenarioReportItem.id">

@@ -1,11 +1,15 @@
 <template>
     <div class="report-statistical-table">
-        <div class="statistical-main" ref="main"></div>
+        <template v-if="loading">
+            <div class="statistical-loading">
+                <div class="spinner"></div>
+            </div>
+        </template>
+        <template v-else>
+            <div class="statistical-main" ref="main"></div>
+        </template>
         <div class="statistical-info">
-            <TextItem 
-                class="statistical-info-item" 
-                label-class-name="success" 
-                label="通过" 
+            <TextItem class="statistical-info-item" label-class-name="success" label="通过"
                 :value="`${statiscalResult.passRate || '0.00%'} &nbsp; &nbsp;${statiscalResult.passNum || 0}`">
             </TextItem>
             <TextItem class="statistical-info-item" label="总耗时" label-style="width: 147px">
@@ -13,28 +17,20 @@
                     <span style="color: #04C495">{{ statiscalResult.duration || 0 }} &nbsp;</span>秒
                 </template>
             </TextItem>
-            <TextItem 
-                class="statistical-info-item" 
-                label-class-name="failed" 
-                label="失败" 
+            <TextItem class="statistical-info-item" label-class-name="failed" label="失败"
                 :value="`${statiscalResult.failRate || '0.00%'} &nbsp; &nbsp;${statiscalResult.failNum || 0}`">
             </TextItem>
             <TextItem class="statistical-info-item" label="平均接口请求耗时" label-style="width: 147px">
                 <template #value>
-                    <span class="value"><span style="color: #04C495">{{ statiscalResult.averageDuration || 0 }} &nbsp;</span>毫秒</span>
+                    <span class="value"><span style="color: #04C495">{{ statiscalResult.averageDuration || 0 }}
+                            &nbsp;</span>毫秒</span>
                 </template>
             </TextItem>
-            <TextItem 
-                class="statistical-info-item" 
-                label-class-name="notest" 
-                label="未测" 
+            <TextItem class="statistical-info-item" label-class-name="notest" label="未测"
                 :value="`${statiscalResult.notestRate || '0.00%'} &nbsp; &nbsp;${statiscalResult.notestNum || 0}`">
             </TextItem>
-            <TextItem 
-                class="statistical-info-item" 
-                :label="labelMap" 
-                :value="`${statiscalResult.passNum || 0}/${statiscalResult.failNum || 0}`" 
-                label-style="width: 147px">
+            <TextItem class="statistical-info-item" :label="labelMap"
+                :value="`${statiscalResult.passNum || 0}/${statiscalResult.failNum || 0}`" label-style="width: 147px">
             </TextItem>
         </div>
     </div>
@@ -45,7 +41,7 @@ import * as echarts from 'echarts';
 import TextItem from './TextItem.vue';
 
 import { ReportDetailType } from '@/utils/enum';
-import { percentDef } from '@/utils/datetime';
+import { percentDef, transformWithSeconds } from '@/utils/datetime';
 
 const props = defineProps<{
     scene: string
@@ -55,6 +51,7 @@ const props = defineProps<{
 const main = ref();
 const myChart = ref<any>(null);
 const statiscalResult = ref<any>({});
+const loading = ref(false);
 const labelMap = props.scene !== ReportDetailType.ExecScenario ? '测试场景(成功/失败)' : '断言数(成功/失败)';
 const initOptions = ref({
     color: ['#04C495', '#F63838', 'rgba(0, 0, 0, 0.28)'],
@@ -104,6 +101,10 @@ onMounted(() => {
     init();
 })
 
+const transformWithUndefined = (num: number | undefined) => {
+    return num || 0;
+}
+
 function init() {
     if (!main.value) {
         return;
@@ -112,23 +113,28 @@ function init() {
 }
 
 function initData(data: any) {
+    console.log('statiscalData --- ', data);
+    if (Object.keys(data).length === 0) {
+        loading.value = true;
+        return;
+    }
     const isExecScenario = props.scene === ReportDetailType.ExecScenario;
     const statiscalData: any = !isExecScenario ? {
-        totalNum: data.totalScenarioNum, //场景总数
-        passNum: data.passScenarioNum, //通过场景数
-        failNum: data.failScenarioNum, //失败场景数
-        notestNum: data.totalScenarioNum - data.passScenarioNum - data.failScenarioNum
+        totalNum: transformWithUndefined(data.totalScenarioNum), //场景总数
+        passNum: transformWithUndefined(data.passScenarioNum), //通过场景数
+        failNum: transformWithUndefined(data.failScenarioNum), //失败场景数
+        notestNum: transformWithUndefined(data.totalScenarioNum) - transformWithUndefined(data.passScenarioNum) - transformWithUndefined(data.failScenarioNum)
     } : {
-        totalNum: data.totalInterfaceNum, //接口总数
-        passNum: data.passInterfaceNum,
-        failNum: data.failInterfaceNum,
-        notestNum: data.totalInterfaceNum - data.passInterfaceNum - data.failInterfaceNum
+        totalNum: transformWithUndefined(data.totalInterfaceNum), //接口总数
+        passNum: transformWithUndefined(data.passInterfaceNum),
+        failNum: transformWithUndefined(data.failInterfaceNum),
+        notestNum: transformWithUndefined(data.totalInterfaceNum) - transformWithUndefined(data.passInterfaceNum) - transformWithUndefined(data.failInterfaceNum)
     };
     statiscalData.passRate = percentDef(statiscalData.passNum, statiscalData.totalNum);
     statiscalData.failRate = percentDef(statiscalData.failNum, statiscalData.totalNum);
     statiscalData.notestRate = percentDef(statiscalData.notestNum, statiscalData.totalNum);
-    statiscalData.duration = data.duration;
-    statiscalData.averageDuration = (data.duration / statiscalData.totalNum) * 1000;
+    statiscalData.duration = transformWithSeconds(data.duration);
+    statiscalData.averageDuration = transformWithSeconds((data.duration / statiscalData.totalNum));
     const chartData = [{
         value: statiscalData.passNum,
         name: '通过'
@@ -142,8 +148,14 @@ function initData(data: any) {
     initOptions.value.series[0].data = chartData;
     statiscalResult.value = { ...statiscalData };
     console.log(myChart.value);
-    console.log(statiscalResult.value);
-    myChart.value.setOption({ ...initOptions.value });
+    console.log('~~~~~ statiscalResult ~~~~~', statiscalResult.value);
+    if (!myChart.value) {
+        myChart.value = echarts.init(main.value);
+    }
+    setTimeout(() => {
+        loading.value = false;
+        myChart.value.setOption({ ...initOptions.value });
+    }, 500)
 }
 
 
@@ -183,6 +195,24 @@ watch(() => {
         margin-right: 60px;
     }
 
+    .statistical-loading {
+        width: 214px;
+        height: 214px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 60px;
+
+        .spinner {
+            animation: spinnerFour 1s linear infinite;
+            border: solid 7px transparent;
+            border-top: solid 7px #447DFD;
+            border-radius: 100%;
+            width: 100px;
+            height: 100px;
+        }
+    }
+
     .statistical-info {
         display: flex;
         flex-wrap: wrap;
@@ -194,6 +224,16 @@ watch(() => {
             display: flex;
             align-items: center;
         }
+    }
+}
+
+@keyframes spinnerFour {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
     }
 }
 </style>

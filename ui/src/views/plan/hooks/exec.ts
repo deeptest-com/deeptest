@@ -44,7 +44,7 @@ export function useExec() {
         console.log('execStart');
 
         logTreeData.value = [];
-        logDetailData.value = { basicInfo: {}, scenarioReports: [], statisticData: {} };
+        logDetailData.value = { basicInfoList: [], scenarioReports: [], statisticData: {} };
         processNum.value = 0;
 
         const data = {
@@ -68,17 +68,28 @@ export function useExec() {
         const wsMsg = JSON.parse(data.msg) as WsMsg;
         console.log('--- WebsocketMsgEvent in exec info', wsMsg);
         const log = wsMsg.data ? JSON.parse(JSON.stringify(wsMsg.data)) : {};
-        console.log('--- WebsocketMsgEvent in exec log', log);
         // category [result, in_progress, end, ''] 为空时是执行记录
         if (wsMsg.category == 'result') { // update result
             // scenarioId === 0  测试计划的数据
             if (wsMsg.data.scenarioId === undefined) {
-                logDetailData.value.basicInfo = {
-                    name: log.planName || '',
-                    startTime: momentUtc(new Date()),
-                    execEnv: log.execEnv || '',
-                    createUserName: currUser.value.username || ''
-                };
+                logDetailData.value.basicInfoList = [
+                    {
+                        label: '测试计划',
+                        value: log.planName || '-'
+                    },
+                    {
+                        label: '开始时间',
+                        value: momentUtc(new Date())
+                    },
+                    {
+                        label: '执行环境',
+                        value:log.execEnv || '--'
+                    },
+                    {
+                        label: '创建人',
+                        value: currUser.value.username || '--'
+                    },
+                ],
                 logDetailData.value.statisticData = {
                     totalScenarioNum: log.totalScenarioNum,
                     totalInterfaceNum: log.totalInterfaceNum,
@@ -104,7 +115,7 @@ export function useExec() {
                     "passAssertionNum": calcNum(log.passAssertionNum, statisticData.passAssertionNum), //通过检查点数
                     "failAssertionNum": calcNum(log.failAssertionNum, statisticData.failAssertionNum), //失败检查点数
                 };
-                const requestLogs = log.logs && log.logs[0].logs;
+                const requestLogs = (log.logs && log.logs[0].logs) ? log.logs[0].logs : [];
                 logDetailData.value.scenarioReports.push({
                     ...log,
                     requestLogs

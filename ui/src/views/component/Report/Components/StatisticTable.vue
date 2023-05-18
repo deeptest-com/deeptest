@@ -115,7 +115,6 @@ function init() {
 }
 
 function initData(data: any) {
-    console.log('statiscalData --- ', data);
     if (Object.keys(data).length === 0) {
         loading.value = true;
         return;
@@ -157,8 +156,6 @@ function initData(data: any) {
         },
     }
     statiscalResult.value = { ...statiscalData };
-    console.log(myChart.value);
-    console.log('~~~~~ statiscalResult ~~~~~', statiscalResult.value);
     if (!myChart.value) {
         myChart.value = echarts.init(main.value);
     }

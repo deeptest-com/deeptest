@@ -12,6 +12,7 @@ import {
     addScenarios,
     removeScenarios,
     clonePlan,
+    listScenario,
 } from './service';
 
 import { get as getExecDetail } from '../report/service';
@@ -23,9 +24,10 @@ import {
     updateCategory,
     removeCategory,
     moveCategory,
-    updateCategoryName} from "@/services/category";
+    updateCategoryName
+} from "@/services/category";
 
-import {getNodeMap} from "@/services/tree";
+import { getNodeMap } from "@/services/tree";
 import { queryMembers } from '../project/service';
 
 export interface StateType {
@@ -44,8 +46,17 @@ export interface StateType {
     nodeDataCategory: any;
 
     members: any[];
-    scenarioListResult: {
+    relationScenarios: {
         scenarioList: any[],
+        pagination: {
+            total: number,
+            current: number,
+            pageSize: number,
+        }
+    };
+
+    scenarios: {
+        list: any[],
         pagination: {
             total: number,
             current: number,
@@ -75,7 +86,8 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setNodeCategory: Mutation<StateType>;
 
         setMembers: Mutation<StateType>;
-        setScenarioList: Mutation<StateType>;
+        setRelationScenarios: Mutation<StateType>;
+        setScenarios: Mutation<StateType>;
 
         setExecDetail: Mutation<StateType>;
     };
@@ -103,9 +115,10 @@ export interface ModuleType extends StoreModuleType<StateType> {
 
         loadMembers: Action<StateType, StateType>;
 
-        getScenarioList: Action<StateType, StateType>;
+        getRelationScenarios: Action<StateType, StateType>;
         addScenario: Action<StateType, StateType>;
         removeScenario: Action<StateType, StateType>;
+        getScenarioList: Action<StateType, StateType>;
 
         getExecDetail: Action<StateType, StateType>;
         setExecResult: Action<StateType, StateType>;
@@ -139,12 +152,21 @@ const initState: StateType = {
     nodeDataCategory: {},
 
     members: [],
-    scenarioListResult: {
+    relationScenarios: {
         scenarioList: [],
         pagination: {
             total: 0,
             current: 1,
             pageSize: 10,
+        }
+    },
+
+    scenarios: {
+        list: [],
+        pagination: {
+            total: 0,
+            current: 1,
+            pageSize: 10
         }
     },
 
@@ -198,17 +220,20 @@ const StoreModel: ModuleType = {
         setMembers(state, payload) {
             state.members = payload;
         },
-        setScenarioList(state, payload) {
-            state.scenarioListResult = payload;
+        setRelationScenarios(state, payload) {
+            state.relationScenarios = payload;
         },
         setExecDetail(state, payload) {
             state.execDetail = payload;
+        },
+        setScenarios(state, payload) {
+            state.scenarios = payload;
         }
     },
     actions: {
-        async listPlan({commit, state, dispatch}, { page, pageSize, ...opts }: any) {
+        async listPlan({ commit, state, dispatch }, { page, pageSize, ...opts }: any) {
             try {
-                page = page || state.listResult.pagination.current; 
+                page = page || state.listResult.pagination.current;
                 pageSize = pageSize || state.listResult.pagination.pageSize;
                 const response: ResponseData = await query({
                     page,
@@ -240,7 +265,7 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
-        async getPlan({commit}, id: number) {
+        async getPlan({ commit }, id: number) {
             if (id === 0) {
                 commit('setDetail', {
                     ...initState.detailResult,
@@ -249,7 +274,7 @@ const StoreModel: ModuleType = {
             }
             try {
                 const response: ResponseData = await get(id);
-                const {data} = response;
+                const { data } = response;
                 commit('setDetail', {
                     ...initState.detailResult,
                     ...data,
@@ -269,7 +294,7 @@ const StoreModel: ModuleType = {
                 return false
             }
         },
-        async removePlan({commit, dispatch, state}, payload: number) {
+        async removePlan({ commit, dispatch, state }, payload: number) {
             try {
                 const jsn = await remove(payload);
                 if (jsn.code === 0) {
@@ -289,24 +314,24 @@ const StoreModel: ModuleType = {
                     return true;
                 }
                 return false;
-            } catch(error) {
+            } catch (error) {
                 return false;
             }
         },
         setCurrentPlan({ commit }, payload: any) {
             commit('setCurrPlan', payload);
         },
-        async loadExecResult({commit, dispatch, state}, scenarioId) {
+        async loadExecResult({ commit, dispatch, state }, scenarioId) {
             const response = await loadExecResult(scenarioId);
             if (response.code != 0) return;
 
-            const {data} = response;
+            const { data } = response;
             commit('setExecResult', data || {});
             commit('setPlanId', scenarioId);
 
             return true;
         },
-        async updateExecResult({commit, dispatch, state}, payload) {
+        async updateExecResult({ commit, dispatch, state }, payload) {
             commit('setExecResult', payload);
             commit('setPlanId', payload.scenarioId);
 
@@ -314,11 +339,11 @@ const StoreModel: ModuleType = {
         },
 
         // category tree
-        async loadCategory({commit}) {
+        async loadCategory({ commit }) {
             const response = await loadCategory('plan');
             if (response.code != 0) return;
 
-            const {data} = response;
+            const { data } = response;
             commit('setTreeDataCategory', data || {});
 
             const mp = {}
@@ -328,7 +353,7 @@ const StoreModel: ModuleType = {
 
             return true;
         },
-        async getCategoryNode({commit}, payload: any) {
+        async getCategoryNode({ commit }, payload: any) {
             try {
                 if (!payload) {
                     commit('setNodeCategory', {});
@@ -336,7 +361,7 @@ const StoreModel: ModuleType = {
                 }
 
                 const response = await getCategory(payload.id);
-                const {data} = response;
+                const { data } = response;
                 console.log(data);
                 commit('setNodeCategory', data);
                 return true;
@@ -344,7 +369,7 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
-        async createCategoryNode({commit, dispatch, state}, payload: any) {
+        async createCategoryNode({ commit, dispatch, state }, payload: any) {
             try {
                 const resp = await createCategory(payload);
 
@@ -354,16 +379,16 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
-        async updateCategoryNode({commit}, payload: any) {
+        async updateCategoryNode({ commit }, payload: any) {
             try {
-                const {id, ...params} = payload;
-                await updateCategory(id, {...params});
+                const { id, ...params } = payload;
+                await updateCategory(id, { ...params });
                 return true;
             } catch (error) {
                 return false;
             }
         },
-        async removeCategoryNode({commit, dispatch, state}, payload: number) {
+        async removeCategoryNode({ commit, dispatch, state }, payload: number) {
             try {
                 await removeCategory(payload);
                 await dispatch('loadCategory');
@@ -372,7 +397,7 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
-        async moveCategoryNode({commit, dispatch, state}, payload: any) {
+        async moveCategoryNode({ commit, dispatch, state }, payload: any) {
             try {
                 await moveCategory(payload);
                 await dispatch('loadCategory');
@@ -381,13 +406,13 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
-        async saveTreeMapItemCategory({commit}, payload: any) {
+        async saveTreeMapItemCategory({ commit }, payload: any) {
             commit('setTreeDataMapItemCategory', payload);
         },
-        async saveTreeMapItemPropCategory({commit}, payload: any) {
+        async saveTreeMapItemPropCategory({ commit }, payload: any) {
             commit('setTreeDataMapItemPropCategory', payload);
         },
-        async saveCategory({commit, dispatch, state}, payload: any) {
+        async saveCategory({ commit, dispatch, state }, payload: any) {
             const jsn = await updateCategory(payload.id, payload)
             if (jsn.code === 0) {
                 commit('setCategory', jsn.data);
@@ -397,7 +422,7 @@ const StoreModel: ModuleType = {
                 return false
             }
         },
-        async updateCategoryName({commit, dispatch, state}, payload: any) {
+        async updateCategoryName({ commit, dispatch, state }, payload: any) {
             const jsn = await updateCategoryName(payload.id, payload.name)
             if (jsn.code === 0) {
                 await dispatch('loadCategory');
@@ -418,18 +443,32 @@ const StoreModel: ModuleType = {
                 commit('setMembers', result);
             }
         },
-        // 获取与计划关联的场景列表
+        // 获取可关联的场景列表
         async getScenarioList({ commit }, payload: any) {
+            const jsn = await listScenario(payload);
+            if (jsn.code === 0) {
+                commit('setScenarios', {
+                    list: jsn.data.result || [],
+                    pagination: {
+                        current: jsn.data.page,
+                        pageSize: jsn.data.pageSize,
+                        total: jsn.data.total
+                    }
+                });
+            }
+        },
+        // 获取与计划关联的场景列表
+        async getRelationScenarios({ commit }, payload: any) {
             const jsn = await getPlanScenarioList(payload);
             if (jsn.code === 0) {
-                commit('setScenarioList', {
+                commit('setRelationScenarios', {
                     scenarioList: jsn.data.result || [],
                     pagination: {
                         current: jsn.data.page,
                         pageSize: jsn.data.pageSize,
                         total: jsn.data.total
                     }
-                } );
+                });
             }
         },
         // 关联场景
@@ -463,7 +502,7 @@ const StoreModel: ModuleType = {
         },
 
         async initExecResult({ commit }) {
-            commit('setExecResult', { basicInfoList: [], statisticData: {},  scenarioReports: [], progressValue: 10, progressStatus: 'in_progress' });
+            commit('setExecResult', { basicInfoList: [], statisticData: {}, scenarioReports: [], progressValue: 10, progressStatus: 'in_progress' });
         }
     }
 };

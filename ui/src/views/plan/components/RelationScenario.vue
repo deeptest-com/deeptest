@@ -22,20 +22,19 @@ import { defineProps, defineEmits, ref, reactive, computed, watch } from 'vue';
 import { useStore } from 'vuex';
 import ScenarioList from './ScenarioList.vue';
 
-import { StateType as ScenarioStateType } from '@/views/scenario/store';
 import { StateType as PlanStateType } from '../store';
-import { PaginationConfig, QueryParams } from '@/views/scenario/data';
 
 const props = defineProps<{
     associateModalVisible: Boolean,
 }>();
-const store = useStore<{ Scenario: ScenarioStateType, Plan: PlanStateType }>();
+const store = useStore<{ Plan: PlanStateType }>();
 const emits = defineEmits(['onCancel', 'onOk']);
-const scenarioList = computed<any[]>(() => store.state.Scenario.listResult.list);
+const scenarioList = computed<any[]>(() => store.state.Plan.scenarios.list);
 const currPlan = computed<any>(() => store.state.Plan.currPlan);
-let pagination = computed<PaginationConfig>(() => store.state.Scenario.listResult.pagination);
-let queryParams = reactive<QueryParams>({
+let pagination = computed<any>(() => store.state.Plan.scenarios.pagination);
+let queryParams = reactive<any>({
   keywords: '', enabled: '1',
+  planId: currPlan.value.id,
   page: pagination.value.current, pageSize: pagination.value.pageSize
 });
 let selectedScenarioIds: number[] = [];
@@ -77,9 +76,9 @@ async function onOk() {
 
 async function getScenarioList(params) {
     loading.value = true;
-    await store.dispatch('Scenario/listScenario', {
+    await store.dispatch('Plan/getScenarioList', {
         ...queryParams,
-        params
+        ...params
     })
     loading.value = false;
 }

@@ -75,7 +75,7 @@ func (s *PlanExecService) SaveReport(planId int, userId uint, result agentDomain
 		scenarioReportIds = append(scenarioReportIds, scenarioResult.ScenarioReportId)
 	}
 
-	report.Duration = report.EndTime.Unix() - report.StartTime.Unix()
+	report.Duration = report.EndTime.UnixMilli() - report.StartTime.UnixMilli()
 	_ = s.PlanReportRepo.Create(&report)
 
 	_ = s.ScenarioReportRepo.BatchUpdatePlanReportId(scenarioReportIds, report.ID)
@@ -86,10 +86,10 @@ func (s *PlanExecService) CombineReport(scenarioReport model.ScenarioReport, pla
 
 	planReport.InterfaceStatusMap = map[uint]map[consts.ResultStatus]int{}
 
-	if planReport.StartTime == nil || planReport.StartTime.Unix() > scenarioReport.StartTime.Unix() {
+	if planReport.StartTime == nil || planReport.StartTime.UnixMilli() > scenarioReport.StartTime.UnixMilli() {
 		planReport.StartTime = scenarioReport.StartTime
 	}
-	if planReport.EndTime == nil || planReport.EndTime.Unix() < scenarioReport.EndTime.Unix() {
+	if planReport.EndTime == nil || planReport.EndTime.UnixMilli() < scenarioReport.EndTime.UnixMilli() {
 		planReport.EndTime = scenarioReport.EndTime
 	}
 
@@ -113,10 +113,10 @@ func (s *PlanExecService) CombineReport(scenarioReport model.ScenarioReport, pla
 	planReport.FailInterfaceNum += scenarioReport.FailInterfaceNum
 
 	planReport.TotalScenarioNum += 1
-	if scenarioReport.ResultStatus == consts.Pass {
-		planReport.PassScenarioNum += 1
-	} else if scenarioReport.ResultStatus == consts.Fail {
+	if scenarioReport.ResultStatus == consts.Fail {
 		planReport.FailScenarioNum += 1
+	} else {
+		planReport.PassScenarioNum += 1
 	}
 
 	for keyId := range scenarioReport.InterfaceStatusMap {

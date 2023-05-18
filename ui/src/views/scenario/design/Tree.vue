@@ -95,16 +95,15 @@ import InterfaceSelection from "./components/interface-selection/main.vue";
 
 const props = defineProps<{ scenarioId: number }>()
 
-
 const useForm = Form.useForm;
 
 const {t} = useI18n();
-import {Scenario} from "@/views/scenario/data";
+
 const store = useStore<{ Scenario: ScenarioStateType; }>();
 const treeData = computed<any>(() => store.state.Scenario.treeData);
 const treeDataMap = computed<any>(() => store.state.Scenario.treeDataMap);
 const selectedNode = computed<any>(()=> store.state.Scenario.nodeData);
-const detailResult = computed<Scenario>(() => store.state.Scenario.detailResult);
+
 watch(treeData, () => {
   console.log('watch', treeData)
 
@@ -115,22 +114,10 @@ watch(treeData, () => {
   getExpandedKeysCall()
 })
 
-
-watch(() => {
-  return detailResult.value.id
-},async (newVal) => {
-  if(newVal){
-    // loadTree();
-    await store.dispatch('Scenario/loadScenario', newVal);
-  }
-},{
-  immediate:true
-})
-
-// const loadTree = debounce(async () => {
-//   await store.dispatch('Scenario/loadScenario', detailResult.value.id);
-// }, 60)
-
+const loadTree = debounce(async () => {
+  await store.dispatch('Scenario/loadScenario', props.scenarioId);
+}, 60)
+loadTree();
 
 const replaceFields = {key: 'id', title: 'name'};
 let expandedKeys = ref<number[]>([]);

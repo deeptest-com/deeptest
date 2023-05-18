@@ -260,7 +260,9 @@ func (r *PlanRepo) AddScenarios(planId uint, scenarioIds []uint) (err error) {
 		}
 		pos = append(pos, po)
 	}
-
+	if len(pos) == 0 {
+		return
+	}
 	err = r.DB.Create(&pos).Error
 
 	return
@@ -377,5 +379,62 @@ func (r *PlanRepo) GetScenarioNumByPlan(planId uint) (num int64, err error) {
 	err = r.DB.Model(model.RelaPlanScenario{}).
 		Where("plan_id = ? AND NOT deleted", planId).
 		Count(&num).Error
+	return
+}
+
+func (r *PlanRepo) NotRelationScenarioList(req v1.NotRelationScenarioReqPaginate, projectId int) (data _domain.PageData, err error) {
+	relations, _ := r.ListScenarioRelation(req.PlanId)
+	var scenarioIds []uint
+	for _, v := range relations {
+		scenarioIds = append(scenarioIds, v.ScenarioId)
+	}
+
+	var count int64
+
+	db := r.DB.Model(&model.Scenario{}).
+		Where("project_id = ? AND NOT deleted",
+			projectId)
+
+	if req.Keywords != "" {
+		db = db.Where("name LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords))
+	}
+	if req.Enabled != "" {
+		db = db.Where("disabled = ?", commonUtils.IsDisable(req.Enabled))
+	}
+	if req.Status != "" {
+		db = db.Where("status = ?", req.Status)
+	}
+	if req.Priority != "" {
+		db = db.Where("priority = ?", req.Priority)
+	}
+	if req.Type != "" {
+		db = db.Where("type = ?", req.Type)
+	}
+	if req.CreateUserId != 0 {
+		db = db.Where("create_user_id = ?", req.CreateUserId)
+	}
+	if len(scenarioIds) > 0 {
+		db = db.Where("id NOT IN (?)", scenarioIds)
+
+	}
+
+	err = db.Count(&count).Error
+	if err != nil {
+		logUtils.Errorf("count scenario error", zap.String("error:", err.Error()))
+		return
+	}
+
+	scenarios := make([]*model.Scenario, 0)
+	req.Order = "desc"
+	err = db.
+		Scopes(dao.PaginateScope(req.Page, req.PageSize, req.Order, req.Field)).
+		Find(&scenarios).Error
+	if err != nil {
+		logUtils.Errorf("query scenario error", zap.String("error:", err.Error()))
+		return
+	}
+
+	data.Populate(scenarios, count, req.Page, req.PageSize)
+
 	return
 }

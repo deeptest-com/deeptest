@@ -1,5 +1,5 @@
 <template>
-  <div id="debug-index" class="dp-splits-v">
+  <div id="debug-index" class="dp-splits-v" v-if="endpointDetail?.interfaces?.length">
     <div id="debug-top">
       <DebugMehod />
       <RequestInvocation
@@ -7,7 +7,7 @@
         :onSend="invokeInterface"
         :onSave="saveInterface">
       </RequestInvocation>
-    </div> 
+    </div>
     <div id="debug-bottom">
       <div id="debug-content">
         <DebugBasicInfo />
@@ -47,12 +47,23 @@
         </a-tabs>
       </div>
     </div>
-    
+  </div>
+  <div v-else>
+    <a-empty
+        image="https://gw.alipayobjects.com/mdn/miniapp_social/afts/img/A*pevERLJC9v0AAAAAAAAAAABjAQAAAQ/original"
+        :image-style="{height: '60px',}">
+      <template #description>
+      <span>
+        您还未定义接口，请先定义接口才能使用调试功能
+      </span>
+      </template>
+      <a-button type="primary" @click="emit('switchToDefineTab')">接口定义</a-button>
+    </a-empty>
   </div>
 </template>
 
 <script setup lang="ts">
-import {onMounted, provide, ref, computed} from "vue";
+import {onMounted, provide, ref, computed,defineEmits} from "vue";
 import {useI18n} from "vue-i18n";
 import {Form, notification} from 'ant-design-vue';
 import {useStore} from "vuex";
@@ -70,14 +81,16 @@ import {UsedBy} from "@/utils/enum";
 import {getToken} from "@/utils/localToken";
 import {DebugInfo} from "@/views/component/debug/data";
 import {StateType as Debug} from "@/views/component/debug/store";
-const store = useStore<{  Debug: Debug }>();
-
+import {StateType as Endpoint} from "@/views/endpoint/store";
+const store = useStore<{  Debug: Debug,Endpoint:Endpoint }>();
+const endpointDetail = computed<any>(() => store.state.Endpoint.endpointDetail);
 provide('usedBy', UsedBy.InterfaceDebug)
 const useForm = Form.useForm;
 const debugInfo = computed<DebugInfo>(() => store.state.Debug.debugInfo);
 const debugData = computed<any>(() => store.state.Debug.debugData);
 const {t} = useI18n();
 
+const emit = defineEmits(['switchToDefineTab']);
 const tabKey = ref('env')
 
 onMounted(() => {

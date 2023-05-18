@@ -12,14 +12,13 @@
     <template #title>
       <a-row type="flex" style="align-items: center;width: 100%">
         <a-col :span="8">
-          <EditAndShowField placeholder="修改标题" :value="endpointDetail.title" @update="updateTitle"/>
+          <EditAndShowField placeholder="修改标题" :value="endpointDetail?.title || ''" @update="updateTitle"/>
         </a-col>
       </a-row>
     </template>
-
     <!-- 基本信息 -->
-    <EndpointBasicInfo @changeStatus="changeStatus" @change-description="changeDescription" @changeCategory="changeCategory"/>
-
+    <EndpointBasicInfo @changeStatus="changeStatus" @change-description="changeDescription"
+                       @changeCategory="changeCategory"/>
     <!-- 接口设计区域 -->
     <a-card
         style="width: 100%"
@@ -29,21 +28,19 @@
         :bodyStyle="{padding:'0 24px 0 24px'}">
       <template #title>
         <div style="margin-top: -12px;">
-          <ConBoxTitle :backgroundStyle="'background: #FBFBFB;'" :title="'接口设计'" />
+          <ConBoxTitle :backgroundStyle="'background: #FBFBFB;'" :title="'接口设计'"/>
         </div>
       </template>
-
-      <a-tabs v-model:activeKey="key" :animated="false">
+      <a-tabs :activeKey="key" :animated="false" @change="changeTab">
         <a-tab-pane key="request" tab="定义">
           <EndpointDefine v-if="key === 'request'"/> <!-- use v-if to force page reload-->
         </a-tab-pane>
-
         <a-tab-pane key="run" tab="调试">
-          <EndpointDebug v-if="key === 'run'"/> <!-- use v-if to force page reload -->
+          <!-- use v-if to force page reload -->
+          <EndpointDebug v-if="key === 'run'" @switchToDefineTab="switchToDefineTab"/>
         </a-tab-pane>
       </a-tabs>
     </a-card>
-
     <div v-if="key === 'request'" class="drawer-btns">
       <a-space>
         <a-button type="primary" @click="save">保存</a-button>
@@ -58,7 +55,7 @@ import {
   ref,
   defineProps,
   defineEmits,
-  computed,
+  computed, watch,
 } from 'vue';
 import EndpointBasicInfo from './EndpointBasicInfo.vue';
 import EditAndShowField from '@/components/EditAndShow/index.vue';
@@ -71,7 +68,7 @@ import {Endpoint} from "@/views/endpoint/data";
 import {message} from "ant-design-vue";
 
 const store = useStore<{ Endpoint, ProjectGlobal, ServeGlobal }>();
-const endpointDetail = computed<Endpoint>(() => store.state.Endpoint.endpointDetail);
+const endpointDetail: any = computed<Endpoint>(() => store.state.Endpoint.endpointDetail);
 
 const props = defineProps({
   visible: {
@@ -85,9 +82,25 @@ function onCloseDrawer() {
   emit('close');
 }
 
+async function changeTab(value) {
+  key.value = value;
+  // 切换到调试页面时，需要先保存
+  if (value === 'run') {
+    await store.dispatch('Endpoint/updateEndpointDetail',
+        {...endpointDetail.value}
+    );
+    // 获取最新的接口详情,比如新增的 接口的id可能会变化，所以需要重新获取
+    await store.dispatch('Endpoint/getEndpointDetail', {id: endpointDetail.value.id});
+  }
+}
+
+function switchToDefineTab() {
+    key.value = 'request';
+}
+
 async function changeStatus(status) {
   await store.dispatch('Endpoint/updateStatus',
-      {id:endpointDetail.value.id, status: status}
+      {id: endpointDetail.value.id, status: status}
   );
   await store.dispatch('Endpoint/getEndpointDetail', {id: endpointDetail.value.id});
 }
@@ -123,10 +136,10 @@ async function save() {
   await store.dispatch('Endpoint/updateEndpointDetail',
       {...endpointDetail.value}
   );
-  // emit('close');
   message.success('保存成功');
   emit('refreshList');
 }
+
 
 </script>
 <style lang="less" scoped>
@@ -160,6 +173,7 @@ async function save() {
     }
   }
 }
+
 .drawer-btns {
   background: #ffffff;
   border-top: 1px solid rgba(0, 0, 0, 0.06);

@@ -500,8 +500,43 @@ func (r *ProjectRepo) GetAuditList(req v1.AuditProjectPaginate) (data _domain.Pa
 		return
 	}
 
+	r.refUserName(list)
+	r.refProjectName(list)
+
 	data.Populate(list, count, req.Page, req.PageSize)
+
 	return
+}
+
+func (r *ProjectRepo) refUserName(list []*model.ProjectMemberAudit) {
+	names := make(map[uint]string)
+	for key, item := range list {
+		if _, ok := names[item.ApplyUserId]; !ok {
+			user, _ := r.UserRepo.FindById(item.ApplyUserId)
+			names[item.ApplyUserId] = user.Name
+
+		}
+		if _, ok := names[item.AuditUserId]; !ok {
+			user, _ := r.UserRepo.FindById(item.AuditUserId)
+			names[item.AuditUserId] = user.Name
+		}
+
+		list[key].AuditUserName = names[item.AuditUserId]
+		list[key].ApplyUserName = names[item.ApplyUserId]
+
+	}
+}
+
+func (r *ProjectRepo) refProjectName(list []*model.ProjectMemberAudit) {
+	names := make(map[uint]string)
+	for key, item := range list {
+		if _, ok := names[item.ProjectId]; !ok {
+			project, _ := r.Get(item.ProjectId)
+			names[item.ProjectId] = project.Name
+		}
+
+		list[key].ProjectName = names[item.ProjectId]
+	}
 }
 
 func (r *ProjectRepo) GetAudit(id uint) (ret model.ProjectMemberAudit, err error) {

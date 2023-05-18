@@ -224,8 +224,8 @@ func (r *UserRepo) Register(user *model.SysUser) (err error) {
 }
 
 func (r *UserRepo) Create(req serverDomain.UserReq) (uint, error) {
-	if _, err := r.FindByUserName(req.Username); !errors.Is(err, gorm.ErrRecordNotFound) {
-		return 0, fmt.Errorf("用户名 %s 已经被使用", req.Username)
+	if _, err := r.GetByUsernameOrEmail(req.Username, req.Email); !errors.Is(err, gorm.ErrRecordNotFound) {
+		return 0, fmt.Errorf("用户名 %s 或者邮箱 %s 已经被使用", req.Username, req.Email)
 	}
 
 	user := model.SysUser{UserBase: req.UserBase, RoleIds: req.RoleIds}
@@ -267,7 +267,12 @@ func (r *UserRepo) Update(id uint, req serverDomain.UserReq) error {
 	} else if b {
 		return errors.New("不能编辑超级管理员")
 	}
-	if _, err := r.FindByUserName(req.Username, id); !errors.Is(err, gorm.ErrRecordNotFound) {
+	userFind, err := r.GetByUsernameOrEmail(req.Username, req.Email, id)
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		return err
+	}
+	if userFind.ID != 0 {
+		err = errors.New("用户名/邮箱重复")
 		return err
 	}
 
@@ -280,13 +285,13 @@ func (r *UserRepo) Update(id uint, req serverDomain.UserReq) error {
 		user.Password = string(hash)
 	}
 
-	err := r.DB.Model(&model.SysUser{}).Where("id = ?", id).Updates(&user).Error
+	err = r.DB.Model(&model.SysUser{}).Where("id = ?", id).Updates(&user).Error
 	if err != nil {
 		logUtils.Errorf("更新用户错误", zap.String("错误:", err.Error()))
 		return err
 	}
 
-	if err := r.AddRoleForUser(&user); err != nil {
+	if err = r.AddRoleForUser(&user); err != nil {
 		logUtils.Errorf("添加用户角色错误", zap.String("错误:", err.Error()))
 		return err
 	}
@@ -626,4 +631,17 @@ func (r *UserRepo) GetUserIdNameMap(ids []uint) map[uint]string {
 	}
 
 	return userIdNameMap
+}
+
+func (r *UserRepo) GetByUsernameOrEmail(username, email string, ids ...uint) (user model.SysUser, err error) {
+	db := r.DB.Model(&model.SysUser{}).
+		Where("NOT deleted").
+		Where("username = ? OR email = ?", username, email)
+
+	if len(ids) == 1 {
+		db.Where("id != ?", ids[0])
+	}
+	err = db.First(&user).Error
+
+	return
 }

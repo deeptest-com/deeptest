@@ -70,7 +70,7 @@ func (s *ScenarioExecService) SaveReport(scenarioId int, userId uint, rootResult
 		Name:      scenario.Name,
 		StartTime: rootResult.StartTime,
 		EndTime:   rootResult.EndTime,
-		Duration:  rootResult.EndTime.Unix() - rootResult.StartTime.Unix(),
+		Duration:  rootResult.EndTime.UnixMilli() - rootResult.StartTime.UnixMilli(),
 
 		ProgressStatus: rootResult.ProgressStatus,
 		ResultStatus:   rootResult.ResultStatus,

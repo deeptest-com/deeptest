@@ -19,8 +19,8 @@ import {useI18n} from "vue-i18n";
 import {Form} from 'ant-design-vue';
 import {UsedBy} from "@/utils/enum";
 import CollapsedIcon from "@/components/CollapsedIcon/index.vue"
-import Tree from './list/tree.vue';
-import ScenarioList from './list/list.vue';
+import Tree from './components/Tree/index.vue';
+import ScenarioList from './components/List/index.vue';
 
 provide('usedBy', UsedBy.InterfaceDebug)
 const useForm = Form.useForm;

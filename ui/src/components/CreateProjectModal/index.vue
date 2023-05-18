@@ -56,7 +56,7 @@ import { StateType as UserStateType } from "@/store/user";
 import { StateType as ProjectStateType } from "@/views/project/store";
 import { SelectTypes } from 'ant-design-vue/es/select';
 import { useStore } from "vuex";
-import { projectLogoList } from "./index";
+import { projectLogoList } from "./index.ts";
 import { getProjectLogo } from "@/components/CreateProjectModal";
 const useForm = Form.useForm;
 const props = defineProps<{
@@ -123,7 +123,7 @@ const handleSelectLogo = (item: any) => {
 watch(() => props.visible, (val) => {
     if (val) {
         store.dispatch('Project/getUserList')
-        if(!props?.formState.id){
+        if(!props?.formState?.id){
             resetFields()
         }
     }

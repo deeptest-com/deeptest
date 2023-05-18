@@ -28,7 +28,7 @@ const reportsDetail: any = computed<PaginationConfig>(() => store.state.Scenario
 
 
 const baseInfoList = computed(() => {
-  if (!reportsDetail.value) return {};
+  if (!reportsDetail.value) return [];
   return [
     {value: reportsDetail.value.name, label: '场景名称'},
     {value: reportsDetail.value.startTime ? momentUtc(reportsDetail.value.startTime) : '暂无', label: '执行时间'},

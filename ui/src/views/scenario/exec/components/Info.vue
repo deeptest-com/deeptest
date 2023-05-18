@@ -5,21 +5,26 @@
         <div class="title">
           {{execResult.name}}
         </div>
+
         <div class="progress">
           {{execResult.progressStatus ? t(execResult.progressStatus) : ''}}
         </div>
+
         <div class="status">
           {{execResult.resultStatus ? t(execResult.resultStatus) : ''}}
         </div>
+
         <div class="opt">
           <a-button v-if="execResult.progressStatus !== 'in_progress'" @click="execStart" type="link">
             开始执行
           </a-button>
+
           <a-button v-if="execResult.progressStatus === 'in_progress'" @click="execCancel" type="link">
             停止执行
           </a-button>
-<!--          <a-button @click="design" type="link" class="dp-btn-group">设计</a-button>-->
-<!--          <a-button href="#/scenario/index" type="link" class="dp-btn-group">返回</a-button>-->
+
+          <a-button @click="design" type="link" class="dp-btn-group">设计</a-button>
+          <a-button href="#/scenario/index" type="link" class="dp-btn-group">返回</a-button>
         </div>
       </div>
 
@@ -88,18 +93,13 @@ import { momentShort } from "@/utils/datetime";
 import {useI18n} from "vue-i18n";
 import {getToken} from "@/utils/localToken";
 import {WsMsgCategory} from "@/utils/enum";
-import {Scenario} from "@/views/scenario/data";
 const { t } = useI18n();
 
 const router = useRouter();
 const store = useStore<{ Scenario: ScenarioStateType, Global: GlobalStateType, Exec: ExecStatus; }>();
 const collapsed = computed<boolean>(()=> store.state.Global.collapsed);
-const detailResult = computed<Scenario>(() => store.state.Scenario.detailResult);
 
-// const scenarioId = ref(+router.currentRoute.value.params.id)
-const scenarioId = computed(() => {
-  return detailResult.value.id
-});
+const scenarioId = ref(+router.currentRoute.value.params.id)
 store.dispatch('Scenario/loadExecResult', scenarioId.value);
 
 const execStart = async () => {

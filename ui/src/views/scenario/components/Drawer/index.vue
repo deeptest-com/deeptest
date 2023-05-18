@@ -26,7 +26,7 @@
             <div class="exec-btn">
               <a-button @click="exec" :size="'small'" type="primary"><span>&nbsp;执行&nbsp;</span></a-button>
             </div>
-            <DesignContent :id="detailResult?.id"/>
+            <Design :id="detailResult?.id"/>
           </div>
         </a-tab-pane>
         <a-tab-pane key="2" tab="执行历史" force-render>
@@ -53,7 +53,7 @@
         wrapClassName="drawer-exec"
         :bodyStyle="{padding:'16px',marginBottom:'56px'}"
         @close="onCloseExecDrawer">
-      <ExecInfo/>
+      <ExecInfo v-if="execDrawerVisible"/>
     </a-drawer>
     <EnvSelector
         :env-select-drawer-visible="selectEnvVisible"
@@ -77,11 +77,7 @@
       </template>
       <ExecListDetail/>
     </a-drawer>
-
-
-
   </div>
-
 </template>
 
 <script lang="ts" setup>
@@ -97,10 +93,10 @@ import EditAndShowField from '@/components/EditAndShow/index.vue';
 import {useStore} from "vuex";
 import {PaginationConfig, Scenario} from "@/views/Scenario/data";
 import {message} from "ant-design-vue";
-import DesignContent from "../../design/index.vue"
+import Design from "../Design/index.vue"
 import PlanList from "./PlanList.vue";
 import ExecList from "./ExecList.vue";
-import ExecInfo  from "../../exec/components/Info.vue";
+import ExecInfo  from "../Exec/index.vue";
 import EnvSelector from "@/views/component/EnvSelector/index.vue";
 import ExecListDetail from "./ExecListDetail.vue";
 const store = useStore<{ Scenario, ProjectGlobal, ServeGlobal,Report }>();

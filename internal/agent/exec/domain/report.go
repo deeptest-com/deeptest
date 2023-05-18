@@ -15,7 +15,11 @@ type Report struct {
 
 	StartTime *time.Time `json:"startTime"`
 	EndTime   *time.Time `json:"endTime"`
-	Duration  int64      `json:"duration"` // sec
+	Duration  int64      `json:"duration"` // 毫秒
+
+	TotalScenarioNum int `json:"totalScenarioNum"`
+	PassScenarioNum  int `json:"passScenarioNum"`
+	FailScenarioNum  int `json:"failScenarioNum" yaml:"failScenarioNum"`
 
 	TotalInterfaceNum int `json:"totalInterfaceNum"`
 	PassInterfaceNum  int `json:"passInterfaceNum"`

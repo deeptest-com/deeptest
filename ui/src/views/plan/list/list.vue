@@ -5,20 +5,20 @@
         <a-button type="primary" @click="() => create()">新建</a-button>
       </template>
       <template #extra>
-        <a-select 
+        <a-select
           allowClear
-          @change="onSearch" 
-          v-model:value="queryParams.status" 
-          :options="planStatusOptions" 
-          class="status-select" 
+          @change="onSearch"
+          v-model:value="queryParams.status"
+          :options="planStatusOptions"
+          class="status-select"
           style="width: 120px"
           placeholder="请选择状态">
         </a-select>
-        <a-input-search 
+        <a-input-search
           allowClear
-          @change="onSearch" 
-          @search="onSearch" 
-          v-model:value="queryParams.keywords" 
+          @change="onSearch"
+          @search="onSearch"
+          v-model:value="queryParams.keywords"
           placeholder="输入关键字搜索"
           style="width:270px;margin-left: 16px;" />
       </template>
@@ -39,10 +39,10 @@
 
           <template #name="{ text, record }">
             <div class="plan-name">
-              <EditAndShowField 
-                :custom-class="'custom-endpoint show-on-hover'" 
-                :value="text" 
-                placeholder="请输入计划名称" 
+              <EditAndShowField
+                :custom-class="'custom-endpoint show-on-hover'"
+                :value="text"
+                placeholder="请输入计划名称"
                 @edit="edit(record)"
                 @update="(e: string) => updatePlan(e, record)" />
             </div>
@@ -85,24 +85,24 @@
   </div>
 
   <!-- 新建计划弹窗 -->
-  <PlanCreate 
+  <PlanCreate
     :create-drawer-visible="createDrawerVisible"
-    @on-cancel="createDrawerVisible = false" 
+    @on-cancel="createDrawerVisible = false"
     @get-list="getList(1)"
   />
   <!-- 编辑计划抽屉 -->
-  <PlanEdit 
-    :tab-active-key="editTabActiveKey" 
-    :edit-drawer-visible="editDrawerVisible" 
+  <PlanEdit
+    :tab-active-key="editTabActiveKey"
+    :edit-drawer-visible="editDrawerVisible"
     @onExec="onExec"
     @onUpdate="handleUpdate"
     @on-cancel="editDrawerVisible = false" />
 
   <!-- 执行计划抽屉 -->
-  <ExecResult 
-    :drawer-visible="execReportVisible" 
-    :title="execReportTitle" 
-    :scenario-expand-active="true" 
+  <ExecResult
+    :drawer-visible="execReportVisible"
+    :title="execReportTitle"
+    :scenario-expand-active="true"
     :show-scenario-info="true"
     :scene="ReportDetailType.ExecPlan"
     @on-close="execReportVisible = false"
@@ -129,8 +129,6 @@ import { PaginationConfig, Plan } from '../data.d';
 import { StateType } from "../store";
 import { momentUtc } from "@/utils/datetime";
 import { planStatusColorMap, planStatusTextMap, planStatusOptions } from "@/config/constant";
-import { ReportDetailType } from "@/utils/enum";
-
 const columns = [
   {
     title: '编号',
@@ -168,6 +166,8 @@ const columns = [
   },
 ];
 
+import { ReportDetailType } from "@/utils/enum";
+
 const store = useStore<{ Plan: StateType, ProjectGlobal: ProjectStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const nodeDataCategory = computed<any>(() => store.state.Plan.nodeDataCategory);
@@ -177,15 +177,15 @@ const list = computed<Plan[]>(() => store.state.Plan.listResult.list);
 let pagination = computed<PaginationConfig>(() => store.state.Plan.listResult.pagination);
 
 const queryParams = reactive<any>({
-  keywords: '', 
+  keywords: '',
   status: null
 });
 const loading = ref<boolean>(false);
 const createDrawerVisible = ref(false);
 const editDrawerVisible = ref(false); // 编辑弹窗控制visible
 const editTabActiveKey = ref('test-scenario'); // 打开编辑弹窗时,需要选中的tab
-const execReportVisible = ref(false); 
-const execReportTitle = ref(''); // 执行报告标题 
+const execReportVisible = ref(false);
+const execReportTitle = ref(''); // 执行报告标题
 const envSelectVisible = ref(false); // 选择执行环境
 
 const getList = debounce(async (current: number): Promise<void> => {
@@ -216,7 +216,7 @@ const report = async (record: any) => {
   await getCurrentPalnInfo(record);
   editTabActiveKey.value = 'test-report';
   editDrawerVisible.value = true;
-  
+
 };
 
 const clone = async (id: number) => {

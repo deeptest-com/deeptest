@@ -23,7 +23,7 @@
         </div>
         <EmptyCom>
           <template #content>
-            <a-table
+            <a-table :loading="fetching"
               :row-selection="{
                 selectedRowKeys: selectedRowKeys,
                 onChange: onSelectChange
@@ -42,8 +42,11 @@
               :data-source="list">
               <template #colTitle="{text,record}">
                 <div class="customTitleColRender">
-                  <EditAndShowField :custom-class="'custom-endpoint show-on-hover'" :value="text" placeholder="请输入接口名称"
-                                    @update="(e: string) => handleUpdateEndpoint(e, record)" @edit="editEndpoint(record)"/>
+                  <EditAndShowField :custom-class="'custom-endpoint show-on-hover'"
+                                    :value="text"
+                                    placeholder="请输入接口名称"
+                                    @update="(e: string) => handleUpdateEndpoint(e, record)"
+                                    @edit="editEndpoint(record)"/>
                 </div>
               </template>
 
@@ -92,12 +95,15 @@
         :selectedCategoryId="selectedCategoryId"
         @cancal="createApiModalVisible = false;"
         @ok="handleCreateApi"/>
-    <!-- 编辑接口时，展开抽屉   -->
-    <Drawer
-        :destroyOnClose="true"
-        :visible="drawerVisible"
-        @refreshList="refreshList"
-        @close="drawerVisible = false;"/>
+    <!-- 编辑接口时，展开抽屉：外层再包一层 div, 保证每次打开弹框都重新渲染   -->
+    <div v-if="drawerVisible">
+      <Drawer
+          :destroyOnClose="true"
+          :visible="drawerVisible"
+          @refreshList="refreshList"
+          @close="drawerVisible = false;"/>
+    </div>
+
 
   </div>
 </template>
@@ -149,7 +155,7 @@ const columns = [
     title: '接口名称',
     dataIndex: 'title',
     slots: {customRender: 'colTitle'},
-    width: 120,
+    width: 200,
     ellipsis: true
   },
   {
@@ -165,6 +171,7 @@ const columns = [
   {
     title: '接口路径',
     dataIndex: 'path',
+    width: 200,
     slots: {customRender: 'colPath'},
   },
   {
@@ -211,6 +218,8 @@ const selectedCategoryId = ref<string|number>('');
 const onSelectChange = (keys: Key[], rows: any) => {
   selectedRowKeys.value = [...keys];
 };
+const fetching=ref(false);
+
 
 function handleCreateEndPoint() {
   if (serves.value.length === 0) {
@@ -276,12 +285,14 @@ async function selectNode(id) {
 }
 
 const loadList = debounce(async (page, size, opts?: any) => {
+  fetching.value = true;
   await store.dispatch('Endpoint/loadList', {
     "projectId": currProject.value.id,
     "page": page,
     "pageSize": size,
     opts,
   });
+  fetching.value = false;
 }, 300)
 
 async function handleTableFilter(filterState) {

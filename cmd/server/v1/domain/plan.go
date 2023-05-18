@@ -50,3 +50,15 @@ type PlanScenariosReqPaginate struct {
 	Keywords     string `json:"keywords"`
 	Enabled      string `json:"enabled"`
 }
+
+type NotRelationScenarioReqPaginate struct {
+	_domain.PaginateReq
+
+	PlanId       uint   `json:"planId"`
+	Keywords     string `json:"keywords"`
+	Enabled      string `json:"enabled"`
+	Status       string `json:"status"`
+	Priority     string `json:"priority"`
+	Type         string `json:"type"`
+	CreateUserId uint   `json:"createUserId"`
+}

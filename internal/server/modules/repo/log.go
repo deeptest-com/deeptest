@@ -1,8 +1,10 @@
 package repo
 
 import (
+	"encoding/json"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	v1 "github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"go.uber.org/zap"
@@ -76,6 +78,13 @@ func (r *LogRepo) CreateLog(result agentDomain.ScenarioExecResult, parentId, rep
 }
 
 func (r *LogRepo) CreateInterfaceLog(result agentDomain.ScenarioExecResult, parentId, reportId uint) (id uint, err error) {
+	requestContent := v1.BaseRequest{}
+	responseContent := v1.DebugResponse{}
+	_ = json.Unmarshal([]byte(result.ReqContent), &requestContent)
+	_ = json.Unmarshal([]byte(result.RespContent), &responseContent)
+	responseContent.Headers = requestContent.Headers
+	byteRespContent, _ := json.Marshal(responseContent)
+
 	po := model.ExecLogProcessor{
 		Name:              result.Name,
 		ProcessorCategory: result.ProcessorCategory,
@@ -83,7 +92,7 @@ func (r *LogRepo) CreateInterfaceLog(result agentDomain.ScenarioExecResult, pare
 		ResultStatus:      result.ResultStatus,
 
 		ReqContent:  result.ReqContent,
-		RespContent: result.RespContent,
+		RespContent: string(byteRespContent),
 
 		InterfaceId: result.InterfaceId,
 		ProcessorId: result.ProcessorId,

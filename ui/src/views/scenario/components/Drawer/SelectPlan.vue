@@ -13,6 +13,7 @@
 <script setup lang="ts">
 import {defineProps, defineEmits, ref} from 'vue';
 import PlanList from './PlanList.vue';
+import {message} from "ant-design-vue";
 
 const props = defineProps<{
   visible: Boolean,
@@ -24,12 +25,16 @@ function handleCancel() {
   emits('cancal');
 }
 
-const selectedKeys = ref<any[]>([]); // Check here to configure the default column
+const selectedKeys = ref<any[]>([]);
 function handleChange(keys: any[]) {
   selectedKeys.value= keys;
 }
 
 async function ok() {
+  if(selectedKeys.value.length === 0) {
+    message.info('请选择测试场景');
+    return;
+  }
   emits('ok',selectedKeys.value);
 }
 

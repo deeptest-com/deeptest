@@ -1,6 +1,5 @@
 <template>
     <div class="path-param-header">
-
         <a-input class="path-param-header-input" placeholder="请输入路径"
                  :value="url"
                  @change="changeUrl">

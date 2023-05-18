@@ -42,8 +42,11 @@
               :data-source="list">
               <template #colTitle="{text,record}">
                 <div class="customTitleColRender">
-                  <EditAndShowField :custom-class="'custom-endpoint show-on-hover'" :value="text" placeholder="请输入接口名称"
-                                    @update="(e: string) => handleUpdateEndpoint(e, record)" @edit="editEndpoint(record)"/>
+                  <EditAndShowField :custom-class="'custom-endpoint show-on-hover'"
+                                    :value="text"
+                                    placeholder="请输入接口名称"
+                                    @update="(e: string) => handleUpdateEndpoint(e, record)"
+                                    @edit="editEndpoint(record)"/>
                 </div>
               </template>
 
@@ -92,12 +95,15 @@
         :selectedCategoryId="selectedCategoryId"
         @cancal="createApiModalVisible = false;"
         @ok="handleCreateApi"/>
-    <!-- 编辑接口时，展开抽屉   -->
-    <Drawer
-        :destroyOnClose="true"
-        :visible="drawerVisible"
-        @refreshList="refreshList"
-        @close="drawerVisible = false;"/>
+    <!-- 编辑接口时，展开抽屉：外层再包一层 div, 保证每次打开弹框都重新渲染   -->
+    <div v-if="drawerVisible">
+      <Drawer
+          :destroyOnClose="true"
+          :visible="drawerVisible"
+          @refreshList="refreshList"
+          @close="drawerVisible = false;"/>
+    </div>
+
 
   </div>
 </template>

@@ -14,7 +14,7 @@
     </div>
 </template>
 <script setup lang="ts">
-import { computed, ref, inject } from 'vue';
+import {computed, ref, inject, watch, onMounted} from 'vue';
 import {useStore} from "vuex";
 
 import {requestMethodOpts} from '@/config/constant';
@@ -31,24 +31,26 @@ const interfaceMethodToObjMap = computed<any>(() => store.state.Endpoint.interfa
 const selectedMethod = ref(selectedMethodDetail.value?.method ? selectedMethodDetail.value?.method : 'GET');
 
 const changeMethod = async () => {
-  console.log('changeMethod', selectedMethod.value, interfaceMethodToObjMap)
-
+  // console.log('changeMethod', selectedMethod.value, interfaceMethodToObjMap)
   const endpointInterface = interfaceMethodToObjMap.value[selectedMethod.value]
-
   // sync with / to define page
-  if (endpointInterface) {
+  if (endpointInterface?.id) {
     await store.commit('Endpoint/setSelectedMethodDetail', endpointInterface);
+    store.dispatch('Debug/loadDataAndInvocations', {
+      endpointInterfaceId: endpointInterface.id,
+      scenarioProcessorId: 0,
+      usedBy: usedBy,
+    });
   } else {
     await store.commit('Endpoint/setSelectedMethodDetail', {});
   }
-
-  store.dispatch('Debug/loadDataAndInvocations', {
-    endpointInterfaceId: endpointInterface.id,
-    scenarioProcessorId: 0,
-    usedBy: usedBy,
-  });
 }
-changeMethod()
+
+onMounted(async () => {
+  await changeMethod()
+})
+
+// changeMethod()
 
 function hasDefinedMethod(method: string) {
   return endpointDetail?.value?.interfaces?.some((item) => {

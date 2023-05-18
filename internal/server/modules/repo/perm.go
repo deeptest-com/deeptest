@@ -118,7 +118,7 @@ func (r *PermRepo) CreateIfNotExist(perms []model.SysPerm) (count int, err error
 			err = r.DB.Model(&model.SysPerm{}).Create(&perm).Error
 			if err != nil {
 				logUtils.Errorf("添加权限%s失败，错误%s。", perm.Name, err.Error())
-				return
+				continue
 			}
 		}
 

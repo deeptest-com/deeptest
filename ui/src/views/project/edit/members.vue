@@ -1,128 +1,80 @@
 <template>
   <div class="project-members">
-    <a-tabs v-model:activeKey="activeKey">
-      <a-tab-pane key="1" tab="成员">
-        <a-card :bordered="false">
-          <template #title>
-            <a-button type="primary" @click="() => invite()">邀请</a-button>
-          </template>
-          <template #extra>
-            <a-input-search
-              @change="onSearch"
-              @search="onSearch"
-              v-model:value="queryParams.keywords"
-              placeholder="输入关键字搜索"
-              style="width: 270px; margin-left: 16px"
-            />
-          </template>
+    <a-card :bordered="false">
+      <template #title>
+        <a-button type="primary" @click="() => invite()">邀请</a-button>
+      </template>
+      <template #extra>
+        <a-input-search
+          @change="onSearch"
+          @search="onSearch"
+          v-model:value="queryParams.keywords"
+          placeholder="输入关键字搜索"
+          style="width: 270px; margin-left: 16px"
+        />
+      </template>
 
-          <div>
-            <a-table
-              row-key="id"
-              :columns="columns"
-              :data-source="members.list"
-              :loading="loading"
-              :pagination="{
-                ...pagination,
-                onChange: (page) => {
-                  getMembers(page);
-                },
-                onShowSizeChange: (page, size) => {
-                  pagination.pageSize = size;
-                  getMembers(page);
-                },
-              }"
-            >
-              <template #username="{ text }">
-                {{ text }}
-              </template>
-
-              <template #email="{ text }">
-                {{ text }}
-              </template>
-
-              <template #role="{ record }">
-                <div class="customTitleColRender">
-                  <a-select
-                    :value="record.roleId"
-                    style="width: 100px"
-                    :size="'small'"
-                    placeholder="请选中角色"
-                    @change="
-                      (val) => {
-                        handleChangeRole(val, record);
-                      }
-                    "
-                  >
-                    <a-select-option
-                      v-for="(option, key) in roles"
-                      :key="key"
-                      :value="option.id"
-                      >{{ option.label }}</a-select-option
-                    >
-                  </a-select>
-                </div>
-              </template>
-
-              <template #action="{ record }">
-                <a-button
-                  type="link"
-                  @click="() => remove(record.id)"
-                  :disabled="currentUser.projectRoles[projectId] !== 'admin'"
-                  >移除</a-button
-                >
-              </template>
-            </a-table>
-          </div>
-        </a-card></a-tab-pane
-      >
-      <a-tab-pane key="2" tab="审批" force-render>
+      <div>
         <a-table
           row-key="id"
-          :columns="auditColumns"
-          :data-source="auditLst.list"
+          :columns="columns"
+          :data-source="members.list"
           :loading="loading"
           :pagination="{
-            ...auditLst.pagination,
+            ...pagination,
             onChange: (page) => {
-              getAudits(page);
+              getMembers(page);
             },
             onShowSizeChange: (page, size) => {
-              pagination1.pageSize = size;
-              getAudits(page);
+              pagination.pageSize = size;
+              getMembers(page);
             },
           }"
         >
-          <template #status="{ text }">
-            {{ text == 0 ? "待审批" : text == 1 ? "已同意" : "已拒绝" }}
+          <template #username="{ text }">
+            {{ text }}
           </template>
+
+          <template #email="{ text }">
+            {{ text }}
+          </template>
+
+          <template #role="{ record }">
+            <div class="customTitleColRender">
+              <a-select
+                :value="record.roleId"
+                style="width: 100px"
+                :size="'small'"
+                placeholder="请选中角色"
+                @change="
+                  (val) => {
+                    handleChangeRole(val, record);
+                  }
+                "
+              >
+                <a-select-option
+                  v-for="(option, key) in roles"
+                  :key="key"
+                  :value="option.id"
+                  >{{ option.label }}</a-select-option
+                >
+              </a-select>
+            </div>
+          </template>
+
           <template #action="{ record }">
-            <a-button type="link" @click="() => audit(record.id)"
-              >审批</a-button
+            <a-button
+              type="link"
+              @click="() => remove(record.id)"
+              :disabled="currentUser.projectRoles[projectId] !== 'admin'"
+              >移除</a-button
             >
           </template>
-        </a-table></a-tab-pane
-      >
-    </a-tabs>
+        </a-table>
+      </div>
+    </a-card>
   </div>
-  <a-modal
-    v-model:visible="auditModal"
-    title="审批"
-    @cancel="auditModal = false"
-  >
-    <p>是否通过该用户的审批？</p>
 
-    <template #footer>
-      <a-button key="back" danger @click="handleAudit(2)">拒绝</a-button>
-      <a-button
-        key="submit"
-        type="primary"
-        :loading="loading"
-        @click="handleAudit(1)"
-        >同意</a-button
-      >
-    </template>
-  </a-modal>
   <EditPage :record="data" :title="title" :visible="visible" @cancal="cancal" />
 </template>
 
@@ -140,8 +92,6 @@ import {
   queryMembers,
   removeMember,
   changeRole,
-  getAuditList,
-  doAudit,
 } from "@/views/project/service";
 import { StateType as UserStateType } from "@/store/user";
 import EditPage from "../edit/invite.vue";
@@ -163,9 +113,7 @@ let queryParams = reactive<QueryParams>({
 });
 let activeKey = ref("1");
 const members = ref({});
-const auditLst = ref({});
-const auditModal = ref(false);
-const auditId = ref(0);
+
 const data = reactive<Member>({
   userId: 0,
   email: "",
@@ -204,40 +152,6 @@ const columns = [
     slots: { customRender: "action" },
   },
 ];
-const auditColumns = [
-  {
-    title: "申请人",
-    dataIndex: "applyUserName",
-    // slots: { customRender: "username" },
-  },
-  {
-    title: "申请角色",
-    dataIndex: "projectRoleName",
-    // slots: { customRender: "role" },
-  },
-  {
-    title: "申请原因",
-    dataIndex: "description",
-    width: 260,
-    // slots: { customRender: "email" },
-  },
-  {
-    title: "申请日期",
-    dataIndex: "createdAt",
-    // slots: { customRender: "email" },
-  },
-  {
-    title: "状态",
-    dataIndex: "status",
-    slots: { customRender: "status" },
-  },
-  {
-    title: "操作",
-    key: "action",
-    width: 50,
-    slots: { customRender: "action" },
-  },
-];
 
 const invite = () => {
   title.value = "邀请用户";
@@ -250,16 +164,8 @@ const invite = () => {
 onMounted(() => {
   console.log("onMounted");
   getMembers(1);
-  getRoles();
-  getAudits(1);
 });
-const pagination1 = ref({
-  total: 0,
-  current: 1,
-  pageSize: 10,
-  showSizeChanger: true,
-  showQuickJumper: true,
-});
+
 const initState: StateType = {
   queryResult: {
     list: [],
@@ -303,55 +209,7 @@ const getMembers = (page: number) => {
       loading.value = false;
     });
 };
-const getAudits = (page: number) => {
-  loading.value = true;
 
-  getAuditList({
-    pageSize: pagination1.value.pageSize,
-    page: page,
-  })
-    .then((json) => {
-      console.log("审批列表", json);
-      if (json.code === 0) {
-        // auditLst.value = json.data.result;
-        auditLst.value = {
-          current: 1,
-          list: json.data.result || [],
-          pagination: {
-            ...pagination1.value,
-            current: page,
-            total: json.data.total || 0,
-          },
-        };
-      }
-    })
-    .finally(() => {
-      loading.value = false;
-    });
-};
-const audit = (id: number) => {
-  console.log("remove");
-  auditModal.value = true;
-  auditId.value = id;
-};
-const handleAudit = async (type: number) => {
-  await doAudit({ id: auditId.value, status: type }).then((json) => {
-    if (json.code === 0) {
-      getAudits(1);
-      notification.success({
-        key: NotificationKeyCommon,
-        message: `审批成功`,
-      });
-    } else {
-      notification.error({
-        key: NotificationKeyCommon,
-        message: `审批失败`,
-      });
-    }
-  });
-
-  auditModal.value = false;
-};
 const remove = (userId: number) => {
   console.log("remove");
 

@@ -8,7 +8,7 @@
         </template>
         <div class="drawer-content">
             <ReportBasicInfo :items="execResult.basicInfoList || {}" :show-operation="false" :scene="scene" />
-            <StatisticTable :scene="scene" :data="execResult.statisticData" />
+            <StatisticTable :exec-status="execResult.progressStatus" :scene="scene" :data="execResult.statisticData" />
             <Progress :exec-status="execResult.progressStatus" v-if="scene !== ReportDetailType.QueryDetail" :percent="execResult.progressValue || 10"
                 @exec-cancel="execCancel" />
             <template v-for="scenarioReportItem in execResult.scenarioReports" :key="scenarioReportItem.id">

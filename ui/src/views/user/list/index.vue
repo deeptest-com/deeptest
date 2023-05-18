@@ -67,6 +67,7 @@
             </template>
             <template #action="{ record }">
               <a-button
+                v-if="record.status == 0"
                 type="link"
                 style="padding: 0"
                 @click="() => audit(record.id)"
@@ -197,13 +198,13 @@ const auditColumns = [
   {
     title: "申请日期",
     dataIndex: "createdAt",
-      width: 240,
+    width: 240,
     // slots: { customRender: "email" },
   },
   {
     title: "状态",
     dataIndex: "status",
-     width: 100,
+    width: 100,
     slots: { customRender: "status" },
   },
   {

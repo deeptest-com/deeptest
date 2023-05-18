@@ -113,6 +113,7 @@ func (s *SummaryDetailsService) HandleSummaryDetails(userProjectIds []int64, all
 			if int64(projectInfo.ID) == id {
 				resDetail.Id = uint(userProjectIdsIndex + 1)
 				resDetail.Accessible = 1
+				resDetail.Accessible = 1
 				resUserDetails = append(resUserDetails, resDetail)
 				break
 			}

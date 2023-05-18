@@ -29,7 +29,6 @@ const changeActivekey = (key: string) => {
 };
 
 const handleQueryDetail = ({ resContent, reqContent }) => {
-    console.log(resContent, reqContent);
     currRespDetail.value = { resContent, reqContent };
     logResponseDetailVisible.value = true;
 }

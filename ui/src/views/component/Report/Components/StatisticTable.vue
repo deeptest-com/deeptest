@@ -47,6 +47,7 @@ import { percentDef, formatWithSeconds } from '@/utils/datetime';
 const props = defineProps<{
     scene: string
     data: any
+    execStatus?: any
 }>();
 
 const main = ref();
@@ -115,9 +116,9 @@ function init() {
 }
 
 function initData(data: any) {
-    console.log('statiscalData --- ', data);
     if (Object.keys(data).length === 0) {
         loading.value = true;
+        statiscalResult.value = {};
         return;
     }
     const isExecScenario = props.scene === ReportDetailType.ExecScenario;
@@ -127,14 +128,16 @@ function initData(data: any) {
         failNum: transformWithUndefined(data.failScenarioNum), //失败场景数
         notestNum: transformWithUndefined(data.totalScenarioNum) - transformWithUndefined(data.passScenarioNum) - transformWithUndefined(data.failScenarioNum)
     } : {
-        totalNum: transformWithUndefined(data.totalInterfaceNum), //接口总数
-        passNum: transformWithUndefined(data.passInterfaceNum),
-        failNum: transformWithUndefined(data.failInterfaceNum),
-        notestNum: transformWithUndefined(data.totalInterfaceNum) - transformWithUndefined(data.passInterfaceNum) - transformWithUndefined(data.failInterfaceNum)
+        totalNum: transformWithUndefined(data.totalRequestNum), //接口总数
+        passNum: transformWithUndefined(data.passRequestNum),
+        failNum: transformWithUndefined(data.failRequestNum),
+        notestNum: transformWithUndefined(data.totalRequestNum) - transformWithUndefined(data.passRequestNum) - transformWithUndefined(data.failRequestNum)
     };
     statiscalData.passRate = percentDef(statiscalData.passNum, statiscalData.totalNum);
     statiscalData.failRate = percentDef(statiscalData.failNum, statiscalData.totalNum);
     statiscalData.notestRate = percentDef(statiscalData.notestNum, statiscalData.totalNum);
+
+
     statiscalData.duration = data.duration;
     statiscalData.averageDuration = data.totalRequestNum ? data.duration / data.totalRequestNum : 0;
     const chartData = [{
@@ -155,8 +158,6 @@ function initData(data: any) {
         },
     }
     statiscalResult.value = { ...statiscalData };
-    console.log(myChart.value);
-    console.log('~~~~~ statiscalResult ~~~~~', statiscalResult.value);
     if (!myChart.value) {
         myChart.value = echarts.init(main.value);
     }
@@ -176,15 +177,31 @@ watch(() => main.value, (val) => {
 });
 
 watch(() => {
-    return [props.data, myChart.value];
+    return [props.data, myChart.value, props.execStatus];
 }, val => {
-    const [statiscalOriginalData, chartRef] = val;
-    if (val[0] && chartRef) {
+    const [statiscalOriginalData, chartRef, execStatus] = val;
+    if (val[0] && chartRef && execStatus !== 'end' && execStatus !== 'failed') {
         initData(statiscalOriginalData);
+    }
+    if (Object.keys(val[0]).length === 0 &&  (execStatus === 'end' || execStatus === 'failed')) {
+        loading.value = false;
+        if (!myChart.value) {
+            myChart.value = echarts.init(main.value);
+        }
+        setTimeout(() => {
+            initOptions.value.series[0].label = {
+                ...initOptions.value.series[0].label,
+                formatter: () => {
+                    return [`{subTitle|通过}`, `{title|0}`].join('\n')
+                },
+            }
+            myChart.value.setOption({ ...initOptions.value });
+        }, 500)
     }
 }, {
     immediate: true
-})
+});
+
 </script>
 <style scoped lang="less">
 .report-statistical-table {

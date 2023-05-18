@@ -49,7 +49,7 @@
                 "
               />
             </a-form-item>
-            <a-form-item label="审批人"> ericpp; flyjenkin </a-form-item>
+            <!-- <a-form-item label="审批人"> ericpp; flyjenkin </a-form-item> -->
             <a-form-item
               class="edit-button"
               :wrapper-col="{ offset: labelCol.span, span: wrapperCol.span }"

@@ -119,10 +119,10 @@ const handleCreateSuccess = () => {
   createProjectModalVisible.value = false;
   getList(1);
 };
-// 加入项目成功回调
+// 申请加入项目成功的回调
 const handleSuccess = async () => {
   applyProPermissionsModalVisible.value = false;
-  getList(1);
+  // getList(1);
 };
 
 function handleTabClick(e: number) {

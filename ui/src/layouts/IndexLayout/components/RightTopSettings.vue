@@ -19,28 +19,25 @@
         </template>
       </a-dropdown>
     </div>
-    <div class="msgs">
+    <!-- <div class="msgs">
       <a @click="gotoMessage">
         <a-badge count="100" :overflowCount="99" show-zero
                  :numberStyle="{fontSize: '12px', minWidth: '12px', height: '10px', lineHeight: '10px', padding: '0 4px','box-shadow':'none'}">
           <MailOutlined  class="dp-light user-icon" :style="{ fontSize: '16px',left:'-2px',position:'relative' }"/>
         </a-badge>
       </a>
-    </div>
+    </div> -->
     <div class="user-management" @click="onManagementClick">
-      <template v-if="theme === 'white-theme'">
-        <icon-svg type="setting-dark" :size="20" :fill="'#2A325A'"></icon-svg>
-      </template>
-      <template v-else>
-        <icon-svg type="setting" :size="20" :fill="'#fff'"></icon-svg>
-      </template>
+      <a-tooltip placement="bottom" title="用户管理">
+        <icon-svg type="setting" :style="{width: '20px', height: '20px', fill: `${theme === 'white-theme' ? '#fff' : '#8A8A8A' }`}" />
+      </a-tooltip>
     </div>  
   </div>
 </template>
 <script lang="ts">
 import {computed, defineComponent, ref} from "vue";
 import {useStore} from "vuex";
-import {DownOutlined, SettingOutlined, UserOutlined,LogoutOutlined, MailOutlined} from '@ant-design/icons-vue';
+import {DownOutlined, SettingOutlined, UserOutlined,LogoutOutlined} from '@ant-design/icons-vue';
 import {useI18n} from "vue-i18n";
 import IconSvg from "@/components/IconSvg";
 import {CurrentUser, StateType as UserStateType} from "@/store/user";
@@ -51,7 +48,6 @@ export default defineComponent({
   components: {
     DownOutlined,
     SettingOutlined, UserOutlined,LogoutOutlined,
-    MailOutlined,
     IconSvg
   },
   props: {
@@ -165,6 +161,7 @@ export default defineComponent({
 .user-management {
   display: flex;
   align-items: center;
+  cursor: pointer;
 }
 .user-info {
   .user-name {

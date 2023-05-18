@@ -81,8 +81,6 @@ const props = defineProps({
 const emits = defineEmits(['queryDetail']);
 const reqContent = computed(() => props.endpointData.reqContent ? JSON.parse(props.endpointData.reqContent) : {});
 const resContent = computed(() => props.endpointData.respContent ? JSON.parse(props.endpointData.respContent) : {});
-console.log(reqContent);
-console.log(resContent);
 const responseCodeColorMap = {};
 
 responseCodes.forEach(e => {

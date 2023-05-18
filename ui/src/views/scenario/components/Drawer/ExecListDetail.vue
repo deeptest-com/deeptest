@@ -1,7 +1,7 @@
 <template>
   <div class="drawer-content">
     <ReportBasicInfo :show-operation="true" :scene="ReportDetailType.ExecScenario" :items="baseInfoList || []" @handleBtnClick="genReport"/>
-    <StatisticTable :scene="'query_detail'" :data="statisticData"/>
+    <StatisticTable :scene="ReportDetailType.ExecScenario" :data="statisticData"/>
     <EndpointCollapsePanel v-if="recordList.length > 0"
                            :recordList="recordList"/>
   </div>
@@ -20,6 +20,7 @@ import {PaginationConfig, Scenario} from "@/views/scenario/data";
 import {momentUtc} from "@/utils/datetime"
 import {message} from "ant-design-vue";
 import { ReportDetailType } from '@/utils/enum';
+import { formatData } from '@/utils/formatData';
 
 const store = useStore<{ Scenario, ProjectGlobal, ServeGlobal, }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
@@ -58,7 +59,7 @@ const statisticData = computed(() => {
 })
 
 const recordList = computed(() => {
-  return reportsDetail.value?.logs?.[0].logs || [];
+  return formatData(reportsDetail.value?.logs?.[0].logs || []);
 })
 
 

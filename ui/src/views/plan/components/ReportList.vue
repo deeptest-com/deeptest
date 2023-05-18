@@ -120,7 +120,6 @@ async function queryDetail(id) {
 watch(() => {
     return props.showReportList;
 }, val => {
-    console.log('~~~~ 116~~~~', val);
     if (val) {
         refreshList({});
     }

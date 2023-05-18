@@ -22,7 +22,7 @@
                     <ConsoleInfo />
                 </a-tab-pane>
                 <a-tab-pane key="Request" tab="实际请求">
-                    <RequestInfo :data="reqContent" />
+                    <RequestInfo :data="requestContent" />
                 </a-tab-pane>
             </a-tabs>
         </div>
@@ -48,7 +48,7 @@ const bodyInfo = ref({});
 
 const cookies = ref([]);
 const headers = ref([]);
-const reqContent = ref({});
+const requestContent = ref({});
 
 function onClose() {
     emits('onClose');
@@ -65,8 +65,8 @@ watch(() => {
     };
     cookies.value = resContent.cookies || [];
     headers.value = resContent.headers || [];
-    reqContent.value = reqContent;
-    console.log(reqContent.value)
+    requestContent.value = reqContent;
+    console.log(requestContent.value)
 }, {
     immediate: true,
     deep: true

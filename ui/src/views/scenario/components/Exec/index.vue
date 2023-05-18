@@ -34,6 +34,7 @@ import {momentShort, momentUtc} from "@/utils/datetime";
 import {useI18n} from "vue-i18n";
 import {getToken} from "@/utils/localToken";
 import {WsMsgCategory} from "@/utils/enum";
+import {formatData} from "@/utils/formatData";
 import {Scenario} from "@/views/scenario/data";
 
 const {t} = useI18n();
@@ -59,7 +60,7 @@ const baseInfoList = computed(() => {
 const statisticData = ref({});
 // const execResult = computed<any>(() => store.state.Scenario.execResult);
 const progressValue = ref(10);
-const recordList = ref([]);
+const recordList:any = ref([]);
 const progressStatus = ref('in_progress');
 const execStart = async () => {
   console.log('execStart')
@@ -108,7 +109,7 @@ const OnWebSocketMsg = (data: any) => {
         "failAssertionNum": res.failAssertionNum || 0, //失败检查点数
       }
       console.log('statisticData', statisticData.value);
-      recordList.value = res?.logs?.[0]?.logs || [];
+      recordList.value = formatData(res?.logs?.[0]?.logs || []);
     }
   }
 

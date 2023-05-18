@@ -57,7 +57,6 @@ function onClose() {
 watch(() => {
     return props.responseDrawerVisible;
 }, () => {
-    console.log('查看接口详情', props.data);
     const { resContent = {}, reqContent = {} }: any = props.data;
     bodyInfo.value = {
         content: resContent.content || '',
@@ -66,7 +65,6 @@ watch(() => {
     cookies.value = resContent.cookies || [];
     headers.value = resContent.headers || [];
     requestContent.value = reqContent;
-    console.log(requestContent.value)
 }, {
     immediate: true,
     deep: true

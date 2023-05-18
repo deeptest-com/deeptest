@@ -24,7 +24,7 @@
                             @update="handleChangeStatus"/>
                     </a-descriptions-item>
                 </a-descriptions>
-                <a-button class="plan-exec" type="primary" @click="envDrawerVisible = true">执行计划</a-button>
+                <a-button class="plan-exec" type="primary" @click="handleEnvSelect">执行计划</a-button>
             </div>
             <ConBoxTitle title="关联信息" backgroundStyle="background: #FBFBFB" />
             <div class="contract-wrapper">
@@ -49,11 +49,6 @@
             </div>
         </div>
     </a-drawer>
-    <!-- 执行环境选择弹窗 -->
-    <EnvSelector
-        :env-select-drawer-visible="envDrawerVisible"
-        @on-cancel="envDrawerVisible = false"
-        @on-ok="handleExec" />
 </template>
 <script setup lang="ts">
 import { defineProps, defineEmits, ref, watch, reactive, computed } from 'vue';
@@ -63,7 +58,6 @@ import ConBoxTitle from '@/components/ConBoxTitle/index.vue';
 import EditAndShowSelect from '@/components/EditAndShowSelect/index.vue';
 import EditAndShowField from '@/components/EditAndShow/index.vue';
 import { ScenarioList, ReportList } from '../components';
-import EnvSelector from "@/views/component/EnvSelector/index.vue";
 import{ momentUtc } from '@/utils/datetime';
 import { StateType as PlanStateType } from '../store';
 import { planStatusOptions, planStatusTextMap } from '@/config/constant';
@@ -78,10 +72,9 @@ const planDetail = computed<any>(() => store.state.Plan.detailResult);
 const planScenarioList = computed<any[]>(() => store.state.Plan.relationScenarios.scenarioList);
 const scenarioPagination = computed<any>(() => store.state.Plan.relationScenarios.pagination);
 const currPlan = computed<any>(() => store.state.Plan.currPlan);
-const emits = defineEmits(['onCancel', 'onExec', 'onUpdate']);
+const emits = defineEmits(['onCancel', 'onSelectEnv', 'onUpdate']);
 const activeKey = ref(props.tabActiveKey || 'test-scenario');
 const loading = ref(false);
-const envDrawerVisible = ref(false); //选择执行环境弹窗
 
 const columns: any[] = reactive([
     {
@@ -128,9 +121,8 @@ function onCancel() {
     emits('onCancel');
 }
 
-function handleExec() {
-    envDrawerVisible.value = false;
-    emits('onExec');
+function handleEnvSelect() {
+    emits('onSelectEnv');
 }
 
 function handleChangeStatus(value) {

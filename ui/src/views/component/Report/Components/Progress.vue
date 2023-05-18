@@ -3,7 +3,7 @@
         <a-progress status="active" :strokeColor="execStatusColorMap.get(execStatus)" :percent="percent || 10" :showInfo="false" />
         <div>
             <a-button v-if="execStatus === WsMsgCategory.InProgress" class="exec-cancel" type="default" @click="handleExecCancel">{{ execStatusTextMap.get(execStatus) }}</a-button>
-            <span class="exec-status" v-else>{{ execStatusTextMap.get(execStatus) }}</span>
+            <span class="exec-status" :style="{ color: `${execStatusColorMap.get(execStatus)}` }" v-else>{{ execStatusTextMap.get(execStatus) }}</span>
         </div>
     </div>
 </template>
@@ -17,7 +17,7 @@ defineProps<{
 }>();
 
 const emits = defineEmits(['execCancel']);
-const execStatusTextMap = new Map([['in_progress', '终止执行'], ['end', '执行成功'], ['failed', '执行失败']]);
+const execStatusTextMap = new Map([['in_progress', '终止执行'], ['end', '执行完成'], ['failed', '执行失败']]);
 const execStatusColorMap = new Map([['in_progress', '#1890ff'], ['end', '#04C495'], ['failed', '#F63838']]);
 const handleExecCancel = () => {
     emits('execCancel');

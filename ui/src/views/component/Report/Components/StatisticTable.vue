@@ -127,14 +127,16 @@ function initData(data: any) {
         failNum: transformWithUndefined(data.failScenarioNum), //失败场景数
         notestNum: transformWithUndefined(data.totalScenarioNum) - transformWithUndefined(data.passScenarioNum) - transformWithUndefined(data.failScenarioNum)
     } : {
-        totalNum: transformWithUndefined(data.totalInterfaceNum), //接口总数
-        passNum: transformWithUndefined(data.passInterfaceNum),
-        failNum: transformWithUndefined(data.failInterfaceNum),
-        notestNum: transformWithUndefined(data.totalInterfaceNum) - transformWithUndefined(data.passInterfaceNum) - transformWithUndefined(data.failInterfaceNum)
+        totalNum: transformWithUndefined(data.totalRequestNum), //接口总数
+        passNum: transformWithUndefined(data.passRequestNum),
+        failNum: transformWithUndefined(data.failRequestNum),
+        notestNum: transformWithUndefined(data.totalRequestNum) - transformWithUndefined(data.passRequestNum) - transformWithUndefined(data.failRequestNum)
     };
     statiscalData.passRate = percentDef(statiscalData.passNum, statiscalData.totalNum);
     statiscalData.failRate = percentDef(statiscalData.failNum, statiscalData.totalNum);
     statiscalData.notestRate = percentDef(statiscalData.notestNum, statiscalData.totalNum);
+
+
     statiscalData.duration = data.duration;
     statiscalData.averageDuration = data.totalRequestNum ? data.duration / data.totalRequestNum : 0;
     const chartData = [{

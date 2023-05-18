@@ -97,6 +97,8 @@ const OnWebSocketMsg = (data: any) => {
       progressStatus.value = wsMsg.category;
       progressValue.value = 100;
       statisticData.value = {
+
+
         "duration": res.duration, //执行耗时（单位：s)
         "passScenarioNum": res.passScenarioNum || 0, //通过场景数
         "failScenarioNum": res.failScenarioNum || 0, //失败场景数
@@ -107,8 +109,15 @@ const OnWebSocketMsg = (data: any) => {
         "failRequestNum": res.failRequestNum || 0,
         "passAssertionNum": res.passAssertionNum || 0, //通过检查点数
         "failAssertionNum": res.failAssertionNum || 0, //失败检查点数
+
+        "totalScenarioNum": data.totalScenarioNum || 0, //场景总数
+        "totalInterfaceNum": data.totalInterfaceNum || 0, //接口总数
+
+
+
       }
       console.log('statisticData', statisticData.value);
+      console.log('832res',res);
       recordList.value = formatData(res?.logs?.[0]?.logs || []);
     }
   }

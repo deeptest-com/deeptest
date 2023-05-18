@@ -1,7 +1,7 @@
 <template>
   <div class="drawer-content">
     <ReportBasicInfo :show-operation="true" :scene="ReportDetailType.ExecScenario" :items="baseInfoList || []" @handleBtnClick="genReport"/>
-    <StatisticTable :scene="'query_detail'" :data="statisticData"/>
+    <StatisticTable :scene="ReportDetailType.ExecScenario" :data="statisticData"/>
     <EndpointCollapsePanel v-if="recordList.length > 0"
                            :recordList="recordList"/>
   </div>

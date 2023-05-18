@@ -214,6 +214,7 @@ func (c *UserCtrl) CreateUser(ctx iris.Context) {
 
 // UpdateUser 更新
 func (c *UserCtrl) UpdateUser(ctx iris.Context) {
+	userId := multi.GetUserId(ctx)
 	var reqId _domain.ReqId
 	if err := ctx.ReadParams(&reqId); err != nil {
 		_logUtils.Errorf("参数解析失败", zap.String("错误:", err.Error()))
@@ -231,7 +232,7 @@ func (c *UserCtrl) UpdateUser(ctx iris.Context) {
 		}
 	}
 
-	err := c.UserRepo.Update(reqId.Id, req)
+	err := c.UserRepo.Update(userId, reqId.Id, req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

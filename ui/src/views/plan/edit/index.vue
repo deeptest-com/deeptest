@@ -75,8 +75,8 @@ const props = defineProps<{
 
 const store = useStore<{ Plan: PlanStateType }>();
 const planDetail = computed<any>(() => store.state.Plan.detailResult);
-const planScenarioList = computed<any[]>(() => store.state.Plan.scenarioListResult.scenarioList);
-const scenarioPagination = computed<any>(() => store.state.Plan.scenarioListResult.pagination);
+const planScenarioList = computed<any[]>(() => store.state.Plan.relationScenarios.scenarioList);
+const scenarioPagination = computed<any>(() => store.state.Plan.relationScenarios.pagination);
 const currPlan = computed<any>(() => store.state.Plan.currPlan);
 const emits = defineEmits(['onCancel', 'onExec', 'onUpdate']);
 const activeKey = ref(props.tabActiveKey || 'test-scenario');
@@ -145,7 +145,7 @@ function handleUpdateName(value) {
 // 移除-关联-筛选时重新获取已关联的场景列表
 async function getScenarioList(params: any) {
     loading.value = true;
-    await store.dispatch('Plan/getScenarioList', { ...params, planId: currPlan.value.id });
+    await store.dispatch('Plan/getRelationScenarios', { ...params, planId: currPlan.value.id });
     loading.value = false;
 }
 

@@ -49,7 +49,7 @@
             </a-button>
         </template>
     </a-table>
-    <Associate 
+    <RelationScenario 
         :associate-modal-visible="associateModalVisible" 
         @on-cancel="associateModalVisible = false" 
         @on-ok="handleFinish"
@@ -59,7 +59,7 @@
 import { ref, reactive, defineProps, defineEmits, PropType, computed } from 'vue';
 import { useStore } from 'vuex';
 import { PlusOutlined } from '@ant-design/icons-vue';
-import Associate from './Associate.vue';
+import RelationScenario from './RelationScenario.vue';
 
 import { StateType as PlanStateType } from '../store';  
 import { message, Modal } from 'ant-design-vue';

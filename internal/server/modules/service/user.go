@@ -39,8 +39,8 @@ func (s *UserService) Create(req v1.UserReq) (uint, error) {
 	return s.UserRepo.Create(req)
 }
 
-func (s *UserService) Update(id uint, req v1.UserReq) error {
-	return s.UserRepo.Update(id, req)
+func (s *UserService) Update(userId, id uint, req v1.UserReq) error {
+	return s.UserRepo.Update(userId, id, req)
 }
 
 func (s *UserService) IsAdminUser(id uint) (bool, error) {

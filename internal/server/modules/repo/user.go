@@ -261,12 +261,17 @@ func (r *UserRepo) Create(req serverDomain.UserReq) (uint, error) {
 	return user.ID, nil
 }
 
-func (r *UserRepo) Update(id uint, req serverDomain.UserReq) error {
+func (r *UserRepo) Update(userId, id uint, req serverDomain.UserReq) error {
+	operatorIsAdmin, err := r.IsAdminUser(userId)
+	if err != nil {
+		return err
+	}
 	if b, err := r.IsAdminUser(id); err != nil {
 		return err
-	} else if b {
+	} else if b && !operatorIsAdmin {
 		return errors.New("不能编辑超级管理员")
 	}
+
 	userFind, err := r.GetByUsernameOrEmail(req.Username, req.Email, id)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return err

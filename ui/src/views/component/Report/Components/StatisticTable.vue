@@ -47,6 +47,7 @@ import { percentDef, formatWithSeconds } from '@/utils/datetime';
 const props = defineProps<{
     scene: string
     data: any
+    execStatus?: any
 }>();
 
 const main = ref();
@@ -117,6 +118,7 @@ function init() {
 function initData(data: any) {
     if (Object.keys(data).length === 0) {
         loading.value = true;
+        statiscalResult.value = {};
         return;
     }
     const isExecScenario = props.scene === ReportDetailType.ExecScenario;
@@ -175,15 +177,31 @@ watch(() => main.value, (val) => {
 });
 
 watch(() => {
-    return [props.data, myChart.value];
+    return [props.data, myChart.value, props.execStatus];
 }, val => {
-    const [statiscalOriginalData, chartRef] = val;
-    if (val[0] && chartRef) {
+    const [statiscalOriginalData, chartRef, execStatus] = val;
+    if (val[0] && chartRef && execStatus !== 'end' && execStatus !== 'failed') {
         initData(statiscalOriginalData);
+    }
+    if (Object.keys(val[0]).length === 0 &&  (execStatus === 'end' || execStatus === 'failed')) {
+        loading.value = false;
+        if (!myChart.value) {
+            myChart.value = echarts.init(main.value);
+        }
+        setTimeout(() => {
+            initOptions.value.series[0].label = {
+                ...initOptions.value.series[0].label,
+                formatter: () => {
+                    return [`{subTitle|通过}`, `{title|0}`].join('\n')
+                },
+            }
+            myChart.value.setOption({ ...initOptions.value });
+        }, 500)
     }
 }, {
     immediate: true
-})
+});
+
 </script>
 <style scoped lang="less">
 .report-statistical-table {

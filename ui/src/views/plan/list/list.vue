@@ -94,7 +94,7 @@
   <PlanEdit
     :tab-active-key="editTabActiveKey"
     :edit-drawer-visible="editDrawerVisible"
-    @onExec="onExec"
+    @onSelectEnv="handleEnvSelect"
     @onUpdate="handleUpdate"
     @on-cancel="editDrawerVisible = false" />
 
@@ -211,6 +211,11 @@ const exec = async (record: any) => {
   await getCurrentPalnInfo(record);
   envSelectVisible.value = true;
 };
+
+const handleEnvSelect = () => {
+  editDrawerVisible.value = false;
+  envSelectVisible.value = true;
+}
 
 const report = async (record: any) => {
   await getCurrentPalnInfo(record);

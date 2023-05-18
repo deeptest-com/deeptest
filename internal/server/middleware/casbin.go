@@ -43,6 +43,7 @@ func Check(r *http.Request, userId string) (bool, error) {
 	}
 
 	logUtils.Debugf(fmt.Sprintf("权限：%s-%s-%s", userId, path, method))
+	fmt.Println(fmt.Sprintf("权限：%s-%s-%s", userId, path, method))
 
 	if !ok {
 		return ok, errors.New("你未拥有当前操作权限，请联系管理员")

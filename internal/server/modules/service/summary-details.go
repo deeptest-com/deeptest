@@ -140,17 +140,21 @@ func (s *SummaryDetailsService) HandleSummaryDetails(userProjectIds []int64, all
 		if projectsUserListOfMap != nil {
 			resDetail.UserList = projectsUserListOfMap[int64(projectInfo.ID)]
 		}
-
-		resAllDetails = append(resAllDetails, resDetail)
+		accessible := 0
 		//当前项目如果是用户参与的项目，则添加到resUserDetails中
 		for _, id := range userProjectIds {
 			if int64(projectInfo.ID) == id {
 				userId = userId + 1
 				resDetail.Id = userId
 				resUserDetails = append(resUserDetails, resDetail)
+				accessible = 1
 				break
 			}
 		}
+		resDetail.Accessible = accessible
+
+		resAllDetails = append(resAllDetails, resDetail)
+
 	}
 	return
 }

@@ -136,7 +136,7 @@ function initData(data: any) {
     statiscalData.failRate = percentDef(statiscalData.failNum, statiscalData.totalNum);
     statiscalData.notestRate = percentDef(statiscalData.notestNum, statiscalData.totalNum);
     statiscalData.duration = data.duration;
-    statiscalData.averageDuration = data.duration / statiscalData.totalNum;
+    statiscalData.averageDuration = data.totalRequestNum ? data.duration / data.totalRequestNum : 0;
     const chartData = [{
         value: statiscalData.passNum,
         name: '通过'

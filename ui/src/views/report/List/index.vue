@@ -46,6 +46,9 @@
                             <a class="operation-a" href="javascript:void (0)" @click="handleExport(record.id)">导出</a>
                         </a-menu-item>
                         <a-menu-item key="2">
+                            <a class="operation-a" href="javascript:void (0)" @click="handleQueryDetail(record)">查看报告</a>
+                        </a-menu-item>
+                        <a-menu-item key="3">
                             <a class="operation-a" href="javascript:void (0)" @click="handleDelete(record.id)">删除</a>
                         </a-menu-item>
                     </a-menu>
@@ -152,8 +155,4 @@ const handleGetList = (params: any) => {
 
 </script>
 <style scoped lang="less">
-.report-planname {
-    cursor: pointer;
-    color: #447DFD;
-}
 </style>

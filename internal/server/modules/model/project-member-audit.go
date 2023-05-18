@@ -12,6 +12,7 @@ type ProjectMemberAudit struct {
 	Description     string             `json:"description" gorm:"type:text"`
 	AuditUserName   string             `gorm:"-" json:"auditUserName"`
 	ApplyUserName   string             `gorm:"-" json:"applyUserName"`
+	ProjectName     string             `gorm:"-" json:"projectName"`
 }
 
 func (ProjectMemberAudit) TableName() string {

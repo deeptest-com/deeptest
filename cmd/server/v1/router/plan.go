@@ -27,6 +27,7 @@ func (m *PlanModule) Party() module.WebModule {
 		index.Delete("/{id:uint}", m.PlanCtrl.Delete).Name = "删除计划"
 		index.Post("/{id:uint}/clone", m.PlanCtrl.Clone).Name = "克隆计划"
 		index.Get("/planScenariosList", m.PlanCtrl.PlanScenariosList).Name = "计划中的场景列表"
+		index.Get("/notRelationScenarioList", m.PlanCtrl.NotRelationScenarioList).Name = "计划中未绑定的场景列表"
 
 		index.Post("/{id:uint}/addScenarios", m.PlanCtrl.AddScenarios).Name = "添加场景"
 		index.Post("/{id:uint}/removeScenario", m.PlanCtrl.RemoveScenario).Name = "移除场景"

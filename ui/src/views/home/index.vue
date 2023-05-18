@@ -31,6 +31,7 @@
             v-if="showMode == 'list'"
             :activeKey="activeKey"
             :searchValue="searchValue"
+             @join="handleJoin"
             @edit="handleOpenEdit"
             @delete="handleDelete"
           />

@@ -11,7 +11,7 @@
 <script setup lang="ts">
 import { ref, defineProps, watch } from 'vue';
 import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
-import {MonacoOptions} from "@/utils/const";
+import { MonacoOptions } from "@/utils/const";
 
 const props = defineProps({
     data: {

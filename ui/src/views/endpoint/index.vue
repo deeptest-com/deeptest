@@ -155,7 +155,7 @@ const columns = [
     title: '接口名称',
     dataIndex: 'title',
     slots: {customRender: 'colTitle'},
-    width: 120,
+    width: 200,
     ellipsis: true
   },
   {
@@ -171,6 +171,7 @@ const columns = [
   {
     title: '接口路径',
     dataIndex: 'path',
+    width: 200,
     slots: {customRender: 'colPath'},
   },
   {

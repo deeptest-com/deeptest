@@ -3,26 +3,26 @@
     <div class="filter-header">
       <div class="left">
         <a-space :size="16">
-          <a-button type="primary" @click="() => edit(0)">新建测试场景</a-button>
+          <a-button type="primary" @click="() => edit(0)">新建场景</a-button>
           <!--  <a-button  :disabled="true" @click="() => edit(0)">批量操作</a-button>-->
         </a-space>
       </div>
       <div class="right">
         <a-form :layout="'inline'" class="filter-items">
           <a-form-item :label="'测试类型'">
-            <a-select style="width:120px" allowClear placeholder="请选择" @change="onSearch"
+            <a-select style="width:100px" allowClear placeholder="请选择" @change="onSearch"
                       v-model:value="queryParams.type" :options="testTypeOptions" class="status-select"/>
           </a-form-item>
           <a-form-item :label="'状态'">
-            <a-select style="width:120px" allowClear placeholder="请选择" @change="onSearch"
+            <a-select style="width:100px" allowClear placeholder="请选择" @change="onSearch"
                       v-model:value="queryParams.status" :options="scenarioStatusOptions" class="status-select"/>
           </a-form-item>
           <a-form-item :label="'优先级'">
-            <a-select style="width:120px" placeholder="请选择" allowClear @change="onSearch"
+            <a-select style="width:100px" placeholder="请选择" allowClear @change="onSearch"
                       v-model:value="queryParams.priority" :options="priorityOptions" class="status-select"/>
           </a-form-item>
           <a-input-search @change="onSearch" allowClear @search="onSearch" v-model:value="queryParams.keywords"
-                          placeholder="输入你需要搜索测试场景名称" style="width:270px;margin-left: 8px;"/>
+                          placeholder="搜索测试场景" style="width:200px;margin-left: 8px;"/>
         </a-form>
       </div>
     </div>
@@ -86,7 +86,7 @@
                 <a class="operation-a" href="javascript:void (0)" @click="editScenario(record,'3')">关联计划</a>
               </a-menu-item>
               <a-menu-item key="1">
-                <a class="operation-a" href="javascript:void (0)" @click="execScenario(record)">执行场景</a>
+                <a class="operation-a" href="javascript:void (0)" @click="execScenario(record)">执行</a>
               </a-menu-item>
               <a-menu-item key="2">
                 <a class="operation-a" href="javascript:void (0)" @click="editScenario(record,'2')">执行历史</a>
@@ -386,6 +386,9 @@ onMounted(() => {
 </script>
 
 <style lang="less" scoped>
+.scenario-list-main{
+  //min-width: 1000px;
+}
 .filter-header {
   display: flex;
   align-items: center;

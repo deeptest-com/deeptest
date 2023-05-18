@@ -58,11 +58,15 @@
       </a-button>
     </template>
   </a-table>
-  <SelectPlan
-      :visible="visible"
-      @cancel="visible = false"
-      @ok="handleSelect"
-  />
+
+  <!-- 使用v-if 来保证组件重新渲染 -->
+  <div v-if="visible">
+    <SelectPlan
+        :visible="visible"
+        @cancel="visible = false"
+        @ok="handleSelect"/>
+  </div>
+
 </template>
 <script lang="ts" setup>
 import {ref, reactive, defineProps, defineEmits, PropType, computed, onMounted, watch} from 'vue';
@@ -180,19 +184,20 @@ async function getPlans() {
 watch(() => {
   return detailResult.value.id
 }, async (newVal) => {
-  await getPlans();
+  if(newVal) {
+    await getPlans();
+  }
 }, {
   immediate: true
 })
 
-onMounted(async () => {
-  await getPlans();
-})
+// onMounted(async () => {
+//   await getPlans();
+// })
 
 const handleChange = () => {
   getPlans();
 };
-
 
 async function handleAdd(keys: any[]) {
   await store.dispatch('Scenario/addPlans', {

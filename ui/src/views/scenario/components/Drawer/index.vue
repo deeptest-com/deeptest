@@ -77,11 +77,7 @@
       </template>
       <ExecListDetail/>
     </a-drawer>
-
-
-
   </div>
-
 </template>
 
 <script lang="ts" setup>

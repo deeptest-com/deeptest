@@ -15,8 +15,8 @@ func NewProjectMenuService() *ProjectMenuService {
 	return &ProjectMenuService{}
 }
 
-func (s *ProjectMenuService) GetUserMenuList(userId uint) (ret []model.ProjectMenu, err error) {
-	projectMemberRole, err := s.ProjectRepo.GetCurrProjectMemberRoleByUser(userId)
+func (s *ProjectMenuService) GetUserMenuList(projectId, userId uint) (ret []model.ProjectMenu, err error) {
+	projectMemberRole, err := s.ProjectRepo.FindRolesByProjectAndUser(projectId, userId)
 	if err != nil {
 		return
 	}

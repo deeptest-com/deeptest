@@ -7,7 +7,6 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"strconv"
-	"time"
 )
 
 type SummaryBugsService struct {
@@ -85,26 +84,24 @@ func (s *SummaryBugsService) Create(req model.SummaryBugs) (err error) {
 	return r.Create(req)
 }
 
-func (s *SummaryBugsService) CreateByDate(req model.SummaryBugs) (err error) {
-	now := time.Now()
-	startTime, endTime := GetDate(now)
-	ret, err := s.HasDataOfDate(startTime, endTime)
-	if ret {
+func (s *SummaryBugsService) CreateBug(req model.SummaryBugs) (err error) {
+	id, err := s.Existed(req.BugId, req.ProjectId)
+	if id == 0 {
 		err = s.Create(req)
 	} else {
-		err = s.UpdateColumnsByDate(req, startTime, endTime)
+		err = s.UpdateColumnsByDate(req, id)
 	}
 	return
 }
 
-func (s *SummaryBugsService) UpdateColumnsByDate(req model.SummaryBugs, startTime string, endTime string) (err error) {
+func (s *SummaryBugsService) UpdateColumnsByDate(req model.SummaryBugs, id int64) (err error) {
 	r := repo.NewSummaryBugsRepo()
-	return r.UpdateColumnsByDate(req, startTime, endTime)
+	return r.UpdateColumnsByDate(req, id)
 }
 
-func (s *SummaryBugsService) HasDataOfDate(startTime string, endTiem string) (ret bool, err error) {
+func (s *SummaryBugsService) Existed(bugId int64, projectId int64) (id int64, err error) {
 	r := repo.NewSummaryBugsRepo()
-	return r.HasDataOfDate(startTime, endTiem)
+	return r.Existed(bugId, projectId)
 }
 
 // Count
@@ -117,9 +114,4 @@ func (s *SummaryBugsService) Count() (count int64, err error) {
 func (s *SummaryBugsService) CountByProjectId(projectId int64) (count int64, err error) {
 	r := repo.NewSummaryBugsRepo()
 	return r.CountByProjectId(projectId)
-}
-
-func (s *SummaryBugsService) CheckUpdated(lastUpdateTime *time.Time) (result bool, err error) {
-	r := *repo.NewSummaryBugsRepo()
-	return r.CheckUpdated(lastUpdateTime)
 }

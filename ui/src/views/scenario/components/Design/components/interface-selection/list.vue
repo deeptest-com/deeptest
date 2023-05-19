@@ -1,10 +1,8 @@
 <template>
   <div class="interface-list-main">
-
     <div class="table-toolbar">
-<!--      <div class="actions">接口列表</div>-->
-
       <div class="filters">
+        <TreeSelect/>
         <a-input-search
             style="display: flex;justify-content: end;width: 300px;margin-bottom: 16px; "
             placeholder="请输入关键词"
@@ -71,6 +69,7 @@ import {StateType as ServeStateType} from "@/store/serve";
 import {StateType as Debug} from "@/views/component/debug/store";
 import {message, Modal} from 'ant-design-vue';
 import {listEndpointInterface} from "@/views/endpoint/service";
+import TreeSelect from "./TreeSelect.vue";
 
 const store = useStore<{ Endpoint, ProjectGlobal, Debug: Debug, ServeGlobal: ServeStateType }>();
 
@@ -186,7 +185,7 @@ onMounted(async () => {
     .filters {
       flex: 1;
       display: flex;
-      justify-content: flex-end;
+      justify-content: space-between;
     }
   }
 }

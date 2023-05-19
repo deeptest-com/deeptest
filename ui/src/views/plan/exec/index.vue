@@ -56,9 +56,7 @@ function onClose() {
     emits('onClose');
 }
 
-watch(() => {
-    return props;
-}, (val) => {
+watch(props, (val) => {
     if (val.drawerVisible) {
         execStart();
         bus.on(settings.eventWebSocketMsg, OnWebSocketMsg);
@@ -72,16 +70,6 @@ watch(() => {
     immediate: true,
     deep: true
 });
-
-watch(() => {
-    return execResult.value;
-}, (val) => {
-    console.log(' ~~~~~ execResult ~~~~~~ ', val);
-}, {
-    immediate: true,
-    deep: true
-});
-
 </script>
 <style scoped lang="less">
 .report-drawer {

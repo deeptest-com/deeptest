@@ -63,17 +63,11 @@ async function save() {
     emits('onOk');
 }
 
-watch(() => {
-    return props;
-}, (val) => {
-    console.log(val);
-    if (props.envSelectDrawerVisible) {
+watch(props, (val) => {
+    if (val.envSelectDrawerVisible) {
         store.dispatch('ProjectSetting/getEnvsList', {
             projectId: currProject.value.id
         });
     }
-}, {
-    immediate: true,
-    deep: true
 })
 </script>

@@ -41,7 +41,6 @@ func (s *SummaryDetailsService) Card(projectId int64) (res v1.ResSummaryCard, er
 		oldCoverage = oldSummaryCardTotal.Coverage
 		oldScenarioTotal = oldSummaryCardTotal.ScenarioTotal
 		oldInterfaceTotal = oldSummaryCardTotal.InterfaceTotal
-
 	} else {
 		summaryDetails, err = s.FindByProjectId(projectId)
 		res.ProjectTotal = 1
@@ -87,7 +86,6 @@ func (s *SummaryDetailsService) Details(userId int64) (res v1.ResSummaryDetail, 
 	allDetails, err := s.GetAllDetailGroupByProjectId()
 	//查找用户参与的项目id,并转为map
 	userProjectIds, err := s.FindProjectIdsByUserId(userId)
-
 	//查询所有项目信息
 	allProjectsInfo, err := s.FindAllProjectInfo()
 	//组装返回的json结构体
@@ -96,56 +94,25 @@ func (s *SummaryDetailsService) Details(userId int64) (res v1.ResSummaryDetail, 
 }
 
 func (s *SummaryDetailsService) HandleSummaryDetails(userProjectIds []int64, allDetails map[int64]model.SummaryDetails, allProjectsInfo []model.SummaryProjectInfo) (resAllDetails []v1.ResSummaryDetails, resUserDetails []v1.ResSummaryDetails, err error) {
-	var id, userId uint
-	var projectsUserListOfMap map[int64][]v1.ResUserIdAndName
 	projectsBugCount, err := s.CountBugsGroupByProjectId()
 	projectsUsers, err := s.FindAllUserIdAndNameOfProject()
-	//如果获取的
-	if projectsUsers != nil {
-		projectsUserListOfMap = s.LetUsersGroupByProjectId(allProjectsInfo, projectsUsers)
-	} else {
-		projectsUserListOfMap = nil
-	}
+	projectsUserListGroupByProject := s.LetUsersGroupByProjectId(allProjectsInfo, projectsUsers)
 
 	//遍历项目信息，匹配details表结果，进行字段复制，组装返回resAllDetails体
-	for _, projectInfo := range allProjectsInfo {
-
+	for allProjectsInfoIndex, projectInfo := range allProjectsInfo {
 		var resDetail v1.ResSummaryDetails
-		hit := false
-		for _, detail := range allDetails {
-			if int64(projectInfo.ID) == detail.ProjectId {
-				//如果detail中有当前projectid对应的信息，则把detail数据赋值给结果resDetail
-				resDetail = s.CopyProjectInfo(projectInfo, allDetails[int64(projectInfo.ID)])
-				hit = true
-				break
-			}
-		}
+		var Detail model.SummaryDetails
+		Detail = allDetails[int64(projectInfo.ID)]
+		resDetail = s.CopyProjectInfo(projectInfo, Detail)
+		resDetail.Id = uint(allProjectsInfoIndex + 1)
+		resDetail.BugTotal = projectsBugCount[int64(projectInfo.ID)]
+		resDetail.UserList = projectsUserListGroupByProject[int64(projectInfo.ID)]
 
-		if !hit {
-			//如果detail中没有当前projectid对应的信息，则把复制个空的detail数据给结果resDetail
-			var nilDetail model.SummaryDetails
-			resDetail = s.CopyProjectInfo(projectInfo, nilDetail)
-		}
-		id = id + 1
-		resDetail.Id = id
-
-		if projectsBugCount != nil {
-			for _, bugCount := range projectsBugCount {
-				if bugCount.ProjectId == int64(projectInfo.ID) {
-					resDetail.BugTotal = bugCount.Count
-				}
-			}
-		}
-
-		if projectsUserListOfMap != nil {
-			resDetail.UserList = projectsUserListOfMap[int64(projectInfo.ID)]
-		}
-		resDetail.Accessible = 0
 		//当前项目如果是用户参与的项目，则添加到resUserDetails中
-		for _, id := range userProjectIds {
+		for userProjectIdsIndex, id := range userProjectIds {
 			if int64(projectInfo.ID) == id {
-				userId = userId + 1
-				resDetail.Id = userId
+				resDetail.Id = uint(userProjectIdsIndex + 1)
+				resDetail.Accessible = 1
 				resDetail.Accessible = 1
 				resUserDetails = append(resUserDetails, resDetail)
 				break
@@ -196,20 +163,20 @@ func (s *SummaryDetailsService) GetAllDetailGroupByProjectId() (ret map[int64]mo
 	//从biz_scenario_report拿到assertion的相关数据,计算后存储
 	passRates, err := s.FindAllPassRateByProjectId()
 
-	//从processor里边，根据project_id，取出来对应的，所有endpointid总数，其中endpointid不重复
-	endpointCountOfProcessor, err := s.FindAllProcessEndpointCountGroupByProjectId()
+	//从processor里边，根据project_id，取出来对应的，所有endPointId总数，其中endPointId不重复
+	endPointCountOfProcessor, err := s.FindAllProcessEndpointCountGroupByProjectId()
 
 	ret = make(map[int64]model.SummaryDetails, len(projectIds))
 
 	for _, projectId := range projectIds {
-		details, _ := s.HandleDetail(projectId, ScenariosTotal[projectId], interfacesTotal[projectId], execsTotal[projectId], passRates[projectId], endpointCountOfProcessor[projectId])
+		details, _ := s.HandleDetail(projectId, ScenariosTotal[projectId], interfacesTotal[projectId], execsTotal[projectId], passRates[projectId], endPointCountOfProcessor[projectId])
 		//返回的数组，需要处理成map形式
 		ret[projectId] = details
 	}
 	return
 }
 
-func (s *SummaryDetailsService) HandleDetail(projectId int64, ScenariosTotal int64, interfacesTotal int64, execsTotal int64, passRates float64, endpointCountOfProcessor int64) (ret model.SummaryDetails, err error) {
+func (s *SummaryDetailsService) HandleDetail(projectId int64, ScenariosTotal int64, interfacesTotal int64, execsTotal int64, passRates float64, endPointCountOfProcessor int64) (ret model.SummaryDetails, err error) {
 	ret.ProjectId = projectId
 	ret.ScenarioTotal = ScenariosTotal
 	ret.InterfaceTotal = interfacesTotal
@@ -218,7 +185,7 @@ func (s *SummaryDetailsService) HandleDetail(projectId int64, ScenariosTotal int
 
 	var coverage float64
 	if ret.InterfaceTotal != 0 {
-		coverage = float64(endpointCountOfProcessor) / float64(ret.InterfaceTotal) * 100
+		coverage = float64(endPointCountOfProcessor) / float64(ret.InterfaceTotal) * 100
 	} else {
 		coverage = 0
 	}
@@ -364,9 +331,15 @@ func (s *SummaryDetailsService) FindCreateUserNameByProjectId(projectId int64) (
 	return r.FindCreateUserNameByProjectId(projectId)
 }
 
-func (s *SummaryDetailsService) CountBugsGroupByProjectId() (bugsCount []model.ProjectsBugCount, err error) {
+func (s *SummaryDetailsService) CountBugsGroupByProjectId() (bugsCount map[int64]int64, err error) {
 	r := repo.NewSummaryDetailsRepo()
-	return r.CountBugsGroupByProjectId()
+	result, err := r.CountBugsGroupByProjectId()
+	bugsCount = make(map[int64]int64, len(result))
+	for _, value := range result {
+		//这里写的是id实际是count，都是int64，不做多余的明明
+		bugsCount[value.ProjectId] = value.Count
+	}
+	return
 }
 
 func (s *SummaryDetailsService) CountScenarioTotalProjectId(projectId int64) (count int64, err error) {

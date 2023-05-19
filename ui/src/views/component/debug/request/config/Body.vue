@@ -50,7 +50,7 @@
         <BodyFormUrlencoded></BodyFormUrlencoded>
       </div>
 
-      <div v-else>
+      <div v-else class="editor-container">
         <MonacoEditor
             class="editor"
             v-model:value="debugData.body"
@@ -128,17 +128,26 @@ onUnmounted(() => {
 
 <style lang="less">
 .request-body-main {
-  .jsoneditor-vue {
+  .editor-container {
     height: 100%;
-    .jsoneditor-menu {
-      display: none;
-    }
-    .jsoneditor-outer {
-      margin: 0;
-      padding: 0;
+    min-height: 160px;
+    .editor {
       height: 100%;
-      .ace-jsoneditor {
+      min-height: 160px;
+    }
+
+    .jsoneditor-vue {
+      height: 100%;
+      .jsoneditor-menu {
+        display: none;
+      }
+      .jsoneditor-outer {
+        margin: 0;
+        padding: 0;
         height: 100%;
+        .ace-jsoneditor {
+          height: 100%;
+        }
       }
     }
   }

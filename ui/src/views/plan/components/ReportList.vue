@@ -1,9 +1,9 @@
 <template>
     <TableFilter :show-operation="false" @handle-filter="handleFilter" />
-    <a-table 
+    <a-table
         row-key="id"
         :loading="loading"
-        :columns="columns" 
+        :columns="columns"
         :data-source="list"
         :pagination="{
             ...pagination,
@@ -12,7 +12,7 @@
     >
         <template #duration="{ record }">
             <span v-html="formatWithSeconds(record.duration)"></span>
-        </template> 
+        </template>
         <template #startTime="{ record }">
             {{ momentUtc(record.startTime) }} ~  {{ momentUtc(record.endTime) }}
         </template>
@@ -20,12 +20,12 @@
             <a-button type="primary" @click="queryDetail(record.id)">查看报告</a-button>
         </template>
     </a-table>
-    <ExecDetail 
-        title="测试报告详情" 
+    <ExecDetail
+        title="测试报告详情"
         :show-scenario-info="true"
         :scenario-expand-active="false"
-        :drawer-visible="detailDrawerVisible" 
-        :scene="ReportDetailType.QueryDetail" 
+        :drawer-visible="detailDrawerVisible"
+        :scene="ReportDetailType.QueryDetail"
         @on-close="detailDrawerVisible = false" />
 </template>
 <script lang="ts" setup>
@@ -33,10 +33,10 @@ import { reactive, computed, defineProps, watch, defineEmits, ref } from 'vue';
 import { useStore } from 'vuex';
 
 import { TableFilter } from "@/views/component/Report/Components";
-import ExecDetail from '@/views/report/Detail/Index.vue';
+import ExecDetail from '@/views/report/detail/Index.vue';
 
 import { StateType as ReportStateType } from '@/views/report/store';
-import { StateType as PlanStateType } from '../store';  
+import { StateType as PlanStateType } from '../store';
 import { momentUtc, formatWithSeconds } from '@/utils/datetime';
 import { ReportDetailType } from '@/utils/enum';
 
@@ -128,5 +128,4 @@ watch(() => {
     deep: true
 })
 </script>
-  
-  
+

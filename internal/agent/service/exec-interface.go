@@ -39,10 +39,11 @@ func (s *ExecInterfaceService) Request(req domain.DebugData) (ret domain.DebugRe
 	// replace variables
 	agentExec.DealwithVariables(&req.BaseRequest, consts.InterfaceDebug)
 
-	// send request
+	// gen url
 	reqUrl := req.Url
 	req.BaseRequest.Url = _httpUtils.AddSepIfNeeded(req.BaseUrl) + reqUrl
 
+	// send request
 	ret, err = agentExec.Invoke(&req.BaseRequest)
 
 	req.BaseRequest.Url = reqUrl // rollback for saved to db

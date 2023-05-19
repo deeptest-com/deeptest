@@ -44,7 +44,7 @@
           </div>
         </a-card>
       </a-tab-pane>
-      <a-tab-pane key="2" tab="审批" force-render>
+      <a-tab-pane key="2" tab="我的审批" force-render>
         <a-card :bordered="false">
           <a-table
             row-key="id"
@@ -73,6 +73,30 @@
                 @click="() => audit(record.id)"
                 >审批</a-button
               >
+            </template>
+          </a-table>
+        </a-card></a-tab-pane
+      >
+      <a-tab-pane key="3" tab="我的申请" force-render>
+        <a-card :bordered="false">
+          <a-table
+            row-key="id"
+            :columns="applyColumns"
+            :data-source="auditLst.list"
+            :loading="loading"
+            :pagination="{
+              ...auditLst.pagination,
+              onChange: (page) => {
+                getAudits(page);
+              },
+              onShowSizeChange: (page, size) => {
+                pagination1.pageSize = size;
+                getAudits(page);
+              },
+            }"
+          >
+            <template #status="{ text }">
+              {{ text == 0 ? "待审批" : text == 1 ? "已同意" : "已拒绝" }}
             </template>
           </a-table>
         </a-card></a-tab-pane
@@ -114,7 +138,7 @@
 <script setup lang="ts">
 import { PaginationConfig, QueryParams, User } from "../data.d";
 
-import { computed, onMounted, reactive, ref } from "vue";
+import { computed, onMounted, reactive, ref, watch } from "vue";
 import { useStore } from "vuex";
 import { StateType } from "@/views/user/store";
 import { Modal, notification } from "ant-design-vue";
@@ -214,10 +238,48 @@ const auditColumns = [
     slots: { customRender: "action" },
   },
 ];
+const applyColumns = [
+  {
+    title: "审批人",
+    dataIndex: "auditUserName",
+    //  width: 150,
+    // slots: { customRender: "username" },
+  },
+  {
+    title: "申请加入项目",
+    dataIndex: "projectName",
+    //  width: 200,
+    // slots: { customRender: "role" },
+  },
+  {
+    title: "申请角色",
+    dataIndex: "projectRoleName",
+    //  width: 150,
+    // slots: { customRender: "role" },
+  },
+  {
+    title: "申请原因",
+    dataIndex: "description",
+    // width: 200,
+    // slots: { customRender: "email" },
+  },
+  {
+    title: "申请日期",
+    dataIndex: "createdAt",
+    width: 240,
+    // slots: { customRender: "email" },
+  },
+  {
+    title: "状态",
+    dataIndex: "status",
+    width: 100,
+    slots: { customRender: "status" },
+  },
+];
 onMounted(() => {
   getList(1);
   getRoles();
-  getAudits(1);
+  // getAudits(1);
 });
 const pagination1 = ref({
   total: 0,
@@ -243,6 +305,7 @@ const getAudits = (page: number) => {
   getAuditList({
     pageSize: pagination1.value.pageSize,
     page: page,
+    type: activeKey.value == "2" ? 0 : 1,
   })
     .then((json) => {
       console.log("审批列表", json);
@@ -337,6 +400,19 @@ const remove = (id: number) => {
     },
   });
 };
+watch(
+  () => activeKey.value,
+  (val) => {
+    if (val) {
+      if (val == "2" || val == "3") {
+        getAudits(1);
+      }
+    }
+  },
+  {
+    immediate: true,
+  }
+);
 </script>
 <style lang="less" scoped>
 .user-main-list {

@@ -97,14 +97,11 @@ const currPlan = computed<any>(() => store.state.Plan.currPlan);
 const members = computed(() => store.state.Plan.members);
 const associateModalVisible = ref(false);
 const selectedRowKeys = ref<any[]>([]); // Check here to configure the default column
-let selectedRowIds = reactive<number[]>([]);
+let selectedRowIds = reactive<any[]>([]);
 
 const onSelectChange = (changableRowKeys: string[], rows: any) => {
     selectedRowKeys.value = changableRowKeys;
-    selectedRowIds = rows.map(e => {
-        return e.id;
-    });
-    emits('selectRowKeys', selectedRowIds);
+    emits('selectRowKeys', changableRowKeys);
 };
 
 const priorityOptions = ref<any>([
@@ -139,8 +136,6 @@ const handleChange = (value: string) => {
 };
 
 const handleRemove = async (record?: any) => {
-    console.log(selectedRowIds.length);
-    console.log(record);
     if (!record && selectedRowIds.length === 0) {
         message.warning('请先选择要删除的关联场景');
         return;

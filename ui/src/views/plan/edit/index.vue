@@ -28,7 +28,7 @@
             </div>
             <ConBoxTitle title="关联信息" backgroundStyle="background: #FBFBFB" />
             <div class="contract-wrapper">
-                <a-tabs v-model:activeKey="activeKey">
+                <a-tabs v-model:activeKey="activeKey" @change="handleTabChanged">
                     <a-tab-pane key="test-scenario" tab="测试场景">
                         <div style="padding-top: 20px">
                             <ScenarioList
@@ -72,8 +72,8 @@ const planDetail = computed<any>(() => store.state.Plan.detailResult);
 const planScenarioList = computed<any[]>(() => store.state.Plan.relationScenarios.scenarioList);
 const scenarioPagination = computed<any>(() => store.state.Plan.relationScenarios.pagination);
 const currPlan = computed<any>(() => store.state.Plan.currPlan);
-const emits = defineEmits(['onCancel', 'onSelectEnv', 'onUpdate']);
-const activeKey = ref(props.tabActiveKey || 'test-scenario');
+const emits = defineEmits(['onCancel', 'onSelectEnv', 'onUpdate', 'update:tabKey']);
+const activeKey = ref<string>('test-scenario');
 const loading = ref(false);
 
 const columns: any[] = reactive([
@@ -134,6 +134,10 @@ function handleUpdateName(value) {
     emits('onUpdate', { name: value });
 }
 
+function handleTabChanged(val) {
+    emits('update:tabKey', val);
+}
+
 // 移除-关联-筛选时重新获取已关联的场景列表
 async function getScenarioList(params: any) {
     loading.value = true;
@@ -141,20 +145,18 @@ async function getScenarioList(params: any) {
     loading.value = false;
 }
 
-watch(() => {
-    return currPlan.value;
-}, (val: any) => {
-    if (val && val.id) {
+watch([currPlan, () => props.editDrawerVisible], async (val: any) => {
+    const [plan, visible] = val;
+    if (plan && plan.id && visible) {
+        await store.dispatch('Plan/getPlan', currPlan.value.id);
         getScenarioList({ planId: val.id });
     }
-}, { immediate: true });
+});
 
-watch(() => {
-    return props.tabActiveKey;
-}, (val) => {
+watch(() => props.tabActiveKey, (val: any) => {
     console.log('props- tabActiveKey', val);
     activeKey.value = val || 'test-scenario';
-}, { immediate: true });
+}, { deep: true });
 </script>
 <style scoped lang="less">
 .plan-basic-info {

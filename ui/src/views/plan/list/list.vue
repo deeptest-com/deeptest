@@ -94,6 +94,7 @@
   <PlanEdit
     :tab-active-key="editTabActiveKey"
     :edit-drawer-visible="editDrawerVisible"
+    @update:tab-key="e => editTabActiveKey = e"
     @onSelectEnv="handleEnvSelect"
     @onUpdate="handleUpdate"
     @on-cancel="editDrawerVisible = false" />
@@ -207,7 +208,6 @@ const onExec = async () => {
 }
 
 const exec = async (record: any) => {
-  await store.dispatch('Plan/initExecResult');
   await getCurrentPalnInfo(record);
   envSelectVisible.value = true;
 };
@@ -267,8 +267,8 @@ const create = () => {
 };
 
 const edit = async (record: any) => {
-  editDrawerVisible.value = true;
   editTabActiveKey.value = 'test-scenario';
+  editDrawerVisible.value = true;
   getCurrentPalnInfo(record);
 };
 
@@ -276,7 +276,6 @@ const getCurrentPalnInfo = async (record: any) => {
   const { id, adminId, categoryId, testStage, desc, status, name } = record;
   try {
     await store.dispatch('Plan/setCurrentPlan', { id, adminId, categoryId, testStage, desc, status, name });
-    await store.dispatch('Plan/getPlan', record.id);
   } catch(err) {
     message.error('获取计划信息出错');
   }

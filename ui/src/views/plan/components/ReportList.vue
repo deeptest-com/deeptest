@@ -117,15 +117,12 @@ async function queryDetail(id) {
     detailDrawerVisible.value = true;
 }
 
-watch(() => {
-    return props.showReportList;
-}, val => {
+watch(() => props.showReportList, val => {
     if (val) {
         refreshList({});
     }
 }, {
-    immediate: true,
-    deep: true
+    immediate: true
 })
 </script>
 

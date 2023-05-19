@@ -97,25 +97,21 @@ const columns = [
         width: 120
     },
     {
+        title: '测试计划',
+        dataIndex: 'execPlan',
+        slots: { customRender: 'execPlan' },
+    },
+    {
         title: '测试通过率',
         dataIndex: 'interfacePassRate',
-        width: 120,
     },
     {
         title: '执行人',
         dataIndex: 'createUserName',
-        width: 80,
-    },
-    {
-        title: '所属测试计划',
-        dataIndex: 'execPlan',
-        width: 200,
-        slots: { customRender: 'execPlan' },
     },
     {
         title: '执行耗时',
         dataIndex: 'duration',
-        width: 80,
         slots: { customRender: 'duration' },
     },
     {
@@ -155,4 +151,9 @@ const handleGetList = (params: any) => {
 
 </script>
 <style scoped lang="less">
+
+.report-planname {
+    cursor: pointer;
+    color: #447DFD;
+}
 </style>

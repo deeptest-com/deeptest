@@ -22,7 +22,7 @@ import { useStore } from "vuex";
 
 import { TableFilter } from '@/views/component/Report/Components';
 import List from './List/index.vue';
-import DetailDrawer from './Detail/Index.vue';
+import DetailDrawer from './Detail/index.vue';
 
 import { StateType as ProjectStateType } from "@/store/project";
 import { StateType } from "./store";

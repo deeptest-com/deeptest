@@ -8,22 +8,18 @@
     :onCancel="onCancel"
     wrapClassName="modal-tree-selection"
     width="1000px">
-
     <div class="interface-selection-main">
-      <div class="left tree">
-        <Tree :selectCategory="selectCategory"/>
-      </div>
-
+<!--      <div class="left tree">-->
+<!--        <Tree :selectCategory="selectCategory"/>-->
+<!--      </div>-->
       <div class="right">
-        <List :categoryId="categoryId" :selectInterface="onSelectInterface"></List>
+        <List :selectInterface="onSelectInterface"></List>
       </div>
     </div>
-
     <template #footer>
       <a-button @click="onCancel">取消</a-button>
       <a-button @click="onSubmit" type="primary">确定</a-button>
     </template>
-
   </a-modal>
 
 </template>

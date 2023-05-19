@@ -12,7 +12,6 @@
           <a-select-option v-for="item in serves" :key="item.id" :value="item.id">{{ item.name }}</a-select-option>
         </a-select>
       </div>
-
       <div class="buttons">
         <a-button @click="expandAll" type="link" class="dp-color-primary">
           <span v-if="!isExpand">展开</span>

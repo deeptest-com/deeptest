@@ -481,8 +481,12 @@ func (r *ProjectRepo) GetAuditList(req v1.AuditProjectPaginate) (data _domain.Pa
 	req.Field = "status asc,created_at"
 
 	var count int64
-
-	db := r.DB.Model(&model.ProjectMemberAudit{}).Where("audit_user_id = ?", req.AuditUserId)
+	db := r.DB.Model(&model.ProjectMemberAudit{})
+	if req.Type == 0 {
+		db = db.Where("audit_user_id = ? and status = 0", req.AuditUserId)
+	} else {
+		db = db.Where("apply_user_id = ?", req.ApplyUserId)
+	}
 
 	err = db.Count(&count).Error
 	if err != nil {

@@ -21,8 +21,8 @@ import { computed, ref, watch, reactive } from "vue";
 import { useStore } from "vuex";
 
 import { TableFilter } from '@/views/component/Report/Components';
-import List from './list/index.vue';
-import DetailDrawer from './detail/Index.vue';
+import List from './List/index.vue';
+import DetailDrawer from './Detail/Index.vue';
 
 import { StateType as ProjectStateType } from "@/store/project";
 import { StateType } from "./store";

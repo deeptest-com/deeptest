@@ -18,14 +18,17 @@ type EndpointInterfaceRepo struct {
 }
 
 func (r *EndpointInterfaceRepo) Paginate(req v1.EndpointInterfaceReqPaginate) (ret _domain.PageData, err error) {
-	endpointIds, err := r.EndpointRepo.ListEndpointByCategory(req.CategoryId)
-	if err != nil {
-		return
-	}
+	/*
+		endpointIds, err := r.EndpointRepo.ListEndpointByCategory(req.CategoryId)
+		if err != nil {
+			return
+		}
+
+	*/
 
 	var count int64
 	db := r.DB.Model(&model.EndpointInterface{}).
-		Where("endpoint_id IN ? AND NOT deleted AND NOT disabled", endpointIds)
+		Where("project_id = ? AND NOT deleted AND NOT disabled", req.ProjectId)
 
 	if req.Keywords != "" {
 		db = db.Where("name LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords))

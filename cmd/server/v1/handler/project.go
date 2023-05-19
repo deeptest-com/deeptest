@@ -254,6 +254,7 @@ func (c *ProjectCtrl) AuditList(ctx iris.Context) {
 		return
 	}
 	req.AuditUserId = multi.GetUserId(ctx)
+	req.ApplyUserId = multi.GetUserId(ctx)
 	res, err := c.ProjectService.AuditList(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})

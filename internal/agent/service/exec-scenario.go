@@ -18,6 +18,7 @@ func RunScenario(req *agentExec.ScenarioExecReq, wsMsg *websocket.Message) (err 
 
 	session, err := ExecScenario(scenarioExecObj, wsMsg)
 	session.RootProcessor.Result.EnvironmentId = req.EnvironmentId
+
 	// submit result
 	report, _ := SubmitScenarioResult(*session.RootProcessor.Result, scenarioExecObj.RootProcessor.ScenarioId,
 		agentExec.ServerUrl, agentExec.ServerToken)

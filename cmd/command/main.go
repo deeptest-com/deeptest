@@ -46,6 +46,9 @@ func main() {
 	flagSet.IntVar(&planId, "p", 0, "")
 	flagSet.IntVar(&planId, "plan", 0, "")
 
+	flagSet.IntVar(&envId, "e", 0, "")
+	flagSet.IntVar(&envId, "env", 0, "")
+
 	flagSet.StringVar(&server, "S", "", "")
 	flagSet.StringVar(&server, "server", "", "")
 
@@ -54,13 +57,13 @@ func main() {
 
 	flagSet.BoolVar(&_consts.Verbose, "verbose", false, "")
 
-	flagSet.Parse(os.Args)
+	flagSet.Parse(os.Args[1:])
 
 	switch os.Args[1] {
 	case "help", "-h", "-help", "--help":
 		action.PrintUsage(language)
 
-	default: // run
+	default:
 		if (scenarioId == 0 && planId == 0) || envId == 0 || server == "" || token == "" {
 			action.PrintUsage(language)
 			return

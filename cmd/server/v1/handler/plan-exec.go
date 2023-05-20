@@ -55,6 +55,7 @@ func (c *PlanExecCtrl) SubmitResult(ctx iris.Context) {
 	userId := multi.GetUserId(ctx)
 	report, err := c.PlanExecService.SaveReport(planId, userId, result)
 
+	// report.Logs = nil // otherwise will cause an json parse err on agent size
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: report})
 }
 

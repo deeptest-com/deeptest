@@ -60,5 +60,6 @@ func (c *ScenarioExecCtrl) SubmitResult(ctx iris.Context) {
 
 	report, err := c.ScenarioExecService.SaveReport(scenarioId, userId, result)
 
+	report.Logs = nil // otherwise will cause an json parse err on agent size
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: report})
 }

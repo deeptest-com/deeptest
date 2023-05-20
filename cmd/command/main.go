@@ -18,11 +18,11 @@ var (
 	GoVersion  string
 	GitHash    string
 
-	server     string
-	token      string
 	scenarioId int
 	planId     int
 	envId      int
+	server     string
+	token      string
 
 	language string
 
@@ -40,30 +40,28 @@ func main() {
 
 	flagSet = flag.NewFlagSet("deeptest", flag.ContinueOnError)
 
-	flagSet.StringVar(&server, "s", "", "")
-	flagSet.StringVar(&server, "server", "", "")
-
-	flagSet.StringVar(&token, "t", "", "")
-	flagSet.StringVar(&token, "token", "", "")
-
-	flagSet.IntVar(&scenarioId, "S", 0, "")
+	flagSet.IntVar(&scenarioId, "s", 0, "")
 	flagSet.IntVar(&scenarioId, "scenario", 0, "")
 
 	flagSet.IntVar(&planId, "p", 0, "")
 	flagSet.IntVar(&planId, "plan", 0, "")
 
+	flagSet.StringVar(&server, "S", "", "")
+	flagSet.StringVar(&server, "server", "", "")
+
+	flagSet.StringVar(&token, "t", "", "")
+	flagSet.StringVar(&token, "token", "", "")
+
 	flagSet.BoolVar(&_consts.Verbose, "verbose", false, "")
 
-	if len(os.Args) == 1 {
-		os.Args = append(os.Args, "run", ".")
-	}
+	flagSet.Parse(os.Args)
 
 	switch os.Args[1] {
 	case "help", "-h", "-help", "--help":
 		action.PrintUsage(language)
 
 	default: // run
-		if scenarioId == 0 || planId == 0 || envId == 0 || server == "" || token == "" {
+		if (scenarioId == 0 && planId == 0) || envId == 0 || server == "" || token == "" {
 			action.PrintUsage(language)
 			return
 		} else {
@@ -73,8 +71,7 @@ func main() {
 }
 
 func run(scenarioId, planId, envId int, server, token string) {
-	command, _ := NewCommand()
-	command.Run(scenarioId, planId, envId, server, token)
+	action.Run(scenarioId, planId, envId, server, token)
 }
 
 func init() {

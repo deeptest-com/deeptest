@@ -5,10 +5,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/agent/service"
 )
 
-type RunAction struct {
-}
-
-func (s *RunAction) Run(scenario, plan, env int, server, token string) {
+func Run(scenario, plan, env int, server, token string) {
 	//s.ExecScenarioService.ExecScenario(scenarioId, nil)
 
 	if scenario > 0 {

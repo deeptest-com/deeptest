@@ -11,8 +11,6 @@ import (
 	"path"
 )
 
-var ()
-
 func PrintUsage(lang string) {
 	usageFile := path.Join("res", lang, "usage.txt")
 

@@ -15,11 +15,8 @@ import (
 	_stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 )
 
-type RemoteService struct {
-}
-
 // for interface invocation in both endpoint and scenario
-func (s *RemoteService) GetInterfaceToExec(req v1.InterfaceCall) (ret agentExec.InterfaceExecObj) {
+func GetInterfaceToExec(req v1.InterfaceCall) (ret agentExec.InterfaceExecObj) {
 	url := fmt.Sprintf("debugs/interface/loadForExec")
 	body, err := json.Marshal(req.Data)
 	if err != nil {
@@ -66,7 +63,7 @@ func (s *RemoteService) GetInterfaceToExec(req v1.InterfaceCall) (ret agentExec.
 
 	return
 }
-func (s *RemoteService) SubmitInterfaceResult(reqObj domain.DebugData, respObj domain.DebugResponse, serverUrl, token string) (err error) {
+func SubmitInterfaceResult(reqObj domain.DebugData, respObj domain.DebugResponse, serverUrl, token string) (err error) {
 	url := fmt.Sprintf("debugs/invoke/submitResult")
 
 	data := domain.SubmitDebugResultRequest{
@@ -109,7 +106,7 @@ func (s *RemoteService) SubmitInterfaceResult(reqObj domain.DebugData, respObj d
 }
 
 // for scenario exec
-func (s *RemoteService) GetScenarioToExec(req *agentExec.ScenarioExecReq) (ret *agentExec.ScenarioExecObj) {
+func GetScenarioToExec(req *agentExec.ScenarioExecReq) (ret *agentExec.ScenarioExecObj) {
 	url := "scenarios/exec/loadExecScenario"
 
 	httpReq := domain.BaseRequest{
@@ -163,7 +160,7 @@ func (s *RemoteService) GetScenarioToExec(req *agentExec.ScenarioExecReq) (ret *
 	return
 }
 
-func (s *RemoteService) SubmitScenarioResult(result agentDomain.ScenarioExecResult, scenarioId uint, serverUrl, token string) (
+func SubmitScenarioResult(result agentDomain.ScenarioExecResult, scenarioId uint, serverUrl, token string) (
 	report agentDomain.Report, err error) {
 
 	bodyBytes, _ := json.Marshal(result)
@@ -204,7 +201,7 @@ func (s *RemoteService) SubmitScenarioResult(result agentDomain.ScenarioExecResu
 }
 
 // for plan exec
-func (s *RemoteService) GetPlanToExec(req *agentExec.PlanExecReq) (ret *agentExec.PlanExecObj) {
+func GetPlanToExec(req *agentExec.PlanExecReq) (ret *agentExec.PlanExecObj) {
 	url := "plans/exec/loadExecPlan"
 
 	httpReq := domain.BaseRequest{
@@ -258,7 +255,7 @@ func (s *RemoteService) GetPlanToExec(req *agentExec.PlanExecReq) (ret *agentExe
 	return
 }
 
-func (s *RemoteService) SubmitPlanResult(result agentDomain.PlanExecResult, planId uint, serverUrl, token string) (
+func SubmitPlanResult(result agentDomain.PlanExecResult, planId int, serverUrl, token string) (
 	report agentDomain.Report, err error) {
 	bodyBytes, _ := json.Marshal(result)
 	req := domain.BaseRequest{
@@ -297,7 +294,7 @@ func (s *RemoteService) SubmitPlanResult(result agentDomain.PlanExecResult, plan
 	return
 }
 
-func (s *RemoteService) GetMessageToExec(req *agentExec.MessageExecReq) (ret *agentExec.MessageExecObj) {
+func GetMessageToExec(req *agentExec.MessageExecReq) (ret *agentExec.MessageExecObj) {
 	url := "message/unreadCount"
 
 	httpReq := domain.BaseRequest{
@@ -338,7 +335,7 @@ func (s *RemoteService) GetMessageToExec(req *agentExec.MessageExecReq) (ret *ag
 	return
 }
 
-func (s *RemoteService) GetPlanNormalData(req *agentExec.PlanExecReq) (ret agentDomain.PlanNormalData, err error) {
+func GetPlanNormalData(req *agentExec.PlanExecReq) (ret agentDomain.PlanNormalData, err error) {
 	url := "plans/exec/getPlanReportNormalData"
 
 	httpReq := domain.BaseRequest{

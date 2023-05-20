@@ -50,7 +50,7 @@ export default defineComponent({
         .home-header-left {
             width: 105px;
             height: 35px;
-            background-image: url('../assets/images/logo-deep.png');
+            background-image: url('../assets/images/logo.png');
             background-repeat: no-repeat;
             background-size: 100% 100%;
             cursor: pointer;

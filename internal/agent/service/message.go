@@ -4,25 +4,17 @@ import (
 	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	agentDomain "github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	execUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/kataras/iris/v12/websocket"
 )
 
-type MessageService struct {
-	RemoteService *RemoteService `inject:""`
-}
-
-func (s *MessageService) ExecMessage(req *agentExec.MessageExecReq, wsMsg *websocket.Message) (err error) {
-	consts.ServerUrl = req.ServerUrl
-	consts.ServerToken = req.Token
-
+func RunMessage(req *agentExec.MessageExecReq, wsMsg *websocket.Message) (err error) {
 	// start msg
 	err = execUtils.SendStartMsg(wsMsg)
 	if err != nil {
 		return err
 	}
 
-	result := s.RemoteService.GetMessageToExec(req)
+	result := GetMessageToExec(req)
 
 	// submit result
 	err = execUtils.SendResult(result, wsMsg)
@@ -30,7 +22,7 @@ func (s *MessageService) ExecMessage(req *agentExec.MessageExecReq, wsMsg *webso
 		return err
 	}
 
-	err = s.sendSubmitResult(req.UserId, wsMsg)
+	err = sendSubmitResult(req.UserId, wsMsg)
 	if err != nil {
 		return err
 	}
@@ -44,7 +36,7 @@ func (s *MessageService) ExecMessage(req *agentExec.MessageExecReq, wsMsg *webso
 	return
 }
 
-func (s *MessageService) sendSubmitResult(userId uint, wsMsg *websocket.Message) (err error) {
+func sendSubmitResult(userId uint, wsMsg *websocket.Message) (err error) {
 	result := agentDomain.MessageExecResult{
 		UserId: userId,
 		Name:   "提交执行结果成功",

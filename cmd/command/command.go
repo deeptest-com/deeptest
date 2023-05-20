@@ -32,6 +32,6 @@ func NewCommand() (command *Command, err error) {
 	return
 }
 
-func (c *Command) Run(scenarioIdOrName string) {
-	c.RunAction.Run(scenarioIdOrName)
+func (c *Command) Run(scenarioId, planId, envId int, server, token string) {
+	c.RunAction.Run(scenarioId, planId, envId, server, token)
 }

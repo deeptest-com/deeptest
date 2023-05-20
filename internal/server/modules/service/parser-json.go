@@ -50,7 +50,6 @@ func (s *ParserJsonService) updateJsonElem(docJson, selectContent string,
 
 	key := fmt.Sprintf("%s", consts.DeepestKey)
 	newLine := string(line[:startColumn]) + key + string(line[endColumn:])
-
 	lines[startLine] = newLine
 
 	ret = strings.Join(lines, "\n")
@@ -63,7 +62,7 @@ func (s *ParserJsonService) getJsonSelectedElem(docJson, selectContent string) (
 		return
 	}
 
-	expr := fmt.Sprintf("//%s", consts.DeepestKey)
+	expr := fmt.Sprintf("//*[contains(.,'%s')]", consts.DeepestKey)
 	ret, err = jsonquery.Query(doc, expr)
 
 	return

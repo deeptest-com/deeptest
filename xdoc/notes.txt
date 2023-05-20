@@ -35,3 +35,5 @@ scp -r bin/linux/deeptest aaron@110.42.146.127:/home/aaron/dev/server
 nohup ./deeptest-server > deeptest.log 2>&1 &
 
 cd ui && yarn build && scp -r ui/dist aaron@110.42.146.127:/home/aaron/dev/project/deeptest/static && cd ..
+
+convert logo-mini.png -scale 256 ../../../public/favicon.ico

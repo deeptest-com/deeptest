@@ -145,7 +145,8 @@ const selectNode = (keys, e) => {
   }
 
   const selectedData = treeDataMap.value[selectedKeys.value[0]]
-  if (selectedData && isRoot(selectedData.entityCategory)) {
+
+  if (selectedData && isRoot(selectedData.entityCategory)) { // is root
     store.dispatch('Scenario/getNode', null)
     return
   }

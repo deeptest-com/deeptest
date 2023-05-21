@@ -2,7 +2,9 @@
   <div id="debug-index" class="dp-splits-v">
     <div id="debug-content">
       <DebugEnvSelection />
-      <DebugInterface />
+      <div class="move-up">
+        <DebugInterface />
+      </div>
     </div>
 
     <div id="debug-splitter" class="splitter"></div>
@@ -84,6 +86,10 @@ const resize = () => {
     flex: 1;
     width: 0;
     height: 100%;
+
+    .move-up {
+      margin-top: -43px;
+    }
   }
 
   #debug-right {

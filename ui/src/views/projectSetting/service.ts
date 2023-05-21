@@ -116,7 +116,7 @@ export async function deleteServeVersion(id: Number | String | any): Promise<any
  * */
 export async function serverList(data: any): Promise<any> {
     return request({
-        url: `/serves/server/list?serveId=${data.serveId}`,
+        url: `/serves/server/list`,
         method: 'post',
         data:data,
     });

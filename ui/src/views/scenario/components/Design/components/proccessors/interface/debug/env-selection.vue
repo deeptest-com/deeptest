@@ -5,7 +5,7 @@
                  @change="changeUrl">
 
             <template #addonBefore>
-                <a-select :options="serveServers" :value="serverId || null" @change="changeServer"
+                <a-select :options="servers" :value="serverId || null" @change="changeServer"
                     placeholder="请选择环境" class="select-env">
                 </a-select>
                 <span v-if="envURL" class="current-env-url">{{ envURL || '---' }}</span>
@@ -14,28 +14,54 @@
     </div>
 </template>
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import {computed, ref, watch} from "vue";
 import { useStore } from "vuex";
 import {Endpoint} from "@/views/endpoint/data";
 import {StateType as Debug} from "@/views/component/debug/store";
 import debounce from "lodash.debounce";
+import {serverList} from "@/views/projectSetting/service";
+import bus from "@/utils/eventBus";
+import settings from "@/config/settings";
 const store = useStore<{  Debug: Debug, Endpoint }>();
 
 const debugData = computed<any>(() => store.state.Debug.debugData);
-
-const serveServers: any = computed<Endpoint>(() => store.state.Endpoint.serveServers);
+const servers = ref([] as any);
 
 const serverId = computed(() => {
-  return debugData?.value?.serverId || serveServers?.value[0]?.value || ''
+  return debugData?.value?.serverId || servers?.value[0]?.value || ''
 });
 const envURL = computed(() => {
-  return serveServers.value?.find((item) => {
+  return servers.value?.find((item) => {
     return serverId.value === item.id;
   })?.url
 });
 const url = computed(() => {
   return debugData?.value.url
 });
+
+const listServer = async (serverId) => {
+  servers.value = []
+  if (!serverId) {
+    return
+  }
+
+  const res = await serverList({
+    serverId: serverId
+  });
+  if (res.code === 0) {
+    res.data.forEach((item: any) => {
+      servers.value.push({
+        label: item.description,
+        value: item.id
+      })
+    })
+  }
+}
+
+watch(debugData, (val) => {
+  console.log('-----', debugData.value.serverId)
+  listServer(debugData.value.serverId)
+}, {immediate: true, deep: true});
 
 function changeServer(id) {
   store.dispatch('Debug/changeServer', id)

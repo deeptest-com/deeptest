@@ -62,9 +62,10 @@ type EnvironmentReq struct {
 }
 
 type ServeServer struct {
-	ID      uint   `json:"id"`
-	ServeId uint   `json:"serveId"`
-	Url     string `json:"url"`
+	ID       uint   `json:"id"`
+	ServeId  uint   `json:"serveId"`
+	ServerId uint   `json:"serverId"` // load by server id in scenario design page
+	Url      string `json:"url"`
 }
 
 type EnvironmentVariable struct {

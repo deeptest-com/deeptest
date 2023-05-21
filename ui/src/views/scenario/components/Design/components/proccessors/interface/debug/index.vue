@@ -1,6 +1,7 @@
 <template>
   <div id="debug-index" class="dp-splits-v">
     <div id="debug-content">
+      <DebugEnvSelection />
       <DebugInterface />
     </div>
 
@@ -51,6 +52,8 @@ import {UsedBy} from "@/utils/enum";
 import DebugInterface from './interface.vue';
 import RequestEnv from '@/views/component/debug/others/env/index.vue';
 import RequestHistory from '@/views/component/debug/others/history/index.vue';
+
+import DebugEnvSelection from './env-selection.vue';
 
 provide('usedBy', UsedBy.ScenarioDebug)
 const useForm = Form.useForm;

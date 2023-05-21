@@ -1,16 +1,18 @@
 <template>
   <div id="debug-index" class="dp-splits-v">
     <div id="debug-top">
-      <DebugMehod />
+      <DebugMethod />
+
       <RequestInvocation
         :show-debug-data-url="false"
         :onSend="invokeInterface"
         :onSave="saveInterface">
       </RequestInvocation>
-    </div> 
+    </div>
+
     <div id="debug-bottom">
       <div id="debug-content">
-        <DebugBasicInfo />
+        <DebugEnvSelection />
         <DebugInterface />
       </div>
 
@@ -47,7 +49,7 @@
         </a-tabs>
       </div>
     </div>
-    
+
   </div>
 </template>
 
@@ -58,8 +60,8 @@ import {Form, notification} from 'ant-design-vue';
 import {useStore} from "vuex";
 import { EnvironmentOutlined, HistoryOutlined } from '@ant-design/icons-vue';
 import DebugInterface from './interface.vue';
-import DebugMehod from './method.vue';
-import DebugBasicInfo from './basicInfo.vue';
+import DebugMethod from './method.vue';
+import DebugEnvSelection from './env-selection.vue';
 import RequestEnv from '@/views/component/debug/others/env/index.vue';
 import RequestHistory from '@/views/component/debug/others/history/index.vue';
 import RequestInvocation from '@/views/component/debug/request/Invocation.vue';

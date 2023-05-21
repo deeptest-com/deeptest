@@ -46,7 +46,7 @@ import {useRouter} from "vue-router";
 
 import {useStore} from "vuex";
 
-import {StateType as ScenarioStateType} from "../../store";
+import {StateType as ScenarioStateType} from "../../../store";
 
 import ProcessorGroupDefault from "./proccessors/group/default.vue";
 import ProcessorInterfaceDefault from "./proccessors/interface/default.vue"

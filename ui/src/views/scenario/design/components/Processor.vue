@@ -1,6 +1,6 @@
 <template>
   <div class="scenario-processor-edit-main">
-    <!--    <ProcessorThreadDefault v-if="selectedNode.processorType === 'processor_thread_default'" />-->
+    <!-- <ProcessorThreadDefault v-if="selectedNode.processorType === 'processor_thread_default'" /> -->
 
     <ProcessorInterfaceDefault v-if="selectedNode.processorType === 'processor_interface_default'" />
     <ProcessorGroupDefault v-else-if="selectedNode.processorType === 'processor_group_default'" />

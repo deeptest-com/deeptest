@@ -10,11 +10,11 @@
                     </a-tooltip>
                 </span>
                 <a-input v-if="item.type === 'input'" :style="item.attrs || 'width: 150px'"
-                    v-model:value="formState[item.modelName!]" :placeholder="item.placeholder" />
-                <a-select v-if="item.type === 'select' && item.mode" v-model:value="formState[item.modelName!]" :mode="item.mode"
+                    v-model:value="formState[item.modelName]" :placeholder="item.placeholder" />
+                <a-select v-if="item.type === 'select' && item.mode" v-model:value="formState[item.modelName]" :mode="item.mode"
                     :style="item.attrs || 'width: 200px'" :placeholder="item.placeholder" :options="item.options" allowClear>
                 </a-select>
-                <a-select v-if="item.type === 'select' && !item.mode" v-model:value="formState[item.modelName!]"
+                <a-select v-if="item.type === 'select' && !item.mode" v-model:value="formState[item.modelName]"
                     :style="item.attrs || 'width: 200px'" :placeholder="item.placeholder" :options="item.options" allowClear>
                 </a-select>
                 <a-button v-if="item.type === 'button'" class="editable-add-btn" type="primary" html-type="submit"
@@ -51,8 +51,8 @@ interface FormItem {
     label?: string; // 是否需要label
     name?: string; // 是否需要name
     text?: string; // 表单文案  按钮或者 checkbox 等需要固定文案
-    mode?: string; // 表单类型 select时 传入mode 
-    valueType?: string; // 表单值类型 
+    mode?: string; // 表单类型 select时 传入mode
+    valueType?: string; // 表单值类型
     placeholder?: string; // input/ checkbox/ select 需要placeholder提示语
     attrs?: any; // 表单是否有自定义样式属性
     title?: string;
@@ -74,13 +74,14 @@ const rulesRef = reactive<any>(props.rules);
 const keyword = ref<string>('');
 
 
-const { validate, validateInfos } = useForm(formState, rulesRef);
+const { validate, validateInfos ,resetFields} = useForm(formState, rulesRef);
 
 const onSubmit = () => {
     validate()
         .then(() => {
             console.log(toRaw(formState));
             emits('handleOk', toRaw(formState));
+            resetFields();
         })
         .catch(err => {
             console.log('捕捉表单错误信息：', err);
@@ -92,7 +93,6 @@ const onSubmit = () => {
 const handleSearch = (e: string) => {
     emits('handleSearch', e);
 }
-
 
 </script>
 <style scoped lang="less">

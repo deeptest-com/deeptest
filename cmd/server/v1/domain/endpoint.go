@@ -37,6 +37,8 @@ type OpenApiParam struct {
 	MaxItems    int64  `json:"maxItems"`
 	UniqueItems bool   `json:"uniqueItems"`
 	Ref         string `json:"ref"`
+	Required    bool   `json:"required"`
+	Type        string `json:"type"`
 }
 
 type EndpointReq struct {

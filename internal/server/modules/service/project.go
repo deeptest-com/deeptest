@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
@@ -44,15 +43,17 @@ func (s *ProjectService) Update(req v1.ProjectReq) error {
 }
 
 func (s *ProjectService) DeleteById(id uint) error {
-	count, err := s.ServeRepo.GetCountByProject(id)
-	if err != nil {
-		return err
-	}
+	/*
+		count, err := s.ServeRepo.GetCountByProject(id)
+		if err != nil {
+			return err
+		}
 
-	if count > 0 {
-		err = fmt.Errorf("services under the project, cannot be deleted")
-		return err
-	}
+		if count > 0 {
+			err = fmt.Errorf("services under the project, cannot be deleted")
+			return err
+		}
+	*/
 	return s.ProjectRepo.DeleteById(id)
 }
 

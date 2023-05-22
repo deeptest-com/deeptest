@@ -172,3 +172,7 @@ func (s *PlanService) Clone(id, userId uint) (ret model.Plan, err error) {
 func (s *PlanService) PlanScenariosPaginate(req v1.PlanScenariosReqPaginate, planId uint) (ret _domain.PageData, err error) {
 	return s.PlanRepo.PlanScenariosPaginate(req, planId)
 }
+
+func (s *PlanService) NotRelationScenarioList(req v1.NotRelationScenarioReqPaginate, projectId int) (ret _domain.PageData, err error) {
+	return s.PlanRepo.NotRelationScenarioList(req, projectId)
+}

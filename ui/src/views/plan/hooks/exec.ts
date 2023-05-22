@@ -122,7 +122,7 @@ export function useExec() {
                     requestLogs
                 })
                 processNum.value++;
-                logDetailData.value.progressValue = Math.ceil(processNum.value / transformWithUndefined(statisticData.totalScenarioNum)) * 100;
+                logDetailData.value.progressValue = statisticData.totalScenarioNum ?  processNum.value / statisticData.totalScenarioNum * 100 : 10;
                 store.dispatch('Plan/setExecResult', logDetailData.value);
             } else { // scenarioId = 0 为整个计划的执行结果.
                 logDetailData.value.statisticData = {
@@ -139,10 +139,15 @@ export function useExec() {
                     "failAssertionNum": log.failAssertionNum, //失败检查点数
                     "totalAssertionNum": log.totalAssertionNum
                 };
+                store.dispatch('Plan/setExecResult', logDetailData.value);
             }
             return;
         } else if (wsMsg.category === WsMsgCategory.InProgress || wsMsg.category === WsMsgCategory.End) { // update status
-            execResult.value.progressStatus = wsMsg.category
+            logDetailData.value.progressStatus = wsMsg.category;
+            if (wsMsg.category === WsMsgCategory.End) {
+                logDetailData.value.progressValue = 100;
+            }
+            store.dispatch('Plan/setExecResult', logDetailData.value);
             return;
         }
     };
@@ -153,7 +158,8 @@ export function useExec() {
             return;
         }
         const { conn }: any = JSON.parse(data.msg);
-        execResult.value.progressStatus = conn === 'success' ? WsMsgCategory.InProgress : 'failed';
+        logDetailData.value.progressStatus = conn === 'success' ? WsMsgCategory.InProgress : 'failed';
+        store.dispatch('Plan/setExecResult', logDetailData.value);
     }
 
     return {

@@ -64,4 +64,6 @@ type AuditProjectReq struct {
 type AuditProjectPaginate struct {
 	_domain.PaginateReq
 	AuditUserId uint `json:"auditUserId"`
+	ApplyUserId uint `json:"applyUserId"`
+	Type        uint `json:"type"`
 }

@@ -11,6 +11,7 @@ export interface CurrentUser {
   avatar: string;
   sysRoles: string[];
   projectRoles: any;
+  name?: string;
 }
 
 export interface StateType {

@@ -21,6 +21,7 @@ type EndpointInterfaceReqPaginate struct {
 
 	Keywords   string `json:"Keywords"`
 	CategoryId uint   `json:"categoryId"`
+	ProjectId  uint   `json:"projectId"`
 }
 
 type OpenApiParam struct {
@@ -36,6 +37,8 @@ type OpenApiParam struct {
 	MaxItems    int64  `json:"maxItems"`
 	UniqueItems bool   `json:"uniqueItems"`
 	Ref         string `json:"ref"`
+	Required    bool   `json:"required"`
+	Type        string `json:"type"`
 }
 
 type EndpointReq struct {

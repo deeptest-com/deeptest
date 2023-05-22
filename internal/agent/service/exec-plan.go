@@ -14,6 +14,7 @@ func RunPlan(req *agentExec.PlanExecReq, wsMsg *websocket.Message) (err error) {
 	planExecObj := GetPlanToExec(req)
 
 	if len(planExecObj.Scenarios) == 0 {
+		execUtils.SendEndMsg(wsMsg)
 		return
 	}
 

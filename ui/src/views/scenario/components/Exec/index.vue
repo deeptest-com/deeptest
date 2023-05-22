@@ -1,6 +1,8 @@
 <template>
   <div class="scenario-exec-info-main">
-    <ReportBasicInfo :items="baseInfoList || []" :scene="ReportDetailType.ExecScenario"/>
+    <ReportBasicInfo :items="baseInfoList || []" :showOperation="!!reportId"
+                     :scene="ReportDetailType.ExecScenario"
+                     @handleBtnClick="genReport"/>
     <StatisticTable :scene="ReportDetailType.ExecScenario" :data="statisticData"/>
     <Progress :exec-status="progressStatus" :percent="progressValue" @exec-cancel="execCancel"/>
     <EndpointCollapsePanel v-if="recordList.length > 0"
@@ -34,7 +36,9 @@ import {momentShort, momentUtc} from "@/utils/datetime";
 import {useI18n} from "vue-i18n";
 import {getToken} from "@/utils/localToken";
 import {WsMsgCategory} from "@/utils/enum";
+import {formatData} from "@/utils/formatData";
 import {Scenario} from "@/views/scenario/data";
+import {message} from "ant-design-vue";
 
 const {t} = useI18n();
 
@@ -47,6 +51,8 @@ const envList = computed(() => store.state.ProjectSetting.envList);
 const scenarioId = computed(() => {
   return detailResult.value.id
 });
+
+const reportId = ref('');
 const baseInfoList = computed(() => {
   if (!detailResult.value) return [];
   console.log(envList.value)
@@ -59,7 +65,7 @@ const baseInfoList = computed(() => {
 const statisticData = ref({});
 // const execResult = computed<any>(() => store.state.Scenario.execResult);
 const progressValue = ref(10);
-const recordList = ref([]);
+const recordList:any = ref([]);
 const progressStatus = ref('in_progress');
 const execStart = async () => {
   console.log('execStart')
@@ -86,6 +92,7 @@ onUnmounted(() => {
   bus.off(settings.eventWebSocketMsg, OnWebSocketMsg);
 })
 
+
 const OnWebSocketMsg = (data: any) => {
   console.log('OnWebSocketMsg 832', data);
   if (!data.msg) return
@@ -106,14 +113,28 @@ const OnWebSocketMsg = (data: any) => {
         "failRequestNum": res.failRequestNum || 0,
         "passAssertionNum": res.passAssertionNum || 0, //通过检查点数
         "failAssertionNum": res.failAssertionNum || 0, //失败检查点数
+        "totalScenarioNum": data.totalScenarioNum || 0, //场景总数
+        "totalInterfaceNum": data.totalInterfaceNum || 0, //接口总数
       }
       console.log('statisticData', statisticData.value);
-      recordList.value = res?.logs?.[0]?.logs || [];
+      console.log('832res',res);
+      reportId.value = res.id;
+      recordList.value = formatData(res?.logs?.[0]?.logs || []);
     }
   }
-
 }
 
+
+async function genReport() {
+  const res = await store.dispatch('Scenario/genReport', {
+    id: reportId.value,
+  });
+  if(res){
+    message.success('生成报告成功');
+  }else {
+    message.error('生成报告失败');
+  }
+}
 </script>
 
 <style lang="less" scoped>

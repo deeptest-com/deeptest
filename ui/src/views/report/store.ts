@@ -65,7 +65,6 @@ const StoreModel: ModuleType = {
             state.listResult = payload;
         },
         setDetail(state, payload) {
-            console.log(payload);
             state.detailResult = payload;
         },
         setQueryParams(state, payload) {

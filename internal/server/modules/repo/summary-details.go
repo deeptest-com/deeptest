@@ -43,7 +43,7 @@ func (r *SummaryDetailsRepo) CountByUserId(userId int64) (count int64, err error
 }
 
 func (r *SummaryDetailsRepo) CountUserTotal() (count int64, err error) {
-	err = r.DB.Model(&model.ProjectMember{}).Select("count(distinct id) ").Where("NOT deleted").Find(&count).Error
+	err = r.DB.Model(&model.ProjectMember{}).Select("count(distinct user_id) ").Where("NOT deleted").Find(&count).Error
 	return
 }
 

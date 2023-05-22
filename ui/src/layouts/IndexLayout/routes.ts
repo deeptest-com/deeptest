@@ -170,17 +170,17 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
           }
         ]
       },
-      {
-        icon:'set',
-        title: 'projectSetting.datapool',
-        path: 'data-pool',
-        name: 'data-pool',
-        component: () => import('@/views/projectSetting/components/DataPool/index.vue'),
-        hidden: false,
-        meta: {
-          code: 'PROJECT-SETTING-DATA-POOL'
-        }
-      },
+      // {
+      //   icon:'set',
+      //   title: 'projectSetting.datapool',
+      //   path: 'data-pool',
+      //   name: 'data-pool',
+      //   component: () => import('@/views/projectSetting/components/DataPool/index.vue'),
+      //   hidden: false,
+      //   meta: {
+      //     code: 'PROJECT-SETTING-DATA-POOL'
+      //   }
+      // },
       {
         icon:'set',
         title: 'projectSetting.service',

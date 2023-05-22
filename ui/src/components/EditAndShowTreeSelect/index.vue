@@ -1,22 +1,17 @@
 <template>
-  <div class="editor" v-if="isEditing">
+  <div class="editor" v-if="isEditing" >
       <a-tree-select
           v-model:value="fieldValue"
-          show-search
           :multiple="false"
           :treeData="treeData"
           style="width: 200px"
+          :size="'small'"
+          @change="updateField"
           :treeDefaultExpandAll="true"
           :replaceFields="{ title: 'name',value:'id'}"
           :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
           placeholder="请选择所属分类"
           allow-clear/>
-    <a-space :size="8">
-      <CloseOutlined @click.stop="cancelEdit"/>
-      <CheckOutlined
-          @click.stop="updateField"
-          :class="{disabled: !fieldValue}"/>&nbsp;
-    </a-space>
   </div>
   <div :class="['editor', customClass]" v-else>
     <span class="title" @click.stop="handleClick">{{ label }}</span> &nbsp;&nbsp;

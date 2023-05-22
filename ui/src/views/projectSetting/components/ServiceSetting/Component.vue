@@ -1,3 +1,4 @@
+<!-- 服务组件 -->
 <template>
   <div class="content">
     <div class="header">
@@ -7,7 +8,7 @@
         :search-placeholder="'输入组件名称搜索'"
         :show-search="true"
         @handle-ok="handleAdd"
-        @handle-search="onSearch" />
+        @handle-search="onSearch"/>
     </div>
     <EmptyCom>
       <template #content>
@@ -28,7 +29,6 @@
         </a-table>
       </template>
     </EmptyCom>
-
     <!-- ::::编辑scheme组件 -->
     <a-modal v-model:visible="schemeVisible" @cancel="handleSchemeCancel" width="882px" :closable="false"
       :key="schemeVisibleKey" @ok="handleEdit">

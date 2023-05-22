@@ -1,7 +1,7 @@
 <template>
   <div class="report-basicinfo">
     <TextItem :key="item.label" v-for="item in items" :label="item.label" :value="item.value"/>
-    <a-button 
+    <a-button
       v-if="showOperation"
       type="primary"
       @click="handleBtnClick"

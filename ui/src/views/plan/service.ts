@@ -52,10 +52,11 @@ export async function loadExecResult(planId: number): Promise<any> {
     });
 }
 
-export async function listScenario(): Promise<any> {
+export async function listScenario(params): Promise<any> {
     return request({
-        url: `/${apiPathScenario}/listByProject`,
+        url: `/${apiPath}/notRelationScenarioList`,
         method: 'get',
+        params
     });
 }
 

@@ -8,7 +8,7 @@
         </template>
         <div class="drawer-content">
             <ReportBasicInfo :items="execResult.basicInfoList || {}" :show-operation="false" :scene="scene" />
-            <StatisticTable :scene="scene" :data="execResult.statisticData" />
+            <StatisticTable :exec-status="execResult.progressStatus" :scene="scene" :data="execResult.statisticData" />
             <Progress :exec-status="execResult.progressStatus" v-if="scene !== ReportDetailType.QueryDetail" :percent="execResult.progressValue || 10"
                 @exec-cancel="execCancel" />
             <template v-for="scenarioReportItem in execResult.scenarioReports" :key="scenarioReportItem.id">
@@ -56,9 +56,7 @@ function onClose() {
     emits('onClose');
 }
 
-watch(() => {
-    return props;
-}, (val) => {
+watch(props, (val) => {
     if (val.drawerVisible) {
         execStart();
         bus.on(settings.eventWebSocketMsg, OnWebSocketMsg);
@@ -72,16 +70,6 @@ watch(() => {
     immediate: true,
     deep: true
 });
-
-watch(() => {
-    return execResult.value;
-}, (val) => {
-    console.log(' ~~~~~ execResult ~~~~~~ ', val);
-}, {
-    immediate: true,
-    deep: true
-});
-
 </script>
 <style scoped lang="less">
 .report-drawer {

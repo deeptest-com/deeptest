@@ -33,7 +33,7 @@ import { reactive, computed, defineProps, watch, defineEmits, ref } from 'vue';
 import { useStore } from 'vuex';
 
 import { TableFilter } from "@/views/component/Report/Components";
-import ExecDetail from '@/views/report/detail/Index.vue';
+import ExecDetail from '@/views/report/Detail/index.vue';
 
 import { StateType as ReportStateType } from '@/views/report/store';
 import { StateType as PlanStateType } from '../store';
@@ -117,16 +117,12 @@ async function queryDetail(id) {
     detailDrawerVisible.value = true;
 }
 
-watch(() => {
-    return props.showReportList;
-}, val => {
-    console.log('~~~~ 116~~~~', val);
+watch(() => props.showReportList, val => {
     if (val) {
         refreshList({});
     }
 }, {
-    immediate: true,
-    deep: true
+    immediate: true
 })
 </script>
 

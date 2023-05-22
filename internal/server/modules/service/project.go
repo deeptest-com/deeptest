@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
@@ -44,15 +43,17 @@ func (s *ProjectService) Update(req v1.ProjectReq) error {
 }
 
 func (s *ProjectService) DeleteById(id uint) error {
-	count, err := s.ServeRepo.GetCountByProject(id)
-	if err != nil {
-		return err
-	}
+	/*
+		count, err := s.ServeRepo.GetCountByProject(id)
+		if err != nil {
+			return err
+		}
 
-	if count > 0 {
-		err = fmt.Errorf("services under the project, cannot be deleted")
-		return err
-	}
+		if count > 0 {
+			err = fmt.Errorf("services under the project, cannot be deleted")
+			return err
+		}
+	*/
 	return s.ProjectRepo.DeleteById(id)
 }
 
@@ -95,7 +96,7 @@ func (s *ProjectService) GetCurrProjectByUser(userId uint) (currProject model.Pr
 func (s *ProjectService) Apply(req v1.ApplyProjectReq) (err error) {
 	var project model.Project
 	project, err = s.ProjectRepo.Get(req.ProjectId)
-	err = s.ProjectRepo.SaveAudit(model.ProjectMemberAudit{ProjectId: req.ProjectId, ApplyUserId: req.ApplyUserId, AuditUserId: project.AdminId, ProjectRoleName: req.ProjectRoleName})
+	err = s.ProjectRepo.SaveAudit(model.ProjectMemberAudit{ProjectId: req.ProjectId, ApplyUserId: req.ApplyUserId, AuditUserId: project.AdminId, ProjectRoleName: req.ProjectRoleName, Description: req.Description})
 	return
 }
 
@@ -126,7 +127,7 @@ func (s *ProjectService) Audit(id, auditUserId uint, status consts.AuditStatus) 
 		return
 	}
 
-	err = s.ProjectRepo.AddProjectMember(record.ProjectId, record.AuditUserId, record.ProjectRoleName)
+	err = s.ProjectRepo.AddProjectMember(record.ProjectId, record.ApplyUserId, record.ProjectRoleName)
 	if err != nil {
 		return
 	}

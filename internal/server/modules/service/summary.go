@@ -45,18 +45,7 @@ func (s *SummaryService) Collection() (err error) {
 }
 
 func (s *SummaryService) CollectionRanking() (err error) {
-	//projectIds, err := s.SummaryProjectUserRankingService.FindProjectIds()
-	//
-	////从各地方获取ranking数据然后存储
-	//sort bigint
-	//project_id text
-	//user_id bigint
-	//user_name text
-	//scenario_total text
-	//testcases_total text
-	//
-	//s.SummaryProjectUserRankingService.CreateByDate();
-
+	s.SummaryProjectUserRankingService.SaveRanking()
 	return
 }
 
@@ -65,7 +54,7 @@ func (s *SummaryService) CollectionBugs() (err error) {
 	//请求对应系统,获取bug信息
 	//bug转化,配置字段映射关系
 	//调用存储
-	//s.SummaryBugsService.Create(bugs)
+	//s.SummaryBugsService.CreateBug(bugs)
 
 	return
 }

@@ -21,17 +21,15 @@ func (r *SummaryBugsRepo) Create(bugs model.SummaryBugs) (err error) {
 	return
 }
 
-func (r *SummaryBugsRepo) UpdateColumnsByDate(bugs model.SummaryBugs, startTime string, endTime string) (err error) {
-	err = r.DB.Model(&model.SummaryBugs{}).Where("project_id = ? and created_at > ? and created_at < ?", bugs.ProjectId, startTime, endTime).UpdateColumns(&bugs).Error
+func (r *SummaryBugsRepo) UpdateColumnsByDate(bugs model.SummaryBugs, id int64) (err error) {
+	err = r.DB.Model(&model.SummaryBugs{}).Where("id = ?", id).UpdateColumns(&bugs).Error
 	return
 }
 
-func (r *SummaryBugsRepo) HasDataOfDate(startTime string, endTime string) (ret bool, err error) {
-	var count int64
-	err = r.DB.Model(&model.SummaryBugs{}).Raw("select count(id) from deeptest.biz_summary_bugs where created_at >= ? and created_at < ? AND NOT deleted;", startTime, endTime).Last(&count).Error
-	if count == 0 {
-		ret = true
-	}
+func (r *SummaryBugsRepo) Existed(bugId int64, projectId int64) (id int64, err error) {
+
+	err = r.DB.Model(&model.SummaryBugs{}).Raw("select id from deeptest.biz_summary_bugs where bugId = ? and project_id = ? AND NOT deleted;", bugId, projectId).Last(&id).Error
+
 	return
 }
 

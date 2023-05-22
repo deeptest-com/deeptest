@@ -39,10 +39,10 @@ func (c *EndpointCtrl) Save(ctx iris.Context) {
 	req.CreateUser = multi.GetUsername(ctx)
 	endpoint := c.requestParser(req)
 
-	// TODO: remove
-	if endpoint.CategoryId < 0 {
+	if endpoint.CategoryId == 0 {
 		endpoint.CategoryId = 0
 	}
+
 	res, _ := c.EndpointService.Save(endpoint)
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res})
 

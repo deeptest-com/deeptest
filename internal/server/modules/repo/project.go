@@ -481,8 +481,12 @@ func (r *ProjectRepo) GetAuditList(req v1.AuditProjectPaginate) (data _domain.Pa
 	req.Field = "status asc,created_at"
 
 	var count int64
-
-	db := r.DB.Model(&model.ProjectMemberAudit{}).Where("audit_user_id = ?", req.AuditUserId)
+	db := r.DB.Model(&model.ProjectMemberAudit{})
+	if req.Type == 0 {
+		db = db.Where("audit_user_id = ? and status = 0", req.AuditUserId)
+	} else {
+		db = db.Where("apply_user_id = ?", req.ApplyUserId)
+	}
 
 	err = db.Count(&count).Error
 	if err != nil {
@@ -501,6 +505,7 @@ func (r *ProjectRepo) GetAuditList(req v1.AuditProjectPaginate) (data _domain.Pa
 	}
 
 	r.refUserName(list)
+	r.refProjectName(list)
 
 	data.Populate(list, count, req.Page, req.PageSize)
 
@@ -523,6 +528,18 @@ func (r *ProjectRepo) refUserName(list []*model.ProjectMemberAudit) {
 		list[key].AuditUserName = names[item.AuditUserId]
 		list[key].ApplyUserName = names[item.ApplyUserId]
 
+	}
+}
+
+func (r *ProjectRepo) refProjectName(list []*model.ProjectMemberAudit) {
+	names := make(map[uint]string)
+	for key, item := range list {
+		if _, ok := names[item.ProjectId]; !ok {
+			project, _ := r.Get(item.ProjectId)
+			names[item.ProjectId] = project.Name
+		}
+
+		list[key].ProjectName = names[item.ProjectId]
 	}
 }
 

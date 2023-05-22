@@ -46,6 +46,9 @@
                             <a class="operation-a" href="javascript:void (0)" @click="handleExport(record.id)">导出</a>
                         </a-menu-item>
                         <a-menu-item key="2">
+                            <a class="operation-a" href="javascript:void (0)" @click="handleQueryDetail(record)">查看报告</a>
+                        </a-menu-item>
+                        <a-menu-item key="3">
                             <a class="operation-a" href="javascript:void (0)" @click="handleDelete(record.id)">删除</a>
                         </a-menu-item>
                     </a-menu>
@@ -94,25 +97,21 @@ const columns = [
         width: 120
     },
     {
+        title: '测试计划',
+        dataIndex: 'execPlan',
+        slots: { customRender: 'execPlan' },
+    },
+    {
         title: '测试通过率',
         dataIndex: 'interfacePassRate',
-        width: 120,
     },
     {
         title: '执行人',
         dataIndex: 'createUserName',
-        width: 80,
-    },
-    {
-        title: '所属测试计划',
-        dataIndex: 'execPlan',
-        width: 200,
-        slots: { customRender: 'execPlan' },
     },
     {
         title: '执行耗时',
         dataIndex: 'duration',
-        width: 80,
         slots: { customRender: 'duration' },
     },
     {
@@ -152,6 +151,7 @@ const handleGetList = (params: any) => {
 
 </script>
 <style scoped lang="less">
+
 .report-planname {
     cursor: pointer;
     color: #447DFD;

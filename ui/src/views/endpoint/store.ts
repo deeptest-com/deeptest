@@ -84,6 +84,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setStatus: Mutation<StateType>;
 
         setInterfaceMethodToObjMap: Mutation<StateType>;
+        clearInterfaceMethodToObjMap: Mutation<StateType>;
         setRefsOptions: Mutation<StateType>;
         setSelectedMethodDetail: Mutation<StateType>;
         setSelectedCodeDetail: Mutation<StateType>;
@@ -219,6 +220,9 @@ const StoreModel: ModuleType = {
         },
         setInterfaceMethodToObjMap(state, payload) {
             state.interfaceMethodToObjMap[payload.method] = payload.value;
+        },
+        clearInterfaceMethodToObjMap(state, payload) {
+            state.interfaceMethodToObjMap = {};
         },
         setRefsOptions(state, payload) {
             state.refsOptions[payload.type] = payload.options;
@@ -478,16 +482,17 @@ const StoreModel: ModuleType = {
         },
         // 用于新建接口时选择接口分类
         async getEndpointDetail({commit, state}, payload: any) {
+            // 请求数据之前先清空数据
+            // await commit('setEndpointDetail',  {});
+            await commit('clearInterfaceMethodToObjMap',  {});
+
             const res = await getEndpointDetail(payload.id);
             res.data.createdAt = momentUtc(res.data.createdAt);
             res.data.updatedAt = momentUtc(res.data.updatedAt);
 
             if (res.code === 0) {
                 await commit('setEndpointDetail', res.data || null);
-                console.log('++++', state.endpointDetail)
-                const map = {}
                 state.endpointDetail?.interfaces?.forEach((item) => {
-                    // map[item.method] = item;
                     commit('setInterfaceMethodToObjMap', {
                         method: item.method,
                         value: item,

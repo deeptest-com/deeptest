@@ -1,13 +1,14 @@
 <template>
-  <div class="editor" v-if="isEditing" >
+  <div class="editor" v-if="isEditing"    v-on-click-outside="cancelEdit">
       <a-tree-select
-          v-model:value="fieldValue"
+          :value="fieldValue"
           :multiple="false"
           :treeData="treeData"
           style="width: 200px"
           :size="'small'"
-          @change="updateField"
+          @select="updateField"
           :treeDefaultExpandAll="true"
+          @treeExpand="treeExpand"
           :replaceFields="{ title: 'name',value:'id'}"
           :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
           placeholder="请选择所属分类"
@@ -26,11 +27,11 @@ import {
 } from 'vue';
 import {
   EditOutlined,
-  CheckOutlined,
-  CloseOutlined
 } from '@ant-design/icons-vue';
-const isEditing = ref(false);
-const fieldValue = ref('');
+import { vOnClickOutside } from '@vueuse/components';
+import {valueAccordingPercent} from "handsontable/helpers";
+const isEditing:any = ref(false);
+const fieldValue:any = ref('');
 const props = defineProps({
   value: {
     required: true,
@@ -51,14 +52,25 @@ const props = defineProps({
 })
 const emit = defineEmits(['update', 'edit']);
 
-function updateField() {
+function updateField(value) {
+  fieldValue.value = value;
   emit('update', fieldValue.value || null);
   isEditing.value = false;
 }
 
+
 function cancelEdit() {
-  fieldValue.value = props.value;
-  isEditing.value = false;
+  if(isEditing.value){
+    fieldValue.value = props.value;
+    isEditing.value = false;
+  }
+}
+
+const isOpen = ref(false);
+
+function treeExpand(open) {
+  debugger;
+  isOpen.value = open;
 }
 
 function handleClick() {

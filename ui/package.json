@@ -13,7 +13,6 @@
   },
   "dependencies": {
     "@ant-design/icons-vue": "^6.0.1",
-    "@floating-ui/dom": "^1.2.1",
     "@handsontable/vue3": "^12.3.0",
     "@toast-ui/editor": "^2.5.3",
     "@vuepic/vue-datepicker": "^3.6.5",

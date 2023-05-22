@@ -1,22 +1,17 @@
 <template>
-  <div class="editor" v-if="isEditing">
+  <div class="editor" v-if="isEditing"  v-on-click-outside="cancelEdit">
       <a-tree-select
           v-model:value="fieldValue"
           :multiple="false"
           :treeData="treeData"
           style="width: 200px"
           :size="'small'"
+          @change="updateField"
           :treeDefaultExpandAll="true"
           :replaceFields="{ title: 'name',value:'id'}"
           :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
           placeholder="请选择所属分类"
           allow-clear/>
-    <a-space :size="8" style="margin-left:8px;">
-      <CloseOutlined @click.stop="cancelEdit"/>
-      <CheckOutlined
-          @click.stop="updateField"
-          :class="{disabled: !fieldValue}"/>&nbsp;
-    </a-space>
   </div>
   <div :class="['editor', customClass]" v-else>
     <span class="title" @click.stop="handleClick">{{ label }}</span> &nbsp;&nbsp;
@@ -34,6 +29,7 @@ import {
   CheckOutlined,
   CloseOutlined
 } from '@ant-design/icons-vue';
+import { vOnClickOutside } from '@vueuse/components';
 const isEditing = ref(false);
 const fieldValue = ref('');
 const props = defineProps({

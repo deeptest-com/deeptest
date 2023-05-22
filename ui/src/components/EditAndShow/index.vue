@@ -1,6 +1,6 @@
 <template>
-  <div class="editor" v-if="isEditing">
-    <a-input class="input" :placeholder="placeholder || '请输入内容'"  :size="'small'" v-model:value="fieldValue"/>
+  <div class="editor" v-if="isEditing" >
+    <a-input v-on-click-outside="cancelEdit" class="input" :placeholder="placeholder || '请输入内容'" :size="'small'" v-model:value="fieldValue"/>
     <a-space :size="8">
       <CloseOutlined @click.stop="cancelEdit"/>
       <CheckOutlined
@@ -10,23 +10,26 @@
     </a-space>
   </div>
   <div :class="['editor', customClass]" v-else>
-    <span class="title" @click.stop="handleClick">{{ fieldValue || '暂无' }}</span> &nbsp;&nbsp;
+    <span class="title" :title="fieldValue" @click.stop="handleClick">{{ fieldValue || '暂无' }}</span> &nbsp;&nbsp;
     <span class="edit-icon"><EditOutlined @click.stop="isEditing = true"/></span>
   </div>
 </template>
 <script lang="ts" setup>
+
 import {
   defineProps,
   defineEmits,
-  ref, watch,
+  ref, watch, onMounted, onUnmounted,
 } from 'vue';
 import {
   EditOutlined,
   CheckOutlined,
   CloseOutlined
 } from '@ant-design/icons-vue';
+import { vOnClickOutside } from '@vueuse/components';
 const isEditing = ref(false);
 const fieldValue = ref('');
+const editor = ref(null);
 const props = defineProps({
   value: {
     required: true,
@@ -67,6 +70,9 @@ watch(() => {
 }, {
   immediate: true
 })
+
+
+
 
 </script>
 

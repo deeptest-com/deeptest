@@ -4,15 +4,11 @@
         v-model:value="fieldValue"
         style="width: 100px;margin-right: 8px;"
         :size="'small'"
+        v-on-click-outside="cancelEdit"
+        @change="updateField"
         placeholder="请修改接口状态"
         :options="options">
     </a-select>
-    <a-space :size="8">
-      <CloseOutlined @click.stop="cancelEdit"/>
-      <CheckOutlined
-          @click.stop="updateField"
-          :class="{disabled: !fieldValue}"/>&nbsp;
-    </a-space>
   </div>
   <div :class="['editor', customClass]" v-else>
     <span class="title" @click.stop="handleClick">{{ label }}</span> &nbsp;&nbsp;
@@ -27,9 +23,8 @@ import {
 } from 'vue';
 import {
   EditOutlined,
-  CheckOutlined,
-  CloseOutlined
 } from '@ant-design/icons-vue';
+import { vOnClickOutside } from '@vueuse/components';
 const isEditing = ref(false);
 const fieldValue:any = ref('');
 const props = defineProps({

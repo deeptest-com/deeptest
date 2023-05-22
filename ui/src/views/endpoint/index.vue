@@ -24,10 +24,10 @@
         <EmptyCom>
           <template #content>
             <a-table :loading="fetching"
-              :row-selection="{
+              :row-selection="isSuportBatch ?{
                 selectedRowKeys: selectedRowKeys,
                 onChange: onSelectChange
-              }"
+              } : null"
               :pagination="{
                   ...pagination,
                   onChange: (page) => {
@@ -143,6 +143,8 @@ let pagination = computed<PaginationConfig>(() => store.state.Endpoint.listResul
 const createApiModalVisible = ref(false);
 const router = useRouter();
 type Key = ColumnProps['key'];
+
+const isSuportBatch = ref(false);
 /**
  * 表格数据
  * */
@@ -150,37 +152,42 @@ const columns = [
   {
     title: '编号',
     dataIndex: 'serialNumber',
+    width: 150,
   },
   {
     title: '接口名称',
     dataIndex: 'title',
     slots: {customRender: 'colTitle'},
-    width: 200,
     ellipsis: true
   },
   {
     title: '状态',
     dataIndex: 'status',
     slots: {customRender: 'colStatus'},
+    width: 150,
   },
   {
     title: '创建人',
     dataIndex: 'createUser',
-
+    width: 100,
   },
   {
     title: '接口路径',
     dataIndex: 'path',
-    width: 200,
+    width: 300,
     slots: {customRender: 'colPath'},
+    ellipsis: true
   },
   {
     title: '所属服务',
     dataIndex: 'serveName',
+    ellipsis: true,
+    width: 100,
   },
   {
     title: '最近更新',
     dataIndex: 'updatedAt',
+    width: 200,
   },
   {
     title: '操作',

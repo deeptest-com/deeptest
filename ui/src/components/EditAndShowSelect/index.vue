@@ -4,7 +4,6 @@
         v-model:value="fieldValue"
         style="width: 100px;margin-right: 8px;"
         :size="'small'"
-        v-on-click-outside="cancelEdit"
         @change="updateField"
         placeholder="请修改接口状态"
         :options="options">
@@ -24,7 +23,6 @@ import {
 import {
   EditOutlined,
 } from '@ant-design/icons-vue';
-import { vOnClickOutside } from '@vueuse/components';
 const isEditing = ref(false);
 const fieldValue:any = ref('');
 const props = defineProps({

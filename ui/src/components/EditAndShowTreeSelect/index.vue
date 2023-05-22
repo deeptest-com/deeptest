@@ -1,5 +1,5 @@
 <template>
-  <div class="editor" v-if="isEditing"  v-on-click-outside="cancelEdit">
+  <div class="editor" v-if="isEditing" >
       <a-tree-select
           v-model:value="fieldValue"
           :multiple="false"
@@ -29,7 +29,6 @@ import {
   CheckOutlined,
   CloseOutlined
 } from '@ant-design/icons-vue';
-import { vOnClickOutside } from '@vueuse/components';
 const isEditing = ref(false);
 const fieldValue = ref('');
 const props = defineProps({

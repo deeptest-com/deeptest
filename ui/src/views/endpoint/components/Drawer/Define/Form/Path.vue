@@ -17,7 +17,7 @@
                 placeholder="请选择环境"
                 class="select-env">
               <template #notFoundContent>
-                <a-button type="link" @click="addEnv" class="add-env-btn">新建</a-button>
+                <a-button type="link" @click="addEnv" class="add-env-btn">新建环境</a-button>
               </template>
             </a-select>
             <span v-if="currentEnvURL" class="current-env-url">{{ currentEnvURL || '---' }}</span>

@@ -51,9 +51,9 @@ const props = defineProps({
 const emit = defineEmits(['update', 'edit']);
 
 function updateField() {
-  if (!fieldValue.value) {
-    return;
-  }
+  // if (!fieldValue.value) {
+  //   return;
+  // }
   emit('update', fieldValue.value);
   isEditing.value = false;
 }

@@ -171,6 +171,10 @@ watch(() => {
 
 <style lang="less" scoped>
 @dropdown-width: 300px;
+.indexlayout-top-project{
+  height: 32px;
+  line-height: 32px;
+}
 
 .header {
   width: @dropdown-width;

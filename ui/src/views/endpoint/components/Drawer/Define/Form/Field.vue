@@ -50,7 +50,7 @@
             <InfoCircleOutlined :class="{'disabled':hasRef}" v-if="!fieldState.required" @click="setRequire"/>
             <InfoCircleTwoTone  :class="{'disabled':hasRef}" v-if="fieldState.required" @click="setRequire"/>
           </a-tooltip>
-          <a-popover v-if="!hideOther" v-model:visible="showOther" placement="topLeft" :title="null" trigger="click">
+          <a-popover v-if="!hideOther" v-model:visible="showOther" :title="null" trigger="click">
             <template #content>
               <div class="other-props-content">
                 <a-form :layout='"vertical"' v-if="otherProps?.value === fieldState.type">

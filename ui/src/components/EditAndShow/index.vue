@@ -1,6 +1,6 @@
 <template>
   <div class="editor" v-if="isEditing">
-    <a-input class="input" :placeholder="placeholder || '请输入内容'" v-model:value="fieldValue"/>
+    <a-input class="input" :placeholder="placeholder || '请输入内容'"  :size="'small'" v-model:value="fieldValue"/>
     <a-space :size="8">
       <CloseOutlined @click.stop="cancelEdit"/>
       <CheckOutlined

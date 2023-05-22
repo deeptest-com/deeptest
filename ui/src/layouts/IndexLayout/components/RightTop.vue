@@ -159,6 +159,7 @@ export default defineComponent({
       line-height: @headerHeight;
       flex: 1;
       display: flex;
+      align-items: center;
       overflow: hidden;
       overflow-x: auto;
       width: 280px;

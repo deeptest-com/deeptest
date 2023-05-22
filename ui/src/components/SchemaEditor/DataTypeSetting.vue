@@ -2,7 +2,6 @@
   <a-popover :title="null"
              trigger="click"
              v-model:visible="visible"
-             placement="left"
              :overlayClassName="'data-type-setting-container'">
     <template #content>
       <div class="content" v-for="(tabs,tabsIndex) in tabsList" :key="tabsIndex">

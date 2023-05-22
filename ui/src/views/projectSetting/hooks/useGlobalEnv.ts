@@ -98,12 +98,14 @@ export function useGlobalEnv(formRef?: any): EnvReturnData {
                 });
                 const newIndex = oldEnvList.length - 1 > index ? index + 1 : 0;
                 const newEnv = oldEnvList[newIndex];
-                showEnvDetail(newEnv, false); 
+                showEnvDetail(newEnv, false);
             }
         }
         Modal.confirm({
             title: '确认要删除该环境吗',
             icon: createVNode(ExclamationCircleOutlined),
+            okText:'确定',
+            cancelText:'取消',
             onOk() {
                 successCallBack();
             },

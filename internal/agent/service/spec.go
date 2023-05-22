@@ -16,10 +16,7 @@ import (
 	"regexp"
 )
 
-type SpecService struct {
-}
-
-func (s *SpecService) Parse(req v1.ParseSpecReq) (err error) {
+func ParseSpec(req v1.ParseSpecReq) (err error) {
 	ctx := context.Background()
 	loader := &openapi3.Loader{Context: ctx, IsExternalRefsAllowed: true}
 
@@ -40,7 +37,7 @@ func (s *SpecService) Parse(req v1.ParseSpecReq) (err error) {
 		return
 	}
 
-	err = s.postSpecToServer(doc3, req)
+	err = postSpecToServer(doc3, req)
 	if err != nil {
 		return
 	}
@@ -50,7 +47,7 @@ func (s *SpecService) Parse(req v1.ParseSpecReq) (err error) {
 	return
 }
 
-func (s *SpecService) postSpecToServer(doc3 *openapi3.T, req v1.ParseSpecReq) (err error) {
+func postSpecToServer(doc3 *openapi3.T, req v1.ParseSpecReq) (err error) {
 	url := fmt.Sprintf("import/importSpec")
 
 	body, err := json.Marshal(doc3)
@@ -92,7 +89,7 @@ func (s *SpecService) postSpecToServer(doc3 *openapi3.T, req v1.ParseSpecReq) (e
 	return
 }
 
-func (s *SpecService) parseDesc(desc string) (ret [][]int) {
+func parseDesc(desc string) (ret [][]int) {
 	compileRegex := regexp.MustCompile(`[\^\n]# (.+)`)
 	arr := compileRegex.FindAllStringSubmatchIndex(desc, -1)
 

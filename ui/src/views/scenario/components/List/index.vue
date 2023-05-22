@@ -44,6 +44,7 @@
                 },
             }"
         class="dp-table">
+
       <template #name="{ record ,text }">
         <EditAndShowField :custom-class="'custom-endpoint show-on-hover'"
                           :value="text"
@@ -51,13 +52,16 @@
                           @update="(val) => handleUpdateName(val, record)"
                           @edit="editScenario(record,'1')"/>
       </template>
-      <template #desc="{ record ,text }">
+
+<!--      <template #desc="{ record ,text }">
         <EditAndShowField :placeholder="'请输入描述'" :value="text || '暂无'"
                           @update="(val) => {handleUpdateDesc(text,record)}"/>
-      </template>
+      </template>-->
+
       <template #updatedAt="{ record }">
         <span>{{ momentUtc(record.updatedAt) }}</span>
       </template>
+
       <template #status="{ record }">
         <div class="customStatusColRender">
           <EditAndShowSelect
@@ -66,8 +70,8 @@
               :options="scenarioStatusOptions"
               @update="(val) => { handleChangeStatus(val,record);}"/>
         </div>
-
       </template>
+
       <template #priority="{ record }">
         <div class="customStatusColRender">
           <EditAndShowSelect
@@ -77,6 +81,7 @@
               @update="(val) => { handleChangePriority(val,record)}"/>
         </div>
       </template>
+
       <template #action="{ record }">
         <a-dropdown>
           <MoreOutlined/>
@@ -335,46 +340,51 @@ const columns = [
   {
     title: '编号',
     dataIndex: 'serialNumber',
+    width: '100px',
   },
   {
     title: '测试场景名称',
     dataIndex: 'name',
     slots: {customRender: 'name'},
     ellipsis: true,
+    width: '200px',
   },
-  {
-    title: '描述',
-    dataIndex: 'desc',
-    ellipsis: true,
-    slots: {customRender: 'desc'},
-  },
+  // {
+  //   title: '描述',
+  //   dataIndex: 'desc',
+  //   ellipsis: true,
+  //   slots: {customRender: 'desc'},
+  // },
   {
     title: '状态',
     dataIndex: 'status',
     slots: {customRender: 'status'},
+    width: '100px',
   },
   {
     title: '优先级',
     dataIndex: 'priority',
     ellipsis: true,
     slots: {customRender: 'priority'},
+    width: '100px',
   },
   {
     title: '创建人',
     dataIndex: 'createUserName',
-    width: 100,
     ellipsis: true,
+    width: '80px',
   },
   {
     title: '最新更新',
     dataIndex: 'updatedAt',
     slots: {customRender: 'updatedAt'},
     ellipsis: true,
+    width: '150px',
   },
   {
     title: '操作',
     key: 'action',
-    width: 80,
+    width: '80px',
     slots: {customRender: 'action'},
   },
 ];

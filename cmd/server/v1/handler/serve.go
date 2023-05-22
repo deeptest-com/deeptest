@@ -212,12 +212,15 @@ func (c *ServeCtrl) DeleteSchema(ctx iris.Context) {
 func (c *ServeCtrl) ListServer(ctx iris.Context) {
 	var req serverDomain.ServeServer
 
-	if err := ctx.ReadJSON(&req); err == nil {
-		res, _ := c.ServeService.ListServer(req.ServeId)
-		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
-	} else {
+	err := ctx.ReadJSON(&req)
+	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
 	}
+
+	res, _ := c.ServeService.ListServer(req)
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
 }
 
 func (c *ServeCtrl) SaveServer(ctx iris.Context) {

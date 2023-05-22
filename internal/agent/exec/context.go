@@ -9,6 +9,10 @@ import (
 )
 
 var (
+	ServerUrl     = ""
+	ServerApiPath = "api/v1"
+	ServerToken   = ""
+
 	CurrProcessorId = uint(0)
 	CurrInterfaceId = uint(0)
 

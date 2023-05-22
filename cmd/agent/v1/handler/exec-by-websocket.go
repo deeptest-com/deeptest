@@ -27,10 +27,6 @@ var (
 type ExecByWebSocketCtrl struct {
 	Namespace         string
 	*websocket.NSConn `stateless:"true"`
-
-	ScenarioService *service.ExecScenarioService `inject:""`
-	PlanService     *service.ExecPlanService     `inject:""`
-	MessageService  *service.MessageService      `inject:""`
 }
 
 func NewWebsocketCtrl() *ExecByWebSocketCtrl {
@@ -92,7 +88,7 @@ func (c *ExecByWebSocketCtrl) OnChat(wsMsg websocket.Message) (err error) {
 			}
 		}
 
-		c.ScenarioService.CancelAndSendMsg(req.ScenarioExecReq.ScenarioId, wsMsg)
+		service.CancelAndSendMsg(req.ScenarioExecReq.ScenarioId, wsMsg)
 
 		return
 	}
@@ -107,17 +103,17 @@ func (c *ExecByWebSocketCtrl) OnChat(wsMsg websocket.Message) (err error) {
 	if act == consts.ExecScenario {
 		ch = make(chan int, 1)
 		go func() {
-			c.ScenarioService.ExecScenario(&req.ScenarioExecReq, &wsMsg)
+			service.RunScenario(&req.ScenarioExecReq, &wsMsg)
 		}()
 	} else if act == consts.ExecPlan {
 		ch = make(chan int, 1)
 		go func() {
-			c.PlanService.ExecPlan(&req.PlanExecReq, &wsMsg)
+			service.RunPlan(&req.PlanExecReq, &wsMsg)
 		}()
 	} else if act == consts.ExecMessage {
 		ch = make(chan int, 1)
 		go func() {
-			c.MessageService.ExecMessage(&req.MessageReq, &wsMsg)
+			service.RunMessage(&req.MessageReq, &wsMsg)
 		}()
 	}
 

@@ -1,39 +1,32 @@
 package action
 
 import (
-	commandConsts "github.com/aaronchen2k/deeptest/internal/command/consts"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
-	"strconv"
+	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
+	"github.com/aaronchen2k/deeptest/internal/agent/service"
 )
 
-type RunAction struct {
-	ExecScenarioService *service.ScenarioExecService `inject:""`
-}
+func Run(scenario, plan, env int, server, token string) {
+	//s.ExecScenarioService.ExecScenario(scenarioId, nil)
 
-func (s *RunAction) Run(scenarioIdOrName string) {
-	scenarioId, _ := strconv.Atoi(scenarioIdOrName)
+	if scenario > 0 {
+		req := agentExec.ScenarioExecReq{
+			ServerUrl:     server,
+			Token:         token,
+			ScenarioId:    scenario,
+			EnvironmentId: env,
+		}
 
-	if scenarioId == 0 {
-		scenario := getScenarioByName(scenarioIdOrName)
-		scenarioId = int(scenario.ID)
+		service.RunScenario(&req, nil)
+
+	} else if plan > 0 {
+		req := agentExec.PlanExecReq{
+			ServerUrl:     server,
+			Token:         token,
+			PlanId:        plan,
+			EnvironmentId: env,
+		}
+
+		service.RunPlan(&req, nil)
+
 	}
-
-	s.ExecScenarioService.ExecScenario(scenarioId, nil)
-}
-
-func getScenarioById(id int) (scenario model.Scenario) {
-	commandConsts.DB.
-		Where("id = ? && NOT deleted && NOT disabled", id).
-		First(&scenario)
-
-	return
-}
-
-func getScenarioByName(name string) (scenario model.Scenario) {
-	commandConsts.DB.
-		Where("name = ? && NOT deleted && NOT disabled", name).
-		First(&scenario)
-
-	return
 }

@@ -1,4 +1,4 @@
-package agentUtils
+package agentExec
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
@@ -80,7 +80,7 @@ func ReadDataFromExcel(url string) (ret []domain.VarKeyValuePair, err error) {
 }
 
 func DownloadUploadedFile(uri string) (ret string, err error) {
-	serverBaseUrl := strings.TrimSuffix(consts.ServerUrl, consts.ServerApiPath)
+	serverBaseUrl := strings.TrimSuffix(ServerUrl, ServerApiPath)
 
 	url := _httpUtils.AddSepIfNeeded(serverBaseUrl) + uri
 

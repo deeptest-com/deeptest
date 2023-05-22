@@ -3,7 +3,6 @@ package agentExec
 import (
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
-	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
@@ -84,15 +83,15 @@ func (entity *ProcessorData) getIterator() (iterator agentDomain.ExecIterator, m
 }
 
 func (entity *ProcessorData) GenerateLoopList() (ret agentDomain.ExecIterator, err error) {
-	pth, _ := agentUtils.DownloadUploadedFile(entity.Url)
+	pth, _ := DownloadUploadedFile(entity.Url)
 	if err != nil {
 		logUtils.Infof("Download file %s failed", pth)
 	}
 
 	if entity.ProcessorType == consts.ProcessorDataText {
-		ret.Data, err = agentUtils.ReadDataFromText(pth, entity.Separator)
+		ret.Data, err = ReadDataFromText(pth, entity.Separator)
 	} else if entity.ProcessorType == consts.ProcessorDataExcel {
-		ret.Data, err = agentUtils.ReadDataFromExcel(pth)
+		ret.Data, err = ReadDataFromExcel(pth)
 	}
 
 	return

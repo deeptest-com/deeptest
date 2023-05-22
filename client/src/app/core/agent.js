@@ -33,8 +33,7 @@ export async function startAgent() {
         }
         return new Promise((resolve, reject) => {
             const cwd = process.env.AGENT_CWD_PATH || path.dirname(agentExePath);
-            logInfo(`>> starting agent server with command ` +
-                `"${agentExePath} -p ${portAgent} -uuid ${uuid}" in "${cwd}"...`);
+            logInfo(`>> starting agent with ${agentExePath} -p ${portAgent} -uuid ${uuid} in ${cwd} ...`);
 
             const cmd = spawn('"'+agentExePath+'"', ['-p', portAgent, '-uuid', uuid], {
                 cwd,
@@ -125,18 +124,17 @@ export function killAgent() {
         logInfo(`>> not windows`);
 
         const cmd = `ps -ef | grep ${uuid} | grep -v "grep" | awk '{print $2}' | xargs kill -9`
-        logInfo(`>> exit cmd: ${cmd}`);
+        logInfo(`>> kill agent cmd: ${cmd}`);
 
-        const cp = require('child_process');
-        cp.exec(cmd, function (error, stdout, stderr) {
-            logInfo(`>> exit result: stdout: ${stdout}; stderr: ${stderr}; error: ${error}`);
-        });
+        const stdout  = execSync(cmd).toString().trim()
+        logInfo(`>> kill agent result: ${stdout}`);
+
     } else {
         const cmd = 'WMIC path win32_process  where "Commandline like \'%%' + uuid + '%%\'" get Processid,Caption';
-        logInfo(`>> list process cmd: ${cmd}`);
+        logInfo(`>> list agent process cmd: ${cmd}`);
 
         const stdout = execSync(cmd, {windowsHide: true}).toString().trim()
-        logInfo(`>> list process result: exec ${cmd}, stdout: ${stdout}`)
+        logInfo(`>> list agent process result: ${stdout}`)
 
         let pid = 0
         const lines = stdout.split('\n')
@@ -147,22 +145,22 @@ export function killAgent() {
             const cols = line.split(/\s/)
 
             if (line.indexOf('deeptest') > -1 && cols.length > 3) {
-                const col3 = cols[3].trim()
-                console.log(`col3=${col3}`);
-                logInfo(`col3=${col3}`)
+                const pidStr = cols[3].trim()
+                console.log(`>> agent pid: ${pidStr}`);
+                logInfo(`>> agent pid: ${pidStr}`)
 
-                if (col3 && parseInt(col3, 10)) {
-                    pid = parseInt(col3, 10)
+                if (pidStr && parseInt(pidStr, 10)) {
+                    pid = parseInt(pidStr, 10)
                 }
             }
         });
 
         if (pid && pid > 0) {
             const killCmd = `taskkill /F /pid ${pid}`
-            logInfo(`>> exit cmd: exec ${killCmd}`)
+            logInfo(`>> kill agent cmd: exec ${killCmd}`)
 
             const out = execSync(`taskkill /F /pid ${pid}`, {windowsHide: true}).toString().trim()
-            logInfo(`>> exit result: ${out}`)
+            logInfo(`>> kill agent result: ${out}`)
         }
     }
 }

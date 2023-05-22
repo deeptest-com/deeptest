@@ -11,12 +11,8 @@ import (
 	"strings"
 )
 
-type ExecInterfaceService struct {
-	RemoteService *RemoteService `inject:""`
-}
-
-func (s *ExecInterfaceService) Run(call agentDomain.InterfaceCall) (ret domain.DebugResponse, err error) {
-	req := s.RemoteService.GetInterfaceToExec(call)
+func RunInterface(call agentDomain.InterfaceCall) (ret domain.DebugResponse, err error) {
+	req := GetInterfaceToExec(call)
 
 	agentExec.CurrInterfaceId = req.DebugData.EndpointInterfaceId
 	agentExec.CurrProcessorId = 0 // not in a scenario
@@ -24,15 +20,15 @@ func (s *ExecInterfaceService) Run(call agentDomain.InterfaceCall) (ret domain.D
 	agentExec.ExecScene = req.ExecScene
 
 	logUtils.Info("DebugData:" + _commUtils.JsonEncode(req.DebugData))
-	ret, err = s.Request(req.DebugData)
+	ret, err = RequestInterface(req.DebugData)
 	logUtils.Info("DebugResponse:" + _commUtils.JsonEncode(ret))
 
-	err = s.RemoteService.SubmitInterfaceResult(req.DebugData, ret, call.ServerUrl, call.Token)
+	err = SubmitInterfaceResult(req.DebugData, ret, call.ServerUrl, call.Token)
 
 	return
 }
 
-func (s *ExecInterfaceService) Request(req domain.DebugData) (ret domain.DebugResponse, err error) {
+func RequestInterface(req domain.DebugData) (ret domain.DebugResponse, err error) {
 	// exec pre-request script
 	agentExec.ExecJs(req.PreRequestScript)
 
@@ -53,7 +49,7 @@ func (s *ExecInterfaceService) Request(req domain.DebugData) (ret domain.DebugRe
 	return
 }
 
-func (s *ExecInterfaceService) GetContentProps(ret *domain.DebugResponse) {
+func GetInterfaceContentProps(ret *domain.DebugResponse) {
 	ret.ContentLang = consts.LangTEXT
 
 	if ret.ContentLang == "" {

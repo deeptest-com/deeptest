@@ -14,7 +14,9 @@ import (
 )
 
 type ServeService struct {
-	ServeRepo             *repo.ServeRepo             `inject:""`
+	ServeRepo       *repo.ServeRepo       `inject:""`
+	ServeServerRepo *repo.ServeServerRepo `inject:""`
+
 	EndpointRepo          *repo.EndpointRepo          `inject:""`
 	EndpointInterfaceRepo *repo.EndpointInterfaceRepo `inject:""`
 }
@@ -110,8 +112,14 @@ func (s *ServeService) DisableVersionById(id uint) (err error) {
 	return
 }
 
-func (s *ServeService) ListServer(serveId uint) (res []model.ServeServer, err error) {
-	res, err = s.ServeRepo.ListServer(serveId)
+func (s *ServeService) ListServer(req v1.ServeServer) (res []model.ServeServer, err error) {
+	if req.ServeId == 0 {
+		server, _ := s.ServeServerRepo.Get(req.ServerId)
+		req.ServeId = server.ServeId
+	}
+
+	res, err = s.ServeRepo.ListServer(req.ServeId)
+
 	return
 }
 

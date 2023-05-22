@@ -32,6 +32,7 @@ import RequestVariable from '@/components/Editor/RequestVariable.vue';
 import {UsedBy} from "@/utils/enum";
 import {DebugInfo} from "@/views/component/debug/data";
 import debounce from "lodash.debounce";
+
 const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
 const store = useStore<{  Debug: Debug, Scenario: Scenario }>();

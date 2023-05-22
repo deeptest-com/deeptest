@@ -1,4 +1,4 @@
-[![logo](xdoc/image/deeptest.png)](http://deeptest.com)
+<img src="xdoc/image/logo.png" width="200" />
 
 DeepTest is Continue Testing Platform written in Go with Iris, Gorm, MySQL and Vue3, Protobuf, WebSocket. 
 

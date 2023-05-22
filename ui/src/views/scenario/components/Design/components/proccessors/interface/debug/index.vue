@@ -1,7 +1,10 @@
 <template>
   <div id="debug-index" class="dp-splits-v">
     <div id="debug-content">
-      <DebugInterface />
+      <DebugEnvSelection />
+      <div class="move-up">
+        <DebugInterface />
+      </div>
     </div>
 
     <div id="debug-splitter" class="splitter"></div>
@@ -52,6 +55,8 @@ import DebugInterface from './interface.vue';
 import RequestEnv from '@/views/component/debug/others/env/index.vue';
 import RequestHistory from '@/views/component/debug/others/history/index.vue';
 
+import DebugEnvSelection from './env-selection.vue';
+
 provide('usedBy', UsedBy.ScenarioDebug)
 const useForm = Form.useForm;
 
@@ -81,6 +86,10 @@ const resize = () => {
     flex: 1;
     width: 0;
     height: 100%;
+
+    .move-up {
+      margin-top: -43px;
+    }
   }
 
   #debug-right {

@@ -8,7 +8,6 @@ import (
 )
 
 type SpecCtrl struct {
-	SpecService *service.SpecService `inject:""`
 }
 
 // Parse 解析定义文件
@@ -20,7 +19,7 @@ func (c *SpecCtrl) Parse(ctx iris.Context) {
 		return
 	}
 
-	err = c.SpecService.Parse(req)
+	err = service.ParseSpec(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

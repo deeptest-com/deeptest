@@ -58,7 +58,7 @@ export default defineComponent({
     position: fixed;
     left: 72px;
     top: 62px;
-    background-image: url('../../assets/images/logo-deep.png');
+    background-image: url('../../assets/images/logo.png');
     background-position: center;
     background-size: cover;
   }

@@ -3,7 +3,9 @@
     <div id="scenario-design-left" class="left">
       <ScenarioTree/>
     </div>
+
     <div id="scenario-design-splitter" class="splitter"></div>
+
     <div id="scenario-design-right" class="right">
       <Designer/>
     </div>

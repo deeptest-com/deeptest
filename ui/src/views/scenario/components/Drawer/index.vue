@@ -2,7 +2,7 @@
   <div>
     <a-drawer
         :placement="'right'"
-        :width="1000"
+        :width="1200"
         :closable="true"
         :visible="visible"
         class="drawer"
@@ -17,8 +17,10 @@
           </a-col>
         </a-row>
       </template>
+
       <!-- 基本信息 -->
       <BasicInfo @change="changeBasicInfo"/>
+
       <!-- Tab 切换区域 -->
       <a-tabs v-model:activeKey="activeKey" force-render>
         <a-tab-pane class="test-developer" key="1" tab="测试开发">
@@ -29,11 +31,13 @@
             <Design :id="detailResult?.id"/>
           </div>
         </a-tab-pane>
+
         <a-tab-pane key="2" tab="执行历史" force-render>
           <div style="padding: 16px" v-if="activeKey==='2'">
             <ExecList @showDetail="showDetail"/>
           </div>
         </a-tab-pane>
+
         <!-- :::: 关联测试计划Tab-->
         <a-tab-pane key="3" tab="关联测试计划" force-render>
           <div style="padding: 16px" v-if="activeKey==='3'">

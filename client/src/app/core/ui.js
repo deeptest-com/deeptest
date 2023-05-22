@@ -94,7 +94,7 @@ export function startUIService() {
             }
         });
         cmd.on('error', spawnError => {
-            logErr('>>> start ui server failed, error' + spawnError);
+            logErr(`>>> start ui server failed, error ${spawnError}`);
             reject(spawnError)
         });
         _uiService = cmd;

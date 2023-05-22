@@ -3,10 +3,12 @@
     <div id="scenario-index-left" v-if="!collapsed">
       <Tree/>
     </div>
+
     <CollapsedIcon
         :style="{left:'294px',top:'300px'}"
         :collapsedStyle="{left:'-9px', top:'300px'}"
-        @click="collapsed = !collapsed" :collapsed="collapsed"/>
+        @click="collapsed = !collapsed" :collapsed="collapsed" />
+
     <div id="scenario-index-right">
         <ScenarioList />
     </div>

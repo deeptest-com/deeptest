@@ -31,7 +31,7 @@ func getVariableValue(name string) (ret string) {
 
 func getValueFromShareVar(name string) (ret string) {
 	if CurrProcessorId == 0 { // endpoint interface debug
-		// try to find in vars set by pre-condition scripts
+		// try to find in vars that set by pre-condition scripts
 		vars := listCachedVariable(0)
 		for _, v := range vars {
 			if v.Name == name {

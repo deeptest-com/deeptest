@@ -63,6 +63,7 @@
                           :label="opt.label">
                         <a-select
                             v-if="opt.component === 'selectTag'"
+                            allowClear
                             :value="fieldState[opt.name] || []"
                             mode="tags"
                             :placeholder="opt.placeholder"
@@ -74,6 +75,7 @@
                             v-if="opt.component === 'select'"
                             :value="fieldState[opt.name] || null"
                             :options="opt.options"
+                            allowClear
                             :disabled="hasRef"
                             :placeholder="opt.placeholder"
                             @change="(val) => {
@@ -84,6 +86,7 @@
                             v-if="opt.component === 'input'"
                             :value="fieldState[opt.name] || null"
                             :disabled="hasRef"
+                            allowClear
                             @change="(e) => {
                             handleOthersPropsChange(opt.name, e.target.value);
                           }"
@@ -92,6 +95,9 @@
                             v-if="opt.component === 'inputNumber'"
                             :value="fieldState[opt.name] || null"
                             :disabled="hasRef"
+                            allowClear
+                            :min="0"
+                            :step="1"
                             class="input-number"
                             @change="(val) => {
                             handleOthersPropsChange(opt.name,val);

@@ -125,12 +125,15 @@ const serviceColumns = [
     {
         title: '服务名称',
         dataIndex: 'name',
-        slots: { customRender: 'name', title: 'fdshfh' },
+        slots: { customRender: 'name'},
+        ellipsis: true
     },
     {
         title: '描述',
         dataIndex: 'description',
         slots: { customRender: 'description' },
+        width: '300px',
+        ellipsis: true
     },
     {
         title: '关联服务',
@@ -141,23 +144,28 @@ const serviceColumns = [
         title: '状态',
         dataIndex: 'statusDesc',
         slots: { customRender: 'customStatus' },
+        width: '100px',
     },
     {
         title: '创建人',
         dataIndex: 'createUser',
+        width: '100px',
     },
     {
         title: '创建时间',
         dataIndex: 'createdAt',
+        width: '200px',
     },
     {
         title: '最近更新时间',
         dataIndex: 'updatedAt',
+        width: '200px',
     },
     {
         title: '操作',
         dataIndex: 'operation',
         slots: { customRender: 'operation' },
+        width: '100px',
     },
 ];
 

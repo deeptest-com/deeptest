@@ -33,7 +33,7 @@
       </template>
       <a-tabs :activeKey="key" :animated="false" @change="changeTab">
         <a-tab-pane key="request" tab="定义">
-          <EndpointDefine v-if="key === 'request'"/> <!-- use v-if to force page reload-->
+          <EndpointDefine v-if="key === 'request'" @switchMode="switchMode"/> <!-- use v-if to force page reload-->
         </a-tab-pane>
         <a-tab-pane key="run" tab="调试">
           <!-- use v-if to force page reload -->
@@ -41,7 +41,7 @@
         </a-tab-pane>
       </a-tabs>
     </a-card>
-    <div v-if="key === 'request'" class="drawer-btns">
+    <div v-if="key === 'request' && showFooter" class="drawer-btns">
       <a-space>
         <a-button type="primary" @click="save">保存</a-button>
         <a-button @click="cancel">取消</a-button>
@@ -98,6 +98,11 @@ function switchToDefineTab() {
     key.value = 'request';
 }
 
+const showFooter = ref(true);
+function switchMode(val) {
+  showFooter.value = (val === 'form');
+}
+
 async function changeStatus(status) {
   await store.dispatch('Endpoint/updateStatus',
       {id: endpointDetail.value.id, status: status}
@@ -125,6 +130,7 @@ async function changeCategory(value) {
   );
   await store.dispatch('Endpoint/getEndpointDetail', {id: endpointDetail.value.id});
 }
+
 
 const key = ref('request');
 

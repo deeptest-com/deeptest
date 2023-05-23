@@ -9,7 +9,6 @@
     <EmptyCom>
       <template #content>
         <a-table :data-source="dataSource" :columns="serviceColumns" :rowKey="(_record, index) => index">
-
           <template #name="{ text, record }">
             <div class="serve-name">
               <EditAndShowField :custom-class="'custom-serve show-on-hover'" placeholder="请输入服务名称" :value="text || ''"

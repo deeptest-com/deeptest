@@ -27,7 +27,7 @@
                            }"/>
       </a-descriptions-item>
       <a-descriptions-item label="描述">
-        <EditAndShowField :placeholder="'请输入描述'" :value="detailResult?.desc || '暂无'"
+        <EditAndShowField :placeholder="'请输入描述'" :value="detailResult?.desc"
                           @update="(val) => {
                             handleChange('desc',val)
                            }"/>

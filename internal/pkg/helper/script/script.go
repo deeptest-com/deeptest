@@ -107,9 +107,9 @@ const (
 
 	ScriptDatapoolGet = "datapool_get"
 
-	ScriptEnvironmentGet   = "environment_get"
-	ScriptEnvironmentSet   = "environment_set"
-	ScriptEnvironmentClear = "environment_clear"
+	//ScriptEnvironmentGet   = "environment_get"
+	//ScriptEnvironmentSet   = "environment_set"
+	//ScriptEnvironmentClear = "environment_clear"
 
 	ScriptVariablesGet   = "variables_get"
 	ScriptVariablesSet   = "variables_set"

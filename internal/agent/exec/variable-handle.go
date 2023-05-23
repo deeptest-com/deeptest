@@ -44,15 +44,17 @@ func SetVariable(processorId uint, variableName string, variableValue interface{
 	}
 
 	allValidIds := ScopeHierarchy[processorId]
-	if allValidIds != nil {
-		for _, id := range *allValidIds {
-			for i := 0; i < len(ScopedVariables[id]); i++ {
-				if ScopedVariables[id][i].Name == variableName {
-					ScopedVariables[id][i] = newVariable
+	if allValidIds == nil {
+		allValidIds = &[]uint{uint(0)}
+	}
 
-					found = true
-					break
-				}
+	for _, id := range *allValidIds {
+		for i := 0; i < len(ScopedVariables[id]); i++ {
+			if ScopedVariables[id][i].Name == variableName {
+				ScopedVariables[id][i] = newVariable
+
+				found = true
+				break
 			}
 		}
 	}

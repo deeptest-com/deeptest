@@ -97,6 +97,20 @@ const editorChange = (newScriptCode) => {
 
 </script>
 
+<style lang="less">
+.pre-body-main {
+  .codes {
+    height: 100%;
+    min-height: 160px;
+
+    .editor {
+      height: 100%;
+      min-height: 160px;
+    }
+  }
+}
+</style>
+
 <style lang="less" scoped>
 .pre-body-main {
   height: 100%;

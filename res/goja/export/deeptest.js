@@ -1,22 +1,10 @@
 "use strict";
 
-// environment
+// datapool
 const datapool = {};
 
 datapool.get = getDatapoolVariable;
 datapool.get.prototype = {};
-
-// environment
-const environment = {};
-
-environment.get = getEnvironmentVariable;
-environment.get.prototype = {};
-
-environment.set = setEnvironmentVariable;
-environment.set.prototype = {};
-
-environment.clear = clearEnvironmentVariable;
-environment.clear.prototype = {};
 
 // variables
 const variables = {};
@@ -30,8 +18,20 @@ variables.set.prototype = {};
 variables.clear = clearVariable;
 variables.clear.prototype = {};
 
+// environment
+// const environment = {};
+//
+// environment.get = getEnvironmentVariable;
+// environment.get.prototype = {};
+//
+// environment.set = setEnvironmentVariable;
+// environment.set.prototype = {};
+//
+// environment.clear = clearEnvironmentVariable;
+// environment.clear.prototype = {};
+
 module.exports = {
     datapool: datapool,
     variables: variables,
-    environment: environment,
+    // environment: environment,
 }

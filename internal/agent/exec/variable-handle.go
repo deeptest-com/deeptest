@@ -43,9 +43,9 @@ func SetVariable(processorId uint, variableName string, variableValue interface{
 		Scope: scope,
 	}
 
-	allValidIds := ScopeHierarchy[processorId]
-	if allValidIds == nil {
-		allValidIds = &[]uint{uint(0)}
+	allValidIds := &[]uint{uint(0)}
+	if processorId > 0 {
+		allValidIds = ScopeHierarchy[processorId]
 	}
 
 	for _, id := range *allValidIds {

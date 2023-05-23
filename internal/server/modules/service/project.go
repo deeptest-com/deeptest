@@ -94,9 +94,7 @@ func (s *ProjectService) GetCurrProjectByUser(userId uint) (currProject model.Pr
 }
 
 func (s *ProjectService) Apply(req v1.ApplyProjectReq) (err error) {
-	var project model.Project
-	project, err = s.ProjectRepo.Get(req.ProjectId)
-	err = s.ProjectRepo.SaveAudit(model.ProjectMemberAudit{ProjectId: req.ProjectId, ApplyUserId: req.ApplyUserId, AuditUserId: project.AdminId, ProjectRoleName: req.ProjectRoleName, Description: req.Description})
+	err = s.ProjectRepo.SaveAudit(model.ProjectMemberAudit{ProjectId: req.ProjectId, ApplyUserId: req.ApplyUserId, ProjectRoleName: req.ProjectRoleName, Description: req.Description})
 	return
 }
 

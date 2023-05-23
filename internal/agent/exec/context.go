@@ -16,7 +16,7 @@ var (
 	CurrProcessorId = uint(0)
 	CurrInterfaceId = uint(0)
 
-	CachedShareVarByProcessor map[uint]domain.VarKeyValuePair
+	CachedShareVarByProcessorForRead map[uint]domain.VarKeyValuePair
 
 	ScopeHierarchy  = map[uint]*[]uint{}               // only for scenario
 	ScopedVariables = map[uint][]domain.ExecVariable{} // only for scenario

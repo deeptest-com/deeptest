@@ -140,7 +140,6 @@ import { PaginationConfig, QueryParams, User } from "../data.d";
 
 import { computed, onMounted, reactive, ref, watch } from "vue";
 import { useStore } from "vuex";
-import { StateType } from "@/views/user/store";
 import { Modal, notification } from "ant-design-vue";
 import { NotificationKeyCommon } from "@/utils/const";
 import debounce from "lodash.debounce";
@@ -149,9 +148,16 @@ import { getAuditList, doAudit } from "@/views/project/service";
 import EditPage from "../edit/edit.vue";
 
 const router = useRouter();
-const store = useStore<{ UserInternal: StateType }>();
+const store = useStore();
 
 const list = computed<User[]>(() => store.state.UserInternal.queryResult.list);
+const roles = ()=>{
+  let rolesList = {}
+  store.state.Project.roles.forEach((item:any)=>{
+    rolesList[item.name] = item.displayName
+  })
+  return rolesList
+}
 let activeKey = ref("1");
 let pagination = computed<PaginationConfig>(
   () => store.state.UserInternal.queryResult.pagination
@@ -161,6 +167,11 @@ let queryParams = reactive<QueryParams>({
   page: pagination.value.current,
   pageSize: pagination.value.pageSize,
 });
+
+const getRoleName = (val:any)=>{
+  let rolesList = roles()
+  return rolesList[val.text]
+}
 const auditLst = ref({});
 const auditModal = ref(false);
 const auditId = ref(0);
@@ -210,6 +221,7 @@ const auditColumns = [
   {
     title: "申请角色",
     dataIndex: "projectRoleName",
+    customRender:getRoleName
     //  width: 150,
     // slots: { customRender: "role" },
   },
@@ -238,6 +250,7 @@ const auditColumns = [
     slots: { customRender: "action" },
   },
 ];
+
 const applyColumns = [
   {
     title: "审批人",
@@ -256,6 +269,7 @@ const applyColumns = [
     dataIndex: "projectRoleName",
     //  width: 150,
     // slots: { customRender: "role" },
+    customRender:getRoleName
   },
   {
     title: "申请原因",
@@ -281,6 +295,7 @@ onMounted(() => {
   getRoles();
   // getAudits(1);
 });
+
 const pagination1 = ref({
   total: 0,
   current: 1,

@@ -483,7 +483,8 @@ func (r *ProjectRepo) GetAuditList(req v1.AuditProjectPaginate) (data _domain.Pa
 	var count int64
 	db := r.DB.Model(&model.ProjectMemberAudit{})
 	if req.Type == 0 {
-		db = db.Where("audit_user_id = ? and status = 0", req.AuditUserId)
+		projectIds := r.GetProjectIdsByUserIdAndRole(req.AuditUserId, 1)
+		db = db.Where("project_id in ? and status = 0", projectIds)
 	} else {
 		db = db.Where("apply_user_id = ?", req.ApplyUserId)
 	}
@@ -552,8 +553,8 @@ func (r *ProjectRepo) GetAudit(id uint) (ret model.ProjectMemberAudit, err error
 
 func (r *ProjectRepo) UpdateAuditStatus(id, auditUserId uint, status consts.AuditStatus) (err error) {
 	err = r.DB.Model(&model.ProjectMemberAudit{}).
-		Where("id=? and audit_user_id=?", id, auditUserId).
-		Update("status", status).Error
+		Where("id=?", id).
+		Updates(map[string]interface{}{"status": status, "audit_user_id": auditUserId}).Error
 	return
 }
 
@@ -600,4 +601,16 @@ func (r *ProjectRepo) CreateSample(projectId, serveId, userId uint) (err error) 
 		return nil
 	})
 
+}
+
+func (r *ProjectRepo) GetProjectIdsByUserIdAndRole(userId, roleId uint) (projectIds []uint) {
+	var projects []model.ProjectMember
+	err := r.DB.Where("user_id=? and project_role_id=? and not deleted and not disabled", userId, roleId).Find(&projects).Error
+	if err != nil {
+		return
+	}
+	for _, project := range projects {
+		projectIds = append(projectIds, project.ProjectId)
+	}
+	return
 }

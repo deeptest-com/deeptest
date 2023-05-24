@@ -9,7 +9,7 @@
             }"
             placeholder="请选择创建人"
             :options="userList"
-            option-label-prop="username"
+            option-label-prop="name"
             :value="formState?.createUser"/>
       </a-form-item>
     </a-col>

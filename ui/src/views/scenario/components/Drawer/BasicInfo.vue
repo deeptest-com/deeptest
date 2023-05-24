@@ -11,16 +11,16 @@
     <a-descriptions :size="'small'" :title="null">
       <a-descriptions-item label="创建人">{{ detailResult?.createUserName }}</a-descriptions-item>
       <a-descriptions-item label="状态">
-        <EditAndShowSelect :label="scenarioStatus.get(detailResult?.status)"
-                           :value="detailResult?.status"
+        <EditAndShowSelect :label="scenarioStatus.get(detailResult?.status) || '未设置'"
+                           :value="detailResult?.status || null"
                            :options="scenarioStatusOptions"
                            @update="(val) => {
                             handleChange('status',val)
                            }"/>
       </a-descriptions-item>
       <a-descriptions-item label="优先级">
-        <EditAndShowSelect :label="scenarioPriority.get(detailResult?.priority)"
-                           :value="detailResult?.priority"
+        <EditAndShowSelect :label="scenarioPriority.get(detailResult?.priority) || '未设置'"
+                           :value="detailResult?.priority || null"
                            :options="priorityOptions"
                            @update="(val) => {
                             handleChange('priority',val)
@@ -41,6 +41,14 @@
                handleChange('categoryId',val)
             }"/>
       </a-descriptions-item>
+      <a-descriptions-item label="测试类型">
+        <EditAndShowSelect :label="testTypeMap.get(detailResult?.type) || '未设置'"
+                           :value="detailResult?.type || null"
+                           :options="testTypeOptions"
+                           @update="(val) => {
+                            handleChange('type',val)
+                           }"/>
+      </a-descriptions-item>
       <a-descriptions-item label="创建时间">{{ momentUtc(detailResult?.createdAt) }}</a-descriptions-item>
       <a-descriptions-item label="最近更新">{{ momentUtc(detailResult?.updatedAt) }}</a-descriptions-item>
     </a-descriptions>
@@ -57,7 +65,9 @@ import {
   scenarioStatus,
   scenarioPriority,
   scenarioStatusOptions,
-  priorityOptions
+  priorityOptions,
+  testTypeMap,
+  testTypeOptions
 } from '@/config/constant';
 import {useStore} from "vuex";
 import {Scenario} from "@/views/Scenario/data";

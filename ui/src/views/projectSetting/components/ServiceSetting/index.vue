@@ -22,11 +22,11 @@
           </template>
           <template #customServers="{ record }">
             <span v-if="record?.servers.length > 0">
-              <span v-for="server in record.servers" :key="server.id">
+              <a-tag v-for="server in record.servers" :key="server.id">
                 {{ server.name || server.description }}
-              </span>
+              </a-tag>
             </span>
-            <span v-else>暂无关联服务</span>
+            <span v-else>---</span>
           </template>
           <template #customStatus="{ text, record }">
             <a-tag :color="record.statusTag">{{ text }}</a-tag>
@@ -97,7 +97,7 @@ const drawerVisible = ref(false);
 const editKey = ref(0);
 const currentTabKey = ref('');
 
-let formConfig = [
+let formConfig = ref([
   {
     type: 'tooltip',
     title: '一个产品服务端通常对应一个或多个服务(微服务)，服务可以有多个版本并行，新的服务默认起始版本为v0.1.0。',
@@ -124,9 +124,9 @@ let formConfig = [
   },
   {
     type: 'button',
-    text: '确定'
+    text: '新建'
   }
-];
+]);
 
 const rules = {
   name: [
@@ -244,13 +244,13 @@ watch(() => {
   return userListOptions.value;
 }, (val: any) => {
   if (val && val.length > 0) {
-    const config = JSON.parse(JSON.stringify(formConfig));
+    const config = JSON.parse(JSON.stringify(formConfig.value));
     config.forEach((e: any) => {
       if (e.type === 'select') {
         e.options = [...val];
       }
     })
-    formConfig = config;
+    formConfig.value = config;
   }
 }, {
   immediate: true

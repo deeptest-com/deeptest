@@ -206,6 +206,12 @@ async function changeBasicInfo(type, value) {
     );
     emit('refreshList');
   }
+  if(type==='type') {
+    await store.dispatch('Scenario/saveScenario',
+        {id: detailResult.value.id, type: value}
+    );
+    emit('refreshList');
+  }
 }
 
 async function cancel() {

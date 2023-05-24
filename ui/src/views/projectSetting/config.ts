@@ -147,6 +147,13 @@ const serviceColumns = [
         width: '100px',
     },
     {
+        title: '描述',
+        dataIndex: 'description',
+        slots: { customRender: 'description' },
+        width: '300px',
+        ellipsis: true
+    },
+    {
         title: '创建人',
         dataIndex: 'createUser',
         width: '100px',

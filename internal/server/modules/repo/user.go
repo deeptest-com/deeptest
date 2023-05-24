@@ -457,7 +457,7 @@ func (r *UserRepo) AddProjectForUser(user *model.SysUser) (project model.Project
 	}
 
 	// create project
-	project = model.Project{ProjectBase: serverDomain.ProjectBase{Name: "默认项目"}}
+	project = model.Project{ProjectBase: serverDomain.ProjectBase{Name: "默认项目", ShortName: "T"}}
 	err = r.DB.Create(&project).Error
 	if err != nil {
 		logUtils.Errorf("添加项目错误", zap.String("错误:", err.Error()))

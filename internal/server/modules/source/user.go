@@ -9,18 +9,19 @@ import (
 )
 
 type UserSource struct {
-	UserRepo *repo2.UserRepo `inject:""`
-	RoleRepo *repo2.RoleRepo `inject:""`
+	UserRepo    *repo2.UserRepo    `inject:""`
+	RoleRepo    *repo2.RoleRepo    `inject:""`
+	ProjectRepo *repo2.ProjectRepo `inject:""`
 }
 
 func NewUserSource() *UserSource {
 	return &UserSource{}
 }
 
-func (s *UserSource) GetSources() ([]v1.UserReq, error) {
+func (s *UserSource) GetSources() ([]v1.UserReq, v1.ProjectReq, error) {
 	roleIds, err := s.RoleRepo.GetRoleIds()
 	if err != nil {
-		return []v1.UserReq{}, err
+		return []v1.UserReq{}, v1.ProjectReq{}, err
 	}
 	users := []v1.UserReq{
 		{
@@ -34,7 +35,10 @@ func (s *UserSource) GetSources() ([]v1.UserReq, error) {
 			},
 		},
 	}
-	return users, nil
+
+	project := v1.ProjectReq{ProjectBase: v1.ProjectBase{Name: "默认项目", AdminId: 1, ShortName: "T"}}
+
+	return users, project, nil
 }
 
 func (s *UserSource) Init() error {
@@ -42,10 +46,14 @@ func (s *UserSource) Init() error {
 		color.Danger.Printf("\n[Mysql] --> %s 表的初始数据已存在!", model.SysUser{}.TableName())
 		return nil
 	}
-	sources, err := s.GetSources()
+	sources, project, err := s.GetSources()
 	if err != nil {
 		return err
 	}
+
+	//创建项目
+	s.ProjectRepo.Create(project, 1)
+
 	for _, source := range sources {
 		if _, err := s.UserRepo.Create(source); err != nil { // 遇到错误时回滚事务
 			return err

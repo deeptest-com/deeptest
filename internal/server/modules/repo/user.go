@@ -240,12 +240,15 @@ func (r *UserRepo) Create(req serverDomain.UserReq) (uint, error) {
 		return 0, err
 	}
 
-	project, err := r.AddProjectForUser(&user)
-	if err != nil {
-		return 0, err
-	}
+	/*
+		project, err := r.AddProjectForUser(&user)
+		if err != nil {
+			return 0, err
+		}
+	*/
 
-	if err := r.AddProfileForUser(&user, project.ID); err != nil {
+	//新用户默认授权默认项目权限
+	if err := r.AddProfileForUser(&user, 1); err != nil {
 		return 0, err
 	}
 

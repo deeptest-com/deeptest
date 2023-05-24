@@ -49,14 +49,6 @@
             <a-switch v-model:checked="modelRef.isRand"
                      @blur="validate('isRand', { trigger: 'blur' }).catch(() => {})"/>
           </a-form-item>
-          <a-form-item label="是否唯一" v-bind="validateInfos.isOnce">
-            <a-switch v-model:checked="modelRef.isOnce"
-                     @blur="validate('isOnce', { trigger: 'blur' }).catch(() => {})"/>
-          </a-form-item>
-          <a-form-item label="是否循环" v-bind="validateInfos.isLoop">
-            <a-switch :disabled="modelRef.isOnce" v-model:checked="modelRef.isLoop"
-                     @blur="validate('isLoop', { trigger: 'blur' }).catch(() => {})"/>
-          </a-form-item>
 
           <a-form-item :wrapper-col="{ span: 16, offset: 4 }">
             <a-button type="primary" @click.prevent="submitForm">保存</a-button>

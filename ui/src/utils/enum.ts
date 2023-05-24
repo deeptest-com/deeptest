@@ -4,8 +4,8 @@ export enum UsedBy {
 }
 
 export enum VarScope {
-    ScopePrivate = "private",
     ScopePublic = "public",
+    ScopePrivate = "private",
 }
 
 export enum WsMsgCategory {

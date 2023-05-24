@@ -29,7 +29,7 @@ func (i *interfaces2debug) Convert() (debugInterface *model.DebugInterface) {
 	debugInterface.Body = i.Body()
 	debugInterface.BodyType = i.BodyType()
 	debugInterface.AuthorizationType, debugInterface.ApiKey, debugInterface.OAuth20, debugInterface.BearerToken, debugInterface.BasicAuth = i.security()
-	//debugInterface.Headers =
+	debugInterface.Params, debugInterface.Headers, debugInterface.Cookies = i.params()
 
 	return
 }
@@ -58,7 +58,16 @@ func (i *interfaces2debug) BodyType() (mediaType consts.HttpContentType) {
 	return
 }
 
-func (i *interfaces2debug) params() (params []model.DebugInterfaceParam) {
+func (i *interfaces2debug) params() (params []model.DebugInterfaceParam, headers []model.DebugInterfaceHeader, cookies []model.DebugInterfaceCookie) {
+	for _, item := range i.Inter.Params {
+		params = append(params, model.DebugInterfaceParam{InterfaceParamBase: model.InterfaceParamBase{Name: item.Name, Value: item.Default}})
+	}
+	for _, item := range i.Inter.Headers {
+		headers = append(headers, model.DebugInterfaceHeader{InterfaceHeaderBase: model.InterfaceHeaderBase{Name: item.Name, Value: item.Default}})
+	}
+	for _, item := range i.Inter.Cookies {
+		cookies = append(cookies, model.DebugInterfaceCookie{InterfaceCookieBase: model.InterfaceCookieBase{Name: item.Name, Value: item.Default}})
+	}
 	return
 }
 

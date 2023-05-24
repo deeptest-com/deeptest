@@ -35,7 +35,7 @@
       <a-descriptions-item label="分类">
         <EditAndShowTreeSelect
             :label="categoryLabel"
-            :value="detailResult?.categoryId"
+            :value="detailResult?.categoryId || -1"
             :treeData="treeData"
             @update="(val) => {
                handleChange('categoryId',val)
@@ -73,7 +73,10 @@ const store = useStore<{ Scenario }>();
 const detailResult: any = computed<Scenario>(() => store.state.Scenario.detailResult);
 const treeDataCategory = computed<any>(() => store.state.Scenario.treeDataCategory);
 const treeData: any = computed(() => {
-  return treeDataCategory.value?.[0]?.children || [];
+  return treeDataCategory.value?.[0]?.children || [{
+    label:'未分类',
+    value:-1,
+  }];
 });
 const categoryLabel = computed(() => {
   if (!detailResult.value?.categoryId) {
@@ -82,7 +85,6 @@ const categoryLabel = computed(() => {
   const data = treeDataCategory.value?.[0]?.children || [];
   let label = "";
   let hasFind = false;
-
   // 递归查找目录树的文案
   function fn(arr: any) {
     if (!Array.isArray(arr)) {
@@ -99,7 +101,6 @@ const categoryLabel = computed(() => {
       }
     }
   }
-
   fn(data);
   return label;
 });

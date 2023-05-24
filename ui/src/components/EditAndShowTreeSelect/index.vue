@@ -11,7 +11,7 @@
           @treeExpand="treeExpand"
           :replaceFields="{ title: 'name',value:'id'}"
           :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
-          placeholder="请选择所属分类"
+          placeholder="请选择"
           allow-clear/>
   </div>
   <div :class="['editor', customClass]" v-else>

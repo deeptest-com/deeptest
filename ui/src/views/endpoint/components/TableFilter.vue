@@ -1,6 +1,6 @@
 <template>
-  <a-row type="flex" :gutter="16" justify="space-between" >
-    <a-col :span="8">
+  <a-form :layout="'inline'">
+    <a-space :size="16">
       <a-form-item label="创建人" style="margin-bottom: 0;">
         <a-select
             allowClear
@@ -10,12 +10,12 @@
             placeholder="请选择创建人"
             :options="userList"
             option-label-prop="name"
+            style="width: 200px;"
             :value="formState?.createUser"/>
       </a-form-item>
-    </a-col>
-    <a-col :span="8">
       <a-form-item label="状态" style="margin-bottom: 0;">
         <a-select
+            style="width: 150px;"
             allowClear
             @change="(e) => {
               handleFilterChange('status',e);
@@ -24,21 +24,21 @@
             placeholder="请选择状态"
             :options="endpointStatusOpts"/>
       </a-form-item>
-    </a-col>
-    <a-col :span="8">
-      <a-input-search
-          style="display: flex;justify-content: end;"
-          placeholder="请输入关键词"
-          enter-button
-          :value="formState?.title"
-          @change="(e) => {
+      <a-form-item :label="null">
+        <a-input-search
+            style="display: flex;justify-content: end;width: 250px;"
+            placeholder="请输入关键词"
+            enter-button
+            :value="formState?.title"
+            @change="(e) => {
               handleFilterChange('title',e);
             }"
-          @search="async () => {
+            @search="async () => {
             await handleFilter()
           }"/>
-    </a-col>
-  </a-row>
+      </a-form-item>
+    </a-space>
+  </a-form>
 </template>
 
 <script lang="ts" setup>

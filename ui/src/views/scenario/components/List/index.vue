@@ -52,10 +52,15 @@
                           @edit="editScenario(record,'1')"/>
       </template>
 
-<!--      <template #desc="{ record ,text }">
-        <EditAndShowField :placeholder="'请输入描述'" :value="text || '暂无'"
-                          @update="(val) => {handleUpdateDesc(text,record)}"/>
-      </template>-->
+      <template #type="{ record }">
+        <div>
+          <EditAndShowSelect
+              :label="testTypeMap.get(record?.type)"
+              :value="record?.type || null"
+              :options="testTypeOptions"
+              @update="(val) => { handleUpdateType(val,record);}"/>
+        </div>
+      </template>
 
       <template #updatedAt="{ record }">
         <span>{{ momentUtc(record.updatedAt) }}</span>
@@ -65,7 +70,7 @@
         <div class="customStatusColRender">
           <EditAndShowSelect
               :label="scenarioStatus.get(record?.status)"
-              :value="record?.status"
+              :value="record?.status || null"
               :options="scenarioStatusOptions"
               @update="(val) => { handleChangeStatus(val,record);}"/>
         </div>
@@ -75,7 +80,7 @@
         <div class="customStatusColRender">
           <EditAndShowSelect
               :label="record?.priority"
-              :value="record?.priority"
+              :value="record?.priority || null"
               :options="priorityOptions"
               @update="(val) => { handleChangePriority(val,record)}"/>
         </div>
@@ -148,8 +153,9 @@ import {
   scenarioStatus,
   scenarioStatusOptions,
   priorityOptions,
-  testTypeOptions
-} from "@/config/constant"
+  testTypeOptions,
+  testTypeMap,
+} from "@/config/constant";
 import {ExclamationCircleOutlined} from '@ant-design/icons-vue';
 import EditAndShowSelect from '@/components/EditAndShowSelect/index.vue';
 
@@ -263,7 +269,7 @@ const drawerVisible = ref<boolean>(false);
 // 执行抽屉打开
 const execVisible = ref<boolean>(false);
 const selectEnvVisible = ref<boolean>(false);
-const selectedExecScenario:any = ref(null);
+const selectedExecScenario: any = ref(null);
 // 抽屉里的tab key
 const drawerTabKey: any = ref<string>('1');
 
@@ -319,6 +325,13 @@ async function handleUpdateDesc(value: string, record: any) {
   await refreshList();
 }
 
+async function handleUpdateType(value: string, record: any) {
+  await store.dispatch('Scenario/saveScenario',
+      {id: record.id, type: value}
+  );
+  await refreshList();
+}
+
 // 关闭弹框时，重新拉取列表数据,
 // 关闭抽屉时，重新拉取列表数据,快捷更新字段也会重新拉取列表数据
 async function refreshList() {
@@ -348,12 +361,13 @@ const columns = [
     ellipsis: true,
     width: '200px',
   },
-  // {
-  //   title: '描述',
-  //   dataIndex: 'desc',
-  //   ellipsis: true,
-  //   slots: {customRender: 'desc'},
-  // },
+  {
+    title: '测试类型',
+    dataIndex: 'type',
+    ellipsis: true,
+    width: 120,
+    slots: {customRender: 'type'},
+  },
   {
     title: '状态',
     dataIndex: 'status',
@@ -395,9 +409,10 @@ onMounted(() => {
 </script>
 
 <style lang="less" scoped>
-.scenario-list-main{
+.scenario-list-main {
   //min-width: 1000px;
 }
+
 .filter-header {
   display: flex;
   align-items: center;

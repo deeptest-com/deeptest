@@ -7,7 +7,7 @@
         @change="updateField"
         v-on-click-outside="cancelEdit"
         @dropdownVisibleChange="dropdownVisibleChange"
-        placeholder="请修改接口状态"
+        placeholder="请选择"
         :options="options">
     </a-select>
   </div>

@@ -136,7 +136,7 @@ const serviceColumns = [
         ellipsis: true
     },
     {
-        title: '关联服务',
+        title: '关联环境',
         dataIndex: 'servers',
         slots: { customRender: 'customServers' },
     },

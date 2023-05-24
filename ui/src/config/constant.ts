@@ -1278,4 +1278,7 @@ export const testTypeOptions = [
     },
 ];
 
+export const testTypeMap = new Map([['api_test', '接口测试'],['performance_test', '性能测试'], ['smoke_test', '冒烟测试']]);
+
+
 

@@ -92,6 +92,10 @@ func (c *EndpointCtrl) requestParser(req serverDomain.EndpointReq) (endpoint mod
 		req.CategoryId = -1
 	}
 
+	if req.Status == 0 {
+		req.Status = 1
+	}
+
 	copier.CopyWithOption(&endpoint, &req, copier.Option{IgnoreEmpty: true, DeepCopy: true})
 	return
 }

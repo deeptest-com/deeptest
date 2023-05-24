@@ -61,10 +61,12 @@ func (s *ServeService) GetById(id uint) (res model.Serve) {
 }
 
 func (s *ServeService) DeleteById(id uint) (err error) {
-	err = s.canDelete(id)
-	if err != nil {
-		return err
-	}
+	/*
+		err = s.canDelete(id)
+		if err != nil {
+			return err
+		}
+	*/
 	err = s.ServeRepo.DeleteById(id)
 	return
 }

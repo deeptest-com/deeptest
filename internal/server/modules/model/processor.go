@@ -17,7 +17,6 @@ type Processor struct {
 	ParentId   uint `json:"parentId"`
 	ScenarioId uint `json:"scenarioId"`
 	ProjectId  uint `json:"projectId"`
-	UseID      uint `json:"useId"`
 
 	EntityCategory      consts.ProcessorCategory `json:"entityCategory"`
 	EntityType          consts.ProcessorType     `json:"entityType"`

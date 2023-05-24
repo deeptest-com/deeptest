@@ -143,17 +143,19 @@ func (r *ScenarioRepo) Create(scenario model.Scenario) (ret model.Scenario, bizE
 }
 
 func (r *ScenarioRepo) Update(req model.Scenario) error {
-	values := map[string]interface{}{
-		"name":             req.Name,
-		"desc":             req.Desc,
-		"disabled":         req.Disabled,
-		"create_user_id":   req.CreateUserId,
-		"create_user_name": req.CreateUserName,
-		"priority":         req.Priority,
-		"type":             req.Type,
-		"status":           req.Status,
-	}
-	err := r.DB.Model(&req).Where("id = ?", req.ID).Updates(values).Error
+	/*
+		values := map[string]interface{}{
+			"name":             req.Name,
+			"desc":             req.Desc,
+			"disabled":         req.Disabled,
+			"create_user_id":   req.CreateUserId,
+			"create_user_name": req.CreateUserName,
+			"priority":         req.Priority,
+			"type":             req.Type,
+			"status":           req.Status,
+		}
+	*/
+	err := r.DB.Model(&req).Where("id = ?", req.ID).Updates(req).Error
 	if err != nil {
 		logUtils.Errorf("update scenario error", zap.String("error:", err.Error()))
 		return err

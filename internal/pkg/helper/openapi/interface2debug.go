@@ -29,6 +29,7 @@ func (i *interfaces2debug) Convert() (debugInterface *model.DebugInterface) {
 	debugInterface.Body = i.Body()
 	debugInterface.BodyType = i.BodyType()
 	debugInterface.AuthorizationType, debugInterface.ApiKey, debugInterface.OAuth20, debugInterface.BearerToken, debugInterface.BasicAuth = i.security()
+	//debugInterface.Headers =
 
 	return
 }
@@ -57,8 +58,8 @@ func (i *interfaces2debug) BodyType() (mediaType consts.HttpContentType) {
 	return
 }
 
-func (i *interfaces2debug) params() {
-
+func (i *interfaces2debug) params() (params []model.DebugInterfaceParam) {
+	return
 }
 
 func (i *interfaces2debug) security() (authorizationType string, apiKey model.DebugInterfaceApiKey, oAuth20 model.DebugInterfaceOAuth20, bearerToken model.DebugInterfaceBearerToken, basicAuth model.DebugInterfaceBasicAuth) {

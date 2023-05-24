@@ -9,9 +9,9 @@
     wrapClassName="modal-tree-selection"
     width="1000px">
     <div class="interface-selection-main">
-<!--      <div class="left tree">-->
-<!--        <Tree :selectCategory="selectCategory"/>-->
-<!--      </div>-->
+      <div class="left tree">
+        <Tree :selectCategory="selectCategory"/>
+      </div>
       <div class="right">
         <List :selectInterface="onSelectInterface"></List>
       </div>
@@ -21,7 +21,6 @@
       <a-button @click="onSubmit" type="primary">确定</a-button>
     </template>
   </a-modal>
-
 </template>
 
 <script setup lang="ts">
@@ -47,7 +46,7 @@ const interfaceIds = ref([])
 
 const selectCategory = async (id) => {
   console.log('selectCategory', id)
-  categoryId.value = id
+  categoryId.value = id;
 }
 
 const onSelectInterface = async (ids) => {

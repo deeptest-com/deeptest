@@ -80,16 +80,9 @@ import {message, Modal} from 'ant-design-vue';
 import CreateCategoryModal from '@/components/CreateCategoryModal/index.vue'
 import {DropEvent} from 'ant-design-vue/es/tree/Tree';
 import {useStore} from "vuex";
-import {StateType as EndpointStateType} from "@/views/endpoint/store";
 import {StateType as ProjectStateType} from "@/store/project";
 import {setSelectedKey} from "@/utils/cache";
 import {StateType as ScenarioStateType} from "@/views/scenario/store";
-
-// const store = useStore<{ Endpoint: EndpointStateType, ProjectGlobal: ProjectStateType }>();
-// const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
-// const treeDataCategory = computed<any>(() => store.state.Endpoint.treeDataCategory);
-// const treeDataMapCategory = computed<any>(() => store.state.Endpoint.treeDataMapCategory);
-// const createTagModalvisible = ref(false);
 
 const store = useStore<{ Scenario: ScenarioStateType, ProjectGlobal: ProjectStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
@@ -134,6 +127,7 @@ const treeData: any = computed(() => {
     children.push({
       id: -1,
       key: -1,
+      value: -1,
       title: '未分类',
       name: '未分类',
       parentId: data[0]?.id,
@@ -231,15 +225,20 @@ function expandAll() {
 let selectedKeys = ref<number[]>([]);
 const emit = defineEmits(['select']);
 
-function selectTreeItem(keys, e) {
+async function selectTreeItem(keys, e) {
   selectedKeys.value = keys;
+  const nodeVal = selectedKeys.value?.[0];
   // 前端缓存选中的节点
-  setSelectedKey('category-scenario', currProject.value.id, selectedKeys.value[0])
+  await setSelectedKey('category-scenario', currProject.value.id, selectedKeys.value[0])
   // 如果没有选中的节点，就默认选中根节点
-  emit('select', selectedKeys.value?.[0] ? selectedKeys.value[0] : null);
+  emit('select', nodeVal ? selectedKeys.value[0] : null);
   const selectedData = treeDataMapCategory.value[selectedKeys.value[0]]
   // 选中节点后，需要将选中节点的数据存入 store
-  store.dispatch('Scenario/getCategoryNode', selectedData);
+  if(nodeVal !== -1){
+   await store.dispatch('Scenario/getCategoryNode', selectedData);
+  }else {
+    await store.commit('Scenario/setNodeCategory', {id: -1, name: '未分类', children: []});
+  }
 }
 
 const currentNode = ref(null);

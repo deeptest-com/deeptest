@@ -23,8 +23,9 @@
 import {
   defineProps,
   defineEmits,
-  ref, watch, onMounted, onUnmounted,
+  ref, watch,
 } from 'vue';
+import { message } from 'ant-design-vue';
 import {
   EditOutlined,
   CheckOutlined,
@@ -52,6 +53,7 @@ const emit = defineEmits(['update', 'edit']);
 
 function updateField() {
   if (!fieldValue.value) {
+    message.warning('请请输入内容');
     return;
   }
   emit('update', fieldValue.value);

@@ -4,7 +4,6 @@
       <div class="left">
         <a-space :size="16">
           <a-button type="primary" @click="() => edit(0)">新建场景</a-button>
-          <!--  <a-button  :disabled="true" @click="() => edit(0)">批量操作</a-button>-->
         </a-space>
       </div>
       <div class="right">

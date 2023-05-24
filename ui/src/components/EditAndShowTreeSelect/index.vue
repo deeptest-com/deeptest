@@ -29,7 +29,6 @@ import {
   EditOutlined,
 } from '@ant-design/icons-vue';
 import { vOnClickOutside } from '@vueuse/components';
-import {valueAccordingPercent} from "handsontable/helpers";
 const isEditing:any = ref(false);
 const fieldValue:any = ref('');
 const props = defineProps({

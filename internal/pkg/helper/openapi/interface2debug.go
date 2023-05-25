@@ -22,7 +22,9 @@ func (i *interfaces2debug) Convert() (debugInterface *model.DebugInterface) {
 
 	copier.CopyWithOption(debugInterface, &i.Inter, copier.Option{DeepCopy: true})
 
-	//for _, param := range i.Inter.Params {
+	//endpoint := model.Endpoint{}
+	//for _, param := range endpoint.PathParams {
+	//
 	//}
 
 	debugInterface.ID = 0

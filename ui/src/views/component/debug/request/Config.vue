@@ -5,28 +5,28 @@
         <QueryParameters v-if="activeKey === '1'"></QueryParameters>
       </a-tab-pane>
 
-      <a-tab-pane key="1" tab="路径参数">
-        <PathParameters v-if="activeKey === '1'"></PathParameters>
+      <a-tab-pane key="2" tab="路径参数">
+        <PathParameters v-if="activeKey === '2'"></PathParameters>
       </a-tab-pane>
 
-      <a-tab-pane key="2" tab="请求体">
-        <RequestBody v-if="activeKey === '2'"></RequestBody>
+      <a-tab-pane key="3" tab="请求体">
+        <RequestBody v-if="activeKey === '3'"></RequestBody>
       </a-tab-pane>
 
-      <a-tab-pane key="3" tab="请求头">
-        <RequestHeaders v-if="activeKey === '3'"></RequestHeaders>
+      <a-tab-pane key="4" tab="请求头">
+        <RequestHeaders v-if="activeKey === '4'"></RequestHeaders>
       </a-tab-pane>
 
-      <a-tab-pane key="4" tab="授权">
-        <Authorization v-if="activeKey === '4'"></Authorization>
+      <a-tab-pane key="5" tab="授权">
+        <Authorization v-if="activeKey === '5'"></Authorization>
       </a-tab-pane>
 
-      <a-tab-pane key="5" tab="预处理">
-        <PreRequestScript v-if="activeKey === '5'"></PreRequestScript>
+      <a-tab-pane key="6" tab="预处理">
+        <PreRequestScript v-if="activeKey === '6'"></PreRequestScript>
       </a-tab-pane>
 
-      <!--      <a-tab-pane key="6" tab="验证">
-              <ValidationScript v-if="activeKey === '6'"></ValidationScript>
+      <!--      <a-tab-pane key="7" tab="验证">
+              <ValidationScript v-if="activeKey === '7'"></ValidationScript>
             </a-tab-pane>-->
     </a-tabs>
   </div>

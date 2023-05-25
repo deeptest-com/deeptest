@@ -9,12 +9,13 @@ import (
 )
 
 type interfaces2debug struct {
-	Inter model.EndpointInterface
-	Serve model.Serve
+	Inter    model.EndpointInterface
+	Endpoint model.Endpoint
+	Serve    model.Serve
 }
 
-func NewInterfaces2debug(inter model.EndpointInterface, serve model.Serve) *interfaces2debug {
-	return &interfaces2debug{Inter: inter, Serve: serve}
+func NewInterfaces2debug(inter model.EndpointInterface, endpoint model.Endpoint, serve model.Serve) *interfaces2debug {
+	return &interfaces2debug{Inter: inter, Endpoint: endpoint, Serve: serve}
 }
 
 func (i *interfaces2debug) Convert() (debugInterface *model.DebugInterface) {
@@ -22,10 +23,15 @@ func (i *interfaces2debug) Convert() (debugInterface *model.DebugInterface) {
 
 	copier.CopyWithOption(debugInterface, &i.Inter, copier.Option{DeepCopy: true})
 
-	//endpoint := model.Endpoint{}
-	//for _, param := range endpoint.PathParams {
-	//
-	//}
+	for _, param := range i.Endpoint.PathParams {
+		debugInterfaceParam := model.DebugInterfaceParam{
+			InterfaceParamBase: model.InterfaceParamBase{
+				Name:  param.Name,
+				Value: param.Value,
+			},
+		}
+		debugInterface.PathParams = append(debugInterface.PathParams, debugInterfaceParam)
+	}
 
 	debugInterface.ID = 0
 

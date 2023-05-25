@@ -159,7 +159,7 @@ func (s *DebugInterfaceService) SetProps(
 	debugData.EndpointInterfaceId = endpointInterface.ID
 
 	if debugInterfacePo == nil {
-		interfaces2debug := openapi.NewInterfaces2debug(endpointInterface, serve)
+		interfaces2debug := openapi.NewInterfaces2debug(endpointInterface, endpoint, serve)
 		debugInterfacePo = interfaces2debug.Convert()
 
 		debugInterfacePo.Name = fmt.Sprintf("%s - %s", endpoint.Title, debugInterfacePo.Method)

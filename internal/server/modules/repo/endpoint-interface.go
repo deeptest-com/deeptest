@@ -28,13 +28,17 @@ func (r *EndpointInterfaceRepo) Paginate(req v1.EndpointInterfaceReqPaginate) (r
 
 	var count int64
 	db := r.DB.Model(&model.EndpointInterface{}).
-		Where("project_id = ? AND NOT deleted AND NOT disabled", req.ProjectId)
+		Joins("LEFT JOIN biz_endpoint e ON biz_endpoint_interface.endpoint_id=e.id").
+		Where("biz_endpoint_interface.project_id = ? AND NOT biz_endpoint_interface.deleted AND NOT biz_endpoint_interface.disabled", req.ProjectId)
 
 	if req.Keywords != "" {
-		db = db.Where("name LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords))
+		db = db.Where("biz_endpoint_interface.name LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords))
+	}
+	if req.ServeId != 0 {
+		db = db.Where("e.serve_id = ?", req.ServeId)
 	}
 
-	db = db.Order("created_at desc")
+	db = db.Order("biz_endpoint_interface.created_at desc")
 	err = db.Count(&count).Error
 	if err != nil {
 		logUtils.Errorf("count error %s", err.Error())

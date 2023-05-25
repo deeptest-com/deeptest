@@ -11,6 +11,7 @@ import (
 
 type SummaryDetailsService struct {
 	SummaryDetailsRepo *repo.SummaryDetailsRepo `inject:""`
+	UserRepo           *repo.UserRepo           `inject:""`
 }
 
 func NewSummaryDetailsService() *SummaryDetailsService {
@@ -62,11 +63,15 @@ func (s *SummaryDetailsService) Details(userId int64) (res v1.ResSummaryDetail, 
 	//查询所有项目信息
 	allProjectsInfo, err := s.FindAllProjectInfo()
 	//组装返回的json结构体
-	res.ProjectList, res.UserProjectList, err = s.HandleSummaryDetails(userProjectIds, allDetails, allProjectsInfo)
+	res.ProjectList, res.UserProjectList, err = s.HandleSummaryDetails(userId, userProjectIds, allDetails, allProjectsInfo)
 	return
 }
 
-func (s *SummaryDetailsService) HandleSummaryDetails(userProjectIds []int64, allDetails map[int64]model.SummaryDetails, allProjectsInfo []model.SummaryProjectInfo) (resAllDetails []v1.ResSummaryDetails, resUserDetails []v1.ResSummaryDetails, err error) {
+func (s *SummaryDetailsService) HandleSummaryDetails(userId int64, userProjectIds []int64, allDetails map[int64]model.SummaryDetails, allProjectsInfo []model.SummaryProjectInfo) (resAllDetails []v1.ResSummaryDetails, resUserDetails []v1.ResSummaryDetails, err error) {
+	isAdminUser, err := s.UserRepo.IsAdminUser(uint(userId))
+	if err != nil {
+		return
+	}
 	projectsBugCount, err := s.CountBugsGroupByProjectId()
 	projectsUsers, err := s.FindAllUserIdAndNameOfProject()
 	projectsUserListGroupByProject := s.LetUsersGroupByProjectId(allProjectsInfo, projectsUsers)
@@ -83,9 +88,8 @@ func (s *SummaryDetailsService) HandleSummaryDetails(userProjectIds []int64, all
 
 		//当前项目如果是用户参与的项目，则添加到resUserDetails中
 		for userProjectIdsIndex, id := range userProjectIds {
-			if int64(projectInfo.ID) == id {
+			if int64(projectInfo.ID) == id || isAdminUser {
 				resDetail.Id = uint(userProjectIdsIndex + 1)
-				resDetail.Accessible = 1
 				resDetail.Accessible = 1
 				resUserDetails = append(resUserDetails, resDetail)
 				break

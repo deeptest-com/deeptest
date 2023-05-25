@@ -256,12 +256,21 @@ func (r *ProjectRepo) GetChildrenIds(id uint) (ids []int, err error) {
 }
 
 func (r *ProjectRepo) ListProjectByUser(userId uint) (projects []model.ProjectMemberRole, err error) {
-	err = r.DB.Model(&model.ProjectMember{}).
+	isAdminUser, err := r.UserRepo.IsAdminUser(userId)
+	if err != nil {
+		return
+	}
+
+	db := r.DB.Model(&model.ProjectMember{}).
 		Joins("LEFT JOIN biz_project p ON biz_project_member.project_id=p.id").
 		Joins("LEFT JOIN biz_project_role r ON biz_project_member.project_role_id=r.id").
 		Select("p.*, r.id role_id, r.name role_name").
-		Where("biz_project_member.user_id = ? AND NOT biz_project_member.deleted", userId).
-		Find(&projects).Error
+		Where("NOT biz_project_member.deleted")
+
+	if !isAdminUser {
+		db.Where("biz_project_member.user_id = ?", userId)
+	}
+	err = db.Group("biz_project_member.project_id").Find(&projects).Error
 	return
 }
 

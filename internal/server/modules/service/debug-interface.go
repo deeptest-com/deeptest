@@ -169,7 +169,7 @@ func (s *DebugInterfaceService) SetProps(
 	debugData.EndpointInterfaceId = endpointInterface.ID // reset
 
 	debugData.Headers = append(debugData.Headers, domain.Header{Name: "", Value: ""})
-	debugData.Params = append(debugData.Params, domain.Param{Name: "", Value: ""})
+	debugData.QueryParams = append(debugData.QueryParams, domain.Param{Name: "", Value: ""})
 	debugData.BodyFormData = append(debugData.BodyFormData, domain.BodyFormDataItem{
 		Name: "", Value: "", Type: consts.FormDataTypeText})
 	debugData.BodyFormUrlencoded = append(debugData.BodyFormUrlencoded, domain.BodyFormUrlEncodedItem{

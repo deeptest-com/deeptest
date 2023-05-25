@@ -103,7 +103,7 @@ func replaceParams(req *domain.BaseRequest, usedBy consts.UsedBy) {
 	if usedBy == consts.ScenarioDebug {
 		for _, v := range ExecScene.GlobalParams {
 			if v.In == consts.ParamInQuery {
-				req.Params = append(req.Params, domain.Param{
+				req.QueryParams = append(req.QueryParams, domain.Param{
 					Name:  v.Name,
 					Value: v.DefaultValue,
 				})
@@ -111,15 +111,15 @@ func replaceParams(req *domain.BaseRequest, usedBy consts.UsedBy) {
 		}
 	}
 
-	for idx, param := range req.Params {
-		req.Params[idx].Value = ReplaceVariableValue(param.Value)
+	for idx, param := range req.QueryParams {
+		req.QueryParams[idx].Value = ReplaceVariableValue(param.Value)
 	}
 }
 func replaceHeaders(req *domain.BaseRequest, usedBy consts.UsedBy) {
 	if usedBy == consts.ScenarioDebug {
 		for _, v := range ExecScene.GlobalParams {
 			if v.In == consts.ParamInHeader {
-				req.Params = append(req.Params, domain.Param{
+				req.QueryParams = append(req.QueryParams, domain.Param{
 					Name:  v.Name,
 					Value: v.DefaultValue,
 				})

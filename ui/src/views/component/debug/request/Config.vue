@@ -2,7 +2,11 @@
   <div class="config-main">
     <a-tabs v-model:activeKey="activeKey" :animated="false">
       <a-tab-pane key="1" tab="查询参数">
-        <RequestParameters v-if="activeKey === '1'"></RequestParameters>
+        <QueryParameters v-if="activeKey === '1'"></QueryParameters>
+      </a-tab-pane>
+
+      <a-tab-pane key="1" tab="路径参数">
+        <PathParameters v-if="activeKey === '1'"></PathParameters>
       </a-tab-pane>
 
       <a-tab-pane key="2" tab="请求体">
@@ -34,7 +38,9 @@ import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import {Methods, UsedBy} from "@/utils/enum";
 
-import RequestParameters from "./config/Parameters.vue";
+import QueryParameters from "./config/QueryParameters.vue";
+import PathParameters from "./config/PathParameters.vue";
+
 import RequestBody from "./config/Body.vue";
 import RequestHeaders from "./config/Headers.vue";
 import Authorization from "./config/Authorization.vue";

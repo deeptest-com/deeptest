@@ -75,7 +75,7 @@ func gets(req domain.BaseRequest, method consts.HttpMethod, readRespData bool) (
 	reqUrl := commUtils.RemoveLeftVariableSymbol(req.Url)
 
 	var reqParams []domain.Param
-	for _, p := range req.Params {
+	for _, p := range req.QueryParams {
 		if p.Name != "" {
 			reqParams = append(reqParams, p)
 		}
@@ -183,7 +183,7 @@ func posts(req domain.BaseRequest, method consts.HttpMethod, readRespData bool) 
 	reqUrl := commUtils.RemoveLeftVariableSymbol(req.Url)
 
 	var reqParams []domain.Param
-	for _, p := range req.Params {
+	for _, p := range req.QueryParams {
 		if p.Name != "" {
 			reqParams = append(reqParams, p)
 		}

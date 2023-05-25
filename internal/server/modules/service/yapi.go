@@ -62,8 +62,8 @@ func getYapiCatMenu(yapiHost, token string) (yapiCatMenu YapiCatMenu) {
 	param = append(param, tokenParam)
 
 	req := domain.BaseRequest{
-		Url:    yapiHost + "/api/interface/getCatMenu",
-		Params: param,
+		Url:         yapiHost + "/api/interface/getCatMenu",
+		QueryParams: param,
 	}
 	resp, err := httpHelper.Get(req)
 	if err != nil {
@@ -95,8 +95,8 @@ func (s *YapiService) GetYapiMenuInterfaceList(yapiHost, token, catid string) (y
 	param = append(param, limitParam)
 
 	req := domain.BaseRequest{
-		Url:    yapiHost + "/api/interface/list_cat",
-		Params: param,
+		Url:         yapiHost + "/api/interface/list_cat",
+		QueryParams: param,
 	}
 	resp, err := httpHelper.Get(req)
 	if err != nil {
@@ -124,8 +124,8 @@ func (s *YapiService) GetYapiInterface(yapiHost, token, interfaceId string) (ret
 		Value: interfaceId}
 	param = append(param, interfaceIdParam)
 	req := domain.BaseRequest{
-		Url:    yapiHost + "/api/interface/get",
-		Params: param,
+		Url:         yapiHost + "/api/interface/get",
+		QueryParams: param,
 	}
 	resp, err := httpHelper.Get(req)
 	if err != nil {
@@ -150,7 +150,7 @@ func (s *YapiService) YapiInterfaceInfoToInterf(ret domain.DebugResponse) (inter
 	//interf.Method = getMethod(yapiRes.Data.Method)
 	//interf.BodyType = getReqBodyType(yapiRes.Data.ReqBodyType)
 	//interf.Body = getReqBodyOther(yapiRes.Data.ReqBodyOther)
-	//interf.Params = getReqParams(yapiRes.Data.ReqQuery)
+	//interf.QueryParams = getReqParams(yapiRes.Data.ReqQuery)
 	//interf.Headers = getReqHeaders(yapiRes.Data.ReqHeaders)
 	//interf.BodyFormData = getReqBodyForm(yapiRes.Data.ReqBodyForm)
 	return

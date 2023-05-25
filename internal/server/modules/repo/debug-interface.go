@@ -92,7 +92,7 @@ func (r *DebugInterfaceRepo) GetDetail(interfId uint) (interf model.DebugInterfa
 	if interfId > 0 {
 		interf, err = r.Get(interfId)
 
-		interf.Params, _ = r.ListParams(interfId)
+		interf.QueryParams, _ = r.ListParams(interfId)
 		interf.Headers, _ = r.ListHeaders(interfId)
 		interf.BodyFormData, _ = r.ListBodyFormData(interfId)
 		interf.BodyFormUrlencoded, _ = r.ListBodyFormUrlencoded(interfId)
@@ -113,7 +113,7 @@ func (r *DebugInterfaceRepo) Save(interf *model.DebugInterface) (err error) {
 			return err
 		}
 
-		err = r.UpdateParams(interf.ID, interf.Params)
+		err = r.UpdateParams(interf.ID, interf.QueryParams)
 		if err != nil {
 			return err
 		}
@@ -501,7 +501,7 @@ func (r *DebugInterfaceRepo) SaveInterfaces(interf *model.DebugInterface) (err e
 			return err
 		}
 
-		err = r.UpdateParams(interf.ID, interf.Params)
+		err = r.UpdateParams(interf.ID, interf.QueryParams)
 		if err != nil {
 			return err
 		}
@@ -531,7 +531,7 @@ func (r *DebugInterfaceRepo) GetByEndpointId(endpointId uint, version string) (i
 
 	interfaces, err = r.GetEndpointId(endpointId, version)
 	for key, interf := range interfaces {
-		interfaces[key].Params, _ = r.ListParams(interf.ID)
+		interfaces[key].QueryParams, _ = r.ListParams(interf.ID)
 		interfaces[key].Headers, _ = r.ListHeaders(interf.ID)
 		interfaces[key].Cookies, _ = r.ListCookies(interf.ID)
 	}
@@ -586,7 +586,7 @@ func (r *DebugInterfaceRepo) HasDebugInterfaceRecord(endpointInterfaceId uint) (
 }
 
 func (r *DebugInterfaceRepo) SetProps(po *model.DebugInterface) (err error) {
-	po.Params, _ = r.ListParams(po.ID)
+	po.QueryParams, _ = r.ListParams(po.ID)
 	po.Headers, _ = r.ListHeaders(po.ID)
 	po.BodyFormData, _ = r.ListBodyFormData(po.ID)
 	po.BodyFormUrlencoded, _ = r.ListBodyFormUrlencoded(po.ID)

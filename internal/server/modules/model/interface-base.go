@@ -34,11 +34,11 @@ type InterfaceBase struct {
 }
 
 type InterfaceParamBase struct {
-	Name        string `json:"name"`
-	Value       string `json:"value"`
-	Type        string `json:"type"`
-	Desc        string `json:"desc"`
-	InterfaceId uint   `json:"interfaceId"`
+	Name        string         `json:"name"`
+	Value       string         `json:"value"`
+	ParamIn     consts.ParamIn `json:"paramIn"`
+	Desc        string         `json:"desc"`
+	InterfaceId uint           `json:"interfaceId"`
 }
 
 type InterfaceBodyFormDataItemBase struct {

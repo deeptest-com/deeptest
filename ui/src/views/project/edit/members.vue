@@ -164,6 +164,7 @@ const invite = () => {
 onMounted(() => {
   console.log("onMounted");
   getMembers(1);
+  getRoles()
 });
 
 const initState: StateType = {

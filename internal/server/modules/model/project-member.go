@@ -15,3 +15,9 @@ type ProjectMember struct {
 func (ProjectMember) TableName() string {
 	return "biz_project_member"
 }
+
+type ProjectMemberRole struct {
+	Project
+	RoleId   uint            `gorm:"role_id" json:"roleId"`
+	RoleName consts.RoleType `gorm:"role_name" json:"roleName"`
+}

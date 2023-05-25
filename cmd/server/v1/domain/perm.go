@@ -25,3 +25,8 @@ type PermBase struct {
 	Description string `gorm:"type:varchar(256)" json:"description"`
 	Act         string `gorm:"index:perm_index;type:varchar(50)" json:"act" validate:"required"`
 }
+
+type PermStruct struct {
+	Name string `json:"name"`
+	Act  string `json:"act"`
+}

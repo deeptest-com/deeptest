@@ -19,6 +19,7 @@ type ScenarioRepo struct {
 	DB          *gorm.DB     `inject:""`
 	BaseRepo    *BaseRepo    `inject:""`
 	ProjectRepo *ProjectRepo `inject:""`
+	PlanRepo    *PlanRepo    `inject:""`
 }
 
 func NewScenarioRepo() *ScenarioRepo {
@@ -301,6 +302,8 @@ func (r *ScenarioRepo) PlanList(req v1.ScenarioPlanReqPaginate, scenarioId int) 
 		return
 	}
 
+	r.PlanRepo.CombinePassRate(plans)
+	r.PlanRepo.CombineUserName(plans)
 	data.Populate(plans, count, req.Page, req.PageSize)
 
 	return

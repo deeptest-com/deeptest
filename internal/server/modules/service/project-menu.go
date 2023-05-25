@@ -9,6 +9,7 @@ type ProjectMenuService struct {
 	ProjectRepo     *repo.ProjectRepo     `inject:""`
 	ProjectMenuRepo *repo.ProjectMenuRepo `inject:""`
 	ProjectRoleRepo *repo.ProjectRoleRepo `inject:""`
+	UserRepo        *repo.UserRepo        `inject:""`
 }
 
 func NewProjectMenuService() *ProjectMenuService {
@@ -16,10 +17,25 @@ func NewProjectMenuService() *ProjectMenuService {
 }
 
 func (s *ProjectMenuService) GetUserMenuList(projectId, userId uint) (ret []model.ProjectMenu, err error) {
-	projectMemberRole, err := s.ProjectRepo.FindRolesByProjectAndUser(projectId, userId)
+	var roleId uint
+	isAdminUser, err := s.UserRepo.IsAdminUser(userId)
 	if err != nil {
 		return
 	}
 
-	return s.ProjectMenuRepo.GetRoleMenuList(projectMemberRole.ProjectRoleId)
+	if isAdminUser {
+		adminProjectRole, err := s.ProjectRoleRepo.GetAdminRecord()
+		if err != nil {
+			return ret, err
+		}
+		roleId = adminProjectRole.ID
+	} else {
+		projectMemberRole, err := s.ProjectRepo.FindRolesByProjectAndUser(projectId, userId)
+		if err != nil {
+			return ret, err
+		}
+		roleId = projectMemberRole.ProjectRoleId
+	}
+
+	return s.ProjectMenuRepo.GetRoleMenuList(roleId)
 }

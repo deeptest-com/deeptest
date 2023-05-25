@@ -25,11 +25,14 @@ type ScenarioReportRepo struct {
 func (r *ScenarioReportRepo) Paginate(req v1.ReportReqPaginate) (data _domain.PageData, err error) {
 	var count int64
 
-	db := r.DB.Model(&model.ScenarioReport{}).
-		Where(" NOT deleted and scenario_id=?", req.ScenarioId)
+	db := r.DB.Model(&model.ScenarioReport{}).Where(" NOT deleted and scenario_id=?", req.ScenarioId)
 
 	if req.Keywords != "" {
 		db = db.Where("name LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords))
+	}
+
+	if req.CreateUserId != 0 {
+		db = db.Where("create_user_id = ?", req.CreateUserId)
 	}
 
 	err = db.Count(&count).Error

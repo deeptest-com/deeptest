@@ -20,7 +20,7 @@ type JsVm struct {
 }
 
 func InitJsRuntime() {
-	registry := new(require.Registry) // registry 能夠被 多個 goja.Runtime 共用
+	registry := new(require.Registry) // registry 能夠被多个goja.Runtime共用
 
 	MyVm.JsRuntime = goja.New()
 
@@ -48,8 +48,8 @@ func InitJsRuntime() {
 
 	// load global script
 	MyRequire = registry.Enable(MyVm.JsRuntime)
-	pth := filepath.Join(consts.TmpDir, "dp.js")
-	fileUtils.WriteFile(pth, scriptHelper.GetScript(scriptHelper.ScriptDp))
+	pth := filepath.Join(consts.TmpDir, "deeptest.js")
+	fileUtils.WriteFile(pth, scriptHelper.GetScript(scriptHelper.ScriptDeepTest))
 	dp, err := MyRequire.Require(pth)
 	if err != nil {
 		logUtils.Info(err.Error())

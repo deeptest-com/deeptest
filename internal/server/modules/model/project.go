@@ -1,12 +1,12 @@
 package model
 
 import (
-	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 )
 
 type Project struct {
 	BaseModel
-	v1.ProjectBase
+	serverDomain.ProjectBase
 
 	Spec          string `json:"spec"`
 	Spec2         string `json:"spec2"`

@@ -1,13 +1,13 @@
 package model
 
 import (
-	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 )
 
 type SysUser struct {
 	BaseModel
 
-	v1.UserBase
+	serverDomain.UserBase
 
 	Password string         `gorm:"type:varchar(250)" json:"password" validate:"required"`
 	Vcode    string         `json:"vcode"`

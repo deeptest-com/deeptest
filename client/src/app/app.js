@@ -218,21 +218,20 @@ export class DeepTestApp {
             app.quit();
         });
 
-        app.on('before-quit', (e) => {
+        app.on('will-quit', (e) => {
             e.preventDefault()
-            logInfo(`>> event: app before-quit`)
+            logInfo(`>> event: app will-quit`)
 
             logInfo(`>> start to kill child process`)
             this.quit();
             logInfo(`>> end to kill child process`)
 
-            app.exit()
+            app.quit()
         });
 
-        // app.on('quit', () => {
-        //     logInfo(`>> event: app quit`)
-        //     this.quit();
-        // });
+        app.on('quit', () => {
+            logInfo(`>> event: app quit`)
+        });
     }
 
     // choose file

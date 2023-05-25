@@ -119,12 +119,11 @@
 
           <a-form-item label="变量作用域">
             <a-radio-group v-model:value="model.scope">
-<!--              <a-radio value="private">私有</a-radio>-->
-              <a-radio value="local">局部</a-radio>
-              <a-radio value="global">全局</a-radio>
+              <a-radio value="public">公有</a-radio>
+              <a-radio value="private">私有</a-radio>
             </a-radio-group>
             <div class="dp-input-tip">
-              局部变量在整个接口设计器及其诞生的场景目录下有效。
+              公有变量在接口所在服务及场景下有效。
             </div>
           </a-form-item>
 
@@ -182,7 +181,7 @@ const listExtractor = () => {
 }
 listExtractor()
 
-const model = ref({scope: VarScope.ScopePrivate} as Extractor)
+const model = ref({scope: VarScope.ScopePublic} as Extractor)
 const results = ref({})
 const editVisible = ref(false)
 
@@ -225,7 +224,7 @@ const add = () => {
     type: ExtractorType.boundary,
     expression: '',
     variable: '',
-    scope: 'local'} as Extractor
+    scope: VarScope.ScopePublic} as Extractor
 
   selectSrc()
   if (responseData.value.contentLang === 'json') {

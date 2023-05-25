@@ -28,20 +28,20 @@ type BaseRequest struct {
 	Headers []Header          ` json:"headers"`
 	Cookies []ExecCookie      ` json:"cookies"` // from cookie processor in scenario
 
-	Body               string                   `gorm:"default:{}" json:"body"`
-	BodyFormData       []BodyFormDataItem       `gorm:"-" json:"bodyFormData"`
-	BodyFormUrlencoded []BodyFormUrlEncodedItem `gorm:"-" json:"bodyFormUrlencoded"`
-	BodyType           consts.HttpContentType   `gorm:"default:json" json:"bodyType"`
-	BodyLang           consts.HttpRespLangType  `gorm:"default:json" json:"bodyLang"`
+	Body               string                   `json:"body"`
+	BodyFormData       []BodyFormDataItem       `json:"bodyFormData"`
+	BodyFormUrlencoded []BodyFormUrlEncodedItem `son:"bodyFormUrlencoded"`
+	BodyType           consts.HttpContentType   `json:"bodyType"`
+	BodyLang           consts.HttpRespLangType  `json:"bodyLang"`
 
-	AuthorizationType consts.AuthorType `gorm:"default:''" json:"authorizationType"`
-	PreRequestScript  string            `gorm:"default:''" json:"preRequestScript"`
-	ValidationScript  string            `gorm:"default:''" json:"validationScript"`
+	AuthorizationType consts.AuthorType `json:"authorizationType"`
+	PreRequestScript  string            `json:"preRequestScript"`
+	ValidationScript  string            `json:"validationScript"`
 
-	BasicAuth   BasicAuth   `gorm:"-" json:"basicAuth"`
-	BearerToken BearerToken `gorm:"-" json:"bearerToken"`
-	OAuth20     OAuth20     `gorm:"-" json:"oauth20"`
-	ApiKey      ApiKey      `gorm:"-" json:"apiKey"`
+	BasicAuth   BasicAuth   `json:"basicAuth"`
+	BearerToken BearerToken `json:"bearerToken"`
+	OAuth20     OAuth20     `json:"oauth20"`
+	ApiKey      ApiKey      `json:"apiKey"`
 }
 
 type Header struct {

@@ -41,6 +41,7 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 		ProcessorType:     entity.ProcessorType,
 		StartTime:         &startTime,
 		ParentId:          int(entity.ParentID),
+		InterfaceId:       processor.EndpointInterfaceId,
 	}
 
 	// exec pre-request script

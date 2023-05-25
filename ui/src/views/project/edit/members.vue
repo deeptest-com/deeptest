@@ -66,7 +66,7 @@
             <a-button
               type="link"
               @click="() => remove(record.id)"
-              :disabled="currentUser.projectRoles[projectId] !== 'admin'"
+              :disabled="currentUser.projectRoles[projectId] !== 'admin' && currentUser.sysRoles.indexOf('admin') === -1"
               >移除</a-button
             >
           </template>
@@ -165,6 +165,7 @@ onMounted(() => {
   console.log("onMounted");
   getMembers(1);
   getRoles()
+  store.dispatch("User/fetchUserProjectRole");
 });
 
 const initState: StateType = {

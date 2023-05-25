@@ -260,7 +260,7 @@ func (r *ProjectRepo) ListProjectByUser(userId uint) (projects []model.ProjectMe
 		Joins("LEFT JOIN biz_project p ON biz_project_member.project_id=p.id").
 		Joins("LEFT JOIN biz_project_role r ON biz_project_member.project_role_id=r.id").
 		Select("p.*, r.id role_id, r.name role_name").
-		Where("biz_project_member.user_id = ? AND NOT biz_project_member.deleted AND NOT p.deleted AND NOT r.deleted", userId).
+		Where("biz_project_member.user_id = ? AND NOT biz_project_member.deleted", userId).
 		Find(&projects).Error
 	return
 }

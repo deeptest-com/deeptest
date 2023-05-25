@@ -22,6 +22,9 @@ func (i *interfaces2debug) Convert() (debugInterface *model.DebugInterface) {
 
 	copier.CopyWithOption(debugInterface, &i.Inter, copier.Option{DeepCopy: true})
 
+	//for _, param := range i.Inter.Params {
+	//}
+
 	debugInterface.ID = 0
 
 	debugInterface.BodyFormData = i.BodyFormData()

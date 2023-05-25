@@ -28,6 +28,7 @@ const (
 	ProgressInProgress WsMsgCategory = "in_progress"
 	ProgressEnd        WsMsgCategory = "end"
 	ProgressResult     WsMsgCategory = "result"
+	Processor          WsMsgCategory = "processor"
 )
 
 func (e WsMsgCategory) String() string {

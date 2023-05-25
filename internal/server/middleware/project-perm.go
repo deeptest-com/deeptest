@@ -4,14 +4,18 @@ import (
 	"errors"
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
+	"github.com/aaronchen2k/deeptest/internal/server/core/casbin"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/context"
+	"github.com/snowlyg/helper/arr"
 	"github.com/snowlyg/multi"
 	"go.uber.org/zap"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -71,15 +75,49 @@ func (ProjectRolePermModel) TableName() string {
 	return "biz_project_role_perm"
 }
 
+type SysUser struct {
+	BaseModel
+
+	v1.UserBase
+
+	Password string              `gorm:"type:varchar(250)" json:"password" validate:"required"`
+	Vcode    string              `json:"vcode"`
+	Profile  SysUserProfileModel `gorm:"foreignKey:user_id"`
+
+	RoleIds []uint `gorm:"-" json:"role_ids"`
+}
+
+func (SysUser) TableName() string {
+	return "sys_user"
+}
+
+type SysRole struct {
+	BaseModel
+	v1.RoleBase
+}
+
+func (SysRole) TableName() string {
+	return "sys_role"
+}
+
 // ProjectPerm  项目权限权鉴中间件
 func ProjectPerm() iris.Handler {
 	return func(ctx *context.Context) {
 		userId := multi.GetUserId(ctx)
-		check, err := CheckProjectPerm(ctx.Request(), userId)
-		if err != nil || !check {
-			ctx.JSON(_domain.Response{Code: _domain.AuthActionErr.Code, Data: nil, Msg: "你未拥有当前操作权限，请联系管理员"})
+
+		isAdminUser, err := IsAdminUser(userId)
+		if err != nil {
+			ctx.JSON(_domain.Response{Code: _domain.AuthActionErr.Code, Data: nil, Msg: "系统异常，请重新登录或者联系管理员"})
 			ctx.StopExecution()
 			return
+		}
+		if !isAdminUser {
+			check, err := CheckProjectPerm(ctx.Request(), userId)
+			if err != nil || !check {
+				ctx.JSON(_domain.Response{Code: _domain.AuthActionErr.Code, Data: nil, Msg: "你未拥有当前操作权限，请联系管理员"})
+				ctx.StopExecution()
+				return
+			}
 		}
 
 		ctx.Next()
@@ -172,4 +210,72 @@ func GetProjectRolePerm(roleId, permId uint) (data ProjectRolePermModel, err err
 		Where("project_perm_id = ?", permId).
 		First(&data).Error
 	return
+}
+
+func IsAdminUser(id uint) (bool, error) {
+	user, err := FindUserDetailById(id)
+	if err != nil {
+		return false, err
+	}
+
+	return arr.InArrayS(user.SysRoles, serverConsts.AdminRoleName), nil
+}
+
+func FindUserDetailById(id uint) (user v1.UserResp, err error) {
+	user, err = FindUserById(id)
+	if err != nil {
+		return user, err
+	}
+
+	GetSysRoles(&user)
+
+	return user, nil
+}
+
+func FindUserById(id uint) (user v1.UserResp, err error) {
+	err = dao.GetDB().Model(&SysUser{}).Where("id = ?", id).First(&user).Error
+	if err != nil {
+		return user, err
+	}
+
+	return
+}
+
+func FindInId(ids []string) (roles []v1.RoleResp, error error) {
+	err := dao.GetDB().Model(&SysRole{}).Where("id in ?", ids).Find(&roles).Error
+	if err != nil {
+		logUtils.Errorf("通过ids查询角色错误", zap.String("错误:", err.Error()))
+		return
+	}
+	return
+}
+
+func GetSysRoles(users ...*v1.UserResp) {
+	var roleIds []string
+	userRoleIds := make(map[uint][]string, 10)
+
+	if len(users) == 0 {
+		return
+	}
+
+	for _, user := range users {
+		user.ToString()
+		userRoleId := casbin.GetRolesForUser(user.Id)
+		userRoleIds[user.Id] = userRoleId
+		roleIds = append(roleIds, userRoleId...)
+	}
+
+	roles, err := FindInId(roleIds)
+	if err != nil {
+		logUtils.Errorf("get role get err ", zap.String("错误:", err.Error()))
+	}
+
+	for _, user := range users {
+		for _, role := range roles {
+			sRoleId := strconv.FormatInt(int64(role.Id), 10)
+			if arr.InArrayS(userRoleIds[user.Id], sRoleId) {
+				user.SysRoles = append(user.SysRoles, role.Name)
+			}
+		}
+	}
 }

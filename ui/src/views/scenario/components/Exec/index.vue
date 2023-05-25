@@ -25,7 +25,7 @@ import {
   ScenarioCollapsePanel,
   EndpointCollapsePanel,
   Progress
-} from '@/views/component/Report/Components';
+} from '@/views/component/Report/components';
 import {ReportDetailType} from "@/utils/enum";
 import {StateType as GlobalStateType} from "@/store/global";
 import {ExecStatus} from "@/store/exec";

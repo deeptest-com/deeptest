@@ -18,7 +18,7 @@ var (
 
 func SendExecMsg(msg string, log interface{}, wsMsg *websocket.Message) {
 	msg = strings.TrimSpace(msg)
-	resp := _domain.WsResp{Msg: msg, Data: log}
+	resp := _domain.WsResp{Msg: msg, Category: consts.Processor, Data: log}
 
 	bytes, _ := json.Marshal(resp)
 

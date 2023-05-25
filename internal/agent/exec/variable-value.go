@@ -3,6 +3,7 @@ package agentExec
 import (
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
+	stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 )
 
 func getVariableValue(name string) (ret string) {
@@ -29,20 +30,28 @@ func getVariableValue(name string) (ret string) {
 }
 
 func getValueFromShareVar(name string) (ret string) {
-	if CurrProcessorId == 0 { // endpoint interface dbug
+	if CurrProcessorId == 0 { // endpoint interface debug
+		// try to find in vars that set by pre-condition scripts
+		vars := listCachedVariable(0)
+		for _, v := range vars {
+			if v.Name == name {
+				return stringUtils.InterfToStr(v.Value)
+			}
+		}
+
+		// find in vars in scene
 		ret = getValueFromList(name, ExecScene.ShareVars)
 
 	} else { // run scenario
-		cache := CachedShareVarByProcessor[CurrProcessorId]
-		if cache == nil {
-			cache = GetCachedVariableMapInContext(CurrProcessorId)
+		if CachedShareVarByProcessorForRead[CurrProcessorId] == nil {
+			CachedShareVarByProcessorForRead[CurrProcessorId] = GetCachedVariableMapInContext(CurrProcessorId)
 		}
 
-		if cache[name] == nil {
+		if CachedShareVarByProcessorForRead[CurrProcessorId][name] == nil {
 			return ""
 		}
 
-		ret = fmt.Sprintf("%v", cache[name])
+		ret = fmt.Sprintf("%v", CachedShareVarByProcessorForRead[CurrProcessorId][name])
 	}
 
 	return

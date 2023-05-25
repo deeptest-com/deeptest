@@ -15,16 +15,17 @@ type SubmitDebugResultRequest struct {
 }
 
 type DebugData struct {
-	EndpointInterfaceId uint          `gorm:"-" json:"endpointInterfaceId"`
-	ScenarioProcessorId uint          `gorm:"-" json:"scenarioProcessorId"`
+	BaseRequest
+
+	EndpointInterfaceId uint          `json:"endpointInterfaceId"`
+	ScenarioProcessorId uint          `json:"scenarioProcessorId"`
 	UsedBy              consts.UsedBy `json:"usedBy"`
 
 	ServerId uint `json:"serverId"`
 
-	BaseUrl   string      `gorm:"-" json:"baseUrl"`
-	ShareVars []GlobalVar `gorm:"-" json:"shareVars"` // used to show in right environment tab
-	EnvVars   []GlobalVar `gorm:"-" json:"envVars"`   // used to show in right environment tab
+	BaseUrl   string      `json:"baseUrl"`
+	ShareVars []GlobalVar `json:"shareVars"` // used to show in right environment tab
+	EnvVars   []GlobalVar `json:"envVars"`   // used to show in right environment tab
 
-	Name string `gorm:"-" json:"name"`
-	BaseRequest
+	Name string `json:"name"`
 }

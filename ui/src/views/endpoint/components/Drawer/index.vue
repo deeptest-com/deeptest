@@ -1,7 +1,7 @@
 <template>
   <a-drawer
       :placement="'right'"
-      :width="1000"
+      :width="1200"
       :closable="true"
       :visible="visible"
       class="drawer"

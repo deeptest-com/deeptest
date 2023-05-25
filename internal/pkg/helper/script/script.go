@@ -6,9 +6,9 @@ import (
 )
 
 func GetScript(name ScriptType) string {
-	if name == ScriptDp {
+	if name == ScriptDeepTest {
 		if DpScript == "" {
-			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "export", "dp.js"))
+			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "export", "deeptest.js"))
 			DpScript = string(bytes)
 		}
 		return DpScript
@@ -18,8 +18,8 @@ func GetScript(name ScriptType) string {
 			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "export", "global.txt"))
 			GlobalScript = string(bytes)
 		}
-
 		return GlobalScript
+
 	} else if name == ScriptModule {
 		if ModuleScript == "" {
 			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "export", "module.txt"))
@@ -33,27 +33,6 @@ func GetScript(name ScriptType) string {
 			ModuleScript = string(bytes)
 		}
 		return ModuleScript
-
-	} else if name == ScriptEnvironmentGet {
-		if EnvironmentGet == "" {
-			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "snippet", "environment_get.txt"))
-			EnvironmentGet = string(bytes)
-		}
-		return EnvironmentGet
-
-	} else if name == ScriptEnvironmentSet {
-		if EnvironmentSet == "" {
-			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "snippet", "environment_set.txt"))
-			EnvironmentSet = string(bytes)
-		}
-		return EnvironmentSet
-
-	} else if name == ScriptEnvironmentClear {
-		if EnvironmentClear == "" {
-			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "snippet", "environment_clear.txt"))
-			EnvironmentClear = string(bytes)
-		}
-		return EnvironmentClear
 
 	} else if name == ScriptVariablesGet {
 		if VariablesGet == "" {
@@ -78,6 +57,29 @@ func GetScript(name ScriptType) string {
 
 	}
 
+	//else if name == ScriptEnvironmentGet {
+	//	if EnvironmentGet == "" {
+	//		bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "snippet", "environment_get.txt"))
+	//		EnvironmentGet = string(bytes)
+	//	}
+	//	return EnvironmentGet
+	//
+	//} else if name == ScriptEnvironmentSet {
+	//	if EnvironmentSet == "" {
+	//		bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "snippet", "environment_set.txt"))
+	//		EnvironmentSet = string(bytes)
+	//	}
+	//	return EnvironmentSet
+	//
+	//} else if name == ScriptEnvironmentClear {
+	//	if EnvironmentClear == "" {
+	//		bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "snippet", "environment_clear.txt"))
+	//		EnvironmentClear = string(bytes)
+	//	}
+	//	return EnvironmentClear
+	//
+	//}
+
 	return ""
 }
 
@@ -99,15 +101,15 @@ var (
 type ScriptType string
 
 const (
-	ScriptDp     = "dp"
-	ScriptGlobal = "global"
-	ScriptModule = "module"
+	ScriptDeepTest = "deeptest"
+	ScriptGlobal   = "global"
+	ScriptModule   = "module"
 
 	ScriptDatapoolGet = "datapool_get"
 
-	ScriptEnvironmentGet   = "environment_get"
-	ScriptEnvironmentSet   = "environment_set"
-	ScriptEnvironmentClear = "environment_clear"
+	//ScriptEnvironmentGet   = "environment_get"
+	//ScriptEnvironmentSet   = "environment_set"
+	//ScriptEnvironmentClear = "environment_clear"
 
 	ScriptVariablesGet   = "variables_get"
 	ScriptVariablesSet   = "variables_set"

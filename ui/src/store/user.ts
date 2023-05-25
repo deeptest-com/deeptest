@@ -24,10 +24,12 @@ export interface ModuleType extends StoreModuleType<StateType> {
   mutations: {
     saveCurrentUser: Mutation<StateType>;
     saveMessage: Mutation<StateType>;
+    saveProjectRoles: Mutation<StateType>;
   };
   actions: {
     fetchCurrent: Action<StateType, StateType>;
     fetchMessage: Action<StateType, StateType>;
+    fetchUserProjectRole: Action<StateType, StateType>;
     logout: Action<StateType, StateType>;
 
     updateEmail: Action<StateType, StateType>;
@@ -64,6 +66,11 @@ const StoreModel: ModuleType = {
     saveMessage(state, payload) {
       state.message = payload;
     },
+    saveProjectRoles(state, payload) {
+      payload.projects.forEach((item) => {
+        state.currentUser.projectRoles[item.id] = item.roleName
+      })
+    }
   },
   actions: {
     async fetchCurrent({ commit }) {
@@ -137,7 +144,17 @@ const StoreModel: ModuleType = {
       } catch (error) {
         return false;
       }
-    }
+    },
+    async fetchUserProjectRole({ commit }) {
+      try {
+        const response: ResponseData = await queryProject();
+        const { data } = response;
+        commit('saveProjectRoles', data || 0);
+        return true;
+      } catch (error) {
+        return false;
+      }
+    },
   }
 }
 

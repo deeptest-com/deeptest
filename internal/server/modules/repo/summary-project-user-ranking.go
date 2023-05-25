@@ -36,18 +36,23 @@ func (r *SummaryProjectUserRankingRepo) FindProjectIds() (projectIds []int64, er
 	return
 }
 
-func (r *SummaryProjectUserRankingRepo) FindByDateAndProjectId(startTime string, endTime string, projectId int64) (summaryProjectUserRanking []model.SummaryProjectUserRanking, err error) {
-	err = r.DB.Model(&model.SummaryProjectUserRanking{}).Raw("select scenario_total,test_case_total,updated_at,user_name,sort,user_id,project_id from deeptest.biz_summary_project_user_ranking where id in (SELECT max(id) FROM deeptest.biz_summary_project_user_ranking where created_at >= ? and created_at < ? AND NOT deleted And project_id = ? group by user_id ORDER BY sort asc);", startTime, endTime, projectId).Find(&summaryProjectUserRanking).Error
+func (r *SummaryProjectUserRankingRepo) FindMaxDataByDateAndProjectId(startTime string, endTime string, projectId int64) (summaryProjectUserRanking []model.SummaryProjectUserRanking, err error) {
+	err = r.DB.Model(&model.SummaryProjectUserRanking{}).Raw("select scenario_total,test_case_total,updated_at,sort,user_id,project_id from deeptest.biz_summary_project_user_ranking where id in (SELECT max(id) FROM deeptest.biz_summary_project_user_ranking where created_at >= ? and created_at < ? AND NOT deleted And project_id = ? group by user_id ORDER BY sort asc);", startTime, endTime, projectId).Find(&summaryProjectUserRanking).Error
+	return
+}
+
+func (r *SummaryProjectUserRankingRepo) FindMinDataByDateAndProjectId(startTime string, endTime string, projectId int64) (summaryProjectUserRanking []model.SummaryProjectUserRanking, err error) {
+	err = r.DB.Model(&model.SummaryProjectUserRanking{}).Raw("select scenario_total,test_case_total,updated_at,sort,user_id,project_id from deeptest.biz_summary_project_user_ranking where id in (SELECT min(id) FROM deeptest.biz_summary_project_user_ranking where created_at >= ? and created_at < ? AND NOT deleted And project_id = ? group by user_id ORDER BY sort asc);", startTime, endTime, projectId).Find(&summaryProjectUserRanking).Error
 	return
 }
 
 func (r *SummaryProjectUserRankingRepo) FindByProjectId(projectId int64) (summaryProjectUserRanking []model.SummaryProjectUserRanking, err error) {
-	err = r.DB.Model(&model.SummaryProjectUserRanking{}).Raw("select scenario_total,test_case_total,updated_at,user_name,sort,user_id,project_id from deeptest.biz_summary_project_user_ranking where id in (SELECT max(id) FROM deeptest.biz_summary_project_user_ranking where NOT deleted And project_id = ? group by user_id ORDER BY sort asc);", projectId).Find(&summaryProjectUserRanking).Error
+	err = r.DB.Model(&model.SummaryProjectUserRanking{}).Raw("select scenario_total,test_case_total,updated_at,sort,user_id,project_id from deeptest.biz_summary_project_user_ranking where id in (SELECT max(id) FROM deeptest.biz_summary_project_user_ranking where NOT deleted And project_id = ? group by user_id ORDER BY sort asc);", projectId).Find(&summaryProjectUserRanking).Error
 	return
 }
 
 func (r *SummaryProjectUserRankingRepo) FindGroupByProjectId() (summaryProjectUserRanking []model.SummaryProjectUserRanking, err error) {
-	err = r.DB.Model(&model.SummaryProjectUserRanking{}).Raw("select scenario_total,test_case_total,updated_at,user_name,sort,user_id,project_id from deeptest.biz_summary_project_user_ranking where id in (SELECT max(id) FROM deeptest.biz_summary_project_user_ranking where NOT deleted group by user_id ORDER BY sort asc);").Find(&summaryProjectUserRanking).Error
+	err = r.DB.Model(&model.SummaryProjectUserRanking{}).Raw("select scenario_total,test_case_total,updated_at,sort,user_id,project_id from deeptest.biz_summary_project_user_ranking where id in (SELECT max(id) FROM deeptest.biz_summary_project_user_ranking where NOT deleted group by user_id ORDER BY sort asc);").Find(&summaryProjectUserRanking).Error
 	return
 }
 
@@ -57,12 +62,12 @@ func (r *SummaryProjectUserRankingRepo) FindProjectUserScenarioTotal() (projectU
 }
 
 func (r *SummaryProjectUserRankingRepo) FindProjectUserTestCasesTotal() (projectUserTotal []model.ProjectUserTotal, err error) {
-	err = r.DB.Model(&model.Processor{}).Raw("select project_id,create_user_id,count(id) as count from deeptest.biz_processor where entity_category = 'processor_interface' And NOT deleted group by project_id,create_user_id order by count desc; ").Find(&projectUserTotal).Error
+	err = r.DB.Model(&model.Processor{}).Raw("select project_id,create_user_id,count(id) as count from deeptest.biz_processor where entity_category = 'processor_interface' And NOT deleted group by project_id,create_user_id order by count desc;	").Find(&projectUserTotal).Error
 	return
 }
 
 func (r *SummaryProjectUserRankingRepo) FindCasesTotalByProjectId(projectId int64) (result []model.UserTotal, err error) {
-	err = r.DB.Model(&model.Processor{}).Raw("select created_by as create_user_id,count(id) as count from deeptest.biz_processor where entity_category = 'processor_interface' and project_id = ? And NOT deleted group by created_by order by count desc; ", projectId).Find(&result).Error
+	err = r.DB.Model(&model.Processor{}).Raw("select created_by as create_user_id,count(id) as count from deeptest.biz_processor where entity_category = 'processor_interface' and project_id = ? And NOT deleted group by created_by order by count desc;", projectId).Find(&result).Error
 	return
 }
 
@@ -72,7 +77,7 @@ func (r *SummaryProjectUserRankingRepo) FindScenariosTotalByProjectId(projectId 
 }
 
 func (r *SummaryProjectUserRankingRepo) FindUserLastUpdateTestCasesByProjectId(projectId int64) (result []model.UserUpdateTime, err error) {
-	err = r.DB.Model(&model.Processor{}).Raw("select updated_at,created_by from deeptest.biz_processor where entity_category = 'processor_interface' and project_id = ? And NOT deleted order by updated_at desc limit 1; ", projectId).Find(&result).Error
+	err = r.DB.Model(&model.Processor{}).Raw("select max(updated_at) as updated_at,created_by from deeptest.biz_processor where entity_category = 'processor_interface' and project_id = ? And NOT deleted group by created_by", projectId).Find(&result).Error
 	return
 }
 
@@ -87,7 +92,7 @@ func (r *SummaryProjectUserRankingRepo) FindUserByProjectId(projectId int64) (us
 }
 
 func (r *SummaryProjectUserRankingRepo) FindUserIdsByProjectId(projectId int64) (userIds []int64, err error) {
-	err = r.DB.Model(&model.SysUser{}).Raw("select sys_user.id from biz_project_member where biz_project_member.project_id = ? AND NOT deleted; ", projectId).Find(&userIds).Error
+	err = r.DB.Model(&model.ProjectMember{}).Raw("select user_id from biz_project_member where biz_project_member.project_id = ? AND NOT deleted; ", projectId).Find(&userIds).Error
 	return
 }
 

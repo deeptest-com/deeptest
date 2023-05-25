@@ -30,29 +30,36 @@ func (s *SummaryProjectUserRankingService) ProjectUserRanking(projectId int64, c
 		var testTotal int64
 		var scenarioTotal int64
 
+		//查询7天前直到现在，最靠前的数据
+		earlierDateStartTime, todayEndTime := GetEarlierDateUntilTodayStartAndEndTime(-7)
+		lastWeekRanking, err = s.FindMinDataByDateAndProjectIdOfMap(earlierDateStartTime, todayEndTime, projectId)
+
 		if cycle == 1 {
-			//全部范围数据
-			//查询上周的数据
-			lastWeek := time.Now().AddDate(0, 0, -7)
-			lastWeekStartTime, lastWeekEndTime := GetDate(lastWeek)
-			lastWeekRanking, err = s.FindByDateAndProjectIdOfMap(lastWeekStartTime, lastWeekEndTime, projectId)
+			//全部范围数据,就是最新的数据，newRanking
 			scenarioTotal = newRanking.ScenarioTotal
 			testTotal = newRanking.TestCaseTotal
 		} else if cycle == 0 {
 			//当月范围数据
-			lastMonthLastDay := time.Now().AddDate(0, 0, -30)
-			lastMonthLastDayStartTime, lastMonthLastDayEndTime := GetDate(lastMonthLastDay)
-			lastMonthLastDayRanking, _ := s.FindByDateAndProjectIdOfMap(lastMonthLastDayStartTime, lastMonthLastDayEndTime, projectId)
+			//先查询31天前的数据
+			earlierDateStartTime, earlierDateEndTime := GetEarlierDateStartAndEndTime(-31)
+			lastMonthLastDayRanking, _ := s.FindMaxDataByDateAndProjectIdOfMap(earlierDateStartTime, earlierDateEndTime, projectId)
+			//那newRanking的所有数据，减去30天前的，就是当月增量数据情况
 			scenarioTotal = newRanking.ScenarioTotal - lastMonthLastDayRanking[newRanking.UserId].ScenarioTotal
 			testTotal = newRanking.TestCaseTotal - lastMonthLastDayRanking[newRanking.UserId].TestCaseTotal
 		}
 		if lastWeekRanking[newRanking.UserId].Sort != 0 {
 			resRanking.Hb = lastWeekRanking[newRanking.UserId].Sort - newRanking.Sort
 		}
+		resRanking.Sort = newRanking.Sort
 		resRanking.ScenarioTotal = scenarioTotal
 		resRanking.TestCaseTotal = testTotal
 		resRanking.UserName = userInfo[newRanking.UserId]
-		resRanking.UpdatedAt = newRanking.UpdatedAt.Format("2006-01-02 15:04:05")
+		lastUpdateTime, _ := s.FindUserLastUpdateTestCasesByProjectId(projectId)
+		if lastUpdateTime[newRanking.UserId] != nil {
+			resRanking.UpdatedAt = lastUpdateTime[newRanking.UserId].Format("2006-01-02 15:04:05")
+		} else {
+			resRanking.UpdatedAt = "------"
+		}
 		resRanking.UserId = newRanking.UserId
 		resRankingList.UserRankingList = append(resRankingList.UserRankingList, resRanking)
 	}
@@ -71,8 +78,7 @@ func (s *SummaryProjectUserRankingService) Create(req model.SummaryProjectUserRa
 }
 
 func (s *SummaryProjectUserRankingService) CreateByDate(req model.SummaryProjectUserRanking) (err error) {
-	now := time.Now()
-	startTime, endTime := GetDate(now)
+	startTime, endTime := GetTodayStartAndEndTime()
 	id, err := s.Existed(startTime, endTime, req.ProjectId, req.UserId)
 	if id == 0 {
 		err = s.Create(req)
@@ -102,13 +108,28 @@ func (s *SummaryProjectUserRankingService) FindByProjectId(projectId int64) (sum
 	return r.FindByProjectId(projectId)
 }
 
-func (s *SummaryProjectUserRankingService) FindByDateAndProjectId(startTime string, endTime string, projectId int64) (summaryProjectUserRanking []model.SummaryProjectUserRanking, err error) {
+func (s *SummaryProjectUserRankingService) FindMaxDataByDateAndProjectId(startTime string, endTime string, projectId int64) (summaryProjectUserRanking []model.SummaryProjectUserRanking, err error) {
 	r := repo.NewSummaryProjectUserRankingRepo()
-	return r.FindByDateAndProjectId(startTime, endTime, projectId)
+	return r.FindMaxDataByDateAndProjectId(startTime, endTime, projectId)
 }
 
-func (s *SummaryProjectUserRankingService) FindByDateAndProjectIdOfMap(startTime string, endTime string, projectId int64) (result map[int64]model.SummaryProjectUserRanking, err error) {
-	summaryProjectUserRanking, _ := s.FindByDateAndProjectId(startTime, endTime, projectId)
+func (s *SummaryProjectUserRankingService) FindMinDataByDateAndProjectId(startTime string, endTime string, projectId int64) (summaryProjectUserRanking []model.SummaryProjectUserRanking, err error) {
+	r := repo.NewSummaryProjectUserRankingRepo()
+	return r.FindMinDataByDateAndProjectId(startTime, endTime, projectId)
+}
+
+func (s *SummaryProjectUserRankingService) FindMaxDataByDateAndProjectIdOfMap(startTime string, endTime string, projectId int64) (result map[int64]model.SummaryProjectUserRanking, err error) {
+	summaryProjectUserRanking, _ := s.FindMaxDataByDateAndProjectId(startTime, endTime, projectId)
+
+	result = make(map[int64]model.SummaryProjectUserRanking, len(summaryProjectUserRanking))
+	for _, ranking := range summaryProjectUserRanking {
+		result[ranking.UserId] = ranking
+	}
+	return
+}
+
+func (s *SummaryProjectUserRankingService) FindMinDataByDateAndProjectIdOfMap(startTime string, endTime string, projectId int64) (result map[int64]model.SummaryProjectUserRanking, err error) {
+	summaryProjectUserRanking, _ := s.FindMinDataByDateAndProjectId(startTime, endTime, projectId)
 
 	result = make(map[int64]model.SummaryProjectUserRanking, len(summaryProjectUserRanking))
 	for _, ranking := range summaryProjectUserRanking {
@@ -211,10 +232,10 @@ func (s *SummaryProjectUserRankingService) ForMap(userTotal []model.UserTotal) (
 func (s *SummaryProjectUserRankingService) SortRanking(data []model.SummaryProjectUserRanking) (ret []model.SummaryProjectUserRanking, err error) {
 	length := len(data)
 	for i := 0; i < length; i++ {
-		mix := data[i].TestCaseTotal
+		max := data[i].TestCaseTotal
 
 		for x := i + 1; x < length; x++ {
-			if data[x].TestCaseTotal < mix {
+			if data[x].TestCaseTotal > max {
 
 				tmp := data[i]
 				data[i] = data[x]
@@ -223,7 +244,7 @@ func (s *SummaryProjectUserRankingService) SortRanking(data []model.SummaryProje
 			}
 		}
 	}
-	data[length-1].Sort = int64(length - 1)
+	data[length-1].Sort = int64(length)
 	ret = data
 	return
 }
@@ -232,9 +253,9 @@ func (s *SummaryProjectUserRankingService) SortRankingList(data v1.ResRankingLis
 	list := data.UserRankingList
 	length := len(list)
 	for i := 0; i < length; i++ {
-		mix := list[i].TestCaseTotal
+		max := list[i].TestCaseTotal
 		for x := i + 1; x < length; x++ {
-			if list[x].TestCaseTotal < mix {
+			if list[x].TestCaseTotal > max {
 				tmp := list[i]
 				list[i] = list[x]
 				list[x] = tmp
@@ -242,7 +263,7 @@ func (s *SummaryProjectUserRankingService) SortRankingList(data v1.ResRankingLis
 			}
 		}
 	}
-	list[length-1].Sort = int64(length - 1)
+	list[length-1].Sort = int64(length)
 	ret = data
 	return
 }

@@ -27,7 +27,6 @@
     </div>
     <a-table
         v-if="list.length > 0"
-        :row-selection="rowSelection"
         row-key="id"
         :columns="columns"
         :data-source="list"

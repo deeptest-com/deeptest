@@ -30,7 +30,7 @@
 </template>
 <script lang="ts" setup>
 import {computed, reactive, ref, onMounted, watch,defineEmits} from 'vue';
-import { TableFilter } from "@/views/component/Report/Components";
+import { TableFilter } from "@/views/component/Report/components";
 import {useStore} from "vuex";
 import {momentUtc} from "@/utils/datetime";
 import {PaginationConfig, Scenario} from "@/views/scenario/data";

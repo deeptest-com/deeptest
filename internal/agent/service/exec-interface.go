@@ -38,7 +38,7 @@ func RequestInterface(req domain.DebugData) (ret domain.DebugResponse, err error
 	// gen url
 	reqUri := agentExec.ReplacePathParams(req.Url, req.PathParams)
 	req.BaseRequest.Url = _httpUtils.AddSepIfNeeded(req.BaseUrl) + reqUri
-
+	logUtils.Info("reqUri" + reqUri + "|" + "req.Url:" + req.Url + "|req.BaseRequest.Url:" + req.BaseRequest.Url)
 	// send request
 	ret, err = agentExec.Invoke(&req.BaseRequest)
 

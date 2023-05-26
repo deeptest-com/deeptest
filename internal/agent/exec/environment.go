@@ -29,7 +29,7 @@ func ReplacePathParams(uri string, pathParams []domain.Param) (ret string) {
 
 		vari := fmt.Sprintf("{%v}", param.Name)
 
-		uri = strings.ReplaceAll(uri, vari, param.Value)
+		ret = strings.ReplaceAll(uri, vari, param.Value)
 	}
 
 	return

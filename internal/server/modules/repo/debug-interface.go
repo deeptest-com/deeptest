@@ -195,17 +195,27 @@ func (r *DebugInterfaceRepo) RemoveHeaders(id uint) (err error) {
 func (r *DebugInterfaceRepo) UpdateParams(id uint, queryParams, pathParams []model.DebugInterfaceParam) (err error) {
 	err = r.RemoveParams(id)
 
-	params := []model.DebugInterfaceParam{}
+	var params []model.DebugInterfaceParam
 
 	for _, p := range queryParams {
+
+		if p.Name == "" {
+			continue
+		}
+
 		p.ID = 0
 		p.InterfaceId = id
+		p.ParamIn = consts.ParamInQuery
 		params = append(params, p)
 	}
 
 	for _, p := range pathParams {
+		if p.Name == "" {
+			continue
+		}
 		p.ID = 0
 		p.InterfaceId = id
+		p.ParamIn = consts.ParamInPath
 		params = append(params, p)
 	}
 

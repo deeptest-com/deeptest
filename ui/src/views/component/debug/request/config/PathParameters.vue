@@ -112,7 +112,7 @@ const disable = (idx) => {
 const remove = (idx) => {
   console.log('remove')
   debugData.value.pathParams.splice(idx, 1)
-  add()
+  //add()
 }
 const insert = (idx) => {
   console.log('insert')

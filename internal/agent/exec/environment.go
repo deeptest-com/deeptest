@@ -22,6 +22,7 @@ func GenRequestUrl(req *domain.BaseRequest, interfaceId uint, baseUrl string) {
 }
 
 func ReplacePathParams(uri string, pathParams []domain.Param) (ret string) {
+	ret = uri
 	for _, param := range pathParams {
 		if param.ParamIn != consts.ParamInPath {
 			continue

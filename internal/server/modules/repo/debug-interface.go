@@ -219,6 +219,10 @@ func (r *DebugInterfaceRepo) UpdateParams(id uint, queryParams, pathParams []mod
 		params = append(params, p)
 	}
 
+	if len(params) == 0 {
+		return
+	}
+	
 	err = r.DB.Create(&params).Error
 
 	return

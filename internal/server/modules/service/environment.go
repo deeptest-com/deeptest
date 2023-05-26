@@ -2,7 +2,6 @@ package service
 
 import (
 	"errors"
-	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
@@ -170,16 +169,18 @@ func (s *EnvironmentService) Clone(id uint) (environment *model.Environment, err
 }
 
 func (s *EnvironmentService) DeleteEnvironment(id uint) (err error) {
-	var count int64
-	count, err = s.ServeRepo.GetServerCountByEnvironmentId(id)
-	if err != nil {
-		return err
-	}
+	/*
+		var count int64
+		count, err = s.ServeRepo.GetServerCountByEnvironmentId(id)
+		if err != nil {
+			return err
+		}
 
-	if count > 0 {
-		err = fmt.Errorf("the environment has been associated with services and cannot be deleted")
-		return err
-	}
+		if count > 0 {
+			err = fmt.Errorf("the environment has been associated with services and cannot be deleted")
+			return err
+		}
+	*/
 	err = s.EnvironmentRepo.DeleteEnvironment(id)
 	return
 }

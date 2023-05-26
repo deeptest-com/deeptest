@@ -7,6 +7,8 @@
     <Progress :exec-status="progressStatus" :percent="progressValue" @exec-cancel="execCancel"/>
     <EndpointCollapsePanel v-if="recordList.length > 0"
                            :recordList="recordList"/>
+
+    <LogTreeView :treeData="scenarioList"/>
   </div>
 </template>
 
@@ -24,6 +26,7 @@ import {
   StatisticTable,
   ScenarioCollapsePanel,
   EndpointCollapsePanel,
+  LogTreeView,
   Progress
 } from '@/views/component/Report/components';
 import {ReportDetailType} from "@/utils/enum";
@@ -93,10 +96,11 @@ onUnmounted(() => {
 })
 
 
+
 const OnWebSocketMsg = (data: any) => {
-  console.log('OnWebSocketMsg 832', data);
   if (!data.msg) return
   const wsMsg = JSON.parse(data.msg) as WsMsg;
+  // console.log('832 wsMsg', wsMsg);
   if (wsMsg.category) {
     if (wsMsg.category == WsMsgCategory.Result) { // update result
       const res = wsMsg.data;
@@ -116,14 +120,21 @@ const OnWebSocketMsg = (data: any) => {
         "totalScenarioNum": data.totalScenarioNum || 0, //场景总数
         "totalInterfaceNum": data.totalInterfaceNum || 0, //接口总数
       }
-      console.log('statisticData', statisticData.value);
-      console.log('832res',res);
+      // console.log('statisticData', statisticData.value);
+      // console.log('832res',res);
       reportId.value = res.id;
       recordList.value = formatData(res?.logs?.[0]?.logs || []);
     }
   }
 }
 
+
+/**
+ * 适配场景执行报告日志数据
+ * */
+const scenarioList = computed(() => {
+  return [];
+})
 
 async function genReport() {
   const res = await store.dispatch('Scenario/genReport', {

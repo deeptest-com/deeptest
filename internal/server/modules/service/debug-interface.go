@@ -144,7 +144,7 @@ func (s *DebugInterfaceService) ConvertDebugDataFromEndpointInterface(endpointIn
 func (s *DebugInterfaceService) SetProps(
 	endpointInterface model.EndpointInterface, debugInterfacePo *model.DebugInterface, debugData *domain.DebugData) {
 
-	endpoint, err := s.EndpointRepo.Get(endpointInterface.EndpointId)
+	endpoint, err := s.EndpointRepo.GetAll(endpointInterface.EndpointId, "v0.1.0")
 	serve, err := s.ServeRepo.Get(endpoint.ServeId)
 	if err != nil {
 		return
@@ -159,7 +159,7 @@ func (s *DebugInterfaceService) SetProps(
 	debugData.EndpointInterfaceId = endpointInterface.ID
 
 	if debugInterfacePo == nil {
-		interfaces2debug := openapi.NewInterfaces2debug(endpointInterface, serve)
+		interfaces2debug := openapi.NewInterfaces2debug(endpoint, endpointInterface, serve)
 		debugInterfacePo = interfaces2debug.Convert()
 
 		debugInterfacePo.Name = fmt.Sprintf("%s - %s", endpoint.Title, debugInterfacePo.Method)

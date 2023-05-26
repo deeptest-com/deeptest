@@ -51,9 +51,10 @@ type Header struct {
 }
 
 type Param struct {
-	Name     string `json:"name"`
-	Value    string `json:"value"`
-	Disabled bool   `json:"disabled"`
+	Name     string         `json:"name"`
+	Value    string         `json:"value"`
+	Disabled bool           `json:"disabled"`
+	In       consts.ParamIn `json:"in"`
 }
 
 type BodyFormDataItem struct {

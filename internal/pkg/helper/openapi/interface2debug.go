@@ -9,12 +9,13 @@ import (
 )
 
 type interfaces2debug struct {
-	Inter model.EndpointInterface
-	Serve model.Serve
+	Endpoint model.Endpoint
+	Inter    model.EndpointInterface
+	Serve    model.Serve
 }
 
-func NewInterfaces2debug(inter model.EndpointInterface, serve model.Serve) *interfaces2debug {
-	return &interfaces2debug{Inter: inter, Serve: serve}
+func NewInterfaces2debug(endpoint model.Endpoint, inter model.EndpointInterface, serve model.Serve) *interfaces2debug {
+	return &interfaces2debug{Endpoint: endpoint, Inter: inter, Serve: serve}
 }
 
 func (i *interfaces2debug) Convert() (debugInterface *model.DebugInterface) {
@@ -60,7 +61,10 @@ func (i *interfaces2debug) BodyType() (mediaType consts.HttpContentType) {
 
 func (i *interfaces2debug) params() (params []model.DebugInterfaceParam, headers []model.DebugInterfaceHeader, cookies []model.DebugInterfaceCookie) {
 	for _, item := range i.Inter.Params {
-		params = append(params, model.DebugInterfaceParam{InterfaceParamBase: model.InterfaceParamBase{Name: item.Name, Value: item.Default}})
+		params = append(params, model.DebugInterfaceParam{InterfaceParamBase: model.InterfaceParamBase{Name: item.Name, In: consts.ParamInQuery, Value: item.Default}})
+	}
+	for _, item := range i.Endpoint.PathParams {
+		params = append(params, model.DebugInterfaceParam{InterfaceParamBase: model.InterfaceParamBase{Name: item.Name, In: consts.ParamInPath, Value: item.Default}})
 	}
 	for _, item := range i.Inter.Headers {
 		headers = append(headers, model.DebugInterfaceHeader{InterfaceHeaderBase: model.InterfaceHeaderBase{Name: item.Name, Value: item.Default}})

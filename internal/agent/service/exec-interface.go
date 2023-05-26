@@ -36,13 +36,13 @@ func RequestInterface(req domain.DebugData) (ret domain.DebugResponse, err error
 	agentExec.DealwithVariables(&req.BaseRequest, consts.InterfaceDebug)
 
 	// gen url
-	reqUrl := req.Url
-	req.BaseRequest.Url = _httpUtils.AddSepIfNeeded(req.BaseUrl) + reqUrl
+	reqUri := agentExec.ReplacePathParams(req.Url, req.PathParams)
+	req.BaseRequest.Url = _httpUtils.AddSepIfNeeded(req.BaseUrl) + reqUri
 
 	// send request
 	ret, err = agentExec.Invoke(&req.BaseRequest)
 
-	req.BaseRequest.Url = reqUrl // rollback for saved to db
+	req.BaseRequest.Url = reqUri // rollback for saved to db
 
 	ret.Id = req.EndpointInterfaceId
 

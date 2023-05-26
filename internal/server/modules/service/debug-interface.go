@@ -159,7 +159,7 @@ func (s *DebugInterfaceService) SetProps(
 	debugData.EndpointInterfaceId = endpointInterface.ID
 
 	if debugInterfacePo == nil {
-		interfaces2debug := openapi.NewInterfaces2debug(endpoint, endpointInterface, serve)
+		interfaces2debug := openapi.NewInterfaces2debug(endpointInterface, endpoint, serve)
 		debugInterfacePo = interfaces2debug.Convert()
 
 		debugInterfacePo.Name = fmt.Sprintf("%s - %s", endpoint.Title, debugInterfacePo.Method)
@@ -169,7 +169,9 @@ func (s *DebugInterfaceService) SetProps(
 	debugData.EndpointInterfaceId = endpointInterface.ID // reset
 
 	debugData.Headers = append(debugData.Headers, domain.Header{Name: "", Value: ""})
-	debugData.Params = append(debugData.Params, domain.Param{Name: "", Value: ""})
+	debugData.QueryParams = append(debugData.QueryParams, domain.Param{Name: "", Value: ""})
+	debugData.PathParams = append(debugData.PathParams, domain.Param{Name: "", Value: ""})
+
 	debugData.BodyFormData = append(debugData.BodyFormData, domain.BodyFormDataItem{
 		Name: "", Value: "", Type: consts.FormDataTypeText})
 	debugData.BodyFormUrlencoded = append(debugData.BodyFormUrlencoded, domain.BodyFormUrlEncodedItem{

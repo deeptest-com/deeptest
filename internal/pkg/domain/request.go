@@ -22,11 +22,12 @@ type DebugResponse struct {
 }
 
 type BaseRequest struct {
-	Method  consts.HttpMethod `gorm:"default:GET" json:"method"`
-	Url     string            `json:"url"`
-	Params  []Param           ` json:"params"`
-	Headers []Header          ` json:"headers"`
-	Cookies []ExecCookie      ` json:"cookies"` // from cookie processor in scenario
+	Method      consts.HttpMethod `gorm:"default:GET" json:"method"`
+	Url         string            `json:"url"`
+	QueryParams []Param           ` json:"queryParams"`
+	PathParams  []Param           ` json:"pathParams"`
+	Headers     []Header          ` json:"headers"`
+	Cookies     []ExecCookie      ` json:"cookies"` // from cookie processor in scenario
 
 	Body               string                   `json:"body"`
 	BodyFormData       []BodyFormDataItem       `json:"bodyFormData"`
@@ -53,8 +54,8 @@ type Header struct {
 type Param struct {
 	Name     string         `json:"name"`
 	Value    string         `json:"value"`
+	ParamIn  consts.ParamIn `json:"paramIn"`
 	Disabled bool           `json:"disabled"`
-	In       consts.ParamIn `json:"in"`
 }
 
 type BodyFormDataItem struct {

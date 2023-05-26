@@ -16,9 +16,10 @@ type DebugInterface struct {
 
 	Children []*DebugInterface `gorm:"-" json:"children"`
 
-	Params  []DebugInterfaceParam  `gorm:"-" json:"params"`
-	Headers []DebugInterfaceHeader `gorm:"-" json:"headers"`
-	Cookies []DebugInterfaceCookie `gorm:"-" json:"cookies"`
+	QueryParams []DebugInterfaceParam  `gorm:"-" json:"queryParams"`
+	PathParams  []DebugInterfaceParam  `gorm:"-" json:"pathParams"`
+	Headers     []DebugInterfaceHeader `gorm:"-" json:"headers"`
+	Cookies     []DebugInterfaceCookie `gorm:"-" json:"cookies"`
 
 	BodyFormData       []DebugInterfaceBodyFormDataItem       `gorm:"-" json:"bodyFormData"`
 	BodyFormUrlencoded []DebugInterfaceBodyFormUrlEncodedItem `gorm:"-" json:"bodyFormUrlencoded"`

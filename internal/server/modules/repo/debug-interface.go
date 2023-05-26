@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/kataras/iris/v12"
@@ -92,7 +93,7 @@ func (r *DebugInterfaceRepo) GetDetail(interfId uint) (interf model.DebugInterfa
 	if interfId > 0 {
 		interf, err = r.Get(interfId)
 
-		interf.Params, _ = r.ListParams(interfId)
+		interf.QueryParams, interf.PathParams, _ = r.ListParams(interfId)
 		interf.Headers, _ = r.ListHeaders(interfId)
 		interf.BodyFormData, _ = r.ListBodyFormData(interfId)
 		interf.BodyFormUrlencoded, _ = r.ListBodyFormUrlencoded(interfId)
@@ -113,7 +114,7 @@ func (r *DebugInterfaceRepo) Save(interf *model.DebugInterface) (err error) {
 			return err
 		}
 
-		err = r.UpdateParams(interf.ID, interf.Params)
+		err = r.UpdateParams(interf.ID, interf.QueryParams, interf.PathParams)
 		if err != nil {
 			return err
 		}
@@ -191,16 +192,21 @@ func (r *DebugInterfaceRepo) RemoveHeaders(id uint) (err error) {
 	return
 }
 
-func (r *DebugInterfaceRepo) UpdateParams(id uint, params []model.DebugInterfaceParam) (err error) {
+func (r *DebugInterfaceRepo) UpdateParams(id uint, queryParams, pathParams []model.DebugInterfaceParam) (err error) {
 	err = r.RemoveParams(id)
 
-	if len(params) == 0 {
-		return
+	params := []model.DebugInterfaceParam{}
+
+	for _, p := range queryParams {
+		p.ID = 0
+		p.InterfaceId = id
+		params = append(params, p)
 	}
 
-	for idx, _ := range params {
-		params[idx].ID = 0
-		params[idx].InterfaceId = id
+	for _, p := range pathParams {
+		p.ID = 0
+		p.InterfaceId = id
+		params = append(params, p)
 	}
 
 	err = r.DB.Create(&params).Error
@@ -419,12 +425,25 @@ func (r *DebugInterfaceRepo) SetOAuth2AccessToken(token string, interfaceId int)
 	return
 }
 
-func (r *DebugInterfaceRepo) ListParams(interfaceId uint) (pos []model.DebugInterfaceParam, err error) {
+func (r *DebugInterfaceRepo) ListParams(interfaceId uint) (
+	queryParams []model.DebugInterfaceParam, pathParams []model.DebugInterfaceParam, err error) {
+
+	pos := []model.DebugInterfaceParam{}
+
 	err = r.DB.
 		Where("interface_id=?", interfaceId).
 		Where("NOT deleted").
 		Order("id ASC").
 		Find(&pos).Error
+
+	for _, po := range pos {
+		if po.ParamIn == consts.ParamInQuery {
+			queryParams = append(queryParams, po)
+		} else if po.ParamIn == consts.ParamInPath {
+			pathParams = append(pathParams, po)
+		}
+	}
+
 	return
 }
 func (r *DebugInterfaceRepo) ListHeaders(interfaceId uint) (pos []model.DebugInterfaceHeader, err error) {
@@ -501,7 +520,7 @@ func (r *DebugInterfaceRepo) SaveInterfaces(interf *model.DebugInterface) (err e
 			return err
 		}
 
-		err = r.UpdateParams(interf.ID, interf.Params)
+		err = r.UpdateParams(interf.ID, interf.QueryParams, interf.PathParams)
 		if err != nil {
 			return err
 		}
@@ -531,7 +550,7 @@ func (r *DebugInterfaceRepo) GetByEndpointId(endpointId uint, version string) (i
 
 	interfaces, err = r.GetEndpointId(endpointId, version)
 	for key, interf := range interfaces {
-		interfaces[key].Params, _ = r.ListParams(interf.ID)
+		interfaces[key].QueryParams, interfaces[key].PathParams, _ = r.ListParams(interf.ID)
 		interfaces[key].Headers, _ = r.ListHeaders(interf.ID)
 		interfaces[key].Cookies, _ = r.ListCookies(interf.ID)
 	}
@@ -586,7 +605,7 @@ func (r *DebugInterfaceRepo) HasDebugInterfaceRecord(endpointInterfaceId uint) (
 }
 
 func (r *DebugInterfaceRepo) SetProps(po *model.DebugInterface) (err error) {
-	po.Params, _ = r.ListParams(po.ID)
+	po.QueryParams, po.PathParams, _ = r.ListParams(po.ID)
 	po.Headers, _ = r.ListHeaders(po.ID)
 	po.BodyFormData, _ = r.ListBodyFormData(po.ID)
 	po.BodyFormUrlencoded, _ = r.ListBodyFormUrlencoded(po.ID)

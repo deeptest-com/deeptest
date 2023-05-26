@@ -23,7 +23,7 @@
         </a-row>
       </div>
       <div class="params">
-        <a-row v-for="(item, idx) in debugData.params" :key="idx" type="flex" class="param">
+        <a-row v-for="(item, idx) in debugData.queryParams" :key="idx" type="flex" class="param">
           <a-col flex="1">
             <a-input v-model:value="item.name" @change="onParamChange(idx)" class="dp-bg-input-transparent" />
           </a-col>
@@ -90,33 +90,33 @@ const debugData = computed<any>(() => store.state.Debug.debugData);
 
 const onParamChange = (idx) => {
   console.log('onParamChange', idx)
-  if (debugData.value.params.length <= idx + 1
-        && (debugData.value.params[idx].name !== '' || debugData.value.params[idx].value !== '')) {
-    debugData.value.params.push({} as Param)
+  if (debugData.value.queryParams.length <= idx + 1
+        && (debugData.value.queryParams[idx].name !== '' || debugData.value.queryParams[idx].value !== '')) {
+    debugData.value.queryParams.push({} as Param)
   }
 };
 
 const add = () => {
   console.log('add')
-  debugData.value.params.push({} as Param)
+  debugData.value.queryParams.push({} as Param)
 }
 const removeAll = () => {
-  console.log('removeAll', debugData.value.params)
-  debugData.value.params = [{} as Param]
+  console.log('removeAll', debugData.value.queryParams)
+  debugData.value.queryParams = [{} as Param]
 }
 
 const disable = (idx) => {
   console.log('enable', idx)
-  debugData.value.params[idx].disabled = !debugData.value.params[idx].disabled
+  debugData.value.queryParams[idx].disabled = !debugData.value.queryParams[idx].disabled
 }
 const remove = (idx) => {
   console.log('remove')
-  debugData.value.params.splice(idx, 1)
-  // add()
+  debugData.value.queryParams.splice(idx, 1)
+  add()
 }
 const insert = (idx) => {
   console.log('insert')
-  debugData.value.params.splice(idx+1, 0, {} as Param)
+  debugData.value.queryParams.splice(idx+1, 0, {} as Param)
 }
 
 const showContextMenu = ref(false)

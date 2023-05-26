@@ -74,7 +74,7 @@ func (s *ImportService) Create(interf *model.EndpointInterface) (err error) {
 	//	return err
 	//}
 	//
-	//err = s.InterfaceRepo.UpdateParams(interf.ID, interf.Params)
+	//err = s.InterfaceRepo.UpdateParams(interf.ID, interf.QueryParams)
 	//if err != nil {
 	//	return err
 	//}

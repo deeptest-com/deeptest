@@ -1,9 +1,11 @@
 package agentExec
 
 import (
+	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	_httpUtils "github.com/aaronchen2k/deeptest/pkg/lib/http"
+	"strings"
 )
 
 func GenRequestUrl(req *domain.BaseRequest, interfaceId uint, baseUrl string) {
@@ -14,5 +16,21 @@ func GenRequestUrl(req *domain.BaseRequest, interfaceId uint, baseUrl string) {
 		baseUrl = getValueFromList(consts.KEY_BASE_URL, vars)
 	}
 
-	req.Url = _httpUtils.AddSepIfNeeded(baseUrl) + req.Url
+	uri := ReplacePathParams(req.Url, req.PathParams)
+
+	req.Url = _httpUtils.AddSepIfNeeded(baseUrl) + uri
+}
+
+func ReplacePathParams(uri string, pathParams []domain.Param) (ret string) {
+	for _, param := range pathParams {
+		if param.ParamIn != consts.ParamInPath {
+			continue
+		}
+
+		vari := fmt.Sprintf("{%v}", param.Name)
+
+		uri = strings.ReplaceAll(uri, vari, param.Value)
+	}
+
+	return
 }

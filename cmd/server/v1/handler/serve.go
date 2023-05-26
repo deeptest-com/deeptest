@@ -94,7 +94,7 @@ func (c *ServeCtrl) Delete(ctx iris.Context) {
 	if err == nil {
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 	} else {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 	}
 }
 

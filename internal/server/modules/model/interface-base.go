@@ -36,6 +36,7 @@ type InterfaceBase struct {
 type InterfaceParamBase struct {
 	Name        string         `json:"name"`
 	Value       string         `json:"value"`
+	Type        string         `json:"type"`
 	ParamIn     consts.ParamIn `json:"paramIn"`
 	Desc        string         `json:"desc"`
 	InterfaceId uint           `json:"interfaceId"`

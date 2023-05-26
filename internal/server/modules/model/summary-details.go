@@ -41,12 +41,11 @@ type SummaryCard struct {
 }
 
 type SummaryCardTotal struct {
-	ScenarioTotal  int64               `gorm:"column:scenario_total" json:"scenarioTotal"`
-	InterfaceTotal int64               `gorm:"column:interface_total" json:"interfaceTotal"`
-	ExecTotal      int64               `gorm:"column:exec_total" json:"execTotal"`
-	PassRate       float64             `gorm:"column:pass_rate" json:"passRate"`
-	Coverage       float64             `gorm:"column:coverage" json:"coverage"`
-	Logs           []*ExecLogProcessor `gorm:"-" json:"logs"`
+	ScenarioTotal  int64   `gorm:"type:bigint" json:"scenarioTotal"`
+	InterfaceTotal int64   `gorm:"type:bigint" json:"interfaceTotal"`
+	ExecTotal      int64   `gorm:"type:bigint" json:"execTotal"`
+	PassRate       float64 `gorm:"type:double" json:"passRate"`
+	Coverage       float64 `gorm:"type:double" json:"coverage"`
 }
 
 type ProjectIdsGroupByUserId struct {
@@ -66,6 +65,11 @@ type ProjectsBugCount struct {
 
 type ProjectIdAndId struct {
 	ProjectId int64 `json:"projectId"`
+	Id        int64 `json:"id"`
+}
+
+type ScenarioProjectIdAndId struct {
+	ProjectId uint  `json:"projectId"`
 	Id        int64 `json:"id"`
 }
 

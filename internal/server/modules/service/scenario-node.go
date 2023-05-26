@@ -74,7 +74,7 @@ func (s *ScenarioNodeService) AddInterfaces(req v1.ScenarioAddInterfacesReq) (re
 	}
 
 	for _, interfaceId := range req.InterfaceIds {
-		ret, _ = s.addInterface(interfaceId, targetProcessor)
+		ret, _ = s.addInterface(interfaceId, req.CreateBy, targetProcessor)
 	}
 
 	return
@@ -93,6 +93,7 @@ func (s *ScenarioNodeService) AddProcessor(req v1.ScenarioAddScenarioReq) (ret m
 
 		ScenarioId: targetProcessor.ScenarioId,
 		ProjectId:  req.ProjectId,
+		CreatedBy:  req.CreateBy,
 	}
 
 	if req.Mode == "child" {
@@ -126,7 +127,7 @@ func (s *ScenarioNodeService) AddProcessor(req v1.ScenarioAddScenarioReq) (ret m
 	return
 }
 
-func (s *ScenarioNodeService) addInterface(endpointInterfaceId int, parentProcessor model.Processor) (
+func (s *ScenarioNodeService) addInterface(endpointInterfaceId int, createBy uint, parentProcessor model.Processor) (
 	ret model.Processor, err error) {
 
 	endpointInterface, err := s.EndpointInterfaceRepo.Get(uint(endpointInterfaceId))
@@ -145,6 +146,7 @@ func (s *ScenarioNodeService) addInterface(endpointInterfaceId int, parentProces
 		ParentId:            parentProcessor.ID,
 		ScenarioId:          parentProcessor.ScenarioId,
 		ProjectId:           parentProcessor.ProjectId,
+		CreatedBy:           createBy,
 	}
 	processor.Ordr = s.ScenarioNodeRepo.GetMaxOrder(processor.ParentId)
 	s.ScenarioNodeRepo.Save(&processor)

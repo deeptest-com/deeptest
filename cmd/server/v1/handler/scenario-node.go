@@ -6,6 +6,7 @@ import (
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/kataras/iris/v12"
+	"github.com/snowlyg/multi"
 )
 
 type ScenarioNodeCtrl struct {
@@ -42,6 +43,7 @@ func (c *ScenarioNodeCtrl) AddInterfaces(ctx iris.Context) {
 		return
 	}
 
+	req.CreateBy = multi.GetUserId(ctx)
 	nodePo, bizErr := c.ScenarioNodeService.AddInterfaces(req)
 	if bizErr != nil {
 		ctx.JSON(_domain.Response{
@@ -69,7 +71,7 @@ func (c *ScenarioNodeCtrl) AddProcessor(ctx iris.Context) {
 	}
 
 	req.ProjectId = uint(projectId)
-
+	req.CreateBy = multi.GetUserId(ctx)
 	nodePo, bizErr := c.ScenarioNodeService.AddProcessor(req)
 	if bizErr != nil {
 		ctx.JSON(_domain.Response{

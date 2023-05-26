@@ -2,6 +2,7 @@ package source
 
 import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	repo2 "github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"github.com/gookit/color"
@@ -17,7 +18,7 @@ func NewRoleSource() *RoleSource {
 }
 
 func (s *RoleSource) GetSources() ([]v1.RoleReq, error) {
-	perms, err := s.PermRepo.GetPermsForRole()
+	perms, err := s.PermRepo.GetPermsForRoles()
 	if err != nil {
 		return []v1.RoleReq{}, err
 	}
@@ -27,14 +28,14 @@ func (s *RoleSource) GetSources() ([]v1.RoleReq, error) {
 			RoleBase: v1.RoleBase{
 				Name:        "admin",
 				DisplayName: "管理员",
-				Perms:       perms,
+				Perms:       perms[consts.Admin],
 			},
 		},
 		{
 			RoleBase: v1.RoleBase{
 				Name:        "user",
 				DisplayName: "用户",
-				Perms:       perms,
+				Perms:       perms[consts.User],
 			},
 		},
 	}

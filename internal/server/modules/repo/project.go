@@ -255,15 +255,22 @@ func (r *ProjectRepo) GetChildrenIds(id uint) (ids []int, err error) {
 	return
 }
 
-func (r *ProjectRepo) ListProjectByUser(userId uint) (projects []model.Project, err error) {
-	var projectIds []uint
-	r.DB.Model(&model.ProjectMember{}).
-		Select("project_id").Where("user_id = ?", userId).Scan(&projectIds)
+func (r *ProjectRepo) ListProjectByUser(userId uint) (projects []model.ProjectMemberRole, err error) {
+	isAdminUser, err := r.UserRepo.IsAdminUser(userId)
+	if err != nil {
+		return
+	}
 
-	err = r.DB.Model(&model.Project{}).
-		Where("NOT deleted AND id IN (?)", projectIds).
-		Find(&projects).Error
+	db := r.DB.Model(&model.ProjectMember{}).
+		Joins("LEFT JOIN biz_project p ON biz_project_member.project_id=p.id").
+		Joins("LEFT JOIN biz_project_role r ON biz_project_member.project_role_id=r.id").
+		Select("p.*, r.id role_id, r.name role_name").
+		Where("NOT biz_project_member.deleted")
 
+	if !isAdminUser {
+		db.Where("biz_project_member.user_id = ?", userId)
+	}
+	err = db.Group("biz_project_member.project_id").Find(&projects).Error
 	return
 }
 
@@ -483,7 +490,8 @@ func (r *ProjectRepo) GetAuditList(req v1.AuditProjectPaginate) (data _domain.Pa
 	var count int64
 	db := r.DB.Model(&model.ProjectMemberAudit{})
 	if req.Type == 0 {
-		db = db.Where("audit_user_id = ? and status = 0", req.AuditUserId)
+		projectIds := r.GetProjectIdsByUserIdAndRole(req.AuditUserId, 1)
+		db = db.Where("project_id in ? and status = 0", projectIds)
 	} else {
 		db = db.Where("apply_user_id = ?", req.ApplyUserId)
 	}
@@ -552,8 +560,8 @@ func (r *ProjectRepo) GetAudit(id uint) (ret model.ProjectMemberAudit, err error
 
 func (r *ProjectRepo) UpdateAuditStatus(id, auditUserId uint, status consts.AuditStatus) (err error) {
 	err = r.DB.Model(&model.ProjectMemberAudit{}).
-		Where("id=? and audit_user_id=?", id, auditUserId).
-		Update("status", status).Error
+		Where("id=?", id).
+		Updates(map[string]interface{}{"status": status, "audit_user_id": auditUserId}).Error
 	return
 }
 
@@ -600,4 +608,16 @@ func (r *ProjectRepo) CreateSample(projectId, serveId, userId uint) (err error) 
 		return nil
 	})
 
+}
+
+func (r *ProjectRepo) GetProjectIdsByUserIdAndRole(userId, roleId uint) (projectIds []uint) {
+	var projects []model.ProjectMember
+	err := r.DB.Where("user_id=? and project_role_id=? and not deleted and not disabled", userId, roleId).Find(&projects).Error
+	if err != nil {
+		return
+	}
+	for _, project := range projects {
+		projectIds = append(projectIds, project.ProjectId)
+	}
+	return
 }

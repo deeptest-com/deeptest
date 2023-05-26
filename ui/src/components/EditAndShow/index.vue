@@ -1,6 +1,10 @@
 <template>
-  <div class="editor" v-if="isEditing" >
-    <a-input v-on-click-outside="cancelEdit" class="input" :placeholder="placeholder || '请输入内容'" :size="'small'" v-model:value="fieldValue"/>
+  <div class="editor" v-if="isEditing" v-on-click-outside="cancelEdit">
+    <a-input
+             class="input"
+             :placeholder="placeholder || '请输入内容'"
+             :size="'small'"
+             v-model:value="fieldValue"/>
     <a-space :size="8">
       <CloseOutlined @click.stop="cancelEdit"/>
       <CheckOutlined
@@ -19,8 +23,9 @@
 import {
   defineProps,
   defineEmits,
-  ref, watch, onMounted, onUnmounted,
+  ref, watch,
 } from 'vue';
+import { message } from 'ant-design-vue';
 import {
   EditOutlined,
   CheckOutlined,
@@ -48,6 +53,7 @@ const emit = defineEmits(['update', 'edit']);
 
 function updateField() {
   if (!fieldValue.value) {
+    message.warning('请请输入内容');
     return;
   }
   emit('update', fieldValue.value);

@@ -20,7 +20,7 @@
 import { computed, ref, watch, reactive } from "vue";
 import { useStore } from "vuex";
 
-import { TableFilter } from '@/views/component/Report/Components';
+import { TableFilter } from '@/views/component/Report/components';
 import List from './List/index.vue';
 import DetailDrawer from './Detail/index.vue';
 
@@ -68,9 +68,9 @@ const getList = async (params?: any): Promise<void> => {
 };
 
 const queryDetail = async (record: any) => {
-    console.log('查看报告详情：===', record);
+    // console.log('查看报告详情：===', record);
     await store.dispatch('Report/initReportDetail');
-    store.dispatch('Report/get', record.id);
+    await store.dispatch('Report/get', record.id);
     currPlanId.value = record.id;
     drawerVisible.value = true;
 };

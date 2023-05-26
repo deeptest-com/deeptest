@@ -180,7 +180,7 @@ export async function removeInvocation(id: number): Promise<any> {
  * */
 export async function getScenariosReports(data: any): Promise<any> {
     return request({
-        url: `/scenarios/reports/`,
+        url: `/scenarios/reports`,
         method: 'POST',
         data: data,
     });

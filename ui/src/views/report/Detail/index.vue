@@ -9,14 +9,7 @@
         <div class="drawer-content">
             <ReportBasicInfo  :items="detailResult.basicInfoList" :scene="scene" :show-operation="true" />
             <StatisticTable :scene="scene" :data="detailResult.statisticData" />
-            <template v-for="scenarioReportItem in detailResult.scenarioReports" :key="scenarioReportItem.id">
-                <ScenarioCollapsePanel :show-scenario-info="showScenarioInfo" :expand-active="expandActive"
-                    :record="scenarioReportItem">
-                    <template #endpointData>
-                        <EndpointCollapsePanel v-if="scenarioReportItem.requestLogs.length > 0" :recordList="scenarioReportItem.requestLogs" />
-                    </template>
-                </ScenarioCollapsePanel>
-            </template>
+            <LogTreeView :treeData="detailResult.scenarioReports"/>
         </div>
     </a-drawer>
 </template>
@@ -24,7 +17,8 @@
 import { defineProps, defineEmits, ref, computed } from 'vue';
 import { useStore } from 'vuex';
 
-import { ReportBasicInfo, StatisticTable, ScenarioCollapsePanel, EndpointCollapsePanel } from '@/views/component/Report/Components';
+import { ReportBasicInfo, StatisticTable, ScenarioCollapsePanel, EndpointCollapsePanel,LogTreeView } from '@/views/component/Report/components';
+
 
 import { StateType as ReportStateType } from "../store";
 import { StateType as PlanStateType } from '@/views/plan/store';

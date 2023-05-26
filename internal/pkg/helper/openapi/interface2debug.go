@@ -22,24 +22,24 @@ func (i *interfaces2debug) Convert() (debugInterface *model.DebugInterface) {
 	debugInterface = new(model.DebugInterface)
 
 	copier.CopyWithOption(debugInterface, &i.Inter, copier.Option{DeepCopy: true})
-
-	for _, param := range i.Endpoint.PathParams {
-		debugInterfaceParam := model.DebugInterfaceParam{
-			InterfaceParamBase: model.InterfaceParamBase{
-				Name:  param.Name,
-				Value: param.Value,
-			},
+	/*
+		for _, param := range i.Endpoint.PathParams {
+			debugInterfaceParam := model.DebugInterfaceParam{
+				InterfaceParamBase: model.InterfaceParamBase{
+					Name:  param.Name,
+					Value: param.Value,
+				},
+			}
+			debugInterface.PathParams = append(debugInterface.PathParams, debugInterfaceParam)
 		}
-		debugInterface.PathParams = append(debugInterface.PathParams, debugInterfaceParam)
-	}
-
+	*/
 	debugInterface.ID = 0
-
 	debugInterface.BodyFormData = i.BodyFormData()
 	debugInterface.BodyFormUrlencoded = i.BodyFormUrlencoded()
 	debugInterface.Body = i.Body()
 	debugInterface.BodyType = i.BodyType()
 	debugInterface.AuthorizationType, debugInterface.ApiKey, debugInterface.OAuth20, debugInterface.BearerToken, debugInterface.BasicAuth = i.security()
+	debugInterface.QueryParams, debugInterface.PathParams, debugInterface.Headers, debugInterface.Cookies = i.params()
 
 	return
 }
@@ -68,8 +68,20 @@ func (i *interfaces2debug) BodyType() (mediaType consts.HttpContentType) {
 	return
 }
 
-func (i *interfaces2debug) params() {
-
+func (i *interfaces2debug) params() (queryParams []model.DebugInterfaceParam, pathParams []model.DebugInterfaceParam, headers []model.DebugInterfaceHeader, cookies []model.DebugInterfaceCookie) {
+	for _, item := range i.Inter.Params {
+		queryParams = append(queryParams, model.DebugInterfaceParam{InterfaceParamBase: model.InterfaceParamBase{Name: item.Name, ParamIn: consts.ParamInQuery, Value: item.Default}})
+	}
+	for _, item := range i.Endpoint.PathParams {
+		pathParams = append(pathParams, model.DebugInterfaceParam{InterfaceParamBase: model.InterfaceParamBase{Name: item.Name, ParamIn: consts.ParamInPath, Value: item.Default}})
+	}
+	for _, item := range i.Inter.Headers {
+		headers = append(headers, model.DebugInterfaceHeader{InterfaceHeaderBase: model.InterfaceHeaderBase{Name: item.Name, Value: item.Default}})
+	}
+	for _, item := range i.Inter.Cookies {
+		cookies = append(cookies, model.DebugInterfaceCookie{InterfaceCookieBase: model.InterfaceCookieBase{Name: item.Name, Value: item.Default}})
+	}
+	return
 }
 
 func (i *interfaces2debug) security() (authorizationType string, apiKey model.DebugInterfaceApiKey, oAuth20 model.DebugInterfaceOAuth20, bearerToken model.DebugInterfaceBearerToken, basicAuth model.DebugInterfaceBasicAuth) {

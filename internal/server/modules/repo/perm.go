@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	casbinServer "github.com/aaronchen2k/deeptest/internal/server/core/casbin"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
@@ -182,7 +183,7 @@ func (r *PermRepo) DeleteAll() error {
 // GetPermsForRole
 func (r *PermRepo) GetPermsForRole() ([][]string, error) {
 	var permsForRoles [][]string
-	perms := []model.SysPerm{}
+	var perms []model.SysPerm
 	err := r.DB.Model(&model.SysPerm{}).Find(&perms).Error
 	if err != nil {
 		return nil, fmt.Errorf("获取权限错误 %w", err)
@@ -192,4 +193,44 @@ func (r *PermRepo) GetPermsForRole() ([][]string, error) {
 		permsForRoles = append(permsForRoles, permsForRole)
 	}
 	return permsForRoles, nil
+}
+
+func (r *PermRepo) GetPermsForRoles() (map[consts.RoleType][][]string, error) {
+	permsUserNotInclude := []v1.PermStruct{
+		{
+			Name: "/api/v1/users",
+			Act:  "POST",
+		},
+		{
+			Name: "/api/v1/users/:id",
+			Act:  "POST",
+		},
+		{
+			Name: "/api/v1/users/:id",
+			Act:  "DELETE",
+		},
+	}
+	var adminPerms, userPerms [][]string
+	var perms []model.SysPerm
+	err := r.DB.Model(&model.SysPerm{}).Find(&perms).Error
+	if err != nil {
+		return nil, fmt.Errorf("获取权限错误 %w", err)
+	}
+
+OuterLoop:
+	for _, perm := range perms {
+		permForRole := []string{perm.Name, perm.Act}
+		adminPerms = append(adminPerms, permForRole)
+		for _, v := range permsUserNotInclude {
+			if perm.Name == v.Name && perm.Act == v.Act {
+				continue OuterLoop
+			}
+		}
+		userPerms = append(userPerms, permForRole)
+	}
+
+	rolePermsMap := make(map[consts.RoleType][][]string)
+	rolePermsMap[consts.Admin] = adminPerms
+	rolePermsMap[consts.User] = userPerms
+	return rolePermsMap, nil
 }

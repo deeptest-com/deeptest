@@ -21,6 +21,7 @@ type ScenarioReqPaginate struct {
 type ScenarioAddInterfacesReq struct {
 	InterfaceIds []int `json:"interfaceIds"`
 	TargetId     uint  `json:"targetId"`
+	CreateBy     uint  `json:"createBy"`
 }
 
 type ScenarioAddScenarioReq struct {
@@ -33,6 +34,7 @@ type ScenarioAddScenarioReq struct {
 	TargetProcessorType     consts.ProcessorType     `json:"targetProcessorType"`
 	TargetProcessorId       int                      `json:"targetProcessorId"`
 	ProjectId               uint                     `json:"projectId"`
+	CreateBy                uint                     `json:"createBy"`
 }
 
 type ScenarioNodeReq struct {

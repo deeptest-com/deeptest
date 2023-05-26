@@ -17,7 +17,6 @@
     </div>
 
     <EndpointForm v-if="showMode === 'form'"/>
-
     <div class="endpoint-code" v-if="showMode === 'code'">
       <MonacoEditor
           class="editor"
@@ -51,7 +50,7 @@ const endpointDetailYamlCode = computed<Endpoint[]>(() => store.state.Endpoint.e
 import EndpointForm from './Form/index.vue'
 
 const props = defineProps({});
-const emit = defineEmits(['ok', 'close', 'refreshList']);
+const emit = defineEmits(['switchMode']);
 const showMode = ref('form');
 
 async function switchMode(val) {
@@ -60,10 +59,13 @@ async function switchMode(val) {
   if (val === 'code') {
     await store.dispatch('Endpoint/getYamlCode', endpointDetail.value);
   }
+  emit('switchMode', val);
+
 }
 
 function handleYamlCodeChange(code) {
-  store.commit("Endpoint/setYamlCode", code);
+  console.log(code);
+  // store.commit("Endpoint/setYamlCode", code);
 }
 
 </script>

@@ -2,8 +2,7 @@
   <div class="drawer-content">
     <ReportBasicInfo :show-operation="true" :scene="ReportDetailType.ExecScenario" :items="baseInfoList || []" @handleBtnClick="genReport"/>
     <StatisticTable :scene="ReportDetailType.ExecScenario" :data="statisticData"/>
-    <EndpointCollapsePanel v-if="recordList.length > 0"
-                           :recordList="recordList"/>
+    <LogTreeView :treeData="scenarioList"/>
   </div>
 </template>
 <script setup lang="ts">
@@ -14,7 +13,10 @@ import {
   ReportBasicInfo,
   StatisticTable,
   EndpointCollapsePanel,
-} from '@/views/component/Report/Components';
+  LogTreeView
+} from '@/views/component/Report/components';
+
+
 
 import {PaginationConfig, Scenario} from "@/views/scenario/data";
 import {momentUtc} from "@/utils/datetime"
@@ -58,8 +60,11 @@ const statisticData = computed(() => {
   }
 })
 
-const recordList = computed(() => {
-  return formatData(reportsDetail.value?.logs?.[0].logs || []);
+/**
+ * 适配场景执行报告日志数据
+ * */
+const scenarioList = computed(() => {
+  return [reportsDetail.value];
 })
 
 

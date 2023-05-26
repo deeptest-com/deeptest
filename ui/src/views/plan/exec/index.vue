@@ -27,7 +27,7 @@
 import { defineProps, defineEmits, ref, computed, watch } from 'vue';
 import { useStore } from 'vuex';
 
-import { ReportBasicInfo, StatisticTable, ScenarioCollapsePanel, EndpointCollapsePanel, Progress } from '@/views/component/Report/Components';
+import { ReportBasicInfo, StatisticTable, ScenarioCollapsePanel, EndpointCollapsePanel, Progress } from '@/views/component/Report/components';
 
 import { StateType as PlanStateType } from "../store";
 import { ReportDetailType } from '@/utils/enum';

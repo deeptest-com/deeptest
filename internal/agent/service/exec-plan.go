@@ -46,7 +46,7 @@ func RunPlan(req *agentExec.PlanExecReq, wsMsg *websocket.Message) (err error) {
 	// submit result
 	report, _ := SubmitPlanResult(results, req.PlanId, req.ServerUrl, req.Token)
 	execUtils.SendResultMsg(report, wsMsg)
-	sendPlanSubmitResult(req.PlanId, wsMsg)
+	//sendPlanSubmitResult(req.PlanId, wsMsg)
 
 	// end msg
 	execUtils.SendEndMsg(wsMsg)

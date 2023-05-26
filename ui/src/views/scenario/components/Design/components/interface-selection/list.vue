@@ -2,7 +2,6 @@
   <div class="interface-list-main">
     <div class="table-toolbar">
       <div class="filters">
-        <TreeSelect/>
         <a-input-search
             style="display: flex;justify-content: end;width: 300px;margin-bottom: 16px; "
             placeholder="请输入关键词"
@@ -12,7 +11,6 @@
             @search="selectCategory"/>
       </div>
     </div>
-
     <a-table
         :row-selection="{
           selectedRowKeys: selectedRowKeys,
@@ -56,12 +54,6 @@ import {useRouter} from 'vue-router';
 import debounce from "lodash.debounce";
 import EndpointTree from './list/tree.vue';
 import {ColumnProps} from 'ant-design-vue/es/table/interface';
-import {MoreOutlined} from '@ant-design/icons-vue';
-import {endpointStatusOpts} from '@/config/constant';
-import EditAndShowField from '@/components/EditAndShow/index.vue';
-import CreateEndpointModal from './components/CreateEndpointModal.vue';
-import TableFilter from './components/TableFilter.vue';
-import Drawer from './components/Drawer/index.vue'
 import {useStore} from "vuex";
 import {Endpoint, PaginationConfig} from "@/views/endpoint/data";
 
@@ -69,7 +61,7 @@ import {StateType as ServeStateType} from "@/store/serve";
 import {StateType as Debug} from "@/views/component/debug/store";
 import {message, Modal} from 'ant-design-vue';
 import {listEndpointInterface} from "@/views/endpoint/service";
-import TreeSelect from "./TreeSelect.vue";
+// import TreeSelect from "./TreeSelect.vue";
 
 const store = useStore<{ Endpoint, ProjectGlobal, Debug: Debug, ServeGlobal: ServeStateType }>();
 

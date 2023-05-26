@@ -70,9 +70,30 @@ func DecimalHB(newValue float64, oldValue float64) float64 {
 	return value * 100
 }
 
-func GetDate(date time.Time) (startTime string, endTime string) {
-	year, month, day := date.Date()
+func GetTodayStartAndEndTime() (startTime string, endTime string) {
+	today := time.Now().AddDate(0, 0, 0)
+	year, month, day := today.Date()
 	startTime = strconv.Itoa(year) + "-" + strconv.Itoa(int(month)) + "-" + strconv.Itoa(day) + " 00:00:00"
+	endTime = strconv.Itoa(year) + "-" + strconv.Itoa(int(month)) + "-" + strconv.Itoa(day) + " 23:59:59"
+	return
+}
+
+func GetEarlierDateStartAndEndTime(earlier int64) (startTime string, endTime string) {
+	earlierDate := time.Now().AddDate(0, 0, int(earlier))
+	year, month, day := earlierDate.Date()
+	startTime = strconv.Itoa(year) + "-" + strconv.Itoa(int(month)) + "-" + strconv.Itoa(day) + " 00:00:00"
+	endTime = strconv.Itoa(year) + "-" + strconv.Itoa(int(month)) + "-" + strconv.Itoa(day) + " 23:59:59"
+	return
+}
+
+func GetEarlierDateUntilTodayStartAndEndTime(earlier int64) (startTime string, endTime string) {
+	earlierDate := time.Now().AddDate(0, 0, int(earlier))
+	today := time.Now().AddDate(0, 0, 0)
+
+	earlierYear, earlierMonth, earlierDay := earlierDate.Date()
+	year, month, day := today.Date()
+
+	startTime = strconv.Itoa(earlierYear) + "-" + strconv.Itoa(int(earlierMonth)) + "-" + strconv.Itoa(earlierDay) + " 00:00:00"
 	endTime = strconv.Itoa(year) + "-" + strconv.Itoa(int(month)) + "-" + strconv.Itoa(day) + " 23:59:59"
 	return
 }

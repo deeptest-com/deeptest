@@ -1,11 +1,13 @@
 <template>
-  <div class="editor" v-if="isEditing">
+  <div class="editor" v-if="isEditing" >
     <a-select
         v-model:value="fieldValue"
         style="width: 100px;margin-right: 8px;"
         :size="'small'"
         @change="updateField"
-        placeholder="请修改接口状态"
+        v-on-click-outside="cancelEdit"
+        @dropdownVisibleChange="dropdownVisibleChange"
+        placeholder="请选择"
         :options="options">
     </a-select>
   </div>
@@ -23,6 +25,7 @@ import {
 import {
   EditOutlined,
 } from '@ant-design/icons-vue';
+import { vOnClickOutside } from '@vueuse/components';
 const isEditing = ref(false);
 const fieldValue:any = ref('');
 const props = defineProps({
@@ -52,8 +55,17 @@ function updateField() {
 }
 
 function cancelEdit() {
+  if(isOpen.value){
+    return;
+  }
   fieldValue.value = props.value;
   isEditing.value = false;
+}
+
+const isOpen = ref(false);
+
+function dropdownVisibleChange(open) {
+  isOpen.value = open;
 }
 
 function handleClick() {

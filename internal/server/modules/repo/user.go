@@ -240,12 +240,15 @@ func (r *UserRepo) Create(req serverDomain.UserReq) (uint, error) {
 		return 0, err
 	}
 
-	project, err := r.AddProjectForUser(&user)
-	if err != nil {
-		return 0, err
-	}
+	/*
+		project, err := r.AddProjectForUser(&user)
+		if err != nil {
+			return 0, err
+		}
+	*/
 
-	if err := r.AddProfileForUser(&user, project.ID); err != nil {
+	//新用户默认授权默认项目权限
+	if err := r.AddProfileForUser(&user, 1); err != nil {
 		return 0, err
 	}
 
@@ -457,7 +460,7 @@ func (r *UserRepo) AddProjectForUser(user *model.SysUser) (project model.Project
 	}
 
 	// create project
-	project = model.Project{ProjectBase: serverDomain.ProjectBase{Name: "默认项目"}}
+	project = model.Project{ProjectBase: serverDomain.ProjectBase{Name: "默认项目", ShortName: "T"}}
 	err = r.DB.Create(&project).Error
 	if err != nil {
 		logUtils.Errorf("添加项目错误", zap.String("错误:", err.Error()))

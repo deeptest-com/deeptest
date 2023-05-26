@@ -64,13 +64,15 @@ func (r *ScenarioNodeRepo) hasChild(processors []*agentExec.Processor, parent *a
 	return
 }
 
-func (r *ScenarioNodeRepo) CreateDefault(scenarioId uint) (po model.Processor, err error) {
+func (r *ScenarioNodeRepo) CreateDefault(scenarioId, projectId, createUserId uint) (po model.Processor, err error) {
 	po = model.Processor{
 		ScenarioId:     scenarioId,
+		ProjectId:      projectId,
 		Name:           "root",
 		EntityCategory: consts.ProcessorRoot,
 		EntityType:     consts.ProcessorRootDefault,
 		EntityId:       0,
+		CreatedBy:      createUserId,
 	}
 	err = r.DB.Create(&po).Error
 

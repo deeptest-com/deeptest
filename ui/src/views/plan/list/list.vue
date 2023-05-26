@@ -139,6 +139,7 @@ const columns = [
     title: '测试计划',
     dataIndex: 'name',
     slots: { customRender: 'name' },
+    width: 300,
     ellips: true
   },
   {

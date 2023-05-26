@@ -6,8 +6,8 @@
         <router-view></router-view>
       </div>
       <div class="right-footer">
-        京ICP备11017824号-7 京ICP证130164号 北京市公安局朝阳分局备案编号:11010502034683
-        Copyright © 2006-2023 ZCOOL中文 English
+        Copyright © 2018 能科科技股份有限公司 <br>
+        All Rights Reserved 京ICP备18044627号-4
       </div>
     </div>
     <div class="lang">

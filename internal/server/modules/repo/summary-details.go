@@ -113,22 +113,22 @@ func (r *SummaryDetailsRepo) FindByProjectIds(projectIds []int64) (summaryDetail
 }
 
 func (r *SummaryDetailsRepo) SummaryCard() (summaryCardTotal model.SummaryCardTotal, err error) {
-	err = r.DB.Model(&model.SummaryDetails{}).Raw("select SUM(scenario_total) as scenario_total,sum(interface_total) as interface_total,sum(exec_total) as exec_total,cast(AVG(pass_rate) as decimal(64,1)) as pass_rate,cast(AVG(coverage) as decimal(64,1)) as coverage from (deeptest.biz_summary_details) where id in (SELECT max(id) FROM deeptest.biz_summary_details where NOT deleted  group by project_id);").Find(&summaryCardTotal).Error
+	err = r.DB.Model(&model.SummaryDetails{}).Raw("select SUM(scenario_total) as scenario_total,sum(interface_total) as interface_total,sum(exec_total) as exec_total,cast(AVG(NULLIF(pass_rate, 0)) as decimal(64,1)) as pass_rate,cast(AVG(NULLIF(coverage, 0)) as decimal(64,1)) as coverage from (deeptest.biz_summary_details) where id in (SELECT max(id) FROM deeptest.biz_summary_details where NOT deleted  group by project_id);").Find(&summaryCardTotal).Error
 	return
 }
 
 func (r *SummaryDetailsRepo) SummaryCardByDate(startTime string, endTime string) (summaryCardTotal model.SummaryCardTotal, err error) {
-	err = r.DB.Model(&model.SummaryDetails{}).Raw("select SUM(scenario_total) as scenario_total,sum(interface_total) as interface_total,sum(exec_total) as exec_total,cast(AVG(pass_rate) as decimal(64,1)) as pass_rate,cast(AVG(coverage) as decimal(64,1)) as coverage from (deeptest.biz_summary_details) where id in (SELECT max(id) FROM deeptest.biz_summary_details where created_at >= ? and created_at < ? AND NOT deleted  group by project_id);", startTime, endTime).Find(&summaryCardTotal).Error
+	err = r.DB.Model(&model.SummaryDetails{}).Raw("select SUM(scenario_total) as scenario_total,sum(interface_total) as interface_total,sum(exec_total) as exec_total,cast(AVG(NULLIF(pass_rate, 0)) as decimal(64,1)) as pass_rate,cast(AVG(NULLIF(coverage, 0)) as decimal(64,1)) as coverage from (deeptest.biz_summary_details) where id in (SELECT max(id) FROM deeptest.biz_summary_details where created_at >= ? and created_at < ? AND NOT deleted  group by project_id);", startTime, endTime).Find(&summaryCardTotal).Error
 	return
 }
 
 func (r *SummaryDetailsRepo) SummaryCardByProjectId(projectId int64) (summaryCardTotal model.SummaryCardTotal, err error) {
-	err = r.DB.Model(&model.SummaryDetails{}).Raw("select SUM(scenario_total) as scenario_total,sum(interface_total) as interface_total,sum(exec_total) as exec_total,cast(AVG(pass_rate) as decimal(64,1)) as pass_rate,cast(AVG(coverage) as decimal(64,1)) as coverage from (deeptest.biz_summary_details) where id in (SELECT max(id) FROM deeptest.biz_summary_details where project_id = ? And NOT deleted  group by project_id);", projectId).Find(&summaryCardTotal).Error
+	err = r.DB.Model(&model.SummaryDetails{}).Raw("select SUM(scenario_total) as scenario_total,sum(interface_total) as interface_total,sum(exec_total) as exec_total,cast(AVG(NULLIF(pass_rate, 0)) as decimal(64,1)) as pass_rate,cast(AVG(NULLIF(coverage, 0)) as decimal(64,1)) as coverage from (deeptest.biz_summary_details) where id in (SELECT max(id) FROM deeptest.biz_summary_details where project_id = ? And NOT deleted  group by project_id);", projectId).Find(&summaryCardTotal).Error
 	return
 }
 
 func (r *SummaryDetailsRepo) SummaryCardByDateAndProjectId(startTime string, endTime string, projectId int64) (summaryCardTotal model.SummaryCardTotal, err error) {
-	err = r.DB.Model(&model.SummaryDetails{}).Raw("select SUM(scenario_total) as scenario_total,sum(interface_total) as interface_total,sum(exec_total) as exec_total,cast(AVG(pass_rate) as decimal(64,1)) as pass_rate,cast(AVG(coverage) as decimal(64,1)) as coverage from (deeptest.biz_summary_details) where id in (SELECT max(id) FROM deeptest.biz_summary_details where created_at >= ? and created_at < ? and project_id = ? AND NOT deleted  group by project_id);", startTime, endTime, projectId).Find(&summaryCardTotal).Error
+	err = r.DB.Model(&model.SummaryDetails{}).Raw("select SUM(scenario_total) as scenario_total,sum(interface_total) as interface_total,sum(exec_total) as exec_total,cast(AVG(NULLIF(pass_rate, 0)) as decimal(64,1)) as pass_rate,cast(AVG(NULLIF(coverage, 0)) as decimal(64,1)) as coverage from (deeptest.biz_summary_details) where id in (SELECT max(id) FROM deeptest.biz_summary_details where created_at >= ? and created_at < ? and project_id = ? AND NOT deleted  group by project_id);", startTime, endTime, projectId).Find(&summaryCardTotal).Error
 	return
 }
 
@@ -175,39 +175,29 @@ func (r *SummaryDetailsRepo) CountAllExecTotalProjectId() (counts []model.Projec
 	return
 }
 
-func (r *SummaryDetailsRepo) CountEndpointTotalProjectId(projectId int64) (int64, error) {
+func (r *SummaryDetailsRepo) CountEndpointInterfaceTotalProjectId(projectId int64) (int64, error) {
 	var count sql.NullInt64
-	err := r.DB.Model(&model.Endpoint{}).Select("count(id)").Where("project_id = ? AND NOT deleted ", projectId).Find(&count).Error
+	err := r.DB.Model(&model.EndpointInterface{}).Select("count(id)").Where("project_id = ? AND NOT deleted ", projectId).Find(&count).Error
 	return count.Int64, err
 }
 
-func (r *SummaryDetailsRepo) CountAllEndpointTotalProjectId() (counts []model.ProjectIdAndId, err error) {
-	err = r.DB.Model(&model.Endpoint{}).Select("count(id) as id,project_id").Where("NOT deleted ").Group("project_id").Find(&counts).Error
+func (r *SummaryDetailsRepo) CountAllEndpointInterfaceTotalProjectId() (counts []model.ProjectIdAndId, err error) {
+	err = r.DB.Model(&model.EndpointInterface{}).Select("count(id) as id,project_id").Where("NOT deleted ").Group("project_id").Find(&counts).Error
 	return
 }
 
 func (r *SummaryDetailsRepo) FindEndpointIdsByProjectId(projectId int64) (ids []int64, err error) {
-	err = r.DB.Model(&model.Endpoint{}).Select("id").Where("project_id = ? AND NOT deleted ", projectId).Find(&ids).Error
+	err = r.DB.Model(&model.EndpointInterface{}).Select("id").Where("project_id = ? AND NOT deleted ", projectId).Find(&ids).Error
 	return
 }
 
 func (r *SummaryDetailsRepo) FindAllEndpointIdsGroupByProjectId() (ids []model.ProjectIdAndId, err error) {
-	err = r.DB.Model(&model.Endpoint{}).Select("id,project_id").Where("NOT deleted ").Find(&ids).Error
+	err = r.DB.Model(&model.EndpointInterface{}).Select("id,project_id").Where("NOT deleted ").Find(&ids).Error
 	return
 }
 
-func (r *SummaryDetailsRepo) CoverageByProjectId(projectId int64, interfaceIds []int64) (count int64, err error) {
-	err = r.DB.Model(&model.Processor{}).Raw("select count(id) from deeptest.biz_processor where id in ? AND project_id = ? AND NOT deleted ", interfaceIds, projectId).Find(&count).Error
-	return
-}
-
-func (r *SummaryDetailsRepo) FindAllProcessEndpointCountGroupByProjectId() (counts []model.ProjectIdAndId, err error) {
-	err = r.DB.Model(&model.Processor{}).Raw("select project_id,count(DISTINCT endpoint_interface_id) as id  from deeptest.biz_processor where NOT deleted group by project_id;").Find(&counts).Error
-	return
-}
-
-func (r *SummaryDetailsRepo) CoverageAllProject(interfaceIds []int64) (counts []model.ProjectIdAndId, err error) {
-	err = r.DB.Model(&model.Processor{}).Raw("select project_id,count(id) as id from deeptest.biz_processor_interface where id in ? AND NOT deleted group by project_id", interfaceIds).Find(&counts).Error
+func (r *SummaryDetailsRepo) FindAllExecLogProcessorInterfaceTotalGroupByProjectId() (counts []model.ProjectIdAndId, err error) {
+	err = r.DB.Model(&model.ExecLogProcessor{}).Raw("select project_id,count(DISTINCT biz_exec_log_processor.interface_id) as id  from deeptest.biz_scenario_report join biz_exec_log_processor on biz_scenario_report.id = biz_exec_log_processor.report_id where processor_category='processor_interface' AND interface_id != 0 group by project_id;").Find(&counts).Error
 	return
 }
 

@@ -140,13 +140,13 @@ func (s *SummaryDetailsService) GetAllDetailGroupByProjectId() (ret map[int64]mo
 	//从biz_scenario_report拿到assertion的相关数据,计算后存储
 	passRates, err := s.FindAllPassRateByProjectId()
 
-	//从processor里边，根据project_id，取出来对应的，所有endPointId总数，其中endPointId不重复
-	endPointCountOfProcessor, err := s.FindAllProcessEndpointCountGroupByProjectId()
+	//通过processorInterface、biz_scenario_report、biz_exec_log_processor联合查询，取出来所有被测试过的接口数量，根据project_id分组
+	execLogProcessorInterfaceTotal, err := s.FindAllExecLogProcessorInterfaceTotalGroupByProjectId()
 
 	ret = make(map[int64]model.SummaryDetails, len(projectIds))
 
 	for _, projectId := range projectIds {
-		details, _ := s.HandleDetail(projectId, ScenariosTotal[projectId], interfacesTotal[projectId], execsTotal[projectId], passRates[projectId], endPointCountOfProcessor[projectId])
+		details, _ := s.HandleDetail(projectId, ScenariosTotal[projectId], interfacesTotal[projectId], execsTotal[projectId], passRates[projectId], execLogProcessorInterfaceTotal[projectId])
 		//返回的数组，需要处理成map形式
 		ret[projectId] = details
 	}
@@ -160,6 +160,8 @@ func (s *SummaryDetailsService) HandleDetail(projectId int64, ScenariosTotal int
 	ret.ExecTotal = execsTotal
 	ret.PassRate, err = strconv.ParseFloat(fmt.Sprintf("%.1f", passRates), 64)
 
+	//通过processorInterface、biz_scenario_report、biz_exec_log_processor联合查询，取出来所有被测试过的接口数量，根据project_id分组（跳过0值）
+	//然后除以通过processorInterface中对应项目的接口总数
 	var coverage float64
 	if ret.InterfaceTotal != 0 {
 		coverage = float64(endPointCountOfProcessor) / float64(ret.InterfaceTotal) * 100
@@ -246,14 +248,9 @@ func (s *SummaryDetailsService) FindAllEndpointIdsGroupByProjectId(projectIds []
 	return
 }
 
-func (s *SummaryDetailsService) CoverageByProjectId(projectId int64, interfaceIds []int64) (count int64, err error) {
+func (s *SummaryDetailsService) FindAllExecLogProcessorInterfaceTotalGroupByProjectId() (counts map[int64]int64, err error) {
 	r := repo.NewSummaryDetailsRepo()
-	return r.CoverageByProjectId(projectId, interfaceIds)
-}
-
-func (s *SummaryDetailsService) FindAllProcessEndpointCountGroupByProjectId() (counts map[int64]int64, err error) {
-	r := repo.NewSummaryDetailsRepo()
-	result, err := r.FindAllProcessEndpointCountGroupByProjectId()
+	result, err := r.FindAllExecLogProcessorInterfaceTotalGroupByProjectId()
 
 	counts = make(map[int64]int64, len(result))
 	for _, value := range result {
@@ -348,12 +345,12 @@ func (s *SummaryDetailsService) CountAllScenarioTotalProjectId() (scenarioTotal 
 
 func (s *SummaryDetailsService) CountEndpointTotalProjectId(projectId int64) (count int64, err error) {
 	r := repo.NewSummaryDetailsRepo()
-	return r.CountEndpointTotalProjectId(projectId)
+	return r.CountEndpointInterfaceTotalProjectId(projectId)
 }
 
 func (s *SummaryDetailsService) CountAllEndpointTotalProjectId() (counts map[int64]int64, err error) {
 	r := repo.NewSummaryDetailsRepo()
-	endpointsTotal, err := r.CountAllEndpointTotalProjectId()
+	endpointsTotal, err := r.CountAllEndpointInterfaceTotalProjectId()
 	counts = make(map[int64]int64, len(endpointsTotal))
 	for _, value := range endpointsTotal {
 		//这里写的是id实际是count，都是int64，不做多余的明明

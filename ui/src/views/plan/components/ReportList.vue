@@ -32,7 +32,7 @@
 import { reactive, computed, defineProps, watch, defineEmits, ref } from 'vue';
 import { useStore } from 'vuex';
 
-import { TableFilter } from "@/views/component/Report/Components";
+import { TableFilter } from "@/views/component/Report/components";
 import ExecDetail from '@/views/report/Detail/index.vue';
 
 import { StateType as ReportStateType } from '@/views/report/store';

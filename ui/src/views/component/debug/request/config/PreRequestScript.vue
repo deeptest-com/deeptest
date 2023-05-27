@@ -51,6 +51,8 @@
           <div @click="addSnippet('variables_get')" class="dp-link-primary">Get an variable</div>
           <div @click="addSnippet('variables_set')" class="dp-link-primary">Set an variable</div>
           <div @click="addSnippet('variables_clear')" class="dp-link-primary">Clear an variable</div>
+
+          <div @click="addSnippet('datapool_get')" class="dp-link-primary">Get datapool variable</div>
         </div>
       </div>
     </div>

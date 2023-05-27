@@ -29,7 +29,7 @@ func GetScript(name ScriptType) string {
 
 	} else if name == ScriptDatapoolGet {
 		if ModuleScript == "" {
-			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "export", "datapool_get.txt"))
+			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "snippet", "datapool_get.txt"))
 			ModuleScript = string(bytes)
 		}
 		return ModuleScript

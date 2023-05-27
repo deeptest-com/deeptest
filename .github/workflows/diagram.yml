@@ -6,6 +6,8 @@ on:
       - main
 jobs:
   get_data:
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code

@@ -61,6 +61,10 @@ func GetInterfaceToExec(req v1.InterfaceCall) (ret agentExec.InterfaceExecObj) {
 
 	json.Unmarshal(bytes, &ret)
 
+	if req.Data.Name != "" {
+		ret.DebugData = req.Data
+	}
+
 	return
 }
 func SubmitInterfaceResult(reqObj domain.DebugData, respObj domain.DebugResponse, serverUrl, token string) (err error) {

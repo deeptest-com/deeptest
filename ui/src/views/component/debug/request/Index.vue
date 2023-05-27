@@ -1,7 +1,7 @@
 <template>
   <div id="request-main">
     <!-- 最新版本ui中 发送/保存按钮 调整为全局的保存，这里为了避免 scenario/design中引用出错，用这个条件判断先放着。后续再看是否移除掉 -->
-    <template v-if="showReuqestInvocation">
+    <template v-if="showRequestInvocation">
       <RequestInvocation
         :showDebugDataUrl="showDebugDataUrl"
         :onSend="invokeInterface"
@@ -25,7 +25,7 @@ import {UsedBy} from "@/utils/enum";
 import {getToken} from "@/utils/localToken";
 
 defineProps({
-  showReuqestInvocation: {
+  showRequestInvocation: {
     type: Boolean,
     required: false,
     default: true
@@ -54,9 +54,8 @@ const invokeInterface = async () => {
   const callData = {
     serverUrl: process.env.VUE_APP_API_SERVER, // used by agent to submit result to server
     token: await getToken(),
-    id: debugData.value.id,
 
-    data: debugInfo.value
+    data: debugData.value
   }
   await store.dispatch('Debug/call', callData)
 };

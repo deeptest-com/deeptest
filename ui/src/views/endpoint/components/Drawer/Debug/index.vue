@@ -110,9 +110,8 @@ const invokeInterface = async () => {
   const callData = {
     serverUrl: process.env.VUE_APP_API_SERVER, // used by agent to submit result to server
     token: await getToken(),
-    id: debugData.value.id,
 
-    data: debugInfo.value
+    data: debugData.value
   }
   await store.dispatch('Debug/call', callData)
 };

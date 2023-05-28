@@ -67,6 +67,11 @@ export default {
     'header':  '响应头',
     'body':  '响应体',
 
+    'header_en':  'Header',
+    'cookie_en':  'Cookie',
+    'query_en':  'Query',
+    'body_en':  'Body',
+
     'responseStatus': '响应码',
     'responseHeader': '响应头',
     'responseBody': '响应体',

@@ -95,6 +95,7 @@ func (r *DebugInterfaceRepo) GetDetail(interfId uint) (interf model.DebugInterfa
 
 		interf.QueryParams, interf.PathParams, _ = r.ListParams(interfId)
 		interf.Headers, _ = r.ListHeaders(interfId)
+
 		interf.BodyFormData, _ = r.ListBodyFormData(interfId)
 		interf.BodyFormUrlencoded, _ = r.ListBodyFormUrlencoded(interfId)
 
@@ -222,7 +223,7 @@ func (r *DebugInterfaceRepo) UpdateParams(id uint, queryParams, pathParams []mod
 	if len(params) == 0 {
 		return
 	}
-	
+
 	err = r.DB.Create(&params).Error
 
 	return

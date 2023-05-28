@@ -238,12 +238,12 @@ func (r *EnvironmentRepo) getCopyName(name string) (ret string) {
 	return
 }
 
-func (r *EnvironmentRepo) ListVariableByProject(projectId uint) (vars []model.EnvironmentVar, err error) {
-	environment, _ := r.GetByProject(projectId)
-	vars, _ = r.GetVars(environment.ID)
-
-	return
-}
+//func (r *EnvironmentRepo) ListVariableByProject(projectId uint) (vars []model.EnvironmentVar, err error) {
+//	environment, _ := r.GetByProject(projectId)
+//	vars, _ = r.GetVars(environment.ID)
+//
+//	return
+//}
 
 func (r *EnvironmentRepo) SaveEnvironment(environment *model.Environment) (err error) {
 	return r.DB.Transaction(func(tx *gorm.DB) error {

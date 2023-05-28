@@ -83,7 +83,7 @@ func GetContentProps(resp *domain.DebugResponse) {
 	return
 }
 
-func DealwithVariables(req *domain.BaseRequest, usedBy consts.UsedBy) {
+func ReplaceVariables(req *domain.BaseRequest, usedBy consts.UsedBy) {
 	replaceUrl(req, usedBy)
 	replaceParams(req, usedBy)
 	replaceHeaders(req, usedBy)

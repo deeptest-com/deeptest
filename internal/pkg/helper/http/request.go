@@ -74,20 +74,6 @@ func gets(req domain.BaseRequest, method consts.HttpMethod, readRespData bool) (
 
 	reqUrl := commUtils.RemoveLeftVariableSymbol(req.Url)
 
-	var reqParams []domain.Param
-	for _, p := range req.QueryParams {
-		if p.Name != "" {
-			reqParams = append(reqParams, p)
-		}
-	}
-
-	var reqHeaders []domain.Header
-	for _, h := range req.Headers {
-		if h.Name != "" {
-			reqHeaders = append(reqHeaders, h)
-		}
-	}
-
 	jar := genCookies(req)
 
 	client := &http.Client{
@@ -102,35 +88,19 @@ func gets(req domain.BaseRequest, method consts.HttpMethod, readRespData bool) (
 		_logUtils.Info(reqUrl)
 	}
 
-	request, err := http.NewRequest(method.String(), reqUrl, nil)
+	httpReq, err := http.NewRequest(method.String(), reqUrl, nil)
 	if err != nil {
 		_logUtils.Error(err.Error())
 		return
 	}
 
-	queryParams := url.Values{}
-	for _, queryParam := range strings.Split(request.URL.RawQuery, "&") {
-		arr := strings.Split(queryParam, "=")
-		if len(arr) > 1 {
-			queryParams.Add(arr[0], arr[1])
-		}
-	}
-	for _, param := range reqParams {
-		queryParams.Add(param.Name, param.Value)
-	}
-	request.URL.RawQuery = queryParams.Encode()
+	DealwithQueryParams(req, httpReq)
 
-	for _, header := range reqHeaders {
-		request.Header.Set(header.Name, header.Value)
-	}
-
-	request.Header.Set("User-Agent", consts.UserAgentChrome)
-	request.Header.Set("Origin", "DEEPTEST")
-	addAuthorInfo(req, request)
+	DealwithHeader(req, httpReq)
 
 	startTime := time.Now().UnixMilli()
 
-	resp, err := client.Do(request)
+	resp, err := client.Do(httpReq)
 	if err != nil {
 		wrapperErrInResp(consts.ServiceUnavailable, "请求错误", err.Error(), &ret)
 		_logUtils.Error(err.Error())

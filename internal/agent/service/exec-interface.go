@@ -33,12 +33,13 @@ func RequestInterface(req domain.DebugData) (ret domain.DebugResponse, err error
 	agentExec.ExecJs(req.PreRequestScript)
 
 	// replace variables
-	agentExec.DealwithVariables(&req.BaseRequest, consts.InterfaceDebug)
+	agentExec.ReplaceVariables(&req.BaseRequest, consts.InterfaceDebug)
 
 	// gen url
 	reqUri := agentExec.ReplacePathParams(req.Url, req.PathParams)
 	req.BaseRequest.Url = _httpUtils.AddSepIfNeeded(req.BaseUrl) + reqUri
 	logUtils.Info("reqUri" + reqUri + "|" + "req.Url:" + req.Url + "|req.BaseRequest.Url:" + req.BaseRequest.Url)
+
 	// send request
 	ret, err = agentExec.Invoke(&req.BaseRequest)
 

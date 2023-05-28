@@ -52,33 +52,15 @@ func (s *DebugInterfaceService) Load(loadReq domain.DebugReq) (debugData domain.
 }
 
 func (s *DebugInterfaceService) LoadForExec(loadReq domain.DebugReq) (ret agentExec.InterfaceExecObj, err error) {
-	if loadReq.ScenarioProcessorId > 0 {
-		processor, _ := s.ScenarioProcessorRepo.Get(loadReq.ScenarioProcessorId)
-		loadReq.EndpointInterfaceId = processor.EndpointInterfaceId
-	}
+	ret.DebugData, _ = s.Load(loadReq)
 
-	if loadReq.EndpointInterfaceId == 0 {
-		return
-	}
+	ret.ExecScene.ShareVars = ret.DebugData.ShareVars
+	ret.DebugData.ShareVars = nil // for display on debug page only
 
-	// gen debug data
-	debugData, _ := s.GetDebugInterface(loadReq.EndpointInterfaceId)
+	// get project environment
+	projectId, _ := s.SceneService.LoadEnvVarMapByEndpointInterface(&ret.ExecScene,
+		ret.DebugData.EndpointInterfaceId, ret.DebugData.ServerId)
 
-	debugData.UsedBy = loadReq.UsedBy
-	if loadReq.ScenarioProcessorId > 0 {
-		debugData.ScenarioProcessorId = loadReq.ScenarioProcessorId
-	}
-
-	debugData.BaseUrl, ret.ExecScene.ShareVars, debugData.EnvVars =
-		s.DebugSceneService.LoadScene(debugData.EndpointInterfaceId, debugData.ServerId, debugData.ScenarioProcessorId, debugData.UsedBy)
-
-	debugData.ScenarioProcessorId = loadReq.ScenarioProcessorId
-	debugData.UsedBy = loadReq.UsedBy
-
-	ret.DebugData = debugData
-
-	// get variables
-	projectId, _ := s.SceneService.LoadEnvVarMapByEndpointInterface(&ret.ExecScene, debugData.EndpointInterfaceId, debugData.ServerId)
 	s.SceneService.LoadProjectSettings(&ret.ExecScene, projectId)
 
 	return

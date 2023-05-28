@@ -48,7 +48,7 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 	ExecJs(entity.PreRequestScript)
 
 	// dealwith variables
-	DealwithVariables(&entity.BaseRequest, consts.ScenarioDebug)
+	ReplaceVariables(&entity.BaseRequest, consts.ScenarioDebug)
 
 	// add cookies
 	DealwithCookies(&entity.BaseRequest, entity.ProcessorID)

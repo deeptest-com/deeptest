@@ -6,6 +6,8 @@ on:
       - main
 jobs:
   get_data:
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -13,5 +15,5 @@ jobs:
       - name: Update diagram
         uses: githubocto/repo-visualizer@main
         with:
-          output_file: "images/diagram.svg"
+          output_file: "xdoc/diagram.svg"
           excluded_paths: "ignore,.github,dist,node_modules"

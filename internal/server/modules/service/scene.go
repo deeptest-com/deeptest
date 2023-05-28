@@ -115,5 +115,6 @@ func (s *SceneService) LoadEnvVarMapByEndpointInterface(scene *domain.ExecScene,
 func (s *SceneService) LoadProjectSettings(scene *domain.ExecScene, projectId uint) {
 	scene.GlobalParams, _ = s.EnvironmentService.GetGlobalParams(projectId)
 	scene.GlobalVars, _ = s.EnvironmentService.GetGlobalVars(projectId)
+
 	scene.Datapools, _ = s.DatapoolService.ListForExec(projectId)
 }

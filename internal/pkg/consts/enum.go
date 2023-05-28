@@ -570,9 +570,8 @@ func (e ParamType) String() string {
 type ParamIn string
 
 const (
-	ParamInPath  ParamIn = "path"
-	ParamInQuery ParamIn = "query"
-
+	ParamInPath   ParamIn = "path"
+	ParamInQuery  ParamIn = "query"
 	ParamInHeader ParamIn = "header"
 	ParamInCookie ParamIn = "cookie"
 )

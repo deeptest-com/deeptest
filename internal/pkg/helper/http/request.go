@@ -19,7 +19,6 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
-	"net/http/cookiejar"
 	"net/url"
 	"strings"
 	"time"
@@ -94,9 +93,9 @@ func gets(req domain.BaseRequest, method consts.HttpMethod, readRespData bool) (
 		return
 	}
 
-	DealwithQueryParams(req, httpReq)
+	dealwithQueryParams(req, httpReq)
 
-	DealwithHeader(req, httpReq)
+	dealwithHeader(req, httpReq)
 
 	startTime := time.Now().UnixMilli()
 
@@ -428,23 +427,6 @@ func IsJsonContent(str string) bool {
 
 func Base64(str string) (ret string) {
 	ret = base64.StdEncoding.EncodeToString([]byte(str))
-
-	return
-}
-
-func genCookies(req domain.BaseRequest) (ret http.CookieJar) {
-	ret, _ = cookiejar.New(nil)
-
-	var cookies []*http.Cookie
-	for _, c := range req.Cookies {
-		cookies = append(cookies, &http.Cookie{
-			Name:   c.Name,
-			Value:  _stringUtils.InterfToStr(c.Value),
-			Domain: c.Domain,
-		})
-	}
-	urlStr, _ := url.Parse(req.Url)
-	ret.SetCookies(urlStr, cookies)
 
 	return
 }

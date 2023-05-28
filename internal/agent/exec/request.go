@@ -4,6 +4,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
+	_stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"strings"
 )
 
@@ -87,6 +88,7 @@ func ReplaceVariables(req *domain.BaseRequest, usedBy consts.UsedBy) {
 	replaceUrl(req, usedBy)
 	replaceParams(req, usedBy)
 	replaceHeaders(req, usedBy)
+	replaceCookies(req, usedBy)
 	replaceBody(req)
 	replaceAuthor(req)
 }
@@ -129,6 +131,22 @@ func replaceHeaders(req *domain.BaseRequest, usedBy consts.UsedBy) {
 
 	for idx, header := range req.Headers {
 		req.Headers[idx].Value = ReplaceVariableValue(header.Value)
+	}
+}
+func replaceCookies(req *domain.BaseRequest, usedBy consts.UsedBy) {
+	if usedBy == consts.ScenarioDebug {
+		for _, v := range ExecScene.GlobalParams {
+			if v.In == consts.ParamInCookie {
+				req.Cookies = append(req.Cookies, domain.ExecCookie{
+					Name:  v.Name,
+					Value: v.DefaultValue,
+				})
+			}
+		}
+	}
+
+	for idx, cookie := range req.Cookies {
+		req.Cookies[idx].Value = ReplaceVariableValue(_stringUtils.InterfToStr(cookie.Value))
 	}
 }
 func replaceBody(req *domain.BaseRequest) {

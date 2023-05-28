@@ -72,6 +72,9 @@ func gets(req domain.BaseRequest, method consts.HttpMethod, readRespData bool) (
 	ret domain.DebugResponse, err error) {
 
 	reqUrl := commUtils.RemoveLeftVariableSymbol(req.Url)
+	if _consts.Verbose {
+		_logUtils.Info(reqUrl)
+	}
 
 	jar := genCookies(req)
 
@@ -83,10 +86,6 @@ func gets(req domain.BaseRequest, method consts.HttpMethod, readRespData bool) (
 		},
 	}
 
-	if _consts.Verbose {
-		_logUtils.Info(reqUrl)
-	}
-
 	httpReq, err := http.NewRequest(method.String(), reqUrl, nil)
 	if err != nil {
 		_logUtils.Error(err.Error())
@@ -94,8 +93,8 @@ func gets(req domain.BaseRequest, method consts.HttpMethod, readRespData bool) (
 	}
 
 	dealwithQueryParams(req, httpReq)
-
 	dealwithHeader(req, httpReq)
+	dealwithCookie(req, httpReq)
 
 	startTime := time.Now().UnixMilli()
 
@@ -150,32 +149,14 @@ func posts(req domain.BaseRequest, method consts.HttpMethod, readRespData bool) 
 	ret domain.DebugResponse, err error) {
 
 	reqUrl := commUtils.RemoveLeftVariableSymbol(req.Url)
-
-	var reqParams []domain.Param
-	for _, p := range req.QueryParams {
-		if p.Name != "" {
-			reqParams = append(reqParams, p)
-		}
-	}
-
-	var reqHeaders []domain.Header
-	for _, h := range req.Headers {
-		if h.Name != "" {
-			reqHeaders = append(reqHeaders, h)
-		}
-	}
-
-	reqBody := req.Body
-
-	bodyType := req.BodyType
-	bodyFormData := req.BodyFormData
-	bodyFormUrlencoded := req.BodyFormUrlencoded
-
 	if _consts.Verbose {
 		_logUtils.Info(reqUrl)
 	}
 
 	jar := genCookies(req)
+
+	reqBody := req.Body
+	bodyType := req.BodyType
 
 	client := &http.Client{
 		Transport: &http.Transport{
@@ -189,18 +170,16 @@ func posts(req domain.BaseRequest, method consts.HttpMethod, readRespData bool) 
 
 	formDataContentType := ""
 	if strings.HasPrefix(bodyType.String(), consts.ContentTypeFormData.String()) {
+		bodyFormData := genBodyFormData(req)
+
 		formDataWriter, _ := agentUtils.MultipartEncoder(bodyFormData)
 		formDataContentType = agentUtils.MultipartContentType(formDataWriter)
 
 		dataBytes = formDataWriter.Payload.Bytes()
 
 	} else if strings.HasPrefix(bodyType.String(), consts.ContentTypeFormUrlencoded.String()) {
-		// post form data
-		formData := make(url.Values)
-		for _, item := range bodyFormUrlencoded {
-			formData.Add(item.Name, item.Value)
-		}
-		dataBytes = []byte(formData.Encode())
+		bodyFormUrlencoded := genBodyFormUrlencoded(req)
+		dataBytes = []byte(bodyFormUrlencoded)
 
 	} else if strings.HasPrefix(bodyType.String(), consts.ContentTypeJSON.String()) {
 		// post json
@@ -211,7 +190,7 @@ func posts(req domain.BaseRequest, method consts.HttpMethod, readRespData bool) 
 	}
 
 	if err != nil {
-		_logUtils.Infof(color.RedString("marshal request failed, error: %s.", err.Error()))
+		_logUtils.Infof(color.RedString("marshal httpReq failed, error: %s.", err.Error()))
 		return
 	}
 
@@ -219,48 +198,28 @@ func posts(req domain.BaseRequest, method consts.HttpMethod, readRespData bool) 
 		_logUtils.Infof(string(dataBytes))
 	}
 
-	request, reqErr := http.NewRequest(method.String(), reqUrl, bytes.NewReader(dataBytes))
+	httpReq, reqErr := http.NewRequest(method.String(), reqUrl, bytes.NewReader(dataBytes))
 	if reqErr != nil {
 		_logUtils.Error(reqErr.Error())
 		return
 	}
 
-	queryParams := url.Values{}
-	for _, queryParam := range strings.Split(request.URL.RawQuery, "&") {
-		arr := strings.Split(queryParam, "=")
-		if len(arr) > 1 {
-			queryParams.Add(arr[0], arr[1])
-		}
-	}
+	dealwithQueryParams(req, httpReq)
+	dealwithHeader(req, httpReq)
+	dealwithCookie(req, httpReq)
 
-	for _, param := range reqParams {
-		if param.Name == "" {
-			continue
-		}
-		queryParams.Add(param.Name, param.Value)
-	}
-	request.URL.RawQuery = queryParams.Encode()
-
-	for _, header := range reqHeaders {
-		if header.Name == "" {
-			continue
-		}
-		request.Header.Set(header.Name, header.Value)
-	}
-
+	// body type
 	if strings.HasPrefix(bodyType.String(), consts.ContentTypeJSON.String()) {
-		request.Header.Set(consts.ContentType, fmt.Sprintf("%s; charset=utf-8", bodyType))
+		httpReq.Header.Set(consts.ContentType, fmt.Sprintf("%s; charset=utf-8", bodyType))
 	} else if strings.HasPrefix(bodyType.String(), consts.ContentTypeFormData.String()) {
-		request.Header.Set(consts.ContentType, formDataContentType)
+		httpReq.Header.Set(consts.ContentType, formDataContentType)
 	} else {
-		request.Header.Set(consts.ContentType, bodyType.String())
+		httpReq.Header.Set(consts.ContentType, bodyType.String())
 	}
-
-	addAuthorInfo(req, request)
 
 	startTime := time.Now().UnixMilli()
 
-	resp, err := client.Do(request)
+	resp, err := client.Do(httpReq)
 	if err != nil {
 		wrapperErrInResp(consts.ServiceUnavailable, "请求错误", err.Error(), &ret)
 		_logUtils.Error(err.Error())

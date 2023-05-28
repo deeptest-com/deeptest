@@ -86,9 +86,12 @@ func GetContentProps(resp *domain.DebugResponse) {
 
 func ReplaceVariables(req *domain.BaseRequest, usedBy consts.UsedBy) {
 	replaceUrl(req, usedBy)
-	replaceParams(req, usedBy)
+
+	replaceQueryParams(req, usedBy)
 	replaceHeaders(req, usedBy)
 	replaceCookies(req, usedBy)
+	replaceFormBodies(req, usedBy)
+
 	replaceBody(req)
 	replaceAuthor(req)
 }
@@ -101,52 +104,74 @@ func replaceUrl(req *domain.BaseRequest, usedBy consts.UsedBy) {
 	// project's global params already be added
 	req.Url = ReplaceVariableValue(req.Url)
 }
-func replaceParams(req *domain.BaseRequest, usedBy consts.UsedBy) {
-	if usedBy == consts.ScenarioDebug {
-		for _, v := range ExecScene.GlobalParams {
-			if v.In == consts.ParamInQuery {
-				req.QueryParams = append(req.QueryParams, domain.Param{
-					Name:  v.Name,
-					Value: v.DefaultValue,
-				})
-			}
+func replaceQueryParams(req *domain.BaseRequest, usedBy consts.UsedBy) {
+	//if usedBy == consts.ScenarioDebug {
+	for _, p := range ExecScene.GlobalParams {
+		if p.In == consts.ParamInQuery {
+			req.QueryParams = append(req.QueryParams, domain.Param{
+				Name:  p.Name,
+				Value: p.DefaultValue,
+			})
 		}
 	}
+	//}
 
 	for idx, param := range req.QueryParams {
 		req.QueryParams[idx].Value = ReplaceVariableValue(param.Value)
 	}
 }
 func replaceHeaders(req *domain.BaseRequest, usedBy consts.UsedBy) {
-	if usedBy == consts.ScenarioDebug {
-		for _, v := range ExecScene.GlobalParams {
-			if v.In == consts.ParamInHeader {
-				req.QueryParams = append(req.QueryParams, domain.Param{
-					Name:  v.Name,
-					Value: v.DefaultValue,
-				})
-			}
+	//if usedBy == consts.ScenarioDebug {
+	for _, p := range ExecScene.GlobalParams {
+		if p.In == consts.ParamInHeader {
+			req.QueryParams = append(req.QueryParams, domain.Param{
+				Name:  p.Name,
+				Value: p.DefaultValue,
+			})
 		}
 	}
+	//}
 
 	for idx, header := range req.Headers {
 		req.Headers[idx].Value = ReplaceVariableValue(header.Value)
 	}
 }
 func replaceCookies(req *domain.BaseRequest, usedBy consts.UsedBy) {
-	if usedBy == consts.ScenarioDebug {
-		for _, v := range ExecScene.GlobalParams {
-			if v.In == consts.ParamInCookie {
-				req.Cookies = append(req.Cookies, domain.ExecCookie{
-					Name:  v.Name,
-					Value: v.DefaultValue,
-				})
-			}
+	//if usedBy == consts.ScenarioDebug {
+	for _, p := range ExecScene.GlobalParams {
+		if p.In == consts.ParamInCookie {
+			req.Cookies = append(req.Cookies, domain.ExecCookie{
+				Name:  p.Name,
+				Value: p.DefaultValue,
+			})
 		}
 	}
+	//}
 
 	for idx, cookie := range req.Cookies {
 		req.Cookies[idx].Value = ReplaceVariableValue(_stringUtils.InterfToStr(cookie.Value))
+	}
+}
+func replaceFormBodies(req *domain.BaseRequest, usedBy consts.UsedBy) {
+	for _, v := range ExecScene.GlobalParams {
+		if v.In == consts.ParamInBody {
+			req.BodyFormData = append(req.BodyFormData, domain.BodyFormDataItem{
+				Name:  v.Name,
+				Value: v.DefaultValue,
+			})
+
+			req.BodyFormUrlencoded = append(req.BodyFormUrlencoded, domain.BodyFormUrlEncodedItem{
+				Name:  v.Name,
+				Value: v.DefaultValue,
+			})
+		}
+	}
+
+	for idx, item := range req.BodyFormData {
+		req.BodyFormData[idx].Value = ReplaceVariableValue(_stringUtils.InterfToStr(item.Value))
+	}
+	for idx, item := range req.BodyFormUrlencoded {
+		req.BodyFormUrlencoded[idx].Value = ReplaceVariableValue(_stringUtils.InterfToStr(item.Value))
 	}
 }
 func replaceBody(req *domain.BaseRequest) {

@@ -18,7 +18,7 @@ func genCookies(req domain.BaseRequest) (ret http.CookieJar) {
 	mp := map[string]bool{}
 	for _, c := range req.Cookies {
 		key := fmt.Sprintf("%s=%s", c.Name, c.Domain)
-		if _, ok := mp[key]; ok {
+		if _, ok := mp[key]; ok { // skip duplicate one
 			continue
 		}
 
@@ -32,6 +32,40 @@ func genCookies(req domain.BaseRequest) (ret http.CookieJar) {
 
 	urlStr, _ := url.Parse(req.Url)
 	ret.SetCookies(urlStr, cookies)
+
+	return
+}
+
+func genBodyFormData(req domain.BaseRequest) (formData []domain.BodyFormDataItem) {
+	mp := map[string]bool{}
+
+	for _, item := range req.BodyFormData {
+		key := item.Name
+		if _, ok := mp[key]; ok { // skip duplicate one
+			continue
+		}
+
+		formData = append(formData, item)
+		mp[key] = true
+	}
+
+	return
+}
+func genBodyFormUrlencoded(req domain.BaseRequest) (ret string) {
+	mp := map[string]bool{}
+	formData := make(url.Values)
+
+	for _, item := range req.BodyFormUrlencoded {
+		key := item.Name
+		if _, ok := mp[key]; ok { // skip duplicate one
+			continue
+		}
+
+		formData.Add(item.Name, item.Value)
+		mp[key] = true
+	}
+
+	formData.Encode()
 
 	return
 }
@@ -70,7 +104,7 @@ func dealwithHeader(req domain.BaseRequest, httpReq *http.Request) {
 	addAuthorInfo(req, httpReq)
 }
 
-func DealwithCookie(req domain.BaseRequest, httpReq *http.Request) {
+func dealwithCookie(req domain.BaseRequest, httpReq *http.Request) {
 	httpReq.Header.Set("User-Agent", consts.UserAgentChrome)
 	httpReq.Header.Set("Origin", "DEEPTEST")
 
@@ -79,6 +113,4 @@ func DealwithCookie(req domain.BaseRequest, httpReq *http.Request) {
 			httpReq.Header.Set(h.Name, h.Value)
 		}
 	}
-
-	addAuthorInfo(req, httpReq)
 }

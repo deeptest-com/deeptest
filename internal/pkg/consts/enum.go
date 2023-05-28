@@ -574,6 +574,7 @@ const (
 	ParamInQuery  ParamIn = "query"
 	ParamInHeader ParamIn = "header"
 	ParamInCookie ParamIn = "cookie"
+	ParamInBody   ParamIn = "body"
 )
 
 func (e ParamIn) String() string {

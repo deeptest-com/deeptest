@@ -21,4 +21,3 @@ tmp/
 /cmd/test/nodejs/node_modules/
 /cmd/test/nodejs/package-lock.json
 .yarn
-/xdoc/diagram.svg

@@ -2,11 +2,12 @@
   <div class="report-basicinfo">
     <TextItem :key="item.label" v-for="item in items" :label="item.label" :value="item.value"/>
     <a-button
-      v-if="showOperation"
+      v-if="showBtn"
       type="primary"
       @click="handleBtnClick"
       class="report-export">
-      {{ scene === ReportDetailType.QueryDetail ? '导出报告' : '生成报告' }}
+      {{}}
+      {{ btnText }}
     </a-button>
   </div>
 </template>
@@ -17,8 +18,8 @@ import {ReportDetailType} from '@/utils/enum';
 
 defineProps<{
   items: any,
-  scene: string
-  showOperation?: boolean
+  showBtn?: boolean,
+  btnText?: string,
 }>();
 const emit = defineEmits(['handleBtnClick']);
 

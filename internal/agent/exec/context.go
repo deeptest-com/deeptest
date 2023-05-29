@@ -33,6 +33,7 @@ func InitExecContext(execObj *ScenarioExecObj) (variables []domain.ExecVariable)
 
 	ScopedVariables = map[uint][]domain.ExecVariable{}
 	ScopedCookies = map[uint][]domain.ExecCookie{}
+	CachedShareVarByProcessorForRead = map[uint]domain.VarKeyValuePair{}
 
 	return
 }

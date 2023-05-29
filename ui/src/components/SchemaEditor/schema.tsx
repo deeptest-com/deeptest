@@ -69,7 +69,7 @@ export default defineComponent({
             tree.properties = {...newObj};
             data.value = addExtraViewInfo(data.value);
         }
-        const pasteKeyName = (e)=>{
+        const pasteKeyName = (e) => {
             // 阻止默认的粘贴事件
             e.preventDefault();
             // 从剪贴板中获取纯文本
@@ -121,7 +121,7 @@ export default defineComponent({
                 // 非根节点
             } else {
                 //  数组类型, 且个数大于等于 1 ，需要生成新的schema
-               if (newProps?.length >= 1 && isArray(firstType)) {
+                if (newProps?.length >= 1 && isArray(firstType)) {
                     const items = parent?.type === 'array' ? ancestor : parent;
                     if (items?.properties?.[keyName]) {
                         items.properties[keyName] = generateSchemaByArray(newProps);
@@ -184,8 +184,13 @@ export default defineComponent({
         const setRequire = (keyIndex: any, parent: any) => {
             const keys = Object.keys(parent.properties);
             const key = keys[keyIndex];
-            if (!parent.required.includes(key)) {
-                parent.required.push(key);
+            // ::::todo 有问题,不能选择
+            if (!parent?.required?.includes(key)) {
+                if (!parent.required) {
+                    parent.required = [key];
+                } else {
+                    parent.required.push(key);
+                }
             }
         };
         const addDesc = (tree: any, desc: string) => {
@@ -359,7 +364,8 @@ export default defineComponent({
                 const isExpand = tree?.extraViewInfo?.isExpand;
                 const isRef = tree?.extraViewInfo?.isRef;
                 const options = {...tree?.extraViewInfo, isRoot, tree}
-                return <div key={tree.type} class={{'directoryNode': true, "rootNode": isRoot, 'refNode': isRef || !!tree?.ref}}>
+                return <div key={tree.type}
+                            class={{'directoryNode': true, "rootNode": isRoot, 'refNode': isRef || !!tree?.ref}}>
                     {renderDirectoryText(options)}
                     {
                         isExpand && tree?.content && renderTree(tree.content)

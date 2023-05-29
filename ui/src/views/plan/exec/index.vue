@@ -66,6 +66,7 @@ const store = useStore<{
 
 const currPlan = computed<any>(() => store.state.Plan.currPlan);
 const currEnvId = computed(() => store.state.ProjectSetting.selectEnvId);
+// TODO： 这里的envList是从ProjectSetting中获取的，需要修改下，会污染其他作用域下的数据
 const envList = computed(() => store.state.ProjectSetting.envList);
 
 const currUser = computed(() => store.state.User.currentUser);

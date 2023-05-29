@@ -78,27 +78,6 @@ func (r *ProjectMenuRepo) GetAllMenuList() (menus []model.ProjectMenu, err error
 }
 
 func (r *ProjectMenuRepo) GetMenuConfig() (menuConfigs []v1.ProjectMenuConfig, err error) {
-	//path1, _ := filepath.EvalSymlinks(filepath.Dir(os.Args[0]))
-	//logUtils.Infof(fmt.Sprintf("进制文件所在绝对路径:%+v", path1))
-	//
-	//path2, _ := os.Getwd()
-	//logUtils.Infof(fmt.Sprintf("执行二进制文件的绝对路径:%+v", path2))
-	//
-	//var path3 string
-	//_, filename3, _, ok := runtime.Caller(0)
-	//if ok {
-	//	path3 = path.Dir(filename3)
-	//}
-	//logUtils.Infof(fmt.Sprintf("执行的代码文件所在的绝对路径:%+v", path3))
-	//
-	//fileExisted := _fileUtils.FileExist("config/sample/menu.json") //查的执行二进制文件的绝对路径
-	//logUtils.Infof(fmt.Sprintf("config/sample/menu.json存在结果:%+v", fileExisted))
-	//var file string
-	//if fileExisted {
-	//	file = "/data/deploy/bin/config/sample/menu.json"
-	//} else {
-	//	file = "../../../../config/sample/menu.json"
-	//}
 	data, err := ioutil.ReadFile("config/sample/menu.json")
 	if err != nil {
 		logUtils.Errorf("load menu config err ", zap.String("错误:", err.Error()))

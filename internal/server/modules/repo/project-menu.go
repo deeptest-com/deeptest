@@ -6,6 +6,7 @@ import (
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
+	_fileUtils "github.com/aaronchen2k/deeptest/pkg/lib/file"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
@@ -78,7 +79,15 @@ func (r *ProjectMenuRepo) GetAllMenuList() (menus []model.ProjectMenu, err error
 }
 
 func (r *ProjectMenuRepo) GetMenuConfig() (menuConfigs []v1.ProjectMenuConfig, err error) {
-	data, err := ioutil.ReadFile("config/sample/menu.json")
+	fileExisted := _fileUtils.FileExist("config/sample/menu.json")
+	logUtils.Infof("config/sample/menu.json存在结果:", zap.Bool("fileExisted:", fileExisted))
+	var file string
+	if fileExisted {
+		file = "config/sample/menu.json"
+	} else {
+		file = "/data/deploy/bin/config/menu.json"
+	}
+	data, err := ioutil.ReadFile(file)
 	if err != nil {
 		logUtils.Errorf("load menu config err ", zap.String("错误:", err.Error()))
 		return

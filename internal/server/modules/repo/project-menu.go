@@ -80,7 +80,7 @@ func (r *ProjectMenuRepo) GetAllMenuList() (menus []model.ProjectMenu, err error
 
 func (r *ProjectMenuRepo) GetMenuConfig() (menuConfigs []v1.ProjectMenuConfig, err error) {
 	fileExisted := _fileUtils.FileExist("config/sample/menu.json")
-	logUtils.Infof("config/sample/menu.json存在结果:", zap.Bool("fileExisted:", fileExisted))
+	logUtils.Infof(fmt.Sprintf("config/sample/menu.json存在结果:%+v", fileExisted))
 	var file string
 	if fileExisted {
 		file = "config/sample/menu.json"

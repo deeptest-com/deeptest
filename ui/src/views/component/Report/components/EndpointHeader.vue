@@ -2,9 +2,7 @@
   <div class="endpoint-header">
     <div :class="['endpoint-status', ClassMap[endpointData.resultStatus]]">
       <span v-if="endpointData.resultStatus !== 'loading'">{{ StatusMap[endpointData.resultStatus] }}</span>
-      <span v-else>
-                        <a-spin :indicator="indicator" />
-                    </span>
+      <span v-else><a-spin :indicator="indicator" /></span>
     </div>
     <div :class="['endpoint-method', ClassMap[endpointData.resultStatus]]">
       {{ reqContent.method }}

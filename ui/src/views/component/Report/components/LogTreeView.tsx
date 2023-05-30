@@ -37,8 +37,10 @@ export default defineComponent({
                 if(log.processorCategory === 'processor_interface'){
                     return <EndpointContent endpointData={log}/>
                 }
+                if(log.processorCategory === 'processor_action'){
+                    return null;
+                }
                 return null;
-
             }
             const renderLogs = (log) => {
                 if (!log?.id) {

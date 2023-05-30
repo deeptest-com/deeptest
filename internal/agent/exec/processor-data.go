@@ -39,6 +39,7 @@ func (entity ProcessorData) Run(processor *Processor, session *Session) (err err
 		ProcessorType:     entity.ProcessorType,
 		StartTime:         &startTime,
 		ParentId:          int(entity.ParentID),
+		ScenarioId:        processor.ScenarioId,
 	}
 
 	processor.Result.Iterator, processor.Result.Summary = entity.getIterator()

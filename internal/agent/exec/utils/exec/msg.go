@@ -65,3 +65,7 @@ func SendErrorMsg(log agentDomain.ScenarioExecResult, wsMsg *websocket.Message) 
 
 	return
 }
+
+func SendInitializeMsg(data interface{}, wsMsg *websocket.Message) {
+	websocketHelper.SendInitializeMsg(data, wsMsg)
+}

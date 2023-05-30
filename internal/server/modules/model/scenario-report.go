@@ -30,6 +30,9 @@ type ScenarioReport struct {
 	PassAssertionNum  int `json:"passAssertionNum"`
 	FailAssertionNum  int `json:"failAssertionNum"`
 
+	TotalProcessorNum  int `json:"totalProcessorNum"`
+	FinishProcessorNum int `json:"finishProcessorNum"`
+
 	InterfaceStatusMap map[uint]map[consts.ResultStatus]int `gorm:"-"`
 
 	Payload string `json:"payload"`

@@ -112,6 +112,9 @@ func (s *PlanExecService) CombineReport(scenarioReport model.ScenarioReport, pla
 	planReport.PassInterfaceNum += scenarioReport.PassInterfaceNum
 	planReport.FailInterfaceNum += scenarioReport.FailInterfaceNum
 
+	planReport.TotalProcessorNum += scenarioReport.TotalProcessorNum
+	planReport.FinishProcessorNum += scenarioReport.FinishProcessorNum
+
 	planReport.TotalScenarioNum += 1
 	if scenarioReport.ResultStatus == consts.Fail {
 		planReport.FailScenarioNum += 1
@@ -211,7 +214,7 @@ func (s *PlanExecService) summarizeInterface(report *model.PlanReport) {
 	}
 }
 
-func (s *PlanExecService) GetPlanReportNormalData(planId, environmentId uint) (ret agentDomain.PlanNormalData, err error) {
+func (s *PlanExecService) GetPlanReportNormalData(planId, environmentId uint) (ret agentDomain.Report, err error) {
 	plan, err := s.PlanRepo.Get(planId)
 	if err != nil {
 		return
@@ -241,8 +244,13 @@ func (s *PlanExecService) GetPlanReportNormalData(planId, environmentId uint) (r
 		if err != nil {
 			return ret, err
 		}
+		processorNum, err := s.ScenarioNodeRepo.GetNumberByScenariosAndEntityCategory(scenarioIds, "")
+		if err != nil {
+			return ret, err
+		}
 		ret.TotalInterfaceNum = int(interfaceNum)
 		ret.TotalAssertionNum = int(assertionNum)
+		ret.TotalProcessorNum = int(processorNum)
 	}
 
 	ret.PlanId = planId

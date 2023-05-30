@@ -164,6 +164,57 @@ func GetScenarioToExec(req *agentExec.ScenarioExecReq) (ret *agentExec.ScenarioE
 	return
 }
 
+func GetScenarioNormalData(req *agentExec.ScenarioExecReq) (ret agentDomain.Report) {
+	url := "scenarios/exec/getScenarioNormalData"
+
+	httpReq := domain.BaseRequest{
+		Url:               _httpUtils.AddSepIfNeeded(req.ServerUrl) + url,
+		AuthorizationType: consts.BearerToken,
+		BearerToken: domain.BearerToken{
+			Token: req.Token,
+		},
+		QueryParams: []domain.Param{
+			{
+				Name:  "id",
+				Value: fmt.Sprintf("%d", req.ScenarioId),
+			},
+			{
+				Name:  "environmentId",
+				Value: _stringUtils.IntToStr(req.EnvironmentId),
+			},
+		},
+	}
+
+	resp, err := httpHelper.Get(httpReq)
+	if err != nil {
+		logUtils.Infof("get exec obj failed, error, %s", err.Error())
+		return
+	}
+
+	if resp.StatusCode != consts.OK {
+		logUtils.Infof("get exec obj failed, response %v", resp)
+		return
+	}
+
+	respContent := _domain.Response{}
+	json.Unmarshal([]byte(resp.Content), &respContent)
+
+	if respContent.Code != 0 {
+		logUtils.Infof("get exec obj failed, response %v", resp.Content)
+		return
+	}
+
+	bytes, err := json.Marshal(respContent.Data)
+	if respContent.Code != 0 {
+		logUtils.Infof("get exec obj failed, response %v", resp.Content)
+		return
+	}
+
+	json.Unmarshal(bytes, &ret)
+
+	return
+}
+
 func SubmitScenarioResult(result agentDomain.ScenarioExecResult, scenarioId uint, serverUrl, token string) (
 	report agentDomain.Report, err error) {
 
@@ -206,6 +257,7 @@ func SubmitScenarioResult(result agentDomain.ScenarioExecResult, scenarioId uint
 
 // for plan exec
 func GetPlanToExec(req *agentExec.PlanExecReq) (ret *agentExec.PlanExecObj) {
+	ret = &agentExec.PlanExecObj{}
 	url := "plans/exec/loadExecPlan"
 
 	httpReq := domain.BaseRequest{
@@ -339,7 +391,7 @@ func GetMessageToExec(req *agentExec.MessageExecReq) (ret *agentExec.MessageExec
 	return
 }
 
-func GetPlanNormalData(req *agentExec.PlanExecReq) (ret agentDomain.PlanNormalData, err error) {
+func GetPlanNormalData(req *agentExec.PlanExecReq) (ret agentDomain.Report, err error) {
 	url := "plans/exec/getPlanReportNormalData"
 
 	httpReq := domain.BaseRequest{

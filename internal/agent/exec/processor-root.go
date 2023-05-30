@@ -23,6 +23,7 @@ func (entity ProcessorRoot) Run(processor *Processor, session *Session) (err err
 		ProcessorType:     entity.ProcessorType,
 		StartTime:         &startTime,
 		ParentId:          int(entity.ParentID),
+		ScenarioId:        processor.ScenarioId,
 	}
 
 	execUtils.SendExecMsg(*processor.Result, session.WsMsg)

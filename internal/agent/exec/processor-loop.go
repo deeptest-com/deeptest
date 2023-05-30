@@ -36,6 +36,7 @@ func (entity ProcessorLoop) Run(processor *Processor, session *Session) (err err
 		ProcessorType:     entity.ProcessorType,
 		StartTime:         &startTime,
 		ParentId:          int(entity.ParentID),
+		ScenarioId:        processor.ScenarioId,
 	}
 
 	if entity.ProcessorType == consts.ProcessorLoopBreak {

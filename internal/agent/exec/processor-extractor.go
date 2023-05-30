@@ -34,6 +34,7 @@ func (entity ProcessorExtractor) Run(processor *Processor, session *Session) (er
 		ProcessorType:     entity.ProcessorType,
 		StartTime:         &startTime,
 		ParentId:          int(entity.ParentID),
+		ScenarioId:        processor.ScenarioId,
 	}
 
 	brother, ok := getPreviousBrother(*processor)

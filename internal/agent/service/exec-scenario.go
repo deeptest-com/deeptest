@@ -16,15 +16,20 @@ func RunScenario(req *agentExec.ScenarioExecReq, wsMsg *websocket.Message) (err 
 	// start msg
 	execUtils.SendStartMsg(wsMsg)
 
+	//场景执行初始信息
+	normalData := GetScenarioNormalData(req)
+	execUtils.SendInitializeMsg(normalData, wsMsg)
+
 	session, err := ExecScenario(scenarioExecObj, wsMsg)
 	session.RootProcessor.Result.EnvironmentId = req.EnvironmentId
+	session.RootProcessor.Result.ScenarioId = uint(req.ScenarioId)
 
 	// submit result
 	report, _ := SubmitScenarioResult(*session.RootProcessor.Result, scenarioExecObj.RootProcessor.ScenarioId,
 		agentExec.ServerUrl, agentExec.ServerToken)
 
 	execUtils.SendResultMsg(report, session.WsMsg)
-	sendScenarioSubmitResult(session.RootProcessor.ID, session.WsMsg)
+	//sendScenarioSubmitResult(session.RootProcessor.ID, session.WsMsg)
 
 	// end msg
 	execUtils.SendEndMsg(wsMsg)

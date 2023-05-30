@@ -33,12 +33,19 @@ type Report struct {
 	PassAssertionNum  int `json:"passAssertionNum"`
 	FailAssertionNum  int `json:"failAssertionNum"`
 
+	TotalProcessorNum  int `json:"totalProcessorNum"`
+	FinishProcessorNum int `json:"finishProcessorNum"`
+
 	InterfaceStatusMap map[uint]map[consts.ResultStatus]int `gorm:"-"`
 
 	Payload interface{} `json:"payload"`
 
-	ScenarioId uint `json:"scenarioId"`
-	ProjectId  uint `json:"projectId"`
+	ScenarioId uint   `json:"scenarioId"`
+	ProjectId  uint   `json:"projectId"`
+	PlanId     uint   `json:"planId"`
+	PlanName   string `json:"planName"`
+
+	ExecEnv string `json:"execEnv"`
 
 	Logs []*ExecLogProcessor `gorm:"-" json:"logs"`
 }
@@ -146,10 +153,16 @@ type ReportSimple struct {
 }
 
 type PlanNormalData struct {
-	PlanId            uint   `json:"planId"`
-	PlanName          string `json:"planName"`
-	ExecEnv           string `json:"execEnv"`
-	TotalScenarioNum  int    `json:"totalScenarioNum"`
-	TotalInterfaceNum int    `json:"totalInterfaceNum"`
-	TotalAssertionNum int    `json:"totalAssertionNum"`
+	PlanId             uint   `json:"planId"`
+	PlanName           string `json:"planName"`
+	ExecEnv            string `json:"execEnv"`
+	TotalScenarioNum   int    `json:"totalScenarioNum"`
+	TotalInterfaceNum  int    `json:"totalInterfaceNum"`
+	TotalAssertionNum  int    `json:"totalAssertionNum"`
+	PassAssertionNum   int    `json:"passAssertionNum"`
+	FailAssertionNum   int    `json:"failAssertionNum"`
+	FailScenarioNum    int    `json:"failAssertionNum"`
+	PassScenarioNum    int    `json:"passScenarioNum"`
+	TotalProcessorNum  int    `json:"totalProcessorNum"`
+	FinishProcessorNum int    `json:"finishProcessorNum"`
 }

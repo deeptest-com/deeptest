@@ -25,7 +25,8 @@ func RunPlan(req *agentExec.PlanExecReq, wsMsg *websocket.Message) (err error) {
 	if err != nil {
 		return
 	}
-	_ = execUtils.SendResult(normalData, wsMsg)
+
+	execUtils.SendInitializeMsg(normalData, wsMsg)
 
 	// execution
 	var results = agentDomain.PlanExecResult{

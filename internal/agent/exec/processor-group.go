@@ -23,6 +23,7 @@ func (entity ProcessorGroup) Run(processor *Processor, session *Session) (err er
 		ProcessorType:     entity.ProcessorType,
 		StartTime:         &startTime,
 		ParentId:          int(entity.ParentID),
+		ScenarioId:        processor.ScenarioId,
 	}
 
 	processor.AddResultToParent()

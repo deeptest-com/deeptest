@@ -26,6 +26,7 @@ func (entity ProcessorAssertion) Run(processor *Processor, session *Session) (er
 		ProcessorType:     entity.ProcessorType,
 		StartTime:         &startTime,
 		ParentId:          int(entity.ParentID),
+		ScenarioId:        processor.ScenarioId,
 	}
 
 	ret, err := EvaluateGovaluateExpressionByScope(entity.Expression, processor.ID)

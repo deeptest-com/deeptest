@@ -47,7 +47,7 @@ import {
     VarsReqParams,
     DatapoolListParams
 } from './data';
-import { serveStatus, serveStatusTagColor } from '@/config/constant';
+import {disabledStatus, disabledStatusTagColor, serveStatus, serveStatusTagColor} from '@/config/constant';
 import { momentUtc } from '@/utils/datetime';
 
 export interface StateType {
@@ -595,8 +595,8 @@ const StoreModel: ModuleType = {
                 res.data.result.forEach((item: any) => {
                     item.label = item.name;
                     item.value = item.id;
-                    item.statusDesc = serveStatus.get(item.status);
-                    item.statusTag = serveStatusTagColor.get(item.status);
+                    item.statusDesc = disabledStatus.get(item.disabled ? 1 : 0);
+                    item.statusTag = disabledStatusTagColor.get(item.disabled ? 1 : 0);
                     item.createdAt = momentUtc(item.createdAt)
                     item.updatedAt = momentUtc(item.updatedAt)
                 })

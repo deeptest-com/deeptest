@@ -28,8 +28,12 @@
               <template #overlay>
                 <a-menu>
                   <a-menu-item key="1">
-                    <a class="operation-a" href="javascript:void (0)" @click="onDisable(record)">禁用</a>
+                    <a class="operation-a" href="javascript:void (0)" @click="onDisable(record)">
+                      <span v-if="!record.disabled">禁用</span>
+                      <span v-else>解禁</span>
+                    </a>
                   </a-menu-item>
+
                   <a-menu-item key="2">
                     <a class="operation-a" href="javascript:void (0)" @click="onDelete(record)">删除</a>
                   </a-menu-item>

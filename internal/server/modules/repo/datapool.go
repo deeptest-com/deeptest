@@ -20,7 +20,7 @@ func NewDatapoolRepo() *DatapoolRepo {
 
 func (r *DatapoolRepo) Paginate(req v1.DatapoolReqPaginate) (ret _domain.PageData, err error) {
 	var count int64
-	db := r.DB.Model(&model.Datapool{}).Where("project_id = ? AND NOT deleted AND NOT disabled", req.ProjectId)
+	db := r.DB.Model(&model.Datapool{}).Where("project_id = ? AND NOT deleted", req.ProjectId)
 
 	if req.Name != "" {
 		db = db.Where("name LIKE ?", fmt.Sprintf("%%%s%%", req.Name))
@@ -106,7 +106,7 @@ func (r *DatapoolRepo) Delete(id uint) (err error) {
 func (r *DatapoolRepo) Disable(id uint) (err error) {
 	err = r.DB.Model(&model.Datapool{}).
 		Where("id = ?", id).
-		Updates(map[string]interface{}{"disabled": true}).Error
+		Updates(map[string]interface{}{"disabled": gorm.Expr("NOT disabled")}).Error
 
 	return
 }

@@ -114,7 +114,7 @@ func ProjectPerm() iris.Handler {
 		if !isAdminUser {
 			check, err := CheckProjectPerm(ctx.Request(), userId)
 			if err != nil || !check {
-				ctx.JSON(_domain.Response{Code: _domain.AuthActionErr.Code, Data: nil, Msg: "你未拥有当前操作权限，请联系管理员"})
+				ctx.JSON(_domain.Response{Code: _domain.AuthActionErr.Code, Data: nil, Msg: "你未拥有当前项目操作权限，请联系管理员"})
 				ctx.StopExecution()
 				return
 			}

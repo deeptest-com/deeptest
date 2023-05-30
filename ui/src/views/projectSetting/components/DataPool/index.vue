@@ -66,7 +66,7 @@ import {datapoolColumns} from '../../config';
 const store = useStore<{ ProjectGlobal: ProjectStateType, ProjectSetting: ProjectSettingStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const userListOptions = computed<any>(() => store.state.ProjectSetting.userListOptions);
-const dataSource = computed<any>(() => store.state.ProjectSetting.serviceOptions);
+const dataSource = computed<any>(() => store.state.ProjectSetting.datapoolList);
 const route = useRouter();
 
 const drawerVisible = ref(false);

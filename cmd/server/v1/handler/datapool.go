@@ -89,7 +89,7 @@ func (c *DatapoolCtrl) Disable(ctx iris.Context) {
 		return
 	}
 
-	err = c.DatapoolService.Delete(uint(id))
+	err = c.DatapoolService.Disable(uint(id))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

@@ -381,7 +381,7 @@ export async function saveDatapool(data: ServeReqParams): Promise<any> {
 }
 export async function deleteDatapool(id: Number | String | undefined): Promise<any> {
     return request({
-        url: `/datapools/{id}/delete`,
+        url: `/datapools/{id}`,
         method: 'delete',
     });
 }

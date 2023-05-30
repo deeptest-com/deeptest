@@ -612,7 +612,7 @@ const StoreModel: ModuleType = {
             const res = await saveDatapool({ ...formState, projectId });
             if (res.code === 0) {
                 message.success(`${tips[action]}成功`);
-                await dispatch('getServersList', {
+                await dispatch('listDatapool', {
                     projectId
                 })
             } else {
@@ -623,24 +623,24 @@ const StoreModel: ModuleType = {
             const { id, projectId } = params;
             const res = await deleteDatapool(id);
             if (res.code === 0) {
-                message.success('删除成功');
-                await dispatch('getServersList', {
+                message.success('删除数据池成功');
+                await dispatch('listDatapool', {
                     projectId
                 })
             } else {
-                message.error('删除失败');
+                message.error('删除数据池失败');
             }
         },
         async disableDatapool({ dispatch }, params: ServeReqParams) {
             const { id, projectId } = params;
             const res = await disableDatapool(id);
             if (res.code === 0) {
-                message.success('禁用服务成功');
-                await dispatch('getServersList', {
+                message.success('禁用数据池成功');
+                await dispatch('listDatapool', {
                     projectId
                 })
             } else {
-                message.error('禁用服务失败');
+                message.error('禁用数据池失败');
             }
         },
     }

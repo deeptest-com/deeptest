@@ -10,7 +10,7 @@ import (
 )
 
 func RunScenario(req *agentExec.ScenarioExecReq, wsMsg *websocket.Message) (err error) {
-	logUtils.Infof("scenario exec req", zap.Any("ScenarioId", req.ScenarioId), zap.Any("environmentId", req.EnvironmentId))
+	logUtils.Infof("scenario exec req", zap.Int("ScenarioId", req.ScenarioId), zap.Int("environmentId", req.EnvironmentId))
 
 	agentExec.ServerUrl = req.ServerUrl
 	agentExec.ServerToken = req.Token

@@ -27,10 +27,26 @@ import {
     saveServeVersion,
     deleteServeVersion,
     disableServeVersions,
-    sortEnv
+    sortEnv, listDatapool, saveDatapool, deleteDatapool, disableDatapool
 } from './service';
 import { message } from 'ant-design-vue';
-import { BasicSchemaParams,SecurityListReqParams, EnvDataItem, EnvReqParams, ParamsChangeState, SaveSchemaReqParams, SaveVersionParams, SchemaListReqParams, ServeDetail, ServeListParams, ServeReqParams, StoreServeParams, VarsChangeState, VarsReqParams } from './data';
+import {
+    BasicSchemaParams,
+    SecurityListReqParams,
+    EnvDataItem,
+    EnvReqParams,
+    ParamsChangeState,
+    SaveSchemaReqParams,
+    SaveVersionParams,
+    SchemaListReqParams,
+    ServeDetail,
+    ServeListParams,
+    ServeReqParams,
+    StoreServeParams,
+    VarsChangeState,
+    VarsReqParams,
+    DatapoolListParams
+} from './data';
 import { serveStatus, serveStatusTagColor } from '@/config/constant';
 import { momentUtc } from '@/utils/datetime';
 
@@ -42,6 +58,8 @@ export interface StateType {
     userListOptions: any;
     schemaList: any;
     securityList: any;
+    datapoolList: any;
+
     selectServiceDetail: any;
     serveVersionsList: any;
     activeEnvDetail: any;
@@ -58,6 +76,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setUserList: Mutation<StateType>,
         setSchemaList: Mutation<StateType>,
         setSecurityList: Mutation<StateType>,
+        setDatapoolList: Mutation<StateType>,
         setServiceDetail: Mutation<StateType>,
         setVersionList: Mutation<StateType>,
         setEnvDetail: Mutation<StateType>,
@@ -68,6 +87,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         getEnvsList: Action<StateType, StateType>,
         sortEnvList: Action<StateType, StateType>,
         getServersList: Action<StateType, StateType>,
+
         addEnvData: Action<StateType, StateType>,
         saveEnvId: Action<StateType, StateType>,
         deleteEnvData: Action<StateType, StateType>,
@@ -107,6 +127,12 @@ export interface ModuleType extends StoreModuleType<StateType> {
         deleteVersion: Action<StateType, StateType>,
         disabledVersion: Action<StateType, StateType>,
         saveVersion: Action<StateType, StateType>
+
+        // 数据池相关
+        listDatapool: Action<StateType, StateType>,
+        saveDatapool: Action<StateType, StateType>,
+        deleteDatapool: Action<StateType, StateType>,
+        disableDatapool: Action<StateType, StateType>,
     }
 }
 
@@ -123,6 +149,7 @@ const initState: StateType = {
     userListOptions: [],
     schemaList: [],
     securityList:[],
+    datapoolList: [],
     selectServiceDetail: {
         name: '',
         description: '',
@@ -165,6 +192,9 @@ const StoreModel: ModuleType = {
         },
         setSecurityList(state, payload) {
             state.securityList = payload;
+        },
+        setDatapoolList(state, payload) {
+            state.datapoolList = payload;
         },
         setServiceDetail(state, payload) {
             state.selectServiceDetail = payload;
@@ -414,6 +444,7 @@ const StoreModel: ModuleType = {
                 message.error('禁用服务失败');
             }
         },
+
         async getSchemaList({ commit }, params: SchemaListReqParams) {
             const reqParams = { ...params, page: 1, pageSize: 20 };
             const res = await getSchemaList(reqParams);
@@ -551,7 +582,67 @@ const StoreModel: ModuleType = {
             const newEnvDetail = JSON.parse(JSON.stringify(state.activeEnvDetail));
             newEnvDetail.vars.push(varData);
             commit('setEnvDetail', newEnvDetail);
-        }
+        },
+
+        async listDatapool({ commit }, { projectId, page, pageSize, name }: DatapoolListParams) {
+            const res = await listDatapool({
+                projectId,
+                page: page || 0,
+                pageSize: pageSize || 100,
+                name: name || ''
+            });
+            if (res.code === 0) {
+                res.data.result.forEach((item: any) => {
+                    item.label = item.name;
+                    item.value = item.id;
+                    item.statusDesc = serveStatus.get(item.status);
+                    item.statusTag = serveStatusTagColor.get(item.status);
+                    item.createdAt = momentUtc(item.createdAt)
+                    item.updatedAt = momentUtc(item.updatedAt)
+                })
+                commit('setDatapoolList', res.data.result);
+                return true;
+            } else {
+                return false;
+            }
+        },
+        async saveDatapool({ dispatch }, params: StoreServeParams) {
+            const { formState, projectId, action = 'create' } = params;
+            const tips = { 'create': '新建服务', 'update': '修改服务' };
+            const res = await saveDatapool({ ...formState, projectId });
+            if (res.code === 0) {
+                message.success(`${tips[action]}成功`);
+                await dispatch('getServersList', {
+                    projectId
+                })
+            } else {
+                message.error(`${tips[action]}失败`);
+            }
+        },
+        async deleteDatapool({ dispatch }, params: ServeReqParams) {
+            const { id, projectId } = params;
+            const res = await deleteDatapool(id);
+            if (res.code === 0) {
+                message.success('删除成功');
+                await dispatch('getServersList', {
+                    projectId
+                })
+            } else {
+                message.error('删除失败');
+            }
+        },
+        async disableDatapool({ dispatch }, params: ServeReqParams) {
+            const { id, projectId } = params;
+            const res = await disableDatapool(id);
+            if (res.code === 0) {
+                message.success('禁用服务成功');
+                await dispatch('getServersList', {
+                    projectId
+                })
+            } else {
+                message.error('禁用服务失败');
+            }
+        },
     }
 };
 

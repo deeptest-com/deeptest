@@ -7,6 +7,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
+	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	dateUtils "github.com/aaronchen2k/deeptest/pkg/lib/date"
 	_fileUtils "github.com/aaronchen2k/deeptest/pkg/lib/file"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
@@ -27,9 +28,8 @@ func NewDatapoolService() *DatapoolService {
 	return &DatapoolService{}
 }
 
-func (s *DatapoolService) List(projectId uint) (ret []v1.DatapoolReq, err error) {
-	ret, err = s.DatapoolRepo.List(projectId)
-
+func (s *DatapoolService) Paginate(req v1.DatapoolReqPaginate) (ret _domain.PageData, err error) {
+	ret, err = s.DatapoolRepo.Paginate(req)
 	return
 }
 
@@ -43,6 +43,9 @@ func (s *DatapoolService) Save(req *model.Datapool) (err error) {
 
 func (s *DatapoolService) Delete(id uint) (err error) {
 	return s.DatapoolRepo.Delete(id)
+}
+func (s *DatapoolService) Disable(id uint) (err error) {
+	return s.DatapoolRepo.Disable(id)
 }
 
 // Upload 上传文件
@@ -100,7 +103,7 @@ func (s *DatapoolService) ReadExcel(pth string) (ret [][]interface{}, err error)
 func (s *DatapoolService) ListForExec(projectId uint) (ret domain.Datapools, error interface{}) {
 	ret = domain.Datapools{}
 
-	datapools, err := s.DatapoolRepo.List(projectId)
+	datapools, err := s.DatapoolRepo.ListForExec(projectId)
 	if err != nil {
 		return
 	}

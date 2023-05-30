@@ -4,6 +4,12 @@ import (
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 )
 
+type DatapoolReqPaginate struct {
+	_domain.PaginateReq
+	ProjectId int64  `json:"projectId"`
+	Name      string `json:"name"`
+}
+
 type DatapoolReq struct {
 	_domain.Model
 

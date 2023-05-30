@@ -2,18 +2,8 @@
   <div class="datapool-main">
     <!-- header -->
     <div class="header">
-      <a-form layout="inline">
-        <a-form-item>
-          <a-button class="editable-add-btn" type="primary" html-type="submit" style="margin-bottom: 8px"
-                    @click="onCreate">
-            新建
-          </a-button>
-        </a-form-item>
-      </a-form>
-
-      <a-input-search placeholder="输入数据池名称搜索" style="width: 200px"
-                      v-model:value="keyword"
-                      @search="handleSearch"/>
+      <CustomForm :form-config="formConfig" :rules="rules" :show-search="true" :search-placeholder="'输入数据池名称搜索'"
+                  @handle-ok="handleAdd" @handle-search="handleSearch" />
     </div>
 
     <!-- content -->
@@ -22,7 +12,7 @@
         <a-table :data-source="dataSource" :columns="datapoolColumns" :rowKey="(_record, index) => index">
           <template #name="{ text, record }">
             <div class="serve-name">
-              <EditAndShowField :custom-class="'custom-serve show-on-hover'" placeholder="请输入服务名称"
+              <EditAndShowField :custom-class="'custom-serve show-on-hover'" placeholder="请输入数据池名称"
                                 :value="text || ''"
                                 @update="(e: string) => handleUpdateName(e, record)" @edit="onEdit(record)"/>
             </div>
@@ -67,6 +57,7 @@ import {Modal} from 'ant-design-vue';
 import {ExclamationCircleOutlined, MoreOutlined} from '@ant-design/icons-vue';
 import EditAndShowField from '@/components/EditAndShow/index.vue';
 import EmptyCom from '@/components/Empty/index.vue';
+import CustomForm from '../common/CustomForm.vue';
 import Drawer from './Drawer.vue';
 import {StateType as ProjectStateType} from "@/store/project";
 import {StateType as ProjectSettingStateType} from '../../store';
@@ -74,18 +65,18 @@ import {datapoolColumns} from '../../config';
 
 const store = useStore<{ ProjectGlobal: ProjectStateType, ProjectSetting: ProjectSettingStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
+const userListOptions = computed<any>(() => store.state.ProjectSetting.userListOptions);
 const dataSource = computed<any>(() => store.state.ProjectSetting.serviceOptions);
 const route = useRouter();
 
 const drawerVisible = ref(false);
 const editKey = ref(0);
-const keyword = ref('')
 
 let formConfig = ref([
   {
     type: 'tooltip',
-    title: '一个产品服务端通常对应一个或多个服务(微服务)，服务可以有多个版本并行，新的服务默认起始版本为v0.1.0。',
-    text: '新建服务'
+    title: '可在接口和场景设计器中引用数据池',
+    text: '新数据池'
   },
   {
     type: 'input',
@@ -109,13 +100,13 @@ const rules = {
 };
 
 watch((currProject), async (newVal) => {
-  await getList()
+  await list()
 }, {
   immediate: true
 })
 
-async function getList(name = '') {
-  await store.dispatch('ProjectSetting/getServersList', {
+async function list(name = '') {
+  await store.dispatch('ProjectSetting/listDatapool', {
     projectId: currProject.value.id,
     page: 0,
     pageSize: 100,
@@ -123,28 +114,34 @@ async function getList(name = '') {
   })
 }
 
+async function handleAdd(formData: any) {
+  const { name, username, description } = formData;
+  const result = userListOptions.value.filter((e: any) => e.value === username);
+  await store.dispatch('ProjectSetting/saveDatapool', {
+    projectId: currProject.value.id,
+    formState: {
+      userId: result && result[0] && result[0].id,
+      name,
+      description
+    },
+    action: 'create'
+  })
+}
 function onClose() {
   drawerVisible.value = false;
 }
 
 function handleSearch(value: any) {
-  getList(value);
+  list(value);
 }
 
 function handleUpdateName(value: string, record: any) {
   const serviceInfo = {name: value, description: record.description, id: record.id};
-  store.dispatch('ProjectSetting/saveStoreServe', {
+  store.dispatch('ProjectSetting/saveDatapool', {
     "projectId": currProject.value.id,
     formState: {...serviceInfo},
     action: 'update'
   });
-}
-
-const onCreate = () => {
-  console.log('onCreate')
-
-  editKey.value++;
-  drawerVisible.value = true;
 }
 
 const onEdit = () => {
@@ -156,16 +153,16 @@ const onEdit = () => {
 
 async function onDelete(record: any) {
   Modal.confirm({
-    title: '确认要删除该服务吗',
+    title: '确认要删除该数据池吗',
     icon: createVNode(ExclamationCircleOutlined),
     onOk() {
-      store.dispatch('ProjectSetting/deleteStoreServe', {id: record.id, projectId: currProject.value.id});
+      store.dispatch('ProjectSetting/deleteDatapool', {id: record.id, projectId: currProject.value.id});
     }
   })
 }
 
 async function onDisable(record: any) {
-  store.dispatch('ProjectSetting/disabledStoreServe', {id: record.id, projectId: currProject.value.id});
+  store.dispatch('ProjectSetting/disableDatapool', {id: record.id, projectId: currProject.value.id});
 }
 
 </script>

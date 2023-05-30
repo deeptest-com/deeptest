@@ -192,7 +192,7 @@ func (c *EndpointCtrl) ListVersions(ctx iris.Context) {
 }
 
 /*
-func (c *EndpointCtrl) List() {
+func (c *EndpointCtrl) Index() {
 	c.EndpointService.GetVersionsByEndpointId(1)
 }
 */

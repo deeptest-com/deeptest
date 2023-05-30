@@ -189,7 +189,7 @@ func (s *ScenarioProcessorService) GetEntityTo(processorTo *agentExec.Processor)
 //}
 //
 //func (s *ScenarioProcessorService) CopyExtractors(interfaceId, processorInterfaceId uint, processor model.Processor) {
-//	pos, _ := s.ExtractorService.List(interfaceId, consts.InterfaceDebug)
+//	pos, _ := s.ExtractorService.Index(interfaceId, consts.InterfaceDebug)
 //
 //	for _, po := range pos {
 //		extractor := model.DebugInterfaceExtractor{}
@@ -207,7 +207,7 @@ func (s *ScenarioProcessorService) GetEntityTo(processorTo *agentExec.Processor)
 //}
 //
 //func (s *ScenarioProcessorService) CopyCheckpoints(interfaceId, processorInterfaceId uint, processor model.Processor) {
-//	pos, _ := s.CheckpointService.List(interfaceId, consts.InterfaceDebug)
+//	pos, _ := s.CheckpointService.Index(interfaceId, consts.InterfaceDebug)
 //
 //	for _, po := range pos {
 //		checkpoint := model.InterfaceCheckpoint{}

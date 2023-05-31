@@ -33,7 +33,7 @@
                           v-if="item.accessible === 0"
                           @click="handleJoin(item)"
                         >
-                          <a href="javascript:;">加入项目</a>
+                          <a href="javascript:;">申请加入</a>
                         </a-menu-item>
                         <a-menu-item @click="handleEdit(item)">
                           <a href="javascript:;">编辑</a>
@@ -44,7 +44,7 @@
                         <a-menu-item>
                           <a
                             href="javascript:;"
-                            @click="handleDelete(item.projectId)"
+                            @click.stop="handleDelete(item.projectId)"
                             >删除</a
                           >
                         </a-menu-item>
@@ -55,8 +55,8 @@
               </div>
               <div class="card-desc" :title="item?.projectDescr">
                 {{
-                  item?.projectDescr.length > 66
-                    ? item?.projectDescr.substring(0, 66) + "..."
+                  item?.projectDescr.length > 38
+                    ? item?.projectDescr.substring(0, 38) + "..."
                     : item?.projectDescr
                     ? item?.projectDescr
                     : "&nbsp;"

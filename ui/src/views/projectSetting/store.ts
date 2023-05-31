@@ -312,10 +312,8 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
-        async getGlobalVarsList({ commit, state, dispatch }, { projectId }: VarsReqParams) {
-            const res = await getGlobalVarsList({
-                projectId
-            });
+        async getGlobalVarsList({ commit, state, dispatch }) {
+            const res = await getGlobalVarsList();
             if (res.code === 0) {
                 commit('setGlobalVarsList', res.data);
                 return true;

@@ -309,9 +309,9 @@ export async function saveGlobalVars(data: any[]): Promise<any> {
 /**
  *   全局变量列表
  * */
-export async function getGlobalVarsList(data: VarsReqParams): Promise<any> {
+export async function getGlobalVarsList(): Promise<any> {
     return request({
-        url: `/environments/vars/global?projectId=${data.projectId}`,
+        url: `/environments/vars/global`,
         method: 'get',
     });
 }

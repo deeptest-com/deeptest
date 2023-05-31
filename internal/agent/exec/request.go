@@ -88,6 +88,7 @@ func ReplaceVariables(req *domain.BaseRequest, usedBy consts.UsedBy) {
 	replaceUrl(req, usedBy)
 
 	replaceQueryParams(req, usedBy)
+	replacePathParams(req, usedBy)
 	replaceHeaders(req, usedBy)
 	replaceCookies(req, usedBy)
 	replaceFormBodies(req, usedBy)
@@ -120,6 +121,25 @@ func replaceQueryParams(req *domain.BaseRequest, usedBy consts.UsedBy) {
 		req.QueryParams[idx].Value = ReplaceVariableValue(param.Value)
 	}
 }
+
+func replacePathParams(req *domain.BaseRequest, usedBy consts.UsedBy) {
+	/*
+		for _, p := range ExecScene.GlobalParams {
+			if p.In == consts.ParamInQuery {
+				req.QueryParams = append(req.QueryParams, domain.Param{
+					Name:  p.Name,
+					Value: p.DefaultValue,
+				})
+			}
+		}
+	*/
+
+	for idx, param := range req.PathParams {
+		req.PathParams[idx].Value = ReplaceVariableValue(param.Value)
+	}
+	return
+}
+
 func replaceHeaders(req *domain.BaseRequest, usedBy consts.UsedBy) {
 	//if usedBy == consts.ScenarioDebug {
 	for _, p := range ExecScene.GlobalParams {

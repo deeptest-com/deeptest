@@ -40,6 +40,9 @@ func (entity ProcessorData) Run(processor *Processor, session *Session) (err err
 		StartTime:         &startTime,
 		ParentId:          int(entity.ParentID),
 		ScenarioId:        processor.ScenarioId,
+		ProcessorId:       processor.ID,
+		LogId:             session.Step.GetId(),
+		ParentLogId:       processor.Parent.Result.LogId,
 	}
 
 	processor.Result.Iterator, processor.Result.Summary = entity.getIterator()

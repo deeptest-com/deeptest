@@ -7,6 +7,7 @@ import (
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/kataras/iris/v12"
+	"github.com/snowlyg/multi"
 )
 
 type DatapoolCtrl struct {
@@ -42,6 +43,7 @@ func (c *DatapoolCtrl) Get(ctx iris.Context) {
 }
 
 func (c *DatapoolCtrl) Save(ctx iris.Context) {
+	userId := multi.GetUserId(ctx)
 	projectId, err := ctx.URLParamInt("currProjectId")
 	if projectId == 0 {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: "projectId"})
@@ -57,7 +59,7 @@ func (c *DatapoolCtrl) Save(ctx iris.Context) {
 
 	req.ProjectId = uint(projectId)
 
-	err = c.DatapoolService.Save(&req)
+	err = c.DatapoolService.Save(&req, userId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: err.Error()})
 		return

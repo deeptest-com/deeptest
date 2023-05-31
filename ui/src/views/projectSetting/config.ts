@@ -248,19 +248,12 @@ const datapoolColumns = [
         title: '状态',
         dataIndex: 'statusDesc',
         slots: { customRender: 'customStatus' },
-        width: '100px',
-    },
-    {
-        title: '描述',
-        dataIndex: 'description',
-        slots: { customRender: 'description' },
-        width: '300px',
-        ellipsis: true
+        width: '200px',
     },
     {
         title: '创建人',
         dataIndex: 'createUser',
-        width: '100px',
+        width: '200px',
     },
     {
         title: '创建时间',

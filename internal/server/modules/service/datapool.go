@@ -37,8 +37,8 @@ func (s *DatapoolService) Get(id uint) (model.Datapool, error) {
 	return s.DatapoolRepo.Get(id)
 }
 
-func (s *DatapoolService) Save(req *model.Datapool) (err error) {
-	return s.DatapoolRepo.Save(req)
+func (s *DatapoolService) Save(req *model.Datapool, userId uint) (err error) {
+	return s.DatapoolRepo.Save(req, userId)
 }
 
 func (s *DatapoolService) Delete(id uint) (err error) {

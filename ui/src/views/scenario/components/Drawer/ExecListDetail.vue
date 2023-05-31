@@ -15,7 +15,6 @@ import {useStore} from 'vuex';
 import {
   ReportBasicInfo,
   StatisticTable,
-  EndpointCollapsePanel,
   LogTreeView
 } from '@/views/component/Report/components';
 

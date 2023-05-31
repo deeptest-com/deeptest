@@ -24,8 +24,6 @@ import {WsMsg} from "@/types/data";
 import {
   ReportBasicInfo,
   StatisticTable,
-  ScenarioCollapsePanel,
-  EndpointCollapsePanel,
   LogTreeView,
   Progress
 } from '@/views/component/Report/components';

@@ -17,7 +17,7 @@
 import { defineProps, defineEmits, ref, computed } from 'vue';
 import { useStore } from 'vuex';
 
-import { ReportBasicInfo, StatisticTable, ScenarioCollapsePanel, EndpointCollapsePanel,LogTreeView } from '@/views/component/Report/components';
+import { ReportBasicInfo, StatisticTable,LogTreeView } from '@/views/component/Report/components';
 
 
 import { StateType as ReportStateType } from "../store";

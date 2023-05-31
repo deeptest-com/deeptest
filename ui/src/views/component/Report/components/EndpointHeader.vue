@@ -21,9 +21,9 @@
       <div :class="['endpoint-time', ClassMap[endpointData.resultStatus]]" v-if="endpointData.resultStatus !== 'loading'">
         耗时:  &nbsp;<span v-html="formatWithSeconds(resContent.time)"></span>
       </div>
-      <div class="endpoint-type" v-if="endpointData.resultStatus !== 'loading'">
-        转单
-      </div>
+<!--      <div class="endpoint-type" v-if="endpointData.resultStatus !== 'loading'">-->
+<!--        转单-->
+<!--      </div>-->
     </div>
 
   </div>

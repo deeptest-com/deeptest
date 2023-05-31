@@ -321,13 +321,13 @@ func (c *EnvironmentCtrl) SaveGlobal(ctx iris.Context) {
 }
 
 func (c *EnvironmentCtrl) ListGlobal(ctx iris.Context) {
-	projectId := ctx.URLParamIntDefault("projectId", 0)
+	projectId := ctx.URLParamIntDefault("currProjectId", 0)
 	res, err := c.EnvironmentService.ListGlobal(uint(projectId))
-	if err == nil {
-		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res, Msg: _domain.NoErr.Msg})
-	} else {
+	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
 	}
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res, Msg: _domain.NoErr.Msg})
 }
 
 func (c *EnvironmentCtrl) SaveParams(ctx iris.Context) {

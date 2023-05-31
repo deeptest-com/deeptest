@@ -3,7 +3,7 @@ package domain
 import "github.com/aaronchen2k/deeptest/internal/pkg/consts"
 
 type GlobalVar struct {
-	Id          uint   `json:"id"`
+	VarId          uint   `gorm:"-" json:"varId"`
 	Name        string `json:"name"`
 	RightValue  string `json:"rightValue"`
 	LocalValue  string `json:"localValue"`

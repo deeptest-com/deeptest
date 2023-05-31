@@ -2,7 +2,7 @@
   <div class="scenario-exec-info-main">
     <ReportBasicInfo :items="baseInfoList || []"
                      :showBtn="true"
-                      :btnText="'导出'"
+                      :btnText="'生成报告'"
                      @handleBtnClick="genReport"/>
     <StatisticTable :data="statisticData" :value="statInfo"/>
     <Progress :exec-status="progressStatus"
@@ -20,24 +20,18 @@ import {useStore} from "vuex";
 
 import settings from "@/config/settings";
 import {WebSocket} from "@/services/websocket";
-import {WsMsg} from "@/types/data";
 import {
   ReportBasicInfo,
   StatisticTable,
   LogTreeView,
   Progress
 } from '@/views/component/Report/components';
-import {ReportDetailType} from "@/utils/enum";
 import {StateType as GlobalStateType} from "@/store/global";
 import {ExecStatus} from "@/store/exec";
 import {StateType as ScenarioStateType} from "../../store";
 import bus from "@/utils/eventBus";
-import Log from "./Log.vue"
-import {momentShort, momentUtc} from "@/utils/datetime";
 import {useI18n} from "vue-i18n";
 import {getToken} from "@/utils/localToken";
-import {WsMsgCategory} from "@/utils/enum";
-import {formatData} from "@/utils/formatData";
 import {Scenario} from "@/views/scenario/data";
 import {message} from "ant-design-vue";
 import {getDivision, getPercentStr} from "@/utils/number";
@@ -67,28 +61,16 @@ const baseInfoList = computed(() => {
 const statisticData = computed(() => {
   const {
     failAssertionNum,
-    failInterfaceNum,
-    failRequestNum,
-    failScenarioNum,
     passAssertionNum,
-    passInterfaceNum,
-    passRequestNum,
-    passScenarioNum,
     totalAssertionNum,
-    totalInterfaceNum,
-    totalRequestNum,
-    totalScenarioNum,
-    totalProcessorNum,
     notTestNum,
-    duration,
   } = statInfo.value;
-
   // 计算平均接口耗时
   let interfaceDuration = 0;
   let interfaceNum = 0;
   execLogs.value.forEach((item: any) => {
     if (item.processorCategory === "processor_interface") {
-      interfaceDuration += (item.duration || 0);
+      interfaceDuration += (item.cost || 0);
       interfaceNum++;
     }
   });
@@ -103,8 +85,8 @@ const statisticData = computed(() => {
       value: `${passRate} ${passAssertionNum} 个`,
     },
     {
-      label: '总耗时',
-      value: `${duration} 毫秒`
+      label: '接口总耗时',
+      value: `${interfaceDuration} 毫秒`
     },
     {
       label: '失败',
@@ -119,10 +101,6 @@ const statisticData = computed(() => {
       label: '未测',
       value: `${notTestNumRate} ${notTestNum}个`,
       class: 'fail',
-    },
-    {
-      label: '检查点 (成功/失败)',
-      value: `${totalAssertionNum} (${passAssertionNum}/${failAssertionNum})`,
     },
   ]
 })
@@ -145,18 +123,15 @@ const statInfo = ref({
   passRequestNum: 0,
   passScenarioNum: 0,
   totalAssertionNum: 0,
-  totalInterfaceNum: 0,
-  totalRequestNum: 0,
   totalScenarioNum: 0,
   totalProcessorNum: 0,
   notTestNum: 0,
   finishProcessorNum: 0,
-  duration:0,
+  cost:0,
 });
 
 const scenarioReports = computed(() => {
-  let res = [...genLogTreeView(execLogs.value, execRes.value)];
-  return res;
+  return [...genLogTreeView(execLogs.value, execRes.value)];
 })
 
 const expandKeys = computed(() => {
@@ -223,6 +198,7 @@ const execStart = async () => {
 }
 
 const execCancel = () => {
+  progressStatus.value = 'cancel';
   const msg = {act: 'stop', execReq: {scenarioId: scenarioId.value}}
   WebSocket.sentMsg(settings.webSocketRoom, JSON.stringify(msg))
 }
@@ -244,7 +220,6 @@ const execRes: any = ref([]);
 // 更新场景的执行结果
 // todo 优化: 可以优化成算法，使用 hash
 function updateExecRes(res) {
-  console.log('832 log res', res)
   // 1. 更新执行结果
   if (execRes.value.some((item: any) => item.scenarioId === res.scenarioId)) {
     execRes.value.forEach((item: any) => {
@@ -264,8 +239,6 @@ function updateExecLogs(log) {
   const isExist = execLogs.value.some((item: any) => {
     return item.logId === log.logId && item.scenarioId === log.scenarioId;
   });
-  console.log('832 log log', log);
-  console.log('832isExist', isExist);
   // 1. 更新执行记录
   if (isExist) {
     execLogs.value.forEach((item: any) => {
@@ -298,7 +271,7 @@ function updateStatFromLog(res: any) {
     totalScenarioNum = 0,
     totalProcessorNum = 0,
     finishProcessorNum = 0,
-    duration = 0,
+    cost = 0,
   }: any = res;
   console.log('updateStatFromLog', res);
   const notTestNum = totalAssertionNum - passAssertionNum - failAssertionNum;
@@ -312,12 +285,10 @@ function updateStatFromLog(res: any) {
     passRequestNum,
     passScenarioNum,
     totalAssertionNum,
-    totalInterfaceNum,
-    totalRequestNum,
     totalScenarioNum,
     totalProcessorNum,
     finishProcessorNum,
-    duration,
+    cost,
     notTestNum: notTestNum >= 0 ? notTestNum : 0,
   }
 }
@@ -327,16 +298,11 @@ function initData(res: any) {
   updateStatFromLog(res);
 }
 
-// 【计划】的执行最终结果 用于更新最终的执行结果
-function updatePlanRes(res) {
-  updateStatFromLog(res);
-}
-
 const OnWebSocketMsg = (data: any) => {
   if (!data.msg) return;
+  if(progressStatus.value === 'cancel') return;
   const wsMsg = JSON.parse(data.msg);
   const log = wsMsg.data ? JSON.parse(JSON.stringify(wsMsg.data)) : {};
-  console.log('832333333', wsMsg);
   // 开始执行，初始化数据
   if (wsMsg.category == 'initialize') {
     initData(log);
@@ -349,7 +315,6 @@ const OnWebSocketMsg = (data: any) => {
   //  更新【场景】的执行结果
   else if (wsMsg.category == 'result' && log.scenarioId) {
     updateExecRes(log);
-    console.log('场景的结果', log)
   }
   // 更新【场景中每条编排】的执行记录
   else if (wsMsg.category === "processor" && log.scenarioId) {
@@ -360,7 +325,7 @@ const OnWebSocketMsg = (data: any) => {
   else if (wsMsg.category == 'end') {
     progressStatus.value = 'end';
   } else {
-    console.log('其他情况：严格来说，不能执行到这儿');
+    console.log('wsMsg', wsMsg);
   }
 }
 

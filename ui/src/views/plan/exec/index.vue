@@ -161,8 +161,8 @@ const statisticData = computed(() => {
       value: `${passRate} ${passAssertionNum} 个`,
     },
     {
-      label: '总耗时',
-      value: `${duration} 毫秒`
+      label: '接口总耗时',
+      value: `${interfaceDuration} 毫秒`
     },
     {
       label: '失败',
@@ -209,6 +209,7 @@ const execStart = async () => {
 };
 
 const execCancel = () => {
+  progressStatus.value = 'exception';
   const msg = {act: 'stop', execReq: {planId: currPlan.value && currPlan.value.id}};
   WebSocket.sentMsg(settings.webSocketRoom, JSON.stringify(msg))
 };
@@ -291,7 +292,6 @@ const execRes: any = ref([]);
 // 更新场景的执行结果
 // todo 优化: 可以优化成算法，使用 hash
 function updateExecRes(res) {
-  console.log('832 log res', res)
   // 1. 更新执行结果
   if (execRes.value.some((item: any) => item.scenarioId === res.scenarioId)) {
     execRes.value.forEach((item: any) => {
@@ -360,6 +360,7 @@ function updatePlanRes(res) {
 
 const OnWebSocketMsg = (data: any) => {
   if (!data.msg) return;
+  if(progressStatus.value === 'cancel') return;
   const wsMsg = JSON.parse(data.msg);
   const log = wsMsg.data ? JSON.parse(JSON.stringify(wsMsg.data)) : {};
   console.log('832222', wsMsg);

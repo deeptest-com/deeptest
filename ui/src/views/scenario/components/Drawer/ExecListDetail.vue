@@ -1,7 +1,7 @@
 <template>
   <div class="drawer-content">
     <ReportBasicInfo :showBtn="true"
-                     :btnText="'导出'"
+                     :btnText="'生成报告'"
                      :items="baseInfoList || []"
                      @handleBtnClick="genReport"/>
     <StatisticTable :data="statisticData" :value="statInfo"/>
@@ -81,7 +81,7 @@ const statisticData = computed(() => {
       value: `${passRate} ${passAssertionNum} 个`,
     },
     {
-      label: '总耗时',
+      label: '接口总耗时',
       value: `${duration} 毫秒`
     },
     {

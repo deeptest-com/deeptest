@@ -79,7 +79,7 @@ const statisticData = computed(() => {
       value: `${passRate} ${passAssertionNum} 个`,
     },
     {
-      label: '总耗时',
+      label: '接口总耗时',
       value: `${duration} 毫秒`
     },
     {

@@ -88,6 +88,7 @@ func (s *ScenarioExecService) SaveReport(scenarioId int, userId uint, rootResult
 	s.TestLogRepo.CreateLogs(rootResult, &report)
 	logs, _ := s.ScenarioReportService.GetById(report.ID)
 	report.Logs = logs.Logs
+	report.Priority = scenario.Priority
 
 	return
 }
@@ -126,6 +127,7 @@ func (s *ScenarioExecService) countRequest(result execDomain.ScenarioExecResult,
 		s.countInterface(result.InterfaceId, result.ResultStatus, report)
 
 		report.TotalRequestNum++
+		report.Duration += result.Cost
 
 		switch result.ResultStatus {
 		case consts.Pass:
@@ -139,6 +141,7 @@ func (s *ScenarioExecService) countRequest(result execDomain.ScenarioExecResult,
 		}
 
 	} else if result.ProcessorType == consts.ProcessorAssertionDefault {
+		report.TotalAssertionNum++
 		switch result.ResultStatus {
 		case consts.Pass:
 			report.PassAssertionNum++

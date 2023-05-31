@@ -237,6 +237,49 @@ const versionColumns = [
     },
 ];
 
+const datapoolColumns = [
+    {
+        title: '数据池名称',
+        dataIndex: 'name',
+        slots: { customRender: 'name'},
+        ellipsis: true
+    },
+    {
+        title: '状态',
+        dataIndex: 'statusDesc',
+        slots: { customRender: 'customStatus' },
+        width: '100px',
+    },
+    {
+        title: '描述',
+        dataIndex: 'description',
+        slots: { customRender: 'description' },
+        width: '300px',
+        ellipsis: true
+    },
+    {
+        title: '创建人',
+        dataIndex: 'createUser',
+        width: '100px',
+    },
+    {
+        title: '创建时间',
+        dataIndex: 'createdAt',
+        width: '200px',
+    },
+    {
+        title: '最近更新时间',
+        dataIndex: 'updatedAt',
+        width: '200px',
+    },
+    {
+        title: '操作',
+        dataIndex: 'operation',
+        slots: { customRender: 'operation' },
+        width: '100px',
+    },
+];
+
 
 export {
     globalParamscolumns,
@@ -246,5 +289,6 @@ export {
     serviceColumns,
     schemaColumns,
     securityColumns,
-    versionColumns
+    versionColumns,
+    datapoolColumns
 }

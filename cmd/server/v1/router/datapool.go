@@ -20,11 +20,11 @@ func (m *DatapoolModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
 		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
 
-		index.Get("/", m.DatapoolCtrl.List).Name = "数据池列表"
+		index.Post("/index", m.DatapoolCtrl.Index).Name = "数据池列表"
 		index.Get("/{id:uint}", m.DatapoolCtrl.Get).Name = "数据池详情"
-		index.Post("/", m.DatapoolCtrl.Save).Name = "保存数据池"
-		index.Put("/", m.DatapoolCtrl.Save).Name = "保存数据池"
+		index.Post("/save", m.DatapoolCtrl.Save).Name = "保存数据池"
 		index.Delete("/{id:uint}", m.DatapoolCtrl.Delete).Name = "删除数据池"
+		index.Put("/{id:uint}/disable", m.DatapoolCtrl.Disable).Name = "禁用数据池"
 		index.Post("/upload", m.DatapoolCtrl.Upload).Name = "上传数据池文件"
 	}
 	return module.NewModule("/datapools", handler)

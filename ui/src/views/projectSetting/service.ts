@@ -360,3 +360,34 @@ export async function getEnvironmentsParamList(data: VarsReqParams): Promise<any
         method: 'delete',
     });
 }
+
+
+/**
+ * 数据池
+ * */
+export async function listDatapool(data: ServeListParams): Promise<any> {
+    return request({
+        url: `/datapools/index`,
+        method: 'post',
+        data: data,
+    });
+}
+export async function saveDatapool(data: ServeReqParams): Promise<any> {
+    return request({
+        url: `/datapools/save`,
+        method: 'post',
+        data: data
+    });
+}
+export async function deleteDatapool(id: Number | String | undefined): Promise<any> {
+    return request({
+        url: `/datapools/{id}`,
+        method: 'delete',
+    });
+}
+export async function disableDatapool(id: Number | String | undefined): Promise<any> {
+    return request({
+        url: `/datapools/${id}/disable`,
+        method: 'put',
+    });
+}

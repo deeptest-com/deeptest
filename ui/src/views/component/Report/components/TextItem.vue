@@ -3,10 +3,10 @@
         <span :class="['text-label', labelClassName]" :style="labelStyle" v-if="label">{{ label }}</span>
         <span class="text-value">
             <template v-if="$slots.value">
-                <slot name="value"></slot>    
+                <slot name="value"></slot>
             </template>
             <template v-else>{{ value || '' }}</template>
-        </span>    
+        </span>
     </div>
 </template>
 <script setup lang="ts">
@@ -25,7 +25,7 @@ defineProps<{
     align-items: center;
     .text-label {
         display: inline-block;
-        width: 68px;
+        width: 150px;
         font-family: 'PingFang SC';
         font-style: normal;
         font-weight: 400;
@@ -38,15 +38,15 @@ defineProps<{
         margin-right: 30px;
         display: inline-flex;
         align-items: center;
-        
+
 
         &:before {
             content: '';
             display: block;
             margin-right: 7px;
             border-radius: 50%;
-        } 
-        
+        }
+
         &.success:before {
             width: 6px;
             height: 6px;

@@ -35,6 +35,9 @@ func (entity ProcessorCookie) Run(processor *Processor, session *Session) (err e
 		StartTime:         &startTime,
 		ParentId:          int(entity.ParentID),
 		ScenarioId:        processor.ScenarioId,
+		ProcessorId:       processor.ID,
+		LogId:             session.Step.GetId(),
+		ParentLogId:       processor.Parent.Result.LogId,
 	}
 
 	cookieName := entity.CookieName

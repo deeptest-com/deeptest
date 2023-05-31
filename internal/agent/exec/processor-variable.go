@@ -29,6 +29,9 @@ func (entity ProcessorVariable) Run(processor *Processor, session *Session) (err
 		StartTime:         &startTime,
 		ParentId:          int(entity.ParentID),
 		ScenarioId:        processor.ScenarioId,
+		ProcessorId:       processor.ID,
+		LogId:             session.Step.GetId(),
+		ParentLogId:       processor.Parent.Result.LogId,
 	}
 
 	if entity.ProcessorType == consts.ProcessorVariableSet {

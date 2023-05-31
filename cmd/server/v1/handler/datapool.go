@@ -1,6 +1,7 @@
 package handler
 
 import (
+	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
@@ -13,20 +14,15 @@ type DatapoolCtrl struct {
 	BaseCtrl
 }
 
-func (c *DatapoolCtrl) List(ctx iris.Context) {
-	projectId, err := ctx.URLParamInt("currProjectId")
-	if projectId == 0 {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
-		return
-	}
+func (c *DatapoolCtrl) Index(ctx iris.Context) {
+	var req serverDomain.DatapoolReqPaginate
 
-	data, err := c.DatapoolService.List(uint(projectId))
-	if err != nil {
+	if err := ctx.ReadJSON(&req); err == nil {
+		res, _ := c.DatapoolService.Paginate(req)
+		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res})
+	} else {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
-		return
 	}
-
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data, Msg: _domain.NoErr.Msg})
 }
 
 func (c *DatapoolCtrl) Get(ctx iris.Context) {
@@ -78,6 +74,22 @@ func (c *DatapoolCtrl) Delete(ctx iris.Context) {
 	}
 
 	err = c.DatapoolService.Delete(uint(id))
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+}
+
+func (c *DatapoolCtrl) Disable(ctx iris.Context) {
+	id, err := ctx.Params().GetInt("id")
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		return
+	}
+
+	err = c.DatapoolService.Disable(uint(id))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

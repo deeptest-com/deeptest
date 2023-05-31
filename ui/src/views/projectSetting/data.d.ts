@@ -67,6 +67,16 @@ export interface ServeListParams {
     "name"?: string;
 }
 
+export interface DatapoolListParams {
+    "projectId"?: number | string,
+    "page"?: number,
+    "pageSize"?: number,
+    "status"?: number,
+    "userId"?: number,
+    "title"?: string,
+    "name"?: string;
+}
+
 export interface VarsChangeState {
     field: string;
     index: number;

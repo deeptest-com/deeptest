@@ -34,7 +34,7 @@ func (s *YapiService) ImportYapiProject(req v1.InterfaceYapiReq) (err error) {
 	//	catid := strconv.Itoa(yapiCatMenuData.ID)
 	//
 	//	yapiInterfaceList := s.GetYapiMenuInterfaceList(yapiHost, token, catid)
-	//	catMenuInterfaces := yapiInterfaceList.Data.List
+	//	catMenuInterfaces := yapiInterfaceList.Data.Index
 	//	for j := 0; j < len(catMenuInterfaces); j++ {
 	//		catMenuInterface := catMenuInterfaces[j]
 	//		interfaceId := strconv.Itoa(catMenuInterface.ID)

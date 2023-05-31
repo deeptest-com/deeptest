@@ -6,13 +6,13 @@
       </div>
     </template>
     <template v-else>
-      <div class="statistical-main" ref="main"></div>
+      <div class="statistical-main" ref="mainRef"></div>
     </template>
     <div class="statistical-info">
       <TextItem v-for="item in data"
                 :key="item.label"
                 class="statistical-info-item"
-                label-class-name="success"
+                :label-class-name="item.class === 'fail' ? 'failed' : 'success'"
                 :label="item.label"
                 :value="item.value"/>
     </div>
@@ -23,20 +23,15 @@ import {ref, onMounted, watch, defineProps} from 'vue';
 import * as echarts from 'echarts';
 import TextItem from './TextItem.vue';
 
-import {ReportDetailType} from '@/utils/enum';
-import {percentDef, formatWithSeconds} from '@/utils/datetime';
-
 const props = defineProps<{
-  scene: string
+  value: string
   data: any[],
-  execStatus?: any
 }>();
 
-const main = ref();
-const myChart = ref<any>(null);
-const statiscalResult = ref<any>({});
+const mainRef = ref();
+let myChart: any = null;
 const loading = ref(false);
-const labelMap = props.scene !== ReportDetailType.ExecScenario ? '测试场景(成功/失败)' : '断言数(成功/失败)';
+
 const initOptions = ref<any>({
   tooltip: {
     trigger: 'item',
@@ -83,103 +78,68 @@ const initOptions = ref<any>({
   ]
 });
 
-onMounted(() => {
-  init();
+const option = ref({
+  tooltip: {
+    trigger: 'item',
+    formatter: (params) => {
+      return `${params.data.name}: ${params.data.value}`
+    }
+  },
+  series: [
+    {
+      name: '执行详情',
+      type: 'pie',
+      radius: ['40%', '70%'],
+      avoidLabelOverlap: false,
+      itemStyle: {
+        borderRadius: 10,
+        borderColor: '#fff',
+        borderWidth: 2
+      },
+      label: {
+        show: false,
+        position: 'center'
+      },
+      color: ['#04C495', '#F63838', 'rgba(0, 0, 0, 0.28)'],
+      emphasis: {
+        label: {
+          show: true,
+          fontSize: 12,
+          fontWeight: 'bold',
+        }
+      },
+      labelLine: {
+        show: false
+      },
+      data: [
+        {value: 0, name: '通过'},
+        {value: 0, name: '失败'},
+        {value: 0, name: '未测'},
+      ]
+    }
+  ]
 })
 
-const transformWithUndefined = (num: number | undefined) => {
-  return num || 0;
+
+
+function setChart() {
+  if (!myChart) {
+    myChart = echarts.init(mainRef.value);
+  }
+  myChart.setOption(option.value);
 }
-
-function init() {
-  if (!main.value) {
-    return;
-  }
-  myChart.value = echarts.init(main.value);
-}
-
-function initData(data: any) {
-  if (Object.keys(data).length === 0) {
-    loading.value = true;
-    statiscalResult.value = {};
-    return;
-  }
-  const isExecScenario = props.scene === ReportDetailType.ExecScenario;
-  const statiscalData: any = !isExecScenario ? {
-    totalNum: transformWithUndefined(data.totalScenarioNum), //场景总数
-    passNum: transformWithUndefined(data.passScenarioNum), //通过场景数
-    failNum: transformWithUndefined(data.failScenarioNum), //失败场景数
-    notestNum: transformWithUndefined(data.totalScenarioNum) - transformWithUndefined(data.passScenarioNum) - transformWithUndefined(data.failScenarioNum)
-  } : {
-    totalNum: transformWithUndefined(data.totalRequestNum), //接口总数
-    passNum: transformWithUndefined(data.passRequestNum),
-    failNum: transformWithUndefined(data.failRequestNum),
-    notestNum: transformWithUndefined(data.totalRequestNum) - transformWithUndefined(data.passRequestNum) - transformWithUndefined(data.failRequestNum)
-  };
-  statiscalData.passRate = percentDef(statiscalData.passNum, statiscalData.totalNum);
-  statiscalData.failRate = percentDef(statiscalData.failNum, statiscalData.totalNum);
-  statiscalData.notestRate = percentDef(statiscalData.notestNum, statiscalData.totalNum);
-
-
-  statiscalData.duration = data.duration;
-  statiscalData.averageDuration = data.totalRequestNum ? data.duration / data.totalRequestNum : 0;
-  const chartData = [{
-    value: statiscalData.passNum,
-    name: '通过'
-  }, {
-    value: statiscalData.failNum,
-    name: '失败'
-  }, {
-    value: statiscalData.totalNum - statiscalData.passNum - statiscalData.failNum,
-    name: '未测'
-  }];
-  initOptions.value.series[0].data = chartData;
-  initOptions.value.series[0].label = {
-    ...initOptions.value.series[0].label,
-    formatter: () => {
-      return [`{subTitle|通过}`, `{title|${statiscalData.passNum}}`].join('\n')
-    },
-  }
-  statiscalResult.value = {...statiscalData};
-  if (!myChart.value) {
-    myChart.value = echarts.init(main.value);
-  }
-  setTimeout(() => {
-    loading.value = false;
-    myChart.value.setOption({...initOptions.value});
-  }, 500)
-}
-
-
-watch(() => main.value, (val) => {
-  if (val) {
-    init();
-  }
-}, {
-  immediate: true
-});
 
 watch(() => {
-  return [props.data, myChart.value, props.execStatus];
-}, val => {
-  const [statiscalOriginalData, chartRef, execStatus] = val;
-  if (val[0] && chartRef && execStatus !== 'end' && execStatus !== 'failed') {
-    initData(statiscalOriginalData);
-  }
-  if (Object.keys(val[0]).length === 0 && (execStatus === 'end' || execStatus === 'failed')) {
-    loading.value = false;
-    if (!myChart.value) {
-      myChart.value = echarts.init(main.value);
-    }
+  return props.value
+}, (newVal:any) => {
+  if(newVal) {
     setTimeout(() => {
-      initOptions.value.series[0].label = {
-        ...initOptions.value.series[0].label,
-        formatter: () => {
-          return [`{subTitle|通过}`, `{title|0}`].join('\n')
-        },
-      }
-      myChart.value.setOption({...initOptions.value});
-    }, 500)
+      loading.value = false;
+      option.value.series[0].data[0].value = newVal.passAssertionNum;
+      option.value.series[0].data[1].value = newVal.failAssertionNum;
+      option.value.series[0].data[2].value = newVal.notTestNum;
+      setChart();
+    }, 500);
   }
 }, {
   immediate: true
@@ -194,7 +154,7 @@ watch(() => {
   margin-bottom: 24px;
   display: flex;
   align-items: center;
-  padding: 0 80px;
+  padding: 0 24px;
   box-sizing: border-box;
 
   .statistical-main {

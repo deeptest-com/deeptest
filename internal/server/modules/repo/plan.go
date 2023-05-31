@@ -53,7 +53,7 @@ func (r *PlanRepo) Paginate(req v1.PlanReqPaginate, projectId int) (data _domain
 		db = db.Where("name LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords))
 	}
 	if req.Enabled != "" {
-		db = db.Where("biz_plan.disabled = ?", commonUtils.IsDisable(req.Enabled))
+		db = db.Where("disabled = ?", commonUtils.IsDisable(req.Enabled))
 	}
 
 	if req.Status != "" {

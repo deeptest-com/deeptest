@@ -42,6 +42,7 @@ import {ExecStatus} from "@/store/exec";
 import {StateType as ProjectSettingStateType} from "@/views/projectSetting/store";
 import {StateType as UserStateType} from "@/store/user";
 import {getDivision, getPercent} from '@/utils/number';
+
 const progressStatus = ref('in_progress');
 const progressValue = computed(() => {
   const {
@@ -147,10 +148,10 @@ const statisticData = computed(() => {
       interfaceNum++;
     }
   });
-  const passRate = getPercent(passAssertionNum,totalAssertionNum);
-  const notPassRate = getPercent(failAssertionNum,totalAssertionNum);
+  const passRate = getPercent(passAssertionNum, totalAssertionNum);
+  const notPassRate = getPercent(failAssertionNum, totalAssertionNum);
   // 平均接口耗时
-  const avgInterfaceDuration = getDivision(interfaceDuration,interfaceNum);
+  const avgInterfaceDuration = getDivision(interfaceDuration, interfaceNum);
   return [
     {
       label: '通过',
@@ -263,6 +264,7 @@ function genLogTreeView(execLogs, execRes) {
 
     scenario.logs[0].logs = fn(execLogs, scenario.id);
   });
+  console.log('832 scenarioReports', scenarioReports)
   return scenarioReports;
 }
 
@@ -272,10 +274,15 @@ const execLogs: any = ref([]);
 // 更新场景的执行记录，不包括场景的执行结果
 // todo 优化: 可以优化成算法，使用 hash
 function updateExecLogs(log) {
+  const isExist = execLogs.value.some((item: any) => {
+    return item.logId === log.logId && item.scenarioId === log.scenarioId;
+  });
+  console.log('832log', log);
+  console.log('832isExist', isExist);
   // 1. 更新执行记录
-  if (execLogs.value.some((item: any) => item.id === log.id)) {
+  if (isExist) {
     execLogs.value.forEach((item: any) => {
-      if (item.id === log.id) {
+      if (item.logId === log.logId && item.scenarioId === log.scenarioId) {
         item = {...item, ...log};
       }
     });

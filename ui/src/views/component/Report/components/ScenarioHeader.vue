@@ -7,13 +7,13 @@
     <div class="scenario-rate">
       <a-progress class="scenario-rate-progress"
                   :percent="progressValue"/>
-      <div class="scenario-rate-info" >通过率 {{ `${progressValue.toFixed(2)}%` }}</div>
+      <div class="scenario-rate-info" >通过率 {{ progressValueStr }}</div>
     </div>
   </div>
 </template>
 <script lang="ts" setup>
 import {defineProps, ref, computed, watch} from 'vue';
-import {getPercent,num2Percent} from '@/utils/number';
+import {getPercent, getPercentStr, num2Percent} from '@/utils/number';
 
 const props = defineProps(['record', 'showScenarioInfo', 'expandActive']);
 const statusMap = new Map([['pass', '通过'], ['fail', '失败']]);
@@ -22,9 +22,11 @@ const logInfo = computed(() => {
   return props.record?.logs?.[0] || {};
 })
 const progressValue = computed(() => {
-  console.log(124,logInfo.value)
   return getPercent(logInfo.value?.passAssertionNum || 0, logInfo?.value.totalAssertionNum || 0)
 });
+const progressValueStr = computed(() => {
+  return getPercentStr(logInfo.value?.passAssertionNum || 0, logInfo?.value.totalAssertionNum || 0)
+})
 
 watch(() => props.record, (val) => {
   if (val) {

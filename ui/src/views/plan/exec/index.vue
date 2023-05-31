@@ -20,7 +20,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import {defineProps, defineEmits, ref, computed, watch} from 'vue';
+import {defineProps, defineEmits, ref, computed, watch, onMounted} from 'vue';
 import {useStore} from 'vuex';
 
 import {
@@ -78,12 +78,8 @@ const currEnvId = computed(() => store.state.ProjectSetting.selectEnvId);
 // TODO： 这里的envList是从ProjectSetting中获取的，需要修改下，会污染其他作用域下的数据
 const envList = computed(() => store.state.ProjectSetting.envList);
 const currentUser = computed(()=> store.state.User.currentUser);
-
-console.log('9999 currentUser', currentUser.value);
 const currUser = computed(() => store.state.User.currentUser);
 const processNum = ref(0);
-
-
 
 // 统计聚合数据
 const statInfo = ref({
@@ -102,6 +98,7 @@ const statInfo = ref({
   totalProcessorNum: 0,
   notTestNum: 0,
   finishProcessorNum: 0,
+  duration: 0,
 })
 
 // 执行计划的基本信息
@@ -141,6 +138,7 @@ const statisticData = computed(() => {
     totalRequestNum,
     totalScenarioNum,
     totalProcessorNum,
+    duration,
     notTestNum,
   } = statInfo.value;
   // 计算平均接口耗时
@@ -154,6 +152,7 @@ const statisticData = computed(() => {
   });
   const passRate = getPercentStr(passAssertionNum, totalAssertionNum);
   const notPassRate = getPercentStr(failAssertionNum, totalAssertionNum);
+  const notTestNumRate = getPercentStr(notTestNum, totalAssertionNum);
   // 平均接口耗时
   const avgInterfaceDuration = getDivision(interfaceDuration, interfaceNum);
   return [
@@ -163,7 +162,7 @@ const statisticData = computed(() => {
     },
     {
       label: '总耗时',
-      value: `${totalAssertionNum} 毫秒`
+      value: `${duration} 毫秒`
     },
     {
       label: '失败',
@@ -176,22 +175,14 @@ const statisticData = computed(() => {
     },
     {
       label: '未测',
-      value: `${notTestNum} 个`,
+      value: `${notTestNumRate} ${notTestNum}个`,
       class: 'fail',
     },
     {
       label: '测试场景 (成功/失败)',
       value: `${totalScenarioNum} (${passScenarioNum}/${failScenarioNum})`,
     },
-    //  占位置
-    {
-      label: '',
-      value: ``,
-    },
-    {
-      label: '检查点 (成功/失败)',
-      value: `${totalAssertionNum} (${passAssertionNum}/${failAssertionNum})`,
-    },
+
   ]
 })
 
@@ -333,6 +324,7 @@ function updateStatFromLog(res: any) {
     totalScenarioNum = 0,
     totalProcessorNum = 0,
     finishProcessorNum = 0,
+    duration = 0,
   }: any = res;
   console.log('updateStatFromLog', res);
   const notTestNum = totalAssertionNum - passAssertionNum - failAssertionNum;
@@ -352,6 +344,7 @@ function updateStatFromLog(res: any) {
     totalProcessorNum,
     finishProcessorNum,
     notTestNum: notTestNum >= 0 ? notTestNum : 0,
+    duration
   }
 }
 
@@ -430,6 +423,10 @@ watch(() => {
   }
 }, {
   immediate: true,
+});
+
+onMounted(() => {
+  execCancel();
 });
 
 </script>

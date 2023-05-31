@@ -6,7 +6,6 @@
       type="primary"
       @click="handleBtnClick"
       class="report-export">
-      {{}}
       {{ btnText }}
     </a-button>
   </div>

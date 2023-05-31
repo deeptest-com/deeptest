@@ -15,7 +15,6 @@ export const WsDefaultNameSpace = 'default'
 export const WsDefaultRoom = 'default'
 
 
-
 export class WebSocket {
   static conn: NSConn
 

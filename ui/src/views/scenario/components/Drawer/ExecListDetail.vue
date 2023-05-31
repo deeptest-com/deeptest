@@ -1,6 +1,8 @@
 <template>
   <div class="drawer-content">
-    <ReportBasicInfo :show-operation="true" :scene="ReportDetailType.ExecScenario" :items="baseInfoList || []"
+    <ReportBasicInfo :showBtn="true"
+                     :btnText="'导出'"
+                     :items="baseInfoList || []"
                      @handleBtnClick="genReport"/>
     <StatisticTable :data="statisticData" :value="statInfo"/>
     <LogTreeView :treeData="scenarioList"/>
@@ -52,23 +54,6 @@ const statInfo = computed(() => {
 })
 const statisticData = computed(() => {
   const data = reportsDetail.value;
-  // if (data === null) return {};
-  // return {
-  //   "duration": data.duration, //执行耗时（单位：s)
-  //   "totalScenarioNum": data.totalScenarioNum, //场景总数
-  //   "passScenarioNum": data.passScenarioNum, //通过场景数
-  //   "failScenarioNum": data.failScenarioNum, //失败场景数
-  //   "totalInterfaceNum": data.totalInterfaceNum, //接口总数
-  //   "passInterfaceNum": data.passInterfaceNum,
-  //   "failInterfaceNum": data.failInterfaceNum,
-  //   "totalRequestNum": data.totalRequestNum,
-  //   "passRequestNum": data.passRequestNum,
-  //   "failRequestNum": data.failRequestNum,
-  //   "totalAssertionNum": data.totalAssertionNum, //检查点总数
-  //   "passAssertionNum": data.passAssertionNum, //通过检查点数
-  //   "failAssertionNum": data.failAssertionNum, //失败检查点数
-  // }
-
   const {
     totalAssertionNum = 0,
     totalInterfaceNum = 0,
@@ -87,6 +72,8 @@ const statisticData = computed(() => {
   let interfaceDuration = 0;
   const passRate = getPercentStr(passAssertionNum, totalAssertionNum);
   const notPassRate = getPercentStr(failAssertionNum, totalAssertionNum);
+  const notTestNum = totalAssertionNum - passAssertionNum - failAssertionNum;
+  const notTestNumRate = getPercentStr(notTestNum, totalAssertionNum);
   // // 平均接口耗时
   const avgInterfaceDuration = getDivision(duration, totalRequestNum);
   return [
@@ -96,7 +83,7 @@ const statisticData = computed(() => {
     },
     {
       label: '总耗时',
-      value: `${totalAssertionNum} 毫秒`
+      value: `${duration} 毫秒`
     },
     {
       label: '失败',
@@ -109,7 +96,7 @@ const statisticData = computed(() => {
     },
     {
       label: '未测',
-      value: `${totalAssertionNum - failAssertionNum - passAssertionNum} 个`,
+      value: `${notTestNumRate} ${notTestNum}个`,
       class: 'fail',
     },
     {

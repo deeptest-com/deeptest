@@ -2,7 +2,7 @@
   <div class="scenario-exec-info-main">
     <ReportBasicInfo :items="baseInfoList || []"
                      :showBtn="true"
-                     :scene="ReportDetailType.ExecScenario"
+                      :btnText="'导出'"
                      @handleBtnClick="genReport"/>
     <StatisticTable :data="statisticData" :value="statInfo"/>
     <Progress :exec-status="progressStatus"
@@ -82,6 +82,7 @@ const statisticData = computed(() => {
     totalScenarioNum,
     totalProcessorNum,
     notTestNum,
+    duration,
   } = statInfo.value;
 
   // 计算平均接口耗时
@@ -95,6 +96,7 @@ const statisticData = computed(() => {
   });
   const passRate = getPercentStr(passAssertionNum, totalAssertionNum);
   const notPassRate = getPercentStr(failAssertionNum, totalAssertionNum);
+  const notTestNumRate = getPercentStr(notTestNum, totalAssertionNum);
   // 平均接口耗时
   const avgInterfaceDuration = getDivision(interfaceDuration, interfaceNum);
   return [
@@ -104,7 +106,7 @@ const statisticData = computed(() => {
     },
     {
       label: '总耗时',
-      value: `${totalAssertionNum} 毫秒`
+      value: `${duration} 毫秒`
     },
     {
       label: '失败',
@@ -117,7 +119,7 @@ const statisticData = computed(() => {
     },
     {
       label: '未测',
-      value: `${notTestNum} 个`,
+      value: `${notTestNumRate} ${notTestNum}个`,
       class: 'fail',
     },
     {
@@ -151,6 +153,7 @@ const statInfo = ref({
   totalProcessorNum: 0,
   notTestNum: 0,
   finishProcessorNum: 0,
+  duration:0,
 });
 
 const scenarioReports = computed(() => {
@@ -297,6 +300,7 @@ function updateStatFromLog(res: any) {
     totalScenarioNum = 0,
     totalProcessorNum = 0,
     finishProcessorNum = 0,
+    duration = 0,
   }: any = res;
   console.log('updateStatFromLog', res);
   const notTestNum = totalAssertionNum - passAssertionNum - failAssertionNum;
@@ -315,6 +319,7 @@ function updateStatFromLog(res: any) {
     totalScenarioNum,
     totalProcessorNum,
     finishProcessorNum,
+    duration,
     notTestNum: notTestNum >= 0 ? notTestNum : 0,
   }
 }

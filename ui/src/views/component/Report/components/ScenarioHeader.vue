@@ -1,18 +1,19 @@
 <template>
   <div class="scenario-basicinfo">
-    <div class="scenario-name">{{ record.name }}</div>
+    <div class="scenario-name">{{ logInfo.name }}</div>
     <div class="scenario-priority">{{ record.priority || 'P1' }}</div>
-    <div :class="['scenario-status', record.resultStatus]">{{ statusMap.get(record.resultStatus) }}
+    <div :class="['scenario-status', logInfo.resultStatus]">{{ statusMap.get(logInfo.resultStatus) }}
     </div>
     <div class="scenario-rate">
-      <a-progress :percent="100" :success-percent="progressValue" :showInfo="true" status="exception"/>
-      <div style="margin-left: 24px;">通过率 {{ progressValue }}</div>
+      <a-progress class="scenario-rate-progress"
+                  :percent="progressValue"/>
+      <div class="scenario-rate-info" >通过率 {{ `${progressValue.toFixed(2)}%` }}</div>
     </div>
   </div>
 </template>
 <script lang="ts" setup>
 import {defineProps, ref, computed, watch} from 'vue';
-import {getPercent} from '@/utils/number';
+import {getPercent,num2Percent} from '@/utils/number';
 
 const props = defineProps(['record', 'showScenarioInfo', 'expandActive']);
 const statusMap = new Map([['pass', '通过'], ['fail', '失败']]);
@@ -20,8 +21,18 @@ const statusMap = new Map([['pass', '通过'], ['fail', '失败']]);
 const logInfo = computed(() => {
   return props.record?.logs?.[0] || {};
 })
-const progressValue = computed(() => getPercent(logInfo.value?.passAssertionNum || 0, logInfo?.value.totalAssertionNum || 0));
+const progressValue = computed(() => {
+  console.log(124,logInfo.value)
+  return getPercent(logInfo.value?.passAssertionNum || 0, logInfo?.value.totalAssertionNum || 0)
+});
 
+watch(() => props.record, (val) => {
+  if (val) {
+    console.log(1111,val)
+  }
+},{
+  immediate: true
+});
 
 </script>
 
@@ -75,7 +86,7 @@ const progressValue = computed(() => getPercent(logInfo.value?.passAssertionNum 
 
 .scenario-rate {
   // width: 292px;
-  width: 240px;
+  width: 220px;
   margin-right: 24px;
   display: flex;
   align-items: center;
@@ -90,6 +101,16 @@ const progressValue = computed(() => getPercent(logInfo.value?.passAssertionNum 
 
 .scenario-action {
   width: 54px;
+}
+.scenario-rate-progress{
+  width: 120px;
+}
+
+.scenario-rate-info{
+  margin-left: 24px;
+  width: 80px;
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.45);
 }
 </style>
 

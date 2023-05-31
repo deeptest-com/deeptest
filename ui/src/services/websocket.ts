@@ -2,6 +2,7 @@ import * as neffos from 'neffos.js';
 import {NSConn} from "neffos.js";
 
 import bus from "@/utils/eventBus";
+import {getToken} from "@/utils/localToken";
 import settings from "@/config/settings";
 
 export type WsEvent = {
@@ -12,6 +13,8 @@ export type WsEvent = {
 
 export const WsDefaultNameSpace = 'default'
 export const WsDefaultRoom = 'default'
+
+
 
 export class WebSocket {
   static conn: NSConn
@@ -78,8 +81,9 @@ export class WebSocket {
     }
   }
 
-  static sentMsg(roomName: string, msg: string): void {
+  static async sentMsg(roomName: string, msg: string): Promise<void> {
     console.log(`send msg to room "${roomName}"`)
+    roomName = await getToken() || roomName;
     if (!WebSocket.conn) return
 
     WebSocket.conn.leaveAll().then(() =>

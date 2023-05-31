@@ -68,6 +68,10 @@ export default defineComponent({
             })
         }
 
+        watch(() => props.treeData, (newVal) => {
+            console.log('333333 newVal', newVal)
+        })
+
         // 渲染场景，一级目录
         function renderScenarioList(list) {
             if (!list?.length) {

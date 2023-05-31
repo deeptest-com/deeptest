@@ -41,7 +41,7 @@ import {StateType as GlobalStateType} from "@/store/global";
 import {ExecStatus} from "@/store/exec";
 import {StateType as ProjectSettingStateType} from "@/views/projectSetting/store";
 import {StateType as UserStateType} from "@/store/user";
-import {getDivision, getPercent} from '@/utils/number';
+import {getDivision, getPercent, getPercentStr} from '@/utils/number';
 
 const progressStatus = ref('in_progress');
 const progressValue = computed(() => {
@@ -70,15 +70,20 @@ const store = useStore<{
   Report: ReportStateType,
   ProjectSetting: ProjectSettingStateType,
   User: UserStateType
+  CurrentUser
 }>();
 
 const currPlan = computed<any>(() => store.state.Plan.currPlan);
 const currEnvId = computed(() => store.state.ProjectSetting.selectEnvId);
 // TODO： 这里的envList是从ProjectSetting中获取的，需要修改下，会污染其他作用域下的数据
 const envList = computed(() => store.state.ProjectSetting.envList);
+const currentUser = computed(()=> store.state.User.currentUser);
 
+console.log('9999 currentUser', currentUser.value);
 const currUser = computed(() => store.state.User.currentUser);
 const processNum = ref(0);
+
+
 
 // 统计聚合数据
 const statInfo = ref({
@@ -138,18 +143,17 @@ const statisticData = computed(() => {
     totalProcessorNum,
     notTestNum,
   } = statInfo.value;
-
   // 计算平均接口耗时
   let interfaceDuration = 0;
   let interfaceNum = 0;
   execLogs.value.forEach((item: any) => {
     if (item.processorCategory === "processor_interface") {
-      interfaceDuration += (item.duration || 0);
+      interfaceDuration += (item.cost || 0);
       interfaceNum++;
     }
   });
-  const passRate = getPercent(passAssertionNum, totalAssertionNum);
-  const notPassRate = getPercent(failAssertionNum, totalAssertionNum);
+  const passRate = getPercentStr(passAssertionNum, totalAssertionNum);
+  const notPassRate = getPercentStr(failAssertionNum, totalAssertionNum);
   // 平均接口耗时
   const avgInterfaceDuration = getDivision(interfaceDuration, interfaceNum);
   return [
@@ -201,12 +205,12 @@ const expandKeys = computed(() => {
 })
 
 const execStart = async () => {
-  console.log('execStart');
   processNum.value = 1;
   execLogs.value = [];
+  const token = await getToken();
   const data = {
     serverUrl: process.env.VUE_APP_API_SERVER, // used by agent to submit result to server
-    token: await getToken(),
+    token: token,
     planId: currPlan.value && currPlan.value.id,
     environmentId: currEnvId.value
   }
@@ -277,8 +281,6 @@ function updateExecLogs(log) {
   const isExist = execLogs.value.some((item: any) => {
     return item.logId === log.logId && item.scenarioId === log.scenarioId;
   });
-  console.log('832log', log);
-  console.log('832isExist', isExist);
   // 1. 更新执行记录
   if (isExist) {
     execLogs.value.forEach((item: any) => {
@@ -298,6 +300,7 @@ const execRes: any = ref([]);
 // 更新场景的执行结果
 // todo 优化: 可以优化成算法，使用 hash
 function updateExecRes(res) {
+  console.log('832 log res', res)
   // 1. 更新执行结果
   if (execRes.value.some((item: any) => item.scenarioId === res.scenarioId)) {
     execRes.value.forEach((item: any) => {
@@ -310,7 +313,6 @@ function updateExecRes(res) {
     execRes.value.push(res);
   }
 }
-
 
 /**
  * 从每次返回的执行日志中更新统计数据
@@ -380,19 +382,21 @@ const OnWebSocketMsg = (data: any) => {
   // 更新【计划】的执行结果
   else if (wsMsg.category == 'result' && log.planId) {
     updatePlanRes(log);
+    console.log('计划的结果', log)
   }
   //  更新【场景】的执行结果
   else if (wsMsg.category == 'result' && log.scenarioId) {
     updateExecRes(log);
+    console.log('场景的结果', log)
   }
   // 更新【场景里每条编排】的执行记录
   else if (wsMsg.category === "processor" && log.scenarioId) {
+    console.log('场景里每条编排的执行记录', log)
     updateExecLogs(log);
   }
   // 执行完毕
   else if (wsMsg.category == 'end') {
     progressStatus.value = 'end';
-    console.log('计划执行完成');
   } else {
     console.log('其他情况：严格来说，不能执行到这儿');
   }

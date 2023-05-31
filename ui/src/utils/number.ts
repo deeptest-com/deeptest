@@ -1,10 +1,32 @@
 import moment from "moment";
 
+/**
+ * @param num {Number} 数字
+ * @return {string}
+ * */
+export function getPercentStr(numb = 0, total = 0) {
+    if (total == 0) return '0.00%';
+    return Number(numb / total * 100).toFixed(2) + '%';
+}
+
+/**
+ * 将数字转换为百分比
+ * */
+export function num2Percent(num) {
+    return Number( num * 100).toFixed(2) + '%';
+}
+
+/**
+ * 计算两个数字的百分比
+ * @param numb {Number} 被除数
+ * @param total {Number} 除数
+ * @return {Number} 返回百分比
+ * */
 export function getPercent(numb, total) {
     numb = numb || 0;
     total = total || 0;
-    if (total == 0) return '0.00%';
-    return Number(numb / total * 100).toFixed(2) + '%';
+    if (total == 0) return 0;
+    return Number((numb / total) * 100).toFixed(4);
 }
 
 /**

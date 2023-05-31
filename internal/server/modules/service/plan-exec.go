@@ -75,7 +75,7 @@ func (s *PlanExecService) SaveReport(planId int, userId uint, result agentDomain
 		scenarioReportIds = append(scenarioReportIds, scenarioResult.ScenarioReportId)
 	}
 
-	report.Duration = report.EndTime.UnixMilli() - report.StartTime.UnixMilli()
+	//report.Duration = report.EndTime.UnixMilli() - report.StartTime.UnixMilli()
 	_ = s.PlanReportRepo.Create(&report)
 
 	_ = s.ScenarioReportRepo.BatchUpdatePlanReportId(scenarioReportIds, report.ID)
@@ -114,6 +114,8 @@ func (s *PlanExecService) CombineReport(scenarioReport model.ScenarioReport, pla
 
 	planReport.TotalProcessorNum += scenarioReport.TotalProcessorNum
 	planReport.FinishProcessorNum += scenarioReport.FinishProcessorNum
+
+	planReport.Duration += scenarioReport.Duration
 
 	planReport.TotalScenarioNum += 1
 	if scenarioReport.ResultStatus == consts.Fail {

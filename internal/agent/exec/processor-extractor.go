@@ -53,7 +53,6 @@ func (entity ProcessorExtractor) Run(processor *Processor, session *Session) (er
 
 	entity.Src = consts.Body
 	entity.Type = getExtractorTypeForProcessor(entity.ProcessorType)
-
 	entity.Result, err = extractorHelper.Extract(entity.ExtractorBase, resp)
 	if err != nil {
 		processor.Result.Summary = fmt.Sprintf("%s提取器解析错误 %s。", entity.ProcessorType, err.Error())
@@ -63,7 +62,6 @@ func (entity ProcessorExtractor) Run(processor *Processor, session *Session) (er
 	}
 
 	SetVariable(processor.ParentId, entity.Variable, entity.Result, consts.Public) // set in parent scope
-
 	processor.Result.Summary = fmt.Sprintf("将结果\"%v\"赋予变量\"%s\"。", entity.Result, entity.Variable)
 	processor.AddResultToParent()
 	execUtils.SendExecMsg(*processor.Result, session.WsMsg)

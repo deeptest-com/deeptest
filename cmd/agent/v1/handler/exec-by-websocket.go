@@ -36,8 +36,7 @@ func NewWebsocketCtrl() *ExecByWebSocketCtrl {
 
 func (c *ExecByWebSocketCtrl) OnNamespaceConnected(wsMsg websocket.Message) error {
 	websocketHelper.SetConn(c.Conn)
-
-	_logUtils.Infof(_i118Utils.Sprintf("ws_namespace_connected", c.Conn.ID(), wsMsg.Room))
+	_logUtils.Infof(_i118Utils.Sprintf("ws_namespace_connected :id=%v room=%v", c.Conn.ID(), wsMsg.Room))
 
 	resp := _domain.WsResp{Msg: "from agent: connected to websocket"}
 	bytes, _ := json.Marshal(resp)
@@ -52,7 +51,7 @@ func (c *ExecByWebSocketCtrl) OnNamespaceConnected(wsMsg websocket.Message) erro
 // This will call the "OnVisit" event on all clients, except the current one,
 // it can't because it's left but for any case use this type of design.
 func (c *ExecByWebSocketCtrl) OnNamespaceDisconnect(wsMsg websocket.Message) error {
-	_logUtils.Infof(_i118Utils.Sprintf("ws_namespace_disconnected", c.Conn.ID()))
+	_logUtils.Infof(_i118Utils.Sprintf("ws_namespace_disconnected :id=%v room=%v", c.Conn.ID(), wsMsg.Room))
 
 	resp := _domain.WsResp{Msg: "from agent: disconnected to websocket"}
 	bytes, _ := json.Marshal(resp)

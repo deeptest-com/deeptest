@@ -45,7 +45,8 @@ type Report struct {
 	PlanId     uint   `json:"planId"`
 	PlanName   string `json:"planName"`
 
-	ExecEnv string `json:"execEnv"`
+	ExecEnv  string `json:"execEnv"`
+	Priority string `json:"priority"`
 
 	Logs []*ExecLogProcessor `gorm:"-" json:"logs"`
 }

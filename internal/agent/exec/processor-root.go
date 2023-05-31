@@ -26,6 +26,7 @@ func (entity ProcessorRoot) Run(processor *Processor, session *Session) (err err
 		ScenarioId:        processor.ScenarioId,
 		ProcessorId:       processor.ID,
 		LogId:             session.Step.GetId(),
+		ParentLogId:       0,
 	}
 
 	execUtils.SendExecMsg(*processor.Result, session.WsMsg)

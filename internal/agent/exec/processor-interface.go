@@ -59,8 +59,9 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 
 	// send request
 	GenRequestUrl(&entity.BaseRequest, processor.EndpointInterfaceId, entity.BaseUrl)
+	//startTime := time.UnixNano()
 	entity.Response, err = Invoke(&entity.BaseRequest)
-
+	processor.Result.Cost = time.Now().UnixMilli() - startTime.UnixMilli()
 	reqContent, _ := json.Marshal(entity.BaseRequest)
 	processor.Result.ReqContent = string(reqContent)
 	respContent, _ := json.Marshal(entity.Response)

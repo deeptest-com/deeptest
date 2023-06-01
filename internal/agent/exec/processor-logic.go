@@ -34,7 +34,7 @@ func (entity ProcessorLogic) Run(processor *Processor, session *Session) (err er
 
 	typ := entity.ProcessorType
 	pass := false
-
+	processor.Result.Detail = map[string]interface{}{"表达式": entity.Expression}
 	if typ == consts.ProcessorLogicIf {
 		var result interface{}
 		result, err = EvaluateGovaluateExpressionByScope(entity.Expression, entity.ProcessorID)
@@ -43,7 +43,7 @@ func (entity ProcessorLogic) Run(processor *Processor, session *Session) (err er
 		} else {
 			pass = result.(bool)
 		}
-
+		processor.Result.Detail["结果"] = pass
 	} else if typ == consts.ProcessorLogicElse {
 		brother, ok := getPreviousBrother(*processor)
 		if ok && brother.Result.ResultStatus != consts.Pass {

@@ -5,7 +5,6 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
-	"strings"
 	"time"
 )
 
@@ -34,9 +33,9 @@ func (entity ProcessorPrint) Run(processor *Processor, session *Session) (err er
 	}
 
 	value := ReplaceVariableValue(entity.RightValue)
-
-	processor.Result.Summary = strings.ReplaceAll(fmt.Sprintf("%s为\"%v\"。",
-		entity.RightValue, value), "<nil>", "空")
+	//processor.Result.Summary = strings.ReplaceAll(fmt.Sprintf("%s为\"%v\"。", entity.RightValue, value), "<nil>", "空")
+	processor.Result.Summary = fmt.Sprintf("%s", entity.RightValue)
+	processor.Result.Detail = map[string]interface{}{"结果": value}
 
 	processor.AddResultToParent()
 	execUtils.SendExecMsg(*processor.Result, session.WsMsg)

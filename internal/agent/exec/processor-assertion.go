@@ -39,8 +39,9 @@ func (entity ProcessorAssertion) Run(processor *Processor, session *Session) (er
 	var status string
 	processor.Result.ResultStatus, status = getResultStatus(pass)
 
-	processor.Result.Summary = fmt.Sprintf("断言\"%s\"结果为\"%s\"。", entity.Expression, status)
-
+	//processor.Result.Summary = fmt.Sprintf("断言\"%s\"结果为\"%s\"。", entity.Expression, status)
+	processor.Result.Summary = fmt.Sprintf("结果为\"%s\"。", status)
+	processor.Result.Detail = map[string]interface{}{"结果": status, "表达式": entity.Expression}
 	processor.AddResultToParent()
 	execUtils.SendExecMsg(*processor.Result, session.WsMsg)
 

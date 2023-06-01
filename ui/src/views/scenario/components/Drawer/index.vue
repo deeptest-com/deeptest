@@ -201,7 +201,7 @@ async function changeBasicInfo(type, value) {
     emit('refreshList');
   }
   if(type==='categoryId') {
-    await store.dispatch('Scenario/saveScenario',
+    await store.dispatch('Scenario/updateCategoryId',
         {id: detailResult.value.id, categoryId: value}
     );
     emit('refreshList');

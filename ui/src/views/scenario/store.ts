@@ -112,6 +112,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         loadScenario: Action<StateType, StateType>;
         saveScenario: Action<StateType, StateType>;
         getNode: Action<StateType, StateType>;
+        updateCategoryId: Action<StateType, StateType>;
 
         addInterfaces: Action<StateType, StateType>;
         addProcessor: Action<StateType, StateType>;
@@ -339,13 +340,24 @@ const StoreModel: ModuleType = {
         },
 
 
-        async saveScenario({commit}, payload: any) {
+        async saveScenario({commit ,dispatch, state}, payload: any) {
             const jsn = await save(payload)
             if (jsn.code === 0) {
                 return true;
             } else {
                 return false
             }
+        },
+        async updateCategoryId({commit, dispatch, state}, payload) {
+            const res = await save(payload);
+            if (res.code === 0) {
+                commit('setDetail', {
+                    ...state.detailResult,
+                    categoryId: payload.categoryId
+                });
+                return res;
+            }
+            return false;
         },
         async removeScenario({commit, dispatch, state}, payload: number) {
             try {

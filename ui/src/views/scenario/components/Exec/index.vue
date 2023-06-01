@@ -37,6 +37,7 @@ import {message} from "ant-design-vue";
 import {getDivision, getPercentStr} from "@/utils/number";
 import {
   scenarioReports, expandKeys,
+  clearLog,
   execLogs, execRes, updateExecLogs, updateExecRes,statInfo
   , statisticData, initData, progressStatus, progressValue, updatePlanRes,
 } from '@/composables/useExecLogs';
@@ -65,6 +66,7 @@ const baseInfoList = computed(() => {
 });
 
 const execStart = async () => {
+  clearLog();
   const data = {
     serverUrl: process.env.VUE_APP_API_SERVER, // used by agent to submit result to server
     token: await getToken(),

@@ -111,6 +111,10 @@ const expandKeys = computed(() => {
     return scenarioReports.value.map((item: any) => item.key);
 })
 
+function clearLog() {
+    execLogs.value = [];
+    execRes.value = [];
+}
 
 // 统计聚合数据
 const statInfo = ref({
@@ -261,6 +265,7 @@ const progressValue = computed(() => {
 
 export {
     scenarioReports, expandKeys, statInfo,
-    execLogs, execRes, updateExecLogs, updateExecRes
+    execLogs, execRes, updateExecLogs, updateExecRes,
+    clearLog
     , statisticData, initData, progressStatus, progressValue, updatePlanRes,
 };

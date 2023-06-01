@@ -44,6 +44,7 @@ import {StateType as UserStateType} from "@/store/user";
 import {getDivision, getPercent, getPercentStr} from '@/utils/number';
 import {
   scenarioReports, expandKeys,
+  clearLog,
   execLogs, execRes, updateExecLogs, updateExecRes,statInfo
   , statisticData, initData, progressStatus, progressValue, updatePlanRes,
 } from '@/composables/useExecLogs';
@@ -100,7 +101,7 @@ const basicInfoList = computed(() => {
 })
 
 const execStart = async () => {
-  execLogs.value = [];
+  clearLog();
   const token = await getToken();
   const data = {
     serverUrl: process.env.VUE_APP_API_SERVER, // used by agent to submit result to server

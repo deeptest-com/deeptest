@@ -54,6 +54,8 @@ type ScenarioExecResult struct {
 	ParentLogId int `json:"parentLogId,omitempty"`
 
 	Cost int64 `json:"cost,omitempty"`
+
+	Detail map[string]interface{} `json:"detail,omitempty"`
 }
 
 type PlanExecResult struct {

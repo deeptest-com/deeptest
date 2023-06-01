@@ -52,17 +52,16 @@ func (entity ProcessorLoop) Run(processor *Processor, session *Session) (err err
 
 		return
 	}
-
 	processor.Result.Iterator, processor.Result.Summary = entity.getIterator()
-
-	processor.AddResultToParent()
-	execUtils.SendExecMsg(*processor.Result, session.WsMsg)
 
 	if entity.ProcessorType == consts.ProcessorLoopUntil {
 		entity.runLoopUntil(session, processor, processor.Result.Iterator)
 	} else {
 		entity.runLoopItems(session, processor, processor.Result.Iterator)
 	}
+
+	processor.AddResultToParent()
+	execUtils.SendExecMsg(*processor.Result, session.WsMsg)
 
 	endTime := time.Now()
 	processor.Result.EndTime = &endTime
@@ -73,15 +72,17 @@ func (entity ProcessorLoop) Run(processor *Processor, session *Session) (err err
 func (entity *ProcessorLoop) runLoopItems(session *Session, processor *Processor, iterator agentDomain.ExecIterator) (err error) {
 	for i, item := range iterator.Items {
 		msg := agentDomain.ScenarioExecResult{
-			ParentId: int(processor.ID),
-			Summary:  fmt.Sprintf("%d. %s为%v", i+1, iterator.VariableName, item),
+			ParentId:          int(processor.ID),
+			Summary:           fmt.Sprintf("%d. %s为%v", i+1, iterator.VariableName, item),
+			Name:              "循环变量",
+			ProcessorCategory: consts.ProcessorPrint,
 		}
 		execUtils.SendExecMsg(msg, session.WsMsg)
 
 		SetVariable(entity.ProcessorID, iterator.VariableName, item, consts.Public)
 
 		for _, child := range processor.Children {
-			child.Run(session)
+			(*child).Run(session)
 
 			if child.Result.WillBreak {
 				logUtils.Infof("break")

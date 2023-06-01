@@ -11,6 +11,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
 	stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
+	"github.com/jinzhu/copier"
 	"time"
 
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
@@ -48,21 +49,25 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 		ParentLogId:       processor.Parent.Result.LogId,
 	}
 
+	//在循环过程中，processor 被执行多次，变量替换会受到影响，第一次跌替换之后，就不能根据实际情况替换了
+	var baseRequest domain.BaseRequest
+	copier.CopyWithOption(&baseRequest, &entity.BaseRequest, copier.Option{IgnoreEmpty: true, DeepCopy: true})
+
 	// exec pre-request script
 	ExecJs(entity.PreRequestScript)
 
 	// dealwith variables
-	ReplaceVariables(&entity.BaseRequest, consts.ScenarioDebug)
+	ReplaceVariables(&baseRequest, consts.ScenarioDebug)
 
 	// add cookies
-	DealwithCookies(&entity.BaseRequest, entity.ProcessorID)
+	DealwithCookies(&baseRequest, entity.ProcessorID)
 
 	// send request
-	GenRequestUrl(&entity.BaseRequest, processor.EndpointInterfaceId, entity.BaseUrl)
+	GenRequestUrl(&baseRequest, processor.EndpointInterfaceId, entity.BaseUrl)
 	//startTime := time.UnixNano()
-	entity.Response, err = Invoke(&entity.BaseRequest)
+	entity.Response, err = Invoke(&baseRequest)
 	processor.Result.Cost = time.Now().UnixMilli() - startTime.UnixMilli()
-	reqContent, _ := json.Marshal(entity.BaseRequest)
+	reqContent, _ := json.Marshal(baseRequest)
 	processor.Result.ReqContent = string(reqContent)
 	respContent, _ := json.Marshal(entity.Response)
 	processor.Result.RespContent = string(respContent)

@@ -1,6 +1,7 @@
 package agentExec
 
 import (
+	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
@@ -136,6 +137,7 @@ func replacePathParams(req *domain.BaseRequest, usedBy consts.UsedBy) {
 
 	for idx, param := range req.PathParams {
 		req.PathParams[idx].Value = ReplaceVariableValue(param.Value)
+		fmt.Println(param.Value, req.PathParams[idx].Value, "+-+")
 	}
 	return
 }

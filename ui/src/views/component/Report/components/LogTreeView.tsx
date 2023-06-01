@@ -6,6 +6,7 @@ import ScenarioHeader from "./ScenarioHeader.vue";
 
 import EndpointHeader from "./EndpointHeader.vue";
 import EndpointContent from "./EndpointContent.vue";
+import LogContent from "./LogContent.vue";
 
 export default defineComponent({
     name: 'LogTreeView',
@@ -14,10 +15,9 @@ export default defineComponent({
     },
     emits: ['change'],
     setup(props, {emit}) {
-        const activeKey = ref([410, 411, 41, 1351, 1353,]);
-        function changeActivekey(keys) {
-            console.log('832', keys)
-        }
+       function change(log,keys) {
+           log.activeKey = keys;
+       }
         /**
          * @desc 渲染场景执行树
          * @param logs 需要渲染的场景类型
@@ -30,17 +30,18 @@ export default defineComponent({
                 if(log.processorCategory === 'processor_interface'){
                     return <EndpointHeader endpointData={log}/>
                 }
-                return <span>{log.name}：{log.summary}</span>
+                return  <a-tooltip  title={`${log.name}：${log.summary}`}>
+                    <div class={'header-text'}><span class={'label'}>{log.name}</span>：<span
+                        class={'value'}>{log.summary}</span></div>
+                </a-tooltip>
+
             }
 
             function renderContent(log) {
                 if(log.processorCategory === 'processor_interface'){
                     return <EndpointContent endpointData={log}/>
                 }
-                if(log.processorCategory === 'processor_action'){
-                    return null;
-                }
-                return null;
+                return <LogContent data={log}/>;
             }
             const renderLogs = (log) => {
                 if (!log?.id) {
@@ -60,7 +61,7 @@ export default defineComponent({
                 </a-collapse-panel>;
             };
             return logs.map((log) => {
-                return <div class={'log-item'}>
+                return <div class={'log-item'} >
                     <a-collapse>
                         {renderLogs(log)}
                     </a-collapse>
@@ -85,7 +86,7 @@ export default defineComponent({
             return list.map((item, index) => {
                 console.log(item.name)
                 return <div class={'scenario-item'}>
-                    <a-collapse>
+                    <a-collapse >
                         <a-collapse-panel header={renderHeader(item)}>
                             {renderScenario(item?.logs?.[0]?.logs, item)}
                         </a-collapse-panel>

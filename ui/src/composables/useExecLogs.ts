@@ -5,6 +5,10 @@
  */
 import {computed, ComputedRef, onMounted, ref, Ref, watch} from 'vue';
 import {getDivision, getPercentStr} from "@/utils/number";
+import EndpointHeader from "@/views/component/Report/components/EndpointHeader.vue";
+import EndpointContent from "@/views/component/Report/components/EndpointContent.vue";
+import LogContent from "@/views/component/Report/components/LogContent.vue";
+import ScenarioHeader from "@/views/component/Report/components/ScenarioHeader.vue";
 
 // 打平的执行记录
 const execLogs: any = ref([]);
@@ -42,7 +46,7 @@ function genLogTreeView(execLogs, execRes) {
             item.logs = [{
                 ...item,
                 ...res,
-                logs: []
+                logs: [],
             }];
             scenarioReports.push(item);
         }
@@ -72,11 +76,22 @@ function genLogTreeView(execLogs, execRes) {
             })
             return res;
         }
-
         scenario.logs[0].logs = fn(execLogs, scenario.logId);
     });
+
+    console.log("scenarioReports", scenarioReports)
     return scenarioReports;
 }
+
+// // 处理动态执行的展开收起标识
+// function handleActiveKey(log) {
+//     log.activeKey = [log.logId];
+//     if (log.logs) {
+//         log.logs.forEach((item) => {
+//             handleActiveKey(item);
+//         })
+//     }
+// }
 
 // 更新场景的执行记录，不包括场景的执行结果
 // todo 优化: 可以优化成算法，使用 hash
@@ -264,8 +279,14 @@ const progressValue = computed(() => {
 });
 
 export {
-    scenarioReports, expandKeys, statInfo,
-    execLogs, execRes, updateExecLogs, updateExecRes,
+    scenarioReports,
+    expandKeys,
+    statInfo,
+    execLogs,
+    execRes,
+    updateExecLogs,
+    updateExecRes,
     clearLog
-    , statisticData, initData, progressStatus, progressValue, updatePlanRes,
+    , statisticData,
+    initData, progressStatus, progressValue, updatePlanRes,
 };

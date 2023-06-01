@@ -16,11 +16,12 @@ const execRes: any = ref([]);
 function updateExecRes(res) {
     // 1. 更新执行结果
     if (execRes.value.some((item: any) => item.scenarioId === res.scenarioId)) {
-        execRes.value.forEach((item: any) => {
+        for (let item of execRes.value) {
             if (item.scenarioId === res.scenarioId) {
                 item = {...item, ...res};
+                break;
             }
-        });
+        }
         // 2. 新增执行结果
     } else {
         execRes.value.push(res);
@@ -80,16 +81,21 @@ function genLogTreeView(execLogs, execRes) {
 // 更新场景的执行记录，不包括场景的执行结果
 // todo 优化: 可以优化成算法，使用 hash
 function updateExecLogs(log) {
+    function hasSameId(log, item) {
+        return item?.logId === log?.logId && item?.scenarioId === log?.scenarioId;
+    }
+
     const isExist = execLogs.value.some((item: any) => {
-        return item.logId === log.logId && item.scenarioId === log.scenarioId;
+        return hasSameId(log, item);
     });
     // 1. 更新执行记录
     if (isExist) {
-        execLogs.value.forEach((item: any) => {
-            if (item.logId === log.logId && item.scenarioId === log.scenarioId) {
+        for (let item of execLogs.value) {
+            if (hasSameId(log, item)) {
                 item = {...item, ...log};
+                break;
             }
-        });
+        }
         // 2. 新增执行记录
     } else {
         execLogs.value.push(log);
@@ -124,9 +130,8 @@ const statInfo = ref({
     notTestNum: 0,
     finishProcessorNum: 0,
     duration: 0,
-    cost:0,
+    cost: 0,
 })
-
 const statisticData = computed(() => {
     const {
         failAssertionNum,
@@ -255,7 +260,7 @@ const progressValue = computed(() => {
 });
 
 export {
-    scenarioReports, expandKeys,statInfo,
+    scenarioReports, expandKeys, statInfo,
     execLogs, execRes, updateExecLogs, updateExecRes
     , statisticData, initData, progressStatus, progressValue, updatePlanRes,
 };

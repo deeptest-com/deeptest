@@ -55,7 +55,7 @@ type ScenarioExecResult struct {
 
 	Cost int64 `json:"cost,omitempty"`
 
-	Detail map[string]interface{} `json:"detail,omitempty"`
+	Detail string `json:"detail,omitempty"`
 }
 
 type PlanExecResult struct {

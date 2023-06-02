@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
+	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"time"
 )
@@ -35,7 +36,8 @@ func (entity ProcessorPrint) Run(processor *Processor, session *Session) (err er
 	value := ReplaceVariableValue(entity.RightValue)
 	//processor.Result.Summary = strings.ReplaceAll(fmt.Sprintf("%s为\"%v\"。", entity.RightValue, value), "<nil>", "空")
 	processor.Result.Summary = fmt.Sprintf("%s", entity.RightValue)
-	processor.Result.Detail = map[string]interface{}{"结果": value}
+	detail := map[string]interface{}{"结果": value}
+	processor.Result.Detail = commonUtils.JsonEncode(detail)
 
 	processor.AddResultToParent()
 	execUtils.SendExecMsg(*processor.Result, session.WsMsg)

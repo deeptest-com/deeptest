@@ -6,6 +6,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	valueGen "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/value"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"time"
 )
@@ -79,7 +80,8 @@ func (entity ProcessorCookie) Run(processor *Processor, session *Session) (err e
 
 		SetVariable(processor.ParentId, variableName, variableValue, consts.Public) // set in parent scope
 		processor.Result.Summary = fmt.Sprintf("将%s%s值\"%v\"赋予变量%s。", cookieName, words, variableValue, variableName)
-		processor.Result.Detail = map[string]interface{}{"cookie名称": cookieName, "cookie值": words, "变量": variableName, "变量值": variableValue}
+		detail := map[string]interface{}{"cookie名称": cookieName, "cookie值": words, "变量": variableName, "变量值": variableValue}
+		processor.Result.Detail = commonUtils.JsonEncode(detail)
 	} else if typ == consts.ProcessorCookieClear {
 		ClearCookie(processor.ParentId, cookieName) // set in parent scope
 		processor.Result.Summary = fmt.Sprintf("%s。", cookieName)

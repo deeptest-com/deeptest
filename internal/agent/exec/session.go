@@ -21,8 +21,6 @@ type Session struct {
 	Report        *Report
 
 	WsMsg *websocket.Message
-
-	Step *step
 }
 
 func NewSession(req *ScenarioExecObj, failfast bool, wsMsg *websocket.Message) (ret *Session) {
@@ -37,7 +35,6 @@ func NewSession(req *ScenarioExecObj, failfast bool, wsMsg *websocket.Message) (
 		RootProcessor: root,
 		Failfast:      failfast,
 		WsMsg:         wsMsg,
-		Step:          &step{},
 	}
 
 	jar, _ := cookiejar.New(nil)
@@ -63,13 +60,4 @@ func NewSession(req *ScenarioExecObj, failfast bool, wsMsg *websocket.Message) (
 
 func (s *Session) Run() {
 	s.RootProcessor.Run(s)
-}
-
-type step struct {
-	Id int
-}
-
-func (s *step) GetId() int {
-	s.Id = s.Id + 1
-	return s.Id
 }

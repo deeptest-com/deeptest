@@ -115,7 +115,6 @@ func getPlaceholderVariableValue(name string) (ret string) {
 
 	if typ == consts.PlaceholderTypeVariable {
 		ret = getVariableValue(name)
-
 	} else if typ == consts.PlaceholderTypeDatapool {
 		ret = getDatapoolValue(name)
 

@@ -24,7 +24,7 @@
                   @click="handleJoin(record)"
                   type="link"
                   size="small"
-                  >加入项目</a-button
+                  >申请加入</a-button
                 >
               </a-menu-item>
               <a-menu-item key="1">
@@ -46,7 +46,7 @@
                   style="width: 80px"
                   type="link"
                   size="small"
-                  @click="handleDelete(record.projectId)"
+                  @click.stop="handleDelete(record.projectId)"
                   >删除</a-button
                 >
               </a-menu-item>

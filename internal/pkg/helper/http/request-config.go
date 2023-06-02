@@ -81,7 +81,7 @@ func dealwithQueryParams(req domain.BaseRequest, httpReq *http.Request) {
 	}
 
 	for _, p := range req.QueryParams {
-		name := strings.ToUpper(p.Name)
+		name := p.Name
 
 		if name != "" && queryParams.Get(name) == "" {
 			queryParams.Add(name, p.Value)

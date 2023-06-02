@@ -83,6 +83,7 @@ func (s *ShareVarService) ListForDebug(serveId, scenarioProcessorId uint) (ret [
 
 	for _, po := range pos {
 		ret = append(ret, domain.GlobalVar{
+			VarId:      po.ID,
 			Name:       po.Name,
 			LocalValue: po.Value,
 		})

@@ -1,7 +1,10 @@
 <template>
   <div class="drawer-content">
-    <ReportBasicInfo :show-operation="true" :scene="ReportDetailType.ExecScenario" :items="baseInfoList || []" @handleBtnClick="genReport"/>
-    <StatisticTable :scene="ReportDetailType.ExecScenario" :data="statisticData"/>
+    <ReportBasicInfo :showBtn="true"
+                     :btnText="'生成报告'"
+                     :items="baseInfoList || []"
+                     @handleBtnClick="genReport"/>
+    <StatisticTable :data="statisticData" :value="statInfo"/>
     <LogTreeView :treeData="scenarioList"/>
   </div>
 </template>
@@ -12,17 +15,16 @@ import {useStore} from 'vuex';
 import {
   ReportBasicInfo,
   StatisticTable,
-  EndpointCollapsePanel,
   LogTreeView
 } from '@/views/component/Report/components';
-
 
 
 import {PaginationConfig, Scenario} from "@/views/scenario/data";
 import {momentUtc} from "@/utils/datetime"
 import {message} from "ant-design-vue";
-import { ReportDetailType } from '@/utils/enum';
-import { formatData } from '@/utils/formatData';
+import {ReportDetailType} from '@/utils/enum';
+import {formatData} from '@/utils/formatData';
+import {getDivision, getPercentStr} from "@/utils/number";
 
 const store = useStore<{ Scenario, ProjectGlobal, ServeGlobal, }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
@@ -40,24 +42,73 @@ const baseInfoList = computed(() => {
   ]
 })
 
-const statisticData = computed(() => {
+const statInfo = computed(() => {
   const data = reportsDetail.value;
   if (data === null) return {};
   return {
-    "duration": data.duration, //执行耗时（单位：s)
-    "totalScenarioNum": data.totalScenarioNum, //场景总数
-    "passScenarioNum": data.passScenarioNum, //通过场景数
-    "failScenarioNum": data.failScenarioNum, //失败场景数
-    "totalInterfaceNum": data.totalInterfaceNum, //接口总数
-    "passInterfaceNum": data.passInterfaceNum,
-    "failInterfaceNum": data.failInterfaceNum,
-    "totalRequestNum": data.totalRequestNum,
-    "passRequestNum": data.passRequestNum,
-    "failRequestNum": data.failRequestNum,
-    "totalAssertionNum": data.totalAssertionNum, //检查点总数
-    "passAssertionNum": data.passAssertionNum, //通过检查点数
-    "failAssertionNum": data.failAssertionNum, //失败检查点数
+    passAssertionNum: data.passAssertionNum,
+    failAssertionNum: data.failAssertionNum,
+    notTestNum: data.notTestNum,
   }
+})
+const statisticData = computed(() => {
+  const data = reportsDetail.value;
+  const {
+    totalAssertionNum = 0,
+    totalInterfaceNum = 0,
+    totalProcessorNum = 0,
+    totalRequestNum = 0,
+    failAssertionNum = 0,
+    failInterfaceNum = 0,
+    failRequestNum = 0,
+    finishProcessorNum = 0,
+    passInterfaceNum = 0,
+    passRequestNum = 0,
+    passAssertionNum = 0,
+    duration = 0,
+  } = data;
+  // 计算平均接口耗时
+  let interfaceDuration = 0;
+  const passRate = getPercentStr(passAssertionNum, totalAssertionNum);
+  const notPassRate = getPercentStr(failAssertionNum, totalAssertionNum);
+  const notTestNum = totalAssertionNum - passAssertionNum - failAssertionNum;
+  const notTestNumRate = getPercentStr(notTestNum, totalAssertionNum);
+  // // 平均接口耗时
+  const avgInterfaceDuration = getDivision(duration, totalRequestNum);
+  return [
+    {
+      label: '通过',
+      class: 'success',
+      rate: passRate,
+      value: `${passAssertionNum} 个`,
+    },
+    {
+      label: '接口总耗时',
+      value: `${duration} 毫秒`
+    },
+    {
+      label: '失败',
+      rate: notPassRate,
+      value: `${failAssertionNum} 个`,
+      class: 'fail',
+    },
+    {
+      label: '平均接口耗时',
+      value: `${avgInterfaceDuration} 毫秒`,
+    },
+    {
+      label: '未测',
+      value: ` ${notTestNum}个`,
+      rate: notTestNumRate,
+      class: 'notest',
+    },
+    {
+      label: '检查点 (成功/失败)',
+      value: `${totalAssertionNum} (${passAssertionNum}/${failAssertionNum})`,
+    },
+
+
+  ]
 })
 
 /**
@@ -72,9 +123,9 @@ async function genReport() {
   const res = await store.dispatch('Scenario/genReport', {
     id: reportsDetail.value.id,
   });
-  if(res){
+  if (res) {
     message.success('生成报告成功');
-  }else {
+  } else {
     message.error('生成报告失败');
   }
 }

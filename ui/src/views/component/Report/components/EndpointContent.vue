@@ -91,11 +91,11 @@ function handleQueryDetail() {
 
     .endpoint-expand-content {
         background-color: #fff;
-        padding: 16px;
+        padding: 8px 16px;
     }
 
     .endpoint-expand-btn {
-        margin-top: 15px;
+        margin-top: 8px;
         text-align: center;
         cursor: pointer;
         line-height: 22px;
@@ -180,7 +180,8 @@ function handleQueryDetail() {
     }
 
     .endpoint-time {
-        width: 100px;
+        width: 150px;
+      text-align: right;
     }
 
     .endpoint-type {

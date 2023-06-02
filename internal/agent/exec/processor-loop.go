@@ -7,6 +7,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	uuid "github.com/satori/go.uuid"
 	"time"
 )
 
@@ -36,6 +37,10 @@ func (entity ProcessorLoop) Run(processor *Processor, session *Session) (err err
 		ProcessorType:     entity.ProcessorType,
 		StartTime:         &startTime,
 		ParentId:          int(entity.ParentID),
+		ScenarioId:        processor.ScenarioId,
+		ProcessorId:       processor.ID,
+		LogId:             uuid.NewV4(),
+		ParentLogId:       processor.Parent.Result.LogId,
 	}
 
 	if entity.ProcessorType == consts.ProcessorLoopBreak {
@@ -48,17 +53,16 @@ func (entity ProcessorLoop) Run(processor *Processor, session *Session) (err err
 
 		return
 	}
-
 	processor.Result.Iterator, processor.Result.Summary = entity.getIterator()
-
-	processor.AddResultToParent()
-	execUtils.SendExecMsg(*processor.Result, session.WsMsg)
 
 	if entity.ProcessorType == consts.ProcessorLoopUntil {
 		entity.runLoopUntil(session, processor, processor.Result.Iterator)
 	} else {
 		entity.runLoopItems(session, processor, processor.Result.Iterator)
 	}
+
+	processor.AddResultToParent()
+	execUtils.SendExecMsg(*processor.Result, session.WsMsg)
 
 	endTime := time.Now()
 	processor.Result.EndTime = &endTime
@@ -69,15 +73,17 @@ func (entity ProcessorLoop) Run(processor *Processor, session *Session) (err err
 func (entity *ProcessorLoop) runLoopItems(session *Session, processor *Processor, iterator agentDomain.ExecIterator) (err error) {
 	for i, item := range iterator.Items {
 		msg := agentDomain.ScenarioExecResult{
-			ParentId: int(processor.ID),
-			Summary:  fmt.Sprintf("%d. %s为%v", i+1, iterator.VariableName, item),
+			ParentId:          int(processor.ID),
+			Summary:           fmt.Sprintf("%d. %s为%v", i+1, iterator.VariableName, item),
+			Name:              "循环变量",
+			ProcessorCategory: consts.ProcessorPrint,
 		}
 		execUtils.SendExecMsg(msg, session.WsMsg)
 
 		SetVariable(entity.ProcessorID, iterator.VariableName, item, consts.Public)
 
 		for _, child := range processor.Children {
-			child.Run(session)
+			(*child).Run(session)
 
 			if child.Result.WillBreak {
 				logUtils.Infof("break")

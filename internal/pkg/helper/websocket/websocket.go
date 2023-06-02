@@ -62,6 +62,22 @@ func SendExecResult(data interface{}, wsMsg *websocket.Message) {
 	}
 }
 
+func SendInitializeMsg(data interface{}, wsMsg *websocket.Message) {
+	resp := _domain.WsResp{Category: consts.Initialize, Data: data}
+	if data != nil {
+		resp.Data = data
+	}
+	bytes, _ := json.Marshal(resp)
+
+	if wsMsg != nil {
+		mqData := _domain.MqMsg{Namespace: wsMsg.Namespace, Room: wsMsg.Room, Event: wsMsg.Event, Content: string(bytes)}
+		logUtils.Infof(_i118Utils.Sprintf("ws_send_exec_msg", wsMsg.Room, consts.ProgressResult))
+		PubMsg(mqData)
+	} else {
+		logUtils.Infof(string(bytes))
+	}
+}
+
 func Broadcast(namespace, room, event string, content string) {
 	wsConn.Server().Broadcast(nil, websocket.Message{
 		Namespace: namespace,

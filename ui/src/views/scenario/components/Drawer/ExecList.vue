@@ -23,7 +23,7 @@
       <span v-if="!record.totalRequestNum">{{ `---` }}</span>
     </template>
     <template #action="{ record }">
-      <a  href="javascript:void (0)" @click="showDetail(record)">查看详情</a>
+      <a  href="javascript:void (0)" @click="showDetail(record)">查看报告</a>
     </template>
   </a-table>
 

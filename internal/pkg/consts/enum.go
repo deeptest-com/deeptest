@@ -29,6 +29,7 @@ const (
 	ProgressEnd        WsMsgCategory = "end"
 	ProgressResult     WsMsgCategory = "result"
 	Processor          WsMsgCategory = "processor"
+	Initialize         WsMsgCategory = "initialize"
 )
 
 func (e WsMsgCategory) String() string {

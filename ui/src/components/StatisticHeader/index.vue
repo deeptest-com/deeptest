@@ -14,13 +14,13 @@
               <div class="card-content">
                 <a-statistic
                   v-if="type === 0"
-                  title="入住项目(个)"
+                  title="入住项目（个）"
                   :value="card?.projectTotal||0"
+                  
                 />
-
                 <a-statistic
                   v-else
-                  title="项目成员(位)"
+                  title="项目成员（位）"
                   :value="card?.userTotal||0"
                 />
               </div>
@@ -39,8 +39,11 @@
                     <div class="card-content-num">
                       {{ card?.interfaceTotal||0 }}
                     </div>
-                      <arrow-up-outlined   v-if="card?.interfaceHb >= 0"/>
-                      <arrow-down-outlined v-else />
+                   
+                       <span class="card-content-text">环比</span> 
+                      <arrow-up-outlined  class="card-content-up" v-if="card?.interfaceHb > 0"/>
+                      <arrow-down-outlined class="card-content-down" v-if="card?.interfaceHb < 0"/>
+                 
                   </template>
                 </a-statistic>
                  <a-statistic
@@ -55,8 +58,9 @@
                     <div class="card-content-num">
                       {{ card?.scenarioTotal ||0}}
                     </div>
-                      <arrow-up-outlined   v-if="card?.scenarioHb >= 0"/>
-                      <arrow-down-outlined v-else />
+                      <span class="card-content-text">环比</span> 
+                      <arrow-up-outlined  class="card-content-up"  v-if="card?.scenarioHb > 0"/>
+                      <arrow-down-outlined class="card-content-down" v-if="card?.scenarioHb < 0" />
                   </template>
                 </a-statistic>
            
@@ -76,8 +80,9 @@
                     <div class="card-content-num">
                       {{ card?.coverage?card.coverage+"%":0+'%' }}
                     </div>
-                      <arrow-up-outlined   v-if="card?.coverageHb >= 0"/>
-                      <arrow-down-outlined v-else />
+                    <span class="card-content-text">环比</span> 
+                      <arrow-up-outlined  class="card-content-up"   v-if="card?.scenarioHb > 0"/>
+                      <arrow-down-outlined class="card-content-down" v-if="card?.scenarioHb < 0"  />
                   </template>
                 </a-statistic>
          
@@ -149,11 +154,30 @@ watch(
   .card-content {
     display: flex;
     justify-content: space-between;
+    :deep(.ant-statistic-content){
+      font-size: 32px;
+      font-weight: 400;
+    }
     &-num {
       font-weight: 400;
-      font-size: 24px;
+      font-size: 32px;
 
       color: rgba(0, 0, 0, 0.85);
+    }
+    &-text{
+      font-size: 12px;
+      color: rgba(0, 0, 0, 0.46);;
+    }
+    &-up{
+      font-size: 12px;
+      border-radius:50%;
+      background: rgba(255, 242, 240, 0.6);
+      padding: 5px;
+    }
+     &-down{
+      font-size: 12px;
+      border-radius:50%;
+      background: rgba(230, 255, 244, 0.6); padding: 5px;
     }
   }
 
@@ -163,7 +187,8 @@ watch(
       height: 100%;
     }
     :deep(.ant-card-body) {
-      height: 38vh !important;
+      // height: 38vh !important;
+         height: calc(100% - 57px);
       padding: 0 !important;
     }
   }

@@ -129,16 +129,11 @@ const serviceColumns = [
         ellipsis: true
     },
     {
-        title: '描述',
-        dataIndex: 'description',
-        slots: { customRender: 'description' },
-        width: '300px',
-        ellipsis: true
-    },
-    {
         title: '关联环境',
         dataIndex: 'servers',
         slots: { customRender: 'customServers' },
+        width: '200px',
+        ellipsis: true
     },
     {
         title: '状态',
@@ -146,16 +141,17 @@ const serviceColumns = [
         slots: { customRender: 'customStatus' },
         width: '100px',
     },
-    {
-        title: '描述',
-        dataIndex: 'description',
-        slots: { customRender: 'description' },
-        width: '300px',
-        ellipsis: true
-    },
+    // {
+    //     title: '描述',
+    //     dataIndex: 'description',
+    //     slots: { customRender: 'description' },
+    //     width: '300px',
+    //     ellipsis: true
+    // },
     {
         title: '创建人',
         dataIndex: 'createUser',
+        slots: { customRender: 'createUser' },
         width: '100px',
     },
     {

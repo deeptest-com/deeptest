@@ -24,6 +24,8 @@ func (m *ScenarioExecModule) Party() module.WebModule {
 		index.Get("/loadExecResult", m.ScenarioExecCtrl.LoadExecResult).Name = "加载执行结果"
 
 		index.Post("/submitResult/{id:uint}", m.ScenarioExecCtrl.SubmitResult).Name = "提交测试结果"
+		index.Get("/getScenarioNormalData", m.ScenarioExecCtrl.GetScenarioNormalData).Name = "获取场景执行初始话信息"
+
 	}
 
 	return module.NewModule("/scenarios/exec/", handler)

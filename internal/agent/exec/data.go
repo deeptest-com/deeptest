@@ -88,8 +88,8 @@ func DownloadUploadedFile(uri string) (ret string, err error) {
 	dist := filepath.Join(consts.TmpDir, "download", name)
 
 	_fileUtils.Download(url, dist)
-
-	ret = dist
+	//下载路径和上传路径保存一致，暂时修改成这样，有问题稍后排查
+	ret = name
 
 	return
 }

@@ -29,7 +29,7 @@
                         转单
                     </div>
                 </div>
-                
+
             </div>
         </template>
         <div class="endpoint-expand">
@@ -38,7 +38,7 @@
                     <exclamation-circle-outlined style="color: #f5222d" /> &nbsp;
                     {{ resContent.statusContent || '' }}</span>
                 <span v-if="endpointData.resultStatus === 'pass'">
-                    <check-circle-outlined style="color: #04C495" /> &nbsp; 
+                    <check-circle-outlined style="color: #04C495" /> &nbsp;
                     返回数据结构校验通过
                 </span>
             </div>
@@ -205,7 +205,7 @@ function handleQueryDetail() {
     }
 
     .endpoint-time {
-        width: 100px;
+        width: 150px;
     }
 
     .endpoint-type {

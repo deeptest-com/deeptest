@@ -106,7 +106,7 @@ const myRecentProject = computed(() => {
 });
 
 function viewAllProject() {
-  router.push('/home');
+  router.push({path:'/home',query:{type:'all'}});
 }
 
 function newProject() {
@@ -164,6 +164,12 @@ watch(() => {
 }, (val: any) => {
   if (val.id) {
     store.dispatch("ServeGlobal/fetchServe");
+  }
+})
+
+watch(dropdownVisible, (value) => {
+  if (value)  {
+    keyword.value = ""
   }
 })
 

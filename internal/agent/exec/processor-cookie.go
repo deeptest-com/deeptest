@@ -6,7 +6,9 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	valueGen "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/value"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	uuid "github.com/satori/go.uuid"
 	"time"
 )
 
@@ -34,6 +36,10 @@ func (entity ProcessorCookie) Run(processor *Processor, session *Session) (err e
 		ProcessorType:     entity.ProcessorType,
 		StartTime:         &startTime,
 		ParentId:          int(entity.ParentID),
+		ScenarioId:        processor.ScenarioId,
+		ProcessorId:       processor.ID,
+		LogId:             uuid.NewV4(),
+		ParentLogId:       processor.Parent.Result.LogId,
 	}
 
 	cookieName := entity.CookieName
@@ -75,7 +81,8 @@ func (entity ProcessorCookie) Run(processor *Processor, session *Session) (err e
 
 		SetVariable(processor.ParentId, variableName, variableValue, consts.Public) // set in parent scope
 		processor.Result.Summary = fmt.Sprintf("将%s%s值\"%v\"赋予变量%s。", cookieName, words, variableValue, variableName)
-
+		detail := map[string]interface{}{"cookie名称": cookieName, "cookie值": words, "变量": variableName, "变量值": variableValue}
+		processor.Result.Detail = commonUtils.JsonEncode(detail)
 	} else if typ == consts.ProcessorCookieClear {
 		ClearCookie(processor.ParentId, cookieName) // set in parent scope
 		processor.Result.Summary = fmt.Sprintf("%s。", cookieName)

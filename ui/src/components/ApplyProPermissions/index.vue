@@ -35,7 +35,7 @@
                 <a-select-option
                   v-for="(option, key) in roles"
                   :key="key"
-                  :value="option.id + '-' + option.name"
+                  :value="item.id + '-' + option.name"
                   >{{ option.displayName }}</a-select-option
                 >
               </a-select>
@@ -142,7 +142,7 @@ watch(
        resetFields()
       console.log("roles", roles);
       store.dispatch("Project/getRoles");
-     
+
     }
   },
   {

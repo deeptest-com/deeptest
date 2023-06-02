@@ -10,6 +10,7 @@ import (
 	extractorHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/extractor"
 	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	uuid "github.com/satori/go.uuid"
 	"time"
 )
 
@@ -37,7 +38,7 @@ func (entity ProcessorExtractor) Run(processor *Processor, session *Session) (er
 		ParentId:          int(entity.ParentID),
 		ScenarioId:        processor.ScenarioId,
 		ProcessorId:       processor.ID,
-		LogId:             session.Step.GetId(),
+		LogId:             uuid.NewV4(),
 		ParentLogId:       processor.Parent.Result.LogId,
 	}
 

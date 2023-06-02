@@ -10,12 +10,12 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
+	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"github.com/jinzhu/copier"
-	"time"
-
-	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	uuid "github.com/satori/go.uuid"
 	"strings"
+	"time"
 )
 
 type ProcessorInterface struct {
@@ -45,7 +45,7 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 		InterfaceId:       processor.EndpointInterfaceId,
 		ScenarioId:        processor.ScenarioId,
 		ProcessorId:       processor.ID,
-		LogId:             session.Step.GetId(),
+		LogId:             uuid.NewV4(),
 		ParentLogId:       processor.Parent.Result.LogId,
 	}
 

@@ -2,6 +2,7 @@ package agentDomain
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	uuid "github.com/satori/go.uuid"
 	"time"
 )
 
@@ -50,8 +51,8 @@ type ScenarioExecResult struct {
 
 	EnvironmentId int `json:"environmentId,omitempty"`
 
-	LogId       int `json:"logId,omitempty"`
-	ParentLogId int `json:"parentLogId,omitempty"`
+	LogId       uuid.UUID `json:"logId,omitempty"`
+	ParentLogId uuid.UUID `json:"parentLogId,omitempty"`
 
 	Cost int64 `json:"cost,omitempty"`
 

@@ -6,6 +6,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	uuid "github.com/satori/go.uuid"
 	"time"
 )
 
@@ -29,7 +30,7 @@ func (entity ProcessorLogic) Run(processor *Processor, session *Session) (err er
 		ParentId:          int(entity.ParentID),
 		ScenarioId:        processor.ScenarioId,
 		ProcessorId:       processor.ID,
-		LogId:             session.Step.GetId(),
+		LogId:             uuid.NewV4(),
 		ParentLogId:       processor.Parent.Result.LogId,
 	}
 

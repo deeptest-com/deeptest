@@ -126,7 +126,11 @@ func (r *ProjectRepo) Create(req v1.ProjectReq, userId uint) (id uint, bizErr *_
 
 		return
 	}
-
+	err = r.AddProjectMember(project.ID, req.AdminId, "admin")
+	if err != nil {
+		logUtils.Errorf("添加项目角色错误", zap.String("错误:", err.Error()))
+		return
+	}
 	err = r.CreateProjectRes(project.ID, userId, req.IncludeExample)
 
 	id = project.ID

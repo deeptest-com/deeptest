@@ -78,7 +78,9 @@ const statisticData = computed(() => {
   return [
     {
       label: '通过',
-      value: `${passRate} ${passAssertionNum} 个`,
+      class: 'success',
+      rate: passRate,
+      value: `${passAssertionNum} 个`,
     },
     {
       label: '接口总耗时',
@@ -86,7 +88,8 @@ const statisticData = computed(() => {
     },
     {
       label: '失败',
-      value: `${notPassRate}  ${failAssertionNum} 个`,
+      rate: notPassRate,
+      value: `${failAssertionNum} 个`,
       class: 'fail',
     },
     {
@@ -95,13 +98,16 @@ const statisticData = computed(() => {
     },
     {
       label: '未测',
-      value: `${notTestNumRate} ${notTestNum}个`,
-      class: 'fail',
+      value: ` ${notTestNum}个`,
+      rate: notTestNumRate,
+      class: 'notest',
     },
     {
       label: '检查点 (成功/失败)',
       value: `${totalAssertionNum} (${passAssertionNum}/${failAssertionNum})`,
     },
+
+
   ]
 })
 

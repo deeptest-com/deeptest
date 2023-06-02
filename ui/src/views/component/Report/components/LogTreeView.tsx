@@ -15,9 +15,21 @@ export default defineComponent({
     },
     emits: ['change'],
     setup(props, {emit}) {
-       function change(log,keys) {
-           log.activeKey = keys;
-       }
+
+        const activeKeyMap = ref({});
+
+        function change(uid, keys) {
+            activeKeyMap.value[uid] = keys;
+        }
+
+        watch(() => props.treeData, (newVal: any) => {
+            if (newVal?.length) {
+                newVal.forEach((item) => {
+                    activeKeyMap.value[item.id] = [item.id];
+                })
+            }
+        }, {immediate: true})
+
         /**
          * @desc 渲染场景执行树
          * @param logs 需要渲染的场景类型
@@ -27,10 +39,10 @@ export default defineComponent({
             if (!logs) return null;
 
             function renderHeader(log) {
-                if(log.processorCategory === 'processor_interface'){
+                if (log.processorCategory === 'processor_interface') {
                     return <EndpointHeader endpointData={log}/>
                 }
-                return  <a-tooltip  title={`${log.name}：${log.summary}`}>
+                return <a-tooltip title={`${log.name}：${log.summary}`}>
                     <div class={'header-text'}><span class={'label'}>{log.name}</span>：<span
                         class={'value'}>{log.summary}</span></div>
                 </a-tooltip>
@@ -38,11 +50,12 @@ export default defineComponent({
             }
 
             function renderContent(log) {
-                if(log.processorCategory === 'processor_interface'){
+                if (log.processorCategory === 'processor_interface') {
                     return <EndpointContent endpointData={log}/>
                 }
                 return <LogContent data={log}/>;
             }
+
             const renderLogs = (log) => {
                 if (!log?.id) {
                     return;
@@ -61,7 +74,7 @@ export default defineComponent({
                 </a-collapse-panel>;
             };
             return logs.map((log) => {
-                return <div class={'log-item'} >
+                return <div class={'log-item'}>
                     <a-collapse>
                         {renderLogs(log)}
                     </a-collapse>
@@ -69,11 +82,8 @@ export default defineComponent({
             })
         }
 
-        watch(() => props.treeData, (newVal) => {
-            console.log('333333 newVal', newVal)
-        })
 
-        // 渲染场景，一级目录
+        // 渲染场景，一级目录, 即场景列表
         function renderScenarioList(list) {
             if (!list?.length) {
                 return null
@@ -84,10 +94,14 @@ export default defineComponent({
             }
 
             return list.map((item, index) => {
-                console.log(item.name)
-                return <div class={'scenario-item'}>
-                    <a-collapse >
-                        <a-collapse-panel header={renderHeader(item)}>
+                const uid = item.id;
+                return <div class={'scenario-item'} key={uid}>
+                    <a-collapse
+                        activeKey={activeKeyMap.value[uid]}
+                        onChange={(key) => {
+                            change(uid, key)
+                        }}>
+                        <a-collapse-panel key={uid} header={renderHeader(item)}>
                             {renderScenario(item?.logs?.[0]?.logs, item)}
                         </a-collapse-panel>
                     </a-collapse>

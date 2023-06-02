@@ -5,10 +5,6 @@
  */
 import {computed, ComputedRef, onMounted, ref, Ref, watch} from 'vue';
 import {getDivision, getPercentStr} from "@/utils/number";
-import EndpointHeader from "@/views/component/Report/components/EndpointHeader.vue";
-import EndpointContent from "@/views/component/Report/components/EndpointContent.vue";
-import LogContent from "@/views/component/Report/components/LogContent.vue";
-import ScenarioHeader from "@/views/component/Report/components/ScenarioHeader.vue";
 
 // 打平的执行记录
 const execLogs: any = ref([]);
@@ -187,7 +183,9 @@ const statisticData = computed(() => {
     return [
         {
             label: '通过',
-            value: `${passRate} ${passAssertionNum} 个`,
+            value: `${passAssertionNum} 个`,
+            rate: passRate,
+            class: 'success',
         },
         {
             label: '接口总耗时',
@@ -195,7 +193,8 @@ const statisticData = computed(() => {
         },
         {
             label: '失败',
-            value: `${notPassRate}  ${failAssertionNum} 个`,
+            rate: notPassRate,
+            value: `${failAssertionNum} 个`,
             class: 'fail',
         },
         {
@@ -204,13 +203,14 @@ const statisticData = computed(() => {
         },
         {
             label: '未测',
-            value: `${notTestNumRate} ${notTestNum}个`,
-            class: 'fail',
+            value: `${notTestNum}个`,
+            rate: notTestNumRate,
+            class: 'notest',
         },
-        // {
-        //     label: '测试场景 (成功/失败)',
-        //     value: `${totalScenarioNum} (${passScenarioNum}/${failScenarioNum})`,
-        // },
+        {
+            label: '检查点 (成功/失败)',
+            value: `${totalAssertionNum} (${passAssertionNum}/${failAssertionNum})`,
+        },
     ]
 })
 

@@ -45,7 +45,7 @@ const props = defineProps({
 const emits = defineEmits([]);
 
 const detailList = computed(() => {
-  const detail = props?.data?.detail || {};
+  const detail = JSON.parse(props.data.detail || '{}')
   const list:any = [];
   Object.entries(detail).forEach(([label,value]:any) => {
     list.push({

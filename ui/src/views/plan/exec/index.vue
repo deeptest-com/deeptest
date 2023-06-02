@@ -31,7 +31,6 @@ import {
 } from '@/views/component/Report/components';
 
 import {StateType as ReportStateType, StateType as PlanStateType} from "../store";
-import {ReportDetailType, WsMsgCategory} from '@/utils/enum';
 import settings from "@/config/settings";
 import bus from "@/utils/eventBus";
 import {getToken} from "@/utils/localToken";
@@ -120,6 +119,8 @@ const execCancel = () => {
 
 
 const OnWebSocketMsg = (data: any) => {
+  console.log('832 websocket msg', data)
+
   if (!data.msg) return;
   if (progressStatus.value === 'cancel') return;
   const wsMsg = JSON.parse(data.msg);
@@ -162,7 +163,7 @@ const onWebSocketConnStatusMsg = (data: any) => {
     return;
   }
   const {conn}: any = JSON.parse(data.msg);
-  progressStatus.value = conn === 'success' ? WsMsgCategory.InProgress : 'failed';
+  progressStatus.value = conn === 'success' ? 'in_progress' : 'failed';
 }
 
 function onClose() {

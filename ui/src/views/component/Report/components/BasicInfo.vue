@@ -13,7 +13,6 @@
 <script setup lang="ts">
 import {defineProps, defineEmits} from 'vue';
 import TextItem from './TextItem.vue';
-import {ReportDetailType} from '@/utils/enum';
 
 defineProps<{
   items: any,

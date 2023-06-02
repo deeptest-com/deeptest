@@ -9,19 +9,28 @@
       <div class="statistical-main" ref="mainRef"></div>
     </template>
     <div class="statistical-info">
-      <TextItem v-for="item in data"
-                :key="item.label"
-                class="statistical-info-item"
-                :label-class-name="item.class === 'fail' ? 'failed' : 'success'"
-                :label="item.label"
-                :value="item.value"/>
+      <a-descriptions :column="2">
+        <a-descriptions-item :key="index" v-for="(item,index) in data" >
+          <template #label>
+            <span :class="['text-label', item.class]" >{{ item.label }}</span>
+          </template>
+          <span class="text-rate" v-if="item.rate">{{item.rate}}</span>
+          <span class="text-value">{{item.value}}</span>
+        </a-descriptions-item>
+      </a-descriptions>
+<!--      <TextItem v-for="item in data"-->
+<!--                :key="item.label"-->
+<!--                class="statistical-info-item"-->
+<!--                :label-class-name="item.class === 'fail' ? 'failed' : 'success'"-->
+<!--                :label="item.label"-->
+<!--                :value="item.value"/>-->
     </div>
   </div>
 </template>
 <script setup lang="ts">
 import {ref, onMounted, watch, defineProps} from 'vue';
 import * as echarts from 'echarts';
-import TextItem from './TextItem.vue';
+// import TextItem from './TextItem.vue';
 
 const props = defineProps<{
   value: string
@@ -204,4 +213,49 @@ watch(() => {
     transform: rotate(360deg);
   }
 }
+
+
+.text-label {
+  color: rgba(0, 0, 0, 0.85);
+  margin-left: 8px;
+  &:before {
+    content: '';
+    display: inline-block;
+    margin-right: 7px;
+    width: 6px;
+    height: 6px;
+    position: relative;
+    top: -2px;
+    border-radius: 50%;
+  }
+
+  &.success:before {
+    background-color: #04C495;
+  }
+
+  &.fail:before {
+    width: 6px;
+    height: 6px;
+    background-color: #F63838;
+  }
+
+  &.notest:before {
+    width: 6px;
+    height: 6px;
+    background-color: rgba(0, 0, 0, 0.28);
+  }
+}
+
+.text-value{
+  display: inline-block;
+  margin-left: 16px;
+  width: 80px;
+}
+.text-rate{
+  display: inline-block;
+  width: 60px;
+  margin-left: 16px;
+
+}
+
 </style>

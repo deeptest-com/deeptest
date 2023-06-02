@@ -35,13 +35,15 @@
                         >
                           <a href="javascript:;">申请加入</a>
                         </a-menu-item>
-                        <a-menu-item @click="handleEdit(item)">
+                        <a-menu-item
+                            v-if="item.accessible === 1"
+                            @click="handleEdit(item)">
                           <a href="javascript:;">编辑</a>
                         </a-menu-item>
                         <!-- <a-menu-item>
                           <a href="javascript:;">启用/禁用</a>
                         </a-menu-item> -->
-                        <a-menu-item>
+                        <a-menu-item v-if="item.accessible === 1">
                           <a
                             href="javascript:;"
                             @click.stop="handleDelete(item.projectId)"

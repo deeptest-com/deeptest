@@ -139,7 +139,7 @@ func (s *ScenarioNodeService) addInterface(endpointInterfaceId int, createBy uin
 	}
 
 	processor := model.Processor{
-		Name: endpointInterface.Name,
+		Name: endpointInterface.Name + "-" + string(endpointInterface.Method),
 
 		EntityCategory: consts.ProcessorInterface,
 		EntityType:     consts.ProcessorInterfaceDefault,

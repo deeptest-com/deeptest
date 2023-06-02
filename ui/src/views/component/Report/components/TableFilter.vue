@@ -8,7 +8,7 @@
                         <span class="action-item">删除</span>
                     </div>
                 </template>
-                <a-button type="primary">批量操作</a-button>
+            <!--    <a-button type="primary">批量操作</a-button> -->
             </a-tooltip>
         </div>
         <a-form :model="formState" class="report-form">

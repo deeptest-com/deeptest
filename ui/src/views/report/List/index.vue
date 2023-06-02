@@ -14,10 +14,7 @@
                 handleGetList({ page });
             },
         }" 
-        :row-selection="{
-            selectedRowKeys: selectedRowKeys,
-            onChange: onSelectChange
-        }" class="dp-table">
+        class="dp-table">
         <template #serialNumber="{ record }">
             <span style="cursor: pointer">{{ record.serialNumber }}</span>
         </template>
@@ -96,6 +93,7 @@ const columns = [
         slots: { customRender: 'serialNumber' },
         width: 120
     },
+
     {
         title: '测试计划',
         dataIndex: 'execPlan',

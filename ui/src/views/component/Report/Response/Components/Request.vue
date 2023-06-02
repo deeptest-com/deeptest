@@ -6,7 +6,7 @@
         </div>
         <ConBoxTitle title="Header"></ConBoxTitle>
         <div class="request-headers">
-            <a-table :data="data?.headers || []" :columns="columns" />
+            <a-table :dataSource="data?.headers || []" :columns="columns" />
         </div>
         <ConBoxTitle title="Body"></ConBoxTitle>
         <div class="request-body">
@@ -18,13 +18,12 @@
                 <Icon :type="item.icon" :fill="item.fill" />
                 {{ item.label }}
             </div>
-
             <div class="editor-wrapper">
-                <MonacoEditor 
-                    class="editor" 
+                <MonacoEditor
+                    class="editor"
                     :value="codeValue"
-                    :language="'powershell'" 
-                    theme="vs" 
+                    :language="'powershell'"
+                    theme="vs"
                     :options="editorOptions" />
             </div>
         </div>
@@ -103,18 +102,18 @@ const Icon = (props) => {
 
 const selectIndex = ref(0);
 const editorOptions = ref(MonacoOptions);
-const codeValue = `curl --location --request ${props.data?.method} ${props.data?.url}  
---header 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36'  
---header 'Accept: */*'  
---header 'Cache-Control: no-cache' 
---header 'Host: localhost:8000' 
+const codeValue = `curl --location --request ${props.data?.method} ${props.data?.url}
+--header 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36'
+--header 'Accept: */*'
+--header 'Cache-Control: no-cache'
+--header 'Host: localhost:8000'
 --header 'Connection: keep-alive'
 `;
 
 watch(() => {
-    return props;
+    return props.data;
 }, val => {
-    console.log(val);
+    console.log(7777777,val);
 }, {
     immediate: true,
     deep: true

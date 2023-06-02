@@ -1,24 +1,29 @@
 <template>
     <div class="headers">
-        <a-table
-            :data="data"
-            :columns="columns" />
+        <a-table :dataSource="data" :columns="columns"/>
     </div>
 </template>
 <script setup lang="ts">
-import { defineProps } from 'vue';
+import { defineProps ,watch} from 'vue';
 
-defineProps<{
+const props = defineProps<{
     data: Array<any>
 }>();
 
+watch(() => {
+    return props.data;
+}, () => {
+    console.log('6666666',props.data)
+}, {
+    immediate: true
+})
 const columns = [
     {
-        title: 'Name',
+        title: 'name',
         dataIndex: 'name',
     },
     {
-        title: 'Value',
+        title: 'value',
         dataIndex: 'value',
     }
 ];

@@ -93,10 +93,10 @@ function genLogTreeView(execLogs, execRes) {
 // 更新场景的执行记录，不包括场景的执行结果
 // todo 优化: 可以优化成算法，使用 hash
 function updateExecLogs(log) {
+    console.log("更新场景的执行记录，不包括场景的执行结果", log)
     function hasSameId(log, item) {
         return item?.logId === log?.logId && item?.scenarioId === log?.scenarioId;
     }
-
     const isExist = execLogs.value.some((item: any) => {
         return hasSameId(log, item);
     });

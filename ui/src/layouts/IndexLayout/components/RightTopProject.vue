@@ -167,6 +167,12 @@ watch(() => {
   }
 })
 
+watch(dropdownVisible, (value) => {
+  if (value)  {
+    keyword.value = ""
+  }
+})
+
 </script>
 
 <style lang="less" scoped>

@@ -1008,10 +1008,6 @@ export const disabledStatusTagColor = new Map([[0, 'success'], [1, 'error']])
 
 export const endpointStatusOpts = [
     {
-        label: "未知",
-        value: 0,
-    },
-    {
         label: "设计中",
         value: 1,
     },

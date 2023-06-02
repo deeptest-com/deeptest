@@ -64,7 +64,7 @@ func Init() *AgentServer {
 	websocketAPI := app.Party(consts.WsPath)
 	m := mvc.New(websocketAPI)
 	m.Register(
-		&service.PrefixedLogger{Prefix: ""},
+		&commService.PrefixedLogger{Prefix: ""},
 	)
 	m.HandleWebsocket(websocketCtrl)
 	websocketServer := websocket.New(

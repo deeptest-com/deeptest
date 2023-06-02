@@ -147,8 +147,8 @@ const uploadFile = async () => {
 const upload = async (file, fileList) => {
   console.log('upload', file, fileList)
 
-  const path = await uploadRequest(file)
-  modelRef.value.url = path
+  const res = await uploadRequest(file)
+  modelRef.value.url = res.path
 
   return false
 }

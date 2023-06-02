@@ -67,6 +67,12 @@ export interface ServeListParams {
     "name"?: string;
 }
 
+export interface StoreDatapoolParams {
+    projectId: string | number;
+    formState?: any;
+    id?: string | number | undefined;
+    action?: string;
+}
 export interface DatapoolListParams {
     "projectId"?: number | string,
     "page"?: number,
@@ -75,6 +81,12 @@ export interface DatapoolListParams {
     "userId"?: number,
     "title"?: string,
     "name"?: string;
+}
+export interface DatapoolReqParams {
+    projectId: string | number;
+    name: string;
+    description?: string;
+    id?: number;
 }
 
 export interface VarsChangeState {

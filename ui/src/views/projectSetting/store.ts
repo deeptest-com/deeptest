@@ -27,7 +27,7 @@ import {
     saveServeVersion,
     deleteServeVersion,
     disableServeVersions,
-    sortEnv, listDatapool, saveDatapool, deleteDatapool, disableDatapool
+    sortEnv, listDatapool, saveDatapool, deleteDatapool, disableDatapool, getDatapool
 } from './service';
 import { message } from 'ant-design-vue';
 import {
@@ -45,7 +45,7 @@ import {
     StoreServeParams,
     VarsChangeState,
     VarsReqParams,
-    DatapoolListParams
+    DatapoolListParams, DatapoolReqParams, StoreDatapoolParams
 } from './data';
 import {disabledStatus, disabledStatusTagColor, serveStatus, serveStatusTagColor} from '@/config/constant';
 import { momentUtc } from '@/utils/datetime';
@@ -59,6 +59,7 @@ export interface StateType {
     schemaList: any;
     securityList: any;
     datapoolList: any;
+    datapoolDetail: any;
 
     selectServiceDetail: any;
     serveVersionsList: any;
@@ -76,11 +77,13 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setUserList: Mutation<StateType>,
         setSchemaList: Mutation<StateType>,
         setSecurityList: Mutation<StateType>,
-        setDatapoolList: Mutation<StateType>,
         setServiceDetail: Mutation<StateType>,
         setVersionList: Mutation<StateType>,
         setEnvDetail: Mutation<StateType>,
         setSelectEnvId: Mutation<StateType>
+
+        setDatapoolList: Mutation<StateType>,
+        setDatapoolDetail: Mutation<StateType>,
     };
     actions: {
         // 环境-全局变量-全局参数相关
@@ -130,6 +133,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
 
         // 数据池相关
         listDatapool: Action<StateType, StateType>,
+        getDatapool: Action<StateType, StateType>,
         saveDatapool: Action<StateType, StateType>,
         deleteDatapool: Action<StateType, StateType>,
         disableDatapool: Action<StateType, StateType>,
@@ -150,6 +154,7 @@ const initState: StateType = {
     schemaList: [],
     securityList:[],
     datapoolList: [],
+    datapoolDetail: [],
     selectServiceDetail: {
         name: '',
         description: '',
@@ -193,9 +198,6 @@ const StoreModel: ModuleType = {
         setSecurityList(state, payload) {
             state.securityList = payload;
         },
-        setDatapoolList(state, payload) {
-            state.datapoolList = payload;
-        },
         setServiceDetail(state, payload) {
             state.selectServiceDetail = payload;
         },
@@ -207,7 +209,13 @@ const StoreModel: ModuleType = {
         },
         setSelectEnvId(state, payload) {
             state.selectEnvId = payload;
-        }
+        },
+        setDatapoolList(state, payload) {
+            state.datapoolList = payload;
+        },
+        setDatapoolDetail(state, payload) {
+            state.datapoolDetail = payload;
+        },
     },
     actions: {
         async getEnvsList({ commit }, { projectId }: EnvReqParams) {
@@ -600,13 +608,22 @@ const StoreModel: ModuleType = {
                     item.createdAt = momentUtc(item.createdAt)
                     item.updatedAt = momentUtc(item.updatedAt)
                 })
+                console.log('res.data.result', res.data.result)
                 commit('setDatapoolList', res.data.result);
                 return true;
             } else {
                 return false;
             }
         },
-        async saveDatapool({ dispatch }, params: StoreServeParams) {
+        async getDatapool({ commit, dispatch }, id: number) {
+            const res = await getDatapool(id);
+            if (res.code === 0) {
+                commit('setDatapoolDetail', res.data);
+            } else {
+                message.error(`获取数据池失败`);
+            }
+        },
+        async saveDatapool({ dispatch }, params: StoreDatapoolParams) {
             const { formState, projectId, action = 'create' } = params;
             const tips = { 'create': '新建服务', 'update': '修改服务' };
             const res = await saveDatapool({ ...formState, projectId });
@@ -619,7 +636,7 @@ const StoreModel: ModuleType = {
                 message.error(`${tips[action]}失败`);
             }
         },
-        async deleteDatapool({ dispatch }, params: ServeReqParams) {
+        async deleteDatapool({ dispatch }, params: DatapoolReqParams) {
             const { id, projectId } = params;
             const res = await deleteDatapool(id);
             if (res.code === 0) {
@@ -635,7 +652,6 @@ const StoreModel: ModuleType = {
             const { id, projectId } = params;
             const res = await disableDatapool(id);
             if (res.code === 0) {
-                message.success('禁用数据池成功');
                 await dispatch('listDatapool', {
                     projectId
                 })

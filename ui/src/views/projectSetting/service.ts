@@ -372,6 +372,12 @@ export async function listDatapool(data: ServeListParams): Promise<any> {
         data: data,
     });
 }
+export async function getDatapool(id: number): Promise<any> {
+    return request({
+        url: `/datapools/${id}`,
+        method: 'get',
+    });
+}
 export async function saveDatapool(data: ServeReqParams): Promise<any> {
     return request({
         url: `/datapools/save`,
@@ -381,7 +387,7 @@ export async function saveDatapool(data: ServeReqParams): Promise<any> {
 }
 export async function deleteDatapool(id: Number | String | undefined): Promise<any> {
     return request({
-        url: `/datapools/{id}`,
+        url: `/datapools/${id}`,
         method: 'delete',
     });
 }

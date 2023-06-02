@@ -7,7 +7,7 @@
             </div>
         </template>
         <div class="drawer-content">
-            <a-form :model="formState" :label-col="{ span: 2 }" :wrapper-col="{ span: 15 }"> 
+            <a-form :model="formState" :label-col="{ span: 2 }" :wrapper-col="{ span: 15 }">
                 <ConBoxTitle :backgroundStyle="'background: #FBFBFB;'" :title="'基本信息'" />
                 <div class="drawer-basicinfo">
                     <a-form-item label="服务名称">

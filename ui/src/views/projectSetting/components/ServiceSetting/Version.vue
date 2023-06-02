@@ -40,7 +40,6 @@ import EmptyCom from '@/components/Empty/index.vue';
 import { StateType as ProjectSettingStateType } from '../../store';
 import { versionColumns } from '../../config';
 
-
 const props = defineProps({
   serveId: {
     required: true

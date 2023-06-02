@@ -11,16 +11,17 @@ import {addSepIfNeeded} from "@/utils/url";
 
 const baseUrl = addSepIfNeeded(getServerUrl())
 
-export async function uploadRequest(file) {
+export async function uploadRequest(file: any, params?: any) {
     const data = new FormData()
 
     data.append('file', file, file.name)
     console.log(data.get('file'))
 
-    const config = {
+    const config:AxiosRequestConfig = {
         headers: {
             'Content-Type': 'multipart/form-data',
         },
+        params: params,
     }
     // 添加jwt token
     const jwtToken = await getToken();
@@ -33,9 +34,12 @@ export async function uploadRequest(file) {
     const resp = await axios.post(url, data, config)
     console.log(resp.data.code)
 
+    const ret = {} as any
+
     if (resp.data.code === 0) {
-        return resp.data.data.path
+        ret.path = resp.data.data.path
+        ret.data = resp.data.data.data
     }
 
-    return 'UPLOAD ERROR'
+    return ret
 }

@@ -9,7 +9,7 @@
     <!-- content -->
     <EmptyCom>
       <template #content>
-        <a-table :data-source="dataSource" :columns="datapoolColumns" :rowKey="(_record, index) => index">
+        <a-table :data-source="dataSource" :columns="datapoolColumns" :rowKey="(_record, index) => _record.id">
           <template #name="{ text, record }">
             <div class="serve-name">
               <EditAndShowField :custom-class="'custom-serve show-on-hover'" placeholder="请输入数据池名称"

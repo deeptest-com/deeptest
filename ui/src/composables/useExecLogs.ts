@@ -62,9 +62,10 @@ function genLogTreeView(execLogs, execRes) {
                 if (!parentLogId) return;
                 if (parentLogId === rootId) {
                     res.push(mapItem);
-                } else {
+                } else if(map[parentLogId]){
                     if (map[parentLogId]?.logs) {
-                        map[parentLogId].logs.push(mapItem);
+                        const hasSameId = map[parentLogId].logs.some((log) => log.logId === logId);
+                        !hasSameId && map[parentLogId].logs.push(mapItem);
                     } else {
                         map[parentLogId].logs = [mapItem];
                     }
@@ -75,7 +76,7 @@ function genLogTreeView(execLogs, execRes) {
         scenario.logs[0].logs = fn(execLogs, scenario.logId);
     });
 
-    console.log("scenarioReports", scenarioReports)
+    console.log("场景里每条编排的执行记录 2222", scenarioReports)
     return scenarioReports;
 }
 

@@ -1,7 +1,7 @@
 <template>
   <div class="scenario-exec-info-main">
     <ReportBasicInfo :items="baseInfoList || []"
-                     :showBtn="true"
+                     :showBtn="show"
                      :btnText="'生成报告'"
                      @handleBtnClick="genReport"/>
     <StatisticTable :data="statisticData" :value="statInfo"/>
@@ -55,6 +55,7 @@ const scenarioId = computed(() => {
 });
 
 const reportId = ref('');
+const show = ref(false)
 const baseInfoList = computed(() => {
   if (!detailResult.value) return [];
   console.log(envList.value)
@@ -109,6 +110,7 @@ const OnWebSocketMsg = (data: any) => {
   //  更新【场景】的执行结果
   else if (wsMsg.category == 'result' && log.scenarioId) {
     updateExecRes(log);
+    reportId.value = log.id
   }
   // 更新【场景中每条编排】的执行记录
   else if (wsMsg.category === "processor" && log.scenarioId) {
@@ -118,6 +120,7 @@ const OnWebSocketMsg = (data: any) => {
   // 执行完毕
   else if (wsMsg.category == 'end') {
     progressStatus.value = 'end';
+    show.value = true
   } else {
     console.log('wsMsg', wsMsg);
   }

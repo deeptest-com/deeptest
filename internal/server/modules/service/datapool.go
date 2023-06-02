@@ -111,7 +111,9 @@ func (s *DatapoolService) ListForExec(projectId uint) (ret domain.Datapools, err
 	for _, datapool := range datapools {
 		var arr [][]string
 		json.Unmarshal([]byte(datapool.Data), &arr)
-
+		if len(arr) == 0 {
+			return
+		}
 		var headers []string
 		for _, col := range arr[0] {
 			headers = append(headers, col)

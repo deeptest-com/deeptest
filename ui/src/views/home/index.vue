@@ -80,7 +80,7 @@ import EditPage from "@/views/project/edit/edit.vue";
 import { useRouter } from "vue-router";
 import { setCache } from "@/utils/localCache";
 import settings from "@/config/settings";
-
+const router = useRouter();
 const store = useStore<{ Home: StateType }>();
 const cardData = computed<any>(() => store.state.Home.cardData);
 const activeKey = ref(1);
@@ -101,6 +101,9 @@ let formState = ref({
 });
 
 onMounted(() => {
+  if( router.currentRoute.value?.query?.type=='all'){
+    activeKey.value=0
+  }
   getHearderData();
   getList(1);
 });

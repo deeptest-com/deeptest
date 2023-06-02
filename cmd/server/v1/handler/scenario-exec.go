@@ -63,3 +63,24 @@ func (c *ScenarioExecCtrl) SubmitResult(ctx iris.Context) {
 	report.Logs = nil // otherwise will cause an json parse err on agent size
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: report})
 }
+
+func (c *ScenarioExecCtrl) GetScenarioNormalData(ctx iris.Context) {
+	id, err := ctx.URLParamInt("id")
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+		return
+	}
+
+	environmentId, err := ctx.URLParamInt("environmentId")
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+		return
+	}
+
+	data, err := c.ScenarioExecService.GetScenarioNormalData(uint(id), uint(environmentId))
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data})
+}

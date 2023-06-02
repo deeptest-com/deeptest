@@ -75,7 +75,7 @@ func (s *PlanExecService) SaveReport(planId int, userId uint, result agentDomain
 		scenarioReportIds = append(scenarioReportIds, scenarioResult.ScenarioReportId)
 	}
 
-	report.Duration = report.EndTime.UnixMilli() - report.StartTime.UnixMilli()
+	//report.Duration = report.EndTime.UnixMilli() - report.StartTime.UnixMilli()
 	_ = s.PlanReportRepo.Create(&report)
 
 	_ = s.ScenarioReportRepo.BatchUpdatePlanReportId(scenarioReportIds, report.ID)
@@ -111,6 +111,11 @@ func (s *PlanExecService) CombineReport(scenarioReport model.ScenarioReport, pla
 	planReport.TotalInterfaceNum += scenarioReport.TotalInterfaceNum
 	planReport.PassInterfaceNum += scenarioReport.PassInterfaceNum
 	planReport.FailInterfaceNum += scenarioReport.FailInterfaceNum
+
+	planReport.TotalProcessorNum += scenarioReport.TotalProcessorNum
+	planReport.FinishProcessorNum += scenarioReport.FinishProcessorNum
+
+	planReport.Duration += scenarioReport.Duration
 
 	planReport.TotalScenarioNum += 1
 	if scenarioReport.ResultStatus == consts.Fail {
@@ -211,7 +216,7 @@ func (s *PlanExecService) summarizeInterface(report *model.PlanReport) {
 	}
 }
 
-func (s *PlanExecService) GetPlanReportNormalData(planId, environmentId uint) (ret agentDomain.PlanNormalData, err error) {
+func (s *PlanExecService) GetPlanReportNormalData(planId, environmentId uint) (ret agentDomain.Report, err error) {
 	plan, err := s.PlanRepo.Get(planId)
 	if err != nil {
 		return
@@ -241,8 +246,13 @@ func (s *PlanExecService) GetPlanReportNormalData(planId, environmentId uint) (r
 		if err != nil {
 			return ret, err
 		}
+		processorNum, err := s.ScenarioNodeRepo.GetNumberByScenariosAndEntityCategory(scenarioIds, "")
+		if err != nil {
+			return ret, err
+		}
 		ret.TotalInterfaceNum = int(interfaceNum)
 		ret.TotalAssertionNum = int(assertionNum)
+		ret.TotalProcessorNum = int(processorNum)
 	}
 
 	ret.PlanId = planId

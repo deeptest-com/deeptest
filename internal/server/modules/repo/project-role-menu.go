@@ -55,6 +55,7 @@ func (r *ProjectRoleMenuRepo) DeleteById(id uint) error {
 }
 
 func (r *ProjectRoleMenuRepo) GetRoleMenuConfig() (roleMenuConfigs []v1.ProjectRoleMenuConfig, err error) {
+
 	data, err := ioutil.ReadFile("config/sample/role-menu.json")
 	if err != nil {
 		logUtils.Errorf("load role menu config err ", zap.String("错误:", err.Error()))

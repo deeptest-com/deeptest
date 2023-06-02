@@ -38,7 +38,8 @@ func (c *PlanCtrl) List(ctx iris.Context) {
 		}
 	}
 	req.ConvertParams()
-
+	req.Field = "updated_at"
+	req.Order = "desc"
 	data, err := c.PlanService.Paginate(req, projectId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})

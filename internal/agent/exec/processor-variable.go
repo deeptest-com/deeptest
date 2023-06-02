@@ -5,7 +5,9 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	uuid "github.com/satori/go.uuid"
 	"time"
 )
 
@@ -28,8 +30,12 @@ func (entity ProcessorVariable) Run(processor *Processor, session *Session) (err
 		ProcessorType:     entity.ProcessorType,
 		StartTime:         &startTime,
 		ParentId:          int(entity.ParentID),
+		ScenarioId:        processor.ScenarioId,
+		ProcessorId:       processor.ID,
+		LogId:             uuid.NewV4(),
+		ParentLogId:       processor.Parent.Result.LogId,
 	}
-
+	detail := map[string]interface{}{"变量": entity.VariableName}
 	if entity.ProcessorType == consts.ProcessorVariableSet {
 		var variableValue interface{}
 		variableValue, err = EvaluateGovaluateExpressionByScope(entity.Expression, processor.ID)
@@ -40,6 +46,8 @@ func (entity ProcessorVariable) Run(processor *Processor, session *Session) (err
 
 		SetVariable(processor.ParentId, entity.VariableName, variableValue, consts.Public) // set in parent scope
 		processor.Result.Summary = fmt.Sprintf("\"%s\"为\"%v\"。", entity.VariableName, variableValue)
+		detail["值"] = variableValue
+		processor.Result.Detail = commonUtils.JsonEncode(detail)
 
 	} else if entity.ProcessorType == consts.ProcessorVariableClear {
 		ClearVariable(processor.ID, entity.VariableName)

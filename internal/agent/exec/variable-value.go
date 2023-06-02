@@ -43,15 +43,16 @@ func getValueFromShareVar(name string) (ret string) {
 		ret = getValueFromList(name, ExecScene.ShareVars)
 
 	} else { // run scenario
-		if CachedShareVarByProcessorForRead[CurrProcessorId] == nil {
-			CachedShareVarByProcessorForRead[CurrProcessorId] = GetCachedVariableMapInContext(CurrProcessorId)
-		}
+		//每次都更新缓存变量
+		//if CachedShareVarByProcessorForRead[CurrProcessorId] == nil {
+		CachedShareVarByProcessorForRead[CurrProcessorId] = GetCachedVariableMapInContext(CurrProcessorId)
+		//}
 
 		if CachedShareVarByProcessorForRead[CurrProcessorId][name] == nil {
 			return ""
 		}
-
 		ret = fmt.Sprintf("%v", CachedShareVarByProcessorForRead[CurrProcessorId][name])
+		fmt.Println(name, ret, "+++")
 	}
 
 	return

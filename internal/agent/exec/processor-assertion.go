@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
+	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	uuid "github.com/satori/go.uuid"
 	"time"
 )
 
@@ -26,6 +28,10 @@ func (entity ProcessorAssertion) Run(processor *Processor, session *Session) (er
 		ProcessorType:     entity.ProcessorType,
 		StartTime:         &startTime,
 		ParentId:          int(entity.ParentID),
+		ScenarioId:        processor.ScenarioId,
+		ProcessorId:       processor.ID,
+		LogId:             uuid.NewV4(),
+		ParentLogId:       processor.Parent.Result.LogId,
 	}
 
 	ret, err := EvaluateGovaluateExpressionByScope(entity.Expression, processor.ID)
@@ -35,8 +41,10 @@ func (entity ProcessorAssertion) Run(processor *Processor, session *Session) (er
 	var status string
 	processor.Result.ResultStatus, status = getResultStatus(pass)
 
-	processor.Result.Summary = fmt.Sprintf("断言\"%s\"结果为\"%s\"。", entity.Expression, status)
-
+	//processor.Result.Summary = fmt.Sprintf("断言\"%s\"结果为\"%s\"。", entity.Expression, status)
+	processor.Result.Summary = fmt.Sprintf("结果为\"%s\"。", status)
+	detail := map[string]interface{}{"结果": status, "表达式": entity.Expression}
+	processor.Result.Detail = commonUtils.JsonEncode(detail)
 	processor.AddResultToParent()
 	execUtils.SendExecMsg(*processor.Result, session.WsMsg)
 

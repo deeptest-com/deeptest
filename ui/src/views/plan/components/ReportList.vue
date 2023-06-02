@@ -17,7 +17,7 @@
             {{ momentUtc(record.startTime) }} ~  {{ momentUtc(record.endTime) }}
         </template>
         <template #operation="{ record }">
-            <a-button type="primary" @click="queryDetail(record.id)">查看报告</a-button>
+          <a  href="javascript:void (0)" @click="queryDetail(record.id)">查看报告</a>
         </template>
     </a-table>
     <ExecDetail

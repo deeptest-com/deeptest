@@ -211,9 +211,10 @@ func (r *ScenarioNodeRepo) IsLeaf(po model.Processor) (ret bool) {
 }
 
 func (r *ScenarioNodeRepo) GetNumberByScenariosAndEntityCategory(scenarioIds []uint, entityCategory consts.ProcessorCategory) (num int64, err error) {
-	err = r.DB.Model(model.Processor{}).
-		Where("scenario_id IN (?)", scenarioIds).
-		Where("entity_category = ? AND NOT deleted", entityCategory).
-		Count(&num).Error
+	db := r.DB.Model(model.Processor{}).Where("not deleted and not disabled and scenario_id IN (?)", scenarioIds)
+	if entityCategory != "" {
+		db.Where("entity_category=?", entityCategory)
+	}
+	err = db.Count(&num).Error
 	return
 }

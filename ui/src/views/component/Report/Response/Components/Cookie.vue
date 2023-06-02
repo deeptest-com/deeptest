@@ -1,7 +1,7 @@
 <template>
     <div class="cookies">
         <a-table
-            :data="data"
+            :dataSource="data"
             :columns="columns" />
     </div>
 </template>

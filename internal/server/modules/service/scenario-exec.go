@@ -88,6 +88,7 @@ func (s *ScenarioExecService) SaveReport(scenarioId int, userId uint, rootResult
 	s.TestLogRepo.CreateLogs(rootResult, &report)
 	logs, _ := s.ScenarioReportService.GetById(report.ID)
 	report.Logs = logs.Logs
+	report.Priority = scenario.Priority
 
 	return
 }
@@ -120,10 +121,13 @@ func (s *ScenarioExecService) GenerateReport(scenarioId int, userId uint, rootRe
 }
 
 func (s *ScenarioExecService) countRequest(result execDomain.ScenarioExecResult, report *model.ScenarioReport) {
+	report.TotalProcessorNum++
+	report.FinishProcessorNum++
 	if result.ProcessorType == consts.ProcessorInterfaceDefault {
 		s.countInterface(result.InterfaceId, result.ResultStatus, report)
 
 		report.TotalRequestNum++
+		report.Duration += result.Cost
 
 		switch result.ResultStatus {
 		case consts.Pass:
@@ -137,6 +141,7 @@ func (s *ScenarioExecService) countRequest(result execDomain.ScenarioExecResult,
 		}
 
 	} else if result.ProcessorType == consts.ProcessorAssertionDefault {
+		report.TotalAssertionNum++
 		switch result.ResultStatus {
 		case consts.Pass:
 			report.PassAssertionNum++
@@ -190,4 +195,36 @@ func (s *ScenarioExecService) summarizeInterface(report *model.ScenarioReport) {
 
 		report.TotalInterfaceNum++
 	}
+}
+
+func (s *ScenarioExecService) GetScenarioNormalData(id, environmentId uint) (ret execDomain.Report, err error) {
+
+	ret.ScenarioId = id
+
+	environment, err := s.EnvironmentRepo.Get(environmentId)
+	if err != nil {
+		return
+	}
+	ret.ExecEnv = environment.Name
+
+	scenarioIds := []uint{id}
+	interfaceNum, err := s.ScenarioNodeRepo.GetNumberByScenariosAndEntityCategory(scenarioIds, "processor_interface")
+	if err != nil {
+		return ret, err
+	}
+	assertionNum, err := s.ScenarioNodeRepo.GetNumberByScenariosAndEntityCategory(scenarioIds, "processor_assertion")
+	if err != nil {
+		return ret, err
+	}
+	processorNum, err := s.ScenarioNodeRepo.GetNumberByScenariosAndEntityCategory(scenarioIds, "")
+	if err != nil {
+		return ret, err
+	}
+
+	ret.TotalInterfaceNum = int(interfaceNum)
+	ret.TotalAssertionNum = int(assertionNum)
+	ret.TotalProcessorNum = int(processorNum)
+
+	return
+
 }

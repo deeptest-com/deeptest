@@ -17,7 +17,12 @@
           </template>
           <template #description="{ text }">
             <div class="serve-description">
-              {{ text || '' }}
+              {{ text || '---' }}
+            </div>
+          </template>
+          <template #createUser="{ text }">
+            <div>
+              {{ text || '---' }}
             </div>
           </template>
           <template #customServers="{ record }">

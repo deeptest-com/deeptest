@@ -8,7 +8,9 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	extractorHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/extractor"
+	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	uuid "github.com/satori/go.uuid"
 	"time"
 )
 
@@ -34,6 +36,10 @@ func (entity ProcessorExtractor) Run(processor *Processor, session *Session) (er
 		ProcessorType:     entity.ProcessorType,
 		StartTime:         &startTime,
 		ParentId:          int(entity.ParentID),
+		ScenarioId:        processor.ScenarioId,
+		ProcessorId:       processor.ID,
+		LogId:             uuid.NewV4(),
+		ParentLogId:       processor.Parent.Result.LogId,
 	}
 
 	brother, ok := getPreviousBrother(*processor)
@@ -49,7 +55,6 @@ func (entity ProcessorExtractor) Run(processor *Processor, session *Session) (er
 
 	entity.Src = consts.Body
 	entity.Type = getExtractorTypeForProcessor(entity.ProcessorType)
-
 	entity.Result, err = extractorHelper.Extract(entity.ExtractorBase, resp)
 	if err != nil {
 		processor.Result.Summary = fmt.Sprintf("%s提取器解析错误 %s。", entity.ProcessorType, err.Error())
@@ -59,8 +64,10 @@ func (entity ProcessorExtractor) Run(processor *Processor, session *Session) (er
 	}
 
 	SetVariable(processor.ParentId, entity.Variable, entity.Result, consts.Public) // set in parent scope
-
-	processor.Result.Summary = fmt.Sprintf("将结果\"%v\"赋予变量\"%s\"。", entity.Result, entity.Variable)
+	//processor.Result.Summary = fmt.Sprintf("将结果\"%v\"赋予变量\"%s\"。", entity.Result, entity.Variable)
+	processor.Result.Summary = fmt.Sprintf("将结果赋予变量\"%s\"。", entity.Variable)
+	detail := map[string]interface{}{"提取器类型": entity.ProcessorType, "元素路径": entity.Expression, "变量": entity.Variable, "值": entity.Result}
+	processor.Result.Detail = commonUtils.JsonEncode(detail)
 	processor.AddResultToParent()
 	execUtils.SendExecMsg(*processor.Result, session.WsMsg)
 

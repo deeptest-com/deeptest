@@ -13,7 +13,6 @@ func JsonQuery(content string, expression string) (result string) {
 		result = consts.ContentErr
 		return
 	}
-
 	elem, err := jsonquery.Query(doc, expression)
 	if err != nil || elem == nil {
 		result = consts.ExtractorErr

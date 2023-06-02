@@ -39,6 +39,8 @@ func (s *ScenarioNodeService) GetTree(scenario model.Scenario, withDetail bool) 
 
 	root.Session = agentExec.Session{}
 
+	root.ScenarioId = scenario.ID
+
 	return
 }
 
@@ -46,8 +48,9 @@ func (s *ScenarioNodeService) ToTos(pos []*model.Processor, withDetail bool) (to
 	for _, po := range pos {
 		to := agentExec.Processor{
 			ProcessorBase: agentExec.ProcessorBase{
-				IsLeaf:  s.ScenarioNodeRepo.IsLeaf(*po),
-				Session: agentExec.Session{},
+				IsLeaf:     s.ScenarioNodeRepo.IsLeaf(*po),
+				Session:    agentExec.Session{},
+				ScenarioId: po.ScenarioId,
 			},
 		}
 		copier.CopyWithOption(&to, po, copier.Option{DeepCopy: true})
@@ -136,7 +139,7 @@ func (s *ScenarioNodeService) addInterface(endpointInterfaceId int, createBy uin
 	}
 
 	processor := model.Processor{
-		Name: endpointInterface.Name,
+		Name: endpointInterface.Name + "-" + string(endpointInterface.Method),
 
 		EntityCategory: consts.ProcessorInterface,
 		EntityType:     consts.ProcessorInterfaceDefault,

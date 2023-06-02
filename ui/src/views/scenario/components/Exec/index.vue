@@ -1,14 +1,14 @@
 <template>
   <div class="scenario-exec-info-main">
-    <ReportBasicInfo :items="baseInfoList || []" :showOperation="!!reportId"
-                     :scene="ReportDetailType.ExecScenario"
+    <ReportBasicInfo :items="baseInfoList || []"
+                     :showBtn="show"
+                     :btnText="'生成报告'"
                      @handleBtnClick="genReport"/>
-    <StatisticTable :scene="ReportDetailType.ExecScenario" :data="statisticData"/>
-    <Progress :exec-status="progressStatus" :percent="progressValue" @exec-cancel="execCancel"/>
-    <EndpointCollapsePanel v-if="recordList.length > 0"
-                           :recordList="recordList"/>
-
-    <LogTreeView :treeData="scenarioList"/>
+    <StatisticTable :data="statisticData" :value="statInfo"/>
+    <Progress :exec-status="progressStatus"
+              :percent="progressValue"
+              @exec-cancel="execCancel"/>
+    <LogTreeView :treeData="scenarioReports" :expandKeys="expandKeys"/>
   </div>
 </template>
 
@@ -20,28 +20,27 @@ import {useStore} from "vuex";
 
 import settings from "@/config/settings";
 import {WebSocket} from "@/services/websocket";
-import {WsMsg} from "@/types/data";
 import {
   ReportBasicInfo,
   StatisticTable,
-  ScenarioCollapsePanel,
-  EndpointCollapsePanel,
   LogTreeView,
   Progress
 } from '@/views/component/Report/components';
-import {ReportDetailType} from "@/utils/enum";
 import {StateType as GlobalStateType} from "@/store/global";
 import {ExecStatus} from "@/store/exec";
 import {StateType as ScenarioStateType} from "../../store";
 import bus from "@/utils/eventBus";
-import Log from "./Log.vue"
-import {momentShort, momentUtc} from "@/utils/datetime";
 import {useI18n} from "vue-i18n";
 import {getToken} from "@/utils/localToken";
-import {WsMsgCategory} from "@/utils/enum";
-import {formatData} from "@/utils/formatData";
 import {Scenario} from "@/views/scenario/data";
 import {message} from "ant-design-vue";
+import {getDivision, getPercentStr} from "@/utils/number";
+import {
+  scenarioReports, expandKeys,
+  clearLog,
+  execLogs, execRes, updateExecLogs, updateExecRes,statInfo
+  , statisticData, initData, progressStatus, progressValue, updatePlanRes,
+} from '@/composables/useExecLogs';
 
 const {t} = useI18n();
 
@@ -56,6 +55,7 @@ const scenarioId = computed(() => {
 });
 
 const reportId = ref('');
+const show = ref(false)
 const baseInfoList = computed(() => {
   if (!detailResult.value) return [];
   console.log(envList.value)
@@ -64,14 +64,10 @@ const baseInfoList = computed(() => {
     {value: detailResult?.value?.name || '暂无', label: '场景名称'},
     {value: curEnv?.name || '暂无', label: '执行环境'},
   ]
-})
-const statisticData = ref({});
-// const execResult = computed<any>(() => store.state.Scenario.execResult);
-const progressValue = ref(10);
-const recordList:any = ref([]);
-const progressStatus = ref('in_progress');
+});
+
 const execStart = async () => {
-  console.log('execStart')
+  clearLog();
   const data = {
     serverUrl: process.env.VUE_APP_API_SERVER, // used by agent to submit result to server
     token: await getToken(),
@@ -82,6 +78,7 @@ const execStart = async () => {
 }
 
 const execCancel = () => {
+  progressStatus.value = 'cancel';
   const msg = {act: 'stop', execReq: {scenarioId: scenarioId.value}}
   WebSocket.sentMsg(settings.webSocketRoom, JSON.stringify(msg))
 }
@@ -96,53 +93,46 @@ onUnmounted(() => {
 })
 
 
-
 const OnWebSocketMsg = (data: any) => {
-  if (!data.msg) return
-  const wsMsg = JSON.parse(data.msg) as WsMsg;
-  // console.log('832 wsMsg', wsMsg);
-  if (wsMsg.category) {
-    if (wsMsg.category == WsMsgCategory.Result) { // update result
-      const res = wsMsg.data;
-      progressStatus.value = wsMsg.category;
-      progressValue.value = 100;
-      statisticData.value = {
-        "duration": res.duration, //执行耗时（单位：s)
-        "passScenarioNum": res.passScenarioNum || 0, //通过场景数
-        "failScenarioNum": res.failScenarioNum || 0, //失败场景数
-        "passInterfaceNum": res.passInterfaceNum || 0,
-        "failInterfaceNum": res.failInterfaceNum || 0,
-        "totalRequestNum": res.totalRequestNum || 0,
-        "passRequestNum": res.passRequestNum || 0,
-        "failRequestNum": res.failRequestNum || 0,
-        "passAssertionNum": res.passAssertionNum || 0, //通过检查点数
-        "failAssertionNum": res.failAssertionNum || 0, //失败检查点数
-        "totalScenarioNum": data.totalScenarioNum || 0, //场景总数
-        "totalInterfaceNum": data.totalInterfaceNum || 0, //接口总数
-      }
-      // console.log('statisticData', statisticData.value);
-      // console.log('832res',res);
-      reportId.value = res.id;
-      recordList.value = formatData(res?.logs?.[0]?.logs || []);
-    }
+  if (!data.msg) return;
+  if (progressStatus.value === 'cancel') return;
+  const wsMsg = JSON.parse(data.msg);
+  const log = wsMsg.data ? JSON.parse(JSON.stringify(wsMsg.data)) : {};
+  // 开始执行，初始化数据
+  if (wsMsg.category == 'initialize') {
+    initData(log);
+    progressStatus.value = 'in_progress';
+  }
+  // 执行中
+  else if (wsMsg.category == 'in_progress') {
+    progressStatus.value = 'in_progress';
+  }
+  //  更新【场景】的执行结果
+  else if (wsMsg.category == 'result' && log.scenarioId) {
+    updateExecRes(log);
+    reportId.value = log.id
+  }
+  // 更新【场景中每条编排】的执行记录
+  else if (wsMsg.category === "processor" && log.scenarioId) {
+    console.log('场景里每条编排的执行记录', log)
+    updateExecLogs(log);
+  }
+  // 执行完毕
+  else if (wsMsg.category == 'end') {
+    progressStatus.value = 'end';
+    show.value = true
+  } else {
+    console.log('wsMsg', wsMsg);
   }
 }
-
-
-/**
- * 适配场景执行报告日志数据
- * */
-const scenarioList = computed(() => {
-  return [];
-})
 
 async function genReport() {
   const res = await store.dispatch('Scenario/genReport', {
     id: reportId.value,
   });
-  if(res){
+  if (res) {
     message.success('生成报告成功');
-  }else {
+  } else {
     message.error('生成报告失败');
   }
 }

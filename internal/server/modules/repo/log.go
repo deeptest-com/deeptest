@@ -109,6 +109,7 @@ func (r *LogRepo) CreateCommonLog(result agentDomain.ScenarioExecResult, parentI
 		ProcessorId: result.ProcessorId,
 		ParentId:    parentId,
 		ReportId:    reportId,
+		Detail:      result.Detail,
 	}
 
 	err = r.Save(&po)

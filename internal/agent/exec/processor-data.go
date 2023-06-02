@@ -5,7 +5,9 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	uuid "github.com/satori/go.uuid"
 	"time"
 )
 
@@ -39,9 +41,16 @@ func (entity ProcessorData) Run(processor *Processor, session *Session) (err err
 		ProcessorType:     entity.ProcessorType,
 		StartTime:         &startTime,
 		ParentId:          int(entity.ParentID),
+		ScenarioId:        processor.ScenarioId,
+		ProcessorId:       processor.ID,
+		LogId:             uuid.NewV4(),
+		ParentLogId:       processor.Parent.Result.LogId,
 	}
 
 	processor.Result.Iterator, processor.Result.Summary = entity.getIterator()
+
+	detail := map[string]interface{}{"变量名": entity.VariableName, "上传文件": entity.Url, "分割符": entity.Separator, "重复次数": entity.RepeatTimes}
+	processor.Result.Detail = commonUtils.JsonEncode(detail)
 
 	processor.AddResultToParent()
 	execUtils.SendExecMsg(*processor.Result, session.WsMsg)

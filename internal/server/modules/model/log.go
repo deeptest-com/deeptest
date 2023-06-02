@@ -39,6 +39,7 @@ type ExecLogProcessor struct {
 	//ProcessorResult  string               `json:"processorResult,omitempty"`
 
 	Summary string `json:"summary,omitempty"`
+	Detail  string `gorm:"type:text" json:"Detail,omitempty"`
 	Output  string `json:"output,omitempty"`
 
 	Logs []*ExecLogProcessor `gorm:"-" json:"logs"`

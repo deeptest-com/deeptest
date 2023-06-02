@@ -494,7 +494,7 @@ func (r *ProjectRepo) GetAuditList(req v1.AuditProjectPaginate) (data _domain.Pa
 	var count int64
 	db := r.DB.Model(&model.ProjectMemberAudit{})
 	if req.Type == 0 {
-		projectIds := r.GetProjectIdsByUserIdAndRole(req.AuditUserId, 1)
+		projectIds := r.GetProjectIdsByUserIdAndRole(req.AuditUserId, consts.Admin)
 		db = db.Where("project_id in ? and status = 0", projectIds)
 	} else {
 		db = db.Where("apply_user_id = ?", req.ApplyUserId)
@@ -614,9 +614,12 @@ func (r *ProjectRepo) CreateSample(projectId, serveId, userId uint) (err error) 
 
 }
 
-func (r *ProjectRepo) GetProjectIdsByUserIdAndRole(userId, roleId uint) (projectIds []uint) {
+func (r *ProjectRepo) GetProjectIdsByUserIdAndRole(userId uint, roleName consts.RoleType) (projectIds []uint) {
 	var projects []model.ProjectMember
-	err := r.DB.Where("user_id=? and project_role_id=? and not deleted and not disabled", userId, roleId).Find(&projects).Error
+	err := r.DB.Model(model.ProjectMember{}).
+		Joins("LEFT JOIN biz_project_role r ON biz_project_member.project_role_id=r.id").
+		Where("biz_project_member.user_id=? and r.name=? and not biz_project_member.deleted and not biz_project_member.disabled", userId, roleName).
+		Find(&projects).Error
 	if err != nil {
 		return
 	}

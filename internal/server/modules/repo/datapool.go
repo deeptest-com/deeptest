@@ -11,7 +11,8 @@ import (
 )
 
 type DatapoolRepo struct {
-	DB *gorm.DB `inject:""`
+	DB       *gorm.DB  `inject:""`
+	UserRepo *UserRepo `inject:""`
 }
 
 func NewDatapoolRepo() *DatapoolRepo {
@@ -81,7 +82,12 @@ func (r *DatapoolRepo) GetByName(name string) (po model.Datapool, err error) {
 	return
 }
 
-func (r *DatapoolRepo) Save(po *model.Datapool) (err error) {
+func (r *DatapoolRepo) Save(po *model.Datapool, userId uint) (err error) {
+	user, _ := r.UserRepo.FindById(userId)
+	if po.CreateUser == "" {
+		po.CreateUser = user.Username
+	}
+
 	err = r.DB.Save(po).Error
 
 	return

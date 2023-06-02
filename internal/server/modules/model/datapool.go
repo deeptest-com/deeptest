@@ -9,7 +9,8 @@ type Datapool struct {
 	Path string `json:"path"`
 	Data string `json:"data"`
 
-	ProjectId uint `json:"projectId"`
+	CreateUser string `json:"createUser"`
+	ProjectId  uint   `json:"projectId"`
 }
 
 func (Datapool) TableName() string {

@@ -2,6 +2,7 @@ package serverDomain
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 )
 
@@ -27,8 +28,9 @@ type ProjectMemberRemoveReq struct {
 }
 
 type ProjectBase struct {
-	Name string `json:"name"`
-	Desc string `json:"desc" gorm:"column:descr"`
+	Name string                   `json:"name"`
+	Desc string                   `json:"desc" gorm:"column:descr"`
+	Type serverConsts.ProjectType `json:"type"`
 
 	SchemaId       uint   `json:"schemaId"`
 	OrgId          uint   `json:"orgId"`

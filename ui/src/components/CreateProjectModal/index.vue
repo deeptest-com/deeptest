@@ -64,9 +64,23 @@
                 >
               </a-select>
             </a-form-item>
-            <a-form-item label="项目示例">
+
+            <a-form-item label="示例数据">
               <a-switch v-model:checked="formStateRef.includeExample" />
             </a-form-item>
+
+            <a-form-item label="项目类型">
+              <a-radio-group v-model:value="formStateRef.type" button-style="solid">
+                <a-radio-button :value="ProjectType.Full">完整模式</a-radio-button>
+                <a-radio-button :value="ProjectType.Debug">调试模式</a-radio-button>
+              </a-radio-group>
+              <div class="dp-input-tip">
+                <div>
+                  <span class="term">完整模式</span>使用OpenAPI3设计接口。
+                </div>
+              </div>
+            </a-form-item>
+
             <a-form-item label="项目简介" v-bind="validateInfos.desc">
               <a-textarea
                 v-model:value="formStateRef.desc"
@@ -86,7 +100,7 @@
               <a-button type="primary" @click.prevent="submitForm"
                 >确定</a-button
               >
-                  <a-button 
+                  <a-button
                 >取消</a-button
               >
             </a-form-item> -->
@@ -100,6 +114,7 @@
 <script lang="ts" setup>
 import { ref, reactive, watch, defineProps, defineEmits, computed } from "vue";
 import { Form, message } from "ant-design-vue";
+import { ProjectType } from "@/utils/enum";
 import { StateType as UserStateType } from "@/store/user";
 import { StateType as ProjectStateType } from "@/views/project/store";
 import { SelectTypes } from "ant-design-vue/es/select";
@@ -122,6 +137,7 @@ const wrapperCol = { span: 14 };
 const projectInfo = {
   name: "",
   desc: "",
+  type: 'full',
   logo: getProjectLogo("default_logo1"),
   shortName: "",
   adminId: null,

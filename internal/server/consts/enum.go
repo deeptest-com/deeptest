@@ -57,3 +57,14 @@ const (
 func (e AuthType) String() string {
 	return string(e)
 }
+
+type ProjectType string
+
+const (
+	Full  ProjectType = "full"
+	Debug ProjectType = "debug"
+)
+
+func (e ProjectType) String() string {
+	return string(e)
+}

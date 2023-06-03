@@ -173,3 +173,8 @@ export enum ReportDetailType {
     ExecScenario = 'exec_scenario',
     QueryDetail = 'query_detail'
 }
+
+export enum ProjectType {
+    Full = 'full',
+    Debug = 'debug'
+}

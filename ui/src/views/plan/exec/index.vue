@@ -38,7 +38,7 @@ import {WebSocket} from "@/services/websocket";
 import {momentUtc} from "@/utils/datetime";
 import {StateType as GlobalStateType} from "@/store/global";
 import {ExecStatus} from "@/store/exec";
-import {StateType as ProjectSettingStateType} from "@/views/projectSetting/store";
+import {StateType as ProjectSettingStateType} from "@/views/project-settings/store";
 import {StateType as UserStateType} from "@/store/user";
 import {getDivision, getPercent, getPercentStr} from '@/utils/number';
 import {

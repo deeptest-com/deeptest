@@ -139,7 +139,7 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
     title: '项目设置',
     path: '/project-setting',
     redirect: '/project-setting/index',
-    component: () => import('@/views/projectSetting/index.vue'),
+    component: () => import('@/views/project-settings/index.vue'),
     children: [
       {
         icon:'set',
@@ -156,7 +156,7 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
         title: 'projectSetting.enviroment',
         path: 'enviroment',
         name: 'enviroment',
-        component: () => import('@/views/projectSetting/components/EnvSetting/index.vue'),
+        component: () => import('@/views/project-settings/components/EnvSetting/index.vue'),
         hidden: false,
         meta: {
           code: 'PROJECT-SETTING-ENVIRONMENT'
@@ -167,7 +167,7 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
             title: 'envsetting.var',
             path: 'var',
             name: 'enviroment.var',
-            component: () => import('@/views/projectSetting/components/EnvSetting/GlobalVar.vue'),
+            component: () => import('@/views/project-settings/components/EnvSetting/GlobalVar.vue'),
             hidden: true
           },
           {
@@ -175,7 +175,7 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
             title: 'envsetting.params',
             path: 'params',
             name: 'enviroment.params',
-            component: () => import('@/views/projectSetting/components/EnvSetting/GlobalParams.vue'),
+            component: () => import('@/views/project-settings/components/EnvSetting/GlobalParams.vue'),
             hidden: true
           },
           {
@@ -183,7 +183,7 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
             title: 'envsetting.envdetail',
             path: 'envdetail/:id(\\d+)?',
             name: 'enviroment.envdetail',
-            component: () => import('@/views/projectSetting/components/EnvSetting/EnvDetail.vue'),
+            component: () => import('@/views/project-settings/components/EnvSetting/EnvDetail.vue'),
             hidden: true
           }
         ]
@@ -193,7 +193,7 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
         title: 'projectSetting.datapool',
         path: 'datapool',
         name: 'datapool',
-        component: () => import('@/views/projectSetting/components/DataPool/index.vue'),
+        component: () => import('@/views/project-settings/components/DataPool/index.vue'),
         hidden: false,
         meta: {
           code: 'PROJECT-SETTING-DATA-POOL'
@@ -204,7 +204,7 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
         title: 'projectSetting.service',
         path: 'service-setting',
         name: 'service-setting',
-        component: () => import('@/views/projectSetting/components/ServiceSetting/index.vue'),
+        component: () => import('@/views/project-settings/components/ServiceSetting/index.vue'),
         hidden: false,
         meta: {
           code: 'PROJECT-SETTING-SERVICE-SETTING'

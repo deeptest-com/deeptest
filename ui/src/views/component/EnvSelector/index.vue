@@ -25,7 +25,7 @@ import { defineProps, defineEmits, ref, reactive, computed, watch } from 'vue';
 import { useStore } from 'vuex';
 import { Form } from 'ant-design-vue';
 import { StateType as ProjectStateType } from "@/store/project";
-import { StateType as ProjectSettingStateType } from "@/views/projectSetting/store";
+import { StateType as ProjectSettingStateType } from "@/views/project-settings/store";
 
 const props = defineProps<{
     envSelectDrawerVisible: Boolean

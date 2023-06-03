@@ -3,7 +3,7 @@ import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { Modal } from "ant-design-vue";
 import { ExclamationCircleOutlined } from "@ant-design/icons-vue";
-import { StateType as ProjectSettingStateType } from "@/views/projectSetting/store";
+import { StateType as ProjectSettingStateType } from "@/views/project-settings/store";
 import { StateType as ProjectStateType } from "@/store/project";
 import { EnvReturnData } from "../data";
 

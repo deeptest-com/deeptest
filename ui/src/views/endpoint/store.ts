@@ -41,7 +41,7 @@ import {
     getSecurityList,
     serverList,
     getSchemaList, getSchemaDetail
-} from "@/views/projectSetting/service";
+} from "@/views/project-settings/service";
 
 export interface StateType {
     endpointId: number;

@@ -19,7 +19,7 @@ import { useStore } from "vuex";
 import {Endpoint} from "@/views/endpoint/data";
 import {StateType as Debug} from "@/views/component/debug/store";
 import debounce from "lodash.debounce";
-import {serverList} from "@/views/projectSetting/service";
+import {serverList} from "@/views/project-settings/service";
 import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
 const store = useStore<{  Debug: Debug, Endpoint }>();

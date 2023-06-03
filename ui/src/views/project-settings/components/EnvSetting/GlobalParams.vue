@@ -97,7 +97,7 @@ import EmptyCom from '@/components/Empty/index.vue';
 import PermissionButton from "@/components/PermissionButton/index.vue";
 import {globalParamscolumns, tabPaneList} from '../../config';
 import {StateType as ProjectStateType} from "@/store/project";
-import {StateType as ProjectSettingStateType} from "@/views/projectSetting/store";
+import {StateType as ProjectSettingStateType} from "@/views/project-settings/store";
 import {useI18n} from "vue-i18n";
 
 const store = useStore<{ ProjectGlobal: ProjectStateType, ProjectSetting: ProjectSettingStateType }>();

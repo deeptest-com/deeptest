@@ -87,12 +87,10 @@ export default defineComponent({
       const get = async (id: number): Promise<void> => {
         await store.dispatch('Project/getProject', id);
       }
-      //const id = +router.currentRoute.value.params.id
+
       watchEffect(() => {
       get(props.currentProjectId)
-      //store.dispatch('Project/getUserList')
     })
-     // get(id.value)
 
      const options = computed<SelectTypes["options"]>(()=>store.state.Project.userList);
 
@@ -105,18 +103,9 @@ export default defineComponent({
             if (res === true) {
               store.dispatch('User/fetchCurrent');
               message.success("保存成功")
-              //notification.success({
-               // key: NotificationKeyCommon,
-              //  message: `保存成功`,
-             // });
               props.getList(1)
-              //router.replace('/project/index')
             } else {
               message.error("保存失败")
-              //notification.success({
-              //  key: NotificationKeyCommon,
-               // message: `保存失败`,
-              //});
             }
             props.closeModal()
           })

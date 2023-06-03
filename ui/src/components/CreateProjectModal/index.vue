@@ -27,17 +27,11 @@
               />
             </a-form-item>
             <a-form-item label="英文缩写" v-bind="validateInfos.shortName">
-              <a-input
-                v-model:value="formStateRef.shortName"
-                @blur="
-                  validate('shortName', { trigger: 'blur' }).catch(() => {})
-                "
-              />
+              <a-input v-model:value="formStateRef.shortName" @blur="validate('shortName', { trigger: 'blur' }).catch(() => {})" />
             </a-form-item>
             <a-form-item label="logo" v-bind="validateInfos.logo">
               <div class="logo-picker">
-                <div
-                  :class="{
+                <div :class="{
                     'logo-picker-item': true,
                     'logo-picker-item-active': selectLogoKey === item.imgName,
                   }"
@@ -82,28 +76,13 @@
             </a-form-item>
 
             <a-form-item label="项目简介" v-bind="validateInfos.desc">
-              <a-textarea
-                v-model:value="formStateRef.desc"
-                @blur="validate('desc', { trigger: 'blur' }).catch(() => {})"
-              />
+              <a-textarea v-model:value="formStateRef.desc"
+                          @blur="validate('desc', { trigger: 'blur' }).catch(() => {})"/>
             </a-form-item>
             <a-form-item :wrapper-col="{ span: 12, offset: 18 }">
-              <a-button type="primary" @click.prevent="submitForm"
-                >确定</a-button
-              >
+              <a-button type="primary" @click.prevent="submitForm">确定</a-button>
               <a-button @click="handleCancel" style="margin-left:10px">取消</a-button>
             </a-form-item>
-            <!-- <a-form-item
-              class="edit-button"
-              :wrapper-col="{ offset: labelCol.span, span: wrapperCol.span }"
-            >
-              <a-button type="primary" @click.prevent="submitForm"
-                >确定</a-button
-              >
-                  <a-button
-                >取消</a-button
-              >
-            </a-form-item> -->
           </a-form>
         </div>
       </a-card>
@@ -119,9 +98,9 @@ import { StateType as UserStateType } from "@/store/user";
 import { StateType as ProjectStateType } from "@/views/project/store";
 import { SelectTypes } from "ant-design-vue/es/select";
 import { useStore } from "vuex";
-import { projectLogoList } from "./index.ts";
-import { getProjectLogo } from "@/components/CreateProjectModal";
 import { RuleObject } from "ant-design-vue/es/form/interface";
+import {projectLogoList, getProjectLogo} from "./index";
+
 const useForm = Form.useForm;
 const props = defineProps<{
   visible: Boolean;
@@ -143,17 +122,21 @@ const projectInfo = {
   adminId: null,
   includeExample: true,
 };
+
 const formStateRef = reactive(props.formState || projectInfo);
+
 let validateShortName = async (rule: RuleObject, value: string) => {
-  const reg = /^[A-Z][A-Za-z0-9]{0,9}$/;
+  const reg = /^[A-Za-z][A-Za-z0-9_\\-]{0,9}$/;
+
   if (value == "") {
     return Promise.reject("请输入英文缩写");
   } else if (!reg.test(value)) {
-    return Promise.reject("大写英文字母开头,仅限字母和数字,<=10位");
+    return Promise.reject("英文字母开头,仅限字母、数字和下划线，小于10位。");
   } else {
     return Promise.resolve();
   }
 };
+
 const rulesRef = reactive({
   name: [
     { required: true, message: "请输入名称", trigger: "blur" },
@@ -172,7 +155,7 @@ const { validate, validateInfos, resetFields } = useForm(
   rulesRef
 );
 const submitForm = async () => {
-  console.log("~~~~~~~~~formStateRef", formStateRef);
+  console.log("submitForm", formStateRef);
   validate()
     .then(() => {
       store.dispatch("Project/saveProject", { ...formStateRef }).then((res) => {

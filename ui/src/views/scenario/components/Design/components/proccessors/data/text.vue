@@ -31,7 +31,8 @@
               </div>
               <div class="upload-container">
                 <a-upload :beforeUpload="upload"
-                          :showUploadList="false">
+                          :showUploadList="false"
+                          accept="text/plain">
                   <a-button>
                     <UploadOutlined />
                   </a-button>

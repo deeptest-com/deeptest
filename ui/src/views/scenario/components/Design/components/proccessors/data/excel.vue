@@ -31,7 +31,8 @@
               </div>
               <div class="upload-container">
                 <a-upload :beforeUpload="upload"
-                          :showUploadList="false">
+                          :showUploadList="false"
+                          accept="application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
                   <a-button>
                     <UploadOutlined />
                   </a-button>

@@ -1,7 +1,7 @@
 <!-- 本页面是数据池编辑页面的抽屉 -->
 <template>
   <div class="datapool-main">
-    <a-drawer :closable="true" :width="1000" :key="editKey" :bodyStyle="{padding:'16px'}" :visible="drawerVisible"
+    <a-drawer :closable="true" :width="1000" :key="editId" :bodyStyle="{padding:'16px'}" :visible="drawerVisible"
               @close="onClose">
       <template #title>
         <div class="drawer-header">
@@ -9,18 +9,17 @@
         </div>
       </template>
 
-      <div class="">
+      <div v-if="drawerVisible" class="">
         <a-form :model="formState" :label-col="labelCol" :wrapper-col="wrapperCol">
-
           <a-form-item label="名称" v-bind="validateInfos.name">
-            <a-input v-model:value="modelRef.name"
+            <a-input v-model:value="formState.name"
                      @blur="validate('name', { trigger: 'blur' }).catch(() => {})"/>
           </a-form-item>
 
           <a-form-item label="从文件导入" :wrapper-col="wrapperCol">
             <div v-if="isElectron" class="upload-file">
               <div class="input-container">
-                <a-input v-model:value="modelRef.path" readonly="readonly"/>
+                <a-input v-model:value="formState.path" readonly="readonly"/>
               </div>
               <div class="upload-container">
                 <a-button @click="uploadFile()">
@@ -29,25 +28,23 @@
               </div>
             </div>
 
-            <div v-if="isElectron" class="upload-file">
-            </div>
-
             <div v-if="isElectron" class="upload-file-by-electron">
-              <a-input v-model:value="modelRef.path" readonly="readonly" />
+              <a-input v-model:value="formState.path" readonly="readonly"/>
               <a-button @click="uploadFile()">
-                <UploadOutlined />
+                <UploadOutlined/>
               </a-button>
             </div>
 
             <div v-else class="upload-file">
               <div class="input-container">
-                <a-input v-model:value="modelRef.path" readonly="readonly" />
+                <a-input v-model:value="formState.path" readonly="readonly"/>
               </div>
               <div class="upload-container">
                 <a-upload :beforeUpload="upload"
-                          :showUploadList="false">
+                          :showUploadList="false"
+                          accept="application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
                   <a-button>
-                    <UploadOutlined />
+                    <UploadOutlined/>
                   </a-button>
                 </a-upload>
               </div>
@@ -71,10 +68,10 @@
 </template>
 
 <script setup lang="ts">
-import {computed, defineEmits, defineProps, ref, reactive, watch} from 'vue';
+import {computed, defineEmits, defineProps, reactive, ref, watch} from 'vue';
 import {Form, notification} from 'ant-design-vue';
 import {useStore} from 'vuex';
-import { UploadOutlined} from '@ant-design/icons-vue';
+import {UploadOutlined} from '@ant-design/icons-vue';
 import HandsonTable from "@/components/sheet/handsontable.vue";
 
 import settings from "@/config/settings";
@@ -84,17 +81,17 @@ import {getToken} from "@/utils/localToken";
 
 import {StateType as ProjectStateType} from "@/store/project";
 import {StateType as ProjectSettingStateType} from '../../store';
-import {ServeDetail} from '../../data';
+import {DatapoolDetail} from '../../data';
 import {uploadRequest} from "@/utils/upload";
 
 const useForm = Form.useForm;
 const store = useStore<{ ProjectGlobal: ProjectStateType, ProjectSetting: ProjectSettingStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
-const formState = computed<ServeDetail>(() => store.state.ProjectSetting.datapoolDetail);
+const formState = computed<DatapoolDetail>(() => store.state.ProjectSetting.datapoolDetail);
 
 const props = defineProps<{
   drawerVisible: boolean
-  editKey?: number
+  editId?: number
 }>();
 
 const emits = defineEmits(['onClose', 'update:formState']);
@@ -102,8 +99,8 @@ const onClose = () => {
   emits('onClose');
 }
 
-const modelRef = ref<any>({name: '', path: ''})
-const data = ref<any[][]>([['A','B','C'], [1,2,3]])
+const dataArr = [['A', 'B', 'C'], [1, 2, 3]]
+const data = ref<any[][]>(dataArr)
 
 const rulesRef = reactive({
   name: [
@@ -111,24 +108,31 @@ const rulesRef = reactive({
   ],
 });
 
-const {resetFields, validate, validateInfos} = useForm(modelRef, rulesRef);
+const {resetFields, validate, validateInfos} = useForm(formState, rulesRef);
 
 watch(props, () => {
-  console.log('modelRef', props)
+  console.log('editId', props)
 
-  if (props.editKey === 0) {
-    modelRef.value = {name: '', path: ''}
+  if (props.editId === 0) {
+    store.commit('ProjectSetting/setDatapoolDetail', {name: '', path: '', data: ''});
   } else {
-    store.dispatch('ProjectSetting/getDatapool', props.editKey);
+    store.dispatch('ProjectSetting/getDatapool', props.editId);
   }
 
 }, {deep: true, immediate: true})
 
-watch(modelRef, () => {
-  console.log('modelRef', modelRef.value)
-  if (!modelRef.value.id) return
+watch(formState, () => {
+  console.log('formState', formState.value)
+  if (!formState.value.id) {
+    data.value = dataArr
+    return
+  }
 
-  data.value = JSON.parse(modelRef.value.data)
+  if (formState.value.data && formState.value.data.length > 0) {
+    data.value = JSON.parse(formState.value.data)
+  }
+  console.log('data.value', formState.value)
+
 }, {deep: true, immediate: true})
 
 const isElectron = ref(!!window.require)
@@ -140,7 +144,7 @@ if (isElectron.value && !ipcRenderer) {
     console.log('from electron: ', result)
     if (result.code === 0) {
       data.value = result.data.data
-      modelRef.value.path = result.data.path
+      formState.value.path = result.data.path
     }
   })
 }
@@ -152,9 +156,10 @@ const uploadFile = async () => {
     const data = {
       act: 'uploadFile',
       url: getServerUrl() + '/upload',
+      params: {isDatapool: true},
       token: await getToken(),
       filters: [
-        {name: 'Text Files', extensions: ['txt']},
+        {name: 'Excel Files', extensions: ['xlsx']},
       ]
     }
 
@@ -162,11 +167,11 @@ const uploadFile = async () => {
   }
 }
 
-const upload =  (file, fileList) => {
+const upload = (file, fileList) => {
   console.log('upload', file, fileList)
 
   uploadRequest(file, {isDatapool: true}).then((res) => {
-    modelRef.value.path = res.path
+    formState.value.path = res.path
     data.value = res.data
   })
 
@@ -174,7 +179,7 @@ const upload =  (file, fileList) => {
 }
 
 const onSubmit = async () => {
-  console.log('onSubmit', modelRef.value)
+  console.log('onSubmit', formState.value)
 
   validate().then(async () => {
     if (data.value.length < 2) {
@@ -185,9 +190,13 @@ const onSubmit = async () => {
       return
     }
 
-    modelRef.value.data = JSON.stringify(data.value)
+    formState.value.data = JSON.stringify(data.value)
 
-    store.dispatch('Datapool/saveDatapool', modelRef.value).then(() => {
+    store.dispatch('ProjectSetting/saveDatapool', {
+      "projectId": currProject.value.id,
+      formState: formState.value,
+      action: formState.value.id > 0 ? 'update':'create'
+    }).then(() => {
       // onClose();
     })
   }).catch(err => {

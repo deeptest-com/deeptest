@@ -14,7 +14,8 @@
             <div class="serve-name">
               <EditAndShowField :custom-class="'custom-serve show-on-hover'" placeholder="请输入数据池名称"
                                 :value="text || ''"
-                                @update="(e: string) => handleUpdateName(e, record)" @edit="onEdit(record)"/>
+                                @update="(e: string) => handleUpdateName(e, record)"
+                                @edit="onEdit(record)"/>
             </div>
           </template>
 
@@ -46,7 +47,7 @@
     </EmptyCom>
 
     <!-- 抽屉 -->
-    <Drawer :edit-key="editKey"
+    <Drawer :editId="editId"
             :drawer-visible="drawerVisible"
             @onClose="onClose"/>
 
@@ -74,7 +75,7 @@ const dataSource = computed<any>(() => store.state.ProjectSetting.datapoolList);
 const route = useRouter();
 
 const drawerVisible = ref(false);
-const editKey = ref(0);
+const editId = ref(0);
 
 let formConfig = ref([
   {
@@ -148,10 +149,10 @@ function handleUpdateName(value: string, record: any) {
   });
 }
 
-const onEdit = () => {
+const onEdit = (record) => {
   console.log('onEdit')
 
-  editKey.value++;
+  editId.value = record.id;
   drawerVisible.value = true;
 }
 

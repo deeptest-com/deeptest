@@ -6,7 +6,9 @@ import (
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/kataras/iris/v12"
+	"github.com/snowlyg/helper/dir"
 	"go.uber.org/zap"
+	"path/filepath"
 )
 
 type FileCtrl struct {
@@ -34,7 +36,8 @@ func (c *FileCtrl) Upload(ctx iris.Context) {
 
 	var data interface{}
 	if isDatapool {
-		data, _ = c.DatapoolService.ReadExcel(pth)
+		absPath := filepath.Join(dir.GetCurrentAbPath(), pth)
+		data, _ = c.DatapoolService.ReadExcel(absPath)
 	}
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code,

@@ -88,6 +88,13 @@ export interface DatapoolReqParams {
     description?: string;
     id?: number;
 }
+export interface DatapoolDetail {
+    id: number;
+    name: string;
+    path: string,
+    data: any,
+    description: string;
+}
 
 export interface VarsChangeState {
     field: string;

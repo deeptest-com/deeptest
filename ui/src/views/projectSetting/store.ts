@@ -623,8 +623,10 @@ const StoreModel: ModuleType = {
         },
         async saveDatapool({ dispatch }, params: StoreDatapoolParams) {
             const { formState, projectId, action = 'create' } = params;
-            const tips = { 'create': '新建服务', 'update': '修改服务' };
+            const tips = { 'create': '新建数据池', 'update': '修改数据池' };
+
             const res = await saveDatapool({ ...formState, projectId });
+
             if (res.code === 0) {
                 message.success(`${tips[action]}成功`);
                 await dispatch('listDatapool', {

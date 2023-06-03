@@ -2,12 +2,12 @@ package source
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
-	repo2 "github.com/aaronchen2k/deeptest/internal/server/modules/repo"
+	repo "github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"github.com/gookit/color"
 )
 
 type ProjectRoleMenuSource struct {
-	ProjectRoleMenuRepo *repo2.ProjectRoleMenuRepo `inject:""`
+	ProjectRoleMenuRepo *repo.ProjectRoleMenuRepo `inject:""`
 }
 
 func NewProjectRoleMenuSource() *ProjectRoleMenuSource {

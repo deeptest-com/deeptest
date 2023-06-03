@@ -35,12 +35,30 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
     children: [
       {
         icon: 'endpoint',
-        title: 'endpoint',
+        title: 'endpoint-management',
         path: 'index',
         component: () => import('@/views/endpoint/index.vue'),
         hidden: false,
         meta: {
           code: 'ENDPOINT'
+        }
+      },
+    ],
+  },
+  {
+    title: 'index-layout.menu',
+    path: '/debugger',
+    redirect: '/debugger/index',
+    component: BlankLayout,
+    children: [
+      {
+        icon: 'endpoint',
+        title: 'interface-debug',
+        path: 'index',
+        component: () => import('@/views/debugger/index.vue'),
+        hidden: false,
+        meta: {
+          code: 'DEBUG'
         }
       },
     ],

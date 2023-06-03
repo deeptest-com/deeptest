@@ -28,3 +28,11 @@ export async function getPermissionMenuList(): Promise<any> {
         method: 'GET',
     })
 }
+
+export async function queryMembers(params): Promise<any> {
+    return request({
+        url: `/${apiPath}/members`,
+        method: 'get',
+        params,
+    });
+}

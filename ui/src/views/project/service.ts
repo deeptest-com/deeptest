@@ -1,5 +1,6 @@
 import request from '@/utils/request';
-import { Project, QueryParams } from './data.d';
+import { Project } from './data.d';
+import {QueryParams} from "@/types/data";
 
 const apiPath = 'projects';
 

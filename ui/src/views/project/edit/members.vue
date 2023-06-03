@@ -80,7 +80,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, reactive, Ref, ref } from "vue";
-import { PaginationConfig, QueryParams, Project, Member } from "../data.d";
+import { PaginationConfig, Project, Member } from "../data.d";
 import { useStore } from "vuex";
 
 import { StateType } from "../store";
@@ -92,10 +92,11 @@ import {
   queryMembers,
   removeMember,
   changeRole,
-} from "@/views/project/service";
+} from "../service";
 import { StateType as UserStateType } from "@/store/user";
 import EditPage from "../edit/invite.vue";
 import { SelectTypes } from "ant-design-vue/lib/select";
+import {QueryParams} from "@/types/data";
 
 const router = useRouter();
 const store = useStore<{ Project: StateType; User: UserStateType }>();

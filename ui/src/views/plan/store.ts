@@ -28,7 +28,7 @@ import {
 } from "@/services/category";
 
 import { getNodeMap } from "@/services/tree";
-import { queryMembers } from '../project/service';
+import { queryMembers } from '@/services/project';
 
 export interface StateType {
     planId: number;

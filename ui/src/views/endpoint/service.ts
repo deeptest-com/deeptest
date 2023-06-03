@@ -1,5 +1,5 @@
 import request, {ResponseData} from '@/utils/request';
-import {QueryParams} from "@/views/project/data";
+import {QueryParams} from "@/types/data";
 
 const apiPath = 'endpoints';
 const apiPathInterface = 'endpoints/interfaces';

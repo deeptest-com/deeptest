@@ -131,7 +131,7 @@ let validateShortName = async (rule: RuleObject, value: string) => {
   if (value == "") {
     return Promise.reject("请输入英文缩写");
   } else if (!reg.test(value)) {
-    return Promise.reject("英文字母开头,仅限字母、数字和下划线，小于10位。");
+    return Promise.reject("英文字母开头，10位字母、数字和下划线组成。");
   } else {
     return Promise.resolve();
   }

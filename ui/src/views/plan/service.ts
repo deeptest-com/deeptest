@@ -1,10 +1,8 @@
 import request from '@/utils/request';
-import {QueryParams} from "@/views/project/data";
+import {QueryParams} from "@/types/data";
 
 const apiPath = 'plans';
 const apiPathExec = `${apiPath}/exec`;
-
-const apiPathScenario = `scenarios`;
 
 export async function query(params?: QueryParams): Promise<any> {
     return request({
@@ -57,14 +55,6 @@ export async function listScenario(params): Promise<any> {
         url: `/${apiPath}/notRelationScenarioList`,
         method: 'get',
         params
-    });
-}
-
-export async function queryMembers(params): Promise<any> {
-    return request({
-        url: `/projects/members`,
-        method: 'get',
-        params,
     });
 }
 

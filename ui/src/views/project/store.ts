@@ -2,10 +2,11 @@ import { Mutation, Action } from 'vuex';
 import { StoreModuleType } from "@/utils/store";
 import { ResponseData } from '@/utils/request';
 import {SelectTypes} from 'ant-design-vue/es/select';
-import { Project, QueryResult, QueryParams, PaginationConfig } from './data.d';
+import { Project, QueryResult, PaginationConfig } from './data.d';
 import {
     query, save, remove, detail, getUserList, getRoles, getNotExistedUserList
 } from './service';
+import {QueryParams} from "@/types/data";
 
 export interface StateType {
     queryResult: QueryResult;
@@ -79,8 +80,6 @@ const StoreModel: ModuleType = {
         setRoles(state, payload) {
             state.roles = payload;
         },
-
-
     },
     actions: {
         async queryProject({ commit }, params: QueryParams ) {

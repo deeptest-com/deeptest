@@ -1,5 +1,5 @@
 import request from '@/utils/request';
-import {QueryParams} from "@/views/project/data";
+import {QueryParams} from "./data";
 
 import {
     ProcessorCookie, ProcessorData,

@@ -58,7 +58,7 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
         component: () => import('@/views/debugger/index.vue'),
         hidden: false,
         meta: {
-          code: 'DEBUG'
+          code: 'DEBUGGER'
         }
       },
     ],

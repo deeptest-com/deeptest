@@ -92,7 +92,7 @@ const serveServersColumns: any = [
         width: 200
     },
     {
-        title: '前置 URL ',
+        title: '前置URL ',
         dataIndex: 'url',
         key: 'url',
         slots: { customRender: 'customUrl' },

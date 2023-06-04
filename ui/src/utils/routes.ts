@@ -347,8 +347,6 @@ export const getPermissionMenuData = ( roles: string[], routes: RoutesDataItem[]
   for (let index = 0, len = routes.length; index < len; index += 1) {
     const element = {...routes[index]};
 
-    console.log('!!!', roles, element)
-
     if (hasPermission(roles, element)) {
       if (element.children) {
         element.children = getPermissionMenuData(roles, element.children);

@@ -14,6 +14,13 @@
     "parent":""
   },
   {
+    "code":"debugger",
+    "title":"接口调试",
+    "path":"/debugger",
+    "type":"menu",
+    "parent":""
+  },
+  {
     "code":"scenario",
     "title":"测试开发",
     "path":"/scenario",

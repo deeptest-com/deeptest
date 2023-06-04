@@ -11,11 +11,11 @@
                     placeholder="请输入环境名称" />
             </a-form-item>
             <div class="serveServers">
-                <div class="serveServers-header">服务 (前置URL)</div>
-                <PermissionButton 
+                <div class="serveServers-header">服务访问地址</div>
+                <PermissionButton
                     code="LINK-SERVICE"
-                    class="envDetail-btn" 
-                    text="关联服务" 
+                    class="envDetail-btn"
+                    text="关联服务"
                     @handle-access="addService">
                     <template #before>
                         <PlusOutlined />
@@ -36,7 +36,7 @@
                             code="UNLINK-SERVICE"
                             type="text"
                             size="small"
-                            :danger="true" 
+                            :danger="true"
                             text="解除关联"
                             @handle-access="handleEnvChange('serveServers', '', index, '', 'delete')" />
                     </template>
@@ -89,7 +89,7 @@
                             code="DELETE-ENVIRONMENT-VARIABLE"
                             type="text"
                             size="small"
-                            :danger="true" 
+                            :danger="true"
                             text="删除"
                             @handle-access="handleEnvChange('vars', '', index, '', 'delete')" />
                     </template>
@@ -147,7 +147,7 @@ const rules = {
     remoteValue: [{ required: true, message: '远程值不可为空' }]
 }
 
-// 添加服务弹窗操作 
+// 添加服务弹窗操作
 async function addService() {
     addServiceModalVisible.value = true;
 }

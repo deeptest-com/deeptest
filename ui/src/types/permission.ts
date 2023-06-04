@@ -19,10 +19,12 @@ export enum PermissionButtonType {
 export enum RouteMenuType {
     "WORKBENCH" = "workbench",
     "ENDPOINT" = "endpoint",
-    "PROJECT-SETTING" = "project-setting",
+    "DEBUGGER" = "debugger",
     "SCENARIO" = "scenario",
     "PLAN" = "plan",
     "REPORT" = "report",
+
+    "PROJECT-SETTING" = "project-setting",
     "PROJECT-SETTING-ENVIRONMENT" = "project-setting-environment",
     "PROJECT-SETTING-DATA-POOL" = "project-setting-data-pool",
     "PROJECT-SETTING-SERVICE-SETTING" = "project-setting-service-setting",

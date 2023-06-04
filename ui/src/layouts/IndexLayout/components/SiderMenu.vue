@@ -5,19 +5,15 @@
       :inline-collapsed="collapsed"
       :selectedKeys="selectedKeys"
       :openKeys="openKeys"
-      @openChange="(key)=>{
-          openChange(key);
-        }"
-  >
+      @openChange="(key)=>{openChange(key);}">
+
     <sider-menu-item
         v-for="item in newMenuData"
         :key="item.path"
         :routeItem="item"
         :topNavEnable="topNavEnable"
-        :belongTopMenu="belongTopMenu"
-    >
+        :belongTopMenu="belongTopMenu">
     </sider-menu-item>
-
   </a-menu>
 </template>
 
@@ -81,11 +77,13 @@ export default defineComponent({
         return menuData.value as RoutesDataItem[];
       }
       const MenuItems: RoutesDataItem[] = [];
+
       for (let index = 0, len = menuData.value.length; index < len; index += 1) {
         const element = menuData.value[index];
         if (element.children) {
-          const childrenRoute = element.children.length > 1 ? element.children.slice(1) : [];
           const routeDataItem: RoutesDataItem = { ...element.children[0], children: [] };
+
+          const childrenRoute = element.children.length > 1 ? element.children.slice(1) : [];
           if (childrenRoute.length > 0) {
             childrenRoute.forEach((routeItem: RoutesDataItem) => {
               if (!routeItem.hidden && permissionRouteMenuMap.value && permissionRouteMenuMap.value[RouteMenuType[`${routeItem.meta?.code}`]]) {
@@ -93,6 +91,7 @@ export default defineComponent({
               }
             })
           }
+
           // 根据可访问权限路由表来做匹配可展示的路由menu
           if (permissionRouteMenuMap.value && permissionRouteMenuMap.value[RouteMenuType[`${routeDataItem.meta?.code}`]]) {
             MenuItems.push({ ...routeDataItem });

@@ -37,5 +37,6 @@ func (s *ProjectMenuService) GetUserMenuList(projectId, userId uint) (ret []mode
 		roleId = projectMemberRole.ProjectRoleId
 	}
 
-	return s.ProjectMenuRepo.GetRoleMenuList(roleId)
+	ret, err = s.ProjectMenuRepo.GetRoleMenuList(roleId)
+	return
 }

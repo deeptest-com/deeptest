@@ -1,16 +1,20 @@
 <template>
   <template v-if="!item.hidden">
-    <a-menu-item class="left-menu-item" v-if="(item.children && item.children.length === 0) || !item.children" :key="item.path">
+    <a-menu-item class="left-menu-item"
+                 v-if="!item.children || item.children.length === 0"
+                 :key="item.path">
       <a-link :to="item.path">
         <Icon v-if="item.icon" :type="item.icon" class="anticon" />
         <span class="left-menu-title" style="margin-left: 5px;">{{t(item.title)}}</span>
       </a-link>
     </a-menu-item>
+
     <a-sub-menu v-else :key="`sub_${item.path}`">
       <template #title>
         <Icon v-if="item.icon" :type="item.icon" class="anticon" />
         <span class="left-menu-title" style="margin-left: 5px;">{{t(item.title)}}</span>
       </template>
+
       <a-menu-item v-for="childrenItem in item.children" :key="childrenItem.path">
         <a-link :to="childrenItem.path">
           <span class="left-menu-title" style="margin-left: 5px;">{{t(childrenItem.title)}}</span>

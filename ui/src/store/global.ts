@@ -85,9 +85,11 @@ const StoreModel: ModuleType = {
   actions: {
     async getPermissionList({ commit }) {
       const result = await getPermissionMenuList();
+
       if (result.code === 0) {
         const menuData = {};
         const buttonData = {};
+
         if (result.data.result) {
           result.data.result.forEach(e => {
             if (e.type === 'menu') {
@@ -96,10 +98,12 @@ const StoreModel: ModuleType = {
               buttonData[e.code] = e;
             }
           })
+
           console.log('~permissionMenu --', menuData);
           console.log('~permissionButton --', buttonData);
         }
-        commit('setPermissionMenuAndBtn', { permissionButtonMap: buttonData, permissionMenuMap: menuData }); 
+
+        commit('setPermissionMenuAndBtn', { permissionButtonMap: buttonData, permissionMenuMap: menuData });
       }
     }
   }

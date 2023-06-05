@@ -58,7 +58,6 @@
                 >
               </a-select>
             </a-form-item>
-
             <a-form-item label="示例数据">
               <a-switch v-model:checked="formStateRef.includeExample" />
             </a-form-item>

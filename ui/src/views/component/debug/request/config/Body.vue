@@ -6,7 +6,6 @@
           <span>
             原始请求体
           </span>
-
           <a-select
               ref="bodyType"
               :options="bodyTypes"
@@ -55,6 +54,7 @@
             class="editor"
             v-model:value="debugData.body"
             :language="codeLang"
+            :height="200"
             theme="vs"
             :options="editorOptions"
             @change="editorChange"

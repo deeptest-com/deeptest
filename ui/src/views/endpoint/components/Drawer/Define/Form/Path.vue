@@ -14,6 +14,7 @@
                 :options="serveServers"
                 :value="currentServerId || null"
                 @change="changeServer"
+                @focus="getServeServers"
                 placeholder="请选择环境"
                 class="select-env">
               <template #notFoundContent>
@@ -63,12 +64,14 @@ import {cloneByJSON} from "@/utils/object";
 const props = defineProps({});
 const emit = defineEmits([]);
 
-const store = useStore<{ Endpoint, Debug, ProjectGlobal, User }>();
+const store = useStore<{ Endpoint, Debug, ProjectGlobal, User,ServeGlobal }>();
 const endpointDetail: any = computed<Endpoint>(() => store.state.Endpoint.endpointDetail);
 const currentUser: any = computed<Endpoint>(() => store.state.User.currentUser);
+
 const serveServers: any = computed<Endpoint>(() => store.state.Endpoint.serveServers);
 
-const currentServerId = ref(endpointDetail?.value?.serverId || serveServers?.value[0]?.value || '');
+const currServe = computed<any>(() => store.state.ServeGlobal.currServe);
+const currentServerId = ref(endpointDetail?.value?.serverId || null);
 const currentEnvURL = computed(() => {
   return serveServers.value?.find((item) => {
     return currentServerId.value === item.id;
@@ -77,6 +80,8 @@ const currentEnvURL = computed(() => {
 
 // 是否折叠,默认展开
 const collapse = ref(true);
+
+
 
 /**
  * 跳转去新建环境
@@ -91,6 +96,12 @@ function changeServer(val) {
   store.commit('Endpoint/setEndpointDetail', {
     ...endpointDetail.value,
   })
+}
+
+async function getServeServers() {
+    await store.dispatch('Endpoint/getServerList', {
+      id: currServe.value.id,
+    })
 }
 
 /**

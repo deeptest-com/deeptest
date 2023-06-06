@@ -1,14 +1,13 @@
 <template>
   <div id="request-main">
     <!-- 最新版本ui中 发送/保存按钮 调整为全局的保存，这里为了避免 scenario/design中引用出错，用这个条件判断先放着。后续再看是否移除掉 -->
-    <template v-if="showRequestInvocation">
-      <RequestInvocation
-        :showDebugDataUrl="showDebugDataUrl"
-        :onSend="invokeInterface"
-        :onSave="saveInterface">
-      </RequestInvocation>
-    </template>
-
+<!--    <template v-if="showRequestInvocation">-->
+<!--      <RequestInvocation-->
+<!--        :showDebugDataUrl="showDebugDataUrl"-->
+<!--        :onSend="invokeInterface"-->
+<!--        :onSave="saveInterface">-->
+<!--      </RequestInvocation>-->
+<!--    </template>-->
     <RequestConfig></RequestConfig>
   </div>
 </template>

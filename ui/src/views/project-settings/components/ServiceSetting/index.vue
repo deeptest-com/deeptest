@@ -154,6 +154,8 @@ async function handleAdd(formData: any) {
     },
     action: 'create'
   })
+  // 需要重新更新可选服务列表
+  await store.dispatch("ServeGlobal/fetchServe");
 }
 
 function onClose() {

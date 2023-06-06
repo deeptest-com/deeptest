@@ -6,19 +6,7 @@
    </div>
 
     <div class="send">
-<!--      <a-dropdown-button type="primary" trigger="click" @click="sendRequest">-->
-<!--        <span>发送</span>-->
 
-<!--        <template #overlay>-->
-<!--          <a-menu>-->
-<!--            <a-menu-item @click="clearAll" key="clearAll">-->
-<!--              <UndoOutlined />-->
-<!--              全部清除-->
-<!--            </a-menu-item>-->
-<!--          </a-menu>-->
-<!--        </template>-->
-<!--        <template #icon><DownOutlined /></template>-->
-<!--      </a-dropdown-button>-->
       <a-button type="primary" trigger="click" @click="sendRequest">
         <span>发送</span>
       </a-button>
@@ -29,35 +17,7 @@
         <SaveOutlined />
         保存
       </a-button>
-<!--      <a-dropdown-button trigger="click" @click="save" class="dp-bg-light">-->
-<!--        <SaveOutlined />-->
-<!--        保存-->
-<!--        <template #overlay>-->
-<!--          <a-menu>-->
-<!--            <a-menu-item @click.prevent="none" key="copyLink" class="edit-name">-->
-<!--              <div class="dp-edit-interface-name">-->
-<!--                <div class="left">-->
-<!--                  <a-input @click.stop v-model:value="debugData.name" />-->
-<!--                </div>-->
-<!--                <div class="right">-->
-<!--                  <CheckOutlined @click.stop="saveName" class="save-button" />-->
-<!--                </div>-->
-<!--              </div>-->
-<!--            </a-menu-item>-->
 
-<!--            <a-menu-item @click="copyLink" key="copyLink">-->
-<!--              <LinkOutlined />-->
-<!--              复制链接-->
-<!--            </a-menu-item>-->
-
-<!--            <a-menu-item @click="saveAs" key="saveAs">-->
-<!--              <LinkOutlined />-->
-<!--              另存为-->
-<!--            </a-menu-item>-->
-<!--          </a-menu>-->
-<!--        </template>-->
-<!--        <template #icon><DownOutlined /></template>-->
-<!--      </a-dropdown-button>-->
     </div>
 
     <ContextMenu
@@ -166,7 +126,7 @@ const validateInfo = () => {
     notification.warn({
       key: NotificationKeyCommon,
       message: msg,
-      placement: 'bottomLeft'
+      placement: 'topRight'
     });
 
     return false

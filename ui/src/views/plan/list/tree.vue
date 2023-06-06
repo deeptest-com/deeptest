@@ -54,7 +54,7 @@
             </div>
           </template>
         </a-tree>
-        <div v-if="!treeData" class="nodata-tip">请点击上方按钮添加分类 ~</div>
+        <div v-if="!treeData" class="nodata-tip"><a-spin v-if="!treeData"/></div>
       </div>
     </div>
     <!--  创建接口 Tag  -->

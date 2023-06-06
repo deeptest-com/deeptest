@@ -27,7 +27,7 @@
                   >申请加入</a-button
                 >
               </a-menu-item>
-              <a-menu-item key="1">
+              <a-menu-item key="1" v-if="item.accessible === 1">
                 <a-button
                   style="width: 80px"
                   @click="handleEdit(record)"
@@ -41,13 +41,22 @@
                   >禁用/启用</a-button
                 >
               </a-menu-item> -->
-              <a-menu-item key="3">
+              <a-menu-item key="3" v-if="item.accessible === 1">
                 <a-button
                   style="width: 80px"
                   type="link"
                   size="small"
                   @click.stop="handleDelete(record.projectId)"
                   >删除</a-button
+                >
+              </a-menu-item>
+              <a-menu-item key="4" v-if="item.accessible === 1">
+                <a-button
+                    style="width: 80px"
+                    type="link"
+                    size="small"
+                    @click.stop="handleExit(record)"
+                >退出项目</a-button
                 >
               </a-menu-item>
             </a-menu>
@@ -110,7 +119,7 @@ const props = defineProps({
 
 const total = ref(0);
 //暴露内部方法
-const emit = defineEmits(["join", "edit", "delete"]);
+const emit = defineEmits(["join", "edit", "delete", "exit"]);
 const columns = [
   // {
   //   title: '序号',
@@ -303,6 +312,9 @@ async function handleEdit(item) {
 }
 async function handleDelete(id) {
   emit("delete", id);
+}
+async function handleExit(item) {
+  emit("exit", item);
 }
 </script>
 

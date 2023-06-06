@@ -13,6 +13,7 @@ type Category struct {
 	ParentId int64       `json:"parentId"`
 	Children []*Category `json:"children"`
 	Slots    iris.Map    `json:"slots"`
+	Count    int64       `json:"count"`
 }
 
 type CategoryCreateReq struct {
@@ -37,4 +38,9 @@ type CategoryMoveReq struct {
 	DragKey int                                `json:"dragKey"`
 	DropKey int                                `json:"dropKey"`
 	DropPos serverConsts.DropPos               `json:"dropPos"`
+}
+
+type CategoryCount struct {
+	Count      int64
+	CategoryId int64
 }

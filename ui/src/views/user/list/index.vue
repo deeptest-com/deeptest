@@ -253,12 +253,6 @@ const auditColumns = [
 
 const applyColumns = [
   {
-    title: "审批人",
-    dataIndex: "auditUserName",
-    //  width: 150,
-    // slots: { customRender: "username" },
-  },
-  {
     title: "申请加入项目",
     dataIndex: "projectName",
     //  width: 200,

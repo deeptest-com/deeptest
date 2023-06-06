@@ -27,7 +27,6 @@ func (c *CategoryCtrl) LoadTree(ctx iris.Context) {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
-
 	serveId := ctx.URLParamIntDefault("serveId", 0)
 
 	data, err := c.CategoryService.GetTree(serverConsts.CategoryDiscriminator(typ), projectId, serveId)

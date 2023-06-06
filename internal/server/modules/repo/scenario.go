@@ -16,8 +16,8 @@ import (
 )
 
 type ScenarioRepo struct {
-	DB          *gorm.DB     `inject:""`
-	BaseRepo    *BaseRepo    `inject:""`
+	DB          *gorm.DB `inject:""`
+	*BaseRepo   `inject:""`
 	ProjectRepo *ProjectRepo `inject:""`
 	PlanRepo    *PlanRepo    `inject:""`
 }
@@ -329,5 +329,10 @@ func (r *ScenarioRepo) GetByIds(ids []uint) (scenarios []model.Scenario, err err
 
 func (r *ScenarioRepo) RemovePlans(scenarioId uint, planIds []int) (err error) {
 	err = r.DB.Model(&model.RelaPlanScenario{}).Where("scenario_id=? and plan_id in (?)", scenarioId, planIds).Update("deleted", true).Error
+	return
+}
+
+func (r *ScenarioRepo) GetCategoryCount(result interface{}, projectId uint) (err error) {
+	err = r.DB.Raw("select count(id) count, category_id from "+model.Scenario{}.TableName()+" where not deleted and not disabled and project_id=? group by category_id", projectId).Scan(result).Error
 	return
 }

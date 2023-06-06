@@ -114,7 +114,7 @@ const treeData: any = computed(() => {
     }
     arr.forEach((item) => {
       item.key = item.id;
-      item.title = item.name;
+      item.title = item.name +" ("+item.count+")";
       if (Array.isArray(item.children)) {
         fn(item.children)
       }

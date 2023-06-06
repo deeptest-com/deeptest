@@ -16,8 +16,8 @@ import (
 )
 
 type PlanRepo struct {
-	DB             *gorm.DB        `inject:""`
-	BaseRepo       *BaseRepo       `inject:""`
+	DB             *gorm.DB `inject:""`
+	*BaseRepo      `inject:""`
 	ProjectRepo    *ProjectRepo    `inject:""`
 	UserRepo       *UserRepo       `inject:""`
 	PlanReportRepo *PlanReportRepo `inject:""`
@@ -436,5 +436,10 @@ func (r *PlanRepo) NotRelationScenarioList(req v1.NotRelationScenarioReqPaginate
 
 	data.Populate(scenarios, count, req.Page, req.PageSize)
 
+	return
+}
+
+func (r *PlanRepo) GetCategoryCount(result interface{}, projectId uint) (err error) {
+	err = r.DB.Raw("select count(id) count, category_id from "+model.Endpoint{}.TableName()+" where not deleted and not disabled and project_id=? group by category_id", projectId).Scan(result).Error
 	return
 }

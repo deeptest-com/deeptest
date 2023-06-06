@@ -6,15 +6,20 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	repo "github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
+	"github.com/kataras/iris/v12"
 )
 
 type CategoryService struct {
 	CategoryRepo *repo.CategoryRepo `inject:""`
+	EndpointRepo *repo.EndpointRepo `inject:""`
+	PlanRepo     *repo.PlanRepo     `inject:""`
+	ScenarioRepo *repo.ScenarioRepo `inject:""`
 }
 
 func (s *CategoryService) GetTree(typ serverConsts.CategoryDiscriminator, projectId, serveId int) (root *v1.Category, err error) {
 	root, err = s.CategoryRepo.GetTree(typ, uint(projectId), uint(serveId))
-	//root.Children = append(root.Children, &v1.Category{Id: -1, Name: "未分类", ParentId: root.Id})
+	root.Children = append(root.Children, &v1.Category{Id: -1, Name: "未分类", ParentId: root.Id, Slots: iris.Map{"icon": "icon"}})
+	s.mountCount(root, typ, uint(projectId))
 	return
 }
 
@@ -90,4 +95,47 @@ func (s *CategoryService) deleteNodeAndChildren(nodeId uint) (err error) {
 	}
 
 	return
+}
+
+func (s *CategoryService) mountCount(root *v1.Category, typ serverConsts.CategoryDiscriminator, projectId uint) {
+
+	repo := s.getRepo(typ)
+
+	var data []v1.CategoryCount
+	err := repo.GetCategoryCount(&data, projectId)
+	if err != nil {
+		return
+	}
+
+	result := s.convertMap(data)
+
+	s.mountCountOnNode(root, result)
+
+	//TODO 遍历数据挂载数量。
+}
+
+func (s *CategoryService) getRepo(typ serverConsts.CategoryDiscriminator) repo.IRepo {
+
+	repos := map[serverConsts.CategoryDiscriminator]repo.IRepo{
+		serverConsts.EndpointCategory: s.EndpointRepo,
+		serverConsts.PlanCategory:     s.PlanRepo,
+		serverConsts.ScenarioCategory: s.ScenarioRepo,
+	}
+
+	return repos[typ]
+}
+func (s *CategoryService) convertMap(data []v1.CategoryCount) (result map[int64]int64) {
+	result = make(map[int64]int64)
+	for _, item := range data {
+		result[item.CategoryId] = item.Count
+	}
+	return
+}
+
+func (s *CategoryService) mountCountOnNode(root *v1.Category, data map[int64]int64) int64 {
+	root.Count = data[root.Id]
+	for _, children := range root.Children {
+		root.Count += s.mountCountOnNode(children, data)
+	}
+	return root.Count
 }

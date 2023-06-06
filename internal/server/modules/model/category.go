@@ -12,7 +12,7 @@ type Category struct {
 	Desc   string `json:"desc"`
 	IsLeaf bool   `json:"isLeaf"`
 
-	ParentId  uint `json:"parentId"`
+	ParentId  int  `json:"parentId"`
 	ProjectId uint `json:"projectId"`
 	ServeId   uint `json:"serveId"`
 	UseID     uint `json:"useId"`

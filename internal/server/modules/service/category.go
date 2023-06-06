@@ -23,8 +23,8 @@ func (s *CategoryService) GetTree(typ serverConsts.CategoryDiscriminator, projec
 	return
 }
 
-func (s *CategoryService) Get(scenarioId int) (root model.Category, err error) {
-	root, err = s.CategoryRepo.Get(uint(scenarioId))
+func (s *CategoryService) Get(id int) (root model.Category, err error) {
+	//root, err = s.CategoryRepo.Get(id)
 
 	return
 }
@@ -43,17 +43,17 @@ func (s *CategoryService) Create(req v1.CategoryCreateReq) (ret model.Category, 
 	}
 
 	if req.Mode == "child" {
-		ret.ParentId = target.ID
+		ret.ParentId = int(target.ID)
 	} else if req.Mode == "brother" {
 		ret.ParentId = target.ParentId
 	}
 
-	ret.Ordr = s.CategoryRepo.GetMaxOrder(ret.ParentId, req.Type, req.ProjectId)
+	ret.Ordr = s.CategoryRepo.GetMaxOrder(uint(ret.ParentId), req.Type, req.ProjectId)
 
 	s.CategoryRepo.Save(&ret)
 
 	if req.Mode == "parent" { // move interface to new folder
-		target.ParentId = ret.ID
+		target.ParentId = int(ret.ID)
 		s.CategoryRepo.Save(&target)
 	}
 
@@ -77,9 +77,9 @@ func (s *CategoryService) Delete(id uint) (err error) {
 
 func (s *CategoryService) Move(srcId, targetId uint, pos serverConsts.DropPos, typ serverConsts.CategoryDiscriminator, projectId uint) (
 	srcScenarioNode model.Category, err error) {
-	srcScenarioNode, err = s.CategoryRepo.Get(srcId)
+	srcScenarioNode, err = s.CategoryRepo.Get(int(srcId))
 
-	srcScenarioNode.ParentId, srcScenarioNode.Ordr = s.CategoryRepo.UpdateOrder(pos, targetId, typ, projectId)
+	srcScenarioNode.ParentId, srcScenarioNode.Ordr = s.CategoryRepo.UpdateOrder(pos, int(targetId), typ, projectId)
 	err = s.CategoryRepo.UpdateOrdAndParent(srcScenarioNode)
 
 	return

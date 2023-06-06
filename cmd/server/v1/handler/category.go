@@ -40,13 +40,13 @@ func (c *CategoryCtrl) LoadTree(ctx iris.Context) {
 
 // Get 详情
 func (c *CategoryCtrl) Get(ctx iris.Context) {
-	processorId, err := ctx.Params().GetInt("id")
+	id, err := ctx.Params().GetInt("id")
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
 		return
 	}
 
-	po, err := c.CategoryService.Get(processorId)
+	po, err := c.CategoryService.Get(id)
 
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})

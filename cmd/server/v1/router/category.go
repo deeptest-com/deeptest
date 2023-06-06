@@ -17,7 +17,7 @@ func (m *CategoryModule) Party() module.WebModule {
 		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
 
 		index.Get("/load", m.CategoryCtrl.LoadTree).Name = "分类树状数据"
-		index.Get("/{id:uint}", m.CategoryCtrl.Get).Name = "分类详情"
+		index.Get("/{id:int}", m.CategoryCtrl.Get).Name = "分类详情"
 		index.Post("/", m.CategoryCtrl.Create).Name = "新建分类"
 		index.Put("/", m.CategoryCtrl.Update).Name = "更新分类"
 		index.Put("/{id:uint}/updateName", m.CategoryCtrl.UpdateName).Name = "更新节点名称"

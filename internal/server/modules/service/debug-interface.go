@@ -14,12 +14,14 @@ import (
 type DebugInterfaceService struct {
 	EndpointInterfaceRepo *repo.EndpointInterfaceRepo `inject:""`
 	DebugInterfaceRepo    *repo.DebugInterfaceRepo    `inject:""`
+	ScenarioInterfaceRepo *repo.ScenarioInterfaceRepo `inject:""`
 	EndpointRepo          *repo.EndpointRepo          `inject:""`
 	ServeRepo             *repo.ServeRepo             `inject:""`
 	ScenarioProcessorRepo *repo.ScenarioProcessorRepo `inject:""`
 	ServeServerRepo       *repo.ServeServerRepo       `inject:""`
 
-	DebugSceneService  *DebugSceneService  `inject:""`
+	DebugSceneService        *DebugSceneService        `inject:""`
+	ScenarioInterfaceService *ScenarioInterfaceService `inject:""`
 	SceneService       *SceneService       `inject:""`
 	EnvironmentService *EnvironmentService `inject:""`
 	DatapoolService    *DatapoolService    `inject:""`
@@ -35,7 +37,11 @@ func (s *DebugInterfaceService) Load(loadReq domain.DebugReq) (debugData domain.
 		return
 	}
 
-	debugData, _ = s.GetDebugInterface(loadReq.EndpointInterfaceId)
+	if loadReq.ScenarioProcessorId > 0 || loadReq.UsedBy == consts.ScenarioDebug {
+		debugData, _ = s.ScenarioInterfaceService.GetScenarioInterface(loadReq.EndpointInterfaceId)
+	} else {
+		debugData, _ = s.GetDebugInterface(loadReq.EndpointInterfaceId)
+	}
 
 	debugData.UsedBy = loadReq.UsedBy
 	if loadReq.ScenarioProcessorId > 0 {
@@ -95,7 +101,7 @@ func (s *DebugInterfaceService) Save(req domain.DebugData) (debug model.DebugInt
 }
 
 func (s *DebugInterfaceService) GetDebugDataFromDebugInterface(debugInterfaceId uint) (req domain.DebugData, err error) {
-	debugInterfacePo, _ := s.DebugInterfaceRepo.GetDetail(debugInterfaceId)
+	debugInterfacePo, err := s.DebugInterfaceRepo.GetDetail(debugInterfaceId)
 	if err != nil {
 		return
 	}

@@ -19,6 +19,17 @@
       </a-button>
 
     </div>
+    <div v-if="usedBy===UsedBy.ScenarioDebug" class="sync">
+      <a-button trigger="click" @click="sync" class="dp-bg-light">
+        同步
+      </a-button>
+    </div>
+    <div v-if="usedBy===UsedBy.ScenarioDebug" class="save-scenario">
+      <a-button trigger="click" @click="saveScenarioInterface" class="dp-bg-light">
+        <SaveOutlined />
+        保存
+      </a-button>
+    </div>
 
     <ContextMenu
         :isShow="showContextMenu"
@@ -60,6 +71,14 @@ const props = defineProps({
     type: Function as PropType<(data) => void>,
     required: true
   },
+  onSaveScenarioInterface: {
+    type: Function as PropType<(data) => void>,
+    required: true
+  },
+  onSync: {
+    type: Function as PropType<() => void>,
+    required: true
+  },
   showDebugDataUrl: {
     type: Boolean,
     required: false,
@@ -94,6 +113,20 @@ const save = (e) => {
   }
 };
 
+const saveScenarioInterface = (e) => {
+  let data = JSON.parse(JSON.stringify(debugData.value))
+  data = prepareDataForRequest(data)
+
+  if (validateInfo()) {
+    props.onSaveScenarioInterface(data)
+  }
+};
+
+const sync = (e) => {
+  if (validateInfo()) {
+    props.onSync()
+  }
+};
 const saveName = (e) => {
   console.log('saveName', e)
   e.preventDefault();
@@ -188,6 +221,12 @@ const onMenuClick = (key) => {
     width: 96px;
   }
   .save {
+    width: 110px;
+  }
+  .sync {
+    width: 110px;
+  }
+  .save-scenario {
     width: 110px;
   }
 }

@@ -39,6 +39,9 @@
           <!-- use v-if to force page reload -->
           <EndpointDebug v-if="key === 'run'" @switchToDefineTab="switchToDefineTab"/>
         </a-tab-pane>
+        <a-tab-pane key="docs" tab="文档">
+          <Docs v-if="key === 'docs'" @switchMode="switchMode"/> <!-- use v-if to force page reload-->
+        </a-tab-pane>
       </a-tabs>
     </a-card>
     <div v-if="key === 'request' && showFooter" class="drawer-btns">
@@ -62,6 +65,7 @@ import EditAndShowField from '@/components/EditAndShow/index.vue';
 import ConBoxTitle from '@/components/ConBoxTitle/index.vue';
 import EndpointDefine from './Define/index.vue';
 import EndpointDebug from './Debug/index.vue';
+import Docs from './Docs/index.vue';
 
 import {useStore} from "vuex";
 import {Endpoint} from "@/views/endpoint/data";

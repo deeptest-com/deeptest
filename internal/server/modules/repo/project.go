@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
@@ -26,6 +27,11 @@ type ProjectRepo struct {
 	ServeRepo                  *ServeRepo                  `inject:""`
 	EndpointRepo               *EndpointRepo               `inject:""`
 	ProjectRecentlyVisitedRepo *ProjectRecentlyVisitedRepo `inject:""`
+	ServeServerRepo            *ServeServerRepo            `inject:""`
+	ScenarioRepo               *ScenarioRepo               `inject:""`
+	ScenarioNodeRepo           *ScenarioNodeRepo           `inject:""`
+	ScenarioProcessorRepo      *ScenarioProcessorRepo      `inject:""`
+	PlanRepo                   *PlanRepo                   `inject:""`
 }
 
 func NewProjectRepo() *ProjectRepo {
@@ -587,27 +593,67 @@ func (r *ProjectRepo) IfProjectMember(userId, projectId uint) (res bool, err err
 func (r *ProjectRepo) CreateSample(projectId, serveId, userId uint) (err error) {
 
 	//获取接口配置
-	var endpoint model.Endpoint
+	var endpoints []model.Endpoint
 	endpointJson := _fileUtils.ReadFile("./config/sample/endpoint.json")
-	_commUtils.JsonDecode(endpointJson, &endpoint)
-
-	//fmt.Println(_fileUtils.GetWorkDir(), endpoint)
+	_commUtils.JsonDecode(endpointJson, &endpoints)
 
 	user, _ := r.UserRepo.FindById(userId)
-	//return err
+
+	//获取场景配置
+	var scenario model.Scenario
+	scenarioJson := _fileUtils.ReadFile("./config/sample/scenario.json")
+	_commUtils.JsonDecode(scenarioJson, &scenario)
+
+	//获取执行器
+	var root agentExec.Processor
+	processorJson := _fileUtils.ReadFile("./config/sample/processor.json")
+	_commUtils.JsonDecode(processorJson, &root)
+
+	var processorEntity map[string]interface{}
+	processorEntityJson := _fileUtils.ReadFile("./config/sample/processor-entity.json")
+	_commUtils.JsonDecode(processorEntityJson, &processorEntity)
+
+	var plan model.Plan
+	planJson := _fileUtils.ReadFile("./config/sample/plan.json")
+	_commUtils.JsonDecode(planJson, &plan)
 
 	return r.DB.Transaction(func(tx *gorm.DB) error {
 		//创建接口
-		endpoint.ServeId = serveId
-		endpoint.ProjectId = projectId
-		endpoint.CreateUser = user.Username
-		err = r.EndpointRepo.saveEndpoint(&endpoint)
+		interfaceIds := map[string]uint{}
+		for _, endpoint := range endpoints {
+			endpoint.ServeId = serveId
+			endpoint.ProjectId = projectId
+			endpoint.CreateUser = user.Username
+			err = r.EndpointRepo.SaveAll(&endpoint)
+			if err != nil {
+				return err
+			}
+			interfaceIds[endpoint.Interfaces[0].Name+"-"+string(endpoint.Interfaces[0].Method)] = endpoint.Interfaces[0].ID
+		}
+
+		r.ServeServerRepo.SetUrl(serveId, "http://119.3.182.218:50400")
+
+		//TODO 创建场景
+		scenario.ProjectId = projectId
+		scenario, err = r.ScenarioRepo.Create(scenario)
 		if err != nil {
 			return err
 		}
 
-		//TODO 创建场景
+		//TODO 添加执行器
+		err = r.createProcessorTree(&root, interfaceIds, processorEntity, projectId, scenario.ID, 0, userId)
+		if err != nil {
+			return err
+		}
 		//TODO 创建计划
+		plan.ProjectId = projectId
+		plan, _ = r.PlanRepo.Create(plan)
+
+		//关联场景
+		err = r.PlanRepo.AddScenarios(plan.ID, []uint{scenario.ID})
+		if err != nil {
+			return err
+		}
 
 		return nil
 	})
@@ -627,4 +673,114 @@ func (r *ProjectRepo) GetProjectIdsByUserIdAndRole(userId uint, roleName consts.
 		projectIds = append(projectIds, project.ProjectId)
 	}
 	return
+}
+
+func (r *ProjectRepo) createProcessorTree(root *agentExec.Processor, interfaceIds map[string]uint, processorEntity map[string]interface{}, projectId, scenarioId, parentId, userId uint) error {
+	processor := model.Processor{
+		Name:                root.Name,
+		EntityCategory:      root.EntityCategory,
+		EntityType:          root.EntityType,
+		EndpointInterfaceId: interfaceIds[root.Name],
+		ParentId:            parentId,
+		ScenarioId:          scenarioId,
+		ProjectId:           projectId,
+		CreatedBy:           userId,
+	}
+	processor.Ordr = r.ScenarioNodeRepo.GetMaxOrder(processor.ParentId)
+	err := r.ScenarioNodeRepo.Save(&processor)
+	if err != nil {
+		return err
+	}
+
+	processorCategory := root.EntityCategory
+	if item, ok := processorEntity[root.Name]; ok {
+		if processorCategory == consts.ProcessorGroup {
+			var entity model.ProcessorGroup
+			//将 map 转换为指定的结构体
+			_commUtils.Map2Struct(item, &entity)
+			entity.ProcessorID = processor.ID
+			entity.ParentID = parentId
+			err = r.ScenarioProcessorRepo.SaveGroup(&entity)
+			r.ScenarioNodeRepo.UpdateEntityId(processor.ID, entity.ID)
+
+		} else if processorCategory == consts.ProcessorLogic {
+			var entity model.ProcessorLogic
+			_commUtils.Map2Struct(item, &entity)
+			entity.ProcessorID = processor.ID
+			entity.ParentID = parentId
+			err = r.ScenarioProcessorRepo.SaveLogic(&entity)
+			r.ScenarioNodeRepo.UpdateEntityId(processor.ID, entity.ID)
+
+		} else if processorCategory == consts.ProcessorLoop {
+			var entity model.ProcessorLoop
+			_commUtils.Map2Struct(item, &entity)
+			entity.ProcessorID = processor.ID
+			entity.ParentID = parentId
+			err = r.ScenarioProcessorRepo.SaveLoop(&entity)
+			r.ScenarioNodeRepo.UpdateEntityId(processor.ID, entity.ID)
+
+		} else if processorCategory == consts.ProcessorTimer {
+			var entity model.ProcessorTimer
+			_commUtils.Map2Struct(item, &entity)
+			entity.ProcessorID = processor.ID
+			entity.ParentID = parentId
+			err = r.ScenarioProcessorRepo.SaveTimer(&entity)
+			r.ScenarioNodeRepo.UpdateEntityId(processor.ID, entity.ID)
+
+		} else if processorCategory == consts.ProcessorPrint {
+			var entity model.ProcessorPrint
+			_commUtils.Map2Struct(item, &entity)
+			entity.ProcessorID = processor.ID
+			entity.ParentID = parentId
+			err = r.ScenarioProcessorRepo.SavePrint(&entity)
+			r.ScenarioNodeRepo.UpdateEntityId(processor.ID, entity.ID)
+		} else if processorCategory == consts.ProcessorVariable {
+			var entity model.ProcessorVariable
+			_commUtils.Map2Struct(item, &entity)
+			entity.ProcessorID = processor.ID
+			entity.ParentID = parentId
+			err = r.ScenarioProcessorRepo.SaveVariable(&entity)
+			r.ScenarioNodeRepo.UpdateEntityId(processor.ID, entity.ID)
+
+		} else if processorCategory == consts.ProcessorCookie {
+			var entity model.ProcessorCookie
+			_commUtils.Map2Struct(item, &entity)
+			entity.ProcessorID = processor.ID
+			entity.ParentID = parentId
+			err = r.ScenarioProcessorRepo.SaveCookie(&entity)
+			r.ScenarioNodeRepo.UpdateEntityId(processor.ID, entity.ID)
+
+		} else if processorCategory == consts.ProcessorAssertion {
+			var entity model.ProcessorAssertion
+			_commUtils.Map2Struct(item, &entity)
+			entity.ProcessorID = processor.ID
+			entity.ParentID = parentId
+			err = r.ScenarioProcessorRepo.SaveAssertion(&entity)
+			r.ScenarioNodeRepo.UpdateEntityId(processor.ID, entity.ID)
+
+		} else if processorCategory == consts.ProcessorExtractor {
+			var entity model.ProcessorExtractor
+			_commUtils.Map2Struct(item, &entity)
+			entity.ProcessorID = processor.ID
+			entity.ParentID = parentId
+			err = r.ScenarioProcessorRepo.SaveExtractor(&entity)
+			r.ScenarioNodeRepo.UpdateEntityId(processor.ID, entity.ID)
+
+		} else if processorCategory == consts.ProcessorData {
+			var entity model.ProcessorData
+			_commUtils.Map2Struct(item, &entity)
+			entity.ProcessorID = processor.ID
+			entity.ParentID = parentId
+			err = r.ScenarioProcessorRepo.SaveData(&entity)
+			r.ScenarioNodeRepo.UpdateEntityId(processor.ID, entity.ID)
+		}
+
+	}
+
+	for _, child := range root.Children {
+		r.createProcessorTree(child, interfaceIds, processorEntity, projectId, scenarioId, processor.ID, userId)
+	}
+
+	return nil
+
 }

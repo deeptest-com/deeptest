@@ -53,7 +53,7 @@ func (r *SummaryDetailsRepo) CountProjectUserTotal(projectId int64) (count int64
 }
 
 func (r *SummaryDetailsRepo) FindAllProjectInfo() (projectsInfo []model.SummaryProjectInfo, err error) {
-	err = r.DB.Model(&model.Project{}).Select("biz_project.id,biz_project.created_at,biz_project.deleted,biz_project.disabled,biz_project.updated_at,biz_project.name,biz_project.descr,biz_project.logo,biz_project.short_name,biz_project.admin_id,biz_project.include_example ,sys_user.name as admin_name ").Joins("left join sys_user on biz_project.admin_id = sys_user.id").Where("biz_project.deleted !=1 ").Order("id").Find(&projectsInfo).Error
+	err = r.DB.Model(&model.Project{}).Select("biz_project.id,biz_project.created_at,biz_project.deleted,biz_project.disabled,biz_project.updated_at,biz_project.name,biz_project.descr,biz_project.logo,biz_project.short_name,biz_project.admin_id,biz_project.include_example ,sys_user.name as admin_name ").Joins("left join sys_user on biz_project.admin_id = sys_user.id").Where("biz_project.deleted !=1 ").Order("id desc").Find(&projectsInfo).Error
 	return
 }
 

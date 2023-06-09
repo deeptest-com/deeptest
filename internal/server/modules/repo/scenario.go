@@ -16,8 +16,8 @@ import (
 )
 
 type ScenarioRepo struct {
-	DB          *gorm.DB     `inject:""`
-	BaseRepo    *BaseRepo    `inject:""`
+	DB          *gorm.DB `inject:""`
+	*BaseRepo   `inject:""`
 	ProjectRepo *ProjectRepo `inject:""`
 	PlanRepo    *PlanRepo    `inject:""`
 }
@@ -116,17 +116,16 @@ func (r *ScenarioRepo) FindByName(scenarioName string, id uint) (scenario model.
 	return
 }
 
-func (r *ScenarioRepo) Create(scenario model.Scenario) (ret model.Scenario, bizErr *_domain.BizErr) {
+func (r *ScenarioRepo) Create(scenario model.Scenario) (ret model.Scenario, err error) {
 	//po, err := r.FindByName(scenario.Name, 0)
 	//if po.Name != "" {
 	//	bizErr = &_domain.BizErr{Code: _domain.ErrNameExist.Code}
 	//	return
 	//}
 
-	err := r.DB.Model(&model.Scenario{}).Create(&scenario).Error
+	err = r.DB.Model(&model.Scenario{}).Create(&scenario).Error
 	if err != nil {
 		logUtils.Errorf("add scenario error", zap.String("error:", err.Error()))
-		bizErr = &_domain.BizErr{Code: _domain.SystemErr.Code}
 
 		return
 	}
@@ -134,8 +133,6 @@ func (r *ScenarioRepo) Create(scenario model.Scenario) (ret model.Scenario, bizE
 	err = r.UpdateSerialNumber(scenario.ID, scenario.ProjectId)
 	if err != nil {
 		logUtils.Errorf("update scenario serial number error", zap.String("error:", err.Error()))
-		bizErr = &_domain.BizErr{Code: _domain.SystemErr.Code}
-
 		return
 	}
 	ret = scenario
@@ -329,5 +326,10 @@ func (r *ScenarioRepo) GetByIds(ids []uint) (scenarios []model.Scenario, err err
 
 func (r *ScenarioRepo) RemovePlans(scenarioId uint, planIds []int) (err error) {
 	err = r.DB.Model(&model.RelaPlanScenario{}).Where("scenario_id=? and plan_id in (?)", scenarioId, planIds).Update("deleted", true).Error
+	return
+}
+
+func (r *ScenarioRepo) GetCategoryCount(result interface{}, projectId uint) (err error) {
+	err = r.DB.Raw("select count(id) count, category_id from "+model.Scenario{}.TableName()+" where not deleted and not disabled and project_id=? group by category_id", projectId).Scan(result).Error
 	return
 }

@@ -19,7 +19,7 @@ import {
     getScenariosReportsDetail,
     addPlans,
     getPlans,
-    removePlans, updatePriority, updateStatus, genReport,
+    removePlans, updatePriority, updateStatus, genReport, saveScenarioDebugData,
 } from './service';
 
 import {
@@ -147,6 +147,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         saveTreeMapItemPropCategory: Action<StateType, StateType>;
         saveCategory: Action<StateType, StateType>;
         updateCategoryName: Action<StateType, StateType>;
+        saveScenarioDebugData: Action<StateType, StateType>;
     }
 }
 
@@ -667,6 +668,10 @@ const StoreModel: ModuleType = {
                 return res;
             }
             return false;
+        },
+        async saveScenarioDebugData({commit}, payload: any) {
+            const resp = await  saveScenarioDebugData(payload)
+            return resp.code === 0;
         },
     }
 };

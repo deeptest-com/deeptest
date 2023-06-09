@@ -16,7 +16,7 @@
           <template #icon>
             <PlusOutlined/>
           </template>
-          Generate from JSON
+          通过JSON生成Schema
         </a-button>
       </div>
     </div>
@@ -187,7 +187,9 @@ function handleExampleNameChange(e) {
 }
 
 function handleExampleContentChange(val) {
+  console.log(832,'handleExampleContentChange',val)
   activeExample.value.content = val;
+  examples.value[activeExampleIndex.value].content = val;
 }
 
 function handleContentChange(val) {
@@ -264,12 +266,14 @@ watch(() => {
 watch(() => {
   return examples.value
 }, (newVal: any) => {
+  // console.log(832,'examples.value',newVal)
   emit('change', {
     examples: newVal,
     content: content.value
   });
 }, {
   immediate: false,
+  deep: true
 });
 
 watch(() => {

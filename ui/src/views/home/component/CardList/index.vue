@@ -50,6 +50,13 @@
                             >删除</a
                           >
                         </a-menu-item>
+                        <a-menu-item v-if="item.accessible === 1">
+                          <a
+                              href="javascript:;"
+                              @click.stop="handleExit(item)"
+                          >退出项目</a
+                          >
+                        </a-menu-item>
                       </a-menu>
                     </template>
                   </a-dropdown>
@@ -147,7 +154,7 @@ const paginationProp = ref({
   onShowSizeChange: pageSizeChange,
 });
 //暴露内部方法
-const emit = defineEmits(["join", "edit", "delete"]);
+const emit = defineEmits(["join", "edit", "delete", "exit"]);
 //数据
 const data = ref([]);
 const height = computed(() => {
@@ -246,6 +253,9 @@ async function handleEdit(item) {
 }
 async function handleDelete(id) {
   emit("delete", id);
+}
+async function handleExit(item) {
+  emit("exit", item);
 }
 async function goProject(item: any) {
   if (item?.accessible === 0) {

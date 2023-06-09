@@ -102,14 +102,15 @@ func (r *EndpointRepo) Paginate(req v1.EndpointReqPaginate) (ret _domain.PageDat
 
 func (r *EndpointRepo) SaveAll(endpoint *model.Endpoint) (err error) {
 	r.DB.Transaction(func(tx *gorm.DB) error {
-		//创建version
-		err = r.saveEndpointVersion(endpoint)
+
+		//更新终端
+		err = r.saveEndpoint(endpoint)
 		if err != nil {
 			return err
 		}
 
-		//更新终端
-		err = r.saveEndpoint(endpoint)
+		//创建version
+		err = r.saveEndpointVersion(endpoint)
 		if err != nil {
 			return err
 		}
@@ -207,13 +208,13 @@ func (r *EndpointRepo) saveInterfaces(endpointId, projectId uint, path, version 
 	if err != nil {
 		return
 	}
-	for _, item := range interfaces {
-		item.EndpointId = endpointId
-		item.Version = version
-		item.Url = path
-		item.ProjectId = projectId
+	for key, _ := range interfaces {
+		interfaces[key].EndpointId = endpointId
+		interfaces[key].Version = version
+		interfaces[key].Url = path
+		interfaces[key].ProjectId = projectId
 
-		err = r.EndpointInterfaceRepo.SaveInterfaces(&item)
+		err = r.EndpointInterfaceRepo.SaveInterfaces(&interfaces[key])
 		if err != nil {
 			return err
 		}
@@ -313,5 +314,10 @@ func (r *EndpointRepo) ListEndpointByCategory(categoryId uint) (ids []uint, err 
 
 func (r *EndpointRepo) CreateEndpointSample(serveId uint) (endpointId uint, err error) {
 
+	return
+}
+
+func (r *EndpointRepo) GetCategoryCount(result interface{}, projectId uint) (err error) {
+	err = r.DB.Raw("select count(id) count, category_id from "+model.Endpoint{}.TableName()+" where not deleted and not disabled and project_id=? group by category_id", projectId).Scan(result).Error
 	return
 }

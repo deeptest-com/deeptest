@@ -35,7 +35,7 @@
                 <a-select-option
                   v-for="(option, key) in roles"
                   :key="key"
-                  :value="item.id + '-' + option.name"
+                  :value="item.projectId + '-' + option.name"
                   >{{ option.displayName }}</a-select-option
                 >
               </a-select>

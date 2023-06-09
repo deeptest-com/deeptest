@@ -49,7 +49,7 @@ func (r *CategoryRepo) ListByProject(typ serverConsts.CategoryDiscriminator, pro
 	return
 }
 
-func (r *CategoryRepo) Get(id uint) (po model.Category, err error) {
+func (r *CategoryRepo) Get(id int) (po model.Category, err error) {
 	err = r.DB.Where("id = ?", id).First(&po).Error
 	return
 }
@@ -109,8 +109,8 @@ func (r *CategoryRepo) Save(processor *model.Category) (err error) {
 	return
 }
 
-func (r *CategoryRepo) UpdateOrder(pos serverConsts.DropPos, targetId uint, typ serverConsts.CategoryDiscriminator, projectId uint) (
-	parentId uint, ordr int) {
+func (r *CategoryRepo) UpdateOrder(pos serverConsts.DropPos, targetId int, typ serverConsts.CategoryDiscriminator, projectId uint) (
+	parentId int, ordr int) {
 	if pos == serverConsts.Inner {
 		parentId = targetId
 

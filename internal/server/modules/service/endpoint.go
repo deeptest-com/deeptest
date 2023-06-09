@@ -29,8 +29,11 @@ func (s *EndpointService) Paginate(req v1.EndpointReqPaginate) (ret _domain.Page
 }
 
 func (s *EndpointService) Save(endpoint model.Endpoint) (res uint, err error) {
-	server, _ := s.ServeServerRepo.GetDefaultByServe(endpoint.ServeId)
-	endpoint.ServerId = server.ID
+
+	if endpoint.ServerId == 0 {
+		server, _ := s.ServeServerRepo.GetDefaultByServe(endpoint.ServeId)
+		endpoint.ServerId = server.ID
+	}
 
 	err = s.EndpointRepo.SaveAll(&endpoint)
 	return endpoint.ID, err

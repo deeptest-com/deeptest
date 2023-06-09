@@ -6,6 +6,11 @@ import (
 	"gorm.io/gorm"
 )
 
+type IRepo interface {
+	Save(id uint, entity interface{}) error
+	GetCategoryCount(result interface{}, projectId uint) (err error)
+}
+
 type BaseRepo struct {
 	DB *gorm.DB `inject:""`
 }

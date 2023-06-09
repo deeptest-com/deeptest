@@ -5,10 +5,10 @@
     <a-divider style="margin:0"/>
     <div class="doc-container">
       <div class="left">
-        <LeftTreeView :serviceList="serviceList"/>
+        <LeftTreeView :serviceList="serviceList" @select="selectMenu"/>
       </div>
       <div class="right">
-        <EndpointDoc/>
+        <EndpointDoc :info="selectedItem"/>
       </div>
     </div>
   </div>
@@ -26,6 +26,7 @@ import {useStore} from "vuex";
 import BasicDetail from "./components/BasicDetail.vue";
 import LeftTreeView from "./components/LeftTreeView.vue";
 import EndpointDoc from "./components/EndpointDoc.vue";
+
 const store = useStore<{ Endpoint, ProjectGlobal }>();
 const props = defineProps({});
 const emit = defineEmits([]);
@@ -84,7 +85,48 @@ const list = [
         "environmentName": "测试环境"
       }
     ],
-    "Securities": null,
+    "Securities": [
+      {
+        "id": 2233,
+        "createdAt": "2023-05-25T16:34:25+08:00",
+        "updatedAt": "2023-05-25T16:35:12+08:00",
+        "name": "token",
+        "type": "bearerToken",
+        "project_id": 63,
+        "serve_id": 122,
+        "description": "",
+        "in": "",
+        "scheme": "",
+        "bearerFormat": "",
+        "openIdConnectUrl": "",
+        "key": "",
+        "value": "",
+        "token": "WVRCaE1UTTRZbVU1TTJWbVlXWTFOR0ZoWlRsbE5tSm1ZV1poTVdRMVpETS5Nalk0WmpaaVpqQmtORGcyT0RKbE9EZzJaRE15Wmpsak5EWXhNVE16WldV",
+        "username": "",
+        "password": "",
+        "default": true
+      },
+      {
+        "id": 31113,
+        "createdAt": "2023-05-25T16:34:25+08:00",
+        "updatedAt": "2023-05-25T16:35:12+08:00",
+        "name": "token1",
+        "type": "bearerToken2",
+        "project_id": 63,
+        "serve_id": 122,
+        "description": "",
+        "in": "",
+        "scheme": "",
+        "bearerFormat": "",
+        "openIdConnectUrl": "",
+        "key": "",
+        "value": "",
+        "token": "WVRCaE1UTTRZbVU1TTJWbVlXWTFOR0ZoWlRsbE5tSm1ZV1poTVdRMVpETS5Nalk0WmpaaVpqQmtORGcyT0RKbE9EZzJaRE15Wmpsak5EWXhNVE16WldV",
+        "username": "",
+        "password": "",
+        "default": true
+      }
+    ],
     endpointList: [
       {
         "id": 1292,
@@ -349,7 +391,7 @@ const list = [
               "createdAt": "2023-05-18T10:11:15+08:00",
               "updatedAt": "2023-05-18T10:11:15+08:00",
               "interfaceId": 81,
-              "mediaType": "",
+              "mediaType": "application/json",
               "description": "",
               "schemaRefId": 0,
               "examples": "",
@@ -365,13 +407,13 @@ const list = [
             },
             "responseBodies": [
               {
-                "id": 64,
+                "id": 62224,
                 "createdAt": "2023-05-18T10:11:15+08:00",
                 "updatedAt": "2023-05-18T10:11:15+08:00",
                 "code": "200",
                 "interfaceId": 81,
                 "mediaType": "application/json",
-                "description": "",
+                "description": "200 description",
                 "schemaRefId": 0,
                 "examples": "[]",
                 "schemaItem": {
@@ -383,7 +425,118 @@ const list = [
                   "content": "{\"type\":\"object\",\"properties\":{\"name1\":{\"type\":\"string\"},\"name2\":{\"type\":\"string\"},\"name3\":{\"type\":\"string\"}}}",
                   "ResponseBodyId": 64
                 },
-                "headers": []
+                "headers": [
+                  {
+                    "id": 209,
+                    "createdAt": "2023-06-08T14:33:47+08:00",
+                    "updatedAt": "2023-06-08T14:33:47+08:00",
+                    "name": "header1",
+                    "value": "",
+                    "type": "string",
+                    "desc": "",
+                    "interfaceId": 111,
+                    "format": "",
+                    "example": "1",
+                    "pattern": "",
+                    "minLength": 0,
+                    "maxLength": 0,
+                    "default": "1",
+                    "required": true,
+                    "multipleOf": 0,
+                    "minItems": 0,
+                    "maxItems": 0,
+                    "uniqueItems": false,
+                    "ref": ""
+                  }
+                ],
+              },
+              {
+                "id": 641,
+                "createdAt": "2023-05-18T10:11:15+08:00",
+                "updatedAt": "2023-05-18T10:11:15+08:00",
+                "code": "403",
+                "interfaceId": 81,
+                "mediaType": "application/json",
+                "schemaRefId": 0,
+                "examples": "[]",
+                "description": "403 description",
+                "schemaItem": {
+                  "id": 267,
+                  "createdAt": "2023-05-18T10:11:15+08:00",
+                  "updatedAt": "2023-05-18T10:11:15+08:00",
+                  "name": "",
+                  "type": "object",
+                  "content": "{\"type\":\"object\",\"properties\":{\"name1\":{\"type\":\"string\"},\"name2\":{\"type\":\"string\"},\"name3\":{\"type\":\"string\"}}}",
+                  "ResponseBodyId": 64
+                },
+                "headers": [
+                  {
+                    "id": 209,
+                    "createdAt": "2023-06-08T14:33:47+08:00",
+                    "updatedAt": "2023-06-08T14:33:47+08:00",
+                    "name": "header1",
+                    "value": "",
+                    "type": "string",
+                    "desc": "",
+                    "interfaceId": 111,
+                    "format": "",
+                    "example": "1",
+                    "pattern": "",
+                    "minLength": 0,
+                    "maxLength": 0,
+                    "default": "1",
+                    "required": true,
+                    "multipleOf": 0,
+                    "minItems": 0,
+                    "maxItems": 0,
+                    "uniqueItems": false,
+                    "ref": ""
+                  }
+                ],
+              },
+              {
+                "id": 624,
+                "createdAt": "2023-05-18T10:11:15+08:00",
+                "updatedAt": "2023-05-18T10:11:15+08:00",
+                "code": "500",
+                "interfaceId": 81,
+                "mediaType": "application/json",
+                "description": "500 description",
+                "schemaRefId": 0,
+                "examples": "[]",
+                "schemaItem": {
+                  "id": 267,
+                  "createdAt": "2023-05-18T10:11:15+08:00",
+                  "updatedAt": "2023-05-18T10:11:15+08:00",
+                  "name": "",
+                  "type": "object",
+                  "content": "{\"type\":\"object\",\"properties\":{\"name1\":{\"type\":\"string\"},\"name2\":{\"type\":\"string\"},\"name3\":{\"type\":\"string\"}}}",
+                  "ResponseBodyId": 64
+                },
+                "headers": [
+                  {
+                    "id": 209,
+                    "createdAt": "2023-06-08T14:33:47+08:00",
+                    "updatedAt": "2023-06-08T14:33:47+08:00",
+                    "name": "header1",
+                    "value": "",
+                    "type": "string",
+                    "desc": "",
+                    "interfaceId": 111,
+                    "format": "",
+                    "example": "1",
+                    "pattern": "",
+                    "minLength": 0,
+                    "maxLength": 0,
+                    "default": "1",
+                    "required": true,
+                    "multipleOf": 0,
+                    "minItems": 0,
+                    "maxItems": 0,
+                    "uniqueItems": false,
+                    "ref": ""
+                  }
+                ],
               }
             ],
             "responseCodes": ""
@@ -399,18 +552,34 @@ const list = [
 ]
 const serviceList = ref([])
 
-
 // 这里还是需要打平的
 onMounted(() => {
-  let items:any = [];
-  list.forEach((item:any) => {
+  // 组装数据以兼容组件 LeftTreeMenu
+  let items: any = [];
+  list.forEach((item: any) => {
     items.push(item);
-    item.endpointList.forEach((endpoint:any) => {
-      items.push(endpoint);
+    item.endpointList.forEach((endpoint: any) => {
+      endpoint.interfaces.forEach((interfaceItem: any) => {
+        items.push({
+          ...interfaceItem,
+          endpointInfo: endpoint,
+          serveInfo: item,
+          serveId: item.id,
+        });
+      })
     })
   })
   serviceList.value = items;
+
+  // 默认选中第一个
+  selectedItem.value = items[0];
 })
+
+
+const selectedItem = ref(null);
+function selectMenu(item) {
+  selectedItem.value = item
+}
 
 
 </script>
@@ -432,7 +601,7 @@ onMounted(() => {
   height: 100%;
 
   .left {
-    width: 400px;
+    width: 300px;
     height: 100%;
     overflow: auto;
   }

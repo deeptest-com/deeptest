@@ -2,9 +2,108 @@
  项目基本信息
 -->
 <template>
-  <div>
-    <H1>接口 1</H1>
+  <div class="doc-content" v-if="info?.name">
+    <div class="serve-info" v-if="!isInterface">
+      <H1>{{ info.name }}</H1>
+      <a-tag>v1.0</a-tag>
 
+      <div class="serve-info-block">
+        <div class="title"><strong>服务信息</strong></div>
+        <div class="item" v-for="serve in serveList" :key="serve.url">
+          <span><strong>{{ serve.name }}：</strong></span>
+          <span>{{ serve.url }}</span>
+        </div>
+      </div>
+
+      <div class="serve-security-block" v-if="info?.Securities">
+        <div class="header"><strong>Security</strong></div>
+        <template v-for="item in info?.Securities" :key="item.id">
+          <div class="title"><strong>{{ item.type }}</strong></div>
+          <div class="item">{{ item.name }}</div>
+        </template>
+      </div>
+
+    </div>
+    <div class="interface-info" v-if="isInterface">
+      <H1>{{ info.name }}</H1>
+      <p class="ant-typography">{{ info.description || '暂无描述信息' }}</p>
+      <div class="url-info-block">
+        <div class="path-info" v-for="path in paths" :key="path.path">
+          <span><strong>{{ path.name }}：</strong></span>
+          <a-tag :color="getMethodColor(info.method)">{{ info.method }}</a-tag>
+          <span>
+            <span class="ant-typography ant-typography-secondary">{{ path.url }}</span>
+            <span class="ant-typography"><strong>{{ path.path }}</strong></span>
+            </span>
+        </div>
+      </div>
+
+      <div class="interface-request">
+        <H2>请求信息</H2>
+        <div class="req-item req-path-params">
+          <H3>路径参数（Path Parameters）</H3>
+        </div>
+
+        <div class="req-item req-path-params">
+          <H3>请求鉴权（Security）</H3>
+        </div>
+
+        <div class="req-item req-path-params">
+          <H3>请求Header（Headers）</H3>
+        </div>
+
+        <div class="req-item req-path-params">
+          <H3>请求参数（Query Parameters）</H3>
+        </div>
+
+
+        <div class="req-item req-path-params">
+          <H3>请求Cookie（Cookies）</H3>
+        </div>
+
+        <div class="req-item req-path-params">
+          <H3 class="body-header">请求体（Request Body） <a-tag class="tag" color="default">{{info.requestBody.mediaType}}</a-tag></H3>
+          <p>{{info.requestBody.description || '无描述信息'}}</p>
+        </div>
+
+
+      </div>
+
+      <div class="interface-response">
+        <div class="header">
+          <H2>响应信息</H2>
+          <a-checkable-tag
+              class="code-tag"
+              :style="{color: selectedCode === res.code ? '#fff': getCodeColor(res.code)}"
+              @change="selectCode(res.code)"
+              v-for="res in info?.responseBodies"
+              :checked="selectedCode === res.code"
+              :key="res?.code">
+            {{
+              res.code
+            }}
+          </a-checkable-tag>
+        </div>
+      </div>
+
+      <div class="content"
+           v-for="res in info?.responseBodies"
+           :key="res?.code"
+           v-show="selectedCode === res.code">
+        <div class="res-item res-desc">
+          <p>{{res.description || '无描述信息'}}</p>
+        </div>
+        <div class="res-item res-path-params">
+          <H3>响应Header（Headers）</H3>
+        </div>
+        <div class="res-item res-path-params">
+          <H3 class="body-header">响应体（Response Body） <a-tag class="tag" color="default">{{res.mediaType}}</a-tag></H3>
+          <p>{{res.description || '无描述信息'}}</p>
+        </div>
+      </div>
+
+
+    </div>
   </div>
 </template>
 
@@ -17,54 +116,173 @@ import {
 } from 'vue';
 
 import {DownOutlined, RightOutlined} from '@ant-design/icons-vue';
+import {getMethodColor, getCodeColor} from "../hooks/index"
 
+const props = defineProps(['info']);
 
-const props = defineProps({
-  items: {
-    required: true,
-    type: Object,
-  },
+const info: any = computed(() => {
+  return props.info;
 })
-
 
 const emit = defineEmits(['ok', 'close', 'refreshList']);
 
-const expand = ref(true);
+const isInterface = computed(() => {
+  return props.info && props.info.endpointInfo && props.info.serveInfo && props.info.serveInfo.id;
+})
 
-function switchExpand() {
-  expand.value = !expand.value;
+const paths = computed(() => {
+  const list: any = [];
+  info.value?.serveInfo?.servers.forEach((item: any) => {
+    list.push({
+      url: item.url,
+      path: info.value.endpointInfo?.path,
+      name: item.environmentName
+    })
+  })
+  return list;
+})
+
+const serveList = computed(() => {
+  const list: any = [];
+  info.value?.servers.forEach((item: any) => {
+    list.push({
+      url: item.url,
+      name: item.environmentName
+    })
+  })
+  return list;
+})
+
+
+watch(() => {
+  return props.info
+}, (newVal) => {
+  console.log(newVal)
+}, {immediate: true})
+
+
+const selectedCode = ref('200');
+
+function selectCode(code) {
+  selectedCode.value = code;
 }
-
 
 </script>
 <style lang="less" scoped>
-.basic-info {
-  position: relative;
-  padding: 0 24px;
+.doc-content {
+  margin: 0 16px;
 
-  :deep(.ant-descriptions-header) {
-    padding-bottom: 16px;
+  .serve-info {
+
   }
+
+  .interface-info {
+
+  }
+
+  .url-info-block {
+    background-color: hsla(218, 32%, 97%, 1);
+    border-radius: 3px;
+    padding: 12px;
+  }
+
+  .path-info {
+    display: flex;
+    align-items: center;
+    height: 36px;
+    line-height: 36px;
+    width: 100%;
+
+    a {
+      margin-left: 8px;
+    }
+  }
+
+  .serve-info-block {
+    background-color: hsla(218, 28%, 18%, 1);
+    border-radius: 3px;
+    margin-top: 16px;
+    overflow: hidden;
+    padding-bottom: 6px;
+
+    .title {
+      background-color: hsla(218, 28%, 18%, 1);
+      color: #ffffffa6;
+      height: 36px;
+      line-height: 36px;
+      padding-left: 16px;
+    }
+
+    .item {
+      background-color: hsla(218, 27%, 24%, 1);
+      height: 40px;
+      line-height: 40px;
+      color: #ffffffa6;
+      padding-left: 16px;
+    }
+  }
+
+  .serve-security-block {
+    border-radius: 3px;
+    margin-top: 24px;
+    overflow: hidden;
+    padding-bottom: 6px;
+
+    .header {
+      background-color: hsla(218, 36%, 88%, 1);
+      height: 36px;
+      line-height: 36px;
+      padding-left: 16px;
+    }
+
+    .title {
+      background-color: hsla(218, 35%, 91%, 1);
+      height: 36px;
+      line-height: 36px;
+      padding-left: 16px;
+    }
+
+    .item {
+      background-color: hsla(218, 33%, 94%, 1);
+      height: 40px;
+      line-height: 40px;
+      padding-left: 16px;
+    }
+  }
+
+  .interface-request {
+    margin-top: 24px;
+  }
+
+  .interface-response {
+    .header {
+      height: 48px;
+      display: flex;
+      align-items: center;
+      //justify-content: space-between;
+      margin-top: 24px;
+
+      h2 {
+        margin: 0;
+        margin-right: 16px;
+      }
+
+      .code-tag {
+        cursor: pointer;
+      }
+    }
+  }
+
+
+  .body-header{
+    display: flex;
+    align-items: center;
+    .tag{
+      margin-left: 16px;
+    }
+  }
+
 
 }
-
-
-.title {
-  position: absolute;
-  cursor: pointer;
-
-  .icon {
-    position: absolute;
-    left: -18px;
-    top: 4px;
-    font-size: 14px;
-
-  }
-
-  .text {
-
-  }
-}
-
 
 </style>

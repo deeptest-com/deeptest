@@ -1,38 +1,31 @@
 <!--
- 项目基本信息
+ 左侧菜单树
 -->
 <template>
   <a-menu style="width: 100%;
           padding-top: 8px;"
           class="docs-menu"
           mode="inline">
-
     <a-menu-item v-for="item in items"
                  :key="item.id"
-                 
-                 :class="{'hide': item.interfaces && openKeysMap[item.serveId]}">
+                 @click="select(item)"
+                 :class="{'hide': item.endpointInfo && item.serveInfo && openKeysMap[item.serveId]}">
       <!-- ::::服务信息 -->
       <div class="menus-title" v-if="item.endpointList">
         <div class="icon" @click="(event) => {switchExpand(item,event)}">
           <RightOutlined class="expand-icon" :class="!openKeysMap[item.id] ? 'open' : ''"/>
         </div>
-        <div class="left">{{ item.name }}</div>
+        <div class="left"><strong>{{ item?.name }}</strong></div>
       </div>
       <!-- ::::该服务下的所有接口列表 -->
-      <div class="menus-item" v-if="item.interfaces">
+      <div class="menus-item" v-if="item.endpointInfo && item.serveInfo">
         <div class="left">
-          {{ item.title }}
-        </div>
-        <div class="right">
-          <a-tag color="pink">post</a-tag>
-          <a-tag color="red">get</a-tag>
-          <a-tag color="orange">GET</a-tag>
+          <a-tag :color="getMethodColor(item.method)">{{ item.method }}</a-tag>
+          {{ item.name }}
         </div>
       </div>
     </a-menu-item>
-
   </a-menu>
-
 </template>
 
 <script lang="ts" setup>
@@ -40,22 +33,22 @@ import {
   ref,
   defineProps,
   defineEmits,
-  computed, watch,
+  computed,
+  watch,
 } from 'vue';
-import {MailOutlined, QqOutlined, AppstoreOutlined, SettingOutlined} from '@ant-design/icons-vue';
 
 import {DownOutlined, RightOutlined} from '@ant-design/icons-vue';
+import {requestMethodOpts} from '@/config/constant';
 
 const openKeysMap = ref<any>({});
 
+function getMethodColor(method: any) {
+  const item: any = requestMethodOpts.find((item: any) => {
+    return item.value === method;
+  });
+  return item.color || '#04C495';
+}
 
-const handleClick = (e: Event) => {
-  console.log('click', e);
-};
-
-const titleClick = (e: Event) => {
-  console.log('titleClick', e);
-};
 
 const props = defineProps({
   serviceList: {
@@ -63,6 +56,7 @@ const props = defineProps({
     type: Object,
   },
 })
+const emit = defineEmits(['select']);
 
 const items: any = ref([]);
 watch(() => {
@@ -70,23 +64,28 @@ watch(() => {
     }, (newVal) => {
       items.value = newVal;
       newVal.forEach((item: any) => {
-        if(item.endpointList){
+        if (item.endpointList) {
           openKeysMap.value[item.id] = false;
         }
       })
-  console.log(items.value)
+      console.log(items.value)
     }, {immediate: true}
 )
 
 
 const activeKey = ref([]);
 
-const emit = defineEmits(['ok', 'close', 'refreshList']);
 
 function switchExpand(item, e) {
   e.stopPropagation();
   openKeysMap.value[item.id] = !openKeysMap.value[item.id];
-  console.log('openKeysMap', openKeysMap.value)
+
+}
+
+
+function select(item) {
+  console.log(item)
+  emit('select', item);
 }
 
 
@@ -98,8 +97,9 @@ function switchExpand(item, e) {
   //  position: relative;
   //}
   :deep(.hide) {
-    display: none!important;
+    display: none !important;
   }
+
   :deep(.ant-menu-item) {
     padding: 0 6px !important;
   }
@@ -122,9 +122,12 @@ function switchExpand(item, e) {
   }
 
   .left {
-    display: flex;
     flex: 1;
-    align-items: center;
+    margin-right: 8px;
+    //  添加省略号
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }
 
@@ -135,17 +138,25 @@ function switchExpand(item, e) {
   margin-left: 20px;
 
   .left {
-    display: flex;
-    align-items: center;
+    flex: 1;
+    display: inline-block;
+    margin-right: 8px;
+    //margin-left: 16px;
+    //  添加省略号
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .right {
     display: flex;
     align-items: center;
+    width: 60px;
+    justify-content: flex-end;
 
     .ant-tag {
       margin-left: 4px;
-      margin-right: 0px;
+      margin-right: 4px;
     }
   }
 }

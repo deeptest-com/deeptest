@@ -6,19 +6,7 @@
    </div>
 
     <div class="send">
-<!--      <a-dropdown-button type="primary" trigger="click" @click="sendRequest">-->
-<!--        <span>发送</span>-->
 
-<!--        <template #overlay>-->
-<!--          <a-menu>-->
-<!--            <a-menu-item @click="clearAll" key="clearAll">-->
-<!--              <UndoOutlined />-->
-<!--              全部清除-->
-<!--            </a-menu-item>-->
-<!--          </a-menu>-->
-<!--        </template>-->
-<!--        <template #icon><DownOutlined /></template>-->
-<!--      </a-dropdown-button>-->
       <a-button type="primary" trigger="click" @click="sendRequest">
         <span>发送</span>
       </a-button>
@@ -29,35 +17,18 @@
         <SaveOutlined />
         保存
       </a-button>
-<!--      <a-dropdown-button trigger="click" @click="save" class="dp-bg-light">-->
-<!--        <SaveOutlined />-->
-<!--        保存-->
-<!--        <template #overlay>-->
-<!--          <a-menu>-->
-<!--            <a-menu-item @click.prevent="none" key="copyLink" class="edit-name">-->
-<!--              <div class="dp-edit-interface-name">-->
-<!--                <div class="left">-->
-<!--                  <a-input @click.stop v-model:value="debugData.name" />-->
-<!--                </div>-->
-<!--                <div class="right">-->
-<!--                  <CheckOutlined @click.stop="saveName" class="save-button" />-->
-<!--                </div>-->
-<!--              </div>-->
-<!--            </a-menu-item>-->
 
-<!--            <a-menu-item @click="copyLink" key="copyLink">-->
-<!--              <LinkOutlined />-->
-<!--              复制链接-->
-<!--            </a-menu-item>-->
-
-<!--            <a-menu-item @click="saveAs" key="saveAs">-->
-<!--              <LinkOutlined />-->
-<!--              另存为-->
-<!--            </a-menu-item>-->
-<!--          </a-menu>-->
-<!--        </template>-->
-<!--        <template #icon><DownOutlined /></template>-->
-<!--      </a-dropdown-button>-->
+    </div>
+    <div v-if="usedBy===UsedBy.ScenarioDebug" class="sync">
+      <a-button trigger="click" @click="sync" class="dp-bg-light">
+        同步
+      </a-button>
+    </div>
+    <div v-if="usedBy===UsedBy.ScenarioDebug" class="save-scenario">
+      <a-button trigger="click" @click="saveScenarioInterface" class="dp-bg-light">
+        <SaveOutlined />
+        保存
+      </a-button>
     </div>
 
     <ContextMenu
@@ -100,6 +71,14 @@ const props = defineProps({
     type: Function as PropType<(data) => void>,
     required: true
   },
+  onSaveScenarioInterface: {
+    type: Function as PropType<(data) => void>,
+    required: true
+  },
+  onSync: {
+    type: Function as PropType<() => void>,
+    required: true
+  },
   showDebugDataUrl: {
     type: Boolean,
     required: false,
@@ -134,6 +113,20 @@ const save = (e) => {
   }
 };
 
+const saveScenarioInterface = (e) => {
+  let data = JSON.parse(JSON.stringify(debugData.value))
+  data = prepareDataForRequest(data)
+
+  if (validateInfo()) {
+    props.onSaveScenarioInterface(data)
+  }
+};
+
+const sync = (e) => {
+  if (validateInfo()) {
+    props.onSync()
+  }
+};
 const saveName = (e) => {
   console.log('saveName', e)
   e.preventDefault();
@@ -166,7 +159,7 @@ const validateInfo = () => {
     notification.warn({
       key: NotificationKeyCommon,
       message: msg,
-      placement: 'bottomLeft'
+      placement: 'topRight'
     });
 
     return false
@@ -228,6 +221,12 @@ const onMenuClick = (key) => {
     width: 96px;
   }
   .save {
+    width: 110px;
+  }
+  .sync {
+    width: 110px;
+  }
+  .save-scenario {
     width: 110px;
   }
 }

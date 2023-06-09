@@ -50,6 +50,7 @@
               <a-select @change="securityChange"
                         allowClear
                         placeholder="请选择 Security"
+                        @focus="getSecurityOpts"
                         :value="selectedMethodDetail.security || null"
                         :options="securityOpts" style="width: 300px;"/>
               <a-tooltip placement="topLeft" arrow-point-at-center title="去添加或编辑 Security">
@@ -165,6 +166,12 @@ function securityChange(val) {
 function setSecurity() {
   collapse.value = true;
   showSecurity.value = true;
+}
+
+async function getSecurityOpts() {
+    await store.dispatch('Endpoint/getSecurityList', {
+      id: endpointDetail.value.serveId
+    });
 }
 
 function addCookie() {

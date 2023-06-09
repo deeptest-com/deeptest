@@ -5,7 +5,10 @@
       <RequestInvocation
         :showDebugDataUrl="showDebugDataUrl"
         :onSend="invokeInterface"
-        :onSave="saveInterface">
+        :onSave="saveInterface"
+        :onSaveScenarioInterface="saveScenarioInterface"
+        :onSync="syncDebugData"
+      >
       </RequestInvocation>
     </template>
 
@@ -42,8 +45,9 @@ const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
 
 import {StateType as Debug} from "@/views/component/debug/store";
+import {StateType as Scenario} from "@/views/scenario/store";
 import {DebugInfo} from "@/views/component/debug/data";
-const store = useStore<{  Debug: Debug }>();
+const store = useStore<{  Debug: Debug, Scenario: Scenario }>();
 
 const debugInfo = computed<DebugInfo>(() => store.state.Debug.debugInfo);
 const debugData = computed<any>(() => store.state.Debug.debugData);
@@ -81,6 +85,36 @@ const saveInterface = async (data) => {
       message: `保存失败`,
     });
   }
+};
+
+//保存场景调试数据
+const saveScenarioInterface = async (data) => {
+  const obj = Object.assign({}, data)
+  delete obj.shareVars
+  delete obj.envVars
+  delete obj.globalEnvVars
+  delete obj.globalParamVars
+
+  const res = await store.dispatch('Scenario/saveScenarioDebugData', obj)
+  if (res === true) {
+    notification.success({
+      key: NotificationKeyCommon,
+      message: `保存成功`,
+    });
+  } else {
+    notification.success({
+      key: NotificationKeyCommon,
+      message: `保存失败`,
+    });
+  }
+};
+
+const syncDebugData = async () => {
+  await store.dispatch('Debug/loadDataAndInvocations', {
+    endpointInterfaceId: debugData.value.endpointInterfaceId,
+    scenarioProcessorId: 0,
+    usedBy: UsedBy.InterfaceDebug,
+  });
 };
 
 onMounted(() => {

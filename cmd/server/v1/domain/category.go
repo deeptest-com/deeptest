@@ -22,7 +22,7 @@ type CategoryCreateReq struct {
 	Type      serverConsts.CategoryDiscriminator `json:"type"`
 	ServeId   uint                               `json:"serveId"`
 	ModuleId  string                             `json:"moduleId"`
-	TargetId  uint                               `json:"targetId"`
+	TargetId  int                                `json:"targetId"`
 	ProjectId uint                               `json:"projectId"`
 }
 

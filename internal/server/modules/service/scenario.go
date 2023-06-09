@@ -36,8 +36,8 @@ func (s *ScenarioService) GetById(id uint) (model.Scenario, error) {
 	return s.ScenarioRepo.Get(id)
 }
 
-func (s *ScenarioService) Create(req model.Scenario) (po model.Scenario, bizErr *_domain.BizErr) {
-	po, bizErr = s.ScenarioRepo.Create(req)
+func (s *ScenarioService) Create(req model.Scenario) (po model.Scenario, err error) {
+	po, err = s.ScenarioRepo.Create(req)
 
 	s.ScenarioNodeRepo.CreateDefault(po.ID, req.ProjectId, req.CreateUserId)
 

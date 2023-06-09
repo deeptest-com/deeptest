@@ -218,3 +218,7 @@ func (r *ScenarioNodeRepo) GetNumberByScenariosAndEntityCategory(scenarioIds []u
 	err = db.Count(&num).Error
 	return
 }
+
+func (r *ScenarioNodeRepo) UpdateEntityId(id, entityId uint) error {
+	return r.DB.Model(model.Processor{}).Where("id=?", id).Update("entity_id", entityId).Error
+}

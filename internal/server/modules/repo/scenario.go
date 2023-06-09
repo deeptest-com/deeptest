@@ -116,17 +116,16 @@ func (r *ScenarioRepo) FindByName(scenarioName string, id uint) (scenario model.
 	return
 }
 
-func (r *ScenarioRepo) Create(scenario model.Scenario) (ret model.Scenario, bizErr *_domain.BizErr) {
+func (r *ScenarioRepo) Create(scenario model.Scenario) (ret model.Scenario, err error) {
 	//po, err := r.FindByName(scenario.Name, 0)
 	//if po.Name != "" {
 	//	bizErr = &_domain.BizErr{Code: _domain.ErrNameExist.Code}
 	//	return
 	//}
 
-	err := r.DB.Model(&model.Scenario{}).Create(&scenario).Error
+	err = r.DB.Model(&model.Scenario{}).Create(&scenario).Error
 	if err != nil {
 		logUtils.Errorf("add scenario error", zap.String("error:", err.Error()))
-		bizErr = &_domain.BizErr{Code: _domain.SystemErr.Code}
 
 		return
 	}
@@ -134,8 +133,6 @@ func (r *ScenarioRepo) Create(scenario model.Scenario) (ret model.Scenario, bizE
 	err = r.UpdateSerialNumber(scenario.ID, scenario.ProjectId)
 	if err != nil {
 		logUtils.Errorf("update scenario serial number error", zap.String("error:", err.Error()))
-		bizErr = &_domain.BizErr{Code: _domain.SystemErr.Code}
-
 		return
 	}
 	ret = scenario

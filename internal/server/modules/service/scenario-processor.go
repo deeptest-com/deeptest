@@ -17,9 +17,10 @@ type ScenarioProcessorService struct {
 	DebugInterfaceRepo    *repo.DebugInterfaceRepo     `inject:""`
 	ServeServerRepo       *repo.ServeServerRepo        `inject:""`
 
-	ExtractorService      *ExtractorService      `inject:""`
-	CheckpointService     *CheckpointService     `inject:""`
-	DebugInterfaceService *DebugInterfaceService `inject:""`
+	ExtractorService         *ExtractorService         `inject:""`
+	CheckpointService        *CheckpointService        `inject:""`
+	DebugInterfaceService    *DebugInterfaceService    `inject:""`
+	ScenarioInterfaceService *ScenarioInterfaceService `inject:""`
 }
 
 func (s *ScenarioProcessorService) GetEntity(id int) (ret interface{}, err error) {
@@ -87,7 +88,7 @@ func (s *ScenarioProcessorService) GetEntityTo(processorTo *agentExec.Processor)
 
 	switch processor.EntityCategory {
 	case consts.ProcessorInterface:
-		debugData, _ := s.DebugInterfaceService.GetDebugInterface(processor.EndpointInterfaceId)
+		debugData, _ := s.ScenarioInterfaceService.GetScenarioInterface(processor.EndpointInterfaceId)
 
 		interfaceEntity := agentExec.ProcessorInterface{}
 		copier.CopyWithOption(&interfaceEntity, debugData, copier.Option{DeepCopy: true})

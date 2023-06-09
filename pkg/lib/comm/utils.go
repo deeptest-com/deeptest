@@ -167,3 +167,7 @@ func ArrayRemoveUintDuplication(arr []uint) []uint {
 
 	return arr[:j]
 }
+
+func Map2Struct(m interface{}, s interface{}) {
+	JsonDecode(JsonEncode(m), s)
+}

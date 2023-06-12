@@ -3,6 +3,7 @@
 -->
 <template>
   <a-menu style="width: 100%;
+          height: auto;
           padding-top: 8px;"
           class="docs-menu"
           mode="inline">
@@ -11,7 +12,7 @@
                  @click="select(item)"
                  :class="{'hide': item.endpointInfo && item.serveInfo && openKeysMap[item.serveId]}">
       <!-- ::::服务信息 -->
-      <div class="menus-title" v-if="item.endpointList">
+      <div class="menus-title" v-if="item.servers">
         <div class="icon" @click="(event) => {switchExpand(item,event)}">
           <RightOutlined class="expand-icon" :class="!openKeysMap[item.id] ? 'open' : ''"/>
         </div>
@@ -92,7 +93,10 @@ function select(item) {
 </script>
 <style lang="less" scoped>
 .docs-menu {
+  height: 100%;
+  //margin-left: 1px;
   position: relative;
+  //border-left: 1px solid #f0f0f0;
   //:deep(.ant-menu-submenu-title) {
   //  position: relative;
   //}

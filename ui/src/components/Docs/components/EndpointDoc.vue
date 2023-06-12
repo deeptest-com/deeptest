@@ -4,9 +4,8 @@
 <template>
   <div class="doc-content" v-if="info?.name">
     <div class="serve-info" v-if="!isInterface">
-      <H1>{{ info.name }}</H1>
+      <h1>{{ info.name }}</h1>
       <a-tag>v1.0</a-tag>
-
       <div class="serve-info-block">
         <div class="title"><strong>服务信息</strong></div>
         <div class="item" v-for="serve in serveList" :key="serve.url">
@@ -14,19 +13,12 @@
           <span>{{ serve.url }}</span>
         </div>
       </div>
-
-      <div class="serve-security-block" v-if="info?.Securities">
-        <div class="header"><strong>Security</strong></div>
-        <template v-for="item in info?.Securities" :key="item.id">
-          <div class="title"><strong>{{ item.type }}</strong></div>
-          <div class="item">{{ item.name }}</div>
-        </template>
-      </div>
+      <Securitys :items="info?.securities"/>
 
     </div>
     <div class="interface-info" v-if="isInterface">
-      <H1>{{ info.name }}</H1>
-      <p class="ant-typography">{{ info.description || '暂无描述信息' }}</p>
+      <h1>{{ info.name }}</h1>
+      <p class="ant-typography" v-if="info.description">{{ info.description }}</p>
       <div class="url-info-block">
         <div class="path-info" v-for="path in paths" :key="path.path">
           <span><strong>{{ path.name }}：</strong></span>
@@ -37,38 +29,36 @@
             </span>
         </div>
       </div>
-
       <div class="interface-request">
         <H2>请求信息</H2>
-        <div class="req-item req-path-params">
-          <H3>路径参数（Path Parameters）</H3>
-        </div>
-
-        <div class="req-item req-path-params">
+        <div class="req-item req-path-params" v-if="info?.endpointInfo.security">
           <H3>请求鉴权（Security）</H3>
+          <Security :items="info.endpointInfo.security"/>
         </div>
-
-        <div class="req-item req-path-params">
+        <div class="req-item req-path-params" v-if="info?.endpointInfo.pathParams">
+          <H3>路径参数（Path Parameters）</H3>
+          <Parameters :items="info?.endpointInfo.pathParams"/>
+        </div>
+        <div class="req-item req-path-params" v-if="info?.endpointInfo.headers">
           <H3>请求Header（Headers）</H3>
+          <Parameters :items="info?.endpointInfo.headers"/>
         </div>
-
-        <div class="req-item req-path-params">
+        <div class="req-item req-path-params" v-if="info?.endpointInfo.params">
           <H3>请求参数（Query Parameters）</H3>
+          <Parameters :items="info?.endpointInfo.params"/>
         </div>
-
-
-        <div class="req-item req-path-params">
+        <div class="req-item req-path-params" v-if="info?.endpointInfo.cookies">
           <H3>请求Cookie（Cookies）</H3>
+          <Parameters :items="info?.endpointInfo.cookies"/>
         </div>
-
-        <div class="req-item req-path-params">
-          <H3 class="body-header">请求体（Request Body） <a-tag class="tag" color="default">{{info.requestBody.mediaType}}</a-tag></H3>
-          <p>{{info.requestBody.description || '无描述信息'}}</p>
+        <div class="req-item req-path-params" v-if="info.requestBody.mediaType">
+          <H3 class="body-header">请求体（Request Body）
+            <a-tag class="tag" color="default">{{ info.requestBody.mediaType }}</a-tag>
+          </H3>
+          <p>{{ info.requestBody.description || '无描述信息' }}</p>
+          <SchemaViewer/>
         </div>
-
-
       </div>
-
       <div class="interface-response">
         <div class="header">
           <H2>响应信息</H2>
@@ -85,24 +75,25 @@
           </a-checkable-tag>
         </div>
       </div>
-
       <div class="content"
            v-for="res in info?.responseBodies"
            :key="res?.code"
            v-show="selectedCode === res.code">
         <div class="res-item res-desc">
-          <p>{{res.description || '无描述信息'}}</p>
+          <p>{{ res.description || '无描述信息' }}</p>
         </div>
         <div class="res-item res-path-params">
           <H3>响应Header（Headers）</H3>
+          <Parameters/>
         </div>
         <div class="res-item res-path-params">
-          <H3 class="body-header">响应体（Response Body） <a-tag class="tag" color="default">{{res.mediaType}}</a-tag></H3>
-          <p>{{res.description || '无描述信息'}}</p>
+          <H3 class="body-header">响应体（Response Body）
+            <a-tag class="tag" color="default">{{ res.mediaType }}</a-tag>
+          </H3>
+          <p>{{ res.description || '无描述信息' }}</p>
+          <SchemaViewer/>
         </div>
       </div>
-
-
     </div>
   </div>
 </template>
@@ -117,6 +108,10 @@ import {
 
 import {DownOutlined, RightOutlined} from '@ant-design/icons-vue';
 import {getMethodColor, getCodeColor} from "../hooks/index"
+import Parameters from "./Parameters.vue"
+import Security from "./Security.vue"
+import Securitys from "./Securitys.vue"
+import SchemaViewer from "./SchemaViewer/index.vue"
 
 const props = defineProps(['info']);
 
@@ -157,7 +152,7 @@ const serveList = computed(() => {
 watch(() => {
   return props.info
 }, (newVal) => {
-  console.log(newVal)
+  console.log(832, newVal)
 }, {immediate: true})
 
 
@@ -170,7 +165,7 @@ function selectCode(code) {
 </script>
 <style lang="less" scoped>
 .doc-content {
-  margin: 0 16px;
+  //margin: 0 16px;
 
   .serve-info {
 
@@ -207,7 +202,7 @@ function selectCode(code) {
 
     .title {
       background-color: hsla(218, 28%, 18%, 1);
-      color: #ffffffa6;
+      color: #ffffff;
       height: 36px;
       line-height: 36px;
       padding-left: 16px;
@@ -274,10 +269,11 @@ function selectCode(code) {
   }
 
 
-  .body-header{
+  .body-header {
     display: flex;
     align-items: center;
-    .tag{
+
+    .tag {
       margin-left: 16px;
     }
   }

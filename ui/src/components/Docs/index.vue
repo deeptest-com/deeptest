@@ -1,0 +1,120 @@
+<!-- :::: 接口定义模块 -->
+<template>
+  <div class="content">
+    <BasicDetail :items="items" v-if="showBasicInfo"/>
+    <a-divider style="margin:0" v-if="showBasicInfo"/>
+    <div class="doc-container">
+      <div class="left" v-if="showMenu">
+        <LeftTreeView :serviceList="serviceList" @select="selectMenu"/>
+      </div>
+      <div class="right" :class="{'only-docs':!showMenu}">
+        <EndpointDoc v-if="selectedItem" :info="selectedItem"/>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script lang="ts" setup>
+import {
+  ref,
+  defineProps,
+  defineEmits,
+  computed, onMounted, watch,
+} from 'vue';
+import {useStore} from "vuex";
+
+import BasicDetail from "./components/BasicDetail.vue";
+import LeftTreeView from "./components/LeftTreeView.vue";
+import EndpointDoc from "./components/EndpointDoc.vue";
+
+const store = useStore<{ Endpoint, ProjectGlobal }>();
+const props = defineProps(['showBasicInfo', 'showMenu', 'data']);
+const emit = defineEmits([]);
+
+const items = computed(() => {
+  return [
+    {
+      label: '项目名称',
+      value: props?.data?.name,
+    },
+    {
+      label: '项目描述',
+      value: props?.data?.desc,
+    },
+  ]
+})
+
+const serviceList = computed(() => {
+  // 组装数据以兼容组件 LeftTreeMenu
+  let items: any = [];
+  props?.data?.serves.forEach((item: any) => {
+    items.push(item);
+    item?.endpoints?.forEach((endpoint: any) => {
+      endpoint?.interfaces?.forEach((interfaceItem: any) => {
+        items.push({
+          ...interfaceItem,
+          endpointInfo: endpoint,
+          serveInfo: item,
+          serveId: item.id,
+        });
+      })
+    })
+  })
+  return items;
+})
+
+const selectedItem = ref(null);
+
+watch(() => {
+  return serviceList.value
+}, (newVal) => {
+  if (!selectedItem.value && newVal.length > 0) {
+    selectedItem.value = newVal.find((item) => {
+      return item.endpointInfo && item.serveInfo;
+    })
+  }
+}, {immediate: true});
+
+
+function selectMenu(item) {
+  selectedItem.value = item
+}
+
+
+</script>
+
+<style lang="less" scoped>
+.content {
+  //padding: 24px;
+  height: calc(100vh - 200px);
+  position: relative;
+
+}
+
+.doc-container {
+  display: flex;
+  height: 100%;
+
+  .left {
+    width: 300px;
+    height: 100%;
+    overflow: hidden;
+    //margin-left: 24px;
+    //padding: 24px;
+    //border-left: 1px solid #f0f0f0;
+    overflow-y: scroll;
+  }
+
+  .right {
+    flex: 1;
+    height: 100%;
+    overflow: auto;
+    padding: 24px;
+    padding-bottom: 96px;
+  }
+
+  .only-docs {
+    padding: 0;
+  }
+}
+</style>

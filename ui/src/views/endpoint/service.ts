@@ -11,22 +11,26 @@ export async function query(params?: QueryParams): Promise<any> {
         params,
     });
 }
+
 export async function get(id: number): Promise<any> {
     return request({url: `/${apiPath}/${id}`});
 }
+
 export async function getDetail(id: number): Promise<any> {
     const params = {
         detail: true,
     }
     return request({url: `/${apiPath}/${id}`, params});
 }
+
 export async function save(data: any): Promise<any> {
     return request({
         url: `/${apiPath}`,
-        method: data.id? 'PUT': 'POST',
+        method: data.id ? 'PUT' : 'POST',
         data: data,
     });
 }
+
 export async function remove(id: number): Promise<any> {
     return request({
         url: `/${apiPath}/${id}`,
@@ -54,7 +58,7 @@ export async function listEndpointInterface(data: any, pagination: any) {
             ...pagination,
             ...data,
         }
-    }))  as any;
+    })) as any;
 
     if (resp.code != 0) return;
 
@@ -132,7 +136,6 @@ export async function saveEndpoint(data: any): Promise<any> {
 }
 
 
-
 /**
  * 更新接口状态
  * */
@@ -140,5 +143,17 @@ export async function updateStatus(data: any): Promise<any> {
     return request({
         url: `/endpoint/updateStatus?id=${data.id}&status=${data.status}`,
         method: 'put',
+    });
+}
+
+
+/**
+ * 获取接口文档信息
+ * */
+export async function getDocs(data: any): Promise<any> {
+    return request({
+        url: `/document`,
+        method: 'post',
+        data: data
     });
 }

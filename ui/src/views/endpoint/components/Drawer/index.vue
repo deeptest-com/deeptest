@@ -40,7 +40,10 @@
           <EndpointDebug v-if="key === 'run'" @switchToDefineTab="switchToDefineTab"/>
         </a-tab-pane>
         <a-tab-pane key="docs" tab="文档">
-          <Docs v-if="key === 'docs'" @switchMode="switchMode"/> <!-- use v-if to force page reload-->
+          <Docs :show-basic-info="false"
+                v-if="key === 'docs' && docsData"
+                :data="docsData"
+                :show-menu="true"/> <!-- use v-if to force page reload-->
         </a-tab-pane>
       </a-tabs>
     </a-card>
@@ -65,7 +68,7 @@ import EditAndShowField from '@/components/EditAndShow/index.vue';
 import ConBoxTitle from '@/components/ConBoxTitle/index.vue';
 import EndpointDefine from './Define/index.vue';
 import EndpointDebug from './Debug/index.vue';
-import Docs from './Docs/index.vue';
+import Docs from '@/components/Docs/index.vue';
 
 import {useStore} from "vuex";
 import {Endpoint} from "@/views/endpoint/data";
@@ -86,6 +89,8 @@ function onCloseDrawer() {
   emit('close');
 }
 
+const docsData = ref(null);
+
 async function changeTab(value) {
   key.value = value;
   // 切换到调试页面时，需要先保存
@@ -96,13 +101,20 @@ async function changeTab(value) {
     // 获取最新的接口详情,比如新增的 接口的id可能会变化，所以需要重新获取
     await store.dispatch('Endpoint/getEndpointDetail', {id: endpointDetail.value.id});
   }
+  if (value === 'docs') {
+    const res = await store.dispatch('Endpoint/getDocs', {
+      endpointIds: [endpointDetail.value.id],
+    });
+    docsData.value = res;
+  }
 }
 
 function switchToDefineTab() {
-    key.value = 'request';
+  key.value = 'request';
 }
 
 const showFooter = ref(true);
+
 function switchMode(val) {
   showFooter.value = (val === 'form');
 }

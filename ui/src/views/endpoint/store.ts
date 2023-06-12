@@ -12,7 +12,7 @@ import {
     get,
     save,
     remove,
-    getYaml, updateStatus
+    getYaml, updateStatus, getDocs
 } from './service';
 import {
     loadCategory,
@@ -121,6 +121,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         getRefsOptions: Action<StateType, StateType>;
         getAllRefs: Action<StateType, StateType>;
         getRefDetail: Action<StateType, StateType>;
+        getDocs: Action<StateType, StateType>;
     }
 }
 
@@ -619,6 +620,18 @@ const StoreModel: ModuleType = {
         // 获取可选组件信息
         async getRefDetail({commit}, payload: any) {
             const res = await getSchemaDetail({
+                ...payload,
+            });
+            if (res.code === 0) {
+                return res.data;
+            } else {
+                return null;
+            }
+        },
+
+        // 获取可选组件信息
+        async getDocs({commit}, payload: any) {
+            const res = await getDocs({
                 ...payload,
             });
             if (res.code === 0) {

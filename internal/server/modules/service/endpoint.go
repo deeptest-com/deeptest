@@ -15,8 +15,7 @@ type EndpointService struct {
 	ServeRepo              *repo.ServeRepo              `inject:""`
 	EndpointInterfaceRepo  *repo.EndpointInterfaceRepo  `inject:""`
 	ProcessorInterfaceRepo *repo.ProcessorInterfaceRepo `inject:""`
-
-	ServeServerRepo *repo.ServeServerRepo `inject:""`
+	ServeServerRepo        *repo.ServeServerRepo        `inject:""`
 }
 
 func NewEndpointService() *EndpointService {

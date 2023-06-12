@@ -13,7 +13,7 @@ type DocumentModule struct {
 func (m *DocumentModule) Party() module.WebModule {
 	handler := func(public iris.Party) {
 		//public.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
-		public.Get("/", m.DocumentCtrl.Index).Name = "接口文档"
+		public.Post("/", m.DocumentCtrl.Index).Name = "接口文档"
 
 	}
 	return module.NewModule("/document", handler)

@@ -408,3 +408,14 @@ func (r *EnvironmentRepo) SaveOrder(ids []uint) (err error) {
 		return nil
 	})
 }
+
+func (r *EnvironmentRepo) GetByIds(ids []uint) (envs map[uint]model.Environment, err error) {
+	var res []model.Environment
+	err = r.DB.Where("NOT disabled and NOT deleted and id in ?", ids).Find(&res).Error
+
+	envs = make(map[uint]model.Environment)
+	for _, item := range res {
+		envs[item.ID] = item
+	}
+	return
+}

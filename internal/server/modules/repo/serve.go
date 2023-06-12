@@ -453,3 +453,32 @@ func (r *ServeRepo) AddDefaultServer(projectId, serveId uint) (err error) {
 
 	return
 }
+
+func (r *ServeRepo) GetServesByIds(ids []uint) (serves []model.Serve, err error) {
+	err = r.DB.Where("id in ? AND not deleted AND not disabled ", ids).Find(&serves).Error
+	return
+}
+
+func (r *ServeRepo) GetSchemas(serveIs []uint) (res []model.ComponentSchema, err error) {
+	err = r.DB.Where("NOT deleted AND not disabled and serve_id in ?", serveIs).Find(&res).Error
+	return
+}
+
+func (r *ServeRepo) GetSecurities(serveIs []uint) (res []model.ComponentSchemaSecurity, err error) {
+	err = r.DB.Where("NOT deleted AND not disabled and serve_id in ?", serveIs).Find(&res).Error
+	return
+}
+
+func (r *ServeRepo) GetServers(serveIs []uint) (res []model.ServeServer, err error) {
+	err = r.DB.Where("NOT deleted AND not disabled and serve_id in ?", serveIs).Find(&res).Error
+	var environmentIds []uint
+	for _, server := range res {
+		environmentIds = append(environmentIds, server.EnvironmentId)
+	}
+
+	environments, _ := r.EnvironmentRepo.GetByIds(environmentIds)
+	for key, server := range res {
+		res[key].EnvironmentName = environments[server.EnvironmentId].Name
+	}
+	return
+}

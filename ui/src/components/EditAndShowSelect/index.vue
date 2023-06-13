@@ -11,7 +11,7 @@
         :options="options">
     </a-select>
   </div>
-  <div :class="['editor', customClass]" v-else>
+  <div :class="['editor','show-on-hover', customClass]" v-else>
     <span class="title" @click.stop="handleClick">{{ label }}</span> &nbsp;&nbsp;
     <span class="edit-icon"><EditOutlined @click.stop="isEditing = true"/></span>
   </div>

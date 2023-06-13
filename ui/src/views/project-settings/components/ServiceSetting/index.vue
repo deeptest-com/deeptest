@@ -59,6 +59,9 @@
                   <a-menu-item key="6">
                     <a class="operation-a" href="javascript:void (0)" @click="onDelete(record)">删除</a>
                   </a-menu-item>
+                  <a-menu-item key="7">
+                    <a class="operation-a" href="javascript:void (0)" @click="goDocs(record)">查看文档</a>
+                  </a-menu-item>
                 </a-menu>
               </template>
             </a-dropdown>
@@ -215,6 +218,11 @@ async function onDelete(record: any) {
       store.dispatch('ProjectSetting/deleteStoreServe', { id: record.id, projectId: currProject.value.id });
     }
   })
+}
+
+/*查看选中的接口文档*/
+function goDocs(record: any) {
+  window.open(`/#/endpoint/docs?serveIds=${record.id}`);
 }
 
 async function onDisabled(record: any) {

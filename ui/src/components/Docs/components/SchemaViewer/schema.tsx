@@ -28,22 +28,20 @@ export default defineComponent({
         value: Object,
         contentStyle: Object,
         serveId: Number,
-        refsOptions: Array
+        refsOptions: Array,
+        components: Array,
     },
     emits: ['change'],
     setup(props, {emit}) {
         const store = useStore<{ Endpoint, ServeGlobal: ServeStateType }>();
         const data: any = ref(null);
-        const expandIt = async (tree: any, options: any, e: any) => {
+        const expandIt = (tree: any, options: any, e: any) => {
             const {parent, ancestor, isRoot} = options;
             // 异步获取组件详情信息
             if (tree.ref) {
                 // 如果没有引用组件内容，需要获取组件详情
                 if (!tree.content) {
-                    const result = await store.dispatch('Endpoint/getRefDetail', {
-                        ref: tree.ref,
-                        serveId: props.serveId
-                    })
+                    const result: any = (props.components || []).find((item: any) => item.ref === tree.ref);
                     tree.content = JSON.parse(result.content || '{}');
                     data.value = addExtraViewInfo(data.value);
                 } else {
@@ -53,124 +51,7 @@ export default defineComponent({
                 tree.extraViewInfo.isExpand = !tree.extraViewInfo.isExpand;
             }
         }
-        const addProps = (tree: any, e: any) => {
-            tree.properties = tree.properties || {};
-            const keys = Object.keys(tree.properties);
-            keys.push(`name${keys.length + 1}`);
-            const newVal: any = {type: 'string'};
-            const newObj: any = {};
-            keys.forEach((item) => {
-                if (tree.properties[item]) {
-                    newObj[item] = tree.properties[item];
-                } else {
-                    newObj[item] = newVal;
-                }
-            })
-            tree.properties = {...newObj};
-            data.value = addExtraViewInfo(data.value);
-        }
 
-        const dataTypeChange = (options?: any, newProps?: any) => {
-            const {parent, keyName, depth, ancestor} = options;
-            const firstType = newProps?.[0]?.type;
-            // 如果是根节点
-            if (depth === 1) {
-                if (isArray(firstType)) {
-                    data.value = generateSchemaByArray(newProps);
-                } else {
-                    data.value = {
-                        ...newProps[0]
-                    }
-                }
-                // 非根节点
-            } else {
-                //  数组类型, 且个数大于等于 1 ，需要生成新的schema
-                if (newProps?.length >= 1 && isArray(firstType)) {
-                    const items = parent?.type === 'array' ? ancestor : parent;
-                    if (items?.properties?.[keyName]) {
-                        items.properties[keyName] = generateSchemaByArray(newProps);
-                        console.log('123', items.properties[keyName]);
-                    }
-                    // 非数组类型
-                } else if (newProps?.length === 1 && !isArray(firstType)) {
-                    const items = parent?.type === 'array' ? ancestor : parent;
-                    if (items?.properties?.[keyName]) {
-                        items.properties[keyName] = Object.assign(items.properties[keyName], {...newProps[0]})
-                    }
-                }
-            }
-            data.value = addExtraViewInfo(data.value);
-            console.log('change datatype  data.value', data.value);
-        }
-        const moveUp = (keyIndex: any, parent: any) => {
-            const keys = Object.keys(parent.properties);
-            // 互换两个元素的位置
-            [keys[keyIndex - 1], keys[keyIndex]] = [keys[keyIndex], keys[keyIndex - 1]];
-            const newObj: any = {};
-            keys.forEach((item) => {
-                newObj[item] = parent.properties[item];
-            })
-            parent.properties = {...newObj};
-            data.value = addExtraViewInfo(data.value);
-        };
-        const moveDown = (keyIndex: number, parent: any) => {
-            const keys = Object.keys(parent.properties);
-            // 互换两个元素的位置
-            [keys[keyIndex + 1], keys[keyIndex]] = [keys[keyIndex], keys[keyIndex + 1]];
-            const newObj: any = {};
-            keys.forEach((item) => {
-                newObj[item] = parent.properties[item];
-            })
-            parent.properties = {...newObj};
-            data.value = addExtraViewInfo(data.value);
-        };
-        const copy = (keyIndex: any, parent: any) => {
-            const keys = Object.keys(parent.properties);
-            const key = keys[keyIndex];
-            const copyObj = cloneDeep(parent.properties[key]);
-            let keyCopyName = `${key}-copy`;
-            if (keys.includes(keyCopyName)) {
-                keyCopyName = `${keyCopyName}-copy`;
-            }
-            keys.splice(keyIndex + 1, 0, `${keyCopyName}`);
-            console.log('keys', keys);
-            const newObj: any = {};
-            keys.forEach((item, index: number) => {
-                if (parent.properties[item]) {
-                    newObj[item] = parent.properties[item];
-                } else {
-                    newObj[item] = copyObj;
-                }
-            })
-            parent.properties = {...newObj};
-            data.value = addExtraViewInfo(data.value);
-        }
-        const setRequire = (keyIndex: any, parent: any) => {
-            const keys = Object.keys(parent.properties);
-            const key = keys[keyIndex];
-            parent.required = Array.isArray(parent?.required) ? parent?.required : [];
-            if (!parent.required.includes(key)) {
-                parent.required.push(key);
-            } else {
-                const index = parent.required.indexOf(key);
-                parent.required.splice(index, 1);
-            }
-
-        };
-        const addDesc = (tree: any, desc: string) => {
-            tree.description = desc;
-            data.value = addExtraViewInfo(data.value);
-        };
-        const del = (keyIndex: any, parent: any) => {
-            const keys = Object.keys(parent.properties);
-            keys.splice(keyIndex, 1);
-            const newObj: any = {};
-            keys.forEach((item) => {
-                newObj[item] = parent.properties[item];
-            })
-            parent.properties = {...newObj};
-            data.value = addExtraViewInfo(data.value);
-        };
         watch(() => {
             return props.value
         }, (newVal) => {
@@ -190,23 +71,27 @@ export default defineComponent({
             deep: true
         });
         const renderDivider = (options: any) => {
-            const {isRoot, isFirst, isLast, keyIndex, parent, ancestor, isRefChildNode} = options;
+            const {isRoot, isFirst, isLast, keyIndex, parent, ancestor, isRefChildNode, keyName} = options;
             const items = parent?.type === 'array' ? ancestor : parent;
+            const required = (items?.required || []).includes(keyName);
+            if (!required) {
+                return null;
+            }
             return <div class={'action'}>
                 <SplitDivider/>
             </div>
         }
         const renderExtraAction = (options: any) => {
-            const {isRoot, keyIndex, parent, tree, ancestor, isRefChildNode} = options;
+            const {isRoot, keyIndex, keyName, parent, tree, ancestor, isRefChildNode} = options;
             const items = parent?.type === 'array' ? ancestor : parent;
+            const required = (items?.required || []).includes(keyName);
             return <div class={'extraAction'}>
                 <ExtraInfo
                     isRoot={isRoot}
+                    required={required}
+                    deprecated={tree?.deprecated}
                     isRefChildNode={isRefChildNode || false}
-                    value={tree}
-                    onAddDesc={addDesc.bind(this, tree)}
-                    onDel={del.bind(this, keyIndex, items)}
-                    onSetRequire={setRequire.bind(this, keyIndex, items)}/>
+                    value={tree}/>
             </div>
         }
         const renderDataTypeSetting = (options: any) => {
@@ -223,17 +108,18 @@ export default defineComponent({
 
         const renderProperties = (options: any) => {
             const {keyName, parent, depth, isRoot} = options;
-            // console.log('renderProperties', options)
             if (isRoot) {
                 return null
             }
             if (!parent) {
                 return null;
             }
-            const properties = parent?.properties?.[keyName];
+
+            const properties = parent?.properties?.[keyName] || {};
+            console.log('832 properties', properties)
             const list: any = [];
             Object.entries(properties).forEach(([k, v]) => {
-                if (typeof v !== 'boolean' && !['type', 'properties', 'extraViewInfo'].includes(k)) {
+                if (typeof v !== 'boolean' && !['type', 'properties', 'extraViewInfo','ref','content','name'].includes(k)) {
                     if (!!v || v === 0) {
                         list.push({
                             label: k,
@@ -251,9 +137,11 @@ export default defineComponent({
                         const {label, value} = item;
                         return <div class={['directoryText', 'properties-info']}
                                     style={{'paddingLeft': `${depth * treeLevelWidth}px`}}>
-                            {label !== 'description'? <a-typography-text type="secondary">{label}：</a-typography-text> : null}
-                            {label === 'description'?  <a-typography-text>{value}</a-typography-text> : null}
-                            {label !== 'description'?  <a-typography-text type="secondary">{value}</a-typography-text> : null}
+                            {label !== 'description' ?
+                                <a-typography-text type="secondary">{label}：</a-typography-text> : null}
+                            {label === 'description' ? <a-typography-text>{value}</a-typography-text> : null}
+                            {label !== 'description' ?
+                                <a-typography-text type="secondary">{value}</a-typography-text> : null}
                         </div>
                     })
                 }
@@ -304,7 +192,7 @@ export default defineComponent({
             </div>)
         }
         const renderDirectoryText = (options: any) => {
-            const {depth, tree, isRefChildNode, isRoot,isExpand} = options;
+            const {depth, tree, isRefChildNode, isRoot, isExpand} = options;
             return <div class={'helo'}>
                 <div class={'directoryText'}
                      style={{'paddingLeft': `${depth * treeLevelWidth}px`}}>

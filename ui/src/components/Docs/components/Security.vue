@@ -18,7 +18,12 @@ import {
 
 import {DownOutlined, RightOutlined} from '@ant-design/icons-vue';
 
-
+// watch(() => {
+//   return props.item
+// }, (newVal) => {
+//   console.log(newVal)
+//   debugger;
+// }, {immediate: true})
 const props = defineProps(['item']);
 const emit = defineEmits([]);
 

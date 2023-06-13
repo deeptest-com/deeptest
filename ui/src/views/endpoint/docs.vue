@@ -14,24 +14,73 @@ import Docs from '@/components/Docs/index.vue';
 
 import {useStore} from "vuex";
 
-
 const store = useStore<{ Endpoint, ProjectGlobal }>();
+import {useRouter} from "vue-router";
 
+
+const router = useRouter();
+const query: any = router.currentRoute.value.query;
+const endpointIds: any = computed(() => {
+  if (query.endpointIds) {
+    return query.endpointIds.split(',').map((item: any) => {
+      return +item
+    })
+  } else {
+    return [];
+  }
+});
+const serveIds: any = computed(() => {
+  if (query.serveIds) {
+    return query.serveIds.split(',').map((item: any) => {
+      return +item;
+    })
+  } else {
+    return [];
+  }
+});
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 
 const data = ref<any>(null);
+
 watch(() => {
   return currProject.value.id;
 }, async (newVal) => {
+  if (endpointIds.value.length > 0 || serveIds.value.length > 0) {
+    return;
+  }
   if (newVal) {
-    const docs = await store.dispatch('Endpoint/getDocs', {
+    data.value = await store.dispatch('Endpoint/getDocs', {
       projectId: currProject.value.id,
     });
-    data.value = docs;
   }
 }, {
   immediate: true
 })
+
+watch(() => {
+  return endpointIds.value;
+}, async (newVal) => {
+  if (newVal && newVal.length > 0) {
+    data.value = await store.dispatch('Endpoint/getDocs', {
+      endpointIds: newVal,
+    })
+  }
+}, {
+  immediate: true
+})
+
+watch(() => {
+  return serveIds.value;
+}, async (newVal) => {
+  if (newVal && newVal.length > 0) {
+    data.value = await store.dispatch('Endpoint/getDocs', {
+      serveIds: newVal,
+    })
+  }
+}, {
+  immediate: true
+})
+
 
 </script>
 <style scoped lang="less">

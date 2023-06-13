@@ -6,6 +6,7 @@
           height: auto;
           padding-top: 8px;"
           class="docs-menu"
+          :selectedKeys="selectedKeys"
           mode="inline">
     <a-menu-item v-for="item in items"
                  :key="item.id"
@@ -56,6 +57,10 @@ const props = defineProps({
     required: true,
     type: Object,
   },
+  selectedKeys:{
+    required: true,
+    type: Array,
+  }
 })
 const emit = defineEmits(['select']);
 

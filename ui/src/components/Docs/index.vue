@@ -5,7 +5,7 @@
     <a-divider style="margin:0" v-if="showBasicInfo"/>
     <div class="doc-container">
       <div class="left" v-if="showMenu">
-        <LeftTreeView :serviceList="serviceList" @select="selectMenu"/>
+        <LeftTreeView :serviceList="serviceList" @select="selectMenu" :selectedKeys="selectedKeys"/>
       </div>
       <div class="right" :class="{'only-docs':!showMenu}">
         <EndpointDoc v-if="selectedItem" :info="selectedItem"/>
@@ -63,7 +63,14 @@ const serviceList = computed(() => {
   return items;
 })
 
-const selectedItem = ref(null);
+const selectedItem:any = ref(null);
+
+const selectedKeys = computed(() => {
+  if(!selectedItem.value?.id) {
+    return [];
+  }
+  return [selectedItem.value?.id];
+})
 
 watch(() => {
   return serviceList.value

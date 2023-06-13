@@ -1,83 +1,65 @@
 <template>
   <div class="body-schema">
-    <SchemaEditor :value="content"/>
+    <SchemaEditor :value="content" :components="components"/>
+    <div class="examples" v-if="examples?.length">
+      <h4>示例</h4>
+      <a-tabs :size="'small'">
+        <a-tab-pane v-for="(example,index) in examples"
+                    :key="index"
+                    :tab="example.name">
+          <MonacoEditor
+              class="editor"
+              :value="example.content"
+              :language="'json'"
+              :height="100"
+              theme="vs"
+              :options="{...MonacoOptions}"
+          />
+        </a-tab-pane>
+      </a-tabs>
+    </div>
   </div>
 </template>
 <script lang="ts" setup>
-import {
-  CloseOutlined,
-  EditOutlined,
-  DeleteOutlined,
-  InfoCircleOutlined,
-  PlusOutlined,
-} from '@ant-design/icons-vue';
 import {computed, defineProps, defineEmits, ref, watch} from "vue";
 import SchemaEditor from './schema';
 import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
 import {MonacoOptions} from '@/utils/const';
 
-const props = defineProps(['info']) ;
+const props = defineProps(['contentStr', 'examplesStr','components']);
 const examples: any = ref([]);
-
-const content: any = ref({
-  "type": "object",
-  "deprecated": false,
-  "minProperties": 1,
-  // "ref": "#dddd",
-  "properties": {
-    "name1": {
-      "type": "integer",
-      "enum": ['a', 'b', 'c'],
-      "format": null,
-      "behavior": null,
-      "default": "",
-      "example": "example",
-      "minimum": "",
-      "maximum": "",
-      "maxLength": "",
-      "multipleOf": "",
-      "exclusiveMin": false,
-      "exclusiveMax": false,
-      "deprecated": false
-    },
-    "name2": {
-      "type": "string",
-      "description": "description 12121212",
-    },
-    "obj1": {
-      "type": "object",
-      "example":"example 1 3 44",
-      "properties": {
-        "name1": {
-          "type": "integer",
-          "enum": ['a', 'b', 'c'],
-          "format": null,
-          "behavior": null,
-          "default": "",
-          "example": "example",
-          "minimum": "",
-          "maximum": "",
-          "maxLength": "",
-          "multipleOf": "",
-          "exclusiveMin": false,
-          "exclusiveMax": false,
-          "deprecated": false
-        },
-        "name2": {
-          "type": "string"
-        },
-      }
-    }
+const content: any = ref<any>(null);
+watch(() => {
+  return props.contentStr
+}, (newVal) => {
+  if (newVal) {
+    content.value = JSON.parse(newVal);
   }
-});
+}, {
+  immediate: true
+})
+
+watch(() => {
+  return props.examplesStr
+}, (newVal) => {
+  if (newVal) {
+    examples.value = JSON.parse(newVal);
+  }
+}, {
+  immediate: true
+})
 
 </script>
 
 
 <style lang="less" scoped>
 @import "var.less";
-.body-schema{
 
+.body-schema {
+
+  .examples{
+    margin-top: 16px;
+  }
 }
 
 </style>

@@ -7,25 +7,23 @@ import {
 } from '@ant-design/icons-vue';
 import {computed, defineProps, defineEmits, ref, watch} from "vue";
 
-const props = defineProps(['value']);
+const props = defineProps(['value','deprecated','required']) ;
 
 const emit = defineEmits([])
 
 const visible = ref(false);
 
+console.log(2222,props.value)
+
 </script>
 
 <template>
   <div>
-    <a-typography-text :strong="false" type="warning" style="margin-right: 6px;">
-      {{
-        value.deprecated ? 'deprecated' : 'deprecated'
-      }}
+    <a-typography-text v-if="deprecated" :strong="false" type="warning" style="margin-right: 6px;">
+      deprecated
     </a-typography-text>
-    <a-typography-text :strong="false" type="warning" >
-      {{
-        value.required ? 'required' : 'required'
-      }}
+    <a-typography-text v-if="required" :strong="false" type="warning" >
+      required
     </a-typography-text>
   </div>
 

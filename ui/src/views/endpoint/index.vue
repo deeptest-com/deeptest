@@ -10,13 +10,17 @@
           @click="collapsed = !collapsed" :collapsed="collapsed"/>
       <div :class="{'right': true, 'right-not-collapsed': !collapsed}">
         <div class="top-action">
-          <PermissionButton
-            class="action-new"
-            text="新建接口"
-            code="ENDPOINT-ADD"
-            type="primary"
-            :loading="loading"
-            @handle-access="handleCreateEndPoint" />
+          <div>
+            <PermissionButton
+                class="action-new"
+                text="新建接口"
+                code="ENDPOINT-ADD"
+                type="primary"
+                :loading="loading"
+                @handle-access="handleCreateEndPoint"/>
+            <a-button type="primary" :disabled="!hasSelected" @click="goDocs">查看文档</a-button>
+          </div>
+
           <div class="top-search-filter">
             <TableFilter @filter="handleTableFilter"/>
           </div>
@@ -24,11 +28,11 @@
         <EmptyCom>
           <template #content>
             <a-table :loading="fetching"
-              :row-selection="isSuportBatch ?{
+                     :row-selection="{
                 selectedRowKeys: selectedRowKeys,
                 onChange: onSelectChange
-              } : null"
-              :pagination="{
+              }"
+                     :pagination="{
                   ...pagination,
                   onChange: (page) => {
                     loadList(page,pagination.pageSize);
@@ -37,9 +41,9 @@
                     loadList(page,size);
                   },
               }"
-              :scroll="{ x: '1280px' || true }"
-              :columns="columns"
-              :data-source="list">
+                     :scroll="{ x: '1280px' || true }"
+                     :columns="columns"
+                     :data-source="list">
               <template #colTitle="{text,record}">
                 <div class="customTitleColRender">
                   <EditAndShowField :custom-class="'custom-endpoint show-on-hover'"
@@ -73,12 +77,12 @@
                     <a-menu>
                       <a-menu-item v-for="menuItem in MenuList" :key="menuItem.key">
                         <PermissionButton
-                          style="width: 80px"
-                          :text="menuItem.text"
-                          size="small"
-                          type="link"
-                          :code="menuItem.code"
-                          @handle-access="menuItem.action(record)" />
+                            style="width: 80px"
+                            :text="menuItem.text"
+                            size="small"
+                            type="link"
+                            :code="menuItem.code"
+                            @handle-access="menuItem.action(record)"/>
                       </a-menu-item>
                     </a-menu>
                   </template>
@@ -102,7 +106,6 @@
           @refreshList="refreshList"
           @close="drawerVisible = false;"/>
     </div>
-
   </div>
 </template>
 <script setup lang="ts">
@@ -142,7 +145,6 @@ const createApiModalVisible = ref(false);
 const router = useRouter();
 type Key = ColumnProps['key'];
 
-const isSuportBatch = ref(false);
 /**
  * 表格数据
  * */
@@ -216,15 +218,23 @@ const MenuList = [
   },
 ]
 const selectedRowKeys = ref<Key[]>([]);
+const selectedRowIds = ref<Key[]>([]);
 const loading = false;
 // 抽屉是否打开
 const drawerVisible = ref<boolean>(false);
-const selectedCategoryId = ref<string|number>('');
+const selectedCategoryId = ref<string | number>('');
 const onSelectChange = (keys: Key[], rows: any) => {
   selectedRowKeys.value = [...keys];
+  selectedRowIds.value = rows.map((item: any) => item.id);
 };
-const fetching=ref(false);
+const hasSelected = computed(() => selectedRowKeys.value.length > 0);
 
+const fetching = ref(false);
+
+/*查看选中的接口文档*/
+function goDocs() {
+  window.open(`/#/endpoint/docs?endpointIds=${selectedRowIds.value.join(',')}`);
+}
 
 function handleCreateEndPoint() {
   if (serves.value.length === 0) {

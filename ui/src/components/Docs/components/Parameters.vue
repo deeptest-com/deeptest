@@ -2,7 +2,7 @@
  参数展示组件，适用于 Path 参数、Query 参数、Header 参数、Cookie 参数
 -->
 <template>
-  <a-list item-layout="horizontal" :data-source="data" :bordered="false" :split="false">
+  <a-list v-if="data?.length" item-layout="horizontal" :data-source="data" :bordered="false" :split="false">
     <template #renderItem="{ item }">
       <a-list-item>
         <a-list-item-meta>
@@ -15,11 +15,19 @@
                 <a-typography-text type="secondary">{{ item.type }}</a-typography-text>
               </div>
               <a-divider class="divider" v-if="item.required"/>
-              <div class="required" v-if="item.required">
-                <a-typography-text :strong="false" type="warning">{{
-                    item.required ? 'required' : ''
-                  }}
-                </a-typography-text>
+              <div>
+                <div class="required" v-if="item.deprecated" style="margin-right: 6px;">
+                  <a-typography-text :strong="false" type="warning">{{
+                      item.deprecated ? 'deprecated' : ''
+                    }}
+                  </a-typography-text>
+                </div>
+                <div class="required" v-if="item.required">
+                  <a-typography-text :strong="false" type="warning">{{
+                      item.required ? 'required' : ''
+                    }}
+                  </a-typography-text>
+                </div>
               </div>
             </div>
           </template>
@@ -78,11 +86,12 @@ const data = computed(() => {
     const options: any = [];
     Object.keys(item).forEach((key) => {
       if (key !== 'name' && key !== 'type' && key !== 'required') {
+        // 为 0 的时候不显示
         if (item[key] === 0) {
-          options.push({
-            label: key,
-            value: item[key],
-          })
+          // options.push({
+          //   label: key,
+          //   value: item[key],
+          // })
         } else if (item[key]) {
           options.push({
             label: key,
@@ -112,7 +121,7 @@ function switchExpand() {
 watch(() => {
   return props.items
 }, (newVal) => {
-  console.log(8322222, newVal)
+  // console.log(8322222, newVal)
 })
 
 

@@ -19,6 +19,7 @@
                 :loading="loading"
                 @handle-access="handleCreateEndPoint"/>
             <a-button type="primary" :disabled="!hasSelected" @click="goDocs">查看文档</a-button>
+            <a-button type="primary" @click="inportApi">导入接口</a-button>
           </div>
 
           <div class="top-search-filter">
@@ -98,6 +99,11 @@
         :selectedCategoryId="selectedCategoryId"
         @cancal="createApiModalVisible = false;"
         @ok="handleCreateApi"/>
+    <ImportEndpointModal
+        :visible="showImportModal"
+        :selectedCategoryId="selectedCategoryId"
+        @cancal="showImportModal = false;"
+        @ok="handleImport"/>
     <!-- 编辑接口时，展开抽屉：外层再包一层 div, 保证每次打开弹框都重新渲染   -->
     <div v-if="drawerVisible">
       <Drawer
@@ -121,6 +127,7 @@ import {MoreOutlined} from '@ant-design/icons-vue';
 import {endpointStatusOpts, endpointStatus} from '@/config/constant';
 import EditAndShowField from '@/components/EditAndShow/index.vue';
 import CreateEndpointModal from './components/CreateEndpointModal.vue';
+import ImportEndpointModal from './components/ImportEndpointModal.vue';
 import TableFilter from './components/TableFilter.vue';
 import Drawer from './components/Drawer/index.vue'
 import EditAndShowSelect from '@/components/EditAndShowSelect/index.vue';
@@ -236,6 +243,16 @@ function goDocs() {
   window.open(`/#/endpoint/docs?endpointIds=${selectedRowIds.value.join(',')}`);
 }
 
+/**
+ * 导入接口
+ * */
+const showImportModal = ref(false);
+
+function inportApi() {
+  showImportModal.value = true;
+}
+
+
 function handleCreateEndPoint() {
   if (serves.value.length === 0) {
     Modal.confirm({
@@ -289,6 +306,15 @@ async function handleCreateApi(data) {
     "categoryId": data.categoryId || null,
   });
   createApiModalVisible.value = false;
+}
+
+async function handleImport(data) {
+
+  await store.dispatch('Endpoint/importEndpointData', {
+    ...data,
+    "serveId": currServe.value.id,
+  });
+  showImportModal.value = false;
 }
 
 async function selectNode(id) {

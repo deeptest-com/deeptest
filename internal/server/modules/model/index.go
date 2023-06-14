@@ -33,6 +33,7 @@ var (
 		&DebugInterfaceApiKey{},
 		&DebugInterfaceExtractor{},
 		&DebugInterfaceCheckpoint{},
+		&TestInterface{},
 
 		&Snippet{},
 

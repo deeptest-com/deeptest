@@ -6,7 +6,7 @@
             class="search-input"
             v-model:value="searchValue"
             placeholder="搜索接口分类"/>
-        <div class="add-btn" @click="newCategorie(treeDataCategory?.[0])">
+        <div class="add-btn" @click="newCategory(treeData?.[0])">
           <PlusOutlined style="font-size: 16px;"/>
         </div>
       </div>
@@ -21,10 +21,13 @@
             @drop="onDrop"
             @expand="onExpand"
             @select="selectTreeItem"
-            :tree-data="treeData">
+            :tree-data="treeData"
+            :replace-fields="replaceFields">
+
           <template #switcherIcon>
             <CaretDownOutlined/>
           </template>
+
           <template #title="nodeProps">
             <div class="tree-title" :draggable="nodeProps.id === -1">
                 <span class="tree-title-text" v-if="nodeProps.title.indexOf(searchValue) > -1">
@@ -38,13 +41,13 @@
                        <MoreOutlined/>
                       <template #overlay>
                         <a-menu>
-                          <a-menu-item key="0" @click="newCategorie(nodeProps)">
+                          <a-menu-item key="0" @click="newCategory(nodeProps)">
                              新建子分类
                           </a-menu-item>
-                          <a-menu-item :disabled="nodeProps.id === -1" key="1" @click="deleteCategorie(nodeProps)">
+                          <a-menu-item :disabled="nodeProps.id === -1" key="1" @click="deleteCategory(nodeProps)">
                             删除分类
                           </a-menu-item>
-                          <a-menu-item :disabled="nodeProps.id === -1" key="1" @click="editCategorie(nodeProps)">
+                          <a-menu-item :disabled="nodeProps.id === -1" key="1" @click="editCategory(nodeProps)">
                             编辑分类
                           </a-menu-item>
                         </a-menu>
@@ -57,12 +60,13 @@
         <div v-if="!treeData" class="nodata-tip">请点击上方按钮添加分类 ~</div>
       </div>
     </div>
+
     <!--  创建接口 Tag  -->
     <CreateCategoryModal
         :visible="createTagModalVisible"
         :nodeInfo="currentNode"
         :mode="tagModalMode"
-        @cancal="handleCancalTagModalCancal"
+        @cancal="handleCancelTagModalCancel"
         @ok="handleTagModalOk"/>
   </div>
 </template>
@@ -80,18 +84,21 @@ import {message, Modal} from 'ant-design-vue';
 import CreateCategoryModal from '@/components/CreateCategoryModal/index.vue'
 import {DropEvent} from 'ant-design-vue/es/tree/Tree';
 import {useStore} from "vuex";
-import {StateType as ProjectStateType} from "@/store/project";
 import {setSelectedKey} from "@/utils/cache";
-import {StateType as PlanStateType} from "@/views/plan/store";
 
-const store = useStore<{ Plan: PlanStateType, ProjectGlobal: ProjectStateType }>();
+import {StateType as ProjectStateType} from "@/store/project";
+import {StateType as TestInterfaceStateType} from '../store';
+import {StateType as ServeStateType} from "@/store/serve";
+
+const store = useStore<{ TestInterface: TestInterfaceStateType, ProjectGlobal: ProjectStateType, ServeGlobal: ServeStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
-const treeDataCategory = computed<any>(() => store.state.Plan.treeDataCategory);
-const treeDataMapCategory = computed<any>(() => store.state.Plan.treeDataMapCategory);
-const nodeDataCategory = computed<any>(()=> store.state.Plan.nodeDataCategory);
+const currServe = computed<any>(() => store.state.ServeGlobal.currServe);
+
+const treeData = computed<any>(() => store.state.TestInterface.treeData);
+const treeDataMap = computed<any>(() => store.state.TestInterface.treeDataMap);
+const nodeDataCategory = computed<any>(()=> store.state.TestInterface.nodeDataCategory);
 
 const createTagModalVisible = ref(false);
-
 
 const props = defineProps({
   serveId: {
@@ -99,54 +106,28 @@ const props = defineProps({
     type: Number || String,
   },
 })
+
+const replaceFields = {key: 'id'};
 const searchValue = ref('');
 const expandedKeys = ref<string[]>([]);
 const autoExpandParent = ref<boolean>(false);
-const treeData: any = computed(() => {
-  const data = treeDataCategory.value;
-  if(!data?.[0]?.id){
-    return null;
-  }
-  data[0].children = data[0].children || [];
-  function fn(arr: any) {
-    if (!Array.isArray(arr)) {
-      return;
-    }
-    arr.forEach((item) => {
-      item.key = item.id;
-      item.title = item.name;
-      if (Array.isArray(item.children)) {
-        fn(item.children)
-      }
-    });
-  }
-  fn(data);
-  const children = data?.[0]?.children;
-  //  末尾如果没有未分类，需要主动 push 未分类,未分类的 id 为 -1
-  if (children?.length === 0 || (children?.length && children[children.length - 1]?.id != -1)) {
-    children.push({
-      id: -1,
-      key: -1,
-      title: '未分类',
-      name: '未分类',
-      parentId: data[0]?.id,
-      children: []
-    })
-  }
-  return data?.[0]?.children || null;
-});
 
-async function loadCategories() {
-  await store.dispatch('Plan/loadCategory');
-  expandAll();
+async function loadTreeData() {
+  if (currProject?.value?.id > 0 && currServe?.value?.id > 0) {
+    await store.dispatch('TestInterface/loadTree', {projectId: currProject.value.id, serveId: currServe.value.id});
+    expandAll();
+  }
 }
 
-watch(() => {
-  return currProject.value;
-}, async (newVal) => {
-  if (newVal?.id) {
-    await loadCategories();
-  }
+watch((currProject), async (newVal) => {
+  console.log('watch currProject', currProject?.value.id, currServe?.value.id)
+  await loadTreeData();
+}, {
+  immediate: true
+})
+watch((currServe), async (newVal) => {
+  console.log('watch currProject', currProject?.value.id, currServe?.value.id)
+  await loadTreeData();
 }, {
   immediate: true
 })
@@ -204,7 +185,7 @@ const onExpand = (keys: string[]) => {
 // 展开所有
 function expandAll() {
   const keys: any = [];
-  const data = treeDataCategory.value;
+  const data = treeData.value;
 
   function fn(arr: any) {
     if (!Array.isArray(arr)) {
@@ -229,7 +210,7 @@ function selectTreeItem(keys, e) {
   setSelectedKey('category-plan', currProject.value.id, selectedKeys.value[0])
   // 如果没有选中的节点，就默认选中根节点
   emit('select', selectedKeys.value?.[0] ? selectedKeys.value[0] : null);
-  const selectedData = treeDataMapCategory.value[selectedKeys.value[0]]
+  const selectedData = treeDataMap.value[selectedKeys.value[0]]
   store.dispatch('Plan/getCategoryNode', selectedData);
 }
 
@@ -238,7 +219,7 @@ const currentNode = ref(null);
 const tagModalMode = ref('new');
 
 // 删除分类
-async function deleteCategorie(node) {
+async function deleteCategory(node) {
   Modal.confirm({
     title: () => '确定删除该分类吗？',
     content: () => '删除后所有所有子分类都会被删除',
@@ -261,7 +242,7 @@ async function deleteCategorie(node) {
 }
 
 // 新建分类
-function newCategorie(node) {
+function newCategory(node) {
   if (!node) {
     return;
   }
@@ -271,7 +252,7 @@ function newCategorie(node) {
 }
 
 //编辑分类
-function editCategorie(node) {
+function editCategory(node) {
   tagModalMode.value = 'edit';
   createTagModalVisible.value = true;
   currentNode.value = node;
@@ -313,10 +294,9 @@ async function handleTagModalOk(obj) {
   }
 }
 
-function handleCancalTagModalCancal() {
+function handleCancelTagModalCancel() {
   createTagModalVisible.value = false;
 }
-
 
 async function onDrop(info: DropEvent) {
   const dropKey = info.node.eventKey;
@@ -351,8 +331,7 @@ async function onDrop(info: DropEvent) {
 }
 
 onMounted(async () => {
-  await loadCategories();
-  expandAll();
+  console.log('onMounted')
 })
 
 </script>

@@ -24,14 +24,10 @@ func (r *TestInterfaceRepo) GetTree(projectId, serveId uint) (root *v1.TestInter
 		return
 	}
 
-	root = tos[0]
+	root = &v1.TestInterface{}
 	root.Slots = iris.Map{"icon": "icon"}
 
-	r.makeTree(tos[1:], root)
-
-	if root != nil || len(root.Children) == 0 {
-		root = nil
-	}
+	r.makeTree(tos, root)
 
 	return
 }

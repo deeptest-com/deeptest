@@ -24,3 +24,22 @@ func (c *EndpointInterfaceCtrl) ListForSelection(ctx iris.Context) {
 
 	return
 }
+
+func (c *EndpointInterfaceCtrl) ImportEndpointData(ctx iris.Context) {
+	var req serverDomain.ImportEndpointDataReq
+	err := ctx.ReadJSON(&req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	err = c.EndpointInterfaceService.ImportEndpointData(req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code})
+
+	return
+}

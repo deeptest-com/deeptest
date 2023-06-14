@@ -1,14 +1,21 @@
 package repo
 
 import (
+	"encoding/json"
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi/convert"
+	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi/convert/postman"
+	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi/convert/swagger"
+	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi/convert/yapi"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/kataras/iris/v12"
+	"go.uber.org/zap"
 	"gorm.io/gorm"
+	"io/ioutil"
 )
 
 type EndpointInterfaceRepo struct {
@@ -491,5 +498,32 @@ func (r *EndpointInterfaceRepo) GetCountByRef(ref string) (count int64, err erro
 		}
 	}
 
+	return
+}
+
+func (r *EndpointInterfaceRepo) ImportEndpointData(req v1.ImportEndpointDataReq) (err error) {
+	if req.OpenUrlImport {
+
+	} else {
+		data, err := ioutil.ReadFile(req.FilePath)
+		if err != nil {
+			logUtils.Errorf("load end point data err ", zap.String("错误:", err.Error()))
+			return err
+		}
+		var endpointData interface{}
+		switch req.DriverType {
+		case convert.POSTMAN:
+			endpointData = postman.Doc{}
+		case convert.YAPI:
+			endpointData = yapi.Doc{}
+		case convert.SWAGGER:
+			endpointData = swagger.Doc{}
+		}
+		err = json.Unmarshal(data, &endpointData)
+		if err != nil {
+			logUtils.Errorf("unmarshall endpoint data err ", zap.String("错误:", err.Error()))
+			return err
+		}
+	}
 	return
 }

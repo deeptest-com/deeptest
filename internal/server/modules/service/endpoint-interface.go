@@ -18,3 +18,8 @@ func (s *EndpointInterfaceService) Paginate(req v1.EndpointInterfaceReqPaginate)
 	ret, err = s.EndpointInterfaceRepo.Paginate(req)
 	return
 }
+
+func (s *EndpointInterfaceService) ImportEndpointData(req v1.ImportEndpointDataReq) (err error) {
+	err = s.EndpointInterfaceRepo.ImportEndpointData(req)
+	return
+}

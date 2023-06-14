@@ -28,13 +28,15 @@ type TestInterfaceLoadReq struct {
 	ProjectId int `json:"projectId"`
 }
 
-type TestInterfaceCreateReq struct {
-	Name      string `json:"name"`
+type TestInterfaceSaveReq struct {
+	Id        uint   `json:"id"`
+	Title     string `json:"title"`
 	Mode      string `json:"mode"`
-	ServeId   uint   `json:"serveId"`
-	ModuleId  string `json:"moduleId"`
 	TargetId  uint   `json:"targetId"`
+	ServeId   uint   `json:"serveId"`
 	ProjectId uint   `json:"projectId"`
+
+	Type serverConsts.TestInterfaceType `json:"type"`
 }
 
 type TestInterfaceReq struct {

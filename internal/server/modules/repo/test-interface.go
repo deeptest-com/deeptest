@@ -25,8 +25,6 @@ func (r *TestInterfaceRepo) GetTree(projectId, serveId uint) (root *v1.TestInter
 	}
 
 	root = &v1.TestInterface{}
-	root.Slots = iris.Map{"icon": "icon"}
-
 	r.makeTree(tos, root)
 
 	return

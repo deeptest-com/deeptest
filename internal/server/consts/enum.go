@@ -46,6 +46,17 @@ func (e CategoryDiscriminator) String() string {
 	return string(e)
 }
 
+type TestInterfaceType string
+
+const (
+	TestInterfaceTypeDir       TestInterfaceType     = "dir"
+	TestInterfaceTypeInterface CategoryDiscriminator = "interface"
+)
+
+func (e TestInterfaceType) String() string {
+	return string(e)
+}
+
 type AuthType string
 
 const (

@@ -4,6 +4,7 @@ import (
 	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
+	"github.com/jinzhu/copier"
 )
 
 type TestInterfaceService struct {
@@ -15,8 +16,12 @@ type TestInterfaceService struct {
 	ServeServerRepo       *repo.ServeServerRepo       `inject:""`
 }
 
-func (s *TestInterfaceService) Load(projectId, serveId int) (root *serverDomain.TestInterface, err error) {
-	root, err = s.TestInterfaceRepo.GetTree(uint(projectId), uint(serveId))
+func (s *TestInterfaceService) Load(projectId, serveId int) (ret []*serverDomain.TestInterface, err error) {
+	root, err := s.TestInterfaceRepo.GetTree(uint(projectId), uint(serveId))
+
+	if root != nil {
+		ret = root.Children
+	}
 
 	return
 }
@@ -33,18 +38,15 @@ func (s *TestInterfaceService) GetTest(endpointInterfaceId uint) (ret serverDoma
 	return
 }
 
-func (s *TestInterfaceService) Save(req serverDomain.TestInterfaceCreateReq) (debug model.TestInterface, err error) {
-	//s.CopyValueFromRequest(&debug, req)
-	//
-	//endpointInterface, _ := s.EndpointInterfaceRepo.Get(req.EndpointInterfaceId)
-	//debug.EndpointId = endpointInterface.EndpointId
-	//
-	//debugInterfaceId, _ := s.TestInterfaceRepo.HasTestInterfaceRecord(debug.EndpointInterfaceId)
-	//if debugInterfaceId > 0 {
-	//	debug.ID = debugInterfaceId
-	//}
-	//
-	//err = s.TestInterfaceRepo.Save(&debug)
+func (s *TestInterfaceService) Save(req serverDomain.TestInterfaceSaveReq) (debug model.TestInterface, err error) {
+	s.CopyValueFromRequest(&debug, req)
+	err = s.TestInterfaceRepo.Save(&debug)
 
 	return
+}
+
+func (s *TestInterfaceService) CopyValueFromRequest(interf *model.TestInterface, req serverDomain.TestInterfaceSaveReq) {
+	copier.CopyWithOption(interf, req, copier.Option{
+		DeepCopy: true,
+	})
 }

@@ -3,11 +3,11 @@ import {QueryParams} from "@/types/data";
 
 const apiPath = 'testInterfaces';
 
-export async function query(data: any): Promise<any> {
+export async function query(params: any): Promise<any> {
     return request({
-        url: `/${apiPath}/load`,
-        method: 'post',
-        data,
+        url: `/${apiPath}`,
+        method: 'get',
+        params,
     });
 }
 export async function get(id: number): Promise<any> {

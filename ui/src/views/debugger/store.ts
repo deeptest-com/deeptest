@@ -114,7 +114,7 @@ const StoreModel: ModuleType = {
         },
 
         setTreeData(state, data) {
-            state.treeData = data ? [data] : null;
+            state.treeData = data
         },
         setTreeDataMap(state, payload) {
             state.treeDataMap = payload
@@ -135,11 +135,12 @@ const StoreModel: ModuleType = {
         },
     },
     actions: {
-        async loadTree({ commit, state, dispatch }, data: any) {
+        async loadTree({ commit, state, dispatch }, params: any) {
             try {
-                const response: ResponseData = await query(data);
+                const response: ResponseData = await query(params);
                 if (response.code != 0) return;
 
+                commit('setQueryParams', params);
                 commit('setTreeData', response.data);
 
                 return true;
@@ -170,7 +171,7 @@ const StoreModel: ModuleType = {
         async saveInterface({ state, dispatch }, payload: any) {
             const jsn = await save(payload)
             if (jsn.code === 0) {
-                dispatch('listInterface', state.queryParams);
+                dispatch('loadTree', state.queryParams);
                 return true;
             } else {
                 return false

@@ -16,8 +16,8 @@ func (m *TestInterfaceModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
 		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
 
-		index.Post("/load", m.TestInterfaceCtrl.Load).Name = "获取测试接口"
-		index.Post("/save", m.TestInterfaceCtrl.Save).Name = "保存调试接口"
+		index.Get("/", m.TestInterfaceCtrl.Load).Name = "获取测试接口"
+		index.Post("/", m.TestInterfaceCtrl.Save).Name = "保存调试接口"
 	}
 	return module.NewModule("/testInterfaces", handler)
 }

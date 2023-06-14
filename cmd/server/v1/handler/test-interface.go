@@ -16,14 +16,10 @@ type TestInterfaceCtrl struct {
 
 // Load
 func (c *TestInterfaceCtrl) Load(ctx iris.Context) {
-	req := serverDomain.TestInterfaceLoadReq{}
-	err := ctx.ReadJSON(&req)
-	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
-		return
-	}
+	projectId, _ := ctx.URLParamInt("projectId")
+	serveId, _ := ctx.URLParamInt("serveId")
 
-	data, err := c.TestInterfaceService.Load(req.ProjectId, req.ServeId)
+	data, err := c.TestInterfaceService.Load(projectId, serveId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -34,7 +30,7 @@ func (c *TestInterfaceCtrl) Load(ctx iris.Context) {
 
 // Save
 func (c *TestInterfaceCtrl) Save(ctx iris.Context) {
-	req := serverDomain.TestInterfaceCreateReq{}
+	req := serverDomain.TestInterfaceSaveReq{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})

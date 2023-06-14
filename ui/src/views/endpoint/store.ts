@@ -12,7 +12,9 @@ import {
     get,
     save,
     remove,
-    getYaml, updateStatus, getDocs
+    getYaml, updateStatus, getDocs,
+    importEndpointData,
+    upload
 } from './service';
 import {
     loadCategory,
@@ -122,6 +124,8 @@ export interface ModuleType extends StoreModuleType<StateType> {
         getAllRefs: Action<StateType, StateType>;
         getRefDetail: Action<StateType, StateType>;
         getDocs: Action<StateType, StateType>;
+        upload: Action<StateType, StateType>;
+        importEndpointData: Action<StateType, StateType>;
     }
 }
 
@@ -250,7 +254,7 @@ const StoreModel: ModuleType = {
                 state.endpointDetail.interfaces[methodIndex]['responseBodies'][codeIndex] = {...payload};
             }
             // 新增
-            if(methodIndex !== -1 && codeIndex === -1 && payload?.code) {
+            if (methodIndex !== -1 && codeIndex === -1 && payload?.code) {
                 state.endpointDetail.interfaces[methodIndex]['responseBodies'].push({...payload});
             }
         }
@@ -394,7 +398,7 @@ const StoreModel: ModuleType = {
             commit('setTreeDataMapItemPropCategory', payload);
         },
         async saveCategory({commit, dispatch, state}, payload: any) {
-            const res = await updateCategory(payload.id,payload);
+            const res = await updateCategory(payload.id, payload);
             if (res.code === 0) {
                 // commit('setCategory', res.data);
                 await dispatch('loadCategory');
@@ -485,7 +489,7 @@ const StoreModel: ModuleType = {
         async getEndpointDetail({commit, state}, payload: any) {
             // 请求数据之前先清空数据
             // await commit('setEndpointDetail',  {});
-            await commit('clearInterfaceMethodToObjMap',  {});
+            await commit('clearInterfaceMethodToObjMap', {});
 
             const res = await getEndpointDetail(payload.id);
             res.data.createdAt = momentUtc(res.data.createdAt);
@@ -614,7 +618,7 @@ const StoreModel: ModuleType = {
                 })
                 return res.data.result;
             } else {
-               return null;
+                return null;
             }
         },
         // 获取可选组件信息
@@ -639,6 +643,43 @@ const StoreModel: ModuleType = {
             } else {
                 return null;
             }
+        },
+
+        // 获取可选组件信息
+        async upload({commit}, payload: any) {
+            let result = null;
+            try {
+                const res = await upload({
+                    ...payload,
+                });
+                if (res.code === 0) {
+                    result = res.data;
+                } else {
+                    result = null;
+                }
+            } catch (e) {
+                result = null;
+                console.log(e)
+            }
+            return result;
+        },
+
+        // 获取可选组件信息
+        async importEndpointData({commit}, payload: any) {
+            let result = null;
+            try {
+                const res = await importEndpointData({
+                    ...payload,
+                });
+                if (res.code === 0) {
+                    result = res.data;
+                } else {
+                    result = null;
+                }
+            } catch (e) {
+                console.log(e)
+            }
+            return result;
         },
     }
 };

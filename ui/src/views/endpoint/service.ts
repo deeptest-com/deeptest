@@ -157,3 +157,32 @@ export async function getDocs(data: any): Promise<any> {
         data: data
     });
 }
+
+
+/**
+ * 导入接口 - 上传文件
+ * */
+export async function upload(data: any): Promise<any> {
+    return request({
+        url: `/upload`,
+        method: 'post',
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        },
+        data: data.file
+    });
+}
+
+/**
+ * 导入接口 - 导入接口数据
+ * */
+export async function importEndpointData(data: any): Promise<any> {
+    return request({
+        url: `/endpoints/interfaces/importEndpointData`,
+        method: 'post',
+        data: {
+            ...data,
+        }
+    });
+}
+

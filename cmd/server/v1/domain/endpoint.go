@@ -80,4 +80,5 @@ type ImportEndpointDataReq struct {
 	DataSyncType  convert.DataSyncType `json:"dataSyncType" validate:"required"` //数据同步方式
 	OpenUrlImport bool                 `json:"openUrlImport"`                    //开启url导入
 	FilePath      string               `json:"filePath" validate:"required"`
+	ProjectId     uint                 `json:"projectId"`
 }

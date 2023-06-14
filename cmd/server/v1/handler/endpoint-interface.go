@@ -33,6 +33,13 @@ func (c *EndpointInterfaceCtrl) ImportEndpointData(ctx iris.Context) {
 		return
 	}
 
+	projectId, err := ctx.URLParamInt("currProjectId")
+	if projectId == 0 {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+		return
+	}
+	req.ProjectId = uint(projectId)
+
 	err = c.EndpointInterfaceService.ImportEndpointData(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})

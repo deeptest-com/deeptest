@@ -18,11 +18,11 @@ func NewOpenapi2endpoint(doc *openapi3.T) *openapi2endpoint {
 }
 
 func (o *openapi2endpoint) Convert() (endpoints []*model.Endpoint) {
-	o.ConvertEndpoints()
+	o.convertEndpoints()
 	return o.endpoints
 }
 
-func (o *openapi2endpoint) ConvertEndpoints() {
+func (o *openapi2endpoint) convertEndpoints() {
 
 	for url, path := range o.doc.Paths {
 		endpoint := new(model.Endpoint)

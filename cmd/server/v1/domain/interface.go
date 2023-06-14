@@ -52,10 +52,10 @@ type InterfaceResp struct {
 	Headers        []OpenApiHeader       `gorm:"-" json:"headers"`
 	Cookies        []OpenApiCookie       `gorm:"-" json:"cookies"`
 	RequestBody    domain.RequestBody    `gorm:"default:{}" json:"requestBody"`
-	ResponseBodies []domain.ResponseBody `gorm:"default:{}" json:"ResponseBodies"`
+	ResponseBodies []domain.ResponseBody `gorm:"default:{}" json:"responseBodies"`
 	Body           string                `gorm:"default:{}" json:"body"`
 	BodyType       string                `gorm:"default:''" json:"bodyType"`
-	ResponseCodes  string                `json:"ResponseCodes"`
+	ResponseCodes  string                `json:"responseCodes"`
 	//AuthorizationType string                 `gorm:"default:''" json:"authorizationType"`
 	//PreRequestScript  string                 `gorm:"default:''" json:"preRequestScript"`
 	//ValidationScript  string                 `gorm:"default:''" json:"validationScript"`

@@ -2,6 +2,7 @@ package serverDomain
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi/convert"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 )
 
@@ -70,4 +71,12 @@ type EndpointRes struct {
 type EndpointVersionReq struct {
 	EndpointId int64  `json:"endpointId"`
 	Version    string `json:"version"`
+}
+
+type ImportEndpointDataReq struct {
+	DriverType    convert.DriverType   `json:"driverType"`    //接口数据来源
+	CategoryId    int64                `json:"categoryId"`    //所属分类
+	DataSyncType  convert.DataSyncType `json:"dataSyncType"`  //数据同步方式
+	OpenUrlImport bool                 `json:"openUrlImport"` //开启url导入
+	FilePath      string               `json:"filePath"`
 }

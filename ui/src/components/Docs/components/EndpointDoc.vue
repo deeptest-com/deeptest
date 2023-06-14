@@ -157,7 +157,7 @@ const security = computed(() => {
 watch(() => {
   return props.info
 }, (newVal) => {
-  // console.log(832, newVal)
+  console.log(8322222, newVal)
 }, {immediate: true})
 
 

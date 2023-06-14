@@ -13,7 +13,7 @@ import (
 
 type EndpointInterfaceService struct {
 	EndpointInterfaceRepo *repo.EndpointInterfaceRepo `inject:""`
-	EndpointService       EndpointService             `inject:""`
+	EndpointService       *EndpointService            `inject:""`
 }
 
 func NewEndpointInterfaceService() *EndpointInterfaceService {
@@ -26,7 +26,6 @@ func (s *EndpointInterfaceService) Paginate(req v1.EndpointInterfaceReqPaginate)
 }
 
 func (s *EndpointInterfaceService) ImportEndpointData(req v1.ImportEndpointDataReq) (err error) {
-	//err = s.EndpointInterfaceRepo.ImportEndpointData(req)
 	data, err := ioutil.ReadFile(req.FilePath)
 	if err != nil {
 		logUtils.Errorf("load end point data err ", zap.String("错误:", err.Error()))
@@ -38,7 +37,7 @@ func (s *EndpointInterfaceService) ImportEndpointData(req v1.ImportEndpointDataR
 	openapi2endpoint := openapi.NewOpenapi2endpoint(doc)
 	endpoints := openapi2endpoint.Convert()
 	err = s.EndpointService.SaveEndpoints(endpoints)
-	
+
 	return
 
 }

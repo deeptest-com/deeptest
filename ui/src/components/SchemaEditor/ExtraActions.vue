@@ -2,7 +2,8 @@
 import {
   DeleteOutlined,
   InfoCircleOutlined,
-  ReadOutlined
+  ReadOutlined,
+  InfoCircleTwoTone
 } from '@ant-design/icons-vue';
 import {computed, defineProps, defineEmits, ref, watch} from "vue";
 
@@ -44,6 +45,16 @@ const disableDel = computed(() => {
   return false;
 });
 
+// 该字段是否必填
+const isRequired = computed(() => {
+  console.log('isRequired', props.value)
+  const extraViewInfo = props.value?.extraViewInfo;
+  if(extraViewInfo && extraViewInfo?.parent?.required?.includes(extraViewInfo?.keyName)) {
+    return true;
+  }
+  return false
+});
+
 const description = ref('');
 watch(() => {
   return props.value
@@ -69,7 +80,8 @@ watch(() => {
   <a-tooltip placement="topLeft" :title="disableSetRequire ? null :  '是否必填？'" arrow-point-at-center>
     <a-button :size="'small'" :disabled="disableSetRequire" type="text" @click="emit('setRequire')">
       <template #icon>
-        <InfoCircleOutlined/>
+        <InfoCircleOutlined  v-if="!isRequired" />
+        <InfoCircleTwoTone   v-if="isRequired" />
       </template>
     </a-button>
   </a-tooltip>

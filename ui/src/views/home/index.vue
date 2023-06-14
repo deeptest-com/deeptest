@@ -34,6 +34,7 @@
              @join="handleJoin"
             @edit="handleOpenEdit"
             @delete="handleDelete"
+            @exit="handleExit"
           />
 
           <CardList
@@ -43,6 +44,7 @@
             @join="handleJoin"
             @edit="handleOpenEdit"
             @delete="handleDelete"
+            @exit="handleExit"
           />
         </div>
       </a-card>
@@ -80,8 +82,13 @@ import EditPage from "@/views/project/edit/edit.vue";
 import { useRouter } from "vue-router";
 import { setCache } from "@/utils/localCache";
 import settings from "@/config/settings";
+import {removeMember} from "@/views/project/service";
+import {NotificationKeyCommon} from "@/utils/const";
+import {CurrentUser, StateType as UserStateType} from "@/store/user";
+// 获取当前登录用户信息
 const router = useRouter();
-const store = useStore<{ Home: StateType }>();
+const store = useStore<{ Home: StateType, User:UserStateType }>();
+const currentUser = computed<CurrentUser>(() => store.state.User.currentUser);
 const cardData = computed<any>(() => store.state.Home.cardData);
 const activeKey = ref(1);
 const keywords = ref<string>("");
@@ -106,6 +113,7 @@ onMounted(() => {
   }
   getHearderData();
   getList(1);
+  store.dispatch("User/fetchCurrent");
 });
 const onSearch = () => {
   searchValue.value = keywords.value;
@@ -184,6 +192,34 @@ async function handleDelete(id) {
     },
   });
 }
+
+const handleExit = (item) => {
+  console.log("exit");
+
+  Modal.confirm({
+    title: "退出项目",
+    content: "确定要推出项目"+item.projectName+"？",
+    okText: "确认",
+    cancelText: "取消",
+    onOk: async () => {
+      removeMember(currentUser.value.id, item.projectId).then((json) => {
+        if (json.code === 0) {
+          notification.success({
+            key: NotificationKeyCommon,
+            message: `退出成功`,
+          });
+          getList(1);
+        } else {
+          notification.error({
+            key: NotificationKeyCommon,
+            message: `退出失败`,
+          });
+        }
+      });
+    },
+  });
+};
+
 </script>
 
 <style lang="less" scoped>

@@ -1,7 +1,6 @@
 package repo
 
 import (
-	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/jinzhu/copier"
@@ -334,15 +333,15 @@ func (r *ScenarioProcessorRepo) genProcessorComm(processor model.Processor) (ret
 	ret.ProcessorID = processor.ID
 	ret.ParentID = processor.ParentId
 
-	ret = model.ProcessorComm{
-		ProcessorEntityBase: agentExec.ProcessorEntityBase{
-			Name:              processor.Name,
-			ProcessorCategory: processor.EntityCategory,
-			ProcessorType:     processor.EntityType,
-			ProcessorID:       processor.ID,
-			ParentID:          processor.ParentId,
-		},
-	}
+	//ret = model.ProcessorComm{
+	//	ProcessorEntityBase: agentExec.ProcessorEntityBase{
+	//		Name:              processor.Name,
+	//		ProcessorCategory: processor.EntityCategory,
+	//		ProcessorType:     processor.EntityType,
+	//		ProcessorID:       processor.ID,
+	//		ParentID:          processor.ParentId,
+	//	},
+	//}
 	if processor.EndpointInterfaceId > 0 {
 		ret.EndpointInterfaceId = processor.EndpointInterfaceId
 	}

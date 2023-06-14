@@ -184,14 +184,14 @@ export default defineComponent({
         const setRequire = (keyIndex: any, parent: any) => {
             const keys = Object.keys(parent.properties);
             const key = keys[keyIndex];
-            // ::::todo 有问题,不能选择
-            if (!parent?.required?.includes(key)) {
-                if (!parent.required) {
-                    parent.required = [key];
-                } else {
-                    parent.required.push(key);
-                }
+            parent.required = Array.isArray(parent?.required)  ? parent?.required : [];
+            if (!parent.required.includes(key)) {
+                parent.required.push(key);
+            }else{
+                const index = parent.required.indexOf(key);
+                parent.required.splice(index, 1);
             }
+
         };
         const addDesc = (tree: any, desc: string) => {
             tree.description = desc;

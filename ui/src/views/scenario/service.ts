@@ -9,6 +9,7 @@ import {
     ProcessorCategory,
     ProcessorVariable, ProcessorAssertion, RequestBodyType, UsedBy
 } from "@/utils/enum";
+import {Interface} from "@/views/component/debug/data";
 
 const apiPath = 'scenarios';
 const apiPathNodes = `${apiPath}/nodes`;
@@ -332,4 +333,12 @@ export const getEnumSelectItems = (enumDef) => {
     }
 
     return arr
+}
+
+export async function saveScenarioDebugData(interf: Interface): Promise<any> {
+    return request({
+        url: `/scenarios/interface/save`,
+        method: 'post',
+        data: interf,
+    });
 }

@@ -89,7 +89,6 @@
         </EmptyCom>
       </div>
     </div>
-
     <CreateEndpointModal
         :visible="createApiModalVisible"
         :selectedCategoryId="selectedCategoryId"
@@ -103,7 +102,6 @@
           @refreshList="refreshList"
           @close="drawerVisible = false;"/>
     </div>
-
 
   </div>
 </template>

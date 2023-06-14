@@ -40,3 +40,8 @@ func (r *ServeServerRepo) FindByServeAndExecEnv(serveId, environmentId uint) (re
 
 	return
 }
+
+func (r *ServeServerRepo) SetUrl(serveId uint, url string) (err error) {
+	err = r.DB.Model(model.ServeServer{}).Where("serve_id=?", serveId).Update("url", url).Error
+	return
+}

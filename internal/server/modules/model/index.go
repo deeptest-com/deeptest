@@ -109,5 +109,18 @@ var (
 		&ProjectMenu{},
 		&ProjectRecentlyVisited{},
 		&ProjectMemberAudit{},
+
+		&ScenarioInterface{},
+		&ScenarioInterfaceParam{},
+		&ScenarioInterfaceBodyFormDataItem{},
+		&ScenarioInterfaceBodyFormUrlEncodedItem{},
+		&ScenarioInterfaceHeader{},
+		&ScenarioInterfaceCookie{},
+		&ScenarioInterfaceBasicAuth{},
+		&ScenarioInterfaceBearerToken{},
+		&ScenarioInterfaceOAuth20{},
+		&ScenarioInterfaceApiKey{},
+		&ScenarioInterfaceExtractor{},
+		&ScenarioInterfaceCheckpoint{},
 	}
 )

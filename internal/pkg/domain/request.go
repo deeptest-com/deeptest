@@ -49,6 +49,7 @@ type Header struct {
 	Name     string `json:"name"`
 	Value    string `json:"value"`
 	Disabled bool   `json:"disabled"`
+	Type     string `json:"type"`
 }
 
 type Param struct {

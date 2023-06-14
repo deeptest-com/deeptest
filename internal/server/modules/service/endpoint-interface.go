@@ -13,7 +13,7 @@ import (
 
 type EndpointInterfaceService struct {
 	EndpointInterfaceRepo *repo.EndpointInterfaceRepo `inject:""`
-	EndpointService       EndpointService             `inject:""`
+	EndpointService       *EndpointService            `inject:""`
 }
 
 func NewEndpointInterfaceService() *EndpointInterfaceService {
@@ -38,7 +38,7 @@ func (s *EndpointInterfaceService) ImportEndpointData(req v1.ImportEndpointDataR
 	openapi2endpoint := openapi.NewOpenapi2endpoint(doc)
 	endpoints := openapi2endpoint.Convert()
 	err = s.EndpointService.SaveEndpoints(endpoints)
-	
+
 	return
 
 }

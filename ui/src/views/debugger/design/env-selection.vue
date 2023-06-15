@@ -11,11 +11,12 @@
 <script setup lang="ts">
 import {computed, ref, watch} from "vue";
 import { useStore } from "vuex";
-import {StateType as Debug} from "@/views/component/debug/store";
 import debounce from "lodash.debounce";
+import {StateType as DebugStateType} from "@/views/component/debug/store";
+import {StateType as EndpointStateType} from "@/views/endpoint/store";
 import {StateType as TestInterfaceStateType} from "@/views/debugger/store";
 
-const store = useStore<{TestInterface: TestInterfaceStateType, Debug: Debug, Endpoint}>();
+const store = useStore<{TestInterface: TestInterfaceStateType, Debug: DebugStateType, Endpoint: EndpointStateType}>();
 
 const debugData = computed<any>(() => store.state.Debug.debugData);
 const serveServers: any = computed(() => store.state.TestInterface.serveServers);

@@ -29,7 +29,9 @@ func (o *openapi2endpoint) convertEndpoints() {
 		endpoint.Path = url
 		endpoint.Interfaces = o.interfaces(url, path)
 		endpoint.PathParams = o.pathParams(path.Parameters)
-		endpoint.Title = endpoint.Interfaces[0].Name
+		if len(endpoint.Interfaces) > 0 {
+			endpoint.Title = endpoint.Interfaces[0].Name
+		}
 		o.endpoints = append(o.endpoints, endpoint)
 	}
 

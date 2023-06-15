@@ -90,20 +90,22 @@ func (r *DebugInterfaceRepo) Get(id uint) (po model.DebugInterface, err error) {
 }
 
 func (r *DebugInterfaceRepo) GetDetail(interfId uint) (interf model.DebugInterface, err error) {
-	if interfId > 0 {
-		interf, err = r.Get(interfId)
-
-		interf.QueryParams, interf.PathParams, _ = r.ListParams(interfId)
-		interf.Headers, _ = r.ListHeaders(interfId)
-
-		interf.BodyFormData, _ = r.ListBodyFormData(interfId)
-		interf.BodyFormUrlencoded, _ = r.ListBodyFormUrlencoded(interfId)
-
-		interf.BasicAuth, _ = r.GetBasicAuth(interfId)
-		interf.BearerToken, _ = r.GetBearerToken(interfId)
-		interf.OAuth20, _ = r.GetOAuth20(interfId)
-		interf.ApiKey, _ = r.GetApiKey(interfId)
+	if interfId <= 0 {
+		return
 	}
+
+	interf, err = r.Get(interfId)
+
+	interf.QueryParams, interf.PathParams, _ = r.ListParams(interfId)
+	interf.Headers, _ = r.ListHeaders(interfId)
+
+	interf.BodyFormData, _ = r.ListBodyFormData(interfId)
+	interf.BodyFormUrlencoded, _ = r.ListBodyFormUrlencoded(interfId)
+
+	interf.BasicAuth, _ = r.GetBasicAuth(interfId)
+	interf.BearerToken, _ = r.GetBearerToken(interfId)
+	interf.OAuth20, _ = r.GetOAuth20(interfId)
+	interf.ApiKey, _ = r.GetApiKey(interfId)
 
 	return
 }

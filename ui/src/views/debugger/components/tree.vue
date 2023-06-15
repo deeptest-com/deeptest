@@ -102,7 +102,6 @@ const currServe = computed<any>(() => store.state.ServeGlobal.currServe);
 
 const treeData = computed<any>(() => store.state.TestInterface.treeData);
 const treeDataMap = computed<any>(() => store.state.TestInterface.treeDataMap);
-const nodeDataCategory = computed<any>(()=> store.state.TestInterface.nodeDataCategory);
 
 const props = defineProps({
   serveId: {
@@ -207,13 +206,15 @@ let selectedKeys = ref<number[]>([]);
 const emit = defineEmits(['select']);
 
 function selectTreeItem(keys, e) {
+  console.log('selectTreeItem', keys, e.node.dataRef)
   selectedKeys.value = keys;
-  setSelectedKey('category-plan', currProject.value.id, selectedKeys.value[0])
-  // 如果没有选中的节点，就默认选中根节点
-  emit('select', selectedKeys.value?.[0] ? selectedKeys.value[0] : null);
-  const selectedData = treeDataMap.value[selectedKeys.value[0]]
+  setSelectedKey('test-interface', currProject.value.id, selectedKeys.value[0])
 
-  // store.dispatch('Plan/getCategoryNode', selectedData);
+  // 如果没有选中的节点，就默认选中根节点
+  emit('select', e.node.dataRef);
+
+  // const selectedData = treeDataMap.value[selectedKeys.value[0]]
+  // store.dispatch('TestInterface/getTreeNode', selectedData);
 }
 
 const currentNode = ref(null as any);

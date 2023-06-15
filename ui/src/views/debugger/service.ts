@@ -13,12 +13,6 @@ export async function query(params: any): Promise<any> {
 export async function get(id: number): Promise<any> {
     return request({url: `/${apiPath}/${id}`});
 }
-export async function getDetail(id: number): Promise<any> {
-    const params = {
-        detail: true,
-    }
-    return request({url: `/${apiPath}/${id}`, params});
-}
 export async function save(data: any): Promise<any> {
     return request({
         url: `/${apiPath}`,

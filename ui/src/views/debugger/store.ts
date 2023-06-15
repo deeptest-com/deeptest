@@ -99,24 +99,22 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
-        async getInterface({ commit }, id: number) {
-            // if (id === 0) {
-            //     commit('setDetail', {
-            //         ...initState.detailResult,
-            //     })
-            //     return
-            // }
-            // try {
-            //     const response: ResponseData = await get(id);
-            //     const { data } = response;
-            //     commit('setDetail', {
-            //         ...initState.detailResult,
-            //         ...data,
-            //     });
-            //     return true;
-            // } catch (error) {
-            //     return false;
-            // }
+        async getInterface({ commit }, node: any) {
+            if (node.type !== 'interface') {
+                commit('setInterfaceData', null)
+                return
+            }
+
+            try {
+                const resp: ResponseData = await get(node.id);
+                const { data } = resp;
+                commit('setInterfaceData', {
+                    ...data,
+                });
+                return true;
+            } catch (error) {
+                return false;
+            }
         },
 
         async saveInterface({ state, dispatch }, payload: any) {

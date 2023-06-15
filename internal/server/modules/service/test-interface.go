@@ -27,14 +27,8 @@ func (s *TestInterfaceService) Load(projectId, serveId int) (ret []*serverDomain
 	return
 }
 
-func (s *TestInterfaceService) GetTest(endpointInterfaceId uint) (ret serverDomain.TestInterfaceLoadReq, err error) {
-	//debugInterfaceId, _ := s.TestInterfaceRepo.HasTestInterfaceRecord(endpointInterfaceId)
-	//
-	//if debugInterfaceId > 0 {
-	//	ret, err = s.GetTestDataFromTestInterface(debugInterfaceId)
-	//} else {
-	//	ret, err = s.ConvertTestDataFromEndpointInterface(endpointInterfaceId)
-	//}
+func (s *TestInterfaceService) Get(id int) (ret model.TestInterface, err error) {
+	ret, err = s.TestInterfaceRepo.GetDetail(uint(id))
 
 	return
 }

@@ -29,6 +29,19 @@ func (c *TestInterfaceCtrl) Load(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data, Msg: _domain.NoErr.Msg})
 }
 
+// Get
+func (c *TestInterfaceCtrl) Get(ctx iris.Context) {
+	id, _ := ctx.Params().GetInt("id")
+
+	data, err := c.TestInterfaceService.Get(id)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data, Msg: _domain.NoErr.Msg})
+}
+
 // Save
 func (c *TestInterfaceCtrl) Save(ctx iris.Context) {
 	req := serverDomain.TestInterfaceSaveReq{}

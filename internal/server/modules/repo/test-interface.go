@@ -1,7 +1,7 @@
 package repo
 
 import (
-	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/kataras/iris/v12"
@@ -9,11 +9,12 @@ import (
 )
 
 type TestInterfaceRepo struct {
-	*BaseRepo `inject:""`
-	DB        *gorm.DB `inject:""`
+	*BaseRepo           `inject:""`
+	*DebugInterfaceRepo `inject:""`
+	DB                  *gorm.DB `inject:""`
 }
 
-func (r *TestInterfaceRepo) GetTree(projectId, serveId uint) (root *v1.TestInterface, err error) {
+func (r *TestInterfaceRepo) GetTree(projectId, serveId uint) (root *serverDomain.TestInterface, err error) {
 	pos, err := r.ListByProject(projectId, serveId)
 	if err != nil {
 		return
@@ -24,7 +25,7 @@ func (r *TestInterfaceRepo) GetTree(projectId, serveId uint) (root *v1.TestInter
 		return
 	}
 
-	root = &v1.TestInterface{}
+	root = &serverDomain.TestInterface{}
 	r.makeTree(tos, root)
 
 	return
@@ -51,27 +52,46 @@ func (r *TestInterfaceRepo) Get(id uint) (po model.TestInterface, err error) {
 	return
 }
 
-func (r *TestInterfaceRepo) toTos(pos []*model.TestInterface) (tos []*v1.TestInterface) {
-	for _, po := range pos {
-		to := v1.TestInterface{
-			Id:       int64(po.ID),
-			Title:    po.Title,
-			Desc:     po.Desc,
-			Type:     po.Type,
-			ParentId: int64(po.ParentId),
-		}
+func (r *TestInterfaceRepo) GetDetail(id uint) (ret model.TestInterface, err error) {
+	ret, err = r.Get(id)
 
-		if po.Type == serverConsts.TestInterfaceTypeInterface {
-			to.IsLeaf = true
+	if ret.DebugInterfaceId > 0 {
+		debugInterface, err := r.DebugInterfaceRepo.GetDetail(ret.DebugInterfaceId)
+		if err == nil {
+			ret.DebugInterface = &debugInterface
 		}
-
-		tos = append(tos, &to)
 	}
 
 	return
 }
 
-func (r *TestInterfaceRepo) makeTree(findIn []*v1.TestInterface, parent *v1.TestInterface) { //参数为父节点，添加父节点的子节点指针切片
+func (r *TestInterfaceRepo) toTos(pos []*model.TestInterface) (tos []*serverDomain.TestInterface) {
+	for _, po := range pos {
+		to := r.toTo(po)
+
+		tos = append(tos, to)
+	}
+
+	return
+}
+func (r *TestInterfaceRepo) toTo(po *model.TestInterface) (to *serverDomain.TestInterface) {
+
+	to = &serverDomain.TestInterface{
+		Id:       int64(po.ID),
+		Title:    po.Title,
+		Desc:     po.Desc,
+		Type:     po.Type,
+		ParentId: int64(po.ParentId),
+	}
+
+	if po.Type == serverConsts.TestInterfaceTypeInterface {
+		to.IsLeaf = true
+	}
+
+	return
+}
+
+func (r *TestInterfaceRepo) makeTree(findIn []*serverDomain.TestInterface, parent *serverDomain.TestInterface) { //参数为父节点，添加父节点的子节点指针切片
 	children, _ := r.hasChild(findIn, parent) // 判断节点是否有子节点并返回
 
 	if children != nil {
@@ -86,8 +106,8 @@ func (r *TestInterfaceRepo) makeTree(findIn []*v1.TestInterface, parent *v1.Test
 	}
 }
 
-func (r *TestInterfaceRepo) hasChild(categories []*v1.TestInterface, parent *v1.TestInterface) (
-	ret []*v1.TestInterface, yes bool) {
+func (r *TestInterfaceRepo) hasChild(categories []*serverDomain.TestInterface, parent *serverDomain.TestInterface) (
+	ret []*serverDomain.TestInterface, yes bool) {
 
 	for _, item := range categories {
 		if item.ParentId == parent.Id {
@@ -113,7 +133,7 @@ func (r *TestInterfaceRepo) Save(po *model.TestInterface) (err error) {
 	return
 }
 
-func (r *TestInterfaceRepo) Update(req v1.TestInterfaceReq) (err error) {
+func (r *TestInterfaceRepo) Update(req serverDomain.TestInterfaceReq) (err error) {
 	err = r.DB.Model(&model.TestInterface{}).
 		Where("id ?", req.Id).
 		Updates(map[string]interface{}{"title": req.Title, "desc": req.Desc}).Error

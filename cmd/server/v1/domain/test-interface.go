@@ -20,8 +20,8 @@ type TestInterface struct {
 	UseID            uint  `json:"useId"`
 
 	Ordr     int              `json:"ordr"`
-	Children []*TestInterface `gorm:"-" json:"children"`
-	Slots    iris.Map         `gorm:"-" json:"slots"`
+	Children []*TestInterface `json:"children"`
+	Slots    iris.Map         `json:"slots"`
 }
 
 type TestInterfaceLoadReq struct {

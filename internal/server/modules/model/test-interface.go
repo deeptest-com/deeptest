@@ -13,15 +13,17 @@ type TestInterface struct {
 	IsLeaf bool                           `json:"isLeaf"`
 	Type   serverConsts.TestInterfaceType `json:"type"`
 
-	DebugInterfaceId uint `json:"debugInterfaceId"`
-	ParentId         uint `json:"parentId"`
-	ProjectId        uint `json:"projectId"`
-	ServeId          uint `json:"serveId"`
-	UseID            uint `json:"useId"`
+	ParentId  uint `json:"parentId"`
+	ProjectId uint `json:"projectId"`
+	ServeId   uint `json:"serveId"`
+	UseID     uint `json:"useId"`
 
 	Ordr     int              `json:"ordr"`
 	Children []*TestInterface `gorm:"-" json:"children"`
 	Slots    iris.Map         `gorm:"-" json:"slots"`
+
+	DebugInterfaceId uint            `json:"debugInterfaceId"`
+	DebugInterface   *DebugInterface `gorm:"-" json:"debugInterface"`
 }
 
 func (TestInterface) TableName() string {

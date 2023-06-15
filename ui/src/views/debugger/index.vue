@@ -1,7 +1,8 @@
 <template>
   <div id="test-interface-index-main" class="dp-splits-v">
     <div id="test-interface-index-left" v-if="!collapsed">
-      <TestInterfaceTree />
+      <TestInterfaceTree
+          @select="selectNode" />
     </div>
 
     <CollapsedIcon
@@ -19,9 +20,25 @@
 <script setup lang="ts">
 import CollapsedIcon from "@/components/CollapsedIcon/index.vue"
 import TestInterfaceTree from './components/tree.vue';
-import {ref} from "vue";
+import {computed, ref} from "vue";
+import {useStore} from "vuex";
+import {StateType as TestInterfaceStateType} from "@/views/debugger/store";
+import {StateType as ProjectStateType} from "@/store/project";
+import {StateType as ServeStateType} from "@/store/serve";
 
 const collapsed = ref(false);
+const selectedInterfaceId = ref(0)
+
+const store = useStore<{ TestInterface: TestInterfaceStateType, ProjectGlobal: ProjectStateType, ServeGlobal: ServeStateType }>();
+const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
+const currServe = computed<any>(() => store.state.ServeGlobal.currServe);
+
+const selectNode = async (node) => {
+  console.log('selectNode', node)
+  selectedInterfaceId.value = node.id
+
+  store.dispatch('TestInterface/getInterface', node);
+}
 
 </script>
 

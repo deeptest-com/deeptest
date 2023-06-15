@@ -89,7 +89,9 @@ func (o *openapi2endpoint) interf(method consts.HttpMethod, url string, operatio
 	interf.Method = method
 	interf.Url = url
 	interf.Headers, interf.Cookies, interf.Params = o.parameters(operation)
-	interf.BodyType, interf.RequestBody = o.requestBody(operation.RequestBody.Value.Content)
+	if operation.RequestBody != nil {
+		interf.BodyType, interf.RequestBody = o.requestBody(operation.RequestBody.Value.Content)
+	}
 	interf.ResponseBodies = o.responseBodies(operation.Responses)
 	return
 }
@@ -176,11 +178,27 @@ func (*openapi2endpoint) parameterValue(schema *openapi3.Schema, param *model.En
 	param.Example = schema.Example.(string)
 	param.Pattern = schema.Pattern
 	param.MinLength = schema.MinLength
-	param.MaxLength = *schema.MaxLength
-	param.Default = schema.Default.(string)
-	param.MultipleOf = *schema.MultipleOf
+	if schema.MaxLength == nil {
+		param.MaxLength = 0
+	} else {
+		param.MaxLength = *schema.MaxLength
+	}
+	if schema.Default == nil {
+		param.Default = ""
+	} else {
+		param.Default = schema.Default.(string)
+	}
+	if schema.MultipleOf == nil {
+		param.MultipleOf = 0
+	} else {
+		param.MultipleOf = *schema.MultipleOf
+	}
 	param.MinItems = schema.MinItems
-	param.MaxItems = *schema.MaxItems
+	if schema.MaxItems == nil {
+		param.MaxItems = 0
+	} else {
+		param.MaxItems = *schema.MaxItems
+	}
 	param.UniqueItems = schema.UniqueItems
 	param.Type = schema.Type
 }

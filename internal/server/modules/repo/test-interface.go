@@ -57,7 +57,12 @@ func (r *TestInterfaceRepo) toTos(pos []*model.TestInterface) (tos []*v1.TestInt
 			Id:       int64(po.ID),
 			Title:    po.Title,
 			Desc:     po.Desc,
+			Type:     po.Type,
 			ParentId: int64(po.ParentId),
+		}
+
+		if po.Type == serverConsts.TestInterfaceTypeInterface {
+			to.IsLeaf = true
 		}
 
 		tos = append(tos, &to)

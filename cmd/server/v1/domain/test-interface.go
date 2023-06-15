@@ -8,9 +8,10 @@ import (
 type TestInterface struct {
 	Id int64 `json:"id"`
 
-	Title  string `json:"title"`
-	Desc   string `json:"desc"`
-	IsLeaf bool   `json:"isLeaf"`
+	Title  string                         `json:"title"`
+	Desc   string                         `json:"desc"`
+	Type   serverConsts.TestInterfaceType `json:"type"`
+	IsLeaf bool                           `json:"isLeaf"`
 
 	DebugInterfaceId uint  `json:"debugInterfaceId"`
 	ParentId         int64 `json:"parentId"`

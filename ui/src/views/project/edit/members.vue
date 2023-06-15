@@ -75,7 +75,7 @@
     </a-card>
   </div>
 
-  <EditPage :record="data" :title="title" :visible="visible" @cancal="cancal" />
+  <EditPage :record="data" :title="title" :visible="visible" @cancel="cancel" />
 </template>
 
 <script setup lang="ts">
@@ -261,7 +261,7 @@ const getSelectUserList = () => {
 };
 
 const title = ref("邀请用户");
-const cancal = () => {
+const cancel = () => {
   visible.value = false;
   getMembers(1);
 };

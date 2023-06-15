@@ -42,17 +42,17 @@
                        <MoreOutlined/>
                       <template #overlay>
                         <a-menu>
-                          <a-menu-item key="0" @click="newDir(nodeProps.id)">
+                          <a-menu-item v-if="nodeProps.dataRef.type === 'dir'" key="0" @click="create(nodeProps.id, 'dir')">
                              新建目录
                           </a-menu-item>
-                          <a-menu-item key="0" @click="newInterface(nodeProps.id)">
+                          <a-menu-item v-if="nodeProps.dataRef.type === 'dir'" key="0" @click="create(nodeProps.id, 'interface')">
                              新建接口
                           </a-menu-item>
-                          <a-menu-item :disabled="nodeProps.id === -1" key="1" @click="edit(nodeProps)">
-                            编辑分类
+                          <a-menu-item v-if="nodeProps.id !== -1" key="1" @click="edit(nodeProps)">
+                           {{'编辑' + (nodeProps.dataRef.type === 'interface' ? '接口' : '目录')}}
                           </a-menu-item>
-                          <a-menu-item :disabled="nodeProps.id === -1" key="1" @click="deleteNode(nodeProps)">
-                            删除分类
+                          <a-menu-item v-if="nodeProps.id !== -1" key="1" @click="deleteNode(nodeProps)">
+                            {{'删除' + (nodeProps.dataRef.type === 'interface' ? '接口' : '目录')}}
                           </a-menu-item>
                         </a-menu>
                       </template>
@@ -70,8 +70,8 @@
     <EditModal
         v-if="currentNode"
         :nodeInfo="currentNode"
-        @cancal="handleModalCancel"
-        @ok="handleModalOk"/>
+        @ok="handleModalOk"
+        @cancel="handleModalCancel"/>
   </div>
 </template>
 
@@ -217,11 +217,8 @@ function selectTreeItem(keys, e) {
 
 const currentNode = ref(null as any);
 
-function newDir(targetId) {
-  currentNode.value = {targetId};
-}
-function newInterface(targetId) {
-  currentNode.value = {targetId};
+function create(targetId, type) {
+  currentNode.value = {targetId, type};
 }
 function edit(node) {
   currentNode.value = node;
@@ -249,6 +246,7 @@ async function deleteNode(node) {
 }
 
 async function handleModalOk(model) {
+  console.log('handleModalOk')
   Object.assign(model, {
     projectId: currProject.value.id,
     serveId: currServe.value.id,
@@ -264,6 +262,7 @@ async function handleModalOk(model) {
 }
 
 function handleModalCancel() {
+  console.log('handleModalCancel')
   currentNode.value = null
 }
 

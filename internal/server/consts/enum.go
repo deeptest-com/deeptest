@@ -49,8 +49,8 @@ func (e CategoryDiscriminator) String() string {
 type TestInterfaceType string
 
 const (
-	TestInterfaceTypeDir       TestInterfaceType     = "dir"
-	TestInterfaceTypeInterface CategoryDiscriminator = "interface"
+	TestInterfaceTypeDir       TestInterfaceType = "dir"
+	TestInterfaceTypeInterface TestInterfaceType = "interface"
 )
 
 func (e TestInterfaceType) String() string {

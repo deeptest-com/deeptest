@@ -92,7 +92,7 @@
     <CreateEndpointModal
         :visible="createApiModalVisible"
         :selectedCategoryId="selectedCategoryId"
-        @cancal="createApiModalVisible = false;"
+        @cancel="createApiModalVisible = false;"
         @ok="handleCreateApi"/>
     <!-- 编辑接口时，展开抽屉：外层再包一层 div, 保证每次打开弹框都重新渲染   -->
     <div v-if="drawerVisible">

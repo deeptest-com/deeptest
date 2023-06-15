@@ -3,8 +3,8 @@
       width="600px"
       :visible="!!nodeInfo"
       @ok="ok"
-      @cancel="cancal"
-      :title="!nodeInfo.id ? '新建分类' : '修改分类'">
+      @cancel="cancel"
+      :title="(!nodeInfo.id ? '新建' : '修改') + (formState.type === 'interface' ? '接口' : '目录')">
     <a-form
         ref="tagFormRef"
         :rules="rules"
@@ -12,12 +12,12 @@
         :label-col="{ span: 6 }"
         :wrapper-col="{ span: 14 }">
 
-      <a-form-item label="分类名称" name="name">
-        <a-input placeholder="请输入分类名称" v-model:value="formState.title"/>
+      <a-form-item :label="(formState.type === 'interface' ? '接口' : '目录') + '名称'" name="name">
+        <a-input placeholder="请输入名称" v-model:value="formState.title"/>
       </a-form-item>
 
-      <a-form-item label="备注信息" name="desc">
-        <a-input placeholder="请输入备注信息" v-model:value="formState.desc"/>
+      <a-form-item :label="(formState.type === 'interface' ? '接口' : '目录') + '备注'" name="desc">
+        <a-input placeholder="请输入备注" v-model:value="formState.desc"/>
       </a-form-item>
 
     </a-form>
@@ -34,17 +34,19 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['ok', 'cancal']);
+const emit = defineEmits(['ok', 'cancel']);
 
 const tagFormRef = ref();
 const formState = ref({
   title: '',
   desc: '',
+  type: '',
 });
 
 watch(props.nodeInfo, () => {
-  formState.value = {title: props?.nodeInfo?.title, desc: props?.nodeInfo?.desc}
-})
+  console.log('watch props.nodeInfo', props?.nodeInfo?.type)
+  formState.value = {title: props?.nodeInfo?.title, desc: props?.nodeInfo?.desc, type: props?.nodeInfo?.type}
+}, { immediate: true, deep: true })
 
 function ok() {
   tagFormRef.value
@@ -60,15 +62,15 @@ function ok() {
       });
 }
 
-function cancal() {
+function cancel() {
+  emit('cancel');
   tagFormRef.value.resetFields();
-  emit('cancal');
 }
 
 const rules = {
   title: [
-    {required: true, message: '请输入分类名称', trigger: 'blur'},
-    {min: 1, max: 50, message: '最少 1 个字符，最长 50 个字符', trigger: 'blur'},
+    {required: true, message: '请输入名称', trigger: 'blur'},
+    {min: 1, max: 50, message: '最少1个字符，最长50个字符', trigger: 'blur'},
   ],
   desc: [{required: false}],
 };

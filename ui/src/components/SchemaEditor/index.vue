@@ -95,7 +95,7 @@
           </template>
           生成
         </a-button>
-        <a-button @click="cancalGen">
+        <a-button @click="cancelGen">
           <template #icon>
             <CloseOutlined/>
           </template>
@@ -207,7 +207,7 @@ function handleJSONDemoChange(val, event, syntaxError) {
   hasSyntaxError.value = !syntaxError;
 }
 
-function cancalGen() {
+function cancelGen() {
   activeGenSchemaMode.value = false;
 }
 

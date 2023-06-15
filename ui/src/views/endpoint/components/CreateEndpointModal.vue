@@ -3,7 +3,7 @@
       width="640px"
       :visible="visible"
       @ok="ok"
-      @cancel="cancal"
+      @cancel="cancel"
       title="新建接口">
     <a-form
         ref="formRef"
@@ -74,7 +74,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['ok', 'cancal']);
+const emit = defineEmits(['ok', 'cancel']);
 
 const formRef = ref();
 
@@ -90,8 +90,8 @@ function ok() {
       });
 }
 
-function cancal() {
-  emit('cancal', formState);
+function cancel() {
+  emit('cancel', formState);
   formRef.value.resetFields();
 }
 

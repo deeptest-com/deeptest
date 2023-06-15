@@ -3,7 +3,7 @@
     <a-modal :title="'新建测试场景'"
              :visible="visible"
              @ok="submitForm"
-             @cancel="cancal"
+             @cancel="cancel"
              class="scenario-edit"
              width="600px">
       <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
@@ -129,7 +129,7 @@ const submitForm = async () => {
 
 const emit = defineEmits(['cancel']);
 
-function cancal() {
+function cancel() {
   emit('cancel')
 }
 

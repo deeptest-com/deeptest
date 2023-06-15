@@ -32,8 +32,10 @@ func initDriver(driverType DriverType, data []byte, filePath string) (driver IDr
 		driver = newPostman()
 	case YAPI:
 		driver = newYApi()
-	case SWAGGER:
-		driver = newSwagger()
+	case SWAGGER2:
+		driver = newSwaggerV2()
+	case SWAGGER3:
+		driver = newSwaggerV3()
 	default:
 		panic(fmt.Errorf("dirver error"))
 	}

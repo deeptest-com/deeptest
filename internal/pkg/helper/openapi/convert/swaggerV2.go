@@ -7,21 +7,21 @@ import (
 	"github.com/getkin/kin-openapi/openapi3"
 )
 
-type Swagger struct {
+type SwaggerV2 struct {
 	driver
 	doc openapi2.T
 }
 
-func newSwagger() *Swagger {
-	return new(Swagger)
+func newSwaggerV2() *SwaggerV2 {
+	return new(SwaggerV2)
 }
 
-func (d *Swagger) toOpenapi() (doc *openapi3.T, err error) {
+func (d *SwaggerV2) toOpenapi() (doc *openapi3.T, err error) {
 	doc, err = openapi2conv.ToV3(&d.doc)
 	return
 }
 
-func (d *Swagger) Doc(data []byte) {
+func (d *SwaggerV2) Doc(data []byte) {
 	err := json.Unmarshal(data, &d.doc)
 	if err != err {
 		panic(err)

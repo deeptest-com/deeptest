@@ -85,7 +85,7 @@ export default defineComponent({
     watch(() => {
       return router.currentRoute.value.path;
     }, (val: string) => {
-      showServerSelector.value = val.includes('endpoint');
+      showServerSelector.value = val.includes('endpoint') || val.includes('debugger');
     }, {
       immediate: true
     })

@@ -62,7 +62,7 @@
         :visible="createTagModalvisible"
         :nodeInfo="currentNode || {}"
         :mode="tagModalMode"
-        @cancal="handleCancalTagModalCancal"
+        @cancel="handleCancelTagModalCancel"
         @ok="handleTagModalOk"/>
   </div>
 </template>
@@ -309,7 +309,7 @@ async function handleTagModalOk(obj) {
   }
 }
 
-function handleCancalTagModalCancal() {
+function handleCancelTagModalCancel() {
   createTagModalvisible.value = false;
 }
 

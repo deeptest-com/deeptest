@@ -82,8 +82,8 @@ const loadCategoryByServe = async () => {
   if (response.code === 0) {
     treeDataCategory.value = [response.data]
     // selectNode([response.data.id], null)
-    // treeDataMapCategory = {}
-    // getNodeMap(treeDataCategory.value, treeDataMapCategory)
+    // treeDataMap = {}
+    // getNodeMap(treeData.value, treeDataMap)
   }
 }
 

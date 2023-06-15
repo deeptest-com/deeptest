@@ -62,18 +62,6 @@
               <a-switch v-model:checked="formStateRef.includeExample" />
             </a-form-item>
 
-            <a-form-item label="项目类型">
-              <a-radio-group v-model:value="formStateRef.type" button-style="solid">
-                <a-radio-button :value="ProjectType.Full">完整模式</a-radio-button>
-                <a-radio-button :value="ProjectType.Debug">调试模式</a-radio-button>
-              </a-radio-group>
-              <div class="dp-input-tip">
-                <div>
-                  <span class="term">完整模式</span>使用OpenAPI3设计接口。
-                </div>
-              </div>
-            </a-form-item>
-
             <a-form-item label="项目简介" v-bind="validateInfos.desc">
               <a-textarea v-model:value="formStateRef.desc"
                           @blur="validate('desc', { trigger: 'blur' }).catch(() => {})"/>

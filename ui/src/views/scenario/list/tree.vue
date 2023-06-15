@@ -95,7 +95,7 @@ const treeDataMapCategory = computed<any>(() => store.state.Scenario.treeDataMap
 const nodeDataCategory = computed<any>(()=> store.state.Scenario.nodeDataCategory);
 
 watch(treeDataCategory, () => {
-  console.log('watch treeDataCategory', treeDataCategory)
+  console.log('watch treeData', treeDataCategory)
 
   selectStoredKeyCall()
   getExpandedKeysCall()

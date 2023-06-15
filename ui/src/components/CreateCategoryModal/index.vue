@@ -3,7 +3,7 @@
       width="600px"
       :visible="visible"
       @ok="ok"
-      @cancel="cancal"
+      @cancel="cancel"
       :title="mode === 'new' ? '新建分类' : '修改分类'">
     <a-form
         ref="tagFormRef"
@@ -38,7 +38,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['ok', 'cancal']);
+const emit = defineEmits(['ok', 'cancel']);
 
 const tagFormRef = ref();
 const formState = ref({
@@ -74,9 +74,9 @@ function ok() {
       });
 }
 
-function cancal() {
+function cancel() {
   tagFormRef.value.resetFields();
-  emit('cancal');
+  emit('cancel');
 }
 
 const rules = {

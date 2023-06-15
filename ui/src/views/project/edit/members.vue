@@ -261,7 +261,7 @@ const getSelectUserList = () => {
 };
 
 const title = ref("邀请用户");
-const cancal = () => {
+const cancel = () => {
   visible.value = false;
   getMembers(1);
 };

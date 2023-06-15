@@ -19,10 +19,10 @@ const props = defineProps<{
   visible: Boolean,
 }>();
 
-const emits = defineEmits(['cancal', 'ok']);
+const emits = defineEmits(['cancel', 'ok']);
 
 function handleCancel() {
-  emits('cancal');
+  emits('cancel');
 }
 
 const selectedKeys = ref<any[]>([]);

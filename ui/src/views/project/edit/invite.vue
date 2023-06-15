@@ -63,7 +63,7 @@ const props = defineProps({
   visible:Boolean
 })
 
-const emit = defineEmits(['ok', 'cancal']);
+const emit = defineEmits(['ok', 'cancel']);
 
 const router = useRouter();
 
@@ -141,7 +141,7 @@ const roles = computed<SelectTypes["options"]>(()=>store.state.Project.roles);
 const formRef = ref();
 
 const close = ()=>{
-  emit("cancal")
+  emit("cancel")
 }
 
 

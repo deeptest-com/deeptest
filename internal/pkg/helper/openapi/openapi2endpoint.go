@@ -26,10 +26,10 @@ func (o *openapi2endpoint) convertEndpoints() {
 
 	for url, path := range o.doc.Paths {
 		endpoint := new(model.Endpoint)
-		endpoint.Title = path.Summary
 		endpoint.Path = url
 		endpoint.Interfaces = o.interfaces(url, path)
 		endpoint.PathParams = o.pathParams(path.Parameters)
+		endpoint.Title = endpoint.Interfaces[0].Name
 		o.endpoints = append(o.endpoints, endpoint)
 	}
 
@@ -110,7 +110,15 @@ func (o *openapi2endpoint) requestBody(content openapi3.Content) (mediaType cons
 		mediaType = consts.HttpContentType(key)
 		body = model.EndpointInterfaceRequestBody{}
 		body.MediaType = key
+
+		if item.Examples == nil {
+			item.Examples = openapi3.Examples{}
+			item.Examples["example"] = new(openapi3.ExampleRef)
+			item.Examples["example"].Value = new(openapi3.Example)
+			item.Examples["example"].Value.Value = item.Example
+		}
 		body.Examples = commonUtils.JsonEncode(item.Examples)
+		//body.Examples = item.Example
 		return
 	}
 

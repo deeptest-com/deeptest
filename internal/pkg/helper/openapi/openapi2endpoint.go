@@ -52,32 +52,37 @@ func (o *openapi2endpoint) interfaces(url string, path *openapi3.PathItem) (inte
 	}
 
 	if path.Post != nil {
-		interf := o.interf("POST", url, path.Get)
+		interf := o.interf("POST", url, path.Post)
 		interfaces = append(interfaces, interf)
 	}
 
 	if path.Put != nil {
-		interf := o.interf("PUT", url, path.Get)
+		interf := o.interf("PUT", url, path.Put)
 		interfaces = append(interfaces, interf)
 	}
 
 	if path.Delete != nil {
-		interf := o.interf("DELETE", url, path.Get)
+		interf := o.interf("DELETE", url, path.Delete)
 		interfaces = append(interfaces, interf)
 	}
 
 	if path.Trace != nil {
-		interf := o.interf("TRACE", url, path.Get)
+		interf := o.interf("TRACE", url, path.Trace)
 		interfaces = append(interfaces, interf)
 	}
 
 	if path.Head != nil {
-		interf := o.interf("HEAD", url, path.Get)
+		interf := o.interf("HEAD", url, path.Head)
 		interfaces = append(interfaces, interf)
 	}
 
 	if path.Options != nil {
-		interf := o.interf("OPTIONS", url, path.Get)
+		interf := o.interf("OPTIONS", url, path.Options)
+		interfaces = append(interfaces, interf)
+	}
+
+	if path.Patch != nil {
+		interf := o.interf("OPTIONS", url, path.Patch)
 		interfaces = append(interfaces, interf)
 	}
 	return
@@ -89,7 +94,9 @@ func (o *openapi2endpoint) interf(method consts.HttpMethod, url string, operatio
 	interf.Method = method
 	interf.Url = url
 	interf.Headers, interf.Cookies, interf.Params = o.parameters(operation)
-	interf.BodyType, interf.RequestBody = o.requestBody(operation.RequestBody.Value.Content)
+	if operation.RequestBody != nil {
+		interf.BodyType, interf.RequestBody = o.requestBody(operation.RequestBody.Value.Content)
+	}
 	interf.ResponseBodies = o.responseBodies(operation.Responses)
 	return
 }
@@ -173,14 +180,28 @@ func (o *openapi2endpoint) parameter(parameter *openapi3.ParameterRef) (param mo
 }
 
 func (*openapi2endpoint) parameterValue(schema *openapi3.Schema, param *model.EndpointInterfaceParam) {
-	param.Example = schema.Example.(string)
+	if schema.Example != nil {
+		param.Example = schema.Example.(string)
+	}
+
+	if schema.MaxLength != nil {
+		param.MaxLength = *schema.MaxLength
+	}
+	if schema.Default != nil {
+		param.Default = schema.Default.(string)
+	}
+
+	if schema.MultipleOf != nil {
+		param.MultipleOf = *schema.MultipleOf
+	}
+
+	if schema.MaxItems != nil {
+		param.MaxItems = *schema.MaxItems
+	}
+
 	param.Pattern = schema.Pattern
-	param.MinLength = schema.MinLength
-	param.MaxLength = *schema.MaxLength
-	param.Default = schema.Default.(string)
-	param.MultipleOf = *schema.MultipleOf
 	param.MinItems = schema.MinItems
-	param.MaxItems = *schema.MaxItems
+	param.MinLength = schema.MinLength
 	param.UniqueItems = schema.UniqueItems
 	param.Type = schema.Type
 }

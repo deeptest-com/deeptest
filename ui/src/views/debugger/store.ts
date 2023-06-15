@@ -11,37 +11,28 @@ import {
     clone,
 } from './service';
 
-import { getNodeMap } from "@/services/tree";
-import {moveCategory} from "@/services/category";
-
 export interface StateType {
-    testInterfaceId: number;
-    currInterface: any;
+    interfaceId: number;
+    interfaceData: any;
 
-    listResult: QueryResult;
-    detailResult: any;
     queryParams: any;
 
     treeData: any[] | null;
     treeDataMap: any,
-    nodeDataCategory: any;
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
     state: StateType;
     mutations: {
         setInterfaceId: Mutation<StateType>;
-        setCurrInterface: Mutation<StateType>;
+        setInterfaceData: Mutation<StateType>;
 
-        setList: Mutation<StateType>;
-        setDetail: Mutation<StateType>;
         setQueryParams: Mutation<StateType>;
 
         setTreeData: Mutation<StateType>;
         setTreeDataMap: Mutation<StateType>;
-        setTreeDataMapItem: Mutation<StateType>;
-        setTreeDataMapItemProp: Mutation<StateType>;
-        setNodeCategory: Mutation<StateType>;
+        changeTreeDataMapItem: Mutation<StateType>;
+        changeTreeDataMapItemProp: Mutation<StateType>;
     };
     actions: {
         loadTree: Action<StateType, StateType>;
@@ -54,25 +45,12 @@ export interface ModuleType extends StoreModuleType<StateType> {
 }
 
 const initState: StateType = {
-    testInterfaceId: 0,
-    currInterface: null,
-
-    listResult: {
-        list: [],
-        pagination: {
-            total: 0,
-            current: 1,
-            pageSize: 10,
-            showSizeChanger: true,
-            showQuickJumper: true,
-        },
-    },
-    detailResult: {} as TestInterface,
+    interfaceId: 0,
+    interfaceData: null,
     queryParams: {},
 
     treeData: [],
     treeDataMap: {},
-    nodeDataCategory: {},
 };
 
 const StoreModel: ModuleType = {
@@ -83,16 +61,10 @@ const StoreModel: ModuleType = {
     },
     mutations: {
         setInterfaceId(state, id) {
-            state.testInterfaceId = id;
+            state.interfaceId = id;
         },
-        setCurrInterface(state, payload) {
-            state.currInterface = payload;
-        },
-        setList(state, payload) {
-            state.listResult = payload;
-        },
-        setDetail(state, payload) {
-            state.detailResult = payload;
+        setInterfaceData(state, payload) {
+            state.interfaceData = payload;
         },
 
         setTreeData(state, data) {
@@ -101,16 +73,13 @@ const StoreModel: ModuleType = {
         setTreeDataMap(state, payload) {
             state.treeDataMap = payload
         },
-        setTreeDataMapItem(state, payload) {
+        changeTreeDataMapItem(state, payload) {
             if (!state.treeDataMap[payload.id]) return
             state.treeDataMap[payload.id] = payload
         },
-        setTreeDataMapItemProp(state, payload) {
+        changeTreeDataMapItemProp(state, payload) {
             if (!state.treeDataMap[payload.id]) return
             state.treeDataMap[payload.id][payload.prop] = payload.value
-        },
-        setNodeCategory(state, data) {
-            state.nodeDataCategory = data;
         },
         setQueryParams(state, payload) {
             state.queryParams = payload;
@@ -131,23 +100,23 @@ const StoreModel: ModuleType = {
             }
         },
         async getInterface({ commit }, id: number) {
-            if (id === 0) {
-                commit('setDetail', {
-                    ...initState.detailResult,
-                })
-                return
-            }
-            try {
-                const response: ResponseData = await get(id);
-                const { data } = response;
-                commit('setDetail', {
-                    ...initState.detailResult,
-                    ...data,
-                });
-                return true;
-            } catch (error) {
-                return false;
-            }
+            // if (id === 0) {
+            //     commit('setDetail', {
+            //         ...initState.detailResult,
+            //     })
+            //     return
+            // }
+            // try {
+            //     const response: ResponseData = await get(id);
+            //     const { data } = response;
+            //     commit('setDetail', {
+            //         ...initState.detailResult,
+            //         ...data,
+            //     });
+            //     return true;
+            // } catch (error) {
+            //     return false;
+            // }
         },
 
         async saveInterface({ state, dispatch }, payload: any) {

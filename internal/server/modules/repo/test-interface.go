@@ -105,8 +105,18 @@ func (r *TestInterfaceRepo) hasChild(categories []*v1.TestInterface, parent *v1.
 	return
 }
 
-func (r *TestInterfaceRepo) Save(processor *model.TestInterface) (err error) {
-	err = r.DB.Save(processor).Error
+func (r *TestInterfaceRepo) Save(po *model.TestInterface) (err error) {
+	po.Ordr = r.GetMaxOrder(po.ParentId, po.ProjectId)
+
+	err = r.DB.Save(po).Error
+
+	return
+}
+
+func (r *TestInterfaceRepo) Update(req v1.TestInterfaceReq) (err error) {
+	err = r.DB.Model(&model.TestInterface{}).
+		Where("id ?", req.Id).
+		Updates(map[string]interface{}{"title": req.Title, "desc": req.Desc}).Error
 
 	return
 }
@@ -154,23 +164,6 @@ func (r *TestInterfaceRepo) UpdateName(id int, name string) (err error) {
 	err = r.DB.Model(&model.TestInterface{}).
 		Where("id = ?", id).
 		Update("name", name).Error
-
-	return
-}
-
-func (r *TestInterfaceRepo) Update(req v1.TestInterfaceReq) (err error) {
-	po := new(model.TestInterface)
-	po.ID = uint(req.Id)
-
-	err = r.DB.First(&po).Error
-	if err != nil {
-		return err
-	}
-
-	po.Title = req.Title
-	po.Desc = req.Desc
-
-	err = r.DB.Save(&po).Error
 
 	return
 }

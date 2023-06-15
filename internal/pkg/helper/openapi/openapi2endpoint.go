@@ -118,9 +118,19 @@ func (o *openapi2endpoint) requestBody(content openapi3.Content) (mediaType cons
 			item.Examples["example"].Value.Value = item.Example
 		}
 		body.Examples = commonUtils.JsonEncode(item.Examples)
+		body.SchemaItem = o.requestBodyItem(item)
 		//body.Examples = item.Example
+		//content.
 		return
 	}
+
+	return
+}
+
+func (o *openapi2endpoint) requestBodyItem(item *openapi3.MediaType) (requestBodyItem model.EndpointInterfaceRequestBodyItem) {
+	requestBodyItem = model.EndpointInterfaceRequestBodyItem{}
+	requestBodyItem.Content = commonUtils.JsonEncode(item.Schema)
+	requestBodyItem.Type = item.Schema.Value.Type
 
 	return
 }

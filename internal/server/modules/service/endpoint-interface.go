@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi/convert"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
@@ -43,12 +44,12 @@ func (s *EndpointInterfaceService) ImportEndpointData(req v1.ImportEndpointDataR
 	x, _ := json.Marshal(doc)
 	fmt.Println(string(x), "++++")
 	//fmt.Println(json.Marshal(doc))
-	//openapi2endpoint := openapi.NewOpenapi2endpoint(doc)
-	//endpoints := openapi2endpoint.Convert()
+	openapi2endpoint := openapi.NewOpenapi2endpoint(doc)
+	endpoints := openapi2endpoint.Convert()
 	//x, _ = json.Marshal(endpoints)
 	//fmt.Println(string(x), "----")
 	//fmt.Println(endpoints)
-	//err = s.EndpointService.SaveEndpoints(endpoints, req)
+	err = s.EndpointService.SaveEndpoints(endpoints, req)
 
 	return
 

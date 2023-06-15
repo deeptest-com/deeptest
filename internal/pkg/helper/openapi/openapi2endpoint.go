@@ -210,6 +210,7 @@ func (*openapi2endpoint) parameterValue(schema *openapi3.Schema, param *model.En
 	param.Pattern = schema.Pattern
 	param.MinItems = schema.MinItems
 	param.MinLength = schema.MinLength
+	param.MinItems = schema.MinItems
 	param.UniqueItems = schema.UniqueItems
 	param.Type = schema.Type
 }

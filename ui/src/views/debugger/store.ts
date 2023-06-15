@@ -7,20 +7,12 @@ import {
     get,
     save,
     remove,
+    move,
     clone,
 } from './service';
 
-import {
-    loadCategory,
-    getCategory,
-    createCategory,
-    updateCategory,
-    removeCategory,
-    moveCategory,
-    updateCategoryName
-} from "@/services/category";
-
 import { getNodeMap } from "@/services/tree";
+import {moveCategory} from "@/services/category";
 
 export interface StateType {
     testInterfaceId: number;
@@ -56,18 +48,8 @@ export interface ModuleType extends StoreModuleType<StateType> {
         getInterface: Action<StateType, StateType>;
         saveInterface: Action<StateType, StateType>;
         removeInterface: Action<StateType, StateType>;
+        moveInterface: Action<StateType, StateType>;
         cloneInterface: Action<StateType, StateType>;
-
-        loadCategory: Action<StateType, StateType>;
-        getCategoryNode: Action<StateType, StateType>;
-        createCategoryNode: Action<StateType, StateType>;
-        updateCategoryNode: Action<StateType, StateType>;
-        removeCategoryNode: Action<StateType, StateType>;
-        moveCategoryNode: Action<StateType, StateType>;
-        saveTreeMapItemCategory: Action<StateType, StateType>;
-        saveTreeMapItemPropCategory: Action<StateType, StateType>;
-        saveCategory: Action<StateType, StateType>;
-        updateCategoryName: Action<StateType, StateType>;
     }
 }
 
@@ -189,6 +171,15 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
+        async moveInterface({commit, dispatch, state}, payload: any) {
+            try {
+                await move(payload);
+                dispatch('loadTree', state.queryParams);
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
         async cloneInterface({ dispatch, state }, payload: number) {
             try {
                 const jsn = await clone(payload);
@@ -201,99 +192,6 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
-        // category tree
-        async loadCategory({ commit }) {
-            const response = await loadCategory('plan');
-            if (response.code != 0) return;
-
-            const { data } = response;
-            commit('setTreeData', data || {});
-
-            const mp = {}
-            getNodeMap(data, mp)
-
-            commit('setTreeDataMap', mp);
-
-            return true;
-        },
-        async getCategoryNode({ commit }, payload: any) {
-            try {
-                if (!payload) {
-                    commit('setNodeCategory', {});
-                    return true;
-                }
-
-                const response = await getCategory(payload.id);
-                const { data } = response;
-                console.log(data);
-                commit('setNodeCategory', data);
-                return true;
-            } catch (error) {
-                return false;
-            }
-        },
-        async createCategoryNode({ commit, dispatch, state }, payload: any) {
-            try {
-                const resp = await createCategory(payload);
-
-                await dispatch('loadCategory');
-                return resp.data;
-            } catch (error) {
-                return false;
-            }
-        },
-        async updateCategoryNode({ commit }, payload: any) {
-            try {
-                const { id, ...params } = payload;
-                await updateCategory(id, { ...params });
-                return true;
-            } catch (error) {
-                return false;
-            }
-        },
-        async removeCategoryNode({ commit, dispatch, state }, payload: number) {
-            try {
-                await removeCategory(payload);
-                await dispatch('loadCategory');
-                return true;
-            } catch (error) {
-                return false;
-            }
-        },
-        async moveCategoryNode({ commit, dispatch, state }, payload: any) {
-            try {
-                await moveCategory(payload);
-                await dispatch('loadCategory');
-                return true;
-            } catch (error) {
-                return false;
-            }
-        },
-        async saveTreeMapItemCategory({ commit }, payload: any) {
-            commit('setTreeDataMapItem', payload);
-        },
-        async saveTreeMapItemPropCategory({ commit }, payload: any) {
-            commit('setTreeDataMapItemProp', payload);
-        },
-        async saveCategory({ commit, dispatch, state }, payload: any) {
-            const jsn = await updateCategory(payload.id, payload)
-            if (jsn.code === 0) {
-                commit('setCategory', jsn.data);
-                await dispatch('loadCategory');
-                return true;
-            } else {
-                return false
-            }
-        },
-        async updateCategoryName({ commit, dispatch, state }, payload: any) {
-            const jsn = await updateCategoryName(payload.id, payload.name)
-            if (jsn.code === 0) {
-                await dispatch('loadCategory');
-                return true;
-            } else {
-                return false
-            }
-        }
     }
 };
 

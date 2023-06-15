@@ -34,6 +34,13 @@ export async function remove(id: number, type: string): Promise<any> {
         params,
     });
 }
+export async function move(data: any): Promise<any> {
+    return request({
+        url: `/${apiPath}/move`,
+        method: 'post',
+        data: data,
+    });
+}
 
 export async function clone(id: number): Promise<any> {
     return request({

@@ -29,29 +29,29 @@
           </template>
 
           <template #title="nodeProps">
-            <div class="tree-title" :draggable="nodeProps.id === -1">
-              <span class="tree-title-text" v-if="nodeProps.title.indexOf(searchValue) > -1">
-                {{ nodeProps.title.substr(0, nodeProps.title.indexOf(searchValue)) }}
-                <span style="color: #f50">{{ searchValue }}</span>
-                {{ nodeProps.title.substr(nodeProps.title.indexOf(searchValue) + searchValue.length) }}
+            <div class="tree-title" :draggable="nodeProps.dataRef.id === -1">
+              <span class="tree-title-text" v-if="nodeProps.dataRef.title.indexOf(searchValue) > -1">
+                <span>{{nodeProps.dataRef.title.substr(0, nodeProps.dataRef.title.indexOf(searchValue))}}</span>
+                <span style="color: #f50">{{searchValue}}</span>
+                <span>{{nodeProps.dataRef.title.substr(nodeProps.dataRef.title.indexOf(searchValue) + searchValue.length)}}</span>
               </span>
-              <span class="tree-title-text" v-else>{{ nodeProps.title }}</span>
+              <span class="tree-title-text" v-else>{{ nodeProps.dataRef.title }}</span>
 
-              <span class="more-icon" v-if="nodeProps.id > 0">
+              <span class="more-icon" v-if="nodeProps.dataRef.id > 0">
                   <a-dropdown>
                        <MoreOutlined/>
                       <template #overlay>
                         <a-menu>
-                          <a-menu-item v-if="nodeProps.dataRef.type === 'dir'" key="0" @click="create(nodeProps.id, 'dir')">
+                          <a-menu-item v-if="nodeProps.dataRef.type === 'dir'" key="0" @click="create(nodeProps.dataRef.id, 'dir')">
                              新建目录
                           </a-menu-item>
-                          <a-menu-item v-if="nodeProps.dataRef.type === 'dir'" key="0" @click="create(nodeProps.id, 'interface')">
+                          <a-menu-item v-if="nodeProps.dataRef.type === 'dir'" key="0" @click="create(nodeProps.dataRef.id, 'interface')">
                              新建接口
                           </a-menu-item>
-                          <a-menu-item v-if="nodeProps.id !== -1" key="1" @click="edit(nodeProps)">
+                          <a-menu-item v-if="nodeProps.dataRef.id !== -1" key="1" @click="edit(nodeProps)">
                            {{'编辑' + (nodeProps.dataRef.type === 'interface' ? '接口' : '目录')}}
                           </a-menu-item>
-                          <a-menu-item v-if="nodeProps.id !== -1" key="1" @click="deleteNode(nodeProps.dataRef)">
+                          <a-menu-item v-if="nodeProps.dataRef.id !== -1" key="1" @click="deleteNode(nodeProps.dataRef)">
                             {{'删除' + (nodeProps.dataRef.type === 'interface' ? '接口' : '目录')}}
                           </a-menu-item>
                         </a-menu>
@@ -244,7 +244,6 @@ async function deleteNode(node) {
       console.log('Cancel');
     },
   });
-
 }
 
 async function handleModalOk(model) {
@@ -274,11 +273,9 @@ async function onDrop(info: DropEvent) {
   const pos = info.node.pos.split('-');
   const dropPosition = info.dropPosition - Number(pos[pos.length - 1]);
 
-  const res = await store.dispatch('Plan/moveNode', {
-    "currProjectId": currProject.value.id,
+  const res = await store.dispatch('TestInterface/moveInterface', {
     "dragKey": dragKey, // 移动谁
     "dropKey": dropKey,  // 移动那儿
-    type: 'plan',
     "dropPos": dropPosition // 0 表示移动到目标节点的子节点，-1 表示移动到目标节点的前面， 1表示移动到目标节点的后面
   });
   if (res) {

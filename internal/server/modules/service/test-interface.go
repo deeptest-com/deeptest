@@ -51,6 +51,16 @@ func (s *TestInterfaceService) Remove(id int, typ serverConsts.TestInterfaceType
 	return
 }
 
+func (s *TestInterfaceService) Move(srcId, targetId uint, pos serverConsts.DropPos, projectId uint) (
+	srcScenarioNode model.TestInterface, err error) {
+	srcScenarioNode, err = s.TestInterfaceRepo.Get(srcId)
+
+	srcScenarioNode.ParentId, srcScenarioNode.Ordr = s.TestInterfaceRepo.UpdateOrder(pos, targetId, projectId)
+	err = s.TestInterfaceRepo.UpdateOrdAndParent(srcScenarioNode)
+
+	return
+}
+
 func (s *TestInterfaceService) CopyValueFromRequest(interf *model.TestInterface, req serverDomain.TestInterfaceSaveReq) {
 	copier.CopyWithOption(interf, req, copier.Option{
 		DeepCopy: true,

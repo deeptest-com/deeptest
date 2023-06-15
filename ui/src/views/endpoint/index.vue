@@ -18,8 +18,8 @@
                 type="primary"
                 :loading="loading"
                 @handle-access="handleCreateEndPoint"/>
+            <a-button @click="inportApi">导入接口</a-button>
             <a-button type="primary" :disabled="!hasSelected" @click="goDocs">查看文档</a-button>
-            <a-button type="primary" @click="inportApi">导入接口</a-button>
           </div>
 
           <div class="top-search-filter">

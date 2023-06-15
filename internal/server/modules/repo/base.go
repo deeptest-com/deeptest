@@ -70,6 +70,33 @@ func (r *BaseRepo) GetAllChildIds(id uint, tableName string, typ serverConsts.Ca
 	return
 }
 
+func (r *TestInterfaceRepo) GetAllChildIdsSimple(id uint, tableName string) (
+	ids []uint, err error) {
+	sql := `
+		WITH RECURSIVE temp AS
+		(
+			SELECT id, parent_id, name from %s a 
+				WHERE a.id = %d AND NOT a.deleted
+		
+			UNION ALL
+		
+			SELECT b.id, b.parent_id, b.name 
+				from temp c
+				inner join %s b on b.parent_id = c.id
+				WHERE NOT b.deleted
+		) 
+		select id from temp e;
+`
+	sql = fmt.Sprintf(sql, tableName, id, tableName)
+
+	err = r.DB.Raw(sql).Scan(&ids).Error
+	if err != nil {
+		return
+	}
+
+	return
+}
+
 func (r *BaseRepo) Save(id uint, entity interface{}) (err error) {
 	var count int64
 	err = r.DB.Model(&entity).Where("id = ?", id).Count(&count).Error

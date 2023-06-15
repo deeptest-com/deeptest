@@ -211,3 +211,19 @@ func (r *TestInterfaceRepo) GetMaxOrder(parentId uint, projectId uint) (order in
 
 	return
 }
+
+func (r *TestInterfaceRepo) Remove(id uint, typ serverConsts.TestInterfaceType) (err error) {
+	ids := []uint{}
+
+	if typ == serverConsts.TestInterfaceTypeDir {
+		ids, _ = r.GetAllChildIdsSimple(id, model.TestInterface{}.TableName())
+	} else {
+		ids = append(ids, id)
+	}
+
+	err = r.DB.Model(&model.TestInterface{}).
+		Where("id IN (?)", ids).
+		Update("deleted", true).Error
+
+	return
+}

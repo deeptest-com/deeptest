@@ -6,7 +6,7 @@
             class="search-input"
             v-model:value="searchValue"
             placeholder="搜索接口分类"/>
-        <div class="add-btn" @click="newDir(treeData?.[0])">
+        <div class="add-btn" @click="create(treeData?.[0], 'dir')">
           <PlusOutlined style="font-size: 16px;"/>
         </div>
       </div>
@@ -51,7 +51,7 @@
                           <a-menu-item v-if="nodeProps.id !== -1" key="1" @click="edit(nodeProps)">
                            {{'编辑' + (nodeProps.dataRef.type === 'interface' ? '接口' : '目录')}}
                           </a-menu-item>
-                          <a-menu-item v-if="nodeProps.id !== -1" key="1" @click="deleteNode(nodeProps)">
+                          <a-menu-item v-if="nodeProps.id !== -1" key="1" @click="deleteNode(nodeProps.dataRef)">
                             {{'删除' + (nodeProps.dataRef.type === 'interface' ? '接口' : '目录')}}
                           </a-menu-item>
                         </a-menu>
@@ -212,30 +212,32 @@ function selectTreeItem(keys, e) {
   // 如果没有选中的节点，就默认选中根节点
   emit('select', selectedKeys.value?.[0] ? selectedKeys.value[0] : null);
   const selectedData = treeDataMap.value[selectedKeys.value[0]]
-  store.dispatch('Plan/getCategoryNode', selectedData);
+
+  // store.dispatch('Plan/getCategoryNode', selectedData);
 }
 
 const currentNode = ref(null as any);
 
-function create(targetId, type) {
-  currentNode.value = {targetId, type};
+function create(parentId, type) {
+  console.log('create', parentId, type)
+  currentNode.value = {parentId, type};
 }
 function edit(node) {
   currentNode.value = node;
 }
 async function deleteNode(node) {
   Modal.confirm({
-    title: () => '确定删除该分类吗？',
-    content: () => '删除后所有所有子分类都会被删除',
+    title: () => '确定删除该' + (node.type === 'interface'?'接口':'目录') + '吗？',
+    content: () => node.type === 'dir'?'删除后所有所有子目录都会被删除':'',
     okText: () => '确定',
     okType: 'danger',
     cancelText: () => '取消',
     onOk: async () => {
-      const res = await store.dispatch('Plan/removeCategoryNode', node.id);
+      const res = await store.dispatch('TestInterface/removeInterface', {id: node.id, type: node.type});
       if (res) {
         message.success('删除成功');
       } else {
-        message.success('删除失败');
+        message.error('删除失败');
       }
     },
     onCancel() {
@@ -255,9 +257,9 @@ async function handleModalOk(model) {
   const res = await store.dispatch('TestInterface/saveInterface', model);
   if (res) {
     currentNode.value = null
-    message.success('保存分类成功');
+    message.success('保存目录成功');
   } else {
-    message.error('保存分类失败');
+    message.error('保存目录失败');
   }
 }
 
@@ -271,15 +273,7 @@ async function onDrop(info: DropEvent) {
   const dragKey = info.dragNode.eventKey;
   const pos = info.node.pos.split('-');
   const dropPosition = info.dropPosition - Number(pos[pos.length - 1]);
-  // 未分类不让移动
-  if (dragKey === -1) {
-    message.warning('未分类不能移动');
-    return;
-  }
-  if (dropKey === -1) {
-    message.warning('其他分类不能移动到未分类下');
-    return;
-  }
+
   const res = await store.dispatch('Plan/moveNode', {
     "currProjectId": currProject.value.id,
     "dragKey": dragKey, // 移动谁

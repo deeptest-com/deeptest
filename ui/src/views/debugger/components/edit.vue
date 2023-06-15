@@ -38,14 +38,22 @@ const emit = defineEmits(['ok', 'cancel']);
 
 const tagFormRef = ref();
 const formState = ref({
+  id: 0,
   title: '',
   desc: '',
   type: '',
+  parentId: 0,
 });
 
 watch(props.nodeInfo, () => {
   console.log('watch props.nodeInfo', props?.nodeInfo?.type)
-  formState.value = {title: props?.nodeInfo?.title, desc: props?.nodeInfo?.desc, type: props?.nodeInfo?.type}
+  formState.value = {
+    id: props?.nodeInfo?.id,
+    title: props?.nodeInfo?.title,
+    desc: props?.nodeInfo?.desc,
+    type: props?.nodeInfo?.type,
+    parentId: props?.nodeInfo?.parentId,
+  }
 }, { immediate: true, deep: true })
 
 function ok() {

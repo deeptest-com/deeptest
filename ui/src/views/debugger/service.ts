@@ -26,10 +26,12 @@ export async function save(data: any): Promise<any> {
         data: data,
     });
 }
-export async function remove(id: number): Promise<any> {
+export async function remove(id: number, type: string): Promise<any> {
+    const params = {type}
     return request({
         url: `/${apiPath}/${id}`,
         method: 'delete',
+        params,
     });
 }
 

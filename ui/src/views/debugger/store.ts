@@ -47,8 +47,8 @@ export interface ModuleType extends StoreModuleType<StateType> {
 
         setTreeData: Mutation<StateType>;
         setTreeDataMap: Mutation<StateType>;
-        setTreeDataMapItemCategory: Mutation<StateType>;
-        setTreeDataMapItemPropCategory: Mutation<StateType>;
+        setTreeDataMapItem: Mutation<StateType>;
+        setTreeDataMapItemProp: Mutation<StateType>;
         setNodeCategory: Mutation<StateType>;
     };
     actions: {
@@ -119,11 +119,11 @@ const StoreModel: ModuleType = {
         setTreeDataMap(state, payload) {
             state.treeDataMap = payload
         },
-        setTreeDataMapItemCategory(state, payload) {
+        setTreeDataMapItem(state, payload) {
             if (!state.treeDataMap[payload.id]) return
             state.treeDataMap[payload.id] = payload
         },
-        setTreeDataMapItemPropCategory(state, payload) {
+        setTreeDataMapItemProp(state, payload) {
             if (!state.treeDataMap[payload.id]) return
             state.treeDataMap[payload.id][payload.prop] = payload.value
         },
@@ -177,11 +177,11 @@ const StoreModel: ModuleType = {
                 return false
             }
         },
-        async removeInterface({ commit, dispatch, state }, payload: number) {
+        async removeInterface({ commit, dispatch, state }, payload: any) {
             try {
-                const jsn = await remove(payload);
+                const jsn = await remove(payload.id, payload.type);
                 if (jsn.code === 0) {
-                    dispatch('listInterface', state.queryParams);
+                    dispatch('loadTree', state.queryParams);
                     return true;
                 }
                 return false;
@@ -270,10 +270,10 @@ const StoreModel: ModuleType = {
             }
         },
         async saveTreeMapItemCategory({ commit }, payload: any) {
-            commit('setTreeDataMapItemCategory', payload);
+            commit('setTreeDataMapItem', payload);
         },
         async saveTreeMapItemPropCategory({ commit }, payload: any) {
-            commit('setTreeDataMapItemPropCategory', payload);
+            commit('setTreeDataMapItemProp', payload);
         },
         async saveCategory({ commit, dispatch, state }, payload: any) {
             const jsn = await updateCategory(payload.id, payload)

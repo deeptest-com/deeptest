@@ -2,6 +2,7 @@ package service
 
 import (
 	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"github.com/jinzhu/copier"
@@ -42,6 +43,11 @@ func (s *TestInterfaceService) Save(req serverDomain.TestInterfaceSaveReq) (debu
 	s.CopyValueFromRequest(&debug, req)
 	err = s.TestInterfaceRepo.Save(&debug)
 
+	return
+}
+
+func (s *TestInterfaceService) Remove(id int, typ serverConsts.TestInterfaceType) (err error) {
+	err = s.TestInterfaceRepo.Remove(uint(id), typ)
 	return
 }
 

@@ -30,10 +30,10 @@ type TestInterfaceLoadReq struct {
 }
 
 type TestInterfaceSaveReq struct {
-	Id        uint   `json:"id"`
+	ID        uint   `json:"id"`
 	Title     string `json:"title"`
 	Mode      string `json:"mode"`
-	TargetId  uint   `json:"targetId"`
+	ParentId  uint   `json:"parentId"`
 	ServeId   uint   `json:"serveId"`
 	ProjectId uint   `json:"projectId"`
 

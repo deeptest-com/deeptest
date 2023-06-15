@@ -11,7 +11,6 @@
 <script setup lang="ts">
 import {computed, ref, watch} from "vue";
 import { useStore } from "vuex";
-import {Endpoint} from "@/views/endpoint/data";
 import {StateType as Debug} from "@/views/component/debug/store";
 import debounce from "lodash.debounce";
 import {StateType as TestInterfaceStateType} from "@/views/debugger/store";

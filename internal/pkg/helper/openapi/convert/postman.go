@@ -7,6 +7,7 @@ import (
 	"github.com/getkin/kin-openapi/openapi3"
 	"os/exec"
 	"runtime"
+	"strings"
 )
 
 type Postman struct {
@@ -20,20 +21,29 @@ func newPostman() *Postman {
 
 func (d *Postman) toOpenapi() (doc *openapi3.T, err error) {
 	system := runtime.GOOS
-	cmd := fmt.Sprintf("plugins/postman2openapi/%s/postman2openapi", system)
-	// 此处是windows版本
+	cmd := ""
+	var c *exec.Cmd
 	var output []byte
 	if system == "windows" {
-		c := exec.Command("cmd", "/C", cmd)
-		output, _ = c.CombinedOutput()
+		cmd = fmt.Sprintf("plugins/postman2openapi/%s/postman2openapi.exe -f json %s", system, d.FilePath)
+		cmd = strings.ReplaceAll(cmd, "/", "\\")
+		c = exec.Command("cmd", "/C", cmd)
 	} else {
-		c := exec.Command("bash", "-c", cmd)
-		output, _ = c.CombinedOutput()
+		cmd = fmt.Sprintf("plugins/postman2openapi/%s/postman2openapi -f json %s", system, d.FilePath)
+		c = exec.Command("bash", "-c", cmd)
 	}
-	err = json.Unmarshal(output, doc)
 
-	fmt.Println(string(output))
-	fmt.Println(cmd)
+	output, err = c.CombinedOutput()
+	if err != nil {
+		return
+	}
+
+	doc = new(openapi3.T)
+	err = json.Unmarshal(output, doc)
+	if err != nil {
+		return
+	}
+
 	return
 }
 

@@ -173,8 +173,9 @@ func (s *EndpointService) AddVersion(version *model.EndpointVersion) (err error)
 	return
 }
 
-func (s *EndpointService) SaveEndpoints(endpoints []*model.Endpoint) (err error) {
+func (s *EndpointService) SaveEndpoints(endpoints []*model.Endpoint, req v1.ImportEndpointDataReq) (err error) {
 	for _, endpoint := range endpoints {
+		endpoint.ProjectId, endpoint.ServeId, endpoint.CategoryId = req.ProjectId, req.ServeId, req.CategoryId
 		_, err = s.Save(*endpoint)
 		if err != nil {
 			return

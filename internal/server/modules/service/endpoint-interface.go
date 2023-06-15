@@ -32,11 +32,14 @@ func (s *EndpointInterfaceService) ImportEndpointData(req v1.ImportEndpointDataR
 		return err
 	}
 
-	handler := convert.NewHandler(req.DriverType, data)
-	doc := handler.ToOpenapi()
+	handler := convert.NewHandler(req.DriverType, data, req.FilePath)
+	doc, err := handler.ToOpenapi()
+	if err != nil {
+		return
+	}
 	openapi2endpoint := openapi.NewOpenapi2endpoint(doc)
 	endpoints := openapi2endpoint.Convert()
-	err = s.EndpointService.SaveEndpoints(endpoints)
+	err = s.EndpointService.SaveEndpoints(endpoints, req)
 
 	return
 

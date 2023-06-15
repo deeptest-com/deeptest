@@ -75,7 +75,8 @@ func (EndpointInterfaceResponseBodyItem) TableName() string {
 
 type EndpointInterfaceResponseBodyHeader struct {
 	BaseModel
-	InterfaceResponseBodyHeaderBase
+	SchemaParam
+	ResponseBodyId uint `json:"responseBodyId"`
 }
 
 func (EndpointInterfaceResponseBodyHeader) TableName() string {

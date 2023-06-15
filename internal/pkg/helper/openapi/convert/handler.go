@@ -6,25 +6,26 @@ import (
 )
 
 type IDriver interface {
-	toOpenapi() *openapi3.T
+	toOpenapi() (*openapi3.T, error)
 	Doc(data []byte)
+	setFilePath(filePath string)
 }
 
 type Handler struct {
 	driver IDriver
 }
 
-func NewHandler(driverType DriverType, data []byte) *Handler {
+func NewHandler(driverType DriverType, data []byte, filePath string) *Handler {
 	h := &Handler{}
-	h.driver = initDriver(driverType, data)
+	h.driver = initDriver(driverType, data, filePath)
 	return h
 }
 
-func (h *Handler) ToOpenapi() *openapi3.T {
+func (h *Handler) ToOpenapi() (*openapi3.T, error) {
 	return h.driver.toOpenapi()
 }
 
-func initDriver(driverType DriverType, data []byte) (driver IDriver) {
+func initDriver(driverType DriverType, data []byte, filePath string) (driver IDriver) {
 
 	switch driverType {
 	case POSTMAN:
@@ -38,5 +39,6 @@ func initDriver(driverType DriverType, data []byte) (driver IDriver) {
 	}
 
 	driver.Doc(data)
+	driver.setFilePath(filePath)
 	return
 }

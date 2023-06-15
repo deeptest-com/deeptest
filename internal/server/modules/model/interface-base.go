@@ -147,6 +147,5 @@ type InterfaceResponseBodyHeaderBase struct {
 	Name           string `json:"name"`
 	Desc           string `json:"desc"`
 	Value          string `json:"value"`
-	Type           string `json:"type"`
 	ResponseBodyId uint   `json:"responseBodyId"`
 }

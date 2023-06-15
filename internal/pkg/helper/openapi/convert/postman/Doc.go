@@ -1,4 +1,4 @@
 package postman
 
-type Doc struct {
+type Doc interface {
 }

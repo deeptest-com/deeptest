@@ -9,9 +9,8 @@
     </div>
 </template>
 <script setup lang="ts">
-import {computed, ref, watch} from "vue";
+import {computed} from "vue";
 import { useStore } from "vuex";
-import debounce from "lodash.debounce";
 import {StateType as DebugStateType} from "@/views/component/debug/store";
 import {StateType as EndpointStateType} from "@/views/endpoint/store";
 import {StateType as TestInterfaceStateType} from "@/views/debugger/store";

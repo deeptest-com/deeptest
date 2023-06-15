@@ -123,7 +123,7 @@ async function loadTreeData() {
 }
 
 async function getServeServers() {
-  await store.dispatch('Debug/getServeServers', {
+  await store.dispatch('TestInterface/getServeServers', {
     id: currServe.value.id,
   })
 }

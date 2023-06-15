@@ -1,55 +1,49 @@
 <template>
-    <div class="path-param-header">
-        <a-input class="path-param-header-input" placeholder="请输入路径"
-                 :value="url"
-                 @change="changeUrl">
+    <div class="url-input-main">
+      <a-input class="path-param-header-input" placeholder="请求站点"
+               :value="currentEnvURL">
+      </a-input>
 
-            <template #addonBefore>
-                <a-select :options="serveServers" :value="serverId || null" @change="changeServer"
-                    placeholder="请选择环境" class="select-env">
-                </a-select>
-                <span v-if="envURL" class="current-env-url">{{ envURL || '---' }}</span>
-            </template>
-        </a-input>
+      <a-input class="path-param-header-input" placeholder="请求路径"
+               :value="url">
+      </a-input>
     </div>
 </template>
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { useStore } from "vuex";
 import {Endpoint} from "@/views/endpoint/data";
-import {StateType as Debug} from "@/views/component/debug/store";
+import {StateType as DebugStateType, StateType as Debug} from "@/views/component/debug/store";
 import debounce from "lodash.debounce";
-const store = useStore<{  Debug: Debug, Endpoint }>();
+import {StateType as TestInterfaceStateType} from "@/views/debugger/store";
+import {StateType as EndpointStateType} from "@/views/endpoint/store";
+
+const store = useStore<{TestInterface: TestInterfaceStateType, Debug: DebugStateType, Endpoint: EndpointStateType}>();
 
 const debugData = computed<any>(() => store.state.Debug.debugData);
-
-const endpointDetail: any = computed<Endpoint>(() => store.state.Endpoint.endpointDetail);
-const serveServers: any = computed<Endpoint>(() => store.state.Endpoint.serveServers);
+const serveServers: any = computed(() => store.state.TestInterface.serveServers);
 
 const serverId = computed(() => {
-  return debugData?.value?.serverId || endpointDetail?.value?.serverId || serveServers?.value[0]?.value || ''
+  return debugData?.value?.serverId || serveServers?.value[0]?.value || ''
 });
-const envURL = computed(() => {
+
+const url = computed(() => {
+  return debugData?.value.url
+});
+
+const currentServerId = ref(debugData.value.serverId || null);
+const currentEnvURL = computed(() => {
+  console.log('computed currentEnvURL', currentServerId.value, serveServers.value)
+
   return serveServers.value?.find((item) => {
-    return serverId.value === item.id;
+    return currentServerId.value === item.id;
   })?.url
 });
-const url = computed(() => {
-  return debugData?.value.url || endpointDetail.value.path
-});
-
-function changeServer(id) {
-  store.dispatch('Debug/changeServer', id)
-}
-
-const changeUrl = (e) => {
-  store.commit('Debug/setUrl', e.target.value.trim())
-}
 
 </script>
 
 <style scoped lang="less">
-.path-param-header {
+.url-input-main {
   display: inline-block;
   overflow: hidden;
   width: 100%;

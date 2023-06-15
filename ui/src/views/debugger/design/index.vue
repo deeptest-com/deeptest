@@ -3,7 +3,8 @@
     <div class="tabs">
       <a-tabs v-model:activeKey="activeKey" type="editable-card" @edit="onEdit">
         <a-tab-pane v-for="pane in panes" :key="pane.key" :tab="pane.title">
-          {{ pane.content }}
+          <UrlInput />
+
         </a-tab-pane>
       </a-tabs>
     </div>
@@ -15,25 +16,15 @@
 </template>
 
 <script setup lang="ts">
-import {
-  computed, ref, onMounted,
-  watch, defineEmits, defineProps
-} from 'vue';
-import {
-  PlusOutlined,
-  CaretDownOutlined,
-  MoreOutlined
-} from '@ant-design/icons-vue';
-import {message, Modal} from 'ant-design-vue';
-import {DropEvent} from 'ant-design-vue/es/tree/Tree';
+import {computed, ref} from 'vue';
 import {useStore} from "vuex";
-import {setSelectedKey} from "@/utils/cache";
-
-import EnvSelection from './env-selection.vue'
 
 import {StateType as ProjectStateType} from "@/store/project";
 import {StateType as TestInterfaceStateType} from '../store';
 import {StateType as ServeStateType} from "@/store/serve";
+
+import EnvSelection from './env-selection.vue'
+import UrlInput from './url-input.vue'
 
 const store = useStore<{ TestInterface: TestInterfaceStateType, ProjectGlobal: ProjectStateType, ServeGlobal: ServeStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);

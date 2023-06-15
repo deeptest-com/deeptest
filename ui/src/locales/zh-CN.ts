@@ -26,8 +26,8 @@ export default {
     'project.members': '项目成员',
     'project.invite': '邀请成员',
 
-    'endpoint-management': '接口管理',
-    'interface-debug': '接口测试',
+    'endpoint-management': '接口设计',
+    'interface-debug': '接口调试',
     'projectSetting': '项目设置', // 新版 接口模块
     'projectSetting.enviroment': '环境管理',
     'projectSetting.datapool': '数据池',

@@ -10,12 +10,14 @@ import {
     move,
     clone,
 } from './service';
+import {serverList} from "@/views/project-settings/service";
 
 export interface StateType {
     interfaceId: number;
     interfaceData: any;
 
     queryParams: any;
+    serveServers: [],
 
     treeData: any[] | null;
     treeDataMap: any,
@@ -28,6 +30,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setInterfaceData: Mutation<StateType>;
 
         setQueryParams: Mutation<StateType>;
+        setServeServers: Mutation<StateType>;
 
         setTreeData: Mutation<StateType>;
         setTreeDataMap: Mutation<StateType>;
@@ -41,13 +44,17 @@ export interface ModuleType extends StoreModuleType<StateType> {
         removeInterface: Action<StateType, StateType>;
         moveInterface: Action<StateType, StateType>;
         cloneInterface: Action<StateType, StateType>;
+
+        getServeServers: Action<StateType, StateType>;
     }
 }
 
 const initState: StateType = {
     interfaceId: 0,
     interfaceData: null,
+
     queryParams: {},
+    serveServers: [],
 
     treeData: [],
     treeDataMap: {},
@@ -83,6 +90,9 @@ const StoreModel: ModuleType = {
         },
         setQueryParams(state, payload) {
             state.queryParams = payload;
+        },
+        setServeServers(state, payload) {
+            state.serveServers = payload;
         },
     },
     actions: {
@@ -157,6 +167,21 @@ const StoreModel: ModuleType = {
                 return false;
             } catch (error) {
                 return false;
+            }
+        },
+
+        async getServeServers({commit}, payload: any) {
+            const res = await serverList({
+                serveId: payload.id
+            });
+            if (res.code === 0) {
+                res.data.forEach((item: any) => {
+                    item.label = item.description;
+                    item.value = item.id;
+                })
+                commit('setServeServers', res.data || null);
+            } else {
+                return false
             }
         },
     }

@@ -122,15 +122,23 @@ async function loadTreeData() {
   }
 }
 
+async function getServeServers() {
+  await store.dispatch('TestInterface/getServeServers', {
+    id: currServe.value.id,
+  })
+}
+
 watch((currProject), async (newVal) => {
   console.log('watch currProject', currProject?.value.id, currServe?.value.id)
   await loadTreeData();
+  await getServeServers()
 }, {
   immediate: true
 })
 watch((currServe), async (newVal) => {
   console.log('watch currProject', currProject?.value.id, currServe?.value.id)
   await loadTreeData();
+  await getServeServers()
 }, {
   immediate: true
 })

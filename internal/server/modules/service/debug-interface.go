@@ -22,9 +22,9 @@ type DebugInterfaceService struct {
 
 	DebugSceneService        *DebugSceneService        `inject:""`
 	ScenarioInterfaceService *ScenarioInterfaceService `inject:""`
-	SceneService       *SceneService       `inject:""`
-	EnvironmentService *EnvironmentService `inject:""`
-	DatapoolService    *DatapoolService    `inject:""`
+	SceneService             *SceneService             `inject:""`
+	EnvironmentService       *EnvironmentService       `inject:""`
+	DatapoolService          *DatapoolService          `inject:""`
 }
 
 func (s *DebugInterfaceService) Load(loadReq domain.DebugReq) (debugData domain.DebugData, err error) {
@@ -80,6 +80,12 @@ func (s *DebugInterfaceService) GetDebugInterface(endpointInterfaceId uint) (ret
 	} else {
 		ret, err = s.ConvertDebugDataFromEndpointInterface(endpointInterfaceId)
 	}
+
+	return
+}
+
+func (s *DebugInterfaceService) GetDetail(id uint) (ret model.DebugInterface, err error) {
+	ret, err = s.DebugInterfaceRepo.GetDetail(id)
 
 	return
 }
@@ -205,5 +211,9 @@ func (s *DebugInterfaceService) GetScenarioIdForDebugInterface(processorId uint)
 func (s *DebugInterfaceService) CopyValueFromRequest(interf *model.DebugInterface, req domain.DebugData) (err error) {
 	copier.CopyWithOption(interf, req, copier.Option{DeepCopy: true})
 
+	return
+}
+
+func (s *DebugInterfaceService) GenSample(projectId, serveId uint) (ret *model.DebugInterface, err error) {
 	return
 }

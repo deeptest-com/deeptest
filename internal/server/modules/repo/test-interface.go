@@ -52,19 +52,6 @@ func (r *TestInterfaceRepo) Get(id uint) (po model.TestInterface, err error) {
 	return
 }
 
-func (r *TestInterfaceRepo) GetDetail(id uint) (ret model.TestInterface, err error) {
-	ret, err = r.Get(id)
-
-	if ret.DebugInterfaceId > 0 {
-		debugInterface, err := r.DebugInterfaceRepo.GetDetail(ret.DebugInterfaceId)
-		if err == nil {
-			ret.DebugInterface = &debugInterface
-		}
-	}
-
-	return
-}
-
 func (r *TestInterfaceRepo) toTos(pos []*model.TestInterface) (tos []*serverDomain.TestInterface) {
 	for _, po := range pos {
 		to := r.toTo(po)

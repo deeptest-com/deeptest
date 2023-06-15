@@ -16,9 +16,11 @@
         </a-col>
       </a-row>
     </template>
+
     <!-- 基本信息 -->
     <EndpointBasicInfo @changeStatus="changeStatus" @change-description="changeDescription"
                        @changeCategory="changeCategory"/>
+
     <!-- 接口设计区域 -->
     <a-card
         style="width: 100%"
@@ -31,19 +33,23 @@
           <ConBoxTitle :backgroundStyle="'background: #FBFBFB;'" :title="'接口设计'"/>
         </div>
       </template>
+
       <a-tabs :activeKey="key" :animated="false" @change="changeTab">
         <a-tab-pane key="request" tab="定义">
           <EndpointDefine v-if="key === 'request'" @switchMode="switchMode"/> <!-- use v-if to force page reload-->
         </a-tab-pane>
+
         <a-tab-pane key="run" tab="调试">
           <!-- use v-if to force page reload -->
           <EndpointDebug v-if="key === 'run'" @switchToDefineTab="switchToDefineTab"/>
         </a-tab-pane>
+
         <a-tab-pane key="docs" tab="文档">
           <Docs v-if="key === 'docs'" @switchMode="switchMode"/> <!-- use v-if to force page reload-->
         </a-tab-pane>
       </a-tabs>
     </a-card>
+
     <div v-if="key === 'request' && showFooter" class="drawer-btns">
       <a-space>
         <a-button type="primary" @click="save">保存</a-button>

@@ -52,7 +52,33 @@ func (o *openapi2endpoint) interfaces(url string, path *openapi3.PathItem) (inte
 	}
 
 	if path.Post != nil {
+		interf := o.interf("POST", url, path.Get)
+		interfaces = append(interfaces, interf)
+	}
 
+	if path.Put != nil {
+		interf := o.interf("PUT", url, path.Get)
+		interfaces = append(interfaces, interf)
+	}
+
+	if path.Delete != nil {
+		interf := o.interf("DELETE", url, path.Get)
+		interfaces = append(interfaces, interf)
+	}
+
+	if path.Trace != nil {
+		interf := o.interf("TRACE", url, path.Get)
+		interfaces = append(interfaces, interf)
+	}
+
+	if path.Head != nil {
+		interf := o.interf("HEAD", url, path.Get)
+		interfaces = append(interfaces, interf)
+	}
+
+	if path.Options != nil {
+		interf := o.interf("OPTIONS", url, path.Get)
+		interfaces = append(interfaces, interf)
 	}
 	return
 }

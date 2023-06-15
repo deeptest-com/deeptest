@@ -42,14 +42,14 @@ func (s *EndpointInterfaceService) ImportEndpointData(req v1.ImportEndpointDataR
 	}
 	//var x interface{}
 	x, _ := json.Marshal(doc)
-	fmt.Println(string(x))
-	fmt.Println(json.Marshal(doc))
+	fmt.Println(string(x), "++++")
+	//fmt.Println(json.Marshal(doc))
 	openapi2endpoint := openapi.NewOpenapi2endpoint(doc)
 	endpoints := openapi2endpoint.Convert()
 	x, _ = json.Marshal(endpoints)
-	fmt.Println(string(x))
-	fmt.Println(endpoints)
-	err = s.EndpointService.SaveEndpoints(endpoints, req)
+	//fmt.Println(string(x), "----")
+	//fmt.Println(endpoints)
+	//err = s.EndpointService.SaveEndpoints(endpoints, req)
 
 	return
 

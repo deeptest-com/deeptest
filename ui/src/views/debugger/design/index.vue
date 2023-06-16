@@ -1,8 +1,8 @@
 <template>
   <div class="test-interface-design-main">
-    <div class="tabs">{{activeTabKey}}
-      <a-tabs v-model:activeTabKey="activeTabKey" @edit="onTabEdit" @change="changeTab" type="editable-card">
-        <a-tab-pane v-for="tab in interfaceTabs" :key="tab.id" :tab="tab.title">
+    <div class="tabs">
+      <a-tabs v-model:activeKey="activeTabKey" @edit="onTabEdit" @change="changeTab" type="editable-card">
+        <a-tab-pane v-for="tab in interfaceTabs" :key="''+tab.id" :tab="tab.title">
           <UrlInput />
           <DebugForm />
         </a-tab-pane>
@@ -44,17 +44,15 @@ const interfaceId = computed<any>(() => store.state.TestInterface.interfaceId);
 const interfaceData = computed<any>(() => store.state.TestInterface.interfaceData);
 const interfaceTabs = computed<any>(() => store.state.TestInterface.interfaceTabs);
 
-const activeTabKey = ref(0)
+const activeTabKey = ref('0')
 
 const changeTab = (key) => {
   console.log('changeTab', key)
-  // activeTabKey.value = key
-
-  setSelectedKey('test-interface', currProject.value.id, [key])
 
   const found = interfaceTabs.value.find(function (item, index, arr) {
-    return item.id === key
+    return item.id === +key
   })
+
   store.dispatch('TestInterface/openInterfaceTab', found);
 }
 
@@ -73,9 +71,9 @@ watch((interfaceData), async (newVal) => {
 
   if (!interfaceData?.value) return
 
-  activeTabKey.value = interfaceData.value.id
   loadDebugData()
-}, { immediate: true })
+  activeTabKey.value = ''+interfaceData.value.id
+}, { immediate: true, deep: true })
 
 const onTabEdit = (targetKey, action) => {
   console.log('onTabEdit', targetKey, action)

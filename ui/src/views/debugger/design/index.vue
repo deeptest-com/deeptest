@@ -75,10 +75,10 @@ watch((interfaceData), async (newVal) => {
   activeTabKey.value = ''+interfaceData.value.id
 }, { immediate: true, deep: true })
 
-const onTabEdit = (targetKey, action) => {
-  console.log('onTabEdit', targetKey, action)
+const onTabEdit = (key, action) => {
+  console.log('onTabEdit', key, action)
   if (action === 'remove') {
-    store.dispatch('TestInterface/removeInterfaceTab', targetKey);
+    store.dispatch('TestInterface/removeInterfaceTab', +key);
   }
 };
 

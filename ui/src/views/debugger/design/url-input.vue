@@ -6,19 +6,19 @@
           <a-col flex="80px">
             <a-select class="select-env"
                       :options="methods"
-                      :value="method"
+                      v-model:value="method"
                       @change="changeMethod">
             </a-select>
           </a-col>
 
           <a-col flex="3">
             <a-input placeholder="站点地址"
-                     :value="currentEnvUrl">
+                     v-model:value="debugData.baseUrl">
             </a-input>
           </a-col>
           <a-col flex="3">
             <a-input class="uri" placeholder="请求路径"
-                     :value="url">
+                     v-model:value="debugData.url">
             </a-input>
           </a-col>
         </a-row>
@@ -44,39 +44,26 @@ const serveServers: any = computed(() => store.state.TestInterface.serveServers)
 const method = ref('GET')
 const methods = getArrSelectItems(Methods)
 
-const currentEnvUrl = computed(() => {
-  return serveServers.value?.find((item) => {
-    return debugData.value.serverId === item.id;
-  })?.url
-});
+const getEnvUrl = () => {
+  if (!debugData.value || !serveServers.value) return
 
-// watch((debugData), async (newVal) => {
-//   console.log('watch debugData', debugData?.value)
-//   if (!debugData.value || !serveServers.value) return
-//
-//   serveServers.value?.forEach((item) => {
-//     if (debugData.value.serverId === item.id) {
-//       currentEnvUrl.value = item.url
-//       return
-//     }
-//   })
-// }, { immediate: true, deep: true })
-//
-// watch((serveServers), async (newVal) => {
-//   console.log('watch serveServers', serveServers?.value)
-//   if (!debugData.value || !serveServers.value) return
-//
-//   serveServers.value?.forEach((item) => {
-//     if (debugData.value.serverId === item.id) {
-//       currentEnvUrl.value = item.url
-//       return
-//     }
-//   })
-// }, { immediate: true, deep: true })
+  serveServers.value?.forEach((item) => {
+    if (debugData.value.serverId === item.id) {
+      debugData.value.baseUrl = item.url
+      return
+    }
+  })
+}
 
-const url = computed(() => {
-  return debugData?.value.url
-});
+watch((debugData), async (newVal) => {
+  console.log('watch debugData', debugData?.value)
+  getEnvUrl()
+}, { immediate: true, deep: true })
+
+watch((serveServers), async (newVal) => {
+  console.log('watch serveServers', serveServers?.value)
+  getEnvUrl()
+}, { immediate: true, deep: true })
 
 const changeMethod = (item) => {
   console.log('changeMethod', item)

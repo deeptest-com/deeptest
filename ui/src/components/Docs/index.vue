@@ -79,6 +79,9 @@ watch(() => {
     selectedItem.value = newVal.find((item) => {
       return item.endpointInfo && item.serveInfo;
     })
+    if(!selectedItem.value) {
+      selectedItem.value = newVal[0];
+    }
   }
 }, {immediate: true});
 

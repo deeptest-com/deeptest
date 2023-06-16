@@ -222,7 +222,7 @@ async function onDelete(record: any) {
 
 /*查看选中的接口文档*/
 function goDocs(record: any) {
-  window.open(`/#/endpoint/docs?serveIds=${record.id}`);
+  window.open(`/#/docs/index?serveIds=${record.id}`);
 }
 
 async function onDisabled(record: any) {

@@ -240,7 +240,7 @@ const fetching = ref(false);
 
 /*查看选中的接口文档*/
 function goDocs() {
-  window.open(`/#/endpoint/docs?endpointIds=${selectedRowIds.value.join(',')}`);
+  window.open(`/#/docs/index?endpointIds=${selectedRowIds.value.join(',')}`);
 }
 
 /**

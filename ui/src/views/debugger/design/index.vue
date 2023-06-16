@@ -1,8 +1,8 @@
 <template>
   <div class="test-interface-design-main">
-    <div class="tabs">
-      <a-tabs v-model:activeKey="activeKey" type="editable-card" @edit="onEdit">
-        <a-tab-pane v-for="pane in panes" :key="pane.key" :tab="pane.title">
+    <div class="tabs">{{activeTabKey}}
+      <a-tabs v-model:activeTabKey="activeTabKey" @edit="onTabEdit" @change="changeTab" type="editable-card">
+        <a-tab-pane v-for="tab in interfaceTabs" :key="tab.id" :tab="tab.title">
           <UrlInput />
           <DebugForm />
         </a-tab-pane>
@@ -31,6 +31,7 @@ import EnvSelection from './env-selection.vue'
 import UrlInput from './url-input.vue'
 
 import DebugForm from '@/views/component/debug/index.vue';
+import {setSelectedKey} from "@/utils/cache";
 
 provide('usedBy', UsedBy.TestDebug)
 
@@ -38,13 +39,24 @@ const store = useStore<{ Debug: Debug, TestInterface: TestInterfaceStateType, Pr
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const currServe = computed<any>(() => store.state.ServeGlobal.currServe);
 const debugData = computed<any>(() => store.state.Debug.debugData);
-const interfaceData = computed<any>(() => store.state.TestInterface.interfaceData);
 
-watch((interfaceData), async (newVal) => {
-  console.log('watch interfaceData', interfaceData?.value)
-  if (!interfaceData?.value) return
-  loadDebugData()
-}, { immediate: true })
+const interfaceId = computed<any>(() => store.state.TestInterface.interfaceId);
+const interfaceData = computed<any>(() => store.state.TestInterface.interfaceData);
+const interfaceTabs = computed<any>(() => store.state.TestInterface.interfaceTabs);
+
+const activeTabKey = ref(0)
+
+const changeTab = (key) => {
+  console.log('changeTab', key)
+  // activeTabKey.value = key
+
+  setSelectedKey('test-interface', currProject.value.id, [key])
+
+  const found = interfaceTabs.value.find(function (item, index, arr) {
+    return item.id === key
+  })
+  store.dispatch('TestInterface/openInterfaceTab', found);
+}
 
 const usedBy = UsedBy.TestDebug
 const loadDebugData = debounce(async () => {
@@ -56,47 +68,19 @@ const loadDebugData = debounce(async () => {
   });
 }, 300)
 
-const panes = ref([
-  { title: 'Tab 1', content: 'Content of Tab 1', key: '1' },
-  { title: 'Tab 2', content: 'Content of Tab 2', key: '2' },
-  { title: 'Tab 3', content: 'Content of Tab 3', key: '3' },
-]);
+watch((interfaceData), async (newVal) => {
+  console.log('watch interfaceData', interfaceData?.value)
 
-const activeKey = ref(panes.value[0].key);
+  if (!interfaceData?.value) return
 
-const newTabIndex = ref(0);
+  activeTabKey.value = interfaceData.value.id
+  loadDebugData()
+}, { immediate: true })
 
-const callback = (key: string) => {
-  console.log(key);
-};
-
-const add = () => {
-  activeKey.value = `newTab${++newTabIndex.value}`;
-  panes.value.push({ title: 'New Tab', content: 'Content of new Tab', key: activeKey.value });
-};
-
-const remove = (targetKey: string) => {
-  let lastIndex = 0;
-  panes.value.forEach((pane, i) => {
-    if (pane.key === targetKey) {
-      lastIndex = i - 1;
-    }
-  });
-  panes.value = panes.value.filter(pane => pane.key !== targetKey);
-  if (panes.value.length && activeKey.value === targetKey) {
-    if (lastIndex >= 0) {
-      activeKey.value = panes.value[lastIndex].key;
-    } else {
-      activeKey.value = panes.value[0].key;
-    }
-  }
-};
-
-const onEdit = (targetKey: string | MouseEvent, action: string) => {
-  if (action === 'add') {
-    add();
-  } else {
-    remove(targetKey as string);
+const onTabEdit = (targetKey, action) => {
+  console.log('onTabEdit', targetKey, action)
+  if (action === 'remove') {
+    store.dispatch('TestInterface/removeInterfaceTab', targetKey);
   }
 };
 

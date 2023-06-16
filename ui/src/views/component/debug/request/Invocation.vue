@@ -17,16 +17,22 @@
         保存
       </a-button>
     </div>
-
-    <div v-if="usedBy===UsedBy.ScenarioDebug" class="sync">
-      <a-button trigger="click" @click="sync" class="dp-bg-light">
-        同步
-      </a-button>
-    </div>
     <div v-if="usedBy===UsedBy.ScenarioDebug" class="save-scenario">
       <a-button trigger="click" @click="saveScenarioInterface" class="dp-bg-light">
         <SaveOutlined/>
         保存
+      </a-button>
+    </div>
+    <div v-if="usedBy===UsedBy.TestDebug" class="save-scenario">
+      <a-button trigger="click" @click="saveTestInterface" class="dp-bg-light">
+        <SaveOutlined/>
+        保存
+      </a-button>
+    </div>
+
+    <div v-if="usedBy===UsedBy.ScenarioDebug" class="sync">
+      <a-button trigger="click" @click="sync" class="dp-bg-light">
+        同步
       </a-button>
     </div>
 
@@ -115,6 +121,9 @@ const saveScenarioInterface = (e) => {
   if (validateInfo()) {
     props.onSaveScenarioInterface(data)
   }
+};
+const saveTestInterface = (e) => {
+  console.log('===')
 };
 
 const sync = (e) => {

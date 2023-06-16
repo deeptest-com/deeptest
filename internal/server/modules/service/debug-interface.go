@@ -33,14 +33,16 @@ func (s *DebugInterfaceService) Load(loadReq domain.DebugReq) (debugData domain.
 		loadReq.EndpointInterfaceId = processor.EndpointInterfaceId
 	}
 
-	if loadReq.EndpointInterfaceId == 0 {
+	if loadReq.EndpointInterfaceId == 0 && loadReq.TestInterfaceId == 0 {
 		return
 	}
 
 	if loadReq.ScenarioProcessorId > 0 || loadReq.UsedBy == consts.ScenarioDebug {
 		debugData, _ = s.ScenarioInterfaceService.GetScenarioInterface(loadReq.EndpointInterfaceId)
-	} else {
+	} else if loadReq.EndpointInterfaceId > 0 {
 		debugData, _ = s.GetDebugInterface(loadReq.EndpointInterfaceId)
+	} else if loadReq.TestInterfaceId > 0 {
+		// debugData, _ = s.GetDebugInterface(loadReq.EndpointInterfaceId)
 	}
 
 	debugData.UsedBy = loadReq.UsedBy

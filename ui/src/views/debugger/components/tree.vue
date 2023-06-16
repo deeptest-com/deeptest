@@ -218,11 +218,7 @@ function selectTreeItem(keys, e) {
   selectedKeys.value = keys;
   setSelectedKey('test-interface', currProject.value.id, selectedKeys.value[0])
 
-  // 如果没有选中的节点，就默认选中根节点
-  emit('select', e.node.dataRef);
-
-  // const selectedData = treeDataMap.value[selectedKeys.value[0]]
-  // store.dispatch('TestInterface/getTreeNode', selectedData);
+  store.dispatch('TestInterface/getInterface', e.node.dataRef);
 }
 
 const currentNode = ref(null as any);

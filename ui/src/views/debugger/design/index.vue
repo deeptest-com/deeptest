@@ -5,6 +5,20 @@
         <a-tab-pane v-for="pane in panes" :key="pane.key" :tab="pane.title">
           <UrlInput />
 
+          <div id="debug-form">
+            <div id="top-panel">
+              <InterfaceRequest v-if="debugData.method" :show-reuqest-invocation="false" :show-debug-data-url="false"></InterfaceRequest>
+            </div>
+
+            <!-- <div id="design-splitter-v" :hidden="!debugData.method"></div> -->
+
+            <div id="bottom-panel">
+              <InterfaceResponse v-if="debugData.method"></InterfaceResponse>
+            </div>
+
+            <RequestVariable/>
+          </div>
+
         </a-tab-pane>
       </a-tabs>
     </div>
@@ -16,22 +30,42 @@
 </template>
 
 <script setup lang="ts">
-import {computed, ref} from 'vue';
+import {computed, ref, watch} from 'vue';
 import {useStore} from "vuex";
 
 import {StateType as ProjectStateType} from "@/store/project";
 import {StateType as TestInterfaceStateType} from '../store';
 import {StateType as ServeStateType} from "@/store/serve";
+import {StateType as Debug} from "@/views/component/debug/store";
 
 import EnvSelection from './env-selection.vue'
 import UrlInput from './url-input.vue'
+import InterfaceRequest from '@/views/component/debug/request/Index.vue';
+import InterfaceResponse from '@/views/component/debug/response/Index.vue';
+import RequestVariable from '@/components/Editor/RequestVariable.vue';
+import debounce from "lodash.debounce";
+import {UsedBy} from "@/utils/enum";
 
-const store = useStore<{ TestInterface: TestInterfaceStateType, ProjectGlobal: ProjectStateType, ServeGlobal: ServeStateType }>();
+const store = useStore<{ Debug: Debug, TestInterface: TestInterfaceStateType, ProjectGlobal: ProjectStateType, ServeGlobal: ServeStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const currServe = computed<any>(() => store.state.ServeGlobal.currServe);
+const debugData = computed<any>(() => store.state.Debug.debugData);
+const interfaceData = computed<any>(() => store.state.TestInterface.interfaceData);
 
-const treeData = computed<any>(() => store.state.TestInterface.treeData);
-const treeDataMap = computed<any>(() => store.state.TestInterface.treeDataMap);
+watch((interfaceData), async (newVal) => {
+  console.log('watch interfaceData', interfaceData?.value)
+  loadDebugData()
+}, { immediate: true })
+
+const usedBy = UsedBy.TestDebug
+const loadDebugData = debounce(async () => {
+  console.log('loadDebugData')
+
+  store.dispatch('Debug/loadDataAndInvocations', {
+    testInterfaceId: interfaceData.value.id,
+    usedBy: usedBy,
+  });
+}, 300)
 
 const panes = ref([
   { title: 'Tab 1', content: 'Content of Tab 1', key: '1' },
@@ -99,6 +133,45 @@ const onEdit = (targetKey: string | MouseEvent, action: string) => {
 <style scoped lang="less">
 .test-interface-design-main {
   padding: 16px;
+
+  #debug-form {
+    flex: 1;
+    padding: 5px 0;
+
+    flex-direction: column;
+    position: relative;
+    height: 100%;
+    max-height: 800px;
+
+    #top-panel {
+      height: 50%;
+      min-height: 200px;
+      width: 100%;
+      padding: 0;
+    }
+
+    #bottom-panel {
+      height: 360px;
+      width: 100%;
+    }
+
+    #design-splitter-v {
+      width: 100%;
+      height: 2px;
+      background-color: #e6e9ec;
+      cursor: ns-resize;
+
+      &:hover {
+        height: 2px;
+        background-color: #D0D7DE;
+      }
+
+      &.active {
+        height: 2px;
+        background-color: #a9aeb4;
+      }
+    }
+  }
 }
 
 </style>

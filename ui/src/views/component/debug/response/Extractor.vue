@@ -153,7 +153,6 @@ import {
   PlusOutlined
 } from '@ant-design/icons-vue';
 import {VarScope} from "@/utils/enum";
-import {getEnumSelectItems} from "@/views/component/debug/service";
 import {ExtractorSrc, ExtractorType, UsedBy} from "@/utils/enum";
 
 const usedBy = inject('usedBy') as UsedBy
@@ -165,6 +164,7 @@ const typeOptions = getEnumSelectItems(ExtractorType)
 
 import {Extractor, Param} from "@/views/component/debug/data";
 import {StateType as Debug} from "@/views/component/debug/store";
+import {getEnumSelectItems} from "@/utils/comm";
 const store = useStore<{  Debug: Debug }>();
 
 const debugData = computed<any>(() => store.state.Debug.debugData);

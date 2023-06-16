@@ -57,8 +57,6 @@ import {addSepIfNeeded} from "@/utils/url";
 const store = useStore<{ Debug: Debug }>();
 const debugData = computed<any>(() => store.state.Debug.debugData);
 
-const methods = Methods;
-
 const props = defineProps({
   onSend: {
     type: Function as PropType<() => void>,

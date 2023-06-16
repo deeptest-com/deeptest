@@ -174,16 +174,6 @@ export function getCodeLangByType(type) {
     }
 }
 
-export const getEnumSelectItems = (enumDef) => {
-    const arr : any[] = []
-
-    for (const item in enumDef) {
-        arr.push({label: enumDef[item], value: item})
-    }
-
-    return arr
-}
-
 // extractor
 export async function listExtractor(endpointInterfaceId: number): Promise<any> {
     const params = {endpointInterfaceId}

@@ -5,6 +5,7 @@ import "github.com/aaronchen2k/deeptest/internal/pkg/consts"
 type DebugReq struct {
 	EndpointInterfaceId uint `json:"endpointInterfaceId"` // load by endpoint designer
 	ScenarioProcessorId uint `json:"scenarioProcessorId"` // load by scenario designer
+	TestInterfaceId     uint `json:"testInterfaceId"`     // load by interface testing
 
 	UsedBy consts.UsedBy `json:"usedBy"`
 }

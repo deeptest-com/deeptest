@@ -173,9 +173,17 @@ func (o *openapi2endpoint) responseBody(response *openapi3.Response) (body model
 		body.MediaType = key
 		body.Examples = commonUtils.JsonEncode(item.Examples)
 		body.Description = *response.Description
+		body.SchemaItem = o.responseBodyItem(item.Schema)
 		return
 	}
 
+	return
+}
+
+func (o *openapi2endpoint) responseBodyItem(schema *openapi3.SchemaRef) (item model.EndpointInterfaceResponseBodyItem) {
+	item = model.EndpointInterfaceResponseBodyItem{}
+	item.Type = schema.Value.Type
+	item.Content = commonUtils.JsonEncode(schema.Value)
 	return
 }
 

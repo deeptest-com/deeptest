@@ -48,6 +48,7 @@
         <a-spin tip="上传中..." :spinning="uploading">
           <a-upload
               :fileList="fileList"
+              accept=".json"
               :remove="handleRemove"
               @change="handleChangeFile"
               :before-upload="beforeUpload">

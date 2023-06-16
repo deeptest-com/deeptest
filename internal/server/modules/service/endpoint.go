@@ -15,8 +15,8 @@ type EndpointService struct {
 	ServeRepo              *repo.ServeRepo              `inject:""`
 	EndpointInterfaceRepo  *repo.EndpointInterfaceRepo  `inject:""`
 	ProcessorInterfaceRepo *repo.ProcessorInterfaceRepo `inject:""`
-
-	ServeServerRepo *repo.ServeServerRepo `inject:""`
+	ServeServerRepo        *repo.ServeServerRepo        `inject:""`
+	UserRepo               *repo.UserRepo               `inject:""`
 }
 
 func NewEndpointService() *EndpointService {
@@ -170,6 +170,19 @@ func (s *EndpointService) AddVersion(version *model.EndpointVersion) (err error)
 		err = s.EndpointRepo.Save(0, version)
 	} else {
 		err = fmt.Errorf("version already exists")
+	}
+	return
+}
+
+func (s *EndpointService) SaveEndpoints(endpoints []*model.Endpoint, req v1.ImportEndpointDataReq) (err error) {
+	user, _ := s.UserRepo.FindById(req.UserId)
+	for _, endpoint := range endpoints {
+		endpoint.ProjectId, endpoint.ServeId, endpoint.CategoryId, endpoint.CreateUser = req.ProjectId, req.ServeId, req.CategoryId, user.Name
+		endpoint.Status = 1
+		_, err = s.Save(*endpoint)
+		if err != nil {
+			return
+		}
 	}
 	return
 }

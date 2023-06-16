@@ -74,12 +74,12 @@
       </div>
     </a-card>
   </div>
-
-  <EditPage :record="data" :title="title" :visible="visible" @cancel="cancel" />
+  <EditPage :record="data" :title="title" :visible="visible" @cancal="cancal" />
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, reactive, Ref, ref } from "vue";
+import { computed, onMounted, reactive, Ref, ref,
+watch } from "vue";
 import { PaginationConfig, Project, Member } from "../data.d";
 import { useStore } from "vuex";
 
@@ -99,9 +99,9 @@ import { SelectTypes } from "ant-design-vue/lib/select";
 import {QueryParams} from "@/types/data";
 
 const router = useRouter();
-const store = useStore<{ Project: StateType; User: UserStateType }>();
+const store = useStore<{ Project: StateType; User: UserStateType,ProjectGlobal }>();
 const currentUser = computed<any>(() => store.state.User.currentUser);
-
+const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 let pagination = computed<PaginationConfig>(
   () => store.state.Project.queryResult.pagination
 );
@@ -273,6 +273,18 @@ const handleChangeRole = async (val: any, record: any) => {
     userId: record.id,
   });
 };
+
+
+// 实时监听项目/服务 ID，如果项目切换了则重新请求数据
+watch(() => {
+  return currProject.value.id;
+}, async (newVal) => {
+  if (newVal) {
+    getMembers(1);
+  }
+}, {
+  immediate: true
+})
 </script>
 
 <style lang="less" scoped>

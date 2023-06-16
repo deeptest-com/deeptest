@@ -2,6 +2,7 @@ package serverDomain
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi/convert"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 )
 
@@ -44,9 +45,9 @@ type OpenApiParam struct {
 
 type EndpointReq struct {
 	ID          int64           `json:"id"`
-	ProjectId   int64           `json:"projectId" validate:"required"`
-	ServeId     int64           `json:"serveId" validate:"required"`
-	ServerId    int64           `json:"serverId"`
+	ProjectId   uint            `json:"projectId" validate:"required"`
+	ServeId     uint            `json:"serveId" validate:"required"`
+	ServerId    uint            `json:"serverId"`
 	Status      int64           `json:"status"`
 	Title       string          `json:"title" validate:"required"`
 	Path        string          `json:"path"`
@@ -70,4 +71,15 @@ type EndpointRes struct {
 type EndpointVersionReq struct {
 	EndpointId int64  `json:"endpointId"`
 	Version    string `json:"version"`
+}
+
+type ImportEndpointDataReq struct {
+	ServeId       uint                 `json:"serveId" validate:"required"`      //服务ID
+	DriverType    convert.DriverType   `json:"driverType" validate:"required"`   //接口数据来源
+	CategoryId    int64                `json:"categoryId"`                       //所属分类
+	DataSyncType  convert.DataSyncType `json:"dataSyncType" validate:"required"` //数据同步方式
+	OpenUrlImport bool                 `json:"openUrlImport"`                    //开启url导入
+	FilePath      string               `json:"filePath" validate:"required"`
+	ProjectId     uint                 `json:"projectId"`
+	UserId        uint                 `json:"userId"`
 }

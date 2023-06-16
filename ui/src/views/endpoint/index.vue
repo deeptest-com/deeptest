@@ -10,13 +10,18 @@
           @click="collapsed = !collapsed" :collapsed="collapsed"/>
       <div :class="{'right': true, 'right-not-collapsed': !collapsed}">
         <div class="top-action">
-          <PermissionButton
-            class="action-new"
-            text="新建接口"
-            code="ENDPOINT-ADD"
-            type="primary"
-            :loading="loading"
-            @handle-access="handleCreateEndPoint" />
+          <div>
+            <PermissionButton
+                class="action-new"
+                text="新建接口"
+                code="ENDPOINT-ADD"
+                type="primary"
+                :loading="loading"
+                @handle-access="handleCreateEndPoint"/>
+            <a-button @click="inportApi">导入接口</a-button>
+            <a-button type="primary" :disabled="!hasSelected" @click="goDocs">查看文档</a-button>
+          </div>
+
           <div class="top-search-filter">
             <TableFilter @filter="handleTableFilter"/>
           </div>
@@ -24,11 +29,11 @@
         <EmptyCom>
           <template #content>
             <a-table :loading="fetching"
-              :row-selection="isSuportBatch ?{
+                     :row-selection="{
                 selectedRowKeys: selectedRowKeys,
                 onChange: onSelectChange
-              } : null"
-              :pagination="{
+              }"
+                     :pagination="{
                   ...pagination,
                   onChange: (page) => {
                     loadList(page,pagination.pageSize);
@@ -37,9 +42,9 @@
                     loadList(page,size);
                   },
               }"
-              :scroll="{ x: '1280px' || true }"
-              :columns="columns"
-              :data-source="list">
+                     :scroll="{ x: '1280px' || true }"
+                     :columns="columns"
+                     :data-source="list">
               <template #colTitle="{text,record}">
                 <div class="customTitleColRender">
                   <EditAndShowField :custom-class="'custom-endpoint show-on-hover'"
@@ -73,12 +78,12 @@
                     <a-menu>
                       <a-menu-item v-for="menuItem in MenuList" :key="menuItem.key">
                         <PermissionButton
-                          style="width: 80px"
-                          :text="menuItem.text"
-                          size="small"
-                          type="link"
-                          :code="menuItem.code"
-                          @handle-access="menuItem.action(record)" />
+                            style="width: 80px"
+                            :text="menuItem.text"
+                            size="small"
+                            type="link"
+                            :code="menuItem.code"
+                            @handle-access="menuItem.action(record)"/>
                       </a-menu-item>
                     </a-menu>
                   </template>
@@ -94,6 +99,11 @@
         :selectedCategoryId="selectedCategoryId"
         @cancel="createApiModalVisible = false;"
         @ok="handleCreateApi"/>
+    <ImportEndpointModal
+        :visible="showImportModal"
+        :selectedCategoryId="selectedCategoryId"
+        @cancal="showImportModal = false;"
+        @ok="handleImport"/>
     <!-- 编辑接口时，展开抽屉：外层再包一层 div, 保证每次打开弹框都重新渲染   -->
     <div v-if="drawerVisible">
       <Drawer
@@ -102,7 +112,6 @@
           @refreshList="refreshList"
           @close="drawerVisible = false;"/>
     </div>
-
   </div>
 </template>
 <script setup lang="ts">
@@ -118,6 +127,7 @@ import {MoreOutlined} from '@ant-design/icons-vue';
 import {endpointStatusOpts, endpointStatus} from '@/config/constant';
 import EditAndShowField from '@/components/EditAndShow/index.vue';
 import CreateEndpointModal from './components/CreateEndpointModal.vue';
+import ImportEndpointModal from './components/ImportEndpointModal.vue';
 import TableFilter from './components/TableFilter.vue';
 import Drawer from './components/Drawer/index.vue'
 import EditAndShowSelect from '@/components/EditAndShowSelect/index.vue';
@@ -142,7 +152,6 @@ const createApiModalVisible = ref(false);
 const router = useRouter();
 type Key = ColumnProps['key'];
 
-const isSuportBatch = ref(false);
 /**
  * 表格数据
  * */
@@ -216,14 +225,32 @@ const MenuList = [
   },
 ]
 const selectedRowKeys = ref<Key[]>([]);
+const selectedRowIds = ref<Key[]>([]);
 const loading = false;
 // 抽屉是否打开
 const drawerVisible = ref<boolean>(false);
-const selectedCategoryId = ref<string|number>('');
+const selectedCategoryId = ref<string | number>('');
 const onSelectChange = (keys: Key[], rows: any) => {
   selectedRowKeys.value = [...keys];
+  selectedRowIds.value = rows.map((item: any) => item.id);
 };
-const fetching=ref(false);
+const hasSelected = computed(() => selectedRowKeys.value.length > 0);
+
+const fetching = ref(false);
+
+/*查看选中的接口文档*/
+function goDocs() {
+  window.open(`/#/docs/index?endpointIds=${selectedRowIds.value.join(',')}`);
+}
+
+/**
+ * 导入接口
+ * */
+const showImportModal = ref(false);
+
+function inportApi() {
+  showImportModal.value = true;
+}
 
 
 function handleCreateEndPoint() {
@@ -279,6 +306,24 @@ async function handleCreateApi(data) {
     "categoryId": data.categoryId || null,
   });
   createApiModalVisible.value = false;
+}
+
+async function handleImport(data,callback) {
+
+  const res = await store.dispatch('Endpoint/importEndpointData', {
+    ...data,
+    "serveId": currServe.value.id,
+  });
+
+  // 导入成功，重新拉取列表 ，并且关闭弹窗
+  if (res) {
+    await refreshList();
+    if (callback) {
+      callback();
+    }
+    showImportModal.value = false;
+  }
+
 }
 
 async function selectNode(id) {

@@ -321,3 +321,18 @@ func (r *EndpointRepo) GetCategoryCount(result interface{}, projectId uint) (err
 	err = r.DB.Raw("select count(id) count, category_id from "+model.Endpoint{}.TableName()+" where not deleted and not disabled and project_id=? group by category_id", projectId).Scan(result).Error
 	return
 }
+
+func (r *EndpointRepo) GetByProjectId(projectId uint) (endpoints []*model.Endpoint, err error) {
+	err = r.DB.Find(&endpoints, "project_id = ? and not deleted and not disabled", projectId).Error
+	return
+}
+
+func (r *EndpointRepo) GetByServeIds(serveIds []uint) (endpoints []*model.Endpoint, err error) {
+	err = r.DB.Where("serve_id = ? and not deleted and not disabled", serveIds).Find(&endpoints).Error
+	return
+}
+
+func (r *EndpointRepo) GetByEndpointIds(endpointIds []uint) (endpoints []*model.Endpoint, err error) {
+	err = r.DB.Where("id in ? and not deleted and not disabled", endpointIds).Find(&endpoints).Error
+	return
+}

@@ -28,6 +28,7 @@ type SchemaParam struct {
 	MaxItems    uint64  `json:"maxItems"`
 	UniqueItems bool    `json:"uniqueItems"`
 	Ref         string  `json:"ref"`
+	Description string  `json:"description"`
 }
 
 func (EndpointInterface) TableName() string {
@@ -75,7 +76,8 @@ func (EndpointInterfaceResponseBodyItem) TableName() string {
 
 type EndpointInterfaceResponseBodyHeader struct {
 	BaseModel
-	InterfaceResponseBodyHeaderBase
+	SchemaParam
+	ResponseBodyId uint `json:"responseBodyId"`
 }
 
 func (EndpointInterfaceResponseBodyHeader) TableName() string {

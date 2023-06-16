@@ -67,6 +67,7 @@ import {
   defineEmits,
   watch,
   computed,
+    onMounted,
 } from 'vue';
 import {useStore} from "vuex";
 import {
@@ -90,6 +91,12 @@ const interfaceMethodToObjMap = computed<any>(() => store.state.Endpoint.interfa
 const currentUser: any = computed<Endpoint>(() => store.state.User.currentUser);
 
 const selectedMethod = ref(interfaceDetail.value?.method ? interfaceDetail.value?.method : 'GET');
+
+onMounted(() => {
+  if (endpointDetail.value?.interfaces?.length) {
+    selectedMethod.value = endpointDetail.value.interfaces[0].method;
+  }
+})
 
 // 是否折叠,默认展开
 const collapse = ref(true);

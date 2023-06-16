@@ -5,6 +5,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
+	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	"github.com/jinzhu/copier"
 	"github.com/kataras/iris/v12"
 	"github.com/snowlyg/multi"
@@ -146,7 +147,9 @@ func (c *EndpointCtrl) Yaml(ctx iris.Context) {
 	if err := ctx.ReadJSON(&req); err == nil {
 		endpoint := c.requestParser(req)
 		res := c.EndpointService.Yaml(endpoint)
-		content, _ := encoder.NewEncoder(res).Encode()
+		var ret interface{}
+		commonUtils.JsonDecode(commonUtils.JsonEncode(res), &ret)
+		content, _ := encoder.NewEncoder(ret).Encode()
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: string(content)})
 	} else {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})

@@ -97,6 +97,7 @@ func (s *serve2conv) paths() (paths openapi3.Paths) {
 	for _, endpoint := range s.endpoints {
 		paths[endpoint.Path] = new(openapi3.PathItem)
 		paths[endpoint.Path].Parameters = s.pathParameters(endpoint.PathParams) //
+		paths[endpoint.Path].Description = endpoint.Description
 		for _, item := range endpoint.Interfaces {
 			switch item.Method {
 			case "GET":
@@ -176,7 +177,6 @@ func (s *serve2conv) parameterRef(in string, param model.EndpointInterfaceParam)
 	parameterRef.Value = new(openapi3.Parameter)
 	parameterRef.Value.In = in
 	parameterRef.Value.Name = param.Name
-	parameterRef.Value.Required = true
 	parameterRef.Value.Schema = new(openapi3.SchemaRef)
 	parameterRef.Value.Schema.Ref = param.Ref
 	parameterRef.Value.Required = param.Required
@@ -244,6 +244,24 @@ func (s *serve2conv) responsesBody(bodies []model.EndpointInterfaceResponseBody)
 		responsesBody[body.Code].Value.Content[body.MediaType] = new(openapi3.MediaType)
 		responsesBody[body.Code].Value.Content[body.MediaType].Schema = new(openapi3.SchemaRef)
 		responsesBody[body.Code].Value.Content[body.MediaType].Schema.Value = s.responsesBodySchema(body.SchemaItem)
+		responsesBody[body.Code].Value.Headers = s.responseBodyHeaders(body.Headers)
+	}
+	return
+}
+
+func (s *serve2conv) responseBodyHeaders(headers []model.EndpointInterfaceResponseBodyHeader) (res openapi3.Headers) {
+	res = openapi3.Headers{}
+	for _, item := range headers {
+		res[item.Name] = new(openapi3.HeaderRef)
+		res[item.Name].Value = new(openapi3.Header)
+		res[item.Name].Value.Schema = new(openapi3.SchemaRef)
+		res[item.Name].Value.Schema.Value = new(openapi3.Schema)
+		res[item.Name].Value.Schema.Value.Type = item.Type
+		if item.Default == "" {
+			item.Default = item.Example
+		}
+		res[item.Name].Value.Schema.Value.Default = item.Default
+		//TODO DETAIL
 	}
 	return
 }

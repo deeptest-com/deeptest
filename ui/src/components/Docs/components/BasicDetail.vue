@@ -48,8 +48,7 @@ function switchExpand() {
 <style lang="less" scoped>
 .basic-info {
   position: relative;
-  padding: 0 24px;
-
+  padding: 20px 24px 0 30px;
   :deep(.ant-descriptions-header) {
     padding-bottom: 16px;
   }

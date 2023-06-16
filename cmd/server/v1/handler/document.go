@@ -8,7 +8,7 @@ import (
 )
 
 type DocumentCtrl struct {
-	DocumentService service.DocumentService
+	DocumentService *service.DocumentService `inject:""`
 }
 
 func (c *DocumentCtrl) Index(ctx iris.Context) {
@@ -22,5 +22,4 @@ func (c *DocumentCtrl) Index(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res})
 
 	return
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: new(domain.DocumentRep)})
 }

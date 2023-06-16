@@ -26,7 +26,7 @@
           <a-tag :color="getMethodColor(info.method)">{{ info.method }}</a-tag>
           <span>
             <span class="ant-typography ant-typography-secondary">{{ path.url }}</span>
-            <span class="ant-typography"><strong>{{ path.path }}</strong></span>
+            <span class="ant-typography"><strong>{{ path.path.indexOf('/') === '/' ? path.path : `/${path.path}`}}</strong></span>
             </span>
         </div>
       </div>
@@ -70,7 +70,7 @@
               class="code-tag"
               :style="{color: selectedCode === res.code ? '#fff': getCodeColor(res.code)}"
               @change="selectCode(res.code)"
-              v-for="res in info?.ResponseBodies"
+              v-for="res in info?.responseBodies"
               :checked="selectedCode === res.code"
               :key="res?.code">
             {{
@@ -80,7 +80,7 @@
         </div>
       </div>
       <div class="content"
-           v-for="res in info?.ResponseBodies"
+           v-for="res in info?.responseBodies"
            :key="res?.code"
            v-show="selectedCode === res.code">
         <div class="res-item res-desc">

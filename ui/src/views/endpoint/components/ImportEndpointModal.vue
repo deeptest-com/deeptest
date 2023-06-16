@@ -79,10 +79,7 @@ const store = useStore<{ Endpoint }>();
 const treeDataCategory = computed<any>(() => store.state.Endpoint.treeDataCategory);
 
 const driverTypeOpts = [
-  {
-    label: 'Swagger',
-    value: 'swagger',
-  },
+
   {
     label: 'Postman',
     value: 'postman',
@@ -90,7 +87,15 @@ const driverTypeOpts = [
   {
     label: 'Yapi',
     value: 'yapi',
-  }
+  },
+  {
+    label: 'Swagger 2',
+    value: 'swagger2',
+  },
+  {
+    label: 'Swagger 3',
+    value: 'swagger3',
+  },
 ]
 
 const dataSyncTypeOpts = [

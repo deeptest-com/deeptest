@@ -310,11 +310,17 @@ async function handleCreateApi(data) {
 
 async function handleImport(data) {
 
-  await store.dispatch('Endpoint/importEndpointData', {
+  const res = await store.dispatch('Endpoint/importEndpointData', {
     ...data,
     "serveId": currServe.value.id,
   });
-  showImportModal.value = false;
+
+  // 导入成功，重新拉取列表 ，并且关闭弹窗
+  if (res) {
+    await refreshList();
+    showImportModal.value = false;
+  }
+
 }
 
 async function selectNode(id) {

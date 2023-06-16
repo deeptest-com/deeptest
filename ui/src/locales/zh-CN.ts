@@ -27,6 +27,7 @@ export default {
     'project.invite': '邀请成员',
 
     'endpoint-management': '接口设计',
+    'endpoint-docs': '接口文档',
     'interface-debug': '接口调试',
     'projectSetting': '项目设置', // 新版 接口模块
     'projectSetting.enviroment': '环境管理',

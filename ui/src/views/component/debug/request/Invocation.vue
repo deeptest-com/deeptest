@@ -17,16 +17,22 @@
         保存
       </a-button>
     </div>
-
-    <div v-if="usedBy===UsedBy.ScenarioDebug" class="sync">
-      <a-button trigger="click" @click="sync" class="dp-bg-light">
-        同步
-      </a-button>
-    </div>
     <div v-if="usedBy===UsedBy.ScenarioDebug" class="save-scenario">
       <a-button trigger="click" @click="saveScenarioInterface" class="dp-bg-light">
         <SaveOutlined/>
         保存
+      </a-button>
+    </div>
+    <div v-if="usedBy===UsedBy.TestDebug" class="save-scenario">
+      <a-button trigger="click" @click="saveTestInterface" class="dp-bg-light">
+        <SaveOutlined/>
+        保存
+      </a-button>
+    </div>
+
+    <div v-if="usedBy===UsedBy.ScenarioDebug" class="sync">
+      <a-button trigger="click" @click="sync" class="dp-bg-light">
+        同步
       </a-button>
     </div>
 
@@ -56,8 +62,6 @@ import {addSepIfNeeded} from "@/utils/url";
 
 const store = useStore<{ Debug: Debug }>();
 const debugData = computed<any>(() => store.state.Debug.debugData);
-
-const methods = Methods;
 
 const props = defineProps({
   onSend: {
@@ -117,6 +121,9 @@ const saveScenarioInterface = (e) => {
   if (validateInfo()) {
     props.onSaveScenarioInterface(data)
   }
+};
+const saveTestInterface = (e) => {
+  console.log('===')
 };
 
 const sync = (e) => {
@@ -220,19 +227,19 @@ const onMenuClick = (key) => {
   }
 
   .send {
-    width: 96px;
+    width: 90px;
   }
 
   .save {
-    width: 110px;
+    width: 90px;
   }
 
   .sync {
-    width: 110px;
+    width: 90px;
   }
 
   .save-scenario {
-    width: 110px;
+    width: 90px;
   }
 }
 

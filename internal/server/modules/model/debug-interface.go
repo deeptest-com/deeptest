@@ -8,6 +8,7 @@ import (
 type DebugInterface struct {
 	BaseModel
 	InterfaceBase
+	BaseUrl string `json:"baseUrl"` // used by TestInterface
 
 	EndpointInterfaceId uint `json:"endpointInterfaceId"`
 	ServerId            uint `json:"serverId"`

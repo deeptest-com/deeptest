@@ -76,7 +76,7 @@ func (s *ScenarioInterfaceService) GetScenarioInterface(endpointInterfaceId uint
 	if scenarioInterfaceId > 0 {
 		ret, err = s.GetDebugDataFromScenarioInterface(scenarioInterfaceId)
 	} else {
-		ret, err = s.DebugInterfaceService.GetDebugInterface(endpointInterfaceId)
+		ret, err = s.DebugInterfaceService.GetDebugInterfaceByEndpointInterface(endpointInterfaceId)
 		if err != nil || ret.EndpointInterfaceId == 0 {
 			return domain.DebugData{}, err
 		}

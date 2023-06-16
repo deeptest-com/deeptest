@@ -20,7 +20,7 @@
             :auto-expand-parent="autoExpandParent"
             @drop="onDrop"
             @expand="onExpand"
-            @select="selectTreeItem"
+            @select="selectNode"
             :tree-data="treeData"
             :replace-fields="replaceFields">
 
@@ -213,16 +213,12 @@ function expandAll() {
 let selectedKeys = ref<number[]>([]);
 const emit = defineEmits(['select']);
 
-function selectTreeItem(keys, e) {
-  console.log('selectTreeItem', keys, e.node.dataRef)
+function selectNode(keys, e) {
+  console.log('selectNode', keys, e.node.dataRef)
   selectedKeys.value = keys;
   setSelectedKey('test-interface', currProject.value.id, selectedKeys.value[0])
 
-  // 如果没有选中的节点，就默认选中根节点
-  emit('select', e.node.dataRef);
-
-  // const selectedData = treeDataMap.value[selectedKeys.value[0]]
-  // store.dispatch('TestInterface/getTreeNode', selectedData);
+  store.dispatch('TestInterface/openInterfaceTab', e.node.dataRef);
 }
 
 const currentNode = ref(null as any);

@@ -91,7 +91,7 @@ func (s *DebugInvokeService) Create(debugData domain.DebugData, resp domain.Debu
 	return
 }
 
-func (s *DebugInvokeService) ListByInterface(endpointInterfaceId uint) (invocations []model.DebugInvoke, err error) {
+func (s *DebugInvokeService) ListByInterface(endpointInterfaceId, testInterfaceId uint) (invocations []model.DebugInvoke, err error) {
 	debugInterfaceId, _ := s.DebugInterfaceRepo.HasDebugInterfaceRecord(endpointInterfaceId)
 
 	invocations, err = s.DebugRepo.List(endpointInterfaceId, debugInterfaceId)
@@ -99,7 +99,7 @@ func (s *DebugInvokeService) ListByInterface(endpointInterfaceId uint) (invocati
 	return
 }
 
-func (s *DebugInvokeService) GetLastResp(endpointInterfaceId uint) (resp domain.DebugResponse, err error) {
+func (s *DebugInvokeService) GetLastResp(endpointInterfaceId, testInterfaceId uint) (resp domain.DebugResponse, err error) {
 	debugInterfaceId, _ := s.DebugInterfaceRepo.HasDebugInterfaceRecord(endpointInterfaceId)
 
 	po, _ := s.DebugRepo.GetLast(endpointInterfaceId, debugInterfaceId)

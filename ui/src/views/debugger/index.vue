@@ -1,8 +1,7 @@
 <template>
   <div id="test-interface-main" class="dp-splits-v">
     <div id="test-interface-left" v-if="!collapsed">
-      <TestInterfaceTree
-          @select="selectNode" />
+      <TestInterfaceTree />
     </div>
 
     <CollapsedIcon
@@ -30,18 +29,10 @@ import {StateType as ProjectStateType} from "@/store/project";
 import {StateType as ServeStateType} from "@/store/serve";
 
 const collapsed = ref(false);
-const selectedInterfaceId = ref(0)
 
 const store = useStore<{ TestInterface: TestInterfaceStateType, ProjectGlobal: ProjectStateType, ServeGlobal: ServeStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const currServe = computed<any>(() => store.state.ServeGlobal.currServe);
-
-const selectNode = async (node) => {
-  console.log('selectNode', node)
-  selectedInterfaceId.value = node.id
-
-  store.dispatch('TestInterface/getInterface', node);
-}
 
 </script>
 

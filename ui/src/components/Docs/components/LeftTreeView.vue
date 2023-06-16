@@ -74,7 +74,7 @@ watch(() => {
           openKeysMap.value[item.id] = false;
         }
       })
-      console.log(items.value)
+      console.log(1323232323,items.value)
     }, {immediate: true}
 )
 

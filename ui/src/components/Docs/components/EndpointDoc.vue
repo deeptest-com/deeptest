@@ -126,24 +126,28 @@ const isInterface = computed(() => {
 
 const paths = computed(() => {
   const list: any = [];
-  info.value?.serveInfo?.servers.forEach((item: any) => {
-    list.push({
-      url: item.url,
-      path: info.value.endpointInfo?.path,
-      name: item.environmentName
+  if(info?.value?.serveInfo?.servers){
+    info?.value?.serveInfo?.servers.forEach((item: any) => {
+      list.push({
+        url: item.url,
+        path: info.value.endpointInfo?.path,
+        name: item.environmentName
+      })
     })
-  })
+  }
   return list;
 })
 
 const serveList = computed(() => {
   const list: any = [];
-  info.value?.servers.forEach((item: any) => {
-    list.push({
-      url: item.url,
-      name: item.environmentName
+  if(info?.value?.servers) {
+    info.value?.servers.forEach((item: any) => {
+      list.push({
+        url: item.url,
+        name: item.environmentName
+      })
     })
-  })
+  }
   return list;
 })
 

@@ -28,10 +28,9 @@ import debounce from "lodash.debounce";
 import {UsedBy} from "@/utils/enum";
 
 import EnvSelection from './env-selection.vue'
-import UrlInput from './url-input.vue'
+import UrlInput from './invocation.vue'
 
 import DebugForm from '@/views/component/debug/index.vue';
-import {setSelectedKey} from "@/utils/cache";
 
 provide('usedBy', UsedBy.TestDebug)
 

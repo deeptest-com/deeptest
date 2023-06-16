@@ -21,6 +21,20 @@
                      v-model:value="debugData.url">
             </a-input>
           </a-col>
+
+          <a-col flex="80px" class="send">
+            <a-button type="primary" trigger="click" @click="send">
+              <span>发送</span>
+            </a-button>
+          </a-col>
+
+          <a-col flex="80px" class="save">
+            <a-button trigger="click" @click="save" class="dp-bg-light">
+              <SaveOutlined/>
+              保存
+            </a-button>
+          </a-col>
+
         </a-row>
       </a-input-group>
 
@@ -30,11 +44,18 @@
 <script setup lang="ts">
 import {computed, ref, watch} from "vue";
 import {useStore} from "vuex";
+import {notification} from "ant-design-vue";
+import {SaveOutlined} from '@ant-design/icons-vue';
+
+import {NotificationKeyCommon} from "@/utils/const";
+import {getToken} from "@/utils/localToken";
+
 import {StateType as DebugStateType} from "@/views/component/debug/store";
 import {StateType as TestInterfaceStateType} from "@/views/debugger/store";
 import {StateType as EndpointStateType} from "@/views/endpoint/store";
 import {Methods} from "@/utils/enum";
 import {getArrSelectItems} from "@/utils/comm";
+import {prepareDataForRequest} from "@/views/component/debug/service";
 
 const store = useStore<{ TestInterface: TestInterfaceStateType, Debug: DebugStateType, Endpoint: EndpointStateType }>();
 
@@ -68,6 +89,62 @@ watch((serveServers), async (newVal) => {
 const changeMethod = (item) => {
   console.log('changeMethod', item)
 }
+
+const send = async (e) => {
+  console.log('sendRequest', debugData.value)
+
+  if (validateInfo()) {
+    const callData = {
+      serverUrl: process.env.VUE_APP_API_SERVER, // used by agent to submit result to server
+      token: await getToken(),
+
+      data: debugData.value
+    }
+    await store.dispatch('Debug/call', callData)
+  }
+}
+const save = async (e) => {
+  if (validateInfo()) {
+    let data = JSON.parse(JSON.stringify(debugData.value))
+    data = prepareDataForRequest(data)
+
+    if (validateInfo()) {
+      Object.assign(data, {shareVars: null, envVars: null, globalEnvVars: null, globalParamVars: null})
+
+      const res = await store.dispatch('TestInterface/saveTestDebugData', data)
+      if (res === true) {
+        notification.success({
+          key: NotificationKeyCommon,
+          message: `保存成功`,
+        });
+      } else {
+        notification.success({
+          key: NotificationKeyCommon,
+          message: `保存失败`,
+        });
+      }
+    }
+  }
+}
+
+const validateInfo = () => {
+  let msg = ''
+  if (!debugData.value.url) {
+    msg = '请求地址不能为空'
+  }
+
+  if (msg) {
+    notification.warn({
+      key: NotificationKeyCommon,
+      message: msg,
+      placement: 'topRight'
+    });
+
+    return false
+  }
+
+  return true
+};
 
 </script>
 

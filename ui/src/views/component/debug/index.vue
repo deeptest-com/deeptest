@@ -1,13 +1,14 @@
 <template>
   <div id="debug-form">
     <div id="top-panel">
-      <InterfaceRequest v-if="debugData.method"></InterfaceRequest>
+      <InterfaceRequest v-if="debugData.method"
+                        :showRequestInvocation="false" />
     </div>
 
-    <div id="design-splitter-v" :hidden="!debugData.method"></div>
+    <div id="design-splitter-v" :hidden="!debugData.method" />
 
     <div id="bottom-panel">
-      <InterfaceResponse v-if="debugData.method"></InterfaceResponse>
+      <InterfaceResponse v-if="debugData.method" />
     </div>
 
     <RequestVariable/>

@@ -1,5 +1,6 @@
 import request from '@/utils/request';
 import {QueryParams} from "@/types/data";
+import {Interface} from "@/views/component/debug/data";
 
 const apiPath = 'testInterfaces';
 
@@ -41,4 +42,12 @@ export async function clone(id: number): Promise<any> {
         url: `/${apiPath}/${id}/clone`,
         method: 'post'
     })
+}
+
+export async function saveTestDebugData(interf: Interface): Promise<any> {
+    return request({
+        url: `/apiPath/saveTestDebugData`,
+        method: 'post',
+        data: interf,
+    });
 }

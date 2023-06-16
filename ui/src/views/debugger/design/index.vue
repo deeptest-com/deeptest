@@ -54,6 +54,7 @@ const interfaceData = computed<any>(() => store.state.TestInterface.interfaceDat
 
 watch((interfaceData), async (newVal) => {
   console.log('watch interfaceData', interfaceData?.value)
+  if (!interfaceData?.value) return
   loadDebugData()
 }, { immediate: true })
 

@@ -15,6 +15,8 @@ type DebugInterfaceService struct {
 	EndpointInterfaceRepo *repo.EndpointInterfaceRepo `inject:""`
 	DebugInterfaceRepo    *repo.DebugInterfaceRepo    `inject:""`
 	ScenarioInterfaceRepo *repo.ScenarioInterfaceRepo `inject:""`
+	TestInterfaceRepo     *repo.TestInterfaceRepo     `inject:""`
+
 	EndpointRepo          *repo.EndpointRepo          `inject:""`
 	ServeRepo             *repo.ServeRepo             `inject:""`
 	ScenarioProcessorRepo *repo.ScenarioProcessorRepo `inject:""`
@@ -40,9 +42,9 @@ func (s *DebugInterfaceService) Load(loadReq domain.DebugReq) (debugData domain.
 	if loadReq.ScenarioProcessorId > 0 || loadReq.UsedBy == consts.ScenarioDebug {
 		debugData, _ = s.ScenarioInterfaceService.GetScenarioInterface(loadReq.EndpointInterfaceId)
 	} else if loadReq.EndpointInterfaceId > 0 {
-		debugData, _ = s.GetDebugInterface(loadReq.EndpointInterfaceId)
+		debugData, _ = s.GetDebugInterfaceByEndpointInterface(loadReq.EndpointInterfaceId)
 	} else if loadReq.TestInterfaceId > 0 {
-		// debugData, _ = s.GetDebugInterface(loadReq.EndpointInterfaceId)
+		debugData, _ = s.GetDebugInterfaceByTestInterface(loadReq.TestInterfaceId)
 	}
 
 	debugData.UsedBy = loadReq.UsedBy
@@ -52,9 +54,6 @@ func (s *DebugInterfaceService) Load(loadReq domain.DebugReq) (debugData domain.
 
 	debugData.BaseUrl, debugData.ShareVars, debugData.EnvVars =
 		s.DebugSceneService.LoadScene(debugData.EndpointInterfaceId, debugData.ServerId, debugData.ScenarioProcessorId, debugData.UsedBy)
-
-	debugData.ScenarioProcessorId = loadReq.ScenarioProcessorId
-	debugData.UsedBy = loadReq.UsedBy
 
 	return
 }
@@ -74,7 +73,7 @@ func (s *DebugInterfaceService) LoadForExec(loadReq domain.DebugReq) (ret agentE
 	return
 }
 
-func (s *DebugInterfaceService) GetDebugInterface(endpointInterfaceId uint) (ret domain.DebugData, err error) {
+func (s *DebugInterfaceService) GetDebugInterfaceByEndpointInterface(endpointInterfaceId uint) (ret domain.DebugData, err error) {
 	debugInterfaceId, _ := s.DebugInterfaceRepo.HasDebugInterfaceRecord(endpointInterfaceId)
 
 	if debugInterfaceId > 0 {
@@ -82,6 +81,24 @@ func (s *DebugInterfaceService) GetDebugInterface(endpointInterfaceId uint) (ret
 	} else {
 		ret, err = s.ConvertDebugDataFromEndpointInterface(endpointInterfaceId)
 	}
+
+	return
+}
+
+func (s *DebugInterfaceService) GetDebugInterfaceByTestInterface(testInterfaceId uint) (ret domain.DebugData, err error) {
+	testInterface, err := s.TestInterfaceRepo.Get(testInterfaceId)
+	if err != nil {
+		return
+	}
+
+	if testInterface.ServerId > 0 {
+		ret.ServerId = testInterface.ServeId
+	} else {
+		server, _ := s.ServeServerRepo.GetDefaultByServe(testInterface.ServeId)
+		ret.ServerId = server.ID
+	}
+
+	ret.TestInterfaceId = testInterfaceId
 
 	return
 }

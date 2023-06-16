@@ -28,6 +28,7 @@ type SchemaParam struct {
 	MaxItems    uint64  `json:"maxItems"`
 	UniqueItems bool    `json:"uniqueItems"`
 	Ref         string  `json:"ref"`
+	Description string  `json:"description"`
 }
 
 func (EndpointInterface) TableName() string {

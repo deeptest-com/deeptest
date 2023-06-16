@@ -1,6 +1,8 @@
 package domain
 
-import "github.com/aaronchen2k/deeptest/internal/pkg/consts"
+import (
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+)
 
 type DebugResponse struct {
 	Id uint `json:"id"`
@@ -46,17 +48,30 @@ type BaseRequest struct {
 }
 
 type Header struct {
-	Name     string `json:"name"`
-	Value    string `json:"value"`
-	Disabled bool   `json:"disabled"`
-	Type     string `json:"type"`
+	Name        string `json:"name"`
+	Value       string `json:"value"`
+	Disabled    bool   `json:"disabled"`
+	Format      string `json:"format"`
+	Example     string `json:"example"`
+	Pattern     string `json:"pattern"`
+	MinLength   int64  `json:"minLength"`
+	MaxLength   int64  `json:"maxLength"`
+	Default     string `json:"default"`
+	MultipleOf  int64  `json:"multipleOf"`
+	MinItems    int64  `json:"minItems"`
+	MaxItems    int64  `json:"maxItems"`
+	UniqueItems bool   `json:"uniqueItems"`
+	Ref         string `json:"ref"`
+	Required    bool   `json:"required"`
+	Type        string `json:"type"`
 }
 
 type Param struct {
-	Name     string         `json:"name"`
-	Value    string         `json:"value"`
-	ParamIn  consts.ParamIn `json:"paramIn"`
-	Disabled bool           `json:"disabled"`
+	Name        string         `json:"name"`
+	Value       string         `json:"value"`
+	ParamIn     consts.ParamIn `json:"paramIn"`
+	Disabled    bool           `json:"disabled"`
+	Description string         `json:"Description"`
 }
 
 type BodyFormDataItem struct {

@@ -1,6 +1,7 @@
 package openapi
 
 import (
+	"encoding/json"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
@@ -27,8 +28,9 @@ func (o *openapi2endpoint) convertEndpoints() {
 	for url, path := range o.doc.Paths {
 		endpoint := new(model.Endpoint)
 		endpoint.Path = url
-		endpoint.Interfaces = o.interfaces(url, path)
-		endpoint.PathParams = o.pathParams(path.Parameters)
+		o.addMethod(url, path.ExtensionProps)
+		endpoint.Interfaces = o.interfaces(url, o.doc.Paths[url])
+		endpoint.PathParams = o.pathParams(o.doc.Paths[url].Parameters)
 		if len(endpoint.Interfaces) > 0 {
 			endpoint.Title = endpoint.Interfaces[0].Name
 		}
@@ -36,6 +38,16 @@ func (o *openapi2endpoint) convertEndpoints() {
 	}
 
 	return
+}
+
+func (o *openapi2endpoint) addMethod(url string, extensions openapi3.ExtensionProps) {
+	for method, extension := range extensions.Extensions {
+		var operation *openapi3.Operation
+		json.Unmarshal(extension.(json.RawMessage), &operation)
+		//fmt.Println(string(extension.(json.RawMessage)), "+_+_+_")
+		o.doc.AddOperation(url, method, operation)
+	}
+
 }
 
 func (o *openapi2endpoint) pathParams(parameters openapi3.Parameters) (pathParams []model.EndpointPathParam) {
@@ -48,6 +60,7 @@ func (o *openapi2endpoint) pathParams(parameters openapi3.Parameters) (pathParam
 }
 
 func (o *openapi2endpoint) interfaces(url string, path *openapi3.PathItem) (interfaces []model.EndpointInterface) {
+
 	if path.Get != nil {
 		interf := o.interf("GET", url, path.Get)
 		interfaces = append(interfaces, interf)
@@ -119,7 +132,12 @@ func (o *openapi2endpoint) requestBody(content openapi3.Content) (mediaType cons
 			item.Examples["example"].Value = new(openapi3.Example)
 			item.Examples["example"].Value.Value = item.Example
 		}
-		body.Examples = commonUtils.JsonEncode(item.Examples)
+		var examples []map[string]string
+		for name, example := range item.Examples {
+			value := map[string]string{"name": name, "content": commonUtils.JsonEncode(example.Value.Value)}
+			examples = append(examples, value)
+		}
+		body.Examples = commonUtils.JsonEncode(examples)
 		body.SchemaItem = o.requestBodyItem(item)
 		//body.Examples = item.Example
 		//content.

@@ -257,7 +257,10 @@ func (s *serve2conv) responseBodyHeaders(headers []model.EndpointInterfaceRespon
 		res[item.Name].Value.Schema = new(openapi3.SchemaRef)
 		res[item.Name].Value.Schema.Value = new(openapi3.Schema)
 		res[item.Name].Value.Schema.Value.Type = item.Type
-		res[item.Name].Value.Schema.Value.Default = item.Value
+		if item.Default == "" {
+			item.Default = item.Example
+		}
+		res[item.Name].Value.Schema.Value.Default = item.Default
 		//TODO DETAIL
 	}
 	return

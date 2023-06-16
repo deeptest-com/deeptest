@@ -70,15 +70,27 @@ func (i *interfaces2debug) BodyType() (mediaType consts.HttpContentType) {
 
 func (i *interfaces2debug) params() (queryParams []model.DebugInterfaceParam, pathParams []model.DebugInterfaceParam, headers []model.DebugInterfaceHeader, cookies []model.DebugInterfaceCookie) {
 	for _, item := range i.Inter.Params {
+		if item.Default == "" {
+			item.Default = item.Example
+		}
 		queryParams = append(queryParams, model.DebugInterfaceParam{InterfaceParamBase: model.InterfaceParamBase{Name: item.Name, ParamIn: consts.ParamInQuery, Value: item.Default}})
 	}
 	for _, item := range i.Endpoint.PathParams {
+		if item.Default == "" {
+			item.Default = item.Example
+		}
 		pathParams = append(pathParams, model.DebugInterfaceParam{InterfaceParamBase: model.InterfaceParamBase{Name: item.Name, ParamIn: consts.ParamInPath, Value: item.Default}})
 	}
 	for _, item := range i.Inter.Headers {
+		if item.Default == "" {
+			item.Default = item.Example
+		}
 		headers = append(headers, model.DebugInterfaceHeader{InterfaceHeaderBase: model.InterfaceHeaderBase{Name: item.Name, Value: item.Default}})
 	}
 	for _, item := range i.Inter.Cookies {
+		if item.Default == "" {
+			item.Default = item.Example
+		}
 		cookies = append(cookies, model.DebugInterfaceCookie{InterfaceCookieBase: model.InterfaceCookieBase{Name: item.Name, Value: item.Default}})
 	}
 	return

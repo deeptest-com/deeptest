@@ -12,7 +12,7 @@
     <template #title>
       <a-row type="flex" style="align-items: center;width: 100%">
         <a-col :span="8">
-          <EditAndShowField placeholder="修改标题" :value="endpointDetail?.title || ''" @update="updateTitle"/>
+          <EditAndShowField :custom-class="'show-on-hover'" placeholder="修改标题" :value="endpointDetail?.title || ''" @update="updateTitle"/>
         </a-col>
       </a-row>
     </template>

@@ -6,13 +6,14 @@
       :bodyStyle="{padding:'12px 24px 12px 24px'}"
       :title="null">
     <div style="margin-bottom: 8px;">
-      <ConBoxTitle :backgroundStyle="'background: #FBFBFB;'" :title="'基本信息'"/>
+      <ConBoxTitle :show-arrow="true" :backgroundStyle="'background: #FBFBFB;'" :title="'基本信息'"/>
     </div>
 
     <a-descriptions :size="'small'" :title="null">
       <a-descriptions-item label="创建人">{{ endpointDetail?.createUser }}</a-descriptions-item>
       <a-descriptions-item label="状态">
-        <EditAndShowSelect :label="endpointStatus.get(endpointDetail?.status || 0 )"
+        <EditAndShowSelect
+            :label="endpointStatus.get(endpointDetail?.status || 0 )"
                            :value="endpointDetail?.status"
                            :options="endpointStatusOpts"
                            @update="handleChangeStatus"/>

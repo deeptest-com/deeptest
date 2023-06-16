@@ -81,4 +81,5 @@ type ImportEndpointDataReq struct {
 	OpenUrlImport bool                 `json:"openUrlImport"`                    //开启url导入
 	FilePath      string               `json:"filePath" validate:"required"`
 	ProjectId     uint                 `json:"projectId"`
+	UserId        uint                 `json:"userId"`
 }

@@ -5,6 +5,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	"github.com/kataras/iris/v12"
+	"github.com/snowlyg/multi"
 )
 
 type EndpointInterfaceCtrl struct {
@@ -39,6 +40,9 @@ func (c *EndpointInterfaceCtrl) ImportEndpointData(ctx iris.Context) {
 		return
 	}
 	req.ProjectId = uint(projectId)
+
+	userId := multi.GetUserId(ctx)
+	req.UserId = userId
 
 	err = c.EndpointInterfaceService.ImportEndpointData(req)
 	if err != nil {

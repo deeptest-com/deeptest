@@ -321,8 +321,8 @@ async function handleImport(data,callback) {
     if (callback) {
       callback();
     }
+    showImportModal.value = false;
   }
-  // showImportModal.value = false;
 
 }
 

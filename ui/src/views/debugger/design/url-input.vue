@@ -28,7 +28,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import {computed, ref} from "vue";
+import {computed, ref, watch} from "vue";
 import {useStore} from "vuex";
 import {StateType as DebugStateType} from "@/views/component/debug/store";
 import {StateType as TestInterfaceStateType} from "@/views/debugger/store";
@@ -44,17 +44,38 @@ const serveServers: any = computed(() => store.state.TestInterface.serveServers)
 const method = ref('GET')
 const methods = getArrSelectItems(Methods)
 
-const url = computed(() => {
-  return debugData?.value.url
+const currentEnvUrl = computed(() => {
+  return serveServers.value?.find((item) => {
+    return debugData.value.serverId === item.id;
+  })?.url
 });
 
-const currentServerId = ref(debugData.value.serverId || null);
-const currentEnvUrl = computed(() => {
-  console.log('computed currentEnvUrl', currentServerId.value, serveServers.value)
+// watch((debugData), async (newVal) => {
+//   console.log('watch debugData', debugData?.value)
+//   if (!debugData.value || !serveServers.value) return
+//
+//   serveServers.value?.forEach((item) => {
+//     if (debugData.value.serverId === item.id) {
+//       currentEnvUrl.value = item.url
+//       return
+//     }
+//   })
+// }, { immediate: true, deep: true })
+//
+// watch((serveServers), async (newVal) => {
+//   console.log('watch serveServers', serveServers?.value)
+//   if (!debugData.value || !serveServers.value) return
+//
+//   serveServers.value?.forEach((item) => {
+//     if (debugData.value.serverId === item.id) {
+//       currentEnvUrl.value = item.url
+//       return
+//     }
+//   })
+// }, { immediate: true, deep: true })
 
-  return serveServers.value?.find((item) => {
-    return currentServerId.value === item.id;
-  })?.url
+const url = computed(() => {
+  return debugData?.value.url
 });
 
 const changeMethod = (item) => {

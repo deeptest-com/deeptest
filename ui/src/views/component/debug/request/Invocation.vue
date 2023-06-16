@@ -218,19 +218,19 @@ const onMenuClick = (key) => {
   }
 
   .send {
-    width: 96px;
+    width: 90px;
   }
 
   .save {
-    width: 110px;
+    width: 90px;
   }
 
   .sync {
-    width: 110px;
+    width: 90px;
   }
 
   .save-scenario {
-    width: 110px;
+    width: 90px;
   }
 }
 

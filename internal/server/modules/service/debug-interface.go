@@ -91,6 +91,12 @@ func (s *DebugInterfaceService) GetDebugInterfaceByTestInterface(testInterfaceId
 		return
 	}
 
+	if testInterface.DebugInterfaceId > 0 {
+		ret, err = s.GetDebugDataFromDebugInterface(testInterface.DebugInterfaceId)
+	} else {
+		ret.Method = consts.GET
+	}
+
 	if testInterface.ServerId > 0 {
 		ret.ServerId = testInterface.ServeId
 	} else {

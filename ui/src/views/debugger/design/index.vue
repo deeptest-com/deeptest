@@ -4,21 +4,7 @@
       <a-tabs v-model:activeKey="activeKey" type="editable-card" @edit="onEdit">
         <a-tab-pane v-for="pane in panes" :key="pane.key" :tab="pane.title">
           <UrlInput />
-
-          <div id="debug-form">
-            <div id="top-panel">
-              <InterfaceRequest v-if="debugData.method" :show-reuqest-invocation="false" :show-debug-data-url="false"></InterfaceRequest>
-            </div>
-
-            <!-- <div id="design-splitter-v" :hidden="!debugData.method"></div> -->
-
-            <div id="bottom-panel">
-              <InterfaceResponse v-if="debugData.method"></InterfaceResponse>
-            </div>
-
-            <RequestVariable/>
-          </div>
-
+          <DebugForm />
         </a-tab-pane>
       </a-tabs>
     </div>
@@ -30,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, ref, watch} from 'vue';
+import {computed, provide, ref, watch} from 'vue';
 import {useStore} from "vuex";
 
 import {StateType as ProjectStateType} from "@/store/project";
@@ -38,13 +24,15 @@ import {StateType as TestInterfaceStateType} from '../store';
 import {StateType as ServeStateType} from "@/store/serve";
 import {StateType as Debug} from "@/views/component/debug/store";
 
-import EnvSelection from './env-selection.vue'
-import UrlInput from './url-input.vue'
-import InterfaceRequest from '@/views/component/debug/request/Index.vue';
-import InterfaceResponse from '@/views/component/debug/response/Index.vue';
-import RequestVariable from '@/components/Editor/RequestVariable.vue';
 import debounce from "lodash.debounce";
 import {UsedBy} from "@/utils/enum";
+
+import EnvSelection from './env-selection.vue'
+import UrlInput from './url-input.vue'
+
+import DebugForm from '@/views/component/debug/index.vue';
+
+provide('usedBy', UsedBy.TestDebug)
 
 const store = useStore<{ Debug: Debug, TestInterface: TestInterfaceStateType, ProjectGlobal: ProjectStateType, ServeGlobal: ServeStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);

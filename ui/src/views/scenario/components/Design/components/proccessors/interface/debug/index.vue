@@ -2,6 +2,7 @@
   <div id="debug-index" class="dp-splits-v">
     <div id="debug-content">
       <DebugEnvSelection />
+
       <div class="move-up">
         <DebugInterface />
       </div>

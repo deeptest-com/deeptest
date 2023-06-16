@@ -140,12 +140,16 @@ const emit = defineEmits(['ok', 'cancal']);
 const formRef = ref();
 
 function ok() {
+  // if(loading)
+  if (uploading.value) {
+    return;
+  }
   formRef.value
       .validate()
       .then(() => {
-        emit('ok', formState.value);
-        formRef.value.resetFields();
-        fileList.value = [];
+        emit('ok', formState.value,() => {
+          reset();
+        });
       })
       .catch((error: ValidateErrorEntity) => {
         console.log('error', error);
@@ -154,8 +158,7 @@ function ok() {
 
 function cancal() {
   emit('cancal', formState.value);
-  formRef.value.resetFields();
-  fileList.value = [];
+  reset();
 }
 
 function selectedCategory(value) {
@@ -181,6 +184,11 @@ const beforeUpload = (file) => {
   fileList.value = [file];
   return false;
 };
+
+function reset() {
+  formRef.value.resetFields();
+  fileList.value = [];
+}
 
 watch(() => {
   return fileList.value
@@ -210,7 +218,8 @@ function handleChangeFile() {
 }
 
 function handleRemove() {
-  console.log('handleRemove', fileList.value);
+  // console.log('handleRemove', fileList.value);
+  fileList.value = [];
 }
 
 const formState = ref({
@@ -224,8 +233,12 @@ const formState = ref({
 watch(() => {
   return props.visible
 }, (newVal) => {
+  // if(newVal) {
+  //   reset();
+  // }
   if (newVal && props.selectedCategoryId) {
     formState.value.categoryId = props.selectedCategoryId || null;
+
   }
 }, {
   immediate: true

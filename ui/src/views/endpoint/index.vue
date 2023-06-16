@@ -308,7 +308,7 @@ async function handleCreateApi(data) {
   createApiModalVisible.value = false;
 }
 
-async function handleImport(data) {
+async function handleImport(data,callback) {
 
   const res = await store.dispatch('Endpoint/importEndpointData', {
     ...data,
@@ -318,8 +318,11 @@ async function handleImport(data) {
   // 导入成功，重新拉取列表 ，并且关闭弹窗
   if (res) {
     await refreshList();
-    showImportModal.value = false;
+    if (callback) {
+      callback();
+    }
   }
+  // showImportModal.value = false;
 
 }
 

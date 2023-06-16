@@ -11,11 +11,11 @@ import {
     clone,
 } from './service';
 import {serverList} from "@/views/project-settings/service";
-import {listEnvVarByServer} from "@/services/environment";
 
 export interface StateType {
     interfaceId: number;
     interfaceData: any;
+    interfaceTabs: any[];
 
     queryParams: any;
     serveServers: [],
@@ -37,6 +37,8 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setTreeDataMap: Mutation<StateType>;
         changeTreeDataMapItem: Mutation<StateType>;
         changeTreeDataMapItemProp: Mutation<StateType>;
+
+        setInterfaceTabs: Mutation<StateType>;
     };
     actions: {
         loadTree: Action<StateType, StateType>;
@@ -46,6 +48,9 @@ export interface ModuleType extends StoreModuleType<StateType> {
         moveInterface: Action<StateType, StateType>;
         cloneInterface: Action<StateType, StateType>;
 
+        openInterfaceTab: Action<StateType, StateType>;
+        removeInterfaceTab: Action<StateType, StateType>;
+
         getServeServers: Action<StateType, StateType>;
     }
 }
@@ -53,6 +58,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
 const initState: StateType = {
     interfaceId: 0,
     interfaceData: null,
+    interfaceTabs: [],
 
     queryParams: {},
     serveServers: [],
@@ -95,6 +101,10 @@ const StoreModel: ModuleType = {
         setServeServers(state, payload) {
             state.serveServers = payload;
         },
+
+        setInterfaceTabs(state, payload) {
+            state.interfaceTabs = payload;
+        },
     },
     actions: {
         async loadTree({ commit, state, dispatch }, params: any) {
@@ -111,7 +121,7 @@ const StoreModel: ModuleType = {
             }
         },
         async getInterface({ commit }, node: any) {
-            if (node.type !== 'interface') {
+            if (!node || node.type !== 'interface') {
                 commit('setInterfaceData', null)
                 return
             }
@@ -183,6 +193,56 @@ const StoreModel: ModuleType = {
                 commit('setServeServers', res.data || null);
             } else {
                 return false
+            }
+        },
+
+        async openInterfaceTab({commit, dispatch, state}, payload: any) {
+            const ok = await dispatch('getInterface', payload)
+            if (ok) {
+                const tabs = state.interfaceTabs
+
+                const found = state.interfaceTabs.find(function (item, index, arr) {
+                    return item.id === state.interfaceData.id
+                })
+
+                if (!found) {
+                    tabs.push({id: state.interfaceData.id,
+                        title: state.interfaceData.title,
+                        type: state.interfaceData.type})
+                    commit('setInterfaceTabs', tabs);
+                }
+
+                commit('setInterfaceId', state.interfaceData.id);
+            }
+        },
+        async removeInterfaceTab({commit, dispatch, state}, id: number) {
+            console.log('removeInterfaceTab', id)
+
+            const needReload = id === state.interfaceId
+
+            let lastIndex = 0;
+            state.interfaceTabs.forEach((tab, i) => {
+                if (tab.id === id) {
+                    lastIndex = i - 1;
+                }
+            });
+
+            const interfaceTabs = state.interfaceTabs.filter(tab => tab.id !== id);
+            commit('setInterfaceTabs', interfaceTabs)
+
+            let closedTab = {} as any
+            if (state.interfaceTabs.length && state.interfaceId === id) {
+                if (lastIndex >= 0) {
+                    closedTab = state.interfaceTabs[lastIndex]
+                } else {
+                    closedTab = state.interfaceTabs[0]
+                }
+
+                commit('setInterfaceId', closedTab.id)
+            }
+
+            if (needReload && closedTab.id) {
+                dispatch('openInterfaceTab', closedTab);
             }
         },
     }

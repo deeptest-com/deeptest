@@ -85,6 +85,7 @@ import {getToken} from "@/utils/localToken";
 import {DebugInfo} from "@/views/component/debug/data";
 import {StateType as Debug} from "@/views/component/debug/store";
 import {StateType as Endpoint} from "@/views/endpoint/store";
+
 const store = useStore<{  Debug: Debug,Endpoint:Endpoint }>();
 const endpointDetail = computed<any>(() => store.state.Endpoint.endpointDetail);
 provide('usedBy', UsedBy.InterfaceDebug)

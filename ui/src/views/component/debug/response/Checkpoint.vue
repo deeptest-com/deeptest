@@ -132,7 +132,6 @@ import {message, Form} from 'ant-design-vue';
 import { PlusOutlined, EditOutlined, DeleteOutlined, CloseCircleOutlined, CheckCircleOutlined} from '@ant-design/icons-vue';
 
 import {
-  getEnumSelectItems,
   listExtractorVariable
 } from "@/views/component/debug/service";
 import {ComparisonOperator, CheckpointType, UsedBy} from "@/utils/enum";
@@ -146,6 +145,7 @@ const {t} = useI18n();
 
 import {StateType as Debug} from "@/views/component/debug/store";
 import {Checkpoint} from "@/views/component/debug/data";
+import {getEnumSelectItems} from "@/utils/comm";
 const store = useStore<{  Debug: Debug }>();
 
 const debugData = computed<any>(() => store.state.Debug.debugData);

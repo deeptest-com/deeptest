@@ -14,8 +14,9 @@ type TestInterface struct {
 	Type   serverConsts.TestInterfaceType `json:"type"`
 
 	ParentId  uint `json:"parentId"`
-	ProjectId uint `json:"projectId"`
+	ServerId  uint `json:"serverId"`
 	ServeId   uint `json:"serveId"`
+	ProjectId uint `json:"projectId"`
 	UseID     uint `json:"useId"`
 
 	Ordr     int              `json:"ordr"`

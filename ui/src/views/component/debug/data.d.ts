@@ -114,6 +114,7 @@ export interface Checkpoint {
 export interface DebugInfo {
     endpointInterfaceId: number,
     scenarioProcessorId  : number,
+    testInterfaceId  : number,
 
     usedBy:          consts.UsedBy
 }

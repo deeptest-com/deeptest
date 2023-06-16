@@ -188,9 +188,11 @@ const StoreModel: ModuleType = {
 
                 dispatch('getLastInvocationResp', {
                     endpointInterfaceId: state.debugInfo.endpointInterfaceId,
+                    testInterfaceId: state.debugInfo.testInterfaceId,
                 })
                 dispatch('listInvocation', {
                     endpointInterfaceId: state.debugInfo.endpointInterfaceId,
+                    testInterfaceId: state.debugInfo.testInterfaceId,
                 })
 
                 return true;
@@ -204,6 +206,7 @@ const StoreModel: ModuleType = {
                 await commit('setDebugInfo', {
                     endpointInterfaceId: data.endpointInterfaceId,
                     scenarioProcessorId  : data.scenarioProcessorId,
+                    testInterfaceId  : data.testInterfaceId,
                     usedBy:          data.usedBy,
                 } as DebugInfo);
 

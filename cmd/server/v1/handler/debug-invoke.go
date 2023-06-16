@@ -35,13 +35,13 @@ func (c *DebugInvokeCtrl) SubmitResult(ctx iris.Context) {
 // List
 func (c *DebugInvokeCtrl) List(ctx iris.Context) {
 	endpointInterfaceId, err := ctx.URLParamInt("endpointInterfaceId")
-
-	if err != nil {
+	testInterfaceId, err := ctx.URLParamInt("testInterfaceId")
+	if testInterfaceId == 0 && testInterfaceId == 0 {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
-	data, err := c.DebugInvokeService.ListByInterface(uint(endpointInterfaceId))
+	data, err := c.DebugInvokeService.ListByInterface(uint(endpointInterfaceId), uint(testInterfaceId))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -53,13 +53,13 @@ func (c *DebugInvokeCtrl) List(ctx iris.Context) {
 // GetLastResp
 func (c *DebugInvokeCtrl) GetLastResp(ctx iris.Context) {
 	endpointInterfaceId, err := ctx.URLParamInt("endpointInterfaceId")
-
-	if err != nil {
+	testInterfaceId, err := ctx.URLParamInt("testInterfaceId")
+	if testInterfaceId == 0 && testInterfaceId == 0 {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
-	resp, err := c.DebugInvokeService.GetLastResp(uint(endpointInterfaceId))
+	resp, err := c.DebugInvokeService.GetLastResp(uint(endpointInterfaceId), uint(testInterfaceId))
 
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})

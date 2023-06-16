@@ -72,7 +72,7 @@ const {t} = useI18n();
 
 import {Param} from "@/views/component/debug/data";
 import {StateType as Debug} from "@/views/component/debug/store";
-import {getEnumSelectItems} from "@/views/component/debug/service";
+import {getEnumSelectItems} from "@/utils/comm";
 const store = useStore<{  Debug: Debug }>();
 
 const debugData = computed<any>(() => store.state.Debug.debugData);

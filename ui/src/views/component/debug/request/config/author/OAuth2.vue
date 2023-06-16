@@ -162,7 +162,7 @@ import {computed, defineComponent, inject, onBeforeUnmount, onMounted, ref} from
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import { DownOutlined, ArrowRightOutlined, DeleteOutlined } from '@ant-design/icons-vue';
-import {genOAuth2AccessToken, getEnumSelectItems, listOAuth2Token, removeOAuth2Token} from "@/views/component/debug/service";
+import {genOAuth2AccessToken, listOAuth2Token, removeOAuth2Token} from "@/views/component/debug/service";
 import {OAuth2ClientAuthenticationWay, OAuth2GrantTypes, UsedBy} from "@/utils/enum";
 import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
@@ -174,6 +174,7 @@ const {t} = useI18n();
 import {Param} from "@/views/component/debug/data";
 import {StateType as Debug} from "@/views/component/debug/store";
 import {StateType as ProjectStateType} from "@/store/project";
+import {getEnumSelectItems} from "@/utils/comm";
 
 const store = useStore<{  Debug: Debug, ProjectGlobal: ProjectStateType }>();
 

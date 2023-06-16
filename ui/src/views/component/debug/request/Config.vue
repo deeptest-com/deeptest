@@ -36,7 +36,7 @@
 import {computed, inject, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
-import {Methods, UsedBy} from "@/utils/enum";
+import {UsedBy} from "@/utils/enum";
 
 import QueryParameters from "./config/QueryParameters.vue";
 import PathParameters from "./config/PathParameters.vue";
@@ -54,7 +54,6 @@ const store = useStore<{ Debug: Debug }>();
 const debugData = computed<any>(() => store.state.Debug.debugData);
 
 const activeKey = ref('1');
-const methods = Methods;
 
 const selectMethod = (e) => {
   console.log('selectMethod', e)

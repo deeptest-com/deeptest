@@ -31,9 +31,10 @@ const serverId = computed(() => {
   return debugData?.value?.serverId || servers?.value[0]?.value || ''
 });
 const envURL = computed(() => {
-  return servers.value?.find((item) => {
-    return serverId.value === item.id;
-  })?.url
+  const server = servers.value?.find((item) => {
+    return serverId.value === item.value;
+  })
+  return server?.url
 });
 const url = computed(() => {
   return debugData?.value.url
@@ -52,7 +53,8 @@ const listServer = async (serverId) => {
     res.data.forEach((item: any) => {
       servers.value.push({
         label: item.description,
-        value: item.id
+        value: item.id,
+        url: item.url,
       })
     })
   }

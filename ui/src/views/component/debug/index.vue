@@ -2,7 +2,8 @@
   <div id="debug-form">
     <div id="top-panel">
       <InterfaceRequest v-if="debugData.method"
-                        :showRequestInvocation="false" />
+                        :showRequestInvocation="false"
+                        :showDebugDataUrl="false" />
     </div>
 
     <div id="design-splitter-v" :hidden="!debugData.method" />
@@ -36,8 +37,23 @@ import {DebugInfo} from "@/views/component/debug/data";
 
 const {t} = useI18n();
 const store = useStore<{  Debug: Debug, ProjectGlobal: ProjectGlobal, Endpoint: Endpoint }>();
-const debugInfo = computed<DebugInfo>(() => store.state.Debug.debugInfo);
 const debugData = computed<any>(() => store.state.Debug.debugData);
+
+// onMounted(() => {
+//   console.log('onMounted interface')
+//   window.addEventListener('resize', resizeHandler)
+//   resize()
+// })
+// onUnmounted(() => {
+//   console.log('onUnmounted interface')
+//   window.removeEventListener('resize', resizeHandler)
+// })
+//
+// const resize = () => {
+//   resizeHeight('debug-form', 'top-panel', 'design-splitter-v', 'bottom-panel',
+//       200, 360)
+// }
+
 </script>
 
 <style lang="less" scoped>

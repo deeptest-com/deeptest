@@ -8,7 +8,6 @@
         :onSend="invokeInterface"
         :onSave="saveInterface">
       </RequestInvocation>
-
     </div>
 
     <div id="debug-bottom">
@@ -71,7 +70,9 @@ import {useI18n} from "vue-i18n";
 import {Form, notification} from 'ant-design-vue';
 import {useStore} from "vuex";
 import { EnvironmentOutlined, HistoryOutlined } from '@ant-design/icons-vue';
-import DebugInterface from './interface.vue';
+
+import DebugInterface from '@/views/component/debug/index.vue';
+
 import DebugMethod from './method.vue';
 import DebugEnvSelection from './env-selection.vue';
 import RequestEnv from '@/views/component/debug/others/env/index.vue';
@@ -90,7 +91,6 @@ const store = useStore<{  Debug: Debug,Endpoint:Endpoint }>();
 const endpointDetail = computed<any>(() => store.state.Endpoint.endpointDetail);
 provide('usedBy', UsedBy.InterfaceDebug)
 const useForm = Form.useForm;
-const debugInfo = computed<DebugInfo>(() => store.state.Debug.debugInfo);
 const debugData = computed<any>(() => store.state.Debug.debugData);
 const {t} = useI18n();
 

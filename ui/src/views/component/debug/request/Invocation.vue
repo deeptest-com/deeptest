@@ -1,9 +1,6 @@
 <template>
   <div class="invocation-main">
-    <!-- 最新ui交互将调整这里的url显示。这里先用条件判断，保证接口管理/调试栏显示的是新ui，而scenario/design中仍保留 -->
-    <div v-if="showDebugDataUrl" class="url">
-      <!--     <span>{{url}} - {{debugData.method}}</span>-->
-    </div>
+    <div v-if="showDebugDataUrl" class="url"></div>
 
     <div class="send">
       <a-button type="primary" trigger="click" @click="sendRequest">

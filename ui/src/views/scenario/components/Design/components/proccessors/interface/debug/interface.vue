@@ -1,18 +1,6 @@
 <template>
   <div class="debug-main">
-    <div id="debug-form">
-      <div id="top-panel">
-        <InterfaceRequest v-if="debugData.method"></InterfaceRequest>
-      </div>
-
-      <div id="design-splitter-v" :hidden="!debugData.method"></div>
-
-      <div id="bottom-panel">
-        <InterfaceResponse v-if="debugData.method"></InterfaceResponse>
-      </div>
-
-      <RequestVariable/>
-    </div>
+    <DebugInterface />
   </div>
 </template>
 
@@ -21,17 +9,13 @@ import {computed, inject, onMounted, onUnmounted, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import {resizeHandler, resizeHeight} from "@/utils/dom";
 import {useStore} from "vuex";
+import debounce from "lodash.debounce";
 
 import {StateType as Debug} from "@/views/component/debug/store";
 import {StateType as Scenario} from "@/views/scenario/store";
 
-import InterfaceRequest from '@/views/component/debug/request/Index.vue';
-import InterfaceResponse from '@/views/component/debug/response/Index.vue';
-import RequestVariable from '@/components/Editor/RequestVariable.vue';
-
 import {UsedBy} from "@/utils/enum";
-import {DebugInfo} from "@/views/component/debug/data";
-import debounce from "lodash.debounce";
+import DebugInterface from '@/views/component/debug/index.vue';
 
 const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
@@ -39,7 +23,6 @@ const store = useStore<{  Debug: Debug, Scenario: Scenario }>();
 
 const scenarioProcessorIdForDebug = computed<number>(() => store.state.Scenario.scenarioProcessorIdForDebug);
 const endpointInterfaceIdForDebug = computed<number>(() => store.state.Scenario.endpointInterfaceIdForDebug);
-const debugInfo = computed<DebugInfo>(() => store.state.Debug.debugInfo);
 const debugData = computed<any>(() => store.state.Debug.debugData);
 
 watch(scenarioProcessorIdForDebug, () => {

@@ -7,7 +7,7 @@
         <RequestInvocation
             :showDebugDataUrl="true"
             :onSend="invokeInterface"
-            :onSaveScenarioInterface="saveScenarioInterface"
+            :onSave="saveScenarioInterface"
             :onSync="syncDebugData" />
 
         <DebugInterface />

@@ -3,31 +3,19 @@
     <div v-if="showDebugDataUrl" class="url"></div>
 
     <div class="send">
-      <a-button type="primary" trigger="click" @click="sendRequest">
+      <a-button type="primary" trigger="click" @click="send">
         <span>发送</span>
       </a-button>
     </div>
 
-    <div v-if="usedBy===UsedBy.InterfaceDebug" class="save">
+    <div class="save">
       <a-button trigger="click" @click="save" class="dp-bg-light">
         <SaveOutlined/>
         保存
       </a-button>
     </div>
-    <div v-if="usedBy===UsedBy.ScenarioDebug" class="save-scenario">
-      <a-button trigger="click" @click="saveScenarioInterface" class="dp-bg-light">
-        <SaveOutlined/>
-        保存
-      </a-button>
-    </div>
-    <div v-if="usedBy===UsedBy.TestDebug" class="save-scenario">
-      <a-button trigger="click" @click="saveTestInterface" class="dp-bg-light">
-        <SaveOutlined/>
-        保存
-      </a-button>
-    </div>
 
-    <div v-if="usedBy===UsedBy.ScenarioDebug" class="sync">
+    <div v-if="usedBy === UsedBy.ScenarioDebug" class="sync">
       <a-button trigger="click" @click="sync" class="dp-bg-light">
         同步
       </a-button>
@@ -69,10 +57,6 @@ const props = defineProps({
     type: Function as PropType<(data) => void>,
     required: true
   },
-  onSaveScenarioInterface: {
-    type: Function as PropType<(data) => void>,
-    required: true
-  },
   onSync: {
     type: Function as PropType<() => void>,
     required: true
@@ -86,14 +70,7 @@ const props = defineProps({
 const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
 
-const url = computed(() => addSepIfNeeded(debugData.value.baseUrl) + debugData.value.url)
-
-const selectMethod = (val) => {
-  console.log('selectMethod', val.key)
-  debugData.value.method = val.key
-};
-
-const sendRequest = (e) => {
+const send = (e) => {
   console.log('sendRequest', debugData.value)
 
   if (validateInfo()) {
@@ -104,47 +81,16 @@ const sendRequest = (e) => {
 const save = (e) => {
   let data = JSON.parse(JSON.stringify(debugData.value))
   data = prepareDataForRequest(data)
-  // console.log('-------', data.endpointInterfaceId)
 
   if (validateInfo()) {
     props.onSave(data)
   }
 };
 
-const saveScenarioInterface = (e) => {
-  let data = JSON.parse(JSON.stringify(debugData.value))
-  data = prepareDataForRequest(data)
-
-  if (validateInfo()) {
-    props.onSaveScenarioInterface(data)
-  }
-};
-const saveTestInterface = (e) => {
-  console.log('===')
-};
-
 const sync = (e) => {
   if (validateInfo()) {
     props.onSync()
   }
-};
-const saveName = (e) => {
-  console.log('saveName', e)
-  e.preventDefault();
-};
-const saveAs = (e) => {
-  console.log('saveAs', e)
-};
-
-const copyLink = (e) => {
-  console.log('copyLink', e)
-};
-const clearAll = (e) => {
-  console.log('clearAll', e)
-};
-const none = (e) => {
-  console.log('none', e)
-  e.preventDefault()
 };
 
 const validateInfo = () => {

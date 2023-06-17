@@ -1,6 +1,6 @@
 <template>
   <div class="debug-main">
-    <DebugInterface />
+    <DebugComp />
   </div>
 </template>
 
@@ -15,7 +15,7 @@ import {StateType as Debug} from "@/views/component/debug/store";
 import {StateType as Scenario} from "@/views/scenario/store";
 
 import {UsedBy} from "@/utils/enum";
-import DebugInterface from '@/views/component/debug/index.vue';
+import DebugComp from '@/views/component/debug/index.vue';
 
 const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();

@@ -29,7 +29,8 @@
           </a-col>
 
           <a-col flex="80px" class="save">
-            <a-button trigger="click" @click="save" class="dp-bg-light">
+            <a-button class="dp-bg-light"
+                      @click="saveTestInterface">
               <SaveOutlined/>
               保存
             </a-button>
@@ -103,7 +104,7 @@ const send = async (e) => {
     await store.dispatch('Debug/call', callData)
   }
 }
-const save = async (e) => {
+const saveTestInterface = async (e) => {
   if (validateInfo()) {
     let data = JSON.parse(JSON.stringify(debugData.value))
     data = prepareDataForRequest(data)

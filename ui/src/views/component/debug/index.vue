@@ -17,23 +17,17 @@
 </template>
 
 <script setup lang="ts">
-import {computed, inject, onMounted, onUnmounted, ref, watch} from "vue";
+import {computed} from "vue";
 import {useI18n} from "vue-i18n";
-import {resizeHandler, resizeHeight} from "@/utils/dom";
 import {useStore} from "vuex";
 
-import {requestMethodOpts} from '@/config/constant';
 import {StateType as ProjectGlobal} from "@/store/project";
 import {StateType as Debug} from "@/views/component/debug/store";
 import {StateType as Endpoint} from "../../endpoint/store";
 
-import Path  from './path.vue';
 import InterfaceRequest from './request/Index.vue';
 import InterfaceResponse from './response/Index.vue';
 import RequestVariable from '@/components/Editor/RequestVariable.vue';
-
-import {UsedBy} from "@/utils/enum";
-import {DebugInfo} from "@/views/component/debug/data";
 
 const {t} = useI18n();
 const store = useStore<{  Debug: Debug, ProjectGlobal: ProjectGlobal, Endpoint: Endpoint }>();

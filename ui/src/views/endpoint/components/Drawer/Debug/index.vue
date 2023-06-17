@@ -6,14 +6,14 @@
       <RequestInvocation
         :show-debug-data-url="false"
         :onSend="invokeInterface"
-        :onSave="saveInterface">
-      </RequestInvocation>
+        :onSave="saveDebugInterface" />
     </div>
 
     <div id="debug-bottom">
       <div id="debug-content">
         <DebugEnvSelection />
-        <DebugInterface />
+
+        <DebugComp />
       </div>
 
       <div id="debug-splitter" class="splitter"></div>
@@ -71,7 +71,12 @@ import {Form, notification} from 'ant-design-vue';
 import {useStore} from "vuex";
 import { EnvironmentOutlined, HistoryOutlined } from '@ant-design/icons-vue';
 
-import DebugInterface from '@/views/component/debug/index.vue';
+import {NotificationKeyCommon} from "@/utils/const";
+import {resizeWidth} from "@/utils/dom";
+import {UsedBy} from "@/utils/enum";
+import {getToken} from "@/utils/localToken";
+import {StateType as Debug} from "@/views/component/debug/store";
+import {StateType as Endpoint} from "@/views/endpoint/store";
 
 import DebugMethod from './method.vue';
 import DebugEnvSelection from './env-selection.vue';
@@ -79,13 +84,7 @@ import RequestEnv from '@/views/component/debug/others/env/index.vue';
 import RequestHistory from '@/views/component/debug/others/history/index.vue';
 import RequestInvocation from '@/views/component/debug/request/Invocation.vue';
 
-import {NotificationKeyCommon} from "@/utils/const";
-import {resizeWidth} from "@/utils/dom";
-import {UsedBy} from "@/utils/enum";
-import {getToken} from "@/utils/localToken";
-import {DebugInfo} from "@/views/component/debug/data";
-import {StateType as Debug} from "@/views/component/debug/store";
-import {StateType as Endpoint} from "@/views/endpoint/store";
+import DebugComp from '@/views/component/debug/index.vue';
 
 const store = useStore<{  Debug: Debug,Endpoint:Endpoint }>();
 const endpointDetail = computed<any>(() => store.state.Endpoint.endpointDetail);
@@ -119,16 +118,12 @@ const invokeInterface = async () => {
   await store.dispatch('Debug/call', callData)
 };
 
-const saveInterface = async (data) => {
-  console.log('saveInterface', data)
+const saveDebugInterface = async (data) => {
+  console.log('saveDebugInterface', data)
 
-  const obj = Object.assign({}, data)
-  delete obj.shareVars
-  delete obj.envVars
-  delete obj.globalEnvVars
-  delete obj.globalParamVars
+  Object.assign(data, {shareVars: null, envVars: null, globalEnvVars: null, globalParamVars: null })
 
-  const res = await store.dispatch('Debug/save', obj)
+  const res = await store.dispatch('Debug/save', data)
   if (res === true) {
     notification.success({
       key: NotificationKeyCommon,

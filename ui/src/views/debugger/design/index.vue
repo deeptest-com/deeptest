@@ -3,8 +3,10 @@
     <div class="tabs">
       <a-tabs v-model:activeKey="activeTabKey" @edit="onTabEdit" @change="changeTab" type="editable-card">
         <a-tab-pane v-for="tab in interfaceTabs" :key="''+tab.id" :tab="tab.title">
-          <UrlInput />
-          <DebugForm />
+
+          <UrlAndInvocation />
+          <DebugComp />
+
         </a-tab-pane>
       </a-tabs>
     </div>
@@ -28,9 +30,9 @@ import debounce from "lodash.debounce";
 import {UsedBy} from "@/utils/enum";
 
 import EnvSelection from './env-selection.vue'
-import UrlInput from './invocation.vue'
+import UrlAndInvocation from './url-and-invocation.vue'
 
-import DebugForm from '@/views/component/debug/index.vue';
+import DebugComp from '@/views/component/debug/index.vue';
 
 provide('usedBy', UsedBy.TestDebug)
 

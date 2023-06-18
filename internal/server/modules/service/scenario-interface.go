@@ -80,13 +80,13 @@ func (s *ScenarioInterfaceService) GetScenarioInterface(endpointInterfaceId uint
 		if err != nil || ret.EndpointInterfaceId == 0 {
 			return domain.DebugData{}, err
 		}
-		_, err = s.Save(ret)
+		_, err = s.SaveDebugData(ret)
 	}
 
 	return
 }
 
-func (s *ScenarioInterfaceService) Save(req domain.DebugData) (debug model.ScenarioInterface, err error) {
+func (s *ScenarioInterfaceService) SaveDebugData(req domain.DebugData) (debug model.ScenarioInterface, err error) {
 	s.CopyValueFromRequest(&debug, req)
 
 	endpointInterface, _ := s.EndpointInterfaceRepo.Get(req.EndpointInterfaceId)
@@ -97,7 +97,7 @@ func (s *ScenarioInterfaceService) Save(req domain.DebugData) (debug model.Scena
 		debug.ID = scenarioInterfaceId
 	}
 
-	err = s.ScenarioInterfaceRepo.Save(&debug)
+	err = s.ScenarioInterfaceRepo.SaveDebugData(&debug)
 
 	return
 }

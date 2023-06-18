@@ -138,7 +138,7 @@ func (r *ScenarioInterfaceRepo) HasScenarioInterfaceRecord(endpointInterfaceId u
 	return
 }
 
-func (r *ScenarioInterfaceRepo) Save(interf *model.ScenarioInterface) (err error) {
+func (r *ScenarioInterfaceRepo) SaveDebugData(interf *model.ScenarioInterface) (err error) {
 	r.DB.Transaction(func(tx *gorm.DB) error {
 		err = r.DB.Save(interf).Error
 		if err != nil {

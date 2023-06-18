@@ -2,6 +2,7 @@ package service
 
 import (
 	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
@@ -66,8 +67,30 @@ func (s *TestInterfaceService) Move(srcId, targetId uint, pos serverConsts.DropP
 	return
 }
 
+func (s *TestInterfaceService) SaveDebugData(req domain.DebugData) (debug model.TestInterface, err error) {
+	s.CopyDebugDataValueFromRequest(&debug, req)
+
+	//endpointInterface, _ := s.EndpointInterfaceRepo.Get(req.EndpointInterfaceId)
+	//debug.EndpointId = endpointInterface.EndpointId
+	//
+	//scenarioInterfaceId, _ := s.TestInterfaceRepo.HasScenarioInterfaceRecord(debug.EndpointInterfaceId)
+	//if scenarioInterfaceId > 0 {
+	//	debug.ID = scenarioInterfaceId
+	//}
+
+	err = s.TestInterfaceRepo.SaveDebugData(&debug)
+
+	return
+}
+
 func (s *TestInterfaceService) CopyValueFromRequest(interf *model.TestInterface, req serverDomain.TestInterfaceSaveReq) {
 	copier.CopyWithOption(interf, req, copier.Option{
 		DeepCopy: true,
 	})
+}
+
+func (s *TestInterfaceService) CopyDebugDataValueFromRequest(interf *model.TestInterface, req domain.DebugData) (err error) {
+	copier.CopyWithOption(interf, req, copier.Option{DeepCopy: true})
+
+	return
 }

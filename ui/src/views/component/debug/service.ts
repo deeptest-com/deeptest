@@ -176,7 +176,7 @@ export function getCodeLangByType(type) {
 
 // extractor
 export async function listExtractor(endpointInterfaceId: number): Promise<any> {
-    const params = {endpointInterfaceId}
+    const params = {interfaceId: endpointInterfaceId}
 
     return request({
         url: `/${apiExtractor}`,
@@ -221,8 +221,8 @@ export async function listExtractorVariable(interfaceId: number): Promise<any> {
 }
 
 // checkpoint
-export async function listCheckpoint(interfaceId: number): Promise<any> {
-    const params = {interfaceId}
+export async function listCheckpoint(endpointInterfaceId: number): Promise<any> {
+    const params = {interfaceId: endpointInterfaceId}
 
     return request({
         url: `/${apiCheckpoint}`,

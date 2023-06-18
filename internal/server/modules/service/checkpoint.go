@@ -21,8 +21,8 @@ type CheckpointService struct {
 	VariableService *VariableService      `inject:""`
 }
 
-func (s *CheckpointService) List(interfaceId uint) (checkpoints []model.DebugInterfaceCheckpoint, err error) {
-	checkpoints, err = s.CheckpointRepo.List(interfaceId)
+func (s *CheckpointService) List(endpointInterfaceId uint) (checkpoints []model.DebugInterfaceCheckpoint, err error) {
+	checkpoints, err = s.CheckpointRepo.List(endpointInterfaceId)
 
 	return
 }

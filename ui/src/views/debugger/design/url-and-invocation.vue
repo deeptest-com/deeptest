@@ -29,8 +29,7 @@
           </a-col>
 
           <a-col flex="80px" class="save">
-            <a-button class="dp-bg-light"
-                      @click="saveTestInterface">
+            <a-button @click="saveTestInterface" class="dp-bg-light">
               <SaveOutlined/>
               保存
             </a-button>
@@ -104,6 +103,7 @@ const send = async (e) => {
   }
 }
 const saveTestInterface = async (e) => {
+  console.log('saveTestInterface')
   if (validateInfo()) {
     let data = JSON.parse(JSON.stringify(debugData.value))
     data = prepareDataForRequest(data)

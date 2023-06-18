@@ -2,6 +2,8 @@ package handler
 
 import (
 	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	service "github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
@@ -12,6 +14,9 @@ type TestInterfaceCtrl struct {
 	TestInterfaceService *service.TestInterfaceService `inject:""`
 	ExtractorService     *service.ExtractorService     `inject:""`
 	CheckpointService    *service.CheckpointService    `inject:""`
+
+	DebugInterfaceService *service.DebugInterfaceService `inject:""`
+
 	BaseCtrl
 }
 
@@ -121,4 +126,33 @@ func (c *TestInterfaceCtrl) Move(ctx iris.Context) {
 	}
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+}
+
+// SaveDebugData
+func (c *TestInterfaceCtrl) SaveDebugData(ctx iris.Context) {
+	req := domain.DebugData{}
+	err := ctx.ReadJSON(&req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+		return
+	}
+
+	_, err = c.TestInterfaceService.SaveDebugData(req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	loadReq := domain.DebugReq{
+		TestInterfaceId: req.TestInterfaceId,
+		UsedBy:          consts.TestDebug,
+	}
+
+	data, err := c.DebugInterfaceService.Load(loadReq)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data})
 }

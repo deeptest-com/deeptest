@@ -335,9 +335,9 @@ export const getEnumSelectItems = (enumDef) => {
     return arr
 }
 
-export async function saveScenarioDebugData(interf: Interface): Promise<any> {
+export async function saveDebugData(interf: Interface): Promise<any> {
     return request({
-        url: `/scenarios/interface/save`,
+        url: `/scenarios/interface/saveDebugData`,
         method: 'post',
         data: interf,
     });

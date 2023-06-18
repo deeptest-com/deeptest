@@ -16,7 +16,7 @@ type ScenarioInterfaceCtrl struct {
 	BaseCtrl
 }
 
-func (c *ScenarioInterfaceCtrl) Save(ctx iris.Context) {
+func (c *ScenarioInterfaceCtrl) SaveDebugData(ctx iris.Context) {
 	req := domain.DebugData{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -24,7 +24,7 @@ func (c *ScenarioInterfaceCtrl) Save(ctx iris.Context) {
 		return
 	}
 
-	po, err := c.ScenarioInterfaceService.Save(req)
+	po, err := c.ScenarioInterfaceService.SaveDebugData(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

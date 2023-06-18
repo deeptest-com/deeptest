@@ -184,7 +184,7 @@ func (s *ScenarioNodeService) addInterface(endpointInterfaceId int, createBy uin
 //			ProjectId:      parentProcessor.ProjectId,
 //		}
 //		processor.Ordr = s.ScenarioNodeRepo.GetMaxOrder(processor.ParentId)
-//		s.ScenarioNodeRepo.Save(&processor)
+//		s.ScenarioNodeRepo.SaveDebugData(&processor)
 //
 //		for _, child := range interfaceNode.Children {
 //			s.createDirOrInterface(child, processor)
@@ -202,7 +202,7 @@ func (s *ScenarioNodeService) addInterface(endpointInterfaceId int, createBy uin
 //			ProjectId:   parentProcessor.ProjectId,
 //		}
 //		processor.Ordr = s.ScenarioNodeRepo.GetMaxOrder(processor.ParentId)
-//		s.ScenarioNodeRepo.Save(&processor)
+//		s.ScenarioNodeRepo.SaveDebugData(&processor)
 //
 //		interfaceProcessor := model.ProcessorInterface{}
 //		interfaceProcessor, err = s.ScenarioProcessorService.CloneInterface(uint(interfaceNode.Id), processor)

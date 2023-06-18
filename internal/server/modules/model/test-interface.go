@@ -25,6 +25,22 @@ type TestInterface struct {
 
 	DebugInterfaceId uint            `json:"debugInterfaceId"`
 	DebugInterface   *DebugInterface `gorm:"-" json:"debugInterface"`
+
+	QueryParams []ScenarioInterfaceParam  `gorm:"-" json:"queryParams"`
+	PathParams  []ScenarioInterfaceParam  `gorm:"-" json:"pathParams"`
+	Headers     []ScenarioInterfaceHeader `gorm:"-" json:"headers"`
+	Cookies     []ScenarioInterfaceCookie `gorm:"-" json:"cookies"`
+
+	BodyFormData       []ScenarioInterfaceBodyFormDataItem       `gorm:"-" json:"bodyFormData"`
+	BodyFormUrlencoded []ScenarioInterfaceBodyFormUrlEncodedItem `gorm:"-" json:"bodyFormUrlencoded"`
+
+	BasicAuth   ScenarioInterfaceBasicAuth   `gorm:"-" json:"basicAuth"`
+	BearerToken ScenarioInterfaceBearerToken `gorm:"-" json:"bearerToken"`
+	OAuth20     ScenarioInterfaceOAuth20     `gorm:"-" json:"oauth20"`
+	ApiKey      ScenarioInterfaceApiKey      `gorm:"-" json:"apiKey"`
+
+	InterfaceExtractors  []ScenarioInterfaceExtractor  `gorm:"-" json:"interfaceExtractors"`
+	InterfaceCheckpoints []ScenarioInterfaceCheckpoint `gorm:"-" json:"interfaceCheckpoints"`
 }
 
 func (TestInterface) TableName() string {

@@ -18,7 +18,7 @@ func NewScenarioInterfaceModule() *ScenarioInterfaceModule {
 func (m *ScenarioInterfaceModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
 		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
-		index.Post("/save", m.ScenarioInterfaceCtrl.Save).Name = "保存场景调试接口"
+		index.Post("/saveDebugData", m.ScenarioInterfaceCtrl.SaveDebugData).Name = "保存场景调试接口"
 	}
 	return module.NewModule("/scenarios/interface", handler)
 }

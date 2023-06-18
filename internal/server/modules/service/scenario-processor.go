@@ -201,7 +201,7 @@ func (s *ScenarioProcessorService) GetEntityTo(processorTo *agentExec.Processor)
 //		extractor.InterfaceId = processorInterfaceId
 //		extractor.ScenarioId = processor.ScenarioId
 //
-//		s.ExtractorRepo.Save(&extractor)
+//		s.ExtractorRepo.SaveDebugData(&extractor)
 //	}
 //
 //	return
@@ -219,7 +219,7 @@ func (s *ScenarioProcessorService) GetEntityTo(processorTo *agentExec.Processor)
 //		checkpoint.InterfaceId = processorInterfaceId
 //		checkpoint.ScenarioId = processor.ScenarioId
 //
-//		s.CheckpointRepo.Save(&checkpoint)
+//		s.CheckpointRepo.SaveDebugData(&checkpoint)
 //	}
 //
 //	return

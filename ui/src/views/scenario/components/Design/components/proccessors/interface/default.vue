@@ -102,7 +102,7 @@ const saveScenarioInterface = async (data) => {
   delete obj.globalEnvVars
   delete obj.globalParamVars
 
-  const res = await store.dispatch('Scenario/saveScenarioDebugData', obj)
+  const res = await store.dispatch('Scenario/saveDebugData', obj)
   if (res === true) {
     notification.success({
       key: NotificationKeyCommon,

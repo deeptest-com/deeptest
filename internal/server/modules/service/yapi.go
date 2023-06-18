@@ -29,7 +29,7 @@ func (s *YapiService) ImportYapiProject(req v1.InterfaceYapiReq) (err error) {
 	//	interf.Name = yapiCatMenuData.Name
 	//	dropPos := serverConsts.Inner
 	//	interf.ParentId, interf.Ordr = s.InterfaceRepo.UpdateOrder(dropPos, uint(target))
-	//	err = s.InterfaceRepo.Save(&interf)
+	//	err = s.InterfaceRepo.SaveDebugData(&interf)
 	//	menuId := interf.ID
 	//	catid := strconv.Itoa(yapiCatMenuData.ID)
 	//

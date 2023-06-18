@@ -14,13 +14,13 @@ type CheckpointCtrl struct {
 
 // List
 func (c *CheckpointCtrl) List(ctx iris.Context) {
-	interfaceId, err := ctx.URLParamInt("interfaceId")
-	if interfaceId == 0 {
+	endpointInterfaceId, err := ctx.URLParamInt("interfaceId")
+	if endpointInterfaceId <= 0 {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
-	data, err := c.CheckpointService.List(uint(interfaceId))
+	data, err := c.CheckpointService.List(uint(endpointInterfaceId))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

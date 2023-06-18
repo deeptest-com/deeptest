@@ -9,7 +9,6 @@ import (
 
 type TestInterface struct {
 	BaseModel
-	//InterfaceBase
 
 	Title  string                         `json:"title"`
 	Desc   string                         `json:"desc"`
@@ -28,7 +27,9 @@ type TestInterface struct {
 
 	DebugInterfaceId uint `json:"debugInterfaceId"`
 
-	// data
+	// debug data
+	InterfaceConfigBase
+
 	QueryParams []TestInterfaceParam  `gorm:"-" json:"queryParams"`
 	PathParams  []TestInterfaceParam  `gorm:"-" json:"pathParams"`
 	Headers     []TestInterfaceHeader `gorm:"-" json:"headers"`
@@ -56,7 +57,7 @@ type TestInterfaceParam struct {
 }
 
 func (TestInterfaceParam) TableName() string {
-	return "biz_scenario_interface_param"
+	return "biz_test_interface_param"
 }
 
 type TestInterfaceBodyFormDataItem struct {
@@ -65,7 +66,7 @@ type TestInterfaceBodyFormDataItem struct {
 }
 
 func (TestInterfaceBodyFormDataItem) TableName() string {
-	return "biz_scenario_interface_form_data_item"
+	return "biz_test_interface_form_data_item"
 }
 
 type TestInterfaceBodyFormUrlEncodedItem struct {
@@ -74,7 +75,7 @@ type TestInterfaceBodyFormUrlEncodedItem struct {
 }
 
 func (TestInterfaceBodyFormUrlEncodedItem) TableName() string {
-	return "biz_scenario_interface_form_urlencoded_item"
+	return "biz_test_interface_form_urlencoded_item"
 }
 
 type TestInterfaceHeader struct {
@@ -83,7 +84,7 @@ type TestInterfaceHeader struct {
 }
 
 func (TestInterfaceHeader) TableName() string {
-	return "biz_scenario_interface_header"
+	return "biz_test_interface_header"
 }
 
 type TestInterfaceCookie struct {
@@ -92,7 +93,7 @@ type TestInterfaceCookie struct {
 }
 
 func (TestInterfaceCookie) TableName() string {
-	return "biz_scenario_interface_cookie"
+	return "biz_test_interface_cookie"
 }
 
 type TestInterfaceBasicAuth struct {
@@ -101,7 +102,7 @@ type TestInterfaceBasicAuth struct {
 }
 
 func (TestInterfaceBasicAuth) TableName() string {
-	return "biz_scenario_interface_basic_auth"
+	return "biz_test_interface_basic_auth"
 }
 
 type TestInterfaceBearerToken struct {
@@ -110,7 +111,7 @@ type TestInterfaceBearerToken struct {
 }
 
 func (TestInterfaceBearerToken) TableName() string {
-	return "biz_scenario_interface_bearer_token"
+	return "biz_test_interface_bearer_token"
 }
 
 type TestInterfaceOAuth20 struct {
@@ -119,7 +120,7 @@ type TestInterfaceOAuth20 struct {
 }
 
 func (TestInterfaceOAuth20) TableName() string {
-	return "biz_scenario_interface_oauth20"
+	return "biz_test_interface_oauth20"
 }
 
 type TestInterfaceApiKey struct {
@@ -128,7 +129,7 @@ type TestInterfaceApiKey struct {
 }
 
 func (TestInterfaceApiKey) TableName() string {
-	return "biz_scenario_interface_apikey"
+	return "biz_test_interface_apikey"
 }
 
 type TestInterfaceExtractor struct {
@@ -147,7 +148,7 @@ type TestInterfaceExtractor struct {
 }
 
 func (TestInterfaceExtractor) TableName() string {
-	return "biz_scenario_interface_extractor"
+	return "biz_test_interface_extractor"
 }
 
 type TestInterfaceCheckpoint struct {
@@ -170,5 +171,5 @@ type TestInterfaceCheckpoint struct {
 }
 
 func (TestInterfaceCheckpoint) TableName() string {
-	return "biz_scenario_interface_checkpoint"
+	return "biz_test_interface_checkpoint"
 }

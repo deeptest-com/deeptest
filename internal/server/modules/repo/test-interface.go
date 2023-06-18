@@ -282,10 +282,10 @@ func (r *TestInterfaceRepo) SaveDebugData(interf *model.TestInterface) (err erro
 	return
 }
 
-func (r *TestInterfaceRepo) UpdateParams(id uint, queryParams, pathParams []model.ScenarioInterfaceParam) (err error) {
+func (r *TestInterfaceRepo) UpdateParams(id uint, queryParams, pathParams []model.TestInterfaceParam) (err error) {
 	err = r.RemoveParams(id)
 
-	var params []model.ScenarioInterfaceParam
+	var params []model.TestInterfaceParam
 
 	for _, p := range queryParams {
 
@@ -321,12 +321,12 @@ func (r *TestInterfaceRepo) UpdateParams(id uint, queryParams, pathParams []mode
 func (r *TestInterfaceRepo) RemoveParams(id uint) (err error) {
 	err = r.DB.
 		Where("interface_id = ?", id).
-		Delete(&model.ScenarioInterfaceParam{}, "").Error
+		Delete(&model.TestInterfaceParam{}, "").Error
 
 	return
 }
 
-func (r *TestInterfaceRepo) UpdateBodyFormData(id uint, items []model.ScenarioInterfaceBodyFormDataItem) (err error) {
+func (r *TestInterfaceRepo) UpdateBodyFormData(id uint, items []model.TestInterfaceBodyFormDataItem) (err error) {
 	err = r.RemoveBodyFormData(id)
 
 	if len(items) == 0 {
@@ -346,12 +346,12 @@ func (r *TestInterfaceRepo) UpdateBodyFormData(id uint, items []model.ScenarioIn
 func (r *TestInterfaceRepo) RemoveBodyFormData(id uint) (err error) {
 	err = r.DB.
 		Where("interface_id = ?", id).
-		Delete(&model.ScenarioInterfaceBodyFormDataItem{}, "").Error
+		Delete(&model.TestInterfaceBodyFormDataItem{}, "").Error
 
 	return
 }
 
-func (r *TestInterfaceRepo) UpdateBodyFormUrlencoded(id uint, items []model.ScenarioInterfaceBodyFormUrlEncodedItem) (err error) {
+func (r *TestInterfaceRepo) UpdateBodyFormUrlencoded(id uint, items []model.TestInterfaceBodyFormUrlEncodedItem) (err error) {
 	err = r.RemoveBodyFormUrlencoded(id)
 
 	if len(items) == 0 {
@@ -371,12 +371,12 @@ func (r *TestInterfaceRepo) UpdateBodyFormUrlencoded(id uint, items []model.Scen
 func (r *TestInterfaceRepo) RemoveBodyFormUrlencoded(id uint) (err error) {
 	err = r.DB.
 		Where("interface_id = ?", id).
-		Delete(&model.ScenarioInterfaceBodyFormUrlEncodedItem{}, "").Error
+		Delete(&model.TestInterfaceBodyFormUrlEncodedItem{}, "").Error
 
 	return
 }
 
-func (r *TestInterfaceRepo) UpdateHeaders(id uint, headers []model.ScenarioInterfaceHeader) (err error) {
+func (r *TestInterfaceRepo) UpdateHeaders(id uint, headers []model.TestInterfaceHeader) (err error) {
 	err = r.RemoveHeaders(id)
 
 	if len(headers) == 0 {
@@ -396,12 +396,12 @@ func (r *TestInterfaceRepo) UpdateHeaders(id uint, headers []model.ScenarioInter
 func (r *TestInterfaceRepo) RemoveHeaders(id uint) (err error) {
 	err = r.DB.
 		Where("interface_id = ?", id).
-		Delete(&model.ScenarioInterfaceHeader{}, "").Error
+		Delete(&model.TestInterfaceHeader{}, "").Error
 
 	return
 }
 
-func (r *TestInterfaceRepo) UpdateBasicAuth(id uint, payload model.ScenarioInterfaceBasicAuth) (err error) {
+func (r *TestInterfaceRepo) UpdateBasicAuth(id uint, payload model.TestInterfaceBasicAuth) (err error) {
 	if err = r.RemoveBasicAuth(id); err != nil {
 		return
 	}
@@ -415,12 +415,12 @@ func (r *TestInterfaceRepo) UpdateBasicAuth(id uint, payload model.ScenarioInter
 func (r *TestInterfaceRepo) RemoveBasicAuth(id uint) (err error) {
 	err = r.DB.
 		Where("interface_id = ?", id).
-		Delete(&model.ScenarioInterfaceBasicAuth{}, "").Error
+		Delete(&model.TestInterfaceBasicAuth{}, "").Error
 
 	return
 }
 
-func (r *TestInterfaceRepo) UpdateBearerToken(id uint, payload model.ScenarioInterfaceBearerToken) (err error) {
+func (r *TestInterfaceRepo) UpdateBearerToken(id uint, payload model.TestInterfaceBearerToken) (err error) {
 	if err = r.RemoveBearerToken(id); err != nil {
 		return
 	}
@@ -434,12 +434,12 @@ func (r *TestInterfaceRepo) UpdateBearerToken(id uint, payload model.ScenarioInt
 func (r *TestInterfaceRepo) RemoveBearerToken(id uint) (err error) {
 	err = r.DB.
 		Where("interface_id = ?", id).
-		Delete(&model.ScenarioInterfaceBearerToken{}, "").Error
+		Delete(&model.TestInterfaceBearerToken{}, "").Error
 
 	return
 }
 
-func (r *TestInterfaceRepo) UpdateOAuth20(interfaceId uint, payload model.ScenarioInterfaceOAuth20) (err error) {
+func (r *TestInterfaceRepo) UpdateOAuth20(interfaceId uint, payload model.TestInterfaceOAuth20) (err error) {
 	if err = r.RemoveOAuth20(interfaceId); err != nil {
 		return
 	}
@@ -453,12 +453,12 @@ func (r *TestInterfaceRepo) UpdateOAuth20(interfaceId uint, payload model.Scenar
 func (r *TestInterfaceRepo) RemoveOAuth20(interfaceId uint) (err error) {
 	err = r.DB.
 		Where("interface_id = ?", interfaceId).
-		Delete(&model.ScenarioInterfaceOAuth20{}).Error
+		Delete(&model.TestInterfaceOAuth20{}).Error
 
 	return
 }
 
-func (r *TestInterfaceRepo) UpdateApiKey(id uint, payload model.ScenarioInterfaceApiKey) (err error) {
+func (r *TestInterfaceRepo) UpdateApiKey(id uint, payload model.TestInterfaceApiKey) (err error) {
 	if err = r.RemoveApiKey(id); err != nil {
 		return
 	}
@@ -472,7 +472,7 @@ func (r *TestInterfaceRepo) UpdateApiKey(id uint, payload model.ScenarioInterfac
 func (r *TestInterfaceRepo) RemoveApiKey(id uint) (err error) {
 	err = r.DB.
 		Where("interface_id = ?", id).
-		Delete(&model.ScenarioInterfaceApiKey{}, "").Error
+		Delete(&model.TestInterfaceApiKey{}, "").Error
 
 	return
 }

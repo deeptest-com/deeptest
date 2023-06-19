@@ -11,14 +11,16 @@
     <!-- 头部信息  -->
     <template #title>
       <a-row type="flex" style="align-items: center;width: 100%">
-        <a-col :span="8">
+        <a-col :span="12" class="header-text">
+          <span class="serialNumber">[{{endpointDetail.serialNumber}}]</span>
           <EditAndShowField :custom-class="'show-on-hover'" placeholder="修改标题" :value="endpointDetail?.title || ''" @update="updateTitle"/>
         </a-col>
       </a-row>
     </template>
 
     <!-- 基本信息 -->
-    <EndpointBasicInfo @changeStatus="changeStatus" @change-description="changeDescription"
+    <EndpointBasicInfo @changeStatus="changeStatus"
+                       @change-description="changeDescription"
                        @changeCategory="changeCategory"/>
 
     <!-- 接口设计区域 -->
@@ -30,11 +32,11 @@
         :bodyStyle="{padding:'0 24px 0 24px'}">
       <template #title>
         <div style="margin-top: -12px;">
-          <ConBoxTitle :backgroundStyle="'background: #FBFBFB;'" :title="'接口设计'"/>
+          <ConBoxTitle :show-arrow="true" @expand="expandInfo" :backgroundStyle="'background: #FBFBFB;'" :title="'接口设计'"/>
         </div>
       </template>
 
-      <a-tabs :activeKey="key" :animated="false" @change="changeTab">
+      <a-tabs v-show="expand" :activeKey="key" :animated="false" @change="changeTab">
         <a-tab-pane key="request" tab="定义">
           <EndpointDefine v-if="key === 'request'" @switchMode="switchMode"/> <!-- use v-if to force page reload-->
         </a-tab-pane>
@@ -168,6 +170,10 @@ async function save() {
   emit('refreshList');
 }
 
+const expand = ref(true)
+function expandInfo(val) {
+    expand.value = val
+}
 
 </script>
 <style lang="less" scoped>
@@ -216,5 +222,10 @@ async function save() {
   margin-right: 16px;
   z-index: 99;
 }
-
+.header-text{
+  display: flex;
+  .serialNumber{
+    margin-right: 6px;
+  }
+}
 </style>

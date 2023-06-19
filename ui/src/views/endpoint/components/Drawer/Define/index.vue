@@ -15,7 +15,6 @@
         YAML
       </a-button>
     </div>
-
     <EndpointForm v-if="showMode === 'form'"/>
     <div class="endpoint-code" v-if="showMode === 'code'">
       <MonacoEditor
@@ -25,8 +24,7 @@
           :height="600"
           theme="vs"
           :options="{...MonacoOptions}"
-          @change="handleYamlCodeChange"
-      />
+          @change="handleYamlCodeChange"/>
     </div>
   </div>
 </template>

@@ -1,19 +1,21 @@
 <template>
   <div class="test-interface-design-main">
-    <div class="tabs">
-      <a-tabs v-model:activeKey="activeTabKey" @edit="onTabEdit" @change="changeTab" type="editable-card">
-        <a-tab-pane v-for="tab in interfaceTabs" :key="''+tab.id" :tab="tab.title">
+    <template v-if="debugData?.method">
+      <div class="tabs">
+        <a-tabs v-model:activeKey="activeTabKey" @edit="onTabEdit" @change="changeTab" type="editable-card">
+          <a-tab-pane v-for="tab in interfaceTabs" :key="''+tab.id" :tab="tab.title">
 
-          <UrlAndInvocation />
-          <DebugComp />
+            <UrlAndInvocation />
+            <DebugComp />
 
-        </a-tab-pane>
-      </a-tabs>
-    </div>
+          </a-tab-pane>
+        </a-tabs>
+      </div>
 
-    <div class="selection">
-      <EnvSelection />
-    </div>
+      <div class="selection">
+        <EnvSelection />
+      </div>
+    </template>
   </div>
 </template>
 
@@ -70,7 +72,10 @@ const loadDebugData = debounce(async () => {
 watch((interfaceData), async (newVal) => {
   console.log('watch interfaceData', interfaceData?.value)
 
-  if (!interfaceData?.value) return
+  if (!interfaceData?.value) {
+    store.dispatch('Debug/resetDataAndInvocations');
+    return
+  }
 
   loadDebugData()
   activeTabKey.value = ''+interfaceData.value.id

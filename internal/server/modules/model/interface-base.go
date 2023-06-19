@@ -22,7 +22,11 @@ type InterfaceBase struct {
 
 	Slots iris.Map `gorm:"-" json:"slots"`
 
-	Url      string                 `json:"url"`
+	InterfaceConfigBase
+}
+
+type InterfaceConfigBase struct {
+	Url      string                 `gorm:"default:''" json:"url"`
 	Method   consts.HttpMethod      `gorm:"default:GET" json:"method"`
 	Body     string                 `gorm:"type:text" json:"body"`
 	BodyType consts.HttpContentType `gorm:"default:'application/json'" json:"bodyType"`

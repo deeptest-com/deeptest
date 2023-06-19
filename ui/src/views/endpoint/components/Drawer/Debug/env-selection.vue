@@ -34,16 +34,19 @@ const envURL = computed(() => {
     return serverId.value === item.id;
   })?.url
 });
+
 const url = computed(() => {
-  return debugData?.value.url || endpointDetail.value.path
+  console.log('computed url')
+  const u = debugData?.value.url || endpointDetail.value.path
+  // store.commit('Debug/setUrl', u)
+  return u
 });
+const changeUrl = (e) => {
+  store.commit('Debug/setUrl', e.target.value.trim())
+}
 
 function changeServer(id) {
   store.dispatch('Debug/changeServer', id)
-}
-
-const changeUrl = (e) => {
-  store.commit('Debug/setUrl', e.target.value.trim())
 }
 
 </script>

@@ -33,7 +33,18 @@ var (
 		&DebugInterfaceApiKey{},
 		&DebugInterfaceExtractor{},
 		&DebugInterfaceCheckpoint{},
+
 		&TestInterface{},
+		&TestInterfaceParam{},
+		&TestInterfaceBodyFormDataItem{},
+		&TestInterfaceBodyFormUrlEncodedItem{},
+		&TestInterfaceHeader{},
+		&TestInterfaceBasicAuth{},
+		&TestInterfaceBearerToken{},
+		&TestInterfaceOAuth20{},
+		&TestInterfaceApiKey{},
+		&TestInterfaceExtractor{},
+		&TestInterfaceCheckpoint{},
 
 		&Snippet{},
 

@@ -1,5 +1,5 @@
 <template>
-  <div class="editor" v-if="isEditing" >
+  <div class="editor show-on-hover" v-if="isEditing" >
     <a-select
         v-model:value="fieldValue"
         style="width: 100px;margin-right: 8px;"

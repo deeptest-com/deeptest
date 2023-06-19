@@ -1,14 +1,15 @@
 <!-- :::: 接口定义模块 -->
 <template>
-  <div class="content">
-    <BasicDetail :items="items" v-if="showBasicInfo"/>
+  <div class="content" v-show="data?.name">
+<!--    <BasicDetail  :items="items" v-if="showBasicInfo"/>-->
+    <DocsHeader/>
     <a-divider style="margin:0" v-if="showBasicInfo"/>
     <div class="doc-container">
       <div class="left" v-if="showMenu">
         <LeftTreeView :serviceList="serviceList" @select="selectMenu" :selectedKeys="selectedKeys"/>
       </div>
       <div class="right" :class="{'only-docs':!showMenu}">
-        <EndpointDoc v-if="selectedItem" :info="selectedItem"/>
+        <EndpointDoc v-if="selectedItem" :info="selectedItem" :onlyShowDocs="onlyShowDocs"/>
       </div>
     </div>
   </div>
@@ -26,9 +27,10 @@ import {useStore} from "vuex";
 import BasicDetail from "./components/BasicDetail.vue";
 import LeftTreeView from "./components/LeftTreeView.vue";
 import EndpointDoc from "./components/EndpointDoc.vue";
+import DocsHeader from "./components/DocsHeader.vue";
 
 const store = useStore<{ Endpoint, ProjectGlobal }>();
-const props = defineProps(['showBasicInfo', 'showMenu', 'data']);
+const props = defineProps(['showBasicInfo', 'showMenu', 'data', 'onlyShowDocs']);
 const emit = defineEmits([]);
 
 const items = computed(() => {
@@ -48,7 +50,10 @@ const serviceList = computed(() => {
   // 组装数据以兼容组件 LeftTreeMenu
   let items: any = [];
   props?.data?.serves.forEach((item: any) => {
-    items.push(item);
+    // 只显示文档，不展示服务信息
+    if (!props.onlyShowDocs) {
+      items.push(item);
+    }
     item?.endpoints?.forEach((endpoint: any) => {
       endpoint?.interfaces?.forEach((interfaceItem: any) => {
         items.push({
@@ -63,10 +68,10 @@ const serviceList = computed(() => {
   return items;
 })
 
-const selectedItem:any = ref(null);
+const selectedItem: any = ref(null);
 
 const selectedKeys = computed(() => {
-  if(!selectedItem.value?.id) {
+  if (!selectedItem.value?.id) {
     return [];
   }
   return [selectedItem.value?.id];
@@ -79,7 +84,7 @@ watch(() => {
     selectedItem.value = newVal.find((item) => {
       return item.endpointInfo && item.serveInfo;
     })
-    if(!selectedItem.value) {
+    if (!selectedItem.value) {
       selectedItem.value = newVal[0];
     }
   }
@@ -111,8 +116,20 @@ function selectMenu(item) {
     overflow: hidden;
     //margin-left: 24px;
     //padding: 24px;
-    //border-left: 1px solid #f0f0f0;
+    //border-right: 1px solid #f0f0f0;
     overflow-y: scroll;
+    position: relative;
+
+    &:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+      z-index: 99;
+      background-color: #f0f0f0;
+      width: 1px;
+    }
   }
 
   .right {

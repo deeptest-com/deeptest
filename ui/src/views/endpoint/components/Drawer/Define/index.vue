@@ -2,17 +2,15 @@
 <template>
   <div class="content">
     <div class="mode-btns">
-      <a-button :type="showMode === 'form' ? 'primary' : 'default'" @click="switchMode('form')">
+      <a-button  :type="showMode === 'form' ? 'default' : 'default'" @click="switchMode('form')">
         <template #icon>
           <BarsOutlined/>
-        </template>
-        图形
+        </template>图形
       </a-button>
-      <a-button :type="showMode === 'code' ? 'primary' : 'default'" @click="switchMode('code')">
+      <a-button   :type="showMode === 'code' ? 'default' : 'default'" @click="switchMode('code')">
         <template #icon>
           <CodeOutlined/>
-        </template>
-        YAML
+        </template>YAML
       </a-button>
     </div>
     <EndpointForm v-if="showMode === 'form'"/>
@@ -41,7 +39,6 @@ import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
 import {CodeOutlined, BarsOutlined} from '@ant-design/icons-vue';
 import {Endpoint} from "@/views/endpoint/data";
 import {MonacoOptions} from '@/utils/const';
-
 const store = useStore<{ Endpoint, ProjectGlobal }>();
 const endpointDetail = computed<Endpoint[]>(() => store.state.Endpoint.endpointDetail);
 const endpointDetailYamlCode = computed<Endpoint[]>(() => store.state.Endpoint.endpointDetailYamlCode);

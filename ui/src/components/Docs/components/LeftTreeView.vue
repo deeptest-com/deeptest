@@ -101,16 +101,31 @@ function select(item) {
   height: 100%;
   //margin-left: 1px;
   position: relative;
+  border-right:none;
   //border-left: 1px solid #f0f0f0;
   //:deep(.ant-menu-submenu-title) {
   //  position: relative;
   //}
+
+  &:before{
+    content: '';
+    position: absolute;
+    top:0;
+    right: 0;
+    height: 100%;
+    z-index: 99;
+    background-color: #f0f0f0;
+    width: 1px;
+  }
   :deep(.hide) {
     display: none !important;
   }
 
   :deep(.ant-menu-item) {
-    padding: 0 6px !important;
+    padding: 0 6px 0 6px!important;
+  }
+  :deep(.ant-menu-item-selected:after) {
+    right: 2px!important;
   }
 }
 

@@ -3,7 +3,7 @@
       class="card-baseInfo"
       :bordered="false"
       :headStyle="{}"
-      :bodyStyle="{padding:'12px 24px 12px 24px'}"
+      :bodyStyle="{padding:'12px 16px 0 16px'}"
       :title="null">
     <div style="margin-bottom: 8px;">
       <ConBoxTitle

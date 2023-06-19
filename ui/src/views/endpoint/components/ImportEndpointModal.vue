@@ -140,14 +140,13 @@ const emit = defineEmits(['ok', 'cancal']);
 const formRef = ref();
 
 function ok() {
-  // if(loading)
   if (uploading.value) {
     return;
   }
   formRef.value
       .validate()
       .then(() => {
-        emit('ok', formState.value,() => {
+        emit('ok', formState.value, () => {
           reset();
         });
       })

@@ -25,12 +25,10 @@ type TestInterface struct {
 	Children []*TestInterface `gorm:"-" json:"children"`
 	Slots    iris.Map         `gorm:"-" json:"slots"`
 
-	DebugInterfaceId uint `json:"debugInterfaceId"`
-
 	// debug data
+	BaseUrl string `json:"baseUrl"`
 	InterfaceConfigBase
 
-	BaseUrl     string                `json:"baseUrl"`
 	QueryParams []TestInterfaceParam  `gorm:"-" json:"queryParams"`
 	PathParams  []TestInterfaceParam  `gorm:"-" json:"pathParams"`
 	Headers     []TestInterfaceHeader `gorm:"-" json:"headers"`

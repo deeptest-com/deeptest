@@ -14,8 +14,7 @@ type DebugInterface struct {
 	ServerId            uint `json:"serverId"`
 
 	//ReqBodySpec InterfaceReqBodySpec `gorm:"-" json:"basicAuth"`
-
-	Children []*DebugInterface `gorm:"-" json:"children"`
+	//Children []*DebugInterface `gorm:"-" json:"children"`
 
 	QueryParams []DebugInterfaceParam  `gorm:"-" json:"queryParams"`
 	PathParams  []DebugInterfaceParam  `gorm:"-" json:"pathParams"`

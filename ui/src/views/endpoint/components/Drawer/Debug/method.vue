@@ -31,16 +31,20 @@ const interfaceMethodToObjMap = computed<any>(() => store.state.Endpoint.interfa
 const selectedMethod = ref(selectedMethodDetail.value?.method ? selectedMethodDetail.value?.method : 'GET');
 
 const changeMethod = async () => {
-  // console.log('changeMethod', selectedMethod.value, interfaceMethodToObjMap)
+  console.log('changeMethod', selectedMethod.value)
   const endpointInterface = interfaceMethodToObjMap.value[selectedMethod.value]
+
   // sync with / to define page
   if (endpointInterface?.id) {
     await store.commit('Endpoint/setSelectedMethodDetail', endpointInterface);
+
+    console.log('================ start load debug data for endpointInterface ', endpointInterface.id, selectedMethod.value)
     store.dispatch('Debug/loadDataAndInvocations', {
       endpointInterfaceId: endpointInterface.id,
       scenarioProcessorId: 0,
       usedBy: usedBy,
     });
+
   } else {
     await store.commit('Endpoint/setSelectedMethodDetail', {});
   }

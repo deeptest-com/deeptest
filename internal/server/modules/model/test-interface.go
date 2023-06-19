@@ -30,6 +30,7 @@ type TestInterface struct {
 	// debug data
 	InterfaceConfigBase
 
+	BaseUrl     string                `json:"baseUrl"`
 	QueryParams []TestInterfaceParam  `gorm:"-" json:"queryParams"`
 	PathParams  []TestInterfaceParam  `gorm:"-" json:"pathParams"`
 	Headers     []TestInterfaceHeader `gorm:"-" json:"headers"`

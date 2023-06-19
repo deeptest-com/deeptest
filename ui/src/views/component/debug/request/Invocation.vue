@@ -59,7 +59,7 @@ const props = defineProps({
   },
   onSync: {
     type: Function as PropType<() => void>,
-    required: true
+    required: false
   },
   showDebugDataUrl: {
     type: Boolean,
@@ -88,7 +88,7 @@ const save = (e) => {
 };
 
 const sync = (e) => {
-  if (validateInfo()) {
+  if (validateInfo() && props.onSync) {
     props.onSync()
   }
 };

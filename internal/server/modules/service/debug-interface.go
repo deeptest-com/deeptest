@@ -131,7 +131,7 @@ func (s *DebugInterfaceService) Save(req domain.DebugData) (debug model.DebugInt
 	return
 }
 
-func (s *DebugInterfaceService) GetDebugDataFromDebugInterface(debugInterfaceId uint) (req domain.DebugData, err error) {
+func (s *DebugInterfaceService) GetDebugDataFromDebugInterface(debugInterfaceId uint) (ret domain.DebugData, err error) {
 	debugInterfacePo, err := s.DebugInterfaceRepo.GetDetail(debugInterfaceId)
 	if err != nil {
 		return
@@ -139,7 +139,7 @@ func (s *DebugInterfaceService) GetDebugDataFromDebugInterface(debugInterfaceId 
 
 	endpointInterface, _ := s.EndpointInterfaceRepo.Get(debugInterfacePo.EndpointInterfaceId)
 
-	s.SetProps(endpointInterface, &debugInterfacePo, &req)
+	s.SetProps(endpointInterface, &debugInterfacePo, &ret)
 
 	return
 }

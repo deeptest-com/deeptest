@@ -98,16 +98,19 @@ function onCloseDrawer() {
 const docsData = ref(null);
 
 async function changeTab(value) {
+  console.log('changeTab',value)
+
   key.value = value;
   // 切换到调试页面时，需要先保存
   if (value === 'run') {
-    await store.dispatch('Endpoint/updateEndpointDetail',
-        {...endpointDetail.value}
-    );
+    // Comment out since it cause a issue in ./Debug/method @chenqi
+    // await store.dispatch('Endpoint/updateEndpointDetail',
+    //     {...endpointDetail.value}
+    // );
     // 获取最新的接口详情,比如新增的 接口的id可能会变化，所以需要重新获取
-    await store.dispatch('Endpoint/getEndpointDetail', {id: endpointDetail.value.id});
-  }
-  if (value === 'docs') {
+    // await store.dispatch('Endpoint/getEndpointDetail', {id: endpointDetail.value.id});
+
+  } else if (value === 'docs') {
     const res = await store.dispatch('Endpoint/getDocs', {
       endpointIds: [endpointDetail.value.id],
     });

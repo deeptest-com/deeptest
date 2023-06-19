@@ -32,15 +32,7 @@ func (s *TestInterfaceService) Load(projectId, serveId int) (ret []*serverDomain
 
 func (s *TestInterfaceService) Get(id int) (ret model.TestInterface, err error) {
 	ret, err = s.TestInterfaceRepo.Get(uint(id))
-
-	//if ret.DebugInterfaceId > 0 {
-	//	debugInterface, err := s.DebugInterfaceService.GetDetail(ret.DebugInterfaceId)
-	//	if err == nil {
-	//		ret.DebugInterface = &debugInterface
-	//	}
-	//} else {
-	//	ret.DebugInterface, err = s.DebugInterfaceService.GenSample(ret.ProjectId, ret.ServeId)
-	//}
+	// its debug data will load in webpage
 
 	return
 }

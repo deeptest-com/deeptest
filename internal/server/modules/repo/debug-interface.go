@@ -4,7 +4,6 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
-	"github.com/kataras/iris/v12"
 	"gorm.io/gorm"
 )
 
@@ -23,18 +22,18 @@ func (r *DebugInterfaceRepo) Tested(id uint) (res bool, err error) {
 	return
 }
 
-func (r *DebugInterfaceRepo) GetInterfaceTree(projectId int) (root *model.DebugInterface, err error) {
-	pos, err := r.ListByProject(projectId)
-
-	if err != nil || len(pos) == 0 {
-		return
-	}
-
-	root = pos[0]
-	root.Slots = iris.Map{"icon": "icon"}
-	r.makeTree(pos[1:], root)
-	return
-}
+//func (r *DebugInterfaceRepo) GetInterfaceTree(projectId int) (root *model.DebugInterface, err error) {
+//	pos, err := r.ListByProject(projectId)
+//
+//	if err != nil || len(pos) == 0 {
+//		return
+//	}
+//
+//	root = pos[0]
+//	root.Slots = iris.Map{"icon": "icon"}
+//	r.makeTree(pos[1:], root)
+//	return
+//}
 
 func (r *DebugInterfaceRepo) UpdateOrder(pos serverConsts.DropPos, targetId uint) (parentId uint, ordr int) {
 	if pos == serverConsts.Inner {
@@ -375,31 +374,31 @@ func (r *DebugInterfaceRepo) RemoveApiKey(id uint) (err error) {
 	return
 }
 
-func (r *DebugInterfaceRepo) makeTree(Data []*model.DebugInterface, node *model.DebugInterface) { //参数为父节点，添加父节点的子节点指针切片
-	children, _ := r.haveChild(Data, node) //判断节点是否有子节点并返回
-	if children != nil {
-		node.Children = append(node.Children, children[0:]...) //添加子节点
-		for _, v := range children {                           //查询子节点的子节点，并添加到子节点
-			_, has := r.haveChild(Data, v)
-			if has {
-				r.makeTree(Data, v) //递归添加节点
-			}
-		}
-	}
-}
-
-func (r *DebugInterfaceRepo) haveChild(Data []*model.DebugInterface, node *model.DebugInterface) (children []*model.DebugInterface, yes bool) {
-	for _, v := range Data {
-		if v.ParentId == node.ID {
-			v.Slots = iris.Map{"icon": "icon"}
-			children = append(children, v)
-		}
-	}
-	if children != nil {
-		yes = true
-	}
-	return
-}
+//func (r *DebugInterfaceRepo) makeTree(Data []*model.DebugInterface, node *model.DebugInterface) { //参数为父节点，添加父节点的子节点指针切片
+//	children, _ := r.haveChild(Data, node) //判断节点是否有子节点并返回
+//	if children != nil {
+//		node.Children = append(node.Children, children[0:]...) //添加子节点
+//		for _, v := range children {                           //查询子节点的子节点，并添加到子节点
+//			_, has := r.haveChild(Data, v)
+//			if has {
+//				r.makeTree(Data, v) //递归添加节点
+//			}
+//		}
+//	}
+//}
+//
+//func (r *DebugInterfaceRepo) haveChild(Data []*model.DebugInterface, node *model.DebugInterface) (children []*model.DebugInterface, yes bool) {
+//	for _, v := range Data {
+//		if v.ParentId == node.ID {
+//			v.Slots = iris.Map{"icon": "icon"}
+//			children = append(children, v)
+//		}
+//	}
+//	if children != nil {
+//		yes = true
+//	}
+//	return
+//}
 
 func (r *DebugInterfaceRepo) Delete(id uint) (err error) {
 	err = r.DB.Model(&model.DebugInterface{}).

@@ -59,8 +59,8 @@ func (s *TestInterfaceService) Move(srcId, targetId uint, pos serverConsts.DropP
 	return
 }
 
-func (s *TestInterfaceService) SaveDebugData(req domain.DebugData) (debug model.TestInterface, err error) {
-	s.CopyDebugDataValueFromRequest(&debug, req)
+func (s *TestInterfaceService) SaveDebugData(req domain.DebugData) (testInterface model.TestInterface, err error) {
+	s.CopyDebugDataValueFromRequest(&testInterface, req)
 
 	//endpointInterface, _ := s.EndpointInterfaceRepo.Get(req.EndpointInterfaceId)
 	//debug.EndpointId = endpointInterface.EndpointId
@@ -70,7 +70,9 @@ func (s *TestInterfaceService) SaveDebugData(req domain.DebugData) (debug model.
 	//	debug.ID = scenarioInterfaceId
 	//}
 
-	err = s.TestInterfaceRepo.SaveDebugData(&debug)
+	testInterface.ID = req.TestInterfaceId
+
+	err = s.TestInterfaceRepo.SaveDebugData(&testInterface)
 
 	return
 }

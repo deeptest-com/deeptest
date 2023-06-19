@@ -81,6 +81,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
     };
     actions: {
         loadDataAndInvocations: Action<StateType, StateType>;
+        resetDataAndInvocations: Action<StateType, StateType>;
         loadData: Action<StateType, StateType>;
         call: Action<StateType, StateType>;
         save: Action<StateType, StateType>;
@@ -199,6 +200,11 @@ const StoreModel: ModuleType = {
             } catch (error) {
                 return false;
             }
+        },
+        async resetDataAndInvocations({commit, dispatch, state}) {
+            commit('setDebugData', {});
+            commit('setResponse', {});
+            commit('setInvocations', []);
         },
 
         async loadData({commit, dispatch}, data) {

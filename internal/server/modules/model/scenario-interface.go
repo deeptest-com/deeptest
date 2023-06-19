@@ -13,8 +13,7 @@ type ScenarioInterface struct {
 	ServerId            uint `json:"serverId"`
 
 	//ReqBodySpec InterfaceReqBodySpec `gorm:"-" json:"basicAuth"`
-
-	Children []*ScenarioInterface `gorm:"-" json:"children"`
+	//Children []*ScenarioInterface `gorm:"-" json:"children"`
 
 	QueryParams []ScenarioInterfaceParam  `gorm:"-" json:"queryParams"`
 	PathParams  []ScenarioInterfaceParam  `gorm:"-" json:"pathParams"`

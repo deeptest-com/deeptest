@@ -231,7 +231,7 @@ func (r *TestInterfaceRepo) Remove(id uint, typ serverConsts.TestInterfaceType) 
 
 func (r *TestInterfaceRepo) SaveDebugData(interf *model.TestInterface) (err error) {
 	r.DB.Transaction(func(tx *gorm.DB) error {
-		err = r.DB.Save(interf).Error
+		err = r.UpdateDebugInfo(interf)
 		if err != nil {
 			return err
 		}
@@ -278,6 +278,28 @@ func (r *TestInterfaceRepo) SaveDebugData(interf *model.TestInterface) (err erro
 
 		return err
 	})
+
+	return
+}
+
+func (r *TestInterfaceRepo) UpdateDebugInfo(interf *model.TestInterface) (err error) {
+	values := map[string]interface{}{
+		"server_id": interf.ServerId,
+		"url":       interf.Url,
+		"method":    interf.Method,
+		"body":      interf.Body,
+		"body_type": interf.BodyType,
+
+		"authorization_type": interf.AuthorizationType,
+		"pre_request_script": interf.PreRequestScript,
+		"validation_script":  interf.ValidationScript,
+		"version":            interf.Version,
+	}
+
+	err = r.DB.Model(&model.TestInterface{}).
+		Where("id=?", interf.ID).
+		Updates(values).
+		Error
 
 	return
 }

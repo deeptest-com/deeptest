@@ -3,6 +3,7 @@ package model
 type EndpointInterface struct {
 	BaseModel
 	InterfaceBase
+
 	Params         []EndpointInterfaceParam        `gorm:"-" json:"params"`
 	Headers        []EndpointInterfaceHeader       `gorm:"-" json:"headers"`
 	Cookies        []EndpointInterfaceCookie       `gorm:"-" json:"cookies"`

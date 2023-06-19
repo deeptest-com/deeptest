@@ -198,8 +198,8 @@ const StoreModel: ModuleType = {
         },
 
         async openInterfaceTab({commit, dispatch, state}, payload: any) {
-            const ok = await dispatch('getInterface', payload)
-            if (ok) {
+            await dispatch('getInterface', payload)
+            if (state.interfaceData) {
                 const tabs = state.interfaceTabs
 
                 const found = state.interfaceTabs.find(function (item, index, arr) {

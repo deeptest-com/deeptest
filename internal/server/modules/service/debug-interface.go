@@ -91,15 +91,11 @@ func (s *DebugInterfaceService) GetDebugInterfaceByTestInterface(testInterfaceId
 		return
 	}
 
-	if testInterface.DebugInterfaceId > 0 {
-		ret, err = s.GetDebugDataFromDebugInterface(testInterface.DebugInterfaceId)
-	} else {
-		ret.Method = consts.GET
-	}
+	copier.CopyWithOption(&ret, testInterface, copier.Option{
+		DeepCopy: true,
+	})
 
-	if testInterface.ServerId > 0 {
-		ret.ServerId = testInterface.ServeId
-	} else {
+	if ret.ServerId <= 0 {
 		server, _ := s.ServeServerRepo.GetDefaultByServe(testInterface.ServeId)
 		ret.ServerId = server.ID
 	}
@@ -131,7 +127,7 @@ func (s *DebugInterfaceService) Save(req domain.DebugData) (debug model.DebugInt
 	return
 }
 
-func (s *DebugInterfaceService) GetDebugDataFromDebugInterface(debugInterfaceId uint) (req domain.DebugData, err error) {
+func (s *DebugInterfaceService) GetDebugDataFromDebugInterface(debugInterfaceId uint) (ret domain.DebugData, err error) {
 	debugInterfacePo, err := s.DebugInterfaceRepo.GetDetail(debugInterfaceId)
 	if err != nil {
 		return
@@ -139,7 +135,7 @@ func (s *DebugInterfaceService) GetDebugDataFromDebugInterface(debugInterfaceId 
 
 	endpointInterface, _ := s.EndpointInterfaceRepo.Get(debugInterfacePo.EndpointInterfaceId)
 
-	s.SetProps(endpointInterface, &debugInterfacePo, &req)
+	s.SetProps(endpointInterface, &debugInterfacePo, &ret)
 
 	return
 }

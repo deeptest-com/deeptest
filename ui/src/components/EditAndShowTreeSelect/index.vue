@@ -1,5 +1,5 @@
 <template>
-  <div class="editor" v-if="isEditing"    v-on-click-outside="cancelEdit">
+  <div class="editor show-on-hover" v-if="isEditing"    v-on-click-outside="cancelEdit">
       <a-tree-select
           :value="fieldValue"
           :multiple="false"
@@ -14,7 +14,7 @@
           placeholder="请选择"
           allow-clear/>
   </div>
-  <div :class="['editor', customClass]" v-else>
+  <div :class="['editor', 'show-on-hover']" v-else>
     <span class="title" @click.stop="handleClick">{{ label }}</span> &nbsp;&nbsp;
     <span class="edit-icon"><EditOutlined @click.stop="isEditing = true"/></span>
   </div>

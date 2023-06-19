@@ -6,16 +6,20 @@
       :bodyStyle="{padding:'12px 24px 12px 24px'}"
       :title="null">
     <div style="margin-bottom: 8px;">
-      <ConBoxTitle :backgroundStyle="'background: #FBFBFB;'" :title="'基本信息'"/>
+      <ConBoxTitle
+          @expand="expandInfo"
+          :show-arrow="true"
+          :backgroundStyle="'background: #FBFBFB;'"
+          :title="'基本信息'"/>
     </div>
-
-    <a-descriptions :size="'small'" :title="null">
+    <a-descriptions :size="'small'" :title="null" v-show="exandInfo">
       <a-descriptions-item label="创建人">{{ endpointDetail?.createUser }}</a-descriptions-item>
       <a-descriptions-item label="状态">
-        <EditAndShowSelect :label="endpointStatus.get(endpointDetail?.status || 0 )"
-                           :value="endpointDetail?.status"
-                           :options="endpointStatusOpts"
-                           @update="handleChangeStatus"/>
+        <EditAndShowSelect
+            :label="endpointStatus.get(endpointDetail?.status || 0 )"
+            :value="endpointDetail?.status"
+            :options="endpointStatusOpts"
+            @update="handleChangeStatus"/>
       </a-descriptions-item>
       <a-descriptions-item label="描述">
         <EditAndShowField :placeholder="'请输入描述'" :value="endpointDetail?.description || '暂无'"
@@ -37,7 +41,9 @@
 
 import {
   defineProps,
-  defineEmits, computed,
+  ref,
+  defineEmits,
+  computed,
 } from 'vue';
 import {endpointStatusOpts, endpointStatus} from '@/config/constant';
 import {useStore} from "vuex";
@@ -56,12 +62,13 @@ const treeData: any = computed(() => {
   return treeDataCategory.value?.[0]?.children || [];
 });
 const categoryLabel = computed(() => {
-  if(!endpointDetail.value?.categoryId){
+  if (!endpointDetail.value?.categoryId) {
     return '未分类'
   }
   const data = treeDataCategory.value?.[0]?.children || [];
   let label = "";
   let hasFind = false;
+
   // 递归查找目录树的文案
   function fn(arr: any) {
     if (!Array.isArray(arr)) {
@@ -78,11 +85,12 @@ const categoryLabel = computed(() => {
       }
     }
   }
+
   fn(data);
   return label;
 });
 
-const emit = defineEmits(['changeStatus', 'changeDescription','changeCategory']);
+const emit = defineEmits(['changeStatus', 'changeDescription', 'changeCategory', 'expandInfo']);
 
 function handleChangeStatus(val) {
   emit('changeStatus', val);
@@ -94,6 +102,13 @@ function handleChangeCategory(val) {
 
 function updateDescription(val: string) {
   emit('changeDescription', val);
+}
+
+const exandInfo = ref(true);
+
+function expandInfo(value: boolean) {
+  exandInfo.value = value;
+  // emit('expandInfo');
 }
 </script>
 

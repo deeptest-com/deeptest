@@ -1,5 +1,5 @@
 <template>
-  <div class="editor" v-if="isEditing" v-on-click-outside="cancelEdit">
+  <div class="editor show-on-hover" v-if="isEditing" v-on-click-outside="cancelEdit">
     <a-input
              class="input"
              :placeholder="placeholder || '请输入内容'"
@@ -13,7 +13,7 @@
           :class="{disabled: !fieldValue}"/>&nbsp;
     </a-space>
   </div>
-  <div :class="['editor', customClass]" v-else>
+  <div :class="['editor','show-on-hover', customClass]" v-else>
     <span class="title" :title="fieldValue" @click.stop="handleClick">{{ fieldValue || '暂无' }}</span> &nbsp;&nbsp;
     <span class="edit-icon"><EditOutlined @click.stop="isEditing = true"/></span>
   </div>

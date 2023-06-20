@@ -33,8 +33,8 @@ type ExecLogProcessor struct {
 	InterfaceCheckpointsResult []ExecLogCheckpoint `gorm:"-" json:"interfaceCheckpointsResult,omitempty"`
 
 	// for processor
-	ProcessorType consts.ProcessorType `json:"processorType" yaml:"processorType"`
-	ProcessorId   uint                 `json:"processorId,omitempty"`
+	ProcessorType       consts.ProcessorType `json:"processorType" yaml:"processorType"`
+	ScenarioProcessorId uint                 `gorm:"default:0" json:"scenarioProcessorId,omitempty"`
 	//ProcessorContent string               `json:"processorContent,omitempty"`
 	//ProcessorResult  string               `json:"processorResult,omitempty"`
 

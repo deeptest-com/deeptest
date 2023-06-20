@@ -9,9 +9,9 @@ type DebugInterface struct {
 	BaseModel
 	InterfaceBase
 
-	EndpointInterfaceId uint `json:"endpointInterfaceId"`
-	ScenarioProcessorId uint `json:"scenarioProcessorId"`
-	TestInterfaceId     uint `json:"testInterfaceId"`
+	EndpointInterfaceId uint `gorm:"default:0" json:"endpointInterfaceId"`
+	ScenarioProcessorId uint `gorm:"default:0" json:"scenarioProcessorId"`
+	TestInterfaceId     uint `gorm:"default:0" json:"testInterfaceId"`
 
 	// used by TestInterface
 	ServerId uint   `json:"serverId"`
@@ -128,17 +128,17 @@ type DebugInterfaceExtractor struct {
 
 	Scope consts.ExtractorScope `json:"scope" gorm:"default:private"`
 
-	DebugInterfaceId uint `json:"debugInterfaceId"`
+	DebugInterfaceId uint `gorm:"default:0" json:"debugInterfaceId"`
 
 	// debug for Endpoint Interface
-	EndpointInterfaceId uint `json:"endpointInterfaceId"`
+	EndpointInterfaceId uint `gorm:"default:0" json:"endpointInterfaceId"`
 
 	// debug in Scenario Processor
-	ProcessorId uint `json:"processorId"`
-	ScenarioId  uint `json:"scenarioId"`
+	ScenarioProcessorId uint `gorm:"default:0" json:"scenarioProcessorId"`
+	ScenarioId          uint `gorm:"default:0" json:"scenarioId"`
 
 	// debug for Test Interface
-	TestInterfaceId uint `json:"testInterfaceId"`
+	TestInterfaceId uint `gorm:"default:0" json:"testInterfaceId"`
 
 	ProjectId uint `json:"projectId"`
 }
@@ -162,17 +162,17 @@ type DebugInterfaceCheckpoint struct {
 	ActualResult string              `json:"actualResult"`
 	ResultStatus consts.ResultStatus `json:"resultStatus"`
 
-	DebugInterfaceId uint `json:"debugInterfaceId"`
+	DebugInterfaceId uint `gorm:"default:0" json:"debugInterfaceId"`
 
 	// debug for Endpoint Interface
-	EndpointInterfaceId uint `json:"endpointInterfaceId"`
+	EndpointInterfaceId uint `gorm:"default:0" json:"endpointInterfaceId"`
 
 	// debug in Scenario Processor
-	ProcessorId uint `json:"processorId"`
-	ScenarioId  uint `json:"scenarioId"`
+	ScenarioProcessorId uint `gorm:"default:0" json:"scenarioProcessorId"`
+	ScenarioId          uint `gorm:"default:0" json:"scenarioId"`
 
 	// debug for Test Interface
-	TestInterfaceId uint `json:"testInterfaceId"`
+	TestInterfaceId uint `gorm:"default:0" json:"testInterfaceId"`
 }
 
 func (DebugInterfaceCheckpoint) TableName() string {

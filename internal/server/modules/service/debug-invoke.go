@@ -67,15 +67,15 @@ func (s *DebugInvokeService) SubmitResult(req domain.SubmitDebugResultRequest) (
 }
 
 func (s *DebugInvokeService) Create(debugData domain.DebugData, resp domain.DebugResponse,
-	serveId, processorId, scenarioId, projectId uint) (po model.DebugInvoke, err error) {
+	serveId, scenarioProcessorId, scenarioId, projectId uint) (po model.DebugInvoke, err error) {
 
 	debugInterface, _ := s.DebugInterfaceRepo.Get(debugData.DebugInterfaceId)
 
 	po = model.DebugInvoke{
 		ServeId: serveId,
 
-		ProcessorId: processorId,
-		ScenarioId:  scenarioId,
+		ScenarioProcessorId: scenarioProcessorId,
+		ScenarioId:          scenarioId,
 
 		InvocationBase: model.InvocationBase{
 			Name:                time.Now().Format("01-02 15:04:05"),

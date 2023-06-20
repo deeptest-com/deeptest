@@ -85,10 +85,10 @@ func (r *LogRepo) CreateInterfaceLog(result agentDomain.ScenarioExecResult, pare
 		ReqContent:  result.ReqContent,
 		RespContent: result.RespContent,
 
-		InterfaceId: result.InterfaceId,
-		ProcessorId: result.ProcessorId,
-		ParentId:    parentId,
-		ReportId:    reportId,
+		InterfaceId:         result.InterfaceId,
+		ScenarioProcessorId: result.ProcessorId,
+		ParentId:            parentId,
+		ReportId:            reportId,
 	}
 
 	err = r.Save(&po)
@@ -106,10 +106,10 @@ func (r *LogRepo) CreateCommonLog(result agentDomain.ScenarioExecResult, parentI
 
 		Summary: result.Summary,
 
-		ProcessorId: result.ProcessorId,
-		ParentId:    parentId,
-		ReportId:    reportId,
-		Detail:      result.Detail,
+		ScenarioProcessorId: result.ProcessorId,
+		ParentId:            parentId,
+		ReportId:            reportId,
+		Detail:              result.Detail,
 	}
 
 	err = r.Save(&po)

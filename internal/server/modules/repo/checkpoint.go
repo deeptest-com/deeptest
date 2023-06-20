@@ -20,7 +20,7 @@ func (r *CheckpointRepo) List(debugInterfaceId, endpointInterfaceId uint) (pos [
 	if debugInterfaceId > 0 {
 		db.Where("debug_interface_id=?", debugInterfaceId)
 	} else {
-		db.Where("endpoint_interface_id=?", endpointInterfaceId)
+		db.Where("endpoint_interface_id=? AND debug_interface_id=?", endpointInterfaceId, 0)
 	}
 
 	err = db.

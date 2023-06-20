@@ -20,13 +20,13 @@ func (s *ShareVarService) Save(name, value string, interfaceId, serveId, process
 	scope consts.ExtractorScope, usedBy consts.UsedBy) (err error) {
 
 	po := model.ShareVariable{
-		Name:        name,
-		Value:       value,
-		InterfaceId: interfaceId,
-		ServeId:     serveId,
-		ProcessorId: processorId,
-		ScenarioId:  scenarioId,
-		Scope:       scope,
+		Name:                name,
+		Value:               value,
+		InterfaceId:         interfaceId,
+		ServeId:             serveId,
+		ScenarioProcessorId: processorId,
+		ScenarioId:          scenarioId,
+		Scope:               scope,
 	}
 
 	if usedBy == consts.InterfaceDebug {

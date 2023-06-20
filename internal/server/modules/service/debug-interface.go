@@ -32,12 +32,14 @@ type DebugInterfaceService struct {
 func (s *DebugInterfaceService) Load(loadReq domain.DebugReq) (debugData domain.DebugData, err error) {
 	if loadReq.DebugInterfaceId > 0 {
 		debugData, _ = s.GetDebugDataFromDebugInterface(loadReq.DebugInterfaceId)
-	} else if loadReq.EndpointInterfaceId > 0 {
-		debugData, _ = s.GetDebugInterfaceByEndpointInterface(loadReq.EndpointInterfaceId)
-	} else if loadReq.ScenarioProcessorId > 0 {
-		debugData, _ = s.GetDebugInterfaceByScenarioInterface(loadReq.ScenarioProcessorId)
-	} else if loadReq.TestInterfaceId > 0 {
-		debugData, _ = s.GetDebugInterfaceByTestInterface(loadReq.TestInterfaceId)
+	} else {
+		if loadReq.ScenarioProcessorId > 0 {
+			debugData, _ = s.GetDebugInterfaceByScenarioInterface(loadReq.ScenarioProcessorId)
+		} else if loadReq.TestInterfaceId > 0 {
+			debugData, _ = s.GetDebugInterfaceByTestInterface(loadReq.TestInterfaceId)
+		} else if loadReq.EndpointInterfaceId > 0 {
+			debugData, _ = s.GetDebugInterfaceByEndpointInterface(loadReq.EndpointInterfaceId)
+		}
 	}
 
 	debugData.UsedBy = loadReq.UsedBy

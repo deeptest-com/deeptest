@@ -25,7 +25,7 @@ func (r *ExtractorRepo) List(debugInterfaceId, endpointInterfaceId uint) (pos []
 	if debugInterfaceId > 0 {
 		db.Where("debug_interface_id=?", debugInterfaceId)
 	} else {
-		db.Where("endpoint_interface_id=?", endpointInterfaceId)
+		db.Where("endpoint_interface_id=? AND debug_interface_id=?", endpointInterfaceId, 0)
 	}
 
 	err = db.Find(&pos).Error
@@ -186,7 +186,7 @@ func (r *ExtractorRepo) ListValidExtractorVariableForInterface(interfaceId, proj
 	//	r.GetParentIds(processorInterface.ProcessorId, &parentIds)
 	//
 	//	q.Where("scenario_id=?", processorInterface.ScenarioId).
-	//		Where("scope = ? OR processor_id IN(?)", consts.Public, parentIds)
+	//		Where("scope = ? OR scenario_processor_id IN(?)", consts.Public, parentIds)
 	//}
 
 	err = q.Order("created_at ASC").

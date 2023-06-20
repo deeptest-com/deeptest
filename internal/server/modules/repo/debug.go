@@ -16,7 +16,7 @@ func (r *DebugRepo) List(debugInterfaceId, endpointInterfaceId uint) (pos []mode
 		db.Where("debug_interface_id=?", debugInterfaceId)
 
 	} else if endpointInterfaceId > 0 {
-		db.Where("endpoint_interface_id=?", endpointInterfaceId)
+		db.Where("endpoint_interface_id=? AND debug_interface_id=?", endpointInterfaceId, 0)
 
 	}
 
@@ -32,7 +32,7 @@ func (r *DebugRepo) GetLast(debugInterfaceId, endpointInterfaceId uint) (debug m
 	if debugInterfaceId > 0 { // debugInterfaceId first
 		db = db.Where("debug_interface_id=?", debugInterfaceId)
 	} else if endpointInterfaceId > 0 {
-		db = db.Where("endpoint_interface_id=?", endpointInterfaceId)
+		db = db.Where("endpoint_interface_id=? AND debug_interface_id=?", endpointInterfaceId, 0)
 	}
 
 	err = db.Where("NOT deleted").

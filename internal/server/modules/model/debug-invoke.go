@@ -8,8 +8,8 @@ type DebugInvoke struct {
 
 	ServeId uint `json:"serveId"`
 
-	ProcessorId uint `json:"processorId"`
-	ScenarioId  uint `json:"scenarioId"`
+	ScenarioProcessorId uint `gorm:"default:0" json:"scenarioProcessorId"`
+	ScenarioId          uint `gorm:"default:0" json:"scenarioId"`
 }
 
 func (DebugInvoke) TableName() string {
@@ -29,8 +29,8 @@ type InvocationBase struct {
 	ResultStatus     consts.ResultStatus `json:"resultStatus" gorm:"default:pass"`
 	CheckpointStatus consts.ResultStatus `json:"checkpointStatus"`
 
-	EndpointInterfaceId uint `json:"endpointInterfaceId,omitempty"`
-	DebugInterfaceId    uint `json:"debugInterfaceId,omitempty"`
+	EndpointInterfaceId uint `gorm:"default:0" json:"endpointInterfaceId,omitempty"`
+	DebugInterfaceId    uint `gorm:"default:0" json:"debugInterfaceId,omitempty"`
 
 	ProjectId uint `json:"projectId,omitempty"`
 }

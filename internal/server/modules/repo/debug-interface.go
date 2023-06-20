@@ -567,25 +567,25 @@ func (r *DebugInterfaceRepo) UpdateInterface(interf *model.DebugInterface) (err 
 //
 //	return
 //}
-
-func (r *DebugInterfaceRepo) GetByOwner(ownerId uint, usedBy consts.UsedBy) (ret model.DebugInterface, err error) {
-	db := r.DB.Where("NOT deleted")
-
-	if usedBy == consts.InterfaceDebug {
-		db.Where("endpoint_interface_id=?", ownerId)
-
-	} else if usedBy == consts.ScenarioDebug {
-		db.Where("scenario_interface_id=?", ownerId)
-
-	} else if usedBy == consts.TestDebug {
-		db.Where("test_interface_id=?", ownerId)
-
-	}
-
-	err = db.Find(&ret).Error
-
-	return
-}
+//
+//func (r *DebugInterfaceRepo) GetByOwner(ownerId uint, usedBy consts.UsedBy) (ret model.DebugInterface, err error) {
+//	db := r.DB.Where("NOT deleted")
+//
+//	if usedBy == consts.InterfaceDebug {
+//		db.Where("endpoint_interface_id=?", ownerId)
+//
+//	} else if usedBy == consts.ScenarioDebug {
+//		db.Where("scenario_interface_id=?", ownerId)
+//
+//	} else if usedBy == consts.TestDebug {
+//		db.Where("test_interface_id=?", ownerId)
+//
+//	}
+//
+//	err = db.Find(&ret).Error
+//
+//	return
+//}
 
 func (r *DebugInterfaceRepo) PopulateProps(po *model.DebugInterface) (err error) {
 	po.QueryParams, po.PathParams, _ = r.ListParams(po.ID)

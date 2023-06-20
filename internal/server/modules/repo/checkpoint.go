@@ -12,17 +12,25 @@ type CheckpointRepo struct {
 	DB *gorm.DB `inject:""`
 }
 
-func (r *CheckpointRepo) List(interfaceId uint) (pos []model.DebugInterfaceCheckpoint, err error) {
-	err = r.DB.
-		Where("endpoint_interface_id=?", interfaceId).
+func (r *CheckpointRepo) List(debugInterfaceId, endpointInterfaceId uint) (pos []model.DebugInterfaceCheckpoint, err error) {
+	db := r.DB.
 		Where("NOT deleted").
-		Order("created_at ASC").
+		Order("created_at ASC")
+
+	if debugInterfaceId > 0 {
+		db.Where("debug_interface_id=?", debugInterfaceId)
+	} else {
+		db.Where("endpoint_interface_id=?", endpointInterfaceId)
+	}
+
+	err = db.
 		Find(&pos).Error
+
 	return
 }
 
-func (r *CheckpointRepo) ListTo(interfaceId uint) (ret []agentDomain.Checkpoint, err error) {
-	pos, err := r.List(interfaceId)
+func (r *CheckpointRepo) ListTo(debugInterfaceId, endpointInterfaceId uint) (ret []agentDomain.Checkpoint, err error) {
+	pos, err := r.List(debugInterfaceId, endpointInterfaceId)
 
 	for _, po := range pos {
 		checkpoint := agentDomain.Checkpoint{}

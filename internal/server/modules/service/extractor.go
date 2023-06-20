@@ -15,8 +15,8 @@ type ExtractorService struct {
 	ShareVarService *ShareVarService `inject:""`
 }
 
-func (s *ExtractorService) List(endpointInterfaceId uint) (extractors []model.DebugInterfaceExtractor, err error) {
-	extractors, err = s.ExtractorRepo.List(endpointInterfaceId)
+func (s *ExtractorService) List(debugInterfaceId, endpointInterfaceId uint) (extractors []model.DebugInterfaceExtractor, err error) {
+	extractors, err = s.ExtractorRepo.List(debugInterfaceId, endpointInterfaceId)
 
 	return
 }
@@ -51,8 +51,8 @@ func (s *ExtractorService) Delete(reqId uint) (err error) {
 	return
 }
 
-func (s *ExtractorService) ExtractInterface(endpointInterfaceId, serveId, processorId, scenarioId uint, resp domain.DebugResponse, usedBy consts.UsedBy) (err error) {
-	extractors, _ := s.ExtractorRepo.List(endpointInterfaceId)
+func (s *ExtractorService) ExtractInterface(debugInterfaceId, endpointInterfaceId, serveId, processorId, scenarioId uint, resp domain.DebugResponse, usedBy consts.UsedBy) (err error) {
+	extractors, _ := s.ExtractorRepo.List(debugInterfaceId, endpointInterfaceId)
 
 	for _, extractor := range extractors {
 		s.Extract(&extractor, resp, usedBy)

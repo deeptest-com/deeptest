@@ -9,13 +9,12 @@ import (
 )
 
 type ScenarioProcessorService struct {
-	ScenarioProcessorRepo *repo.ScenarioProcessorRepo  `inject:""`
-	ScenarioInterfaceRepo *repo.ProcessorInterfaceRepo `inject:""`
-	EndpointInterfaceRepo *repo.EndpointInterfaceRepo  `inject:""`
-	ExtractorRepo         *repo.ExtractorRepo          `inject:""`
-	CheckpointRepo        *repo.CheckpointRepo         `inject:""`
-	DebugInterfaceRepo    *repo.DebugInterfaceRepo     `inject:""`
-	ServeServerRepo       *repo.ServeServerRepo        `inject:""`
+	ScenarioProcessorRepo *repo.ScenarioProcessorRepo `inject:""`
+	EndpointInterfaceRepo *repo.EndpointInterfaceRepo `inject:""`
+	ExtractorRepo         *repo.ExtractorRepo         `inject:""`
+	CheckpointRepo        *repo.CheckpointRepo        `inject:""`
+	DebugInterfaceRepo    *repo.DebugInterfaceRepo    `inject:""`
+	ServeServerRepo       *repo.ServeServerRepo       `inject:""`
 
 	ExtractorService         *ExtractorService         `inject:""`
 	CheckpointService        *CheckpointService        `inject:""`
@@ -88,7 +87,7 @@ func (s *ScenarioProcessorService) GetEntityTo(processorTo *agentExec.Processor)
 
 	switch processor.EntityCategory {
 	case consts.ProcessorInterface:
-		debugData, _ := s.ScenarioInterfaceService.GetScenarioInterface(processor.EndpointInterfaceId)
+		debugData, _ := s.DebugInterfaceService.GetDetail(processor.EntityId)
 
 		interfaceEntity := agentExec.ProcessorInterface{}
 		copier.CopyWithOption(&interfaceEntity, debugData, copier.Option{DeepCopy: true})
@@ -101,8 +100,8 @@ func (s *ScenarioProcessorService) GetEntityTo(processorTo *agentExec.Processor)
 		interfaceEntity.ProcessorCategory = consts.ProcessorInterface
 		interfaceEntity.ProcessorType = consts.ProcessorInterfaceDefault
 
-		interfaceEntity.Extractors, _ = s.ExtractorRepo.ListTo(interfaceEntity.ID)
-		interfaceEntity.Checkpoints, _ = s.CheckpointRepo.ListTo(interfaceEntity.ID)
+		interfaceEntity.Extractors, _ = s.ExtractorRepo.ListTo(processor.EntityId, interfaceEntity.ID)
+		interfaceEntity.Checkpoints, _ = s.CheckpointRepo.ListTo(processor.EntityId, interfaceEntity.ID)
 
 		ret = &interfaceEntity
 

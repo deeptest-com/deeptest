@@ -594,7 +594,6 @@ func (r *ProjectRepo) IfProjectMember(userId, projectId uint) (res bool, err err
 }
 
 func (r *ProjectRepo) CreateSample(projectId, serveId, userId uint) (err error) {
-
 	//获取接口配置
 	var endpoints []model.Endpoint
 	endpointJson := _fileUtils.ReadFile("./config/sample/endpoint.json")
@@ -680,14 +679,14 @@ func (r *ProjectRepo) GetProjectIdsByUserIdAndRole(userId uint, roleName consts.
 
 func (r *ProjectRepo) createProcessorTree(root *agentExec.Processor, interfaceIds map[string]uint, processorEntity map[string]interface{}, projectId, scenarioId, parentId, userId uint) error {
 	processor := model.Processor{
-		Name:                root.Name,
-		EntityCategory:      root.EntityCategory,
-		EntityType:          root.EntityType,
-		EndpointInterfaceId: interfaceIds[root.Name],
-		ParentId:            parentId,
-		ScenarioId:          scenarioId,
-		ProjectId:           projectId,
-		CreatedBy:           userId,
+		Name:           root.Name,
+		EntityCategory: root.EntityCategory,
+		EntityType:     root.EntityType,
+		//EndpointInterfaceId: interfaceIds[root.Name],
+		ParentId:   parentId,
+		ScenarioId: scenarioId,
+		ProjectId:  projectId,
+		CreatedBy:  userId,
 	}
 	processor.Ordr = r.ScenarioNodeRepo.GetMaxOrder(processor.ParentId)
 	err := r.ScenarioNodeRepo.Save(&processor)
@@ -699,6 +698,7 @@ func (r *ProjectRepo) createProcessorTree(root *agentExec.Processor, interfaceId
 	if item, ok := processorEntity[root.Name]; ok {
 		if processorCategory == consts.ProcessorGroup {
 			var entity model.ProcessorGroup
+
 			//将 map 转换为指定的结构体
 			_commUtils.Map2Struct(item, &entity)
 			entity.ProcessorID = processor.ID

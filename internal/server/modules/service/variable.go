@@ -7,8 +7,7 @@ import (
 )
 
 type VariableService struct {
-	DebugInterfaceRepo     *repo.DebugInterfaceRepo     `inject:""`
-	ProcessorInterfaceRepo *repo.ProcessorInterfaceRepo `inject:""`
+	DebugInterfaceRepo *repo.DebugInterfaceRepo `inject:""`
 
 	EndpointInterfaceRepo *repo.EndpointInterfaceRepo `inject:""`
 	EndpointRepo          *repo.EndpointRepo          `inject:""`
@@ -21,10 +20,10 @@ type VariableService struct {
 	DatapoolService    *DatapoolService    `inject:""`
 }
 
-func (s *VariableService) GetCombinedVarsForCheckpoint(endpointInterfaceId, scenarioProcessorId uint) (
+func (s *VariableService) GetCombinedVarsForCheckpoint(debugInterfaceId, endpointInterfaceId, scenarioProcessorId uint) (
 	ret map[string]interface{}, datapools domain.Datapools, err error) {
 
-	debugEnv, _ := s.EnvironmentService.GetDebugEnvByEndpointInterface(endpointInterfaceId)
+	debugEnv, _ := s.EnvironmentService.GetDebugEnvByEndpointInterface(debugInterfaceId, endpointInterfaceId)
 
 	interf, _ := s.EndpointInterfaceRepo.Get(endpointInterfaceId)
 	endpoint, _ := s.EndpointRepo.Get(interf.EndpointId)

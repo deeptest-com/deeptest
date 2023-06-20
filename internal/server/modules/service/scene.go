@@ -33,7 +33,7 @@ func (s *SceneService) LoadEnvVarMapByScenario(scene *domain.ExecScene, scenario
 			continue
 		}
 
-		var server = s.GetExecServer(processor.EndpointInterfaceId, environmentId)
+		var server = s.GetExecServer(processor.EntityId, processor.EndpointInterfaceId, environmentId)
 		envId := server.EnvironmentId
 
 		scene.InterfaceToEnvMap[processor.EndpointInterfaceId] = envId
@@ -57,7 +57,7 @@ func (s *SceneService) LoadEnvVarMapByScenario(scene *domain.ExecScene, scenario
 	return
 }
 
-func (s *SceneService) GetExecServer(endpointInterfaceId, environmentId uint) (server model.ServeServer) {
+func (s *SceneService) GetExecServer(debugInterfaceId, endpointInterfaceId, environmentId uint) (server model.ServeServer) {
 	interf, _ := s.EndpointInterfaceRepo.Get(endpointInterfaceId)
 
 	if environmentId > 0 { // select a env to exec
@@ -65,8 +65,6 @@ func (s *SceneService) GetExecServer(endpointInterfaceId, environmentId uint) (s
 		server, _ = s.ServeServerRepo.FindByServeAndExecEnv(endpoint.ServeId, environmentId)
 
 	} else {
-		debugInterfaceId, _ := s.DebugInterfaceRepo.HasDebugInterfaceRecord(endpointInterfaceId)
-
 		var serverId uint
 		if debugInterfaceId > 0 { // from debug interface
 			debugInterface, _ := s.DebugInterfaceRepo.Get(debugInterfaceId)

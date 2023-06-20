@@ -13,11 +13,10 @@ import (
 )
 
 type EndpointRepo struct {
-	*BaseRepo              `inject:""`
-	EndpointInterfaceRepo  *EndpointInterfaceRepo  `inject:""`
-	ServeRepo              *ServeRepo              `inject:""`
-	ProcessorInterfaceRepo *ProcessorInterfaceRepo `inject:""`
-	ProjectRepo            *ProjectRepo            `inject:""`
+	*BaseRepo             `inject:""`
+	EndpointInterfaceRepo *EndpointInterfaceRepo `inject:""`
+	ServeRepo             *ServeRepo             `inject:""`
+	ProjectRepo           *ProjectRepo           `inject:""`
 }
 
 func NewEndpointRepo() *EndpointRepo {
@@ -334,5 +333,15 @@ func (r *EndpointRepo) GetByServeIds(serveIds []uint) (endpoints []*model.Endpoi
 
 func (r *EndpointRepo) GetByEndpointIds(endpointIds []uint) (endpoints []*model.Endpoint, err error) {
 	err = r.DB.Where("id in ? and not deleted and not disabled", endpointIds).Find(&endpoints).Error
+	return
+}
+
+func (r *EndpointRepo) GetUsedCountByEndpointId(endpointId uint) (count int64, err error) {
+	endpointInterfaceIds, _ := r.EndpointInterfaceRepo.ListIdByEndpoint(endpointId)
+
+	err = r.DB.Model(&model.Processor{}).
+		Where("NOT deleted and endpoint_interface_id IN (?)", endpointInterfaceIds).
+		Count(&count).Error
+
 	return
 }

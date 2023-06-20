@@ -71,6 +71,36 @@ func (c *TestInterfaceCtrl) Save(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data})
 }
 
+// SaveDebugData
+func (c *TestInterfaceCtrl) SaveDebugData(ctx iris.Context) {
+	req := domain.DebugData{}
+	err := ctx.ReadJSON(&req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+		return
+	}
+
+	_, err = c.TestInterfaceService.SaveDebugData(req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	loadReq := domain.DebugReq{
+		TestInterfaceId:  req.TestInterfaceId,
+		DebugInterfaceId: req.DebugInterfaceId,
+		UsedBy:           consts.TestDebug,
+	}
+
+	data, err := c.DebugInterfaceService.Load(loadReq)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data})
+}
+
 // Update
 func (c *TestInterfaceCtrl) Update(ctx iris.Context) {
 	req := serverDomain.TestInterfaceSaveReq{}
@@ -126,33 +156,4 @@ func (c *TestInterfaceCtrl) Move(ctx iris.Context) {
 	}
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
-}
-
-// SaveDebugData
-func (c *TestInterfaceCtrl) SaveDebugData(ctx iris.Context) {
-	req := domain.DebugData{}
-	err := ctx.ReadJSON(&req)
-	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
-		return
-	}
-
-	_, err = c.TestInterfaceService.SaveDebugData(req)
-	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
-		return
-	}
-
-	loadReq := domain.DebugReq{
-		TestInterfaceId: req.TestInterfaceId,
-		UsedBy:          consts.TestDebug,
-	}
-
-	data, err := c.DebugInterfaceService.Load(loadReq)
-	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
-		return
-	}
-
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data})
 }

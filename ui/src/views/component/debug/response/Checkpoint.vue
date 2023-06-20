@@ -148,6 +148,7 @@ import {Checkpoint} from "@/views/component/debug/data";
 import {getEnumSelectItems} from "@/utils/comm";
 const store = useStore<{  Debug: Debug }>();
 
+const debugInfo = computed<any>(() => store.state.Debug.debugInfo);
 const debugData = computed<any>(() => store.state.Debug.debugData);
 const checkpointsData = computed(() => store.state.Debug.checkpointsData);
 
@@ -225,7 +226,9 @@ const edit = (item) => {
 const save = () => {
   console.log('save')
   validate().then(() => {
-    model.value.endpointInterfaceId = debugData.value.endpointInterfaceId
+    model.value.debugInterfaceId = debugInfo.value.debugInterfaceId
+    model.value.endpointInterfaceId = debugInfo.value.endpointInterfaceId
+    model.value.projectId = debugData.value.projectId
 
     store.dispatch('Debug/saveCheckpoint', model.value).then((result) => {
       if (result) {

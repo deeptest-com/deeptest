@@ -298,9 +298,7 @@ func (s *EnvironmentService) GetGlobalParams(projectId uint) (ret []domain.Globa
 	return
 }
 
-func (s *EnvironmentService) GetDebugEnvByEndpointInterface(endpointInterfaceId uint) (ret model.Environment, err error) {
-	debugInterfaceId, _ := s.DebugInterfaceRepo.HasDebugInterfaceRecord(endpointInterfaceId)
-
+func (s *EnvironmentService) GetDebugEnvByEndpointInterface(debugInterfaceId, endpointInterfaceId uint) (ret model.Environment, err error) {
 	var serveId uint
 
 	if debugInterfaceId > 0 {

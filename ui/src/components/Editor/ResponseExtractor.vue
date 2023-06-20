@@ -45,9 +45,8 @@
 
         <a-form-item label="变量作用域">
           <a-radio-group v-model:value="modelRef.scope">
-            <!--              <a-radio value="private">私有</a-radio>-->
-            <a-radio :value="VarScope.ScopePrivate">局部</a-radio>
-            <a-radio :value="VarScope.ScopePublic">全局</a-radio>
+            <a-radio value="public">公有</a-radio>
+            <a-radio value="private">私有</a-radio>
           </a-radio-group>
           <div class="dp-input-tip">
             局部变量在整个接口设计器及其诞生的场景目录下有效。
@@ -122,7 +121,7 @@ const modelRef = ref<any>({
   expression: props.expr,
   expressionType: props.exprType,
   variable: '',
-  scope: VarScope.ScopePrivate,
+  scope: VarScope.ScopePublic,
   code: '',
 })
 

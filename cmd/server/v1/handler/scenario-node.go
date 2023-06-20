@@ -34,7 +34,7 @@ func (c *ScenarioNodeCtrl) LoadTree(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data})
 }
 
-// AddInterfaces 添加
+// AddInterfaces 添加接口
 func (c *ScenarioNodeCtrl) AddInterfaces(ctx iris.Context) {
 	req := serverDomain.ScenarioAddInterfacesReq{}
 	err := ctx.ReadJSON(&req)

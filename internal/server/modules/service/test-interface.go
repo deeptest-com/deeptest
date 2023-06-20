@@ -2,6 +2,7 @@ package service
 
 import (
 	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
@@ -16,6 +17,7 @@ type TestInterfaceService struct {
 	ServeRepo             *repo.ServeRepo             `inject:""`
 	ScenarioProcessorRepo *repo.ScenarioProcessorRepo `inject:""`
 	ServeServerRepo       *repo.ServeServerRepo       `inject:""`
+	DebugInterfaceRepo    *repo.DebugInterfaceRepo    `inject:""`
 
 	DebugInterfaceService *DebugInterfaceService `inject:""`
 }
@@ -37,9 +39,27 @@ func (s *TestInterfaceService) Get(id int) (ret model.TestInterface, err error) 
 	return
 }
 
-func (s *TestInterfaceService) Save(req serverDomain.TestInterfaceSaveReq) (debug model.TestInterface, err error) {
-	s.CopyValueFromRequest(&debug, req)
-	err = s.TestInterfaceRepo.Save(&debug)
+func (s *TestInterfaceService) Save(req serverDomain.TestInterfaceSaveReq) (testInterface model.TestInterface, err error) {
+	s.CopyValueFromRequest(&testInterface, req)
+
+	// create new DebugInterface
+	debugInterface := model.DebugInterface{
+		InterfaceBase: model.InterfaceBase{
+			Name: req.Title,
+			InterfaceConfigBase: model.InterfaceConfigBase{
+				Method: consts.GET,
+			},
+		},
+	}
+	err = s.DebugInterfaceRepo.Save(&debugInterface)
+	testInterface.DebugInterfaceId = debugInterface.ID
+
+	err = s.TestInterfaceRepo.Save(&testInterface)
+
+	values := map[string]interface{}{
+		"test_interface_id": testInterface.ID,
+	}
+	err = s.DebugInterfaceRepo.UpdateDebugInfo(debugInterface.ID, values)
 
 	return
 }
@@ -59,20 +79,8 @@ func (s *TestInterfaceService) Move(srcId, targetId uint, pos serverConsts.DropP
 	return
 }
 
-func (s *TestInterfaceService) SaveDebugData(req domain.DebugData) (testInterface model.TestInterface, err error) {
-	s.CopyDebugDataValueFromRequest(&testInterface, req)
-
-	//endpointInterface, _ := s.EndpointInterfaceRepo.Get(req.EndpointInterfaceId)
-	//debug.EndpointId = endpointInterface.EndpointId
-	//
-	//scenarioInterfaceId, _ := s.TestInterfaceRepo.HasScenarioInterfaceRecord(debug.EndpointInterfaceId)
-	//if scenarioInterfaceId > 0 {
-	//	debug.ID = scenarioInterfaceId
-	//}
-
-	testInterface.ID = req.TestInterfaceId
-
-	err = s.TestInterfaceRepo.SaveDebugData(&testInterface)
+func (s *TestInterfaceService) SaveDebugData(req domain.DebugData) (debugInterface model.DebugInterface, err error) {
+	s.DebugInterfaceService.Save(req)
 
 	return
 }

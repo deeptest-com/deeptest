@@ -207,9 +207,11 @@ const StoreModel: ModuleType = {
                 })
 
                 if (!found) {
-                    tabs.push({id: state.interfaceData.id,
+                    tabs.push({
+                        id: state.interfaceData.id,
                         title: state.interfaceData.title,
-                        type: state.interfaceData.type})
+                        type: state.interfaceData.type
+                    })
                     commit('setInterfaceTabs', tabs);
                 }
 

@@ -9,13 +9,15 @@ type DebugRepo struct {
 	DB *gorm.DB `inject:""`
 }
 
-func (r *DebugRepo) List(endpointInterfaceId, debugInterfaceId uint) (pos []model.DebugInvoke, err error) {
+func (r *DebugRepo) List(debugInterfaceId, endpointInterfaceId uint) (pos []model.DebugInvoke, err error) {
 	db := r.DB.Select("id", "name")
 
 	if debugInterfaceId > 0 { // debugInterfaceId first
 		db.Where("debug_interface_id=?", debugInterfaceId)
+
 	} else if endpointInterfaceId > 0 {
 		db.Where("endpoint_interface_id=?", endpointInterfaceId)
+
 	}
 
 	err = db.Where("NOT deleted").
@@ -24,7 +26,7 @@ func (r *DebugRepo) List(endpointInterfaceId, debugInterfaceId uint) (pos []mode
 	return
 }
 
-func (r *DebugRepo) GetLast(endpointInterfaceId, debugInterfaceId uint) (debug model.DebugInvoke, err error) {
+func (r *DebugRepo) GetLast(debugInterfaceId, endpointInterfaceId uint) (debug model.DebugInvoke, err error) {
 	db := r.DB
 
 	if debugInterfaceId > 0 { // debugInterfaceId first

@@ -68,6 +68,7 @@ import {Param} from "@/views/component/debug/data";
 import {StateType as Debug} from "@/views/component/debug/store";
 const store = useStore<{  Debug: Debug }>();
 
+const debugInfo = computed<any>(() => store.state.Debug.debugInfo);
 const debugData = computed<any>(() => store.state.Debug.debugData);
 const responseData = computed<any>(() => store.state.Debug.responseData);
 
@@ -117,9 +118,11 @@ const responseExtractorFinish = (data) => {
   data.src = ExtractorSrc.body
   data.result = result.value
 
-  data.endpointInterfaceId = debugData.value.endpointInterfaceId
+  data.debugInterfaceId = debugInfo.value.debugInterfaceId
+  data.endpointInterfaceId = debugInfo.value.endpointInterfaceId
   data.projectId = debugData.value.projectId
   data.usedBy = usedBy
+
   store.dispatch('Debug/createExtractorOrUpdateResult', data).then((result) => {
     if (result) {
       responseExtractorVisible.value = false

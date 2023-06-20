@@ -38,7 +38,7 @@ func (s *ScenarioInterfaceService) GetDebugDataFromScenarioInterface(scenarioInt
 }
 
 func (s *ScenarioInterfaceService) SetProps(
-	endpointInterface model.EndpointInterface, scenarioInterfacePo *model.ScenarioInterface, debugData *domain.DebugData) {
+	endpointInterface model.EndpointInterface, scenarioInterfacePo *model.DebugInterface, debugData *domain.DebugData) {
 
 	endpoint, err := s.EndpointRepo.GetAll(endpointInterface.EndpointId, "v0.1.0")
 	serve, err := s.ServeRepo.Get(endpoint.ServeId)
@@ -70,31 +70,30 @@ func (s *ScenarioInterfaceService) SetProps(
 	return
 }
 
-func (s *ScenarioInterfaceService) GetScenarioInterface(endpointInterfaceId uint) (ret domain.DebugData, err error) {
-	scenarioInterfaceId, _ := s.ScenarioInterfaceRepo.HasScenarioInterfaceRecord(endpointInterfaceId)
+//func (s *ScenarioInterfaceService) GetScenarioInterface(endpointInterfaceId uint) (ret domain.DebugData, err error) {
+//	scenarioInterfaceId, _ := s.ScenarioInterfaceRepo.HasScenarioInterfaceRecord(endpointInterfaceId)
+//
+//	if scenarioInterfaceId > 0 {
+//		ret, err = s.GetDebugDataFromScenarioInterface(scenarioInterfaceId)
+//	} else {
+//		ret, err = s.DebugInterfaceService.GetDebugInterfaceByEndpointInterface(endpointInterfaceId)
+//		if err != nil || ret.EndpointInterfaceId == 0 {
+//			return domain.DebugData{}, err
+//		}
+//		_, err = s.SaveDebugData(ret)
+//	}
+//
+//	return
+//}
 
-	if scenarioInterfaceId > 0 {
-		ret, err = s.GetDebugDataFromScenarioInterface(scenarioInterfaceId)
-	} else {
-		ret, err = s.DebugInterfaceService.GetDebugInterfaceByEndpointInterface(endpointInterfaceId)
-		if err != nil || ret.EndpointInterfaceId == 0 {
-			return domain.DebugData{}, err
-		}
-		_, err = s.SaveDebugData(ret)
-	}
-
-	return
-}
-
-func (s *ScenarioInterfaceService) SaveDebugData(req domain.DebugData) (debug model.ScenarioInterface, err error) {
+func (s *ScenarioInterfaceService) SaveDebugData(req domain.DebugData) (debug model.DebugInterface, err error) {
 	s.CopyValueFromRequest(&debug, req)
 
 	endpointInterface, _ := s.EndpointInterfaceRepo.Get(req.EndpointInterfaceId)
 	debug.EndpointId = endpointInterface.EndpointId
 
-	scenarioInterfaceId, _ := s.ScenarioInterfaceRepo.HasScenarioInterfaceRecord(debug.EndpointInterfaceId)
-	if scenarioInterfaceId > 0 {
-		debug.ID = scenarioInterfaceId
+	if req.DebugInterfaceId > 0 {
+		debug.ID = req.DebugInterfaceId
 	}
 
 	err = s.ScenarioInterfaceRepo.SaveDebugData(&debug)
@@ -102,7 +101,7 @@ func (s *ScenarioInterfaceService) SaveDebugData(req domain.DebugData) (debug mo
 	return
 }
 
-func (s *ScenarioInterfaceService) CopyValueFromRequest(interf *model.ScenarioInterface, req domain.DebugData) (err error) {
+func (s *ScenarioInterfaceService) CopyValueFromRequest(interf *model.DebugInterface, req domain.DebugData) (err error) {
 	copier.CopyWithOption(interf, req, copier.Option{DeepCopy: true})
 
 	return

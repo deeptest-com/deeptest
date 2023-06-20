@@ -58,7 +58,7 @@ export async function listInvocation(params: DebugInfo): Promise<any> {
 export async function getInvocationAsInterface(id: number): Promise<any> {
     return request({url: `/${apiPathInvoke}/${id}`});
 }
-export async function getLastInvocationResp(params: any): Promise<any> {
+export async function getLastInvocationResp(params: DebugInfo): Promise<any> {
     return request({
         url: `/${apiPathInvoke}/getLastResp`,
         params
@@ -175,8 +175,8 @@ export function getCodeLangByType(type) {
 }
 
 // extractor
-export async function listExtractor(endpointInterfaceId: number): Promise<any> {
-    const params = {interfaceId: endpointInterfaceId}
+export async function listExtractor(debugInterfaceId, endpointInterfaceId: number): Promise<any> {
+    const params = {debugInterfaceId, endpointInterfaceId}
 
     return request({
         url: `/${apiExtractor}`,
@@ -221,8 +221,8 @@ export async function listExtractorVariable(interfaceId: number): Promise<any> {
 }
 
 // checkpoint
-export async function listCheckpoint(endpointInterfaceId: number): Promise<any> {
-    const params = {interfaceId: endpointInterfaceId}
+export async function listCheckpoint(debugInterfaceId, endpointInterfaceId: number): Promise<any> {
+    const params = {debugInterfaceId, endpointInterfaceId}
 
     return request({
         url: `/${apiCheckpoint}`,

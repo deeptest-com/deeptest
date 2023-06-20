@@ -167,19 +167,19 @@ import {StateType as Debug} from "@/views/component/debug/store";
 import {getEnumSelectItems} from "@/utils/comm";
 const store = useStore<{  Debug: Debug }>();
 
+const debugInfo = computed<any>(() => store.state.Debug.debugInfo);
 const debugData = computed<any>(() => store.state.Debug.debugData);
 const responseData = computed<any>(() => store.state.Debug.responseData);
 const extractorsData = computed(() => store.state.Debug.extractorsData);
 
-watch(debugData, () => {
-  console.log('watch debugData', debugData.value.id, usedBy)
-  listExtractor()
-}, {deep: true})
-
 const listExtractor = () => {
   store.dispatch('Debug/listExtractor')
 }
-listExtractor()
+
+watch(debugData, () => {
+  console.log('watch debugData', debugData.value.id, usedBy)
+  listExtractor()
+}, {immediate: true, deep: true})
 
 const model = ref({scope: VarScope.ScopePublic} as Extractor)
 const results = ref({})
@@ -247,9 +247,10 @@ const edit = (item) => {
 const save = () => {
   console.log('save')
   validate().then(() => {
-    model.value.endpointInterfaceId = debugData.value.endpointInterfaceId
-
+    model.value.debugInterfaceId = debugInfo.value.debugInterfaceId
+    model.value.endpointInterfaceId = debugInfo.value.endpointInterfaceId
     model.value.projectId = debugData.value.projectId
+
     store.dispatch('Debug/saveExtractor', model.value).then((result) => {
       if (result) {
         editVisible.value = false

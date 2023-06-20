@@ -18,9 +18,11 @@ type ScenarioNodeService struct {
 	ScenarioProcessorRepo    *repo.ScenarioProcessorRepo `inject:""`
 	ScenarioProcessorService *ScenarioProcessorService   `inject:""`
 	ScenarioRepo             *repo.ScenarioRepo          `inject:""`
+	DebugInterfaceRepo       *repo.DebugInterfaceRepo    `inject:""`
 
-	ProcessorInterfaceRepo *repo.ProcessorInterfaceRepo `inject:""`
-	EndpointInterfaceRepo  *repo.EndpointInterfaceRepo  `inject:""`
+	EndpointInterfaceRepo *repo.EndpointInterfaceRepo `inject:""`
+
+	DebugInterfaceService *DebugInterfaceService `inject:""`
 }
 
 func (s *ScenarioNodeService) GetTree(scenario model.Scenario, withDetail bool) (root *agentExec.Processor, err error) {
@@ -144,22 +146,27 @@ func (s *ScenarioNodeService) addInterface(endpointInterfaceId int, createBy uin
 		EntityCategory: consts.ProcessorInterface,
 		EntityType:     consts.ProcessorInterfaceDefault,
 
-		EndpointInterfaceId: endpointInterface.ID,
-		EntityId:            0, // set to 0 for interface processor node
-		ParentId:            parentProcessor.ID,
-		ScenarioId:          parentProcessor.ScenarioId,
-		ProjectId:           parentProcessor.ProjectId,
-		CreatedBy:           createBy,
+		Ordr: s.ScenarioNodeRepo.GetMaxOrder(parentProcessor.ID),
+
+		ParentId:   parentProcessor.ID,
+		ScenarioId: parentProcessor.ScenarioId,
+		ProjectId:  parentProcessor.ProjectId,
+		CreatedBy:  createBy,
 	}
-	processor.Ordr = s.ScenarioNodeRepo.GetMaxOrder(processor.ParentId)
+
+	// convert or clone a debug interface obj
+	debugData, err := s.DebugInterfaceService.GetDebugInterfaceByEndpointInterface(uint(endpointInterfaceId))
+	debugInterface, err := s.DebugInterfaceService.Save(debugData)
+
+	processor.EntityId = debugInterface.ID // as debugInterfaceId
+	processor.EndpointInterfaceId = debugInterface.EndpointInterfaceId
+
 	s.ScenarioNodeRepo.Save(&processor)
 
-	//interfaceProcessor := model.ProcessorInterface{}
-	// interfaceProcessor, err = s.ScenarioProcessorService.CloneInterface(uint(endpointInterfaceId), processor)
-	//if err != nil {
-	//	return
-	//}
-	//s.ScenarioProcessorRepo.UpdateEntityId(processor.ID, interfaceProcessor.ID)
+	values := map[string]interface{}{
+		"scenario_processor_id": processor.ID,
+	}
+	s.DebugInterfaceRepo.UpdateDebugInfo(debugInterface.ID, values)
 
 	ret = processor
 

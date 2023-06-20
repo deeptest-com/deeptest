@@ -18,10 +18,11 @@ type Processor struct {
 	ScenarioId uint `json:"scenarioId"`
 	ProjectId  uint `json:"projectId"`
 
-	EntityCategory      consts.ProcessorCategory `json:"entityCategory"`
-	EntityType          consts.ProcessorType     `json:"entityType"`
-	EntityId            uint                     `json:"entityId"`
-	EndpointInterfaceId uint                     `json:"endpointInterfaceId"`
+	EntityCategory consts.ProcessorCategory `json:"entityCategory"`
+	EntityType     consts.ProcessorType     `json:"entityType"`
+
+	EntityId            uint `json:"entityId"` // is DebugInterfaceId if being interface
+	EndpointInterfaceId uint `json:"endpointInterfaceId"`
 
 	Ordr     int          `json:"ordr"`
 	Children []*Processor `gorm:"-" json:"children"`

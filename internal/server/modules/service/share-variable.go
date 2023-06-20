@@ -40,11 +40,11 @@ func (s *ShareVarService) Save(name, value string, interfaceId, serveId, process
 	return
 }
 
-func (s *ShareVarService) List(endpointInterfaceId, scenarioProcessorId uint, usedBy consts.UsedBy) (
+func (s *ShareVarService) List(debugInterfaceId, endpointInterfaceId, scenarioProcessorId uint, usedBy consts.UsedBy) (
 	shareVariables []domain.GlobalVar) {
 
-	interf, _ := s.EndpointInterfaceRepo.Get(endpointInterfaceId)
-	endpoint, _ := s.EndpointRepo.Get(interf.EndpointId)
+	endpointInterface, _ := s.EndpointInterfaceRepo.Get(endpointInterfaceId)
+	endpoint, _ := s.EndpointRepo.Get(endpointInterface.EndpointId)
 	serveId := endpoint.ServeId
 
 	shareVariables, _ = s.ListForDebug(serveId, scenarioProcessorId)

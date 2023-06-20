@@ -3,8 +3,9 @@ package domain
 import "github.com/aaronchen2k/deeptest/internal/pkg/consts"
 
 type DebugReq struct {
-	EndpointInterfaceId uint `json:"endpointInterfaceId"` // load by endpoint designer
-	ScenarioProcessorId uint `json:"scenarioProcessorId"` // load by scenario designer
+	DebugInterfaceId    uint `json:"debugInterfaceId"`
+	EndpointInterfaceId uint `json:"endpointInterfaceId"` // EndpointInterface without DebugInterface init
+	ScenarioProcessorId uint `json:"scenarioProcessorId"` // used to load vars by scenario processor
 	TestInterfaceId     uint `json:"testInterfaceId"`     // load by interface testing
 
 	UsedBy consts.UsedBy `json:"usedBy"`
@@ -17,6 +18,8 @@ type SubmitDebugResultRequest struct {
 
 type DebugData struct {
 	BaseRequest
+
+	DebugInterfaceId uint `json:"debugInterfaceId"`
 
 	EndpointInterfaceId uint          `json:"endpointInterfaceId"`
 	ScenarioProcessorId uint          `json:"scenarioProcessorId"`

@@ -32,7 +32,7 @@ func (c *ScenarioInterfaceCtrl) SaveDebugData(ctx iris.Context) {
 
 	loadReq := domain.DebugReq{
 		EndpointInterfaceId: po.EndpointInterfaceId,
-		ScenarioProcessorId: req.ScenarioProcessorId,
+		DebugInterfaceId:    req.DebugInterfaceId,
 		UsedBy:              consts.ScenarioDebug,
 	}
 

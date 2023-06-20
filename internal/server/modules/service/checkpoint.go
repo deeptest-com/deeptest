@@ -21,8 +21,8 @@ type CheckpointService struct {
 	VariableService *VariableService      `inject:""`
 }
 
-func (s *CheckpointService) List(endpointInterfaceId uint) (checkpoints []model.DebugInterfaceCheckpoint, err error) {
-	checkpoints, err = s.CheckpointRepo.List(endpointInterfaceId)
+func (s *CheckpointService) List(debugInterfaceId, endpointInterfaceId uint) (checkpoints []model.DebugInterfaceCheckpoint, err error) {
+	checkpoints, err = s.CheckpointRepo.List(debugInterfaceId, endpointInterfaceId)
 
 	return
 }
@@ -51,10 +51,10 @@ func (s *CheckpointService) Delete(reqId uint) (err error) {
 	return
 }
 
-func (s *CheckpointService) CheckInterface(endpointInterfaceId, scenarioProcessorId uint, resp domain.DebugResponse, usedBy consts.UsedBy) (
+func (s *CheckpointService) CheckInterface(debugInterfaceId, endpointInterfaceId, scenarioProcessorId uint, resp domain.DebugResponse, usedBy consts.UsedBy) (
 	logCheckpoints []domain.ExecInterfaceCheckpoint, status consts.ResultStatus, err error) {
 
-	checkpoints, _ := s.CheckpointRepo.List(endpointInterfaceId)
+	checkpoints, _ := s.CheckpointRepo.List(debugInterfaceId, endpointInterfaceId)
 
 	status = consts.Pass
 	for _, checkpoint := range checkpoints {
@@ -149,7 +149,8 @@ func (s *CheckpointService) Check(checkpoint model.DebugInterfaceCheckpoint, sce
 
 	// Judgement
 	if checkpoint.Type == consts.Judgement {
-		variableMap, datapools, _ := s.VariableService.GetCombinedVarsForCheckpoint(checkpoint.EndpointInterfaceId, scenarioProcessorId)
+		variableMap, datapools, _ := s.VariableService.GetCombinedVarsForCheckpoint(
+			checkpoint.DebugInterfaceId, checkpoint.EndpointInterfaceId, scenarioProcessorId)
 
 		result, _ := agentExec.EvaluateGovaluateExpressionWithVariables(checkpoint.Expression, variableMap, datapools)
 

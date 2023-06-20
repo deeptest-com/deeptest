@@ -10,10 +10,9 @@ import (
 type ScenarioProcessorRepo struct {
 	DB *gorm.DB `inject:""`
 
-	ScenarioNodeRepo      *ScenarioNodeRepo       `inject:""`
-	ExtractorRepo         *ExtractorRepo          `inject:""`
-	CheckpointRepo        *CheckpointRepo         `inject:""`
-	ScenarioInterfaceRepo *ProcessorInterfaceRepo `inject:""`
+	ScenarioNodeRepo *ScenarioNodeRepo `inject:""`
+	ExtractorRepo    *ExtractorRepo    `inject:""`
+	CheckpointRepo   *CheckpointRepo   `inject:""`
 }
 
 func (r *ScenarioProcessorRepo) Get(id uint) (processor model.Processor, err error) {
@@ -342,9 +341,9 @@ func (r *ScenarioProcessorRepo) genProcessorComm(processor model.Processor) (ret
 	//		ParentID:          processor.ParentId,
 	//	},
 	//}
-	if processor.EndpointInterfaceId > 0 {
-		ret.EndpointInterfaceId = processor.EndpointInterfaceId
-	}
+	//if processor.EndpointInterfaceId > 0 {
+	//	ret.EndpointInterfaceId = processor.EndpointInterfaceId
+	//}
 
 	return
 }

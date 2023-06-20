@@ -185,15 +185,15 @@ func (r *ServeRepo) ListServer(serveId uint) (servers model.ServeServerArr, err 
 	err = r.DB.Where("serve_id = ? AND NOT deleted AND not disabled", serveId).
 		Find(&servers).Error
 
-	for key, server := range servers {
+	for index, server := range servers {
 		var environment model.Environment
 		environment, err = r.EnvironmentRepo.Get(server.EnvironmentId)
 		if err != nil {
 			return
 		}
 
-		servers[key].EnvironmentName = environment.Name
-		servers[key].Sort = environment.Sort
+		servers[index].EnvironmentName = environment.Name
+		servers[index].Sort = environment.Sort
 	}
 
 	sort.Sort(servers)

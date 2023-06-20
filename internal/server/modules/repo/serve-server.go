@@ -28,9 +28,30 @@ func (r *ServeServerRepo) GetByEndpoint(endpointId uint) (res model.ServeServer,
 }
 
 func (r *ServeServerRepo) GetDefaultByServe(serveId uint) (ret model.ServeServer, err error) {
+	servers := []model.ServeServer{}
 	err = r.DB.Where("serve_id = ? AND NOT deleted", serveId).
-		Order("sort ASC").
-		First(&ret).Error
+		Find(&servers).Error
+
+	minEnvironmentSort := -1
+
+	for _, server := range servers {
+		var environment model.Environment
+		environment, err = r.EnvironmentRepo.Get(server.EnvironmentId)
+		if err != nil {
+			return
+		}
+
+		if minEnvironmentSort < 0 {
+			minEnvironmentSort = int(environment.Sort)
+			ret = server
+			continue
+		}
+
+		if minEnvironmentSort > int(environment.Sort) {
+			minEnvironmentSort = int(environment.Sort)
+			ret = server
+		}
+	}
 
 	return
 }

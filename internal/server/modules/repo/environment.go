@@ -19,7 +19,7 @@ func (r *EnvironmentRepo) List(projectId int) (pos []model.Environment, err erro
 	err = r.DB.
 		Select("id", "name").
 		Where("NOT deleted and project_id=?", projectId).
-		Order("created_at ASC").
+		Order("sort ASC").
 		Find(&pos).Error
 	return
 }

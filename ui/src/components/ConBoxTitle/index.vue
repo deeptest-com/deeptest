@@ -28,14 +28,15 @@ function expandInfo() {
 </script>
 <style scoped lang="less">
 .con-box-title {
-  padding-left: 8px;
+  padding-left: 12px;
   cursor: pointer;
   width: 100%;
-  height: 32px;
+  height: 36px;
+  line-height: 36px;
   display: flex;
   align-items: center;
   text-align: left;
-  font-size: 14px;
+  font-size: 16px;
   color: rgba(0, 0, 0, 0.85);
   position: relative;
   font-weight: bold;
@@ -46,9 +47,9 @@ function expandInfo() {
     content: '';
     position: absolute;
     width: 3px;
-    height: 14px;
+    height: 16px;
     background: #447DFD;
-    top: 9px;
+    top: 10px;
     left: 0;
   }
 }

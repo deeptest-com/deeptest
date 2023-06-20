@@ -1,4 +1,5 @@
 <template>
+  <a-spin tip="Loading..." :spinning="isImporting">
   <div class="container">
     <div class="content">
       <div class="left tree" v-if="!collapsed">
@@ -10,7 +11,7 @@
           @click="collapsed = !collapsed" :collapsed="collapsed"/>
       <div :class="{'right': true, 'right-not-collapsed': !collapsed}">
         <div class="top-action">
-          <div>
+          <div class="top-action-left">
             <PermissionButton
                 class="action-new"
                 text="新建接口"
@@ -18,8 +19,22 @@
                 type="primary"
                 :loading="loading"
                 @handle-access="handleCreateEndPoint"/>
-            <a-button @click="inportApi">导入接口</a-button>
-            <a-button type="primary" :disabled="!hasSelected" @click="goDocs">查看文档</a-button>
+            <a-dropdown :trigger="['hover']" :placement="'bottomLeft'">
+              <a class="ant-dropdown-link" @click.prevent>
+                <a-button>批量操作</a-button>
+              </a>
+              <template #overlay>
+                <a-menu style="margin-top: 8px;">
+                  <a-menu-item key="0">
+                    <a-button type="link" :size="'small'"  href="javascript:void (0)"  @click="inportApi" >导入接口</a-button>
+                  </a-menu-item>
+                  <a-menu-item key="1" >
+                    <a-button  :disabled="!hasSelected"  :size="'small'"   type="link" @click="goDocs">查看文档</a-button>
+                  </a-menu-item>
+                </a-menu>
+              </template>
+            </a-dropdown>
+
           </div>
 
           <div class="top-search-filter">
@@ -113,6 +128,7 @@
           @close="drawerVisible = false;"/>
     </div>
   </div>
+  </a-spin>
 </template>
 <script setup lang="ts">
 import {
@@ -243,6 +259,7 @@ function goDocs() {
   window.open(`/#/docs/index?endpointIds=${selectedRowIds.value.join(',')}`);
 }
 
+
 /**
  * 导入接口
  * */
@@ -308,8 +325,12 @@ async function handleCreateApi(data) {
   createApiModalVisible.value = false;
 }
 
+
+const isImporting = ref(false);
 async function handleImport(data,callback) {
 
+  isImporting.value = true;
+  showImportModal.value = false;
   const res = await store.dispatch('Endpoint/importEndpointData', {
     ...data,
     "serveId": currServe.value.id,
@@ -323,6 +344,7 @@ async function handleImport(data,callback) {
     }
     showImportModal.value = false;
   }
+  isImporting.value = false
 
 }
 
@@ -431,6 +453,9 @@ async function refreshList() {
 
   .ant-btn {
     margin-right: 16px;
+  }
+  .top-action-left{
+    min-width: 220px;
   }
 }
 

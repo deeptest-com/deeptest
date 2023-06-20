@@ -22,8 +22,8 @@
       <!-- ::::该服务下的所有接口列表 -->
       <div class="menus-item" v-if="item.endpointInfo && item.serveInfo">
         <div class="left">
-          <a-tag :color="getMethodColor(item.method)">{{ item.method }}</a-tag>
-          {{ item.name }}
+          <a-tag  class="method-tag" :color="getMethodColor(item.method)">{{ item.method }}</a-tag>
+          <span :title="item.name">{{ item.name }}</span>
         </div>
       </div>
     </a-menu-item>
@@ -74,7 +74,7 @@ watch(() => {
           openKeysMap.value[item.id] = false;
         }
       })
-      console.log(1323232323,items.value)
+
     }, {immediate: true}
 )
 
@@ -90,7 +90,6 @@ function switchExpand(item, e) {
 
 
 function select(item) {
-  console.log(item)
   emit('select', item);
 }
 
@@ -122,10 +121,16 @@ function select(item) {
   }
 
   :deep(.ant-menu-item) {
-    padding: 0 6px 0 6px!important;
+    padding: 0 6px 0 8px!important;
+    //padding: 0!important;
+    margin: 0!important;
+    border-radius: 4px;
+    height: 36px;
+    line-height: 36px;
   }
   :deep(.ant-menu-item-selected:after) {
-    right: 2px!important;
+    //right: 300px!important;
+    display: none;
   }
 }
 
@@ -160,6 +165,8 @@ function select(item) {
   justify-content: space-between;
   align-items: center;
   margin-left: 20px;
+  height: 36px;
+  line-height: 36px;
 
   .left {
     flex: 1;
@@ -194,5 +201,9 @@ function select(item) {
   }
 }
 
+.method-tag{
+  transform: scale(0.85);
+  margin-right: 3px;
+}
 
 </style>

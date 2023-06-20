@@ -240,7 +240,6 @@ function expandInfo(val) {
 
 .header-text {
   display: flex;
-
   .serialNumber {
     margin-right: 6px;
   }

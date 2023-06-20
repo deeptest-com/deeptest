@@ -1,8 +1,8 @@
 <!-- :::: 接口定义模块 -->
 <template>
-  <div class="content" v-show="data?.name">
+  <div class="content" v-if="data?.name">
 <!--    <BasicDetail  :items="items" v-if="showBasicInfo"/>-->
-    <DocsHeader/>
+    <DocsHeader :data="items" :items="serviceList" @select="selectMenu"/>
     <a-divider style="margin:0" v-if="showBasicInfo"/>
     <div class="doc-container">
       <div class="left" v-if="showMenu">
@@ -13,6 +13,7 @@
       </div>
     </div>
   </div>
+  <a-skeleton v-else/>
 </template>
 
 <script lang="ts" setup>
@@ -95,13 +96,12 @@ function selectMenu(item) {
   selectedItem.value = item
 }
 
-
 </script>
 
 <style lang="less" scoped>
 .content {
   //padding: 24px;
-  height: calc(100vh - 200px);
+  height: calc(100vh - 100px);
   position: relative;
 
 }
@@ -115,7 +115,7 @@ function selectMenu(item) {
     height: 100%;
     overflow: hidden;
     //margin-left: 24px;
-    //padding: 24px;
+    //padding: 0 12px;
     //border-right: 1px solid #f0f0f0;
     overflow-y: scroll;
     position: relative;
@@ -136,8 +136,7 @@ function selectMenu(item) {
     flex: 1;
     height: 100%;
     overflow: auto;
-    padding: 24px;
-    padding-bottom: 96px;
+    padding: 12px 24px 96px 24px;
   }
 
   .only-docs {

@@ -3,6 +3,10 @@
 -->
 <template>
   <div class="doc-content" v-if="info?.name">
+<!--    <a-breadcrumb v-if="isInterface" style="margin-bottom: 12px;">-->
+<!--      <a-breadcrumb-item>{{isInterface ? info?.serveInfo?.name : info?.name}}</a-breadcrumb-item>-->
+<!--      <a-breadcrumb-item ><a href="javascript:void (0)">{{info?.name}}</a></a-breadcrumb-item>-->
+<!--    </a-breadcrumb>-->
     <!-- 服务信息 -->
     <div class="serve-info" v-if="!isInterface">
       <h1>{{ info.name }}</h1>
@@ -23,7 +27,7 @@
       <div class="url-info-block">
         <div class="path-info" v-for="path in paths" :key="path.path">
           <span><strong>{{ path.name }}：</strong></span>
-          <a-tag :color="getMethodColor(info.method)">{{ info.method }}</a-tag>
+          <a-tag class="method-tag" :color="getMethodColor(info.method)">{{ info.method }}</a-tag>
           <span>
             <span class="ant-typography ant-typography-secondary">{{ path.url }}</span>
             <span class="ant-typography"><strong>{{ path.path.indexOf('/') === '/' ? path.path : `/${path.path}`}}</strong></span>
@@ -288,7 +292,10 @@ function selectCode(code) {
       margin-left: 16px;
     }
   }
-
+  .method-tag{
+    transform: scale(0.85);
+    margin-right: 3px;
+  }
 
 }
 

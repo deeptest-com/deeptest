@@ -2,6 +2,8 @@ package service
 
 import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
+	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi/convert"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
@@ -26,7 +28,16 @@ func (s *EndpointInterfaceService) Paginate(req v1.EndpointInterfaceReqPaginate)
 }
 
 func (s *EndpointInterfaceService) ImportEndpointData(req v1.ImportEndpointDataReq) (err error) {
-	data, err := ioutil.ReadFile(req.FilePath)
+	var data []byte
+	if req.OpenUrlImport {
+		request := domain.BaseRequest{Url: req.FilePath}
+		var response domain.DebugResponse
+		response, err = httpHelper.Get(request)
+		data = []byte(response.Content)
+	} else {
+		data, err = ioutil.ReadFile(req.FilePath)
+	}
+
 	if err != nil {
 		logUtils.Errorf("load end point data err ", zap.String("错误:", err.Error()))
 		return err
@@ -34,19 +45,11 @@ func (s *EndpointInterfaceService) ImportEndpointData(req v1.ImportEndpointDataR
 
 	handler := convert.NewHandler(req.DriverType, data, req.FilePath)
 	doc, err := handler.ToOpenapi()
-	//fmt.Println(doc, "xxx")
 	if err != nil {
 		return err
 	}
-	//var x interface{}
-	//x, _ := json.Marshal(doc)
-	//fmt.Println(string(x), "++++")
-	//fmt.Println(json.Marshal(doc))
 	openapi2endpoint := openapi.NewOpenapi2endpoint(doc)
 	endpoints := openapi2endpoint.Convert()
-	//x, _ = json.Marshal(endpoints)
-	//fmt.Println(string(x), "----")
-	//fmt.Println(endpoints)
 	err = s.EndpointService.SaveEndpoints(endpoints, req)
 
 	return

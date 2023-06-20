@@ -21,3 +21,8 @@ type DocumentServe struct {
 	Endpoints  []EndpointReq      `json:"endpoints"`
 	Securities []ServeSecurityReq `json:"securities"`
 }
+
+type Endpoints struct {
+	endpoint EndpointReq
+	children []*Endpoints
+}

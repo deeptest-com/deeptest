@@ -156,6 +156,8 @@ func (s *ScenarioNodeService) addInterface(endpointInterfaceId int, createBy uin
 
 	// convert or clone a debug interface obj
 	debugData, err := s.DebugInterfaceService.GetDebugInterfaceByEndpointInterface(uint(endpointInterfaceId))
+	debugData.DebugInterfaceId = 0 // force to clone the old one
+	debugData.ScenarioProcessorId = 0
 	debugInterface, err := s.DebugInterfaceService.Save(debugData)
 
 	processor.EntityId = debugInterface.ID // as debugInterfaceId
@@ -163,6 +165,7 @@ func (s *ScenarioNodeService) addInterface(endpointInterfaceId int, createBy uin
 
 	s.ScenarioNodeRepo.Save(&processor)
 
+	// update to new ScenarioProcessorId
 	values := map[string]interface{}{
 		"scenario_processor_id": processor.ID,
 	}

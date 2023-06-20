@@ -40,11 +40,11 @@
             placeholder="请选择"/>
       </a-form-item>
       <a-form-item label="开启url导入" name="openUrlImport">
-        <a-radio-group
+        <a-radio-group :disabled="disabled"
             :options="openUrlImportOpts"
             v-model:value="formState.openUrlImport"/>
       </a-form-item>
-      <a-form-item label="上传文件" name="filePath">
+      <a-form-item label="上传文件" name="filePath" v-if="!formState.openUrlImport">
         <a-spin tip="上传中..." :spinning="uploading">
           <a-upload
               :fileList="fileList"
@@ -59,6 +59,10 @@
           </a-upload>
         </a-spin>
       </a-form-item>
+      <a-form-item label="swagger url" v-if="formState.openUrlImport" name="filePath">
+      <a-input v-model:value="formState.filePath" />
+    </a-form-item>
+
     </a-form>
   </a-modal>
 </template>
@@ -248,8 +252,13 @@ const rules = {
   driverType: [{required: true, message: '请选择接口数据来源'}],
   dataSyncType: [{required: true, message: '请选择数据同步方式'}],
   openUrlImport: [{required: false}],
-  filePath: [{required: true, message: '请上传文件'}],
+  filePath: [{required: true, message: '请上传文件或输入url地址'}],
 };
+
+const disabled = computed(()=>{
+  return !(formState.value.driverType == "swagger2" || formState.value.driverType == "swagger3")
+})
+
 
 
 </script>

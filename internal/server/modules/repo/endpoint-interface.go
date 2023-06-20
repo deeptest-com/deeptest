@@ -521,3 +521,184 @@ func (r *EndpointInterfaceRepo) ImportEndpointData(req v1.ImportEndpointDataReq)
 	*/
 	return
 }
+
+func (r *EndpointInterfaceRepo) GetInterfaces(endpointIds []uint) (interfaces map[uint][]model.EndpointInterface, err error) {
+	interfaces = map[uint][]model.EndpointInterface{}
+	var result []model.EndpointInterface
+	err = r.DB.Where("id in ?", endpointIds).Where("NOT deleted").Find(&result).Error
+
+	var interfaceIds []uint
+	for _, item := range result {
+		interfaceIds = append(interfaceIds, item.ID)
+	}
+
+	var params map[uint][]model.EndpointInterfaceParam
+	params, err = r.GetParams(interfaceIds)
+	if err != nil {
+		return
+	}
+
+	var cookies map[uint][]model.EndpointInterfaceCookie
+	cookies, err = r.GetCookies(interfaceIds)
+	if err != nil {
+		return
+	}
+
+	var headers map[uint][]model.EndpointInterfaceHeader
+	headers, err = r.GetHeaders(interfaceIds)
+	if err != nil {
+		return
+	}
+
+	var requestBodies map[uint]model.EndpointInterfaceRequestBody
+	requestBodies, err = r.GetRequestBodies(interfaceIds)
+	if err != nil {
+		return
+	}
+
+	var responseBodies map[uint][]model.EndpointInterfaceResponseBody
+	responseBodies, err = r.GetResponseBodies(interfaceIds)
+
+	for key, item := range result {
+		result[key].Params = params[item.ID]
+		result[key].Cookies = cookies[item.ID]
+		result[key].Headers = headers[item.ID]
+		result[key].RequestBody = requestBodies[item.ID]
+		result[key].ResponseBodies = responseBodies[item.ID]
+		interfaces[item.EndpointId] = append(interfaces[item.EndpointId], result[key])
+	}
+
+	return
+
+}
+
+func (r *EndpointInterfaceRepo) GetParams(interfaceIds []uint) (params map[uint][]model.EndpointInterfaceParam, err error) {
+	var result []model.EndpointInterfaceParam
+	err = r.DB.Where("NOT deleted and interface_id in ?", interfaceIds).Find(&result).Error
+
+	params = make(map[uint][]model.EndpointInterfaceParam)
+	for key, item := range result {
+		params[item.InterfaceId] = append(params[item.InterfaceId], result[key])
+	}
+
+	return
+}
+
+func (r *EndpointInterfaceRepo) GetCookies(interfaceIds []uint) (cookies map[uint][]model.EndpointInterfaceCookie, err error) {
+	var result []model.EndpointInterfaceCookie
+	err = r.DB.Where("NOT deleted and interface_id in ?", interfaceIds).Find(&result).Error
+
+	cookies = make(map[uint][]model.EndpointInterfaceCookie)
+	for key, item := range result {
+		cookies[item.InterfaceId] = append(cookies[item.InterfaceId], result[key])
+	}
+
+	return
+}
+
+func (r *EndpointInterfaceRepo) GetHeaders(interfaceIds []uint) (headers map[uint][]model.EndpointInterfaceHeader, err error) {
+	var result []model.EndpointInterfaceHeader
+	err = r.DB.Where("NOT deleted and interface_id in ?", interfaceIds).Find(&result).Error
+
+	headers = make(map[uint][]model.EndpointInterfaceHeader)
+	for key, item := range result {
+		headers[item.InterfaceId] = append(headers[item.InterfaceId], result[key])
+	}
+
+	return
+}
+
+func (r *EndpointInterfaceRepo) GetRequestBodies(interfaceIds []uint) (requestBodies map[uint]model.EndpointInterfaceRequestBody, err error) {
+	var result []model.EndpointInterfaceRequestBody
+	err = r.DB.Find(&result, "interface_id in ?", interfaceIds).Error
+	if err != nil {
+		return
+	}
+
+	var requestBodyIds []uint
+	for _, item := range result {
+		requestBodyIds = append(requestBodyIds, item.ID)
+	}
+
+	var requestBodyItems map[uint]model.EndpointInterfaceRequestBodyItem
+	requestBodyItems, err = r.GetRequestBodyItems(requestBodyIds)
+
+	requestBodies = make(map[uint]model.EndpointInterfaceRequestBody)
+	for key, item := range result {
+		result[key].SchemaItem = requestBodyItems[item.ID]
+		requestBodies[item.InterfaceId] = result[key]
+	}
+
+	return
+}
+
+func (r *EndpointInterfaceRepo) GetRequestBodyItems(requestBodyIds []uint) (requestBodyItems map[uint]model.EndpointInterfaceRequestBodyItem, err error) {
+	var result []model.EndpointInterfaceRequestBodyItem
+	err = r.DB.Find(&result, "request_body_id in ?", requestBodyIds).Error
+
+	requestBodyItems = make(map[uint]model.EndpointInterfaceRequestBodyItem)
+	for key, item := range result {
+		requestBodyItems[item.RequestBodyId] = result[key]
+	}
+	return
+}
+
+func (r *EndpointInterfaceRepo) GetResponseBodies(interfaceIds []uint) (responseBodies map[uint][]model.EndpointInterfaceResponseBody, err error) {
+	var result []model.EndpointInterfaceResponseBody
+	err = r.DB.Find(&result, "interface_id in ?", interfaceIds).Error
+	if err != nil {
+		return
+	}
+
+	var responseBodyIds []uint
+	for _, item := range result {
+		responseBodyIds = append(responseBodyIds, item.ID)
+	}
+
+	var responseBodyItems map[uint]model.EndpointInterfaceResponseBodyItem
+	responseBodyItems, err = r.GetResponseBodyItems(responseBodyIds)
+	if err != nil {
+		return
+	}
+
+	var responseBodyHeaders map[uint][]model.EndpointInterfaceResponseBodyHeader
+	responseBodyHeaders, err = r.GetResponseBodyHeaders(responseBodyIds)
+	if err != nil {
+		return
+	}
+
+	responseBodies = make(map[uint][]model.EndpointInterfaceResponseBody)
+	for key, item := range result {
+		result[key].SchemaItem = responseBodyItems[item.ID]
+		result[key].Headers = responseBodyHeaders[item.ID]
+		responseBodies[item.InterfaceId] = append(responseBodies[item.InterfaceId], result[key])
+	}
+
+	return
+
+}
+
+func (r *EndpointInterfaceRepo) GetResponseBodyItems(responseBodyIds []uint) (responseBodyItem map[uint]model.EndpointInterfaceResponseBodyItem, err error) {
+	var result []model.EndpointInterfaceResponseBodyItem
+	err = r.DB.Find(&result, "response_body_id in ?", responseBodyIds).Error
+
+	responseBodyItem = make(map[uint]model.EndpointInterfaceResponseBodyItem)
+	for key, item := range result {
+		responseBodyItem[item.ResponseBodyId] = result[key]
+	}
+
+	return
+}
+
+func (r *EndpointInterfaceRepo) GetResponseBodyHeaders(responseBodyIds []uint) (responseBodyHeaders map[uint][]model.EndpointInterfaceResponseBodyHeader, err error) {
+
+	var result []model.EndpointInterfaceResponseBodyHeader
+	err = r.DB.Find(&result, "response_body_id in ?", responseBodyIds).Error
+
+	responseBodyHeaders = make(map[uint][]model.EndpointInterfaceResponseBodyHeader)
+	for key, item := range result {
+		responseBodyHeaders[item.ResponseBodyId] = append(responseBodyHeaders[item.ResponseBodyId], result[key])
+	}
+
+	return
+}

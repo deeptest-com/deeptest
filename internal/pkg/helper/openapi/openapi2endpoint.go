@@ -221,7 +221,10 @@ func (o *openapi2endpoint) parameter(parameter *openapi3.ParameterRef) (param mo
 	param.Name = parameter.Value.Name
 	param.Ref = parameter.Ref
 	param.Required = parameter.Value.Required
-	o.parameterValue(parameter.Value.Schema.Value, &param)
+	if parameter.Value.Schema != nil {
+		o.parameterValue(parameter.Value.Schema.Value, &param)
+	}
+
 	return
 }
 

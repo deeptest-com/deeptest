@@ -59,8 +59,8 @@ func (s *DocumentService) GetEndpointsInfo(projectId *uint, serveIds *[]uint, en
 	serves := make(map[uint]uint)
 	for _, item := range endpoints {
 		var endpoint domain.EndpointReq
-		ret, _ := s.EndpointRepo.GetAll(item.ID, "v0.1.0")
-		copier.CopyWithOption(&endpoint, &ret, copier.Option{IgnoreEmpty: true, DeepCopy: true})
+		//ret, _ := s.EndpointRepo.GetAll(item.ID, "v0.1.0")
+		copier.CopyWithOption(&endpoint, &item, copier.Option{IgnoreEmpty: true, DeepCopy: true})
 		res[endpoint.ServeId] = append(res[endpoint.ServeId], endpoint)
 		if _, ok := serves[endpoint.ServeId]; !ok {
 			*serveIds = append(*serveIds, endpoint.ServeId)

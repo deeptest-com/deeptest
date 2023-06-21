@@ -129,8 +129,8 @@ func (s *TestInterfaceService) addInterface(endpointInterfaceId int, createBy ui
 
 	// clone extractors and checkpoints if needed
 	if endpointInterface.DebugInterfaceId <= 0 {
-		s.ExtractorRepo.CloneFromEndpointInterfaceToDebugInterface(uint(endpointInterfaceId), debugInterface.ID)
-		s.CheckpointRepo.CloneFromEndpointInterfaceToDebugInterface(uint(endpointInterfaceId), debugInterface.ID)
+		s.ExtractorRepo.CloneFromEndpointInterfaceToDebugInterface(uint(endpointInterfaceId), debugInterface.ID, consts.TestDebug)
+		s.CheckpointRepo.CloneFromEndpointInterfaceToDebugInterface(uint(endpointInterfaceId), debugInterface.ID, consts.TestDebug)
 	}
 
 	// save test interface

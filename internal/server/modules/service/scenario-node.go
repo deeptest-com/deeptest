@@ -150,8 +150,8 @@ func (s *ScenarioNodeService) addInterface(endpointInterfaceId int, createBy uin
 
 	// clone extractors and checkpoints if needed
 	if endpointInterface.DebugInterfaceId <= 0 {
-		s.ExtractorRepo.CloneFromEndpointInterfaceToDebugInterface(uint(endpointInterfaceId), debugInterface.ID)
-		s.CheckpointRepo.CloneFromEndpointInterfaceToDebugInterface(uint(endpointInterfaceId), debugInterface.ID)
+		s.ExtractorRepo.CloneFromEndpointInterfaceToDebugInterface(uint(endpointInterfaceId), debugInterface.ID, consts.ScenarioDebug)
+		s.CheckpointRepo.CloneFromEndpointInterfaceToDebugInterface(uint(endpointInterfaceId), debugInterface.ID, consts.ScenarioDebug)
 	}
 
 	// save scenario interface

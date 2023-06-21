@@ -6,10 +6,10 @@
         <a-col flex="70px">来源</a-col>
         <a-col flex="90px">提取类型</a-col>
         <a-col flex="1">表达式</a-col>
-        <a-col flex="150px" style="padding-left: 10px;">变量</a-col>
+        <a-col flex="100px" style="padding-left: 10px;">变量</a-col>
         <a-col flex="1">结果</a-col>
 
-        <a-col v-if="usedBy===UsedBy.InterfaceDebug" flex="100px" class="dp-right">
+        <a-col flex="100px" class="dp-right">
           <PlusOutlined @click.stop="add" class="dp-icon-btn dp-trans-80" />
         </a-col>
       </a-row>
@@ -30,12 +30,12 @@
                 item.expression }}
           </span>
         </a-col>
-        <a-col flex="150px" style="padding-left: 10px;">{{ item.variable }}</a-col>
+        <a-col flex="100px" style="padding-left: 10px;">{{ item.variable }}</a-col>
         <a-col flex="1" :class="[item.result==='extractor_err'? 'dp-color-fail': '']"  style="width: 0; word-break: break-word;">
           {{item.result==='extractor_err'? t(item.result) : item.result}}
         </a-col>
 
-        <a-col v-if="usedBy===UsedBy.InterfaceDebug" flex="100px" class="dp-right">
+        <a-col flex="100px" class="dp-right">
           <a-tooltip v-if="!item.disabled" @click="disable(item)" overlayClassName="dp-tip-small">
             <template #title>禁用</template>
             <CheckCircleOutlined class="dp-icon-btn dp-trans-80" />
@@ -46,8 +46,8 @@
             <CloseCircleOutlined class="dp-icon-btn dp-trans-80 dp-light" />
           </a-tooltip>
 
-          <EditOutlined v-if="usedBy===UsedBy.InterfaceDebug" @click.stop="edit(item)" class="dp-icon-btn dp-trans-80" />
-          <DeleteOutlined v-if="usedBy===UsedBy.InterfaceDebug" @click.stop="remove(item)" class="dp-icon-btn dp-trans-80" />
+          <EditOutlined @click.stop="edit(item)" class="dp-icon-btn dp-trans-80" />
+          <DeleteOutlined @click.stop="remove(item)" class="dp-icon-btn dp-trans-80" />
         </a-col>
       </a-row>
     </div>
@@ -181,7 +181,7 @@ watch(debugData, () => {
   listExtractor()
 }, {immediate: true, deep: true})
 
-const model = ref({scope: VarScope.ScopePublic} as Extractor)
+const model = ref({usedBy: usedBy, scope: VarScope.ScopePublic} as Extractor)
 const results = ref({})
 const editVisible = ref(false)
 
@@ -224,6 +224,7 @@ const add = () => {
     type: ExtractorType.boundary,
     expression: '',
     variable: '',
+    usedBy: usedBy,
     scope: VarScope.ScopePublic} as Extractor
 
   selectSrc()

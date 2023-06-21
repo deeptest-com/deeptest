@@ -112,7 +112,8 @@ func (r *CheckpointRepo) UpdateResultToExecLog(checkpoint model.DebugInterfaceCh
 	return
 }
 
-func (r *CheckpointRepo) CloneFromEndpointInterfaceToDebugInterface(endpointInterfaceId, debugInterfaceId uint) (
+func (r *CheckpointRepo) CloneFromEndpointInterfaceToDebugInterface(endpointInterfaceId, debugInterfaceId uint,
+	usedBy consts.UsedBy) (
 	err error) {
 
 	srcPos, _ := r.List(0, endpointInterfaceId)
@@ -121,6 +122,7 @@ func (r *CheckpointRepo) CloneFromEndpointInterfaceToDebugInterface(endpointInte
 		po.ID = 0
 		po.EndpointInterfaceId = endpointInterfaceId
 		po.DebugInterfaceId = debugInterfaceId
+		po.UsedBy = usedBy
 
 		r.Save(&po)
 	}

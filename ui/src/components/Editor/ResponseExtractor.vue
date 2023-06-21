@@ -70,14 +70,15 @@
 </template>
 
 <script setup lang="ts">
-import {defineProps, onMounted, reactive, ref, Ref, computed} from "vue";
+import {defineProps, onMounted, reactive, ref, Ref, computed, inject} from "vue";
 import {Form} from 'ant-design-vue';
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
-import {VarScope} from "@/utils/enum";
+import {UsedBy, VarScope} from "@/utils/enum";
 import {StateType as DebugStateType} from "@/views/component/debug/store";
 import {StateType as EnvironmentStateType} from "@/store/environment";
 const useForm = Form.useForm;
+const usedBy = inject('usedBy') as UsedBy
 
 const props = defineProps({
   interfaceId:{
@@ -121,6 +122,7 @@ const modelRef = ref<any>({
   expression: props.expr,
   expressionType: props.exprType,
   variable: '',
+  usedBy: usedBy,
   scope: VarScope.ScopePublic,
   code: '',
 })

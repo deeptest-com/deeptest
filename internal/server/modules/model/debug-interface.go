@@ -126,7 +126,8 @@ type DebugInterfaceExtractor struct {
 
 	domain.ExtractorBase
 
-	Scope consts.ExtractorScope `json:"scope" gorm:"default:private"`
+	UsedBy consts.UsedBy         `json:"usedBy"`
+	Scope  consts.ExtractorScope `json:"scope" gorm:"default:private"`
 
 	DebugInterfaceId uint `gorm:"default:0" json:"debugInterfaceId"`
 

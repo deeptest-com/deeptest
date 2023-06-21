@@ -30,7 +30,6 @@ const props = defineProps({
   },
   nodeInfo: {
     required: true,
-    type: Object,
   },
   mode: {
     required: true,

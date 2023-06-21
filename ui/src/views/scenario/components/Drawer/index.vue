@@ -13,7 +13,7 @@
       <template #title>
         <a-row type="flex" style="align-items: center;width: 100%">
           <a-col :span="8">
-            <EditAndShowField placeholder="修改标题" :value="detailResult.name" @update="updateTitle"/>
+            <EditAndShowField placeholder="修改标题" :value="detailResult?.name || ''" @update="updateTitle"/>
           </a-col>
         </a-row>
       </template>

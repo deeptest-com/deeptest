@@ -93,7 +93,7 @@ import {isRoot, updateNodeName, isInterface} from "../../service";
 import TreeContextMenu from "./components/TreeContextMenu.vue";
 import InterfaceSelection from "@/views/component/InterfaceSelection/main.vue";
 
-const props = defineProps<{ scenarioId: number }>()
+const props = defineProps<{}>()
 
 const useForm = Form.useForm;
 

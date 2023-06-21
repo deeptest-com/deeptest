@@ -44,7 +44,7 @@ func (c *ScenarioNodeCtrl) AddInterfaces(ctx iris.Context) {
 	}
 
 	req.CreateBy = multi.GetUserId(ctx)
-	bizErr := c.ScenarioNodeService.AddInterfaces(req)
+	nodePo, bizErr := c.ScenarioNodeService.AddInterfaces(req)
 	if bizErr != nil {
 		ctx.JSON(_domain.Response{
 			Code: _domain.SystemErr.Code,
@@ -52,7 +52,7 @@ func (c *ScenarioNodeCtrl) AddInterfaces(ctx iris.Context) {
 		return
 	}
 
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: nodePo})
 }
 
 // AddProcessor 添加

@@ -8,6 +8,7 @@ import (
 	service "github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	"github.com/kataras/iris/v12"
+	"github.com/snowlyg/multi"
 )
 
 type TestInterfaceCtrl struct {
@@ -156,4 +157,25 @@ func (c *TestInterfaceCtrl) Move(ctx iris.Context) {
 	}
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+}
+
+// ImportInterfaces 导入接口
+func (c *TestInterfaceCtrl) ImportInterfaces(ctx iris.Context) {
+	req := serverDomain.TestInterfaceImportReq{}
+	err := ctx.ReadJSON(&req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+		return
+	}
+
+	req.CreateBy = multi.GetUserId(ctx)
+	newNode, bizErr := c.TestInterfaceService.ImportInterfaces(req)
+	if bizErr != nil {
+		ctx.JSON(_domain.Response{
+			Code: _domain.SystemErr.Code,
+		})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: newNode})
 }

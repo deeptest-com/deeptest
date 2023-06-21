@@ -402,7 +402,6 @@ const StoreModel: ModuleType = {
 
             const mp = {}
             getNodeMap(data, mp)
-
             commit('setTreeDataMap', mp);
 
             return true;

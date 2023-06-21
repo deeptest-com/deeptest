@@ -91,10 +91,9 @@ import {getContextMenuStyle} from "@/utils/dom";
 import {StateType as ScenarioStateType} from "../../store";
 import {isRoot, updateNodeName, isInterface} from "../../service";
 import TreeContextMenu from "./components/TreeContextMenu.vue";
-import InterfaceSelection from "./components/interface-selection/main.vue";
+import InterfaceSelection from "@/views/component/InterfaceSelection/main.vue";
 
 const props = defineProps<{ scenarioId: number }>()
-
 
 const useForm = Form.useForm;
 

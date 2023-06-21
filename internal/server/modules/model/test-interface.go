@@ -7,6 +7,7 @@ import (
 
 type TestInterface struct {
 	BaseModel
+	CreatedBy uint `json:"createdBy"`
 
 	Title  string                         `json:"title"`
 	Desc   string                         `json:"desc"`

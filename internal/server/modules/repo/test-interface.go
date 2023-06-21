@@ -128,7 +128,7 @@ func (r *TestInterfaceRepo) hasChild(categories []*serverDomain.TestInterface, p
 }
 
 func (r *TestInterfaceRepo) Save(po *model.TestInterface) (err error) {
-	po.Ordr = r.GetMaxOrder(po.ParentId, po.ProjectId)
+	po.Ordr = r.GetMaxOrder(po.ParentId)
 
 	err = r.DB.Save(po).Error
 
@@ -212,11 +212,11 @@ func (r *TestInterfaceRepo) UpdateOrdAndParent(node model.TestInterface) (err er
 	return
 }
 
-func (r *TestInterfaceRepo) GetMaxOrder(parentId uint, projectId uint) (order int) {
+func (r *TestInterfaceRepo) GetMaxOrder(parentId uint) (order int) {
 	node := model.TestInterface{}
 
 	err := r.DB.Model(&model.TestInterface{}).
-		Where("parent_id=? AND project_id = ?", parentId, projectId).
+		Where("parent_id=?", parentId).
 		Order("ordr DESC").
 		First(&node).Error
 

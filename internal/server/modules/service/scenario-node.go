@@ -71,7 +71,7 @@ func (s *ScenarioNodeService) ToTos(pos []*model.Processor, withDetail bool) (to
 	return
 }
 
-func (s *ScenarioNodeService) AddInterfaces(req v1.ScenarioAddInterfacesReq) (ret model.Processor, err error) {
+func (s *ScenarioNodeService) AddInterfaces(req v1.ScenarioAddInterfacesReq) (err error) {
 	targetProcessor, _ := s.ScenarioProcessorRepo.Get(req.TargetId)
 
 	if s.ScenarioNodeRepo.IsLeaf(targetProcessor) {
@@ -79,7 +79,7 @@ func (s *ScenarioNodeService) AddInterfaces(req v1.ScenarioAddInterfacesReq) (re
 	}
 
 	for _, interfaceId := range req.InterfaceIds {
-		ret, _ = s.addInterface(interfaceId, req.CreateBy, targetProcessor)
+		s.addInterface(interfaceId, req.CreateBy, targetProcessor)
 	}
 
 	return

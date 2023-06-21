@@ -52,3 +52,9 @@ type TestInterfaceMoveReq struct {
 	DropKey int                  `json:"dropKey"`
 	DropPos serverConsts.DropPos `json:"dropPos"`
 }
+
+type TestInterfaceImportReq struct {
+	InterfaceIds []int `json:"interfaceIds"`
+	TargetId     uint  `json:"targetId"`
+	CreateBy     uint  `json:"createBy"`
+}

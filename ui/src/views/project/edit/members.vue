@@ -74,11 +74,11 @@
       </div>
     </a-card>
   </div>
-  <EditPage :record="data" :title="title" :visible="visible" @cancal="cancal" />
+  <EditPage :visible="inviteVisible" @ok="ok"  @cancel="inviteVisible = false"/>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, reactive, Ref, ref,
+import { computed, onMounted, reactive, ref,
 watch } from "vue";
 import { PaginationConfig, Project, Member } from "../data.d";
 import { useStore } from "vuex";
@@ -97,6 +97,7 @@ import { StateType as UserStateType } from "@/store/user";
 import EditPage from "../edit/invite.vue";
 import { SelectTypes } from "ant-design-vue/lib/select";
 import {QueryParams} from "@/types/data";
+import {inviteUser} from "@/views/user/info/service";
 
 const router = useRouter();
 const store = useStore<{ Project: StateType; User: UserStateType,ProjectGlobal }>();
@@ -112,11 +113,11 @@ let queryParams = reactive<QueryParams>({
   page: pagination.value.current,
   pageSize: pagination.value.pageSize,
 });
-let activeKey = ref("1");
+
 const members = ref({});
 
 const data = reactive<Member>({
-  userId: 0,
+  userId: "",
   email: "",
   roleName: "",
   username: "",
@@ -154,13 +155,6 @@ const columns = [
   },
 ];
 
-const invite = () => {
-  title.value = "邀请用户";
-  data.email = "";
-  data.userId = 0;
-  visible.value = true;
-  getSelectUserList();
-};
 
 onMounted(() => {
   console.log("onMounted");
@@ -245,7 +239,7 @@ const onSearch = debounce(() => {
   getMembers(1);
 }, 500);
 
-const visible = ref(false);
+const inviteVisible = ref(false);
 
 const roles = computed<SelectTypes["options"]>(() => store.state.Project.roles);
 
@@ -260,11 +254,36 @@ const getSelectUserList = () => {
   return;
 };
 
-const title = ref("邀请用户");
+const invite = () => {
+  inviteVisible.value = true;
+  console.log( inviteVisible.value)
+  getSelectUserList();
+};
+
 const cancel = () => {
-  visible.value = false;
+  inviteVisible.value = false;
+  console.log( inviteVisible.value)
   getMembers(1);
 };
+
+const ok=(modelRef,callback)=>{
+  inviteUser(modelRef, projectId).then((json) => {
+      if (json.code === 0) {
+        notification.success({
+          key: NotificationKeyCommon,
+          message: `保存成功`,
+        });
+      } else {
+        notification.success({
+          key: NotificationKeyCommon,
+          message: `保存失败`,
+        });
+      }
+      close()
+    })
+    inviteVisible.value = false;
+  callback()
+}
 
 const handleChangeRole = async (val: any, record: any) => {
   await changeRole({
@@ -285,6 +304,8 @@ watch(() => {
 }, {
   immediate: true
 })
+
+
 </script>
 
 <style lang="less" scoped>

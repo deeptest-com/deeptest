@@ -1,13 +1,15 @@
 <template>
-  <a-modal
+    <a-modal
+      title="邀请用户"
       :visible="visible"
       @cancel="close"
-      width="700px"
-      :footer="null">
+      @ok="ok"
+      width="700px">
   <div class="invite-main">
     <a-card>
-      <template #title>
-      </template>
+      
+       
+      
       <!--
       <template #extra>
         <a-button type="link" @click="() => back()">返回</a-button>
@@ -33,35 +35,36 @@
         <a-form-item label="邮箱" v-bind="validateInfos.email" >
           <a-input v-model:value="modelRef.email"/>
         </a-form-item>
-
+      <!--
         <a-form-item :wrapper-col="{ span: 14, offset: 4 }">
           <a-button @click="submit" type="primary" class="submit">
             确认
           </a-button>
         </a-form-item>
+      -->
       </a-form>
 
     </a-card>
-
   </div>
-  </a-modal>
+    </a-modal>
 </template>
 
 <script setup lang="ts">
 import {ref, reactive, computed} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
-import {Form, notification, } from 'ant-design-vue';
-import {NotificationKeyCommon} from "@/utils/const";
-import {inviteUser} from "@/views/user/info/service";
+import {Form} from 'ant-design-vue';
 import {useRouter} from "vue-router";
 import { SelectTypes } from "ant-design-vue/lib/select";
 import {StateType as UserStateType} from "@/store/user";
 import {StateType} from "../store";
 import { defineProps,defineEmits,} from 'vue';
-const props = defineProps({
-  visible:Boolean
-})
+import { Member } from "../data.d";
+const props = defineProps({  
+  visible: {
+    required: true,
+    type: Boolean,
+  },})
 
 const emit = defineEmits(['ok', 'cancel']);
 
@@ -71,16 +74,7 @@ const useForm = Form.useForm;
 
 const {t} = useI18n();
 
-
-const modelRef = reactive({
-  userId:"",
-  email:"",
-  roleName:"user",
-  username:""
-});
-
-
-const projectId = Number(window.localStorage.getItem('currentProjectId'));
+const modelRef = ref<Member>({userId:"",username:"",email:"",roleName:""});
 
 
 const rulesRef = reactive({
@@ -107,32 +101,6 @@ const rulesRef = reactive({
 
 const { validate, validateInfos} = useForm(modelRef, rulesRef);
 
-const submit = async (e: MouseEvent) => {
-  validate().then(() => {
-    console.log(modelRef);
-
-    inviteUser(modelRef, projectId).then((json) => {
-      if (json.code === 0) {
-        notification.success({
-          key: NotificationKeyCommon,
-          message: `保存成功`,
-        });
-      } else {
-        notification.success({
-          key: NotificationKeyCommon,
-          message: `保存失败`,
-        });
-      }
-      close()
-    })
-  })
-}
-
-const back = () => {
-  console.log('back')
-  router.push(`/project/members/${projectId}`)
-}
-
 const labelCol = {span: 4}
 const wrapperCol = {span: 14}
 const store = useStore<{ Project: StateType, User: UserStateType }>();
@@ -144,12 +112,22 @@ const close = ()=>{
   emit("cancel")
 }
 
+const ok  = ()=>{
+  validate().then(() => {
+    emit('ok', modelRef.value, () => {
+          reset();
+        });
+  })
+}
 
+function reset() {
+  modelRef.value = {userId:0,username:"",email:"",roleName:""};
+}
 
 const selectUser  = (value:any) => {
       store.state.Project.notExistedUserList?.forEach((item)=>{
         if (item.id == value){
-          modelRef.email = item.email
+          modelRef.value.email = item.email
         }
       })
     };

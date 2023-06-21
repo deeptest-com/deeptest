@@ -114,13 +114,13 @@ export default defineComponent({
 
 
       const usedBy = inject('usedBy')
-      if (usedBy === UsedBy.InterfaceDebug) {
+      // if (usedBy === UsedBy.InterfaceDebug) {
         if (this.options.usedWith === 'response') {
           addExtractAction(this.editor, this.onExtractor)
         } else if (this.options.usedWith === 'request') {
           addReplaceAction(this.editor, this.onReplace)
         }
-      }
+      // }
 
       // @event `change`
       const editor = this._getEditor()

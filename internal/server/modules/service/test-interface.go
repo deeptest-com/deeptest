@@ -18,6 +18,8 @@ type TestInterfaceService struct {
 	ScenarioProcessorRepo *repo.ScenarioProcessorRepo `inject:""`
 	ServeServerRepo       *repo.ServeServerRepo       `inject:""`
 	DebugInterfaceRepo    *repo.DebugInterfaceRepo    `inject:""`
+	ExtractorRepo         *repo.ExtractorRepo         `inject:""`
+	CheckpointRepo        *repo.CheckpointRepo        `inject:""`
 
 	DebugInterfaceService *DebugInterfaceService `inject:""`
 }
@@ -119,25 +121,30 @@ func (s *TestInterfaceService) addInterface(endpointInterfaceId int, createBy ui
 		return
 	}
 
-	testInterface := model.TestInterface{
-		Title: endpointInterface.Name + "-" + string(endpointInterface.Method),
-		Type:  serverConsts.TestInterfaceTypeInterface,
-		Ordr:  s.TestInterfaceRepo.GetMaxOrder(parent.ID),
-
-		ParentId:  parent.ID,
-		ServeId:   parent.ServeId,
-		ProjectId: parent.ProjectId,
-		CreatedBy: createBy,
-	}
-
 	// convert or clone a debug interface obj
 	debugData, err := s.DebugInterfaceService.GetDebugInterfaceByEndpointInterface(uint(endpointInterfaceId))
 	debugData.DebugInterfaceId = 0 // force to clone the old one
 	debugData.ScenarioProcessorId = 0
 	debugInterface, err := s.DebugInterfaceService.Save(debugData)
 
-	testInterface.DebugInterfaceId = debugInterface.ID
+	// clone extractors and checkpoints if needed
+	if endpointInterface.DebugInterfaceId <= 0 {
+		s.ExtractorRepo.CloneFromEndpointInterfaceToDebugInterface(uint(endpointInterfaceId), debugInterface.ID)
+		s.CheckpointRepo.CloneFromEndpointInterfaceToDebugInterface(uint(endpointInterfaceId), debugInterface.ID)
+	}
 
+	// save test interface
+	testInterface := model.TestInterface{
+		Title: endpointInterface.Name + "-" + string(endpointInterface.Method),
+		Type:  serverConsts.TestInterfaceTypeInterface,
+		Ordr:  s.TestInterfaceRepo.GetMaxOrder(parent.ID),
+
+		DebugInterfaceId: debugInterface.ID,
+		ParentId:         parent.ID,
+		ServeId:          parent.ServeId,
+		ProjectId:        parent.ProjectId,
+		CreatedBy:        createBy,
+	}
 	s.TestInterfaceRepo.Save(&testInterface)
 
 	// update test_interface_id

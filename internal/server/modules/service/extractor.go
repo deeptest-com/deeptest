@@ -56,7 +56,7 @@ func (s *ExtractorService) ExtractInterface(debugInterfaceId, endpointInterfaceI
 
 	for _, extractor := range extractors {
 		s.Extract(&extractor, resp, usedBy)
-		s.ShareVarService.Save(extractor.Variable, extractor.Result, endpointInterfaceId, serveId, processorId, scenarioId, extractor.Scope, usedBy)
+		s.ShareVarService.Save(extractor.Variable, extractor.Result, debugInterfaceId, endpointInterfaceId, serveId, processorId, scenarioId, extractor.Scope, usedBy)
 	}
 
 	return

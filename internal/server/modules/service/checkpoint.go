@@ -150,7 +150,7 @@ func (s *CheckpointService) Check(checkpoint model.DebugInterfaceCheckpoint, sce
 	// Judgement
 	if checkpoint.Type == consts.Judgement {
 		variableMap, datapools, _ := s.VariableService.GetCombinedVarsForCheckpoint(
-			checkpoint.DebugInterfaceId, checkpoint.EndpointInterfaceId, scenarioProcessorId)
+			checkpoint.DebugInterfaceId, checkpoint.EndpointInterfaceId, scenarioProcessorId, usedBy)
 
 		result, _ := agentExec.EvaluateGovaluateExpressionWithVariables(checkpoint.Expression, variableMap, datapools)
 

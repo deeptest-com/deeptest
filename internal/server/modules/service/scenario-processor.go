@@ -197,7 +197,7 @@ func (s *ScenarioProcessorService) GetEntityTo(processorTo *agentExec.Processor)
 //		copier.CopyWithOption(&extractor, po, copier.Option{DeepCopy: true})
 //		extractor.ID = 0
 //		extractor.UsedBy = consts.ScenarioDebug
-//		extractor.InterfaceId = processorInterfaceId
+//		extractor.EndpointInterfaceId = processorInterfaceId
 //		extractor.ScenarioId = processor.ScenarioId
 //
 //		s.ExtractorRepo.SaveDebugData(&extractor)
@@ -215,7 +215,7 @@ func (s *ScenarioProcessorService) GetEntityTo(processorTo *agentExec.Processor)
 //		copier.CopyWithOption(&checkpoint, po, copier.Option{DeepCopy: true})
 //		checkpoint.ID = 0
 //		checkpoint.UsedBy = consts.ScenarioDebug
-//		checkpoint.InterfaceId = processorInterfaceId
+//		checkpoint.EndpointInterfaceId = processorInterfaceId
 //		checkpoint.ScenarioId = processor.ScenarioId
 //
 //		s.CheckpointRepo.SaveDebugData(&checkpoint)

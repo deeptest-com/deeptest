@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"gorm.io/gorm"
 )
@@ -46,12 +47,12 @@ func (r *ShareVariableRepo) findExist(po model.ShareVariable) (id uint, err erro
 	return
 }
 
-func (r *ShareVariableRepo) GetExistByInterfaceDebug(name string, serveId uint) (id uint, err error) {
+func (r *ShareVariableRepo) GetExistByInterfaceDebug(name string, serveId uint, usedBy consts.UsedBy) (id uint, err error) {
 	po := model.ShareVariable{}
 
 	err = r.DB.Model(&po).
-		Where("name = ? AND serve_id =? AND not deleted",
-			name, serveId).
+		Where("name = ? AND used_by = ? AND serve_id =? AND not deleted",
+			name, usedBy, serveId).
 		First(&po).Error
 
 	id = po.ID
@@ -71,9 +72,10 @@ func (r *ShareVariableRepo) GetExistByScenarioDebug(name string, scenarioId uint
 	return
 }
 
-func (r *ShareVariableRepo) ListByInterfaceDebug(serveId uint) (pos []model.ShareVariable, err error) {
+func (r *ShareVariableRepo) ListByInterfaceDebug(serveId uint, usedBy consts.UsedBy) (pos []model.ShareVariable, err error) {
 	err = r.DB.Model(&model.ShareVariable{}).
 		Where("serve_id=?", serveId).
+		Where("used_by=?", usedBy).
 		Where("NOT deleted AND NOT disabled").
 		Find(&pos).Error
 

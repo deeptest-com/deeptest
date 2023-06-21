@@ -139,6 +139,38 @@ const saveDebugInterface = async (data) => {
 
 </script>
 
+<style lang="less">
+#debug-index #debug-right .right-tab {
+  height: 100%;
+
+  .ant-tabs-left-content {
+    padding-left: 0px;
+  }
+  .ant-tabs-right-content {
+    padding-right: 0px;
+    height: 100%;
+    .ant-tabs-tabpane {
+      height: 100%;
+      &.ant-tabs-tabpane-inactive {
+        display: none;
+      }
+    }
+  }
+  .ant-tabs-nav-scroll {
+    text-align: center;
+  }
+  .ant-tabs-tab {
+    padding: 5px 10px !important;
+    .anticon {
+      margin-right: 2px !important;
+    }
+  }
+  .ant-tabs-ink-bar {
+    background-color: #d9d9d9 !important;
+  }
+}
+</style>
+
 <style lang="less" scoped>
 #debug-index {
   height: 100%;
@@ -182,34 +214,3 @@ const saveDebugInterface = async (data) => {
 }
 </style>
 
-<style lang="less">
-#debug-index #debug-right .right-tab {
-  height: 100%;
-
-  .ant-tabs-left-content {
-    padding-left: 0px;
-  }
-  .ant-tabs-right-content {
-    padding-right: 0px;
-    height: 100%;
-    .ant-tabs-tabpane {
-      height: 100%;
-      &.ant-tabs-tabpane-inactive {
-        display: none;
-      }
-    }
-  }
-  .ant-tabs-nav-scroll {
-    text-align: center;
-  }
-  .ant-tabs-tab {
-    padding: 5px 10px !important;
-    .anticon {
-      margin-right: 2px !important;
-    }
-  }
-  .ant-tabs-ink-bar {
-    background-color: #d9d9d9 !important;
-  }
-}
-</style>

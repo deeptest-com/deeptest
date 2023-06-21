@@ -111,3 +111,19 @@ func (r *CheckpointRepo) UpdateResultToExecLog(checkpoint model.DebugInterfaceCh
 
 	return
 }
+
+func (r *CheckpointRepo) CloneFromEndpointInterfaceToDebugInterface(endpointInterfaceId, debugInterfaceId uint) (
+	err error) {
+
+	srcPos, _ := r.List(0, endpointInterfaceId)
+
+	for _, po := range srcPos {
+		po.ID = 0
+		po.EndpointInterfaceId = endpointInterfaceId
+		po.DebugInterfaceId = debugInterfaceId
+
+		r.Save(&po)
+	}
+
+	return
+}

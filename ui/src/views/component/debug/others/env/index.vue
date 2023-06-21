@@ -180,13 +180,11 @@
 </template>
 
 <script setup lang="ts">
-import {computed, defineComponent, inject, ref, watch} from "vue";
+import {computed, inject, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
-import { QuestionCircleOutlined,ImportOutlined, MoreOutlined, ClearOutlined, PlusOutlined,
-  DownOutlined, EditOutlined, DeleteOutlined, CopyOutlined } from '@ant-design/icons-vue';
-import {StateType as EnvironmentStateType} from "@/store/environment";
-import Empty from "@/components/others/empty.vue";
+import { QuestionCircleOutlined, ClearOutlined, DeleteOutlined } from '@ant-design/icons-vue';
+
 import {StateType as ProjectStateType} from "@/store/project";
 import {UsedBy} from "@/utils/enum";
 const usedBy = inject('usedBy') as UsedBy
@@ -194,10 +192,12 @@ const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
 
 import {StateType as Debug} from "@/views/component/debug/store";
-const store = useStore<{  Debug: Debug, ProjectGlobal: ProjectStateType, Environment: EnvironmentStateType }>();
+import {StateType as ServeStateType} from "@/store/serve";
+const store = useStore<{  Debug: Debug, ServeGlobal: ServeStateType, ProjectGlobal: ProjectStateType }>();
 
 const debugData = computed<any>(() => store.state.Debug.debugData);
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
+const currServe = computed<any>(() => store.state.ServeGlobal.currServe);
 
 const clearShareVar  = () => {
   console.log('clearShareVar')

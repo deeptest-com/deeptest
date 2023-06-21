@@ -21,6 +21,8 @@ type DebugInterfaceService struct {
 	ServeRepo             *repo.ServeRepo             `inject:""`
 	ScenarioProcessorRepo *repo.ScenarioProcessorRepo `inject:""`
 	ServeServerRepo       *repo.ServeServerRepo       `inject:""`
+	ExtractorRepo         *repo.ExtractorRepo         `inject:""`
+	CheckpointRepo        *repo.CheckpointRepo        `inject:""`
 
 	DebugSceneService        *DebugSceneService        `inject:""`
 	ScenarioInterfaceService *ScenarioInterfaceService `inject:""`
@@ -157,7 +159,11 @@ func (s *DebugInterfaceService) Save(req domain.DebugData) (debugInterface model
 
 	err = s.DebugInterfaceRepo.Save(&debugInterface)
 
-	if req.DebugInterfaceId <= 0 {
+	if req.DebugInterfaceId <= 0 { // first time to save
+		// clone extractors and checkpoints if needed
+		s.ExtractorRepo.CloneFromEndpointInterfaceToDebugInterface(req.EndpointInterfaceId, debugInterface.ID)
+		s.CheckpointRepo.CloneFromEndpointInterfaceToDebugInterface(req.EndpointInterfaceId, debugInterface.ID)
+
 		s.EndpointInterfaceRepo.SetDebugInterfaceId(req.EndpointInterfaceId, debugInterface.ID)
 	}
 

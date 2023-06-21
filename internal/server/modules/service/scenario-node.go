@@ -21,6 +21,8 @@ type ScenarioNodeService struct {
 	DebugInterfaceRepo       *repo.DebugInterfaceRepo    `inject:""`
 
 	EndpointInterfaceRepo *repo.EndpointInterfaceRepo `inject:""`
+	ExtractorRepo         *repo.ExtractorRepo         `inject:""`
+	CheckpointRepo        *repo.CheckpointRepo        `inject:""`
 
 	DebugInterfaceService *DebugInterfaceService `inject:""`
 }
@@ -140,11 +142,26 @@ func (s *ScenarioNodeService) addInterface(endpointInterfaceId int, createBy uin
 		return
 	}
 
+	// convert or clone a debug interface obj
+	debugData, err := s.DebugInterfaceService.GetDebugInterfaceByEndpointInterface(uint(endpointInterfaceId))
+	debugData.DebugInterfaceId = 0 // force to clone the old one
+	debugData.ScenarioProcessorId = 0
+	debugInterface, err := s.DebugInterfaceService.Save(debugData)
+
+	// clone extractors and checkpoints if needed
+	if endpointInterface.DebugInterfaceId <= 0 {
+		s.ExtractorRepo.CloneFromEndpointInterfaceToDebugInterface(uint(endpointInterfaceId), debugInterface.ID)
+		s.CheckpointRepo.CloneFromEndpointInterfaceToDebugInterface(uint(endpointInterfaceId), debugInterface.ID)
+	}
+
+	// save scenario interface
 	processor := model.Processor{
 		Name: endpointInterface.Name + "-" + string(endpointInterface.Method),
 
-		EntityCategory: consts.ProcessorInterface,
-		EntityType:     consts.ProcessorInterfaceDefault,
+		EntityCategory:      consts.ProcessorInterface,
+		EntityType:          consts.ProcessorInterfaceDefault,
+		EntityId:            debugInterface.ID, // as debugInterfaceId
+		EndpointInterfaceId: debugInterface.EndpointInterfaceId,
 
 		Ordr: s.ScenarioNodeRepo.GetMaxOrder(parentProcessor.ID),
 
@@ -153,15 +170,6 @@ func (s *ScenarioNodeService) addInterface(endpointInterfaceId int, createBy uin
 		ProjectId:  parentProcessor.ProjectId,
 		CreatedBy:  createBy,
 	}
-
-	// convert or clone a debug interface obj
-	debugData, err := s.DebugInterfaceService.GetDebugInterfaceByEndpointInterface(uint(endpointInterfaceId))
-	debugData.DebugInterfaceId = 0 // force to clone the old one
-	debugData.ScenarioProcessorId = 0
-	debugInterface, err := s.DebugInterfaceService.Save(debugData)
-
-	processor.EntityId = debugInterface.ID // as debugInterfaceId
-	processor.EndpointInterfaceId = debugInterface.EndpointInterfaceId
 
 	s.ScenarioNodeRepo.Save(&processor)
 

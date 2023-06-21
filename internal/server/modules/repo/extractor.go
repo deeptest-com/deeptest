@@ -212,3 +212,19 @@ func (r *ExtractorRepo) GetParentIds(processorId uint, ids *[]uint) {
 
 	return
 }
+
+func (r *ExtractorRepo) CloneFromEndpointInterfaceToDebugInterface(endpointInterfaceId, debugInterfaceId uint) (
+	err error) {
+
+	srcPos, _ := r.List(0, endpointInterfaceId)
+
+	for _, po := range srcPos {
+		po.ID = 0
+		po.EndpointInterfaceId = endpointInterfaceId
+		po.DebugInterfaceId = debugInterfaceId
+
+		r.Save(&po)
+	}
+
+	return
+}

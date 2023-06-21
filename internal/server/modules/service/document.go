@@ -8,20 +8,22 @@ import (
 )
 
 type DocumentService struct {
-	EndpointRepo    *repo.EndpointRepo    `inject:""`
-	ProjectRepo     *repo.ProjectRepo     `inject:""`
-	ServeRepo       *repo.ServeRepo       `inject:""`
-	EnvironmentRepo *repo.EnvironmentRepo `inject:""`
+	EndpointRepo         *repo.EndpointRepo         `inject:""`
+	ProjectRepo          *repo.ProjectRepo          `inject:""`
+	ServeRepo            *repo.ServeRepo            `inject:""`
+	EnvironmentRepo      *repo.EnvironmentRepo      `inject:""`
+	EndpointDocumentRepo *repo.EndpointDocumentRepo `inject:""`
+	EndpointSnapshotRepo *repo.EndpointSnapshotRepo `inject:""`
 }
 
 func (s *DocumentService) Content(req domain.DocumentReq) (res domain.DocumentRep, err error) {
-	var projectId uint
+	var projectId, documentId uint
 	var endpointIds, serveIds []uint
 
-	projectId, serveIds, endpointIds = req.ProjectId, req.ServeIds, req.EndpointIds
+	projectId, serveIds, endpointIds, documentId = req.ProjectId, req.ServeIds, req.EndpointIds, req.DocumentId
 
 	var endpoints map[uint][]domain.EndpointReq
-	endpoints, err = s.GetEndpoints(&projectId, &serveIds, &endpointIds)
+	endpoints, err = s.GetEndpoints(&projectId, &serveIds, &endpointIds, documentId)
 	if err != nil {
 		return
 	}
@@ -33,10 +35,12 @@ func (s *DocumentService) Content(req domain.DocumentReq) (res domain.DocumentRe
 	return
 }
 
-func (s *DocumentService) GetEndpoints(projectId *uint, serveIds, endpointIds *[]uint) (res map[uint][]domain.EndpointReq, err error) {
+func (s *DocumentService) GetEndpoints(projectId *uint, serveIds, endpointIds *[]uint, documentId uint) (res map[uint][]domain.EndpointReq, err error) {
 	var endpoints []*model.Endpoint
 
-	if *projectId != 0 {
+	if documentId != 0 {
+		endpoints, err = s.EndpointSnapshotRepo.GetByDocumentId(documentId)
+	} else if *projectId != 0 {
 		endpoints, err = s.EndpointRepo.GetByProjectId(*projectId)
 	} else if len(*serveIds) != 0 {
 		endpoints, err = s.EndpointRepo.GetByServeIds(*serveIds)
@@ -137,5 +141,39 @@ func (s *DocumentService) GetSecurities(serveIds []uint) (securities map[uint][]
 func (s *DocumentService) GetGlobalVars(projectId uint) (globalVars []domain.EnvironmentParam) {
 	res, _ := s.EnvironmentRepo.ListGlobalVar(projectId)
 	copier.CopyWithOption(&globalVars, &res, copier.Option{IgnoreEmpty: true, DeepCopy: true})
+	return
+}
+
+func (s *DocumentService) GetDocumentVersionList(projectId uint, needLatest bool) (documents []model.EndpointDocument, err error) {
+	documents, err = s.EndpointDocumentRepo.ListByProject(projectId)
+
+	if needLatest {
+		latestDocument := model.EndpointDocument{
+			Name:    "实时版本",
+			Version: "latest",
+		}
+		documents = append(documents, latestDocument)
+	}
+
+	return
+}
+
+func (s *DocumentService) Publish(req domain.DocumentVersionReq, projectId uint) (err error) {
+	err = s.EndpointSnapshotRepo.BatchCreateSnapshot(req, projectId)
+	return
+}
+
+func (s *DocumentService) RemoveSnapshot(snapshotId uint) (err error) {
+	err = s.EndpointSnapshotRepo.DeleteById(snapshotId)
+	return
+}
+
+func (s *DocumentService) UpdateSnapshotContent(id uint, endpoint model.Endpoint) (err error) {
+	err = s.EndpointSnapshotRepo.UpdateContent(id, endpoint)
+	return
+}
+
+func (s *DocumentService) UpdateDocument(req domain.UpdateDocumentVersionReq) (err error) {
+	err = s.EndpointDocumentRepo.Update(req)
 	return
 }

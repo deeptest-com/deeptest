@@ -14,6 +14,10 @@ func (m *DocumentModule) Party() module.WebModule {
 	handler := func(public iris.Party) {
 		//public.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
 		public.Post("/", m.DocumentCtrl.Index).Name = "接口文档"
+		public.Post("/version_list", m.DocumentCtrl.DocumentVersionList).Name = "接口文档版本列表"
+		public.Post("/publish", m.DocumentCtrl.Publish).Name = "发布接口文档"
+		public.Delete("/delete", m.DocumentCtrl.DeleteSnapshot).Name = "删除接口文档"
+		public.Post("/update_version", m.DocumentCtrl.UpdateDocument).Name = "更新文档版本信息"
 
 	}
 	return module.NewModule("/document", handler)

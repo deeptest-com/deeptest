@@ -4,6 +4,7 @@ type DocumentReq struct {
 	EndpointIds []uint `json:"endpointIds"`
 	ServeIds    []uint `json:"serveIds"`
 	ProjectId   uint   `json:"projectId"`
+	DocumentId  uint   `json:"documentId"`
 }
 
 type DocumentRep struct {
@@ -25,4 +26,20 @@ type DocumentServe struct {
 type Endpoints struct {
 	endpoint EndpointReq
 	children []*Endpoints
+}
+
+type DocumentVersionReq struct {
+	EndpointIds []uint `json:"endpointId"`
+	Name        string `json:"name"`
+	Version     string `json:"version"`
+}
+
+type UpdateDocumentVersionReq struct {
+	Id      uint   `json:"id"`
+	Name    string `json:"name"`
+	Version string `json:"version"`
+}
+
+type DocumentVersionListReq struct {
+	NeedLatest bool `json:"needLatest"` //需要展示实时版本这条假数据
 }

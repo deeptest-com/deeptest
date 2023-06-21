@@ -101,6 +101,8 @@ var (
 		&EndpointInterfaceParam{},
 		&EndpointInterfaceCookie{},
 		&EndpointInterfaceHeader{},
+		&EndpointDocument{},
+		&EndpointSnapshot{},
 
 		&Serve{},
 		&ServeServer{},

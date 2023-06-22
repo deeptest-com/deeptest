@@ -20,7 +20,8 @@ type DebugSceneService struct {
 }
 
 func (s *DebugSceneService) LoadScene(endpointInterfaceId, debugServerId, scenarioProcessorId uint, usedBy consts.UsedBy) (
-	baseUrl string, shareVariables []domain.GlobalVar, envVars []domain.GlobalVar, globalVars []domain.GlobalVar) {
+	baseUrl string, shareVars []domain.GlobalVar, envVars []domain.GlobalVar,
+	globalVars []domain.GlobalVar, globalParams []domain.GlobalParam) {
 
 	if endpointInterfaceId > 0 {
 		interf, _ := s.EndpointInterfaceRepo.Get(endpointInterfaceId)
@@ -35,9 +36,12 @@ func (s *DebugSceneService) LoadScene(endpointInterfaceId, debugServerId, scenar
 
 	baseUrl = _httpUtils.AddSepIfNeeded(serveServer.Url)
 	envId := serveServer.EnvironmentId
+	environment, _ := s.EnvironmentRepo.Get(envId)
 
-	shareVariables, _ = s.ShareVarService.ListForDebug(debugServerId, scenarioProcessorId, usedBy)
+	shareVars, _ = s.ShareVarService.ListForDebug(debugServerId, scenarioProcessorId, usedBy)
 	envVars, _ = s.EnvironmentService.GetVarsByEnv(envId)
+	globalVars, _ = s.EnvironmentService.GetGlobalVars(environment.ProjectId)
+	globalParams, _ = s.EnvironmentService.GetGlobalParams(environment.ProjectId)
 
 	return
 }

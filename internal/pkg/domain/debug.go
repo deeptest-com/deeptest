@@ -32,9 +32,10 @@ type DebugData struct {
 	BaseUrl string `json:"baseUrl"`
 
 	// used for selection and show in right environment tab
-	ShareVars  []GlobalVar `json:"shareVars"`
-	EnvVars    []GlobalVar `json:"envVars"`
-	GlobalVars []GlobalVar `json:"globalVars"`
+	ShareVars    []GlobalVar   `json:"shareVars"`
+	EnvVars      []GlobalVar   `json:"envVars"`
+	GlobalVars   []GlobalVar   `json:"globalVars"`
+	GlobalParams []GlobalParam `json:"globalParams"`
 
 	Name string `json:"name"`
 }

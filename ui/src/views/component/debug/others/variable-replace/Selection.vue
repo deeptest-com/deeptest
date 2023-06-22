@@ -99,6 +99,10 @@ const selectMenuItem = async (item) => {
 
     store.dispatch("Debug/updateUrl", url);
 
+  } else if (variableSelectionData.value.src === 'body') {
+    const body = getEditorNewContent(item.name)
+    store.dispatch("Debug/updateBody", body);
+
   } else if (variableSelectionData.value.src === 'queryParam') {
     let param = debugData.value.queryParams[variableSelectionData.value.index].value
     param = getInputNewContent(item.name, param,
@@ -120,9 +124,6 @@ const selectMenuItem = async (item) => {
 
     updateInput(targetElemId, header)
 
-  } else if (variableSelectionData.value.src === 'body') {
-    const body = getEditorNewContent(item.name)
-    store.dispatch("Debug/updateBody", body);
   }
 
   requestVariableVisible.value = false

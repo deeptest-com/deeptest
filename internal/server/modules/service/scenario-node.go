@@ -185,8 +185,8 @@ func (s *ScenarioNodeService) addInterface(endpointInterfaceId int, createBy uin
 	return
 }
 
-//func (s *ScenarioNodeService) createDirOrInterface(interfaceId int, parentProcessor model.Processor) (
-//	ret model.Processor, err error) {
+//func (s *ScenarioNodeService) createDirOrInterface(interfaceId int, parentProcessor modelRef.Processor) (
+//	ret modelRef.Processor, err error) {
 //
 //	if interfaceNode.ParentId == 0 {
 //		for _, child := range interfaceNode.Children {
@@ -194,7 +194,7 @@ func (s *ScenarioNodeService) addInterface(endpointInterfaceId int, createBy uin
 //		}
 //
 //	} else if !interfaceNode.IsLeaf {
-//		processor := model.Processor{
+//		processor := modelRef.Processor{
 //			Name:           interfaceNode.Name,
 //			ScenarioId:     parentProcessor.ScenarioId,
 //			EntityCategory: consts.ProcessorGroup,
@@ -210,7 +210,7 @@ func (s *ScenarioNodeService) addInterface(endpointInterfaceId int, createBy uin
 //		}
 //
 //	} else {
-//		processor := model.Processor{
+//		processor := modelRef.Processor{
 //			Name:           interfaceNode.Name,
 //			ScenarioId:     parentProcessor.ScenarioId,
 //			EntityCategory: consts.ProcessorInterface,
@@ -223,7 +223,7 @@ func (s *ScenarioNodeService) addInterface(endpointInterfaceId int, createBy uin
 //		processor.Ordr = s.ScenarioNodeRepo.GetMaxOrder(processor.ParentId)
 //		s.ScenarioNodeRepo.SaveDebugData(&processor)
 //
-//		interfaceProcessor := model.ProcessorInterface{}
+//		interfaceProcessor := modelRef.ProcessorInterface{}
 //		interfaceProcessor, err = s.ScenarioProcessorService.CloneInterface(uint(interfaceNode.Id), processor)
 //		if err != nil {
 //			return

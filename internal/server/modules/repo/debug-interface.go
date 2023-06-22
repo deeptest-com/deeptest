@@ -361,7 +361,7 @@ func (r *DebugInterfaceRepo) RemoveApiKey(id uint) (err error) {
 	return
 }
 
-//func (r *DebugInterfaceRepo) makeTree(Data []*model.DebugInterface, node *model.DebugInterface) { //参数为父节点，添加父节点的子节点指针切片
+//func (r *DebugInterfaceRepo) makeTree(Data []*modelRef.DebugInterface, node *modelRef.DebugInterface) { //参数为父节点，添加父节点的子节点指针切片
 //	children, _ := r.haveChild(Data, node) //判断节点是否有子节点并返回
 //	if children != nil {
 //		node.Children = append(node.Children, children[0:]...) //添加子节点
@@ -374,7 +374,7 @@ func (r *DebugInterfaceRepo) RemoveApiKey(id uint) (err error) {
 //	}
 //}
 //
-//func (r *DebugInterfaceRepo) haveChild(Data []*model.DebugInterface, node *model.DebugInterface) (children []*model.DebugInterface, yes bool) {
+//func (r *DebugInterfaceRepo) haveChild(Data []*modelRef.DebugInterface, node *modelRef.DebugInterface) (children []*modelRef.DebugInterface, yes bool) {
 //	for _, v := range Data {
 //		if v.ParentId == node.ID {
 //			v.Slots = iris.Map{"icon": "icon"}
@@ -393,7 +393,7 @@ func (r *DebugInterfaceRepo) Delete(id uint) (err error) {
 		Update("deleted", true).
 		Error
 
-	//field := model.InterfaceDebug{}
+	//field := modelRef.InterfaceDebug{}
 	//field.ID = id
 	//err = r.DB.Remove(field).SendErrorMsg
 
@@ -568,7 +568,7 @@ func (r *DebugInterfaceRepo) UpdateInterface(interf *model.DebugInterface) (err 
 //	return
 //}
 //
-//func (r *DebugInterfaceRepo) GetByOwner(ownerId uint, usedBy consts.UsedBy) (ret model.DebugInterface, err error) {
+//func (r *DebugInterfaceRepo) GetByOwner(ownerId uint, usedBy consts.UsedBy) (ret modelRef.DebugInterface, err error) {
 //	db := r.DB.Where("NOT deleted")
 //
 //	if usedBy == consts.InterfaceDebug {

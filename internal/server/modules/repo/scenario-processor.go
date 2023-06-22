@@ -332,7 +332,7 @@ func (r *ScenarioProcessorRepo) genProcessorComm(processor model.Processor) (ret
 	ret.ProcessorID = processor.ID
 	ret.ParentID = processor.ParentId
 
-	//ret = model.ProcessorComm{
+	//ret = modelRef.ProcessorComm{
 	//	ProcessorEntityBase: agentExec.ProcessorEntityBase{
 	//		Name:              processor.Name,
 	//		ProcessorCategory: processor.EntityCategory,

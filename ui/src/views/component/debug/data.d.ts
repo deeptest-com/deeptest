@@ -96,6 +96,7 @@ export interface Extractor {
     boundaryIncluded: boolean;
 
     variable: string;
+    code: string;
     scope: string;
     debugInterfaceId?: number;
     endpointInterfaceId?: number;

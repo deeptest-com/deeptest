@@ -167,7 +167,7 @@ func (s *ScenarioProcessorService) GetEntityTo(processorTo *agentExec.Processor)
 	return
 }
 
-//func (s *ScenarioProcessorService) CloneInterface(interfaceId uint, processor model.Processor) (ret model.ProcessorInterface, err error) {
+//func (s *ScenarioProcessorService) CloneInterface(interfaceId uint, processor modelRef.Processor) (ret modelRef.ProcessorInterface, err error) {
 //	interf, err := s.EndpointInterfaceRepo.GetDetail(interfaceId)
 //	if err != nil {
 //		return
@@ -188,11 +188,11 @@ func (s *ScenarioProcessorService) GetEntityTo(processorTo *agentExec.Processor)
 //	return
 //}
 //
-//func (s *ScenarioProcessorService) CopyExtractors(interfaceId, processorInterfaceId uint, processor model.Processor) {
+//func (s *ScenarioProcessorService) CopyExtractors(interfaceId, processorInterfaceId uint, processor modelRef.Processor) {
 //	pos, _ := s.ExtractorService.Index(interfaceId, consts.InterfaceDebug)
 //
 //	for _, po := range pos {
-//		extractor := model.DebugInterfaceExtractor{}
+//		extractor := modelRef.DebugInterfaceExtractor{}
 //
 //		copier.CopyWithOption(&extractor, po, copier.Option{DeepCopy: true})
 //		extractor.ID = 0
@@ -206,11 +206,11 @@ func (s *ScenarioProcessorService) GetEntityTo(processorTo *agentExec.Processor)
 //	return
 //}
 //
-//func (s *ScenarioProcessorService) CopyCheckpoints(interfaceId, processorInterfaceId uint, processor model.Processor) {
+//func (s *ScenarioProcessorService) CopyCheckpoints(interfaceId, processorInterfaceId uint, processor modelRef.Processor) {
 //	pos, _ := s.CheckpointService.Index(interfaceId, consts.InterfaceDebug)
 //
 //	for _, po := range pos {
-//		checkpoint := model.InterfaceCheckpoint{}
+//		checkpoint := modelRef.InterfaceCheckpoint{}
 //
 //		copier.CopyWithOption(&checkpoint, po, copier.Option{DeepCopy: true})
 //		checkpoint.ID = 0

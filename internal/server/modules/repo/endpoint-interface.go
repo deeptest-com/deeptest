@@ -232,7 +232,7 @@ func (r *EndpointInterfaceRepo) Delete(id uint) (err error) {
 		Update("deleted", true).
 		Error
 
-	//field := model.UsedByInterface{}
+	//field := modelRef.UsedByInterface{}
 	//field.ID = id
 	//err = r.DB.Remove(field).SendErrorMsg
 

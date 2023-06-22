@@ -75,7 +75,7 @@ func GormSQLLite() *gorm.DB {
 	db.Session(&gorm.Session{FullSaveAssociations: true, AllowGlobalUpdate: false})
 
 	//err = db.AutoMigrate(
-	//	model.Models...,
+	//	modelRef.Models...,
 	//)
 	//if err != nil {
 	//	logUtils.Info(err.SendErrorMsg())

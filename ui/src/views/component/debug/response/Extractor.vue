@@ -53,18 +53,17 @@
     </div>
 
     <a-modal
-        :title="model.id ? '编辑' : '创建' + '提取器'"
+        :title="modelRef.id ? '编辑' : '创建' + '提取器'"
         :destroy-on-close="true"
         :mask-closable="false"
         :visible="editVisible"
         :onCancel="cancel"
         :footer="null"
-        width="700px"
-    >
+        width="700px">
       <div>
         <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
           <a-form-item label="数据来源" v-bind="validateInfos.src">
-            <a-radio-group name="srcGroup" @change="selectSrc" v-model:value="model.src"
+            <a-radio-group name="srcGroup" @change="selectSrc" v-model:value="modelRef.src"
                            @blur="validate('src', { trigger: 'change' }).catch(() => {})">
               <a-radio v-for="(item, idx) in srcOptions" :key="idx" :value="item.value">
                 {{ t(item.label) }}
@@ -74,8 +73,8 @@
           </a-form-item>
 
           <!-- for body -->
-          <a-form-item v-if="model.src === 'body'" label="提取方法" v-bind="validateInfos.type">
-            <a-select v-model:value="model.type" @change="selectType"
+          <a-form-item v-if="modelRef.src === 'body'" label="提取方法" v-bind="validateInfos.type">
+            <a-select v-model:value="modelRef.type" @change="selectType"
                       @blur="validate('type', { trigger: 'change' }).catch(() => {})">
               <a-select-option v-for="(item, idx) in typeOptions" :key="idx" :value="item.value">
                 {{ t(item.label) }}
@@ -84,41 +83,59 @@
           </a-form-item>
 
           <!-- for header -->
-          <a-form-item v-if="model.src === 'header'"  label="键值" v-bind="validateInfos.key">
-            <a-input v-model:value="model.key"
+          <a-form-item v-if="modelRef.src === 'header'" label="键值" v-bind="validateInfos.key">
+            <a-input v-model:value="modelRef.key"
                      @blur="validate('key', { trigger: 'blur' }).catch(() => {})" />
           </a-form-item>
 
-          <template v-if="model.src === 'body' && model.type === 'boundary'">
+          <template v-if="modelRef.src === 'body' && modelRef.type === 'boundary'">
             <a-form-item label="边界开始" v-bind="validateInfos.boundaryStart">
-              <a-input v-model:value="model.boundaryStart"
+              <a-input v-model:value="modelRef.boundaryStart"
                        @blur="validate('boundaryStart', { trigger: 'blur' }).catch(() => {})" />
             </a-form-item>
             <a-form-item  label="边界结束" v-bind="validateInfos.boundaryEnd">
-              <a-input v-model:value="model.boundaryEnd"
+              <a-input v-model:value="modelRef.boundaryEnd"
                        @blur="validate('boundaryEnd', { trigger: 'blur' }).catch(() => {})" />
             </a-form-item>
             <a-form-item  label="索引值">
-              <a-input-number v-model:value="model.boundaryIndex" />
+              <a-input-number v-model:value="modelRef.boundaryIndex" />
             </a-form-item>
             <a-form-item  label="是否包含边界">
-              <a-switch v-model:checked="model.boundaryIncluded" />
+              <a-switch v-model:checked="modelRef.boundaryIncluded" />
             </a-form-item>
           </template>
 
-          <a-form-item v-if="model.src === 'body' && model.type !== 'boundary'"
-                       :label="model.type==='regx'?'表达式':'XPath'" v-bind="validateInfos.expression">
-            <a-input v-model:value="model.expression"
+          <a-form-item v-if="modelRef.src === 'body' && modelRef.type !== 'boundary'"
+                       :label="modelRef.type==='regx'?'表达式':'XPath'" v-bind="validateInfos.expression">
+            <a-input v-model:value="modelRef.expression"
                      @blur="validate('expression', { trigger: 'blur' }).catch(() => {})" />
           </a-form-item>
 
           <a-form-item label="变量名称" v-bind="validateInfos.variable">
-            <a-input v-model:value="model.variable"
-                     @blur="validate('variable', { trigger: 'blur' }).catch(() => {})" />
+            <a-input-group compact>
+              <a-input v-model:value="modelRef.variable"
+                       @change="onVarChanged"
+                       @blur="validate('variable', { trigger: 'blur' }).catch(() => {})"
+                       style="width: 72%"/>
+
+              <a-select v-model:value="modelRef.code"
+                        @change="onVarSelected"
+                        style="width: 28%">
+                <a-select-option value="">
+                  选择变量
+                </a-select-option>
+
+                <a-select-option v-for="(item, idx) in debugData.shareVars"
+                                 :key="idx"
+                                 :value="item.id + '-' + item.name">
+                  {{item.name}}
+                </a-select-option>
+              </a-select>
+            </a-input-group>
           </a-form-item>
 
           <a-form-item label="变量作用域">
-            <a-radio-group v-model:value="model.scope">
+            <a-radio-group v-model:value="modelRef.scope">
               <a-radio value="public">公有</a-radio>
               <a-radio value="private">私有</a-radio>
             </a-radio-group>
@@ -181,7 +198,7 @@ watch(debugData, () => {
   listExtractor()
 }, {immediate: true, deep: true})
 
-const model = ref({usedBy: usedBy, scope: VarScope.ScopePublic} as Extractor)
+const modelRef = ref({variable: '', code: '', scope: VarScope.ScopePublic, usedBy: usedBy} as any)
 const results = ref({})
 const editVisible = ref(false)
 
@@ -215,31 +232,32 @@ const rules = reactive({
   ],
 });
 
-const { resetFields, validate, validateInfos } = useForm(model, rules);
+const { resetFields, validate, validateInfos } = useForm(modelRef, rules);
 
 const add = () => {
   editVisible.value = true
-  model.value = {
+  modelRef.value = {
     src: ExtractorSrc.body,
     type: ExtractorType.boundary,
     expression: '',
     variable: '',
-    usedBy: usedBy,
-    scope: VarScope.ScopePublic} as Extractor
+    code: '',
+    scope: VarScope.ScopePublic,
+    usedBy: usedBy} as Extractor
 
   selectSrc()
   if (responseData.value.contentLang === 'json') {
-    model.value.type = ExtractorType.jsonquery
+    modelRef.value.type = ExtractorType.jsonquery
   } else if (responseData.value.contentLang === 'xml') {
-    model.value.type = ExtractorType.xmlquery
+    modelRef.value.type = ExtractorType.xmlquery
   } else if (responseData.value.contentLang === 'html') {
-    model.value.type = ExtractorType.htmlquery
+    modelRef.value.type = ExtractorType.htmlquery
   }
 }
 
 const edit = (item) => {
   console.log('edit')
-  model.value = item
+  modelRef.value = item
   editVisible.value = true
 
   selectSrc()
@@ -248,11 +266,11 @@ const edit = (item) => {
 const save = () => {
   console.log('save')
   validate().then(() => {
-    model.value.debugInterfaceId = debugInfo.value.debugInterfaceId
-    model.value.endpointInterfaceId = debugInfo.value.endpointInterfaceId
-    model.value.projectId = debugData.value.projectId
+    modelRef.value.debugInterfaceId = debugInfo.value.debugInterfaceId
+    modelRef.value.endpointInterfaceId = debugInfo.value.endpointInterfaceId
+    modelRef.value.projectId = debugData.value.projectId
 
-    store.dispatch('Debug/saveExtractor', model.value).then((result) => {
+    store.dispatch('Debug/saveExtractor', modelRef.value).then((result) => {
       if (result) {
         editVisible.value = false
       }
@@ -277,9 +295,9 @@ const disable = (item) => {
 }
 
 const selectSrc = () => {
-  console.log('selectSrc', model.value.src)
+  console.log('selectSrc', modelRef.value.src)
 
-  if (model.value.src === ExtractorSrc.header) {
+  if (modelRef.value.src === ExtractorSrc.header) {
     rules.key = [keyRequired]
     rules.expression = []
     rules.type = []
@@ -292,9 +310,9 @@ const selectSrc = () => {
   selectType()
 }
 const selectType = () => {
-  console.log('selectType', model.value.type)
+  console.log('selectType', modelRef.value.type)
 
-  if (model.value.type === ExtractorType.boundary) {
+  if (modelRef.value.type === ExtractorType.boundary) {
     rules.boundaryStart = [boundaryStartRequired]
     rules.boundaryEnd = [boundaryEndRequired]
     rules.expression = []
@@ -304,6 +322,39 @@ const selectType = () => {
     rules.expression = [expressionRequired]
   }
 }
+
+const onVarChanged = (e) => {
+  console.log('onVarChanged', e)
+
+  const value = e.target.value.trim()
+
+  if (!value) {
+    modelRef.value.code = ''
+    return
+  }
+
+  let found = false
+  for (let i in debugData.value.shareVars) {
+    const item = debugData.value.shareVars[i]
+
+    if (value === item.name) {
+      modelRef.value.code = item.id + '-' + item.name
+      found = true
+      break
+    }
+  }
+
+  if (!found) {
+    modelRef.value.code = ''
+  }
+};
+
+const onVarSelected = (value) => {
+  console.log('onVarSelected')
+
+  const arr = value.split('-')
+  modelRef.value.variable = arr[1]
+};
 
 const labelCol = { span: 6 }
 const wrapperCol = { span: 16 }

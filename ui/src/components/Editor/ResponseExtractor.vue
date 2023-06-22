@@ -20,7 +20,7 @@
           </a-input>
         </a-form-item>
 
-        <a-form-item label="变量" v-bind="validateInfos.variable">
+        <a-form-item label="变量名称" v-bind="validateInfos.variable">
           <a-input-group compact>
             <a-input v-model:value="modelRef.variable"
                      @change="onVarChanged"
@@ -121,9 +121,9 @@ const modelRef = ref<any>({
   expression: props.expr,
   expressionType: props.exprType,
   variable: '',
-  usedBy: usedBy,
-  scope: VarScope.ScopePublic,
   code: '',
+  scope: VarScope.ScopePublic,
+  usedBy: usedBy,
 })
 
 const onVarChanged = (e) => {

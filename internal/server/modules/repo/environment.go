@@ -238,7 +238,7 @@ func (r *EnvironmentRepo) getCopyName(name string) (ret string) {
 	return
 }
 
-//func (r *EnvironmentRepo) ListVariableByProject(projectId uint) (vars []model.EnvironmentVar, err error) {
+//func (r *EnvironmentRepo) ListVariableByProject(projectId uint) (vars []modelRef.EnvironmentVar, err error) {
 //	environment, _ := r.GetByProject(projectId)
 //	vars, _ = r.GetVars(environment.ID)
 //

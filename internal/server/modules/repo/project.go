@@ -397,7 +397,7 @@ func (r *ProjectRepo) Members(req v1.ProjectReqPaginate, projectId int) (data _d
 
 func (r *ProjectRepo) RemoveMember(userId, projectId int) (err error) {
 	/*
-		err = r.DB.Model(&model.ProjectMember{}).
+		err = r.DB.Model(&modelRef.ProjectMember{}).
 			Where("user_id = ? AND project_id = ?", userId, projectId).
 			Updates(map[string]interface{}{"deleted": true}).Error
 		if err != nil {

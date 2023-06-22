@@ -28,7 +28,7 @@ func (s *EnvironmentService) List(projectId int) (envs []model.Environment, err 
 	return
 }
 
-//func (s *EnvironmentService) ListVariableForExec(scenario model.Scenario) (ret map[string]interface{}, err error) {
+//func (s *EnvironmentService) ListVariableForExec(scenario modelRef.Scenario) (ret map[string]interface{}, err error) {
 //	ret = map[string]interface{}{}
 //
 //	pos, err := s.EnvironmentRepo.ListVariableByProject(scenario.ProjectId)

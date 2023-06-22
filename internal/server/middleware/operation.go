@@ -90,7 +90,7 @@ func CreateOplog(ol Oplog) error {
 	return nil
 }
 
-// Oplog 中间件 model
+// Oplog 中间件 modelRef
 type Oplog struct {
 	gorm.Model
 	Ip           string        `json:"ip" form:"ip" gorm:"column:ip;comment:请求ip"`

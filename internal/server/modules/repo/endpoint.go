@@ -24,7 +24,7 @@ func NewEndpointRepo() *EndpointRepo {
 }
 
 func (r *EndpointRepo) Paginate(req v1.EndpointReqPaginate) (ret _domain.PageData, err error) {
-	//fmt.Println(r.DB.Model(&model.SysUser{}))
+	//fmt.Println(r.DB.Model(&modelRef.SysUser{}))
 	//err = r.DB.Where("id=?", id).Where("name=?", name).Find(&res).Error
 	var count int64
 	db := r.DB.Model(&model.Endpoint{}).Where("project_id = ? AND NOT deleted AND NOT disabled", req.ProjectId)

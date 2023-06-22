@@ -85,6 +85,7 @@ const {t} = useI18n();
 import {Param} from "@/views/component/debug/data";
 import {StateType as Debug} from "@/views/component/debug/store";
 import {getContextMenuStyle2} from "@/utils/dom";
+import useVariableReplace from "@/hooks/variable-replace";
 const store = useStore<{  Debug: Debug }>();
 
 const debugData = computed<any>(() => store.state.Debug.debugData);
@@ -120,29 +121,7 @@ const insert = (idx) => {
   debugData.value.pathParams.splice(idx+1, 0, {} as Param)
 }
 
-const showContextMenu = ref(false)
-const paramIndex = ref(-1)
-let contextTarget = {} as any
-const contextMenuStyle = ref({} as any)
-const onContextMenuShow = (idx, e) => {
-  console.log('onContextMenuShow', idx, e.target)
-  if (!e) return
-
-  contextMenuStyle.value = getContextMenuStyle2(e)
-  contextTarget = e.target
-  paramIndex.value = idx
-
-  showContextMenu.value = true
-}
-const onMenuClick = (key) => {
-  console.log('onMenuClick', key)
-
-  if (key === 'use-variable') {
-    bus.emit(settings.eventVariableSelectionStatus, {src: 'pathParam', index: paramIndex.value, data: contextTarget});
-  }
-
-  showContextMenu.value = false
-}
+const { showContextMenu, contextMenuStyle, onContextMenuShow, onMenuClick } = useVariableReplace('pathParam')
 
 </script>
 

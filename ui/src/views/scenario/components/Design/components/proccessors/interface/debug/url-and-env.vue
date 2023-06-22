@@ -30,6 +30,7 @@ import {getContextMenuStyle2} from "@/utils/dom";
 import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
 import ContextMenu from "@/views/component/debug/others/variable-replace/ContextMenu.vue"
+import useVariableReplace from "@/hooks/variable-replace";
 
 const store = useStore<{ Debug: Debug, Endpoint }>();
 
@@ -82,29 +83,7 @@ const changeUrl = (e) => {
   store.commit('Debug/setUrl', e.target.value.trim())
 }
 
-const showContextMenu = ref(false)
-const paramIndex = ref(-1)
-let contextTarget = {} as any
-const contextMenuStyle = ref({} as any)
-const onContextMenuShow = (idx, e) => {
-  console.log('onContextMenuShow', idx, e.target)
-  if (!e) return
-
-  contextMenuStyle.value = getContextMenuStyle2(e)
-  contextTarget = e.target
-  paramIndex.value = idx
-
-  showContextMenu.value = true
-}
-const onMenuClick = (key) => {
-  console.log('onMenuClick', key)
-
-  if (key === 'use-variable') {
-    bus.emit(settings.eventVariableSelectionStatus, {src: 'scenarioInterfaceUrl', index: paramIndex.value, data: contextTarget});
-  }
-
-  showContextMenu.value = false
-}
+const { showContextMenu, contextMenuStyle, onContextMenuShow, onMenuClick } = useVariableReplace('scenarioInterfaceUrl')
 
 </script>
 

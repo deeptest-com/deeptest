@@ -82,6 +82,7 @@ import {Header} from "@/views/component/debug/data";
 import ContextMenu from "@/views/component/debug/others/variable-replace/ContextMenu.vue"
 
 import {StateType as Debug} from "@/views/component/debug/store";
+import useVariableReplace from "@/hooks/variable-replace";
 
 const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
@@ -119,27 +120,7 @@ const insert = (idx) => {
   debugData.value.headers.splice(idx+1, 0, {} as Header)
 }
 
-const showContextMenu = ref(false)
-const headerIndex = ref(-1)
-let contextTarget = {} as any
-const contextMenuStyle = ref({} as any)
-const onContextMenuShow = (idx, e) => {
-  console.log('onContextMenuShow', idx, e)
-  if (!e) return
-
-  contextMenuStyle.value = getContextMenuStyle2(e)
-  contextTarget = e.target
-  headerIndex.value = idx
-
-  showContextMenu.value = true
-}
-const onMenuClick = (key) => {
-  console.log('onMenuClick', key)
-  if (key === 'use-variable') {
-    bus.emit(settings.eventVariableSelectionStatus, {src: 'header', index: headerIndex.value, data: contextTarget});
-  }
-  showContextMenu.value = false
-}
+const { showContextMenu, contextMenuStyle, onContextMenuShow, onMenuClick } = useVariableReplace('header')
 
 </script>
 

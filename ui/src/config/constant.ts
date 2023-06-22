@@ -599,7 +599,7 @@ export const paramsSchemaDataTypes: any = {
                     name: 'format',
                     type: 'string',
                     component: 'select',
-                    placeholder: 'select a value',
+                    placeholder: 'selectMenuItem a value',
                     options: [
                         {
                             label: 'data-time',
@@ -739,7 +739,7 @@ export const paramsSchemaDataTypes: any = {
                     name: 'format',
                     type: 'string',
                     component: 'select',
-                    placeholder: 'select a value',
+                    placeholder: 'selectMenuItem a value',
                     options: [
                         {
                             label: 'float',
@@ -827,7 +827,7 @@ export const paramsSchemaDataTypes: any = {
                     name: 'default',
                     type: 'boolean',
                     component: 'select',
-                    placeholder: 'select a value',
+                    placeholder: 'selectMenuItem a value',
                     options: [
                         {
                             label: 'true',
@@ -875,7 +875,7 @@ export const paramsSchemaDataTypes: any = {
                     name: 'format',
                     type: 'string',
                     component: 'select',
-                    placeholder: 'select a value',
+                    placeholder: 'selectMenuItem a value',
                     options: [
                         {
                             label: 'int32',

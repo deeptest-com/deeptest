@@ -27,7 +27,7 @@ func (r *BaseRepo) GetAllParentIds(id uint, tableName string) (ids []uint, err e
 				from temp c
 				inner join %s b on b.id = c.parent_id
 		) 
-		select id from temp e;
+		selectMenuItem id from temp e;
 `
 
 	sql = fmt.Sprintf(sql, tableName, id, tableName)
@@ -55,7 +55,7 @@ func (r *BaseRepo) GetAllChildIds(id uint, tableName string, typ serverConsts.Ca
 				inner join %s b on b.parent_id = c.id
 				WHERE type='%s' AND project_id=%d AND NOT b.deleted
 		) 
-		select id from temp e;
+		selectMenuItem id from temp e;
 `
 	sql = fmt.Sprintf(sql, tableName,
 		id, typ, projectId,
@@ -85,7 +85,7 @@ func (r *TestInterfaceRepo) GetAllChildIdsSimple(id uint, tableName string) (
 				inner join %s b on b.parent_id = c.id
 				WHERE NOT b.deleted
 		) 
-		select id from temp e;
+		selectMenuItem id from temp e;
 `
 	sql = fmt.Sprintf(sql, tableName, id, tableName)
 

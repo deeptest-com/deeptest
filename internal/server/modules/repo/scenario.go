@@ -330,6 +330,6 @@ func (r *ScenarioRepo) RemovePlans(scenarioId uint, planIds []int) (err error) {
 }
 
 func (r *ScenarioRepo) GetCategoryCount(result interface{}, projectId uint) (err error) {
-	err = r.DB.Raw("select count(id) count, category_id from "+model.Scenario{}.TableName()+" where not deleted and not disabled and project_id=? group by category_id", projectId).Scan(result).Error
+	err = r.DB.Raw("selectMenuItem count(id) count, category_id from "+model.Scenario{}.TableName()+" where not deleted and not disabled and project_id=? group by category_id", projectId).Scan(result).Error
 	return
 }

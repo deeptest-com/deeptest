@@ -74,10 +74,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setCheckpoints: Mutation<StateType>;
         setCheckpoint: Mutation<StateType>;
 
-        setUrl: Mutation<StateType>;
         setBody: Mutation<StateType>;
-        setParam: Mutation<StateType>;
-        setHeader: Mutation<StateType>;
         setPreRequestScript: Mutation<StateType>;
     };
     actions: {
@@ -107,10 +104,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         saveCheckpoint: Action<StateType, StateType>;
         removeCheckpoint: Action<StateType, StateType>;
 
-        updateUrl: Action<StateType, StateType>;
         updateBody: Action<StateType, StateType>;
-        updateParam: Action<StateType, StateType>;
-        updateHeader: Action<StateType, StateType>;
         addSnippet: Action<StateType, StateType>;
 
         changeServer: Action<StateType, StateType>;
@@ -167,18 +161,8 @@ const StoreModel: ModuleType = {
             state.checkpointData = payload;
         },
 
-        setUrl(state, payload) {
-            state.debugData.url = payload;
-        },
         setBody(state, payload) {
             state.debugData.body = payload;
-        },
-        setParam(state, payload) {
-            state.debugData.params[payload.index].value = payload.value;
-        },
-        setHeader(state, payload) {
-            console.log('setParam', payload)
-            state.debugData.headers[payload.index].value = payload.value;
         },
         setPreRequestScript(state, payload) {
             console.log('setPreRequestScript', payload)
@@ -453,21 +437,8 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
-
-        async updateUrl({commit, dispatch, state}, url: string) {
-            commit('setUrl', url);
-            return true;
-        },
         async updateBody({commit, dispatch, state}, body: string) {
             commit('setBody', body);
-            return true;
-        },
-        async updateParam({commit, dispatch, state}, data: any) {
-            commit('setParam', data);
-            return true;
-        },
-        async updateHeader({commit, dispatch, state}, data: any) {
-            commit('setHeader', data);
             return true;
         },
         async addSnippet({commit, dispatch, state}, name: string) {

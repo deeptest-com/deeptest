@@ -23,7 +23,7 @@ export const JSONSchemaDataTypes = [
                     name: 'format',
                     type: 'string',
                     component: 'select',
-                    placeholder: 'select a value',
+                    placeholder: 'selectMenuItem a value',
                     value: null,
                     options: [
                         {
@@ -105,7 +105,7 @@ export const JSONSchemaDataTypes = [
                     name: 'behavior',
                     type: 'boolean',
                     component: 'select',
-                    placeholder: 'select a value',
+                    placeholder: 'selectMenuItem a value',
                     value: null,
                     options: [
                         {
@@ -193,7 +193,7 @@ export const JSONSchemaDataTypes = [
                     name: 'format',
                     type: 'string',
                     component: 'select',
-                    placeholder: 'select a value',
+                    placeholder: 'selectMenuItem a value',
                     value: null,
                     options: [
                         {
@@ -211,7 +211,7 @@ export const JSONSchemaDataTypes = [
                     name: 'behavior',
                     type: 'boolean',
                     component: 'select',
-                    placeholder: 'select a value',
+                    placeholder: 'selectMenuItem a value',
                     value: null,
                     options: [
                         {
@@ -321,7 +321,7 @@ export const JSONSchemaDataTypes = [
                     name: 'format',
                     type: 'string',
                     component: 'select',
-                    placeholder: 'select a value',
+                    placeholder: 'selectMenuItem a value',
                     value: null,
                     options: [
                         {
@@ -339,7 +339,7 @@ export const JSONSchemaDataTypes = [
                     name: 'behavior',
                     type: 'boolean',
                     component: 'select',
-                    placeholder: 'select a value',
+                    placeholder: 'selectMenuItem a value',
                     value: null,
                     options: [
                         {
@@ -545,7 +545,7 @@ export const JSONSchemaDataTypes = [
                     name: 'default',
                     type: 'boolean',
                     component: 'select',
-                    placeholder: 'select a value',
+                    placeholder: 'selectMenuItem a value',
                     value: '',
                     options: [
                         {

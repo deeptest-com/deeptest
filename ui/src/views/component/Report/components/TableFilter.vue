@@ -66,7 +66,7 @@ const getMember = async (): Promise<void> => {
 }
 
 function onRangeOk(date: any) {
-    console.log('current select executime ---', date);
+    console.log('current selectMenuItem executime ---', date);
     executeTime = { executeStartTime: momentTimeStamp(date[0]), executeEndTime: momentTimeStamp(date[1]) };
     refreshList({});
 }

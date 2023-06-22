@@ -150,7 +150,7 @@ const selectNode = (keys, e) => {
   console.log('selectNode', keys, e?.node.dataRef.id)
 
   if (keys.length === 0 && e) {
-    selectedKeys.value = [e.node.dataRef.id] // cancel un-select
+    selectedKeys.value = [e.node.dataRef.id] // cancel un-selectMenuItem
     return
   } else {
     selectedKeys.value = keys
@@ -311,7 +311,7 @@ const addNode = (mode, processorCategory, processorType,
   console.log('addNode', mode, processorCategory, processorType,
       targetProcessorCategory, targetProcessorType, targetProcessorId)
 
-  if (processorCategory === 'interface') { // select a interface
+  if (processorCategory === 'interface') { // selectMenuItem a interface
     interfaceSelectionVisible.value = true
     return
 

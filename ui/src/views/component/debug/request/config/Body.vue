@@ -106,7 +106,7 @@ const editorChange = (newScriptCode) => {
 
 const replaceRequest = (data) => {
   console.log('replaceRequest', data)
-  bus.emit(settings.eventVariableSelectionStatus, {src: 'body', data: data});
+  bus.emit(settings.eventVariableSelectionStatus, {src: 'body', index: 0, data: data});
 }
 
 onMounted(() => {

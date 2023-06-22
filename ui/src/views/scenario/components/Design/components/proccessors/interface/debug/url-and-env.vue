@@ -1,28 +1,38 @@
 <template>
-    <div class="path-param-header">
-        <a-input class="path-param-header-input" placeholder="请输入路径"
-                 :value="url"
-                 @change="changeUrl">
+  <div class="path-param-header">
+    <!-- url-2 -->
+    <a-input class="path-param-header-input" placeholder="请输入路径"
+             :id="'scenarioInterfaceUrl0'"
+             :value="url"
+             @change="changeUrl"
+             v-contextmenu="e => onContextMenuShow(0, e)">
 
-            <template #addonBefore>
-                <a-select :options="servers" :value="serverId || null" @change="changeServer"
-                    placeholder="请选择环境" class="select-env">
-                </a-select>
-                <span v-if="envURL" class="current-env-url">{{ envURL || '---' }}</span>
-            </template>
-        </a-input>
-    </div>
+      <template #addonBefore>
+        <a-select :options="servers" :value="serverId || null" @change="changeServer"
+                  placeholder="请选择环境" class="select-env">
+        </a-select>
+        <span v-if="envURL" class="current-env-url">{{ envURL || '---' }}</span>
+      </template>
+    </a-input>
+
+    <ContextMenu
+        :isShow="showContextMenu"
+        :style="contextMenuStyle"
+        :menu-click="onMenuClick">
+    </ContextMenu>
+  </div>
 </template>
 <script setup lang="ts">
 import {computed, ref, watch} from "vue";
-import { useStore } from "vuex";
-import {Endpoint} from "@/views/endpoint/data";
+import {useStore} from "vuex";
 import {StateType as Debug} from "@/views/component/debug/store";
-import debounce from "lodash.debounce";
 import {serverList} from "@/views/project-settings/service";
+import {getContextMenuStyle2} from "@/utils/dom";
 import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
-const store = useStore<{  Debug: Debug, Endpoint }>();
+import ContextMenu from "@/views/component/debug/others/variable-replace/ContextMenu.vue"
+
+const store = useStore<{ Debug: Debug, Endpoint }>();
 
 const debugData = computed<any>(() => store.state.Debug.debugData);
 const servers = ref([] as any);
@@ -71,6 +81,30 @@ function changeServer(id) {
 
 const changeUrl = (e) => {
   store.commit('Debug/setUrl', e.target.value.trim())
+}
+
+const showContextMenu = ref(false)
+const paramIndex = ref(-1)
+let contextTarget = {} as any
+const contextMenuStyle = ref({} as any)
+const onContextMenuShow = (idx, e) => {
+  console.log('onContextMenuShow', idx, e.target)
+  if (!e) return
+
+  contextMenuStyle.value = getContextMenuStyle2(e)
+  contextTarget = e.target
+  paramIndex.value = idx
+
+  showContextMenu.value = true
+}
+const onMenuClick = (key) => {
+  console.log('onMenuClick', key)
+
+  if (key === 'use-variable') {
+    bus.emit(settings.eventVariableSelectionStatus, {src: 'scenarioInterfaceUrl', index: paramIndex.value, data: contextTarget});
+  }
+
+  showContextMenu.value = false
 }
 
 </script>

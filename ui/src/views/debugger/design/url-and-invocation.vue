@@ -18,8 +18,11 @@
           </a-col>
 
           <a-col flex="3">
+            <!-- url-3 -->
             <a-input class="uri" placeholder="请求路径"
-                     v-model:value="debugData.url">
+                     :id="'testInterfaceUrl0'"
+                     v-model:value="debugData.url"
+                     v-contextmenu="e => onContextMenuShow(0, e)">
             </a-input>
           </a-col>
 
@@ -39,6 +42,12 @@
       </a-input-group>
 
     </div>
+
+    <ContextMenu
+        :isShow="showContextMenu"
+        :style="contextMenuStyle"
+        :menu-click="onMenuClick">
+    </ContextMenu>
   </div>
 </template>
 <script setup lang="ts">
@@ -56,6 +65,10 @@ import {StateType as EndpointStateType} from "@/views/endpoint/store";
 import {Methods} from "@/utils/enum";
 import {getArrSelectItems} from "@/utils/comm";
 import {prepareDataForRequest} from "@/views/component/debug/service";
+import {getContextMenuStyle2} from "@/utils/dom";
+import bus from "@/utils/eventBus";
+import settings from "@/config/settings";
+import ContextMenu from "@/views/component/debug/others/variable-replace/ContextMenu.vue"
 
 const store = useStore<{ TestInterface: TestInterfaceStateType, Debug: DebugStateType, Endpoint: EndpointStateType }>();
 
@@ -146,6 +159,30 @@ const validateInfo = () => {
 
   return true
 };
+
+const showContextMenu = ref(false)
+const paramIndex = ref(-1)
+let contextTarget = {} as any
+const contextMenuStyle = ref({} as any)
+const onContextMenuShow = (idx, e) => {
+  console.log('onContextMenuShow', idx, e.target)
+  if (!e) return
+
+  contextMenuStyle.value = getContextMenuStyle2(e)
+  contextTarget = e.target
+  paramIndex.value = idx
+
+  showContextMenu.value = true
+}
+const onMenuClick = (key) => {
+  console.log('onMenuClick', key)
+
+  if (key === 'use-variable') {
+    bus.emit(settings.eventVariableSelectionStatus, {src: 'testInterfaceUrl', index: paramIndex.value, data: contextTarget});
+  }
+
+  showContextMenu.value = false
+}
 
 </script>
 

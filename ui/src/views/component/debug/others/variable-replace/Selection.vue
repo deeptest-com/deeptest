@@ -91,48 +91,55 @@ const onVariableSelectionStatus = (data) => {
 const select = async (item) => {
   console.log('select', item, debugData.value)
 
-  if (variableSelectionData.value.src === 'body') {
-    const body = getEditorContent(item.name)
+  const targetElemId = '' + variableSelectionData.value.src + variableSelectionData.value.index
 
-    await store.dispatch('Interface/updateBody', body)
 
-  } else if (variableSelectionData.value.src === 'url') {
+  if (variableSelectionData.value.src.indexOf('interfaceUrl')) {
     let url = debugData.value.url
-
-    url = getInputContent(item.name, url,
+    url = getInputNewContent(item.name, url,
         variableSelectionData.value.data.selectionStart, variableSelectionData.value.data.selectionEnd)
 
-    store.dispatch('Interface/updateUrl', url).then((res) => {
-      console.log('res', res)
-    })
+    updateInput(targetElemId, url)
 
-  } else if (variableSelectionData.value.src === 'param') {
-    let param = debugData.value.params[variableSelectionData.value.index].value
-
-    param = getInputContent(item.name, param,
+  } else if (variableSelectionData.value.src === 'queryParam') {
+    let param = debugData.value.queryParams[variableSelectionData.value.index].value
+    param = getInputNewContent(item.name, param,
         variableSelectionData.value.data.selectionStart, variableSelectionData.value.data.selectionEnd)
 
-    await store.dispatch('Interface/updateParam', {
-      value: param,
-      index: variableSelectionData.value.index,
-    })
+    updateInput(targetElemId, param)
+
+  }  else if (variableSelectionData.value.src === 'pathParam') {
+    let param = debugData.value.pathParams[variableSelectionData.value.index].value
+    param = getInputNewContent(item.name, param,
+        variableSelectionData.value.data.selectionStart, variableSelectionData.value.data.selectionEnd)
+
+    updateInput(targetElemId, param)
 
   } else if (variableSelectionData.value.src === 'header') {
     let header = debugData.value.headers[variableSelectionData.value.index].value
-
-    header = getInputContent(item.name, header,
+    header = getInputNewContent(item.name, header,
             variableSelectionData.value.data.selectionStart, variableSelectionData.value.data.selectionEnd)
 
-    await store.dispatch('Interface/updateHeader', {
-      value: header,
-      index: variableSelectionData.value.index,
-    })
+    updateInput(targetElemId, header)
+
+  } else if (variableSelectionData.value.src === 'body') {
+    const body = getEditorNewContent(item.name)
+    await store.dispatch('Interface/updateBody', body)
+
   }
 
   requestVariableVisible.value = false
 }
 
-const getInputContent = (variName, val, start, end) => {
+const updateInput = (id, val) => {
+  const targetElem = document.getElementById(id)
+  if (targetElem) {
+    targetElem.value = val
+    targetElem.dispatchEvent(new Event('input'));
+  }
+}
+
+const getInputNewContent = (variName, val, start, end) => {
   const ret = val.substring(0, variableSelectionData.value.data.selectionStart) +
       '${' + variName + '}' +
       val.substring(variableSelectionData.value.data.selectionEnd)
@@ -140,8 +147,8 @@ const getInputContent = (variName, val, start, end) => {
   return ret
 }
 
-const getEditorContent = (variName) => {
-  console.log('getEditorContent', variName)
+const getEditorNewContent = (variName) => {
+  console.log('getEditorNewContent', variName)
 
   const docContent = variableSelectionData.value.data.docContent
   const selectContent = variableSelectionData.value.data.selectContent

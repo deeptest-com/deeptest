@@ -28,7 +28,8 @@
             <a-input v-model:value="item.name" @change="onParamChange(idx)" class="dp-bg-input-transparent" />
           </a-col>
           <a-col flex="1">
-            <a-input v-model:value="item.value"
+            <a-input :id="'queryParam' + idx"
+                     v-model:value="item.value"
                      @change="onParamChange(idx)"
                      v-contextmenu="e => onContextMenuShow(idx, e)"
                      class="dp-bg-input-transparent" />
@@ -123,7 +124,6 @@ const showContextMenu = ref(false)
 const paramIndex = ref(-1)
 let contextTarget = {} as any
 const contextMenuStyle = ref({} as any)
-
 const onContextMenuShow = (idx, e) => {
   console.log('onContextMenuShow', idx, e.target)
   if (!e) return
@@ -134,12 +134,11 @@ const onContextMenuShow = (idx, e) => {
 
   showContextMenu.value = true
 }
-
 const onMenuClick = (key) => {
   console.log('onMenuClick', key)
 
   if (key === 'use-variable') {
-    bus.emit(settings.eventVariableSelectionStatus, {src: 'param', index: paramIndex.value, data: contextTarget});
+    bus.emit(settings.eventVariableSelectionStatus, {src: 'queryParam', index: paramIndex.value, data: contextTarget});
   }
 
   showContextMenu.value = false

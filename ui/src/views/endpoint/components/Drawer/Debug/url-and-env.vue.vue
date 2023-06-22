@@ -1,25 +1,39 @@
 <template>
-    <div class="path-param-header">
-        <a-input class="path-param-header-input" placeholder="请输入路径"
-                 :value="url"
-                 @change="changeUrl">
+  <div class="path-param-header">
+    <!-- url-1 -->
+    <a-input class="path-param-header-input" placeholder="请输入路径"
+             :id="'endpointInterfaceUrl0'"
+             :value="url"
+             @change="changeUrl"
+             v-contextmenu="e => onContextMenuShow(0, e)">
 
-            <template #addonBefore>
-                <a-select :options="serveServers" :value="serverId || null" @change="changeServer"
-                    placeholder="请选择环境" class="select-env">
-                </a-select>
-                <span v-if="envURL" class="current-env-url">{{ envURL || '---' }}</span>
-            </template>
-        </a-input>
-    </div>
+      <template #addonBefore>
+        <a-select :options="serveServers" :value="serverId || null" @change="changeServer"
+                  placeholder="请选择环境" class="select-env">
+        </a-select>
+        <span v-if="envURL" class="current-env-url">{{ envURL || '---' }}</span>
+      </template>
+    </a-input>
+
+    <ContextMenu
+        :isShow="showContextMenu"
+        :style="contextMenuStyle"
+        :menu-click="onMenuClick">
+    </ContextMenu>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
-import { useStore } from "vuex";
+import {computed, ref} from "vue";
+import {useStore} from "vuex";
 import {Endpoint} from "@/views/endpoint/data";
 import {StateType as Debug} from "@/views/component/debug/store";
-const store = useStore<{  Debug: Debug, Endpoint }>();
+import {getContextMenuStyle2} from "@/utils/dom";
+import bus from "@/utils/eventBus";
+import settings from "@/config/settings";
+import ContextMenu from "@/views/component/debug/others/variable-replace/ContextMenu.vue"
+
+const store = useStore<{ Debug: Debug, Endpoint }>();
 
 const debugData = computed<any>(() => store.state.Debug.debugData);
 
@@ -38,7 +52,6 @@ const envURL = computed(() => {
 const url = computed(() => {
   console.log('computed url')
   const u = debugData?.value.url || endpointDetail.value.path
-  // store.commit('Debug/setUrl', u)
   return u
 });
 const changeUrl = (e) => {
@@ -47,6 +60,30 @@ const changeUrl = (e) => {
 
 function changeServer(id) {
   store.dispatch('Debug/changeServer', id)
+}
+
+const showContextMenu = ref(false)
+const paramIndex = ref(-1)
+let contextTarget = {} as any
+const contextMenuStyle = ref({} as any)
+const onContextMenuShow = (idx, e) => {
+  console.log('onContextMenuShow', idx, e.target)
+  if (!e) return
+
+  contextMenuStyle.value = getContextMenuStyle2(e)
+  contextTarget = e.target
+  paramIndex.value = idx
+
+  showContextMenu.value = true
+}
+const onMenuClick = (key) => {
+  console.log('onMenuClick', key)
+
+  if (key === 'use-variable') {
+    bus.emit(settings.eventVariableSelectionStatus, {src: 'endpointInterfaceUrl', index: paramIndex.value, data: contextTarget});
+  }
+
+  showContextMenu.value = false
 }
 
 </script>

@@ -5,7 +5,8 @@ export interface Interface {
     url: string;
     method: string;
     headers: Header[];
-    params: Param[];
+    queryParams: Param[];
+    pathParams: Param[];
 
     body: string;
     bodyFormUrlencoded: BodyFormUrlEncodedItem[];

@@ -18,7 +18,7 @@
           </a-col>
 
           <a-col flex="3">
-            <!-- url-3 -->
+            <!-- debug-url-3 -->
             <a-input class="uri" placeholder="请求路径"
                      :id="'testInterfaceUrl0'"
                      v-model:value="debugData.url"

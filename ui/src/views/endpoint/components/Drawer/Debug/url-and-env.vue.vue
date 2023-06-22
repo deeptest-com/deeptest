@@ -1,6 +1,6 @@
 <template>
   <div class="path-param-header">
-    <!-- url-1 -->
+    <!-- debug-url-1 -->
     <a-input class="path-param-header-input" placeholder="请输入路径"
              :id="'endpointInterfaceUrl0'"
              :value="url"

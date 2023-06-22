@@ -92,12 +92,12 @@ const selectMenuItem = async (item) => {
   console.log('selectMenuItem', item, variableSelectionData.value, debugData.value)
   const targetElemId = '' + variableSelectionData.value.src + variableSelectionData.value.index
 
-  if (variableSelectionData.value.src.indexOf('interfaceUrl') > -1) {
+  if (variableSelectionData.value.src.indexOf('InterfaceUrl') > -1) {
     let url = debugData.value.url
     url = getInputNewContent(item.name, url,
         variableSelectionData.value.data.selectionStart, variableSelectionData.value.data.selectionEnd)
 
-    updateInput(targetElemId, url)
+    store.dispatch("Debug/updateUrl", url);
 
   } else if (variableSelectionData.value.src === 'queryParam') {
     let param = debugData.value.queryParams[variableSelectionData.value.index].value

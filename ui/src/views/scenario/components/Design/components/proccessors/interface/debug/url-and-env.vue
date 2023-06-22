@@ -1,9 +1,9 @@
 <template>
   <div class="path-param-header">
-    <!-- url-2 -->
+    <!-- debug-url-2 -->
     <a-input class="path-param-header-input" placeholder="请输入路径"
              :id="'scenarioInterfaceUrl0'"
-             :value="url"
+             :value="debugData.url"
              @change="changeUrl"
              v-contextmenu="e => onContextMenuShow(0, e)">
 
@@ -46,9 +46,9 @@ const envURL = computed(() => {
   })
   return server?.url
 });
-const url = computed(() => {
-  return debugData?.value.url
-});
+// const url = computed(() => {
+//   return debugData?.value.url
+// });
 
 const listServer = async (serverId) => {
   servers.value = []

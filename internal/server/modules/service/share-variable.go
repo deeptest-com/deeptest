@@ -47,7 +47,9 @@ func (s *ShareVarService) Save(name, value string, debugInterfaceId, endpointInt
 func (s *ShareVarService) List(debugInterfaceId, endpointInterfaceId, testInterfaceId, scenarioProcessorId uint,
 	usedBy consts.UsedBy) (
 	shareVariables []domain.GlobalVar) {
+
 	var serveId uint
+
 	if testInterfaceId > 0 {
 		testInterface, _ := s.TestInterfaceRepo.Get(testInterfaceId)
 		serveId = testInterface.ServeId

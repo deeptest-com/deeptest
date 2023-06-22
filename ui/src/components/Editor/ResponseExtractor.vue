@@ -34,7 +34,7 @@
                 选择变量
               </a-select-option>
 
-              <a-select-option v-for="(item, idx) in validExtractorVariablesData"
+              <a-select-option v-for="(item, idx) in debugData.shareVars"
                                :key="idx"
                                :value="item.id + '-' + item.name">
                 {{item.name}}
@@ -77,8 +77,13 @@ import {useStore} from "vuex";
 import {UsedBy, VarScope} from "@/utils/enum";
 import {StateType as DebugStateType} from "@/views/component/debug/store";
 import {StateType as EnvironmentStateType} from "@/store/environment";
+
 const useForm = Form.useForm;
 const usedBy = inject('usedBy') as UsedBy
+const { t } = useI18n();
+
+const store = useStore<{ Debug: DebugStateType, Environment: EnvironmentStateType }>();
+const debugData = computed<any>(() => store.state.Debug.debugData);
 
 const props = defineProps({
   interfaceId:{
@@ -112,12 +117,6 @@ const props = defineProps({
   }
 });
 
-const { t } = useI18n();
-
-const store = useStore<{ Debug: DebugStateType, Environment: EnvironmentStateType }>();
-const debugData = computed<any>(() => store.state.Debug.debugData);
-const validExtractorVariablesData = computed(() => store.state.Debug.validExtractorVariablesData);
-
 const modelRef = ref<any>({
   expression: props.expr,
   expressionType: props.exprType,
@@ -138,8 +137,8 @@ const onVarChanged = (e) => {
   }
 
   let found = false
-  for (let i in validExtractorVariablesData.value) {
-    const item = validExtractorVariablesData.value[i]
+  for (let i in debugData.value.shareVars) {
+    const item = debugData.value.shareVars[i]
 
     if (value === item.name) {
       modelRef.value.code = item.id + '-' + item.name

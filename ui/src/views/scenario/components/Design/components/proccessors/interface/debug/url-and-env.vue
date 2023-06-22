@@ -2,7 +2,6 @@
   <div class="path-param-header">
     <!-- debug-url-2 -->
     <a-input class="path-param-header-input" placeholder="请输入路径"
-             :id="'scenarioInterfaceUrl0'"
              :value="debugData.url"
              @change="changeUrl"
              v-contextmenu="e => onContextMenuShow(0, e)">

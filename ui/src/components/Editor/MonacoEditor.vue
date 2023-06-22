@@ -113,7 +113,7 @@ export default defineComponent({
       this.diffEditor && this._setModel(this.value, this.original);
 
 
-      const usedBy = inject('usedBy')
+      // const usedBy = inject('usedBy')
       // if (usedBy === UsedBy.InterfaceDebug) {
         if (this.options.usedWith === 'response') {
           addExtractAction(this.editor, this.onExtractor)

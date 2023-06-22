@@ -3,7 +3,7 @@ import {getContextMenuStyle2} from "@/utils/dom";
 import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
 
-interface Replacement {
+interface VariableReplacement {
     showContextMenu: Ref<boolean>,
     contextMenuStyle: Ref,
 
@@ -11,7 +11,7 @@ interface Replacement {
     onMenuClick: Function,
 }
 
-function useVariableReplace(src): Replacement {
+function useVariableReplace(src): VariableReplacement {
     const showContextMenu = ref(false)
     const paramIndex = ref(-1)
     const contextTarget = ref({} as any)
@@ -31,7 +31,11 @@ function useVariableReplace(src): Replacement {
         console.log('onMenuClick in hook', key)
 
         if (key === 'use-variable') {
-            bus.emit(settings.eventVariableSelectionStatus, {src: src, index: paramIndex.value, data: contextTarget});
+            bus.emit(settings.eventVariableSelectionStatus, {
+                src: src,
+                index: paramIndex.value,
+                data: contextTarget,
+            });
         }
 
         showContextMenu.value = false
@@ -45,7 +49,12 @@ function useVariableReplace(src): Replacement {
         console.log('useVariableReplace onUnmounted')
     })
 
-    return {showContextMenu, contextMenuStyle, onContextMenuShow, onMenuClick} as Replacement
+    return {
+        showContextMenu,
+        contextMenuStyle,
+        onContextMenuShow,
+        onMenuClick
+    } as VariableReplacement
 }
 
 export default useVariableReplace

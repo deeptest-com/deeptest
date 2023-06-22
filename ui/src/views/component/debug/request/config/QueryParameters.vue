@@ -75,7 +75,7 @@ import { QuestionCircleOutlined, DeleteOutlined, PlusOutlined, CheckCircleOutlin
 
 import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
-import ContextMenu from "@/components/Editor/ContextMenu.vue"
+import ContextMenu from "@/views/component/debug/others/variable-replace/ContextMenu.vue"
 
 import {UsedBy} from "@/utils/enum";
 const usedBy = inject('usedBy') as UsedBy

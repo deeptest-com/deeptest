@@ -59,10 +59,9 @@ export interface StateType {
     responseData: any;
     extractorsData: any[];
     checkpointsData: any[];
-    validExtractorVariablesData: any[];
     scenariosReports: any[];
     linkedPlans: any[];
-    notLinkedplans: any[];
+    notLinkedPlans: any[];
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
@@ -97,10 +96,9 @@ export interface ModuleType extends StoreModuleType<StateType> {
 
         setExtractors: Mutation<StateType>;
         setCheckpoints: Mutation<StateType>;
-        setValidExtractorVariables: Mutation<StateType>;
         setScenariosReports: Mutation<StateType>;
         setLinkedPlans: Mutation<StateType>;
-        setNotLinkedplans: Mutation<StateType>;
+        setNotLinkedPlans: Mutation<StateType>;
     };
     actions: {
         setScenarioProcessorIdForDebug: Action<StateType, StateType>;
@@ -184,10 +182,9 @@ const initState: StateType = {
     responseData: {},
     extractorsData: [],
     checkpointsData: [],
-    validExtractorVariablesData: [],
     scenariosReports: [],
     linkedPlans: [],
-    notLinkedplans: [],
+    notLinkedPlans: [],
 };
 
 const StoreModel: ModuleType = {
@@ -274,17 +271,14 @@ const StoreModel: ModuleType = {
         setCheckpoints(state, payload) {
             state.checkpointsData = payload;
         },
-        setValidExtractorVariables(state, payload) {
-            state.validExtractorVariablesData = payload;
-        },
         setScenariosReports(state, payload) {
             state.scenariosReports = payload;
         },
         setLinkedPlans(state, payload) {
             state.linkedPlans = payload;
         },
-        setNotLinkedplans(state, payload) {
-            state.notLinkedplans = payload;
+        setNotLinkedPlans(state, payload) {
+            state.notLinkedPlans = payload;
         },
     },
     actions: {
@@ -624,7 +618,7 @@ const StoreModel: ModuleType = {
                 if (payload.data.ref) {
                     commit('setLinkedPlans', res?.data?.result || []);
                 } else {
-                    commit('setNotLinkedplans', res?.data?.result || []);
+                    commit('setNotLinkedPlans', res?.data?.result || []);
                 }
             }
             return false;

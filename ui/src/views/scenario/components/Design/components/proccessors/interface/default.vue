@@ -2,7 +2,7 @@
   <div class="processor_interface_default-main">
     <div id="debug-index" class="dp-splits-v">
       <div id="debug-content">
-        <DebugEnvSelection />
+        <DebugUrlAndEnv />
 
         <RequestInvocation
             :showDebugDataUrl="true"
@@ -50,7 +50,6 @@
 </template>
 
 <script setup lang="ts">
-import {useRouter} from "vue-router";
 import {useI18n} from "vue-i18n";
 
 
@@ -68,7 +67,7 @@ import RequestEnv from '@/views/component/debug/others/env/index.vue';
 import RequestHistory from '@/views/component/debug/others/history/index.vue';
 
 import RequestInvocation from '@/views/component/debug/request/Invocation.vue';
-import DebugEnvSelection from './debug/env-selection.vue';
+import DebugUrlAndEnv from './debug/url-and-env.vue';
 import DebugInterface from './debug/interface.vue';
 
 import {StateType as Debug} from "@/views/component/debug/store";

@@ -11,7 +11,7 @@
 
     <div id="debug-bottom">
       <div id="debug-content">
-        <DebugEnvSelection />
+        <DebugUrlAndEnv />
 
         <DebugComp />
       </div>
@@ -79,7 +79,7 @@ import {StateType as Debug} from "@/views/component/debug/store";
 import {StateType as Endpoint} from "@/views/endpoint/store";
 
 import DebugMethod from './method.vue';
-import DebugEnvSelection from './env-selection.vue';
+import DebugUrlAndEnv from './url-and-env.vue';
 import RequestEnv from '@/views/component/debug/others/env/index.vue';
 import RequestHistory from '@/views/component/debug/others/history/index.vue';
 import RequestInvocation from '@/views/component/debug/request/Invocation.vue';

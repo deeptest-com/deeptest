@@ -13,12 +13,12 @@
         </a-input>
     </div>
 </template>
+
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { useStore } from "vuex";
 import {Endpoint} from "@/views/endpoint/data";
 import {StateType as Debug} from "@/views/component/debug/store";
-import debounce from "lodash.debounce";
 const store = useStore<{  Debug: Debug, Endpoint }>();
 
 const debugData = computed<any>(() => store.state.Debug.debugData);

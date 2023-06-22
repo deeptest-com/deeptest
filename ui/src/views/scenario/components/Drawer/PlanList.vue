@@ -42,7 +42,7 @@
       row-key="id"
       :loading="loading"
       :columns="linked ? columns : columnsForSelect"
-      :data-source="linked ? linkedPlans : notLinkedplans">
+      :data-source="linked ? linkedPlans : notLinkedPlans">
     <template #status="{ record }">
       {{ scenarioStatus.get(record.status) || '未知' }}
     </template>
@@ -91,7 +91,7 @@ const store = useStore<{ Scenario, ProjectGlobal, ServeGlobal }>();
 const detailResult: any = computed<Scenario>(() => store.state.Scenario.detailResult);
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const linkedPlans = computed(() => store.state.Scenario.linkedPlans);
-const notLinkedplans = computed(() => store.state.Scenario.notLinkedplans);
+const notLinkedPlans = computed(() => store.state.Scenario.notLinkedPlans);
 // const members = computed(() => store.state.Plan.members);
 const visible = ref(false);
 const selectedRowKeys = ref<any[]>([]); // Check here to configure the default column

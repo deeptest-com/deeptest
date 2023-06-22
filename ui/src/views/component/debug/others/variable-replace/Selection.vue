@@ -7,8 +7,7 @@
       :footer="null"
       :onCancel="onCancel"
       width="800px"
-      height="600px"
-  >
+      height="600px">
     <div>
       <a-row>
         <a-col flex="100px" class="dp-border">环境变量</a-col>
@@ -59,14 +58,14 @@ import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
 
 import {Interface} from "@/views/component/debug/data";
-import {StateType as InterfaceStateType} from "@/views/component/debug/store";
+import {StateType as DebugStateType} from "@/views/component/debug/store";
 import {StateType as EnvironmentStateType} from "@/store/environment";
 
 const { t } = useI18n();
 
-const store = useStore<{ InterfaceState: InterfaceStateType, EnvironmentState: EnvironmentStateType }>();
-const interfaceData = computed<Interface>(() => store.state.InterfaceState?.interfaceData);
-const validExtractorVariablesData = computed<any>(() => store.state.InterfaceState?.validExtractorVariablesData);
+const store = useStore<{ Debug: DebugStateType, EnvironmentState: EnvironmentStateType }>();
+const debugData = computed<Interface>(() => store.state.Debug?.debugData);
+const validExtractorVariablesData = computed<any>(() => store.state.Debug?.validExtractorVariablesData);
 const environmentData = computed<any>(() => store.state.EnvironmentState?.environmentData);
 
 const requestVariableVisible = ref(false)
@@ -90,7 +89,7 @@ const onVariableSelectionStatus = (data) => {
 }
 
 const select = async (item) => {
-  console.log('select', item, interfaceData.value)
+  console.log('select', item, debugData.value)
 
   if (variableSelectionData.value.src === 'body') {
     const body = getEditorContent(item.name)
@@ -98,7 +97,7 @@ const select = async (item) => {
     await store.dispatch('Interface/updateBody', body)
 
   } else if (variableSelectionData.value.src === 'url') {
-    let url = interfaceData.value.url
+    let url = debugData.value.url
 
     url = getInputContent(item.name, url,
         variableSelectionData.value.data.selectionStart, variableSelectionData.value.data.selectionEnd)
@@ -108,7 +107,7 @@ const select = async (item) => {
     })
 
   } else if (variableSelectionData.value.src === 'param') {
-    let param = interfaceData.value.params[variableSelectionData.value.index].value
+    let param = debugData.value.params[variableSelectionData.value.index].value
 
     param = getInputContent(item.name, param,
         variableSelectionData.value.data.selectionStart, variableSelectionData.value.data.selectionEnd)
@@ -119,7 +118,7 @@ const select = async (item) => {
     })
 
   } else if (variableSelectionData.value.src === 'header') {
-    let header = interfaceData.value.headers[variableSelectionData.value.index].value
+    let header = debugData.value.headers[variableSelectionData.value.index].value
 
     header = getInputContent(item.name, header,
             variableSelectionData.value.data.selectionStart, variableSelectionData.value.data.selectionEnd)

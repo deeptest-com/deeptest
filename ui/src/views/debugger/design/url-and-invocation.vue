@@ -16,6 +16,7 @@
                      v-model:value="debugData.baseUrl">
             </a-input>
           </a-col>
+
           <a-col flex="3">
             <a-input class="uri" placeholder="请求路径"
                      v-model:value="debugData.url">

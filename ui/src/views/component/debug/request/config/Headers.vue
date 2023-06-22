@@ -75,16 +75,17 @@ import { QuestionCircleOutlined, DeleteOutlined, PlusOutlined, CheckCircleOutlin
 
 import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
-import ContextMenu from "@/components/Editor/ContextMenu.vue"
 import {UsedBy} from "@/utils/enum";
+
+import {getContextMenuStyle2} from "@/utils/dom";
+import {Header} from "@/views/component/debug/data";
+import ContextMenu from "@/views/component/debug/others/variable-replace/ContextMenu.vue"
+
+import {StateType as Debug} from "@/views/component/debug/store";
+
 const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
-
-import {Header} from "@/views/component/debug/data";
-import {StateType as Debug} from "@/views/component/debug/store";
-import {getContextMenuStyle2} from "@/utils/dom";
 const store = useStore<{  Debug: Debug }>();
-
 const debugData = computed<any>(() => store.state.Debug.debugData);
 
 const onParamChange = (idx) => {

@@ -69,6 +69,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setExtractor: Mutation<StateType>;
         setShareVars: Mutation<StateType>;
         setEnvVars: Mutation<StateType>;
+        setGlobalVars: Mutation<StateType>;
 
         setCheckpoints: Mutation<StateType>;
         setCheckpoint: Mutation<StateType>;
@@ -154,6 +155,9 @@ const StoreModel: ModuleType = {
         },
         setEnvVars(state, payload) {
             state.debugData.envVars = payload;
+        },
+        setGlobalVars(state, payload) {
+            state.debugData.globalVars = payload;
         },
 
         setCheckpoints(state, payload) {

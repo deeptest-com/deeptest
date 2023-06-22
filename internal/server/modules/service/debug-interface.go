@@ -46,7 +46,7 @@ func (s *DebugInterfaceService) Load(loadReq domain.DebugReq) (debugData domain.
 
 	debugData.UsedBy = loadReq.UsedBy
 
-	debugData.BaseUrl, debugData.ShareVars, debugData.EnvVars =
+	debugData.BaseUrl, debugData.ShareVars, debugData.EnvVars, debugData.GlobalVars =
 		s.DebugSceneService.LoadScene(debugData.EndpointInterfaceId, debugData.ServerId, debugData.ScenarioProcessorId, debugData.UsedBy)
 
 	return

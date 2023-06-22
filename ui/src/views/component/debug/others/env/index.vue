@@ -109,7 +109,7 @@
             </div>
           </div>
 
-          <div v-for="(item, idx) in debugData.globalEnvVars" :key="idx" class="env">
+          <div v-for="(item, idx) in debugData.globalVars" :key="idx" class="env">
             <div class="left">
               <div class="name">
                 <a-tooltip overlayClassName="dp-tip-small">
@@ -128,7 +128,7 @@
 
             <div class="right"></div>
           </div>
-          <div v-if="!debugData.globalEnvVars || debugData.globalEnvVars.length===0" class="env">空</div>
+          <div v-if="!debugData.globalVars || debugData.globalVars.length===0" class="env">空</div>
         </div>
 
       </div>

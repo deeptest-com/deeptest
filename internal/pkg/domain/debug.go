@@ -29,9 +29,12 @@ type DebugData struct {
 	ServeId  uint `json:"serveId"`
 	ServerId uint `json:"serverId"`
 
-	BaseUrl   string      `json:"baseUrl"`
-	ShareVars []GlobalVar `json:"shareVars"` // used to show in right environment tab
-	EnvVars   []GlobalVar `json:"envVars"`   // used to show in right environment tab
+	BaseUrl string `json:"baseUrl"`
+
+	// used for selection and show in right environment tab
+	ShareVars  []GlobalVar `json:"shareVars"`
+	EnvVars    []GlobalVar `json:"envVars"`
+	GlobalVars []GlobalVar `json:"globalVars"`
 
 	Name string `json:"name"`
 }

@@ -10,23 +10,9 @@
       height="600px">
     <div>
       <a-row>
-        <a-col flex="100px" class="dp-border">环境变量</a-col>
-      </a-row>
-      <a-row v-for="(item, idx) in environmentData?.vars" :key="idx" type="flex">
-        <a-col flex="100px">{{item.name}}</a-col>
-        <a-col :flex="3">{{item.rightValue}}</a-col>
-
-        <a-col flex="100px">
-          <span @click="select(item)" class="dp-link-primary">选择</span>
-        </a-col>
-      </a-row>
-
-      <br/>
-
-      <a-row>
         <a-col flex="100px" class="dp-border">共享变量</a-col>
       </a-row>
-      <a-row v-for="(item, idx) in validExtractorVariablesData" :key="idx" type="flex">
+      <a-row v-for="(item, idx) in debugData.shareVars" :key="idx" type="flex">
         <a-col flex="100px">{{item.name}}</a-col>
         <a-col :flex="3">{{item.rightValue==='extractor_err'? t(item.rightValue+'_short') : item.value}}</a-col>
 
@@ -34,15 +20,31 @@
           <span @click="select(item)" class="dp-link-primary">选择</span>
         </a-col>
       </a-row>
-
       <br/>
 
-      <a-row v-for="(item, idx) in validExtractorVariablesData" :key="idx" type="flex">
-        <a-col flex="100px"></a-col>
-        <a-col :flex="3" class="dp-center">
-          <a-button @click="() => onCancel()" type="primary">关闭</a-button>
+      <a-row>
+        <a-col flex="100px" class="dp-border">环境变量</a-col>
+      </a-row>
+      <a-row v-for="(item, idx) in debugData.envVars" :key="idx" type="flex">
+        <a-col flex="100px">{{item.name}}</a-col>
+        <a-col :flex="3">{{item.rightValue}}</a-col>
+
+        <a-col flex="100px">
+          <span @click="select(item)" class="dp-link-primary">选择</span>
         </a-col>
-        <a-col flex="100px"></a-col>
+      </a-row>
+      <br/>
+
+      <a-row>
+        <a-col flex="100px" class="dp-border">全局变量</a-col>
+      </a-row>
+      <a-row v-for="(item, idx) in debugData.globalVars" :key="idx" type="flex">
+        <a-col flex="100px">{{item.name}}</a-col>
+        <a-col :flex="3">{{item.rightValue}}</a-col>
+
+        <a-col flex="100px">
+          <span @click="select(item)" class="dp-link-primary">选择</span>
+        </a-col>
       </a-row>
 
     </div>
@@ -65,8 +67,6 @@ const { t } = useI18n();
 
 const store = useStore<{ Debug: DebugStateType, EnvironmentState: EnvironmentStateType }>();
 const debugData = computed<Interface>(() => store.state.Debug?.debugData);
-const validExtractorVariablesData = computed<any>(() => store.state.Debug?.validExtractorVariablesData);
-const environmentData = computed<any>(() => store.state.EnvironmentState?.environmentData);
 
 const requestVariableVisible = ref(false)
 

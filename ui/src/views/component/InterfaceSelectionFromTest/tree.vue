@@ -11,14 +11,10 @@
     <div class="tree-container">
       <a-tree
           class="deeptest-tree"
-          draggable
-          blockNode
           showIcon
+          :checkable="true"
           :expandedKeys="expandedKeys"
           :auto-expand-parent="autoExpandParent"
-          @drop="onDrop"
-          @expand="onExpand"
-          @select="selectNode"
           :tree-data="treeData"
           :replace-fields="replaceFields">
 
@@ -34,31 +30,6 @@
                 <span>{{nodeProps.dataRef.title.substr(nodeProps.dataRef.title.indexOf(searchValue) + searchValue.length)}}</span>
               </span>
             <span class="tree-title-text" v-else>{{ nodeProps.dataRef.title }}</span>
-
-            <span class="more-icon" v-if="nodeProps.dataRef.id > 0">
-                  <a-dropdown>
-                       <MoreOutlined/>
-                      <template #overlay>
-                        <a-menu>
-                          <a-menu-item v-if="nodeProps.dataRef.type === 'dir'" key="0" @click="create(nodeProps.dataRef.id, 'dir')">
-                             新建目录
-                          </a-menu-item>
-                          <a-menu-item v-if="nodeProps.dataRef.type === 'dir'" key="0" @click="create(nodeProps.dataRef.id, 'interface')">
-                             新建接口
-                          </a-menu-item>
-                          <a-menu-item v-if="nodeProps.dataRef.id !== -1" key="1" @click="edit(nodeProps)">
-                           {{'编辑' + (nodeProps.dataRef.type === 'interface' ? '接口' : '目录')}}
-                          </a-menu-item>
-                          <a-menu-item v-if="nodeProps.dataRef.id !== -1" key="1" @click="deleteNode(nodeProps.dataRef)">
-                            {{'删除' + (nodeProps.dataRef.type === 'interface' ? '接口' : '目录')}}
-                          </a-menu-item>
-                          <a-menu-item v-if="nodeProps.dataRef.type === 'dir'" key="0" @click="importInterfaces(nodeProps.dataRef)">
-                             导入接口
-                          </a-menu-item>
-                        </a-menu>
-                      </template>
-                    </a-dropdown>
-                </span>
           </div>
         </template>
       </a-tree>
@@ -193,11 +164,6 @@ watch(searchValue, (newVal) => {
   autoExpandParent.value = true;
 });
 
-const onExpand = (keys: number[]) => {
-  expandedKeys.value = keys;
-  autoExpandParent.value = false;
-};
-
 // 展开所有
 function expandAll() {
   const keys: any = [];
@@ -220,21 +186,6 @@ function expandAll() {
 
 let selectedKeys = ref<number[]>([]);
 const emit = defineEmits(['select']);
-
-function selectNode(keys, e) {
-  console.log('selectNode', keys, treeDataMap.value)
-
-  if (keys.length === 0 && e) {
-    selectedKeys.value = [e.node.dataRef.id] // un-select
-    return
-  } else {
-    selectedKeys.value = keys
-  }
-  setSelectedKey('test-interface', currProject.value.id, selectedKeys.value[0])
-
-  const selectedItem = treeDataMap.value[selectedKeys.value[0]]
-  store.dispatch('TestInterface/openInterfaceTab', selectedItem);
-}
 
 const currentNode = ref(null as any);
 
@@ -284,10 +235,7 @@ onMounted(async () => {
 
       .tree-title-text {
         display: inline-block;
-        width: calc(100% - 24px);
         white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
       }
 
       .more-icon {

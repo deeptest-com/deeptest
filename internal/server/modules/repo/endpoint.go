@@ -317,7 +317,7 @@ func (r *EndpointRepo) CreateEndpointSample(serveId uint) (endpointId uint, err 
 }
 
 func (r *EndpointRepo) GetCategoryCount(result interface{}, projectId uint) (err error) {
-	err = r.DB.Raw("selectMenuItem count(id) count, category_id from "+model.Endpoint{}.TableName()+" where not deleted and not disabled and project_id=? group by category_id", projectId).Scan(result).Error
+	err = r.DB.Raw("select count(id) count, category_id from "+model.Endpoint{}.TableName()+" where not deleted and not disabled and project_id=? group by category_id", projectId).Scan(result).Error
 	return
 }
 

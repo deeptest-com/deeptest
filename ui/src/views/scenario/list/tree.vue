@@ -129,7 +129,7 @@ const selectNode = (keys, e) => {
   console.log('selectNode', keys)
 
   if (keys.length === 0 && e) {
-    selectedKeys.value = [e.node.dataRef.id] // cancel un-selectMenuItem
+    selectedKeys.value = [e.node.dataRef.id] // cancel un-select
     return
   } else {
     selectedKeys.value = keys

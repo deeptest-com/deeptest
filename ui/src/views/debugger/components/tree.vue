@@ -229,7 +229,7 @@ function selectNode(keys, e) {
   console.log('selectNode', keys, treeDataMap.value)
 
   if (keys.length === 0 && e) {
-    selectedKeys.value = [e.node.dataRef.id] // un-selectMenuItem
+    selectedKeys.value = [e.node.dataRef.id] // un-select
     return
   } else {
     selectedKeys.value = keys

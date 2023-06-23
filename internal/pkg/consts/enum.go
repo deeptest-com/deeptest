@@ -222,7 +222,7 @@ const (
 	File        FieldType = "file"
 	image       FieldType = "image"
 	Hidden      FieldType = "hidden"
-	Select      FieldType = "selectMenuItem"
+	Select      FieldType = "select"
 	MultiSelect FieldType = "multiselect"
 
 	Button FieldType = "button"

@@ -709,7 +709,7 @@ func fromV3RequestBodies(name string, requestBodyRef *openapi3.RequestBodyRef, c
 		return
 	}
 
-	//Only selectMenuItem one formData or request body for an individual requestBody as OpenAPI 2 does not support multiples
+	//Only select one formData or request body for an individual requestBody as OpenAPI 2 does not support multiples
 	if requestBodyRef.Value != nil {
 		for contentType, mediaType := range requestBodyRef.Value.Content {
 			if consumes == nil {

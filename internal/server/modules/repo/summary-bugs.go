@@ -28,7 +28,7 @@ func (r *SummaryBugsRepo) UpdateColumnsByDate(bugs model.SummaryBugs, id int64) 
 
 func (r *SummaryBugsRepo) Existed(bugId int64, projectId int64) (id int64, err error) {
 
-	err = r.DB.Model(&model.SummaryBugs{}).Raw("selectMenuItem id from deeptest.biz_summary_bugs where bugId = ? and project_id = ? AND NOT deleted;", bugId, projectId).Last(&id).Error
+	err = r.DB.Model(&model.SummaryBugs{}).Raw("select id from deeptest.biz_summary_bugs where bugId = ? and project_id = ? AND NOT deleted;", bugId, projectId).Last(&id).Error
 
 	return
 }
@@ -56,14 +56,14 @@ func (r *SummaryBugsRepo) FindGroupByBugSeverity() (result []model.SummaryBugsSe
 }
 
 func (r *SummaryBugsRepo) FindProjectIds() (projectIds []int64, err error) {
-	err = r.DB.Model(&model.Project{}).Raw("selectMenuItem id from deeptest.biz_project;").Find(&projectIds).Error
+	err = r.DB.Model(&model.Project{}).Raw("select id from deeptest.biz_project;").Find(&projectIds).Error
 	return
 }
 
 func (r *SummaryBugsRepo) CheckUpdated(lastUpdateTime *time.Time) (result bool, err error) {
 	result = false
 	newTime := time.Now()
-	err = r.DB.Model(&model.SummaryBugs{}).Raw("selectMenuItem updated_at from  deeptest.biz_summary_bugs order by updated_at desc limit 1").Find(&newTime).Error
+	err = r.DB.Model(&model.SummaryBugs{}).Raw("select updated_at from  deeptest.biz_summary_bugs order by updated_at desc limit 1").Find(&newTime).Error
 	result = newTime.After(*lastUpdateTime)
 	return
 }

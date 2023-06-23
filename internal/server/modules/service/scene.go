@@ -60,7 +60,7 @@ func (s *SceneService) LoadEnvVarMapByScenario(scene *domain.ExecScene, scenario
 func (s *SceneService) GetExecServer(debugInterfaceId, endpointInterfaceId, environmentId uint) (server model.ServeServer) {
 	interf, _ := s.EndpointInterfaceRepo.Get(endpointInterfaceId)
 
-	if environmentId > 0 { // selectMenuItem a env to exec
+	if environmentId > 0 { // select a env to exec
 		endpoint, _ := s.EndpointRepo.Get(interf.EndpointId)
 		server, _ = s.ServeServerRepo.FindByServeAndExecEnv(endpoint.ServeId, environmentId)
 

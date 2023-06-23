@@ -45,7 +45,7 @@ const props = defineProps<{
 const emits = defineEmits(['handleOk', 'handleSearch']);
 
 interface FormItem {
-    type: string; // 表单类型 input | selectMenuItem | button | or any more
+    type: string; // 表单类型 input | select | button | or any more
     modelName?: string; // 表单model key值
     options?: any[]; // 表单类型为select时传入
     label?: string; // 是否需要label
@@ -53,7 +53,7 @@ interface FormItem {
     text?: string; // 表单文案  按钮或者 checkbox 等需要固定文案
     mode?: string; // 表单类型 select时 传入mode
     valueType?: string; // 表单值类型
-    placeholder?: string; // input/ checkbox/ selectMenuItem 需要placeholder提示语
+    placeholder?: string; // input/ checkbox/ select 需要placeholder提示语
     attrs?: any; // 表单是否有自定义样式属性
     title?: string;
 }

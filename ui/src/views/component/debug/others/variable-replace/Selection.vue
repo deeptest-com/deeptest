@@ -17,7 +17,7 @@
         <a-col :flex="3">{{item.rightValue==='extractor_err'? t(item.rightValue+'_short') : item.value}}</a-col>
 
         <a-col flex="100px">
-          <span @click="selectMenuItem(item)" class="dp-link-primary">选择</span>
+          <span @click="select(item)" class="dp-link-primary">选择</span>
         </a-col>
       </a-row>
       <br/>
@@ -30,7 +30,7 @@
         <a-col :flex="3">{{item.rightValue}}</a-col>
 
         <a-col flex="100px">
-          <span @click="selectMenuItem(item)" class="dp-link-primary">选择</span>
+          <span @click="select(item)" class="dp-link-primary">选择</span>
         </a-col>
       </a-row>
       <br/>
@@ -43,7 +43,7 @@
         <a-col :flex="3">{{item.rightValue}}</a-col>
 
         <a-col flex="100px">
-          <span @click="selectMenuItem(item)" class="dp-link-primary">选择</span>
+          <span @click="select(item)" class="dp-link-primary">选择</span>
         </a-col>
       </a-row>
 
@@ -89,7 +89,7 @@ const onVariableSelectionStatus = (data) => {
 }
 
 const selectMenuItem = async (item) => {
-  console.log('selectMenuItem', item, variableSelectionData.value, debugData.value)
+  console.log('select', item, variableSelectionData.value, debugData.value)
   const targetElemId = '' + variableSelectionData.value.src + variableSelectionData.value.index
 
   if (variableSelectionData.value.src.indexOf('InterfaceUrl') > -1) {

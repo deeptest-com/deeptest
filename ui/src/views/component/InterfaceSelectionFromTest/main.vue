@@ -7,15 +7,8 @@
       :onCancel="onCancel"
       wrapClassName="modal-tree-selection"
       width="1000px">
-
     <div class="interface-selection-main">
-      <div class="left tree">
-        <Tree :selectCategory="selectCategory"/>
-      </div>
-
-      <div class="right">
-        <List :selectInterfaces="onSelectInterfaces"></List>
-      </div>
+        <Tree :submit="onSubmit" />
     </div>
 
     <template #footer>
@@ -42,22 +35,9 @@ const props = defineProps({
   },
 })
 
-const categoryId = ref(0)
-const interfaceIds = ref([])
-
-const selectCategory = async (id) => {
-  console.log('selectCategory', id)
-  categoryId.value = id;
-}
-
-const onSelectInterfaces = async (ids) => {
-  console.log('onSelectInterfaces', ids)
-  interfaceIds.value = ids
-}
-
-const onSubmit = () => {
-  console.log('onSubmit')
-  props.onFinish(interfaceIds.value)
+const onSubmit = (nodes) => {
+  console.log('onSubmit', nodes)
+  props.onFinish(nodes)
 }
 
 const onCancel = () => {
@@ -77,15 +57,5 @@ const onCancel = () => {
 
 <style lang="less" scoped>
 .interface-selection-main {
-  display: flex;
-
-  .left {
-    width: 260px;
-  }
-
-  .right {
-    flex: 1;
-    margin-left: 16px;
-  }
 }
 </style>

@@ -74,7 +74,7 @@ const props = defineProps({
   //   type: Number,
   //   required: true,
   // },
-  selectInterface: {
+  selectInterfaces: {
     type: Function,
     required: true,
   },
@@ -127,7 +127,7 @@ const selectedRowKeys = ref<Key[]>([]);
 
 const onSelectChange = (keys: Key[], rows: any) => {
   selectedRowKeys.value = [...keys];
-  props.selectInterface(selectedRowKeys.value)
+  props.selectInterfaces(selectedRowKeys.value)
 };
 
 const columns = [

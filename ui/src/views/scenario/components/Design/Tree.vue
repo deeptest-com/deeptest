@@ -67,7 +67,12 @@
     </div>
 
     <InterfaceSelectionFromDefine
-        v-if="interfaceSelectionVisible && interfaceSrc==='fromDefine'"
+        v-if="interfaceSelectionVisible && interfaceSelectionSrc==='fromDefine'"
+        :onFinish="interfaceSelectionFinish"
+        :onCancel="interfaceSelectionCancel" />
+
+    <InterfaceSelectionFromTest
+        v-if="interfaceSelectionVisible && interfaceSelectionSrc==='fromTest'"
         :onFinish="interfaceSelectionFinish"
         :onCancel="interfaceSelectionCancel" />
 
@@ -92,6 +97,7 @@ import {StateType as ScenarioStateType} from "../../store";
 import {isRoot, updateNodeName, isInterface} from "../../service";
 import TreeContextMenu from "./components/TreeContextMenu.vue";
 import InterfaceSelectionFromDefine from "@/views/component/InterfaceSelectionFromDefine/main.vue";
+import InterfaceSelectionFromTest from "@/views/component/InterfaceSelectionFromTest/main.vue";
 
 const props = defineProps<{}>()
 
@@ -302,14 +308,13 @@ const renameNode = () => {
   }, 50)
 }
 
-const interfaceSrc = ref('')
 const addNode = (mode, processorCategory, processorType,
                  targetProcessorCategory, targetProcessorType, targetProcessorId) => {
   console.log('addNode', mode, processorCategory, processorType,
       targetProcessorCategory, targetProcessorType, targetProcessorId)
 
   if (processorCategory === 'interface') { // select a interface
-    interfaceSrc.value = processorType
+    interfaceSelectionSrc.value = processorType
     interfaceSelectionVisible.value = true
     return
 
@@ -334,8 +339,9 @@ const interfaceSelectionFinish = (interfaceIds) => {
   const targetNode = treeDataMap.value[targetModelId]
   console.log('interfaceSelectionFinish', interfaceIds, targetNode)
 
-  store.dispatch('Scenario/addInterfaces', {
-    interfaceIds: interfaceIds,
+  if (interfaceSelectionSrc.value === 'fromDefine') {
+    store.dispatch('Scenario/addInterfaces', {
+      interfaceIds: interfaceIds,
       targetId: targetNode.id,
     }).then((newNode) => {
       console.log('addInterfaces successfully', newNode)
@@ -345,6 +351,19 @@ const interfaceSelectionFinish = (interfaceIds) => {
       expandOneKey(treeDataMap.value, newNode.parentId, expandedKeys.value) // expend new node
       setExpandedKeys('scenario', treeData.value[0].scenarioId, expandedKeys.value)
     })
+  } else if (interfaceSelectionSrc.value === 'fromTest') {
+    store.dispatch('Scenario/addInterfaces', {
+      interfaceIds: interfaceIds,
+      targetId: targetNode.id,
+    }).then((newNode) => {
+      console.log('addInterfaces successfully', newNode)
+
+      interfaceSelectionVisible.value = false
+      selectNode([newNode.id], null)
+      expandOneKey(treeDataMap.value, newNode.parentId, expandedKeys.value) // expend new node
+      setExpandedKeys('scenario', treeData.value[0].scenarioId, expandedKeys.value)
+    })
+  }
 }
 
 const interfaceSelectionCancel = () => {

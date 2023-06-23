@@ -1,53 +1,24 @@
 <template>
   <div class="interface-tree-main dp-tree">
-    <div class="toolbar">
-      <div class="tips">
-        <a-select
-            v-model:value="serveId"
-            :placeholder="'请选择服务'"
-            :bordered="true"
-            @change="selectServe"
-            size="small"
-            class="dp-no-border">
-          <a-select-option v-for="item in serves" :key="item.id" :value="item.id">{{ item.name }}</a-select-option>
-        </a-select>
-      </div>
-
-      <div class="buttons">
-        <a-button @click="expandAll" type="link" class="dp-color-primary">
-          <span v-if="!isExpand">展开</span>
-          <span v-if="isExpand">收缩</span>
-        </a-button>
-      </div>
-    </div>
-
-    <div class="tree-panel">
-      <a-tree
-          ref="tree"
-          :tree-data="treeDataCategory"
-          :replace-fields="replaceFields"
-          show-icon
-          @expand="expandNode"
-          @select="selectNode"
-
-          v-model:selectedKeys="selectedKeys"
-          v-model:expandedKeys="expandedKeys"
-      >
-        <template #title="slotProps">
-          <span class="name-editor">
-            {{ slotProps.name }}
-          </span>
-        </template>
-
-        <template #icon="slotProps">
-          <FolderOutlined v-if="!slotProps.isLeaf && !slotProps.expanded"/>
-          <FolderOpenOutlined v-if="!slotProps.isLeaf && slotProps.expanded"/>
-          <FileOutlined v-if="slotProps.isLeaf"/>
-        </template>
-      </a-tree>
-    </div>
-
+    <a-select
+        v-model:value="serveId"
+        :placeholder="'请选择服务'"
+        :bordered="true"
+        style="width: 150px;margin-right: 16px;"
+        @change="selectServe">
+      <a-select-option v-for="item in serves" :key="item.id" :value="item.id">{{ item.name }}</a-select-option>
+    </a-select>
+    <a-tree-select
+        v-model:value="categoryId"
+        style="width: 300px;"
+        allow-clear
+        :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+        :tree-data="treeDataCategory"
+        placeholder="请选择分类"
+        tree-default-expand-all
+    />
   </div>
+
 </template>
 
 <script setup lang="ts">
@@ -106,15 +77,13 @@ const selectServe = () => {
 const treeDataCategory = ref([] as any[])
 let treeDataMapCategory = {}
 const loadCategoryByServe = async () => {
-  console.log('loadCategory', serveId.value)
-
+  // console.log('loadCategory', serveId.value)
   const response = await loadCategory('endpoint');
   if (response.code === 0) {
     treeDataCategory.value = [response.data]
-
-    selectNode([response.data.id], null)
-    treeDataMapCategory = {}
-    getNodeMap(treeDataCategory.value, treeDataMapCategory)
+    // selectNode([response.data.id], null)
+    // treeDataMap = {}
+    // getNodeMap(treeData.value, treeDataMap)
   }
 }
 
@@ -136,12 +105,14 @@ const expandNode = (keys: string[], e: any) => {
 
 const selectNode = (keys, e) => {
   console.log('selectNode', keys)
+
   if (keys.length === 0 && e) {
     selectedKeys.value = [e.node.dataRef.id] // cancel un-select
     return
   } else {
     selectedKeys.value = keys
   }
+
   props.selectCategory(selectedKeys.value[0])
 }
 
@@ -162,17 +133,12 @@ onUnmounted(() => {
 
 <style lang="less" scoped>
 .interface-tree-main {
-  .toolbar {
-    display: flex;
-    .tips {
-      flex: 1;
-      .ant-select {
-        width: 100%;
-      }
-    }
-    .buttons {
-      width: 50px;
-    }
-  }
+  //width: 600px;
+  display: flex;
+  align-items: center;
+  margin-right: 16px;
+  margin-bottom: 16px;
+
+
 }
 </style>

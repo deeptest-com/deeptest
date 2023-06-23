@@ -13,8 +13,8 @@ import {
     updateNode,
     removeNode,
     moveNode,
-    addInterfaces, addProcessor,
-    saveProcessorName, saveProcessor, saveInterface, loadExecResult,
+    addInterfacesFromDefine, addInterfacesFromTest, addProcessor,
+    saveProcessorName, saveProcessor, loadExecResult,
     getScenariosReports,
     getScenariosReportsDetail,
     addPlans,
@@ -112,7 +112,8 @@ export interface ModuleType extends StoreModuleType<StateType> {
         getNode: Action<StateType, StateType>;
         updateCategoryId: Action<StateType, StateType>;
 
-        addInterfaces: Action<StateType, StateType>;
+        addInterfacesFromDefine: Action<StateType, StateType>;
+        addInterfacesFromTest: Action<StateType, StateType>;
         addProcessor: Action<StateType, StateType>;
 
         createNode: Action<StateType, StateType>;
@@ -364,9 +365,9 @@ const StoreModel: ModuleType = {
             }
         },
 
-        async addInterfaces({commit, dispatch, state}, payload: any) {
+        async addInterfacesFromDefine({commit, dispatch, state}, payload: any) {
             try {
-                const resp = await addInterfaces(payload);
+                const resp = await addInterfacesFromDefine(payload);
 
                 await dispatch('loadScenario', state.scenarioId);
                 return resp.data;
@@ -374,6 +375,17 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
+        async addInterfacesFromTest({commit, dispatch, state}, payload: any) {
+            try {
+                const resp = await addInterfacesFromTest(payload);
+
+                await dispatch('loadScenario', state.scenarioId);
+                return resp.data;
+            } catch (error) {
+                return false;
+            }
+        },
+
         async addProcessor({commit, dispatch, state}, payload: any) {
             try {
                 const resp = await addProcessor(payload);

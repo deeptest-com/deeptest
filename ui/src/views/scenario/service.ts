@@ -110,9 +110,16 @@ export async function moveNode(data: any): Promise<any> {
         data: data,
     });
 }
-export async function addInterfaces(data): Promise<any> {
+export async function addInterfacesFromDefine(data): Promise<any> {
     return request({
-        url: `/${apiPathNodes}/addInterfaces`,
+        url: `/${apiPathNodes}/addInterfacesFromDefine`,
+        method: 'POST',
+        data: data,
+    });
+}
+export async function addInterfacesFromTest(data): Promise<any> {
+    return request({
+        url: `/${apiPathNodes}/addInterfacesFromTest`,
         method: 'POST',
         data: data,
     });

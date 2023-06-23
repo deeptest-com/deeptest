@@ -34,8 +34,8 @@ func (c *ScenarioNodeCtrl) LoadTree(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data})
 }
 
-// AddInterfaces 添加接口
-func (c *ScenarioNodeCtrl) AddInterfaces(ctx iris.Context) {
+// AddInterfacesFromDefine 添加接口
+func (c *ScenarioNodeCtrl) AddInterfacesFromDefine(ctx iris.Context) {
 	req := serverDomain.ScenarioAddInterfacesReq{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -56,7 +56,7 @@ func (c *ScenarioNodeCtrl) AddInterfaces(ctx iris.Context) {
 }
 
 // AddInterfacesFromDebuggerTree 添加接口
-func (c *ScenarioNodeCtrl) AddInterfacesFromDebuggerTree(ctx iris.Context) {
+func (c *ScenarioNodeCtrl) AddInterfacesFromTest(ctx iris.Context) {
 	req := serverDomain.ScenarioAddInterfacesFromTreeReq{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {

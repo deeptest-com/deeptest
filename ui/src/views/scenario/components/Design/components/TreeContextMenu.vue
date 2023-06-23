@@ -25,7 +25,7 @@
           <a-menu-item key="add-child-interface-fromDefine" class="menu-item">
             <span>从接口管理模块</span>
           </a-menu-item>
-          <a-menu-item key="add-child-interface-fromDebug" class="menu-item">
+          <a-menu-item key="add-child-interface-fromTest" class="menu-item">
             <span>从接口调试模块</span>
           </a-menu-item>
         </a-sub-menu>

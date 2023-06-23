@@ -77,7 +77,7 @@
         @cancel="handleModalCancel" />
 
     <!--  导入接口弹窗  -->
-    <InterfaceSelection
+    <InterfaceSelectionFromDefine
         v-if="interfaceSelectionVisible"
         :onFinish="interfaceSelectionFinish"
         :onCancel="interfaceSelectionCancel" />
@@ -106,7 +106,7 @@ import {StateType as ServeStateType} from "@/store/serve";
 
 import {expandOneKey} from "@/services/tree";
 import EditModal from './edit.vue'
-import InterfaceSelection from "@/views/component/InterfaceSelection/main.vue";
+import InterfaceSelectionFromDefine from "@/views/component/InterfaceSelectionFromDefine/main.vue";
 
 const store = useStore<{ TestInterface: TestInterfaceStateType, ProjectGlobal: ProjectStateType, ServeGlobal: ServeStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);

@@ -161,8 +161,8 @@ func (s *DebugInterfaceService) Save(req domain.DebugData) (debugInterface model
 
 	if req.DebugInterfaceId <= 0 { // first time to save
 		// clone extractors and checkpoints if needed
-		s.ExtractorRepo.CloneFromEndpointInterfaceToDebugInterface(req.EndpointInterfaceId, debugInterface.ID, consts.InterfaceDebug)
-		s.CheckpointRepo.CloneFromEndpointInterfaceToDebugInterface(req.EndpointInterfaceId, debugInterface.ID, consts.InterfaceDebug)
+		s.ExtractorRepo.CloneFromEndpointInterfaceToDebugInterface(req.EndpointInterfaceId, debugInterface.ID, req.UsedBy)
+		s.CheckpointRepo.CloneFromEndpointInterfaceToDebugInterface(req.EndpointInterfaceId, debugInterface.ID, req.UsedBy)
 
 		s.EndpointInterfaceRepo.SetDebugInterfaceId(req.EndpointInterfaceId, debugInterface.ID)
 	}

@@ -126,6 +126,7 @@ func (s *TestInterfaceService) addInterface(endpointInterfaceId int, createBy ui
 	debugData.DebugInterfaceId = 0 // force to clone the old one
 	debugData.DebugInterfaceId = 0
 	debugData.EndpointInterfaceId = uint(endpointInterfaceId)
+	debugData.UsedBy = consts.TestDebug
 	debugInterface, err := s.DebugInterfaceService.Save(debugData)
 
 	// clone extractors and checkpoints if needed

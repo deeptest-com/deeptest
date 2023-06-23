@@ -66,8 +66,8 @@
       </div>
     </div>
 
-    <InterfaceSelection
-        v-if="interfaceSelectionVisible"
+    <InterfaceSelectionFromDefine
+        v-if="interfaceSelectionVisible && interfaceSrc==='fromDefine'"
         :onFinish="interfaceSelectionFinish"
         :onCancel="interfaceSelectionCancel" />
 
@@ -91,7 +91,7 @@ import {getContextMenuStyle} from "@/utils/dom";
 import {StateType as ScenarioStateType} from "../../store";
 import {isRoot, updateNodeName, isInterface} from "../../service";
 import TreeContextMenu from "./components/TreeContextMenu.vue";
-import InterfaceSelection from "@/views/component/InterfaceSelection/main.vue";
+import InterfaceSelectionFromDefine from "@/views/component/InterfaceSelectionFromDefine/main.vue";
 
 const props = defineProps<{}>()
 
@@ -125,11 +125,6 @@ watch(() => {
 },{
   immediate:true
 })
-
-// const loadTree = debounce(async () => {
-//   await store.dispatch('Scenario/loadScenario', detailResult.value.id);
-// }, 60)
-
 
 const replaceFields = {key: 'id', title: 'name'};
 let expandedKeys = ref<number[]>([]);
@@ -272,7 +267,8 @@ const menuClick = (menuKey: string, targetId: number) => {
     return
   }
 
-  // add-child-interface
+  // add-child-interface-define
+  // add-child-interface-debug
   // add-child-processor_logic-processor_logic_if
   const arr = menuKey.split('-')
   const mode = arr[1]
@@ -306,12 +302,14 @@ const renameNode = () => {
   }, 50)
 }
 
+const interfaceSrc = ref('')
 const addNode = (mode, processorCategory, processorType,
                  targetProcessorCategory, targetProcessorType, targetProcessorId) => {
   console.log('addNode', mode, processorCategory, processorType,
       targetProcessorCategory, targetProcessorType, targetProcessorId)
 
   if (processorCategory === 'interface') { // select a interface
+    interfaceSrc.value = processorType
     interfaceSelectionVisible.value = true
     return
 
@@ -330,6 +328,7 @@ const addNode = (mode, processorCategory, processorType,
 }
 
 const interfaceSelectionVisible = ref(false)
+const interfaceSelectionSrc = ref('')
 
 const interfaceSelectionFinish = (interfaceIds) => {
   const targetNode = treeDataMap.value[targetModelId]

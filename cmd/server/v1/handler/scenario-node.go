@@ -55,6 +55,27 @@ func (c *ScenarioNodeCtrl) AddInterfaces(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: nodePo})
 }
 
+// AddInterfacesFromDebuggerTree 添加接口
+func (c *ScenarioNodeCtrl) AddInterfacesFromDebuggerTree(ctx iris.Context) {
+	req := serverDomain.ScenarioAddInterfacesFromTreeReq{}
+	err := ctx.ReadJSON(&req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+		return
+	}
+
+	req.CreateBy = multi.GetUserId(ctx)
+	nodePo, bizErr := c.ScenarioNodeService.AddInterfacesFromDebuggerTree(req)
+	if bizErr != nil {
+		ctx.JSON(_domain.Response{
+			Code: _domain.SystemErr.Code,
+		})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: nodePo})
+}
+
 // AddProcessor 添加
 func (c *ScenarioNodeCtrl) AddProcessor(ctx iris.Context) {
 	projectId, err := ctx.URLParamInt("currProjectId")

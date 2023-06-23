@@ -1,13 +1,12 @@
 <template>
-
   <a-modal
-    title="请选择接口"
-    :destroy-on-close="true"
-    :mask-closable="false"
-    :visible="true"
-    :onCancel="onCancel"
-    wrapClassName="modal-tree-selection"
-    width="1000px">
+      title="请选择接口"
+      :destroy-on-close="true"
+      :mask-closable="false"
+      :visible="true"
+      :onCancel="onCancel"
+      wrapClassName="modal-tree-selection"
+      width="1000px">
     <div class="interface-selection-main">
       <div class="left tree">
         <Tree :selectCategory="selectCategory"/>
@@ -24,8 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import {defineProps, ref, watch} from "vue";
-import {listServe} from "@/services/serve";
+import {defineProps, ref} from "vue";
 
 import Tree from "./tree.vue"
 import List from "./list.vue"
@@ -77,9 +75,11 @@ const onCancel = () => {
 <style lang="less" scoped>
 .interface-selection-main {
   display: flex;
+
   .left {
     width: 260px;
   }
+
   .right {
     flex: 1;
     margin-left: 16px;

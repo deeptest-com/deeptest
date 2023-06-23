@@ -13,25 +13,28 @@ type DebugSceneService struct {
 	ServeServerRepo       *repo.ServeServerRepo       `inject:""`
 	ScenarioProcessorRepo *repo.ScenarioProcessorRepo `inject:""`
 	EnvironmentRepo       *repo.EnvironmentRepo       `inject:""`
+	TestInterfaceRepo     *repo.TestInterfaceRepo     `inject:""`
 
 	ShareVarService *ShareVarService `inject:""`
 
 	EnvironmentService *EnvironmentService `inject:""`
 }
 
-func (s *DebugSceneService) LoadScene(endpointInterfaceId, debugServeId, debugServerId, scenarioProcessorId uint, usedBy consts.UsedBy) (
+func (s *DebugSceneService) LoadScene(debugData domain.DebugData, usedBy consts.UsedBy) (
 	baseUrl string, shareVars []domain.GlobalVar, envVars []domain.GlobalVar,
 	globalVars []domain.GlobalVar, globalParams []domain.GlobalParam) {
 
-	if endpointInterfaceId > 0 {
-		interf, _ := s.EndpointInterfaceRepo.Get(endpointInterfaceId)
+	debugServeId := debugData.ServeId
+	debugServerId := debugData.ServerId
+
+	if debugData.EndpointInterfaceId > 0 && (debugServeId <= 0 || debugServerId <= 0) {
+		interf, _ := s.EndpointInterfaceRepo.Get(debugData.EndpointInterfaceId)
 		endpoint, _ := s.EndpointRepo.Get(interf.EndpointId)
 
-		if debugServeId == 0 {
+		if debugServeId <= 0 {
 			debugServeId = endpoint.ServeId
 		}
-
-		if debugServerId == 0 {
+		if debugServerId <= 0 {
 			debugServerId = endpoint.ServerId
 		}
 	}
@@ -42,7 +45,7 @@ func (s *DebugSceneService) LoadScene(endpointInterfaceId, debugServeId, debugSe
 	envId := serveServer.EnvironmentId
 	environment, _ := s.EnvironmentRepo.Get(envId)
 
-	shareVars, _ = s.ShareVarService.ListForDebug(debugServeId, scenarioProcessorId, usedBy)
+	shareVars, _ = s.ShareVarService.ListForDebug(debugServeId, debugData.ScenarioProcessorId, usedBy)
 	envVars, _ = s.EnvironmentService.GetVarsByEnv(envId)
 	globalVars, _ = s.EnvironmentService.GetGlobalVars(environment.ProjectId)
 	globalParams, _ = s.EnvironmentService.GetGlobalParams(environment.ProjectId)

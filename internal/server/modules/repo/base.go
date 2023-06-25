@@ -70,7 +70,7 @@ func (r *BaseRepo) GetAllChildIds(id uint, tableName string, typ serverConsts.Ca
 	return
 }
 
-func (r *TestInterfaceRepo) GetAllChildIdsSimple(id uint, tableName string) (
+func (r *BaseRepo) GetAllChildIdsSimple(id uint, tableName string) (
 	ids []uint, err error) {
 	sql := `
 		WITH RECURSIVE temp AS

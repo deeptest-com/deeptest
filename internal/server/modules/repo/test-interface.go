@@ -230,10 +230,10 @@ func (r *TestInterfaceRepo) GetMaxOrder(parentId uint) (order int) {
 func (r *TestInterfaceRepo) Remove(id uint, typ serverConsts.TestInterfaceType) (err error) {
 	ids := []uint{}
 
-	if typ == serverConsts.TestInterfaceTypeDir {
-		ids, _ = r.GetAllChildIdsSimple(id, model.TestInterface{}.TableName())
-	} else {
+	if typ == serverConsts.TestInterfaceTypeInterface {
 		ids = append(ids, id)
+	} else {
+		ids, _ = r.GetAllChildIdsSimple(id, model.TestInterface{}.TableName())
 	}
 
 	err = r.DB.Model(&model.TestInterface{}).

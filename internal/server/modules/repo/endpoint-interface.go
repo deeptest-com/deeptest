@@ -20,14 +20,6 @@ type EndpointInterfaceRepo struct {
 }
 
 func (r *EndpointInterfaceRepo) Paginate(req v1.EndpointInterfaceReqPaginate) (ret _domain.PageData, err error) {
-	/*
-		endpointIds, err := r.EndpointRepo.ListEndpointByCategory(req.CategoryId)
-		if err != nil {
-			return
-		}
-
-	*/
-
 	var count int64
 	db := r.DB.Model(&model.EndpointInterface{}).
 		Joins("LEFT JOIN biz_endpoint e ON biz_endpoint_interface.endpoint_id=e.id").

@@ -486,7 +486,6 @@ func (r *DebugInterfaceRepo) GetApiKey(id uint) (po model.DebugInterfaceApiKey, 
 }
 
 func (r *DebugInterfaceRepo) SaveInterfaces(interf *model.DebugInterface) (err error) {
-
 	r.DB.Transaction(func(tx *gorm.DB) error {
 		err = r.UpdateInterface(interf)
 		if err != nil {
@@ -519,44 +518,6 @@ func (r *DebugInterfaceRepo) UpdateInterface(interf *model.DebugInterface) (err 
 	return
 }
 
-//func (r *DebugInterfaceRepo) HasEndpointInterfaceDebugRecord(endpointInterfaceId uint) (id uint, err error) {
-//	po, err := r.GetByOwner(endpointInterfaceId, consts.InterfaceDebug)
-//	id = po.ID
-//
-//	return
-//}
-//func (r *DebugInterfaceRepo) HasScenarioInterfaceDebugRecord(scenarioInterfaceId uint) (id uint, err error) {
-//	po, err := r.GetByOwner(scenarioInterfaceId, consts.ScenarioDebug)
-//	id = po.ID
-//
-//	return
-//}
-//func (r *DebugInterfaceRepo) HasTestInterfaceDebugRecord(testInterfaceId uint) (id uint, err error) {
-//	po, err := r.GetByOwner(testInterfaceId, consts.TestDebug)
-//	id = po.ID
-//
-//	return
-//}
-//
-//func (r *DebugInterfaceRepo) GetByOwner(ownerId uint, usedBy consts.UsedBy) (ret modelRef.DebugInterface, err error) {
-//	db := r.DB.Where("NOT deleted")
-//
-//	if usedBy == consts.InterfaceDebug {
-//		db.Where("endpoint_interface_id=?", ownerId)
-//
-//	} else if usedBy == consts.ScenarioDebug {
-//		db.Where("scenario_interface_id=?", ownerId)
-//
-//	} else if usedBy == consts.TestDebug {
-//		db.Where("test_interface_id=?", ownerId)
-//
-//	}
-//
-//	err = db.Find(&ret).Error
-//
-//	return
-//}
-
 func (r *DebugInterfaceRepo) PopulateProps(po *model.DebugInterface) (err error) {
 	po.QueryParams, po.PathParams, _ = r.ListParams(po.ID)
 	po.Headers, _ = r.ListHeaders(po.ID)
@@ -574,6 +535,15 @@ func (r *DebugInterfaceRepo) UpdateDebugInfo(id uint, values map[string]interfac
 	err = r.DB.Model(&model.DebugInterface{}).
 		Where("id=?", id).
 		Updates(values).
+		Error
+
+	return
+}
+
+func (r *DebugInterfaceRepo) DeleteByProcessorIds(ids []uint) (err error) {
+	err = r.DB.Model(&model.DebugInterface{}).
+		Where("scenario_processor_id= IN (?)", ids).
+		Update("deleted", true).
 		Error
 
 	return

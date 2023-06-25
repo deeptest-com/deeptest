@@ -13,6 +13,7 @@ type ScenarioNodeRepo struct {
 	DB                    *gorm.DB               `inject:""`
 	ScenarioProcessorRepo *ScenarioProcessorRepo `inject:""`
 	ScenarioRepo          *ScenarioRepo          `inject:""`
+	DebugInterfaceRepo    *DebugInterfaceRepo    `inject:""`
 }
 
 func (r *ScenarioNodeRepo) ListByScenario(scenarioId uint) (pos []*model.Processor, err error) {
@@ -134,6 +135,11 @@ func (r *ScenarioNodeRepo) Delete(id uint) (err error) {
 		Where("id=?", id).
 		Update("deleted", true).
 		Error
+
+	processor, _ := r.Get(id)
+	if processor.EntityId > 0 {
+		r.DebugInterfaceRepo.Delete(processor.EntityId)
+	}
 
 	return
 }

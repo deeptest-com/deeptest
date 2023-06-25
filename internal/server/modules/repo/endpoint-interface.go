@@ -12,9 +12,11 @@ import (
 )
 
 type EndpointInterfaceRepo struct {
-	*BaseRepo    `inject:""`
-	DB           *gorm.DB      `inject:""`
-	EndpointRepo *EndpointRepo `inject:""`
+	*BaseRepo `inject:""`
+	DB        *gorm.DB `inject:""`
+
+	EndpointRepo       *EndpointRepo       `inject:""`
+	DebugInterfaceRepo *DebugInterfaceRepo `inject:""`
 }
 
 func (r *EndpointInterfaceRepo) Paginate(req v1.EndpointInterfaceReqPaginate) (ret _domain.PageData, err error) {
@@ -226,19 +228,6 @@ func (r *EndpointInterfaceRepo) haveChild(Data []*model.EndpointInterface, node 
 	return
 }
 
-func (r *EndpointInterfaceRepo) Delete(id uint) (err error) {
-	err = r.DB.Model(&model.EndpointInterface{}).
-		Where("id=?", id).
-		Update("deleted", true).
-		Error
-
-	//field := modelRef.UsedByInterface{}
-	//field.ID = id
-	//err = r.DB.Remove(field).SendErrorMsg
-
-	return
-}
-
 func (r *EndpointInterfaceRepo) GetChildren(defId, fieldId uint) (children []*model.EndpointInterface, err error) {
 	err = r.DB.Where("defID=? AND parentID=?", defId, fieldId).Find(&children).Error
 	return
@@ -323,17 +312,21 @@ func (r *EndpointInterfaceRepo) UpdateRequestBody(requestBody *model.EndpointInt
 	if err != nil {
 		return
 	}
+
 	err = r.BaseRepo.Save(requestBody.ID, requestBody)
 	if err != nil {
 		return
 	}
+
 	schemaItem := requestBody.SchemaItem
 	schemaItem.RequestBodyId = requestBody.ID
 	err = r.removeRequestBodyItem(requestBody.ID)
 	if err != nil {
 		return
 	}
+
 	err = r.BaseRepo.Save(schemaItem.ID, &schemaItem)
+
 	return
 }
 
@@ -358,26 +351,32 @@ func (r *EndpointInterfaceRepo) UpdateResponseBodies(interfaceId uint, responseB
 	if err != nil {
 		return
 	}
+
 	for _, responseBody := range responseBodies {
 		responseBody.InterfaceId = interfaceId
+
 		err = r.BaseRepo.Save(responseBody.ID, &responseBody)
 		if err != nil {
 			return
 		}
+
 		err = r.removeResponseBodyItem(responseBody.ID)
 		if err != nil {
 			return
 		}
+
 		schemaItem := responseBody.SchemaItem
 		schemaItem.ResponseBodyId = responseBody.ID
 		err = r.BaseRepo.Save(schemaItem.ID, &schemaItem)
 		if err != nil {
 			return
 		}
+
 		err = r.removeResponseBodyHeader(responseBody.ID)
 		if err != nil {
 			return
 		}
+
 		responseBodyHeaders := responseBody.Headers
 		for _, header := range responseBodyHeaders {
 			header.ResponseBodyId = responseBody.ID
@@ -456,9 +455,7 @@ func (r *EndpointInterfaceRepo) ListRequestBody(interfaceId uint) (requestBody m
 	return
 }
 func (r *EndpointInterfaceRepo) ListRequestBodyItem(requestBodyId uint) (requestBodyItem model.EndpointInterfaceRequestBodyItem, err error) {
-	//fmt.Println(requestBodyId, "+++++++++++++")
 	err = r.DB.First(&requestBodyItem, "request_body_id = ?", requestBodyId).Error
-	//fmt.Println(err)
 	return
 }
 
@@ -537,5 +534,52 @@ func (r *EndpointInterfaceRepo) ImportEndpointData(req v1.ImportEndpointDataReq)
 			}
 		}
 	*/
+	return
+}
+
+func (r *EndpointInterfaceRepo) DeleteByEndpoint(endpointId uint) (err error) {
+	ids, err := r.ListIdByEndpoint(endpointId)
+
+	err = r.DeleteBatch(ids)
+
+	return
+}
+func (r *EndpointInterfaceRepo) DeleteBatch(ids []uint) (err error) {
+	for _, id := range ids {
+		err = r.Delete(id)
+	}
+	return
+}
+func (r *EndpointInterfaceRepo) Delete(id uint) (err error) {
+	err = r.DB.Model(&model.EndpointInterface{}).
+		Where("id=?", id).
+		Update("deleted", true).
+		Error
+
+	endpointInterface, _ := r.Get(id)
+	if endpointInterface.DebugInterfaceId > 0 {
+		r.DebugInterfaceRepo.Delete(endpointInterface.DebugInterfaceId)
+	}
+
+	return
+}
+
+func (r *EndpointInterfaceRepo) RemoveAll(id uint) (err error) {
+	err = r.RemoveParams(id)
+	err = r.RemoveHeaders(id)
+	err = r.RemoveCookie(id)
+
+	err = r.removeRequestBody(id)
+	err = r.removeResponseBodies(id)
+
+	requestBody, err := r.ListRequestBody(id)
+	err = r.removeRequestBodyItem(requestBody.ID)
+
+	responseBodies, err := r.ListResponseBodies(id)
+	for _, body := range responseBodies {
+		err = r.removeResponseBodyItem(body.ID)
+		err = r.removeResponseBodyHeader(body.ID)
+	}
+
 	return
 }

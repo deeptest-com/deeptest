@@ -90,6 +90,7 @@ func (EndpointInterfaceResponseBodyHeader) TableName() string {
 type EndpointInterfaceRequestBody struct {
 	BaseModel
 	InterfaceRequestBodyBase
+
 	SchemaItem EndpointInterfaceRequestBodyItem `gorm:"-" json:"schemaItem"`
 }
 

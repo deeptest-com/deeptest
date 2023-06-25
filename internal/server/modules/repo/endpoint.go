@@ -259,8 +259,12 @@ func (r *EndpointRepo) GetEndpointParams(endpointId uint) (pathParam []model.End
 	return
 }
 
-func (r *EndpointRepo) DeleteById(id uint) error {
-	return r.DB.Model(&model.Endpoint{}).Where("id = ?", id).Update("deleted", 1).Error
+func (r *EndpointRepo) DeleteById(id uint) (err error) {
+	err = r.DB.Model(&model.Endpoint{}).
+		Where("id = ?", id).
+		Update("deleted", 1).Error
+
+	return
 }
 
 func (r *EndpointRepo) DisableById(id uint) error {

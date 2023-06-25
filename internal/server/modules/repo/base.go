@@ -99,10 +99,12 @@ func (r *TestInterfaceRepo) GetAllChildIdsSimple(id uint, tableName string) (
 
 func (r *BaseRepo) Save(id uint, entity interface{}) (err error) {
 	var count int64
+
 	err = r.DB.Model(&entity).Where("id = ?", id).Count(&count).Error
 	if err != nil {
 		return
 	}
+
 	if count == 0 {
 		err = r.DB.Create(entity).Error
 	} else {

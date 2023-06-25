@@ -31,15 +31,9 @@
 </template>
 
 <script lang="ts" setup>
-import {
-  ref,
-  defineProps,
-  defineEmits,
-  computed,
-  watch,
-} from 'vue';
+import {defineEmits, defineProps, ref, watch,} from 'vue';
 
-import {DownOutlined, RightOutlined} from '@ant-design/icons-vue';
+import {RightOutlined} from '@ant-design/icons-vue';
 import {requestMethodOpts} from '@/config/constant';
 
 const openKeysMap = ref<any>({});
@@ -57,7 +51,7 @@ const props = defineProps({
     required: true,
     type: Object,
   },
-  selectedKeys:{
+  selectedKeys: {
     required: true,
     type: Array,
   }
@@ -65,19 +59,15 @@ const props = defineProps({
 const emit = defineEmits(['select']);
 
 const items: any = ref([]);
-watch(() => {
-      return props.serviceList
-    }, (newVal) => {
-      items.value = newVal;
-      newVal.forEach((item: any) => {
-        if (item.endpointList) {
-          openKeysMap.value[item.id] = false;
-        }
-      })
-      console.log(1323232323,items.value)
-    }, {immediate: true}
-)
-
+watch(() => {return props.serviceList}, (newVal) => {
+  items.value = newVal;
+  newVal.forEach((item: any) => {
+    if (item.endpointList) {
+      openKeysMap.value[item.id] = false;
+    }
+  })
+  console.log(1323232323, items.value)
+}, {immediate: true})
 
 const activeKey = ref([]);
 

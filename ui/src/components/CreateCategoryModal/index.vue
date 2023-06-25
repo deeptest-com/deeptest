@@ -46,9 +46,7 @@ const formState = ref({
 });
 
 
-watch(() => {
-  return props.visible
-}, (newVal) => {
+watch(() => {return props.visible}, (newVal) => {
   if(newVal){
     formState.value.name = props?.nodeInfo?.name || '';
     formState.value.desc = props?.nodeInfo?.desc || '';

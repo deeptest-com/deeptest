@@ -158,12 +158,9 @@ const security = computed(() => {
 });
 
 
-watch(() => {
-  return props.info
-}, (newVal) => {
-  console.log(8322222, newVal)
+watch(() => {return props.info}, (newVal) => {
+  console.log('watch props.info', newVal)
 }, {immediate: true})
-
 
 const selectedCode = ref('200');
 

@@ -253,9 +253,7 @@ function getValueFromTabsList(tabsList: any) {
   return result;
 }
 
-watch(() => {
-  return visible.value
-}, (newVal: any) => {
+watch(() => {return visible.value}, (newVal: any) => {
   let {type, types} = props.value || {};
   // ref 优先级高于 type，如果是 ref，则优先取 ref值判断类型
   type =  props.value?.ref || type;
@@ -275,8 +273,7 @@ watch(() => {
       emit('change', value);
     }
   }
-})
-
+  }, {immediate: true})
 
 </script>
 

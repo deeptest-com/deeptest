@@ -1,13 +1,13 @@
 <template>
   <a-modal
-    class="create-project-modal"
-    style="padding: 0"
-    :visible="visible"
-    @ok="handleOk"
-    width="700px"
-    :footer="null"
-    :closable="true"
-    @cancel="handleCancel"
+      class="create-project-modal"
+      style="padding: 0"
+      :visible="visible"
+      @ok="handleOk"
+      width="700px"
+      :footer="null"
+      :closable="true"
+      @cancel="handleCancel"
   >
     <div class="project-edit-main">
       <a-card :bordered="false">
@@ -16,18 +16,19 @@
         </template>
         <div>
           <a-form
-            :model="formStateRef"
-            :label-col="labelCol"
-            :wrapper-col="wrapperCol"
+              :model="formStateRef"
+              :label-col="labelCol"
+              :wrapper-col="wrapperCol"
           >
             <a-form-item label="项目名称" v-bind="validateInfos.name">
               <a-input
-                v-model:value="formStateRef.name"
-                @blur="validate('name', { trigger: 'blur' }).catch(() => {})"
+                  v-model:value="formStateRef.name"
+                  @blur="validate('name', { trigger: 'blur' }).catch(() => {})"
               />
             </a-form-item>
             <a-form-item label="英文缩写" v-bind="validateInfos.shortName">
-              <a-input v-model:value="formStateRef.shortName" @blur="validate('shortName', { trigger: 'blur' }).catch(() => {})" />
+              <a-input v-model:value="formStateRef.shortName"
+                       @blur="validate('shortName', { trigger: 'blur' }).catch(() => {})"/>
             </a-form-item>
             <a-form-item label="logo" v-bind="validateInfos.logo">
               <div class="logo-picker">
@@ -35,31 +36,32 @@
                     'logo-picker-item': true,
                     'logo-picker-item-active': selectLogoKey === item.imgName,
                   }"
-                  v-for="(item, index) in projectLogoList"
-                  :key="index"
-                  @click="handleSelectLogo(item)"
+                     v-for="(item, index) in projectLogoList"
+                     :key="index"
+                     @click="handleSelectLogo(item)"
                 >
-                  <img :src="item.icon" alt="" />
+                  <img :src="item.icon" alt=""/>
                 </div>
               </div>
             </a-form-item>
             <a-form-item label="管理员" v-bind="validateInfos.adminId">
               <a-select
-                v-model:value="formStateRef.adminId"
-                show-search
-                placeholder="请选择管理员"
-                @blur="validate('adminId', { trigger: 'blur' }).catch(() => {})"
+                  v-model:value="formStateRef.adminId"
+                  show-search
+                  placeholder="请选择管理员"
+                  @blur="validate('adminId', { trigger: 'blur' }).catch(() => {})"
               >
                 <a-select-option
-                  v-for="(option, key) in userListOptions"
-                  :key="key"
-                  :value="option.id"
-                  >{{ option.label }}</a-select-option
+                    v-for="(option, key) in userListOptions"
+                    :key="key"
+                    :value="option.id"
+                >{{ option.label }}
+                </a-select-option
                 >
               </a-select>
             </a-form-item>
             <a-form-item label="示例数据">
-              <a-switch v-model:checked="formStateRef.includeExample" />
+              <a-switch v-model:checked="formStateRef.includeExample"/>
             </a-form-item>
 
             <a-form-item label="项目简介" v-bind="validateInfos.desc">
@@ -78,15 +80,14 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, watch, defineProps, defineEmits, computed } from "vue";
-import { Form, message } from "ant-design-vue";
-import { ProjectType } from "@/utils/enum";
-import { StateType as UserStateType } from "@/store/user";
-import { StateType as ProjectStateType } from "@/views/project/store";
-import { SelectTypes } from "ant-design-vue/es/select";
-import { useStore } from "vuex";
-import { RuleObject } from "ant-design-vue/es/form/interface";
-import {projectLogoList, getProjectLogo} from "./index";
+import {computed, defineEmits, defineProps, reactive, ref, watch} from "vue";
+import {Form, message} from "ant-design-vue";
+import {StateType as UserStateType} from "@/store/user";
+import {StateType as ProjectStateType} from "@/views/project/store";
+import {SelectTypes} from "ant-design-vue/es/select";
+import {useStore} from "vuex";
+import {RuleObject} from "ant-design-vue/es/form/interface";
+import {getProjectLogo, projectLogoList} from "./index";
 
 const useForm = Form.useForm;
 const props = defineProps<{
@@ -96,10 +97,10 @@ const props = defineProps<{
 const emits = defineEmits(["update:visible", "handleOk", "handleSuccess"]);
 const store = useStore<{ User: UserStateType; Project: ProjectStateType }>();
 const userListOptions = computed<SelectTypes["options"]>(
-  () => store.state.Project.userList
+    () => store.state.Project.userList
 );
-const labelCol = { span: 6 };
-const wrapperCol = { span: 14 };
+const labelCol = {span: 6};
+const wrapperCol = {span: 14};
 const projectInfo = {
   name: "",
   desc: "",
@@ -126,37 +127,37 @@ let validateShortName = async (rule: RuleObject, value: string) => {
 
 const rulesRef = reactive({
   name: [
-    { required: true, message: "请输入名称", trigger: "blur" },
-    { max: 20, message: "项目名称应小于20位", trigger: "blur" },
+    {required: true, message: "请输入名称", trigger: "blur"},
+    {max: 20, message: "项目名称应小于20位", trigger: "blur"},
   ],
   shortName: [
-    { required: true, validator: validateShortName, trigger: "blur" },
+    {required: true, validator: validateShortName, trigger: "blur"},
   ],
-  adminId: [{ required: true, message: "请选择管理员" }],
-  desc: [{ max: 180, message: "项目简介应小于180位", trigger: "blur" }],
+  adminId: [{required: true, message: "请选择管理员"}],
+  desc: [{max: 180, message: "项目简介应小于180位", trigger: "blur"}],
 });
 
 const selectLogoKey = ref("default_logo1");
-const { validate, validateInfos, resetFields } = useForm(
-  formStateRef,
-  rulesRef
+const {validate, validateInfos, resetFields} = useForm(
+    formStateRef,
+    rulesRef
 );
 const submitForm = async () => {
   console.log("submitForm", formStateRef);
   validate()
-    .then(() => {
-      store.dispatch("Project/saveProject", { ...formStateRef }).then((res) => {
-        if (res === true) {
-          message.success("保存成功");
-          emits("handleSuccess");
-        } else {
-          message.error("保存失败");
-        }
+      .then(() => {
+        store.dispatch("Project/saveProject", {...formStateRef}).then((res) => {
+          if (res === true) {
+            message.success("保存成功");
+            emits("handleSuccess");
+          } else {
+            message.error("保存失败");
+          }
+        });
+      })
+      .catch((err) => {
+        console.log("error", err);
       });
-    })
-    .catch((err) => {
-      console.log("error", err);
-    });
 };
 
 const handleCancel = () => {
@@ -173,19 +174,15 @@ const handleSelectLogo = (item: any) => {
 };
 
 watch(
-  () => props.visible,
-  (val) => {
-    if (val) {
-      store.dispatch("Project/getUserList");
-      if (!props?.formState?.id) {
-        resetFields();
+    () => props.visible,
+    (val) => {
+      if (val) {
+        store.dispatch("Project/getUserList");
+        if (!props?.formState?.id) {
+          resetFields();
+        }
       }
-    }
-  },
-  {
-    immediate: true,
-  }
-);
+    }, {immediate: true});
 </script>
 
 <style scoped lang="less">
@@ -201,6 +198,7 @@ watch(
     border: 1px solid #b0b0b0;
     position: relative;
     cursor: pointer;
+
     &.logo-picker-item-active::after {
       content: "";
       display: block;

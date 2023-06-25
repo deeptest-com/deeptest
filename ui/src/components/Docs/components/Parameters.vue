@@ -118,13 +118,6 @@ function switchExpand() {
   expand.value = !expand.value;
 }
 
-watch(() => {
-  return props.items
-}, (newVal) => {
-  // console.log(8322222, newVal)
-})
-
-
 </script>
 <style lang="less" scoped>
 

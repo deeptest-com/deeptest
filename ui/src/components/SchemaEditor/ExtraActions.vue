@@ -56,19 +56,13 @@ const isRequired = computed(() => {
 });
 
 const description = ref('');
-watch(() => {
-  return props.value
-}, (newVal) => {
+watch(() => {return props.value}, (newVal) => {
   if (newVal) {
     description.value = newVal.description;
   }
-}, {
-  immediate: true
-})
+}, {immediate: true})
 
-watch(() => {
-  return visible.value
-}, (newVal) => {
+watch(() => {return visible.value}, (newVal) => {
   if (!newVal && description.value) {
     emit('addDesc', description.value);
   }

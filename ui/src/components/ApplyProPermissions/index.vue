@@ -135,20 +135,14 @@ const handleSelectLogo = (item: any) => {
   formStateRef.logo = item.imgName;
 };
 
-watch(
-  () => props.visible,
-  (val) => {
+watch(() => props.visible, (val) => {
     if (val) {
        resetFields()
       console.log("roles", roles);
       store.dispatch("Project/getRoles");
 
     }
-  },
-  {
-    immediate: true,
-  }
-);
+  }, {immediate: true,});
 </script>
 
 <style scoped lang="less">

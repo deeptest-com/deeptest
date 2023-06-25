@@ -10,7 +10,7 @@
                       :class="{'active': equalTabNavRView(route, item.route, item.menu.tabNavType)}"
                       @click="toRoute(item,index)">
                     <icon-svg class="icon-pre" type="refresh" @click.stop="refreshCurrentTabNav(item)"  />
-                    <span>{{t(item.menu.title)}}</span> 
+                    <span>{{t(item.menu.title)}}</span>
                     <icon-svg v-if="item.menu.path!==homeRouteItemPath" class="icon" type="close" @click.stop="closeCurrentTabNav(item, index)" />
                 </span>
             </div>
@@ -42,7 +42,7 @@
                         <el-dropdown-item command="closeright"><icon-svg class="icon-dropdown-menu" type="arrow-right2"  /> 关闭右侧</el-dropdown-item>
                         <el-dropdown-item command="closeother"><icon-svg class="icon-dropdown-menu" type="close"  /> 关闭其他</el-dropdown-item>
                         <el-dropdown-item command="closeall"><icon-svg class="icon-dropdown-menu" type="close2"  /> 关闭所有</el-dropdown-item>
-                    
+
                     </el-dropdown-menu>
                 </template>
            </el-dropdown> -->
@@ -59,8 +59,8 @@ import { StateType as GlobalStateType } from "@/store/global";
 import { equalTabNavRoute, RoutesDataItem, TabNavItem, TabNavType } from '@/utils/routes';
 import settings from '@/config/settings';
 
-interface RightTabNavSetupData {  
-    t: (key: string | number) => string;  
+interface RightTabNavSetupData {
+    t: (key: string | number) => string;
     equalTabNavRView: (route1: RouteLocationNormalizedLoaded, route2: RouteLocationNormalizedLoaded, type?: TabNavType) => boolean,
     translateX: Ref<number>;
     scrollBox: Ref;
@@ -94,7 +94,7 @@ export default defineComponent({
         const { routeItem } = toRefs(props);
         const equalTabNavRView = equalTabNavRoute;
 
-        
+
         const translateX = ref<number>(0);
         const scrollBox = ref<HTMLDivElement>();
         const scrollContent = ref<HTMLDivElement>();
@@ -107,7 +107,7 @@ export default defineComponent({
                 if (boxWidth < contentWidth) {
                     if (translateX.value >= -(contentWidth - boxWidth)) {
                         translateX.value = Math.max(translateX.value + offset, boxWidth - contentWidth)
-                    } 
+                    }
                 } else {
                     translateX.value = 0;
                 }
@@ -134,10 +134,10 @@ export default defineComponent({
         onBeforeUpdate(() => {
             tabNavSpanRefs = []
         })
-        /* 
+        /*
         onUpdated(() => {
             console.log('tabNavSpanRefs', tabNavSpanRefs)
-        }) 
+        })
         */
         const tabNavPadding = 10;
         const moveToView = (index: number): void => {
@@ -163,9 +163,9 @@ export default defineComponent({
                 translateX.value = -(tabItemElOffsetLeft - (boxWidth - tabNavPadding - tabItemOffsetWidth))
             }
 
-           
+
         }
-        
+
 
 
         const store = useStore<{global: GlobalStateType}>();
@@ -173,9 +173,9 @@ export default defineComponent({
         const router = useRouter();
         const route = useRoute();
 
-     
 
-        // 设置TabNav 
+
+        // 设置TabNav
         const setTabNav = (): void => {
 
             /**
@@ -187,12 +187,12 @@ export default defineComponent({
             }
 
             // 数组里是否已经存在当前route规则
-            /* 
+            /*
             const isRoute: boolean = tabNavList.value.some(item =>{
                 if(equalTabNavRoute(item.route, route, routeItem.value.tabNavType)) {
                     return true;
-                }                
-            }); 
+                }
+            });
             if(!isRoute) {
                 store.commit('Global/setHeadTabNavList', [
                     ...tabNavList.value,
@@ -208,7 +208,7 @@ export default defineComponent({
             }
             */
             // 数组里是否已经存在当前route规则，不存在下标为-1
-            let index = tabNavList.value.findIndex(item => equalTabNavRoute(item.route, route, routeItem.value.tabNavType))            
+            let index = tabNavList.value.findIndex(item => equalTabNavRoute(item.route, route, routeItem.value.tabNavType))
             if(index < 0) {
                 index = tabNavList.value.length;
                 store.commit('Global/setHeadTabNavList', [
@@ -247,7 +247,7 @@ export default defineComponent({
             if(isRouterPush!==false) {
                 router.push(isRouterPush.route)
             }
-            
+
         }
 
         // 关闭TabNav所有
@@ -289,9 +289,6 @@ export default defineComponent({
                 ...navList
             ]);
         }
-
-
-
 
         watch([route, routeItem], ()=> {
             setTabNav()
@@ -345,9 +342,9 @@ export default defineComponent({
         }
 
 
-        return {  
+        return {
             t,
-            equalTabNavRView,    
+            equalTabNavRView,
             translateX,
             scrollBox,
             scrollContent,
@@ -385,13 +382,13 @@ export default defineComponent({
        /*  background-color: #FFFFFF; */
         text-align: center;
         font-size: 12px;
-        cursor: pointer;  
+        cursor: pointer;
         .icon-box {
             display: block;
             width: (@headerTabNavHeight - 10px);
             height: (@headerTabNavHeight - 8px);
             line-height: (@headerTabNavHeight - 8px);
-        }      
+        }
         .icon {
             color: rgba(0,0,0,.45);
         }
@@ -405,12 +402,12 @@ export default defineComponent({
         box-sizing: content-box;
         padding-right: 10px;
         line-height: normal;
-    } 
+    }
     .middle {
         flex: 1;
         overflow: hidden;
         .tab {
-            position: relative;           
+            position: relative;
             float: left;
             list-style: none;
             overflow: visible;
@@ -454,12 +451,12 @@ export default defineComponent({
                         color: rgba(@primary-color, 1);
                     }
                 }
-            }            
+            }
             .active {
                 color: @primary-color;
                 background:#FFFFFF;
                 border-color:#FFFFFF;
-                .icon-pre { 
+                .icon-pre {
                     display: inline-block;
                 }
             }

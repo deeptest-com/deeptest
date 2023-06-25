@@ -16,7 +16,7 @@
                   v-if="type === 0"
                   title="入住项目（个）"
                   :value="card?.projectTotal||0"
-                  
+
                 />
                 <a-statistic
                   v-else
@@ -39,11 +39,11 @@
                     <div class="card-content-num">
                       {{ card?.interfaceTotal||0 }}
                     </div>
-                   
-                       <span class="card-content-text">环比</span> 
+
+                       <span class="card-content-text">环比</span>
                       <arrow-up-outlined  class="card-content-up" v-if="card?.interfaceHb > 0"/>
                       <arrow-down-outlined class="card-content-down" v-if="card?.interfaceHb < 0"/>
-                 
+
                   </template>
                 </a-statistic>
                  <a-statistic
@@ -58,12 +58,12 @@
                     <div class="card-content-num">
                       {{ card?.scenarioTotal ||0}}
                     </div>
-                      <span class="card-content-text">环比</span> 
+                      <span class="card-content-text">环比</span>
                       <arrow-up-outlined  class="card-content-up"  v-if="card?.scenarioHb > 0"/>
                       <arrow-down-outlined class="card-content-down" v-if="card?.scenarioHb < 0" />
                   </template>
                 </a-statistic>
-           
+
               </div>
             </a-card>
             <a-card style="width: 49%; margin-bottom: 16px">
@@ -80,12 +80,12 @@
                     <div class="card-content-num">
                       {{ card?.coverage?card.coverage+"%":0+'%' }}
                     </div>
-                    <span class="card-content-text">环比</span> 
+                    <span class="card-content-text">环比</span>
                       <arrow-up-outlined  class="card-content-up"   v-if="card?.scenarioHb > 0"/>
                       <arrow-down-outlined class="card-content-down" v-if="card?.scenarioHb < 0"  />
                   </template>
                 </a-statistic>
-         
+
               </div>
             </a-card>
             <a-card style="width: 49%; margin-bottom: 16px">
@@ -93,14 +93,14 @@
                 <a-statistic
                   title="执行总次数"
                   :value="card?.execTotal||0"
-                 
+
                 />
                    <a-statistic
                   title="测试通过率（%）"
                   :value="card?.passRate?card.passRate+'%':0+'%'"
-                 
+
                 />
-               
+
               </div>
             </a-card>
           </div>
@@ -135,18 +135,11 @@ const props = defineProps({
 const card = ref<any>({});
 
 // 监听项目数据变化
-watch(
-  () => {
-    return props.params;
-  },
-  async (newVal: any) => {
-    console.log("watch staticstic newVal", newVal);
-    card.value = newVal.cardData;
-  },
-  {
-    immediate: true,
-  }
-);
+watch(() => {return props.params;}, async (newVal: any) => {
+      console.log("watch staticstic newVal", newVal);
+      card.value = newVal.cardData;
+    }, {immediate: true});
+
 </script>
 <style lang="less" scoped>
 .statistics {
@@ -194,5 +187,5 @@ watch(
   }
 }
 </style>
- 
+
 

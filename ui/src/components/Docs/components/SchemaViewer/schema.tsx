@@ -52,24 +52,16 @@ export default defineComponent({
             }
         }
 
-        watch(() => {
-            return props.value
-        }, (newVal) => {
+        watch(() => {return props.value}, (newVal) => {
             const val = cloneDeep(newVal);
             data.value = addExtraViewInfo(val);
-        }, {
-            immediate: true,
-            deep: true
-        });
-        watch(() => {
-            return data.value
-        }, (newVal) => {
+        }, {immediate: true, deep: true});
+
+        watch(() => {return data.value}, (newVal) => {
             const newObj = removeExtraViewInfo(cloneDeep(newVal));
             emit('change', newObj);
-        }, {
-            immediate: true,
-            deep: true
-        });
+        }, {immediate: true, deep: true});
+
         const renderDivider = (options: any) => {
             const {isRoot, isFirst, isLast, keyIndex, parent, ancestor, isRefChildNode, keyName} = options;
             const items = parent?.type === 'array' ? ancestor : parent;

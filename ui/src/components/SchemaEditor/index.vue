@@ -218,9 +218,7 @@ function generate() {
 }
 
 
-watch(() => {
-  return props?.contentStr
-}, (newVal: any) => {
+watch(() => {return props?.contentStr}, (newVal: any) => {
   try {
     const obj = JSON.parse(newVal);
     content.value = obj?.type ? obj : {
@@ -229,10 +227,7 @@ watch(() => {
   }catch (e){
     console.log('e',e);
   }
-}, {
-  immediate: true,
-  deep: true
-});
+}, {immediate: true, deep: true});
 
 watch(() => {
   return props?.exampleStr

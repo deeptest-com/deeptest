@@ -31,14 +31,10 @@ function onClose() {
     emits('onClose');
 }
 
-watch(() => {
-    return props.visible;
-}, () => {
-    content.value = props.data;
-}, {
-    immediate: true,
-    deep: true
-})
+watch(() => {return props.visible;}, () => {
+  content.value = props.data;
+}, {immediate: true, deep: true})
+
 </script>
 
 <style scoped lang="less">

@@ -1,11 +1,22 @@
 <template>
   <div class="tree-main">
     <div class="tree-filters">
-      <a-select :placeholder="'请选择服务'" :bordered="true"
-          v-model:value="serveId"
-          @change="selectServe">
-        <a-select-option v-for="item in serves" :key="item.id" :value="item.id">{{ item.name }}</a-select-option>
-      </a-select>
+      <a-row type="flex">
+        <a-col :flex="2">
+          <a-select :placeholder="'请选择服务'" :bordered="true"
+                    v-model:value="serveId"
+                    @change="selectServe">
+            <a-select-option v-for="item in serves" :key="item.id" :value="item.id">{{ item.name }}</a-select-option>
+          </a-select>
+        </a-col>
+        <a-col :flex="3">
+          <a-input-search
+              style="display: flex;justify-content: end;width: 300px;margin-bottom: 16px; "
+              placeholder="请输入关键词"
+              enter-button
+              v-model:value="searchValue"/>
+        </a-col>
+      </a-row>
     </div>
 
     <div class="tree-container">
@@ -16,6 +27,8 @@
           :expandedKeys="expandedKeys"
           :auto-expand-parent="autoExpandParent"
           :tree-data="treeData"
+          v-model:checkedKeys="checkedKeys"
+          @check="onChecked"
           :replace-fields="replaceFields">
 
         <template #switcherIcon>
@@ -60,19 +73,29 @@ import {StateType as ServeStateType} from "@/store/serve";
 
 import {expandOneKey} from "@/services/tree";
 import {listServe} from "@/services/serve";
+import {filterTree, findParentIds} from "@/utils/tree";
 
 const store = useStore<{ TestInterface: TestInterfaceStateType, ProjectGlobal: ProjectStateType, ServeGlobal: ServeStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const currServe = computed<any>(() => store.state.ServeGlobal.currServe);
 
 const treeData = computed<any>(() => store.state.TestInterface.treeData);
-const treeDataMap = computed<any>(() => store.state.TestInterface.treeDataMap);
 
 const props = defineProps({
+  selectInterfaces: {
+    type: Function,
+    required: true,
+  },
 })
 
 const serves = ref([] as any[]);
 const serveId = ref(0)
+const checkedKeys = ref([])
+
+const onChecked = (checkedKeys) => {
+  console.log('onChecked', checkedKeys)
+  props.selectInterfaces(checkedKeys)
+}
 
 const loadServe = async () => {
   listServe().then((json) => {
@@ -123,44 +146,7 @@ watch((currServe), async (newVal) => {
 })
 
 watch(searchValue, (newVal) => {
-  if (!treeData.value) return
-  // 打平树形结构
-  function flattenTree(tree) {
-    const nodes: Array<any> = [];
-
-    function traverse(node) {
-      nodes.push(node);
-      if (node.children) {
-        node.children.forEach(traverse);
-      }
-    }
-
-    traverse(tree);
-    return nodes;
-  }
-
-  const flattenTreeList = flattenTree(treeData.value[0]);
-
-  function findParentIds(nodeId, tree) {
-    let current: any = tree.find(node => node.id === nodeId);
-    let parentIds: Array<string> = [];
-    while (current && current.parentId) {
-      parentIds.unshift(current.parentId); // unshift 方法可以将新元素添加到数组的开头
-      current = tree.find(node => node.id === current.parentId);
-    }
-    return parentIds;
-  }
-
-  let parentKeys: any = [];
-  for (let i = 0; i < flattenTreeList.length; i++) {
-    let node = flattenTreeList[i];
-    if (node.title.includes(newVal)) {
-      parentKeys.push(node.parentId);
-      parentKeys = parentKeys.concat(findParentIds(node.parentId, flattenTreeList));
-    }
-  }
-  parentKeys = [...new Set(parentKeys)];
-  expandedKeys.value = parentKeys;
+  expandedKeys.value = filterTree(treeData.value, newVal)
   autoExpandParent.value = true;
 });
 
@@ -186,36 +172,6 @@ function expandAll() {
 
 let selectedKeys = ref<number[]>([]);
 const emit = defineEmits(['select']);
-
-const currentNode = ref(null as any);
-
-function create(parentId, type) {
-  console.log('create', parentId, type)
-  currentNode.value = {parentId, type};
-}
-function edit(node) {
-  currentNode.value = node;
-}
-async function deleteNode(node) {
-  Modal.confirm({
-    title: () => '确定删除该' + (node.type === 'interface'?'接口':'目录') + '吗？',
-    content: () => node.type === 'dir'?'删除后所有所有子目录都会被删除':'',
-    okText: () => '确定',
-    okType: 'danger',
-    cancelText: () => '取消',
-    onOk: async () => {
-      const res = await store.dispatch('TestInterface/removeInterface', {id: node.id, type: node.type});
-      if (res) {
-        message.success('删除成功');
-      } else {
-        message.error('删除失败');
-      }
-    },
-    onCancel() {
-      console.log('Cancel');
-    },
-  });
-}
 
 onMounted(async () => {
   console.log('onMounted')

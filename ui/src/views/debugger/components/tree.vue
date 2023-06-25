@@ -107,6 +107,7 @@ import {StateType as ServeStateType} from "@/store/serve";
 import {expandOneKey} from "@/services/tree";
 import EditModal from './edit.vue'
 import InterfaceSelectionFromDefine from "@/views/component/InterfaceSelectionFromDefine/main.vue";
+import {filterTree} from "@/utils/tree";
 
 const store = useStore<{ TestInterface: TestInterfaceStateType, ProjectGlobal: ProjectStateType, ServeGlobal: ServeStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
@@ -156,46 +157,9 @@ watch((currServe), async (newVal) => {
 })
 
 watch(searchValue, (newVal) => {
-  if (!treeData.value) return
-      // 打平树形结构
-      function flattenTree(tree) {
-        const nodes: Array<any> = [];
-
-        function traverse(node) {
-          nodes.push(node);
-          if (node.children) {
-            node.children.forEach(traverse);
-          }
-        }
-
-        traverse(tree);
-        return nodes;
-      }
-
-      const flattenTreeList = flattenTree(treeData.value[0]);
-
-      function findParentIds(nodeId, tree) {
-        let current: any = tree.find(node => node.id === nodeId);
-        let parentIds: Array<string> = [];
-        while (current && current.parentId) {
-          parentIds.unshift(current.parentId); // unshift 方法可以将新元素添加到数组的开头
-          current = tree.find(node => node.id === current.parentId);
-        }
-        return parentIds;
-      }
-
-      let parentKeys: any = [];
-      for (let i = 0; i < flattenTreeList.length; i++) {
-        let node = flattenTreeList[i];
-        if (node.title.includes(newVal)) {
-          parentKeys.push(node.parentId);
-          parentKeys = parentKeys.concat(findParentIds(node.parentId, flattenTreeList));
-        }
-      }
-      parentKeys = [...new Set(parentKeys)];
-      expandedKeys.value = parentKeys;
-      autoExpandParent.value = true;
-    });
+  expandedKeys.value = filterTree(treeData.value, newVal)
+  autoExpandParent.value = true;
+});
 
 const onExpand = (keys: number[]) => {
   expandedKeys.value = keys;

@@ -8,7 +8,7 @@
       wrapClassName="modal-tree-selection"
       width="1000px">
     <div class="interface-selection-main">
-        <Tree :submit="onSubmit" />
+        <Tree :selectInterfaces="onSelectInterfaces" />
     </div>
 
     <template #footer>
@@ -35,9 +35,13 @@ const props = defineProps({
   },
 })
 
+const onSelectInterfaces = (data) => {
+  console.log('onSelectInterfaces', data)
+}
+
 const onSubmit = (nodes) => {
   console.log('onSubmit', nodes)
-  props.onFinish(nodes)
+  // props.onFinish(nodes)
 }
 
 const onCancel = () => {

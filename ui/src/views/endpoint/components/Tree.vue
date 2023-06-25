@@ -59,7 +59,7 @@
     </div>
     <!--  创建接口 Tag  -->
     <CreateCategoryModal
-        :visible="createTagModalvisible"
+        :visible="createTagModalVisible"
         :nodeInfo="currentNode || {}"
         :mode="tagModalMode"
         @cancel="handleCancelTagModalCancel"
@@ -83,12 +83,13 @@ import {useStore} from "vuex";
 import {StateType as EndpointStateType} from "@/views/endpoint/store";
 import {StateType as ProjectStateType} from "@/store/project";
 import {setSelectedKey} from "@/utils/cache";
+import {filterTree} from "@/utils/tree";
 
 const store = useStore<{ Endpoint: EndpointStateType, ProjectGlobal: ProjectStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const treeDataCategory = computed<any>(() => store.state.Endpoint.treeDataCategory);
 const treeDataMapCategory = computed<any>(() => store.state.Endpoint.treeDataMapCategory);
-const createTagModalvisible = ref(false);
+const createTagModalVisible = ref(false);
 const props = defineProps({
   serveId: {
     required: false,
@@ -96,7 +97,7 @@ const props = defineProps({
   },
 })
 const searchValue = ref('');
-const expandedKeys = ref<string[]>([]);
+const expandedKeys = ref<number[]>([]);
 const autoExpandParent = ref<boolean>(false);
 const treeData: any = computed(() => {
   const data = treeDataCategory.value;
@@ -147,52 +148,12 @@ watch(() => {
   immediate: true
 })
 
-watch(
-    () => {
-      return searchValue.value
-    },
-    (newVal) => {
-      // 打平树形结构
-      function flattenTree(tree) {
-        const nodes: Array<any> = [];
+watch(searchValue, (newVal) => {
+  expandedKeys.value = filterTree(treeData.value, newVal)
+  autoExpandParent.value = true;
+});
 
-        function traverse(node) {
-          nodes.push(node);
-          if (node.children) {
-            node.children.forEach(traverse);
-          }
-        }
-
-        traverse(tree);
-        return nodes;
-      }
-
-      const flattenTreeList = flattenTree(treeData.value[0]);
-
-      function findParentIds(nodeId, tree) {
-        let current: any = tree.find(node => node.id === nodeId);
-        let parentIds: Array<string> = [];
-        while (current && current.parentId) {
-          parentIds.unshift(current.parentId); // unshift 方法可以将新元素添加到数组的开头
-          current = tree.find(node => node.id === current.parentId);
-        }
-        return parentIds;
-      }
-
-      let parentKeys: any = [];
-      for (let i = 0; i < flattenTreeList.length; i++) {
-        let node = flattenTreeList[i];
-        if (node.title.includes(newVal)) {
-          parentKeys.push(node.parentId);
-          parentKeys = parentKeys.concat(findParentIds(node.parentId, flattenTreeList));
-        }
-      }
-      parentKeys = [...new Set(parentKeys)];
-      expandedKeys.value = parentKeys;
-      autoExpandParent.value = true;
-    });
-
-const onExpand = (keys: string[]) => {
+const onExpand = (keys: number[]) => {
   expandedKeys.value = keys;
   autoExpandParent.value = false;
 };
@@ -262,14 +223,14 @@ function newCategorie(node) {
     return;
   }
   tagModalMode.value = 'new';
-  createTagModalvisible.value = true;
+  createTagModalVisible.value = true;
   currentNode.value = node;
 }
 
 //编辑分类
 function editCategorie(node) {
   tagModalMode.value = 'edit';
-  createTagModalvisible.value = true;
+  createTagModalVisible.value = true;
   currentNode.value = node;
 }
 
@@ -283,7 +244,7 @@ async function handleTagModalOk(obj) {
       desc: obj.desc,
     });
     if (res?.code === 0) {
-      createTagModalvisible.value = false;
+      createTagModalVisible.value = false;
       message.success('修改分类成功');
     } else {
       message.error('修改分类失败，请重试~');
@@ -301,7 +262,7 @@ async function handleTagModalOk(obj) {
       "serveId": props.serveId || null, // 仅在接口管理模块下有
     });
     if (res?.code === 0) {
-      createTagModalvisible.value = false;
+      createTagModalVisible.value = false;
       message.success('新建分类成功');
     } else {
       message.error('修改分类失败，请重试~');
@@ -310,7 +271,7 @@ async function handleTagModalOk(obj) {
 }
 
 function handleCancelTagModalCancel() {
-  createTagModalvisible.value = false;
+  createTagModalVisible.value = false;
 }
 
 

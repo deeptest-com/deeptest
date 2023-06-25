@@ -212,7 +212,7 @@ func (s *ScenarioNodeService) createDirOrInterface(interfaceNode *serverDomain.T
 			s.createDirOrInterface(child, processor)
 		}
 
-	} else { // interface
+	} else if interfaceNode.IsLeaf { // interface
 		processor := model.Processor{
 			Name: interfaceNode.Title,
 

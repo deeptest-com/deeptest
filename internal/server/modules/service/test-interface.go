@@ -2,6 +2,7 @@ package service
 
 import (
 	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
@@ -16,6 +17,9 @@ type TestInterfaceService struct {
 	ServeRepo             *repo.ServeRepo             `inject:""`
 	ScenarioProcessorRepo *repo.ScenarioProcessorRepo `inject:""`
 	ServeServerRepo       *repo.ServeServerRepo       `inject:""`
+	DebugInterfaceRepo    *repo.DebugInterfaceRepo    `inject:""`
+	ExtractorRepo         *repo.ExtractorRepo         `inject:""`
+	CheckpointRepo        *repo.CheckpointRepo        `inject:""`
 
 	DebugInterfaceService *DebugInterfaceService `inject:""`
 }
@@ -37,9 +41,27 @@ func (s *TestInterfaceService) Get(id int) (ret model.TestInterface, err error) 
 	return
 }
 
-func (s *TestInterfaceService) Save(req serverDomain.TestInterfaceSaveReq) (debug model.TestInterface, err error) {
-	s.CopyValueFromRequest(&debug, req)
-	err = s.TestInterfaceRepo.Save(&debug)
+func (s *TestInterfaceService) Save(req serverDomain.TestInterfaceSaveReq) (testInterface model.TestInterface, err error) {
+	s.CopyValueFromRequest(&testInterface, req)
+
+	// create new DebugInterface
+	debugInterface := model.DebugInterface{
+		InterfaceBase: model.InterfaceBase{
+			Name: req.Title,
+			InterfaceConfigBase: model.InterfaceConfigBase{
+				Method: consts.GET,
+			},
+		},
+	}
+	err = s.DebugInterfaceRepo.Save(&debugInterface)
+	testInterface.DebugInterfaceId = debugInterface.ID
+
+	err = s.TestInterfaceRepo.Save(&testInterface)
+
+	values := map[string]interface{}{
+		"test_interface_id": testInterface.ID,
+	}
+	err = s.DebugInterfaceRepo.UpdateDebugInfo(debugInterface.ID, values)
 
 	return
 }
@@ -59,20 +81,8 @@ func (s *TestInterfaceService) Move(srcId, targetId uint, pos serverConsts.DropP
 	return
 }
 
-func (s *TestInterfaceService) SaveDebugData(req domain.DebugData) (testInterface model.TestInterface, err error) {
-	s.CopyDebugDataValueFromRequest(&testInterface, req)
-
-	//endpointInterface, _ := s.EndpointInterfaceRepo.Get(req.EndpointInterfaceId)
-	//debug.EndpointId = endpointInterface.EndpointId
-	//
-	//scenarioInterfaceId, _ := s.TestInterfaceRepo.HasScenarioInterfaceRecord(debug.EndpointInterfaceId)
-	//if scenarioInterfaceId > 0 {
-	//	debug.ID = scenarioInterfaceId
-	//}
-
-	testInterface.ID = req.TestInterfaceId
-
-	err = s.TestInterfaceRepo.SaveDebugData(&testInterface)
+func (s *TestInterfaceService) SaveDebugData(req domain.DebugData) (debugInterface model.DebugInterface, err error) {
+	s.DebugInterfaceService.Save(req)
 
 	return
 }
@@ -85,6 +95,67 @@ func (s *TestInterfaceService) CopyValueFromRequest(interf *model.TestInterface,
 
 func (s *TestInterfaceService) CopyDebugDataValueFromRequest(interf *model.TestInterface, req domain.DebugData) (err error) {
 	copier.CopyWithOption(interf, req, copier.Option{DeepCopy: true})
+
+	return
+}
+
+func (s *TestInterfaceService) ImportInterfaces(req serverDomain.TestInterfaceImportReq) (ret model.TestInterface, err error) {
+	parent, _ := s.TestInterfaceRepo.Get(req.TargetId)
+
+	if parent.Type != serverConsts.TestInterfaceTypeDir {
+		parent, _ = s.TestInterfaceRepo.Get(parent.ParentId)
+	}
+
+	for _, interfaceId := range req.InterfaceIds {
+		ret, err = s.addInterface(interfaceId, req.CreateBy, parent)
+	}
+
+	return
+}
+
+func (s *TestInterfaceService) addInterface(endpointInterfaceId int, createBy uint, parent model.TestInterface) (
+	ret model.TestInterface, err error) {
+
+	endpointInterface, err := s.EndpointInterfaceRepo.Get(uint(endpointInterfaceId))
+	if err != nil {
+		return
+	}
+
+	// convert or clone a debug interface obj
+	debugData, err := s.DebugInterfaceService.GetDebugInterfaceByEndpointInterface(uint(endpointInterfaceId))
+	debugData.DebugInterfaceId = 0 // force to clone the old one
+	debugData.DebugInterfaceId = 0
+	debugData.EndpointInterfaceId = uint(endpointInterfaceId)
+	debugData.UsedBy = consts.TestDebug
+	debugInterface, err := s.DebugInterfaceService.Save(debugData)
+
+	// clone extractors and checkpoints if needed
+	if endpointInterface.DebugInterfaceId <= 0 {
+		s.ExtractorRepo.CloneFromEndpointInterfaceToDebugInterface(uint(endpointInterfaceId), debugInterface.ID, consts.TestDebug)
+		s.CheckpointRepo.CloneFromEndpointInterfaceToDebugInterface(uint(endpointInterfaceId), debugInterface.ID, consts.TestDebug)
+	}
+
+	// save test interface
+	testInterface := model.TestInterface{
+		Title: endpointInterface.Name + "-" + string(endpointInterface.Method),
+		Type:  serverConsts.TestInterfaceTypeInterface,
+		Ordr:  s.TestInterfaceRepo.GetMaxOrder(parent.ID),
+
+		DebugInterfaceId: debugInterface.ID,
+		ParentId:         parent.ID,
+		ServeId:          parent.ServeId,
+		ProjectId:        parent.ProjectId,
+		CreatedBy:        createBy,
+	}
+	s.TestInterfaceRepo.Save(&testInterface)
+
+	// update test_interface_id
+	values := map[string]interface{}{
+		"test_interface_id": testInterface.ID,
+	}
+	s.DebugInterfaceRepo.UpdateDebugInfo(debugInterface.ID, values)
+
+	ret = testInterface
 
 	return
 }

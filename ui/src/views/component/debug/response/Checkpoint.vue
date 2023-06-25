@@ -11,7 +11,7 @@
         <a-col flex="60px">状态</a-col>
 
         <a-col flex="80px" class="dp-right">
-          <PlusOutlined v-if="usedBy===UsedBy.InterfaceDebug" @click.stop="add" class="dp-icon-btn dp-trans-80" />
+          <PlusOutlined @click.stop="add" class="dp-icon-btn dp-trans-80" />
         </a-col>
       </a-row>
     </div>
@@ -42,8 +42,8 @@
             <CloseCircleOutlined class="dp-icon-btn dp-trans-80 dp-light" />
           </a-tooltip>
 
-          <EditOutlined v-if="usedBy===UsedBy.InterfaceDebug" @click.stop="edit(item)" class="dp-icon-btn dp-trans-80" />
-          <DeleteOutlined v-if="usedBy===UsedBy.InterfaceDebug" @click.stop="remove(item)" class="dp-icon-btn dp-trans-80" />
+          <EditOutlined @click.stop="edit(item)" class="dp-icon-btn dp-trans-80" />
+          <DeleteOutlined @click.stop="remove(item)" class="dp-icon-btn dp-trans-80" />
         </a-col>
       </a-row>
     </div>
@@ -148,6 +148,7 @@ import {Checkpoint} from "@/views/component/debug/data";
 import {getEnumSelectItems} from "@/utils/comm";
 const store = useStore<{  Debug: Debug }>();
 
+const debugInfo = computed<any>(() => store.state.Debug.debugInfo);
 const debugData = computed<any>(() => store.state.Debug.debugData);
 const checkpointsData = computed(() => store.state.Debug.checkpointsData);
 
@@ -169,7 +170,7 @@ listCheckPoint()
 const model = ref({
   type: CheckpointType.responseStatus,
   expression: '',
-  usedBy: UsedBy.InterfaceDebug,
+  usedBy: usedBy,
   extractorVariable: '',
   operator: ComparisonOperator.equal,
   value: ''} as Checkpoint)
@@ -207,7 +208,7 @@ const add = () => {
   model.value = {
     type: CheckpointType.responseStatus,
     expression: '',
-    usedBy: UsedBy.InterfaceDebug,
+    usedBy: usedBy,
     extractorVariable: '',
     operator: ComparisonOperator.equal,
     value: ''} as Checkpoint
@@ -225,7 +226,9 @@ const edit = (item) => {
 const save = () => {
   console.log('save')
   validate().then(() => {
-    model.value.endpointInterfaceId = debugData.value.endpointInterfaceId
+    model.value.debugInterfaceId = debugInfo.value.debugInterfaceId
+    model.value.endpointInterfaceId = debugInfo.value.endpointInterfaceId
+    model.value.projectId = debugData.value.projectId
 
     store.dispatch('Debug/saveCheckpoint', model.value).then((result) => {
       if (result) {

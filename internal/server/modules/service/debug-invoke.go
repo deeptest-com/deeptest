@@ -14,10 +14,10 @@ type DebugInvokeService struct {
 	DebugInterfaceRepo *repo.DebugInterfaceRepo `inject:""`
 	DebugInvokeRepo    *repo.DebugInvokeRepo    `inject:""`
 
-	ProcessorInterfaceRepo *repo.ProcessorInterfaceRepo `inject:""`
-	EndpointRepo           *repo.EndpointRepo           `inject:""`
-	ScenarioProcessorRepo  *repo.ScenarioProcessorRepo  `inject:""`
-	ScenarioRepo           *repo.ScenarioRepo           `inject:""`
+	EndpointRepo          *repo.EndpointRepo          `inject:""`
+	ScenarioProcessorRepo *repo.ScenarioProcessorRepo `inject:""`
+	ScenarioRepo          *repo.ScenarioRepo          `inject:""`
+	TestInterfaceRepo     *repo.TestInterfaceRepo     `inject:""`
 
 	DebugSceneService     *DebugSceneService     `inject:""`
 	DebugInterfaceService *DebugInterfaceService `inject:""`
@@ -47,10 +47,15 @@ func (s *DebugInvokeService) SubmitResult(req domain.SubmitDebugResultRequest) (
 		scenario, _ := s.ScenarioRepo.Get(scenarioId)
 		scenarioId = scenario.ID
 		projectId = scenario.ProjectId
+	} else if usedBy == consts.TestDebug {
+		testInterface, _ := s.TestInterfaceRepo.Get(req.Request.TestInterfaceId)
+
+		serveId = testInterface.ServeId
+		projectId = testInterface.ProjectId
 	}
 
-	s.ExtractorService.ExtractInterface(req.Request.EndpointInterfaceId, serveId, processorId, scenarioId, req.Response, usedBy)
-	s.CheckpointService.CheckInterface(req.Request.EndpointInterfaceId, req.Request.ScenarioProcessorId, req.Response, usedBy)
+	s.ExtractorService.ExtractInterface(req.Request.DebugInterfaceId, req.Request.EndpointInterfaceId, serveId, processorId, scenarioId, req.Response, usedBy)
+	s.CheckpointService.CheckInterface(req.Request.DebugInterfaceId, req.Request.EndpointInterfaceId, req.Request.ScenarioProcessorId, req.Response, usedBy)
 
 	_, err = s.Create(req.Request, req.Response, serveId, processorId, scenarioId, projectId)
 
@@ -62,20 +67,20 @@ func (s *DebugInvokeService) SubmitResult(req domain.SubmitDebugResultRequest) (
 }
 
 func (s *DebugInvokeService) Create(debugData domain.DebugData, resp domain.DebugResponse,
-	serveId, processorId, scenarioId, projectId uint) (po model.DebugInvoke, err error) {
+	serveId, scenarioProcessorId, scenarioId, projectId uint) (po model.DebugInvoke, err error) {
 
-	debugInterfaceId, _ := s.DebugInterfaceRepo.HasDebugInterfaceRecord(debugData.EndpointInterfaceId)
+	debugInterface, _ := s.DebugInterfaceRepo.Get(debugData.DebugInterfaceId)
 
 	po = model.DebugInvoke{
 		ServeId: serveId,
 
-		ProcessorId: processorId,
-		ScenarioId:  scenarioId,
+		ScenarioProcessorId: scenarioProcessorId,
+		ScenarioId:          scenarioId,
 
 		InvocationBase: model.InvocationBase{
 			Name:                time.Now().Format("01-02 15:04:05"),
 			EndpointInterfaceId: debugData.EndpointInterfaceId,
-			DebugInterfaceId:    debugInterfaceId,
+			DebugInterfaceId:    debugInterface.ID, // may be 0
 			ProjectId:           projectId,
 		},
 	}
@@ -91,18 +96,14 @@ func (s *DebugInvokeService) Create(debugData domain.DebugData, resp domain.Debu
 	return
 }
 
-func (s *DebugInvokeService) ListByInterface(endpointInterfaceId, testInterfaceId uint) (invocations []model.DebugInvoke, err error) {
-	debugInterfaceId, _ := s.DebugInterfaceRepo.HasDebugInterfaceRecord(endpointInterfaceId)
-
-	invocations, err = s.DebugRepo.List(endpointInterfaceId, debugInterfaceId)
+func (s *DebugInvokeService) ListByInterface(debugInterfaceId, endpointInterfaceId uint) (invocations []model.DebugInvoke, err error) {
+	invocations, err = s.DebugRepo.List(debugInterfaceId, endpointInterfaceId)
 
 	return
 }
 
-func (s *DebugInvokeService) GetLastResp(endpointInterfaceId, testInterfaceId uint) (resp domain.DebugResponse, err error) {
-	debugInterfaceId, _ := s.DebugInterfaceRepo.HasDebugInterfaceRecord(endpointInterfaceId)
-
-	po, _ := s.DebugRepo.GetLast(endpointInterfaceId, debugInterfaceId)
+func (s *DebugInvokeService) GetLastResp(debugInterfaceId, endpointInterfaceId uint) (resp domain.DebugResponse, err error) {
+	po, _ := s.DebugRepo.GetLast(debugInterfaceId, endpointInterfaceId)
 
 	if po.ID > 0 {
 		json.Unmarshal([]byte(po.RespContent), &resp)

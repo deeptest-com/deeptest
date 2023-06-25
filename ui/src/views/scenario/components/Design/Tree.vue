@@ -66,8 +66,13 @@
       </div>
     </div>
 
-    <InterfaceSelection
-        v-if="interfaceSelectionVisible"
+    <InterfaceSelectionFromDefine
+        v-if="interfaceSelectionVisible && interfaceSelectionSrc==='fromDefine'"
+        :onFinish="interfaceSelectionFinish"
+        :onCancel="interfaceSelectionCancel" />
+
+    <InterfaceSelectionFromTest
+        v-if="interfaceSelectionVisible && interfaceSelectionSrc==='fromTest'"
         :onFinish="interfaceSelectionFinish"
         :onCancel="interfaceSelectionCancel" />
 
@@ -91,10 +96,10 @@ import {getContextMenuStyle} from "@/utils/dom";
 import {StateType as ScenarioStateType} from "../../store";
 import {isRoot, updateNodeName, isInterface} from "../../service";
 import TreeContextMenu from "./components/TreeContextMenu.vue";
-import InterfaceSelection from "./components/interface-selection/main.vue";
+import InterfaceSelectionFromDefine from "@/views/component/InterfaceSelectionFromDefine/main.vue";
+import InterfaceSelectionFromTest from "@/views/component/InterfaceSelectionFromTest/main.vue";
 
-const props = defineProps<{ scenarioId: number }>()
-
+const props = defineProps<{}>()
 
 const useForm = Form.useForm;
 
@@ -126,11 +131,6 @@ watch(() => {
 },{
   immediate:true
 })
-
-// const loadTree = debounce(async () => {
-//   await store.dispatch('Scenario/loadScenario', detailResult.value.id);
-// }, 60)
-
 
 const replaceFields = {key: 'id', title: 'name'};
 let expandedKeys = ref<number[]>([]);
@@ -273,7 +273,8 @@ const menuClick = (menuKey: string, targetId: number) => {
     return
   }
 
-  // add-child-interface
+  // add-child-interface-define
+  // add-child-interface-debug
   // add-child-processor_logic-processor_logic_if
   const arr = menuKey.split('-')
   const mode = arr[1]
@@ -313,6 +314,7 @@ const addNode = (mode, processorCategory, processorType,
       targetProcessorCategory, targetProcessorType, targetProcessorId)
 
   if (processorCategory === 'interface') { // select a interface
+    interfaceSelectionSrc.value = processorType
     interfaceSelectionVisible.value = true
     return
 
@@ -331,13 +333,15 @@ const addNode = (mode, processorCategory, processorType,
 }
 
 const interfaceSelectionVisible = ref(false)
+const interfaceSelectionSrc = ref('')
 
 const interfaceSelectionFinish = (interfaceIds) => {
   const targetNode = treeDataMap.value[targetModelId]
   console.log('interfaceSelectionFinish', interfaceIds, targetNode)
 
-  store.dispatch('Scenario/addInterfaces', {
-    interfaceIds: interfaceIds,
+  if (interfaceSelectionSrc.value === 'fromDefine') {
+    store.dispatch('Scenario/addInterfaces', {
+      interfaceIds: interfaceIds,
       targetId: targetNode.id,
     }).then((newNode) => {
       console.log('addInterfaces successfully', newNode)
@@ -347,6 +351,19 @@ const interfaceSelectionFinish = (interfaceIds) => {
       expandOneKey(treeDataMap.value, newNode.parentId, expandedKeys.value) // expend new node
       setExpandedKeys('scenario', treeData.value[0].scenarioId, expandedKeys.value)
     })
+  } else if (interfaceSelectionSrc.value === 'fromTest') {
+    store.dispatch('Scenario/addInterfaces', {
+      interfaceIds: interfaceIds,
+      targetId: targetNode.id,
+    }).then((newNode) => {
+      console.log('addInterfaces successfully', newNode)
+
+      interfaceSelectionVisible.value = false
+      selectNode([newNode.id], null)
+      expandOneKey(treeDataMap.value, newNode.parentId, expandedKeys.value) // expend new node
+      setExpandedKeys('scenario', treeData.value[0].scenarioId, expandedKeys.value)
+    })
+  }
 }
 
 const interfaceSelectionCancel = () => {

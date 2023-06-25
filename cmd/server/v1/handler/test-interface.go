@@ -8,6 +8,7 @@ import (
 	service "github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	"github.com/kataras/iris/v12"
+	"github.com/snowlyg/multi"
 )
 
 type TestInterfaceCtrl struct {
@@ -63,6 +64,36 @@ func (c *TestInterfaceCtrl) Save(ctx iris.Context) {
 	}
 
 	data, err := c.TestInterfaceService.Load(int(po.ProjectId), int(po.ServeId))
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data})
+}
+
+// SaveDebugData
+func (c *TestInterfaceCtrl) SaveDebugData(ctx iris.Context) {
+	req := domain.DebugData{}
+	err := ctx.ReadJSON(&req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+		return
+	}
+
+	_, err = c.TestInterfaceService.SaveDebugData(req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	loadReq := domain.DebugReq{
+		TestInterfaceId:  req.TestInterfaceId,
+		DebugInterfaceId: req.DebugInterfaceId,
+		UsedBy:           consts.TestDebug,
+	}
+
+	data, err := c.DebugInterfaceService.Load(loadReq)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -128,31 +159,23 @@ func (c *TestInterfaceCtrl) Move(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 }
 
-// SaveDebugData
-func (c *TestInterfaceCtrl) SaveDebugData(ctx iris.Context) {
-	req := domain.DebugData{}
+// ImportInterfaces 导入接口
+func (c *TestInterfaceCtrl) ImportInterfaces(ctx iris.Context) {
+	req := serverDomain.TestInterfaceImportReq{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
-	_, err = c.TestInterfaceService.SaveDebugData(req)
-	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+	req.CreateBy = multi.GetUserId(ctx)
+	newNode, bizErr := c.TestInterfaceService.ImportInterfaces(req)
+	if bizErr != nil {
+		ctx.JSON(_domain.Response{
+			Code: _domain.SystemErr.Code,
+		})
 		return
 	}
 
-	loadReq := domain.DebugReq{
-		TestInterfaceId: req.TestInterfaceId,
-		UsedBy:          consts.TestDebug,
-	}
-
-	data, err := c.DebugInterfaceService.Load(loadReq)
-	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
-		return
-	}
-
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: newNode})
 }

@@ -16,7 +16,7 @@ type AuthService struct {
 }
 
 func (s AuthService) OAuth2Authorization(req model.DebugInterfaceOAuth20) (result iris.Map, err error) {
-	//s.InterfaceRepo.UpdateOAuth20(req.InterfaceId, req)
+	//s.InterfaceRepo.UpdateOAuth20(req.EndpointInterfaceId, req)
 
 	responseType := ""
 	if req.GrantType == consts.AuthorizationCode {

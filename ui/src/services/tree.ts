@@ -1,4 +1,11 @@
 
+export function genNodeMap(treeNode: any, ids?: number[]): any {
+     const mp = {}
+    getNodeMap(treeNode, mp, ids)
+
+    return mp
+}
+
 export function getNodeMap(treeNode: any, mp: any, ids?: number[]): void {
     if (!treeNode) return
 

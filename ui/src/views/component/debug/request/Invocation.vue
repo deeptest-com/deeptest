@@ -21,11 +21,11 @@
       </a-button>
     </div>
 
-    <ContextMenu
+<!--    <ContextMenu
         :isShow="showContextMenu"
         :style="contextMenuStyle"
         :menu-click="onMenuClick">
-    </ContextMenu>
+    </ContextMenu>-->
 
   </div>
 </template>
@@ -41,9 +41,9 @@ import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
 import {prepareDataForRequest} from "@/views/component/debug/service";
 import {NotificationKeyCommon} from "@/utils/const"
-import ContextMenu from "@/components/Editor/ContextMenu.vue"
+import ContextMenu from "../others/variable/ContextMenu.vue"
+
 import {StateType as Debug} from "@/views/component/debug/store";
-import {addSepIfNeeded} from "@/utils/url";
 
 const store = useStore<{ Debug: Debug }>();
 const debugData = computed<any>(() => store.state.Debug.debugData);
@@ -115,10 +115,7 @@ const validateInfo = () => {
   return true
 };
 
-const clearMenu = () => {
-  console.log('clearMenu')
-  showContextMenu.value = false
-}
+
 onMounted(() => {
   console.log('onMounted')
 })
@@ -126,18 +123,23 @@ onUnmounted(() => {
   console.log('onUnmounted')
 })
 
-const showContextMenu = ref(false)
-let contextTarget = {} as any
-const contextMenuStyle = ref({} as any)
-
-const onMenuClick = (key) => {
-  console.log('onMenuClick', key)
-
-  if (key === 'use-variable') {
-    bus.emit(settings.eventVariableSelectionStatus, {src: 'url', data: contextTarget});
-  }
-  showContextMenu.value = false
-}
+// const showContextMenu = ref(false)
+// const clearMenu = () => {
+//   console.log('clearMenu')
+//   showContextMenu.value = false
+// }
+//
+// let contextTarget = {} as any
+// const contextMenuStyle = ref({} as any)
+//
+// const onMenuClick = (key) => {
+//   console.log('onMenuClick', key)
+//
+//   if (key === 'use-variable') {
+//     bus.emit(settings.eventVariableSelectionStatus, {src: 'url', data: contextTarget});
+//   }
+//   showContextMenu.value = false
+// }
 
 </script>
 

@@ -13,20 +13,28 @@ type DebugSceneService struct {
 	ServeServerRepo       *repo.ServeServerRepo       `inject:""`
 	ScenarioProcessorRepo *repo.ScenarioProcessorRepo `inject:""`
 	EnvironmentRepo       *repo.EnvironmentRepo       `inject:""`
+	TestInterfaceRepo     *repo.TestInterfaceRepo     `inject:""`
 
 	ShareVarService *ShareVarService `inject:""`
 
 	EnvironmentService *EnvironmentService `inject:""`
 }
 
-func (s *DebugSceneService) LoadScene(endpointInterfaceId, debugServerId, scenarioProcessorId uint, usedBy consts.UsedBy) (
-	baseUrl string, shareVariables []domain.GlobalVar, envVars []domain.GlobalVar) {
+func (s *DebugSceneService) LoadScene(debugData domain.DebugData, usedBy consts.UsedBy) (
+	baseUrl string, shareVars []domain.GlobalVar, envVars []domain.GlobalVar,
+	globalVars []domain.GlobalVar, globalParams []domain.GlobalParam) {
 
-	if endpointInterfaceId > 0 {
-		interf, _ := s.EndpointInterfaceRepo.Get(endpointInterfaceId)
+	debugServeId := debugData.ServeId
+	debugServerId := debugData.ServerId
+
+	if debugData.EndpointInterfaceId > 0 && (debugServeId <= 0 || debugServerId <= 0) {
+		interf, _ := s.EndpointInterfaceRepo.Get(debugData.EndpointInterfaceId)
 		endpoint, _ := s.EndpointRepo.Get(interf.EndpointId)
 
-		if debugServerId == 0 {
+		if debugServeId <= 0 {
+			debugServeId = endpoint.ServeId
+		}
+		if debugServerId <= 0 {
 			debugServerId = endpoint.ServerId
 		}
 	}
@@ -35,9 +43,12 @@ func (s *DebugSceneService) LoadScene(endpointInterfaceId, debugServerId, scenar
 
 	baseUrl = _httpUtils.AddSepIfNeeded(serveServer.Url)
 	envId := serveServer.EnvironmentId
+	environment, _ := s.EnvironmentRepo.Get(envId)
 
-	shareVariables, _ = s.ShareVarService.ListForDebug(debugServerId, scenarioProcessorId)
+	shareVars, _ = s.ShareVarService.ListForDebug(debugServeId, debugData.ScenarioProcessorId, usedBy)
 	envVars, _ = s.EnvironmentService.GetVarsByEnv(envId)
+	globalVars, _ = s.EnvironmentService.GetGlobalVars(environment.ProjectId)
+	globalParams, _ = s.EnvironmentService.GetGlobalParams(environment.ProjectId)
 
 	return
 }

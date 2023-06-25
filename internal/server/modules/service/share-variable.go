@@ -10,27 +10,31 @@ import (
 type ShareVarService struct {
 	ShareVariableRepo *repo.ShareVariableRepo `inject:""`
 
+	TestInterfaceRepo     *repo.TestInterfaceRepo     `inject:""`
+	DebugInterfaceRepo    *repo.DebugInterfaceRepo    `inject:""`
 	EndpointInterfaceRepo *repo.EndpointInterfaceRepo `inject:""`
 	EndpointRepo          *repo.EndpointRepo          `inject:""`
 	ServeServerRepo       *repo.ServeServerRepo       `inject:""`
 	ScenarioProcessorRepo *repo.ScenarioProcessorRepo `inject:""`
 }
 
-func (s *ShareVarService) Save(name, value string, interfaceId, serveId, processorId, scenarioId uint,
+func (s *ShareVarService) Save(name, value string, debugInterfaceId, endpointInterfaceId, serveId, processorId, scenarioId uint,
 	scope consts.ExtractorScope, usedBy consts.UsedBy) (err error) {
 
 	po := model.ShareVariable{
-		Name:        name,
-		Value:       value,
-		InterfaceId: interfaceId,
-		ServeId:     serveId,
-		ProcessorId: processorId,
-		ScenarioId:  scenarioId,
-		Scope:       scope,
+		Name:                name,
+		Value:               value,
+		DebugInterfaceId:    debugInterfaceId,
+		EndpointInterfaceId: endpointInterfaceId,
+		ServeId:             serveId,
+		ScenarioProcessorId: processorId,
+		ScenarioId:          scenarioId,
+		Scope:               scope,
+		UsedBy:              usedBy,
 	}
 
-	if usedBy == consts.InterfaceDebug {
-		po.ID, err = s.ShareVariableRepo.GetExistByInterfaceDebug(name, serveId)
+	if usedBy == consts.InterfaceDebug || usedBy == consts.TestDebug {
+		po.ID, err = s.ShareVariableRepo.GetExistByInterfaceDebug(name, serveId, usedBy)
 	} else if usedBy == consts.ScenarioDebug {
 		po.ID, err = s.ShareVariableRepo.GetExistByScenarioDebug(name, scenarioId)
 	}
@@ -40,14 +44,29 @@ func (s *ShareVarService) Save(name, value string, interfaceId, serveId, process
 	return
 }
 
-func (s *ShareVarService) List(endpointInterfaceId, scenarioProcessorId uint, usedBy consts.UsedBy) (
+func (s *ShareVarService) List(debugInterfaceId, endpointInterfaceId, testInterfaceId, scenarioProcessorId uint,
+	usedBy consts.UsedBy) (
 	shareVariables []domain.GlobalVar) {
 
-	interf, _ := s.EndpointInterfaceRepo.Get(endpointInterfaceId)
-	endpoint, _ := s.EndpointRepo.Get(interf.EndpointId)
-	serveId := endpoint.ServeId
+	var serveId uint
 
-	shareVariables, _ = s.ListForDebug(serveId, scenarioProcessorId)
+	if testInterfaceId > 0 {
+		testInterface, _ := s.TestInterfaceRepo.Get(testInterfaceId)
+		serveId = testInterface.ServeId
+
+	} else if endpointInterfaceId > 0 {
+		endpointInterface, _ := s.EndpointInterfaceRepo.Get(endpointInterfaceId)
+		endpoint, _ := s.EndpointRepo.Get(endpointInterface.EndpointId)
+		serveId = endpoint.ServeId
+
+	} else if debugInterfaceId > 0 {
+		debugInterface, _ := s.DebugInterfaceRepo.Get(debugInterfaceId)
+		endpointInterface, _ := s.EndpointInterfaceRepo.Get(debugInterface.EndpointInterfaceId)
+		endpoint, _ := s.EndpointRepo.Get(endpointInterface.EndpointId)
+		serveId = endpoint.ServeId
+	}
+
+	shareVariables, _ = s.ListForDebug(serveId, scenarioProcessorId, usedBy)
 
 	return
 }
@@ -72,13 +91,13 @@ func (s *ShareVarService) Clear(endpointOrProcessorId int, usedBy consts.UsedBy)
 	return
 }
 
-func (s *ShareVarService) ListForDebug(serveId, scenarioProcessorId uint) (ret []domain.GlobalVar, err error) {
+func (s *ShareVarService) ListForDebug(serveId, scenarioProcessorId uint, usedBy consts.UsedBy) (ret []domain.GlobalVar, err error) {
 	var pos []model.ShareVariable
 
 	if scenarioProcessorId > 0 {
 		pos, err = s.ShareVariableRepo.ListByScenarioDebug(scenarioProcessorId)
 	} else {
-		pos, err = s.ShareVariableRepo.ListByInterfaceDebug(serveId)
+		pos, err = s.ShareVariableRepo.ListByInterfaceDebug(serveId, usedBy)
 	}
 
 	for _, po := range pos {

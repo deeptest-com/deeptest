@@ -11,7 +11,7 @@
 
     <div id="debug-bottom">
       <div id="debug-content">
-        <DebugEnvSelection />
+        <DebugUrlAndEnv />
 
         <DebugComp />
       </div>
@@ -79,7 +79,7 @@ import {StateType as Debug} from "@/views/component/debug/store";
 import {StateType as Endpoint} from "@/views/endpoint/store";
 
 import DebugMethod from './method.vue';
-import DebugEnvSelection from './env-selection.vue';
+import DebugUrlAndEnv from './url-and-env.vue';
 import RequestEnv from '@/views/component/debug/others/env/index.vue';
 import RequestHistory from '@/views/component/debug/others/history/index.vue';
 import RequestInvocation from '@/views/component/debug/request/Invocation.vue';
@@ -139,6 +139,38 @@ const saveDebugInterface = async (data) => {
 
 </script>
 
+<style lang="less">
+#debug-index #debug-right .right-tab {
+  height: 100%;
+
+  .ant-tabs-left-content {
+    padding-left: 0px;
+  }
+  .ant-tabs-right-content {
+    padding-right: 0px;
+    height: 100%;
+    .ant-tabs-tabpane {
+      height: 100%;
+      &.ant-tabs-tabpane-inactive {
+        display: none;
+      }
+    }
+  }
+  .ant-tabs-nav-scroll {
+    text-align: center;
+  }
+  .ant-tabs-tab {
+    padding: 5px 10px !important;
+    .anticon {
+      margin-right: 2px !important;
+    }
+  }
+  .ant-tabs-ink-bar {
+    background-color: #d9d9d9 !important;
+  }
+}
+</style>
+
 <style lang="less" scoped>
 #debug-index {
   height: 100%;
@@ -182,34 +214,3 @@ const saveDebugInterface = async (data) => {
 }
 </style>
 
-<style lang="less">
-#debug-index #debug-right .right-tab {
-  height: 100%;
-
-  .ant-tabs-left-content {
-    padding-left: 0px;
-  }
-  .ant-tabs-right-content {
-    padding-right: 0px;
-    height: 100%;
-    .ant-tabs-tabpane {
-      height: 100%;
-      &.ant-tabs-tabpane-inactive {
-        display: none;
-      }
-    }
-  }
-  .ant-tabs-nav-scroll {
-    text-align: center;
-  }
-  .ant-tabs-tab {
-    padding: 5px 10px !important;
-    .anticon {
-      margin-right: 2px !important;
-    }
-  }
-  .ant-tabs-ink-bar {
-    background-color: #d9d9d9 !important;
-  }
-}
-</style>

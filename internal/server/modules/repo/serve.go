@@ -9,6 +9,7 @@ import (
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"gorm.io/gorm"
+	"sort"
 )
 
 type ServeRepo struct {
@@ -180,17 +181,23 @@ func (r *ServeRepo) DisableVersionById(id uint) error {
 	return r.DB.Model(&model.ServeVersion{}).Where("id = ?", id).Update("disabled", 1).Error
 }
 
-func (r *ServeRepo) ListServer(serveId uint) (res []model.ServeServer, err error) {
-	err = r.DB.Where("serve_id = ? AND NOT deleted AND not disabled", serveId).Find(&res).Error
+func (r *ServeRepo) ListServer(serveId uint) (servers model.ServeServerArr, err error) {
+	err = r.DB.Where("serve_id = ? AND NOT deleted AND not disabled", serveId).
+		Find(&servers).Error
 
-	for key, server := range res {
+	for index, server := range servers {
 		var environment model.Environment
 		environment, err = r.EnvironmentRepo.Get(server.EnvironmentId)
 		if err != nil {
 			return
 		}
-		res[key].EnvironmentName = environment.Name
+
+		servers[index].EnvironmentName = environment.Name
+		servers[index].Sort = environment.Sort
 	}
+
+	sort.Sort(servers)
+
 	return
 }
 

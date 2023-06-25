@@ -2,13 +2,13 @@ package service
 
 import (
 	"fmt"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	repo "github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 )
 
 type VariableService struct {
-	DebugInterfaceRepo     *repo.DebugInterfaceRepo     `inject:""`
-	ProcessorInterfaceRepo *repo.ProcessorInterfaceRepo `inject:""`
+	DebugInterfaceRepo *repo.DebugInterfaceRepo `inject:""`
 
 	EndpointInterfaceRepo *repo.EndpointInterfaceRepo `inject:""`
 	EndpointRepo          *repo.EndpointRepo          `inject:""`
@@ -21,15 +21,14 @@ type VariableService struct {
 	DatapoolService    *DatapoolService    `inject:""`
 }
 
-func (s *VariableService) GetCombinedVarsForCheckpoint(endpointInterfaceId, scenarioProcessorId uint) (
-	ret map[string]interface{}, datapools domain.Datapools, err error) {
+func (s *VariableService) GetCombinedVarsForCheckpoint(debugInterfaceId, endpointInterfaceId, scenarioProcessorId uint, usedBy consts.UsedBy) (ret map[string]interface{}, datapools domain.Datapools, err error) {
 
-	debugEnv, _ := s.EnvironmentService.GetDebugEnvByEndpointInterface(endpointInterfaceId)
+	debugEnv, _ := s.EnvironmentService.GetDebugEnvByEndpointInterface(debugInterfaceId, endpointInterfaceId)
 
 	interf, _ := s.EndpointInterfaceRepo.Get(endpointInterfaceId)
 	endpoint, _ := s.EndpointRepo.Get(interf.EndpointId)
 
-	shareVariables, _ := s.ShareVarService.ListForDebug(endpoint.ServeId, scenarioProcessorId)
+	shareVariables, _ := s.ShareVarService.ListForDebug(endpoint.ServeId, scenarioProcessorId, usedBy)
 	envVars, _ := s.EnvironmentService.GetVarsByEnv(debugEnv.ID)
 	globalVars, _ := s.EnvironmentService.GetGlobalVars(debugEnv.ProjectId)
 	datapools, _ = s.DatapoolService.ListForExec(debugEnv.ProjectId)

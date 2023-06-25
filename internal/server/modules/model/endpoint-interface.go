@@ -10,6 +10,8 @@ type EndpointInterface struct {
 	RequestBody    EndpointInterfaceRequestBody    `gorm:"-" json:"requestBody"`
 	ResponseBodies []EndpointInterfaceResponseBody `gorm:"-" json:"responseBodies"`
 	ResponseCodes  string                          `json:"responseCodes"`
+
+	DebugInterfaceId uint `gorm:"default:0" json:"debugInterfaceId"`
 }
 type SchemaParam struct {
 	Name        string  `json:"name"`

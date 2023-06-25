@@ -8,14 +8,16 @@ import (
 type DebugInterface struct {
 	BaseModel
 	InterfaceBase
-	BaseUrl string `json:"baseUrl"` // used by TestInterface
 
-	EndpointInterfaceId uint `json:"endpointInterfaceId"`
-	ServerId            uint `json:"serverId"`
+	EndpointInterfaceId uint `gorm:"default:0" json:"endpointInterfaceId"`
+	ScenarioProcessorId uint `gorm:"default:0" json:"scenarioProcessorId"`
+	TestInterfaceId     uint `gorm:"default:0" json:"testInterfaceId"`
 
-	//ReqBodySpec InterfaceReqBodySpec `gorm:"-" json:"basicAuth"`
-	//Children []*DebugInterface `gorm:"-" json:"children"`
+	// used by TestInterface
+	ServerId uint   `json:"serverId"`
+	BaseUrl  string `json:"baseUrl"`
 
+	// debug data
 	QueryParams []DebugInterfaceParam  `gorm:"-" json:"queryParams"`
 	PathParams  []DebugInterfaceParam  `gorm:"-" json:"pathParams"`
 	Headers     []DebugInterfaceHeader `gorm:"-" json:"headers"`
@@ -124,12 +126,20 @@ type DebugInterfaceExtractor struct {
 
 	domain.ExtractorBase
 
-	Scope consts.ExtractorScope `json:"scope" gorm:"default:private"`
+	UsedBy consts.UsedBy         `json:"usedBy"`
+	Scope  consts.ExtractorScope `json:"scope" gorm:"default:private"`
 
-	EndpointInterfaceId uint `json:"endpointInterfaceId"`
+	DebugInterfaceId uint `gorm:"default:0" json:"debugInterfaceId"`
 
-	ProcessorId uint `json:"processorId"`
-	ScenarioId  uint `json:"scenarioId"`
+	// debug for Endpoint Interface
+	EndpointInterfaceId uint `gorm:"default:0" json:"endpointInterfaceId"`
+
+	// debug in Scenario Processor
+	ScenarioProcessorId uint `gorm:"default:0" json:"scenarioProcessorId"`
+	ScenarioId          uint `gorm:"default:0" json:"scenarioId"`
+
+	// debug for Test Interface
+	TestInterfaceId uint `gorm:"default:0" json:"testInterfaceId"`
 
 	ProjectId uint `json:"projectId"`
 }
@@ -153,8 +163,17 @@ type DebugInterfaceCheckpoint struct {
 	ActualResult string              `json:"actualResult"`
 	ResultStatus consts.ResultStatus `json:"resultStatus"`
 
-	EndpointInterfaceId uint `json:"endpointInterfaceId"`
-	ScenarioId          uint `json:"scenarioId"`
+	DebugInterfaceId uint `gorm:"default:0" json:"debugInterfaceId"`
+
+	// debug for Endpoint Interface
+	EndpointInterfaceId uint `gorm:"default:0" json:"endpointInterfaceId"`
+
+	// debug in Scenario Processor
+	ScenarioProcessorId uint `gorm:"default:0" json:"scenarioProcessorId"`
+	ScenarioId          uint `gorm:"default:0" json:"scenarioId"`
+
+	// debug for Test Interface
+	TestInterfaceId uint `gorm:"default:0" json:"testInterfaceId"`
 }
 
 func (DebugInterfaceCheckpoint) TableName() string {

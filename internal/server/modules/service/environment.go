@@ -28,7 +28,7 @@ func (s *EnvironmentService) List(projectId int) (envs []model.Environment, err 
 	return
 }
 
-//func (s *EnvironmentService) ListVariableForExec(scenario model.Scenario) (ret map[string]interface{}, err error) {
+//func (s *EnvironmentService) ListVariableForExec(scenario modelRef.Scenario) (ret map[string]interface{}, err error) {
 //	ret = map[string]interface{}{}
 //
 //	pos, err := s.EnvironmentRepo.ListVariableByProject(scenario.ProjectId)
@@ -298,9 +298,7 @@ func (s *EnvironmentService) GetGlobalParams(projectId uint) (ret []domain.Globa
 	return
 }
 
-func (s *EnvironmentService) GetDebugEnvByEndpointInterface(endpointInterfaceId uint) (ret model.Environment, err error) {
-	debugInterfaceId, _ := s.DebugInterfaceRepo.HasDebugInterfaceRecord(endpointInterfaceId)
-
+func (s *EnvironmentService) GetDebugEnvByEndpointInterface(debugInterfaceId, endpointInterfaceId uint) (ret model.Environment, err error) {
 	var serveId uint
 
 	if debugInterfaceId > 0 {

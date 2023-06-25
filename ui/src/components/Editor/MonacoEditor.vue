@@ -98,7 +98,7 @@ export default defineComponent({
 
         if (json.code === 0) {
           // const externalDtsFileName = 'ex.d.ts';
-          // monaco.languages.typescript.typescriptDefaults.addExtraLib(libSource, `inmemory://model/${externalDtsFileName}`);
+          // monaco.languages.typescript.typescriptDefaults.addExtraLib(libSource, `inmemory://modelRef/${externalDtsFileName}`);
           monaco.languages.typescript.typescriptDefaults.addExtraLib(json.data.script);
         }
       }
@@ -113,14 +113,14 @@ export default defineComponent({
       this.diffEditor && this._setModel(this.value, this.original);
 
 
-      const usedBy = inject('usedBy')
-      if (usedBy === UsedBy.InterfaceDebug) {
+      // const usedBy = inject('usedBy')
+      // if (usedBy === UsedBy.InterfaceDebug) {
         if (this.options.usedWith === 'response') {
           addExtractAction(this.editor, this.onExtractor)
         } else if (this.options.usedWith === 'request') {
           addReplaceAction(this.editor, this.onReplace)
         }
-      }
+      // }
 
       // @event `change`
       const editor = this._getEditor()

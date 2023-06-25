@@ -13,8 +13,8 @@ import {
     updateNode,
     removeNode,
     moveNode,
-    addInterfaces, addProcessor,
-    saveProcessorName, saveProcessor, saveInterface, loadExecResult,
+    addInterfacesFromDefine, addInterfacesFromTest, addProcessor,
+    saveProcessorName, saveProcessor, loadExecResult,
     getScenariosReports,
     getScenariosReportsDetail,
     addPlans,
@@ -59,10 +59,9 @@ export interface StateType {
     responseData: any;
     extractorsData: any[];
     checkpointsData: any[];
-    validExtractorVariablesData: any[];
     scenariosReports: any[];
     linkedPlans: any[];
-    notLinkedplans: any[];
+    notLinkedPlans: any[];
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
@@ -97,10 +96,9 @@ export interface ModuleType extends StoreModuleType<StateType> {
 
         setExtractors: Mutation<StateType>;
         setCheckpoints: Mutation<StateType>;
-        setValidExtractorVariables: Mutation<StateType>;
         setScenariosReports: Mutation<StateType>;
         setLinkedPlans: Mutation<StateType>;
-        setNotLinkedplans: Mutation<StateType>;
+        setNotLinkedPlans: Mutation<StateType>;
     };
     actions: {
         setScenarioProcessorIdForDebug: Action<StateType, StateType>;
@@ -114,7 +112,8 @@ export interface ModuleType extends StoreModuleType<StateType> {
         getNode: Action<StateType, StateType>;
         updateCategoryId: Action<StateType, StateType>;
 
-        addInterfaces: Action<StateType, StateType>;
+        addInterfacesFromDefine: Action<StateType, StateType>;
+        addInterfacesFromTest: Action<StateType, StateType>;
         addProcessor: Action<StateType, StateType>;
 
         createNode: Action<StateType, StateType>;
@@ -184,10 +183,9 @@ const initState: StateType = {
     responseData: {},
     extractorsData: [],
     checkpointsData: [],
-    validExtractorVariablesData: [],
     scenariosReports: [],
     linkedPlans: [],
-    notLinkedplans: [],
+    notLinkedPlans: [],
 };
 
 const StoreModel: ModuleType = {
@@ -274,17 +272,14 @@ const StoreModel: ModuleType = {
         setCheckpoints(state, payload) {
             state.checkpointsData = payload;
         },
-        setValidExtractorVariables(state, payload) {
-            state.validExtractorVariablesData = payload;
-        },
         setScenariosReports(state, payload) {
             state.scenariosReports = payload;
         },
         setLinkedPlans(state, payload) {
             state.linkedPlans = payload;
         },
-        setNotLinkedplans(state, payload) {
-            state.notLinkedplans = payload;
+        setNotLinkedPlans(state, payload) {
+            state.notLinkedPlans = payload;
         },
     },
     actions: {
@@ -370,9 +365,9 @@ const StoreModel: ModuleType = {
             }
         },
 
-        async addInterfaces({commit, dispatch, state}, payload: any) {
+        async addInterfacesFromDefine({commit, dispatch, state}, payload: any) {
             try {
-                const resp = await addInterfaces(payload);
+                const resp = await addInterfacesFromDefine(payload);
 
                 await dispatch('loadScenario', state.scenarioId);
                 return resp.data;
@@ -380,6 +375,17 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
+        async addInterfacesFromTest({commit, dispatch, state}, payload: any) {
+            try {
+                const resp = await addInterfacesFromTest(payload);
+
+                await dispatch('loadScenario', state.scenarioId);
+                return resp.data;
+            } catch (error) {
+                return false;
+            }
+        },
+
         async addProcessor({commit, dispatch, state}, payload: any) {
             try {
                 const resp = await addProcessor(payload);
@@ -402,7 +408,6 @@ const StoreModel: ModuleType = {
 
             const mp = {}
             getNodeMap(data, mp)
-
             commit('setTreeDataMap', mp);
 
             return true;
@@ -625,7 +630,7 @@ const StoreModel: ModuleType = {
                 if (payload.data.ref) {
                     commit('setLinkedPlans', res?.data?.result || []);
                 } else {
-                    commit('setNotLinkedplans', res?.data?.result || []);
+                    commit('setNotLinkedPlans', res?.data?.result || []);
                 }
             }
             return false;

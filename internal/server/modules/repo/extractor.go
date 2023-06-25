@@ -14,22 +14,27 @@ import (
 )
 
 type ExtractorRepo struct {
-	DB                     *gorm.DB                `inject:""`
-	ProcessorInterfaceRepo *ProcessorInterfaceRepo `inject:""`
+	DB *gorm.DB `inject:""`
 }
 
-func (r *ExtractorRepo) List(endpointInterfaceId uint) (pos []model.DebugInterfaceExtractor, err error) {
-	err = r.DB.
-		Where("endpoint_interface_id=?", endpointInterfaceId).
+func (r *ExtractorRepo) List(debugInterfaceId, endpointInterfaceId uint) (pos []model.DebugInterfaceExtractor, err error) {
+	db := r.DB.
 		Where("NOT deleted").
-		Order("created_at ASC").
-		Find(&pos).Error
+		Order("created_at ASC")
+
+	if debugInterfaceId > 0 {
+		db.Where("debug_interface_id=?", debugInterfaceId)
+	} else {
+		db.Where("endpoint_interface_id=? AND debug_interface_id=?", endpointInterfaceId, 0)
+	}
+
+	err = db.Find(&pos).Error
 
 	return
 }
 
-func (r *ExtractorRepo) ListTo(interfaceId uint) (ret []agentDomain.Extractor, err error) {
-	pos, _ := r.List(interfaceId)
+func (r *ExtractorRepo) ListTo(debugInterfaceId, endpointInterfaceId uint) (ret []agentDomain.Extractor, err error) {
+	pos, _ := r.List(debugInterfaceId, endpointInterfaceId)
 
 	for _, po := range pos {
 		extractor := agentDomain.Extractor{}
@@ -171,18 +176,18 @@ func (r *ExtractorRepo) ListValidExtractorVariableForInterface(interfaceId, proj
 			"endpoint_interface_id AS endpointInterfaceId, scope AS scope").
 		Where("NOT deleted AND NOT disabled")
 
-	if usedBy == consts.InterfaceDebug {
-		q.Where("project_id=?", projectId)
-
-	} else {
-		processorInterface, _ := r.ProcessorInterfaceRepo.Get(interfaceId)
-
-		var parentIds []uint
-		r.GetParentIds(processorInterface.ProcessorId, &parentIds)
-
-		q.Where("scenario_id=?", processorInterface.ScenarioId).
-			Where("scope = ? OR processor_id IN(?)", consts.Public, parentIds)
-	}
+	//if usedBy == consts.InterfaceDebug {
+	//	q.Where("project_id=?", projectId)
+	//
+	//} else {
+	//	processorInterface, _ := r.ProcessorInterfaceRepo.Get(interfaceId)
+	//
+	//	var parentIds []uint
+	//	r.GetParentIds(processorInterface.ProcessorId, &parentIds)
+	//
+	//	q.Where("scenario_id=?", processorInterface.ScenarioId).
+	//		Where("scope = ? OR scenario_processor_id IN(?)", consts.Public, parentIds)
+	//}
 
 	err = q.Order("created_at ASC").
 		Find(&variables).Error
@@ -203,6 +208,24 @@ func (r *ExtractorRepo) GetParentIds(processorId uint, ids *[]uint) {
 
 	if po.ParentId > 0 {
 		r.GetParentIds(po.ParentId, ids)
+	}
+
+	return
+}
+
+func (r *ExtractorRepo) CloneFromEndpointInterfaceToDebugInterface(endpointInterfaceId, debugInterfaceId uint,
+	usedBy consts.UsedBy) (
+	err error) {
+
+	srcPos, _ := r.List(0, endpointInterfaceId)
+
+	for _, po := range srcPos {
+		po.ID = 0
+		po.EndpointInterfaceId = endpointInterfaceId
+		po.DebugInterfaceId = debugInterfaceId
+		po.UsedBy = usedBy
+
+		r.Save(&po)
 	}
 
 	return

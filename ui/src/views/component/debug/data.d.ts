@@ -5,7 +5,8 @@ export interface Interface {
     url: string;
     method: string;
     headers: Header[];
-    params: Param[];
+    queryParams: Param[];
+    pathParams: Param[];
 
     body: string;
     bodyFormUrlencoded: BodyFormUrlEncodedItem[];
@@ -95,7 +96,9 @@ export interface Extractor {
     boundaryIncluded: boolean;
 
     variable: string;
+    code: string;
     scope: string;
+    debugInterfaceId?: number;
     endpointInterfaceId?: number;
     projectId?: number;
 }
@@ -108,10 +111,13 @@ export interface Checkpoint {
 
     operator: ComparisonOperator;
     value: any;
+    debugInterfaceId?: number;
     endpointInterfaceId?: number;
+    projectId?: number;
 }
 
 export interface DebugInfo {
+    debugInterfaceId: number,
     endpointInterfaceId: number,
     scenarioProcessorId  : number,
     testInterfaceId  : number,

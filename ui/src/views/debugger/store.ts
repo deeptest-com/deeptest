@@ -1,16 +1,16 @@
 import { Mutation, Action } from 'vuex';
 import { StoreModuleType } from "@/utils/store";
 import { ResponseData } from '@/utils/request';
-import { TestInterface, QueryResult, QueryParams, PaginationConfig } from './data.d';
 import {
     query,
     get,
     save,
     remove,
     move,
-    clone, saveTestDebugData,
+    clone, saveTestDebugData, importInterfaces,
 } from './service';
 import {serverList} from "@/views/project-settings/service";
+import {genNodeMap, getNodeMap} from "@/services/tree";
 
 export interface StateType {
     interfaceId: number;
@@ -47,6 +47,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         removeInterface: Action<StateType, StateType>;
         moveInterface: Action<StateType, StateType>;
         cloneInterface: Action<StateType, StateType>;
+        importInterfaces: Action<StateType, StateType>;
 
         openInterfaceTab: Action<StateType, StateType>;
         removeInterfaceTab: Action<StateType, StateType>;
@@ -116,6 +117,10 @@ const StoreModel: ModuleType = {
                 commit('setQueryParams', params);
                 commit('setTreeData', response.data);
 
+                const data = {id: 0, children: response.data} // covert arr to obj
+                const mp = genNodeMap(data)
+                commit('setTreeDataMap', mp);
+
                 return true;
             } catch (error) {
                 return false;
@@ -181,6 +186,16 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
+        async importInterfaces({commit, dispatch, state}, payload: any) {
+            try {
+                const resp = await importInterfaces(payload);
+
+                dispatch('loadTree', state.queryParams);
+                return resp.data;
+            } catch (error) {
+                return false;
+            }
+        },
 
         async getServeServers({commit}, payload: any) {
             const res = await serverList({
@@ -207,9 +222,11 @@ const StoreModel: ModuleType = {
                 })
 
                 if (!found) {
-                    tabs.push({id: state.interfaceData.id,
+                    tabs.push({
+                        id: state.interfaceData.id,
                         title: state.interfaceData.title,
-                        type: state.interfaceData.type})
+                        type: state.interfaceData.type
+                    })
                     commit('setInterfaceTabs', tabs);
                 }
 

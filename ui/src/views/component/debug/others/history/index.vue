@@ -43,12 +43,8 @@ const debugData = computed<any>(() => store.state.Debug.debugData);
 
 const invocationsData = computed<any[]>(() => store.state.Debug.invocationsData);
 
-store.dispatch('Debug/listInvocation', {
-  endpointInterfaceId: debugInfo.value.endpointInterfaceId,
-})
-store.dispatch('Debug/getLastInvocationResp', {
-  endpointInterfaceId: debugInfo.value.endpointInterfaceId,
-})
+store.dispatch('Debug/listInvocation')
+store.dispatch('Debug/getLastInvocationResp')
 
 const getRequestAsInterface = (id) => {
   store.dispatch('Debug/getInvocationAsInterface', id)

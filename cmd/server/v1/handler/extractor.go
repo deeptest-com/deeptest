@@ -15,13 +15,21 @@ type ExtractorCtrl struct {
 
 // List
 func (c *ExtractorCtrl) List(ctx iris.Context) {
-	endpointInterfaceId, err := ctx.URLParamInt("interfaceId")
-	if endpointInterfaceId <= 0 {
+	debugInterfaceId, err := ctx.URLParamInt("debugInterfaceId")
+	endpointInterfaceId, err := ctx.URLParamInt("endpointInterfaceId")
+	if debugInterfaceId <= 0 && endpointInterfaceId <= 0 {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
-	data, err := c.ExtractorService.List(uint(endpointInterfaceId))
+	if debugInterfaceId < 0 {
+		debugInterfaceId = 0
+	}
+	if endpointInterfaceId < 0 {
+		endpointInterfaceId = 0
+	}
+
+	data, err := c.ExtractorService.List(uint(debugInterfaceId), uint(endpointInterfaceId))
 
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
@@ -72,24 +80,6 @@ func (c *ExtractorCtrl) Create(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: extractor, Msg: _domain.NoErr.Msg})
 }
 
-// Update 更新
-func (c *ExtractorCtrl) Update(ctx iris.Context) {
-	var extractor model.DebugInterfaceExtractor
-	err := ctx.ReadJSON(&extractor)
-	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
-		return
-	}
-
-	err = c.ExtractorService.Update(&extractor)
-	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: err.Error()})
-		return
-	}
-
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
-}
-
 // CreateOrUpdateResult 新建或更新结果
 func (c *ExtractorCtrl) CreateOrUpdateResult(ctx iris.Context) {
 	var extractor model.DebugInterfaceExtractor
@@ -100,6 +90,24 @@ func (c *ExtractorCtrl) CreateOrUpdateResult(ctx iris.Context) {
 	}
 
 	err = c.ExtractorService.CreateOrUpdateResult(&extractor, consts.InterfaceDebug)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+}
+
+// Update 更新
+func (c *ExtractorCtrl) Update(ctx iris.Context) {
+	var extractor model.DebugInterfaceExtractor
+	err := ctx.ReadJSON(&extractor)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+		return
+	}
+
+	err = c.ExtractorService.Update(&extractor)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: err.Error()})
 		return

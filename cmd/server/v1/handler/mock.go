@@ -54,7 +54,7 @@ func (c *MockCtrl) Get(ctx iris.Context) {
 }
 
 func (c *MockCtrl) Request(ctx iris.Context) {
-	var req model.Invocation
+	var req model.MockInvocation
 	err := ctx.ReadQuery(&req)
 	if err != nil {
 		logUtils.Errorf("参数获取失败", err.Error())

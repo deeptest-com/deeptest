@@ -19,7 +19,7 @@ func (r *EnvironmentRepo) List(projectId int) (pos []model.Environment, err erro
 	err = r.DB.
 		Select("id", "name").
 		Where("NOT deleted and project_id=?", projectId).
-		Order("created_at ASC").
+		Order("sort ASC").
 		Find(&pos).Error
 	return
 }
@@ -238,7 +238,7 @@ func (r *EnvironmentRepo) getCopyName(name string) (ret string) {
 	return
 }
 
-//func (r *EnvironmentRepo) ListVariableByProject(projectId uint) (vars []model.EnvironmentVar, err error) {
+//func (r *EnvironmentRepo) ListVariableByProject(projectId uint) (vars []modelRef.EnvironmentVar, err error) {
 //	environment, _ := r.GetByProject(projectId)
 //	vars, _ = r.GetVars(environment.ID)
 //

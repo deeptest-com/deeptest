@@ -2,7 +2,6 @@ package repo
 
 import (
 	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/kataras/iris/v12"
@@ -11,6 +10,7 @@ import (
 
 type TestInterfaceRepo struct {
 	*BaseRepo           `inject:""`
+	*TestInterfaceRepo  `inject:""`
 	*DebugInterfaceRepo `inject:""`
 	DB                  *gorm.DB `inject:""`
 }
@@ -50,6 +50,20 @@ func (r *TestInterfaceRepo) ListByProject(projectId, serveId uint) (pos []*model
 
 func (r *TestInterfaceRepo) Get(id uint) (po model.TestInterface, err error) {
 	err = r.DB.Where("id = ?", id).First(&po).Error
+	return
+}
+
+func (r *TestInterfaceRepo) GetDetail(interfId uint) (testInterface model.TestInterface, err error) {
+	if interfId <= 0 {
+		return
+	}
+
+	testInterface, err = r.Get(interfId)
+
+	debugInterface, _ := r.DebugInterfaceRepo.Get(testInterface.DebugInterfaceId)
+
+	testInterface.DebugData, _ = r.DebugInterfaceRepo.GetDetail(debugInterface.ID)
+
 	return
 }
 
@@ -114,7 +128,7 @@ func (r *TestInterfaceRepo) hasChild(categories []*serverDomain.TestInterface, p
 }
 
 func (r *TestInterfaceRepo) Save(po *model.TestInterface) (err error) {
-	po.Ordr = r.GetMaxOrder(po.ParentId, po.ProjectId)
+	po.Ordr = r.GetMaxOrder(po.ParentId)
 
 	err = r.DB.Save(po).Error
 
@@ -198,11 +212,11 @@ func (r *TestInterfaceRepo) UpdateOrdAndParent(node model.TestInterface) (err er
 	return
 }
 
-func (r *TestInterfaceRepo) GetMaxOrder(parentId uint, projectId uint) (order int) {
+func (r *TestInterfaceRepo) GetMaxOrder(parentId uint) (order int) {
 	node := model.TestInterface{}
 
 	err := r.DB.Model(&model.TestInterface{}).
-		Where("parent_id=? AND project_id = ?", parentId, projectId).
+		Where("parent_id=?", parentId).
 		Order("ordr DESC").
 		First(&node).Error
 
@@ -236,45 +250,7 @@ func (r *TestInterfaceRepo) SaveDebugData(interf *model.TestInterface) (err erro
 			return err
 		}
 
-		err = r.UpdateParams(interf.ID, interf.QueryParams, interf.PathParams)
-		if err != nil {
-			return err
-		}
-
-		err = r.UpdateBodyFormData(interf.ID, interf.BodyFormData)
-		if err != nil {
-			return err
-		}
-
-		err = r.UpdateBodyFormUrlencoded(interf.ID, interf.BodyFormUrlencoded)
-		if err != nil {
-			return err
-		}
-
-		err = r.UpdateHeaders(interf.ID, interf.Headers)
-		if err != nil {
-			return err
-		}
-
-		err = r.UpdateBasicAuth(interf.ID, interf.BasicAuth)
-		if err != nil {
-			return err
-		}
-
-		err = r.UpdateBearerToken(interf.ID, interf.BearerToken)
-		if err != nil {
-			return err
-		}
-
-		err = r.UpdateOAuth20(interf.ID, interf.OAuth20)
-		if err != nil {
-			return err
-		}
-
-		err = r.UpdateApiKey(interf.ID, interf.ApiKey)
-		if err != nil {
-			return err
-		}
+		// TODO: save debug data
 
 		return err
 	})
@@ -284,217 +260,16 @@ func (r *TestInterfaceRepo) SaveDebugData(interf *model.TestInterface) (err erro
 
 func (r *TestInterfaceRepo) UpdateDebugInfo(interf *model.TestInterface) (err error) {
 	values := map[string]interface{}{
-		"server_id": interf.ServerId,
-		"url":       interf.Url,
-		"method":    interf.Method,
-		"body":      interf.Body,
-		"body_type": interf.BodyType,
-
-		"authorization_type": interf.AuthorizationType,
-		"pre_request_script": interf.PreRequestScript,
-		"validation_script":  interf.ValidationScript,
-		"version":            interf.Version,
+		"server_id": interf.DebugData.ServerId,
+		"base_url":  interf.DebugData.BaseUrl,
+		"url":       interf.DebugData.Url,
+		"method":    interf.DebugData.Method,
 	}
 
 	err = r.DB.Model(&model.TestInterface{}).
 		Where("id=?", interf.ID).
 		Updates(values).
 		Error
-
-	return
-}
-
-func (r *TestInterfaceRepo) UpdateParams(id uint, queryParams, pathParams []model.TestInterfaceParam) (err error) {
-	err = r.RemoveParams(id)
-
-	var params []model.TestInterfaceParam
-
-	for _, p := range queryParams {
-
-		if p.Name == "" {
-			continue
-		}
-
-		p.ID = 0
-		p.InterfaceId = id
-		p.ParamIn = consts.ParamInQuery
-		params = append(params, p)
-	}
-
-	for _, p := range pathParams {
-		if p.Name == "" {
-			continue
-		}
-		p.ID = 0
-		p.InterfaceId = id
-		p.ParamIn = consts.ParamInPath
-		params = append(params, p)
-	}
-
-	if len(params) == 0 {
-		return
-	}
-
-	err = r.DB.Create(&params).Error
-
-	return
-}
-
-func (r *TestInterfaceRepo) RemoveParams(id uint) (err error) {
-	err = r.DB.
-		Where("interface_id = ?", id).
-		Delete(&model.TestInterfaceParam{}, "").Error
-
-	return
-}
-
-func (r *TestInterfaceRepo) UpdateBodyFormData(id uint, items []model.TestInterfaceBodyFormDataItem) (err error) {
-	err = r.RemoveBodyFormData(id)
-
-	if len(items) == 0 {
-		return
-	}
-
-	for idx, _ := range items {
-		items[idx].ID = 0
-		items[idx].InterfaceId = id
-	}
-
-	err = r.DB.Create(&items).Error
-
-	return
-}
-
-func (r *TestInterfaceRepo) RemoveBodyFormData(id uint) (err error) {
-	err = r.DB.
-		Where("interface_id = ?", id).
-		Delete(&model.TestInterfaceBodyFormDataItem{}, "").Error
-
-	return
-}
-
-func (r *TestInterfaceRepo) UpdateBodyFormUrlencoded(id uint, items []model.TestInterfaceBodyFormUrlEncodedItem) (err error) {
-	err = r.RemoveBodyFormUrlencoded(id)
-
-	if len(items) == 0 {
-		return
-	}
-
-	for idx, _ := range items {
-		items[idx].ID = 0
-		items[idx].InterfaceId = id
-	}
-
-	err = r.DB.Create(&items).Error
-
-	return
-}
-
-func (r *TestInterfaceRepo) RemoveBodyFormUrlencoded(id uint) (err error) {
-	err = r.DB.
-		Where("interface_id = ?", id).
-		Delete(&model.TestInterfaceBodyFormUrlEncodedItem{}, "").Error
-
-	return
-}
-
-func (r *TestInterfaceRepo) UpdateHeaders(id uint, headers []model.TestInterfaceHeader) (err error) {
-	err = r.RemoveHeaders(id)
-
-	if len(headers) == 0 {
-		return
-	}
-
-	for idx, _ := range headers {
-		headers[idx].ID = 0
-		headers[idx].InterfaceId = id
-	}
-
-	err = r.DB.Create(&headers).Error
-
-	return
-}
-
-func (r *TestInterfaceRepo) RemoveHeaders(id uint) (err error) {
-	err = r.DB.
-		Where("interface_id = ?", id).
-		Delete(&model.TestInterfaceHeader{}, "").Error
-
-	return
-}
-
-func (r *TestInterfaceRepo) UpdateBasicAuth(id uint, payload model.TestInterfaceBasicAuth) (err error) {
-	if err = r.RemoveBasicAuth(id); err != nil {
-		return
-	}
-
-	payload.InterfaceId = id
-	err = r.DB.Save(&payload).Error
-
-	return
-}
-
-func (r *TestInterfaceRepo) RemoveBasicAuth(id uint) (err error) {
-	err = r.DB.
-		Where("interface_id = ?", id).
-		Delete(&model.TestInterfaceBasicAuth{}, "").Error
-
-	return
-}
-
-func (r *TestInterfaceRepo) UpdateBearerToken(id uint, payload model.TestInterfaceBearerToken) (err error) {
-	if err = r.RemoveBearerToken(id); err != nil {
-		return
-	}
-
-	payload.InterfaceId = id
-	err = r.DB.Save(&payload).Error
-
-	return
-}
-
-func (r *TestInterfaceRepo) RemoveBearerToken(id uint) (err error) {
-	err = r.DB.
-		Where("interface_id = ?", id).
-		Delete(&model.TestInterfaceBearerToken{}, "").Error
-
-	return
-}
-
-func (r *TestInterfaceRepo) UpdateOAuth20(interfaceId uint, payload model.TestInterfaceOAuth20) (err error) {
-	if err = r.RemoveOAuth20(interfaceId); err != nil {
-		return
-	}
-
-	payload.InterfaceId = interfaceId
-	err = r.DB.Save(&payload).Error
-
-	return
-}
-
-func (r *TestInterfaceRepo) RemoveOAuth20(interfaceId uint) (err error) {
-	err = r.DB.
-		Where("interface_id = ?", interfaceId).
-		Delete(&model.TestInterfaceOAuth20{}).Error
-
-	return
-}
-
-func (r *TestInterfaceRepo) UpdateApiKey(id uint, payload model.TestInterfaceApiKey) (err error) {
-	if err = r.RemoveApiKey(id); err != nil {
-		return
-	}
-
-	payload.InterfaceId = id
-	err = r.DB.Save(&payload).Error
-
-	return
-}
-
-func (r *TestInterfaceRepo) RemoveApiKey(id uint) (err error) {
-	err = r.DB.
-		Where("interface_id = ?", id).
-		Delete(&model.TestInterfaceApiKey{}, "").Error
 
 	return
 }

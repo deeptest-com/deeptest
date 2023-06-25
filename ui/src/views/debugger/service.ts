@@ -51,3 +51,11 @@ export async function saveTestDebugData(interf: Interface): Promise<any> {
         data: interf,
     });
 }
+
+export async function importInterfaces(data): Promise<any> {
+    return request({
+        url: `/${apiPath}/importInterfaces`,
+        method: 'POST',
+        data: data,
+    });
+}

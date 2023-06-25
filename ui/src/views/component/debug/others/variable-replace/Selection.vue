@@ -7,27 +7,12 @@
       :footer="null"
       :onCancel="onCancel"
       width="800px"
-      height="600px"
-  >
+      height="600px">
     <div>
-      <a-row>
-        <a-col flex="100px" class="dp-border">环境变量</a-col>
-      </a-row>
-      <a-row v-for="(item, idx) in environmentData?.vars" :key="idx" type="flex">
-        <a-col flex="100px">{{item.name}}</a-col>
-        <a-col :flex="3">{{item.rightValue}}</a-col>
-
-        <a-col flex="100px">
-          <span @click="select(item)" class="dp-link-primary">选择</span>
-        </a-col>
-      </a-row>
-
-      <br/>
-
       <a-row>
         <a-col flex="100px" class="dp-border">共享变量</a-col>
       </a-row>
-      <a-row v-for="(item, idx) in validExtractorVariablesData" :key="idx" type="flex">
+      <a-row v-for="(item, idx) in debugData.shareVars" :key="idx" type="flex">
         <a-col flex="100px">{{item.name}}</a-col>
         <a-col :flex="3">{{item.rightValue==='extractor_err'? t(item.rightValue+'_short') : item.value}}</a-col>
 
@@ -35,15 +20,31 @@
           <span @click="select(item)" class="dp-link-primary">选择</span>
         </a-col>
       </a-row>
-
       <br/>
 
-      <a-row v-for="(item, idx) in validExtractorVariablesData" :key="idx" type="flex">
-        <a-col flex="100px"></a-col>
-        <a-col :flex="3" class="dp-center">
-          <a-button @click="() => onCancel()" type="primary">关闭</a-button>
+      <a-row>
+        <a-col flex="100px" class="dp-border">环境变量</a-col>
+      </a-row>
+      <a-row v-for="(item, idx) in debugData.envVars" :key="idx" type="flex">
+        <a-col flex="100px">{{item.name}}</a-col>
+        <a-col :flex="3">{{item.rightValue}}</a-col>
+
+        <a-col flex="100px">
+          <span @click="select(item)" class="dp-link-primary">选择</span>
         </a-col>
-        <a-col flex="100px"></a-col>
+      </a-row>
+      <br/>
+
+      <a-row>
+        <a-col flex="100px" class="dp-border">全局变量</a-col>
+      </a-row>
+      <a-row v-for="(item, idx) in debugData.globalVars" :key="idx" type="flex">
+        <a-col flex="100px">{{item.name}}</a-col>
+        <a-col :flex="3">{{item.rightValue}}</a-col>
+
+        <a-col flex="100px">
+          <span @click="select(item)" class="dp-link-primary">选择</span>
+        </a-col>
       </a-row>
 
     </div>
@@ -59,15 +60,13 @@ import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
 
 import {Interface} from "@/views/component/debug/data";
-import {StateType as InterfaceStateType} from "@/views/component/debug/store";
+import {StateType as DebugStateType} from "@/views/component/debug/store";
 import {StateType as EnvironmentStateType} from "@/store/environment";
 
 const { t } = useI18n();
 
-const store = useStore<{ InterfaceState: InterfaceStateType, EnvironmentState: EnvironmentStateType }>();
-const interfaceData = computed<Interface>(() => store.state.InterfaceState?.interfaceData);
-const validExtractorVariablesData = computed<any>(() => store.state.InterfaceState?.validExtractorVariablesData);
-const environmentData = computed<any>(() => store.state.EnvironmentState?.environmentData);
+const store = useStore<{ Debug: DebugStateType, EnvironmentState: EnvironmentStateType }>();
+const debugData = computed<Interface>(() => store.state.Debug?.debugData);
 
 const requestVariableVisible = ref(false)
 
@@ -89,51 +88,56 @@ const onVariableSelectionStatus = (data) => {
   requestVariableVisible.value = true
 }
 
-const select = async (item) => {
-  console.log('select', item, interfaceData.value)
+const selectMenuItem = async (item) => {
+  console.log('select', item, variableSelectionData.value, debugData.value)
+  const targetElemId = '' + variableSelectionData.value.src + variableSelectionData.value.index
 
-  if (variableSelectionData.value.src === 'body') {
-    const body = getEditorContent(item.name)
-
-    await store.dispatch('Interface/updateBody', body)
-
-  } else if (variableSelectionData.value.src === 'url') {
-    let url = interfaceData.value.url
-
-    url = getInputContent(item.name, url,
+  if (variableSelectionData.value.src.indexOf('InterfaceUrl') > -1) {
+    let url = debugData.value.url
+    url = getInputNewContent(item.name, url,
         variableSelectionData.value.data.selectionStart, variableSelectionData.value.data.selectionEnd)
 
-    store.dispatch('Interface/updateUrl', url).then((res) => {
-      console.log('res', res)
-    })
+    store.dispatch("Debug/updateUrl", url);
 
-  } else if (variableSelectionData.value.src === 'param') {
-    let param = interfaceData.value.params[variableSelectionData.value.index].value
+  } else if (variableSelectionData.value.src === 'body') {
+    const body = getEditorNewContent(item.name)
+    store.dispatch("Debug/updateBody", body);
 
-    param = getInputContent(item.name, param,
+  } else if (variableSelectionData.value.src === 'queryParam') {
+    let param = debugData.value.queryParams[variableSelectionData.value.index].value
+    param = getInputNewContent(item.name, param,
         variableSelectionData.value.data.selectionStart, variableSelectionData.value.data.selectionEnd)
 
-    await store.dispatch('Interface/updateParam', {
-      value: param,
-      index: variableSelectionData.value.index,
-    })
+    updateInput(targetElemId, param)
+
+  }  else if (variableSelectionData.value.src === 'pathParam') {
+    let param = debugData.value.pathParams[variableSelectionData.value.index].value
+    param = getInputNewContent(item.name, param,
+        variableSelectionData.value.data.selectionStart, variableSelectionData.value.data.selectionEnd)
+
+    updateInput(targetElemId, param)
 
   } else if (variableSelectionData.value.src === 'header') {
-    let header = interfaceData.value.headers[variableSelectionData.value.index].value
-
-    header = getInputContent(item.name, header,
+    let header = debugData.value.headers[variableSelectionData.value.index].value
+    header = getInputNewContent(item.name, header,
             variableSelectionData.value.data.selectionStart, variableSelectionData.value.data.selectionEnd)
 
-    await store.dispatch('Interface/updateHeader', {
-      value: header,
-      index: variableSelectionData.value.index,
-    })
+    updateInput(targetElemId, header)
+
   }
 
   requestVariableVisible.value = false
 }
 
-const getInputContent = (variName, val, start, end) => {
+const updateInput = (id, val) => {
+  const targetElem = document.getElementById(id)
+  if (targetElem) {
+    targetElem.value = val
+    targetElem.dispatchEvent(new Event('input'));
+  }
+}
+
+const getInputNewContent = (variName, val, start, end) => {
   const ret = val.substring(0, variableSelectionData.value.data.selectionStart) +
       '${' + variName + '}' +
       val.substring(variableSelectionData.value.data.selectionEnd)
@@ -141,8 +145,8 @@ const getInputContent = (variName, val, start, end) => {
   return ret
 }
 
-const getEditorContent = (variName) => {
-  console.log('getEditorContent', variName)
+const getEditorNewContent = (variName) => {
+  console.log('getEditorNewContent', variName)
 
   const docContent = variableSelectionData.value.data.docContent
   const selectContent = variableSelectionData.value.data.selectContent

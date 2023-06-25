@@ -69,14 +69,13 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setExtractor: Mutation<StateType>;
         setShareVars: Mutation<StateType>;
         setEnvVars: Mutation<StateType>;
+        setGlobalVars: Mutation<StateType>;
 
         setCheckpoints: Mutation<StateType>;
         setCheckpoint: Mutation<StateType>;
 
         setUrl: Mutation<StateType>;
         setBody: Mutation<StateType>;
-        setParam: Mutation<StateType>;
-        setHeader: Mutation<StateType>;
         setPreRequestScript: Mutation<StateType>;
     };
     actions: {
@@ -108,8 +107,6 @@ export interface ModuleType extends StoreModuleType<StateType> {
 
         updateUrl: Action<StateType, StateType>;
         updateBody: Action<StateType, StateType>;
-        updateParam: Action<StateType, StateType>;
-        updateHeader: Action<StateType, StateType>;
         addSnippet: Action<StateType, StateType>;
 
         changeServer: Action<StateType, StateType>;
@@ -155,6 +152,9 @@ const StoreModel: ModuleType = {
         setEnvVars(state, payload) {
             state.debugData.envVars = payload;
         },
+        setGlobalVars(state, payload) {
+            state.debugData.globalVars = payload;
+        },
 
         setCheckpoints(state, payload) {
             state.checkpointsData = payload;
@@ -169,13 +169,6 @@ const StoreModel: ModuleType = {
         setBody(state, payload) {
             state.debugData.body = payload;
         },
-        setParam(state, payload) {
-            state.debugData.params[payload.index].value = payload.value;
-        },
-        setHeader(state, payload) {
-            console.log('setParam', payload)
-            state.debugData.headers[payload.index].value = payload.value;
-        },
         setPreRequestScript(state, payload) {
             console.log('setPreRequestScript', payload)
             state.debugData.preRequestScript = payload;
@@ -188,10 +181,12 @@ const StoreModel: ModuleType = {
                 await dispatch('loadData', data)
 
                 dispatch('getLastInvocationResp', {
+                    debugInterfaceId: state.debugInfo.debugInterfaceId,
                     endpointInterfaceId: state.debugInfo.endpointInterfaceId,
                     testInterfaceId: state.debugInfo.testInterfaceId,
                 })
                 dispatch('listInvocation', {
+                    debugInterfaceId: state.debugInfo.debugInterfaceId,
                     endpointInterfaceId: state.debugInfo.endpointInterfaceId,
                     testInterfaceId: state.debugInfo.testInterfaceId,
                 })
@@ -207,19 +202,21 @@ const StoreModel: ModuleType = {
             commit('setInvocations', []);
         },
 
-        async loadData({commit, dispatch}, data) {
+        async loadData({commit, state, dispatch}, data) {
             try {
+                const resp: ResponseData = await loadData(data);
+                if (resp.code != 0) return false;
+
                 await commit('setDebugInfo', {
+                    debugInterfaceId: resp.data.debugInterfaceId,
                     endpointInterfaceId: data.endpointInterfaceId,
                     scenarioProcessorId  : data.scenarioProcessorId,
                     testInterfaceId  : data.testInterfaceId,
                     usedBy:          data.usedBy,
                 } as DebugInfo);
+                console.log('set debugInfo', state.debugInfo)
 
-                const resp: ResponseData = await loadData(data);
-                if (resp.code != 0) return false;
-
-                commit('setDebugData', resp.data);
+                await commit('setDebugData', resp.data);
 
                 return true;
             } catch (error) {
@@ -243,9 +240,9 @@ const StoreModel: ModuleType = {
             if (response.code === 0) {
                 commit('setResponse', response.data);
 
-                dispatch('listInvocation', {
-                    endpointInterfaceId: state.debugInfo.endpointInterfaceId,
-                });
+                dispatch('getLastInvocationResp')
+                dispatch('listInvocation')
+
                 dispatch('listShareVar');
 
                 dispatch('listExtractor');
@@ -257,9 +254,14 @@ const StoreModel: ModuleType = {
             }
         },
 
-        async listInvocation({commit}, info: any) {
+        // invocation
+        async listInvocation({commit, state}) {
             try {
-                const resp = await listInvocation(info);
+                const resp = await listInvocation({
+                    debugInterfaceId: state.debugInfo.debugInterfaceId,
+                    endpointInterfaceId: state.debugInfo.endpointInterfaceId,
+                    testInterfaceId: state.debugInfo.testInterfaceId,
+                } as DebugInfo);
                 const {data} = resp;
                 commit('setInvocations', data);
                 return true;
@@ -267,8 +269,12 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
-        async getLastInvocationResp({commit, dispatch, state}, payload: any) {
-            const response = await getLastInvocationResp(payload);
+        async getLastInvocationResp({commit, dispatch, state}) {
+            const response = await getLastInvocationResp( {
+                debugInterfaceId: state.debugInfo.debugInterfaceId,
+                endpointInterfaceId: state.debugInfo.endpointInterfaceId,
+                testInterfaceId: state.debugInfo.testInterfaceId,
+            } as DebugInfo);
 
             const {data} = response;
 
@@ -302,7 +308,7 @@ const StoreModel: ModuleType = {
         // extractor
         async listExtractor({commit, dispatch, state}) {
             try {
-                const resp = await listExtractor(state.debugInfo.endpointInterfaceId);
+                const resp = await listExtractor(state.debugInfo.debugInterfaceId, state.debugInfo.endpointInterfaceId);
                 const {data} = resp;
                 commit('setExtractors', data);
                 return true;
@@ -351,6 +357,49 @@ const StoreModel: ModuleType = {
             }
         },
 
+        // checkpoint
+        async listCheckpoint({commit, state}) {
+            try {
+                const resp = await listCheckpoint(state.debugInfo.debugInterfaceId, state.debugData.endpointInterfaceId);
+                const {data} = resp;
+                commit('setCheckpoints', data);
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+        async getCheckpoint({commit}, id: number) {
+            try {
+                const response = await getCheckpoint(id);
+                const {data} = response;
+
+                commit('setCheckpoint', data);
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+        async saveCheckpoint({commit, dispatch, state}, payload: any) {
+            try {
+                await saveCheckpoint(payload);
+                dispatch('listCheckpoint', UsedBy.InterfaceDebug);
+                return true
+            } catch (error) {
+                return false;
+            }
+        },
+        async removeCheckpoint({commit, dispatch, state}, id: number) {
+            try {
+                await removeCheckpoint(id);
+
+                dispatch('listCheckpoint', UsedBy.InterfaceDebug);
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+
+
         // shared variable
         async listShareVar({commit, dispatch, state}) {
             try {
@@ -393,63 +442,12 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
-
-        // checkpoint
-        async listCheckpoint({commit, state}) {
-            try {
-                const resp = await listCheckpoint(state.debugData.endpointInterfaceId);
-                const {data} = resp;
-                commit('setCheckpoints', data);
-                return true;
-            } catch (error) {
-                return false;
-            }
-        },
-        async getCheckpoint({commit}, id: number) {
-            try {
-                const response = await getCheckpoint(id);
-                const {data} = response;
-
-                commit('setCheckpoint', data);
-                return true;
-            } catch (error) {
-                return false;
-            }
-        },
-        async saveCheckpoint({commit, dispatch, state}, payload: any) {
-            try {
-                await saveCheckpoint(payload);
-                dispatch('listCheckpoint', UsedBy.InterfaceDebug);
-                return true
-            } catch (error) {
-                return false;
-            }
-        },
-        async removeCheckpoint({commit, dispatch, state}, id: number) {
-            try {
-                await removeCheckpoint(id);
-
-                dispatch('listCheckpoint', UsedBy.InterfaceDebug);
-                return true;
-            } catch (error) {
-                return false;
-            }
-        },
-
-        async updateUrl({commit, dispatch, state}, url: string) {
-            commit('setUrl', url);
+        async updateUrl({commit, dispatch, state}, body: string) {
+            commit('setUrl', body);
             return true;
         },
         async updateBody({commit, dispatch, state}, body: string) {
             commit('setBody', body);
-            return true;
-        },
-        async updateParam({commit, dispatch, state}, data: any) {
-            commit('setParam', data);
-            return true;
-        },
-        async updateHeader({commit, dispatch, state}, data: any) {
-            commit('setHeader', data);
             return true;
         },
         async addSnippet({commit, dispatch, state}, name: string) {

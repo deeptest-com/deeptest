@@ -20,7 +20,7 @@
           </a-input>
         </a-form-item>
 
-        <a-form-item label="变量" v-bind="validateInfos.variable">
+        <a-form-item label="变量名称" v-bind="validateInfos.variable">
           <a-input-group compact>
             <a-input v-model:value="modelRef.variable"
                      @change="onVarChanged"
@@ -34,7 +34,7 @@
                 选择变量
               </a-select-option>
 
-              <a-select-option v-for="(item, idx) in validExtractorVariablesData"
+              <a-select-option v-for="(item, idx) in debugData.shareVars"
                                :key="idx"
                                :value="item.id + '-' + item.name">
                 {{item.name}}
@@ -45,9 +45,8 @@
 
         <a-form-item label="变量作用域">
           <a-radio-group v-model:value="modelRef.scope">
-            <!--              <a-radio value="private">私有</a-radio>-->
-            <a-radio :value="VarScope.ScopePrivate">局部</a-radio>
-            <a-radio :value="VarScope.ScopePublic">全局</a-radio>
+            <a-radio value="public">公有</a-radio>
+            <a-radio value="private">私有</a-radio>
           </a-radio-group>
           <div class="dp-input-tip">
             局部变量在整个接口设计器及其诞生的场景目录下有效。
@@ -71,14 +70,20 @@
 </template>
 
 <script setup lang="ts">
-import {defineProps, onMounted, reactive, ref, Ref, computed} from "vue";
+import {defineProps, onMounted, reactive, ref, Ref, computed, inject} from "vue";
 import {Form} from 'ant-design-vue';
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
-import {VarScope} from "@/utils/enum";
+import {UsedBy, VarScope} from "@/utils/enum";
 import {StateType as DebugStateType} from "@/views/component/debug/store";
 import {StateType as EnvironmentStateType} from "@/store/environment";
+
 const useForm = Form.useForm;
+const usedBy = inject('usedBy') as UsedBy
+const { t } = useI18n();
+
+const store = useStore<{ Debug: DebugStateType, Environment: EnvironmentStateType }>();
+const debugData = computed<any>(() => store.state.Debug.debugData);
 
 const props = defineProps({
   interfaceId:{
@@ -112,18 +117,13 @@ const props = defineProps({
   }
 });
 
-const { t } = useI18n();
-
-const store = useStore<{ Debug: DebugStateType, Environment: EnvironmentStateType }>();
-const debugData = computed<any>(() => store.state.Debug.debugData);
-const validExtractorVariablesData = computed(() => store.state.Debug.validExtractorVariablesData);
-
 const modelRef = ref<any>({
   expression: props.expr,
   expressionType: props.exprType,
   variable: '',
-  scope: VarScope.ScopePrivate,
   code: '',
+  scope: VarScope.ScopePublic,
+  usedBy: usedBy,
 })
 
 const onVarChanged = (e) => {
@@ -137,8 +137,8 @@ const onVarChanged = (e) => {
   }
 
   let found = false
-  for (let i in validExtractorVariablesData.value) {
-    const item = validExtractorVariablesData.value[i]
+  for (let i in debugData.value.shareVars) {
+    const item = debugData.value.shareVars[i]
 
     if (value === item.name) {
       modelRef.value.code = item.id + '-' + item.name

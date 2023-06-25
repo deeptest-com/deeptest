@@ -66,6 +66,16 @@ func (r *EndpointInterfaceRepo) ListByProject(projectId int) (pos []*model.Endpo
 		Find(&pos).Error
 	return
 }
+func (r *EndpointInterfaceRepo) ListIdByEndpoint(endpointId uint) (ids []uint, err error) {
+	err = r.DB.
+		Model(model.EndpointInterface{}).
+		Select("id").
+		Where("endpoint_id=?", endpointId).
+		Where("NOT deleted").
+		Find(&ids).Error
+
+	return
+}
 
 func (r *EndpointInterfaceRepo) Get(interfaceId uint) (field model.EndpointInterface, err error) {
 	err = r.DB.
@@ -88,6 +98,14 @@ func (r *EndpointInterfaceRepo) GetDetail(interfId uint) (interf model.EndpointI
 
 func (r *EndpointInterfaceRepo) Save(interf *model.EndpointInterface) (err error) {
 	err = r.DB.Save(interf).Error
+	return
+}
+
+func (r *EndpointInterfaceRepo) SetDebugInterfaceId(endpointInterfaceId, debugInterfaceId uint) (err error) {
+	err = r.DB.Model(&model.EndpointInterface{}).
+		Where("id = ?", endpointInterfaceId).
+		Update("debug_interface_id", debugInterfaceId).Error
+
 	return
 }
 
@@ -214,7 +232,7 @@ func (r *EndpointInterfaceRepo) Delete(id uint) (err error) {
 		Update("deleted", true).
 		Error
 
-	//field := model.UsedByInterface{}
+	//field := modelRef.UsedByInterface{}
 	//field.ID = id
 	//err = r.DB.Remove(field).SendErrorMsg
 

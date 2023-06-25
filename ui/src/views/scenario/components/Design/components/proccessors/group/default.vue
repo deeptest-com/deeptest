@@ -18,7 +18,7 @@
 
             <a-row v-if="editMap.name" type="flex">
               <a-col flex="1">
-                <a-input v-model:value="modelRef.name" />
+                <a-input v-modelRef:value="modelRef.name" />
               </a-col>
 
               <a-col flex="16px" />

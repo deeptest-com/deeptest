@@ -9,6 +9,7 @@
       :headerStyle="{position:'sticky',top:0,zIndex:9999}"
       :bodyStyle="{padding:0,minHeight:'100vh'}"
       @close="onCloseDrawer">
+
     <!-- 头部信息  -->
     <template #title>
       <a-row type="flex" style="align-items: center;width: 100%">

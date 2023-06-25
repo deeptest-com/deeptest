@@ -83,6 +83,7 @@ import {useStore} from "vuex";
 import {StateType as ProjectStateType} from "@/store/project";
 import {setSelectedKey} from "@/utils/cache";
 import {StateType as PlanStateType} from "@/views/plan/store";
+import {filterTree} from "@/utils/tree";
 
 const store = useStore<{ Plan: PlanStateType, ProjectGlobal: ProjectStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
@@ -100,7 +101,7 @@ const props = defineProps({
   },
 })
 const searchValue = ref('');
-const expandedKeys = ref<string[]>([]);
+const expandedKeys = ref<number[]>([]);
 const autoExpandParent = ref<boolean>(false);
 const treeData: any = computed(() => {
   const data = treeDataCategory.value;
@@ -151,52 +152,12 @@ watch(() => {
   immediate: true
 })
 
-watch(
-    () => {
-      return searchValue.value
-    },
-    (newVal) => {
-      // 打平树形结构
-      function flattenTree(tree) {
-        const nodes: Array<any> = [];
+watch(searchValue, (newVal) => {
+  expandedKeys.value = filterTree(treeData.value, newVal)
+  autoExpandParent.value = true;
+});
 
-        function traverse(node) {
-          nodes.push(node);
-          if (node.children) {
-            node.children.forEach(traverse);
-          }
-        }
-
-        traverse(tree);
-        return nodes;
-      }
-
-      const flattenTreeList = flattenTree(treeData.value[0]);
-
-      function findParentIds(nodeId, tree) {
-        let current: any = tree.find(node => node.id === nodeId);
-        let parentIds: Array<string> = [];
-        while (current && current.parentId) {
-          parentIds.unshift(current.parentId); // unshift 方法可以将新元素添加到数组的开头
-          current = tree.find(node => node.id === current.parentId);
-        }
-        return parentIds;
-      }
-
-      let parentKeys: any = [];
-      for (let i = 0; i < flattenTreeList.length; i++) {
-        let node = flattenTreeList[i];
-        if (node.title.includes(newVal)) {
-          parentKeys.push(node.parentId);
-          parentKeys = parentKeys.concat(findParentIds(node.parentId, flattenTreeList));
-        }
-      }
-      parentKeys = [...new Set(parentKeys)];
-      expandedKeys.value = parentKeys;
-      autoExpandParent.value = true;
-    });
-
-const onExpand = (keys: string[]) => {
+const onExpand = (keys: number[]) => {
   expandedKeys.value = keys;
   autoExpandParent.value = false;
 };

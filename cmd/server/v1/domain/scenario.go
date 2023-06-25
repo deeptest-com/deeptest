@@ -23,6 +23,11 @@ type ScenarioAddInterfacesReq struct {
 	TargetId     uint  `json:"targetId"`
 	CreateBy     uint  `json:"createBy"`
 }
+type ScenarioAddInterfacesFromTreeReq struct {
+	SelectedNodes []TestInterface `json:"selectedNodes"`
+	TargetId      uint            `json:"targetId"`
+	CreateBy      uint            `json:"createBy"`
+}
 
 type ScenarioAddScenarioReq struct {
 	Name              string                   `json:"name"`

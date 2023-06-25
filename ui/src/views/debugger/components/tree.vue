@@ -54,6 +54,9 @@
                           <a-menu-item v-if="nodeProps.dataRef.id !== -1" key="1" @click="deleteNode(nodeProps.dataRef)">
                             {{'删除' + (nodeProps.dataRef.type === 'interface' ? '接口' : '目录')}}
                           </a-menu-item>
+                          <a-menu-item v-if="nodeProps.dataRef.type === 'dir'" key="0" @click="importInterfaces(nodeProps.dataRef)">
+                             导入接口
+                          </a-menu-item>
                         </a-menu>
                       </template>
                     </a-dropdown>
@@ -66,12 +69,19 @@
       </div>
     </div>
 
-    <!--  创建接口 Tag  -->
+    <!--  编辑接口弹窗  -->
     <EditModal
         v-if="currentNode"
         :nodeInfo="currentNode"
         @ok="handleModalOk"
-        @cancel="handleModalCancel"/>
+        @cancel="handleModalCancel" />
+
+    <!--  导入接口弹窗  -->
+    <InterfaceSelectionFromDefine
+        v-if="interfaceSelectionVisible"
+        :onFinish="interfaceSelectionFinish"
+        :onCancel="interfaceSelectionCancel" />
+
   </div>
 </template>
 
@@ -88,13 +98,16 @@ import {
 import {message, Modal} from 'ant-design-vue';
 import {DropEvent} from 'ant-design-vue/es/tree/Tree';
 import {useStore} from "vuex";
-import {setSelectedKey} from "@/utils/cache";
-
-import EditModal from './edit.vue'
+import {setExpandedKeys, setSelectedKey} from "@/utils/cache";
 
 import {StateType as ProjectStateType} from "@/store/project";
 import {StateType as TestInterfaceStateType} from '../store';
 import {StateType as ServeStateType} from "@/store/serve";
+
+import {expandOneKey} from "@/services/tree";
+import EditModal from './edit.vue'
+import InterfaceSelectionFromDefine from "@/views/component/InterfaceSelectionFromDefine/main.vue";
+import {filterTree} from "@/utils/tree";
 
 const store = useStore<{ TestInterface: TestInterfaceStateType, ProjectGlobal: ProjectStateType, ServeGlobal: ServeStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
@@ -112,7 +125,7 @@ const props = defineProps({
 
 const replaceFields = {key: 'id'};
 const searchValue = ref('');
-const expandedKeys = ref<string[]>([]);
+const expandedKeys = ref<number[]>([]);
 const autoExpandParent = ref<boolean>(false);
 
 async function loadTreeData() {
@@ -144,48 +157,11 @@ watch((currServe), async (newVal) => {
 })
 
 watch(searchValue, (newVal) => {
-  if (!treeData.value) return
-      // 打平树形结构
-      function flattenTree(tree) {
-        const nodes: Array<any> = [];
+  expandedKeys.value = filterTree(treeData.value, newVal)
+  autoExpandParent.value = true;
+});
 
-        function traverse(node) {
-          nodes.push(node);
-          if (node.children) {
-            node.children.forEach(traverse);
-          }
-        }
-
-        traverse(tree);
-        return nodes;
-      }
-
-      const flattenTreeList = flattenTree(treeData.value[0]);
-
-      function findParentIds(nodeId, tree) {
-        let current: any = tree.find(node => node.id === nodeId);
-        let parentIds: Array<string> = [];
-        while (current && current.parentId) {
-          parentIds.unshift(current.parentId); // unshift 方法可以将新元素添加到数组的开头
-          current = tree.find(node => node.id === current.parentId);
-        }
-        return parentIds;
-      }
-
-      let parentKeys: any = [];
-      for (let i = 0; i < flattenTreeList.length; i++) {
-        let node = flattenTreeList[i];
-        if (node.title.includes(newVal)) {
-          parentKeys.push(node.parentId);
-          parentKeys = parentKeys.concat(findParentIds(node.parentId, flattenTreeList));
-        }
-      }
-      parentKeys = [...new Set(parentKeys)];
-      expandedKeys.value = parentKeys;
-      autoExpandParent.value = true;
-    });
-
-const onExpand = (keys: string[]) => {
+const onExpand = (keys: number[]) => {
   expandedKeys.value = keys;
   autoExpandParent.value = false;
 };
@@ -214,11 +190,18 @@ let selectedKeys = ref<number[]>([]);
 const emit = defineEmits(['select']);
 
 function selectNode(keys, e) {
-  console.log('selectNode', keys, e.node.dataRef)
-  selectedKeys.value = keys;
+  console.log('selectNode', keys, treeDataMap.value)
+
+  if (keys.length === 0 && e) {
+    selectedKeys.value = [e.node.dataRef.id] // un-select
+    return
+  } else {
+    selectedKeys.value = keys
+  }
   setSelectedKey('test-interface', currProject.value.id, selectedKeys.value[0])
 
-  store.dispatch('TestInterface/openInterfaceTab', e.node.dataRef);
+  const selectedItem = treeDataMap.value[selectedKeys.value[0]]
+  store.dispatch('TestInterface/openInterfaceTab', selectedItem);
 }
 
 const currentNode = ref(null as any);
@@ -269,7 +252,35 @@ async function handleModalOk(model) {
 
 function handleModalCancel() {
   console.log('handleModalCancel')
-  currentNode.value = null
+}
+
+// import interfaces
+const interfaceSelectionVisible = ref(false)
+const importTarget = ref(null as any)
+const importInterfaces = (target) => {
+  console.log('importInterfaces', target)
+
+  importTarget.value = target
+  interfaceSelectionVisible.value = true
+}
+const interfaceSelectionFinish = (interfaceIds) => {
+  console.log('interfaceSelectionFinish', interfaceIds, importTarget.value)
+
+  store.dispatch('TestInterface/importInterfaces', {
+    interfaceIds: interfaceIds,
+    targetId: importTarget.value.id,
+  }).then((newNode) => {
+    console.log('importInterfaces successfully', newNode)
+
+    interfaceSelectionVisible.value = false
+    selectNode([newNode.id], null)
+    expandOneKey(treeDataMap.value, newNode.parentId, expandedKeys.value) // expend new node
+    setExpandedKeys('scenario', treeData.value[0].scenarioId, expandedKeys.value)
+  })
+}
+function interfaceSelectionCancel() {
+  console.log('handleModalCancel')
+  interfaceSelectionVisible.value = false
 }
 
 async function onDrop(info: DropEvent) {

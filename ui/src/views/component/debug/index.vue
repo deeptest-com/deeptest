@@ -12,7 +12,7 @@
       <InterfaceResponse v-if="debugData.method" />
     </div>
 
-    <RequestVariable/>
+    <VariableSelection/>
   </div>
 </template>
 
@@ -27,7 +27,7 @@ import {StateType as Endpoint} from "../../endpoint/store";
 
 import InterfaceRequest from './request/Index.vue';
 import InterfaceResponse from './response/Index.vue';
-import RequestVariable from '@/components/Editor/RequestVariable.vue';
+import VariableSelection from './others/variable-replace/Selection.vue';
 
 const {t} = useI18n();
 const store = useStore<{  Debug: Debug, ProjectGlobal: ProjectGlobal, Endpoint: Endpoint }>();

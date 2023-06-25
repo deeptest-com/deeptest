@@ -22,6 +22,7 @@ func (m *TestInterfaceModule) Party() module.WebModule {
 		index.Put("/", m.TestInterfaceCtrl.Update).Name = "更新测试接口"
 		index.Delete("/{id:uint}", m.TestInterfaceCtrl.Delete).Name = "删除测试接口"
 		index.Post("/move", m.TestInterfaceCtrl.Move).Name = "移动节点"
+		index.Post("/importInterfaces", m.TestInterfaceCtrl.ImportInterfaces).Name = "导入接口"
 
 		index.Post("/saveDebugData", m.TestInterfaceCtrl.SaveDebugData).Name = "保存测试调试接口"
 	}

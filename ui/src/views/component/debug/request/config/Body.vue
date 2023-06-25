@@ -106,23 +106,8 @@ const editorChange = (newScriptCode) => {
 
 const replaceRequest = (data) => {
   console.log('replaceRequest', data)
-  bus.emit(settings.eventVariableSelectionStatus, {src: 'body', data: data});
+  bus.emit(settings.eventVariableSelectionStatus, {src: 'body', index: 0, data: data});
 }
-
-onMounted(() => {
-  console.log('onMounted')
-  // bus.on(settings.eventVariableSelectionResult, onVariableSelectionResult);
-})
-onUnmounted(() => {
-  // bus.off(settings.eventVariableSelectionResult, onVariableSelectionResult);
-})
-
-// const onVariableSelectionResult = (result) => {
-//   console.log('onVariableSelectionResult', result.src, result.item)
-//   if (result.src === 'body') {
-//     console.log('for body',)
-//   }
-// }
 
 </script>
 

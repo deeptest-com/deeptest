@@ -13,11 +13,10 @@ import (
 )
 
 type EndpointRepo struct {
-	*BaseRepo              `inject:""`
-	EndpointInterfaceRepo  *EndpointInterfaceRepo  `inject:""`
-	ServeRepo              *ServeRepo              `inject:""`
-	ProcessorInterfaceRepo *ProcessorInterfaceRepo `inject:""`
-	ProjectRepo            *ProjectRepo            `inject:""`
+	*BaseRepo             `inject:""`
+	EndpointInterfaceRepo *EndpointInterfaceRepo `inject:""`
+	ServeRepo             *ServeRepo             `inject:""`
+	ProjectRepo           *ProjectRepo           `inject:""`
 }
 
 func NewEndpointRepo() *EndpointRepo {
@@ -25,7 +24,7 @@ func NewEndpointRepo() *EndpointRepo {
 }
 
 func (r *EndpointRepo) Paginate(req v1.EndpointReqPaginate) (ret _domain.PageData, err error) {
-	//fmt.Println(r.DB.Model(&model.SysUser{}))
+	//fmt.Println(r.DB.Model(&modelRef.SysUser{}))
 	//err = r.DB.Where("id=?", id).Where("name=?", name).Find(&res).Error
 	var count int64
 	db := r.DB.Model(&model.Endpoint{}).Where("project_id = ? AND NOT deleted AND NOT disabled", req.ProjectId)
@@ -359,5 +358,15 @@ func (r *EndpointRepo) GetByEndpoints(endpoints []*model.Endpoint) {
 
 func (r *EndpointRepo) GetPathParams(endpointIds []uint) (err error, pathParams model.EndpointPathParam) {
 	err = r.DB.Find(&pathParams, "not disabled and not deleted and endpoint_id in ?", endpointIds).Error
+	return
+}
+
+func (r *EndpointRepo) GetUsedCountByEndpointId(endpointId uint) (count int64, err error) {
+	endpointInterfaceIds, _ := r.EndpointInterfaceRepo.ListIdByEndpoint(endpointId)
+
+	err = r.DB.Model(&model.Processor{}).
+		Where("NOT deleted and endpoint_interface_id IN (?)", endpointInterfaceIds).
+		Count(&count).Error
+
 	return
 }

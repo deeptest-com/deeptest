@@ -1,21 +1,23 @@
 <template>
-
   <a-modal
-    title="请选择接口"
-    :destroy-on-close="true"
-    :mask-closable="false"
-    :visible="true"
-    :onCancel="onCancel"
-    wrapClassName="modal-tree-selection"
-    width="1000px">
+      title="请选择接口"
+      :destroy-on-close="true"
+      :mask-closable="false"
+      :visible="true"
+      :onCancel="onCancel"
+      wrapClassName="modal-tree-selection"
+      width="1000px">
+
     <div class="interface-selection-main">
       <div class="left tree">
         <Tree :selectCategory="selectCategory"/>
       </div>
+
       <div class="right">
-        <List :selectInterface="onSelectInterface"></List>
+        <List :selectInterfaces="onSelectInterfaces"></List>
       </div>
     </div>
+
     <template #footer>
       <a-button @click="onCancel">取消</a-button>
       <a-button @click="onSubmit" type="primary">确定</a-button>
@@ -24,8 +26,7 @@
 </template>
 
 <script setup lang="ts">
-import {defineProps, ref, watch} from "vue";
-import {listServe} from "@/services/serve";
+import {defineProps, ref} from "vue";
 
 import Tree from "./tree.vue"
 import List from "./list.vue"
@@ -49,8 +50,8 @@ const selectCategory = async (id) => {
   categoryId.value = id;
 }
 
-const onSelectInterface = async (ids) => {
-  console.log('onSelectInterface', ids)
+const onSelectInterfaces = async (ids) => {
+  console.log('onSelectInterfaces', ids)
   interfaceIds.value = ids
 }
 
@@ -77,9 +78,11 @@ const onCancel = () => {
 <style lang="less" scoped>
 .interface-selection-main {
   display: flex;
+
   .left {
     width: 260px;
   }
+
   .right {
     flex: 1;
     margin-left: 16px;

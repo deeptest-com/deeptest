@@ -9,13 +9,12 @@ import (
 )
 
 type ScenarioProcessorService struct {
-	ScenarioProcessorRepo *repo.ScenarioProcessorRepo  `inject:""`
-	ScenarioInterfaceRepo *repo.ProcessorInterfaceRepo `inject:""`
-	EndpointInterfaceRepo *repo.EndpointInterfaceRepo  `inject:""`
-	ExtractorRepo         *repo.ExtractorRepo          `inject:""`
-	CheckpointRepo        *repo.CheckpointRepo         `inject:""`
-	DebugInterfaceRepo    *repo.DebugInterfaceRepo     `inject:""`
-	ServeServerRepo       *repo.ServeServerRepo        `inject:""`
+	ScenarioProcessorRepo *repo.ScenarioProcessorRepo `inject:""`
+	EndpointInterfaceRepo *repo.EndpointInterfaceRepo `inject:""`
+	ExtractorRepo         *repo.ExtractorRepo         `inject:""`
+	CheckpointRepo        *repo.CheckpointRepo        `inject:""`
+	DebugInterfaceRepo    *repo.DebugInterfaceRepo    `inject:""`
+	ServeServerRepo       *repo.ServeServerRepo       `inject:""`
 
 	ExtractorService         *ExtractorService         `inject:""`
 	CheckpointService        *CheckpointService        `inject:""`
@@ -88,7 +87,7 @@ func (s *ScenarioProcessorService) GetEntityTo(processorTo *agentExec.Processor)
 
 	switch processor.EntityCategory {
 	case consts.ProcessorInterface:
-		debugData, _ := s.ScenarioInterfaceService.GetScenarioInterface(processor.EndpointInterfaceId)
+		debugData, _ := s.DebugInterfaceService.GetDetail(processor.EntityId)
 
 		interfaceEntity := agentExec.ProcessorInterface{}
 		copier.CopyWithOption(&interfaceEntity, debugData, copier.Option{DeepCopy: true})
@@ -101,8 +100,8 @@ func (s *ScenarioProcessorService) GetEntityTo(processorTo *agentExec.Processor)
 		interfaceEntity.ProcessorCategory = consts.ProcessorInterface
 		interfaceEntity.ProcessorType = consts.ProcessorInterfaceDefault
 
-		interfaceEntity.Extractors, _ = s.ExtractorRepo.ListTo(interfaceEntity.ID)
-		interfaceEntity.Checkpoints, _ = s.CheckpointRepo.ListTo(interfaceEntity.ID)
+		interfaceEntity.Extractors, _ = s.ExtractorRepo.ListTo(processor.EntityId, interfaceEntity.ID)
+		interfaceEntity.Checkpoints, _ = s.CheckpointRepo.ListTo(processor.EntityId, interfaceEntity.ID)
 
 		ret = &interfaceEntity
 
@@ -168,7 +167,7 @@ func (s *ScenarioProcessorService) GetEntityTo(processorTo *agentExec.Processor)
 	return
 }
 
-//func (s *ScenarioProcessorService) CloneInterface(interfaceId uint, processor model.Processor) (ret model.ProcessorInterface, err error) {
+//func (s *ScenarioProcessorService) CloneInterface(interfaceId uint, processor modelRef.Processor) (ret modelRef.ProcessorInterface, err error) {
 //	interf, err := s.EndpointInterfaceRepo.GetDetail(interfaceId)
 //	if err != nil {
 //		return
@@ -189,16 +188,16 @@ func (s *ScenarioProcessorService) GetEntityTo(processorTo *agentExec.Processor)
 //	return
 //}
 //
-//func (s *ScenarioProcessorService) CopyExtractors(interfaceId, processorInterfaceId uint, processor model.Processor) {
+//func (s *ScenarioProcessorService) CopyExtractors(interfaceId, processorInterfaceId uint, processor modelRef.Processor) {
 //	pos, _ := s.ExtractorService.Index(interfaceId, consts.InterfaceDebug)
 //
 //	for _, po := range pos {
-//		extractor := model.DebugInterfaceExtractor{}
+//		extractor := modelRef.DebugInterfaceExtractor{}
 //
 //		copier.CopyWithOption(&extractor, po, copier.Option{DeepCopy: true})
 //		extractor.ID = 0
 //		extractor.UsedBy = consts.ScenarioDebug
-//		extractor.InterfaceId = processorInterfaceId
+//		extractor.EndpointInterfaceId = processorInterfaceId
 //		extractor.ScenarioId = processor.ScenarioId
 //
 //		s.ExtractorRepo.SaveDebugData(&extractor)
@@ -207,16 +206,16 @@ func (s *ScenarioProcessorService) GetEntityTo(processorTo *agentExec.Processor)
 //	return
 //}
 //
-//func (s *ScenarioProcessorService) CopyCheckpoints(interfaceId, processorInterfaceId uint, processor model.Processor) {
+//func (s *ScenarioProcessorService) CopyCheckpoints(interfaceId, processorInterfaceId uint, processor modelRef.Processor) {
 //	pos, _ := s.CheckpointService.Index(interfaceId, consts.InterfaceDebug)
 //
 //	for _, po := range pos {
-//		checkpoint := model.InterfaceCheckpoint{}
+//		checkpoint := modelRef.InterfaceCheckpoint{}
 //
 //		copier.CopyWithOption(&checkpoint, po, copier.Option{DeepCopy: true})
 //		checkpoint.ID = 0
 //		checkpoint.UsedBy = consts.ScenarioDebug
-//		checkpoint.InterfaceId = processorInterfaceId
+//		checkpoint.EndpointInterfaceId = processorInterfaceId
 //		checkpoint.ScenarioId = processor.ScenarioId
 //
 //		s.CheckpointRepo.SaveDebugData(&checkpoint)

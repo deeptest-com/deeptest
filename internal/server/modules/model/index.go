@@ -35,20 +35,10 @@ var (
 		&DebugInterfaceCheckpoint{},
 
 		&TestInterface{},
-		&TestInterfaceParam{},
-		&TestInterfaceBodyFormDataItem{},
-		&TestInterfaceBodyFormUrlEncodedItem{},
-		&TestInterfaceHeader{},
-		&TestInterfaceBasicAuth{},
-		&TestInterfaceBearerToken{},
-		&TestInterfaceOAuth20{},
-		&TestInterfaceApiKey{},
-		&TestInterfaceExtractor{},
-		&TestInterfaceCheckpoint{},
 
 		&Snippet{},
 
-		&Invocation{},
+		&MockInvocation{},
 		&Auth2Token{},
 
 		&Category{},
@@ -70,17 +60,6 @@ var (
 		&ProcessorCookie{},
 		&ProcessorExtractor{},
 
-		&ProcessorInterface{},
-		&ProcessorInterfaceParam{},
-		&ProcessorInterfaceBodyFormDataItem{},
-		&ProcessorInterfaceBodyFormUrlEncodedItem{},
-		&ProcessorInterfaceHeader{},
-		&ProcessorInterfaceBasicAuth{},
-		&ProcessorInterfaceBearerToken{},
-		&ProcessorInterfaceOAuth20{},
-		&ProcessorInterfaceApiKey{},
-
-		&ProcessorInvocation{},
 		&ScenarioReport{},
 		&PlanReport{},
 		&ExecLogProcessor{},
@@ -122,18 +101,5 @@ var (
 		&ProjectMenu{},
 		&ProjectRecentlyVisited{},
 		&ProjectMemberAudit{},
-
-		&ScenarioInterface{},
-		&ScenarioInterfaceParam{},
-		&ScenarioInterfaceBodyFormDataItem{},
-		&ScenarioInterfaceBodyFormUrlEncodedItem{},
-		&ScenarioInterfaceHeader{},
-		&ScenarioInterfaceCookie{},
-		&ScenarioInterfaceBasicAuth{},
-		&ScenarioInterfaceBearerToken{},
-		&ScenarioInterfaceOAuth20{},
-		&ScenarioInterfaceApiKey{},
-		&ScenarioInterfaceExtractor{},
-		&ScenarioInterfaceCheckpoint{},
 	}
 )

@@ -6,7 +6,7 @@
           <a-col flex="80px">
             <a-select class="select-env"
                       :options="methods"
-                      v-model:value="method"
+                      v-model:value="debugData.method"
                       @change="changeMethod">
             </a-select>
           </a-col>
@@ -75,7 +75,6 @@ const store = useStore<{ TestInterface: TestInterfaceStateType, Debug: DebugStat
 const debugData = computed<any>(() => store.state.Debug.debugData);
 const serveServers: any = computed(() => store.state.TestInterface.serveServers);
 
-const method = ref('GET')
 const methods = getArrSelectItems(Methods)
 
 const getEnvUrl = () => {
@@ -98,10 +97,6 @@ watch((serveServers), async (newVal) => {
   console.log('watch serveServers', serveServers?.value)
   getEnvUrl()
 }, { immediate: true, deep: true })
-
-const changeMethod = (item) => {
-  console.log('changeMethod', item)
-}
 
 const send = async (e) => {
   console.log('sendRequest', debugData.value)

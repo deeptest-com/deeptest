@@ -41,20 +41,17 @@ import {computed, inject, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 
-import ResponseLensJson from "./Renderer/lenses/JSONLensRenderer.vue";
 import ResponseHeaders from "./Renderer/Headers.vue";
-import ResponseExtract from "./Extractor.vue";
-import ResponseCheck from "./Checkpoint.vue";
+import ResponseExtract from "./Renderer/Extractor.vue";
+import ResponseCheck from "./Renderer/Checkpoint.vue";
 
+import ResponseLensJson from "./Renderer/lenses/JSONLensRenderer.vue";
 import ResponseLensXml from "@/views/component/debug/response/Renderer/lenses/XMLLensRenderer.vue";
 import ResponseLensHtml from "@/views/component/debug/response/Renderer/lenses/HTMLLensRenderer.vue";
 import ResponseLensImage from "@/views/component/debug/response/Renderer/lenses/ImageLensRenderer.vue";
 import ResponseLensRaw from "@/views/component/debug/response/Renderer/lenses/RawLensRenderer.vue";
 import {UsedBy} from "@/utils/enum";
-const usedBy = inject('usedBy') as UsedBy
-const {t} = useI18n();
 
-import {Param} from "@/views/component/debug/data";
 import {StateType as Debug} from "@/views/component/debug/store";
 const store = useStore<{  Debug: Debug }>();
 
@@ -62,6 +59,9 @@ const debugData = computed<any>(() => store.state.Debug.debugData);
 const responseData = computed<any>(() => store.state.Debug.responseData);
 const extractorsData = computed<any>(() => store.state.Debug.extractorsData);
 const checkpointsData = computed<any>(() => store.state.Debug.checkpointsData);
+
+const usedBy = inject('usedBy') as UsedBy
+const {t} = useI18n();
 
 const title = computed(() => t(responseData.value.contentLang ? responseData.value.contentLang : 'empty'))
 const activeKey = ref('1');

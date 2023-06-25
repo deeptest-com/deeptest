@@ -61,14 +61,11 @@ const debugData = computed<any>(() => store.state.Debug.debugData);
   max-height: 800px;
 
   #top-panel {
-    height: 50%;
-    min-height: 200px;
     width: 100%;
     padding: 0;
   }
 
   #bottom-panel {
-    height: 360px;
     width: 100%;
     padding: 4px;
     overflow: auto;

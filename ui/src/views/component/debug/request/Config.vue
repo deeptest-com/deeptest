@@ -91,7 +91,6 @@ const none = (e) => {
 
     .ant-tabs-top-content {
       height: calc(100% - 61px);
-      min-height: 200px;
     }
   }
 }

@@ -183,7 +183,7 @@ const getMembers = (page: number) => {
   loading.value = true;
 
   queryMembers({
-    id: projectId,
+   // id: projectId,
     keywords: queryParams.keywords,
     pageSize: pagination.value.pageSize,
     page: page,
@@ -260,14 +260,10 @@ const invite = () => {
   getSelectUserList();
 };
 
-const cancel = () => {
-  inviteVisible.value = false;
-  console.log( inviteVisible.value)
-  getMembers(1);
-};
 
-const ok=(modelRef,callback)=>{
-  inviteUser(modelRef, projectId).then((json) => {
+const ok= async (modelRef:any,callback:any)=>{ 
+  inviteVisible.value = false;
+   await inviteUser(modelRef, projectId).then((json) => {
       if (json.code === 0) {
         notification.success({
           key: NotificationKeyCommon,
@@ -281,8 +277,8 @@ const ok=(modelRef,callback)=>{
       }
       close()
     })
-    inviteVisible.value = false;
   callback()
+  getMembers(1);
 }
 
 const handleChangeRole = async (val: any, record: any) => {

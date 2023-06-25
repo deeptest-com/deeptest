@@ -66,6 +66,12 @@ func (c *UserCtrl) Invite(ctx iris.Context) {
 		return
 	}
 
+	projectId, err := ctx.URLParamInt("currProjectId")
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		return
+	}
+	req.ProjectId = projectId
 	_, bizErr := c.UserService.Invite(req)
 	if bizErr != nil {
 		ctx.JSON(_domain.Response{Code: bizErr.Code})

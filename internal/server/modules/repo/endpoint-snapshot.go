@@ -9,13 +9,12 @@ import (
 )
 
 type EndpointSnapshotRepo struct {
-	*BaseRepo              `inject:""`
-	EndpointInterfaceRepo  *EndpointInterfaceRepo  `inject:""`
-	ServeRepo              *ServeRepo              `inject:""`
-	ProcessorInterfaceRepo *ProcessorInterfaceRepo `inject:""`
-	ProjectRepo            *ProjectRepo            `inject:""`
-	EndpointRepo           *EndpointRepo           `inject:""`
-	EndpointDocumentRepo   *EndpointDocumentRepo   `inject:""`
+	*BaseRepo             `inject:""`
+	EndpointInterfaceRepo *EndpointInterfaceRepo `inject:""`
+	ServeRepo             *ServeRepo             `inject:""`
+	ProjectRepo           *ProjectRepo           `inject:""`
+	EndpointRepo          *EndpointRepo          `inject:""`
+	EndpointDocumentRepo  *EndpointDocumentRepo  `inject:""`
 }
 
 func NewEndpointSnapshotRepo() *EndpointSnapshotRepo {

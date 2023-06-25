@@ -10,11 +10,10 @@ import (
 )
 
 type EndpointDocumentRepo struct {
-	*BaseRepo              `inject:""`
-	EndpointInterfaceRepo  *EndpointInterfaceRepo  `inject:""`
-	ServeRepo              *ServeRepo              `inject:""`
-	ProcessorInterfaceRepo *ProcessorInterfaceRepo `inject:""`
-	ProjectRepo            *ProjectRepo            `inject:""`
+	*BaseRepo             `inject:""`
+	EndpointInterfaceRepo *EndpointInterfaceRepo `inject:""`
+	ServeRepo             *ServeRepo             `inject:""`
+	ProjectRepo           *ProjectRepo           `inject:""`
 }
 
 func NewEndpointDocumentRepo() *EndpointDocumentRepo {

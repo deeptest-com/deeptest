@@ -7,18 +7,8 @@
       width="700px">
   <div class="invite-main">
     <a-card>
-      
-       
-      
-      <!--
-      <template #extra>
-        <a-button type="link" @click="() => back()">返回</a-button>
-      </template>
-    -->
-
+    
       <a-form :label-col="labelCol" :wrapper-col="wrapperCol" ref="formRef">
-
-
         <a-form-item label="用户名" v-bind="validateInfos.userId">
                 <a-select v-model:value="modelRef.userId" show-search @change="selectUser" :options="options" optionFilterProp="label"
                           @blur="validate('userId', { trigger: 'blur' }).catch(() => {})">
@@ -35,13 +25,6 @@
         <a-form-item label="邮箱" v-bind="validateInfos.email" >
           <a-input v-model:value="modelRef.email"/>
         </a-form-item>
-      <!--
-        <a-form-item :wrapper-col="{ span: 14, offset: 4 }">
-          <a-button @click="submit" type="primary" class="submit">
-            确认
-          </a-button>
-        </a-form-item>
-      -->
       </a-form>
 
     </a-card>
@@ -99,7 +82,7 @@ const rulesRef = reactive({
   ]
 });
 
-const { validate, validateInfos} = useForm(modelRef, rulesRef);
+const { resetFields,validate, validateInfos} = useForm(modelRef, rulesRef);
 
 const labelCol = {span: 4}
 const wrapperCol = {span: 14}
@@ -110,6 +93,7 @@ const formRef = ref();
 
 const close = ()=>{
   emit("cancel")
+  reset()
 }
 
 const ok  = ()=>{
@@ -121,7 +105,7 @@ const ok  = ()=>{
 }
 
 function reset() {
-  modelRef.value = {userId:0,username:"",email:"",roleName:""};
+  resetFields()
 }
 
 const selectUser  = (value:any) => {

@@ -34,9 +34,7 @@
                 </a-menu>
               </template>
             </a-dropdown>
-
           </div>
-
           <div class="top-search-filter">
             <TableFilter @filter="handleTableFilter"/>
           </div>
@@ -256,7 +254,7 @@ const fetching = ref(false);
 
 /*查看选中的接口文档*/
 function goDocs() {
-  window.open(`/#/docs/index?endpointIds=${selectedRowIds.value.join(',')}`);
+  window.open(`/#/docs/share?endpointIds=${selectedRowIds.value.join(',')}`);
 }
 
 

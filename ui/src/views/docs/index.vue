@@ -9,7 +9,8 @@
 import {
   computed,
   watch,
-  ref
+  ref,
+  onMounted
 } from 'vue';
 
 import Docs from '@/components/Docs/index.vue';
@@ -22,6 +23,14 @@ import {useRouter} from "vue-router";
 const loading = ref(false);
 const router = useRouter();
 const query: any = router.currentRoute.value.query;
+
+const docVersions: any = ref([
+  {
+    value: '',
+    label: 'latest',
+  }
+]);
+
 const endpointIds: any = computed(() => {
   if (query.endpointIds) {
     return query.endpointIds.split(',').map((item: any) => {
@@ -52,7 +61,7 @@ watch(() => {
   }
   if (newVal) {
     loading.value = true;
-    data.value = await store.dispatch('Endpoint/getDocs', {
+    data.value = await store.dispatch('Docs/getDocs', {
       projectId: currProject.value.id,
     });
     loading.value = false;
@@ -66,7 +75,7 @@ watch(() => {
 }, async (newVal) => {
   if (newVal && newVal.length > 0) {
     loading.value = true;
-    data.value = await store.dispatch('Endpoint/getDocs', {
+    data.value = await store.dispatch('Docs/getDocs', {
       endpointIds: newVal,
     })
     loading.value = false;
@@ -80,13 +89,24 @@ watch(() => {
 }, async (newVal) => {
   if (newVal && newVal.length > 0) {
     loading.value = true;
-    data.value = await store.dispatch('Endpoint/getDocs', {
+    data.value = await store.dispatch('Docs/getDocs', {
       serveIds: newVal,
     })
     loading.value = false;
   }
 }, {
   immediate: true
+})
+
+onMounted(async () => {
+  // if (query.version) {
+  //   docVersions.value = await store.dispatch('Docs/getDocVersions', {
+  //     projectId: currProject.value.id,
+  //   });
+  // }
+  docVersions.value = await store.dispatch('Docs/getVersionList', {
+    projectId: currProject.value.id,
+  });
 })
 
 

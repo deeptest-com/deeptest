@@ -32,8 +32,13 @@ const content: any = ref<any>(null);
 watch(() => {
   return props.contentStr
 }, (newVal) => {
-  if (newVal) {
-    content.value = JSON.parse(newVal);
+
+  try {
+    if (newVal) {
+      content.value = JSON.parse(newVal);
+    }
+  }catch (e){
+    console.log(e)
   }
 }, {
   immediate: true
@@ -42,9 +47,14 @@ watch(() => {
 watch(() => {
   return props.examplesStr
 }, (newVal) => {
-  if (newVal) {
-    examples.value = JSON.parse(newVal);
+  try {
+    if (newVal) {
+      examples.value = JSON.parse(newVal);
+    }
+  }catch (e){
+    console.log(e)
   }
+
 }, {
   immediate: true
 })

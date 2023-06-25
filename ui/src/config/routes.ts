@@ -36,6 +36,19 @@ const routes: RoutesDataItem[] = [
   },
   {
     title: 'empty',
+    path: '/docs',
+    component: BlankLayout,
+    children: [
+      {
+        title: '接口文档',
+        path: 'share',
+        component: () => import('@/views/docs/index.vue'),
+        hidden: true,
+      },
+    ],
+  },
+  {
+    title: 'empty',
     path: '/',
     component: SecurityLayout,
     children: [

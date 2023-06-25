@@ -12,13 +12,11 @@
 
     <!-- 头部信息  -->
     <template #title>
-      <a-row type="flex" style="align-items: center;width: 100%">
-        <a-col :span="12" class="header-text">
-          <span class="serialNumber">[{{ endpointDetail.serialNumber }}]</span>
-          <EditAndShowField :custom-class="'show-on-hover'" placeholder="修改标题" :value="endpointDetail?.title || ''"
-                            @update="updateTitle"/>
-        </a-col>
-      </a-row>
+      <div class="header-text">
+        <span class="serialNumber">[{{ endpointDetail.serialNumber }}]</span>
+        <EditAndShowField :custom-class="'show-on-hover'" placeholder="修改标题" :value="endpointDetail?.title || ''"
+                          @update="updateTitle"/>
+      </div>
     </template>
 
     <!-- 基本信息 -->
@@ -56,7 +54,7 @@
             <EndpointDefine v-if="key === 'request'" @switchMode="switchMode"/> <!-- use v-if to force page reload-->
           </div>
         </a-tab-pane>
-        <a-tab-pane key="run" tab="调试" >
+        <a-tab-pane key="run" tab="调试">
           <div style="margin-top: 16px;">
             <!-- use v-if to force page reload -->
             <EndpointDebug v-if="key === 'run'" @switchToDefineTab="switchToDefineTab"/>
@@ -65,6 +63,7 @@
         <a-tab-pane key="docs" tab="文档">
           <Docs :show-basic-info="false"
                 :onlyShowDocs="true"
+                :showHeader="false"
                 v-if="key === 'docs' && docsData"
                 :data="docsData"
                 :show-menu="true"/> <!-- use v-if to force page reload-->
@@ -111,7 +110,7 @@ function onCloseDrawer() {
 const docsData = ref(null);
 
 async function changeTab(value) {
-  console.log('changeTab',value)
+  console.log('changeTab', value)
 
   key.value = value;
   // 切换到调试页面时，需要先保存
@@ -241,6 +240,7 @@ function expandInfo(val) {
 
 .header-text {
   display: flex;
+  max-width: 80%;
   .serialNumber {
     margin-right: 6px;
   }

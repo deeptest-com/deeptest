@@ -55,7 +55,7 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
         icon: 'endpoint',
         title: 'endpoint-docs',
         path: 'index',
-        component: () => import('@/views/endpoint/docs.vue'),
+        component: () => import('@/views/docs/index.vue'),
         hidden: false,
         meta: {
           code: 'ENDPOINT'

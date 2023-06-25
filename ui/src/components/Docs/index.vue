@@ -2,7 +2,7 @@
 <template>
   <div class="content" v-if="data?.name">
 <!--    <BasicDetail  :items="items" v-if="showBasicInfo"/>-->
-    <DocsHeader :data="items" :items="serviceList" @select="selectMenu"/>
+    <DocsHeader v-if="showHeader" :data="items" :items="serviceList" @select="selectSugRes"/>
     <a-divider style="margin:0" v-if="showBasicInfo"/>
     <div class="doc-container">
       <div class="left" v-if="showMenu">
@@ -31,7 +31,7 @@ import EndpointDoc from "./components/EndpointDoc.vue";
 import DocsHeader from "./components/DocsHeader.vue";
 
 const store = useStore<{ Endpoint, ProjectGlobal }>();
-const props = defineProps(['showBasicInfo', 'showMenu', 'data', 'onlyShowDocs']);
+const props = defineProps(['showBasicInfo', 'showMenu', 'data', 'onlyShowDocs','showHeader']);
 const emit = defineEmits([]);
 
 const items = computed(() => {
@@ -50,7 +50,9 @@ const items = computed(() => {
 const serviceList = computed(() => {
   // 组装数据以兼容组件 LeftTreeMenu
   let items: any = [];
+
   props?.data?.serves.forEach((item: any) => {
+    console.log(832,'item', item)
     // 只显示文档，不展示服务信息
     if (!props.onlyShowDocs) {
       items.push(item);
@@ -66,6 +68,7 @@ const serviceList = computed(() => {
       })
     })
   })
+  console.log(832,'items', items)
   return items;
 })
 
@@ -81,6 +84,7 @@ const selectedKeys = computed(() => {
 watch(() => {
   return serviceList.value
 }, (newVal) => {
+  console.log(832,'newVal', newVal)
   if (!selectedItem.value && newVal.length > 0) {
     selectedItem.value = newVal.find((item) => {
       return item.endpointInfo && item.serveInfo;
@@ -91,6 +95,9 @@ watch(() => {
   }
 }, {immediate: true});
 
+function selectSugRes(item) {
+  selectedItem.value = item
+}
 
 function selectMenu(item) {
   selectedItem.value = item

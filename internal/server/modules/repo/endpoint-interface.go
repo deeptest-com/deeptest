@@ -543,7 +543,7 @@ func (r *EndpointInterfaceRepo) ImportEndpointData(req v1.ImportEndpointDataReq)
 func (r *EndpointInterfaceRepo) GetInterfaces(endpointIds []uint) (interfaces map[uint][]model.EndpointInterface, err error) {
 	interfaces = map[uint][]model.EndpointInterface{}
 	var result []model.EndpointInterface
-	err = r.DB.Where("id in ?", endpointIds).Where("NOT deleted").Find(&result).Error
+	err = r.DB.Where("endpoint_id in ?", endpointIds).Where("NOT deleted").Find(&result).Error
 
 	var interfaceIds []uint
 	for _, item := range result {

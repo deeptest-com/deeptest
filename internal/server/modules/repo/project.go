@@ -268,22 +268,101 @@ func (r *ProjectRepo) GetChildrenIds(id uint) (ids []int, err error) {
 	return
 }
 
-func (r *ProjectRepo) ListProjectByUser(userId uint) (projects []model.ProjectMemberRole, err error) {
+func (r *ProjectRepo) ListProjectByUser(userId uint) (res []model.ProjectMemberRole, err error) {
+	projectRoleMap, err := r.GetProjectRoleMapByUser(userId)
+
+	if err != nil {
+		return
+	}
+
+	projectIds := make([]uint, 0)
+	for k, _ := range projectRoleMap {
+		projectIds = append(projectIds, k)
+	}
+
+	projects, err := r.GetProjectsByIds(projectIds)
+	if err != nil {
+		return
+	}
+
+	res, err = r.CombineRoleForProject(projects, projectRoleMap)
+
+	if err != nil {
+		return
+	}
+
+	//db := r.DB.Model(&model.ProjectMember{}).
+	//	Joins("LEFT JOIN biz_project p ON biz_project_member.project_id=p.id").
+	//	Joins("LEFT JOIN biz_project_role r ON biz_project_member.project_role_id=r.id").
+	//	Select("p.*, r.id role_id, r.name role_name").
+	//	Where("NOT biz_project_member.deleted")
+	//
+	//if !isAdminUser {
+	//	db.Where("biz_project_member.user_id = ?", userId)
+	//}
+	//err = db.Group("biz_project_member.project_id").Find(&projects).Error
+	return
+}
+
+func (r *ProjectRepo) GetProjectRoleMapByUser(userId uint) (res map[uint]uint, err error) {
 	isAdminUser, err := r.UserRepo.IsAdminUser(userId)
 	if err != nil {
 		return
 	}
 
+	var projectMembers []model.ProjectMember
 	db := r.DB.Model(&model.ProjectMember{}).
-		Joins("LEFT JOIN biz_project p ON biz_project_member.project_id=p.id").
-		Joins("LEFT JOIN biz_project_role r ON biz_project_member.project_role_id=r.id").
-		Select("p.*, r.id role_id, r.name role_name").
-		Where("NOT biz_project_member.deleted")
-
+		Select("project_id, project_role_id")
 	if !isAdminUser {
-		db.Where("biz_project_member.user_id = ?", userId)
+		db.Where("user_id = ?", userId)
 	}
-	err = db.Group("biz_project_member.project_id").Find(&projects).Error
+	if err = db.Find(&projectMembers).Error; err != nil {
+		return
+	}
+
+	res = make(map[uint]uint)
+	for _, v := range projectMembers {
+		res[v.ProjectId] = v.ProjectRoleId
+	}
+
+	return
+}
+
+func (r *ProjectRepo) GetProjectsByIds(ids []uint) (projects []model.Project, err error) {
+	err = r.DB.Model(&model.Project{}).
+		Where("id IN (?) AND NOT deleted AND NOT disabled ", ids).
+		Find(&projects).Error
+	return
+}
+
+func (r *ProjectRepo) CombineRoleForProject(projects []model.Project, projectRoleMap map[uint]uint) (res []model.ProjectMemberRole, err error) {
+	roleIds := make([]uint, 0)
+	for _, v := range projectRoleMap {
+		roleIds = append(roleIds, v)
+	}
+	roleIds = commonUtils.ArrayRemoveUintDuplication(roleIds)
+
+	roleIdNameMap, err := r.ProjectRoleRepo.GetRoleIdNameMap(roleIds)
+	if err != nil {
+		return
+	}
+
+	for _, v := range projects {
+		projectMemberRole := model.ProjectMemberRole{
+			Project: v,
+		}
+		if roleId, ok := projectRoleMap[v.ID]; ok {
+			projectMemberRole.RoleId = roleId
+		}
+		if projectMemberRole.RoleId == 0 {
+			continue
+		}
+		if roleName, ok := roleIdNameMap[projectMemberRole.RoleId]; ok {
+			projectMemberRole.RoleName = roleName
+		}
+		res = append(res, projectMemberRole)
+	}
+
 	return
 }
 

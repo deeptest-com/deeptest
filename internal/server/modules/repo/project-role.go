@@ -96,3 +96,16 @@ func (r *ProjectRoleRepo) GetAllRoleNameIdMap() (data map[consts.RoleType]uint, 
 	}
 	return
 }
+
+func (r *ProjectRoleRepo) GetRoleIdNameMap(roleIds []uint) (data map[uint]consts.RoleType, err error) {
+	projectRoles, err := r.FindByIds(roleIds)
+	if err != nil {
+		return
+	}
+
+	roleIdNameMap := make(map[uint]consts.RoleType)
+	for _, v := range projectRoles {
+		roleIdNameMap[v.ID] = v.Name
+	}
+	return
+}

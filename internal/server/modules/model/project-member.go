@@ -18,6 +18,6 @@ func (ProjectMember) TableName() string {
 
 type ProjectMemberRole struct {
 	Project
-	RoleId   uint            `gorm:"role_id" json:"roleId"`
-	RoleName consts.RoleType `gorm:"role_name" json:"roleName"`
+	RoleId   uint            `json:"roleId"`
+	RoleName consts.RoleType `json:"roleName"`
 }

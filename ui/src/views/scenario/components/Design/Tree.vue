@@ -105,11 +105,13 @@ const useForm = Form.useForm;
 
 const {t} = useI18n();
 import {Scenario} from "@/views/scenario/data";
+import {confirmToDelete} from "@/utils/confirm";
 const store = useStore<{ Scenario: ScenarioStateType; }>();
 const treeData = computed<any>(() => store.state.Scenario.treeData);
 const treeDataMap = computed<any>(() => store.state.Scenario.treeDataMap);
 const selectedNode = computed<any>(()=> store.state.Scenario.nodeData);
 const detailResult = computed<Scenario>(() => store.state.Scenario.detailResult);
+
 watch(treeData, () => {
   console.log('watch', treeData)
 
@@ -199,6 +201,7 @@ let contextNode = ref({} as any)
 let menuStyle = ref({} as any)
 let tips = ref('')
 let rightVisible = false
+
 const onRightClick = (e) => {
   console.log('onRightClick', e)
   const {event, node} = e
@@ -376,9 +379,19 @@ const interfaceSelectionCancel = () => {
 
 const removeNode = () => {
   console.log('removeNode')
-  store.dispatch('Scenario/removeNode', targetModelId);
-  selectNode([], null)
+
+  const node = treeDataMap.value[targetModelId]
+  console.log(node)
+
+  const title = '确定删除该' + (node.isLeaf?'接口':'目录') + '吗？'
+  const context = !node.isLeaf?'删除后所有所有子目录都会被删除。' : ''
+
+  confirmToDelete(title, context, () => {
+    store.dispatch('Scenario/removeNode', targetModelId);
+    selectNode([], null)
+  })
 }
+
 const clearMenu = () => {
   console.log('clearMenu')
   contextNode.value = ref({})

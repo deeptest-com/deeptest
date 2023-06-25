@@ -6,8 +6,7 @@
         <a-col flex="80px">
           <a-select class="select-env"
                     :options="methods"
-                    v-model:value="debugData.method"
-                    @change="changeMethod">
+                    v-model:value="debugData.method">
           </a-select>
         </a-col>
         <a-col flex="3">
@@ -42,11 +41,15 @@ import {StateType as Debug} from "@/views/component/debug/store";
 import {serverList} from "@/views/project-settings/service";
 import ContextMenu from "@/views/component/debug/others/variable-replace/ContextMenu.vue"
 import useVariableReplace from "@/hooks/variable-replace";
+import {getArrSelectItems} from "@/utils/comm";
+import {Methods} from "@/utils/enum";
 
 const store = useStore<{ Debug: Debug, Endpoint }>();
 
 const debugData = computed<any>(() => store.state.Debug.debugData);
 const servers = ref([] as any);
+
+const methods = getArrSelectItems(Methods)
 
 const serverId = computed(() => {
   return debugData?.value?.serverId || servers?.value[0]?.value || ''

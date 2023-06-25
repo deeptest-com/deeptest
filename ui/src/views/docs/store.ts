@@ -45,6 +45,7 @@ const StoreModel: ModuleType = {
         },
         // 获取版本列表
         async getVersionList({commit}, payload: any) {
+            debugger;
             const res = await getVersionList({
                 ...payload,
             });

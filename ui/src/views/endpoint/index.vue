@@ -1,52 +1,58 @@
 <template>
   <a-spin tip="Loading..." :spinning="isImporting">
-  <div class="container">
-    <div class="content">
-      <div class="left tree" v-if="!collapsed">
-        <Tree @select="selectNode" :serveId="currServe.id"/>
-      </div>
-      <CollapsedIcon
-          :style="{left:'294px',top:'300px'}"
-          :collapsedStyle="{left:'-9px', top:'300px'}"
-          @click="collapsed = !collapsed" :collapsed="collapsed"/>
-      <div :class="{'right': true, 'right-not-collapsed': !collapsed}">
-        <div class="top-action">
-          <div class="top-action-left">
-            <PermissionButton
-                class="action-new"
-                text="新建接口"
-                code="ENDPOINT-ADD"
-                type="primary"
-                :loading="loading"
-                @handle-access="handleCreateEndPoint"/>
-            <a-dropdown :trigger="['hover']" :placement="'bottomLeft'">
-              <a class="ant-dropdown-link" @click.prevent>
-                <a-button>批量操作</a-button>
-              </a>
-              <template #overlay>
-                <a-menu style="margin-top: 8px;">
-                  <a-menu-item key="0">
-                    <a-button type="link" :size="'small'"  href="javascript:void (0)"  @click="inportApi" >导入接口</a-button>
-                  </a-menu-item>
-                  <a-menu-item key="1" >
-                    <a-button  :disabled="!hasSelected"  :size="'small'"   type="link" @click="goDocs">查看文档</a-button>
-                  </a-menu-item>
-                </a-menu>
-              </template>
-            </a-dropdown>
-          </div>
-          <div class="top-search-filter">
-            <TableFilter @filter="handleTableFilter"/>
-          </div>
+    <div class="container">
+      <div class="content">
+        <div class="left tree" v-if="!collapsed">
+          <Tree @select="selectNode" :serveId="currServe.id"/>
         </div>
-        <EmptyCom>
-          <template #content>
-            <a-table :loading="fetching"
-                     :row-selection="{
+        <CollapsedIcon
+            :style="{left:'294px',top:'300px'}"
+            :collapsedStyle="{left:'-9px', top:'300px'}"
+            @click="collapsed = !collapsed" :collapsed="collapsed"/>
+        <div :class="{'right': true, 'right-not-collapsed': !collapsed}">
+          <div class="top-action">
+            <div class="top-action-left">
+              <PermissionButton
+                  class="action-new"
+                  text="新建接口"
+                  code="ENDPOINT-ADD"
+                  type="primary"
+                  :loading="loading"
+                  @handle-access="handleCreateEndPoint"/>
+              <a-dropdown :trigger="['hover']" :placement="'bottomLeft'">
+                <a class="ant-dropdown-link" @click.prevent>
+                  <a-button>批量操作</a-button>
+                </a>
+                <template #overlay>
+                  <a-menu style="margin-top: 8px;">
+                    <a-menu-item key="0">
+                      <a-button type="link" :size="'small'" href="javascript:void (0)" @click="inportApi">导入接口
+                      </a-button>
+                    </a-menu-item>
+                    <a-menu-item key="1">
+                      <a-button :disabled="!hasSelected" :size="'small'" type="link" @click="goDocs">查看文档</a-button>
+                    </a-menu-item>
+                    <a-menu-item key="1">
+                      <a-button :disabled="!hasSelected" :size="'small'" type="link"
+                                @click="showPublishDocsModal = true">发布文档
+                      </a-button>
+                    </a-menu-item>
+                  </a-menu>
+                </template>
+              </a-dropdown>
+            </div>
+            <div class="top-search-filter">
+              <TableFilter @filter="handleTableFilter"/>
+            </div>
+          </div>
+          <EmptyCom>
+            <template #content>
+              <a-table :loading="fetching"
+                       :row-selection="{
                 selectedRowKeys: selectedRowKeys,
                 onChange: onSelectChange
               }"
-                     :pagination="{
+                       :pagination="{
                   ...pagination,
                   onChange: (page) => {
                     loadList(page,pagination.pageSize);
@@ -55,77 +61,82 @@
                     loadList(page,size);
                   },
               }"
-                     :scroll="{ x: '1280px' || true }"
-                     :columns="columns"
-                     :data-source="list">
-              <template #colTitle="{text,record}">
-                <div class="customTitleColRender">
-                  <EditAndShowField :custom-class="'custom-endpoint show-on-hover'"
-                                    :value="text"
-                                    placeholder="请输入接口名称"
-                                    @update="(e: string) => handleUpdateEndpoint(e, record)"
-                                    @edit="editEndpoint(record)"/>
-                </div>
-              </template>
+                       :scroll="{ x: '1280px' || true }"
+                       :columns="columns"
+                       :data-source="list">
+                <template #colTitle="{text,record}">
+                  <div class="customTitleColRender">
+                    <EditAndShowField :custom-class="'custom-endpoint show-on-hover'"
+                                      :value="text"
+                                      placeholder="请输入接口名称"
+                                      @update="(e: string) => handleUpdateEndpoint(e, record)"
+                                      @edit="editEndpoint(record)"/>
+                  </div>
+                </template>
 
-              <template #colStatus="{record}">
-                <div class="customStatusColRender">
-                  <EditAndShowSelect
-                      :label="endpointStatus.get(record?.status || 0 )"
-                      :value="record?.status"
-                      :options="endpointStatusOpts"
-                      @update="(val) => { handleChangeStatus(val,record);}"/>
-                </div>
-              </template>
+                <template #colStatus="{record}">
+                  <div class="customStatusColRender">
+                    <EditAndShowSelect
+                        :label="endpointStatus.get(record?.status || 0 )"
+                        :value="record?.status"
+                        :options="endpointStatusOpts"
+                        @update="(val) => { handleChangeStatus(val,record);}"/>
+                  </div>
+                </template>
 
-              <template #colPath="{text}">
-                <div class="customPathColRender">
-                  <a-tag>{{ text }}</a-tag>
-                </div>
-              </template>
+                <template #colPath="{text}">
+                  <div class="customPathColRender">
+                    <a-tag>{{ text }}</a-tag>
+                  </div>
+                </template>
 
-              <template #action="{record}">
-                <a-dropdown>
-                  <MoreOutlined/>
-                  <template #overlay>
-                    <a-menu>
-                      <a-menu-item v-for="menuItem in MenuList" :key="menuItem.key">
-                        <PermissionButton
-                            style="width: 80px"
-                            :text="menuItem.text"
-                            size="small"
-                            type="link"
-                            :code="menuItem.code"
-                            @handle-access="menuItem.action(record)"/>
-                      </a-menu-item>
-                    </a-menu>
-                  </template>
-                </a-dropdown>
-              </template>
-            </a-table>
-          </template>
-        </EmptyCom>
+                <template #action="{record}">
+                  <a-dropdown>
+                    <MoreOutlined/>
+                    <template #overlay>
+                      <a-menu>
+                        <a-menu-item v-for="menuItem in MenuList" :key="menuItem.key">
+                          <PermissionButton
+                              style="width: 80px"
+                              :text="menuItem.text"
+                              size="small"
+                              type="link"
+                              :code="menuItem.code"
+                              @handle-access="menuItem.action(record)"/>
+                        </a-menu-item>
+                      </a-menu>
+                    </template>
+                  </a-dropdown>
+                </template>
+              </a-table>
+            </template>
+          </EmptyCom>
+        </div>
+      </div>
+      <CreateEndpointModal
+          :visible="createApiModalVisible"
+          :selectedCategoryId="selectedCategoryId"
+          @cancel="createApiModalVisible = false;"
+          @ok="handleCreateApi"/>
+      <ImportEndpointModal
+          :visible="showImportModal"
+          :selectedCategoryId="selectedCategoryId"
+          @cancal="showImportModal = false;"
+          @ok="handleImport"/>
+      <PubDocs
+          :visible="showPublishDocsModal"
+          :endpointIds='selectedRowKeys'
+          @cancal="showPublishDocsModal = false;"
+          @ok="publishDocs"/>
+      <!-- 编辑接口时，展开抽屉：外层再包一层 div, 保证每次打开弹框都重新渲染   -->
+      <div v-if="drawerVisible">
+        <Drawer
+            :destroyOnClose="true"
+            :visible="drawerVisible"
+            @refreshList="refreshList"
+            @close="drawerVisible = false;"/>
       </div>
     </div>
-    <CreateEndpointModal
-        :visible="createApiModalVisible"
-        :selectedCategoryId="selectedCategoryId"
-        @cancel="createApiModalVisible = false;"
-        @ok="handleCreateApi"/>
-    <ImportEndpointModal
-        :visible="showImportModal"
-        :selectedCategoryId="selectedCategoryId"
-        @cancal="showImportModal = false;"
-        @ok="handleImport"/>
-    <!-- 编辑接口时，展开抽屉：外层再包一层 div, 保证每次打开弹框都重新渲染   -->
-    <div v-if="drawerVisible">
-      <Drawer
-          :destroyOnClose="true"
-          :visible="drawerVisible"
-          @refreshList="refreshList"
-          @close="drawerVisible = false;"/>
-    </div>
-  </div>
   </a-spin>
 </template>
 <script setup lang="ts">
@@ -141,6 +152,7 @@ import {MoreOutlined} from '@ant-design/icons-vue';
 import {endpointStatusOpts, endpointStatus} from '@/config/constant';
 import EditAndShowField from '@/components/EditAndShow/index.vue';
 import CreateEndpointModal from './components/CreateEndpointModal.vue';
+import PubDocs from './components/PubDocs.vue';
 import ImportEndpointModal from './components/ImportEndpointModal.vue';
 import TableFilter from './components/TableFilter.vue';
 import Drawer from './components/Drawer/index.vue'
@@ -257,6 +269,14 @@ function goDocs() {
   window.open(`/#/docs/share?endpointIds=${selectedRowIds.value.join(',')}`);
 }
 
+const showPublishDocsModal: any = ref(false)
+
+// 发布文档版本
+async function publishDocs() {
+  debugger;
+  showPublishDocsModal.value = false;
+  selectedRowIds.value = [];
+}
 
 /**
  * 导入接口
@@ -325,7 +345,8 @@ async function handleCreateApi(data) {
 
 
 const isImporting = ref(false);
-async function handleImport(data,callback) {
+
+async function handleImport(data, callback) {
 
   isImporting.value = true;
   showImportModal.value = false;
@@ -452,7 +473,8 @@ async function refreshList() {
   .ant-btn {
     margin-right: 16px;
   }
-  .top-action-left{
+
+  .top-action-left {
     min-width: 220px;
   }
 }

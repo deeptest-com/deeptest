@@ -42,7 +42,7 @@
               </a-list-item>
             </template>
           </a-list>
-          <a-empty v-else :image="Empty.PRESENTED_IMAGE_SIMPLE" :description="'请输入合适的关键词'"/>
+          <a-empty v-else :image="Empty.PRESENTED_IMAGE_SIMPLE" :description="'请输入合适的关键词搜索文档'"/>
         </div>
       </template>
       <div class="search">

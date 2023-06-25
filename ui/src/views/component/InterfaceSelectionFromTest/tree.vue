@@ -9,6 +9,7 @@
             <a-select-option v-for="item in serves" :key="item.id" :value="item.id">{{ item.name }}</a-select-option>
           </a-select>
         </a-col>
+
         <a-col :flex="3">
           <a-input-search
               style="display: flex;justify-content: end;width: 300px;margin-bottom: 16px; "
@@ -27,7 +28,6 @@
           :expandedKeys="expandedKeys"
           :auto-expand-parent="autoExpandParent"
           :tree-data="treeData"
-          v-model:checkedKeys="checkedKeys"
           @check="onChecked"
           :replace-fields="replaceFields">
 
@@ -38,9 +38,9 @@
         <template #title="nodeProps">
           <div class="tree-title" :draggable="nodeProps.dataRef.id === -1">
               <span class="tree-title-text" v-if="nodeProps.dataRef.title.indexOf(searchValue) > -1">
-                <span>{{nodeProps.dataRef.title.substr(0, nodeProps.dataRef.title.indexOf(searchValue))}}</span>
-                <span style="color: #f50">{{searchValue}}</span>
-                <span>{{nodeProps.dataRef.title.substr(nodeProps.dataRef.title.indexOf(searchValue) + searchValue.length)}}</span>
+                <span>{{ nodeProps.dataRef.title.substr(0, nodeProps.dataRef.title.indexOf(searchValue)) }}</span>
+                <span style="color: #f50">{{ searchValue }}</span>
+                <span>{{ nodeProps.dataRef.title.substr(nodeProps.dataRef.title.indexOf(searchValue) + searchValue.length) }}</span>
               </span>
             <span class="tree-title-text" v-else>{{ nodeProps.dataRef.title }}</span>
           </div>
@@ -53,33 +53,24 @@
 </template>
 
 <script setup lang="ts">
-import {
-  computed, ref, onMounted,
-  watch, defineEmits, defineProps
-} from 'vue';
-import {
-  PlusOutlined,
-  CaretDownOutlined,
-  MoreOutlined
-} from '@ant-design/icons-vue';
-import {message, Modal} from 'ant-design-vue';
-import {DropEvent} from 'ant-design-vue/es/tree/Tree';
+import {computed, defineProps, onMounted, ref, watch} from 'vue';
+import {CaretDownOutlined,} from '@ant-design/icons-vue';
 import {useStore} from "vuex";
-import {setExpandedKeys, setSelectedKey} from "@/utils/cache";
 
 import {StateType as ProjectStateType} from "@/store/project";
 import {StateType as TestInterfaceStateType} from '@/views/debugger/store';
 import {StateType as ServeStateType} from "@/store/serve";
 
-import {expandOneKey} from "@/services/tree";
 import {listServe} from "@/services/serve";
-import {filterTree, findParentIds} from "@/utils/tree";
+import {filterTree, getSelectedTreeNode} from "@/utils/tree";
+import {isInArray} from "@/utils/array";
 
 const store = useStore<{ TestInterface: TestInterfaceStateType, ProjectGlobal: ProjectStateType, ServeGlobal: ServeStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const currServe = computed<any>(() => store.state.ServeGlobal.currServe);
 
 const treeData = computed<any>(() => store.state.TestInterface.treeData);
+const treeDataMap = computed<any>(() => store.state.TestInterface.treeDataMap);
 
 const props = defineProps({
   selectInterfaces: {
@@ -90,11 +81,23 @@ const props = defineProps({
 
 const serves = ref([] as any[]);
 const serveId = ref(0)
-const checkedKeys = ref([])
 
-const onChecked = (checkedKeys) => {
-  console.log('onChecked', checkedKeys)
-  props.selectInterfaces(checkedKeys)
+const onChecked = (checkedKeys, e) => {
+  console.log('onChecked', checkedKeys, e.checkedNodes)
+
+  const selectedNodes = getSelectedTreeNode(checkedKeys, treeDataMap.value)
+  props.selectInterfaces(selectedNodes)
+
+  console.log('selectedNodes', selectedNodes)
+}
+const getChildren = (node, mp) => {
+  mp[node.id] = true
+
+  if (node.children) {
+    node.children.forEach((child, index) => {
+      getChildren(child, mp)
+    })
+  }
 }
 
 const loadServe = async () => {
@@ -147,6 +150,7 @@ watch((currServe), async (newVal) => {
 
 watch(searchValue, (newVal) => {
   expandedKeys.value = filterTree(treeData.value, newVal)
+  console.log('searchValue', expandedKeys.value)
   autoExpandParent.value = true;
 });
 
@@ -166,12 +170,10 @@ function expandAll() {
       }
     });
   }
+
   fn(data);
   expandedKeys.value = keys;
 }
-
-let selectedKeys = ref<number[]>([]);
-const emit = defineEmits(['select']);
 
 onMounted(async () => {
   console.log('onMounted')
@@ -184,8 +186,10 @@ onMounted(async () => {
   .tree-filters {
     margin-bottom: 16px;
   }
+
   .tree-container {
     background: #ffffff;
+
     .tree-title {
       position: relative;
 

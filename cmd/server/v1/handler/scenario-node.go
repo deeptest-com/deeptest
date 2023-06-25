@@ -55,7 +55,7 @@ func (c *ScenarioNodeCtrl) AddInterfacesFromDefine(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: nodePo})
 }
 
-// AddInterfacesFromDebuggerTree 添加接口
+// AddInterfacesFromTest 添加接口
 func (c *ScenarioNodeCtrl) AddInterfacesFromTest(ctx iris.Context) {
 	req := serverDomain.ScenarioAddInterfacesFromTreeReq{}
 	err := ctx.ReadJSON(&req)

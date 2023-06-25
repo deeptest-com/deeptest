@@ -35,13 +35,15 @@ const props = defineProps({
   },
 })
 
+const selectInterfaces = ref([])
 const onSelectInterfaces = (data) => {
   console.log('onSelectInterfaces', data)
+  selectInterfaces.value = data
 }
 
-const onSubmit = (nodes) => {
-  console.log('onSubmit', nodes)
-  // props.onFinish(nodes)
+const onSubmit = (e) => {
+  console.log('onSubmit')
+  props.onFinish(selectInterfaces.value)
 }
 
 const onCancel = () => {

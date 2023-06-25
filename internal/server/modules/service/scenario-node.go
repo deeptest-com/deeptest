@@ -196,7 +196,7 @@ func (s *ScenarioNodeService) addInterface(endpointInterfaceId int, createBy uin
 func (s *ScenarioNodeService) createDirOrInterface(interfaceNode *serverDomain.TestInterface, parentProcessor model.Processor) (
 	ret model.Processor, err error) {
 
-	if !interfaceNode.IsLeaf { // dir
+	if !interfaceNode.IsLeaf && len(interfaceNode.Children) > 0 { // dir
 		processor := model.Processor{
 			Name:           interfaceNode.Title,
 			ScenarioId:     parentProcessor.ScenarioId,

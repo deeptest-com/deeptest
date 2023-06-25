@@ -6,35 +6,43 @@
     <div class="logo">
       <ReadOutlined style="font-size: 20px"/>
       <span class="logo-name">
-        {{`${title} - 接口文档`}}
+        {{ `${title} - 接口文档` }}
       </span>
-
     </div>
-    <a-popover placement="bottomLeft" :arrowPointAtCenter="false" :visible="visible"
-               :overlayStyle="{marginTop:'-15px'}">
+    <a-popover
+        :autoAdjustOverflow="false"
+        :overlayClassName="'deeptest-docs-search-popover'"
+        placement="bottomLeft"
+        :arrowPointAtCenter="false"
+        :visible="visible"
+        :overlayStyle="{}">
       <template #content>
         <div class="select-content">
-          <a-list item-layout="horizontal" :data-source="data">
+          <a-list item-layout="horizontal" :data-source="data" v-if="data?.length > 0">
             <template #renderItem="{ item }">
               <a-list-item @click="selectItem(item)" class="list-item">
                 <a-list-item-meta>
                   <template #title>
-                    <span>
-                      <a-tag class="method-tag" v-if="item.method" :color="getMethodColor(item.method)">{{ item.method }}</a-tag>
+                    <span class="title" :title="item.name">
+                      <a-tag class="method-tag" v-if="item.method" :color="getMethodColor(item.method)">{{
+                          item.method
+                        }}</a-tag>
                       {{ item.name }}
                     </span>
                   </template>
                   <template #description>
-                    <a v-if="item.description || item.url">{{ item.url || item.description }}</a>
+                    <a class="description" :title="item.url || item.description" href="javascript:void (0)"
+                       v-if="item.description || item.url">{{ item.url || item.description }}</a>
                   </template>
                   <template #avatar>
-                    <CloudServerOutlined v-if="!item.method" style="font-size: 20px"/>
-                    <ReadOutlined v-else style="font-size: 20px"/>
+                    <CloudServerOutlined v-if="!item.method" style="font-size: 20px;margin-top: 2px;"/>
+                    <ReadOutlined v-else style="font-size: 20px;margin-top: 2px;"/>
                   </template>
                 </a-list-item-meta>
               </a-list-item>
             </template>
           </a-list>
+          <a-empty v-else :image="Empty.PRESENTED_IMAGE_SIMPLE" :description="'请输入合适的关键词'"/>
         </div>
       </template>
       <div class="search">
@@ -52,7 +60,7 @@
     <div class="space"/>
     <div class="action">
       <a-dropdown class="version-info" style="width: 100px;" placement="bottomCenter">
-        <a-button :size="'small'" >
+        <a-button :size="'small'">
           文档版本：Latest
           <DownOutlined/>
         </a-button>
@@ -72,11 +80,12 @@
       </a-dropdown>
 
       <a-dropdown class="version-info" style="width: 100px;" placement="bottomLeft">
-        <a-button :size="'small'"  type="text">
+        <a-button :size="'small'" type="text">
           <template #icon>
             <ShareAltOutlined class="action-item"/>
           </template>
-          分享</a-button>
+          分享
+        </a-button>
         <template #overlay>
           <a-menu>
             <a-menu-item>
@@ -94,7 +103,7 @@
 
       <a-tooltip placement="bottom">
         <template #title>全屏</template>
-        <a-button  type="text" class="share-btn">
+        <a-button type="text" class="share-btn">
           <FullscreenOutlined style="font-size: 14px"/>
         </a-button>
       </a-tooltip>
@@ -110,7 +119,7 @@ import {
   defineEmits,
   computed, watch,
 } from 'vue';
-
+import { Empty } from 'ant-design-vue';
 import {
   DownOutlined,
   RightOutlined,
@@ -123,18 +132,20 @@ import {
 } from '@ant-design/icons-vue';
 import {useMagicKeys} from '@vueuse/core'
 import {getCodeColor, getMethodColor} from "../hooks/index"
+import debounce from "lodash.debounce";
 
 const searchInputRef: any = ref(null);
 const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
 
 const shortCutText = ref(isMac ? '⌘ K' : 'Ctrl K');
 
+
 const props = defineProps({
   items: {
     required: true,
     type: Object,
   },
-  data:{
+  data: {
     required: true,
     type: Object,
   }
@@ -157,7 +168,7 @@ const title = computed(() => {
 })
 
 function selectItem(item) {
-  emit('select', item);
+  emit('select', item?.value);
   keywords.value = null;
 }
 
@@ -169,7 +180,8 @@ function focus() {
 }
 
 const visible = computed(() => {
-  return data?.value?.length && keywords.value;
+  // console.log(searchInputRef?.value?.isFocused())
+  return keywords.value || isFocus.value;
 })
 
 function blur() {
@@ -190,9 +202,7 @@ watch(cmdK, (v) => {
 })
 
 
-watch(() => {
-  return keywords.value
-}, (newVal: any) => {
+function keywordsChange(newVal) {
   if (newVal && props?.items?.length) {
     let lists: any = [];
     const keyword = newVal.toLowerCase();
@@ -206,16 +216,23 @@ watch(() => {
           name: item.name,
           method: item.method,
           url: item.url,
-          description: item.description
+          description: item.description,
+          value:item
         })
       }
     })
     data.value = [...lists];
-  }else {
+  } else {
     data.value = [];
   }
-});
 
+}
+
+watch(() => {
+  return keywords.value
+}, (newVal: any) => {
+  debounce(keywordsChange, 200)(newVal);
+});
 
 
 </script>
@@ -320,16 +337,19 @@ watch(() => {
 
 
 .select-content {
-  width: 400px;
+  width: 450px;
   max-height: 400px;
   overflow-y: scroll;
   border-radius: 6px;
   background: #fff;
+  padding: 12px 24px;
 }
-.list-item{
-  cursor:pointer;
+
+.list-item {
+  cursor: pointer;
 }
-.share-btn{
+
+.share-btn {
   text-align: center;
   align-items: center;
   justify-content: center;
@@ -338,8 +358,17 @@ watch(() => {
   height: 32px;
 }
 
-.method-tag{
+.method-tag {
   transform: scale(0.85);
   margin-right: 3px;
+}
+
+.title, .description {
+  //  超出一行加省略号
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+  display: inline-block;
 }
 </style>

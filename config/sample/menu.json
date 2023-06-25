@@ -362,5 +362,40 @@
     "path":"",
     "type":"button",
     "parent":"project-setting-members"
+  },
+  {
+    "code":"user-manage-list",
+    "title":"成员",
+    "path":"",
+    "type":"button",
+    "parent":""
+  },
+  {
+    "code":"user-manage-my-approval",
+    "title":"我的审批",
+    "path":"",
+    "type":"button",
+    "parent":""
+  },
+  {
+    "code":"user-manage-my-apply",
+    "title":"我的申请",
+    "path":"",
+    "type":"button",
+    "parent":""
+  },
+  {
+    "code":"user-manage-edit",
+    "title":"编辑",
+    "path":"",
+    "type":"button",
+    "parent":""
+  },
+  {
+    "code":"user-manage-delete",
+    "title":"删除",
+    "path":"",
+    "type":"button",
+    "parent":""
   }
 ]

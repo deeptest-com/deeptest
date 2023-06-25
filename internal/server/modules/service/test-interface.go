@@ -52,6 +52,7 @@ func (s *TestInterfaceService) Save(req serverDomain.TestInterfaceSaveReq) (test
 				Method: consts.GET,
 			},
 		},
+		ServeId: req.ServeId,
 	}
 	err = s.DebugInterfaceRepo.Save(&debugInterface)
 	testInterface.DebugInterfaceId = debugInterface.ID

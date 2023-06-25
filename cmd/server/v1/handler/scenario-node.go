@@ -44,7 +44,7 @@ func (c *ScenarioNodeCtrl) AddInterfacesFromDefine(ctx iris.Context) {
 	}
 
 	req.CreateBy = multi.GetUserId(ctx)
-	nodePo, bizErr := c.ScenarioNodeService.AddInterfaces(req)
+	nodePo, bizErr := c.ScenarioNodeService.AddInterfacesFromDefine(req)
 	if bizErr != nil {
 		ctx.JSON(_domain.Response{
 			Code: _domain.SystemErr.Code,
@@ -65,7 +65,7 @@ func (c *ScenarioNodeCtrl) AddInterfacesFromTest(ctx iris.Context) {
 	}
 
 	req.CreateBy = multi.GetUserId(ctx)
-	nodePo, bizErr := c.ScenarioNodeService.AddInterfacesFromDebuggerTree(req)
+	nodePo, bizErr := c.ScenarioNodeService.AddInterfacesFromTest(req)
 	if bizErr != nil {
 		ctx.JSON(_domain.Response{
 			Code: _domain.SystemErr.Code,

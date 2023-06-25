@@ -53,10 +53,13 @@ const onCancel = () => {
 
 </script>
 
-<style scoped lang="less">
+<style lang="less">
 .modal-tree-selection {
-  .ant-modal-body {
-    padding-top: 5px;
+  .ant-modal {
+    .ant-modal-content {
+      .ant-modal-body {
+      }
+    }
   }
 }
 </style>

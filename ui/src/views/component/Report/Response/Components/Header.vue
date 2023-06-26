@@ -1,6 +1,6 @@
 <template>
     <div class="headers">
-        <a-table :dataSource="data" :columns="columns"/>
+        <a-table :dataSource="list" :columns="columns"/>
     </div>
 </template>
 <script setup lang="ts">

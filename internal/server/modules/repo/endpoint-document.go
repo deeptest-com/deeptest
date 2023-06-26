@@ -37,6 +37,14 @@ func (r *EndpointDocumentRepo) GetByVersionAndProject(version string, projectId 
 	return
 }
 
+func (r *EndpointDocumentRepo) GetById(id uint) (document model.EndpointDocument, err error) {
+	err = r.DB.Model(&model.EndpointDocument{}).
+		Where("id = ?", id).
+		First(&document).Error
+
+	return
+}
+
 func (r *EndpointDocumentRepo) Create(req v1.DocumentVersionReq, projectId uint) (id uint, err error) {
 	document := model.EndpointDocument{
 		Name:      req.Name,

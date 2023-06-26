@@ -98,20 +98,20 @@ func (c *DocumentCtrl) GetShareLink(ctx iris.Context) {
 		return
 	}
 
-	link, err := c.DocumentService.GenerateShareLink(req)
+	code, err := c.DocumentService.GenerateShareLink(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
-	res := iris.Map{"link": link}
+	res := iris.Map{"code": code}
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
 	return
 }
 
 func (c *DocumentCtrl) GetContentsByShareLink(ctx iris.Context) {
-	link := ctx.URLParam("link")
+	link := ctx.URLParam("code")
 	if link == "" {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: "link can't be empty"})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: "code can't be empty"})
 		return
 	}
 

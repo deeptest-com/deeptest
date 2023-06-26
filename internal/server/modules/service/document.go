@@ -264,9 +264,21 @@ func (s *DocumentService) ContentByShare(link string) (res domain.DocumentRep, e
 		return
 	}
 
+	var version string
+	if documentId == 0 {
+		version = "latest"
+	} else {
+		document, err := s.EndpointDocumentRepo.GetById(documentId)
+		if err != nil {
+			return res, err
+		}
+		version = document.Version
+	}
+
 	res = s.GetProject(projectId)
 
 	res.Serves = s.GetServes(serveIds, endpoints)
+	res.Version = version
 
 	return
 }

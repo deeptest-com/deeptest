@@ -14,7 +14,8 @@
 
       <a-form-item label="是否新建版本" name="isNewVersion">
         <a-space direction="vertical">
-          <a-radio-group  style="width: 400px" v-model:value="formState.isNewVersion" button-style="solid" :options="pubOptions"/>
+          <a-radio-group style="width: 400px" v-model:value="formState.isNewVersion" button-style="solid"
+                         :options="pubOptions"/>
         </a-space>
       </a-form-item>
 
@@ -91,7 +92,6 @@ async function ok() {
       .validate()
       .then(async () => {
 
-        debugger;
         let name: any = '';
         let version: any = '';
         if (formState.value.isNewVersion) {
@@ -112,7 +112,7 @@ async function ok() {
               endpointIds: props.endpointIds.map((item: any) => Number(item)),
             }
         );
-        if(res) {
+        if (res) {
           message.success('发布成功');
         }
         reset();
@@ -150,7 +150,7 @@ watch(() => {
     versionOptions.value = res.map((item: any) => {
       return {
         ...item,
-        label: `${item.name}（${item.version}）`,
+        label: item.name ? `${item.version}（${item.name}）` : item.version,
         value: item.version,
       }
     });
@@ -161,11 +161,11 @@ watch(() => {
 
 const rules = computed(() => {
 
-  if(formState.value.isNewVersion) {
+  if (formState.value.isNewVersion) {
     return {
       isNewVersion: [{required: true}],
       name: [{required: false, message: '请输入版本描述信息'}],
-      version: [{required: true, message: '请输入正确版本号信息，示例 1.0.0 ',pattern: /^\d{1,2}\.\d{1,2}\.\d{1,2}$/}],
+      version: [{required: true, message: '请输入正确版本号信息，示例 1.0.0 ', pattern: /^\d{1,2}\.\d{1,2}\.\d{1,2}$/}],
     }
   } else {
     return {

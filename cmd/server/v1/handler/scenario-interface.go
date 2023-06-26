@@ -35,7 +35,7 @@ func (c *ScenarioInterfaceCtrl) SaveDebugData(ctx iris.Context) {
 
 func (c *ScenarioInterfaceCtrl) ResetDebugData(ctx iris.Context) {
 	createBy := multi.GetUserId(ctx)
-	scenarioProcessorId, err := ctx.Params().GetInt("scenarioProcessorId")
+	scenarioProcessorId, err := ctx.URLParamInt("scenarioProcessorId")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return

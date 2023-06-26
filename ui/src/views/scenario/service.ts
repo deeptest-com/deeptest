@@ -350,8 +350,8 @@ export async function saveDebugData(interf: Interface): Promise<any> {
     });
 }
 
-export async function syncDebugData(scenarioProcessorIdForDebug: number): Promise<any> {
-    const params = {scenarioProcessorIdForDebug}
+export async function syncDebugData(scenarioProcessorId: number): Promise<any> {
+    const params = {scenarioProcessorId}
 
     return request({
         url: `/scenarios/interface/resetDebugData`,

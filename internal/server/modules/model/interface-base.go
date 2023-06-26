@@ -63,7 +63,7 @@ type InterfaceBodyFormUrlEncodedItemBase struct {
 type InterfaceHeaderBase struct {
 	Name        string `json:"name"`
 	Desc        string `json:"desc"`
-	Value       string `json:"value" gorm:"type:text"`
+	Value       string `gorm:"type:text" json:"value"`
 	Type        string `json:"type"`
 	InterfaceId uint   `json:"interfaceId"`
 }

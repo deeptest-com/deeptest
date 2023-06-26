@@ -508,7 +508,7 @@ const StoreModel: ModuleType = {
         },
         async getCategoryNode({commit}, payload: any) {
             try {
-                if (!payload) {
+                if (payload) {
                     commit('setNodeCategory', {});
                     return true;
                 }

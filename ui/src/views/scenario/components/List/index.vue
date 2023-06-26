@@ -182,8 +182,7 @@ let queryParams = reactive<QueryParams>({
 const currModelId = ref(0)
 
 watch(nodeDataCategory, () => {
-  console.log('watch nodeDataCategory', nodeDataCategory.value.id)
-  getList(1, nodeDataCategory.value.id);
+  getList(1, nodeDataCategory.value?.id || 0);
 }, {deep: false})
 
 watch(currProject, () => {

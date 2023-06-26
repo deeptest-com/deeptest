@@ -86,7 +86,7 @@ const listServer = async (serverId) => {
 }
 
 watch(debugData, (val) => {
-  console.log('-----', debugData.value.serverId)
+  console.log('watch debugData', debugData.value.serverId)
   listServer(debugData.value.serverId)
 }, {immediate: true, deep: true});
 

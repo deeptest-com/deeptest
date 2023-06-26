@@ -11,7 +11,6 @@ import (
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
-	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	_fileUtils "github.com/aaronchen2k/deeptest/pkg/lib/file"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"go.uber.org/zap"
@@ -51,7 +50,7 @@ func (r *ProjectRepo) Paginate(req v1.ProjectReqPaginate, userId uint) (data _do
 		db = db.Where("name LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords))
 	}
 	if req.Enabled != "" {
-		db = db.Where("disabled = ?", commonUtils.IsDisable(req.Enabled))
+		db = db.Where("disabled = ?", _commUtils.IsDisable(req.Enabled))
 	}
 
 	err = db.Count(&count).Error
@@ -340,7 +339,7 @@ func (r *ProjectRepo) CombineRoleForProject(projects []model.Project, projectRol
 	for _, v := range projectRoleMap {
 		roleIds = append(roleIds, v)
 	}
-	roleIds = commonUtils.ArrayRemoveUintDuplication(roleIds)
+	roleIds = _commUtils.ArrayRemoveUintDuplication(roleIds)
 
 	roleIdNameMap, err := r.ProjectRoleRepo.GetRoleIdNameMap(roleIds)
 	if err != nil {

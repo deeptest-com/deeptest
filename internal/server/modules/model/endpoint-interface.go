@@ -15,7 +15,7 @@ type EndpointInterface struct {
 }
 type SchemaParam struct {
 	Name        string  `json:"name"`
-	Value       string  `json:"value"`
+	Value       string  `json:"value"  gorm:"type:text"`
 	Type        string  `json:"type"`
 	Desc        string  `json:"desc"`
 	InterfaceId uint    `json:"interfaceId"`

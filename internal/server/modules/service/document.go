@@ -1,10 +1,14 @@
 package service
 
 import (
+	"encoding/base64"
 	domain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
+	commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	"github.com/jinzhu/copier"
+	"strconv"
+	"strings"
 )
 
 type DocumentService struct {
@@ -15,6 +19,10 @@ type DocumentService struct {
 	EndpointDocumentRepo *repo.EndpointDocumentRepo `inject:""`
 	EndpointSnapshotRepo *repo.EndpointSnapshotRepo `inject:""`
 }
+
+const (
+	EncryptKey = "docencryptkey123"
+)
 
 func (s *DocumentService) Content(req domain.DocumentReq) (res domain.DocumentRep, err error) {
 	var projectId, documentId uint
@@ -145,8 +153,6 @@ func (s *DocumentService) GetGlobalVars(projectId uint) (globalVars []domain.Env
 }
 
 func (s *DocumentService) GetDocumentVersionList(projectId uint, needLatest bool) (documents []model.EndpointDocument, err error) {
-	documents, err = s.EndpointDocumentRepo.ListByProject(projectId)
-
 	if needLatest {
 		latestDocument := model.EndpointDocument{
 			Name:    "实时版本",
@@ -155,6 +161,12 @@ func (s *DocumentService) GetDocumentVersionList(projectId uint, needLatest bool
 		documents = append(documents, latestDocument)
 	}
 
+	documentsTmp, err := s.EndpointDocumentRepo.ListByProject(projectId)
+	if err != nil {
+		return
+	}
+
+	documents = append(documents, documentsTmp...)
 	return
 }
 
@@ -175,5 +187,86 @@ func (s *DocumentService) UpdateSnapshotContent(id uint, endpoint model.Endpoint
 
 func (s *DocumentService) UpdateDocument(req domain.UpdateDocumentVersionReq) (err error) {
 	err = s.EndpointDocumentRepo.Update(req)
+	return
+}
+
+func (s *DocumentService) GenerateShareLink(req domain.DocumentShareReq) (link string, err error) {
+	encryptValue := strconv.Itoa(int(req.ProjectId)) + "-" + strconv.Itoa(int(req.DocumentId)) + "-" + strconv.Itoa(int(req.EndpointId))
+	res, err := commUtils.AesCBCEncrypt([]byte(encryptValue), []byte(EncryptKey))
+	link = base64.StdEncoding.EncodeToString(res)
+	return
+}
+
+func (s *DocumentService) DecryptShareLink(link string) (req domain.DocumentShareReq, err error) {
+	linkByte, err := base64.StdEncoding.DecodeString(link)
+	if err != nil {
+		return
+	}
+
+	decryptValue, err := commUtils.AesCBCDecrypt(linkByte, []byte(EncryptKey))
+	if err != nil {
+		return
+	}
+
+	DocumentShareArr := strings.Split(string(decryptValue), "-")
+
+	projectId, _ := strconv.Atoi(DocumentShareArr[0])
+	documentId, _ := strconv.Atoi(DocumentShareArr[1])
+	endpointId, _ := strconv.Atoi(DocumentShareArr[2])
+	req.ProjectId = uint(projectId)
+	req.DocumentId = uint(documentId)
+	req.EndpointId = uint(endpointId)
+
+	return
+}
+
+func (s *DocumentService) GetEndpointsByShare(projectId, endpointId *uint, serveIds *[]uint, documentId uint) (res map[uint][]domain.EndpointReq, err error) {
+	var endpoints []*model.Endpoint
+	if documentId != 0 {
+		if *endpointId != 0 {
+			endpoints, err = s.EndpointSnapshotRepo.GetByDocumentIdAndEndpointId(documentId, *endpointId)
+		} else {
+			endpoints, err = s.EndpointSnapshotRepo.GetByDocumentId(documentId)
+		}
+	} else if *projectId != 0 {
+		if *endpointId != 0 {
+			endpoints, err = s.EndpointRepo.GetByEndpointIds([]uint{*endpointId})
+		} else {
+			endpoints, err = s.EndpointRepo.GetByProjectId(*projectId)
+		}
+	}
+	if err != nil {
+		return
+	}
+
+	if err != nil {
+		return
+	}
+
+	res = s.GetEndpointsInfo(projectId, serveIds, endpoints)
+
+	return
+}
+
+func (s *DocumentService) ContentByShare(link string) (res domain.DocumentRep, err error) {
+	var projectId, documentId, endpointId uint
+	var serveIds []uint
+
+	req, err := s.DecryptShareLink(link)
+	if err != nil {
+		return
+	}
+
+	projectId, endpointId, documentId = req.ProjectId, req.EndpointId, req.DocumentId
+
+	endpoints, err := s.GetEndpointsByShare(&projectId, &endpointId, &serveIds, documentId)
+	if err != nil {
+		return
+	}
+
+	res = s.GetProject(projectId)
+
+	res.Serves = s.GetServes(serveIds, endpoints)
+
 	return
 }

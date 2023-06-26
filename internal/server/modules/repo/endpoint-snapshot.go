@@ -69,6 +69,22 @@ func (r *EndpointSnapshotRepo) GetByDocumentId(documentId uint) (endpoints []*mo
 	return
 }
 
+func (r *EndpointSnapshotRepo) GetByDocumentIdAndEndpointId(documentId, endpointId uint) (endpoints []*model.Endpoint, err error) {
+	var snapshot model.EndpointSnapshot
+	err = r.DB.Where("document_id = ?", documentId).
+		Where("endpoint_id = ? and not deleted and not disabled", endpointId).
+		Find(&snapshot).Error
+	if err != nil {
+		return
+	}
+
+	var endpoint model.Endpoint
+	_ = json.Unmarshal([]byte(snapshot.Content), &endpoint)
+	endpoints = append(endpoints, &endpoint)
+
+	return
+}
+
 func (r *EndpointSnapshotRepo) DeleteById(id uint) (err error) {
 	err = r.DB.
 		Where("id = ?", id).

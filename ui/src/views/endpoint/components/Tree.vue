@@ -41,7 +41,7 @@
                           <a-menu-item key="0" @click="newCategorie(nodeProps)">
                              新建子分类
                           </a-menu-item>
-                          <a-menu-item :disabled="nodeProps.id === -1" key="1" @click="deleteCategorie(nodeProps)">
+                          <a-menu-item :disabled="nodeProps.id === -1 || nodeProps.count > 0" key="1" @click="deleteCategorie(nodeProps)">
                             删除分类
                           </a-menu-item>
                           <a-menu-item :disabled="nodeProps.id === -1" key="1" @click="editCategorie(nodeProps)">

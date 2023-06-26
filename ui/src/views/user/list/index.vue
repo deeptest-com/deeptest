@@ -2,6 +2,8 @@
   <div class="user-main-list">
     <a-tabs v-model:activeKey="activeKey">
       <a-tab-pane key="1" tab="成员">
+        <Member/>
+        <!----
         <a-card :bordered="false">
           <template #title>
             <a-button type="primary" @click="() => edit(0)">新建用户</a-button>
@@ -43,8 +45,12 @@
             </a-table>
           </div>
         </a-card>
+      --->
       </a-tab-pane>
       <a-tab-pane key="2" tab="我的审批" force-render>
+        <Audit/>
+        <!---
+      
         <a-card :bordered="false">
           <a-table
             row-key="id"
@@ -75,9 +81,13 @@
               >
             </template>
           </a-table>
-        </a-card></a-tab-pane
+        </a-card>
+      -->
+        </a-tab-pane
       >
       <a-tab-pane key="3" tab="我的申请" force-render>
+        <Apply/>
+        <!--
         <a-card :bordered="false">
           <a-table
             row-key="id"
@@ -99,11 +109,13 @@
               {{ text == 0 ? "待审批" : text == 1 ? "已同意" : "已拒绝" }}
             </template>
           </a-table>
-        </a-card></a-tab-pane
+        </a-card>
+      --->
+        </a-tab-pane
       >
     </a-tabs>
   </div>
-
+  <!--
   <a-modal
     v-model:visible="visible"
     @ok="handleOk"
@@ -134,8 +146,15 @@
       >
     </template>
   </a-modal>
+-->
 </template>
 <script setup lang="ts">
+
+import Member from "./member/member.vue";
+import Audit from "./audit/audit.vue";
+import Apply from "./apply/apply.vue";
+/*
+
 import { PaginationConfig, QueryParams, User } from "../data.d";
 
 import { computed, onMounted, reactive, ref, watch } from "vue";
@@ -143,11 +162,12 @@ import { useStore } from "vuex";
 import { Modal, notification } from "ant-design-vue";
 import { NotificationKeyCommon } from "@/utils/const";
 import debounce from "lodash.debounce";
-import { useRouter } from "vue-router";
+
 import { getAuditList, doAudit } from "@/views/project/service";
 import EditPage from "../edit/edit.vue";
 
-const router = useRouter();
+
+
 const store = useStore();
 
 const list = computed<User[]>(() => store.state.UserInternal.queryResult.list);
@@ -422,6 +442,7 @@ watch(
     immediate: true,
   }
 );
+*/
 </script>
 <style lang="less" scoped>
 .user-main-list {

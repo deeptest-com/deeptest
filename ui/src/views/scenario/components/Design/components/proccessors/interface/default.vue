@@ -52,8 +52,7 @@
 <script setup lang="ts">
 import {useI18n} from "vue-i18n";
 
-
-import {computed, onMounted, provide, ref} from "vue";
+import {computed, inject, onMounted, provide, ref} from "vue";
 import {Form, notification} from 'ant-design-vue';
 import {useStore} from "vuex";
 import { EnvironmentOutlined, HistoryOutlined } from '@ant-design/icons-vue';
@@ -75,12 +74,14 @@ import {StateType as Scenario} from "@/views/scenario/store";
 
 provide('usedBy', UsedBy.ScenarioDebug)
 
+const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
 
 const tabKey = ref('env')
 
 const store = useStore<{  Debug: Debug, Scenario: Scenario }>();
 const debugData = computed<any>(() => store.state.Debug.debugData);
+const scenarioProcessorIdForDebug = computed<number>(() => store.state.Scenario.scenarioProcessorIdForDebug);
 
 const invokeInterface = async () => {
   console.log('invokeInterface', debugData.value)
@@ -117,7 +118,15 @@ const saveScenarioInterface = async (data) => {
 
 const syncDebugData = async () => {
   console.log('syncDebugData')
-  await store.dispatch('Debug/syncDebugData');
+
+  const resp = store.dispatch('Scenario/syncDebugData');
+  if (resp) {
+    store.dispatch('Debug/loadDataAndInvocations', {
+      // endpointInterfaceId: endpointInterfaceIdForDebug.value,
+      scenarioProcessorId: scenarioProcessorIdForDebug.value,
+      usedBy: usedBy,
+    });
+  }
 };
 
 onMounted(() => {

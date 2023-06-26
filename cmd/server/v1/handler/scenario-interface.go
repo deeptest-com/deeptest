@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
@@ -25,25 +24,13 @@ func (c *ScenarioInterfaceCtrl) SaveDebugData(ctx iris.Context) {
 		return
 	}
 
-	po, err := c.ScenarioInterfaceService.SaveDebugData(req)
+	_, err = c.ScenarioInterfaceService.SaveDebugData(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
-	loadReq := domain.DebugReq{
-		EndpointInterfaceId: po.EndpointInterfaceId,
-		DebugInterfaceId:    req.DebugInterfaceId,
-		UsedBy:              consts.ScenarioDebug,
-	}
-
-	data, err := c.DebugInterfaceService.Load(loadReq)
-	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
-		return
-	}
-
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code})
 }
 
 func (c *ScenarioInterfaceCtrl) ResetDebugData(ctx iris.Context) {
@@ -60,16 +47,5 @@ func (c *ScenarioInterfaceCtrl) ResetDebugData(ctx iris.Context) {
 		return
 	}
 
-	loadReq := domain.DebugReq{
-		ScenarioProcessorId: uint(scenarioProcessorId),
-		UsedBy:              consts.ScenarioDebug,
-	}
-
-	data, err := c.DebugInterfaceService.Load(loadReq)
-	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
-		return
-	}
-
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code})
 }

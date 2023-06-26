@@ -91,8 +91,8 @@ func (s *ScenarioInterfaceService) SetProps(
 func (s *ScenarioInterfaceService) SaveDebugData(req domain.DebugData) (debug model.DebugInterface, err error) {
 	s.CopyValueFromRequest(&debug, req)
 
-	endpointInterface, _ := s.EndpointInterfaceRepo.Get(req.EndpointInterfaceId)
-	debug.EndpointId = endpointInterface.EndpointId
+	//endpointInterface, _ := s.EndpointInterfaceRepo.Get(req.EndpointInterfaceId)
+	//debug.EndpointId = endpointInterface.EndpointId
 
 	if req.DebugInterfaceId > 0 {
 		debug.ID = req.DebugInterfaceId

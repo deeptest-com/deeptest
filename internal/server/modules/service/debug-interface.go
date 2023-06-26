@@ -257,18 +257,19 @@ func (s *DebugInterfaceService) GetEndpointAndServeIdForEndpointInterface(endpoi
 
 	return
 }
-func (s *DebugInterfaceService) GetEndpointAndServeIdForDebugInterface(debugInterfaceId uint) (
-	endpointId, serveId uint) {
 
-	debugInterface, _ := s.DebugInterfaceRepo.Get(debugInterfaceId)
-
-	endpointId = debugInterface.EndpointId
-	endpoint, _ := s.EndpointRepo.Get(endpointId)
-
-	serveId = endpoint.ServeId
-
-	return
-}
+//func (s *DebugInterfaceService) GetEndpointAndServeIdForDebugInterface(debugInterfaceId uint) (
+//	endpointId, serveId uint) {
+//
+//	debugInterface, _ := s.DebugInterfaceRepo.Get(debugInterfaceId)
+//
+//	endpointId = debugInterface.EndpointId
+//	endpoint, _ := s.EndpointRepo.Get(endpointId)
+//
+//	serveId = endpoint.ServeId
+//
+//	return
+//}
 func (s *DebugInterfaceService) GetScenarioIdForDebugInterface(processorId uint) (
 	scenarioId uint) {
 

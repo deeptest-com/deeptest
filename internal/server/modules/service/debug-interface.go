@@ -228,6 +228,7 @@ func (s *DebugInterfaceService) SetProps(
 
 	copier.CopyWithOption(&debugData, debugInterfacePo, copier.Option{DeepCopy: true})
 	debugData.EndpointInterfaceId = endpointInterface.ID // reset
+	debugData.ServerId = debugInterfacePo.ServerId
 
 	debugData.DebugInterfaceId = debugInterfacePo.ID
 

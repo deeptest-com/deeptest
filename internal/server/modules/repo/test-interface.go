@@ -77,13 +77,14 @@ func (r *TestInterfaceRepo) toTos(pos []*model.TestInterface) (tos []*serverDoma
 	return
 }
 func (r *TestInterfaceRepo) ToTo(po *model.TestInterface) (to *serverDomain.TestInterface) {
-
 	to = &serverDomain.TestInterface{
-		Id:       int64(po.ID),
-		Title:    po.Title,
-		Desc:     po.Desc,
-		Type:     po.Type,
-		ParentId: int64(po.ParentId),
+		Id:               int64(po.ID),
+		Title:            po.Title,
+		Desc:             po.Desc,
+		Type:             po.Type,
+		ParentId:         int64(po.ParentId),
+		ServeId:          po.ServeId,
+		DebugInterfaceId: po.DebugInterfaceId,
 	}
 
 	if po.Type == serverConsts.TestInterfaceTypeInterface {

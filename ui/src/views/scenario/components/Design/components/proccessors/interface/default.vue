@@ -118,15 +118,7 @@ const saveScenarioInterface = async (data) => {
 
 const syncDebugData = async () => {
   console.log('syncDebugData')
-
-  const resp = store.dispatch('Scenario/syncDebugData');
-  if (resp) {
-    store.dispatch('Debug/loadDataAndInvocations', {
-      // endpointInterfaceId: endpointInterfaceIdForDebug.value,
-      scenarioProcessorId: scenarioProcessorIdForDebug.value,
-      usedBy: usedBy,
-    });
-  }
+  store.dispatch('Scenario/syncDebugData')
 };
 
 onMounted(() => {

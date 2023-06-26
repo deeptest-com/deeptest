@@ -109,22 +109,24 @@ func (s *ScenarioInterfaceService) CopyValueFromRequest(interf *model.DebugInter
 	return
 }
 
-func (s *ScenarioInterfaceService) ResetDebugData(scenarioProcessorId int, createBy uint) (err error) {
+func (s *ScenarioInterfaceService) ResetDebugData(scenarioProcessorId int, createBy uint) (newProcessor model.Processor, err error) {
 	scenarioProcessor, _ := s.ScenarioProcessorRepo.Get(uint(scenarioProcessorId))
 	parentProcessor, _ := s.ScenarioProcessorRepo.Get(scenarioProcessor.ParentId)
 	debugInterface, _ := s.DebugInterfaceRepo.Get(scenarioProcessor.EntityId)
 
-	s.DebugInterfaceRepo.Delete(scenarioProcessor.EntityId)
-
 	if debugInterface.TestInterfaceId > 0 {
 		testInterface, _ := s.TestInterfaceRepo.Get(debugInterface.TestInterfaceId)
 		testInterfaceTo := s.TestInterfaceRepo.ToTo(&testInterface)
-		s.ScenarioNodeService.createDirOrInterfaceFromTest(testInterfaceTo, parentProcessor)
+		newProcessor, err = s.ScenarioNodeService.createDirOrInterfaceFromTest(testInterfaceTo, parentProcessor)
 
 	} else if debugInterface.EndpointInterfaceId > 0 {
 		serveId := uint(0)
-		s.ScenarioNodeService.createInterfaceFromDefine(debugInterface.EndpointInterfaceId, &serveId, createBy, parentProcessor, scenarioProcessor.Name)
+		newProcessor, err = s.ScenarioNodeService.createInterfaceFromDefine(debugInterface.EndpointInterfaceId, &serveId, createBy, parentProcessor, scenarioProcessor.Name)
 	}
+
+	// must put below, since creation will use its DebugInterface
+	s.DebugInterfaceRepo.Delete(scenarioProcessor.EntityId)
+	s.ScenarioProcessorRepo.Delete(scenarioProcessor.ID)
 
 	return
 }

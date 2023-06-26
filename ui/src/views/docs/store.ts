@@ -87,7 +87,7 @@ const StoreModel: ModuleType = {
                 ...payload,
             });
             if (res.code === 0) {
-                return res.data;
+                return res;
             } else {
                 return null;
             }

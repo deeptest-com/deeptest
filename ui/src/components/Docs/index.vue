@@ -2,7 +2,7 @@
 <template>
   <div class="content" v-if="data?.name">
     <DocsHeader v-if="showHeader"
-                :data="items"
+                :data="data"
                 :items="serviceList"
                 @select="selectSugRes"
                 @changeVersion="changeVersion"/>
@@ -36,18 +36,6 @@ const store = useStore<{ Endpoint, ProjectGlobal }>();
 const props = defineProps(['showMenu', 'data', 'onlyShowDocs', 'showHeader']);
 const emit = defineEmits(['changeVersion']);
 
-const items = computed(() => {
-  return [
-    {
-      label: '项目名称',
-      value: props?.data?.name,
-    },
-    {
-      label: '项目描述',
-      value: props?.data?.desc,
-    },
-  ]
-})
 
 const serviceList = computed(() => {
   // 组装数据以兼容组件 LeftTreeMenu

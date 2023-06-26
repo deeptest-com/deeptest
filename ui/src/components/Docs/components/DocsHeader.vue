@@ -68,7 +68,7 @@
           <DownOutlined/>
         </a-button>
         <template #overlay>
-          <a-menu v-if="!isDocsSharePage">
+          <a-menu v-if="!isDocsSharePage && !isDocsViewPage">
             <a-menu-item v-for="version in versions" :key="version" @click="selectVersion(version)">
               <span class="version-text">{{ version.version }}</span>
             </a-menu-item>
@@ -83,7 +83,6 @@
           分享链接
         </a-button>
       </a-tooltip>
-
       <!--      <a-tooltip placement="bottom" :title="'复制分享链接'">-->
       <!--        <a-button :size="'small'" type="text" @click="copyUrl">-->
       <!--          <template #icon>-->
@@ -92,7 +91,6 @@
       <!--          复制-->
       <!--        </a-button>-->
       <!--      </a-tooltip>-->
-
       <a-tooltip placement="bottom" @click="toggle">
         <template #title>全屏</template>
         <a-button type="text" class="share-btn">
@@ -136,7 +134,7 @@ const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
 const shortCutText = ref(isMac ? '⌘ K' : 'Ctrl K');
 
 // 复制链接
-const source = ref('Hello111')
+const source = ref('')
 
 const {text, copy, copied, isSupported} = useClipboard({source});
 const {isFullscreen, enter, exit, toggle} = useFullscreen();
@@ -148,6 +146,7 @@ const router = useRouter();
 const path: any = router.currentRoute.value.path;
 // 是否分享页面
 const isDocsSharePage = path.includes('/share');
+const isDocsViewPage = path.includes('/view');
 
 const store = useStore<{ Docs, ProjectGlobal }>();
 
@@ -175,7 +174,8 @@ const cmdK = keys['Command+K'];
 
 // 默认版本 ID 为 0 ，即最新版本
 const currentVersion = computed(() => {
-  return versions.value.find((item) => item.id === store.state.Docs.currDocId)?.version;
+  const version = versions.value.find((item) => item.id === store.state.Docs.currDocId)?.version;
+  return version || data.value.version || 'latest';
 })
 
 const versions = computed(() => {
@@ -183,8 +183,9 @@ const versions = computed(() => {
 })
 
 const title = computed(() => {
-  return props.data?.[0]?.value
+  return props.data?.name;
 })
+
 
 function selectItem(item) {
   emit('select', item?.value);
@@ -227,7 +228,7 @@ watch(cmdK, (v) => {
 
 async function shareDocs() {
   // 如果是分享页面，则直接复制链接即可
-  if(isDocsSharePage){
+  if(isDocsSharePage || isDocsViewPage){
     source.value = `${window.location.href}`;
     copyUrl();
     return

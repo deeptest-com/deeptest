@@ -28,6 +28,7 @@ const query: any = router.currentRoute.value.query;
 const path: any = router.currentRoute.value.path;
 // 是否分享页面
 const isDocsSharePage = path.includes('/share');
+const isDocsViewPage = path.includes('/view');
 
 const endpointIds: any = computed(() => {
   if (query.endpointIds) {
@@ -51,15 +52,6 @@ const serveIds: any = computed(() => {
 
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const currDocId = computed<any>(() => store.state.Docs.currDocId);
-
-
-const documentId: any = computed(() => {
-  if (query.endpointIds) {
-    return query.documentId;
-  } else {
-    return '';
-  }
-});
 
 const shareId: any = computed(() => {
   if (query.code) {
@@ -124,29 +116,12 @@ watch(() => {
   immediate: true
 })
 
-watch(() => {
-  return documentId.value
-}, async (newVal) => {
-  if (isDocsSharePage) {
-    return;
-  }
-  if (newVal || newVal === 0) {
-    loading.value = true;
-    data.value = await store.dispatch('Docs/getDocs', {
-      documentId: newVal,
-      projectId: currProject.value.id,
-    })
-    loading.value = false;
-  }
-}, {
-  immediate: true
-})
 
 // 监控文档版本的变化
 watch(() => {
   return currDocId.value
 }, async (newVal) => {
-  if (isDocsSharePage) {
+  if (isDocsSharePage || isDocsViewPage) {
     return;
   }
   if (newVal || newVal === 0) {
@@ -163,13 +138,12 @@ watch(() => {
 
 // 获取版本列表
 onMounted(async () => {
-  if (isDocsSharePage) {
+  if (isDocsSharePage || isDocsViewPage) {
     return;
   }
   await store.dispatch('Docs/getVersionList', {
     needLatest: true,
   });
-
 })
 
 watch(() => {return shareId.value}, async (newVal) => {

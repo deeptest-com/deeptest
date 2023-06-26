@@ -18,11 +18,13 @@
         </a-space>
       </a-form-item>
 
-      <a-form-item label="文档名称" name="name" v-if="formState.isNewVersion">
-        <a-input style="width: 400px" v-model:value="formState.name"/>
-      </a-form-item>
-      <a-form-item label="选择版本号" name="version" v-if="formState.isNewVersion">
+
+      <a-form-item label="版本号" name="version" v-if="formState.isNewVersion">
         <a-input style="width: 400px" v-model:value="formState.version"/>
+      </a-form-item>
+
+      <a-form-item label="描述" name="name" v-if="formState.isNewVersion">
+        <a-input style="width: 400px" v-model:value="formState.name"/>
       </a-form-item>
 
       <a-form-item label="版本号" name="selectedVersion" v-if="!formState.isNewVersion">
@@ -162,8 +164,8 @@ const rules = computed(() => {
   if(formState.value.isNewVersion) {
     return {
       isNewVersion: [{required: true}],
-      name: [{required: true, message: '请输入文档名称'}],
-      version: [{required: true, message: '请输入版本号'}],
+      name: [{required: false, message: '请输入版本描述信息'}],
+      version: [{required: true, message: '请输入正确版本号信息，示例 1.0.0 ',pattern: /^\d{1,2}\.\d{1,2}\.\d{1,2}$/}],
     }
   } else {
     return {

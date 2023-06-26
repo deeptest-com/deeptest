@@ -42,7 +42,10 @@
               </a-list-item>
             </template>
           </a-list>
-          <a-empty v-else :image="Empty.PRESENTED_IMAGE_SIMPLE" :description="'请输入合适的关键词搜索文档'"/>
+          <a-empty v-else
+                   image="https://gw.alipayobjects.com/mdn/miniapp_social/afts/img/A*pevERLJC9v0AAAAAAAAAAABjAQAAAQ/original"
+                   :image-style="{height: '80px'}"
+                   :description="'请输入合适的关键词搜索文档'"/>
         </div>
       </template>
       <div class="search">
@@ -61,47 +64,36 @@
     <div class="action">
       <a-dropdown class="version-info" style="width: 100px;" placement="bottomCenter">
         <a-button :size="'small'">
-          文档版本：Latest
+          文档版本：{{ currentVersion }}
           <DownOutlined/>
         </a-button>
         <template #overlay>
           <a-menu>
-            <a-menu-item>
-              <span class="version-text">v1.0.1</span>
-            </a-menu-item>
-            <a-menu-item>
-              <span class="version-text">v1.0.1</span>
-            </a-menu-item>
-            <a-menu-item>
-              <span class="version-text">v1.2.1</span>
+            <a-menu-item v-for="version in versions" :key="version" @click="selectVersion(version)">
+              <span class="version-text">{{ version.version }}</span>
             </a-menu-item>
           </a-menu>
         </template>
       </a-dropdown>
-
-      <a-dropdown class="version-info" style="width: 100px;" placement="bottomLeft">
-        <a-button :size="'small'" type="text">
+      <a-tooltip placement="bottom" :title="'分享文档'">
+        <a-button :size="'small'" type="text" @click="shareDocs">
           <template #icon>
             <ShareAltOutlined class="action-item"/>
           </template>
           分享
         </a-button>
-        <template #overlay>
-          <a-menu>
-            <a-menu-item>
-              <span class="version-text">分享文档</span>
-            </a-menu-item>
-            <a-menu-item>
-              <span class="version-text">关闭分享</span>
-            </a-menu-item>
-            <a-menu-item>
-              <span class="version-text">复制链接</span>
-            </a-menu-item>
-          </a-menu>
-        </template>
-      </a-dropdown>
+      </a-tooltip>
 
-      <a-tooltip placement="bottom">
+      <a-tooltip placement="bottom" :title="'复制分享链接'">
+        <a-button :size="'small'" type="text" @click="copyUrl">
+          <template #icon>
+            <CopyOutlined class="action-item"/>
+          </template>
+          复制
+        </a-button>
+      </a-tooltip>
+
+      <a-tooltip placement="bottom" @click="toggle">
         <template #title>全屏</template>
         <a-button type="text" class="share-btn">
           <FullscreenOutlined style="font-size: 14px"/>
@@ -117,9 +109,9 @@ import {
   ref,
   defineProps,
   defineEmits,
-  computed, watch,
+  computed, watch, createVNode, onMounted,
 } from 'vue';
-import { Empty } from 'ant-design-vue';
+import {Empty, message} from 'ant-design-vue';
 import {
   DownOutlined,
   RightOutlined,
@@ -128,17 +120,30 @@ import {
   CloudServerOutlined,
   ReadOutlined,
   FullscreenOutlined,
-  FullscreenExitOutlined
+  FullscreenExitOutlined,
+  ExclamationCircleOutlined,
+  CopyOutlined
 } from '@ant-design/icons-vue';
 import {useMagicKeys} from '@vueuse/core'
 import {getCodeColor, getMethodColor} from "../hooks/index"
 import debounce from "lodash.debounce";
+import {Modal} from 'ant-design-vue';
+import {useClipboard, useFullscreen} from '@vueuse/core'
 
 const searchInputRef: any = ref(null);
 const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
 
 const shortCutText = ref(isMac ? '⌘ K' : 'Ctrl K');
 
+// 复制链接
+const source = ref('Hello111')
+
+const {text, copy, copied, isSupported} = useClipboard({source});
+const {isFullscreen, enter, exit, toggle} = useFullscreen();
+
+import {useStore} from "vuex";
+
+const store = useStore<{ Docs, ProjectGlobal }>();
 
 const props = defineProps({
   items: {
@@ -148,20 +153,30 @@ const props = defineProps({
   data: {
     required: true,
     type: Object,
-  }
+  },
+  versions: {
+    required: true,
+    type: Object,
+  },
 })
 const data: any = ref([]);
 
-const emit = defineEmits(['select']);
+const emit = defineEmits(['select', 'changeVersion']);
 
 const expand = ref(true);
 const keys = useMagicKeys()
 const CtrlK = keys['Ctrl+K'];
 const cmdK = keys['Command+K'];
 
-function switchExpand() {
-  expand.value = !expand.value;
-}
+
+// 默认版本 ID 为 0 ，即最新版本
+const currentVersionId = ref(0);
+
+const currentVersion = computed(() => {
+  return props?.versions.find((item) => item.id === currentVersionId.value)?.version;
+})
+
+
 
 const title = computed(() => {
   return props.data?.[0]?.value
@@ -172,15 +187,21 @@ function selectItem(item) {
   keywords.value = null;
 }
 
+function selectVersion(item) {
+  currentVersionId.value = item?.id;
+  emit('changeVersion', item?.id);
+}
+
 const isFocus = ref(false);
 const keywords = ref(null);
+
+const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 
 function focus() {
   isFocus.value = true;
 }
 
 const visible = computed(() => {
-  // console.log(searchInputRef?.value?.isFocused())
   return keywords.value || isFocus.value;
 })
 
@@ -201,6 +222,25 @@ watch(cmdK, (v) => {
   }
 })
 
+function shareDocs() {
+  console.log('shareDocs')
+  Modal.confirm({
+    title: `确定分享版本号为「${title.value}」的文档吗？`,
+    icon: createVNode(ExclamationCircleOutlined),
+    onOk() {
+      message.success('分享成功, 分享链接已复制到剪切板 ');
+    },
+    onCancel() {
+      console.log('Cancel');
+    },
+    class: 'test',
+  });
+}
+
+function copyUrl() {
+  copy(source.value);
+  message.success('复制成功')
+}
 
 function keywordsChange(newVal) {
   if (newVal && props?.items?.length) {
@@ -217,7 +257,7 @@ function keywordsChange(newVal) {
           method: item.method,
           url: item.url,
           description: item.description,
-          value:item
+          value: item
         })
       }
     })
@@ -233,7 +273,6 @@ watch(() => {
 }, (newVal: any) => {
   debounce(keywordsChange, 200)(newVal);
 });
-
 
 </script>
 <style lang="less" scoped>

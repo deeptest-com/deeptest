@@ -18,7 +18,6 @@ export async function getDocs(data: any): Promise<any> {
  * 获取接口文档版本列表，无分页
  * */
 export async function getVersionList(data: any): Promise<any> {
-    debugger;
     return request({
         url: `/document/version_list`,
         method: 'post',

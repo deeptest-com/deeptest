@@ -12,7 +12,11 @@ export interface StateType {
 
 export interface ModuleType extends StoreModuleType<StateType> {
     state: StateType;
-    mutations: {};
+    mutations: {
+        changeCurrDocId: Mutation<StateType>;
+        updateVersionList: Mutation<StateType>;
+        updateDocs: Mutation<StateType>;
+    };
     actions: {
         getDocs: Action<StateType, StateType>;
         getVersionList: Action<StateType, StateType>;
@@ -22,7 +26,11 @@ export interface ModuleType extends StoreModuleType<StateType> {
     }
 }
 
-const initState: StateType = {};
+const initState: StateType = {
+    docs: null,
+    versionList: [],
+    currDocId: 0,
+};
 
 const StoreModel: ModuleType = {
     namespaced: true,
@@ -30,7 +38,17 @@ const StoreModel: ModuleType = {
     state: {
         ...initState
     },
-    mutations: {},
+    mutations: {
+        changeCurrDocId(state, payload) {
+            state.currDocId = payload;
+        },
+        updateVersionList(state, payload) {
+            state.versionList = payload;
+        },
+        updateDocs(state, payload) {
+            state.docs = payload;
+        }
+    },
     actions: {
         // 获取可选组件信息
         async getDocs({commit}, payload: any) {
@@ -38,6 +56,7 @@ const StoreModel: ModuleType = {
                 ...payload,
             });
             if (res.code === 0) {
+                commit('updateDocs', res.data);
                 return res.data;
             } else {
                 return null;
@@ -45,11 +64,11 @@ const StoreModel: ModuleType = {
         },
         // 获取版本列表
         async getVersionList({commit}, payload: any) {
-            debugger;
             const res = await getVersionList({
                 ...payload,
             });
             if (res.code === 0) {
+                commit('updateVersionList', res.data);
                 return res.data;
             } else {
                 return null;
@@ -66,7 +85,7 @@ const StoreModel: ModuleType = {
                 return null;
             }
         },
-        //    删除快照
+        // 删除快照
         async deleteDocumentVersion({commit}, payload: any) {
             const res = await deleteDocumentVersion({
                 ...payload,
@@ -77,7 +96,7 @@ const StoreModel: ModuleType = {
                 return null;
             }
         },
-        //    更新快照名称
+        //  更新快照名称
         async updateDocumentVersion({commit}, payload: any) {
             const res = await updateDocumentVersion({
                 ...payload,

@@ -153,8 +153,6 @@ func (s *DocumentService) GetGlobalVars(projectId uint) (globalVars []domain.Env
 }
 
 func (s *DocumentService) GetDocumentVersionList(projectId uint, needLatest bool) (documents []model.EndpointDocument, err error) {
-	documents, err = s.EndpointDocumentRepo.ListByProject(projectId)
-
 	if needLatest {
 		latestDocument := model.EndpointDocument{
 			Name:    "实时版本",
@@ -163,6 +161,12 @@ func (s *DocumentService) GetDocumentVersionList(projectId uint, needLatest bool
 		documents = append(documents, latestDocument)
 	}
 
+	documentsTmp, err := s.EndpointDocumentRepo.ListByProject(projectId)
+	if err != nil {
+		return
+	}
+
+	documents = append(documents, documentsTmp...)
 	return
 }
 

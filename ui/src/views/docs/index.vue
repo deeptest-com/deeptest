@@ -3,9 +3,7 @@
     <a-spin tip="加载中..." :spinning="loading">
       <Docs :show-menu="true"
             :showHeader="true"
-            :data="data"
-            :versions="docVersions"
-            @changeVersion="changeVersion"/>
+            :data="data"/>
     </a-spin>
   </div>
 </template>
@@ -21,12 +19,16 @@ import Docs from '@/components/Docs/index.vue';
 
 import {useStore} from "vuex";
 
-const store = useStore<{ Endpoint, ProjectGlobal }>();
+const store = useStore<{ Docs, ProjectGlobal }>();
 import {useRouter} from "vue-router";
 
 const loading = ref(false);
 const router = useRouter();
 const query: any = router.currentRoute.value.query;
+const path: any = router.currentRoute.value.path;
+// 是否分享路径
+const isSharePage = path.includes('/share');
+
 
 const endpointIds: any = computed(() => {
   if (query.endpointIds) {
@@ -37,6 +39,8 @@ const endpointIds: any = computed(() => {
     return [];
   }
 });
+
+
 
 const serveIds: any = computed(() => {
   if (query.serveIds) {
@@ -49,6 +53,16 @@ const serveIds: any = computed(() => {
 });
 
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
+const currDocId = computed<any>(() => store.state.Docs.currDocId);
+
+
+const documentId: any = computed(() => {
+  if (query.endpointIds) {
+    return query.documentId;
+  } else {
+    return '';
+  }
+});
 
 const data = ref<any>(null);
 
@@ -67,11 +81,15 @@ watch(() => {
   }
 }, {
   immediate: true
-})
+});
+
 
 watch(() => {
   return endpointIds.value;
 }, async (newVal) => {
+  if (!isSharePage) {
+    return;
+  }
   if (newVal && newVal.length > 0) {
     loading.value = true;
     data.value = await store.dispatch('Docs/getDocs', {
@@ -86,6 +104,9 @@ watch(() => {
 watch(() => {
   return serveIds.value;
 }, async (newVal) => {
+  if (!isSharePage) {
+    return;
+  }
   if (newVal && newVal.length > 0) {
     loading.value = true;
     data.value = await store.dispatch('Docs/getDocs', {
@@ -97,10 +118,39 @@ watch(() => {
   immediate: true
 })
 
-const docVersions: any = ref([]);
+watch(() => {return documentId.value}, async (newVal) => {
+  if (!isSharePage) {
+    return;
+  }
+  if (newVal || newVal === 0) {
+    loading.value = true;
+    data.value = await store.dispatch('Docs/getDocs', {
+      documentId: newVal,
+      projectId: currProject.value.id,
+    })
+    loading.value = false;
+  }
+}, {
+  immediate: true
+})
 
+// 监控文档版本的变化
+watch(() => {return currDocId.value}, async (newVal) => {
+  if (newVal || newVal === 0) {
+    loading.value = true;
+    data.value = await store.dispatch('Docs/getDocs', {
+      documentId: newVal,
+      projectId: currProject.value.id,
+    })
+    loading.value = false;
+  }
+}, {
+  immediate: true
+})
+
+// 获取版本列表
 onMounted(async () => {
-  docVersions.value = await store.dispatch('Docs/getVersionList', {
+  await store.dispatch('Docs/getVersionList', {
     needLatest: true,
   });
 })

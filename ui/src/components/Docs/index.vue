@@ -4,7 +4,6 @@
     <DocsHeader v-if="showHeader"
                 :data="items"
                 :items="serviceList"
-                :versions="versions"
                 @select="selectSugRes"
                 @changeVersion="changeVersion"/>
     <a-divider style="margin:0" v-if="showHeader"/>
@@ -34,7 +33,7 @@ import EndpointDoc from "./components/EndpointDoc.vue";
 import DocsHeader from "./components/DocsHeader.vue";
 
 const store = useStore<{ Endpoint, ProjectGlobal }>();
-const props = defineProps(['showMenu', 'data', 'onlyShowDocs','showHeader','versions']);
+const props = defineProps(['showMenu', 'data', 'onlyShowDocs', 'showHeader']);
 const emit = defineEmits(['changeVersion']);
 
 const items = computed(() => {
@@ -54,7 +53,6 @@ const serviceList = computed(() => {
   // 组装数据以兼容组件 LeftTreeMenu
   let items: any = [];
   props?.data?.serves.forEach((item: any) => {
-    console.log(832,'item', item)
     // 只显示文档，不展示服务信息
     if (!props.onlyShowDocs) {
       items.push(item);
@@ -82,7 +80,9 @@ const selectedKeys = computed(() => {
   return [selectedItem.value?.id];
 })
 
-watch(() => {return serviceList.value}, (newVal) => {
+watch(() => {
+  return serviceList.value
+}, (newVal) => {
   if (!selectedItem.value && newVal.length > 0) {
     selectedItem.value = newVal.find((item) => {
       return item.endpointInfo && item.serveInfo;
@@ -105,10 +105,8 @@ function selectMenu(item) {
 
 
 function changeVersion(docId) {
-  emit('changeVersion',docId);
+  emit('changeVersion', docId);
 }
-
-
 
 
 </script>

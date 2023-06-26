@@ -145,6 +145,7 @@ import {useStore} from "vuex";
 
 const store = useStore<{ Docs, ProjectGlobal }>();
 
+
 const props = defineProps({
   items: {
     required: true,
@@ -154,11 +155,8 @@ const props = defineProps({
     required: true,
     type: Object,
   },
-  versions: {
-    required: true,
-    type: Object,
-  },
 })
+
 const data: any = ref([]);
 
 const emit = defineEmits(['select', 'changeVersion']);
@@ -170,13 +168,13 @@ const cmdK = keys['Command+K'];
 
 
 // 默认版本 ID 为 0 ，即最新版本
-const currentVersionId = ref(0);
-
 const currentVersion = computed(() => {
-  return props?.versions.find((item) => item.id === currentVersionId.value)?.version;
+  return versions.value.find((item) => item.id === store.state.Docs.currDocId)?.version;
 })
 
-
+const versions = computed(() => {
+  return store.state.Docs.versionList
+})
 
 const title = computed(() => {
   return props.data?.[0]?.value
@@ -188,8 +186,7 @@ function selectItem(item) {
 }
 
 function selectVersion(item) {
-  currentVersionId.value = item?.id;
-  emit('changeVersion', item?.id);
+  store.commit('Docs/changeCurrDocId', item?.id)
 }
 
 const isFocus = ref(false);
@@ -225,7 +222,7 @@ watch(cmdK, (v) => {
 function shareDocs() {
   console.log('shareDocs')
   Modal.confirm({
-    title: `确定分享版本号为「${title.value}」的文档吗？`,
+    title: `确定分享版本号为 ${currentVersion.value} 的文档吗？`,
     icon: createVNode(ExclamationCircleOutlined),
     onOk() {
       message.success('分享成功, 分享链接已复制到剪切板 ');

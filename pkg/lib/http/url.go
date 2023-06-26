@@ -22,7 +22,7 @@ func AddDefaultUrlSchema(urlStr string) (ret string, err error) {
 
 func AddSepIfNeeded(utl string) string {
 	if strings.LastIndex(utl, "/") < len(utl)-1 {
-		utl += "/"
+		//utl += "/"
 	}
 	return utl
 }

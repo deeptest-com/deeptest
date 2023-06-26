@@ -68,8 +68,8 @@ watch(() => {
   };
   cookies.value = resContent.cookies || [];
   headers.value = resContent.headers || [];
-  console.log(555555, props.data)
-  console.log(555555, headers.value)
+  // console.log(555555, props.data)
+  // console.log(555555, headers.value)
   requestContent.value = reqContent;
 }, {
   immediate: true,

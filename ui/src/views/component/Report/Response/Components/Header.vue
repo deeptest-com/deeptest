@@ -4,11 +4,18 @@
     </div>
 </template>
 <script setup lang="ts">
-import { defineProps ,watch} from 'vue';
+import {computed, defineProps} from 'vue';
 
 const props = defineProps<{
     data: Array<any>
 }>();
+
+// 过滤掉没有 name=''  的header , 否则会导致antv表格组件渲染出错
+const list = computed(() => {
+    return props?.data.filter(item => {
+        return item.name;
+    })
+});
 
 const columns = [
     {

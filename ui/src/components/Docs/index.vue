@@ -1,6 +1,6 @@
 <!-- :::: 接口定义模块 -->
 <template>
-  <div class="content" v-if="data?.name">
+  <div class="content" v-if="data?.name && serviceList?.length">
     <DocsHeader v-if="showHeader"
                 :data="data"
                 :items="serviceList"
@@ -16,7 +16,21 @@
       </div>
     </div>
   </div>
-  <a-skeleton v-else/>
+  <a-skeleton v-if="!data?.name"/>
+  <!--    没有定义接口文档，则展示空信息   -->
+  <div v-if="data?.name && serviceList?.length ===0" style="margin-top: 48px;">
+    <a-empty
+        image="https://gw.alipayobjects.com/mdn/miniapp_social/afts/img/A*pevERLJC9v0AAAAAAAAAAABjAQAAAQ/original"
+        :image-style="{height: '60px',}">
+        <template #description>
+                <span>
+                  您还未定义接口，请先定义接口
+                </span>
+
+      </template>
+      <a-button type="primary" @click="emit('switchToDefineTab')">接口定义</a-button>
+    </a-empty>
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -34,18 +48,20 @@ import DocsHeader from "./components/DocsHeader.vue";
 
 const store = useStore<{ Endpoint, ProjectGlobal }>();
 const props = defineProps(['showMenu', 'data', 'onlyShowDocs', 'showHeader']);
-const emit = defineEmits(['changeVersion']);
+const emit = defineEmits(['changeVersion','switchToDefineTab']);
 
 
 const serviceList = computed(() => {
   // 组装数据以兼容组件 LeftTreeMenu
   let items: any = [];
+  console.log(123, props?.data?.serves)
   props?.data?.serves.forEach((item: any) => {
     // 只显示文档，不展示服务信息
     if (!props.onlyShowDocs) {
       items.push(item);
     }
     item?.endpoints?.forEach((endpoint: any) => {
+
       endpoint?.interfaces?.forEach((interfaceItem: any) => {
         items.push({
           ...interfaceItem,

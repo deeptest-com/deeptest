@@ -91,10 +91,11 @@
       <!--          复制-->
       <!--        </a-button>-->
       <!--      </a-tooltip>-->
-      <a-tooltip placement="bottom" @click="toggle">
+      <a-tooltip placement="bottom" @click="toggle" v-if="isDocsViewPage || isDocsSharePage">
         <template #title>全屏</template>
         <a-button type="text" class="share-btn">
-          <FullscreenOutlined style="font-size: 14px"/>
+          <FullscreenOutlined v-if="isFullscreen" style="font-size: 14px"/>
+          <FullscreenExitOutlined v-if="!isFullscreen" style="font-size: 14px"/>
         </a-button>
       </a-tooltip>
 

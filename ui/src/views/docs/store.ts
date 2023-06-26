@@ -2,7 +2,12 @@ import {Mutation, Action} from 'vuex';
 import {StoreModuleType} from "@/utils/store";
 import {
     deleteDocumentVersion,
-    getDocs, getVersionList, publishDocument, updateDocumentVersion,
+    getDocs,
+    getVersionList,
+    publishDocument,
+    updateDocumentVersion,
+    shareDocs,
+    getShareContent
 } from './service';
 
 
@@ -23,6 +28,8 @@ export interface ModuleType extends StoreModuleType<StateType> {
         publishDocument: Action<StateType, StateType>;
         deleteDocumentVersion: Action<StateType, StateType>;
         updateDocumentVersion: Action<StateType, StateType>;
+        shareDocs: Action<StateType, StateType>;
+        getShareContent: Action<StateType, StateType>;
     }
 }
 
@@ -106,7 +113,30 @@ const StoreModel: ModuleType = {
             } else {
                 return null;
             }
-        }
+        },
+        //  获取分享文档的链接
+        async shareDocs({commit}, payload: any) {
+            const res = await shareDocs({
+                ...payload,
+            });
+            if (res.code === 0) {
+                return res.data;
+            } else {
+                return null;
+            }
+        },
+        //  通过分享链接获取文档数据
+        async getShareContent({commit}, payload: any) {
+            const res = await getShareContent({
+                ...payload,
+            });
+            if (res.code === 0) {
+                return res.data;
+            } else {
+                return null;
+            }
+        },
+
     }
 };
 

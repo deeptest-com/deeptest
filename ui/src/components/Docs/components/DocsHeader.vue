@@ -68,30 +68,30 @@
           <DownOutlined/>
         </a-button>
         <template #overlay>
-          <a-menu>
+          <a-menu v-if="!isDocsSharePage">
             <a-menu-item v-for="version in versions" :key="version" @click="selectVersion(version)">
               <span class="version-text">{{ version.version }}</span>
             </a-menu-item>
           </a-menu>
         </template>
       </a-dropdown>
-      <a-tooltip placement="bottom" :title="'分享文档'">
+      <a-tooltip placement="bottom" :title="'复制分享链接'">
         <a-button :size="'small'" type="text" @click="shareDocs">
           <template #icon>
             <ShareAltOutlined class="action-item"/>
           </template>
-          分享
+          分享链接
         </a-button>
       </a-tooltip>
 
-      <a-tooltip placement="bottom" :title="'复制分享链接'">
-        <a-button :size="'small'" type="text" @click="copyUrl">
-          <template #icon>
-            <CopyOutlined class="action-item"/>
-          </template>
-          复制
-        </a-button>
-      </a-tooltip>
+      <!--      <a-tooltip placement="bottom" :title="'复制分享链接'">-->
+      <!--        <a-button :size="'small'" type="text" @click="copyUrl">-->
+      <!--          <template #icon>-->
+      <!--            <CopyOutlined class="action-item"/>-->
+      <!--          </template>-->
+      <!--          复制-->
+      <!--        </a-button>-->
+      <!--      </a-tooltip>-->
 
       <a-tooltip placement="bottom" @click="toggle">
         <template #title>全屏</template>
@@ -142,6 +142,12 @@ const {text, copy, copied, isSupported} = useClipboard({source});
 const {isFullscreen, enter, exit, toggle} = useFullscreen();
 
 import {useStore} from "vuex";
+import {useRouter} from "vue-router";
+
+const router = useRouter();
+const path: any = router.currentRoute.value.path;
+// 是否分享页面
+const isDocsSharePage = path.includes('/share');
 
 const store = useStore<{ Docs, ProjectGlobal }>();
 
@@ -219,24 +225,39 @@ watch(cmdK, (v) => {
   }
 })
 
-function shareDocs() {
-  console.log('shareDocs')
-  Modal.confirm({
-    title: `确定分享版本号为 ${currentVersion.value} 的文档吗？`,
-    icon: createVNode(ExclamationCircleOutlined),
-    onOk() {
-      message.success('分享成功, 分享链接已复制到剪切板 ');
-    },
-    onCancel() {
-      console.log('Cancel');
-    },
-    class: 'test',
-  });
+async function shareDocs() {
+  // 如果是分享页面，则直接复制链接即可
+  if(isDocsSharePage){
+    source.value = `${window.location.href}`;
+    copyUrl();
+    return
+  }
+
+  const res = await store.dispatch('Docs/shareDocs', {
+    documentId: store.state.Docs.currDocId,
+    projectId: currProject.value.id,
+  })
+
+  if (res) {
+    source.value = `${window.location.origin}/#/docs/share?code=${res.code}`;
+    copyUrl();
+  }
+  // Modal.confirm({
+  //   title: `确定分享版本号为 ${currentVersion.value} 的文档吗？`,
+  //   icon: createVNode(ExclamationCircleOutlined),
+  //   onOk() {
+  //     message.success('分享成功, 分享链接已复制到剪切板 ');
+  //   },
+  //   onCancel() {
+  //     console.log('Cancel');
+  //   },
+  //   class: 'test',
+  // });
 }
 
 function copyUrl() {
   copy(source.value);
-  message.success('复制成功')
+  message.success('分享链接已复制到剪切板 ');
 }
 
 function keywordsChange(newVal) {

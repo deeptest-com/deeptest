@@ -26,9 +26,8 @@ const loading = ref(false);
 const router = useRouter();
 const query: any = router.currentRoute.value.query;
 const path: any = router.currentRoute.value.path;
-// 是否分享路径
-const isSharePage = path.includes('/share');
-
+// 是否分享页面
+const isDocsSharePage = path.includes('/share');
 
 const endpointIds: any = computed(() => {
   if (query.endpointIds) {
@@ -39,8 +38,6 @@ const endpointIds: any = computed(() => {
     return [];
   }
 });
-
-
 
 const serveIds: any = computed(() => {
   if (query.serveIds) {
@@ -59,6 +56,15 @@ const currDocId = computed<any>(() => store.state.Docs.currDocId);
 const documentId: any = computed(() => {
   if (query.endpointIds) {
     return query.documentId;
+  } else {
+    return '';
+  }
+});
+
+const shareId: any = computed(() => {
+  if (query.code) {
+    console.log('query.code', query.code)
+    return query.code;
   } else {
     return '';
   }
@@ -87,7 +93,7 @@ watch(() => {
 watch(() => {
   return endpointIds.value;
 }, async (newVal) => {
-  if (!isSharePage) {
+  if (isDocsSharePage) {
     return;
   }
   if (newVal && newVal.length > 0) {
@@ -104,7 +110,7 @@ watch(() => {
 watch(() => {
   return serveIds.value;
 }, async (newVal) => {
-  if (!isSharePage) {
+  if (isDocsSharePage) {
     return;
   }
   if (newVal && newVal.length > 0) {
@@ -118,8 +124,10 @@ watch(() => {
   immediate: true
 })
 
-watch(() => {return documentId.value}, async (newVal) => {
-  if (!isSharePage) {
+watch(() => {
+  return documentId.value
+}, async (newVal) => {
+  if (isDocsSharePage) {
     return;
   }
   if (newVal || newVal === 0) {
@@ -135,7 +143,12 @@ watch(() => {return documentId.value}, async (newVal) => {
 })
 
 // 监控文档版本的变化
-watch(() => {return currDocId.value}, async (newVal) => {
+watch(() => {
+  return currDocId.value
+}, async (newVal) => {
+  if (isDocsSharePage) {
+    return;
+  }
   if (newVal || newVal === 0) {
     loading.value = true;
     data.value = await store.dispatch('Docs/getDocs', {
@@ -150,9 +163,25 @@ watch(() => {return currDocId.value}, async (newVal) => {
 
 // 获取版本列表
 onMounted(async () => {
+  if (isDocsSharePage) {
+    return;
+  }
   await store.dispatch('Docs/getVersionList', {
     needLatest: true,
   });
+
+})
+
+watch(() => {return shareId.value}, async (newVal) => {
+  if (newVal) {
+    loading.value = true;
+    data.value = await store.dispatch('Docs/getShareContent', {
+      code: newVal,
+    });
+    loading.value = false;
+  }
+},{
+  immediate: true
 })
 
 

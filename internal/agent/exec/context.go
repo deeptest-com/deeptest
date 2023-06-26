@@ -30,6 +30,7 @@ func InitExecContext(execObj *ScenarioExecObj) (variables []domain.ExecVariable)
 	ComputerScopeHierarchy(execObj.RootProcessor, &ScopeHierarchy)
 
 	ExecScene = execObj.ExecScene
+	DatapoolCursor = map[string]int{}
 
 	ScopedVariables = map[uint][]domain.ExecVariable{}
 	ScopedCookies = map[uint][]domain.ExecCookie{}

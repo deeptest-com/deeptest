@@ -15,10 +15,6 @@ type DatapoolRepo struct {
 	UserRepo *UserRepo `inject:""`
 }
 
-func NewDatapoolRepo() *DatapoolRepo {
-	return &DatapoolRepo{}
-}
-
 func (r *DatapoolRepo) Paginate(req v1.DatapoolReqPaginate) (ret _domain.PageData, err error) {
 	var count int64
 	db := r.DB.Model(&model.Datapool{}).Where("project_id = ? AND NOT deleted", req.ProjectId)

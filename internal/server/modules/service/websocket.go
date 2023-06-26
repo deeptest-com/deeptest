@@ -15,10 +15,6 @@ var (
 type WebSocketService struct {
 }
 
-func NewWebSocketService() *WebSocketService {
-	return &WebSocketService{}
-}
-
 func (s *WebSocketService) SendMsg(namespace, room string, data interface{}) {
 	s.Broadcast(namespace, room, consts.WsChatEvent, data)
 }

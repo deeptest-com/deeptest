@@ -12,10 +12,6 @@ type ProjectMenuService struct {
 	UserRepo        *repo.UserRepo        `inject:""`
 }
 
-func NewProjectMenuService() *ProjectMenuService {
-	return &ProjectMenuService{}
-}
-
 func (s *ProjectMenuService) GetUserMenuList(projectId, userId uint) (ret []model.ProjectMenu, err error) {
 	var roleId uint
 	isAdminUser, err := s.UserRepo.IsAdminUser(userId)

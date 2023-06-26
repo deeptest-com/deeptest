@@ -11,10 +11,6 @@ type ProjectPermModule struct {
 	ProjectRolePermCtrl *handler.ProjectRolePermCtrl `inject:""`
 }
 
-func NewProjectPermModule() *ProjectPermModule {
-	return &ProjectPermModule{}
-}
-
 // Party 项目权限
 func (m *ProjectPermModule) Party() module.WebModule {
 	handler := func(index iris.Party) {

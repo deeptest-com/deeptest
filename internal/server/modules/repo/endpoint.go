@@ -19,10 +19,6 @@ type EndpointRepo struct {
 	ProjectRepo           *ProjectRepo           `inject:""`
 }
 
-func NewEndpointRepo() *EndpointRepo {
-	return &EndpointRepo{}
-}
-
 func (r *EndpointRepo) Paginate(req v1.EndpointReqPaginate) (ret _domain.PageData, err error) {
 	//fmt.Println(r.DB.Model(&modelRef.SysUser{}))
 	//err = r.DB.Where("id=?", id).Where("name=?", name).Find(&res).Error

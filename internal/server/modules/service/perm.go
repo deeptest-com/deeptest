@@ -11,10 +11,6 @@ type PermService struct {
 	PermRepo *repo.PermRepo `inject:""`
 }
 
-func NewPermService() *PermService {
-	return &PermService{}
-}
-
 // Paginate
 func (s *PermService) Paginate(req v1.PermReqPaginate) (data _domain.PageData, err error) {
 	return s.PermRepo.Paginate(req)

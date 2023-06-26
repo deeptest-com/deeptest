@@ -11,10 +11,6 @@ type ServeServerRepo struct {
 	EndpointRepo    *EndpointRepo    `inject:""`
 }
 
-func NewServerRepo() *ServeServerRepo {
-	return &ServeServerRepo{}
-}
-
 func (r *ServeServerRepo) Get(id uint) (res model.ServeServer, err error) {
 	err = r.DB.Where("NOT deleted").First(&res, id).Error
 	return

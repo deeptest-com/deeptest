@@ -20,6 +20,7 @@
               <a-select :options="servers" :value="serverId || null" @change="changeServer"
                         placeholder="请选择环境" class="select-env">
               </a-select>
+
               <span v-if="envURL" class="current-env-url">{{ envURL || '---' }}</span>
             </template>
           </a-input>

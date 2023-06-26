@@ -69,14 +69,14 @@ func (r *TestInterfaceRepo) GetDetail(interfId uint) (testInterface model.TestIn
 
 func (r *TestInterfaceRepo) toTos(pos []*model.TestInterface) (tos []*serverDomain.TestInterface) {
 	for _, po := range pos {
-		to := r.toTo(po)
+		to := r.ToTo(po)
 
 		tos = append(tos, to)
 	}
 
 	return
 }
-func (r *TestInterfaceRepo) toTo(po *model.TestInterface) (to *serverDomain.TestInterface) {
+func (r *TestInterfaceRepo) ToTo(po *model.TestInterface) (to *serverDomain.TestInterface) {
 
 	to = &serverDomain.TestInterface{
 		Id:       int64(po.ID),

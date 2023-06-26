@@ -14,10 +14,6 @@ type SummaryDetailsService struct {
 	UserRepo           *repo.UserRepo           `inject:""`
 }
 
-func NewSummaryDetailsService() *SummaryDetailsService {
-	return new(SummaryDetailsService)
-}
-
 func (s *SummaryDetailsService) Card(projectId int64) (res v1.ResSummaryCard, err error) {
 	var summaryCardTotal, oldSummaryCardTotal model.SummaryCardTotal
 

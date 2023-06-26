@@ -116,11 +116,8 @@ const saveScenarioInterface = async (data) => {
 };
 
 const syncDebugData = async () => {
-  await store.dispatch('Debug/loadDataAndInvocations', {
-    endpointInterfaceId: debugData.value.endpointInterfaceId,
-    scenarioProcessorId: 0,
-    usedBy: UsedBy.InterfaceDebug,
-  });
+  console.log('syncDebugData')
+  await store.dispatch('Debug/syncDebugData');
 };
 
 onMounted(() => {

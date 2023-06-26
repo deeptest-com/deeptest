@@ -9,10 +9,6 @@ type ComponentSchemaSecurityRepo struct {
 	DB *gorm.DB `inject:""`
 }
 
-func NewComponentSchemaSecurityRepo() *ComponentSchemaSecurityRepo {
-	return &ComponentSchemaSecurityRepo{}
-}
-
 func (r *ComponentSchemaSecurityRepo) Save(ComponentSchema model.ComponentSchema) (err error) {
 
 	return

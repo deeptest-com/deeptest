@@ -11,10 +11,6 @@ type ComponentService struct {
 	ComponentSchemaSecurityRepo *repo.ComponentSchemaSecurityRepo `inject:""`
 }
 
-func NewComponentService() *ComponentService {
-	return &ComponentService{}
-}
-
 func (s *ComponentService) GetSchemaByServiceId(serveId int64) (ret _domain.PageData, err error) {
 	//ret, err = s.ComponentRepo.Paginate(req)
 	return

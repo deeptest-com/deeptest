@@ -1,7 +1,7 @@
 import {Mutation, Action} from 'vuex';
 import {StoreModuleType} from "@/utils/store";
 import {ResponseData} from '@/utils/request';
-import {Scenario, QueryResult, QueryParams, PaginationConfig} from './data.d';
+import {Scenario, QueryResult, QueryParams} from './data.d';
 import {
     query,
     get,
@@ -19,7 +19,7 @@ import {
     getScenariosReportsDetail,
     addPlans,
     getPlans,
-    removePlans, updatePriority, updateStatus, genReport, saveDebugData,
+    removePlans, updatePriority, updateStatus, genReport, saveDebugData, syncDebugData,
 } from './service';
 
 import {
@@ -37,7 +37,7 @@ import {getNodeMap} from "@/services/tree";
 export interface StateType {
     scenarioId: number;
     scenarioProcessorIdForDebug: number;
-    endpointInterfaceIdForDebug: number;
+    // endpointInterfaceIdForDebug: number;
 
     listResult: QueryResult;
     detailResult: Scenario;
@@ -69,7 +69,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
     mutations: {
         setScenarioId: Mutation<StateType>;
         setScenarioProcessorIdForDebug: Mutation<StateType>;
-        setEndpointInterfaceIdForDebug: Mutation<StateType>;
+        // setEndpointInterfaceIdForDebug: Mutation<StateType>;
 
         setList: Mutation<StateType>;
         setDetail: Mutation<StateType>;
@@ -102,7 +102,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
     };
     actions: {
         setScenarioProcessorIdForDebug: Action<StateType, StateType>;
-        setEndpointInterfaceIdForDebug: Action<StateType, StateType>;
+        // setEndpointInterfaceIdForDebug: Action<StateType, StateType>;
         listScenario: Action<StateType, StateType>;
         getScenario: Action<StateType, StateType>;
         removeScenario: Action<StateType, StateType>;
@@ -146,14 +146,16 @@ export interface ModuleType extends StoreModuleType<StateType> {
         saveTreeMapItemPropCategory: Action<StateType, StateType>;
         saveCategory: Action<StateType, StateType>;
         updateCategoryName: Action<StateType, StateType>;
+
         saveDebugData: Action<StateType, StateType>;
+        syncDebugData: Action<StateType, StateType>;
     }
 }
 
 const initState: StateType = {
     scenarioId: 0,
     scenarioProcessorIdForDebug: 0,
-    endpointInterfaceIdForDebug: 0,
+    // endpointInterfaceIdForDebug: 0,
 
     listResult: {
         list: [],
@@ -201,9 +203,9 @@ const StoreModel: ModuleType = {
         setScenarioProcessorIdForDebug(state, id) {
             state.scenarioProcessorIdForDebug = id;
         },
-        setEndpointInterfaceIdForDebug(state, id) {
-            state.endpointInterfaceIdForDebug = id;
-        },
+        // setEndpointInterfaceIdForDebug(state, id) {
+        //     state.endpointInterfaceIdForDebug = id;
+        // },
 
         setList(state, payload) {
             state.listResult = payload;
@@ -287,10 +289,10 @@ const StoreModel: ModuleType = {
             commit('setScenarioProcessorIdForDebug', id);
             return true;
         },
-        async setEndpointInterfaceIdForDebug({commit, dispatch, state}, id) {
-            commit('setEndpointInterfaceIdForDebug', id);
-            return true;
-        },
+        // async setEndpointInterfaceIdForDebug({commit, dispatch, state}, id) {
+        //     commit('setEndpointInterfaceIdForDebug', id);
+        //     return true;
+        // },
         async listScenario({commit, dispatch}, params: QueryParams) {
             try {
                 const response: ResponseData = await query(params);
@@ -674,8 +676,13 @@ const StoreModel: ModuleType = {
             }
             return false;
         },
+
         async saveDebugData({commit}, payload: any) {
             const resp = await  saveDebugData(payload)
+            return resp.code === 0;
+        },
+        async syncDebugData({commit, state}) {
+            const resp = await  syncDebugData(state.scenarioProcessorIdForDebug)
             return resp.code === 0;
         },
     }

@@ -7,10 +7,6 @@ import (
 type ComponentCtrl struct {
 }
 
-func NewComponentCtrl() *ComponentCtrl {
-	return &ComponentCtrl{}
-}
-
 func (c *ComponentCtrl) Detail(ctx iris.Context) {
 	return
 }

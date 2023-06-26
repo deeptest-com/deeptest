@@ -11,10 +11,6 @@ type RoleModule struct {
 	RoleCtrl *handler.RoleCtrl `inject:""`
 }
 
-func NewRoleModule() *RoleModule {
-	return &RoleModule{}
-}
-
 // Party 角色模块
 func (m *RoleModule) Party() module.WebModule {
 	handler := func(index iris.Party) {

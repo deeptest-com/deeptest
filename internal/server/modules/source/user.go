@@ -14,10 +14,6 @@ type UserSource struct {
 	ProjectRepo *repo2.ProjectRepo `inject:""`
 }
 
-func NewUserSource() *UserSource {
-	return &UserSource{}
-}
-
 func (s *UserSource) GetSources() ([]v1.UserReq, v1.ProjectReq, error) {
 	roleIds, err := s.RoleRepo.GetRoleIds()
 	if err != nil {

@@ -10,10 +10,6 @@ type ProjectRoleMenuSource struct {
 	ProjectRoleMenuRepo *repo.ProjectRoleMenuRepo `inject:""`
 }
 
-func NewProjectRoleMenuSource() *ProjectRoleMenuSource {
-	return &ProjectRoleMenuSource{}
-}
-
 func (s *ProjectRoleMenuSource) GetSources() (res []model.ProjectRoleMenu, err error) {
 	return s.ProjectRoleMenuRepo.GetConfigData()
 }

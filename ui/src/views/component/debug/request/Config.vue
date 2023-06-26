@@ -25,7 +25,7 @@
         <PreRequestScript v-if="activeKey === '6'"></PreRequestScript>
       </a-tab-pane>
 
-      <!--      <a-tab-pane key="7" tab="验证">
+      <!-- <a-tab-pane key="7" tab="验证">
               <ValidationScript v-if="activeKey === '7'"></ValidationScript>
             </a-tab-pane>-->
     </a-tabs>

@@ -11,10 +11,6 @@ type UserModule struct {
 	UserCtrl *handler.UserCtrl `inject:""`
 }
 
-func NewUserModule() *UserModule {
-	return &UserModule{}
-}
-
 // Party 用户
 func (m *UserModule) Party() module.WebModule {
 	handler := func(index iris.Party) {

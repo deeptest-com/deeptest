@@ -143,16 +143,17 @@ func (s *ScenarioNodeService) AddInterfacesFromDefine(req serverDomain.ScenarioA
 
 	serveId := uint(0)
 	for _, interfaceId := range req.InterfaceIds {
-		ret, err = s.addInterfaceFromDefine(interfaceId, &serveId, req.CreateBy, targetProcessor)
+		ret, err = s.createInterfaceFromDefine(uint(interfaceId), &serveId, req.CreateBy, targetProcessor, "")
 	}
 
 	return
 }
 
-func (s *ScenarioNodeService) addInterfaceFromDefine(endpointInterfaceId int, serveId *uint, createBy uint, parentProcessor model.Processor) (
+func (s *ScenarioNodeService) createInterfaceFromDefine(endpointInterfaceId uint, serveId *uint,
+	createBy uint, parentProcessor model.Processor, name string) (
 	ret model.Processor, err error) {
 
-	endpointInterface, err := s.EndpointInterfaceRepo.Get(uint(endpointInterfaceId))
+	endpointInterface, err := s.EndpointInterfaceRepo.Get(endpointInterfaceId)
 	if err != nil {
 		return
 	}
@@ -164,16 +165,19 @@ func (s *ScenarioNodeService) addInterfaceFromDefine(endpointInterfaceId int, se
 	}
 
 	// convert or clone a debug interface obj
-	debugData, err := s.DebugInterfaceService.GetDebugInterfaceByEndpointInterface(uint(endpointInterfaceId))
+	debugData, err := s.DebugInterfaceService.GetDebugInterfaceByEndpointInterface(endpointInterfaceId)
 	debugData.DebugInterfaceId = 0 // force to clone the old one
-	debugData.EndpointInterfaceId = uint(endpointInterfaceId)
+	debugData.EndpointInterfaceId = endpointInterfaceId
 	debugData.ScenarioProcessorId = 0 // will be update after ScenarioProcessor saved
 	debugData.ServeId = *serveId
 	debugInterface, err := s.DebugInterfaceService.Save(debugData)
 
 	// save scenario interface
+	if name == "" {
+		name = endpointInterface.Name + "-" + string(endpointInterface.Method)
+	}
 	processor := model.Processor{
-		Name: endpointInterface.Name + "-" + string(endpointInterface.Method),
+		Name: name,
 
 		EntityCategory:      consts.ProcessorInterface,
 		EntityType:          consts.ProcessorInterfaceDefault,

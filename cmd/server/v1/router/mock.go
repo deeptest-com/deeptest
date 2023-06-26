@@ -10,10 +10,6 @@ type MockModule struct {
 	MockCtrl *handler.MockCtrl `inject:""`
 }
 
-func NewMockModule() *MockModule {
-	return &MockModule{}
-}
-
 // Party 脚本
 func (m *MockModule) Party() module.WebModule {
 	handler := func(index iris.Party) {

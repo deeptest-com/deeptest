@@ -167,8 +167,9 @@ const selectNode = (keys, e) => {
 
   store.dispatch('Scenario/getNode', selectedData).then((ok) => {
     if (ok && selectedNode.value.processorType === 'processor_interface_default') {
+      // will cause watch event to load debug data in components/interface/interface.vue
       store.dispatch('Scenario/setScenarioProcessorIdForDebug', selectedNode.value.processorID)
-      store.dispatch('Scenario/setEndpointInterfaceIdForDebug', selectedNode.value.endpointInterfaceId)
+      // store.dispatch('Scenario/setEndpointInterfaceIdForDebug', selectedNode.value.endpointInterfaceId)
     }
   })
 }

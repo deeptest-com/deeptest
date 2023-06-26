@@ -18,10 +18,6 @@ type EndpointInterfaceService struct {
 	EndpointService       *EndpointService            `inject:""`
 }
 
-func NewEndpointInterfaceService() *EndpointInterfaceService {
-	return &EndpointInterfaceService{}
-}
-
 func (s *EndpointInterfaceService) Paginate(req v1.EndpointInterfaceReqPaginate) (ret _domain.PageData, err error) {
 	ret, err = s.EndpointInterfaceRepo.Paginate(req)
 	return

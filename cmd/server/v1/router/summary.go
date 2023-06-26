@@ -14,10 +14,6 @@ type SummaryModule struct {
 	Cron        *cron.ServerCron     `inject:""`
 }
 
-func NewSummaryModule() *SummaryModule {
-	return &SummaryModule{}
-}
-
 // Party 用户
 func (m *SummaryModule) Party() module.WebModule {
 	handler := func(index iris.Party) {

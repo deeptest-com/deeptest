@@ -18,10 +18,6 @@ type ServeRepo struct {
 	EnvironmentRepo *EnvironmentRepo `inject:""`
 }
 
-func NewServeRepo() *ServeRepo {
-	return &ServeRepo{}
-}
-
 func (r *ServeRepo) ListVersion(serveId uint) (res []model.ServeVersion, err error) {
 	err = r.DB.Where("serve_id = ? AND NOT deleted AND not disabled", serveId).Find(&res).Error
 	return

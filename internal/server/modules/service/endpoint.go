@@ -18,10 +18,6 @@ type EndpointService struct {
 	UserRepo              *repo.UserRepo              `inject:""`
 }
 
-func NewEndpointService() *EndpointService {
-	return &EndpointService{}
-}
-
 func (s *EndpointService) Paginate(req v1.EndpointReqPaginate) (ret _domain.PageData, err error) {
 	ret, err = s.EndpointRepo.Paginate(req)
 	return

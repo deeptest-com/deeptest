@@ -32,10 +32,6 @@ type UserRepo struct {
 	ProjectRoleRepo *ProjectRoleRepo `inject:""`
 }
 
-func NewUserRepo() *UserRepo {
-	return &UserRepo{}
-}
-
 func (r *UserRepo) Paginate(req serverDomain.UserReqPaginate) (data _domain.PageData, err error) {
 	var count int64
 

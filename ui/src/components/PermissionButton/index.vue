@@ -12,12 +12,12 @@
         </a-tooltip>
     </template>
     <template v-else>
-        <a-button 
-        :type="type || 'default'" 
-        :loading="loading || false" 
-        :html-type="htmlType" 
-        :size="size" 
-        :danger="danger || false" 
+        <a-button
+        :type="type || 'default'"
+        :loading="loading || false"
+        :html-type="htmlType"
+        :size="size"
+        :danger="danger || false"
         @click="handleClick">
             <!-- 前置icon -->
             <slot name="before"></slot>
@@ -60,13 +60,12 @@ const hasPermission = () => {
 }
 
 // 判断权限方法
-watch(() => {
-    return permissionButtonMap.value;
-}, (val: any) => {
-    if (val && Object.keys(val).length > 0) {
-        disabled.value = !hasPermission();
-    }
+watch(() => {return permissionButtonMap.value}, (val: any) => {
+  if (val && Object.keys(val).length > 0) {
+    disabled.value = !hasPermission();
+  }
 }, { immediate: true });
+
 </script>
 <style scoped lang="less">
 .permission-btn {
@@ -97,5 +96,5 @@ watch(() => {
     &.save-btn {
         margin-right: 16px;
     }
-} 
+}
 </style>

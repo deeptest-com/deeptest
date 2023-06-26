@@ -13,6 +13,7 @@ type DebugInterface struct {
 	ScenarioProcessorId uint `gorm:"default:0" json:"scenarioProcessorId"`
 	TestInterfaceId     uint `gorm:"default:0" json:"testInterfaceId"`
 
+	ServeId uint `json:"serveId"`
 	// used by TestInterface
 	ServerId uint   `json:"serverId"`
 	BaseUrl  string `json:"baseUrl"`

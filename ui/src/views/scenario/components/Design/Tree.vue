@@ -68,12 +68,12 @@
 
     <InterfaceSelectionFromDefine
         v-if="interfaceSelectionVisible && interfaceSelectionSrc==='fromDefine'"
-        :onFinish="interfaceSelectionFinish"
+        :onFinish="endpointInterfaceIdsSelectionFinish"
         :onCancel="interfaceSelectionCancel" />
 
     <InterfaceSelectionFromTest
         v-if="interfaceSelectionVisible && interfaceSelectionSrc==='fromTest'"
-        :onFinish="interfaceSelectionFinish"
+        :onFinish="testInterfaceNodesSelectionFinish"
         :onCancel="interfaceSelectionCancel" />
 
   </div>
@@ -335,35 +335,38 @@ const addNode = (mode, processorCategory, processorType,
 const interfaceSelectionVisible = ref(false)
 const interfaceSelectionSrc = ref('')
 
-const interfaceSelectionFinish = (interfaceIds) => {
+const endpointInterfaceIdsSelectionFinish = (interfaceIds) => {
   const targetNode = treeDataMap.value[targetModelId]
-  console.log('interfaceSelectionFinish', interfaceIds, targetNode)
+  console.log('endpointInterfaceIdsSelectionFinish', interfaceIds, targetNode)
 
-  if (interfaceSelectionSrc.value === 'fromDefine') {
-    store.dispatch('Scenario/addInterfaces', {
-      interfaceIds: interfaceIds,
-      targetId: targetNode.id,
-    }).then((newNode) => {
-      console.log('addInterfaces successfully', newNode)
+  store.dispatch('Scenario/addInterfacesFromDefine', {
+    interfaceIds: interfaceIds,
+    targetId: targetNode.id,
+  }).then((newNode) => {
+    console.log('addInterfaces successfully', newNode)
 
-      interfaceSelectionVisible.value = false
-      selectNode([newNode.id], null)
-      expandOneKey(treeDataMap.value, newNode.parentId, expandedKeys.value) // expend new node
-      setExpandedKeys('scenario', treeData.value[0].scenarioId, expandedKeys.value)
-    })
-  } else if (interfaceSelectionSrc.value === 'fromTest') {
-    store.dispatch('Scenario/addInterfaces', {
-      interfaceIds: interfaceIds,
-      targetId: targetNode.id,
-    }).then((newNode) => {
-      console.log('addInterfaces successfully', newNode)
+    interfaceSelectionVisible.value = false
+    selectNode([newNode.id], null)
+    expandOneKey(treeDataMap.value, newNode.parentId, expandedKeys.value) // expend new node
+    setExpandedKeys('scenario', treeData.value[0].scenarioId, expandedKeys.value)
+  })
+}
 
-      interfaceSelectionVisible.value = false
-      selectNode([newNode.id], null)
-      expandOneKey(treeDataMap.value, newNode.parentId, expandedKeys.value) // expend new node
-      setExpandedKeys('scenario', treeData.value[0].scenarioId, expandedKeys.value)
-    })
-  }
+const testInterfaceNodesSelectionFinish = (interfaceNodes) => {
+  const targetNode = treeDataMap.value[targetModelId]
+  console.log('endpointInterfaceIdsSelectionFinish', interfaceNodes, targetNode)
+
+  store.dispatch('Scenario/addInterfacesFromTest', {
+    selectedNodes: interfaceNodes,
+    targetId: targetNode.id,
+  }).then((newNode) => {
+    console.log('addInterfaces successfully', newNode)
+
+    interfaceSelectionVisible.value = false
+    selectNode([newNode.id], null)
+    expandOneKey(treeDataMap.value, newNode.parentId, expandedKeys.value) // expend new node
+    setExpandedKeys('scenario', treeData.value[0].scenarioId, expandedKeys.value)
+  })
 }
 
 const interfaceSelectionCancel = () => {

@@ -44,7 +44,7 @@ func (c *ScenarioNodeCtrl) AddInterfacesFromDefine(ctx iris.Context) {
 	}
 
 	req.CreateBy = multi.GetUserId(ctx)
-	nodePo, bizErr := c.ScenarioNodeService.AddInterfaces(req)
+	nodePo, bizErr := c.ScenarioNodeService.AddInterfacesFromDefine(req)
 	if bizErr != nil {
 		ctx.JSON(_domain.Response{
 			Code: _domain.SystemErr.Code,
@@ -55,7 +55,7 @@ func (c *ScenarioNodeCtrl) AddInterfacesFromDefine(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: nodePo})
 }
 
-// AddInterfacesFromDebuggerTree 添加接口
+// AddInterfacesFromTest 添加接口
 func (c *ScenarioNodeCtrl) AddInterfacesFromTest(ctx iris.Context) {
 	req := serverDomain.ScenarioAddInterfacesFromTreeReq{}
 	err := ctx.ReadJSON(&req)
@@ -65,7 +65,7 @@ func (c *ScenarioNodeCtrl) AddInterfacesFromTest(ctx iris.Context) {
 	}
 
 	req.CreateBy = multi.GetUserId(ctx)
-	nodePo, bizErr := c.ScenarioNodeService.AddInterfacesFromDebuggerTree(req)
+	nodePo, bizErr := c.ScenarioNodeService.AddInterfacesFromTest(req)
 	if bizErr != nil {
 		ctx.JSON(_domain.Response{
 			Code: _domain.SystemErr.Code,

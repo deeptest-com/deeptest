@@ -52,6 +52,7 @@ func (s *TestInterfaceService) Save(req serverDomain.TestInterfaceSaveReq) (test
 				Method: consts.GET,
 			},
 		},
+		ServeId: req.ServeId,
 	}
 	err = s.DebugInterfaceRepo.Save(&debugInterface)
 	testInterface.DebugInterfaceId = debugInterface.ID
@@ -126,6 +127,7 @@ func (s *TestInterfaceService) addInterface(endpointInterfaceId int, createBy ui
 	debugData.DebugInterfaceId = 0 // force to clone the old one
 	debugData.DebugInterfaceId = 0
 	debugData.EndpointInterfaceId = uint(endpointInterfaceId)
+	debugData.ServeId = parent.ServeId
 	debugData.UsedBy = consts.TestDebug
 	debugInterface, err := s.DebugInterfaceService.Save(debugData)
 

@@ -1,8 +1,8 @@
 <template>
   <div  ref="main" style="width: 100%; height: 100%">
-   
+
   </div>
-  
+
 
 </template>
 
@@ -22,21 +22,14 @@ export default defineComponent({
       // init();
     });
     // 监听项目数据变化
-    watch(
-      () => {
-        return props.params;
-      },
-      async (newVal: any) => {
-        console.log("watch pie newVal", newVal);
-        pieData.value = newVal.pieData;
-        // if (pieData.value?.total!=0) {
+    watch(() => {return props.params;}, async (newVal: any) => {
+          console.log("watch pie newVal", newVal);
+          pieData.value = newVal.pieData;
+          // if (pieData.value?.total!=0) {
           init();
-        // }
-      },
-      {
-        immediate: false,
-      }
-    );
+          // }
+        }, {immediate: false});
+
     function init() {
       // 基于准备好的dom，初始化echarts实例
       const myChart = echarts.init(main.value);
@@ -147,7 +140,7 @@ export default defineComponent({
         color: schoolData.map((item) => {
           return item.color;
         }),
-  
+
       };
       // 赋值
       //   option.series = [
@@ -181,5 +174,5 @@ export default defineComponent({
   },
 });
 </script>
- 
+
 

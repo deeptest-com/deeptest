@@ -46,10 +46,19 @@
           </template>
         </a-sub-menu>
 
-        <a-menu-item :key="'add-' + mode + '-interface'" class="menu-item">
-          <FileAddOutlined />
-          <span>添加请求</span>
-        </a-menu-item>
+        <a-sub-menu @click.stop key="addInterface" trigger="['click']" class="menu-item" popupClassName="dp-tree-context-submenu">
+          <template #title>
+            <FolderAddOutlined />
+            <span>添加请求</span>
+          </template>
+
+          <a-menu-item key="add-child-interface-fromDefine" class="menu-item">
+            <span>从接口管理模块</span>
+          </a-menu-item>
+          <a-menu-item key="add-child-interface-fromTest" class="menu-item">
+            <span>从接口调试模块</span>
+          </a-menu-item>
+        </a-sub-menu>
       </template>
 
       <template v-if="isInterface(treeNode.entityCategory)">

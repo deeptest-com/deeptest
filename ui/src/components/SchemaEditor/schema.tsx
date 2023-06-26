@@ -207,24 +207,15 @@ export default defineComponent({
             parent.properties = {...newObj};
             data.value = addExtraViewInfo(data.value);
         };
-        watch(() => {
-            return props.value
-        }, (newVal) => {
+        watch(() => {return props.value}, (newVal) => {
             const val = cloneDeep(newVal);
             data.value = addExtraViewInfo(val);
-        }, {
-            immediate: true,
-            deep: true
-        });
-        watch(() => {
-            return data.value
-        }, (newVal) => {
+        }, {immediate: true, deep: true});
+        watch(() => {return data.value}, (newVal) => {
             const newObj = removeExtraViewInfo(cloneDeep(newVal));
             emit('change', newObj);
-        }, {
-            immediate: true,
-            deep: true
-        });
+        }, {immediate: true, deep: true});
+
         const renderAction = (options: any) => {
             const {isRoot, isFirst, isLast, keyIndex, parent, ancestor, isRefChildNode} = options;
             const items = parent?.type === 'array' ? ancestor : parent;

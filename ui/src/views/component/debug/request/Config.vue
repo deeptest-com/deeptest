@@ -33,9 +33,8 @@
 </template>
 
 <script setup lang="ts">
-import {computed, inject, ref} from "vue";
+import {inject, ref} from "vue";
 import {useI18n} from "vue-i18n";
-import {useStore} from "vuex";
 import {UsedBy} from "@/utils/enum";
 
 import QueryParameters from "./config/QueryParameters.vue";
@@ -45,39 +44,11 @@ import RequestBody from "./config/Body.vue";
 import RequestHeaders from "./config/Headers.vue";
 import Authorization from "./config/Authorization.vue";
 import PreRequestScript from "./config/PreRequestScript.vue";
-import {StateType as Debug} from "@/views/component/debug/store";
 
 const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
 
-const store = useStore<{ Debug: Debug }>();
-const debugData = computed<any>(() => store.state.Debug.debugData);
-
 const activeKey = ref('1');
-
-const selectMethod = (e) => {
-  console.log('selectMethod', e)
-};
-const sendRequest = (e) => {
-  console.log('sendRequest', e)
-};
-const clearAll = (e) => {
-  console.log('clearAll', e)
-};
-const saveName = (e) => {
-  console.log('saveName', e)
-  e.preventDefault();
-};
-const copyLink = (e) => {
-  console.log('copyLink', e)
-};
-const saveAs = (e) => {
-  console.log('saveAs', e)
-};
-const none = (e) => {
-  console.log('none', e)
-  e.preventDefault()
-};
 
 </script>
 
@@ -91,7 +62,6 @@ const none = (e) => {
 
     .ant-tabs-top-content {
       height: calc(100% - 61px);
-      min-height: 200px;
     }
   }
 }

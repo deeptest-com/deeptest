@@ -361,41 +361,11 @@ func (r *DebugInterfaceRepo) RemoveApiKey(id uint) (err error) {
 	return
 }
 
-//func (r *DebugInterfaceRepo) makeTree(Data []*modelRef.DebugInterface, node *modelRef.DebugInterface) { //参数为父节点，添加父节点的子节点指针切片
-//	children, _ := r.haveChild(Data, node) //判断节点是否有子节点并返回
-//	if children != nil {
-//		node.Children = append(node.Children, children[0:]...) //添加子节点
-//		for _, v := range children {                           //查询子节点的子节点，并添加到子节点
-//			_, has := r.haveChild(Data, v)
-//			if has {
-//				r.makeTree(Data, v) //递归添加节点
-//			}
-//		}
-//	}
-//}
-//
-//func (r *DebugInterfaceRepo) haveChild(Data []*modelRef.DebugInterface, node *modelRef.DebugInterface) (children []*modelRef.DebugInterface, yes bool) {
-//	for _, v := range Data {
-//		if v.ParentId == node.ID {
-//			v.Slots = iris.Map{"icon": "icon"}
-//			children = append(children, v)
-//		}
-//	}
-//	if children != nil {
-//		yes = true
-//	}
-//	return
-//}
-
 func (r *DebugInterfaceRepo) Delete(id uint) (err error) {
 	err = r.DB.Model(&model.DebugInterface{}).
 		Where("id=?", id).
 		Update("deleted", true).
 		Error
-
-	//field := modelRef.InterfaceDebug{}
-	//field.ID = id
-	//err = r.DB.Remove(field).SendErrorMsg
 
 	return
 }
@@ -516,7 +486,6 @@ func (r *DebugInterfaceRepo) GetApiKey(id uint) (po model.DebugInterfaceApiKey, 
 }
 
 func (r *DebugInterfaceRepo) SaveInterfaces(interf *model.DebugInterface) (err error) {
-
 	r.DB.Transaction(func(tx *gorm.DB) error {
 		err = r.UpdateInterface(interf)
 		if err != nil {
@@ -549,44 +518,6 @@ func (r *DebugInterfaceRepo) UpdateInterface(interf *model.DebugInterface) (err 
 	return
 }
 
-//func (r *DebugInterfaceRepo) HasEndpointInterfaceDebugRecord(endpointInterfaceId uint) (id uint, err error) {
-//	po, err := r.GetByOwner(endpointInterfaceId, consts.InterfaceDebug)
-//	id = po.ID
-//
-//	return
-//}
-//func (r *DebugInterfaceRepo) HasScenarioInterfaceDebugRecord(scenarioInterfaceId uint) (id uint, err error) {
-//	po, err := r.GetByOwner(scenarioInterfaceId, consts.ScenarioDebug)
-//	id = po.ID
-//
-//	return
-//}
-//func (r *DebugInterfaceRepo) HasTestInterfaceDebugRecord(testInterfaceId uint) (id uint, err error) {
-//	po, err := r.GetByOwner(testInterfaceId, consts.TestDebug)
-//	id = po.ID
-//
-//	return
-//}
-//
-//func (r *DebugInterfaceRepo) GetByOwner(ownerId uint, usedBy consts.UsedBy) (ret modelRef.DebugInterface, err error) {
-//	db := r.DB.Where("NOT deleted")
-//
-//	if usedBy == consts.InterfaceDebug {
-//		db.Where("endpoint_interface_id=?", ownerId)
-//
-//	} else if usedBy == consts.ScenarioDebug {
-//		db.Where("scenario_interface_id=?", ownerId)
-//
-//	} else if usedBy == consts.TestDebug {
-//		db.Where("test_interface_id=?", ownerId)
-//
-//	}
-//
-//	err = db.Find(&ret).Error
-//
-//	return
-//}
-
 func (r *DebugInterfaceRepo) PopulateProps(po *model.DebugInterface) (err error) {
 	po.QueryParams, po.PathParams, _ = r.ListParams(po.ID)
 	po.Headers, _ = r.ListHeaders(po.ID)
@@ -604,6 +535,15 @@ func (r *DebugInterfaceRepo) UpdateDebugInfo(id uint, values map[string]interfac
 	err = r.DB.Model(&model.DebugInterface{}).
 		Where("id=?", id).
 		Updates(values).
+		Error
+
+	return
+}
+
+func (r *DebugInterfaceRepo) DeleteByProcessorIds(ids []uint) (err error) {
+	err = r.DB.Model(&model.DebugInterface{}).
+		Where("scenario_processor_id= IN (?)", ids).
+		Update("deleted", true).
 		Error
 
 	return

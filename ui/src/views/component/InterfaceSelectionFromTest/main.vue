@@ -35,13 +35,15 @@ const props = defineProps({
   },
 })
 
+const selectInterfaces = ref([])
 const onSelectInterfaces = (data) => {
   console.log('onSelectInterfaces', data)
+  selectInterfaces.value = data
 }
 
-const onSubmit = (nodes) => {
-  console.log('onSubmit', nodes)
-  // props.onFinish(nodes)
+const onSubmit = (e) => {
+  console.log('onSubmit')
+  props.onFinish(selectInterfaces.value)
 }
 
 const onCancel = () => {
@@ -51,10 +53,13 @@ const onCancel = () => {
 
 </script>
 
-<style scoped lang="less">
+<style lang="less">
 .modal-tree-selection {
-  .ant-modal-body {
-    padding-top: 5px;
+  .ant-modal {
+    .ant-modal-content {
+      .ant-modal-body {
+      }
+    }
   }
 }
 </style>

@@ -63,7 +63,9 @@ func (c *EndpointCtrl) Detail(ctx iris.Context) {
 
 func (c *EndpointCtrl) Delete(ctx iris.Context) {
 	id := ctx.URLParamUint64("id")
+
 	err := c.EndpointService.DeleteById(uint(id))
+
 	if err == nil {
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 	} else {

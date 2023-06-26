@@ -81,10 +81,7 @@ const selectedKeys = computed(() => {
   return [selectedItem.value?.id];
 })
 
-watch(() => {
-  return serviceList.value
-}, (newVal) => {
-  console.log(832,'newVal', newVal)
+watch(() => {return serviceList.value}, (newVal) => {
   if (!selectedItem.value && newVal.length > 0) {
     selectedItem.value = newVal.find((item) => {
       return item.endpointInfo && item.serveInfo;
@@ -95,9 +92,11 @@ watch(() => {
   }
 }, {immediate: true});
 
+
 function selectSugRes(item) {
   selectedItem.value = item
 }
+
 
 function selectMenu(item) {
   selectedItem.value = item

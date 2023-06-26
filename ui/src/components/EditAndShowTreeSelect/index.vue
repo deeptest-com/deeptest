@@ -76,13 +76,9 @@ function handleClick() {
   emit('edit');
 }
 
-watch(() => {
-  return props.value
-}, (newVal) => {
+watch(() => {return props.value}, (newVal) => {
   fieldValue.value = newVal
-}, {
-  immediate: true
-})
+}, {immediate: true})
 
 </script>
 

@@ -56,6 +56,8 @@ func (s *EndpointService) DeleteById(id uint) (err error) {
 	}
 
 	err = s.EndpointRepo.DeleteById(id)
+	err = s.EndpointInterfaceRepo.DeleteByEndpoint(id)
+
 	return
 }
 

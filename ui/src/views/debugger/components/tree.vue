@@ -252,6 +252,7 @@ async function handleModalOk(model) {
 
 function handleModalCancel() {
   console.log('handleModalCancel')
+  currentNode.value = null
 }
 
 // import interfaces

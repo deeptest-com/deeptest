@@ -10,9 +10,11 @@ import (
 )
 
 type ScenarioNodeRepo struct {
-	DB                    *gorm.DB               `inject:""`
+	*BaseRepo `inject:""`
+
 	ScenarioProcessorRepo *ScenarioProcessorRepo `inject:""`
 	ScenarioRepo          *ScenarioRepo          `inject:""`
+	DebugInterfaceRepo    *DebugInterfaceRepo    `inject:""`
 }
 
 func (r *ScenarioNodeRepo) ListByScenario(scenarioId uint) (pos []*model.Processor, err error) {
@@ -130,10 +132,16 @@ func (r *ScenarioNodeRepo) UpdateName(id int, name string) (err error) {
 }
 
 func (r *ScenarioNodeRepo) Delete(id uint) (err error) {
-	err = r.DB.Model(&model.Processor{}).
-		Where("id=?", id).
-		Update("deleted", true).
-		Error
+	node, err := r.Get(id)
+
+	ids := []uint{}
+	if r.IsLeaf(node) {
+		ids = append(ids, id)
+	} else {
+		ids, _ = r.GetAllChildIdsSimple(id, model.Processor{}.TableName())
+	}
+
+	err = r.DebugInterfaceRepo.DeleteByProcessorIds(ids)
 
 	return
 }

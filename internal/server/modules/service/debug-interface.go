@@ -155,6 +155,8 @@ func (s *DebugInterfaceService) Save(req domain.DebugData) (debugInterface model
 
 	if req.DebugInterfaceId > 0 { // to update
 		debugInterface.ID = req.DebugInterfaceId
+	} else {
+		debugInterface.ServeId = req.ServeId
 	}
 
 	err = s.DebugInterfaceRepo.Save(&debugInterface)
@@ -192,6 +194,7 @@ func (s *DebugInterfaceService) ConvertDebugDataFromEndpointInterface(endpointIn
 	s.SetProps(endpointInterface, nil, &debugData)
 
 	endpoint, _ := s.EndpointRepo.Get(endpointInterface.EndpointId)
+	debugData.ServeId = endpoint.ServeId
 	debugData.ServerId = endpoint.ServerId
 
 	debugData.UsedBy = consts.InterfaceDebug

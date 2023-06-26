@@ -40,9 +40,7 @@ watch(() => {
   }catch (e){
     console.log(e)
   }
-}, {
-  immediate: true
-})
+}, {immediate: true})
 
 watch(() => {
   return props.examplesStr

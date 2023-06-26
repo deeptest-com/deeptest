@@ -161,9 +161,7 @@ onUnmounted(() => {
 /**
  * fixed: 保证选中项目不为空之后，再fetchServe列表，避免由于currProjectId=NaN导致服务列表返回异常问题
  */
-watch(() => {
-  return currProject.value;
-}, (val: any) => {
+watch(() => {return currProject.value;}, (val: any) => {
   if (val.id) {
     store.dispatch("ServeGlobal/fetchServe");
   }

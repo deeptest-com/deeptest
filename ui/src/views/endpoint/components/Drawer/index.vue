@@ -61,11 +61,11 @@
           </div>
         </a-tab-pane>
         <a-tab-pane key="docs" tab="文档">
-          <Docs :show-basic-info="false"
-                :onlyShowDocs="true"
+          <Docs :onlyShowDocs="true"
                 :showHeader="false"
                 v-if="key === 'docs' && docsData"
                 :data="docsData"
+                @switchToDefineTab="switchToDefineTab"
                 :show-menu="true"/> <!-- use v-if to force page reload-->
         </a-tab-pane>
       </a-tabs>
@@ -241,6 +241,7 @@ function expandInfo(val) {
 .header-text {
   display: flex;
   max-width: 80%;
+
   .serialNumber {
     margin-right: 6px;
   }

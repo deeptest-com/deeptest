@@ -266,7 +266,7 @@ const fetching = ref(false);
 
 /*查看选中的接口文档*/
 function goDocs() {
-  window.open(`/#/docs/share?endpointIds=${selectedRowIds.value.join(',')}`);
+  window.open(`/#/docs/view?endpointIds=${selectedRowIds.value.join(',')}`);
 }
 
 const showPublishDocsModal: any = ref(false)
@@ -350,7 +350,7 @@ const isImporting = ref(false);
 async function handleImport(data, callback) {
 
   isImporting.value = true;
-  
+
   const res = await store.dispatch('Endpoint/importEndpointData', {
     ...data,
     "serveId": currServe.value.id,

@@ -68,35 +68,34 @@
           <DownOutlined/>
         </a-button>
         <template #overlay>
-          <a-menu>
+          <a-menu v-if="!isDocsSharePage && !isDocsViewPage">
             <a-menu-item v-for="version in versions" :key="version" @click="selectVersion(version)">
               <span class="version-text">{{ version.version }}</span>
             </a-menu-item>
           </a-menu>
         </template>
       </a-dropdown>
-      <a-tooltip placement="bottom" :title="'分享文档'">
+      <a-tooltip placement="bottom" :title="'复制分享链接'">
         <a-button :size="'small'" type="text" @click="shareDocs">
           <template #icon>
             <ShareAltOutlined class="action-item"/>
           </template>
-          分享
+          分享链接
         </a-button>
       </a-tooltip>
-
-      <a-tooltip placement="bottom" :title="'复制分享链接'">
-        <a-button :size="'small'" type="text" @click="copyUrl">
-          <template #icon>
-            <CopyOutlined class="action-item"/>
-          </template>
-          复制
-        </a-button>
-      </a-tooltip>
-
-      <a-tooltip placement="bottom" @click="toggle">
+      <!--      <a-tooltip placement="bottom" :title="'复制分享链接'">-->
+      <!--        <a-button :size="'small'" type="text" @click="copyUrl">-->
+      <!--          <template #icon>-->
+      <!--            <CopyOutlined class="action-item"/>-->
+      <!--          </template>-->
+      <!--          复制-->
+      <!--        </a-button>-->
+      <!--      </a-tooltip>-->
+      <a-tooltip placement="bottom" @click="toggle" v-if="isDocsViewPage || isDocsSharePage">
         <template #title>全屏</template>
         <a-button type="text" class="share-btn">
-          <FullscreenOutlined style="font-size: 14px"/>
+          <FullscreenOutlined v-if="isFullscreen" style="font-size: 14px"/>
+          <FullscreenExitOutlined v-if="!isFullscreen" style="font-size: 14px"/>
         </a-button>
       </a-tooltip>
 
@@ -136,12 +135,19 @@ const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
 const shortCutText = ref(isMac ? '⌘ K' : 'Ctrl K');
 
 // 复制链接
-const source = ref('Hello111')
+const source = ref('')
 
 const {text, copy, copied, isSupported} = useClipboard({source});
 const {isFullscreen, enter, exit, toggle} = useFullscreen();
 
 import {useStore} from "vuex";
+import {useRouter} from "vue-router";
+
+const router = useRouter();
+const path: any = router.currentRoute.value.path;
+// 是否分享页面
+const isDocsSharePage = path.includes('/share');
+const isDocsViewPage = path.includes('/view');
 
 const store = useStore<{ Docs, ProjectGlobal }>();
 
@@ -169,7 +175,8 @@ const cmdK = keys['Command+K'];
 
 // 默认版本 ID 为 0 ，即最新版本
 const currentVersion = computed(() => {
-  return versions.value.find((item) => item.id === store.state.Docs.currDocId)?.version;
+  const version = versions.value.find((item) => item.id === store.state.Docs.currDocId)?.version;
+  return version || data.value.version || 'latest';
 })
 
 const versions = computed(() => {
@@ -177,8 +184,9 @@ const versions = computed(() => {
 })
 
 const title = computed(() => {
-  return props.data?.[0]?.value
+  return props.data?.name;
 })
+
 
 function selectItem(item) {
   emit('select', item?.value);
@@ -219,24 +227,39 @@ watch(cmdK, (v) => {
   }
 })
 
-function shareDocs() {
-  console.log('shareDocs')
-  Modal.confirm({
-    title: `确定分享版本号为 ${currentVersion.value} 的文档吗？`,
-    icon: createVNode(ExclamationCircleOutlined),
-    onOk() {
-      message.success('分享成功, 分享链接已复制到剪切板 ');
-    },
-    onCancel() {
-      console.log('Cancel');
-    },
-    class: 'test',
-  });
+async function shareDocs() {
+  // 如果是分享页面，则直接复制链接即可
+  if(isDocsSharePage || isDocsViewPage){
+    source.value = `${window.location.href}`;
+    copyUrl();
+    return
+  }
+
+  const res = await store.dispatch('Docs/shareDocs', {
+    documentId: store.state.Docs.currDocId,
+    projectId: currProject.value.id,
+  })
+
+  if (res) {
+    source.value = `${window.location.origin}/#/docs/share?code=${res.code}`;
+    copyUrl();
+  }
+  // Modal.confirm({
+  //   title: `确定分享版本号为 ${currentVersion.value} 的文档吗？`,
+  //   icon: createVNode(ExclamationCircleOutlined),
+  //   onOk() {
+  //     message.success('分享成功, 分享链接已复制到剪切板 ');
+  //   },
+  //   onCancel() {
+  //     console.log('Cancel');
+  //   },
+  //   class: 'test',
+  // });
 }
 
 function copyUrl() {
   copy(source.value);
-  message.success('复制成功')
+  message.success('分享链接已复制到剪切板 ');
 }
 
 function keywordsChange(newVal) {

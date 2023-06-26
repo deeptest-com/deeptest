@@ -1,7 +1,11 @@
 <template>
   <div class="container">
     <a-spin tip="加载中..." :spinning="loading">
-      <Docs :show-basic-info="true" :show-menu="true" :showHeader="true" :data="data"/>
+      <Docs :show-menu="true"
+            :showHeader="true"
+            :data="data"
+            :versions="docVersions"
+            @changeVersion="changeVersion"/>
     </a-spin>
   </div>
 </template>
@@ -24,13 +28,6 @@ const loading = ref(false);
 const router = useRouter();
 const query: any = router.currentRoute.value.query;
 
-const docVersions: any = ref([
-  {
-    value: '',
-    label: 'latest',
-  }
-]);
-
 const endpointIds: any = computed(() => {
   if (query.endpointIds) {
     return query.endpointIds.split(',').map((item: any) => {
@@ -40,6 +37,7 @@ const endpointIds: any = computed(() => {
     return [];
   }
 });
+
 const serveIds: any = computed(() => {
   if (query.serveIds) {
     return query.serveIds.split(',').map((item: any) => {
@@ -49,6 +47,7 @@ const serveIds: any = computed(() => {
     return [];
   }
 });
+
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 
 const data = ref<any>(null);
@@ -98,14 +97,11 @@ watch(() => {
   immediate: true
 })
 
+const docVersions: any = ref([]);
+
 onMounted(async () => {
-  // if (query.version) {
-  //   docVersions.value = await store.dispatch('Docs/getDocVersions', {
-  //     projectId: currProject.value.id,
-  //   });
-  // }
   docVersions.value = await store.dispatch('Docs/getVersionList', {
-    projectId: currProject.value.id,
+    needLatest: true,
   });
 })
 

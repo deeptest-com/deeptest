@@ -10,13 +10,6 @@ const props = defineProps<{
     data: Array<any>
 }>();
 
-watch(() => {
-    return props.data;
-}, () => {
-    console.log('6666666',props.data)
-}, {
-    immediate: true
-})
 const columns = [
     {
         title: 'name',

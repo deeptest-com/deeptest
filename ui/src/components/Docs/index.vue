@@ -1,9 +1,13 @@
 <!-- :::: 接口定义模块 -->
 <template>
   <div class="content" v-if="data?.name">
-<!--    <BasicDetail  :items="items" v-if="showBasicInfo"/>-->
-    <DocsHeader v-if="showHeader" :data="items" :items="serviceList" @select="selectSugRes"/>
-    <a-divider style="margin:0" v-if="showBasicInfo"/>
+    <DocsHeader v-if="showHeader"
+                :data="items"
+                :items="serviceList"
+                :versions="versions"
+                @select="selectSugRes"
+                @changeVersion="changeVersion"/>
+    <a-divider style="margin:0" v-if="showHeader"/>
     <div class="doc-container">
       <div class="left" v-if="showMenu">
         <LeftTreeView :serviceList="serviceList" @select="selectMenu" :selectedKeys="selectedKeys"/>
@@ -25,14 +29,13 @@ import {
 } from 'vue';
 import {useStore} from "vuex";
 
-import BasicDetail from "./components/BasicDetail.vue";
 import LeftTreeView from "./components/LeftTreeView.vue";
 import EndpointDoc from "./components/EndpointDoc.vue";
 import DocsHeader from "./components/DocsHeader.vue";
 
 const store = useStore<{ Endpoint, ProjectGlobal }>();
-const props = defineProps(['showBasicInfo', 'showMenu', 'data', 'onlyShowDocs','showHeader']);
-const emit = defineEmits([]);
+const props = defineProps(['showMenu', 'data', 'onlyShowDocs','showHeader','versions']);
+const emit = defineEmits(['changeVersion']);
 
 const items = computed(() => {
   return [
@@ -50,7 +53,6 @@ const items = computed(() => {
 const serviceList = computed(() => {
   // 组装数据以兼容组件 LeftTreeMenu
   let items: any = [];
-
   props?.data?.serves.forEach((item: any) => {
     console.log(832,'item', item)
     // 只显示文档，不展示服务信息
@@ -68,7 +70,6 @@ const serviceList = computed(() => {
       })
     })
   })
-  console.log(832,'items', items)
   return items;
 })
 
@@ -101,6 +102,14 @@ function selectSugRes(item) {
 function selectMenu(item) {
   selectedItem.value = item
 }
+
+
+function changeVersion(docId) {
+  emit('changeVersion',docId);
+}
+
+
+
 
 </script>
 

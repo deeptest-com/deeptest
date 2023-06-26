@@ -43,3 +43,9 @@ type UpdateDocumentVersionReq struct {
 type DocumentVersionListReq struct {
 	NeedLatest bool `json:"needLatest"` //需要展示实时版本这条假数据
 }
+
+type DocumentShareReq struct {
+	ProjectId  uint `json:"projectId"`
+	DocumentId uint `json:"documentId"`
+	EndpointId uint `json:"endpointId"`
+}

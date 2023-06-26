@@ -340,6 +340,7 @@ async function handleCreateApi(data) {
     "description": data.description || null,
     "categoryId": data.categoryId || null,
   });
+  await refreshList();
   createApiModalVisible.value = false;
 }
 
@@ -349,7 +350,7 @@ const isImporting = ref(false);
 async function handleImport(data, callback) {
 
   isImporting.value = true;
-  showImportModal.value = false;
+  
   const res = await store.dispatch('Endpoint/importEndpointData', {
     ...data,
     "serveId": currServe.value.id,
@@ -409,7 +410,18 @@ watch(() => [currProject.value.id, currServe.value.id], async (newVal) => {
 
 async function refreshList() {
   await loadList(pagination.value.current, pagination.value.pageSize);
+  //await store.dispatch('Endpoint/loadCategory');
 }
+
+watch(
+  ()=>[createApiModalVisible.value, showImportModal.value,drawerVisible.value],
+  async (newValue) => {
+    if (!newValue[0] || !newValue[1] || !newValue[2]) {
+      await store.dispatch('Endpoint/loadCategory');
+    }
+  },
+  {  immediate: true }
+);
 
 
 </script>

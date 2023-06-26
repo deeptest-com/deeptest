@@ -38,7 +38,7 @@ type InterfaceConfigBase struct {
 
 type InterfaceParamBase struct {
 	Name        string         `json:"name"`
-	Value       string         `json:"value"`
+	Value       string         `json:"value" gorm:"type:text"`
 	Type        string         `json:"type"`
 	ParamIn     consts.ParamIn `json:"paramIn"`
 	Desc        string         `json:"desc"`
@@ -63,7 +63,7 @@ type InterfaceBodyFormUrlEncodedItemBase struct {
 type InterfaceHeaderBase struct {
 	Name        string `json:"name"`
 	Desc        string `json:"desc"`
-	Value       string `json:"value"`
+	Value       string `json:"value" gorm:"type:text"`
 	Type        string `json:"type"`
 	InterfaceId uint   `json:"interfaceId"`
 }
@@ -71,7 +71,7 @@ type InterfaceHeaderBase struct {
 type InterfaceCookieBase struct {
 	Name        string `json:"name"`
 	Desc        string `json:"desc"`
-	Value       string `json:"value"`
+	Value       string `json:"value" gorm:"type:text"`
 	Type        string `json:"type"`
 	InterfaceId uint   `json:"interfaceId"`
 }

@@ -405,6 +405,16 @@ onMounted(() => {
   console.log('onMounted')
 })
 
+watch(
+  ()=>[isEditVisible.value, drawerVisible.value],
+  async (newValue) => {
+    if (!newValue[0] || !newValue[1]) {
+      await store.dispatch('Scenario/loadCategory');
+    }
+  },
+  {  immediate: true }
+);
+
 </script>
 
 <style lang="less" scoped>

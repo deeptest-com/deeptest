@@ -84,39 +84,31 @@ const auditColumns = [
 {
     title: "ID",
     dataIndex: "id",
-    //  width: 200,
-    // slots: { customRender: "role" },
   },
   {
     title: "申请人",
     dataIndex: "applyUserName",
-    //  width: 150,
-    // slots: { customRender: "username" },
+
   },
   {
     title: "申请加入项目",
     dataIndex: "projectName",
-    //  width: 200,
-    // slots: { customRender: "role" },
+
   },
   {
     title: "申请角色",
     dataIndex: "projectRoleName",
     customRender:getRoleName
-    //  width: 150,
-    // slots: { customRender: "role" },
   },
   {
     title: "申请原因",
     dataIndex: "description",
-    // width: 200,
-    // slots: { customRender: "email" },
   },
   {
     title: "申请日期",
     dataIndex: "createdAt",
     width: 240,
-    // slots: { customRender: "email" },
+
   },
   {
     title: "状态",

@@ -132,8 +132,6 @@ watch(() => {
     })
     loading.value = false;
   }
-}, {
-  immediate: true
 })
 
 // 获取版本列表

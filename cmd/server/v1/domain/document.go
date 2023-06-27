@@ -32,7 +32,7 @@ type Endpoints struct {
 type DocumentVersionReq struct {
 	EndpointIds []uint `json:"endpointIds"`
 	Name        string `json:"name"`
-	Version     string `json:"version"`
+	Version     string `json:"version" validate:"required"`
 }
 
 type UpdateDocumentVersionReq struct {

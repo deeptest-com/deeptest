@@ -193,12 +193,12 @@ func (s *DocumentService) UpdateDocument(req domain.UpdateDocumentVersionReq) (e
 func (s *DocumentService) GenerateShareLink(req domain.DocumentShareReq) (link string, err error) {
 	encryptValue := strconv.Itoa(int(req.ProjectId)) + "-" + strconv.Itoa(int(req.DocumentId)) + "-" + strconv.Itoa(int(req.EndpointId))
 	res, err := commUtils.AesCBCEncrypt([]byte(encryptValue), []byte(EncryptKey))
-	link = base64.StdEncoding.EncodeToString(res)
+	link = base64.RawURLEncoding.EncodeToString(res)
 	return
 }
 
 func (s *DocumentService) DecryptShareLink(link string) (req domain.DocumentShareReq, err error) {
-	linkByte, err := base64.StdEncoding.DecodeString(link)
+	linkByte, err := base64.RawURLEncoding.DecodeString(link)
 	if err != nil {
 		return
 	}

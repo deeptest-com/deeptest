@@ -64,6 +64,7 @@ const StoreModel: ModuleType = {
             });
             if (res.code === 0) {
                 commit('updateDocs', res.data);
+                commit('changeCurrDocId',payload.documentId || 0);
                 return res.data;
             } else {
                 return null;

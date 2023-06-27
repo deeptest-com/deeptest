@@ -89,17 +89,15 @@ const driverTypeOpts = [
     label: 'Postman',
     value: 'postman',
   },
+  /*
   {
     label: 'Yapi',
     value: 'yapi',
   },
+  */
   {
-    label: 'Swagger 2',
-    value: 'swagger2',
-  },
-  {
-    label: 'Swagger 3',
-    value: 'swagger3',
+    label: 'Swagger',
+    value: 'swagger',
   },
 ]
 

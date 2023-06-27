@@ -129,9 +129,9 @@ func JsonEncode(data interface{}) (res string) {
 
 }
 
-func JsonDecode(str string, res interface{}) {
+func JsonDecode(str string, res interface{}) (err error) {
 
-	if err := json.Unmarshal([]byte(str), res); err != nil {
+	if err = json.Unmarshal([]byte(str), res); err != nil {
 		//panic(err)
 	}
 

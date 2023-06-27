@@ -33,15 +33,22 @@ func (o *openapi2endpoint) Convert() (endpoints []*model.Endpoint, dirs *Dirs) {
 func (o *openapi2endpoint) convertEndpoints() {
 
 	for url, path := range o.doc.Paths {
-		endpoint := new(model.Endpoint)
-		endpoint.Path = url
 		o.addMethod(url, path.ExtensionProps)
-		endpoint.Interfaces, endpoint.Tags = o.interfaces(url, o.doc.Paths[url])
-		endpoint.PathParams = o.pathParams(o.doc.Paths[url].Parameters)
-		if len(endpoint.Interfaces) > 0 {
-			endpoint.Title = endpoint.Interfaces[0].Name
+		interfaces := o.interfaces(url, o.doc.Paths[url])
+		pathParams := o.pathParams(o.doc.Paths[url].Parameters)
+		for _, interf := range interfaces {
+			endpoint := new(model.Endpoint)
+			endpoint.Path = url
+			if len(pathParams) == 0 {
+				pathParams = interf.PathParams
+			}
+			endpoint.PathParams = pathParams
+			endpoint.Title = interf.Name
+			endpoint.Interfaces = append(endpoint.Interfaces, interf)
+			endpoint.Tags = interf.Tags
+			o.endpoints = append(o.endpoints, endpoint)
 		}
-		o.endpoints = append(o.endpoints, endpoint)
+
 	}
 
 	return
@@ -51,7 +58,6 @@ func (o *openapi2endpoint) addMethod(url string, extensions openapi3.ExtensionPr
 	for method, extension := range extensions.Extensions {
 		var operation *openapi3.Operation
 		json.Unmarshal(extension.(json.RawMessage), &operation)
-		//fmt.Println(string(extension.(json.RawMessage)), "+_+_+_")
 		o.doc.AddOperation(url, method, operation)
 	}
 
@@ -66,61 +72,61 @@ func (o *openapi2endpoint) pathParams(parameters openapi3.Parameters) (pathParam
 	return
 }
 
-func (o *openapi2endpoint) interfaces(url string, path *openapi3.PathItem) (interfaces []model.EndpointInterface, tags []string) {
+func (o *openapi2endpoint) interfaces(url string, path *openapi3.PathItem) (interfaces []model.EndpointInterface) {
 	var interf model.EndpointInterface
 	if path.Get != nil {
-		interf, tags = o.interf("GET", url, path.Get)
+		interf = o.interf("GET", url, path.Get)
 		interfaces = append(interfaces, interf)
 	}
 
 	if path.Post != nil {
-		interf, tags = o.interf("POST", url, path.Post)
+		interf = o.interf("POST", url, path.Post)
 		interfaces = append(interfaces, interf)
 	}
 
 	if path.Put != nil {
-		interf, tags = o.interf("PUT", url, path.Put)
+		interf = o.interf("PUT", url, path.Put)
 		interfaces = append(interfaces, interf)
 	}
 
 	if path.Delete != nil {
-		interf, tags = o.interf("DELETE", url, path.Delete)
+		interf = o.interf("DELETE", url, path.Delete)
 		interfaces = append(interfaces, interf)
 	}
 
 	if path.Trace != nil {
-		interf, tags = o.interf("TRACE", url, path.Trace)
+		interf = o.interf("TRACE", url, path.Trace)
 		interfaces = append(interfaces, interf)
 	}
 
 	if path.Head != nil {
-		interf, tags = o.interf("HEAD", url, path.Head)
+		interf = o.interf("HEAD", url, path.Head)
 		interfaces = append(interfaces, interf)
 	}
 
 	if path.Options != nil {
-		interf, tags = o.interf("OPTIONS", url, path.Options)
+		interf = o.interf("OPTIONS", url, path.Options)
 		interfaces = append(interfaces, interf)
 	}
 
 	if path.Patch != nil {
-		interf, tags = o.interf("OPTIONS", url, path.Patch)
+		interf = o.interf("OPTIONS", url, path.Patch)
 		interfaces = append(interfaces, interf)
 	}
 	return
 }
 
-func (o *openapi2endpoint) interf(method consts.HttpMethod, url string, operation *openapi3.Operation) (interf model.EndpointInterface, tags []string) {
+func (o *openapi2endpoint) interf(method consts.HttpMethod, url string, operation *openapi3.Operation) (interf model.EndpointInterface) {
 	interf = model.EndpointInterface{}
 	interf.Name = operation.Summary
 	interf.Method = method
 	interf.Url = url
-	interf.Headers, interf.Cookies, interf.Params = o.parameters(operation)
+	interf.Headers, interf.Cookies, interf.Params, interf.PathParams = o.parameters(operation)
 	if operation.RequestBody != nil {
 		interf.BodyType, interf.RequestBody = o.requestBody(operation.RequestBody.Value.Content)
 	}
 	interf.ResponseBodies = o.responseBodies(operation.Responses)
-	tags = o.makeDirs(operation.Tags)
+	interf.Tags = o.makeDirs(operation.Tags)
 	return
 }
 
@@ -231,7 +237,7 @@ func (o *openapi2endpoint) responseHeader(h openapi3.Headers) (headers []model.E
 	return
 }
 
-func (o *openapi2endpoint) parameters(operation *openapi3.Operation) (headers []model.EndpointInterfaceHeader, cookies []model.EndpointInterfaceCookie, params []model.EndpointInterfaceParam) {
+func (o *openapi2endpoint) parameters(operation *openapi3.Operation) (headers []model.EndpointInterfaceHeader, cookies []model.EndpointInterfaceCookie, params []model.EndpointInterfaceParam, pathParams []model.EndpointPathParam) {
 	for _, parameter := range operation.Parameters {
 		if parameter.Value.In == "header" {
 			header := o.parameter(parameter)
@@ -242,6 +248,9 @@ func (o *openapi2endpoint) parameters(operation *openapi3.Operation) (headers []
 		} else if parameter.Value.In == "query" {
 			param := o.parameter(parameter)
 			params = append(params, param)
+		} else if parameter.Value.In == "path" {
+			param := o.parameter(parameter)
+			pathParams = append(pathParams, model.EndpointPathParam{EndpointInterfaceParam: param})
 		}
 	}
 

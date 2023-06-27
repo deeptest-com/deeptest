@@ -58,6 +58,10 @@
           </a-form-item>
 
           <a-form-item :wrapper-col="{ span: wrapperCol.span, offset: labelCol.span }">
+            请求中可使用形如${_dp(myData, A, 1)}的表达式引用数据池，追回一个参数支持数字（索引）、seq（顺序）和rand（随机）。
+          </a-form-item>
+
+          <a-form-item :wrapper-col="{ span: wrapperCol.span, offset: labelCol.span }">
             <a-button type="primary" @click="onSubmit" class="dp-btn-gap">保存</a-button> &nbsp;
             <a-button @click="onClose" class="dp-btn-gap">取消</a-button>
           </a-form-item>

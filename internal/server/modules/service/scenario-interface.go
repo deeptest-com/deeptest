@@ -60,8 +60,8 @@ func (s *ScenarioInterfaceService) SetProps(
 	debugData.EndpointInterfaceId = endpointInterface.ID // reset
 
 	debugData.Headers = append(debugData.Headers, domain.Header{Name: "", Value: ""})
-	debugData.QueryParams = append(debugData.QueryParams, domain.Param{Name: "", Value: ""})
-	debugData.PathParams = append(debugData.PathParams, domain.Param{Name: "", Value: ""})
+	debugData.QueryParams = append(debugData.QueryParams, domain.Param{Name: "", Value: "", ParamIn: consts.ParamInQuery})
+	debugData.PathParams = append(debugData.PathParams, domain.Param{Name: "", Value: "", ParamIn: consts.ParamInPath})
 
 	debugData.BodyFormData = append(debugData.BodyFormData, domain.BodyFormDataItem{
 		Name: "", Value: "", Type: consts.FormDataTypeText})

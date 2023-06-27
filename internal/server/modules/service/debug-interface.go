@@ -101,8 +101,8 @@ func (s *DebugInterfaceService) GetDebugInterfaceByScenarioInterface(scenarioPro
 	ret.ScenarioProcessorId = scenarioProcessorId
 
 	ret.Headers = append(ret.Headers, domain.Header{Name: "", Value: ""})
-	ret.QueryParams = append(ret.QueryParams, domain.Param{Name: "", Value: ""})
-	ret.PathParams = append(ret.PathParams, domain.Param{Name: "", Value: ""})
+	ret.QueryParams = append(ret.QueryParams, domain.Param{Name: "", Value: "", ParamIn: consts.ParamInQuery})
+	ret.PathParams = append(ret.PathParams, domain.Param{Name: "", Value: "", ParamIn: consts.ParamInPath})
 
 	ret.BodyFormData = append(ret.BodyFormData, domain.BodyFormDataItem{
 		Name: "", Value: "", Type: consts.FormDataTypeText})
@@ -132,8 +132,8 @@ func (s *DebugInterfaceService) GetDebugInterfaceByTestInterface(testInterfaceId
 	ret.TestInterfaceId = testInterfaceId
 
 	ret.Headers = append(ret.Headers, domain.Header{Name: "", Value: ""})
-	ret.QueryParams = append(ret.QueryParams, domain.Param{Name: "", Value: ""})
-	ret.PathParams = append(ret.PathParams, domain.Param{Name: "", Value: ""})
+	ret.QueryParams = append(ret.QueryParams, domain.Param{Name: "", Value: "", ParamIn: consts.ParamInQuery})
+	ret.PathParams = append(ret.PathParams, domain.Param{Name: "", Value: "", ParamIn: consts.ParamInPath})
 
 	ret.BodyFormData = append(ret.BodyFormData, domain.BodyFormDataItem{
 		Name: "", Value: "", Type: consts.FormDataTypeText})
@@ -233,8 +233,8 @@ func (s *DebugInterfaceService) SetProps(
 	debugData.DebugInterfaceId = debugInterfacePo.ID
 
 	debugData.Headers = append(debugData.Headers, domain.Header{Name: "", Value: ""})
-	debugData.QueryParams = append(debugData.QueryParams, domain.Param{Name: "", Value: ""})
-	debugData.PathParams = append(debugData.PathParams, domain.Param{Name: "", Value: ""})
+	debugData.QueryParams = append(debugData.QueryParams, domain.Param{Name: "", Value: "", ParamIn: consts.ParamInQuery})
+	debugData.PathParams = append(debugData.PathParams, domain.Param{Name: "", Value: "", ParamIn: consts.ParamInPath})
 
 	debugData.BodyFormData = append(debugData.BodyFormData, domain.BodyFormDataItem{
 		Name: "", Value: "", Type: consts.FormDataTypeText})

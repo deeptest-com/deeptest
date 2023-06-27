@@ -62,8 +62,17 @@ func (s *ParserJsonService) getJsonSelectedElem(docJson, selectContent string) (
 		return
 	}
 
-	expr := fmt.Sprintf("//*[contains(.,'%s')]", consts.DeepestKey)
+	expr := fmt.Sprintf("//*/text()[contains(.,'%s')]", consts.DeepestKey)
 	ret, err = jsonquery.Query(doc, expr)
+	if err != nil {
+		return
+	}
+
+	if ret.Type == jsonquery.TextNode &&
+		ret.Parent.Data != "" { // except the array parent node which data is empty
+
+		ret = ret.Parent
+	}
 
 	return
 }

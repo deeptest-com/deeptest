@@ -37,7 +37,12 @@ func (c *FileCtrl) Upload(ctx iris.Context) {
 	var data interface{}
 	if isDatapool {
 		absPath := filepath.Join(dir.GetCurrentAbPath(), pth)
-		data, _ = c.DatapoolService.ReadExcel(absPath)
+		data, err = c.DatapoolService.ReadExcel(absPath)
+
+		if err != nil {
+			ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+			return
+		}
 	}
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code,

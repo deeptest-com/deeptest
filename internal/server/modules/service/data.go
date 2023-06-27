@@ -34,10 +34,6 @@ type DataService struct {
 	ProjectRoleMenuSource *source.ProjectRoleMenuSource `inject:""`
 }
 
-func NewDataService() *DataService {
-	return &DataService{}
-}
-
 // writeConfig 写入配置文件
 func (s *DataService) writeConfig(viper *viper.Viper, conf config.Config) error {
 	cs := str.StructToMap(config.CONFIG)

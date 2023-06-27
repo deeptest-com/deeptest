@@ -26,10 +26,6 @@ type AccountService struct {
 	UserRepo *repo.UserRepo `inject:""`
 }
 
-func NewAuthService() *AccountService {
-	return &AccountService{}
-}
-
 // Login 登录
 func (s *AccountService) Login(req v1.LoginReq) (ret v1.LoginResp, err error) {
 	user, err := s.UserRepo.FindPasswordByUserName(req.Username)

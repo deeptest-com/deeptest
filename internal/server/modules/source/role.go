@@ -13,10 +13,6 @@ type RoleSource struct {
 	PermRepo *repo2.PermRepo `inject:""`
 }
 
-func NewRoleSource() *RoleSource {
-	return &RoleSource{}
-}
-
 func (s *RoleSource) GetSources() ([]v1.RoleReq, error) {
 	perms, err := s.PermRepo.GetPermsForRoles()
 	if err != nil {

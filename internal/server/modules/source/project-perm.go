@@ -12,10 +12,6 @@ type ProjectPermSource struct {
 	ProjectPermRepo *repo.ProjectPermRepo `inject:""`
 }
 
-func NewProjectPermSource() *ProjectPermSource {
-	return &ProjectPermSource{}
-}
-
 func (s *ProjectPermSource) GetSources() []model.ProjectPerm {
 	permRouteLen := len(config.PermRoutes)
 	ch := make(chan model.ProjectPerm, permRouteLen)

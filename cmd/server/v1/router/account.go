@@ -11,10 +11,6 @@ type AccountModule struct {
 	AccountCtrl *handler.AccountCtrl `inject:""`
 }
 
-func NewAccountModule() *AccountModule {
-	return &AccountModule{}
-}
-
 // Party 认证模块
 func (m *AccountModule) Party() module.WebModule {
 	handler := func(public iris.Party) {

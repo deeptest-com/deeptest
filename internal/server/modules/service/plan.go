@@ -18,10 +18,6 @@ type PlanService struct {
 	UserRepo       *repo.UserRepo       `inject:""`
 }
 
-func NewPlanService() *PlanService {
-	return &PlanService{}
-}
-
 func (s *PlanService) Paginate(req v1.PlanReqPaginate, projectId int) (ret _domain.PageData, err error) {
 	ret, err = s.PlanRepo.Paginate(req, projectId)
 

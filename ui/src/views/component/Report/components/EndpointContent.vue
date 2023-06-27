@@ -26,22 +26,9 @@ import { RightOutlined, LoadingOutlined, ExclamationCircleOutlined, CheckCircleO
 import { responseCodes } from '@/config/constant';
 import { formatWithSeconds } from '@/utils/datetime';
 
-enum StatusMap {
-    'pass' = '通过',
-    'expires' = '过期',
-    'fail' = '失败'
-}
-
-enum ClassMap {
-    'pass' = 'endpoint-success',
-    'expires' = 'endpoint-expires',
-    'fail' = 'endpoint-error',
-    'loading' = 'endpoint-loading'
-}
-
 const props = defineProps({
     collapseKey: {
-        required: true
+        required: false
     },
     endpointData: {
         type: Object,

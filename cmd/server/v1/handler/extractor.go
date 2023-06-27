@@ -2,6 +2,7 @@ package handler
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
@@ -135,13 +136,14 @@ func (c *ExtractorCtrl) Delete(ctx iris.Context) {
 
 // ListExtractorVariableForCheckpoint
 func (c *ExtractorCtrl) ListExtractorVariableForCheckpoint(ctx iris.Context) {
-	interfaceId, err := ctx.URLParamInt("interfaceId")
-	if interfaceId == 0 {
+	req := domain.DebugReq{}
+	err := ctx.ReadJSON(&req)
+	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
-	data, err := c.ExtractorService.ListExtractorVariableByInterface(interfaceId)
+	data, err := c.ExtractorService.ListExtractorVariableByInterface(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

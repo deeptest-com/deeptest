@@ -141,6 +141,10 @@ func (r *ScenarioNodeRepo) Delete(id uint) (err error) {
 		ids, _ = r.GetAllChildIdsSimple(id, model.Processor{}.TableName())
 	}
 
+	err = r.DB.Model(&model.Processor{}).
+		Where("id IN (?)", ids).
+		Update("deleted", true).Error
+
 	err = r.DebugInterfaceRepo.DeleteByProcessorIds(ids)
 
 	return

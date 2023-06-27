@@ -11,10 +11,6 @@ type EndpointInterfaceModule struct {
 	EndpointInterfaceCtrl *handler.EndpointInterfaceCtrl `inject:""`
 }
 
-func NewEndpointInterfaceModule() *EndpointInterfaceModule {
-	return &EndpointInterfaceModule{}
-}
-
 // Party 注册模块
 func (m *EndpointInterfaceModule) Party() module.WebModule {
 	handler := func(public iris.Party) {

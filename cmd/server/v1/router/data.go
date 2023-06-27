@@ -10,10 +10,6 @@ type DataModule struct {
 	DataCtrl *handler.DataCtrl `inject:""`
 }
 
-func NewDataModule() *DataModule {
-	return &DataModule{}
-}
-
 // Party 初始化模块
 func (m *DataModule) Party() module.WebModule {
 	handler := func(index iris.Party) {

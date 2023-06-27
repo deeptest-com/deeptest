@@ -11,10 +11,6 @@ type PlanReportModule struct {
 	ReportCtrl *handler.PlanReportCtrl `inject:""`
 }
 
-func NewReportModule() *PlanReportModule {
-	return &PlanReportModule{}
-}
-
 // Party
 func (m *PlanReportModule) Party() module.WebModule {
 	handler := func(index iris.Party) {

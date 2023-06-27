@@ -20,6 +20,7 @@
               <a-select :options="servers" :value="serverId || null" @change="changeServer"
                         placeholder="请选择环境" class="select-env">
               </a-select>
+
               <span v-if="envURL" class="current-env-url">{{ envURL || '---' }}</span>
             </template>
           </a-input>
@@ -85,7 +86,7 @@ const listServer = async (serverId) => {
 }
 
 watch(debugData, (val) => {
-  console.log('-----', debugData.value.serverId)
+  console.log('watch debugData', debugData.value.serverId)
   listServer(debugData.value.serverId)
 }, {immediate: true, deep: true});
 

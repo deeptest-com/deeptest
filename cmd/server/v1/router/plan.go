@@ -11,10 +11,6 @@ type PlanModule struct {
 	PlanCtrl *handler.PlanCtrl `inject:""`
 }
 
-func NewPlanModule() *PlanModule {
-	return &PlanModule{}
-}
-
 // Party 计划
 func (m *PlanModule) Party() module.WebModule {
 	handler := func(index iris.Party) {

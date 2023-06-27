@@ -52,8 +52,7 @@
 <script setup lang="ts">
 import {useI18n} from "vue-i18n";
 
-
-import {computed, onMounted, provide, ref} from "vue";
+import {computed, inject, onMounted, provide, ref} from "vue";
 import {Form, notification} from 'ant-design-vue';
 import {useStore} from "vuex";
 import { EnvironmentOutlined, HistoryOutlined } from '@ant-design/icons-vue';
@@ -75,12 +74,14 @@ import {StateType as Scenario} from "@/views/scenario/store";
 
 provide('usedBy', UsedBy.ScenarioDebug)
 
+const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
 
 const tabKey = ref('env')
 
 const store = useStore<{  Debug: Debug, Scenario: Scenario }>();
 const debugData = computed<any>(() => store.state.Debug.debugData);
+const scenarioProcessorIdForDebug = computed<number>(() => store.state.Scenario.scenarioProcessorIdForDebug);
 
 const invokeInterface = async () => {
   console.log('invokeInterface', debugData.value)
@@ -116,11 +117,8 @@ const saveScenarioInterface = async (data) => {
 };
 
 const syncDebugData = async () => {
-  await store.dispatch('Debug/loadDataAndInvocations', {
-    endpointInterfaceId: debugData.value.endpointInterfaceId,
-    scenarioProcessorId: 0,
-    usedBy: UsedBy.InterfaceDebug,
-  });
+  console.log('syncDebugData')
+  store.dispatch('Scenario/syncDebugData')
 };
 
 onMounted(() => {

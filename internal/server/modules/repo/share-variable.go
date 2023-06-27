@@ -13,10 +13,6 @@ type ShareVariableRepo struct {
 	ScenarioProcessorRepo *ScenarioProcessorRepo `inject:""`
 }
 
-func NewShareVariableRepo() *ShareVariableRepo {
-	return &ShareVariableRepo{}
-}
-
 func (r *ShareVariableRepo) Save(po *model.ShareVariable) (err error) {
 	po.ID, _ = r.findExist(*po)
 

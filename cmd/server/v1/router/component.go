@@ -10,10 +10,6 @@ type ComponentModule struct {
 	ComponentCtrl *handler.ComponentCtrl `inject:""`
 }
 
-func NewComponentModule() *ComponentModule {
-	return &ComponentModule{}
-}
-
 // Party 注册模块
 func (m *ComponentModule) Party() module.WebModule {
 	handler := func(public iris.Party) {

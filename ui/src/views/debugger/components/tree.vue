@@ -108,6 +108,7 @@ import {expandOneKey} from "@/services/tree";
 import EditModal from './edit.vue'
 import InterfaceSelectionFromDefine from "@/views/component/InterfaceSelectionFromDefine/main.vue";
 import {filterTree} from "@/utils/tree";
+import {confirmToDelete} from "@/utils/confirm";
 
 const store = useStore<{ TestInterface: TestInterfaceStateType, ProjectGlobal: ProjectStateType, ServeGlobal: ServeStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
@@ -214,24 +215,12 @@ function edit(node) {
   currentNode.value = node;
 }
 async function deleteNode(node) {
-  Modal.confirm({
-    title: () => '确定删除该' + (node.type === 'interface'?'接口':'目录') + '吗？',
-    content: () => node.type === 'dir'?'删除后所有所有子目录都会被删除':'',
-    okText: () => '确定',
-    okType: 'danger',
-    cancelText: () => '取消',
-    onOk: async () => {
-      const res = await store.dispatch('TestInterface/removeInterface', {id: node.id, type: node.type});
-      if (res) {
-        message.success('删除成功');
-      } else {
-        message.error('删除失败');
-      }
-    },
-    onCancel() {
-      console.log('Cancel');
-    },
-  });
+  const title = '确定删除该' + (node.type === 'interface'?'接口':'目录') + '吗？'
+  const context = node.type === 'dir'?'删除后所有所有子目录都会被删除。':''
+
+  confirmToDelete(title, context, () => {
+    store.dispatch('TestInterface/removeInterface', {id: node.id, type: node.type});
+  })
 }
 
 async function handleModalOk(model) {

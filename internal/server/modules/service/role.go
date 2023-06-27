@@ -10,10 +10,6 @@ type RoleService struct {
 	RoleRepo *repo.RoleRepo `inject:""`
 }
 
-func NewRoleService() *RoleService {
-	return &RoleService{}
-}
-
 // Paginate
 func (s *RoleService) Paginate(req v1.RoleReqPaginate) (ret _domain.PageData, err error) {
 	return s.RoleRepo.Paginate(req)

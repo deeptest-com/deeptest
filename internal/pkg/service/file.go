@@ -24,10 +24,6 @@ var (
 type FileService struct {
 }
 
-func NewFileService() *FileService {
-	return &FileService{}
-}
-
 // UploadFile 上传文件
 func (s *FileService) UploadFile(ctx iris.Context, fh *multipart.FileHeader) (ret string, err error) {
 	filename, err := _fileUtils.GetUploadFileName(fh.Filename)

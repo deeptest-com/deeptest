@@ -39,6 +39,7 @@ export interface Response {
 export interface Param {
     name: string;
     value: any;
+    paramIn: string;
     disabled: boolean;
 }
 

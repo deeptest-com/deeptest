@@ -12,10 +12,6 @@ type SummaryService struct {
 	SummaryProjectUserRankingService *SummaryProjectUserRankingService `inject:""`
 }
 
-func NewSummaryService() *SummaryService {
-	return &SummaryService{}
-}
-
 func (s *SummaryService) Bugs(projectId int64) (res v1.ResSummaryBugs, err error) {
 	res, err = s.SummaryBugsService.Bugs(projectId)
 	return

@@ -13,10 +13,6 @@ type SummaryBugsService struct {
 	SummaryBugsRepo *repo.SummaryBugsRepo `inject:""`
 }
 
-func NewSummaryBugsService() *SummaryBugsService {
-	return new(SummaryBugsService)
-}
-
 func (s *SummaryBugsService) Bugs(projectId int64) (res v1.ResSummaryBugs, err error) {
 
 	var summaryBugsSeverity []model.SummaryBugsSeverity

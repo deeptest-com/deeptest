@@ -16,7 +16,7 @@
           <a-form-item label="表达式" v-bind="validateInfos.expression">
             <a-input v-model:value="modelRef.expression"
                      @blur="validate('expression', { trigger: 'blur' }).catch(() => {})"/>
-            <div class="dp-input-tip">{{t('tips_expression')}}</div>
+            <div class="dp-input-tip">{{t('tips_expression', {name: '{name}'})}}</div>
           </a-form-item>
 
           <a-form-item :wrapper-col="{ span: 16, offset: 2 }">
@@ -35,7 +35,7 @@ import {useRouter} from "vue-router";
 import {useStore} from "vuex";
 import {useI18n} from "vue-i18n";
 import {Form, message, notification} from 'ant-design-vue';
-import {StateType as ScenarioStateType} from "../../../../store";
+import {StateType as ScenarioStateType} from "../../../../../store";
 import {EditOutlined, CheckOutlined, CloseOutlined} from "@ant-design/icons-vue";
 
 const useForm = Form.useForm;

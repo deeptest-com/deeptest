@@ -16,10 +16,6 @@ type ProjectMenuRepo struct {
 	DB *gorm.DB `inject:""`
 }
 
-func NewProjectMenuRepo() *ProjectMenuRepo {
-	return &ProjectMenuRepo{}
-}
-
 func (r *ProjectMenuRepo) FindByCode(code string) (projectMenu model.ProjectMenu, err error) {
 	db := r.DB.Model(&model.ProjectMenu{}).Where("code = ?", code)
 

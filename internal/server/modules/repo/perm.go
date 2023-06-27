@@ -18,10 +18,6 @@ type PermRepo struct {
 	RoleRepo *RoleRepo `inject:""`
 }
 
-func NewPermRepo() *PermRepo {
-	return &PermRepo{}
-}
-
 // Paginate
 func (r *PermRepo) Paginate(req v1.PermReqPaginate) (data _domain.PageData, err error) {
 	var count int64

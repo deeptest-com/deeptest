@@ -54,10 +54,10 @@ func (r *ExtractorRepo) Get(id uint) (extractor model.DebugInterfaceExtractor, e
 	return
 }
 
-func (r *ExtractorRepo) GetByInterfaceVariable(variable string, id, interfaceId uint) (extractor model.DebugInterfaceExtractor, err error) {
+func (r *ExtractorRepo) GetByInterfaceVariable(variable string, id, debugInterfaceId uint) (extractor model.DebugInterfaceExtractor, err error) {
 	db := r.DB.Model(&extractor).
-		Where("variable = ? AND endpoint_interface_id =? AND used_by = ? AND not deleted",
-			variable, interfaceId, consts.InterfaceDebug)
+		Where("variable = ? AND debug_interface_id =? AND not deleted",
+			variable, debugInterfaceId)
 
 	if id > 0 {
 		db.Where("id != ?", id)
@@ -157,10 +157,10 @@ func (r *ExtractorRepo) UpdateResultToExecLog(extractor model.DebugInterfaceExtr
 	return
 }
 
-func (r *ExtractorRepo) ListExtractorVariableByInterface(interfaceId uint) (variables []domain.Variable, err error) {
+func (r *ExtractorRepo) ListExtractorVariableByInterface(req domain.DebugReq) (variables []domain.Variable, err error) {
 	err = r.DB.Model(&model.DebugInterfaceExtractor{}).
 		Select("id, variable AS name, result AS value").
-		Where("endpoint_interface_id=?", interfaceId).
+		Where("debug_interface_id=?", req.DebugInterfaceId).
 		Where("NOT deleted AND NOT disabled").
 		Order("created_at ASC").
 		Find(&variables).Error

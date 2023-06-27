@@ -170,6 +170,7 @@ func (s *ScenarioNodeService) createInterfaceFromDefine(endpointInterfaceId uint
 	debugData.EndpointInterfaceId = endpointInterfaceId
 	debugData.ScenarioProcessorId = 0 // will be update after ScenarioProcessor saved
 	debugData.ServeId = *serveId
+	debugData.UsedBy = consts.ScenarioDebug
 	debugInterface, err := s.DebugInterfaceService.Save(debugData)
 
 	// save scenario interface
@@ -250,7 +251,6 @@ func (s *ScenarioNodeService) createDirOrInterfaceFromTest(testInterfaceNode *se
 
 		debugData.DebugInterfaceId = 0 // force to clone the old one
 		debugData.ScenarioProcessorId = processor.ID
-
 		debugData.ServeId = testInterfaceNode.ServeId
 
 		debugInterfaceOfTestInterfaceNode, _ := s.DebugInterfaceRepo.Get(testInterfaceNode.DebugInterfaceId)

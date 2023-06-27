@@ -93,7 +93,8 @@ func (s *DebugInterfaceService) GetDebugInterfaceByScenarioInterface(scenarioPro
 	})
 
 	if ret.ServerId <= 0 {
-		server, _ := s.ServeServerRepo.GetByEndpoint(processor.EndpointInterfaceId)
+		endpointInterface, _ := s.EndpointInterfaceRepo.Get(processor.EndpointInterfaceId)
+		server, _ := s.ServeServerRepo.GetByEndpoint(endpointInterface.EndpointId)
 		ret.ServerId = server.ID
 	}
 
@@ -165,7 +166,9 @@ func (s *DebugInterfaceService) Save(req domain.DebugData) (debugInterface model
 		// clone extractors and checkpoints if needed
 		s.ExtractorRepo.CloneFromEndpointInterfaceToDebugInterface(req.EndpointInterfaceId, debugInterface.ID, req.UsedBy)
 		s.CheckpointRepo.CloneFromEndpointInterfaceToDebugInterface(req.EndpointInterfaceId, debugInterface.ID, req.UsedBy)
+	}
 
+	if req.UsedBy == consts.InterfaceDebug {
 		s.EndpointInterfaceRepo.SetDebugInterfaceId(req.EndpointInterfaceId, debugInterface.ID)
 	}
 

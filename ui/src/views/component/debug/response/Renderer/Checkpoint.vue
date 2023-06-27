@@ -288,7 +288,7 @@ const loadExtractorVariable = () => {
   if (model.value.type === CheckpointType.extractor) {
     rules.extractorVariable = [extractorVariableRequired]
 
-    listExtractorVariable(debugData.value.id).then((jsn) => {
+    listExtractorVariable(debugInfo.value).then((jsn) => {
       variables.value = jsn.data
     })
   } else {

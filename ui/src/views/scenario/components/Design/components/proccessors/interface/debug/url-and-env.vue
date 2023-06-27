@@ -55,6 +55,13 @@ const methods = getArrSelectItems(Methods)
 const serverId = computed(() => {
   return debugData?.value?.serverId || servers?.value[0]?.value || ''
 });
+
+const serveId = computed(() => {
+  return debugData?.value?.serveId || 0
+});
+
+
+
 const envURL = computed(() => {
   const server = servers.value?.find((item) => {
     return serverId.value === item.value;
@@ -65,14 +72,14 @@ const envURL = computed(() => {
 //   return debugData?.value.url
 // });
 
-const listServer = async (serverId) => {
+const listServer = async (serveId) => {
   servers.value = []
-  if (!serverId) {
+  if (!serveId) {
     return
   }
 
   const res = await serverList({
-    serverId: serverId
+    serveId: serveId
   });
   if (res.code === 0) {
     res.data.forEach((item: any) => {
@@ -86,8 +93,8 @@ const listServer = async (serverId) => {
 }
 
 watch(debugData, (val) => {
-  console.log('watch debugData', debugData.value.serverId)
-  listServer(debugData.value.serverId)
+  console.log('watch debugData', debugData.value.serveId)
+  listServer(debugData.value.serveId)
 }, {immediate: true, deep: true});
 
 function changeServer(id) {

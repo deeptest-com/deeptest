@@ -103,7 +103,7 @@
             <a-textarea v-model:value="model.expression" :auto-size="{ minRows: 2, maxRows: 5 }"
                      @blur="validate('expression', { trigger: 'blur' }).catch(() => {})" />
 
-            <div class="dp-input-tip">{{t('tips_expression_bool')}}</div>
+            <div class="dp-input-tip">{{t('tips_expression_bool', {name: '{name}'})}}</div>
           </a-form-item>
 
           <a-form-item v-if="model.type !== 'judgement'" label="数值" v-bind="validateInfos.value">

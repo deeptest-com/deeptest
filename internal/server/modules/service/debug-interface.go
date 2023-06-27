@@ -124,11 +124,7 @@ func (s *DebugInterfaceService) GetDebugInterfaceByTestInterface(testInterfaceId
 		DeepCopy: true,
 	})
 
-	if ret.ServerId <= 0 {
-		server, _ := s.ServeServerRepo.GetDefaultByServe(testInterface.ServeId)
-		ret.ServerId = server.ID
-	}
-
+	ret.ServerId = testInterface.DebugData.ServerId
 	ret.DebugInterfaceId = testInterface.DebugInterfaceId
 	ret.TestInterfaceId = testInterfaceId
 
@@ -196,6 +192,7 @@ func (s *DebugInterfaceService) ConvertDebugDataFromEndpointInterface(endpointIn
 
 	s.SetProps(endpointInterface, nil, &debugData)
 
+	// init ServeId and ServerId id by endpoint
 	endpoint, _ := s.EndpointRepo.Get(endpointInterface.EndpointId)
 	debugData.ServeId = endpoint.ServeId
 	debugData.ServerId = endpoint.ServerId

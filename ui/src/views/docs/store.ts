@@ -10,7 +10,6 @@ import {
     getShareContent
 } from './service';
 
-
 export interface StateType {
     [key: string]: any;
 }

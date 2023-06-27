@@ -18,7 +18,9 @@
         :html-type="htmlType"
         :size="size"
         :danger="danger || false"
-        @click="handleClick">
+        @click="(e) => {
+          handleClick(e)
+        }">
             <!-- 前置icon -->
             <slot name="before"></slot>
             {{ text }}
@@ -50,7 +52,8 @@ const store = useStore<{ Global: GlobalStateType }>();
 const permissionButtonMap = computed<any[]>(() => store.state.Global.permissionButtonMap);
 
 
-const handleClick = () => {
+const handleClick = (e) => {
+    e.preventDefault();
     emits('handleAccess');
 }
 

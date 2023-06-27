@@ -1,9 +1,9 @@
 <template>
     <div class="title">全局变量</div>
-    <PermissionButton 
+    <PermissionButton
         code="ADD-GLOBAL-VARIABLE"
-        class="envDetail-btn" 
-        text="添加" 
+        class="envDetail-btn"
+        text="添加"
         @handle-access="addGlobalVar">
         <template #before>
             <PlusOutlined />
@@ -46,10 +46,10 @@
                                 code="DELETE-GLOBAL-VARIABLE"
                                 type="text"
                                 size="small"
-                                :danger="true" 
-                                html-type="submit" 
+                                :danger="true"
+                                html-type="submit"
                                 text="删除"
-                                @handle-access="handleGlobalVarsChange('description', index, '', 'delete')" />
+                                @handle-access="handleGlobalVarsChange('', index, '', 'delete')" />
                         </template>
                     </a-table>
                 </template>
@@ -57,9 +57,9 @@
             <div class="envDetail-footer">
                 <PermissionButton
                     code="SAVE-GLOBAL-VARIABLE"
-                    type="primary" 
-                    html-type="submit" 
-                    class="save-btn" 
+                    type="primary"
+                    html-type="submit"
+                    class="save-btn"
                     text="保存"
                     @handle-access="handleSaveGlobalVars"></PermissionButton>
             </div>
@@ -75,7 +75,7 @@ import EmptyCom from "@/components/Empty/index.vue";
 import PermissionButton from "@/components/PermissionButton/index.vue";
 import { globalVarsColumns } from '../../config';
 import { StateType as ProjectStateType } from "@/store/project";
-import { StateType as ProjectSettingStateType } from "@/views/ProjectSetting/store";
+import { StateType as ProjectSettingStateType } from "./../../store";
 
 // store 相关
 const store = useStore<{ ProjectGlobal: ProjectStateType, ProjectSetting: ProjectSettingStateType }>();
@@ -111,11 +111,11 @@ function addGlobalVar() {
 }
 
 async function handleSaveGlobalVars() {
+  // debugger;
     try {
         await formRef.value.validateFields();
-        store.dispatch('ProjectSetting/saveGlobalVars');
+        await store.dispatch('ProjectSetting/saveGlobalVars');
     } catch (err) {
-        console.log('saveGlobalVars validateFailed --', err);
         message.error('全局变量名/远程值/本地值不可为空');
     }
 }

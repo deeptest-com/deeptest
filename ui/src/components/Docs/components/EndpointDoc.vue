@@ -3,14 +3,14 @@
 -->
 <template>
   <div class="doc-content" v-if="info?.name">
-<!--    <a-breadcrumb v-if="isInterface" style="margin-bottom: 12px;">-->
-<!--      <a-breadcrumb-item>{{isInterface ? info?.serveInfo?.name : info?.name}}</a-breadcrumb-item>-->
-<!--      <a-breadcrumb-item ><a href="javascript:void (0)">{{info?.name}}</a></a-breadcrumb-item>-->
-<!--    </a-breadcrumb>-->
+    <!--    <a-breadcrumb v-if="isInterface" style="margin-bottom: 12px;">-->
+    <!--      <a-breadcrumb-item>{{isInterface ? info?.serveInfo?.name : info?.name}}</a-breadcrumb-item>-->
+    <!--      <a-breadcrumb-item ><a href="javascript:void (0)">{{info?.name}}</a></a-breadcrumb-item>-->
+    <!--    </a-breadcrumb>-->
     <!-- 服务信息 -->
     <div class="serve-info" v-if="!isInterface">
       <h1>{{ info.name }}</h1>
-      <a-tag>v1.0</a-tag>
+      <!--      <a-tag>v1.0</a-tag>-->
       <div class="serve-info-block">
         <div class="title"><strong>服务信息</strong></div>
         <div class="item" v-for="serve in serveList" :key="serve.url">
@@ -28,10 +28,11 @@
         <div class="path-info" v-for="path in paths" :key="path.path">
           <span><strong>{{ path.name }}：</strong></span>
           <a-tag class="method-tag" :color="getMethodColor(info.method)">{{ info.method }}</a-tag>
-          <span>
-            <span class="ant-typography ant-typography-secondary">{{ path.url }}</span>
-            <span class="ant-typography"><strong>{{ path.path.indexOf('/') === '/' ? path.path : `/${path.path}`}}</strong></span>
-            </span>
+          <span class="request-uri">
+            <span class="ant-typography ant-typography-secondary">{{ handlePathStr(path.url + '/' + path.path) }}</span>
+            <CopyOutlined class="copy-icon" @click="copyURL(handlePathStr(path.url + '/' + path.path))"/>
+            <!--            <span class="ant-typography"><strong>{{  path.path}}</strong></span>-->
+          </span>
         </div>
       </div>
       <div class="interface-request">
@@ -115,9 +116,11 @@ import Parameters from "./Parameters.vue"
 import Security from "./Security.vue"
 import Securitys from "./Securitys.vue"
 import SchemaViewer from "./SchemaViewer/index.vue"
-
+import {CopyOutlined} from '@ant-design/icons-vue';
+import {useClipboard, useFullscreen} from '@vueuse/core'
+import {message} from "ant-design-vue";
 const props = defineProps(['info']);
-
+const {text, copy, copied, isSupported} = useClipboard({});
 const info: any = computed(() => {
   return props.info;
 })
@@ -130,7 +133,7 @@ const isInterface = computed(() => {
 
 const paths = computed(() => {
   const list: any = [];
-  if(info?.value?.serveInfo?.servers){
+  if (info?.value?.serveInfo?.servers) {
     info?.value?.serveInfo?.servers.forEach((item: any) => {
       list.push({
         url: item.url,
@@ -144,7 +147,7 @@ const paths = computed(() => {
 
 const serveList = computed(() => {
   const list: any = [];
-  if(info?.value?.servers) {
+  if (info?.value?.servers) {
     info.value?.servers.forEach((item: any) => {
       list.push({
         url: item.url,
@@ -162,7 +165,9 @@ const security = computed(() => {
 });
 
 
-watch(() => {return props.info}, (newVal) => {
+watch(() => {
+  return props.info
+}, (newVal) => {
   console.log('watch props.info', newVal)
 }, {immediate: true})
 
@@ -170,6 +175,15 @@ const selectedCode = ref('200');
 
 function selectCode(code) {
   selectedCode.value = code;
+}
+
+function handlePathStr(str) {
+  return str.replace(/\/{2,}/g, '/');
+}
+
+function copyURL(url) {
+    copy(url)
+    message.success('已复制到剪切板 ');
 }
 
 </script>
@@ -289,10 +303,29 @@ function selectCode(code) {
       margin-left: 16px;
     }
   }
-  .method-tag{
+
+  .method-tag {
     transform: scale(0.85);
     margin-right: 3px;
   }
+
+}
+
+.request-uri {
+  display: flex;
+  align-items: center;
+
+  .copy-icon {
+    display: none;
+    margin-left: 8px;
+    cursor: pointer;
+  }
+  &:hover {
+    .copy-icon {
+      display: block;
+    }
+  }
+
 
 }
 

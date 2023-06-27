@@ -14,6 +14,7 @@ type Endpoint struct {
 	PathParams   []EndpointPathParam `gorm:"-" json:"pathParams"`
 	Interfaces   []EndpointInterface `gorm:"-" json:"interfaces"`
 	Versions     []EndpointVersion   `gorm:"-" json:"versions"`
+	Tags         []string            `gorm:"-" json:"tags"`
 	ServeName    string              `gorm:"-" json:"serveName"`
 	Description  string              `json:"description"`
 	SerialNumber string              `json:"serialNumber"`

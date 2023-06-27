@@ -32,6 +32,7 @@
             placeholder="请选择所属分类"
             allow-clear/>
       </a-form-item>
+      <!---
       <a-form-item label="数据同步方式" name="dataSyncType">
         <a-select
             style="width: 100%"
@@ -39,6 +40,7 @@
             :options="dataSyncTypeOpts"
             placeholder="请选择"/>
       </a-form-item>
+      -->
       <a-form-item label="开启url导入" name="openUrlImport">
         <a-radio-group :disabled="disabled"
             :options="openUrlImportOpts"
@@ -254,7 +256,7 @@ const rules = {
 };
 
 const disabled = computed(()=>{
-  return !(formState.value.driverType == "swagger2" || formState.value.driverType == "swagger3")
+  return formState.value.driverType != "swagger"
 })
 
 

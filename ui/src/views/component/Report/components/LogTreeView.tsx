@@ -1,7 +1,5 @@
 import {defineComponent, ref, watch,} from 'vue';
 import './LogTreeView.less';
-import {DownOutlined, PlusOutlined, RightOutlined,} from '@ant-design/icons-vue';
-import Actions from "./Actions.vue";
 import ScenarioHeader from "./ScenarioHeader.vue";
 
 import EndpointHeader from "./EndpointHeader.vue";
@@ -51,7 +49,7 @@ export default defineComponent({
 
             function renderContent(log) {
                 if (log.processorCategory === 'processor_interface') {
-                    return <EndpointContent endpointData={log}/>
+                    return <EndpointContent endpointData={log} />
                 }
                 return <LogContent data={log}/>;
             }

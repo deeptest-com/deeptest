@@ -1,11 +1,11 @@
 package handler
 
 import (
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	"github.com/kataras/iris/v12"
+	"github.com/snowlyg/multi"
 )
 
 type ScenarioInterfaceCtrl struct {
@@ -24,23 +24,28 @@ func (c *ScenarioInterfaceCtrl) SaveDebugData(ctx iris.Context) {
 		return
 	}
 
-	po, err := c.ScenarioInterfaceService.SaveDebugData(req)
+	_, err = c.ScenarioInterfaceService.SaveDebugData(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
-	loadReq := domain.DebugReq{
-		EndpointInterfaceId: po.EndpointInterfaceId,
-		DebugInterfaceId:    req.DebugInterfaceId,
-		UsedBy:              consts.ScenarioDebug,
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code})
+}
+
+func (c *ScenarioInterfaceCtrl) ResetDebugData(ctx iris.Context) {
+	createBy := multi.GetUserId(ctx)
+	scenarioProcessorId, err := ctx.URLParamInt("scenarioProcessorId")
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+		return
 	}
 
-	data, err := c.DebugInterfaceService.Load(loadReq)
+	newPo, err := c.ScenarioInterfaceService.ResetDebugData(scenarioProcessorId, createBy)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: newPo})
 }

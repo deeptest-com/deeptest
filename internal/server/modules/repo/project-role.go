@@ -14,10 +14,6 @@ type ProjectRoleRepo struct {
 	ProjectRepo *ProjectRepo `inject:""`
 }
 
-func NewProjectRoleRepo() *ProjectRoleRepo {
-	return &ProjectRoleRepo{}
-}
-
 func (r *ProjectRoleRepo) GetAdminRecord() (projectRole model.ProjectRole, err error) {
 	db := r.DB.Model(&model.ProjectRole{}).Where("name='admin'").Order("id ASC")
 	err = db.First(&projectRole).Error

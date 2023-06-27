@@ -541,10 +541,12 @@ func (r *DebugInterfaceRepo) UpdateDebugInfo(id uint, values map[string]interfac
 }
 
 func (r *DebugInterfaceRepo) DeleteByProcessorIds(ids []uint) (err error) {
-	err = r.DB.Model(&model.DebugInterface{}).
-		Where("scenario_processor_id= IN (?)", ids).
-		Update("deleted", true).
-		Error
+	if len(ids) > 0 {
+		err = r.DB.Model(&model.DebugInterface{}).
+			Where("scenario_processor_id IN (?)", ids).
+			Update("deleted", true).
+			Error
+	}
 
 	return
 }

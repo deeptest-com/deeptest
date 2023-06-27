@@ -11,10 +11,6 @@ type MessageModule struct {
 	MessageCtrl *handler.MessageCtrl `inject:""`
 }
 
-func NewMessageModule() *MessageModule {
-	return &MessageModule{}
-}
-
 // Party 消息
 func (m *MessageModule) Party() module.WebModule {
 	handler := func(index iris.Party) {

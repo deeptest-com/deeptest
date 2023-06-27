@@ -11,10 +11,6 @@ type EndpointModule struct {
 	EndpointCtrl *handler.EndpointCtrl `inject:""`
 }
 
-func NewEndpointModule() *EndpointModule {
-	return &EndpointModule{}
-}
-
 // Party 注册模块
 func (m *EndpointModule) Party() module.WebModule {
 	handler := func(public iris.Party) {

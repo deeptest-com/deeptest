@@ -94,17 +94,17 @@ const onParamChange = (idx) => {
   console.log('onParamChange', idx)
   if (debugData.value.pathParams.length <= idx + 1
         && (debugData.value.pathParams[idx].name !== '' || debugData.value.pathParams[idx].value !== '')) {
-    debugData.value.pathParams.push({} as Param)
+    debugData.value.pathParams.push({paramIn: 'path'} as Param)
   }
 };
 
 const add = () => {
   console.log('add')
-  debugData.value.pathParams.push({} as Param)
+  debugData.value.pathParams.push({paramIn: 'path'} as Param)
 }
 const removeAll = () => {
   console.log('removeAll', debugData.value.pathParams)
-  debugData.value.pathParams = [{} as Param]
+  debugData.value.pathParams = [{paramIn: 'path'} as Param]
 }
 
 const disable = (idx) => {
@@ -118,7 +118,7 @@ const remove = (idx) => {
 }
 const insert = (idx) => {
   console.log('insert')
-  debugData.value.pathParams.splice(idx+1, 0, {} as Param)
+  debugData.value.pathParams.splice(idx+1, 0, {paramIn: 'path'} as Param)
 }
 
 const { showContextMenu, contextMenuStyle, onContextMenuShow, onMenuClick } = useVariableReplace('pathParam')

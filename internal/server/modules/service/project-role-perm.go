@@ -15,10 +15,6 @@ type ProjectRolePermService struct {
 	ProfileRepo         *repo.ProfileRepo         `inject:""`
 }
 
-func NewProjectRolePermService() *ProjectRolePermService {
-	return &ProjectRolePermService{}
-}
-
 func (s *ProjectRolePermService) AllRoleList() (data []model.ProjectRole, err error) {
 	return s.ProjectRoleRepo.AllRoleList()
 }

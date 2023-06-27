@@ -16,10 +16,6 @@ import (
 type ProcessorDataService struct {
 }
 
-func NewProcessorDataService() *ProcessorDataService {
-	return &ProcessorDataService{}
-}
-
 // Upload 上传文件
 func (s *ProcessorDataService) Upload(ctx iris.Context, fh *multipart.FileHeader) (ret v1.ProcessorDataUploadResp, err error) {
 	filename, err := _fileUtils.GetUploadFileName(fh.Filename)

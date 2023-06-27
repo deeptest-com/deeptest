@@ -13,10 +13,6 @@ type MessageReadRepo struct {
 	BaseRepo *BaseRepo `inject:""`
 }
 
-func NewMessageReadRepo() *MessageReadRepo {
-	return &MessageReadRepo{}
-}
-
 func (r *MessageReadRepo) Create(req v1.MessageReadReq) (id uint, err error) {
 	messageRead := model.MessageRead{MessageReadBase: req.MessageReadBase}
 	err = r.DB.Model(&model.MessageRead{}).Create(&messageRead).Error

@@ -211,12 +211,11 @@ export async function removeExtractor(id: number): Promise<any> {
         method: 'DELETE',
     });
 }
-export async function listExtractorVariable(interfaceId: number): Promise<any> {
-    const params = {interfaceId}
+export async function listExtractorVariable(data: any): Promise<any> {
     return request({
         url: `/${apiExtractor}/listExtractorVariableForCheckpoint`,
-        method: 'GET',
-        params,
+        method: 'POST',
+        data,
     });
 }
 

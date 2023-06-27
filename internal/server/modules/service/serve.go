@@ -21,10 +21,6 @@ type ServeService struct {
 	EndpointInterfaceRepo *repo.EndpointInterfaceRepo `inject:""`
 }
 
-func NewServeService() *ServeService {
-	return &ServeService{}
-}
-
 func (s *ServeService) ListByProject(projectId int, userId uint) (ret []model.Serve, currServe model.Serve, err error) {
 	ret, err = s.ServeRepo.ListByProject(projectId)
 

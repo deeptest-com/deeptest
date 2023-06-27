@@ -11,10 +11,6 @@ type ProjectPermRepo struct {
 	DB *gorm.DB `inject:""`
 }
 
-func NewProjectPerm() *ProjectPermRepo {
-	return &ProjectPermRepo{}
-}
-
 func (r *ProjectPermRepo) GetRecordByNameAndAction(name, action string) (projectPerm model.ProjectPerm, err error) {
 	err = r.DB.Model(&model.ProjectPerm{}).
 		Where("name = ?", name).

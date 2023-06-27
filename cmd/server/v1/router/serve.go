@@ -11,10 +11,6 @@ type ServeModule struct {
 	ServeCtrl *handler.ServeCtrl `inject:""`
 }
 
-func NewServeModule() *ServeModule {
-	return &ServeModule{}
-}
-
 // Party 注册模块
 func (m *ServeModule) Party() module.WebModule {
 	handler := func(public iris.Party) {

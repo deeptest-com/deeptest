@@ -22,10 +22,6 @@ type ScenarioRepo struct {
 	PlanRepo    *PlanRepo    `inject:""`
 }
 
-func NewScenarioRepo() *ScenarioRepo {
-	return &ScenarioRepo{}
-}
-
 func (r *ScenarioRepo) ListByProject(projectId int) (pos []model.Scenario, err error) {
 	err = r.DB.
 		Where("project_id=?", projectId).

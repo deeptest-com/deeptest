@@ -298,7 +298,7 @@ func (s *XPathService) jsonXpathValue(node *jsonquery.Node, optimized bool) (ret
 	}
 
 	if ownIndex > 0 {
-		ownValue = ownValue.(string) + fmt.Sprintf("[%d]", ownIndex)
+		ownValue = ownValue.(string) + fmt.Sprintf("*[%d]", ownIndex)
 	}
 
 	ret = NewStep(ownValue, node.Type == jsonquery.DocumentNode)

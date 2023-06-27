@@ -12,7 +12,7 @@
       <a-radio-group v-model:value="selectedMethod" button-style="outline">
         <a-radio-button
             :class="{'has-defined': hasDefinedMethod(method.value),'request-method-btn':true}"
-            :style="{ color: hasDefinedMethod(method.value) ? method.color : '',
+            :style="{ color: hasDefinedMethod(method.value) ? method.color : '#999999',
                       'box-shadow': `none` ,
                       background: method.value !== selectedMethod ? '#f5f5f5' : '#fff',
                      'border-color': '#d9d9d9'}"

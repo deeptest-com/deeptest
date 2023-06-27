@@ -93,7 +93,8 @@ func (s *DebugInterfaceService) GetDebugInterfaceByScenarioInterface(scenarioPro
 	})
 
 	if ret.ServerId <= 0 {
-		server, _ := s.ServeServerRepo.GetByEndpoint(processor.EndpointInterfaceId)
+		endpointInterface, _ := s.EndpointInterfaceRepo.Get(processor.EndpointInterfaceId)
+		server, _ := s.ServeServerRepo.GetByEndpoint(endpointInterface.EndpointId)
 		ret.ServerId = server.ID
 	}
 
@@ -101,8 +102,8 @@ func (s *DebugInterfaceService) GetDebugInterfaceByScenarioInterface(scenarioPro
 	ret.ScenarioProcessorId = scenarioProcessorId
 
 	ret.Headers = append(ret.Headers, domain.Header{Name: "", Value: ""})
-	ret.QueryParams = append(ret.QueryParams, domain.Param{Name: "", Value: ""})
-	ret.PathParams = append(ret.PathParams, domain.Param{Name: "", Value: ""})
+	ret.QueryParams = append(ret.QueryParams, domain.Param{Name: "", Value: "", ParamIn: consts.ParamInQuery})
+	ret.PathParams = append(ret.PathParams, domain.Param{Name: "", Value: "", ParamIn: consts.ParamInPath})
 
 	ret.BodyFormData = append(ret.BodyFormData, domain.BodyFormDataItem{
 		Name: "", Value: "", Type: consts.FormDataTypeText})
@@ -132,8 +133,8 @@ func (s *DebugInterfaceService) GetDebugInterfaceByTestInterface(testInterfaceId
 	ret.TestInterfaceId = testInterfaceId
 
 	ret.Headers = append(ret.Headers, domain.Header{Name: "", Value: ""})
-	ret.QueryParams = append(ret.QueryParams, domain.Param{Name: "", Value: ""})
-	ret.PathParams = append(ret.PathParams, domain.Param{Name: "", Value: ""})
+	ret.QueryParams = append(ret.QueryParams, domain.Param{Name: "", Value: "", ParamIn: consts.ParamInQuery})
+	ret.PathParams = append(ret.PathParams, domain.Param{Name: "", Value: "", ParamIn: consts.ParamInPath})
 
 	ret.BodyFormData = append(ret.BodyFormData, domain.BodyFormDataItem{
 		Name: "", Value: "", Type: consts.FormDataTypeText})
@@ -165,7 +166,9 @@ func (s *DebugInterfaceService) Save(req domain.DebugData) (debugInterface model
 		// clone extractors and checkpoints if needed
 		s.ExtractorRepo.CloneFromEndpointInterfaceToDebugInterface(req.EndpointInterfaceId, debugInterface.ID, req.UsedBy)
 		s.CheckpointRepo.CloneFromEndpointInterfaceToDebugInterface(req.EndpointInterfaceId, debugInterface.ID, req.UsedBy)
+	}
 
+	if req.UsedBy == consts.InterfaceDebug {
 		s.EndpointInterfaceRepo.SetDebugInterfaceId(req.EndpointInterfaceId, debugInterface.ID)
 	}
 
@@ -228,12 +231,13 @@ func (s *DebugInterfaceService) SetProps(
 
 	copier.CopyWithOption(&debugData, debugInterfacePo, copier.Option{DeepCopy: true})
 	debugData.EndpointInterfaceId = endpointInterface.ID // reset
+	debugData.ServerId = debugInterfacePo.ServerId
 
 	debugData.DebugInterfaceId = debugInterfacePo.ID
 
 	debugData.Headers = append(debugData.Headers, domain.Header{Name: "", Value: ""})
-	debugData.QueryParams = append(debugData.QueryParams, domain.Param{Name: "", Value: ""})
-	debugData.PathParams = append(debugData.PathParams, domain.Param{Name: "", Value: ""})
+	debugData.QueryParams = append(debugData.QueryParams, domain.Param{Name: "", Value: "", ParamIn: consts.ParamInQuery})
+	debugData.PathParams = append(debugData.PathParams, domain.Param{Name: "", Value: "", ParamIn: consts.ParamInPath})
 
 	debugData.BodyFormData = append(debugData.BodyFormData, domain.BodyFormDataItem{
 		Name: "", Value: "", Type: consts.FormDataTypeText})
@@ -256,18 +260,7 @@ func (s *DebugInterfaceService) GetEndpointAndServeIdForEndpointInterface(endpoi
 
 	return
 }
-func (s *DebugInterfaceService) GetEndpointAndServeIdForDebugInterface(debugInterfaceId uint) (
-	endpointId, serveId uint) {
 
-	debugInterface, _ := s.DebugInterfaceRepo.Get(debugInterfaceId)
-
-	endpointId = debugInterface.EndpointId
-	endpoint, _ := s.EndpointRepo.Get(endpointId)
-
-	serveId = endpoint.ServeId
-
-	return
-}
 func (s *DebugInterfaceService) GetScenarioIdForDebugInterface(processorId uint) (
 	scenarioId uint) {
 

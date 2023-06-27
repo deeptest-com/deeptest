@@ -23,10 +23,6 @@ type PlanRepo struct {
 	PlanReportRepo *PlanReportRepo `inject:""`
 }
 
-func NewPlanRepo() *PlanRepo {
-	return &PlanRepo{}
-}
-
 func (r *PlanRepo) Paginate(req v1.PlanReqPaginate, projectId int) (data _domain.PageData, err error) {
 	var count int64
 	var categoryIds []uint

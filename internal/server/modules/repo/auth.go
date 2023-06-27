@@ -14,10 +14,6 @@ type AuthRepo struct {
 	DB *gorm.DB `inject:""`
 }
 
-func NewAuthRepo() *AuthRepo {
-	return &AuthRepo{}
-}
-
 func (r *AuthRepo) CreateToken(name, token, tokenType string, projectId int) (po model.Auth2Token, err error) {
 	pos, _ := r.FindByToken(token)
 	if len(pos) > 0 {

@@ -18,10 +18,6 @@ type ServeRepo struct {
 	EnvironmentRepo *EnvironmentRepo `inject:""`
 }
 
-func NewServeRepo() *ServeRepo {
-	return &ServeRepo{}
-}
-
 func (r *ServeRepo) ListVersion(serveId uint) (res []model.ServeVersion, err error) {
 	err = r.DB.Where("serve_id = ? AND NOT deleted AND not disabled", serveId).Find(&res).Error
 	return
@@ -247,14 +243,20 @@ func (r *ServeRepo) SaveServer(environmentId uint, environmentName string, serve
 	}
 
 	for key, _ := range servers {
-		servers[key].ID = 0
+		//servers[key].ID = 0
 		servers[key].EnvironmentId = environmentId
 		servers[key].Description = environmentName
+		err = r.Save(servers[key].ID, servers)
+		if err != nil {
+			return err
+		}
 	}
-	err = r.DB.Create(servers).Error
-	if err != nil {
-		return err
-	}
+	/*
+		err = r.DB.Create(servers).Error
+		if err != nil {
+			return err
+		}
+	*/
 	return
 }
 

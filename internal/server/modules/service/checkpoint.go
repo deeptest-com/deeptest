@@ -149,8 +149,7 @@ func (s *CheckpointService) Check(checkpoint model.DebugInterfaceCheckpoint, sce
 
 	// Judgement
 	if checkpoint.Type == consts.Judgement {
-		variableMap, datapools, _ := s.VariableService.GetCombinedVarsForCheckpoint(
-			checkpoint.DebugInterfaceId, checkpoint.EndpointInterfaceId, scenarioProcessorId, usedBy)
+		variableMap, datapools, _ := s.VariableService.GetCombinedVarsForCheckpoint(checkpoint.DebugInterfaceId, checkpoint.EndpointInterfaceId, scenarioProcessorId, usedBy)
 
 		result, _ := agentExec.EvaluateGovaluateExpressionWithVariables(checkpoint.Expression, variableMap, datapools)
 
@@ -171,7 +170,7 @@ func (s *CheckpointService) Check(checkpoint model.DebugInterfaceCheckpoint, sce
 	// Extractor
 	if checkpoint.Type == consts.Extractor {
 		// get extractor variable value saved by previous extract opt
-		extractorPo, _ := s.ExtractorRepo.GetByInterfaceVariable(checkpoint.ExtractorVariable, 0, checkpoint.EndpointInterfaceId)
+		extractorPo, _ := s.ExtractorRepo.GetByInterfaceVariable(checkpoint.ExtractorVariable, 0, checkpoint.DebugInterfaceId)
 		checkpoint.ActualResult = extractorPo.Result
 
 		checkpoint.ResultStatus = agentUtils.Compare(checkpoint.Operator, checkpoint.ActualResult, checkpoint.Value)

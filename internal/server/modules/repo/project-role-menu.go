@@ -18,10 +18,6 @@ type ProjectRoleMenuRepo struct {
 	ProjectMenuRepo *ProjectMenuRepo `inject:""`
 }
 
-func NewProjectRoleMenuRepo() *ProjectRoleMenuRepo {
-	return &ProjectRoleMenuRepo{}
-}
-
 func (r *ProjectRoleMenuRepo) FindByRoleAndMenu(roleId, menuId uint) (projectRoleMenu model.ProjectRoleMenu, err error) {
 	db := r.DB.Model(&model.ProjectRoleMenu{}).Where("role_id = ?", roleId).Where("menu_id = ?", menuId)
 

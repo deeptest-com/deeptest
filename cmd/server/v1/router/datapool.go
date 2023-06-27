@@ -11,10 +11,6 @@ type DatapoolModule struct {
 	DatapoolCtrl *handler.DatapoolCtrl `inject:""`
 }
 
-func NewDatapoolModule() *DatapoolModule {
-	return &DatapoolModule{}
-}
-
 // Party 项目
 func (m *DatapoolModule) Party() module.WebModule {
 	handler := func(index iris.Party) {

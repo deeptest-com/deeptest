@@ -12,7 +12,7 @@ import (
 )
 
 func getDatapoolValue(placeholder string) (ret string) {
-	// _dp(name, col, <1 | seq | rand>)
+	// _dp(name, col, 1 | seq | rand >)
 
 	regex := regexp.MustCompile(fmt.Sprintf("(?Ui)%s\\((.+),(.+),(.+)\\)", consts.PlaceholderPrefixDatapool))
 	arrs := regex.FindAllStringSubmatch(placeholder, -1)

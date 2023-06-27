@@ -15,10 +15,6 @@ type ProjectService struct {
 	SampleSource *source.SampleSource `inject:""`
 }
 
-func NewProjectService() *ProjectService {
-	return &ProjectService{}
-}
-
 func (s *ProjectService) Paginate(req v1.ProjectReqPaginate, userId uint) (ret _domain.PageData, err error) {
 	ret, err = s.ProjectRepo.Paginate(req, userId)
 

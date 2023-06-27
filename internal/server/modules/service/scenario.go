@@ -13,10 +13,6 @@ type ScenarioService struct {
 	ScenarioNodeRepo *repo2.ScenarioNodeRepo `inject:""`
 }
 
-func NewScenarioService() *ScenarioService {
-	return &ScenarioService{}
-}
-
 func (s *ScenarioService) ListByProject(serveId int) (pos []model.Scenario, err error) {
 	pos, err = s.ScenarioRepo.ListByProject(serveId)
 	return

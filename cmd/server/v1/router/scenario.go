@@ -12,10 +12,6 @@ type ScenarioModule struct {
 	ScenarioNodeCtrl *handler.ScenarioNodeCtrl `inject:""`
 }
 
-func NewScenarioModule() *ScenarioModule {
-	return &ScenarioModule{}
-}
-
 // Party 场景
 func (m *ScenarioModule) Party() module.WebModule {
 	handler := func(index iris.Party) {

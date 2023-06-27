@@ -20,10 +20,6 @@ type MessageRepo struct {
 	MessageReadRepo *MessageReadRepo `inject:""`
 }
 
-func NewMessageRepo() *MessageRepo {
-	return &MessageRepo{}
-}
-
 func (r *MessageRepo) GetScope(userId uint) (scope map[int][]string) {
 	scope = make(map[int][]string)
 	scope[2] = []string{strconv.Itoa(int(userId))}

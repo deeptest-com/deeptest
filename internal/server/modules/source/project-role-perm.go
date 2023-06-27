@@ -11,10 +11,6 @@ type ProjectRolePermSource struct {
 	ProjectRolePermRepo *repo2.ProjectRolePermRepo `inject:""`
 }
 
-func NewProjectRolePermSource() *ProjectRolePermSource {
-	return &ProjectRolePermSource{}
-}
-
 func (s *ProjectRolePermSource) GetSources() (res map[consts.RoleType][]uint, err error) {
 	return s.ProjectRolePermRepo.GetProjectPermsForRole()
 }

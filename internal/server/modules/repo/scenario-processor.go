@@ -347,3 +347,12 @@ func (r *ScenarioProcessorRepo) genProcessorComm(processor model.Processor) (ret
 
 	return
 }
+
+func (r *ScenarioProcessorRepo) Delete(id uint) (err error) {
+	err = r.DB.Model(&model.Processor{}).
+		Where("id=?", id).
+		Update("deleted", true).
+		Error
+
+	return
+}

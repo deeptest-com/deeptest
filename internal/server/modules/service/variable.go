@@ -9,29 +9,39 @@ import (
 
 type VariableService struct {
 	DebugInterfaceRepo *repo.DebugInterfaceRepo `inject:""`
+	TestInterfaceRepo  *repo.TestInterfaceRepo  `inject:""`
 
 	EndpointInterfaceRepo *repo.EndpointInterfaceRepo `inject:""`
 	EndpointRepo          *repo.EndpointRepo          `inject:""`
 
 	ExtractorRepo   *repo.ExtractorRepo   `inject:""`
 	EnvironmentRepo *repo.EnvironmentRepo `inject:""`
+	ServeServerRepo *repo.ServeServerRepo `inject:""`
 
 	EnvironmentService *EnvironmentService `inject:""`
 	ShareVarService    *ShareVarService    `inject:""`
 	DatapoolService    *DatapoolService    `inject:""`
 }
 
-func (s *VariableService) GetCombinedVarsForCheckpoint(debugInterfaceId, endpointInterfaceId, scenarioProcessorId uint, usedBy consts.UsedBy) (ret map[string]interface{}, datapools domain.Datapools, err error) {
+func (s *VariableService) GetCombinedVarsForCheckpoint(debugInterfaceId, endpointInterfaceId, scenarioProcessorId uint, usedBy consts.UsedBy) (
+	ret map[string]interface{}, datapools domain.Datapools, err error) {
 
-	debugEnv, _ := s.EnvironmentService.GetDebugEnvByEndpointInterface(debugInterfaceId, endpointInterfaceId)
+	testInterfaceId := uint(0)
 
-	interf, _ := s.EndpointInterfaceRepo.Get(endpointInterfaceId)
-	endpoint, _ := s.EndpointRepo.Get(interf.EndpointId)
+	if debugInterfaceId > 0 {
+		debugInterface, _ := s.DebugInterfaceRepo.Get(debugInterfaceId)
+		testInterfaceId = debugInterface.TestInterfaceId
+	}
 
-	shareVariables, _ := s.ShareVarService.ListForDebug(endpoint.ServeId, scenarioProcessorId, usedBy)
-	envVars, _ := s.EnvironmentService.GetVarsByEnv(debugEnv.ID)
-	globalVars, _ := s.EnvironmentService.GetGlobalVars(debugEnv.ProjectId)
-	datapools, _ = s.DatapoolService.ListForExec(debugEnv.ProjectId)
+	server, _ := s.ServeServerRepo.GetByDebugInfo(debugInterfaceId, endpointInterfaceId)
+	envId := server.EnvironmentId
+	env, _ := s.EnvironmentRepo.Get(envId)
+	projectId := env.ProjectId
+
+	shareVariables := s.ShareVarService.List(debugInterfaceId, endpointInterfaceId, testInterfaceId, scenarioProcessorId, usedBy)
+	envVars, _ := s.EnvironmentService.GetVarsByEnv(envId)
+	globalVars, _ := s.EnvironmentService.GetGlobalVars(projectId)
+	datapools, _ = s.DatapoolService.ListForExec(projectId)
 
 	ret = CombineVariables(shareVariables, envVars, globalVars)
 

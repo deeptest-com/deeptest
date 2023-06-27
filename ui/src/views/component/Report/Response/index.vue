@@ -61,16 +61,17 @@ watch(() => {
   return props.responseDrawerVisible;
 }, (newVal) => {
   if (!newVal) return
+
   const {resContent = {}, reqContent = {}}: any = props.data;
+
   bodyInfo.value = {
     content: resContent.content || '',
     contentLang: resContent.contentLang || ''
   };
   cookies.value = resContent.cookies || [];
   headers.value = resContent.headers || [];
-  console.log(555555, props.data)
-  console.log(555555, headers.value)
   requestContent.value = reqContent;
+
 }, {
   immediate: true,
 })

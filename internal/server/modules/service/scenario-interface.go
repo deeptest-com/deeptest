@@ -16,7 +16,9 @@ type ScenarioInterfaceService struct {
 	ServeRepo             *repo.ServeRepo             `inject:""`
 	ScenarioProcessorRepo *repo.ScenarioProcessorRepo `inject:""`
 	ServeServerRepo       *repo.ServeServerRepo       `inject:""`
+	TestInterfaceRepo     *repo.TestInterfaceRepo     `inject:""`
 
+	ScenarioNodeService   *ScenarioNodeService   `inject:""`
 	DebugSceneService     *DebugSceneService     `inject:""`
 	DebugInterfaceService *DebugInterfaceService `inject:""`
 	SceneService          *SceneService          `inject:""`
@@ -58,8 +60,8 @@ func (s *ScenarioInterfaceService) SetProps(
 	debugData.EndpointInterfaceId = endpointInterface.ID // reset
 
 	debugData.Headers = append(debugData.Headers, domain.Header{Name: "", Value: ""})
-	debugData.QueryParams = append(debugData.QueryParams, domain.Param{Name: "", Value: ""})
-	debugData.PathParams = append(debugData.PathParams, domain.Param{Name: "", Value: ""})
+	debugData.QueryParams = append(debugData.QueryParams, domain.Param{Name: "", Value: "", ParamIn: consts.ParamInQuery})
+	debugData.PathParams = append(debugData.PathParams, domain.Param{Name: "", Value: "", ParamIn: consts.ParamInPath})
 
 	debugData.BodyFormData = append(debugData.BodyFormData, domain.BodyFormDataItem{
 		Name: "", Value: "", Type: consts.FormDataTypeText})
@@ -89,8 +91,8 @@ func (s *ScenarioInterfaceService) SetProps(
 func (s *ScenarioInterfaceService) SaveDebugData(req domain.DebugData) (debug model.DebugInterface, err error) {
 	s.CopyValueFromRequest(&debug, req)
 
-	endpointInterface, _ := s.EndpointInterfaceRepo.Get(req.EndpointInterfaceId)
-	debug.EndpointId = endpointInterface.EndpointId
+	//endpointInterface, _ := s.EndpointInterfaceRepo.Get(req.EndpointInterfaceId)
+	//debug.EndpointId = endpointInterface.EndpointId
 
 	if req.DebugInterfaceId > 0 {
 		debug.ID = req.DebugInterfaceId
@@ -103,6 +105,28 @@ func (s *ScenarioInterfaceService) SaveDebugData(req domain.DebugData) (debug mo
 
 func (s *ScenarioInterfaceService) CopyValueFromRequest(interf *model.DebugInterface, req domain.DebugData) (err error) {
 	copier.CopyWithOption(interf, req, copier.Option{DeepCopy: true})
+
+	return
+}
+
+func (s *ScenarioInterfaceService) ResetDebugData(scenarioProcessorId int, createBy uint) (newProcessor model.Processor, err error) {
+	scenarioProcessor, _ := s.ScenarioProcessorRepo.Get(uint(scenarioProcessorId))
+	parentProcessor, _ := s.ScenarioProcessorRepo.Get(scenarioProcessor.ParentId)
+	debugInterface, _ := s.DebugInterfaceRepo.Get(scenarioProcessor.EntityId)
+
+	if debugInterface.TestInterfaceId > 0 {
+		testInterface, _ := s.TestInterfaceRepo.Get(debugInterface.TestInterfaceId)
+		testInterfaceTo := s.TestInterfaceRepo.ToTo(&testInterface)
+		newProcessor, err = s.ScenarioNodeService.createDirOrInterfaceFromTest(testInterfaceTo, parentProcessor)
+
+	} else if debugInterface.EndpointInterfaceId > 0 {
+		serveId := uint(0)
+		newProcessor, err = s.ScenarioNodeService.createInterfaceFromDefine(debugInterface.EndpointInterfaceId, &serveId, createBy, parentProcessor, scenarioProcessor.Name)
+	}
+
+	// must put below, since creation will use its DebugInterface
+	s.DebugInterfaceRepo.Delete(scenarioProcessor.EntityId)
+	s.ScenarioProcessorRepo.Delete(scenarioProcessor.ID)
 
 	return
 }

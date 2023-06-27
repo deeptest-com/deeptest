@@ -8,15 +8,32 @@ type ServeServerRepo struct {
 	*BaseRepo       `inject:""`
 	CategoryRepo    *CategoryRepo    `inject:""`
 	EnvironmentRepo *EnvironmentRepo `inject:""`
-	EndpointRepo    *EndpointRepo    `inject:""`
-}
 
-func NewServerRepo() *ServeServerRepo {
-	return &ServeServerRepo{}
+	DebugInterfaceRepo    *DebugInterfaceRepo    `inject:""`
+	EndpointInterfaceRepo *EndpointInterfaceRepo `inject:""`
+	EndpointRepo          *EndpointRepo          `inject:""`
 }
 
 func (r *ServeServerRepo) Get(id uint) (res model.ServeServer, err error) {
 	err = r.DB.Where("NOT deleted").First(&res, id).Error
+	return
+}
+
+func (r *ServeServerRepo) GetByDebugInfo(debugInterfaceId, endpointInterfaceId uint) (ret model.ServeServer, err error) {
+	serverId := uint(0)
+
+	if debugInterfaceId > 0 {
+		debugInterface, _ := r.DebugInterfaceRepo.Get(debugInterfaceId)
+		serverId = debugInterface.ServerId
+
+	} else if endpointInterfaceId > 0 {
+		endpointInterface, _ := r.EndpointInterfaceRepo.Get(endpointInterfaceId)
+		endpoint, _ := r.EndpointRepo.Get(endpointInterface.EndpointId)
+		serverId = endpoint.ServerId
+	}
+
+	ret, _ = r.Get(serverId)
+
 	return
 }
 

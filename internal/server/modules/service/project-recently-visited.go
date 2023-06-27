@@ -9,10 +9,6 @@ type ProjectRecentlyVisitedService struct {
 	ProjectRecentlyVisitedRepo *repo.ProjectRecentlyVisitedRepo `inject:""`
 }
 
-func NewProjectRecentlyVisitedService() *ProjectRecentlyVisitedService {
-	return &ProjectRecentlyVisitedService{}
-}
-
 func (s *ProjectRecentlyVisitedService) Create(userId, projectId uint) (uint, error) {
 	projectRecentlyVisitedBase := v1.ProjectRecentlyVisitedBase{UserId: userId, ProjectId: projectId}
 	req := v1.ProjectRecentlyVisitedReq{ProjectRecentlyVisitedBase: projectRecentlyVisitedBase}

@@ -207,7 +207,7 @@ function focus() {
 }
 
 const visible = computed(() => {
-  return keywords.value || isFocus.value;
+  return isFocus.value;
 })
 
 function blur() {

@@ -125,7 +125,7 @@
           @ok="handleImport"/>
       <PubDocs
           :visible="showPublishDocsModal"
-          :endpointIds='selectedRowKeys'
+          :endpointIds='selectedRowIds'
           @cancal="showPublishDocsModal = false;"
           @ok="publishDocs"/>
       <!-- 编辑接口时，展开抽屉：外层再包一层 div, 保证每次打开弹框都重新渲染   -->
@@ -257,6 +257,7 @@ const loading = false;
 const drawerVisible = ref<boolean>(false);
 const selectedCategoryId = ref<string | number>('');
 const onSelectChange = (keys: Key[], rows: any) => {
+  console.log('onSelectChange', keys, rows)
   selectedRowKeys.value = [...keys];
   selectedRowIds.value = rows.map((item: any) => item.id);
 };
@@ -273,7 +274,6 @@ const showPublishDocsModal: any = ref(false)
 
 // 发布文档版本
 async function publishDocs() {
-  debugger;
   showPublishDocsModal.value = false;
   selectedRowIds.value = [];
 }

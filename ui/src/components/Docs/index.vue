@@ -26,7 +26,6 @@
                 <span>
                   您还未定义接口，请先定义接口
                 </span>
-
       </template>
       <a-button type="primary" @click="emit('switchToDefineTab')">接口定义</a-button>
     </a-empty>
@@ -55,7 +54,7 @@ const serviceList = computed(() => {
   // 组装数据以兼容组件 LeftTreeMenu
   let items: any = [];
   console.log(123, props?.data?.serves)
-  props?.data?.serves.forEach((item: any) => {
+  props?.data?.serves?.forEach((item: any) => {
     // 只显示文档，不展示服务信息
     if (!props.onlyShowDocs) {
       items.push(item);

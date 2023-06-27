@@ -25,18 +25,18 @@
       <div class="form-item-request" v-if="collapse">
         <div v-if="selectedMethodDetail">
           <!-- Operation ID -->
-          <a-row class="form-item-request-item">
-            <a-col :span="3" class="form-label">
-              Operation ID
-            </a-col>
-            <a-col :span="12">
-              <a-input placeholder="Operation ID" v-model:value="selectedMethodDetail.operationId"/>
-            </a-col>
-          </a-row>
+<!--          <a-row class="form-item-request-item">-->
+<!--            <a-col :span="3" class="form-label">-->
+<!--              Operation ID-->
+<!--            </a-col>-->
+<!--            <a-col :span="12">-->
+<!--              <a-input placeholder="Operation ID" v-model:value="selectedMethodDetail.operationId"/>-->
+<!--            </a-col>-->
+<!--          </a-row>-->
           <!-- Description -->
           <a-row class="form-item-request-item">
             <a-col :span="3" class="form-label">
-              描述
+              描述信息
             </a-col>
             <a-col :span="12">
               <a-input placeholder="描述信息" v-model:value="selectedMethodDetail.description"/>

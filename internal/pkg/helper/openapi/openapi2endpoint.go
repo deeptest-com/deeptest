@@ -7,20 +7,27 @@ import (
 	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/jinzhu/copier"
+	"strings"
 )
 
 type openapi2endpoint struct {
 	doc       *openapi3.T
 	endpoints []*model.Endpoint
+	dirs      *Dirs
 }
 
-func NewOpenapi2endpoint(doc *openapi3.T) *openapi2endpoint {
-	return &openapi2endpoint{doc: doc}
+type Dirs struct {
+	Id   int64
+	Dirs map[string]*Dirs
 }
 
-func (o *openapi2endpoint) Convert() (endpoints []*model.Endpoint) {
+func NewOpenapi2endpoint(doc *openapi3.T, dirId int64) *openapi2endpoint {
+	return &openapi2endpoint{doc: doc, dirs: &Dirs{Id: dirId}}
+}
+
+func (o *openapi2endpoint) Convert() (endpoints []*model.Endpoint, dirs *Dirs) {
 	o.convertEndpoints()
-	return o.endpoints
+	return o.endpoints, o.dirs
 }
 
 func (o *openapi2endpoint) convertEndpoints() {
@@ -29,7 +36,7 @@ func (o *openapi2endpoint) convertEndpoints() {
 		endpoint := new(model.Endpoint)
 		endpoint.Path = url
 		o.addMethod(url, path.ExtensionProps)
-		endpoint.Interfaces = o.interfaces(url, o.doc.Paths[url])
+		endpoint.Interfaces, endpoint.Tags = o.interfaces(url, o.doc.Paths[url])
 		endpoint.PathParams = o.pathParams(o.doc.Paths[url].Parameters)
 		if len(endpoint.Interfaces) > 0 {
 			endpoint.Title = endpoint.Interfaces[0].Name
@@ -59,51 +66,51 @@ func (o *openapi2endpoint) pathParams(parameters openapi3.Parameters) (pathParam
 	return
 }
 
-func (o *openapi2endpoint) interfaces(url string, path *openapi3.PathItem) (interfaces []model.EndpointInterface) {
-
+func (o *openapi2endpoint) interfaces(url string, path *openapi3.PathItem) (interfaces []model.EndpointInterface, tags []string) {
+	var interf model.EndpointInterface
 	if path.Get != nil {
-		interf := o.interf("GET", url, path.Get)
+		interf, tags = o.interf("GET", url, path.Get)
 		interfaces = append(interfaces, interf)
 	}
 
 	if path.Post != nil {
-		interf := o.interf("POST", url, path.Post)
+		interf, tags = o.interf("POST", url, path.Post)
 		interfaces = append(interfaces, interf)
 	}
 
 	if path.Put != nil {
-		interf := o.interf("PUT", url, path.Put)
+		interf, tags = o.interf("PUT", url, path.Put)
 		interfaces = append(interfaces, interf)
 	}
 
 	if path.Delete != nil {
-		interf := o.interf("DELETE", url, path.Delete)
+		interf, tags = o.interf("DELETE", url, path.Delete)
 		interfaces = append(interfaces, interf)
 	}
 
 	if path.Trace != nil {
-		interf := o.interf("TRACE", url, path.Trace)
+		interf, tags = o.interf("TRACE", url, path.Trace)
 		interfaces = append(interfaces, interf)
 	}
 
 	if path.Head != nil {
-		interf := o.interf("HEAD", url, path.Head)
+		interf, tags = o.interf("HEAD", url, path.Head)
 		interfaces = append(interfaces, interf)
 	}
 
 	if path.Options != nil {
-		interf := o.interf("OPTIONS", url, path.Options)
+		interf, tags = o.interf("OPTIONS", url, path.Options)
 		interfaces = append(interfaces, interf)
 	}
 
 	if path.Patch != nil {
-		interf := o.interf("OPTIONS", url, path.Patch)
+		interf, tags = o.interf("OPTIONS", url, path.Patch)
 		interfaces = append(interfaces, interf)
 	}
 	return
 }
 
-func (o *openapi2endpoint) interf(method consts.HttpMethod, url string, operation *openapi3.Operation) (interf model.EndpointInterface) {
+func (o *openapi2endpoint) interf(method consts.HttpMethod, url string, operation *openapi3.Operation) (interf model.EndpointInterface, tags []string) {
 	interf = model.EndpointInterface{}
 	interf.Name = operation.Summary
 	interf.Method = method
@@ -113,7 +120,32 @@ func (o *openapi2endpoint) interf(method consts.HttpMethod, url string, operatio
 		interf.BodyType, interf.RequestBody = o.requestBody(operation.RequestBody.Value.Content)
 	}
 	interf.ResponseBodies = o.responseBodies(operation.Responses)
+	tags = o.makeDirs(operation.Tags)
 	return
+}
+
+func (o *openapi2endpoint) makeDirs(tags []string) []string {
+	d := o.dirs
+	if len(tags) > 0 {
+		tags = strings.Split(tags[0], "/")
+	}
+	for _, tag := range tags {
+		d = o.makeDir(tag, d)
+	}
+
+	return tags
+}
+
+func (o *openapi2endpoint) makeDir(tag string, d *Dirs) *Dirs {
+	if d.Dirs == nil {
+		d.Dirs = map[string]*Dirs{}
+	}
+
+	if _, ok := d.Dirs[tag]; !ok {
+		d.Dirs[tag] = new(Dirs)
+	}
+
+	return d.Dirs[tag]
 }
 
 func (o *openapi2endpoint) BodyType() {

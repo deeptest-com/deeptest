@@ -55,9 +55,11 @@ func (s *EndpointInterfaceService) ImportEndpointData(req v1.ImportEndpointDataR
 	if err != nil {
 		return err
 	}
-	openapi2endpoint := openapi.NewOpenapi2endpoint(doc)
-	endpoints := openapi2endpoint.Convert()
-	err = s.EndpointService.SaveEndpoints(endpoints, req)
+
+	openapi2endpoint := openapi.NewOpenapi2endpoint(doc, req.CategoryId)
+	endpoints, dirs := openapi2endpoint.Convert()
+	//fmt.Println(endpoints, dirs)
+	err = s.EndpointService.SaveEndpoints(endpoints, dirs, req)
 
 	return
 
@@ -81,6 +83,11 @@ func (s *EndpointInterfaceService) resetDriverType(driverType convert.DriverType
 			if version == "3.0" {
 				newDriverType = convert.SWAGGER3
 			}
+			return
+		}
+
+		if _, ok := res["openapi"].(string); ok {
+			newDriverType = convert.SWAGGER3
 			return
 		}
 

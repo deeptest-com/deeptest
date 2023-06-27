@@ -31,7 +31,7 @@ export default defineComponent({
         refsOptions: Array,
         components: Array,
     },
-    emits: ['change'],
+    emits: [],
     setup(props, {emit}) {
         const store = useStore<{ Endpoint, ServeGlobal: ServeStateType }>();
         const data: any = ref(null);
@@ -55,11 +55,6 @@ export default defineComponent({
         watch(() => {return props.value}, (newVal) => {
             const val = cloneDeep(newVal);
             data.value = addExtraViewInfo(val);
-        }, {immediate: true, deep: true});
-
-        watch(() => {return data.value}, (newVal) => {
-            const newObj = removeExtraViewInfo(cloneDeep(newVal));
-            emit('change', newObj);
         }, {immediate: true, deep: true});
 
         const renderDivider = (options: any) => {

@@ -40,7 +40,6 @@ function getExpandedValue(val: any, defaultVal: boolean) {
  * 根据传入的 schema 结构信息，添加需要额外的渲染属性
  * */
 export function addExtraViewInfo(val: Object | any | undefined | null): any {
-    console.log('转换之前', val);
     if (!val) {
         return null
     }
@@ -129,7 +128,6 @@ export function addExtraViewInfo(val: Object | any | undefined | null): any {
     if (!isNormalType(val.type) || isRef(val)) {
         traverse(val, 1, null, false);
     }
-    console.log('转换之后', val);
     return val;
 }
 

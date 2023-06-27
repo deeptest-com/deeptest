@@ -29,10 +29,10 @@ import {MonacoOptions} from '@/utils/const';
 const props = defineProps(['contentStr', 'examplesStr','components']);
 const examples: any = ref([]);
 const content: any = ref<any>(null);
+
 watch(() => {
   return props.contentStr
 }, (newVal) => {
-
   try {
     if (newVal) {
       content.value = JSON.parse(newVal);

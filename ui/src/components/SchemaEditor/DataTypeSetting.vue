@@ -273,7 +273,7 @@ watch(() => {return visible.value}, (newVal: any) => {
       emit('change', value);
     }
   }
-  }, {immediate: true})
+  }, {immediate: false})
 
 </script>
 

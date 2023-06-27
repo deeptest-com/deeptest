@@ -25,7 +25,7 @@ import {StateType as ServeStateType} from "@/store/serve";
 export default defineComponent({
     name: 'SchemeEditor',
     props: {
-        value: Object,
+        value: String,
         contentStyle: Object,
         serveId: Number,
         refsOptions: Array
@@ -125,16 +125,22 @@ export default defineComponent({
                     const items = parent?.type === 'array' ? ancestor : parent;
                     if (items?.properties?.[keyName]) {
                         items.properties[keyName] = generateSchemaByArray(newProps);
-                        console.log('123', items.properties[keyName]);
                     }
                     // 非数组类型
                 } else if (newProps?.length === 1 && !isArray(firstType)) {
                     const items = parent?.type === 'array' ? ancestor : parent;
                     if (items?.properties?.[keyName]) {
-                        items.properties[keyName] = Object.assign(items.properties[keyName], {...newProps[0]})
+                        // 之前是引用类型
+                        // if(items.properties[keyName]?.ref){
+                        //
+                        // }
+                        // items.properties[keyName] = Object.assign(items.properties[keyName], {...newProps[0]})
+                        // 既然更换类型，之前的属性就不需要了
+                        items.properties[keyName] = {...newProps[0]};
                     }
                 }
             }
+
             data.value = addExtraViewInfo(data.value);
             console.log('change datatype  data.value', data.value);
         }
@@ -169,7 +175,6 @@ export default defineComponent({
                 keyCopyName = `${keyCopyName}-copy`;
             }
             keys.splice(keyIndex + 1, 0, `${keyCopyName}`);
-            console.log('keys', keys);
             const newObj: any = {};
             keys.forEach((item, index: number) => {
                 if (parent.properties[item]) {
@@ -184,10 +189,10 @@ export default defineComponent({
         const setRequire = (keyIndex: any, parent: any) => {
             const keys = Object.keys(parent.properties);
             const key = keys[keyIndex];
-            parent.required = Array.isArray(parent?.required)  ? parent?.required : [];
+            parent.required = Array.isArray(parent?.required) ? parent?.required : [];
             if (!parent.required.includes(key)) {
                 parent.required.push(key);
-            }else{
+            } else {
                 const index = parent.required.indexOf(key);
                 parent.required.splice(index, 1);
             }
@@ -207,14 +212,34 @@ export default defineComponent({
             parent.properties = {...newObj};
             data.value = addExtraViewInfo(data.value);
         };
-        watch(() => {return props.value}, (newVal) => {
-            const val = cloneDeep(newVal);
-            data.value = addExtraViewInfo(val);
-        }, {immediate: true, deep: true});
-        watch(() => {return data.value}, (newVal) => {
+
+        // 监听value变化，更新data，他是一个字符串
+        watch(() => {
+            return props.value
+        }, (newVal: any) => {
+            try {
+                let val = JSON.parse(newVal);
+                // 默认值
+                if(!val?.type) {
+                    val = {
+                        type: 'object',
+                    }
+                }
+                data.value = addExtraViewInfo(val);
+            } catch (e) {
+                console.log('watch', e);
+            }
+        }, {immediate: true});
+
+        watch(() => {
+            return data.value
+        }, (newVal) => {
             const newObj = removeExtraViewInfo(cloneDeep(newVal));
             emit('change', newObj);
-        }, {immediate: true, deep: true});
+        }, {
+            immediate: false,
+            deep: true
+        });
 
         const renderAction = (options: any) => {
             const {isRoot, isFirst, isLast, keyIndex, parent, ancestor, isRefChildNode} = options;
@@ -317,6 +342,7 @@ export default defineComponent({
             return <div class={'verticalLine'} style={{left: `${options.depth * treeLevelWidth + 8}px`}}></div>
         }
         const renderTree = (tree: any) => {
+            // console.log('222222tree', tree)
             if (!tree) return null;
             const isRoot = tree?.extraViewInfo?.depth === 1;
             const options = {...tree?.extraViewInfo, isRoot, tree: tree};

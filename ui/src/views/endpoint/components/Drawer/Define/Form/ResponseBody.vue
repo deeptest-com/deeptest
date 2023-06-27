@@ -29,7 +29,8 @@
     <a-col :span="23">
       <SchemaEditor
           @generateFromJSON="generateFromJSON"
-          @change="handleChange"
+          @changeContent="changeContent"
+          @changeExamples="changeExamples"
           :serveId= "currServe.id"
           :refsOptions="refsOptions"
           :contentStr="contentStr"
@@ -68,7 +69,7 @@ const exampleStr = ref('');
 watch(() => {
   return selectedCodeDetail?.value?.schemaItem?.content
 }, (newVal, oldValue) => {
-  activeResBodySchema.value.content = JSON.parse(newVal || 'null');
+  activeResBodySchema.value.content = JSON.parse(newVal || '{}');
   contentStr.value = JSON.stringify(activeResBodySchema.value.content);
 }, {immediate: true});
 
@@ -102,16 +103,25 @@ async function handleGenerateExample(examples: any) {
   exampleStr.value = JSON.stringify(activeResBodySchema.value.examples);
 }
 
-function handleChange(json: any) {
-  const {content, examples} = json;
+function changeContent(content: any) {
   if (selectedCodeDetail?.value) {
-    selectedCodeDetail.value.schemaItem.content = JSON.stringify(removeExtraViewInfo(content, true));
-    selectedCodeDetail.value.examples = JSON.stringify(examples);
-    exampleStr.value = JSON.stringify(examples);
-    contentStr.value = JSON.stringify(content);
-    selectedCodeDetail.value.schemaItem.type = content.type;
+    if(content?.type){
+      selectedCodeDetail.value.schemaItem.content = JSON.stringify(removeExtraViewInfo(content, true));
+      contentStr.value = JSON.stringify(content);
+      selectedCodeDetail.value.schemaItem.type = content.type;
+      store.commit('Endpoint/setSelectedCodeDetail', selectedCodeDetail?.value);
+    }
   }
-  store.commit('Endpoint/setSelectedCodeDetail', selectedCodeDetail?.value);
+}
+
+function changeExamples(examples: any) {
+  if (selectedCodeDetail?.value) {
+    if(examples){
+      selectedCodeDetail.value.examples = JSON.stringify(examples);
+      exampleStr.value = JSON.stringify(examples);
+      store.commit('Endpoint/setSelectedCodeDetail', selectedCodeDetail?.value);
+    }
+  }
 }
 
 const refsOptions = ref([]);

@@ -34,7 +34,8 @@
           <SchemaEditor
               @generateFromJSON="generateFromJSON"
               @generateExample="handleGenerateExample"
-              @change="handleChange"
+              @changeContent="changeContent"
+              @changeExamples="changeExamples"
               :serveId="currServe.id"
               :refsOptions="refsOptions"
               :contentStr="contentStr"
@@ -119,18 +120,26 @@ function handleChangeDesc(e: any) {
   })
 }
 
-function handleChange(json: any) {
-  const {content, examples} = json;
+
+function changeExamples(examples: any) {
   if (selectedMethodDetail?.value?.requestBody) {
-    selectedMethodDetail.value.requestBody.schemaItem.content =  JSON.stringify(removeExtraViewInfo(content, true));
     selectedMethodDetail.value.requestBody.examples = JSON.stringify(examples);
     exampleStr.value = JSON.stringify(examples);
+    store.commit('Endpoint/setSelectedMethodDetail', {
+      ...selectedMethodDetail.value
+    })
+  }
+}
+
+function changeContent(content: any) {
+  if (selectedMethodDetail?.value?.requestBody && content.type) {
+    selectedMethodDetail.value.requestBody.schemaItem.content = JSON.stringify(removeExtraViewInfo(content, true));
     contentStr.value = JSON.stringify(content);
     selectedMethodDetail.value.requestBody.schemaItem.type = content.type;
+    store.commit('Endpoint/setSelectedMethodDetail', {
+      ...selectedMethodDetail.value
+    })
   }
-  store.commit('Endpoint/setSelectedMethodDetail', {
-    ...selectedMethodDetail.value
-  })
 }
 
 // todo 公共逻辑抽象成 hooks
@@ -147,30 +156,36 @@ onMounted(async () => {
   font-weight: bold;
   position: relative;
 }
+
 .form-label-first {
   font-weight: bold;
   position: relative;
   left: -18px;
 }
+
 .label-name {
   display: inline-block;
   margin-left: 4px;
   margin-top: 4px;
 }
+
 .form-item-request-item {
   display: flex;
   align-items: baseline;
   margin-top: 16px;
 }
-.form-request-body{
+
+.form-request-body {
   margin-top: 16px;
   display: flex;
   align-items: baseline;
 }
-.form-request-body-content{
+
+.form-request-body-content {
   position: relative;
-  &:before{
-    content:"";
+
+  &:before {
+    content: "";
     position: absolute;
     left: -12px;
     top: 0px;

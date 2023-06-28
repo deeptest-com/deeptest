@@ -45,6 +45,8 @@ func (s *TestInterfaceService) Save(req serverDomain.TestInterfaceSaveReq) (test
 	s.CopyValueFromRequest(&testInterface, req)
 
 	if testInterface.Type == serverConsts.TestInterfaceTypeInterface {
+		server, _ := s.ServeServerRepo.GetDefaultByServe(testInterface.ServeId)
+
 		// create new DebugInterface
 		debugInterface := model.DebugInterface{
 			InterfaceBase: model.InterfaceBase{
@@ -53,8 +55,11 @@ func (s *TestInterfaceService) Save(req serverDomain.TestInterfaceSaveReq) (test
 					Method: consts.GET,
 				},
 			},
-			ServeId: req.ServeId,
+			ServeId:  testInterface.ServeId,
+			ServerId: server.ServeId,
+			BaseUrl:  server.Url,
 		}
+
 		err = s.DebugInterfaceRepo.Save(&debugInterface)
 		testInterface.DebugInterfaceId = debugInterface.ID
 	}

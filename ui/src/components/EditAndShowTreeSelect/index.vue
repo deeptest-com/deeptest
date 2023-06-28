@@ -68,7 +68,6 @@ function cancelEdit() {
 const isOpen = ref(false);
 
 function treeExpand(open) {
-  debugger;
   isOpen.value = open;
 }
 

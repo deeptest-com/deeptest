@@ -2,7 +2,10 @@
   <div id="indexlayout-left" :class="{'narrow': collapsed}">
     <div class="indexlayout-left-logo">
       <router-link to="/" class="logo-url">
-        <div :class="{'logo-title':true,'logo-title-collapsed':collapsed}"/>
+        <div :class="{
+          'logo-title':true,
+          'logo-title-collapsed':collapsed,
+          'leyan-logo':isLeyanEnv}"/>
       </router-link>
     </div>
     <div class="indexlayout-left-menu">
@@ -72,6 +75,12 @@ export default defineComponent({
   components: {
     SiderMenu,
   },
+  setup(props) {
+    let isLeyanEnv = process.env.VUE_APP_DEPLOY_ENV === 'leyan';
+    return {
+      isLeyanEnv
+    };
+  }
 
 })
 
@@ -122,6 +131,9 @@ export default defineComponent({
         background-size: 105px 35px;
         background-repeat: no-repeat;
         background-position: center;
+        &.leyan-logo{
+          background-image: url("../../../assets/images/leyan-api-logo.svg");
+        }
       }
 
       .logo-title-collapsed {
@@ -129,6 +141,9 @@ export default defineComponent({
         background-size: 22px 22px;
         background-repeat: no-repeat;
         background-position: center;
+        &.leyan-logo{
+          background-image: url("../../../assets/images/leyan-api-logo-mini.svg");
+        }
       }
     }
 

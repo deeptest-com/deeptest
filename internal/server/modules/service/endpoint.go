@@ -224,9 +224,12 @@ func (s *EndpointService) createDirs(data *openapi.Dirs, req v1.ImportEndpointDa
 }
 
 func (s *EndpointService) getCategoryId(tags []string, dirs *openapi.Dirs) int64 {
+	rootId := dirs.Id
 	for _, tag := range tags {
 		dirs = dirs.Dirs[tag]
 	}
-
+	if dirs.Id == rootId {
+		return -1
+	}
 	return dirs.Id
 }

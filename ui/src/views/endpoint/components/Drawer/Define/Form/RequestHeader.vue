@@ -5,8 +5,7 @@
       <div v-if="useSelect">
         <a-select  :value="fieldState.name"
                    showSearch
-                   mode="combobox"
-                   :maxTagCount="1"
+                   filterOption
                    @change="handleChangeHeader"
                    :options="requestHeaderOptions"
                    style="width: 200px"
@@ -227,7 +226,6 @@ function handleChangeName(e: any) {
 }
 
 function handleChangeHeader(val) {
-  console.log("-------------------------",val)
   if (val == 'other') {
     useSelect.value = false
     return

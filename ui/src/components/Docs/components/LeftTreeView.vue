@@ -123,6 +123,7 @@ function select(item) {
     border-radius: 4px;
     height: 36px;
     line-height: 36px;
+    left: -6px;
   }
   :deep(.ant-menu-item-selected:after) {
     //right: 300px!important;

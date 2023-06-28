@@ -1,6 +1,5 @@
-<!-- :::: 接口定义模块 -->
 <template>
-  <div class="content" v-if="data?.name && serviceList?.length">
+  <div class="content"  :style="isDocsFullPage ? {height: '100vh'} :{}" v-if="data?.name && serviceList?.length">
     <DocsHeader v-if="showHeader"
                 :data="data"
                 :items="serviceList"
@@ -49,7 +48,8 @@ const store = useStore<{ Endpoint, ProjectGlobal }>();
 const props = defineProps(['showMenu', 'data', 'onlyShowDocs', 'showHeader']);
 const emit = defineEmits(['changeVersion','switchToDefineTab']);
 
-const isEndpointPage = window.location.pathname.includes('/endpoint/index');
+const isEndpointPage = window.location.href.includes('/endpoint/index');
+const isDocsFullPage = window.location.href.includes('/docs/share') || window.location.pathname.includes('/docs/view');
 
 const serviceList = computed(() => {
   // 组装数据以兼容组件 LeftTreeMenu
@@ -117,10 +117,8 @@ function changeVersion(docId) {
 
 <style lang="less" scoped>
 .content {
-  //padding: 24px;
   height: calc(100vh - 100px);
   position: relative;
-
 }
 
 .doc-container {

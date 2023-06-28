@@ -1278,5 +1278,49 @@ export const testTypeOptions = [
 
 export const testTypeMap = new Map([['api_test', '接口测试'],['performance_test', '性能测试'], ['smoke_test', '冒烟测试']]);
 
-
-
+export const requestHeaderOptions = [
+    {
+        label: 'Accept',
+        value: 'Accept'
+    },
+    {
+        label: 'Accept-Encoding',
+        value: 'Accept-Encoding'
+    },
+    {
+        label: 'Accept-Language',
+        value: 'Accept-Language'
+    },
+    {
+        label: 'Connection',
+        value: 'Connection'
+    },
+    {
+        label: 'Host',
+        value: 'Host'
+    },
+    {
+        label: 'Referer',
+        value: 'Referer'
+    },
+    {
+        label: 'User-Agent',
+        value: 'User-Agent'
+    },
+    {
+        label: 'Cache-Control',
+        value: 'Cache-Control'
+    },
+    {
+        label: 'Cookie',
+        value: 'Cookie'
+    },
+    {
+        label: 'Range',
+        value: 'Range'
+    },
+    {
+        label: 'other',
+        value: 'other'
+    },
+];

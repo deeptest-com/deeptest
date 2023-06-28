@@ -117,7 +117,7 @@ func (s *ScenarioInterfaceService) ResetDebugData(scenarioProcessorId int, creat
 	if debugInterface.DiagnoseInterfaceId > 0 {
 		diagnoseInterface, _ := s.DiagnoseInterfaceRepo.Get(debugInterface.DiagnoseInterfaceId)
 		diagnoseInterfaceTo := s.DiagnoseInterfaceRepo.ToTo(&diagnoseInterface)
-		newProcessor, err = s.ScenarioNodeService.createDirOrInterfaceFromTest(diagnoseInterfaceTo, parentProcessor)
+		newProcessor, err = s.ScenarioNodeService.createDirOrInterfaceFromDiagnose(diagnoseInterfaceTo, parentProcessor)
 
 	} else if debugInterface.EndpointInterfaceId > 0 {
 		serveId := uint(0)

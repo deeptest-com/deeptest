@@ -137,6 +137,11 @@ func (s *DiagnoseInterfaceService) createInterfaceFromDefine(endpointInterfaceId
 	debugData.DebugInterfaceId = 0
 	debugData.EndpointInterfaceId = uint(endpointInterfaceId)
 	debugData.ServeId = parent.ServeId
+
+	server, _ := s.ServeServerRepo.GetDefaultByServe(debugData.ServeId)
+	debugData.ServerId = server.ID
+	debugData.Url = server.Url
+
 	debugData.UsedBy = consts.TestDebug
 	debugInterface, err := s.DebugInterfaceService.Save(debugData)
 

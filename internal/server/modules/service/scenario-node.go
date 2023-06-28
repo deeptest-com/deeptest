@@ -23,6 +23,7 @@ type ScenarioNodeService struct {
 	EndpointInterfaceRepo    *repo.EndpointInterfaceRepo `inject:""`
 	ExtractorRepo            *repo.ExtractorRepo         `inject:""`
 	CheckpointRepo           *repo.CheckpointRepo        `inject:""`
+	ServeServerRepo          *repo.ServeServerRepo       `inject:""`
 
 	DebugInterfaceService *DebugInterfaceService `inject:""`
 }
@@ -128,7 +129,7 @@ func (s *ScenarioNodeService) AddInterfacesFromTest(req serverDomain.ScenarioAdd
 	}
 
 	for _, interfaceNode := range req.SelectedNodes {
-		ret, _ = s.createDirOrInterfaceFromTest(&interfaceNode, targetProcessor)
+		ret, _ = s.createDirOrInterfaceFromDiagnose(&interfaceNode, targetProcessor)
 	}
 
 	return
@@ -170,6 +171,11 @@ func (s *ScenarioNodeService) createInterfaceFromDefine(endpointInterfaceId uint
 	debugData.EndpointInterfaceId = endpointInterfaceId
 	debugData.ScenarioProcessorId = 0 // will be update after ScenarioProcessor saved
 	debugData.ServeId = *serveId
+
+	server, _ := s.ServeServerRepo.GetDefaultByServe(debugData.ServeId)
+	debugData.ServerId = server.ID
+	debugData.Url = server.Url
+
 	debugData.UsedBy = consts.ScenarioDebug
 	debugInterface, err := s.DebugInterfaceService.Save(debugData)
 
@@ -206,7 +212,7 @@ func (s *ScenarioNodeService) createInterfaceFromDefine(endpointInterfaceId uint
 	return
 }
 
-func (s *ScenarioNodeService) createDirOrInterfaceFromTest(diagnoseInterfaceNode *serverDomain.DiagnoseInterface, parentProcessor model.Processor) (
+func (s *ScenarioNodeService) createDirOrInterfaceFromDiagnose(diagnoseInterfaceNode *serverDomain.DiagnoseInterface, parentProcessor model.Processor) (
 	ret model.Processor, err error) {
 
 	debugData, _ := s.DebugInterfaceService.GetDebugDataFromDebugInterface(diagnoseInterfaceNode.DebugInterfaceId)
@@ -224,7 +230,7 @@ func (s *ScenarioNodeService) createDirOrInterfaceFromTest(diagnoseInterfaceNode
 		s.ScenarioNodeRepo.Save(&processor)
 
 		for _, child := range diagnoseInterfaceNode.Children {
-			s.createDirOrInterfaceFromTest(child, processor)
+			s.createDirOrInterfaceFromDiagnose(child, processor)
 		}
 
 	} else if diagnoseInterfaceNode.IsLeaf { // interface
@@ -248,13 +254,13 @@ func (s *ScenarioNodeService) createDirOrInterfaceFromTest(diagnoseInterfaceNode
 		s.ScenarioNodeRepo.Save(&processor)
 
 		// convert or clone a debug interface obj
-
 		debugData.DebugInterfaceId = 0 // force to clone the old one
 		debugData.ScenarioProcessorId = processor.ID
 		debugData.ServeId = diagnoseInterfaceNode.ServeId
 
 		debugInterfaceOfDiagnoseInterfaceNode, _ := s.DebugInterfaceRepo.Get(diagnoseInterfaceNode.DebugInterfaceId)
 		debugData.ServerId = debugInterfaceOfDiagnoseInterfaceNode.ServerId
+		debugData.Url = debugInterfaceOfDiagnoseInterfaceNode.Url
 
 		debugData.UsedBy = consts.ScenarioDebug
 		debugInterface, _ := s.DebugInterfaceService.Save(debugData)

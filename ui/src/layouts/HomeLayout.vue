@@ -22,7 +22,7 @@ export default defineComponent({
   },
   setup() {
     const router = useRouter();
-    let isLeyanEnv = process.env.VUE_APP_DEPLOY_ENV === 'leyan';
+    let isLeyanEnv = process.env.VUE_APP_DEPLOY_ENV === 'ly';
 
     function handleRedirect() {
       router.push('/');
@@ -58,7 +58,7 @@ export default defineComponent({
       background-size: 100% 100%;
       cursor: pointer;
       &.leyan-logo{
-        background-image: url("../assets/images/leyan-api-logo.svg");
+        background-image: url("../assets/images/local/leyan-api-logo.svg");
       }
     }
   }

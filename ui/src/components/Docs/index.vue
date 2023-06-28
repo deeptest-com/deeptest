@@ -109,6 +109,7 @@ function selectMenu(item) {
 
 
 function changeVersion(docId) {
+  // debugger;
   emit('changeVersion', docId);
 }
 

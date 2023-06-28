@@ -76,7 +76,7 @@ export default defineComponent({
     SiderMenu,
   },
   setup(props) {
-    let isLeyanEnv = process.env.VUE_APP_DEPLOY_ENV === 'leyan';
+    let isLeyanEnv = process.env.VUE_APP_DEPLOY_ENV === 'ly';
     return {
       isLeyanEnv
     };
@@ -132,7 +132,7 @@ export default defineComponent({
         background-repeat: no-repeat;
         background-position: center;
         &.leyan-logo{
-          background-image: url("../../../assets/images/leyan-api-logo.svg");
+          background-image: url("../../../assets/images/local/leyan-api-logo.svg");
         }
       }
 
@@ -142,7 +142,7 @@ export default defineComponent({
         background-repeat: no-repeat;
         background-position: center;
         &.leyan-logo{
-          background-image: url("../../../assets/images/leyan-api-logo-mini.svg");
+          background-image: url("../../../assets/images/local/leyan-api-logo-mini.svg");
         }
       }
     }

@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
@@ -10,13 +11,16 @@ import (
 	_i118Utils "github.com/aaronchen2k/deeptest/pkg/lib/i118"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	_mailUtils "github.com/aaronchen2k/deeptest/pkg/lib/mail"
+	"github.com/go-ldap/ldap"
+	"github.com/snowlyg/multi"
+	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
+	"log"
 	"strconv"
 	"time"
 
 	"github.com/snowlyg/multi"
-	"go.uber.org/zap"
-)
+	"go.uber.org/zap")
 
 var (
 	ErrUserNameOrPassword = errors.New("用户名或密码错误")
@@ -65,6 +69,23 @@ func (s *AccountService) Login(req v1.LoginReq) (ret v1.LoginResp, err error) {
 	}
 
 	return
+}
+
+func LdapLogin(username, password string) bool {
+	host := "192.168.5.228"
+	port := 389
+	l, err := ldap.Dial("tcp", fmt.Sprintf("%s:%d", host, port))
+	if err != nil {
+		log.Fatalf("LDAP dial error: %s", err)
+	}
+	defer l.Close()
+	bindDN := fmt.Sprintf("cn=%s,ou=people,dc=example,dc=com", username)
+	err = l.Bind(bindDN, password)
+	if err != nil {
+		log.Printf("LDAP bind error: %s", err)
+		return false
+	}
+	return true
 }
 
 func (s *AccountService) Register(req v1.RegisterReq) (err _domain.BizErr) {

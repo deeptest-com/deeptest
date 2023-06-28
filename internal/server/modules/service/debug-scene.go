@@ -1,7 +1,6 @@
 package service
 
 import (
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	_httpUtils "github.com/aaronchen2k/deeptest/pkg/lib/http"
@@ -20,7 +19,7 @@ type DebugSceneService struct {
 	EnvironmentService *EnvironmentService `inject:""`
 }
 
-func (s *DebugSceneService) LoadScene(debugData domain.DebugData, usedBy consts.UsedBy) (
+func (s *DebugSceneService) LoadScene(debugData *domain.DebugData) (
 	baseUrl string, shareVars []domain.GlobalVar, envVars []domain.GlobalVar,
 	globalVars []domain.GlobalVar, globalParams []domain.GlobalParam) {
 
@@ -44,8 +43,9 @@ func (s *DebugSceneService) LoadScene(debugData domain.DebugData, usedBy consts.
 	baseUrl = _httpUtils.AddSepIfNeeded(serveServer.Url)
 	envId := serveServer.EnvironmentId
 	environment, _ := s.EnvironmentRepo.Get(envId)
+	debugData.ProjectId = environment.ProjectId
 
-	shareVars, _ = s.ShareVarService.ListForDebug(debugServeId, debugData.ScenarioProcessorId, usedBy)
+	shareVars, _ = s.ShareVarService.ListForDebug(debugServeId, debugData.ScenarioProcessorId, debugData.UsedBy)
 	envVars, _ = s.EnvironmentService.GetVarsByEnv(envId)
 	globalVars, _ = s.EnvironmentService.GetGlobalVars(environment.ProjectId)
 	globalParams, _ = s.EnvironmentService.GetGlobalParams(environment.ProjectId)

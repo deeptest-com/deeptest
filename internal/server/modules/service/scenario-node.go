@@ -165,7 +165,7 @@ func (s *ScenarioNodeService) createInterfaceFromDefine(endpointInterfaceId uint
 	}
 
 	// convert or clone a debug interface obj
-	debugData, err := s.DebugInterfaceService.GetDebugInterfaceByEndpointInterface(endpointInterfaceId)
+	debugData, err := s.DebugInterfaceService.GetDebugDataFromEndpointInterface(endpointInterfaceId)
 	debugData.DebugInterfaceId = 0 // force to clone the old one
 	debugData.EndpointInterfaceId = endpointInterfaceId
 	debugData.ScenarioProcessorId = 0 // will be update after ScenarioProcessor saved

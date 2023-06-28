@@ -112,13 +112,13 @@ func (s *TestInterfaceService) ImportInterfaces(req serverDomain.TestInterfaceIm
 	}
 
 	for _, interfaceId := range req.InterfaceIds {
-		ret, err = s.addInterface(interfaceId, req.CreateBy, parent)
+		ret, err = s.createInterfaceFromDefine(interfaceId, req.CreateBy, parent)
 	}
 
 	return
 }
 
-func (s *TestInterfaceService) addInterface(endpointInterfaceId int, createBy uint, parent model.TestInterface) (
+func (s *TestInterfaceService) createInterfaceFromDefine(endpointInterfaceId int, createBy uint, parent model.TestInterface) (
 	ret model.TestInterface, err error) {
 
 	endpointInterface, err := s.EndpointInterfaceRepo.Get(uint(endpointInterfaceId))
@@ -127,7 +127,7 @@ func (s *TestInterfaceService) addInterface(endpointInterfaceId int, createBy ui
 	}
 
 	// convert or clone a debug interface obj
-	debugData, err := s.DebugInterfaceService.GetDebugInterfaceByEndpointInterface(uint(endpointInterfaceId))
+	debugData, err := s.DebugInterfaceService.GetDebugDataFromEndpointInterface(uint(endpointInterfaceId))
 	debugData.DebugInterfaceId = 0 // force to clone the old one
 	debugData.DebugInterfaceId = 0
 	debugData.EndpointInterfaceId = uint(endpointInterfaceId)

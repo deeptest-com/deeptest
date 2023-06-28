@@ -8,8 +8,8 @@ import (
 	"strings"
 )
 
-func GenRequestUrl(req *domain.BaseRequest, interfaceId uint, baseUrl string) {
-	envId := ExecScene.InterfaceToEnvMap[interfaceId]
+func GenRequestUrl(req *domain.BaseRequest, debugInterfaceId uint, baseUrl string) {
+	envId := ExecScene.DebugInterfaceToEnvMap[debugInterfaceId]
 	vars := ExecScene.EnvToVariables[envId]
 
 	if baseUrl == "" {

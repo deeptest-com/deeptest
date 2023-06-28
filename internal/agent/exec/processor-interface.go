@@ -32,21 +32,22 @@ type ProcessorInterface struct {
 
 func (entity ProcessorInterface) Run(processor *Processor, session *Session) (err error) {
 	logUtils.Infof("interface entity")
-	CurrInterfaceId = processor.EndpointInterfaceId
+	CurrDebugInterfaceId = processor.EntityId
 
 	startTime := time.Now()
 	processor.Result = &agentDomain.ScenarioExecResult{
-		ID:                int(entity.ProcessorID),
-		Name:              entity.Name,
-		ProcessorCategory: entity.ProcessorCategory,
-		ProcessorType:     entity.ProcessorType,
-		StartTime:         &startTime,
-		ParentId:          int(entity.ParentID),
-		InterfaceId:       processor.EndpointInterfaceId,
-		ScenarioId:        processor.ScenarioId,
-		ProcessorId:       processor.ID,
-		LogId:             uuid.NewV4(),
-		ParentLogId:       processor.Parent.Result.LogId,
+		ID:                  int(entity.ProcessorID),
+		Name:                entity.Name,
+		ProcessorCategory:   entity.ProcessorCategory,
+		ProcessorType:       entity.ProcessorType,
+		StartTime:           &startTime,
+		ParentId:            int(entity.ParentID),
+		EndpointInterfaceId: processor.EndpointInterfaceId,
+		DebugInterfaceId:    processor.EntityId,
+		ProcessorId:         processor.ID,
+		ScenarioId:          processor.ScenarioId,
+		LogId:               uuid.NewV4(),
+		ParentLogId:         processor.Parent.Result.LogId,
 	}
 
 	//在循环过程中，processor 被执行多次，变量替换会受到影响，第一次跌替换之后，就不能根据实际情况替换了
@@ -63,7 +64,7 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 	DealwithCookies(&baseRequest, entity.ProcessorID)
 
 	// send request
-	GenRequestUrl(&baseRequest, processor.EndpointInterfaceId, entity.BaseUrl)
+	GenRequestUrl(&baseRequest, processor.EntityId, entity.BaseUrl)
 	//startTime := time.UnixNano()
 	entity.Response, err = Invoke(&baseRequest)
 	processor.Result.Cost = time.Now().UnixMilli() - startTime.UnixMilli()

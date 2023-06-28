@@ -26,8 +26,9 @@ type DebugData struct {
 	TestInterfaceId     uint          `json:"testInterfaceId"`
 	UsedBy              consts.UsedBy `json:"usedBy"`
 
-	ServeId  uint `json:"serveId"`
-	ServerId uint `json:"serverId"`
+	ServeId   uint `json:"serveId"`
+	ServerId  uint `json:"serverId"`
+	ProjectId uint `json:"projectId"`
 
 	BaseUrl string `json:"baseUrl"`
 

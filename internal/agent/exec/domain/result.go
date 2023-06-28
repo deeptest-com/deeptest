@@ -26,7 +26,9 @@ type ScenarioExecResult struct {
 	ProcessorType     consts.ProcessorType     `json:"processorType"`
 
 	// for interface
-	InterfaceId           uint                `json:"interfaceId,omitempty"`
+	EndpointInterfaceId uint `json:"endpointInterfaceId,omitempty"`
+	DebugInterfaceId    uint `json:"debugInterfaceId,omitempty"`
+
 	ReqContent            string              `json:"reqContent,omitempty"`
 	RespContent           string              `json:"respContent,omitempty"`
 	HttpRespStatusCode    consts.HttpRespCode `json:"httpStatusCode,omitempty"`

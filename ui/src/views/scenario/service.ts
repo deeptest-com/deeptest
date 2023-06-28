@@ -153,36 +153,6 @@ export async function saveProcessorName(data: any): Promise<any> {
     });
 }
 
-export async function getInterface(interfaceId: number): Promise<any> {
-    const params = {interfaceId: interfaceId}
-
-    return request({
-        url: `/${apiPathInterface}/getInterface`,
-        method: 'GET',
-        params,
-    });
-}
-
-// invocation
-export async function listInvocation(interfaceId: number): Promise<any> {
-    const params = {interfaceId: interfaceId}
-
-    return request({
-        url: `/${apiInvocation}`,
-        method: 'GET',
-        params,
-    });
-}
-export async function getInvocationAsInterface(id: number): Promise<any> {
-    return request({url: `/${apiInvocation}/${id}`});
-}
-export async function removeInvocation(id: number): Promise<any> {
-    return request({
-        url: `/${apiInvocation}/${id}`,
-        method: 'DELETE',
-    });
-}
-
 /**
  * 执行场景历史
  * */

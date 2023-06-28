@@ -87,7 +87,7 @@ const selectedKeys = computed(() => {
 watch(() => {
   return serviceList.value
 }, (newVal) => {
-  if (!selectedItem.value && newVal.length > 0) {
+  if (newVal.length > 0) {
     selectedItem.value = newVal.find((item) => {
       return item.endpointInfo && item.serveInfo;
     })

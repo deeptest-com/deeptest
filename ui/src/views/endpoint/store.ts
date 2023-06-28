@@ -473,6 +473,7 @@ const StoreModel: ModuleType = {
             const res = await deleteEndpoint(payload.id);
             if (res.code === 0) {
                 await dispatch('loadList', {projectId: payload.projectId});
+                return true
             } else {
                 return false
             }

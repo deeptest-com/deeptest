@@ -142,13 +142,13 @@
 <script setup lang="ts">
 import {
   computed, reactive, toRefs, ref, onMounted,
-  watch
+  watch, createVNode
 } from 'vue';
 import {useRouter} from 'vue-router';
 import debounce from "lodash.debounce";
 import EndpointTree from './list/tree.vue';
 import {ColumnProps} from 'ant-design-vue/es/table/interface';
-import {MoreOutlined} from '@ant-design/icons-vue';
+import {ExclamationCircleOutlined, MoreOutlined} from '@ant-design/icons-vue';
 import {endpointStatusOpts, endpointStatus} from '@/config/constant';
 import EditAndShowField from '@/components/EditAndShow/index.vue';
 import CreateEndpointModal from './components/CreateEndpointModal.vue';
@@ -164,7 +164,7 @@ import {Endpoint, PaginationConfig} from "@/views/endpoint/data";
 import CollapsedIcon from "@/components/CollapsedIcon/index.vue"
 import {StateType as ServeStateType} from "@/store/serve";
 import {StateType as Debug} from "@/views/component/debug/store";
-import {message, Modal} from 'ant-design-vue';
+import {message, Modal, notification} from 'ant-design-vue';
 import Tree from './components/Tree.vue'
 
 const store = useStore<{ Endpoint, ProjectGlobal, Debug: Debug, ServeGlobal: ServeStateType }>();
@@ -329,7 +329,21 @@ async function disabled(record: any) {
 }
 
 async function del(record: any) {
-  await store.dispatch('Endpoint/del', record);
+  Modal.confirm({
+    title: () => '确定删除该接口吗？',
+    icon: createVNode(ExclamationCircleOutlined),
+    okText: () => '确定',
+    okType: 'danger',
+    cancelText: () => '取消',
+    onOk: async () => {
+      const res =  await store.dispatch('Endpoint/del', record);
+      if (res) {
+        message.success('删除成功');
+      } else {
+        message.error('删除失败');
+      }
+    },
+  });
 }
 
 async function handleCreateApi(data) {

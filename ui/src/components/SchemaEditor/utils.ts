@@ -236,19 +236,31 @@ export const generateSchemaByArray = (arr: any[]): any => {
 /**
  * 将 $ref 字段转成 ref
  * */
-export const  handleRef = (res) => {
+export const handleRef = (res) => {
     // 将$ref转换为ref
     function fn(obj) {
-        Object.entries(obj).forEach(([key, value]) => {
-            if (key === '$ref') {
-                obj.ref = value;
-                delete obj.$ref;
-            }
-            if (typeof value === 'object') {
-                fn(value);
-            }
-        });
+        if (!obj) return;
+        if (!obj.type) return;
+        if (typeof obj === 'object') {
+            Object.entries(obj).forEach(([key, value]) => {
+                if (key === '$ref') {
+                    obj.ref = value;
+                    delete obj.$ref;
+                }
+                if (typeof value === 'object') {
+                    fn(value);
+                }
+                if (Array.isArray(value)) {
+                    value.forEach(item => {
+                        if (typeof item === 'object') {
+                            fn(item);
+                        }
+                    })
+                }
+            });
+        }
     }
+
     fn(res);
     return res;
 }

@@ -13,6 +13,7 @@ import {
     isNormalType,
     isObject,
     isRef,
+    handleRef,
     removeExtraViewInfo,
 } from './utils';
 import {
@@ -54,6 +55,7 @@ export default defineComponent({
 
         watch(() => {return props.value}, (newVal) => {
             const val = cloneDeep(newVal);
+            handleRef(val);
             data.value = addExtraViewInfo(val);
         }, {immediate: true, deep: true});
 

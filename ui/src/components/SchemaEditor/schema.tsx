@@ -8,7 +8,7 @@ import cloneDeep from "lodash/cloneDeep";
 import {
     addExtraViewInfo,
     findLastNotArrayNode,
-    generateSchemaByArray,
+    generateSchemaByArray, handleRef,
     isArray,
     isNormalType,
     isObject,
@@ -109,6 +109,9 @@ export default defineComponent({
         const dataTypeChange = (options?: any, newProps?: any) => {
             const {parent, keyName, depth, ancestor} = options;
             const firstType = newProps?.[0]?.type;
+            if(!firstType){
+                return;
+            }
             // 如果是根节点
             if (depth === 1) {
                 if (isArray(firstType)) {
@@ -140,7 +143,6 @@ export default defineComponent({
                     }
                 }
             }
-
             data.value = addExtraViewInfo(data.value);
             console.log('change datatype  data.value', data.value);
         }
@@ -219,6 +221,8 @@ export default defineComponent({
         }, (newVal: any) => {
             try {
                 let val = JSON.parse(newVal);
+                // 将 $ref 转换为ref
+                handleRef(val);
                 // 默认值
                 if(!val?.type) {
                     val = {

@@ -48,7 +48,7 @@ import {mediaTypesOpts,} from '@/config/constant';
 import {DownOutlined, RightOutlined} from '@ant-design/icons-vue';
 import {Endpoint} from "@/views/endpoint/data";
 import SchemaEditor from '@/components/SchemaEditor/index.vue';
-import {handleRef, removeExtraViewInfo} from "@/components/SchemaEditor/utils";
+import {removeExtraViewInfo} from "@/components/SchemaEditor/utils";
 
 const store = useStore<{ Endpoint, Debug, ProjectGlobal, User, ServeGlobal }>();
 const selectedCodeDetail = computed<any>(() => store.state.Endpoint.selectedCodeDetail);
@@ -71,8 +71,6 @@ watch(() => {
 }, (newVal, oldValue) => {
   const res = JSON.parse(newVal || '{}');
   res.type = selectedCodeDetail?.value?.schemaItem?.type || 'object';
-  // 将ref转换为$ref
-  handleRef(res);
   activeResBodySchema.value.content = res;
   contentStr.value = JSON.stringify(activeResBodySchema.value.content);
 }, {immediate: true});

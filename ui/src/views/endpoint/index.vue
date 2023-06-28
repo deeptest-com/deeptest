@@ -1,5 +1,5 @@
 <template>
-  <a-spin tip="Loading..." :spinning="isImporting">
+  <a-spin tip="Loading..." :spinning="isImporting" style="z-index: 2000;">
     <div class="container">
       <div class="content">
         <div class="left tree" v-if="!collapsed">

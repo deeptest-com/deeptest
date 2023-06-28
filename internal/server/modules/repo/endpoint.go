@@ -369,3 +369,7 @@ func (r *EndpointRepo) GetUsedCountByEndpointId(endpointId uint) (count int64, e
 
 	return
 }
+
+func (r *EndpointRepo) CreateEndpoints(endpoints []*model.Endpoint) error {
+	return r.DB.Create(endpoints).Error
+}

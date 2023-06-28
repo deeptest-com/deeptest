@@ -173,7 +173,7 @@ func (s *EndpointService) AddVersion(version *model.EndpointVersion) (err error)
 	return
 }
 
-func (s *EndpointService) SaveEndpoints(endpoints []*model.Endpoint, dirs *openapi.Dirs, req v1.ImportEndpointDataReq) (err error) {
+func (s *EndpointService) SaveEndpoints(endpoints []*model.Endpoint, dirs *openapi.Dirs, components []*model.ComponentSchema, req v1.ImportEndpointDataReq) (err error) {
 	user, _ := s.UserRepo.FindById(req.UserId)
 
 	if dirs.Id == 0 || dirs.Id == -1 {
@@ -182,16 +182,27 @@ func (s *EndpointService) SaveEndpoints(endpoints []*model.Endpoint, dirs *opena
 	}
 
 	s.createDirs(dirs, req)
+	s.createComponents(components, req)
 	for _, endpoint := range endpoints {
 		endpoint.ProjectId, endpoint.ServeId, endpoint.CategoryId, endpoint.CreateUser = req.ProjectId, req.ServeId, req.CategoryId, user.Name
 		endpoint.Status = 1
 		endpoint.CategoryId = s.getCategoryId(endpoint.Tags, dirs)
+
 		_, err = s.Save(*endpoint)
 		if err != nil {
 			return
 		}
+
 	}
+	//err = s.EndpointRepo.CreateEndpoints(endpoints)
 	return
+}
+
+func (s *EndpointService) createComponents(components []*model.ComponentSchema, req v1.ImportEndpointDataReq) {
+	for _, component := range components {
+		component.ServeId = int64(req.ServeId)
+	}
+	s.ServeRepo.CreateSchemas(components)
 }
 
 func (s *EndpointService) createDirs(data *openapi.Dirs, req v1.ImportEndpointDataReq) (err error) {

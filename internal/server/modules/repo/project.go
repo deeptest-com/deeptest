@@ -722,7 +722,7 @@ func (r *ProjectRepo) CreateSample(projectId, serveId, userId uint) (err error) 
 			interfaceIds[endpoint.Interfaces[0].Name+"-"+string(endpoint.Interfaces[0].Method)] = endpoint.Interfaces[0].ID
 		}
 
-		r.ServeServerRepo.SetUrl(serveId, "http://119.3.182.218:50400")
+		r.ServeServerRepo.SetUrl(serveId, "http://192.168.5.224:50400")
 
 		//TODO 创建场景
 		scenario.ProjectId = projectId

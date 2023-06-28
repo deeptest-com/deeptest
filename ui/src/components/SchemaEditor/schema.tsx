@@ -46,7 +46,9 @@ export default defineComponent({
                     })
                     tree.content = JSON.parse(result.content || '{}');
                     data.value = addExtraViewInfo(data.value);
+                    tree.extraViewInfo.isExpand = true;
                 } else {
+                    tree.extraViewInfo.isExpand = false;
                     delete tree.content;
                 }
             } else {
@@ -241,7 +243,8 @@ export default defineComponent({
             const newObj = removeExtraViewInfo(cloneDeep(newVal));
             emit('change', newObj);
         }, {
-            immediate: false,
+            // todo 为什么要加上页面渲染时就需要加上这个，其实没必要，待优化
+            immediate: true,
             deep: true
         });
 

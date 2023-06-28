@@ -2,6 +2,7 @@ package openapi
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
@@ -11,9 +12,10 @@ import (
 )
 
 type openapi2endpoint struct {
-	doc       *openapi3.T
-	endpoints []*model.Endpoint
-	dirs      *Dirs
+	doc        *openapi3.T
+	endpoints  []*model.Endpoint
+	dirs       *Dirs
+	components []*model.ComponentSchema
 }
 
 type Dirs struct {
@@ -25,9 +27,21 @@ func NewOpenapi2endpoint(doc *openapi3.T, dirId int64) *openapi2endpoint {
 	return &openapi2endpoint{doc: doc, dirs: &Dirs{Id: dirId}}
 }
 
-func (o *openapi2endpoint) Convert() (endpoints []*model.Endpoint, dirs *Dirs) {
+func (o *openapi2endpoint) Convert() (endpoints []*model.Endpoint, dirs *Dirs, components []*model.ComponentSchema) {
 	o.convertEndpoints()
-	return o.endpoints, o.dirs
+	o.convertComponents()
+	return o.endpoints, o.dirs, o.components
+}
+
+func (o *openapi2endpoint) convertComponents() {
+	for key, schema := range o.doc.Components.Schemas {
+		content, err := json.Marshal(schema.Value)
+		if err != nil {
+			panic(err)
+		}
+		component := model.ComponentSchema{Name: key, Type: schema.Value.Type, Content: string(content), Ref: schema.Ref}
+		o.components = append(o.components, &component)
+	}
 }
 
 func (o *openapi2endpoint) convertEndpoints() {
@@ -121,9 +135,13 @@ func (o *openapi2endpoint) interf(method consts.HttpMethod, url string, operatio
 	interf.Name = operation.Summary
 	interf.Method = method
 	interf.Url = url
-	interf.Headers, interf.Cookies, interf.Params, interf.PathParams = o.parameters(operation)
+	var requestBodyItem []model.EndpointInterfaceRequestBodyItem
+	interf.Headers, interf.Cookies, interf.Params, interf.PathParams, requestBodyItem = o.parameters(operation)
 	if operation.RequestBody != nil {
 		interf.BodyType, interf.RequestBody = o.requestBody(operation.RequestBody.Value.Content)
+		if len(requestBodyItem) > 0 {
+			interf.RequestBody.SchemaItem = requestBodyItem[0]
+		}
 	}
 	interf.ResponseBodies = o.responseBodies(operation.Responses)
 	interf.Tags = o.makeDirs(operation.Tags)
@@ -176,7 +194,7 @@ func (o *openapi2endpoint) requestBody(content openapi3.Content) (mediaType cons
 			examples = append(examples, value)
 		}
 		body.Examples = commonUtils.JsonEncode(examples)
-		body.SchemaItem = o.requestBodyItem(item)
+		body.SchemaItem = o.requestBodyItem(item.Schema)
 		//body.Examples = item.Example
 		//content.
 		return
@@ -185,10 +203,10 @@ func (o *openapi2endpoint) requestBody(content openapi3.Content) (mediaType cons
 	return
 }
 
-func (o *openapi2endpoint) requestBodyItem(item *openapi3.MediaType) (requestBodyItem model.EndpointInterfaceRequestBodyItem) {
+func (o *openapi2endpoint) requestBodyItem(schema *openapi3.SchemaRef) (requestBodyItem model.EndpointInterfaceRequestBodyItem) {
 	requestBodyItem = model.EndpointInterfaceRequestBodyItem{}
-	requestBodyItem.Content = commonUtils.JsonEncode(item.Schema)
-	requestBodyItem.Type = item.Schema.Value.Type
+	requestBodyItem.Content = commonUtils.JsonEncode(schema)
+	requestBodyItem.Type = schema.Value.Type
 
 	return
 }
@@ -237,7 +255,7 @@ func (o *openapi2endpoint) responseHeader(h openapi3.Headers) (headers []model.E
 	return
 }
 
-func (o *openapi2endpoint) parameters(operation *openapi3.Operation) (headers []model.EndpointInterfaceHeader, cookies []model.EndpointInterfaceCookie, params []model.EndpointInterfaceParam, pathParams []model.EndpointPathParam) {
+func (o *openapi2endpoint) parameters(operation *openapi3.Operation) (headers []model.EndpointInterfaceHeader, cookies []model.EndpointInterfaceCookie, params []model.EndpointInterfaceParam, pathParams []model.EndpointPathParam, bodyItem []model.EndpointInterfaceRequestBodyItem) {
 	for _, parameter := range operation.Parameters {
 		if parameter.Value.In == "header" {
 			header := o.parameter(parameter)
@@ -251,7 +269,14 @@ func (o *openapi2endpoint) parameters(operation *openapi3.Operation) (headers []
 		} else if parameter.Value.In == "path" {
 			param := o.parameter(parameter)
 			pathParams = append(pathParams, model.EndpointPathParam{EndpointInterfaceParam: param})
+		} else if parameter.Value.In == "body" {
+			if parameter.Value.Schema != nil {
+				item := o.requestBodyItem(parameter.Value.Schema)
+				bodyItem = append(bodyItem, item)
+			}
+
 		}
+
 	}
 
 	return
@@ -271,14 +296,15 @@ func (o *openapi2endpoint) parameter(parameter *openapi3.ParameterRef) (param mo
 
 func (*openapi2endpoint) parameterValue(schema *openapi3.Schema, param *model.EndpointInterfaceParam) {
 	if schema.Example != nil {
-		param.Example = schema.Example.(string)
+		param.Example = fmt.Sprintf("%v", schema.Example)
 	}
 
 	if schema.MaxLength != nil {
 		param.MaxLength = *schema.MaxLength
 	}
 	if schema.Default != nil {
-		param.Default = schema.Default.(string)
+		param.Default = fmt.Sprintf("%v", schema.Default)
+
 	}
 
 	if schema.MultipleOf != nil {

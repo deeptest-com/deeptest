@@ -4,7 +4,9 @@
       :visible="visible"
       @ok="ok"
       @cancel="cancal"
-      title="导入接口数据">
+      title="导入接口数据"
+      :confirmLoading = "spinning"
+      >
     <a-form
         ref="formRef"
         :model="formState"
@@ -64,9 +66,9 @@
       <a-form-item label="swagger url" v-if="formState.openUrlImport" name="filePath">
       <a-input v-model:value="formState.filePath" />
     </a-form-item>
-
     </a-form>
   </a-modal>
+
 </template>
 <script lang="ts" setup>
 import {ValidateErrorEntity} from 'ant-design-vue/es/form/interface';
@@ -142,21 +144,23 @@ const props = defineProps({
 const emit = defineEmits(['ok', 'cancal']);
 
 const formRef = ref();
-
+const spinning = ref<boolean>(false)
 function ok() {
   if (uploading.value) {
     return;
   }
+  spinning.value = true 
   formRef.value
       .validate()
-      .then(() => {
-        emit('ok', formState.value, () => {
+      .then( () => {
+         emit('ok', formState.value, () => {
           reset();
+          spinning.value = false
         });
       })
       .catch((error: ValidateErrorEntity) => {
         console.log('error', error);
-      });
+      }); 
 }
 
 function cancal() {

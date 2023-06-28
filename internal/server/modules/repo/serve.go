@@ -509,3 +509,7 @@ func (r *ServeRepo) GetServers(serveIs []uint) (res []model.ServeServer, err err
 	}
 	return
 }
+
+func (r *ServeRepo) CreateSchemas(schemas []*model.ComponentSchema) (err error) {
+	return r.DB.Create(schemas).Error
+}

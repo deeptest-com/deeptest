@@ -13,10 +13,15 @@
       <!--      <a-tag>v1.0</a-tag>-->
       <div class="serve-info-block">
         <div class="title"><strong>服务信息</strong></div>
-        <div class="item" v-for="serve in serveList" :key="serve.url">
-          <span><strong>{{ serve.name }}：</strong></span>
-          <span>{{ serve.url }}</span>
+        <div class="items">
+          <div class="item" v-for="serve in serveList" :key="serve.url">
+            <span><strong>{{ serve.name }}：</strong></span>
+            <span>{{ serve.url }}
+            <CopyOutlined class="copy-icon" @click="copyURL(serve.url)"/>
+          </span>
+          </div>
         </div>
+
       </div>
       <Securitys :items="info?.securities"/>
     </div>
@@ -31,7 +36,6 @@
           <span class="request-uri">
             <span class="ant-typography ant-typography-secondary">{{ handlePathStr(path.url + '/' + path.path) }}</span>
             <CopyOutlined class="copy-icon" @click="copyURL(handlePathStr(path.url + '/' + path.path))"/>
-            <!--            <span class="ant-typography"><strong>{{  path.path}}</strong></span>-->
           </span>
         </div>
       </div>
@@ -224,7 +228,7 @@ function copyURL(url) {
     border-radius: 3px;
     margin-top: 16px;
     overflow: hidden;
-    padding-bottom: 6px;
+    //padding-bottom: 6px;
 
     .title {
       background-color: hsla(218, 28%, 18%, 1);
@@ -233,13 +237,30 @@ function copyURL(url) {
       line-height: 36px;
       padding-left: 16px;
     }
+    .items{
+      background-color: hsla(218, 27%, 24%, 1);
+      padding-bottom: 8px;
+      padding-top: 8px;
+    }
 
     .item {
-      background-color: hsla(218, 27%, 24%, 1);
-      height: 40px;
-      line-height: 40px;
+      height: 32px;
+      line-height: 32px;
       color: #ffffffa6;
       padding-left: 16px;
+      cursor: pointer;
+      .copy-icon{
+        //display: none;
+        opacity: 0;
+        margin-left: 6px;
+        transition: all 0.3s;
+      }
+      &:hover{
+        .copy-icon{
+          opacity: 1;
+          display: inline-block;
+        }
+      }
     }
   }
 

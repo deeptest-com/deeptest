@@ -275,7 +275,7 @@ function handleResHeaderChange(data) {
     &:before {
       content: "";
       position: absolute;
-      left: -121px;
+      left: -145px;
       top: -12px;
       width: 2px;
       background: #E5E5E5;

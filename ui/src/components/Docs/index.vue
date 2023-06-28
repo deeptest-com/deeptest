@@ -27,7 +27,7 @@
                   您还未定义接口，请先定义接口
                 </span>
       </template>
-      <a-button type="primary" @click="emit('switchToDefineTab')">接口定义</a-button>
+      <a-button v-if="isEndpointPage" type="primary" @click="emit('switchToDefineTab')">接口定义</a-button>
     </a-empty>
   </div>
 </template>
@@ -49,6 +49,7 @@ const store = useStore<{ Endpoint, ProjectGlobal }>();
 const props = defineProps(['showMenu', 'data', 'onlyShowDocs', 'showHeader']);
 const emit = defineEmits(['changeVersion','switchToDefineTab']);
 
+const isEndpointPage = window.location.pathname.includes('/endpoint/index');
 
 const serviceList = computed(() => {
   // 组装数据以兼容组件 LeftTreeMenu

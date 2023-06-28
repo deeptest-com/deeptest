@@ -6,7 +6,23 @@
     <div class="header"><strong>Security</strong></div>
     <template v-for="item in items" :key="item.id">
       <div class="title"><strong>{{ item.type }}：{{ item.name }}</strong></div>
-      <div class="item">{{ item.token }}</div>
+      <div class="item" v-if="item.type === 'basicAuth'">
+        <a-space direction="vertical">
+          <a-typography-text>username: {{ item.username || '暂无' }}</a-typography-text>
+          <a-typography-text>password: {{ item.password || '暂无' }}</a-typography-text>
+        </a-space>
+      </div>
+      <div class="item" v-if="item.type === 'apiKey'">
+        <a-space direction="vertical">
+          <a-typography-text>key: {{ item.key || '暂无' }}</a-typography-text>
+          <a-typography-text>value: {{ item.value || '暂无' }}</a-typography-text>
+        </a-space>
+      </div>
+      <div class="item" v-if="item.type === 'bearerToken'">
+        <a-space direction="vertical">
+          <a-typography-text>token: {{ item.token || '暂无' }}</a-typography-text>
+        </a-space>
+      </div>
     </template>
   </div>
 </template>
@@ -49,9 +65,9 @@ const emit = defineEmits([]);
 
   .item {
     background-color: hsla(218, 33%, 94%, 1);
-    height: 40px;
-    line-height: 40px;
-    padding-left: 16px;
+    //height: 40px;
+    //line-height: 40px;
+    padding: 12px 16px;
   }
 }
 

@@ -62,7 +62,8 @@ func (r *TestInterfaceRepo) GetDetail(interfId uint) (testInterface model.TestIn
 
 	debugInterface, _ := r.DebugInterfaceRepo.Get(testInterface.DebugInterfaceId)
 
-	testInterface.DebugData, _ = r.DebugInterfaceRepo.GetDetail(debugInterface.ID)
+	debugData, _ := r.DebugInterfaceRepo.GetDetail(debugInterface.ID)
+	testInterface.DebugData = &debugData
 
 	return
 }

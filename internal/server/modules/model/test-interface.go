@@ -23,8 +23,8 @@ type TestInterface struct {
 	Children []*TestInterface `gorm:"-" json:"children"`
 	Slots    iris.Map         `gorm:"-" json:"slots"`
 
-	DebugInterfaceId uint           `gorm:"default:0" json:"debugInterfaceId"`
-	DebugData        DebugInterface `gorm:"-" json:"debugData"`
+	DebugInterfaceId uint            `gorm:"default:0" json:"debugInterfaceId"`
+	DebugData        *DebugInterface `gorm:"-" json:"debugData"`
 }
 
 func (TestInterface) TableName() string {

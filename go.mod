@@ -84,6 +84,8 @@ require (
 	github.com/fatih/structs v1.1.0 // indirect
 	github.com/flosch/pongo2/v4 v4.0.2 // indirect
 	github.com/gavv/httpexpect/v2 v2.3.1 // indirect
+	github.com/go-asn1-ber/asn1-ber v1.5.4 // indirect
+	github.com/go-ldap/ldap v3.0.3+incompatible // indirect
 	github.com/go-openapi/jsonpointer v0.19.5 // indirect
 	github.com/go-openapi/swag v0.19.5 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect
@@ -179,6 +181,7 @@ require (
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	google.golang.org/protobuf v1.27.1 // indirect
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
+	gopkg.in/asn1-ber.v1 v1.0.0-20181015200546-f715ec2f112d // indirect
 	gopkg.in/ini.v1 v1.63.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gorm.io/driver/postgres v1.2.3 // indirect

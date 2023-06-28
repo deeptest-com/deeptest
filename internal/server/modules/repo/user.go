@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/casbin"
@@ -647,5 +648,26 @@ func (r *UserRepo) GetByUsernameOrEmail(username, email string, ids ...uint) (us
 	}
 	err = db.First(&user).Error
 
+	return
+}
+
+func (r *UserRepo) UpdateByLdapInfo(ldapUserInfo v1.UserBase) (id uint, err error) {
+	var user serverDomain.UserReq
+	db := r.DB.Model(&model.SysUser{}).
+		Where("NOT deleted").
+		Where("email = ?", ldapUserInfo.Email)
+	err = db.First(&user).Error
+	user.Username = ldapUserInfo.Username
+	user.Email = ldapUserInfo.Email
+	user.Name = ldapUserInfo.Name
+
+	if err != nil && err.Error() == "record not found" {
+		id, err = r.Create(user)
+	} else if err == nil && user.Id != 1 && user.Model.Id != 0 {
+		err = r.Update(user.Id, user.Model.Id, user)
+		id = user.Id
+	} else {
+		err = errors.New("未能更新或创建ldap信息")
+	}
 	return
 }

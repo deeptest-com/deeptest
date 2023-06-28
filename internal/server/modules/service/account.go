@@ -2,54 +2,53 @@ package service
 
 import (
 	"errors"
-	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	commService "github.com/aaronchen2k/deeptest/internal/pkg/service"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	_i118Utils "github.com/aaronchen2k/deeptest/pkg/lib/i118"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	_mailUtils "github.com/aaronchen2k/deeptest/pkg/lib/mail"
-	"github.com/go-ldap/ldap"
 	"github.com/snowlyg/multi"
 	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
-	"log"
 	"strconv"
 	"time"
-
-	"github.com/snowlyg/multi"
-	"go.uber.org/zap")
+)
 
 var (
 	ErrUserNameOrPassword = errors.New("用户名或密码错误")
 )
 
 type AccountService struct {
-	UserRepo *repo.UserRepo `inject:""`
+	UserRepo    *repo.UserRepo           `inject:""`
+	LdapService *commService.LdapService `inject:""`
 }
 
 // Login 登录
 func (s *AccountService) Login(req v1.LoginReq) (ret v1.LoginResp, err error) {
-	user, err := s.UserRepo.FindPasswordByUserName(req.Username)
-	if err != nil {
-		user, err = s.UserRepo.FindPasswordByEmail(req.Username)
+	var Id uint
+	var userBase v1.UserBase
 
+	if config.CONFIG.Ldap && req.Username != "admin" {
+		userBase, err = s.LdapService.LdapUserInfo(req)
 		if err != nil {
 			return
 		}
+		Id, err = s.UserRepo.UpdateByLdapInfo(userBase)
+	} else {
+		Id, err = s.UserLogin(req)
 	}
 
-	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password))
 	if err != nil {
-		logUtils.Errorf("用户名或密码错误", zap.String("密码:", req.Password), zap.String("hash:", user.Password), zap.String("bcrypt.CompareHashAndPassword()", err.Error()))
-		err = ErrUserNameOrPassword
 		return
 	}
 
 	claims := &multi.CustomClaims{
-		ID:            strconv.FormatUint(uint64(user.Id), 10),
+		ID:            strconv.FormatUint(uint64(Id), 10),
 		Username:      req.Username,
 		AuthorityId:   "",
 		AuthorityType: multi.AdminAuthority,
@@ -67,21 +66,23 @@ func (s *AccountService) Login(req v1.LoginReq) (ret v1.LoginResp, err error) {
 	return
 }
 
-func LdapLogin(username, password string) bool {
-	host := "192.168.5.228"
-	port := 389
-	l, err := ldap.Dial("tcp", fmt.Sprintf("%s:%d", host, port))
+func (s *AccountService) UserLogin(req v1.LoginReq) (userId uint, err error) {
+	user, err := s.UserRepo.FindPasswordByUserName(req.Username)
 	if err != nil {
-		log.Fatalf("LDAP dial error: %s", err)
+		user, err = s.UserRepo.FindPasswordByEmail(req.Username)
+		if err != nil {
+			return
+		}
 	}
-	defer l.Close()
-	bindDN := fmt.Sprintf("cn=%s,ou=people,dc=example,dc=com", username)
-	err = l.Bind(bindDN, password)
+	userId = user.Id
+
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password))
 	if err != nil {
-		log.Printf("LDAP bind error: %s", err)
-		return false
+		logUtils.Errorf("用户名或密码错误", zap.String("密码:", req.Password), zap.String("hash:", user.Password), zap.String("bcrypt.CompareHashAndPassword()", err.Error()))
+		err = ErrUserNameOrPassword
+		return
 	}
-	return true
+	return
 }
 
 func (s *AccountService) Register(req v1.RegisterReq) (err _domain.BizErr) {

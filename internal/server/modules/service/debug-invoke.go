@@ -17,7 +17,7 @@ type DebugInvokeService struct {
 	EndpointRepo          *repo.EndpointRepo          `inject:""`
 	ScenarioProcessorRepo *repo.ScenarioProcessorRepo `inject:""`
 	ScenarioRepo          *repo.ScenarioRepo          `inject:""`
-	TestInterfaceRepo     *repo.TestInterfaceRepo     `inject:""`
+	DiagnoseInterfaceRepo *repo.DiagnoseInterfaceRepo `inject:""`
 
 	DebugSceneService     *DebugSceneService     `inject:""`
 	DebugInterfaceService *DebugInterfaceService `inject:""`
@@ -48,10 +48,10 @@ func (s *DebugInvokeService) SubmitResult(req domain.SubmitDebugResultRequest) (
 		scenarioId = scenario.ID
 		projectId = scenario.ProjectId
 	} else if usedBy == consts.TestDebug {
-		testInterface, _ := s.TestInterfaceRepo.Get(req.Request.TestInterfaceId)
+		diagnoseInterface, _ := s.DiagnoseInterfaceRepo.Get(req.Request.DiagnoseInterfaceId)
 
-		serveId = testInterface.ServeId
-		projectId = testInterface.ProjectId
+		serveId = diagnoseInterface.ServeId
+		projectId = diagnoseInterface.ProjectId
 	}
 
 	s.ExtractorService.ExtractInterface(req.Request.DebugInterfaceId, req.Request.EndpointInterfaceId, serveId, processorId, scenarioId, req.Response, usedBy)

@@ -16,7 +16,7 @@ type ScenarioInterfaceService struct {
 	ServeRepo             *repo.ServeRepo             `inject:""`
 	ScenarioProcessorRepo *repo.ScenarioProcessorRepo `inject:""`
 	ServeServerRepo       *repo.ServeServerRepo       `inject:""`
-	TestInterfaceRepo     *repo.TestInterfaceRepo     `inject:""`
+	DiagnoseInterfaceRepo *repo.DiagnoseInterfaceRepo `inject:""`
 
 	ScenarioNodeService   *ScenarioNodeService   `inject:""`
 	DebugSceneService     *DebugSceneService     `inject:""`
@@ -114,10 +114,10 @@ func (s *ScenarioInterfaceService) ResetDebugData(scenarioProcessorId int, creat
 	parentProcessor, _ := s.ScenarioProcessorRepo.Get(scenarioProcessor.ParentId)
 	debugInterface, _ := s.DebugInterfaceRepo.Get(scenarioProcessor.EntityId)
 
-	if debugInterface.TestInterfaceId > 0 {
-		testInterface, _ := s.TestInterfaceRepo.Get(debugInterface.TestInterfaceId)
-		testInterfaceTo := s.TestInterfaceRepo.ToTo(&testInterface)
-		newProcessor, err = s.ScenarioNodeService.createDirOrInterfaceFromTest(testInterfaceTo, parentProcessor)
+	if debugInterface.DiagnoseInterfaceId > 0 {
+		diagnoseInterface, _ := s.DiagnoseInterfaceRepo.Get(debugInterface.DiagnoseInterfaceId)
+		diagnoseInterfaceTo := s.DiagnoseInterfaceRepo.ToTo(&diagnoseInterface)
+		newProcessor, err = s.ScenarioNodeService.createDirOrInterfaceFromTest(diagnoseInterfaceTo, parentProcessor)
 
 	} else if debugInterface.EndpointInterfaceId > 0 {
 		serveId := uint(0)

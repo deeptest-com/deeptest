@@ -20,8 +20,8 @@ type IndexModule struct {
 	RoleModule    *router.RoleModule    `inject:""`
 	PermModule    *router.PermModule    `inject:""`
 
-	DebugModule         *router.DebugModule         `inject:""`
-	TestInterfaceModule *router.TestInterfaceModule `inject:""`
+	DebugModule             *router.DebugModule             `inject:""`
+	DiagnoseInterfaceModule *router.DiagnoseInterfaceModule `inject:""`
 
 	MockModule *router.MockModule `inject:""`
 
@@ -120,7 +120,7 @@ func (m *IndexModule) Party() module.WebModule {
 		m.SummaryModule.Party(),
 
 		m.DebugModule.Party(),
-		m.TestInterfaceModule.Party(),
+		m.DiagnoseInterfaceModule.Party(),
 		m.MessageModule.Party(),
 		m.DocumentModule.Party(),
 

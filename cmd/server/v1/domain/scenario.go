@@ -24,9 +24,9 @@ type ScenarioAddInterfacesReq struct {
 	CreateBy     uint  `json:"createBy"`
 }
 type ScenarioAddInterfacesFromTreeReq struct {
-	SelectedNodes []TestInterface `json:"selectedNodes"`
-	TargetId      uint            `json:"targetId"`
-	CreateBy      uint            `json:"createBy"`
+	SelectedNodes []DiagnoseInterface `json:"selectedNodes"`
+	TargetId      uint                `json:"targetId"`
+	CreateBy      uint                `json:"createBy"`
 }
 
 type ScenarioAddScenarioReq struct {

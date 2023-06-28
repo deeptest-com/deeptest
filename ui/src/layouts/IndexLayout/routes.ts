@@ -65,18 +65,18 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
   },
   {
     title: 'index-layout.menu',
-    path: '/debugger',
-    redirect: '/debugger/index',
+    path: '/diagnose',
+    redirect: '/diagnose/index',
     component: BlankLayout,
     children: [
       {
         icon: 'endpoint',
-        title: 'interface-debug',
+        title: 'diagnose',
         path: 'index',
-        component: () => import('@/views/debugger/index.vue'),
+        component: () => import('@/views/diagnose/index.vue'),
         hidden: false,
         meta: {
-          code: 'DEBUGGER'
+          code: 'DIAGNOSE'
         }
       },
     ],

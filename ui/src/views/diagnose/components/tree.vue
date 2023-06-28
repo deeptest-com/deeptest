@@ -101,7 +101,7 @@ import {useStore} from "vuex";
 import {setExpandedKeys, setSelectedKey} from "@/utils/cache";
 
 import {StateType as ProjectStateType} from "@/store/project";
-import {StateType as TestInterfaceStateType} from '../store';
+import {StateType as DiagnoseInterfaceStateType} from '../store';
 import {StateType as ServeStateType} from "@/store/serve";
 
 import {expandOneKey} from "@/services/tree";
@@ -110,12 +110,12 @@ import InterfaceSelectionFromDefine from "@/views/component/InterfaceSelectionFr
 import {filterTree} from "@/utils/tree";
 import {confirmToDelete} from "@/utils/confirm";
 
-const store = useStore<{ TestInterface: TestInterfaceStateType, ProjectGlobal: ProjectStateType, ServeGlobal: ServeStateType }>();
+const store = useStore<{ DiagnoseInterface: DiagnoseInterfaceStateType, ProjectGlobal: ProjectStateType, ServeGlobal: ServeStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const currServe = computed<any>(() => store.state.ServeGlobal.currServe);
 
-const treeData = computed<any>(() => store.state.TestInterface.treeData);
-const treeDataMap = computed<any>(() => store.state.TestInterface.treeDataMap);
+const treeData = computed<any>(() => store.state.DiagnoseInterface.treeData);
+const treeDataMap = computed<any>(() => store.state.DiagnoseInterface.treeDataMap);
 
 const props = defineProps({
   serveId: {
@@ -131,13 +131,13 @@ const autoExpandParent = ref<boolean>(false);
 
 async function loadTreeData() {
   if (currProject?.value?.id > 0 && currServe?.value?.id > 0) {
-    await store.dispatch('TestInterface/loadTree', {projectId: currProject.value.id, serveId: currServe.value.id});
+    await store.dispatch('DiagnoseInterface/loadTree', {projectId: currProject.value.id, serveId: currServe.value.id});
     expandAll();
   }
 }
 
 async function getServeServers() {
-  await store.dispatch('TestInterface/getServeServers', {
+  await store.dispatch('DiagnoseInterface/getServeServers', {
     id: currServe.value.id,
   })
 }
@@ -199,10 +199,10 @@ function selectNode(keys, e) {
   } else {
     selectedKeys.value = keys
   }
-  setSelectedKey('test-interface', currProject.value.id, selectedKeys.value[0])
+  setSelectedKey('diagnose-interface', currProject.value.id, selectedKeys.value[0])
 
   const selectedItem = treeDataMap.value[selectedKeys.value[0]]
-  store.dispatch('TestInterface/openInterfaceTab', selectedItem);
+  store.dispatch('DiagnoseInterface/openInterfaceTab', selectedItem);
 }
 
 const currentNode = ref(null as any);
@@ -219,7 +219,7 @@ async function deleteNode(node) {
   const context = node.type === 'dir'?'删除后所有所有子目录都会被删除。':''
 
   confirmToDelete(title, context, () => {
-    store.dispatch('TestInterface/removeInterface', {id: node.id, type: node.type});
+    store.dispatch('DiagnoseInterface/removeInterface', {id: node.id, type: node.type});
   })
 }
 
@@ -230,7 +230,7 @@ async function handleModalOk(model) {
     serveId: currServe.value.id,
   })
 
-  const res = await store.dispatch('TestInterface/saveInterface', model);
+  const res = await store.dispatch('DiagnoseInterface/saveInterface', model);
   if (res) {
     currentNode.value = null
     message.success('保存目录成功');
@@ -256,7 +256,7 @@ const importInterfaces = (target) => {
 const interfaceSelectionFinish = (interfaceIds) => {
   console.log('interfaceSelectionFinish', interfaceIds, importTarget.value)
 
-  store.dispatch('TestInterface/importInterfaces', {
+  store.dispatch('DiagnoseInterface/importInterfaces', {
     interfaceIds: interfaceIds,
     targetId: importTarget.value.id,
   }).then((newNode) => {
@@ -279,7 +279,7 @@ async function onDrop(info: DropEvent) {
   const pos = info.node.pos.split('-');
   const dropPosition = info.dropPosition - Number(pos[pos.length - 1]);
 
-  const res = await store.dispatch('TestInterface/moveInterface', {
+  const res = await store.dispatch('DiagnoseInterface/moveInterface', {
     "dragKey": dragKey, // 移动谁
     "dropKey": dropKey,  // 移动那儿
     "dropPos": dropPosition // 0 表示移动到目标节点的子节点，-1 表示移动到目标节点的前面， 1表示移动到目标节点的后面

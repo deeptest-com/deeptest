@@ -6,7 +6,7 @@ type DebugReq struct {
 	DebugInterfaceId    uint `json:"debugInterfaceId"`
 	EndpointInterfaceId uint `json:"endpointInterfaceId"` // EndpointInterface without DebugInterface init
 	ScenarioProcessorId uint `json:"scenarioProcessorId"` // used to load vars by scenario processor
-	TestInterfaceId     uint `json:"testInterfaceId"`     // load by interface testing
+	DiagnoseInterfaceId uint `json:"diagnoseInterfaceId"` // load by interface diagnose
 
 	UsedBy consts.UsedBy `json:"usedBy"`
 }
@@ -23,7 +23,7 @@ type DebugData struct {
 
 	EndpointInterfaceId uint          `json:"endpointInterfaceId"`
 	ScenarioProcessorId uint          `json:"scenarioProcessorId"`
-	TestInterfaceId     uint          `json:"testInterfaceId"`
+	DiagnoseInterfaceId uint          `json:"diagnoseInterfaceId"`
 	UsedBy              consts.UsedBy `json:"usedBy"`
 
 	ServeId   uint `json:"serveId"`

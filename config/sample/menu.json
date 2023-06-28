@@ -14,9 +14,9 @@
     "parent":""
   },
   {
-    "code":"debugger",
+    "code":"diagnose",
     "title":"接口调试",
-    "path":"/debugger",
+    "path":"/diagnose",
     "type":"menu",
     "parent":""
   },

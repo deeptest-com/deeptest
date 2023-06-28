@@ -19,7 +19,7 @@ export enum PermissionButtonType {
 export enum RouteMenuType {
     "WORKBENCH" = "workbench",
     "ENDPOINT" = "endpoint",
-    "DEBUGGER" = "debugger",
+    "DIAGNOSE" = "diagnose",
     "SCENARIO" = "scenario",
     "PLAN" = "plan",
     "REPORT" = "report",

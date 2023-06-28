@@ -34,7 +34,7 @@ var (
 		&DebugInterfaceExtractor{},
 		&DebugInterfaceCheckpoint{},
 
-		&TestInterface{},
+		&DiagnoseInterface{},
 
 		&Snippet{},
 

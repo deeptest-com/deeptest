@@ -73,7 +73,7 @@
 
     <InterfaceSelectionFromTest
         v-if="interfaceSelectionVisible && interfaceSelectionSrc==='fromTest'"
-        :onFinish="testInterfaceNodesSelectionFinish"
+        :onFinish="diagnoseInterfaceNodesSelectionFinish"
         :onCancel="interfaceSelectionCancel" />
 
   </div>
@@ -356,7 +356,7 @@ const endpointInterfaceIdsSelectionFinish = (interfaceIds) => {
   })
 }
 
-const testInterfaceNodesSelectionFinish = (interfaceNodes) => {
+const diagnoseInterfaceNodesSelectionFinish = (interfaceNodes) => {
   const targetNode = treeDataMap.value[targetModelId]
   console.log('endpointInterfaceIdsSelectionFinish', interfaceNodes, targetNode)
 

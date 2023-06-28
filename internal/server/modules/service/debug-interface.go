@@ -15,7 +15,7 @@ type DebugInterfaceService struct {
 	EndpointInterfaceRepo *repo.EndpointInterfaceRepo `inject:""`
 	DebugInterfaceRepo    *repo.DebugInterfaceRepo    `inject:""`
 	ScenarioInterfaceRepo *repo.ScenarioInterfaceRepo `inject:""`
-	TestInterfaceRepo     *repo.TestInterfaceRepo     `inject:""`
+	DiagnoseInterfaceRepo *repo.DiagnoseInterfaceRepo `inject:""`
 
 	EndpointRepo          *repo.EndpointRepo          `inject:""`
 	ServeRepo             *repo.ServeRepo             `inject:""`
@@ -37,8 +37,8 @@ func (s *DebugInterfaceService) Load(loadReq domain.DebugReq) (debugData domain.
 	} else {
 		if loadReq.ScenarioProcessorId > 0 {
 			debugData, _ = s.GetDebugInterfaceByScenarioInterface(loadReq.ScenarioProcessorId)
-		} else if loadReq.TestInterfaceId > 0 {
-			debugData, _ = s.GetDebugInterfaceByTestInterface(loadReq.TestInterfaceId)
+		} else if loadReq.DiagnoseInterfaceId > 0 {
+			debugData, _ = s.GetDebugInterfaceByDiagnoseInterface(loadReq.DiagnoseInterfaceId)
 		} else if loadReq.EndpointInterfaceId > 0 {
 			debugData, _ = s.GetDebugInterfaceByEndpointInterface(loadReq.EndpointInterfaceId)
 		}
@@ -260,19 +260,19 @@ func (s *DebugInterfaceService) GetDebugInterfaceByScenarioInterface(scenarioPro
 	return
 }
 
-func (s *DebugInterfaceService) GetDebugInterfaceByTestInterface(testInterfaceId uint) (ret domain.DebugData, err error) {
-	testInterface, err := s.TestInterfaceRepo.GetDetail(testInterfaceId)
+func (s *DebugInterfaceService) GetDebugInterfaceByDiagnoseInterface(diagnoseInterfaceId uint) (ret domain.DebugData, err error) {
+	diagnoseInterface, err := s.DiagnoseInterfaceRepo.GetDetail(diagnoseInterfaceId)
 	if err != nil {
 		return
 	}
 
-	copier.CopyWithOption(&ret, testInterface.DebugData, copier.Option{
+	copier.CopyWithOption(&ret, diagnoseInterface.DebugData, copier.Option{
 		DeepCopy: true,
 	})
 
-	ret.ServerId = testInterface.DebugData.ServerId
-	ret.DebugInterfaceId = testInterface.DebugInterfaceId
-	ret.TestInterfaceId = testInterfaceId
+	ret.ServerId = diagnoseInterface.DebugData.ServerId
+	ret.DebugInterfaceId = diagnoseInterface.DebugInterfaceId
+	ret.DiagnoseInterfaceId = diagnoseInterfaceId
 
 	ret.Headers = append(ret.Headers, domain.Header{Name: "", Value: ""})
 	ret.QueryParams = append(ret.QueryParams, domain.Param{Name: "", Value: "", ParamIn: consts.ParamInQuery})

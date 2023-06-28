@@ -12,7 +12,7 @@ type DebugSceneService struct {
 	ServeServerRepo       *repo.ServeServerRepo       `inject:""`
 	ScenarioProcessorRepo *repo.ScenarioProcessorRepo `inject:""`
 	EnvironmentRepo       *repo.EnvironmentRepo       `inject:""`
-	TestInterfaceRepo     *repo.TestInterfaceRepo     `inject:""`
+	DiagnoseInterfaceRepo *repo.DiagnoseInterfaceRepo `inject:""`
 
 	ShareVarService *ShareVarService `inject:""`
 

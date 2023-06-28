@@ -58,19 +58,19 @@ import {CaretDownOutlined,} from '@ant-design/icons-vue';
 import {useStore} from "vuex";
 
 import {StateType as ProjectStateType} from "@/store/project";
-import {StateType as TestInterfaceStateType} from '@/views/debugger/store';
+import {StateType as DiagnoseInterfaceStateType} from '@/views/diagnose/store';
 import {StateType as ServeStateType} from "@/store/serve";
 
 import {listServe} from "@/services/serve";
 import {filterTree, getSelectedTreeNode} from "@/utils/tree";
 import {isInArray} from "@/utils/array";
 
-const store = useStore<{ TestInterface: TestInterfaceStateType, ProjectGlobal: ProjectStateType, ServeGlobal: ServeStateType }>();
+const store = useStore<{ DiagnoseInterface: DiagnoseInterfaceStateType, ProjectGlobal: ProjectStateType, ServeGlobal: ServeStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const currServe = computed<any>(() => store.state.ServeGlobal.currServe);
 
-const treeData = computed<any>(() => store.state.TestInterface.treeData);
-const treeDataMap = computed<any>(() => store.state.TestInterface.treeDataMap);
+const treeData = computed<any>(() => store.state.DiagnoseInterface.treeData);
+const treeDataMap = computed<any>(() => store.state.DiagnoseInterface.treeDataMap);
 
 const props = defineProps({
   selectInterfaces: {
@@ -118,13 +118,13 @@ const autoExpandParent = ref<boolean>(false);
 
 async function loadTreeData() {
   if (currProject?.value?.id > 0 && currServe?.value?.id > 0) {
-    await store.dispatch('TestInterface/loadTree', {projectId: currProject.value.id, serveId: currServe.value.id});
+    await store.dispatch('DiagnoseInterface/loadTree', {projectId: currProject.value.id, serveId: currServe.value.id});
     expandAll();
   }
 }
 
 async function getServeServers() {
-  await store.dispatch('TestInterface/getServeServers', {
+  await store.dispatch('DiagnoseInterface/getServeServers', {
     id: currServe.value.id,
   })
 }

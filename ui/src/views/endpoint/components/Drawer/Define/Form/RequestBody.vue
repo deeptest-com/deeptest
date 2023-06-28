@@ -54,7 +54,7 @@ import {mediaTypesOpts,} from '@/config/constant';
 import {Endpoint} from "@/views/endpoint/data";
 import {DownOutlined, RightOutlined} from '@ant-design/icons-vue';
 import SchemaEditor from '@/components/SchemaEditor/index.vue';
-import {removeExtraViewInfo} from "@/components/SchemaEditor/utils";
+import {handleRef, removeExtraViewInfo} from "@/components/SchemaEditor/utils";
 
 const store = useStore<{ Endpoint, Debug, ProjectGlobal, User, ServeGlobal }>();
 const endpointDetail: any = computed<Endpoint>(() => store.state.Endpoint.endpointDetail);
@@ -76,7 +76,11 @@ const exampleStr = ref('');
 watch(() => {
   return selectedMethodDetail?.value?.requestBody?.schemaItem?.content
 }, (newVal, oldValue) => {
-  contentStr.value = newVal || 'null';
+  const res = JSON.parse(newVal || '{}');
+  res.type = selectedMethodDetail?.value?.requestBody?.schemaItem?.type || 'object';
+  // 将 $ref 转换为ref
+  handleRef(res);
+  contentStr.value = JSON.stringify(res);
   activeReqBodySchema.value.content = JSON.parse(contentStr.value);
 }, {immediate: true});
 

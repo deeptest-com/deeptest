@@ -337,13 +337,16 @@ function copyURL(url) {
   align-items: center;
 
   .copy-icon {
-    display: none;
+    //display: none;
+    opacity: 0;
     margin-left: 8px;
     cursor: pointer;
+    transition: all 0.3s;
   }
   &:hover {
     .copy-icon {
-      display: block;
+      opacity: 1;
+      //display: block;
     }
   }
 

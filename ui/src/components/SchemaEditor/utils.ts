@@ -233,5 +233,25 @@ export const generateSchemaByArray = (arr: any[]): any => {
     return res;
 };
 
+/**
+ * 将 $ref 字段转成 ref
+ * */
+export const  handleRef = (res) => {
+    // 将$ref转换为ref
+    function fn(obj) {
+        Object.entries(obj).forEach(([key, value]) => {
+            if (key === '$ref') {
+                obj.ref = value;
+                delete obj.$ref;
+            }
+            if (typeof value === 'object') {
+                fn(value);
+            }
+        });
+    }
+    fn(res);
+    return res;
+}
+
 
 

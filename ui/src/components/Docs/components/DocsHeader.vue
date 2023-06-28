@@ -17,7 +17,7 @@
         :visible="visible"
         :overlayStyle="{}">
       <template #content>
-        <div class="select-content">
+        <div class="select-content" v-on-click-outside="closeSearchModal">
           <a-list item-layout="horizontal" :data-source="data" v-if="data?.length > 0">
             <template #renderItem="{ item }">
               <a-list-item @click="selectItem(item)" class="list-item">
@@ -128,7 +128,7 @@ import {getCodeColor, getMethodColor} from "../hooks/index"
 import debounce from "lodash.debounce";
 import {Modal} from 'ant-design-vue';
 import {useClipboard, useFullscreen} from '@vueuse/core'
-
+import { vOnClickOutside } from '@vueuse/components'
 const searchInputRef: any = ref(null);
 const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
 
@@ -187,6 +187,11 @@ const title = computed(() => {
   return props.data?.name;
 })
 
+// todo: 搜索弹框展示的实际不对，需要再处理
+const showSearchModal = ref(false);
+function closeSearchModal() {
+  showSearchModal.value = false;
+}
 
 function selectItem(item) {
   emit('select', item?.value);
@@ -207,7 +212,8 @@ function focus() {
 }
 
 const visible = computed(() => {
-  return isFocus.value;
+  return keywords.value || isFocus.value;
+  // return isFocus.value;
 })
 
 function blur() {

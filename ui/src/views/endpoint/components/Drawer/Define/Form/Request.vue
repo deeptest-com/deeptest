@@ -53,7 +53,8 @@
             <template #icon>
               <PlusOutlined/>
             </template>
-            {{ `${selectedMethod} Operation` }}
+<!--            {{ `${selectedMethod} Operation` }}-->
+            {{ `定义 ${selectedMethod} 方法` }}
           </a-button>
         </div>
       </div>

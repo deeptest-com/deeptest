@@ -180,7 +180,7 @@ export default defineComponent({
         }
         const renderDirectoryText = (options: any) => {
             const {depth, tree, isRefChildNode, isRoot, isExpand} = options;
-            return <div class={'helo'}>
+            return <div>
                 <div class={'directoryText'}
                      style={{'paddingLeft': `${depth * treeLevelWidth}px`}}>
                     {renderHorizontalLine(depth)}
@@ -226,7 +226,7 @@ export default defineComponent({
                 // 找到最后一个非数组类型的节点
                 const {node} = findLastNotArrayNode(tree);
                 const isRoot = tree?.extraViewInfo?.depth === 1;
-                return <div class={{'directoryNode': true, "rootNode": isRoot}}>
+                return <div class={{'directoryNode': true, "rootNode": isRoot,'rootNode-array':isRoot}}>
                     {
                         renderTree(node)
                     }

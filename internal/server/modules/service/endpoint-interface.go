@@ -90,5 +90,6 @@ func (s *EndpointInterfaceService) resetDriverType(driverType convert.DriverType
 		err = fmt.Errorf("file type error")
 		return
 	}
+	newDriverType = driverType
 	return
 }

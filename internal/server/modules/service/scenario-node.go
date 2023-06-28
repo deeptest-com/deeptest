@@ -174,7 +174,7 @@ func (s *ScenarioNodeService) createInterfaceFromDefine(endpointInterfaceId uint
 
 	server, _ := s.ServeServerRepo.GetDefaultByServe(debugData.ServeId)
 	debugData.ServerId = server.ID
-	debugData.Url = server.Url
+	debugData.BaseUrl = server.Url
 
 	debugData.UsedBy = consts.ScenarioDebug
 	debugInterface, err := s.DebugInterfaceService.Save(debugData)
@@ -260,6 +260,7 @@ func (s *ScenarioNodeService) createDirOrInterfaceFromDiagnose(diagnoseInterface
 
 		debugInterfaceOfDiagnoseInterfaceNode, _ := s.DebugInterfaceRepo.Get(diagnoseInterfaceNode.DebugInterfaceId)
 		debugData.ServerId = debugInterfaceOfDiagnoseInterfaceNode.ServerId
+		debugData.BaseUrl = debugInterfaceOfDiagnoseInterfaceNode.BaseUrl
 		debugData.Url = debugInterfaceOfDiagnoseInterfaceNode.Url
 
 		debugData.UsedBy = consts.ScenarioDebug

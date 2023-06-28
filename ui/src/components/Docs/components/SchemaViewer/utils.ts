@@ -134,65 +134,6 @@ export function addExtraViewInfo(val: Object | any | undefined | null): any {
 }
 
 
-/**
- * 根据传入的 schema 结构信息，删除额外的渲染属性
- * */
-export function removeExtraViewInfo(val: Object | any, isRemoveRefContent = false): object | null {
-    if (!val) {
-        return null
-    }
-    delete val?.extraViewInfo;
-
-    function traverse(obj: any) {
-        // base Case 普通类型，递归结束，
-        if (isNormalType(obj.type) && !isRef(obj)) {
-            delete obj?.extraViewInfo;
-            // 切换成普通类型 之前可能是数组，所以可能有 items 属性
-            delete obj?.items;
-            return;
-        }
-        // 处理对象类型
-        if (isObject(obj.type)) {
-            delete obj?.extraViewInfo;
-            // 切换类型之前可能是数组，所以可能有 items 属性
-            delete obj?.items;
-            Object.entries(obj.properties || {}).forEach(([keyName, value]: any, keyIndex: number) => {
-                traverse(value);
-            })
-        }
-        // 处理数组类型
-        if (isArray(obj.type)) {
-            (function fn(obj: any) {
-                delete obj?.extraViewInfo;
-                if (!isArray(obj.type)) {
-                    traverse(obj);
-                    return;
-                }
-                obj?.items?.type && fn(obj.items);
-                if (isRemoveRefContent) {
-                    // 直接删除 content 属性
-                    delete obj?.content;
-                } else if (obj?.content && obj.content?.type) {
-                    obj?.content?.type && fn(obj.content);
-                }
-            })(obj);
-        }
-        if (isRef(obj)) {
-            delete obj?.extraViewInfo;
-            // 切换类型之前可能是数组，所以可能有 items 属性
-            delete obj?.items;
-            if (isRemoveRefContent) {
-                // 直接删除 content 属性
-                delete obj?.content;
-            } else if (obj?.content && obj.content?.type) {
-                traverse(obj.content);
-            }
-        }
-    }
-
-    traverse(val);
-    return val;
-}
 
 /**
  * 找到最后一个非数组类型的节点
@@ -218,22 +159,7 @@ export function findLastNotArrayNode(tree: Object): any {
     };
 }
 
-/**
- * 根据具体类型的数据组成的数组，生成对应的 schema 结构
- * */
-export const generateSchemaByArray = (arr: any[]): any => {
-    const res = {};
-    arr.reduce((prev, next, index, array) => {
-        if (index === 0) {
-            prev = Object.assign(prev, next);
-            return prev;
-        } else {
-            prev.items = Object.assign({}, next);
-            return prev.items;
-        }
-    }, res);
-    return res;
-};
+
 
 
 /**
@@ -263,7 +189,6 @@ export const handleRef = (res) => {
             });
         }
     }
-
     fn(res);
     return res;
 }

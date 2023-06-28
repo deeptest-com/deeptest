@@ -136,11 +136,6 @@ export function addExtraViewInfo(val: Object | any | undefined | null): any {
  * 根据传入的 schema 结构信息，删除额外的渲染属性
  * */
 export function removeExtraViewInfo(val: Object | any, isRemoveRefContent = false): object | null {
-    if (!val) {
-        return null
-    }
-    delete val?.extraViewInfo;
-
     function traverse(obj: any) {
         // base Case 普通类型，递归结束，
         if (isNormalType(obj.type) && !isRef(obj)) {
@@ -187,8 +182,17 @@ export function removeExtraViewInfo(val: Object | any, isRemoveRefContent = fals
             }
         }
     }
+    try {
+        if (!val) {
+            return null
+        }
+        delete val?.extraViewInfo;
+        traverse(val);
+    }catch (e){
+        console.log(e);
+    }
 
-    traverse(val);
+
     return val;
 }
 

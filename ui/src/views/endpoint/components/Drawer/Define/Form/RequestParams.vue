@@ -76,7 +76,7 @@
             </div>
             <div class="header-defined header-defined-items">
               <div v-for="(item,index) in selectedMethodDetail.headers" :key="item.id">
-                <Field
+                <RequestHeader
                     :fieldData="{...item,index:index}"
                     :showRequire="true"
                     @del="deleteParams('headers',index)"
@@ -133,6 +133,7 @@ import {
 } from '@/config/constant';
 import {PlusOutlined, DeleteOutlined, RightOutlined, DownOutlined, FormOutlined} from '@ant-design/icons-vue';
 import Field from './Field.vue'
+import RequestHeader from './RequestHeader.vue'
 import {Endpoint} from "@/views/endpoint/data";
 import {cloneByJSON} from "@/utils/object";
 

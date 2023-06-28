@@ -145,6 +145,7 @@ type ResponseBody struct {
 	SchemaItem  SchemaItem `json:"schemaItem"`
 	Headers     []Header   `json:"headers"`
 	Examples    string     `json:"examples"`
+	Description string     `json:"description"`
 }
 
 type SchemaItem struct {

@@ -201,6 +201,7 @@ func (s *EndpointService) SaveEndpoints(endpoints []*model.Endpoint, dirs *opena
 func (s *EndpointService) createComponents(components []*model.ComponentSchema, req v1.ImportEndpointDataReq) {
 	for _, component := range components {
 		component.ServeId = int64(req.ServeId)
+		component.Ref = "#/components/schemas/" + component.Name
 	}
 	s.ServeRepo.CreateSchemas(components)
 }

@@ -41,6 +41,7 @@ type OpenApiParam struct {
 	Ref         string `json:"ref"`
 	Required    bool   `json:"required"`
 	Type        string `json:"type"`
+	Description string `json:"description"`
 }
 
 type EndpointReq struct {

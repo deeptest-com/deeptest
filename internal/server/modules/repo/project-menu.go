@@ -16,10 +16,6 @@ type ProjectMenuRepo struct {
 	DB *gorm.DB `inject:""`
 }
 
-func NewProjectMenuRepo() *ProjectMenuRepo {
-	return &ProjectMenuRepo{}
-}
-
 func (r *ProjectMenuRepo) FindByCode(code string) (projectMenu model.ProjectMenu, err error) {
 	db := r.DB.Model(&model.ProjectMenu{}).Where("code = ?", code)
 
@@ -28,9 +24,14 @@ func (r *ProjectMenuRepo) FindByCode(code string) (projectMenu model.ProjectMenu
 }
 
 func (r *ProjectMenuRepo) Create(projectMenu model.ProjectMenu) (id uint, err error) {
-	_, err = r.FindByCode(projectMenu.Code)
-	if !errors.Is(err, gorm.ErrRecordNotFound) {
-		logUtils.Errorf("项目菜单已经存在")
+	menu, err := r.FindByCode(projectMenu.Code)
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		logUtils.Errorf("创建项目菜单失败%s", err.Error())
+		return
+	}
+
+	if menu.ID != 0 {
+		logUtils.Infof("项目菜单%s已经存在", projectMenu.Code)
 		return
 	}
 
@@ -122,13 +123,15 @@ func (r *ProjectMenuRepo) GetConfigData(level string) (menus []model.ProjectMenu
 					continue
 				}
 			}
-			parentProjectMenu, err := r.FindByCode(v.Parent)
-			if err != nil {
-				logUtils.Errorf("get parent menu err ", zap.String("错误:", err.Error()))
-				continue
-			}
 
-			projectMenuBase.ParentId = parentProjectMenu.ID
+			if v.Parent != "" {
+				parentProjectMenu, err := r.FindByCode(v.Parent)
+				if err != nil {
+					logUtils.Errorf("get parent menu err ", zap.String("错误:", err.Error()))
+					continue
+				}
+				projectMenuBase.ParentId = parentProjectMenu.ID
+			}
 		}
 
 		projectMenu := model.ProjectMenu{ProjectMenuBase: projectMenuBase}

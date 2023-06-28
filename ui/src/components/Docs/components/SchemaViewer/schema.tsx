@@ -31,7 +31,7 @@ export default defineComponent({
         refsOptions: Array,
         components: Array,
     },
-    emits: ['change'],
+    emits: [],
     setup(props, {emit}) {
         const store = useStore<{ Endpoint, ServeGlobal: ServeStateType }>();
         const data: any = ref(null);
@@ -52,24 +52,11 @@ export default defineComponent({
             }
         }
 
-        watch(() => {
-            return props.value
-        }, (newVal) => {
+        watch(() => {return props.value}, (newVal) => {
             const val = cloneDeep(newVal);
             data.value = addExtraViewInfo(val);
-        }, {
-            immediate: true,
-            deep: true
-        });
-        watch(() => {
-            return data.value
-        }, (newVal) => {
-            const newObj = removeExtraViewInfo(cloneDeep(newVal));
-            emit('change', newObj);
-        }, {
-            immediate: true,
-            deep: true
-        });
+        }, {immediate: true, deep: true});
+
         const renderDivider = (options: any) => {
             const {isRoot, isFirst, isLast, keyIndex, parent, ancestor, isRefChildNode, keyName} = options;
             const items = parent?.type === 'array' ? ancestor : parent;
@@ -193,7 +180,7 @@ export default defineComponent({
         }
         const renderDirectoryText = (options: any) => {
             const {depth, tree, isRefChildNode, isRoot, isExpand} = options;
-            return <div class={'helo'}>
+            return <div>
                 <div class={'directoryText'}
                      style={{'paddingLeft': `${depth * treeLevelWidth}px`}}>
                     {renderHorizontalLine(depth)}
@@ -239,7 +226,7 @@ export default defineComponent({
                 // 找到最后一个非数组类型的节点
                 const {node} = findLastNotArrayNode(tree);
                 const isRoot = tree?.extraViewInfo?.depth === 1;
-                return <div class={{'directoryNode': true, "rootNode": isRoot}}>
+                return <div class={{'directoryNode': true, "rootNode": isRoot,'rootNode-array':isRoot}}>
                     {
                         renderTree(node)
                     }

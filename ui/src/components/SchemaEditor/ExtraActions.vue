@@ -47,28 +47,18 @@ const disableDel = computed(() => {
 
 // 该字段是否必填
 const isRequired = computed(() => {
-  console.log('isRequired', props.value)
   const extraViewInfo = props.value?.extraViewInfo;
-  if(extraViewInfo && extraViewInfo?.parent?.required?.includes(extraViewInfo?.keyName)) {
-    return true;
-  }
-  return false
+  return !!(extraViewInfo && extraViewInfo?.parent?.required?.includes(extraViewInfo?.keyName));
 });
 
 const description = ref('');
-watch(() => {
-  return props.value
-}, (newVal) => {
+watch(() => {return props.value}, (newVal) => {
   if (newVal) {
     description.value = newVal.description;
   }
-}, {
-  immediate: true
-})
+}, {immediate: true})
 
-watch(() => {
-  return visible.value
-}, (newVal) => {
+watch(() => {return visible.value}, (newVal) => {
   if (!newVal && description.value) {
     emit('addDesc', description.value);
   }

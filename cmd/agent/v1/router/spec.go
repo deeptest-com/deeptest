@@ -10,10 +10,6 @@ type SpecModule struct {
 	SpecCtrl *handler.SpecCtrl `inject:""`
 }
 
-func NewSpecModule() *SpecModule {
-	return &SpecModule{}
-}
-
 // Party 上传文件模块
 func (m *SpecModule) Party() module.WebModule {
 	handler := func(index iris.Party) {

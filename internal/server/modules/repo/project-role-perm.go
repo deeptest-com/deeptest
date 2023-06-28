@@ -18,10 +18,6 @@ type ProjectRolePermRepo struct {
 	ProjectRoleRepo *ProjectRoleRepo `inject:""`
 }
 
-func NewProjectRolePermRepo() *ProjectRolePermRepo {
-	return &ProjectRolePermRepo{}
-}
-
 func (r *ProjectRolePermRepo) PaginateRolePerms(req v1.ProjectRolePermPaginateReq) (data _domain.PageData, err error) {
 	var count int64
 	projectPerms := make([]*model.ProjectPerm, 0)

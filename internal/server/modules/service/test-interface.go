@@ -44,24 +44,29 @@ func (s *TestInterfaceService) Get(id int) (ret model.TestInterface, err error) 
 func (s *TestInterfaceService) Save(req serverDomain.TestInterfaceSaveReq) (testInterface model.TestInterface, err error) {
 	s.CopyValueFromRequest(&testInterface, req)
 
-	// create new DebugInterface
-	debugInterface := model.DebugInterface{
-		InterfaceBase: model.InterfaceBase{
-			Name: req.Title,
-			InterfaceConfigBase: model.InterfaceConfigBase{
-				Method: consts.GET,
+	if testInterface.Type == serverConsts.TestInterfaceTypeInterface {
+		// create new DebugInterface
+		debugInterface := model.DebugInterface{
+			InterfaceBase: model.InterfaceBase{
+				Name: req.Title,
+				InterfaceConfigBase: model.InterfaceConfigBase{
+					Method: consts.GET,
+				},
 			},
-		},
+			ServeId: req.ServeId,
+		}
+		err = s.DebugInterfaceRepo.Save(&debugInterface)
+		testInterface.DebugInterfaceId = debugInterface.ID
 	}
-	err = s.DebugInterfaceRepo.Save(&debugInterface)
-	testInterface.DebugInterfaceId = debugInterface.ID
 
 	err = s.TestInterfaceRepo.Save(&testInterface)
 
-	values := map[string]interface{}{
-		"test_interface_id": testInterface.ID,
+	if testInterface.DebugInterfaceId > 0 {
+		values := map[string]interface{}{
+			"test_interface_id": testInterface.ID,
+		}
+		err = s.DebugInterfaceRepo.UpdateDebugInfo(testInterface.DebugInterfaceId, values)
 	}
-	err = s.DebugInterfaceRepo.UpdateDebugInfo(debugInterface.ID, values)
 
 	return
 }
@@ -126,6 +131,7 @@ func (s *TestInterfaceService) addInterface(endpointInterfaceId int, createBy ui
 	debugData.DebugInterfaceId = 0 // force to clone the old one
 	debugData.DebugInterfaceId = 0
 	debugData.EndpointInterfaceId = uint(endpointInterfaceId)
+	debugData.ServeId = parent.ServeId
 	debugData.UsedBy = consts.TestDebug
 	debugInterface, err := s.DebugInterfaceService.Save(debugData)
 

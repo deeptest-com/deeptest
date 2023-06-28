@@ -40,7 +40,6 @@ function getExpandedValue(val: any, defaultVal: boolean) {
  * 根据传入的 schema 结构信息，添加需要额外的渲染属性
  * */
 export function addExtraViewInfo(val: Object | any | undefined | null): any {
-    console.log('转换之前', val);
     if (!val) {
         return null
     }
@@ -129,7 +128,6 @@ export function addExtraViewInfo(val: Object | any | undefined | null): any {
     if (!isNormalType(val.type) || isRef(val)) {
         traverse(val, 1, null, false);
     }
-    console.log('转换之后', val);
     return val;
 }
 
@@ -234,6 +232,26 @@ export const generateSchemaByArray = (arr: any[]): any => {
     }, res);
     return res;
 };
+
+/**
+ * 将 $ref 字段转成 ref
+ * */
+export const  handleRef = (res) => {
+    // 将$ref转换为ref
+    function fn(obj) {
+        Object.entries(obj).forEach(([key, value]) => {
+            if (key === '$ref') {
+                obj.ref = value;
+                delete obj.$ref;
+            }
+            if (typeof value === 'object') {
+                fn(value);
+            }
+        });
+    }
+    fn(res);
+    return res;
+}
 
 
 

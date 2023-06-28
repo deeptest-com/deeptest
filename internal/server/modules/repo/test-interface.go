@@ -69,21 +69,22 @@ func (r *TestInterfaceRepo) GetDetail(interfId uint) (testInterface model.TestIn
 
 func (r *TestInterfaceRepo) toTos(pos []*model.TestInterface) (tos []*serverDomain.TestInterface) {
 	for _, po := range pos {
-		to := r.toTo(po)
+		to := r.ToTo(po)
 
 		tos = append(tos, to)
 	}
 
 	return
 }
-func (r *TestInterfaceRepo) toTo(po *model.TestInterface) (to *serverDomain.TestInterface) {
-
+func (r *TestInterfaceRepo) ToTo(po *model.TestInterface) (to *serverDomain.TestInterface) {
 	to = &serverDomain.TestInterface{
-		Id:       int64(po.ID),
-		Title:    po.Title,
-		Desc:     po.Desc,
-		Type:     po.Type,
-		ParentId: int64(po.ParentId),
+		Id:               int64(po.ID),
+		Title:            po.Title,
+		Desc:             po.Desc,
+		Type:             po.Type,
+		ParentId:         int64(po.ParentId),
+		ServeId:          po.ServeId,
+		DebugInterfaceId: po.DebugInterfaceId,
 	}
 
 	if po.Type == serverConsts.TestInterfaceTypeInterface {
@@ -230,10 +231,10 @@ func (r *TestInterfaceRepo) GetMaxOrder(parentId uint) (order int) {
 func (r *TestInterfaceRepo) Remove(id uint, typ serverConsts.TestInterfaceType) (err error) {
 	ids := []uint{}
 
-	if typ == serverConsts.TestInterfaceTypeDir {
-		ids, _ = r.GetAllChildIdsSimple(id, model.TestInterface{}.TableName())
-	} else {
+	if typ == serverConsts.TestInterfaceTypeInterface {
 		ids = append(ids, id)
+	} else {
+		ids, _ = r.GetAllChildIdsSimple(id, model.TestInterface{}.TableName())
 	}
 
 	err = r.DB.Model(&model.TestInterface{}).

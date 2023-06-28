@@ -30,62 +30,15 @@
 <script setup lang="ts">
 import {ref, onMounted, watch, defineProps} from 'vue';
 import * as echarts from 'echarts';
-// import TextItem from './TextItem.vue';
 
 const props = defineProps<{
-  value: string
+  value: Object,
   data: any[],
 }>();
 
 const mainRef = ref();
 let myChart: any = null;
 const loading = ref(false);
-
-const initOptions = ref<any>({
-  tooltip: {
-    trigger: 'item',
-    formatter: (params) => {
-      return `${params.data.name}: ${params.data.value}`
-    }
-  },
-  color: ['#04C495', '#F63838', 'rgba(0, 0, 0, 0.28)'],
-  series: [
-    {
-      name: 'Access From',
-      type: 'pie',
-      radius: ['40%', '70%'],
-      avoidLabelOverlap: false,
-      label: {
-        position: 'center',
-        show: true,
-        color: '#1E7CE8',
-        lineHeight: 16,
-        fontSize: 12,
-        rich: {
-          subTitle: {
-            fontSize: 12,
-            lineHeight: 18,
-            marginBottom: 10,
-            color: 'rgba(0, 0, 0, 0.85)'
-          },
-          title: {
-            fontSize: 24,
-            lineHeight: 29,
-            color: 'rgba(0, 0, 0, 0.85)'
-          }
-        }
-      },
-      labelLine: {
-        show: false
-      },
-      data: [
-        {value: 0, name: '已完成'},
-        {value: 0, name: '失败'},
-        {value: 0, name: '未测试'},
-      ]
-    }
-  ]
-});
 
 const option = ref({
   tooltip: {

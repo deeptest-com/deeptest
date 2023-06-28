@@ -1,5 +1,5 @@
 <template>
-  <a-spin tip="Loading..." :spinning="isImporting">
+  <a-spin tip="Loading..." :spinning="isImporting" style="z-index: 2000;">
     <div class="container">
       <div class="content">
         <div class="left tree" v-if="!collapsed">
@@ -125,7 +125,7 @@
           @ok="handleImport"/>
       <PubDocs
           :visible="showPublishDocsModal"
-          :endpointIds='selectedRowKeys'
+          :endpointIds='selectedRowIds'
           @cancal="showPublishDocsModal = false;"
           @ok="publishDocs"/>
       <!-- 编辑接口时，展开抽屉：外层再包一层 div, 保证每次打开弹框都重新渲染   -->
@@ -142,13 +142,13 @@
 <script setup lang="ts">
 import {
   computed, reactive, toRefs, ref, onMounted,
-  watch
+  watch, createVNode
 } from 'vue';
 import {useRouter} from 'vue-router';
 import debounce from "lodash.debounce";
 import EndpointTree from './list/tree.vue';
 import {ColumnProps} from 'ant-design-vue/es/table/interface';
-import {MoreOutlined} from '@ant-design/icons-vue';
+import {ExclamationCircleOutlined, MoreOutlined} from '@ant-design/icons-vue';
 import {endpointStatusOpts, endpointStatus} from '@/config/constant';
 import EditAndShowField from '@/components/EditAndShow/index.vue';
 import CreateEndpointModal from './components/CreateEndpointModal.vue';
@@ -164,7 +164,7 @@ import {Endpoint, PaginationConfig} from "@/views/endpoint/data";
 import CollapsedIcon from "@/components/CollapsedIcon/index.vue"
 import {StateType as ServeStateType} from "@/store/serve";
 import {StateType as Debug} from "@/views/component/debug/store";
-import {message, Modal} from 'ant-design-vue';
+import {message, Modal, notification} from 'ant-design-vue';
 import Tree from './components/Tree.vue'
 
 const store = useStore<{ Endpoint, ProjectGlobal, Debug: Debug, ServeGlobal: ServeStateType }>();
@@ -257,6 +257,7 @@ const loading = false;
 const drawerVisible = ref<boolean>(false);
 const selectedCategoryId = ref<string | number>('');
 const onSelectChange = (keys: Key[], rows: any) => {
+  console.log('onSelectChange', keys, rows)
   selectedRowKeys.value = [...keys];
   selectedRowIds.value = rows.map((item: any) => item.id);
 };
@@ -266,14 +267,13 @@ const fetching = ref(false);
 
 /*查看选中的接口文档*/
 function goDocs() {
-  window.open(`/#/docs/share?endpointIds=${selectedRowIds.value.join(',')}`);
+  window.open(`/#/docs/view?endpointIds=${selectedRowIds.value.join(',')}`);
 }
 
 const showPublishDocsModal: any = ref(false)
 
 // 发布文档版本
 async function publishDocs() {
-  debugger;
   showPublishDocsModal.value = false;
   selectedRowIds.value = [];
 }
@@ -329,7 +329,21 @@ async function disabled(record: any) {
 }
 
 async function del(record: any) {
-  await store.dispatch('Endpoint/del', record);
+  Modal.confirm({
+    title: () => '确定删除该接口吗？',
+    icon: createVNode(ExclamationCircleOutlined),
+    okText: () => '确定',
+    okType: 'danger',
+    cancelText: () => '取消',
+    onOk: async () => {
+      const res =  await store.dispatch('Endpoint/del', record);
+      if (res) {
+        message.success('删除成功');
+      } else {
+        message.error('删除失败');
+      }
+    },
+  });
 }
 
 async function handleCreateApi(data) {
@@ -340,6 +354,7 @@ async function handleCreateApi(data) {
     "description": data.description || null,
     "categoryId": data.categoryId || null,
   });
+  await refreshList();
   createApiModalVisible.value = false;
 }
 
@@ -349,7 +364,7 @@ const isImporting = ref(false);
 async function handleImport(data, callback) {
 
   isImporting.value = true;
-  showImportModal.value = false;
+
   const res = await store.dispatch('Endpoint/importEndpointData', {
     ...data,
     "serveId": currServe.value.id,
@@ -409,7 +424,18 @@ watch(() => [currProject.value.id, currServe.value.id], async (newVal) => {
 
 async function refreshList() {
   await loadList(pagination.value.current, pagination.value.pageSize);
+  //await store.dispatch('Endpoint/loadCategory');
 }
+
+watch(
+  ()=>[createApiModalVisible.value, showImportModal.value,drawerVisible.value],
+  async (newValue) => {
+    if (!newValue[0] || !newValue[1] || !newValue[2]) {
+      await store.dispatch('Endpoint/loadCategory');
+    }
+  },
+  {  immediate: true }
+);
 
 
 </script>

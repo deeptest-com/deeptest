@@ -76,7 +76,7 @@ export interface SettingsType {
 }
 
 const settings: SettingsType = {
-    siteTitle: 'deeptest.com',
+    siteTitle: process.env.VUE_APP_DEPLOY_ENV === 'leyan' ? 'leyanapi.com' : 'deeptest.com',
     topNavEnable: true,
     headFixed: true,
     tabNavEnable: false,

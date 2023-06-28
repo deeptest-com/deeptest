@@ -12,10 +12,6 @@ type PermSource struct {
 	PermRepo *repo.PermRepo `inject:""`
 }
 
-func NewPermSource() *PermSource {
-	return &PermSource{}
-}
-
 func (s *PermSource) GetSources() []model.SysPerm {
 	permRouteLen := len(config.PermRoutes)
 	ch := make(chan model.SysPerm, permRouteLen)

@@ -4,7 +4,9 @@
       :visible="visible"
       @ok="ok"
       @cancel="cancal"
-      title="导入接口数据">
+      title="导入接口数据"
+      :confirmLoading = "spinning"
+      >
     <a-form
         ref="formRef"
         :model="formState"
@@ -32,6 +34,7 @@
             placeholder="请选择所属分类"
             allow-clear/>
       </a-form-item>
+      <!---
       <a-form-item label="数据同步方式" name="dataSyncType">
         <a-select
             style="width: 100%"
@@ -39,6 +42,7 @@
             :options="dataSyncTypeOpts"
             placeholder="请选择"/>
       </a-form-item>
+      -->
       <a-form-item label="开启url导入" name="openUrlImport">
         <a-radio-group :disabled="disabled"
             :options="openUrlImportOpts"
@@ -62,9 +66,9 @@
       <a-form-item label="swagger url" v-if="formState.openUrlImport" name="filePath">
       <a-input v-model:value="formState.filePath" />
     </a-form-item>
-
     </a-form>
   </a-modal>
+
 </template>
 <script lang="ts" setup>
 import {ValidateErrorEntity} from 'ant-design-vue/es/form/interface';
@@ -89,17 +93,15 @@ const driverTypeOpts = [
     label: 'Postman',
     value: 'postman',
   },
+  /*
   {
     label: 'Yapi',
     value: 'yapi',
   },
+  */
   {
-    label: 'Swagger 2',
-    value: 'swagger2',
-  },
-  {
-    label: 'Swagger 3',
-    value: 'swagger3',
+    label: 'Swagger',
+    value: 'swagger',
   },
 ]
 
@@ -142,21 +144,23 @@ const props = defineProps({
 const emit = defineEmits(['ok', 'cancal']);
 
 const formRef = ref();
-
+const spinning = ref<boolean>(false)
 function ok() {
   if (uploading.value) {
     return;
   }
+  spinning.value = true 
   formRef.value
       .validate()
-      .then(() => {
-        emit('ok', formState.value, () => {
+      .then( () => {
+         emit('ok', formState.value, () => {
           reset();
+          spinning.value = false
         });
       })
       .catch((error: ValidateErrorEntity) => {
         console.log('error', error);
-      });
+      }); 
 }
 
 function cancal() {
@@ -256,7 +260,7 @@ const rules = {
 };
 
 const disabled = computed(()=>{
-  return !(formState.value.driverType == "swagger2" || formState.value.driverType == "swagger3")
+  return formState.value.driverType != "swagger"
 })
 
 

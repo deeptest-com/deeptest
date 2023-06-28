@@ -11,10 +11,6 @@ type ProjectModule struct {
 	ProjectCtrl *handler.ProjectCtrl `inject:""`
 }
 
-func NewProjectModule() *ProjectModule {
-	return &ProjectModule{}
-}
-
 // Party 项目
 func (m *ProjectModule) Party() module.WebModule {
 	handler := func(index iris.Party) {

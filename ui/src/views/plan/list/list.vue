@@ -194,7 +194,7 @@ const getList = debounce(async (current: number): Promise<void> => {
   loading.value = true;
   await store.dispatch('Plan/listPlan', {
     ...queryParams,
-    categoryId: nodeDataCategory.value.id,
+    categoryId: nodeDataCategory.value?.id || 0,
     pageSize: pagination.value.pageSize,
     page: current,
   });
@@ -301,7 +301,7 @@ const onSearch = () => {
 };
 
 watch(() => {
-  return nodeDataCategory.value.id;
+  return nodeDataCategory.value?.id || 0;
 }, async (val) => {
   await getList(1);
 }, { immediate: true, deep: true });
@@ -313,6 +313,17 @@ watch(() => {
     await getList(1);
   }
 }, { immediate: true });
+
+watch(
+  ()=>[createDrawerVisible.value, editDrawerVisible.value],
+  async (newValue) => {
+    if (!newValue[0] || !newValue[1]) {
+      await store.dispatch('Plan/loadCategory');
+    }
+  },
+  {  immediate: true }
+);
+
 </script>
 
 <style lang="less" scoped>

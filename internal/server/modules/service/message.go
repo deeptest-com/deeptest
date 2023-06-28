@@ -11,10 +11,6 @@ type MessageService struct {
 	MessageReadRepo *repo.MessageReadRepo `inject:""`
 }
 
-func NewMessageService() *MessageService {
-	return &MessageService{}
-}
-
 func (s *MessageService) GetScope(userId uint) (scope map[int][]string) {
 	return s.MessageRepo.GetScope(userId)
 }

@@ -14,10 +14,6 @@ type ProjectRoleRepo struct {
 	ProjectRepo *ProjectRepo `inject:""`
 }
 
-func NewProjectRoleRepo() *ProjectRoleRepo {
-	return &ProjectRoleRepo{}
-}
-
 func (r *ProjectRoleRepo) GetAdminRecord() (projectRole model.ProjectRole, err error) {
 	db := r.DB.Model(&model.ProjectRole{}).Where("name='admin'").Order("id ASC")
 	err = db.First(&projectRole).Error
@@ -44,9 +40,13 @@ func (r *ProjectRoleRepo) FindByName(name consts.RoleType) (projectRole model.Pr
 }
 
 func (r *ProjectRoleRepo) Create(projectRole model.ProjectRole) (err error) {
-	_, err = r.FindByName(projectRole.Name)
-	if !errors.Is(err, gorm.ErrRecordNotFound) {
-		logUtils.Errorf("项目角色已经存在")
+	role, err := r.FindByName(projectRole.Name)
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		logUtils.Errorf("创建项目角色失败%s", err.Error())
+		return
+	}
+	if role.ID != 0 {
+		logUtils.Infof("项目角色%s已经存在", projectRole.Name)
 		return
 	}
 

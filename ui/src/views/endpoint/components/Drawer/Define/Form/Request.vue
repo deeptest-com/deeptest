@@ -12,7 +12,7 @@
       <a-radio-group v-model:value="selectedMethod" button-style="outline">
         <a-radio-button
             :class="{'has-defined': hasDefinedMethod(method.value),'request-method-btn':true}"
-            :style="{ color: hasDefinedMethod(method.value) ? method.color : '',
+            :style="{ color: hasDefinedMethod(method.value) ? method.color : '#999999',
                       'box-shadow': `none` ,
                       background: method.value !== selectedMethod ? '#f5f5f5' : '#fff',
                      'border-color': '#d9d9d9'}"
@@ -25,18 +25,18 @@
       <div class="form-item-request" v-if="collapse">
         <div v-if="selectedMethodDetail">
           <!-- Operation ID -->
-          <a-row class="form-item-request-item">
-            <a-col :span="3" class="form-label">
-              Operation ID
-            </a-col>
-            <a-col :span="12">
-              <a-input placeholder="Operation ID" v-model:value="selectedMethodDetail.operationId"/>
-            </a-col>
-          </a-row>
+<!--          <a-row class="form-item-request-item">-->
+<!--            <a-col :span="3" class="form-label">-->
+<!--              Operation ID-->
+<!--            </a-col>-->
+<!--            <a-col :span="12">-->
+<!--              <a-input placeholder="Operation ID" v-model:value="selectedMethodDetail.operationId"/>-->
+<!--            </a-col>-->
+<!--          </a-row>-->
           <!-- Description -->
           <a-row class="form-item-request-item">
             <a-col :span="3" class="form-label">
-              描述
+              描述信息
             </a-col>
             <a-col :span="12">
               <a-input placeholder="描述信息" v-model:value="selectedMethodDetail.description"/>
@@ -53,7 +53,8 @@
             <template #icon>
               <PlusOutlined/>
             </template>
-            {{ `${selectedMethod} Operation` }}
+<!--            {{ `${selectedMethod} Operation` }}-->
+            {{ `定义 ${selectedMethod} 方法` }}
           </a-button>
         </div>
       </div>

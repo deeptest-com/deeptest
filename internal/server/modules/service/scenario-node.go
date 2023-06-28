@@ -19,10 +19,10 @@ type ScenarioNodeService struct {
 	ScenarioProcessorService *ScenarioProcessorService   `inject:""`
 	ScenarioRepo             *repo.ScenarioRepo          `inject:""`
 	DebugInterfaceRepo       *repo.DebugInterfaceRepo    `inject:""`
-
-	EndpointInterfaceRepo *repo.EndpointInterfaceRepo `inject:""`
-	ExtractorRepo         *repo.ExtractorRepo         `inject:""`
-	CheckpointRepo        *repo.CheckpointRepo        `inject:""`
+	EndpointRepo             *repo.EndpointRepo          `inject:""`
+	EndpointInterfaceRepo    *repo.EndpointInterfaceRepo `inject:""`
+	ExtractorRepo            *repo.ExtractorRepo         `inject:""`
+	CheckpointRepo           *repo.CheckpointRepo        `inject:""`
 
 	DebugInterfaceService *DebugInterfaceService `inject:""`
 }
@@ -120,7 +120,7 @@ func (s *ScenarioNodeService) AddProcessor(req serverDomain.ScenarioAddScenarioR
 	return
 }
 
-func (s *ScenarioNodeService) AddInterfacesFromDebuggerTree(req serverDomain.ScenarioAddInterfacesFromTreeReq) (ret model.Processor, err error) {
+func (s *ScenarioNodeService) AddInterfacesFromTest(req serverDomain.ScenarioAddInterfacesFromTreeReq) (ret model.Processor, err error) {
 	targetProcessor, _ := s.ScenarioProcessorRepo.Get(req.TargetId)
 
 	if s.ScenarioNodeRepo.IsLeaf(targetProcessor) {
@@ -128,44 +128,57 @@ func (s *ScenarioNodeService) AddInterfacesFromDebuggerTree(req serverDomain.Sce
 	}
 
 	for _, interfaceNode := range req.SelectedNodes {
-		ret, _ = s.createDirOrInterface(&interfaceNode, targetProcessor)
+		ret, _ = s.createDirOrInterfaceFromTest(&interfaceNode, targetProcessor)
 	}
 
 	return
 }
 
-func (s *ScenarioNodeService) AddInterfaces(req serverDomain.ScenarioAddInterfacesReq) (ret model.Processor, err error) {
+func (s *ScenarioNodeService) AddInterfacesFromDefine(req serverDomain.ScenarioAddInterfacesReq) (ret model.Processor, err error) {
 	targetProcessor, _ := s.ScenarioProcessorRepo.Get(req.TargetId)
 
 	if s.ScenarioNodeRepo.IsLeaf(targetProcessor) {
 		targetProcessor, _ = s.ScenarioProcessorRepo.Get(targetProcessor.ParentId)
 	}
 
+	serveId := uint(0)
 	for _, interfaceId := range req.InterfaceIds {
-		ret, err = s.addInterface(interfaceId, req.CreateBy, targetProcessor)
+		ret, err = s.createInterfaceFromDefine(uint(interfaceId), &serveId, req.CreateBy, targetProcessor, "")
 	}
 
 	return
 }
 
-func (s *ScenarioNodeService) addInterface(endpointInterfaceId int, createBy uint, parentProcessor model.Processor) (
+func (s *ScenarioNodeService) createInterfaceFromDefine(endpointInterfaceId uint, serveId *uint,
+	createBy uint, parentProcessor model.Processor, name string) (
 	ret model.Processor, err error) {
 
-	endpointInterface, err := s.EndpointInterfaceRepo.Get(uint(endpointInterfaceId))
+	endpointInterface, err := s.EndpointInterfaceRepo.Get(endpointInterfaceId)
 	if err != nil {
 		return
 	}
 
+	// get serve id once
+	if *serveId == 0 {
+		endpoint, _ := s.EndpointRepo.Get(endpointInterface.EndpointId)
+		*serveId = endpoint.ServeId
+	}
+
 	// convert or clone a debug interface obj
-	debugData, err := s.DebugInterfaceService.GetDebugInterfaceByEndpointInterface(uint(endpointInterfaceId))
+	debugData, err := s.DebugInterfaceService.GetDebugInterfaceByEndpointInterface(endpointInterfaceId)
 	debugData.DebugInterfaceId = 0 // force to clone the old one
-	debugData.EndpointInterfaceId = uint(endpointInterfaceId)
+	debugData.EndpointInterfaceId = endpointInterfaceId
 	debugData.ScenarioProcessorId = 0 // will be update after ScenarioProcessor saved
+	debugData.ServeId = *serveId
+	debugData.UsedBy = consts.ScenarioDebug
 	debugInterface, err := s.DebugInterfaceService.Save(debugData)
 
 	// save scenario interface
+	if name == "" {
+		name = endpointInterface.Name + "-" + string(endpointInterface.Method)
+	}
 	processor := model.Processor{
-		Name: endpointInterface.Name + "-" + string(endpointInterface.Method),
+		Name: name,
 
 		EntityCategory:      consts.ProcessorInterface,
 		EntityType:          consts.ProcessorInterfaceDefault,
@@ -193,12 +206,14 @@ func (s *ScenarioNodeService) addInterface(endpointInterfaceId int, createBy uin
 	return
 }
 
-func (s *ScenarioNodeService) createDirOrInterface(interfaceNode *serverDomain.TestInterface, parentProcessor model.Processor) (
+func (s *ScenarioNodeService) createDirOrInterfaceFromTest(testInterfaceNode *serverDomain.TestInterface, parentProcessor model.Processor) (
 	ret model.Processor, err error) {
 
-	if !interfaceNode.IsLeaf { // dir
+	debugData, _ := s.DebugInterfaceService.GetDebugDataFromDebugInterface(testInterfaceNode.DebugInterfaceId)
+
+	if !testInterfaceNode.IsLeaf && len(testInterfaceNode.Children) > 0 { // dir
 		processor := model.Processor{
-			Name:           interfaceNode.Title,
+			Name:           testInterfaceNode.Title,
 			ScenarioId:     parentProcessor.ScenarioId,
 			EntityCategory: consts.ProcessorGroup,
 			EntityType:     consts.ProcessorGroupDefault,
@@ -208,17 +223,18 @@ func (s *ScenarioNodeService) createDirOrInterface(interfaceNode *serverDomain.T
 		processor.Ordr = s.ScenarioNodeRepo.GetMaxOrder(processor.ParentId)
 		s.ScenarioNodeRepo.Save(&processor)
 
-		for _, child := range interfaceNode.Children {
-			s.createDirOrInterface(child, processor)
+		for _, child := range testInterfaceNode.Children {
+			s.createDirOrInterfaceFromTest(child, processor)
 		}
 
-	} else { // interface
+	} else if testInterfaceNode.IsLeaf { // interface
 		processor := model.Processor{
-			Name: interfaceNode.Title,
+			Name: testInterfaceNode.Title,
 
-			EntityCategory: consts.ProcessorInterface,
-			EntityType:     consts.ProcessorInterfaceDefault,
-			EntityId:       interfaceNode.DebugInterfaceId, // as debugInterfaceId
+			EntityCategory:      consts.ProcessorInterface,
+			EntityType:          consts.ProcessorInterfaceDefault,
+			EntityId:            testInterfaceNode.DebugInterfaceId, // as debugInterfaceId
+			EndpointInterfaceId: debugData.EndpointInterfaceId,
 
 			Ordr: s.ScenarioNodeRepo.GetMaxOrder(parentProcessor.ID),
 
@@ -232,9 +248,14 @@ func (s *ScenarioNodeService) createDirOrInterface(interfaceNode *serverDomain.T
 		s.ScenarioNodeRepo.Save(&processor)
 
 		// convert or clone a debug interface obj
-		debugData, _ := s.DebugInterfaceService.GetDebugDataFromDebugInterface(interfaceNode.DebugInterfaceId)
-		debugData.DebugInterfaceId = 0    // force to clone the old one
-		debugData.ScenarioProcessorId = 0 // will be update after ScenarioProcessor saved
+
+		debugData.DebugInterfaceId = 0 // force to clone the old one
+		debugData.ScenarioProcessorId = processor.ID
+		debugData.ServeId = testInterfaceNode.ServeId
+
+		debugInterfaceOfTestInterfaceNode, _ := s.DebugInterfaceRepo.Get(testInterfaceNode.DebugInterfaceId)
+		debugData.ServerId = debugInterfaceOfTestInterfaceNode.ServerId
+
 		debugData.UsedBy = consts.ScenarioDebug
 		debugInterface, _ := s.DebugInterfaceService.Save(debugData)
 

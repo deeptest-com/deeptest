@@ -11,10 +11,6 @@ type ProjectMenuModule struct {
 	ProjectMenuCtrl *handler.ProjectMenuCtrl `inject:""`
 }
 
-func NewProjectMenuModule() *ProjectMenuModule {
-	return &ProjectMenuModule{}
-}
-
 // Party 项目菜单
 func (m *ProjectMenuModule) Party() module.WebModule {
 	handler := func(index iris.Party) {

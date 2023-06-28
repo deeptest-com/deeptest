@@ -14,10 +14,6 @@ type LogRepo struct {
 	RoleRepo *RoleRepo `inject:""`
 }
 
-func NewLogRepo() *LogRepo {
-	return &LogRepo{}
-}
-
 func (r *LogRepo) ListByReport(reportId uint) (logs []*model.ExecLogProcessor, err error) {
 	err = r.DB.
 		Where("report_id=?", reportId).

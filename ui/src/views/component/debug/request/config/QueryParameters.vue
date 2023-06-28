@@ -94,17 +94,17 @@ const onParamChange = (idx) => {
   console.log('onParamChange', idx)
   if (debugData.value.queryParams.length <= idx + 1
         && (debugData.value.queryParams[idx].name !== '' || debugData.value.queryParams[idx].value !== '')) {
-    debugData.value.queryParams.push({} as Param)
+    debugData.value.queryParams.push({paramIn: 'query'} as Param)
   }
 };
 
 const add = () => {
   console.log('add')
-  debugData.value.queryParams.push({} as Param)
+  debugData.value.queryParams.push({paramIn: 'query'} as Param)
 }
 const removeAll = () => {
   console.log('removeAll', debugData.value.queryParams)
-  debugData.value.queryParams = [{} as Param]
+  debugData.value.queryParams = [{paramIn: 'query'} as Param]
 }
 
 const disable = (idx) => {
@@ -118,7 +118,7 @@ const remove = (idx) => {
 }
 const insert = (idx) => {
   console.log('insert')
-  debugData.value.queryParams.splice(idx+1, 0, {} as Param)
+  debugData.value.queryParams.splice(idx+1, 0, {paramIn: 'query'} as Param)
 }
 
 const { showContextMenu, contextMenuStyle, onContextMenuShow, onMenuClick } = useVariableReplace('queryParam')

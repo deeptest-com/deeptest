@@ -1,18 +1,32 @@
 <template>
   <div class="path-param-header">
     <!-- debug-url-2 -->
-    <a-input class="path-param-header-input" placeholder="请输入路径"
-             :value="debugData.url"
-             @change="changeUrl"
-             v-contextmenu="e => onContextMenuShow(0, e)">
+    <a-input-group>
+      <a-row type="flex" :gutter="0">
+        <a-col flex="80px">
+          <a-select class="select-env"
+                    :options="methods"
+                    v-model:value="debugData.method">
+          </a-select>
+        </a-col>
+        <a-col flex="3">
 
-      <template #addonBefore>
-        <a-select :options="servers" :value="serverId || null" @change="changeServer"
-                  placeholder="请选择环境" class="select-env">
-        </a-select>
-        <span v-if="envURL" class="current-env-url">{{ envURL || '---' }}</span>
-      </template>
-    </a-input>
+          <a-input class="path-param-header-input" placeholder="请输入路径"
+                   :value="debugData.url"
+                   @change="changeUrl"
+                   v-contextmenu="e => onContextMenuShow(0, e)">
+
+            <template #addonBefore>
+              <a-select :options="servers" :value="serverId || null" @change="changeServer"
+                        placeholder="请选择环境" class="select-env">
+              </a-select>
+
+              <span v-if="envURL" class="current-env-url">{{ envURL || '---' }}</span>
+            </template>
+          </a-input>
+        </a-col>
+      </a-row>
+    </a-input-group>
 
     <ContextMenu
         :isShow="showContextMenu"
@@ -26,20 +40,28 @@ import {computed, ref, watch} from "vue";
 import {useStore} from "vuex";
 import {StateType as Debug} from "@/views/component/debug/store";
 import {serverList} from "@/views/project-settings/service";
-import {getContextMenuStyle2} from "@/utils/dom";
-import bus from "@/utils/eventBus";
-import settings from "@/config/settings";
 import ContextMenu from "@/views/component/debug/others/variable-replace/ContextMenu.vue"
 import useVariableReplace from "@/hooks/variable-replace";
+import {getArrSelectItems} from "@/utils/comm";
+import {Methods} from "@/utils/enum";
 
 const store = useStore<{ Debug: Debug, Endpoint }>();
 
 const debugData = computed<any>(() => store.state.Debug.debugData);
 const servers = ref([] as any);
 
+const methods = getArrSelectItems(Methods)
+
 const serverId = computed(() => {
   return debugData?.value?.serverId || servers?.value[0]?.value || ''
 });
+
+const serveId = computed(() => {
+  return debugData?.value?.serveId || 0
+});
+
+
+
 const envURL = computed(() => {
   const server = servers.value?.find((item) => {
     return serverId.value === item.value;
@@ -50,14 +72,14 @@ const envURL = computed(() => {
 //   return debugData?.value.url
 // });
 
-const listServer = async (serverId) => {
+const listServer = async (serveId) => {
   servers.value = []
-  if (!serverId) {
+  if (!serveId) {
     return
   }
 
   const res = await serverList({
-    serverId: serverId
+    serveId: serveId
   });
   if (res.code === 0) {
     res.data.forEach((item: any) => {
@@ -71,8 +93,8 @@ const listServer = async (serverId) => {
 }
 
 watch(debugData, (val) => {
-  console.log('-----', debugData.value.serverId)
-  listServer(debugData.value.serverId)
+  console.log('watch debugData', debugData.value.serveId)
+  listServer(debugData.value.serveId)
 }, {immediate: true, deep: true});
 
 function changeServer(id) {
@@ -83,7 +105,7 @@ const changeUrl = (e) => {
   store.commit('Debug/setUrl', e.target.value.trim())
 }
 
-const { showContextMenu, contextMenuStyle, onContextMenuShow, onMenuClick } = useVariableReplace('scenarioInterfaceUrl')
+const {showContextMenu, contextMenuStyle, onContextMenuShow, onMenuClick} = useVariableReplace('scenarioInterfaceUrl')
 
 </script>
 

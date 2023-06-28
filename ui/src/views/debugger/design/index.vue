@@ -3,7 +3,9 @@
       <div v-if="debugData?.method" id="test-interface-debug-panel">
         <div id="test-interface-debug-content">
           <div class="tabs">
-            <a-tabs v-model:activeKey="activeTabKey" @edit="onTabEdit" @change="changeTab" type="editable-card">
+            <a-tabs type="editable-card" :hideAdd="true" v-model:activeKey="activeTabKey"
+                    @edit="onTabEdit"
+                    @change="changeTab">
               <a-tab-pane v-for="tab in interfaceTabs" :key="''+tab.id" :tab="tab.title">
 
                 <UrlAndInvocation />

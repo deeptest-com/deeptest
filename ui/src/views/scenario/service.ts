@@ -349,3 +349,14 @@ export async function saveDebugData(interf: Interface): Promise<any> {
         data: interf,
     });
 }
+
+export async function syncDebugData(scenarioProcessorId: number): Promise<any> {
+    const params = {scenarioProcessorId}
+
+    return request({
+        url: `/scenarios/interface/resetDebugData`,
+        method: 'post',
+        params,
+    });
+}
+

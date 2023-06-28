@@ -6,8 +6,7 @@
           <a-col flex="80px">
             <a-select class="select-env"
                       :options="methods"
-                      v-model:value="method"
-                      @change="changeMethod">
+                      v-model:value="debugData.method" >
             </a-select>
           </a-col>
 
@@ -64,9 +63,6 @@ import {StateType as EndpointStateType} from "@/views/endpoint/store";
 import {Methods} from "@/utils/enum";
 import {getArrSelectItems} from "@/utils/comm";
 import {prepareDataForRequest} from "@/views/component/debug/service";
-import {getContextMenuStyle2} from "@/utils/dom";
-import bus from "@/utils/eventBus";
-import settings from "@/config/settings";
 import ContextMenu from "@/views/component/debug/others/variable-replace/ContextMenu.vue"
 import useVariableReplace from "@/hooks/variable-replace";
 
@@ -75,7 +71,6 @@ const store = useStore<{ TestInterface: TestInterfaceStateType, Debug: DebugStat
 const debugData = computed<any>(() => store.state.Debug.debugData);
 const serveServers: any = computed(() => store.state.TestInterface.serveServers);
 
-const method = ref('GET')
 const methods = getArrSelectItems(Methods)
 
 const getEnvUrl = () => {
@@ -98,10 +93,6 @@ watch((serveServers), async (newVal) => {
   console.log('watch serveServers', serveServers?.value)
   getEnvUrl()
 }, { immediate: true, deep: true })
-
-const changeMethod = (item) => {
-  console.log('changeMethod', item)
-}
 
 const send = async (e) => {
   console.log('sendRequest', debugData.value)

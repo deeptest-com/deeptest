@@ -1,9 +1,11 @@
-<!-- :::: 接口定义模块 -->
 <template>
-  <div class="content" v-if="data?.name">
-<!--    <BasicDetail  :items="items" v-if="showBasicInfo"/>-->
-    <DocsHeader v-if="showHeader" :data="items" :items="serviceList" @select="selectSugRes"/>
-    <a-divider style="margin:0" v-if="showBasicInfo"/>
+  <div class="content"  :style="isDocsFullPage ? {height: '100vh'} :{}" v-if="data?.name && serviceList?.length">
+    <DocsHeader v-if="showHeader"
+                :data="data"
+                :items="serviceList"
+                @select="selectSugRes"
+                @changeVersion="changeVersion"/>
+    <a-divider style="margin:0" v-if="showHeader"/>
     <div class="doc-container">
       <div class="left" v-if="showMenu">
         <LeftTreeView :serviceList="serviceList" @select="selectMenu" :selectedKeys="selectedKeys"/>
@@ -13,7 +15,20 @@
       </div>
     </div>
   </div>
-  <a-skeleton v-else/>
+  <a-skeleton v-if="!data?.name"/>
+  <!--    没有定义接口文档，则展示空信息   -->
+  <div v-if="data?.name && serviceList?.length ===0" style="margin-top: 48px;">
+    <a-empty
+        image="https://gw.alipayobjects.com/mdn/miniapp_social/afts/img/A*pevERLJC9v0AAAAAAAAAAABjAQAAAQ/original"
+        :image-style="{height: '60px',}">
+        <template #description>
+                <span>
+                  您还未定义接口，请先定义接口
+                </span>
+      </template>
+      <a-button v-if="isEndpointPage" type="primary" @click="emit('switchToDefineTab')">接口定义</a-button>
+    </a-empty>
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -25,39 +40,28 @@ import {
 } from 'vue';
 import {useStore} from "vuex";
 
-import BasicDetail from "./components/BasicDetail.vue";
 import LeftTreeView from "./components/LeftTreeView.vue";
 import EndpointDoc from "./components/EndpointDoc.vue";
 import DocsHeader from "./components/DocsHeader.vue";
 
 const store = useStore<{ Endpoint, ProjectGlobal }>();
-const props = defineProps(['showBasicInfo', 'showMenu', 'data', 'onlyShowDocs','showHeader']);
-const emit = defineEmits([]);
+const props = defineProps(['showMenu', 'data', 'onlyShowDocs', 'showHeader']);
+const emit = defineEmits(['changeVersion','switchToDefineTab']);
 
-const items = computed(() => {
-  return [
-    {
-      label: '项目名称',
-      value: props?.data?.name,
-    },
-    {
-      label: '项目描述',
-      value: props?.data?.desc,
-    },
-  ]
-})
+const isEndpointPage = window.location.href.includes('/endpoint/index');
+const isDocsFullPage = window.location.href.includes('/docs/share') || window.location.pathname.includes('/docs/view');
 
 const serviceList = computed(() => {
   // 组装数据以兼容组件 LeftTreeMenu
   let items: any = [];
-
-  props?.data?.serves.forEach((item: any) => {
-    console.log(832,'item', item)
+  console.log(123, props?.data?.serves)
+  props?.data?.serves?.forEach((item: any) => {
     // 只显示文档，不展示服务信息
     if (!props.onlyShowDocs) {
       items.push(item);
     }
     item?.endpoints?.forEach((endpoint: any) => {
+
       endpoint?.interfaces?.forEach((interfaceItem: any) => {
         items.push({
           ...interfaceItem,
@@ -68,7 +72,6 @@ const serviceList = computed(() => {
       })
     })
   })
-  console.log(832,'items', items)
   return items;
 })
 
@@ -84,7 +87,6 @@ const selectedKeys = computed(() => {
 watch(() => {
   return serviceList.value
 }, (newVal) => {
-  console.log(832,'newVal', newVal)
   if (!selectedItem.value && newVal.length > 0) {
     selectedItem.value = newVal.find((item) => {
       return item.endpointInfo && item.serveInfo;
@@ -95,22 +97,28 @@ watch(() => {
   }
 }, {immediate: true});
 
+
 function selectSugRes(item) {
   selectedItem.value = item
 }
+
 
 function selectMenu(item) {
   selectedItem.value = item
 }
 
+
+function changeVersion(docId) {
+  emit('changeVersion', docId);
+}
+
+
 </script>
 
 <style lang="less" scoped>
 .content {
-  //padding: 24px;
   height: calc(100vh - 100px);
   position: relative;
-
 }
 
 .doc-container {

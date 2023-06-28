@@ -13,6 +13,7 @@ type DocumentRep struct {
 	Serves       []DocumentServe        `json:"serves"`
 	GlobalParams map[string]interface{} `json:"globalParams"`
 	GlobalVars   []EnvironmentParam     `json:"globalVars"`
+	Version      string                 `json:"version"`
 }
 
 type DocumentServe struct {
@@ -31,7 +32,7 @@ type Endpoints struct {
 type DocumentVersionReq struct {
 	EndpointIds []uint `json:"endpointIds"`
 	Name        string `json:"name"`
-	Version     string `json:"version"`
+	Version     string `json:"version" validate:"required"`
 }
 
 type UpdateDocumentVersionReq struct {
@@ -42,4 +43,10 @@ type UpdateDocumentVersionReq struct {
 
 type DocumentVersionListReq struct {
 	NeedLatest bool `json:"needLatest"` //需要展示实时版本这条假数据
+}
+
+type DocumentShareReq struct {
+	ProjectId  uint `json:"projectId"`
+	DocumentId uint `json:"documentId"`
+	EndpointId uint `json:"endpointId"`
 }

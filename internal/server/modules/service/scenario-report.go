@@ -14,10 +14,6 @@ type ScenarioReportService struct {
 	PlanReportRepo     *repo2.PlanReportRepo     `inject:""`
 }
 
-func NewReportService() *ScenarioReportService {
-	return &ScenarioReportService{}
-}
-
 func (s *ScenarioReportService) Paginate(req v1.ReportReqPaginate) (ret _domain.PageData, err error) {
 	ret, err = s.ScenarioReportRepo.Paginate(req)
 	return

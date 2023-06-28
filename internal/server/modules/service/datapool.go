@@ -24,10 +24,6 @@ type DatapoolService struct {
 	DatapoolRepo *repo.DatapoolRepo `inject:""`
 }
 
-func NewDatapoolService() *DatapoolService {
-	return &DatapoolService{}
-}
-
 func (s *DatapoolService) Paginate(req v1.DatapoolReqPaginate) (ret _domain.PageData, err error) {
 	ret, err = s.DatapoolRepo.Paginate(req)
 	return

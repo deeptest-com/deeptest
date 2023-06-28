@@ -14,10 +14,6 @@ type UserService struct {
 	UserRepo *repo.UserRepo `inject:""`
 }
 
-func NewUserService() *UserService {
-	return &UserService{}
-}
-
 func (s *UserService) Paginate(req v1.UserReqPaginate) (_domain.PageData, error) {
 	return s.UserRepo.Paginate(req)
 }

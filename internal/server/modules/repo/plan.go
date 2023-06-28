@@ -23,10 +23,6 @@ type PlanRepo struct {
 	PlanReportRepo *PlanReportRepo `inject:""`
 }
 
-func NewPlanRepo() *PlanRepo {
-	return &PlanRepo{}
-}
-
 func (r *PlanRepo) Paginate(req v1.PlanReqPaginate, projectId int) (data _domain.PageData, err error) {
 	var count int64
 	var categoryIds []uint
@@ -440,6 +436,6 @@ func (r *PlanRepo) NotRelationScenarioList(req v1.NotRelationScenarioReqPaginate
 }
 
 func (r *PlanRepo) GetCategoryCount(result interface{}, projectId uint) (err error) {
-	err = r.DB.Raw("select count(id) count, category_id from "+model.Endpoint{}.TableName()+" where not deleted and not disabled and project_id=? group by category_id", projectId).Scan(result).Error
+	err = r.DB.Raw("select count(id) count, category_id from "+model.Plan{}.TableName()+" where not deleted and not disabled and project_id=? group by category_id", projectId).Scan(result).Error
 	return
 }

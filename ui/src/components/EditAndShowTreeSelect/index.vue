@@ -68,7 +68,6 @@ function cancelEdit() {
 const isOpen = ref(false);
 
 function treeExpand(open) {
-  debugger;
   isOpen.value = open;
 }
 
@@ -76,13 +75,9 @@ function handleClick() {
   emit('edit');
 }
 
-watch(() => {
-  return props.value
-}, (newVal) => {
+watch(() => {return props.value}, (newVal) => {
   fieldValue.value = newVal
-}, {
-  immediate: true
-})
+}, {immediate: true})
 
 </script>
 

@@ -11,10 +11,6 @@ type PermModule struct {
 	PermCtrl *handler.PermCtrl `inject:""`
 }
 
-func NewPermModule() *PermModule {
-	return &PermModule{}
-}
-
 // Party 权限模块
 func (m *PermModule) Party() module.WebModule {
 	handler := func(index iris.Party) {

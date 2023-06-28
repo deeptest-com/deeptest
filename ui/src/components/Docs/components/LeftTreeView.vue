@@ -31,15 +31,9 @@
 </template>
 
 <script lang="ts" setup>
-import {
-  ref,
-  defineProps,
-  defineEmits,
-  computed,
-  watch,
-} from 'vue';
+import {defineEmits, defineProps, ref, watch,} from 'vue';
 
-import {DownOutlined, RightOutlined} from '@ant-design/icons-vue';
+import {RightOutlined} from '@ant-design/icons-vue';
 import {requestMethodOpts} from '@/config/constant';
 
 const openKeysMap = ref<any>({});
@@ -57,7 +51,7 @@ const props = defineProps({
     required: true,
     type: Object,
   },
-  selectedKeys:{
+  selectedKeys: {
     required: true,
     type: Array,
   }
@@ -65,6 +59,7 @@ const props = defineProps({
 const emit = defineEmits(['select']);
 
 const items: any = ref([]);
+
 watch(() => {
       return props.serviceList
     }, (newVal) => {
@@ -77,6 +72,7 @@ watch(() => {
 
     }, {immediate: true}
 )
+
 
 
 const activeKey = ref([]);
@@ -127,6 +123,7 @@ function select(item) {
     border-radius: 4px;
     height: 36px;
     line-height: 36px;
+    left: -6px;
   }
   :deep(.ant-menu-item-selected:after) {
     //right: 300px!important;

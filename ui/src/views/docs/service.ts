@@ -18,7 +18,6 @@ export async function getDocs(data: any): Promise<any> {
  * 获取接口文档版本列表，无分页
  * */
 export async function getVersionList(data: any): Promise<any> {
-    debugger;
     return request({
         url: `/document/version_list`,
         method: 'post',
@@ -59,5 +58,29 @@ export async function updateDocumentVersion(data: any): Promise<any> {
         url: `/document/update_version`,
         method: 'post',
         data: data
+    });
+}
+
+
+/**
+ * 获取分享文档的code
+ * */
+export async function shareDocs(data: any): Promise<any> {
+    return request({
+        url: `/document/share`,
+        method: 'post',
+        data: data
+    });
+}
+
+
+
+/**
+ * 通过获取分享的文档数据
+ * */
+export async function getShareContent(data: any): Promise<any> {
+    return request({
+        url: `/document/get_share_content?code=${data.code}`,
+        method: 'get',
     });
 }

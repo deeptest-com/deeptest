@@ -14,7 +14,6 @@
               <div class="card-title">
                 <div class="title">
                   <img :src="getProjectLogo(item?.logo)" alt="" />
-
                   <span class="card-title-text" :title="item?.projectName">{{
                     item?.projectName.length > 13
                       ? item?.projectName.substring(0, 13) + "..."
@@ -24,7 +23,7 @@
 
                 <div class="action">
                   <a-dropdown>
-                    <span class="ant-dropdown-link" @click.prevent>
+                    <span class="ant-dropdown-link" @click.prevent.stop>
                       <EllipsisOutlined key="ellipsis" />
                     </span>
                     <template #overlay>

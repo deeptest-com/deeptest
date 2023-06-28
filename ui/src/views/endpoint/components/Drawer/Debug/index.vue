@@ -50,7 +50,7 @@
       </div>
     </div>
   </div>
-  <div v-else>
+  <div v-else style="margin-top: 48px;">
     <a-empty
         image="https://gw.alipayobjects.com/mdn/miniapp_social/afts/img/A*pevERLJC9v0AAAAAAAAAAABjAQAAAQ/original"
         :image-style="{height: '60px',}">

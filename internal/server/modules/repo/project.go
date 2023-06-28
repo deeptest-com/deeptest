@@ -11,7 +11,6 @@ import (
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
-	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	_fileUtils "github.com/aaronchen2k/deeptest/pkg/lib/file"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"go.uber.org/zap"
@@ -34,10 +33,6 @@ type ProjectRepo struct {
 	PlanRepo                   *PlanRepo                   `inject:""`
 }
 
-func NewProjectRepo() *ProjectRepo {
-	return &ProjectRepo{}
-}
-
 func (r *ProjectRepo) Paginate(req v1.ProjectReqPaginate, userId uint) (data _domain.PageData, err error) {
 	var count int64
 
@@ -51,7 +46,7 @@ func (r *ProjectRepo) Paginate(req v1.ProjectReqPaginate, userId uint) (data _do
 		db = db.Where("name LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords))
 	}
 	if req.Enabled != "" {
-		db = db.Where("disabled = ?", commonUtils.IsDisable(req.Enabled))
+		db = db.Where("disabled = ?", _commUtils.IsDisable(req.Enabled))
 	}
 
 	err = db.Count(&count).Error
@@ -340,7 +335,7 @@ func (r *ProjectRepo) CombineRoleForProject(projects []model.Project, projectRol
 	for _, v := range projectRoleMap {
 		roleIds = append(roleIds, v)
 	}
-	roleIds = commonUtils.ArrayRemoveUintDuplication(roleIds)
+	roleIds = _commUtils.ArrayRemoveUintDuplication(roleIds)
 
 	roleIdNameMap, err := r.ProjectRoleRepo.GetRoleIdNameMap(roleIds)
 	if err != nil {
@@ -381,7 +376,7 @@ func (r *ProjectRepo) GetCurrProjectByUser(userId uint) (currProject model.Proje
 }
 
 func (r *ProjectRepo) ListProjectsRecentlyVisited(userId uint) (projects []model.Project, err error) {
-	err = r.DB.Raw(fmt.Sprintf("SELECT p.*,max( v.created_at ) visited_time FROM biz_project_recently_visited v,biz_project p WHERE v.project_id = p.id AND v.user_id = %d GROUP BY v.project_id ORDER BY visited_time DESC LIMIT 3", userId)).Find(&projects).Error
+	err = r.DB.Raw(fmt.Sprintf("SELECT p.*,max( v.created_at ) visited_time FROM biz_project_recently_visited v,biz_project p WHERE v.project_id = p.id AND v.user_id = %d AND NOT p.deleted GROUP BY v.project_id ORDER BY visited_time DESC LIMIT 3", userId)).Find(&projects).Error
 	return
 }
 
@@ -436,6 +431,19 @@ func (r *ProjectRepo) AddProjectRootPlanCategory(projectId uint) (err error) {
 		Type:      serverConsts.PlanCategory,
 		ProjectId: projectId,
 		IsLeaf:    false,
+	}
+	err = r.DB.Create(&root).Error
+
+	return
+}
+
+func (r *ProjectRepo) AddProjectRootTestCategory(projectId, serveId uint) (err error) {
+	root := model.TestInterface{
+		Title:     "根节点",
+		ProjectId: projectId,
+		IsLeaf:    false,
+		Type:      "dir",
+		ServeId:   serveId,
 	}
 	err = r.DB.Create(&root).Error
 
@@ -532,6 +540,8 @@ func (r *ProjectRepo) AddProjectDefaultServe(projectId, userId uint) (serve mode
 	r.ServeRepo.SetCurrServeByUser(serve.ID, userId)
 
 	r.ServeRepo.AddDefaultServer(serve.ProjectId, serve.ID)
+
+	r.ServeRepo.AddDefaultTestCategory(serve.ProjectId, serve.ID)
 
 	return
 }
@@ -712,7 +722,7 @@ func (r *ProjectRepo) CreateSample(projectId, serveId, userId uint) (err error) 
 			interfaceIds[endpoint.Interfaces[0].Name+"-"+string(endpoint.Interfaces[0].Method)] = endpoint.Interfaces[0].ID
 		}
 
-		r.ServeServerRepo.SetUrl(serveId, "http://119.3.182.218:50400")
+		r.ServeServerRepo.SetUrl(serveId, "http://192.168.5.224:50400")
 
 		//TODO 创建场景
 		scenario.ProjectId = projectId

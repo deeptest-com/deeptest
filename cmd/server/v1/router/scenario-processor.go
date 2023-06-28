@@ -11,10 +11,6 @@ type ScenarioProcessorModule struct {
 	ScenarioProcessorCtrl *handler.ScenarioProcessorCtrl `inject:""`
 }
 
-func NewScenarioProcessorModule() *ScenarioProcessorModule {
-	return &ScenarioProcessorModule{}
-}
-
 // Party 场景
 func (m *ScenarioProcessorModule) Party() module.WebModule {
 	handler := func(index iris.Party) {

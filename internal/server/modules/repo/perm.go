@@ -5,13 +5,10 @@ import (
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	casbinServer "github.com/aaronchen2k/deeptest/internal/server/core/casbin"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
-	"strconv"
-
 	"gorm.io/gorm"
 )
 
@@ -19,10 +16,6 @@ type PermRepo struct {
 	DB *gorm.DB `inject:""`
 
 	RoleRepo *RoleRepo `inject:""`
-}
-
-func NewPermRepo() *PermRepo {
-	return &PermRepo{}
 }
 
 // Paginate
@@ -96,35 +89,44 @@ func (r *PermRepo) CreateInBatches(perms []model.SysPerm) error {
 
 // CreateIfNotExist
 func (r *PermRepo) CreateIfNotExist(perms []model.SysPerm) (count int, err error) {
-	enforcer := casbinServer.Instance()
-
-	adminRole, _ := r.RoleRepo.FindFirstAdminUser()
-	adminRoleId := strconv.Itoa(int(adminRole.Id))
-
-	r.DB.Transaction(func(tx *gorm.DB) (err error) {
-		for _, perm := range perms {
-			found := enforcer.HasNamedPolicy("p", adminRoleId, perm.Name, perm.Act)
-			if found {
-				continue
-			}
-
-			// add to casbin table
-			namedPolicy := []string{adminRoleId, perm.Name, perm.Act}
-			success, _ := enforcer.AddNamedPolicy("p", namedPolicy)
-			if success {
-				count++
-			}
-
-			// add to permission table
-			err = r.DB.Model(&model.SysPerm{}).Create(&perm).Error
-			if err != nil {
-				logUtils.Errorf("添加权限%s失败，错误%s。", perm.Name, err.Error())
-				continue
-			}
+	_ = r.DB.Delete(&model.SysPerm{}, "id > 0").Error
+	for _, perm := range perms {
+		err := r.DB.Model(&model.SysPerm{}).Create(&perm).Error
+		if err != nil {
+			logUtils.Errorf("添加权限%s失败，错误%s。", perm.Name, err.Error())
+		} else {
+			count++
 		}
-
-		return
-	})
+	}
+	//enforcer := casbinServer.Instance()
+	//
+	//adminRole, _ := r.RoleRepo.FindFirstAdminUser()
+	//adminRoleId := strconv.Itoa(int(adminRole.Id))
+	//
+	//r.DB.Transaction(func(tx *gorm.DB) (err error) {
+	//	for _, perm := range perms {
+	//		found := enforcer.HasNamedPolicy("p", adminRoleId, perm.Name, perm.Act)
+	//		if found {
+	//			continue
+	//		}
+	//
+	//		// add to casbin table
+	//		namedPolicy := []string{adminRoleId, perm.Name, perm.Act}
+	//		success, _ := enforcer.AddNamedPolicy("p", namedPolicy)
+	//		if success {
+	//			count++
+	//		}
+	//
+	//		// add to permission table
+	//		err = r.DB.Model(&model.SysPerm{}).Create(&perm).Error
+	//		if err != nil {
+	//			logUtils.Errorf("添加权限%s失败，错误%s。", perm.Name, err.Error())
+	//			continue
+	//		}
+	//	}
+	//
+	//	return
+	//})
 
 	return
 }

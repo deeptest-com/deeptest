@@ -12,10 +12,6 @@ type ProjectRoleSource struct {
 	PermRepo        *repo2.PermRepo        `inject:""`
 }
 
-func NewProjectRoleSource() *ProjectRoleSource {
-	return &ProjectRoleSource{}
-}
-
 func (s *ProjectRoleSource) GetSources() (sources []model.ProjectRole, err error) {
 	sources = []model.ProjectRole{
 		{

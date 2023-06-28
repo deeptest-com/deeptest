@@ -20,10 +20,6 @@ type RoleRepo struct {
 	DB *gorm.DB `inject:""`
 }
 
-func NewRoleRepo() *RoleRepo {
-	return &RoleRepo{}
-}
-
 // Paginate
 func (r *RoleRepo) Paginate(req v1.RoleReqPaginate) (data _domain.PageData, err error) {
 	var count int64

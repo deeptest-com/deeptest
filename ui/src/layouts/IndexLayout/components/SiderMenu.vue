@@ -106,9 +106,7 @@ export default defineComponent({
       props.onOpenChange && props.onOpenChange(key);
     }
 
-    watch(() => {
-      return permissionRouteMenuMap.value;
-    }, () => {
+    watch(() => {return permissionRouteMenuMap.value;}, () => {
       getNewMenuData();
     }, {
       immediate: true

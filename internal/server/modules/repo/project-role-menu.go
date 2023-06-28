@@ -18,10 +18,6 @@ type ProjectRoleMenuRepo struct {
 	ProjectMenuRepo *ProjectMenuRepo `inject:""`
 }
 
-func NewProjectRoleMenuRepo() *ProjectRoleMenuRepo {
-	return &ProjectRoleMenuRepo{}
-}
-
 func (r *ProjectRoleMenuRepo) FindByRoleAndMenu(roleId, menuId uint) (projectRoleMenu model.ProjectRoleMenu, err error) {
 	db := r.DB.Model(&model.ProjectRoleMenu{}).Where("role_id = ?", roleId).Where("menu_id = ?", menuId)
 
@@ -30,9 +26,14 @@ func (r *ProjectRoleMenuRepo) FindByRoleAndMenu(roleId, menuId uint) (projectRol
 }
 
 func (r *ProjectRoleMenuRepo) Create(projectRoleMenu model.ProjectRoleMenu) (err error) {
-	_, err = r.FindByRoleAndMenu(projectRoleMenu.RoleId, projectRoleMenu.MenuId)
-	if !errors.Is(err, gorm.ErrRecordNotFound) {
-		logUtils.Errorf("角色菜单已经存在")
+	roleMenu, err := r.FindByRoleAndMenu(projectRoleMenu.RoleId, projectRoleMenu.MenuId)
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		logUtils.Errorf("创建角色菜单失败%s", err.Error())
+		return
+	}
+
+	if roleMenu.ID != 0 {
+		logUtils.Infof("角色id：%d的菜单id:%d已经存在", projectRoleMenu.RoleId, projectRoleMenu.MenuId)
 		return
 	}
 

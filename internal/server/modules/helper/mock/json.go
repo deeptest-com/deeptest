@@ -22,7 +22,13 @@ var (
 			"type"  : "telephone",
 			"number": "0512-65911234"
 		  }
-		]
+		],
+		{
+		  "strArr": [
+			"aaa",
+			"bbb"
+		  ]
+		}
 	}`
 )
 

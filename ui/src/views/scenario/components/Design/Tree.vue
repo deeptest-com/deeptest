@@ -68,12 +68,12 @@
 
     <InterfaceSelectionFromDefine
         v-if="interfaceSelectionVisible && interfaceSelectionSrc==='fromDefine'"
-        :onFinish="interfaceSelectionFinish"
+        :onFinish="endpointInterfaceIdsSelectionFinish"
         :onCancel="interfaceSelectionCancel" />
 
     <InterfaceSelectionFromTest
         v-if="interfaceSelectionVisible && interfaceSelectionSrc==='fromTest'"
-        :onFinish="interfaceSelectionFinish"
+        :onFinish="testInterfaceNodesSelectionFinish"
         :onCancel="interfaceSelectionCancel" />
 
   </div>
@@ -105,11 +105,13 @@ const useForm = Form.useForm;
 
 const {t} = useI18n();
 import {Scenario} from "@/views/scenario/data";
+import {confirmToDelete} from "@/utils/confirm";
 const store = useStore<{ Scenario: ScenarioStateType; }>();
 const treeData = computed<any>(() => store.state.Scenario.treeData);
 const treeDataMap = computed<any>(() => store.state.Scenario.treeDataMap);
 const selectedNode = computed<any>(()=> store.state.Scenario.nodeData);
 const detailResult = computed<Scenario>(() => store.state.Scenario.detailResult);
+
 watch(treeData, () => {
   console.log('watch', treeData)
 
@@ -165,8 +167,9 @@ const selectNode = (keys, e) => {
 
   store.dispatch('Scenario/getNode', selectedData).then((ok) => {
     if (ok && selectedNode.value.processorType === 'processor_interface_default') {
+      // will cause watch event to load debug data in components/interface/interface.vue
       store.dispatch('Scenario/setScenarioProcessorIdForDebug', selectedNode.value.processorID)
-      store.dispatch('Scenario/setEndpointInterfaceIdForDebug', selectedNode.value.endpointInterfaceId)
+      // store.dispatch('Scenario/setEndpointInterfaceIdForDebug', selectedNode.value.endpointInterfaceId)
     }
   })
 }
@@ -199,6 +202,7 @@ let contextNode = ref({} as any)
 let menuStyle = ref({} as any)
 let tips = ref('')
 let rightVisible = false
+
 const onRightClick = (e) => {
   console.log('onRightClick', e)
   const {event, node} = e
@@ -335,35 +339,38 @@ const addNode = (mode, processorCategory, processorType,
 const interfaceSelectionVisible = ref(false)
 const interfaceSelectionSrc = ref('')
 
-const interfaceSelectionFinish = (interfaceIds) => {
+const endpointInterfaceIdsSelectionFinish = (interfaceIds) => {
   const targetNode = treeDataMap.value[targetModelId]
-  console.log('interfaceSelectionFinish', interfaceIds, targetNode)
+  console.log('endpointInterfaceIdsSelectionFinish', interfaceIds, targetNode)
 
-  if (interfaceSelectionSrc.value === 'fromDefine') {
-    store.dispatch('Scenario/addInterfaces', {
-      interfaceIds: interfaceIds,
-      targetId: targetNode.id,
-    }).then((newNode) => {
-      console.log('addInterfaces successfully', newNode)
+  store.dispatch('Scenario/addInterfacesFromDefine', {
+    interfaceIds: interfaceIds,
+    targetId: targetNode.id,
+  }).then((newNode) => {
+    console.log('addInterfaces successfully', newNode)
 
-      interfaceSelectionVisible.value = false
-      selectNode([newNode.id], null)
-      expandOneKey(treeDataMap.value, newNode.parentId, expandedKeys.value) // expend new node
-      setExpandedKeys('scenario', treeData.value[0].scenarioId, expandedKeys.value)
-    })
-  } else if (interfaceSelectionSrc.value === 'fromTest') {
-    store.dispatch('Scenario/addInterfaces', {
-      interfaceIds: interfaceIds,
-      targetId: targetNode.id,
-    }).then((newNode) => {
-      console.log('addInterfaces successfully', newNode)
+    interfaceSelectionVisible.value = false
+    selectNode([newNode.id], null)
+    expandOneKey(treeDataMap.value, newNode.parentId, expandedKeys.value) // expend new node
+    setExpandedKeys('scenario', treeData.value[0].scenarioId, expandedKeys.value)
+  })
+}
 
-      interfaceSelectionVisible.value = false
-      selectNode([newNode.id], null)
-      expandOneKey(treeDataMap.value, newNode.parentId, expandedKeys.value) // expend new node
-      setExpandedKeys('scenario', treeData.value[0].scenarioId, expandedKeys.value)
-    })
-  }
+const testInterfaceNodesSelectionFinish = (interfaceNodes) => {
+  const targetNode = treeDataMap.value[targetModelId]
+  console.log('endpointInterfaceIdsSelectionFinish', interfaceNodes, targetNode)
+
+  store.dispatch('Scenario/addInterfacesFromTest', {
+    selectedNodes: interfaceNodes,
+    targetId: targetNode.id,
+  }).then((newNode) => {
+    console.log('addInterfaces successfully', newNode)
+
+    interfaceSelectionVisible.value = false
+    selectNode([newNode.id], null)
+    expandOneKey(treeDataMap.value, newNode.parentId, expandedKeys.value) // expend new node
+    setExpandedKeys('scenario', treeData.value[0].scenarioId, expandedKeys.value)
+  })
 }
 
 const interfaceSelectionCancel = () => {
@@ -373,9 +380,19 @@ const interfaceSelectionCancel = () => {
 
 const removeNode = () => {
   console.log('removeNode')
-  store.dispatch('Scenario/removeNode', targetModelId);
-  selectNode([], null)
+
+  const node = treeDataMap.value[targetModelId]
+  console.log(node)
+
+  const title = '确定删除该' + (node.isLeaf?'接口':'目录') + '吗？'
+  const context = !node.isLeaf?'删除后所有所有子目录都会被删除。' : ''
+
+  confirmToDelete(title, context, () => {
+    store.dispatch('Scenario/removeNode', targetModelId);
+    selectNode([], null)
+  })
 }
+
 const clearMenu = () => {
   console.log('clearMenu')
   contextNode.value = ref({})

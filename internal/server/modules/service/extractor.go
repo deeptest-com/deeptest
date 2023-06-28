@@ -75,8 +75,8 @@ func (s *ExtractorService) Extract(extractor *model.DebugInterfaceExtractor, res
 	return
 }
 
-func (s *ExtractorService) ListExtractorVariableByInterface(interfaceId int) (variables []domain.Variable, err error) {
-	variables, err = s.ExtractorRepo.ListExtractorVariableByInterface(uint(interfaceId))
+func (s *ExtractorService) ListExtractorVariableByInterface(req domain.DebugReq) (variables []domain.Variable, err error) {
+	variables, err = s.ExtractorRepo.ListExtractorVariableByInterface(req)
 
 	return
 }

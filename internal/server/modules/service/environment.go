@@ -298,21 +298,21 @@ func (s *EnvironmentService) GetGlobalParams(projectId uint) (ret []domain.Globa
 	return
 }
 
-func (s *EnvironmentService) GetDebugEnvByEndpointInterface(debugInterfaceId, endpointInterfaceId uint) (ret model.Environment, err error) {
-	var serveId uint
-
-	if debugInterfaceId > 0 {
-		debug, _ := s.DebugInterfaceRepo.Get(debugInterfaceId)
-		serveId = debug.ServerId
-	} else {
-		interf, _ := s.EndpointInterfaceRepo.Get(endpointInterfaceId)
-		endpoint, _ := s.EndpointRepo.Get(interf.EndpointId)
-		serveId = endpoint.ServeId
-	}
-
-	serveServer, _ := s.ServeServerRepo.Get(serveId)
-
-	ret, _ = s.EnvironmentRepo.Get(serveServer.EnvironmentId)
-
-	return
-}
+//func (s *EnvironmentService) GetDebugEnvByDebugInterfaceOrEndpointInterface(debugInterfaceId, endpointInterfaceId uint) (ret model.Environment, err error) {
+//	var serveId uint
+//
+//	if debugInterfaceId > 0 {
+//		debug, _ := s.DebugInterfaceRepo.Get(debugInterfaceId)
+//		serveId = debug.ServerId
+//	} else {
+//		interf, _ := s.EndpointInterfaceRepo.Get(endpointInterfaceId)
+//		endpoint, _ := s.EndpointRepo.Get(interf.EndpointId)
+//		serveId = endpoint.ServerId
+//	}
+//
+//	serveServer, _ := s.ServeServerRepo.Get(serveId)
+//
+//	ret, _ = s.EnvironmentRepo.Get(serveServer.EnvironmentId)
+//
+//	return
+//}

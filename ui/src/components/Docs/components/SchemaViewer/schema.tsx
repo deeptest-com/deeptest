@@ -8,17 +8,15 @@ import cloneDeep from "lodash/cloneDeep";
 import {
     addExtraViewInfo,
     findLastNotArrayNode,
-    generateSchemaByArray,
     isArray,
     isNormalType,
     isObject,
     isRef,
-    removeExtraViewInfo,
+    handleRef,
 } from './utils';
 import {
     treeLevelWidth
 } from './config';
-import {message} from "ant-design-vue";
 import {useStore} from "vuex";
 import {StateType as ServeStateType} from "@/store/serve";
 
@@ -54,6 +52,7 @@ export default defineComponent({
 
         watch(() => {return props.value}, (newVal) => {
             const val = cloneDeep(newVal);
+            handleRef(val);
             data.value = addExtraViewInfo(val);
         }, {immediate: true, deep: true});
 
@@ -103,7 +102,6 @@ export default defineComponent({
             }
 
             const properties = parent?.properties?.[keyName] || {};
-            console.log('832 properties', properties)
             const list: any = [];
             Object.entries(properties).forEach(([k, v]) => {
                 if (typeof v !== 'boolean' && !['type', 'properties', 'extraViewInfo','ref','content','name'].includes(k)) {

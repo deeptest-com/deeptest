@@ -443,7 +443,8 @@ watch(
 .container {
   margin: 16px;
   background: #ffffff;
-  min-height: calc(100vh - 80px);
+  height: calc(100vh - 96px);
+  overflow: hidden;
 }
 
 .tag-filter-form {
@@ -467,11 +468,13 @@ watch(
   display: flex;
   width: 100%;
   position: relative;
+  height: 100%;
 
   .left {
     width: 300px;
     border-right: 1px solid #f0f0f0;
     height: calc(100vh - 80px);
+    overflow-y:scroll;
   }
 
   .right {

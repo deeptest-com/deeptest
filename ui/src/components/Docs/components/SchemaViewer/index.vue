@@ -26,7 +26,7 @@ import SchemaEditor from './schema';
 import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
 import {MonacoOptions} from '@/utils/const';
 
-const props = defineProps(['contentStr', 'examplesStr','components']);
+const props = defineProps(['contentStr', 'examplesStr', 'components', 'contentType']);
 const examples: any = ref([]);
 const content: any = ref<any>(null);
 
@@ -36,8 +36,9 @@ watch(() => {
   try {
     if (newVal) {
       content.value = JSON.parse(newVal);
+      content.value.type = content.value.type || props.contentType;
     }
-  }catch (e){
+  } catch (e) {
     console.log(e)
   }
 }, {immediate: true})
@@ -49,7 +50,7 @@ watch(() => {
     if (newVal) {
       examples.value = JSON.parse(newVal);
     }
-  }catch (e){
+  } catch (e) {
     console.log(e)
   }
 
@@ -65,7 +66,7 @@ watch(() => {
 
 .body-schema {
 
-  .examples{
+  .examples {
     margin-top: 16px;
   }
 }

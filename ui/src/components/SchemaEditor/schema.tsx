@@ -8,7 +8,7 @@ import cloneDeep from "lodash/cloneDeep";
 import {
     addExtraViewInfo,
     findLastNotArrayNode,
-    generateSchemaByArray,
+    generateSchemaByArray, handleRef,
     isArray,
     isNormalType,
     isObject,
@@ -46,7 +46,9 @@ export default defineComponent({
                     })
                     tree.content = JSON.parse(result.content || '{}');
                     data.value = addExtraViewInfo(data.value);
+                    tree.extraViewInfo.isExpand = true;
                 } else {
+                    tree.extraViewInfo.isExpand = false;
                     delete tree.content;
                 }
             } else {
@@ -109,6 +111,9 @@ export default defineComponent({
         const dataTypeChange = (options?: any, newProps?: any) => {
             const {parent, keyName, depth, ancestor} = options;
             const firstType = newProps?.[0]?.type;
+            if(!firstType){
+                return;
+            }
             // 如果是根节点
             if (depth === 1) {
                 if (isArray(firstType)) {
@@ -140,7 +145,6 @@ export default defineComponent({
                     }
                 }
             }
-
             data.value = addExtraViewInfo(data.value);
             console.log('change datatype  data.value', data.value);
         }
@@ -219,6 +223,8 @@ export default defineComponent({
         }, (newVal: any) => {
             try {
                 let val = JSON.parse(newVal);
+                // 将 $ref 转换为ref
+                handleRef(val);
                 // 默认值
                 if(!val?.type) {
                     val = {
@@ -237,7 +243,8 @@ export default defineComponent({
             const newObj = removeExtraViewInfo(cloneDeep(newVal));
             emit('change', newObj);
         }, {
-            immediate: false,
+            // todo 为什么要加上页面渲染时就需要加上这个，其实没必要，待优化
+            immediate: true,
             deep: true
         });
 

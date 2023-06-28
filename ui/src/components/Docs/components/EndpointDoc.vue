@@ -69,6 +69,7 @@
           <SchemaViewer
               :examples-str="info?.requestBody?.examples"
               :components="info?.serveInfo?.component"
+              :contentType="info?.requestBody?.schemaItem?.type"
               :contentStr="info?.requestBody?.schemaItem?.content"/>
         </div>
       </div>
@@ -106,6 +107,7 @@
           <p v-if="res.description">{{ res.description }}</p>
           <SchemaViewer :examples-str="res?.examples"
                         :components="info?.serveInfo?.component"
+                        :contentType="res?.schemaItem?.type"
                         :contentStr="res?.schemaItem?.content"/>
         </div>
       </div>

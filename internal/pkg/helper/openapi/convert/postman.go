@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi/convert/postman"
+	_logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/getkin/kin-openapi/openapi3"
 	"os/exec"
 	"runtime"
@@ -21,6 +22,7 @@ func newPostman() *Postman {
 
 func (d *Postman) toOpenapi() (doc *openapi3.T, err error) {
 	system := runtime.GOOS
+	_logUtils.Infof(fmt.Sprintf("system:%s", system))
 	cmd := ""
 	var c *exec.Cmd
 	var output []byte

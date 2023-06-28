@@ -6,7 +6,7 @@
             class="search-input"
             v-model:value="searchValue"
             placeholder="搜索接口分类"/>
-        <div class="add-btn" @click="create(treeData?.[0], 'dir')">
+        <div class="add-btn" @click="create(treeData?.[0]?.id, 'dir')">
           <PlusOutlined style="font-size: 16px;"/>
         </div>
       </div>
@@ -21,7 +21,7 @@
             @drop="onDrop"
             @expand="onExpand"
             @select="selectNode"
-            :tree-data="treeData"
+            :tree-data="treeData?.[0]?.children"
             :replace-fields="replaceFields">
 
           <template #switcherIcon>

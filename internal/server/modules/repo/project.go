@@ -437,6 +437,19 @@ func (r *ProjectRepo) AddProjectRootPlanCategory(projectId uint) (err error) {
 	return
 }
 
+func (r *ProjectRepo) AddProjectRootTestCategory(projectId, serveId uint) (err error) {
+	root := model.TestInterface{
+		Title:     "根节点",
+		ProjectId: projectId,
+		IsLeaf:    false,
+		Type:      "dir",
+		ServeId:   serveId,
+	}
+	err = r.DB.Create(&root).Error
+
+	return
+}
+
 func (r *ProjectRepo) Members(req v1.ProjectReqPaginate, projectId int) (data _domain.PageData, err error) {
 	req.Order = "sys_user.created_at"
 	db := r.DB.Model(&model.SysUser{}).
@@ -527,6 +540,8 @@ func (r *ProjectRepo) AddProjectDefaultServe(projectId, userId uint) (serve mode
 	r.ServeRepo.SetCurrServeByUser(serve.ID, userId)
 
 	r.ServeRepo.AddDefaultServer(serve.ProjectId, serve.ID)
+
+	r.ServeRepo.AddDefaultTestCategory(serve.ProjectId, serve.ID)
 
 	return
 }

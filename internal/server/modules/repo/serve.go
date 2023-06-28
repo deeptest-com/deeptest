@@ -407,7 +407,13 @@ func (r *ServeRepo) SaveServe(serve *model.Serve) (err error) {
 			if err != nil {
 				return err
 			}
+
 			err = r.AddDefaultServer(serve.ProjectId, serve.ID)
+			if err != nil {
+				return err
+			}
+
+			err = r.AddDefaultTestCategory(serve.ProjectId, serve.ID)
 
 		} else {
 			err = r.Save(serve.ID, &serve)
@@ -460,6 +466,18 @@ func (r *ServeRepo) AddDefaultServer(projectId, serveId uint) (err error) {
 		return
 	}
 
+	return
+}
+
+func (r *ServeRepo) AddDefaultTestCategory(projectId, serveId uint) (err error) {
+	root := model.TestInterface{
+		Title:     "根节点",
+		ProjectId: projectId,
+		IsLeaf:    false,
+		Type:      "dir",
+		ServeId:   serveId,
+	}
+	err = r.DB.Create(&root).Error
 	return
 }
 

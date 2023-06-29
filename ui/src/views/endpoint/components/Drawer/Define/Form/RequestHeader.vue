@@ -2,39 +2,59 @@
 <template>
   <div class="main" style="display:inline-block;">
     <a-input-group compact>
-      <div v-if="useSelect">
-        <a-select  :value="fieldState.name"
-                   showSearch
-                   filterOption
-                   @change="handleChangeHeader"
-                   :options="requestHeaderOptions"
-                   style="width: 200px"
-                   :disabled="hasRef"
-                   placeholder="输入字段名称">
-        </a-select>
-        <a-select
-            :value="fieldState.type"
-            placeholder="请选择类型"
-            @change="handleTypeChange"
-            :disabled="hasRef"
-            :options="pathParamsDataTypesOpts"
-            style="width: 100px"/>
-      </div>
-      <a-input v-else :value="fieldState.name"
-               @change="handleChangeName"
-               style="width: 300px"
-               :disabled="hasRef"
-               placeholder="输入字段名称">
-        <template #addonAfter>
-          <a-select
-              :value="fieldState.type"
-              placeholder="请选择类型"
-              @change="handleTypeChange"
-              :disabled="hasRef"
-              :options="pathParamsDataTypesOpts"
-              style="width: 100px"/>
+      <a-auto-complete
+          v-model:value="fieldState.name"
+          style="width: 200px"
+          placeholder="输入字段名称"
+          @search="handleSearch"
+          @change="handleChangeHeader"
+      >
+        <template #dataSource>
+          <a-select-option v-for="header in result" :key="header">
+            {{ header }}
+          </a-select-option>
         </template>
-      </a-input>
+      </a-auto-complete>
+      <a-select
+          :value="fieldState.type"
+          placeholder="请选择类型"
+          @change="handleTypeChange"
+          :disabled="hasRef"
+          :options="pathParamsDataTypesOpts"
+          style="width: 100px"/>
+<!--      <div v-if="useSelect">-->
+<!--        <a-select  :value="fieldState.name"-->
+<!--                   showSearch-->
+<!--                   filterOption-->
+<!--                   @change="handleChangeHeader"-->
+<!--                   :options="requestHeaderOptions"-->
+<!--                   style="width: 200px"-->
+<!--                   :disabled="hasRef"-->
+<!--                   placeholder="输入字段名称">-->
+<!--        </a-select>-->
+<!--        <a-select-->
+<!--            :value="fieldState.type"-->
+<!--            placeholder="请选择类型"-->
+<!--            @change="handleTypeChange"-->
+<!--            :disabled="hasRef"-->
+<!--            :options="pathParamsDataTypesOpts"-->
+<!--            style="width: 100px"/>-->
+<!--      </div>-->
+<!--      <a-input v-else :value="fieldState.name"-->
+<!--               @change="handleChangeName"-->
+<!--               style="width: 300px"-->
+<!--               :disabled="hasRef"-->
+<!--               placeholder="输入字段名称">-->
+<!--        <template #addonAfter>-->
+<!--          <a-select-->
+<!--              :value="fieldState.type"-->
+<!--              placeholder="请选择类型"-->
+<!--              @change="handleTypeChange"-->
+<!--              :disabled="hasRef"-->
+<!--              :options="pathParamsDataTypesOpts"-->
+<!--              style="width: 100px"/>-->
+<!--        </template>-->
+<!--      </a-input>-->
 
       <a-input :value="fieldState.description"
                placeholder="输入描述信息"
@@ -205,6 +225,20 @@ const fieldState = ref<fieldStateType | any>({
   example: '',
   pattern: '',
 });
+
+const result = ref<string[]>([]);
+const handleSearch = (val: string) => {
+  if (!val) {
+    result.value = [];
+  } else {
+    requestHeaderOptions.forEach((item) => {
+      console.log('-------------', item.value)
+      if (item.value.search(val) != -1) {
+        result.value.push(item.value)
+      }
+    })
+  }
+};
 
 const showRef = ref(false);
 const otherProps: any = ref({});

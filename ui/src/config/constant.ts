@@ -1319,8 +1319,4 @@ export const requestHeaderOptions = [
         label: 'Range',
         value: 'Range'
     },
-    {
-        label: 'other',
-        value: 'other'
-    },
 ];

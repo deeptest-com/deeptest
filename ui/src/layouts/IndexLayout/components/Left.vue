@@ -145,6 +145,7 @@ export default defineComponent({
         &.leyan-logo{
           background-size: 24px 24px;
           background-image: url("https://od-1310531898.cos.ap-beijing.myqcloud.com/202306291016780.svg");
+          transform: scale(1) translateX(-2px);
         }
       }
     }
@@ -162,6 +163,13 @@ export default defineComponent({
     .left-scrollbar {
       width: 100%;
       height: 100%;
+    }
+
+    :deep(.ant-menu-submenu.ant-menu-submenu-inline.ant-menu-submenu-open) {
+      color: rgba(255, 255, 255, 0.4);
+    }
+    :deep(.ant-menu-submenu.ant-menu-submenu-inline.ant-menu-submenu-open .ant-menu-submenu-arrow) {
+      opacity: 0.45;
     }
   }
 
@@ -214,5 +222,8 @@ export default defineComponent({
   :deep(.indexlayout-left-menu .ant-menu) {
     padding: 10px;
   }
+
+
+
 }
 </style>

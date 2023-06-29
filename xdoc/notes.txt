@@ -43,3 +43,5 @@ ${_dp(myData, A, seq|rand|2)}
 
 ${_dp(myData, A, 1)}
 
+sudo lsof -i:6379
+sudo redis-server ~/rd/server/redis.conf

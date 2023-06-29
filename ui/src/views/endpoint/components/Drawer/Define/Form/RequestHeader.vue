@@ -232,7 +232,6 @@ const handleSearch = (val: string) => {
     result.value = [];
   } else {
     requestHeaderOptions.forEach((item) => {
-      console.log('-------------', item.value)
       if (item.value.search(val) != -1) {
         result.value.push(item.value)
       }

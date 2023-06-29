@@ -58,6 +58,8 @@ export default defineComponent({
       background-size: 100% 100%;
       cursor: pointer;
       &.leyan-logo{
+        transform: scale(1.1) translateX(5px);
+
         background-image: url("https://od-1310531898.cos.ap-beijing.myqcloud.com/202306291016448.svg");
       }
     }

@@ -1,15 +1,12 @@
 
-import axios, { AxiosPromise, AxiosRequestConfig, AxiosResponse } from 'axios';
-import router from '@/config/routes';
-import i18n from "@/config/i18n";
-import bus from "@/utils/eventBus";
+import axios, { AxiosRequestConfig } from 'axios';
 import settings from '@/config/settings';
 import { getToken } from '@/utils/localToken';
-import { getCache } from '@/utils/localCache';
-import {getServerUrl} from "@/utils/request";
+import {getUrls} from "@/utils/request";
 import {addSepIfNeeded} from "@/utils/url";
 
-const baseUrl = addSepIfNeeded(getServerUrl())
+const urls = getUrls()
+const baseUrl = addSepIfNeeded(urls.serverUrl)
 
 export async function uploadRequest(file: any, params?: any) {
     const data = new FormData()

@@ -9,6 +9,7 @@ import bus from "@/utils/eventBus";
 import settings from '@/config/settings';
 import { getToken } from '@/utils/localToken';
 import { getCache } from '@/utils/localCache';
+import {ref} from "vue";
 
 export interface ResponseData {
     code: number;
@@ -25,37 +26,39 @@ export interface ResultErr {
 /**
  * 配置request请求时的默认参数
  */
-
-export const getServerUrl = () => {
+export const getUrls = () => {
+    const isElectron = !!window.require
     const nodeEnv = process.env.NODE_ENV
-    let apiUrl = process.env.VUE_APP_API_SERVER
+    console.log(`isElectron=${isElectron}, nodeEnv=${nodeEnv}, locationHref=${window.location.href}`)
 
-    if (nodeEnv === 'production' && (!apiUrl || apiUrl.trim() == '')) {
-        console.log(process.env.NODE_ENV, window.location.href)
+    let serverUrl = process.env.VUE_APP_API_SERVER
+    let agentUrl = process.env.VUE_APP_API_AGENT
 
+    if (nodeEnv === 'production' && !isElectron) { // load ui page from server
         const location = unescape(window.location.href);
 
-        let serverUrl = location.split('#')[0].split('index.html')[0];
+        serverUrl = location.split('#')[0].split('index.html')[0];
         if (!serverUrl.endsWith('/')) {
             serverUrl += '/'
         }
+        serverUrl = serverUrl + 'api/v1'
 
-        apiUrl = serverUrl + 'api/v1'
+        agentUrl = serverUrl.replace('8085', '8086')
     }
 
-    console.log(`on ${nodeEnv} env, server url is ${apiUrl}.`)
+    console.log(`serverUrl=${serverUrl}, agentUrl=${agentUrl}`)
 
-    return apiUrl
+    return {serverUrl, agentUrl}
 }
 
+const {serverUrl, agentUrl} = getUrls()
 const request = axios.create({
-    baseURL: getServerUrl(),
+    baseURL: serverUrl,
     withCredentials: true, // 跨域请求时发送cookie
     timeout: 0
 });
-
 const requestAgent = axios.create({
-    baseURL: process.env.VUE_APP_API_AGENT
+    baseURL: agentUrl
 });
 
 // 全局设置 - post请求头

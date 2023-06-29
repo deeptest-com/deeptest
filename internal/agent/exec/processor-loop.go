@@ -71,10 +71,14 @@ func (entity ProcessorLoop) Run(processor *Processor, session *Session) (err err
 }
 
 func (entity *ProcessorLoop) runLoopItems(session *Session, processor *Processor, iterator agentDomain.ExecIterator) (err error) {
-	for i, item := range iterator.Items {
+	for index, item := range iterator.Items {
+		if DemoTestSite != "" && index > 2 {
+			break
+		}
+
 		msg := agentDomain.ScenarioExecResult{
 			ParentId:          int(processor.ID),
-			Summary:           fmt.Sprintf("%d. %s为%v", i+1, iterator.VariableName, item),
+			Summary:           fmt.Sprintf("%d. %s为%v", index+1, iterator.VariableName, item),
 			Name:              "循环变量",
 			ProcessorCategory: consts.ProcessorPrint,
 		}
@@ -101,7 +105,11 @@ func (entity *ProcessorLoop) runLoopUntil(session *Session, processor *Processor
 
 	index := 0
 	for {
+		if DemoTestSite != "" && index > 2 {
+			break
+		}
 		index += 1
+
 		msg := agentDomain.ScenarioExecResult{
 			ParentId: int(processor.ID),
 			Summary:  fmt.Sprintf("%d. ", index),

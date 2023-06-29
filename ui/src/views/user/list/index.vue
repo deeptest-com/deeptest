@@ -161,7 +161,6 @@ const store = useStore<{ User: UserStateType }>();
 const isAdmin = ref<boolean>(false)
 const getUserSysRole = () => {
   isAdmin.value = store.state.User.currentUser.sysRoles.indexOf('admin') != -1
-  console.log('======================',store.state.User.currentUser)
 }
 onMounted(() => {
   getUserSysRole();

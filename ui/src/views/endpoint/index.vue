@@ -66,11 +66,14 @@
                        :data-source="list">
                 <template #colTitle="{text,record}">
                   <div class="customTitleColRender">
-                    <EditAndShowField :custom-class="'custom-endpoint show-on-hover'"
-                                      :value="text"
-                                      placeholder="请输入接口名称"
-                                      @update="(e: string) => handleUpdateEndpoint(e, record)"
-                                      @edit="editEndpoint(record)"/>
+                    <span>
+                      <a :title="record?.title" href="javascript:void (0)" @click="editEndpoint(record)">{{ text }}</a>
+                    </span>
+<!--                    <EditAndShowField :custom-class="'custom-endpoint show-on-hover'"-->
+<!--                                      :value="text"-->
+<!--                                      placeholder="请输入接口名称"-->
+<!--                                      @update="(e: string) => handleUpdateEndpoint(e, record)"-->
+<!--                                      @edit="editEndpoint(record)"/>-->
                   </div>
                 </template>
 
@@ -568,5 +571,11 @@ onUnmounted(async () => {
   }
 }
 
+
+.customTitleColRender{
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
 </style>

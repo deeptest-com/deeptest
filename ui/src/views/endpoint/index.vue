@@ -450,6 +450,12 @@ onUnmounted(async () => {
   background: #ffffff;
   height: calc(100vh - 96px);
   overflow: hidden;
+
+
+
+  :deep(.ant-pagination) {
+    margin-right: 24px;
+  }
 }
 
 .tag-filter-form {
@@ -484,6 +490,7 @@ onUnmounted(async () => {
 
   .right {
     flex: 1;
+    overflow: scroll;
 
     &.right-not-collapsed {
       width: calc(100% - 300px);

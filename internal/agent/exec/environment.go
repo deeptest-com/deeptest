@@ -19,9 +19,6 @@ func GenRequestUrl(req *domain.BaseRequest, debugInterfaceId uint, baseUrl strin
 
 	//req.Url = _httpUtils.AddSepIfNeeded(baseUrl) + uri
 	req.Url = baseUrl + uri
-	if DemoTestSite != "" {
-		req.Url = DemoTestSite
-	}
 }
 
 func ReplacePathParams(uri string, pathParams []domain.Param) (ret string) {

@@ -63,10 +63,13 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 	// add cookies
 	DealwithCookies(&baseRequest, entity.ProcessorID)
 
-	// send request
+	// gen request url
 	GenRequestUrl(&baseRequest, processor.EntityId, entity.BaseUrl)
+
+	// send request
 	//startTime := time.UnixNano()
 	entity.Response, err = Invoke(&baseRequest)
+
 	processor.Result.Cost = time.Now().UnixMilli() - startTime.UnixMilli()
 	reqContent, _ := json.Marshal(baseRequest)
 	processor.Result.ReqContent = string(reqContent)

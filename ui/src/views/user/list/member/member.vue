@@ -30,12 +30,18 @@
         }"
       >
         <template #action="{ record }">
-          <a-button type="link" @click="() => edit(record.id)">
-            <span>编辑</span>
-          </a-button>
-          <a-button type="link" @click="() => remove(record.id)">
-            <span>删除</span>
-          </a-button>
+          <a-tooltip>
+            <template v-if="!isAdmin" #title>暂无权限，请联系管理员</template>
+            <a-button type="link" :disabled="!isAdmin" @click="() => edit(record.id)">
+              <span>编辑</span>
+            </a-button>
+          </a-tooltip>
+          <a-tooltip>
+            <template v-if="!isAdmin" #title>暂无权限，请联系管理员</template>
+            <a-button type="link" :disabled="!isAdmin" @click="() => remove(record.id)">
+              <span>删除</span>
+            </a-button>
+          </a-tooltip>
         </template>
       </a-table>
     </div>
@@ -63,6 +69,9 @@ import { NotificationKeyCommon } from "@/utils/const";
 import debounce from "lodash.debounce";
 import { useRouter } from "vue-router";
 import EditPage from "../../edit/edit.vue";
+import { defineProps } from 'vue'
+
+const props = defineProps(['isAdmin'])
 
 const router = useRouter();
 const store = useStore();

@@ -6,17 +6,17 @@
       :visible="visible"
       class="drawer"
       wrapClassName="drawer-1"
-      :bodyStyle="{padding:0,marginBottom:'56px'}"
+      :headerStyle="{position:'sticky',top:0,zIndex:9999}"
+      :bodyStyle="{padding:0,minHeight:'100vh'}"
       @close="onCloseDrawer">
 
     <!-- 头部信息  -->
     <template #title>
-      <a-row type="flex" style="align-items: center;width: 100%">
-        <a-col :span="12" class="header-text">
-          <span class="serialNumber">[{{endpointDetail.serialNumber}}]</span>
-          <EditAndShowField :custom-class="'show-on-hover'" placeholder="修改标题" :value="endpointDetail?.title || ''" @update="updateTitle"/>
-        </a-col>
-      </a-row>
+      <div class="header-text">
+        <span class="serialNumber">[{{ endpointDetail.serialNumber }}]</span>
+        <EditAndShowField :custom-class="'show-on-hover'" placeholder="修改标题" :value="endpointDetail?.title || ''"
+                          @update="updateTitle"/>
+      </div>
     </template>
 
     <!-- 基本信息 -->
@@ -29,39 +29,47 @@
         style="width: 100%"
         :bordered="false"
         :size="'small'"
-        :headStyle="{padding:'0 24px',borderBottom:'none'}"
-        :bodyStyle="{padding:'0 24px 0 24px'}">
+        :bodyStyle="{padding:'0 16px'}"
+        :headStyle="{padding:'0 16px',borderBottom:'none'}"
+    >
       <template #title>
-        <div style="margin-top: -12px;">
-          <ConBoxTitle :show-arrow="true" @expand="expandInfo" :backgroundStyle="'background: #FBFBFB;'" :title="'接口设计'"/>
+        <div>
+          <ConBoxTitle :show-arrow="true" @expand="expandInfo" :backgroundStyle="'background: #FBFBFB;'"
+                       :title="'接口设计'"/>
         </div>
       </template>
-
-      <a-tabs v-show="expand" :activeKey="key" :animated="false" @change="changeTab">
+      <a-tabs
+          tabBarStyle="margin-bottom: 0;"
+          v-show="expand" :activeKey="key" :animated="false" @change="changeTab">
+        <template #tabBarExtraContent>
+          <a-button v-if="key === 'request' && showFooter" type="primary" @click="save">
+            <template #icon>
+              <SaveOutlined/>
+            </template>
+            保存
+          </a-button>
+        </template>
         <a-tab-pane key="request" tab="定义">
-          <EndpointDefine v-if="key === 'request'" @switchMode="switchMode"/> <!-- use v-if to force page reload-->
+          <div style="margin-top: 16px;">
+            <EndpointDefine v-if="key === 'request'" @switchMode="switchMode"/> <!-- use v-if to force page reload-->
+          </div>
         </a-tab-pane>
-
         <a-tab-pane key="run" tab="调试">
-          <!-- use v-if to force page reload -->
-          <EndpointDebug v-if="key === 'run'" @switchToDefineTab="switchToDefineTab"/>
+          <div style="margin-top: 16px;">
+            <!-- use v-if to force page reload -->
+            <EndpointDebug v-if="key === 'run'" @switchToDefineTab="switchToDefineTab"/>
+          </div>
         </a-tab-pane>
-
         <a-tab-pane key="docs" tab="文档">
-          <Docs :show-basic-info="false"
+          <Docs :onlyShowDocs="true"
+                :showHeader="false"
                 v-if="key === 'docs' && docsData"
                 :data="docsData"
+                @switchToDefineTab="switchToDefineTab"
                 :show-menu="true"/> <!-- use v-if to force page reload-->
         </a-tab-pane>
       </a-tabs>
     </a-card>
-
-    <div v-if="key === 'request' && showFooter" class="drawer-btns">
-      <a-space>
-        <a-button type="primary" @click="save">保存</a-button>
-        <a-button @click="cancel">取消</a-button>
-      </a-space>
-    </div>
   </a-drawer>
 </template>
 
@@ -82,6 +90,7 @@ import Docs from '@/components/Docs/index.vue';
 import {useStore} from "vuex";
 import {Endpoint} from "@/views/endpoint/data";
 import {message} from "ant-design-vue";
+import {SaveOutlined} from '@ant-design/icons-vue';
 
 const store = useStore<{ Endpoint, ProjectGlobal, ServeGlobal }>();
 const endpointDetail: any = computed<Endpoint>(() => store.state.Endpoint.endpointDetail);
@@ -101,7 +110,7 @@ function onCloseDrawer() {
 const docsData = ref(null);
 
 async function changeTab(value) {
-  console.log('changeTab',value)
+  console.log('changeTab', value)
 
   key.value = value;
   // 切换到调试页面时，需要先保存
@@ -175,8 +184,9 @@ async function save() {
 }
 
 const expand = ref(true)
+
 function expandInfo(val) {
-    expand.value = val
+  expand.value = val
 }
 
 </script>
@@ -219,6 +229,7 @@ function expandInfo(val) {
   bottom: 0;
   //right: 0;
   width: 100%;
+  padding-right: 24px;
   height: 56px;
   display: flex;
   justify-content: flex-end;
@@ -226,9 +237,12 @@ function expandInfo(val) {
   margin-right: 16px;
   z-index: 99;
 }
-.header-text{
+
+.header-text {
   display: flex;
-  .serialNumber{
+  max-width: 80%;
+
+  .serialNumber {
     margin-right: 6px;
   }
 }

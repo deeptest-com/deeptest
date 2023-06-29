@@ -3,7 +3,6 @@ package service
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
-	_httpUtils "github.com/aaronchen2k/deeptest/pkg/lib/http"
 )
 
 type DebugSceneService struct {
@@ -40,7 +39,8 @@ func (s *DebugSceneService) LoadScene(debugData *domain.DebugData) (
 
 	serveServer, _ := s.ServeServerRepo.Get(debugServerId)
 
-	baseUrl = _httpUtils.AddSepIfNeeded(serveServer.Url)
+	//baseUrl = _httpUtils.AddSepIfNeeded(serveServer.Url)
+	baseUrl = serveServer.Url
 	envId := serveServer.EnvironmentId
 	environment, _ := s.EnvironmentRepo.Get(envId)
 	debugData.ProjectId = environment.ProjectId

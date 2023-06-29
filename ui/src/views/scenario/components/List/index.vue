@@ -182,8 +182,7 @@ let queryParams = reactive<QueryParams>({
 const currModelId = ref(0)
 
 watch(nodeDataCategory, () => {
-  console.log('watch nodeDataCategory', nodeDataCategory.value.id)
-  getList(1, nodeDataCategory.value.id);
+  getList(1, nodeDataCategory.value?.id || 0);
 }, {deep: false})
 
 watch(currProject, () => {
@@ -404,6 +403,16 @@ const columns = [
 onMounted(() => {
   console.log('onMounted')
 })
+
+watch(
+  ()=>[isEditVisible.value, drawerVisible.value],
+  async (newValue) => {
+    if (!newValue[0] || !newValue[1]) {
+      await store.dispatch('Scenario/loadCategory');
+    }
+  },
+  {  immediate: true }
+);
 
 </script>
 

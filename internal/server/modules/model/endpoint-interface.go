@@ -11,12 +11,14 @@ type EndpointInterface struct {
 	RequestBody    EndpointInterfaceRequestBody    `gorm:"-" json:"requestBody"`
 	ResponseBodies []EndpointInterfaceResponseBody `gorm:"-" json:"responseBodies"`
 	ResponseCodes  string                          `json:"responseCodes"`
+	Tags           []string                        `gorm:"-" json:"tags"`
+	PathParams     []EndpointPathParam             `gorm:"-" json:"pathParams"`
 
 	DebugInterfaceId uint `gorm:"default:0" json:"debugInterfaceId"`
 }
 type SchemaParam struct {
 	Name        string  `json:"name"`
-	Value       string  `json:"value"`
+	Value       string  `json:"value"  gorm:"type:text"`
 	Type        string  `json:"type"`
 	Desc        string  `json:"desc"`
 	InterfaceId uint    `json:"interfaceId"`

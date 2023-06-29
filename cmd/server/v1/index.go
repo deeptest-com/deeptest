@@ -57,8 +57,8 @@ type IndexModule struct {
 	SummaryModule           *router.SummaryModule           `inject:""`
 	MessageModule           *router.MessageModule           `inject:""`
 	DocumentModule          *router.DocumentModule          `inject:""`
-
-	TestsModule *router.TestsModule `inject:""`
+	HealthzModule           *router.HealthzModule           `inject:""`
+	TestsModule             *router.TestsModule             `inject:""`
 }
 
 func NewIndexModule() *IndexModule {
@@ -123,7 +123,7 @@ func (m *IndexModule) Party() module.WebModule {
 		m.DiagnoseInterfaceModule.Party(),
 		m.MessageModule.Party(),
 		m.DocumentModule.Party(),
-
+		m.HealthzModule.Party(),
 		m.TestsModule.Party(),
 	}
 	return module.NewModule(consts.ApiPath, handler, modules...)

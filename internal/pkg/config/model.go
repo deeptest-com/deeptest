@@ -13,6 +13,7 @@ type Config struct {
 	Redis   Redis     `mapstructure:"redis" json:"redis" yaml:"redis"`
 	Mysql   Mysql     `mapstructure:"mysql" json:"mysql" yaml:"mysql"`
 	Captcha Captcha   `mapstructure:"captcha" json:"captcha" yaml:"captcha"`
+	Ldap    bool      `mapstructure:"ldap" json:"ldap" yaml:"ldap"`
 }
 
 type System struct {

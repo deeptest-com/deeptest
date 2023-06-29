@@ -1,4 +1,4 @@
-import {defineComponent, ref, watch,} from 'vue';
+import {defineComponent, ref, watch,nextTick} from 'vue';
 import './schema.less';
 import {DownOutlined, PlusOutlined, RightOutlined,} from '@ant-design/icons-vue';
 import SplitDivider from "./SplitDivider.vue";
@@ -8,19 +8,14 @@ import cloneDeep from "lodash/cloneDeep";
 import {
     addExtraViewInfo,
     findLastNotArrayNode,
-    generateSchemaByArray,
     isArray,
     isNormalType,
     isObject,
     isRef,
-    removeExtraViewInfo,
 } from './utils';
 import {
     treeLevelWidth
 } from './config';
-import {message} from "ant-design-vue";
-import {useStore} from "vuex";
-import {StateType as ServeStateType} from "@/store/serve";
 
 export default defineComponent({
     name: 'SchemeEditor',
@@ -31,9 +26,8 @@ export default defineComponent({
         refsOptions: Array,
         components: Array,
     },
-    emits: ['change'],
+    emits: [],
     setup(props, {emit}) {
-        const store = useStore<{ Endpoint, ServeGlobal: ServeStateType }>();
         const data: any = ref(null);
         const expandIt = (tree: any, options: any, e: any) => {
             const {parent, ancestor, isRoot} = options;
@@ -44,8 +38,10 @@ export default defineComponent({
                     const result: any = (props.components || []).find((item: any) => item.ref === tree.ref);
                     tree.content = JSON.parse(result.content || '{}');
                     data.value = addExtraViewInfo(data.value);
+                    tree.extraViewInfo.isExpand = true;
                 } else {
                     delete tree.content;
+                    tree.extraViewInfo.isExpand = false;
                 }
             } else {
                 tree.extraViewInfo.isExpand = !tree.extraViewInfo.isExpand;
@@ -53,13 +49,7 @@ export default defineComponent({
         }
 
         watch(() => {return props.value}, (newVal) => {
-            const val = cloneDeep(newVal);
-            data.value = addExtraViewInfo(val);
-        }, {immediate: true, deep: true});
-
-        watch(() => {return data.value}, (newVal) => {
-            const newObj = removeExtraViewInfo(cloneDeep(newVal));
-            emit('change', newObj);
+            data.value = addExtraViewInfo(newVal);
         }, {immediate: true, deep: true});
 
         const renderDivider = (options: any) => {
@@ -108,7 +98,6 @@ export default defineComponent({
             }
 
             const properties = parent?.properties?.[keyName] || {};
-            console.log('832 properties', properties)
             const list: any = [];
             Object.entries(properties).forEach(([k, v]) => {
                 if (typeof v !== 'boolean' && !['type', 'properties', 'extraViewInfo','ref','content','name'].includes(k)) {
@@ -185,7 +174,7 @@ export default defineComponent({
         }
         const renderDirectoryText = (options: any) => {
             const {depth, tree, isRefChildNode, isRoot, isExpand} = options;
-            return <div class={'helo'}>
+            return <div>
                 <div class={'directoryText'}
                      style={{'paddingLeft': `${depth * treeLevelWidth}px`}}>
                     {renderHorizontalLine(depth)}
@@ -231,7 +220,7 @@ export default defineComponent({
                 // 找到最后一个非数组类型的节点
                 const {node} = findLastNotArrayNode(tree);
                 const isRoot = tree?.extraViewInfo?.depth === 1;
-                return <div class={{'directoryNode': true, "rootNode": isRoot}}>
+                return <div class={{'directoryNode': true, "rootNode": isRoot,'rootNode-array':isRoot}}>
                     {
                         renderTree(node)
                     }

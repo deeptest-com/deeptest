@@ -97,7 +97,7 @@
 <script setup lang="ts">
 
 import {
-  computed,
+  computed, createVNode,
   defineEmits,
   defineProps,
   reactive,
@@ -111,9 +111,10 @@ import { securityColumns } from '../../config';
 import { useStore } from 'vuex';
 import { StateType as ProjectStateType } from "@/store/project";
 import { StateType as ProjectSettingStateType } from '../../store';
-import { message } from 'ant-design-vue';
+import {message, Modal} from 'ant-design-vue';
 import { SelectTypes } from 'ant-design-vue/es/select';
 import EmptyCom from '@/components/Empty/index.vue';
+import {ExclamationCircleOutlined} from "@ant-design/icons-vue";
 
 
 const props = defineProps({
@@ -263,10 +264,19 @@ async function getList() {
 
 
 async function onDelete(record: any) {
-  await store.dispatch('ProjectSetting/deleteSecurity', {
-    id: record.id,
-    serveId: props.serveId,
-  })
+  Modal.confirm({
+    title: () => '确定删除该Security吗？',
+    icon: createVNode(ExclamationCircleOutlined),
+    okText: () => '确定',
+    okType: 'danger',
+    cancelText: () => '取消',
+    onOk: async () => {
+      await store.dispatch('ProjectSetting/deleteSecurity', {
+        id: record.id,
+        serveId: props.serveId,
+      })
+    },
+  });
 }
 
 function changeDefault() {

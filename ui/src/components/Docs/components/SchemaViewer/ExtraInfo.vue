@@ -13,7 +13,6 @@ const emit = defineEmits([])
 
 const visible = ref(false);
 
-console.log(2222,props.value)
 
 </script>
 

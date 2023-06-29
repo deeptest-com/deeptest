@@ -1,16 +1,33 @@
-<!-- :::: 接口定义模块 -->
 <template>
-  <div class="content">
-    <BasicDetail :items="items" v-if="showBasicInfo"/>
-    <a-divider style="margin:0" v-if="showBasicInfo"/>
+  <div class="content"  :style="isDocsFullPage ? {height: '100vh'} :{}" v-if="data?.name && serviceList?.length">
+    <DocsHeader v-if="showHeader"
+                :data="data"
+                :items="serviceList"
+                @select="selectSugRes"
+                @changeVersion="changeVersion"/>
+    <a-divider style="margin:0" v-if="showHeader"/>
     <div class="doc-container">
       <div class="left" v-if="showMenu">
         <LeftTreeView :serviceList="serviceList" @select="selectMenu" :selectedKeys="selectedKeys"/>
       </div>
       <div class="right" :class="{'only-docs':!showMenu}">
-        <EndpointDoc v-if="selectedItem" :info="selectedItem"/>
+        <EndpointDoc v-if="selectedItem" :info="selectedItem" :onlyShowDocs="onlyShowDocs"/>
       </div>
     </div>
+  </div>
+  <a-skeleton v-if="!data?.name"/>
+  <!--    没有定义接口文档，则展示空信息   -->
+  <div v-if="data?.name && serviceList?.length ===0" style="margin-top: 48px;">
+    <a-empty
+        image="https://gw.alipayobjects.com/mdn/miniapp_social/afts/img/A*pevERLJC9v0AAAAAAAAAAABjAQAAAQ/original"
+        :image-style="{height: '60px',}">
+        <template #description>
+                <span>
+                  您还未定义接口，请先定义接口
+                </span>
+      </template>
+      <a-button v-if="isEndpointPage" type="primary" @click="emit('switchToDefineTab')">接口定义</a-button>
+    </a-empty>
   </div>
 </template>
 
@@ -23,33 +40,28 @@ import {
 } from 'vue';
 import {useStore} from "vuex";
 
-import BasicDetail from "./components/BasicDetail.vue";
 import LeftTreeView from "./components/LeftTreeView.vue";
 import EndpointDoc from "./components/EndpointDoc.vue";
+import DocsHeader from "./components/DocsHeader.vue";
 
 const store = useStore<{ Endpoint, ProjectGlobal }>();
-const props = defineProps(['showBasicInfo', 'showMenu', 'data']);
-const emit = defineEmits([]);
+const props = defineProps(['showMenu', 'data', 'onlyShowDocs', 'showHeader']);
+const emit = defineEmits(['changeVersion','switchToDefineTab']);
 
-const items = computed(() => {
-  return [
-    {
-      label: '项目名称',
-      value: props?.data?.name,
-    },
-    {
-      label: '项目描述',
-      value: props?.data?.desc,
-    },
-  ]
-})
+const isEndpointPage = window.location.href.includes('/endpoint/index');
+const isDocsFullPage = window.location.href.includes('/docs/share') || window.location.pathname.includes('/docs/view');
 
 const serviceList = computed(() => {
   // 组装数据以兼容组件 LeftTreeMenu
   let items: any = [];
-  props?.data?.serves.forEach((item: any) => {
-    items.push(item);
+  console.log(123, props?.data?.serves)
+  props?.data?.serves?.forEach((item: any) => {
+    // 只显示文档，不展示服务信息
+    if (!props.onlyShowDocs) {
+      items.push(item);
+    }
     item?.endpoints?.forEach((endpoint: any) => {
+
       endpoint?.interfaces?.forEach((interfaceItem: any) => {
         items.push({
           ...interfaceItem,
@@ -63,28 +75,42 @@ const serviceList = computed(() => {
   return items;
 })
 
-const selectedItem:any = ref(null);
+const selectedItem: any = ref(null);
 
 const selectedKeys = computed(() => {
-  if(!selectedItem.value?.id) {
+  if (!selectedItem.value?.id) {
     return [];
   }
   return [selectedItem.value?.id];
 })
 
-watch(() => {return serviceList.value}, (newVal) => {
-  if (!selectedItem.value && newVal.length > 0) {
+watch(() => {
+  return serviceList.value
+}, (newVal) => {
+  if (newVal.length > 0) {
     selectedItem.value = newVal.find((item) => {
       return item.endpointInfo && item.serveInfo;
     })
-    if(!selectedItem.value) {
+    if (!selectedItem.value) {
       selectedItem.value = newVal[0];
     }
   }
 }, {immediate: true});
 
+
+function selectSugRes(item) {
+  selectedItem.value = item
+}
+
+
 function selectMenu(item) {
   selectedItem.value = item
+}
+
+
+function changeVersion(docId) {
+  // debugger;
+  emit('changeVersion', docId);
 }
 
 
@@ -92,10 +118,8 @@ function selectMenu(item) {
 
 <style lang="less" scoped>
 .content {
-  //padding: 24px;
-  height: calc(100vh - 200px);
+  height: calc(100vh - 100px);
   position: relative;
-
 }
 
 .doc-container {
@@ -107,17 +131,28 @@ function selectMenu(item) {
     height: 100%;
     overflow: hidden;
     //margin-left: 24px;
-    //padding: 24px;
-    //border-left: 1px solid #f0f0f0;
+    //padding: 0 12px;
+    //border-right: 1px solid #f0f0f0;
     overflow-y: scroll;
+    position: relative;
+
+    &:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+      z-index: 99;
+      background-color: #f0f0f0;
+      width: 1px;
+    }
   }
 
   .right {
     flex: 1;
     height: 100%;
     overflow: auto;
-    padding: 24px;
-    padding-bottom: 96px;
+    padding: 12px 24px 96px 24px;
   }
 
   .only-docs {

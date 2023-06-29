@@ -1,3 +1,7 @@
+/*
+* todo 改文件的很多公共方法需要提出去
+* */
+
 /**
  * 是否是对象类型
  * */
@@ -12,7 +16,7 @@ export function isObject(value: any): boolean {
  * 是否是引用类型
  * */
 export function isRef(obj: any): boolean {
-    return !!obj?.ref
+    return !!obj?.ref || !!obj?.$ref;
 }
 
 /**
@@ -40,14 +44,13 @@ function getExpandedValue(val: any, defaultVal: boolean) {
  * 根据传入的 schema 结构信息，添加需要额外的渲染属性
  * */
 export function addExtraViewInfo(val: Object | any | undefined | null): any {
-    console.log('转换之前', val);
     if (!val) {
         return null
     }
     val.extraViewInfo = {
         "isExpand": getExpandedValue(val, true),
         "depth": 1,
-        "type": val.type,
+        "type": val.type ,
         "parent": null,
         "keyName": "root",
         "keyIndex": 0,
@@ -106,6 +109,8 @@ export function addExtraViewInfo(val: Object | any | undefined | null): any {
         }
         // 处理引用类型
         if (isRef(obj)) {
+            obj.ref = obj.ref || obj.$ref;
+            obj.type = obj.type || val?.content?.type || 'object'
             obj.extraViewInfo = {
                 ...obj.extraViewInfo || {},
                 "isExpand": !!(obj?.content && obj.content?.type),
@@ -129,7 +134,6 @@ export function addExtraViewInfo(val: Object | any | undefined | null): any {
     if (!isNormalType(val.type) || isRef(val)) {
         traverse(val, 1, null, false);
     }
-    console.log('转换之后', val);
     return val;
 }
 
@@ -138,12 +142,10 @@ export function addExtraViewInfo(val: Object | any | undefined | null): any {
  * 根据传入的 schema 结构信息，删除额外的渲染属性
  * */
 export function removeExtraViewInfo(val: Object | any, isRemoveRefContent = false): object | null {
-    if (!val) {
-        return null
-    }
-    delete val?.extraViewInfo;
-
     function traverse(obj: any) {
+        if(obj?.extraViewInfo && isRemoveRefContent){
+            delete obj?.extraViewInfo;
+        }
         // base Case 普通类型，递归结束，
         if (isNormalType(obj.type) && !isRef(obj)) {
             delete obj?.extraViewInfo;
@@ -170,6 +172,9 @@ export function removeExtraViewInfo(val: Object | any, isRemoveRefContent = fals
                 }
                 obj?.items?.type && fn(obj.items);
                 if (isRemoveRefContent) {
+                    // debugger;
+                    // 兼容有可能是数组类型的 ref，但是且 type 属性
+                    delete obj.items?.extraViewInfo;
                     // 直接删除 content 属性
                     delete obj?.content;
                 } else if (obj?.content && obj.content?.type) {
@@ -190,7 +195,17 @@ export function removeExtraViewInfo(val: Object | any, isRemoveRefContent = fals
         }
     }
 
-    traverse(val);
+    try {
+        if (!val) {
+            return null
+        }
+        delete val?.extraViewInfo;
+        traverse(val);
+    } catch (e) {
+        console.log(832,'removeExtraViewInfo error',e);
+    }
+
+
     return val;
 }
 
@@ -234,6 +249,9 @@ export const generateSchemaByArray = (arr: any[]): any => {
     }, res);
     return res;
 };
+
+
+
 
 
 

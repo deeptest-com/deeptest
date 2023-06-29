@@ -79,6 +79,8 @@ watch(() => {return props.value}, (newVal) => {
 .editor {
   display: flex;
   align-items: center;
+  overflow: hidden;
+  flex: 1;
 
   &.custom-serve {
     color: #447DFD;

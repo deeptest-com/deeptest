@@ -1,9 +1,9 @@
 <template>
-    <a-table 
-        :rowKey="(_record, index) => index" 
-        :columns="columns" 
-        :data-source="list" 
-        :loading="loading" 
+    <a-table
+        :rowKey="(_record, index) => index"
+        :columns="columns"
+        :data-source="list"
+        :loading="loading"
         :pagination="{
             ...pagination,
             onChange: (page) => {
@@ -13,7 +13,7 @@
                 pagination.pageSize = size
                 handleGetList({ page });
             },
-        }" 
+        }"
         class="dp-table">
         <template #serialNumber="{ record }">
             <span style="cursor: pointer">{{ record.serialNumber }}</span>
@@ -55,14 +55,15 @@
     </a-table>
 </template>
 <script setup lang="ts">
-import { computed, ref, defineEmits, defineProps } from "vue";
+import {computed, ref, defineEmits, defineProps, createVNode} from "vue";
 import { useStore } from "vuex";
 import { ColumnProps } from 'ant-design-vue/es/table/interface';
-import { MoreOutlined } from "@ant-design/icons-vue";
+import {ExclamationCircleOutlined, MoreOutlined} from "@ant-design/icons-vue";
 import { StateType as ProjectStateType } from "@/store/project";
 import { StateType } from "../store";
 import { PaginationConfig } from "../data";
 import { momentUtc, formatWithSeconds } from "@/utils/datetime";
+import {message, Modal} from "ant-design-vue";
 
 defineProps({
     loading: {
@@ -136,7 +137,21 @@ const handleExport = (id: number) => {
 }
 
 const handleDelete = async (id: number) => {
-    store.dispatch('Report/remove', id);
+  Modal.confirm({
+    title: () => '确定删除该报告吗？',
+    icon: createVNode(ExclamationCircleOutlined),
+    okText: () => '确定',
+    okType: 'danger',
+    cancelText: () => '取消',
+    onOk: async () => {
+      const res = store.dispatch('Report/remove', id);
+      if (res) {
+        message.success('删除成功');
+      } else {
+        message.error('删除失败');
+      }
+    },
+  });
 }
 
 const handleQueryDetail = (record: any) => {

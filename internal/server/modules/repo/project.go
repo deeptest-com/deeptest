@@ -11,7 +11,6 @@ import (
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
-	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	_fileUtils "github.com/aaronchen2k/deeptest/pkg/lib/file"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"go.uber.org/zap"
@@ -47,7 +46,7 @@ func (r *ProjectRepo) Paginate(req v1.ProjectReqPaginate, userId uint) (data _do
 		db = db.Where("name LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords))
 	}
 	if req.Enabled != "" {
-		db = db.Where("disabled = ?", commonUtils.IsDisable(req.Enabled))
+		db = db.Where("disabled = ?", _commUtils.IsDisable(req.Enabled))
 	}
 
 	err = db.Count(&count).Error
@@ -264,22 +263,101 @@ func (r *ProjectRepo) GetChildrenIds(id uint) (ids []int, err error) {
 	return
 }
 
-func (r *ProjectRepo) ListProjectByUser(userId uint) (projects []model.ProjectMemberRole, err error) {
+func (r *ProjectRepo) ListProjectByUser(userId uint) (res []model.ProjectMemberRole, err error) {
+	projectRoleMap, err := r.GetProjectRoleMapByUser(userId)
+
+	if err != nil {
+		return
+	}
+
+	projectIds := make([]uint, 0)
+	for k, _ := range projectRoleMap {
+		projectIds = append(projectIds, k)
+	}
+
+	projects, err := r.GetProjectsByIds(projectIds)
+	if err != nil {
+		return
+	}
+
+	res, err = r.CombineRoleForProject(projects, projectRoleMap)
+
+	if err != nil {
+		return
+	}
+
+	//db := r.DB.Model(&model.ProjectMember{}).
+	//	Joins("LEFT JOIN biz_project p ON biz_project_member.project_id=p.id").
+	//	Joins("LEFT JOIN biz_project_role r ON biz_project_member.project_role_id=r.id").
+	//	Select("p.*, r.id role_id, r.name role_name").
+	//	Where("NOT biz_project_member.deleted")
+	//
+	//if !isAdminUser {
+	//	db.Where("biz_project_member.user_id = ?", userId)
+	//}
+	//err = db.Group("biz_project_member.project_id").Find(&projects).Error
+	return
+}
+
+func (r *ProjectRepo) GetProjectRoleMapByUser(userId uint) (res map[uint]uint, err error) {
 	isAdminUser, err := r.UserRepo.IsAdminUser(userId)
 	if err != nil {
 		return
 	}
 
+	var projectMembers []model.ProjectMember
 	db := r.DB.Model(&model.ProjectMember{}).
-		Joins("LEFT JOIN biz_project p ON biz_project_member.project_id=p.id").
-		Joins("LEFT JOIN biz_project_role r ON biz_project_member.project_role_id=r.id").
-		Select("p.*, r.id role_id, r.name role_name").
-		Where("NOT biz_project_member.deleted")
-
+		Select("project_id, project_role_id")
 	if !isAdminUser {
-		db.Where("biz_project_member.user_id = ?", userId)
+		db.Where("user_id = ?", userId)
 	}
-	err = db.Group("biz_project_member.project_id").Find(&projects).Error
+	if err = db.Find(&projectMembers).Error; err != nil {
+		return
+	}
+
+	res = make(map[uint]uint)
+	for _, v := range projectMembers {
+		res[v.ProjectId] = v.ProjectRoleId
+	}
+
+	return
+}
+
+func (r *ProjectRepo) GetProjectsByIds(ids []uint) (projects []model.Project, err error) {
+	err = r.DB.Model(&model.Project{}).
+		Where("id IN (?) AND NOT deleted AND NOT disabled ", ids).
+		Find(&projects).Error
+	return
+}
+
+func (r *ProjectRepo) CombineRoleForProject(projects []model.Project, projectRoleMap map[uint]uint) (res []model.ProjectMemberRole, err error) {
+	roleIds := make([]uint, 0)
+	for _, v := range projectRoleMap {
+		roleIds = append(roleIds, v)
+	}
+	roleIds = _commUtils.ArrayRemoveUintDuplication(roleIds)
+
+	roleIdNameMap, err := r.ProjectRoleRepo.GetRoleIdNameMap(roleIds)
+	if err != nil {
+		return
+	}
+
+	for _, v := range projects {
+		projectMemberRole := model.ProjectMemberRole{
+			Project: v,
+		}
+		if roleId, ok := projectRoleMap[v.ID]; ok {
+			projectMemberRole.RoleId = roleId
+		}
+		if projectMemberRole.RoleId == 0 {
+			continue
+		}
+		if roleName, ok := roleIdNameMap[projectMemberRole.RoleId]; ok {
+			projectMemberRole.RoleName = roleName
+		}
+		res = append(res, projectMemberRole)
+	}
+
 	return
 }
 
@@ -298,7 +376,7 @@ func (r *ProjectRepo) GetCurrProjectByUser(userId uint) (currProject model.Proje
 }
 
 func (r *ProjectRepo) ListProjectsRecentlyVisited(userId uint) (projects []model.Project, err error) {
-	err = r.DB.Raw(fmt.Sprintf("SELECT p.*,max( v.created_at ) visited_time FROM biz_project_recently_visited v,biz_project p WHERE v.project_id = p.id AND v.user_id = %d GROUP BY v.project_id ORDER BY visited_time DESC LIMIT 3", userId)).Find(&projects).Error
+	err = r.DB.Raw(fmt.Sprintf("SELECT p.*,max( v.created_at ) visited_time FROM biz_project_recently_visited v,biz_project p WHERE v.project_id = p.id AND v.user_id = %d AND NOT p.deleted GROUP BY v.project_id ORDER BY visited_time DESC LIMIT 3", userId)).Find(&projects).Error
 	return
 }
 
@@ -353,6 +431,19 @@ func (r *ProjectRepo) AddProjectRootPlanCategory(projectId uint) (err error) {
 		Type:      serverConsts.PlanCategory,
 		ProjectId: projectId,
 		IsLeaf:    false,
+	}
+	err = r.DB.Create(&root).Error
+
+	return
+}
+
+func (r *ProjectRepo) AddProjectRootTestCategory(projectId, serveId uint) (err error) {
+	root := model.DiagnoseInterface{
+		Title:     "根节点",
+		ProjectId: projectId,
+		IsLeaf:    false,
+		Type:      "dir",
+		ServeId:   serveId,
 	}
 	err = r.DB.Create(&root).Error
 
@@ -449,6 +540,8 @@ func (r *ProjectRepo) AddProjectDefaultServe(projectId, userId uint) (serve mode
 	r.ServeRepo.SetCurrServeByUser(serve.ID, userId)
 
 	r.ServeRepo.AddDefaultServer(serve.ProjectId, serve.ID)
+
+	r.ServeRepo.AddDefaultTestCategory(serve.ProjectId, serve.ID)
 
 	return
 }
@@ -629,7 +722,7 @@ func (r *ProjectRepo) CreateSample(projectId, serveId, userId uint) (err error) 
 			interfaceIds[endpoint.Interfaces[0].Name+"-"+string(endpoint.Interfaces[0].Method)] = endpoint.Interfaces[0].ID
 		}
 
-		r.ServeServerRepo.SetUrl(serveId, "http://119.3.182.218:50400")
+		r.ServeServerRepo.SetUrl(serveId, "http://192.168.5.224:50400")
 
 		//TODO 创建场景
 		scenario.ProjectId = projectId

@@ -41,7 +41,7 @@
                           <a-menu-item key="0" @click="newCategorie(nodeProps)">
                              新建子分类
                           </a-menu-item>
-                          <a-menu-item :disabled="nodeProps.id === -1" key="1" @click="deleteCategorie(nodeProps)">
+                          <a-menu-item :disabled="nodeProps.id === -1 || nodeProps.count > 0" key="1" @click="deleteCategorie(nodeProps)">
                             删除分类
                           </a-menu-item>
                           <a-menu-item :disabled="nodeProps.id === -1" key="1" @click="editCategorie(nodeProps)">
@@ -191,7 +191,8 @@ function selectTreeItem(keys, e) {
   // 如果没有选中的节点，就默认选中根节点
   emit('select', selectedKeys.value?.[0] ? selectedKeys.value[0] : null);
   const selectedData = treeDataMapCategory.value[selectedKeys.value[0]]
-  store.dispatch('Plan/getCategoryNode', selectedData);
+  store.commit('Plan/setNodeCategory', selectedData);
+  //store.dispatch('Plan/getCategoryNode', selectedData);
 }
 
 const currentNode = ref(null);

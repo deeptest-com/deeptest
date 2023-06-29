@@ -79,6 +79,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setTreeDataMapItemPropCategory: Mutation<StateType>;
         setNodeCategory: Mutation<StateType>;
         setFilterState: Mutation<StateType>;
+        clearFilterState: Mutation<StateType>;
         setEndpointDetail: Mutation<StateType>;
         setServerList: Mutation<StateType>;
         setSecurityOpts: Mutation<StateType>;
@@ -202,7 +203,14 @@ const StoreModel: ModuleType = {
             state.queryParams = payload;
         },
         setFilterState(state, payload) {
-            state.filterState = payload;
+            state.filterState.status = payload.status || null;
+            state.filterState.createUser = payload.createUser || null;
+            state.filterState.title = payload.title || null ;
+        },
+        clearFilterState(state) {
+            state.filterState.status = null;
+            state.filterState.createUser = null;
+            state.filterState.title =null ;
         },
         setEndpointDetail(state, payload) {
             state.endpointDetail = payload;
@@ -473,6 +481,7 @@ const StoreModel: ModuleType = {
             const res = await deleteEndpoint(payload.id);
             if (res.code === 0) {
                 await dispatch('loadList', {projectId: payload.projectId});
+                return true
             } else {
                 return false
             }

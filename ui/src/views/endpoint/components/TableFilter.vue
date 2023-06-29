@@ -10,12 +10,12 @@
             placeholder="请选择创建人"
             :options="userList"
             option-label-prop="name"
-            style="width: 200px;"
+            style="width: 140px;"
             :value="formState?.createUser"/>
       </a-form-item>
       <a-form-item label="状态" style="margin-bottom: 0;">
         <a-select
-            style="width: 150px;"
+            style="width: 120px;"
             allowClear
             @change="(e) => {
               handleFilterChange('status',e);

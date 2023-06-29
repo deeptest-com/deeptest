@@ -271,8 +271,8 @@ func (r *ScenarioRepo) PlanList(req v1.ScenarioPlanReqPaginate, scenarioId int) 
 		db = db.Where("status = ?", req.Status)
 	}
 
-	if req.UpdateUserId != 0 {
-		db = db.Where("update_user_id = ?", req.UpdateUserId)
+	if req.AdminId != 0 {
+		db = db.Where("admin_id = ?", req.AdminId)
 	}
 
 	if req.Keywords != "" {

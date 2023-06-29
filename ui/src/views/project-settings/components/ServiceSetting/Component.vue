@@ -65,7 +65,8 @@
             :schemeVisibleKey="schemeVisibleKey"
             @generateFromJSON="generateFromJSON"
             @generateExample="handleGenerateExample"
-            @change="handleContentChange"
+            @changeContent="handleContentChange"
+            @changeExample="handleExampleChange"
             :serveId="serveId"
             :tab-content-style="{ width: '100%' }"
             :refs-options="refsOptions"
@@ -329,15 +330,16 @@ async function handleGenerateExample(examples: any) {
   exampleStr.value = JSON.stringify(activeSchema.value.examples);
 }
 
-function handleContentChange(json: any) {
-  const { content, examples } = json;
+function handleContentChange(content: any) {
   contentStr.value = JSON.stringify(content);
-  activeSchema.value.examples = examples;
   activeSchema.value.content = content;
-  exampleStr.value = JSON.stringify(examples);
   schemaType.value = content.type;
 }
 
+function handleExampleChange(examples) {
+  activeSchema.value.examples = examples;
+  exampleStr.value = JSON.stringify(examples);
+}
 
 watch(() => {
   return props.serveId

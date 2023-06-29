@@ -22,8 +22,8 @@
       <!-- ::::该服务下的所有接口列表 -->
       <div class="menus-item" v-if="item.endpointInfo && item.serveInfo">
         <div class="left">
-          <a-tag :color="getMethodColor(item.method)">{{ item.method }}</a-tag>
-          {{ item.name }}
+          <a-tag  class="method-tag" :color="getMethodColor(item.method)">{{ item.method }}</a-tag>
+          <span :title="item.name">{{ item.name }}</span>
         </div>
       </div>
     </a-menu-item>
@@ -59,15 +59,21 @@ const props = defineProps({
 const emit = defineEmits(['select']);
 
 const items: any = ref([]);
-watch(() => {return props.serviceList}, (newVal) => {
-  items.value = newVal;
-  newVal.forEach((item: any) => {
-    if (item.endpointList) {
-      openKeysMap.value[item.id] = false;
-    }
-  })
-  console.log(1323232323, items.value)
-}, {immediate: true})
+
+watch(() => {
+      return props.serviceList
+    }, (newVal) => {
+      items.value = newVal;
+      newVal.forEach((item: any) => {
+        if (item.endpointList) {
+          openKeysMap.value[item.id] = false;
+        }
+      })
+
+    }, {immediate: true}
+)
+
+
 
 const activeKey = ref([]);
 
@@ -80,7 +86,6 @@ function switchExpand(item, e) {
 
 
 function select(item) {
-  console.log(item)
   emit('select', item);
 }
 
@@ -91,16 +96,38 @@ function select(item) {
   height: 100%;
   //margin-left: 1px;
   position: relative;
+  border-right:none;
   //border-left: 1px solid #f0f0f0;
   //:deep(.ant-menu-submenu-title) {
   //  position: relative;
   //}
+
+  &:before{
+    content: '';
+    position: absolute;
+    top:0;
+    right: 0;
+    height: 100%;
+    z-index: 99;
+    background-color: #f0f0f0;
+    width: 1px;
+  }
   :deep(.hide) {
     display: none !important;
   }
 
   :deep(.ant-menu-item) {
-    padding: 0 6px !important;
+    padding: 0 6px 0 8px!important;
+    //padding: 0!important;
+    margin: 0!important;
+    border-radius: 4px;
+    height: 36px;
+    line-height: 36px;
+    left: -6px;
+  }
+  :deep(.ant-menu-item-selected:after) {
+    //right: 300px!important;
+    display: none;
   }
 }
 
@@ -135,6 +162,8 @@ function select(item) {
   justify-content: space-between;
   align-items: center;
   margin-left: 20px;
+  height: 36px;
+  line-height: 36px;
 
   .left {
     flex: 1;
@@ -169,5 +198,9 @@ function select(item) {
   }
 }
 
+.method-tag{
+  transform: scale(0.85);
+  margin-right: 3px;
+}
 
 </style>

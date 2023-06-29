@@ -2,7 +2,10 @@
   <div id="indexlayout-left" :class="{'narrow': collapsed}">
     <div class="indexlayout-left-logo">
       <router-link to="/" class="logo-url">
-        <div :class="{'logo-title':true,'logo-title-collapsed':collapsed}"/>
+        <div :class="{
+          'logo-title':true,
+          'logo-title-collapsed':collapsed,
+          'leyan-logo':isLeyanEnv}"/>
       </router-link>
     </div>
     <div class="indexlayout-left-menu">
@@ -72,6 +75,12 @@ export default defineComponent({
   components: {
     SiderMenu,
   },
+  setup(props) {
+    let isLeyanEnv = process.env.VUE_APP_DEPLOY_ENV === 'ly';
+    return {
+      isLeyanEnv
+    };
+  }
 
 })
 
@@ -122,6 +131,10 @@ export default defineComponent({
         background-size: 105px 35px;
         background-repeat: no-repeat;
         background-position: center;
+        &.leyan-logo{
+          transform: scale(1.1) translateX(-16px);
+          background-image: url("https://od-1310531898.cos.ap-beijing.myqcloud.com/202306291016448.svg");
+        }
       }
 
       .logo-title-collapsed {
@@ -129,6 +142,11 @@ export default defineComponent({
         background-size: 22px 22px;
         background-repeat: no-repeat;
         background-position: center;
+        &.leyan-logo{
+          background-size: 24px 24px;
+          background-image: url("https://od-1310531898.cos.ap-beijing.myqcloud.com/202306291016780.svg");
+          transform: scale(1) translateX(-2px);
+        }
       }
     }
 
@@ -145,6 +163,13 @@ export default defineComponent({
     .left-scrollbar {
       width: 100%;
       height: 100%;
+    }
+
+    :deep(.ant-menu-submenu.ant-menu-submenu-inline.ant-menu-submenu-open) {
+      color: rgba(255, 255, 255, 0.4);
+    }
+    :deep(.ant-menu-submenu.ant-menu-submenu-inline.ant-menu-submenu-open .ant-menu-submenu-arrow) {
+      opacity: 0.45;
     }
   }
 
@@ -197,5 +222,8 @@ export default defineComponent({
   :deep(.indexlayout-left-menu .ant-menu) {
     padding: 10px;
   }
+
+
+
 }
 </style>

@@ -11,7 +11,7 @@
   </a-row>
 
   <a-row class="form-item-response-item" v-if="collapse">
-    <a-col :span="1" />
+    <a-col :span="1"/>
     <a-col :span="21">
       <a-select
           placeholder="请选择响应格式"
@@ -29,8 +29,9 @@
     <a-col :span="23">
       <SchemaEditor
           @generateFromJSON="generateFromJSON"
-          @change="handleChange"
-          :serveId= "currServe.id"
+          @changeContent="changeContent"
+          @changeExamples="changeExamples"
+          :serveId="currServe.id"
           :refsOptions="refsOptions"
           :contentStr="contentStr"
           :exampleStr="exampleStr"
@@ -49,7 +50,7 @@ import {Endpoint} from "@/views/endpoint/data";
 import SchemaEditor from '@/components/SchemaEditor/index.vue';
 import {removeExtraViewInfo} from "@/components/SchemaEditor/utils";
 
-const store = useStore<{ Endpoint, Debug, ProjectGlobal, User,ServeGlobal }>();
+const store = useStore<{ Endpoint, Debug, ProjectGlobal, User, ServeGlobal }>();
 const selectedCodeDetail = computed<any>(() => store.state.Endpoint.selectedCodeDetail);
 const currentUser: any = computed<Endpoint>(() => store.state.User.currentUser);
 const currServe = computed<any>(() => store.state.ServeGlobal.currServe);
@@ -68,7 +69,9 @@ const exampleStr = ref('');
 watch(() => {
   return selectedCodeDetail?.value?.schemaItem?.content
 }, (newVal, oldValue) => {
-  activeResBodySchema.value.content = JSON.parse(newVal || 'null');
+  const res = JSON.parse(newVal || '{}');
+  res.type = selectedCodeDetail?.value?.schemaItem?.type || 'object';
+  activeResBodySchema.value.content = res;
   contentStr.value = JSON.stringify(activeResBodySchema.value.content);
 }, {immediate: true});
 
@@ -92,26 +95,38 @@ async function generateFromJSON(JSONStr: string) {
 async function handleGenerateExample(examples: any) {
   const content = JSON.stringify(removeExtraViewInfo(JSON.parse(contentStr.value), true));
   const res = await store.dispatch('Endpoint/schema2example',
-      {data: content,   serveId: currServe.value.id,}
+      {data: content, serveId: currServe.value.id,}
   );
   const example = {
     name: `Example ${examples.length + 1}`,
     content: JSON.stringify(res),
   };
+  if(!activeResBodySchema.value?.examples) {
+    activeResBodySchema.value.examples = [];
+  }
   activeResBodySchema.value.examples.push(example);
   exampleStr.value = JSON.stringify(activeResBodySchema.value.examples);
 }
 
-function handleChange(json: any) {
-  const {content, examples} = json;
+function changeContent(content: any) {
   if (selectedCodeDetail?.value) {
-    selectedCodeDetail.value.schemaItem.content = JSON.stringify(removeExtraViewInfo(content, true));
-    selectedCodeDetail.value.examples = JSON.stringify(examples);
-    exampleStr.value = JSON.stringify(examples);
-    contentStr.value = JSON.stringify(content);
-    selectedCodeDetail.value.schemaItem.type = content.type;
+    if (content?.type) {
+      selectedCodeDetail.value.schemaItem.content = JSON.stringify(content);
+      contentStr.value = JSON.stringify(content);
+      selectedCodeDetail.value.schemaItem.type = content.type;
+      store.commit('Endpoint/setSelectedCodeDetail', selectedCodeDetail?.value);
+    }
   }
-  store.commit('Endpoint/setSelectedCodeDetail', selectedCodeDetail?.value);
+}
+
+function changeExamples(examples: any) {
+  if (selectedCodeDetail?.value) {
+    if (examples) {
+      selectedCodeDetail.value.examples = JSON.stringify(examples);
+      exampleStr.value = JSON.stringify(examples);
+      store.commit('Endpoint/setSelectedCodeDetail', selectedCodeDetail?.value);
+    }
+  }
 }
 
 const refsOptions = ref([]);
@@ -138,11 +153,13 @@ onMounted(async () => {
   margin-top: 16px;
   align-items: center;
 }
-.form-item-response-item-con{
+
+.form-item-response-item-con {
   position: relative;
   margin-bottom: 24px;
-  &:before{
-    content:"";
+
+  &:before {
+    content: "";
     position: absolute;
     left: -12px;
     top: -72px;

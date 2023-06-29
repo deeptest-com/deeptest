@@ -16,6 +16,7 @@ type EndpointService struct {
 	EndpointInterfaceRepo *repo.EndpointInterfaceRepo `inject:""`
 	ServeServerRepo       *repo.ServeServerRepo       `inject:""`
 	UserRepo              *repo.UserRepo              `inject:""`
+	CategoryRepo          *repo.CategoryRepo          `inject:""`
 }
 
 func (s *EndpointService) Paginate(req v1.EndpointReqPaginate) (ret _domain.PageData, err error) {
@@ -172,15 +173,64 @@ func (s *EndpointService) AddVersion(version *model.EndpointVersion) (err error)
 	return
 }
 
-func (s *EndpointService) SaveEndpoints(endpoints []*model.Endpoint, req v1.ImportEndpointDataReq) (err error) {
+func (s *EndpointService) SaveEndpoints(endpoints []*model.Endpoint, dirs *openapi.Dirs, components []*model.ComponentSchema, req v1.ImportEndpointDataReq) (err error) {
 	user, _ := s.UserRepo.FindById(req.UserId)
+
+	if dirs.Id == 0 || dirs.Id == -1 {
+		root, _ := s.CategoryRepo.ListByProject(serverConsts.EndpointCategory, req.ProjectId, 0)
+		dirs.Id = int64(root[0].ID)
+	}
+
+	s.createDirs(dirs, req)
+	s.createComponents(components, req)
 	for _, endpoint := range endpoints {
 		endpoint.ProjectId, endpoint.ServeId, endpoint.CategoryId, endpoint.CreateUser = req.ProjectId, req.ServeId, req.CategoryId, user.Name
 		endpoint.Status = 1
+		endpoint.CategoryId = s.getCategoryId(endpoint.Tags, dirs)
+
 		_, err = s.Save(*endpoint)
 		if err != nil {
 			return
 		}
+
+	}
+	//err = s.EndpointRepo.CreateEndpoints(endpoints)
+	return
+}
+
+func (s *EndpointService) createComponents(components []*model.ComponentSchema, req v1.ImportEndpointDataReq) {
+	for _, component := range components {
+		component.ServeId = int64(req.ServeId)
+		component.Ref = "#/components/schemas/" + component.Name
+	}
+	s.ServeRepo.CreateSchemas(components)
+}
+
+func (s *EndpointService) createDirs(data *openapi.Dirs, req v1.ImportEndpointDataReq) (err error) {
+
+	for name, dirs := range data.Dirs {
+		category := model.Category{Name: name, ParentId: int(data.Id), ProjectId: req.ProjectId, UseID: req.UserId, Type: serverConsts.EndpointCategory}
+		err = s.CategoryRepo.Save(&category)
+		if err != nil {
+			return
+		}
+
+		dirs.Id = int64(category.ID)
+		err = s.createDirs(dirs, req)
+		if err != nil {
+			return err
+		}
 	}
 	return
+}
+
+func (s *EndpointService) getCategoryId(tags []string, dirs *openapi.Dirs) int64 {
+	rootId := dirs.Id
+	for _, tag := range tags {
+		dirs = dirs.Dirs[tag]
+	}
+	if dirs.Id == rootId {
+		return -1
+	}
+	return dirs.Id
 }

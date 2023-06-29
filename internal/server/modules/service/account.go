@@ -3,19 +3,20 @@ package service
 import (
 	"errors"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	commService "github.com/aaronchen2k/deeptest/internal/pkg/service"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	_i118Utils "github.com/aaronchen2k/deeptest/pkg/lib/i118"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	_mailUtils "github.com/aaronchen2k/deeptest/pkg/lib/mail"
+	"github.com/snowlyg/multi"
+	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
 	"strconv"
 	"time"
-
-	"github.com/snowlyg/multi"
-	"go.uber.org/zap"
 )
 
 var (
@@ -23,29 +24,31 @@ var (
 )
 
 type AccountService struct {
-	UserRepo *repo.UserRepo `inject:""`
+	UserRepo    *repo.UserRepo           `inject:""`
+	LdapService *commService.LdapService `inject:""`
 }
 
 // Login 登录
 func (s *AccountService) Login(req v1.LoginReq) (ret v1.LoginResp, err error) {
-	user, err := s.UserRepo.FindPasswordByUserName(req.Username)
-	if err != nil {
-		user, err = s.UserRepo.FindPasswordByEmail(req.Username)
+	var Id uint
+	var userBase v1.UserBase
 
+	if config.CONFIG.Ldap && req.Username != "admin" {
+		userBase, err = s.LdapService.LdapUserInfo(req)
 		if err != nil {
 			return
 		}
+		Id, err = s.UserRepo.UpdateByLdapInfo(userBase)
+	} else {
+		Id, err = s.UserLogin(req)
 	}
 
-	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password))
 	if err != nil {
-		logUtils.Errorf("用户名或密码错误", zap.String("密码:", req.Password), zap.String("hash:", user.Password), zap.String("bcrypt.CompareHashAndPassword()", err.Error()))
-		err = ErrUserNameOrPassword
 		return
 	}
 
 	claims := &multi.CustomClaims{
-		ID:            strconv.FormatUint(uint64(user.Id), 10),
+		ID:            strconv.FormatUint(uint64(Id), 10),
 		Username:      req.Username,
 		AuthorityId:   "",
 		AuthorityType: multi.AdminAuthority,
@@ -60,6 +63,25 @@ func (s *AccountService) Login(req v1.LoginReq) (ret v1.LoginResp, err error) {
 		return
 	}
 
+	return
+}
+
+func (s *AccountService) UserLogin(req v1.LoginReq) (userId uint, err error) {
+	user, err := s.UserRepo.FindPasswordByUserName(req.Username)
+	if err != nil {
+		user, err = s.UserRepo.FindPasswordByEmail(req.Username)
+		if err != nil {
+			return
+		}
+	}
+	userId = user.Id
+
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password))
+	if err != nil {
+		logUtils.Errorf("用户名或密码错误", zap.String("密码:", req.Password), zap.String("hash:", user.Password), zap.String("bcrypt.CompareHashAndPassword()", err.Error()))
+		err = ErrUserNameOrPassword
+		return
+	}
 	return
 }
 

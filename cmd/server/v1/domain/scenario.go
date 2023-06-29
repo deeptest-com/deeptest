@@ -112,10 +112,10 @@ type ScenarioSimple struct {
 
 type ScenarioPlanReqPaginate struct {
 	_domain.PaginateReq
-	ProjectId    uint              `json:"projectId"`
-	CategoryId   int64             `json:"categoryId"`
-	Status       consts.TestStatus `json:"status"`
-	UpdateUserId uint              `json:"updateUserId"`
-	Ref          bool              `json:"ref"`
-	Keywords     string            `json:"keywords"`
+	ProjectId  uint              `json:"projectId"`
+	CategoryId int64             `json:"categoryId"`
+	Status     consts.TestStatus `json:"status"`
+	AdminId    uint              `json:"adminId"`
+	Ref        bool              `json:"ref"`
+	Keywords   string            `json:"keywords"`
 }

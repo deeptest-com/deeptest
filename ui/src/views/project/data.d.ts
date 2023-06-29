@@ -25,5 +25,5 @@ export interface Member {
   username:string;
   email:string;
   roleName:string;
-  userId:number;
+  userId:string;
 }

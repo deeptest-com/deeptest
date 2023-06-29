@@ -322,16 +322,41 @@ func (r *EndpointRepo) GetCategoryCount(result interface{}, projectId uint) (err
 
 func (r *EndpointRepo) GetByProjectId(projectId uint) (endpoints []*model.Endpoint, err error) {
 	err = r.DB.Find(&endpoints, "project_id = ? and not deleted and not disabled", projectId).Error
+	r.GetByEndpoints(endpoints)
 	return
 }
 
 func (r *EndpointRepo) GetByServeIds(serveIds []uint) (endpoints []*model.Endpoint, err error) {
 	err = r.DB.Where("serve_id = ? and not deleted and not disabled", serveIds).Find(&endpoints).Error
+	r.GetByEndpoints(endpoints)
 	return
 }
 
 func (r *EndpointRepo) GetByEndpointIds(endpointIds []uint) (endpoints []*model.Endpoint, err error) {
 	err = r.DB.Where("id in ? and not deleted and not disabled", endpointIds).Find(&endpoints).Error
+	r.GetByEndpoints(endpoints)
+	return
+}
+
+func (r *EndpointRepo) GetByEndpoints(endpoints []*model.Endpoint) {
+	var endpointIds []uint
+	for _, endpoint := range endpoints {
+		endpointIds = append(endpointIds, endpoint.ID)
+	}
+
+	interfaces, err := r.EndpointInterfaceRepo.GetInterfaces(endpointIds)
+	if err != nil {
+		return
+	}
+
+	for key, endpoint := range endpoints {
+		endpoints[key].Interfaces = interfaces[endpoint.ID]
+	}
+	return
+}
+
+func (r *EndpointRepo) GetPathParams(endpointIds []uint) (err error, pathParams model.EndpointPathParam) {
+	err = r.DB.Find(&pathParams, "not disabled and not deleted and endpoint_id in ?", endpointIds).Error
 	return
 }
 
@@ -343,4 +368,8 @@ func (r *EndpointRepo) GetUsedCountByEndpointId(endpointId uint) (count int64, e
 		Count(&count).Error
 
 	return
+}
+
+func (r *EndpointRepo) CreateEndpoints(endpoints []*model.Endpoint) error {
+	return r.DB.Create(endpoints).Error
 }

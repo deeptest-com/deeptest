@@ -5,7 +5,7 @@
                 <template #icon><plus-outlined /></template>
                 关联测试场景
             </a-button>
-            <a-button type="default" @click="handleRemove()">批量移除</a-button>
+            <a-button type="default" :disabled="!selectedRowIds?.length" @click="handleRemove()">批量移除</a-button>
         </div>
         <div class="right">
             <a-form-item label="优先级">
@@ -21,11 +21,11 @@
             </a-form-item>
         </div>
     </div>
-    <a-table 
-        :row-selection="{ 
+    <a-table
+        :row-selection="{
             selectedRowKeys: selectedRowKeys,
-            onChange: onSelectChange 
-        }" 
+            onChange: onSelectChange
+        }"
         :pagination="{
             ...pagination,
             showSizeChanger: false,
@@ -35,7 +35,7 @@
         }"
         row-key="id"
         :loading="loading"
-        :columns="columns" 
+        :columns="columns"
         :data-source="list">
         <template #status="{ record }">
             <a-tag v-if="record.status" :color="planStatusColorMap.get(record.status)">{{ planStatusTextMap.get(record.status) }}</a-tag>
@@ -44,14 +44,14 @@
             <span>{{ momentUtc(record.updateAt) }}</span>
         </template>
         <template #operation="{ record }">
-            <a-button type="primary" @click="handleRemove(record)"> 
+            <a-button type="primary" @click="handleRemove(record)">
                 移除
             </a-button>
         </template>
     </a-table>
-    <RelationScenario 
-        :associate-modal-visible="associateModalVisible" 
-        @on-cancel="associateModalVisible = false" 
+    <RelationScenario
+        :associate-modal-visible="associateModalVisible"
+        @on-cancel="associateModalVisible = false"
         @on-ok="handleFinish"
     />
 </template>
@@ -61,7 +61,7 @@ import { useStore } from 'vuex';
 import { PlusOutlined } from '@ant-design/icons-vue';
 import RelationScenario from './RelationScenario.vue';
 
-import { StateType as PlanStateType } from '../store';  
+import { StateType as PlanStateType } from '../store';
 import { message, Modal } from 'ant-design-vue';
 import { planStatusColorMap, planStatusTextMap } from '@/config/constant';
 import { momentUtc } from '@/utils/datetime';
@@ -101,6 +101,7 @@ let selectedRowIds = reactive<any[]>([]);
 
 const onSelectChange = (changableRowKeys: string[], rows: any) => {
     selectedRowKeys.value = changableRowKeys;
+    selectedRowIds = rows.map((item: any) => item.id);
     emits('selectRowKeys', changableRowKeys);
 };
 
@@ -172,7 +173,7 @@ const handleFinish = async () => {
     .left, .right {
         display: flex;
         align-items: center;
- 
+
         :deep(.ant-row.ant-form-item), :deep(.ant-btn) {
             margin-right: 20px;
             margin-bottom: 0;
@@ -184,5 +185,4 @@ const handleFinish = async () => {
     }
 }
 </style>
-  
-  
+

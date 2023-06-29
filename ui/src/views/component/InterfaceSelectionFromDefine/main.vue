@@ -14,7 +14,7 @@
       </div>
 
       <div class="right">
-        <List :selectInterfaces="onSelectInterfaces"></List>
+        <List :selectInterfaces="onSelectInterfaces" :categoryId="categoryId"></List>
       </div>
     </div>
 
@@ -46,7 +46,7 @@ const categoryId = ref(0)
 const interfaceIds = ref([])
 
 const selectCategory = async (id) => {
-  console.log('selectCategory', id)
+  console.log('selectCategory1', id)
   categoryId.value = id;
 }
 

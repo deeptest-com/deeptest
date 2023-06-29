@@ -24,7 +24,7 @@
       <!-- ::::Schema Tab -->
       <div class="tab-body-schema" v-if="activeTab=== 'schema'">
         <SchemaEditor
-            :value="content"
+            :value="contentStr"
             :serveId="Number(serveId)"
             :refsOptions="refsOptions || []"
             @change="handleContentChange"
@@ -132,6 +132,7 @@ import {computed, defineProps, defineEmits, ref, watch} from "vue";
 import SchemaEditor from './schema';
 import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
 import {MonacoOptions} from '@/utils/const';
+import {handleRef} from "@/components/SchemaEditor/utils";
 
 const props = defineProps<{
   tabContentStyle?: object,
@@ -145,10 +146,11 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'generateFromJSON', jsonStr?: string): void,
   (e: 'generateExample', jsonStr?: string): void,
-  (e: 'change', json?: object): void,
+  (e: 'changeExamples', json?: object): void,
+  (e: 'changeContent', json?: object): void,
 }>();
 
-const content: any = ref({type: 'object', properties: {}});
+const content: any = ref(null);
 const examples: any = ref([]);
 
 const activeExample: any = ref(null);
@@ -187,16 +189,12 @@ function handleExampleNameChange(e) {
 }
 
 function handleExampleContentChange(val) {
-  console.log(832,'handleExampleContentChange',val)
   activeExample.value.content = val;
   examples.value[activeExampleIndex.value].content = val;
 }
 
 function handleContentChange(val) {
-  emit('change', {
-    examples: examples.value,
-    content: val
-  });
+  emit('changeContent', val);
 }
 
 const exampleJsonStr = ref('');
@@ -218,16 +216,22 @@ function generate() {
 }
 
 
-watch(() => {return props?.contentStr}, (newVal: any) => {
-  try {
-    const obj = JSON.parse(newVal);
-    content.value = obj?.type ? obj : {
-      type: 'object'
-    };
-  }catch (e){
-    console.log('e',e);
-  }
-}, {immediate: true, deep: true});
+// watch(() => {return props?.contentStr}, (newVal: any) => {
+//   try {
+//     if(!newVal){
+//       return;
+//     }
+//     const obj = JSON.parse(newVal);
+//     // 将 $ref 转换为ref
+//     handleRef(obj);
+//     content.value = obj?.type ? obj : {
+//       type: 'object'
+//     };
+//   }catch (e){
+//     console.log('e',e);
+//   }
+// }, {immediate: true});
+
 
 watch(() => {
   return props?.exampleStr
@@ -245,27 +249,12 @@ watch(() => {
   immediate: true,
 });
 
-watch(() => {
-  return props.contentStr
-}, (newVal: any) => {
-  if(!newVal){
-    return;
-  }
-  try {
-    content.value = JSON.parse(newVal)
-  }catch (e){
-    console.log('e',e);
-  }
-});
+
 
 watch(() => {
   return examples.value
 }, (newVal: any) => {
-  // console.log(832,'examples.value',newVal)
-  emit('change', {
-    examples: newVal,
-    content: content.value
-  });
+  emit('changeExamples', newVal);
 }, {
   immediate: false,
   deep: true

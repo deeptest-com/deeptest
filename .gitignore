@@ -21,3 +21,6 @@ tmp/
 /cmd/test/nodejs/node_modules/
 /cmd/test/nodejs/package-lock.json
 .yarn
+
+ui/src/assets/images/local
+ui/.env.ly

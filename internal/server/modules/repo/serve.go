@@ -243,14 +243,20 @@ func (r *ServeRepo) SaveServer(environmentId uint, environmentName string, serve
 	}
 
 	for key, _ := range servers {
-		servers[key].ID = 0
+		//servers[key].ID = 0
 		servers[key].EnvironmentId = environmentId
 		servers[key].Description = environmentName
+		err = r.Save(servers[key].ID, servers)
+		if err != nil {
+			return err
+		}
 	}
-	err = r.DB.Create(servers).Error
-	if err != nil {
-		return err
-	}
+	/*
+		err = r.DB.Create(servers).Error
+		if err != nil {
+			return err
+		}
+	*/
 	return
 }
 
@@ -401,7 +407,13 @@ func (r *ServeRepo) SaveServe(serve *model.Serve) (err error) {
 			if err != nil {
 				return err
 			}
+
 			err = r.AddDefaultServer(serve.ProjectId, serve.ID)
+			if err != nil {
+				return err
+			}
+
+			err = r.AddDefaultTestCategory(serve.ProjectId, serve.ID)
 
 		} else {
 			err = r.Save(serve.ID, &serve)
@@ -457,6 +469,18 @@ func (r *ServeRepo) AddDefaultServer(projectId, serveId uint) (err error) {
 	return
 }
 
+func (r *ServeRepo) AddDefaultTestCategory(projectId, serveId uint) (err error) {
+	root := model.TestInterface{
+		Title:     "根节点",
+		ProjectId: projectId,
+		IsLeaf:    false,
+		Type:      "dir",
+		ServeId:   serveId,
+	}
+	err = r.DB.Create(&root).Error
+	return
+}
+
 func (r *ServeRepo) GetServesByIds(ids []uint) (serves []model.Serve, err error) {
 	err = r.DB.Where("id in ? AND not deleted AND not disabled ", ids).Find(&serves).Error
 	return
@@ -484,4 +508,8 @@ func (r *ServeRepo) GetServers(serveIs []uint) (res []model.ServeServer, err err
 		res[key].EnvironmentName = environments[server.EnvironmentId].Name
 	}
 	return
+}
+
+func (r *ServeRepo) CreateSchemas(schemas []*model.ComponentSchema) (err error) {
+	return r.DB.Create(schemas).Error
 }

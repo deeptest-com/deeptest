@@ -70,10 +70,10 @@ const filters = ref<any>({})
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 
 const props = defineProps({
-  // categoryId: {
-  //   type: Number,
-  //   required: true,
-  // },
+   categoryId: {
+     type: Number,
+     required: true,
+   },
   selectInterfaces: {
     type: Function,
     required: true,
@@ -94,7 +94,7 @@ const pagination = ref<any>({
 // }, {deep: true})
 //
 const selectCategory = async () => {
-  // console.log('selectCategory', props.categoryId)
+   console.log('selectCategory2', props.categoryId)
   //
   // if (props.categoryId === 0) {
   //   interfaces.value = []
@@ -112,7 +112,7 @@ const loadList = debounce(async (page, pageSize) => {
   pagination.value.page = page
   pagination.value.pageSize = pageSize
   const data = {
-    // categoryId: props.categoryId,
+    categoryId: props.categoryId,
     keywords: filters.value.keywords,
     projectId: currProject.value.id,
   }

@@ -1,27 +1,37 @@
 package service
 
 import (
+	"encoding/base64"
 	domain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
+	commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	"github.com/jinzhu/copier"
+	"strconv"
+	"strings"
 )
 
 type DocumentService struct {
-	EndpointRepo    *repo.EndpointRepo    `inject:""`
-	ProjectRepo     *repo.ProjectRepo     `inject:""`
-	ServeRepo       *repo.ServeRepo       `inject:""`
-	EnvironmentRepo *repo.EnvironmentRepo `inject:""`
+	EndpointRepo         *repo.EndpointRepo         `inject:""`
+	ProjectRepo          *repo.ProjectRepo          `inject:""`
+	ServeRepo            *repo.ServeRepo            `inject:""`
+	EnvironmentRepo      *repo.EnvironmentRepo      `inject:""`
+	EndpointDocumentRepo *repo.EndpointDocumentRepo `inject:""`
+	EndpointSnapshotRepo *repo.EndpointSnapshotRepo `inject:""`
 }
 
+const (
+	EncryptKey = "docencryptkey123"
+)
+
 func (s *DocumentService) Content(req domain.DocumentReq) (res domain.DocumentRep, err error) {
-	var projectId uint
+	var projectId, documentId uint
 	var endpointIds, serveIds []uint
 
-	projectId, serveIds, endpointIds = req.ProjectId, req.ServeIds, req.EndpointIds
+	projectId, serveIds, endpointIds, documentId = req.ProjectId, req.ServeIds, req.EndpointIds, req.DocumentId
 
 	var endpoints map[uint][]domain.EndpointReq
-	endpoints, err = s.GetEndpoints(&projectId, &serveIds, &endpointIds)
+	endpoints, err = s.GetEndpoints(&projectId, &serveIds, &endpointIds, documentId)
 	if err != nil {
 		return
 	}
@@ -33,10 +43,12 @@ func (s *DocumentService) Content(req domain.DocumentReq) (res domain.DocumentRe
 	return
 }
 
-func (s *DocumentService) GetEndpoints(projectId *uint, serveIds, endpointIds *[]uint) (res map[uint][]domain.EndpointReq, err error) {
+func (s *DocumentService) GetEndpoints(projectId *uint, serveIds, endpointIds *[]uint, documentId uint) (res map[uint][]domain.EndpointReq, err error) {
 	var endpoints []*model.Endpoint
 
-	if *projectId != 0 {
+	if documentId != 0 {
+		endpoints, err = s.EndpointSnapshotRepo.GetByDocumentId(documentId)
+	} else if *projectId != 0 {
 		endpoints, err = s.EndpointRepo.GetByProjectId(*projectId)
 	} else if len(*serveIds) != 0 {
 		endpoints, err = s.EndpointRepo.GetByServeIds(*serveIds)
@@ -59,8 +71,8 @@ func (s *DocumentService) GetEndpointsInfo(projectId *uint, serveIds *[]uint, en
 	serves := make(map[uint]uint)
 	for _, item := range endpoints {
 		var endpoint domain.EndpointReq
-		ret, _ := s.EndpointRepo.GetAll(item.ID, "v0.1.0")
-		copier.CopyWithOption(&endpoint, &ret, copier.Option{IgnoreEmpty: true, DeepCopy: true})
+		//ret, _ := s.EndpointRepo.GetAll(item.ID, "v0.1.0")
+		copier.CopyWithOption(&endpoint, &item, copier.Option{IgnoreEmpty: true, DeepCopy: true})
 		res[endpoint.ServeId] = append(res[endpoint.ServeId], endpoint)
 		if _, ok := serves[endpoint.ServeId]; !ok {
 			*serveIds = append(*serveIds, endpoint.ServeId)
@@ -137,5 +149,136 @@ func (s *DocumentService) GetSecurities(serveIds []uint) (securities map[uint][]
 func (s *DocumentService) GetGlobalVars(projectId uint) (globalVars []domain.EnvironmentParam) {
 	res, _ := s.EnvironmentRepo.ListGlobalVar(projectId)
 	copier.CopyWithOption(&globalVars, &res, copier.Option{IgnoreEmpty: true, DeepCopy: true})
+	return
+}
+
+func (s *DocumentService) GetDocumentVersionList(projectId uint, needLatest bool) (documents []model.EndpointDocument, err error) {
+	if needLatest {
+		latestDocument := model.EndpointDocument{
+			Name:    "实时版本",
+			Version: "latest",
+		}
+		documents = append(documents, latestDocument)
+	}
+
+	documentsTmp, err := s.EndpointDocumentRepo.ListByProject(projectId)
+	if err != nil {
+		return
+	}
+
+	documents = append(documents, documentsTmp...)
+	return
+}
+
+func (s *DocumentService) Publish(req domain.DocumentVersionReq, projectId uint) (err error) {
+	err = s.EndpointSnapshotRepo.BatchCreateSnapshot(req, projectId)
+	return
+}
+
+func (s *DocumentService) RemoveSnapshot(snapshotId uint) (err error) {
+	err = s.EndpointSnapshotRepo.DeleteById(snapshotId)
+	return
+}
+
+func (s *DocumentService) UpdateSnapshotContent(id uint, endpoint model.Endpoint) (err error) {
+	err = s.EndpointSnapshotRepo.UpdateContent(id, endpoint)
+	return
+}
+
+func (s *DocumentService) UpdateDocument(req domain.UpdateDocumentVersionReq) (err error) {
+	err = s.EndpointDocumentRepo.Update(req)
+	return
+}
+
+func (s *DocumentService) GenerateShareLink(req domain.DocumentShareReq) (link string, err error) {
+	encryptValue := strconv.Itoa(int(req.ProjectId)) + "-" + strconv.Itoa(int(req.DocumentId)) + "-" + strconv.Itoa(int(req.EndpointId))
+	res, err := commUtils.AesCBCEncrypt([]byte(encryptValue), []byte(EncryptKey))
+	link = base64.RawURLEncoding.EncodeToString(res)
+	return
+}
+
+func (s *DocumentService) DecryptShareLink(link string) (req domain.DocumentShareReq, err error) {
+	linkByte, err := base64.RawURLEncoding.DecodeString(link)
+	if err != nil {
+		return
+	}
+
+	decryptValue, err := commUtils.AesCBCDecrypt(linkByte, []byte(EncryptKey))
+	if err != nil {
+		return
+	}
+
+	DocumentShareArr := strings.Split(string(decryptValue), "-")
+
+	projectId, _ := strconv.Atoi(DocumentShareArr[0])
+	documentId, _ := strconv.Atoi(DocumentShareArr[1])
+	endpointId, _ := strconv.Atoi(DocumentShareArr[2])
+	req.ProjectId = uint(projectId)
+	req.DocumentId = uint(documentId)
+	req.EndpointId = uint(endpointId)
+
+	return
+}
+
+func (s *DocumentService) GetEndpointsByShare(projectId, endpointId *uint, serveIds *[]uint, documentId uint) (res map[uint][]domain.EndpointReq, err error) {
+	var endpoints []*model.Endpoint
+	if documentId != 0 {
+		if *endpointId != 0 {
+			endpoints, err = s.EndpointSnapshotRepo.GetByDocumentIdAndEndpointId(documentId, *endpointId)
+		} else {
+			endpoints, err = s.EndpointSnapshotRepo.GetByDocumentId(documentId)
+		}
+	} else if *projectId != 0 {
+		if *endpointId != 0 {
+			endpoints, err = s.EndpointRepo.GetByEndpointIds([]uint{*endpointId})
+		} else {
+			endpoints, err = s.EndpointRepo.GetByProjectId(*projectId)
+		}
+	}
+	if err != nil {
+		return
+	}
+
+	if err != nil {
+		return
+	}
+
+	res = s.GetEndpointsInfo(projectId, serveIds, endpoints)
+
+	return
+}
+
+func (s *DocumentService) ContentByShare(link string) (res domain.DocumentRep, err error) {
+	var projectId, documentId, endpointId uint
+	var serveIds []uint
+
+	req, err := s.DecryptShareLink(link)
+	if err != nil {
+		return
+	}
+
+	projectId, endpointId, documentId = req.ProjectId, req.EndpointId, req.DocumentId
+
+	endpoints, err := s.GetEndpointsByShare(&projectId, &endpointId, &serveIds, documentId)
+	if err != nil {
+		return
+	}
+
+	var version string
+	if documentId == 0 {
+		version = "latest"
+	} else {
+		document, err := s.EndpointDocumentRepo.GetById(documentId)
+		if err != nil {
+			return res, err
+		}
+		version = document.Version
+	}
+
+	res = s.GetProject(projectId)
+
+	res.Serves = s.GetServes(serveIds, endpoints)
+	res.Version = version
+
 	return
 }

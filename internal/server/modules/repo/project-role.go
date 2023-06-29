@@ -40,9 +40,13 @@ func (r *ProjectRoleRepo) FindByName(name consts.RoleType) (projectRole model.Pr
 }
 
 func (r *ProjectRoleRepo) Create(projectRole model.ProjectRole) (err error) {
-	_, err = r.FindByName(projectRole.Name)
-	if !errors.Is(err, gorm.ErrRecordNotFound) {
-		logUtils.Errorf("项目角色已经存在")
+	role, err := r.FindByName(projectRole.Name)
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		logUtils.Errorf("创建项目角色失败%s", err.Error())
+		return
+	}
+	if role.ID != 0 {
+		logUtils.Infof("项目角色%s已经存在", projectRole.Name)
 		return
 	}
 
@@ -89,6 +93,19 @@ func (r *ProjectRoleRepo) GetAllRoleNameIdMap() (data map[consts.RoleType]uint, 
 	data = make(map[consts.RoleType]uint)
 	for _, v := range roleList {
 		data[v.Name] = v.ID
+	}
+	return
+}
+
+func (r *ProjectRoleRepo) GetRoleIdNameMap(roleIds []uint) (data map[uint]consts.RoleType, err error) {
+	projectRoles, err := r.FindByIds(roleIds)
+	if err != nil {
+		return
+	}
+
+	roleIdNameMap := make(map[uint]consts.RoleType)
+	for _, v := range projectRoles {
+		roleIdNameMap[v.ID] = v.Name
 	}
 	return
 }

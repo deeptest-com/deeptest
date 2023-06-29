@@ -18,7 +18,7 @@
                   @change="handleChange" placeholder="请选择状态"></a-select>
       </a-form-item>
       <a-form-item label="负责人">
-        <a-select allowClear ref="select" v-model:value="formState.createUserId" style="width: 140px" :options="members"
+        <a-select allowClear ref="select" v-model:value="formState.adminId" style="width: 140px" :options="members"
                   @change="handleChange" placeholder="请选择创建人"></a-select>
       </a-form-item>
       <a-form-item>
@@ -87,12 +87,12 @@ const props = defineProps({
 import {Scenario} from "@/views/scenario/data";
 
 const emits = defineEmits(['select']);
-const store = useStore<{ Scenario, ProjectGlobal, ServeGlobal }>();
+const store = useStore<{Report,Scenario, ProjectGlobal, ServeGlobal }>();
 const detailResult: any = computed<Scenario>(() => store.state.Scenario.detailResult);
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const linkedPlans = computed(() => store.state.Scenario.linkedPlans);
 const notLinkedPlans = computed(() => store.state.Scenario.notLinkedPlans);
-// const members = computed(() => store.state.Plan.members);
+const members = computed(() => store.state.Report.members);
 const visible = ref(false);
 const selectedRowKeys = ref<any[]>([]); // Check here to configure the default column
 
@@ -100,7 +100,7 @@ const onSelectChange = (keys: string[], rows: any) => {
   selectedRowKeys.value = keys;
   emits('select', keys);
 };
-const formState = reactive({status: null, createUserId: null, keywords: ''});
+const formState = reactive({status: null, adminId: null, keywords: ''});
 const columns = [
   {
     title: '编号',
@@ -189,6 +189,19 @@ watch(() => {
   }
 }, {
   immediate: true
+})
+
+const getMember = async (): Promise<void> => {
+  await store.dispatch('Report/getMembers', currProject.value.id)
+}
+watch(() => {
+    return currProject.value;
+}, (val: any) => {
+    if (val.id) {
+        getMember();
+    }
+}, {
+    immediate: true
 })
 
 // onMounted(async () => {

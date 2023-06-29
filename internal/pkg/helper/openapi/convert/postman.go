@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi/convert/postman"
+	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/getkin/kin-openapi/openapi3"
+	"os"
 	"os/exec"
 	"runtime"
 	"strings"
@@ -32,7 +34,8 @@ func (d *Postman) toOpenapi() (doc *openapi3.T, err error) {
 		cmd = fmt.Sprintf("plugins/postman2openapi/%s/postman2openapi -f json %s", system, d.FilePath)
 		c = exec.Command("bash", "-c", cmd)
 	}
-
+	dir, _ := os.Getwd()
+	logUtils.Info("workdir:" + dir + ",命令路径:" + cmd)
 	output, err = c.CombinedOutput()
 	if err != nil {
 		return

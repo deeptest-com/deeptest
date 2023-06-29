@@ -22,7 +22,7 @@ type EndpointInterfaceReqPaginate struct {
 
 	ServeId    uint   `json:"serveId"`
 	Keywords   string `json:"Keywords"`
-	CategoryId uint   `json:"categoryId"`
+	CategoryId int64  `json:"categoryId"`
 	ProjectId  uint   `json:"projectId"`
 }
 
@@ -41,6 +41,7 @@ type OpenApiParam struct {
 	Ref         string `json:"ref"`
 	Required    bool   `json:"required"`
 	Type        string `json:"type"`
+	Description string `json:"description"`
 }
 
 type EndpointReq struct {
@@ -74,11 +75,11 @@ type EndpointVersionReq struct {
 }
 
 type ImportEndpointDataReq struct {
-	ServeId       uint                 `json:"serveId" validate:"required"`      //服务ID
-	DriverType    convert.DriverType   `json:"driverType" validate:"required"`   //接口数据来源
-	CategoryId    int64                `json:"categoryId"`                       //所属分类
-	DataSyncType  convert.DataSyncType `json:"dataSyncType" validate:"required"` //数据同步方式
-	OpenUrlImport bool                 `json:"openUrlImport"`                    //开启url导入
+	ServeId       uint                 `json:"serveId" validate:"required"`    //服务ID
+	DriverType    convert.DriverType   `json:"driverType" validate:"required"` //接口数据来源
+	CategoryId    int64                `json:"categoryId"`                     //所属分类
+	DataSyncType  convert.DataSyncType `json:"dataSyncType"`                   //数据同步方式
+	OpenUrlImport bool                 `json:"openUrlImport"`                  //开启url导入
 	FilePath      string               `json:"filePath" validate:"required"`
 	ProjectId     uint                 `json:"projectId"`
 	UserId        uint                 `json:"userId"`

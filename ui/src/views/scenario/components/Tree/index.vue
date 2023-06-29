@@ -41,7 +41,7 @@
                           <a-menu-item key="0" @click="newCategorie(nodeProps)">
                              新建子分类
                           </a-menu-item>
-                          <a-menu-item :disabled="nodeProps.id === -1" key="1" @click="deleteCategorie(nodeProps)">
+                          <a-menu-item :disabled="nodeProps.id === -1 || nodeProps.count > 0" key="1" @click="deleteCategorie(nodeProps)">
                             删除分类
                           </a-menu-item>
                           <a-menu-item :disabled="nodeProps.id === -1" key="1" @click="editCategorie(nodeProps)">
@@ -196,7 +196,9 @@ async function selectTreeItem(keys, e) {
   const selectedData = treeDataMapCategory.value[selectedKeys.value[0]]
   // 选中节点后，需要将选中节点的数据存入 store
   if(nodeVal !== -1){
-   await store.dispatch('Scenario/getCategoryNode', selectedData);
+    console.log("select node",selectedData)
+   //await store.dispatch('Scenario/getCategoryNode', selectedData);
+   await store.commit('Scenario/setNodeCategory',selectedData);
   }else {
     await store.commit('Scenario/setNodeCategory', {id: -1, name: '未分类', children: []});
   }

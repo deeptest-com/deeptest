@@ -206,7 +206,10 @@ func (o *openapi2endpoint) requestBody(content openapi3.Content) (mediaType cons
 func (o *openapi2endpoint) requestBodyItem(schema *openapi3.SchemaRef) (requestBodyItem model.EndpointInterfaceRequestBodyItem) {
 	requestBodyItem = model.EndpointInterfaceRequestBodyItem{}
 	requestBodyItem.Content = commonUtils.JsonEncode(schema)
-	requestBodyItem.Type = schema.Value.Type
+
+	if schema.Value != nil {
+		requestBodyItem.Type = schema.Value.Type
+	}
 
 	return
 }
@@ -238,8 +241,11 @@ func (o *openapi2endpoint) responseBody(response *openapi3.Response) (body model
 
 func (o *openapi2endpoint) responseBodyItem(schema *openapi3.SchemaRef) (item model.EndpointInterfaceResponseBodyItem) {
 	item = model.EndpointInterfaceResponseBodyItem{}
-	item.Type = schema.Value.Type
-	item.Content = commonUtils.JsonEncode(schema.Value)
+	if schema.Value != nil {
+		item.Type = schema.Value.Type
+		item.Content = commonUtils.JsonEncode(schema.Value)
+	}
+	
 	return
 }
 

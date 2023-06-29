@@ -1,5 +1,5 @@
 <template>
-  <div id="debug-form">{{debugInfo}}
+  <div id="debug-form">
     <div id="top-panel">
       <InterfaceRequest v-if="debugData.method"
                         :showRequestInvocation="false"

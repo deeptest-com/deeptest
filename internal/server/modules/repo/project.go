@@ -85,7 +85,7 @@ func (r *ProjectRepo) Get(id uint) (project model.Project, err error) {
 
 func (r *ProjectRepo) GetByName(projectName string, id uint) (project model.Project, err error) {
 	db := r.DB.Model(&model.Project{}).
-		Where("name = ?", projectName)
+		Where("name = ? AND NOT deleted AND NOT disabled", projectName)
 
 	if id > 0 {
 		db.Where("id != ?", id)

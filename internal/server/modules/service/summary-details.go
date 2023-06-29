@@ -186,50 +186,45 @@ func (s *SummaryDetailsService) LetUsersGroupByProjectId(projectsInfo []model.Su
 	return m1
 }
 
+func (s *SummaryDetailsService) HandlerSummaryDetailsRepo() *repo.SummaryDetailsRepo {
+	return repo.NewSummaryDetailsRepo()
+}
+
 func (s *SummaryDetailsService) Count() (count int64, err error) {
-	r := repo.NewSummaryDetailsRepo()
-	return r.Count()
+	return s.HandlerSummaryDetailsRepo().Count()
 }
 
 func (s *SummaryDetailsService) CountByUserId(userId int64) (count int64, err error) {
-	r := repo.NewSummaryDetailsRepo()
-	return r.CountByUserId(userId)
+	return s.HandlerSummaryDetailsRepo().CountByUserId(userId)
 }
 
 func (s *SummaryDetailsService) CountUserTotal() (count int64, err error) {
-	r := repo.NewSummaryDetailsRepo()
-	return r.CountUserTotal()
+	return s.HandlerSummaryDetailsRepo().CountUserTotal()
 }
 
 func (s *SummaryDetailsService) CountProjectUserTotal(projectId int64) (count int64, err error) {
-	r := repo.NewSummaryDetailsRepo()
-	return r.CountProjectUserTotal(projectId)
+	return s.HandlerSummaryDetailsRepo().CountProjectUserTotal(projectId)
 }
 
 func (s *SummaryDetailsService) FindAllProjectInfo() (projectDetails []model.SummaryProjectInfo, err error) {
-	r := repo.NewSummaryDetailsRepo()
-	return r.FindAllProjectInfo()
+	return s.HandlerSummaryDetailsRepo().FindAllProjectInfo()
 
 }
 
 func (s *SummaryDetailsService) FindAllAdminNameByAdminId(adminId int64) (adminName string, err error) {
-	r := repo.NewSummaryDetailsRepo()
-	return r.FindAdminNameByAdminId(adminId)
+	return s.HandlerSummaryDetailsRepo().FindAdminNameByAdminId(adminId)
 }
 
 func (s *SummaryDetailsService) FindProjectIdsByUserId(userId int64) (count []int64, err error) {
-	r := repo.NewSummaryDetailsRepo()
-	return r.FindProjectIdsByUserId(userId)
+	return s.HandlerSummaryDetailsRepo().FindProjectIdsByUserId(userId)
 }
 
 func (s *SummaryDetailsService) FindEndpointIdsByProjectId(projectId int64) (ids []int64, err error) {
-	r := repo.NewSummaryDetailsRepo()
-	return r.FindEndpointIdsByProjectId(projectId)
+	return s.HandlerSummaryDetailsRepo().FindEndpointIdsByProjectId(projectId)
 }
 
 func (s *SummaryDetailsService) FindAllEndpointIdsGroupByProjectId(projectIds []int64) (ids map[int64][]int64, err error) {
-	r := repo.NewSummaryDetailsRepo()
-	results, err := r.FindAllEndpointIdsGroupByProjectId()
+	results, err := s.HandlerSummaryDetailsRepo().FindAllEndpointIdsGroupByProjectId()
 	ids = make(map[int64][]int64, len(projectIds))
 
 	for _, projectId := range projectIds {
@@ -245,8 +240,7 @@ func (s *SummaryDetailsService) FindAllEndpointIdsGroupByProjectId(projectIds []
 }
 
 func (s *SummaryDetailsService) FindAllExecLogProcessorInterfaceTotalGroupByProjectId() (counts map[int64]int64, err error) {
-	r := repo.NewSummaryDetailsRepo()
-	result, err := r.FindAllExecLogProcessorInterfaceTotalGroupByProjectId()
+	result, err := s.HandlerSummaryDetailsRepo().FindAllExecLogProcessorInterfaceTotalGroupByProjectId()
 
 	counts = make(map[int64]int64, len(result))
 	for _, value := range result {
@@ -257,63 +251,51 @@ func (s *SummaryDetailsService) FindAllExecLogProcessorInterfaceTotalGroupByProj
 }
 
 func (s *SummaryDetailsService) FindByProjectId(projectId int64) (summaryDetail model.SummaryDetails, err error) {
-	r := repo.NewSummaryDetailsRepo()
-	return r.FindByProjectId(projectId)
+	return s.HandlerSummaryDetailsRepo().FindByProjectId(projectId)
 }
 
 func (s *SummaryDetailsService) Find() (details []model.SummaryDetails, err error) {
-	r := repo.NewSummaryDetailsRepo()
-	return r.Find()
+	return s.HandlerSummaryDetailsRepo().Find()
 }
 
 func (s *SummaryDetailsService) FindByProjectIds(projectIds []int64) (details []model.SummaryDetails, err error) {
-	r := repo.NewSummaryDetailsRepo()
-	return r.FindByProjectIds(projectIds)
+	return s.HandlerSummaryDetailsRepo().FindByProjectIds(projectIds)
 }
 
 func (s *SummaryDetailsService) FindProjectIds() (ids []int64, err error) {
-	r := repo.NewSummaryDetailsRepo()
-	return r.FindProjectIds()
+	return s.HandlerSummaryDetailsRepo().FindProjectIds()
 }
 
 func (s *SummaryDetailsService) SummaryCard() (summaryCardTotal model.SummaryCardTotal, err error) {
-	r := repo.NewSummaryDetailsRepo()
-	return r.SummaryCard()
+	return s.HandlerSummaryDetailsRepo().SummaryCard()
 }
 
 func (s *SummaryDetailsService) SummaryCardByDate(startTime string, endTime string) (summaryCardTotal model.SummaryCardTotal, err error) {
-	r := repo.NewSummaryDetailsRepo()
-	return r.SummaryCardByDate(startTime, endTime)
+	return s.HandlerSummaryDetailsRepo().SummaryCardByDate(startTime, endTime)
 }
 
 func (s *SummaryDetailsService) SummaryCardByProjectId(projectId int64) (summaryCardTotal model.SummaryCardTotal, err error) {
-	r := repo.NewSummaryDetailsRepo()
-	return r.SummaryCardByProjectId(projectId)
+	return s.HandlerSummaryDetailsRepo().SummaryCardByProjectId(projectId)
 }
 
 func (s *SummaryDetailsService) SummaryCardByDateAndProjectId(startTime string, endTime string, projectId int64) (summaryCardTotal model.SummaryCardTotal, err error) {
-	r := repo.NewSummaryDetailsRepo()
-	return r.SummaryCardByDateAndProjectId(startTime, endTime, projectId)
+	return s.HandlerSummaryDetailsRepo().SummaryCardByDateAndProjectId(startTime, endTime, projectId)
 }
 
 func (s *SummaryDetailsService) FindByProjectIdAndDate(startTime string, endTime string, projectId int64) (summaryDetails model.SummaryDetails, err error) {
-	r := repo.NewSummaryDetailsRepo()
-	return r.FindByProjectIdAndDate(startTime, endTime, projectId)
+	return s.HandlerSummaryDetailsRepo().FindByProjectIdAndDate(startTime, endTime, projectId)
 }
 
 func (s *SummaryDetailsService) FindAllUserIdAndNameOfProject() (users []model.UserIdAndName, err error) {
-	r := repo.NewSummaryDetailsRepo()
-	return r.FindAllUserIdAndNameOfProject()
+	return s.HandlerSummaryDetailsRepo().FindAllUserIdAndNameOfProject()
 }
 
 func (s *SummaryDetailsService) FindCreateUserNameByProjectId(projectId int64) (userName string, err error) {
-	r := repo.NewSummaryDetailsRepo()
-	return r.FindCreateUserNameByProjectId(projectId)
+	return s.HandlerSummaryDetailsRepo().FindCreateUserNameByProjectId(projectId)
 }
 
 func (s *SummaryDetailsService) CountBugsGroupByProjectId() (bugsCount map[int64]int64, err error) {
-	r := repo.NewSummaryDetailsRepo()
-	result, err := r.CountBugsGroupByProjectId()
+	result, err := s.HandlerSummaryDetailsRepo().CountBugsGroupByProjectId()
 	bugsCount = make(map[int64]int64, len(result))
 	for _, value := range result {
 		//这里写的是id实际是count，都是int64，不做多余的明明
@@ -323,13 +305,11 @@ func (s *SummaryDetailsService) CountBugsGroupByProjectId() (bugsCount map[int64
 }
 
 func (s *SummaryDetailsService) CountScenarioTotalProjectId(projectId int64) (count int64, err error) {
-	r := repo.NewSummaryDetailsRepo()
-	return r.CountScenarioTotalProjectId(projectId)
+	return s.HandlerSummaryDetailsRepo().CountScenarioTotalProjectId(projectId)
 }
 
 func (s *SummaryDetailsService) CountAllScenarioTotalProjectId() (scenarioTotal map[int64]int64, err error) {
-	r := repo.NewSummaryDetailsRepo()
-	scenariosTotal, err := r.CountAllScenarioTotalProjectId()
+	scenariosTotal, err := s.HandlerSummaryDetailsRepo().CountAllScenarioTotalProjectId()
 
 	scenarioTotal = make(map[int64]int64, len(scenariosTotal))
 	for _, value := range scenariosTotal {
@@ -340,13 +320,11 @@ func (s *SummaryDetailsService) CountAllScenarioTotalProjectId() (scenarioTotal 
 }
 
 func (s *SummaryDetailsService) CountEndpointTotalProjectId(projectId int64) (count int64, err error) {
-	r := repo.NewSummaryDetailsRepo()
-	return r.CountEndpointInterfaceTotalProjectId(projectId)
+	return s.HandlerSummaryDetailsRepo().CountEndpointInterfaceTotalProjectId(projectId)
 }
 
 func (s *SummaryDetailsService) CountAllEndpointTotalProjectId() (counts map[int64]int64, err error) {
-	r := repo.NewSummaryDetailsRepo()
-	endpointsTotal, err := r.CountAllEndpointInterfaceTotalProjectId()
+	endpointsTotal, err := s.HandlerSummaryDetailsRepo().CountAllEndpointInterfaceTotalProjectId()
 	counts = make(map[int64]int64, len(endpointsTotal))
 	for _, value := range endpointsTotal {
 		//这里写的是id实际是count，都是int64，不做多余的明明
@@ -356,13 +334,11 @@ func (s *SummaryDetailsService) CountAllEndpointTotalProjectId() (counts map[int
 }
 
 func (s *SummaryDetailsService) CountExecTotalProjectId(projectId int64) (count int64, err error) {
-	r := repo.NewSummaryDetailsRepo()
-	return r.CountExecTotalProjectId(projectId)
+	return s.HandlerSummaryDetailsRepo().CountExecTotalProjectId(projectId)
 }
 
 func (s *SummaryDetailsService) CountAllExecTotalProjectId() (counts map[int64]int64, err error) {
-	r := repo.NewSummaryDetailsRepo()
-	execsTotal, err := r.CountAllExecTotalProjectId()
+	execsTotal, err := s.HandlerSummaryDetailsRepo().CountAllExecTotalProjectId()
 	counts = make(map[int64]int64, len(execsTotal))
 	for _, value := range execsTotal {
 		//这里写的是id实际是count，都是int64，不做多余的明明
@@ -372,13 +348,11 @@ func (s *SummaryDetailsService) CountAllExecTotalProjectId() (counts map[int64]i
 }
 
 func (s *SummaryDetailsService) FindPassRateByProjectId(projectId int64) (passRate float64, err error) {
-	r := repo.NewSummaryDetailsRepo()
-	return r.FindPassRateByProjectId(projectId)
+	return s.HandlerSummaryDetailsRepo().FindPassRateByProjectId(projectId)
 }
 
 func (s *SummaryDetailsService) FindAllPassRateByProjectId() (passRate map[int64]float64, err error) {
-	r := repo.NewSummaryDetailsRepo()
-	passRates, err := r.FindAllPassRateByProjectId()
+	passRates, err := s.HandlerSummaryDetailsRepo().FindAllPassRateByProjectId()
 
 	passRate = make(map[int64]float64, len(passRates))
 
@@ -389,18 +363,15 @@ func (s *SummaryDetailsService) FindAllPassRateByProjectId() (passRate map[int64
 }
 
 func (s *SummaryDetailsService) Create(req model.SummaryDetails) (err error) {
-	r := repo.NewSummaryDetailsRepo()
-	return r.Create(req)
+	return s.HandlerSummaryDetailsRepo().Create(req)
 }
 
 func (s *SummaryDetailsService) UpdateColumnsByDate(id int64, req model.SummaryDetails) (err error) {
-	r := repo.NewSummaryDetailsRepo()
-	return r.UpdateColumnsByDate(id, req)
+	return s.HandlerSummaryDetailsRepo().UpdateColumnsByDate(id, req)
 }
 
 func (s *SummaryDetailsService) HasDataOfDate(startTime string, endTime string, projectId int64) (id int64, err error) {
-	r := repo.NewSummaryDetailsRepo()
-	return r.Existed(startTime, endTime, projectId)
+	return s.HandlerSummaryDetailsRepo().Existed(startTime, endTime, projectId)
 }
 
 func (s *SummaryDetailsService) CreateByDate(req model.SummaryDetails) (err error) {

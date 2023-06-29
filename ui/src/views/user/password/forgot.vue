@@ -6,7 +6,7 @@
     <a-form :wrapper-col="{ span: 24 }">
       <a-form-item label="" v-bind="validateInfos.usernameOrPassword">
         <div class="login-input-item">
-          <a-input v-model:value="modelRef.usernameOrPassword" placeholder="输入用户名或邮箱" />
+          <a-input class="login-input-item-input" v-model:value="modelRef.usernameOrPassword" placeholder="输入用户名或邮箱" />
         </div>
       </a-form-item>
       <div class="text-align-right">
@@ -77,4 +77,9 @@ const handleSubmit = async (e: MouseEvent) => {
 </script>
 <style lang="less" scoped>
 @import '../assets/login.less';
+.login-input-item-input:focus{
+  box-shadow: none!important;
+  background-color: #fff!important;
+}
+
 </style>

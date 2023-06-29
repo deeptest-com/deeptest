@@ -12,7 +12,7 @@ export function isObject(value: any): boolean {
  * 是否是引用类型
  * */
 export function isRef(obj: any): boolean {
-    return !!obj?.ref
+    return !!obj?.ref || !!obj?.$ref;
 }
 
 /**
@@ -46,7 +46,7 @@ export function addExtraViewInfo(val: Object | any | undefined | null): any {
     val.extraViewInfo = {
         "isExpand": getExpandedValue(val, true),
         "depth": 1,
-        "type": val.type,
+        "type": val.type ,
         "parent": null,
         "keyName": "root",
         "keyIndex": 0,
@@ -105,6 +105,8 @@ export function addExtraViewInfo(val: Object | any | undefined | null): any {
         }
         // 处理引用类型
         if (isRef(obj)) {
+            obj.ref = obj.ref || obj.$ref;
+            obj.type = obj.ref.type || val?.content?.type || 'object'
             obj.extraViewInfo = {
                 ...obj.extraViewInfo || {},
                 "isExpand": !!(obj?.content && obj.content?.type),
@@ -137,6 +139,9 @@ export function addExtraViewInfo(val: Object | any | undefined | null): any {
  * */
 export function removeExtraViewInfo(val: Object | any, isRemoveRefContent = false): object | null {
     function traverse(obj: any) {
+        if(obj?.extraViewInfo && isRemoveRefContent){
+            delete obj?.extraViewInfo;
+        }
         // base Case 普通类型，递归结束，
         if (isNormalType(obj.type) && !isRef(obj)) {
             delete obj?.extraViewInfo;
@@ -163,6 +168,9 @@ export function removeExtraViewInfo(val: Object | any, isRemoveRefContent = fals
                 }
                 obj?.items?.type && fn(obj.items);
                 if (isRemoveRefContent) {
+                    // debugger;
+                    // 兼容有可能是数组类型的 ref，但是且 type 属性
+                    delete obj.items?.extraViewInfo;
                     // 直接删除 content 属性
                     delete obj?.content;
                 } else if (obj?.content && obj.content?.type) {
@@ -182,14 +190,15 @@ export function removeExtraViewInfo(val: Object | any, isRemoveRefContent = fals
             }
         }
     }
+
     try {
         if (!val) {
             return null
         }
         delete val?.extraViewInfo;
         traverse(val);
-    }catch (e){
-        console.log(e);
+    } catch (e) {
+        console.log(832,'removeExtraViewInfo error',e);
     }
 
 
@@ -244,22 +253,16 @@ export const handleRef = (res) => {
     // 将$ref转换为ref
     function fn(obj) {
         if (!obj) return;
-        if (!obj.type) return;
+        if (typeof obj !== 'object') return;
         if (typeof obj === 'object') {
             Object.entries(obj).forEach(([key, value]) => {
                 if (key === '$ref') {
                     obj.ref = value;
+                    obj.type = obj.type || 'object';
                     delete obj.$ref;
                 }
                 if (typeof value === 'object') {
                     fn(value);
-                }
-                if (Array.isArray(value)) {
-                    value.forEach(item => {
-                        if (typeof item === 'object') {
-                            fn(item);
-                        }
-                    })
                 }
             });
         }
@@ -268,6 +271,7 @@ export const handleRef = (res) => {
     fn(res);
     return res;
 }
+
 
 
 

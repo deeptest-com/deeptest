@@ -1,4 +1,4 @@
-import {defineComponent, ref, watch,} from 'vue';
+import {defineComponent, ref, watch,nextTick} from 'vue';
 import './schema.less';
 import {DownOutlined, PlusOutlined, RightOutlined,} from '@ant-design/icons-vue';
 import SplitDivider from "./SplitDivider.vue";
@@ -12,8 +12,9 @@ import {
     isNormalType,
     isObject,
     isRef,
-    handleRef,
+
 } from './utils';
+import {   handleRef} from '@/components/SchemaEditor/utils';
 import {
     treeLevelWidth
 } from './config';
@@ -42,8 +43,10 @@ export default defineComponent({
                     const result: any = (props.components || []).find((item: any) => item.ref === tree.ref);
                     tree.content = JSON.parse(result.content || '{}');
                     data.value = addExtraViewInfo(data.value);
+                    tree.extraViewInfo.isExpand = true;
                 } else {
                     delete tree.content;
+                    tree.extraViewInfo.isExpand = false;
                 }
             } else {
                 tree.extraViewInfo.isExpand = !tree.extraViewInfo.isExpand;

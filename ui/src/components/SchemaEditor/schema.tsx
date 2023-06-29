@@ -1,4 +1,4 @@
-import {defineComponent, ref, watch,} from 'vue';
+import {defineComponent, ref, watch,nextTick} from 'vue';
 import './schema.less';
 import {DownOutlined, PlusOutlined, RightOutlined,} from '@ant-design/icons-vue';
 import Actions from "./Actions.vue";
@@ -222,9 +222,11 @@ export default defineComponent({
             return props.value
         }, (newVal: any) => {
             try {
+                // nextTick(() => {
+                //     // 重新渲染
+                //
+                // })
                 let val = JSON.parse(newVal);
-                // 将 $ref 转换为ref
-                handleRef(val);
                 // 默认值
                 if(!val?.type) {
                     val = {
@@ -240,11 +242,11 @@ export default defineComponent({
         watch(() => {
             return data.value
         }, (newVal) => {
-            const newObj = removeExtraViewInfo(cloneDeep(newVal));
+            const newObj = removeExtraViewInfo(cloneDeep(newVal),true);
             emit('change', newObj);
         }, {
             // todo 为什么要加上页面渲染时就需要加上这个，其实没必要，待优化
-            immediate: true,
+            // immediate: true,
             deep: true
         });
 

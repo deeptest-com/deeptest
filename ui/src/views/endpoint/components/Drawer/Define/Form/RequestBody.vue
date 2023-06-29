@@ -135,7 +135,7 @@ function changeExamples(examples: any) {
 
 function changeContent(content: any) {
   if (selectedMethodDetail?.value?.requestBody && content.type) {
-    selectedMethodDetail.value.requestBody.schemaItem.content = JSON.stringify(removeExtraViewInfo(content, true));
+    selectedMethodDetail.value.requestBody.schemaItem.content = JSON.stringify(content);
     contentStr.value = JSON.stringify(content);
     selectedMethodDetail.value.requestBody.schemaItem.type = content.type;
     store.commit('Endpoint/setSelectedMethodDetail', {

@@ -111,7 +111,7 @@ async function handleGenerateExample(examples: any) {
 function changeContent(content: any) {
   if (selectedCodeDetail?.value) {
     if (content?.type) {
-      selectedCodeDetail.value.schemaItem.content = JSON.stringify(removeExtraViewInfo(content, true));
+      selectedCodeDetail.value.schemaItem.content = JSON.stringify(content);
       contentStr.value = JSON.stringify(content);
       selectedCodeDetail.value.schemaItem.type = content.type;
       store.commit('Endpoint/setSelectedCodeDetail', selectedCodeDetail?.value);

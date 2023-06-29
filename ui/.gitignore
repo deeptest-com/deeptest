@@ -24,3 +24,5 @@ yarn.lock
 *.sw?
 /package-lock.json
 .env.ly
+
+test.js

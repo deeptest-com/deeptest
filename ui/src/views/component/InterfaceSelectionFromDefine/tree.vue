@@ -174,5 +174,13 @@ onUnmounted(() => {
       width: 50px;
     }
   }
+
+  .tree-panel {
+    width: 260px;
+    border-right: 1px solid #f0f0f0;
+    height: calc(100vh - 140px);
+    overflow-y:scroll;
+  }
+
 }
 </style>

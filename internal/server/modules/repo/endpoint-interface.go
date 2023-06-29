@@ -3,6 +3,7 @@ package repo
 import (
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
@@ -30,6 +31,20 @@ func (r *EndpointInterfaceRepo) Paginate(req v1.EndpointInterfaceReqPaginate) (r
 	}
 	if req.ServeId != 0 {
 		db = db.Where("e.serve_id = ?", req.ServeId)
+	}
+
+	if req.CategoryId > 0 {
+		var categoryIds []uint
+		categoryIds, err = r.BaseRepo.GetAllChildIds(uint(req.CategoryId), model.Category{}.TableName(),
+			serverConsts.EndpointCategory, int(req.ProjectId))
+		if err != nil {
+			return
+		}
+		if len(categoryIds) > 0 {
+			db.Where("category_id IN(?)", categoryIds)
+		}
+	} else if req.CategoryId == -1 {
+		db.Where("category_id IN(-1)")
 	}
 
 	db = db.Order("biz_endpoint_interface.created_at desc")

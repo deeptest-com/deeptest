@@ -22,7 +22,7 @@ type EndpointInterfaceReqPaginate struct {
 
 	ServeId    uint   `json:"serveId"`
 	Keywords   string `json:"Keywords"`
-	CategoryId uint   `json:"categoryId"`
+	CategoryId int64  `json:"categoryId"`
 	ProjectId  uint   `json:"projectId"`
 }
 

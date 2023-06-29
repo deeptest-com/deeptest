@@ -12,14 +12,10 @@ import {
     isNormalType,
     isObject,
     isRef,
-
 } from './utils';
-import {   handleRef} from '@/components/SchemaEditor/utils';
 import {
     treeLevelWidth
 } from './config';
-import {useStore} from "vuex";
-import {StateType as ServeStateType} from "@/store/serve";
 
 export default defineComponent({
     name: 'SchemeEditor',
@@ -32,7 +28,6 @@ export default defineComponent({
     },
     emits: [],
     setup(props, {emit}) {
-        const store = useStore<{ Endpoint, ServeGlobal: ServeStateType }>();
         const data: any = ref(null);
         const expandIt = (tree: any, options: any, e: any) => {
             const {parent, ancestor, isRoot} = options;
@@ -54,9 +49,7 @@ export default defineComponent({
         }
 
         watch(() => {return props.value}, (newVal) => {
-            const val = cloneDeep(newVal);
-            handleRef(val);
-            data.value = addExtraViewInfo(val);
+            data.value = addExtraViewInfo(newVal);
         }, {immediate: true, deep: true});
 
         const renderDivider = (options: any) => {

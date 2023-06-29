@@ -142,7 +142,7 @@
 <script setup lang="ts">
 import {
   computed, reactive, toRefs, ref, onMounted,
-  watch, createVNode
+  watch, createVNode, onUnmounted
 } from 'vue';
 import {useRouter} from 'vue-router';
 import debounce from "lodash.debounce";
@@ -336,7 +336,7 @@ async function del(record: any) {
     okType: 'danger',
     cancelText: () => '取消',
     onOk: async () => {
-      const res =  await store.dispatch('Endpoint/del', record);
+      const res = await store.dispatch('Endpoint/del', record);
       if (res) {
         message.success('删除成功');
       } else {
@@ -428,14 +428,19 @@ async function refreshList() {
 }
 
 watch(
-  ()=>[createApiModalVisible.value, showImportModal.value,drawerVisible.value],
-  async (newValue) => {
-    if (!newValue[0] || !newValue[1] || !newValue[2]) {
-      await store.dispatch('Endpoint/loadCategory');
-    }
-  },
-  {  immediate: true }
+    () => [createApiModalVisible.value, showImportModal.value, drawerVisible.value],
+    async (newValue) => {
+      if (!newValue[0] || !newValue[1] || !newValue[2]) {
+        await store.dispatch('Endpoint/loadCategory');
+      }
+    },
+    {immediate: true}
 );
+
+// 页面路由卸载时，清空搜索条件
+onUnmounted(async () => {
+  await store.commit('Endpoint/clearFilterState');
+})
 
 
 </script>
@@ -474,7 +479,7 @@ watch(
     width: 300px;
     border-right: 1px solid #f0f0f0;
     height: calc(100vh - 80px);
-    overflow-y:scroll;
+    overflow-y: scroll;
   }
 
   .right {

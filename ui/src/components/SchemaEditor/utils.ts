@@ -1,3 +1,7 @@
+/*
+* todo 改文件的很多公共方法需要提出去
+* */
+
 /**
  * 是否是对象类型
  * */
@@ -106,7 +110,7 @@ export function addExtraViewInfo(val: Object | any | undefined | null): any {
         // 处理引用类型
         if (isRef(obj)) {
             obj.ref = obj.ref || obj.$ref;
-            obj.type = obj.ref.type || val?.content?.type || 'object'
+            obj.type = obj.type || val?.content?.type || 'object'
             obj.extraViewInfo = {
                 ...obj.extraViewInfo || {},
                 "isExpand": !!(obj?.content && obj.content?.type),
@@ -246,31 +250,7 @@ export const generateSchemaByArray = (arr: any[]): any => {
     return res;
 };
 
-/**
- * 将 $ref 字段转成 ref
- * */
-export const handleRef = (res) => {
-    // 将$ref转换为ref
-    function fn(obj) {
-        if (!obj) return;
-        if (typeof obj !== 'object') return;
-        if (typeof obj === 'object') {
-            Object.entries(obj).forEach(([key, value]) => {
-                if (key === '$ref') {
-                    obj.ref = value;
-                    obj.type = obj.type || 'object';
-                    delete obj.$ref;
-                }
-                if (typeof value === 'object') {
-                    fn(value);
-                }
-            });
-        }
-    }
 
-    fn(res);
-    return res;
-}
 
 
 

@@ -1,4 +1,4 @@
-import {defineComponent, ref, watch,nextTick} from 'vue';
+import {defineComponent, ref, watch, nextTick} from 'vue';
 import './schema.less';
 import {DownOutlined, PlusOutlined, RightOutlined,} from '@ant-design/icons-vue';
 import Actions from "./Actions.vue";
@@ -8,7 +8,7 @@ import cloneDeep from "lodash/cloneDeep";
 import {
     addExtraViewInfo,
     findLastNotArrayNode,
-    generateSchemaByArray, handleRef,
+    generateSchemaByArray,
     isArray,
     isNormalType,
     isObject,
@@ -45,10 +45,10 @@ export default defineComponent({
                         serveId: props.serveId
                     })
                     tree.content = JSON.parse(result.content || '{}');
-                    data.value = addExtraViewInfo(data.value);
                     tree.extraViewInfo.isExpand = true;
+                    data.value = addExtraViewInfo(data.value);
                 } else {
-                    tree.extraViewInfo.isExpand = false;
+                    // tree.extraViewInfo.isExpand = false;
                     delete tree.content;
                 }
             } else {
@@ -111,7 +111,7 @@ export default defineComponent({
         const dataTypeChange = (options?: any, newProps?: any) => {
             const {parent, keyName, depth, ancestor} = options;
             const firstType = newProps?.[0]?.type;
-            if(!firstType){
+            if (!firstType) {
                 return;
             }
             // 如果是根节点
@@ -228,7 +228,7 @@ export default defineComponent({
                 // })
                 let val = JSON.parse(newVal);
                 // 默认值
-                if(!val?.type) {
+                if (!val?.type) {
                     val = {
                         type: 'object',
                     }
@@ -242,7 +242,7 @@ export default defineComponent({
         watch(() => {
             return data.value
         }, (newVal) => {
-            const newObj = removeExtraViewInfo(cloneDeep(newVal),true);
+            const newObj = removeExtraViewInfo(cloneDeep(newVal), true);
             emit('change', newObj);
         }, {
             // todo 为什么要加上页面渲染时就需要加上这个，其实没必要，待优化

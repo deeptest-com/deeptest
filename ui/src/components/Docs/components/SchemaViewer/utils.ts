@@ -12,7 +12,7 @@ export function isObject(value: any): boolean {
  * 是否是引用类型
  * */
 export function isRef(obj: any): boolean {
-    return !!obj?.ref
+    return !!obj?.ref || !!obj?.$ref;
 }
 
 /**
@@ -40,7 +40,6 @@ function getExpandedValue(val: any, defaultVal: boolean) {
  * 根据传入的 schema 结构信息，添加需要额外的渲染属性
  * */
 export function addExtraViewInfo(val: Object | any | undefined | null): any {
-    console.log('转换之前', val);
     if (!val) {
         return null
     }
@@ -57,7 +56,6 @@ export function addExtraViewInfo(val: Object | any | undefined | null): any {
     };
 
     function traverse(obj: any, depth: number, parent: any, options: any = {}, isRefChildNode = false) {
-
         // base Case 普通类型，递归结束，
         if (isNormalType(obj.type) && !isRef(obj)) {
             obj.extraViewInfo = {
@@ -106,6 +104,7 @@ export function addExtraViewInfo(val: Object | any | undefined | null): any {
         }
         // 处理引用类型
         if (isRef(obj)) {
+            obj.ref = obj.ref || obj.$ref;
             obj.extraViewInfo = {
                 ...obj.extraViewInfo || {},
                 "isExpand": !!(obj?.content && obj.content?.type),
@@ -124,9 +123,9 @@ export function addExtraViewInfo(val: Object | any | undefined | null): any {
             }
         }
     }
-
     // array  object  ref 类型都需要递归
     if (!isNormalType(val.type) || isRef(val)) {
+        val.ref = val.ref || val.$ref;
         traverse(val, 1, null, false);
     }
     console.log('转换之后', val);

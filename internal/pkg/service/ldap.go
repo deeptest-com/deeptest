@@ -19,7 +19,7 @@ var (
 )
 
 func (s *LdapService) Login(req v1.LoginReq) (err error) {
-	l, err := ldap.Dial("tcp", "192.168.5.228:389")
+	l, err := ldap.Dial("tcp", "ldap-admin.nancalcloud.com:389")
 	if err != nil {
 		logUtils.Errorf("LDAP dial error: %s", err)
 		err = ErrDial
@@ -37,7 +37,7 @@ func (s *LdapService) Login(req v1.LoginReq) (err error) {
 }
 
 func (s *LdapService) LdapUserInfo(req v1.LoginReq) (userBase v1.UserBase, err error) {
-	l, err := ldap.Dial("tcp", "192.168.5.228:389")
+	l, err := ldap.Dial("tcp", "ldap-admin.nancalcloud.com:389")
 	if err != nil {
 		logUtils.Errorf("LDAP dial error: %s", err)
 		err = ErrDial

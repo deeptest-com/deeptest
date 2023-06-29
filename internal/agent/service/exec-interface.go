@@ -6,7 +6,6 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
-	_httpUtils "github.com/aaronchen2k/deeptest/pkg/lib/http"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"strings"
 )

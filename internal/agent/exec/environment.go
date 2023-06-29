@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
-	_httpUtils "github.com/aaronchen2k/deeptest/pkg/lib/http"
 	"strings"
 )
 

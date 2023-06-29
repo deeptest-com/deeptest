@@ -69,6 +69,11 @@ func (s *EndpointInterfaceService) resetDriverType(driverType convert.DriverType
 			return
 		}
 
+		if _, ok := res["openapi"].(string); ok {
+			newDriverType = convert.SWAGGER3
+			return
+		}
+
 		if _, ok := res["swagger"]; !ok {
 			err = fmt.Errorf("file type error")
 			return
@@ -79,11 +84,6 @@ func (s *EndpointInterfaceService) resetDriverType(driverType convert.DriverType
 			if version == "3.0" {
 				newDriverType = convert.SWAGGER3
 			}
-			return
-		}
-
-		if _, ok := res["openapi"].(string); ok {
-			newDriverType = convert.SWAGGER3
 			return
 		}
 

@@ -7,7 +7,7 @@
         <a-form :wrapper-col="{ span: 24 }">
             <a-form-item label="" v-bind="validateInfos.username">
                 <div class="login-input-item">
-                    <a-input v-model:value="modelRef.username" :placeholder="t('page.user.login.form-item-username')"
+                    <a-input class="login-input-item-input" v-model:value="modelRef.username" :placeholder="t('page.user.login.form-item-username')"
                         @keyup.enter="handleSubmit">
                     </a-input>
                 </div>
@@ -151,4 +151,8 @@ export default defineComponent({
 </script>
 <style lang="less" scoped>
 @import '../assets/login.less';
+.login-input-item-input:focus{
+  box-shadow: none!important;
+  background-color: #fff!important;
+}
 </style>

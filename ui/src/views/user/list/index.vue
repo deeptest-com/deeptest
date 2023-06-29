@@ -1,8 +1,8 @@
 <template>
   <div class="user-main-list">
     <a-tabs v-model:activeKey="activeKey">
-      <a-tab-pane key="1" tab="成员">
-        <Member/>
+      <a-tab-pane key="1" v-if="isAdmin" tab="成员">
+        <Member :isAdmin="isAdmin"/>
         <!----
         <a-card :bordered="false">
           <template #title>
@@ -50,7 +50,7 @@
       <a-tab-pane key="2" tab="我的审批" force-render>
         <Audit/>
         <!---
-      
+
         <a-card :bordered="false">
           <a-table
             row-key="id"
@@ -153,6 +153,19 @@
 import Member from "./member/member.vue";
 import Audit from "./audit/audit.vue";
 import Apply from "./apply/apply.vue";
+import {onMounted, ref} from "vue";
+import {useStore} from "vuex";
+import {StateType as UserStateType} from "@/store/user";
+
+const store = useStore<{ User: UserStateType }>();
+const isAdmin = ref<boolean>(false)
+const getUserSysRole = () => {
+  isAdmin.value = store.state.User.currentUser.sysRoles.indexOf('admin') != -1
+}
+onMounted(() => {
+  getUserSysRole();
+  console.log(isAdmin)
+});
 /*
 
 import { PaginationConfig, QueryParams, User } from "../data.d";

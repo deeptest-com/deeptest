@@ -197,6 +197,7 @@ const StoreModel: ModuleType = {
             }
         },
         async resetDataAndInvocations({commit, dispatch, state}) {
+            commit('setDebugInfo', {});
             commit('setDebugData', {});
             commit('setResponse', {});
             commit('setInvocations', []);

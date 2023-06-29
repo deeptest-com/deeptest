@@ -18,6 +18,7 @@
             showIcon
             :expandedKeys="expandedKeys"
             :auto-expand-parent="autoExpandParent"
+            v-model:selectedKeys="selectedKeys"
             @drop="onDrop"
             @expand="onExpand"
             @select="selectNode"
@@ -98,7 +99,7 @@ import {
 import {message, Modal} from 'ant-design-vue';
 import {DropEvent} from 'ant-design-vue/es/tree/Tree';
 import {useStore} from "vuex";
-import {setExpandedKeys, setSelectedKey} from "@/utils/cache";
+import {getSelectedKey, setExpandedKeys, setSelectedKey} from "@/utils/cache";
 
 import {StateType as ProjectStateType} from "@/store/project";
 import {StateType as DiagnoseInterfaceStateType} from '../store';
@@ -109,6 +110,7 @@ import EditModal from './edit.vue'
 import InterfaceSelectionFromDefine from "@/views/component/InterfaceSelectionFromDefine/main.vue";
 import {filterTree} from "@/utils/tree";
 import {confirmToDelete} from "@/utils/confirm";
+import debounce from "lodash.debounce";
 
 const store = useStore<{ DiagnoseInterface: DiagnoseInterfaceStateType, ProjectGlobal: ProjectStateType, ServeGlobal: ServeStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
@@ -146,21 +148,29 @@ watch((currProject), async (newVal) => {
   console.log('watch currProject', currProject?.value.id, currServe?.value.id)
   await loadTreeData();
   await getServeServers()
-}, {
-  immediate: true
-})
+}, {immediate: true})
 watch((currServe), async (newVal) => {
   console.log('watch currProject', currProject?.value.id, currServe?.value.id)
   await loadTreeData();
   await getServeServers()
-}, {
-  immediate: true
-})
+  selectStoredKeyCall()
+}, {immediate: true})
 
 watch(searchValue, (newVal) => {
   expandedKeys.value = filterTree(treeData.value, newVal)
   autoExpandParent.value = true;
+  selectStoredKeyCall()
 });
+
+const getSelectedKeyName = () => {
+  return `diagnose-interface-` + currServe.value.id
+}
+const selectStoredKeyCall = debounce(async () => {
+  console.log('selectStoredKeyCall')
+  let key = await getSelectedKey(getSelectedKeyName(), currProject.value.id)
+  console.log('key', key)
+  selectNode([key], null)
+}, 300)
 
 const onExpand = (keys: number[]) => {
   expandedKeys.value = keys;
@@ -199,10 +209,12 @@ function selectNode(keys, e) {
   } else {
     selectedKeys.value = keys
   }
-  setSelectedKey('diagnose-interface', currProject.value.id, selectedKeys.value[0])
+  setSelectedKey(getSelectedKeyName(), currProject.value.id, selectedKeys.value[0])
 
-  const selectedItem = treeDataMap.value[selectedKeys.value[0]]
-  store.dispatch('DiagnoseInterface/openInterfaceTab', selectedItem);
+  if (!e) {
+    const selectedItem = treeDataMap.value[selectedKeys.value[0]]
+    store.dispatch('DiagnoseInterface/openInterfaceTab', selectedItem);
+  }
 }
 
 const currentNode = ref(null as any);

@@ -1,5 +1,5 @@
 <template>
-  <div id="debug-form">
+  <div id="debug-form">{{debugInfo}}
     <div id="top-panel">
       <InterfaceRequest v-if="debugData.method"
                         :showRequestInvocation="false"
@@ -17,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed} from "vue";
+import {computed, onMounted, onUnmounted} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 
@@ -32,21 +32,15 @@ import VariableSelection from './others/variable-replace/Selection.vue';
 const {t} = useI18n();
 const store = useStore<{  Debug: Debug, ProjectGlobal: ProjectGlobal, Endpoint: Endpoint }>();
 const debugData = computed<any>(() => store.state.Debug.debugData);
+const debugInfo = computed<any>(() => store.state.Debug.debugInfo);
 
-// onMounted(() => {
-//   console.log('onMounted interface')
-//   window.addEventListener('resize', resizeHandler)
-//   resize()
-// })
-// onUnmounted(() => {
-//   console.log('onUnmounted interface')
-//   window.removeEventListener('resize', resizeHandler)
-// })
-//
-// const resize = () => {
-//   resizeHeight('debug-form', 'top-panel', 'design-splitter-v', 'bottom-panel',
-//       200, 360)
-// }
+onMounted(() => {
+  console.log('onMounted debug-interface')
+})
+onUnmounted(() => {
+  console.log('onUnmounted debug-interface')
+  store.dispatch('Debug/resetDataAndInvocations');
+})
 
 </script>
 

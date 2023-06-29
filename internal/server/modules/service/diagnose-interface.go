@@ -56,7 +56,7 @@ func (s *DiagnoseInterfaceService) Save(req serverDomain.DiagnoseInterfaceSaveRe
 				},
 			},
 			ServeId:  diagnoseInterface.ServeId,
-			ServerId: server.ServeId,
+			ServerId: server.ID,
 			BaseUrl:  server.Url,
 		}
 

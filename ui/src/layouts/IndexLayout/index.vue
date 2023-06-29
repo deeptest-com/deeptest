@@ -60,7 +60,6 @@ import Permission from '@/components/Permission/index.vue';
 import Left from '@/layouts/IndexLayout/components/Left.vue';
 import RightTop from '@/layouts/IndexLayout/components/RightTop.vue';
 import RightFooter from '@/layouts/IndexLayout/components/RightFooter.vue';
-import {useI18n} from "vue-i18n";
 
 export default defineComponent({
   name: 'IndexLayout',
@@ -84,6 +83,8 @@ export default defineComponent({
         const remote = window.require('@electron/remote')
         version.value = remote.getGlobal('sharedObj').version
       }
+
+      store.dispatch('Global/getServerConfig');
     })
 
     // 所有菜单路由

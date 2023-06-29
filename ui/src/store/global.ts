@@ -5,6 +5,7 @@ import { TabNavItem } from '@/utils/routes';
 import settings from '@/config/settings';
 import router from '@/config/routes';
 import { getPermissionMenuList } from '@/services/project';
+import {getServerConfig} from "@/services/config";
 
 export interface StateType {
   // 左侧展开收起
@@ -20,6 +21,7 @@ export interface StateType {
 
   permissionMenuMap: any;
   permissionButtonMap: any;
+  serverConfig: any;
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
@@ -31,9 +33,11 @@ export interface ModuleType extends StoreModuleType<StateType> {
     setTabNavEnable: Mutation<StateType>;
     setHeadTabNavList: Mutation<StateType>;
     setPermissionMenuAndBtn: Mutation<StateType>;
+    setServerConfig: Mutation<StateType>;
   };
   actions: {
     getPermissionList: Action<StateType, StateType>;
+    getServerConfig: Action<StateType, StateType>;
   };
 }
 
@@ -51,7 +55,8 @@ const initState: StateType = {
     }
   ],
   permissionMenuMap: null,
-  permissionButtonMap: null
+  permissionButtonMap: null,
+  serverConfig: {},
 };
 
 const StoreModel: ModuleType = {
@@ -80,7 +85,10 @@ const StoreModel: ModuleType = {
       const { permissionButtonMap, permissionMenuMap } = payload;
       state.permissionButtonMap = permissionButtonMap;
       state.permissionMenuMap = permissionMenuMap
-    }
+    },
+    setServerConfig(state, payload) {
+      state.serverConfig = payload
+    },
   },
   actions: {
     async getPermissionList({ commit }) {
@@ -105,10 +113,15 @@ const StoreModel: ModuleType = {
 
         commit('setPermissionMenuAndBtn', { permissionButtonMap: buttonData, permissionMenuMap: menuData });
       }
+    },
+    async getServerConfig({ commit }) {
+      const result = await getServerConfig();
+
+      if (result.code === 0) {
+        commit('setServerConfig', result.data);
+      }
     }
   }
 }
-
-
 
 export default StoreModel;

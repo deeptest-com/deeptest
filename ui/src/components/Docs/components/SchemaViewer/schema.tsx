@@ -50,7 +50,7 @@ export default defineComponent({
 
         watch(() => {return props.value}, (newVal) => {
             data.value = addExtraViewInfo(newVal);
-        }, {immediate: true, deep: true});
+        }, {immediate: true, deep: false});
 
         const renderDivider = (options: any) => {
             const {isRoot, isFirst, isLast, keyIndex, parent, ancestor, isRefChildNode, keyName} = options;

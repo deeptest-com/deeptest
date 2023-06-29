@@ -1,6 +1,6 @@
 <template>
   <div class="user-layout">
-    <div class="logo"></div>
+    <div class="logo" :class="{'ly-logo':isLeyanEnv}"></div>
     <div class="right-main">
       <div class="right-content">
         <router-view></router-view>
@@ -26,6 +26,9 @@ export default defineComponent({
   components: {
   },
   setup() {
+
+    let isLeyanEnv = process.env.VUE_APP_DEPLOY_ENV === 'ly';
+
     const route = useRoute();
 
     // 所有菜单路由
@@ -36,6 +39,10 @@ export default defineComponent({
 
     // 设置title
     useTitle(routeItem);
+
+    return {
+      isLeyanEnv
+    }
 
   }
 })
@@ -61,6 +68,11 @@ export default defineComponent({
     background-image: url('../../assets/images/logo.png');
     background-position: center;
     background-size: cover;
+   background-repeat: no-repeat;
+    &.ly-logo{
+      background-image: url("https://od-1310531898.cos.ap-beijing.myqcloud.com/202306291016448.svg");
+      background-size: contain;
+    }
   }
 
   .right-main {

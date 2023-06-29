@@ -48,7 +48,7 @@ export default defineComponent({
                     tree.extraViewInfo.isExpand = true;
                     data.value = addExtraViewInfo(data.value);
                 } else {
-                    // tree.extraViewInfo.isExpand = false;
+                    tree.extraViewInfo.isExpand = false;
                     delete tree.content;
                 }
             } else {

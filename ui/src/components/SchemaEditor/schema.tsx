@@ -222,18 +222,17 @@ export default defineComponent({
             return props.value
         }, (newVal: any) => {
             try {
-                // nextTick(() => {
-                //     // 重新渲染
-                //
-                // })
-                let val = JSON.parse(newVal);
-                // 默认值
-                if (!val?.type) {
-                    val = {
-                        type: 'object',
+                nextTick(() => {
+                    let val = JSON.parse(newVal);
+                    // 默认值
+                    if (!val?.type) {
+                        val = {
+                            type: 'object',
+                        }
                     }
-                }
-                data.value = addExtraViewInfo(val);
+                    data.value = addExtraViewInfo(val);
+                })
+
             } catch (e) {
                 console.log('watch', e);
             }

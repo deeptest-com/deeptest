@@ -124,7 +124,7 @@ func (s *ScenarioExecService) countRequest(result execDomain.ScenarioExecResult,
 	report.TotalProcessorNum++
 	report.FinishProcessorNum++
 	if result.ProcessorType == consts.ProcessorInterfaceDefault {
-		s.countInterface(result.InterfaceId, result.ResultStatus, report)
+		s.countInterface(result.DebugInterfaceId, result.ResultStatus, report)
 
 		report.TotalRequestNum++
 		report.Duration += result.Cost

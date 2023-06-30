@@ -145,7 +145,7 @@ func (s *PlanExecService) CombineReport(scenarioReport model.ScenarioReport, pla
 
 func (s *PlanExecService) countRequest(result agentDomain.ScenarioExecResult, report *model.PlanReport) {
 	if result.ProcessorType == consts.ProcessorInterfaceDefault {
-		s.countInterface(result.InterfaceId, result.ResultStatus, report)
+		s.countInterface(result.DebugInterfaceId, result.ResultStatus, report)
 
 		report.TotalRequestNum++
 

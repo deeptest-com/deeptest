@@ -11,6 +11,10 @@ import (
 func Invoke(req *domain.BaseRequest) (resp domain.DebugResponse, err error) {
 	GetRequestProps(req)
 
+	if DemoTestSite != "" {
+		req.Url = DemoTestSite
+	}
+
 	if req.Method == consts.GET {
 		resp, err = httpHelper.Get(*req)
 	} else if req.Method == consts.POST {

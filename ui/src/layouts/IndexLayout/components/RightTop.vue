@@ -83,7 +83,7 @@ export default defineComponent({
     const {topMenuCon, topMenuWidth} = useTopMenuWidth(topNavEnable);
 
     watch(() => {return router.currentRoute.value.path;}, (val: string) => {
-      showServerSelector.value = val.includes('endpoint') || val.includes('debugger');
+      showServerSelector.value = val.includes('endpoint') || val.includes('diagnose');
     }, {immediate: true})
 
     return {

@@ -152,7 +152,7 @@ func (webServer *WebServer) AddWebUi() {
 		return
 	}
 
-	webServer.app.HandleDir("/ui", http.FS(uiFs), iris.DirOptions{
+	webServer.app.HandleDir("/", http.FS(uiFs), iris.DirOptions{
 		IndexName: "index.html",
 		ShowList:  false,
 		SPA:       true,

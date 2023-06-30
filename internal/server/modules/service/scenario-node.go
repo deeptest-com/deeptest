@@ -23,6 +23,7 @@ type ScenarioNodeService struct {
 	EndpointInterfaceRepo    *repo.EndpointInterfaceRepo `inject:""`
 	ExtractorRepo            *repo.ExtractorRepo         `inject:""`
 	CheckpointRepo           *repo.CheckpointRepo        `inject:""`
+	ServeServerRepo          *repo.ServeServerRepo       `inject:""`
 
 	DebugInterfaceService *DebugInterfaceService `inject:""`
 }
@@ -128,7 +129,7 @@ func (s *ScenarioNodeService) AddInterfacesFromTest(req serverDomain.ScenarioAdd
 	}
 
 	for _, interfaceNode := range req.SelectedNodes {
-		ret, _ = s.createDirOrInterfaceFromTest(&interfaceNode, targetProcessor)
+		ret, _ = s.createDirOrInterfaceFromDiagnose(&interfaceNode, targetProcessor)
 	}
 
 	return
@@ -165,11 +166,16 @@ func (s *ScenarioNodeService) createInterfaceFromDefine(endpointInterfaceId uint
 	}
 
 	// convert or clone a debug interface obj
-	debugData, err := s.DebugInterfaceService.GetDebugInterfaceByEndpointInterface(endpointInterfaceId)
+	debugData, err := s.DebugInterfaceService.GetDebugDataFromEndpointInterface(endpointInterfaceId)
 	debugData.DebugInterfaceId = 0 // force to clone the old one
 	debugData.EndpointInterfaceId = endpointInterfaceId
 	debugData.ScenarioProcessorId = 0 // will be update after ScenarioProcessor saved
 	debugData.ServeId = *serveId
+
+	server, _ := s.ServeServerRepo.GetDefaultByServe(debugData.ServeId)
+	debugData.ServerId = server.ID
+	debugData.BaseUrl = server.Url
+
 	debugData.UsedBy = consts.ScenarioDebug
 	debugInterface, err := s.DebugInterfaceService.Save(debugData)
 
@@ -206,14 +212,14 @@ func (s *ScenarioNodeService) createInterfaceFromDefine(endpointInterfaceId uint
 	return
 }
 
-func (s *ScenarioNodeService) createDirOrInterfaceFromTest(testInterfaceNode *serverDomain.TestInterface, parentProcessor model.Processor) (
+func (s *ScenarioNodeService) createDirOrInterfaceFromDiagnose(diagnoseInterfaceNode *serverDomain.DiagnoseInterface, parentProcessor model.Processor) (
 	ret model.Processor, err error) {
 
-	debugData, _ := s.DebugInterfaceService.GetDebugDataFromDebugInterface(testInterfaceNode.DebugInterfaceId)
+	debugData, _ := s.DebugInterfaceService.GetDebugDataFromDebugInterface(diagnoseInterfaceNode.DebugInterfaceId)
 
-	if !testInterfaceNode.IsLeaf && len(testInterfaceNode.Children) > 0 { // dir
+	if !diagnoseInterfaceNode.IsLeaf && len(diagnoseInterfaceNode.Children) > 0 { // dir
 		processor := model.Processor{
-			Name:           testInterfaceNode.Title,
+			Name:           diagnoseInterfaceNode.Title,
 			ScenarioId:     parentProcessor.ScenarioId,
 			EntityCategory: consts.ProcessorGroup,
 			EntityType:     consts.ProcessorGroupDefault,
@@ -223,17 +229,17 @@ func (s *ScenarioNodeService) createDirOrInterfaceFromTest(testInterfaceNode *se
 		processor.Ordr = s.ScenarioNodeRepo.GetMaxOrder(processor.ParentId)
 		s.ScenarioNodeRepo.Save(&processor)
 
-		for _, child := range testInterfaceNode.Children {
-			s.createDirOrInterfaceFromTest(child, processor)
+		for _, child := range diagnoseInterfaceNode.Children {
+			s.createDirOrInterfaceFromDiagnose(child, processor)
 		}
 
-	} else if testInterfaceNode.IsLeaf { // interface
+	} else if diagnoseInterfaceNode.IsLeaf { // interface
 		processor := model.Processor{
-			Name: testInterfaceNode.Title,
+			Name: diagnoseInterfaceNode.Title,
 
 			EntityCategory:      consts.ProcessorInterface,
 			EntityType:          consts.ProcessorInterfaceDefault,
-			EntityId:            testInterfaceNode.DebugInterfaceId, // as debugInterfaceId
+			EntityId:            diagnoseInterfaceNode.DebugInterfaceId, // as debugInterfaceId
 			EndpointInterfaceId: debugData.EndpointInterfaceId,
 
 			Ordr: s.ScenarioNodeRepo.GetMaxOrder(parentProcessor.ID),
@@ -248,13 +254,14 @@ func (s *ScenarioNodeService) createDirOrInterfaceFromTest(testInterfaceNode *se
 		s.ScenarioNodeRepo.Save(&processor)
 
 		// convert or clone a debug interface obj
-
 		debugData.DebugInterfaceId = 0 // force to clone the old one
 		debugData.ScenarioProcessorId = processor.ID
-		debugData.ServeId = testInterfaceNode.ServeId
+		debugData.ServeId = diagnoseInterfaceNode.ServeId
 
-		debugInterfaceOfTestInterfaceNode, _ := s.DebugInterfaceRepo.Get(testInterfaceNode.DebugInterfaceId)
-		debugData.ServerId = debugInterfaceOfTestInterfaceNode.ServerId
+		debugInterfaceOfDiagnoseInterfaceNode, _ := s.DebugInterfaceRepo.Get(diagnoseInterfaceNode.DebugInterfaceId)
+		debugData.ServerId = debugInterfaceOfDiagnoseInterfaceNode.ServerId
+		debugData.BaseUrl = debugInterfaceOfDiagnoseInterfaceNode.BaseUrl
+		debugData.Url = debugInterfaceOfDiagnoseInterfaceNode.Url
 
 		debugData.UsedBy = consts.ScenarioDebug
 		debugInterface, _ := s.DebugInterfaceService.Save(debugData)

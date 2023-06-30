@@ -121,7 +121,7 @@ export interface DebugInfo {
     debugInterfaceId: number,
     endpointInterfaceId: number,
     scenarioProcessorId  : number,
-    testInterfaceId  : number,
+    diagnoseInterfaceId  : number,
 
     usedBy:          consts.UsedBy
 }

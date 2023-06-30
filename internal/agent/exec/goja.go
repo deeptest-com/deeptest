@@ -40,10 +40,10 @@ func InitJsRuntime() {
 		return getVariableValue(name)
 	})
 	MyVm.JsRuntime.Set("setVariable", func(name, val string) {
-		SetVariable(CurrProcessorId, name, val, consts.Public)
+		SetVariable(CurrScenarioProcessorId, name, val, consts.Public)
 	})
 	MyVm.JsRuntime.Set("clearVariable", func(name string) {
-		ClearVariable(CurrProcessorId, name)
+		ClearVariable(CurrScenarioProcessorId, name)
 	})
 
 	// load global script

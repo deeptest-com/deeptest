@@ -1,10 +1,10 @@
-export interface TestInterface {
+export interface DiagnoseInterface {
   id: number;
   [props: any]: any;
 }
 
 export interface QueryResult {
-  list: TestInterface[];
+  list: DiagnoseInterface[];
   pagination: PaginationConfig;
 }
 

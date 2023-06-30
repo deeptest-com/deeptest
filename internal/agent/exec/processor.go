@@ -47,7 +47,7 @@ type ProcessorBase struct {
 
 func (p *Processor) Run(s *Session) (err error) {
 	_logUtils.Infof("%d - %s %s", p.ID, p.Name, p.EntityType)
-	CurrProcessorId = p.ID
+	CurrScenarioProcessorId = p.ID
 
 	if p.Entity != nil {
 		p.Entity.Run(p, s)

@@ -6,7 +6,7 @@ type ExecScene struct {
 
 	ShareVars []GlobalVar `json:"shareVars"`
 
-	InterfaceToEnvMap InterfaceToEnvMap `json:"interfaceToEnvMap"`
-	EnvToVariables    EnvToVariables    `json:"envToVariables"`
-	Datapools         Datapools         `json:"datapool"`
+	DebugInterfaceToEnvMap InterfaceToEnvMap `json:"debugInterfaceToEnvMap"`
+	EnvToVariables         EnvToVariables    `json:"envToVariables"`
+	Datapools              Datapools         `json:"datapool"`
 }

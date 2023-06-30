@@ -20,8 +20,8 @@ type IndexModule struct {
 	RoleModule    *router.RoleModule    `inject:""`
 	PermModule    *router.PermModule    `inject:""`
 
-	DebugModule         *router.DebugModule         `inject:""`
-	TestInterfaceModule *router.TestInterfaceModule `inject:""`
+	DebugModule             *router.DebugModule             `inject:""`
+	DiagnoseInterfaceModule *router.DiagnoseInterfaceModule `inject:""`
 
 	MockModule *router.MockModule `inject:""`
 
@@ -58,7 +58,9 @@ type IndexModule struct {
 	MessageModule           *router.MessageModule           `inject:""`
 	DocumentModule          *router.DocumentModule          `inject:""`
 	HealthzModule           *router.HealthzModule           `inject:""`
-	TestsModule             *router.TestsModule             `inject:""`
+
+	ConfigModule *router.ConfigModule `inject:""`
+	TestsModule  *router.TestsModule  `inject:""`
 }
 
 func NewIndexModule() *IndexModule {
@@ -120,10 +122,12 @@ func (m *IndexModule) Party() module.WebModule {
 		m.SummaryModule.Party(),
 
 		m.DebugModule.Party(),
-		m.TestInterfaceModule.Party(),
+		m.DiagnoseInterfaceModule.Party(),
 		m.MessageModule.Party(),
 		m.DocumentModule.Party(),
 		m.HealthzModule.Party(),
+
+		m.ConfigModule.Party(),
 		m.TestsModule.Party(),
 	}
 	return module.NewModule(consts.ApiPath, handler, modules...)

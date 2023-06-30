@@ -1,7 +1,7 @@
 <template>
-  <div class="test-interface-design-main">
-      <div v-if="debugData?.method" id="test-interface-debug-panel">
-        <div id="test-interface-debug-content">
+  <div class="diagnose-interface-design-main">
+      <div v-if="debugData?.method" id="diagnose-interface-debug-panel">
+        <div id="diagnose-interface-debug-content">
           <div class="tabs">
             <a-tabs type="editable-card" :hideAdd="true" v-model:activeKey="activeTabKey"
                     @edit="onTabEdit"
@@ -16,9 +16,9 @@
           </div>
         </div>
 
-        <div id="test-interface-debug-splitter" class="splitter"></div>
+        <div id="diagnose-interface-debug-splitter" class="splitter"></div>
 
-        <div id="test-interface-debug-right">
+        <div id="diagnose-interface-debug-right">
           <a-tabs v-model:activeKey="rightTabKey"
                   tabPosition="right"
                   :tabBarGutter="0"
@@ -70,20 +70,20 @@ import UrlAndInvocation from './url-and-invocation.vue'
 import DebugComp from '@/views/component/debug/index.vue';
 
 import {StateType as ProjectStateType} from "@/store/project";
-import {StateType as TestInterfaceStateType} from '../store';
+import {StateType as DiagnoseInterfaceStateType} from '../store';
 import {StateType as ServeStateType} from "@/store/serve";
 import {StateType as Debug} from "@/views/component/debug/store";
 
 provide('usedBy', UsedBy.TestDebug)
 
-const store = useStore<{ Debug: Debug, TestInterface: TestInterfaceStateType, ProjectGlobal: ProjectStateType, ServeGlobal: ServeStateType }>();
+const store = useStore<{ Debug: Debug, DiagnoseInterface: DiagnoseInterfaceStateType, ProjectGlobal: ProjectStateType, ServeGlobal: ServeStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const currServe = computed<any>(() => store.state.ServeGlobal.currServe);
 const debugData = computed<any>(() => store.state.Debug.debugData);
 
-const interfaceId = computed<any>(() => store.state.TestInterface.interfaceId);
-const interfaceData = computed<any>(() => store.state.TestInterface.interfaceData);
-const interfaceTabs = computed<any>(() => store.state.TestInterface.interfaceTabs);
+const interfaceId = computed<any>(() => store.state.DiagnoseInterface.interfaceId);
+const interfaceData = computed<any>(() => store.state.DiagnoseInterface.interfaceData);
+const interfaceTabs = computed<any>(() => store.state.DiagnoseInterface.interfaceTabs);
 
 const activeTabKey = ref('0')
 const rightTabKey = ref('env')
@@ -95,7 +95,7 @@ const changeTab = (key) => {
     return item.id === +key
   })
 
-  store.dispatch('TestInterface/openInterfaceTab', found);
+  store.dispatch('DiagnoseInterface/openInterfaceTab', found);
 }
 
 const usedBy = UsedBy.TestDebug
@@ -103,7 +103,7 @@ const loadDebugData = debounce(async () => {
   console.log('loadDebugData')
 
   store.dispatch('Debug/loadDataAndInvocations', {
-    testInterfaceId: interfaceData.value.id,
+    diagnoseInterfaceId: interfaceData.value.id,
     usedBy: usedBy,
   });
 }, 300)
@@ -123,13 +123,13 @@ watch((interfaceData), async (newVal) => {
 const onTabEdit = (key, action) => {
   console.log('onTabEdit', key, action)
   if (action === 'remove') {
-    store.dispatch('TestInterface/removeInterfaceTab', +key);
+    store.dispatch('DiagnoseInterface/removeInterfaceTab', +key);
   }
 };
 </script>
 
 <style lang="less">
-.test-interface-design-main {
+.diagnose-interface-design-main {
   .tabs {
     .ant-tabs-card {
       .ant-tabs-extra-content {
@@ -143,7 +143,7 @@ const onTabEdit = (key, action) => {
     right: 16px;
   }
 
-  #test-interface-debug-right .right-tab {
+  #diagnose-interface-debug-right .right-tab {
     height: 100%;
 
     .ant-tabs-left-content {
@@ -177,25 +177,25 @@ const onTabEdit = (key, action) => {
 </style>
 
 <style scoped lang="less">
-.test-interface-design-main {
+.diagnose-interface-design-main {
   padding: 16px 0px 16px 16px;
 
-  #test-interface-debug-panel {
+  #diagnose-interface-debug-panel {
     display: flex;
 
-    #test-interface-debug-content {
+    #diagnose-interface-debug-content {
       flex: 1;
       width: 0;
       height: 100%;
     }
 
-    #test-interface-debug-right {
+    #diagnose-interface-debug-right {
       margin-top: 50px;
       width: 260px;
       height: 100%;
     }
 
-    .test-interface-debug-splitter {
+    .diagnose-interface-debug-splitter {
       min-width: 20px;
     }
   }

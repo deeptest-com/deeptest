@@ -32,6 +32,8 @@ nohup go run cmd/agent/main.go  > agent.log 2>&1 &
 make compile_server_linux
 scp -r bin/linux/deeptest aaron@110.42.146.127:/home/aaron/dev/server
 
+scp -r client/ui/* lighthouse@124.222.224.72:~/rd/project/deeptest/ui/dist/
+
 nohup ./deeptest-server > deeptest.log 2>&1 &
 
 cd ui && yarn build && scp -r ui/dist aaron@110.42.146.127:/home/aaron/dev/project/deeptest/static && cd ..
@@ -42,3 +44,6 @@ ${_rand(10, 2)}
 ${_dp(myData, A, seq|rand|2)}
 
 ${_dp(myData, A, 1)}
+
+sudo lsof -i:6379 | grep -v COMMAND | awk '{print $2}' | sudo xargs kill -9
+sudo redis-server ~/rd/server/redis.conf

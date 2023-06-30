@@ -13,12 +13,12 @@ import {computed} from "vue";
 import { useStore } from "vuex";
 import {StateType as DebugStateType} from "@/views/component/debug/store";
 import {StateType as EndpointStateType} from "@/views/endpoint/store";
-import {StateType as TestInterfaceStateType} from "@/views/debugger/store";
+import {StateType as DiagnoseInterfaceStateType} from "@/views/diagnose/store";
 
-const store = useStore<{TestInterface: TestInterfaceStateType, Debug: DebugStateType, Endpoint: EndpointStateType}>();
+const store = useStore<{DiagnoseInterface: DiagnoseInterfaceStateType, Debug: DebugStateType, Endpoint: EndpointStateType}>();
 
 const debugData = computed<any>(() => store.state.Debug.debugData);
-const serveServers: any = computed(() => store.state.TestInterface.serveServers);
+const serveServers: any = computed(() => store.state.DiagnoseInterface.serveServers);
 
 const serverId = computed(() => {
   return debugData?.value?.serverId || serveServers?.value[0]?.value || ''

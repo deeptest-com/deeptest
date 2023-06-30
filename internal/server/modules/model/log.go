@@ -23,7 +23,8 @@ type ExecLogProcessor struct {
 	ProcessorCategory consts.ProcessorCategory `json:"processorCategory" yaml:"processorCategory"`
 
 	// for interface
-	InterfaceId           uint                `json:"interfaceId"`
+	EndpointInterfaceId   uint                `json:"endpointInterfaceId"`
+	DebugInterfaceId      uint                `json:"debugInterfaceId"`
 	ReqContent            string              `json:"reqContent,omitempty" gorm:"type:mediumtext"`
 	RespContent           string              `json:"respContent,omitempty" gorm:"type:mediumtext"`
 	HttpRespStatusCode    consts.HttpRespCode `json:"httpStatusCode"`
@@ -35,6 +36,7 @@ type ExecLogProcessor struct {
 	// for processor
 	ProcessorType       consts.ProcessorType `json:"processorType" yaml:"processorType"`
 	ScenarioProcessorId uint                 `gorm:"default:0" json:"scenarioProcessorId,omitempty"`
+	ScenarioId          uint                 `gorm:"default:0" json:"scenarioId,omitempty"`
 	//ProcessorContent string               `json:"processorContent,omitempty"`
 	//ProcessorResult  string               `json:"processorResult,omitempty"`
 

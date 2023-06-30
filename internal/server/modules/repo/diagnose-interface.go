@@ -8,14 +8,14 @@ import (
 	"gorm.io/gorm"
 )
 
-type TestInterfaceRepo struct {
-	*BaseRepo           `inject:""`
-	*TestInterfaceRepo  `inject:""`
-	*DebugInterfaceRepo `inject:""`
-	DB                  *gorm.DB `inject:""`
+type DiagnoseInterfaceRepo struct {
+	*BaseRepo              `inject:""`
+	*DiagnoseInterfaceRepo `inject:""`
+	*DebugInterfaceRepo    `inject:""`
+	DB                     *gorm.DB `inject:""`
 }
 
-func (r *TestInterfaceRepo) GetTree(projectId, serveId uint) (root *serverDomain.TestInterface, err error) {
+func (r *DiagnoseInterfaceRepo) GetTree(projectId, serveId uint) (root *serverDomain.DiagnoseInterface, err error) {
 	pos, err := r.ListByProject(projectId, serveId)
 	if err != nil {
 		return
@@ -26,13 +26,13 @@ func (r *TestInterfaceRepo) GetTree(projectId, serveId uint) (root *serverDomain
 		return
 	}
 
-	root = &serverDomain.TestInterface{}
+	root = &serverDomain.DiagnoseInterface{}
 	r.makeTree(tos, root)
 
 	return
 }
 
-func (r *TestInterfaceRepo) ListByProject(projectId, serveId uint) (pos []*model.TestInterface, err error) {
+func (r *DiagnoseInterfaceRepo) ListByProject(projectId, serveId uint) (pos []*model.DiagnoseInterface, err error) {
 	db := r.DB.
 		Where("project_id=?", projectId).
 		Where("NOT deleted")
@@ -48,26 +48,27 @@ func (r *TestInterfaceRepo) ListByProject(projectId, serveId uint) (pos []*model
 	return
 }
 
-func (r *TestInterfaceRepo) Get(id uint) (po model.TestInterface, err error) {
+func (r *DiagnoseInterfaceRepo) Get(id uint) (po model.DiagnoseInterface, err error) {
 	err = r.DB.Where("id = ?", id).First(&po).Error
 	return
 }
 
-func (r *TestInterfaceRepo) GetDetail(interfId uint) (testInterface model.TestInterface, err error) {
+func (r *DiagnoseInterfaceRepo) GetDetail(interfId uint) (diagnoseInterface model.DiagnoseInterface, err error) {
 	if interfId <= 0 {
 		return
 	}
 
-	testInterface, err = r.Get(interfId)
+	diagnoseInterface, err = r.Get(interfId)
 
-	debugInterface, _ := r.DebugInterfaceRepo.Get(testInterface.DebugInterfaceId)
+	debugInterface, _ := r.DebugInterfaceRepo.Get(diagnoseInterface.DebugInterfaceId)
 
-	testInterface.DebugData, _ = r.DebugInterfaceRepo.GetDetail(debugInterface.ID)
+	debugData, _ := r.DebugInterfaceRepo.GetDetail(debugInterface.ID)
+	diagnoseInterface.DebugData = &debugData
 
 	return
 }
 
-func (r *TestInterfaceRepo) toTos(pos []*model.TestInterface) (tos []*serverDomain.TestInterface) {
+func (r *DiagnoseInterfaceRepo) toTos(pos []*model.DiagnoseInterface) (tos []*serverDomain.DiagnoseInterface) {
 	for _, po := range pos {
 		to := r.ToTo(po)
 
@@ -76,8 +77,8 @@ func (r *TestInterfaceRepo) toTos(pos []*model.TestInterface) (tos []*serverDoma
 
 	return
 }
-func (r *TestInterfaceRepo) ToTo(po *model.TestInterface) (to *serverDomain.TestInterface) {
-	to = &serverDomain.TestInterface{
+func (r *DiagnoseInterfaceRepo) ToTo(po *model.DiagnoseInterface) (to *serverDomain.DiagnoseInterface) {
+	to = &serverDomain.DiagnoseInterface{
 		Id:               int64(po.ID),
 		Title:            po.Title,
 		Desc:             po.Desc,
@@ -87,14 +88,14 @@ func (r *TestInterfaceRepo) ToTo(po *model.TestInterface) (to *serverDomain.Test
 		DebugInterfaceId: po.DebugInterfaceId,
 	}
 
-	if po.Type == serverConsts.TestInterfaceTypeInterface {
+	if po.Type == serverConsts.DiagnoseInterfaceTypeInterface {
 		to.IsLeaf = true
 	}
 
 	return
 }
 
-func (r *TestInterfaceRepo) makeTree(findIn []*serverDomain.TestInterface, parent *serverDomain.TestInterface) { //参数为父节点，添加父节点的子节点指针切片
+func (r *DiagnoseInterfaceRepo) makeTree(findIn []*serverDomain.DiagnoseInterface, parent *serverDomain.DiagnoseInterface) { //参数为父节点，添加父节点的子节点指针切片
 	children, _ := r.hasChild(findIn, parent) // 判断节点是否有子节点并返回
 
 	if children != nil {
@@ -109,8 +110,8 @@ func (r *TestInterfaceRepo) makeTree(findIn []*serverDomain.TestInterface, paren
 	}
 }
 
-func (r *TestInterfaceRepo) hasChild(categories []*serverDomain.TestInterface, parent *serverDomain.TestInterface) (
-	ret []*serverDomain.TestInterface, yes bool) {
+func (r *DiagnoseInterfaceRepo) hasChild(categories []*serverDomain.DiagnoseInterface, parent *serverDomain.DiagnoseInterface) (
+	ret []*serverDomain.DiagnoseInterface, yes bool) {
 
 	for _, item := range categories {
 		if item.ParentId == parent.Id {
@@ -128,7 +129,7 @@ func (r *TestInterfaceRepo) hasChild(categories []*serverDomain.TestInterface, p
 	return
 }
 
-func (r *TestInterfaceRepo) Save(po *model.TestInterface) (err error) {
+func (r *DiagnoseInterfaceRepo) Save(po *model.DiagnoseInterface) (err error) {
 	po.Ordr = r.GetMaxOrder(po.ParentId)
 
 	err = r.DB.Save(po).Error
@@ -136,20 +137,20 @@ func (r *TestInterfaceRepo) Save(po *model.TestInterface) (err error) {
 	return
 }
 
-func (r *TestInterfaceRepo) Update(req serverDomain.TestInterfaceReq) (err error) {
-	err = r.DB.Model(&model.TestInterface{}).
+func (r *DiagnoseInterfaceRepo) Update(req serverDomain.DiagnoseInterfaceReq) (err error) {
+	err = r.DB.Model(&model.DiagnoseInterface{}).
 		Where("id ?", req.Id).
 		Updates(map[string]interface{}{"title": req.Title, "desc": req.Desc}).Error
 
 	return
 }
 
-func (r *TestInterfaceRepo) UpdateOrder(pos serverConsts.DropPos, targetId uint, projectId uint) (
+func (r *DiagnoseInterfaceRepo) UpdateOrder(pos serverConsts.DropPos, targetId uint, projectId uint) (
 	parentId uint, ordr int) {
 	if pos == serverConsts.Inner {
 		parentId = targetId
 
-		var preChild model.TestInterface
+		var preChild model.DiagnoseInterface
 		r.DB.Where("parent_id=? AND project_id = ?", parentId, projectId).
 			Order("ordr DESC").Limit(1).
 			First(&preChild)
@@ -160,7 +161,7 @@ func (r *TestInterfaceRepo) UpdateOrder(pos serverConsts.DropPos, targetId uint,
 		brother, _ := r.Get(targetId)
 		parentId = brother.ParentId
 
-		r.DB.Model(&model.TestInterface{}).
+		r.DB.Model(&model.DiagnoseInterface{}).
 			Where("NOT deleted AND parent_id=? AND project_id = ? AND ordr >= ?",
 				parentId, projectId, brother.Ordr).
 			Update("ordr", gorm.Expr("ordr + 1"))
@@ -171,7 +172,7 @@ func (r *TestInterfaceRepo) UpdateOrder(pos serverConsts.DropPos, targetId uint,
 		brother, _ := r.Get(targetId)
 		parentId = brother.ParentId
 
-		r.DB.Model(&model.TestInterface{}).
+		r.DB.Model(&model.DiagnoseInterface{}).
 			Where("NOT deleted AND parent_id=? AND project_id = ? AND ordr > ?",
 				parentId, parentId, brother.Ordr).
 			Update("ordr", gorm.Expr("ordr + 1"))
@@ -183,16 +184,16 @@ func (r *TestInterfaceRepo) UpdateOrder(pos serverConsts.DropPos, targetId uint,
 	return
 }
 
-func (r *TestInterfaceRepo) UpdateName(id int, name string) (err error) {
-	err = r.DB.Model(&model.TestInterface{}).
+func (r *DiagnoseInterfaceRepo) UpdateName(id int, name string) (err error) {
+	err = r.DB.Model(&model.DiagnoseInterface{}).
 		Where("id = ?", id).
 		Update("name", name).Error
 
 	return
 }
 
-func (r *TestInterfaceRepo) Delete(id uint) (err error) {
-	err = r.DB.Model(&model.TestInterface{}).
+func (r *DiagnoseInterfaceRepo) Delete(id uint) (err error) {
+	err = r.DB.Model(&model.DiagnoseInterface{}).
 		Where("id=?", id).
 		Update("deleted", true).
 		Error
@@ -200,23 +201,23 @@ func (r *TestInterfaceRepo) Delete(id uint) (err error) {
 	return
 }
 
-func (r *TestInterfaceRepo) GetChildren(nodeId uint) (children []*model.TestInterface, err error) {
+func (r *DiagnoseInterfaceRepo) GetChildren(nodeId uint) (children []*model.DiagnoseInterface, err error) {
 	err = r.DB.Where("parent_id=?", nodeId).Find(&children).Error
 	return
 }
 
-func (r *TestInterfaceRepo) UpdateOrdAndParent(node model.TestInterface) (err error) {
+func (r *DiagnoseInterfaceRepo) UpdateOrdAndParent(node model.DiagnoseInterface) (err error) {
 	err = r.DB.Model(&node).
-		Updates(model.TestInterface{Ordr: node.Ordr, ParentId: node.ParentId}).
+		Updates(model.DiagnoseInterface{Ordr: node.Ordr, ParentId: node.ParentId}).
 		Error
 
 	return
 }
 
-func (r *TestInterfaceRepo) GetMaxOrder(parentId uint) (order int) {
-	node := model.TestInterface{}
+func (r *DiagnoseInterfaceRepo) GetMaxOrder(parentId uint) (order int) {
+	node := model.DiagnoseInterface{}
 
-	err := r.DB.Model(&model.TestInterface{}).
+	err := r.DB.Model(&model.DiagnoseInterface{}).
 		Where("parent_id=?", parentId).
 		Order("ordr DESC").
 		First(&node).Error
@@ -228,23 +229,23 @@ func (r *TestInterfaceRepo) GetMaxOrder(parentId uint) (order int) {
 	return
 }
 
-func (r *TestInterfaceRepo) Remove(id uint, typ serverConsts.TestInterfaceType) (err error) {
+func (r *DiagnoseInterfaceRepo) Remove(id uint, typ serverConsts.DiagnoseInterfaceType) (err error) {
 	ids := []uint{}
 
-	if typ == serverConsts.TestInterfaceTypeInterface {
+	if typ == serverConsts.DiagnoseInterfaceTypeInterface {
 		ids = append(ids, id)
 	} else {
-		ids, _ = r.GetAllChildIdsSimple(id, model.TestInterface{}.TableName())
+		ids, _ = r.GetAllChildIdsSimple(id, model.DiagnoseInterface{}.TableName())
 	}
 
-	err = r.DB.Model(&model.TestInterface{}).
+	err = r.DB.Model(&model.DiagnoseInterface{}).
 		Where("id IN (?)", ids).
 		Update("deleted", true).Error
 
 	return
 }
 
-func (r *TestInterfaceRepo) SaveDebugData(interf *model.TestInterface) (err error) {
+func (r *DiagnoseInterfaceRepo) SaveDebugData(interf *model.DiagnoseInterface) (err error) {
 	r.DB.Transaction(func(tx *gorm.DB) error {
 		err = r.UpdateDebugInfo(interf)
 		if err != nil {
@@ -259,7 +260,7 @@ func (r *TestInterfaceRepo) SaveDebugData(interf *model.TestInterface) (err erro
 	return
 }
 
-func (r *TestInterfaceRepo) UpdateDebugInfo(interf *model.TestInterface) (err error) {
+func (r *DiagnoseInterfaceRepo) UpdateDebugInfo(interf *model.DiagnoseInterface) (err error) {
 	values := map[string]interface{}{
 		"server_id": interf.DebugData.ServerId,
 		"base_url":  interf.DebugData.BaseUrl,
@@ -267,7 +268,7 @@ func (r *TestInterfaceRepo) UpdateDebugInfo(interf *model.TestInterface) (err er
 		"method":    interf.DebugData.Method,
 	}
 
-	err = r.DB.Model(&model.TestInterface{}).
+	err = r.DB.Model(&model.DiagnoseInterface{}).
 		Where("id=?", interf.ID).
 		Updates(values).
 		Error

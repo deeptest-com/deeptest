@@ -30,7 +30,7 @@ func getVariableValue(name string) (ret string) {
 }
 
 func getValueFromShareVar(name string) (ret string) {
-	if CurrProcessorId == 0 { // endpoint interface debug
+	if CurrScenarioProcessorId == 0 { // endpoint interface debug
 		// try to find in vars that set by pre-condition scripts
 		vars := listCachedVariable(0)
 		for _, v := range vars {
@@ -44,21 +44,21 @@ func getValueFromShareVar(name string) (ret string) {
 
 	} else { // run scenario
 		//每次都更新缓存变量
-		//if CachedShareVarByProcessorForRead[CurrProcessorId] == nil {
-		CachedShareVarByProcessorForRead[CurrProcessorId] = GetCachedVariableMapInContext(CurrProcessorId)
+		//if CachedShareVarByProcessorForRead[CurrScenarioProcessorId] == nil {
+		CachedShareVarByProcessorForRead[CurrScenarioProcessorId] = GetCachedVariableMapInContext(CurrScenarioProcessorId)
 		//}
 
-		if CachedShareVarByProcessorForRead[CurrProcessorId][name] == nil {
+		if CachedShareVarByProcessorForRead[CurrScenarioProcessorId][name] == nil {
 			return ""
 		}
-		ret = fmt.Sprintf("%v", CachedShareVarByProcessorForRead[CurrProcessorId][name])
+		ret = fmt.Sprintf("%v", CachedShareVarByProcessorForRead[CurrScenarioProcessorId][name])
 		fmt.Println(name, ret, "+++")
 	}
 
 	return
 }
 func getValueFromEnvVar(name string) (ret string) {
-	envId := ExecScene.InterfaceToEnvMap[CurrInterfaceId]
+	envId := ExecScene.DebugInterfaceToEnvMap[CurrDebugInterfaceId]
 
 	vars := ExecScene.EnvToVariables[envId]
 

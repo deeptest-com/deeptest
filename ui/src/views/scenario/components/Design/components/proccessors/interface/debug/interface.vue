@@ -29,10 +29,6 @@ watch(scenarioProcessorIdForDebug, () => {
   console.log('watch scenarioProcessorIdForDebug', scenarioProcessorIdForDebug)
   loadData()
 }, {deep: true})
-// watch(endpointInterfaceIdForDebug, () => {
-//   console.log('watch endpointInterfaceIdForDebug', endpointInterfaceIdForDebug)
-//   loadData()
-// }, {deep: true})
 
 const loadData = debounce(async () => {
   console.log('loadData', scenarioProcessorIdForDebug.value)
@@ -41,7 +37,6 @@ const loadData = debounce(async () => {
   }
 
   store.dispatch('Debug/loadDataAndInvocations', {
-    // endpointInterfaceId: endpointInterfaceIdForDebug.value,
     scenarioProcessorId: scenarioProcessorIdForDebug.value,
     usedBy: usedBy,
   });

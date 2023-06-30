@@ -11,10 +11,10 @@ type DebugInterface struct {
 
 	EndpointInterfaceId uint `gorm:"default:0" json:"endpointInterfaceId"`
 	ScenarioProcessorId uint `gorm:"default:0" json:"scenarioProcessorId"`
-	TestInterfaceId     uint `gorm:"default:0" json:"testInterfaceId"`
+	DiagnoseInterfaceId uint `gorm:"default:0" json:"diagnoseInterfaceId"`
 
 	ServeId uint `json:"serveId"`
-	// used by TestInterface
+	// used by DiagnoseInterface
 	ServerId uint   `json:"serverId"`
 	BaseUrl  string `json:"baseUrl"`
 
@@ -140,7 +140,7 @@ type DebugInterfaceExtractor struct {
 	ScenarioId          uint `gorm:"default:0" json:"scenarioId"`
 
 	// debug for Test Interface
-	TestInterfaceId uint `gorm:"default:0" json:"testInterfaceId"`
+	DiagnoseInterfaceId uint `gorm:"default:0" json:"diagnoseInterfaceId"`
 
 	ProjectId uint `json:"projectId"`
 }
@@ -174,7 +174,7 @@ type DebugInterfaceCheckpoint struct {
 	ScenarioId          uint `gorm:"default:0" json:"scenarioId"`
 
 	// debug for Test Interface
-	TestInterfaceId uint `gorm:"default:0" json:"testInterfaceId"`
+	DiagnoseInterfaceId uint `gorm:"default:0" json:"diagnoseInterfaceId"`
 }
 
 func (DebugInterfaceCheckpoint) TableName() string {

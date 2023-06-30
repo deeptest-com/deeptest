@@ -35,7 +35,6 @@ export default defineComponent({
     setup(props, {emit}) {
         const store = useStore<{ Endpoint, ServeGlobal: ServeStateType }>();
         const data: any = ref(null);
-        // todo 和 SchemaViewer的逻辑重复，后续考虑抽离
         const expandIt = async (tree: any, options: any, e: any) => {
             const {parent, ancestor, isRoot} = options;
             // 异步获取组件详情信息

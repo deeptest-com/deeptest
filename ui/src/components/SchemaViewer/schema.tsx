@@ -15,7 +15,7 @@ import {
 } from '@/components/SchemaEditor/utils';
 import {
     treeLevelWidth
-} from './config';
+} from '@/components/SchemaEditor/config';
 
 export default defineComponent({
     name: 'SchemeEditor',

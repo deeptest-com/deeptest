@@ -8,14 +8,12 @@
         :openKeys="leftOpenKeys"
         :menuData="permissionMenuData"
         :version="version"
-        :onOpenChange="onOpenChange"
-    >
+        :onOpenChange="onOpenChange">
     </left>
 
     <div
         id="indexlayout-right"
-        :class="{'fiexd-header': headFixed}"
-    >
+        :class="{'fiexd-header': headFixed}">
       <right-top
           :collapsed="collapsed"
           :tabNavEnable="tabNavEnable"

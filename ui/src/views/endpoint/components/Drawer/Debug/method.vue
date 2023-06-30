@@ -51,7 +51,6 @@ const changeMethod = async () => {
 onMounted(async () => {
   await changeMethod()
 })
-
 // changeMethod()
 
 function hasDefinedMethod(method: string) {

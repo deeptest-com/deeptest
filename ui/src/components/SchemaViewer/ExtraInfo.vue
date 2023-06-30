@@ -6,14 +6,9 @@ import {
   InfoCircleTwoTone
 } from '@ant-design/icons-vue';
 import {computed, defineProps, defineEmits, ref, watch} from "vue";
-
 const props = defineProps(['value','deprecated','required']) ;
-
 const emit = defineEmits([])
-
 const visible = ref(false);
-
-
 </script>
 
 <template>
@@ -25,7 +20,6 @@ const visible = ref(false);
       required
     </a-typography-text>
   </div>
-
 </template>
 
 

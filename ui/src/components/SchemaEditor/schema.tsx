@@ -9,7 +9,7 @@ import cloneDeep from "lodash/cloneDeep";
 import {
     addExtraViewInfo,
     findLastNotArrayNode,
-    generateSchemaByArray,
+    generateSchemaByArray, handleRefInfo,
     isArray,
     isNormalType,
     isObject,
@@ -45,38 +45,8 @@ export default defineComponent({
                         ref: tree.ref,
                         serveId: props.serveId
                     })
-                    // 兼容，返回的值为空字符串的情况，则直接不展开
-                    if (!result?.content) {
-                        tree.extraViewInfo.isExpand = false;
-                        message.warning(`引用的字段的详情数据为空`);
-                        return;
-                    }
-
-                    tree.content = JSON.parse(result.content);
-
-                    // 兼容获取引用详情时，没有 type 字段的情况
-                    // 如果外层 result 有 type 字段，则直接使用
-                    // 否则，根据 content 的结构，判断 type
-                    tree.content.type = tree.content.type || result.type;
-                    if (!tree.content?.type) {
-                        if (result?.properties) {
-                            tree.content.type = 'object';
-                        } else if (result?.items) {
-                            tree.content.type = 'array';
-                        }
-                        else if (result?.allOf) {
-                            tree.content.type = 'array';
-                        }
-                        // 先展示出来，但是还没实现这几个关键词
-                        // AND = all of XOR = one of OR = any of
-                        else if (tree.content?.anyOf || tree.content?.oneOf || tree.content?.allOf) {
-                            tree.content.type = 'all of | one of | any of';
-                        }
-                        else {
-                            tree.content.type = 'string';
-                        }
-                    }
-
+                    // 处理引用组件的信息
+                    handleRefInfo(tree, result);
                     data.value = addExtraViewInfo(data.value);
                     tree.extraViewInfo.isExpand = true;
 

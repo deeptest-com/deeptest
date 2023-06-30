@@ -121,7 +121,7 @@ import {getCodeColor, getMethodColor} from "../hooks/index"
 import Parameters from "./Parameters.vue"
 import Security from "./Security.vue"
 import Securitys from "./Securitys.vue"
-import SchemaViewer from "./SchemaViewer/index.vue"
+import SchemaViewer from "@/components/SchemaViewer/index.vue";
 import {CopyOutlined} from '@ant-design/icons-vue';
 import {useClipboard, useFullscreen} from '@vueuse/core'
 import {message} from "ant-design-vue";

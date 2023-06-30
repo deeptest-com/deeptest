@@ -1,6 +1,10 @@
 <template>
   <div id="debug-form">
     <div id="top-panel">
+      <div v-if="serverConfig.demoTestSite" class="red">
+        您正在访问演示站点，所有的接口请求将被重定向到{{serverConfig.demoTestSite}}。
+      </div>
+
       <InterfaceRequest v-if="debugData.method"
                         :showRequestInvocation="false"
                         :showDebugDataUrl="false" />
@@ -17,7 +21,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed} from "vue";
+import {computed, onMounted, onUnmounted} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 
@@ -28,25 +32,21 @@ import {StateType as Endpoint} from "../../endpoint/store";
 import InterfaceRequest from './request/Index.vue';
 import InterfaceResponse from './response/Index.vue';
 import VariableSelection from './others/variable-replace/Selection.vue';
+import {StateType as GlobalStateType} from "@/store/global";
+import {StateType as UserStateType} from "@/store/user";
 
 const {t} = useI18n();
-const store = useStore<{  Debug: Debug, ProjectGlobal: ProjectGlobal, Endpoint: Endpoint }>();
+const store = useStore<{  Debug: Debug, Endpoint: Endpoint, ProjectGlobal: ProjectGlobal, Global: GlobalStateType }>();
 const debugData = computed<any>(() => store.state.Debug.debugData);
+const serverConfig = computed<any>(() => store.state.Global.serverConfig);
 
-// onMounted(() => {
-//   console.log('onMounted interface')
-//   window.addEventListener('resize', resizeHandler)
-//   resize()
-// })
-// onUnmounted(() => {
-//   console.log('onUnmounted interface')
-//   window.removeEventListener('resize', resizeHandler)
-// })
-//
-// const resize = () => {
-//   resizeHeight('debug-form', 'top-panel', 'design-splitter-v', 'bottom-panel',
-//       200, 360)
-// }
+onMounted(() => {
+  console.log('onMounted debug-interface')
+})
+onUnmounted(() => {
+  console.log('onUnmounted debug-interface')
+  store.dispatch('Debug/resetDataAndInvocations');
+})
 
 </script>
 

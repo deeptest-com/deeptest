@@ -158,7 +158,7 @@ func (s *EnvironmentService) Clone(id uint) (environment *model.Environment, err
 	if err != nil {
 		return
 	}
-	err = s.EnvironmentRepo.GetEnvironment(environment)
+	err = s.EnvironmentRepo.GetEnvironmentDetail(environment)
 	if err != nil {
 		return
 	}

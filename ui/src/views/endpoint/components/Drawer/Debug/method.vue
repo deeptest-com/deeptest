@@ -38,10 +38,8 @@ const changeMethod = async () => {
   if (endpointInterface?.id) {
     await store.commit('Endpoint/setSelectedMethodDetail', endpointInterface);
 
-    console.log('================ start load debug data for endpointInterface ', endpointInterface.id, selectedMethod.value)
     store.dispatch('Debug/loadDataAndInvocations', {
       endpointInterfaceId: endpointInterface.id,
-      scenarioProcessorId: 0,
       usedBy: usedBy,
     });
 

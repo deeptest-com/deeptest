@@ -3,8 +3,7 @@
       <a-badge
         class="indexlayout-top-message-badge"
         :count="message"
-        :numberStyle="{ boxShadow: 'none', height: '15px', 'line-height': '15px' }"
-      />
+        :numberStyle="{ boxShadow: 'none', height: '15px', 'line-height': '15px' }" />
     </router-link>
 </template>
 <script lang="ts">

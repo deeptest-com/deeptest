@@ -13,8 +13,8 @@ import (
 func RunInterface(call agentDomain.InterfaceCall) (ret domain.DebugResponse, err error) {
 	req := GetInterfaceToExec(call)
 
-	agentExec.CurrInterfaceId = req.DebugData.EndpointInterfaceId
-	agentExec.CurrProcessorId = 0 // not in a scenario
+	agentExec.CurrDebugInterfaceId = req.DebugData.DebugInterfaceId
+	agentExec.CurrScenarioProcessorId = 0 // not in a scenario
 
 	agentExec.ExecScene = req.ExecScene
 
@@ -44,7 +44,7 @@ func RequestInterface(req domain.DebugData) (ret domain.DebugResponse, err error
 
 	req.BaseRequest.Url = reqUri // rollback for saved to db
 
-	ret.Id = req.EndpointInterfaceId
+	ret.Id = req.DebugInterfaceId
 
 	return
 }

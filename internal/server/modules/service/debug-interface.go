@@ -15,7 +15,7 @@ type DebugInterfaceService struct {
 	EndpointInterfaceRepo *repo.EndpointInterfaceRepo `inject:""`
 	DebugInterfaceRepo    *repo.DebugInterfaceRepo    `inject:""`
 	ScenarioInterfaceRepo *repo.ScenarioInterfaceRepo `inject:""`
-	TestInterfaceRepo     *repo.TestInterfaceRepo     `inject:""`
+	DiagnoseInterfaceRepo *repo.DiagnoseInterfaceRepo `inject:""`
 
 	EndpointRepo          *repo.EndpointRepo          `inject:""`
 	ServeRepo             *repo.ServeRepo             `inject:""`
@@ -37,8 +37,8 @@ func (s *DebugInterfaceService) Load(loadReq domain.DebugReq) (debugData domain.
 	} else {
 		if loadReq.ScenarioProcessorId > 0 {
 			debugData, _ = s.GetDebugInterfaceByScenarioInterface(loadReq.ScenarioProcessorId)
-		} else if loadReq.TestInterfaceId > 0 {
-			debugData, _ = s.GetDebugInterfaceByTestInterface(loadReq.TestInterfaceId)
+		} else if loadReq.DiagnoseInterfaceId > 0 {
+			debugData, _ = s.GetDebugInterfaceByDiagnoseInterface(loadReq.DiagnoseInterfaceId)
 		} else if loadReq.EndpointInterfaceId > 0 {
 			debugData, _ = s.GetDebugInterfaceByEndpointInterface(loadReq.EndpointInterfaceId)
 		}
@@ -47,7 +47,7 @@ func (s *DebugInterfaceService) Load(loadReq domain.DebugReq) (debugData domain.
 	debugData.UsedBy = loadReq.UsedBy
 
 	debugData.BaseUrl, debugData.ShareVars, debugData.EnvVars, debugData.GlobalVars, debugData.GlobalParams =
-		s.DebugSceneService.LoadScene(debugData, debugData.UsedBy)
+		s.DebugSceneService.LoadScene(&debugData)
 
 	return
 }
@@ -55,15 +55,161 @@ func (s *DebugInterfaceService) Load(loadReq domain.DebugReq) (debugData domain.
 func (s *DebugInterfaceService) LoadForExec(loadReq domain.DebugReq) (ret agentExec.InterfaceExecObj, err error) {
 	ret.DebugData, _ = s.Load(loadReq)
 
-	ret.ExecScene.ShareVars = ret.DebugData.ShareVars
-	ret.DebugData.ShareVars = nil // for display on debug page only
+	ret.ExecScene.ShareVars = ret.DebugData.ShareVars // for execution
+	ret.DebugData.ShareVars = nil                     // for display on debug page only
 
-	// get project environment
-	projectId, _ := s.SceneService.LoadEnvVarMapByEndpointInterface(&ret.ExecScene,
-		ret.DebugData.EndpointInterfaceId, ret.DebugData.ServerId)
+	// get project environment data
+	s.SceneService.LoadEnvVars(&ret.ExecScene, ret.DebugData)
 
-	s.SceneService.LoadProjectSettings(&ret.ExecScene, projectId)
+	s.SceneService.LoadProjectSettings(&ret.ExecScene, ret.DebugData.ProjectId)
 
+	return
+}
+
+func (s *DebugInterfaceService) GetDetail(id uint) (ret model.DebugInterface, err error) {
+	ret, err = s.DebugInterfaceRepo.GetDetail(id)
+
+	return
+}
+
+func (s *DebugInterfaceService) Save(req domain.DebugData) (debugInterface model.DebugInterface, err error) {
+	s.CopyValueFromRequest(&debugInterface, req)
+
+	if req.DebugInterfaceId > 0 { // to update
+		debugInterface.ID = req.DebugInterfaceId
+	} else {
+		debugInterface.ServeId = req.ServeId
+	}
+
+	err = s.DebugInterfaceRepo.Save(&debugInterface)
+
+	if req.DebugInterfaceId <= 0 { // first time to save
+		// clone extractors and checkpoints if needed
+		s.ExtractorRepo.CloneFromEndpointInterfaceToDebugInterface(req.EndpointInterfaceId, debugInterface.ID, req.UsedBy)
+		s.CheckpointRepo.CloneFromEndpointInterfaceToDebugInterface(req.EndpointInterfaceId, debugInterface.ID, req.UsedBy)
+	}
+
+	if req.UsedBy == consts.InterfaceDebug {
+		s.EndpointInterfaceRepo.SetDebugInterfaceId(req.EndpointInterfaceId, debugInterface.ID)
+	}
+
+	return
+}
+
+func (s *DebugInterfaceService) GetDebugDataFromDebugInterface(debugInterfaceId uint) (debugData domain.DebugData, err error) {
+	debugInterfacePo, err := s.DebugInterfaceRepo.GetDetail(debugInterfaceId)
+	if err != nil {
+		return
+	}
+
+	endpointInterface, _ := s.EndpointInterfaceRepo.Get(debugInterfacePo.EndpointInterfaceId)
+
+	s.CopyDebugDataPropsFromPo(&debugData, &debugInterfacePo, endpointInterface)
+
+	return
+}
+func (s *DebugInterfaceService) GetDebugDataFromEndpointInterface(endpointInterfaceId uint) (ret domain.DebugData, err error) {
+	endpointInterface, _ := s.EndpointInterfaceRepo.Get(endpointInterfaceId)
+
+	if endpointInterface.DebugInterfaceId > 0 {
+		ret, err = s.GetDebugDataFromDebugInterface(endpointInterface.DebugInterfaceId)
+	} else {
+		ret, err = s.ConvertDebugDataFromEndpointInterface(endpointInterfaceId)
+	}
+
+	return
+}
+
+func (s *DebugInterfaceService) ConvertDebugDataFromEndpointInterface(endpointInterfaceId uint) (debugData domain.DebugData, err error) {
+	endpointInterface, err := s.EndpointInterfaceRepo.GetDetail(endpointInterfaceId)
+	if err != nil {
+		return
+	}
+
+	s.CopyDebugDataPropsFromPo(&debugData, nil, endpointInterface)
+
+	// init ServeId and ServerId id by endpoint
+	endpoint, _ := s.EndpointRepo.Get(endpointInterface.EndpointId)
+	debugData.ServeId = endpoint.ServeId
+	debugData.ServerId = endpoint.ServerId
+	debugData.ProjectId = endpoint.ProjectId
+
+	debugData.UsedBy = consts.InterfaceDebug
+
+	return
+}
+
+func (s *DebugInterfaceService) CopyDebugDataPropsFromPo(debugData *domain.DebugData,
+	debugInterfacePo *model.DebugInterface, endpointInterface model.EndpointInterface) {
+
+	endpoint, err := s.EndpointRepo.GetAll(endpointInterface.EndpointId, "v0.1.0")
+	serve, err := s.ServeRepo.Get(endpoint.ServeId)
+	if err != nil {
+		return
+	}
+
+	securities, err := s.ServeRepo.ListSecurity(serve.ID)
+	if err != nil {
+		return
+	}
+
+	serve.Securities = securities
+	debugData.EndpointInterfaceId = endpointInterface.ID
+
+	if debugInterfacePo == nil { // is null when converting from EndpointInterface
+		interfaces2debug := openapi.NewInterfaces2debug(endpointInterface, endpoint, serve)
+		debugInterfacePo = interfaces2debug.Convert()
+
+		debugInterfacePo.Name = fmt.Sprintf("%s - %s", endpoint.Title, debugInterfacePo.Method)
+	}
+
+	copier.CopyWithOption(&debugData, debugInterfacePo, copier.Option{DeepCopy: true})
+	debugData.EndpointInterfaceId = endpointInterface.ID // reset
+
+	debugData.DebugInterfaceId = debugInterfacePo.ID
+
+	debugData.Headers = append(debugData.Headers, domain.Header{Name: "", Value: ""})
+	debugData.QueryParams = append(debugData.QueryParams, domain.Param{Name: "", Value: "", ParamIn: consts.ParamInQuery})
+	debugData.PathParams = append(debugData.PathParams, domain.Param{Name: "", Value: "", ParamIn: consts.ParamInPath})
+
+	debugData.BodyFormData = append(debugData.BodyFormData, domain.BodyFormDataItem{
+		Name: "", Value: "", Type: consts.FormDataTypeText})
+	debugData.BodyFormUrlencoded = append(debugData.BodyFormUrlencoded, domain.BodyFormUrlEncodedItem{
+		Name: "", Value: "",
+	})
+
+	return
+}
+
+func (s *DebugInterfaceService) GetEndpointAndServeIdForEndpointInterface(endpointInterfaceId uint) (
+	endpointId, serveId uint) {
+
+	endpointInterface, _ := s.EndpointInterfaceRepo.Get(endpointInterfaceId)
+
+	endpointId = endpointInterface.EndpointId
+	endpoint, _ := s.EndpointRepo.Get(endpointId)
+
+	serveId = endpoint.ServeId
+
+	return
+}
+
+func (s *DebugInterfaceService) GetScenarioIdForDebugInterface(processorId uint) (
+	scenarioId uint) {
+
+	processor, _ := s.ScenarioProcessorRepo.Get(processorId)
+	scenarioId = processor.ScenarioId
+
+	return
+}
+
+func (s *DebugInterfaceService) CopyValueFromRequest(interf *model.DebugInterface, req domain.DebugData) (err error) {
+	copier.CopyWithOption(interf, req, copier.Option{DeepCopy: true})
+
+	return
+}
+
+func (s *DebugInterfaceService) GenSample(projectId, serveId uint) (ret *model.DebugInterface, err error) {
 	return
 }
 
@@ -114,23 +260,19 @@ func (s *DebugInterfaceService) GetDebugInterfaceByScenarioInterface(scenarioPro
 	return
 }
 
-func (s *DebugInterfaceService) GetDebugInterfaceByTestInterface(testInterfaceId uint) (ret domain.DebugData, err error) {
-	testInterface, err := s.TestInterfaceRepo.GetDetail(testInterfaceId)
+func (s *DebugInterfaceService) GetDebugInterfaceByDiagnoseInterface(diagnoseInterfaceId uint) (ret domain.DebugData, err error) {
+	diagnoseInterface, err := s.DiagnoseInterfaceRepo.GetDetail(diagnoseInterfaceId)
 	if err != nil {
 		return
 	}
 
-	copier.CopyWithOption(&ret, testInterface.DebugData, copier.Option{
+	copier.CopyWithOption(&ret, diagnoseInterface.DebugData, copier.Option{
 		DeepCopy: true,
 	})
 
-	if ret.ServerId <= 0 {
-		server, _ := s.ServeServerRepo.GetDefaultByServe(testInterface.ServeId)
-		ret.ServerId = server.ID
-	}
-
-	ret.DebugInterfaceId = testInterface.DebugInterfaceId
-	ret.TestInterfaceId = testInterfaceId
+	ret.ServerId = diagnoseInterface.DebugData.ServerId
+	ret.DebugInterfaceId = diagnoseInterface.DebugInterfaceId
+	ret.DiagnoseInterfaceId = diagnoseInterfaceId
 
 	ret.Headers = append(ret.Headers, domain.Header{Name: "", Value: ""})
 	ret.QueryParams = append(ret.QueryParams, domain.Param{Name: "", Value: "", ParamIn: consts.ParamInQuery})
@@ -142,140 +284,5 @@ func (s *DebugInterfaceService) GetDebugInterfaceByTestInterface(testInterfaceId
 		Name: "", Value: "",
 	})
 
-	return
-}
-
-func (s *DebugInterfaceService) GetDetail(id uint) (ret model.DebugInterface, err error) {
-	ret, err = s.DebugInterfaceRepo.GetDetail(id)
-
-	return
-}
-
-func (s *DebugInterfaceService) Save(req domain.DebugData) (debugInterface model.DebugInterface, err error) {
-	s.CopyValueFromRequest(&debugInterface, req)
-
-	if req.DebugInterfaceId > 0 { // to update
-		debugInterface.ID = req.DebugInterfaceId
-	} else {
-		debugInterface.ServeId = req.ServeId
-	}
-
-	err = s.DebugInterfaceRepo.Save(&debugInterface)
-
-	if req.DebugInterfaceId <= 0 { // first time to save
-		// clone extractors and checkpoints if needed
-		s.ExtractorRepo.CloneFromEndpointInterfaceToDebugInterface(req.EndpointInterfaceId, debugInterface.ID, req.UsedBy)
-		s.CheckpointRepo.CloneFromEndpointInterfaceToDebugInterface(req.EndpointInterfaceId, debugInterface.ID, req.UsedBy)
-	}
-
-	if req.UsedBy == consts.InterfaceDebug {
-		s.EndpointInterfaceRepo.SetDebugInterfaceId(req.EndpointInterfaceId, debugInterface.ID)
-	}
-
-	return
-}
-
-func (s *DebugInterfaceService) GetDebugDataFromDebugInterface(debugInterfaceId uint) (ret domain.DebugData, err error) {
-	debugInterfacePo, err := s.DebugInterfaceRepo.GetDetail(debugInterfaceId)
-	if err != nil {
-		return
-	}
-
-	endpointInterface, _ := s.EndpointInterfaceRepo.Get(debugInterfacePo.EndpointInterfaceId)
-
-	s.SetProps(endpointInterface, &debugInterfacePo, &ret)
-
-	return
-}
-
-func (s *DebugInterfaceService) ConvertDebugDataFromEndpointInterface(endpointInterfaceId uint) (debugData domain.DebugData, err error) {
-	endpointInterface, err := s.EndpointInterfaceRepo.GetDetail(endpointInterfaceId)
-	if err != nil {
-		return
-	}
-
-	s.SetProps(endpointInterface, nil, &debugData)
-
-	endpoint, _ := s.EndpointRepo.Get(endpointInterface.EndpointId)
-	debugData.ServeId = endpoint.ServeId
-	debugData.ServerId = endpoint.ServerId
-
-	debugData.UsedBy = consts.InterfaceDebug
-
-	return
-}
-
-func (s *DebugInterfaceService) SetProps(
-	endpointInterface model.EndpointInterface, debugInterfacePo *model.DebugInterface, debugData *domain.DebugData) {
-
-	endpoint, err := s.EndpointRepo.GetAll(endpointInterface.EndpointId, "v0.1.0")
-	serve, err := s.ServeRepo.Get(endpoint.ServeId)
-	if err != nil {
-		return
-	}
-
-	securities, err := s.ServeRepo.ListSecurity(serve.ID)
-	if err != nil {
-		return
-	}
-
-	serve.Securities = securities
-	debugData.EndpointInterfaceId = endpointInterface.ID
-
-	if debugInterfacePo == nil {
-		interfaces2debug := openapi.NewInterfaces2debug(endpointInterface, endpoint, serve)
-		debugInterfacePo = interfaces2debug.Convert()
-
-		debugInterfacePo.Name = fmt.Sprintf("%s - %s", endpoint.Title, debugInterfacePo.Method)
-	}
-
-	copier.CopyWithOption(&debugData, debugInterfacePo, copier.Option{DeepCopy: true})
-	debugData.EndpointInterfaceId = endpointInterface.ID // reset
-	debugData.ServerId = debugInterfacePo.ServerId
-
-	debugData.DebugInterfaceId = debugInterfacePo.ID
-
-	debugData.Headers = append(debugData.Headers, domain.Header{Name: "", Value: ""})
-	debugData.QueryParams = append(debugData.QueryParams, domain.Param{Name: "", Value: "", ParamIn: consts.ParamInQuery})
-	debugData.PathParams = append(debugData.PathParams, domain.Param{Name: "", Value: "", ParamIn: consts.ParamInPath})
-
-	debugData.BodyFormData = append(debugData.BodyFormData, domain.BodyFormDataItem{
-		Name: "", Value: "", Type: consts.FormDataTypeText})
-	debugData.BodyFormUrlencoded = append(debugData.BodyFormUrlencoded, domain.BodyFormUrlEncodedItem{
-		Name: "", Value: "",
-	})
-
-	return
-}
-
-func (s *DebugInterfaceService) GetEndpointAndServeIdForEndpointInterface(endpointInterfaceId uint) (
-	endpointId, serveId uint) {
-
-	endpointInterface, _ := s.EndpointInterfaceRepo.Get(endpointInterfaceId)
-
-	endpointId = endpointInterface.EndpointId
-	endpoint, _ := s.EndpointRepo.Get(endpointId)
-
-	serveId = endpoint.ServeId
-
-	return
-}
-
-func (s *DebugInterfaceService) GetScenarioIdForDebugInterface(processorId uint) (
-	scenarioId uint) {
-
-	processor, _ := s.ScenarioProcessorRepo.Get(processorId)
-	scenarioId = processor.ScenarioId
-
-	return
-}
-
-func (s *DebugInterfaceService) CopyValueFromRequest(interf *model.DebugInterface, req domain.DebugData) (err error) {
-	copier.CopyWithOption(interf, req, copier.Option{DeepCopy: true})
-
-	return
-}
-
-func (s *DebugInterfaceService) GenSample(projectId, serveId uint) (ret *model.DebugInterface, err error) {
 	return
 }

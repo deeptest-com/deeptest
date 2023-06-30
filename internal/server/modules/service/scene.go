@@ -24,7 +24,7 @@ type SceneService struct {
 
 func (s *SceneService) LoadEnvVarMapByScenario(scene *domain.ExecScene, scenarioId, environmentId uint) {
 	scene.EnvToVariables = domain.EnvToVariables{}
-	scene.InterfaceToEnvMap = domain.InterfaceToEnvMap{}
+	scene.DebugInterfaceToEnvMap = domain.InterfaceToEnvMap{}
 
 	processors, _ := s.ScenarioNodeRepo.ListByScenario(scenarioId)
 
@@ -36,7 +36,7 @@ func (s *SceneService) LoadEnvVarMapByScenario(scene *domain.ExecScene, scenario
 		var server = s.GetExecServer(processor.EntityId, processor.EndpointInterfaceId, environmentId)
 		envId := server.EnvironmentId
 
-		scene.InterfaceToEnvMap[processor.EndpointInterfaceId] = envId
+		scene.DebugInterfaceToEnvMap[processor.EntityId] = envId
 
 		scene.EnvToVariables[envId] = append(scene.EnvToVariables[envId], domain.GlobalVar{
 			Name:        consts.KEY_BASE_URL,
@@ -81,22 +81,15 @@ func (s *SceneService) GetExecServer(debugInterfaceId, endpointInterfaceId, envi
 	return
 }
 
-func (s *SceneService) LoadEnvVarMapByEndpointInterface(scene *domain.ExecScene, endpointInterfaceId, debugServerId uint) (projectId uint, err error) {
+func (s *SceneService) LoadEnvVars(scene *domain.ExecScene, debugData domain.DebugData) (projectId uint, err error) {
+
 	scene.EnvToVariables = domain.EnvToVariables{}
-	scene.InterfaceToEnvMap = domain.InterfaceToEnvMap{}
+	scene.DebugInterfaceToEnvMap = domain.InterfaceToEnvMap{}
 
-	interf, _ := s.EndpointInterfaceRepo.Get(endpointInterfaceId)
-	endpoint, _ := s.EndpointRepo.Get(interf.EndpointId)
-
-	if debugServerId == 0 {
-		debugServerId = endpoint.ServerId
-	}
-	serveServer, _ := s.ServeServerRepo.Get(debugServerId)
-
+	serveServer, _ := s.ServeServerRepo.Get(debugData.ServerId)
 	envId := serveServer.EnvironmentId
-	projectId = endpoint.ProjectId
 
-	scene.InterfaceToEnvMap[endpointInterfaceId] = envId
+	scene.DebugInterfaceToEnvMap[debugData.DebugInterfaceId] = envId
 
 	vars, _ := s.EnvironmentRepo.GetVars(envId)
 	for _, v := range vars {

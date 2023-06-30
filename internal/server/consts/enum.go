@@ -46,14 +46,14 @@ func (e CategoryDiscriminator) String() string {
 	return string(e)
 }
 
-type TestInterfaceType string
+type DiagnoseInterfaceType string
 
 const (
-	TestInterfaceTypeDir       TestInterfaceType = "dir"
-	TestInterfaceTypeInterface TestInterfaceType = "interface"
+	DiagnoseInterfaceTypeDir       DiagnoseInterfaceType = "dir"
+	DiagnoseInterfaceTypeInterface DiagnoseInterfaceType = "interface"
 )
 
-func (e TestInterfaceType) String() string {
+func (e DiagnoseInterfaceType) String() string {
 	return string(e)
 }
 

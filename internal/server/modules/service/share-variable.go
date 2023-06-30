@@ -10,7 +10,7 @@ import (
 type ShareVarService struct {
 	ShareVariableRepo *repo.ShareVariableRepo `inject:""`
 
-	TestInterfaceRepo     *repo.TestInterfaceRepo     `inject:""`
+	DiagnoseInterfaceRepo *repo.DiagnoseInterfaceRepo `inject:""`
 	DebugInterfaceRepo    *repo.DebugInterfaceRepo    `inject:""`
 	EndpointInterfaceRepo *repo.EndpointInterfaceRepo `inject:""`
 	EndpointRepo          *repo.EndpointRepo          `inject:""`
@@ -44,15 +44,15 @@ func (s *ShareVarService) Save(name, value string, debugInterfaceId, endpointInt
 	return
 }
 
-func (s *ShareVarService) List(debugInterfaceId, endpointInterfaceId, testInterfaceId, scenarioProcessorId uint,
+func (s *ShareVarService) List(debugInterfaceId, endpointInterfaceId, diagnoseInterfaceId, scenarioProcessorId uint,
 	usedBy consts.UsedBy) (
 	shareVariables []domain.GlobalVar) {
 
 	var serveId uint
 
-	if testInterfaceId > 0 {
-		testInterface, _ := s.TestInterfaceRepo.Get(testInterfaceId)
-		serveId = testInterface.ServeId
+	if diagnoseInterfaceId > 0 {
+		diagnoseInterface, _ := s.DiagnoseInterfaceRepo.Get(diagnoseInterfaceId)
+		serveId = diagnoseInterface.ServeId
 
 	} else if endpointInterfaceId > 0 {
 		endpointInterface, _ := s.EndpointInterfaceRepo.Get(endpointInterfaceId)

@@ -11,10 +11,10 @@ import (
 	"github.com/snowlyg/multi"
 )
 
-type TestInterfaceCtrl struct {
-	TestInterfaceService *service.TestInterfaceService `inject:""`
-	ExtractorService     *service.ExtractorService     `inject:""`
-	CheckpointService    *service.CheckpointService    `inject:""`
+type DiagnoseInterfaceCtrl struct {
+	DiagnoseInterfaceService *service.DiagnoseInterfaceService `inject:""`
+	ExtractorService         *service.ExtractorService         `inject:""`
+	CheckpointService        *service.CheckpointService        `inject:""`
 
 	DebugInterfaceService *service.DebugInterfaceService `inject:""`
 
@@ -22,11 +22,11 @@ type TestInterfaceCtrl struct {
 }
 
 // Load
-func (c *TestInterfaceCtrl) Load(ctx iris.Context) {
+func (c *DiagnoseInterfaceCtrl) Load(ctx iris.Context) {
 	projectId, _ := ctx.URLParamInt("projectId")
 	serveId, _ := ctx.URLParamInt("serveId")
 
-	data, err := c.TestInterfaceService.Load(projectId, serveId)
+	data, err := c.DiagnoseInterfaceService.Load(projectId, serveId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -36,10 +36,10 @@ func (c *TestInterfaceCtrl) Load(ctx iris.Context) {
 }
 
 // Get
-func (c *TestInterfaceCtrl) Get(ctx iris.Context) {
+func (c *DiagnoseInterfaceCtrl) Get(ctx iris.Context) {
 	id, _ := ctx.Params().GetInt("id")
 
-	data, err := c.TestInterfaceService.Get(id)
+	data, err := c.DiagnoseInterfaceService.Get(id)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -49,21 +49,21 @@ func (c *TestInterfaceCtrl) Get(ctx iris.Context) {
 }
 
 // Save
-func (c *TestInterfaceCtrl) Save(ctx iris.Context) {
-	req := serverDomain.TestInterfaceSaveReq{}
+func (c *DiagnoseInterfaceCtrl) Save(ctx iris.Context) {
+	req := serverDomain.DiagnoseInterfaceSaveReq{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
-	po, err := c.TestInterfaceService.Save(req)
+	po, err := c.DiagnoseInterfaceService.Save(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
-	data, err := c.TestInterfaceService.Load(int(po.ProjectId), int(po.ServeId))
+	data, err := c.DiagnoseInterfaceService.Load(int(po.ProjectId), int(po.ServeId))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -73,7 +73,7 @@ func (c *TestInterfaceCtrl) Save(ctx iris.Context) {
 }
 
 // SaveDebugData
-func (c *TestInterfaceCtrl) SaveDebugData(ctx iris.Context) {
+func (c *DiagnoseInterfaceCtrl) SaveDebugData(ctx iris.Context) {
 	req := domain.DebugData{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -81,16 +81,16 @@ func (c *TestInterfaceCtrl) SaveDebugData(ctx iris.Context) {
 		return
 	}
 
-	_, err = c.TestInterfaceService.SaveDebugData(req)
+	_, err = c.DiagnoseInterfaceService.SaveDebugData(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
 	loadReq := domain.DebugReq{
-		TestInterfaceId:  req.TestInterfaceId,
-		DebugInterfaceId: req.DebugInterfaceId,
-		UsedBy:           consts.TestDebug,
+		DiagnoseInterfaceId: req.DiagnoseInterfaceId,
+		DebugInterfaceId:    req.DebugInterfaceId,
+		UsedBy:              consts.TestDebug,
 	}
 
 	data, err := c.DebugInterfaceService.Load(loadReq)
@@ -103,21 +103,21 @@ func (c *TestInterfaceCtrl) SaveDebugData(ctx iris.Context) {
 }
 
 // Update
-func (c *TestInterfaceCtrl) Update(ctx iris.Context) {
-	req := serverDomain.TestInterfaceSaveReq{}
+func (c *DiagnoseInterfaceCtrl) Update(ctx iris.Context) {
+	req := serverDomain.DiagnoseInterfaceSaveReq{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
-	po, err := c.TestInterfaceService.Save(req)
+	po, err := c.DiagnoseInterfaceService.Save(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
-	data, err := c.TestInterfaceService.Load(int(po.ProjectId), int(po.ServeId))
+	data, err := c.DiagnoseInterfaceService.Load(int(po.ProjectId), int(po.ServeId))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -126,11 +126,11 @@ func (c *TestInterfaceCtrl) Update(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data})
 }
 
-func (c *TestInterfaceCtrl) Delete(ctx iris.Context) {
+func (c *DiagnoseInterfaceCtrl) Delete(ctx iris.Context) {
 	id, _ := ctx.Params().GetInt("id")
 	typ := ctx.URLParam("type")
 
-	err := c.TestInterfaceService.Remove(id, serverConsts.TestInterfaceType(typ))
+	err := c.DiagnoseInterfaceService.Remove(id, serverConsts.DiagnoseInterfaceType(typ))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -140,17 +140,17 @@ func (c *TestInterfaceCtrl) Delete(ctx iris.Context) {
 }
 
 // Mode 移动
-func (c *TestInterfaceCtrl) Move(ctx iris.Context) {
+func (c *DiagnoseInterfaceCtrl) Move(ctx iris.Context) {
 	projectId, _ := ctx.URLParamInt("currProjectId")
 
-	var req serverDomain.TestInterfaceMoveReq
+	var req serverDomain.DiagnoseInterfaceMoveReq
 	err := ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
-	_, err = c.TestInterfaceService.Move(uint(req.DragKey), uint(req.DropKey), req.DropPos, uint(projectId))
+	_, err = c.DiagnoseInterfaceService.Move(uint(req.DragKey), uint(req.DropKey), req.DropPos, uint(projectId))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -160,8 +160,8 @@ func (c *TestInterfaceCtrl) Move(ctx iris.Context) {
 }
 
 // ImportInterfaces 导入接口
-func (c *TestInterfaceCtrl) ImportInterfaces(ctx iris.Context) {
-	req := serverDomain.TestInterfaceImportReq{}
+func (c *DiagnoseInterfaceCtrl) ImportInterfaces(ctx iris.Context) {
+	req := serverDomain.DiagnoseInterfaceImportReq{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
@@ -169,7 +169,7 @@ func (c *TestInterfaceCtrl) ImportInterfaces(ctx iris.Context) {
 	}
 
 	req.CreateBy = multi.GetUserId(ctx)
-	newNode, bizErr := c.TestInterfaceService.ImportInterfaces(req)
+	newNode, bizErr := c.DiagnoseInterfaceService.ImportInterfaces(req)
 	if bizErr != nil {
 		ctx.JSON(_domain.Response{
 			Code: _domain.SystemErr.Code,

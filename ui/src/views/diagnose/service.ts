@@ -2,7 +2,7 @@ import request from '@/utils/request';
 import {QueryParams} from "@/types/data";
 import {Interface} from "@/views/component/debug/data";
 
-const apiPath = 'testInterfaces';
+const apiPath = 'diagnoseInterfaces';
 
 export async function query(params: any): Promise<any> {
     return request({

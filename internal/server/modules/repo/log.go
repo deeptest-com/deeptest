@@ -81,8 +81,11 @@ func (r *LogRepo) CreateInterfaceLog(result agentDomain.ScenarioExecResult, pare
 		ReqContent:  result.ReqContent,
 		RespContent: result.RespContent,
 
-		InterfaceId:         result.InterfaceId,
+		EndpointInterfaceId: result.EndpointInterfaceId,
+		DebugInterfaceId:    result.DebugInterfaceId,
+
 		ScenarioProcessorId: result.ProcessorId,
+		ScenarioId:          result.ScenarioId,
 		ParentId:            parentId,
 		ReportId:            reportId,
 	}

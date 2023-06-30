@@ -183,12 +183,12 @@ const StoreModel: ModuleType = {
                 dispatch('getLastInvocationResp', {
                     debugInterfaceId: state.debugInfo.debugInterfaceId,
                     endpointInterfaceId: state.debugInfo.endpointInterfaceId,
-                    testInterfaceId: state.debugInfo.testInterfaceId,
+                    diagnoseInterfaceId: state.debugInfo.diagnoseInterfaceId,
                 })
                 dispatch('listInvocation', {
                     debugInterfaceId: state.debugInfo.debugInterfaceId,
                     endpointInterfaceId: state.debugInfo.endpointInterfaceId,
-                    testInterfaceId: state.debugInfo.testInterfaceId,
+                    diagnoseInterfaceId: state.debugInfo.diagnoseInterfaceId,
                 })
 
                 return true;
@@ -197,6 +197,7 @@ const StoreModel: ModuleType = {
             }
         },
         async resetDataAndInvocations({commit, dispatch, state}) {
+            commit('setDebugInfo', {});
             commit('setDebugData', {});
             commit('setResponse', {});
             commit('setInvocations', []);
@@ -211,7 +212,7 @@ const StoreModel: ModuleType = {
                     debugInterfaceId: resp.data.debugInterfaceId,
                     endpointInterfaceId: data.endpointInterfaceId,
                     scenarioProcessorId  : data.scenarioProcessorId,
-                    testInterfaceId  : data.testInterfaceId,
+                    diagnoseInterfaceId  : data.diagnoseInterfaceId,
                     usedBy:          data.usedBy,
                 } as DebugInfo);
                 console.log('set debugInfo', state.debugInfo)
@@ -260,7 +261,7 @@ const StoreModel: ModuleType = {
                 const resp = await listInvocation({
                     debugInterfaceId: state.debugInfo.debugInterfaceId,
                     endpointInterfaceId: state.debugInfo.endpointInterfaceId,
-                    testInterfaceId: state.debugInfo.testInterfaceId,
+                    diagnoseInterfaceId: state.debugInfo.diagnoseInterfaceId,
                 } as DebugInfo);
                 const {data} = resp;
                 commit('setInvocations', data);
@@ -273,7 +274,7 @@ const StoreModel: ModuleType = {
             const response = await getLastInvocationResp( {
                 debugInterfaceId: state.debugInfo.debugInterfaceId,
                 endpointInterfaceId: state.debugInfo.endpointInterfaceId,
-                testInterfaceId: state.debugInfo.testInterfaceId,
+                diagnoseInterfaceId: state.debugInfo.diagnoseInterfaceId,
             } as DebugInfo);
 
             const {data} = response;

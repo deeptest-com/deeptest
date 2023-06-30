@@ -21,7 +21,7 @@ type Processor struct {
 	EntityCategory consts.ProcessorCategory `json:"entityCategory"`
 	EntityType     consts.ProcessorType     `json:"entityType"`
 
-	EntityId            uint `json:"entityId"` // is DebugInterfaceId if being interface
+	EntityId            uint `json:"entityId"` // Debug Interface Id for ProcessorInterface type
 	EndpointInterfaceId uint `json:"endpointInterfaceId"`
 
 	Ordr     int          `json:"ordr"`

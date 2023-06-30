@@ -470,7 +470,7 @@ func (r *ServeRepo) AddDefaultServer(projectId, serveId uint) (err error) {
 }
 
 func (r *ServeRepo) AddDefaultTestCategory(projectId, serveId uint) (err error) {
-	root := model.TestInterface{
+	root := model.DiagnoseInterface{
 		Title:     "根节点",
 		ProjectId: projectId,
 		IsLeaf:    false,

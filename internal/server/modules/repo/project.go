@@ -438,7 +438,7 @@ func (r *ProjectRepo) AddProjectRootPlanCategory(projectId uint) (err error) {
 }
 
 func (r *ProjectRepo) AddProjectRootTestCategory(projectId, serveId uint) (err error) {
-	root := model.TestInterface{
+	root := model.DiagnoseInterface{
 		Title:     "根节点",
 		ProjectId: projectId,
 		IsLeaf:    false,

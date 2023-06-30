@@ -31,7 +31,7 @@
           </a-col>
 
           <a-col flex="80px" class="save">
-            <a-button @click="saveTestInterface" class="dp-bg-light">
+            <a-button @click="saveDiagnoseInterface" class="dp-bg-light">
               <SaveOutlined/>
               保存
             </a-button>
@@ -58,7 +58,7 @@ import {NotificationKeyCommon} from "@/utils/const";
 import {getToken} from "@/utils/localToken";
 
 import {StateType as DebugStateType} from "@/views/component/debug/store";
-import {StateType as TestInterfaceStateType} from "@/views/debugger/store";
+import {StateType as DiagnoseInterfaceStateType} from "@/views/diagnose/store";
 import {StateType as EndpointStateType} from "@/views/endpoint/store";
 import {Methods} from "@/utils/enum";
 import {getArrSelectItems} from "@/utils/comm";
@@ -66,10 +66,10 @@ import {prepareDataForRequest} from "@/views/component/debug/service";
 import ContextMenu from "@/views/component/debug/others/variable-replace/ContextMenu.vue"
 import useVariableReplace from "@/hooks/variable-replace";
 
-const store = useStore<{ TestInterface: TestInterfaceStateType, Debug: DebugStateType, Endpoint: EndpointStateType }>();
+const store = useStore<{ DiagnoseInterface: DiagnoseInterfaceStateType, Debug: DebugStateType, Endpoint: EndpointStateType }>();
 
 const debugData = computed<any>(() => store.state.Debug.debugData);
-const serveServers: any = computed(() => store.state.TestInterface.serveServers);
+const serveServers: any = computed(() => store.state.DiagnoseInterface.serveServers);
 
 const methods = getArrSelectItems(Methods)
 
@@ -107,8 +107,8 @@ const send = async (e) => {
     await store.dispatch('Debug/call', callData)
   }
 }
-const saveTestInterface = async (e) => {
-  console.log('saveTestInterface')
+const saveDiagnoseInterface = async (e) => {
+  console.log('saveDiagnoseInterface')
   if (validateInfo()) {
     let data = JSON.parse(JSON.stringify(debugData.value))
     data = prepareDataForRequest(data)
@@ -116,7 +116,7 @@ const saveTestInterface = async (e) => {
     if (validateInfo()) {
       Object.assign(data, {shareVars: null, envVars: null, globalEnvVars: null, globalParamVars: null})
 
-      const res = await store.dispatch('TestInterface/saveTestDebugData', data)
+      const res = await store.dispatch('DiagnoseInterface/saveTestDebugData', data)
       if (res === true) {
         notification.success({
           key: NotificationKeyCommon,
@@ -151,7 +151,7 @@ const validateInfo = () => {
   return true
 };
 
-const { showContextMenu, contextMenuStyle, onContextMenuShow, onMenuClick } = useVariableReplace('testInterfaceUrl')
+const { showContextMenu, contextMenuStyle, onContextMenuShow, onMenuClick } = useVariableReplace('diagnoseInterfaceUrl')
 
 </script>
 

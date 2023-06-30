@@ -311,7 +311,7 @@ func (r *EnvironmentRepo) GetListByProjectId(projectId uint) (environments []mod
 		return
 	}
 	for key, _ := range environments {
-		err = r.GetEnvironment(&environments[key])
+		err = r.GetEnvironmentDetail(&environments[key])
 		if err != nil {
 			return
 		}
@@ -324,7 +324,7 @@ func (r *EnvironmentRepo) GetEnvironmentById(id uint) (env *model.Environment, e
 	return
 }
 
-func (r *EnvironmentRepo) GetEnvironment(env *model.Environment) (err error) {
+func (r *EnvironmentRepo) GetEnvironmentDetail(env *model.Environment) (err error) {
 	var vars []model.EnvironmentVar
 	err = r.DB.Find(&vars, "environment_id=?", env.ID).Error
 	if err != nil {
@@ -337,12 +337,15 @@ func (r *EnvironmentRepo) GetEnvironment(env *model.Environment) (err error) {
 	if err != nil {
 		return
 	}
+
 	for key, server := range servers {
 		var serve model.Serve
 		r.DB.First(&serve, "id=?", server.ServeId)
 		servers[key].ServeName = serve.Name
 	}
+
 	env.ServeServers = servers
+
 	return
 }
 

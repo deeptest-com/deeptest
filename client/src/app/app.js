@@ -196,7 +196,7 @@ export class DeepTestApp {
 
          setTimeout(async () => {
              await checkUpdate(this._windows.get('main'))
-         }, 6000);
+         }, 16000);
     }
 
     quit() {
@@ -226,7 +226,7 @@ export class DeepTestApp {
             this.quit();
             logInfo(`>> end to kill child process`)
 
-            app.quit()
+            app.exit()
         });
 
         app.on('quit', () => {

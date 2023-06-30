@@ -8,12 +8,15 @@
       </div>
     </div>
     <router-view></router-view>
+
+    <RightTopUpdate />
   </div>
 </template>
 <script lang="ts">
 import {defineComponent} from 'vue';
 import {useRouter} from 'vue-router';
 import UserSetting from './IndexLayout/components/RightTopSettings.vue';
+import RightTopUpdate from './IndexLayout/components/RightTopUpdate.vue';
 
 export default defineComponent({
   name: 'HomeLayout',

@@ -1,6 +1,6 @@
 import {app} from 'electron';
 import {
-    changeVersion, checkMd5, getAppUrl,
+    changeVersion, checkFileExist, checkMd5, getAppUrl,
     getCurrVersion,
     getDownloadPath,
     getRemoteVersion,
@@ -38,8 +38,11 @@ export const updateApp = (version, mainWin) => {
 }
 
 const doUpdate = async (downloadPath, version) => {
-    await copyFiles(downloadPath);
-    changeVersion(version);
+    let ok = copyFiles(downloadPath);
+    if (!ok) return
+
+    ok = changeVersion(version);
+    if (!ok) return
 
     restart();
 }
@@ -53,6 +56,7 @@ import got from 'got';
 import {cpSync} from "fs";
 import os from "os";
 import {killAgent} from "../core/agent";
+import {isBoolean} from "@vercel/webpack-asset-relocator-loader";
 const pipeline = promisify(stream.pipeline);
 
 mkdir(path.join('tmp', 'download'))
@@ -85,7 +89,7 @@ const downLoadApp = (version, mainWin, cb) => {
     });
 }
 
-const copyFiles = async (downloadPath) => {
+const copyFiles = (downloadPath) => {
     const downloadDir = path.dirname(downloadPath)
 
     const extractedPath = path.resolve(downloadDir, 'extracted')
@@ -93,27 +97,34 @@ const copyFiles = async (downloadPath) => {
 
     const unzip = new admZip(downloadPath, {});
     let pass = ''
-    await unzip.extractAllTo(extractedPath, true, true, pass);
+    unzip.extractAllTo(extractedPath, true, true, pass);
     logInfo(pass)
 
-    const {uiPath, serverPath} = getResPath()
-    logInfo(`uiPath=${uiPath}, serverPath=${serverPath}`)
+    const {uiPath, agentPath} = getResPath()
+    logInfo(`uiPath=${uiPath}, agentPath=${agentPath}`)
 
     killAgent();
     fs.rmSync(uiPath, {recursive: true})
-    fs.rmSync(serverPath)
+    fs.rmSync(agentPath)
 
-    const serverFile = `server${os.platform() === 'win32' ? '.exe' : ''}`
-    const serverDir = path.dirname(serverPath)
-    logInfo(`serverDir=${serverDir}`)
-    const serverDist = path.join(serverDir, serverFile)
-    logInfo(`serverFile=${serverFile}, serverDist=${serverDist}`)
+    if (!checkFileExist(uiPath) && !checkFileExist(agentPath)) {
+        logInfo(`success to remove old resources`)
+    } else {
+        logInfo(`failed to remove old resources`)
+        return false
+    }
 
-    fse.copySync(path.resolve(downloadDir, 'extracted', 'ui'), path.resolve(path.dirname(uiPath), 'ui'), {recursive: true})
-    fse.copySync(path.resolve(downloadDir, 'extracted', serverFile), serverDist)
+    const agentFileName = `agent${os.platform() === 'win32' ? '.exe' : ''}`
+
+    fse.copySync(path.resolve(downloadDir, 'extracted', 'ui'),          uiPath, {recursive: true})
+    fse.copySync(path.resolve(downloadDir, 'extracted', agentFileName), agentPath)
 
     if (!IS_WINDOWS_OS) {
-        const cmd = `chmod +x ${serverDist}`
+        const cmd = `chmod +x ${agentPath}`
         execSync(cmd, {windowsHide: true})
     }
+
+    logInfo(`success to copy new resources`)
+
+    return true
 }

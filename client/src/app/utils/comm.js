@@ -4,12 +4,9 @@ import {App, downloadUrl, ResDir, WorkDir} from "./consts";
 import {app} from "electron";
 import {logInfo} from "./log";
 
-import {promisify} from 'node:util';
-import stream from 'node:stream';
 import fs from 'node:fs';
 import got from 'got';
 import crypto from "crypto";
-const pipeline = promisify(stream.pipeline);
 
 export function mkdir(dir) {
     const pth = path.join(WorkDir, dir);
@@ -18,10 +15,10 @@ export function mkdir(dir) {
     return pth
 }
 
-export function getResDir(dir) {
-    const pth = path.resolve(process.resourcesPath, dir);
-    return pth
-}
+// export function getResDir(dir) {
+//     const pth = path.resolve(process.resourcesPath, dir);
+//     return pth
+// }
 
 export function getDownloadPath(version) {
     const pth = path.join(WorkDir, 'tmp', 'download', `${version}.zip`);
@@ -62,17 +59,20 @@ export async function getRemoteVersion() {
 }
 
 export function changeVersion(newVersion) {
-    const pth = path.join(ResDir, 'version.json');
-    logInfo(`ResDir=${ResDir}, pth=${pth}`)
+    const versionPath = path.resolve(ResDir, 'version.json');
+    logInfo(`ResDir=${ResDir}, versionPath=${versionPath}`)
 
     let json = {}
-    if (fs.existsSync(pth)) {
-        const content = fs.readFileSync(pth)
+    if (fs.existsSync(versionPath)) {
+        const content = fs.readFileSync(versionPath)
         json = JSON.parse(content);
     }
 
     json.version = newVersion;
-    fs.writeFileSync(pth, JSON.stringify(json));
+    fs.writeFileSync(versionPath, JSON.stringify(json));
+    logInfo(`success to write new version`)
+
+    return true
 }
 
 export function restart() {
@@ -85,10 +85,10 @@ export function restart() {
 export function getResPath() {
     const versionPath = path.resolve(ResDir, 'version.json')
     const uiPath =  path.resolve(ResDir, 'ui');
-    const serverPath = getBinPath('server')
+    const agentPath = getBinPath('agent')
 
     return {
-        versionPath, uiPath, serverPath
+        versionPath, uiPath, agentPath
     }
 }
 
@@ -144,4 +144,9 @@ export async function checkMd5(version, file) {
     logInfo(`md5Remote=${md5Remote}, md5File=${md5File}, pass=${pass}`)
 
     return pass
+}
+
+export function checkFileExist(path) {
+    const ret = fs.existsSync(path)
+    return ret
 }

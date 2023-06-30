@@ -12,9 +12,9 @@ else
 endif
 
 ifeq ($(PLATFORM),"mac")
-    QINIU_DIR=/Users/aaron/work/zentao/qiniu/
+    QINIU_DIR=/Users/aaron/work/qiniu/
 else
-    QINIU_DIR=~/deeptestZip
+    QINIU_DIR=~/work/qiniu/
 endif
 
 QINIU_DIST_DIR=${QINIU_DIR}${PROJECT}/${VERSION}/

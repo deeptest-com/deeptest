@@ -63,6 +63,7 @@ var (
 	RequestErr = BizErr{3000, "请求失败"}
 	FailErr    = BizErr{3500, "处理失败"}
 	SystemErr  = BizErr{4000, "系统错误"}
+	LoginErr   = BizErr{5000, "登录失败"}
 
 	ErrNoUser             = BizErr{10100, "找不到用户"}
 	ErrNameExist          = BizErr{10100, "同名记录已存在"}

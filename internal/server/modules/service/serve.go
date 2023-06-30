@@ -224,7 +224,7 @@ func (s *ServeService) Schema2Example(serveId uint, data string) (obj interface{
 	//_commUtils.JsonDecode("{\"type\":\"array\",\"items\":{\"type\":\"number\"}}", &schema)
 	//_commUtils.JsonDecode("{\"properties\":{\"id\":{\"type\":\"number\"},\"name\":{\"type\":\"string\"}},\"type\":\"object\"}", &schema)
 	//_commUtils.JsonDecode("{\"type\":\"array\",\"items\":{\"properties\":{\"id\":{\"type\":\"number\"},\"name\":{\"type\":\"string\"}},\"type\":\"object\"}}", &schema)
-	schema := openapi.Schema{}
+	schema := openapi3.SchemaRef{}
 	//data = "{\"type\":\"object\",\"properties\":{\"name1\":{\"type\":\"object\",\"ref\":\"#/components/schemas/user1\",\"name\":\"user1\"},\"name2\":{\"type\":\"string\"},\"name3\":{\"type\":\"string\"}}}"
 	_commUtils.JsonDecode(data, &schema)
 	//_commUtils.JsonDecode("{\"type\":\"array\",\"items\":{\"type\":\"number\"}}", &schema1)
@@ -243,7 +243,7 @@ func (s *ServeService) Components(serveId uint) (components openapi.Components) 
 	}
 
 	for _, item := range result {
-		var schema openapi.Schema
+		var schema openapi3.SchemaRef
 		_commUtils.JsonDecode(item.Content, &schema)
 		components[item.Ref] = schema
 	}

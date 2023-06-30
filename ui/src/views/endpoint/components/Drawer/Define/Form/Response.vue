@@ -109,7 +109,7 @@
             <template #icon>
               <PlusOutlined/>
             </template>
-            {{ `Add Response` }}
+            {{ `添加响应体` }}
           </a-button>
         </div>
       </div>

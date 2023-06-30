@@ -109,8 +109,9 @@ export function addExtraViewInfo(val: Object | any | undefined | null): any {
         }
         // 处理引用类型
         if (isRef(obj)) {
+            // 需要兼容两种写法，三方导入的$ref
             obj.ref = obj.ref || obj.$ref;
-            obj.type = obj.type || val?.content?.type || 'object'
+            obj.name = obj.ref?.split('/')?.pop(),
             obj.extraViewInfo = {
                 ...obj.extraViewInfo || {},
                 "isExpand": !!(obj?.content && obj.content?.type),
@@ -129,11 +130,12 @@ export function addExtraViewInfo(val: Object | any | undefined | null): any {
             }
         }
     }
-
     // array  object  ref 类型都需要递归
     if (!isNormalType(val.type) || isRef(val)) {
         traverse(val, 1, null, false);
     }
+
+    console.log('832 addExtraViewInfo', val)
     return val;
 }
 
@@ -170,7 +172,7 @@ export function removeExtraViewInfo(val: Object | any, isRemoveRefContent = fals
                     traverse(obj);
                     return;
                 }
-                obj?.items?.type && fn(obj.items);
+                obj?.items && fn(obj.items);
                 if (isRemoveRefContent) {
                     // debugger;
                     // 兼容有可能是数组类型的 ref，但是且 type 属性
@@ -178,7 +180,7 @@ export function removeExtraViewInfo(val: Object | any, isRemoveRefContent = fals
                     // 直接删除 content 属性
                     delete obj?.content;
                 } else if (obj?.content && obj.content?.type) {
-                    obj?.content?.type && fn(obj.content);
+                    obj?.content && fn(obj.content);
                 }
             })(obj);
         }

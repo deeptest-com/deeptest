@@ -80,7 +80,7 @@ import HandsonTable from "@/components/sheet/handsontable.vue";
 
 import settings from "@/config/settings";
 import {NotificationKeyCommon} from "@/utils/const";
-import {getServerUrl} from "@/utils/request";
+import {getUrls} from "@/utils/request";
 import {getToken} from "@/utils/localToken";
 
 import {StateType as ProjectStateType} from "@/store/project";
@@ -159,7 +159,7 @@ const uploadFile = async () => {
   if (isElectron.value) {
     const data = {
       act: 'uploadFile',
-      url: getServerUrl() + '/upload',
+      url: getUrls().serverUrl + '/upload',
       params: {isDatapool: true},
       token: await getToken(),
       filters: [

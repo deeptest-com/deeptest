@@ -72,10 +72,10 @@ import {useRouter} from "vue-router";
 import {useStore} from "vuex";
 import {useI18n} from "vue-i18n";
 import {Form, message, notification} from 'ant-design-vue';
-import {StateType as ScenarioStateType} from "../../../../store";
+import {StateType as ScenarioStateType} from "../../../../../store";
 import {UploadOutlined} from "@ant-design/icons-vue";
 import {NotificationKeyCommon} from "@/utils/const";
-import {getServerUrl} from "@/utils/request";
+import {getUrls} from "@/utils/request";
 import {getToken} from "@/utils/localToken";
 import settings from "@/config/settings";
 import {uploadRequest} from "@/utils/upload";
@@ -142,7 +142,7 @@ const uploadFile = async () => {
   if (isElectron.value) {
     const data = {
       act: 'uploadFile',
-      url: getServerUrl() + '/upload',
+      url: getUrls().serverUrl + '/upload',
       token: await getToken(),
       filters: [
         {name: 'Text Files', extensions: ['txt']},

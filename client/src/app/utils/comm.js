@@ -52,7 +52,7 @@ export async function getRemoteVersion() {
     const json = await got.get(versionUrl).json();
     const newVersionStr = json.version;
     const newVersion = parseFloat(newVersionStr);
-    const forceUpdate = json.force;
+    const forceUpdate = json.force?json.force:false;
 
     return {
         newVersion,

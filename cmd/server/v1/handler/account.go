@@ -31,7 +31,7 @@ func (c *AccountCtrl) Login(ctx iris.Context) {
 	}
 	resp, err := c.AccountService.Login(req)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.LoginErr.Code})
 		return
 	}
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: resp, Msg: _domain.NoErr.Msg})

@@ -1,6 +1,6 @@
 import {app} from 'electron';
 import {
-    changeVersion, checkMd5, getAppUrl,
+    changeVersion, checkFileExist, checkMd5, getAppUrl,
     getCurrVersion,
     getDownloadPath,
     getRemoteVersion,
@@ -38,8 +38,11 @@ export const updateApp = (version, mainWin) => {
 }
 
 const doUpdate = async (downloadPath, version) => {
-    await copyFiles(downloadPath);
-    changeVersion(version);
+    let ok = copyFiles(downloadPath);
+    if (!ok) return
+
+    ok = changeVersion(version);
+    if (!ok) return
 
     restart();
 }
@@ -53,6 +56,7 @@ import got from 'got';
 import {cpSync} from "fs";
 import os from "os";
 import {killAgent} from "../core/agent";
+import {isBoolean} from "@vercel/webpack-asset-relocator-loader";
 const pipeline = promisify(stream.pipeline);
 
 mkdir(path.join('tmp', 'download'))
@@ -85,7 +89,7 @@ const downLoadApp = (version, mainWin, cb) => {
     });
 }
 
-const copyFiles = async (downloadPath) => {
+const copyFiles = (downloadPath) => {
     const downloadDir = path.dirname(downloadPath)
 
     const extractedPath = path.resolve(downloadDir, 'extracted')
@@ -93,7 +97,7 @@ const copyFiles = async (downloadPath) => {
 
     const unzip = new admZip(downloadPath, {});
     let pass = ''
-    await unzip.extractAllTo(extractedPath, true, true, pass);
+    unzip.extractAllTo(extractedPath, true, true, pass);
     logInfo(pass)
 
     const {uiPath, agentPath} = getResPath()
@@ -103,13 +107,24 @@ const copyFiles = async (downloadPath) => {
     fs.rmSync(uiPath, {recursive: true})
     fs.rmSync(agentPath)
 
+    if (!checkFileExist(uiPath) && !checkFileExist(agentPath)) {
+        logInfo(`success to remove old resources`)
+    } else {
+        logInfo(`failed to remove old resources`)
+        return false
+    }
+
     const agentFileName = `agent${os.platform() === 'win32' ? '.exe' : ''}`
 
     fse.copySync(path.resolve(downloadDir, 'extracted', 'ui'),          uiPath, {recursive: true})
     fse.copySync(path.resolve(downloadDir, 'extracted', agentFileName), agentPath)
 
     if (!IS_WINDOWS_OS) {
-        const cmd = `chmod +x ${agentDist}`
+        const cmd = `chmod +x ${agentPath}`
         execSync(cmd, {windowsHide: true})
     }
+
+    logInfo(`success to copy new resources`)
+
+    return true
 }

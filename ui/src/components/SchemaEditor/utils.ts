@@ -2,6 +2,8 @@
 * todo 改文件的很多公共方法需要提出去
 * */
 
+import {message} from "ant-design-vue";
+
 /**
  * 是否是对象类型
  * */
@@ -50,7 +52,7 @@ export function addExtraViewInfo(val: Object | any | undefined | null): any {
     val.extraViewInfo = {
         "isExpand": getExpandedValue(val, true),
         "depth": 1,
-        "type": val.type ,
+        "type": val.type,
         "parent": null,
         "keyName": "root",
         "keyIndex": 0,
@@ -109,18 +111,19 @@ export function addExtraViewInfo(val: Object | any | undefined | null): any {
         }
         // 处理引用类型
         if (isRef(obj)) {
+            // 需要兼容两种写法，三方导入的$ref
             obj.ref = obj.ref || obj.$ref;
-            obj.type = obj.type || val?.content?.type || 'object'
-            obj.extraViewInfo = {
-                ...obj.extraViewInfo || {},
-                "isExpand": !!(obj?.content && obj.content?.type),
-                "depth": depth,
-                "type": obj.type,
-                "parent": parent,
-                isRef: true,
-                isRefChildNode,
-                ...options
-            }
+            obj.name = obj.ref?.split('/')?.pop(),
+                obj.extraViewInfo = {
+                    ...obj.extraViewInfo || {},
+                    "isExpand": !!(obj?.content && obj.content?.type),
+                    "depth": depth,
+                    "type": obj.type,
+                    "parent": parent,
+                    isRef: true,
+                    isRefChildNode,
+                    ...options
+                }
             if (obj?.content && obj.content?.type) {
                 traverse(obj.content, depth + 1, obj, {
                     ...options,
@@ -134,6 +137,8 @@ export function addExtraViewInfo(val: Object | any | undefined | null): any {
     if (!isNormalType(val.type) || isRef(val)) {
         traverse(val, 1, null, false);
     }
+
+    console.log('832 addExtraViewInfo', val)
     return val;
 }
 
@@ -143,7 +148,7 @@ export function addExtraViewInfo(val: Object | any | undefined | null): any {
  * */
 export function removeExtraViewInfo(val: Object | any, isRemoveRefContent = false): object | null {
     function traverse(obj: any) {
-        if(obj?.extraViewInfo && isRemoveRefContent){
+        if (obj?.extraViewInfo && isRemoveRefContent) {
             delete obj?.extraViewInfo;
         }
         // base Case 普通类型，递归结束，
@@ -170,7 +175,7 @@ export function removeExtraViewInfo(val: Object | any, isRemoveRefContent = fals
                     traverse(obj);
                     return;
                 }
-                obj?.items?.type && fn(obj.items);
+                obj?.items && fn(obj.items);
                 if (isRemoveRefContent) {
                     // debugger;
                     // 兼容有可能是数组类型的 ref，但是且 type 属性
@@ -178,7 +183,7 @@ export function removeExtraViewInfo(val: Object | any, isRemoveRefContent = fals
                     // 直接删除 content 属性
                     delete obj?.content;
                 } else if (obj?.content && obj.content?.type) {
-                    obj?.content?.type && fn(obj.content);
+                    obj?.content && fn(obj.content);
                 }
             })(obj);
         }
@@ -202,7 +207,7 @@ export function removeExtraViewInfo(val: Object | any, isRemoveRefContent = fals
         delete val?.extraViewInfo;
         traverse(val);
     } catch (e) {
-        console.log(832,'removeExtraViewInfo error',e);
+        console.log(832, 'removeExtraViewInfo error', e);
     }
 
 
@@ -250,8 +255,42 @@ export const generateSchemaByArray = (arr: any[]): any => {
     return res;
 };
 
+/*
+* @description: 根据传入的 schema 结构信息，生成对应的 ref 信息
+* @param {Object} tree 传入的 schema 结构信息
+* @param {Object} result 获取到的的 ref 信息
+* notice : 有副作用，会修改 tree
+* */
+export const handleRefInfo = (tree: any, result: any) => {
 
+    // 兼容，返回的值为空字符串的情况，则直接不展开
+    if (!result?.content) {
+        tree.extraViewInfo.isExpand = false;
+        message.warning(`引用的字段的详情数据为空`);
+        return;
+    }
 
+    tree.content = JSON.parse(result.content);
 
-
+    // 兼容获取引用详情时，没有 type 字段的情况
+    // 如果外层 result 有 type 字段，则直接使用
+    // 否则，根据 content 的结构，判断 type
+    tree.content.type = tree.content.type || result.type;
+    if (!tree.content?.type) {
+        if (result?.properties) {
+            tree.content.type = 'object';
+        } else if (result?.items) {
+            tree.content.type = 'array';
+        } else if (result?.allOf) {
+            tree.content.type = 'array';
+        }
+            // 先展示出来，但是还没实现这几个关键词
+        // AND = all of XOR = one of OR = any of
+        else if (tree.content?.anyOf || tree.content?.oneOf || tree.content?.allOf) {
+            tree.content.type = 'all of | one of | any of';
+        } else {
+            tree.content.type = 'string';
+        }
+    }
+}
 

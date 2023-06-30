@@ -41,7 +41,7 @@ func (schemaRef *SchemaRef) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-type Components map[string]Schema
+type Components map[string]openapi3.SchemaRef
 
 type schema2conv struct {
 	Components Components
@@ -82,31 +82,33 @@ func (s *schema2conv) Example2Schema(object interface{}, schema *openapi3.Schema
 		schema.Type = openapi3.TypeBoolean
 	case reflect.Float64:
 		schema.Type = openapi3.TypeNumber
+	default:
+		schema.Type = openapi3.TypeObject
 	}
 	return
 }
 
-func (s *schema2conv) Schema2Example(schema Schema) (object interface{}) {
+func (s *schema2conv) Schema2Example(schema openapi3.SchemaRef) (object interface{}) {
 	if ref, ok := s.Components[schema.Ref]; ok {
 		schema = ref
 		s.sets[schema.Ref]++
 	}
 
-	switch schema.Type {
+	switch schema.Value.Type {
 	case openapi3.TypeObject:
 		object = map[string]interface{}{}
 		if s.sets[schema.Ref] > 1 {
 			return
 		}
-		for key, property := range schema.Properties {
-			object.(map[string]interface{})[key] = s.Schema2Example(*property.Value)
+		for key, property := range schema.Value.Properties {
+			object.(map[string]interface{})[key] = s.Schema2Example(*property)
 		}
 	case openapi3.TypeArray:
 		object = make([]interface{}, 1)
 		if s.sets[schema.Ref] > 1 {
 			return
 		}
-		object.([]interface{})[0] = s.Schema2Example(*schema.Items.Value)
+		object.([]interface{})[0] = s.Schema2Example(*schema.Value.Items)
 	case openapi3.TypeString:
 		object = "string"
 	case openapi3.TypeBoolean:

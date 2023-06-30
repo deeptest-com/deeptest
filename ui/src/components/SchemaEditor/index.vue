@@ -132,7 +132,6 @@ import {computed, defineProps, defineEmits, ref, watch} from "vue";
 import SchemaEditor from './schema';
 import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
 import {MonacoOptions} from '@/utils/const';
-import {handleRef} from "@/components/SchemaEditor/utils";
 
 const props = defineProps<{
   tabContentStyle?: object,
@@ -214,23 +213,6 @@ function generate() {
   activeTab.value = 'schema';
   emit('generateFromJSON', exampleJsonStr.value);
 }
-
-
-// watch(() => {return props?.contentStr}, (newVal: any) => {
-//   try {
-//     if(!newVal){
-//       return;
-//     }
-//     const obj = JSON.parse(newVal);
-//     // 将 $ref 转换为ref
-//     handleRef(obj);
-//     content.value = obj?.type ? obj : {
-//       type: 'object'
-//     };
-//   }catch (e){
-//     console.log('e',e);
-//   }
-// }, {immediate: true});
 
 
 watch(() => {

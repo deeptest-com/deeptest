@@ -5,7 +5,6 @@
       @ok="ok"
       @cancel="cancal"
       title="导入接口数据"
-      :confirmLoading = "spinning"
       >
     <a-form
         ref="formRef"

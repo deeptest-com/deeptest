@@ -173,7 +173,7 @@ func (s *EndpointService) AddVersion(version *model.EndpointVersion) (err error)
 	return
 }
 
-func (s *EndpointService) SaveEndpoints(endpoints []*model.Endpoint, dirs *openapi.Dirs, components []*model.ComponentSchema, req v1.ImportEndpointDataReq) (err error) {
+func (s *EndpointService) SaveEndpoints(endpoints []*model.Endpoint, dirs *openapi.Dirs, components map[string]*model.ComponentSchema, req v1.ImportEndpointDataReq) (err error) {
 	user, _ := s.UserRepo.FindById(req.UserId)
 
 	if dirs.Id == 0 || dirs.Id == -1 {
@@ -198,12 +198,13 @@ func (s *EndpointService) SaveEndpoints(endpoints []*model.Endpoint, dirs *opena
 	return
 }
 
-func (s *EndpointService) createComponents(components []*model.ComponentSchema, req v1.ImportEndpointDataReq) {
+func (s *EndpointService) createComponents(components map[string]*model.ComponentSchema, req v1.ImportEndpointDataReq) {
+	var NewComponents []*model.ComponentSchema
 	for _, component := range components {
 		component.ServeId = int64(req.ServeId)
-		component.Ref = "#/components/schemas/" + component.Name
+		NewComponents = append(NewComponents, component)
 	}
-	s.ServeRepo.CreateSchemas(components)
+	s.ServeRepo.CreateSchemas(NewComponents)
 }
 
 func (s *EndpointService) createDirs(data *openapi.Dirs, req v1.ImportEndpointDataReq) (err error) {

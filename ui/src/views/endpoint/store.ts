@@ -524,6 +524,7 @@ const StoreModel: ModuleType = {
                 ...payload
             });
             if (res.code === 0) {
+                await dispatch("getEndpointDetail",{id:res.data})
                 await dispatch('loadList', {projectId: payload.projectId});
             } else {
                 return false

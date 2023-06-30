@@ -7,15 +7,15 @@ import DataTypeSetting from './DataTypeSetting.vue';
 import cloneDeep from "lodash/cloneDeep";
 import {
     addExtraViewInfo,
-    findLastNotArrayNode,
+    findLastNotArrayNode, handleRefInfo,
     isArray,
     isNormalType,
     isObject,
     isRef,
-} from './utils';
+} from '@/components/SchemaEditor/utils';
 import {
     treeLevelWidth
-} from './config';
+} from '@/components/SchemaEditor/config';
 
 export default defineComponent({
     name: 'SchemeEditor',
@@ -36,9 +36,12 @@ export default defineComponent({
                 // 如果没有引用组件内容，需要获取组件详情
                 if (!tree.content) {
                     const result: any = (props.components || []).find((item: any) => item.ref === tree.ref);
-                    tree.content = JSON.parse(result.content || '{}');
+                    // 处理引用组件的信息
+                    handleRefInfo(tree, result);
                     data.value = addExtraViewInfo(data.value);
                     tree.extraViewInfo.isExpand = true;
+
+
                 } else {
                     delete tree.content;
                     tree.extraViewInfo.isExpand = false;

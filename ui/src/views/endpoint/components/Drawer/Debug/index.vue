@@ -1,5 +1,5 @@
 <template>
-  <div id="debug-index" class="dp-splits-v" v-if="endpointDetail?.interfaces?.length">
+  <div id="debug-index" class="dp-splits-v" v-if="endpointDetail?.id && endpointDetail?.interfaces[0]?.id">
     <div id="debug-top">
       <DebugMethod />
 

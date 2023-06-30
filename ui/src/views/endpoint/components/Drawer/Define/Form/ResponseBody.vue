@@ -69,10 +69,9 @@ const exampleStr = ref('');
 watch(() => {
   return selectedCodeDetail?.value?.schemaItem?.content
 }, (newVal, oldValue) => {
-  const res = JSON.parse(newVal || '{}');
-  res.type = selectedCodeDetail?.value?.schemaItem?.type || 'object';
-  activeResBodySchema.value.content = res;
-  contentStr.value = JSON.stringify(activeResBodySchema.value.content);
+  const str = newVal || 'null';
+  activeResBodySchema.value.content = JSON.parse(str)
+  contentStr.value = str;
 }, {immediate: true});
 
 watch(() => {

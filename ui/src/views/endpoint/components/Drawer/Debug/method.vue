@@ -33,7 +33,7 @@ const selectedMethod = ref(selectedMethodDetail.value?.method ? selectedMethodDe
 const changeMethod = async () => {
   console.log('changeMethod', selectedMethod.value)
   const endpointInterface = interfaceMethodToObjMap.value[selectedMethod.value]
-
+  console.log('interfaceMethodToObjMap',interfaceMethodToObjMap.value)
   // sync with / to define page
   if (endpointInterface?.id) {
     await store.commit('Endpoint/setSelectedMethodDetail', endpointInterface);

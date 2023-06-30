@@ -54,7 +54,7 @@ func (s *EndpointInterfaceService) ImportEndpointData(req v1.ImportEndpointDataR
 
 	openapi2endpoint := openapi.NewOpenapi2endpoint(doc, req.CategoryId)
 	endpoints, dirs, components := openapi2endpoint.Convert()
-	//fmt.Println(endpoints, dirs, components)
+	fmt.Println(endpoints, dirs, components)
 	err = s.EndpointService.SaveEndpoints(endpoints, dirs, components, req)
 
 	return

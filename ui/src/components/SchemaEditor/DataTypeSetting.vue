@@ -110,7 +110,8 @@
         </div>
       </div>
     </template>
-    <a href="javascript:void(0)">{{ typesLabel }}
+    <a href="javascript:void(0)">
+      {{ typesLabel }}
       <LinkOutlined v-if="props?.value?.ref"/>
     </a>
   </a-popover>
@@ -145,12 +146,8 @@ const typesLabel: any = computed(() => {
   let {type, types} = props.value || {};
   type = props?.value?.name || type || '';
   if (!type) {
-    return '';
+    return 'null';
   }
-  // // 引用类型
-  // if (props?.value?.ref) {
-  //   return props?.value?.name
-  // }
   const labels = Array.isArray(types) ? [...types, type] : [type];
   const result = labels.reduceRight((acc, cur, index) => {
     if (index === labels.length - 1) {
@@ -222,8 +219,10 @@ function initTabsList(types: any, treeInfo: any) {
 
 function getValueFromTabsList(tabsList: any) {
   const result: any = [];
+  // debugger;
   tabsList.forEach((tabs: any) => {
     let activeTab = tabs.find((tab: any) => tab.active);
+    // debugger
     // 如果 activeTab.type === '$ref'，则说明是引用类型, 还需要判断是否有值，没有值还是展示基本类型
     if (activeTab.type === '$ref' && !activeTab.value) {
       activeTab = tabs[0];
@@ -231,14 +230,12 @@ function getValueFromTabsList(tabsList: any) {
     let res: any = {};
     if (activeTab.type === '$ref') {
       const selectedRef: any = props.refsOptions.find((ref: any) => ref.value === activeTab.value);
-      if (selectedRef) {
-        res = {
-          type: selectedRef.type,
-          ref: activeTab.value,
-          name: selectedRef.name,
-          content:null
-        }
-      }
+      res = {
+        type: selectedRef?.type || '',
+        ref: activeTab.value || '',
+        name: selectedRef?.name || '',
+        content:null
+      };
     } else {
       res = {
         type: activeTab.value

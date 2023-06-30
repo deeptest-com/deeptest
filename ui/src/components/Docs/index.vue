@@ -54,7 +54,6 @@ const isDocsFullPage = window.location.href.includes('/docs/share') || window.lo
 const serviceList = computed(() => {
   // 组装数据以兼容组件 LeftTreeMenu
   let items: any = [];
-  console.log(123, props?.data?.serves)
   props?.data?.serves?.forEach((item: any) => {
     // 只显示文档，不展示服务信息
     if (!props.onlyShowDocs) {

@@ -8,14 +8,17 @@ import (
 	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/jinzhu/copier"
+	"reflect"
+	"strconv"
 	"strings"
 )
 
 type openapi2endpoint struct {
-	doc        *openapi3.T
-	endpoints  []*model.Endpoint
-	dirs       *Dirs
-	components []*model.ComponentSchema
+	doc              *openapi3.T
+	endpoints        []*model.Endpoint
+	dirs             *Dirs
+	components       map[string]*model.ComponentSchema
+	componentSchemas map[string]Schema
 }
 
 type Dirs struct {
@@ -27,20 +30,31 @@ func NewOpenapi2endpoint(doc *openapi3.T, dirId int64) *openapi2endpoint {
 	return &openapi2endpoint{doc: doc, dirs: &Dirs{Id: dirId}}
 }
 
-func (o *openapi2endpoint) Convert() (endpoints []*model.Endpoint, dirs *Dirs, components []*model.ComponentSchema) {
-	o.convertEndpoints()
+func (o *openapi2endpoint) Convert() (endpoints []*model.Endpoint, dirs *Dirs, components map[string]*model.ComponentSchema) {
 	o.convertComponents()
+	o.convertEndpoints()
 	return o.endpoints, o.dirs, o.components
 }
 
 func (o *openapi2endpoint) convertComponents() {
+	o.components = make(map[string]*model.ComponentSchema)
 	for key, schema := range o.doc.Components.Schemas {
 		content, err := json.Marshal(schema.Value)
 		if err != nil {
 			panic(err)
 		}
-		component := model.ComponentSchema{Name: key, Type: schema.Value.Type, Content: string(content), Ref: schema.Ref}
-		o.components = append(o.components, &component)
+
+		ref := "#/components/schemas/" + key
+		if schema.Value.Type == "" {
+			if schema.Value.Properties != nil {
+				schema.Value.Type = openapi3.TypeObject
+			} else if schema.Value.Items != nil {
+				schema.Value.Type = openapi3.TypeArray
+			}
+		}
+		component := model.ComponentSchema{Name: key, Type: schema.Value.Type, Content: string(content), Ref: ref}
+		o.components[ref] = &component
+		//o.componentSchemas[ref] = Schema{Type: schema.Value.Type,Items: }
 	}
 }
 
@@ -186,6 +200,11 @@ func (o *openapi2endpoint) requestBody(content openapi3.Content) (mediaType cons
 			item.Examples = openapi3.Examples{}
 			item.Examples["example"] = new(openapi3.ExampleRef)
 			item.Examples["example"].Value = new(openapi3.Example)
+			if item.Example == nil {
+				//schema2conv := NewSchema2conv()
+				//schema2conv.Components = o.components
+				//item.Example = schema2conv.Schema2Example(item.Schema)
+			}
 			item.Examples["example"].Value.Value = item.Example
 		}
 		var examples []map[string]string
@@ -206,7 +225,6 @@ func (o *openapi2endpoint) requestBody(content openapi3.Content) (mediaType cons
 func (o *openapi2endpoint) requestBodyItem(schema *openapi3.SchemaRef) (requestBodyItem model.EndpointInterfaceRequestBodyItem) {
 	requestBodyItem = model.EndpointInterfaceRequestBodyItem{}
 	requestBodyItem.Content = commonUtils.JsonEncode(schema)
-
 	if schema.Value != nil {
 		requestBodyItem.Type = schema.Value.Type
 	}
@@ -218,6 +236,9 @@ func (o *openapi2endpoint) responseBodies(responses openapi3.Responses) (bodies 
 	bodies = []model.EndpointInterfaceResponseBody{}
 	for key, item := range responses {
 		body := o.responseBody(item.Value)
+		if _, err := strconv.Atoi(key); err != nil {
+			key = "200"
+		}
 		body.Code = key
 		bodies = append(bodies, body)
 		return
@@ -241,11 +262,10 @@ func (o *openapi2endpoint) responseBody(response *openapi3.Response) (body model
 
 func (o *openapi2endpoint) responseBodyItem(schema *openapi3.SchemaRef) (item model.EndpointInterfaceResponseBodyItem) {
 	item = model.EndpointInterfaceResponseBodyItem{}
+	item.Content = commonUtils.JsonEncode(schema)
 	if schema.Value != nil {
 		item.Type = schema.Value.Type
-		item.Content = commonUtils.JsonEncode(schema.Value)
 	}
-	
 	return
 }
 
@@ -300,7 +320,7 @@ func (o *openapi2endpoint) parameter(parameter *openapi3.ParameterRef) (param mo
 	return
 }
 
-func (*openapi2endpoint) parameterValue(schema *openapi3.Schema, param *model.EndpointInterfaceParam) {
+func (o *openapi2endpoint) parameterValue(schema *openapi3.Schema, param *model.EndpointInterfaceParam) {
 	if schema.Example != nil {
 		param.Example = fmt.Sprintf("%v", schema.Example)
 	}
@@ -327,4 +347,17 @@ func (*openapi2endpoint) parameterValue(schema *openapi3.Schema, param *model.En
 	param.MinItems = schema.MinItems
 	param.UniqueItems = schema.UniqueItems
 	param.Type = schema.Type
+}
+
+func (o *openapi2endpoint) schemaRefAddType(schema *openapi3.SchemaRef) {
+
+	if schema.Ref != "" {
+		refSchema := o.components[schema.Ref]
+		fieldValue := reflect.ValueOf(refSchema.Type)
+		fieldName := reflect.ValueOf("Type")
+		schema.Value = openapi3.NewSchema()
+		indirectValue := reflect.Indirect(reflect.ValueOf(schema.Value))
+		indirectValue.FieldByName(fieldName.String()).Set(fieldValue)
+	}
+
 }

@@ -1,5 +1,6 @@
 import {defineComponent, ref, watch, nextTick} from 'vue';
 import './schema.less';
+
 import {DownOutlined, PlusOutlined, RightOutlined,} from '@ant-design/icons-vue';
 import Actions from "./Actions.vue";
 import ExtraActions from "./ExtraActions.vue";
@@ -8,7 +9,7 @@ import cloneDeep from "lodash/cloneDeep";
 import {
     addExtraViewInfo,
     findLastNotArrayNode,
-    generateSchemaByArray,
+    generateSchemaByArray, handleRefInfo,
     isArray,
     isNormalType,
     isObject,
@@ -44,9 +45,11 @@ export default defineComponent({
                         ref: tree.ref,
                         serveId: props.serveId
                     })
-                    tree.content = JSON.parse(result.content || '{}');
-                    tree.extraViewInfo.isExpand = true;
+                    // 处理引用组件的信息
+                    handleRefInfo(tree, result);
                     data.value = addExtraViewInfo(data.value);
+                    tree.extraViewInfo.isExpand = true;
+
                 } else {
                     tree.extraViewInfo.isExpand = false;
                     delete tree.content;
@@ -143,6 +146,8 @@ export default defineComponent({
                         // 既然更换类型，之前的属性就不需要了
                         items.properties[keyName] = {...newProps[0]};
                     }
+                } else {
+                    message.warning(`数组类型至少需要一个元素`);
                 }
             }
             data.value = addExtraViewInfo(data.value);
@@ -202,10 +207,12 @@ export default defineComponent({
             }
 
         };
+
         const addDesc = (tree: any, desc: string) => {
             tree.description = desc;
             data.value = addExtraViewInfo(data.value);
         };
+
         const del = (keyIndex: any, parent: any) => {
             const keys = Object.keys(parent.properties);
             keys.splice(keyIndex, 1);
@@ -222,18 +229,9 @@ export default defineComponent({
             return props.value
         }, (newVal: any) => {
             try {
-                // nextTick(() => {
-                //     // 重新渲染
-                //
-                // })
-                let val = JSON.parse(newVal);
-                // 默认值
-                if (!val?.type) {
-                    val = {
-                        type: 'object',
-                    }
-                }
-                data.value = addExtraViewInfo(val);
+                nextTick(() => {
+                    data.value = addExtraViewInfo(JSON.parse(newVal));
+                })
             } catch (e) {
                 console.log('watch', e);
             }
@@ -245,8 +243,6 @@ export default defineComponent({
             const newObj = removeExtraViewInfo(cloneDeep(newVal), true);
             emit('change', newObj);
         }, {
-            // todo 为什么要加上页面渲染时就需要加上这个，其实没必要，待优化
-            // immediate: true,
             deep: true
         });
 
@@ -279,6 +275,7 @@ export default defineComponent({
         }
         const renderDataTypeSetting = (options: any) => {
             const {tree, isRefChildNode} = options;
+            console.log('renderDataTypeSetting', options);
             const propsLen = Object.keys(tree?.properties || {}).length;
             return <>
                 <DataTypeSetting refsOptions={props.refsOptions}
@@ -290,7 +287,8 @@ export default defineComponent({
             </>
         }
         const renderKeyName = (options: any) => {
-            const {keyName, keyIndex, parent, isRoot, isRefChildNode, isRef, isRefRootNode} = options;
+            const {keyName, keyIndex, parent, isRoot, isRefChildNode, isRef, isRefRootNode, ancestor} = options;
+            const items = parent?.type === 'array' ? ancestor : parent;
             if (isRoot) return null;
             if (!keyName) return null;
             if (isRefRootNode) return null;
@@ -298,7 +296,7 @@ export default defineComponent({
                 <span class={'baseInfoKey'}
                       contenteditable={!isRefChildNode}
                       onPaste={pasteKeyName}
-                      onBlur={updateKeyName.bind(this, keyName, keyIndex, parent)}>
+                      onBlur={updateKeyName.bind(this, keyName, keyIndex, items)}>
                     {keyName}
                 </span>
                 <span class={'baseInfoSpace'}>:</span>
@@ -351,7 +349,6 @@ export default defineComponent({
             return <div class={'verticalLine'} style={{left: `${options.depth * treeLevelWidth + 8}px`}}></div>
         }
         const renderTree = (tree: any) => {
-            // console.log('222222tree', tree)
             if (!tree) return null;
             const isRoot = tree?.extraViewInfo?.depth === 1;
             const options = {...tree?.extraViewInfo, isRoot, tree: tree};
@@ -400,10 +397,14 @@ export default defineComponent({
                 </div>
             }
         }
-        return () => (
-            <div class={'schemaEditor-content'} style={props.contentStyle}>
-                {renderTree(data.value)}
-            </div>
-        )
+
+        return () => {
+            if (!data.value) return null;
+            return (
+                <div class={'schemaEditor-content'} style={props.contentStyle}>
+                    {renderTree(data.value)}
+                </div>
+            )
+        }
     }
 })

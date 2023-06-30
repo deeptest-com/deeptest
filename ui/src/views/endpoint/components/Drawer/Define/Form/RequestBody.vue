@@ -54,7 +54,7 @@ import {mediaTypesOpts,} from '@/config/constant';
 import {Endpoint} from "@/views/endpoint/data";
 import {DownOutlined, RightOutlined} from '@ant-design/icons-vue';
 import SchemaEditor from '@/components/SchemaEditor/index.vue';
-import { removeExtraViewInfo} from "@/components/SchemaEditor/utils";
+import {removeExtraViewInfo} from "@/components/SchemaEditor/utils";
 
 const store = useStore<{ Endpoint, Debug, ProjectGlobal, User, ServeGlobal }>();
 const endpointDetail: any = computed<Endpoint>(() => store.state.Endpoint.endpointDetail);
@@ -76,10 +76,9 @@ const exampleStr = ref('');
 watch(() => {
   return selectedMethodDetail?.value?.requestBody?.schemaItem?.content
 }, (newVal, oldValue) => {
-  const res = JSON.parse(newVal || '{}');
-  res.type = selectedMethodDetail?.value?.requestBody?.schemaItem?.type || 'object';
-  contentStr.value = JSON.stringify(res);
-  activeReqBodySchema.value.content = JSON.parse(contentStr.value);
+  const str = newVal || 'null';
+  activeReqBodySchema.value.content = JSON.parse(str);
+  contentStr.value = str
 }, {immediate: true});
 
 watch(() => {
@@ -144,7 +143,6 @@ function changeContent(content: any) {
   }
 }
 
-// todo 公共逻辑抽象成 hooks
 const refsOptions = ref([]);
 onMounted(async () => {
   refsOptions.value = await store.dispatch('Endpoint/getAllRefs', {

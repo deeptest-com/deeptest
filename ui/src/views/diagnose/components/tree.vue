@@ -242,12 +242,10 @@ async function handleModalOk(model) {
     serveId: currServe.value.id,
   })
 
-  const res = await store.dispatch('DiagnoseInterface/saveInterface', model);
+  const res = await store.dispatch('DiagnoseInterface/saveInterface', model)
   if (res) {
     currentNode.value = null
-    message.success('保存目录成功');
-  } else {
-    message.error('保存目录失败');
+    expandedKeys.value.push(model.parentId)
   }
 }
 

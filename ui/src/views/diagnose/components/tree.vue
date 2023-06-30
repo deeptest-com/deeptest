@@ -245,7 +245,7 @@ async function handleModalOk(model) {
   const res = await store.dispatch('DiagnoseInterface/saveInterface', model)
   if (res) {
     currentNode.value = null
-    expandedKeys.value.push(model.parentId)
+    expandOneKey(treeDataMap.value, model.parentId, expandedKeys.value)
   }
 }
 

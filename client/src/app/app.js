@@ -226,7 +226,7 @@ export class DeepTestApp {
             this.quit();
             logInfo(`>> end to kill child process`)
 
-            app.quit()
+            app.exit()
         });
 
         app.on('quit', () => {

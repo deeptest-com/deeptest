@@ -194,9 +194,9 @@ export class DeepTestApp {
              updateApp(arg.newVersion, mainWin)
          });
 
-         setTimeout(async () => {
+         setInterval(async () => {
              await checkUpdate(this._windows.get('main'))
-         }, 16000);
+         }, 6000);
     }
 
     quit() {

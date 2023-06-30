@@ -85,10 +85,10 @@ export function restart() {
 export function getResPath() {
     const versionPath = path.resolve(ResDir, 'version.json')
     const uiPath =  path.resolve(ResDir, 'ui');
-    const serverPath = getBinPath('server')
+    const agentPath = getBinPath('agent')
 
     return {
-        versionPath, uiPath, serverPath
+        versionPath, uiPath, agentPath
     }
 }
 

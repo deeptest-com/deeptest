@@ -96,24 +96,24 @@ const copyFiles = async (downloadPath) => {
     await unzip.extractAllTo(extractedPath, true, true, pass);
     logInfo(pass)
 
-    const {uiPath, serverPath} = getResPath()
-    logInfo(`uiPath=${uiPath}, serverPath=${serverPath}`)
+    const {uiPath, agentPath} = getResPath()
+    logInfo(`uiPath=${uiPath}, agentPath=${agentPath}`)
 
     killAgent();
     fs.rmSync(uiPath, {recursive: true})
-    fs.rmSync(serverPath)
+    fs.rmSync(agentPath)
 
-    const serverFile = `server${os.platform() === 'win32' ? '.exe' : ''}`
-    const serverDir = path.dirname(serverPath)
-    logInfo(`serverDir=${serverDir}`)
-    const serverDist = path.join(serverDir, serverFile)
-    logInfo(`serverFile=${serverFile}, serverDist=${serverDist}`)
+    const agentFile = `agent${os.platform() === 'win32' ? '.exe' : ''}`
+    const agentDir = path.dirname(agentPath)
+    logInfo(`agentDir=${agentDir}`)
+    const agentDist = path.join(agentDir, agentFile)
+    logInfo(`agentFile=${agentFile}, agentDist=${agentDist}`)
 
     fse.copySync(path.resolve(downloadDir, 'extracted', 'ui'), path.resolve(path.dirname(uiPath), 'ui'), {recursive: true})
-    fse.copySync(path.resolve(downloadDir, 'extracted', serverFile), serverDist)
+    fse.copySync(path.resolve(downloadDir, 'extracted', agentFile), agentDist)
 
     if (!IS_WINDOWS_OS) {
-        const cmd = `chmod +x ${serverDist}`
+        const cmd = `chmod +x ${agentDist}`
         execSync(cmd, {windowsHide: true})
     }
 }

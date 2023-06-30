@@ -58,7 +58,6 @@ const reportId = ref('');
 const show = ref(false)
 const baseInfoList = computed(() => {
   if (!detailResult.value) return [];
-  console.log(envList.value)
   const curEnv = envList.value.find((item: any) => item.id === currEnvId.value)
   return [
     {value: detailResult?.value?.name || '暂无', label: '场景名称'},

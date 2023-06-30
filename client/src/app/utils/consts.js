@@ -20,4 +20,5 @@ export const minimumSizeHeight = 640
 export const App = 'deeptest';
 export const WorkDir = path.join(os.homedir(), App);
 export const ResDir = process.resourcesPath;
-export const downloadUrl = 'http://127.0.0.1:8085/upload/';
+// export const downloadUrl = 'http://127.0.0.1:8085/upload/';
+export const downloadUrl = 'http://111.231.16.35:8085/upload/';

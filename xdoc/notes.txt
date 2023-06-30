@@ -47,3 +47,8 @@ ${_dp(myData, A, 1)}
 
 sudo lsof -i:6379 | grep -v COMMAND | awk '{print $2}' | sudo xargs kill -9
 sudo redis-server ~/rd/server/redis.conf
+
+scp ~/work/qiniu/deeptest/1.1.1/darwin/deeptest-upgrade.zip* \
+    lighthouse@111.231.16.35:~/rd/project/deeptest/upload/deeptest/1.1.1/darwin
+
+scp -r client/ui/* lighthouse@111.231.16.35:~/rd/project/deeptest/ui/dist

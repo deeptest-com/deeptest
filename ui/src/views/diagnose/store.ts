@@ -157,7 +157,8 @@ const StoreModel: ModuleType = {
             try {
                 const jsn = await remove(payload.id, payload.type);
                 if (jsn.code === 0) {
-                    dispatch('loadTree', state.queryParams);
+                    dispatch('removeInterfaceTab', payload.id)
+                    dispatch('loadTree', state.queryParams)
                     return true;
                 }
                 return false;

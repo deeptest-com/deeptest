@@ -211,10 +211,10 @@ function selectNode(keys, e) {
   }
   setSelectedKey(getSelectedKeyName(), currProject.value.id, selectedKeys.value[0])
 
-  if (e) {
+  // if (e) {
     const selectedItem = treeDataMap.value[selectedKeys.value[0]]
     store.dispatch('DiagnoseInterface/openInterfaceTab', selectedItem);
-  }
+  // }
 }
 
 const currentNode = ref(null as any);

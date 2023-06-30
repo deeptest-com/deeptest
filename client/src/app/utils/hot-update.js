@@ -103,14 +103,10 @@ const copyFiles = async (downloadPath) => {
     fs.rmSync(uiPath, {recursive: true})
     fs.rmSync(agentPath)
 
-    const agentFile = `agent${os.platform() === 'win32' ? '.exe' : ''}`
-    const agentDir = path.dirname(agentPath)
-    logInfo(`agentDir=${agentDir}`)
-    const agentDist = path.join(agentDir, agentFile)
-    logInfo(`agentFile=${agentFile}, agentDist=${agentDist}`)
+    const agentFileName = `agent${os.platform() === 'win32' ? '.exe' : ''}`
 
-    fse.copySync(path.resolve(downloadDir, 'extracted', 'ui'), path.resolve(path.dirname(uiPath), 'ui'), {recursive: true})
-    fse.copySync(path.resolve(downloadDir, 'extracted', agentFile), agentDist)
+    fse.copySync(path.resolve(downloadDir, 'extracted', 'ui'),          uiPath, {recursive: true})
+    fse.copySync(path.resolve(downloadDir, 'extracted', agentFileName), agentPath)
 
     if (!IS_WINDOWS_OS) {
         const cmd = `chmod +x ${agentDist}`

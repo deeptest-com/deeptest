@@ -18,10 +18,10 @@ export async function checkUpdate(mainWin) {
     logInfo('checkUpdate ...')
 
     const {currVersion, currVersionStr} = getCurrVersion()
-
     const {newVersion, newVersionStr, forceUpdate} = await getRemoteVersion()
-    logInfo(`currVersion=${currVersion}, newVersion=${newVersion}, forceUpdate=${forceUpdate}`)
+    logInfo(`currVersion=${currVersion}(${currVersionStr}), newVersion=${newVersion}(${newVersionStr}), forceUpdate=${forceUpdate}`)
     logInfo(currVersion < newVersion)
+
     if (currVersion < newVersion) {
         if (forceUpdate) {
             // logInfo('forceUpdate')

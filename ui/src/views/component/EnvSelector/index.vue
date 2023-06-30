@@ -59,7 +59,6 @@ async function changeEnv(value) {
 }
 
 async function save() {
-    console.log(selectEnvId.value);
     emits('onOk');
 }
 

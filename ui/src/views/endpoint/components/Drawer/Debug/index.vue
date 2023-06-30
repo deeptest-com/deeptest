@@ -1,5 +1,6 @@
 <template>
   ={{endpointDetail?.interfaces[0].id}}=
+
   <div id="debug-index" class="dp-splits-v" v-if="endpointDetail?.interfaces?.length && endpointDetail?.interfaces[0].id">
     <div id="debug-top">
       <DebugMethod />

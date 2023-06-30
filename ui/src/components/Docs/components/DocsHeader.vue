@@ -176,7 +176,7 @@ const cmdK = keys['Command+K'];
 // 默认版本 ID 为 0 ，即最新版本
 const currentVersion = computed(() => {
   const version = versions.value.find((item) => item.id === store.state.Docs.currDocId)?.version;
-  return version || data.value.version || 'latest';
+  return version || props.data.version || 'latest';
 })
 
 const versions = computed(() => {

@@ -6,7 +6,7 @@
             class="search-input"
             v-model:value="searchValue"
             placeholder="搜索接口分类"/>
-        <div class="add-btn" @click="newCategorie(treeDataCategory?.[0])">
+        <div class="add-btn" @click="newCategory(treeDataCategory?.[0])">
           <PlusOutlined style="font-size: 16px;"/>
         </div>
       </div>
@@ -38,13 +38,13 @@
                        <MoreOutlined/>
                       <template #overlay>
                         <a-menu>
-                          <a-menu-item key="0" @click="newCategorie(nodeProps)">
+                          <a-menu-item key="0" @click="newCategory(nodeProps)">
                              新建子分类
                           </a-menu-item>
-                          <a-menu-item :disabled="nodeProps.id === -1 || nodeProps.count > 0" key="1" @click="deleteCategorie(nodeProps)">
+                          <a-menu-item :disabled="nodeProps.id === -1 || nodeProps.count > 0" key="1" @click="deleteCategory(nodeProps)">
                             删除分类
                           </a-menu-item>
-                          <a-menu-item :disabled="nodeProps.id === -1" key="1" @click="editCategorie(nodeProps)">
+                          <a-menu-item :disabled="nodeProps.id === -1" key="1" @click="editCategory(nodeProps)">
                             编辑分类
                           </a-menu-item>
                         </a-menu>
@@ -59,7 +59,7 @@
     </div>
     <!--  创建接口 Tag  -->
     <CreateCategoryModal
-        :visible="createTagModalvisible"
+        :visible="createTagModalVisible"
         :nodeInfo="currentNode"
         :mode="tagModalMode"
         @cancel="handleCancelTagModalCancel"
@@ -89,10 +89,6 @@ const store = useStore<{ Scenario: ScenarioStateType, ProjectGlobal: ProjectStat
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const treeDataCategory = computed<any>(() => store.state.Scenario.treeDataCategory);
 const treeDataMapCategory = computed<any>(() => store.state.Scenario.treeDataMapCategory);
-const nodeDataCategory = computed<any>(()=> store.state.Scenario.nodeDataCategory);
-
-const createTagModalvisible = ref(false);
-
 
 const props = defineProps({
   serveId: {
@@ -100,6 +96,7 @@ const props = defineProps({
     type: Number || String,
   },
 })
+
 const searchValue = ref('');
 const expandedKeys = ref<number[]>([]);
 const autoExpandParent = ref<boolean>(false);
@@ -138,7 +135,7 @@ const treeData: any = computed(() => {
   return data?.[0]?.children || null;
 });
 
-async function loadCategories() {
+async function loadCategorys() {
   await store.dispatch('Scenario/loadCategory');
   expandAll();
 }
@@ -147,7 +144,7 @@ watch(() => {
   return currProject.value;
 }, async (newVal) => {
   if (newVal?.id) {
-    await loadCategories();
+    await loadCategorys();
   }
 }, {
   immediate: true
@@ -204,12 +201,13 @@ async function selectTreeItem(keys, e) {
   }
 }
 
+const createTagModalVisible = ref(false);
 const currentNode = ref(null);
 // 新建或者修改
 const tagModalMode = ref('new');
 
 // 删除分类
-async function deleteCategorie(node) {
+async function deleteCategory(node) {
   Modal.confirm({
     title: () => '确定删除该分类吗？',
     content: () => '删除后所有所有子分类都会被删除',
@@ -232,19 +230,19 @@ async function deleteCategorie(node) {
 }
 
 // 新建分类
-function newCategorie(node) {
+function newCategory(node) {
   if (!node) {
     return;
   }
   tagModalMode.value = 'new';
-  createTagModalvisible.value = true;
+  createTagModalVisible.value = true;
   currentNode.value = node;
 }
 
 //编辑分类
-function editCategorie(node) {
+function editCategory(node) {
   tagModalMode.value = 'edit';
-  createTagModalvisible.value = true;
+  createTagModalVisible.value = true;
   currentNode.value = node;
 }
 
@@ -259,7 +257,7 @@ async function handleTagModalOk(obj) {
       desc: obj.desc,
     });
     if (res) {
-      createTagModalvisible.value = false;
+      createTagModalVisible.value = false;
       message.success('修改分类成功');
     } else {
       message.error('修改分类失败，请重试~');
@@ -276,7 +274,7 @@ async function handleTagModalOk(obj) {
       "projectId": currProject.value.id,
     });
     if (res?.name) {
-      createTagModalvisible.value = false;
+      createTagModalVisible.value = false;
       message.success('新建分类成功');
     } else {
       message.error('修改分类失败，请重试~');
@@ -285,7 +283,7 @@ async function handleTagModalOk(obj) {
 }
 
 function handleCancelTagModalCancel() {
-  createTagModalvisible.value = false;
+  createTagModalVisible.value = false;
 }
 
 
@@ -322,7 +320,7 @@ async function onDrop(info: DropEvent) {
 }
 
 onMounted(async () => {
-  await loadCategories();
+  await loadCategorys();
   expandAll();
 })
 

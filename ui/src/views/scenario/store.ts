@@ -19,7 +19,7 @@ import {
     getScenariosReportsDetail,
     addPlans,
     getPlans,
-    removePlans, updatePriority, updateStatus, genReport, saveDebugData, syncDebugData,
+    removePlans, updatePriority, updateStatus, genReport, saveDebugData, syncDebugData, saveProcessorInfo,
 } from './service';
 
 import {
@@ -125,6 +125,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
 
         saveProcessorName: Action<StateType, StateType>;
         saveProcessor: Action<StateType, StateType>;
+        saveProcessorInfo: Action<StateType, StateType>;
 
         loadExecResult: Action<StateType, StateType>;
         updateExecResult: Action<StateType, StateType>;
@@ -485,6 +486,15 @@ const StoreModel: ModuleType = {
         },
         async saveProcessorName({commit, dispatch, state}, payload: any) {
             const jsn = await saveProcessorName(payload)
+            if (jsn.code === 0) {
+                await dispatch('loadScenario', state.scenarioId);
+                return true;
+            } else {
+                return false
+            }
+        },
+        async saveProcessorInfo({commit, dispatch, state}, payload: any) {
+            const jsn = await saveProcessorInfo(payload)
             if (jsn.code === 0) {
                 await dispatch('loadScenario', state.scenarioId);
                 return true;

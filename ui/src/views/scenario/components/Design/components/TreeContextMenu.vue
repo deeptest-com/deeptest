@@ -77,9 +77,9 @@
       </template>
 
       <template v-if="!isRoot(treeNode.entityCategory)">
-        <a-menu-item key="rename" class="menu-item">
+        <a-menu-item key="edit" class="menu-item">
           <EditOutlined />
-          <span>重命名</span>
+          <span>编辑</span>
         </a-menu-item>
         <a-menu-item key="remove" class="menu-item">
           <CloseOutlined />

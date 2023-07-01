@@ -110,6 +110,12 @@ type ScenarioSimple struct {
 	Children []ScenarioSimple `json:"children"`
 }
 
+type ScenarioProcessorInfo struct {
+	Id       uint   `json:"id"`
+	Name     string `json:"name"`
+	Comments string `json:"comments"`
+}
+
 type ScenarioPlanReqPaginate struct {
 	_domain.PaginateReq
 	ProjectId  uint              `json:"projectId"`

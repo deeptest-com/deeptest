@@ -1,6 +1,7 @@
 package service
 
 import (
+	domain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
@@ -29,6 +30,11 @@ func (s *ScenarioProcessorService) GetEntity(id int) (ret interface{}, err error
 
 func (s *ScenarioProcessorService) UpdateName(req agentExec.ProcessorEntityBase) (err error) {
 	err = s.ScenarioProcessorRepo.UpdateName(req.ProcessorID, req.Name)
+	return
+}
+
+func (s *ScenarioProcessorService) SaveProcessorInfo(req domain.ScenarioProcessorInfo) (err error) {
+	err = s.ScenarioProcessorRepo.SaveProcessorInfo(req.Id, req.Name, req.Comments)
 	return
 }
 

@@ -52,7 +52,7 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
     component: BlankLayout,
     children: [
       {
-        icon: 'endpoint',
+        icon: 'doc',
         title: 'endpoint-docs',
         path: 'index',
         component: () => import('@/views/docs/index.vue'),
@@ -70,7 +70,7 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
     component: BlankLayout,
     children: [
       {
-        icon: 'endpoint',
+        icon: 'diagnose',
         title: 'diagnose',
         path: 'index',
         component: () => import('@/views/diagnose/index.vue'),

@@ -1,15 +1,16 @@
 <template>
-  <div class="tree-container">
-    <div class="tree-con">
-      <div class="tag-filter-form">
+  <div class="diagnose-tree-main">
+    <div class="tree-container">
+      <div class="tree-filter">
         <a-input-search
             class="search-input"
-            v-model:value="searchValue"
-            placeholder="搜索接口分类"/>
+            v-model:value="keywords"
+            placeholder="输入关键字过滤"/>
         <div class="add-btn" @click="create(treeData?.[0]?.id, 'dir')">
           <PlusOutlined style="font-size: 16px;"/>
         </div>
       </div>
+
       <div style="margin: 0 8px;">
         <a-tree
             class="deeptest-tree"
@@ -31,10 +32,10 @@
 
           <template #title="nodeProps">
             <div class="tree-title" :draggable="nodeProps.dataRef.id === -1">
-              <span class="tree-title-text" v-if="nodeProps.dataRef.title.indexOf(searchValue) > -1">
-                <span>{{nodeProps.dataRef.title.substr(0, nodeProps.dataRef.title.indexOf(searchValue))}}</span>
-                <span style="color: #f50">{{searchValue}}</span>
-                <span>{{nodeProps.dataRef.title.substr(nodeProps.dataRef.title.indexOf(searchValue) + searchValue.length)}}</span>
+              <span class="tree-title-text" v-if="nodeProps.dataRef.title.indexOf(keywords) > -1">
+                <span>{{nodeProps.dataRef.title.substr(0, nodeProps.dataRef.title.indexOf(keywords))}}</span>
+                <span style="color: #f50">{{keywords}}</span>
+                <span>{{nodeProps.dataRef.title.substr(nodeProps.dataRef.title.indexOf(keywords) + keywords.length)}}</span>
               </span>
               <span class="tree-title-text" v-else>{{ nodeProps.dataRef.title }}</span>
 
@@ -126,8 +127,8 @@ const props = defineProps({
   },
 })
 
+const keywords = ref('');
 const replaceFields = {key: 'id'};
-const searchValue = ref('');
 const expandedKeys = ref<number[]>([]);
 const autoExpandParent = ref<boolean>(false);
 
@@ -156,10 +157,9 @@ watch((currServe), async (newVal) => {
   selectStoredKeyCall()
 }, {immediate: true})
 
-watch(searchValue, (newVal) => {
+watch(keywords, (newVal) => {
   expandedKeys.value = filterTree(treeData.value, newVal)
   autoExpandParent.value = true;
-  selectStoredKeyCall()
 });
 
 const getSelectedKeyName = () => {
@@ -312,103 +312,57 @@ onMounted(async () => {
 </script>
 
 <style scoped lang="less">
-.tree-container {
-  //margin: 16px;
+.diagnose-tree-main {
   background: #ffffff;
-}
+  .tree-container {
+    .tree-filter {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 50px;
+      margin-top: 8px;
+      .search-input {
+        margin-left: 16px;
+        margin-right: 8px;
+      }
 
-.tag-filter-form {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 50px;
-  margin-top: 8px;
-  .search-input {
-    margin-left: 16px;
-    margin-right: 8px;
+      .add-btn {
+        margin-left: 2px;
+        margin-right: 16px;
+        cursor: pointer;
+      }
+    }
+
+    .deeptest-tree {
+      .tree-title {
+        position: relative;
+
+        .tree-title-text {
+          display: inline-block;
+          width: calc(100% - 24px);
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        //&:hover{
+        //  .more-icon {
+        //    background-color: #f5f5f5;
+        //  }
+        //}
+        .more-icon {
+          position: absolute;
+          right: -8px;
+          width: 20px;
+        }
+      }
+    }
+
+    .nodata-tip {
+      margin-top: 8px;
+      text-align: center;
+    }
   }
-
-  .add-btn {
-    margin-left: 2px;
-    margin-right: 16px;
-    cursor: pointer;
-  }
-}
-
-.content {
-  display: flex;
-  width: 100%;
-
-  .left {
-    width: 300px;
-    border-right: 1px solid #f0f0f0;
-  }
-
-  .right {
-    flex: 1
-  }
-}
-
-.action-new {
-  margin-right: 8px;
-}
-
-.top-action {
-  height: 60px;
-  display: flex;
-  align-items: center;
-  margin-left: 16px;
-
-  .ant-btn {
-    margin-right: 16px;
-  }
-}
-
-.action-btns {
-  display: flex;
-}
-
-.customTitleColRender {
-  display: flex;
-
-  .edit {
-    margin-left: 8px;
-    cursor: pointer;
-  }
-}
-
-.form-item-con {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.tree-title {
-  position: relative;
-
-  .tree-title-text {
-    display: inline-block;
-    width: calc(100% - 24px);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  //&:hover{
-  //  .more-icon {
-  //    background-color: #f5f5f5;
-  //  }
-  //}
-  .more-icon {
-    position: absolute;
-    right: -8px;
-    width: 20px;
-  }
-}
-
-.nodata-tip {
-  margin-top: 8px;
-  text-align: center;
 }
 
 </style>

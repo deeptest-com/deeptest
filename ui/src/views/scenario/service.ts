@@ -14,8 +14,6 @@ import {Interface} from "@/views/component/debug/data";
 const apiPath = 'scenarios';
 const apiPathNodes = `${apiPath}/nodes`;
 
-const apiPathCategoryNodes = `${apiPath}/categories`;
-
 const apiPathProcessors = `${apiPath}/processors`;
 const apiPathExec = `${apiPath}/exec`;
 
@@ -148,6 +146,13 @@ export async function saveProcessor(data: any): Promise<any> {
 export async function saveProcessorName(data: any): Promise<any> {
     return request({
         url: `/${apiPathProcessors}/updateName`,
+        method: 'PUT',
+        data: data,
+    });
+}
+export async function saveProcessorInfo(data: any): Promise<any> {
+    return request({
+        url: `/${apiPathProcessors}/saveProcessorInfo`,
         method: 'PUT',
         data: data,
     });

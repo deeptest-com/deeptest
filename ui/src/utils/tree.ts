@@ -43,7 +43,8 @@ export function filterTree(treeDataValue, keywords): number[] {
     for (let i = 0; i < flattenTreeList.length; i++) {
         const node = flattenTreeList[i];
 
-        if (node.title.includes(keywords)) {
+        const text = node.title?node.title:node.name
+        if (text.includes(keywords)) {
             parentKeys.push(node.parentId);
             parentKeys = parentKeys.concat(findParentIds(node.parentId, flattenTreeList));
         }

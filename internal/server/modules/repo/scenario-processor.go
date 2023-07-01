@@ -71,6 +71,14 @@ func (r *ScenarioProcessorRepo) UpdateName(id uint, name string) (err error) {
 	return
 }
 
+func (r *ScenarioProcessorRepo) SaveProcessorInfo(id uint, name, comments string) (err error) {
+	err = r.DB.Model(&model.Processor{}).
+		Where("id = ?", id).
+		Updates(map[string]interface{}{"name": name, "comments": comments}).Error
+
+	return
+}
+
 func (r *ScenarioProcessorRepo) GetAll(scenarioId uint) (processors []model.Processor, err error) {
 	err = r.DB.Where("scenario_id = ?", scenarioId).
 		Find(&processors).Error

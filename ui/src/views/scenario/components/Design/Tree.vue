@@ -1,70 +1,62 @@
 <template>
-  <div class="scenario-tree-main dp-tree">
-    <div class="toolbar">
-      <div class="tips">
-        <span>{{ tips }}</span>
+  <div class="scenario-tree-main">
+    <div class="tree-container">
+      <div class="tree-filter">
+        <a-input-search placeholder="输入关键字过滤"
+                        class="search-input"
+                        v-model:value="keywords" />
       </div>
-      <div class="buttons">
-        <a-button @click="expandAll" type="link" class="dp-color-primary">
-          <span v-if="!isExpand">展开全部</span>
-          <span v-if="isExpand">收缩全部</span>
-        </a-button>
-      </div>
-    </div>
 
-    <div class="tree-panel">
-      <a-tree
-          ref="tree"
-          :tree-data="treeData"
-          :replace-fields="replaceFields"
-          show-icon
-          @expand="expandNode"
-          @select="selectNode"
-          @check="checkNode"
-          @rightClick="onRightClick"
+      <div style="margin: 0 8px;">
+        <a-tree
+            class="deeptest-tree"
+            draggable
+            blockNode
+            showIcon
+            :expandedKeys="expandedKeys"
+            :auto-expand-parent="autoExpandParent"
+            v-model:selectedKeys="selectedKeys"
+            @drop="onDrop"
+            @expand="onExpand"
+            @select="selectNode"
+            :tree-data="treeData"
+            :replace-fields="replaceFields">
 
-          v-model:selectedKeys="selectedKeys"
-          v-model:checkedKeys="checkedKeys"
-          v-model:expandedKeys="expandedKeys"
-
-          draggable
-          @dragenter="onDragEnter"
-          @drop="onDrop"
-
-          class="interf-tree"
-      >
-        <template #title="slotProps">
-          <span v-if="treeDataMap[slotProps.id] && treeDataMap[slotProps.id].isEdit" class="name-editor">
-            <a-input v-model:value="editedData[slotProps.id]"
-                     @keyup.enter=updateName(slotProps.id)
-                     @click.stop
-                     :ref="'name-editor-' + slotProps.id" />
-
-            <span class="btns">
-              <CheckOutlined @click.stop="updateName(slotProps.id)"/>
-              <CloseOutlined @click.stop="cancelUpdate(slotProps.id)"/>
-            </span>
-          </span>
-
-          <span v-else>
-            {{ slotProps.name }}
-          </span>
-        </template>
-
-        <template #icon="slotProps">
-          <template v-if="!slotProps.isLeaf">
-            <FolderOutlined v-if="!slotProps.expanded"/>
-            <FolderOpenOutlined v-if="slotProps.expanded"/>
+          <template #switcherIcon>
+            <CaretDownOutlined/>
           </template>
 
-          <FileOutlined v-else />
-        </template>
-      </a-tree>
+          <template #title="nodeProps">
+            <div class="tree-title" :draggable="nodeProps.dataRef.id === -1">
+              <span class="tree-title-text" v-if="nodeProps.dataRef.name.indexOf(keywords) > -1">
+                <span>{{nodeProps.dataRef.name.substr(0, nodeProps.dataRef.name.indexOf(keywords))}}</span>
+                <span style="color: #f50">{{keywords}}</span>
+                <span>{{nodeProps.dataRef.name.substr(nodeProps.dataRef.name.indexOf(keywords) + keywords.length)}}</span>
+              </span>
+              <span class="tree-title-text" v-else>{{ nodeProps.dataRef.name }}</span>
 
-      <div v-if="contextNode.id >= 0" :style="menuStyle">
-        <TreeContextMenu :treeNode="contextNode" :onMenuClick="menuClick"/>
+              <span class="more-icon" v-if="nodeProps.dataRef.id > 0">
+                  <a-dropdown>
+                       <MoreOutlined/>
+                      <template #overlay>
+                        <TreeContextMenu :treeNode="nodeProps.dataRef" :onMenuClick="menuClick"/>
+                      </template>
+                    </a-dropdown>
+                </span>
+            </div>
+          </template>
+        </a-tree>
+
+        <div v-if="!treeData" class="nodata-tip">请点击上方按钮添加分类 ~</div>
       </div>
     </div>
+
+    <!--  编辑接口弹窗  -->
+    <EditModal
+        v-if="currentNode"
+        :nodeInfo="currentNode"
+        @ok="handleModalOk"
+        @cancel="handleModalCancel" />
 
     <InterfaceSelectionFromDefine
         v-if="interfaceSelectionVisible && interfaceSelectionSrc==='fromDefine'"
@@ -83,19 +75,18 @@
 import {computed, defineProps, onMounted, onUnmounted, ref, watch, getCurrentInstance} from "vue";
 
 import {useI18n} from "vue-i18n";
-import {Form} from 'ant-design-vue';
+import {Form, message} from 'ant-design-vue';
 import {useStore} from "vuex";
 import debounce from "lodash.debounce";
-import {DropEvent, TreeDragEvent} from "ant-design-vue/es/tree/Tree";
-import {CloseOutlined, FileOutlined, FolderOutlined, FolderOpenOutlined, CheckOutlined} from "@ant-design/icons-vue";
+import {DropEvent, TreeDragEvent} from "ant-design-vue/es/tree/Tree";import {PlusOutlined, CaretDownOutlined, MoreOutlined} from '@ant-design/icons-vue';
 
 import {expandAllKeys, expandOneKey} from "@/services/tree";
 
-import {getExpandedKeys, setExpandedKeys} from "@/utils/cache";
-import {getContextMenuStyle} from "@/utils/dom";
+import {getExpandedKeys, getSelectedKey, setExpandedKeys} from "@/utils/cache";
 import {StateType as ScenarioStateType} from "../../store";
 import {isRoot, updateNodeName, isInterface} from "../../service";
 import TreeContextMenu from "./components/TreeContextMenu.vue";
+import EditModal from "./components/edit.vue";
 import InterfaceSelectionFromDefine from "@/views/component/InterfaceSelectionFromDefine/main.vue";
 import InterfaceSelectionFromTest from "@/views/component/InterfaceSelectionFromTest/main.vue";
 
@@ -106,6 +97,7 @@ const useForm = Form.useForm;
 const {t} = useI18n();
 import {Scenario} from "@/views/scenario/data";
 import {confirmToDelete} from "@/utils/confirm";
+import {filterTree} from "@/utils/tree";
 const store = useStore<{ Scenario: ScenarioStateType; }>();
 const treeData = computed<any>(() => store.state.Scenario.treeData);
 const treeDataMap = computed<any>(() => store.state.Scenario.treeDataMap);
@@ -122,7 +114,6 @@ watch(treeData, () => {
   getExpandedKeysCall()
 })
 
-
 watch(() => {
   return detailResult.value.id
 },async (newVal) => {
@@ -134,13 +125,20 @@ watch(() => {
   immediate:true
 })
 
-const replaceFields = {key: 'id', title: 'name'};
-let expandedKeys = ref<number[]>([]);
-let selectedKeys = ref<number[]>([]);
-let checkedKeys = ref<number[]>([])
-let isExpand = ref(false);
+const keywords = ref('');
+watch(keywords, (newVal) => {
+  console.log('watch keywords', keywords)
+  expandedKeys.value = filterTree(treeData.value, newVal)
+  autoExpandParent.value = true;
+});
 
-const editedData = ref<any>({})
+const replaceFields = {key: 'id', title: 'name'};
+
+let expandedKeys = ref<number[]>([]);
+const autoExpandParent = ref<boolean>(false);
+
+let selectedKeys = ref<number[]>([]);
+let isExpand = ref(false);
 
 let tree = ref(null)
 const expandNode = (keys: string[], e: any) => {
@@ -174,58 +172,23 @@ const selectNode = (keys, e) => {
   })
 }
 
-const checkNode = (keys, e) => {
-  console.log('checkNode', checkedKeys)
+const onExpand = (keys: number[]) => {
+  expandedKeys.value = keys;
+  autoExpandParent.value = false;
+};
+
+const currentNode = ref(null as any);
+function create(parentId, type) {
+  console.log('create', parentId, type)
+  currentNode.value = {parentId, type};
 }
-
-const updateName = (id) => {
-  const name = editedData.value[id]
-  console.log('updateName', id, name)
-
-  updateNodeName(id, name).then((json) => {
-    if (json.code === 0) {
-      store.dispatch('Scenario/saveTreeMapItemProp', {id: id, prop: 'name', value: name})
-      store.dispatch('Scenario/saveTreeMapItemProp', {id: id, prop: 'isEdit', value: false})
-
-      if (id === selectedNode.value.processorId) {
-        store.dispatch('Scenario/getNode', {id: id})
-      }
-    }
-  })
-}
-const cancelUpdate = (id) => {
-  console.log('cancelUpdate', id)
-  store.dispatch('Scenario/saveTreeMapItemProp', {id: id, prop: 'isEdit', value: false})
+function edit(node) {
+  console.log('edit', node)
+  currentNode.value = node;
 }
 
 let contextNode = ref({} as any)
-let menuStyle = ref({} as any)
 let tips = ref('')
-let rightVisible = false
-
-const onRightClick = (e) => {
-  console.log('onRightClick', e)
-  const {event, node} = e
-
-  const y = event.currentTarget.getBoundingClientRect().top
-  const x = event.currentTarget.getBoundingClientRect().right
-
-  contextNode.value = {
-    pageX: x,
-    pageY: y,
-    id: node.eventKey,
-    title: node.title,
-    entityCategory: node.dataRef.entityCategory,
-    isLeaf: node.dataRef.isLeaf,
-    entityType: node.dataRef.entityType,
-    entityId: node.dataRef.entityId,
-    interfaceId: node.dataRef.interfaceId,
-    parentId: node.dataRef.parentId,
-  }
-
-  menuStyle.value = getContextMenuStyle(
-      event.currentTarget.getBoundingClientRect().right, event.currentTarget.getBoundingClientRect().top, 120)
-}
 
 const getExpandedKeysCall = debounce(async () => {
   getExpandedKeys('scenario', treeData.value[0].scenarioId).then(async keys => {
@@ -267,8 +230,8 @@ const menuClick = (menuKey: string, targetId: number) => {
   console.log('menuClick', menuKey, targetId)
   targetModelId = targetId
 
-  if (menuKey === 'rename') {
-    renameNode()
+  if (menuKey === 'edit') {
+    edit(treeDataMap.value[targetModelId])
     return
   }
 
@@ -295,21 +258,23 @@ const menuClick = (menuKey: string, targetId: number) => {
   clearMenu()
 }
 
-const renameNode = () => {
-  selectedKeys.value = [targetModelId]
-  selectNode(selectedKeys.value, null)
-  editedData.value[targetModelId] = treeDataMap.value[targetModelId].name
-
-  Object.keys(treeDataMap.value).forEach((key) => {
-    store.dispatch('Scenario/saveTreeMapItemProp', {id: key, prop: 'isEdit', value: false})
+async function handleModalOk(model) {
+  console.log('handleModalOk')
+  Object.assign(model, {
+    // projectId: currProject.value.id,
+    // serveId: currServe.value.id,
   })
-  store.dispatch('Scenario/saveTreeMapItemProp', {id: targetModelId, prop: 'isEdit', value: true})
 
-  setTimeout(() => {
-    console.log('==', currentInstance.ctx.$refs[`name-editor-${targetModelId}`])
-    currentInstance.ctx.$refs[`name-editor-${targetModelId}`]?.focus()
-    currentInstance.ctx.$refs[`name-editor-${targetModelId}`]?.select();
-  }, 50)
+  const res = await store.dispatch('Scenario/saveProcessorInfo', model)
+  if (res) {
+    currentNode.value = null
+    expandOneKey(treeDataMap.value, model.parentId, expandedKeys.value)
+  }
+}
+
+function handleModalCancel() {
+  console.log('handleModalCancel')
+  currentNode.value = null
 }
 
 const addNode = (mode, processorCategory, processorType,
@@ -317,7 +282,7 @@ const addNode = (mode, processorCategory, processorType,
   console.log('addNode', mode, processorCategory, processorType,
       targetProcessorCategory, targetProcessorType, targetProcessorId)
 
-  if (processorCategory === 'interface') { // select a interface
+  if (processorCategory === 'interface') { // show popup to select a interface
     interfaceSelectionSrc.value = processorType
     interfaceSelectionVisible.value = true
     return
@@ -398,15 +363,12 @@ const clearMenu = () => {
   contextNode.value = ref({})
 }
 
-const onDragEnter = (info: TreeDragEvent) => {
-  console.log(info);
-  // expandedKeys.value = info.expandedKeys
-};
-const onDrop = (info: DropEvent) => {
+async function onDrop(info: DropEvent) {
   const dropKey = info.node.eventKey;
   const dragKey = info.dragNode.eventKey;
-  const dropPos = info.node.pos.split('-');
-  let dropPosition = info.dropPosition - Number(dropPos[dropPos.length - 1]);
+  const pos = info.node.pos.split('-');
+  let dropPosition = info.dropPosition - Number(pos[pos.length - 1]);
+
   if (isInterface(treeDataMap.value[dropKey].processorCategory) && dropPosition === 0) dropPosition = 1
   console.log(dragKey, dropKey, dropPosition);
 
@@ -464,5 +426,56 @@ onUnmounted(() => {
 <style lang="less" scoped>
 .scenario-tree-main {
   height: 100%;
+  background: #ffffff;
+
+  .tree-container {
+    .tree-filter {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 50px;
+      margin-top: 8px;
+      .search-input {
+        margin-left: 16px;
+        margin-right: 8px;
+      }
+
+      .add-btn {
+        margin-left: 2px;
+        margin-right: 16px;
+        cursor: pointer;
+      }
+    }
+
+    .deeptest-tree {
+      .tree-title {
+        position: relative;
+
+        .tree-title-text {
+          display: inline-block;
+          width: calc(100% - 24px);
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        //&:hover{
+        //  .more-icon {
+        //    background-color: #f5f5f5;
+        //  }
+        //}
+        .more-icon {
+          position: absolute;
+          right: -8px;
+          width: 20px;
+        }
+      }
+    }
+
+    .nodata-tip {
+      margin-top: 8px;
+      text-align: center;
+    }
+  }
 }
 </style>

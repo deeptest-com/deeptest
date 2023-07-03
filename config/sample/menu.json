@@ -42,6 +42,13 @@
     "parent":""
   },
   {
+    "code":"diagnose",
+    "title":"接口调试",
+    "path":"/diagnose",
+    "type":"menu",
+    "parent":""
+  },
+  {
     "code":"project-setting",
     "title":"项目设置",
     "path":"/project-setting",

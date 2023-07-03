@@ -278,6 +278,7 @@ const StoreModel: ModuleType = {
             } as DebugInfo);
 
             const {data} = response;
+            console.log('getLastInvocationResp', data)
 
             commit('setResponse', data);
             return true;

@@ -74,7 +74,7 @@ import {StateType as DiagnoseInterfaceStateType} from '../store';
 import {StateType as ServeStateType} from "@/store/serve";
 import {StateType as Debug} from "@/views/component/debug/store";
 
-provide('usedBy', UsedBy.TestDebug)
+provide('usedBy', UsedBy.DiagnoseDebug)
 
 const store = useStore<{ Debug: Debug, DiagnoseInterface: DiagnoseInterfaceStateType, ProjectGlobal: ProjectStateType, ServeGlobal: ServeStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
@@ -98,7 +98,7 @@ const changeTab = (key) => {
   store.dispatch('DiagnoseInterface/openInterfaceTab', found);
 }
 
-const usedBy = UsedBy.TestDebug
+const usedBy = UsedBy.DiagnoseDebug
 const loadDebugData = debounce(async () => {
   console.log('loadDebugData')
 

@@ -414,17 +414,9 @@ const StoreModel: ModuleType = {
         },
         async clearShareVar({commit, dispatch, state}, payload: any) {
             try {
-                let id = 0
-                if (state.debugInfo.usedBy === UsedBy.InterfaceDebug)
-                    id = state.debugInfo.endpointInterfaceId
+                console.log('debugInfo', state.debugInfo)
 
-                else if (state.debugInfo.usedBy === UsedBy.ScenarioDebug)
-                    id = state.debugInfo.scenarioProcessorId
-
-                else
-                    return false
-
-                await clearShareVar(id, state.debugInfo.usedBy);
+                await clearShareVar(state.debugInfo);
                 dispatch('listShareVar');
 
                 return true;

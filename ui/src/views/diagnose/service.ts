@@ -44,7 +44,7 @@ export async function clone(id: number): Promise<any> {
     })
 }
 
-export async function saveTestDebugData(interf: Interface): Promise<any> {
+export async function saveDiagnoseDebugData(interf: Interface): Promise<any> {
     return request({
         url: `/${apiPath}/saveDebugData`,
         method: 'post',

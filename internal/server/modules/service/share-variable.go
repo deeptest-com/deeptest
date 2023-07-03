@@ -33,7 +33,7 @@ func (s *ShareVarService) Save(name, value string, debugInterfaceId, endpointInt
 		UsedBy:              usedBy,
 	}
 
-	if usedBy == consts.InterfaceDebug || usedBy == consts.TestDebug {
+	if usedBy == consts.InterfaceDebug || usedBy == consts.DiagnoseDebug {
 		po.ID, err = s.ShareVariableRepo.GetExistByInterfaceDebug(name, serveId, usedBy)
 	} else if usedBy == consts.ScenarioDebug {
 		po.ID, err = s.ShareVariableRepo.GetExistByScenarioDebug(name, scenarioId)
@@ -77,14 +77,19 @@ func (s *ShareVarService) Delete(id int) (err error) {
 	return
 }
 
-func (s *ShareVarService) Clear(endpointOrProcessorId int, usedBy consts.UsedBy) (err error) {
-	if usedBy == consts.InterfaceDebug {
-		endpoint, _ := s.EndpointRepo.Get(uint(endpointOrProcessorId))
-		err = s.ShareVariableRepo.DeleteAllByServeId(endpoint.ServeId)
-
-	} else if usedBy == consts.ScenarioDebug {
-		processor, _ := s.ScenarioProcessorRepo.Get(uint(endpointOrProcessorId))
+func (s *ShareVarService) Clear(debugReq domain.DebugReq) (err error) {
+	if debugReq.ScenarioProcessorId > 0 {
+		processor, _ := s.ScenarioProcessorRepo.Get(debugReq.ScenarioProcessorId)
 		err = s.ShareVariableRepo.DeleteAllByScenarioId(processor.ScenarioId)
+
+	} else if debugReq.DebugInterfaceId > 0 {
+		debugData, _ := s.DebugInterfaceRepo.Get(debugReq.DebugInterfaceId)
+		err = s.ShareVariableRepo.DeleteAllByServeId(debugData.ServeId)
+
+	} else if debugReq.EndpointInterfaceId > 0 {
+		endpointInterface, _ := s.EndpointInterfaceRepo.Get(debugReq.EndpointInterfaceId)
+		endpoint, _ := s.EndpointRepo.Get(endpointInterface.EndpointId)
+		err = s.ShareVariableRepo.DeleteAllByServeId(endpoint.ServeId)
 
 	}
 

@@ -116,7 +116,7 @@ const saveDiagnoseInterface = async (e) => {
     if (validateInfo()) {
       Object.assign(data, {shareVars: null, envVars: null, globalEnvVars: null, globalParamVars: null})
 
-      const res = await store.dispatch('DiagnoseInterface/saveTestDebugData', data)
+      const res = await store.dispatch('DiagnoseInterface/saveDiagnoseDebugData', data)
       if (res === true) {
         notification.success({
           key: NotificationKeyCommon,

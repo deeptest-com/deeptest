@@ -62,8 +62,8 @@
         :visible="createTagModalVisible"
         :nodeInfo="currentNode"
         :mode="tagModalMode"
-        @cancel="handleCancelTagModalCancel"
-        @ok="handleTagModalOk"/>
+        @ok="handleTagModalOk"
+        @cancel="handleCancelTagModalCancel" />
   </div>
 </template>
 <script setup lang="ts">
@@ -248,8 +248,8 @@ function editCategory(node) {
 
 async function handleTagModalOk(obj) {
   obj = Object.assign(currentNode.value, obj);
-  // 修改
-  if (tagModalMode.value === 'edit') {
+
+  if (tagModalMode.value === 'edit') { // 修改
     const res = await store.dispatch('Scenario/updateCategoryNode', {
       id: obj.id,
       name: obj.name,
@@ -262,9 +262,7 @@ async function handleTagModalOk(obj) {
     } else {
       message.error('修改分类失败，请重试~');
     }
-  }
-  // 新建
-  else if (tagModalMode.value === 'new') {
+  } else if (tagModalMode.value === 'new') { // 新建
     const res = await store.dispatch('Scenario/createCategoryNode', {
       "name": obj.name,
       "desc": obj.desc,
@@ -285,7 +283,6 @@ async function handleTagModalOk(obj) {
 function handleCancelTagModalCancel() {
   createTagModalVisible.value = false;
 }
-
 
 async function onDrop(info: DropEvent) {
   const dropKey = info.node.eventKey;

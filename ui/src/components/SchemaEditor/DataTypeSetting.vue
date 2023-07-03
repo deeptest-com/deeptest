@@ -100,10 +100,15 @@
                     @change="(e) => {
                       changeRef(tabsIndex,tabIndex,e);
                     }"
+                    show-search
                     allowClear
+                    @search="searchRefs"
                     :value="tab.value || null"
                     placeholder="Select Components"
                     style="width: 100%"/>
+
+
+
               </a-form-item>
             </a-form>
           </div>
@@ -123,13 +128,16 @@ import {
 } from '@ant-design/icons-vue';
 import {schemaSettingInfo, typeOpts} from "./config";
 import cloneDeep from "lodash/cloneDeep";
+import {useStore} from "vuex";
+import {StateType as ServeStateType} from "@/store/serve";
+import debounce from "lodash.debounce";
 
 const props = defineProps({
   value: {
     required: true,
     type: Object
   },
-  refsOptions: {
+  serveId: {
     required: true,
     type: Array
   },
@@ -229,7 +237,7 @@ function getValueFromTabsList(tabsList: any) {
     }
     let res: any = {};
     if (activeTab.type === '$ref') {
-      const selectedRef: any = props.refsOptions.find((ref: any) => ref.value === activeTab.value);
+      const selectedRef: any = refsOptions.value.find((ref: any) => ref.value === activeTab.value);
       res = {
         type: selectedRef?.type || '',
         ref: activeTab.value || '',
@@ -250,7 +258,32 @@ function getValueFromTabsList(tabsList: any) {
   return result;
 }
 
-watch(() => {return visible.value}, (newVal: any) => {
+
+const store = useStore<{ Endpoint, ServeGlobal: ServeStateType }>();
+const refsOptions:any = ref([]);
+
+async function searchRefs(keyword) {
+  debounce(async () => {
+    refsOptions.value = await store.dispatch('Endpoint/getAllRefs', {
+      "serveId": props.serveId,
+      page:1,
+      name:keyword,
+      pageSize:20
+    });
+  }, 500)();
+}
+
+watch(() => {return visible.value}, async (newVal: any) => {
+
+
+  // 异步最新的refs
+  refsOptions.value = await store.dispatch('Endpoint/getAllRefs', {
+    "serveId": props.serveId,
+    page:1,
+    pageSize:20
+  });
+
+
   let {type, types} = props.value || {};
   // ref 优先级高于 type，如果是 ref，则优先取 ref值判断类型
   type =  props.value?.ref || type;

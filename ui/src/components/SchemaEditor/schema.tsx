@@ -282,6 +282,7 @@ export default defineComponent({
             return <>
                 <DataTypeSetting refsOptions={props.refsOptions}
                                  value={tree}
+                                 serveId={props.serveId}
                                  isRefChildNode={isRefChildNode || false}
                                  onChange={dataTypeChange.bind(this, options)}/>
                 {isObject(tree?.type) && !isRef(tree) ? <span

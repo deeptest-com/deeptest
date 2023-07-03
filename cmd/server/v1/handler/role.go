@@ -111,3 +111,13 @@ func (c *RoleCtrl) DeleteRole(ctx iris.Context) {
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 }
+
+func (c *RoleCtrl) AllRoleList(ctx iris.Context) {
+	roles, err := c.RoleService.AllRoleList()
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+	data := iris.Map{"result": roles}
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data, Msg: _domain.NoErr.Msg})
+}

@@ -1,5 +1,5 @@
 <template>
-  <div class="content"  :style="isDocsFullPage ? {height: '100vh'} :{}" v-if="data?.name && serviceList?.length">
+  <div class="content" :class="{'full-content':isDocsFullPage}"  v-if="data?.name && serviceList?.length">
     <DocsHeader v-if="showHeader"
                 :data="data"
                 :items="serviceList"
@@ -49,7 +49,7 @@ const props = defineProps(['showMenu', 'data', 'onlyShowDocs', 'showHeader']);
 const emit = defineEmits(['changeVersion','switchToDefineTab']);
 
 const isEndpointPage = window.location.href.includes('/endpoint/index');
-const isDocsFullPage = window.location.href.includes('/docs/share') || window.location.pathname.includes('/docs/view');
+const isDocsFullPage = window.location.href.includes('/docs/share') || window.location.href.includes('/docs/view');
 
 const serviceList = computed(() => {
   // 组装数据以兼容组件 LeftTreeMenu
@@ -157,5 +157,8 @@ function changeVersion(docId) {
   .only-docs {
     padding: 0;
   }
+}
+.full-content{
+  height: calc(100vh - 56px);
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container" :class="{'full-container':isDocsSharePage || isDocsViewPage}">
     <a-spin tip="加载中..." :spinning="loading">
       <Docs :show-menu="true"
             :showHeader="true"
@@ -164,6 +164,10 @@ watch(() => {return shareId.value}, async (newVal) => {
   background: #ffffff;
   min-height: calc(100vh - 106px);
   overflow: hidden;
+}
+.full-container{
+  margin: 0;
+  height: 100vh;
 }
 
 </style>

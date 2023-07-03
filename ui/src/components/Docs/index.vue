@@ -103,6 +103,7 @@ function selectSugRes(item) {
 
 
 function selectMenu(item) {
+  console.log(item,832)
   selectedItem.value = item
 }
 

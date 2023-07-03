@@ -132,7 +132,7 @@ export default defineComponent({
         background-repeat: no-repeat;
         background-position: center;
         &.leyan-logo{
-          transform: scale(1.1) translateX(-16px);
+          transform: scale(1.1) translateX(0px);
           background-image: url("https://od-1310531898.cos.ap-beijing.myqcloud.com/202306291016448.svg");
         }
       }

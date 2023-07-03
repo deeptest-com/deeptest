@@ -47,7 +47,7 @@ function getExpandedValue(val: any, defaultVal: boolean) {
  * */
 export function addExtraViewInfo(val: Object | any | undefined | null): any {
     if (!val) {
-        return null
+        return null;
     }
     val.extraViewInfo = {
         "isExpand": getExpandedValue(val, true),

@@ -1,7 +1,7 @@
 import { Mutation, Action } from 'vuex';
 import { StoreModuleType } from "@/utils/store";
 import { ResponseData } from '@/utils/request';
-import {getProfile, queryMessage, queryProject, updateEmail, updateName, updatePassword} from "@/services/user";
+import {getProfile, queryMessage, queryProject, updateEmail, updateName, updatePassword, updateSysRole } from "@/services/user";
 import { removeToken } from "@/utils/localToken";
 
 export interface CurrentUser {
@@ -35,6 +35,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
     updateEmail: Action<StateType, StateType>;
     updateName: Action<StateType, StateType>;
     updatePassword: Action<StateType, StateType>;
+    updateSysRole: Action<StateType, StateType>;
   };
 }
 
@@ -151,6 +152,19 @@ const StoreModel: ModuleType = {
         const { data } = response;
         commit('saveProjectRoles', data || 0);
         return true;
+      } catch (error) {
+        return false;
+      }
+    },
+    async updateSysRole({ commit }, payload) {
+      try {
+        const json = await updateSysRole(payload);
+        if (json.code === 0) {
+          commit('saveCurrentUser', json.data);
+          return true;
+        } else {
+          return false
+        }
       } catch (error) {
         return false;
       }

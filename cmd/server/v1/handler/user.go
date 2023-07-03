@@ -323,3 +323,18 @@ func (c *UserCtrl) GetUsersNotExistedInProject(ctx iris.Context) {
 	data := iris.Map{"result": users}
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data, Msg: _domain.NoErr.Msg})
 }
+
+func (c *UserCtrl) ChangeUserSysRole(ctx iris.Context) {
+	req := serverDomain.UpdateUserRoleReq{}
+	err := ctx.ReadJSON(&req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		return
+	}
+
+	if err = c.UserService.UpdateSysRoleForUser(req.UserId, req.RoleIds); err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+}

@@ -29,6 +29,29 @@
           },
         }"
       >
+        <template #role_ids="{ record }">
+          <div class="customTitleColRender">
+            <a-select
+                :value="record.role_ids"
+                mode="multiple"
+                style="width: 100px"
+                :size="'small'"
+                placeholder="请选中角色"
+                @change="
+                  (val) => {
+                   edit(record.id);
+                  }
+                "
+            >
+              <a-select-option
+                  v-for="(option, key) in sysRoles"
+                  :key="key"
+                  :value="option.id"
+              >{{ option.displayName }}</a-select-option
+              >
+            </a-select>
+          </div>
+        </template>
         <template #action="{ record }">
           <a-tooltip>
             <template v-if="!isAdmin" #title>暂无权限，请联系管理员</template>
@@ -70,6 +93,7 @@ import debounce from "lodash.debounce";
 import { useRouter } from "vue-router";
 import EditPage from "../../edit/edit.vue";
 import { defineProps } from 'vue'
+import {SelectTypes} from "ant-design-vue/lib/select";
 
 const props = defineProps(['isAdmin'])
 
@@ -98,7 +122,7 @@ const getRoleName = (val:any)=>{
   let rolesList = roles()
   return rolesList[val.text]
 }
-
+const sysRoles = computed<SelectTypes["options"]>(()=>store.state.SysRole.roles);
 const columns = [
   {
     title: "序号",
@@ -118,6 +142,11 @@ const columns = [
     align: "center",
   },
   {
+    title: "角色",
+    dataIndex: "role_ids",
+    slots: { customRender: "role_ids" },
+  },
+  {
     title: "邮箱",
     dataIndex: "email",
     align: "center",
@@ -133,6 +162,7 @@ const columns = [
 onMounted(() => {
   getList(1);
   getRoles();
+  getSysRoles()
   // getAudits(1);
 });
 
@@ -172,6 +202,10 @@ const getRoles = () => {
   store.dispatch("Project/getRoles");
   return;
 };
+
+const getSysRoles = () => {
+  store.dispatch("SysRole/getAllRoles")
+}
 
 const closeModal = () => {
   visible.value = false;

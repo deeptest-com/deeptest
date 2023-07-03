@@ -41,3 +41,11 @@ export async function updatePassword(data): Promise<any> {
         data
     });
 }
+export async function updateSysRole(data): Promise<any> {
+    return request({
+        url: '/users/changeUserSysRole',
+        method: 'POST',
+        data
+    });
+}
+

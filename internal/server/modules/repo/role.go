@@ -196,3 +196,8 @@ func (r *RoleRepo) GetRoleIds() ([]uint, error) {
 	}
 	return roleIds, nil
 }
+
+func (r *RoleRepo) GetAllRoles() (res []v1.RoleResp, err error) {
+	err = r.DB.Model(&model.SysRole{}).Find(&res).Error
+	return
+}

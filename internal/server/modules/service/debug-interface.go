@@ -29,6 +29,7 @@ type DebugInterfaceService struct {
 	SceneService             *SceneService             `inject:""`
 	EnvironmentService       *EnvironmentService       `inject:""`
 	DatapoolService          *DatapoolService          `inject:""`
+	ServeService             *ServeService             `inject:""`
 }
 
 func (s *DebugInterfaceService) Load(loadReq domain.DebugReq) (debugData domain.DebugData, err error) {
@@ -157,7 +158,9 @@ func (s *DebugInterfaceService) CopyDebugDataPropsFromPo(debugData *domain.Debug
 	debugData.EndpointInterfaceId = endpointInterface.ID
 
 	if debugInterfacePo == nil { // is null when converting from EndpointInterface
-		interfaces2debug := openapi.NewInterfaces2debug(endpointInterface, endpoint, serve)
+		schema2conv := openapi.NewSchema2conv()
+		schema2conv.Components = s.ServeService.Components(serve.ID)
+		interfaces2debug := openapi.NewInterfaces2debug(endpointInterface, endpoint, serve, schema2conv)
 		debugInterfacePo = interfaces2debug.Convert()
 
 		debugInterfacePo.Name = fmt.Sprintf("%s - %s", endpoint.Title, debugInterfacePo.Method)

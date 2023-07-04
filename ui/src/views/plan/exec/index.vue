@@ -44,7 +44,7 @@ import {getDivision, getPercent, getPercentStr} from '@/utils/number';
 import {
   scenarioReports, expandKeys,
   clearLog,
-  execLogs, execRes, updateExecLogs, updateExecRes,statInfo
+  execLogs, execResults, updateExecLogs, updateExecRes,statInfo
   , statisticData, initData, progressStatus, progressValue, updatePlanRes,
 } from '@/composables/useExecLogs';
 

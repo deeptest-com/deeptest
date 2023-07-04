@@ -68,7 +68,7 @@ func (c *ScenarioProcessorCtrl) SaveProcessorInfo(ctx iris.Context) {
 		return
 	}
 
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: _domain.NoErr.Msg})
 }
 
 // Save 保存

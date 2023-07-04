@@ -13,11 +13,11 @@
     </div>
 
     <div class="items">
-      <a-row v-for="(item, idx) in debugData.headers" :key="idx" type="flex" class="item">
+      <a-row v-for="(item, idx) in responseData.headers" :key="idx" type="flex" class="item">
         <a-col flex="1">
           <a-input v-model:value="item.name" class="dp-bg-input-transparent" />
         </a-col>
-        <a-col flex="80px">
+        <a-col flex="1">
           <a-input v-model:value="item.value" class="dp-bg-input-transparent" />
         </a-col>
       </a-row>
@@ -34,11 +34,10 @@ import {UsedBy} from "@/utils/enum";
 const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
 
-import {Param} from "@/views/component/debug/data";
 import {StateType as Debug} from "@/views/component/debug/store";
 const store = useStore<{  Debug: Debug }>();
 
-const debugData = computed<any>(() => store.state.Debug.debugData);
+const responseData = computed<any>(() => store.state.Debug.responseData);
 
 </script>
 

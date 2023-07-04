@@ -55,8 +55,8 @@
     <EditModal
         v-if="currentNode"
         :nodeInfo="currentNode"
-        @ok="handleModalOk"
-        @cancel="handleModalCancel" />
+        @ok="handleEditModalOk"
+        @cancel="handleEditModalCancel" />
 
     <InterfaceSelectionFromDefine
         v-if="interfaceSelectionVisible && interfaceSelectionSrc==='fromDefine'"
@@ -258,8 +258,8 @@ const menuClick = (menuKey: string, targetId: number) => {
   clearMenu()
 }
 
-async function handleModalOk(model) {
-  console.log('handleModalOk')
+async function handleEditModalOk(model) {
+  console.log('handleEditModalOk')
   Object.assign(model, {
     // projectId: currProject.value.id,
     // serveId: currServe.value.id,
@@ -272,8 +272,8 @@ async function handleModalOk(model) {
   }
 }
 
-function handleModalCancel() {
-  console.log('handleModalCancel')
+function handleEditModalCancel() {
+  console.log('handleEditModalCancel')
   currentNode.value = null
 }
 

@@ -8,23 +8,36 @@
       <template #title>
         <span>接口运行结果</span>
       </template>
+
       <div class="drawer-content">
         <a-tabs v-model:activeKey="activeKey">
-          <a-tab-pane key="Body" tab="Body">
-            <BodyInfo :data="bodyInfo"/>
-          </a-tab-pane>
-          <a-tab-pane key="Cookie" tab="Cookie" >
-            <CookieInfo :data="cookies"/>
-          </a-tab-pane>
-          <a-tab-pane key="Header" tab="Header" force-render>
-            <HeaderInfo :data="headers"/>
-          </a-tab-pane>
-          <a-tab-pane key="Console" tab="控制台">
-            <ConsoleInfo/>
-          </a-tab-pane>
-          <a-tab-pane key="Request" tab="实际请求">
+          <a-tab-pane key="Request" tab="请求">
             <RequestInfo :data="requestContent"/>
           </a-tab-pane>
+
+          <a-tab-pane key="Body" tab="响应Body">
+            <BodyInfo :data="bodyInfo"/>
+          </a-tab-pane>
+
+          <a-tab-pane key="Header" tab="响应Header" force-render>
+            <HeaderInfo :data="headers"/>
+          </a-tab-pane>
+
+          <a-tab-pane key="Cookie" tab="响应Cookie">
+            <CookieInfo :data="cookies"/>
+          </a-tab-pane>
+
+          <a-tab-pane key="extractor" tab="响应提取器">
+            <ExtractorInfo :data="extractors"/>
+          </a-tab-pane>
+
+          <a-tab-pane key="checkpoint" tab="响应验证点">
+            <CheckpointInfo :data="checkpoints"/>
+          </a-tab-pane>
+
+<!--      <a-tab-pane key="Console" tab="控制台">
+            <ConsoleInfo/>
+          </a-tab-pane> -->
         </a-tabs>
       </div>
     </a-drawer>
@@ -33,7 +46,7 @@
 </template>
 <script setup lang="ts">
 import {defineProps, defineEmits, ref, watch, computed} from 'vue';
-import {BodyInfo, ConsoleInfo, CookieInfo, RequestInfo, HeaderInfo} from './Components/index';
+import {BodyInfo, CookieInfo, RequestInfo, HeaderInfo, ExtractorInfo, CheckpointInfo} from './Components/index';
 
 const props = defineProps({
   responseDrawerVisible: {
@@ -46,12 +59,15 @@ const props = defineProps({
 
 const emits = defineEmits(['onClose']);
 
-const activeKey = ref('Body');
+const activeKey = ref('Request');
 const bodyInfo = ref({});
 
 const cookies = ref([]);
 const headers = ref([]);
 const requestContent = ref({});
+
+const extractors = ref([]);
+const checkpoints = ref([]);
 
 function onClose() {
   emits('onClose');
@@ -68,9 +84,15 @@ watch(() => {
     content: resContent.content || '',
     contentLang: resContent.contentLang || ''
   };
+
   cookies.value = resContent.cookies || [];
   headers.value = resContent.headers || [];
   requestContent.value = reqContent;
+
+  extractors.value = props.data?.extractorsResult || [];
+  checkpoints.value = props.data?.checkpointsResult || [];
+
+  console.log('666', extractors.value)
 
 }, {
   immediate: true,

@@ -45,9 +45,8 @@ func (s *DebugInvokeService) SubmitResult(req domain.SubmitDebugResultRequest) (
 		scenarioId = s.DebugInterfaceService.GetScenarioIdForDebugInterface(req.Request.ScenarioProcessorId)
 
 		scenario, _ := s.ScenarioRepo.Get(scenarioId)
-		scenarioId = scenario.ID
 		projectId = scenario.ProjectId
-	} else if usedBy == consts.TestDebug {
+	} else if usedBy == consts.DiagnoseDebug {
 		diagnoseInterface, _ := s.DiagnoseInterfaceRepo.Get(req.Request.DiagnoseInterfaceId)
 
 		serveId = diagnoseInterface.ServeId

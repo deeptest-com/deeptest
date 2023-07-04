@@ -68,6 +68,7 @@ func (c *DebugInterfaceCtrl) Save(ctx iris.Context) {
 	loadReq := domain.DebugReq{
 		DebugInterfaceId:    po.ID,
 		EndpointInterfaceId: po.EndpointInterfaceId,
+		UsedBy:              req.UsedBy,
 	}
 
 	data, err := c.DebugInterfaceService.Load(loadReq)

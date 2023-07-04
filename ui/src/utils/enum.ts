@@ -15,6 +15,14 @@ export enum WsMsgCategory {
     Result = "result",
 }
 
+export enum ProcessorAction {
+    ActionEdit = 'action_edit',
+    ActionRemove = 'action_remove',
+    ActionImportInterface = 'action_import_interface',
+    ActionAddProcessor = 'action_add_processor',
+    ActionInInterface = 'action_in_interface',
+}
+
 export enum ProcessorCategory {
     ProcessorRoot = "processor_root",
     ProcessorThread = "processor_thread",

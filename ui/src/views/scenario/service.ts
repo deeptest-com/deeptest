@@ -7,7 +7,7 @@ import {
     ProcessorLogic,
     ProcessorLoop, ProcessorGroup, ProcessorTimer, ProcessorPrint,
     ProcessorCategory,
-    ProcessorVariable, ProcessorAssertion, RequestBodyType, UsedBy
+    ProcessorVariable, ProcessorAssertion, RequestBodyType, UsedBy, ProcessorAction
 } from "@/utils/enum";
 import {Interface} from "@/views/component/debug/data";
 
@@ -335,3 +335,27 @@ export async function syncDebugData(scenarioProcessorId: number): Promise<any> {
     });
 }
 
+export function getMenu(entityCategory: ProcessorCategory): ProcessorAction[] {
+    const ret:ProcessorAction[] = []
+
+    if (isInterface(entityCategory)) {
+        ret.push(
+            ProcessorAction.ActionEdit,
+            ProcessorAction.ActionRemove,
+            ProcessorAction.ActionInInterface,)
+
+    } else if (isRoot(entityCategory)) {
+        ret.push(
+            ProcessorAction.ActionAddProcessor,
+            ProcessorAction.ActionImportInterface,)
+
+    } else { // no-root dir
+        ret.push(
+            ProcessorAction.ActionEdit,
+            ProcessorAction.ActionRemove,
+            ProcessorAction.ActionAddProcessor,
+            ProcessorAction.ActionImportInterface,)
+    }
+
+    return ret
+}

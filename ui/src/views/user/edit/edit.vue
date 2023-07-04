@@ -17,6 +17,20 @@
           <a-form-item label="姓名" v-bind="validateInfos.name">
             <a-input v-model:value="modelRef.name"/>
           </a-form-item>
+          <a-form-item label="角色" v-bind="validateInfos.role_ids">
+            <a-select
+                v-model:value="modelRef.role_ids"
+                mode="multiple"
+                placeholder="请选择角色"
+            >
+              <a-select-option
+                  v-for="(option, key) in sysRoles"
+                  :key="key"
+                  :value="option.id"
+              >{{ option.displayName }}</a-select-option
+              >
+            </a-select>
+          </a-form-item>
           <a-form-item label="介绍" v-bind="validateInfos.intro">
             <a-input v-model:value="modelRef.intro"/>
           </a-form-item>
@@ -46,7 +60,7 @@ const useForm = Form.useForm;
 
 export default defineComponent({
   name: 'UserEditPage',
-  props:{ currentUserId: Number,getList: Function,closeModal: Function},
+  props:{ currentUserId: Number,getList: Function,closeModal: Function, sysRoles:Array},
   setup(props:any) {
     const router = useRouter();
     const formRef = ref();

@@ -2,7 +2,7 @@ import {User, QueryParams, QueryResult} from "./data.d";
 import {StoreModuleType} from "@/utils/store";
 import {Action, Mutation} from "vuex";
 import {ResponseData} from "@/utils/request";
-import {query, detail, remove, save} from "./service";
+import {query, detail, remove, save, updateSysRole} from "./service";
 
 export interface StateType {
     queryResult: QueryResult;
@@ -22,6 +22,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         getUser: Action<StateType, StateType>;
         removeUser: Action<StateType, StateType>;
         saveUser: Action<StateType, StateType>;
+        updateSysRole: Action<StateType, StateType>;
     };
 }
 
@@ -113,6 +114,14 @@ const StoreModel: ModuleType = {
             try {
                 await remove(payload);
                 await dispatch('queryUser', state.queryParams)
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+        async updateSysRole({ commit }, payload) {
+            try {
+                await updateSysRole(payload);
                 return true;
             } catch (error) {
                 return false;

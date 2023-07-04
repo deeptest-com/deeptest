@@ -39,7 +39,7 @@
                 placeholder="请选中角色"
                 @change="
                   (val) => {
-                   edit(record.id);
+                   updateSysRole(val, record);
                   }
                 "
             >
@@ -79,6 +79,7 @@
       :currentUserId="currentUserId"
       :getList="getList"
       :closeModal="closeModal"
+      :sysRoles="sysRoles"
     />
   </a-modal>
 </template>
@@ -237,5 +238,9 @@ const remove = (id: number) => {
       });
     },
   });
+};
+
+const updateSysRole = async (val: any, record: any) => {
+  await store.dispatch("UserInternal/updateSysRole",{userId:record.id, roleIds:val})
 };
 </script>

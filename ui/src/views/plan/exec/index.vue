@@ -119,7 +119,6 @@ const execCancel = () => {
 
 
 const OnWebSocketMsg = (data: any) => {
-  console.log('832 websocket msg', data)
 
   if (!data.msg) return;
   if (progressStatus.value === 'cancel') return;

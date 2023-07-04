@@ -195,23 +195,6 @@ func (o *openapi2endpoint) requestBody(content openapi3.Content) (mediaType cons
 		mediaType = consts.HttpContentType(key)
 		body = model.EndpointInterfaceRequestBody{}
 		body.MediaType = key
-
-		if item.Examples == nil {
-			item.Examples = openapi3.Examples{}
-			item.Examples["example"] = new(openapi3.ExampleRef)
-			item.Examples["example"].Value = new(openapi3.Example)
-			if item.Example == nil {
-				//	schema2conv1 := NewSchema2conv()
-				//	schema2conv1.Components = o.components
-				//	item.Example = schema2conv1.Schema2Example(item.Schema)
-			}
-			item.Examples["example"].Value.Value = item.Example
-		}
-		var examples []map[string]string
-		for name, example := range item.Examples {
-			value := map[string]string{"name": name, "content": commonUtils.JsonEncode(example.Value.Value)}
-			examples = append(examples, value)
-		}
 		body.Examples = o.requestBodyExamples(item)
 		body.SchemaItem = o.requestBodyItem(item.Schema)
 		return

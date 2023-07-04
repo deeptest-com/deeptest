@@ -1,6 +1,8 @@
 <template>
     <div class="headers">
-        <a-table :dataSource="list" :columns="columns"/>
+        <a-table :dataSource="list" :columns="columns"
+                 :rowKey="(record,index) => {return index}"
+                 :rowClassName="(record,index) => {return record.name==='' ? 'hidden' : ''}"/>
     </div>
 </template>
 <script setup lang="ts">

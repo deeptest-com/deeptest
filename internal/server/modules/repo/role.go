@@ -74,18 +74,18 @@ func (r *RoleRepo) FindFirstAdminUser() (v1.RoleResp, error) {
 	return role, nil
 }
 
-func (r *RoleRepo) Create(req v1.RoleReq) (uint, error) {
-	var roleId uint
+func (r *RoleRepo) Create(req v1.RoleReq) (roleId uint, err error) {
 	role := model.SysRole{RoleBase: req.RoleBase}
 	roleRes, err := r.FindByName(req.Name)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-		return 0, err
+		return
 	}
+
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		err = r.DB.Create(&role).Error
 		if err != nil {
 			logUtils.Errorf("create data err ", zap.String("错误:", err.Error()))
-			return 0, err
+			return
 		}
 		roleId = role.ID
 	} else {
@@ -95,10 +95,10 @@ func (r *RoleRepo) Create(req v1.RoleReq) (uint, error) {
 	err = r.AddPermForRole(roleId, req.Perms)
 	if err != nil {
 		logUtils.Errorf("添加权限到角色错误", zap.String("错误:", err.Error()))
-		return 0, err
+		return
 	}
 
-	return roleId, nil
+	return
 }
 
 func (r *RoleRepo) Update(id uint, req v1.RoleReq) error {

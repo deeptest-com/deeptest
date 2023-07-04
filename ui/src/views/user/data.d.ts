@@ -6,6 +6,7 @@ export interface User {
     intro:string
     avatar:string
     password:string
+    role_ids:any
 }
 
 export interface QueryResult {

@@ -287,7 +287,7 @@ func (r *UserRepo) Update(userId, id uint, req serverDomain.UserReq) error {
 		return err
 	}
 
-	user := model.SysUser{UserBase: req.UserBase}
+	user := model.SysUser{UserBase: req.UserBase, RoleIds: req.RoleIds}
 	if req.Password != "" {
 		hash, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 		if err != nil {

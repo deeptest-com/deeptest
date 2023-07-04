@@ -33,7 +33,7 @@ export const getUrls = () => {
 
     let serverUrl = process.env.VUE_APP_API_SERVER
     let agentUrl = process.env.VUE_APP_API_AGENT
-
+/*
     if (nodeEnv === 'production' && !isElectron) { // load ui page from server
         const location = unescape(window.location.href);
 
@@ -45,8 +45,9 @@ export const getUrls = () => {
 
         agentUrl = serverUrl.replace('8085', '8086')
     }
-
+*/
     console.log(`serverUrl=${serverUrl}, agentUrl=${agentUrl}`)
+
 
     return {serverUrl, agentUrl}
 }

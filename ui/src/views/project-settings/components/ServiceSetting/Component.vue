@@ -84,7 +84,6 @@
               @changeExample="handleExampleChange"
               :serveId="serveId"
               :tab-content-style="{ width: '100%' }"
-              :refs-options="refsOptions"
               :contentStr="contentStr"
               :exampleStr="exampleStr"/>
         </div>
@@ -229,10 +228,6 @@ const edit = async (value: any) => {
   schemaType.value = record?.type || '';
   schemeVisibleKey.value++;
 
-  // 异步最新的refs
-  refsOptions.value = await store.dispatch('Endpoint/getAllRefs', {
-    "serveId": props.serveId,
-  });
 };
 
 // 保存组件

@@ -9,7 +9,8 @@ import cloneDeep from "lodash/cloneDeep";
 import {
     addExtraViewInfo,
     findLastNotArrayNode,
-    generateSchemaByArray, handleRefInfo,
+    generateSchemaByArray,
+    handleRefInfo,
     isArray,
     isNormalType,
     isObject,
@@ -29,7 +30,6 @@ export default defineComponent({
         value: String,
         contentStyle: Object,
         serveId: Number,
-        refsOptions: Array
     },
     emits: ['change'],
     setup(props, {emit}) {
@@ -280,7 +280,7 @@ export default defineComponent({
             console.log('renderDataTypeSetting', options);
             const propsLen = Object.keys(tree?.properties || {}).length;
             return <>
-                <DataTypeSetting refsOptions={props.refsOptions}
+                <DataTypeSetting
                                  value={tree}
                                  serveId={props.serveId}
                                  isRefChildNode={isRefChildNode || false}

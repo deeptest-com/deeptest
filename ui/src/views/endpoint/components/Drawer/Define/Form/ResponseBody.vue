@@ -32,7 +32,6 @@
           @changeContent="changeContent"
           @changeExamples="changeExamples"
           :serveId="currServe.id"
-          :refsOptions="refsOptions"
           :contentStr="contentStr"
           :exampleStr="exampleStr"
           @generateExample="handleGenerateExample"
@@ -126,13 +125,6 @@ function changeExamples(examples: any) {
     }
   }
 }
-
-const refsOptions = ref([]);
-onMounted(async () => {
-  refsOptions.value = await store.dispatch('Endpoint/getAllRefs', {
-    "serveId": currServe.value.id,
-  });
-})
 
 </script>
 <style lang="less" scoped>

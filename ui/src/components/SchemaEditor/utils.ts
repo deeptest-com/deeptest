@@ -255,7 +255,7 @@ export const generateSchemaByArray = (arr: any[]): any => {
     return res;
 };
 
-/*
+/**
 * @description: 根据传入的 schema 结构信息，生成对应的 ref 信息
 * @param {Object} tree 传入的 schema 结构信息
 * @param {Object} result 获取到的的 ref 信息

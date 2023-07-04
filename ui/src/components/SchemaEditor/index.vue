@@ -23,10 +23,9 @@
     <div class="tab-body" v-if="!activeGenSchemaMode">
       <!-- ::::Schema Tab -->
       <div class="tab-body-schema" v-if="activeTab=== 'schema'">
-        <SchemaEditor
+        <Schema
             :value="contentStr"
             :serveId="Number(serveId)"
-            :refsOptions="refsOptions || []"
             @change="handleContentChange"
             :contentStyle="tabContentStyle"/>
       </div>
@@ -129,7 +128,7 @@ import {
   PlusOutlined,
 } from '@ant-design/icons-vue';
 import {computed, defineProps, defineEmits, ref, watch} from "vue";
-import SchemaEditor from './schema';
+import Schema from './schema';
 import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
 import {MonacoOptions} from '@/utils/const';
 
@@ -139,7 +138,6 @@ const props = defineProps<{
   serveId?: number,
   exampleStr?: string,
   schemeVisibleKey?: string | number,
-  refsOptions?: Array<any>,
 }>();
 
 const emit = defineEmits<{

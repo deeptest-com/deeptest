@@ -106,9 +106,6 @@
                     :value="tab.value || null"
                     placeholder="Select Components"
                     style="width: 100%"/>
-
-
-
               </a-form-item>
             </a-form>
           </div>
@@ -273,17 +270,11 @@ async function searchRefs(keyword) {
   }, 500)();
 }
 
+onMounted(async () => {
+  await searchRefs('');
+})
+
 watch(() => {return visible.value}, async (newVal: any) => {
-
-
-  // 异步最新的refs
-  refsOptions.value = await store.dispatch('Endpoint/getAllRefs', {
-    "serveId": props.serveId,
-    page:1,
-    pageSize:20
-  });
-
-
   let {type, types} = props.value || {};
   // ref 优先级高于 type，如果是 ref，则优先取 ref值判断类型
   type =  props.value?.ref || type;

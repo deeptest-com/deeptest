@@ -131,6 +131,7 @@ export default defineComponent({
         background-size: 105px 35px;
         background-repeat: no-repeat;
         background-position: center;
+        transform: scale(1) translateX(-12px);
         &.leyan-logo{
           transform: scale(1.1) translateX(0px);
           background-image: url("https://od-1310531898.cos.ap-beijing.myqcloud.com/202306291016448.svg");
@@ -142,6 +143,7 @@ export default defineComponent({
         background-size: 22px 22px;
         background-repeat: no-repeat;
         background-position: center;
+        transform: scale(1) translateX(0px);
         &.leyan-logo{
           background-size: 24px 24px;
           background-image: url("https://od-1310531898.cos.ap-beijing.myqcloud.com/202306291016780.svg");

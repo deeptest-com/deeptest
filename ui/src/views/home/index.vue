@@ -28,7 +28,7 @@
         </template>
         <div>
           <HomeList
-            v-if="showMode == 'list'"
+            v-show="showMode == 'list'"
             :activeKey="activeKey"
             :searchValue="searchValue"
              @join="handleJoin"
@@ -37,8 +37,7 @@
             @exit="handleExit"
           />
 
-          <CardList
-            v-else
+          <CardList v-show="showMode == 'card'"
             :activeKey="activeKey"
             :searchValue="searchValue"
             @join="handleJoin"

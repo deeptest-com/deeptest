@@ -288,6 +288,7 @@ function changeMode(e) {
 const onSearch = debounce(() => {
   getList(1);
 }, 500);
+
 const members = (id: number) => {
   console.log("members");
   router.push(`/project/members/${id}`);
@@ -316,6 +317,8 @@ async function handleDelete(id) {
 async function handleExit(item) {
   emit("exit", item);
 }
+
+
 </script>
 
 <style lang="less" scoped>

@@ -1,14 +1,18 @@
 package extractorHelper
 
 import (
+	"fmt"
 	queryUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/query"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
+	_logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"strings"
 )
 
 func Extract(extractor domain.ExtractorBase, resp domain.DebugResponse) (result string, err error) {
+	_logUtils.Infof(fmt.Sprintf("提取器调试 extractor:%+v, resp:%+v", extractor, resp))
+
 	if extractor.Disabled {
 		result = ""
 		return

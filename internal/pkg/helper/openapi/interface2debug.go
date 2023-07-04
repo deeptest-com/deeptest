@@ -65,11 +65,11 @@ func (i *interfaces2debug) Body() (body string) {
 	schema := SchemaRef{}
 	if i.Inter.RequestBody.SchemaItem.Content != "" {
 		_commUtils.JsonDecode(i.Inter.RequestBody.SchemaItem.Content, &schema)
+		res, _ := json.Marshal(i.conv.Schema2Example(schema))
+		body = string(res)
 	}
 
-	res, _ := json.Marshal(i.conv.Schema2Example(schema))
-
-	return string(res)
+	return
 }
 
 func (i *interfaces2debug) BodyType() (mediaType consts.HttpContentType) {

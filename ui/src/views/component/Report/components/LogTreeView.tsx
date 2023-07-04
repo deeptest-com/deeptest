@@ -43,7 +43,6 @@ export default defineComponent({
                     <div class={'header-text'}><span class={'label'}>{log.name}</span>：<span
                         class={'value'}>{log.summary}</span></div>
                 </a-tooltip>
-
             }
 
             function renderContent(log) {

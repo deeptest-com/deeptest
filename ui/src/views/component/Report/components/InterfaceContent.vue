@@ -54,13 +54,20 @@ const indicator = h(LoadingOutlined, {
     spin: true,
 });
 
-const currRespDetail = ref({ resContent: {}, reqContent: {} });
+const currRespDetail = ref({ resContent: {}, reqContent: {}, checkpointsResult: [], extractorsResult: [] });
 const logResponseDetailVisible = ref(false);
 
 function handleQueryDetail() {
-  currRespDetail.value = { resContent: resContent.value, reqContent: reqContent.value  };
+  currRespDetail.value = {
+    resContent: resContent.value,
+    reqContent: reqContent.value,
+    checkpointsResult: props.endpointData.checkpointsResult,
+    extractorsResult: props.endpointData.extractorsResult
+  };
+
   logResponseDetailVisible.value = true;
 }
+
 </script>
 
 <style scoped lang="less">

@@ -13,7 +13,7 @@
     </div>
 
     <div class="body">
-      <a-row v-for="(item, idx) in checkpointsData" :key="idx" type="flex" class="item">
+      <a-row v-for="(item, idx) in data" :key="idx" type="flex" class="item">
         <a-col flex="50px">{{idx + 1}}</a-col>
         <a-col flex="60px">{{ t(item.type) }}</a-col>
         <a-col flex="150px">{{ item.type === CheckpointType.extractor ? item.extractorVariable : item.expression }} </a-col>
@@ -41,7 +41,7 @@ import {getResultCls} from "@/utils/dom"
 const {t} = useI18n();
 
 const props = defineProps({
-  checkpointsData: {
+  data: {
     type: []
   }
 })

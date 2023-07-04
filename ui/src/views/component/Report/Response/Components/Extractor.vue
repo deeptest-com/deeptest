@@ -12,7 +12,7 @@
     </div>
 
     <div class="items">
-      <a-row v-for="(item, idx) in extractorsData" :key="idx" type="flex" class="item">
+      <a-row v-for="(item, idx) in data" :key="idx" type="flex" class="item">
         <a-col flex="50px">{{idx + 1}}</a-col>
         <a-col flex="70px">{{ t(item.src) }}</a-col>
         <a-col flex="90px">{{ item.type ? t(item.type) : '' }}</a-col>
@@ -57,7 +57,7 @@ const {t} = useI18n();
 const store = useStore<{  Debug: Debug }>();
 
 const props = defineProps({
-  extractorsData: {
+  data: {
     type: []
   }
 })

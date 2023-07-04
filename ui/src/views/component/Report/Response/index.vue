@@ -23,15 +23,15 @@
             <HeaderInfo :data="headers"/>
           </a-tab-pane>
 
-          <a-tab-pane key="Cookie" tab="响应Cookie" >
+          <a-tab-pane key="Cookie" tab="响应Cookie">
             <CookieInfo :data="cookies"/>
           </a-tab-pane>
 
-          <a-tab-pane key="extractor" tab="响应提取器" >
+          <a-tab-pane key="extractor" tab="响应提取器">
             <ExtractorInfo :data="extractors"/>
           </a-tab-pane>
 
-          <a-tab-pane key="checkpoint" tab="响应验证点" >
+          <a-tab-pane key="checkpoint" tab="响应验证点">
             <CheckpointInfo :data="checkpoints"/>
           </a-tab-pane>
 
@@ -89,8 +89,10 @@ watch(() => {
   headers.value = resContent.headers || [];
   requestContent.value = reqContent;
 
-  extractors.value = resContent.cookies || [];
-  checkpoints.value = resContent.checkpoints || [];
+  extractors.value = props.data?.extractorsResult || [];
+  checkpoints.value = props.data?.checkpointsResult || [];
+
+  console.log('666', extractors.value)
 
 }, {
   immediate: true,

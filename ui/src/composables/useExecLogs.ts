@@ -48,12 +48,19 @@ function genLogTreeView(execLogs, execRes) {
     scenarioReports.forEach((scenario) => {
         function fn(array, rootId) {
             const res: any = [];
+
             // 用于存储 树节点的 map
             const map = {};
+
             array.forEach((item) => {
                 map[item.logId] = {...item}
             });
+
             array.forEach((item) => {
+                if (item.processorType === 'processor_interface_default') {
+                    console.log('interface: ', item.extractorsResult, item.checkpointsResult)
+                }
+
                 const {logId, parentLogId} = item;
                 const mapItem = map[logId];
                 if (!mapItem) return;
@@ -69,12 +76,13 @@ function genLogTreeView(execLogs, execRes) {
                     }
                 }
             })
+
             return res;
         }
         scenario.logs[0].logs = fn(execLogs, scenario.logId);
     });
 
-    console.log("场景里每条编排的执行记录 2222", scenarioReports)
+    console.log("场景里每条编排的执行记录", scenarioReports)
     return scenarioReports;
 }
 
@@ -92,6 +100,7 @@ function genLogTreeView(execLogs, execRes) {
 // todo 优化: 可以优化成算法，使用 hash
 function updateExecLogs(log) {
     console.log("更新场景的执行记录，不包括场景的执行结果", log)
+
     function hasSameId(log, item) {
         return item?.logId === log?.logId && item?.scenarioId === log?.scenarioId;
     }
@@ -111,7 +120,6 @@ function updateExecLogs(log) {
         execLogs.value.push(log);
     }
 }
-
 
 const scenarioReports = computed(() => {
     return [...genLogTreeView(execLogs.value, execResults.value)];

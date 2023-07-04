@@ -120,6 +120,7 @@ const OnWebSocketMsg = (data: any) => {
   // 更新【场景中每条编排】的执行记录
   else if (wsMsg.category === "processor" && log.scenarioId) {
     console.log('场景里每条编排的执行记录', log)
+
     updateExecLogs(log);
   }
 

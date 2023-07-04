@@ -125,12 +125,11 @@ export async function removeShareVar(id: number): Promise<any> {
         method: 'DELETE',
     });
 }
-export async function clearShareVar(endpointOrProcessorId: number, usedBy?: string): Promise<any> {
-    const params = {endpointOrProcessorId, usedBy}
+export async function clearShareVar(data: any): Promise<any> {
     return request({
         url: `/${apiShareVar}/clear`,
         method: 'POST',
-        params,
+        data,
     });
 }
 

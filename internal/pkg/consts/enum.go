@@ -259,7 +259,7 @@ type UsedBy string
 const (
 	InterfaceDebug UsedBy = "interface_debug"
 	ScenarioDebug  UsedBy = "scenario_debug"
-	TestDebug      UsedBy = "test_debug"
+	DiagnoseDebug  UsedBy = "diagnose_debug"
 )
 
 type ExtractorSrc string

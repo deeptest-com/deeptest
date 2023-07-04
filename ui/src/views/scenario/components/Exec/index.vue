@@ -4,28 +4,26 @@
                      :showBtn="show"
                      :btnText="'生成报告'"
                      @handleBtnClick="genReport"/>
+
     <StatisticTable :data="statisticData" :value="statInfo"/>
+
     <Progress :exec-status="progressStatus"
               :percent="progressValue"
               @exec-cancel="execCancel"/>
+
     <LogTreeView :treeData="scenarioReports" :expandKeys="expandKeys"/>
   </div>
 </template>
 
 <script setup lang="ts">
-import {computed, onMounted, onUnmounted, ref, watch} from "vue";
+import {computed, onMounted, onUnmounted, ref} from "vue";
 import {useRouter} from "vue-router";
 
 import {useStore} from "vuex";
 
 import settings from "@/config/settings";
 import {WebSocket} from "@/services/websocket";
-import {
-  ReportBasicInfo,
-  StatisticTable,
-  LogTreeView,
-  Progress
-} from '@/views/component/Report/components';
+import {LogTreeView, Progress, ReportBasicInfo, StatisticTable} from '@/views/component/Report/components';
 import {StateType as GlobalStateType} from "@/store/global";
 import {ExecStatus} from "@/store/exec";
 import {StateType as ScenarioStateType} from "../../store";
@@ -34,12 +32,17 @@ import {useI18n} from "vue-i18n";
 import {getToken} from "@/utils/localToken";
 import {Scenario} from "@/views/scenario/data";
 import {message} from "ant-design-vue";
-import {getDivision, getPercentStr} from "@/utils/number";
 import {
-  scenarioReports, expandKeys,
   clearLog,
-  execLogs, execRes, updateExecLogs, updateExecRes,statInfo
-  , statisticData, initData, progressStatus, progressValue, updatePlanRes,
+  expandKeys,
+  initData,
+  progressStatus,
+  progressValue,
+  scenarioReports,
+  statInfo,
+  statisticData,
+  updateExecLogs,
+  updateExecResult
 } from '@/composables/useExecLogs';
 
 const {t} = useI18n();
@@ -91,31 +94,36 @@ onUnmounted(() => {
   bus.off(settings.eventWebSocketMsg, OnWebSocketMsg);
 })
 
-
 const OnWebSocketMsg = (data: any) => {
   if (!data.msg) return;
   if (progressStatus.value === 'cancel') return;
   const wsMsg = JSON.parse(data.msg);
   const log = wsMsg.data ? JSON.parse(JSON.stringify(wsMsg.data)) : {};
+
   // 开始执行，初始化数据
   if (wsMsg.category == 'initialize') {
     initData(log);
     progressStatus.value = 'in_progress';
   }
+
   // 执行中
   else if (wsMsg.category == 'in_progress') {
     progressStatus.value = 'in_progress';
   }
+
   //  更新【场景】的执行结果
   else if (wsMsg.category == 'result' && log.scenarioId) {
-    updateExecRes(log);
+    updateExecResult(log);
     reportId.value = log.id
   }
+
   // 更新【场景中每条编排】的执行记录
   else if (wsMsg.category === "processor" && log.scenarioId) {
     console.log('场景里每条编排的执行记录', log)
+
     updateExecLogs(log);
   }
+
   // 执行完毕
   else if (wsMsg.category == 'end') {
     progressStatus.value = 'end';

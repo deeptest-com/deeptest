@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
@@ -50,14 +49,14 @@ func (c *ShareVarCtrl) Delete(ctx iris.Context) {
 
 // Clear 清除
 func (c *ShareVarCtrl) Clear(ctx iris.Context) {
-	endpointOrProcessorId, err := ctx.URLParamInt("endpointOrProcessorId")
-	usedBy := ctx.URLParam("usedBy")
-	if err != nil || usedBy == "" {
+	req := domain.DebugReq{}
+	err := ctx.ReadJSON(&req)
+	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
-	err = c.ShareVarService.Clear(endpointOrProcessorId, consts.UsedBy(usedBy))
+	err = c.ShareVarService.Clear(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

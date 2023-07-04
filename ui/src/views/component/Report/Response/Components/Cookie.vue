@@ -1,8 +1,8 @@
 <template>
     <div class="cookies">
-        <a-table
-            :dataSource="data"
-            :columns="columns" />
+        <a-table :dataSource="data" :columns="columns"
+                 :rowKey="(record,index) => {return index}"
+                 :rowClassName="(record,index) => {return record.name==='' ? 'hidden' : ''}" />
     </div>
 </template>
 <script setup lang="ts">

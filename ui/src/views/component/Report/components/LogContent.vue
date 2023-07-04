@@ -5,10 +5,12 @@
         <a-descriptions-item  v-for="detail in detailList" :key="detail.label" :label="detail.label">{{detail.value}}</a-descriptions-item>
       </a-descriptions>
     </div>
+
     <div class="log-content-btn" @click="showLogDetail">
-      更多详情 &nbsp;&nbsp;
+      更多详情
       <RightOutlined/>
     </div>
+
     <LogContentDrawer
         :data="data"
         :visible="visible"

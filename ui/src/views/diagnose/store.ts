@@ -7,7 +7,7 @@ import {
     save,
     remove,
     move,
-    clone, saveTestDebugData, importInterfaces,
+    clone, saveDiagnoseDebugData, importInterfaces,
 } from './service';
 import {serverList} from "@/views/project-settings/service";
 import {genNodeMap, getNodeMap} from "@/services/tree";
@@ -53,7 +53,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         removeInterfaceTab: Action<StateType, StateType>;
 
         getServeServers: Action<StateType, StateType>;
-        saveTestDebugData: Action<StateType, StateType>;
+        saveDiagnoseDebugData: Action<StateType, StateType>;
     }
 }
 
@@ -264,8 +264,8 @@ const StoreModel: ModuleType = {
                 dispatch('openInterfaceTab', closedTab);
             }
         },
-        async saveTestDebugData({commit}, payload: any) {
-            const resp = await  saveTestDebugData(payload)
+        async saveDiagnoseDebugData({commit}, payload: any) {
+            const resp = await  saveDiagnoseDebugData(payload)
             return resp.code === 0;
         },
     }

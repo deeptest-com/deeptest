@@ -19,7 +19,6 @@ import { useStore } from 'vuex';
 
 import { ReportBasicInfo, StatisticTable,LogTreeView } from '@/views/component/Report/components';
 
-
 import { StateType as ReportStateType } from "../store";
 import { StateType as PlanStateType } from '@/views/plan/store';
 import {getDivision, getPercentStr} from "@/utils/number";

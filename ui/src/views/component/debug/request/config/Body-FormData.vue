@@ -152,7 +152,9 @@ onMounted(() => {
 <style lang="less" >
 .formdata-main {
   height: 100%;
-  overflow-y: auto;
+  //overflow-y: auto;
+  max-height: 180px;
+  overflow-y: scroll;
 
   .flow {
     line-height: 32px;

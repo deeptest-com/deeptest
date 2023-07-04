@@ -84,6 +84,8 @@ const onJsonChange = (value) => {
 <style lang="less" scoped>
 .validation-script {
   height: 100%;
+  max-height: 180px;
+  overflow-y: scroll;
   .head {
     padding: 2px 3px;
     border-bottom: 1px solid #d9d9d9;

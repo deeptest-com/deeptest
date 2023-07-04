@@ -387,7 +387,8 @@ async function handleImport(data, callback) {
 
 async function selectNode(id) {
   selectedCategoryId.value = id;
-  await loadList(pagination.value.current, pagination.value.pageSize, {
+  // 选中节点时，重置分页为第一页
+  await loadList(1, pagination.value.pageSize, {
     categoryId: id,
     serveId: currServe.value.id,
   });

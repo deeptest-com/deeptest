@@ -127,6 +127,9 @@ const { showContextMenu, contextMenuStyle, onContextMenuShow, onMenuClick } = us
 <style lang="less" scoped>
 .headers-main {
   height: 100%;
+  max-height: 180px;
+  overflow-y: scroll;
 }
+
 
 </style>

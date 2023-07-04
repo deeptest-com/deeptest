@@ -91,12 +91,14 @@ func (c *EndpointCtrl) requestParser(req serverDomain.EndpointReq) (endpoint mod
 		req.Interfaces[key].Body = item.RequestBody.Examples
 		req.Interfaces[key].BodyType = item.RequestBody.MediaType
 		req.Interfaces[key].Name = req.Title
-		if req.Interfaces[key].RequestBody.Examples == "" {
-			var examples []map[string]string
-			example := c.ServeService.Schema2Example(req.ServeId, item.RequestBody.SchemaItem.Content)
-			examples = append(examples, map[string]string{"name": "default", "content": commonUtils.JsonEncode(example)})
-			req.Interfaces[key].RequestBody.Examples = commonUtils.JsonEncode(examples)
-		}
+		/*
+					if req.Interfaces[key].RequestBody.Examples == "" {
+						var examples []map[string]string
+			//			example := c.ServeService.Schema2Example(req.ServeId, item.RequestBody.SchemaItem.Content)
+			//			examples = append(examples, map[string]string{"name": "default", "content": commonUtils.JsonEncode(example)})
+			//			req.Interfaces[key].RequestBody.Examples = commonUtils.JsonEncode(examples)
+					}
+		*/
 
 	}
 

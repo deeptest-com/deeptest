@@ -95,15 +95,16 @@ func (s *schema2conv) Example2Schema(object interface{}, schema *Schema) (err er
 }
 
 func (s *schema2conv) Schema2Example(schema SchemaRef) (object interface{}) {
-	if ref, ok := s.Components[schema.Ref]; ok && schema.Ref != "" {
-		s.sets[schema.Ref]++
-		schema = ref
+	ref := schema.Ref
+	if component, ok := s.Components[schema.Ref]; ok {
+		s.sets[ref]++
+		schema = component
 	}
 
 	switch schema.Value.Type {
 	case openapi3.TypeObject:
 		object = map[string]interface{}{}
-		if s.sets[schema.Ref] > 1 {
+		if s.sets[ref] > 1 {
 			return
 		}
 		for key, property := range schema.Value.Properties {
@@ -111,7 +112,7 @@ func (s *schema2conv) Schema2Example(schema SchemaRef) (object interface{}) {
 		}
 	case openapi3.TypeArray:
 		object = make([]interface{}, 1)
-		if s.sets[schema.Ref] > 1 {
+		if s.sets[ref] > 1 {
 			return
 		}
 		object.([]interface{})[0] = s.Schema2Example(*schema.Value.Items)

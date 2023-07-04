@@ -4,7 +4,7 @@
 <template>
   <a-list v-if="data?.length" item-layout="horizontal" :data-source="data" :bordered="false" :split="false">
     <template #renderItem="{ item }">
-      <a-list-item>
+      <a-list-item class="dp-list-item">
         <a-list-item-meta>
           <template #title>
             <div class="title">
@@ -120,6 +120,11 @@ function switchExpand() {
 
 </script>
 <style lang="less" scoped>
+
+.dp-list-item{
+  padding: 0;
+}
+
 
 .title {
   display: flex;

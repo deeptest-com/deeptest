@@ -31,8 +31,8 @@ export const getUrls = () => {
     const nodeEnv = process.env.NODE_ENV
     console.log(`isElectron=${isElectron}, nodeEnv=${nodeEnv}, locationHref=${window.location.href}`)
 
-    let serverUrl = process.env.VUE_APP_API_SERVER
-    let agentUrl = process.env.VUE_APP_API_AGENT
+    const serverUrl = process.env.VUE_APP_API_SERVER
+    const agentUrl = process.env.VUE_APP_API_AGENT
 /*
     if (nodeEnv === 'production' && !isElectron) { // load ui page from server
         const location = unescape(window.location.href);

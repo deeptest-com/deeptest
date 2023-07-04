@@ -138,7 +138,6 @@ export function addExtraViewInfo(val: Object | any | undefined | null): any {
         traverse(val, 1, null, false);
     }
 
-    console.log('832 addExtraViewInfo', val)
     return val;
 }
 

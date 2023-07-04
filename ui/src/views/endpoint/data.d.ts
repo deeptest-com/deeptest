@@ -87,6 +87,7 @@ export interface filterFormState {
     status: string | null,
     createUser: string | null,
     title: string | null,
+    categoryId: string | null,
 }
 
 

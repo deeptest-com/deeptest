@@ -48,6 +48,7 @@
           <EmptyCom>
             <template #content>
               <a-table :loading="fetching"
+                       :rowKey="'id'"
                        :row-selection="{
                 selectedRowKeys: selectedRowKeys,
                 onChange: onSelectChange
@@ -149,7 +150,6 @@ import {
 } from 'vue';
 import {useRouter} from 'vue-router';
 import debounce from "lodash.debounce";
-import EndpointTree from './list/tree.vue';
 import {ColumnProps} from 'ant-design-vue/es/table/interface';
 import {ExclamationCircleOutlined, MoreOutlined} from '@ant-design/icons-vue';
 import {endpointStatusOpts, endpointStatus} from '@/config/constant';
@@ -340,6 +340,10 @@ async function del(record: any) {
     cancelText: () => '取消',
     onOk: async () => {
       const res = await store.dispatch('Endpoint/del', record);
+      // // 删除后重新拉取列表，根据当前页面和当前筛选条件
+      // await loadList(pagination.value.current, pagination.value.pageSize, filterState.value);
+      // // 重新拉取目录树
+      // await store.dispatch('Endpoint/loadCategory');
       if (res) {
         message.success('删除成功');
       } else {
@@ -385,6 +389,8 @@ async function handleImport(data, callback) {
 
 }
 
+// 当前筛选条件，包括分类、服务、状态
+const filterState:any = ref({});
 async function selectNode(id) {
   selectedCategoryId.value = id;
   // 选中节点时，重置分页为第一页
@@ -402,10 +408,13 @@ const loadList = debounce(async (page, size, opts?: any) => {
     "pageSize": size,
     opts,
   });
+  // await store.dispatch('Endpoint/loadCategory');
   fetching.value = false;
 }, 300)
 
+
 async function handleTableFilter(filterState) {
+  filterState.value = filterState;
   await loadList(pagination.value.current, pagination.value.pageSize, filterState);
 }
 
@@ -428,7 +437,6 @@ watch(() => [currProject.value.id, currServe.value.id], async (newVal) => {
 
 async function refreshList() {
   await loadList(pagination.value.current, pagination.value.pageSize);
-  //await store.dispatch('Endpoint/loadCategory');
 }
 
 watch(

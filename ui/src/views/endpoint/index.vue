@@ -413,9 +413,9 @@ const loadList = debounce(async (page, size, opts?: any) => {
 }, 300)
 
 
-async function handleTableFilter(filterState) {
-  filterState.value = filterState;
-  await loadList(pagination.value.current, pagination.value.pageSize, filterState);
+async function handleTableFilter(state) {
+  filterState.value = state;
+  await loadList(pagination.value.current, pagination.value.pageSize, state);
 }
 
 // 实时监听项目/服务 ID，如果项目切换了则重新请求数据

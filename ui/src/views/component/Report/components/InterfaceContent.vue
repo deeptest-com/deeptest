@@ -9,10 +9,12 @@
                     返回数据结构校验通过
                 </span>
     </div>
+
     <div class="endpoint-expand-btn" @click="handleQueryDetail">
-      更多详情 &nbsp;&nbsp;
+      更多详情
       <RightOutlined />
     </div>
+
     <ResponseDrawer
         :data="currRespDetail"
         :response-drawer-visible="logResponseDetailVisible"
@@ -21,10 +23,9 @@
 </template>
 <script setup lang="ts">
 import { defineProps, h, defineEmits, computed, toRefs,ref } from 'vue';
-import ResponseDrawer from '@/views/component/Report/Response/index.vue';
 import { RightOutlined, LoadingOutlined, ExclamationCircleOutlined, CheckCircleOutlined } from '@ant-design/icons-vue';
 import { responseCodes } from '@/config/constant';
-import { formatWithSeconds } from '@/utils/datetime';
+import ResponseDrawer from '@/views/component/Report/Response/index.vue';
 
 const props = defineProps({
     collapseKey: {
@@ -61,6 +62,7 @@ function handleQueryDetail() {
   logResponseDetailVisible.value = true;
 }
 </script>
+
 <style scoped lang="less">
 .endpoint-collapse-item {
 

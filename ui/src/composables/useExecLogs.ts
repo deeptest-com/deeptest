@@ -3,29 +3,26 @@
  * 1. 生成场景执行记录树
  * 2. 生成场景执行动态结果数据
  */
-import {computed, ComputedRef, onMounted, ref, Ref, watch} from 'vue';
+import {computed, ref} from 'vue';
 import {getDivision, getPercentStr} from "@/utils/number";
 
 // 打平的执行记录
 const execLogs: any = ref([]);
 // 场景的执行结果列表
-const execRes: any = ref([]);
+const execResults: any = ref([]);
 
 // 更新场景的执行结果
 // todo 优化: 可以优化成算法，使用 hash
-function updateExecRes(res) {
-    // 1. 更新执行结果
-    if (execRes.value.some((item: any) => item.scenarioId === res.scenarioId)) {
-        for (let item of execRes.value) {
+function updateExecResult(res) {
+    if (execResults.value.some((item: any) => item.scenarioId === res.scenarioId)) { // 1. 更新执行结果
+        for (let item of execResults.value) {
             if (item.scenarioId === res.scenarioId) {
                 item = {...item, ...res};
                 break;
             }
         }
-
-        // 2. 新增执行结果
-    } else {
-        execRes.value.push(res);
+    } else { // 2. 新增执行结果
+        execResults.value.push(res);
     }
 }
 
@@ -117,17 +114,12 @@ function updateExecLogs(log) {
 
 
 const scenarioReports = computed(() => {
-    return [...genLogTreeView(execLogs.value, execRes.value)];
+    return [...genLogTreeView(execLogs.value, execResults.value)];
 })
 
 const expandKeys = computed(() => {
     return scenarioReports.value.map((item: any) => item.key);
 })
-
-function clearLog() {
-    execLogs.value = [];
-    execRes.value = [];
-}
 
 // 统计聚合数据
 const statInfo = ref({
@@ -280,15 +272,23 @@ const progressValue = computed(() => {
     return Math.round(((finishProcessorNum || execLogs.value.length) / totalProcessorNum) * 100);
 });
 
+function clearLog() {
+    execLogs.value = [];
+    execResults.value = [];
+}
+
 export {
     scenarioReports,
+    statisticData,
+    progressStatus, progressValue,
     expandKeys,
     statInfo,
     execLogs,
-    execRes,
+    execResults,
+
     updateExecLogs,
-    updateExecRes,
-    clearLog
-    , statisticData,
-    initData, progressStatus, progressValue, updatePlanRes,
+    updateExecResult,
+    clearLog,
+    initData,
+    updatePlanRes,
 };

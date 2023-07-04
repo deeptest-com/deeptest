@@ -2,8 +2,8 @@ import {defineComponent, ref, watch,} from 'vue';
 import './LogTreeView.less';
 import ScenarioHeader from "./ScenarioHeader.vue";
 
-import EndpointHeader from "./EndpointHeader.vue";
-import EndpointContent from "./EndpointContent.vue";
+import InterfaceHeader from "./InterfaceHeader.vue";
+import InterfaceContent from "./InterfaceContent.vue";
 import LogContent from "./LogContent.vue";
 
 export default defineComponent({
@@ -13,7 +13,6 @@ export default defineComponent({
     },
     emits: ['change'],
     setup(props, {emit}) {
-
         const activeKeyMap = ref({});
 
         function change(uid, keys) {
@@ -38,7 +37,7 @@ export default defineComponent({
 
             function renderHeader(log) {
                 if (log.processorCategory === 'processor_interface') {
-                    return <EndpointHeader endpointData={log}/>
+                    return <InterfaceHeader endpointData={log}/>
                 }
                 return <a-tooltip title={`${log.name}：${log.summary}`}>
                     <div class={'header-text'}><span class={'label'}>{log.name}</span>：<span
@@ -49,7 +48,7 @@ export default defineComponent({
 
             function renderContent(log) {
                 if (log.processorCategory === 'processor_interface') {
-                    return <EndpointContent endpointData={log} />
+                    return <InterfaceContent endpointData={log} />
                 }
                 return <LogContent data={log}/>;
             }
@@ -79,7 +78,6 @@ export default defineComponent({
                 </div>
             })
         }
-
 
         // 渲染场景，一级目录, 即场景列表
         function renderScenarioList(list) {

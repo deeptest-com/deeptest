@@ -27,6 +27,14 @@
             <CookieInfo :data="cookies"/>
           </a-tab-pane>
 
+          <a-tab-pane key="extractor" tab="响应提取器" >
+            <ExtractorInfo :data="extractors"/>
+          </a-tab-pane>
+
+          <a-tab-pane key="checkpoint" tab="响应验证点" >
+            <CheckpointInfo :data="checkpoints"/>
+          </a-tab-pane>
+
 <!--      <a-tab-pane key="Console" tab="控制台">
             <ConsoleInfo/>
           </a-tab-pane> -->
@@ -38,7 +46,7 @@
 </template>
 <script setup lang="ts">
 import {defineProps, defineEmits, ref, watch, computed} from 'vue';
-import {BodyInfo, ConsoleInfo, CookieInfo, RequestInfo, HeaderInfo} from './Components/index';
+import {BodyInfo, CookieInfo, RequestInfo, HeaderInfo, ExtractorInfo, CheckpointInfo} from './Components/index';
 
 const props = defineProps({
   responseDrawerVisible: {
@@ -57,6 +65,9 @@ const bodyInfo = ref({});
 const cookies = ref([]);
 const headers = ref([]);
 const requestContent = ref({});
+
+const extractors = ref([]);
+const checkpoints = ref([]);
 
 function onClose() {
   emits('onClose');
@@ -77,6 +88,9 @@ watch(() => {
   cookies.value = resContent.cookies || [];
   headers.value = resContent.headers || [];
   requestContent.value = reqContent;
+
+  extractors.value = resContent.cookies || [];
+  checkpoints.value = resContent.checkpoints || [];
 
 }, {
   immediate: true,

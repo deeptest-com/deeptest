@@ -26,7 +26,7 @@
         <a-tab-pane class="test-developer" key="1" tab="测试开发">
           <div v-if="activeKey==='1'">
             <div class="exec-btn">
-              <a-button @click="exec" :size="'small'" type="primary"><span>&nbsp;执行&nbsp;</span></a-button>
+              <a-button @click="exec" type="primary"><span>&nbsp;执行&nbsp;</span></a-button>
             </div>
             <Design :id="detailResult?.id"/>
           </div>
@@ -171,7 +171,6 @@ watch(() => {
 }, (val) => {
   execDrawerVisible.value = val;
 });
-
 
 // 更新标题
 async function updateTitle(title) {

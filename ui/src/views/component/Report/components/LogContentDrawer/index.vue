@@ -12,9 +12,11 @@
         </div>
     </a-drawer>
 </template>
+
 <script setup lang="ts">
 import { defineProps, defineEmits, ref, watch, computed } from 'vue';
 import Code from './Code.vue';
+
 const props = defineProps({
     visible: {
         type: Boolean

@@ -25,7 +25,7 @@ type InterfaceSimple struct {
 	Name      string `json:"name"`
 	ParentId  int    `json:"parentId"`
 	ProjectId int    `json:"projectId"`
-	IsLeaf    bool   `json:"isLeaf"`
+	IsDir     bool   `json:"isDir"`
 
 	Ordr     int               `json:"ordr"`
 	Children []InterfaceSimple `json:"children"`

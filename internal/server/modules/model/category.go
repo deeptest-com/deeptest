@@ -8,9 +8,9 @@ import (
 type Category struct {
 	BaseModel
 
-	Name   string `json:"name"`
-	Desc   string `json:"desc"`
-	IsLeaf bool   `json:"isLeaf"`
+	Name  string `json:"name"`
+	Desc  string `json:"desc"`
+	IsDir bool   `json:"isDir"`
 
 	ParentId  int  `json:"parentId"`
 	ProjectId uint `json:"projectId"`

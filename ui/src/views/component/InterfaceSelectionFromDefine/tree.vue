@@ -40,9 +40,9 @@
         </template>
 
         <template #icon="slotProps">
-          <FolderOutlined v-if="!slotProps.isLeaf && !slotProps.expanded"/>
-          <FolderOpenOutlined v-if="!slotProps.isLeaf && slotProps.expanded"/>
-          <FileOutlined v-if="slotProps.isLeaf"/>
+          <FolderOutlined v-if="slotProps.isDir && !slotProps.expanded"/>
+          <FolderOpenOutlined v-if="slotProps.isDir && slotProps.expanded"/>
+          <FileOutlined v-if="!slotProps.isDir"/>
         </template>
       </a-tree>
     </div>

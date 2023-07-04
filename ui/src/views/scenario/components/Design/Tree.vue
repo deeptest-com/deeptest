@@ -347,10 +347,9 @@ const removeNode = () => {
   console.log('removeNode')
 
   const node = treeDataMap.value[targetModelId]
-  console.log(node)
 
-  const title = '确定删除该' + (node.isLeaf?'接口':'目录') + '吗？'
-  const context = !node.isLeaf?'删除后所有所有子目录都会被删除。' : ''
+  const title = `确定删除名为${node.name}的节点吗？`
+  const context = '该节点的所有子节点都将被删除！'
 
   confirmToDelete(title, context, () => {
     store.dispatch('Scenario/removeNode', targetModelId);

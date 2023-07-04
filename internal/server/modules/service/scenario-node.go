@@ -53,7 +53,6 @@ func (s *ScenarioNodeService) ToTos(pos []*model.Processor, withDetail bool) (to
 	for _, po := range pos {
 		to := agentExec.Processor{
 			ProcessorBase: agentExec.ProcessorBase{
-				IsLeaf:     s.ScenarioNodeRepo.IsLeaf(*po),
 				Session:    agentExec.Session{},
 				ScenarioId: po.ScenarioId,
 			},
@@ -124,7 +123,7 @@ func (s *ScenarioNodeService) AddProcessor(req serverDomain.ScenarioAddScenarioR
 func (s *ScenarioNodeService) AddInterfacesFromTest(req serverDomain.ScenarioAddInterfacesFromTreeReq) (ret model.Processor, err error) {
 	targetProcessor, _ := s.ScenarioProcessorRepo.Get(req.TargetId)
 
-	if s.ScenarioNodeRepo.IsLeaf(targetProcessor) {
+	if !s.ScenarioNodeRepo.IsDir(targetProcessor) {
 		targetProcessor, _ = s.ScenarioProcessorRepo.Get(targetProcessor.ParentId)
 	}
 
@@ -138,7 +137,7 @@ func (s *ScenarioNodeService) AddInterfacesFromTest(req serverDomain.ScenarioAdd
 func (s *ScenarioNodeService) AddInterfacesFromDefine(req serverDomain.ScenarioAddInterfacesReq) (ret model.Processor, err error) {
 	targetProcessor, _ := s.ScenarioProcessorRepo.Get(req.TargetId)
 
-	if s.ScenarioNodeRepo.IsLeaf(targetProcessor) {
+	if !s.ScenarioNodeRepo.IsDir(targetProcessor) {
 		targetProcessor, _ = s.ScenarioProcessorRepo.Get(targetProcessor.ParentId)
 	}
 
@@ -217,7 +216,7 @@ func (s *ScenarioNodeService) createDirOrInterfaceFromDiagnose(diagnoseInterface
 
 	debugData, _ := s.DebugInterfaceService.GetDebugDataFromDebugInterface(diagnoseInterfaceNode.DebugInterfaceId)
 
-	if !diagnoseInterfaceNode.IsLeaf && len(diagnoseInterfaceNode.Children) > 0 { // dir
+	if diagnoseInterfaceNode.IsDir && len(diagnoseInterfaceNode.Children) > 0 { // dir
 		processor := model.Processor{
 			Name:           diagnoseInterfaceNode.Title,
 			ScenarioId:     parentProcessor.ScenarioId,
@@ -233,7 +232,7 @@ func (s *ScenarioNodeService) createDirOrInterfaceFromDiagnose(diagnoseInterface
 			s.createDirOrInterfaceFromDiagnose(child, processor)
 		}
 
-	} else if diagnoseInterfaceNode.IsLeaf { // interface
+	} else if !diagnoseInterfaceNode.IsDir { // interface
 		processor := model.Processor{
 			Name: diagnoseInterfaceNode.Title,
 

@@ -406,7 +406,7 @@ func (r *ProjectRepo) AddProjectRootEndpointCategory(serveId, projectId uint) (e
 		Type:      serverConsts.EndpointCategory,
 		ServeId:   serveId,
 		ProjectId: projectId,
-		IsLeaf:    false,
+		IsDir:     true,
 	}
 	err = r.DB.Create(&root).Error
 
@@ -418,7 +418,7 @@ func (r *ProjectRepo) AddProjectRootScenarioCategory(projectId uint) (err error)
 		Name:      "分类",
 		Type:      serverConsts.ScenarioCategory,
 		ProjectId: projectId,
-		IsLeaf:    false,
+		IsDir:     true,
 	}
 	err = r.DB.Create(&root).Error
 
@@ -430,7 +430,7 @@ func (r *ProjectRepo) AddProjectRootPlanCategory(projectId uint) (err error) {
 		Name:      "分类",
 		Type:      serverConsts.PlanCategory,
 		ProjectId: projectId,
-		IsLeaf:    false,
+		IsDir:     true,
 	}
 	err = r.DB.Create(&root).Error
 
@@ -441,7 +441,7 @@ func (r *ProjectRepo) AddProjectRootTestCategory(projectId, serveId uint) (err e
 	root := model.DiagnoseInterface{
 		Title:     "根节点",
 		ProjectId: projectId,
-		IsLeaf:    false,
+		IsDir:     true,
 		Type:      "dir",
 		ServeId:   serveId,
 	}

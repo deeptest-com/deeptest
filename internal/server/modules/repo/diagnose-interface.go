@@ -89,7 +89,7 @@ func (r *DiagnoseInterfaceRepo) ToTo(po *model.DiagnoseInterface) (to *serverDom
 	}
 
 	if po.Type == serverConsts.DiagnoseInterfaceTypeInterface {
-		to.IsLeaf = true
+		to.IsDir = false
 	}
 
 	return

@@ -9,10 +9,10 @@ type DiagnoseInterface struct {
 	BaseModel
 	CreatedBy uint `json:"createdBy"`
 
-	Title  string                             `json:"title"`
-	Desc   string                             `json:"desc"`
-	IsLeaf bool                               `json:"isLeaf"`
-	Type   serverConsts.DiagnoseInterfaceType `json:"type"`
+	Title string                             `json:"title"`
+	Desc  string                             `json:"desc"`
+	IsDir bool                               `json:"isDir"`
+	Type  serverConsts.DiagnoseInterfaceType `json:"type"`
 
 	ParentId  uint `json:"parentId"`
 	ServeId   uint `json:"serveId"`

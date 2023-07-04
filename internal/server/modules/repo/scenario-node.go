@@ -35,6 +35,7 @@ func (r *ScenarioNodeRepo) MakeTree(findIn []*agentExec.Processor, parent *agent
 	children, _ := r.hasChild(findIn, parent) // 判断节点是否有子节点并返回
 
 	if children != nil {
+		parent.IsDir = true
 		parent.Children = append(parent.Children, children[0:]...) // 添加子节点
 
 		for _, child := range children { // 查询子节点的子节点，并添加到子节点
@@ -135,7 +136,7 @@ func (r *ScenarioNodeRepo) Delete(id uint) (err error) {
 	node, err := r.Get(id)
 
 	ids := []uint{}
-	if r.IsLeaf(node) {
+	if !r.IsDir(node) {
 		ids = append(ids, id)
 	} else {
 		ids, _ = r.GetAllChildIdsSimple(id, model.Processor{}.TableName())
@@ -209,15 +210,13 @@ func (r *ScenarioNodeRepo) addSuperParent(id, parentId uint, childToParentIdMap 
 	}
 }
 
-func (r *ScenarioNodeRepo) IsLeaf(po model.Processor) (ret bool) {
-	isDir := po.EntityCategory == consts.ProcessorRoot ||
+func (r *ScenarioNodeRepo) IsDir(po model.Processor) (ret bool) {
+	ret = po.EntityCategory == consts.ProcessorRoot ||
 		//po.EntityCategory == consts.ProcessorThread ||
 		po.EntityCategory == consts.ProcessorGroup ||
 		(po.EntityCategory == consts.ProcessorLoop && po.EntityType != consts.ProcessorLoopBreak) ||
 		po.EntityCategory == consts.ProcessorLogic ||
 		po.EntityCategory == consts.ProcessorData
-
-	ret = !isDir
 
 	return
 }

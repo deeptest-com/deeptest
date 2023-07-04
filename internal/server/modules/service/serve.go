@@ -172,10 +172,10 @@ func (s *ServeService) PaginateSecurity(req v1.ServeSecurityPaginate) (ret _doma
 	return s.ServeRepo.PaginateSecurity(req)
 }
 
-func (s *ServeService) Example2Schema(data string) (schema openapi3.Schema) {
+func (s *ServeService) Example2Schema(data string) (schema openapi.Schema) {
 	schema2conv := openapi.NewSchema2conv()
 	var obj interface{}
-	schema = openapi3.Schema{}
+	schema = openapi.Schema{}
 	_commUtils.JsonDecode(data, &obj)
 	//_commUtils.JsonDecode("{\"id\":1,\"name\":\"user\"}", &obj)
 	//_commUtils.JsonDecode("[\"0，2，3\"]", &obj)
@@ -216,7 +216,6 @@ func (s *ServeService) DeleteSecurityId(id uint) (err error) {
 }
 
 func (s *ServeService) Schema2Example(serveId uint, data string) (obj interface{}) {
-	s.Components(serveId)
 	schema2conv := openapi.NewSchema2conv()
 	schema2conv.Components = s.Components(serveId)
 	//schema1 := openapi3.Schema{}
@@ -224,7 +223,7 @@ func (s *ServeService) Schema2Example(serveId uint, data string) (obj interface{
 	//_commUtils.JsonDecode("{\"type\":\"array\",\"items\":{\"type\":\"number\"}}", &schema)
 	//_commUtils.JsonDecode("{\"properties\":{\"id\":{\"type\":\"number\"},\"name\":{\"type\":\"string\"}},\"type\":\"object\"}", &schema)
 	//_commUtils.JsonDecode("{\"type\":\"array\",\"items\":{\"properties\":{\"id\":{\"type\":\"number\"},\"name\":{\"type\":\"string\"}},\"type\":\"object\"}}", &schema)
-	schema := openapi3.SchemaRef{}
+	schema := openapi.SchemaRef{}
 	//data = "{\"type\":\"object\",\"properties\":{\"name1\":{\"type\":\"object\",\"ref\":\"#/components/schemas/user1\",\"name\":\"user1\"},\"name2\":{\"type\":\"string\"},\"name3\":{\"type\":\"string\"}}}"
 	_commUtils.JsonDecode(data, &schema)
 	//_commUtils.JsonDecode("{\"type\":\"array\",\"items\":{\"type\":\"number\"}}", &schema1)
@@ -243,7 +242,7 @@ func (s *ServeService) Components(serveId uint) (components openapi.Components) 
 	}
 
 	for _, item := range result {
-		var schema openapi3.SchemaRef
+		var schema openapi.SchemaRef
 		_commUtils.JsonDecode(item.Content, &schema)
 		components[item.Ref] = schema
 	}

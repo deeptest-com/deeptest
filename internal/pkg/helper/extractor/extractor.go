@@ -42,6 +42,7 @@ func Extract(extractor domain.ExtractorBase, resp domain.DebugResponse) (result 
 	}
 
 	result = strings.TrimSpace(result)
+	_logUtils.Infof(fmt.Sprintf("提取器调试 result:%+v", result))
 
 	return
 }

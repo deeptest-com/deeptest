@@ -236,6 +236,11 @@ const StoreModel: ModuleType = {
         },
 
         async call({commit, dispatch, state}, data: any) {
+
+            // 发送时请求时，先清空response
+            // 比如，手动清空 response.content中的内容后，再次点击发送，还是现实空的response.content
+
+            commit('setResponse', {});
             const response = await call(data)
 
             if (response.code === 0) {

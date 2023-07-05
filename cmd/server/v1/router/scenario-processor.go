@@ -18,10 +18,9 @@ func (m *ScenarioProcessorModule) Party() module.WebModule {
 
 		index.Get("/{id:uint}", m.ScenarioProcessorCtrl.Get).Name = "场景节点详情"
 
-		index.Put("/updateName", m.ScenarioProcessorCtrl.UpdateName).Name = "更新名称"
-		index.Put("/saveProcessorInfo", m.ScenarioProcessorCtrl.SaveProcessorInfo).Name = "保存基本信息"
-
-		index.Put("/{category}/save", m.ScenarioProcessorCtrl.Save).Name = "保存"
+		//index.Put("/updateName", m.ScenarioProcessorCtrl.UpdateName).Name = "更新名称"
+		index.Put("/saveProcessorInfo", m.ScenarioProcessorCtrl.SaveBasicInfo).Name = "保存基本信息"
+		index.Put("/{category}/save", m.ScenarioProcessorCtrl.Save).Name = "保存配置信息"
 	}
 
 	return module.NewModule("/scenarios/processors", handler)

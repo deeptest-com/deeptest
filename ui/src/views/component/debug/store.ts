@@ -241,13 +241,13 @@ const StoreModel: ModuleType = {
             if (response.code === 0) {
                 commit('setResponse', response.data);
 
-                dispatch('getLastInvocationResp')
-                dispatch('listInvocation')
+                await dispatch('getLastInvocationResp')
+                await dispatch('listInvocation')
 
-                dispatch('listShareVar');
+                await dispatch('listShareVar');
 
-                dispatch('listExtractor');
-                dispatch('listCheckpoint');
+                await dispatch('listExtractor');
+                await dispatch('listCheckpoint');
 
                 return true;
             } else {

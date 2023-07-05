@@ -4,14 +4,14 @@
       <div>
         <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
 
-          <a-form-item label="备注" v-bind="validateInfos.comments">
-            <a-input v-model:value="modelRef.comments"/>
-          </a-form-item>
-
           <a-form-item label="判断表达式" v-bind="validateInfos.untilExpression">
             <a-input v-model:value="modelRef.untilExpression"
                      @blur="validate('untilExpression', { trigger: 'blur' }).catch(() => {})"/>
             <div class="dp-input-tip">{{t('tips_expression_bool')}}</div>
+          </a-form-item>
+
+          <a-form-item label="备注" v-bind="validateInfos.comments">
+            <a-input v-model:value="modelRef.comments"/>
           </a-form-item>
 
           <a-form-item :wrapper-col="{ span: 16, offset: 2 }">

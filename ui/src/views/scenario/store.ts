@@ -76,12 +76,14 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setReportsDetail: Mutation<StateType>;
         setQueryParams: Mutation<StateType>;
 
+        // tree of scenario nodes
         setTreeData: Mutation<StateType>;
         setTreeDataMap: Mutation<StateType>;
         setTreeDataMapItem: Mutation<StateType>;
         setTreeDataMapItemProp: Mutation<StateType>;
         setNode: Mutation<StateType>;
 
+        // tree of scenario categories
         setTreeDataCategory: Mutation<StateType>;
         setTreeDataMapCategory: Mutation<StateType>;
         setTreeDataMapItemCategory: Mutation<StateType>;

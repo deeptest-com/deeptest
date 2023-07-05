@@ -4,10 +4,6 @@
       <div>
         <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
 
-          <a-form-item label="备注" v-bind="validateInfos.comments">
-            <a-input v-model:value="modelRef.comments"/>
-          </a-form-item>
-
           <a-form-item label="Cookie名称" v-bind="validateInfos.cookieName">
             <a-input v-model:value="modelRef.cookieName"
                      @blur="validate('cookieName', { trigger: 'blur' }).catch(() => {})"/>
@@ -25,6 +21,10 @@
             <a-input v-model:value="modelRef.rightValue"
                      @blur="validate('rightValue', { trigger: 'blur' }).catch(() => {})"/>
             <div class="dp-input-tip">{{t('tips_expression', {name: '{name}'})}}</div>
+          </a-form-item>
+
+          <a-form-item label="备注" v-bind="validateInfos.comments">
+            <a-input v-model:value="modelRef.comments"/>
           </a-form-item>
 
           <a-form-item :wrapper-col="{ span: 16, offset: 4 }">

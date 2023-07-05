@@ -4,10 +4,6 @@
       <div>
         <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
 
-          <a-form-item label="备注" v-bind="validateInfos.comments">
-            <a-input v-model:value="modelRef.comments"/>
-          </a-form-item>
-
           <a-form-item label="变量名称" v-bind="validateInfos.variableName">
             <a-input v-model:value="modelRef.variableName"
                      @blur="validate('variableName', { trigger: 'blur' }).catch(() => {})"/>
@@ -16,6 +12,10 @@
           <a-form-item label="次数" v-bind="validateInfos.times">
             <a-input-number v-model:value="modelRef.times"
                      @blur="validate('times', { trigger: 'blur' }).catch(() => {})"/>
+          </a-form-item>
+
+          <a-form-item label="备注" v-bind="validateInfos.comments">
+            <a-input v-model:value="modelRef.comments"/>
           </a-form-item>
 
           <a-form-item :wrapper-col="{ span: 16, offset: 2 }">

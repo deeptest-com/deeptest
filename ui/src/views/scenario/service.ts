@@ -10,6 +10,7 @@ import {
     ProcessorVariable, ProcessorAssertion, RequestBodyType, UsedBy, ProcessorAction
 } from "@/utils/enum";
 import {Interface} from "@/views/component/debug/data";
+import {isInArray} from "@/utils/array";
 
 const apiPath = 'scenarios';
 const apiPathNodes = `${apiPath}/nodes`;
@@ -251,7 +252,9 @@ export function getRequestBodyTypes() {
 }
 
 export function getProcessorCategories() {
-    return getEnumSelectItems(ProcessorCategory)
+    const ret = getEnumSelectItems(ProcessorCategory)
+    console.log('====', ret)
+    return ret
 }
 
 export function getProcessorTypeNames() {
@@ -358,4 +361,29 @@ export function getMenu(entityCategory: ProcessorCategory): ProcessorAction[] {
     }
 
     return ret
+}
+
+export const showMenuItem = (isInterface, category) => {
+    // console.log('showMenuItem', isInterface, category)
+
+    if (isInterface && isInArray(category, [ProcessorCategory.ProcessorCookie,
+        ProcessorCategory.ProcessorExtractor,
+        ProcessorCategory.ProcessorAssertion,])) {
+        return true
+
+    } else if (!isInterface && !isInArray(category, [ProcessorCategory.ProcessorExtractor])) {
+        return true
+
+    }
+
+    return false
+}
+
+export const showSubMenuItem = (isInterface, category, type) => {
+    if (isInterface &&
+        category.label === ProcessorCategory.ProcessorCookie && !isInArray(type, [ProcessorCookie.Get,])) {
+        return false
+    }
+
+    return true
 }

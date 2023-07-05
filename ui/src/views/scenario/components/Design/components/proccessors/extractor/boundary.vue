@@ -4,10 +4,6 @@
       <div>
         <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
 
-          <a-form-item label="备注" v-bind="validateInfos.comments">
-            <a-input v-model:value="modelRef.comments"/>
-          </a-form-item>
-
           <a-form-item label="变量名称" v-bind="validateInfos.variable">
             <a-input v-model:value="modelRef.variable"
                      @blur="validate('variable', { trigger: 'blur' }).catch(() => {})" />
@@ -26,6 +22,10 @@
           </a-form-item>
           <a-form-item  label="是否包含边界">
             <a-switch v-model:checked="modelRef.boundaryIncluded" />
+          </a-form-item>
+
+          <a-form-item label="备注" v-bind="validateInfos.comments">
+            <a-input v-model:value="modelRef.comments"/>
           </a-form-item>
 
           <a-form-item :wrapper-col="{ span: 16, offset: 4 }">

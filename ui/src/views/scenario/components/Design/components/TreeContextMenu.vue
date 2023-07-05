@@ -64,7 +64,7 @@ import {FolderAddOutlined, EditOutlined, CloseOutlined} from "@ant-design/icons-
 
 import {isInArray} from "@/utils/array";
 import {ProcessorAction, ProcessorCategory} from "@/utils/enum";
-import {getProcessorCategories, getMenu} from "@/views/scenario/service";
+import {getProcessorCategories, getMenu, showMenuItem} from "@/views/scenario/service";
 import TreeContextSubMenu from "./TreeContextSubMenu.vue";
 
 const useForm = Form.useForm;
@@ -86,22 +86,6 @@ const menuClick = (e) => {
   console.log(key, targetId)
   props.onMenuClick(key, targetId);
 };
-
-const showMenuItem = (isInterface, category) => {
-  // console.log('showMenuItem', isInterface, category)
-
-  if (isInterface && isInArray(category, [ProcessorCategory.ProcessorCookie,
-    ProcessorCategory.ProcessorExtractor,
-    ProcessorCategory.ProcessorAssertion,])) {
-    return true
-
-  } else if (!isInterface && !isInArray(category, [ProcessorCategory.ProcessorExtractor])) {
-    return true
-
-  }
-
-  return false
-}
 
 </script>
 

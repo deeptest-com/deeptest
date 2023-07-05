@@ -149,6 +149,9 @@ func (o *openapi2endpoint) interf(method consts.HttpMethod, url string, operatio
 	interf.Name = operation.Summary
 	interf.Method = method
 	interf.Url = url
+	if interf.Name == "" {
+		interf.Name = interf.Url
+	}
 	var requestBodyItem []model.EndpointInterfaceRequestBodyItem
 	interf.Headers, interf.Cookies, interf.Params, interf.PathParams, requestBodyItem = o.parameters(operation)
 	if operation.RequestBody != nil {

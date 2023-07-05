@@ -125,6 +125,7 @@ func (r *ExtractorRepo) UpdateResult(extractor model.DebugInterfaceExtractor, us
 	logUtils.Infof(fmt.Sprintf("提取器调试 model.DebugInterfaceExtractor:%+v", extractor))
 
 	extractor.Result = strings.TrimSpace(extractor.Result)
+	logUtils.Infof(fmt.Sprintf("提取器调试 extractor.Result:%+v", extractor.Result))
 
 	values := map[string]interface{}{}
 	if extractor.Result != "" {
@@ -133,6 +134,8 @@ func (r *ExtractorRepo) UpdateResult(extractor model.DebugInterfaceExtractor, us
 	if extractor.Scope != "" {
 		values["scope"] = extractor.Scope
 	}
+
+	logUtils.Infof(fmt.Sprintf("提取器调试 update value:%+v, extractor.ID:%+v", values, extractor.ID))
 
 	err = r.DB.Model(&extractor).
 		Where("id = ?", extractor.ID).

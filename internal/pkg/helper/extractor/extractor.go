@@ -11,8 +11,6 @@ import (
 )
 
 func Extract(extractor domain.ExtractorBase, resp domain.DebugResponse) (result string, err error) {
-	_logUtils.Infof(fmt.Sprintf("提取器调试 extractor:%+v, resp:%+v", extractor, resp))
-
 	if extractor.Disabled {
 		result = ""
 		return

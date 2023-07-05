@@ -1,14 +1,12 @@
 package service
 
 import (
-	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/extractor"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
-	_logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 )
 
 type ExtractorService struct {
@@ -68,8 +66,6 @@ func (s *ExtractorService) Extract(extractor *model.DebugInterfaceExtractor, res
 	usedBy consts.UsedBy) (err error) {
 
 	extractor.Result, err = extractorHelper.Extract(extractor.ExtractorBase, resp)
-	_logUtils.Infof(fmt.Sprintf("提取器调试 extractor.Result:%+v, err:%+v, usedBy:%+v", extractor.Result, err, usedBy))
-
 	if err != nil {
 		return
 	}

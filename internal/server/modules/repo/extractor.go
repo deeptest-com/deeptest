@@ -1,7 +1,6 @@
 package repo
 
 import (
-	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
@@ -122,11 +121,7 @@ func (r *ExtractorRepo) Delete(id uint) (err error) {
 }
 
 func (r *ExtractorRepo) UpdateResult(extractor model.DebugInterfaceExtractor, usedBy consts.UsedBy) (err error) {
-	logUtils.Infof(fmt.Sprintf("提取器调试 model.DebugInterfaceExtractor:%+v", extractor))
-
 	extractor.Result = strings.TrimSpace(extractor.Result)
-	logUtils.Infof(fmt.Sprintf("提取器调试 extractor.Result:%+v", extractor.Result))
-
 	values := map[string]interface{}{}
 	if extractor.Result != "" {
 		values["result"] = extractor.Result
@@ -134,8 +129,6 @@ func (r *ExtractorRepo) UpdateResult(extractor model.DebugInterfaceExtractor, us
 	if extractor.Scope != "" {
 		values["scope"] = extractor.Scope
 	}
-
-	logUtils.Infof(fmt.Sprintf("提取器调试 update value:%+v, extractor.ID:%+v", values, extractor.ID))
 
 	err = r.DB.Model(&extractor).
 		Where("id = ?", extractor.ID).

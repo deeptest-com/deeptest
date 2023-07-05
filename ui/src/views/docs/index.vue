@@ -156,7 +156,6 @@ watch(() => {return shareId.value}, async (newVal) => {
   immediate: true
 })
 
-
 </script>
 <style scoped lang="less">
 .container {

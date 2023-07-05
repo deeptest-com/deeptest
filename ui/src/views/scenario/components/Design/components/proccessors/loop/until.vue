@@ -30,7 +30,7 @@ import {useRouter} from "vue-router";
 import {useStore} from "vuex";
 import {useI18n} from "vue-i18n";
 import {Form, message, notification} from 'ant-design-vue';
-import {StateType as ScenarioStateType} from "../../../../store";
+import {StateType as ScenarioStateType} from "../../../../../store";
 import {EditOutlined, CheckOutlined, CloseOutlined} from "@ant-design/icons-vue";
 
 const useForm = Form.useForm;

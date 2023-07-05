@@ -52,7 +52,7 @@ gen_version_file:
 	@echo '{"version": "${VERSION}"}' > ${QINIU_DIR}/${PROJECT}/version.json
 
 compile_ui:
-	@cd ui && yarn build --dest ../client/ui && cd ..
+	@cd ui && yarn build --mode deeptest-local --dest ../client/ui && cd ..
 
 # launcher
 compile_launcher_win64:

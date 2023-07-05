@@ -177,6 +177,7 @@ watch(() => {
   console.log('watch props.info', newVal)
 }, {immediate: true})
 
+// TODO 默认需要选中第一个 code 才对
 const selectedCode = ref('200');
 
 function selectCode(code) {

@@ -320,31 +320,31 @@ func (r *EndpointRepo) GetCategoryCount(result interface{}, projectId uint) (err
 	return
 }
 
-func (r *EndpointRepo) GetByProjectId(projectId uint) (endpoints []*model.Endpoint, err error) {
+func (r *EndpointRepo) GetByProjectId(projectId uint, needDetail bool) (endpoints []*model.Endpoint, err error) {
 	err = r.DB.Find(&endpoints, "project_id = ? and not deleted and not disabled", projectId).Error
-	r.GetByEndpoints(endpoints)
+	r.GetByEndpoints(endpoints, needDetail)
 	return
 }
 
-func (r *EndpointRepo) GetByServeIds(serveIds []uint) (endpoints []*model.Endpoint, err error) {
+func (r *EndpointRepo) GetByServeIds(serveIds []uint, needDetail bool) (endpoints []*model.Endpoint, err error) {
 	err = r.DB.Where("serve_id = ? and not deleted and not disabled", serveIds).Find(&endpoints).Error
-	r.GetByEndpoints(endpoints)
+	r.GetByEndpoints(endpoints, needDetail)
 	return
 }
 
-func (r *EndpointRepo) GetByEndpointIds(endpointIds []uint) (endpoints []*model.Endpoint, err error) {
+func (r *EndpointRepo) GetByEndpointIds(endpointIds []uint, needDetail bool) (endpoints []*model.Endpoint, err error) {
 	err = r.DB.Where("id in ? and not deleted and not disabled", endpointIds).Find(&endpoints).Error
-	r.GetByEndpoints(endpoints)
+	r.GetByEndpoints(endpoints, needDetail)
 	return
 }
 
-func (r *EndpointRepo) GetByEndpoints(endpoints []*model.Endpoint) {
+func (r *EndpointRepo) GetByEndpoints(endpoints []*model.Endpoint, needDetail bool) {
 	var endpointIds []uint
 	for _, endpoint := range endpoints {
 		endpointIds = append(endpointIds, endpoint.ID)
 	}
 
-	interfaces, err := r.EndpointInterfaceRepo.GetInterfaces(endpointIds)
+	interfaces, err := r.EndpointInterfaceRepo.GetInterfaces(endpointIds, needDetail)
 	if err != nil {
 		return
 	}

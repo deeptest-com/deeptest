@@ -2,7 +2,7 @@
  项目基本信息
 -->
 <template>
-  <div class="doc-content" v-if="info?.name">
+  <div class="doc-content" v-if="info?.name" :key="info?.id">
     <!--    <a-breadcrumb v-if="isInterface" style="margin-bottom: 12px;">-->
     <!--      <a-breadcrumb-item>{{isInterface ? info?.serveInfo?.name : info?.name}}</a-breadcrumb-item>-->
     <!--      <a-breadcrumb-item ><a href="javascript:void (0)">{{info?.name}}</a></a-breadcrumb-item>-->
@@ -61,9 +61,9 @@
           <H3>请求Cookie（Cookies）</H3>
           <Parameters :items="info?.cookies"/>
         </div>
-        <div class="req-item req-path-params" v-if="info?.requestBody?.mediaType">
+        <div class="req-item req-path-params" v-if="info.requestBody?.mediaType">
           <H3 class="body-header">请求体（Request Body）
-            <a-tag class="tag" color="default">{{ info.requestBody?.mediaType }}</a-tag>
+            <a-tag class="tag" color="default">{{ info.requestBody?.mediaType}}</a-tag>
           </H3>
           <p v-if="info.requestBody.description">{{ info.requestBody.description }}</p>
           <SchemaViewer
@@ -102,7 +102,7 @@
         </div>
         <div class="res-item res-path-params">
           <H3 class="body-header">响应体（Response Body）
-            <a-tag class="tag" color="default">{{ res.mediaType }}</a-tag>
+            <a-tag class="tag" color="default">{{ res.mediaType || '未定义响应类型' }}</a-tag>
           </H3>
           <p v-if="res.description">{{ res.description }}</p>
           <SchemaViewer :examples-str="res?.examples"
@@ -170,15 +170,18 @@ const security = computed(() => {
   });
 });
 
+const selectedCode = ref('200');
 
 watch(() => {
   return props.info
 }, (newVal) => {
-  console.log('watch props.info', newVal)
+  const responseBodies = newVal?.responseBodies;
+  if(responseBodies?.length) {
+    selectedCode.value = responseBodies[0].code;
+  }
 }, {immediate: true})
 
-// TODO 默认需要选中第一个 code 才对
-const selectedCode = ref('200');
+
 
 function selectCode(code) {
   selectedCode.value = code;

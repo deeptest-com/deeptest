@@ -103,7 +103,7 @@ export default defineComponent({
             const properties = parent?.properties?.[keyName] || {};
             const list: any = [];
             Object.entries(properties).forEach(([k, v]) => {
-                if (typeof v !== 'boolean' && !['type', 'properties', 'extraViewInfo','ref','content','name'].includes(k)) {
+                if (typeof v !== 'boolean' && !['type', 'properties', 'extraViewInfo','ref','content','name','required'].includes(k)) {
                     if (!!v || v === 0) {
                         list.push({
                             label: k,

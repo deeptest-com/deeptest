@@ -5,6 +5,7 @@ type DocumentReq struct {
 	ServeIds    []uint `json:"serveIds"`
 	ProjectId   uint   `json:"projectId"`
 	DocumentId  uint   `json:"documentId"`
+	NeedDetail  bool   `json:"needDetail"`
 }
 
 type DocumentRep struct {
@@ -49,4 +50,5 @@ type DocumentShareReq struct {
 	ProjectId  uint `json:"projectId"`
 	DocumentId uint `json:"documentId"`
 	EndpointId uint `json:"endpointId"`
+	NeedDetail bool `json:"needDetail"`
 }

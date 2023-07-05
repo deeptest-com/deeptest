@@ -9,18 +9,18 @@
           :selectedKeys="selectedKeys"
           mode="inline">
     <a-menu-item v-for="item in items"
-                 :key="item.id"
+                 :key="`${item?.method || 'serve'}-${item.id}`"
                  @click="select(item)"
-                 :class="{'hide': item.endpointInfo && item.serveInfo && openKeysMap[item.serveId]}">
+                 :class="{'hide': item.method && openKeysMap[item.serveId]}">
       <!-- ::::服务信息 -->
-      <div class="menus-title" v-if="item.servers">
+      <div class="menus-title" v-if="!item?.method">
         <div class="icon" @click="(event) => {switchExpand(item,event)}">
           <RightOutlined class="expand-icon" :class="!openKeysMap[item.id] ? 'open' : ''"/>
         </div>
         <div class="left"><strong>{{ item?.name }}</strong></div>
       </div>
       <!-- ::::该服务下的所有接口列表 -->
-      <div class="menus-item" v-if="item.endpointInfo && item.serveInfo">
+      <div class="menus-item" v-if="item?.method">
         <div class="left">
           <a-tag  class="method-tag" :color="getMethodColor(item.method)">{{ item.method }}</a-tag>
           <span :title="item.name">{{ item.name }}</span>
@@ -65,7 +65,7 @@ watch(() => {
     }, (newVal) => {
       items.value = newVal;
       newVal.forEach((item: any) => {
-        if (item.endpointList) {
+        if (!item.method) {
           openKeysMap.value[item.id] = false;
         }
       })
@@ -74,14 +74,9 @@ watch(() => {
 )
 
 
-
-const activeKey = ref([]);
-
-
 function switchExpand(item, e) {
   e.stopPropagation();
   openKeysMap.value[item.id] = !openKeysMap.value[item.id];
-
 }
 
 

@@ -10,7 +10,7 @@
           <PlusOutlined style="font-size: 16px;"/>
         </div>
       </div>
-      <div style="margin: 0 8px;">
+      <div style="margin: 0 8px 16px 8px;">
         <a-tree
             class="deeptest-tree"
             draggable
@@ -327,6 +327,7 @@ onMounted(async () => {
 .tree-container {
   //margin: 16px;
   background: #ffffff;
+
 }
 
 .tag-filter-form {

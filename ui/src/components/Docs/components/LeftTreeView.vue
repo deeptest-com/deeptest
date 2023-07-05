@@ -4,7 +4,9 @@
 <template>
   <a-menu style="width: 100%;
           height: auto;
+          margin-bottom: 24px;
           padding-top: 8px;"
+
           class="docs-menu"
           :selectedKeys="selectedKeys"
           mode="inline">

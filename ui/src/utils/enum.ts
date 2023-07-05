@@ -38,7 +38,9 @@ export enum ProcessorCategory {
     ProcessorPrint = "processor_print",
     ProcessorAssertion = "processor_assertion",
 }
-
+export enum ProcessorInterface {
+    Interface = "processor_interface_default",
+}
 export enum ProcessorRoot {
     Root = "processor_root_default",
 }

@@ -13,7 +13,7 @@
 
         <template v-for="(item) in processorTypes">
           <a-menu-item class="menu-item"
-                       v-if="showSubMenuItem(isInterface, category, item.label)"
+                       v-if="showSubMenuItem(entityType, category, item.label)"
                        :key="'add-'+mode+'-'+category.label+'-'+item.label">
             {{t(item.label)}}
           </a-menu-item>
@@ -41,8 +41,8 @@ const useForm = Form.useForm;
 
 const props = defineProps<{
   category: any,
+  entityType: string,
   mode: string,
-  isInterface: boolean,
 }>()
 
 const {t} = useI18n();

@@ -7,7 +7,7 @@ import {
     ProcessorLogic,
     ProcessorLoop, ProcessorGroup, ProcessorTimer, ProcessorPrint,
     ProcessorCategory,
-    ProcessorVariable, ProcessorAssertion, RequestBodyType, UsedBy, ProcessorAction
+    ProcessorVariable, ProcessorAssertion, RequestBodyType, UsedBy, ProcessorAction, ProcessorInterface
 } from "@/utils/enum";
 import {Interface} from "@/views/component/debug/data";
 import {isInArray} from "@/utils/array";
@@ -363,8 +363,9 @@ export function getMenu(entityCategory: ProcessorCategory): ProcessorAction[] {
     return ret
 }
 
-export const showMenuItem = (isInterface, category) => {
-    // console.log('showMenuItem', isInterface, category)
+export const showMenuItem = (entityType, category) => {
+    const isInterface = entityType === ProcessorInterface.Interface
+    // console.log('showMenuItem', isInterface, entityType, category)
 
     if (isInterface && isInArray(category, [ProcessorCategory.ProcessorCookie,
         ProcessorCategory.ProcessorExtractor,
@@ -379,9 +380,15 @@ export const showMenuItem = (isInterface, category) => {
     return false
 }
 
-export const showSubMenuItem = (isInterface, category, type) => {
+export const showSubMenuItem = (entityType, category, type) => {
+    const isInterface = entityType === ProcessorInterface.Interface
+
     if (isInterface &&
         category.label === ProcessorCategory.ProcessorCookie && !isInArray(type, [ProcessorCookie.Get,])) {
+        return false
+    }
+
+    if (entityType !== ProcessorLogic.If && isInArray(type, [ProcessorLogic.Else,])) {
         return false
     }
 

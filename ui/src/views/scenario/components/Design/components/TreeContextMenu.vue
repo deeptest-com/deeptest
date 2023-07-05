@@ -1,10 +1,7 @@
 <template>
   <div class="dp-tree-context-menu" :set="mode = treeNode.isDir ? 'child' : 'brother'">
     <a-menu @click="menuClick" trigger="['click']" mode="vertical">
-      {{void (
-        menuItems = getMenu(treeNode.entityCategory),
-        isInterface = treeNode.entityCategory === ProcessorCategory.ProcessorInterface
-       )}}
+      {{void ( menuItems = getMenu(treeNode.entityCategory) )}}
 
       <template v-if="isInArray(ProcessorAction.ActionAddProcessor, menuItems) ||
                       isInArray(ProcessorAction.ActionInInterface, menuItems)">
@@ -16,9 +13,9 @@
 
           <template v-for="(category) in processorCategories" :key="category.value">
             <TreeContextSubMenu
-                v-if="showMenuItem(isInterface, category.label)"
+                v-if="showMenuItem(treeNode.entityType, category.label)"
                 :category="category"
-                :isInterface="isInterface"
+                :entityType="treeNode.entityType"
                 mode="child" />
           </template>
         </a-sub-menu>

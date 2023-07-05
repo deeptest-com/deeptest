@@ -125,7 +125,6 @@ export interface ModuleType extends StoreModuleType<StateType> {
         saveTreeMapItem: Action<StateType, StateType>;
         saveTreeMapItemProp: Action<StateType, StateType>;
 
-        saveProcessorName: Action<StateType, StateType>;
         saveProcessor: Action<StateType, StateType>;
         saveProcessorInfo: Action<StateType, StateType>;
 
@@ -480,15 +479,6 @@ const StoreModel: ModuleType = {
             const jsn = await saveProcessor(payload)
             if (jsn.code === 0) {
                 commit('setNode', jsn.data);
-                await dispatch('loadScenario', state.scenarioId);
-                return true;
-            } else {
-                return false
-            }
-        },
-        async saveProcessorName({commit, dispatch, state}, payload: any) {
-            const jsn = await saveProcessorName(payload)
-            if (jsn.code === 0) {
                 await dispatch('loadScenario', state.scenarioId);
                 return true;
             } else {

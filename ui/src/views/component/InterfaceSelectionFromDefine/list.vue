@@ -88,10 +88,10 @@ const pagination = ref<any>({
   showQuickJumper: true,
 })
 
-// watch(props, () => {
-//   console.log('watch props.categoryId for reload', props.categoryId)
-//   selectCategory()
-// }, {deep: true})
+watch(() => {return props.categoryId}, () => {
+  console.log('watch props.categoryId for reload', props.categoryId)
+  selectCategory()
+}, {deep: false})
 //
 const selectCategory = async () => {
    console.log('selectCategory2', props.categoryId)

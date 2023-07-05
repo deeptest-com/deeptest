@@ -74,7 +74,7 @@ const debugInfo = computed<any>(() => store.state.Debug.debugInfo);
 const debugData = computed<any>(() => store.state.Debug.debugData);
 const responseData = computed<any>(() => store.state.Debug.responseData);
 
-const editorOptions = ref(Object.assign({usedWith: 'response'}, MonacoOptions) )
+const editorOptions = ref(Object.assign({usedWith: 'response',readOnly:true}, MonacoOptions) )
 const content = ref(formatXml(responseData.value.content))
 
 const responseExtractorVisible = ref(false)

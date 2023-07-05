@@ -45,25 +45,25 @@
           <H3>请求鉴权（Security）</H3>
           <Security :item="security"/>
         </div>
-        <div class="req-item req-path-params" v-if="info?.endpointInfo.pathParams">
+        <div class="req-item req-path-params" v-if="info?.endpointInfo.pathParams?.length">
           <H3>路径参数（Path Parameters）</H3>
           <Parameters :items="info?.endpointInfo.pathParams"/>
         </div>
-        <div class="req-item req-path-params" v-if="info?.headers">
+        <div class="req-item req-path-params" v-if="info?.headers?.length">
           <H3>请求Header（Headers）</H3>
           <Parameters :items="info?.headers"/>
         </div>
-        <div class="req-item req-path-params" v-if="info?.params">
+        <div class="req-item req-path-params" v-if="info?.params?.length">
           <H3>请求参数（Query Parameters）</H3>
           <Parameters :items="info?.params"/>
         </div>
-        <div class="req-item req-path-params" v-if="info?.cookies">
+        <div class="req-item req-path-params" v-if="info?.cookies?.length">
           <H3>请求Cookie（Cookies）</H3>
           <Parameters :items="info?.cookies"/>
         </div>
-        <div class="req-item req-path-params" v-if="info.requestBody?.mediaType">
+        <div class="req-item req-path-params" v-if="info?.requestBody?.schemaItem?.content">
           <H3 class="body-header">请求体（Request Body）
-            <a-tag class="tag" color="default">{{ info.requestBody?.mediaType}}</a-tag>
+            <a-tag class="tag" color="default">{{ info.requestBody?.mediaType || '未定义请求体类型'}}</a-tag>
           </H3>
           <p v-if="info.requestBody.description">{{ info.requestBody.description }}</p>
           <SchemaViewer
@@ -134,7 +134,7 @@ const info: any = computed(() => {
 const emit = defineEmits(['ok', 'close', 'refreshList']);
 
 const isInterface = computed(() => {
-  return props.info && props.info.endpointInfo && props.info.serveInfo && props.info.serveInfo.id;
+  return props.info && props.info.method;
 })
 
 const paths = computed(() => {

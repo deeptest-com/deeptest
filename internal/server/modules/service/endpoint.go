@@ -248,3 +248,7 @@ func (s *EndpointService) getCategoryId(tags []string, dirs *openapi.Dirs) int64
 	}
 	return dirs.Id
 }
+
+func (s *EndpointService) BatchUpdateByField(req v1.BatchUpdateReq) (err error) {
+	return
+}

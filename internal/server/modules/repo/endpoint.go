@@ -199,11 +199,24 @@ func (r *EndpointRepo) removeEndpointParams(endpointId uint) (err error) {
 
 //保存接口信息
 func (r *EndpointRepo) saveInterfaces(endpointId, projectId uint, path, version string, interfaces []model.EndpointInterface) (err error) {
+	interfaceIds := make([]uint, 0)
+	for _, v := range interfaces {
+		if v.ID != 0 {
+			interfaceIds = append(interfaceIds, v.ID)
+		}
+	}
+	interfaceIdModelMap, err := r.EndpointInterfaceRepo.GetIdAndModelMap(interfaceIds)
+
 	err = r.removeInterfaces(endpointId)
 	if err != nil {
 		return
 	}
-	for key, _ := range interfaces {
+
+	for key, v := range interfaces {
+		if interfaceModel, ok := interfaceIdModelMap[v.ID]; ok {
+			interfaces[key].DebugInterfaceId = interfaceModel.DebugInterfaceId
+		}
+
 		interfaces[key].EndpointId = endpointId
 		interfaces[key].Version = version
 		interfaces[key].Url = path
@@ -372,4 +385,12 @@ func (r *EndpointRepo) GetUsedCountByEndpointId(endpointId uint) (count int64, e
 
 func (r *EndpointRepo) CreateEndpoints(endpoints []*model.Endpoint) error {
 	return r.DB.Create(endpoints).Error
+}
+
+func (r *EndpointRepo) BatchUpdateStatus(ids []uint, status int64) error {
+	return r.DB.Model(&model.Endpoint{}).Where("id IN (?)", ids).Update("status", status).Error
+}
+
+func (r *EndpointRepo) BatchUpdateCategory(ids []uint, categoryId int64) error {
+	return r.DB.Model(&model.Endpoint{}).Where("id IN (?)", ids).Update("category_id", categoryId).Error
 }

@@ -54,7 +54,6 @@ func Init(app string) {
 
 	// 初始化Casbin配置
 	casbinPath := consts.CasbinFileName
-	fmt.Sprintf("casbin conf file is %s", casbinPath)
 
 	if !dir.IsExist(casbinPath) {
 		casbinRes := filepath.Join("res", consts.CasbinFileName)
@@ -68,8 +67,6 @@ func Init(app string) {
 			panic(fmt.Errorf("failed to write casbin rbac_model.conf 文件错误: %s", err.Error()))
 		}
 	}
-
-	fmt.Printf("配置文件路径为%s\n", consts.ConfigFileName)
 
 	if !dir.IsExist(consts.ConfigFileName) { // 没有配置文件，写入默认配置
 		configRes := filepath.Join("res", consts.ConfigFileName)

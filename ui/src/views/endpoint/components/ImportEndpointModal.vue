@@ -82,6 +82,7 @@ import {
 import {useStore} from "vuex";
 import {NewEndpointFormState} from "@/views/Endpoint/data";
 import {InboxOutlined, UploadOutlined} from '@ant-design/icons-vue';
+import { message } from 'ant-design-vue';
 
 const store = useStore<{ Endpoint }>();
 const treeDataCategory = computed<any>(() => store.state.Endpoint.treeDataCategory);
@@ -154,6 +155,7 @@ function ok() {
       .then( () => {
          emit('ok', formState.value, () => {
           reset();
+          message.warning('异步导入中，稍后请刷新列表查看导入结果');
           spinning.value = false
         });
       })

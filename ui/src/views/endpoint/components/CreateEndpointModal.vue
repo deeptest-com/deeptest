@@ -109,7 +109,7 @@ watch(() => {
   return props.visible
 }, (newVal) => {
   if (newVal) {
-    formState.categoryId = props.selectedCategoryId;
+    formState.categoryId = props.selectedCategoryId || -1;
   }
 }, {
   immediate: true

@@ -1,0 +1,45 @@
+captcha:
+  key-long: 6
+  img-width: 240
+  img-height: 80
+ldap: true
+limit:
+  disable: false
+  limit: 0
+  burst: 5
+max-size: 1024
+maxsize: 1024
+mysql:
+  url: 127.0.0.1:3306
+  config: charset=utf8mb4&parseTime=True&loc=Local
+  db-name: deeptest
+  username: root
+  password: root
+  max-idle-conns: 0
+  max-open-conns: 0
+  log-mode: true
+  log-zap: ""
+redis:
+  db: 0
+  addr: 127.0.0.1:6379
+  password: ""
+  pool-size: 0
+system:
+  level: debug
+  serverAddress: 0.0.0.0:8085
+  agentAddress: 0.0.0.0:8086
+  static-path: /static
+  web-path: ui/dist
+  db-type: mysql
+  cache-type: redis
+  time-format: "2006-01-02 15:04:05"
+zap:
+  level: info
+  format: console
+  prefix: '[OP-ONLINE] '
+  director: log
+  link-name: latest_log
+  show-line: true
+  encode-level: ""
+  stacktrace-key: stacktrace
+  log-in-console: true

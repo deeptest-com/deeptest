@@ -7,12 +7,12 @@ import (
 
 type DiagnoseInterface struct {
 	BaseModel
-	CreatedBy uint `json:"createdBy"`
-
-	Title  string                             `json:"title"`
-	Desc   string                             `json:"desc"`
-	IsLeaf bool                               `json:"isLeaf"`
-	Type   serverConsts.DiagnoseInterfaceType `json:"type"`
+	CreatedBy uint                               `json:"createdBy"`
+	Name      string                             `json:"name"`
+	Title     string                             `json:"title"`
+	Desc      string                             `json:"desc"`
+	IsLeaf    bool                               `json:"isLeaf"`
+	Type      serverConsts.DiagnoseInterfaceType `json:"type"`
 
 	ParentId  uint `json:"parentId"`
 	ServeId   uint `json:"serveId"`

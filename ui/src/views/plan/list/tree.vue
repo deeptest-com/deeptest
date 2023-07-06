@@ -41,7 +41,7 @@
                           <a-menu-item key="0" @click="newCategorie(nodeProps)">
                              新建子分类
                           </a-menu-item>
-                          <a-menu-item :disabled="nodeProps.id === -1 || nodeProps.count > 0" key="1" @click="deleteCategorie(nodeProps)">
+                          <a-menu-item :disabled="nodeProps.id === -1" key="1" @click="deleteCategorie(nodeProps)">
                             删除分类
                           </a-menu-item>
                           <a-menu-item :disabled="nodeProps.id === -1" key="1" @click="editCategorie(nodeProps)">
@@ -201,6 +201,11 @@ const tagModalMode = ref('new');
 
 // 删除分类
 async function deleteCategorie(node) {
+  if (node.count > 0) {
+    message.warning('该目录下有数据，请删除后再操作');
+    return 
+  }
+  
   Modal.confirm({
     title: () => '确定删除该分类吗？',
     content: () => '删除后所有所有子分类都会被删除',

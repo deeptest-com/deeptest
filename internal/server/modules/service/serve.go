@@ -139,7 +139,7 @@ func (s *ServeService) Copy(id uint) (err error) {
 
 func (s *ServeService) SaveSchema(req v1.ServeSchemaReq) (res uint, err error) {
 	var serveSchema model.ComponentSchema
-	if s.ServeRepo.SchemaExist(uint(req.ID), uint(req.ServeId), req.Name) {
+	if req.ID == 0 && s.ServeRepo.SchemaExist(uint(req.ID), uint(req.ServeId), req.Name) {
 		err = fmt.Errorf("schema name already exist")
 		return
 	}

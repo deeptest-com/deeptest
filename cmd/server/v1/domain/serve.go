@@ -81,6 +81,7 @@ type ServeSchemaPaginate struct {
 	ServeId int64  `json:"serveId"`
 	Tag     string `json:"tag"`
 	Type    string `json:"type"`
+	Name    string `json:"name"`
 }
 
 type JsonContent struct {

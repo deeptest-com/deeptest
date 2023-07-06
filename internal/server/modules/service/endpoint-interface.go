@@ -13,7 +13,10 @@ import (
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"go.uber.org/zap"
 	"io/ioutil"
+	"sync"
 )
+
+var l sync.RWMutex
 
 type EndpointInterfaceService struct {
 	EndpointInterfaceRepo *repo.EndpointInterfaceRepo `inject:""`
@@ -54,7 +57,6 @@ func (s *EndpointInterfaceService) ImportEndpointData(req v1.ImportEndpointDataR
 
 	openapi2endpoint := openapi.NewOpenapi2endpoint(doc, req.CategoryId)
 	endpoints, dirs, components := openapi2endpoint.Convert()
-	fmt.Println(endpoints, dirs, components)
 	err = s.EndpointService.SaveEndpoints(endpoints, dirs, components, req)
 
 	return

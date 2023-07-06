@@ -191,7 +191,7 @@ const StoreModel: ModuleType = {
             try {
                 const resp = await importInterfaces(payload);
 
-                dispatch('loadTree', state.queryParams);
+                await dispatch('loadTree', state.queryParams);
                 return resp.data;
             } catch (error) {
                 return false;

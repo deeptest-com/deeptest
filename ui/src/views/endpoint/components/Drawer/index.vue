@@ -39,7 +39,7 @@
         </div>
       </template>
       <a-tabs
-          tabBarStyle="margin-bottom: 0;"
+          :tabBarStyle="{marginBottom: 0}"
           v-show="expand" :activeKey="key" :animated="false" @change="changeTab">
         <template #tabBarExtraContent>
           <a-button v-if="key === 'request' && showFooter" type="primary" @click="save">

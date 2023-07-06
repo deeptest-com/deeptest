@@ -68,17 +68,20 @@ const useForm = Form.useForm;
 const {t} = useI18n();
 
 const props = defineProps({
-  selectCategory: {
+  changeServe: {
     type: Function,
     required: true,
-  }
+  },
+  changeCategory: {
+    type: Function,
+    required: true,
+  },
 })
 
 watch(props, () => {
   console.log('watch props for reload', props)
 
 }, {deep: true})
-
 
 const serves = ref([] as any[]);
 const serveId = ref(0)
@@ -90,6 +93,7 @@ const loadServe = async () => {
 
     if (serves.value.length > 0) {
       serveId.value = serves.value[0].id
+      props.changeServe(serveId.value)
       loadCategoryByServe()
     }
   })
@@ -98,7 +102,7 @@ loadServe()
 
 const selectServe = () => {
   console.log('selectServe', serveId.value)
-  props.selectCategory('未分类') // TODO:
+  props.changeServe(serveId.value)
 
   loadCategoryByServe()
 }
@@ -110,9 +114,8 @@ const loadCategoryByServe = async () => {
 
   const response = await loadCategory('endpoint');
   if (response.code === 0) {
-    treeDataCategory.value = [response.data]
+    treeDataCategory.value = response.data.children
 
-    selectNode([response.data.id], null)
     treeDataMapCategory = {}
     getNodeMap(treeDataCategory.value, treeDataMapCategory)
   }
@@ -121,7 +124,7 @@ const loadCategoryByServe = async () => {
 const selectCategory = async (id) => {
   console.log('selectCategory', id)
   categoryId.value = id
-  props.selectCategory(id)
+  props.changeCategory(id)
 }
 
 const replaceFields = {key: 'id', title: 'name'};
@@ -142,7 +145,7 @@ const selectNode = (keys, e) => {
   } else {
     selectedKeys.value = keys
   }
-  props.selectCategory(selectedKeys.value[0])
+  props.changeCategory(selectedKeys.value[0])
 }
 
 const expandAll = () => {

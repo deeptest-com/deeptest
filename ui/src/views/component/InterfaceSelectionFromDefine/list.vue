@@ -70,10 +70,14 @@ const filters = ref<any>({})
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 
 const props = defineProps({
-   categoryId: {
-     type: Number,
-     required: true,
-   },
+  serveId: {
+    type: Number,
+    required: true,
+  },
+  categoryId: {
+    type: Number,
+    required: true,
+  },
   selectInterfaces: {
     type: Function,
     required: true,
@@ -88,39 +92,35 @@ const pagination = ref<any>({
   showQuickJumper: true,
 })
 
-// watch(props, () => {
-//   console.log('watch props.categoryId for reload', props.categoryId)
-//   selectCategory()
-// }, {deep: true})
-//
+const loadList = debounce(async (page, pageSize) => {
+  pagination.value.page = page
+  pagination.value.pageSize = pageSize
+  const data = {
+    serveId: props.serveId,
+    categoryId: props.categoryId,
+    projectId: currProject.value.id,
+    keywords: filters.value.keywords,
+  }
+  const result = await listEndpointInterface(data, pagination.value)
+  console.log('listEndpointInterface', result)
+  interfaces.value = result?.list
+  pagination.value.total = result?.total
+}, 300)
+
 const selectCategory = async () => {
-   console.log('selectCategory2', props.categoryId)
-  //
-  // if (props.categoryId === 0) {
-  //   interfaces.value = []
-  //   return
-  // }
+  console.log('selectCategory', props.categoryId)
   loadList(pagination.value.page, pagination.value.pageSize)
 }
+
+watch(props, () => {
+  console.log('watch props for reload', props.serveId, props.categoryId)
+  selectCategory()
+}, {deep: true, immediate: true})
 
 const onKeywordsChanged = debounce(async () => {
   console.log('onKeywordsChanged')
   await selectCategory()
 }, 600)
-
-const loadList = debounce(async (page, pageSize) => {
-  pagination.value.page = page
-  pagination.value.pageSize = pageSize
-  const data = {
-    categoryId: props.categoryId,
-    keywords: filters.value.keywords,
-    projectId: currProject.value.id,
-  }
-  const result = await listEndpointInterface(data, pagination.value)
-  console.log('listInterface', result)
-  interfaces.value = result?.list
-  pagination.value.total = result?.total
-}, 300)
 
 type Key = ColumnProps['key'];
 const selectedRowKeys = ref<Key[]>([]);

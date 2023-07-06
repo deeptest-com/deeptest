@@ -49,10 +49,11 @@
     </div>
 
     <a-modal
-        :title="model.id ? '编辑' : '创建' + '检查点'"
+        v-if="editVisible"
+        :visible="editVisible"
+        :title="(model.id ? '编辑' : '创建') + '检查点'"
         :destroy-on-close="true"
         :mask-closable="false"
-        :visible="editVisible"
         :onCancel="cancel"
         :footer="null"
     >
@@ -282,7 +283,7 @@ const loadExtractorVariable = () => {
   } else {
     rules.operator = [operatorRequired]
     rules.value = [valueRequired]
-    model.value.operator = ComparisonOperator.equal
+    if (!model.value.operator) model.value.operator = ComparisonOperator.equal
   }
 
   if (model.value.type === CheckpointType.extractor) {

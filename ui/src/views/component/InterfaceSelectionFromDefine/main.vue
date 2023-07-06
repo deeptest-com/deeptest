@@ -10,11 +10,11 @@
 
     <div class="interface-selection-main">
       <div class="left tree">
-        <Tree :selectCategory="selectCategory"/>
+        <Tree :changeCategory="changeCategory" :changeServe="changeServe" />
       </div>
 
       <div class="right">
-        <List :selectInterfaces="onSelectInterfaces" :categoryId="categoryId"></List>
+        <List :selectInterfaces="onSelectInterfaces" :categoryId="categoryId" :serveId="serveId"></List>
       </div>
     </div>
 
@@ -42,11 +42,16 @@ const props = defineProps({
   },
 })
 
+const serveId = ref(0)
 const categoryId = ref(0)
 const interfaceIds = ref([])
 
-const selectCategory = async (id) => {
-  console.log('selectCategory1', id)
+const changeServe = (id) => {
+  console.log('changeServe', id)
+  serveId.value = id;
+}
+const changeCategory = (id) => {
+  console.log('changeCategory', id)
   categoryId.value = id;
 }
 

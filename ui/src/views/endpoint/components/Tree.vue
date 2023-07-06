@@ -10,6 +10,7 @@
           <PlusOutlined style="font-size: 16px;"/>
         </div>
       </div>
+
       <div style="margin: 0 8px;">
         <a-tree
             class="deeptest-tree"
@@ -130,7 +131,11 @@ const treeData: any = computed(() => {
       children: []
     })
   }
-  return data?.[0]?.children || null;
+
+  const ret = data?.[0]?.children || null;
+  console.log('category treeData', ret)
+
+  return ret
 });
 
 async function loadCategories() {

@@ -114,7 +114,7 @@ export async function getYaml(data: any): Promise<any> {
 
 
 /**
- * 接口过时
+ * 接口过期
  * */
 export async function expireEndpoint(id: Number): Promise<any> {
     return request({

@@ -989,7 +989,7 @@ export const paramsSchemaDataTypes: any = {
     },
 }
 
-export const endpointStatus = new Map([[0, '未知'], [1, '设计中'], [2, '开发中'], [3, '已发布'], [4, '已过时']])
+export const endpointStatus = new Map([[0, '未知'], [1, '设计中'], [2, '开发中'], [3, '已发布'], [4, '已过期']])
 
 // export const scenarioStatus = new Map([['draft', '草稿']]);
 export const scenarioStatus = new Map([['disabled', '已禁用'],['draft', '草稿'], ['executed', '已执行'], ['to_execute', '待执行']]);
@@ -1020,7 +1020,7 @@ export const endpointStatusOpts = [
         value: 3,
     },
     {
-        label: "已过时",
+        label: "已过期",
         value: 4,
     }
 ]

@@ -66,7 +66,7 @@ const routes: RoutesDataItem[] = [
     component: SecurityLayout,
     children: [
       {
-        title: '首页',
+        title: 'home',
         path: '/',
         redirect: '/home',
         component: HomeLayout,

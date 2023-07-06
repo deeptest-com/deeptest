@@ -137,6 +137,8 @@ const handleSuccess = async () => {
 
 function handleTabClick(e: number) {
   console.log("activeKey", activeKey);
+  keywords.value = ""
+  onSearch()
 }
 
 function handleJoin(item) {

@@ -50,8 +50,8 @@
               <a-table :loading="fetching"
                        :rowKey="'id'"
                        :row-selection="{
-                selectedRowKeys: selectedRowKeys,
-                onChange: onSelectChange
+                      selectedRowKeys: selectedRowKeys,
+                      onChange: onSelectChange
               }"
                        :pagination="{
                   ...pagination,
@@ -254,7 +254,18 @@ const MenuList = [
   },
 ]
 const selectedRowKeys = ref<Key[]>([]);
-const selectedRowIds = ref<Key[]>([]);
+
+const selectedRowIds = computed(() => {
+  const ids: any[] = [];
+  Object.keys(selectedRow.value).forEach((key: string) => {
+    ids.push(...selectedRow.value[key]);
+  });
+  return ids;
+});
+
+const selectedRow = ref<any>({});
+const currentPage = ref(1);
+
 const loading = false;
 // 抽屉是否打开
 const drawerVisible = ref<boolean>(false);
@@ -262,7 +273,7 @@ const selectedCategoryId = ref<string | number>('');
 const onSelectChange = (keys: Key[], rows: any) => {
   console.log('onSelectChange', keys, rows)
   selectedRowKeys.value = [...keys];
-  selectedRowIds.value = rows.map((item: any) => item.id);
+  selectedRow.value[currentPage.value] = rows.map((item: any) => item.id);
 };
 const hasSelected = computed(() => selectedRowKeys.value.length > 0);
 
@@ -278,7 +289,9 @@ const showPublishDocsModal: any = ref(false)
 // 发布文档版本
 async function publishDocs() {
   showPublishDocsModal.value = false;
-  selectedRowIds.value = [];
+  selectedRowKeys.value = [];
+  selectedRow.value = {};
+  // selectedRowIds.value = [];
 }
 
 /**
@@ -400,8 +413,10 @@ async function selectNode(id) {
   });
 }
 
+
 const loadList = debounce(async (page, size, opts?: any) => {
   fetching.value = true;
+  currentPage.value = page;
   await store.dispatch('Endpoint/loadList', {
     "projectId": currProject.value.id,
     "page": page,

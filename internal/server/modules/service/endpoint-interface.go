@@ -52,7 +52,8 @@ func (s *EndpointInterfaceService) ImportEndpointData(req v1.ImportEndpointDataR
 	handler := convert.NewHandler(req.DriverType, data, req.FilePath)
 	doc, err := handler.ToOpenapi()
 	if err != nil {
-		return err
+		logUtils.Errorf("load end point data err ", zap.String("错误:", err.Error()))
+		return fmt.Errorf("文件格式错误")
 	}
 
 	openapi2endpoint := openapi.NewOpenapi2endpoint(doc, req.CategoryId)

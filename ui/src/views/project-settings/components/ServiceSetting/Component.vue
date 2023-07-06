@@ -259,14 +259,13 @@ async function handleAdd(formState: any) {
 }
 
 async function handleEdit() {
-  const content = JSON.parse(contentStr.value);
   const result = await store.dispatch('ProjectSetting/saveSchema', {
     schemaInfo: {
       "name": activeSchema.value.name,
       "id": activeSchema.value.id,
       "serveId": props.serveId,
       "tags": activeSchema.value.tabs,
-      "content": content,
+      "content": contentStr.value,
       "examples": exampleStr.value,
       "type": schemaType.value,
       "description": activeSchema.value.description

@@ -277,7 +277,6 @@ export default defineComponent({
         }
         const renderDataTypeSetting = (options: any) => {
             const {tree, isRefChildNode} = options;
-            console.log('renderDataTypeSetting', options);
             const propsLen = Object.keys(tree?.properties || {}).length;
             return <>
                 <DataTypeSetting

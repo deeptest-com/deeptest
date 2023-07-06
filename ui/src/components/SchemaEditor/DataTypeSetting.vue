@@ -272,10 +272,15 @@ async function searchRefs(keyword) {
 }
 
 onMounted(async () => {
-  await searchRefs('');
+  // await searchRefs('');
 })
 
 watch(() => {return visible.value}, async (newVal: any) => {
+
+  if(visible.value){
+    await searchRefs('');
+  }
+
   let {type, types} = props.value || {};
   // ref 优先级高于 type，如果是 ref，则优先取 ref值判断类型
   type =  props.value?.ref || type;

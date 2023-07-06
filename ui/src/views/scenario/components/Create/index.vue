@@ -102,7 +102,7 @@ watch(() => props.visible, async (val) => {
       name: '',
       priority: null,
       // 从缓存中 获取当前 默认选中的分类
-      categoryId: await getSelectedKey('category-scenario', currProject.value.id),
+      categoryId: await getSelectedKey('category-scenario', currProject.value.id) || -1,
       type: null,
       desc: null,
       projectId: currProject.value.id

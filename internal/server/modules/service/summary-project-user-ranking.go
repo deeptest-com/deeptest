@@ -62,7 +62,7 @@ func (s *SummaryProjectUserRankingService) ProjectUserRanking(projectId int64, c
 
 	//由于存在当月选项，当月数据需要重新进行排序，不累积
 	if len(resRankingList.UserRankingList) != 0 {
-		resRankingList, _ = s.SortRankingList(resRankingList)
+		//resRankingList, _ = s.SortRankingList(resRankingList)
 	}
 
 	return
@@ -277,7 +277,7 @@ func (s *SummaryProjectUserRankingService) GetRanking(projectId int64) (rankings
 		rankings = append(rankings, ranking)
 	}
 	if len(rankings) != 0 {
-		rankings, err = s.SortRanking(rankings)
+		//rankings, err = s.SortRanking(rankings)
 	}
 
 	return

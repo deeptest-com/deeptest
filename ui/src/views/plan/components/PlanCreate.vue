@@ -152,6 +152,8 @@ watch(() => {
     getSelectedKey('category-plan', currProject.value.id).then(async keys => {
       if(keys){
         modelRef.categoryId = keys;
+      }else{
+        modelRef.categoryId = -1
       }
     })
   }

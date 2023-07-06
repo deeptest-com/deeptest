@@ -260,6 +260,7 @@ const store = useStore<{ Endpoint, ServeGlobal: ServeStateType }>();
 const refsOptions:any = ref([]);
 
 async function searchRefs(keyword) {
+  //TODO 加缓存，否则会重复拿数据
   debounce(async () => {
     refsOptions.value = await store.dispatch('Endpoint/getAllRefs', {
       "serveId": props.serveId,
@@ -271,10 +272,15 @@ async function searchRefs(keyword) {
 }
 
 onMounted(async () => {
-  await searchRefs('');
+  // await searchRefs('');
 })
 
 watch(() => {return visible.value}, async (newVal: any) => {
+
+  if(visible.value){
+    await searchRefs('');
+  }
+
   let {type, types} = props.value || {};
   // ref 优先级高于 type，如果是 ref，则优先取 ref值判断类型
   type =  props.value?.ref || type;

@@ -11,7 +11,7 @@ type SummaryProjectUserRankingService struct {
 	SummaryProjectUserRankingRepo *repo.SummaryProjectUserRankingRepo `inject:""`
 }
 
-func (s *SummaryProjectUserRankingService) ProjectUserRanking(projectId int64, cycle int64) (resRankingList v1.ResRankingList, err error) {
+func (s *SummaryProjectUserRankingService) ProjectUserRanking(cycle int64, projectId int64) (resRankingList v1.ResRankingList, err error) {
 
 	//获取即时数据
 	newRankings, _ := s.GetRanking(projectId)
@@ -62,7 +62,7 @@ func (s *SummaryProjectUserRankingService) ProjectUserRanking(projectId int64, c
 
 	//由于存在当月选项，当月数据需要重新进行排序，不累积
 	if len(resRankingList.UserRankingList) != 0 {
-		//resRankingList, _ = s.SortRankingList(resRankingList)
+		resRankingList, _ = s.SortRankingList(resRankingList)
 	}
 
 	return
@@ -277,7 +277,7 @@ func (s *SummaryProjectUserRankingService) GetRanking(projectId int64) (rankings
 		rankings = append(rankings, ranking)
 	}
 	if len(rankings) != 0 {
-		//rankings, err = s.SortRanking(rankings)
+		rankings, err = s.SortRanking(rankings)
 	}
 
 	return

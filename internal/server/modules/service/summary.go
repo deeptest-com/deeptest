@@ -23,8 +23,8 @@ func (s *SummaryService) Details(userId int64) (res v1.ResSummaryDetail, err err
 	return
 }
 
-func (s *SummaryService) ProjectUserRanking(projectId int64, cycle int64) (res v1.ResRankingList, err error) {
-	res, err = s.SummaryProjectUserRankingService.ProjectUserRanking(projectId, cycle)
+func (s *SummaryService) ProjectUserRanking(cycle int64, projectId int64) (res v1.ResRankingList, err error) {
+	res, err = s.SummaryProjectUserRankingService.ProjectUserRanking(cycle, projectId)
 	return
 }
 

@@ -46,11 +46,12 @@ func ReadDataFromExcel(url string) (ret []domain.VarKeyValuePair, err error) {
 		return
 	}
 
-	if len(excel.GetSheetList()) == 0 {
+	sheetList := excel.GetSheetList()
+	if len(sheetList) == 0 {
 		return
 	}
 
-	firstSheet := excel.GetSheetList()[0]
+	firstSheet := sheetList[0]
 
 	rows, err := excel.GetRows(firstSheet)
 	if len(rows) < 2 {

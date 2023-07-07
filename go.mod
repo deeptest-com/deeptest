@@ -4,7 +4,7 @@ go 1.17
 
 require (
 	github.com/Knetic/govaluate v3.0.1-0.20171022003610-9aa49832a739+incompatible
-	github.com/andybalholm/brotli v1.0.3
+	github.com/andybalholm/brotli v1.0.5
 	github.com/antchfx/htmlquery v1.2.5
 	github.com/antchfx/jsonquery v1.3.0
 	github.com/antchfx/xmlquery v1.3.12
@@ -60,6 +60,8 @@ require (
 )
 
 require (
+	github.com/474420502/gcurl v0.7.0 // indirect
+	github.com/474420502/requests v1.35.0 // indirect
 	github.com/BurntSushi/toml v0.4.1 // indirect
 	github.com/CloudyKit/fastprinter v0.0.0-20200109182630-33d98a066a53 // indirect
 	github.com/CloudyKit/jet/v6 v6.1.0 // indirect
@@ -150,6 +152,7 @@ require (
 	github.com/richardlehane/msoleps v1.0.3 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/schollz/closestmatch v2.1.0+incompatible // indirect
+	github.com/schollz/progressbar v1.0.0 // indirect
 	github.com/sergi/go-diff v1.2.0 // indirect
 	github.com/spf13/afero v1.6.0 // indirect
 	github.com/spf13/cast v1.3.1 // indirect
@@ -158,6 +161,9 @@ require (
 	github.com/subosito/gotenv v1.2.0 // indirect
 	github.com/tdewolff/minify/v2 v2.9.22 // indirect
 	github.com/tdewolff/parse/v2 v2.5.21 // indirect
+	github.com/tidwall/gjson v1.12.0 // indirect
+	github.com/tidwall/match v1.1.1 // indirect
+	github.com/tidwall/pretty v1.2.0 // indirect
 	github.com/ulikunitz/xz v0.5.8 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.30.0 // indirect

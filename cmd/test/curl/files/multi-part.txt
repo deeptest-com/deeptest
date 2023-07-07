@@ -1,0 +1,16 @@
+
+
+----WebKitFormBoundary3bCA1lzvhj4kBR4Q
+FILE CONTENT ...
+
+----WebKitFormBoundary3bCA1lzvhj4kBR4Q
+Content-Disposition: form-data; name="myFile1"
+Content-Type: application/xml;version=1.0;charset=UTF-8
+
+<xml>FILE 1 CONTENT ...</xml>
+----WebKitFormBoundary3bCA1lzvhj4kBR4Q
+Content-Disposition: form-data; name="myFile2"
+Content-Type: text/plain
+
+FILE 2 CONTENT ...
+----WebKitFormBoundary3bCA1lzvhj4kBR4Q

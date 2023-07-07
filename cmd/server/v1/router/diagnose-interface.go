@@ -22,7 +22,9 @@ func (m *DiagnoseInterfaceModule) Party() module.WebModule {
 		index.Put("/", m.DiagnoseInterfaceCtrl.Update).Name = "更新测试接口"
 		index.Delete("/{id:uint}", m.DiagnoseInterfaceCtrl.Delete).Name = "删除测试接口"
 		index.Post("/move", m.DiagnoseInterfaceCtrl.Move).Name = "移动节点"
+
 		index.Post("/importInterfaces", m.DiagnoseInterfaceCtrl.ImportInterfaces).Name = "导入接口"
+		index.Post("/importCurl", m.DiagnoseInterfaceCtrl.ImportCurl).Name = "导入cURL命令"
 
 		index.Post("/saveDebugData", m.DiagnoseInterfaceCtrl.SaveDebugData).Name = "保存测试调试接口"
 	}

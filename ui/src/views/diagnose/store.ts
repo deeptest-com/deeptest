@@ -7,7 +7,7 @@ import {
     save,
     remove,
     move,
-    clone, saveDiagnoseDebugData, importInterfaces,
+    clone, saveDiagnoseDebugData, importInterfaces, importCurl,
 } from './service';
 import {serverList} from "@/views/project-settings/service";
 import {genNodeMap, getNodeMap} from "@/services/tree";
@@ -47,7 +47,9 @@ export interface ModuleType extends StoreModuleType<StateType> {
         removeInterface: Action<StateType, StateType>;
         moveInterface: Action<StateType, StateType>;
         cloneInterface: Action<StateType, StateType>;
+
         importInterfaces: Action<StateType, StateType>;
+        importCurl: Action<StateType, StateType>;
 
         openInterfaceTab: Action<StateType, StateType>;
         removeInterfaceTab: Action<StateType, StateType>;
@@ -190,6 +192,16 @@ const StoreModel: ModuleType = {
         async importInterfaces({commit, dispatch, state}, payload: any) {
             try {
                 const resp = await importInterfaces(payload);
+
+                await dispatch('loadTree', state.queryParams);
+                return resp.data;
+            } catch (error) {
+                return false;
+            }
+        },
+        async importCurl({commit, dispatch, state}, payload: any) {
+            try {
+                const resp = await importCurl(payload);
 
                 await dispatch('loadTree', state.queryParams);
                 return resp.data;

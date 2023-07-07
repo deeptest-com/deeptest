@@ -275,3 +275,9 @@ func (r *DiagnoseInterfaceRepo) UpdateDebugInfo(interf *model.DiagnoseInterface)
 
 	return
 }
+
+func (r *DiagnoseInterfaceRepo) CreateInterfaceFromCurl(interf *model.DiagnoseInterface, parent model.DiagnoseInterface) (
+	err error) {
+
+	return
+}

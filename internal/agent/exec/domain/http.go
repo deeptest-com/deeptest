@@ -1,6 +1,6 @@
 package agentDomain
 
-//type Request struct {
+//type Posts struct {
 //	BaseRequest
 //
 //	//InterfaceID uint `json:"interfaceID"`

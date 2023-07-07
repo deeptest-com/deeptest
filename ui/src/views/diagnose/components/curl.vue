@@ -1,0 +1,77 @@
+<template>
+  <a-modal width="600px"
+           title="导入cURL"
+           :visible="visible"
+           @ok="finish"
+           @cancel="cancel">
+    <a-form :label-col="{ span: 0 }" :wrapper-col="{ span: 24 }" >
+
+      <a-form-item label="" v-bind="validateInfos.content">
+        <a-textarea :rows="8"
+                    v-model:value="modelRef.content"/>
+      </a-form-item>
+
+    </a-form>
+  </a-modal>
+</template>
+
+<script lang="ts" setup>
+import {defineProps, reactive, ref, watch} from 'vue';
+import {Form} from 'ant-design-vue';
+
+const useForm = Form.useForm;
+
+const props = defineProps({
+  visible: {
+    required: true,
+    type: Boolean,
+  },
+  onFinish: {
+    type: Function,
+    required: true,
+  },
+  onCancel: {
+    type: Function,
+    required: true,
+  },
+})
+
+const modelRef = ref({
+  content: '',
+} as any);
+
+const rulesRef = reactive({
+  content: [
+    {required: true, message: '请输入cURL内容', trigger: 'blur'},
+  ],
+});
+
+const {resetFields, validate, validateInfos} = useForm(modelRef, rulesRef);
+
+watch(() => {return props.visible}, () => {
+  console.log('watch props.visible', props.visible)
+  modelRef.value = {
+    content: '',
+  }
+}, {deep: true})
+
+const finish = () => {
+  validate().then(() => {
+    props.onFinish(modelRef.value)
+    resetFields();
+  }).catch((error) => console.log('error', error))
+}
+
+const cancel = () => {
+  resetFields()
+  props.onCancel()
+}
+
+</script>
+
+<style lang="less" scoped>
+.modal-btns {
+  display: flex;
+  justify-content: flex-end;
+}
+</style>

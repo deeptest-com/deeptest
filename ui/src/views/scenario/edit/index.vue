@@ -34,7 +34,7 @@
 </template>
 
 <script setup lang="ts">
-import {defineComponent, computed, ref, reactive, ComputedRef, defineProps, PropType} from "vue";
+import {ref, reactive, defineProps, PropType} from "vue";
 import {useRouter} from "vue-router";
 import {useStore} from "vuex";
 import { useI18n } from "vue-i18n";

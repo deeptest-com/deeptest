@@ -7,9 +7,10 @@
                     @edit="onTabEdit"
                     @change="changeTab">
               <a-tab-pane v-for="tab in interfaceTabs" :key="''+tab.id" :tab="getTitle(tab.title)">
-
-                <UrlAndInvocation />
-                <DebugComp />
+                <template v-if="debugData?.method" >
+                  <UrlAndInvocation />
+                  <DebugComp />
+                </template>
 
               </a-tab-pane>
             </a-tabs>

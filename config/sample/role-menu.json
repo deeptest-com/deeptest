@@ -11,7 +11,7 @@
   },
   {
     "role_name":"tester",
-    "menus":["workbench", "endpoint", "diagnose", "scenario", "plan", "report", "diagnose","endpoint-add-interface","endpoint-copy-interface","endpoint-delete-interface","endpoint-outdated-interface","scenario-create","scenario-execute","scenario-design", "scenario-edit", "scenario-delete","scenario-start-execute","plan-create","plan-execute","plan-delete","report-export","project-setting-members-delete","user-manage-my-approval","user-manage-my-apply"
+    "menus":["workbench", "endpoint", "diagnose", "scenario", "plan", "report", "diagnose", "endpoint-add-interface","endpoint-copy-interface","endpoint-delete-interface","endpoint-outdated-interface","scenario-create","scenario-execute","scenario-design", "scenario-edit", "scenario-delete","scenario-start-execute","plan-create","plan-execute","plan-delete","report-export","project-setting-members-delete","user-manage-my-approval","user-manage-my-apply"
     ]
   },
   {

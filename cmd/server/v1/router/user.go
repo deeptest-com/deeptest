@@ -33,6 +33,8 @@ func (m *UserModule) Party() module.WebModule {
 		index.Get("/clear", m.UserCtrl.Clear).Name = "清空 token"
 		index.Post("/change_avatar", m.UserCtrl.ChangeAvatar).Name = "修改头像"
 		index.Get("/usersNotExistedInProject", m.UserCtrl.GetUsersNotExistedInProject).Name = "获取项目中没有的用户列表"
+		index.Post("/changeUserSysRole", m.UserCtrl.ChangeUserSysRole).Name = "更新用户系统角色"
+
 		// index.GetDetail("/expire", controllers.Expire).Title = "刷新 token"
 	}
 	return module.NewModule("/users", handler)

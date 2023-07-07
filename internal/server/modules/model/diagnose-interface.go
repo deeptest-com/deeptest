@@ -7,17 +7,17 @@ import (
 
 type DiagnoseInterface struct {
 	BaseModel
-	CreatedBy uint `json:"createdBy"`
-
-	Title string                             `json:"title"`
-	Desc  string                             `json:"desc"`
-	IsDir bool                               `json:"isDir"`
-	Type  serverConsts.DiagnoseInterfaceType `json:"type"`
-
-	ParentId  uint `json:"parentId"`
-	ServeId   uint `json:"serveId"`
-	ProjectId uint `json:"projectId"`
-	UseID     uint `json:"useId"`
+	CreatedBy uint                               `json:"createdBy"`
+	Name      string                             `json:"name"`
+	Title     string                             `json:"title"`
+	Desc      string                             `json:"desc"`
+	IsLeaf    bool                               `json:"isLeaf"`
+	Type      serverConsts.DiagnoseInterfaceType `json:"type"`
+	IsDir     bool                               `json:"IsDir"`
+	ParentId  uint                               `json:"parentId"`
+	ServeId   uint                               `json:"serveId"`
+	ProjectId uint                               `json:"projectId"`
+	UseID     uint                               `json:"useId"`
 
 	Ordr     int                  `json:"ordr"`
 	Children []*DiagnoseInterface `gorm:"-" json:"children"`

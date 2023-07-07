@@ -9,8 +9,9 @@ import cloneDeep from "lodash/cloneDeep";
 import {
     addExtraViewInfo,
     findLastNotArrayNode,
-    generateSchemaByArray, handleRefInfo,
-    isArray,
+    generateSchemaByArray,
+    handleRefInfo,
+    isArray, isCompositeType,
     isNormalType,
     isObject,
     isRef,
@@ -29,7 +30,6 @@ export default defineComponent({
         value: String,
         contentStyle: Object,
         serveId: Number,
-        refsOptions: Array
     },
     emits: ['change'],
     setup(props, {emit}) {
@@ -230,7 +230,9 @@ export default defineComponent({
         }, (newVal: any) => {
             try {
                 nextTick(() => {
-                    data.value = addExtraViewInfo(JSON.parse(newVal));
+                    let obj = JSON.parse(newVal);
+                    obj = obj ? obj : {type:'object'};
+                    data.value = addExtraViewInfo(obj);
                 })
             } catch (e) {
                 console.log('watch', e);
@@ -275,11 +277,11 @@ export default defineComponent({
         }
         const renderDataTypeSetting = (options: any) => {
             const {tree, isRefChildNode} = options;
-            console.log('renderDataTypeSetting', options);
             const propsLen = Object.keys(tree?.properties || {}).length;
             return <>
-                <DataTypeSetting refsOptions={props.refsOptions}
+                <DataTypeSetting
                                  value={tree}
+                                 serveId={props.serveId}
                                  isRefChildNode={isRefChildNode || false}
                                  onChange={dataTypeChange.bind(this, options)}/>
                 {isObject(tree?.type) && !isRef(tree) ? <span
@@ -352,7 +354,13 @@ export default defineComponent({
             if (!tree) return null;
             const isRoot = tree?.extraViewInfo?.depth === 1;
             const options = {...tree?.extraViewInfo, isRoot, tree: tree};
+            // 普通类型
             if (isNormalType(tree.type) && !isRef(tree)) {
+                return renderNormalType(options)
+            }
+            // 复合类型
+            if (isCompositeType(tree.type) && !isRef(tree)) {
+                // todo 复合类型的渲染
                 return renderNormalType(options)
             }
             // 渲染对象类型节点

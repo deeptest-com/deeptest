@@ -363,6 +363,7 @@ const StoreModel: ModuleType = {
             try {
                 await remove(payload);
                 await dispatch('listScenario', state.queryParams)
+                await dispatch('loadCategory');
                 return true;
             } catch (error) {
                 return false;

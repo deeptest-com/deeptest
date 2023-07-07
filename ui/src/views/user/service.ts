@@ -29,3 +29,11 @@ export async function remove(id: number): Promise<any> {
 export async function detail(id: number): Promise<any> {
     return request({url: `/${apiPath}/${id}`});
 }
+
+export async function updateSysRole(data): Promise<any> {
+    return request({
+        url: `/${apiPath}/changeUserSysRole`,
+        method: 'POST',
+        data
+    });
+}

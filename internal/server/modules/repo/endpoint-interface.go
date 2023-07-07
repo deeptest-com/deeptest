@@ -94,6 +94,31 @@ func (r *EndpointInterfaceRepo) Get(interfaceId uint) (field model.EndpointInter
 	return
 }
 
+func (r *EndpointInterfaceRepo) BatchGet(interfaceIds []uint) (fields []model.EndpointInterface, err error) {
+	err = r.DB.Model(model.EndpointInterface{}).
+		Where("id IN (?) AND NOT deleted", interfaceIds).
+		Find(&fields).Error
+	return
+}
+
+func (r *EndpointInterfaceRepo) GetIdAndModelMap(interfaceIds []uint) (res map[uint]model.EndpointInterface, err error) {
+	res = make(map[uint]model.EndpointInterface)
+
+	if len(interfaceIds) == 0 {
+		return
+	}
+
+	interfaces, err := r.BatchGet(interfaceIds)
+	if err != nil {
+		return
+	}
+
+	for _, v := range interfaces {
+		res[v.ID] = v
+	}
+	return
+}
+
 func (r *EndpointInterfaceRepo) GetDetail(interfId uint) (interf model.EndpointInterface, err error) {
 	if interfId > 0 {
 		interf, err = r.Get(interfId)
@@ -545,10 +570,17 @@ func (r *EndpointInterfaceRepo) ImportEndpointData(req v1.ImportEndpointDataReq)
 	return
 }
 
-func (r *EndpointInterfaceRepo) GetInterfaces(endpointIds []uint) (interfaces map[uint][]model.EndpointInterface, err error) {
+func (r *EndpointInterfaceRepo) GetInterfaces(endpointIds []uint, needDetail bool) (interfaces map[uint][]model.EndpointInterface, err error) {
 	interfaces = map[uint][]model.EndpointInterface{}
 	var result []model.EndpointInterface
 	err = r.DB.Where("endpoint_id in ?", endpointIds).Where("NOT deleted").Find(&result).Error
+
+	if !needDetail {
+		for key, item := range result {
+			interfaces[item.EndpointId] = append(interfaces[item.EndpointId], result[key])
+		}
+		return
+	}
 
 	var interfaceIds []uint
 	for _, item := range result {

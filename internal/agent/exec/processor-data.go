@@ -66,10 +66,12 @@ func (entity ProcessorData) Run(processor *Processor, session *Session) (err err
 }
 
 func (entity *ProcessorData) runDataItems(session *Session, processor *Processor, iterator agentDomain.ExecIterator) (err error) {
-	for index, item := range iterator.Data {
-		if DemoTestSite != "" && index > 2 {
-			break
-		}
+	for _, item := range iterator.Data {
+		/*
+			if DemoTestSite != "" && index > 2 {
+				break
+			}
+		*/
 
 		SetVariable(processor.ID, iterator.VariableName, item, consts.Public)
 

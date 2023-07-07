@@ -146,5 +146,9 @@ const editorChange = (newScriptCode) => {
 }
 </style>
 
-<style lang="less">
+<style lang="less" scoped>
+//.pre-body-main{
+//  max-height: 180px;
+//  overflow-y: scroll;
+//}
 </style>

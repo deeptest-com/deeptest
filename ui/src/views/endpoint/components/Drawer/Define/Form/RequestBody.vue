@@ -37,7 +37,6 @@
               @changeContent="changeContent"
               @changeExamples="changeExamples"
               :serveId="currServe.id"
-              :refsOptions="refsOptions"
               :contentStr="contentStr"
               :exampleStr="exampleStr"
               :tab-content-style="{width:'100%'}"/>
@@ -54,7 +53,6 @@ import {mediaTypesOpts,} from '@/config/constant';
 import {Endpoint} from "@/views/endpoint/data";
 import {DownOutlined, RightOutlined} from '@ant-design/icons-vue';
 import SchemaEditor from '@/components/SchemaEditor/index.vue';
-import {removeExtraViewInfo} from "@/components/SchemaEditor/utils";
 
 const store = useStore<{ Endpoint, Debug, ProjectGlobal, User, ServeGlobal }>();
 const endpointDetail: any = computed<Endpoint>(() => store.state.Endpoint.endpointDetail);
@@ -94,7 +92,7 @@ async function generateFromJSON(JSONStr: string) {
 }
 
 async function handleGenerateExample(examples: any) {
-  const content = JSON.stringify(removeExtraViewInfo(JSON.parse(contentStr.value), true));
+  const content = contentStr.value;
   const res = await store.dispatch('Endpoint/schema2example', {
     data: content,
     serveId: currServe.value.id
@@ -143,12 +141,6 @@ function changeContent(content: any) {
   }
 }
 
-const refsOptions = ref([]);
-onMounted(async () => {
-  refsOptions.value = await store.dispatch('Endpoint/getAllRefs', {
-    "serveId": currServe.value.id,
-  });
-})
 
 </script>
 <style lang="less" scoped>

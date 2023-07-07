@@ -1,10 +1,5 @@
 <script lang="ts" setup>
-import {
-  DeleteOutlined,
-  InfoCircleOutlined,
-  ReadOutlined,
-  InfoCircleTwoTone
-} from '@ant-design/icons-vue';
+
 import {computed, defineProps, defineEmits, ref, watch} from "vue";
 const props = defineProps(['value','deprecated','required']) ;
 const emit = defineEmits([])

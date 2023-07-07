@@ -1,26 +1,25 @@
 <template>
   <div class="home">
-    <StatisticHeader :params="cardData" :type="0" />
+    <StatisticHeader :params="cardData" :type="0"/>
     <div style="margin-top: 16px">
       <a-card :bordered="false">
         <template #title>
-          <a-tabs v-model:activeKey="activeKey" @change="handleTabClick">
-            <a-tab-pane :key="1" tab="我的项目"> </a-tab-pane>
-            <a-tab-pane :key="0" tab="所有项目"> </a-tab-pane> </a-tabs
-        ></template>
+          <a-tabs v-model:activeKey="activeKey">
+            <a-tab-pane :key="1" tab="我的项目"/>
+            <a-tab-pane :key="0" tab="所有项目"/>
+          </a-tabs
+          >
+        </template>
         <template #extra>
           <a-input-search
-            v-model:value="keywords"
-            style="width: 200px; margin-right: 20px"
-            placeholder="请输入项目名称搜索"
-            @search="onSearch"
-          />
+              v-model:value="keywordsMap[activeKey]"
+              style="width: 200px; margin-right: 20px"
+              placeholder="请输入项目名称搜索"/>
           <a-button
-            type="primary"
-            style="margin-right: 20px"
-            @click="handleOpenAdd"
-            >新建项目</a-button
-          >
+              type="primary"
+              style="margin-right: 20px"
+              @click="handleOpenAdd">新建项目
+          </a-button>
           <a-radio-group v-model:value="showMode" button-style="solid">
             <a-radio-button value="card">卡片</a-radio-button>
             <a-radio-button value="list">列表</a-radio-button>
@@ -28,75 +27,73 @@
         </template>
         <div>
           <HomeList
-            v-if="showMode == 'list'"
-            :activeKey="activeKey"
-            :searchValue="searchValue"
-             @join="handleJoin"
-            @edit="handleOpenEdit"
-            @delete="handleDelete"
-            @exit="handleExit"
-          />
-
-          <CardList
-            v-else
-            :activeKey="activeKey"
-            :searchValue="searchValue"
-            @join="handleJoin"
-            @edit="handleOpenEdit"
-            @delete="handleDelete"
-            @exit="handleExit"
-          />
+              v-if="showMode === 'list'"
+              :activeKey="activeKey"
+              :searchValue="keywordsMap[activeKey]"
+              @join="handleJoin"
+              :isLoading="isLoadingList"
+              @edit="handleOpenEdit"
+              @delete="handleDelete"
+              @exit="handleExit"/>
+          <CardList v-if="showMode === 'card'"
+                    :activeKey="activeKey"
+                    :searchValue="keywordsMap[activeKey]"
+                    :isLoading="isLoadingList"
+                    @join="handleJoin"
+                    @edit="handleOpenEdit"
+                    @delete="handleDelete"
+                    @exit="handleExit"/>
         </div>
       </a-card>
     </div>
 
     <!-- 创建项目弹窗 -->
     <CreateProjectModal
-      :visible="createProjectModalVisible"
-      :formState="formState"
-      @update:visible="createProjectModalVisible = false"
-      @handleSuccess="handleCreateSuccess"
+        :visible="createProjectModalVisible"
+        :formState="formState"
+        @update:visible="createProjectModalVisible = false"
+        @handleSuccess="handleCreateSuccess"
     />
     <!-- 申请项目权限弹窗 -->
     <ApplyProPermissionsModal
-      :visible="applyProPermissionsModalVisible"
-      :item="applyItem"
-      @update:visible="applyProPermissionsModalVisible = false"
-      @handleSuccess="handleSuccess"
+        :visible="applyProPermissionsModalVisible"
+        :item="applyItem"
+        @update:visible="applyProPermissionsModalVisible = false"
+        @handleSuccess="handleSuccess"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref } from "vue";
-import { Modal, notification } from "ant-design-vue";
+import {computed, onMounted, reactive, ref} from "vue";
+import {Modal, notification} from "ant-design-vue";
 import StatisticHeader from "@/components/StatisticHeader/index.vue";
 import CreateProjectModal from "@/components/CreateProjectModal/index.vue";
 import ApplyProPermissionsModal from "@/components/ApplyProPermissions/index.vue";
 import HomeList from "./component/HomeList/index.vue";
 import CardList from "./component/CardList/index.vue";
-import { useStore } from "vuex";
-import { StateType } from "./store";
-import { PaginationConfig, QueryParams } from "./data.d";
-import EditPage from "@/views/project/edit/edit.vue";
-import { useRouter } from "vue-router";
-import { setCache } from "@/utils/localCache";
-import settings from "@/config/settings";
+import {useStore} from "vuex";
+import {StateType} from "./store";
+import {useRouter} from "vue-router";
 import {removeMember} from "@/views/project/service";
 import {NotificationKeyCommon} from "@/utils/const";
 import {CurrentUser, StateType as UserStateType} from "@/store/user";
 // 获取当前登录用户信息
 const router = useRouter();
-const store = useStore<{ Home: StateType, User:UserStateType }>();
+const store = useStore<{ Home: StateType, User: UserStateType }>();
 const currentUser = computed<CurrentUser>(() => store.state.User.currentUser);
 const cardData = computed<any>(() => store.state.Home.cardData);
 const activeKey = ref(1);
-const keywords = ref<string>("");
-const searchValue = ref("");
+const keywordsMap = ref({
+  1: null, // 我的项目
+  0: null, // 所有项目
+});
 const showMode = ref("card");
 const createProjectModalVisible = ref(false);
 const applyProPermissionsModalVisible = ref(false);
 const applyItem = ref({});
+const isLoadingList = ref(true);
+
 let formState = ref({
   id: 0,
   logo: "",
@@ -107,41 +104,40 @@ let formState = ref({
   desc: "",
 });
 
-onMounted(() => {
-  if( router.currentRoute.value?.query?.type=='all'){
-    activeKey.value=0
+onMounted(async () => {
+  if (router.currentRoute.value?.query?.type == 'all') {
+    activeKey.value = 0
   }
-  getHearderData();
-  getList(1);
-  store.dispatch("User/fetchCurrent");
+  await getHearderData();
+  await getList(1);
+  await store.dispatch("User/fetchCurrent");
 });
-const onSearch = () => {
-  searchValue.value = keywords.value;
-};
+
 const getHearderData = async (): Promise<void> => {
-  await store.dispatch("Home/queryCard", { projectId: 0 });
-  await store.dispatch("Home/queryPie", { projectId: 0 });
+  await store.dispatch("Home/queryCard", {projectId: 0});
+  await store.dispatch("Home/queryPie", {projectId: 0});
 };
+
+// 获取全部项目数据
 const getList = async (current: number): Promise<void> => {
   await store.dispatch("Home/queryProject", {});
+  isLoadingList.value = false;
 };
+
 // 创建项目成功的回调
 const handleCreateSuccess = () => {
   createProjectModalVisible.value = false;
   getList(1);
 };
+
 // 申请加入项目成功的回调
 const handleSuccess = async () => {
   applyProPermissionsModalVisible.value = false;
-  // getList(1);
 };
 
-function handleTabClick(e: number) {
-  console.log("activeKey", activeKey);
-}
+
 
 function handleJoin(item) {
-  console.log("handleJoin", item);
   Modal.confirm({
     title: "提示",
     content: "您还没有该项目的访问权限，是否申请更多角色权限？",
@@ -153,10 +149,12 @@ function handleJoin(item) {
     },
   });
 }
+
 function handleOpenAdd() {
   createProjectModalVisible.value = true;
   formState.value.id = 0;
 }
+
 function handleOpenEdit(item) {
   formState.value.id = item.projectId;
   formState.value.name = item.projectName;
@@ -167,6 +165,7 @@ function handleOpenEdit(item) {
   formState.value.desc = item.projectDescr;
   createProjectModalVisible.value = true;
 }
+
 async function handleDelete(id) {
   Modal.confirm({
     title: "删除项目",
@@ -198,7 +197,7 @@ const handleExit = (item) => {
 
   Modal.confirm({
     title: "退出项目",
-    content: "确定要推出项目"+item.projectName+"？",
+    content: "确定要推出项目" + item.projectName + "？",
     okText: "确认",
     cancelText: "取消",
     onOk: async () => {
@@ -225,6 +224,7 @@ const handleExit = (item) => {
 <style lang="less" scoped>
 .home {
   padding: 16px;
+
   :deep(.ant-card-head .ant-tabs-bar) {
     border-bottom: none;
   }

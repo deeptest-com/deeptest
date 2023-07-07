@@ -19,6 +19,7 @@ type Schema struct {
 	Items      *SchemaRef `json:"items,omitempty" yaml:"items,omitempty"`
 	Properties Schemas    `json:"properties,omitempty" yaml:"properties,omitempty"`
 	Ref        string     `json:"ref,omitempty" yaml:"ref,omitempty"`
+	RefExt     string     `json:"$ref,omitempty" yaml:"ref,omitempty"`
 }
 
 func (schemaRef *SchemaRef) MarshalJSON() (res []byte, err error) {
@@ -37,11 +38,16 @@ func (schemaRef *SchemaRef) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
+
+	if schema.Ref == "" {
+		schema.Ref = schema.RefExt
+	}
+	schemaRef.Ref = schema.Ref
 	schemaRef.Value = &schema
 	return nil
 }
 
-type Components map[string]openapi3.SchemaRef
+type Components map[string]SchemaRef
 
 type schema2conv struct {
 	Components Components
@@ -54,23 +60,23 @@ func NewSchema2conv() *schema2conv {
 	return obj
 }
 
-func (s *schema2conv) Example2Schema(object interface{}, schema *openapi3.Schema) (err error) {
+func (s *schema2conv) Example2Schema(object interface{}, schema *Schema) (err error) {
 	V := reflect.ValueOf(object)
 	switch V.Kind() {
 	case reflect.Map:
 		schema.Type = openapi3.TypeObject
-		schema.Properties = openapi3.Schemas{}
+		schema.Properties = Schemas{}
 		iter := V.MapRange()
 		for iter.Next() {
 			key := iter.Key().String()
-			schema.Properties[key] = new(openapi3.SchemaRef)
-			schema.Properties[key].Value = new(openapi3.Schema)
+			schema.Properties[key] = new(SchemaRef)
+			schema.Properties[key].Value = new(Schema)
 			s.Example2Schema(iter.Value().Interface(), schema.Properties[key].Value)
 		}
 	case reflect.Slice:
 		schema.Type = openapi3.TypeArray
-		schema.Items = new(openapi3.SchemaRef)
-		schema.Items.Value = new(openapi3.Schema)
+		schema.Items = new(SchemaRef)
+		schema.Items.Value = new(Schema)
 		if V.Len() != 0 {
 			s.Example2Schema(V.Index(0).Interface(), schema.Items.Value)
 		}
@@ -88,16 +94,17 @@ func (s *schema2conv) Example2Schema(object interface{}, schema *openapi3.Schema
 	return
 }
 
-func (s *schema2conv) Schema2Example(schema openapi3.SchemaRef) (object interface{}) {
-	if ref, ok := s.Components[schema.Ref]; ok {
-		schema = ref
-		s.sets[schema.Ref]++
+func (s *schema2conv) Schema2Example(schema SchemaRef) (object interface{}) {
+	ref := schema.Ref
+	if component, ok := s.Components[schema.Ref]; ok {
+		s.sets[ref]++
+		schema = component
 	}
 
 	switch schema.Value.Type {
 	case openapi3.TypeObject:
 		object = map[string]interface{}{}
-		if s.sets[schema.Ref] > 1 {
+		if s.sets[ref] > 1 {
 			return
 		}
 		for key, property := range schema.Value.Properties {
@@ -105,7 +112,7 @@ func (s *schema2conv) Schema2Example(schema openapi3.SchemaRef) (object interfac
 		}
 	case openapi3.TypeArray:
 		object = make([]interface{}, 1)
-		if s.sets[schema.Ref] > 1 {
+		if s.sets[ref] > 1 {
 			return
 		}
 		object.([]interface{})[0] = s.Schema2Example(*schema.Value.Items)

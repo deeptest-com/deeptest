@@ -44,7 +44,7 @@ import {getDivision, getPercent, getPercentStr} from '@/utils/number';
 import {
   scenarioReports, expandKeys,
   clearLog,
-  execLogs, execResults, updateExecLogs, updateExecRes,statInfo
+  execLogs, execResults, updateExecLogs, updateExecResult,statInfo
   , statisticData, initData, progressStatus, progressValue, updatePlanRes,
 } from '@/composables/useExecLogs';
 
@@ -119,7 +119,6 @@ const execCancel = () => {
 
 
 const OnWebSocketMsg = (data: any) => {
-  console.log('832 websocket msg', data)
 
   if (!data.msg) return;
   if (progressStatus.value === 'cancel') return;
@@ -141,7 +140,7 @@ const OnWebSocketMsg = (data: any) => {
   }
   //  更新【场景】的执行结果
   else if (wsMsg.category == 'result' && log.scenarioId) {
-    updateExecRes(log);
+    updateExecResult(log);
     console.log('场景的结果', log)
   }
   // 更新【场景里每条编排】的执行记录

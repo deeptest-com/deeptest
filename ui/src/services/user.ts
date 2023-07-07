@@ -41,3 +41,4 @@ export async function updatePassword(data): Promise<any> {
         data
     });
 }
+

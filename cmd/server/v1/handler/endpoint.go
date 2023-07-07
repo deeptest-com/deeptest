@@ -14,6 +14,7 @@ import (
 
 type EndpointCtrl struct {
 	EndpointService *service.EndpointService `inject:""`
+	ServeService    *service.ServeService    `inject:""`
 }
 
 func (c *EndpointCtrl) Index(ctx iris.Context) {
@@ -85,10 +86,20 @@ func (c *EndpointCtrl) BatchDelete(ctx iris.Context) {
 
 //构造参数构造auth，BasicAuth,BearerToken,OAuth20,ApiKey
 func (c *EndpointCtrl) requestParser(req serverDomain.EndpointReq) (endpoint model.Endpoint) {
+
 	for key, item := range req.Interfaces {
 		req.Interfaces[key].Body = item.RequestBody.Examples
 		req.Interfaces[key].BodyType = item.RequestBody.MediaType
 		req.Interfaces[key].Name = req.Title
+		/*
+					if req.Interfaces[key].RequestBody.Examples == "" {
+						var examples []map[string]string
+			//			example := c.ServeService.Schema2Example(req.ServeId, item.RequestBody.SchemaItem.Content)
+			//			examples = append(examples, map[string]string{"name": "default", "content": commonUtils.JsonEncode(example)})
+			//			req.Interfaces[key].RequestBody.Examples = commonUtils.JsonEncode(examples)
+					}
+		*/
+
 	}
 
 	if req.CategoryId == 0 {

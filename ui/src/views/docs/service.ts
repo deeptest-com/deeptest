@@ -84,3 +84,26 @@ export async function getShareContent(data: any): Promise<any> {
         method: 'get',
     });
 }
+
+
+
+/**
+ * 通过获取分享的接口文档 详情
+ * */
+export async function getShareDocsDetail(data: any): Promise<any> {
+    return request({
+        url: `/document/share_detail?currProjectId=${data.currProjectId}&interfaceId=${data.interfaceId}`,
+        method: 'get',
+    });
+}
+
+/**
+ * 通过获取 接口文档数据
+ * */
+export async function getDocsDetail(data: any): Promise<any> {
+    return request({
+        url: `/document/detail?currProjectId=${data.currProjectId}&interfaceId=${data.interfaceId}`,
+        method: 'get',
+    });
+}
+

@@ -48,9 +48,10 @@
           <EmptyCom>
             <template #content>
               <a-table :loading="fetching"
+                       :rowKey="'id'"
                        :row-selection="{
-                selectedRowKeys: selectedRowKeys,
-                onChange: onSelectChange
+                      selectedRowKeys: selectedRowKeys,
+                      onChange: onSelectChange
               }"
                        :pagination="{
                   ...pagination,
@@ -149,7 +150,6 @@ import {
 } from 'vue';
 import {useRouter} from 'vue-router';
 import debounce from "lodash.debounce";
-import EndpointTree from './list/tree.vue';
 import {ColumnProps} from 'ant-design-vue/es/table/interface';
 import {ExclamationCircleOutlined, MoreOutlined} from '@ant-design/icons-vue';
 import {endpointStatusOpts, endpointStatus} from '@/config/constant';
@@ -254,7 +254,18 @@ const MenuList = [
   },
 ]
 const selectedRowKeys = ref<Key[]>([]);
-const selectedRowIds = ref<Key[]>([]);
+
+const selectedRowIds = computed(() => {
+  const ids: any[] = [];
+  Object.keys(selectedRow.value).forEach((key: string) => {
+    ids.push(...selectedRow.value[key]);
+  });
+  return ids;
+});
+
+const selectedRow = ref<any>({});
+const currentPage = ref(1);
+
 const loading = false;
 // 抽屉是否打开
 const drawerVisible = ref<boolean>(false);
@@ -262,7 +273,7 @@ const selectedCategoryId = ref<string | number>('');
 const onSelectChange = (keys: Key[], rows: any) => {
   console.log('onSelectChange', keys, rows)
   selectedRowKeys.value = [...keys];
-  selectedRowIds.value = rows.map((item: any) => item.id);
+  selectedRow.value[currentPage.value] = rows.map((item: any) => item.id);
 };
 const hasSelected = computed(() => selectedRowKeys.value.length > 0);
 
@@ -278,7 +289,9 @@ const showPublishDocsModal: any = ref(false)
 // 发布文档版本
 async function publishDocs() {
   showPublishDocsModal.value = false;
-  selectedRowIds.value = [];
+  selectedRowKeys.value = [];
+  selectedRow.value = {};
+  // selectedRowIds.value = [];
 }
 
 /**
@@ -340,6 +353,10 @@ async function del(record: any) {
     cancelText: () => '取消',
     onOk: async () => {
       const res = await store.dispatch('Endpoint/del', record);
+      // // 删除后重新拉取列表，根据当前页面和当前筛选条件
+      // await loadList(pagination.value.current, pagination.value.pageSize, filterState.value);
+      // // 重新拉取目录树
+      // await store.dispatch('Endpoint/loadCategory');
       if (res) {
         message.success('删除成功');
       } else {
@@ -385,27 +402,35 @@ async function handleImport(data, callback) {
 
 }
 
+// 当前筛选条件，包括分类、服务、状态
+const filterState:any = ref({});
 async function selectNode(id) {
   selectedCategoryId.value = id;
-  await loadList(pagination.value.current, pagination.value.pageSize, {
+  // 选中节点时，重置分页为第一页
+  await loadList(1, pagination.value.pageSize, {
     categoryId: id,
     serveId: currServe.value.id,
   });
 }
 
+
 const loadList = debounce(async (page, size, opts?: any) => {
   fetching.value = true;
+  currentPage.value = page;
   await store.dispatch('Endpoint/loadList', {
     "projectId": currProject.value.id,
     "page": page,
     "pageSize": size,
     opts,
   });
+  // await store.dispatch('Endpoint/loadCategory');
   fetching.value = false;
 }, 300)
 
-async function handleTableFilter(filterState) {
-  await loadList(pagination.value.current, pagination.value.pageSize, filterState);
+
+async function handleTableFilter(state) {
+  filterState.value = state;
+  await loadList(pagination.value.current, pagination.value.pageSize, state);
 }
 
 // 实时监听项目/服务 ID，如果项目切换了则重新请求数据
@@ -427,7 +452,6 @@ watch(() => [currProject.value.id, currServe.value.id], async (newVal) => {
 
 async function refreshList() {
   await loadList(pagination.value.current, pagination.value.pageSize);
-  //await store.dispatch('Endpoint/loadCategory');
 }
 
 watch(

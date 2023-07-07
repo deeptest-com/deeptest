@@ -452,13 +452,13 @@ const StoreModel: ModuleType = {
         },
 
         async getSchemaList({ commit }, params: SchemaListReqParams) {
-            const reqParams = { ...params, page: 1, pageSize: 20 };
-            const res = await getSchemaList(reqParams);
+            // const reqParams = { ...params, page: 1, pageSize: 20 };
+            const res = await getSchemaList(params);
             if (res.code === 0) {
-                console.log('%c getSchemaList request success===== sucessData', 'color: red', res);
                 commit('setSchemaList', res.data.result);
+                return res;
             } else {
-                console.log('%c getSchemaList request failed===== failedData', 'color: green', res);
+                message.error('获取schema列表失败');
             }
         },
 

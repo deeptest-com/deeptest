@@ -1,9 +1,9 @@
 <template>
-  <div class="content"  :style="isDocsFullPage ? {height: '100vh'} :{}" v-if="data?.name && serviceList?.length">
+  <div class="content" :class="{'full-content':isDocsFullPage}" v-if="data?.name && serviceList?.length">
     <DocsHeader v-if="showHeader"
                 :data="data"
                 :items="serviceList"
-                @select="selectSugRes"
+                @select="selectMenu"
                 @changeVersion="changeVersion"/>
     <a-divider style="margin:0" v-if="showHeader"/>
     <div class="doc-container">
@@ -21,7 +21,7 @@
     <a-empty
         image="https://gw.alipayobjects.com/mdn/miniapp_social/afts/img/A*pevERLJC9v0AAAAAAAAAAABjAQAAAQ/original"
         :image-style="{height: '60px',}">
-        <template #description>
+      <template #description>
                 <span>
                   您还未定义接口，请先定义接口
                 </span>
@@ -44,12 +44,15 @@ import LeftTreeView from "./components/LeftTreeView.vue";
 import EndpointDoc from "./components/EndpointDoc.vue";
 import DocsHeader from "./components/DocsHeader.vue";
 
-const store = useStore<{ Endpoint, ProjectGlobal }>();
+const store = useStore<{ Docs }>();
 const props = defineProps(['showMenu', 'data', 'onlyShowDocs', 'showHeader']);
-const emit = defineEmits(['changeVersion','switchToDefineTab']);
+const emit = defineEmits(['changeVersion', 'switchToDefineTab']);
 
 const isEndpointPage = window.location.href.includes('/endpoint/index');
-const isDocsFullPage = window.location.href.includes('/docs/share') || window.location.pathname.includes('/docs/view');
+const isSharePage = window.location.href.includes('/docs/share');
+const isViewPage = window.location.href.includes('/docs/view');
+
+const isDocsFullPage = isSharePage || isViewPage;
 
 const serviceList = computed(() => {
   // 组装数据以兼容组件 LeftTreeMenu
@@ -60,7 +63,6 @@ const serviceList = computed(() => {
       items.push(item);
     }
     item?.endpoints?.forEach((endpoint: any) => {
-
       endpoint?.interfaces?.forEach((interfaceItem: any) => {
         items.push({
           ...interfaceItem,
@@ -80,35 +82,56 @@ const selectedKeys = computed(() => {
   if (!selectedItem.value?.id) {
     return [];
   }
-  return [selectedItem.value?.id];
+  return [`${selectedItem.value?.method || 'serve'}-${selectedItem.value.id}`];
 })
 
 watch(() => {
   return serviceList.value
-}, (newVal) => {
+}, async (newVal) => {
   if (newVal.length > 0) {
-    selectedItem.value = newVal.find((item) => {
-      return item.endpointInfo && item.serveInfo;
-    })
-    if (!selectedItem.value) {
-      selectedItem.value = newVal[0];
-    }
+    selectedItem.value = newVal[0];
+    // selectedItem.value = newVal.find((item) => {
+    //   return item.endpointInfo && item.serveInfo;
+    // })
+    // // 如果没有选择的接口，则默认选择第一个，即服务信息
+    // if (!selectedItem.value) {
+    //   selectedItem.value = newVal[0];
+    // }
   }
 }, {immediate: true});
 
+async function selectMenu(item) {
+  selectedItem.value = item;
 
-function selectSugRes(item) {
-  selectedItem.value = item
+  // 如果是接口定义页面，则不请求文档详情,会一次性请求所有接口的文档详情
+  if(isEndpointPage){
+    return;
+  }
+
+  // 仅选择文档时，才请求文档详情
+  if (item.endpointInfo && item.serveInfo) {
+    let res: any = null;
+    if (isSharePage) {
+      res = await store.dispatch('Docs/getShareDocsDetail', {
+        currProjectId: item.serveInfo.projectId,
+        interfaceId: item.id,
+      });
+    } else {
+      res = await store.dispatch('Docs/getDocsDetail', {
+        currProjectId: item.serveInfo.projectId,
+        interfaceId: item.id,
+      });
+    }
+    if (res?.interface) {
+      selectedItem.value = {
+        ...selectedItem.value,
+        ...res.interface,
+      };
+    }
+  }
 }
-
-
-function selectMenu(item) {
-  selectedItem.value = item
-}
-
 
 function changeVersion(docId) {
-  // debugger;
   emit('changeVersion', docId);
 }
 
@@ -157,5 +180,9 @@ function changeVersion(docId) {
   .only-docs {
     padding: 0;
   }
+}
+
+.full-content {
+  height: calc(100vh - 56px);
 }
 </style>

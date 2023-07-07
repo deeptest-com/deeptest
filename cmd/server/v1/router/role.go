@@ -20,6 +20,7 @@ func (m *RoleModule) Party() module.WebModule {
 		index.Post("/", m.RoleCtrl.CreateRole).Name = "新建角色"
 		index.Post("/{id:uint}", m.RoleCtrl.UpdateRole).Name = "编辑角色"
 		index.Delete("/{id:uint}", m.RoleCtrl.DeleteRole).Name = "删除角色"
+		index.Get("/all", m.RoleCtrl.AllRoleList).Name = "无分页的角色列表"
 	}
 	return module.NewModule("/roles", handler)
 }

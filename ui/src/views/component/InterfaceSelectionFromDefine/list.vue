@@ -92,6 +92,11 @@ const pagination = ref<any>({
   showQuickJumper: true,
 })
 
+watch(() => {return props.categoryId}, () => {
+  console.log('watch props.categoryId for reload', props.categoryId)
+  selectCategory()
+}, {deep: false})
+
 const loadList = debounce(async (page, pageSize) => {
   pagination.value.page = page
   pagination.value.pageSize = pageSize

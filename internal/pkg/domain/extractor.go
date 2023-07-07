@@ -16,7 +16,7 @@ type ExtractorBase struct {
 	BoundaryIncluded bool   `json:"boundaryIncluded"`
 
 	Variable string `json:"variable"`
-	Result   string `json:"result"`
+	Result   string `gorm:"type:text" json:"result"`
 
 	Disabled bool `gorm:"-" json:"disabled"`
 }

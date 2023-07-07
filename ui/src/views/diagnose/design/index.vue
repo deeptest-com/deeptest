@@ -1,12 +1,12 @@
 <template>
   <div class="diagnose-interface-design-main">
-      <div v-if="debugData?.method" id="diagnose-interface-debug-panel">
+      <div id="diagnose-interface-debug-panel">
         <div id="diagnose-interface-debug-content">
           <div class="tabs">
             <a-tabs type="editable-card" :hideAdd="true" v-model:activeKey="activeTabKey"
                     @edit="onTabEdit"
                     @change="changeTab">
-              <a-tab-pane v-for="tab in interfaceTabs" :key="''+tab.id" :tab="tab.title">
+              <a-tab-pane v-for="tab in interfaceTabs" :key="''+tab.id" :tab="getTitle(tab.title)">
 
                 <UrlAndInvocation />
                 <DebugComp />
@@ -126,6 +126,14 @@ const onTabEdit = (key, action) => {
     store.dispatch('DiagnoseInterface/removeInterfaceTab', +key);
   }
 };
+
+const getTitle = (title) => {
+  const len = title.length
+  if (len <= 12) return title
+
+  return title.substr(0, 16) + '...' + title.substr(len-6, len);
+};
+
 </script>
 
 <style lang="less">

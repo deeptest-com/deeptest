@@ -251,29 +251,25 @@ const StoreModel: ModuleType = {
 
             const needReload = id === state.interfaceId
 
-            let lastIndex = 0;
+            let index = 0;
             state.interfaceTabs.forEach((tab, i) => {
                 if (tab.id === id) {
-                    lastIndex = i - 1;
+                    index = i;
                 }
             });
 
             const interfaceTabs = state.interfaceTabs.filter(tab => tab.id !== id);
+            console.log('after remove ', interfaceTabs)
             commit('setInterfaceTabs', interfaceTabs)
 
-            let closedTab = {} as any
-            if (state.interfaceTabs.length && state.interfaceId === id) {
-                if (lastIndex >= 0) {
-                    closedTab = state.interfaceTabs[lastIndex]
-                } else {
-                    closedTab = state.interfaceTabs[0]
-                }
-
-                commit('setInterfaceId', closedTab.id)
+            let openTab = {} as any
+            if (state.interfaceTabs.length && state.interfaceId === id) { // close curr tab
+                openTab = state.interfaceTabs[0]
+                commit('setInterfaceId', openTab.id)
             }
 
-            if (needReload && closedTab.id) {
-                dispatch('openInterfaceTab', closedTab);
+            if (needReload && openTab.id) {
+                dispatch('openInterfaceTab', openTab);
             }
         },
         async saveDiagnoseDebugData({commit}, payload: any) {

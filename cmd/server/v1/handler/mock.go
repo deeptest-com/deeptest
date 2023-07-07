@@ -1,9 +1,9 @@
 package handler
 
 import (
+	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	mockHelper "github.com/aaronchen2k/deeptest/internal/server/modules/helper/mock"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
@@ -21,7 +21,7 @@ func (c *MockCtrl) OAuth2Callback(ctx iris.Context) {
 }
 
 func (c *MockCtrl) Get(ctx iris.Context) {
-	respType := ctx.URLParam("type")
+	respType := ctx.URLParam("respType")
 
 	username, password, ok := ctx.Request().BasicAuth()
 	if ok {
@@ -50,29 +50,33 @@ func (c *MockCtrl) Get(ctx iris.Context) {
 	}
 }
 
-func (c *MockCtrl) Request(ctx iris.Context) {
-	var req model.MockInvocation
-	err := ctx.ReadQuery(&req)
-	if err != nil {
-		logUtils.Errorf("参数获取失败", err.Error())
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
-		return
-	}
-
-	data, err := c.MockService.Exec(req)
-	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
-		return
-	}
-
+func (c *MockCtrl) Posts(ctx iris.Context) {
+	repType := ctx.URLParam("reqType")
 	reqBodyType := ctx.GetHeader(consts.ContentType)
+
+	var data interface{}
+	var err error
+
+	if repType == "json" {
+		var req serverDomain.MockReqJson
+		ctx.ReadJSON(&req)
+		data = iris.Map{"req": req}
+	} else if repType == "form" {
+		name := ctx.FormValue("name")
+		password := ctx.FormValue("password")
+		data = iris.Map{"name": name, "password": password}
+	} else if repType == "file" {
+		name := ctx.FormValue("name")
+		data, _, err = ctx.FormFile("myFile")
+		data = iris.Map{"name": name, "data": data}
+	}
 
 	if reqBodyType == consts.ContentTypeJSON.String() {
 		ctx.Header(consts.ContentType, consts.ContentTypeJSON.String()+";charset=utf-8")
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data, Msg: _domain.NoErr.Msg})
 	} else if reqBodyType == consts.ContentTypeXML.String() {
 		ctx.Header(consts.ContentType, consts.ContentTypeXML.String()+";charset=utf-8")
-		ctx.XML(_domain.Response{Code: _domain.NoErr.Code, Data: req, Msg: _domain.NoErr.Msg})
+		ctx.XML(_domain.Response{Code: _domain.NoErr.Code, Data: data, Msg: _domain.NoErr.Msg})
 	} else if reqBodyType == consts.ContentTypeHTML.String() {
 		ctx.Header(consts.ContentType, consts.ContentTypeHTML.String()+";charset=utf-8")
 		ctx.HTML(mockHelper.GetHtmlData())
@@ -80,6 +84,8 @@ func (c *MockCtrl) Request(ctx iris.Context) {
 		ctx.Header(consts.ContentType, consts.ContentTypeTEXT.String()+";charset=utf-8")
 		ctx.Text(mockHelper.GetTextData())
 	}
+
+	log.Println(err)
 }
 
 func (c *MockCtrl) Head(ctx iris.Context) {

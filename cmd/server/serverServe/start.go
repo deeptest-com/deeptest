@@ -47,7 +47,7 @@ func Start() {
 	irisApp := createIrisApp(&idleConnClosed)
 
 	//irisApp.Use(func(ctx iris.Context) {
-	//	ctx.Request().Header.Del("Origin")
+	//	ctx.Posts().Header.Del("Origin")
 	//	ctx.Next()
 	//})
 
@@ -206,7 +206,7 @@ func initWebSocket(irisApp *iris.Application) {
 	m.HandleWebsocket(websocketCtrl)
 	websocketServer := websocket.New(
 		middleware.DefaultUpgrader,
-		//gorilla.Upgrader(gorillaWs.Upgrader{CheckOrigin: func(*http.Request) bool { return true }}),
+		//gorilla.Upgrader(gorillaWs.Upgrader{CheckOrigin: func(*http.Posts) bool { return true }}),
 		m)
 
 	websocketAPI.Get("/", websocket.Handler(websocketServer))

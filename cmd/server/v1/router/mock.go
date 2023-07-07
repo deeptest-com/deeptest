@@ -14,11 +14,11 @@ type MockModule struct {
 func (m *MockModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
 		index.Get("/", m.MockCtrl.Get).Name = "模拟接口测试"
-		index.Post("/", m.MockCtrl.Request).Name = "模拟接口测试"
-		index.Put("/", m.MockCtrl.Request).Name = "模拟接口测试"
-		index.Delete("/", m.MockCtrl.Request).Name = "模拟接口测试"
+		index.Post("/", m.MockCtrl.Posts).Name = "模拟接口测试"
+		index.Put("/", m.MockCtrl.Posts).Name = "模拟接口测试"
+		index.Delete("/", m.MockCtrl.Posts).Name = "模拟接口测试"
 
-		index.Patch("/", m.MockCtrl.Request).Name = "模拟接口测试"
+		index.Patch("/", m.MockCtrl.Posts).Name = "模拟接口测试"
 		index.Head("/", m.MockCtrl.Head).Name = "模拟接口测试"
 
 		index.Connect("/", m.MockCtrl.Connect).Name = "模拟接口测试"

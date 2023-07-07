@@ -45,12 +45,12 @@ func (r *BaseRepo) GetAllChildIds(id uint, tableName string, typ serverConsts.Ca
 	sql := `
 		WITH RECURSIVE temp AS
 		(
-			SELECT id, parent_id, name from %s a 
+			SELECT id, parent_id from %s a 
 				WHERE a.id = %d AND type='%s' AND project_id=%d AND NOT a.deleted
 		
 			UNION ALL
 		
-			SELECT b.id, b.parent_id, b.name 
+			SELECT b.id, b.parent_id 
 				from temp c
 				inner join %s b on b.parent_id = c.id
 				WHERE type='%s' AND project_id=%d AND NOT b.deleted
@@ -75,12 +75,12 @@ func (r *BaseRepo) GetAllChildIdsSimple(id uint, tableName string) (
 	sql := `
 		WITH RECURSIVE temp AS
 		(
-			SELECT id, parent_id, name from %s a 
+			SELECT id, parent_id from %s a 
 				WHERE a.id = %d AND NOT a.deleted
 		
 			UNION ALL
 		
-			SELECT b.id, b.parent_id, b.name 
+			SELECT b.id, b.parent_id 
 				from temp c
 				inner join %s b on b.parent_id = c.id
 				WHERE NOT b.deleted

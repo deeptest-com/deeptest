@@ -4,10 +4,6 @@
       <div>
         <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
 
-          <a-form-item label="备注" v-bind="validateInfos.comments">
-            <a-input v-model:value="modelRef.comments"/>
-          </a-form-item>
-
           <a-form-item label="变量名称" v-bind="validateInfos.variable">
             <a-input v-model:value="modelRef.variable"
                      @blur="validate('variable', { trigger: 'blur' }).catch(() => {})" />
@@ -28,6 +24,10 @@
             <a-switch v-model:checked="modelRef.boundaryIncluded" />
           </a-form-item>
 
+          <a-form-item label="备注" v-bind="validateInfos.comments">
+            <a-input v-model:value="modelRef.comments"/>
+          </a-form-item>
+
           <a-form-item :wrapper-col="{ span: 16, offset: 4 }">
             <a-button type="primary" @click.prevent="submitForm">保存</a-button>
             <a-button style="margin-left: 10px" @click="resetFields">重置</a-button>
@@ -44,7 +44,7 @@ import {useRouter} from "vue-router";
 import {useStore} from "vuex";
 import {useI18n} from "vue-i18n";
 import {Form, message, notification} from 'ant-design-vue';
-import {StateType as ScenarioStateType} from "../../../../store";
+import {StateType as ScenarioStateType} from "../../../../../store";
 import {NotificationKeyCommon} from "@/utils/const";
 
 const useForm = Form.useForm;

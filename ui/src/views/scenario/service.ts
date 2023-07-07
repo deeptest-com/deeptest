@@ -7,9 +7,10 @@ import {
     ProcessorLogic,
     ProcessorLoop, ProcessorGroup, ProcessorTimer, ProcessorPrint,
     ProcessorCategory,
-    ProcessorVariable, ProcessorAssertion, RequestBodyType, UsedBy
+    ProcessorVariable, ProcessorAssertion, RequestBodyType, UsedBy, ProcessorAction, ProcessorInterface
 } from "@/utils/enum";
 import {Interface} from "@/views/component/debug/data";
+import {isInArray} from "@/utils/array";
 
 const apiPath = 'scenarios';
 const apiPathNodes = `${apiPath}/nodes`;
@@ -251,7 +252,9 @@ export function getRequestBodyTypes() {
 }
 
 export function getProcessorCategories() {
-    return getEnumSelectItems(ProcessorCategory)
+    const ret = getEnumSelectItems(ProcessorCategory)
+    console.log('====', ret)
+    return ret
 }
 
 export function getProcessorTypeNames() {
@@ -335,3 +338,59 @@ export async function syncDebugData(scenarioProcessorId: number): Promise<any> {
     });
 }
 
+export function getMenu(entityCategory: ProcessorCategory): ProcessorAction[] {
+    const ret:ProcessorAction[] = []
+
+    if (isInterface(entityCategory)) {
+        ret.push(
+            ProcessorAction.ActionEdit,
+            ProcessorAction.ActionRemove,
+            ProcessorAction.ActionInInterface,)
+
+    } else if (isRoot(entityCategory)) {
+        ret.push(
+            ProcessorAction.ActionAddProcessor,
+            ProcessorAction.ActionImportInterface,)
+
+    } else { // no-root dir
+        ret.push(
+            ProcessorAction.ActionEdit,
+            ProcessorAction.ActionRemove,
+            ProcessorAction.ActionAddProcessor,
+            ProcessorAction.ActionImportInterface,)
+    }
+
+    return ret
+}
+
+export const showMenuItem = (entityType, category) => {
+    const isInterface = entityType === ProcessorInterface.Interface
+    // console.log('showMenuItem', isInterface, entityType, category)
+
+    if (isInterface && isInArray(category, [ProcessorCategory.ProcessorCookie,
+        ProcessorCategory.ProcessorExtractor,
+        ProcessorCategory.ProcessorAssertion,])) {
+        return true
+
+    } else if (!isInterface && !isInArray(category, [ProcessorCategory.ProcessorExtractor])) {
+        return true
+
+    }
+
+    return false
+}
+
+export const showSubMenuItem = (entityType, category, type) => {
+    const isInterface = entityType === ProcessorInterface.Interface
+
+    if (isInterface &&
+        category.label === ProcessorCategory.ProcessorCookie && !isInArray(type, [ProcessorCookie.Get,])) {
+        return false
+    }
+
+    if (entityType !== ProcessorLogic.If && isInArray(type, [ProcessorLogic.Else,])) {
+        return false
+    }
+
+    return true
+}

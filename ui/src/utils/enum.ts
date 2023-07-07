@@ -15,13 +15,21 @@ export enum WsMsgCategory {
     Result = "result",
 }
 
+export enum ProcessorAction {
+    ActionEdit = 'action_edit',
+    ActionRemove = 'action_remove',
+    ActionImportInterface = 'action_import_interface',
+    ActionAddProcessor = 'action_add_processor',
+    ActionInInterface = 'action_in_interface',
+}
+
 export enum ProcessorCategory {
     ProcessorRoot = "processor_root",
     ProcessorThread = "processor_thread",
     ProcessorGroup = "processor_group",
     ProcessorInterface = "processor_interface",
-    ProcessorLoop = "processor_loop",
     ProcessorLogic = "processor_logic",
+    ProcessorLoop = "processor_loop",
     ProcessorData = "processor_data",
     ProcessorVariable  = "processor_variable",
     ProcessorCookie = "processor_cookie",
@@ -30,7 +38,9 @@ export enum ProcessorCategory {
     ProcessorPrint = "processor_print",
     ProcessorAssertion = "processor_assertion",
 }
-
+export enum ProcessorInterface {
+    Interface = "processor_interface_default",
+}
 export enum ProcessorRoot {
     Root = "processor_root_default",
 }

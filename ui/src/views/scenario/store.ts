@@ -76,12 +76,14 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setReportsDetail: Mutation<StateType>;
         setQueryParams: Mutation<StateType>;
 
+        // tree of scenario nodes
         setTreeData: Mutation<StateType>;
         setTreeDataMap: Mutation<StateType>;
         setTreeDataMapItem: Mutation<StateType>;
         setTreeDataMapItemProp: Mutation<StateType>;
         setNode: Mutation<StateType>;
 
+        // tree of scenario categories
         setTreeDataCategory: Mutation<StateType>;
         setTreeDataMapCategory: Mutation<StateType>;
         setTreeDataMapItemCategory: Mutation<StateType>;
@@ -123,9 +125,8 @@ export interface ModuleType extends StoreModuleType<StateType> {
         saveTreeMapItem: Action<StateType, StateType>;
         saveTreeMapItemProp: Action<StateType, StateType>;
 
-        saveProcessorName: Action<StateType, StateType>;
-        saveProcessor: Action<StateType, StateType>;
         saveProcessorInfo: Action<StateType, StateType>;
+        saveProcessor: Action<StateType, StateType>;
 
         loadExecResult: Action<StateType, StateType>;
         updateExecResult: Action<StateType, StateType>;
@@ -475,29 +476,27 @@ const StoreModel: ModuleType = {
         async saveTreeMapItemProp({commit}, payload: any) {
             commit('setTreeDataMapItemProp', payload);
         },
-        async saveProcessor({commit, dispatch, state}, payload: any) {
-            const jsn = await saveProcessor(payload)
-            if (jsn.code === 0) {
-                commit('setNode', jsn.data);
-                await dispatch('loadScenario', state.scenarioId);
-                return true;
-            } else {
-                return false
-            }
-        },
-        async saveProcessorName({commit, dispatch, state}, payload: any) {
-            const jsn = await saveProcessorName(payload)
-            if (jsn.code === 0) {
-                await dispatch('loadScenario', state.scenarioId);
-                return true;
-            } else {
-                return false
-            }
-        },
         async saveProcessorInfo({commit, dispatch, state}, payload: any) {
             const jsn = await saveProcessorInfo(payload)
             if (jsn.code === 0) {
-                await dispatch('loadScenario', state.scenarioId);
+                commit('setTreeDataMapItemProp', {
+                    id: payload.id,
+                    prop: 'name',
+                    value: payload.name});
+                return true;
+            } else {
+                return false
+            }
+        },
+        async saveProcessor({commit, dispatch, state}, payload: any) {
+            const jsn = await saveProcessor(payload)
+            if (jsn.code === 0) {
+                // commit('setNode', jsn.data);
+                commit('setTreeDataMapItemProp', {
+                    id: jsn.data.processorID,
+                    prop: 'name',
+                    value: jsn.data.name});
+
                 return true;
             } else {
                 return false

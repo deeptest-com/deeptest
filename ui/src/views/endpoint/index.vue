@@ -249,7 +249,7 @@ const MenuList = [
   {
     key: '3',
     code: 'ENDPOINT-OUTDATED',
-    text: '过时',
+    text: '过期',
     action: (record: any) => disabled(record)
   },
 ]

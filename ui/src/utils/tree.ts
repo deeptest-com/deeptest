@@ -16,7 +16,7 @@ export function getSelectedTreeNode(checkedKeys, treeDataMapValue): any[] {
     Object.keys(treeDataMapValue).forEach((id, index) => {
         if (!childrenMap[id] && isInArray(+id, checkedKeys)) { // in array and except other's child
             const node = treeDataMapValue[id]
-            if (node.isLeaf || node.children) {
+            if (!node.isDir || node.children) {
                 selectedNodes.push(node)
             }
         }

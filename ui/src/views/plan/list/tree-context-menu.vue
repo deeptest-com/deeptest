@@ -11,7 +11,7 @@
         <span>创建同级分类</span>
       </a-menu-item>
 
-      <a-menu-item key="add-child-node" class="menu-item" v-if="!treeNode.isLeaf">
+      <a-menu-item key="add-child-node" class="menu-item" v-if="treeNode.isDir">
         <PlusOutlined />
         <span>创建子分类</span>
       </a-menu-item>

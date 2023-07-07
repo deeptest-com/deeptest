@@ -1,7 +1,10 @@
 <template>
-  <div class="dp-tree-context-menu" :set="mode = !treeNode.isLeaf ? 'child' : 'brother'">
+  <div class="dp-tree-context-menu" :set="mode = treeNode.isDir ? 'child' : 'brother'">
     <a-menu @click="menuClick" trigger="['click']" mode="vertical">
-      <template v-if="isRoot(treeNode.entityCategory)">
+      {{void ( menuItems = getMenu(treeNode.entityCategory) )}}
+
+      <template v-if="isInArray(ProcessorAction.ActionAddProcessor, menuItems) ||
+                      isInArray(ProcessorAction.ActionInInterface, menuItems)">
         <a-sub-menu @click.stop key="addProcessor" trigger="['click']" class="menu-item" popupClassName="dp-tree-context-submenu">
           <template #title>
             <FolderAddOutlined />
@@ -10,42 +13,15 @@
 
           <template v-for="(category) in processorCategories" :key="category.value">
             <TreeContextSubMenu
-                :processorTypes="processorTypeMap[category.label]"
+                v-if="showMenuItem(treeNode.entityType, category.label)"
                 :category="category"
+                :entityType="treeNode.entityType"
                 mode="child" />
           </template>
         </a-sub-menu>
-
-        <a-sub-menu @click.stop key="addInterface" trigger="['click']" class="menu-item" popupClassName="dp-tree-context-submenu">
-          <template #title>
-            <FolderAddOutlined />
-            <span>添加请求</span>
-          </template>
-
-          <a-menu-item key="add-child-interface-fromDefine" class="menu-item">
-            <span>从接口管理模块</span>
-          </a-menu-item>
-          <a-menu-item key="add-child-interface-fromTest" class="menu-item">
-            <span>从接口调试模块</span>
-          </a-menu-item>
-        </a-sub-menu>
-
       </template>
 
-      <template v-if="isProcessor(treeNode.entityCategory)">
-        <a-sub-menu @click.stop key="addProcessor" class="menu-item" popupClassName="dp-tree-context-submenu">
-          <template #title>
-            <FolderAddOutlined />
-            <span>新建处理器</span>
-          </template>
-          <template v-for="(category) in processorCategories" :key="category.value">
-            <TreeContextSubMenu
-                :processorTypes="processorTypeMap[category.label]"
-                :category="category"
-                :mode="mode"/>
-          </template>
-        </a-sub-menu>
-
+      <template v-if="isInArray(ProcessorAction.ActionImportInterface, menuItems)">
         <a-sub-menu @click.stop key="addInterface" trigger="['click']" class="menu-item" popupClassName="dp-tree-context-submenu">
           <template #title>
             <FolderAddOutlined />
@@ -61,22 +37,7 @@
         </a-sub-menu>
       </template>
 
-      <template v-if="isInterface(treeNode.entityCategory)">
-        <a-sub-menu @click.stop key="addProcessor" class="menu-item" popupClassName="dp-tree-context-submenu">
-          <template #title>
-            <FolderAddOutlined />
-            <span>新建父处理器</span>
-          </template>
-          <template v-for="(category) in processorCategories" :key="category.value">
-            <TreeContextSubMenu
-                :processorTypes="processorTypeMap[category.label]"
-                :category="category"
-                mode="parent"/>
-          </template>
-        </a-sub-menu>
-      </template>
-
-      <template v-if="!isRoot(treeNode.entityCategory)">
+      <template v-if="isInArray(ProcessorAction.ActionEdit, menuItems)">
         <a-menu-item key="edit" class="menu-item">
           <EditOutlined />
           <span>编辑</span>
@@ -88,17 +49,19 @@
       </template>
 
     </a-menu>
+
   </div>
 </template>
 
 <script setup lang="ts">
-import {defineComponent, defineProps, PropType, Ref} from "vue";
+import {defineProps} from "vue";
 import {useI18n} from "vue-i18n";
-import {Form, message} from 'ant-design-vue';
-import {isRoot, isProcessor, isInterface} from '../../../service'
-import {FolderAddOutlined, FileAddOutlined, EditOutlined, CloseOutlined, PlusOutlined} from "@ant-design/icons-vue";
+import {Form} from 'ant-design-vue';
+import {FolderAddOutlined, EditOutlined, CloseOutlined} from "@ant-design/icons-vue";
 
-import {getProcessorTypeMap, getProcessorCategories} from "@/views/scenario/service";
+import {isInArray} from "@/utils/array";
+import {ProcessorAction, ProcessorCategory} from "@/utils/enum";
+import {getProcessorCategories, getMenu, showMenuItem} from "@/views/scenario/service";
 import TreeContextSubMenu from "./TreeContextSubMenu.vue";
 
 const useForm = Form.useForm;
@@ -111,7 +74,6 @@ const props = defineProps<{
 const {t} = useI18n();
 
 const processorCategories = getProcessorCategories()
-const processorTypeMap = getProcessorTypeMap()
 
 const menuClick = (e) => {
   console.log('menuClick')

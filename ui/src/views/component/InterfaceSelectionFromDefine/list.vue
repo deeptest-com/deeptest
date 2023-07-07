@@ -70,10 +70,14 @@ const filters = ref<any>({})
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 
 const props = defineProps({
-   categoryId: {
-     type: Number,
-     required: true,
-   },
+  serveId: {
+    type: Number,
+    required: true,
+  },
+  categoryId: {
+    type: Number,
+    required: true,
+  },
   selectInterfaces: {
     type: Function,
     required: true,
@@ -92,35 +96,36 @@ watch(() => {return props.categoryId}, () => {
   console.log('watch props.categoryId for reload', props.categoryId)
   selectCategory()
 }, {deep: false})
-//
-const selectCategory = async () => {
-   console.log('selectCategory2', props.categoryId)
-  //
-  // if (props.categoryId === 0) {
-  //   interfaces.value = []
-  //   return
-  // }
-  loadList(pagination.value.page, pagination.value.pageSize)
-}
-
-const onKeywordsChanged = debounce(async () => {
-  console.log('onKeywordsChanged')
-  await selectCategory()
-}, 600)
 
 const loadList = debounce(async (page, pageSize) => {
   pagination.value.page = page
   pagination.value.pageSize = pageSize
   const data = {
+    serveId: props.serveId,
     categoryId: props.categoryId,
-    keywords: filters.value.keywords,
     projectId: currProject.value.id,
+    keywords: filters.value.keywords,
   }
   const result = await listEndpointInterface(data, pagination.value)
-  console.log('listInterface', result)
+  console.log('listEndpointInterface', result)
   interfaces.value = result?.list
   pagination.value.total = result?.total
 }, 300)
+
+const selectCategory = async () => {
+  console.log('selectCategory', props.categoryId)
+  loadList(pagination.value.page, pagination.value.pageSize)
+}
+
+watch(props, () => {
+  console.log('watch props for reload', props.serveId, props.categoryId)
+  selectCategory()
+}, {deep: true, immediate: true})
+
+const onKeywordsChanged = debounce(async () => {
+  console.log('onKeywordsChanged')
+  await selectCategory()
+}, 600)
 
 type Key = ColumnProps['key'];
 const selectedRowKeys = ref<Key[]>([]);

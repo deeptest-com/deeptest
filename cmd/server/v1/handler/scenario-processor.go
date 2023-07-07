@@ -2,7 +2,6 @@ package handler
 
 import (
 	domain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
-	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
@@ -34,26 +33,26 @@ func (c *ScenarioProcessorCtrl) Get(ctx iris.Context) {
 }
 
 // UpdateName 更新
-func (c *ScenarioProcessorCtrl) UpdateName(ctx iris.Context) {
-	var req agentExec.ProcessorEntityBase
-	err := ctx.ReadJSON(&req)
-	if err != nil {
-		logUtils.Errorf("参数验证失败", err.Error())
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
-		return
-	}
+//func (c *ScenarioProcessorCtrl) UpdateName(ctx iris.Context) {
+//	var req agentExec.ProcessorEntityBase
+//	err := ctx.ReadJSON(&req)
+//	if err != nil {
+//		logUtils.Errorf("参数验证失败", err.Error())
+//		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+//		return
+//	}
+//
+//	err = c.ScenarioProcessorService.UpdateName(req)
+//	if err != nil {
+//		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+//		return
+//	}
+//
+//	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+//}
 
-	err = c.ScenarioProcessorService.UpdateName(req)
-	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
-		return
-	}
-
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
-}
-
-// SaveProcessorInfo 更新
-func (c *ScenarioProcessorCtrl) SaveProcessorInfo(ctx iris.Context) {
+// SaveBasicInfo 更新
+func (c *ScenarioProcessorCtrl) SaveBasicInfo(ctx iris.Context) {
 	var req domain.ScenarioProcessorInfo
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -68,7 +67,7 @@ func (c *ScenarioProcessorCtrl) SaveProcessorInfo(ctx iris.Context) {
 		return
 	}
 
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: _domain.NoErr.Msg})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: req.Name})
 }
 
 // Save 保存

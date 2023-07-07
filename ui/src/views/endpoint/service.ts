@@ -49,7 +49,6 @@ export async function getEndpointList(data: any): Promise<any> {
     });
 }
 
-// 用户场景选择接口
 export async function listEndpointInterface(data: any, pagination: any) {
     const resp: ResponseData = (await request({
         url: `/${apiPathInterface}/listForSelection`,
@@ -115,7 +114,7 @@ export async function getYaml(data: any): Promise<any> {
 
 
 /**
- * 接口过时
+ * 接口过期
  * */
 export async function expireEndpoint(id: Number): Promise<any> {
     return request({

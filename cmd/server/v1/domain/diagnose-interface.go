@@ -8,10 +8,10 @@ import (
 type DiagnoseInterface struct {
 	Id int64 `json:"id"`
 
-	Title  string                             `json:"title"`
-	Desc   string                             `json:"desc"`
-	Type   serverConsts.DiagnoseInterfaceType `json:"type"`
-	IsLeaf bool                               `json:"isLeaf"`
+	Title string                             `json:"title"`
+	Desc  string                             `json:"desc"`
+	Type  serverConsts.DiagnoseInterfaceType `json:"type"`
+	IsDir bool                               `json:"isDir"`
 
 	DebugInterfaceId uint  `json:"debugInterfaceId"`
 	ParentId         int64 `json:"parentId"`

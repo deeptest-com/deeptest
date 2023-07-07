@@ -50,9 +50,9 @@
         </template>
 
         <template #icon="slotProps">
-          <FolderOutlined v-if="!slotProps.isLeaf && !slotProps.expanded"/>
-          <FolderOpenOutlined v-if="!slotProps.isLeaf && slotProps.expanded"/>
-          <FileOutlined v-if="slotProps.isLeaf"/>
+          <FolderOutlined v-if="slotProps.isDir && !slotProps.expanded"/>
+          <FolderOpenOutlined v-if="slotProps.isDir && slotProps.expanded"/>
+          <FileOutlined v-if="!slotProps.isDir"/>
         </template>
       </a-tree>
 
@@ -177,7 +177,7 @@ const onRightClick = (e) => {
     id: node.eventKey,
     title: node.title,
     entityCategory: node.dataRef.entityCategory,
-    isLeaf: node.dataRef.isLeaf,
+    isDir: node.dataRef.isDir,
     entityType: node.dataRef.entityType,
     entityId: node.dataRef.entityId,
     interfaceId: node.dataRef.interfaceId,
@@ -303,7 +303,7 @@ const onDrop = (info: DropEvent) => {
   const dragKey = info.dragNode.eventKey;
   const dropPos = info.node.pos.split('-');
   let dropPosition = info.dropPosition - Number(dropPos[dropPos.length - 1]);
-  if (treeDataMapCategory.value[dropKey].isLeaf && dropPosition === 0) {
+  if (!treeDataMapCategory.value[dropKey].isDir && dropPosition === 0) {
     dropPosition = 1
   }
   console.log(dragKey, dropKey, dropPosition);

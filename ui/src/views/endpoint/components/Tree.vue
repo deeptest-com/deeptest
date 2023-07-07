@@ -130,7 +130,11 @@ const treeData: any = computed(() => {
       children: []
     })
   }
-  return data?.[0]?.children || null;
+
+  const ret = data?.[0]?.children || null;
+  console.log('category treeData', ret)
+
+  return ret
 });
 
 async function loadCategories() {

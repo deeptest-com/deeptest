@@ -53,10 +53,11 @@
     </div>
 
     <a-modal
-        :title="modelRef.id ? '编辑' : '创建' + '提取器'"
+        v-if="editVisible"
+        :visible="editVisible"
+        :title="(modelRef.id ? '编辑' : '创建') + '提取器'"
         :destroy-on-close="true"
         :mask-closable="false"
-        :visible="editVisible"
         :onCancel="cancel"
         :footer="null"
         width="700px">
@@ -69,7 +70,6 @@
                 {{ t(item.label) }}
               </a-radio>
             </a-radio-group>
-
           </a-form-item>
 
           <!-- for body -->

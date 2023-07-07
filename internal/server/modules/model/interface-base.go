@@ -11,10 +11,10 @@ type InterfaceBase struct {
 	Description string `json:"description"`
 	Desc        string `json:"desc"`
 	Security    string `json:"security"`
-	IsLeaf      bool   `json:"isLeaf"`
-	ParentId    uint   `json:"parentId"`
-	ProjectId   uint   `json:"projectId"`
-	UseID       uint   `json:"useId"`
+	//IsDir       bool   `json:"isDir"`
+	ParentId  uint `json:"parentId"`
+	ProjectId uint `json:"projectId"`
+	UseID     uint `json:"useId"`
 
 	Ordr int `json:"ordr"`
 

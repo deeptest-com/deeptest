@@ -3,32 +3,6 @@
     <a-card :bordered="false">
       <div>
         <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
-<!--          <a-form-item :wrapper-col="{ span: 16, offset: 2 }">
-            <a-row v-if="!editMap.name" type="flex">
-              <a-col flex="1">
-                <span class="icons">{{modelRef.name}}</span>
-              </a-col>
-
-              <a-col flex="16px" />
-
-              <a-col flex="36px" class="icons">
-                <EditOutlined @click="editName()" />
-              </a-col>
-            </a-row>
-
-            <a-row v-if="editMap.name" type="flex">
-              <a-col flex="1">
-                <a-input v-modelRef:value="modelRef.name" />
-              </a-col>
-
-              <a-col flex="16px" />
-
-              <a-col flex="36px" class="icons">
-                <CheckOutlined @click="saveName()" />&nbsp;
-                <CloseOutlined @click="cancelName()" />
-              </a-col>
-            </a-row>
-          </a-form-item>-->
 
           <a-form-item label="备注" v-bind="validateInfos.comments">
             <a-input v-model:value="modelRef.comments"/>
@@ -50,7 +24,7 @@ import {useRouter} from "vue-router";
 import {useStore} from "vuex";
 import {useI18n} from "vue-i18n";
 import {message, Form, notification} from 'ant-design-vue';
-import {StateType as ScenarioStateType} from "../../../../store";
+import {StateType as ScenarioStateType} from "../../../../../store";
 import {EditOutlined, CheckOutlined, CloseOutlined} from "@ant-design/icons-vue";
 import {NotificationKeyCommon} from "@/utils/const";
 

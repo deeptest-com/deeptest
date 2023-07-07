@@ -1,9 +1,11 @@
 package service
 
 import (
+	"fmt"
 	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
+	curlHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/curl"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
@@ -123,6 +125,58 @@ func (s *DiagnoseInterfaceService) ImportInterfaces(req serverDomain.DiagnoseInt
 	return
 }
 
+func (s *DiagnoseInterfaceService) ImportCurl(req serverDomain.DiagnoseCurlImportReq) (ret model.DiagnoseInterface, err error) {
+	parent, _ := s.DiagnoseInterfaceRepo.Get(req.TargetId)
+	if parent.Type != serverConsts.DiagnoseInterfaceTypeDir {
+		parent, _ = s.DiagnoseInterfaceRepo.Get(parent.ParentId)
+	}
+
+	curlObj := curlHelper.Parse(req.Content)
+
+	title := fmt.Sprintf("%s://%s%s %s", curlObj.ParsedURL.Scheme,
+		curlObj.ParsedURL.Host, curlObj.ParsedURL.Path, curlObj.Method)
+
+	server, _ := s.ServeServerRepo.GetDefaultByServe(parent.ServeId)
+
+	debugData := domain.DebugData{
+		Name:    title,
+		BaseUrl: curlObj.ParsedURL.String(),
+		BaseRequest: domain.BaseRequest{
+			Method: consts.HttpMethod(curlObj.Method),
+		},
+		ServeId:   parent.ServeId,
+		ServerId:  server.ID,
+		ProjectId: parent.ProjectId,
+
+		UsedBy: consts.DiagnoseDebug,
+	}
+
+	debugInterface, err := s.DebugInterfaceService.Save(debugData)
+
+	// save test interface
+	diagnoseInterface := model.DiagnoseInterface{
+		Title: title,
+		Type:  serverConsts.DiagnoseInterfaceTypeInterface,
+		Ordr:  s.DiagnoseInterfaceRepo.GetMaxOrder(parent.ID),
+
+		DebugInterfaceId: debugInterface.ID,
+		ParentId:         parent.ID,
+		ServeId:          parent.ServeId,
+		ProjectId:        parent.ProjectId,
+	}
+	s.DiagnoseInterfaceRepo.Save(&diagnoseInterface)
+
+	// update diagnose_interface_id
+	values := map[string]interface{}{
+		"diagnose_interface_id": diagnoseInterface.ID,
+	}
+	s.DebugInterfaceRepo.UpdateDebugInfo(debugInterface.ID, values)
+
+	ret = diagnoseInterface
+
+	return
+}
+
 func (s *DiagnoseInterfaceService) createInterfaceFromDefine(endpointInterfaceId int, createBy uint, parent model.DiagnoseInterface) (
 	ret model.DiagnoseInterface, err error) {
 
@@ -134,7 +188,6 @@ func (s *DiagnoseInterfaceService) createInterfaceFromDefine(endpointInterfaceId
 	// convert or clone a debug interface obj
 	debugData, err := s.DebugInterfaceService.GetDebugDataFromEndpointInterface(uint(endpointInterfaceId))
 	debugData.DebugInterfaceId = 0 // force to clone the old one
-	debugData.DebugInterfaceId = 0
 	debugData.EndpointInterfaceId = uint(endpointInterfaceId)
 	debugData.ServeId = parent.ServeId
 

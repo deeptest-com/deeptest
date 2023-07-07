@@ -59,3 +59,10 @@ export async function importInterfaces(data): Promise<any> {
         data: data,
     });
 }
+export async function importCurl(data): Promise<any> {
+    return request({
+        url: `/${apiPath}/importCurl`,
+        method: 'POST',
+        data: data,
+    });
+}

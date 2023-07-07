@@ -47,17 +47,20 @@
                           <a-menu-item v-if="nodeProps.dataRef.type === 'dir'" key="0" @click="create(nodeProps.dataRef.id, 'dir')">
                              新建目录
                           </a-menu-item>
-                          <a-menu-item v-if="nodeProps.dataRef.type === 'dir'" key="0" @click="create(nodeProps.dataRef.id, 'interface')">
+                          <a-menu-item v-if="nodeProps.dataRef.type === 'dir'" key="1" @click="create(nodeProps.dataRef.id, 'interface')">
                              新建接口
                           </a-menu-item>
-                          <a-menu-item v-if="nodeProps.dataRef.id !== -1" key="1" @click="edit(nodeProps)">
+                          <a-menu-item v-if="nodeProps.dataRef.id !== -1" key="2" @click="edit(nodeProps)">
                            {{'编辑' + (nodeProps.dataRef.type === 'interface' ? '接口' : '目录')}}
                           </a-menu-item>
-                          <a-menu-item v-if="nodeProps.dataRef.id !== -1" key="1" @click="deleteNode(nodeProps.dataRef)">
+                          <a-menu-item v-if="nodeProps.dataRef.id !== -1" key="3" @click="deleteNode(nodeProps.dataRef)">
                             {{'删除' + (nodeProps.dataRef.type === 'interface' ? '接口' : '目录')}}
                           </a-menu-item>
-                          <a-menu-item v-if="nodeProps.dataRef.type === 'dir'" key="0" @click="importInterfaces(nodeProps.dataRef)">
+                          <a-menu-item v-if="nodeProps.dataRef.type === 'dir'" key="4" @click="importInterfaces(nodeProps.dataRef)">
                              导入接口
+                          </a-menu-item>
+                          <a-menu-item v-if="nodeProps.dataRef.type === 'dir'" key="5" @click="importCurl(nodeProps.dataRef)">
+                             导入cURL
                           </a-menu-item>
                         </a-menu>
                       </template>
@@ -84,6 +87,13 @@
         :onFinish="interfaceSelectionFinish"
         :onCancel="interfaceSelectionCancel" />
 
+    <!--  导入cURL弹窗  -->
+    <CurlImportModal
+        v-if="curlImportVisible"
+        :visible="curlImportVisible"
+        :onFinish="importCurlFinish"
+        :onCancel="importCurlCancel" />
+
   </div>
 </template>
 
@@ -108,10 +118,11 @@ import {StateType as ServeStateType} from "@/store/serve";
 
 import {expandOneKey} from "@/services/tree";
 import EditModal from './edit.vue'
-import InterfaceSelectionFromDefine from "@/views/component/InterfaceSelectionFromDefine/main.vue";
 import {filterTree} from "@/utils/tree";
 import {confirmToDelete} from "@/utils/confirm";
 import debounce from "lodash.debounce";
+import InterfaceSelectionFromDefine from "@/views/component/InterfaceSelectionFromDefine/main.vue";
+import CurlImportModal from "./curl.vue";
 
 const store = useStore<{ DiagnoseInterface: DiagnoseInterfaceStateType, ProjectGlobal: ProjectStateType, ServeGlobal: ServeStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
@@ -255,8 +266,8 @@ function handleModalCancel() {
 }
 
 // import interfaces
-const interfaceSelectionVisible = ref(false)
 const importTarget = ref(null as any)
+const interfaceSelectionVisible = ref(false)
 const importInterfaces = (target) => {
   console.log('importInterfaces', target)
 
@@ -281,6 +292,34 @@ const interfaceSelectionFinish = (interfaceIds) => {
 function interfaceSelectionCancel() {
   console.log('handleModalCancel')
   interfaceSelectionVisible.value = false
+}
+
+// import cURL
+const curlImportVisible = ref(false)
+const importCurl = (target) => {
+  console.log('importCurl', target)
+
+  importTarget.value = target
+  curlImportVisible.value = true
+}
+const importCurlFinish = (model) => {
+  console.log('importCurlFinish', model)
+
+  store.dispatch('DiagnoseInterface/importCurl', {
+    content: model.content,
+    targetId: importTarget.value.id,
+  }).then((newNode) => {
+    console.log('importCurl successfully', newNode)
+
+    interfaceSelectionVisible.value = false
+    selectNode([newNode.id], null)
+    expandOneKey(treeDataMap.value, newNode.parentId, expandedKeys.value) // expend new node
+    setExpandedKeys('scenario', treeData.value[0].scenarioId, expandedKeys.value)
+  })
+}
+const importCurlCancel = () => {
+  console.log('importCurlCancel')
+  curlImportVisible.value = false
 }
 
 async function onDrop(info: DropEvent) {

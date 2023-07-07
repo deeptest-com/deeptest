@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/474420502/gcurl"
 	"log"
 )
 
@@ -25,7 +24,7 @@ func main() {
 	//scurl += `-H 'Content-Type: multipart/form-data'`
 	scurl += ` -F name=aaron -F myFile=@/Users/aaron/rd/project/gudi/deeptest/cmd/test/curl/files/file.txt;type=text/plain`
 
-	curl := gcurl.Parse(scurl)
+	curl := curlHelper.Parse(scurl)
 
 	//ses := curl.CreateSession()
 	//wf := curl.CreateTemporary(ses)

@@ -60,7 +60,6 @@ require (
 )
 
 require (
-	github.com/474420502/gcurl v0.7.0 // indirect
 	github.com/474420502/requests v1.35.0 // indirect
 	github.com/BurntSushi/toml v0.4.1 // indirect
 	github.com/CloudyKit/fastprinter v0.0.0-20200109182630-33d98a066a53 // indirect

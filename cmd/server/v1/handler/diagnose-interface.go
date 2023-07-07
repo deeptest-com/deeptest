@@ -179,3 +179,24 @@ func (c *DiagnoseInterfaceCtrl) ImportInterfaces(ctx iris.Context) {
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: newNode})
 }
+
+// ImportCurl 导入cURL命令
+func (c *DiagnoseInterfaceCtrl) ImportCurl(ctx iris.Context) {
+	req := serverDomain.DiagnoseCurlImportReq{}
+	err := ctx.ReadJSON(&req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+		return
+	}
+
+	req.CreateBy = multi.GetUserId(ctx)
+	newNode, bizErr := c.DiagnoseInterfaceService.ImportCurl(req)
+	if bizErr != nil {
+		ctx.JSON(_domain.Response{
+			Code: _domain.SystemErr.Code,
+		})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: newNode})
+}

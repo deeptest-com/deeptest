@@ -58,3 +58,9 @@ type DiagnoseInterfaceImportReq struct {
 	TargetId     uint  `json:"targetId"`
 	CreateBy     uint  `json:"createBy"`
 }
+
+type DiagnoseCurlImportReq struct {
+	Content  string `json:"content"`
+	TargetId uint   `json:"targetId"`
+	CreateBy uint   `json:"createBy"`
+}

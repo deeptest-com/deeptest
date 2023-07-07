@@ -134,17 +134,12 @@ const saveDiagnoseInterface = async (e) => {
 
 const validateInfo = () => {
   let msg = ''
-  if (!debugData.value.url) {
-    msg = '请求地址不能为空'
-  }
-
   if (msg) {
     notification.warn({
       key: NotificationKeyCommon,
       message: msg,
       placement: 'topRight'
     });
-
     return false
   }
 

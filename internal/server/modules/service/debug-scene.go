@@ -39,8 +39,12 @@ func (s *DebugSceneService) LoadScene(debugData *domain.DebugData) (
 
 	serveServer, _ := s.ServeServerRepo.Get(debugServerId)
 
-	//baseUrl = _httpUtils.AddSepIfNeeded(serveServer.Url)
-	baseUrl = serveServer.Url
+	if debugData.DiagnoseInterfaceId > 0 {
+		baseUrl = debugData.BaseUrl
+	} else {
+		baseUrl = serveServer.Url
+	}
+
 	envId := serveServer.EnvironmentId
 	environment, _ := s.EnvironmentRepo.Get(envId)
 	debugData.ProjectId = environment.ProjectId

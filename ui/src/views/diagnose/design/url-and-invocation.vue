@@ -77,7 +77,7 @@ const getEnvUrl = () => {
   if (!debugData.value || !serveServers.value) return
 
   serveServers.value?.forEach((item) => {
-    if (debugData.value.serverId === item.id) {
+    if (debugData.value.serverId === item.id && !debugData.value.baseUrl) {
       debugData.value.baseUrl = item.url
       return
     }

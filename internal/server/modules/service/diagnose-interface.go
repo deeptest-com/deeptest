@@ -10,6 +10,8 @@ import (
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"github.com/jinzhu/copier"
+	"net/http"
+	"net/url"
 )
 
 type DiagnoseInterfaceService struct {
@@ -132,17 +134,23 @@ func (s *DiagnoseInterfaceService) ImportCurl(req serverDomain.DiagnoseCurlImpor
 	}
 
 	curlObj := curlHelper.Parse(req.Content)
+	wf := curlObj.CreateTemporary(curlObj.CreateSession())
 
-	title := fmt.Sprintf("%s://%s%s %s", curlObj.ParsedURL.Scheme,
-		curlObj.ParsedURL.Host, curlObj.ParsedURL.Path, curlObj.Method)
+	url := fmt.Sprintf("%s://%s%s", curlObj.ParsedURL.Scheme,
+		curlObj.ParsedURL.Host, curlObj.ParsedURL.Path)
+	title := fmt.Sprintf("%s %s", url, curlObj.Method)
+	queryParams := s.getQueryParams(curlObj.ParsedURL.Query())
+	headers := s.getHeaders(wf.Header)
 
 	server, _ := s.ServeServerRepo.GetDefaultByServe(parent.ServeId)
 
 	debugData := domain.DebugData{
 		Name:    title,
-		BaseUrl: curlObj.ParsedURL.String(),
+		BaseUrl: url,
 		BaseRequest: domain.BaseRequest{
-			Method: consts.HttpMethod(curlObj.Method),
+			Method:      consts.HttpMethod(curlObj.Method),
+			QueryParams: queryParams,
+			Headers:     headers,
 		},
 		ServeId:   parent.ServeId,
 		ServerId:  server.ID,
@@ -225,6 +233,33 @@ func (s *DiagnoseInterfaceService) createInterfaceFromDefine(endpointInterfaceId
 	s.DebugInterfaceRepo.UpdateDebugInfo(debugInterface.ID, values)
 
 	ret = diagnoseInterface
+
+	return
+}
+
+func (s *DiagnoseInterfaceService) getQueryParams(params url.Values) (ret []domain.Param) {
+	for key, arr := range params {
+		for _, item := range arr {
+			ret = append(ret, domain.Param{
+				Name:    key,
+				Value:   item,
+				ParamIn: consts.ParamInQuery,
+			})
+		}
+	}
+
+	return
+}
+
+func (s *DiagnoseInterfaceService) getHeaders(header http.Header) (ret []domain.Header) {
+	for key, arr := range header {
+		for _, item := range arr {
+			ret = append(ret, domain.Header{
+				Name:  key,
+				Value: item,
+			})
+		}
+	}
 
 	return
 }

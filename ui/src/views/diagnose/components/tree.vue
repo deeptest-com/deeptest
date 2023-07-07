@@ -311,7 +311,7 @@ const importCurlFinish = (model) => {
   }).then((newNode) => {
     console.log('importCurl successfully', newNode)
 
-    interfaceSelectionVisible.value = false
+    curlImportVisible.value = false
     selectNode([newNode.id], null)
     expandOneKey(treeDataMap.value, newNode.parentId, expandedKeys.value) // expend new node
     setExpandedKeys('scenario', treeData.value[0].scenarioId, expandedKeys.value)

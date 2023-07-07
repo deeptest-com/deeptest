@@ -36,9 +36,11 @@ const props = defineProps({
   },
 })
 
-const modelRef = ref({
-  content: '',
-} as any);
+const test = `curl -X POST 'http://127.0.0.1:8085/api/v1/mock?reqType=file'` +
+    `  -H 'Content-Type: application/json'` +
+    `  -H 'Cookie: BIDUPSID=88B7FC40D50C2F811E57590167144216;'` +
+    `  -F 'name=aaron -F myFile=@/Users/aaron/rd/project/github/gcurl/tests/file.txt;type=text/plain'`
+const modelRef = ref({content: test} as any);
 
 const rulesRef = reactive({
   content: [
@@ -51,7 +53,7 @@ const {resetFields, validate, validateInfos} = useForm(modelRef, rulesRef);
 watch(() => {return props.visible}, () => {
   console.log('watch props.visible', props.visible)
   modelRef.value = {
-    content: '',
+    content: test,
   }
 }, {deep: true})
 

@@ -35,7 +35,14 @@ export function isArray(value: any): boolean {
  * 普通类型
  * */
 export function isNormalType(type: string): boolean {
-    return !['array', 'object'].includes(type);
+    return !['array', 'object', 'oneof', 'anyof', 'allOf'].includes(type);
+}
+
+/**
+ * 复合类型
+ * */
+export function isCompositeType(type: string): boolean {
+    return ['oneof', 'anyof', 'allOf'].includes(type);
 }
 
 function getExpandedValue(val: any, defaultVal: boolean) {
@@ -49,10 +56,25 @@ export function addExtraViewInfo(val: Object | any | undefined | null): any {
     if (!val) {
         return null;
     }
+    let type = val.type;
+    if (!type) {
+        // todo 先展示出来，但是还没实现这几个关键词
+        if (val?.oneOf) {
+            type = 'oneof';
+        } else if (val?.anyOf) {
+            type = 'anyof';
+        } else if (val?.allOf) {
+            type = 'allOf';
+        } else {
+            type = 'string';
+        }
+    }
+    val.type = type;
+
     val.extraViewInfo = {
         "isExpand": getExpandedValue(val, true),
         "depth": 1,
-        "type": val.type,
+        "type": type,
         "parent": null,
         "keyName": "root",
         "keyIndex": 0,
@@ -255,11 +277,11 @@ export const generateSchemaByArray = (arr: any[]): any => {
 };
 
 /**
-* @description: 根据传入的 schema 结构信息，生成对应的 ref 信息
-* @param {Object} tree 传入的 schema 结构信息
-* @param {Object} result 获取到的的 ref 信息
-* notice : 有副作用，会修改 tree
-* */
+ * @description: 根据传入的 schema 结构信息，生成对应的 ref 信息
+ * @param {Object} tree 传入的 schema 结构信息
+ * @param {Object} result 获取到的的 ref 信息
+ * notice : 有副作用，会修改 tree
+ * */
 export const handleRefInfo = (tree: any, result: any) => {
 
     // 兼容，返回的值为空字符串的情况，则直接不展开
@@ -283,10 +305,14 @@ export const handleRefInfo = (tree: any, result: any) => {
         } else if (result?.allOf) {
             tree.content.type = 'array';
         }
-            // 先展示出来，但是还没实现这几个关键词
+            // todo 先展示出来，但是还没实现这几个关键词
         // AND = all of XOR = one of OR = any of
-        else if (tree.content?.anyOf || tree.content?.oneOf || tree.content?.allOf) {
-            tree.content.type = 'all of | one of | any of';
+        else if (tree.content?.anyof) {
+            tree.content.type = 'anyof';
+        } else if (tree.content?.oneof) {
+            tree.content.type = 'oneof';
+        } else if (tree.content?.allof) {
+            tree.content.type = 'allof';
         } else {
             tree.content.type = 'string';
         }

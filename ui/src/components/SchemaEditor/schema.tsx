@@ -11,7 +11,7 @@ import {
     findLastNotArrayNode,
     generateSchemaByArray,
     handleRefInfo,
-    isArray,
+    isArray, isCompositeType,
     isNormalType,
     isObject,
     isRef,
@@ -354,7 +354,13 @@ export default defineComponent({
             if (!tree) return null;
             const isRoot = tree?.extraViewInfo?.depth === 1;
             const options = {...tree?.extraViewInfo, isRoot, tree: tree};
+            // 普通类型
             if (isNormalType(tree.type) && !isRef(tree)) {
+                return renderNormalType(options)
+            }
+            // 复合类型
+            if (isCompositeType(tree.type) && !isRef(tree)) {
+                // todo 复合类型的渲染
                 return renderNormalType(options)
             }
             // 渲染对象类型节点

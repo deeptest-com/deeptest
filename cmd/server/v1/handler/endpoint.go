@@ -207,6 +207,22 @@ func (c *EndpointCtrl) ListVersions(ctx iris.Context) {
 	}
 }
 
+func (c *EndpointCtrl) BatchUpdateField(ctx iris.Context) {
+	var req serverDomain.BatchUpdateReq
+	if err := ctx.ReadJSON(&req); err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	if err := c.EndpointService.BatchUpdateByField(req); err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+	return
+}
+
 /*
 func (c *EndpointCtrl) Index() {
 	c.EndpointService.GetVersionsByEndpointId(1)

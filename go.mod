@@ -3,6 +3,7 @@ module github.com/aaronchen2k/deeptest
 go 1.17
 
 require (
+	github.com/474420502/requests v1.35.0
 	github.com/Knetic/govaluate v3.0.1-0.20171022003610-9aa49832a739+incompatible
 	github.com/andybalholm/brotli v1.0.5
 	github.com/antchfx/htmlquery v1.2.5
@@ -20,10 +21,10 @@ require (
 	github.com/fatih/color v1.13.0
 	github.com/fsnotify/fsnotify v1.5.1
 	github.com/getkin/kin-openapi v0.107.0
+	github.com/go-ldap/ldap v3.0.3+incompatible
 	github.com/go-playground/validator/v10 v10.9.0
 	github.com/go-redis/redis/v8 v8.11.3
 	github.com/goccy/go-json v0.7.8
-	github.com/goinggo/mapstructure v0.0.0-20140717182941-194205d9b4a9
 	github.com/gookit/color v1.4.2
 	github.com/gorilla/websocket v1.4.2
 	github.com/invopop/yaml v0.1.0
@@ -60,7 +61,6 @@ require (
 )
 
 require (
-	github.com/474420502/requests v1.35.0 // indirect
 	github.com/BurntSushi/toml v0.4.1 // indirect
 	github.com/CloudyKit/fastprinter v0.0.0-20200109182630-33d98a066a53 // indirect
 	github.com/CloudyKit/jet/v6 v6.1.0 // indirect
@@ -85,8 +85,6 @@ require (
 	github.com/fatih/structs v1.1.0 // indirect
 	github.com/flosch/pongo2/v4 v4.0.2 // indirect
 	github.com/gavv/httpexpect/v2 v2.3.1 // indirect
-	github.com/go-asn1-ber/asn1-ber v1.5.4 // indirect
-	github.com/go-ldap/ldap v3.0.3+incompatible // indirect
 	github.com/go-openapi/jsonpointer v0.19.5 // indirect
 	github.com/go-openapi/swag v0.19.5 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect

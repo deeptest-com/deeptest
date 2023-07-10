@@ -27,7 +27,8 @@ import {
     saveServeVersion,
     deleteServeVersion,
     disableServeVersions,
-    sortEnv, listDatapool, saveDatapool, deleteDatapool, disableDatapool, getDatapool
+    sortEnv, listDatapool, saveDatapool, deleteDatapool, disableDatapool, getDatapool,
+    saveSwaggerSync,
 } from './service';
 import { message } from 'ant-design-vue';
 import {
@@ -45,7 +46,9 @@ import {
     StoreServeParams,
     VarsChangeState,
     VarsReqParams,
-    DatapoolListParams, DatapoolReqParams, StoreDatapoolParams
+    DatapoolListParams, DatapoolReqParams, StoreDatapoolParams,
+    SwaggerSync
+
 } from './data';
 import {disabledStatus, disabledStatusTagColor, serveStatus, serveStatusTagColor} from '@/config/constant';
 import { momentUtc } from '@/utils/datetime';
@@ -60,6 +63,7 @@ export interface StateType {
     securityList: any;
     datapoolList: any;
     datapoolDetail: any;
+    swaggerSyncDetail:any;
 
     selectServiceDetail: any;
     serveVersionsList: any;
@@ -84,6 +88,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
 
         setDatapoolList: Mutation<StateType>,
         setDatapoolDetail: Mutation<StateType>,
+        setSwaggerSync: Mutation<StateType>,
     };
     actions: {
         // 环境-全局变量-全局参数相关
@@ -137,6 +142,9 @@ export interface ModuleType extends StoreModuleType<StateType> {
         saveDatapool: Action<StateType, StateType>,
         deleteDatapool: Action<StateType, StateType>,
         disableDatapool: Action<StateType, StateType>,
+
+        //自动同步相关
+        saveSwaggerSync: Action<StateType, StateType>,
     }
 }
 
@@ -152,7 +160,7 @@ const initState: StateType = {
     globalVarsData: [],
     userListOptions: [],
     schemaList: [],
-    securityList:[],
+    securityList: [],
     datapoolList: [],
     datapoolDetail: [],
     selectServiceDetail: {
@@ -167,7 +175,8 @@ const initState: StateType = {
         serveServers: [],
         vars: [],
     },
-    selectEnvId: null
+    selectEnvId: null,
+    swaggerSyncDetail: {}
 };
 
 const StoreModel: ModuleType = {
@@ -216,6 +225,9 @@ const StoreModel: ModuleType = {
         setDatapoolDetail(state, payload) {
             state.datapoolDetail = payload;
         },
+        setSwaggerSync(state, payload){
+            state.swaggerSyncDetail = payload;
+        }
     },
     actions: {
         async getEnvsList({ commit }, { projectId }: EnvReqParams) {
@@ -659,6 +671,15 @@ const StoreModel: ModuleType = {
                 message.error('禁用数据池失败');
             }
         },
+
+        async saveSwaggerSync({ commit }, params: SwaggerSync){
+            const res = await saveSwaggerSync(params);
+            if (res.code === 0) {
+                 commit('setSwaggerSync', res.data)
+            } else {
+                message.error('禁用数据池失败');
+            }
+        }
     }
 };
 

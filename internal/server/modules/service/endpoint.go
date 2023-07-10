@@ -301,11 +301,16 @@ func (s *EndpointService) getMethod(contentType, method string) (ret consts.Http
 }
 
 func (s *EndpointService) getQueryParams(params url.Values) (ret []model.EndpointInterfaceParam) {
+	m := map[string]bool{}
 	for key, arr := range params {
 		for _, item := range arr {
+			if _, ok := m[key]; ok {
+				continue
+			}
 			ret = append(ret, model.EndpointInterfaceParam{
 				SchemaParam: model.SchemaParam{Name: key, Type: "string", Value: item, Default: item, Example: item},
 			})
+			m[key] = true
 		}
 	}
 

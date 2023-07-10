@@ -14,7 +14,7 @@ import {
     remove,
     getYaml, updateStatus, getDocs,
     importEndpointData,
-    upload
+    upload, batchUpdateField
 } from './service';
 import {
     loadCategory,
@@ -127,6 +127,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         getDocs: Action<StateType, StateType>;
         upload: Action<StateType, StateType>;
         importEndpointData: Action<StateType, StateType>;
+        batchUpdateField: Action<StateType, StateType>;
     }
 }
 
@@ -696,6 +697,15 @@ const StoreModel: ModuleType = {
                 console.log(e)
             }
             return result;
+        },
+
+        async batchUpdateField({commit, dispatch}, payload: any) {
+            const res = await batchUpdateField(payload);
+            if (res.code === 0) {
+                await dispatch('loadList', {projectId: payload.projectId});
+            } else {
+                return null
+            }
         },
     }
 };

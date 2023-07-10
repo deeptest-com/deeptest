@@ -517,3 +517,7 @@ func (r *ServeRepo) GetServers(serveIs []uint) (res []model.ServeServer, err err
 func (r *ServeRepo) CreateSchemas(schemas []*model.ComponentSchema) (err error) {
 	return r.DB.Create(schemas).Error
 }
+
+func (r *ServeRepo) SaveSwaggerSync(sync *model.SwaggerSync) (err error) {
+	return r.Save(sync.ID, sync)
+}

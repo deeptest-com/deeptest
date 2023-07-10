@@ -141,6 +141,7 @@ func (s *DiagnoseInterfaceService) ImportCurl(req serverDomain.DiagnoseCurlImpor
 	title := fmt.Sprintf("%s %s", url, curlObj.Method)
 	queryParams := s.getQueryParams(curlObj.ParsedURL.Query())
 	headers := s.getHeaders(wf.Header)
+	cookies := s.getCookies(wf.Cookies)
 
 	server, _ := s.ServeServerRepo.GetDefaultByServe(parent.ServeId)
 
@@ -151,6 +152,9 @@ func (s *DiagnoseInterfaceService) ImportCurl(req serverDomain.DiagnoseCurlImpor
 			Method:      consts.HttpMethod(curlObj.Method),
 			QueryParams: queryParams,
 			Headers:     headers,
+			Cookies:     cookies,
+			Body:        wf.Body.String(),
+			BodyType:    consts.HttpContentType(curlObj.ContentType),
 		},
 		ServeId:   parent.ServeId,
 		ServerId:  server.ID,
@@ -261,5 +265,17 @@ func (s *DiagnoseInterfaceService) getHeaders(header http.Header) (ret []domain.
 		}
 	}
 
+	return
+}
+
+func (s *DiagnoseInterfaceService) getCookies(cookies map[string]*http.Cookie) (ret []domain.ExecCookie) {
+	for _, item := range cookies {
+		ret = append(ret, domain.ExecCookie{
+			Name:       item.Name,
+			Value:      item.Value,
+			ExpireTime: &item.Expires,
+			Domain:     item.Domain,
+		})
+	}
 	return
 }

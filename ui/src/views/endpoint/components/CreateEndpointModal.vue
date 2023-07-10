@@ -35,6 +35,13 @@
             :auto-size="{ minRows: 2, maxRows: 5 }"
         />
       </a-form-item>
+      <a-form-item label="curl导入" name="curl">
+        <a-textarea
+            v-model:value="formState.curl"
+            placeholder="请输入cURL (bash) 命令"
+            :auto-size="{ minRows: 2, maxRows: 5 }"
+        />
+      </a-form-item>
       <a-form-item :wrapper-col="{ span: 14, offset: 4 }">
         <span class="">
            注：接口请求方法可以通过详情页添加
@@ -103,6 +110,7 @@ const formState: UnwrapRef<NewEndpointFormState> = reactive({
   title: '',
   categoryId: null,
   description: '',
+  curl:'',
 });
 
 watch(() => {

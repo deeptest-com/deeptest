@@ -3,8 +3,11 @@
     <div class="container">
       <div class="content">
         <multipane class="vertical-panes" layout="vertical" @paneResizeStop="paneResizeStop">
-          <div v-show="!collapsed" class="pane left tree" :style="{ minWidth: '200px', width: '300px', maxWidth: '400px' }">
-            <Tree @select="selectNode" :serveId="currServe.id"/>
+          <div v-show="!collapsed" class="pane left tree"
+               :style="{ minWidth: '200px', width: '300px', maxWidth: '400px' }">
+            <div class="left tree" v-if="!collapsed">
+              <Tree @select="selectNode" :serveId="currServe.id"/>
+            </div>
           </div>
           <multipane-resizer :collapsed="collapsed"/>
           <div class="pane" :style="{ flexGrow: 1 }" :class="{'right': true}">
@@ -12,7 +15,7 @@
                 style="left: 0; top: 300px"
                 :collapsedStyle="{left: '0px', top: '300px'}"
                 @click="collapsed = !collapsed"
-                :collapsed="collapsed" />
+                :collapsed="collapsed"/>
             <div class="top-action">
               <div class="top-action-left">
                 <PermissionButton
@@ -38,6 +41,10 @@
                       <a-menu-item key="1">
                         <a-button :disabled="!hasSelected" :size="'small'" type="link"
                                   @click="showPublishDocsModal = true">发布文档
+                        </a-button>
+                      </a-menu-item>
+                      <a-menu-item key="0">
+                        <a-button :disabled="!hasSelected" type="link" :size="'small'" @click="batchUpdate">批量修改
                         </a-button>
                       </a-menu-item>
                     </a-menu>
@@ -132,6 +139,12 @@
           :selectedCategoryId="selectedCategoryId"
           @cancal="showImportModal = false;"
           @ok="handleImport"/>
+      <BatchUpdateFieldModal
+          :visible="showBatchUpdateModal"
+          :selectedCategoryId="selectedCategoryId"
+          @cancel="showBatchUpdateModal = false;"
+          @ok="handleBatchUpdate"/>
+
       <PubDocs
           :visible="showPublishDocsModal"
           :endpointIds='selectedRowIds'
@@ -175,6 +188,8 @@ import {StateType as Debug} from "@/views/component/debug/store";
 import {message, Modal, notification} from 'ant-design-vue';
 import Tree from './components/Tree.vue'
 import CollapsedIcon from "@/components/CollapsedIcon/index.vue"
+import BatchUpdateFieldModal from './components/BatchUpdateFieldModal.vue';
+
 const store = useStore<{ Endpoint, ProjectGlobal, Debug: Debug, ServeGlobal: ServeStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const currServe = computed<any>(() => store.state.ServeGlobal.currServe);
@@ -307,6 +322,14 @@ function inportApi() {
   showImportModal.value = true;
 }
 
+/**
+ * 接口批量修改
+ * */
+const showBatchUpdateModal = ref(false);
+
+function batchUpdate() {
+  showBatchUpdateModal.value = true;
+}
 
 function handleCreateEndPoint() {
   if (serves.value.length === 0) {
@@ -377,11 +400,21 @@ async function handleCreateApi(data) {
     "serveId": currServe.value.id,
     "description": data.description || null,
     "categoryId": data.categoryId || null,
+    "curl": data.curl || null,
   });
   await refreshList();
   createApiModalVisible.value = false;
 }
 
+async function handleBatchUpdate(data) {
+  await store.dispatch('Endpoint/batchUpdateField', {
+    "fieldName": data.value.fieldName,
+    "value": data.value.value,
+    "endpointIds": selectedRowIds.value
+  });
+  await refreshList();
+  showBatchUpdateModal.value = false;
+}
 
 const isImporting = ref(false);
 
@@ -475,7 +508,6 @@ onUnmounted(async () => {
 })
 
 
-
 function paneResizeStop(pane, resizer, size) {
   console.log(pane.className, resizer.className, size.split('px')[0])
   if (pane?.className?.includes('left')) {
@@ -522,7 +554,7 @@ function paneResizeStop(pane, resizer, size) {
   height: 100%;
 
   .left {
-    width: 300px;
+    //width: 300px;
     //border-right: 1px solid #f0f0f0;
     height: calc(100vh - 80px);
     overflow-y: scroll;
@@ -615,7 +647,6 @@ function paneResizeStop(pane, resizer, size) {
 .vertical-panes {
   width: 100%;
 }
-
 
 
 </style>

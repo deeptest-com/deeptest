@@ -185,3 +185,14 @@ export async function importEndpointData(data: any): Promise<any> {
     });
 }
 
+/**
+ * 批量修改接口字段的值
+ * @param data
+ */
+export async function batchUpdateField(data: any): Promise<any> {
+    return request({
+        url: `/endpoint/batchUpdateField`,
+        method: 'post',
+        data: data
+    });
+}

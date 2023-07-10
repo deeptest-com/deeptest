@@ -1,23 +1,32 @@
 package service
 
 import (
+	"errors"
 	"fmt"
+	"github.com/474420502/requests"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	builtin "github.com/aaronchen2k/deeptest/internal/pkg/buildin"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	curlHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/curl"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
+	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
+	"net/http"
+	"net/url"
 	"sync"
 )
 
 type EndpointService struct {
-	EndpointRepo          *repo.EndpointRepo          `inject:""`
-	ServeRepo             *repo.ServeRepo             `inject:""`
-	EndpointInterfaceRepo *repo.EndpointInterfaceRepo `inject:""`
-	ServeServerRepo       *repo.ServeServerRepo       `inject:""`
-	UserRepo              *repo.UserRepo              `inject:""`
-	CategoryRepo          *repo.CategoryRepo          `inject:""`
+	EndpointRepo             *repo.EndpointRepo          `inject:""`
+	ServeRepo                *repo.ServeRepo             `inject:""`
+	EndpointInterfaceRepo    *repo.EndpointInterfaceRepo `inject:""`
+	ServeServerRepo          *repo.ServeServerRepo       `inject:""`
+	UserRepo                 *repo.UserRepo              `inject:""`
+	CategoryRepo             *repo.CategoryRepo          `inject:""`
+	DiagnoseInterfaceService *DiagnoseInterfaceService   `inject:""`
 }
 
 func (s *EndpointService) Paginate(req v1.EndpointReqPaginate) (ret _domain.PageData, err error) {
@@ -32,7 +41,12 @@ func (s *EndpointService) Save(endpoint model.Endpoint) (res uint, err error) {
 		endpoint.ServerId = server.ID
 	}
 
+	if endpoint.Curl != "" {
+		s.curlToEndpoint(&endpoint)
+	}
+
 	err = s.EndpointRepo.SaveAll(&endpoint)
+
 	return endpoint.ID, err
 }
 
@@ -250,5 +264,119 @@ func (s *EndpointService) getCategoryId(tags []string, dirs *openapi.Dirs) int64
 }
 
 func (s *EndpointService) BatchUpdateByField(req v1.BatchUpdateReq) (err error) {
+	valueType := builtin.InterfaceType(req.Value)
+	if _commUtils.InSlice(req.FieldName, []string{"status", "categoryId"}) {
+		if !_commUtils.InSlice(valueType, []string{"int", "float64"}) {
+			err = errors.New("数据类型错误")
+		}
+
+		var value int64
+		switch valueType {
+		case "int":
+			value = int64(req.Value.(int))
+		case "float64":
+			value = int64(req.Value.(float64))
+		}
+
+		if req.FieldName == "status" {
+			err = s.EndpointRepo.BatchUpdateStatus(req.EndpointIds, value)
+		} else if req.FieldName == "categoryId" {
+			err = s.EndpointRepo.BatchUpdateCategory(req.EndpointIds, value)
+		}
+	} else {
+		err = errors.New("字段错误")
+	}
+	return
+}
+
+func (s *EndpointService) curlToEndpoint(endpoint *model.Endpoint) (err error) {
+	curlObj := curlHelper.Parse(endpoint.Curl)
+	wf := curlObj.CreateTemporary(curlObj.CreateSession())
+
+	endpoint.Path = curlObj.ParsedURL.Path
+
+	endpoint.Interfaces = s.getInterfaces(curlObj, wf)
+
+	return
+}
+
+func (s *EndpointService) getInterfaces(cURL *curlHelper.CURL, wf *requests.Temporary) (interfaces []model.EndpointInterface) {
+	interf := model.EndpointInterface{}
+	interf.Params = s.getQueryParams(wf.GetQuery())
+	interf.Headers = s.getHeaders(wf.Header)
+	interf.Cookies = s.getCookies(wf.Cookies)
+	interf.BodyType = consts.HttpContentType(cURL.ContentType)
+	interf.RequestBody = s.getRequestBody(wf.Body.String())
+	interf.RequestBody.MediaType = string(interf.BodyType)
+	interf.Method = s.getMethod(cURL.ContentType, cURL.Method)
+	interfaces = append(interfaces, interf)
+
+	return
+}
+
+func (s *EndpointService) getMethod(contentType, method string) (ret consts.HttpMethod) {
+	ret = consts.HttpMethod(method)
+
+	if contentType == "application/json" {
+		ret = "POST"
+	}
+
+	return
+}
+
+func (s *EndpointService) getQueryParams(params url.Values) (ret []model.EndpointInterfaceParam) {
+	m := map[string]bool{}
+	for key, arr := range params {
+		for _, item := range arr {
+			if _, ok := m[key]; ok {
+				continue
+			}
+			ret = append(ret, model.EndpointInterfaceParam{
+				SchemaParam: model.SchemaParam{Name: key, Type: "string", Value: item, Default: item, Example: item},
+			})
+			m[key] = true
+		}
+	}
+
+	return
+}
+
+func (s *EndpointService) getHeaders(header http.Header) (ret []model.EndpointInterfaceHeader) {
+	for key, arr := range header {
+		for _, item := range arr {
+			ret = append(ret, model.EndpointInterfaceHeader{
+				SchemaParam: model.SchemaParam{Name: key, Type: "string", Value: item, Default: item, Example: item},
+			})
+		}
+	}
+
+	return
+}
+
+func (s *EndpointService) getCookies(cookies map[string]*http.Cookie) (ret []model.EndpointInterfaceCookie) {
+	for _, item := range cookies {
+		ret = append(ret, model.EndpointInterfaceCookie{
+			SchemaParam: model.SchemaParam{Name: item.Name, Type: "string", Value: item.Value, Default: item.Value, Example: item.Value},
+		})
+	}
+
+	return
+}
+
+func (s *EndpointService) getRequestBody(body string) (requestBody model.EndpointInterfaceRequestBody) {
+	requestBody = model.EndpointInterfaceRequestBody{}
+	requestBody.SchemaItem = s.getRequestBodyItem(body)
+	return
+}
+
+func (s *EndpointService) getRequestBodyItem(body string) (requestBodyItem model.EndpointInterfaceRequestBodyItem) {
+	requestBodyItem = model.EndpointInterfaceRequestBodyItem{}
+	requestBodyItem.Type = "object"
+	schema2conv := openapi.NewSchema2conv()
+	var obj interface{}
+	schema := openapi.Schema{}
+	_commUtils.JsonDecode(body, &obj)
+	schema2conv.Example2Schema(obj, &schema)
+	requestBodyItem.Content = _commUtils.JsonEncode(schema)
 	return
 }

@@ -11,7 +11,8 @@ import {
     ServeListParams,
     ServeReqParams,
     VarsReqParams,
-    VersionListReqParams
+    VersionListReqParams,
+    SwaggerSync
 } from './data';
 
 /**
@@ -395,5 +396,13 @@ export async function disableDatapool(id: Number | String | undefined): Promise<
     return request({
         url: `/datapools/${id}/disable`,
         method: 'put',
+    });
+}
+
+export async function saveSwaggerSync(data: SwaggerSync): Promise<any> {
+    return request({
+        url: `/serves/saveSwaggerSync`,
+        method: 'post',
+        data: data
     });
 }

@@ -105,6 +105,8 @@ func (curl *CURL) CreateTemporary(ses *requests.Session) *requests.Temporary {
 		wf = ses.Delete(curl.ParsedURL.String())
 	}
 
+	wf.SetHeader(curl.Header)
+	wf.AddCookies(curl.Cookies)
 	wf.SetContentType(curl.ContentType)
 	wf.SetBody(curl.Body)
 	return wf

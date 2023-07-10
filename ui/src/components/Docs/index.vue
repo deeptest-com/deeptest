@@ -119,43 +119,44 @@ function changeVersion(docId) {
 .content {
   height: calc(100vh - 100px);
   position: relative;
-}
 
-.doc-container {
-  display: flex;
-  height: 100%;
-
-  .left {
-    width: 300px;
+  .doc-container {
+    display: flex;
     height: 100%;
-    overflow: hidden;
-    //margin-left: 24px;
-    //padding: 0 12px;
-    //border-right: 1px solid #f0f0f0;
-    overflow-y: scroll;
-    position: relative;
 
-    &:before {
-      content: '';
-      position: absolute;
-      top: 0;
-      right: 0;
+    .left {
+      width: 300px;
       height: 100%;
-      z-index: 99;
-      background-color: #f0f0f0;
-      width: 1px;
+      overflow: hidden;
+      //margin-left: 24px;
+      //padding: 0 12px;
+      //border-right: 1px solid #f0f0f0;
+      overflow-y: scroll;
+      position: relative;
+
+      &:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        height: 100%;
+        z-index: 99;
+        background-color: #f0f0f0;
+        width: 1px;
+      }
+    }
+
+    .right {
+      flex: 1;
+      height: 100%;
+      overflow: auto;
+      padding: 12px 24px 96px 24px;
+    }
+
+    .only-docs {
+      padding: 0;
     }
   }
-
-  .right {
-    flex: 1;
-    height: 100%;
-    overflow: auto;
-    padding: 12px 24px 96px 24px;
-  }
-
-  .only-docs {
-    padding: 0;
-  }
 }
+
 </style>

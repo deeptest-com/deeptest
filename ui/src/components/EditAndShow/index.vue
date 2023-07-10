@@ -1,10 +1,13 @@
 <template>
-  <div class="editor show-on-hover" v-if="isEditing" v-on-click-outside="cancelEdit">
+  <div class="editor show-on-hover"
+       v-if="isEditing"
+       v-on-click-outside="cancelEdit">
     <a-input
              class="input"
              :placeholder="placeholder || '请输入内容'"
              :size="'small'"
-             v-model:value="fieldValue"/>
+             v-model:value="fieldValue" />
+
     <a-space :size="8">
       <CloseOutlined @click.stop="cancelEdit"/>
       <CheckOutlined
@@ -13,10 +16,17 @@
           :class="{disabled: !fieldValue}"/>&nbsp;
     </a-space>
   </div>
+
   <div :class="['editor','show-on-hover', customClass]" v-else>
-    <span class="title" :title="fieldValue" @click.stop="handleClick">{{ fieldValue || '暂无' }}</span> &nbsp;&nbsp;
-    <span class="edit-icon"><EditOutlined @click.stop="isEditing = true"/></span>
+    <span class="title" :title="fieldValue" @click.stop="handleClick">
+      {{ fieldValue || '暂无' }}
+    </span> &nbsp;&nbsp;
+
+    <span class="edit-icon">
+      <EditOutlined @click.stop="isEditing = true"/>
+    </span>
   </div>
+
 </template>
 <script lang="ts" setup>
 

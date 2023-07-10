@@ -1,6 +1,7 @@
 package repo
 
 import (
+	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
@@ -148,10 +149,10 @@ func (r *DebugInterfaceRepo) Save(interf *model.DebugInterface) (err error) {
 
 	return
 }
-func (r *DebugInterfaceRepo) UpdateName(id int, name string) (err error) {
+func (r *DebugInterfaceRepo) UpdateName(req serverDomain.EndpointCase) (err error) {
 	err = r.DB.Model(&model.DebugInterface{}).
-		Where("id = ?", id).
-		Update("name", name).Error
+		Where("id = ?", req.Id).
+		Update("name", req.Name).Error
 
 	return
 }

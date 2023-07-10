@@ -101,5 +101,7 @@ var (
 		&ProjectMenu{},
 		&ProjectRecentlyVisited{},
 		&ProjectMemberAudit{},
+
+		&SwaggerSync{},
 	}
 )

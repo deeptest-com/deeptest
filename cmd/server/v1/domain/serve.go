@@ -147,3 +147,11 @@ type ServeSecurityReq struct {
 type ChangeServeReq struct {
 	Id uint
 }
+
+type SwaggerSyncReq struct {
+	Switch     bool   `json:"switch"`
+	SyncType   uint   `json:"syncType"`
+	CategoryId uint   `json:"categoryId"`
+	Url        string `json:"url"`
+	Cron       string `json:"cron"`
+}

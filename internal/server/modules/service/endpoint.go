@@ -1,13 +1,16 @@
 package service
 
 import (
+	"errors"
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	builtin "github.com/aaronchen2k/deeptest/internal/pkg/buildin"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
+	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	"sync"
 )
 
@@ -250,5 +253,27 @@ func (s *EndpointService) getCategoryId(tags []string, dirs *openapi.Dirs) int64
 }
 
 func (s *EndpointService) BatchUpdateByField(req v1.BatchUpdateReq) (err error) {
+	valueType := builtin.InterfaceType(req.Value)
+	if _commUtils.InSlice(req.FieldName, []string{"status", "categoryId"}) {
+		if !_commUtils.InSlice(valueType, []string{"int", "float64"}) {
+			err = errors.New("数据类型错误")
+		}
+
+		var value int64
+		switch valueType {
+		case "int":
+			value = int64(req.Value.(int))
+		case "float64":
+			value = int64(req.Value.(float64))
+		}
+
+		if req.FieldName == "status" {
+			err = s.EndpointRepo.BatchUpdateStatus(req.EndpointIds, value)
+		} else if req.FieldName == "categoryId" {
+			err = s.EndpointRepo.BatchUpdateCategory(req.EndpointIds, value)
+		}
+	} else {
+		err = errors.New("字段错误")
+	}
 	return
 }

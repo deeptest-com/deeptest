@@ -37,6 +37,10 @@
                                 @click="showPublishDocsModal = true">发布文档
                       </a-button>
                     </a-menu-item>
+                    <a-menu-item key="0">
+                      <a-button :disabled="!hasSelected" type="link" :size="'small'" @click="batchUpdate">批量修改
+                      </a-button>
+                    </a-menu-item>
                   </a-menu>
                 </template>
               </a-dropdown>
@@ -127,6 +131,12 @@
           :selectedCategoryId="selectedCategoryId"
           @cancal="showImportModal = false;"
           @ok="handleImport"/>
+      <BatchUpdateFieldModal
+          :visible="showBatchUpdateModal"
+          :selectedCategoryId="selectedCategoryId"
+          @cancel="showBatchUpdateModal = false;"
+          @ok="handleBatchUpdate"/>
+
       <PubDocs
           :visible="showPublishDocsModal"
           :endpointIds='selectedRowIds'
@@ -169,6 +179,7 @@ import {StateType as ServeStateType} from "@/store/serve";
 import {StateType as Debug} from "@/views/component/debug/store";
 import {message, Modal, notification} from 'ant-design-vue';
 import Tree from './components/Tree.vue'
+import BatchUpdateFieldModal from './components/BatchUpdateFieldModal.vue';
 
 const store = useStore<{ Endpoint, ProjectGlobal, Debug: Debug, ServeGlobal: ServeStateType }>();
 const collapsed = ref(false);
@@ -303,6 +314,14 @@ function inportApi() {
   showImportModal.value = true;
 }
 
+/**
+ * 接口批量修改
+ * */
+const showBatchUpdateModal = ref(false);
+
+function batchUpdate() {
+  showBatchUpdateModal.value = true;
+}
 
 function handleCreateEndPoint() {
   if (serves.value.length === 0) {
@@ -378,6 +397,15 @@ async function handleCreateApi(data) {
   createApiModalVisible.value = false;
 }
 
+async function handleBatchUpdate(data) {
+  await store.dispatch('Endpoint/batchUpdateField', {
+    "fieldName": data.value.fieldName,
+    "value": data.value.value,
+    "endpointIds":selectedRowIds.value
+  });
+  await refreshList();
+  showBatchUpdateModal.value = false;
+}
 
 const isImporting = ref(false);
 

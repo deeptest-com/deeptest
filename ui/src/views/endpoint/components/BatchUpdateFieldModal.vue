@@ -11,17 +11,15 @@
         :rules="rules"
         :label-col="{ span: 5 }"
         :wrapper-col="{ span: 17 }">
-      <a-form-item label="修改字段" name="fieldName">
+      <a-form-item label="修改字段" name="fieldName" style="width: 100%">
         <a-select v-model:value="formState.fieldName"
-                  style="width: 50%"
                   :options="FieldNameOpts"
                   @change="selectedFieldName"
                   placeholder="请选择"/>
       </a-form-item>
-      <a-form-item label="修改为" name="value">
+      <a-form-item label="修改为" name="value" style="width: 100%">
         <a-select v-if="formState.fieldName === 'status'"
                   v-model:value="formState.value"
-                  style="width: 50%"
                   :options="endpointStatusOpts"
                   @change="selectedValue" />
         <a-tree-select v-else-if="formState.fieldName === 'categoryId'"
@@ -30,15 +28,13 @@
             show-search
             :multiple="false"
             :treeData="treeData"
-            style="width: 50%"
             :treeDefaultExpandAll="true"
             :replaceFields="{ title: 'name',value:'id'}"
             :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
             placeholder="请选择所属分类"
             allow-clear/>
         <a-select v-else
-                  :value="formState.value"
-                  style="width: 50%" />
+                  :value="formState.value"/>
       </a-form-item>
     </a-form>
   </a-modal>

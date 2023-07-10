@@ -47,9 +47,11 @@ import { reactive, toRaw,computed,watch,onMounted } from 'vue';
 import type { UnwrapRef } from 'vue';
 import {SwaggerSync} from './data';
 import {useStore} from "vuex";
-const store = useStore<{ Endpoint,ProjectGlobal }>();
+import {message} from "ant-design-vue";
+const store = useStore<{ Endpoint,ProjectGlobal,ProjectSetting }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const treeDataCategory = computed<any>(() => store.state.Endpoint.treeDataCategory);
+
   const treeData: any = computed(() => {
   const data = treeDataCategory.value;
   return  data?.[0]?.children || [];
@@ -72,7 +74,14 @@ const rules = {
 
 const onSubmit = () => {
     console.log('submit!', toRaw(formState));
+    saveSwaggerSync(formState)
+    message.success('保存成功');
+
 };
+
+async function saveSwaggerSync(data) {
+  await store.dispatch('ProjectSetting/saveSwaggerSync', data)
+}
 
 const syncTypes = [
       { label: '完全覆盖', value: 1 },

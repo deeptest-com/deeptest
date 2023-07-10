@@ -277,6 +277,5 @@ func (s *DiagnoseInterfaceService) getCookies(cookies map[string]*http.Cookie) (
 			Domain:     item.Domain,
 		})
 	}
-
 	return
 }

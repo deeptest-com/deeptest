@@ -18,6 +18,7 @@ type Endpoint struct {
 	ServeName    string              `gorm:"-" json:"serveName"`
 	Description  string              `json:"description"`
 	SerialNumber string              `json:"serialNumber"`
+	Curl         string              `gorm:"-" json:"curl"`
 }
 
 func (Endpoint) TableName() string {

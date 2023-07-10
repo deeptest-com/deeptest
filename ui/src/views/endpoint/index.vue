@@ -373,6 +373,7 @@ async function handleCreateApi(data) {
     "serveId": currServe.value.id,
     "description": data.description || null,
     "categoryId": data.categoryId || null,
+    "curl": data.curl || null,
   });
   await refreshList();
   createApiModalVisible.value = false;

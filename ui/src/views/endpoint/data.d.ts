@@ -95,4 +95,5 @@ interface NewEndpointFormState {
     title: string;
     categoryId: string | null | number;
     description: string | undefined;
+    curl:string;
 }

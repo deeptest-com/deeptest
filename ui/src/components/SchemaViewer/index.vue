@@ -1,6 +1,6 @@
 <template>
   <div class="body-schema">
-    <SchemaEditor :value="content" :components="components"/>
+    <SchemaViewer :value="content" :components="components"/>
     <div class="examples" v-if="examples?.length">
       <h4>示例</h4>
       <a-tabs :size="'small'">
@@ -22,7 +22,7 @@
 </template>
 <script lang="ts" setup>
 import {computed, defineProps, defineEmits, ref, watch} from "vue";
-import SchemaEditor from './schema';
+import SchemaViewer from './schema';
 import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
 import {MonacoOptions} from '@/utils/const';
 

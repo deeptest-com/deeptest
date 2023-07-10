@@ -33,7 +33,21 @@ export const getUrls = () => {
 
     const serverUrl = process.env.VUE_APP_API_SERVER
     const agentUrl = process.env.VUE_APP_API_AGENT
+/*
+    if (nodeEnv === 'production' && !isElectron) { // load ui page from server
+        const location = unescape(window.location.href);
+
+        serverUrl = location.split('#')[0].split('index.html')[0];
+        if (!serverUrl.endsWith('/')) {
+            serverUrl += '/'
+        }
+        serverUrl = serverUrl + 'api/v1'
+
+        agentUrl = serverUrl.replace('8085', '8086')
+    }
+*/
     console.log(`serverUrl=${serverUrl}, agentUrl=${agentUrl}`)
+
 
     return {serverUrl, agentUrl}
 }

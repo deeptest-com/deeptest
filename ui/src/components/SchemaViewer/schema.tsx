@@ -8,7 +8,7 @@ import cloneDeep from "lodash/cloneDeep";
 import {
     addExtraViewInfo,
     findLastNotArrayNode, handleRefInfo,
-    isArray,
+    isArray, isCompositeType,
     isNormalType,
     isObject,
     isRef,
@@ -103,7 +103,7 @@ export default defineComponent({
             const properties = parent?.properties?.[keyName] || {};
             const list: any = [];
             Object.entries(properties).forEach(([k, v]) => {
-                if (typeof v !== 'boolean' && !['type', 'properties', 'extraViewInfo','ref','content','name'].includes(k)) {
+                if (typeof v !== 'boolean' && !['type', 'properties', 'extraViewInfo','ref','content','name','required'].includes(k)) {
                     if (!!v || v === 0) {
                         list.push({
                             label: k,
@@ -201,6 +201,11 @@ export default defineComponent({
             const isRoot = tree?.extraViewInfo?.depth === 1;
             const options = {...tree?.extraViewInfo, isRoot, tree: tree};
             if (isNormalType(tree.type) && !isRef(tree)) {
+                return renderNormalType(options)
+            }
+            // 复合类型
+            if (isCompositeType(tree.type) && !isRef(tree)) {
+                // todo 复合类型的渲染
                 return renderNormalType(options)
             }
             // 渲染对象类型节点

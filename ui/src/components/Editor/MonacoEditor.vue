@@ -25,7 +25,7 @@ export default defineComponent({
     language: {type: String, default: 'javascript'},
     theme: {type: String, default: 'vs'},
     options: {type: Object, default() {return {};}},
-
+    readOnly:  { type: Boolean, default: false ,required: false},
     onExtractor: {type: Function},
     onReplace: {type: Function},
   },

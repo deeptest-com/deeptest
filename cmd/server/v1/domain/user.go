@@ -69,3 +69,8 @@ func (res *UserResp) ToString() {
 		res.Avatar = str.Join("http://127.0.0.1:8085/upload/", res.Avatar)
 	}
 }
+
+type UpdateUserRoleReq struct {
+	UserId  uint   `json:"userId" validate:"required"`
+	RoleIds []uint `json:"roleIds"`
+}

@@ -199,11 +199,24 @@ func (r *EndpointRepo) removeEndpointParams(endpointId uint) (err error) {
 
 //保存接口信息
 func (r *EndpointRepo) saveInterfaces(endpointId, projectId uint, path, version string, interfaces []model.EndpointInterface) (err error) {
+	interfaceIds := make([]uint, 0)
+	for _, v := range interfaces {
+		if v.ID != 0 {
+			interfaceIds = append(interfaceIds, v.ID)
+		}
+	}
+	interfaceIdModelMap, err := r.EndpointInterfaceRepo.GetIdAndModelMap(interfaceIds)
+
 	err = r.removeInterfaces(endpointId)
 	if err != nil {
 		return
 	}
-	for key, _ := range interfaces {
+
+	for key, v := range interfaces {
+		if interfaceModel, ok := interfaceIdModelMap[v.ID]; ok {
+			interfaces[key].DebugInterfaceId = interfaceModel.DebugInterfaceId
+		}
+
 		interfaces[key].EndpointId = endpointId
 		interfaces[key].Version = version
 		interfaces[key].Url = path
@@ -320,31 +333,31 @@ func (r *EndpointRepo) GetCategoryCount(result interface{}, projectId uint) (err
 	return
 }
 
-func (r *EndpointRepo) GetByProjectId(projectId uint) (endpoints []*model.Endpoint, err error) {
+func (r *EndpointRepo) GetByProjectId(projectId uint, needDetail bool) (endpoints []*model.Endpoint, err error) {
 	err = r.DB.Find(&endpoints, "project_id = ? and not deleted and not disabled", projectId).Error
-	r.GetByEndpoints(endpoints)
+	r.GetByEndpoints(endpoints, needDetail)
 	return
 }
 
-func (r *EndpointRepo) GetByServeIds(serveIds []uint) (endpoints []*model.Endpoint, err error) {
+func (r *EndpointRepo) GetByServeIds(serveIds []uint, needDetail bool) (endpoints []*model.Endpoint, err error) {
 	err = r.DB.Where("serve_id = ? and not deleted and not disabled", serveIds).Find(&endpoints).Error
-	r.GetByEndpoints(endpoints)
+	r.GetByEndpoints(endpoints, needDetail)
 	return
 }
 
-func (r *EndpointRepo) GetByEndpointIds(endpointIds []uint) (endpoints []*model.Endpoint, err error) {
+func (r *EndpointRepo) GetByEndpointIds(endpointIds []uint, needDetail bool) (endpoints []*model.Endpoint, err error) {
 	err = r.DB.Where("id in ? and not deleted and not disabled", endpointIds).Find(&endpoints).Error
-	r.GetByEndpoints(endpoints)
+	r.GetByEndpoints(endpoints, needDetail)
 	return
 }
 
-func (r *EndpointRepo) GetByEndpoints(endpoints []*model.Endpoint) {
+func (r *EndpointRepo) GetByEndpoints(endpoints []*model.Endpoint, needDetail bool) {
 	var endpointIds []uint
 	for _, endpoint := range endpoints {
 		endpointIds = append(endpointIds, endpoint.ID)
 	}
 
-	interfaces, err := r.EndpointInterfaceRepo.GetInterfaces(endpointIds)
+	interfaces, err := r.EndpointInterfaceRepo.GetInterfaces(endpointIds, needDetail)
 	if err != nil {
 		return
 	}
@@ -372,4 +385,12 @@ func (r *EndpointRepo) GetUsedCountByEndpointId(endpointId uint) (count int64, e
 
 func (r *EndpointRepo) CreateEndpoints(endpoints []*model.Endpoint) error {
 	return r.DB.Create(endpoints).Error
+}
+
+func (r *EndpointRepo) BatchUpdateStatus(ids []uint, status int64) error {
+	return r.DB.Model(&model.Endpoint{}).Where("id IN (?)", ids).Update("status", status).Error
+}
+
+func (r *EndpointRepo) BatchUpdateCategory(ids []uint, categoryId int64) error {
+	return r.DB.Model(&model.Endpoint{}).Where("id IN (?)", ids).Update("category_id", categoryId).Error
 }

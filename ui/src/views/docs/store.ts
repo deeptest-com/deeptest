@@ -7,7 +7,9 @@ import {
     publishDocument,
     updateDocumentVersion,
     shareDocs,
-    getShareContent
+    getShareContent,
+    getShareDocsDetail,
+    getDocsDetail
 } from './service';
 
 export interface StateType {
@@ -29,6 +31,8 @@ export interface ModuleType extends StoreModuleType<StateType> {
         updateDocumentVersion: Action<StateType, StateType>;
         shareDocs: Action<StateType, StateType>;
         getShareContent: Action<StateType, StateType>;
+        getDocsDetail: Action<StateType, StateType>;
+        getShareDocsDetail: Action<StateType, StateType>;
     }
 }
 
@@ -128,6 +132,28 @@ const StoreModel: ModuleType = {
         //  通过分享链接获取文档数据
         async getShareContent({commit}, payload: any) {
             const res = await getShareContent({
+                ...payload,
+            });
+            if (res.code === 0) {
+                return res.data;
+            } else {
+                return null;
+            }
+        },
+
+        async getShareDocsDetail({commit}, payload: any) {
+            const res = await getShareDocsDetail({
+                ...payload,
+            });
+            if (res.code === 0) {
+                return res.data;
+            } else {
+                return null;
+            }
+        },
+
+        async getDocsDetail({commit}, payload: any) {
+            const res = await getDocsDetail({
                 ...payload,
             });
             if (res.code === 0) {

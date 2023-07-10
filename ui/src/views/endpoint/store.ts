@@ -162,6 +162,7 @@ const initState: StateType = {
         "status": null,
         "createUser": null,
         "title": null,
+        categoryId: null,
     },
     endpointDetail: null,
     endpointDetailYamlCode: null,
@@ -217,11 +218,13 @@ const StoreModel: ModuleType = {
             state.filterState.status = payload.status || null;
             state.filterState.createUser = payload.createUser || null;
             state.filterState.title = payload.title || null ;
+            state.filterState.categoryId = payload.categoryId || null ;
         },
         clearFilterState(state) {
             state.filterState.status = null;
             state.filterState.createUser = null;
             state.filterState.title =null ;
+            state.filterState.categoryId =null ;
         },
         setEndpointDetail(state, payload) {
             state.endpointDetail = payload;
@@ -437,6 +440,7 @@ const StoreModel: ModuleType = {
             }
         },
         async loadList({commit, dispatch, state}, {projectId, page, pageSize, opts}: any) {
+
             page = page || state.listResult.pagination.current;
             pageSize = pageSize || state.listResult.pagination.pageSize;
             const otherParams = {...state.filterState, ...opts};
@@ -447,6 +451,7 @@ const StoreModel: ModuleType = {
                 "pageSize": pageSize,
                 ...otherParams,
             });
+
             if (res.code === 0) {
                 const {result, total} = res.data;
                 result.forEach((item, index) => {
@@ -493,6 +498,8 @@ const StoreModel: ModuleType = {
             const res = await deleteEndpoint(payload.id);
             if (res.code === 0) {
                 await dispatch('loadList', {projectId: payload.projectId});
+                // 删除接口后，需要重新拉取分类树
+                await dispatch('loadCategory');
                 return true
             } else {
                 return false
@@ -524,7 +531,6 @@ const StoreModel: ModuleType = {
                         value: item,
                     });
                 })
-
 
             } else {
                 return false

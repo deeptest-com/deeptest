@@ -32,7 +32,6 @@
           @changeContent="changeContent"
           @changeExamples="changeExamples"
           :serveId="currServe.id"
-          :refsOptions="refsOptions"
           :contentStr="contentStr"
           :exampleStr="exampleStr"
           @generateExample="handleGenerateExample"
@@ -48,7 +47,6 @@ import {mediaTypesOpts,} from '@/config/constant';
 import {DownOutlined, RightOutlined} from '@ant-design/icons-vue';
 import {Endpoint} from "@/views/endpoint/data";
 import SchemaEditor from '@/components/SchemaEditor/index.vue';
-import {removeExtraViewInfo} from "@/components/SchemaEditor/utils";
 
 const store = useStore<{ Endpoint, Debug, ProjectGlobal, User, ServeGlobal }>();
 const selectedCodeDetail = computed<any>(() => store.state.Endpoint.selectedCodeDetail);
@@ -92,7 +90,7 @@ async function generateFromJSON(JSONStr: string) {
 }
 
 async function handleGenerateExample(examples: any) {
-  const content = JSON.stringify(removeExtraViewInfo(JSON.parse(contentStr.value), true));
+  const content = contentStr.value;
   const res = await store.dispatch('Endpoint/schema2example',
       {data: content, serveId: currServe.value.id,}
   );
@@ -127,13 +125,6 @@ function changeExamples(examples: any) {
     }
   }
 }
-
-const refsOptions = ref([]);
-onMounted(async () => {
-  refsOptions.value = await store.dispatch('Endpoint/getAllRefs', {
-    "serveId": currServe.value.id,
-  });
-})
 
 </script>
 <style lang="less" scoped>

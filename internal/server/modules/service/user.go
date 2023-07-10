@@ -8,6 +8,7 @@ import (
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	_i118Utils "github.com/aaronchen2k/deeptest/pkg/lib/i118"
 	_mailUtils "github.com/aaronchen2k/deeptest/pkg/lib/mail"
+	"strconv"
 )
 
 type UserService struct {
@@ -97,6 +98,16 @@ func (s *UserService) Invite(req v1.InviteUserReq) (user model.SysUser, bizErr *
 
 func (s *UserService) GetUsersNotExistedInProject(projectId uint) (ret []v1.UserResp, err error) {
 	ret, err = s.UserRepo.GetUsersNotExistedInProject(projectId)
+
+	return
+}
+
+func (s *UserService) UpdateSysRoleForUser(userId uint, roleIds []uint) (err error) {
+	strRoleIds := make([]string, 0)
+	for _, v := range roleIds {
+		strRoleIds = append(strRoleIds, strconv.Itoa(int(v)))
+	}
+	err = s.UserRepo.UpdateRoleForUser(strconv.Itoa(int(userId)), strRoleIds)
 
 	return
 }

@@ -1,7 +1,7 @@
 import { Mutation, Action } from 'vuex';
 import { StoreModuleType } from "@/utils/store";
 import { ResponseData } from '@/utils/request';
-import {getProfile, queryMessage, queryProject, updateEmail, updateName, updatePassword} from "@/services/user";
+import {getProfile, queryMessage, queryProject, updateEmail, updateName, updatePassword } from "@/services/user";
 import { removeToken } from "@/utils/localToken";
 
 export interface CurrentUser {

@@ -88,6 +88,8 @@ const onParamChange = (idx) => {
 
 <style lang="less">
 .authorization-main {
+  max-height: 180px;
+  overflow-y: scroll;
   height: 100%;
   .head {
     padding: 2px 3px;

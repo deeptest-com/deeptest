@@ -11,7 +11,7 @@ type SummaryProjectUserRankingService struct {
 	SummaryProjectUserRankingRepo *repo.SummaryProjectUserRankingRepo `inject:""`
 }
 
-func (s *SummaryProjectUserRankingService) ProjectUserRanking(projectId int64, cycle int64) (resRankingList v1.ResRankingList, err error) {
+func (s *SummaryProjectUserRankingService) ProjectUserRanking(cycle int64, projectId int64) (resRankingList v1.ResRankingList, err error) {
 
 	//获取即时数据
 	newRankings, _ := s.GetRanking(projectId)

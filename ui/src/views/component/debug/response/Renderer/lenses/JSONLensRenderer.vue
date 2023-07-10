@@ -72,12 +72,16 @@ const debugInfo = computed<any>(() => store.state.Debug.debugInfo);
 const debugData = computed<any>(() => store.state.Debug.debugData);
 const responseData = computed<any>(() => store.state.Debug.responseData);
 
-const editorOptions = ref(Object.assign({usedWith: 'response'}, MonacoOptions) )
+const editorOptions = ref(Object.assign({usedWith: 'response',readOnly:false}, MonacoOptions) )
 
 const responseExtractorVisible = ref(false)
 const expr = ref('')
 const exprType = ref('')
 const result = ref('')
+
+const responseDataContent = computed(() => {
+    return responseData.value.content;
+})
 
 const responseExtractor = (data) => {
   // console.log('responseExtractor', data)

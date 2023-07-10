@@ -12,12 +12,13 @@ import (
 )
 
 type DocumentService struct {
-	EndpointRepo         *repo.EndpointRepo         `inject:""`
-	ProjectRepo          *repo.ProjectRepo          `inject:""`
-	ServeRepo            *repo.ServeRepo            `inject:""`
-	EnvironmentRepo      *repo.EnvironmentRepo      `inject:""`
-	EndpointDocumentRepo *repo.EndpointDocumentRepo `inject:""`
-	EndpointSnapshotRepo *repo.EndpointSnapshotRepo `inject:""`
+	EndpointRepo          *repo.EndpointRepo          `inject:""`
+	ProjectRepo           *repo.ProjectRepo           `inject:""`
+	ServeRepo             *repo.ServeRepo             `inject:""`
+	EnvironmentRepo       *repo.EnvironmentRepo       `inject:""`
+	EndpointDocumentRepo  *repo.EndpointDocumentRepo  `inject:""`
+	EndpointSnapshotRepo  *repo.EndpointSnapshotRepo  `inject:""`
+	EndpointInterfaceRepo *repo.EndpointInterfaceRepo `inject:""`
 }
 
 const (
@@ -27,11 +28,12 @@ const (
 func (s *DocumentService) Content(req domain.DocumentReq) (res domain.DocumentRep, err error) {
 	var projectId, documentId uint
 	var endpointIds, serveIds []uint
+	var needDetail bool
 
-	projectId, serveIds, endpointIds, documentId = req.ProjectId, req.ServeIds, req.EndpointIds, req.DocumentId
+	projectId, serveIds, endpointIds, documentId, needDetail = req.ProjectId, req.ServeIds, req.EndpointIds, req.DocumentId, req.NeedDetail
 
 	var endpoints map[uint][]domain.EndpointReq
-	endpoints, err = s.GetEndpoints(&projectId, &serveIds, &endpointIds, documentId)
+	endpoints, err = s.GetEndpoints(&projectId, &serveIds, &endpointIds, documentId, needDetail)
 	if err != nil {
 		return
 	}
@@ -43,17 +45,17 @@ func (s *DocumentService) Content(req domain.DocumentReq) (res domain.DocumentRe
 	return
 }
 
-func (s *DocumentService) GetEndpoints(projectId *uint, serveIds, endpointIds *[]uint, documentId uint) (res map[uint][]domain.EndpointReq, err error) {
+func (s *DocumentService) GetEndpoints(projectId *uint, serveIds, endpointIds *[]uint, documentId uint, needDetail bool) (res map[uint][]domain.EndpointReq, err error) {
 	var endpoints []*model.Endpoint
 
 	if documentId != 0 {
 		endpoints, err = s.EndpointSnapshotRepo.GetByDocumentId(documentId)
 	} else if *projectId != 0 {
-		endpoints, err = s.EndpointRepo.GetByProjectId(*projectId)
+		endpoints, err = s.EndpointRepo.GetByProjectId(*projectId, needDetail)
 	} else if len(*serveIds) != 0 {
-		endpoints, err = s.EndpointRepo.GetByServeIds(*serveIds)
+		endpoints, err = s.EndpointRepo.GetByServeIds(*serveIds, needDetail)
 	} else if len(*endpointIds) != 0 {
-		endpoints, err = s.EndpointRepo.GetByEndpointIds(*endpointIds)
+		endpoints, err = s.EndpointRepo.GetByEndpointIds(*endpointIds, needDetail)
 	}
 
 	if err != nil {
@@ -230,9 +232,9 @@ func (s *DocumentService) GetEndpointsByShare(projectId, endpointId *uint, serve
 		}
 	} else if *projectId != 0 {
 		if *endpointId != 0 {
-			endpoints, err = s.EndpointRepo.GetByEndpointIds([]uint{*endpointId})
+			endpoints, err = s.EndpointRepo.GetByEndpointIds([]uint{*endpointId}, false)
 		} else {
-			endpoints, err = s.EndpointRepo.GetByProjectId(*projectId)
+			endpoints, err = s.EndpointRepo.GetByProjectId(*projectId, false)
 		}
 	}
 	if err != nil {
@@ -279,6 +281,30 @@ func (s *DocumentService) ContentByShare(link string) (res domain.DocumentRep, e
 
 	res.Serves = s.GetServes(serveIds, endpoints)
 	res.Version = version
+
+	return
+}
+
+func (s *DocumentService) GetDocumentDetail(interfaceId uint) (res map[string]interface{}, err error) {
+	interfaceDetail, err := s.EndpointInterfaceRepo.GetDetail(interfaceId)
+	if err != nil {
+		return
+	}
+
+	endpoint, err := s.EndpointRepo.Get(interfaceDetail.EndpointId)
+	if err != nil {
+		return
+	}
+
+	serveId := endpoint.ServeId
+	serves, err := s.ServeRepo.GetServers([]uint{serveId})
+	if err != nil {
+		return
+	}
+
+	res = make(map[string]interface{})
+	res["interface"] = interfaceDetail
+	res["servers"] = serves
 
 	return
 }

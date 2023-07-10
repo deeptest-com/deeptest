@@ -79,6 +79,12 @@ func (r *UserRepo) GetSysRoles(users ...*serverDomain.UserResp) {
 	for _, user := range users {
 		user.ToString()
 		userRoleId := casbin.GetRolesForUser(user.Id)
+		uintRoleIds := make([]uint, 0)
+		for _, v := range userRoleId {
+			intRoleId, _ := strconv.Atoi(v)
+			uintRoleIds = append(uintRoleIds, uint(intRoleId))
+		}
+		user.RoleIds = uintRoleIds
 		userRoleIds[user.Id] = userRoleId
 		roleIds = append(roleIds, userRoleId...)
 	}
@@ -281,7 +287,7 @@ func (r *UserRepo) Update(userId, id uint, req serverDomain.UserReq) error {
 		return err
 	}
 
-	user := model.SysUser{UserBase: req.UserBase}
+	user := model.SysUser{UserBase: req.UserBase, RoleIds: req.RoleIds}
 	if req.Password != "" {
 		hash, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 		if err != nil {
@@ -289,7 +295,7 @@ func (r *UserRepo) Update(userId, id uint, req serverDomain.UserReq) error {
 		}
 		user.Password = string(hash)
 	}
-
+	user.ID = id
 	err = r.DB.Model(&model.SysUser{}).Where("id = ?", id).Updates(&user).Error
 	if err != nil {
 		logUtils.Errorf("更新用户错误", zap.String("错误:", err.Error()))
@@ -439,6 +445,28 @@ func (r *UserRepo) AddRoleForUser(user *model.SysUser) error {
 	var roleIds []string
 	for _, userRoleId := range user.RoleIds {
 		roleIds = append(roleIds, strconv.FormatUint(uint64(userRoleId), 10))
+	}
+
+	if _, err := casbin.Instance().AddRolesForUser(userId, roleIds); err != nil {
+		logUtils.Errorf("添加角色到用户错误", zap.String("错误:", err.Error()))
+		return err
+	}
+
+	return nil
+}
+
+func (r *UserRepo) UpdateRoleForUser(userId string, roleIds []string) error {
+	oldRoleIds, err := casbin.Instance().GetRolesForUser(userId)
+	if err != nil {
+		logUtils.Errorf("获取用户角色错误", zap.String("错误:", err.Error()))
+		return err
+	}
+
+	if len(oldRoleIds) > 0 {
+		if _, err := casbin.Instance().DeleteRolesForUser(userId); err != nil {
+			logUtils.Errorf("添加角色到用户错误", zap.String("错误:", err.Error()))
+			return err
+		}
 	}
 
 	if _, err := casbin.Instance().AddRolesForUser(userId, roleIds); err != nil {

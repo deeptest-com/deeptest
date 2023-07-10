@@ -104,6 +104,10 @@ func (r *ServeRepo) PaginateSchema(req v1.ServeSchemaPaginate) (ret _domain.Page
 	if req.Type != "" {
 		db.Where("type=?", req.Type)
 	}
+	if req.Name != "" {
+		db = db.Where("name LIKE ?", fmt.Sprintf("%%%s%%", req.Name))
+
+	}
 
 	err = db.Count(&count).Error
 	if err != nil {

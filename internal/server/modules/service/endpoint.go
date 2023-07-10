@@ -8,6 +8,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
+	"sync"
 )
 
 type EndpointService struct {
@@ -174,31 +175,44 @@ func (s *EndpointService) AddVersion(version *model.EndpointVersion) (err error)
 }
 
 func (s *EndpointService) SaveEndpoints(endpoints []*model.Endpoint, dirs *openapi.Dirs, components map[string]*model.ComponentSchema, req v1.ImportEndpointDataReq) (err error) {
-	user, _ := s.UserRepo.FindById(req.UserId)
 
 	if dirs.Id == 0 || dirs.Id == -1 {
 		root, _ := s.CategoryRepo.ListByProject(serverConsts.EndpointCategory, req.ProjectId, 0)
 		dirs.Id = int64(root[0].ID)
 	}
-
+	wg := new(sync.WaitGroup)
+	wg.Add(2)
 	s.createDirs(dirs, req)
-	s.createComponents(components, req)
+	go s.createComponents(wg, components, req)
+	go s.createEndpoints(wg, endpoints, dirs, req)
+
+	//err = s.EndpointRepo.CreateEndpoints(endpoints)
+	wg.Wait()
+	return
+}
+
+func (s *EndpointService) createEndpoints(wg *sync.WaitGroup, endpoints []*model.Endpoint, dirs *openapi.Dirs, req v1.ImportEndpointDataReq) (err error) {
+	defer func() {
+		wg.Done()
+	}()
+	user, _ := s.UserRepo.FindById(req.UserId)
 	for _, endpoint := range endpoints {
 		endpoint.ProjectId, endpoint.ServeId, endpoint.CategoryId, endpoint.CreateUser = req.ProjectId, req.ServeId, req.CategoryId, user.Name
 		endpoint.Status = 1
 		endpoint.CategoryId = s.getCategoryId(endpoint.Tags, dirs)
-
 		_, err = s.Save(*endpoint)
 		if err != nil {
 			return
 		}
-
 	}
-	//err = s.EndpointRepo.CreateEndpoints(endpoints)
+
 	return
 }
 
-func (s *EndpointService) createComponents(components map[string]*model.ComponentSchema, req v1.ImportEndpointDataReq) {
+func (s *EndpointService) createComponents(wg *sync.WaitGroup, components map[string]*model.ComponentSchema, req v1.ImportEndpointDataReq) {
+	defer func() {
+		wg.Done()
+	}()
 	var NewComponents []*model.ComponentSchema
 	for _, component := range components {
 		component.ServeId = int64(req.ServeId)
@@ -208,7 +222,6 @@ func (s *EndpointService) createComponents(components map[string]*model.Componen
 }
 
 func (s *EndpointService) createDirs(data *openapi.Dirs, req v1.ImportEndpointDataReq) (err error) {
-
 	for name, dirs := range data.Dirs {
 		category := model.Category{Name: name, ParentId: int(data.Id), ProjectId: req.ProjectId, UseID: req.UserId, Type: serverConsts.EndpointCategory}
 		err = s.CategoryRepo.Save(&category)
@@ -234,4 +247,8 @@ func (s *EndpointService) getCategoryId(tags []string, dirs *openapi.Dirs) int64
 		return -1
 	}
 	return dirs.Id
+}
+
+func (s *EndpointService) BatchUpdateByField(req v1.BatchUpdateReq) (err error) {
+	return
 }

@@ -122,7 +122,6 @@ func (r *ExtractorRepo) Delete(id uint) (err error) {
 
 func (r *ExtractorRepo) UpdateResult(extractor model.DebugInterfaceExtractor, usedBy consts.UsedBy) (err error) {
 	extractor.Result = strings.TrimSpace(extractor.Result)
-
 	values := map[string]interface{}{}
 	if extractor.Result != "" {
 		values["result"] = extractor.Result
@@ -136,7 +135,7 @@ func (r *ExtractorRepo) UpdateResult(extractor model.DebugInterfaceExtractor, us
 		Updates(values).Error
 
 	if err != nil {
-		logUtils.Errorf("update scenario error", zap.String("error:", err.Error()))
+		logUtils.Errorf("update DebugInterfaceExtractor error", zap.String("error:", err.Error()))
 		return err
 	}
 

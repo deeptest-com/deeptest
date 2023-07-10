@@ -135,6 +135,7 @@ async function changeTab(value) {
   } else if (value === 'docs') {
     const res = await store.dispatch('Endpoint/getDocs', {
       endpointIds: [endpointDetail.value.id],
+      needDetail:true,
     });
     docsData.value = res;
   }

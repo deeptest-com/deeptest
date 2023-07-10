@@ -89,7 +89,7 @@ func (c *SummaryCtrl) ProjectUserRanking(ctx iris.Context) {
 		return
 	}
 
-	data, err := c.SummaryService.ProjectUserRanking(projectId, cycle)
+	data, err := c.SummaryService.ProjectUserRanking(cycle, projectId)
 
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})

@@ -52,3 +52,7 @@ func (s *RoleService) AddPermForRole(id uint, perms [][]string) error {
 func (s *RoleService) GetRoleIds() ([]uint, error) {
 	return s.RoleRepo.GetRoleIds()
 }
+
+func (s *RoleService) AllRoleList() ([]v1.RoleResp, error) {
+	return s.RoleRepo.GetAllRoles()
+}

@@ -4,7 +4,7 @@
 <template>
   <a-list v-if="data?.length" item-layout="horizontal" :data-source="data" :bordered="false" :split="false">
     <template #renderItem="{ item }">
-      <a-list-item>
+      <a-list-item class="dp-list-item">
         <a-list-item-meta>
           <template #title>
             <div class="title">
@@ -85,7 +85,8 @@ const data = computed(() => {
   props?.items?.forEach((item) => {
     const options: any = [];
     Object.keys(item).forEach((key) => {
-      if (key !== 'name' && key !== 'type' && key !== 'required') {
+      // if (key !== 'name' && key !== 'type' && key !== 'required') {
+      if (['enum', 'default', 'example', 'format', 'pattern', 'minLength', 'maxLength', 'minimum', 'maximum', 'multipleOf', 'exclusiveMin', 'exclusiveMax', 'minItems', 'maxItems', 'uniqueItems'].includes(key)) {
         // 为 0 的时候不显示
         if (item[key] === 0) {
           // options.push({
@@ -120,6 +121,11 @@ function switchExpand() {
 
 </script>
 <style lang="less" scoped>
+
+.dp-list-item {
+  padding: 0;
+}
+
 
 .title {
   display: flex;

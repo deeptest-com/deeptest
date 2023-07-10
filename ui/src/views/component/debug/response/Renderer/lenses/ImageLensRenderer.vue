@@ -56,7 +56,7 @@ const store = useStore<{  Debug: Debug }>();
 const debugData = computed<any>(() => store.state.Debug.debugData);
 const responseData = computed<any>(() => store.state.Debug.responseData);
 
-const editorOptions = ref(Object.assign({usedWith: 'response'}, MonacoOptions) )
+const editorOptions = ref(Object.assign({usedWith: 'response',readOnly:false}, MonacoOptions) )
 
 </script>
 

@@ -288,7 +288,7 @@ const StoreModel: ModuleType = {
         async savePlan({ state, dispatch }, payload: any) {
             const jsn = await save(payload)
             if (jsn.code === 0) {
-                dispatch('listPlan', state.queryParams);
+                await dispatch('listPlan', state.queryParams);
                 return true;
             } else {
                 return false
@@ -298,7 +298,8 @@ const StoreModel: ModuleType = {
             try {
                 const jsn = await remove(payload);
                 if (jsn.code === 0) {
-                    dispatch('listPlan', state.queryParams);
+                    await dispatch('listPlan', state.queryParams);
+                    await dispatch('loadCategory');
                     return true;
                 }
                 return false;
@@ -310,7 +311,7 @@ const StoreModel: ModuleType = {
             try {
                 const jsn = await clonePlan(payload);
                 if (jsn.code === 0) {
-                    dispatch('listPlan', state.queryParams);
+                    await dispatch('listPlan', state.queryParams);
                     return true;
                 }
                 return false;

@@ -6,7 +6,7 @@ type ShareVariable struct {
 	BaseModel
 
 	Name  string `json:"name"`
-	Value string `json:"value"`
+	Value string `gorm:"type:text" json:"value"`
 
 	DebugInterfaceId    uint `gorm:"default:0" json:"debugInterfaceId"`
 	EndpointInterfaceId uint `json:"endpointInterfaceId"`

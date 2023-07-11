@@ -41,12 +41,17 @@ func (c *EndpointCtrl) Save(ctx iris.Context) {
 	req.CreateUser = multi.GetUsername(ctx)
 	endpoint := c.requestParser(req)
 
-	if endpoint.CategoryId == 0 {
-		endpoint.CategoryId = 0
-	}
+	/*
+		if endpoint.CategoryId == 0 {
+			endpoint.CategoryId = 0
+		}
+	*/
 
-	res, _ := c.EndpointService.Save(endpoint)
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res})
+	if res, err := c.EndpointService.Save(endpoint); err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+	} else {
+		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res})
+	}
 
 	return
 }

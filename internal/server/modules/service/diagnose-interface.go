@@ -128,6 +128,13 @@ func (s *DiagnoseInterfaceService) ImportInterfaces(req serverDomain.DiagnoseInt
 }
 
 func (s *DiagnoseInterfaceService) ImportCurl(req serverDomain.DiagnoseCurlImportReq) (ret model.DiagnoseInterface, err error) {
+
+	defer func() {
+		if r := recover(); r != nil {
+			err = fmt.Errorf("curl格式错误")
+		}
+	}()
+
 	parent, _ := s.DiagnoseInterfaceRepo.Get(req.TargetId)
 	if parent.Type != serverConsts.DiagnoseInterfaceTypeDir {
 		parent, _ = s.DiagnoseInterfaceRepo.Get(parent.ParentId)

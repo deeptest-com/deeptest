@@ -42,7 +42,10 @@ func (s *EndpointService) Save(endpoint model.Endpoint) (res uint, err error) {
 	}
 
 	if endpoint.Curl != "" {
-		s.curlToEndpoint(&endpoint)
+		err = s.curlToEndpoint(&endpoint)
+		if err != nil {
+			return
+		}
 	}
 
 	err = s.EndpointRepo.SaveAll(&endpoint)
@@ -290,6 +293,11 @@ func (s *EndpointService) BatchUpdateByField(req v1.BatchUpdateReq) (err error) 
 }
 
 func (s *EndpointService) curlToEndpoint(endpoint *model.Endpoint) (err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			err = fmt.Errorf("curl格式错误")
+		}
+	}()
 	curlObj := curlHelper.Parse(endpoint.Curl)
 	wf := curlObj.CreateTemporary(curlObj.CreateSession())
 

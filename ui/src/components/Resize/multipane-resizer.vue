@@ -38,6 +38,7 @@ export default {
   &:hover:after {
     cursor: col-resize;
     width: 2px;
+    background-color: #1890ff;
   }
 
   &.collapsed {

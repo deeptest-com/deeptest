@@ -65,6 +65,7 @@ export interface StateType {
     selectedCodeDetail: any;
 
     caseList: any[];
+    caseDetail: any;
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
@@ -173,6 +174,7 @@ const initState: StateType = {
     selectedMethodDetail: {},
     selectedCodeDetail: {},
     caseList: [],
+    caseDetail: {},
 };
 
 const StoreModel: ModuleType = {
@@ -285,7 +287,7 @@ const StoreModel: ModuleType = {
             state.caseList = payload;
         },
         setEndpointCaseDetail(state, payload) {
-            state.caseList = payload;
+            state.caseDetail = payload;
         },
     },
     actions: {

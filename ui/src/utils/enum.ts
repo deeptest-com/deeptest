@@ -2,6 +2,7 @@ export enum UsedBy {
     InterfaceDebug = "interface_debug",
     ScenarioDebug = "scenario_debug",
     DiagnoseDebug = "diagnose_debug",
+    CaseDebug = "case_debug",
 }
 
 export enum VarScope {

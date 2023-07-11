@@ -1,167 +1,41 @@
 <template>
   <div class="endpoint-debug-cases-main">
-    <div class="toolbar">
-      <a-button type="primary" trigger="click" @click="create">
-        <span>新建用例</span>
-      </a-button>
-    </div>
+    <CaseList
+        v-if="show === 'list'"
+        :onDesign="design" />
 
-    <div class="content">1
-      <a-table
-          v-if="caseList.length > 0"
-          :data-source="caseList"
-          :columns="columns"
-          :loading="loading"
-          row-key="id"
-          class="dp-table">
-
-        <template #name="{ record, text }">
-          <EditAndShowField placeholder="名称"
-                            :custom-class="'custom-endpoint show-on-hover'"
-                            :value="text || ''"
-                            @update="(val) => updateName(val, record)"
-                            @edit="design(record)" />
-        </template>
-
-        <template #createdAt="{ record }">
-          <span>{{ momentUtc(record.createdAt) }}</span>
-        </template>
-
-        <template #updatedAt="{ record }">
-          <span>{{ momentUtc(record.updatedAt) }}</span>
-        </template>
-
-        <template #action="{ record }">
-          <a-button type="link" @click="() => design(record)">设计</a-button>
-          <a-button type="link" @click="() => remove(record)">删除</a-button>
-        </template>
-
-      </a-table>
-
-      <a-empty v-if="caseList.length === 0" :image="simpleImage" />
-    </div>
-
-    <EditModal
-        v-if="editVisible"
-        :visible="editVisible"
-        :model="editModel"
-        :onFinish="createFinish"
-        :onCancel="createCancel" />
+    <CaseDesign
+        v-if="show === 'design'"
+        :onBack="back" />
   </div>
 </template>
 
 <script setup lang="ts">
 import {provide, ref, computed} from "vue";
 import {useI18n} from "vue-i18n";
-import {Empty} from 'ant-design-vue';
 import {useStore} from "vuex";
 import {UsedBy} from "@/utils/enum";
-import debounce from "lodash.debounce";
-import {confirmToDelete} from "@/utils/confirm";
-import {momentUtc} from "@/utils/datetime";
-import EditAndShowField from '@/components/EditAndShow/index.vue';
-import EditModal from './edit.vue';
+import CaseList from "./list.vue";
+import CaseDesign from "./design.vue";
 
-provide('usedBy', UsedBy.InterfaceDebug)
-const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
-const {t} = useI18n();
+const {t} = useI18n()
 
 const store = useStore<{ Endpoint }>();
+const endpointCase = computed<any>(() => store.state.Endpoint.caseDetail);
 const endpoint = computed<any>(() => store.state.Endpoint.endpointDetail);
-const caseList = computed<any[]>(() => store.state.Endpoint.caseList);
 
-const loading = ref<boolean>(true);
+const show = ref('list')
 
-const list = debounce(async (endpointId: number): Promise<void> => {
-  console.log('getList')
-
-  loading.value = true;
-  await store.dispatch('Endpoint/listCase', endpointId);
-  loading.value = false
-}, 300)
-list(endpoint.value.id)
-
-const editVisible = ref(false)
-const editModel = ref({} as any)
-const create = () => {
-  console.log('create')
-  editVisible.value = true
-  editModel.value = {title: ''}
-}
-const createFinish = (data) => {
-  console.log('createFinish', data)
-
-  data.endpointId = endpoint.value.id
-
-  store.dispatch('Endpoint/saveCase', data).then((result) => {
-    console.log('saveCase', result)
-
-    editVisible.value = false
-  })
-}
-const createCancel = () => {
-  console.log('createVisible')
-  editVisible.value = false
-}
-const remove = (record) => {
-  console.log('remove', record)
-
-  const title = '确定删除该用例吗？'
-  confirmToDelete(title, '', () => {
-    store.dispatch('Endpoint/removeCase', record);
-  })
-}
-
-const design = async (record: any) => {
+const design = (record) => {
   console.log('design', record)
-}
-const updateName = async (value: string, record: any) => {
-  await store.dispatch('Endpoint/updateCaseName', {
-    id: record.id,
-    name: value,
-    endpointId: endpoint.value.id,
-  });
-  list(endpoint.value.id)
+  show.value = 'design'
+
+  store.commit('Endpoint/setEndpointCaseDetail', record);
 }
 
-const columns = [
-  {
-    title: '编号',
-    dataIndex: 'serialNumber',
-    width: 120,
-  },
-  {
-    title: '名称',
-    dataIndex: 'name',
-    slots: {customRender: 'name'},
-  },
-  {
-    title: '创建人',
-    dataIndex: 'createUserName',
-    ellipsis: true,
-    width: '100px',
-  },
-  {
-    title: '创建时间',
-    dataIndex: 'createdAt',
-    slots: {customRender: 'createdAt'},
-    ellipsis: true,
-    width: '190px',
-  },
-  {
-    title: '更新时间',
-    dataIndex: 'updatedAt',
-    slots: {customRender: 'updatedAt'},
-    ellipsis: true,
-    width: '190px',
-  },
-  {
-    title: '操作',
-    key: 'action',
-    width: 200,
-    slots: {customRender: 'action'},
-  },
-];
+const back = (record) => {
+  console.log('back', record)
+}
 
 </script>
 

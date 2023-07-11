@@ -18,16 +18,16 @@ type EndpointInterface struct {
 }
 type SchemaParam struct {
 	Name        string  `json:"name"`
-	Value       string  `json:"value"  gorm:"type:text"`
+	Value       string  `gorm:"type:text" json:"value"`
 	Type        string  `json:"type"`
 	Desc        string  `json:"desc"`
 	InterfaceId uint    `json:"interfaceId"`
 	Format      string  `json:"format"`
-	Example     string  `json:"example"`
+	Example     string  `gorm:"type:text" json:"example"`
 	Pattern     string  `json:"pattern"`
 	MinLength   uint64  `json:"minLength"`
 	MaxLength   uint64  `json:"maxLength"`
-	Default     string  `json:"default"`
+	Default     string  `gorm:"type:text" json:"default"`
 	Required    bool    `json:"required"`
 	MultipleOf  float64 `json:"multipleOf"`
 	MinItems    uint64  `json:"minItems"`

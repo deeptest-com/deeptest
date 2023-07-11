@@ -47,7 +47,7 @@ const modelRef = ref({content: test} as any);
 
 const rulesRef = reactive({
   content: [
-    {required: true, message: '请输入cURL内容', trigger: 'blur'},
+    {required: true,  message: '请输入cURL内容', trigger: 'blur'},
   ],
 });
 

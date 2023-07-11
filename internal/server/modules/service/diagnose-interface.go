@@ -12,6 +12,7 @@ import (
 	"github.com/jinzhu/copier"
 	"net/http"
 	"net/url"
+	"strings"
 )
 
 type DiagnoseInterfaceService struct {
@@ -143,25 +144,32 @@ func (s *DiagnoseInterfaceService) ImportCurl(req serverDomain.DiagnoseCurlImpor
 	curlObj := curlHelper.Parse(req.Content)
 	wf := curlObj.CreateTemporary(curlObj.CreateSession())
 
-	url := fmt.Sprintf("%s://%s%s", curlObj.ParsedURL.Scheme,
-		curlObj.ParsedURL.Host, curlObj.ParsedURL.Path)
-	title := fmt.Sprintf("%s %s", url, curlObj.Method)
+	baseUrl := fmt.Sprintf("%s://%s", curlObj.ParsedURL.Scheme,
+		curlObj.ParsedURL.Host)
+	url := curlObj.ParsedURL.Path
+	title := fmt.Sprintf("%s %s", baseUrl+url, curlObj.Method)
 	queryParams := s.getQueryParams(curlObj.ParsedURL.Query())
 	headers := s.getHeaders(wf.Header)
 	cookies := s.getCookies(wf.Cookies)
 
 	server, _ := s.ServeServerRepo.GetDefaultByServe(parent.ServeId)
 
+	bodyType := ""
+	contentType := strings.Split(curlObj.ContentType, ";")
+	if len(contentType) > 1 {
+		bodyType = contentType[0]
+	}
 	debugData := domain.DebugData{
 		Name:    title,
-		BaseUrl: url,
+		BaseUrl: baseUrl,
 		BaseRequest: domain.BaseRequest{
-			Method:      consts.HttpMethod(curlObj.Method),
+			Method:      s.getMethod(bodyType, curlObj.Method),
 			QueryParams: queryParams,
 			Headers:     headers,
 			Cookies:     cookies,
 			Body:        wf.Body.String(),
-			BodyType:    consts.HttpContentType(curlObj.ContentType),
+			BodyType:    consts.HttpContentType(bodyType),
+			Url:         url,
 		},
 		ServeId:   parent.ServeId,
 		ServerId:  server.ID,
@@ -192,6 +200,16 @@ func (s *DiagnoseInterfaceService) ImportCurl(req serverDomain.DiagnoseCurlImpor
 	s.DebugInterfaceRepo.UpdateDebugInfo(debugInterface.ID, values)
 
 	ret = diagnoseInterface
+
+	return
+}
+
+func (s *DiagnoseInterfaceService) getMethod(contentType, method string) (ret consts.HttpMethod) {
+	ret = consts.HttpMethod(method)
+
+	if contentType == "application/json" {
+		ret = "POST"
+	}
 
 	return
 }

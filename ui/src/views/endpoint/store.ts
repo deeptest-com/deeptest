@@ -767,6 +767,7 @@ const StoreModel: ModuleType = {
             const res = await batchUpdateField(payload);
             if (res.code === 0) {
                 await dispatch('loadList', {projectId: payload.projectId});
+                await dispatch('loadCategory');
             } else {
                 return null
             }

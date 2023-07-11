@@ -47,7 +47,7 @@ import DocsHeader from "./components/DocsHeader.vue";
 const store = useStore<{ Docs }>();
 const props = defineProps(['showMenu', 'data', 'onlyShowDocs', 'showHeader']);
 const emit = defineEmits(['changeVersion', 'switchToDefineTab']);
-
+const currDocId = computed<any>(() => store.state.Docs.currDocId);
 const isEndpointPage = window.location.href.includes('/endpoint/index');
 const isSharePage = window.location.href.includes('/docs/share');
 const isViewPage = window.location.href.includes('/docs/view');
@@ -90,13 +90,6 @@ watch(() => {
 }, async (newVal) => {
   if (newVal.length > 0) {
     selectedItem.value = newVal[0];
-    // selectedItem.value = newVal.find((item) => {
-    //   return item.endpointInfo && item.serveInfo;
-    // })
-    // // 如果没有选择的接口，则默认选择第一个，即服务信息
-    // if (!selectedItem.value) {
-    //   selectedItem.value = newVal[0];
-    // }
   }
 }, {immediate: true});
 
@@ -115,11 +108,15 @@ async function selectMenu(item) {
       res = await store.dispatch('Docs/getShareDocsDetail', {
         currProjectId: item.serveInfo.projectId,
         interfaceId: item.id,
+        documentId: currDocId?.value || 0,
+        endpointId: item.endpointInfo.id,
       });
     } else {
       res = await store.dispatch('Docs/getDocsDetail', {
         currProjectId: item.serveInfo.projectId,
         interfaceId: item.id,
+        documentId: currDocId?.value || 0,
+        endpointId: item.endpointInfo.id,
       });
     }
     if (res?.interface) {
@@ -152,9 +149,6 @@ function changeVersion(docId) {
     width: 300px;
     height: 100%;
     overflow: hidden;
-    //margin-left: 24px;
-    //padding: 0 12px;
-    //border-right: 1px solid #f0f0f0;
     overflow-y: scroll;
     position: relative;
 

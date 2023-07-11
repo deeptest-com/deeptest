@@ -25,6 +25,7 @@ const serverId = computed(() => {
 });
 
 function changeServer(id) {
+  console.log('changeServer', id)
   store.dispatch('Debug/changeServer', id)
 }
 

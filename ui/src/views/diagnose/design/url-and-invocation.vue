@@ -74,22 +74,28 @@ const serveServers: any = computed(() => store.state.DiagnoseInterface.serveServ
 const methods = getArrSelectItems(Methods)
 
 const getEnvUrl = () => {
+  console.log('getEnvUrl', debugData?.value)
+
   if (!debugData.value || !serveServers.value) return
 
   serveServers.value?.forEach((item) => {
-    if (debugData.value.serverId === item.id && !debugData.value.baseUrl) {
+    if (debugData.value.serverId === item.id && debugData.value.baseUrl) {
       debugData.value.baseUrl = item.url
       return
     }
   })
 }
 
-watch((debugData), async (newVal) => {
-  console.log('watch debugData', debugData?.value)
-  getEnvUrl()
+const currServerId = ref(0)
+watch(debugData, async (newVal) => {
+  console.log('watch debugData', currServerId.value, newVal.serverId)
+  if (currServerId.value != newVal.serverId) {
+    getEnvUrl()
+    currServerId.value = newVal.serverId
+  }
 }, { immediate: true, deep: true })
 
-watch((serveServers), async (newVal) => {
+watch(serveServers, async (newVal) => {
   console.log('watch serveServers', serveServers?.value)
   getEnvUrl()
 }, { immediate: true, deep: true })

@@ -67,13 +67,17 @@ import DebugComp from '@/views/component/debug/index.vue';
 
 import {StateType as Debug} from "@/views/component/debug/store";
 import {StateType as EndpointStateType} from '../../../store';
+import {StateType as ServeStateType} from "@/store/serve";
+import {StateType as DiagnoseInterfaceStateType} from "@/views/diagnose/store";
 
 provide('usedBy', UsedBy.CaseDebug)
 const usedBy = UsedBy.CaseDebug
 
-const store = useStore<{ Debug: Debug, Endpoint: EndpointStateType }>();
+const store = useStore<{ Debug: Debug, Endpoint: EndpointStateType, DiagnoseInterface: DiagnoseInterfaceStateType, ServeGlobal: ServeStateType }>();
 const endpointCase = computed<any>(() => store.state.Endpoint.caseDetail);
+const serveServers: any = computed(() => store.state.DiagnoseInterface.serveServers);
 const debugData = computed<any>(() => store.state.Debug.debugData);
+const currServe = computed<any>(() => store.state.ServeGlobal.currServe);
 
 const props = defineProps({
   onBack: {
@@ -98,12 +102,36 @@ const back = () => {
   props.onBack()
 }
 
+const getEnvUrl = () => {
+  console.log('getEnvUrl')
+  if (!debugData.value || !serveServers.value) return
+
+  serveServers.value?.forEach((item) => {
+    if (debugData.value.serverId === item.id && !debugData.value.baseUrl) {
+      debugData.value.baseUrl = item.url
+      return
+    }
+  })
+}
+
+async function getServeServers() {
+  await store.dispatch('DiagnoseInterface/getServeServers', {
+    id: currServe.value.id,
+  })
+}
+
 watch(endpointCase, (newVal) => {
   if (!endpointCase.value) return
 
   console.log('watch endpointCase', endpointCase.value.id)
   loadDebugData()
+  getServeServers()
 }, {immediate: true, deep: true})
+
+watch((debugData), async (newVal) => {
+  console.log('watch debugData', debugData?.value)
+  getEnvUrl()
+}, { immediate: true, deep: true })
 
 </script>
 

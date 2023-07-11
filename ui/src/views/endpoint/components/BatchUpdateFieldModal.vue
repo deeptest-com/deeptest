@@ -24,10 +24,8 @@
         <a-select v-if="formState.fieldName === 'status'"
                   v-model:value="formState.value"
                   :options="endpointStatusOpts"
-                  @change="selectedValue"
                   placeholder="请选择"/>
         <a-tree-select v-else-if="formState.fieldName === 'categoryId'"
-            @change="selectedValue"
                        v-model:value="formState.value"
             show-search
             :multiple="false"
@@ -128,10 +126,10 @@ function selectedFieldName() {
 
 const rules = {
   fieldName: [
-    {required: true, message: '请选择字段', trigger: 'change'},
+    {required: true, message: '请选择字段'},
   ],
   value: [
-    {required: true, message: '请选择字段', trigger: 'change'},
+    {required: true, message: '请选择字段'},
   ],
   // value: [
   //   {validator: (rule: any, value: string, callback: any) => {

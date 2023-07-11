@@ -154,4 +154,5 @@ type SwaggerSyncReq struct {
 	CategoryId int    `json:"categoryId"`
 	Url        string `json:"url"`
 	Cron       string `json:"cron"`
+	projectId  uint   `json:"projectId"`
 }

@@ -3,16 +3,14 @@
     <div class="container">
       <div class="content">
         <multipane class="vertical-panes" layout="vertical" @paneResizeStop="paneResizeStop">
-          <div v-show="!collapsed" class="pane left tree" :style="{ minWidth: '200px', width: '300px', maxWidth: '400px' }">
-            <Tree @select="selectNode" :serveId="currServe.id"/>
+          <div  class="pane left tree"
+               :style="{ minWidth: '0px', width: '300px', maxWidth: '600px' }">
+            <div class="left tree" >
+              <Tree @select="selectNode" :serveId="currServe.id"/>
+            </div>
           </div>
-          <multipane-resizer :collapsed="collapsed"/>
+          <multipane-resizer/>
           <div class="pane" :style="{ flexGrow: 1 }" :class="{'right': true}">
-            <CollapsedIcon
-                style="left: 0; top: 300px"
-                :collapsedStyle="{left: '0px', top: '300px'}"
-                @click="collapsed = !collapsed"
-                :collapsed="collapsed" />
             <div class="top-action">
               <div class="top-action-left">
                 <PermissionButton
@@ -281,13 +279,11 @@ const selectedRowIds = computed(() => {
 
 const selectedRow = ref<any>({});
 const currentPage = ref(1);
-const collapsed = ref(false);
 const loading = false;
 // 抽屉是否打开
 const drawerVisible = ref<boolean>(false);
 const selectedCategoryId = ref<string | number>('');
 const onSelectChange = (keys: Key[], rows: any) => {
-  console.log('onSelectChange', keys, rows)
   selectedRowKeys.value = [...keys];
   selectedRow.value[currentPage.value] = rows.map((item: any) => item.id);
 };

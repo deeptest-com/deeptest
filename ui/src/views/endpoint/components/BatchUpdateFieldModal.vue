@@ -94,7 +94,7 @@ const emit = defineEmits(['ok', 'cancel']);
 const formRef = ref();
 
 const formState = ref({
-  fieldName: '',
+  fieldName: null,
   value: null,
   endpointIds: [],
 });

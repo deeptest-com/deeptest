@@ -285,8 +285,15 @@ func (s *DocumentService) ContentByShare(link string) (res domain.DocumentRep, e
 	return
 }
 
-func (s *DocumentService) GetDocumentDetail(interfaceId uint) (res map[string]interface{}, err error) {
-	interfaceDetail, err := s.EndpointInterfaceRepo.GetDetail(interfaceId)
+func (s *DocumentService) GetDocumentDetail(documentId, endpointId, interfaceId uint) (res map[string]interface{}, err error) {
+	var interfaceDetail model.EndpointInterface
+
+	if documentId == 0 {
+		interfaceDetail, err = s.EndpointInterfaceRepo.GetDetail(interfaceId)
+	} else {
+		interfaceDetail, err = s.EndpointSnapshotRepo.GetInterfaceDetail(documentId, endpointId, interfaceId)
+	}
+
 	if err != nil {
 		return
 	}

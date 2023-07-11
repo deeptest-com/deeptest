@@ -108,7 +108,7 @@ async function selectMenu(item) {
       res = await store.dispatch('Docs/getShareDocsDetail', {
         currProjectId: item.serveInfo.projectId,
         interfaceId: item.id,
-        documentId: currDocId?.value || 0,
+        documentId:  props?.data?.documentId || 0,
         endpointId: item.endpointInfo.id,
       });
     } else {

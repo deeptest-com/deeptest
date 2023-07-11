@@ -11,6 +11,9 @@
         :rules="rules"
         :label-col="{ span: 5 }"
         :wrapper-col="{ span: 17 }">
+      <a-form-item :wrapper-col="{ span: 16, offset: 2 }" style="font-weight: bold">
+        <span class="">共选择了{{ selectedEndpointNum }}个接口进行批量修改。修改后无法撤回，请谨慎操作</span>
+      </a-form-item>
       <a-form-item label="修改字段" name="fieldName" style="width: 100%">
         <a-select v-model:value="formState.fieldName"
                   :options="FieldNameOpts"
@@ -21,7 +24,8 @@
         <a-select v-if="formState.fieldName === 'status'"
                   v-model:value="formState.value"
                   :options="endpointStatusOpts"
-                  @change="selectedValue" />
+                  @change="selectedValue"
+                  placeholder="请选择"/>
         <a-tree-select v-else-if="formState.fieldName === 'categoryId'"
             @change="selectedValue"
                        v-model:value="formState.value"
@@ -78,6 +82,13 @@ const props = defineProps({
     required: true,
     type: Boolean,
   },
+  selectedCategoryId: {
+    required: true,
+  },
+  selectedEndpointNum:{
+    required: true,
+    type: Number,
+  }
 })
 
 const emit = defineEmits(['ok', 'cancel']);
@@ -86,7 +97,7 @@ const formRef = ref();
 
 const formState = ref({
   fieldName: '',
-  value: null as any,
+  value: null,
   endpointIds: [],
 });
 
@@ -119,6 +130,21 @@ const rules = {
   fieldName: [
     {required: true, message: '请选择字段', trigger: 'change'},
   ],
+  value1: [
+    {required: true, message: '请选择字段', trigger: 'change'},
+  ],
+  // value: [
+  //   {validator: (rule: any, value: string, callback: any) => {
+  //       console.log('======================',value)
+  //       if (value === '') {
+  //         console.log(11111)
+  //         message.warning('请选择修改为的内容');
+  //         return false
+  //       } else {
+  //         return Promise.resolve();
+  //       }
+  //     }},
+  // ]
 };
 
 </script>

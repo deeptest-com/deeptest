@@ -120,3 +120,32 @@ func (r *EndpointSnapshotRepo) UpdateContent(id uint, endpoint model.Endpoint) (
 
 	return
 }
+
+func (r *EndpointSnapshotRepo) GetContentByDocumentAndEndpoint(documentId, endpointId uint) (endpoint model.Endpoint, err error) {
+	var snapshot model.EndpointSnapshot
+	err = r.DB.Where("document_id = ?", documentId).
+		Where("endpoint_id = ? and not deleted and not disabled", endpointId).
+		Find(&snapshot).Error
+	if err != nil {
+		return
+	}
+
+	err = json.Unmarshal([]byte(snapshot.Content), &endpoint)
+
+	return
+}
+
+func (r *EndpointSnapshotRepo) GetInterfaceDetail(documentId, endpointId, interfaceId uint) (interf model.EndpointInterface, err error) {
+	snapshotContent, err := r.GetContentByDocumentAndEndpoint(documentId, endpointId)
+	if err != nil {
+		return
+	}
+
+	for _, v := range snapshotContent.Interfaces {
+		if v.ID == interfaceId {
+			interf = v
+			break
+		}
+	}
+	return
+}

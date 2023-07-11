@@ -27,7 +27,7 @@ func (r *EndpointSnapshotRepo) BatchCreateSnapshot(req v1.DocumentVersionReq, pr
 		return
 	}
 
-	if err = r.BatchDeleteByEndpointId(req.EndpointIds); err != nil {
+	if err = r.BatchDeleteByEndpointId(req.EndpointIds, documentId); err != nil {
 		return
 	}
 
@@ -98,9 +98,10 @@ func (r *EndpointSnapshotRepo) DeleteById(id uint) (err error) {
 	return
 }
 
-func (r *EndpointSnapshotRepo) BatchDeleteByEndpointId(endpointIds []uint) (err error) {
+func (r *EndpointSnapshotRepo) BatchDeleteByEndpointId(endpointIds []uint, documentId uint) (err error) {
 	err = r.DB.
 		Where("endpoint_id IN (?)", endpointIds).
+		Where("document_id = ?", documentId).
 		Delete(&model.EndpointSnapshot{}).Error
 
 	if err != nil {

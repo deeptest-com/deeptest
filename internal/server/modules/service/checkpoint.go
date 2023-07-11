@@ -51,14 +51,14 @@ func (s *CheckpointService) Delete(reqId uint) (err error) {
 	return
 }
 
-func (s *CheckpointService) CheckInterface(debugInterfaceId, endpointInterfaceId, scenarioProcessorId uint, resp domain.DebugResponse, usedBy consts.UsedBy) (
+func (s *CheckpointService) CheckInterface(debugInterfaceId, caseInterfaceId, endpointInterfaceId, scenarioProcessorId uint, resp domain.DebugResponse, usedBy consts.UsedBy) (
 	logCheckpoints []domain.ExecInterfaceCheckpoint, status consts.ResultStatus, err error) {
 
 	checkpoints, _ := s.CheckpointRepo.List(debugInterfaceId, endpointInterfaceId)
 
 	status = consts.Pass
 	for _, checkpoint := range checkpoints {
-		logCheckpoint, err := s.Check(checkpoint, scenarioProcessorId, resp, usedBy)
+		logCheckpoint, err := s.Check(checkpoint, caseInterfaceId, scenarioProcessorId, resp, usedBy)
 
 		if err != nil || logCheckpoint.ResultStatus == consts.Fail {
 			status = consts.Fail
@@ -68,7 +68,7 @@ func (s *CheckpointService) CheckInterface(debugInterfaceId, endpointInterfaceId
 	return
 }
 
-func (s *CheckpointService) Check(checkpoint model.DebugInterfaceCheckpoint, scenarioProcessorId uint, resp domain.DebugResponse,
+func (s *CheckpointService) Check(checkpoint model.DebugInterfaceCheckpoint, caseInterfaceId, scenarioProcessorId uint, resp domain.DebugResponse,
 	usedBy consts.UsedBy) (logCheckpoint model.ExecLogCheckpoint, err error) {
 
 	if checkpoint.Disabled {
@@ -149,7 +149,7 @@ func (s *CheckpointService) Check(checkpoint model.DebugInterfaceCheckpoint, sce
 
 	// Judgement
 	if checkpoint.Type == consts.Judgement {
-		variableMap, datapools, _ := s.VariableService.GetCombinedVarsForCheckpoint(checkpoint.DebugInterfaceId, checkpoint.EndpointInterfaceId, scenarioProcessorId, usedBy)
+		variableMap, datapools, _ := s.VariableService.GetCombinedVarsForCheckpoint(checkpoint.DebugInterfaceId, checkpoint.EndpointInterfaceId, caseInterfaceId, scenarioProcessorId, usedBy)
 
 		result, _ := agentExec.EvaluateGovaluateExpressionWithVariables(checkpoint.Expression, variableMap, datapools)
 

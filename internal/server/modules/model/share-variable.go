@@ -9,6 +9,7 @@ type ShareVariable struct {
 	Value string `gorm:"type:text" json:"value"`
 
 	DebugInterfaceId    uint `gorm:"default:0" json:"debugInterfaceId"`
+	CaseInterfaceId     uint `gorm:"default:0" json:"caseInterfaceId"`
 	EndpointInterfaceId uint `json:"endpointInterfaceId"`
 	ServeId             uint `json:"serveId"` // for interface debug
 

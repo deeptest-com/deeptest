@@ -1,6 +1,6 @@
 <template>
   <div class="content">
-<a-form :model="formState" :label-col="{ style: { width: '300px' } }" :wrapper-col="{ span: 14 }" :rules="rules">
+<a-form ref="" :model="formState" :label-col="{ style: { width: '300px' } }" :wrapper-col="{ span: 14 }" :rules="rules">
   <a-form-item class="desc">
     开启Swagger自动同步，系统将从指定的Swagger地址中定时自动同步接口定义到项目当前中
     </a-form-item>
@@ -40,10 +40,10 @@
             所有接口都将同步到该分类目录下
       </a-form-item>
       
-    <a-form-item name="url" label="项目的swagger文档 URL地址"  v-if="formState.switch">
+    <a-form-item v-bind="validateInfos.url" label="项目的swagger文档 URL地址"  v-if="formState.switch">
       <a-input  v-model:value="formState.url" type="textarea" placeholder="请输入swagger url地址"/>
     </a-form-item>
-    <a-form-item name="cron" label="类cron风格表达式(默认每天更新一次)" v-if="formState.switch">
+    <a-form-item v-bind="validateInfos.cron" label="类cron风格表达式(默认每天更新一次)" v-if="formState.switch">
       <a-input  v-model:value="formState.cron" type="textarea" placeholder="请输入Linux定时任务表达式"/>
       <a>点此查看</a>cron表达式格式说明
     </a-form-item>
@@ -63,6 +63,7 @@ import {useStore} from "vuex";
 import {message} from "ant-design-vue";
 import { QuestionCircleOutlined } from '@ant-design/icons-vue';
 import {Form} from 'ant-design-vue';
+import {pattern} from "@/utils/const";
 const useForm = Form.useForm;
 const store = useStore<{ Endpoint,ProjectGlobal,ProjectSetting }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
@@ -86,11 +87,11 @@ const formState: UnwrapRef<SwaggerSync> = reactive({
 const rules = {
   syncType: [{required: true}],
   categoryId: [{required: true}],
-  url: [{required: true,message: '请输入swagger url'}],
-  cron: [{required: true,message: '请正确的linux定时任务表达'}]
+  url: [{required: true,message: '请输入swagger url' ,trigger: 'change'}],
+  cron: [{required: true,pattern:pattern.cron,message: '请正确的linux定时任务表达',trigger: 'change'}]
 };
 
-const { resetFields, validate } = useForm(formState, rules);
+const { resetFields,validate,validateInfos  } = useForm(formState, rules);
 
 
 
@@ -126,12 +127,10 @@ function selectedCategory(value) {
 
 async function loadCategories() {
   await store.dispatch('Endpoint/loadCategory');
-  //expandAll();
 }
 
 onMounted(async () => {
   await loadCategories();
- // expandAll();
 })
 
 watch(() => {

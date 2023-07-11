@@ -30,4 +30,7 @@ export const pattern = {
     //   'i',
     // ),
     hex: /^#?([a-f0-9]{6}|[a-f0-9]{3})$/i,
+
+    cron:/(@(annually|yearly|monthly|weekly|daily|hourly|reboot))|(@every (\d+(ns|us|µs|ms|s|m|h))+)|((((\d+,)+\d+|(\d+(\/|-)\d+)|\d+|\*) ?){5,7})/,
+   
 };

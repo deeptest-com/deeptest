@@ -16,6 +16,7 @@ import (
 	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	"net/http"
 	"net/url"
+	"strings"
 	"sync"
 )
 
@@ -313,10 +314,15 @@ func (s *EndpointService) getInterfaces(cURL *curlHelper.CURL, wf *requests.Temp
 	interf.Params = s.getQueryParams(wf.GetQuery())
 	interf.Headers = s.getHeaders(wf.Header)
 	interf.Cookies = s.getCookies(wf.Cookies)
-	interf.BodyType = consts.HttpContentType(cURL.ContentType)
+	bodyType := ""
+	contentType := strings.Split(cURL.ContentType, ";")
+	if len(contentType) > 1 {
+		bodyType = contentType[0]
+	}
+	interf.BodyType = consts.HttpContentType(bodyType)
 	interf.RequestBody = s.getRequestBody(wf.Body.String())
 	interf.RequestBody.MediaType = string(interf.BodyType)
-	interf.Method = s.getMethod(cURL.ContentType, cURL.Method)
+	interf.Method = s.getMethod(bodyType, cURL.Method)
 	interfaces = append(interfaces, interf)
 
 	return

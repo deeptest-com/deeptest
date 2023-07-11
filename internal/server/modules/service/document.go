@@ -275,12 +275,14 @@ func (s *DocumentService) ContentByShare(link string) (res domain.DocumentRep, e
 			return res, err
 		}
 		version = document.Version
+		documentId = document.ID
 	}
 
 	res = s.GetProject(projectId)
 
 	res.Serves = s.GetServes(serveIds, endpoints)
 	res.Version = version
+	res.DocumentId = documentId
 
 	return
 }

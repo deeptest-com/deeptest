@@ -132,7 +132,6 @@
         :selectedCategoryId="selectedCategoryId"
         @cancel="showBatchUpdateModal = false;"
         @ok="handleBatchUpdate"/>
-
     <PubDocs
         :visible="showPublishDocsModal"
         :endpointIds='selectedRowIds'
@@ -160,7 +159,6 @@ import {ExclamationCircleOutlined, MoreOutlined} from '@ant-design/icons-vue';
 import {endpointStatusOpts, endpointStatus} from '@/config/constant';
 import EditAndShowField from '@/components/EditAndShow/index.vue';
 import ContentPane from '@/views/component/ContentPane/index.vue';
-
 import CreateEndpointModal from './components/CreateEndpointModal.vue';
 import PubDocs from './components/PubDocs.vue';
 import ImportEndpointModal from './components/ImportEndpointModal.vue';
@@ -176,8 +174,6 @@ import {StateType as Debug} from "@/views/component/debug/store";
 import {message, Modal, notification} from 'ant-design-vue';
 import Tree from './components/Tree.vue'
 import BatchUpdateFieldModal from './components/BatchUpdateFieldModal.vue';
-
-import CollapsedIcon from "@/components/CollapsedIcon/index.vue"
 const store = useStore<{ Endpoint, ProjectGlobal, Debug: Debug, ServeGlobal: ServeStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const currServe = computed<any>(() => store.state.ServeGlobal.currServe);
@@ -260,6 +256,7 @@ const MenuList = [
     action: (record: any) => disabled(record)
   },
 ]
+
 const selectedRowKeys = ref<Key[]>([]);
 
 const selectedRowIds = computed(() => {

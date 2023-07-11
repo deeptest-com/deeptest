@@ -1,5 +1,14 @@
 <template>
   <div class="env-main">
+    <div class="head">
+      <div class="title">
+        执行变量
+      </div>
+      <div class="acts">
+        <CloseOutlined @click="close" class="dp-icon-btn dp-trans-80"/>
+      </div>
+    </div>
+
     <div class="env-var">
       <div class="body">
         <div class="envs">
@@ -21,12 +30,6 @@
                   <QuestionCircleOutlined class="dp-icon-btn dp-trans-80"/>
                 </a-tooltip>
               </span>
-              <span class="dp-link">
-                <a-tooltip overlayClassName="dp-tip-small">
-                  <CloseOutlined @click="close" class="dp-icon-btn dp-trans-80"/>
-                </a-tooltip>
-              </span>
-
             </div>
           </div>
 
@@ -247,6 +250,23 @@ const close = () => {
 .env-main {
   height: 100%;
   overflow-y: auto;
+
+  .head {
+    padding: 0 5px 10px 5px;
+    border-bottom: 1px solid #d9d9d9;
+
+    height: 32px;
+    line-height: 32px;
+    display: flex;
+    .title {
+      flex: 1;
+      font-weight: bolder;
+    }
+    .acts {
+      width: 50px;
+      text-align: right;
+    }
+  }
 
   .env-var {
     display: flex;

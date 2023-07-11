@@ -21,7 +21,8 @@
             <a-input class="uri" placeholder="请求路径"
                      v-model:value="debugData.url"
                      v-contextmenu="e => onContextMenuShow(0, e)"
-                     :disabled="urlReadonly">
+                     :disabled="urlReadonly"
+                     :title="urlReadonly?'请在接口定义处修改':''">
             </a-input>
           </a-col>
 

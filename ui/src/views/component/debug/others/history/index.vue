@@ -92,6 +92,7 @@ const mouseLeave = (event) => {
     display: flex;
     .title {
       flex: 1;
+      font-weight: bolder;
     }
     .acts {
       width: 50px;

@@ -56,7 +56,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, toRaw,computed,watch,onMounted } from 'vue';
+import { reactive, toRaw,computed,watch,onMounted,ref } from 'vue';
 import type { UnwrapRef } from 'vue';
 import {SwaggerSync} from './data';
 import {useStore} from "vuex";
@@ -68,6 +68,9 @@ const useForm = Form.useForm;
 const store = useStore<{ Endpoint,ProjectGlobal,ProjectSetting }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const treeDataCategory = computed<any>(() => store.state.Endpoint.treeDataCategory);
+//const formState = computed<any>(() => store.state.ProjectSetting.swaggerSyncDetail);
+
+const swaggerSyncDetail = store.state.ProjectSetting.swaggerSyncDetail;
 
   const treeData: any = computed(() => {
   const data = treeDataCategory.value;
@@ -76,19 +79,21 @@ const treeDataCategory = computed<any>(() => store.state.Endpoint.treeDataCatego
 
 
 const formState: UnwrapRef<SwaggerSync> = reactive({
-    switch: true,
-    syncType: 1,
-    categoryId:-1,
-    url: '',
-    cron: '23 * * *',
+    id:swaggerSyncDetail?.id,
+    switch:swaggerSyncDetail?.switch,
+    syncType: swaggerSyncDetail?.syncType || 1,
+    categoryId:swaggerSyncDetail?.categoryId || -1,
+    url: swaggerSyncDetail?.url,
+    cron: swaggerSyncDetail?.cron || '23 * * *',
     projectId:currProject.value.id,
 });
+
 
 const rules = {
   syncType: [{required: true}],
   categoryId: [{required: true}],
-  url: [{required: true,message: '请输入swagger url' ,trigger: 'change'}],
-  cron: [{required: true,pattern:pattern.cron,message: '请正确的linux定时任务表达',trigger: 'change'}]
+  url: [{required: true,message: '请输入swagger url' ,trigger: 'blur'}],
+  cron: [{required: true,pattern:pattern.cron,message: '请正确的linux定时任务表达',trigger: 'blur'}]
 };
 
 const { resetFields,validate,validateInfos  } = useForm(formState, rules);
@@ -104,15 +109,11 @@ const onSubmit = () => {
       message.success('保存成功');
     }).catch(()=>{
       console.log('error:', formState);
-    })
-        
-    //saveSwaggerSync(formState)
-    
+    })  
 
 };
 
 async function saveSwaggerSync(data) {
- 
   await store.dispatch('ProjectSetting/saveSwaggerSync', data)
 }
 
@@ -131,6 +132,7 @@ async function loadCategories() {
 
 onMounted(async () => {
   await loadCategories();
+  await store.dispatch('ProjectSetting/getSwaggerSync');
 })
 
 watch(() => {

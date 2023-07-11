@@ -46,6 +46,7 @@ func (m *ServeModule) Party() module.WebModule {
 		public.Post("/changeServe", m.ServeCtrl.ChangeServe).Name = "切换用户当前服务"
 
 		public.Post("/saveSwaggerSync", m.ServeCtrl.SaveSwaggerSync).Name = "保存同步信息"
+		public.Get("/swaggerSyncDetail", m.ServeCtrl.SwaggerSyncDetail).Name = "保存同步信息"
 
 	}
 

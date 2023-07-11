@@ -28,7 +28,7 @@ import {
     deleteServeVersion,
     disableServeVersions,
     sortEnv, listDatapool, saveDatapool, deleteDatapool, disableDatapool, getDatapool,
-    saveSwaggerSync,
+    saveSwaggerSync,getSwaggerSync
 } from './service';
 import { message } from 'ant-design-vue';
 import {
@@ -145,6 +145,8 @@ export interface ModuleType extends StoreModuleType<StateType> {
 
         //自动同步相关
         saveSwaggerSync: Action<StateType, StateType>,
+        getSwaggerSync: Action<StateType, StateType>,
+        
     }
 }
 
@@ -674,6 +676,15 @@ const StoreModel: ModuleType = {
 
         async saveSwaggerSync({ commit }, params: SwaggerSync){
             const res = await saveSwaggerSync(params);
+            if (res.code === 0) {
+                 commit('setSwaggerSync', res.data)
+            } else {
+                message.error('禁用数据池失败');
+            }
+        },
+
+        async getSwaggerSync({ commit }){
+            const res = await getSwaggerSync();
             if (res.code === 0) {
                  commit('setSwaggerSync', res.data)
             } else {

@@ -337,3 +337,9 @@ func (c *ServeCtrl) SaveSwaggerSync(ctx iris.Context) {
 	}
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
 }
+
+func (c *ServeCtrl) SwaggerSyncDetail(ctx iris.Context) {
+	projectId := ctx.URLParamUint64("currProjectId")
+	res, _ := c.ServeService.SwaggerSyncDetail(uint(projectId))
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
+}

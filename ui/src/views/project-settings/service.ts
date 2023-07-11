@@ -406,3 +406,12 @@ export async function saveSwaggerSync(data: SwaggerSync): Promise<any> {
         data: data
     });
 }
+
+export async function getSwaggerSync(): Promise<any> {
+    return request({
+        url: `/serves/swaggerSyncDetail`,
+        method: 'get',
+    });
+}
+
+

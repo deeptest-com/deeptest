@@ -521,3 +521,8 @@ func (r *ServeRepo) CreateSchemas(schemas []*model.ComponentSchema) (err error) 
 func (r *ServeRepo) SaveSwaggerSync(sync *model.SwaggerSync) (err error) {
 	return r.Save(sync.ID, sync)
 }
+
+func (r *ServeRepo) GetSwaggerSync(projectId uint) (sync model.SwaggerSync, err error) {
+	err = r.DB.First(&sync, "project_id=?", projectId).Error
+	return
+}

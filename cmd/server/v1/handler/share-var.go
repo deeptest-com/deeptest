@@ -21,7 +21,9 @@ func (c *ShareVarCtrl) List(ctx iris.Context) {
 		return
 	}
 
-	data := c.ShareVarService.List(req.DebugInterfaceId, req.EndpointInterfaceId, req.DiagnoseInterfaceId, req.ScenarioProcessorId, req.UsedBy)
+	data := c.ShareVarService.List(req.DebugInterfaceId,
+		req.EndpointInterfaceId, req.DiagnoseInterfaceId, req.CaseInterfaceId, req.ScenarioProcessorId,
+		req.UsedBy)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

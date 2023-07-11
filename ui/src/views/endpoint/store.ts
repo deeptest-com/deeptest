@@ -14,7 +14,7 @@ import {
     remove,
     getYaml, updateStatus, getDocs,
     importEndpointData,
-    upload, batchUpdateField
+    upload, updateEndpointCaseName, removeEndpointCase, getEndpointCase, listEndpointCase, saveEndpointCase,batchUpdateField
 } from './service';
 import {
     loadCategory,
@@ -34,7 +34,7 @@ import {
     saveEndpoint,
 } from './service';
 
-import {getNodeMap} from "@/services/tree";
+import {genNodeMap, getNodeMap} from "@/services/tree";
 import {momentUtc} from "@/utils/datetime";
 import {
     example2schema,
@@ -54,15 +54,18 @@ export interface StateType {
     treeDataCategory: any[];
     treeDataMapCategory: any,
     nodeDataCategory: any;
-    filterState: filterFormState,
+    filterState: filterFormState;
     endpointDetail: any,
     endpointDetailYamlCode: any,
-    serveServers: any[], // serve list
-    securityOpts: any[]
+    serveServers: any[]; // serve list
+    securityOpts: any[];
     interfaceMethodToObjMap: any;
     refsOptions: any;
-    selectedMethodDetail: any,
-    selectedCodeDetail: any,
+    selectedMethodDetail: any;
+    selectedCodeDetail: any;
+
+    caseList: any[];
+    caseDetail: any;
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
@@ -91,6 +94,9 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setRefsOptions: Mutation<StateType>;
         setSelectedMethodDetail: Mutation<StateType>;
         setSelectedCodeDetail: Mutation<StateType>;
+
+        setEndpointCaseList: Mutation<StateType>;
+        setEndpointCaseDetail: Mutation<StateType>;
     };
     actions: {
         listEndpoint: Action<StateType, StateType>;
@@ -107,7 +113,6 @@ export interface ModuleType extends StoreModuleType<StateType> {
         saveTreeMapItemPropCategory: Action<StateType, StateType>;
         saveCategory: Action<StateType, StateType>;
         updateCategoryName: Action<StateType, StateType>;
-        updateExecResult: Action<StateType, StateType>;
         loadList: Action<StateType, StateType>;
         createApi: Action<StateType, StateType>;
         disabled: Action<StateType, StateType>;
@@ -127,6 +132,12 @@ export interface ModuleType extends StoreModuleType<StateType> {
         getDocs: Action<StateType, StateType>;
         upload: Action<StateType, StateType>;
         importEndpointData: Action<StateType, StateType>;
+
+        listCase: Action<StateType, StateType>;
+        getCase: Action<StateType, StateType>;
+        saveCase: Action<StateType, StateType>;
+        updateCaseName: Action<StateType, StateType>;
+        removeCase: Action<StateType, StateType>;
         batchUpdateField: Action<StateType, StateType>;
     }
 }
@@ -163,6 +174,8 @@ const initState: StateType = {
     refsOptions: {},
     selectedMethodDetail: {},
     selectedCodeDetail: {},
+    caseList: [],
+    caseDetail: {},
 };
 
 const StoreModel: ModuleType = {
@@ -269,7 +282,14 @@ const StoreModel: ModuleType = {
             if (methodIndex !== -1 && codeIndex === -1 && payload?.code) {
                 state.endpointDetail.interfaces[methodIndex]['responseBodies'].push({...payload});
             }
-        }
+        },
+
+        setEndpointCaseList(state, payload) {
+            state.caseList = payload;
+        },
+        setEndpointCaseDetail(state, payload) {
+            state.caseDetail = payload;
+        },
     },
     actions: {
         async listEndpoint({commit, dispatch, state}, params: QueryParams) {
@@ -334,12 +354,6 @@ const StoreModel: ModuleType = {
             }
         },
 
-        async updateExecResult({commit, dispatch, state}, payload) {
-            commit('setExecResult', payload);
-            commit('setEndpointId', payload.scenarioId);
-
-            return true;
-        },
         // category tree
         async loadCategory({commit}) {
             const response = await loadCategory('endpoint');
@@ -531,7 +545,7 @@ const StoreModel: ModuleType = {
                 ...payload
             });
             if (res.code === 0) {
-                await dispatch("getEndpointDetail",{id:res.data})
+                await dispatch("getEndpointDetail", {id: res.data})
                 await dispatch('loadList', {projectId: payload.projectId});
             } else {
                 return false
@@ -698,7 +712,57 @@ const StoreModel: ModuleType = {
             }
             return result;
         },
+        async listCase({commit}, endpointId: number) {
+            const resp = await listEndpointCase(endpointId);
+            commit('setEndpointId', endpointId);
 
+            if (resp.code === 0) {
+                commit('setEndpointCaseList', resp.data);
+                return true;
+            } else {
+                return false
+            }
+        },
+        async getCase({commit}, id: number) {
+            const resp: ResponseData = await getEndpointCase(id);
+
+            if (resp.code === 0) {
+                commit('setEndpointCaseDetail', resp.data);
+                return true;
+            } else {
+                return false
+            }
+        },
+        async saveCase({state, dispatch}, payload: any) {
+            const jsn = await saveEndpointCase(payload)
+            if (jsn.code === 0) {
+                dispatch('listCase', state.endpointId);
+                return true;
+            } else {
+                return false
+            }
+        },
+        async updateCaseName({state, dispatch}, payload: any) {
+            const jsn = await updateEndpointCaseName(payload)
+            if (jsn.code === 0) {
+                dispatch('listCase', state.endpointId);
+                return true;
+            } else {
+                return false
+            }
+        },
+        async removeCase({commit, dispatch, state}, record: any) {
+            try {
+                const jsn = await removeEndpointCase(record);
+                if (jsn.code === 0) {
+                    dispatch('listCase', state.endpointId);
+                    return true;
+                }
+                return false;
+            } catch (error) {
+                return false;
+            }
+        },
         async batchUpdateField({commit, dispatch}, payload: any) {
             const res = await batchUpdateField(payload);
             if (res.code === 0) {

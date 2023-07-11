@@ -11,6 +11,7 @@ type ShareVarService struct {
 	ShareVariableRepo *repo.ShareVariableRepo `inject:""`
 
 	DiagnoseInterfaceRepo *repo.DiagnoseInterfaceRepo `inject:""`
+	EndpointCaseRepo      *repo.EndpointCaseRepo      `inject:""`
 	DebugInterfaceRepo    *repo.DebugInterfaceRepo    `inject:""`
 	EndpointInterfaceRepo *repo.EndpointInterfaceRepo `inject:""`
 	EndpointRepo          *repo.EndpointRepo          `inject:""`
@@ -18,13 +19,14 @@ type ShareVarService struct {
 	ScenarioProcessorRepo *repo.ScenarioProcessorRepo `inject:""`
 }
 
-func (s *ShareVarService) Save(name, value string, debugInterfaceId, endpointInterfaceId, serveId, processorId, scenarioId uint,
+func (s *ShareVarService) Save(name, value string, debugInterfaceId, caseInterfaceId, endpointInterfaceId, serveId, processorId, scenarioId uint,
 	scope consts.ExtractorScope, usedBy consts.UsedBy) (err error) {
 
 	po := model.ShareVariable{
 		Name:                name,
 		Value:               value,
 		DebugInterfaceId:    debugInterfaceId,
+		CaseInterfaceId:     caseInterfaceId,
 		EndpointInterfaceId: endpointInterfaceId,
 		ServeId:             serveId,
 		ScenarioProcessorId: processorId,
@@ -44,7 +46,7 @@ func (s *ShareVarService) Save(name, value string, debugInterfaceId, endpointInt
 	return
 }
 
-func (s *ShareVarService) List(debugInterfaceId, endpointInterfaceId, diagnoseInterfaceId, scenarioProcessorId uint,
+func (s *ShareVarService) List(debugInterfaceId, endpointInterfaceId, diagnoseInterfaceId, caseInterfaceId, scenarioProcessorId uint,
 	usedBy consts.UsedBy) (
 	shareVariables []domain.GlobalVar) {
 
@@ -53,6 +55,10 @@ func (s *ShareVarService) List(debugInterfaceId, endpointInterfaceId, diagnoseIn
 	if diagnoseInterfaceId > 0 {
 		diagnoseInterface, _ := s.DiagnoseInterfaceRepo.Get(diagnoseInterfaceId)
 		serveId = diagnoseInterface.ServeId
+
+	} else if caseInterfaceId > 0 {
+		caseInterface, _ := s.EndpointCaseRepo.Get(caseInterfaceId)
+		serveId = caseInterface.ServeId
 
 	} else if endpointInterfaceId > 0 {
 		endpointInterface, _ := s.EndpointInterfaceRepo.Get(endpointInterfaceId)

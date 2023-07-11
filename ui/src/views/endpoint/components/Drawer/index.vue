@@ -1,10 +1,9 @@
 <template>
-  <a-drawer
+  <a-drawer class="drawer"
       :placement="'right'"
       :width="1200"
       :closable="true"
       :visible="visible"
-      class="drawer"
       wrapClassName="drawer-1"
       :headerStyle="{position:'sticky',top:0,zIndex:9999}"
       :bodyStyle="{padding:0,minHeight:'100vh'}"
@@ -30,15 +29,15 @@
         :bordered="false"
         :size="'small'"
         :bodyStyle="{padding:'0 16px'}"
-        :headStyle="{padding:'0 16px',borderBottom:'none'}"
-    >
+        :headStyle="{padding:'0 16px',borderBottom:'none'}">
       <template #title>
         <div>
           <ConBoxTitle :show-arrow="true" @expand="expandInfo" :backgroundStyle="'background: #FBFBFB;'"
                        :title="'接口设计'"/>
         </div>
       </template>
-      <a-tabs
+
+      <a-tabs class="tabs"
           :tabBarStyle="{marginBottom: 0}"
           v-show="expand" :activeKey="key" :animated="false" @change="changeTab">
         <template #tabBarExtraContent>
@@ -49,17 +48,27 @@
             保存
           </a-button>
         </template>
-        <a-tab-pane key="request" tab="定义">
-          <div style="margin-top: 16px;">
+
+        <a-tab-pane key="request" tab="定义" class="tab">
+          <div class="tab-container">
             <EndpointDefine v-if="key === 'request'" @switchMode="switchMode"/> <!-- use v-if to force page reload-->
           </div>
         </a-tab-pane>
+
         <a-tab-pane key="run" tab="调试">
-          <div style="margin-top: 16px;">
+          <div class="tab-container">
             <!-- use v-if to force page reload -->
             <EndpointDebug v-if="key === 'run'" @switchToDefineTab="switchToDefineTab"/>
           </div>
         </a-tab-pane>
+
+        <a-tab-pane key="cases" tab="用例">
+          <div class="tab-container">
+            <!-- use v-if to force page reload -->
+            <EndpointCases v-if="key === 'cases'" @switchToDefineTab="switchToDefineTab"/>
+          </div>
+        </a-tab-pane>
+
         <a-tab-pane key="docs" tab="文档">
           <Docs :onlyShowDocs="true"
                 :showHeader="false"
@@ -85,6 +94,7 @@ import EditAndShowField from '@/components/EditAndShow/index.vue';
 import ConBoxTitle from '@/components/ConBoxTitle/index.vue';
 import EndpointDefine from './Define/index.vue';
 import EndpointDebug from './Debug/index.vue';
+import EndpointCases from './Cases/index.vue';
 import Docs from '@/components/Docs/index.vue';
 
 import {useStore} from "vuex";
@@ -194,6 +204,14 @@ function expandInfo(val) {
 <style lang="less" scoped>
 .drawer {
   margin-bottom: 60px;
+
+  .tabs {
+    .tab {
+      .tab-container {
+        margin-top: 16px;
+      }
+    }
+  }
 
   .title {
     width: auto;

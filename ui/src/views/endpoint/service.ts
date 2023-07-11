@@ -1,8 +1,10 @@
 import request, {ResponseData} from '@/utils/request';
 import {QueryParams} from "@/types/data";
+import {Interface} from "@/views/component/debug/data";
 
 const apiPath = 'endpoints';
 const apiPathInterface = 'endpoints/interfaces';
+const apiPathCase = 'endpoints/cases';
 
 export async function query(params?: QueryParams): Promise<any> {
     return request({
@@ -182,6 +184,49 @@ export async function importEndpointData(data: any): Promise<any> {
         data: {
             ...data,
         }
+    });
+}
+
+export async function listEndpointCase(endpointId: number): Promise<any> {
+    const params = {endpointId}
+    return request({
+        url: `/${apiPathCase}/list`,
+        method: 'GET',
+        params
+    })
+}
+export async function getEndpointCase(id: Number | String | any): Promise<any> {
+    return request({
+        url: `/${apiPathCase}/${id}`,
+        method: 'GET',
+    });
+}
+export async function saveEndpointCase(data: any): Promise<any> {
+    return request({
+        url: `/${apiPathCase}/${data.id?data.id:0}`,
+        method: 'post',
+        data
+    });
+}
+export async function saveEndpointCaseDebugData(data: any): Promise<any> {
+    return request({
+        url: `/${apiPathCase}/saveDebugData`,
+        method: 'post',
+        data,
+    });
+}
+export async function updateEndpointCaseName(data): Promise<any> {
+    return request({
+        url: `/${apiPathCase}/${data.id}`,
+        method: 'put',
+        data
+    });
+}
+export async function removeEndpointCase(data): Promise<any> {
+    return request({
+        url: `/${apiPathCase}/${data.id}`,
+        method: 'delete',
+        data
     });
 }
 

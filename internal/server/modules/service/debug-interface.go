@@ -16,6 +16,7 @@ type DebugInterfaceService struct {
 	DebugInterfaceRepo    *repo.DebugInterfaceRepo    `inject:""`
 	ScenarioInterfaceRepo *repo.ScenarioInterfaceRepo `inject:""`
 	DiagnoseInterfaceRepo *repo.DiagnoseInterfaceRepo `inject:""`
+	EndpointCaseRepo      *repo.EndpointCaseRepo      `inject:""`
 
 	EndpointRepo          *repo.EndpointRepo          `inject:""`
 	ServeRepo             *repo.ServeRepo             `inject:""`
@@ -40,6 +41,8 @@ func (s *DebugInterfaceService) Load(loadReq domain.DebugReq) (debugData domain.
 			debugData, _ = s.GetDebugInterfaceByScenarioInterface(loadReq.ScenarioProcessorId)
 		} else if loadReq.DiagnoseInterfaceId > 0 {
 			debugData, _ = s.GetDebugInterfaceByDiagnoseInterface(loadReq.DiagnoseInterfaceId)
+		} else if loadReq.CaseInterfaceId > 0 {
+			debugData, _ = s.GetDebugInterfaceByEndpointCase(loadReq.CaseInterfaceId)
 		} else if loadReq.EndpointInterfaceId > 0 {
 			debugData, _ = s.GetDebugInterfaceByEndpointInterface(loadReq.EndpointInterfaceId)
 		}
@@ -276,6 +279,33 @@ func (s *DebugInterfaceService) GetDebugInterfaceByDiagnoseInterface(diagnoseInt
 	ret.ServerId = diagnoseInterface.DebugData.ServerId
 	ret.DebugInterfaceId = diagnoseInterface.DebugInterfaceId
 	ret.DiagnoseInterfaceId = diagnoseInterfaceId
+
+	ret.Headers = append(ret.Headers, domain.Header{Name: "", Value: ""})
+	ret.QueryParams = append(ret.QueryParams, domain.Param{Name: "", Value: "", ParamIn: consts.ParamInQuery})
+	ret.PathParams = append(ret.PathParams, domain.Param{Name: "", Value: "", ParamIn: consts.ParamInPath})
+
+	ret.BodyFormData = append(ret.BodyFormData, domain.BodyFormDataItem{
+		Name: "", Value: "", Type: consts.FormDataTypeText})
+	ret.BodyFormUrlencoded = append(ret.BodyFormUrlencoded, domain.BodyFormUrlEncodedItem{
+		Name: "", Value: "",
+	})
+
+	return
+}
+
+func (s *DebugInterfaceService) GetDebugInterfaceByEndpointCase(endpointCaseId uint) (ret domain.DebugData, err error) {
+	endpointCase, err := s.EndpointCaseRepo.GetDetail(endpointCaseId)
+	if err != nil {
+		return
+	}
+
+	copier.CopyWithOption(&ret, endpointCase.DebugData, copier.Option{
+		DeepCopy: true,
+	})
+
+	ret.ServerId = endpointCase.DebugData.ServerId
+	ret.DebugInterfaceId = endpointCase.DebugInterfaceId
+	ret.CaseInterfaceId = endpointCaseId
 
 	ret.Headers = append(ret.Headers, domain.Header{Name: "", Value: ""})
 	ret.QueryParams = append(ret.QueryParams, domain.Param{Name: "", Value: "", ParamIn: consts.ParamInQuery})

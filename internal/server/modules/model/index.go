@@ -77,6 +77,7 @@ var (
 		&EndpointInterfaceResponseBodyHeader{},
 		&EndpointInterfaceResponseBody{},
 		&EndpointInterface{},
+		&EndpointCase{},
 		&EndpointInterfaceParam{},
 		&EndpointInterfaceCookie{},
 		&EndpointInterfaceHeader{},

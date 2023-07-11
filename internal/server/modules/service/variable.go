@@ -23,7 +23,7 @@ type VariableService struct {
 	DatapoolService    *DatapoolService    `inject:""`
 }
 
-func (s *VariableService) GetCombinedVarsForCheckpoint(debugInterfaceId, endpointInterfaceId, scenarioProcessorId uint, usedBy consts.UsedBy) (
+func (s *VariableService) GetCombinedVarsForCheckpoint(debugInterfaceId, endpointInterfaceId, caseInterfaceId, scenarioProcessorId uint, usedBy consts.UsedBy) (
 	ret map[string]interface{}, datapools domain.Datapools, err error) {
 
 	diagnoseInterfaceId := uint(0)
@@ -38,7 +38,7 @@ func (s *VariableService) GetCombinedVarsForCheckpoint(debugInterfaceId, endpoin
 	env, _ := s.EnvironmentRepo.Get(envId)
 	projectId := env.ProjectId
 
-	shareVariables := s.ShareVarService.List(debugInterfaceId, endpointInterfaceId, diagnoseInterfaceId, scenarioProcessorId, usedBy)
+	shareVariables := s.ShareVarService.List(debugInterfaceId, endpointInterfaceId, diagnoseInterfaceId, caseInterfaceId, scenarioProcessorId, usedBy)
 	envVars, _ := s.EnvironmentService.GetVarsByEnv(envId)
 	globalVars, _ := s.EnvironmentService.GetGlobalVars(projectId)
 	datapools, _ = s.DatapoolService.ListForExec(projectId)

@@ -312,7 +312,7 @@ func (c *UserCtrl) ChangeAvatar(ctx iris.Context) {
 }
 
 func (c *UserCtrl) GetUsersNotExistedInProject(ctx iris.Context) {
-	projectId, _ := ctx.URLParamInt("projectId")
+	projectId, _ := ctx.URLParamInt("currProjectId")
 
 	users, err := c.UserService.GetUsersNotExistedInProject(uint(projectId))
 	if err != nil {

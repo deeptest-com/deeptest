@@ -325,10 +325,15 @@ func (c *ServeCtrl) DeleteSecurity(ctx iris.Context) {
 
 func (c *ServeCtrl) SaveSwaggerSync(ctx iris.Context) {
 	var req serverDomain.SwaggerSyncReq
-	if err := ctx.ReadJSON(&req); err == nil {
-		res, _ := c.ServeService.SaveSwaggerSync(req)
-		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
-	} else {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
+	if err := ctx.ReadJSON(&req); err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
 	}
+
+	res, err := c.ServeService.SaveSwaggerSync(req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
 }

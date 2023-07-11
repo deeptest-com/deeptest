@@ -70,24 +70,14 @@ const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const treeDataCategory = computed<any>(() => store.state.Endpoint.treeDataCategory);
 //const formState = computed<any>(() => store.state.ProjectSetting.swaggerSyncDetail);
 
-const swaggerSyncDetail = store.state.ProjectSetting.swaggerSyncDetail;
+//const swaggerSyncDetail = ref(store.state.ProjectSetting.swaggerSyncDetail);
 
   const treeData: any = computed(() => {
   const data = treeDataCategory.value;
   return  data?.[0]?.children || [];
 });
 
-
-const formState: UnwrapRef<SwaggerSync> = reactive({
-    id:swaggerSyncDetail?.id,
-    switch:swaggerSyncDetail?.switch,
-    syncType: swaggerSyncDetail?.syncType || 1,
-    categoryId:swaggerSyncDetail?.categoryId || -1,
-    url: swaggerSyncDetail?.url,
-    cron: swaggerSyncDetail?.cron || '23 * * *',
-    projectId:currProject.value.id,
-});
-
+let formState: UnwrapRef<SwaggerSync>  = computed<SwaggerSync>(()=>store.state.ProjectSetting.swaggerSyncDetail)
 
 const rules = {
   syncType: [{required: true}],
@@ -99,22 +89,21 @@ const rules = {
 const { resetFields,validate,validateInfos  } = useForm(formState, rules);
 
 
-
 const onSubmit = () => {
   
     validate().then(()=>{
-      console.log('Success:', formState);
-      saveSwaggerSync(formState)
-      resetFields();
+      saveSwaggerSync(formState.value)
+      
       message.success('保存成功');
     }).catch(()=>{
-      console.log('error:', formState);
+      console.log('error:', formState.value);
     })  
 
 };
 
-async function saveSwaggerSync(data) {
-  await store.dispatch('ProjectSetting/saveSwaggerSync', data)
+async function saveSwaggerSync(data:SwaggerSync) {
+  console.log(data)
+  await store.dispatch('ProjectSetting/saveSwaggerSync', data);
 }
 
 const syncTypes = [
@@ -123,7 +112,7 @@ const syncTypes = [
   
 
 function selectedCategory(value) {
-  formState.categoryId = value;
+  formState.value.categoryId = value;
 }
 
 async function loadCategories() {
@@ -135,11 +124,13 @@ onMounted(async () => {
   await store.dispatch('ProjectSetting/getSwaggerSync');
 })
 
+
 watch(() => {
   return currProject.value;
 }, async (newVal) => {
   if (newVal?.id) {
     await loadCategories();
+    await store.dispatch('ProjectSetting/getSwaggerSync');
   }
 }, {
   immediate: true

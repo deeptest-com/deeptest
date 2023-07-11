@@ -12,6 +12,7 @@
 
         <a-radio-group v-model:value="selectedParamType">
           <a-radio-button
+              class="request-query-btn"
               :style="{ color: selectedParamType !== item.value ? '#999999' : '#1890ff',
                       'box-shadow': `none` ,
                       background:  selectedParamType !== item.value ? '#f5f5f5' : '#fff',
@@ -281,5 +282,11 @@ function handleParamsChange(type, data) {
   display: inline-block;
   margin-left: 4px;
   margin-top: 4px;
+}
+
+.ant-radio-button-wrapper-checked.request-query-btn{
+  &:before{
+    display: none;
+  }
 }
 </style>

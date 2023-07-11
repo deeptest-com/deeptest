@@ -5,23 +5,17 @@ import (
 	"fmt"
 	"github.com/474420502/requests"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
-<<<<<<< HEAD
+	builtin "github.com/aaronchen2k/deeptest/internal/pkg/buildin"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	curlHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/curl"
-=======
-	builtin "github.com/aaronchen2k/deeptest/internal/pkg/buildin"
->>>>>>> 7d422159 (接口字段批量更新)
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
-<<<<<<< HEAD
 	"net/http"
 	"net/url"
-=======
->>>>>>> 7d422159 (接口字段批量更新)
 	"sync"
 )
 

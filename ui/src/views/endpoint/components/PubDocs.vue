@@ -91,7 +91,6 @@ async function ok() {
   formRef.value
       .validate()
       .then(async () => {
-
         let name: any = '';
         let version: any = '';
         if (formState.value.isNewVersion) {

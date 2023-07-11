@@ -15,6 +15,7 @@ type DocumentRep struct {
 	GlobalParams map[string]interface{} `json:"globalParams"`
 	GlobalVars   []EnvironmentParam     `json:"globalVars"`
 	Version      string                 `json:"version"`
+	DocumentId   uint                   `json:"documentId"`
 }
 
 type DocumentServe struct {

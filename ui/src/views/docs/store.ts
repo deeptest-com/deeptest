@@ -60,7 +60,7 @@ const StoreModel: ModuleType = {
         }
     },
     actions: {
-        // 获取可选组件信息
+
         async getDocs({commit}, payload: any) {
             const res = await getDocs({
                 ...payload,

@@ -33,8 +33,6 @@
                   <EnvironmentOutlined/>
                 </a-tooltip>
               </template>
-
-              <RequestEnv v-if="rightTabKey==='env'"></RequestEnv>
             </a-tab-pane>
 
             <a-tab-pane key="history">
@@ -44,11 +42,17 @@
                   <HistoryOutlined/>
                 </a-tooltip>
               </template>
-
-              <RequestHistory v-if="rightTabKey==='history'"></RequestHistory>
             </a-tab-pane>
           </a-tabs>
         </div>
+
+        <div v-if="rightTabKey==='env'" class="float-tab env">
+          <RequestEnv :onClose="closeRightTab" />
+        </div>
+        <div v-if="rightTabKey==='history'" class="float-tab his">
+          <RequestHistory :onClose="closeRightTab" />
+        </div>
+
       </div>
 
       <div class="selection">
@@ -58,7 +62,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, provide, ref, watch} from 'vue';
+import {computed, onMounted, onUnmounted, provide, ref, watch} from 'vue';
 import {useStore} from "vuex";
 import debounce from "lodash.debounce";
 import {UsedBy} from "@/utils/enum";
@@ -88,7 +92,7 @@ const interfaceData = computed<any>(() => store.state.DiagnoseInterface.interfac
 const interfaceTabs = computed<any>(() => store.state.DiagnoseInterface.interfaceTabs);
 
 const activeTabKey = ref('0')
-const rightTabKey = ref('env')
+const rightTabKey = ref('')
 
 const changeTab = (key) => {
   console.log('changeTab', key)
@@ -135,6 +139,10 @@ const getTitle = (title) => {
 
   return title.substr(0, 16) + '...' + title.substr(len-6, len);
 };
+
+const closeRightTab = () => {
+  rightTabKey.value = ''
+}
 
 </script>
 
@@ -201,12 +209,33 @@ const getTitle = (title) => {
 
     #diagnose-interface-debug-right {
       margin-top: 50px;
-      width: 260px;
+      width: 38px;
       height: 100%;
+      overflow: visible;
     }
 
     .diagnose-interface-debug-splitter {
       min-width: 20px;
+    }
+
+    position: static;
+    .float-tab {
+      position: absolute;
+      padding: 10px;
+      border: 1px solid #e6e9ec;
+      border-radius: 10px;
+      background-color: #F6F6F6F6;
+      z-index: 99;
+      width: 360px;
+      right: 38px;
+      &.env {
+        top: 65px;
+        height: calc(100% - 100px);
+      }
+      &.his {
+        top: 100px;
+        height: calc(100% - 135px);
+      }
     }
   }
 }

@@ -6,7 +6,7 @@
           <a-col flex="80px">
             <a-select class="select-env"
                       :options="methods"
-                      v-model:value="debugData.method" >
+                      v-model:value="debugData.method">
             </a-select>
           </a-col>
 
@@ -20,7 +20,8 @@
             <!-- debug-url-3 -->
             <a-input class="uri" placeholder="请求路径"
                      v-model:value="debugData.url"
-                     v-contextmenu="e => onContextMenuShow(0, e)">
+                     v-contextmenu="e => onContextMenuShow(0, e)"
+                     :disabled="urlReadonly">
             </a-input>
           </a-col>
 
@@ -49,7 +50,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import {computed, ref, watch} from "vue";
+import {computed, defineProps, ref, watch} from "vue";
 import {useStore} from "vuex";
 import {notification} from "ant-design-vue";
 import {SaveOutlined} from '@ant-design/icons-vue';
@@ -70,6 +71,13 @@ const store = useStore<{ DiagnoseInterface: DiagnoseInterfaceStateType, Debug: D
 
 const debugData = computed<any>(() => store.state.Debug.debugData);
 const serveServers: any = computed(() => store.state.DiagnoseInterface.serveServers);
+
+const props = defineProps({
+  urlReadonly: {
+    type: Boolean,
+    required: false,
+  },
+})
 
 const methods = getArrSelectItems(Methods)
 
@@ -93,12 +101,12 @@ watch(debugData, async (newVal) => {
     getEnvUrl()
     currServerId.value = newVal.serverId
   }
-}, { immediate: true, deep: true })
+}, {immediate: true, deep: true})
 
 watch(serveServers, async (newVal) => {
   console.log('watch serveServers', serveServers?.value)
   getEnvUrl()
-}, { immediate: true, deep: true })
+}, {immediate: true, deep: true})
 
 const send = async (e) => {
   console.log('sendRequest', debugData.value)
@@ -152,7 +160,7 @@ const validateInfo = () => {
   return true
 };
 
-const { showContextMenu, contextMenuStyle, onContextMenuShow, onMenuClick } = useVariableReplace('diagnoseInterfaceUrl')
+const {showContextMenu, contextMenuStyle, onContextMenuShow, onMenuClick} = useVariableReplace('diagnoseInterfaceUrl')
 
 </script>
 

@@ -8,7 +8,7 @@
 
     <div id="endpoint-debug-cases-design-panel">
       <div id="endpoint-debug-cases-design-content">
-        <UrlAndInvocation />
+        <UrlAndInvocation :url-readonly="true" />
         <DebugComp />
       </div>
 
@@ -60,6 +60,7 @@ import { EnvironmentOutlined, HistoryOutlined } from '@ant-design/icons-vue';
 
 import RequestEnv from '@/views/component/debug/others/env/index.vue';
 import RequestHistory from '@/views/component/debug/others/history/index.vue';
+
 import EnvSelection from '@/views/diagnose/design/env-selection.vue'
 import UrlAndInvocation from '@/views/diagnose/design/url-and-invocation.vue'
 

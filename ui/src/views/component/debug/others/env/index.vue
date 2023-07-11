@@ -7,6 +7,7 @@
             <div class="left">
               共享变量
             </div>
+
             <div class="right">
               <span class="dp-link">
                 <a-tooltip overlayClassName="dp-tip-small">
@@ -20,6 +21,12 @@
                   <QuestionCircleOutlined class="dp-icon-btn dp-trans-80"/>
                 </a-tooltip>
               </span>
+              <span class="dp-link">
+                <a-tooltip overlayClassName="dp-tip-small">
+                  <CloseOutlined @click="close" class="dp-icon-btn dp-trans-80"/>
+                </a-tooltip>
+              </span>
+
             </div>
           </div>
 
@@ -180,10 +187,10 @@
 </template>
 
 <script setup lang="ts">
-import {computed, inject, ref, watch} from "vue";
+import {computed, defineProps, inject, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
-import { QuestionCircleOutlined, ClearOutlined, DeleteOutlined } from '@ant-design/icons-vue';
+import { QuestionCircleOutlined, ClearOutlined, DeleteOutlined, CloseOutlined } from '@ant-design/icons-vue';
 
 import {StateType as ProjectStateType} from "@/store/project";
 import {UsedBy} from "@/utils/enum";
@@ -199,6 +206,13 @@ const debugData = computed<any>(() => store.state.Debug.debugData);
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const currServe = computed<any>(() => store.state.ServeGlobal.currServe);
 
+const props = defineProps({
+  onClose: {
+    type: Function,
+    required: false,
+  },
+})
+
 const clearShareVar  = () => {
   console.log('clearShareVar')
   store.dispatch('Debug/clearShareVar', {usedBy: usedBy})
@@ -206,6 +220,10 @@ const clearShareVar  = () => {
 const removeShareVar = (item) => {
   console.log('removeShareVar', item)
   store.dispatch('Debug/removeShareVar', {id: item.varId})
+}
+
+const close = () => {
+  if (props.onClose) props.onClose()
 }
 
 </script>
@@ -227,43 +245,12 @@ const removeShareVar = (item) => {
 
 <style lang="less" scoped>
 .env-main {
-  display: flex;
-  flex-direction: column;
   height: 100%;
-
-  .head {
-    padding: 0 3px;
-    height: 32px;
-    line-height: 32px;
-    border-bottom: 1px solid #d9d9d9;
-    display: flex;
-    &.no-padding {
-      padding: 0;
-    }
-    .title {
-      flex: 1;
-      display: flex;
-
-      .label {
-        padding: 0 5px;
-        width: 68px;
-      }
-      .content {
-        flex: 1;
-      }
-
-    }
-    .acts {
-      width: 50px;
-      text-align: right;
-    }
-  }
+  overflow-y: auto;
 
   .env-var {
-    flex: 1;
     display: flex;
     flex-direction: column;
-    height: 0;
 
     .body {
       flex: 1;
@@ -282,8 +269,9 @@ const removeShareVar = (item) => {
 
           &:first-child {
             border-bottom: 1px solid #eaeaee;
+            padding-bottom: 10px;
             .right {
-              width: 48px;
+              width: 78px;
               .dp-link {
                 display: inline-block;
                 width: 24px;

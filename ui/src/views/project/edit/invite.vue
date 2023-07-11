@@ -7,7 +7,7 @@
       width="700px">
   <div class="invite-main">
     <a-card>
-    
+
       <a-form :label-col="labelCol" :wrapper-col="wrapperCol" ref="formRef">
         <a-form-item label="用户名" v-bind="validateInfos.userId">
                 <a-select v-model:value="modelRef.userId" show-search @change="selectUser" :options="options" optionFilterProp="label"
@@ -23,7 +23,7 @@
         </a-form-item>
 
         <a-form-item label="邮箱" v-bind="validateInfos.email" >
-          <a-input v-model:value="modelRef.email"/>
+          <a-input v-model:value="modelRef.email" />
         </a-form-item>
       </a-form>
 
@@ -43,7 +43,7 @@ import {StateType as UserStateType} from "@/store/user";
 import {StateType} from "../store";
 import { defineProps,defineEmits,} from 'vue';
 import { Member } from "../data.d";
-const props = defineProps({  
+const props = defineProps({
   visible: {
     required: true,
     type: Boolean,

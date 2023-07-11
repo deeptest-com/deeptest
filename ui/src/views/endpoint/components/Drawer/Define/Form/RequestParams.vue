@@ -9,29 +9,41 @@
     </a-col>
     <a-col :span="15">
       <div class="params-defined-btns">
-        <a-button @click="setSecurity">
+
+        <a-radio-group v-model:value="selectedParamType">
+          <a-radio-button
+              :style="{ color: selectedParamType !== item.value ? '#999999' : '#1890ff',
+                      'box-shadow': `none` ,
+                      background:  selectedParamType !== item.value ? '#f5f5f5' : '#fff',
+                     'border-color': '#d9d9d9'}"
+              v-for="item in paramTypeOpts" :key="item.value" :value="item.value">{{item.label}}</a-radio-button>
+        </a-radio-group>
+
+        <span style="width: 12px;display: inline-block"></span>
+
+        <a-button @click="setSecurity" v-show="selectedParamType === 'security'">
           <template #icon>
             <PlusOutlined/>
           </template>
-          {{ `Security` }}
+          {{ `设置 Security` }}
         </a-button>
-        <a-button @click="addHeader">
+        <a-button @click="addHeader"  v-show="selectedParamType === 'header'">
           <template #icon>
             <PlusOutlined/>
           </template>
-          {{ `Header` }}
+          {{ `添加 Header` }}
         </a-button>
-        <a-button @click="addQueryParams">
+        <a-button @click="addQueryParams"  v-show="selectedParamType === 'query'">
           <template #icon>
             <PlusOutlined/>
           </template>
-          {{ `Query Params` }}
+          {{ `添加 Params 参数` }}
         </a-button>
-        <a-button @click="addCookie">
+        <a-button @click="addCookie"  v-show="selectedParamType === 'cookie'">
           <template #icon>
             <PlusOutlined/>
           </template>
-          {{ `Cookie` }}
+          {{ `添加 Cookie` }}
         </a-button>
       </div>
     </a-col>
@@ -42,10 +54,8 @@
     <a-col :span="21">
       <div class="params-defined">
         <div class="params-defined-content">
-          <div class="params-defined-item" v-if="showSecurity">
-            <div class="params-defined-item-header" style="margin-top: 16px;margin-bottom: 8px;">
-              <span>Security</span>
-            </div>
+          <div class="params-defined-item" v-if="showSecurity && selectedParamType === 'security'">
+            <div class="params-defined-item-header" style="margin-top: 16px;margin-bottom: 8px;"/>
             <div class="header-defined header-defined-items">
               <a-select @change="securityChange"
                         allowClear
@@ -70,10 +80,7 @@
               </a-tooltip>
             </div>
           </div>
-          <div class="params-defined-item" v-if="selectedMethodDetail?.headers?.length">
-            <div class="params-defined-item-header">
-              <span>Header</span>
-            </div>
+          <div class="params-defined-item" v-if="selectedMethodDetail?.headers?.length &&  selectedParamType === 'header'">
             <div class="header-defined header-defined-items">
               <div v-for="(item,index) in selectedMethodDetail.headers" :key="item.id">
                 <RequestHeader
@@ -84,10 +91,7 @@
               </div>
             </div>
           </div>
-          <div class="params-defined-item" v-if="selectedMethodDetail?.params?.length">
-            <div class="params-defined-item-header">
-              <span>Query Params</span>
-            </div>
+          <div class="params-defined-item" v-if="selectedMethodDetail?.params?.length  &&  selectedParamType === 'query'">
             <div class="header-defined ">
               <div v-for="(item,index) in selectedMethodDetail.params" :key="item.id">
                 <Field
@@ -98,10 +102,7 @@
               </div>
             </div>
           </div>
-          <div class="params-defined-item" v-if="selectedMethodDetail?.cookies?.length">
-            <div class="params-defined-item-header">
-              <span>Cookie</span>
-            </div>
+          <div class="params-defined-item" v-if="selectedMethodDetail?.cookies?.length &&  selectedParamType === 'cookie'">
             <div class="header-defined ">
               <div v-for="(item,index) in selectedMethodDetail.cookies" :key="item.id">
                 <Field
@@ -147,6 +148,28 @@ const emit = defineEmits([]);
 const collapse = ref(true);
 // 是否展示安全定义
 const showSecurity = ref(!!selectedMethodDetail.value?.security);
+
+const paramTypeOpts = [
+  {
+    label: 'Security',
+    value: 'security'
+  },
+  {
+    label: 'Header',
+    value: 'header'
+  },
+  {
+    label: 'Query Params',
+    value: 'query'
+  },
+  {
+    label: 'Cookie',
+    value: 'cookie'
+  },
+]
+
+// 当前选中的参数类型
+const selectedParamType = ref('security');
 
 function goEditSecurity() {
   window.open(`/#/project-setting/service-setting?sectab=service-security&serveId=${endpointDetail.value.serveId}`, '_blank')

@@ -221,7 +221,7 @@ const closeRightTab = () => {
     position: static;
     .float-tab {
       position: absolute;
-      padding: 10px;
+      padding: 10px 16px;
       border: 1px solid #e6e9ec;
       border-radius: 10px;
       background-color: #F6F6F6F6;

@@ -84,10 +84,9 @@ const mouseLeave = (event) => {
   overflow-y: auto;
 
   .head {
-    padding: 0 5px 10px 5px;
+    padding: 0 5px 5px 5px;
     border-bottom: 1px solid #d9d9d9;
 
-    height: 32px;
     line-height: 32px;
     display: flex;
     .title {

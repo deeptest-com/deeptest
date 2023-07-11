@@ -14,7 +14,7 @@ import {
     remove,
     getYaml, updateStatus, getDocs,
     importEndpointData,
-    upload, updateEndpointCaseName, removeEndpointCase, getEndpointCase, listEndpointCase, saveEndpointCase
+    upload, updateEndpointCaseName, removeEndpointCase, getEndpointCase, listEndpointCase, saveEndpointCase,batchUpdateField
 } from './service';
 import {
     loadCategory,
@@ -138,6 +138,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         saveCase: Action<StateType, StateType>;
         updateCaseName: Action<StateType, StateType>;
         removeCase: Action<StateType, StateType>;
+        batchUpdateField: Action<StateType, StateType>;
     }
 }
 
@@ -544,7 +545,7 @@ const StoreModel: ModuleType = {
                 ...payload
             });
             if (res.code === 0) {
-                await dispatch("getEndpointDetail",{id:res.data})
+                await dispatch("getEndpointDetail", {id: res.data})
                 await dispatch('loadList', {projectId: payload.projectId});
             } else {
                 return false
@@ -711,7 +712,6 @@ const StoreModel: ModuleType = {
             }
             return result;
         },
-
         async listCase({commit}, endpointId: number) {
             const resp = await listEndpointCase(endpointId);
             commit('setEndpointId', endpointId);
@@ -723,7 +723,7 @@ const StoreModel: ModuleType = {
                 return false
             }
         },
-        async getCase({ commit }, id: number) {
+        async getCase({commit}, id: number) {
             const resp: ResponseData = await getEndpointCase(id);
 
             if (resp.code === 0) {
@@ -733,7 +733,7 @@ const StoreModel: ModuleType = {
                 return false
             }
         },
-        async saveCase({ state, dispatch }, payload: any) {
+        async saveCase({state, dispatch}, payload: any) {
             const jsn = await saveEndpointCase(payload)
             if (jsn.code === 0) {
                 dispatch('listCase', state.endpointId);
@@ -742,7 +742,7 @@ const StoreModel: ModuleType = {
                 return false
             }
         },
-        async updateCaseName({ state, dispatch }, payload: any) {
+        async updateCaseName({state, dispatch}, payload: any) {
             const jsn = await updateEndpointCaseName(payload)
             if (jsn.code === 0) {
                 dispatch('listCase', state.endpointId);
@@ -751,7 +751,7 @@ const StoreModel: ModuleType = {
                 return false
             }
         },
-        async removeCase({ commit, dispatch, state }, record: any) {
+        async removeCase({commit, dispatch, state}, record: any) {
             try {
                 const jsn = await removeEndpointCase(record);
                 if (jsn.code === 0) {
@@ -763,7 +763,15 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
-    },
+        async batchUpdateField({commit, dispatch}, payload: any) {
+            const res = await batchUpdateField(payload);
+            if (res.code === 0) {
+                await dispatch('loadList', {projectId: payload.projectId});
+            } else {
+                return null
+            }
+        },
+    }
 };
 
 export default StoreModel;

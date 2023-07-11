@@ -5,6 +5,7 @@ import "github.com/aaronchen2k/deeptest/internal/pkg/consts"
 type DebugReq struct {
 	DebugInterfaceId    uint `json:"debugInterfaceId"`
 	EndpointInterfaceId uint `json:"endpointInterfaceId"` // EndpointInterface without DebugInterface init
+	CaseInterfaceId     uint `json:"caseInterfaceId"`     // load by endpoint case
 	ScenarioProcessorId uint `json:"scenarioProcessorId"` // used to load vars by scenario processor
 	DiagnoseInterfaceId uint `json:"diagnoseInterfaceId"` // load by interface diagnose
 
@@ -24,6 +25,7 @@ type DebugData struct {
 	EndpointInterfaceId uint          `json:"endpointInterfaceId"`
 	ScenarioProcessorId uint          `json:"scenarioProcessorId"`
 	DiagnoseInterfaceId uint          `json:"diagnoseInterfaceId"`
+	CaseInterfaceId     uint          `json:"caseInterfaceId"`
 	UsedBy              consts.UsedBy `json:"usedBy"`
 
 	ServeId   uint `json:"serveId"`

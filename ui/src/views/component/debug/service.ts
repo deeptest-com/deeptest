@@ -55,15 +55,16 @@ export async function listInvocation(params: DebugInfo): Promise<any> {
         params,
     });
 }
-export async function getInvocationAsInterface(id: number): Promise<any> {
-    return request({url: `/${apiPathInvoke}/${id}`});
-}
 export async function getLastInvocationResp(params: DebugInfo): Promise<any> {
     return request({
         url: `/${apiPathInvoke}/getLastResp`,
         params
     });
 }
+export async function getInvocationAsInterface(id: number): Promise<any> {
+    return request({url: `/${apiPathInvoke}/${id}`});
+}
+
 export async function removeInvocation(id: number): Promise<any> {
     return request({
         url: `/${apiPathInvoke}/${id}`,

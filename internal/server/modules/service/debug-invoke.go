@@ -18,6 +18,7 @@ type DebugInvokeService struct {
 	ScenarioProcessorRepo *repo.ScenarioProcessorRepo `inject:""`
 	ScenarioRepo          *repo.ScenarioRepo          `inject:""`
 	DiagnoseInterfaceRepo *repo.DiagnoseInterfaceRepo `inject:""`
+	EndpointCaseRepo      *repo.EndpointCaseRepo      `inject:""`
 
 	DebugSceneService     *DebugSceneService     `inject:""`
 	DebugInterfaceService *DebugInterfaceService `inject:""`
@@ -46,15 +47,28 @@ func (s *DebugInvokeService) SubmitResult(req domain.SubmitDebugResultRequest) (
 
 		scenario, _ := s.ScenarioRepo.Get(scenarioId)
 		projectId = scenario.ProjectId
+
 	} else if usedBy == consts.DiagnoseDebug {
 		diagnoseInterface, _ := s.DiagnoseInterfaceRepo.Get(req.Request.DiagnoseInterfaceId)
 
 		serveId = diagnoseInterface.ServeId
 		projectId = diagnoseInterface.ProjectId
+
+	} else if usedBy == consts.CaseDebug {
+		caseInterface, _ := s.EndpointCaseRepo.Get(req.Request.CaseInterfaceId)
+
+		serveId = caseInterface.ServeId
+		projectId = caseInterface.ProjectId
 	}
 
-	s.ExtractorService.ExtractInterface(req.Request.DebugInterfaceId, req.Request.EndpointInterfaceId, serveId, processorId, scenarioId, req.Response, usedBy)
-	s.CheckpointService.CheckInterface(req.Request.DebugInterfaceId, req.Request.EndpointInterfaceId, req.Request.ScenarioProcessorId, req.Response, usedBy)
+	s.ExtractorService.ExtractInterface(
+		req.Request.DebugInterfaceId, req.Request.CaseInterfaceId, req.Request.EndpointInterfaceId,
+		serveId, processorId, scenarioId,
+		req.Response, usedBy)
+	s.CheckpointService.CheckInterface(
+		req.Request.DebugInterfaceId, req.Request.CaseInterfaceId, req.Request.EndpointInterfaceId,
+		req.Request.ScenarioProcessorId,
+		req.Response, usedBy)
 
 	_, err = s.Create(req.Request, req.Response, serveId, processorId, scenarioId, projectId)
 

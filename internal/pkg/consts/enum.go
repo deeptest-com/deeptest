@@ -260,6 +260,7 @@ const (
 	InterfaceDebug UsedBy = "interface_debug"
 	ScenarioDebug  UsedBy = "scenario_debug"
 	DiagnoseDebug  UsedBy = "diagnose_debug"
+	CaseDebug      UsedBy = "case_debug"
 )
 
 type ExtractorSrc string

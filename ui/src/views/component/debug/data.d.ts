@@ -122,6 +122,7 @@ export interface DebugInfo {
     endpointInterfaceId: number,
     scenarioProcessorId  : number,
     diagnoseInterfaceId  : number,
+    caseInterfaceId  : number,
 
-    usedBy:          consts.UsedBy
+    usedBy:          UsedBy
 }

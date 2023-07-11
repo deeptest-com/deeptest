@@ -184,11 +184,13 @@ const StoreModel: ModuleType = {
                     debugInterfaceId: state.debugInfo.debugInterfaceId,
                     endpointInterfaceId: state.debugInfo.endpointInterfaceId,
                     diagnoseInterfaceId: state.debugInfo.diagnoseInterfaceId,
+                    caseInterfaceId: state.debugInfo.caseInterfaceId,
                 })
                 dispatch('listInvocation', {
                     debugInterfaceId: state.debugInfo.debugInterfaceId,
                     endpointInterfaceId: state.debugInfo.endpointInterfaceId,
                     diagnoseInterfaceId: state.debugInfo.diagnoseInterfaceId,
+                    caseInterfaceId: state.debugInfo.caseInterfaceId,
                 })
 
                 return true;
@@ -213,6 +215,7 @@ const StoreModel: ModuleType = {
                     endpointInterfaceId: data.endpointInterfaceId,
                     scenarioProcessorId  : data.scenarioProcessorId,
                     diagnoseInterfaceId  : data.diagnoseInterfaceId,
+                    caseInterfaceId: data.caseInterfaceId,
                     usedBy:          data.usedBy,
                 } as DebugInfo);
                 console.log('set debugInfo', state.debugInfo)
@@ -267,6 +270,7 @@ const StoreModel: ModuleType = {
                     debugInterfaceId: state.debugInfo.debugInterfaceId,
                     endpointInterfaceId: state.debugInfo.endpointInterfaceId,
                     diagnoseInterfaceId: state.debugInfo.diagnoseInterfaceId,
+                    caseInterfaceId: state.debugInfo.caseInterfaceId,
                 } as DebugInfo);
                 const {data} = resp;
                 commit('setInvocations', data);
@@ -280,6 +284,7 @@ const StoreModel: ModuleType = {
                 debugInterfaceId: state.debugInfo.debugInterfaceId,
                 endpointInterfaceId: state.debugInfo.endpointInterfaceId,
                 diagnoseInterfaceId: state.debugInfo.diagnoseInterfaceId,
+                caseInterfaceId: state.debugInfo.caseInterfaceId,
             } as DebugInfo);
 
             const {data} = response;

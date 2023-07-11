@@ -21,7 +21,6 @@ import CaseDesign from "./design.vue";
 const {t} = useI18n()
 
 const store = useStore<{ Endpoint }>();
-const endpointCase = computed<any>(() => store.state.Endpoint.caseDetail);
 const endpoint = computed<any>(() => store.state.Endpoint.endpointDetail);
 
 const show = ref('list')
@@ -33,8 +32,9 @@ const design = (record) => {
   store.commit('Endpoint/setEndpointCaseDetail', record);
 }
 
-const back = (record) => {
-  console.log('back', record)
+const back = () => {
+  console.log('back')
+  show.value = 'list'
 }
 
 </script>

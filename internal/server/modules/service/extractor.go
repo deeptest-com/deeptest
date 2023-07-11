@@ -51,12 +51,12 @@ func (s *ExtractorService) Delete(reqId uint) (err error) {
 	return
 }
 
-func (s *ExtractorService) ExtractInterface(debugInterfaceId, endpointInterfaceId, serveId, processorId, scenarioId uint, resp domain.DebugResponse, usedBy consts.UsedBy) (err error) {
+func (s *ExtractorService) ExtractInterface(debugInterfaceId, caseInterfaceId, endpointInterfaceId, serveId, processorId, scenarioId uint, resp domain.DebugResponse, usedBy consts.UsedBy) (err error) {
 	extractors, _ := s.ExtractorRepo.List(debugInterfaceId, endpointInterfaceId)
 
 	for _, extractor := range extractors {
 		s.Extract(&extractor, resp, usedBy)
-		s.ShareVarService.Save(extractor.Variable, extractor.Result, debugInterfaceId, endpointInterfaceId, serveId, processorId, scenarioId, extractor.Scope, usedBy)
+		s.ShareVarService.Save(extractor.Variable, extractor.Result, debugInterfaceId, caseInterfaceId, endpointInterfaceId, serveId, processorId, scenarioId, extractor.Scope, usedBy)
 	}
 
 	return

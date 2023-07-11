@@ -30,12 +30,12 @@ func (r *EndpointCaseRepo) Get(id uint) (po model.EndpointCase, err error) {
 	return
 }
 
-func (r *EndpointCaseRepo) GetDetail(interfId uint) (endpointCase model.EndpointCase, err error) {
-	if interfId <= 0 {
+func (r *EndpointCaseRepo) GetDetail(caseId uint) (endpointCase model.EndpointCase, err error) {
+	if caseId <= 0 {
 		return
 	}
 
-	endpointCase, err = r.Get(interfId)
+	endpointCase, err = r.Get(caseId)
 
 	debugInterface, _ := r.DebugInterfaceRepo.Get(endpointCase.DebugInterfaceId)
 

@@ -1,5 +1,11 @@
 <template>
   <div class="endpoint-debug-cases-design-main">
+    <div class="toolbar">
+      <a-button type="primary" trigger="click" @click="back">
+        <span>返回用例列表</span>
+      </a-button>
+    </div>
+
     <div id="endpoint-debug-cases-design-panel">
       <div id="endpoint-debug-cases-design-content">
         <UrlAndInvocation />
@@ -46,7 +52,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, provide, ref, watch} from 'vue';
+import {computed, defineProps, provide, ref, watch} from 'vue';
 import {useStore} from "vuex";
 import debounce from "lodash.debounce";
 import {UsedBy} from "@/utils/enum";
@@ -69,6 +75,13 @@ const store = useStore<{ Debug: Debug, Endpoint: EndpointStateType }>();
 const endpointCase = computed<any>(() => store.state.Endpoint.caseDetail);
 const debugData = computed<any>(() => store.state.Debug.debugData);
 
+const props = defineProps({
+  onBack: {
+    type: Function,
+    required: true,
+  },
+})
+
 const rightTabKey = ref('env')
 
 const loadDebugData = debounce(async () => {
@@ -80,6 +93,10 @@ const loadDebugData = debounce(async () => {
   });
 }, 300)
 
+const back = () => {
+  console.log('back')
+  props.onBack()
+}
 
 watch(endpointCase, (newVal) => {
   if (!endpointCase.value) return
@@ -134,6 +151,14 @@ watch(endpointCase, (newVal) => {
 <style scoped lang="less">
 .endpoint-debug-cases-design-main {
   padding: 16px 0px 16px 16px;
+
+  .toolbar {
+    position: absolute;
+    top: -42px;
+    right: 0;
+    height: 50px;
+    width: 120px;
+  }
 
   #endpoint-debug-cases-design-panel {
     display: flex;

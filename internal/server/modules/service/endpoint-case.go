@@ -42,8 +42,10 @@ func (s *EndpointCaseService) Save(req serverDomain.EndpointCaseSaveReq) (po mod
 	debugInterface := model.DebugInterface{
 		InterfaceBase: model.InterfaceBase{
 			Name: req.Name,
+
 			InterfaceConfigBase: model.InterfaceConfigBase{
 				Method: consts.GET,
+				Url:    endpoint.Path,
 			},
 		},
 		ServeId:  endpoint.ServeId,

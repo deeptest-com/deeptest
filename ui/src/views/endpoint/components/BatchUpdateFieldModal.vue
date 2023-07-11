@@ -130,7 +130,7 @@ const rules = {
   fieldName: [
     {required: true, message: '请选择字段', trigger: 'change'},
   ],
-  value1: [
+  value: [
     {required: true, message: '请选择字段', trigger: 'change'},
   ],
   // value: [

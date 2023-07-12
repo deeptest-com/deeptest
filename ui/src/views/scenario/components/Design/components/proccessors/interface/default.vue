@@ -2,13 +2,9 @@
   <div class="processor_interface_default-main">
     <div id="debug-index" class="dp-splits-v">
       <div id="debug-content">
-        <DebugUrlAndEnv />
-
-        <RequestInvocation
-            :showDebugDataUrl="true"
-            :onSend="invokeInterface"
-            :onSave="saveScenarioInterface"
-            :onSync="syncDebugData" />
+        <Invocation :topVal="'-48px'"
+                    :onSave="saveScenarioInterface"
+                    :onSync="syncDebugData" />
 
         <DebugInterface />
       </div>
@@ -16,7 +12,7 @@
       <div id="debug-splitter" class="splitter"></div>
 
       <div id="debug-right">
-        <a-tabs v-model:activeKey="tabKey"
+        <a-tabs v-model:activeKey="rightTabKey"
                 tabPosition="right"
                 :tabBarGutter="0"
                 class="right-tab">
@@ -28,8 +24,6 @@
                 <EnvironmentOutlined/>
               </a-tooltip>
             </template>
-
-            <RequestEnv v-if="tabKey==='env'"></RequestEnv>
           </a-tab-pane>
 
           <a-tab-pane key="history">
@@ -39,11 +33,20 @@
                 <HistoryOutlined/>
               </a-tooltip>
             </template>
-
-            <RequestHistory v-if="tabKey==='history'"></RequestHistory>
           </a-tab-pane>
 
         </a-tabs>
+      </div>
+
+      <div v-if="rightTabKey==='env'" class="right-float-tab env dp-bg-white">
+        <div class="dp-bg-light">
+          <RequestEnv :onClose="closeRightTab" />
+        </div>
+      </div>
+      <div v-if="rightTabKey==='history'" class="right-float-tab his dp-bg-white">
+        <div class="dp-bg-light">
+          <RequestHistory :onClose="closeRightTab" />
+        </div>
       </div>
     </div>
   </div>
@@ -59,14 +62,12 @@ import { EnvironmentOutlined, HistoryOutlined } from '@ant-design/icons-vue';
 
 import {UsedBy} from "@/utils/enum";
 import {resizeWidth} from "@/utils/dom";
-import {getToken} from "@/utils/localToken";
 import {NotificationKeyCommon} from "@/utils/const";
 
 import RequestEnv from '@/views/component/debug/others/env/index.vue';
 import RequestHistory from '@/views/component/debug/others/history/index.vue';
 
-import RequestInvocation from '@/views/component/debug/request/Invocation.vue';
-import DebugUrlAndEnv from './debug/url-and-env.vue';
+import Invocation from '@/views/component/debug/request/Invocation.vue'
 import DebugInterface from './debug/interface.vue';
 
 import {StateType as Debug} from "@/views/component/debug/store";
@@ -77,23 +78,10 @@ provide('usedBy', UsedBy.ScenarioDebug)
 const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
 
-const tabKey = ref('env')
+const rightTabKey = ref('')
 
 const store = useStore<{  Debug: Debug, Scenario: Scenario }>();
 const debugData = computed<any>(() => store.state.Debug.debugData);
-const scenarioProcessorIdForDebug = computed<number>(() => store.state.Scenario.scenarioProcessorIdForDebug);
-
-const invokeInterface = async () => {
-  console.log('invokeInterface', debugData.value)
-
-  const callData = {
-    serverUrl: process.env.VUE_APP_API_SERVER, // used by agent to submit result to server
-    token: await getToken(),
-
-    data: debugData.value
-  }
-  await store.dispatch('Debug/call', callData)
-};
 
 const saveScenarioInterface = async (data) => {
   const obj = Object.assign({}, data)
@@ -128,7 +116,11 @@ onMounted(() => {
 
 const resize = () => {
   resizeWidth('debug-index',
-      'debug-content', 'debug-splitter', 'debug-right', 500, 260)
+      'debug-content', 'debug-splitter', 'debug-right', 500, 38)
+}
+
+const closeRightTab = () => {
+  rightTabKey.value = ''
 }
 
 </script>
@@ -146,14 +138,10 @@ const resize = () => {
     flex: 1;
     width: 0;
     height: 100%;
-
-    .move-up {
-      margin-top: -43px;
-    }
   }
 
   #debug-right {
-    width: 260px;
+    width: 38px;
     height: 100%;
   }
 

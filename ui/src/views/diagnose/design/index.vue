@@ -9,7 +9,10 @@
 
               <a-tab-pane v-for="tab in interfaceTabs" :key="''+tab.id" :tab="getTitle(tab.title)">
                 <template v-if="debugData?.method" >
-                  <UrlAndInvocation />
+                  <Invocation
+                      :topVal="'-48px'"
+                      :onSave="saveDiagnoseInterface"
+                      :base-url-disabled="false" />
                   <DebugComp />
                 </template>
               </a-tab-pane>
@@ -46,27 +49,22 @@
           </a-tabs>
         </div>
 
-        <div v-if="rightTabKey==='env'" class="float-tab env dp-bg-white">
+        <div v-if="rightTabKey==='env'" class="right-float-tab env dp-bg-white">
           <div class="dp-bg-light">
             <RequestEnv :onClose="closeRightTab" />
           </div>
         </div>
-        <div v-if="rightTabKey==='history'" class="float-tab his dp-bg-white">
+        <div v-if="rightTabKey==='history'" class="right-float-tab his dp-bg-white">
           <div class="dp-bg-light">
             <RequestHistory :onClose="closeRightTab" />
           </div>
         </div>
-
-      </div>
-
-      <div class="selection">
-        <EnvSelection />
       </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import {computed, onMounted, onUnmounted, provide, ref, watch} from 'vue';
+import {computed, provide, ref, watch} from 'vue';
 import {useStore} from "vuex";
 import debounce from "lodash.debounce";
 import {UsedBy} from "@/utils/enum";
@@ -74,8 +72,7 @@ import { EnvironmentOutlined, HistoryOutlined } from '@ant-design/icons-vue';
 
 import RequestEnv from '@/views/component/debug/others/env/index.vue';
 import RequestHistory from '@/views/component/debug/others/history/index.vue';
-import EnvSelection from './env-selection.vue'
-import UrlAndInvocation from './url-and-invocation.vue'
+import Invocation from '@/views/component/debug/request/Invocation.vue'
 
 import DebugComp from '@/views/component/debug/index.vue';
 
@@ -83,6 +80,9 @@ import {StateType as ProjectStateType} from "@/store/project";
 import {StateType as DiagnoseInterfaceStateType} from '../store';
 import {StateType as ServeStateType} from "@/store/serve";
 import {StateType as Debug} from "@/views/component/debug/store";
+import {prepareDataForRequest} from "@/views/component/debug/service";
+import {notification} from "ant-design-vue";
+import {NotificationKeyCommon} from "@/utils/const";
 
 provide('usedBy', UsedBy.DiagnoseDebug)
 
@@ -130,6 +130,28 @@ watch((interfaceData), async (newVal) => {
   activeTabKey.value = ''+interfaceData.value.id
 }, { immediate: true, deep: true })
 
+const saveDiagnoseInterface = async (e) => {
+  console.log('saveDiagnoseInterface')
+
+    let data = JSON.parse(JSON.stringify(debugData.value))
+    data = prepareDataForRequest(data)
+
+    Object.assign(data, {shareVars: null, envVars: null, globalEnvVars: null, globalParamVars: null})
+
+    const res = await store.dispatch('DiagnoseInterface/saveDiagnoseDebugData', data)
+    if (res === true) {
+      notification.success({
+        key: NotificationKeyCommon,
+        message: `保存成功`,
+      });
+    } else {
+      notification.success({
+        key: NotificationKeyCommon,
+        message: `保存失败`,
+      });
+    }
+}
+
 const onTabEdit = (key, action) => {
   console.log('onTabEdit', key, action)
   if (action === 'remove') {
@@ -158,11 +180,6 @@ const closeRightTab = () => {
         margin-right: 160px;
       }
     }
-  }
-  .selection {
-    position: absolute;
-    top: 16px;
-    right: 16px;
   }
 
   #diagnose-interface-debug-right .right-tab {
@@ -195,7 +212,6 @@ const closeRightTab = () => {
     }
   }
 }
-
 </style>
 
 <style scoped lang="less">
@@ -223,27 +239,6 @@ const closeRightTab = () => {
     }
 
     position: static;
-    .float-tab {
-      position: absolute;
-      border: 1px solid #e6e9ec;
-      border-radius: 6px;
-      z-index: 99;
-      width: 360px;
-      right: 38px;
-      &.env {
-        top: 65px;
-        height: calc(100% - 100px);
-      }
-      &.his {
-        top: 100px;
-        height: calc(100% - 135px);
-      }
-
-      .dp-bg-light {
-        height: 100%;
-        padding: 10px 16px;
-      }
-    }
   }
 }
 

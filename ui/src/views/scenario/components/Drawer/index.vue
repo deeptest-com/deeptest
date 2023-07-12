@@ -25,8 +25,8 @@
       <a-tabs v-model:activeKey="activeKey" force-render>
         <a-tab-pane class="test-developer" key="1" tab="测试开发">
           <div v-if="activeKey==='1'">
-            <div class="exec-btn">
-              <a-button @click="exec" type="primary"><span>&nbsp;执行&nbsp;</span></a-button>
+            <div class="exec-scenario-btn">
+              <a-button @click="exec" type="primary"><span>执行</span></a-button>
             </div>
             <Design :id="detailResult?.id"/>
           </div>
@@ -271,13 +271,12 @@ async function cancel() {
   width: 1000px;
   position: relative;
 
-  .exec-btn {
+  .exec-scenario-btn {
     position: absolute;
-    right: 4px;
+    right: 218px;
     top: -48px;
   }
 }
-
 
 .drawer-exec-history-detail {
   :deep(.ant-drawer-header) {

@@ -12,9 +12,17 @@ import {
     get,
     save,
     remove,
-    getYaml, updateStatus, getDocs,
+    getYaml,
+    updateStatus,
+    getDocs,
     importEndpointData,
-    upload, updateEndpointCaseName, removeEndpointCase, getEndpointCase, listEndpointCase, saveEndpointCase
+    upload,
+    updateEndpointCaseName,
+    removeEndpointCase,
+    getEndpointCase,
+    listEndpointCase,
+    saveEndpointCase,
+    saveEndpointCaseDebugData
 } from './service';
 import {
     loadCategory,
@@ -138,6 +146,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         saveCase: Action<StateType, StateType>;
         updateCaseName: Action<StateType, StateType>;
         removeCase: Action<StateType, StateType>;
+        saveCaseDebugData: Action<StateType, StateType>;
     }
 }
 
@@ -761,6 +770,14 @@ const StoreModel: ModuleType = {
                 return false;
             } catch (error) {
                 return false;
+            }
+        },
+        async saveCaseDebugData({ state, dispatch }, payload: any) {
+            const jsn = await saveEndpointCaseDebugData(payload)
+            if (jsn.code === 0) {
+                return true;
+            } else {
+                return false
             }
         },
     },

@@ -2,16 +2,14 @@
   <div id="debug-index" class="dp-splits-v" v-if="endpointDetail?.id && endpointDetail?.interfaces[0]?.id">
     <div id="debug-top">
       <DebugMethod />
-
-      <RequestInvocation
-        :show-debug-data-url="false"
-        :onSend="invokeInterface"
-        :onSave="saveDebugInterface" />
     </div>
 
     <div id="debug-bottom">
       <div id="debug-content">
-        <DebugUrlAndEnv />
+        <Invocation
+            :topVal="'-42px'"
+            :onSave="saveDebugInterface"
+            :show-method-selection="false" />
 
         <DebugComp />
       </div>
@@ -31,8 +29,6 @@
                 <EnvironmentOutlined/>
               </a-tooltip>
             </template>
-
-            <RequestEnv v-if="tabKey==='env'"></RequestEnv>
           </a-tab-pane>
 
           <a-tab-pane key="history">
@@ -42,11 +38,20 @@
                 <HistoryOutlined/>
               </a-tooltip>
             </template>
-
-            <RequestHistory v-if="tabKey==='history'"></RequestHistory>
           </a-tab-pane>
 
         </a-tabs>
+      </div>
+
+      <div v-if="rightTabKey==='env'" class="right-float-tab env dp-bg-white">
+        <div class="dp-bg-light">
+          <RequestEnv :onClose="closeRightTab" />
+        </div>
+      </div>
+      <div v-if="rightTabKey==='history'" class="right-float-tab his dp-bg-white">
+        <div class="dp-bg-light">
+          <RequestHistory :onClose="closeRightTab" />
+        </div>
       </div>
     </div>
   </div>
@@ -74,15 +79,13 @@ import { EnvironmentOutlined, HistoryOutlined } from '@ant-design/icons-vue';
 import {NotificationKeyCommon} from "@/utils/const";
 import {resizeWidth} from "@/utils/dom";
 import {UsedBy} from "@/utils/enum";
-import {getToken} from "@/utils/localToken";
 import {StateType as Debug} from "@/views/component/debug/store";
 import {StateType as Endpoint} from "@/views/endpoint/store";
 
 import DebugMethod from './method.vue';
-import DebugUrlAndEnv from './url-and-env.vue';
 import RequestEnv from '@/views/component/debug/others/env/index.vue';
 import RequestHistory from '@/views/component/debug/others/history/index.vue';
-import RequestInvocation from '@/views/component/debug/request/Invocation.vue';
+import Invocation from '@/views/component/debug/request/Invocation.vue';
 
 import DebugComp from '@/views/component/debug/index.vue';
 
@@ -94,7 +97,7 @@ const debugData = computed<any>(() => store.state.Debug.debugData);
 const {t} = useI18n();
 
 const emit = defineEmits(['switchToDefineTab']);
-const tabKey = ref('env')
+const rightTabKey = ref('')
 
 onMounted(() => {
   console.log('onMounted')
@@ -103,20 +106,8 @@ onMounted(() => {
 
 const resize = () => {
   resizeWidth('debug-index',
-      'debug-content', 'debug-splitter', 'debug-right', 500, 260)
+      'debug-content', 'debug-splitter', 'debug-right', 500, 38)
 }
-
-const invokeInterface = async () => {
-  console.log('invokeInterface', debugData.value)
-
-  const callData = {
-    serverUrl: process.env.VUE_APP_API_SERVER, // used by agent to submit result to server
-    token: await getToken(),
-
-    data: debugData.value
-  }
-  await store.dispatch('Debug/call', callData)
-};
 
 const saveDebugInterface = async (data) => {
   console.log('saveDebugInterface', data)
@@ -136,6 +127,10 @@ const saveDebugInterface = async (data) => {
     });
   }
 };
+
+const closeRightTab = () => {
+  rightTabKey.value = ''
+}
 
 </script>
 
@@ -179,11 +174,12 @@ const saveDebugInterface = async (data) => {
   flex-direction: column;
 
   #debug-top {
+    margin: 10px 0;
+
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding-right: 2px;
-    margin-bottom: 20px;
   }
 
   #debug-bottom {
@@ -191,13 +187,14 @@ const saveDebugInterface = async (data) => {
   }
 
   #debug-content {
+    position: relative;
     flex: 1;
     width: 0;
     height: 100%;
   }
 
   #debug-right {
-    width: 260px;
+    width: 38px;
     height: 100%;
   }
 

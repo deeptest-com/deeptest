@@ -81,7 +81,6 @@ const mouseLeave = (event) => {
 <style lang="less" scoped>
 .history-main {
   height: 100%;
-  overflow-y: auto;
 
   .head {
     padding: 0 5px 5px 5px;
@@ -98,8 +97,10 @@ const mouseLeave = (event) => {
       text-align: right;
     }
   }
+
   .body {
     flex: 1;
+    height: calc(100% - 42px);
     overflow-y: auto;
 
     .btn-wrapper {

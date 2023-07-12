@@ -1,15 +1,12 @@
 <template>
-  <div id="scenario-design-main" class="scenario-design-main dp-splits-v">
-    <div id="scenario-design-left" class="left">
+  <ContentPane>
+    <template #left>
       <ScenarioTree/>
-    </div>
-
-    <div id="scenario-design-splitter" class="splitter"></div>
-
-    <div id="scenario-design-right" class="right">
+    </template>
+    <template #right>
       <Designer/>
-    </div>
-  </div>
+    </template>
+  </ContentPane>
 </template>
 
 <script setup lang="ts">
@@ -25,6 +22,7 @@ import {StateType as ScenarioStateType} from "../../store";
 import ScenarioTree from "./Tree.vue"
 import Designer from "./Designer.vue"
 import {Scenario} from "@/views/scenario/data";
+import ContentPane from '@/views/component/ContentPane/index.vue';
 
 const router = useRouter();
 const store = useStore<{ Scenario: ScenarioStateType; Global: GlobalStateType; }>();
@@ -37,7 +35,7 @@ const store = useStore<{ Scenario: ScenarioStateType; Global: GlobalStateType; }
 //   },
 // })
 
-const collapsed = computed<boolean>(()=> store.state.Global.collapsed);
+const collapsed = computed<boolean>(() => store.state.Global.collapsed);
 
 onMounted(() => {
   console.log('onMounted')
@@ -67,6 +65,7 @@ const resize = () => {
   .left {
     width: 260px;
   }
+
   .right {
     flex: 1;
   }

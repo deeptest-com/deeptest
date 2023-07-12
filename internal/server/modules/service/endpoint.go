@@ -379,6 +379,13 @@ func (s *EndpointService) getCookies(cookies map[string]*http.Cookie) (ret []mod
 
 func (s *EndpointService) getRequestBody(body string) (requestBody model.EndpointInterfaceRequestBody) {
 	requestBody = model.EndpointInterfaceRequestBody{}
+
+	if body != "" {
+		var examples []map[string]string
+		examples = append(examples, map[string]string{"content": body, "name": "defaultExample"})
+		requestBody.Examples = _commUtils.JsonEncode(examples)
+	}
+
 	requestBody.SchemaItem = s.getRequestBodyItem(body)
 	return
 }

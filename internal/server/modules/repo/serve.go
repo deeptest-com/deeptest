@@ -250,7 +250,7 @@ func (r *ServeRepo) SaveServer(environmentId uint, environmentName string, serve
 		//servers[key].ID = 0
 		servers[key].EnvironmentId = environmentId
 		servers[key].Description = environmentName
-		err = r.Save(servers[key].ID, servers)
+		err = r.Save(servers[key].ID, &servers[key])
 		if err != nil {
 			return err
 		}

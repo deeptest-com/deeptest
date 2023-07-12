@@ -277,7 +277,7 @@ const onSelectChange = (keys: Key[], rows: any) => {
   selectedRow.value[currentPage.value] = rows.map((item: any) => item.id);
 };
 const hasSelected = computed(() => selectedRowKeys.value.length > 0);
-const selectedEndpointNum = computed(() => selectedRowKeys.value.length);
+const selectedEndpointNum = computed(() => selectedRowIds.value.length);
 
 const fetching = ref(false);
 

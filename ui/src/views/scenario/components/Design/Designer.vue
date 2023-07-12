@@ -1,9 +1,5 @@
 <template>
   <div id="scenario-design-main">
-<!-- <div class="toolbar">
-      <a-button @click="exec" type="primary">执行</a-button>
-    </div> -->
-
     <div class="scenario-design-content">
       <Processor></Processor>
     </div>

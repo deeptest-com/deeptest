@@ -2,7 +2,7 @@
   适用于 左侧目录树 + 右边区域表格筛选，且左侧目录树可伸缩
 -->
 <template>
-  <div class="container">
+  <div class="container" :style="containerStyle || {}">
     <div class="content">
       <multipane class="vertical-panes" layout="vertical">
         <div class="pane left" :style="{ minWidth: '150px', width: '300px', maxWidth: '600px' }">
@@ -20,8 +20,10 @@
 
 <script setup lang="ts">
 import {useI18n} from "vue-i18n";
+import { defineProps } from 'vue'
 import {Multipane, MultipaneResizer} from '@/components/Resize/index';
 const {t} = useI18n();
+const props = defineProps(['containerStyle'])
 </script>
 
 <style lang="less" scoped>

@@ -1,0 +1,445 @@
+{
+  "code": 0,
+  "msg": "",
+  "data": {
+    "id": 1,
+    "name": "宠物商店",
+    "comments": "",
+    "parentId": 0,
+    "scenarioId": 1,
+    "projectId": 2,
+    "useId": 0,
+    "entityCategory": "processor_root",
+    "entityType": "processor_root_default",
+    "entityId": 0,
+    "endpointInterfaceId": 0,
+    "ordr": 0,
+    "children": [
+      {
+        "id": 2,
+        "name": "添加宠物",
+        "comments": "",
+        "parentId": 1,
+        "scenarioId": 1,
+        "projectId": 2,
+        "useId": 0,
+        "entityCategory": "processor_group",
+        "entityType": "processor_group_default",
+        "entityId": 1,
+        "endpointInterfaceId": 0,
+        "ordr": 0,
+        "children": [
+          {
+            "id": 3,
+            "name": "迭代列表",
+            "comments": "",
+            "parentId": 2,
+            "scenarioId": 1,
+            "projectId": 2,
+            "useId": 0,
+            "entityCategory": "processor_loop",
+            "entityType": "processor_loop_in",
+            "entityId": 1,
+            "endpointInterfaceId": 0,
+            "ordr": 0,
+            "children": [
+              {
+                "id": 4,
+                "name": "输出",
+                "comments": "",
+                "parentId": 3,
+                "scenarioId": 1,
+                "projectId": 2,
+                "useId": 0,
+                "entityCategory": "processor_print",
+                "entityType": "processor_print_default",
+                "entityId": 1,
+                "endpointInterfaceId": 0,
+                "ordr": 0,
+                "children": null,
+                "slots": {
+                  "icon": "icon"
+                },
+                "isDir": false,
+                "entityRaw": null,
+                "result": null,
+                "entity": {
+                  "id": 0,
+                  "name": "",
+                  "comments": "",
+                  "default": "",
+                  "processorID": 0,
+                  "processorCategory": "",
+                  "processorType": "",
+                  "parentID": 0
+                }
+              },
+              {
+                "id": 5,
+                "name": "添加宠物-POST",
+                "comments": "",
+                "parentId": 3,
+                "scenarioId": 1,
+                "projectId": 2,
+                "useId": 0,
+                "entityCategory": "processor_interface",
+                "entityType": "processor_interface_default",
+                "entityId": 0,
+                "endpointInterfaceId": 0,
+                "ordr": 1,
+                "children": null,
+                "slots": {
+                  "icon": "icon"
+                },
+                "isDir": false,
+                "entityRaw": null,
+                "result": null,
+                "entity": {
+                  "id": 0,
+                  "name": "",
+                  "comments": "",
+                  "default": "",
+                  "processorID": 0,
+                  "processorCategory": "",
+                  "processorType": "",
+                  "parentID": 0
+                }
+              }
+            ],
+            "slots": {
+              "icon": "icon"
+            },
+            "isDir": true,
+            "entityRaw": null,
+            "result": null,
+            "entity": {
+              "id": 0,
+              "name": "",
+              "comments": "",
+              "default": "",
+              "processorID": 0,
+              "processorCategory": "",
+              "processorType": "",
+              "parentID": 0
+            }
+          }
+        ],
+        "slots": {
+          "icon": "icon"
+        },
+        "isDir": true,
+        "entityRaw": null,
+        "result": null,
+        "entity": {
+          "id": 0,
+          "name": "",
+          "comments": "",
+          "default": "",
+          "processorID": 0,
+          "processorCategory": "",
+          "processorType": "",
+          "parentID": 0
+        }
+      },
+      {
+        "id": 6,
+        "name": "宠物列表",
+        "comments": "",
+        "parentId": 1,
+        "scenarioId": 1,
+        "projectId": 2,
+        "useId": 0,
+        "entityCategory": "processor_group",
+        "entityType": "processor_group_default",
+        "entityId": 2,
+        "endpointInterfaceId": 0,
+        "ordr": 1,
+        "children": [
+          {
+            "id": 7,
+            "name": "宠物列表-GET",
+            "comments": "",
+            "parentId": 6,
+            "scenarioId": 1,
+            "projectId": 2,
+            "useId": 0,
+            "entityCategory": "processor_interface",
+            "entityType": "processor_interface_default",
+            "entityId": 0,
+            "endpointInterfaceId": 0,
+            "ordr": 0,
+            "children": null,
+            "slots": {
+              "icon": "icon"
+            },
+            "isDir": false,
+            "entityRaw": null,
+            "result": null,
+            "entity": {
+              "id": 0,
+              "name": "",
+              "comments": "",
+              "default": "",
+              "processorID": 0,
+              "processorCategory": "",
+              "processorType": "",
+              "parentID": 0
+            }
+          }
+        ],
+        "slots": {
+          "icon": "icon"
+        },
+        "isDir": true,
+        "entityRaw": null,
+        "result": null,
+        "entity": {
+          "id": 0,
+          "name": "",
+          "comments": "",
+          "default": "",
+          "processorID": 0,
+          "processorCategory": "",
+          "processorType": "",
+          "parentID": 0
+        }
+      },
+      {
+        "id": 8,
+        "name": "查看宠物",
+        "comments": "",
+        "parentId": 1,
+        "scenarioId": 1,
+        "projectId": 2,
+        "useId": 0,
+        "entityCategory": "processor_group",
+        "entityType": "processor_group_default",
+        "entityId": 3,
+        "endpointInterfaceId": 0,
+        "ordr": 2,
+        "children": [
+          {
+            "id": 9,
+            "name": "迭代次数",
+            "comments": "",
+            "parentId": 8,
+            "scenarioId": 1,
+            "projectId": 2,
+            "useId": 0,
+            "entityCategory": "processor_loop",
+            "entityType": "processor_loop_time",
+            "entityId": 2,
+            "endpointInterfaceId": 0,
+            "ordr": 0,
+            "children": [
+              {
+                "id": 10,
+                "name": "宠物详情-GET",
+                "comments": "",
+                "parentId": 9,
+                "scenarioId": 1,
+                "projectId": 2,
+                "useId": 0,
+                "entityCategory": "processor_interface",
+                "entityType": "processor_interface_default",
+                "entityId": 0,
+                "endpointInterfaceId": 0,
+                "ordr": 0,
+                "children": null,
+                "slots": {
+                  "icon": "icon"
+                },
+                "isDir": false,
+                "entityRaw": null,
+                "result": null,
+                "entity": {
+                  "id": 0,
+                  "name": "",
+                  "comments": "",
+                  "default": "",
+                  "processorID": 0,
+                  "processorCategory": "",
+                  "processorType": "",
+                  "parentID": 0
+                }
+              }
+            ],
+            "slots": {
+              "icon": "icon"
+            },
+            "isDir": true,
+            "entityRaw": null,
+            "result": null,
+            "entity": {
+              "id": 0,
+              "name": "",
+              "comments": "",
+              "default": "",
+              "processorID": 0,
+              "processorCategory": "",
+              "processorType": "",
+              "parentID": 0
+            }
+          }
+        ],
+        "slots": {
+          "icon": "icon"
+        },
+        "isDir": true,
+        "entityRaw": null,
+        "result": null,
+        "entity": {
+          "id": 0,
+          "name": "",
+          "comments": "",
+          "default": "",
+          "processorID": 0,
+          "processorCategory": "",
+          "processorType": "",
+          "parentID": 0
+        }
+      },
+      {
+        "id": 11,
+        "name": "删除宠物",
+        "comments": "",
+        "parentId": 1,
+        "scenarioId": 1,
+        "projectId": 2,
+        "useId": 0,
+        "entityCategory": "processor_group",
+        "entityType": "processor_group_default",
+        "entityId": 4,
+        "endpointInterfaceId": 0,
+        "ordr": 3,
+        "children": [
+          {
+            "id": 12,
+            "name": "设置删除宠物id",
+            "comments": "",
+            "parentId": 11,
+            "scenarioId": 1,
+            "projectId": 2,
+            "useId": 0,
+            "entityCategory": "processor_variable",
+            "entityType": "processor_variable_set",
+            "entityId": 1,
+            "endpointInterfaceId": 0,
+            "ordr": 0,
+            "children": null,
+            "slots": {
+              "icon": "icon"
+            },
+            "isDir": false,
+            "entityRaw": null,
+            "result": null,
+            "entity": {
+              "id": 0,
+              "name": "",
+              "comments": "",
+              "default": "",
+              "processorID": 0,
+              "processorCategory": "",
+              "processorType": "",
+              "parentID": 0
+            }
+          },
+          {
+            "id": 13,
+            "name": "删除宠物-DELETE",
+            "comments": "",
+            "parentId": 11,
+            "scenarioId": 1,
+            "projectId": 2,
+            "useId": 0,
+            "entityCategory": "processor_interface",
+            "entityType": "processor_interface_default",
+            "entityId": 0,
+            "endpointInterfaceId": 0,
+            "ordr": 1,
+            "children": null,
+            "slots": {
+              "icon": "icon"
+            },
+            "isDir": false,
+            "entityRaw": null,
+            "result": null,
+            "entity": {
+              "id": 0,
+              "name": "",
+              "comments": "",
+              "default": "",
+              "processorID": 0,
+              "processorCategory": "",
+              "processorType": "",
+              "parentID": 0
+            }
+          },
+          {
+            "id": 14,
+            "name": "宠物详情-GET",
+            "comments": "",
+            "parentId": 11,
+            "scenarioId": 1,
+            "projectId": 2,
+            "useId": 0,
+            "entityCategory": "processor_interface",
+            "entityType": "processor_interface_default",
+            "entityId": 0,
+            "endpointInterfaceId": 0,
+            "ordr": 2,
+            "children": null,
+            "slots": {
+              "icon": "icon"
+            },
+            "isDir": false,
+            "entityRaw": null,
+            "result": null,
+            "entity": {
+              "id": 0,
+              "name": "",
+              "comments": "",
+              "default": "",
+              "processorID": 0,
+              "processorCategory": "",
+              "processorType": "",
+              "parentID": 0
+            }
+          }
+        ],
+        "slots": {
+          "icon": "icon"
+        },
+        "isDir": true,
+        "entityRaw": null,
+        "result": null,
+        "entity": {
+          "id": 0,
+          "name": "",
+          "comments": "",
+          "default": "",
+          "processorID": 0,
+          "processorCategory": "",
+          "processorType": "",
+          "parentID": 0
+        }
+      }
+    ],
+    "slots": {
+      "icon": "icon"
+    },
+    "isDir": true,
+    "entityRaw": null,
+    "result": null,
+    "entity": {
+      "id": 0,
+      "name": "",
+      "comments": "",
+      "default": "",
+      "processorID": 0,
+      "processorCategory": "",
+      "processorType": "",
+      "parentID": 0
+    }
+  }
+}

@@ -52,7 +52,7 @@
       </div>
 
       <div class="selection">
-        <EnvSelection />
+       <!-- <EnvSelection /> -->
       </div>
   </div>
 </template>

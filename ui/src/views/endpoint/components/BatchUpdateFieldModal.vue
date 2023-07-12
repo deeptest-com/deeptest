@@ -129,7 +129,7 @@ const rules = {
     {required: true, message: '请选择字段'},
   ],
   value: [
-    {required: true, message: '请选择字段'},
+    {required: true, message: '请选择目标字段值'},
   ],
   // value: [
   //   {validator: (rule: any, value: string, callback: any) => {

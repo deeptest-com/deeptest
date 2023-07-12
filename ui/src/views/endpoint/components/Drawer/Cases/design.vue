@@ -7,51 +7,7 @@
     </div>
 
     <div id="endpoint-debug-cases-design-panel">
-      <div id="endpoint-debug-cases-design-content">
-        <Invocation :topVal="'-48px'"
-                    :onSave="saveCaseInterface" />
-
-        <DebugComp />
-      </div>
-
-      <div id="endpoint-debug-cases-design-splitter" class="splitter"></div>
-
-      <div id="endpoint-debug-cases-design-right">
-        <a-tabs v-model:activeKey="rightTabKey"
-                tabPosition="right"
-                :tabBarGutter="0"
-                class="right-tab">
-
-          <a-tab-pane key="env">
-            <template #tab>
-              <a-tooltip placement="left" overlayClassName="dp-tip-small">
-                <template #title>环境</template>
-                <EnvironmentOutlined/>
-              </a-tooltip>
-            </template>
-          </a-tab-pane>
-
-          <a-tab-pane key="history">
-            <template #tab>
-              <a-tooltip placement="left" overlayClassName="dp-tip-small">
-                <template #title>历史</template>
-                <HistoryOutlined/>
-              </a-tooltip>
-            </template>
-          </a-tab-pane>
-        </a-tabs>
-      </div>
-
-      <div v-if="rightTabKey==='env'" class="right-float-tab env dp-bg-white">
-        <div class="dp-bg-light">
-          <RequestEnv :onClose="closeRightTab" />
-        </div>
-      </div>
-      <div v-if="rightTabKey==='history'" class="right-float-tab his dp-bg-white">
-        <div class="dp-bg-light">
-          <RequestHistory :onClose="closeRightTab" />
-        </div>
-      </div>
+      <DebugComp :onSaveDebugData="saveCaseInterface" />
     </div>
 
   </div>
@@ -91,8 +47,6 @@ const props = defineProps({
     required: true,
   },
 })
-
-const rightTabKey = ref('')
 
 const loadDebugData = debounce(async () => {
   console.log('loadDebugData', endpointCase.value.id)
@@ -135,10 +89,6 @@ const saveCaseInterface = async (e) => {
 const back = () => {
   console.log('back')
   props.onBack()
-}
-
-const closeRightTab = () => {
-  rightTabKey.value = ''
 }
 
 </script>
@@ -197,23 +147,6 @@ const closeRightTab = () => {
   }
 
   #endpoint-debug-cases-design-panel {
-    display: flex;
-
-    #endpoint-debug-cases-design-content {
-      flex: 1;
-      width: 0;
-      height: 100%;
-    }
-
-    #endpoint-debug-cases-design-right {
-      margin-top: 50px;
-      width: 38px;
-      height: 100%;
-    }
-
-    .endpoint-debug-cases-design-splitter {
-      min-width: 20px;
-    }
   }
 }
 

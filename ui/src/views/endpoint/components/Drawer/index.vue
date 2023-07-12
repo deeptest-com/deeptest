@@ -61,8 +61,8 @@
             <EndpointDebug v-if="key === 'run'" @switchToDefineTab="switchToDefineTab"/>
           </div>
         </a-tab-pane>
-
-        <a-tab-pane key="cases" tab="用例">
+        
+        <a-tab-pane key="cases" tab="用例" v-if="false">
           <div class="tab-container">
             <!-- use v-if to force page reload -->
             <EndpointCases v-if="key === 'cases'" @switchToDefineTab="switchToDefineTab"/>

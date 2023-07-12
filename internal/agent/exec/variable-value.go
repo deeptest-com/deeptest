@@ -52,7 +52,6 @@ func getValueFromShareVar(name string) (ret string) {
 			return ""
 		}
 		ret = fmt.Sprintf("%v", CachedShareVarByProcessorForRead[CurrScenarioProcessorId][name])
-		fmt.Println(name, ret, "+++")
 	}
 
 	return

@@ -407,6 +407,8 @@ async function handleBatchUpdate(data) {
   });
   await refreshList();
   showBatchUpdateModal.value = false;
+  selectedRow.value = {};
+  selectedRowKeys.value = [];
 }
 
 const isImporting = ref(false);

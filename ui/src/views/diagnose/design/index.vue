@@ -46,11 +46,15 @@
           </a-tabs>
         </div>
 
-        <div v-if="rightTabKey==='env'" class="float-tab env">
-          <RequestEnv :onClose="closeRightTab" />
+        <div v-if="rightTabKey==='env'" class="float-tab env dp-bg-white">
+          <div class="dp-bg-light">
+            <RequestEnv :onClose="closeRightTab" />
+          </div>
         </div>
-        <div v-if="rightTabKey==='history'" class="float-tab his">
-          <RequestHistory :onClose="closeRightTab" />
+        <div v-if="rightTabKey==='history'" class="float-tab his dp-bg-white">
+          <div class="dp-bg-light">
+            <RequestHistory :onClose="closeRightTab" />
+          </div>
         </div>
 
       </div>
@@ -221,10 +225,8 @@ const closeRightTab = () => {
     position: static;
     .float-tab {
       position: absolute;
-      padding: 10px 16px;
       border: 1px solid #e6e9ec;
-      border-radius: 10px;
-      background-color: #F6F6F6F6;
+      border-radius: 6px;
       z-index: 99;
       width: 360px;
       right: 38px;
@@ -235,6 +237,11 @@ const closeRightTab = () => {
       &.his {
         top: 100px;
         height: calc(100% - 135px);
+      }
+
+      .dp-bg-light {
+        height: 100%;
+        padding: 10px 16px;
       }
     }
   }

@@ -92,7 +92,6 @@
                   <a-tag>{{ text }}</a-tag>
                 </div>
               </template>
-
               <template #action="{record}">
                 <a-dropdown>
                   <MoreOutlined/>
@@ -116,7 +115,6 @@
         </EmptyCom>
       </template>
     </ContentPane>
-
     <CreateEndpointModal
         :visible="createApiModalVisible"
         :selectedCategoryId="selectedCategoryId"
@@ -130,6 +128,7 @@
     <BatchUpdateFieldModal
         :visible="showBatchUpdateModal"
         :selectedCategoryId="selectedCategoryId"
+        :selectedEndpointNum="selectedEndpointNum"
         @cancel="showBatchUpdateModal = false;"
         @ok="handleBatchUpdate"/>
     <PubDocs
@@ -278,6 +277,7 @@ const onSelectChange = (keys: Key[], rows: any) => {
   selectedRow.value[currentPage.value] = rows.map((item: any) => item.id);
 };
 const hasSelected = computed(() => selectedRowKeys.value.length > 0);
+const selectedEndpointNum = computed(() => selectedRowKeys.value.length);
 
 const fetching = ref(false);
 

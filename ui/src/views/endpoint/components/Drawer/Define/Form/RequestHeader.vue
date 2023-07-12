@@ -7,8 +7,7 @@
           style="width: 200px"
           placeholder="输入字段名称"
           @search="handleSearch"
-          @change="handleChangeHeader"
-      >
+          @change="handleChangeHeader">
         <template #dataSource>
           <a-select-option v-for="header in result" :key="header">
             {{ header }}
@@ -365,7 +364,7 @@ watch(() => {
 
 <style lang="less" scoped>
 .main {
-  margin: 16px auto;
+  margin: 16px auto auto auto;
 }
 
 .requireActived {

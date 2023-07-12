@@ -429,6 +429,8 @@ const filterState: any = ref({});
 
 async function selectNode(id) {
   selectedCategoryId.value = id;
+  selectedRowKeys. value = [];
+  selectedRow.value = {};
   // 选中节点时，重置分页为第一页
   await loadList(1, pagination.value.pageSize, {
     categoryId: id,

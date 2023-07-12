@@ -21,8 +21,8 @@ func PaginateScope(page, pageSize int, sort, orderBy string) func(db *gorm.DB) *
 			pageSize = 100
 		case pageSize < 0:
 			pageSize = -1
-			//case pageSize == 0:
-			//	pageSize = 10
+		case pageSize == 0:
+			pageSize = 10
 		}
 
 		if sort == "" {

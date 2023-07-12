@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, ref} from "vue";
+import {computed, ref,watch} from "vue";
 import {useStore} from "vuex";
 import {Endpoint} from "@/views/endpoint/data";
 import {StateType as Debug} from "@/views/component/debug/store";
@@ -59,11 +59,20 @@ const changeUrl = (e) => {
 }
 
 function changeServer(id) {
+  console.log('Debug/changeServer',id)
   store.dispatch('Debug/changeServer', id)
 }
 
 const { showContextMenu, contextMenuStyle, onContextMenuShow, onMenuClick } = useVariableReplace('endpointInterfaceUrl')
 
+watch(() => {
+  return envURL.value
+}, (newVal) => {
+  console.log('Debug/updateBaseUrl',newVal)
+  store.dispatch("Debug/updateBaseUrl",newVal)
+}, {
+  immediate: true
+})
 </script>
 
 <style scoped lang="less">

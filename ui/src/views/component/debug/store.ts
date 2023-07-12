@@ -75,6 +75,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setCheckpoint: Mutation<StateType>;
 
         setUrl: Mutation<StateType>;
+        setBaseUrl: Mutation<StateType>;
         setBody: Mutation<StateType>;
         setPreRequestScript: Mutation<StateType>;
     };
@@ -106,6 +107,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         removeCheckpoint: Action<StateType, StateType>;
 
         updateUrl: Action<StateType, StateType>;
+        updateBaseUrl:Action<StateType, StateType>;
         updateBody: Action<StateType, StateType>;
         addSnippet: Action<StateType, StateType>;
 
@@ -165,6 +167,9 @@ const StoreModel: ModuleType = {
 
         setUrl(state, payload) {
             state.debugData.url = payload;
+        },
+        setBaseUrl(state, payload) {
+            state.debugData.baseUrl = payload;
         },
         setBody(state, payload) {
             state.debugData.body = payload;
@@ -448,6 +453,10 @@ const StoreModel: ModuleType = {
         },
         async updateUrl({commit, dispatch, state}, body: string) {
             commit('setUrl', body);
+            return true;
+        },
+        async updateBaseUrl({commit, dispatch, state}, body: string) {
+            commit('setBaseUrl', body);
             return true;
         },
         async updateBody({commit, dispatch, state}, body: string) {

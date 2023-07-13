@@ -1,7 +1,7 @@
 <template>
   <div id="debug-index" class="dp-splits-v">
     <div id="debug-content">
-      <Invocation :topVal="'-48px'"
+      <Invocation :topVal="topVal"
                   :onSave="saveDebugData"
                   :onSync="syncDebugData" />
 
@@ -80,7 +80,11 @@ const props = defineProps({
   onSyncDebugData: {
     type: Function,
     required: false
-  }
+  },
+  topVal: {
+    type: String,
+    required: true
+  },
 })
 
 const rightTabKey = ref('')

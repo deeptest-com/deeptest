@@ -6,9 +6,10 @@
                 @edit="onTabEdit"
                 @change="changeTab">
 
-          <a-tab-pane v-for="tab in interfaceTabs" :key="''+tab.id" :tab="getTitle(tab.title)">
+          <a-tab-pane v-for="tab in interfaceTabs" :key="''+tab.id" :tab="getTitle(tab.title)" class="dp-relative">
             <template v-if="debugData?.method" >
-              <DebugComp :onSaveDebugData="saveDiagnoseInterface"
+              <DebugComp :topVal="'-40px'"
+                         :onSaveDebugData="saveDiagnoseInterface"
                          :base-url-disabled="false" />
             </template>
           </a-tab-pane>

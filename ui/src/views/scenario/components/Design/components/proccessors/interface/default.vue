@@ -1,7 +1,8 @@
 <template>
-  <div class="processor_interface_default-main">
-    <DebugComp :onSaveDebugData="saveScenarioInterface"
-                :onSyncDebugData="syncDebugData" />
+  <div class="processor_interface_default-main dp-relative">
+    <DebugComp :topVal="'-45px'"
+               :onSaveDebugData="saveScenarioInterface"
+               :onSyncDebugData="syncDebugData" />
   </div>
 </template>
 
@@ -25,8 +26,6 @@ provide('usedBy', UsedBy.ScenarioDebug)
 
 const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
-
-const rightTabKey = ref('')
 
 const store = useStore<{ Debug: Debug, Scenario: Scenario }>();
 const debugData = computed<any>(() => store.state.Debug.debugData);
@@ -87,10 +86,6 @@ const resize = () => {
       'debug-content', 'debug-splitter', 'debug-right', 500, 38)
 }
 
-const closeRightTab = () => {
-  rightTabKey.value = ''
-}
-
 </script>
 
 <style lang="less" scoped>
@@ -113,11 +108,5 @@ const closeRightTab = () => {
       height: 100%;
     }
   }
-}
-</style>
-
-<style lang="less">
-.processor_interface_default-main {
-
 }
 </style>

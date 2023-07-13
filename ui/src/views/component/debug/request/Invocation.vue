@@ -247,7 +247,6 @@ onUnmounted(() => {
 
 <style lang="less">
 .invocation-main {
-  position: relative;
   .select-env {
     position: absolute;
     right: 0px;

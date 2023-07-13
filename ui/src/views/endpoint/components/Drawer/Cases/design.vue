@@ -7,7 +7,9 @@
     </div>
 
     <div id="endpoint-debug-cases-design-panel">
-      <DebugComp :onSaveDebugData="saveCaseInterface" />
+      <DebugComp
+          :topVal="'-52px'"
+          :onSaveDebugData="saveCaseInterface" />
     </div>
 
   </div>
@@ -140,8 +142,8 @@ const back = () => {
 
   .toolbar {
     position: absolute;
-    top: -32px;
-    right: 160px;
+    top: -52px;
+    right: 110px;
     height: 50px;
     width: 120px;
   }

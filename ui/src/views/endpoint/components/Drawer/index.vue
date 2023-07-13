@@ -51,17 +51,19 @@
 
             <a-tab-pane key="request" tab="定义" class="tab">
               <div class="tab-container dp-scroll">
-                <EndpointDefine v-if="key === 'request'" @switchMode="switchMode"/> <!-- use v-if to force page reload-->
+                <EndpointDefine v-if="key === 'request'" @switchMode="switchMode"/>
               </div>
             </a-tab-pane>
 
-            <a-tab-pane key="run" tab="调试" class="tab">
+            <!-- add select env button top is relative to this -->
+            <a-tab-pane key="run" tab="调试" class="tab dp-relative">
               <div class="tab-container">
                 <EndpointDebug v-if="key === 'run'" @switchToDefineTab="switchToDefineTab"/>
               </div>
             </a-tab-pane>
 
-            <a-tab-pane key="cases" tab="用例" class="tab dp-relative">  <!-- add button top is relative to this -->
+            <!-- select env and add case button top is relative to this -->
+            <a-tab-pane key="cases" tab="用例" class="tab dp-relative">
               <div class="tab-container dp-scroll">
                 <EndpointCases v-if="key === 'cases'" @switchToDefineTab="switchToDefineTab"/>
               </div>

@@ -31,6 +31,17 @@ func (s *ServerCron) AddTask(name string, intervalSecond int64, f func()) {
 	})
 }
 
+func (s *ServerCron) AddCommonTask(name string, schedule string, f func()) {
+	_cronUtils.AddTask(
+		name,
+		schedule,
+		f,
+	)
+	iris.RegisterOnInterrupt(func() {
+		_cronUtils.Stop()
+	})
+}
+
 func (s *ServerCron) Init() {
 	s.syncMap.Store("isRunning", false)
 	s.syncMap.Store("lastCompletedTime", int64(0))

@@ -2,14 +2,21 @@ package handler
 
 import (
 	"github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/core/cron"
+	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi/convert"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
+	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
+	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/kataras/iris/v12"
 	"github.com/snowlyg/multi"
+	"strconv"
 )
 
 type ServeCtrl struct {
-	ServeService *service.ServeService `inject:""`
+	Cron                     *cron.ServerCron                  `inject:""`
+	ServeService             *service.ServeService             `inject:""`
+	EndpointInterfaceService *service.EndpointInterfaceService `inject:""`
 }
 
 // 项目服务列表
@@ -342,4 +349,20 @@ func (c *ServeCtrl) SwaggerSyncDetail(ctx iris.Context) {
 	projectId := ctx.URLParamUint64("currProjectId")
 	res, _ := c.ServeService.SwaggerSyncDetail(uint(projectId))
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
+}
+
+func (c *ServeCtrl) InitSwaggerCron() {
+	syncList, err := c.ServeService.SwaggerSyncList()
+	if err != nil {
+		return
+	}
+	for _, item := range syncList {
+		name := "swaggerSync" + "_" + strconv.Itoa(int(item.ID))
+		logUtils.Info("初始化swagger定时导入任务：" + _commUtils.JsonEncode(item))
+		c.Cron.AddCommonTask(name, item.Cron, func() {
+			req := serverDomain.ImportEndpointDataReq{ProjectId: uint(item.ProjectId), ServeId: uint(item.ServeId), CategoryId: int64(item.CategoryId), OpenUrlImport: true, DriverType: convert.SWAGGER, FilePath: item.Url, DataSyncType: convert.FullCover}
+			err := c.EndpointInterfaceService.ImportEndpointData(req)
+			logUtils.Error("指定swagger定时导入任务失败，错误原因：" + err.Error())
+		})
+	}
 }

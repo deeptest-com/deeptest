@@ -13,10 +13,7 @@ import (
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"go.uber.org/zap"
 	"io/ioutil"
-	"sync"
 )
-
-var l sync.RWMutex
 
 type EndpointInterfaceService struct {
 	EndpointInterfaceRepo *repo.EndpointInterfaceRepo `inject:""`

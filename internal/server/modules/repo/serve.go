@@ -526,3 +526,8 @@ func (r *ServeRepo) GetSwaggerSync(projectId uint) (sync model.SwaggerSync, err 
 	err = r.DB.First(&sync, "project_id=?", projectId).Error
 	return
 }
+
+func (r *ServeRepo) GetSwaggerSyncList() (res []model.SwaggerSync, err error) {
+	err = r.DB.Find(&res, "switch = 1").Error
+	return
+}

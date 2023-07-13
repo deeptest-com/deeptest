@@ -24,6 +24,7 @@ func (m *SummaryModule) Party() module.WebModule {
 		index.Get("/projectUserRanking/{cycle:uint}/{projectId:uint}", m.SummaryCtrl.ProjectUserRanking).Name = "汇总项目用户排行数据"
 		index.Get("/collection/{store:string}", m.SummaryCtrl.Collection).Name = "汇总数据"
 	}
+
 	m.Cron.AddTask("summary", consts.SummaryDataCheckInterval, func() {
 		m.SummaryCtrl.Summary()
 	})

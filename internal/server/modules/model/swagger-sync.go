@@ -8,6 +8,7 @@ type SwaggerSync struct {
 	Url        string `json:"url"`
 	Cron       string `json:"cron"`
 	ProjectId  int    `json:"projectId" gorm:"unique"`
+	ServeId    int    `json:"ServeId"`
 }
 
 func (SwaggerSync) TableName() string {

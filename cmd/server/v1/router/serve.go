@@ -50,5 +50,6 @@ func (m *ServeModule) Party() module.WebModule {
 
 	}
 
+	m.ServeCtrl.InitSwaggerCron()
 	return module.NewModule("/serves", handler)
 }

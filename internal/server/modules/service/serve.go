@@ -296,3 +296,7 @@ func (s *ServeService) SaveSwaggerSync(req v1.SwaggerSyncReq) (data model.Swagge
 func (s *ServeService) SwaggerSyncDetail(projectId uint) (data model.SwaggerSync, err error) {
 	return s.ServeRepo.GetSwaggerSync(projectId)
 }
+
+func (s *ServeService) SwaggerSyncList() (data []model.SwaggerSync, err error) {
+	return s.ServeRepo.GetSwaggerSyncList()
+}

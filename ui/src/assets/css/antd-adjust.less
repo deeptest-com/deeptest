@@ -1,9 +1,7 @@
 @import './antd-variables.less';
 @import './variables.less';
 
-body {
-    background-color: #fff;
-}
+
 .ant-btn-link {
     color: @primary-color;
 }
@@ -11,7 +9,34 @@ body {
     background-color: @itemSelectedBackground;
 }
 
-// put here otherwise not work for popup div
+/** set container height to 100% */
+.ant-drawer.dp-drawer-full-height {
+    .ant-drawer-body {
+        height: calc(100% - 55px);
+        padding: 0 16px;
+    }
+}
+.ant-card.dp-card-full-height {
+    .ant-card-head {
+        height: 52px;
+    }
+    .ant-card-body {
+        height: calc(100% - 52px);
+        overflow: auto;
+    }
+}
+.ant-tabs.dp-tabs-full-height{
+    height: 100%;
+    .ant-tabs-bar {
+        margin-bottom: 0px;
+    }
+    .ant-tabs-content {
+        height: calc(100% - 56px);
+        .ant-tabs-tabpane-active {
+            height: 100%;
+        }
+    }
+}
 
 /* 滚动条 */
 ::-webkit-scrollbar {

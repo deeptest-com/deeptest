@@ -1,7 +1,7 @@
 <template>
   <div id="debug-form">
     <div id="top-panel">
-      <div v-if="serverConfig.demoTestSite" class="red">
+      <div v-if="serverConfig.demoTestSite" class="dp-red">
         您正在访问演示站点，所有的接口请求将被重定向到{{serverConfig.demoTestSite}}。
       </div>
 

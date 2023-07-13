@@ -1,6 +1,6 @@
 <template>
   <div class="indexlayout-top-project">
-    <a-dropdown :overlayClassName="'deeptest-project-switch-container'"
+    <a-dropdown :overlayClassName="'dp-project-switch-container'"
                 :visible="dropdownVisible"
                 @click="dropdownVisible = !dropdownVisible"
                 :overlayStyle="{width:'300px'}">
@@ -141,7 +141,7 @@ const handleClickOut = (event) => {
     if (!dropdownVisible.value) {
       return;
     }
-    const target1: any = document.querySelector('.deeptest-project-switch-container');
+    const target1: any = document.querySelector('.dp-project-switch-container');
     const target2: any = document.querySelector('.header.ant-dropdown-trigger.ant-dropdown-open');
     if (!target1.contains(event.target) && !target2.contains(event.target)) {
       dropdownVisible.value = false;

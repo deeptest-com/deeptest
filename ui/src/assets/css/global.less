@@ -3,8 +3,12 @@
 @import './variables.less';
 @import './mixin.less';
 
-@import './adjust';
+@import './antd-adjust.less';
 @import './custom';
+
+body {
+  background-color: #fff;
+}
 
 .hidden {
   display: none;
@@ -22,7 +26,7 @@
 }
 
 // 项目样式切换样式覆盖
-.deeptest-project-switch-container {
+.dp-project-switch-container {
   width: 260px;
   height: 260px;
 
@@ -128,9 +132,7 @@
   }
 }
 
-.red {
-  color: red;
-}
+
 
 .right-float-tab {
   position: absolute;

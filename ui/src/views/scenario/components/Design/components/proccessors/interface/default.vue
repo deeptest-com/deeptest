@@ -1,99 +1,55 @@
 <template>
   <div class="processor_interface_default-main">
-    <div id="debug-index" class="dp-splits-v">
-      <div id="debug-content">
-        <DebugUrlAndEnv />
-
-        <RequestInvocation
-            :showDebugDataUrl="true"
-            :onSend="invokeInterface"
-            :onSave="saveScenarioInterface"
-            :onSync="syncDebugData" />
-
-        <DebugInterface />
-      </div>
-
-      <div id="debug-splitter" class="splitter"></div>
-
-      <div id="debug-right">
-        <a-tabs v-model:activeKey="tabKey"
-                tabPosition="right"
-                :tabBarGutter="0"
-                class="right-tab">
-
-          <a-tab-pane key="env">
-            <template #tab>
-              <a-tooltip placement="left" overlayClassName="dp-tip-small">
-                <template #title>环境</template>
-                <EnvironmentOutlined/>
-              </a-tooltip>
-            </template>
-
-            <RequestEnv v-if="tabKey==='env'"></RequestEnv>
-          </a-tab-pane>
-
-          <a-tab-pane key="history">
-            <template #tab>
-              <a-tooltip placement="left" overlayClassName="dp-tip-small">
-                <template #title>历史</template>
-                <HistoryOutlined/>
-              </a-tooltip>
-            </template>
-
-            <RequestHistory v-if="tabKey==='history'"></RequestHistory>
-          </a-tab-pane>
-
-        </a-tabs>
-      </div>
-    </div>
+    <DebugComp :onSaveDebugData="saveScenarioInterface"
+                :onSyncDebugData="syncDebugData" />
   </div>
 </template>
 
 <script setup lang="ts">
 import {useI18n} from "vue-i18n";
 
-import {computed, inject, onMounted, provide, ref} from "vue";
-import {Form, notification} from 'ant-design-vue';
+import {computed, inject, onMounted, provide, ref, watch} from "vue";
+import {notification} from 'ant-design-vue';
 import {useStore} from "vuex";
-import { EnvironmentOutlined, HistoryOutlined } from '@ant-design/icons-vue';
 
 import {UsedBy} from "@/utils/enum";
 import {resizeWidth} from "@/utils/dom";
-import {getToken} from "@/utils/localToken";
 import {NotificationKeyCommon} from "@/utils/const";
-
-import RequestEnv from '@/views/component/debug/others/env/index.vue';
-import RequestHistory from '@/views/component/debug/others/history/index.vue';
-
-import RequestInvocation from '@/views/component/debug/request/Invocation.vue';
-import DebugUrlAndEnv from './debug/url-and-env.vue';
-import DebugInterface from './debug/interface.vue';
+import DebugComp from '@/views/component/debug/index.vue';
 
 import {StateType as Debug} from "@/views/component/debug/store";
 import {StateType as Scenario} from "@/views/scenario/store";
+import debounce from "lodash.debounce";
 
 provide('usedBy', UsedBy.ScenarioDebug)
 
 const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
 
-const tabKey = ref('env')
+const rightTabKey = ref('')
 
-const store = useStore<{  Debug: Debug, Scenario: Scenario }>();
+const store = useStore<{ Debug: Debug, Scenario: Scenario }>();
 const debugData = computed<any>(() => store.state.Debug.debugData);
 const scenarioProcessorIdForDebug = computed<number>(() => store.state.Scenario.scenarioProcessorIdForDebug);
 
-const invokeInterface = async () => {
-  console.log('invokeInterface', debugData.value)
+watch(scenarioProcessorIdForDebug, () => {
+  console.log('watch scenarioProcessorIdForDebug', scenarioProcessorIdForDebug)
+  loadData()
+}, {deep: true})
 
-  const callData = {
-    serverUrl: process.env.VUE_APP_API_SERVER, // used by agent to submit result to server
-    token: await getToken(),
-
-    data: debugData.value
+const loadData = debounce(async () => {
+  console.log('loadData', scenarioProcessorIdForDebug.value)
+  if (scenarioProcessorIdForDebug.value === 0) {
+    return
   }
-  await store.dispatch('Debug/call', callData)
-};
+
+  store.dispatch('Debug/loadDataAndInvocations', {
+    scenarioProcessorId: scenarioProcessorIdForDebug.value,
+    usedBy: usedBy,
+  });
+
+}, 300)
+loadData()
 
 const saveScenarioInterface = async (data) => {
   const obj = Object.assign({}, data)
@@ -128,7 +84,11 @@ onMounted(() => {
 
 const resize = () => {
   resizeWidth('debug-index',
-      'debug-content', 'debug-splitter', 'debug-right', 500, 260)
+      'debug-content', 'debug-splitter', 'debug-right', 500, 38)
+}
+
+const closeRightTab = () => {
+  rightTabKey.value = ''
 }
 
 </script>
@@ -138,72 +98,26 @@ const resize = () => {
   height: 100%;
 
   #debug-index {
-  display: flex;
-  height: 100%;
-  width: 100%;
-
-  #debug-content {
-    flex: 1;
-    width: 0;
+    display: flex;
     height: 100%;
+    width: 100%;
 
-    .move-up {
-      margin-top: -43px;
+    #debug-content {
+      flex: 1;
+      width: 0;
+      height: 100%;
+    }
+
+    #debug-right {
+      width: 38px;
+      height: 100%;
     }
   }
-
-  #debug-right {
-    width: 260px;
-    height: 100%;
-  }
-
-  .switcher {
-    position: fixed;
-    right: 8px;
-    bottom: 5px;
-    cursor: pointer;
-  }
-}
 }
 </style>
 
 <style lang="less">
 .processor_interface_default-main {
-  #debug-index #debug-right .right-tab {
-    height: 100%;
 
-    .ant-tabs-left-content {
-      padding-left: 0px;
-    }
-
-    .ant-tabs-right-content {
-      padding-right: 0px;
-      height: 100%;
-
-      .ant-tabs-tabpane {
-        height: 100%;
-
-        &.ant-tabs-tabpane-inactive {
-          display: none;
-        }
-      }
-    }
-
-    .ant-tabs-nav-scroll {
-      text-align: center;
-    }
-
-    .ant-tabs-tab {
-      padding: 5px 10px !important;
-
-      .anticon {
-        margin-right: 2px !important;
-      }
-    }
-
-    .ant-tabs-ink-bar {
-      background-color: #d9d9d9 !important;
-    }
-  }
 }
 </style>

@@ -1,91 +1,176 @@
 <template>
-  <div id="debug-form">
-    <div id="top-panel">
-      <div v-if="serverConfig.demoTestSite" class="red">
-        您正在访问演示站点，所有的接口请求将被重定向到{{serverConfig.demoTestSite}}。
+  <div id="debug-index" class="dp-splits-v">
+    <div id="debug-content">
+      <Invocation :topVal="'-48px'"
+                  :onSave="saveDebugData"
+                  :onSync="syncDebugData" />
+
+      <DebugDesigner />
+    </div>
+
+    <div id="debug-splitter" class="splitter"></div>
+
+    <div id="debug-right">
+      <a-tabs v-model:activeKey="rightTabKey"
+              tabPosition="right"
+              :tabBarGutter="0"
+              class="right-tab">
+
+        <a-tab-pane key="env">
+          <template #tab>
+            <a-tooltip placement="left" overlayClassName="dp-tip-small">
+              <template #title>环境</template>
+              <EnvironmentOutlined/>
+            </a-tooltip>
+          </template>
+        </a-tab-pane>
+
+        <a-tab-pane key="history">
+          <template #tab>
+            <a-tooltip placement="left" overlayClassName="dp-tip-small">
+              <template #title>历史</template>
+              <HistoryOutlined/>
+            </a-tooltip>
+          </template>
+        </a-tab-pane>
+
+      </a-tabs>
+    </div>
+
+    <div v-if="rightTabKey==='env'" class="right-float-tab env dp-bg-white">
+      <div class="dp-bg-light">
+        <RequestEnv :onClose="closeRightTab" />
       </div>
-
-      <InterfaceRequest v-if="debugData.method"
-                        :showRequestInvocation="false"
-                        :showDebugDataUrl="false" />
     </div>
-
-    <div id="design-splitter-v" :hidden="!debugData.method" />
-
-    <div id="bottom-panel">
-      <InterfaceResponse v-if="debugData.method" />
+    <div v-if="rightTabKey==='history'" class="right-float-tab his dp-bg-white">
+      <div class="dp-bg-light">
+        <RequestHistory :onClose="closeRightTab" />
+      </div>
     </div>
-
-    <VariableSelection/>
   </div>
 </template>
 
 <script setup lang="ts">
-import {computed, onMounted, onUnmounted} from "vue";
+import {computed, defineProps, onMounted, onUnmounted, PropType, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
+
+import {EnvironmentOutlined, HistoryOutlined} from '@ant-design/icons-vue';
+import Invocation from '@/views/component/debug/request/Invocation.vue'
+import RequestEnv from '@/views/component/debug/others/env/index.vue';
+import RequestHistory from '@/views/component/debug/others/history/index.vue';
+import DebugDesigner  from './designer.vue';
 
 import {StateType as ProjectGlobal} from "@/store/project";
 import {StateType as Debug} from "@/views/component/debug/store";
 import {StateType as Endpoint} from "../../endpoint/store";
 
-import InterfaceRequest from './request/Index.vue';
-import InterfaceResponse from './response/Index.vue';
-import VariableSelection from './others/variable-replace/Selection.vue';
 import {StateType as GlobalStateType} from "@/store/global";
-import {StateType as UserStateType} from "@/store/user";
+import {resizeWidth} from "@/utils/dom";
 
 const {t} = useI18n();
 const store = useStore<{  Debug: Debug, Endpoint: Endpoint, ProjectGlobal: ProjectGlobal, Global: GlobalStateType }>();
 const debugData = computed<any>(() => store.state.Debug.debugData);
-const serverConfig = computed<any>(() => store.state.Global.serverConfig);
+
+const props = defineProps({
+  onSaveDebugData: {
+    type: Function,
+    required: true
+  },
+  onSyncDebugData: {
+    type: Function,
+    required: false
+  }
+})
+
+const rightTabKey = ref('')
+
+const saveDebugData = async () => {
+  props.onSaveDebugData()
+};
+
+const syncDebugData = async () => {
+  if (props.onSyncDebugData)
+    props.onSyncDebugData()
+};
 
 onMounted(() => {
-  console.log('onMounted debug-interface')
+  console.log('onMounted in debug-index')
+  resize()
 })
 onUnmounted(() => {
-  console.log('onUnmounted debug-interface')
+  console.log('onUnmounted in debug-index')
   store.dispatch('Debug/resetDataAndInvocations');
 })
 
+const resize = () => {
+  resizeWidth('debug-index',
+      'debug-content', 'debug-splitter', 'debug-right', 500, 38)
+}
+
+const closeRightTab = () => {
+  rightTabKey.value = ''
+}
+
 </script>
 
-<style lang="less" scoped>
-#debug-form {
-  flex: 1;
-  padding: 5px 0;
-
-  flex-direction: column;
-  position: relative;
+<style lang="less">
+#debug-index #debug-right .right-tab {
   height: 100%;
-  max-height: 800px;
 
-  #top-panel {
-    width: 100%;
-    padding: 0;
+  .ant-tabs-left-content {
+    padding-left: 0px;
   }
 
-  #bottom-panel {
-    width: 100%;
-    padding: 4px;
-    overflow: auto;
+  .ant-tabs-right-content {
+    padding-right: 0px;
+    height: 100%;
+
+    .ant-tabs-tabpane {
+      height: 100%;
+
+      &.ant-tabs-tabpane-inactive {
+        display: none;
+      }
+    }
   }
 
-  #design-splitter-v {
-    width: 100%;
-    height: 2px;
-    background-color: #e6e9ec;
-    cursor: ns-resize;
+  .ant-tabs-nav-scroll {
+    text-align: center;
+  }
 
-    &:hover {
-      height: 2px;
-      background-color: #D0D7DE;
-    }
+  .ant-tabs-tab {
+    padding: 5px 10px !important;
 
-    &.active {
-      height: 2px;
-      background-color: #a9aeb4;
+    .anticon {
+      margin-right: 2px !important;
     }
+  }
+
+  .ant-tabs-ink-bar {
+    background-color: #d9d9d9 !important;
+  }
+}
+</style>
+
+<style lang="less" scoped>
+#debug-index {
+  display: flex;
+  height: 100%;
+  width: 100%;
+
+  #debug-content {
+    flex: 1;
+    width: 0;
+    height: 100%;
+  }
+
+  #debug-right {
+    width: 38px;
+    height: 100%;
+  }
+  #debug-splitter {
+    min-width: 20px;
   }
 }
 </style>

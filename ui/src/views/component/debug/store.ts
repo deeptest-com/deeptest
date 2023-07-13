@@ -475,6 +475,8 @@ const StoreModel: ModuleType = {
         },
 
         async changeServer({commit, dispatch, state}, serverId: number) {
+            console.log('changeServer in DebugStore', serverId)
+
             const json = await listEnvVarByServer(serverId)
             if (json.code === 0) {
                 commit('setServerId', serverId);

@@ -4,6 +4,9 @@
       <div class="title">
         执行历史
       </div>
+      <div class="acts">
+        <CloseOutlined @click="close" class="dp-icon-btn dp-trans-80"/>
+      </div>
     </div>
 
     <div class="body">
@@ -25,23 +28,28 @@
 </template>
 
 <script setup lang="ts">
-import {computed, inject} from "vue";
+import {computed, defineProps, inject} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
-import { DeleteOutlined } from '@ant-design/icons-vue';
+import { DeleteOutlined, CloseOutlined } from '@ant-design/icons-vue';
 import {UsedBy} from "@/utils/enum";
 
 const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
 
-import {DebugInfo, Param} from "@/views/component/debug/data";
 import {StateType as Debug} from "@/views/component/debug/store";
 const store = useStore<{  Debug: Debug }>();
 
-const debugInfo = computed<DebugInfo>(() => store.state.Debug.debugInfo);
 const debugData = computed<any>(() => store.state.Debug.debugData);
 
 const invocationsData = computed<any[]>(() => store.state.Debug.invocationsData);
+
+const props = defineProps({
+  onClose: {
+    type: Function,
+    required: false,
+  },
+})
 
 store.dispatch('Debug/listInvocation')
 store.dispatch('Debug/getLastInvocationResp')
@@ -53,6 +61,10 @@ const getRequestAsInterface = (id) => {
 const removeHistory = (id) => {
   console.log('removeHistory', id)
   store.dispatch('Debug/removeInvocation', id)
+}
+
+const close = () => {
+  if (props.onClose) props.onClose()
 }
 
 const mouseOver = (event) => {
@@ -68,26 +80,27 @@ const mouseLeave = (event) => {
 
 <style lang="less" scoped>
 .history-main {
-  display: flex;
-  flex-direction: column;
-
   height: 100%;
+
   .head {
-    padding: 0 5px;
+    padding: 0 5px 5px 5px;
     border-bottom: 1px solid #d9d9d9;
-    height: 32px;
+
     line-height: 32px;
     display: flex;
     .title {
       flex: 1;
+      font-weight: bolder;
     }
     .acts {
       width: 50px;
       text-align: right;
     }
   }
+
   .body {
     flex: 1;
+    height: calc(100% - 42px);
     overflow-y: auto;
 
     .btn-wrapper {

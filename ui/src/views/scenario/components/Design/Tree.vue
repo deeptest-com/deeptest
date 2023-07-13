@@ -432,8 +432,6 @@ onUnmounted(() => {
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 50px;
-      margin-top: 8px;
       .search-input {
         margin-left: 16px;
         margin-right: 8px;

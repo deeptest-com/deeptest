@@ -9,6 +9,9 @@
 .hidden {
   display: none;
 }
+.clear-both {
+  clear: both;
+}
 
 #nprogress .bar {
   background: @primary-color !important;
@@ -135,4 +138,27 @@
 
 .red {
   color: red;
+}
+
+.right-float-tab {
+  position: absolute;
+  border: 1px solid #e6e9ec;
+  border-radius: 6px;
+  z-index: 99;
+  width: 360px;
+  right: 38px;
+
+  &.env {
+    top: 65px;
+    height: calc(100% - 100px);
+  }
+  &.his {
+    top: 100px;
+    height: calc(100% - 135px);
+  }
+
+  .dp-bg-light {
+    height: 100%;
+    padding: 12px 8px 12px 12px;
+  }
 }

@@ -1,53 +1,15 @@
 <template>
   <div class="endpoint-debug-cases-design-main">
     <div class="toolbar">
-      <a-button type="primary" trigger="click" @click="back">
+      <a-button type="link" trigger="click" @click="back">
         <span>返回用例列表</span>
       </a-button>
     </div>
 
     <div id="endpoint-debug-cases-design-panel">
-      <div id="endpoint-debug-cases-design-content">
-        <UrlAndInvocation />
-        <DebugComp />
-      </div>
-
-      <div id="endpoint-debug-cases-design-splitter" class="splitter"></div>
-
-      <div id="endpoint-debug-cases-design-right">
-        <a-tabs v-model:activeKey="rightTabKey"
-                tabPosition="right"
-                :tabBarGutter="0"
-                class="right-tab">
-
-          <a-tab-pane key="env">
-            <template #tab>
-              <a-tooltip placement="left" overlayClassName="dp-tip-small">
-                <template #title>环境</template>
-                <EnvironmentOutlined/>
-              </a-tooltip>
-            </template>
-
-            <RequestEnv v-if="rightTabKey==='env'"></RequestEnv>
-          </a-tab-pane>
-
-          <a-tab-pane key="history">
-            <template #tab>
-              <a-tooltip placement="left" overlayClassName="dp-tip-small">
-                <template #title>历史</template>
-                <HistoryOutlined/>
-              </a-tooltip>
-            </template>
-
-            <RequestHistory v-if="rightTabKey==='history'"></RequestHistory>
-          </a-tab-pane>
-        </a-tabs>
-      </div>
+      <DebugComp :onSaveDebugData="saveCaseInterface" />
     </div>
 
-    <div class="selection">
-      <EnvSelection />
-    </div>
   </div>
 </template>
 
@@ -60,18 +22,22 @@ import { EnvironmentOutlined, HistoryOutlined } from '@ant-design/icons-vue';
 
 import RequestEnv from '@/views/component/debug/others/env/index.vue';
 import RequestHistory from '@/views/component/debug/others/history/index.vue';
-import EnvSelection from '@/views/diagnose/design/env-selection.vue'
-import UrlAndInvocation from '@/views/diagnose/design/url-and-invocation.vue'
+
+import Invocation from '@/views/component/debug/request/Invocation.vue';
 
 import DebugComp from '@/views/component/debug/index.vue';
 
 import {StateType as Debug} from "@/views/component/debug/store";
 import {StateType as EndpointStateType} from '../../../store';
+import {StateType as DiagnoseInterfaceStateType} from "@/views/diagnose/store";
+import {prepareDataForRequest} from "@/views/component/debug/service";
+import {notification} from "ant-design-vue";
+import {NotificationKeyCommon} from "@/utils/const";
 
 provide('usedBy', UsedBy.CaseDebug)
 const usedBy = UsedBy.CaseDebug
 
-const store = useStore<{ Debug: Debug, Endpoint: EndpointStateType }>();
+const store = useStore<{ Debug: Debug, Endpoint: EndpointStateType, DiagnoseInterface: DiagnoseInterfaceStateType }>();
 const endpointCase = computed<any>(() => store.state.Endpoint.caseDetail);
 const debugData = computed<any>(() => store.state.Debug.debugData);
 
@@ -82,8 +48,6 @@ const props = defineProps({
   },
 })
 
-const rightTabKey = ref('env')
-
 const loadDebugData = debounce(async () => {
   console.log('loadDebugData', endpointCase.value.id)
 
@@ -93,17 +57,39 @@ const loadDebugData = debounce(async () => {
   });
 }, 300)
 
-const back = () => {
-  console.log('back')
-  props.onBack()
-}
-
 watch(endpointCase, (newVal) => {
   if (!endpointCase.value) return
 
   console.log('watch endpointCase', endpointCase.value.id)
   loadDebugData()
 }, {immediate: true, deep: true})
+
+const saveCaseInterface = async (e) => {
+  console.log('saveCaseInterface')
+
+  let data = JSON.parse(JSON.stringify(debugData.value))
+  data = prepareDataForRequest(data)
+
+  Object.assign(data, {shareVars: null, envVars: null, globalEnvVars: null, globalParamVars: null})
+
+  const res = await store.dispatch('Endpoint/saveCaseDebugData', data)
+  if (res === true) {
+    notification.success({
+      key: NotificationKeyCommon,
+      message: `保存成功`,
+    });
+  } else {
+    notification.success({
+      key: NotificationKeyCommon,
+      message: `保存失败`,
+    });
+  }
+}
+
+const back = () => {
+  console.log('back')
+  props.onBack()
+}
 
 </script>
 
@@ -154,30 +140,13 @@ watch(endpointCase, (newVal) => {
 
   .toolbar {
     position: absolute;
-    top: -42px;
-    right: 0;
+    top: -32px;
+    right: 160px;
     height: 50px;
     width: 120px;
   }
 
   #endpoint-debug-cases-design-panel {
-    display: flex;
-
-    #endpoint-debug-cases-design-content {
-      flex: 1;
-      width: 0;
-      height: 100%;
-    }
-
-    #endpoint-debug-cases-design-right {
-      margin-top: 50px;
-      width: 260px;
-      height: 100%;
-    }
-
-    .endpoint-debug-cases-design-splitter {
-      min-width: 20px;
-    }
   }
 }
 

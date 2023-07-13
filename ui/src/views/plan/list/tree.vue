@@ -93,7 +93,6 @@ const nodeDataCategory = computed<any>(()=> store.state.Plan.nodeDataCategory);
 
 const createTagModalVisible = ref(false);
 
-
 const props = defineProps({
   serveId: {
     required: false,
@@ -203,9 +202,9 @@ const tagModalMode = ref('new');
 async function deleteCategorie(node) {
   if (node.count > 0) {
     message.warning('该目录下有数据，请删除后再操作');
-    return 
+    return
   }
-  
+
   Modal.confirm({
     title: () => '确定删除该分类吗？',
     content: () => '删除后所有所有子分类都会被删除',

@@ -196,7 +196,7 @@ export function getRightTabPanelPosition(tabId) {
         const pos = elem.getBoundingClientRect()
         ret = {
             top: pos.y + 'px',
-            right: (document.body.clientWidth - pos.left + 10) + 'px',
+            left: (pos.left - 360 - 10) + 'px',
             height: (document.body.clientHeight - pos.y - 60) + 'px',
         }
     }

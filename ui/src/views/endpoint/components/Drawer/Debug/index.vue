@@ -86,6 +86,7 @@ const saveDebugInterface = async (data) => {
 
   #debug-bottom {
     flex: 1;
+    height: calc(100% - 46px);
   }
 }
 </style>

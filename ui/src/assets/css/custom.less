@@ -1,14 +1,24 @@
 @import './antd-variables.less';
 @import './variables.less';
-.dp-primary {
-  color: @primary-color;
+
+.dp-scroll {
+  overflow: auto;
 }
+
+.dp-relative {
+  position: relative;
+}
+
 .dp-border {
   font-weight: bolder;
 }
 
 .dp-link {
   cursor: pointer;
+}
+
+.dp-primary {
+  color: @primary-color;
 }
 
 .dp-link-white {
@@ -181,9 +191,12 @@
 
 .dp-tabs-full-height{
   height: 100%;
+  .ant-tabs-bar {
+    margin-bottom: 0px;
+  }
   .ant-tabs-content {
     height: calc(100% - 56px);
-    .ant-tabs-tabpane {
+    .ant-tabs-tabpane-active {
       height: 100%;
     }
   }
@@ -194,7 +207,15 @@
     padding: 16px;
   }
 }
-
+.dp-card-full-height {
+  .ant-card-head {
+    height: 52px;
+  }
+  .ant-card-body {
+    height: calc(100% - 52px);
+    overflow: auto;
+  }
+}
 .dp-tree-container {
   height: 100%;
   .tree-filter {

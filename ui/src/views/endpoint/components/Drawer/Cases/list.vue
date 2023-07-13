@@ -175,7 +175,6 @@ const columns = [
 
 <style lang="less" scoped>
 .endpoint-debug-cases-list {
-  position: relative;
   height: 100%;
   .toolbar {
     position: absolute;

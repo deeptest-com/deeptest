@@ -10,11 +10,12 @@
       </div>
 
       <div style="margin: 0 8px;">
-        <a-directory-tree
+        <a-tree
             class="deeptest-tree"
             draggable
             blockNode
             showIcon
+            :expandAction="false"
             :expandedKeys="expandedKeys"
             :auto-expand-parent="autoExpandParent"
             v-model:selectedKeys="selectedKeys"
@@ -23,11 +24,9 @@
             @select="selectNode"
             :tree-data="treeData"
             :replace-fields="replaceFields">
-
           <template #switcherIcon>
             <CaretDownOutlined/>
           </template>
-
           <template #title="nodeProps">
             <div class="tree-title" :draggable="nodeProps.dataRef.id === -1">
               <span class="tree-title-text" v-if="nodeProps.dataRef.name.indexOf(keywords) > -1">
@@ -36,7 +35,6 @@
                 <span>{{nodeProps.dataRef.name.substr(nodeProps.dataRef.name.indexOf(keywords) + keywords.length)}}</span>
               </span>
               <span class="tree-title-text" v-else>{{ nodeProps.dataRef.name }}</span>
-
               <span class="more-icon" v-if="nodeProps.dataRef.id > 0">
                   <a-dropdown>
                        <MoreOutlined/>
@@ -47,8 +45,7 @@
                 </span>
             </div>
           </template>
-        </a-directory-tree>
-
+        </a-tree>
         <div v-if="!treeData" class="nodata-tip">请点击上方按钮添加分类 ~</div>
       </div>
     </div>
@@ -451,8 +448,7 @@ onUnmounted(() => {
       .tree-title {
         position: relative;
         display: inline-block;
-        //width: 100%;
-        width: calc(100% - 24px);
+        width: 100%;
         .tree-title-text {
           display: inline-block;
           width: calc(100% - 24px);

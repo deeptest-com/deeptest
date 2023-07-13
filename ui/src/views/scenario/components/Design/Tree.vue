@@ -2,9 +2,11 @@
   <div class="scenario-tree-main">
     <div class="tree-container">
       <div class="tree-filter">
+<!--        测试场景编排-->
         <a-input-search placeholder="输入关键字过滤"
                         class="search-input"
                         v-model:value="keywords" />
+        <PlusOutlined class="plus-icon"/>
       </div>
 
       <div style="margin: 0 8px;">
@@ -13,6 +15,7 @@
             draggable
             blockNode
             showIcon
+            :expandAction="false"
             :expandedKeys="expandedKeys"
             :auto-expand-parent="autoExpandParent"
             v-model:selectedKeys="selectedKeys"
@@ -21,11 +24,9 @@
             @select="selectNode"
             :tree-data="treeData"
             :replace-fields="replaceFields">
-
           <template #switcherIcon>
             <CaretDownOutlined/>
           </template>
-
           <template #title="nodeProps">
             <div class="tree-title" :draggable="nodeProps.dataRef.id === -1">
               <span class="tree-title-text" v-if="nodeProps.dataRef.name.indexOf(keywords) > -1">
@@ -34,7 +35,6 @@
                 <span>{{nodeProps.dataRef.name.substr(nodeProps.dataRef.name.indexOf(keywords) + keywords.length)}}</span>
               </span>
               <span class="tree-title-text" v-else>{{ nodeProps.dataRef.name }}</span>
-
               <span class="more-icon" v-if="nodeProps.dataRef.id > 0">
                   <a-dropdown>
                        <MoreOutlined/>
@@ -46,7 +46,6 @@
             </div>
           </template>
         </a-tree>
-
         <div v-if="!treeData" class="nodata-tip">请点击上方按钮添加分类 ~</div>
       </div>
     </div>
@@ -78,7 +77,8 @@ import {useI18n} from "vue-i18n";
 import {Form, message} from 'ant-design-vue';
 import {useStore} from "vuex";
 import debounce from "lodash.debounce";
-import {DropEvent, TreeDragEvent} from "ant-design-vue/es/tree/Tree";import {PlusOutlined, CaretDownOutlined, MoreOutlined} from '@ant-design/icons-vue';
+import {DropEvent, TreeDragEvent} from "ant-design-vue/es/tree/Tree";
+import {PlusOutlined, CaretDownOutlined, MoreOutlined,} from '@ant-design/icons-vue';
 
 import {expandAllKeys, expandOneKey} from "@/services/tree";
 
@@ -424,9 +424,7 @@ onUnmounted(() => {
 
 <style lang="less" scoped>
 .scenario-tree-main {
-  height: 100%;
   background: #ffffff;
-
   .tree-container {
     .tree-filter {
       display: flex;
@@ -447,7 +445,8 @@ onUnmounted(() => {
     .deeptest-tree {
       .tree-title {
         position: relative;
-
+        display: inline-block;
+        width: 100%;
         .tree-title-text {
           display: inline-block;
           width: calc(100% - 24px);
@@ -474,5 +473,14 @@ onUnmounted(() => {
       text-align: center;
     }
   }
+
+  .plus-icon{
+    margin-right: 8px;
+    margin-left: 4px;
+    font-size: 18px;
+    cursor: pointer;
+  }
 }
+
+
 </style>

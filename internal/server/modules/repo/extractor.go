@@ -17,7 +17,7 @@ type ExtractorRepo struct {
 	DB *gorm.DB `inject:""`
 }
 
-func (r *ExtractorRepo) List(debugInterfaceId, endpointInterfaceId uint) (pos []model.DebugInterfaceExtractor, err error) {
+func (r *ExtractorRepo) List(debugInterfaceId, endpointInterfaceId uint, usedBy consts.UsedBy) (pos []model.DebugInterfaceExtractor, err error) {
 	db := r.DB.
 		Where("NOT deleted").
 		Order("created_at ASC")
@@ -28,13 +28,16 @@ func (r *ExtractorRepo) List(debugInterfaceId, endpointInterfaceId uint) (pos []
 		db.Where("endpoint_interface_id=? AND debug_interface_id=?", endpointInterfaceId, 0)
 	}
 
+	if usedBy != "" {
+		db.Where("used_by = ?", usedBy)
+	}
 	err = db.Find(&pos).Error
 
 	return
 }
 
 func (r *ExtractorRepo) ListTo(debugInterfaceId, endpointInterfaceId uint) (ret []agentDomain.Extractor, err error) {
-	pos, _ := r.List(debugInterfaceId, endpointInterfaceId)
+	pos, _ := r.List(debugInterfaceId, endpointInterfaceId, "")
 
 	for _, po := range pos {
 		extractor := agentDomain.Extractor{}
@@ -216,7 +219,7 @@ func (r *ExtractorRepo) CloneFromEndpointInterfaceToDebugInterface(endpointInter
 	usedBy consts.UsedBy) (
 	err error) {
 
-	srcPos, _ := r.List(0, endpointInterfaceId)
+	srcPos, _ := r.List(0, endpointInterfaceId, usedBy)
 
 	for _, po := range srcPos {
 		po.ID = 0

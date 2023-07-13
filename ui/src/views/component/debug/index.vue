@@ -11,10 +11,10 @@
     <div id="debug-splitter" class="splitter"></div>
 
     <div id="debug-right">
-      <a-tabs v-model:activeKey="rightTabKey"
-              tabPosition="right"
+      <a-tabs tabPosition="right" class="right-tab"
+              v-model:activeKey="rightTabKey"
               :tabBarGutter="0"
-              class="right-tab">
+              @change="changeRightTab">
 
         <a-tab-pane key="env">
           <template #tab>
@@ -111,10 +111,6 @@ const posStyleEnv = ref({})
 const posStyleHis = ref({})
 onMounted(() => {
   console.log('onMounted in debug-index')
-
-  posStyleEnv.value = getRightTabPanelPosition('env-tab')
-  posStyleHis.value = getRightTabPanelPosition('his-tab')
-
   resize()
 })
 onUnmounted(() => {
@@ -125,6 +121,12 @@ onUnmounted(() => {
 const resize = () => {
   resizeWidth('debug-index',
       'debug-content', 'debug-splitter', 'debug-right', 500, 38)
+}
+
+const changeRightTab = () => {
+  console.log('changeRightTab')
+  posStyleEnv.value = getRightTabPanelPosition('env-tab')
+  posStyleHis.value = getRightTabPanelPosition('his-tab')
 }
 
 const closeRightTab = () => {

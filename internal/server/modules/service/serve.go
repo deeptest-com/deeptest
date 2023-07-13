@@ -288,6 +288,8 @@ func (s *ServeService) ChangeServe(serveId, userId uint) (serve model.Serve, err
 func (s *ServeService) SaveSwaggerSync(req v1.SwaggerSyncReq) (data model.SwaggerSync, err error) {
 	var swaggerSync model.SwaggerSync
 	copier.CopyWithOption(&swaggerSync, req, copier.Option{DeepCopy: true})
+	serve, _ := s.ServeRepo.GetDefault(req.ProjectId)
+	swaggerSync.ServeId = int(serve.ID)
 	err = s.ServeRepo.SaveSwaggerSync(&swaggerSync)
 	data = swaggerSync
 	return

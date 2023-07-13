@@ -531,3 +531,8 @@ func (r *ServeRepo) GetSwaggerSyncList() (res []model.SwaggerSync, err error) {
 	err = r.DB.Find(&res, "switch = 1").Error
 	return
 }
+
+func (r *ServeRepo) GetDefault(projectId uint) (res model.Serve, err error) {
+	err = r.DB.Where("NOT deleted and project_id=?", projectId).First(&res).Error
+	return
+}

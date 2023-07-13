@@ -630,3 +630,16 @@ const (
 func (e TestType) String() string {
 	return string(e)
 }
+
+type SyncType uint
+
+const (
+	FullCopy SyncType = 1
+)
+
+type SwitchStatus uint
+
+const (
+	SwitchON  SyncType = 1
+	SwitchOFF SyncType = 2
+)

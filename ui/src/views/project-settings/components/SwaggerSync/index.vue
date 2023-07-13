@@ -5,10 +5,10 @@
     开启Swagger自动同步，系统将从指定的Swagger地址中定时自动同步接口定义到项目当前中
     </a-form-item>
     <a-form-item label="是否开启自动同步">
-      <a-switch v-model:checked="formState.switch" />
+      <a-switch v-model:checked="formState.switch" :checkedValue="1" :unCheckedValue="2" />
     </a-form-item>
     
-    <a-form-item name="syncType" v-if="formState.switch">
+    <a-form-item name="syncType" v-if="formState.switch==1">
       <template v-slot:label>
         数据同步
         <a-tooltip placement="topLeft" arrow-point-at-center overlayClassName="memo-tooltip">
@@ -24,7 +24,7 @@
       <a-select v-model:value="formState.syncType" :options="syncTypes" />
       完全覆盖会导致通过平台上的接口定义更新被覆盖，请谨慎使用
     </a-form-item>
-    <a-form-item label="所属分类" name="categoryId" v-if="formState.switch">
+    <a-form-item label="所属分类" name="categoryId" v-if="formState.switch==1">
         <a-tree-select
             @change="selectedCategory"
             :value="formState.categoryId"
@@ -40,16 +40,15 @@
             所有接口都将同步到该分类目录下
       </a-form-item>
       
-    <a-form-item v-bind="validateInfos.url" label="项目的swagger文档 URL地址"  v-if="formState.switch">
+    <a-form-item v-bind="validateInfos.url" label="项目的swagger文档 URL地址"  v-if="formState.switch==1">
       <a-input  v-model:value="formState.url" type="textarea" placeholder="请输入swagger url地址"/>
     </a-form-item>
-    <a-form-item v-bind="validateInfos.cron" label="类cron风格表达式(默认每天更新一次)" v-if="formState.switch">
+    <a-form-item v-bind="validateInfos.cron" label="类cron风格表达式(默认每天更新一次)" v-if="formState.switch==1">
       <a-input  v-model:value="formState.cron" type="textarea" placeholder="请输入Linux定时任务表达式"/>
       <a>点此查看</a>cron表达式格式说明
     </a-form-item>
-    <a-form-item :wrapper-col="{ span: 14, offset: 4 }" v-if="formState.switch">
+    <a-form-item :wrapper-col="{ span: 14, offset: 4 }">
       <a-button type="primary" @click="onSubmit">保存</a-button>
-      <a-button style="margin-left: 10px">取消</a-button>
     </a-form-item>
   </a-form>
   </div>
@@ -68,9 +67,6 @@ const useForm = Form.useForm;
 const store = useStore<{ Endpoint,ProjectGlobal,ProjectSetting }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const treeDataCategory = computed<any>(() => store.state.Endpoint.treeDataCategory);
-//const formState = computed<any>(() => store.state.ProjectSetting.swaggerSyncDetail);
-
-//const swaggerSyncDetail = ref(store.state.ProjectSetting.swaggerSyncDetail);
 
   const treeData: any = computed(() => {
   const data = treeDataCategory.value;
@@ -86,8 +82,7 @@ const rules = {
   cron: [{required: true,pattern:pattern.cron,message: '请正确的linux定时任务表达',trigger: 'blur'}]
 };
 
-const { resetFields,validate,validateInfos  } = useForm(formState, rules);
-
+const {validate,validateInfos  } = useForm(formState, rules);
 
 const onSubmit = () => {
   
@@ -122,6 +117,7 @@ async function loadCategories() {
 onMounted(async () => {
   await loadCategories();
   await store.dispatch('ProjectSetting/getSwaggerSync');
+  formState.value.projectId = currProject.value.id
 })
 
 

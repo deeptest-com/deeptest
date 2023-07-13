@@ -1,6 +1,7 @@
 package serverDomain
 
 import (
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 )
@@ -149,11 +150,11 @@ type ChangeServeReq struct {
 }
 
 type SwaggerSyncReq struct {
-	ID         int    `json:"id"`
-	Switch     bool   `json:"switch"`
-	SyncType   uint   `json:"syncType"`
-	CategoryId int    `json:"categoryId"`
-	Url        string `json:"url"`
-	Cron       string `json:"cron"`
-	ProjectId  uint   `json:"projectId"`
+	ID         int                 `json:"id"`
+	Switch     int                 `json:"switch"`
+	SyncType   consts.SwitchStatus `json:"syncType"`
+	CategoryId int                 `json:"categoryId"`
+	Url        string              `json:"url"`
+	Cron       string              `json:"cron"`
+	ProjectId  uint                `json:"projectId"`
 }

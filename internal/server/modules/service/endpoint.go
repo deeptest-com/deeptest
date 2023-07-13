@@ -198,13 +198,11 @@ func (s *EndpointService) SaveEndpoints(endpoints []*model.Endpoint, dirs *opena
 		root, _ := s.CategoryRepo.ListByProject(serverConsts.EndpointCategory, req.ProjectId, 0)
 		dirs.Id = int64(root[0].ID)
 	}
+	s.createDirs(dirs, req)
 	wg := new(sync.WaitGroup)
 	wg.Add(2)
-	s.createDirs(dirs, req)
 	go s.createComponents(wg, components, req)
 	go s.createEndpoints(wg, endpoints, dirs, req)
-
-	//err = s.EndpointRepo.CreateEndpoints(endpoints)
 	wg.Wait()
 	return
 }

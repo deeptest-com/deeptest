@@ -425,6 +425,7 @@ onUnmounted(() => {
 <style lang="less" scoped>
 .scenario-tree-main {
   background: #ffffff;
+  padding-top: 16px;
   .tree-container {
     .tree-filter {
       display: flex;
@@ -443,6 +444,7 @@ onUnmounted(() => {
     }
 
     .deeptest-tree {
+      margin-top: 8px;
       .tree-title {
         position: relative;
         display: inline-block;

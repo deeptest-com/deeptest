@@ -5,7 +5,7 @@
                   :onSave="saveDebugData"
                   :onSync="syncDebugData" />
 
-      <DebugDesigner />
+      <DebugConfig />
     </div>
 
     <div id="debug-splitter" class="splitter"></div>
@@ -59,7 +59,7 @@ import {EnvironmentOutlined, HistoryOutlined} from '@ant-design/icons-vue';
 import Invocation from '@/views/component/debug/request/Invocation.vue'
 import RequestEnv from '@/views/component/debug/others/env/index.vue';
 import RequestHistory from '@/views/component/debug/others/history/index.vue';
-import DebugDesigner  from './designer.vue';
+import DebugConfig  from './config.vue';
 
 import {StateType as ProjectGlobal} from "@/store/project";
 import {StateType as Debug} from "@/views/component/debug/store";
@@ -170,7 +170,8 @@ const closeRightTab = () => {
     height: 100%;
   }
   #debug-splitter {
-    min-width: 20px;
+    width: 1px;
+    background-color: #f0f0f0;
   }
 }
 </style>

@@ -1,13 +1,13 @@
 <template>
   <div class="scenario-tree-main">
-    <div class="tree-container">
+    <div class="dp-tree-container">
       <div class="tree-filter">
         <a-input-search placeholder="输入关键字过滤"
                         class="search-input"
                         v-model:value="keywords" />
       </div>
 
-      <div style="margin: 0 8px;">
+      <div class="tree-content">
         <a-tree
             class="deeptest-tree"
             draggable
@@ -426,53 +426,5 @@ onUnmounted(() => {
 .scenario-tree-main {
   height: 100%;
   background: #ffffff;
-
-  .tree-container {
-    .tree-filter {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      .search-input {
-        margin-left: 16px;
-        margin-right: 8px;
-      }
-
-      .add-btn {
-        margin-left: 2px;
-        margin-right: 16px;
-        cursor: pointer;
-      }
-    }
-
-    .deeptest-tree {
-      .tree-title {
-        position: relative;
-
-        .tree-title-text {
-          display: inline-block;
-          width: calc(100% - 24px);
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-
-        //&:hover{
-        //  .more-icon {
-        //    background-color: #f5f5f5;
-        //  }
-        //}
-        .more-icon {
-          position: absolute;
-          right: -8px;
-          width: 20px;
-        }
-      }
-    }
-
-    .nodata-tip {
-      margin-top: 8px;
-      text-align: center;
-    }
-  }
 }
 </style>

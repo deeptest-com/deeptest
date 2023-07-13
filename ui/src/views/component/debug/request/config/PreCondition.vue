@@ -1,5 +1,5 @@
 <template>
-  <div class="pre-body-main">
+  <div class="pre-condition-main">
     <div class="head">
       <a-row type="flex">
         <a-col flex="1">
@@ -100,7 +100,7 @@ const editorChange = (newScriptCode) => {
 </script>
 
 <style lang="less">
-.pre-body-main {
+.pre-condition-main {
   .codes {
     height: 100%;
     min-height: 160px;
@@ -114,7 +114,7 @@ const editorChange = (newScriptCode) => {
 </style>
 
 <style lang="less" scoped>
-.pre-body-main {
+.pre-condition-main {
   height: 100%;
   .head {
     padding: 2px 3px;
@@ -147,7 +147,7 @@ const editorChange = (newScriptCode) => {
 </style>
 
 <style lang="less" scoped>
-//.pre-body-main{
+//.pre-condition-main{
 //  max-height: 180px;
 //  overflow-y: scroll;
 //}

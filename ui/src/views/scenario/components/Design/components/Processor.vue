@@ -89,7 +89,7 @@ const selectedNode = computed<any>(()=> store.state.Scenario.nodeData);
 <style lang="less" scoped>
 .scenario-processor-edit-main {
   height: 100%;
-  padding: 0;
+  padding: 10px 0 0 16px;
 }
 
 </style>

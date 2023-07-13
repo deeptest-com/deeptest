@@ -1,6 +1,6 @@
 <template>
   <div class="response-renderer">
-    <a-tabs v-model:activeKey="activeKey">
+    <a-tabs v-model:activeKey="activeKey" class="dp-tabs-full-height">
       <a-tab-pane key="1" :tab="title">
         <ResponseLensJson v-if="responseData.contentLang === 'json'"></ResponseLensJson>
         <ResponseLensXml v-if="responseData.contentLang === 'xml'"></ResponseLensXml>

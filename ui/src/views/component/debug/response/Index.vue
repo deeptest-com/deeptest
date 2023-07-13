@@ -29,6 +29,6 @@ onMounted(() => {
 
 <style lang="less" scoped>
 .response-main {
-  height: 360px;
+  height: 100%;
 }
 </style>

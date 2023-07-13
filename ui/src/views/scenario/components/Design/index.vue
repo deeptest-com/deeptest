@@ -1,5 +1,5 @@
 <template>
-  <div id="scenario-design-main" class="scenario-design-main dp-splits-v">
+  <div id="scenario-design-index" class="scenario-design-index dp-splits-v">
     <div id="scenario-design-left" class="left">
       <ScenarioTree/>
     </div>
@@ -28,15 +28,6 @@ import {Scenario} from "@/views/scenario/data";
 
 const router = useRouter();
 const store = useStore<{ Scenario: ScenarioStateType; Global: GlobalStateType; }>();
-// const detailResult = computed<Scenario>(() => store.state.Scenario.detailResult);
-// const id = ref(+router.currentRoute.value.params.id)
-// const props = defineProps({
-//   id: {
-//     required: true,
-//     type: Number,
-//   },
-// })
-
 const collapsed = computed<boolean>(()=> store.state.Global.collapsed);
 
 onMounted(() => {
@@ -63,11 +54,13 @@ const resize = () => {
 </script>
 
 <style lang="less" scoped>
-.scenario-design-main {
+.scenario-design-index {
   .left {
+    height: 100%;
     width: 260px;
   }
   .right {
+    height: 100%;
     flex: 1;
   }
 }

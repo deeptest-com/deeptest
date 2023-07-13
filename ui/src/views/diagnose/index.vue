@@ -38,10 +38,10 @@ const currServe = computed<any>(() => store.state.ServeGlobal.currServe);
 
 <style lang="less" scoped>
 #diagnose-interface-main {
+  position: relative;
   display: flex;
   height: 100%;
-  margin: 16px;
-  position: relative;
+  padding: 16px;
 
   #diagnose-interface-left {
     width: 300px;
@@ -51,8 +51,8 @@ const currServe = computed<any>(() => store.state.ServeGlobal.currServe);
   }
   #diagnose-interface-right {
     flex: 1;
-    width: 0;
     height: 100%;
+    width: 0;
     background-color: #ffffff;
   }
 }

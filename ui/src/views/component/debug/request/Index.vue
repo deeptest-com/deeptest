@@ -11,6 +11,5 @@ import RequestConfig from './Config.vue';
 
 <style lang="less" scoped>
 #request-main {
-  height: 200px;
 }
 </style>

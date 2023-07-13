@@ -1,5 +1,5 @@
 <template>
-  <a-drawer class="drawer"
+  <a-drawer class="drawer dp-drawer-full-height"
       :placement="'right'"
       :width="1200"
       :closable="true"
@@ -37,7 +37,7 @@
         </div>
       </template>
 
-      <a-tabs class="tabs"
+      <a-tabs class="tabs dp-tabs-full-height"
           :tabBarStyle="{marginBottom: 0}"
           v-show="expand" :activeKey="key" :animated="false" @change="changeTab">
         <template #tabBarExtraContent>

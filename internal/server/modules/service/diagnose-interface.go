@@ -47,9 +47,16 @@ func (s *DiagnoseInterfaceService) Get(id int) (ret model.DiagnoseInterface, err
 }
 
 func (s *DiagnoseInterfaceService) Save(req serverDomain.DiagnoseInterfaceSaveReq) (diagnoseInterface model.DiagnoseInterface, err error) {
-	s.CopyValueFromRequest(&diagnoseInterface, req)
+	if req.ID != 0 {
+		diagnoseInterface, err = s.DiagnoseInterfaceRepo.Get(req.ID)
+		if err != nil {
+			return diagnoseInterface, err
+		}
+		diagnoseInterface.Title = req.Title
+	} else {
+		s.CopyValueFromRequest(&diagnoseInterface, req)
 
-	if diagnoseInterface.Type == serverConsts.DiagnoseInterfaceTypeInterface {
+		//if diagnoseInterface.Type == serverConsts.DiagnoseInterfaceTypeInterface {
 		server, _ := s.ServeServerRepo.GetDefaultByServe(diagnoseInterface.ServeId)
 
 		// create new DebugInterface
@@ -105,6 +112,12 @@ func (s *DiagnoseInterfaceService) SaveDebugData(req domain.DebugData) (debugInt
 func (s *DiagnoseInterfaceService) CopyValueFromRequest(interf *model.DiagnoseInterface, req serverDomain.DiagnoseInterfaceSaveReq) {
 	copier.CopyWithOption(interf, req, copier.Option{
 		DeepCopy: true,
+	})
+}
+
+func (s *DiagnoseInterfaceService) CopyValueFromRequestNotDeep(interf *model.DiagnoseInterface, req serverDomain.DiagnoseInterfaceSaveReq) {
+	copier.CopyWithOption(interf, req, copier.Option{
+		DeepCopy: false,
 	})
 }
 

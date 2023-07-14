@@ -59,9 +59,7 @@ import {Endpoint, PaginationConfig} from "@/views/endpoint/data";
 
 import {StateType as ServeStateType} from "@/store/serve";
 import {StateType as Debug} from "@/views/component/debug/store";
-import {message, Modal} from 'ant-design-vue';
 import {listEndpointInterface} from "@/views/endpoint/service";
-// import TreeSelect from "./TreeSelect.vue";
 
 const store = useStore<{ Endpoint, ProjectGlobal, Debug: Debug, ServeGlobal: ServeStateType }>();
 

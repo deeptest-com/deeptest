@@ -1,13 +1,11 @@
 <template>
-  <a-drawer class="drawer"
-      :placement="'right'"
-      :width="1200"
-      :closable="true"
-      :visible="visible"
-      wrapClassName="drawer-1"
-      :headerStyle="{position:'sticky',top:0,zIndex:9999}"
-      :bodyStyle="{padding:0,minHeight:'100vh'}"
-      @close="onCloseDrawer">
+  <a-drawer class="endpoint-drawer-main dp-drawer-full-height"
+            :width="1200"
+            :placement="'right'"
+            :closable="true"
+            :visible="visible"
+            wrapClassName="drawer-1"
+            @close="onCloseDrawer">
 
     <!-- 头部信息  -->
     <template #title>
@@ -18,67 +16,74 @@
       </div>
     </template>
 
-    <!-- 基本信息 -->
-    <EndpointBasicInfo @changeStatus="changeStatus"
-                       @change-description="changeDescription"
-                       @changeCategory="changeCategory"/>
+    <div class="drawer-content">
+      <div class="drawer-content-basic-info">
+        <!-- 基本信息 -->
+        <EndpointBasicInfo @changeStatus="changeStatus"
+                           @change-description="changeDescription"
+                           @changeCategory="changeCategory"/>
+      </div>
 
-    <!-- 接口设计区域 -->
-    <a-card
-        style="width: 100%"
-        :bordered="false"
-        :size="'small'"
-        :bodyStyle="{padding:'0 16px'}"
-        :headStyle="{padding:'0 16px',borderBottom:'none'}">
-      <template #title>
-        <div>
-          <ConBoxTitle :show-arrow="true" @expand="expandInfo" :backgroundStyle="'background: #FBFBFB;'"
-                       :title="'接口设计'"/>
-        </div>
-      </template>
+      <!-- 接口设计区域 -->
+      <div class="drawer-content-config">
+        <a-card class="dp-card-full-height"
+                style="width: 100%"
+                :bordered="false"
+                :size="'small'">
+          <template #title>
+            <div>
+              <ConBoxTitle :show-arrow="true" @expand="expandInfo" :backgroundStyle="'background: #FBFBFB;'"
+                           :title="'接口设计'"/>
+            </div>
+          </template>
 
-      <a-tabs class="tabs"
-          :tabBarStyle="{marginBottom: 0}"
-          v-show="expand" :activeKey="key" :animated="false" @change="changeTab">
-        <template #tabBarExtraContent>
-          <a-button v-if="key === 'request' && showFooter" type="primary" @click="save">
-            <template #icon>
-              <SaveOutlined/>
+          <a-tabs class="tabs dp-tabs-full-height"
+              v-show="expand" :activeKey="key" :animated="false" @change="changeTab">
+
+            <template #tabBarExtraContent>
+              <a-button v-if="key === 'request' && showFooter" type="primary" @click="save">
+                <template #icon>
+                  <SaveOutlined/>
+                </template>
+                保存
+              </a-button>
             </template>
-            保存
-          </a-button>
-        </template>
 
-        <a-tab-pane key="request" tab="定义" class="tab">
-          <div class="tab-container">
-            <EndpointDefine v-if="key === 'request'" @switchMode="switchMode"/> <!-- use v-if to force page reload-->
-          </div>
-        </a-tab-pane>
+            <a-tab-pane key="request" tab="定义" class="tab">
+              <div class="tab-container dp-scroll">
+                <EndpointDefine v-if="key === 'request'" @switchMode="switchMode"/>
+              </div>
+            </a-tab-pane>
 
-        <a-tab-pane key="run" tab="调试">
-          <div class="tab-container">
-            <!-- use v-if to force page reload -->
-            <EndpointDebug v-if="key === 'run'" @switchToDefineTab="switchToDefineTab"/>
-          </div>
-        </a-tab-pane>
-        
-        <a-tab-pane key="cases" tab="用例" v-if="false">
-          <div class="tab-container">
-            <!-- use v-if to force page reload -->
-            <EndpointCases v-if="key === 'cases'" @switchToDefineTab="switchToDefineTab"/>
-          </div>
-        </a-tab-pane>
+            <!-- add select env button top is relative to this -->
+            <a-tab-pane key="run" tab="调试" class="tab dp-relative">
+              <div class="tab-container">
+                <EndpointDebug v-if="key === 'run'" @switchToDefineTab="switchToDefineTab"/>
+              </div>
+            </a-tab-pane>
 
-        <a-tab-pane key="docs" tab="文档">
-          <Docs :onlyShowDocs="true"
-                :showHeader="false"
-                v-if="key === 'docs' && docsData"
-                :data="docsData"
-                @switchToDefineTab="switchToDefineTab"
-                :show-menu="true"/> <!-- use v-if to force page reload-->
-        </a-tab-pane>
-      </a-tabs>
-    </a-card>
+            <!-- select env and add case button top is relative to this -->
+            <a-tab-pane key="cases" tab="用例" class="tab dp-relative">
+              <div class="tab-container dp-scroll">
+                <EndpointCases v-if="key === 'cases'" @switchToDefineTab="switchToDefineTab"/>
+              </div>
+            </a-tab-pane>
+
+            <a-tab-pane key="docs" tab="文档" class="tab">
+              <div class="tab-container dp-scroll">
+                <Docs :onlyShowDocs="true"
+                      :showHeader="false"
+                      v-if="key === 'docs' && docsData"
+                      :data="docsData"
+                      @switchToDefineTab="switchToDefineTab"
+                      :show-menu="true"/> <!-- use v-if to force page reload-->
+              </div>
+            </a-tab-pane>
+          </a-tabs>
+        </a-card>
+      </div>
+    </div>
+
   </a-drawer>
 </template>
 
@@ -201,14 +206,29 @@ function expandInfo(val) {
 }
 
 </script>
+
 <style lang="less" scoped>
-.drawer {
+.endpoint-drawer-main {
   margin-bottom: 60px;
 
-  .tabs {
-    .tab {
-      .tab-container {
-        margin-top: 16px;
+  .drawer-content {
+    height: 100%;
+    .drawer-content-basic-info {
+      height: 118px;
+    }
+    .drawer-content-config {
+      height: calc(100% - 118px);
+      .dp-card-full-height {
+        height: 100%;
+
+        .tabs {
+          .tab {
+            .tab-container {
+              height: 100%;
+              margin-top: 16px;
+            }
+          }
+        }
       }
     }
   }

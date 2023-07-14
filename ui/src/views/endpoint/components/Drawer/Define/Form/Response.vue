@@ -24,7 +24,7 @@
           </a-radio-button>
         </a-radio-group>
         <a-dropdown class="select-code-options"
-                    :overlayClassName="'deeptest-res-code-dropdown'">
+                    :overlayClassName="'dp-res-code-dropdown'">
           <template #overlay>
             <a-menu class="menu-con">
               <a-menu-item v-for="opt in responseCodes"

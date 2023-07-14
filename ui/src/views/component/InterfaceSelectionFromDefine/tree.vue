@@ -1,38 +1,32 @@
 <template>
-  <div class="interface-tree-main dp-tree">
+  <div class="interface-tree-main">
     <div class="toolbar">
       <div class="tips">
-        <a-select
+        <a-select style="width: 220px" :bordered="true"
             v-model:value="serveId"
             :placeholder="'请选择服务'"
-            :bordered="true"
-            @change="selectServe"
-            size="small"
-            class="dp-no-border">
+            @change="selectServe">
           <a-select-option v-for="item in serves" :key="item.id" :value="item.id">{{ item.name }}</a-select-option>
         </a-select>
       </div>
 
       <div class="buttons">
-        <a-button @click="expandAll" type="link" class="dp-color-primary">
+<!--        <a-button @click="expandAll" type="link" class="dp-color-primary">
           <span v-if="!isExpand">展开</span>
           <span v-if="isExpand">收缩</span>
-        </a-button>
+        </a-button>-->
       </div>
     </div>
 
     <div class="tree-panel">
-      <a-tree
-          ref="tree"
-          :tree-data="treeDataCategory"
-          :replace-fields="replaceFields"
-          show-icon
-          @expand="expandNode"
-          @select="selectNode"
+      <a-tree ref="tree"
+              :tree-data="treeDataCategory"
+              :replace-fields="replaceFields"
+              @expand="expandNode"
+              @select="selectNode"
 
-          v-model:selectedKeys="selectedKeys"
-          v-model:expandedKeys="expandedKeys"
-      >
+              v-model:selectedKeys="selectedKeys"
+              v-model:expandedKeys="expandedKeys">
         <template #title="slotProps">
           <span class="name-editor">
             {{ slotProps.name }}

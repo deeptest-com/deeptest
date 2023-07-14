@@ -1,14 +1,14 @@
 <template>
   <div>
     <a-drawer
+        class="drawer dp-drawer-full-height"
+        wrapClassName="drawer-1"
         :placement="'right'"
         :width="1280"
         :closable="true"
         :visible="visible"
-        class="drawer"
-        wrapClassName="drawer-1"
-        :bodyStyle="{padding:'0',marginBottom:'0'}"
         @close="onCloseDrawer">
+
       <!-- 头部信息  -->
       <template #title>
         <a-row type="flex" style="align-items: center;width: 100%">
@@ -20,18 +20,18 @@
       <!-- 基本信息 -->
       <BasicInfo @change="changeBasicInfo"/>
       <!-- Tab 切换区域 -->
-      <a-tabs v-model:activeKey="activeKey" force-render :tabBarStyle="{'margin':0}">
+      <a-tabs v-model:activeKey="activeKey" force-render class="dp-tabs-full-height">
+
         <a-tab-pane class="test-developer" key="1" tab="测试开发">
-          <div v-if="activeKey==='1'">
-            <div class="exec-scenario-btn">
+            <div v-if="activeKey==='1'" class="exec-scenario-btn">
               <a-button @click="exec" type="primary"><span>执行</span></a-button>
             </div>
+
             <Design :id="detailResult?.id"/>
-          </div>
         </a-tab-pane>
 
         <a-tab-pane key="2" tab="执行历史" force-render>
-          <div style="padding: 16px" v-if="activeKey==='2'">
+          <div v-if="activeKey==='2'" style="padding: 16px">
             <ExecList @showDetail="showDetail"/>
           </div>
         </a-tab-pane>
@@ -221,6 +221,22 @@ async function cancel() {
 .drawer {
   margin-bottom: 60px;
 
+  .dp-tabs-full-height {
+    height: calc(100% - 161px);
+
+    .test-developer {
+      height: 100%;
+      width: 100%;
+      position: relative;
+
+      .exec-scenario-btn {
+        position: absolute;
+        right: 218px;
+        top: -35px;
+      }
+    }
+  }
+
   .title {
     width: auto;
 
@@ -264,17 +280,7 @@ async function cancel() {
   z-index: 99;
 }
 
-.test-developer {
-  height: 100%;
-  width: 1000px;
-  position: relative;
 
-  .exec-scenario-btn {
-    position: absolute;
-    right: 218px;
-    top: -48px;
-  }
-}
 
 .drawer-exec-history-detail {
   :deep(.ant-drawer-header) {

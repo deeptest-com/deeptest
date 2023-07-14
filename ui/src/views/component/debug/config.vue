@@ -1,7 +1,7 @@
 <template>
   <div id="debug-form">
     <div id="top-panel">
-      <div v-if="serverConfig.demoTestSite" class="red">
+      <div v-if="serverConfig.demoTestSite" class="dp-red">
         您正在访问演示站点，所有的接口请求将被重定向到{{serverConfig.demoTestSite}}。
       </div>
 
@@ -52,22 +52,23 @@ onUnmounted(() => {
 
 <style lang="less" scoped>
 #debug-form {
-  flex: 1;
-  padding: 5px 0;
-
+  display: flex;
   flex-direction: column;
+  height: calc(100% - 33px);
+
+  padding: 0;
   position: relative;
-  height: 100%;
-  max-height: 800px;
 
   #top-panel {
+    flex: 1;
     width: 100%;
     padding: 0;
   }
 
   #bottom-panel {
+    flex: 1;
     width: 100%;
-    padding: 4px;
+    padding: 0;
     overflow: auto;
   }
 

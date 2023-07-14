@@ -5,7 +5,8 @@
     </div>
 
     <div id="debug-bottom">
-      <DebugComp :onSaveDebugData="saveDebugInterface"
+      <DebugComp :topVal="'10px'"
+                  :onSaveDebugData="saveDebugInterface"
                  :show-method-selection="false" />
     </div>
   </div>
@@ -86,6 +87,7 @@ const saveDebugInterface = async (data) => {
 
   #debug-bottom {
     flex: 1;
+    height: calc(100% - 46px);
   }
 }
 </style>

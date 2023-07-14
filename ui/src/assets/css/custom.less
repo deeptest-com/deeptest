@@ -1,14 +1,24 @@
 @import './antd-variables.less';
 @import './variables.less';
-.dp-primary {
-  color: @primary-color;
+
+.dp-scroll {
+  overflow: auto;
 }
+
+.dp-relative {
+  position: relative;
+}
+
 .dp-border {
   font-weight: bolder;
 }
 
 .dp-link {
   cursor: pointer;
+}
+
+.dp-primary {
+  color: @primary-color;
 }
 
 .dp-link-white {
@@ -34,6 +44,9 @@
   color: @text-color;
 }
 
+.dp-red {
+  color: red;
+}
 .dp-color-pass {
   color: green;
 }
@@ -144,9 +157,6 @@
 }
 
 .dp-table {
-  td {
-  }
-
   .ant-btn-link {
     padding: 0px 5px;
   }
@@ -166,8 +176,70 @@
 
   .right {
     height: 100%;
-    //overflow-y: hidden;
-    //overflow-x: hidden;
+  }
+}
+
+.dp-res-code-dropdown {
+  .menu-con {
+    width: 360px;
+    height: 320px;
+    overflow-y: scroll;
+  }
+}
+
+.dp-tree-container {
+  height: 100%;
+  .tree-filter {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 50px;
+    .search-input {
+      margin-left: 16px;
+      margin-right: 8px;
+    }
+
+    .add-btn {
+      margin-left: 2px;
+      margin-right: 16px;
+      cursor: pointer;
+    }
+  }
+
+  .tree-content {
+    height: calc(100% - 50px);
+    overflow: auto;
+    margin: 0 8px;
+
+    .deeptest-tree {
+      .tree-title {
+        position: relative;
+
+        .tree-title-text {
+          display: inline-block;
+          width: calc(100% - 24px);
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        //&:hover{
+        //  .more-icon {
+        //    background-color: #f5f5f5;
+        //  }
+        //}
+        .more-icon {
+          position: absolute;
+          right: -8px;
+          width: 20px;
+        }
+      }
+    }
+
+    .nodata-tip {
+      margin-top: 8px;
+      text-align: center;
+    }
   }
 }
 
@@ -317,34 +389,6 @@
     }
   }
 }
-
-
-.dp-tree {
-  .toolbar {
-    display: flex;
-    height: 32px;
-    border: 1px solid #D0D7DE;
-
-    .tips {
-      flex: 1;
-      padding: 0px 3px 0 6px;
-      line-height: 31px;
-      color: #5a5e66;
-    }
-
-    .buttons {
-      padding: 0px;
-      width: 100px;
-      text-align: right;
-    }
-  }
-
-  .tree-panel {
-    height: calc(100% - 32px);
-    overflow: auto;
-  }
-}
-
 
 .drawer-content .ant-row.ant-form-item {
   margin-bottom: 0 !important;

@@ -1,20 +1,20 @@
 <template>
   <div class="diagnose-interface-design-main">
       <div id="diagnose-interface-debug-panel">
-        <div class="tabs">
-          <a-tabs type="editable-card" :hideAdd="true" v-model:activeKey="activeTabKey"
-                  @edit="onTabEdit"
-                  @change="changeTab">
+        <a-tabs class="dp-tabs-full-height" type="editable-card"
+                :hideAdd="true" v-model:activeKey="activeTabKey"
+                @edit="onTabEdit"
+                @change="changeTab">
 
-            <a-tab-pane v-for="tab in interfaceTabs" :key="''+tab.id" :tab="getTitle(tab.title)">
-              <template v-if="debugData?.method" >
-                <DebugComp :onSaveDebugData="saveDiagnoseInterface"
-                           :base-url-disabled="false" />
-              </template>
-            </a-tab-pane>
+          <a-tab-pane v-for="tab in interfaceTabs" :key="''+tab.id" :tab="getTitle(tab.title)" class="dp-relative">
+            <template v-if="debugData?.method" >
+              <DebugComp :topVal="'-40px'"
+                         :onSaveDebugData="saveDiagnoseInterface"
+                         :base-url-disabled="false" />
+            </template>
+          </a-tab-pane>
 
-          </a-tabs>
-        </div>
+        </a-tabs>
       </div>
 
       <div class="selection">
@@ -134,9 +134,11 @@ const closeRightTab = () => {
 
 <style scoped lang="less">
 .diagnose-interface-design-main {
-  padding: 16px 0px 16px 16px;
+  height: 100%;
+  padding: 16px 0px 0 16px;
 
   #diagnose-interface-debug-panel {
+    height: 100%;
   }
 }
 

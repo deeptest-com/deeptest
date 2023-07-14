@@ -3,8 +3,12 @@
 @import './variables.less';
 @import './mixin.less';
 
-@import './adjust';
+@import './antd-adjust.less';
 @import './custom';
+
+body {
+  background-color: #fff;
+}
 
 .hidden {
   display: none;
@@ -22,7 +26,7 @@
 }
 
 // 项目样式切换样式覆盖
-.deeptest-project-switch-container {
+.dp-project-switch-container {
   width: 260px;
   height: 260px;
 
@@ -128,34 +132,15 @@
   }
 }
 
-.deeptest-res-code-dropdown {
-  .menu-con {
-    width: 360px;
-    height: 320px;
-    overflow-y: scroll;
-  }
-}
 
-.red {
-  color: red;
-}
 
 .right-float-tab {
-  position: absolute;
+  position: fixed;
   border: 1px solid #e6e9ec;
   border-radius: 6px;
   z-index: 99;
   width: 360px;
   right: 38px;
-
-  &.env {
-    top: 65px;
-    height: calc(100% - 100px);
-  }
-  &.his {
-    top: 100px;
-    height: calc(100% - 135px);
-  }
 
   .dp-bg-light {
     height: 100%;

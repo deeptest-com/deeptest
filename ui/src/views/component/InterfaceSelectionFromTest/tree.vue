@@ -3,7 +3,8 @@
     <div class="tree-filters">
       <a-row type="flex">
         <a-col :flex="2">
-          <a-select :placeholder="'请选择服务'" :bordered="true"
+          <a-select style="width: 220px" :bordered="true"
+                    :placeholder="'请选择服务'"
                     v-model:value="serveId"
                     @change="selectServe">
             <a-select-option v-for="item in serves" :key="item.id" :value="item.id">{{ item.name }}</a-select-option>
@@ -184,7 +185,7 @@ onMounted(async () => {
 <style scoped lang="less">
 .tree-main {
   .tree-filters {
-    margin-bottom: 16px;
+    margin-bottom: 0;
   }
 
   .tree-container {

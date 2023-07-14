@@ -1,53 +1,62 @@
 <template>
   <div id="debug-index" class="dp-splits-v">
     <div id="debug-content">
-      <Invocation :topVal="'-48px'"
+      <Invocation :topVal="topVal"
                   :onSave="saveDebugData"
                   :onSync="syncDebugData" />
 
-      <DebugDesigner />
+      <DebugConfig />
     </div>
 
     <div id="debug-splitter" class="splitter"></div>
 
     <div id="debug-right">
-      <a-tabs v-model:activeKey="rightTabKey"
-              tabPosition="right"
+      <a-tabs tabPosition="right" class="right-tab"
+              v-model:activeKey="rightTabKey"
               :tabBarGutter="0"
-              class="right-tab">
+              @change="changeRightTab">
 
         <a-tab-pane key="env">
           <template #tab>
-            <a-tooltip placement="left" overlayClassName="dp-tip-small">
-              <template #title>环境</template>
-              <EnvironmentOutlined/>
-            </a-tooltip>
+            <span id="env-tab">
+              <a-tooltip placement="left" overlayClassName="dp-tip-small">
+                <template #title>环境</template>
+                <EnvironmentOutlined/>
+              </a-tooltip>
+            </span>
           </template>
         </a-tab-pane>
 
         <a-tab-pane key="history">
           <template #tab>
-            <a-tooltip placement="left" overlayClassName="dp-tip-small">
-              <template #title>历史</template>
-              <HistoryOutlined/>
-            </a-tooltip>
+            <span id="his-tab">
+              <a-tooltip placement="left" overlayClassName="dp-tip-small">
+                <template #title>历史</template>
+                <HistoryOutlined/>
+              </a-tooltip>
+            </span>
           </template>
         </a-tab-pane>
 
       </a-tabs>
     </div>
 
-    <div v-if="rightTabKey==='env'" class="right-float-tab env dp-bg-white">
+    <div v-if="rightTabKey==='env'"
+         :style="posStyleEnv"
+         class="right-float-tab dp-bg-white">
       <div class="dp-bg-light">
         <RequestEnv :onClose="closeRightTab" />
       </div>
     </div>
-    <div v-if="rightTabKey==='history'" class="right-float-tab his dp-bg-white">
+    <div v-if="rightTabKey==='history'"
+         :style="posStyleHis"
+         class="right-float-tab dp-bg-white">
       <div class="dp-bg-light">
         <RequestHistory :onClose="closeRightTab" />
       </div>
     </div>
   </div>
+
 </template>
 
 <script setup lang="ts">
@@ -59,14 +68,14 @@ import {EnvironmentOutlined, HistoryOutlined} from '@ant-design/icons-vue';
 import Invocation from '@/views/component/debug/request/Invocation.vue'
 import RequestEnv from '@/views/component/debug/others/env/index.vue';
 import RequestHistory from '@/views/component/debug/others/history/index.vue';
-import DebugDesigner  from './designer.vue';
+import DebugConfig  from './config.vue';
 
 import {StateType as ProjectGlobal} from "@/store/project";
 import {StateType as Debug} from "@/views/component/debug/store";
 import {StateType as Endpoint} from "../../endpoint/store";
 
 import {StateType as GlobalStateType} from "@/store/global";
-import {resizeWidth} from "@/utils/dom";
+import {getRightTabPanelPosition, resizeWidth} from "@/utils/dom";
 
 const {t} = useI18n();
 const store = useStore<{  Debug: Debug, Endpoint: Endpoint, ProjectGlobal: ProjectGlobal, Global: GlobalStateType }>();
@@ -80,7 +89,11 @@ const props = defineProps({
   onSyncDebugData: {
     type: Function,
     required: false
-  }
+  },
+  topVal: {
+    type: String,
+    required: true
+  },
 })
 
 const rightTabKey = ref('')
@@ -94,6 +107,8 @@ const syncDebugData = async () => {
     props.onSyncDebugData()
 };
 
+const posStyleEnv = ref({})
+const posStyleHis = ref({})
 onMounted(() => {
   console.log('onMounted in debug-index')
   resize()
@@ -106,6 +121,12 @@ onUnmounted(() => {
 const resize = () => {
   resizeWidth('debug-index',
       'debug-content', 'debug-splitter', 'debug-right', 500, 38)
+}
+
+const changeRightTab = () => {
+  console.log('changeRightTab')
+  posStyleEnv.value = getRightTabPanelPosition('env-tab')
+  posStyleHis.value = getRightTabPanelPosition('his-tab')
 }
 
 const closeRightTab = () => {
@@ -170,7 +191,8 @@ const closeRightTab = () => {
     height: 100%;
   }
   #debug-splitter {
-    min-width: 20px;
+    width: 1px;
+    background-color: #f0f0f0;
   }
 }
 </style>

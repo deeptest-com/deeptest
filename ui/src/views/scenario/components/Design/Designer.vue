@@ -51,7 +51,7 @@ onMounted(() => {
   }
 
   .scenario-design-content {
-    height: calc(100% - 32px);
+    height: 100%;
     width: 100%;
   }
 }

@@ -184,3 +184,22 @@ export function getContextMenuStyle2(e) {
 
     return style
 }
+
+export function getRightTabPanelPosition(tabId) {
+    console.log('getRightTabPanelPosition', tabId)
+
+    let ret = {}
+
+    const elem = document.getElementById(tabId)
+
+    if (elem) {
+        const pos = elem.getBoundingClientRect()
+        ret = {
+            top: pos.y + 'px',
+            left: (pos.left - 360 - 10) + 'px',
+            height: (document.body.clientHeight - pos.y - 60) + 'px',
+        }
+    }
+
+    return ret
+}

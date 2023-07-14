@@ -22,9 +22,9 @@
           :breadCrumbs="breadCrumbs"
           :toggleCollapsed="toggleCollapsed"
           :menuData="permissionMenuData"
-          :routeItem="routeItem"
-      >
+          :routeItem="routeItem">
       </right-top>
+
       <div class="indexlayout-right-main">
         <permission :roles="routeItem.roles">
           <router-view></router-view>
@@ -186,8 +186,8 @@ export default defineComponent({
 
     .indexlayout-right-main {
       flex: 1;
-      overflow: auto;
       min-width: 1217px;
+      overflow: auto;
     }
   }
 }

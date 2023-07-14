@@ -41,7 +41,6 @@ const back = () => {
 
 <style lang="less" scoped>
 .endpoint-debug-cases-main {
-  position: relative;
   height: 100%;
   .toolbar {
     position: absolute;

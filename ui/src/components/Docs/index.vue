@@ -97,7 +97,7 @@ async function selectMenu(item) {
   selectedItem.value = item;
 
   // 如果是接口定义页面，则不请求文档详情,会一次性请求所有接口的文档详情
-  if(isEndpointPage){
+  if (isEndpointPage) {
     return;
   }
 
@@ -108,7 +108,7 @@ async function selectMenu(item) {
       res = await store.dispatch('Docs/getShareDocsDetail', {
         currProjectId: item.serveInfo.projectId,
         interfaceId: item.id,
-        documentId:  props?.data?.documentId || 0,
+        documentId: props?.data?.documentId || 0,
         endpointId: item.endpointInfo.id,
       });
     } else {
@@ -143,7 +143,8 @@ function changeVersion(docId) {
 
 .doc-container {
   display: flex;
-  height: 100%;
+  //height: 100%;
+  height: calc(100vh - 156px);
 
   .left {
     width: 300px;
@@ -177,6 +178,11 @@ function changeVersion(docId) {
 }
 
 .full-content {
-  height: calc(100vh - 56px);
+  height: 100vh;
+  .doc-container {
+    display: flex;
+    //height: 100%;
+    height: calc(100vh - 56px);
+  }
 }
 </style>

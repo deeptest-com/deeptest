@@ -7,7 +7,7 @@
         :visible="visible"
         class="drawer"
         wrapClassName="drawer-1"
-        :bodyStyle="{padding:'16px',marginBottom:'56px'}"
+        :bodyStyle="{padding:'0',marginBottom:'0'}"
         @close="onCloseDrawer">
       <!-- 头部信息  -->
       <template #title>
@@ -17,12 +17,10 @@
           </a-col>
         </a-row>
       </template>
-
       <!-- 基本信息 -->
       <BasicInfo @change="changeBasicInfo"/>
-
       <!-- Tab 切换区域 -->
-      <a-tabs v-model:activeKey="activeKey" force-render>
+      <a-tabs v-model:activeKey="activeKey" force-render :tabBarStyle="{'margin':0}">
         <a-tab-pane class="test-developer" key="1" tab="测试开发">
           <div v-if="activeKey==='1'">
             <div class="exec-scenario-btn">

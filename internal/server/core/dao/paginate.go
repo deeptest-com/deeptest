@@ -36,6 +36,10 @@ func PaginateScope(page, pageSize int, sort, orderBy string) func(db *gorm.DB) *
 		if page < 0 {
 			offset = -1
 		}
-		return db.Order(str.Join(orderBy, " ", sort)).Offset(offset).Limit(pageSize)
+		db = db.Order(str.Join(orderBy, " ", sort)).Offset(offset)
+		if pageSize > 0 {
+			db = db.Limit(pageSize)
+		}
+		return db
 	}
 }

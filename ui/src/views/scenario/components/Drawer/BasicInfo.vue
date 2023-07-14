@@ -6,9 +6,12 @@
       :bodyStyle="{padding:'12px 24px 12px 24px'}"
       :title="null">
     <div style="margin-bottom: 8px;">
-      <ConBoxTitle :backgroundStyle="'background: #FBFBFB;'" :title="'基本信息'"/>
+      <ConBoxTitle :show-arrow="true"
+                   @expand="expandInfo"
+                   :backgroundStyle="'background: #FBFBFB;'"
+                   :title="'基本信息'"/>
     </div>
-    <a-descriptions :size="'small'" :title="null">
+    <a-descriptions v-show="expand" :size="'small'" :title="null">
       <a-descriptions-item label="创建人">{{ detailResult?.createUserName }}</a-descriptions-item>
       <a-descriptions-item label="状态">
         <EditAndShowSelect :label="scenarioStatus.get(detailResult?.status) || '未设置'"
@@ -58,6 +61,7 @@
 
 import {
   defineProps,
+  ref,
   defineEmits, computed,
 } from 'vue';
 import {
@@ -121,6 +125,10 @@ function handleChange(type, val) {
   emit('change', type, val);
 }
 
+const expand = ref(true)
+function expandInfo() {
+  expand.value = !expand.value;
+}
 
 </script>
 

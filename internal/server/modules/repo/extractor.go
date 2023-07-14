@@ -69,7 +69,7 @@ func (r *ExtractorRepo) GetByInterfaceVariable(variable string, id, debugInterfa
 }
 
 func (r *ExtractorRepo) Save(extractor *model.DebugInterfaceExtractor) (id uint, bizErr _domain.BizErr) {
-	po, _ := r.GetByInterfaceVariable(extractor.Variable, extractor.ID, extractor.EndpointInterfaceId)
+	po, _ := r.GetByInterfaceVariable(extractor.Variable, extractor.ID, extractor.DebugInterfaceId)
 	if po.ID > 0 {
 		bizErr.Code = _domain.ErrNameExist.Code
 		return
@@ -96,7 +96,7 @@ func (r *ExtractorRepo) Update(extractor *model.DebugInterfaceExtractor) (err er
 }
 
 func (r *ExtractorRepo) CreateOrUpdateResult(extractor *model.DebugInterfaceExtractor, usedBy consts.UsedBy) (err error) {
-	po, _ := r.GetByInterfaceVariable(extractor.Variable, extractor.ID, extractor.EndpointInterfaceId)
+	po, _ := r.GetByInterfaceVariable(extractor.Variable, extractor.ID, extractor.DebugInterfaceId)
 	if po.ID > 0 {
 		extractor.ID = po.ID
 		r.UpdateResult(*extractor, usedBy)

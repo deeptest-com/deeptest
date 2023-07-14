@@ -12,7 +12,7 @@ type ComponentSchema struct {
 	Tags        string            `json:"tags"`
 	Description string            `json:"description"`
 	Ref         string            `json:"ref"`
-	SourceType  consts.SourceType `json:"sourceType" gorm:"default:''"`
+	SourceType  consts.SourceType `json:"sourceType" gorm:"default:0"`
 }
 
 func (ComponentSchema) TableName() string {

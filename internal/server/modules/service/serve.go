@@ -302,3 +302,7 @@ func (s *ServeService) SwaggerSyncDetail(projectId uint) (data model.SwaggerSync
 func (s *ServeService) SwaggerSyncList() (data []model.SwaggerSync, err error) {
 	return s.ServeRepo.GetSwaggerSyncList()
 }
+
+func (s *ServeService) GetSwaggerSyncById(id uint) (data model.SwaggerSync, err error) {
+	return s.ServeRepo.GetSwaggerSyncById(id)
+}

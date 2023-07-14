@@ -528,6 +528,11 @@ func (r *ServeRepo) GetSwaggerSync(projectId uint) (sync model.SwaggerSync, err 
 	return
 }
 
+func (r *ServeRepo) GetSwaggerSyncById(id uint) (sync model.SwaggerSync, err error) {
+	err = r.DB.First(&sync, "id=?", id).Error
+	return
+}
+
 func (r *ServeRepo) GetSwaggerSyncList() (res []model.SwaggerSync, err error) {
 	err = r.DB.Find(&res, "switch = 1").Error
 	return
@@ -539,7 +544,7 @@ func (r *ServeRepo) GetDefault(projectId uint) (res model.Serve, err error) {
 }
 
 func (r *ServeRepo) GetComponentByItem(sourceType consts.SourceType, serveId uint, ref string) (res model.ComponentSchema, err error) {
-	err = r.DB.First(&res, "sourceType=? AND serve_id=? AND ref=? AND NOT deleted", sourceType, serveId, ref).Error
+	err = r.DB.First(&res, "source_type=? AND serve_id=? AND ref=? AND NOT deleted", sourceType, serveId, ref).Error
 	return
 }
 

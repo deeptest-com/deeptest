@@ -4,6 +4,7 @@ import (
 	"github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/cron"
+	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi/convert"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
@@ -337,6 +338,10 @@ func (c *ServeCtrl) SaveSwaggerSync(ctx iris.Context) {
 		return
 	}
 
+	//
+	if req.Switch == consts.SwitchOFF {
+
+	}
 	res, err := c.ServeService.SaveSwaggerSync(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
@@ -364,10 +369,24 @@ func (c *ServeCtrl) InitSwaggerCron() {
 	for _, item := range syncList {
 		name := "swaggerSync" + "_" + strconv.Itoa(int(item.ID))
 		logUtils.Info("初始化swagger定时导入任务：" + _commUtils.JsonEncode(item))
+		if item.Switch == consts.SwitchOFF {
+			return
+		}
 		c.Cron.AddCommonTask(name, item.Cron, func() {
-			//req := serverDomain.ImportEndpointDataReq{ProjectId: uint(item.ProjectId), ServeId: uint(item.ServeId), CategoryId: int64(item.CategoryId), OpenUrlImport: true, DriverType: convert.SWAGGER, FilePath: item.Url, DataSyncType: convert.FullCover}
-			//err := c.EndpointInterfaceService.ImportEndpointData(req)
-			//logUtils.Error("指定swagger定时导入任务失败，错误原因：" + err.Error())
+			task, err := c.ServeService.GetSwaggerSyncById(item.ID)
+			if err != nil {
+				logUtils.Errorf("指定swagger定时导入任务失败,任务ID：%v,错误原因：%v",name,err.Error())
+				return,
+			}
+			if task.Switch == consts.SwitchOFF {
+				logUtils.Infof("指定swagger定时导入关闭,任务ID:%v",name)
+				return
+			}
+			req := serverDomain.ImportEndpointDataReq{ProjectId: uint(task.ProjectId), ServeId: uint(task.ServeId), CategoryId: int64(task.CategoryId), OpenUrlImport: true, DriverType: convert.SWAGGER, FilePath: task.Url, DataSyncType: convert.FullCover}
+			err = c.EndpointInterfaceService.ImportEndpointData(req)
+			if err != nil {
+				logUtils.Error("指定swagger定时导入任务失败，错误原因：" + err.Error())
+			}
 		})
 	}
 }

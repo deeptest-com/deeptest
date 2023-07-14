@@ -805,6 +805,6 @@ func (r *EndpointInterfaceRepo) RemoveAll(id uint) (err error) {
 }
 
 func (r *EndpointInterfaceRepo) GetByItem(sourceType consts.SourceType, endpointId uint, method consts.HttpMethod) (res model.EndpointInterface, err error) {
-	err = r.DB.First(&res, "not deleted AND sourceType = ? AND endpoint_id=? and method=?", sourceType, endpointId, method).Error
+	err = r.DB.First(&res, "not deleted AND source_type = ? AND endpoint_id=? and method=?", sourceType, endpointId, method).Error
 	return
 }

@@ -223,17 +223,9 @@ func (s *EndpointService) createEndpoints(wg *sync.WaitGroup, endpoints []*model
 		endpoint.Status = 1
 		endpoint.SourceType = consts.Swagger
 		endpoint.CategoryId = s.getCategoryId(endpoint.Tags, dirs)
-		res, err := s.EndpointRepo.GetByItem(endpoint.SourceType, endpoint.ProjectId, endpoint.Path, endpoint.ServerId)
-		if err != nil {
+		res, err := s.EndpointRepo.GetByItem(endpoint.SourceType, endpoint.ProjectId, endpoint.Path, endpoint.ServeId, endpoint.Title)
+		if err == nil {
 			endpoint.ID = res.ID
-		}
-
-		for key, interf := range endpoint.Interfaces {
-			res, err := s.EndpointInterfaceRepo.GetByItem(endpoint.SourceType, endpoint.ID, interf.Method)
-			if err != nil {
-				endpoint.Interfaces[key].EndpointId = endpoint.ID
-				endpoint.Interfaces[key].ID = res.ID
-			}
 		}
 
 		_, err = s.Save(*endpoint)
@@ -255,7 +247,7 @@ func (s *EndpointService) createComponents(wg *sync.WaitGroup, components map[st
 		component.SourceType = consts.Swagger
 		if req.DataSyncType == convert.FullCover {
 			_, err := s.ServeRepo.GetComponentByItem(consts.Swagger, uint(component.ServeId), component.Ref)
-			if err != nil {
+			if err == nil {
 				continue
 			}
 		}

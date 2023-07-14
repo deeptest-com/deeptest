@@ -1,5 +1,7 @@
 package model
 
+import "github.com/aaronchen2k/deeptest/internal/pkg/consts"
+
 type EndpointInterface struct {
 	BaseModel
 	InterfaceBase
@@ -14,7 +16,8 @@ type EndpointInterface struct {
 	Tags           []string                        `gorm:"-" json:"tags"`
 	PathParams     []EndpointPathParam             `gorm:"-" json:"pathParams"`
 
-	DebugInterfaceId uint `gorm:"default:0" json:"debugInterfaceId"`
+	DebugInterfaceId uint              `gorm:"default:0" json:"debugInterfaceId"`
+	SourceType       consts.SourceType `json:"sourceType" gorm:"default:0"`
 }
 type SchemaParam struct {
 	Name        string  `json:"name"`

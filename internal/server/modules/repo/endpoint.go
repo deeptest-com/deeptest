@@ -396,9 +396,9 @@ func (r *EndpointRepo) BatchUpdateCategory(ids []uint, categoryId int64) error {
 	return r.DB.Model(&model.Endpoint{}).Where("id IN (?)", ids).Update("category_id", categoryId).Error
 }
 
-func (r *EndpointRepo) GetByItem(sourceType consts.SourceType, projectId uint, path string, serveId uint) (res model.Endpoint, err error) {
+func (r *EndpointRepo) GetByItem(sourceType consts.SourceType, projectId uint, path string, serveId uint, title string) (res model.Endpoint, err error) {
 
-	err = r.DB.First(&res, "source_type=? and projectId=? AND path = ? AND project_id = ? AND name = ?", sourceType, projectId, path).Error
+	err = r.DB.First(&res, "source_type=? and project_id=? AND path = ? AND serve_id = ? AND title = ?", sourceType, projectId, path, serveId, title).Error
 
 	return
 

@@ -640,8 +640,8 @@ const (
 type SwitchStatus uint
 
 const (
-	SwitchON  SyncType = 1
-	SwitchOFF SyncType = 2
+	SwitchON  SwitchStatus = 1
+	SwitchOFF SwitchStatus = 2
 )
 
 type SourceType uint

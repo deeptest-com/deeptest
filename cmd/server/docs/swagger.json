@@ -1,0 +1,13 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "DeepTest服务端API文档",
+        "contact": {
+            "name": "API Support",
+            "url": "https://github.com/aaronchen2k/deeptest/issues",
+            "email": "462626@qq.com"
+        },
+        "version": "1.0"
+    },
+    "paths": {}
+}

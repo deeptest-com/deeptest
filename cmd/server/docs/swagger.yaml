@@ -1,0 +1,9 @@
+info:
+  contact:
+    email: 462626@qq.com
+    name: API Support
+    url: https://github.com/aaronchen2k/deeptest/issues
+  title: DeepTest服务端API文档
+  version: "1.0"
+paths: {}
+swagger: "2.0"

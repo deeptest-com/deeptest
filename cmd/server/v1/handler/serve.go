@@ -4,14 +4,10 @@ import (
 	"github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/cron"
-	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi/convert"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
-	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
-	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/kataras/iris/v12"
 	"github.com/snowlyg/multi"
-	"strconv"
 )
 
 type ServeCtrl struct {
@@ -367,26 +363,6 @@ func (c *ServeCtrl) InitSwaggerCron() {
 		return
 	}
 	for _, item := range syncList {
-		name := "swaggerSync" + "_" + strconv.Itoa(int(item.ID))
-		taskId := item.ID
-		logUtils.Info("初始化swagger定时导入任务：" + _commUtils.JsonEncode(item))
-		c.Cron.AddCommonTask(name, item.Cron, func() {
-			task, err := c.ServeService.GetSwaggerSyncById(taskId)
-			logUtils.Info("swagger定时任务开启：" + _commUtils.JsonEncode(item))
-			if err != nil {
-				logUtils.Errorf("swagger定时导入任务失败,任务ID：%v,错误原因：%v", name, err.Error())
-				return
-			}
-			if task.Switch == consts.SwitchOFF {
-				logUtils.Infof("swagger定时导入关闭,任务ID:%v", name)
-				return
-			}
-			req := serverDomain.ImportEndpointDataReq{ProjectId: uint(task.ProjectId), ServeId: uint(task.ServeId), CategoryId: int64(task.CategoryId), OpenUrlImport: true, DriverType: convert.SWAGGER, FilePath: task.Url, DataSyncType: convert.FullCover}
-			err = c.EndpointInterfaceService.ImportEndpointData(req)
-			if err != nil {
-				logUtils.Error("swagger定时导入任务失败，错误原因：" + err.Error())
-			}
-			logUtils.Info("swagger定时任务结束：" + _commUtils.JsonEncode(item))
-		})
+		c.ServeService.AddSwaggerCron(item)
 	}
 }

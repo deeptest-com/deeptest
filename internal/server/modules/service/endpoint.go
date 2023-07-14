@@ -9,6 +9,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	curlHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/curl"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi"
+	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi/convert"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
@@ -215,10 +216,24 @@ func (s *EndpointService) createEndpoints(wg *sync.WaitGroup, endpoints []*model
 	for _, endpoint := range endpoints {
 		endpoint.ProjectId, endpoint.ServeId, endpoint.CategoryId, endpoint.CreateUser = req.ProjectId, req.ServeId, req.CategoryId, user.Name
 		endpoint.Status = 1
+		endpoint.SourceType = consts.Swagger
 		endpoint.CategoryId = s.getCategoryId(endpoint.Tags, dirs)
+		res, err := s.EndpointRepo.GetByItem(endpoint.SourceType, endpoint.ProjectId, endpoint.Path, endpoint.ServerId)
+		if err != nil {
+			endpoint.ID = res.ID
+		}
+
+		for key, interf := range endpoint.Interfaces {
+			res, err := s.EndpointInterfaceRepo.GetByItem(endpoint.SourceType, endpoint.ID, interf.Method)
+			if err != nil {
+				endpoint.Interfaces[key].EndpointId = endpoint.ID
+				endpoint.Interfaces[key].ID = res.ID
+			}
+		}
+
 		_, err = s.Save(*endpoint)
 		if err != nil {
-			return
+			return err
 		}
 	}
 
@@ -229,22 +244,42 @@ func (s *EndpointService) createComponents(wg *sync.WaitGroup, components map[st
 	defer func() {
 		wg.Done()
 	}()
-	var NewComponents []*model.ComponentSchema
+	var newComponents []*model.ComponentSchema
 	for _, component := range components {
 		component.ServeId = int64(req.ServeId)
-		NewComponents = append(NewComponents, component)
+		component.SourceType = consts.Swagger
+		if req.DataSyncType == convert.FullCover {
+			_, err := s.ServeRepo.GetComponentByItem(consts.Swagger, uint(component.ServeId), component.Ref)
+			if err != nil {
+				continue
+			}
+		}
+		newComponents = append(newComponents, component)
 	}
-	s.ServeRepo.CreateSchemas(NewComponents)
+
+	s.ServeRepo.SaveSchemas(newComponents)
+
 }
 
 func (s *EndpointService) createDirs(data *openapi.Dirs, req v1.ImportEndpointDataReq) (err error) {
 	for name, dirs := range data.Dirs {
-		category := model.Category{Name: name, ParentId: int(data.Id), ProjectId: req.ProjectId, UseID: req.UserId, Type: serverConsts.EndpointCategory}
+
+		category := model.Category{Name: name, ParentId: int(data.Id), ProjectId: req.ProjectId, UseID: req.UserId, Type: serverConsts.EndpointCategory, SourceType: consts.Swagger}
+		//全覆盖更新目录
+		if req.DataSyncType == convert.FullCover {
+			res, err := s.CategoryRepo.GetByItem(consts.Swagger, uint(category.ParentId), category.Type, category.ProjectId, category.Name)
+			if err == nil {
+				category.ID = res.ID
+				goto here
+			}
+		}
+
 		err = s.CategoryRepo.Save(&category)
 		if err != nil {
 			return
 		}
 
+	here:
 		dirs.Id = int64(category.ID)
 		err = s.createDirs(dirs, req)
 		if err != nil {

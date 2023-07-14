@@ -3,6 +3,7 @@ package repo
 import (
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
@@ -535,4 +536,13 @@ func (r *ServeRepo) GetSwaggerSyncList() (res []model.SwaggerSync, err error) {
 func (r *ServeRepo) GetDefault(projectId uint) (res model.Serve, err error) {
 	err = r.DB.Where("NOT deleted and project_id=?", projectId).First(&res).Error
 	return
+}
+
+func (r *ServeRepo) GetComponentByItem(sourceType consts.SourceType, serveId uint, ref string) (res model.ComponentSchema, err error) {
+	err = r.DB.First(&res, "sourceType=? AND serve_id=? AND ref=? AND NOT deleted", sourceType, serveId, ref).Error
+	return
+}
+
+func (r *ServeRepo) SaveSchemas(schemas []*model.ComponentSchema) (err error) {
+	return r.DB.Save(schemas).Error
 }

@@ -643,3 +643,9 @@ const (
 	SwitchON  SyncType = 1
 	SwitchOFF SyncType = 2
 )
+
+type SourceType uint
+
+const (
+	Swagger SourceType = 1
+)

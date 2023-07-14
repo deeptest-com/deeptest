@@ -1,5 +1,7 @@
 package model
 
+import "github.com/aaronchen2k/deeptest/internal/pkg/consts"
+
 type Endpoint struct {
 	BaseModel
 	Title        string              `json:"title"`
@@ -19,6 +21,7 @@ type Endpoint struct {
 	Description  string              `json:"description"`
 	SerialNumber string              `json:"serialNumber"`
 	Curl         string              `gorm:"-" json:"curl"`
+	SourceType   consts.SourceType   `json:"sourceType" gorm:"default:0"`
 }
 
 func (Endpoint) TableName() string {

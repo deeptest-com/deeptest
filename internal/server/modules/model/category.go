@@ -1,6 +1,7 @@
 package model
 
 import (
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/kataras/iris/v12"
 )
@@ -22,6 +23,8 @@ type Category struct {
 	Slots    iris.Map     `gorm:"-" json:"slots"`
 
 	Type serverConsts.CategoryDiscriminator `json:"type"`
+
+	SourceType consts.SourceType `json:"sourceType" gorm:"default:0"`
 }
 
 func (Category) TableName() string {

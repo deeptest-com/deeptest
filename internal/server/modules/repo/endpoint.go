@@ -3,6 +3,7 @@ package repo
 import (
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
@@ -393,4 +394,12 @@ func (r *EndpointRepo) BatchUpdateStatus(ids []uint, status int64) error {
 
 func (r *EndpointRepo) BatchUpdateCategory(ids []uint, categoryId int64) error {
 	return r.DB.Model(&model.Endpoint{}).Where("id IN (?)", ids).Update("category_id", categoryId).Error
+}
+
+func (r *EndpointRepo) GetByItem(sourceType consts.SourceType, projectId uint, path string, serveId uint) (res model.Endpoint, err error) {
+
+	err = r.DB.First(&res, "source_type=? and projectId=? AND path = ? AND project_id = ? AND name = ?", sourceType, projectId, path).Error
+
+	return
+
 }

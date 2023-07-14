@@ -5,7 +5,7 @@ import "github.com/aaronchen2k/deeptest/internal/pkg/consts"
 type EndpointInterface struct {
 	BaseModel
 	InterfaceBase
-	EndpointId uint `json:"endpointId"`
+	EndpointId uint `json:"endpointId" gorm:"index"`
 
 	Params         []EndpointInterfaceParam        `gorm:"-" json:"params"`
 	Headers        []EndpointInterfaceHeader       `gorm:"-" json:"headers"`
@@ -24,7 +24,7 @@ type SchemaParam struct {
 	Value       string  `gorm:"type:text" json:"value"`
 	Type        string  `json:"type"`
 	Desc        string  `json:"desc"`
-	InterfaceId uint    `json:"interfaceId"`
+	InterfaceId uint    `json:"interfaceId" gorm:"index"`
 	Format      string  `json:"format"`
 	Example     string  `gorm:"type:text" json:"example"`
 	Pattern     string  `json:"pattern"`

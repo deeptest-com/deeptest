@@ -5,8 +5,8 @@ import "github.com/aaronchen2k/deeptest/internal/pkg/consts"
 type Endpoint struct {
 	BaseModel
 	Title        string              `json:"title"`
-	ProjectId    uint                `json:"projectId"`
-	ServeId      uint                `json:"serveId"`
+	ProjectId    uint                `json:"projectId" gorm:"index:idx_projectId_serveId"`
+	ServeId      uint                `json:"serveId" gorm:"index:idx_projectId_serveId"`
 	ServerId     uint                `json:"serverId"`
 	Path         string              `json:"path"`
 	Version      string              `json:"version"`
@@ -21,7 +21,7 @@ type Endpoint struct {
 	Description  string              `json:"description"`
 	SerialNumber string              `json:"serialNumber"`
 	Curl         string              `gorm:"-" json:"curl"`
-	SourceType   consts.SourceType   `json:"sourceType" gorm:"default:0"`
+	SourceType   consts.SourceType   `json:"sourceType"`
 }
 
 func (Endpoint) TableName() string {

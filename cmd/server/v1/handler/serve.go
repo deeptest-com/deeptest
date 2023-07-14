@@ -368,25 +368,25 @@ func (c *ServeCtrl) InitSwaggerCron() {
 	}
 	for _, item := range syncList {
 		name := "swaggerSync" + "_" + strconv.Itoa(int(item.ID))
+		taskId := item.ID
 		logUtils.Info("初始化swagger定时导入任务：" + _commUtils.JsonEncode(item))
-		if item.Switch == consts.SwitchOFF {
-			return
-		}
 		c.Cron.AddCommonTask(name, item.Cron, func() {
-			task, err := c.ServeService.GetSwaggerSyncById(item.ID)
+			task, err := c.ServeService.GetSwaggerSyncById(taskId)
+			logUtils.Info("swagger定时任务开启：" + _commUtils.JsonEncode(item))
 			if err != nil {
-				logUtils.Errorf("指定swagger定时导入任务失败,任务ID：%v,错误原因：%v",name,err.Error())
-				return,
+				logUtils.Errorf("swagger定时导入任务失败,任务ID：%v,错误原因：%v", name, err.Error())
+				return
 			}
 			if task.Switch == consts.SwitchOFF {
-				logUtils.Infof("指定swagger定时导入关闭,任务ID:%v",name)
+				logUtils.Infof("swagger定时导入关闭,任务ID:%v", name)
 				return
 			}
 			req := serverDomain.ImportEndpointDataReq{ProjectId: uint(task.ProjectId), ServeId: uint(task.ServeId), CategoryId: int64(task.CategoryId), OpenUrlImport: true, DriverType: convert.SWAGGER, FilePath: task.Url, DataSyncType: convert.FullCover}
 			err = c.EndpointInterfaceService.ImportEndpointData(req)
 			if err != nil {
-				logUtils.Error("指定swagger定时导入任务失败，错误原因：" + err.Error())
+				logUtils.Error("swagger定时导入任务失败，错误原因：" + err.Error())
 			}
+			logUtils.Info("swagger定时任务结束：" + _commUtils.JsonEncode(item))
 		})
 	}
 }

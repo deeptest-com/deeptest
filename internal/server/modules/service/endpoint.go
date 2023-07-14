@@ -223,11 +223,12 @@ func (s *EndpointService) createEndpoints(wg *sync.WaitGroup, endpoints []*model
 		endpoint.Status = 1
 		endpoint.SourceType = consts.Swagger
 		endpoint.CategoryId = s.getCategoryId(endpoint.Tags, dirs)
-		res, err := s.EndpointRepo.GetByItem(endpoint.SourceType, endpoint.ProjectId, endpoint.Path, endpoint.ServeId, endpoint.Title)
-		if err == nil {
-			endpoint.ID = res.ID
+		if req.DataSyncType == convert.FullCover {
+			res, err := s.EndpointRepo.GetByItem(endpoint.SourceType, endpoint.ProjectId, endpoint.Path, endpoint.ServeId, endpoint.Title)
+			if err == nil {
+				endpoint.ID = res.ID
+			}
 		}
-
 		_, err = s.Save(*endpoint)
 		if err != nil {
 			return err

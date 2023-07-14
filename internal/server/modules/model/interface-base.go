@@ -115,7 +115,7 @@ type InterfaceApiKeyBase struct {
 }
 
 type InterfaceRequestBodyBase struct {
-	InterfaceId uint   `json:"interfaceId"`
+	InterfaceId uint   `json:"interfaceId" gorm:"index"`
 	MediaType   string `json:"mediaType"`
 	Description string `json:"description"`
 	SchemaRefId int64  `json:"schemaRefId"`
@@ -135,19 +135,19 @@ type InterfaceRequestBodyItemBase struct {
 	Name          string `json:"name"`
 	Type          string `json:"type"`
 	Content       string `gorm:"type:text" json:"content"`
-	RequestBodyId uint   `json:"requestBodyId"`
+	RequestBodyId uint   `json:"requestBodyId" gorm:"index"`
 }
 
 type InterfaceResponseBodyItemBase struct {
 	Name           string `json:"name"`
 	Type           string `json:"type"`
 	Content        string `gorm:"type:text" json:"content"`
-	ResponseBodyId uint   `json:"ResponseBodyId"`
+	ResponseBodyId uint   `json:"ResponseBodyId" gorm:"index"`
 }
 
 type InterfaceResponseBodyHeaderBase struct {
 	Name           string `json:"name"`
 	Desc           string `json:"desc"`
 	Value          string `json:"value"`
-	ResponseBodyId uint   `json:"responseBodyId"`
+	ResponseBodyId uint   `json:"responseBodyId" gorm:"index"`
 }

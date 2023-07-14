@@ -534,7 +534,7 @@ func (r *ServeRepo) GetSwaggerSyncById(id uint) (sync model.SwaggerSync, err err
 }
 
 func (r *ServeRepo) GetSwaggerSyncList() (res []model.SwaggerSync, err error) {
-	err = r.DB.Find(&res, "switch = 1").Error
+	err = r.DB.Find(&res).Error
 	return
 }
 

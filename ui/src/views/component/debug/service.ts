@@ -175,8 +175,8 @@ export function getCodeLangByType(type) {
 }
 
 // extractor
-export async function listExtractor(debugInterfaceId, endpointInterfaceId: number): Promise<any> {
-    const params = {debugInterfaceId, endpointInterfaceId}
+export async function listExtractor(debugInterfaceId, endpointInterfaceId: number,usedBy?:string): Promise<any> {
+    const params = {debugInterfaceId, endpointInterfaceId, usedBy}
 
     return request({
         url: `/${apiExtractor}`,

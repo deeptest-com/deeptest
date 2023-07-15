@@ -263,6 +263,14 @@ const (
 	CaseDebug      UsedBy = "case_debug"
 )
 
+type ConditionType string
+
+const (
+	ConditionTypeExtractor  ConditionType = "extractor"
+	ConditionTypeCheckpoint ConditionType = "checkpoint"
+	ConditionTypeScript     ConditionType = "script"
+)
+
 type ExtractorSrc string
 
 const (

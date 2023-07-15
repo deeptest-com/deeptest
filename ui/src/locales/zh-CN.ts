@@ -78,6 +78,8 @@ export default {
     'responseHeader': '响应头',
     'responseBody': '响应体',
     'extractor': '提取器',
+    'checkpoint': '检查点',
+    'script': '脚本',
     'judgement': '表达式',
 
     'fulltext': '全文本',

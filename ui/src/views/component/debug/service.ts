@@ -16,8 +16,11 @@ const apiAuth = 'auth';
 const apiShareVar = `shareVars`
 const apiSnippets = 'snippets'
 
+const apiPreConditions = 'preConditions'
+const apiPostConditions = 'postConditions'
 const apiExtractor = 'extractors'
 const apiCheckpoint = 'checkpoints'
+const apiScript = 'scripts'
 
 const apiParser = 'parser'
 
@@ -174,16 +177,68 @@ export function getCodeLangByType(type) {
     }
 }
 
-// extractor
-export async function listExtractor(debugInterfaceId, endpointInterfaceId: number): Promise<any> {
+// conditions
+export async function listPreConditions(debugInterfaceId, endpointInterfaceId: number): Promise<any> {
     const params = {debugInterfaceId, endpointInterfaceId}
 
     return request({
-        url: `/${apiExtractor}`,
+        url: `/${apiPreConditions}`,
         method: 'GET',
         params,
     });
 }
+export async function createPreConditions(data): Promise<any> {
+    return request({
+        url: `/${apiPreConditions}`,
+        method: data.id ? 'PUT' : 'POST',
+        data: data,
+    });
+}
+export async function removePreConditions(id): Promise<any> {
+    return request({
+        url: `/${apiPreConditions}/${id}`,
+        method: 'DELETE',
+    });
+}
+export async function movePreConditions(data): Promise<any> {
+    return request({
+        url: `/${apiPreConditions}`,
+        method: 'POST',
+        data: data,
+    });
+}
+
+export async function listPostConditions(debugInterfaceId, endpointInterfaceId: number): Promise<any> {
+    const params = {debugInterfaceId, endpointInterfaceId}
+
+    return request({
+        url: `/${apiPostConditions}`,
+        method: 'GET',
+        params,
+    });
+}
+export async function createPostConditions(data): Promise<any> {
+    return request({
+        url: `/${apiPostConditions}`,
+        method: data.id ? 'PUT' : 'POST',
+        data: data,
+    });
+}
+export async function removePostConditions(id): Promise<any> {
+    return request({
+        url: `/${apiPostConditions}/${id}`,
+        method: 'DELETE',
+    });
+}
+export async function movePostConditions(data): Promise<any> {
+    return request({
+        url: `/${apiPostConditions}/move`,
+        method: 'POST',
+        data: data,
+    });
+}
+
+// extractor
 export async function getExtractor(id: number): Promise<any> {
     return request({
         url: `/${apiExtractor}/${id}`,
@@ -204,7 +259,6 @@ export async function createExtractorOrUpdateResult(data): Promise<any> {
         data: data,
     });
 }
-
 export async function removeExtractor(id: number): Promise<any> {
     return request({
         url: `/${apiExtractor}/${id}`,
@@ -220,15 +274,6 @@ export async function listExtractorVariable(data: any): Promise<any> {
 }
 
 // checkpoint
-export async function listCheckpoint(debugInterfaceId, endpointInterfaceId: number): Promise<any> {
-    const params = {debugInterfaceId, endpointInterfaceId}
-
-    return request({
-        url: `/${apiCheckpoint}`,
-        method: 'GET',
-        params,
-    });
-}
 export async function getCheckpoint(id: number): Promise<any> {
     return request({
         url: `/${apiCheckpoint}/${id}`,
@@ -245,6 +290,27 @@ export async function saveCheckpoint(data): Promise<any> {
 export async function removeCheckpoint(id: number): Promise<any> {
     return request({
         url: `/${apiCheckpoint}/${id}`,
+        method: 'DELETE',
+    });
+}
+
+// script
+export async function getScript(id: number): Promise<any> {
+    return request({
+        url: `/${apiScript}/${id}`,
+        method: 'GET',
+    });
+}
+export async function saveScript(data): Promise<any> {
+    return request({
+        url: `/${apiScript}`,
+        method: data.id ? 'PUT' : 'POST',
+        data: data,
+    });
+}
+export async function removeScript(id: number): Promise<any> {
+    return request({
+        url: `/${apiScript}/${id}`,
         method: 'DELETE',
     });
 }

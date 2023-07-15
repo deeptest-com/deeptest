@@ -14,10 +14,11 @@ import (
 )
 
 type ExtractorRepo struct {
-	DB *gorm.DB `inject:""`
+	DB                *gorm.DB           `inject:""`
+	PostConditionRepo *PostConditionRepo `inject:""`
 }
 
-func (r *ExtractorRepo) List(debugInterfaceId, endpointInterfaceId uint) (pos []model.DebugInterfaceExtractor, err error) {
+func (r *ExtractorRepo) List(debugInterfaceId, endpointInterfaceId uint) (pos []model.DebugConditionExtractor, err error) {
 	db := r.DB.
 		Where("NOT deleted").
 		Order("created_at ASC")
@@ -46,7 +47,7 @@ func (r *ExtractorRepo) ListTo(debugInterfaceId, endpointInterfaceId uint) (ret 
 	return
 }
 
-func (r *ExtractorRepo) Get(id uint) (extractor model.DebugInterfaceExtractor, err error) {
+func (r *ExtractorRepo) Get(id uint) (extractor model.DebugConditionExtractor, err error) {
 	err = r.DB.
 		Where("id=?", id).
 		Where("NOT deleted").
@@ -54,7 +55,7 @@ func (r *ExtractorRepo) Get(id uint) (extractor model.DebugInterfaceExtractor, e
 	return
 }
 
-func (r *ExtractorRepo) GetByInterfaceVariable(variable string, id, debugInterfaceId uint) (extractor model.DebugInterfaceExtractor, err error) {
+func (r *ExtractorRepo) GetByInterfaceVariable(variable string, id, debugInterfaceId uint) (extractor model.DebugConditionExtractor, err error) {
 	db := r.DB.Model(&extractor).
 		Where("variable = ? AND debug_interface_id =? AND not deleted",
 			variable, debugInterfaceId)
@@ -68,8 +69,10 @@ func (r *ExtractorRepo) GetByInterfaceVariable(variable string, id, debugInterfa
 	return
 }
 
-func (r *ExtractorRepo) Save(extractor *model.DebugInterfaceExtractor) (id uint, bizErr _domain.BizErr) {
-	po, _ := r.GetByInterfaceVariable(extractor.Variable, extractor.ID, extractor.EndpointInterfaceId)
+func (r *ExtractorRepo) Save(extractor *model.DebugConditionExtractor) (id uint, bizErr _domain.BizErr) {
+	postCondition, _ := r.PostConditionRepo.Get(extractor.ConditionId)
+
+	po, _ := r.GetByInterfaceVariable(extractor.Variable, extractor.ID, postCondition.EndpointInterfaceId)
 	if po.ID > 0 {
 		bizErr.Code = _domain.ErrNameExist.Code
 		return
@@ -86,7 +89,7 @@ func (r *ExtractorRepo) Save(extractor *model.DebugInterfaceExtractor) (id uint,
 	return
 }
 
-func (r *ExtractorRepo) Update(extractor *model.DebugInterfaceExtractor) (err error) {
+func (r *ExtractorRepo) Update(extractor *model.DebugConditionExtractor) (err error) {
 	err = r.DB.Updates(extractor).Error
 	if err != nil {
 		return
@@ -95,8 +98,10 @@ func (r *ExtractorRepo) Update(extractor *model.DebugInterfaceExtractor) (err er
 	return
 }
 
-func (r *ExtractorRepo) CreateOrUpdateResult(extractor *model.DebugInterfaceExtractor, usedBy consts.UsedBy) (err error) {
-	po, _ := r.GetByInterfaceVariable(extractor.Variable, extractor.ID, extractor.EndpointInterfaceId)
+func (r *ExtractorRepo) CreateOrUpdateResult(extractor *model.DebugConditionExtractor, usedBy consts.UsedBy) (err error) {
+	postCondition, _ := r.PostConditionRepo.Get(extractor.ConditionId)
+
+	po, _ := r.GetByInterfaceVariable(extractor.Variable, extractor.ID, postCondition.EndpointInterfaceId)
 	if po.ID > 0 {
 		extractor.ID = po.ID
 		r.UpdateResult(*extractor, usedBy)
@@ -112,7 +117,7 @@ func (r *ExtractorRepo) CreateOrUpdateResult(extractor *model.DebugInterfaceExtr
 }
 
 func (r *ExtractorRepo) Delete(id uint) (err error) {
-	err = r.DB.Model(&model.DebugInterfaceExtractor{}).
+	err = r.DB.Model(&model.DebugConditionExtractor{}).
 		Where("id=?", id).
 		Update("deleted", true).
 		Error
@@ -120,7 +125,7 @@ func (r *ExtractorRepo) Delete(id uint) (err error) {
 	return
 }
 
-func (r *ExtractorRepo) UpdateResult(extractor model.DebugInterfaceExtractor, usedBy consts.UsedBy) (err error) {
+func (r *ExtractorRepo) UpdateResult(extractor model.DebugConditionExtractor, usedBy consts.UsedBy) (err error) {
 	extractor.Result = strings.TrimSpace(extractor.Result)
 	values := map[string]interface{}{}
 	if extractor.Result != "" {
@@ -135,13 +140,13 @@ func (r *ExtractorRepo) UpdateResult(extractor model.DebugInterfaceExtractor, us
 		Updates(values).Error
 
 	if err != nil {
-		logUtils.Errorf("update DebugInterfaceExtractor error", zap.String("error:", err.Error()))
+		logUtils.Errorf("update DebugConditionExtractor error", zap.String("error:", err.Error()))
 		return err
 	}
 
 	return
 }
-func (r *ExtractorRepo) UpdateResultToExecLog(extractor model.DebugInterfaceExtractor, log *model.ExecLogProcessor) (
+func (r *ExtractorRepo) UpdateResultToExecLog(extractor model.DebugConditionExtractor, log *model.ExecLogProcessor) (
 	logExtractor model.ExecLogExtractor, err error) {
 
 	copier.CopyWithOption(&logExtractor, extractor, copier.Option{DeepCopy: true})
@@ -157,7 +162,7 @@ func (r *ExtractorRepo) UpdateResultToExecLog(extractor model.DebugInterfaceExtr
 }
 
 func (r *ExtractorRepo) ListExtractorVariableByInterface(req domain.DebugReq) (variables []domain.Variable, err error) {
-	err = r.DB.Model(&model.DebugInterfaceExtractor{}).
+	err = r.DB.Model(&model.DebugConditionExtractor{}).
 		Select("id, variable AS name, result AS value").
 		Where("debug_interface_id=?", req.DebugInterfaceId).
 		Where("NOT deleted AND NOT disabled").
@@ -170,7 +175,7 @@ func (r *ExtractorRepo) ListExtractorVariableByInterface(req domain.DebugReq) (v
 func (r *ExtractorRepo) ListValidExtractorVariableForInterface(interfaceId, projectId uint, usedBy consts.UsedBy) (
 	variables []domain.Variable, err error) {
 
-	q := r.DB.Model(&model.DebugInterfaceExtractor{}).
+	q := r.DB.Model(&model.DebugConditionExtractor{}).
 		Select("id, variable AS name, result AS value, " +
 			"endpoint_interface_id AS endpointInterfaceId, scope AS scope").
 		Where("NOT deleted AND NOT disabled")
@@ -220,12 +225,20 @@ func (r *ExtractorRepo) CloneFromEndpointInterfaceToDebugInterface(endpointInter
 
 	for _, po := range srcPos {
 		po.ID = 0
-		po.EndpointInterfaceId = endpointInterfaceId
-		po.DebugInterfaceId = debugInterfaceId
-		po.UsedBy = usedBy
+		//po.EndpointInterfaceId = endpointInterfaceId
+		//po.DebugInterfaceId = debugInterfaceId
+		//po.UsedBy = usedBy
 
 		r.Save(&po)
 	}
+
+	return
+}
+
+func (r *ExtractorRepo) CreateDefault(conditionId uint) (po model.DebugConditionExtractor) {
+	po.ConditionId = conditionId
+
+	r.Save(&po)
 
 	return
 }

@@ -139,6 +139,12 @@ export enum ComparisonOperator {
     notContain = 'notContain',
 }
 
+export enum ConditionType {
+    extractor = 'extractor',
+    checkpoint = 'checkpoint',
+    script = 'script',
+}
+
 export enum ExtractorSrc {
     header = 'header',
     body = 'body',

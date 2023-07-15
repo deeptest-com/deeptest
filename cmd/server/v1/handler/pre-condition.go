@@ -1,19 +1,21 @@
 package handler
 
 import (
+	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	"github.com/kataras/iris/v12"
 )
 
-type CheckpointCtrl struct {
-	CheckpointService *service.CheckpointService `inject:""`
+type PreConditionCtrl struct {
+	PreConditionService *service.PreConditionService `inject:""`
+	ScriptService       *service.ScriptService       `inject:""`
 	BaseCtrl
 }
 
 // List
-func (c *CheckpointCtrl) List(ctx iris.Context) {
+func (c *PreConditionCtrl) List(ctx iris.Context) {
 	debugInterfaceId, err := ctx.URLParamInt("debugInterfaceId")
 	endpointInterfaceId, err := ctx.URLParamInt("endpointInterfaceId")
 	if debugInterfaceId <= 0 && endpointInterfaceId <= 0 {
@@ -28,7 +30,7 @@ func (c *CheckpointCtrl) List(ctx iris.Context) {
 		endpointInterfaceId = 0
 	}
 
-	data, err := c.CheckpointService.List(uint(debugInterfaceId), uint(endpointInterfaceId))
+	data, err := c.PreConditionService.List(uint(debugInterfaceId), uint(endpointInterfaceId))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -38,31 +40,31 @@ func (c *CheckpointCtrl) List(ctx iris.Context) {
 }
 
 // Get 详情
-func (c *CheckpointCtrl) Get(ctx iris.Context) {
+func (c *PreConditionCtrl) Get(ctx iris.Context) {
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
-	checkpoint, err := c.CheckpointService.Get(uint(id))
+	condition, err := c.PreConditionService.Get(uint(id))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return
 	}
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: checkpoint})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: condition})
 }
 
 // Create 添加
-func (c *CheckpointCtrl) Create(ctx iris.Context) {
-	checkpoint := model.DebugConditionCheckpoint{}
-	err := ctx.ReadJSON(&checkpoint)
+func (c *PreConditionCtrl) Create(ctx iris.Context) {
+	condition := model.DebugPreCondition{}
+	err := ctx.ReadJSON(&condition)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
-	err = c.CheckpointService.Create(&checkpoint)
+	err = c.PreConditionService.Create(&condition)
 	if err != nil {
 		ctx.JSON(_domain.Response{
 			Code: _domain.SystemErr.Code,
@@ -70,35 +72,53 @@ func (c *CheckpointCtrl) Create(ctx iris.Context) {
 		return
 	}
 
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: checkpoint, Msg: _domain.NoErr.Msg})
-}
-
-// Update 更新
-func (c *CheckpointCtrl) Update(ctx iris.Context) {
-	var checkpoint model.DebugConditionCheckpoint
-	err := ctx.ReadJSON(&checkpoint)
-	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
-		return
-	}
-
-	err = c.CheckpointService.Update(&checkpoint)
-	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
-		return
-	}
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: condition, Msg: _domain.NoErr.Msg})
 }
 
 // Delete 删除
-func (c *CheckpointCtrl) Delete(ctx iris.Context) {
+func (c *PreConditionCtrl) Delete(ctx iris.Context) {
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
-	err = c.CheckpointService.Delete(uint(id))
+	err = c.ScriptService.Delete(uint(id))
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+}
+
+// Disable 禁用
+func (c *PreConditionCtrl) Disable(ctx iris.Context) {
+	id, err := ctx.Params().GetInt("id")
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+		return
+	}
+
+	err = c.PreConditionService.Disable(uint(id))
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+}
+
+// Move 移动
+func (c *PreConditionCtrl) Move(ctx iris.Context) {
+	var req serverDomain.ConditionMoveReq
+	err := ctx.ReadJSON(&req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	err = c.PreConditionService.Move(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

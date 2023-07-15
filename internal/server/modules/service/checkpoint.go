@@ -14,32 +14,33 @@ import (
 )
 
 type CheckpointService struct {
-	CheckpointRepo  *repo.CheckpointRepo  `inject:""`
-	EnvironmentRepo *repo.EnvironmentRepo `inject:""`
-	ProjectRepo     *repo.ProjectRepo     `inject:""`
-	ExtractorRepo   *repo.ExtractorRepo   `inject:""`
-	VariableService *VariableService      `inject:""`
+	PostConditionRepo *repo.PostConditionRepo `inject:""`
+	CheckpointRepo    *repo.CheckpointRepo    `inject:""`
+	EnvironmentRepo   *repo.EnvironmentRepo   `inject:""`
+	ProjectRepo       *repo.ProjectRepo       `inject:""`
+	ExtractorRepo     *repo.ExtractorRepo     `inject:""`
+	VariableService   *VariableService        `inject:""`
 }
 
-func (s *CheckpointService) List(debugInterfaceId, endpointInterfaceId uint) (checkpoints []model.DebugInterfaceCheckpoint, err error) {
+func (s *CheckpointService) List(debugInterfaceId, endpointInterfaceId uint) (checkpoints []model.DebugConditionCheckpoint, err error) {
 	checkpoints, err = s.CheckpointRepo.List(debugInterfaceId, endpointInterfaceId)
 
 	return
 }
 
-func (s *CheckpointService) Get(id uint) (checkpoint model.DebugInterfaceCheckpoint, err error) {
+func (s *CheckpointService) Get(id uint) (checkpoint model.DebugConditionCheckpoint, err error) {
 	checkpoint, err = s.CheckpointRepo.Get(id)
 
 	return
 }
 
-func (s *CheckpointService) Create(checkpoint *model.DebugInterfaceCheckpoint) (err error) {
+func (s *CheckpointService) Create(checkpoint *model.DebugConditionCheckpoint) (err error) {
 	err = s.CheckpointRepo.Save(checkpoint)
 
 	return
 }
 
-func (s *CheckpointService) Update(checkpoint *model.DebugInterfaceCheckpoint) (err error) {
+func (s *CheckpointService) Update(checkpoint *model.DebugConditionCheckpoint) (err error) {
 	err = s.CheckpointRepo.Save(checkpoint)
 
 	return
@@ -68,8 +69,10 @@ func (s *CheckpointService) CheckInterface(debugInterfaceId, caseInterfaceId, en
 	return
 }
 
-func (s *CheckpointService) Check(checkpoint model.DebugInterfaceCheckpoint, caseInterfaceId, scenarioProcessorId uint, resp domain.DebugResponse,
+func (s *CheckpointService) Check(checkpoint model.DebugConditionCheckpoint, caseInterfaceId, scenarioProcessorId uint, resp domain.DebugResponse,
 	usedBy consts.UsedBy) (logCheckpoint model.ExecLogCheckpoint, err error) {
+
+	postCondition, _ := s.PostConditionRepo.Get(checkpoint.ConditionId)
 
 	if checkpoint.Disabled {
 		checkpoint.ResultStatus = ""
@@ -149,7 +152,7 @@ func (s *CheckpointService) Check(checkpoint model.DebugInterfaceCheckpoint, cas
 
 	// Judgement
 	if checkpoint.Type == consts.Judgement {
-		variableMap, datapools, _ := s.VariableService.GetCombinedVarsForCheckpoint(checkpoint.DebugInterfaceId, checkpoint.EndpointInterfaceId, caseInterfaceId, scenarioProcessorId, usedBy)
+		variableMap, datapools, _ := s.VariableService.GetCombinedVarsForCheckpoint(postCondition.DebugInterfaceId, postCondition.EndpointInterfaceId, caseInterfaceId, scenarioProcessorId, usedBy)
 
 		result, _ := agentExec.EvaluateGovaluateExpressionWithVariables(checkpoint.Expression, variableMap, datapools)
 
@@ -170,7 +173,7 @@ func (s *CheckpointService) Check(checkpoint model.DebugInterfaceCheckpoint, cas
 	// Extractor
 	if checkpoint.Type == consts.Extractor {
 		// get extractor variable value saved by previous extract opt
-		extractorPo, _ := s.ExtractorRepo.GetByInterfaceVariable(checkpoint.ExtractorVariable, 0, checkpoint.DebugInterfaceId)
+		extractorPo, _ := s.ExtractorRepo.GetByInterfaceVariable(checkpoint.ExtractorVariable, 0, postCondition.DebugInterfaceId)
 		checkpoint.ActualResult = extractorPo.Result
 
 		checkpoint.ResultStatus = agentUtils.Compare(checkpoint.Operator, checkpoint.ActualResult, checkpoint.Value)

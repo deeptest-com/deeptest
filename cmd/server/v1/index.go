@@ -34,10 +34,14 @@ type IndexModule struct {
 	ImportModule      *router.ImportModule      `inject:""`
 	AuthModule        *router.AuthModule        `inject:""`
 	EnvironmentModule *router.EnvironmentModule `inject:""`
-	ExtractorModule   *router.ExtractorModule   `inject:""`
 	ShareVarModule    *router.ShareVarModule    `inject:""`
-	CheckpointModule  *router.CheckpointModule  `inject:""`
 	ParserModule      *router.ParserModule      `inject:""`
+
+	PreConditionModule  *router.PreConditionModule  `inject:""`
+	PostConditionModule *router.PostConditionModule `inject:""`
+	ExtractorModule     *router.ExtractorModule     `inject:""`
+	CheckpointModule    *router.CheckpointModule    `inject:""`
+	ScriptModule        *router.ScriptModule        `inject:""`
 
 	CategoryModule          *router.CategoryModule          `inject:""`
 	ScenarioModule          *router.ScenarioModule          `inject:""`
@@ -98,10 +102,14 @@ func (m *IndexModule) Party() module.WebModule {
 		m.ImportModule.Party(),
 		m.AuthModule.Party(),
 		m.EnvironmentModule.Party(),
-		m.ExtractorModule.Party(),
 		m.ShareVarModule.Party(),
-		m.CheckpointModule.Party(),
 		m.ParserModule.Party(),
+
+		m.PreConditionModule.Party(),
+		m.PostConditionModule.Party(),
+		m.ExtractorModule.Party(),
+		m.CheckpointModule.Party(),
+		m.ScriptModule.Party(),
 
 		m.CategoryModule.Party(),
 		m.ScenarioModule.Party(),

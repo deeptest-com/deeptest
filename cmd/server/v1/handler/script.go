@@ -7,13 +7,13 @@ import (
 	"github.com/kataras/iris/v12"
 )
 
-type CheckpointCtrl struct {
-	CheckpointService *service.CheckpointService `inject:""`
+type ScriptCtrl struct {
+	ScriptService *service.ScriptService `inject:""`
 	BaseCtrl
 }
 
 // List
-func (c *CheckpointCtrl) List(ctx iris.Context) {
+func (c *ScriptCtrl) List(ctx iris.Context) {
 	debugInterfaceId, err := ctx.URLParamInt("debugInterfaceId")
 	endpointInterfaceId, err := ctx.URLParamInt("endpointInterfaceId")
 	if debugInterfaceId <= 0 && endpointInterfaceId <= 0 {
@@ -28,7 +28,7 @@ func (c *CheckpointCtrl) List(ctx iris.Context) {
 		endpointInterfaceId = 0
 	}
 
-	data, err := c.CheckpointService.List(uint(debugInterfaceId), uint(endpointInterfaceId))
+	data, err := c.ScriptService.List(uint(debugInterfaceId), uint(endpointInterfaceId))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -38,14 +38,14 @@ func (c *CheckpointCtrl) List(ctx iris.Context) {
 }
 
 // Get 详情
-func (c *CheckpointCtrl) Get(ctx iris.Context) {
+func (c *ScriptCtrl) Get(ctx iris.Context) {
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
-	checkpoint, err := c.CheckpointService.Get(uint(id))
+	checkpoint, err := c.ScriptService.Get(uint(id))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return
@@ -54,15 +54,15 @@ func (c *CheckpointCtrl) Get(ctx iris.Context) {
 }
 
 // Create 添加
-func (c *CheckpointCtrl) Create(ctx iris.Context) {
-	checkpoint := model.DebugConditionCheckpoint{}
+func (c *ScriptCtrl) Create(ctx iris.Context) {
+	checkpoint := model.DebugConditionScript{}
 	err := ctx.ReadJSON(&checkpoint)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
-	err = c.CheckpointService.Create(&checkpoint)
+	err = c.ScriptService.Create(&checkpoint)
 	if err != nil {
 		ctx.JSON(_domain.Response{
 			Code: _domain.SystemErr.Code,
@@ -74,15 +74,15 @@ func (c *CheckpointCtrl) Create(ctx iris.Context) {
 }
 
 // Update 更新
-func (c *CheckpointCtrl) Update(ctx iris.Context) {
-	var checkpoint model.DebugConditionCheckpoint
+func (c *ScriptCtrl) Update(ctx iris.Context) {
+	var checkpoint model.DebugConditionScript
 	err := ctx.ReadJSON(&checkpoint)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
-	err = c.CheckpointService.Update(&checkpoint)
+	err = c.ScriptService.Update(&checkpoint)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -91,14 +91,14 @@ func (c *CheckpointCtrl) Update(ctx iris.Context) {
 }
 
 // Delete 删除
-func (c *CheckpointCtrl) Delete(ctx iris.Context) {
+func (c *ScriptCtrl) Delete(ctx iris.Context) {
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
-	err = c.CheckpointService.Delete(uint(id))
+	err = c.ScriptService.Delete(uint(id))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

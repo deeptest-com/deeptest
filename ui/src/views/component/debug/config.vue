@@ -61,6 +61,8 @@ onUnmounted(() => {
 
   #top-panel {
     flex: 1;
+    height: 0;
+
     width: 100%;
     padding: 0;
   }

@@ -15,31 +15,31 @@ type ExtractorService struct {
 	ShareVarService *ShareVarService `inject:""`
 }
 
-func (s *ExtractorService) List(debugInterfaceId, endpointInterfaceId uint) (extractors []model.DebugInterfaceExtractor, err error) {
+func (s *ExtractorService) List(debugInterfaceId, endpointInterfaceId uint) (extractors []model.DebugConditionExtractor, err error) {
 	extractors, err = s.ExtractorRepo.List(debugInterfaceId, endpointInterfaceId)
 
 	return
 }
 
-func (s *ExtractorService) Get(id uint) (extractor model.DebugInterfaceExtractor, err error) {
+func (s *ExtractorService) Get(id uint) (extractor model.DebugConditionExtractor, err error) {
 	extractor, err = s.ExtractorRepo.Get(id)
 
 	return
 }
 
-func (s *ExtractorService) Create(extractor *model.DebugInterfaceExtractor) (bizErr _domain.BizErr) {
+func (s *ExtractorService) Create(extractor *model.DebugConditionExtractor) (bizErr _domain.BizErr) {
 	_, bizErr = s.ExtractorRepo.Save(extractor)
 
 	return
 }
 
-func (s *ExtractorService) Update(extractor *model.DebugInterfaceExtractor) (err error) {
+func (s *ExtractorService) Update(extractor *model.DebugConditionExtractor) (err error) {
 	s.ExtractorRepo.Update(extractor)
 
 	return
 }
 
-func (s *ExtractorService) CreateOrUpdateResult(extractor *model.DebugInterfaceExtractor, usedBy consts.UsedBy) (err error) {
+func (s *ExtractorService) CreateOrUpdateResult(extractor *model.DebugConditionExtractor, usedBy consts.UsedBy) (err error) {
 	s.ExtractorRepo.CreateOrUpdateResult(extractor, usedBy)
 
 	return
@@ -62,7 +62,7 @@ func (s *ExtractorService) ExtractInterface(debugInterfaceId, caseInterfaceId, e
 	return
 }
 
-func (s *ExtractorService) Extract(extractor *model.DebugInterfaceExtractor, resp domain.DebugResponse,
+func (s *ExtractorService) Extract(extractor *model.DebugConditionExtractor, resp domain.DebugResponse,
 	usedBy consts.UsedBy) (err error) {
 
 	extractor.Result, err = extractorHelper.Extract(extractor.ExtractorBase, resp)

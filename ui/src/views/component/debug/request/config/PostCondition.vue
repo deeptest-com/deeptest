@@ -77,7 +77,6 @@
               <Script v-if="element.entityType === ConditionType.script"
                           :condition="element" />
             </div>
-
           </div>
 
         </template>
@@ -103,6 +102,7 @@ import Checkpoint from "./post-conditions/Checkpoint.vue";
 import Script from "./post-conditions/Script.vue";
 import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
+import {confirmToDelete} from "@/utils/confirm";
 
 const store = useStore<{  Debug: Debug }>();
 const debugData = computed<any>(() => store.state.Debug.debugData);
@@ -114,7 +114,7 @@ const {t} = useI18n();
 
 const activeItem = ref(0)
 
-const conditionType = ref(ConditionType.checkpoint)
+const conditionType = ref(ConditionType.extractor)
 const conditionTypes = ref(getEnumSelectItems(ConditionType))
 
 const expand = (item) => {
@@ -151,7 +151,10 @@ const disable = (item) => {
 }
 const remove = (item) => {
   console.log('remove', item)
-  store.dispatch('Debug/removePostCondition', item.id)
+
+  confirmToDelete(`确定删除该${t(item.entityType)}？`, '', () => {
+    store.dispatch('Debug/removePostCondition', item.id)
+  })
 }
 
 function handleDrop(_e: any) {

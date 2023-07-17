@@ -39,22 +39,6 @@ func (c *PreConditionCtrl) List(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data})
 }
 
-// Get 详情
-func (c *PreConditionCtrl) Get(ctx iris.Context) {
-	id, err := ctx.Params().GetInt("id")
-	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
-		return
-	}
-
-	condition, err := c.PreConditionService.Get(uint(id))
-	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
-		return
-	}
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: condition})
-}
-
 // Create 添加
 func (c *PreConditionCtrl) Create(ctx iris.Context) {
 	condition := model.DebugPreCondition{}
@@ -83,7 +67,7 @@ func (c *PreConditionCtrl) Delete(ctx iris.Context) {
 		return
 	}
 
-	err = c.ScriptService.Delete(uint(id))
+	err = c.PreConditionService.Delete(uint(id))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

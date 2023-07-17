@@ -74,8 +74,8 @@ type DebugConditionScript struct {
 	BaseModel
 	ConditionId uint `json:"conditionId"`
 
-	ConditionType consts.ConditionType `json:"conditionType"` // per | post
-	Content       string               `json:"content"`
+	ConditionSrc consts.ConditionSrc `json:"conditionType"` // per | post
+	Content      string              `json:"content"`
 
 	Output       string              `json:"output"`
 	ResultStatus consts.ResultStatus `json:"resultStatus"`

@@ -3,20 +3,24 @@
     <div class="head">
       <a-row type="flex">
         <a-col flex="1">
-          <span>
-            JavaScript代码
-          </span>
+          <a-select size="small" :style="{width:'116px'}" :bordered="true"
+                    v-model:value="conditionType">
+            <!--            <a-select-option key="" value="">
+                          控制器类型
+                        </a-select-option>-->
+
+            <a-select-option v-for="item in conditionTypes" :key="item.value" :value="item.value">
+              {{ t(item.label) }}
+            </a-select-option>
+          </a-select> &nbsp;
+
+          <a-button @click="create" size="small">新建</a-button>
         </a-col>
 
         <a-col flex="100px" class="dp-right">
           <a-tooltip overlayClassName="dp-tip-small">
             <template #title>帮助</template>
             <QuestionCircleOutlined class="dp-icon-btn dp-trans-80"/>
-          </a-tooltip>
-
-          <a-tooltip overlayClassName="dp-tip-small">
-            <template #title>格式化</template>
-            <ClearOutlined class="dp-icon-btn dp-trans-80" />
           </a-tooltip>
 
           <a-tooltip overlayClassName="dp-tip-small">
@@ -28,32 +32,50 @@
     </div>
 
     <div class="content">
-      <div class="codes">
-        <MonacoEditor
-            class="editor"
-            v-model:value="debugData.preRequestScript"
-            language="typescript"
-            theme="vs"
-            :options="editorOptions"
-            @change="editorChange" />
-      </div>
+      <draggable tag="div" item-key="name" class="collapse-list"
+                 :list="preConditions"
+                 handle=".handle"
+                 @end="handleDrop">
+        <template #item="{ element }">
 
-      <div class="refer">
-        <div class="desc">预请求脚本使用 JavaScript 编写，并在请求发送前执行。</div>
+          <div class="collapse-item">
+            <div class="header">
+              <div @click.stop="expand(element)" class="title dp-link">
+                <MenuOutlined class="handle" /> &nbsp;
 
-        <div class="title">代码片段：</div>
-        <div>
-<!--          <div @click="addSnippet('environment_get')" class="dp-link-primary">Get an environment variable</div>
-          <div @click="addSnippet('environment_set')" class="dp-link-primary">Set an environment variable</div>
-          <div @click="addSnippet('environment_clear')" class="dp-link-primary">Clear an environment variable</div>-->
+                {{ t(element.entityType) }} &nbsp;
+                {{ element.desc }} -
+                {{activeItem || 0}},{{element.id}}
+              </div>
+              <div class="buttons">
+                <ClearOutlined v-if="activeItem === +element.id && element.entityType === ConditionType.script"
+                               @click.stop="format(element)"  class="dp-icon-btn dp-trans-80" />
+                &nbsp;
 
-          <div @click="addSnippet('variables_get')" class="dp-link-primary">Get an variable</div>
-          <div @click="addSnippet('variables_set')" class="dp-link-primary">Set an variable</div>
-          <div @click="addSnippet('variables_clear')" class="dp-link-primary">Clear an variable</div>
+                <CheckCircleOutlined v-if="!element.disabled" @click.stop="disable(element)"
+                                     class="dp-icon-btn dp-trans-80 dp-color-pass" />
+                <CloseCircleOutlined v-if="element.disabled" @click.stop="disable(element)"
+                                     class="dp-icon-btn dp-trans-80" />
 
-          <div @click="addSnippet('datapool_get')" class="dp-link-primary">Get datapool variable</div>
-        </div>
-      </div>
+                <DeleteOutlined @click.stop="remove(element)"  class="dp-icon-btn dp-trans-80" />
+                &nbsp;
+
+                <RightOutlined v-if="activeItem !== element.id"
+                               @click.stop="expand(element)"  class="dp-icon-btn dp-trans-80" />
+                <DownOutlined v-if="activeItem === element.id"
+                              @click.stop="expand(element)"  class="dp-icon-btn dp-trans-80" />
+              </div>
+            </div>
+
+            <div class="content" v-if="activeItem === +element.id">
+              <Script v-if="element.entityType === ConditionType.script"
+                      :condition="element" />
+            </div>
+
+          </div>
+
+        </template>
+      </draggable>
     </div>
   </div>
 </template>
@@ -62,37 +84,81 @@
 import {computed, inject, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
-import {MonacoOptions} from "@/utils/const";
-import {UsedBy} from "@/utils/enum";
-import {StateType as Debug} from "@/views/component/debug/store";
+import { QuestionCircleOutlined, CheckCircleOutlined, DeleteOutlined,
+  ClearOutlined, MenuOutlined, RightOutlined, DownOutlined, CloseCircleOutlined } from '@ant-design/icons-vue';
+import draggable from 'vuedraggable'
+import {ConditionType, PreConditionType, UsedBy} from "@/utils/enum";
+import {EnvDataItem} from "@/views/project-settings/data";
 
-import { QuestionCircleOutlined, DeleteOutlined, ClearOutlined } from '@ant-design/icons-vue';
-import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
+import {StateType as Debug} from "@/views/component/debug/store";
+import {getEnumSelectItems} from "@/views/scenario/service";
+import Script from "./pre-conditions/Script.vue";
+import bus from "@/utils/eventBus";
+import settings from "@/config/settings";
+import {confirmToDelete} from "@/utils/confirm";
+
+const store = useStore<{  Debug: Debug }>();
+const debugData = computed<any>(() => store.state.Debug.debugData);
+const debugInfo = computed<any>(() => store.state.Debug.debugInfo);
+const preConditions = computed<any>(() => store.state.Debug.preConditions);
 
 const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
 
-const store = useStore<{  Debug: Debug }>();
+const activeItem = ref(0)
 
-const debugData = computed<any>(() => store.state.Debug.debugData);
+const conditionType = ref(PreConditionType.script)
+const conditionTypes = ref(getEnumSelectItems(PreConditionType))
 
-const editorOptions = ref(Object.assign({
-    usedWith: 'request',
-    initTsModules: true,
+const expand = (item) => {
+  console.log('expand', item.id)
 
-    allowNonTsExtensions: true,
-    minimap: {
-      enabled: false
-    },
-  }, MonacoOptions
-))
-
-const addSnippet = (name) => {
-  store.dispatch('Debug/addSnippet', name)
+  if (activeItem.value === item.id) {
+    activeItem.value = 0
+  } else {
+    activeItem.value = item.id
+  }
 }
 
-const editorChange = (newScriptCode) => {
-  debugData.value.preRequestScript = newScriptCode;
+const list = () => {
+  console.log('list')
+  store.dispatch('Debug/listPreCondition')
+}
+list()
+
+const create = () => {
+  console.log('create', conditionType.value)
+  store.dispatch('Debug/createPreCondition', {
+    entityType: conditionType.value,
+    ...debugInfo.value,
+  })
+}
+
+const format = (item) => {
+  console.log('format', item)
+  bus.emit(settings.eventEditorAction, {act: settings.eventTypeFormat})
+}
+const disable = (item) => {
+  console.log('disable', item)
+  store.dispatch('Debug/disablePreCondition', item.id)
+}
+const remove = (item) => {
+  console.log('remove', item)
+
+  confirmToDelete(`确定删除该${t(item.entityType)}？`, '', () => {
+    store.dispatch('Debug/removePreCondition', item.id)
+  })
+}
+
+function handleDrop(_e: any) {
+  const envIdList = preConditions.value.map((e: EnvDataItem) => {
+    return e.id;
+  })
+
+  store.dispatch('Debug/movePreCondition', {
+    data: envIdList,
+    info: debugInfo.value,
+  })
 }
 
 </script>
@@ -114,13 +180,20 @@ const editorChange = (newScriptCode) => {
 <style lang="less" scoped>
 .pre-condition-main {
   height: 100%;
+  display: flex;
+  flex-direction: column;
+
   .head {
+    height: 30px;
     padding: 2px 3px;
     border-bottom: 1px solid #d9d9d9;
   }
   .content {
+    flex: 1;
+    height: calc(100% - 30px);
+    overflow-y: auto;
+
     display: flex;
-    height: calc(100% - 28px);
     &>div {
       height: 100%;
     }
@@ -140,13 +213,49 @@ const editorChange = (newScriptCode) => {
 
       }
     }
+
+    .collapse-list {
+      height: 100%;
+      width: 100%;
+      padding: 3px 0;
+
+      .collapse-item {
+        width: 100%;
+        border: 1px solid #d9d9d9;
+        border-bottom: 0;
+        border-radius: 2px;
+
+        &:last-child {
+          border-radius: 0 0 2px 2px;
+          border-bottom: 1px solid #d9d9d9;
+        }
+
+        .header {
+          height: 38px;
+          line-height: 22px;
+          padding: 10px;
+          background-color: #fafafa;
+
+          display: flex;
+          .title {
+            flex: 1;
+            font-weight: bolder;
+          }
+          .buttons {
+            width: 160px;
+            text-align: right;
+          }
+        }
+        .content {
+          padding: 16px 10px;
+          width: 100%;
+        }
+      }
+    }
   }
 }
 </style>
 
 <style lang="less" scoped>
-//.pre-condition-main{
-//  max-height: 180px;
-//  overflow-y: scroll;
-//}
+
 </style>

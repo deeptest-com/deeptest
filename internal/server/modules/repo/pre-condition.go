@@ -5,7 +5,6 @@ import (
 	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"gorm.io/gorm"
-	"strings"
 )
 
 type PreConditionRepo struct {
@@ -15,7 +14,7 @@ type PreConditionRepo struct {
 func (r *PreConditionRepo) List(debugInterfaceId, endpointInterfaceId uint) (pos []model.DebugPreCondition, err error) {
 	db := r.DB.
 		Where("NOT deleted").
-		Order("created_at ASC")
+		Order("ordr ASC")
 
 	if debugInterfaceId > 0 {
 		db.Where("debug_interface_id=?", debugInterfaceId)
@@ -54,23 +53,33 @@ func (r *PreConditionRepo) Delete(id uint) (err error) {
 func (r *PreConditionRepo) Disable(id uint) (err error) {
 	err = r.DB.Model(&model.DebugPreCondition{}).
 		Where("id=?", id).
-		Update("disabled", true).
+		Update("disabled", gorm.Expr("NOT disabled")).
 		Error
 
 	return
 }
 
 func (r *PreConditionRepo) UpdateOrders(req serverDomain.ConditionMoveReq) (err error) {
-	var arr []string
-	for index, id := range req.Data {
-		str := fmt.Sprintf("UPDATE %s SET ordr = %d WHERE id = %d",
-			model.DebugPreCondition{}.TableName(), index+1, id)
-		arr = append(arr, str)
-	}
+	return r.DB.Transaction(func(tx *gorm.DB) error {
+		for index, id := range req.Data {
+			sql := fmt.Sprintf("UPDATE %s SET ordr = %d WHERE id = %d",
+				model.DebugPreCondition{}.TableName(), index+1, id)
 
-	sql := strings.Join(arr, ";")
+			err = r.DB.Exec(sql).Error
+			if err != nil {
+				return err
+			}
+		}
 
-	err = r.DB.Exec(sql).Error
+		return nil
+	})
+}
+
+func (r *PreConditionRepo) UpdateEntityId(id uint, entityId uint) (err error) {
+	err = r.DB.Model(&model.DebugPreCondition{}).
+		Where("id=?", id).
+		Update("entity_id", entityId).
+		Error
 
 	return
 }

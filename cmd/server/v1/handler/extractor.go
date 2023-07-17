@@ -61,26 +61,6 @@ func (c *ExtractorCtrl) Get(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: extractor})
 }
 
-// Create 添加
-func (c *ExtractorCtrl) Create(ctx iris.Context) {
-	extractor := model.DebugConditionExtractor{}
-	err := ctx.ReadJSON(&extractor)
-	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
-		return
-	}
-
-	bizErr := c.ExtractorService.Create(&extractor)
-	if bizErr.Code > 0 {
-		ctx.JSON(_domain.Response{
-			Code: bizErr.Code,
-		})
-		return
-	}
-
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: extractor, Msg: _domain.NoErr.Msg})
-}
-
 // CreateOrUpdateResult 新建或更新结果
 func (c *ExtractorCtrl) CreateOrUpdateResult(ctx iris.Context) {
 	var extractor model.DebugConditionExtractor

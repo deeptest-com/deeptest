@@ -131,10 +131,11 @@ func (r *ScriptRepo) CloneFromEndpointInterfaceToDebugInterface(endpointInterfac
 	return
 }
 
-func (r *ScriptRepo) CreateDefault(conditionId uint) (po model.DebugConditionScript) {
+func (r *ScriptRepo) CreateDefault(conditionId uint, src consts.ConditionSrc) (po model.DebugConditionScript) {
 	po = model.DebugConditionScript{
-		ConditionId: conditionId,
-		Content:     scriptHelper.GetScript(scriptHelper.ScriptVariablesGet),
+		ConditionId:  conditionId,
+		Content:      scriptHelper.GetScript(scriptHelper.ScriptVariablesGet),
+		ConditionSrc: src,
 	}
 
 	r.Save(&po)

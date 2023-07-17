@@ -17,11 +17,9 @@ func (m *PreConditionModule) Party() module.WebModule {
 		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
 
 		index.Get("", m.PreConditionCtrl.List).Name = "前置条件列表"
-		index.Get("/{id:uint}", m.PreConditionCtrl.Get).Name = "前置条件详情"
 		index.Post("/", m.PreConditionCtrl.Create).Name = "新建前置条件"
 		index.Delete("/{id:uint}", m.PreConditionCtrl.Delete).Name = "删除前置条件"
 		index.Post("/{id:uint}/disable", m.PreConditionCtrl.Disable).Name = "禁用前置条件"
-		index.Post("/disable", m.PreConditionCtrl.Move).Name = "移动前置条件"
 		index.Post("/move", m.PreConditionCtrl.Move).Name = "移动后置条件"
 	}
 

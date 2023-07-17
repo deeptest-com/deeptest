@@ -144,6 +144,9 @@ export enum ConditionType {
     checkpoint = 'checkpoint',
     script = 'script',
 }
+export enum PreConditionType {
+    script = 'script',
+}
 
 export enum ExtractorSrc {
     header = 'header',

@@ -38,22 +38,6 @@ func (c *PostConditionCtrl) List(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data})
 }
 
-// Get 详情
-func (c *PostConditionCtrl) Get(ctx iris.Context) {
-	id, err := ctx.Params().GetInt("id")
-	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
-		return
-	}
-
-	condition, err := c.PostConditionService.Get(uint(id))
-	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
-		return
-	}
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: condition})
-}
-
 // Create 添加
 func (c *PostConditionCtrl) Create(ctx iris.Context) {
 	condition := model.DebugPostCondition{}

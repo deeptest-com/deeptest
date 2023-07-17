@@ -53,26 +53,6 @@ func (c *CheckpointCtrl) Get(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: checkpoint})
 }
 
-// Create 添加
-func (c *CheckpointCtrl) Create(ctx iris.Context) {
-	checkpoint := model.DebugConditionCheckpoint{}
-	err := ctx.ReadJSON(&checkpoint)
-	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
-		return
-	}
-
-	err = c.CheckpointService.Create(&checkpoint)
-	if err != nil {
-		ctx.JSON(_domain.Response{
-			Code: _domain.SystemErr.Code,
-		})
-		return
-	}
-
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: checkpoint, Msg: _domain.NoErr.Msg})
-}
-
 // Update 更新
 func (c *CheckpointCtrl) Update(ctx iris.Context) {
 	var checkpoint model.DebugConditionCheckpoint

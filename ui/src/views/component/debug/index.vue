@@ -2,9 +2,9 @@
   <div id="debug-index" class="dp-splits-v">
     <div id="debug-content">
       <Invocation :topVal="topVal"
+      :showMethodSelection = "showMethodSelection"
                   :onSave="saveDebugData"
                   :onSync="syncDebugData" />
-
       <DebugConfig />
     </div>
 
@@ -92,6 +92,10 @@ const props = defineProps({
   },
   topVal: {
     type: String,
+    required: true
+  },
+  showMethodSelection: {
+    type: Boolean,
     required: true
   },
 })

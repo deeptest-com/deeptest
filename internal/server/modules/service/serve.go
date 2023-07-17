@@ -311,7 +311,8 @@ func (s *ServeService) SwaggerSyncList() (data []model.SwaggerSync, err error) {
 }
 
 func (s *ServeService) GetSwaggerSyncById(id uint) (data model.SwaggerSync, err error) {
-	return s.ServeRepo.GetSwaggerSyncById(id)
+	data, err = s.ServeRepo.GetSwaggerSyncById(id)
+	return
 }
 
 func (s *ServeService) AddSwaggerCron(item model.SwaggerSync) {

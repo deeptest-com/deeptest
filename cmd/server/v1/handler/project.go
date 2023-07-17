@@ -60,7 +60,7 @@ func (c *ProjectCtrl) Get(ctx iris.Context) {
 // @summary project create
 // @Accept json
 // @Produce json
-// @Param ProjectReq body serverDomain.ProjectMemberRemoveReq true "Create project Request Object"
+// @Param ProjectReq body serverDomain.ProjectReq true "Create project Request Object"
 // @Router /api/v1/projects [post]
 func (c *ProjectCtrl) Create(ctx iris.Context) {
 	userId := multi.GetUserId(ctx)

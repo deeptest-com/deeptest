@@ -16,11 +16,11 @@ var (
 	BuildTime  string
 	GoVersion  string
 	GitHash    string
-	flagSet *flag.FlagSet
+	flagSet    *flag.FlagSet
 )
 
 // @title DeepTest服务端API文档
-// @version 1.0
+// @version 3.0
 // @contact.name API Support
 // @contact.url https://github.com/aaronchen2k/deeptest/issues
 // @contact.email 462626@qq.com

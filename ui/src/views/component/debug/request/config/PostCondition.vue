@@ -137,6 +137,7 @@ const disable = (item) => {
 }
 const remove = (item) => {
   console.log('remove', item)
+  store.dispatch('Debug/removePostCondition', item.id)
 }
 
 function handleDrop(_e: any) {

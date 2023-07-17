@@ -24,11 +24,6 @@
           </a-tooltip>
 
           <a-tooltip overlayClassName="dp-tip-small">
-            <template #title>格式化</template>
-            <ClearOutlined class="dp-icon-btn dp-trans-80" />
-          </a-tooltip>
-
-          <a-tooltip overlayClassName="dp-tip-small">
             <template #title>清除</template>
             <DeleteOutlined class="dp-icon-btn dp-trans-80"/>
           </a-tooltip>
@@ -53,13 +48,18 @@
                 {{activeItem || 0}},{{element.id}}
               </div>
               <div class="buttons">
+                <ClearOutlined v-if="activeItem === +element.id && element.entityType === ConditionType.script"
+                               @click.stop="format(element)"  class="dp-icon-btn dp-trans-80" />
+                &nbsp;
+
                 <CheckCircleOutlined v-if="!element.disabled" @click.stop="disable(element)"
                                      class="dp-icon-btn dp-trans-80 dp-color-pass" />
                 <CloseCircleOutlined v-if="element.disabled" @click.stop="disable(element)"
                                      class="dp-icon-btn dp-trans-80" />
 
                 <DeleteOutlined @click.stop="remove(element)"  class="dp-icon-btn dp-trans-80" />
-                &nbsp;&nbsp;
+                &nbsp;
+
                 <RightOutlined v-if="activeItem !== element.id"
                                @click.stop="expand(element)"  class="dp-icon-btn dp-trans-80" />
                 <DownOutlined v-if="activeItem === element.id"
@@ -101,6 +101,8 @@ import {getEnumSelectItems} from "@/views/scenario/service";
 import Extractor from "./post-conditions/Extractor.vue";
 import Checkpoint from "./post-conditions/Checkpoint.vue";
 import Script from "./post-conditions/Script.vue";
+import bus from "@/utils/eventBus";
+import settings from "@/config/settings";
 
 const store = useStore<{  Debug: Debug }>();
 const debugData = computed<any>(() => store.state.Debug.debugData);
@@ -139,6 +141,10 @@ const create = () => {
   })
 }
 
+const format = (item) => {
+  console.log('format', item)
+  bus.emit(settings.eventEditorAction, {act: settings.eventTypeFormat})
+}
 const disable = (item) => {
   console.log('disable', item)
   store.dispatch('Debug/disablePostCondition', item.id)

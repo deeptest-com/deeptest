@@ -35,8 +35,7 @@
             language="typescript"
             theme="vs"
             :options="editorOptions"
-            @change="editorChange"
-        />
+            @change="editorChange" />
       </div>
 
       <div class="refer">
@@ -65,6 +64,7 @@ import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import {MonacoOptions} from "@/utils/const";
 import {UsedBy} from "@/utils/enum";
+import {StateType as Debug} from "@/views/component/debug/store";
 
 import { QuestionCircleOutlined, DeleteOutlined, ClearOutlined } from '@ant-design/icons-vue';
 import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
@@ -72,8 +72,6 @@ import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
 const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
 
-import {Param} from "@/views/component/debug/data";
-import {StateType as Debug} from "@/views/component/debug/store";
 const store = useStore<{  Debug: Debug }>();
 
 const debugData = computed<any>(() => store.state.Debug.debugData);

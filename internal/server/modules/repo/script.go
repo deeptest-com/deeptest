@@ -3,6 +3,7 @@ package repo
 import (
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	scriptHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/script"
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/jinzhu/copier"
 	"gorm.io/gorm"
@@ -131,7 +132,10 @@ func (r *ScriptRepo) CloneFromEndpointInterfaceToDebugInterface(endpointInterfac
 }
 
 func (r *ScriptRepo) CreateDefault(conditionId uint) (po model.DebugConditionScript) {
-	po.ConditionId = conditionId
+	po = model.DebugConditionScript{
+		ConditionId: conditionId,
+		Content:     scriptHelper.GetScript(scriptHelper.ScriptVariablesGet),
+	}
 
 	r.Save(&po)
 

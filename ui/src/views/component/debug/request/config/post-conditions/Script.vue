@@ -1,85 +1,50 @@
 <template>
-  <div class="response-checkpoint-main">
+  <div class="response-script-main">
     <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
-          <a-form-item label="类型" v-bind="validateInfos.type">
-            <a-select v-model:value="model.type"
-                      @change="selectType"
-                      @blur="validate('type', { trigger: 'change' }).catch(() => {})">
-              <a-select-option v-for="(item, idx) in types" :key="idx" :value="item.value">
-                {{ t(item.label) }}
-              </a-select-option>
-            </a-select>
-          </a-form-item>
+      <div class="content">
+        <div class="codes">
+          <MonacoEditor theme="vs" language="typescript" class="editor"
+                        v-model:value="model.content"
+                        :options="editorOptions"
+                        @change="editorChange" />
+        </div>
 
-          <a-form-item v-if="model.type === 'responseHeader'"
-                       :label="model.type === 'responseHeader' ? '键值' : ''"
-                       v-bind="validateInfos.expression">
-            <a-input v-model:value="model.expression"
-                     @blur="validate('expression', { trigger: 'blur' }).catch(() => {})" />
-          </a-form-item>
+        <div class="refer">
+          <div class="desc">后置脚本使用JavaScript编写，在获取响应后执行。</div>
 
-          <a-form-item v-if="model.type === 'extractor'" label="变量名称" v-bind="validateInfos.extractorVariable">
-            <a-select v-model:value="model.extractorVariable"
-                      @blur="validate('extractorVariable', { trigger: 'blur' }).catch(() => {})">
-              <a-select-option key="" value=""></a-select-option>
-              <a-select-option v-for="(item, idx) in variables" :key="idx" :value="item.name">
-                {{ item.name }}
-              </a-select-option>
-            </a-select>
-          </a-form-item>
+          <div class="title">代码片段：</div>
+          <div>
+            <!--          <div @click="addSnippet('environment_get')" class="dp-link-primary">Get an environment variable</div>
+                      <div @click="addSnippet('environment_set')" class="dp-link-primary">Set an environment variable</div>
+                      <div @click="addSnippet('environment_clear')" class="dp-link-primary">Clear an environment variable</div>-->
 
-          <a-form-item v-if="model.type !== 'judgement'" label="运算符" v-bind="validateInfos.operator">
-            {{ void (options = model.type === 'responseStatus' ? operatorsForCode :
-              isInArray(model.type, ['responseHeader', 'responseBody']) ? operatorsForString : operators) }}
+            <div @click="addSnippet('variables_get')" class="dp-link-primary">Get an variable</div>
+            <div @click="addSnippet('variables_set')" class="dp-link-primary">Set an variable</div>
+            <div @click="addSnippet('variables_clear')" class="dp-link-primary">Clear an variable</div>
 
-            <a-select v-model:value="model.operator"
-                      @blur="validate('operator', { trigger: 'change' }).catch(() => {})">
+            <div @click="addSnippet('datapool_get')" class="dp-link-primary">Get datapool variable</div>
+          </div>
+        </div>
+      </div>
 
-              <a-select-option v-for="(item, idx) in options" :key="idx" :value="item.value">
-                {{ t(item.label) }}
-              </a-select-option>
-
-            </a-select>
-          </a-form-item>
-
-          <a-form-item v-if="model.type === 'judgement'" label="判断表达式" v-bind="validateInfos.expression">
-            <a-textarea v-model:value="model.expression" :auto-size="{ minRows: 2, maxRows: 5 }"
-                     @blur="validate('expression', { trigger: 'blur' }).catch(() => {})" />
-
-            <div class="dp-input-tip">{{t('tips_expression_bool', {name: '{name}'})}}</div>
-          </a-form-item>
-
-          <a-form-item v-if="model.type !== 'judgement'" label="数值" v-bind="validateInfos.value">
-            <a-input v-model:value="model.value"
-                     @blur="validate('value', { trigger: 'blur' }).catch(() => {})" />
-          </a-form-item>
-
-          <a-form-item :wrapper-col="{ span: wrapperCol.span, offset: labelCol.span }">
-            <a-button type="primary" @click="save" class="dp-btn-gap">保存</a-button>
-          </a-form-item>
-
-        </a-form>
+      <a-form-item :wrapper-col="{ span: wrapperCol.span, offset: labelCol.span }">
+        <a-button type="primary" @click="save" class="dp-btn-gap">保存</a-button>
+      </a-form-item>
+    </a-form>
   </div>
 </template>
 
 <script setup lang="ts">
-import {computed, defineProps, inject, PropType, reactive, Ref, ref, watch} from "vue";
+import {computed, defineProps, inject, reactive, ref} from "vue";
+import {message, Form} from 'ant-design-vue';
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
-import {message, Form} from 'ant-design-vue';
-import { PlusOutlined, EditOutlined, DeleteOutlined, CloseCircleOutlined, CheckCircleOutlined} from '@ant-design/icons-vue';
-
-import {
-  listExtractorVariable
-} from "@/views/component/debug/service";
-import {ComparisonOperator, CheckpointType, UsedBy} from "@/utils/enum";
-import {isInArray} from "@/utils/array";
-import {getResultCls} from "@/utils/dom"
-import {getCompareOptsForRespCode, getCompareOptsForString} from "@/utils/compare";
+import { QuestionCircleOutlined, DeleteOutlined, ClearOutlined } from '@ant-design/icons-vue';
+import {UsedBy} from "@/utils/enum";
 
 import {StateType as Debug} from "@/views/component/debug/store";
-import {Checkpoint} from "@/views/component/debug/data";
-import {getEnumSelectItems} from "@/utils/comm";
+import {MonacoOptions} from "@/utils/const";
+import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
 
 const useForm = Form.useForm;
 const usedBy = inject('usedBy') as UsedBy
@@ -89,7 +54,7 @@ const store = useStore<{  Debug: Debug }>();
 
 const debugInfo = computed<any>(() => store.state.Debug.debugInfo);
 const debugData = computed<any>(() => store.state.Debug.debugData);
-const model = computed<any>(() => store.state.Debug.checkpointData);
+const model = computed<any>(() => store.state.Debug.scriptData);
 
 const props = defineProps({
   condition: {
@@ -98,125 +63,94 @@ const props = defineProps({
   },
 })
 
-const types = getEnumSelectItems(CheckpointType)
-const operators = getEnumSelectItems(ComparisonOperator)
-const operatorsForString = getCompareOptsForString()
-const operatorsForCode = getCompareOptsForRespCode()
-
 const load = () => {
   console.log('load', props.condition)
-  store.dispatch('Debug/getCheckpoint', props.condition.entityId)
+  store.dispatch('Debug/getScript', props.condition.entityId)
 }
 load()
 
-const variables = ref([])
+const editorOptions = ref(Object.assign({
+      usedWith: 'request',
+      initTsModules: true,
 
-const extractorVariableRequired = { required: true, message: '请选择变量', trigger: 'change' }
-const expressionRequired = { required: true, message: '请输入表达式', trigger: 'blur' }
-const operatorRequired = { required: true, message: '请选择操作', trigger: 'change' }
-const valueRequired = { required: true, message: '请输入数值', trigger: 'blur' }
+      allowNonTsExtensions: true,
+      minimap: {
+        enabled: false
+      },
+    }, MonacoOptions
+))
+
+const addSnippet = (snippetName) => {
+  store.dispatch('Debug/addSnippet', snippetName)
+}
+const editorChange = (newScriptCode) => {
+  model.value.content = newScriptCode;
+}
+
 const rules = reactive({
-  type: [
-    { required: true, message: '请选择类型', trigger: 'blur' },
-  ],
-  extractorVariable: [
-    extractorVariableRequired
-  ],
-  expression: [
-    expressionRequired
-  ],
-  operator: [
-    operatorRequired,
-  ],
-  value: [
-    valueRequired,
-  ],
+  content: [
+    { required: true, message: '请输入脚本内容', trigger: 'blur' },
+  ]
 } as any);
 
 let { resetFields, validate, validateInfos } = useForm(model, rules);
 
 const save = () => {
-  console.log('save')
+  console.log('save', model.value)
   validate().then(() => {
     model.value.debugInterfaceId = debugInfo.value.debugInterfaceId
     model.value.endpointInterfaceId = debugInfo.value.endpointInterfaceId
     model.value.projectId = debugData.value.projectId
 
-    store.dispatch('Debug/saveCheckpoint', model.value)
+    store.dispatch('Debug/saveScript', model.value)
   })
 }
 
-const selectType = () => {
-  console.log('selectType')
-
-  if (model.value.type === CheckpointType.responseBody) {
-    model.value.operator = ComparisonOperator.contain
-  } else {
-    model.value.operator = ComparisonOperator.equal
-  }
-
-  loadExtractorVariable()
-}
-
-const loadExtractorVariable = () => {
-  if (model.value.type === CheckpointType.responseHeader || model.value.type === CheckpointType.judgement) {
-    rules.expression = [expressionRequired]
-  } else {
-    rules.expression = []
-  }
-
-  if (model.value.type === CheckpointType.judgement) {
-    rules.operator = []
-    rules.value = []
-
-    model.value.operator = ComparisonOperator.empty
-    model.value.value = ''
-  } else {
-    rules.operator = [operatorRequired]
-    rules.value = [valueRequired]
-    if (!model.value.operator) model.value.operator = ComparisonOperator.equal
-  }
-
-  if (model.value.type === CheckpointType.extractor) {
-    rules.extractorVariable = [extractorVariableRequired]
-
-    listExtractorVariable(debugInfo.value).then((jsn) => {
-      variables.value = jsn.data
-    })
-  } else {
-    rules.extractorVariable = []
-  }
-}
-loadExtractorVariable()
-
-const labelCol = { span: 4 }
-const wrapperCol = { span: 18 }
+const labelCol = { span: 0 }
+const wrapperCol = { span: 24 }
 
 </script>
 
-<style lang="less">
-.response-checkpoint-main {
-}
-</style>
-
 <style lang="less" scoped>
-.response-checkpoint-main {
+.response-script-main {
   height: 100%;
   width: 100%;
+
   .head {
     padding: 2px 3px;
     border-bottom: 1px solid #d9d9d9;
   }
-  .body {
-    padding: 6px;
-    height: calc(100% - 30px);
-    overflow-y: auto;
+  .content {
+    display: flex;
+    height: calc(100% - 28px);
+    &>div {
+      height: 100%;
+    }
 
-    .item {
-      .ant-col {
-        padding: 0 3px;
-        word-break: break-all;
+    .codes {
+      flex: 1;
+    }
+    .refer {
+      width: 260px;
+      padding: 10px;
+      overflow-y: auto;
+
+      .title {
+        margin-top: 12px;
       }
+      .desc {
+
+      }
+    }
+  }
+
+  .codes {
+    height: 100%;
+    min-height: 160px;
+
+    .editor {
+      height: 100%;
+      min-height: 160px;
     }
   }
 }

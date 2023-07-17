@@ -135,7 +135,7 @@ const rules = reactive({
 let { resetFields, validate, validateInfos } = useForm(model, rules);
 
 const save = () => {
-  console.log('save')
+  console.log('save', model.value)
   validate().then(() => {
     model.value.debugInterfaceId = debugInfo.value.debugInterfaceId
     model.value.endpointInterfaceId = debugInfo.value.endpointInterfaceId
@@ -193,30 +193,9 @@ const wrapperCol = { span: 18 }
 
 </script>
 
-<style lang="less">
-.response-checkpoint-main {
-}
-</style>
-
 <style lang="less" scoped>
 .response-checkpoint-main {
   height: 100%;
   width: 100%;
-  .head {
-    padding: 2px 3px;
-    border-bottom: 1px solid #d9d9d9;
-  }
-  .body {
-    padding: 6px;
-    height: calc(100% - 30px);
-    overflow-y: auto;
-
-    .item {
-      .ant-col {
-        padding: 0 3px;
-        word-break: break-all;
-      }
-    }
-  }
 }
 </style>

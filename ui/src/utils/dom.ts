@@ -92,7 +92,7 @@ export function resizeHeight(mainId: string, topId: string, splitterId: string, 
 }
 
 export const resizeHandler = debounce(() => {
-    bus.emit(settings.eventEditorContainerHeightChanged, '')
+    bus.emit(settings.eventEditorAction, {act: settings.eventTypeContainerHeightChanged})
 }, 50);
 
 export function hasClass( elements, cName ){

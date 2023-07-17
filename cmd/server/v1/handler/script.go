@@ -45,12 +45,12 @@ func (c *ScriptCtrl) Get(ctx iris.Context) {
 		return
 	}
 
-	checkpoint, err := c.ScriptService.Get(uint(id))
+	po, err := c.ScriptService.Get(uint(id))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return
 	}
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: checkpoint})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: po})
 }
 
 // Create 添加

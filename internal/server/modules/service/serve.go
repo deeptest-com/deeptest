@@ -311,7 +311,8 @@ func (s *ServeService) SwaggerSyncList() (data []model.SwaggerSync, err error) {
 }
 
 func (s *ServeService) GetSwaggerSyncById(id uint) (data model.SwaggerSync, err error) {
-	return s.ServeRepo.GetSwaggerSyncById(id)
+	data, err = s.ServeRepo.GetSwaggerSyncById(id)
+	return
 }
 
 func (s *ServeService) AddSwaggerCron(item model.SwaggerSync) {
@@ -333,6 +334,13 @@ func (s *ServeService) AddSwaggerCron(item model.SwaggerSync) {
 		if err != nil {
 			logUtils.Error("swagger定时导入任务失败，错误原因：" + err.Error())
 		}
+
+		//更新实现执行时间
+		s.UpdateSwaggerSyncExecTimeById(taskId)
 		logUtils.Info("swagger定时任务结束：" + _commUtils.JsonEncode(item))
 	})
+}
+
+func (s *ServeService) UpdateSwaggerSyncExecTimeById(id uint) (err error) {
+	return s.ServeRepo.UpdateSwaggerSyncExecTimeById(id)
 }

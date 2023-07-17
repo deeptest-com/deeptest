@@ -7,7 +7,7 @@
     <div id="debug-bottom">
       <DebugComp :topVal="'10px'"
                   :onSaveDebugData="saveDebugInterface"
-                 :show-method-selection="false" />
+                 :showMethodSelection="false" />
     </div>
   </div>
 

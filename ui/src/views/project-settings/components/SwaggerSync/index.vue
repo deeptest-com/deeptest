@@ -7,7 +7,7 @@
     <a-form-item label="是否开启自动同步">
       <a-switch v-model:checked="formState.switch" :checkedValue="1" :unCheckedValue="2" />
     </a-form-item>
-    
+    <a-form-item class="execTime" v-if="formState.switch==1"> 上次更新时间：{{formState.execTime || '-'}}</a-form-item>
     <a-form-item name="syncType" v-if="formState.switch==1">
       <template v-slot:label>
         数据同步
@@ -118,8 +118,8 @@ onMounted(async () => {
   await loadCategories();
   await store.dispatch('ProjectSetting/getSwaggerSync');
   formState.value.projectId = currProject.value.id
+  console.log(formState,"+++++")
 })
-
 
 watch(() => {
   return currProject.value;
@@ -141,4 +141,8 @@ watch(() => {
  .title {
     font-size: 16px;
   }
+  .execTime {
+    padding-left: 300px;
+    margin-top: -25px;
+}
 </style>

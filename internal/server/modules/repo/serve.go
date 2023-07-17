@@ -11,6 +11,7 @@ import (
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"gorm.io/gorm"
 	"sort"
+	"time"
 )
 
 type ServeRepo struct {
@@ -550,4 +551,8 @@ func (r *ServeRepo) GetComponentByItem(sourceType consts.SourceType, serveId uin
 
 func (r *ServeRepo) SaveSchemas(schemas []*model.ComponentSchema) (err error) {
 	return r.DB.Save(schemas).Error
+}
+
+func (r *ServeRepo) UpdateSwaggerSyncExecTimeById(id uint) (err error) {
+	return r.DB.Model(&model.SwaggerSync{}).Where("id=?", id).Update("exec_time", time.Now()).Error
 }

@@ -679,7 +679,7 @@ const StoreModel: ModuleType = {
             if (res.code === 0) {
                  commit('setSwaggerSync', res.data)
             } else {
-                message.error('禁用数据池失败');
+                message.error('保存同步信息失败');
             }
         },
 
@@ -688,7 +688,7 @@ const StoreModel: ModuleType = {
             if (res.code === 0) {
                  commit('setSwaggerSync', res.data)
             } else {
-                message.error('禁用数据池失败');
+                message.error('获取同步信息失败');
             }
         }
     }

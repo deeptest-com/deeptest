@@ -1,0 +1,27 @@
+definitions:
+  serverDomain.ProjectReq:
+    type: object
+info:
+  contact:
+    email: 462626@qq.com
+    name: API Support
+    url: https://github.com/aaronchen2k/deeptest/issues
+  title: DeepTest服务端API文档
+  version: "3.0"
+paths:
+  /api/v1/projects:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Create project Request Object
+        in: body
+        name: ProjectReq
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.ProjectReq'
+      produces:
+      - application/json
+      responses: {}
+      summary: project create
+swagger: "2.0"

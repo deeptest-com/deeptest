@@ -70,13 +70,13 @@ func (r *ExtractorRepo) GetByInterfaceVariable(variable string, id, debugInterfa
 }
 
 func (r *ExtractorRepo) Save(extractor *model.DebugConditionExtractor) (id uint, bizErr _domain.BizErr) {
-	postCondition, _ := r.PostConditionRepo.Get(extractor.ConditionId)
-
-	po, _ := r.GetByInterfaceVariable(extractor.Variable, extractor.ID, postCondition.EndpointInterfaceId)
-	if po.ID > 0 {
-		bizErr.Code = _domain.ErrNameExist.Code
-		return
-	}
+	//postCondition, _ := r.PostConditionRepo.Get(extractor.ConditionId)
+	//
+	//po, _ := r.GetByInterfaceVariable(extractor.Variable, extractor.ID, postCondition.EndpointInterfaceId)
+	//if po.ID > 0 {
+	//	bizErr.Code = _domain.ErrNameExist.Code
+	//	return
+	//}
 
 	err := r.DB.Save(extractor).Error
 	if err != nil {
@@ -236,7 +236,17 @@ func (r *ExtractorRepo) CloneFromEndpointInterfaceToDebugInterface(endpointInter
 }
 
 func (r *ExtractorRepo) CreateDefault(conditionId uint) (po model.DebugConditionExtractor) {
-	po.ConditionId = conditionId
+	po = model.DebugConditionExtractor{
+		ConditionId: conditionId,
+
+		ExtractorBase: domain.ExtractorBase{
+			Src:        consts.Body,
+			Type:       consts.Boundary,
+			Expression: "",
+			Variable:   "",
+		},
+		Scope: consts.Public,
+	}
 
 	r.Save(&po)
 

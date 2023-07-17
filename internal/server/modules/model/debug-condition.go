@@ -43,7 +43,7 @@ type DebugConditionExtractor struct {
 
 	domain.ExtractorBase
 
-	Scope consts.ExtractorScope `json:"scope" gorm:"default:private"`
+	Scope consts.ExtractorScope `json:"scope" gorm:"default:public"`
 }
 
 func (DebugConditionExtractor) TableName() string {

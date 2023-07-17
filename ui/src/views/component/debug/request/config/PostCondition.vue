@@ -68,8 +68,14 @@
             </div>
 
             <div class="content" v-if="activeItem === +element.id">
-                <Checkpoint v-if="element.entityType === ConditionType.checkpoint"
-                            :condition="element" />
+              <Extractor v-if="element.entityType === ConditionType.extractor"
+                          :condition="element" />
+
+              <Checkpoint v-if="element.entityType === ConditionType.checkpoint"
+                          :condition="element" />
+
+              <Script v-if="element.entityType === ConditionType.script"
+                          :condition="element" />
             </div>
 
           </div>
@@ -88,11 +94,13 @@ import { QuestionCircleOutlined, CheckCircleOutlined, DeleteOutlined,
   ClearOutlined, MenuOutlined, RightOutlined, DownOutlined, CloseCircleOutlined } from '@ant-design/icons-vue';
 import draggable from 'vuedraggable'
 import {ConditionType, UsedBy} from "@/utils/enum";
+import {EnvDataItem} from "@/views/project-settings/data";
 
 import {StateType as Debug} from "@/views/component/debug/store";
 import {getEnumSelectItems} from "@/views/scenario/service";
+import Extractor from "./post-conditions/Extractor.vue";
 import Checkpoint from "./post-conditions/Checkpoint.vue";
-import {EnvDataItem} from "@/views/project-settings/data";
+import Script from "./post-conditions/Script.vue";
 
 const store = useStore<{  Debug: Debug }>();
 const debugData = computed<any>(() => store.state.Debug.debugData);

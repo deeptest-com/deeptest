@@ -187,7 +187,6 @@ const store = useStore<{  Debug: Debug }>();
 const debugInfo = computed<any>(() => store.state.Debug.debugInfo);
 const debugData = computed<any>(() => store.state.Debug.debugData);
 const responseData = computed<any>(() => store.state.Debug.responseData);
-const extractorsData = computed(() => store.state.Debug.extractorsData);
 
 const listExtractor = () => {
   store.dispatch('Debug/listExtractor')

@@ -28,6 +28,7 @@ export default defineComponent({
     readOnly:  { type: Boolean, default: false ,required: false},
     onExtractor: {type: Function},
     onReplace: {type: Function},
+    hooks: String,
   },
   emits: [
     'editorWillMount',
@@ -66,9 +67,13 @@ export default defineComponent({
       this.editor.layout(size)
     }, 500);
 
-    bus.on(settings.eventEditorContainerHeightChanged, () => {
-      console.log('resizeIt')
-      resizeIt()
+    bus.on(settings.eventEditorAction, (data) => {
+      console.log('eventEditorAction', data)
+      if (data.act === settings.eventTypeContainerHeightChanged) {
+        resizeIt()
+      } else if (data.act === settings.eventTypeFormat) {
+        this.formatDocUpdate(this.editor)
+      }
     });
   },
 
@@ -76,7 +81,12 @@ export default defineComponent({
     console.log('editor beforeUnmount')
 
     this.editor && this.editor.dispose();
-    bus.off(settings.eventEditorContainerHeightChanged)
+    bus.off(settings.eventEditorAction)
+  },
+  unmounted() {
+    console.log('editor unmounted')
+    this.editor && this.editor.dispose();
+    bus.off(settings.eventEditorAction)
   },
 
   methods: {
@@ -140,7 +150,7 @@ export default defineComponent({
           this.$emit('change', value, event, monaco?.editor?.getModelMarkers({})?.length === 0)
         }
 
-        this.formatDocUpdate(editor)
+        // this.formatDocUpdate(editor)
 
         setTimeout(() => {
           const elems = document.getElementsByClassName('monaco-editor-vue3');
@@ -205,6 +215,12 @@ export default defineComponent({
   },
 
   watch: {
+    hooks: {
+      handler(val) {
+        alert(val)
+      }
+    },
+
     options: {
       deep: true,
       handler(options) {

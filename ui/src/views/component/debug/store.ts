@@ -82,6 +82,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setExtractor: Mutation<StateType>;
         setCheckpoint: Mutation<StateType>;
         setScript: Mutation<StateType>;
+        setScriptContent: Mutation<StateType>;
 
         setShareVars: Mutation<StateType>;
         setEnvVars: Mutation<StateType>;
@@ -89,7 +90,6 @@ export interface ModuleType extends StoreModuleType<StateType> {
 
         setUrl: Mutation<StateType>;
         setBody: Mutation<StateType>;
-        setPreRequestScript: Mutation<StateType>;
     };
     actions: {
         loadDataAndInvocations: Action<StateType, StateType>;
@@ -127,6 +127,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         getScript: Action<StateType, StateType>;
         saveScript: Action<StateType, StateType>;
         removeScript: Action<StateType, StateType>;
+        addSnippet: Action<StateType, StateType>;
 
         listShareVar: Action<StateType, StateType>;
         removeShareVar: Action<StateType, StateType>;
@@ -134,7 +135,6 @@ export interface ModuleType extends StoreModuleType<StateType> {
 
         updateUrl: Action<StateType, StateType>;
         updateBody: Action<StateType, StateType>;
-        addSnippet: Action<StateType, StateType>;
 
         changeServer: Action<StateType, StateType>;
     };
@@ -181,6 +181,10 @@ const StoreModel: ModuleType = {
         setScript(state, payload) {
             state.scriptData = payload;
         },
+        setScriptContent(state, content) {
+            console.log('setScriptContent', content)
+            state.scriptData.content = content;
+        },
 
         setShareVars(state, payload) {
             state.debugData.shareVars = payload;
@@ -197,10 +201,6 @@ const StoreModel: ModuleType = {
         },
         setBody(state, payload) {
             state.debugData.body = payload;
-        },
-        setPreRequestScript(state, payload) {
-            console.log('setPreRequestScript', payload)
-            state.debugData.preRequestScript = payload;
         },
     },
     actions: {
@@ -521,7 +521,7 @@ const StoreModel: ModuleType = {
                 const response = await getScript(id);
                 const {data} = response;
 
-                commit('setCheckpoint', data);
+                commit('setScript', data);
                 return true;
             } catch (error) {
                 return false;
@@ -545,6 +545,16 @@ const StoreModel: ModuleType = {
             } catch (error) {
                 return false;
             }
+        },
+        async addSnippet({commit, dispatch, state}, name: string) {
+            const json = await getSnippet(name)
+            if (json.code === 0) {
+                let script = state.scriptData.content ? state.scriptData.content: '' + '\n' +  json.data.script
+                script = script.trim()
+                commit('setScriptContent', script);
+            }
+
+            return true;
         },
 
         // shared variable
@@ -587,16 +597,6 @@ const StoreModel: ModuleType = {
         },
         async updateBody({commit, dispatch, state}, body: string) {
             commit('setBody', body);
-            return true;
-        },
-        async addSnippet({commit, dispatch, state}, name: string) {
-            const json = await getSnippet(name)
-            if (json.code === 0) {
-                let script = state.debugData.preRequestScript + '\n' +  json.data.script
-                script = script.trim()
-                commit('setPreRequestScript', script);
-            }
-
             return true;
         },
 

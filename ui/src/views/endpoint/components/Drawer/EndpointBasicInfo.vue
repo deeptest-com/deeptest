@@ -7,12 +7,11 @@
       :title="null">
     <div style="margin-bottom: 8px;">
       <ConBoxTitle
-          @expand="expandInfo"
-          :show-arrow="true"
+          :show-arrow="false"
           :backgroundStyle="'background: #FBFBFB;'"
           :title="'基本信息'"/>
     </div>
-    <a-descriptions :size="'small'" :title="null" v-show="exandInfo">
+    <a-descriptions :size="'small'" :title="null" >
       <a-descriptions-item label="创建人">{{ endpointDetail?.createUser }}</a-descriptions-item>
       <a-descriptions-item label="状态">
         <EditAndShowSelect
@@ -106,10 +105,7 @@ function updateDescription(val: string) {
 
 const exandInfo = ref(true);
 
-function expandInfo(value: boolean) {
-  exandInfo.value = value;
-  // emit('expandInfo');
-}
+
 </script>
 
 <style lang="less" scoped>

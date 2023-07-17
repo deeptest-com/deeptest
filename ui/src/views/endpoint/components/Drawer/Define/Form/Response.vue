@@ -294,6 +294,7 @@ function handleResHeaderChange(data) {
     position: absolute;
     left: -12px;
     top: 0;
+    display: none;
     width: 2px;
     background: #E5E5E5;
     height: 100%;

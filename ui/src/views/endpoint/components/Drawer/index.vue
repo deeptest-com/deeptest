@@ -32,13 +32,13 @@
                 :size="'small'">
           <template #title>
             <div>
-              <ConBoxTitle :show-arrow="true" @expand="expandInfo" :backgroundStyle="'background: #FBFBFB;'"
+              <ConBoxTitle  :backgroundStyle="'background: #FBFBFB;'"
                            :title="'接口设计'"/>
             </div>
           </template>
 
           <a-tabs class="tabs dp-tabs-full-height"
-              v-show="expand" :activeKey="key" :animated="false" @change="changeTab">
+               :activeKey="key" :animated="false" @change="changeTab">
 
             <template #tabBarExtraContent>
               <a-button v-if="key === 'request' && showFooter" type="primary" @click="save">
@@ -63,11 +63,11 @@
             </a-tab-pane>
 
             <!-- select env and add case button top is relative to this -->
-            <a-tab-pane key="cases" tab="用例" class="tab dp-relative">
-              <div class="tab-container dp-scroll">
-                <EndpointCases v-if="key === 'cases'" @switchToDefineTab="switchToDefineTab"/>
-              </div>
-            </a-tab-pane>
+<!--            <a-tab-pane key="cases" tab="用例" class="tab dp-relative">-->
+<!--              <div class="tab-container dp-scroll">-->
+<!--                <EndpointCases v-if="key === 'cases'" @switchToDefineTab="switchToDefineTab"/>-->
+<!--              </div>-->
+<!--            </a-tab-pane>-->
 
             <a-tab-pane key="docs" tab="文档" class="tab">
               <div class="tab-container dp-scroll">
@@ -199,11 +199,7 @@ async function save() {
   emit('refreshList');
 }
 
-const expand = ref(true)
 
-function expandInfo(val) {
-  expand.value = val
-}
 
 </script>
 

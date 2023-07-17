@@ -41,10 +41,7 @@ func (s *PreConditionService) Disable(reqId uint) (err error) {
 }
 
 func (s *PreConditionService) Move(req serverDomain.ConditionMoveReq) (err error) {
-	src, err := s.PreConditionRepo.Get(req.DragId)
-
-	src.Ordr, err = s.PreConditionRepo.AddOrder(req)
-	err = s.PreConditionRepo.UpdateOrder(src)
+	err = s.PreConditionRepo.UpdateOrders(req)
 
 	return
 }

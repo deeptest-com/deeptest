@@ -40,7 +40,7 @@
 
           <div class="collapse-item">
             <div class="header">
-              <div class="title">
+              <div @click.stop="expand(element)" class="title dp-link">
                 <MenuOutlined class="handle" /> &nbsp;
 
                 {{ t(element.entityType) }} &nbsp;

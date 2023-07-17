@@ -150,7 +150,7 @@ export default defineComponent({
           this.$emit('change', value, event, monaco?.editor?.getModelMarkers({})?.length === 0)
         }
 
-        // this.formatDocUpdate(editor)
+        this.formatDocUpdate(editor)
 
         setTimeout(() => {
           const elems = document.getElementsByClassName('monaco-editor-vue3');

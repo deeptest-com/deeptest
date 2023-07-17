@@ -1,8 +1,8 @@
 package repo
 
 import (
+	"fmt"
 	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
-	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"gorm.io/gorm"
 )
@@ -14,7 +14,7 @@ type PostConditionRepo struct {
 func (r *PostConditionRepo) List(debugInterfaceId, endpointInterfaceId uint) (pos []model.DebugPostCondition, err error) {
 	db := r.DB.
 		Where("NOT deleted").
-		Order("created_at ASC")
+		Order("ordr ASC")
 
 	if debugInterfaceId > 0 {
 		db.Where("debug_interface_id=?", debugInterfaceId)
@@ -59,44 +59,20 @@ func (r *PostConditionRepo) Disable(id uint) (err error) {
 	return
 }
 
-func (r *PostConditionRepo) AddOrder(req serverDomain.ConditionMoveReq) (ret int, err error) {
-	dist, _ := r.Get(req.DropId)
+func (r *PostConditionRepo) UpdateOrders(req serverDomain.ConditionMoveReq) (err error) {
+	return r.DB.Transaction(func(tx *gorm.DB) error {
+		for index, id := range req.Data {
+			sql := fmt.Sprintf("UPDATE %s SET ordr = %d WHERE id = %d",
+				model.DebugPostCondition{}.TableName(), index+1, id)
 
-	db := r.DB.Model(&model.DebugPostCondition{}).
-		Where("NOT deleted")
+			err = r.DB.Exec(sql).Error
+			if err != nil {
+				return err
+			}
+		}
 
-	if req.DebugInterfaceId > 0 {
-		db.Where("debug_interface_id = ?", req.DebugInterfaceId)
-
-	} else if req.EndpointInterfaceId > 0 {
-		db.Where("endpoint_interface_id = ?", req.EndpointInterfaceId)
-
-	}
-
-	if req.Position == serverConsts.Before {
-		db.Where("ordr >= ?", dist.Ordr)
-
-		ret = dist.Ordr
-
-	} else if req.Position == serverConsts.After {
-		r.DB.Model(&model.DiagnoseInterface{}).
-			Where("ordr > ?", dist.Ordr)
-
-		ret = dist.Ordr + 1
-
-	}
-
-	err = db.Update("ordr", gorm.Expr("ordr + 1")).Error
-
-	return
-}
-
-func (r *PostConditionRepo) UpdateOrder(node model.DebugPostCondition) (err error) {
-	err = r.DB.Model(&node).
-		Updates(model.DebugPostCondition{Ordr: node.Ordr}).
-		Error
-
-	return
+		return nil
+	})
 }
 
 func (r *PostConditionRepo) UpdateEntityId(id uint, entityId uint) (err error) {
@@ -107,3 +83,44 @@ func (r *PostConditionRepo) UpdateEntityId(id uint, entityId uint) (err error) {
 
 	return
 }
+
+//func (r *PostConditionRepo) AddOrder(req serverDomain.ConditionMoveReq) (ret int, err error) {
+//	dist, _ := r.Get(req.DropId)
+//
+//	db := r.DB.Model(&model.DebugPostCondition{}).
+//		Where("NOT deleted")
+//
+//	if req.DebugInterfaceId > 0 {
+//		db.Where("debug_interface_id = ?", req.DebugInterfaceId)
+//
+//	} else if req.EndpointInterfaceId > 0 {
+//		db.Where("endpoint_interface_id = ?", req.EndpointInterfaceId)
+//
+//	}
+//
+//	if req.Position == serverConsts.Before {
+//		db.Where("ordr >= ?", dist.Ordr)
+//
+//		ret = dist.Ordr
+//
+//	} else if req.Position == serverConsts.After {
+//		r.DB.Model(&model.DiagnoseInterface{}).
+//			Where("ordr > ?", dist.Ordr)
+//
+//		ret = dist.Ordr + 1
+//
+//	}
+//
+//	err = db.Update("ordr", gorm.Expr("ordr + 1")).Error
+//
+//	return
+//}
+//
+//func (r *PostConditionRepo) UpdateOrder(node model.DebugPostCondition) (err error) {
+//	err = r.DB.Model(&node).
+//		Updates(model.DebugPostCondition{Ordr: node.Ordr}).
+//		Error
+//
+//	return
+//}
+//

@@ -6,7 +6,6 @@
     <div class="content">
       <multipane class="vertical-panes" layout="vertical">
         <div class="pane left" :style="{ minWidth: '150px', width: '300px', maxWidth: '600px' }">
-          <Tree/>
           <slot name="left"></slot>
         </div>
         <multipane-resizer/>

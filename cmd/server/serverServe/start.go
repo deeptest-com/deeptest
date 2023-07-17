@@ -19,6 +19,8 @@ import (
 	_i118Utils "github.com/aaronchen2k/deeptest/pkg/lib/i118"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/facebookgo/inject"
+	"github.com/iris-contrib/swagger"
+	"github.com/iris-contrib/swagger/swaggerFiles"
 	"github.com/kataras/iris/v12/websocket"
 	"github.com/sirupsen/logrus"
 	"net/http"
@@ -157,6 +159,20 @@ func (webServer *WebServer) AddWebUi() {
 		ShowList:  false,
 		SPA:       true,
 	})
+}
+
+func (webServer *WebServer) AddSwagger() {
+	swaggerConfig := swagger.Config{
+		URL:          fmt.Sprintf("/swagger/doc.json"),
+		DeepLinking:  true,
+		DocExpansion: "list",
+		DomID:        "#swagger-ui",
+		Prefix:       "/swagger",
+	}
+
+	swaggerUI := swagger.Handler(swaggerFiles.Handler, swaggerConfig)
+	webServer.app.Get("/swagger", swaggerUI)
+	webServer.app.Get("/swagger/{any:path}", swaggerUI)
 }
 
 // AddUpload 添加上传文件访问

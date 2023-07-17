@@ -1,6 +1,9 @@
 package model
 
-import "github.com/aaronchen2k/deeptest/internal/pkg/consts"
+import (
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"time"
+)
 
 type SwaggerSync struct {
 	BaseModel
@@ -11,6 +14,7 @@ type SwaggerSync struct {
 	Cron       string              `json:"cron"`
 	ProjectId  int                 `json:"projectId" gorm:"unique"`
 	ServeId    int                 `json:"ServeId"`
+	ExecTime   *time.Time          `json:"execTime"`
 }
 
 func (SwaggerSync) TableName() string {

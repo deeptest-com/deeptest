@@ -43,7 +43,8 @@ func (webServer *WebServer) InitRouter() error {
 		}
 		webServer.initModule()
 
-		webServer.AddWebUi()
+		//webServer.AddWebUi()
+		webServer.AddSwagger()
 		webServer.AddUpload()
 		webServer.AddTest()
 

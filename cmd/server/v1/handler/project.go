@@ -56,6 +56,12 @@ func (c *ProjectCtrl) Get(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: project, Msg: _domain.NoErr.Msg})
 }
 
+// Create
+// @summary project create
+// @Accept json
+// @Produce json
+// @Param ProjectReq body serverDomain.ProjectMemberRemoveReq true "Create project Request Object"
+// @Router /api/v1/projects [post]
 func (c *ProjectCtrl) Create(ctx iris.Context) {
 	userId := multi.GetUserId(ctx)
 

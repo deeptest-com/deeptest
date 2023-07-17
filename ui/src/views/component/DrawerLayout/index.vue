@@ -4,24 +4,28 @@
             :placement="'right'"
             :closable="true"
             :visible="visible"
-            :headerStyle="{padding: '12px 16px',position: 'fixed',zIndex: 9,width: '100%'}"
-            :bodyStyle="{padding: '0px',height: '100vh'}"
+            :headerStyle="{padding: '12px 16px',height: '48px',zIndex: 99,width: '100%'}"
+            :bodyStyle="{padding: '0px',height: 'calc(100vh - 48px)' ,'overflow':'hidden'}"
+            :wrapClassName="'abc-1'"
             @close="onCloseDrawer">
     <!-- 头部信息  -->
     <template #title>
-      <slot name="title"/>
+      <slot name="header"/>
     </template>
-    <div class="dp-drawer-content" ref="tabsRef">
+    <div class="dp-drawer-content" ref="contentRef">
       <!-- 基本信息区域 -->
       <div class="dp-drawer-content-basic-info">
         <slot name="basicInfo"/>
       </div>
-      <!-- Tab 切换区域 -->
-      <div class="dp-drawer-content-tabs-sticky" >
-        <slot name="Tabs"/>
+      <!-- Tab 切换区域头部信息 -->
+      <div class="dp-drawer-content-tabs-header">
+        <slot name="tabHeader"/>
+      </div>
+      <!-- Tab 切换区域内容区域 -->
+      <div class="dp-drawer-content-tabs-content">
+        <slot name="tabContent"/>
       </div>
     </div>
-
   </a-drawer>
 </template>
 
@@ -46,6 +50,11 @@ const props = defineProps({
     required: true,
     type: Boolean,
   },
+  // 每次变化时，触发吸顶操作
+  stickyKey:{
+    type: Number,
+    required: true,
+  }
 })
 const emit = defineEmits(['ok', 'close', 'refreshList']);
 
@@ -53,31 +62,17 @@ function onCloseDrawer() {
   emit('close');
 }
 
-const tabsRef: any = ref(null);
+const contentRef:any = ref(null)
 
-onMounted(() => {
 
-  setTimeout(() => {
-    debugger;
-    tabsRef.value?.addEventListener('scroll', (e) => {
-      console.log('scroll', e);
-    })
-  }, 2000);
+watch(() => {
+  return props.stickyKey;
+}, (newVal) => {
+  if (newVal && contentRef?.value) {
+    contentRef?.value?.scrollTo(0,94);
+  }
 })
 
-// watch(() => {
-//   return props.visible;
-// }, (newVal) => {
-//   if (newVal) {
-//     setTimeout(() => {
-//       debugger;
-//       tabsRef.value?.addEventListener('scroll', (e) => {
-//         console.log('scroll', e);
-//       })
-//     }, 1000);
-//
-//   }
-// })  // 监听抽屉的显示隐藏
 
 </script>
 
@@ -87,16 +82,63 @@ onMounted(() => {
   height: 100vh;
 
   .dp-drawer-content {
-    height: 100vh;
-    margin-top: 48px;
+    height: 100%;
+    overflow-y: scroll;
+    overflow-x: scroll;
   }
 
   .dp-drawer-content-basic-info {
     padding: 16px 24px;
+    height: 94px;
   }
 
-  .dp-drawer-content-tabs-sticky {
+  .dp-drawer-content-tabs-header {
+    position: sticky;
+    top: 0;
+    display: flex;
+    align-items: center;
+    height: 48px;
+    border-bottom: 1px solid #f0f0f0;
+    margin:0 16px;
+    z-index:9999;
+    background-color:#ffffff;
+    :deep(.tab-header-items) {
+      width: 80%;
+      display: flex;
+      align-items: center;
+    }
+    :deep(.tab-header-btns) {
+      width: 20%;
+      display: flex;
+      justify-content: flex-end;
+    }
+    :deep(.tab-header-items .tab-header-item) {
+      color: #000000d9;
+      position: relative;
+      margin: 0 32px 0 0;
+      padding: 12px 16px;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    :deep(.tab-header-items .tab-header-item:hover) {
+      color: #40a9ff;
+    }
+    :deep(.tab-header-items .tab-header-item.active) {
+      color: #1890ff;
+    }
+    :deep(.tab-header-items  .tab-header-item.active:after) {
+      content: "";
+      position: absolute;
+      left:0;
+      bottom: 0;
+      height: 2px;
+      background-color: #1890ff;
+      width: 100%;
+    }
+  }
 
+  .dp-drawer-content-tabs-content {
+    margin:0 16px;
   }
 
 }

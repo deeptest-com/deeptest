@@ -69,12 +69,13 @@ function handleYamlCodeChange(code) {
 .content {
   //padding: 16px;
   //height: 100%;
-  min-height: calc(100vh - 200px);
+  //min-height: calc(100vh - 200px);
   position: relative;
+  margin-top: 24px;
   .mode-btns {
     position: absolute;
-    right: 0px;
-    z-index: 999;
+    right: 0;
+    z-index: 99;
   }
 }
 </style>

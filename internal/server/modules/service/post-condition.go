@@ -62,10 +62,7 @@ func (s *PostConditionService) Disable(reqId uint) (err error) {
 }
 
 func (s *PostConditionService) Move(req serverDomain.ConditionMoveReq) (err error) {
-	src, err := s.PostConditionRepo.Get(req.DragId)
-
-	src.Ordr, err = s.PostConditionRepo.AddOrder(req)
-	err = s.PostConditionRepo.UpdateOrder(src)
+	err = s.PostConditionRepo.UpdateOrders(req)
 
 	return
 }

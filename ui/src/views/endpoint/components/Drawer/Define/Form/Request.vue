@@ -171,7 +171,7 @@ function addEndpoint() {
     top: -12px;
     width: 2px;
     background: #E5E5E5;
-    min-height: 80vh;
+    //min-height: 80vh;
     height: calc(100% + 24px);
   }
   .form-item-request-item {

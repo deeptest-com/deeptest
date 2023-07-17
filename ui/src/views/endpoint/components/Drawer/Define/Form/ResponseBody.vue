@@ -155,8 +155,7 @@ function changeExamples(examples: any) {
     top: -72px;
     width: 2px;
     background: #E5E5E5;
-    min-height: 80vh;
-    height: calc(100% + 50px);
+    height: calc(100% + 100px);
   }
 }
 

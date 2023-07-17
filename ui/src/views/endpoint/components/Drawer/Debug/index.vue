@@ -3,14 +3,12 @@
     <div id="debug-top">
       <DebugMethod />
     </div>
-
     <div id="debug-bottom">
       <DebugComp :topVal="'10px'"
                   :onSaveDebugData="saveDebugInterface"
                  :showMethodSelection="false" />
     </div>
   </div>
-
   <div v-else style="margin-top: 48px;">
     <a-empty
         image="https://gw.alipayobjects.com/mdn/miniapp_social/afts/img/A*pevERLJC9v0AAAAAAAAAAABjAQAAAQ/original"
@@ -75,14 +73,15 @@ const saveDebugInterface = async (data) => {
   height: 100%;
   width: 100%;
   display: flex;
+  min-height: calc(100vh - 96px);
   flex-direction: column;
-
   #debug-top {
     display: flex;
     margin: 10px 0;
     align-items: center;
     justify-content: space-between;
     padding-right: 2px;
+    height: 30%;
   }
 
   #debug-bottom {

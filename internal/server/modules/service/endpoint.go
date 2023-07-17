@@ -16,6 +16,7 @@ import (
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"gorm.io/gorm"
 	"net/http"
 	"net/url"
 	"strings"
@@ -228,6 +229,11 @@ func (s *EndpointService) createEndpoints(wg *sync.WaitGroup, endpoints []*model
 			if err == nil {
 				endpoint.ID = res.ID
 			}
+
+			//非Notfound
+			if err != nil && err != gorm.ErrRecordNotFound {
+				continue
+			}
 		}
 		_, err = s.Save(*endpoint)
 		if err != nil {
@@ -249,6 +255,10 @@ func (s *EndpointService) createComponents(wg *sync.WaitGroup, components map[st
 		if req.DataSyncType == convert.FullCover {
 			_, err := s.ServeRepo.GetComponentByItem(consts.Swagger, uint(component.ServeId), component.Ref)
 			if err == nil {
+				continue
+			}
+			//非Notfound
+			if err != nil && err != gorm.ErrRecordNotFound {
 				continue
 			}
 		}

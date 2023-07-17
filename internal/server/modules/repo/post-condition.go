@@ -28,11 +28,11 @@ func (r *PostConditionRepo) List(debugInterfaceId, endpointInterfaceId uint) (po
 	return
 }
 
-func (r *PostConditionRepo) Get(id uint) (checkpoint model.DebugPostCondition, err error) {
+func (r *PostConditionRepo) Get(id uint) (po model.DebugPostCondition, err error) {
 	err = r.DB.
 		Where("id=?", id).
 		Where("NOT deleted").
-		First(&checkpoint).Error
+		First(&po).Error
 	return
 }
 

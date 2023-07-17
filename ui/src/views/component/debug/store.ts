@@ -31,7 +31,7 @@ import {
     removePostConditions,
     movePostConditions,
     removePreConditions,
-    movePreConditions,
+    movePreConditions, disablePreConditions, disablePostConditions,
 } from './service';
 import {Checkpoint, DebugInfo, Extractor, Interface, Response, Script} from "./data";
 import {UsedBy} from "@/utils/enum";
@@ -105,12 +105,14 @@ export interface ModuleType extends StoreModuleType<StateType> {
 
         listPreCondition: Action<StateType, StateType>;
         createPreCondition: Action<StateType, StateType>;
+        disablePreCondition: Action<StateType, StateType>;
         removePreCondition: Action<StateType, StateType>;
         movePreCondition: Action<StateType, StateType>;
 
         listPostCondition: Action<StateType, StateType>;
         createPostCondition: Action<StateType, StateType>;
         removePostCondition: Action<StateType, StateType>;
+        disablePostCondition: Action<StateType, StateType>;
         movePostCondition: Action<StateType, StateType>;
 
         getExtractor: Action<StateType, StateType>;
@@ -364,6 +366,15 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
+        async disablePreCondition({commit, dispatch, state}, id: number) {
+            try {
+                await disablePreConditions(id);
+                dispatch('listPreCondition');
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
         async removePreCondition({commit, dispatch, state}, id: number) {
             try {
                 await removePreConditions(id);
@@ -396,6 +407,15 @@ const StoreModel: ModuleType = {
         async createPostCondition({commit, dispatch, state}, payload: any) {
             try {
                 await createPostConditions(payload);
+                dispatch('listPostCondition');
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+        async disablePostCondition({commit, dispatch, state}, id: number) {
+            try {
+                await disablePostConditions(id);
                 dispatch('listPostCondition');
                 return true;
             } catch (error) {

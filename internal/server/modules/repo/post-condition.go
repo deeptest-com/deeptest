@@ -53,7 +53,7 @@ func (r *PostConditionRepo) Delete(id uint) (err error) {
 func (r *PostConditionRepo) Disable(id uint) (err error) {
 	err = r.DB.Model(&model.DebugPostCondition{}).
 		Where("id=?", id).
-		Update("disabled", true).
+		Update("disabled", gorm.Expr("NOT disabled")).
 		Error
 
 	return

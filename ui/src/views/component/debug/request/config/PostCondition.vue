@@ -53,7 +53,11 @@
                 {{activeItem || 0}},{{element.id}}
               </div>
               <div class="buttons">
-                <CheckCircleOutlined @click.stop="disable(element)"  class="dp-icon-btn dp-trans-80" />
+                <CheckCircleOutlined v-if="!element.disabled" @click.stop="disable(element)"
+                                     class="dp-icon-btn dp-trans-80 dp-color-pass" />
+                <CloseCircleOutlined v-if="element.disabled" @click.stop="disable(element)"
+                                     class="dp-icon-btn dp-trans-80" />
+
                 <DeleteOutlined @click.stop="remove(element)"  class="dp-icon-btn dp-trans-80" />
                 &nbsp;&nbsp;
                 <RightOutlined v-if="activeItem !== element.id"
@@ -81,7 +85,7 @@ import {computed, inject, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import { QuestionCircleOutlined, CheckCircleOutlined, DeleteOutlined,
-  ClearOutlined, MenuOutlined, RightOutlined, DownOutlined } from '@ant-design/icons-vue';
+  ClearOutlined, MenuOutlined, RightOutlined, DownOutlined, CloseCircleOutlined } from '@ant-design/icons-vue';
 import draggable from 'vuedraggable'
 import {ConditionType, UsedBy} from "@/utils/enum";
 
@@ -129,6 +133,7 @@ const create = () => {
 
 const disable = (item) => {
   console.log('disable', item)
+  store.dispatch('Debug/disablePostCondition', item.id)
 }
 const remove = (item) => {
   console.log('remove', item)

@@ -35,6 +35,7 @@ import (
 	"github.com/snowlyg/helper/str"
 	"github.com/snowlyg/helper/tests"
 
+	_ "github.com/aaronchen2k/deeptest/cmd/server/docs"
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/mvc"
 )

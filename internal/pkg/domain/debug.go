@@ -24,11 +24,13 @@ type DebugData struct {
 
 	DebugInterfaceId uint `json:"debugInterfaceId"`
 
-	EndpointInterfaceId uint          `json:"endpointInterfaceId"`
-	ScenarioProcessorId uint          `json:"scenarioProcessorId"`
-	DiagnoseInterfaceId uint          `json:"diagnoseInterfaceId"`
-	CaseInterfaceId     uint          `json:"caseInterfaceId"`
-	UsedBy              consts.UsedBy `json:"usedBy"`
+	EndpointInterfaceId uint `json:"endpointInterfaceId"`
+	CaseInterfaceId     uint `json:"caseInterfaceId"`
+	DiagnoseInterfaceId uint `json:"diagnoseInterfaceId"`
+
+	ScenarioProcessorId uint `json:"scenarioProcessorId"`
+
+	UsedBy consts.UsedBy `json:"usedBy"`
 
 	ServeId   uint `json:"serveId"`
 	ServerId  uint `json:"serverId"`

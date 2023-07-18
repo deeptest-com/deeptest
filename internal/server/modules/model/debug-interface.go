@@ -1,12 +1,16 @@
 package model
 
+import "github.com/aaronchen2k/deeptest/internal/pkg/consts"
+
 type DebugInterface struct {
 	BaseModel
 	InterfaceBase
 
 	EndpointInterfaceId uint `gorm:"default:0" json:"endpointInterfaceId"`
-	ScenarioProcessorId uint `gorm:"default:0" json:"scenarioProcessorId"`
 	DiagnoseInterfaceId uint `gorm:"default:0" json:"diagnoseInterfaceId"`
+
+	ScenarioProcessorId   uint          `gorm:"default:0" json:"scenarioProcessorId"`
+	ProcessorInterfaceSrc consts.UsedBy `json:"processorInterfaceSrc"`
 
 	ServeId uint `json:"serveId"`
 	// used by DiagnoseInterface

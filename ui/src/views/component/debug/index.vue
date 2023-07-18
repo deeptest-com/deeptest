@@ -3,7 +3,8 @@
     <div id="debug-content">
       <Invocation :topVal="topVal"
                   :onSave="saveDebugData"
-                  :onSync="syncDebugData" />
+                  :onSync="syncDebugData"
+                  :baseUrlDisabled="baseUrlDisabled"/>
 
       <DebugConfig />
     </div>
@@ -60,7 +61,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, defineProps, onMounted, onUnmounted, PropType, ref} from "vue";
+import {computed, defineProps, inject, onMounted, onUnmounted, PropType, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 
@@ -76,6 +77,8 @@ import {StateType as Endpoint} from "../../endpoint/store";
 
 import {StateType as GlobalStateType} from "@/store/global";
 import {getRightTabPanelPosition, resizeWidth} from "@/utils/dom";
+import {UsedBy} from "@/utils/enum";
+const usedBy = inject('usedBy') as UsedBy
 
 const {t} = useI18n();
 const store = useStore<{  Debug: Debug, Endpoint: Endpoint, ProjectGlobal: ProjectGlobal, Global: GlobalStateType }>();
@@ -93,6 +96,11 @@ const props = defineProps({
   topVal: {
     type: String,
     required: true
+  },
+  baseUrlDisabled: {
+    type: Boolean,
+    required: false,
+    default: true
   },
 })
 

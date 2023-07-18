@@ -6,6 +6,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
+	_httpUtils "github.com/aaronchen2k/deeptest/pkg/lib/http"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"strings"
 )
@@ -36,7 +37,10 @@ func RequestInterface(req domain.DebugData) (ret domain.DebugResponse, err error
 
 	// gen url
 	reqUri := agentExec.ReplacePathParams(req.Url, req.PathParams)
-	req.BaseRequest.Url = req.BaseUrl + reqUri
+
+	if req.ProcessorInterfaceSrc != consts.DiagnoseDebug {
+		req.BaseRequest.Url = _httpUtils.CombineUrls(req.BaseUrl, reqUri)
+	}
 	logUtils.Info("url: " + req.BaseRequest.Url)
 
 	// send request

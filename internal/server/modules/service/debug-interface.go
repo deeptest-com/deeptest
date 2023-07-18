@@ -252,6 +252,7 @@ func (s *DebugInterfaceService) GetDebugInterfaceByScenarioInterface(scenarioPro
 
 	ret.DebugInterfaceId = debugInterfaceId
 	ret.ScenarioProcessorId = scenarioProcessorId
+	ret.ProcessorInterfaceSrc = debugData.ProcessorInterfaceSrc
 
 	ret.Headers = append(ret.Headers, domain.Header{Name: "", Value: ""})
 	ret.QueryParams = append(ret.QueryParams, domain.Param{Name: "", Value: "", ParamIn: consts.ParamInQuery})

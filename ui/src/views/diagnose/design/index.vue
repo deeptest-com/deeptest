@@ -10,7 +10,7 @@
             <template v-if="debugData?.method" >
               <DebugComp :topVal="'-40px'"
                          :onSaveDebugData="saveDiagnoseInterface"
-                         :base-url-disabled="false" />
+                         :baseUrlDisabled="false" />
             </template>
           </a-tab-pane>
 
@@ -24,11 +24,6 @@ import {computed, provide, ref, watch} from 'vue';
 import {useStore} from "vuex";
 import debounce from "lodash.debounce";
 import {UsedBy} from "@/utils/enum";
-import { EnvironmentOutlined, HistoryOutlined } from '@ant-design/icons-vue';
-
-import RequestEnv from '@/views/component/debug/others/env/index.vue';
-import RequestHistory from '@/views/component/debug/others/history/index.vue';
-import Invocation from '@/views/component/debug/request/Invocation.vue'
 
 import DebugComp from '@/views/component/debug/index.vue';
 

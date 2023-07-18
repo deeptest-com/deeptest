@@ -9,6 +9,7 @@ import (
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
+	_httpUtils "github.com/aaronchen2k/deeptest/pkg/lib/http"
 	"github.com/jinzhu/copier"
 	"net/http"
 	"net/url"
@@ -113,20 +114,6 @@ func (s *DiagnoseInterfaceService) CopyDebugDataValueFromRequest(interf *model.D
 	return
 }
 
-func (s *DiagnoseInterfaceService) ImportInterfaces(req serverDomain.DiagnoseInterfaceImportReq) (ret model.DiagnoseInterface, err error) {
-	parent, _ := s.DiagnoseInterfaceRepo.Get(req.TargetId)
-
-	if parent.Type != serverConsts.DiagnoseInterfaceTypeDir {
-		parent, _ = s.DiagnoseInterfaceRepo.Get(parent.ParentId)
-	}
-
-	for _, interfaceId := range req.InterfaceIds {
-		ret, err = s.createInterfaceFromDefine(interfaceId, req.CreateBy, parent)
-	}
-
-	return
-}
-
 func (s *DiagnoseInterfaceService) ImportCurl(req serverDomain.DiagnoseCurlImportReq) (ret model.DiagnoseInterface, err error) {
 	parent, _ := s.DiagnoseInterfaceRepo.Get(req.TargetId)
 	if parent.Type != serverConsts.DiagnoseInterfaceTypeDir {
@@ -185,6 +172,20 @@ func (s *DiagnoseInterfaceService) ImportCurl(req serverDomain.DiagnoseCurlImpor
 	return
 }
 
+func (s *DiagnoseInterfaceService) ImportInterfaces(req serverDomain.DiagnoseInterfaceImportReq) (ret model.DiagnoseInterface, err error) {
+	parent, _ := s.DiagnoseInterfaceRepo.Get(req.TargetId)
+
+	if parent.Type != serverConsts.DiagnoseInterfaceTypeDir {
+		parent, _ = s.DiagnoseInterfaceRepo.Get(parent.ParentId)
+	}
+
+	for _, interfaceId := range req.InterfaceIds {
+		ret, err = s.createInterfaceFromDefine(interfaceId, req.CreateBy, parent)
+	}
+
+	return
+}
+
 func (s *DiagnoseInterfaceService) createInterfaceFromDefine(endpointInterfaceId int, createBy uint, parent model.DiagnoseInterface) (
 	ret model.DiagnoseInterface, err error) {
 
@@ -201,7 +202,9 @@ func (s *DiagnoseInterfaceService) createInterfaceFromDefine(endpointInterfaceId
 
 	server, _ := s.ServeServerRepo.GetDefaultByServe(debugData.ServeId)
 	debugData.ServerId = server.ID
-	debugData.BaseUrl = server.Url
+
+	debugData.BaseUrl = "" // no need to bind to env in debug page
+	debugData.Url = _httpUtils.CombineUrls(server.Url, debugData.Url)
 
 	debugData.UsedBy = consts.DiagnoseDebug
 	debugInterface, err := s.DebugInterfaceService.Save(debugData)

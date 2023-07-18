@@ -26,3 +26,22 @@ func AddSepIfNeeded(utl string) string {
 	}
 	return utl
 }
+
+func CombineUrls(base, uri string) (ret string) {
+	if base == "" {
+		return uri
+	}
+
+	last := base[len(base)-1:]
+	first := uri[:1]
+
+	if last == "/" && first == "/" {
+		ret = base[:len(base)-1] + uri
+	} else if last == "/" || first == "/" {
+		ret = base + uri
+	} else {
+		ret = AddSepIfNeeded(base) + uri
+	}
+
+	return
+}

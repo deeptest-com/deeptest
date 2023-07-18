@@ -1,9 +1,11 @@
 package repo
 
 import (
+	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
+	_i118Utils "github.com/aaronchen2k/deeptest/pkg/lib/i118"
 	"github.com/jinzhu/copier"
 	"gorm.io/gorm"
 )
@@ -70,7 +72,38 @@ func (r *CheckpointRepo) GetByName(name string, interfaceId uint) (checkpoint mo
 }
 
 func (r *CheckpointRepo) Save(checkpoint *model.DebugConditionCheckpoint) (err error) {
+	r.UpdateDesc(checkpoint)
+
 	err = r.DB.Save(checkpoint).Error
+	return
+}
+func (r *CheckpointRepo) UpdateDesc(po *model.DebugConditionCheckpoint) (err error) {
+	name := ""
+
+	opt := fmt.Sprintf("%v", po.Operator)
+	optName := _i118Utils.Sprintf(opt)
+	if po.Type == consts.ResponseStatus {
+		name = _i118Utils.Sprintf("usage")
+		name = fmt.Sprintf("状态码检查点 %s \"%s\"", optName, po.Value)
+	} else if po.Type == consts.ResponseHeader {
+		name = fmt.Sprintf("响应头检查点 %s \"%s\"", optName, po.Expression)
+	} else if po.Type == consts.ResponseBody {
+		name = fmt.Sprintf("响应体检查点 %s \"%s\"", optName, po.Value)
+	} else if po.Type == consts.Extractor {
+		name = fmt.Sprintf("提取器检查点 %s %s \"%s\"", po.ExtractorVariable, optName, po.Value)
+	} else if po.Type == consts.Judgement {
+		name = fmt.Sprintf("表达式检查点 \"%s\"", po.Expression)
+	}
+
+	desc := name
+	values := map[string]interface{}{
+		"desc": desc,
+	}
+
+	err = r.DB.Model(&model.DebugPostCondition{}).
+		Where("id=?", po.ConditionId).
+		Updates(values).Error
+
 	return
 }
 

@@ -21,6 +21,52 @@ const docTemplate = `{
     "basePath": "{{.BasePath}}",
     "paths": {
         "/api/v1/projects": {
+            "get": {
+                "tags": [
+                    "项目管理/项目列表"
+                ],
+                "summary": "项目列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "enabled",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "field",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "keywords",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "order",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "pageSize",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            },
             "post": {
                 "consumes": [
                     "application/json"
@@ -28,7 +74,10 @@ const docTemplate = `{
                 "produces": [
                     "application/json"
                 ],
-                "summary": "project create",
+                "tags": [
+                    "项目管理/项目列表"
+                ],
+                "summary": "创建项目",
                 "parameters": [
                     {
                         "description": "Create project Request Object",
@@ -40,11 +89,30 @@ const docTemplate = `{
                         }
                     }
                 ],
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
             }
         }
     },
     "definitions": {
+        "_domain.Response": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {},
+                "msg": {
+                    "type": "string"
+                }
+            }
+        },
         "serverConsts.ProjectType": {
             "type": "string",
             "enum": [

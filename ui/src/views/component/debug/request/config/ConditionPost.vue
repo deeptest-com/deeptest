@@ -42,10 +42,7 @@
             <div class="header">
               <div @click.stop="expand(element)" class="title dp-link">
                 <MenuOutlined class="handle dp-drag" /> &nbsp;
-
-                {{ t(element.entityType) }} &nbsp;
-                {{ element.desc }} -
-                {{activeItem.id || 0}},{{element.id}}
+                {{ element.desc || t(element.entityType) }}
               </div>
               <div class="buttons">
                 <ClearOutlined v-if="activeItem.id === +element.id && element.entityType === ConditionType.script"

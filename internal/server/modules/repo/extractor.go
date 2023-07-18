@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
@@ -90,10 +91,45 @@ func (r *ExtractorRepo) Save(extractor *model.DebugConditionExtractor) (id uint,
 }
 
 func (r *ExtractorRepo) Update(extractor *model.DebugConditionExtractor) (err error) {
+	r.UpdateDesc(extractor)
+
 	err = r.DB.Updates(extractor).Error
 	if err != nil {
 		return
 	}
+
+	return
+}
+
+func (r *ExtractorRepo) UpdateDesc(po *model.DebugConditionExtractor) (err error) {
+	src := ""
+	if po.Src == consts.Header {
+		src = "响应头"
+	} else if po.Src == consts.Body {
+		src = "响应体"
+	}
+
+	name := ""
+	if po.Type == consts.Boundary {
+		name = fmt.Sprintf("边界提取器 \"%s - %s\"", po.BoundaryStart, po.BoundaryEnd)
+	} else if po.Type == consts.JsonQuery {
+		name = fmt.Sprintf("JSON提取器 \"%s\"", po.Expression)
+	} else if po.Type == consts.HtmlQuery {
+		name = fmt.Sprintf("HTML提取器 \"%s\"", po.Expression)
+	} else if po.Type == consts.XmlQuery {
+		name = fmt.Sprintf("XML提取器 \"%s\"", po.Expression)
+	} else if po.Type == consts.Regx {
+		name = fmt.Sprintf("正则表达式提取器 \"%s\"", po.Expression)
+	}
+
+	desc := fmt.Sprintf("%s%s", src, name)
+	values := map[string]interface{}{
+		"desc": desc,
+	}
+
+	err = r.DB.Model(&model.DebugPostCondition{}).
+		Where("id=?", po.ConditionId).
+		Updates(values).Error
 
 	return
 }

@@ -1,10 +1,10 @@
 <template>
   <div class="condition-edit-fullscreen">
     <a-modal
+        :title="'配置'+t(model.entityType)"
         :visible="visible"
         :footer="null"
         @cancel="cancel"
-        title="Basic Modal"
         width="100%"
         wrapClassName="dp-full-modal">
 
@@ -29,6 +29,7 @@
 <script setup lang="ts">
 import {computed, defineProps, inject, ref} from "vue";
 import {useI18n} from "vue-i18n";
+const {t} = useI18n();
 
 import {ConditionType} from "@/utils/enum";
 import Extractor from "./conditions-post/Extractor.vue";

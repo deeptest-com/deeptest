@@ -7,7 +7,7 @@
             "url": "https://github.com/aaronchen2k/deeptest/issues",
             "email": "462626@qq.com"
         },
-        "version": "1.0"
+        "version": "3.0"
     },
     "paths": {
         "/api/v1/projects": {
@@ -26,7 +26,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/serverDomain.ProjectMemberRemoveReq"
+                            "$ref": "#/definitions/serverDomain.ProjectReq"
                         }
                     }
                 ],
@@ -35,14 +35,58 @@
         }
     },
     "definitions": {
-        "serverDomain.ProjectMemberRemoveReq": {
+        "serverConsts.ProjectType": {
+            "type": "string",
+            "enum": [
+                "full",
+                "debug"
+            ],
+            "x-enum-varnames": [
+                "Full",
+                "Debug"
+            ]
+        },
+        "serverDomain.ProjectReq": {
             "type": "object",
             "properties": {
-                "projectId": {
+                "adminId": {
                     "type": "integer"
                 },
-                "userId": {
+                "adminName": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "desc": {
+                    "type": "string"
+                },
+                "id": {
                     "type": "integer"
+                },
+                "includeExample": {
+                    "type": "boolean"
+                },
+                "logo": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "orgId": {
+                    "type": "integer"
+                },
+                "schemaId": {
+                    "type": "integer"
+                },
+                "shortName": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/serverConsts.ProjectType"
+                },
+                "updatedAt": {
+                    "type": "string"
                 }
             }
         }

@@ -1,10 +1,40 @@
 definitions:
-  serverDomain.ProjectMemberRemoveReq:
+  serverConsts.ProjectType:
+    enum:
+    - full
+    - debug
+    type: string
+    x-enum-varnames:
+    - Full
+    - Debug
+  serverDomain.ProjectReq:
     properties:
-      projectId:
+      adminId:
         type: integer
-      userId:
+      adminName:
+        type: string
+      createdAt:
+        type: string
+      desc:
+        type: string
+      id:
         type: integer
+      includeExample:
+        type: boolean
+      logo:
+        type: string
+      name:
+        type: string
+      orgId:
+        type: integer
+      schemaId:
+        type: integer
+      shortName:
+        type: string
+      type:
+        $ref: '#/definitions/serverConsts.ProjectType'
+      updatedAt:
+        type: string
     type: object
 info:
   contact:
@@ -12,7 +42,7 @@ info:
     name: API Support
     url: https://github.com/aaronchen2k/deeptest/issues
   title: DeepTest服务端API文档
-  version: "1.0"
+  version: "3.0"
 paths:
   /api/v1/projects:
     post:
@@ -24,7 +54,7 @@ paths:
         name: ProjectReq
         required: true
         schema:
-          $ref: '#/definitions/serverDomain.ProjectMemberRemoveReq'
+          $ref: '#/definitions/serverDomain.ProjectReq'
       produces:
       - application/json
       responses: {}

@@ -36,7 +36,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/serverDomain.ProjectMemberRemoveReq"
+                            "$ref": "#/definitions/serverDomain.ProjectReq"
                         }
                     }
                 ],
@@ -45,14 +45,58 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "serverDomain.ProjectMemberRemoveReq": {
+        "serverConsts.ProjectType": {
+            "type": "string",
+            "enum": [
+                "full",
+                "debug"
+            ],
+            "x-enum-varnames": [
+                "Full",
+                "Debug"
+            ]
+        },
+        "serverDomain.ProjectReq": {
             "type": "object",
             "properties": {
-                "projectId": {
+                "adminId": {
                     "type": "integer"
                 },
-                "userId": {
+                "adminName": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "desc": {
+                    "type": "string"
+                },
+                "id": {
                     "type": "integer"
+                },
+                "includeExample": {
+                    "type": "boolean"
+                },
+                "logo": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "orgId": {
+                    "type": "integer"
+                },
+                "schemaId": {
+                    "type": "integer"
+                },
+                "shortName": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/serverConsts.ProjectType"
+                },
+                "updatedAt": {
+                    "type": "string"
                 }
             }
         }
@@ -61,7 +105,7 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "1.0",
+	Version:          "3.0",
 	Host:             "",
 	BasePath:         "",
 	Schemes:          []string{},

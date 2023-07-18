@@ -38,7 +38,7 @@
       <div class="tab-pane">
         <EndpointDefine v-if="activeTabKey === 'request'" @switchMode="switchMode"/>
         <EndpointDebug v-if="activeTabKey === 'run'" @switchToDefineTab="switchToDefineTab"/>
-        <EndpointCases v-if="activeTabKey === 'cases'" @switchToDefineTab="switchToDefineTab"/>
+<!--        <EndpointCases v-if="activeTabKey === 'cases'" @switchToDefineTab="switchToDefineTab"/>-->
         <Docs :onlyShowDocs="true"
               :showHeader="false"
               v-if="activeTabKey === 'docs' && docsData"
@@ -94,10 +94,10 @@ const tabsList = [
     "key": "run",
     "label": "调试"
   },
-  {
-    "key": "cases",
-    "label": "用例"
-  },
+  // {
+  //   "key": "cases",
+  //   "label": "用例"
+  // },
   {
     "key": "docs",
     "label": "文档"

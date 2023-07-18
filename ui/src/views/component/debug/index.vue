@@ -141,8 +141,8 @@ const closeRightTab = () => {
 
 <style lang="less">
 #debug-index #debug-right .right-tab {
-  height: 100%;
-
+  //height: 100%;
+  height: calc(100vh - 152px);
   .ant-tabs-left-content {
     padding-left: 0px;
   }

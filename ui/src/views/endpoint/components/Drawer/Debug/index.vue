@@ -77,16 +77,18 @@ const saveDebugInterface = async (data) => {
   flex-direction: column;
   #debug-top {
     display: flex;
-    margin: 10px 0;
+    margin: 12px 0;
+    height: 32px;
+    //margin-bottom: 12px;
     align-items: center;
     justify-content: space-between;
     padding-right: 2px;
-    height: 30%;
   }
 
   #debug-bottom {
     flex: 1;
-    height: calc(100% - 46px);
+    //height: calc(100% - 46px);
+    height: calc(100vh - 152px);
   }
 }
 </style>

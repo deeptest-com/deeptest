@@ -1,5 +1,6 @@
 <template>
-  <div class="content" :class="{'full-content':isDocsFullPage}" v-if="data?.name && serviceList?.length">
+  <div :class="{'content':isDocsPage,'full-content':isDocsFullPage,'drawer-content':isEndpointPage}"
+       v-if="data?.name && serviceList?.length">
     <DocsHeader v-if="showHeader"
                 :data="data"
                 :items="serviceList"
@@ -7,12 +8,18 @@
                 @changeVersion="changeVersion"/>
     <a-divider style="margin:0" v-if="showHeader"/>
     <div class="doc-container">
-      <div class="left" v-if="showMenu">
-        <LeftTreeView :serviceList="serviceList" @select="selectMenu" :selectedKeys="selectedKeys"/>
-      </div>
-      <div class="right" :class="{'only-docs':!showMenu}">
-        <EndpointDoc v-if="selectedItem" :info="selectedItem" :onlyShowDocs="onlyShowDocs"/>
-      </div>
+      <ContentPane :containerStyle="{padding:0,margin:0,height:'100%',width:'100%'}">
+        <template #left>
+          <div class="left" v-if="showMenu">
+            <LeftTreeView :serviceList="serviceList" @select="selectMenu" :selectedKeys="selectedKeys"/>
+          </div>
+        </template>
+        <template #right>
+          <div class="right" :class="{'only-docs':!showMenu}">
+            <EndpointDoc v-if="selectedItem" :info="selectedItem" :onlyShowDocs="onlyShowDocs"/>
+          </div>
+        </template>
+      </ContentPane>
     </div>
   </div>
   <a-skeleton v-if="!data?.name"/>
@@ -43,6 +50,7 @@ import {useStore} from "vuex";
 import LeftTreeView from "./components/LeftTreeView.vue";
 import EndpointDoc from "./components/EndpointDoc.vue";
 import DocsHeader from "./components/DocsHeader.vue";
+import ContentPane from '@/views/component/ContentPane/index.vue';
 
 const store = useStore<{ Docs }>();
 const props = defineProps(['showMenu', 'data', 'onlyShowDocs', 'showHeader']);
@@ -51,6 +59,7 @@ const currDocId = computed<any>(() => store.state.Docs.currDocId);
 const isEndpointPage = window.location.href.includes('/endpoint/index');
 const isSharePage = window.location.href.includes('/docs/share');
 const isViewPage = window.location.href.includes('/docs/view');
+const isDocsPage = window.location.href.includes('/docs/index');
 
 const isDocsFullPage = isSharePage || isViewPage;
 
@@ -136,53 +145,50 @@ function changeVersion(docId) {
 </script>
 
 <style lang="less" scoped>
+
+.right {
+  flex: 1;
+  height: 100%;
+  overflow: auto;
+  padding: 12px 24px 96px 24px;
+}
+
+// 文档页面
 .content {
   height: calc(100vh - 100px);
-  position: relative;
-}
-
-.doc-container {
-  display: flex;
-  //height: 100%;
-  height: calc(100vh - 156px);
-
-  .left {
-    width: 300px;
-    height: 100%;
-    overflow: hidden;
-    overflow-y: scroll;
-    position: relative;
-
-    &:before {
-      content: '';
-      position: absolute;
-      top: 0;
-      right: 0;
-      height: 100%;
-      z-index: 99;
-      background-color: #f0f0f0;
-      width: 1px;
-    }
-  }
-
-  .right {
-    flex: 1;
-    height: 100%;
-    overflow: auto;
-    padding: 12px 24px 96px 24px;
-  }
-
-  .only-docs {
-    padding: 0;
-  }
-}
-
-.full-content {
-  height: 100vh;
   .doc-container {
     display: flex;
-    //height: 100%;
+    height: calc(100vh - 156px);
+    .left {
+      margin-left: 12px;
+    }
+    .only-docs {
+      padding: 0;
+    }
+  }
+}
+
+// 文档分享页和查看页
+.full-content {
+  min-height: 100vh !important;
+
+  .doc-container {
+    display: flex;
+    top: 0;
     height: calc(100vh - 56px);
+  }
+}
+
+// 抽屉里的文档区域
+.drawer-content {
+  height: calc(100vh - 96px) !important;
+
+  .doc-container {
+    position: relative;
+    .left {
+      margin-left: 0 !important;
+      height: calc(100vh - 96px);
+    }
   }
 }
 </style>

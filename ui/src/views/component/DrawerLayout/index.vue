@@ -146,7 +146,8 @@ watch(() => {
     padding: 0 16px;
     :deep(.tab-pane) {
       position: relative;
-      min-height: calc(100vh - 94px);
+      //margin-top: 16px;
+      min-height: calc(100vh - 96px);
     }
   }
 

@@ -95,9 +95,9 @@ watch(() => {
   //  选中的接口文档，滚动相应的位置
   if(menuItemRefs.value?.[`${newVal[0]}`]){
     menuItemRefs.value[`${newVal[0]}`].scrollIntoView({
-      behavior: 'smooth',
-      block: 'nearest',
-      inline: 'nearest',
+      behavior: 'auto',
+      block: 'center',
+      inline: 'center',
     });
   }
 },{immediate: false});
@@ -106,6 +106,7 @@ watch(() => {
 <style lang="less" scoped>
 .docs-menu {
   height: 100%;
+
   //margin-left: 1px;
   position: relative;
   border-right:none;
@@ -114,16 +115,16 @@ watch(() => {
   //  position: relative;
   //}
 
-  &:before{
-    content: '';
-    position: absolute;
-    top:0;
-    right: 0;
-    height: 100%;
-    z-index: 99;
-    background-color: #f0f0f0;
-    width: 1px;
-  }
+  //&:before{
+  //  content: '';
+  //  position: absolute;
+  //  top:0;
+  //  right: 0;
+  //  height: 100%;
+  //  z-index: 99;
+  //  background-color: #f0f0f0;
+  //  width: 1px;
+  //}
   :deep(.hide) {
     display: none !important;
   }

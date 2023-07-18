@@ -370,13 +370,12 @@ func (s *EndpointService) getInterfaces(cURL *curlHelper.CURL, wf *requests.Temp
 }
 
 func (s *EndpointService) getMethod(contentType, method string) (ret consts.HttpMethod) {
-	ret = consts.HttpMethod(method)
-
-	if contentType == "application/json" {
-		ret = "POST"
+	if method == "" && contentType == "application/json" {
+		method = "POST"
 	}
 
-	return
+	return consts.HttpMethod(method)
+
 }
 
 func (s *EndpointService) getQueryParams(params url.Values) (ret []model.EndpointInterfaceParam) {

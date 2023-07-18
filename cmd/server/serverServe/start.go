@@ -171,6 +171,25 @@ func (webServer *WebServer) AddTest() {
 	webServer.app.HandleDir("/test", fsOrDir)
 }
 
+func (webServer *WebServer) AddSwagger() {
+	/*
+		swaggerConfig := swagger.Config{
+			URL:          fmt.Sprintf("/swagger/doc.json"),
+			DeepLinking:  true,
+			DocExpansion: "list",
+			DomID:        "#swagger-ui",
+			Prefix:       "/swagger",
+		}
+	*/
+	/*
+		swaggerUI := swagger.Handler(swaggerFiles.Handler)
+		webServer.app.Get("/swagger", swaggerUI)
+		webServer.app.Get("/swagger/{any:path}", swaggerUI)
+	*/
+	//fsOrDir := iris.Dir(filepath.Join(dir.GetCurrentAbPath(), filepath.Join(webServer.staticPath, "test")))
+	//webServer.app.HandleDir("/swagger", fsOrDir)
+}
+
 // GetModules 获取模块
 func (webServer *WebServer) GetModules() []module.WebModule {
 	return webServer.modules

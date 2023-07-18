@@ -240,10 +240,9 @@ func parseHeader(u *CURL, soption string) {
 	case "cookie":
 		u.Cookies = GetRawCookies(value, "")
 		u.CookieJar.SetCookies(u.ParsedURL, u.Cookies)
+		u.Header.Add(key, value)
 	case "content-type":
 		u.ContentType = value
-	//case "accept":
-	//	u.ContentType = value
 	default:
 		u.Header.Add(key, value)
 	}

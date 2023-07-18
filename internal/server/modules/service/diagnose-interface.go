@@ -162,8 +162,8 @@ func (s *DiagnoseInterfaceService) ImportCurl(req serverDomain.DiagnoseCurlImpor
 	url := curlObj.ParsedURL.Path
 	title := fmt.Sprintf("%s %s", baseUrl+url, curlObj.Method)
 	queryParams := s.getQueryParams(curlObj.ParsedURL.Query())
-	headers := s.getHeaders(wf.Header)
 	cookies := s.getCookies(wf.Cookies)
+	headers := s.getHeaders(wf.Header)
 
 	server, _ := s.ServeServerRepo.GetDefaultByServe(parent.ServeId)
 

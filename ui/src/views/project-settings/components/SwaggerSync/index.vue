@@ -45,17 +45,17 @@
     </a-form-item>
     <a-form-item v-bind="validateInfos.cron" label="类cron风格表达式(默认每天更新一次)" v-if="formState.switch==1">
       <a-input  v-model:value="formState.cron" type="textarea" placeholder="请输入Linux定时任务表达式"/>
-      <a>点此查看</a>cron表达式格式说明
+      <a href="https://wiki.nancalcloud.com/pages/viewpage.action?pageId=5969821" target="_blank">点此查看</a>cron表达式格式说明
     </a-form-item>
     <a-form-item :wrapper-col="{ span: 14, offset: 4 }">
-      <a-button type="primary" @click="onSubmit">保存</a-button>
+      <a-button type="primary" @click="onSubmit" :disabled="disbaled">保存</a-button>
     </a-form-item>
   </a-form>
   </div>
 </template>
 
 <script setup lang="ts">
-import { reactive, toRaw,computed,watch,onMounted,ref } from 'vue';
+import {computed,watch,onMounted,ref } from 'vue';
 import type { UnwrapRef } from 'vue';
 import {SwaggerSync} from './data';
 import {useStore} from "vuex";
@@ -63,6 +63,7 @@ import {message} from "ant-design-vue";
 import { QuestionCircleOutlined } from '@ant-design/icons-vue';
 import {Form} from 'ant-design-vue';
 import {pattern} from "@/utils/const";
+import debounce from "lodash.debounce";
 const useForm = Form.useForm;
 const store = useStore<{ Endpoint,ProjectGlobal,ProjectSetting }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
@@ -118,9 +119,17 @@ onMounted(async () => {
   await loadCategories();
   await store.dispatch('ProjectSetting/getSwaggerSync');
   formState.value.projectId = currProject.value.id
-  console.log(formState,"+++++")
+  watch(() => {
+     return formState.value;
+    }, async () => {
+    disbaled.value = false
+  }, {
+     immediate: false,
+     deep:true
+  })
 })
 
+const disbaled = ref(true)
 watch(() => {
   return currProject.value;
 }, async (newVal) => {
@@ -131,6 +140,9 @@ watch(() => {
 }, {
   immediate: true
 })
+
+
+
 
 </script>
 

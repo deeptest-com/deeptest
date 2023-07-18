@@ -84,7 +84,6 @@ const finish = () => {
     resetFields();
   }).catch((error) => {
     console.log('error', error)
-    //showError.value = true
   })
 }
 

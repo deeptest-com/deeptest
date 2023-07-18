@@ -145,7 +145,7 @@ const rules = {
   categoryId: [{required: false}],
   description: [{required: false}],
   curl: [
-    {required: true,  message: '',validator:validateCurl, trigger: 'change',pattern:/curl\s+.*\s+.*/},
+    {required: false,  message: '',validator:validateCurl, trigger: 'change',pattern:/curl\s+.*\s+.*/},
   ],
 };
 

@@ -1,49 +1,49 @@
 <template>
   <div>
-    <a-drawer
-        class="drawer dp-drawer-full-height"
-        wrapClassName="drawer-1"
-        :placement="'right'"
-        :width="1280"
-        :closable="true"
-        :visible="visible"
-        @close="onCloseDrawer">
-
+    <DrawerLayout :visible="visible" @close="onCloseDrawer" :stickyKey="stickyKey">
       <!-- 头部信息  -->
-      <template #title>
-        <a-row type="flex" style="align-items: center;width: 100%">
-          <a-col :span="8">
-            <EditAndShowField placeholder="修改标题" :value="detailResult?.name || ''" @update="updateTitle"/>
-          </a-col>
-        </a-row>
+      <template #header>
+        <div class="header-text">
+          <span class="serialNumber">[{{ detailResult.serialNumber }}]</span>
+          <EditAndShowField placeholder="修改标题"
+                            :value="detailResult?.title || ''"
+                            @update="updateTitle"/>
+        </div>
       </template>
       <!-- 基本信息 -->
-      <BasicInfo @change="changeBasicInfo"/>
-      <!-- Tab 切换区域 -->
-      <a-tabs v-model:activeKey="activeKey" force-render class="dp-tabs-full-height">
+      <template #basicInfo>
+        <BasicInfo @change="changeBasicInfo"/>
+      </template>
+      <template #tabHeader>
+        <div class="tab-header-items">
+          <div class="tab-header-item"
+               :class="{'active':tab.key === activeKey}" v-for="tab in tabsList"
+               :key="tab.key"
+               @click="changeTab(tab.key)">
+            <span>{{ tab.label }}</span>
+          </div>
+        </div>
+        <div class="tab-header-btns">
+          <div v-if="activeKey==='1'" class="exec-scenario-btn">
+            <a-button @click="exec" type="primary"><span>执行</span></a-button>
+          </div>
+        </div>
+      </template>
 
-        <a-tab-pane class="test-developer" key="1" tab="测试开发">
-            <div v-if="activeKey==='1'" class="exec-scenario-btn">
-              <a-button @click="exec" type="primary"><span>执行</span></a-button>
-            </div>
-
+      <template #tabContent>
+        <div class="tab-pane">
+          <div v-if="activeKey==='1'" >
             <Design :id="detailResult?.id"/>
-        </a-tab-pane>
-
-        <a-tab-pane key="2" tab="执行历史" force-render>
+          </div>
           <div v-if="activeKey==='2'" style="padding: 16px">
             <ExecList @showDetail="showDetail"/>
           </div>
-        </a-tab-pane>
-
-        <!-- :::: 关联测试计划Tab-->
-        <a-tab-pane key="3" tab="关联测试计划" force-render>
           <div style="padding: 16px" v-if="activeKey==='3'">
             <PlanList :linked="true"/>
           </div>
-        </a-tab-pane>
-      </a-tabs>
-    </a-drawer>
+        </div>
+      </template>
+    </DrawerLayout>
     <!-- 动态场景执行抽屉 -->
     <a-drawer
         :placement="'right'"
@@ -101,6 +101,7 @@ import ExecList from "./ExecList.vue";
 import ExecInfo  from "../Exec/index.vue";
 import EnvSelector from "@/views/component/EnvSelector/index.vue";
 import ExecListDetail from "./ExecListDetail.vue";
+import DrawerLayout from "@/views/component/DrawerLayout/index.vue";
 const store = useStore<{ Scenario, ProjectGlobal, ServeGlobal,Report }>();
 const detailResult = computed<Scenario>(() => store.state.Scenario.detailResult);
 const pagination = computed<PaginationConfig>(() => store.state.Scenario.listResult.pagination);
@@ -122,6 +123,27 @@ const props = defineProps({
 
 const emit = defineEmits(['ok', 'close', 'refreshList', 'closeExecDrawer']);
 const activeKey = ref('1');
+const stickyKey = ref(0);
+const tabsList = [
+  {
+    "key": "1",
+    "label": "测试开发"
+  },
+  {
+    "key": "2",
+    "label": "执行历史"
+  },
+  {
+    "key": "3",
+    "label": "关联测试计划"
+  },
+]
+async function changeTab(value) {
+  activeKey.value = value;
+  stickyKey.value ++;
+}
+
+
 const execDrawerVisible = ref(false);
 const selectEnvVisible = ref(false);
 

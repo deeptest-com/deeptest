@@ -10,7 +10,10 @@
             @close="onCloseDrawer">
     <!-- 头部信息  -->
     <template #title>
-      <slot name="header"/>
+      <div  class="dp-drawer-header">
+        <slot name="header"/>
+      </div>
+
     </template>
     <div class="dp-drawer-content" ref="contentRef">
       <!-- 基本信息区域 -->
@@ -150,31 +153,15 @@ watch(() => {
       min-height: calc(100vh - 96px);
     }
   }
-
-}
-
-.drawer-btns {
-  background: #ffffff;
-  border-top: 1px solid rgba(0, 0, 0, 0.06);
-  position: absolute;
-  bottom: 0;
-  //right: 0;
-  width: 100%;
-  padding-right: 24px;
-  height: 56px;
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  margin-right: 16px;
-  z-index: 99;
-}
-
-.header-text {
-  display: flex;
-  max-width: 80%;
-
-  .serialNumber {
-    margin-right: 6px;
+  .dp-drawer-header{
+    :deep(.header-text) {
+      display: flex;
+      max-width: 80%;
+    }
+    :deep(.header-text .serialNumber) {
+      margin-right: 6px;
+    }
   }
 }
+
 </style>

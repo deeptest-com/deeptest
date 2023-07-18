@@ -212,33 +212,36 @@ func (c *EndpointCtrl) ListVersions(ctx iris.Context) {
 	}
 }
 
-<<<<<<< HEAD
 func (c *EndpointCtrl) BatchUpdateField(ctx iris.Context) {
 	var req serverDomain.BatchUpdateReq
-=======
-func (c *EndpointCtrl) UpdateTag(ctx iris.Context) {
-	var req serverDomain.EndpointTagReq
->>>>>>> 1df6a539 (接口标签)
 	if err := ctx.ReadJSON(&req); err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
-<<<<<<< HEAD
 	if err := c.EndpointService.BatchUpdateByField(req); err != nil {
-=======
-	projectId, _ := ctx.URLParamInt("currProjectId")
-	if err := c.EndpointService.UpdateTags(req, uint(projectId)); err != nil {
->>>>>>> 1df6a539 (接口标签)
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
-<<<<<<< HEAD
+}
+
+func (c *EndpointCtrl) UpdateTag(ctx iris.Context) {
+	var req serverDomain.EndpointTagReq
+	if err := ctx.ReadJSON(&req); err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	projectId, _ := ctx.URLParamInt("currProjectId")
+	if err := c.EndpointService.UpdateTags(req, uint(projectId)); err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 	return
-=======
->>>>>>> 1df6a539 (接口标签)
 }
 
 /*

@@ -43,8 +43,8 @@ import PathParameters from "./config/PathParameters.vue";
 import RequestBody from "./config/Body.vue";
 import RequestHeaders from "./config/Headers.vue";
 import Authorization from "./config/Authorization.vue";
-import PreCondition from "./config/PreCondition.vue";
-import PostCondition from "./config/PostCondition.vue";
+import PreCondition from "./config/ConditionPre.vue";
+import PostCondition from "./config/ConditionPost.vue";
 
 const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();

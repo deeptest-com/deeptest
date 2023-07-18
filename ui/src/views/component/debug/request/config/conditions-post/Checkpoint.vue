@@ -56,6 +56,7 @@
 
           <a-form-item :wrapper-col="{ span: wrapperCol.span, offset: labelCol.span }">
             <a-button type="primary" @click="save" class="dp-btn-gap">保存</a-button>
+            <a-button v-if="finish" @click="cancel" class="dp-btn-gap">取消</a-button>
           </a-form-item>
 
         </a-form>
@@ -66,7 +67,7 @@
 import {computed, defineProps, inject, PropType, reactive, Ref, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
-import {message, Form} from 'ant-design-vue';
+import {message, Form, notification} from 'ant-design-vue';
 import { PlusOutlined, EditOutlined, DeleteOutlined, CloseCircleOutlined, CheckCircleOutlined} from '@ant-design/icons-vue';
 
 import {
@@ -79,6 +80,7 @@ import {getCompareOptsForRespCode, getCompareOptsForString} from "@/utils/compar
 import {StateType as Debug} from "@/views/component/debug/store";
 import {Checkpoint} from "@/views/component/debug/data";
 import {getEnumSelectItems} from "@/utils/comm";
+import {NotificationKeyCommon} from "@/utils/const";
 
 const useForm = Form.useForm;
 const usedBy = inject('usedBy') as UsedBy
@@ -94,6 +96,10 @@ const props = defineProps({
   condition: {
     type: Object,
     required: true,
+  },
+  finish: {
+    type: Function,
+    required: false,
   },
 })
 
@@ -141,8 +147,29 @@ const save = () => {
     model.value.endpointInterfaceId = debugInfo.value.endpointInterfaceId
     model.value.projectId = debugData.value.projectId
 
-    store.dispatch('Debug/saveCheckpoint', model.value)
+    store.dispatch('Debug/saveCheckpoint', model.value).then((result) => {
+      if (result) {
+        notification.success({
+          key: NotificationKeyCommon,
+          message: `保存成功`,
+        });
+        if (props.finish) {
+          props.finish()
+        }
+      } else {
+        notification.error({
+          key: NotificationKeyCommon,
+          message: `保存失败`,
+        });
+      }
+    })
   })
+}
+const cancel = () => {
+  console.log('cancel')
+  if (props.finish) {
+    props.finish()
+  }
 }
 
 const selectType = () => {

@@ -29,6 +29,7 @@
 
       <a-form-item :wrapper-col="{ span: wrapperCol.span, offset: labelCol.span }">
         <a-button type="primary" @click="save" class="dp-btn-gap">保存</a-button>
+        <a-button v-if="finish" @click="cancel" class="dp-btn-gap">取消</a-button>
       </a-form-item>
     </a-form>
   </div>
@@ -36,14 +37,14 @@
 
 <script setup lang="ts">
 import {computed, defineProps, inject, reactive, ref} from "vue";
-import {message, Form} from 'ant-design-vue';
+import {message, Form, notification} from 'ant-design-vue';
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import { QuestionCircleOutlined, DeleteOutlined, ClearOutlined } from '@ant-design/icons-vue';
 import {UsedBy} from "@/utils/enum";
 
 import {StateType as Debug} from "@/views/component/debug/store";
-import {MonacoOptions} from "@/utils/const";
+import {MonacoOptions, NotificationKeyCommon} from "@/utils/const";
 import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
 
 const useForm = Form.useForm;
@@ -60,6 +61,10 @@ const props = defineProps({
   condition: {
     type: Object,
     required: true,
+  },
+  finish: {
+    type: Function,
+    required: false,
   },
 })
 
@@ -102,8 +107,29 @@ const save = () => {
     model.value.endpointInterfaceId = debugInfo.value.endpointInterfaceId
     model.value.projectId = debugData.value.projectId
 
-    store.dispatch('Debug/saveScript', model.value)
+    store.dispatch('Debug/saveScript', model.value).then((result) => {
+      if (result) {
+        notification.success({
+          key: NotificationKeyCommon,
+          message: `保存成功`,
+        });
+        if (props.finish) {
+          props.finish()
+        }
+      } else {
+        notification.error({
+          key: NotificationKeyCommon,
+          message: `保存失败`,
+        });
+      }
+    })
   })
+}
+const cancel = () => {
+  console.log('cancel')
+  if (props.finish) {
+    props.finish()
+  }
 }
 
 const labelCol = { span: 0 }

@@ -1,5 +1,5 @@
 <template>
-  <div class="post-condition-main">
+  <div class="pre-condition-main">
     <div class="head">
       <a-row type="flex">
         <a-col flex="1">
@@ -33,7 +33,7 @@
 
     <div class="content">
       <draggable tag="div" item-key="name" class="collapse-list"
-                 :list="postConditions"
+                 :list="preConditions"
                  handle=".handle"
                  @end="handleDrop">
         <template #item="{ element }">
@@ -45,12 +45,11 @@
 
                 {{ t(element.entityType) }} &nbsp;
                 {{ element.desc }} -
-                {{activeItem || 0}},{{element.id}}
+                {{activeItem.id || 0}},{{element.id}}
               </div>
               <div class="buttons">
-                <ClearOutlined v-if="activeItem === +element.id && element.entityType === ConditionType.script"
-                               @click.stop="format(element)"  class="dp-icon-btn dp-trans-80" />
-                &nbsp;
+                <ClearOutlined v-if="activeItem.id === +element.id && element.entityType === ConditionType.script"
+                               @click.stop="format(element)"  class="dp-icon-btn dp-trans-80" />&nbsp;
 
                 <CheckCircleOutlined v-if="!element.disabled" @click.stop="disable(element)"
                                      class="dp-icon-btn dp-trans-80 dp-color-pass" />
@@ -58,30 +57,31 @@
                                      class="dp-icon-btn dp-trans-80" />
 
                 <DeleteOutlined @click.stop="remove(element)"  class="dp-icon-btn dp-trans-80" />
-                &nbsp;
+                <FullscreenOutlined v-if="activeItem.id === element.id"
+                                    @click.stop="openFullscreen(element)"  class="dp-icon-btn dp-trans-80" />&nbsp;
 
-                <RightOutlined v-if="activeItem !== element.id"
+                <RightOutlined v-if="activeItem.id !== element.id"
                                @click.stop="expand(element)"  class="dp-icon-btn dp-trans-80" />
-                <DownOutlined v-if="activeItem === element.id"
+                <DownOutlined v-if="activeItem.id === element.id"
                               @click.stop="expand(element)"  class="dp-icon-btn dp-trans-80" />
               </div>
             </div>
 
-            <div class="content" v-if="activeItem === +element.id">
-              <Extractor v-if="element.entityType === ConditionType.extractor"
-                          :condition="element" />
-
-              <Checkpoint v-if="element.entityType === ConditionType.checkpoint"
-                          :condition="element" />
-
+            <div class="content" v-if="activeItem.id === +element.id">
               <Script v-if="element.entityType === ConditionType.script"
-                          :condition="element" />
+                      :condition="element" />
             </div>
+
           </div>
 
         </template>
       </draggable>
     </div>
+
+    <FullScreenPopup v-if="fullscreen"
+                     :visible="fullscreen"
+                     :model="activeItem"
+                     :onCancel="closeFullScreen"/>
   </div>
 </template>
 
@@ -90,52 +90,53 @@ import {computed, inject, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import { QuestionCircleOutlined, CheckCircleOutlined, DeleteOutlined,
-  ClearOutlined, MenuOutlined, RightOutlined, DownOutlined, CloseCircleOutlined } from '@ant-design/icons-vue';
+  ClearOutlined, MenuOutlined, RightOutlined,
+  DownOutlined, CloseCircleOutlined, FullscreenOutlined } from '@ant-design/icons-vue';
 import draggable from 'vuedraggable'
-import {ConditionType, UsedBy} from "@/utils/enum";
+import bus from "@/utils/eventBus";
+import settings from "@/config/settings";
+import {confirmToDelete} from "@/utils/confirm";
+import {ConditionType, PreConditionType, UsedBy} from "@/utils/enum";
 import {EnvDataItem} from "@/views/project-settings/data";
 
 import {StateType as Debug} from "@/views/component/debug/store";
 import {getEnumSelectItems} from "@/views/scenario/service";
-import Extractor from "./post-conditions/Extractor.vue";
-import Checkpoint from "./post-conditions/Checkpoint.vue";
-import Script from "./post-conditions/Script.vue";
-import bus from "@/utils/eventBus";
-import settings from "@/config/settings";
-import {confirmToDelete} from "@/utils/confirm";
+import Script from "./conditions-pre/Script.vue";
+import FullScreenPopup from "./ConditionPopup.vue";
 
 const store = useStore<{  Debug: Debug }>();
 const debugData = computed<any>(() => store.state.Debug.debugData);
 const debugInfo = computed<any>(() => store.state.Debug.debugInfo);
-const postConditions = computed<any>(() => store.state.Debug.postConditions);
+const preConditions = computed<any>(() => store.state.Debug.preConditions);
 
 const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
 
-const activeItem = ref(0)
+const fullscreen = ref(false)
+const activeItem = ref({} as any)
 
-const conditionType = ref(ConditionType.extractor)
-const conditionTypes = ref(getEnumSelectItems(ConditionType))
+const conditionType = ref(PreConditionType.script)
+const conditionTypes = ref(getEnumSelectItems(PreConditionType))
 
 const expand = (item) => {
-  console.log('expand', item.id)
+  console.log('expand', item)
 
-  if (activeItem.value === item.id) {
-    activeItem.value = 0
+  if (activeItem.value.id === item.id) {
+    activeItem.value = {}
   } else {
-    activeItem.value = item.id
+    activeItem.value = item
   }
 }
 
 const list = () => {
   console.log('list')
-  store.dispatch('Debug/listPostCondition')
+  store.dispatch('Debug/listPreCondition')
 }
 list()
 
 const create = () => {
   console.log('create', conditionType.value)
-  store.dispatch('Debug/createPostCondition', {
+  store.dispatch('Debug/createPreCondition', {
     entityType: conditionType.value,
     ...debugInfo.value,
   })
@@ -147,22 +148,31 @@ const format = (item) => {
 }
 const disable = (item) => {
   console.log('disable', item)
-  store.dispatch('Debug/disablePostCondition', item.id)
+  store.dispatch('Debug/disablePreCondition', item.id)
 }
 const remove = (item) => {
   console.log('remove', item)
 
   confirmToDelete(`确定删除该${t(item.entityType)}？`, '', () => {
-    store.dispatch('Debug/removePostCondition', item.id)
+    store.dispatch('Debug/removePreCondition', item.id)
   })
 }
 
+const openFullscreen = (item) => {
+  console.log('openFullscreen', item)
+  fullscreen.value = true
+}
+const closeFullScreen = (item) => {
+  console.log('closeFullScreen', item)
+  fullscreen.value = false
+}
+
 function handleDrop(_e: any) {
-  const envIdList = postConditions.value.map((e: EnvDataItem) => {
+  const envIdList = preConditions.value.map((e: EnvDataItem) => {
     return e.id;
   })
 
-  store.dispatch('Debug/movePostCondition', {
+  store.dispatch('Debug/movePreCondition', {
     data: envIdList,
     info: debugInfo.value,
   })
@@ -171,7 +181,7 @@ function handleDrop(_e: any) {
 </script>
 
 <style lang="less">
-.post-condition-main {
+.pre-condition-main {
   .codes {
     height: 100%;
     min-height: 160px;
@@ -185,7 +195,7 @@ function handleDrop(_e: any) {
 </style>
 
 <style lang="less" scoped>
-.post-condition-main {
+.pre-condition-main {
   height: 100%;
   display: flex;
   flex-direction: column;

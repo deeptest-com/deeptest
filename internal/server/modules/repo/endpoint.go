@@ -18,6 +18,7 @@ type EndpointRepo struct {
 	EndpointInterfaceRepo *EndpointInterfaceRepo `inject:""`
 	ServeRepo             *ServeRepo             `inject:""`
 	ProjectRepo           *ProjectRepo           `inject:""`
+	EndpointTagRepo       *EndpointTagRepo       `inject:""`
 }
 
 func (r *EndpointRepo) Paginate(req v1.EndpointReqPaginate) (ret _domain.PageData, err error) {
@@ -58,6 +59,14 @@ func (r *EndpointRepo) Paginate(req v1.EndpointReqPaginate) (ret _domain.PageDat
 		db.Where("category_id IN(-1)")
 	}
 
+	if len(req.TagNames) != 0 {
+		endpointIds, err := r.EndpointTagRepo.GetEndpointIdsByTagNames(req.TagNames, req.ProjectId)
+		if err != nil {
+			return ret, err
+		}
+		db.Where("id IN (?)", endpointIds)
+	}
+
 	db = db.Order("created_at desc")
 	err = db.Count(&count).Error
 	if err != nil {
@@ -89,6 +98,8 @@ func (r *EndpointRepo) Paginate(req v1.EndpointReqPaginate) (ret _domain.PageDat
 			serveNames[result.ServeId] = serve.Name
 		}
 		results[key].ServeName = serveNames[result.ServeId]
+
+		results[key].TagNames, err = r.EndpointTagRepo.GetTagNamesByEndpointId(result.ID, result.ProjectId)
 	}
 
 	ret.Populate(results, count, req.Page, req.PageSize)
@@ -253,6 +264,8 @@ func (r *EndpointRepo) GetAll(id uint, version string) (endpoint model.Endpoint,
 	if err != nil {
 		return
 	}
+
+	endpoint.TagNames, _ = r.EndpointTagRepo.GetTagNamesByEndpointId(id, endpoint.ProjectId)
 	endpoint.PathParams, _ = r.GetEndpointParams(id)
 	endpoint.Interfaces, _ = r.EndpointInterfaceRepo.GetByEndpointId(id, version)
 

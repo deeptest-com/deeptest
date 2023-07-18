@@ -18,6 +18,7 @@ type Endpoint struct {
 	Versions     []EndpointVersion   `gorm:"-" json:"versions"`
 	Tags         []string            `gorm:"-" json:"tags"`
 	ServeName    string              `gorm:"-" json:"serveName"`
+	TagNames     []string            `gorm:"-" json:"tagNames"`
 	Description  string              `json:"description"`
 	SerialNumber string              `json:"serialNumber"`
 	Curl         string              `gorm:"-" json:"curl"`

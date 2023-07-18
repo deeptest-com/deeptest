@@ -30,9 +30,18 @@ func (s *EndpointTagService) GetTagIdsNyName(tagNames []string, projectId uint) 
 	tagNamesExisted := make([]string, 0)
 	for _, tag := range tags {
 		tagNamesExisted = append(tagNamesExisted, tag.Name)
+		tagIds = append(tagIds, tag.ID)
 	}
 
 	tagNamesNeedInsert := _commonUtils.Difference(tagNames, tagNamesExisted)
+	if len(tagNamesNeedInsert) == 0 {
+		return tagIds, nil
+	}
 
-	err s.EndpointTagRepo.BatchCreate(tagNamesNeedInsert, projectId)
+	if err = s.EndpointTagRepo.BatchCreate(tagNamesNeedInsert, projectId); err != nil {
+		return
+	}
+
+	tagIds, err = s.EndpointTagRepo.BatchGetIdsByName(tagNames, projectId)
+	return
 }

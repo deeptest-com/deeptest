@@ -96,6 +96,19 @@ func (r *EndpointTagRepo) BatchGetByName(names []string, projectId uint) (tags [
 	return
 }
 
+func (r *EndpointTagRepo) BatchGetIdsByName(names []string, projectId uint) (ids []uint, err error) {
+	tags, err := r.BatchGetByName(names, projectId)
+	if err != nil {
+		return
+	}
+
+	for _, tag := range tags {
+		ids = append(ids, tag.ID)
+	}
+
+	return
+}
+
 func (r *EndpointTagRepo) BatchGetById(ids []string, projectId uint) (tags []model.EndpointTag, err error) {
 	err = r.DB.Model(&model.EndpointTag{}).
 		Where("id IN (?)", ids).
@@ -179,12 +192,24 @@ func (r *EndpointTagRepo) AddRel(endpointId uint, tagIds []uint) (err error) {
 	return
 }
 
-func (r *EndpointTagRepo) GetEndpointIdsByTagNames(tagNames []string) (endpointIds []uint, err error) {
+func (r *EndpointTagRepo) GetEndpointIdsByTagNames(tagNames []string, projectId int64) (endpointIds []uint, err error) {
 	err = r.DB.Model(&model.EndpointTagRel{}).
 		Joins("LEFT JOIN biz_endpoint_tag t ON biz_endpoint_tag_rel.tag_id=t.id").
+		Where("t.project_id = ?", projectId).
 		Where("t.name IN (?) AND NOT t.deleted AND NOT t.disabled", tagNames).
 		Select("biz_endpoint_tag_rel.endpoint_id").
 		Find(&endpointIds).Error
+
+	return
+}
+
+func (r *EndpointTagRepo) GetTagNamesByEndpointId(endpointId, projectId uint) (tagNames []string, err error) {
+	err = r.DB.Model(&model.EndpointTag{}).
+		Joins("LEFT JOIN biz_endpoint_tag_rel l ON biz_endpoint_tag.id=l.tag_id").
+		Where("l.endpoint_id = ?", endpointId).
+		Where("biz_endpoint_tag.project_id = ? AND NOT biz_endpoint_tag.deleted AND NOT biz_endpoint_tag.disabled", projectId).
+		Select("biz_endpoint_tag.name").
+		Find(&tagNames).Error
 
 	return
 }

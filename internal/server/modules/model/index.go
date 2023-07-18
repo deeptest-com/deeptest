@@ -83,6 +83,8 @@ var (
 		&EndpointInterfaceHeader{},
 		&EndpointDocument{},
 		&EndpointSnapshot{},
+		&EndpointTag{},
+		&EndpointTagRel{},
 
 		&Serve{},
 		&ServeServer{},

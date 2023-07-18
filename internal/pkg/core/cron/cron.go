@@ -31,8 +31,8 @@ func (s *ServerCron) AddTask(name string, intervalSecond int64, f func()) {
 	})
 }
 
-func (s *ServerCron) AddCommonTask(name string, schedule string, f func()) {
-	_cronUtils.AddTask(
+func (s *ServerCron) AddCommonTask(name string, schedule string, f func()) (err error) {
+	_, err = _cronUtils.AddTask(
 		name,
 		schedule,
 		f,
@@ -40,6 +40,10 @@ func (s *ServerCron) AddCommonTask(name string, schedule string, f func()) {
 	iris.RegisterOnInterrupt(func() {
 		_cronUtils.Stop()
 	})
+	return
+}
+func (s *ServerCron) RemoveTask(name string) {
+	_cronUtils.RemoveTask(name)
 }
 
 func (s *ServerCron) Init() {

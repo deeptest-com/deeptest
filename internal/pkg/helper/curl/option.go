@@ -144,7 +144,8 @@ func parseOptX(u *CURL, soption string) {
 }
 
 func parseBodyURLEncode(u *CURL, data string) {
-	if u.Method != "" {
+
+	if u.Method == "" {
 		u.Method = "POST"
 	}
 
@@ -153,7 +154,8 @@ func parseBodyURLEncode(u *CURL, data string) {
 }
 
 func parseBodyRaw(u *CURL, data string) {
-	if u.Method != "" {
+
+	if u.Method == "" {
 		u.Method = "POST"
 	}
 
@@ -162,7 +164,8 @@ func parseBodyRaw(u *CURL, data string) {
 }
 
 func parseBodyASCII(u *CURL, data string) {
-	if u.Method != "" {
+
+	if u.Method == "" {
 		u.Method = "POST"
 	}
 
@@ -240,10 +243,9 @@ func parseHeader(u *CURL, soption string) {
 	case "cookie":
 		u.Cookies = GetRawCookies(value, "")
 		u.CookieJar.SetCookies(u.ParsedURL, u.Cookies)
+		u.Header.Add(key, value)
 	case "content-type":
 		u.ContentType = value
-	//case "accept":
-	//	u.ContentType = value
 	default:
 		u.Header.Add(key, value)
 	}

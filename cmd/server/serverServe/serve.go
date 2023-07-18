@@ -44,9 +44,9 @@ func (webServer *WebServer) InitRouter() error {
 		webServer.initModule()
 
 		//webServer.AddWebUi()
-		webServer.AddSwagger()
 		webServer.AddUpload()
 		webServer.AddTest()
+		webServer.AddSwagger()
 
 		err := webServer.app.Build()
 		if err != nil {

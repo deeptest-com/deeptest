@@ -36,7 +36,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/serverDomain.ProjectReq"
+                            "$ref": "#/definitions/serverDomain.ProjectMemberRemoveReq"
                         }
                     }
                 ],
@@ -45,15 +45,23 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "serverDomain.ProjectReq": {
-            "type": "object"
+        "serverDomain.ProjectMemberRemoveReq": {
+            "type": "object",
+            "properties": {
+                "projectId": {
+                    "type": "integer"
+                },
+                "userId": {
+                    "type": "integer"
+                }
+            }
         }
     }
 }`
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "3.0",
+	Version:          "1.0",
 	Host:             "",
 	BasePath:         "",
 	Schemes:          []string{},

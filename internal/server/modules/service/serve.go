@@ -317,6 +317,7 @@ func (s *ServeService) GetSwaggerSyncById(id uint) (data model.SwaggerSync, err 
 
 func (s *ServeService) AddSwaggerCron(item model.SwaggerSync) {
 	name := "swaggerSync" + "_" + strconv.Itoa(int(item.ID))
+	s.Cron.RemoveTask(name)
 	taskId := item.ID
 	s.Cron.AddCommonTask(name, item.Cron, func() {
 		task, err := s.GetSwaggerSyncById(taskId)
@@ -339,6 +340,7 @@ func (s *ServeService) AddSwaggerCron(item model.SwaggerSync) {
 		s.UpdateSwaggerSyncExecTimeById(taskId)
 		logUtils.Info("swagger定时任务结束：" + _commUtils.JsonEncode(item))
 	})
+
 }
 
 func (s *ServeService) UpdateSwaggerSyncExecTimeById(id uint) (err error) {

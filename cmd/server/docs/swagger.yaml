@@ -1,5 +1,10 @@
 definitions:
-  serverDomain.ProjectReq:
+  serverDomain.ProjectMemberRemoveReq:
+    properties:
+      projectId:
+        type: integer
+      userId:
+        type: integer
     type: object
 info:
   contact:
@@ -7,7 +12,7 @@ info:
     name: API Support
     url: https://github.com/aaronchen2k/deeptest/issues
   title: DeepTest服务端API文档
-  version: "3.0"
+  version: "1.0"
 paths:
   /api/v1/projects:
     post:
@@ -19,7 +24,7 @@ paths:
         name: ProjectReq
         required: true
         schema:
-          $ref: '#/definitions/serverDomain.ProjectReq'
+          $ref: '#/definitions/serverDomain.ProjectMemberRemoveReq'
       produces:
       - application/json
       responses: {}

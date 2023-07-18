@@ -7,7 +7,7 @@
             "url": "https://github.com/aaronchen2k/deeptest/issues",
             "email": "462626@qq.com"
         },
-        "version": "3.0"
+        "version": "1.0"
     },
     "paths": {
         "/api/v1/projects": {
@@ -26,7 +26,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/serverDomain.ProjectReq"
+                            "$ref": "#/definitions/serverDomain.ProjectMemberRemoveReq"
                         }
                     }
                 ],
@@ -35,8 +35,16 @@
         }
     },
     "definitions": {
-        "serverDomain.ProjectReq": {
-            "type": "object"
+        "serverDomain.ProjectMemberRemoveReq": {
+            "type": "object",
+            "properties": {
+                "projectId": {
+                    "type": "integer"
+                },
+                "userId": {
+                    "type": "integer"
+                }
+            }
         }
     }
 }

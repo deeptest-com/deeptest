@@ -162,8 +162,8 @@ func (s *DiagnoseInterfaceService) ImportCurl(req serverDomain.DiagnoseCurlImpor
 	url := curlObj.ParsedURL.Path
 	title := fmt.Sprintf("%s %s", baseUrl+url, curlObj.Method)
 	queryParams := s.getQueryParams(curlObj.ParsedURL.Query())
-	headers := s.getHeaders(wf.Header)
 	cookies := s.getCookies(wf.Cookies)
+	headers := s.getHeaders(wf.Header)
 
 	server, _ := s.ServeServerRepo.GetDefaultByServe(parent.ServeId)
 
@@ -218,13 +218,12 @@ func (s *DiagnoseInterfaceService) ImportCurl(req serverDomain.DiagnoseCurlImpor
 }
 
 func (s *DiagnoseInterfaceService) getMethod(contentType, method string) (ret consts.HttpMethod) {
-	ret = consts.HttpMethod(method)
 
-	if contentType == "application/json" {
-		ret = "POST"
+	if method == "" && contentType == "application/json" {
+		method = "POST"
 	}
 
-	return
+	return consts.HttpMethod(method)
 }
 
 func (s *DiagnoseInterfaceService) createInterfaceFromDefine(endpointInterfaceId int, createBy uint, parent model.DiagnoseInterface) (

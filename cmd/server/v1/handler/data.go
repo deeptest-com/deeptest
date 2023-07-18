@@ -18,7 +18,14 @@ type DataCtrl struct {
 	DataService *service.DataService `inject:""`
 }
 
-// InitDB 初始化项目接口
+// Init  初始化项目接口
+// @summary 初始化项目
+// @Tags 系统
+// @Accept json
+// @Produce	json
+// @Router /api/v1/init/initdb [post]
+// @Param ProjectReq body serverDomain.DataReq true "初始化db"
+//@Success 200 {object} _domain.Response
 func (c *DataCtrl) Init(ctx iris.Context) {
 	req := serverDomain.DataReq{}
 	if err := ctx.ReadJSON(&req); err != nil {

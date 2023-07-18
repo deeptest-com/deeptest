@@ -161,12 +161,12 @@ watch(() => {return shareId.value}, async (newVal) => {
 .container {
   margin: 16px;
   background: #ffffff;
-  min-height: calc(100vh - 106px);
+  //min-height: calc(100vh - 106px);
   overflow: hidden;
 }
 .full-container{
   margin: 0;
-  height: 100vh;
+  //height: 100vh;
 }
 
 </style>

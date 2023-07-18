@@ -6,7 +6,6 @@
           height: auto;
           margin-bottom: 24px;
           padding-top: 8px;"
-
           class="docs-menu"
           :selectedKeys="selectedKeys"
           mode="inline">
@@ -22,7 +21,9 @@
         <div class="left"><strong>{{ item?.name }}</strong></div>
       </div>
       <!-- ::::该服务下的所有接口列表 -->
-      <div class="menus-item" v-if="item?.method">
+      <div class="menus-item" v-if="item?.method" :ref="(el) => {
+          menuItemRefs[`${item.method}-${item.id}`] = el;
+      }">
         <div class="left">
           <a-tag  class="method-tag" :color="getMethodColor(item.method)">{{ item.method }}</a-tag>
           <span :title="item.name">{{ item.name }}</span>
@@ -86,11 +87,26 @@ function select(item) {
   emit('select', item);
 }
 
+const menuItemRefs = ref({})
+
+watch(() => {
+  return props.selectedKeys
+},(newVal) => {
+  //  选中的接口文档，滚动相应的位置
+  if(menuItemRefs.value?.[`${newVal[0]}`]){
+    menuItemRefs.value[`${newVal[0]}`].scrollIntoView({
+      behavior: 'auto',
+      block: 'center',
+      inline: 'center',
+    });
+  }
+},{immediate: false});
 
 </script>
 <style lang="less" scoped>
 .docs-menu {
   height: 100%;
+
   //margin-left: 1px;
   position: relative;
   border-right:none;
@@ -99,16 +115,16 @@ function select(item) {
   //  position: relative;
   //}
 
-  &:before{
-    content: '';
-    position: absolute;
-    top:0;
-    right: 0;
-    height: 100%;
-    z-index: 99;
-    background-color: #f0f0f0;
-    width: 1px;
-  }
+  //&:before{
+  //  content: '';
+  //  position: absolute;
+  //  top:0;
+  //  right: 0;
+  //  height: 100%;
+  //  z-index: 99;
+  //  background-color: #f0f0f0;
+  //  width: 1px;
+  //}
   :deep(.hide) {
     display: none !important;
   }

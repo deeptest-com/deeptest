@@ -28,11 +28,12 @@ export default {
 
     'endpoint-management': '接口定义',
     'endpoint-docs': '接口文档',
-    'diagnose': '接口调试',
+    'diagnose': '快捷调试',
     'projectSetting': '项目设置', // 新版 接口模块
     'projectSetting.enviroment': '环境管理',
     'projectSetting.datapool': '数据池',
     'projectSetting.service': '服务管理',
+    'projectSetting.swaggerSync': '自动同步',
     'envsetting.var': '全局变量',
     'envsetting.params': '全局参数',
     'envsetting.envdetail': '环境详情',

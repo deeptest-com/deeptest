@@ -279,8 +279,8 @@ function handleResHeaderChange(data) {
       top: -12px;
       width: 2px;
       background: #E5E5E5;
-      min-height: 80vh;
-      height: calc(100% + 36px);
+      //min-height: 80vh;
+      height: calc(100% + 40px);
     }
   }
 

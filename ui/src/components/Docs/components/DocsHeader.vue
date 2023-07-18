@@ -9,6 +9,7 @@
         {{ `${title} - 接口文档` }}
       </span>
     </div>
+
     <a-popover
         :autoAdjustOverflow="false"
         :overlayClassName="'deeptest-docs-search-popover'"
@@ -309,12 +310,12 @@ watch(() => {
   align-items: center;
 
   .logo {
-    width: 294px;
-    padding-left: 18px;
+    //width: 294px;
+    padding-right: 12px;
+    margin-left: 24px;
     display: flex;
     //justify-content: space-between;
     align-items: center;
-
     .logo-name {
       font-weight: bold;
       margin-left: 12px;
@@ -329,6 +330,7 @@ watch(() => {
     display: flex;
     align-items: center;
     position: relative;
+    //background-color: rgba(29,33,41,0.6);
 
     .search-input, .search-input:active, .search-input:hover, .search-input:focus {
       width: 180px;
@@ -342,6 +344,7 @@ watch(() => {
       width: 1px;
       padding-right: 12px;
       height: 18px;
+      margin: 0 8px;
     }
 
     .icon {

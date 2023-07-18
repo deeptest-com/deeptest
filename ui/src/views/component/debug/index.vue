@@ -2,9 +2,9 @@
   <div id="debug-index" class="dp-splits-v">
     <div id="debug-content">
       <Invocation :topVal="topVal"
+      :showMethodSelection = "showMethodSelection"
                   :onSave="saveDebugData"
                   :onSync="syncDebugData" />
-
       <DebugConfig />
     </div>
 
@@ -94,6 +94,10 @@ const props = defineProps({
     type: String,
     required: true
   },
+  showMethodSelection: {
+    type: Boolean,
+    required: true
+  },
 })
 
 const rightTabKey = ref('')
@@ -137,8 +141,8 @@ const closeRightTab = () => {
 
 <style lang="less">
 #debug-index #debug-right .right-tab {
-  height: 100%;
-
+  //height: 100%;
+  height: calc(100vh - 152px);
   .ant-tabs-left-content {
     padding-left: 0px;
   }

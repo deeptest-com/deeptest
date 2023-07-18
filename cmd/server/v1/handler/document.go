@@ -127,13 +127,19 @@ func (c *DocumentCtrl) GetContentsByShareLink(ctx iris.Context) {
 }
 
 func (c *DocumentCtrl) GetDocumentDetail(ctx iris.Context) {
+	documentId, _ := ctx.URLParamInt("documentId")
+	endpointId, _ := ctx.URLParamInt("endpointId")
 	interfaceId, _ := ctx.URLParamInt("interfaceId")
 	if interfaceId == 0 {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: "interfaceId can't be empty"})
 		return
 	}
+	if documentId != 0 && endpointId == 0 {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: "endpointId can't be empty"})
+		return
+	}
 
-	res, err := c.DocumentService.GetDocumentDetail(uint(interfaceId))
+	res, err := c.DocumentService.GetDocumentDetail(uint(documentId), uint(endpointId), uint(interfaceId))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

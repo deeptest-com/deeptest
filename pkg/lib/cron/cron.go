@@ -7,7 +7,7 @@ import (
 
 var cronInst *cron.Cron
 
-var taskFunc = make(map[string]func())
+var taskFunc = make(map[string]cron.EntryID)
 
 func GetCrontabInstance() *cron.Cron {
 	if cronInst != nil {
@@ -19,16 +19,27 @@ func GetCrontabInstance() *cron.Cron {
 	return cronInst
 }
 
-func AddTask(name string, schedule string, f func()) {
+func AddTask(name string, schedule string, f func()) (entryID cron.EntryID, err error) {
 	if _, ok := taskFunc[name]; !ok {
 		fmt.Println("Add a new task:", name)
 
 		cInstance := GetCrontabInstance()
-		cInstance.AddFunc(schedule, f)
+		entryID, err = cInstance.AddFunc(schedule, f)
+		if err != nil {
+			taskFunc[name] = entryID
+		}
 
-		taskFunc[name] = f
 	} else {
 		fmt.Println("Don't add same task `" + name + "` repeatedly!")
+	}
+	return
+}
+
+func RemoveTask(name string) {
+	if entryID, ok := taskFunc[name]; ok {
+		fmt.Println("remove task:", name)
+		cInstance := GetCrontabInstance()
+		cInstance.Remove(entryID)
 	}
 }
 

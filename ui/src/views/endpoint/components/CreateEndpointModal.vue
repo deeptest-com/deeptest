@@ -35,7 +35,15 @@
             :auto-size="{ minRows: 2, maxRows: 5 }"
         />
       </a-form-item>
+      <a-form-item label="curl导入" name="curl">
+        <a-textarea
+            v-model:value="formState.curl"
+            placeholder="请输入cURL (bash) 命令"
+            :auto-size="{ minRows: 2, maxRows: 5 }"
+        />
+      </a-form-item>
       <a-form-item :wrapper-col="{ span: 14, offset: 4 }">
+      <a-alert message="不是合法的cURL请求，请重试。" type="error" show-icon v-if="showError"/>
         <span class="">
            注：接口请求方法可以通过详情页添加
         </span>
@@ -103,7 +111,10 @@ const formState: UnwrapRef<NewEndpointFormState> = reactive({
   title: '',
   categoryId: null,
   description: '',
+  curl:'',
 });
+
+const showError = ref(false)
 
 watch(() => {
   return props.visible
@@ -115,6 +126,17 @@ watch(() => {
   immediate: true
 })
 
+let validateCurl = async (rule: any, value: string,callback: any) => {
+      if (value !== '') {
+        if (!rule.pattern.test(value)){
+          showError.value = true
+          return Promise.reject("不是合法的cURL请求，请重试。")
+        }
+      }
+      showError.value = false
+      return Promise.resolve();
+    };
+
 const rules = {
   title: [
     {required: true, message: '请输入接口名称', trigger: 'blur'},
@@ -122,6 +144,9 @@ const rules = {
   ],
   categoryId: [{required: false}],
   description: [{required: false}],
+  curl: [
+    {required: false,  message: '',validator:validateCurl, trigger: 'change',pattern:/curl\s+.*\s+.*/},
+  ],
 };
 
 
@@ -131,5 +156,10 @@ const rules = {
 .modal-btns {
   display: flex;
   justify-content: flex-end;
+}
+
+.ant-alert-error {
+    background-color: #ffffff;
+    border: 1px solid #ffffff;
 }
 </style>

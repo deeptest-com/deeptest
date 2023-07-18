@@ -10,11 +10,16 @@
             <template v-if="debugData?.method" >
               <DebugComp :topVal="'-40px'"
                          :onSaveDebugData="saveDiagnoseInterface"
-                         :base-url-disabled="false" />
+                         :base-url-disabled="false"
+                         :showMethodSelection="true" />
             </template>
           </a-tab-pane>
 
         </a-tabs>
+      </div>
+
+      <div class="selection">
+       <!-- <EnvSelection /> -->
       </div>
   </div>
 </template>

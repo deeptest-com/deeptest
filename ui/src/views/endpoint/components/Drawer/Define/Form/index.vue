@@ -14,8 +14,8 @@ import Request  from './Request.vue';
 
 <style lang="less" scoped>
 .content {
-  //padding-top: 16px;
-  padding: 0;
+  //padding: 0;
+  padding-top: 16px;
 }
 
 </style>

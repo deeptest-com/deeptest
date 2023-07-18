@@ -18,6 +18,12 @@ type ProjectCtrl struct {
 	BaseCtrl
 }
 
+// List
+// @summary 项目列表
+// @Tags 项目管理/项目列表
+// @Router /api/v1/projects [get]
+// @Param ProjectReq query serverDomain.ProjectReqPaginate true "Create project Request Object"
+//@Success 200 {object} _domain.Response
 func (c *ProjectCtrl) List(ctx iris.Context) {
 	userId := multi.GetUserId(ctx)
 
@@ -56,6 +62,14 @@ func (c *ProjectCtrl) Get(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: project, Msg: _domain.NoErr.Msg})
 }
 
+// Create
+// @summary 创建项目
+// @Tags 项目管理/项目列表
+// @Router /api/v1/projects [post]
+// @Accept json
+// @Produce	json
+// @Param ProjectReq body serverDomain.ProjectReq true "Create project Request Object"
+// @Success 200 {object} _domain.Response
 func (c *ProjectCtrl) Create(ctx iris.Context) {
 	userId := multi.GetUserId(ctx)
 

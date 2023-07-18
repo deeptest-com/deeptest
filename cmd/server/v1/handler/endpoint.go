@@ -41,12 +41,17 @@ func (c *EndpointCtrl) Save(ctx iris.Context) {
 	req.CreateUser = multi.GetUsername(ctx)
 	endpoint := c.requestParser(req)
 
-	if endpoint.CategoryId == 0 {
-		endpoint.CategoryId = 0
-	}
+	/*
+		if endpoint.CategoryId == 0 {
+			endpoint.CategoryId = 0
+		}
+	*/
 
-	res, _ := c.EndpointService.Save(endpoint)
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res})
+	if res, err := c.EndpointService.Save(endpoint); err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+	} else {
+		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res})
+	}
 
 	return
 }
@@ -146,7 +151,7 @@ func (c *EndpointCtrl) Develop(ctx iris.Context) {
 
 func (c *EndpointCtrl) Copy(ctx iris.Context) {
 	id := ctx.URLParamUint64("id")
-	version := ctx.URLParamDefault("version", "v1.0.0")
+	version := ctx.URLParamDefault("version", c.EndpointService.GetLatestVersion(uint(id)))
 	res, err := c.EndpointService.Copy(uint(id), version)
 	if err == nil {
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res, Msg: _domain.NoErr.Msg})
@@ -205,6 +210,22 @@ func (c *EndpointCtrl) ListVersions(ctx iris.Context) {
 	} else {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 	}
+}
+
+func (c *EndpointCtrl) BatchUpdateField(ctx iris.Context) {
+	var req serverDomain.BatchUpdateReq
+	if err := ctx.ReadJSON(&req); err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	if err := c.EndpointService.BatchUpdateByField(req); err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+	return
 }
 
 /*

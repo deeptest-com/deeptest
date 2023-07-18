@@ -3,6 +3,7 @@ package repo
 import (
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
@@ -800,5 +801,10 @@ func (r *EndpointInterfaceRepo) RemoveAll(id uint) (err error) {
 		err = r.removeResponseBodyItem(body.ID)
 		err = r.removeResponseBodyHeader(body.ID)
 	}
+	return
+}
+
+func (r *EndpointInterfaceRepo) GetByItem(sourceType consts.SourceType, endpointId uint, method consts.HttpMethod) (res model.EndpointInterface, err error) {
+	err = r.DB.First(&res, "not deleted AND source_type = ? AND endpoint_id=? and method=?", sourceType, endpointId, method).Error
 	return
 }

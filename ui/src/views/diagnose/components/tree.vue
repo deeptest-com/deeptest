@@ -303,6 +303,7 @@ const importCurl = (target) => {
   curlImportVisible.value = true
 }
 const importCurlFinish = (model) => {
+  curlImportVisible.value = false
   console.log('importCurlFinish', model)
 
   store.dispatch('DiagnoseInterface/importCurl', {
@@ -310,8 +311,6 @@ const importCurlFinish = (model) => {
     targetId: importTarget.value.id,
   }).then((newNode) => {
     console.log('importCurl successfully', newNode)
-
-    curlImportVisible.value = false
     selectNode([newNode.id], null)
     expandOneKey(treeDataMap.value, newNode.parentId, expandedKeys.value) // expend new node
     setExpandedKeys('scenario', treeData.value[0].scenarioId, expandedKeys.value)

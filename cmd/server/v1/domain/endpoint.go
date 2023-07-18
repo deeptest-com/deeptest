@@ -58,6 +58,7 @@ type EndpointReq struct {
 	PathParams  []OpenApiParam  `gorm:"-" json:"pathParams"`
 	Interfaces  []InterfaceResp `gorm:"-" json:"interfaces"`
 	Description string          `json:"description"`
+	Curl        string          `json:"curl"`
 }
 
 type EndpointRes struct {

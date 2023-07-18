@@ -35,6 +35,10 @@ import (
 
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/mvc"
+
+	_ "github.com/aaronchen2k/deeptest/cmd/server/docs"
+	"github.com/iris-contrib/swagger"
+	"github.com/iris-contrib/swagger/swaggerFiles"
 )
 
 var client *tests.Client
@@ -169,6 +173,22 @@ func (webServer *WebServer) AddUpload() {
 func (webServer *WebServer) AddTest() {
 	fsOrDir := iris.Dir(filepath.Join(dir.GetCurrentAbPath(), filepath.Join(webServer.staticPath, "test")))
 	webServer.app.HandleDir("/test", fsOrDir)
+}
+
+func (webServer *WebServer) AddSwagger() {
+
+	swaggerConfig := swagger.Config{
+		URL:          fmt.Sprintf("swagger/doc.json"),
+		DeepLinking:  true,
+		DocExpansion: "list",
+		DomID:        "#swagger-ui",
+		Prefix:       "/swagger",
+	}
+
+	swaggerUI := swagger.Handler(swaggerFiles.Handler, swaggerConfig)
+	webServer.app.Get("/swagger", swaggerUI)
+	webServer.app.Get("/swagger/{any:path}", swaggerUI)
+
 }
 
 // GetModules 获取模块

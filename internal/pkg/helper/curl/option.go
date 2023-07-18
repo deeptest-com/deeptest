@@ -144,7 +144,8 @@ func parseOptX(u *CURL, soption string) {
 }
 
 func parseBodyURLEncode(u *CURL, data string) {
-	if u.Method != "" {
+
+	if u.Method == "" {
 		u.Method = "POST"
 	}
 
@@ -153,7 +154,8 @@ func parseBodyURLEncode(u *CURL, data string) {
 }
 
 func parseBodyRaw(u *CURL, data string) {
-	if u.Method != "" {
+
+	if u.Method == "" {
 		u.Method = "POST"
 	}
 
@@ -162,7 +164,8 @@ func parseBodyRaw(u *CURL, data string) {
 }
 
 func parseBodyASCII(u *CURL, data string) {
-	if u.Method != "" {
+
+	if u.Method == "" {
 		u.Method = "POST"
 	}
 
@@ -226,7 +229,12 @@ func parseBodyBinary(u *CURL, data string) {
 }
 
 func parseHeader(u *CURL, soption string) {
-	matches := regexp.MustCompile(`['"]([^:]+): ([^'"]+)['"]`).FindAllStringSubmatch(soption, 1)[0]
+	res := regexp.MustCompile(`'([^:]+): ([^']+)'`).FindAllStringSubmatch(soption, 1)
+	if len(res) <= 0 {
+		return
+	}
+	matches := res[0]
+	//matches := regexp.MustCompile(`['"]([^:]+): ([^'"]+)['"]`).FindAllStringSubmatch(soption, 1)[0]
 	key := matches[1]
 	lkey := strings.ToLower(key)
 	value := matches[2]
@@ -235,6 +243,7 @@ func parseHeader(u *CURL, soption string) {
 	case "cookie":
 		u.Cookies = GetRawCookies(value, "")
 		u.CookieJar.SetCookies(u.ParsedURL, u.Cookies)
+		u.Header.Add(key, value)
 	case "content-type":
 		u.ContentType = value
 	default:

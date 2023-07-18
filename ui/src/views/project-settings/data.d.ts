@@ -239,3 +239,13 @@ export interface VersionListReqParams {
     page?: number;
     pageSize?: number;
 }
+
+export interface SwaggerSync {
+    switch: boolean,
+    syncType: number,
+    categoryId: number,
+    url: '',
+    cron:'',
+    projectId:number,
+    exec_time:''
+  }

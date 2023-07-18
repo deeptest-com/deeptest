@@ -12,6 +12,7 @@ import (
 	"github.com/jinzhu/copier"
 	"net/http"
 	"net/url"
+	"strings"
 )
 
 type DiagnoseInterfaceService struct {
@@ -46,9 +47,16 @@ func (s *DiagnoseInterfaceService) Get(id int) (ret model.DiagnoseInterface, err
 }
 
 func (s *DiagnoseInterfaceService) Save(req serverDomain.DiagnoseInterfaceSaveReq) (diagnoseInterface model.DiagnoseInterface, err error) {
-	s.CopyValueFromRequest(&diagnoseInterface, req)
+	if req.ID != 0 {
+		diagnoseInterface, err = s.DiagnoseInterfaceRepo.Get(req.ID)
+		if err != nil {
+			return diagnoseInterface, err
+		}
+		diagnoseInterface.Title = req.Title
+	} else {
+		s.CopyValueFromRequest(&diagnoseInterface, req)
 
-	if diagnoseInterface.Type == serverConsts.DiagnoseInterfaceTypeInterface {
+		//if diagnoseInterface.Type == serverConsts.DiagnoseInterfaceTypeInterface {
 		server, _ := s.ServeServerRepo.GetDefaultByServe(diagnoseInterface.ServeId)
 
 		// create new DebugInterface
@@ -107,6 +115,12 @@ func (s *DiagnoseInterfaceService) CopyValueFromRequest(interf *model.DiagnoseIn
 	})
 }
 
+func (s *DiagnoseInterfaceService) CopyValueFromRequestNotDeep(interf *model.DiagnoseInterface, req serverDomain.DiagnoseInterfaceSaveReq) {
+	copier.CopyWithOption(interf, req, copier.Option{
+		DeepCopy: false,
+	})
+}
+
 func (s *DiagnoseInterfaceService) CopyDebugDataValueFromRequest(interf *model.DiagnoseInterface, req domain.DebugData) (err error) {
 	copier.CopyWithOption(interf, req, copier.Option{DeepCopy: true})
 
@@ -128,6 +142,13 @@ func (s *DiagnoseInterfaceService) ImportInterfaces(req serverDomain.DiagnoseInt
 }
 
 func (s *DiagnoseInterfaceService) ImportCurl(req serverDomain.DiagnoseCurlImportReq) (ret model.DiagnoseInterface, err error) {
+
+	defer func() {
+		if r := recover(); r != nil {
+			err = fmt.Errorf("curl格式错误")
+		}
+	}()
+
 	parent, _ := s.DiagnoseInterfaceRepo.Get(req.TargetId)
 	if parent.Type != serverConsts.DiagnoseInterfaceTypeDir {
 		parent, _ = s.DiagnoseInterfaceRepo.Get(parent.ParentId)
@@ -136,21 +157,32 @@ func (s *DiagnoseInterfaceService) ImportCurl(req serverDomain.DiagnoseCurlImpor
 	curlObj := curlHelper.Parse(req.Content)
 	wf := curlObj.CreateTemporary(curlObj.CreateSession())
 
-	url := fmt.Sprintf("%s://%s%s", curlObj.ParsedURL.Scheme,
-		curlObj.ParsedURL.Host, curlObj.ParsedURL.Path)
-	title := fmt.Sprintf("%s %s", url, curlObj.Method)
+	baseUrl := fmt.Sprintf("%s://%s", curlObj.ParsedURL.Scheme,
+		curlObj.ParsedURL.Host)
+	url := curlObj.ParsedURL.Path
+	title := fmt.Sprintf("%s %s", baseUrl+url, curlObj.Method)
 	queryParams := s.getQueryParams(curlObj.ParsedURL.Query())
+	cookies := s.getCookies(wf.Cookies)
 	headers := s.getHeaders(wf.Header)
 
 	server, _ := s.ServeServerRepo.GetDefaultByServe(parent.ServeId)
 
+	bodyType := ""
+	contentType := strings.Split(curlObj.ContentType, ";")
+	if len(contentType) > 1 {
+		bodyType = contentType[0]
+	}
 	debugData := domain.DebugData{
 		Name:    title,
-		BaseUrl: url,
+		BaseUrl: baseUrl,
 		BaseRequest: domain.BaseRequest{
-			Method:      consts.HttpMethod(curlObj.Method),
+			Method:      s.getMethod(bodyType, curlObj.Method),
 			QueryParams: queryParams,
 			Headers:     headers,
+			Cookies:     cookies,
+			Body:        wf.Body.String(),
+			BodyType:    consts.HttpContentType(bodyType),
+			Url:         url,
 		},
 		ServeId:   parent.ServeId,
 		ServerId:  server.ID,
@@ -183,6 +215,15 @@ func (s *DiagnoseInterfaceService) ImportCurl(req serverDomain.DiagnoseCurlImpor
 	ret = diagnoseInterface
 
 	return
+}
+
+func (s *DiagnoseInterfaceService) getMethod(contentType, method string) (ret consts.HttpMethod) {
+
+	if method == "" && contentType == "application/json" {
+		method = "POST"
+	}
+
+	return consts.HttpMethod(method)
 }
 
 func (s *DiagnoseInterfaceService) createInterfaceFromDefine(endpointInterfaceId int, createBy uint, parent model.DiagnoseInterface) (
@@ -261,5 +302,17 @@ func (s *DiagnoseInterfaceService) getHeaders(header http.Header) (ret []domain.
 		}
 	}
 
+	return
+}
+
+func (s *DiagnoseInterfaceService) getCookies(cookies map[string]*http.Cookie) (ret []domain.ExecCookie) {
+	for _, item := range cookies {
+		ret = append(ret, domain.ExecCookie{
+			Name:       item.Name,
+			Value:      item.Value,
+			ExpireTime: &item.Expires,
+			Domain:     item.Domain,
+		})
+	}
 	return
 }

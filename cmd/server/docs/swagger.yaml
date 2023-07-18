@@ -1,0 +1,137 @@
+definitions:
+  _domain.Response:
+    properties:
+      code:
+        type: integer
+      data: {}
+      msg:
+        type: string
+    type: object
+  serverConsts.ProjectType:
+    enum:
+    - full
+    - debug
+    type: string
+    x-enum-varnames:
+    - Full
+    - Debug
+  serverDomain.DataReq:
+    properties:
+      clearData:
+        type: boolean
+      sys:
+        $ref: '#/definitions/serverDomain.DataSys'
+    type: object
+  serverDomain.DataSys:
+    properties:
+      adminPassword:
+        type: string
+    type: object
+  serverDomain.ProjectReq:
+    properties:
+      adminId:
+        type: integer
+      adminName:
+        type: string
+      createdAt:
+        type: string
+      desc:
+        type: string
+      id:
+        type: integer
+      includeExample:
+        type: boolean
+      logo:
+        type: string
+      name:
+        type: string
+      orgId:
+        type: integer
+      schemaId:
+        type: integer
+      shortName:
+        type: string
+      type:
+        $ref: '#/definitions/serverConsts.ProjectType'
+      updatedAt:
+        type: string
+    type: object
+info:
+  contact:
+    email: 462626@qq.com
+    name: API Support
+    url: https://github.com/aaronchen2k/deeptest/issues
+  title: DeepTest服务端API文档
+  version: "3.0"
+paths:
+  /api/v1/init/initdb:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 初始化db
+        in: body
+        name: ProjectReq
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.DataReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 初始化项目
+      tags:
+      - 系统
+  /api/v1/projects:
+    get:
+      parameters:
+      - in: query
+        name: enabled
+        type: string
+      - in: query
+        name: field
+        type: string
+      - in: query
+        name: keywords
+        type: string
+      - in: query
+        name: order
+        type: string
+      - in: query
+        name: page
+        type: integer
+      - in: query
+        name: pageSize
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 项目列表
+      tags:
+      - 项目管理/项目列表
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Create project Request Object
+        in: body
+        name: ProjectReq
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.ProjectReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 创建项目
+      tags:
+      - 项目管理/项目列表
+swagger: "2.0"

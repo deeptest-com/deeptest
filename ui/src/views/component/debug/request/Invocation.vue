@@ -8,7 +8,7 @@
         </a-select>
       </div>
 
-      <div v-if="debugData.processorInterfaceSrc !== UsedBy.DiagnoseDebug" class="base-url">
+      <div v-if="debugData.usedBy !== UsedBy.DiagnoseDebug && debugData.processorInterfaceSrc !== UsedBy.DiagnoseDebug" class="base-url">
         <a-input placeholder="请输入地址"
                  :disabled="baseUrlDisabled"
                  v-model:value="debugData.baseUrl"/>
@@ -255,7 +255,6 @@ onUnmounted(() => {
     right: 0px;
     width: 120px;
     height: 36px;
-    z-index: 9999;
   }
 }
 </style>

@@ -9,7 +9,7 @@
         <a-col flex="100px" class="dp-right">
           <a-tooltip overlayClassName="dp-tip-small">
             <template #title>格式化</template>
-            <ClearOutlined class="dp-icon-btn dp-trans-80" />
+            <ClearOutlined @click="format" class="dp-icon-btn dp-trans-80" />
           </a-tooltip>
 
           <a-tooltip overlayClassName="dp-tip-small">
@@ -66,6 +66,8 @@ const {t} = useI18n();
 
 import {Param} from "@/views/component/debug/data";
 import {StateType as Debug} from "@/views/component/debug/store";
+import bus from "@/utils/eventBus";
+import settings from "@/config/settings";
 const store = useStore<{  Debug: Debug }>();
 
 const debugInfo = computed<any>(() => store.state.Debug.debugInfo);
@@ -136,6 +138,11 @@ const responseExtractorFinish = (data) => {
 const responseExtractorCancel = () => {
   console.log('responseExtractorCancel')
   responseExtractorVisible.value = false
+}
+
+const format = (item) => {
+  console.log('format', item)
+  bus.emit(settings.eventEditorAction, {act: settings.eventTypeFormat})
 }
 
 </script>

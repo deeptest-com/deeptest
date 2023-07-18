@@ -57,12 +57,13 @@ func (s *DiagnoseInterfaceService) Save(req serverDomain.DiagnoseInterfaceSaveRe
 			InterfaceBase: model.InterfaceBase{
 				Name: req.Title,
 				InterfaceConfigBase: model.InterfaceConfigBase{
+					Url:    server.Url,
 					Method: consts.GET,
 				},
 			},
 			ServeId:  diagnoseInterface.ServeId,
 			ServerId: server.ID,
-			BaseUrl:  server.Url,
+			BaseUrl:  "",
 		}
 
 		err = s.DebugInterfaceRepo.Save(&debugInterface)

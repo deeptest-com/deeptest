@@ -3,7 +3,7 @@ captcha:
   img-width: 240
   img-height: 80
 limit:
-  disable: false
+  disable: true
   limit: 0
   burst: 5
 max-size: 1024

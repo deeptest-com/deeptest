@@ -20,6 +20,39 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/v1/init/initdb": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "系统"
+                ],
+                "summary": "初始化项目",
+                "parameters": [
+                    {
+                        "description": "初始化db",
+                        "name": "ProjectReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.DataReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/projects": {
             "get": {
                 "tags": [
@@ -123,6 +156,25 @@ const docTemplate = `{
                 "Full",
                 "Debug"
             ]
+        },
+        "serverDomain.DataReq": {
+            "type": "object",
+            "properties": {
+                "clearData": {
+                    "type": "boolean"
+                },
+                "sys": {
+                    "$ref": "#/definitions/serverDomain.DataSys"
+                }
+            }
+        },
+        "serverDomain.DataSys": {
+            "type": "object",
+            "properties": {
+                "adminPassword": {
+                    "type": "string"
+                }
+            }
         },
         "serverDomain.ProjectReq": {
             "type": "object",

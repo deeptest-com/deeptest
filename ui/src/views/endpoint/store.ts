@@ -182,6 +182,7 @@ const initState: StateType = {
         "createUser": null,
         "title": null,
         categoryId: null,
+        tagNames:[]
     },
     endpointDetail: null,
     endpointDetailYamlCode: null,

@@ -37,6 +37,7 @@ scp -r client/ui/* lighthouse@124.222.224.72:~/rd/project/deeptest/ui/dist/
 nohup ./deeptest-server > deeptest.log 2>&1 &
 
 cd ui && yarn build && scp -r ui/dist aaron@110.42.146.127:/home/aaron/dev/project/deeptest/static && cd ..
+cd ui && yarn build --mode deeptest-client --dest ../client/ui && cd ..
 
 convert logo-mini.png -scale 256 ../../../public/favicon.ico
 

@@ -42,6 +42,7 @@ export interface StateType {
     debugInfo: DebugInfo
     debugData: any;
 
+    requestData: any;
     responseData: Response;
 
     invocationsData: any[];
@@ -56,6 +57,8 @@ export interface StateType {
 const initState: StateType = {
     debugInfo: {} as DebugInfo,
     debugData: {},
+
+    requestData: {},
     responseData: {} as Response,
 
     invocationsData: [],
@@ -73,7 +76,10 @@ export interface ModuleType extends StoreModuleType<StateType> {
     mutations: {
         setDebugInfo: Mutation<StateType>;
         setDebugData: Mutation<StateType>;
+
+        setRequest: Mutation<StateType>;
         setResponse: Mutation<StateType>;
+
         setInvocations: Mutation<StateType>;
         setServerId: Mutation<StateType>;
 
@@ -160,6 +166,9 @@ const StoreModel: ModuleType = {
         setDebugData(state, payload) {
             state.debugData = payload;
         },
+        setRequest(state, payload) {
+            state.requestData = payload;
+        },
         setResponse(state, payload) {
             state.responseData = payload;
         },
@@ -236,6 +245,7 @@ const StoreModel: ModuleType = {
         async resetDataAndInvocations({commit, dispatch, state}) {
             commit('setDebugInfo', {});
             commit('setDebugData', {});
+            commit('setRequest', {});
             commit('setResponse', {});
             commit('setInvocations', []);
         },
@@ -283,15 +293,13 @@ const StoreModel: ModuleType = {
         },
 
         async call({commit, dispatch, state}, data: any) {
-
-            // 发送时请求时，先清空response
-            // 比如，手动清空 response.content中的内容后，再次点击发送，还是现实空的response.content
-
+            commit('setRequest', {});
             commit('setResponse', {});
             const response = await call(data)
 
             if (response.code === 0) {
-                commit('setResponse', response.data);
+                commit('setRequest', response.data.req);
+                commit('setResponse', response.data.resp);
 
                 await dispatch('getLastInvocationResp')
                 await dispatch('listInvocation')
@@ -331,10 +339,8 @@ const StoreModel: ModuleType = {
                 caseInterfaceId: state.debugInfo.caseInterfaceId,
             } as DebugInfo);
 
-            const {data} = response;
-            console.log('getLastInvocationResp', data)
-
-            commit('setResponse', data);
+            commit('setRequest', response.data.req);
+            commit('setResponse', response.data.resp);
             return true;
         },
         async getInvocationAsInterface({commit}, id: number) {
@@ -343,6 +349,7 @@ const StoreModel: ModuleType = {
                 const {data} = resp;
 
                 commit('setDebugData', data.debugData);
+                commit('setRequest', data.req);
                 commit('setResponse', data.resp);
                 return true;
             } catch (error) {

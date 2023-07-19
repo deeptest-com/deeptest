@@ -19,11 +19,14 @@ func (c *ExecInterfaceCtrl) Call(ctx iris.Context) {
 		return
 	}
 
-	resp, err := service.RunInterface(req)
+	resultReq, resultResp, err := service.RunInterface(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: resp})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: iris.Map{
+		"req":  resultReq,
+		"resp": resultResp,
+	}})
 }

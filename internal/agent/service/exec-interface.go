@@ -11,7 +11,7 @@ import (
 	"strings"
 )
 
-func RunInterface(call agentDomain.InterfaceCall) (ret domain.DebugResponse, err error) {
+func RunInterface(call agentDomain.InterfaceCall) (resultReq domain.DebugData, resultResp domain.DebugResponse, err error) {
 	req := GetInterfaceToExec(call)
 
 	agentExec.CurrDebugInterfaceId = req.DebugData.DebugInterfaceId
@@ -20,10 +20,12 @@ func RunInterface(call agentDomain.InterfaceCall) (ret domain.DebugResponse, err
 	agentExec.ExecScene = req.ExecScene
 
 	logUtils.Info("DebugData:" + _commUtils.JsonEncode(req.DebugData))
-	ret, err = RequestInterface(req.DebugData)
-	logUtils.Info("DebugResponse:" + _commUtils.JsonEncode(ret))
+	resultResp, err = RequestInterface(req.DebugData)
+	logUtils.Info("DebugResponse:" + _commUtils.JsonEncode(resultResp))
 
-	err = SubmitInterfaceResult(req.DebugData, ret, call.ServerUrl, call.Token)
+	err = SubmitInterfaceResult(req.DebugData, resultResp, call.ServerUrl, call.Token)
+
+	resultReq = req.DebugData
 
 	return
 }

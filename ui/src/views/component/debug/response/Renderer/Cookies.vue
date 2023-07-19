@@ -1,7 +1,7 @@
 <template>
-  <div class="headers-main">
+  <div class="cookies-main">
     <ParamGrid title="请求参数"
-               :list="responseData.headers" />
+               :list="responseData.cookies" />
   </div>
 </template>
 
@@ -23,7 +23,7 @@ const responseData = computed<any>(() => store.state.Debug.responseData);
 </script>
 
 <style lang="less" scoped>
-.headers-main {
+.cookies-main {
   height: 100%;
   overflow-y: auto;
 }

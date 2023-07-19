@@ -6,6 +6,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
+	"github.com/kataras/iris/v12"
 	"time"
 )
 
@@ -115,11 +116,16 @@ func (s *DebugInvokeService) ListByInterface(debugInterfaceId, endpointInterface
 	return
 }
 
-func (s *DebugInvokeService) GetLastResp(debugInterfaceId, endpointInterfaceId uint) (resp domain.DebugResponse, err error) {
+func (s *DebugInvokeService) GetLastResp(debugInterfaceId, endpointInterfaceId uint) (ret iris.Map, err error) {
 	po, _ := s.DebugRepo.GetLast(debugInterfaceId, endpointInterfaceId)
 
+	req := domain.DebugData{}
+	resp := domain.DebugResponse{}
+
 	if po.ID > 0 {
+		json.Unmarshal([]byte(po.ReqContent), &req)
 		json.Unmarshal([]byte(po.RespContent), &resp)
+
 	} else {
 		resp = domain.DebugResponse{
 			ContentLang: consts.LangHTML,
@@ -127,14 +133,22 @@ func (s *DebugInvokeService) GetLastResp(debugInterfaceId, endpointInterfaceId u
 		}
 	}
 
+	ret = iris.Map{}
+	ret["req"] = req
+	ret["resp"] = resp
+
 	return
 }
 
-func (s *DebugInvokeService) GetAsInterface(id int) (debugData domain.DebugData, interfResp domain.DebugResponse, err error) {
+func (s *DebugInvokeService) GetAsInterface(id int) (
+	debugData domain.DebugData, resultReq domain.DebugData, resultResp domain.DebugResponse, err error) {
+
 	invocation, err := s.DebugInvokeRepo.Get(uint(id))
 
 	json.Unmarshal([]byte(invocation.ReqContent), &debugData)
-	json.Unmarshal([]byte(invocation.RespContent), &interfResp)
+
+	json.Unmarshal([]byte(invocation.ReqContent), &resultReq)
+	json.Unmarshal([]byte(invocation.RespContent), &resultResp)
 
 	return
 }

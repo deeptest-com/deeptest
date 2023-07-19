@@ -32,6 +32,12 @@
         </a-button>
       </div>
 
+      <div v-if="usedBy === UsedBy.InterfaceDebug" class="save-as-case">
+        <a-button trigger="click" @click="saveAsCase" class="dp-bg-light">
+          另存为用例
+        </a-button>
+      </div>
+
       <div v-if="usedBy === UsedBy.ScenarioDebug" class="sync">
         <a-button trigger="click" @click="sync" class="dp-bg-light">
           <UndoOutlined/>
@@ -89,6 +95,10 @@ const props = defineProps({
   onSave: {
     type: Function as PropType<(data) => void>,
     required: true
+  },
+  onSaveAsCase: {
+    type: Function,
+    required: false
   },
   onSync: {
     type: Function as PropType<() => void>,
@@ -190,7 +200,13 @@ const save = (e) => {
   if (validateInfo()) {
     props.onSave(data)
   }
-};
+}
+const saveAsCase = () => {
+  // console.log('saveAsCase', debugData.value.url)
+  if (validateInfo() && props.onSaveAsCase) {
+    props.onSaveAsCase()
+  }
+}
 
 const sync = (e) => {
   if (validateInfo() && props.onSync) {
@@ -290,6 +306,11 @@ onUnmounted(() => {
     .save {
       margin-left: 8px;
       width: 80px;
+    }
+
+    .save-as-case {
+      margin-left: 8px;
+      width: 102px;
     }
 
     .sync {

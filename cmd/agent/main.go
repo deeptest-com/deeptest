@@ -24,11 +24,10 @@ var (
 	flagSet *flag.FlagSet
 )
 
-// @title DeepTest代理API文档
+// @title 乐研API文档
 // @version 1.0
 // @contact.name API Support
-// @contact.url https://github.com/aaronchen2k/deeptest/issues
-// @contact.email 462626@qq.com
+
 func main() {
 	flagSet = flag.NewFlagSet("deeptest", flag.ContinueOnError)
 

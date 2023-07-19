@@ -7,6 +7,7 @@ type DebugInterface struct {
 	InterfaceBase
 
 	EndpointInterfaceId uint `gorm:"default:0" json:"endpointInterfaceId"`
+	CaseInterfaceId     uint `gorm:"default:0" json:"caseInterfaceId"`
 	DiagnoseInterfaceId uint `gorm:"default:0" json:"diagnoseInterfaceId"`
 
 	ScenarioProcessorId   uint          `gorm:"default:0" json:"scenarioProcessorId"`

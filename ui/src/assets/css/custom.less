@@ -212,12 +212,12 @@
   .tree-content {
     height: calc(100% - 50px);
     overflow: auto;
+    overflow-x:hidden ;
     margin: 0 8px;
 
     .deeptest-tree {
       .tree-title {
         position: relative;
-
         .tree-title-text {
           display: inline-block;
           width: calc(100% - 24px);
@@ -225,12 +225,6 @@
           overflow: hidden;
           text-overflow: ellipsis;
         }
-
-        //&:hover{
-        //  .more-icon {
-        //    background-color: #f5f5f5;
-        //  }
-        //}
         .more-icon {
           position: absolute;
           right: -8px;
@@ -238,7 +232,6 @@
         }
       }
     }
-
     .nodata-tip {
       margin-top: 8px;
       text-align: center;

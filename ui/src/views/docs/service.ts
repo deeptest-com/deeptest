@@ -92,8 +92,9 @@ export async function getShareContent(data: any): Promise<any> {
  * */
 export async function getShareDocsDetail(data: any): Promise<any> {
     return request({
-        url: `/document/share_detail?currProjectId=${data.currProjectId}&interfaceId=${data.interfaceId}`,
+        url: `/document/share_detail`,
         method: 'get',
+        params: data,
     });
 }
 
@@ -102,8 +103,9 @@ export async function getShareDocsDetail(data: any): Promise<any> {
  * */
 export async function getDocsDetail(data: any): Promise<any> {
     return request({
-        url: `/document/detail?currProjectId=${data.currProjectId}&interfaceId=${data.interfaceId}`,
+        url: `/document/detail`,
         method: 'get',
+        params: data,
     });
 }
 

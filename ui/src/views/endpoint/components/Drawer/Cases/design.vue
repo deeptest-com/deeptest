@@ -8,8 +8,8 @@
 
     <div id="endpoint-debug-cases-design-panel">
       <DebugComp
-          :topVal="'-52px'"
-          :onSaveDebugData="saveCaseInterface" />
+          :topVal="'-36px'"
+          :onSaveDebugData="saveCaseInterface"/>
     </div>
 
   </div>
@@ -133,10 +133,11 @@ const back = () => {
 <style scoped lang="less">
 .endpoint-debug-cases-design-main {
   padding: 16px 0px 16px 16px;
+  position: relative;
 
   .toolbar {
     position: absolute;
-    top: -52px;
+    top: -36px;
     right: 110px;
     height: 50px;
     width: 120px;

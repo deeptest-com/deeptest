@@ -3,6 +3,7 @@ package repo
 import (
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
@@ -10,6 +11,7 @@ import (
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"gorm.io/gorm"
 	"sort"
+	"time"
 )
 
 type ServeRepo struct {
@@ -250,7 +252,7 @@ func (r *ServeRepo) SaveServer(environmentId uint, environmentName string, serve
 		//servers[key].ID = 0
 		servers[key].EnvironmentId = environmentId
 		servers[key].Description = environmentName
-		err = r.Save(servers[key].ID, servers)
+		err = r.Save(servers[key].ID, &servers[key])
 		if err != nil {
 			return err
 		}
@@ -516,4 +518,41 @@ func (r *ServeRepo) GetServers(serveIs []uint) (res []model.ServeServer, err err
 
 func (r *ServeRepo) CreateSchemas(schemas []*model.ComponentSchema) (err error) {
 	return r.DB.Create(schemas).Error
+}
+
+func (r *ServeRepo) SaveSwaggerSync(sync *model.SwaggerSync) (err error) {
+	return r.Save(sync.ID, sync)
+}
+
+func (r *ServeRepo) GetSwaggerSync(projectId uint) (sync model.SwaggerSync, err error) {
+	err = r.DB.First(&sync, "project_id=?", projectId).Error
+	return
+}
+
+func (r *ServeRepo) GetSwaggerSyncById(id uint) (sync model.SwaggerSync, err error) {
+	err = r.DB.First(&sync, "id=?", id).Error
+	return
+}
+
+func (r *ServeRepo) GetSwaggerSyncList() (res []model.SwaggerSync, err error) {
+	err = r.DB.Find(&res).Error
+	return
+}
+
+func (r *ServeRepo) GetDefault(projectId uint) (res model.Serve, err error) {
+	err = r.DB.Where("NOT deleted and project_id=?", projectId).First(&res).Error
+	return
+}
+
+func (r *ServeRepo) GetComponentByItem(sourceType consts.SourceType, serveId uint, ref string) (res model.ComponentSchema, err error) {
+	err = r.DB.First(&res, "source_type=? AND serve_id=? AND ref=? AND NOT deleted", sourceType, serveId, ref).Error
+	return
+}
+
+func (r *ServeRepo) SaveSchemas(schemas []*model.ComponentSchema) (err error) {
+	return r.DB.Save(schemas).Error
+}
+
+func (r *ServeRepo) UpdateSwaggerSyncExecTimeById(id uint) (err error) {
+	return r.DB.Model(&model.SwaggerSync{}).Where("id=?", id).Update("exec_time", time.Now()).Error
 }

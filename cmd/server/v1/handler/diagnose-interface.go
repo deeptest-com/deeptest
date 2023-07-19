@@ -194,6 +194,7 @@ func (c *DiagnoseInterfaceCtrl) ImportCurl(ctx iris.Context) {
 	if bizErr != nil {
 		ctx.JSON(_domain.Response{
 			Code: _domain.SystemErr.Code,
+			Msg:  bizErr.Error(),
 		})
 		return
 	}

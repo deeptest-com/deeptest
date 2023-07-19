@@ -1,5 +1,6 @@
 <template>
-  <div class="expand-icon" @click="toggleCollapsed"
+  <div class="expand-icon"
+       @click.self.stop="toggleCollapsed"
        :class="{'collapsed':collapsed}"
        :style="collapsed ? collapsedStyle  :  style">
     <MenuUnfoldOutlined class="icon" v-if="collapsed"/>
@@ -11,8 +12,6 @@
 import {defineComponent, onMounted, PropType, ref} from "vue";
 
 import {
-  // CaretRightOutlined,
-  // CaretLeftOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined
 } from '@ant-design/icons-vue';
@@ -35,8 +34,6 @@ export default defineComponent({
     },
   },
   components: {
-    // CaretRightOutlined,
-    // CaretLeftOutlined,
     MenuFoldOutlined,
     MenuUnfoldOutlined
   },
@@ -58,10 +55,12 @@ export default defineComponent({
   top: 22px;
   z-index: 9;
   cursor: pointer;
-  background-color: #FFF;
+  background-color: transparent;
+
   &.collapsed {
     left: 8px;
   }
+
   .icon {
     color: #8A8A8A;
     font-size: 18px;

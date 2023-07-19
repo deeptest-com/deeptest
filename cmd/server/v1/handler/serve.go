@@ -2,6 +2,8 @@ package handler
 
 import (
 	"github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/core/cron"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	"github.com/kataras/iris/v12"
@@ -9,7 +11,9 @@ import (
 )
 
 type ServeCtrl struct {
-	ServeService *service.ServeService `inject:""`
+	Cron                     *cron.ServerCron                  `inject:""`
+	ServeService             *service.ServeService             `inject:""`
+	EndpointInterfaceService *service.EndpointInterfaceService `inject:""`
 }
 
 // 项目服务列表
@@ -320,5 +324,45 @@ func (c *ServeCtrl) DeleteSecurity(ctx iris.Context) {
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 	} else {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
+	}
+}
+
+func (c *ServeCtrl) SaveSwaggerSync(ctx iris.Context) {
+	var req serverDomain.SwaggerSyncReq
+	if err := ctx.ReadJSON(&req); err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	//
+	if req.Switch == consts.SwitchOFF {
+
+	}
+	res, err := c.ServeService.SaveSwaggerSync(req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
+}
+
+func (c *ServeCtrl) SwaggerSyncDetail(ctx iris.Context) {
+	projectId := ctx.URLParamUint64("currProjectId")
+	res, err := c.ServeService.SwaggerSyncDetail(uint(projectId))
+	if err != nil {
+		res.CategoryId = -1
+		res.SyncType = consts.FullCopy
+		res.Cron = "23 * * * *"
+	}
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
+}
+
+func (c *ServeCtrl) InitSwaggerCron() {
+	syncList, err := c.ServeService.SwaggerSyncList()
+	if err != nil {
+		return
+	}
+	for _, item := range syncList {
+		c.ServeService.AddSwaggerCron(item)
 	}
 }

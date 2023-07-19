@@ -18,6 +18,7 @@ type ExtractorCtrl struct {
 func (c *ExtractorCtrl) List(ctx iris.Context) {
 	debugInterfaceId, err := ctx.URLParamInt("debugInterfaceId")
 	endpointInterfaceId, err := ctx.URLParamInt("endpointInterfaceId")
+
 	if debugInterfaceId <= 0 && endpointInterfaceId <= 0 {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return

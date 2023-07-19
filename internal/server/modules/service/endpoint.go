@@ -1,23 +1,36 @@
 package service
 
 import (
+	"errors"
 	"fmt"
+	"github.com/474420502/requests"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	builtin "github.com/aaronchen2k/deeptest/internal/pkg/buildin"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	curlHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/curl"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi"
+	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi/convert"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
+	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
+	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"gorm.io/gorm"
+	"net/http"
+	"net/url"
+	"strings"
 	"sync"
 )
 
 type EndpointService struct {
-	EndpointRepo          *repo.EndpointRepo          `inject:""`
-	ServeRepo             *repo.ServeRepo             `inject:""`
-	EndpointInterfaceRepo *repo.EndpointInterfaceRepo `inject:""`
-	ServeServerRepo       *repo.ServeServerRepo       `inject:""`
-	UserRepo              *repo.UserRepo              `inject:""`
-	CategoryRepo          *repo.CategoryRepo          `inject:""`
+	EndpointRepo             *repo.EndpointRepo          `inject:""`
+	ServeRepo                *repo.ServeRepo             `inject:""`
+	EndpointInterfaceRepo    *repo.EndpointInterfaceRepo `inject:""`
+	ServeServerRepo          *repo.ServeServerRepo       `inject:""`
+	UserRepo                 *repo.UserRepo              `inject:""`
+	CategoryRepo             *repo.CategoryRepo          `inject:""`
+	DiagnoseInterfaceService *DiagnoseInterfaceService   `inject:""`
 }
 
 func (s *EndpointService) Paginate(req v1.EndpointReqPaginate) (ret _domain.PageData, err error) {
@@ -32,7 +45,15 @@ func (s *EndpointService) Save(endpoint model.Endpoint) (res uint, err error) {
 		endpoint.ServerId = server.ID
 	}
 
+	if endpoint.Curl != "" {
+		err = s.curlToEndpoint(&endpoint)
+		if err != nil {
+			return
+		}
+	}
+
 	err = s.EndpointRepo.SaveAll(&endpoint)
+
 	return endpoint.ID, err
 }
 
@@ -75,9 +96,13 @@ func (s *EndpointService) Develop(id uint) (err error) {
 }
 
 func (s *EndpointService) Copy(id uint, version string) (res uint, err error) {
+	logUtils.Infof(fmt.Sprintf("Copy endpoint id:%+v, version:%+v", id, version))
+
 	endpoint, _ := s.EndpointRepo.GetAll(id, version)
+	logUtils.Infof(fmt.Sprintf("endpoint 11111:%+v", endpoint))
 	s.removeIds(&endpoint)
 	endpoint.Title += "_copy"
+	logUtils.Infof(fmt.Sprintf("endpoint:%+v", endpoint))
 	err = s.EndpointRepo.SaveAll(&endpoint)
 	return endpoint.ID, err
 }
@@ -180,13 +205,11 @@ func (s *EndpointService) SaveEndpoints(endpoints []*model.Endpoint, dirs *opena
 		root, _ := s.CategoryRepo.ListByProject(serverConsts.EndpointCategory, req.ProjectId, 0)
 		dirs.Id = int64(root[0].ID)
 	}
+	s.createDirs(dirs, req)
 	wg := new(sync.WaitGroup)
 	wg.Add(2)
-	s.createDirs(dirs, req)
 	go s.createComponents(wg, components, req)
 	go s.createEndpoints(wg, endpoints, dirs, req)
-
-	//err = s.EndpointRepo.CreateEndpoints(endpoints)
 	wg.Wait()
 	return
 }
@@ -199,10 +222,22 @@ func (s *EndpointService) createEndpoints(wg *sync.WaitGroup, endpoints []*model
 	for _, endpoint := range endpoints {
 		endpoint.ProjectId, endpoint.ServeId, endpoint.CategoryId, endpoint.CreateUser = req.ProjectId, req.ServeId, req.CategoryId, user.Name
 		endpoint.Status = 1
+		endpoint.SourceType = consts.Swagger
 		endpoint.CategoryId = s.getCategoryId(endpoint.Tags, dirs)
+		if req.DataSyncType == convert.FullCover {
+			res, err := s.EndpointRepo.GetByItem(endpoint.SourceType, endpoint.ProjectId, endpoint.Path, endpoint.ServeId, endpoint.Title)
+			if err == nil {
+				endpoint.ID = res.ID
+			}
+
+			//非Notfound
+			if err != nil && err != gorm.ErrRecordNotFound {
+				continue
+			}
+		}
 		_, err = s.Save(*endpoint)
 		if err != nil {
-			return
+			return err
 		}
 	}
 
@@ -213,22 +248,46 @@ func (s *EndpointService) createComponents(wg *sync.WaitGroup, components map[st
 	defer func() {
 		wg.Done()
 	}()
-	var NewComponents []*model.ComponentSchema
+	var newComponents []*model.ComponentSchema
 	for _, component := range components {
 		component.ServeId = int64(req.ServeId)
-		NewComponents = append(NewComponents, component)
+		component.SourceType = consts.Swagger
+		if req.DataSyncType == convert.FullCover {
+			_, err := s.ServeRepo.GetComponentByItem(consts.Swagger, uint(component.ServeId), component.Ref)
+			if err == nil {
+				continue
+			}
+			//非Notfound
+			if err != nil && err != gorm.ErrRecordNotFound {
+				continue
+			}
+		}
+		newComponents = append(newComponents, component)
 	}
-	s.ServeRepo.CreateSchemas(NewComponents)
+
+	s.ServeRepo.SaveSchemas(newComponents)
+
 }
 
 func (s *EndpointService) createDirs(data *openapi.Dirs, req v1.ImportEndpointDataReq) (err error) {
 	for name, dirs := range data.Dirs {
-		category := model.Category{Name: name, ParentId: int(data.Id), ProjectId: req.ProjectId, UseID: req.UserId, Type: serverConsts.EndpointCategory}
+
+		category := model.Category{Name: name, ParentId: int(data.Id), ProjectId: req.ProjectId, UseID: req.UserId, Type: serverConsts.EndpointCategory, SourceType: consts.Swagger}
+		//全覆盖更新目录
+		if req.DataSyncType == convert.FullCover {
+			res, err := s.CategoryRepo.GetByItem(consts.Swagger, uint(category.ParentId), category.Type, category.ProjectId, category.Name)
+			if err == nil {
+				category.ID = res.ID
+				goto here
+			}
+		}
+
 		err = s.CategoryRepo.Save(&category)
 		if err != nil {
 			return
 		}
 
+	here:
 		dirs.Id = int64(category.ID)
 		err = s.createDirs(dirs, req)
 		if err != nil {
@@ -250,5 +309,135 @@ func (s *EndpointService) getCategoryId(tags []string, dirs *openapi.Dirs) int64
 }
 
 func (s *EndpointService) BatchUpdateByField(req v1.BatchUpdateReq) (err error) {
+	valueType := builtin.InterfaceType(req.Value)
+	if _commUtils.InSlice(req.FieldName, []string{"status", "categoryId"}) {
+		if !_commUtils.InSlice(valueType, []string{"int", "float64"}) {
+			err = errors.New("数据类型错误")
+		}
+
+		var value int64
+		switch valueType {
+		case "int":
+			value = int64(req.Value.(int))
+		case "float64":
+			value = int64(req.Value.(float64))
+		}
+
+		if req.FieldName == "status" {
+			err = s.EndpointRepo.BatchUpdateStatus(req.EndpointIds, value)
+		} else if req.FieldName == "categoryId" {
+			err = s.EndpointRepo.BatchUpdateCategory(req.EndpointIds, value)
+		}
+	} else {
+		err = errors.New("字段错误")
+	}
+	return
+}
+
+func (s *EndpointService) curlToEndpoint(endpoint *model.Endpoint) (err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			err = fmt.Errorf("curl格式错误")
+		}
+	}()
+	curlObj := curlHelper.Parse(endpoint.Curl)
+	wf := curlObj.CreateTemporary(curlObj.CreateSession())
+
+	endpoint.Path = curlObj.ParsedURL.Path
+
+	endpoint.Interfaces = s.getInterfaces(curlObj, wf)
+
+	return
+}
+
+func (s *EndpointService) getInterfaces(cURL *curlHelper.CURL, wf *requests.Temporary) (interfaces []model.EndpointInterface) {
+	interf := model.EndpointInterface{}
+	interf.Params = s.getQueryParams(wf.GetQuery())
+	interf.Headers = s.getHeaders(wf.Header)
+	interf.Cookies = s.getCookies(wf.Cookies)
+	bodyType := ""
+	contentType := strings.Split(cURL.ContentType, ";")
+	if len(contentType) > 1 {
+		bodyType = contentType[0]
+	}
+	interf.BodyType = consts.HttpContentType(bodyType)
+	interf.RequestBody = s.getRequestBody(wf.Body.String())
+	interf.RequestBody.MediaType = string(interf.BodyType)
+	interf.Method = s.getMethod(bodyType, cURL.Method)
+	interfaces = append(interfaces, interf)
+
+	return
+}
+
+func (s *EndpointService) getMethod(contentType, method string) (ret consts.HttpMethod) {
+	if method == "" && contentType == "application/json" {
+		method = "POST"
+	}
+
+	return consts.HttpMethod(method)
+
+}
+
+func (s *EndpointService) getQueryParams(params url.Values) (ret []model.EndpointInterfaceParam) {
+	m := map[string]bool{}
+	for key, arr := range params {
+		for _, item := range arr {
+			if _, ok := m[key]; ok {
+				continue
+			}
+			ret = append(ret, model.EndpointInterfaceParam{
+				SchemaParam: model.SchemaParam{Name: key, Type: "string", Value: item, Default: item, Example: item},
+			})
+			m[key] = true
+		}
+	}
+
+	return
+}
+
+func (s *EndpointService) getHeaders(header http.Header) (ret []model.EndpointInterfaceHeader) {
+	for key, arr := range header {
+		for _, item := range arr {
+			ret = append(ret, model.EndpointInterfaceHeader{
+				SchemaParam: model.SchemaParam{Name: key, Type: "string", Value: item, Default: item, Example: item},
+			})
+		}
+	}
+
+	return
+}
+
+func (s *EndpointService) getCookies(cookies map[string]*http.Cookie) (ret []model.EndpointInterfaceCookie) {
+	for _, item := range cookies {
+		ret = append(ret, model.EndpointInterfaceCookie{
+			SchemaParam: model.SchemaParam{Name: item.Name, Type: "string", Value: item.Value, Default: item.Value, Example: item.Value},
+		})
+	}
+
+	return
+}
+
+func (s *EndpointService) getRequestBody(body string) (requestBody model.EndpointInterfaceRequestBody) {
+	requestBody = model.EndpointInterfaceRequestBody{}
+
+	if body != "" {
+		var examples []map[string]string
+		examples = append(examples, map[string]string{"content": body, "name": "defaultExample"})
+		requestBody.Examples = _commUtils.JsonEncode(examples)
+	}
+
+	requestBody.SchemaItem = s.getRequestBodyItem(body)
+	return
+}
+
+func (s *EndpointService) getRequestBodyItem(body string) (requestBodyItem model.EndpointInterfaceRequestBodyItem) {
+	requestBodyItem = model.EndpointInterfaceRequestBodyItem{}
+	requestBodyItem.Type = "object"
+	schema2conv := openapi.NewSchema2conv()
+	var obj interface{}
+	schema := openapi.Schema{}
+	_commUtils.JsonDecode(body, &obj)
+	schema2conv.Example2Schema(obj, &schema)
+	requestBodyItem.Content = _commUtils.JsonEncode(schema)
 	return
 }

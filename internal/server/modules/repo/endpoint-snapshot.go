@@ -27,7 +27,7 @@ func (r *EndpointSnapshotRepo) BatchCreateSnapshot(req v1.DocumentVersionReq, pr
 		return
 	}
 
-	if err = r.BatchDeleteByEndpointId(req.EndpointIds); err != nil {
+	if err = r.BatchDeleteByEndpointId(req.EndpointIds, documentId); err != nil {
 		return
 	}
 
@@ -98,9 +98,10 @@ func (r *EndpointSnapshotRepo) DeleteById(id uint) (err error) {
 	return
 }
 
-func (r *EndpointSnapshotRepo) BatchDeleteByEndpointId(endpointIds []uint) (err error) {
+func (r *EndpointSnapshotRepo) BatchDeleteByEndpointId(endpointIds []uint, documentId uint) (err error) {
 	err = r.DB.
 		Where("endpoint_id IN (?)", endpointIds).
+		Where("document_id = ?", documentId).
 		Delete(&model.EndpointSnapshot{}).Error
 
 	if err != nil {
@@ -117,5 +118,34 @@ func (r *EndpointSnapshotRepo) UpdateContent(id uint, endpoint model.Endpoint) (
 		Where("id = ?", id).
 		Update("content = ?", string(content)).Error
 
+	return
+}
+
+func (r *EndpointSnapshotRepo) GetContentByDocumentAndEndpoint(documentId, endpointId uint) (endpoint model.Endpoint, err error) {
+	var snapshot model.EndpointSnapshot
+	err = r.DB.Where("document_id = ?", documentId).
+		Where("endpoint_id = ? and not deleted and not disabled", endpointId).
+		Find(&snapshot).Error
+	if err != nil {
+		return
+	}
+
+	err = json.Unmarshal([]byte(snapshot.Content), &endpoint)
+
+	return
+}
+
+func (r *EndpointSnapshotRepo) GetInterfaceDetail(documentId, endpointId, interfaceId uint) (interf model.EndpointInterface, err error) {
+	snapshotContent, err := r.GetContentByDocumentAndEndpoint(documentId, endpointId)
+	if err != nil {
+		return
+	}
+
+	for _, v := range snapshotContent.Interfaces {
+		if v.ID == interfaceId {
+			interf = v
+			break
+		}
+	}
 	return
 }

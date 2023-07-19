@@ -32,4 +32,10 @@ type EndpointCaseSaveReq struct {
 
 	CreateUserId   uint   `json:"createUserId"`
 	CreateUserName string `json:"createUserName"`
+
+	DebugInterfaceId    int    `json:"debugInterfaceId"`
+	EndpointInterfaceId int    `json:"endpointInterfaceId"`
+	UsedBy              string `json:"usedBy"`
+
+	DebugData domain.DebugData `json:"debugData"`
 }

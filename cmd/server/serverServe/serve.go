@@ -43,9 +43,10 @@ func (webServer *WebServer) InitRouter() error {
 		}
 		webServer.initModule()
 
-		webServer.AddWebUi()
+		//webServer.AddWebUi()
 		webServer.AddUpload()
 		webServer.AddTest()
+		webServer.AddSwagger()
 
 		err := webServer.app.Build()
 		if err != nil {
@@ -71,7 +72,7 @@ func (webServer *WebServer) GetSources() []map[string]string {
 		// 去除非接口路径
 		handerNames := context.HandlersNames(r.Handlers)
 		if !arr.InArrayS([]string{"GET", "POST", "PUT", "DELETE"}, r.Method) ||
-			!arr.InArrayS(strings.Split(handerNames, ","), "github.com/snowlyg/multi.(*Verifier).Verify") {
+			!arr.InArrayS(strings.Split(handerNames, ","), "github.com/snowlyg/multi.(*Verifier).Verify.func1") {
 			routeLen--
 			continue
 		}

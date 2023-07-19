@@ -1,107 +1,64 @@
 <template>
-  <a-drawer class="endpoint-drawer-main dp-drawer-full-height"
-            :width="1200"
-            :placement="'right'"
-            :closable="true"
-            :visible="visible"
-            wrapClassName="drawer-1"
-            @close="onCloseDrawer">
-
+  <DrawerLayout :visible="visible" @close="emit('close');" :stickyKey="stickyKey">
     <!-- 头部信息  -->
-    <template #title>
+    <template #header>
       <div class="header-text">
         <span class="serialNumber">[{{ endpointDetail.serialNumber }}]</span>
         <EditAndShowField :custom-class="'show-on-hover'" placeholder="修改标题" :value="endpointDetail?.title || ''"
                           @update="updateTitle"/>
       </div>
     </template>
+    <template #basicInfo>
+      <!-- 基本信息 -->
+      <EndpointBasicInfo @changeStatus="changeStatus"
+                         @change-description="changeDescription"
+                         @changeCategory="changeCategory"/>
+    </template>
 
-    <div class="drawer-content">
-      <div class="drawer-content-basic-info">
-        <!-- 基本信息 -->
-        <EndpointBasicInfo @changeStatus="changeStatus"
-                           @change-description="changeDescription"
-                           @changeCategory="changeCategory"/>
+    <template #tabHeader>
+      <div class="tab-header-items">
+        <div class="tab-header-item"
+             :class="{'active':tab.key === activeTabKey}" v-for="tab in tabsList"
+             :key="tab.key"
+             @click="changeTab(tab.key)">
+          <span>{{ tab.label }}</span>
+        </div>
       </div>
-
-      <!-- 接口设计区域 -->
-      <div class="drawer-content-config">
-        <a-card class="dp-card-full-height"
-                style="width: 100%"
-                :bordered="false"
-                :size="'small'">
-          <template #title>
-            <div>
-              <ConBoxTitle :show-arrow="true" @expand="expandInfo" :backgroundStyle="'background: #FBFBFB;'"
-                           :title="'接口设计'"/>
-            </div>
+      <div class="tab-header-btns">
+        <a-button v-if="activeTabKey === 'request' && showFooter" type="primary" @click="save">
+          <template #icon>
+            <SaveOutlined/>
           </template>
-
-          <a-tabs class="tabs dp-tabs-full-height"
-              v-show="expand" :activeKey="key" :animated="false" @change="changeTab">
-
-            <template #tabBarExtraContent>
-              <a-button v-if="key === 'request' && showFooter" type="primary" @click="save">
-                <template #icon>
-                  <SaveOutlined/>
-                </template>
-                保存
-              </a-button>
-            </template>
-
-            <a-tab-pane key="request" tab="定义" class="tab">
-              <div class="tab-container dp-scroll">
-                <EndpointDefine v-if="key === 'request'" @switchMode="switchMode"/>
-              </div>
-            </a-tab-pane>
-
-            <!-- add select env button top is relative to this -->
-            <a-tab-pane key="run" tab="调试" class="tab dp-relative">
-              <div class="tab-container">
-                <EndpointDebug v-if="key === 'run'" @switchToDefineTab="switchToDefineTab"/>
-              </div>
-            </a-tab-pane>
-
-            <!-- select env and add case button top is relative to this -->
-            <a-tab-pane key="cases" tab="用例" class="tab dp-relative">
-              <div class="tab-container dp-scroll">
-                <EndpointCases v-if="key === 'cases'" @switchToDefineTab="switchToDefineTab"/>
-              </div>
-            </a-tab-pane>
-
-            <a-tab-pane key="docs" tab="文档" class="tab">
-              <div class="tab-container dp-scroll">
-                <Docs :onlyShowDocs="true"
-                      :showHeader="false"
-                      v-if="key === 'docs' && docsData"
-                      :data="docsData"
-                      @switchToDefineTab="switchToDefineTab"
-                      :show-menu="true"/> <!-- use v-if to force page reload-->
-              </div>
-            </a-tab-pane>
-          </a-tabs>
-        </a-card>
+          保存
+        </a-button>
       </div>
-    </div>
+    </template>
 
-  </a-drawer>
+    <template #tabContent>
+      <div class="tab-pane">
+        <EndpointDefine v-if="activeTabKey === 'request'" @switchMode="switchMode"/>
+        <EndpointDebug v-if="activeTabKey === 'run'" @switchToDefineTab="switchToDefineTab"/>
+        <EndpointCases v-if="activeTabKey === 'cases'" @switchToDefineTab="switchToDefineTab"/>
+        <Docs :onlyShowDocs="true"
+              :showHeader="false"
+              v-if="activeTabKey === 'docs' && docsData"
+              :data="docsData"
+              @switchToDefineTab="switchToDefineTab"
+              :show-menu="true"/> <!-- use v-if to force page reload-->
+      </div>
+    </template>
+  </DrawerLayout>
 </template>
 
 <script lang="ts" setup>
-import {
-  ref,
-  defineProps,
-  defineEmits,
-  computed, watch,
-} from 'vue';
+import {computed, defineEmits, defineProps, ref,} from 'vue';
 import EndpointBasicInfo from './EndpointBasicInfo.vue';
 import EditAndShowField from '@/components/EditAndShow/index.vue';
-import ConBoxTitle from '@/components/ConBoxTitle/index.vue';
 import EndpointDefine from './Define/index.vue';
 import EndpointDebug from './Debug/index.vue';
 import EndpointCases from './Cases/index.vue';
 import Docs from '@/components/Docs/index.vue';
-
+import DrawerLayout from "@/views/component/DrawerLayout/index.vue";
 import {useStore} from "vuex";
 import {Endpoint} from "@/views/endpoint/data";
 import {message} from "ant-design-vue";
@@ -115,6 +72,10 @@ const props = defineProps({
     required: true,
     type: Boolean,
   },
+  tabs: {
+    type: Object,
+    required: true
+  }
 })
 const emit = defineEmits(['ok', 'close', 'refreshList']);
 
@@ -124,10 +85,29 @@ function onCloseDrawer() {
 
 const docsData = ref(null);
 
-async function changeTab(value) {
-  console.log('changeTab', value)
+const tabsList = [
+  {
+    "key": "request",
+    "label": "定义"
+  },
+  {
+    "key": "run",
+    "label": "调试"
+  },
+  {
+    "key": "cases",
+    "label": "用例"
+  },
+  {
+    "key": "docs",
+    "label": "文档"
+  },
+]
 
-  key.value = value;
+const stickyKey = ref(0);
+async function changeTab(value) {
+  activeTabKey.value = value;
+  stickyKey.value ++;
   // 切换到调试页面时，需要先保存
   if (value === 'run') {
     // Comment out since it cause a issue in ./Debug/method @chenqi
@@ -138,16 +118,15 @@ async function changeTab(value) {
     // await store.dispatch('Endpoint/getEndpointDetail', {id: endpointDetail.value.id});
 
   } else if (value === 'docs') {
-    const res = await store.dispatch('Endpoint/getDocs', {
+    docsData.value = await store.dispatch('Endpoint/getDocs', {
       endpointIds: [endpointDetail.value.id],
-      needDetail:true,
+      needDetail: true,
     });
-    docsData.value = res;
   }
 }
 
 function switchToDefineTab() {
-  key.value = 'request';
+  activeTabKey.value = 'request';
 }
 
 const showFooter = ref(true);
@@ -185,7 +164,7 @@ async function changeCategory(value) {
 }
 
 
-const key = ref('request');
+const activeTabKey = ref('request');
 
 async function cancel() {
   emit('close');
@@ -199,84 +178,10 @@ async function save() {
   emit('refreshList');
 }
 
-const expand = ref(true)
-
-function expandInfo(val) {
-  expand.value = val
-}
 
 </script>
 
 <style lang="less" scoped>
-.endpoint-drawer-main {
-  margin-bottom: 60px;
-
-  .drawer-content {
-    height: 100%;
-    .drawer-content-basic-info {
-      height: 118px;
-    }
-    .drawer-content-config {
-      height: calc(100% - 118px);
-      .dp-card-full-height {
-        height: 100%;
-
-        .tabs {
-          .tab {
-            .tab-container {
-              height: 100%;
-              margin-top: 16px;
-            }
-          }
-        }
-      }
-    }
-  }
-
-  .title {
-    width: auto;
-
-    .ant-input-affix-wrapper {
-      width: auto;
-      border: none;
-
-      &:focus {
-        border: none;
-        outline: none;
-        box-shadow: none;
-      }
-    }
-
-    input {
-      width: auto;
-      border: none;
-
-      &:focus {
-        border: none;
-        border: none;
-        outline: none;
-        box-shadow: none;
-      }
-    }
-  }
-}
-
-.drawer-btns {
-  background: #ffffff;
-  border-top: 1px solid rgba(0, 0, 0, 0.06);
-  position: absolute;
-  bottom: 0;
-  //right: 0;
-  width: 100%;
-  padding-right: 24px;
-  height: 56px;
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  margin-right: 16px;
-  z-index: 99;
-}
-
 .header-text {
   display: flex;
   max-width: 80%;

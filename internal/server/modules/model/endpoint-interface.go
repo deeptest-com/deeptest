@@ -1,9 +1,11 @@
 package model
 
+import "github.com/aaronchen2k/deeptest/internal/pkg/consts"
+
 type EndpointInterface struct {
 	BaseModel
 	InterfaceBase
-	EndpointId uint `json:"endpointId"`
+	EndpointId uint `json:"endpointId" gorm:"index"`
 
 	Params         []EndpointInterfaceParam        `gorm:"-" json:"params"`
 	Headers        []EndpointInterfaceHeader       `gorm:"-" json:"headers"`
@@ -14,20 +16,21 @@ type EndpointInterface struct {
 	Tags           []string                        `gorm:"-" json:"tags"`
 	PathParams     []EndpointPathParam             `gorm:"-" json:"pathParams"`
 
-	DebugInterfaceId uint `gorm:"default:0" json:"debugInterfaceId"`
+	DebugInterfaceId uint              `gorm:"default:0" json:"debugInterfaceId"`
+	SourceType       consts.SourceType `json:"sourceType" gorm:"default:0"`
 }
 type SchemaParam struct {
 	Name        string  `json:"name"`
-	Value       string  `json:"value"  gorm:"type:text"`
+	Value       string  `gorm:"type:text" json:"value"`
 	Type        string  `json:"type"`
 	Desc        string  `json:"desc"`
-	InterfaceId uint    `json:"interfaceId"`
+	InterfaceId uint    `json:"interfaceId" gorm:"index"`
 	Format      string  `json:"format"`
-	Example     string  `json:"example"`
+	Example     string  `gorm:"type:text" json:"example"`
 	Pattern     string  `json:"pattern"`
 	MinLength   uint64  `json:"minLength"`
 	MaxLength   uint64  `json:"maxLength"`
-	Default     string  `json:"default"`
+	Default     string  `gorm:"type:text" json:"default"`
 	Required    bool    `json:"required"`
 	MultipleOf  float64 `json:"multipleOf"`
 	MinItems    uint64  `json:"minItems"`

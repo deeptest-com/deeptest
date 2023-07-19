@@ -149,12 +149,12 @@ func (s *DebugInterfaceService) CopyDebugDataPropsFromPo(debugData *domain.Debug
 	endpoint, err := s.EndpointRepo.GetAll(endpointInterface.EndpointId, "v0.1.0")
 	serve, err := s.ServeRepo.Get(endpoint.ServeId)
 	if err != nil {
-		return
+		//	return
 	}
 
 	securities, err := s.ServeRepo.ListSecurity(serve.ID)
 	if err != nil {
-		return
+		//	return
 	}
 
 	serve.Securities = securities
@@ -173,6 +173,7 @@ func (s *DebugInterfaceService) CopyDebugDataPropsFromPo(debugData *domain.Debug
 	debugData.EndpointInterfaceId = endpointInterface.ID // reset
 
 	debugData.DebugInterfaceId = debugInterfacePo.ID
+	debugData.ServeId = debugInterfacePo.ServeId
 
 	debugData.Headers = append(debugData.Headers, domain.Header{Name: "", Value: ""})
 	debugData.QueryParams = append(debugData.QueryParams, domain.Param{Name: "", Value: "", ParamIn: consts.ParamInQuery})

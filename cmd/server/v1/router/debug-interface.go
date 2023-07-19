@@ -22,6 +22,7 @@ func (m *DebugModule) Party() module.WebModule {
 			party.Post("/loadForExec", m.DebugInterfaceCtrl.LoadForExec).Name = "获取调试接口用于执行"
 
 			party.Post("/save", m.DebugInterfaceCtrl.Save).Name = "保存调试接口"
+			party.Post("/saveAsCase", m.DebugInterfaceCtrl.SaveAsCase).Name = "另存为接口用例"
 		})
 
 		index.PartyFunc("/invoke", func(party iris.Party) {

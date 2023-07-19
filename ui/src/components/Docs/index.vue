@@ -1,5 +1,6 @@
 <template>
-  <div class="content" :class="{'full-content':isDocsFullPage}" v-if="data?.name && serviceList?.length">
+  <div :class="{'content':isDocsPage,'full-content':isDocsFullPage,'drawer-content':isEndpointPage}"
+       v-if="data?.name && serviceList?.length">
     <DocsHeader v-if="showHeader"
                 :data="data"
                 :items="serviceList"
@@ -7,12 +8,18 @@
                 @changeVersion="changeVersion"/>
     <a-divider style="margin:0" v-if="showHeader"/>
     <div class="doc-container">
-      <div class="left" v-if="showMenu">
-        <LeftTreeView :serviceList="serviceList" @select="selectMenu" :selectedKeys="selectedKeys"/>
-      </div>
-      <div class="right" :class="{'only-docs':!showMenu}">
-        <EndpointDoc v-if="selectedItem" :info="selectedItem" :onlyShowDocs="onlyShowDocs"/>
-      </div>
+      <ContentPane :containerStyle="{padding:0,margin:0,height:'100%',width:'100%'}">
+        <template #left>
+          <div class="left" v-if="showMenu">
+            <LeftTreeView :serviceList="serviceList" @select="selectMenu" :selectedKeys="selectedKeys"/>
+          </div>
+        </template>
+        <template #right>
+          <div class="right" :class="{'only-docs':!showMenu}">
+            <EndpointDoc v-if="selectedItem" :info="selectedItem" :onlyShowDocs="onlyShowDocs"/>
+          </div>
+        </template>
+      </ContentPane>
     </div>
   </div>
   <a-skeleton v-if="!data?.name"/>
@@ -43,14 +50,16 @@ import {useStore} from "vuex";
 import LeftTreeView from "./components/LeftTreeView.vue";
 import EndpointDoc from "./components/EndpointDoc.vue";
 import DocsHeader from "./components/DocsHeader.vue";
+import ContentPane from '@/views/component/ContentPane/index.vue';
 
 const store = useStore<{ Docs }>();
 const props = defineProps(['showMenu', 'data', 'onlyShowDocs', 'showHeader']);
 const emit = defineEmits(['changeVersion', 'switchToDefineTab']);
-
+const currDocId = computed<any>(() => store.state.Docs.currDocId);
 const isEndpointPage = window.location.href.includes('/endpoint/index');
 const isSharePage = window.location.href.includes('/docs/share');
 const isViewPage = window.location.href.includes('/docs/view');
+const isDocsPage = window.location.href.includes('/docs/index');
 
 const isDocsFullPage = isSharePage || isViewPage;
 
@@ -90,13 +99,6 @@ watch(() => {
 }, async (newVal) => {
   if (newVal.length > 0) {
     selectedItem.value = newVal[0];
-    // selectedItem.value = newVal.find((item) => {
-    //   return item.endpointInfo && item.serveInfo;
-    // })
-    // // 如果没有选择的接口，则默认选择第一个，即服务信息
-    // if (!selectedItem.value) {
-    //   selectedItem.value = newVal[0];
-    // }
   }
 }, {immediate: true});
 
@@ -104,7 +106,7 @@ async function selectMenu(item) {
   selectedItem.value = item;
 
   // 如果是接口定义页面，则不请求文档详情,会一次性请求所有接口的文档详情
-  if(isEndpointPage){
+  if (isEndpointPage) {
     return;
   }
 
@@ -115,11 +117,15 @@ async function selectMenu(item) {
       res = await store.dispatch('Docs/getShareDocsDetail', {
         currProjectId: item.serveInfo.projectId,
         interfaceId: item.id,
+        documentId: props?.data?.documentId || 0,
+        endpointId: item.endpointInfo.id,
       });
     } else {
       res = await store.dispatch('Docs/getDocsDetail', {
         currProjectId: item.serveInfo.projectId,
         interfaceId: item.id,
+        documentId: currDocId?.value || 0,
+        endpointId: item.endpointInfo.id,
       });
     }
     if (res?.interface) {
@@ -139,50 +145,50 @@ function changeVersion(docId) {
 </script>
 
 <style lang="less" scoped>
+
+.right {
+  flex: 1;
+  height: 100%;
+  overflow: auto;
+  padding: 12px 24px 96px 24px;
+}
+
+// 文档页面
 .content {
   height: calc(100vh - 100px);
-  position: relative;
-}
-
-.doc-container {
-  display: flex;
-  height: 100%;
-
-  .left {
-    width: 300px;
-    height: 100%;
-    overflow: hidden;
-    //margin-left: 24px;
-    //padding: 0 12px;
-    //border-right: 1px solid #f0f0f0;
-    overflow-y: scroll;
-    position: relative;
-
-    &:before {
-      content: '';
-      position: absolute;
-      top: 0;
-      right: 0;
-      height: 100%;
-      z-index: 99;
-      background-color: #f0f0f0;
-      width: 1px;
+  .doc-container {
+    display: flex;
+    height: calc(100vh - 156px);
+    .left {
+      margin-left: 12px;
+    }
+    .only-docs {
+      padding: 0;
     }
   }
+}
 
-  .right {
-    flex: 1;
-    height: 100%;
-    overflow: auto;
-    padding: 12px 24px 96px 24px;
-  }
+// 文档分享页和查看页
+.full-content {
+  min-height: 100vh !important;
 
-  .only-docs {
-    padding: 0;
+  .doc-container {
+    display: flex;
+    top: 0;
+    height: calc(100vh - 56px);
   }
 }
 
-.full-content {
-  height: calc(100vh - 56px);
+// 抽屉里的文档区域
+.drawer-content {
+  height: calc(100vh - 96px) !important;
+
+  .doc-container {
+    position: relative;
+    .left {
+      margin-left: 0 !important;
+      height: calc(100vh - 96px);
+    }
+  }
 }
 </style>

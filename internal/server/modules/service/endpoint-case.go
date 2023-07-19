@@ -10,10 +10,11 @@ import (
 )
 
 type EndpointCaseService struct {
-	EndpointCaseRepo   *repo.EndpointCaseRepo   `inject:""`
-	ServeServerRepo    *repo.ServeServerRepo    `inject:""`
-	DebugInterfaceRepo *repo.DebugInterfaceRepo `inject:""`
-	EndpointRepo       *repo.EndpointRepo       `inject:""`
+	EndpointCaseRepo      *repo.EndpointCaseRepo      `inject:""`
+	EndpointInterfaceRepo *repo.EndpointInterfaceRepo `inject:""`
+	ServeServerRepo       *repo.ServeServerRepo       `inject:""`
+	DebugInterfaceRepo    *repo.DebugInterfaceRepo    `inject:""`
+	EndpointRepo          *repo.EndpointRepo          `inject:""`
 
 	EndpointService       *EndpointService       `inject:""`
 	DebugInterfaceService *DebugInterfaceService `inject:""`
@@ -39,13 +40,18 @@ func (s *EndpointCaseService) Save(req serverDomain.EndpointCaseSaveReq) (po mod
 	server, _ := s.ServeServerRepo.GetDefaultByServe(endpoint.ServeId)
 
 	// create new DebugInterface
+	url := req.DebugData.Url
+	if url == "" {
+		url = endpoint.Path
+	}
+
 	debugInterface := model.DebugInterface{
 		InterfaceBase: model.InterfaceBase{
 			Name: req.Name,
 
 			InterfaceConfigBase: model.InterfaceConfigBase{
 				Method: consts.GET,
-				Url:    endpoint.Path,
+				Url:    url,
 			},
 		},
 		ServeId:  endpoint.ServeId,
@@ -62,9 +68,44 @@ func (s *EndpointCaseService) Save(req serverDomain.EndpointCaseSaveReq) (po mod
 
 	if po.DebugInterfaceId > 0 {
 		values := map[string]interface{}{
-			"diagnose_interface_id": po.ID,
+			"case_interface_id": po.ID,
 		}
 		err = s.DebugInterfaceRepo.UpdateDebugInfo(po.DebugInterfaceId, values)
+	}
+
+	return
+}
+
+func (s *EndpointCaseService) SaveFromDebugInterface(req serverDomain.EndpointCaseSaveReq) (po model.EndpointCase, err error) {
+	if req.EndpointId == 0 {
+		endpointInterface, _ := s.EndpointInterfaceRepo.Get(uint(req.EndpointInterfaceId))
+		req.EndpointId = endpointInterface.EndpointId
+	}
+
+	req.DebugInterfaceId = 0 // force to create
+	req.DebugData.DebugInterfaceId = 0
+	req.DebugData.UsedBy = consts.CaseDebug
+
+	s.CopyValueFromRequest(&po, req)
+	po.ID = 0
+
+	debugInterface, err := s.SaveDebugData(req.DebugData)
+
+	endpoint, err := s.EndpointRepo.Get(req.EndpointId)
+	po.ProjectId = endpoint.ProjectId
+	po.ServeId = endpoint.ServeId
+	po.DebugInterfaceId = debugInterface.ID
+	err = s.EndpointCaseRepo.Save(&po)
+
+	if po.DebugInterfaceId > 0 {
+		values := map[string]interface{}{
+			"case_interface_id": po.ID,
+		}
+		err = s.DebugInterfaceRepo.UpdateDebugInfo(po.DebugInterfaceId, values)
+	}
+
+	if err != nil {
+		return
 	}
 
 	return
@@ -77,7 +118,7 @@ func (s *EndpointCaseService) UpdateName(req serverDomain.EndpointCaseSaveReq) (
 }
 
 func (s *EndpointCaseService) SaveDebugData(req domain.DebugData) (debugInterface model.DebugInterface, err error) {
-	s.DebugInterfaceService.Save(req)
+	debugInterface, err = s.DebugInterfaceService.Save(req)
 
 	return
 }

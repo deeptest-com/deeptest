@@ -74,6 +74,7 @@ type Param struct {
 	ParamIn     consts.ParamIn `json:"paramIn"`
 	Disabled    bool           `json:"disabled"`
 	Description string         `json:"Description"`
+	Type        string         `json:"type"`
 }
 
 type BodyFormDataItem struct {

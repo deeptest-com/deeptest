@@ -2,10 +2,11 @@
   <div class="diagnose-interface-design-main">
       <div id="diagnose-interface-debug-panel">
         <a-tabs class="dp-tabs-full-height" type="editable-card"
-                :hideAdd="true" v-model:activeKey="activeTabKey"
+                :hideAdd="true"
+                v-if="interfaceTabs?.length"
+                v-model:activeKey="activeTabKey"
                 @edit="onTabEdit"
                 @change="changeTab">
-
           <a-tab-pane v-for="tab in interfaceTabs" :key="''+tab.id" :tab="getTitle(tab.title)" class="dp-relative">
             <template v-if="debugData?.method" >
               <DebugComp :topVal="'-40px'"
@@ -14,9 +15,13 @@
                          :showMethodSelection="true" />
             </template>
           </a-tab-pane>
-
         </a-tabs>
+        <div  v-else style="margin-top: 36px;">
+          <a-empty  :description="'请先在左侧目录上选择需要调试的接口'"/>
+        </div>
       </div>
+
+
 
       <div class="selection">
        <!-- <EnvSelection /> -->
@@ -55,7 +60,6 @@ const debugData = computed<any>(() => store.state.Debug.debugData);
 const interfaceId = computed<any>(() => store.state.DiagnoseInterface.interfaceId);
 const interfaceData = computed<any>(() => store.state.DiagnoseInterface.interfaceData);
 const interfaceTabs = computed<any>(() => store.state.DiagnoseInterface.interfaceTabs);
-
 const activeTabKey = ref('0')
 const rightTabKey = ref('')
 
@@ -90,6 +94,13 @@ watch((interfaceData), async (newVal) => {
   loadDebugData()
   activeTabKey.value = ''+interfaceData.value.id
 }, { immediate: true, deep: true })
+
+// 切换项目时，需要判断正在调试的接口是否该项目下的接口，不是则需要清空 Tab list
+watch(() => { return currProject.value.id },(newVal) => {
+  if(newVal){
+    store.commit('DiagnoseInterface/setInterfaceTabs',[])
+  }
+},{immediate:true})
 
 const saveDiagnoseInterface = async (e) => {
   console.log('saveDiagnoseInterface')

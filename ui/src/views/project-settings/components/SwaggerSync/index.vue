@@ -2,7 +2,7 @@
   <div class="content">
 <a-form ref="" :model="formState" :label-col="{ style: { width: '300px' } }" :wrapper-col="{ span: 14 }" :rules="rules">
   <a-form-item class="desc">
-    开启Swagger自动同步，系统将从指定的Swagger地址中定时自动同步接口定义到项目当前中
+    开启Swagger自动同步，系统将从指定的Swagger地址中定时自动同步接口定义到当前项目中
     </a-form-item>
     <a-form-item label="是否开启自动同步">
       <a-switch v-model:checked="formState.switch" :checkedValue="1" :unCheckedValue="2" />
@@ -39,7 +39,7 @@
             allow-clear/>
             所有接口都将同步到该分类目录下
       </a-form-item>
-      
+
     <a-form-item v-bind="validateInfos.url" label="项目的swagger文档 URL地址"  v-if="formState.switch==1">
       <a-input  v-model:value="formState.url" type="textarea" placeholder="请输入swagger url地址"/>
     </a-form-item>
@@ -86,14 +86,14 @@ const rules = {
 const {validate,validateInfos  } = useForm(formState, rules);
 
 const onSubmit = () => {
-  
+
     validate().then(()=>{
       saveSwaggerSync(formState.value)
-      
+
       message.success('保存成功');
     }).catch(()=>{
       console.log('error:', formState.value);
-    })  
+    })
 
 };
 
@@ -105,7 +105,7 @@ async function saveSwaggerSync(data:SwaggerSync) {
 const syncTypes = [
       { label: '完全覆盖', value: 1 },
     ];
-  
+
 
 function selectedCategory(value) {
   formState.value.categoryId = value;

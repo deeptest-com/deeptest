@@ -5,16 +5,18 @@
       <ParamGrid title="路径参数" :list="requestData.pathParams" />
       <ParamGrid title="请求头" :list="requestData.headers" />
 
-      <ParamGrid v-if="requestData.bodyFormData"
-                    title="表单数据"
-                    :list="requestData.bodyFormData" />
-      <ParamGrid v-if="requestData.bodyFormUrlencoded"
-                    title="表单数据（UrlEncoded）"
-                    :list="requestData.bodyFormUrlencoded" />
+      <ParamGrid v-if="requestData.bodyType==='multipart/form-data' && requestData.bodyFormData"
+                 title="表单数据"
+                 :list="requestData.bodyFormData" />
 
-      <ParamContent v-if="requestData.body"
+      <ParamGrid v-else-if="requestData.bodyType==='application/x-www-form-urlencoded' && requestData.bodyFormUrlencoded"
+                 title="表单数据（UrlEncoded）"
+                 :list="requestData.bodyFormUrlencoded" />
+
+      <ParamContent v-else
                     title="请求体"
                     :content="requestData.body" />
+
     </div>
 
     <div class="status">

@@ -2,10 +2,11 @@
   <div id="debug-index" class="dp-splits-v">
     <div id="debug-content">
       <Invocation :topVal="topVal"
+                  :showMethodSelection = "showMethodSelection"
                   :onSave="saveDebugData"
+                  :onSaveAsCase="saveAsCase"
                   :onSync="syncDebugData"
-                  :baseUrlDisabled="baseUrlDisabled"/>
-
+                  :baseUrlDisabled="baseUrlDisabled" />
       <DebugConfig />
     </div>
 
@@ -89,6 +90,10 @@ const props = defineProps({
     type: Function,
     required: true
   },
+  onSaveAsCase: {
+    type: Function,
+    required: false
+  },
   onSyncDebugData: {
     type: Function,
     required: false
@@ -106,8 +111,13 @@ const props = defineProps({
 
 const rightTabKey = ref('')
 
-const saveDebugData = async () => {
-  props.onSaveDebugData()
+const saveDebugData = async (data) => {
+  props.onSaveDebugData(data)
+};
+const saveAsCase = async () => {
+  if (props.onSaveAsCase) {
+    props.onSaveAsCase()
+  }
 };
 
 const syncDebugData = async () => {
@@ -145,8 +155,8 @@ const closeRightTab = () => {
 
 <style lang="less">
 #debug-index #debug-right .right-tab {
-  height: 100%;
-
+  //height: 100%;
+  height: calc(100vh - 152px);
   .ant-tabs-left-content {
     padding-left: 0px;
   }
@@ -191,7 +201,6 @@ const closeRightTab = () => {
   #debug-content {
     flex: 1;
     width: 0;
-    height: 100%;
   }
 
   #debug-right {

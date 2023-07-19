@@ -8,6 +8,14 @@
           :options="endpointStatusOpts"
           @update="handleChangeStatus"/>
     </a-descriptions-item>
+    <a-descriptions-item label="标签">
+      <Tags 
+       :options="tagList" 
+       :size="'small'"
+       :selectValues="endpointDetail.tags"
+       :ok="saveTags"
+      />
+    </a-descriptions-item>
     <a-descriptions-item label="描述">
       <EditAndShowField :placeholder="'请输入描述'" :value="endpointDetail?.description || '暂无'"
                         @update="updateDescription"/>
@@ -30,6 +38,7 @@ import {
   ref,
   defineEmits,
   computed,
+onMounted,
 } from 'vue';
 import {endpointStatusOpts, endpointStatus} from '@/config/constant';
 import {useStore} from "vuex";
@@ -37,11 +46,11 @@ import {Endpoint} from "@/views/endpoint/data";
 import EditAndShowField from '@/components/EditAndShow/index.vue';
 import EditAndShowSelect from '@/components/EditAndShowSelect/index.vue';
 import EditAndShowTreeSelect from '@/components/EditAndShowTreeSelect/index.vue';
-
-const props = defineProps({})
+import Tags from '@/views/component/Tags/index.vue';
 
 const store = useStore<{ Endpoint }>();
 const endpointDetail: any = computed<Endpoint>(() => store.state.Endpoint.endpointDetail);
+const tagList: any = computed<Endpoint>(() => store.state.Endpoint.tagList);
 const treeDataCategory = computed<any>(() => store.state.Endpoint.treeDataCategory);
 const treeData: any = computed(() => {
   return treeDataCategory.value?.[0]?.children || [];
@@ -88,6 +97,16 @@ function handleChangeCategory(val) {
 function updateDescription(val: string) {
   emit('changeDescription', val);
 }
+
+const saveTags = async (values:[])=>{
+  console.log("saveTags",values)
+  await store.dispatch('Endpoint/updateEndpointTag',{id:endpointDetail.value.id,tagNames:values});
+  
+}
+
+onMounted(()=>{
+ console.log("tagList",tagList.value)
+})
 
 
 </script>

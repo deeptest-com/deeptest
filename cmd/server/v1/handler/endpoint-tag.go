@@ -19,6 +19,5 @@ func (c *EndpointTagCtrl) ListTags(ctx iris.Context) {
 		return
 	}
 
-	res := iris.Map{"result": tags}
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res, Msg: _domain.NoErr.Msg})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: tags, Msg: _domain.NoErr.Msg})
 }

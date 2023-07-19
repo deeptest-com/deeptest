@@ -495,6 +495,10 @@ onUnmounted(async () => {
 })
 
 
+onMounted(async ()=>{
+  await store.dispatch('Endpoint/getEndpointTagList');
+})
+
 
 function paneResizeStop(pane, resizer, size) {
   console.log(pane.className, resizer.className, size.split('px')[0])

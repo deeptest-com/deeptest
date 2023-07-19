@@ -87,6 +87,15 @@
                 </div>
               </template>
 
+              <template #colTags="{record}">
+                <div class="customTagsColRender">
+                  <Tags
+                  :record = "record"
+                  :options = "tagList"
+                    />
+                </div>
+              </template>
+
               <template #colPath="{text}">
                 <div class="customPathColRender">
                   <a-tag>{{ text }}</a-tag>
@@ -173,6 +182,7 @@ import {StateType as Debug} from "@/views/component/debug/store";
 import {message, Modal, notification} from 'ant-design-vue';
 import Tree from './components/Tree.vue'
 import BatchUpdateFieldModal from './components/BatchUpdateFieldModal.vue';
+import Tags from './components/Tags/index.vue';
 const store = useStore<{ Endpoint, ProjectGlobal, Debug: Debug, ServeGlobal: ServeStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const currServe = computed<any>(() => store.state.ServeGlobal.currServe);
@@ -182,6 +192,7 @@ let pagination = computed<PaginationConfig>(() => store.state.Endpoint.listResul
 const createApiModalVisible = ref(false);
 const router = useRouter();
 type Key = ColumnProps['key'];
+const tagList: any = computed(()=>store.state.Endpoint.tagList);
 
 /**
  * 表格数据
@@ -202,6 +213,12 @@ const columns = [
     title: '状态',
     dataIndex: 'status',
     slots: {customRender: 'colStatus'},
+    width: 150,
+  },
+  {
+    title: '所属标签',
+    dataIndex: 'tags',
+    slots: {customRender: 'colTags'},
     width: 150,
   },
   {

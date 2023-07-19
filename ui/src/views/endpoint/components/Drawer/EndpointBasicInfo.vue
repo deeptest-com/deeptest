@@ -12,8 +12,7 @@
       <Tags 
        :options="tagList" 
        :size="'small'"
-       :selectValues="endpointDetail.tags"
-       :ok="saveTags"
+       :record="endpointDetail"
       />
     </a-descriptions-item>
     <a-descriptions-item label="描述">
@@ -46,7 +45,7 @@ import {Endpoint} from "@/views/endpoint/data";
 import EditAndShowField from '@/components/EditAndShow/index.vue';
 import EditAndShowSelect from '@/components/EditAndShowSelect/index.vue';
 import EditAndShowTreeSelect from '@/components/EditAndShowTreeSelect/index.vue';
-import Tags from '@/views/component/Tags/index.vue';
+import Tags from '../Tags/index.vue';
 
 const store = useStore<{ Endpoint }>();
 const endpointDetail: any = computed<Endpoint>(() => store.state.Endpoint.endpointDetail);
@@ -98,17 +97,6 @@ function handleChangeCategory(val) {
 function updateDescription(val: string) {
   emit('changeDescription', val);
 }
-
-const saveTags = async (values:[])=>{
-  console.log("saveTags",values)
-  await store.dispatch('Endpoint/updateEndpointTag',{id:endpointDetail.value.id,tagNames:values});
-  
-}
-
-onMounted(()=>{
- console.log("tagList",tagList.value)
-})
-
 
 </script>
 

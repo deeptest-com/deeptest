@@ -308,8 +308,8 @@ const StoreModel: ModuleType = {
         setEndpointCaseDetail(state, payload) {
             state.caseDetail = payload;
         },
-
         setEndpointTagList(state, payload) {
+            debugger;
             state.tagList = payload;
         }
     },
@@ -812,15 +812,17 @@ const StoreModel: ModuleType = {
                 return false
             }
         },
-        async getEndpointTagList({ state,commit } ) {
+        async getEndpointTagList({ commit } ) {
             const resp = await tagList()
             if (resp.code === 0) {
                 
-               state.tagList =  resp.data.map((arrItem)=>{
+               const res =  resp.data.map((arrItem)=>{
                  return {label:arrItem.name,value:arrItem.name}
                }) 
-               //commit("setEndpointTaglist", res);
+               debugger;
+               commit("setEndpointTaglist", res);
                //console.log("setEndpointTaglist",state.tagList);
+              
             } else {
                 return false
             }
@@ -829,6 +831,7 @@ const StoreModel: ModuleType = {
             const jsn = await updateTag(payload)
             if (jsn.code === 0) {
                 await dispatch("getEndpointTagList")
+                await dispatch('loadList', {projectId: payload.projectId});
                 return true;
             } else {
                 return false

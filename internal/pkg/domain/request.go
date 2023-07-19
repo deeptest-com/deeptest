@@ -35,7 +35,7 @@ type BaseRequest struct {
 
 	Body               string                   `json:"body"`
 	BodyFormData       []BodyFormDataItem       `json:"bodyFormData"`
-	BodyFormUrlencoded []BodyFormUrlEncodedItem `son:"bodyFormUrlencoded"`
+	BodyFormUrlencoded []BodyFormUrlEncodedItem `json:"bodyFormUrlencoded"`
 	BodyType           consts.HttpContentType   `json:"bodyType"`
 	BodyLang           consts.HttpRespLangType  `json:"bodyLang"`
 

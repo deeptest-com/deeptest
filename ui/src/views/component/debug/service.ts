@@ -152,8 +152,13 @@ export function prepareDataForRequest(data: any) {
         })
     }
 
-    if (data.params) {
-        data.params = data.params.filter((item) => {
+    if (data.queryParams) {
+        data.queryParams = data.queryParams.filter((item) => {
+            return !!item.name
+        })
+    }
+    if (data.pathParams) {
+        data.pathParams = data.pathParams.filter((item) => {
             return !!item.name
         })
     }

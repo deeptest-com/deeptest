@@ -73,13 +73,13 @@ func (c *DebugInvokeCtrl) GetLastResp(ctx iris.Context) {
 		endpointInterfaceId = 0
 	}
 
-	resp, err := c.DebugInvokeService.GetLastResp(uint(debugInterfaceId), uint(endpointInterfaceId))
+	reqAndResp, err := c.DebugInvokeService.GetLastResp(uint(debugInterfaceId), uint(endpointInterfaceId))
 
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return
 	}
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: resp})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: reqAndResp})
 }
 
 // GetAsInterface 详情
@@ -90,12 +90,16 @@ func (c *DebugInvokeCtrl) GetAsInterface(ctx iris.Context) {
 		return
 	}
 
-	debugData, resp, err := c.DebugInvokeService.GetAsInterface(id)
+	debugData, resultReq, resultResp, err := c.DebugInvokeService.GetAsInterface(id)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return
 	}
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: iris.Map{"debugData": debugData, "resp": resp}})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: iris.Map{
+		"debugData": debugData,
+		"req":       resultReq,
+		"resp":      resultResp,
+	}})
 }
 
 // Delete 删除

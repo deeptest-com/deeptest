@@ -180,14 +180,14 @@ function changeServer(id) {
 }
 
 const send = async (e) => {
-  console.log('sendRequest', debugData.value)
+  const data = prepareDataForRequest(debugData.value)
+  console.log('sendRequest', data)
 
   if (validateInfo()) {
     const callData = {
       serverUrl: process.env.VUE_APP_API_SERVER, // used by agent to submit result to server
       token: await getToken(),
-
-      data: debugData.value
+      data: data
     }
     await store.dispatch('Debug/call', callData)
   }

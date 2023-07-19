@@ -107,6 +107,11 @@ const props = defineProps({
     required: false,
     default: true
   },
+  showMethodSelection: {
+    type: Boolean,
+    required: false,
+    default: true
+  },
 })
 
 const rightTabKey = ref('')

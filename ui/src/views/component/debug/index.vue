@@ -187,7 +187,6 @@ const closeRightTab = () => {
   #debug-content {
     flex: 1;
     width: 0;
-    height: 100%;
   }
 
   #debug-right {

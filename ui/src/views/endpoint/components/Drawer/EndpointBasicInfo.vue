@@ -50,7 +50,8 @@ import Tags from '@/views/component/Tags/index.vue';
 
 const store = useStore<{ Endpoint }>();
 const endpointDetail: any = computed<Endpoint>(() => store.state.Endpoint.endpointDetail);
-const tagList: any = computed<Endpoint>(() => store.state.Endpoint.tagList);
+const tagList: any = computed(()=>store.state.Endpoint.tagList);
+//  const tagList = ref(["aabdd","sddsd"])
 const treeDataCategory = computed<any>(() => store.state.Endpoint.treeDataCategory);
 const treeData: any = computed(() => {
   return treeDataCategory.value?.[0]?.children || [];

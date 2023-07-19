@@ -815,12 +815,12 @@ const StoreModel: ModuleType = {
         async getEndpointTagList({ state,commit } ) {
             const resp = await tagList()
             if (resp.code === 0) {
-               const data = resp.data.map((arrItem)=>{
-                arrItem.value = arrItem.name
-                arrItem.label = arrItem.name
+                
+               state.tagList =  resp.data.map((arrItem)=>{
+                 return {label:arrItem.name,value:arrItem.name}
                }) 
-               state.tagList = data
-              // commit("setEndpointTaglist", data);
+               //commit("setEndpointTaglist", res);
+               //console.log("setEndpointTaglist",state.tagList);
             } else {
                 return false
             }

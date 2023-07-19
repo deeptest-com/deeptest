@@ -465,6 +465,7 @@ watch(() => [currProject.value.id, currServe.value.id], async (newVal) => {
     await loadList(pagination.value.current, pagination.value.pageSize, {
       serveId: newServeId || 0,
     });
+    await store.dispatch('Endpoint/getEndpointTagList');
     if (newServeId) {
       await store.dispatch('Endpoint/getServerList', {id: newServeId});
       // 获取授权列表
@@ -492,11 +493,6 @@ watch(
 // 页面路由卸载时，清空搜索条件
 onUnmounted(async () => {
   await store.commit('Endpoint/clearFilterState');
-})
-
-
-onMounted(async ()=>{
-  await store.dispatch('Endpoint/getEndpointTagList');
 })
 
 

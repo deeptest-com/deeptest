@@ -309,7 +309,6 @@ const StoreModel: ModuleType = {
             state.caseDetail = payload;
         },
         setEndpointTagList(state, payload) {
-            debugger;
             state.tagList = payload;
         }
     },
@@ -794,7 +793,7 @@ const StoreModel: ModuleType = {
                 return null
             }
         },
-    
+
         async saveCaseDebugData({ state, dispatch }, payload: any) {
             const jsn = await saveEndpointCaseDebugData(payload)
             if (jsn.code === 0) {
@@ -815,14 +814,13 @@ const StoreModel: ModuleType = {
         async getEndpointTagList({ commit } ) {
             const resp = await tagList()
             if (resp.code === 0) {
-                
+
                const res =  resp.data.map((arrItem)=>{
                  return {label:arrItem.name,value:arrItem.name}
-               }) 
-               debugger;
-               commit("setEndpointTaglist", res);
-               //console.log("setEndpointTaglist",state.tagList);
-              
+               })
+               commit("setEndpointTagList", res);
+               //console.log("setEndpointTagList",state.tagList);
+
             } else {
                 return false
             }
@@ -837,8 +835,8 @@ const StoreModel: ModuleType = {
                 return false
             }
         },
-           
-        
+
+
     },
 };
 

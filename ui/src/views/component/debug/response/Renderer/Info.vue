@@ -9,7 +9,7 @@
                     title="表单数据"
                     :list="requestData.bodyFormData" />
       <ParamGrid v-if="requestData.bodyFormUrlencoded"
-                    title="表单数据"
+                    title="表单数据（UrlEncoded）"
                     :list="requestData.bodyFormUrlencoded" />
 
       <ParamContent v-if="requestData.body"

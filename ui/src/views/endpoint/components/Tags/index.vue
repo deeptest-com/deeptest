@@ -5,7 +5,7 @@
       :options="options"
       :size="size"
       placeholder="请选择标签"
-      style="width: 200px"
+      style="width: 100px"
       @change="change"
     ></a-select>
 </template>

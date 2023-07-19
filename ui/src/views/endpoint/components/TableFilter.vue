@@ -24,7 +24,7 @@
             placeholder="请选择状态"
             :options="endpointStatusOpts"/>
       </a-form-item>
-      <a-form-item label="请选择标签" style="margin-bottom: 0;">
+      <a-form-item label="标签" style="margin-bottom: 0;">
         <a-select
             mode="tags"
             style="width: 120px;"

@@ -207,7 +207,8 @@ const columns = [
     title: '接口名称',
     dataIndex: 'title',
     slots: {customRender: 'colTitle'},
-    ellipsis: true
+    ellipsis: true,
+    width: 150,
   },
   {
     title: '状态',
@@ -216,7 +217,7 @@ const columns = [
     width: 150,
   },
   {
-    title: '所属标签',
+    title: '标签',
     dataIndex: 'tags',
     slots: {customRender: 'colTags'},
     width: 150,
@@ -225,6 +226,7 @@ const columns = [
     title: '创建人',
     dataIndex: 'createUser',
     width: 100,
+    ellipsis: true
   },
   {
     title: '接口路径',

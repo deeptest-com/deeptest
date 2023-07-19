@@ -461,8 +461,11 @@ func (s *EndpointService) UpdateTags(req v1.EndpointTagReq, projectId uint) (err
 		return
 	}
 
-	if err = s.EndpointTagRepo.AddRel(req.Id, intTagIds); err != nil {
-		return
+	if len(intTagIds) > 0 {
+		err = s.EndpointTagRepo.AddRel(req.Id, intTagIds)
+		if err != nil {
+			return err
+		}
 	}
 
 	for _, v := range tagsNeedDeleted {

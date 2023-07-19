@@ -1,5 +1,5 @@
 <template>
-  <a-descriptions :size="'small'" :title="null" >
+  <a-descriptions :size="'small'" :title="null" :column="4">
     <a-descriptions-item label="创建人">{{ endpointDetail?.createUser }}</a-descriptions-item>
     <a-descriptions-item label="状态">
       <EditAndShowSelect
@@ -9,8 +9,8 @@
           @update="handleChangeStatus"/>
     </a-descriptions-item>
     <a-descriptions-item label="标签">
-      <Tags 
-       :options="tagList" 
+      <Tags
+       :options="tagList"
        :size="'small'"
        :record="endpointDetail"
       />

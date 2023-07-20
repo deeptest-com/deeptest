@@ -15,6 +15,15 @@ type AuthCtrl struct {
 }
 
 // OAuth2Authorization
+// @Tags	授权模块
+// @summary	生成OAuth认证信息
+// @accept	application/json
+// @Produce	application/json
+// @Param 	Authorization			header	string						true	"Authentication header"
+// @Param 	currProjectId			query	int							true	"当前项目ID"
+// @Param 	DebugInterfaceOAuth20	body 	model.DebugInterfaceOAuth20 true 	"生成OAuth认证信息请求体"
+// @success	200	{object}	_domain.Response{data=object{url=string}}
+// @Router	/api/v1/auth/oauth2Authorization	[post]
 func (c *AuthCtrl) OAuth2Authorization(ctx iris.Context) {
 	projectId, err := ctx.URLParamInt("currProjectId")
 	if projectId == 0 {

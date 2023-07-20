@@ -5,7 +5,6 @@ import (
 	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
-	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	_httpUtils "github.com/aaronchen2k/deeptest/pkg/lib/http"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"strings"
@@ -19,11 +18,13 @@ func RunInterface(call agentDomain.InterfaceCall) (resultReq domain.DebugData, r
 
 	agentExec.ExecScene = req.ExecScene
 
-	logUtils.Info("DebugData:" + _commUtils.JsonEncode(req.DebugData))
+	// exec interface
+	agentExec.ExecPreConditions(&req)
 	resultResp, err = RequestInterface(req.DebugData)
-	logUtils.Info("DebugResponse:" + _commUtils.JsonEncode(resultResp))
+	agentExec.ExecPostConditions(&req, resultResp)
 
-	err = SubmitInterfaceResult(req.DebugData, resultResp, call.ServerUrl, call.Token)
+	// submit result
+	err = SubmitInterfaceResult(req, resultResp, call.ServerUrl, call.Token)
 
 	resultReq = req.DebugData
 
@@ -31,9 +32,6 @@ func RunInterface(call agentDomain.InterfaceCall) (resultReq domain.DebugData, r
 }
 
 func RequestInterface(req domain.DebugData) (ret domain.DebugResponse, err error) {
-	// exec pre-request script
-	agentExec.ExecScript(req.PreRequestScript)
-
 	// replace variables
 	agentExec.ReplaceVariables(&req.BaseRequest, consts.InterfaceDebug)
 

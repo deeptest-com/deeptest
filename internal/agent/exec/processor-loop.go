@@ -116,7 +116,7 @@ func (entity *ProcessorLoop) runLoopUntil(session *Session, processor *Processor
 		}
 		execUtils.SendExecMsg(msg, session.WsMsg)
 
-		result, err := EvaluateGovaluateExpressionByScope(expression, entity.ProcessorID)
+		result, err := EvaluateGovaluateExpressionByProcessorScope(expression, entity.ProcessorID)
 		pass, ok := result.(bool)
 		if err != nil || !ok || pass {
 			childBreakProcessor := processor.AppendNewChildProcessor(consts.ProcessorLoop, consts.ProcessorLoopBreak)
@@ -147,7 +147,7 @@ func (entity *ProcessorLoop) getBeak() (ret bool, msg string) {
 	breakFrom := entity.ParentID
 	breakIfExpress := entity.BreakIfExpression
 
-	result, err := EvaluateGovaluateExpressionByScope(breakIfExpress, entity.ProcessorID)
+	result, err := EvaluateGovaluateExpressionByProcessorScope(breakIfExpress, entity.ProcessorID)
 	ret, ok := result.(bool)
 	if err == nil && ok && ret {
 		breakMap.Store(breakFrom, true)

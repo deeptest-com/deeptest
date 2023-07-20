@@ -1,6 +1,9 @@
 package domain
 
-import "github.com/aaronchen2k/deeptest/internal/pkg/consts"
+import (
+	"encoding/json"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+)
 
 type DebugReq struct {
 	DebugInterfaceId    uint `json:"debugInterfaceId"`
@@ -15,6 +18,9 @@ type DebugReq struct {
 type SubmitDebugResultRequest struct {
 	Request  DebugData     `json:"request"`
 	Response DebugResponse `json:"response"`
+
+	PreConditions  []InterfaceExecCondition `json:"preConditions"`
+	PostConditions []InterfaceExecCondition `json:"postConditions"`
 }
 
 type DebugData struct {
@@ -36,9 +42,7 @@ type DebugData struct {
 	ServerId  uint `json:"serverId"`
 	ProjectId uint `json:"projectId"`
 
-	BaseUrl        string      `json:"baseUrl"`
-	PreConditions  []Condition `json:"postConditions"`
-	PostConditions []Condition `json:"postConditions"`
+	BaseUrl string `json:"baseUrl"`
 
 	// used for selection and show in right environment tab
 	ShareVars    []GlobalVar   `json:"shareVars"`
@@ -57,4 +61,9 @@ type Condition struct {
 
 	Ordr     int  `json:"ordr"`
 	Disabled bool `json:"disabled"`
+}
+
+type InterfaceExecCondition struct {
+	Type consts.ConditionType `json:"debugData"`
+	Raw  json.RawMessage      `json:"raw"`
 }

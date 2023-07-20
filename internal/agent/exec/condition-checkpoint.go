@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-func ExecCheck(checkpoint *domain.CheckpointBase, resp domain.DebugResponse, processorId uint) (err error) {
+func ExecCheckPoint(checkpoint *domain.CheckpointBase, resp domain.DebugResponse, processorId uint) (err error) {
 	if checkpoint.Disabled {
 		checkpoint.ResultStatus = "Disabled"
 		return
@@ -80,7 +80,12 @@ func ExecCheck(checkpoint *domain.CheckpointBase, resp domain.DebugResponse, pro
 
 	// Judgement
 	if checkpoint.Type == consts.Judgement {
-		result, _ := EvaluateGovaluateExpressionByScope(checkpoint.Expression, processorId)
+		var result interface{}
+		if processorId > 0 { // exec interface processor in scenario
+			result, _ = EvaluateGovaluateExpressionByProcessorScope(checkpoint.Expression, processorId)
+		} else { // exec by interface invocation
+			result, _ = EvaluateGovaluateExpressionWithDebugVariables(checkpoint.Expression)
+		}
 
 		checkpoint.ActualResult = fmt.Sprintf("%v", result)
 
@@ -96,9 +101,16 @@ func ExecCheck(checkpoint *domain.CheckpointBase, resp domain.DebugResponse, pro
 
 	// Extractor
 	if checkpoint.Type == consts.Extractor {
+		var variable domain.ExecVariable
+
 		// get extractor variable value saved by previous extract opt
-		variable, _ := GetVariableInScope(processorId, checkpoint.ExtractorVariable)
-		checkpoint.ActualResult = variable.Value.(string)
+		if processorId > 0 { // exec interface processor in scenario
+			variable, _ = GetVariableInScope(processorId, checkpoint.ExtractorVariable)
+			checkpoint.ActualResult = variable.Value.(string)
+
+		} else { // exec by interface invocation
+			checkpoint.ActualResult = getValueFromShareVar(checkpoint.ExtractorVariable)
+		}
 
 		checkpoint.ResultStatus = agentUtils.Compare(checkpoint.Operator, checkpoint.ActualResult, checkpoint.Value)
 

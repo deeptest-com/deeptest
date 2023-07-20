@@ -1,14 +1,22 @@
 package repo
 
 import (
+	"encoding/json"
 	"fmt"
 	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
+	"github.com/jinzhu/copier"
 	"gorm.io/gorm"
 )
 
 type PreConditionRepo struct {
 	DB *gorm.DB `inject:""`
+
+	ExtractorRepo  *ExtractorRepo  `inject:""`
+	CheckpointRepo *CheckpointRepo `inject:""`
+	ScriptRepo     *ScriptRepo     `inject:""`
 }
 
 func (r *PreConditionRepo) List(debugInterfaceId, endpointInterfaceId uint) (pos []model.DebugPreCondition, err error) {
@@ -84,42 +92,56 @@ func (r *PreConditionRepo) UpdateEntityId(id uint, entityId uint) (err error) {
 	return
 }
 
-//func (r *PreConditionRepo) UpdateOrder(node model.DebugPreCondition) (err error) {
-//	err = r.DB.Model(&node).
-//		Updates(model.DebugPreCondition{Ordr: node.Ordr}).
-//		Error
-//
-//	return
-//}
-//
-//func (r *PreConditionRepo) AddOrder(req serverDomain.ConditionMoveReq) (ret int, err error) {
-//	dist, _ := r.Get(req.DropId)
-//
-//	db := r.DB.Model(&model.DebugPreCondition{}).
-//		Where("NOT deleted")
-//
-//	if req.DebugInterfaceId > 0 {
-//		db.Where("debug_interface_id = ?", req.DebugInterfaceId)
-//
-//	} else if req.EndpointInterfaceId > 0 {
-//		db.Where("endpoint_interface_id = ?", req.EndpointInterfaceId)
-//
-//	}
-//
-//	if req.Position == serverConsts.Before {
-//		db.Where("ordr >= ?", dist.Ordr)
-//
-//		ret = dist.Ordr
-//
-//	} else if req.Position == serverConsts.After {
-//		r.DB.Model(&model.DiagnoseInterface{}).
-//			Where("ordr > ?", dist.Ordr)
-//
-//		ret = dist.Ordr + 1
-//
-//	}
-//
-//	err = db.Update("ordr", gorm.Expr("ordr + 1")).Error
-//
-//	return
-//}
+func (r *PreConditionRepo) ListTo(debugInterfaceId, endpointInterfaceId uint) (ret []domain.InterfaceExecCondition, err error) {
+	pos, err := r.List(debugInterfaceId, endpointInterfaceId)
+
+	for _, po := range pos {
+		typ := po.EntityType
+
+		if typ == consts.ConditionTypeExtractor {
+			extractor := domain.ExtractorBase{}
+
+			entity, _ := r.ExtractorRepo.Get(po.EntityId)
+			copier.CopyWithOption(&extractor, entity, copier.Option{DeepCopy: true})
+
+			raw, _ := json.Marshal(extractor)
+			condition := domain.InterfaceExecCondition{
+				Type: typ,
+				Raw:  raw,
+			}
+
+			ret = append(ret, condition)
+
+		} else if typ == consts.ConditionTypeCheckpoint {
+			checkpoint := domain.CheckpointBase{}
+
+			entity, _ := r.CheckpointRepo.Get(po.EntityId)
+			copier.CopyWithOption(&checkpoint, entity, copier.Option{DeepCopy: true})
+
+			raw, _ := json.Marshal(checkpoint)
+			condition := domain.InterfaceExecCondition{
+				Type: typ,
+				Raw:  raw,
+			}
+
+			ret = append(ret, condition)
+
+		} else if typ == consts.ConditionTypeScript {
+			script := domain.ScriptBase{}
+
+			entity, _ := r.ScriptRepo.Get(po.EntityId)
+			copier.CopyWithOption(&script, entity, copier.Option{DeepCopy: true})
+
+			raw, _ := json.Marshal(script)
+			condition := domain.InterfaceExecCondition{
+				Type: typ,
+				Raw:  raw,
+			}
+
+			ret = append(ret, condition)
+		}
+
+	}
+
+	return
+}

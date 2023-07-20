@@ -31,6 +31,9 @@ type DebugInterfaceService struct {
 	EnvironmentService       *EnvironmentService       `inject:""`
 	DatapoolService          *DatapoolService          `inject:""`
 	ServeService             *ServeService             `inject:""`
+
+	PreConditionRepo  *repo.PreConditionRepo  `inject:""`
+	PostConditionRepo *repo.PostConditionRepo `inject:""`
 }
 
 func (s *DebugInterfaceService) Load(loadReq domain.DebugReq) (debugData domain.DebugData, err error) {
@@ -58,6 +61,12 @@ func (s *DebugInterfaceService) Load(loadReq domain.DebugReq) (debugData domain.
 
 func (s *DebugInterfaceService) LoadForExec(loadReq domain.DebugReq) (ret agentExec.InterfaceExecObj, err error) {
 	ret.DebugData, _ = s.Load(loadReq)
+
+	ret.PreConditions, _ = s.PreConditionRepo.ListTo(
+		ret.DebugData.DebugInterfaceId, ret.DebugData.EndpointInterfaceId)
+
+	ret.PostConditions, _ = s.PostConditionRepo.ListTo(
+		ret.DebugData.DebugInterfaceId, ret.DebugData.EndpointInterfaceId)
 
 	ret.ExecScene.ShareVars = ret.DebugData.ShareVars // for execution
 	ret.DebugData.ShareVars = nil                     // for display on debug page only

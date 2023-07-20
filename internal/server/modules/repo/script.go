@@ -2,7 +2,6 @@ package repo
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	scriptHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/script"
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/jinzhu/copier"
@@ -30,18 +29,18 @@ func (r *ScriptRepo) List(debugInterfaceId, endpointInterfaceId uint) (pos []mod
 	return
 }
 
-func (r *ScriptRepo) ListTo(debugInterfaceId, endpointInterfaceId uint) (ret []domain.ScriptBase, err error) {
-	pos, err := r.List(debugInterfaceId, endpointInterfaceId)
-
-	for _, po := range pos {
-		script := domain.ScriptBase{}
-		copier.CopyWithOption(&script, po, copier.Option{DeepCopy: true})
-
-		ret = append(ret, script)
-	}
-
-	return
-}
+//func (r *ScriptRepo) ListTo(debugInterfaceId, endpointInterfaceId uint) (ret []domain.ScriptBase, err error) {
+//	pos, err := r.List(debugInterfaceId, endpointInterfaceId)
+//
+//	for _, po := range pos {
+//		script := domain.ScriptBase{}
+//		copier.CopyWithOption(&script, po, copier.Option{DeepCopy: true})
+//
+//		ret = append(ret, script)
+//	}
+//
+//	return
+//}
 
 func (r *ScriptRepo) Get(id uint) (script model.DebugConditionScript, err error) {
 	err = r.DB.

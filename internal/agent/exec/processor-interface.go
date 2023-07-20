@@ -20,10 +20,10 @@ type ProcessorInterface struct {
 	domain.BaseRequest
 	Response domain.DebugResponse `json:"response"`
 
-	BaseUrl     string `json:"baseUrl"`
-	Extractors  []domain.ExtractorBase
-	Checkpoints []domain.CheckpointBase
-	Scripts     []domain.ScriptBase
+	BaseUrl string `json:"baseUrl"`
+
+	PreConditions  []domain.InterfaceExecCondition `json:"preConditions"`
+	PostConditions []domain.InterfaceExecCondition `json:"postConditions"`
 }
 
 func (entity ProcessorInterface) Run(processor *Processor, session *Session) (err error) {
@@ -50,8 +50,8 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 	var baseRequest domain.BaseRequest
 	copier.CopyWithOption(&baseRequest, &entity.BaseRequest, copier.Option{IgnoreEmpty: true, DeepCopy: true})
 
-	// exec pre-request script
-	ExecScript(entity.PreRequestScript)
+	// exec pre-condition
+	entity.ExecPreConditions(processor, session)
 
 	// dealwith variables
 	ReplaceVariables(&baseRequest, consts.ScenarioDebug)
@@ -80,8 +80,8 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 		return
 	}
 
-	entity.ExtractInterface(processor, session)
-	entity.CheckInterface(processor, session)
+	// exec post-condition
+	entity.ExecPostConditions(processor, session)
 
 	for _, c := range entity.Response.Cookies {
 		SetCookie(processor.ParentId, c.Name, c.Value, c.Domain, c.ExpireTime)
@@ -96,43 +96,50 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 	return
 }
 
-func (entity *ProcessorInterface) ExtractInterface(processor *Processor, session *Session) (err error) {
-	for _, extractor := range entity.Extractors {
-		err = entity.extract(&extractor, entity.Response)
-		SetVariable(entity.ParentID, extractor.Variable, extractor.Result, extractor.Scope)
-
-		if err == nil { // gen report for processor
-			processor.Result.ExtractorsResult = append(processor.Result.ExtractorsResult, extractor)
-		}
-	}
-
+func (entity *ProcessorInterface) ExecPreConditions(processor *Processor, session *Session) (err error) {
+	return
+}
+func (entity *ProcessorInterface) ExecPostConditions(processor *Processor, session *Session) (err error) {
 	return
 }
 
-func (entity *ProcessorInterface) CheckInterface(processor *Processor, session *Session) (err error) {
-	status := consts.Pass
-
-	for _, checkpoint := range entity.Checkpoints {
-		ExecCheck(&checkpoint, entity.Response, entity.ProcessorID)
-
-		if checkpoint.ResultStatus == consts.Fail {
-			status = consts.Fail
-		}
-
-		if err == nil {
-			processor.Result.CheckpointsResult = append(processor.Result.CheckpointsResult, checkpoint)
-		}
-	}
-
-	processor.Result.ResultStatus = status
-
-	return
-}
+//func (entity *ProcessorInterface) ExtractInterface(processor *Processor, session *Session) (err error) {
+//	for _, extractor := range entity.Extractors {
+//		err = entity.extract(&extractor, entity.Response)
+//		SetVariable(entity.ParentID, extractor.Variable, extractor.Result, extractor.Scope)
+//
+//		if err == nil { // gen report for processor
+//			processor.Result.ExtractorsResult = append(processor.Result.ExtractorsResult, extractor)
+//		}
+//	}
+//
+//	return
+//}
+//
+//func (entity *ProcessorInterface) CheckInterface(processor *Processor, session *Session) (err error) {
+//	status := consts.Pass
+//
+//	for _, checkpoint := range entity.Checkpoints {
+//		ExecCheck(&checkpoint, entity.Response, entity.ProcessorID)
+//
+//		if checkpoint.ResultStatus == consts.Fail {
+//			status = consts.Fail
+//		}
+//
+//		if err == nil {
+//			processor.Result.CheckpointsResult = append(processor.Result.CheckpointsResult, checkpoint)
+//		}
+//	}
+//
+//	processor.Result.ResultStatus = status
+//
+//	return
+//}
 
 func (entity *ProcessorInterface) extract(extractor *domain.ExtractorBase, resp domain.DebugResponse) (err error) {
-	result, err := ExecExtract(*extractor, resp)
+	err = ExecExtract(extractor, resp)
 
-	extractor.Result = strings.TrimSpace(result)
+	extractor.Result = strings.TrimSpace(extractor.Result)
 
 	return
 }

@@ -24,6 +24,10 @@ type ExtractorBase struct {
 	Disabled bool `json:"disabled"`
 }
 
+func (condition ExtractorBase) GetType() consts.ConditionType {
+	return consts.ConditionTypeExtractor
+}
+
 type CheckpointBase struct {
 	Type consts.CheckpointType `json:"type"`
 
@@ -39,6 +43,11 @@ type CheckpointBase struct {
 
 	Disabled bool `json:"disabled"`
 }
+
+func (condition CheckpointBase) GetType() consts.ConditionType {
+	return consts.ConditionTypeCheckpoint
+}
+
 type ScriptBase struct {
 	ConditionSrc consts.ConditionSrc `json:"conditionType"`
 
@@ -49,4 +58,8 @@ type ScriptBase struct {
 	InvokeId     uint                `json:"invokeId"`
 
 	Disabled bool `json:"disabled"`
+}
+
+func (condition ScriptBase) GetType() consts.ConditionType {
+	return consts.ConditionTypeScript
 }

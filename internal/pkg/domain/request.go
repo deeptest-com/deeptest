@@ -41,8 +41,8 @@ type BaseRequest struct {
 	BodyLang           consts.HttpRespLangType  `json:"bodyLang"`
 
 	AuthorizationType consts.AuthorType `json:"authorizationType"`
-	PreRequestScript  string            `json:"preRequestScript"`
-	ValidationScript  string            `json:"validationScript"`
+	//PreRequestScript  string            `json:"preRequestScript"`
+	//ValidationScript  string            `json:"validationScript"`
 
 	BasicAuth   BasicAuth   `json:"basicAuth"`
 	BearerToken BearerToken `json:"bearerToken"`

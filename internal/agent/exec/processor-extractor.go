@@ -54,7 +54,7 @@ func (entity ProcessorExtractor) Run(processor *Processor, session *Session) (er
 
 	entity.Src = consts.Body
 	entity.Type = getExtractorTypeForProcessor(entity.ProcessorType)
-	entity.Result, err = ExecExtract(entity.ExtractorBase, resp)
+	err = ExecExtract(&entity.ExtractorBase, resp)
 	if err != nil {
 		processor.Result.Summary = fmt.Sprintf("%s提取器解析错误 %s。", entity.ProcessorType, err.Error())
 		processor.AddResultToParent()

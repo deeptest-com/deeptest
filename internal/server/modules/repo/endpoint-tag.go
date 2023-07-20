@@ -121,7 +121,7 @@ func (r *EndpointTagRepo) BatchGetById(ids []string, projectId uint) (tags []mod
 func (r *EndpointTagRepo) ListRelByTagId(tagId uint) (rel []model.EndpointTagRel, err error) {
 	err = r.DB.Model(&model.EndpointTagRel{}).
 		Where("tag_id = ?", tagId).
-		Delete(&model.EndpointTagRel{}).Error
+		Find(&rel).Error
 
 	if err != nil {
 		logUtils.Errorf("get endpoint tag relation by tag_id error", zap.String("error:", err.Error()))

@@ -1,7 +1,7 @@
 <template>
     <div style:="width: 200px">
     <a-tag 
-    :key="index" v-for="(tag,index) in values"
+    :key="tag" v-for="(tag,index) in values"
     closable @close="close(index)"
     >{{tag}}</a-tag>
     <PlusCircleOutlined  @click="showSelect=true"/>
@@ -81,10 +81,17 @@ const filterOption = (input: string, option: any) => {
 };
 
 
-const handleChange = (value: string) => {
-  values.value = Array.from(new Set([...values.value,value]))
-  console.log(`selected ${value}`);
-  updateTags(values.value)
+const handleChange = async (value: string) => {
+    value = value.trim()
+    if (!value) {
+        //debugger;
+        return 
+    }
+    console.log(`selected1 ${value}`,values.value);
+   values.value = Array.from(new Set([...values.value,value]))
+ // console.log(`selected ${value}`);
+  console.log(`selected2 ${value}`,values.value);
+  await updateTags(values.value)
 };
 
 const handleBlur = () => {
@@ -97,18 +104,20 @@ const handleFocus = () => {
 
 const search = (va)=>{
     searchValue.value = va
-    console.log('search',va);
+    //console.log('search',va);
 }
 
 const enter = (value) => {
-    if (value.code=="Enter"){
-        console.log('enter',value,searchValue.value);
+    //debugger;
+    if (value.code=="Enter" ){
+        ///debugger;
+        console.log('enter',searchValue.value);
         handleChange(searchValue.value)
     }
 }
 
-const updateTags = (tags)=>{
-    store.dispatch('Endpoint/updateEndpointTag', {
+const updateTags = async (tags)=>{
+   await store.dispatch('Endpoint/updateEndpointTag', {
       id:props.record.id,tagNames:tags,projectId:props.record.projectId
     });
 }
@@ -120,7 +129,7 @@ const close = (index)=>{
 }
 
 watch(()=>{return props.record?.tags},(newVal)=>{
-    values.value = [...newVal]
+    values.value = [...new Set(newVal)]
 })
 
 

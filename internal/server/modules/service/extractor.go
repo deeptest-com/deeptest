@@ -51,19 +51,19 @@ func (s *ExtractorService) Delete(reqId uint) (err error) {
 	return
 }
 
-func (s *ExtractorService) ExtractInterface(debugInterfaceId, caseInterfaceId, endpointInterfaceId, serveId, processorId, scenarioId uint, resp domain.DebugResponse, usedBy consts.UsedBy) (err error) {
+func (s *ExtractorService) ExtractInterface(invokeId, debugInterfaceId, caseInterfaceId, endpointInterfaceId, serveId, processorId, scenarioId uint, resp domain.DebugResponse, usedBy consts.UsedBy) (err error) {
 	extractors, _ := s.ExtractorRepo.List(debugInterfaceId, endpointInterfaceId)
 
 	for _, extractor := range extractors {
-		s.Extract(&extractor, resp, usedBy)
-		s.ShareVarService.Save(extractor.Variable, extractor.Result, debugInterfaceId, caseInterfaceId, endpointInterfaceId, serveId, processorId, scenarioId, extractor.Scope, usedBy)
+		s.Extract(&extractor, resp, invokeId, usedBy)
+		s.ShareVarService.Save(extractor.Variable, extractor.Result, invokeId, debugInterfaceId, caseInterfaceId, endpointInterfaceId, serveId, processorId, scenarioId, extractor.Scope, usedBy)
 	}
 
 	return
 }
 
 func (s *ExtractorService) Extract(extractor *model.DebugConditionExtractor, resp domain.DebugResponse,
-	usedBy consts.UsedBy) (err error) {
+	invokeId uint, usedBy consts.UsedBy) (err error) {
 
 	extractor.Result, err = extractorHelper.Extract(extractor.ExtractorBase, resp)
 	if err != nil {
@@ -71,6 +71,7 @@ func (s *ExtractorService) Extract(extractor *model.DebugConditionExtractor, res
 	}
 
 	s.ExtractorRepo.UpdateResult(*extractor, usedBy)
+	s.ExtractorRepo.CreateLog(*extractor, invokeId, usedBy)
 
 	return
 }

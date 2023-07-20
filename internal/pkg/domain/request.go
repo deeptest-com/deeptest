@@ -5,7 +5,8 @@ import (
 )
 
 type DebugResponse struct {
-	Id uint `json:"id"`
+	Id       uint `json:"id"`
+	InvokeId uint `json:"invokeId"`
 
 	StatusCode    consts.HttpRespCode `json:"statusCode"`
 	StatusContent string              `json:"statusContent"`

@@ -82,6 +82,26 @@ func (c *DebugInvokeCtrl) GetLastResp(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: reqAndResp})
 }
 
+// GetResult 获取调用结果细节
+func (c *DebugInvokeCtrl) GetResult(ctx iris.Context) {
+	invokeId, err := ctx.URLParamInt("invokeId")
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+		return
+	}
+
+	debugData, resultReq, resultResp, err := c.DebugInvokeService.GetAsInterface(invokeId)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
+		return
+	}
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: iris.Map{
+		"debugData": debugData,
+		"req":       resultReq,
+		"resp":      resultResp,
+	}})
+}
+
 // GetAsInterface 详情
 func (c *DebugInvokeCtrl) GetAsInterface(ctx iris.Context) {
 	id, err := ctx.Params().GetInt("id")

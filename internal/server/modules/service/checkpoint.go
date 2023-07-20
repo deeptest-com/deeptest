@@ -52,14 +52,14 @@ func (s *CheckpointService) Delete(reqId uint) (err error) {
 	return
 }
 
-func (s *CheckpointService) CheckInterface(debugInterfaceId, caseInterfaceId, endpointInterfaceId, scenarioProcessorId uint, resp domain.DebugResponse, usedBy consts.UsedBy) (
+func (s *CheckpointService) CheckInterface(invokeId, debugInterfaceId, caseInterfaceId, endpointInterfaceId, scenarioProcessorId uint, resp domain.DebugResponse, usedBy consts.UsedBy) (
 	logCheckpoints []domain.ExecInterfaceCheckpoint, status consts.ResultStatus, err error) {
 
 	checkpoints, _ := s.CheckpointRepo.List(debugInterfaceId, endpointInterfaceId)
 
 	status = consts.Pass
 	for _, checkpoint := range checkpoints {
-		logCheckpoint, err := s.Check(checkpoint, caseInterfaceId, scenarioProcessorId, resp, usedBy)
+		logCheckpoint, err := s.Check(checkpoint, invokeId, caseInterfaceId, scenarioProcessorId, resp, usedBy)
 
 		if err != nil || logCheckpoint.ResultStatus == consts.Fail {
 			status = consts.Fail
@@ -69,15 +69,16 @@ func (s *CheckpointService) CheckInterface(debugInterfaceId, caseInterfaceId, en
 	return
 }
 
-func (s *CheckpointService) Check(checkpoint model.DebugConditionCheckpoint, caseInterfaceId, scenarioProcessorId uint, resp domain.DebugResponse,
+func (s *CheckpointService) Check(checkpoint model.DebugConditionCheckpoint, invokeId, caseInterfaceId, scenarioProcessorId uint, resp domain.DebugResponse,
 	usedBy consts.UsedBy) (logCheckpoint model.ExecLogCheckpoint, err error) {
 
 	postCondition, _ := s.PostConditionRepo.Get(checkpoint.ConditionId)
 
-	if checkpoint.Disabled {
-		checkpoint.ResultStatus = ""
+	if checkpoint.BaseModel.Disabled {
+		checkpoint.ResultStatus = "Disabled"
 
 		s.CheckpointRepo.UpdateResult(checkpoint, usedBy)
+		logCheckpoint, err = s.CheckpointRepo.CreateLog(checkpoint, invokeId, usedBy)
 
 		return
 	}
@@ -97,6 +98,7 @@ func (s *CheckpointService) Check(checkpoint model.DebugConditionCheckpoint, cas
 		}
 
 		s.CheckpointRepo.UpdateResult(checkpoint, usedBy)
+		logCheckpoint, err = s.CheckpointRepo.CreateLog(checkpoint, invokeId, usedBy)
 
 		return
 	}
@@ -124,6 +126,7 @@ func (s *CheckpointService) Check(checkpoint model.DebugConditionCheckpoint, cas
 		}
 
 		s.CheckpointRepo.UpdateResult(checkpoint, usedBy)
+		logCheckpoint, err = s.CheckpointRepo.CreateLog(checkpoint, invokeId, usedBy)
 
 		return
 	}
@@ -146,6 +149,7 @@ func (s *CheckpointService) Check(checkpoint model.DebugConditionCheckpoint, cas
 		}
 
 		s.CheckpointRepo.UpdateResult(checkpoint, usedBy)
+		logCheckpoint, err = s.CheckpointRepo.CreateLog(checkpoint, invokeId, usedBy)
 
 		return
 	}
@@ -166,6 +170,7 @@ func (s *CheckpointService) Check(checkpoint model.DebugConditionCheckpoint, cas
 		}
 
 		s.CheckpointRepo.UpdateResult(checkpoint, usedBy)
+		logCheckpoint, err = s.CheckpointRepo.CreateLog(checkpoint, invokeId, usedBy)
 
 		return
 	}

@@ -2,7 +2,6 @@ package repo
 
 import (
 	"fmt"
-	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
@@ -35,11 +34,11 @@ func (r *ExtractorRepo) List(debugInterfaceId, endpointInterfaceId uint) (pos []
 	return
 }
 
-func (r *ExtractorRepo) ListTo(debugInterfaceId, endpointInterfaceId uint) (ret []agentDomain.Extractor, err error) {
+func (r *ExtractorRepo) ListTo(debugInterfaceId, endpointInterfaceId uint) (ret []domain.ExtractorBase, err error) {
 	pos, _ := r.List(debugInterfaceId, endpointInterfaceId)
 
 	for _, po := range pos {
-		extractor := agentDomain.Extractor{}
+		extractor := domain.ExtractorBase{}
 		copier.CopyWithOption(&extractor, po, copier.Option{DeepCopy: true})
 
 		ret = append(ret, extractor)
@@ -182,13 +181,14 @@ func (r *ExtractorRepo) UpdateResult(extractor model.DebugConditionExtractor, us
 
 	return
 }
-func (r *ExtractorRepo) UpdateResultToExecLog(extractor model.DebugConditionExtractor, log *model.ExecLogProcessor) (
+
+func (r *ExtractorRepo) CreateLog(extractor model.DebugConditionExtractor, invokeId uint, usedBy consts.UsedBy) (
 	logExtractor model.ExecLogExtractor, err error) {
 
 	copier.CopyWithOption(&logExtractor, extractor, copier.Option{DeepCopy: true})
 
 	logExtractor.ID = 0
-	logExtractor.LogId = log.ID
+	logExtractor.InvokeId = invokeId
 	logExtractor.CreatedAt = nil
 	logExtractor.UpdatedAt = nil
 
@@ -196,6 +196,21 @@ func (r *ExtractorRepo) UpdateResultToExecLog(extractor model.DebugConditionExtr
 
 	return
 }
+
+//func (r *ExtractorRepo) UpdateResultToExecLog(extractor model.DebugConditionExtractor, log *model.ExecLogProcessor) (
+//	logExtractor model.ExecLogExtractor, err error) {
+//
+//	copier.CopyWithOption(&logExtractor, extractor, copier.Option{DeepCopy: true})
+//
+//	logExtractor.ID = 0
+//	logExtractor.LogId = log.ID
+//	logExtractor.CreatedAt = nil
+//	logExtractor.UpdatedAt = nil
+//
+//	err = r.DB.Save(&logExtractor).Error
+//
+//	return
+//}
 
 func (r *ExtractorRepo) ListExtractorVariableByInterface(req domain.DebugReq) (variables []domain.Variable, err error) {
 	err = r.DB.Model(&model.DebugConditionExtractor{}).
@@ -280,8 +295,8 @@ func (r *ExtractorRepo) CreateDefault(conditionId uint) (po model.DebugCondition
 			Type:       consts.Boundary,
 			Expression: "",
 			Variable:   "",
+			Scope:      consts.Public,
 		},
-		Scope: consts.Public,
 	}
 
 	r.Save(&po)

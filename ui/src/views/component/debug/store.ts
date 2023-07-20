@@ -31,7 +31,7 @@ import {
     removePostConditions,
     movePostConditions,
     removePreConditions,
-    movePreConditions, disablePreConditions, disablePostConditions, saveAsCase,
+    movePreConditions, disablePreConditions, disablePostConditions, saveAsCase, getInvocationResult,
 } from './service';
 import {Checkpoint, DebugInfo, Extractor, Interface, Response, Script} from "./data";
 import {UsedBy} from "@/utils/enum";
@@ -44,6 +44,7 @@ export interface StateType {
 
     requestData: any;
     responseData: Response;
+    resultData: any[];
 
     invocationsData: any[];
 
@@ -60,6 +61,7 @@ const initState: StateType = {
 
     requestData: {},
     responseData: {} as Response,
+    resultData: [],
 
     invocationsData: [],
 
@@ -79,6 +81,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
 
         setRequest: Mutation<StateType>;
         setResponse: Mutation<StateType>;
+        setResult: Mutation<StateType>;
 
         setInvocations: Mutation<StateType>;
         setServerId: Mutation<StateType>;
@@ -108,6 +111,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
 
         listInvocation: Action<StateType, StateType>;
         getLastInvocationResp: Action<StateType, StateType>;
+        getInvocationResult: Action<StateType, StateType>;
         getInvocationAsInterface: Action<StateType, StateType>;
         removeInvocation: Action<StateType, StateType>;
 
@@ -171,6 +175,9 @@ const StoreModel: ModuleType = {
         },
         setResponse(state, payload) {
             state.responseData = payload;
+        },
+        setResult(state, payload) {
+            state.resultData = payload;
         },
 
         setInvocations(state, payload) {
@@ -247,6 +254,7 @@ const StoreModel: ModuleType = {
             commit('setDebugData', {});
             commit('setRequest', {});
             commit('setResponse', {});
+            commit('setResult', []);
             commit('setInvocations', []);
         },
 
@@ -343,6 +351,12 @@ const StoreModel: ModuleType = {
             commit('setResponse', response.data.resp);
             return true;
         },
+        async getInvocationResult({commit, dispatch, state}, invokeId: number) {
+            const response = await getInvocationResult(invokeId);
+            commit('setResult', response.data);
+            return true;
+        },
+
         async getInvocationAsInterface({commit}, id: number) {
             try {
                 const resp = await getInvocationAsInterface(id);

@@ -1,8 +1,8 @@
 package repo
 
 import (
-	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	scriptHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/script"
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/jinzhu/copier"
@@ -30,11 +30,11 @@ func (r *ScriptRepo) List(debugInterfaceId, endpointInterfaceId uint) (pos []mod
 	return
 }
 
-func (r *ScriptRepo) ListTo(debugInterfaceId, endpointInterfaceId uint) (ret []agentDomain.Script, err error) {
+func (r *ScriptRepo) ListTo(debugInterfaceId, endpointInterfaceId uint) (ret []domain.ScriptBase, err error) {
 	pos, err := r.List(debugInterfaceId, endpointInterfaceId)
 
 	for _, po := range pos {
-		script := agentDomain.Script{}
+		script := domain.ScriptBase{}
 		copier.CopyWithOption(&script, po, copier.Option{DeepCopy: true})
 
 		ret = append(ret, script)
@@ -98,20 +98,35 @@ func (r *ScriptRepo) UpdateResult(script model.DebugConditionScript, usedBy cons
 	return
 }
 
-func (r *ScriptRepo) UpdateResultToExecLog(script model.DebugConditionScript, log *model.ExecLogProcessor) (
-	logScript model.ExecLogCheckpoint, err error) {
+func (r *ScriptRepo) CreateLog(script model.DebugConditionScript, invokeId uint, usedBy consts.UsedBy) (
+	log model.ExecLogScript, err error) {
 
-	copier.CopyWithOption(&logScript, script, copier.Option{DeepCopy: true})
+	copier.CopyWithOption(&log, script, copier.Option{DeepCopy: true})
 
-	logScript.ID = 0
-	logScript.LogId = log.ID
-	logScript.CreatedAt = nil
-	logScript.UpdatedAt = nil
+	log.ID = 0
+	log.InvokeId = invokeId
+	log.CreatedAt = nil
+	log.UpdatedAt = nil
 
-	err = r.DB.Save(&logScript).Error
+	err = r.DB.Save(&log).Error
 
 	return
 }
+
+//func (r *ScriptRepo) UpdateResultToExecLog(script model.DebugConditionScript, log *model.ExecLogProcessor) (
+//	logScript model.ExecLogCheckpoint, err error) {
+//
+//	copier.CopyWithOption(&logScript, script, copier.Option{DeepCopy: true})
+//
+//	logScript.ID = 0
+//	logScript.LogId = log.ID
+//	logScript.CreatedAt = nil
+//	logScript.UpdatedAt = nil
+//
+//	err = r.DB.Save(&logScript).Error
+//
+//	return
+//}
 
 func (r *ScriptRepo) CloneFromEndpointInterfaceToDebugInterface(endpointInterfaceId, debugInterfaceId uint,
 	usedBy consts.UsedBy) (

@@ -26,9 +26,11 @@ type DebugInvokeService struct {
 
 	ExtractorService  *ExtractorService  `inject:""`
 	CheckpointService *CheckpointService `inject:""`
-	VariableService   *VariableService   `inject:""`
-	DatapoolService   *DatapoolService   `inject:""`
-	EndpointService   *EndpointService   `inject:""`
+	ScriptService     *ScriptService     `inject:""`
+
+	VariableService *VariableService `inject:""`
+	DatapoolService *DatapoolService `inject:""`
+	EndpointService *EndpointService `inject:""`
 }
 
 func (s *DebugInvokeService) SubmitResult(req domain.SubmitDebugResultRequest) (err error) {
@@ -62,16 +64,22 @@ func (s *DebugInvokeService) SubmitResult(req domain.SubmitDebugResultRequest) (
 		projectId = caseInterface.ProjectId
 	}
 
-	s.ExtractorService.ExtractInterface(
+	invoke, err := s.Create(req.Request, req.Response, serveId, processorId, scenarioId, projectId)
+
+	s.ExtractorService.ExtractInterface(invoke.ID,
 		req.Request.DebugInterfaceId, req.Request.CaseInterfaceId, req.Request.EndpointInterfaceId,
 		serveId, processorId, scenarioId,
 		req.Response, usedBy)
-	s.CheckpointService.CheckInterface(
+
+	s.CheckpointService.CheckInterface(invoke.ID,
 		req.Request.DebugInterfaceId, req.Request.CaseInterfaceId, req.Request.EndpointInterfaceId,
-		req.Request.ScenarioProcessorId,
+		processorId,
 		req.Response, usedBy)
 
-	_, err = s.Create(req.Request, req.Response, serveId, processorId, scenarioId, projectId)
+	s.ScriptService.Exec(invoke.ID,
+		req.Request.DebugInterfaceId, req.Request.CaseInterfaceId, req.Request.EndpointInterfaceId,
+		processorId,
+		req.Response, usedBy)
 
 	if err != nil {
 		return
@@ -126,6 +134,8 @@ func (s *DebugInvokeService) GetLastResp(debugInterfaceId, endpointInterfaceId u
 		json.Unmarshal([]byte(po.ReqContent), &req)
 		json.Unmarshal([]byte(po.RespContent), &resp)
 
+		resp.InvokeId = po.ID
+
 	} else {
 		resp = domain.DebugResponse{
 			ContentLang: consts.LangHTML,
@@ -136,6 +146,12 @@ func (s *DebugInvokeService) GetLastResp(debugInterfaceId, endpointInterfaceId u
 	ret = iris.Map{}
 	ret["req"] = req
 	ret["resp"] = resp
+
+	return
+}
+
+func (s *DebugInvokeService) GetResult(invokeId int) (results []interface{}, err error) {
+	//invocation, err := s.DebugInvokeRepo.Get(uint(invokeId))
 
 	return
 }

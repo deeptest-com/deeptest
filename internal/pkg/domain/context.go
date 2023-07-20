@@ -14,7 +14,7 @@ type GlobalParam struct {
 	Type         consts.ParamType `json:"type"`
 	In           consts.ParamIn   `json:"in"`
 	Required     bool             `json:"Required"`
-	DefaultValue string           `json:"defaultValue"`
+	DefaultValue string           `gorm:"type:text" json:"defaultValue"`
 }
 
 type InterfaceToEnvMap map[uint]uint               // interfaceId -> envId

@@ -41,6 +41,7 @@ const props = defineProps(['containerStyle'])
     height: 100%;
     .left {
       overflow-y: scroll;
+      overflow-x:hidden;
       position: relative;
     }
 

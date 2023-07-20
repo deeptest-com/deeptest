@@ -96,14 +96,7 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
         meta: {
           code: 'SCENARIO'
         }
-      },
-      {
-        icon: 'scenario',
-        title: 'scenario.exec',
-        path: 'exec/:id',
-        component: () => import('@/views/scenario/exec/index.vue'),
-        hidden: true,
-      },
+      }
     ],
   },
 

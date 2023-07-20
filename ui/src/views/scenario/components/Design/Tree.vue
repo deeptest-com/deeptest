@@ -2,13 +2,11 @@
   <div class="scenario-tree-main">
     <div class="dp-tree-container">
       <div class="tree-filter">
-<!--        测试场景编排-->
         <a-input-search placeholder="输入关键字过滤"
                         class="search-input"
                         v-model:value="keywords" />
         <PlusOutlined class="plus-icon"/>
       </div>
-
       <div class="tree-content">
         <a-tree
             class="deeptest-tree"
@@ -393,38 +391,16 @@ onUnmounted(() => {
 
 </script>
 
-<style lang="less">
-.interf-tree {
-  .ant-tree-iconEle {
-    height: 20px !important;
-    line-height: 20px !important;
-  }
-
-  .name-editor {
-    vertical-align: 5px;
-
-    input {
-      margin-top: -2px;
-      height: 24px;
-      width: 120px;
-      background-color: transparent;
-    }
-
-    .btns {
-      display: inline-block;
-      padding-left: 4px;
-
-      .anticon {
-        padding: 0 2px;
-      }
-    }
-  }
-}
-</style>
 
 <style lang="less" scoped>
 .scenario-tree-main {
   background: #ffffff;
+}
+.tree-filter{
+  margin-top: 8px;
+}
+.plus-icon{
+  margin: 0 12px 0 6px;
 }
 
 

@@ -225,9 +225,9 @@ func (c *ProjectCtrl) ChangeProject(ctx iris.Context) {
 // @summary	获取项目成员
 // @accept	application/json
 // @Produce	application/json
-// @Param 	Authorization					header	string										true	"Authentication header"
-// @Param 	currProjectId					query	int											true	"当前项目ID"
-// @Param 	ProjectReqPaginate	query	serverDomain.ProjectReqPaginate				true	"获取项目成员的分页参数"
+// @Param 	Authorization		header	string							true	"Authentication header"
+// @Param 	currProjectId		query	int								true	"当前项目ID"
+// @Param 	ProjectReqPaginate	query	serverDomain.ProjectReqPaginate	true	"获取项目成员的分页参数"
 // @success	200	{object}	_domain.Response{data=_domain.PageData{result=[]serverDomain.MemberResp}}
 // @Router	/api/v1/projects/members	[get]
 func (c *ProjectCtrl) Members(ctx iris.Context) {
@@ -262,7 +262,7 @@ func (c *ProjectCtrl) Members(ctx iris.Context) {
 // @accept	application/json
 // @Produce	application/json
 // @Param 	Authorization				header	string								true	"Authentication header"
-// @Param 	currProjectId				query	int						true	"当前项目ID"
+// @Param 	currProjectId				query	int									true	"当前项目ID"
 // @Param 	ProjectMemberRemoveReq 		body 	serverDomain.ProjectMemberRemoveReq true 	"删除项目成员的请求体"
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/projects/removeMember	[post]
@@ -315,9 +315,9 @@ func (c *ProjectCtrl) ChangeUserRole(ctx iris.Context) {
 // @summary	申请项目成员
 // @accept	application/json
 // @Produce	application/json
-// @Param 	Authorization	header	string						true	"Authentication header"
-// @Param 	currProjectId	query	int							true	"当前项目ID"
-// @Param 	ApplyProjectReq body 	serverDomain.ApplyProjectReq true 	"申请项目成员的请求体"
+// @Param 	Authorization	header	string							true	"Authentication header"
+// @Param 	currProjectId	query	int								true	"当前项目ID"
+// @Param 	ApplyProjectReq body 	serverDomain.ApplyProjectReq	true 	"申请项目成员的请求体"
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/projects/apply	[post]
 func (c *ProjectCtrl) Apply(ctx iris.Context) {
@@ -342,9 +342,9 @@ func (c *ProjectCtrl) Apply(ctx iris.Context) {
 // @summary	审批操作
 // @accept	application/json
 // @Produce	application/json
-// @Param 	Authorization	header	string						true	"Authentication header"
-// @Param 	currProjectId	query	int							true	"当前项目ID"
-// @Param 	AuditProjectReq body 	serverDomain.AuditProjectReq true 	"审批操作的请求体"
+// @Param 	Authorization	header	string							true	"Authentication header"
+// @Param 	currProjectId	query	int								true	"当前项目ID"
+// @Param 	AuditProjectReq body 	serverDomain.AuditProjectReq 	true 	"审批操作的请求体"
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/projects/audit	[post]
 func (c *ProjectCtrl) Audit(ctx iris.Context) {
@@ -370,9 +370,9 @@ func (c *ProjectCtrl) Audit(ctx iris.Context) {
 // @summary	申请加入审批列表
 // @accept	application/json
 // @Produce	application/json
-// @Param 	Authorization		header	string								true	"Authentication header"
-// @Param 	currProjectId		query	int									true	"当前项目ID"
-// @Param 	AuditProjectPaginate body 	serverDomain.AuditProjectPaginate 	true 	"申请加入审批列表的请求体"
+// @Param 	Authorization			header	string								true	"Authentication header"
+// @Param 	currProjectId			query	int									true	"当前项目ID"
+// @Param 	AuditProjectPaginate	body 	serverDomain.AuditProjectPaginate 	true 	"申请加入审批列表的请求体"
 // @success	200	{object}	_domain.Response{data=_domain.PageData{result=[]model.ProjectMemberAudit}}
 // @Router	/api/v1/projects/auditList	[post]
 func (c *ProjectCtrl) AuditList(ctx iris.Context) {

@@ -209,6 +209,25 @@ definitions:
       adminPassword:
         type: string
     type: object
+  serverDomain.LoginReq:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  serverDomain.LoginResp:
+    properties:
+      id:
+        type: integer
+      password:
+        type: string
+      token:
+        type: string
+    type: object
   serverDomain.MemberResp:
     properties:
       email:
@@ -260,6 +279,35 @@ definitions:
       updatedAt:
         type: string
     type: object
+  serverDomain.RegisterReq:
+    properties:
+      confirm:
+        type: string
+      email:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - confirm
+    - email
+    - password
+    - username
+    type: object
+  serverDomain.ResetPasswordReq:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+      vcode:
+        type: string
+    required:
+    - password
+    - username
+    - vcode
+    type: object
   serverDomain.UpdateProjectMemberReq:
     properties:
       projectId:
@@ -277,6 +325,94 @@ info:
   title: DeepTest服务端API文档
   version: "3.0"
 paths:
+  /api/v1/account/forgotPassword:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 用户名或者密码
+        in: path
+        name: usernameOrPassword
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 忘记密码
+      tags:
+      - 认证模块
+  /api/v1/account/login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 登录的请求体
+        in: body
+        name: LoginReq
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.LoginReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/serverDomain.LoginResp'
+              type: object
+      summary: 登录
+      tags:
+      - 认证模块
+  /api/v1/account/register:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 注册的请求体
+        in: body
+        name: RegisterReq
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.RegisterReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 注册
+      tags:
+      - 认证模块
+  /api/v1/account/resetPassword:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 重置密码的参数
+        in: body
+        name: ResetPasswordReq
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.ResetPasswordReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 重置密码
+      tags:
+      - 认证模块
   /api/v1/init/initdb:
     post:
       consumes:

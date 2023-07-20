@@ -37,7 +37,7 @@ const docTemplate = `{
                         "type": "string",
                         "description": "用户名或者密码",
                         "name": "usernameOrPassword",
-                        "in": "path",
+                        "in": "query",
                         "required": true
                     }
                 ],
@@ -149,6 +149,713 @@ const docTemplate = `{
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/serverDomain.ResetPasswordReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/auth/getOAuth2AccessToken": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "授权模块"
+                ],
+                "summary": "调用认证服务生成访问令牌",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "accessTokenURL",
+                        "name": "accessTokenURL",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "clientId",
+                        "name": "clientId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "clientSecret",
+                        "name": "clientSecret",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "code",
+                        "name": "code",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/iris.Map"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/auth/listOAuth2Token": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "授权模块"
+                ],
+                "summary": "加载访问令牌到接口",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.Auth2Token"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/auth/oauth2Authorization": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "授权模块"
+                ],
+                "summary": "生成OAuth认证信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "生成OAuth认证信息的请求体",
+                        "name": "DebugInterfaceOAuth20",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.DebugInterfaceOAuth20"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "url": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/auth/removeToken": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "授权模块"
+                ],
+                "summary": "删除访问令牌",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "token id",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/auth/useOAuth2AccessToken": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "授权模块"
+                ],
+                "summary": "加载访问令牌到接口",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "接口ID",
+                        "name": "interfaceId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "name",
+                        "name": "name",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "token",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "tokenType",
+                        "name": "tokenType",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "token": {
+                                                    "type": "string"
+                                                },
+                                                "tokenType": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/categories": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "分类管理"
+                ],
+                "summary": "更新分类",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "新建分类的请求体",
+                        "name": "CategoryReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.CategoryReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/serverDomain.CategoryReq"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "分类管理"
+                ],
+                "summary": "新建分类",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "新建分类的请求体",
+                        "name": "CategoryCreateReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.CategoryCreateReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.Category"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/categories/load": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "分类管理"
+                ],
+                "summary": "分类树状数据",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "类型",
+                        "name": "type",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "服务ID",
+                        "name": "serveId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/serverDomain.Category"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/categories/move": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "分类管理"
+                ],
+                "summary": "移动节点",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "移动节点的请求体",
+                        "name": "CategoryMoveReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.CategoryMoveReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/categories/{id}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "分类管理"
+                ],
+                "summary": "分类详情",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "分类ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.Category"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "分类管理"
+                ],
+                "summary": "删除节点",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "分类ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/categories/{id}/updateName": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "分类管理"
+                ],
+                "summary": "更新节点名称",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "分类ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "更新节点名称的请求体",
+                        "name": "CategoryReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.CategoryReq"
                         }
                     }
                 ],
@@ -1032,6 +1739,120 @@ const docTemplate = `{
                 "Refused"
             ]
         },
+        "consts.ClientAuthenticationWay": {
+            "type": "string",
+            "enum": [
+                "sendAsBasicAuthHeader",
+                "sendClientCredentialsInBody"
+            ],
+            "x-enum-varnames": [
+                "SendAsBasicAuthHeader",
+                "SendClientCredentialsInBody"
+            ]
+        },
+        "consts.GrantType": {
+            "type": "string",
+            "enum": [
+                "authorizationCode",
+                "authorizationCodeWithPKCE",
+                "implicit",
+                "passwordCredential",
+                "clientCredential"
+            ],
+            "x-enum-varnames": [
+                "AuthorizationCode",
+                "AuthorizationCodeWithPKCE",
+                "Implicit",
+                "PasswordCredential",
+                "ClientCredential"
+            ]
+        },
+        "consts.ProcessorCategory": {
+            "type": "string",
+            "enum": [
+                "processor_root",
+                "processor_interface",
+                "processor_group",
+                "processor_logic",
+                "processor_loop",
+                "processor_timer",
+                "processor_print",
+                "processor_variable",
+                "processor_assertion",
+                "processor_extractor",
+                "processor_cookie",
+                "processor_data"
+            ],
+            "x-enum-varnames": [
+                "ProcessorRoot",
+                "ProcessorInterface",
+                "ProcessorGroup",
+                "ProcessorLogic",
+                "ProcessorLoop",
+                "ProcessorTimer",
+                "ProcessorPrint",
+                "ProcessorVariable",
+                "ProcessorAssertion",
+                "ProcessorExtractor",
+                "ProcessorCookie",
+                "ProcessorData"
+            ]
+        },
+        "consts.ProcessorType": {
+            "type": "string",
+            "enum": [
+                "processor_root_default",
+                "processor_interface_default",
+                "processor_group_default",
+                "processor_timer_default",
+                "processor_print_default",
+                "processor_logic_if",
+                "processor_logic_else",
+                "processor_loop_time",
+                "processor_loop_in",
+                "processor_loop_range",
+                "processor_loop_until",
+                "processor_loop_break",
+                "processor_variable_set",
+                "processor_variable_clear",
+                "processor_assertion_default",
+                "processor_extractor_boundary",
+                "processor_extractor_jsonquery",
+                "processor_extractor_htmlquery",
+                "processor_extractor_xmlquery",
+                "processor_cookie_get",
+                "processor_cookie_set",
+                "processor_cookie_clear",
+                "processor_data_text",
+                "processor_data_excel"
+            ],
+            "x-enum-varnames": [
+                "ProcessorRootDefault",
+                "ProcessorInterfaceDefault",
+                "ProcessorGroupDefault",
+                "ProcessorTimerDefault",
+                "ProcessorPrintDefault",
+                "ProcessorLogicIf",
+                "ProcessorLogicElse",
+                "ProcessorLoopTime",
+                "ProcessorLoopIn",
+                "ProcessorLoopRange",
+                "ProcessorLoopUntil",
+                "ProcessorLoopBreak",
+                "ProcessorVariableSet",
+                "ProcessorVariableClear",
+                "ProcessorAssertionDefault",
+                "ProcessorExtractorBoundary",
+                "ProcessorExtractorJsonQuery",
+                "ProcessorExtractorHtmlQuery",
+                "ProcessorExtractorXmlQuery",
+                "ProcessorCookieGet",
+                "ProcessorCookieSet",
+                "ProcessorCookieClear",
+                "ProcessorDataText",
+                "ProcessorDataExcel"
+            ]
+        },
         "consts.RoleType": {
             "type": "string",
             "enum": [
@@ -1048,6 +1869,220 @@ const docTemplate = `{
                 "Developer",
                 "ProductManager"
             ]
+        },
+        "consts.SourceType": {
+            "type": "integer",
+            "enum": [
+                1
+            ],
+            "x-enum-varnames": [
+                "Swagger"
+            ]
+        },
+        "iris.Map": {
+            "type": "object",
+            "additionalProperties": true
+        },
+        "model.Auth2Token": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "projectId": {
+                    "type": "integer"
+                },
+                "token": {
+                    "type": "string"
+                },
+                "tokenType": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.Category": {
+            "type": "object",
+            "properties": {
+                "children": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Processor"
+                    }
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "desc": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "isDir": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "ordr": {
+                    "type": "integer"
+                },
+                "parentId": {
+                    "type": "integer"
+                },
+                "projectId": {
+                    "type": "integer"
+                },
+                "serveId": {
+                    "type": "integer"
+                },
+                "slots": {
+                    "$ref": "#/definitions/iris.Map"
+                },
+                "sourceType": {
+                    "$ref": "#/definitions/consts.SourceType"
+                },
+                "type": {
+                    "$ref": "#/definitions/serverConsts.CategoryDiscriminator"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "useId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "model.DebugInterfaceOAuth20": {
+            "type": "object",
+            "properties": {
+                "accessToken": {
+                    "type": "string"
+                },
+                "accessTokenURL": {
+                    "type": "string"
+                },
+                "authURL": {
+                    "type": "string"
+                },
+                "callbackUrl": {
+                    "type": "string"
+                },
+                "clientAuthentication": {
+                    "$ref": "#/definitions/consts.ClientAuthenticationWay"
+                },
+                "clientID": {
+                    "type": "string"
+                },
+                "clientSecret": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "grantType": {
+                    "$ref": "#/definitions/consts.GrantType"
+                },
+                "headerPrefix": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "interfaceId": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "scope": {
+                    "type": "string"
+                },
+                "state": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.Processor": {
+            "type": "object",
+            "properties": {
+                "children": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Processor"
+                    }
+                },
+                "comments": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "createdBy": {
+                    "type": "integer"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "endpointInterfaceId": {
+                    "type": "integer"
+                },
+                "entityCategory": {
+                    "$ref": "#/definitions/consts.ProcessorCategory"
+                },
+                "entityId": {
+                    "description": "Debug Interface Id for ProcessorInterface type",
+                    "type": "integer"
+                },
+                "entityType": {
+                    "$ref": "#/definitions/consts.ProcessorType"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "ordr": {
+                    "type": "integer"
+                },
+                "parentId": {
+                    "type": "integer"
+                },
+                "projectId": {
+                    "type": "integer"
+                },
+                "scenarioId": {
+                    "type": "integer"
+                },
+                "slots": {
+                    "$ref": "#/definitions/iris.Map"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
         },
         "model.Project": {
             "type": "object",
@@ -1211,6 +2246,32 @@ const docTemplate = `{
                 }
             }
         },
+        "serverConsts.CategoryDiscriminator": {
+            "type": "string",
+            "enum": [
+                "endpoint",
+                "scenario",
+                "plan"
+            ],
+            "x-enum-varnames": [
+                "EndpointCategory",
+                "ScenarioCategory",
+                "PlanCategory"
+            ]
+        },
+        "serverConsts.DropPos": {
+            "type": "integer",
+            "enum": [
+                -1,
+                0,
+                1
+            ],
+            "x-enum-varnames": [
+                "Before",
+                "Inner",
+                "After"
+            ]
+        },
         "serverConsts.ProjectType": {
             "type": "string",
             "enum": [
@@ -1281,6 +2342,95 @@ const docTemplate = `{
                 },
                 "status": {
                     "$ref": "#/definitions/consts.AuditStatus"
+                }
+            }
+        },
+        "serverDomain.Category": {
+            "type": "object",
+            "properties": {
+                "children": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/serverDomain.Category"
+                    }
+                },
+                "count": {
+                    "type": "integer"
+                },
+                "desc": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "parentId": {
+                    "type": "integer"
+                },
+                "slots": {
+                    "$ref": "#/definitions/iris.Map"
+                }
+            }
+        },
+        "serverDomain.CategoryCreateReq": {
+            "type": "object",
+            "properties": {
+                "mode": {
+                    "type": "string"
+                },
+                "moduleId": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "projectId": {
+                    "type": "integer"
+                },
+                "serveId": {
+                    "type": "integer"
+                },
+                "targetId": {
+                    "type": "integer"
+                },
+                "type": {
+                    "$ref": "#/definitions/serverConsts.CategoryDiscriminator"
+                }
+            }
+        },
+        "serverDomain.CategoryMoveReq": {
+            "type": "object",
+            "properties": {
+                "dragKey": {
+                    "type": "integer"
+                },
+                "dropKey": {
+                    "type": "integer"
+                },
+                "dropPos": {
+                    "$ref": "#/definitions/serverConsts.DropPos"
+                },
+                "type": {
+                    "$ref": "#/definitions/serverConsts.CategoryDiscriminator"
+                }
+            }
+        },
+        "serverDomain.CategoryReq": {
+            "type": "object",
+            "properties": {
+                "desc": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "parent": {
+                    "type": "integer"
                 }
             }
         },

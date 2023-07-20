@@ -74,7 +74,7 @@ func (c *AccountCtrl) Register(ctx iris.Context) {
 // @summary	忘记密码
 // @accept	application/json
 // @Produce	application/json
-// @Param 	usernameOrPassword	path	string	true	"用户名或者密码"
+// @Param 	usernameOrPassword	query	string	true	"用户名或者密码"
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/account/forgotPassword	[post]
 func (c *AccountCtrl) ForgotPassword(ctx iris.Context) {

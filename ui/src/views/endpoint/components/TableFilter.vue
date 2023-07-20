@@ -26,7 +26,7 @@
       </a-form-item>
       <a-form-item label="标签" style="margin-bottom: 0;">
         <a-select
-            mode="tags"
+            mode="multiple"
             style="width: 140px;"
             allowClear
             @change="(e) => {

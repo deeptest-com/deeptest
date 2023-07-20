@@ -468,8 +468,11 @@ func (s *EndpointService) UpdateTags(req v1.EndpointTagReq, projectId uint) (err
 		}
 	}
 
+	logUtils.Infof("================tagsNeedDeleted:%+v", tagsNeedDeleted)
 	for _, v := range tagsNeedDeleted {
 		relations, err := s.EndpointTagRepo.ListRelByTagId(v)
+		logUtils.Infof("================relations:%+v, err:%+v", relations, err)
+
 		if err != nil && err != gorm.ErrRecordNotFound {
 			return err
 		}

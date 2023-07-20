@@ -27,7 +27,7 @@
       <a-form-item label="标签" style="margin-bottom: 0;">
         <a-select
             mode="tags"
-            style="width: 120px;"
+            style="width: 140px;"
             allowClear
             @change="(e) => {
               handleFilterChange('tagNames',e);

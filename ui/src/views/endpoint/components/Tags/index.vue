@@ -5,7 +5,7 @@
       :options="options"
       :size="size"
       placeholder="请选择标签"
-      style="width: 100px"
+      :style="'width:'+width"
       @change="change"
     ></a-select>
 </template>
@@ -20,6 +20,10 @@ const props = defineProps({
     size:{
         type:String,
         default:'small'
+    },
+    width:{
+        type:String,
+        default:'120px'
     },
     options:{
         type:[],

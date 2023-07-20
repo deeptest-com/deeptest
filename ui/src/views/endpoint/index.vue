@@ -220,7 +220,7 @@ const columns = [
     title: '标签',
     dataIndex: 'tags',
     slots: {customRender: 'colTags'},
-    width: 150,
+    width: 200,
   },
   {
     title: '创建人',

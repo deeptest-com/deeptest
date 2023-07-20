@@ -27,13 +27,14 @@
       <a-form-item label="标签" style="margin-bottom: 0;">
         <a-select
             mode="multiple"
-            style="width: 140px;"
+            style="width: 200px;"
             allowClear
             @change="(e) => {
               handleFilterChange('tagNames',e);
             }"
             :value="formState?.tagNames"
             placeholder="请选择标签"
+            max-tag-count="responsive"
             :options="tagList"/>
       </a-form-item>
       <a-form-item :label="null">

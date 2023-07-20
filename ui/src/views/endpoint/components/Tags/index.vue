@@ -1,15 +1,15 @@
 <template>
+    <div style:="width: 200px">
     <a-tag 
     :key="index" v-for="(tag,index) in values"
     closable @close="close(index)"
     >{{tag}}</a-tag>
     <PlusCircleOutlined  @click="showSelect=true"/>
-    
-    <div v-if="showSelect">
-    <a-select
+    <a-select 
+        v-if="showSelect"
         v-model:value="tag"
         show-search
-        placeholder="请选择标签"
+        placeholder="请添加标签"
         style="width: 200px"
         :options="options"
         :filter-option="filterOption"
@@ -21,7 +21,7 @@
         @inputKeyDown="enter"
         @search="search"
      ></a-select>
-     </div>
+    </div>
 
 </template>
 

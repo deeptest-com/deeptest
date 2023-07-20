@@ -68,10 +68,11 @@ const renderfeedback = (currentUser:any) => {
             }
         };
 
+        const isProd = window.location.href.includes('leyanapi.nancalcloud.com');
         // 初始化数据
         initState({
             token: '32253824181731328', // 由乐研生成的应用授权Token
-            api: process.env.NODE_ENV === 'production' ? 'https://leyan.nancalcloud.com/api/v1' : 'http://leyan-test.rysaas.cn/api/v1',
+            api: isProd ? 'https://leyan.nancalcloud.com/api/v1' : 'http://leyan-test.rysaas.cn/api/v1',
             help: null,
             userInfo: userInfo,
             zIndex: 1000,

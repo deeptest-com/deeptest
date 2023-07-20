@@ -3,7 +3,6 @@ package service
 import (
 	"encoding/json"
 	"fmt"
-	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	agentUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
@@ -156,9 +155,10 @@ func (s *CheckpointService) Check(checkpoint model.DebugConditionCheckpoint, inv
 
 	// Judgement
 	if checkpoint.Type == consts.Judgement {
-		variableMap, datapools, _ := s.VariableService.GetCombinedVarsForCheckpoint(postCondition.DebugInterfaceId, postCondition.EndpointInterfaceId, caseInterfaceId, scenarioProcessorId, usedBy)
+		//variableMap, datapools, _ := s.VariableService.GetCombinedVarsForCheckpoint(postCondition.DebugInterfaceId, postCondition.EndpointInterfaceId, caseInterfaceId, scenarioProcessorId, usedBy)
+		//result, _ := agentExec.EvaluateGovaluateExpressionWithDebugVariables(checkpoint.Expression, variableMap, datapools)
 
-		result, _ := agentExec.EvaluateGovaluateExpressionWithVariables(checkpoint.Expression, variableMap, datapools)
+		var result interface{} // TODO:
 
 		checkpoint.ActualResult = fmt.Sprintf("%v", result)
 

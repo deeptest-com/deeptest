@@ -13,10 +13,12 @@ import (
 type ScenarioProcessorService struct {
 	ScenarioProcessorRepo *repo.ScenarioProcessorRepo `inject:""`
 	EndpointInterfaceRepo *repo.EndpointInterfaceRepo `inject:""`
-	ExtractorRepo         *repo.ExtractorRepo         `inject:""`
-	CheckpointRepo        *repo.CheckpointRepo        `inject:""`
-	DebugInterfaceRepo    *repo.DebugInterfaceRepo    `inject:""`
-	ServeServerRepo       *repo.ServeServerRepo       `inject:""`
+
+	PreConditionRepo  *repo.PreConditionRepo  `inject:""`
+	PostConditionRepo *repo.PostConditionRepo `inject:""`
+
+	DebugInterfaceRepo *repo.DebugInterfaceRepo `inject:""`
+	ServeServerRepo    *repo.ServeServerRepo    `inject:""`
 
 	ExtractorService         *ExtractorService         `inject:""`
 	CheckpointService        *CheckpointService        `inject:""`
@@ -114,8 +116,8 @@ func (s *ScenarioProcessorService) GetEntityTo(processorTo *agentExec.Processor)
 		interfaceEntity.ProcessorCategory = consts.ProcessorInterface
 		interfaceEntity.ProcessorType = consts.ProcessorInterfaceDefault
 
-		interfaceEntity.Extractors, _ = s.ExtractorRepo.ListTo(processor.EntityId, interfaceEntity.ID)
-		interfaceEntity.Checkpoints, _ = s.CheckpointRepo.ListTo(processor.EntityId, interfaceEntity.ID)
+		interfaceEntity.PreConditions, _ = s.PreConditionRepo.ListTo(processor.EntityId, processor.EndpointInterfaceId)
+		interfaceEntity.PostConditions, _ = s.PostConditionRepo.ListTo(processor.EntityId, processor.EndpointInterfaceId)
 
 		ret = &interfaceEntity
 

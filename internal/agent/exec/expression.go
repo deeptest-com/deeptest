@@ -30,9 +30,7 @@ var (
 )
 
 // called by server checkpoint service
-func EvaluateGovaluateExpressionWithVariables(expression string, varMap map[string]interface{}, datapools domain.Datapools) (
-	ret interface{}, err error) {
-
+func EvaluateGovaluateExpressionWithDebugVariables(expression string) (ret interface{}, err error) {
 	expr := commUtils.RemoveLeftVariableSymbol(expression)
 
 	govaluateExpression, err := govaluate.NewEvaluableExpressionWithFunctions(expr, GovaluateFunctions)
@@ -41,7 +39,7 @@ func EvaluateGovaluateExpressionWithVariables(expression string, varMap map[stri
 	}
 
 	// 1
-	paramValMap, err := generateGovaluateParamsWithVariables(expression, varMap, datapools)
+	paramValMap, err := generateGovaluateParamsWithVariables(expression)
 	if err != nil {
 		return
 	}
@@ -52,7 +50,7 @@ func EvaluateGovaluateExpressionWithVariables(expression string, varMap map[stri
 }
 
 // called by agent processor interface
-func EvaluateGovaluateExpressionByScope(expression string, scopeId uint) (ret interface{}, err error) {
+func EvaluateGovaluateExpressionByProcessorScope(expression string, scopeId uint) (ret interface{}, err error) {
 	expr := commUtils.RemoveLeftVariableSymbol(expression)
 
 	valueExpression, err := govaluate.NewEvaluableExpressionWithFunctions(expr, GovaluateFunctions)
@@ -88,23 +86,28 @@ func generateGovaluateParamsByScope(expression string, scopeId uint) (ret domain
 	return
 }
 
-func generateGovaluateParamsWithVariables(expression string, variableMap map[string]interface{}, datapools domain.Datapools) (
+func generateGovaluateParamsWithVariables(expression string) (
 	govaluateParams map[string]interface{}, err error) {
 
 	govaluateParams = make(map[string]interface{}, 0)
 
 	varsInExpression := commUtils.GetVariablesInExpressionPlaceholder(expression)
 
+	// ExecScene.EnvToVariables, ExecScene.Datapools
+
 	for _, varName := range varsInExpression {
 		varNameWithoutPlus := strings.TrimLeft(varName, "+")
 
-		val, ok := variableMap[varNameWithoutPlus]
-		if ok {
-			if varNameWithoutPlus != varName {
-				val = _stringUtils.StrToInt(_stringUtils.InterfToStr(val))
-			}
-			govaluateParams[varNameWithoutPlus] = val
+		var valObj interface{}
+		valStr := getVariableValue(varNameWithoutPlus)
+
+		if varNameWithoutPlus != varName { // is a number like ${+id}
+			valObj = _stringUtils.StrToInt(valStr)
+		} else {
+			valObj = valStr
 		}
+
+		govaluateParams[varNameWithoutPlus] = valObj
 	}
 
 	return

@@ -7,6 +7,7 @@ import (
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"github.com/kataras/iris/v12"
+	"log"
 	"time"
 )
 
@@ -65,21 +66,22 @@ func (s *DebugInvokeService) SubmitResult(req domain.SubmitDebugResultRequest) (
 	}
 
 	invoke, err := s.Create(req.Request, req.Response, serveId, processorId, scenarioId, projectId)
+	log.Println(invoke)
 
-	s.ExtractorService.ExtractInterface(invoke.ID,
-		req.Request.DebugInterfaceId, req.Request.CaseInterfaceId, req.Request.EndpointInterfaceId,
-		serveId, processorId, scenarioId,
-		req.Response, usedBy)
-
-	s.CheckpointService.CheckInterface(invoke.ID,
-		req.Request.DebugInterfaceId, req.Request.CaseInterfaceId, req.Request.EndpointInterfaceId,
-		processorId,
-		req.Response, usedBy)
-
-	s.ScriptService.Exec(invoke.ID,
-		req.Request.DebugInterfaceId, req.Request.CaseInterfaceId, req.Request.EndpointInterfaceId,
-		processorId,
-		req.Response, usedBy)
+	//s.ExtractorService.ExtractInterface(invoke.ID,
+	//	req.Request.DebugInterfaceId, req.Request.CaseInterfaceId, req.Request.EndpointInterfaceId,
+	//	serveId, processorId, scenarioId,
+	//	req.Response, usedBy)
+	//
+	//s.CheckpointService.CheckInterface(invoke.ID,
+	//	req.Request.DebugInterfaceId, req.Request.CaseInterfaceId, req.Request.EndpointInterfaceId,
+	//	processorId,
+	//	req.Response, usedBy)
+	//
+	//s.ScriptService.Exec(invoke.ID,
+	//	req.Request.DebugInterfaceId, req.Request.CaseInterfaceId, req.Request.EndpointInterfaceId,
+	//	processorId,
+	//	req.Response, usedBy)
 
 	if err != nil {
 		return

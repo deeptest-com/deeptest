@@ -31,18 +31,18 @@ func (r *CheckpointRepo) List(debugInterfaceId, endpointInterfaceId uint) (pos [
 	return
 }
 
-func (r *CheckpointRepo) ListTo(debugInterfaceId, endpointInterfaceId uint) (ret []domain.CheckpointBase, err error) {
-	pos, err := r.List(debugInterfaceId, endpointInterfaceId)
-
-	for _, po := range pos {
-		checkpoint := domain.CheckpointBase{}
-		copier.CopyWithOption(&checkpoint, po, copier.Option{DeepCopy: true})
-
-		ret = append(ret, checkpoint)
-	}
-
-	return
-}
+//func (r *CheckpointRepo) ListTo(debugInterfaceId, endpointInterfaceId uint) (ret []domain.CheckpointBase, err error) {
+//	pos, err := r.List(debugInterfaceId, endpointInterfaceId)
+//
+//	for _, po := range pos {
+//		checkpoint := domain.CheckpointBase{}
+//		copier.CopyWithOption(&checkpoint, po, copier.Option{DeepCopy: true})
+//
+//		ret = append(ret, checkpoint)
+//	}
+//
+//	return
+//}
 
 func (r *CheckpointRepo) Get(id uint) (checkpoint model.DebugConditionCheckpoint, err error) {
 	err = r.DB.

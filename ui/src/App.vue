@@ -24,7 +24,7 @@ export default defineComponent({
     const { locale } = useI18n();
     const antdLocales = computed(()=> antdMessages[locale.value]);
 
-    // 以下代码仅适用于乐研环境，其他环境删除即可
+    // NOTICE: 以下代码仅适用于乐研环境，其他环境删除即可
     const store = useStore<{User: UserStateType}>();
     const currentUser = computed<CurrentUser>(()=> store.state.User.currentUser);
     watch(() => {

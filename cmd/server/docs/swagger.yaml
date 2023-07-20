@@ -1,10 +1,151 @@
 definitions:
+  _domain.PageData:
+    properties:
+      page:
+        type: integer
+      pageSize:
+        type: integer
+      result: {}
+      total:
+        type: integer
+    type: object
   _domain.Response:
     properties:
       code:
         type: integer
       data: {}
       msg:
+        type: string
+    type: object
+  consts.AuditStatus:
+    enum:
+    - 0
+    - 1
+    - 2
+    type: integer
+    x-enum-varnames:
+    - Init
+    - Agreed
+    - Refused
+  consts.RoleType:
+    enum:
+    - admin
+    - user
+    - tester
+    - developer
+    - product_manager
+    type: string
+    x-enum-varnames:
+    - Admin
+    - User
+    - Tester
+    - Developer
+    - ProductManager
+  model.Project:
+    properties:
+      adminId:
+        type: integer
+      adminName:
+        type: string
+      createdAt:
+        type: string
+      desc:
+        type: string
+      disabled:
+        type: boolean
+      environmentId:
+        type: integer
+      id:
+        type: integer
+      includeExample:
+        type: boolean
+      logo:
+        type: string
+      name:
+        type: string
+      orgId:
+        type: integer
+      schemaId:
+        type: integer
+      shortName:
+        type: string
+      spec:
+        type: string
+      spec2:
+        type: string
+      type:
+        $ref: '#/definitions/serverConsts.ProjectType'
+      updatedAt:
+        type: string
+    type: object
+  model.ProjectMemberAudit:
+    properties:
+      applyUserId:
+        type: integer
+      applyUserName:
+        type: string
+      auditUserId:
+        type: integer
+      auditUserName:
+        type: string
+      createdAt:
+        type: string
+      description:
+        type: string
+      disabled:
+        type: boolean
+      id:
+        type: integer
+      projectId:
+        type: integer
+      projectName:
+        type: string
+      projectRoleName:
+        $ref: '#/definitions/consts.RoleType'
+      status:
+        $ref: '#/definitions/consts.AuditStatus'
+      updatedAt:
+        type: string
+    type: object
+  model.ProjectMemberRole:
+    properties:
+      adminId:
+        type: integer
+      adminName:
+        type: string
+      createdAt:
+        type: string
+      desc:
+        type: string
+      disabled:
+        type: boolean
+      environmentId:
+        type: integer
+      id:
+        type: integer
+      includeExample:
+        type: boolean
+      logo:
+        type: string
+      name:
+        type: string
+      orgId:
+        type: integer
+      roleId:
+        type: integer
+      roleName:
+        $ref: '#/definitions/consts.RoleType'
+      schemaId:
+        type: integer
+      shortName:
+        type: string
+      spec:
+        type: string
+      spec2:
+        type: string
+      type:
+        $ref: '#/definitions/serverConsts.ProjectType'
+      updatedAt:
         type: string
     type: object
   serverConsts.ProjectType:
@@ -15,6 +156,47 @@ definitions:
     x-enum-varnames:
     - Full
     - Debug
+  serverDomain.ApplyProjectReq:
+    properties:
+      applyUserId:
+        type: integer
+      description:
+        type: string
+      projectId:
+        type: integer
+      projectRoleName:
+        $ref: '#/definitions/consts.RoleType'
+    required:
+    - projectId
+    - projectRoleName
+    type: object
+  serverDomain.AuditProjectPaginate:
+    properties:
+      applyUserId:
+        type: integer
+      auditUserId:
+        type: integer
+      field:
+        type: string
+      order:
+        type: string
+      page:
+        type: integer
+      pageSize:
+        type: integer
+      type:
+        type: integer
+    type: object
+  serverDomain.AuditProjectReq:
+    properties:
+      id:
+        type: integer
+      status:
+        $ref: '#/definitions/consts.AuditStatus'
+    required:
+    - id
+    - status
+    type: object
   serverDomain.DataReq:
     properties:
       clearData:
@@ -26,6 +208,28 @@ definitions:
     properties:
       adminPassword:
         type: string
+    type: object
+  serverDomain.MemberResp:
+    properties:
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      roleId:
+        type: integer
+      roleName:
+        $ref: '#/definitions/consts.RoleType'
+      username:
+        type: string
+    type: object
+  serverDomain.ProjectMemberRemoveReq:
+    properties:
+      projectId:
+        type: integer
+      userId:
+        type: integer
     type: object
   serverDomain.ProjectReq:
     properties:
@@ -55,6 +259,15 @@ definitions:
         $ref: '#/definitions/serverConsts.ProjectType'
       updatedAt:
         type: string
+    type: object
+  serverDomain.UpdateProjectMemberReq:
+    properties:
+      projectId:
+        type: integer
+      projectRoleId:
+        type: integer
+      userId:
+        type: integer
     type: object
 info:
   contact:
@@ -87,7 +300,19 @@ paths:
       - 系统
   /api/v1/projects:
     get:
+      consumes:
+      - application/json
       parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
       - in: query
         name: enabled
         type: string
@@ -106,18 +331,42 @@ paths:
       - in: query
         name: pageSize
         type: integer
+      produces:
+      - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/_domain.Response'
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  allOf:
+                  - $ref: '#/definitions/_domain.PageData'
+                  - properties:
+                      result:
+                        items:
+                          $ref: '#/definitions/model.Project'
+                        type: array
+                    type: object
+              type: object
       summary: 项目列表
       tags:
-      - 项目管理/项目列表
+      - 项目管理
     post:
       consumes:
       - application/json
       parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
       - description: Create project Request Object
         in: body
         name: ProjectReq
@@ -130,8 +379,415 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/_domain.Response'
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  properties:
+                    id:
+                      type: integer
+                  type: object
+              type: object
       summary: 创建项目
       tags:
-      - 项目管理/项目列表
+      - 项目管理
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: update project Request Object
+        in: body
+        name: ProjectReq
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.ProjectReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 更新项目
+      tags:
+      - 项目管理
+  /api/v1/projects/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 项目ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - in: query
+        name: id
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 删除项目
+      tags:
+      - 项目管理
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 项目ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Project'
+              type: object
+      summary: 项目详情
+      tags:
+      - 项目管理
+  /api/v1/projects/apply:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 申请项目成员的请求体
+        in: body
+        name: ApplyProjectReq
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.ApplyProjectReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 申请项目成员
+      tags:
+      - 项目管理
+  /api/v1/projects/audit:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 审批操作的请求体
+        in: body
+        name: AuditProjectReq
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.AuditProjectReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 审批操作
+      tags:
+      - 项目管理
+  /api/v1/projects/auditList:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 申请加入审批列表的请求体
+        in: body
+        name: AuditProjectPaginate
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.AuditProjectPaginate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  allOf:
+                  - $ref: '#/definitions/_domain.PageData'
+                  - properties:
+                      result:
+                        items:
+                          $ref: '#/definitions/model.ProjectMemberAudit'
+                        type: array
+                    type: object
+              type: object
+      summary: 申请加入审批列表
+      tags:
+      - 项目管理
+  /api/v1/projects/changeProject:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 项目ID
+        in: body
+        name: id
+        required: true
+        schema:
+          type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  properties:
+                    id:
+                      type: integer
+                  type: object
+              type: object
+      summary: 切换用户默认项目
+      tags:
+      - 项目管理
+  /api/v1/projects/changeUserRole:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 更新项目成员角色的请求体
+        in: body
+        name: UpdateProjectMemberReq
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.UpdateProjectMemberReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 更新项目成员的角色
+      tags:
+      - 项目管理
+  /api/v1/projects/getByUser:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  properties:
+                    ' currProject':
+                      $ref: '#/definitions/model.Project'
+                    ' recentProjects':
+                      items:
+                        $ref: '#/definitions/model.Project'
+                      type: array
+                    projects:
+                      items:
+                        $ref: '#/definitions/model.ProjectMemberRole'
+                      type: array
+                  type: object
+              type: object
+      summary: 获取用户参与的项目
+      tags:
+      - 项目管理
+  /api/v1/projects/members:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - in: query
+        name: enabled
+        type: string
+      - in: query
+        name: field
+        type: string
+      - in: query
+        name: keywords
+        type: string
+      - in: query
+        name: order
+        type: string
+      - in: query
+        name: page
+        type: integer
+      - in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  allOf:
+                  - $ref: '#/definitions/_domain.PageData'
+                  - properties:
+                      result:
+                        items:
+                          $ref: '#/definitions/serverDomain.MemberResp'
+                        type: array
+                    type: object
+              type: object
+      summary: 获取项目成员
+      tags:
+      - 项目管理
+  /api/v1/projects/removeMember:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 删除项目成员的请求体
+        in: body
+        name: ProjectMemberRemoveReq
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.ProjectMemberRemoveReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 删除项目成员
+      tags:
+      - 项目管理
 swagger: "2.0"

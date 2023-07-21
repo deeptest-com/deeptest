@@ -67,7 +67,7 @@ export class DeepTestApp {
 
         const mainWin = new BrowserWindow({
             show: false,
-            frame: false,
+            frame: true,
             webPreferences: {
                 nodeIntegration: true,
                 contextIsolation: false,

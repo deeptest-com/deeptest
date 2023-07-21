@@ -33,7 +33,7 @@
 
     <div class="content">
       <draggable tag="div" item-key="name" class="collapse-list"
-                 :list="preConditions"
+                 :list="preConditions || []"
                  handle=".handle"
                  @end="handleDrop">
         <template #item="{ element }">

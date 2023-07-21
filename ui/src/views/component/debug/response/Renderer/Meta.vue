@@ -1,8 +1,7 @@
 <template>
   <div class="response-meta">
     <div class="row">
-      <span class="col"
-            :class="[responseData.statusCode===200? 'dp-color-pass': 'dp-color-fail']">
+      <span class="col">
         状态：{{ responseData.statusContent }}
       </span>
       <span class="col">
@@ -18,7 +17,7 @@
 
       <span v-if="item.resultStatus===ResultStatus.Pass"><CheckCircleOutlined /></span>
       <span v-if="item.resultStatus===ResultStatus.Fail"><CloseCircleOutlined /></span>
-
+      &nbsp;
       <span>{{item.resultMsg}}</span>
     </div>
   </div>
@@ -48,6 +47,8 @@ watch(responseData, (newVal) => {
 
 <style lang="less" scoped>
 .response-meta {
+  height: 100%;
+  overflow-y: auto;
   padding: 0 6px;
 
   .row {

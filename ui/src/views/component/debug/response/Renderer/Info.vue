@@ -1,17 +1,17 @@
 <template>
   <div class="info-main">
     <div class="params">
-      <ParamGrid title="查询参数" :list="requestData.queryParams" />
-      <ParamGrid title="路径参数" :list="requestData.pathParams" />
-      <ParamGrid title="请求头" :list="requestData.headers" />
+      <ParamGrid title="查询参数" :list="requestData.queryParams || []" />
+      <ParamGrid title="路径参数" :list="requestData.pathParams || []" />
+      <ParamGrid title="请求头" :list="requestData.headers || []" />
 
       <ParamGrid v-if="requestData.bodyType==='multipart/form-data' && requestData.bodyFormData"
                  title="表单数据"
-                 :list="requestData.bodyFormData" />
+                 :list="requestData.bodyFormData || []" />
 
       <ParamGrid v-else-if="requestData.bodyType==='application/x-www-form-urlencoded' && requestData.bodyFormUrlencoded"
                  title="表单数据（UrlEncoded）"
-                 :list="requestData.bodyFormUrlencoded" />
+                 :list="requestData.bodyFormUrlencoded || []" />
 
       <ParamContent v-else
                     title="请求体"
@@ -19,7 +19,7 @@
 
     </div>
 
-    <div class="status">
+    <div class="meta">
       <ResponseMeta />
     </div>
   </div>
@@ -55,9 +55,8 @@ const requestData = computed<any>(() => store.state.Debug.requestData);
     overflow-y: auto;
   }
 
-  .status {
+  .meta {
     height: 100%;
-    overflow: hidden;
     width: 360px;
   }
 }

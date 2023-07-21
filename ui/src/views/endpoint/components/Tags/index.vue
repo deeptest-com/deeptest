@@ -103,6 +103,7 @@ const handleChange = async (value: string) => {
 
    values.value = Array.from(new Set([...values.value,value]))
    await updateTags(values.value)
+   tag.value = undefined
 };
 
 const handleBlur = () => {

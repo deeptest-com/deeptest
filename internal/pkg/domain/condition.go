@@ -19,8 +19,8 @@ type ExtractorBase struct {
 	Scope    consts.ExtractorScope `json:"scope" gorm:"default:public"`
 
 	Result            string `json:"result"`
-	ConditionId       uint   `gorm:"-" json:"conditionId"`
-	ConditionEntityId uint   `gorm:"-" json:"conditionEntityId"`
+	ConditionId       uint   `json:"conditionId"`
+	ConditionEntityId uint   `json:"conditionEntityId"`
 	InvokeId          uint   `json:"invokeId"`
 
 	Disabled bool `json:"disabled"`
@@ -59,8 +59,8 @@ type ScriptBase struct {
 
 	Output            string              `json:"output"`
 	ResultStatus      consts.ResultStatus `json:"resultStatus"`
-	ConditionId       uint                `gorm:"-" json:"conditionId"`
-	ConditionEntityId uint                `gorm:"-" json:"conditionEntityId"`
+	ConditionId       uint                `json:"conditionId"`
+	ConditionEntityId uint                `json:"conditionEntityId"`
 	InvokeId          uint                `json:"invokeId"`
 
 	Disabled bool `json:"disabled"`

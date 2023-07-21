@@ -107,7 +107,8 @@ func (r *PreConditionRepo) ListTo(debugInterfaceId, endpointInterfaceId uint) (r
 
 			entity, _ := r.ScriptRepo.Get(po.EntityId)
 			copier.CopyWithOption(&script, entity, copier.Option{DeepCopy: true})
-			script.RecordId = po.EntityId
+			script.ConditionId = po.ID
+			script.ConditionEntityId = po.EntityId
 
 			raw, _ := json.Marshal(script)
 			condition := domain.InterfaceExecCondition{

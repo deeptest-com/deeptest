@@ -179,7 +179,7 @@ func (r *ExtractorRepo) UpdateResult(extractor domain.ExtractorBase) (err error)
 	}
 
 	err = r.DB.Model(&model.DebugConditionExtractor{}).
-		Where("id = ?", extractor.RecordId).
+		Where("id = ?", extractor.ConditionEntityId).
 		Updates(values).Error
 
 	if err != nil {
@@ -205,7 +205,8 @@ func (r *ExtractorRepo) CreateLog(extractor domain.ExtractorBase) (
 	copier.CopyWithOption(&log, extractor, copier.Option{DeepCopy: true})
 
 	log.ID = 0
-	log.ConditionId = extractor.RecordId
+	log.ConditionId = extractor.ConditionId
+	log.ConditionEntityId = extractor.ConditionEntityId
 	log.InvokeId = extractor.InvokeId
 	log.CreatedAt = nil
 	log.UpdatedAt = nil
@@ -306,9 +307,9 @@ func (r *ExtractorRepo) CloneFromEndpointInterfaceToDebugInterface(endpointInter
 
 func (r *ExtractorRepo) CreateDefault(conditionId uint) (po model.DebugConditionExtractor) {
 	po = model.DebugConditionExtractor{
-		ConditionId: conditionId,
-
 		ExtractorBase: domain.ExtractorBase{
+			ConditionId: conditionId,
+
 			Src:        consts.Body,
 			Type:       consts.Boundary,
 			Expression: "",

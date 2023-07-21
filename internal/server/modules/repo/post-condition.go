@@ -113,7 +113,8 @@ func (r *PostConditionRepo) ListTo(debugInterfaceId, endpointInterfaceId uint) (
 
 			entity, _ := r.ExtractorRepo.Get(po.EntityId)
 			copier.CopyWithOption(&extractor, entity, copier.Option{DeepCopy: true})
-			extractor.RecordId = po.EntityId
+			extractor.ConditionId = po.ID
+			extractor.ConditionEntityId = po.EntityId
 
 			raw, _ := json.Marshal(extractor)
 			condition := domain.InterfaceExecCondition{
@@ -128,7 +129,8 @@ func (r *PostConditionRepo) ListTo(debugInterfaceId, endpointInterfaceId uint) (
 
 			entity, _ := r.CheckpointRepo.Get(po.EntityId)
 			copier.CopyWithOption(&checkpoint, entity, copier.Option{DeepCopy: true})
-			checkpoint.RecordId = po.EntityId
+			checkpoint.ConditionId = po.ID
+			checkpoint.ConditionEntityId = po.EntityId
 
 			raw, _ := json.Marshal(checkpoint)
 			condition := domain.InterfaceExecCondition{
@@ -143,7 +145,8 @@ func (r *PostConditionRepo) ListTo(debugInterfaceId, endpointInterfaceId uint) (
 
 			entity, _ := r.ScriptRepo.Get(po.EntityId)
 			copier.CopyWithOption(&script, entity, copier.Option{DeepCopy: true})
-			script.RecordId = po.EntityId
+			script.ConditionId = po.ID
+			script.ConditionEntityId = po.EntityId
 
 			raw, _ := json.Marshal(script)
 			condition := domain.InterfaceExecCondition{

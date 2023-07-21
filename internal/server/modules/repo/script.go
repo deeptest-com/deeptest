@@ -100,7 +100,7 @@ func (r *ScriptRepo) UpdateResult(script domain.ScriptBase) (err error) {
 	}
 
 	err = r.DB.Model(&model.DebugConditionScript{}).
-		Where("id=?", script.RecordId).
+		Where("id=?", script.ConditionEntityId).
 		Updates(values).
 		Error
 
@@ -113,7 +113,8 @@ func (r *ScriptRepo) CreateLog(script domain.ScriptBase) (
 	copier.CopyWithOption(&log, script, copier.Option{DeepCopy: true})
 
 	log.ID = 0
-	log.ConditionId = script.RecordId
+	log.ConditionId = script.ConditionId
+	log.ConditionEntityId = script.ConditionEntityId
 	log.InvokeId = script.InvokeId
 	log.CreatedAt = nil
 	log.UpdatedAt = nil
@@ -158,9 +159,11 @@ func (r *ScriptRepo) CloneFromEndpointInterfaceToDebugInterface(endpointInterfac
 
 func (r *ScriptRepo) CreateDefault(conditionId uint, src consts.ConditionSrc) (po model.DebugConditionScript) {
 	po = model.DebugConditionScript{
-		ConditionId:  conditionId,
-		Content:      scriptHelper.GetScript(scriptHelper.ScriptVariablesGet),
-		ConditionSrc: src,
+		ScriptBase: domain.ScriptBase{
+			ConditionId:  conditionId,
+			Content:      scriptHelper.GetScript(scriptHelper.ScriptVariablesGet),
+			ConditionSrc: src,
+		},
 	}
 
 	r.Save(&po)

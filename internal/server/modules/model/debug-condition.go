@@ -41,7 +41,6 @@ func (DebugPostCondition) TableName() string {
 
 type DebugConditionExtractor struct {
 	BaseModel
-	ConditionId uint `json:"conditionId"`
 
 	domain.ExtractorBase
 }
@@ -52,7 +51,6 @@ func (DebugConditionExtractor) TableName() string {
 
 type DebugConditionCheckpoint struct {
 	BaseModel
-	ConditionId uint `json:"conditionId"`
 
 	domain.CheckpointBase
 }
@@ -63,13 +61,8 @@ func (DebugConditionCheckpoint) TableName() string {
 
 type DebugConditionScript struct {
 	BaseModel
-	ConditionId uint `json:"conditionId"`
 
-	ConditionSrc consts.ConditionSrc `json:"conditionType"` // per | post
-	Content      string              `json:"content"`
-
-	Output       string              `json:"output"`
-	ResultStatus consts.ResultStatus `json:"resultStatus"`
+	domain.ScriptBase
 }
 
 func (DebugConditionScript) TableName() string {

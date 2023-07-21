@@ -131,7 +131,7 @@ func (r *CheckpointRepo) UpdateResult(checkpoint domain.CheckpointBase) (err err
 	}
 
 	err = r.DB.Model(&model.DebugConditionCheckpoint{}).
-		Where("id=?", checkpoint.RecordId).
+		Where("id=?", checkpoint.ConditionEntityId).
 		Updates(values).
 		Error
 
@@ -144,7 +144,9 @@ func (r *CheckpointRepo) CreateLog(checkpoint domain.CheckpointBase) (
 	copier.CopyWithOption(&log, checkpoint, copier.Option{DeepCopy: true})
 
 	log.ID = 0
-	log.ConditionId = checkpoint.RecordId
+	log.ConditionId = checkpoint.ConditionId
+	log.ConditionEntityId = checkpoint.ConditionEntityId
+
 	log.InvokeId = checkpoint.InvokeId
 	log.CreatedAt = nil
 	log.UpdatedAt = nil
@@ -191,9 +193,9 @@ func (r *CheckpointRepo) CreateDefault(conditionId uint) (po model.DebugConditio
 	po.ConditionId = conditionId
 
 	po = model.DebugConditionCheckpoint{
-		ConditionId: conditionId,
-
 		CheckpointBase: domain.CheckpointBase{
+			ConditionId: conditionId,
+
 			Type:              consts.ResponseStatus,
 			Operator:          consts.Equal,
 			Expression:        "",

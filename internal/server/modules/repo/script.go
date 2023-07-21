@@ -99,7 +99,7 @@ func (r *ScriptRepo) UpdateResult(script domain.ScriptBase) (err error) {
 		"result_status": script.ResultStatus,
 	}
 
-	err = r.DB.Model(&script).
+	err = r.DB.Model(&model.DebugConditionScript{}).
 		Where("id=?", script.RecordId).
 		Updates(values).
 		Error
@@ -107,13 +107,14 @@ func (r *ScriptRepo) UpdateResult(script domain.ScriptBase) (err error) {
 	return
 }
 
-func (r *ScriptRepo) CreateLog(script domain.ScriptBase, invokeId uint) (
+func (r *ScriptRepo) CreateLog(script domain.ScriptBase) (
 	log model.ExecLogScript, err error) {
 
 	copier.CopyWithOption(&log, script, copier.Option{DeepCopy: true})
 
 	log.ID = 0
-	log.InvokeId = invokeId
+	log.ConditionId = script.RecordId
+	log.InvokeId = script.InvokeId
 	log.CreatedAt = nil
 	log.UpdatedAt = nil
 
@@ -163,6 +164,15 @@ func (r *ScriptRepo) CreateDefault(conditionId uint, src consts.ConditionSrc) (p
 	}
 
 	r.Save(&po)
+
+	return
+}
+
+func (r *ScriptRepo) GetLog(conditionId, invokeId uint) (ret model.ExecLogScript, err error) {
+	err = r.DB.
+		Where("condition_id=? AND invoke_id=?", conditionId, invokeId).
+		Where("NOT deleted").
+		First(&ret).Error
 
 	return
 }

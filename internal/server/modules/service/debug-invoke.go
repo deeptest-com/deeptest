@@ -16,22 +16,17 @@ type DebugInvokeService struct {
 	DebugInvokeRepo    *repo.DebugInvokeRepo    `inject:""`
 
 	EndpointRepo          *repo.EndpointRepo          `inject:""`
-	ScenarioProcessorRepo *repo.ScenarioProcessorRepo `inject:""`
 	ScenarioRepo          *repo.ScenarioRepo          `inject:""`
 	DiagnoseInterfaceRepo *repo.DiagnoseInterfaceRepo `inject:""`
 	EndpointCaseRepo      *repo.EndpointCaseRepo      `inject:""`
 
-	DebugSceneService     *DebugSceneService     `inject:""`
 	DebugInterfaceService *DebugInterfaceService `inject:""`
+	ExecConditionService  *ExecConditionService  `inject:""`
 
-	ExtractorService     *ExtractorService     `inject:""`
-	CheckpointService    *CheckpointService    `inject:""`
-	ScriptService        *ScriptService        `inject:""`
-	ExecConditionService *ExecConditionService `inject:""`
-
-	VariableService *VariableService `inject:""`
-	DatapoolService *DatapoolService `inject:""`
-	EndpointService *EndpointService `inject:""`
+	PostConditionRepo *repo.PostConditionRepo `inject:""`
+	ExtractorRepo     *repo.ExtractorRepo     `inject:""`
+	CheckpointRepo    *repo.CheckpointRepo    `inject:""`
+	ScriptRepo        *repo.ScriptRepo        `inject:""`
 }
 
 func (s *DebugInvokeService) SubmitResult(req domain.SubmitDebugResultRequest) (err error) {
@@ -73,21 +68,6 @@ func (s *DebugInvokeService) SubmitResult(req domain.SubmitDebugResultRequest) (
 		req.Request.DebugInterfaceId, req.Request.CaseInterfaceId, req.Request.EndpointInterfaceId,
 		serveId, processorId, scenarioId, usedBy,
 		req.PostConditions)
-
-	//s.ExtractorService.ExtractInterface(invoke.ID,
-	//	req.Request.DebugInterfaceId, req.Request.CaseInterfaceId, req.Request.EndpointInterfaceId,
-	//	serveId, processorId, scenarioId,
-	//	req.Response, usedBy)
-	//
-	//s.CheckpointService.CheckInterface(invoke.ID,
-	//	req.Request.DebugInterfaceId, req.Request.CaseInterfaceId, req.Request.EndpointInterfaceId,
-	//	processorId,
-	//	req.Response, usedBy)
-	//
-	//s.ScriptService.Exec(invoke.ID,
-	//	req.Request.DebugInterfaceId, req.Request.CaseInterfaceId, req.Request.EndpointInterfaceId,
-	//	processorId,
-	//	req.Response, usedBy)
 
 	if err != nil {
 		return
@@ -159,7 +139,27 @@ func (s *DebugInvokeService) GetLastResp(debugInterfaceId, endpointInterfaceId u
 }
 
 func (s *DebugInvokeService) GetResult(invokeId int) (results []interface{}, err error) {
-	//invocation, err := s.DebugInvokeRepo.Get(uint(invokeId))
+	invocation, err := s.DebugInvokeRepo.Get(uint(invokeId))
+
+	conditions, err := s.PostConditionRepo.List(invocation.DebugInterfaceId, invocation.EndpointInterfaceId)
+
+	for _, condition := range conditions {
+		typ := condition.EntityType
+		var log interface{}
+
+		if typ == consts.ConditionTypeExtractor {
+			log, _ = s.ExtractorRepo.GetLog(condition.EntityId, uint(invokeId))
+
+		} else if typ == consts.ConditionTypeCheckpoint {
+			log, _ = s.CheckpointRepo.GetLog(condition.EntityId, uint(invokeId))
+
+		} else if typ == consts.ConditionTypeScript {
+			log, _ = s.ScriptRepo.GetLog(condition.EntityId, uint(invokeId))
+
+		}
+
+		results = append(results, log)
+	}
 
 	return
 }

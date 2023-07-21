@@ -4,11 +4,17 @@
       <span class="col" :class="[responseData.statusCode===200? 'dp-color-pass': 'dp-color-fail']">
         状态：{{ responseData.statusContent }}
       </span>
-      <span class="col">耗时: {{ responseData.time }}毫秒</span>
-      <span class="col">大小：{{ responseData.contentLength }}字节</span>
+      <span class="col">
+        耗时: {{ responseData.time }}毫秒
+      </span>
+      <span class="col">
+        大小：{{ responseData.contentLength }}字节
+      </span>
     </div>
 
-    <div class="item"></div>
+    <div v-for="(item, index) in resultData" :key="index" class="item">
+      {{item.id}}
+    </div>
   </div>
 </template>
 
@@ -21,6 +27,7 @@ const {t} = useI18n();
 const store = useStore<{  Debug: Debug }>();
 
 const responseData = computed<any>(() => store.state.Debug.responseData);
+const resultData = computed<any>(() => store.state.Debug.resultData);
 
 watch(responseData, (newVal) => {
   console.log('responseData', responseData.value.invokeId)

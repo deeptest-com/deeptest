@@ -88,6 +88,39 @@ definitions:
     - LessThanOrEqual
     - Contain
     - NotContain
+  consts.ExtractorScope:
+    enum:
+    - private
+    - public
+    type: string
+    x-enum-comments:
+      Private: in current interface
+      Public: shared by other interfaces in serve OR scenario
+    x-enum-varnames:
+    - Private
+    - Public
+  consts.ExtractorSrc:
+    enum:
+    - header
+    - body
+    type: string
+    x-enum-varnames:
+    - Header
+    - Body
+  consts.ExtractorType:
+    enum:
+    - boundary
+    - jsonquery
+    - htmlquery
+    - xmlquery
+    - regx
+    type: string
+    x-enum-varnames:
+    - Boundary
+    - JsonQuery
+    - HtmlQuery
+    - XmlQuery
+    - Regx
   consts.FormDataType:
     enum:
     - text
@@ -832,6 +865,199 @@ definitions:
       updatedAt:
         type: string
     type: object
+  model.DebugInterface:
+    properties:
+      Version:
+        type: string
+      apiKey:
+        $ref: '#/definitions/model.DebugInterfaceApiKey'
+      authorizationType:
+        type: string
+      baseUrl:
+        type: string
+      basicAuth:
+        $ref: '#/definitions/model.DebugInterfaceBasicAuth'
+      bearerToken:
+        $ref: '#/definitions/model.DebugInterfaceBearerToken'
+      body:
+        type: string
+      bodyFormData:
+        items:
+          $ref: '#/definitions/model.DebugInterfaceBodyFormDataItem'
+        type: array
+      bodyFormUrlencoded:
+        items:
+          $ref: '#/definitions/model.DebugInterfaceBodyFormUrlEncodedItem'
+        type: array
+      bodyType:
+        $ref: '#/definitions/consts.HttpContentType'
+      cookies:
+        items:
+          $ref: '#/definitions/model.DebugInterfaceCookie'
+        type: array
+      createdAt:
+        type: string
+      desc:
+        type: string
+      description:
+        type: string
+      diagnoseInterfaceId:
+        type: integer
+      disabled:
+        type: boolean
+      endpointInterfaceId:
+        type: integer
+      headers:
+        items:
+          $ref: '#/definitions/model.DebugInterfaceHeader'
+        type: array
+      id:
+        type: integer
+      interfaceCheckpoints:
+        items:
+          $ref: '#/definitions/model.DebugInterfaceCheckpoint'
+        type: array
+      interfaceExtractors:
+        items:
+          $ref: '#/definitions/model.DebugInterfaceExtractor'
+        type: array
+      method:
+        $ref: '#/definitions/consts.HttpMethod'
+      name:
+        type: string
+      oauth20:
+        $ref: '#/definitions/model.DebugInterfaceOAuth20'
+      operationId:
+        type: string
+      ordr:
+        type: integer
+      parentId:
+        description: IsDir       bool   `json:"isDir"`
+        type: integer
+      pathParams:
+        items:
+          $ref: '#/definitions/model.DebugInterfaceParam'
+        type: array
+      preRequestScript:
+        type: string
+      projectId:
+        type: integer
+      queryParams:
+        description: debug data
+        items:
+          $ref: '#/definitions/model.DebugInterfaceParam'
+        type: array
+      scenarioProcessorId:
+        type: integer
+      security:
+        type: string
+      serveId:
+        type: integer
+      serverId:
+        description: used by DiagnoseInterface
+        type: integer
+      slots:
+        $ref: '#/definitions/iris.Map'
+      updatedAt:
+        type: string
+      url:
+        type: string
+      useId:
+        type: integer
+      validationScript:
+        type: string
+    type: object
+  model.DebugInterfaceApiKey:
+    properties:
+      createdAt:
+        type: string
+      disabled:
+        type: boolean
+      id:
+        type: integer
+      interfaceId:
+        type: integer
+      key:
+        type: string
+      transferMode:
+        type: string
+      updatedAt:
+        type: string
+      value:
+        type: string
+    type: object
+  model.DebugInterfaceBasicAuth:
+    properties:
+      createdAt:
+        type: string
+      disabled:
+        type: boolean
+      id:
+        type: integer
+      interfaceId:
+        type: integer
+      password:
+        type: string
+      updatedAt:
+        type: string
+      username:
+        type: string
+    type: object
+  model.DebugInterfaceBearerToken:
+    properties:
+      createdAt:
+        type: string
+      disabled:
+        type: boolean
+      id:
+        type: integer
+      interfaceId:
+        type: integer
+      token:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  model.DebugInterfaceBodyFormDataItem:
+    properties:
+      createdAt:
+        type: string
+      desc:
+        type: string
+      disabled:
+        type: boolean
+      id:
+        type: integer
+      interfaceId:
+        type: integer
+      name:
+        type: string
+      type:
+        $ref: '#/definitions/consts.FormDataType'
+      updatedAt:
+        type: string
+      value:
+        type: string
+    type: object
+  model.DebugInterfaceBodyFormUrlEncodedItem:
+    properties:
+      createdAt:
+        type: string
+      desc:
+        type: string
+      disabled:
+        type: boolean
+      id:
+        type: integer
+      interfaceId:
+        type: integer
+      name:
+        type: string
+      updatedAt:
+        type: string
+      value:
+        type: string
+    type: object
   model.DebugInterfaceCheckpoint:
     properties:
       actualResult:
@@ -872,6 +1098,99 @@ definitions:
       value:
         type: string
     type: object
+  model.DebugInterfaceCookie:
+    properties:
+      createdAt:
+        type: string
+      desc:
+        type: string
+      disabled:
+        type: boolean
+      id:
+        type: integer
+      interfaceId:
+        type: integer
+      name:
+        type: string
+      type:
+        type: string
+      updatedAt:
+        type: string
+      value:
+        type: string
+    type: object
+  model.DebugInterfaceExtractor:
+    properties:
+      boundaryEnd:
+        type: string
+      boundaryIncluded:
+        type: boolean
+      boundaryIndex:
+        type: integer
+      boundaryStart:
+        type: string
+      createdAt:
+        type: string
+      debugInterfaceId:
+        type: integer
+      diagnoseInterfaceId:
+        description: debug for Test Interface
+        type: integer
+      disabled:
+        type: boolean
+      endpointInterfaceId:
+        description: debug for Endpoint Interface
+        type: integer
+      expression:
+        type: string
+      id:
+        type: integer
+      key:
+        description: form header
+        type: string
+      projectId:
+        type: integer
+      result:
+        type: string
+      scenarioId:
+        type: integer
+      scenarioProcessorId:
+        description: debug in Scenario Processor
+        type: integer
+      scope:
+        $ref: '#/definitions/consts.ExtractorScope'
+      src:
+        $ref: '#/definitions/consts.ExtractorSrc'
+      type:
+        $ref: '#/definitions/consts.ExtractorType'
+      updatedAt:
+        type: string
+      usedBy:
+        $ref: '#/definitions/consts.UsedBy'
+      variable:
+        type: string
+    type: object
+  model.DebugInterfaceHeader:
+    properties:
+      createdAt:
+        type: string
+      desc:
+        type: string
+      disabled:
+        type: boolean
+      id:
+        type: integer
+      interfaceId:
+        type: integer
+      name:
+        type: string
+      type:
+        type: string
+      updatedAt:
+        type: string
+      value:
+        type: string
+    type: object
   model.DebugInterfaceOAuth20:
     properties:
       accessToken:
@@ -907,6 +1226,29 @@ definitions:
       state:
         type: string
       updatedAt:
+        type: string
+    type: object
+  model.DebugInterfaceParam:
+    properties:
+      createdAt:
+        type: string
+      desc:
+        type: string
+      disabled:
+        type: boolean
+      id:
+        type: integer
+      interfaceId:
+        type: integer
+      name:
+        type: string
+      paramIn:
+        $ref: '#/definitions/consts.ParamIn'
+      type:
+        type: string
+      updatedAt:
+        type: string
+      value:
         type: string
     type: object
   model.DebugInvoke:
@@ -947,6 +1289,51 @@ definitions:
         type: integer
       updatedAt:
         type: string
+    type: object
+  model.DiagnoseInterface:
+    properties:
+      IsDir:
+        type: boolean
+      children:
+        items:
+          $ref: '#/definitions/model.DiagnoseInterface'
+        type: array
+      createdAt:
+        type: string
+      createdBy:
+        type: integer
+      debugData:
+        $ref: '#/definitions/model.DebugInterface'
+      debugInterfaceId:
+        type: integer
+      desc:
+        type: string
+      disabled:
+        type: boolean
+      id:
+        type: integer
+      isLeaf:
+        type: boolean
+      name:
+        type: string
+      ordr:
+        type: integer
+      parentId:
+        type: integer
+      projectId:
+        type: integer
+      serveId:
+        type: integer
+      slots:
+        $ref: '#/definitions/iris.Map'
+      title:
+        type: string
+      type:
+        $ref: '#/definitions/serverConsts.DiagnoseInterfaceType'
+      updatedAt:
+        type: string
+      useId:
+        type: integer
     type: object
   model.Processor:
     properties:
@@ -1105,6 +1492,14 @@ definitions:
     - EndpointCategory
     - ScenarioCategory
     - PlanCategory
+  serverConsts.DiagnoseInterfaceType:
+    enum:
+    - dir
+    - interface
+    type: string
+    x-enum-varnames:
+    - DiagnoseInterfaceTypeDir
+    - DiagnoseInterfaceTypeInterface
   serverConsts.DropPos:
     enum:
     - -1
@@ -1249,6 +1644,83 @@ definitions:
       projectId:
         type: integer
     type: object
+  serverDomain.DiagnoseCurlImportReq:
+    properties:
+      content:
+        type: string
+      createBy:
+        type: integer
+      targetId:
+        type: integer
+    type: object
+  serverDomain.DiagnoseInterface:
+    properties:
+      children:
+        items:
+          $ref: '#/definitions/serverDomain.DiagnoseInterface'
+        type: array
+      debugInterfaceId:
+        type: integer
+      desc:
+        type: string
+      id:
+        type: integer
+      isDir:
+        type: boolean
+      ordr:
+        type: integer
+      parentId:
+        type: integer
+      projectId:
+        type: integer
+      serveId:
+        type: integer
+      slots:
+        $ref: '#/definitions/iris.Map'
+      title:
+        type: string
+      type:
+        $ref: '#/definitions/serverConsts.DiagnoseInterfaceType'
+      useId:
+        type: integer
+    type: object
+  serverDomain.DiagnoseInterfaceImportReq:
+    properties:
+      createBy:
+        type: integer
+      interfaceIds:
+        items:
+          type: integer
+        type: array
+      targetId:
+        type: integer
+    type: object
+  serverDomain.DiagnoseInterfaceMoveReq:
+    properties:
+      dragKey:
+        type: integer
+      dropKey:
+        type: integer
+      dropPos:
+        $ref: '#/definitions/serverConsts.DropPos'
+    type: object
+  serverDomain.DiagnoseInterfaceSaveReq:
+    properties:
+      id:
+        type: integer
+      mode:
+        type: string
+      parentId:
+        type: integer
+      projectId:
+        type: integer
+      serveId:
+        type: integer
+      title:
+        type: string
+      type:
+        $ref: '#/definitions/serverConsts.DiagnoseInterfaceType'
+    type: object
   serverDomain.LoginReq:
     properties:
       password:
@@ -1357,6 +1829,41 @@ definitions:
       userId:
         type: integer
     type: object
+  serverDomain.UserResp:
+    properties:
+      avatar:
+        type: string
+      createdAt:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      intro:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      projectRoles:
+        additionalProperties:
+          $ref: '#/definitions/consts.RoleType'
+        type: object
+      role_ids:
+        items:
+          type: integer
+        type: array
+      sysRoles:
+        items:
+          type: string
+        type: array
+      updatedAt:
+        type: string
+      username:
+        type: string
+    required:
+    - username
+    type: object
 info:
   contact:
     email: 462626@qq.com
@@ -1365,6 +1872,49 @@ info:
   title: DeepTest服务端API文档
   version: "3.0"
 paths:
+  /api/v1//users:
+    get:
+      parameters:
+      - in: query
+        name: field
+        type: string
+      - in: query
+        name: name
+        type: string
+      - in: query
+        name: order
+        type: string
+      - in: query
+        name: page
+        type: integer
+      - in: query
+        name: pageSize
+        type: integer
+      - in: query
+        name: userName
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  allOf:
+                  - $ref: '#/definitions/_domain.PageData'
+                  - properties:
+                      result:
+                        items:
+                          $ref: '#/definitions/serverDomain.UserResp'
+                        type: array
+                    type: object
+              type: object
+      summary: 用户列表
+      tags:
+      - 用户管理
   /api/v1/account/forgotPassword:
     post:
       consumes:
@@ -2590,6 +3140,330 @@ paths:
       summary: Agent提交接口执行结果
       tags:
       - 接口调试
+  /api/v1/diagnoseInterfaces:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 项目ID
+        in: query
+        name: projectId
+        required: true
+        type: integer
+      - description: 服务ID
+        in: query
+        name: serveId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/serverDomain.DiagnoseInterface'
+                  type: array
+              type: object
+      summary: 获取测试接口列表
+      tags:
+      - 快捷调试
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 新建测试接口的请求体
+        in: body
+        name: DiagnoseInterfaceSaveReq
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.DiagnoseInterfaceSaveReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/serverDomain.DiagnoseInterface'
+                  type: array
+              type: object
+      summary: 新建测试接口
+      tags:
+      - 快捷调试
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 更新测试接口的请求体
+        in: body
+        name: DiagnoseInterfaceSaveReq
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.DiagnoseInterfaceSaveReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/serverDomain.DiagnoseInterface'
+                  type: array
+              type: object
+      summary: 更新测试接口
+      tags:
+      - 快捷调试
+  /api/v1/diagnoseInterfaces/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 调试接口的id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: type
+        in: query
+        name: type
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 删除测试接口
+      tags:
+      - 快捷调试
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 调试接口的id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.DiagnoseInterface'
+              type: object
+      summary: 获取测试接口详情
+      tags:
+      - 快捷调试
+  /api/v1/diagnoseInterfaces/importCurl:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 导入cURL命令的请求体
+        in: body
+        name: DiagnoseCurlImportReq
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.DiagnoseCurlImportReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.DiagnoseInterface'
+              type: object
+      summary: 导入cURL命令
+      tags:
+      - 快捷调试
+  /api/v1/diagnoseInterfaces/importInterfaces:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 导入接口的请求体
+        in: body
+        name: DiagnoseInterfaceImportReq
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.DiagnoseInterfaceImportReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.DiagnoseInterface'
+              type: object
+      summary: 导入接口
+      tags:
+      - 快捷调试
+  /api/v1/diagnoseInterfaces/move:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 移动节点的请求体
+        in: body
+        name: DiagnoseInterfaceMoveReq
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.DiagnoseInterfaceMoveReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 移动节点
+      tags:
+      - 快捷调试
+  /api/v1/diagnoseInterfaces/saveDebugData:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 保存测试调试接口的请求体
+        in: body
+        name: DebugData
+        required: true
+        schema:
+          $ref: '#/definitions/domain.DebugData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/domain.DebugData'
+              type: object
+      summary: 保存测试调试接口
+      tags:
+      - 快捷调试
   /api/v1/init/checkdb:
     get:
       consumes:
